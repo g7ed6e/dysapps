@@ -29,7 +29,7 @@ function renderAt(path: string) {
 it('l’accueil est le menu de Blocland : le village, les Expéditions (la LV2 à côté de l’anglais), puis Missions et Réglages', () => {
   renderAt('/');
   expect(screen.getByRole('heading', { name: 'Blocland', level: 1 })).toBeInTheDocument();
-  expect(screen.getByRole('heading', { name: /Ton village : les Premiers Rivages/ })).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: /Ton village : les Basses Terres/ })).toBeInTheDocument();
   const menu = screen.getByRole('navigation', { name: 'Menu principal' });
   expect(within(menu).getAllByRole('link').map((a) => a.getAttribute('href'))).toEqual(['/matiere/maths', '/matiere/francais', '/matiere/anglais', '/matiere/lv2']);
   expect(within(menu).getByRole('link', { name: /Espagnol.*Expédition/ })).toHaveAttribute('href', '/matiere/lv2');
@@ -95,12 +95,12 @@ it('liste les activités d’une matière', () => {
   expect(screen.getByRole('link', { name: /Plaine des nombres.*Nouveau.*Niveau 6e/ })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /Rivière des fractions.*Ouvrage à construire/ })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /Glacier des relatifs.*Archipel à rejoindre.*Niveau 5e/ })).toBeInTheDocument();
-  expect(screen.getByRole('heading', { name: 'Archipel de 5e — Les Îles Brumeuses' })).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: 'Archipel de 5e — Les Collines du Large' })).toBeInTheDocument();
   expect(screen.queryByText(/Forêt des sons/)).not.toBeInTheDocument();
   // Les archipels pas encore atteints sont repliés sous « Plus tard ».
   const later = screen.getByText(/^Plus tard : 3 archipels à rejoindre/).closest('details')!;
   expect(later).not.toHaveAttribute('open');
-  expect(later).toContainElement(screen.getByRole('heading', { name: 'Archipel de 5e — Les Îles Brumeuses' }));
+  expect(later).toContainElement(screen.getByRole('heading', { name: 'Archipel de 5e — Les Collines du Large' }));
 });
 
 it('en vue simple, le voyage en Bloc-Navire est un écran avec une phrase et un bouton « Arriver », puis le port d’en face', async () => {
@@ -112,7 +112,7 @@ it('en vue simple, le voyage en Bloc-Navire est un écran avec une phrase et un 
   const user = userEvent.setup();
   renderAt('/aventure/voyage/5e');
   expect(screen.getByRole('dialog', { name: /Le voyage/ })).toBeInTheDocument();
-  expect(document.body.textContent).toContain('Tu embarques sur le Bloc-Navire. Cap sur les Îles Brumeuses !');
+  expect(document.body.textContent).toContain('Tu embarques sur le Bloc-Navire. Cap sur les Collines du Large !');
   await user.click(screen.getByRole('button', { name: /Arriver/ }));
   expect(screen.getByRole('heading', { name: /Marché des proportions/ })).toBeInTheDocument();
   const saved = JSON.parse(localStorage.getItem('dysapps:blocland')!);
@@ -212,10 +212,10 @@ it('en vue simple, « Mes blocs » est une page : ce que chaque bloc construit, 
   expect(screen.getByRole('heading', { name: 'Blocland' })).toBeInTheDocument();
 });
 
-it('en vue simple, les bandeaux de récompense attendent que le mot de la baleine soit fermé (DA-9)', async () => {
+it('en vue simple, les bandeaux de récompense attendent que le mot des grandes étapes soit fermé (DA-9)', async () => {
   const user = userEvent.setup();
   renderAt('/aventure/carte');
-  const word = screen.getByRole('dialog', { name: 'Le mot de la baleine' });
+  const word = screen.getByRole('dialog', { name: 'Le mot de Mousso' });
   expect(screen.getByTestId('retenus')).toHaveTextContent('oui');
   while (within(word).queryByRole('button', { name: 'Suivant' })) await user.click(within(word).getByRole('button', { name: 'Suivant' }));
   await user.click(within(word).getByRole('button', { name: 'J’ai compris' }));
@@ -230,9 +230,9 @@ it('en vue simple, la Carte et la page des quatre archipels renvoient à la list
   expect(screen.getByRole('link', { name: /Y aller/ })).toHaveAttribute('href', '/aventure/foret');
   expect(screen.getByRole('link', { name: /^Forêt des sons.*À explorer/ })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /^Carrière des mots.*Fermée/ })).toBeInTheDocument();
-  expect(screen.getByRole('img', { name: /Carte des quatre archipels.*5e, les Îles Brumeuses : dans la brume/ })).toBeInTheDocument();
-  // Un élève qui n'a rien joué : la baleine se présente, une fois.
-  expect(screen.getByRole('dialog', { name: 'Le mot de la baleine' })).toHaveTextContent('Je suis la baleine');
+  expect(screen.getByRole('img', { name: /Carte des quatre archipels.*5e, les Collines du Large : dans la brume/ })).toBeInTheDocument();
+  // Un élève qui n'a rien joué : Mousso, la créature de l'île de l'école, se présente, une fois.
+  expect(screen.getByRole('dialog', { name: 'Le mot de Mousso' })).toHaveTextContent('Moi, c’est Mousso');
   document.body.innerHTML = '';
   renderAt('/aventure/monde');
   expect(screen.getByRole('heading', { name: 'Blocland' })).toBeInTheDocument();
@@ -296,7 +296,7 @@ it('l’école du village : trois portes, les missions de la matière, et le ret
   expect(fractions).toHaveAttribute('href', '/app/fractions');
   await user.click(fractions);
   expect(await screen.findByRole('link', { name: /École/ })).toHaveAttribute('href', '/aventure/ecole?porte=maths');
-  // La Forêt, île de l'école des Premiers Rivages, y mène aussi.
+  // La Forêt, île de l'école des Basses Terres, y mène aussi.
   document.body.innerHTML = '';
   renderAt('/aventure/foret');
   expect(screen.getByRole('link', { name: /École du village/ })).toHaveAttribute('href', '/aventure/ecole');

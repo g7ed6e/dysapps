@@ -107,7 +107,10 @@ const COLLINES = { ...DONE6, blocland: { ...DONE6.blocland, village: { ...DONE6.
 
 const FOREST_QUEST = BIOMES.find((b) => b.id === 'foret').exercises[0].id;
 
-/** name: fichier ; state: partie préparée ; view: vue du monde ; go: adresse ; act: gestes avant la capture ; whale: ce que la baleine a déjà dit. */
+/**
+ * name: fichier ; state: partie préparée ; view: vue du monde ; go: adresse ; act: gestes avant la capture ; whale: ce
+ * que la baleine a déjà dit ; renommage: l'écran des nouveaux noms des archipels reste à dire (noté dit sinon).
+ */
 const SHOTS = [
   { name: 'titre', state: EARLY, title: true, go: '/' },
   { name: 'menu', state: MID, go: '/menu' },
@@ -124,8 +127,10 @@ const SHOTS = [
   { name: 'mes-blocs', state: MID, go: '/aventure/blocs' },
   { name: 'carte', state: MID, go: '/aventure/carte' },
   { name: 'archipels', state: MID, go: '/aventure/monde' },
-  // Le mot de la baleine : sa présentation déjà dite, reste le premier ouvrage (le sentier vers la Mine).
+  // Le mot des grandes étapes : sa présentation déjà dite, reste le premier ouvrage (le sentier vers la Mine).
   { name: 'baleine', state: MID, go: '/aventure', whale: { 'baleine-6e-arrivee': true }, wait: 9000 },
+  // Les nouveaux noms des archipels (GD-1), dits une fois à un élève qui jouait déjà.
+  { name: 'renommage', state: MID, go: '/aventure', whale: { 'baleine-6e-arrivee': true }, renommage: true, wait: 9000 },
   { name: 'ouvrages', state: MID, go: '/aventure/ferme', act: openFold('ouvrages') },
   { name: 'navire-chantier', state: MID, go: '/aventure/plaine', act: openFold('navire') },
   { name: 'gardien', state: MID, go: '/aventure/mine/gardien', wait: 2500 },
@@ -307,7 +312,7 @@ async function take(shot) {
     // La partie s'écrit depuis une page statique du même site : l'appli, pas encore lancée, ne peut pas l'écraser.
     await page.goto(`${base}/icon.svg`);
     await page.evaluate(
-      ({ state, view, settings, title, tutorial, whale }) => {
+      ({ state, view, settings, title, tutorial, whale, renommage }) => {
         localStorage.clear();
         sessionStorage.clear();
         if (!title) sessionStorage.setItem('dysapps:titre-vu', '1');
@@ -318,8 +323,18 @@ async function take(shot) {
         if (state?.progress) localStorage.setItem('dysapps:progress', JSON.stringify(state.progress));
         // Ce que la baleine a déjà dit : sans cette clé, les étapes déjà passées sont notées dites, sans parler.
         if (whale) localStorage.setItem('dysapps:baleine', JSON.stringify(whale));
+        // Les nouveaux noms des archipels : déjà dits, sauf sur leur capture (une partie préparée les ferait dire).
+        localStorage.setItem('dysapps:noms-archipels', JSON.stringify({ dit: !renommage }));
       },
-      { state: shot.state ?? null, view: shot.view ?? '3d', settings: shot.settings ?? {}, title: Boolean(shot.title), tutorial: Boolean(shot.tutorial), whale: shot.whale ?? null },
+      {
+        state: shot.state ?? null,
+        view: shot.view ?? '3d',
+        settings: shot.settings ?? {},
+        title: Boolean(shot.title),
+        tutorial: Boolean(shot.tutorial),
+        whale: shot.whale ?? null,
+        renommage: Boolean(shot.renommage),
+      },
     );
     await page.goto(`${base}/#${shot.go}`);
     // Le monde 3D met quelques secondes à se construire (rendu logiciel, sans carte graphique).

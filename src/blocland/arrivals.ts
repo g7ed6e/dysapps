@@ -1,19 +1,20 @@
-// Les bulles de première arrivée dans un archipel (deux par archipel), lues à voix haute, une seule fois par appareil
-// (voir Tutorial). Partagées par le monde 3D (WorldPage) et la vue simple (la page du port).
-import type { ArchipelagoId } from './world/archipelago';
+// Les bulles pratiques de première arrivée dans un archipel, après le mot d'arrivée (src/univers/baleine.ts), lues à
+// voix haute, une seule fois par appareil (voir Tutorial). Partagées par le monde 3D (WorldPage) et la vue simple (la
+// page du port). Les noms des archipels viennent de l'appelant : ceux de l'univers affiché (GD-1).
+import type { ArchipelagoId, NomsArchipels } from './world/archipelago';
 
-export const ARRIVAL_STEPS: Record<ArchipelagoId, string[]> = {
-  '6e': [],
-  '5e': [
-    'Bienvenue dans les Îles Brumeuses, l’archipel de 5e ! Six îles, plus hautes et plus fraîches. Les règles ne changent pas : missions, blocs, plans, Gardiens.',
-    'Le Bloc-Navire reste au port, sur le Marché des proportions. Pour revenir en 6e, ouvre le panneau du Marché et touche Revenir. Pour aller en 4e, il lui faut un ballon : ses blocs se posent ici.',
-  ],
-  '4e': [
-    'Bienvenue dans les Anciens Ateliers, l’archipel de 4e ! Ici, les vieux ateliers attendent qu’on les rallume ; le haut-fourneau de la Forge chauffe jour et nuit.',
-    'Le Bloc-Navire est amarré à l’Atelier du calcul littéral. Son réacteur se construit ici : quand il est prêt, tu monteras jusqu’aux Îles du Ciel.',
-  ],
-  '3e': [
-    'Bienvenue dans les Îles du Ciel, l’archipel de 3e ! Les îles flottent dans les nuages : tu es tout en haut.',
-    'Le phare de Fi te guide. Le Bloc-Navire peut te ramener sur n’importe quel archipel : ouvre le panneau du Phare et choisis.',
-  ],
-};
+/** Ce qu'il faut savoir du Bloc-Navire en arrivant dans un archipel (rien en 6e : on y commence). */
+export function pagesDArrivee(a: ArchipelagoId, noms: NomsArchipels): string[] {
+  switch (a) {
+    case '6e':
+      return [];
+    case '5e':
+      return [
+        'Le Bloc-Navire reste au port, sur le Marché des proportions. Pour revenir en 6e, ouvre le panneau du Marché et touche Revenir. Pour aller en 4e, il lui faut un ballon : ses blocs se posent ici.',
+      ];
+    case '4e':
+      return [`Le Bloc-Navire est amarré à l’Atelier du calcul littéral. Son réacteur se construit ici : quand il est prêt, tu monteras jusqu’aux ${noms['3e']}.`];
+    case '3e':
+      return ['Le phare de Fi te guide. Le Bloc-Navire peut te ramener sur n’importe quel archipel : ouvre le panneau du Phare et choisis.'];
+  }
+}

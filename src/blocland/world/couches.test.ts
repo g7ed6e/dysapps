@@ -51,6 +51,8 @@ const GRILLE = [
   'world/decor',
   'world/whalePass',
   'world/grille',
+  // Où va le bonhomme quand on touche le sol : la case touchée, ou la plus proche où il peut aller.
+  'world/arrivee',
   // Le monde en cubes : un cube en cases du monde, ce qu'on touche pour entrer (J5).
   'world/cube',
   // Le relief de chaque île, en repère d'île, un fichier par archipel (socle de la piste Rendu).

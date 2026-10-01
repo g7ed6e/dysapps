@@ -3,7 +3,7 @@
 // profondeur et la faune en facettes, un appel de dessin par famille.
 import * as THREE from 'three';
 import { AMBIENCE, palette } from '../world/daylight';
-import { oiseauxDe, placeDesNuages, PLANEUR, planeurDe, poseDePassage, poseDeRonde, poseDuPlaneur, type PoseDeBaleine, type Ronde } from '../world/faune';
+import { capDuNuage, deriveDesNuages, oiseauxDe, placeDesNuages, placeDesNuagesDArchipeo, PLANEUR, planeurDe, poseDePassage, poseDeRonde, poseDuPlaneur, type NuageAuLoin, type PoseDeBaleine, type Ronde } from '../world/faune';
 import type { ChampDuSol } from '../world/landMesh';
 import { signatureDesTerres, terresDeLaMer } from '../world/mer';
 import { cielDe, teinteSur } from '../world/palette';
@@ -14,7 +14,6 @@ import { playWhaleBlow } from '../sound';
 import { ISLAND_VIEW } from './camera';
 import { creerFaune } from './faune';
 import type { Lumiere } from './lumiere';
-import { mistTexture } from './maillage';
 import { creerMer } from './mer';
 import type { Derniers, Monde, PartieDeLaScene } from './partie';
 import { blockMaterial } from './textures';
@@ -60,7 +59,7 @@ export function creerLarge(
   const water = new THREE.Mesh(new THREE.PlaneGeometry(width * 8, width * 8), waterMat);
   water.rotation.x = -Math.PI / 2;
   water.position.set(center.x, WATER_LEVEL, center.y);
-  // Les Îles du Ciel : pas de mer, un plancher de nuages qui dérive lentement sous les îles.
+  // Les Îles du Ciel : pas de mer, un plancher de nuages sous les îles.
   water.visible = !ambience.sky && !peinte;
   scene.add(water);
   // Archipéo (lot R3) : la mer en dégradé de profondeur, l'écume du rivage et la houle (ou le plancher de nuages), en
@@ -71,24 +70,26 @@ export function creerLarge(
     scene.add(mer.mesh);
   }
   let merSignature = '';
-  const floorTex = ambience.sky ? mistTexture() : null;
-  if (floorTex) {
-    floorTex.wrapS = THREE.RepeatWrapping;
-    floorTex.wrapT = THREE.RepeatWrapping;
-    floorTex.repeat.set(width / 6, width / 6);
-  }
-  const cloudFloorMat = new THREE.MeshBasicMaterial({ map: floorTex, color: 0xf6f9fc, transparent: true, opacity: 0.92, depthWrite: false });
+  // Le plancher de nuages des Îles du Ciel (Blocland) : uni et opaque, de la couleur de l'eau de la palette, qui suit le
+  // jour comme l'eau des autres archipels (DA-35 : la nappe en dégradé répété faisait un damier de ronds blancs).
+  const cloudFloorMat = new THREE.MeshBasicMaterial({ color: palette(1, archipel).water });
   const cloudFloor = new THREE.Mesh(new THREE.PlaneGeometry(width * 8, width * 8), cloudFloorMat);
   cloudFloor.rotation.x = -Math.PI / 2;
   cloudFloor.position.set(center.x, CLOUD_FLOOR, center.y);
   cloudFloor.visible = ambience.sky && !peinte;
   scene.add(cloudFloor);
 
-  // Nuages en cubes, au-dessus du monde ; dans les Îles du Ciel, deux fois plus, et bas, entre les îles.
+  // Blocland : nuages en cubes, au-dessus du monde ; dans les Îles du Ciel, deux fois plus, et bas, entre les îles.
+  // Archipéo : des cumulus facettés, au loin derrière l'archipel (DA-11), dessinés avec la faune (plus bas).
   const cloudGeo = new THREE.BoxGeometry(1, 0.5, 1.2);
   const clouds = new THREE.Group();
-  /** Où sont les nuages : le coin de leur premier cube (le monde en blocs), et leur longueur. */
-  const cloudAt = placeDesNuages(archipel, bounds, width);
+  /**
+   * Où sont les nuages : le coin de leur premier cube (le monde en blocs), et leur longueur. Archipéo : au loin, au nord
+   * de l'archipel, jamais sur un pont ni sur un chemin (DA-11, world/faune.ts).
+   */
+  const cloudAt: NuageAuLoin[] = peinte ? placeDesNuagesDArchipeo(archipel, bounds) : placeDesNuages(archipel, bounds, width).map((n) => ({ ...n, grossi: 1 }));
+  /** Archipéo : la dérive des nuages, et leur fondu au bout (world/faune.ts). */
+  const derive = deriveDesNuages(bounds);
   if (!peinte)
     cloudAt.forEach(({ x, y, z, len }) => {
       const cloud = new THREE.Group();
@@ -186,10 +187,14 @@ export function creerLarge(
     faune.poserOiseau(birds.length, p.x, p.y, p.z, p.cap, PLANEUR.ailes, p.echelle);
   };
   if (faune) scene.add(faune.group);
-  /** Pose un nuage d'Archipéo à sa place (le milieu de ses cubes d'avant), tourné d'un rien, chacun le sien. */
+  /**
+   * Pose un nuage d'Archipéo à sa place (le milieu de ses cubes), tourné d'un rien, chacun le sien, à sa taille (`grossi`)
+   * et défait au bout de sa dérive.
+   */
   const placeCloud = (i: number) => {
     const c = cloudAt[i];
-    faune?.poserNuage(i, c.x + c.len / 2, c.y, c.z + 0.6, c.len, ((i * 0.37) % 1) * 0.6 - 0.3);
+    const milieu = c.x + c.len / 2;
+    faune?.poserNuage(i, milieu, c.y, c.z + 0.6, c.len, capDuNuage(i), c.grossi * derive.taille(milieu));
   };
   /** Le vol d'un oiseau à l'instant `t` : sur son cercle, à son altitude, tourné le long du cercle. */
   const birdAt = (b: (typeof birds)[number], t: number) => {
@@ -218,7 +223,11 @@ export function creerLarge(
       waterMat.color.setHex(teinteSur(c.mer, EAU_MOYENNE));
       if (ambience.sky) cloudFloorMat.color.setHex(c.mer);
       faune?.nuit(1 - jour);
-    } else waterMat.color.setHex(palette(jour, archipel).water);
+    } else {
+      const eau = palette(jour, archipel).water;
+      waterMat.color.setHex(eau);
+      if (ambience.sky) cloudFloorMat.color.setHex(eau);
+    }
   });
 
   return {
@@ -242,13 +251,12 @@ export function creerLarge(
       if (faune)
         cloudAt.forEach((c, i) => {
           c.x -= 0.004;
-          if (c.x < bounds.minX - 12) c.x = bounds.maxX + 12;
+          if (c.x + c.len / 2 < derive.debut) c.x = derive.fin - c.len / 2;
           placeCloud(i);
         });
       if (waterMat.map) waterMat.map.offset.set(t * 0.02, t * 0.013);
       // La houle et l'écume d'Archipéo.
       mer?.temps(t);
-      if (floorTex) floorTex.offset.set(t * 0.004, t * 0.002);
       poserPlaneur(t, false);
       for (const [i, b] of birds.entries()) {
         const o = birdAt(b, t);
@@ -337,7 +345,6 @@ export function creerLarge(
       waterMat.dispose();
       cloudFloor.geometry.dispose();
       cloudFloorMat.dispose();
-      floorTex?.dispose();
       cloudGeo.dispose();
       wingGeo.dispose();
       birdMat.dispose();

@@ -11,7 +11,7 @@ import type { VoxelCube } from '../cube';
 import { mixColor } from '../daylight';
 import type { ElementDeDecor } from '../decorMesh';
 import { colonneEn, NIVEAU_EAU, type ChampDuSol } from '../landMesh';
-import { CORE, MAP } from '../map';
+import { coeurDe, inCore, MAP } from '../map';
 import type { Couleur, Faces } from '../palette';
 import type { TextureKind } from '../pixels';
 import { PLAN_ZONE } from '../plans';
@@ -205,8 +205,13 @@ const rocher: Forme = (o) => {
  */
 export const GRUE = {
   ile: 'atelier',
-  /** La case voulue, depuis le coin du cœur ; on prend la plus proche qui soit libre. */
-  voulue: { dx: -2, dy: CORE - 9 },
+  /**
+   * La case voulue, depuis les bornes du cœur (`coeurDe`) : `dx` depuis son bord gauche (sur la côte, deux cases en
+   * dehors), `dyDuMilieu` depuis sa rangée du milieu (−1 : la septième rangée du cœur d'origine, un peu en avant de la
+   * mi-profondeur) ; on prend la plus proche qui soit libre. Depuis que le cœur de l'Atelier a 20 cases (01/10/2026), la
+   * grue suit sa côte repoussée et garde sa profondeur dans la vue de l'île (avant : −9 depuis le bord du fond).
+   */
+  voulue: { dx: -2, dyDuMilieu: -1 },
   hauteur: 9,
   section: 1,
   fleche: 6,
@@ -224,8 +229,9 @@ export function caseDeLaGrue(champ: ChampDuSol, elements: readonly ElementDeDeco
   // Les cases prises par le décor posé (toute l'emprise d'un repère) : le décor du paysage, le même à toute étape de la partie.
   const pris = new Set<string>();
   for (const e of elements) for (let dx = 0; dx < e.emprise; dx++) for (let dy = 0; dy < e.emprise; dy++) pris.add(`${e.x + dx},${e.y + dy}`);
-  const dansLeCoeur = (x: number, y: number) => x >= def.core.x && x < def.core.x + CORE && y >= def.core.y && y < def.core.y + CORE;
-  const [wx, wy] = [def.core.x + GRUE.voulue.dx, def.core.y + GRUE.voulue.dy];
+  const dansLeCoeur = (x: number, y: number) => inCore(def, x, y);
+  const coeur = coeurDe(def);
+  const [wx, wy] = [coeur.x0 + GRUE.voulue.dx, Math.floor((coeur.y0 + coeur.y1) / 2) + GRUE.voulue.dyDuMilieu];
   let best: { x: number; y: number; z: number } | null = null;
   let bestD = Infinity;
   for (let x = wx - 2; x <= wx + 4; x++)

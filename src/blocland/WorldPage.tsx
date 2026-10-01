@@ -30,6 +30,7 @@ import { accueilDeLIle, decouverteDeLIle } from './decouvertes';
 import { usePanneauDeLaCarte } from './usePanneauDeLaCarte';
 import { usePlaceDesBulles } from './usePlaceDesBulles';
 import { WhaleWordPanel, useWhaleWord } from './WhaleWord';
+import { RenommagePanel, useRenommage } from './Renommage';
 import { useAmbience } from './useAmbience';
 import { VoyagePanel, voyageSentence } from './VoyagePanel';
 import { playArrival, playBell, playBurner, playHorn, playReactor, playSail } from './sound';
@@ -54,8 +55,10 @@ import {
 import { VILLAGE_STAGES, villageStage } from './world/villageStage';
 import { VEIL_MS, legTiming } from './world/voyage';
 import { walkDuration } from './world/scene';
-import { dispositionEnGrille } from './world/grille';
-import type { Entite, Intention } from './world/disposition';
+import { dispositionEnGrille, type BoutsDuTrajet } from './world/grille';
+import type { Entite, Intention, Point } from './world/disposition';
+import { resteDuTrajet } from './world/arrivee';
+import type { Bonhomme } from './world/view';
 import { isPlanDone, plansFor } from './world/plans';
 import { Loading } from '../components/Loading';
 import {
@@ -148,9 +151,13 @@ export function WorldPage() {
   const grille = useMemo(() => dispositionEnGrille(a, state.village.bridges, { cubes, creatures }), [a, state.village.bridges, cubes, creatures]);
   /** Où le bonhomme se tient sur une île (en cases du monde). */
   const seTenir = (id: BiomeId) => grille.versMonde(grille.seTenir(id));
-  /** Son chemin d'une île à une île ou à la porte d'un lieu, sur les ouvrages construits ; `null` s'il n'y en a pas. */
-  const chemin = (de: BiomeId, vers: Entite) => {
-    const t = grille.trajet({ genre: 'ile', id: de }, vers);
+  /**
+   * Son chemin d'une île à une île ou à la porte d'un lieu, sur les ouvrages construits ; `null` s'il n'y en a pas. Vers
+   * une île, il s'arrête en `arrivee` (la case du sol touchée) plutôt qu'à sa place ; il part de `depart` (là où il se
+   * tient sur son île) plutôt que de sa place.
+   */
+  const chemin = (de: BiomeId, vers: Entite, bouts?: BoutsDuTrajet) => {
+    const t = grille.trajet({ genre: 'ile', id: de }, vers, bouts);
     return t ? t.etapes.map(grille.versMonde) : null;
   };
   /** Un nouveau trajet part d'où le bonhomme se tient (la porte de l'école), pas forcément de la place de son île. */
@@ -185,7 +192,7 @@ export function WorldPage() {
   // Les bornes de mission des îles de l'archipel, avec leur état : à faire, étoiles gagnées, ou fermée.
   // Le modèle du monde (world/modele.ts) : les îles, les bornes et leur état, en identifiants ; la grille dit où elles sont.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const modele = useMemo(() => modeleDuMonde(state, a), [a, state, settings.lv2]);
+  const modele = useMemo(() => modeleDuMonde(state, a, textes.archipels, textes.libelles), [a, state, settings.lv2, textes]);
   const quests = useMemo<QuestMark[]>(
     () =>
       modele.bornes.map((b) => ({
@@ -227,7 +234,9 @@ export function WorldPage() {
   // instant (la fin d'une pose, d'une arrivée), puis la caméra cadre l'île concernée et la baleine passe au large.
   const [tutoDone, setTutoDone] = useState(() => hasSeenTutorial('village-immersif'));
   // Le mot de la baleine attend la fin des rallumages (« Tous les Gardiens… » vient après).
-  const whale = useWhaleWord(state, a, tutoDone && rallumage.enAttente.length === 0);
+  // Les nouveaux noms des archipels (GD-1), une fois par appareil : avant le mot des grandes étapes, un panneau à la fois.
+  const renommage = useRenommage(tutoDone && rallumage.enAttente.length === 0, 1200);
+  const whale = useWhaleWord(state, a, tutoDone && rallumage.enAttente.length === 0 && !renommage.ouvert);
   const [whaleOpen, setWhaleOpen] = useState<string | null>(null);
   const [whaleSeq, setWhaleSeq] = useState(0);
   // Le village de l'archipel monte d'un état pendant la séance (un plan, un ouvrage, un monument) : une phrase, lue à
@@ -276,7 +285,7 @@ export function WorldPage() {
   useAmbience(forceDay);
   // La construction guidée de l'île ouverte : bouton du panneau ou case bleue touchée dans le monde ; et le chantier du
   // Bloc-Navire sur le port.
-  const builder = usePlanBuilder(island?.id ?? archipelago.port);
+  const builder = usePlanBuilder(island?.id ?? archipelago.port, true);
   const ship = useVehicleBuilder(island?.id ?? archipelago.port);
   const monumentBuilder = useMonumentBuilder(monument ?? monumentsOf(a)[0]);
   // Les éclats : ceux du plan, du navire ou du monument, le dernier qui a bougé.
@@ -335,7 +344,7 @@ export function WorldPage() {
     const trip = { to, from: a, back, dest, bridges: state.village.bridges, reduceMotion };
     if (reduceMotion) return setVoyage((v) => nouveauVoyage({ ...trip, approach: false }, v));
     const stage = etapeDuVoyage(to, back, state.village.bridges);
-    const text = voyageSentence(to, back, a);
+    const text = voyageSentence(to, back, textes.archipels, a);
     if (settings.autoRead) speak(frenchTypography(text));
     // Le bonhomme n'est pas au port : il y marche d'abord, la caméra sur le port ; le départ suit.
     const port = archipelago.port;
@@ -431,16 +440,24 @@ export function WorldPage() {
   }, [voyage?.seq, voyage?.leg, voyage?.mode, voyage?.approach]);
 
   // Le bonhomme : où il se tient, et son itinéraire quand on ouvre une autre île ouverte (il y marche).
-  const [walk, setWalk] = useState<{ route: { x: number; y: number; z: number }[]; seq: number }>(() => ({ route: [seTenir(at)], seq: 0 }));
+  // La position fine ne se sauvegarde pas : à la reprise, il est à sa place.
+  const [walk, setWalk] = useState<Bonhomme<Point>>(() => ({ route: [seTenir(at)], seq: 0 }));
+  /** La case du sol où l'élève l'a envoyé sur son île (il y reste, sans revenir à sa place), ou `null`. */
+  const flanee = useRef<Point | null>(null);
+  /** Une autre île touchée sur le sol : la case touchée, que l'effet du changement d'île lit (et où il en était en route). */
+  const arriveeDemandee = useRef<{ ile: BiomeId; sol: Point; enRoute?: Point } | null>(null);
   // Les vues reçoivent le trajet en ancrages : chaque point dans le repère de l'île la plus proche. Une disposition
   // à part, qui ne dépend que de l'archipel : `grille` change avec les cubes, et le bonhomme repartirait à chaque bloc posé.
   const repere = useMemo(() => dispositionEnGrille(a), [a]);
-  const avatar = useMemo(() => ({ route: walk.route.map((p) => repere.versIle(p)), seq: walk.seq }), [walk, repere]);
+  const avatar = useMemo(() => ({ ...walk, route: walk.route.map((p) => repere.versIle(p)) }), [walk, repere]);
 
   // L'île de l'URL est cadrée (vol) à chaque changement ; le bonhomme s'y rend si un chemin d'ouvrages y mène.
   // Une île ouverte d'un autre archipel (« Aller au port », lien, retour d'exercice) : le Bloc-Navire y mène (voyage).
   // Une île d'un archipel pas encore atteint : la scène reste, la caméra cadre le port (le chantier du navire).
   useEffect(() => {
+    // La case du sol touchée sur cette île (onIsland), lue une fois : elle ne vaut que pour ce changement d'île.
+    const demande = arriveeDemandee.current;
+    arriveeDemandee.current = null;
     // Pendant un voyage, rien ne change de cap : à l'arrivée, on va à l'île demandée au départ.
     if (voyage) return;
     // Le panneau replié de cette île le reste ; sur une autre île, le sien s'ouvre (et l'ancien repli s'oublie).
@@ -483,10 +500,23 @@ export function WorldPage() {
     }
     setFocus((f) => ({ island: island?.id ?? null, seq: f.seq + 1 }));
     if (island) decouvrir(island.id, !plier);
-    if (island && (island.id !== at || !samePoint(walk.route[walk.route.length - 1], seTenir(at))) && isBiomeUnlocked(island.id, state.village.bridges)) {
-      const route = chemin(at, { genre: 'ile', id: island.id });
-      if (route) setWalk((w) => ({ route: fromHere(w.route, route), seq: w.seq + 1 }));
-      else setWalk((w) => ({ route: [seTenir(island.id)], seq: w.seq + 1 }));
+    // Il va sur l'île : à sa place, ou à la case du sol touchée (la plus proche où il peut aller, sinon sa place). Déjà
+    // sur l'île, à sa place ou là où l'élève l'a envoyé, il ne bouge pas.
+    const touchee = island && demande?.ile === island.id ? demande : null;
+    const but = island && touchee ? (grille.arrivee(island.id, touchee.sol, seTenir(island.id))?.case ?? seTenir(island.id)) : null;
+    const ici = walk.route[walk.route.length - 1];
+    const enPlace = samePoint(ici, seTenir(at)) || (flanee.current !== null && samePoint(ici, flanee.current));
+    if (island && (island.id !== at || !enPlace || but) && isBiomeUnlocked(island.id, state.village.bridges)) {
+      // Il part de là où il en est en route (`enRoute`), ou de la case où l'élève l'avait envoyé, sans repasser par sa place.
+      const depart = touchee?.enRoute ?? (flanee.current && samePoint(ici, flanee.current) ? ici : undefined);
+      // En route, `at` est déjà l'île où il allait (moveTo) : le trajet part de l'île où il se trouve, sans finir de
+      // traverser l'ouvrage pour revenir sur ses pas.
+      const de = touchee?.enRoute ? grille.ileEn(touchee.enRoute) : at;
+      const route = chemin(de, { genre: 'ile', id: island.id }, { arrivee: but ?? undefined, depart });
+      const vise = but ? { vise: true } : {};
+      if (route) setWalk((w) => ({ route: fromHere(depart ? [depart] : w.route, route), seq: w.seq + 1, ...vise }));
+      else setWalk((w) => ({ route: [but ?? seTenir(island.id)], seq: w.seq + 1 }));
+      flanee.current = but;
       moveTo(island.id);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -531,9 +561,11 @@ export function WorldPage() {
   const [moment, setMoment] = useState<{ id: BiomeId; phase: 'camera' | 'fondu'; seq: number } | null>(null);
   const [motRallume, setMotRallume] = useState<BiomeId | null>(null);
   // La bulle du bas défile (grand texte, téléphone) : dit s'il reste du texte sous ses boutons (DA-25).
-  const [bullesRef, bullesSuite] = useASuivre<HTMLDivElement>(whaleWord?.id ?? motRallume);
+  // Les nouveaux noms, hors voyage.
+  const renommageOuvert = renommage.ouvert && !voyage;
+  const [bullesRef, bullesSuite] = useASuivre<HTMLDivElement>(renommageOuvert ? 'renommage' : (whaleWord?.id ?? motRallume));
   usePlaceDesBulles(stageRef, !!voyage);
-  usePanneauDeLaCarte(stageRef, mapOpen && !whaleWord && !motRallume, `${destinationText}|${mapTarget ?? ''}|${remaining.length}`);
+  usePanneauDeLaCarte(stageRef, mapOpen && !whaleWord && !motRallume && !renommageOuvert, `${destinationText}|${mapTarget ?? ''}|${remaining.length}`);
   const clocheDuRetour = useRef(false);
   const aRallumer = !voyage && tutoDone && !panelOpen ? (rallumage.enAttente[0] ?? null) : null;
   // Un bandeau de récompense attend que le panneau ouvert se ferme (le tutoriel, le mot de la baleine, un rallumage, un
@@ -633,20 +665,41 @@ export function WorldPage() {
     openIsland(port);
   };
 
-  // Toucher une île : on y va (le bonhomme marche si un chemin y mène). Sur la Carte, une île fermée montre son chemin.
-  // Le panneau replié reste replié quand on touche l'île où l'on est : on regarde le monde sans qu'il remonte, et la
-  // créature de l'île parle (comme quand on la touche), pour que le toucher réponde ; le bouton de l'île, dans la barre
-  // du bas, rouvre le panneau.
-  const onIsland = (id: BiomeId) => {
+  // Toucher le sol de l'île où il est : il y marche, jusqu'à la case touchée (ou la plus proche où il peut aller, sinon
+  // sa place), un rond posé sur le but (sur sa case même, le rond seul, un court instant). Le panneau ne bouge pas (replié, il le reste) ni la caméra (pas de nouveau
+  // cadrage, et une vue déplacée par un glissé le reste : « Recentrer » la ramène). En route (`enRoute`), le toucher
+  // change son but sans attendre ; sur l'eau, ou sur son but même, il y arrive tout de suite.
+  const flaner = (id: BiomeId, sol: Point, enRoute?: Point) => {
+    const fin = walk.route[walk.route.length - 1];
+    const arriver = () => setWalk((w) => ({ route: [fin], seq: w.seq + 1 }));
+    if (enRoute && grille.surLEau(sol)) return arriver();
+    const ici = enRoute ?? fin;
+    const but = grille.arrivee(id, sol, ici)?.case ?? seTenir(id);
+    if (enRoute && samePoint(but, fin)) return arriver();
+    // Déjà sur cette case : il ne marche pas, le rond s'y pose un court instant (le toucher répond).
+    if (!enRoute && samePoint(but, ici)) return setWalk((w) => ({ route: [ici], seq: w.seq + 1, flanerie: true, vise: true }));
+    // Tout droit à pied si l'on peut ; sinon (au milieu d'un ouvrage), la fin du trajet en cours, puis à pied.
+    const route = grille.raccord(ici, but) ?? (enRoute ? [...resteDuTrajet(walk.route, ici), ...(grille.raccord(fin, but) ?? [fin, but]).slice(1)] : [ici, but]);
+    flanee.current = but;
+    setWalk((w) => ({ route, seq: w.seq + 1, flanerie: true, vise: true }));
+  };
+  // Toucher une île : on y va (le bonhomme marche si un chemin y mène), jusqu'à la case du sol touchée s'il y en a une.
+  // Sur la Carte, une île fermée montre son chemin. Sur l'île où l'on est, toucher le sol l'y fait marcher (`flaner`) ;
+  // l'île choisie au clavier, le panneau replié, sa créature parle, pour que le geste réponde ; le bouton de l'île,
+  // dans la barre du bas, rouvre le panneau.
+  const onIsland = (id: BiomeId, sol?: Point, enRoute?: Point) => {
     if (mapOpen && !isBiomeUnlocked(id, state.village.bridges)) return setMapTarget(id);
+    if (sol && !voyage && island?.id === id && at === id) return flaner(id, sol, enRoute);
     if (island?.id === id && !sheetOpen) return onCreature(id, 'creature');
+    // Une autre île ouverte : l'effet du changement d'île l'y emmène, jusqu'à la case touchée.
+    if (sol && island?.id !== id && isBiomeUnlocked(id, state.village.bridges)) arriveeDemandee.current = { ile: id, sol, ...(enRoute ? { enRoute } : {}) };
     openIsland(id);
   };
   // Ce que l'élève fait dans le monde : la vue renvoie une intention, la page décide.
   const onIntent = (i: Intention) => {
     switch (i.genre) {
       case 'ile':
-        return onIsland(i.id);
+        return onIsland(i.id, i.sol && grille.versMonde(i.sol), i.enRoute && grille.versMonde(i.enRoute));
       case 'borne':
         return onPickQuest(i.ile, i.mission);
       case 'lieu':
@@ -658,8 +711,9 @@ export function WorldPage() {
       case 'navire':
         return onPickVehicle(i.port);
       case 'face':
-        // En chantier : la case d'un plan de l'île, sinon du navire, sinon on ouvre l'île touchée.
-        if (island) builder.tryFill(i.ile, i.case) || ship.tryFill(i.ile, i.case) || onIsland(i.ile);
+        // En chantier : la case d'un plan de l'île, sinon du navire, sinon le sol touché (le bonhomme y va, comme pour
+        // une île touchée), sinon on ouvre l'île touchée.
+        if (island) builder.tryFill(i.ile, i.case) || ship.tryFill(i.ile, i.case) || onIsland(i.ile, i.sol && grille.versMonde(i.sol), i.enRoute && grille.versMonde(i.enRoute));
         return;
       case 'fin-du-voyage':
       case 'voyage-saute':
@@ -689,8 +743,8 @@ export function WorldPage() {
   // Les bulles du haut (la Carte, les phrases du voyage, du village, d'une créature), une condition chacune.
   const ligneDuVoyage = voyage?.mode === 'cinema';
   // Une chose à la fois : le panneau de la Carte attend que le mot de la baleine ou du rallumage soit fermé (DA-25).
-  const panneauDeLaCarte = mapOpen && !whaleWord && !motRallume;
-  const phraseDuVillage = villageSaid && !whaleWord;
+  const panneauDeLaCarte = mapOpen && !whaleWord && !motRallume && !renommageOuvert;
+  const phraseDuVillage = villageSaid && !whaleWord && !renommageOuvert;
   const bulleEnHaut = Boolean(ligneDuVoyage || panneauDeLaCarte || hopTo || phraseDuVillage || said);
   /**
    * « Recentrer » : le focus passe d'abord au monde (le bouton va disparaître, le focus ne tombe pas sur la page), puis
@@ -703,7 +757,7 @@ export function WorldPage() {
 
   return (
     <div
-      className={`world-page${(island && sheetOpen) || (panelOpen && !mapOpen) || voyage?.mode === 'panel' ? ' has-sheet' : ''}${whaleWord || motRallume ? ' bulle-ouverte' : ''}`}
+      className={`world-page${(island && sheetOpen) || (panelOpen && !mapOpen) || voyage?.mode === 'panel' ? ' has-sheet' : ''}${whaleWord || motRallume || renommageOuvert ? ' bulle-ouverte' : ''}`}
     >
       <div className="world-stage" data-scene ref={stageRef} onPointerDownCapture={moment ? toucherQuiSaute(sauterLeRallumage) : undefined}>
         <Suspense fallback={<Loading className="world-loading" text="Chargement du village…" />}>
@@ -732,7 +786,7 @@ export function WorldPage() {
             recentrage={recentrage}
             chantier={Boolean(island)}
             className="voxel-canvas-stage"
-            label={`${UNIVERS[univers].nom} en 3D : les ${archipelago.name}, l’archipel de ${a}, ses îles reliées par des ouvrages à construire, et le Bloc-Navire au port`}
+            label={`${UNIVERS[univers].nom} en 3D : les ${textes.archipels[a]}, l’archipel de ${a}, ses îles reliées par des ouvrages à construire, et le Bloc-Navire au port`}
           />
         </Suspense>
         <div className={`world-veil${veil ? ' on' : ''}`} aria-hidden="true" />
@@ -770,8 +824,8 @@ export function WorldPage() {
         <div className="world-overlay-top" data-couvre="scene">
           {ligneDuVoyage && (
             <div className="creature-line world-line voyage-line" role="status" aria-live="polite">
-              <Syllabified text={voyageSentence(voyage.to, voyage.back, voyage.from)} />
-              <SpeakButton text={voyageSentence(voyage.to, voyage.back, voyage.from)} compact />
+              <Syllabified text={voyageSentence(voyage.to, voyage.back, textes.archipels, voyage.from)} />
+              <SpeakButton text={voyageSentence(voyage.to, voyage.back, textes.archipels, voyage.from)} compact />
               <button type="button" className="button" onClick={onLegEnd}>
                 <Icon name="flag" /> Arriver
               </button>
@@ -840,7 +894,7 @@ export function WorldPage() {
           )}
           {hopTo && (
             <div className="creature-line world-line hop-line" role="status" aria-live="polite">
-              <Icon name="ship" /> Archipel de {hopTo} : les {getArchipelago(hopTo).name}
+              <Icon name="ship" /> Archipel de {hopTo} : les {textes.archipels[hopTo]}
             </div>
           )}
           {phraseDuVillage && (
@@ -875,7 +929,9 @@ export function WorldPage() {
               <Icon name="play" /> Passer
             </button>
           )}
-          {motRallume ? (
+          {renommageOuvert ? (
+            <RenommagePanel onClose={renommage.fermer} aSuivre={bullesSuite} />
+          ) : motRallume ? (
             <RallumagePanel id={motRallume} onClose={() => setMotRallume(null)} aSuivre={bullesSuite} />
           ) : (
             whaleWord && <WhaleWordPanel word={whaleWord} onClose={closeWhale} aSuivre={bullesSuite} />

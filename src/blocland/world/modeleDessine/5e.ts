@@ -9,7 +9,7 @@
 import type { BiomeId } from '../../biomes';
 import { BRIDGES } from '../archipelago';
 import { archipelagoOfIsland } from '../archipels';
-import { CORE, islandDef, landCells } from '../map';
+import { bornesDuCoeur, islandDef, landCells } from '../map';
 import { hash } from '../style';
 import { bridgePath, origineDe } from '../terrain';
 import type { Modele } from './types';
@@ -66,6 +66,8 @@ function crete(id: BiomeId, sommets: Sommet[]): Modele {
   const o = origineDe(id);
   const cases = landCells(islandDef(id)).map((c) => ({ x: c.x - o.x, y: c.y - o.y }));
   const fond = Math.max(...cases.map((c) => c.y));
+  // Le bord du fond du cœur (borne exclue), en repère d'île.
+  const bordDuCoeur = bornesDuCoeur(islandDef(id)).y1;
   // Les abords des ouvrages de l'île : leurs cases, en repère d'île.
   const abords: { x: number; y: number }[] = [];
   for (const b of BRIDGES) if ((b.from === id || b.to === id) && archipelagoOfIsland(b.from) === '5e') for (const c of bridgePath(b)) abords.push({ x: c.x - o.x, y: c.y - o.y });
@@ -76,10 +78,10 @@ function crete(id: BiomeId, sommets: Sommet[]): Modele {
   return {
     hauteur(x, y, h) {
       // Le cœur et la première rangée de l'anneau du fond ne bougent pas.
-      const dy = y - CORE;
+      const dy = y - bordDuCoeur;
       if (dy < 1 || pres(x, y)) return h;
       // Monte du bord du cœur jusqu'au fond de l'île, où la crête tombe en falaise dans la mer.
-      const fy = smooth(Math.min(1, dy / Math.max(1, (fond - CORE) * 0.75)));
+      const fy = smooth(Math.min(1, dy / Math.max(1, (fond - bordDuCoeur) * 0.75)));
       if (casse) {
         // Une masse cassée : chaque sommet a son retrait de chaque côté ; la hauteur descend au palier (2 ou 3 blocs)
         // sous elle, un bord de gradin avançant ou reculant d'une rangée à l'autre (± un demi-palier).

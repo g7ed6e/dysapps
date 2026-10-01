@@ -4,7 +4,7 @@
 // des cubes par une fonction `put` que lui donne le terrain, qui décide où ils vont et ce qu'ils ne recouvrent pas.
 import { BLOCKS, type BiomeId } from '../biomes';
 import type { VoxelCube } from './cube';
-import { CORE, inCore, isLand, LACS, noise, type ArchipelagoId, type Decor, type IslandDef, type LandCell } from './map';
+import { coeurDe, inCore, isLand, LACS, noise, type ArchipelagoId, type Decor, type IslandDef, type LandCell } from './map';
 
 /** Les couleurs du paysage et du décor (les textures 3D s'en déduisent, voir `TEXTURES` dans ./terrain.ts). */
 export const TRUNK = '#6b4a2e';
@@ -518,8 +518,10 @@ interface OutilsDuRepereEnBlocs {
  */
 export const REPERES_EN_BLOCS: Record<Repere, (o: OutilsDuRepereEnBlocs) => void> = {
   'grand-arbre': ({ def, scenery, backY, named, put }) => {
-    // Un chêne géant : tronc 2 × 2 de six blocs, large couronne en trois étages.
-    const s = findSpot(def, scenery, def.core.x - 4, backY, 2);
+    // Un chêne géant : tronc 2 × 2 de six blocs, large couronne en trois étages. Juste derrière le cœur, deux cases en
+    // dedans de son bord gauche : depuis que le cœur de la Forêt a 20 cases (01/10/2026), le replat d'avant, quatre cases
+    // à gauche, est au bord de la pente, et le chêne y montrait plus de la moitié de son tronc.
+    const s = findSpot(def, scenery, coeurDe(def).x0 + 2, backY, 2);
     if (!s) return;
     named(s.x, s.y);
     for (let z = 1; z <= 6; z++) for (let dx = 0; dx < 2; dx++) for (let dy = 0; dy < 2; dy++) put(s.x + dx, s.y + dy, s.h + z, TRUNK);
@@ -530,7 +532,7 @@ export const REPERES_EN_BLOCS: Record<Repere, (o: OutilsDuRepereEnBlocs) => void
   },
   'champignon-geant': ({ def, scenery, backY, named, put }) => {
     // Un champignon géant : pied clair de trois blocs, chapeau rouge à points blancs.
-    const s = findSpot(def, scenery, def.core.x + CORE + 2, backY, 1);
+    const s = findSpot(def, scenery, coeurDe(def).x1 + 2, backY, 1);
     if (!s) return;
     named(s.x, s.y);
     for (let z = 1; z <= 3; z++) put(s.x, s.y, s.h + z, BLOCKS.sable.side);
@@ -552,7 +554,7 @@ export const REPERES_EN_BLOCS: Record<Repere, (o: OutilsDuRepereEnBlocs) => void
   },
   'aiguille-de-glace': ({ def, scenery, backY, named, put }) => {
     // Une aiguille de glace : un pilier 2 × 2 de cinq blocs, une pointe de trois, un cristal qui brille au sommet.
-    const s = findSpot(def, scenery, def.core.x - 4, backY, 2);
+    const s = findSpot(def, scenery, coeurDe(def).x0 - 4, backY, 2);
     if (!s) return;
     named(s.x, s.y);
     for (let z = 1; z <= 5; z++) for (let dx = 0; dx < 2; dx++) for (let dy = 0; dy < 2; dy++) put(s.x + dx, s.y + dy, s.h + z, BLOCKS.glace.side);
@@ -561,7 +563,7 @@ export const REPERES_EN_BLOCS: Record<Repere, (o: OutilsDuRepereEnBlocs) => void
   },
   'haut-fourneau': ({ def, scenery, backY, named, put }) => {
     // Le haut-fourneau de la Forge : une cheminée de basalte 2 × 2 de neuf blocs, la lave qui rougeoie au sommet, la fumée au vent.
-    const s = findSpot(def, scenery, def.core.x + CORE + 2, backY, 2);
+    const s = findSpot(def, scenery, coeurDe(def).x1 + 2, backY, 2);
     if (!s) return;
     named(s.x, s.y);
     for (let z = 1; z <= 9; z++) for (let dx = 0; dx < 2; dx++) for (let dy = 0; dy < 2; dy++) put(s.x + dx, s.y + dy, s.h + z, BASALT);
@@ -579,7 +581,7 @@ export const REPERES_EN_BLOCS: Record<Repere, (o: OutilsDuRepereEnBlocs) => void
   },
   'grand-phare': ({ def, scenery, backY, named, put }) => {
     // Le grand phare : tour de pierre 2 × 2 de huit blocs, lanterne de quatre blocs au sommet, toit de prisme.
-    const s = findSpot(def, scenery, def.core.x + CORE + 1, backY, 2);
+    const s = findSpot(def, scenery, coeurDe(def).x1 + 1, backY, 2);
     if (!s) return;
     named(s.x, s.y);
     for (let z = 1; z <= 10; z++)
@@ -600,7 +602,7 @@ export function landmark(def: IslandDef, scenery: LandCell[], place: Put): void 
   REPERES_EN_BLOCS[kind]({
     def,
     scenery,
-    backY: def.core.y + CORE + 1,
+    backY: coeurDe(def).y1 + 1,
     named: (x, y) => (id = `${kind}@${x},${y}`),
     put: (x, y, z, color) => place(x, y, z, color, id),
   });
@@ -620,11 +622,12 @@ export const PONTON_SUR: readonly BiomeId[] = ['jardin'];
  */
 export function pontonEtBarque(def: IslandDef, scenery: LandCell[], place: Put): void {
   if (!PONTON_SUR.includes(def.id)) return;
-  const milieu = def.core.y + CORE / 2;
+  const coeur = coeurDe(def);
+  const milieu = (coeur.y0 + coeur.y1) / 2;
   const libre = (x: number, y: number) => !isLand(def, x, y);
   let rive: LandCell | null = null;
   for (const c of scenery) {
-    if (c.h < 0 || c.ground === 'eau' || c.ground === 'lave' || c.x < def.core.x + CORE || Math.abs(c.y - milieu) > 3) continue;
+    if (c.h < 0 || c.ground === 'eau' || c.ground === 'lave' || c.x < coeur.x1 || Math.abs(c.y - milieu) > 3) continue;
     // De l'eau devant (deux cases vers le large, sur quatre rangs) : le tablier et la barque y tiennent.
     let large = true;
     for (let dx = 1; dx <= 2 && large; dx++) for (let dy = 0; dy <= 3; dy++) if (!libre(c.x + dx, c.y + dy)) large = false;

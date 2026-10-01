@@ -751,7 +751,7 @@ export default function WorldCanvas2D({
                 const vo = q.vehicle.origin;
                 const cell = { x: vo.x + hit.cell.x, y: vo.y + hit.cell.y, z: vo.z + hit.cell.z };
                 const ghost = q.vehicle.cubes.some((c) => c.ghost && c.x === hit.cell.x && c.y === hit.cell.y && c.z === hit.cell.z);
-                if (ghost && q.build) q.build.onPickFace(cell, cell, q.vehicle.port);
+                if (ghost && q.build) q.build.onPickFace(cell, cell, { ile: q.vehicle.port });
                 else q.onPickVehicle?.(q.vehicle.port);
               },
             });

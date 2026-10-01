@@ -4,6 +4,7 @@ import { ARCHIPEO } from './archipeo';
 import { BLOCLAND } from './blocland';
 import { useUniversChoisi } from '../core/SettingsContext';
 import { universAffiche } from '../core/univers';
+import type { Tier } from '../core/progress';
 import type { TextesUnivers, UniversId } from './types';
 
 export type { TextesUnivers, UniversId } from './types';
@@ -27,5 +28,15 @@ export function texteDuMonument(
   textes: TextesUnivers,
   monument: { id: string; description: string; done: string },
 ): { description: string; done: string } {
-  return textes.monuments[monument.id] ?? { description: monument.description, done: monument.done };
+  return { description: monument.description, done: monument.done, ...textes.monuments[monument.id] };
+}
+
+/** Le titre et la condition d'un succès dans un univers : les siens s'il le nomme autrement, sinon ceux du succès. */
+export function texteDuSucces(textes: TextesUnivers, succes: { id: string; title: string; description: string }): { title: string; description: string } {
+  return textes.succes[succes.id] ?? { title: succes.title, description: succes.description };
+}
+
+/** Le nom d'un rôle dans un univers (« Maçon »). */
+export function nomDuRole(textes: TextesUnivers, tier: Tier): string {
+  return textes.roles[tier];
 }

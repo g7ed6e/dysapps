@@ -129,12 +129,14 @@ export const PALETTES: Record<ArchipelagoId, Ambiance> = {
     // La mer : un bleu pétrole plus sombre, sous la brume chaude.
     teinteDeMer: 0x21606e,
   },
-  // Les Îles du Ciel (R4b-3e) : un bleu franc, plus de lavande, de jour comme de nuit (horizon et lueur de nuit du
-  // directeur artistique) ; la neige et la roche froides du massif, le plancher de
-  // nuages d'un blanc bleuté, jamais sable (design/archipeo/intentions/3e-iles-du-ciel.md §5).
+  // Les Îles du Ciel (R4b-3e) : un bleu franc, sans lavande ; l'horizon et la lueur de nuit sont ceux du directeur
+  // artistique ; la neige et la roche froides du massif, le plancher de nuages d'un blanc bleuté, jamais sable
+  // (design/archipeo/intentions/3e-iles-du-ciel.md §5). La nuit reste de la famille des trois autres (revue du 3e,
+  // DA-21) : zénith, lune, ambiance et plancher ramenés de 223-225° vers 210-220° (220° au zénith, 209-212° pour la
+  // lune, l'ambiance et le plancher), à clarté HSL égale : fini le lilas sur le plancher de nuages.
   '3e': {
     jour: { zenith: 0x3a86cc, horizon: 0xb4d2ec, lueur: 0xeef3f4, soleil: 0xfff4e2, soleilForce: 2.3, ambianceCiel: 0xd4e4f6, ambianceSol: 0x8c9cbe, ambianceForce: 1.05, mer: 0xdde3e8 },
-    nuit: { zenith: 0x243a72, horizon: 0x4c709e, lueur: 0x6e8bb2, soleil: 0xb0c0ea, soleilForce: 1.1, ambianceCiel: 0x8296cc, ambianceSol: 0x46547e, ambianceForce: 1.25, mer: 0x8b97b8 },
+    nuit: { zenith: 0x233d70, horizon: 0x4c709e, lueur: 0x6e8bb2, soleil: 0xaecaea, soleilForce: 1.1, ambianceCiel: 0x80a6cb, ambianceSol: 0x455f7d, ambianceForce: 1.25, mer: 0x8aa1b7 },
     brume: [110, 350],
     voile: [0xdce8f2, 0.05],
     sols: {
@@ -272,6 +274,17 @@ export function eauxDe(a: ArchipelagoId): Eaux {
     ecume: BRUME,
   };
 }
+
+// ---------- Le rond au sol ----------
+
+/** Le rond au sol (./rondAuSol.ts), là où va le bonhomme : un plein ivoire, cerné d'encre brune. */
+export const IVOIRE = 0xfff3d6;
+export const ENCRE = 0x3b2a20;
+/**
+ * La nuit, l'ivoire du rond prend un peu de la nuit de l'archipel (cette part, au cœur de la nuit) : sans lumière, il
+ * paraîtrait collé sur la scène, mais il reste nettement plus clair que l'herbe de nuit.
+ */
+export const IVOIRE_DE_NUIT = 0.25;
 
 // ---------- Les surfaces ----------
 

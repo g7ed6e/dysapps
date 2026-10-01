@@ -9,7 +9,7 @@ const fresh = sanitizeState({});
 it('l’accueil d’une île : « pas de LV2 », l’accueil de sa créature, ou ce qu’il faut pour y venir', () => {
   const textes = textesDe('blocland');
   expect(accueilDeLIle(fresh, 'foret', false, textes)).toBe(textes.creatures.foret.greeting);
-  expect(accueilDeLIle(fresh, 'mine', false, textes)).toBe(lockedHint(fresh, 'mine'));
+  expect(accueilDeLIle(fresh, 'mine', false, textes)).toBe(lockedHint(fresh, 'mine', textes.archipels, textes.libelles));
   expect(accueilDeLIle(fresh, 'relais', true, textes)).toBe(SANS_LV2);
 });
 

@@ -6,9 +6,11 @@ import {
   avatarWalk,
   boardingWalk,
   cubeTags,
+  enRoute,
   finishWalk,
   groundTap,
   islandInDirection,
+  recentrerApres,
   startStrolls,
   startVoyage,
   startWalk,
@@ -46,7 +48,16 @@ describe('la marche du bonhomme', () => {
     expect(walkPose(startWalk([A, B], 0, 2000), 0, true)).toMatchObject({ x: 12, moving: false });
   });
 
-  it('un toucher pendant le trajet le fait arriver tout de suite', () => {
+  it('une flânerie vers une case touchée : la caméra ne la suit pas, un rond montre le but ; « en route » jusqu’à l’arrivée', () => {
+    const walk = avatarWalk({ route: [A, B], seq: 1, flanerie: true, vise: true }, 0)!;
+    expect([walk.flanerie, walk.vise]).toEqual([true, true]);
+    expect(avatarWalk({ route: [A, B], seq: 1 }, 0)).not.toHaveProperty('vise');
+    expect(enRoute(walk, 1000)).toBe(true);
+    expect(enRoute(walk, 2000)).toBe(false);
+    expect(enRoute(null, 0)).toBe(false);
+  });
+
+  it('un toucher dans le vide pendant le trajet le fait arriver tout de suite', () => {
     const walk = startWalk([A, B], 0, 2000);
     expect(finishWalk(walk, 500)).toBe(true);
     expect(walkPose(walk, 500).moving).toBe(false);
@@ -155,6 +166,21 @@ describe('toucher le sol', () => {
     expect(groundTap('6e', { cell: c, next: c, ground: { x: c.x + 0.4, y: c.y + 0.7 } }, cubeTags([]), { quest: true, bridge: true, build: false })).toEqual({
       kind: 'island',
       id: islandAt('6e', Math.floor(c.x + 0.4), Math.floor(c.y + 0.7)),
+      cell: c,
     });
+  });
+
+  it('la vue revient à son cadrage sur une cible, jamais sur le sol (une face en chantier, le sol où le bonhomme va)', () => {
+    const c = islandCenter('foret');
+    const sol = groundTap('6e', { cell: c, next: c, ground: c }, cubeTags([]), { quest: true, bridge: true, build: false });
+    const face = groundTap('6e', { cell: c, next: c, ground: c }, cubeTags([]), { quest: true, bridge: true, build: true });
+    expect(recentrerApres(sol, false)).toBe(false);
+    expect(recentrerApres(face, false)).toBe(false);
+    expect(recentrerApres(null, false)).toBe(false);
+    // Une créature, le navire : une cible.
+    expect(recentrerApres(null, true)).toBe(true);
+    expect(recentrerApres({ kind: 'quest', biome: 'foret', typeId: 'rimes' }, false)).toBe(true);
+    expect(recentrerApres({ kind: 'bridge', id: 'foret-mine' }, false)).toBe(true);
+    expect(recentrerApres({ kind: 'place', place: 'ecole', island: 'foret' }, false)).toBe(true);
   });
 });

@@ -1,11 +1,11 @@
-import { BIOMES, BLOCKS, type BiomeId } from '../biomes';
+import { BIOMES, BLOCKS } from '../biomes';
 import { EMPTY_STATE, fillPlanCell, nextFillable, planStatus, sanitizeState, type BloclandState } from '../engine';
 import { ORIGINE_DES_MONUMENTS, ORIGINE_DU_QUAI, PLANS, PLAN_ZONE, activePlan, isPlanDone, planCells, plansFor } from './plans';
 import { toutConstruit } from './budget';
 import { dockOrigin } from './harbour';
 import { MONUMENTS } from './monuments';
 import { VEHICLE_STAGES } from './vehicle';
-import { groundHeight, islandOrigin, worldCubes } from './terrain';
+import { ancreDuQuai, decalageDuQuai, groundHeight, islandOrigin, monumentAnchor, worldCubes } from './terrain';
 import { ARCHIPELAGO_IDS, islandDef } from './map';
 
 it('chaque île a un plan valide : dans la zone des plans, sur un sol plat et sans décor, avec des blocs gagnables', () => {
@@ -132,19 +132,52 @@ it('écrit une ligne de journal quand un plan est terminé', () => {
   expect(state.village.journal).toEqual([{ day: '2026-09-25', plan: plan.id }]);
 });
 
-describe('les origines figées des chantiers (séparation du jeu et du rendu, J1)', () => {
-  it('égales au calcul depuis le quai et l’îlot : les clés des sauvegardes ne changent pas', () => {
-    for (const port of Object.keys(ORIGINE_DU_QUAI) as BiomeId[]) {
-      const def = islandDef(port);
-      const o = dockOrigin(port);
-      expect(ORIGINE_DU_QUAI[port], port).toEqual({ x: o.x - def.core.x, y: o.y - def.core.y, z: o.z - def.altitude - 1 });
-    }
+describe('les origines figées des chantiers (séparation du jeu et du rendu, J1 ; origine de rendu et origine des clés)', () => {
+  it('figées : les clés des sauvegardes ne suivent ni le quai, ni l’îlot, ni le cœur', () => {
+    // Les valeurs écrites dans les sauvegardes depuis le début : les changer rendrait illisibles les chantiers des élèves.
+    expect(ORIGINE_DU_QUAI).toEqual({
+      plaine: { x: 15, y: -14, z: -1 },
+      marche: { x: 15, y: -12, z: -4 },
+      atelier: { x: 15, y: -14, z: -7 },
+    });
+    expect(ORIGINE_DES_MONUMENTS).toEqual({
+      'monument-observatoire': { x: 4, y: 23, z: 0 },
+      'monument-moulin': { x: 1, y: 24, z: 0 },
+      'monument-phare-large': { x: 23, y: 20, z: 0 },
+      'monument-kiosque': { x: -11, y: -12, z: 0 },
+      'monument-viaduc': { x: 16, y: -13, z: 0 },
+      'monument-amphitheatre': { x: -2, y: 24, z: 0 },
+      'monument-etoiles': { x: -14, y: 4, z: 0 },
+      'monument-temple': { x: -14, y: 6, z: 0 },
+    });
     expect(Object.keys(ORIGINE_DU_QUAI).sort()).toEqual([...new Set(VEHICLE_STAGES.map((s) => s.biome))].sort());
-    for (const m of MONUMENTS) {
-      const def = islandDef(m.biome);
-      expect(ORIGINE_DES_MONUMENTS[m.id], m.id).toEqual({ x: m.islet.x + 1 - def.core.x, y: m.islet.y + 1 - def.core.y, z: 0 });
-    }
     expect(Object.keys(ORIGINE_DES_MONUMENTS).sort()).toEqual(MONUMENTS.map((m) => m.id).sort());
+  });
+
+  it('le rendu retombe sur la bonne clé : chaque case est dessinée au quai ou sur l’îlot, et y redonne sa clé', () => {
+    for (const stage of VEHICLE_STAGES) {
+      // Le navire est dessiné en cases locales depuis le coin du quai (`vehiclePlacement`) ; sa clé y tombe par `ancreDuQuai`.
+      const o = dockOrigin(stage.biome);
+      const a = ancreDuQuai(stage);
+      const d = decalageDuQuai(stage);
+      const ile = islandOrigin(BIOMES.findIndex((b) => b.id === stage.biome));
+      planCells(stage).forEach((k, i) => {
+        const c = stage.cells[i];
+        expect({ x: a.x + k.x, y: a.y + k.y, z: a.z + k.z }, `${stage.id} ${k.key}`).toEqual({ x: o.x + c.x, y: o.y + c.y, z: o.z + c.z });
+        // Une face touchée (repère de l'île, un cran plus bas) redonne la clé.
+        const touchee = { x: o.x + c.x - ile.ox, y: o.y + c.y - ile.oy, z: o.z + c.z - ile.oz - 1 };
+        expect({ x: touchee.x - d.x, y: touchee.y - d.y, z: touchee.z - d.z }, stage.id).toEqual({ x: k.x, y: k.y, z: k.z });
+      });
+    }
+    for (const m of MONUMENTS) {
+      // Le monument est dessiné sur son îlot : la case (0, 0, 0) de son plan au-dessus du coin intérieur de l'îlot.
+      const a = monumentAnchor(m);
+      const sol = islandDef(m.biome).altitude + 1;
+      planCells(m).forEach((k, i) => {
+        const c = m.cells[i];
+        expect({ x: a.x + k.x, y: a.y + k.y, z: a.z + k.z }, `${m.id} ${k.key}`).toEqual({ x: m.islet.x + 1 + c.x, y: m.islet.y + 1 + c.y, z: sol + c.z });
+      });
+    }
   });
 
   it('une sauvegarde tout construite, relue, garde chacune de ses cases', () => {

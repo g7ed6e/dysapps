@@ -1,13 +1,16 @@
 import { useEffect, useState } from 'react';
 import { useSettings } from '../core/SettingsContext';
+import { useTextes } from '../univers';
 import { BLOCKS, ofBlock, type BiomeId, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { canLaunch, nextFillable, planCellAt, planStatus, type LaunchResult, type PlanStatus } from './engine';
-import { playDone, playNope, playPlace } from './sound';
+import { playDone, playNope, sonDePose } from './sound';
+import { habillageDuMonde } from './habillage';
 import { voyageId } from './world/archipelago';
 import { VEHICLE_STAGES, kitReady, stageAt, type VehicleStage } from './world/vehicle';
 import { placeAll, whereToEarn, type Burst } from './usePlanBuilder';
 import { useHaptics } from '../core/haptics';
+import { decalageDuQuai } from './world/terrain';
 
 export interface VehicleBuilder {
   /** Le chantier de ce port : l'étape du Bloc-Navire qui s'y construit, ou `null` (pas un port, ou navire déjà parti d'ici). */
@@ -35,6 +38,7 @@ export interface VehicleBuilder {
 export function useVehicleBuilder(island: BiomeId): VehicleBuilder {
   const { state, fillPlan } = useBlocland();
   const { settings, speak } = useSettings();
+  const textes = useTextes();
   const [notice, setNotice] = useState<string | null>(null);
   const [burst, setBurst] = useState<Burst>({ seq: 0, cell: { ile: island, local: { x: 0, y: 0, z: 0 } }, color: '#fff' });
   useEffect(() => setNotice(null), [island]);
@@ -46,6 +50,8 @@ export function useVehicleBuilder(island: BiomeId): VehicleBuilder {
   const launch = stage ? canLaunch(state, stage) : null;
   const kit = stage ? kitReady(stage, state.progress) : false;
   const sound = (f: () => void) => settings.sounds && f();
+  // Le son de pose de l'univers (le « clac » de Blocland, le « toc » d'Archipéo), lu une fois.
+  const [playPlace] = useState(() => sonDePose(habillageDuMonde().pose));
   const haptics = useHaptics();
 
   const fillAt = (x: number, y: number, z: number) => {
@@ -66,13 +72,15 @@ export function useVehicleBuilder(island: BiomeId): VehicleBuilder {
     }
   };
   const burstAt = (x: number, y: number, z: number, block: BlockId) => {
-    // Dans le repère de l'île, la case de plan (x, y, z) est le cube (x, y, z + 1).
-    setBurst((b) => ({ seq: b.seq + 1, cell: { ile: island, local: { x, y, z: z + 1 } }, color: BLOCKS[block].top }));
+    // La clé (x, y, z) d'une case du navire est dessinée au quai : dans le repère de l'île, le cube (x, y, z + 1) décalé
+    // de `decalageDuQuai` (nul tant que le quai n'a pas bougé).
+    const d = stage ? decalageDuQuai(stage) : { x: 0, y: 0, z: 0 };
+    setBurst((b) => ({ seq: b.seq + 1, cell: { ile: island, local: { x: x + d.x, y: y + d.y, z: z + d.z + 1 } }, color: BLOCKS[block].top }));
   };
   const finished = (done: VehicleStage) => {
     const msg = kit
-      ? `Le Bloc-Navire a tous ses blocs ! ${done.done}`
-      : `Le Bloc-Navire a tous ses blocs ! Il attend encore ${done.guardians} Gardien${done.guardians > 1 ? 's' : ''} vaincu${done.guardians > 1 ? 's' : ''} pour ${done.short}.`;
+      ? `Le Bloc-Navire a tous ses blocs ! ${done.fin(textes.archipels[done.to])}`
+      : textes.libelles.navireAttend(done.guardians, done.short);
     setNotice(msg);
     sound(playDone);
     if (settings.autoRead) speak(msg);
@@ -94,8 +102,11 @@ export function useVehicleBuilder(island: BiomeId): VehicleBuilder {
   };
   const tryFill = (ile: BiomeId, c: { x: number; y: number; z: number }) => {
     if (!stage || ile !== island) return false;
-    if (!planCellAt(stage, c.x, c.y, c.z)) return false;
-    fillAt(c.x, c.y, c.z);
+    // La case touchée est dans le repère de l'île ; la clé de la case du navire s'en déduit (`decalageDuQuai`).
+    const d = decalageDuQuai(stage);
+    const k = { x: c.x - d.x, y: c.y - d.y, z: c.z - d.z };
+    if (!planCellAt(stage, k.x, k.y, k.z)) return false;
+    fillAt(k.x, k.y, k.z);
     return true;
   };
 

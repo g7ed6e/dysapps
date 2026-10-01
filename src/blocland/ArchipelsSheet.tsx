@@ -66,7 +66,7 @@ export function ArchipelsSheet({ onClose, onGo }: Props) {
           return (
             <li key={a.classe} className={`panel archipel-card${reached ? '' : ' locked'}${a.classe === here ? ' archipel-here' : ''}`}>
               <div className="archipel-card-head">
-                <h3 className="island-sheet-heading">{archipelagoTitle(a.classe)}</h3>
+                <h3 className="island-sheet-heading">{archipelagoTitle(a.classe, textes.archipels)}</h3>
                 <span className={`tag${a.classe === here ? ' tag-new' : reached ? ' tag-ok' : ''}`}>{state3}</span>
               </div>
               <p className="archipel-card-line">

@@ -1,7 +1,7 @@
 // Le port d'un archipel : la jetée devant l'île-port, et la place du Bloc-Navire à côté.
 // Générateur pur (coordonnées du monde), partagé par le terrain 3D, les plans du véhicule et la vue simple.
 import type { BiomeId } from '../biomes';
-import { ALTITUDE, CORE, archipelagoOfIsland, isLand, islandDef, type ArchipelagoId, type IslandDef } from './map';
+import { ALTITUDE, archipelagoOfIsland, coeurDe, isLand, islandDef, type ArchipelagoId, type IslandDef } from './map';
 
 /** Colonne de la jetée, à droite du cœur (l'îlot du Gardien tient dans les colonnes 0 à 12 devant l'île). */
 export const DOCK_DX = 14;
@@ -86,5 +86,5 @@ export function dockPosts(port: BiomeId): { x: number; y: number; z: number; lan
 /** L'emprise du port (jetée et navire), pour cadrer la caméra et l'étendue du monde. */
 export function dockBox(port: BiomeId): { x0: number; y0: number; x1: number; y1: number } {
   const o = dockOrigin(port);
-  return { x0: o.x - 3, y0: o.y - 1, x1: o.x + VEHICLE_SIZE.w + 1, y1: Math.min(shoreY(port), islandDef(port).core.y + CORE) };
+  return { x0: o.x - 3, y0: o.y - 1, x1: o.x + VEHICLE_SIZE.w + 1, y1: Math.min(shoreY(port), coeurDe(islandDef(port)).y1) };
 }

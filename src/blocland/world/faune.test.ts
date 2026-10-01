@@ -1,7 +1,15 @@
+import { ARCHIPELAGOS, BRIDGES } from './archipelago';
+import { archipelagoOfIsland } from './archipels';
 import { AMBIENCE } from './daylight';
 import { luminance } from './palette';
 import {
   BALEINE,
+  capDuNuage,
+  deriveDesNuages,
+  allongementDuNuage,
+  EPAISSEUR_DU_NUAGE,
+  NUAGES_AU_LOIN,
+  placeDesNuagesDArchipeo,
   couleursDeLaBaleine,
   VENTRE_DE_NUIT,
   EVENT,
@@ -17,7 +25,8 @@ import {
   trianglesDe,
   type Forme,
 } from './faune';
-import { ARCHIPELAGO_IDS } from './map';
+import { ARCHIPELAGO_IDS, mapOf } from './map';
+import { boardingRoute, bridgePath, worldBounds } from './terrain';
 import { PASS_TIMING } from './whalePass';
 
 /** Le volume signé d'une forme : positif si ses faces regardent vers l'extérieur (les lames à deux faces s'annulent). */
@@ -78,6 +87,88 @@ describe('les effectifs', () => {
     for (const a of ARCHIPELAGO_IDS) {
       expect(nuagesDe(a)).toHaveLength(AMBIENCE[a].sky ? 14 : 7);
       expect(oiseauxDe(a)).toEqual({ nombre: a === '4e' ? 8 : 6, altitude: a === '4e' ? 17 : AMBIENCE[a].sky ? 18 : 13 });
+    }
+  });
+});
+
+describe('les nuages d’Archipéo (DA-11)', () => {
+  /** Le bord sud (le plus petit Z) d'un nuage posé comme dans la vue 3D (three/large.ts, three/faune.ts). */
+  function bordSud(f: Forme, z: number, len: number, i: number, grossi: number): number {
+    const sx = allongementDuNuage(len) * grossi;
+    const sz = EPAISSEUR_DU_NUAGE * grossi;
+    const cap = capDuNuage(i);
+    let min = Infinity;
+    for (let k = 0; k < f.positions.length; k += 3) {
+      const px = f.positions[k] * sx;
+      const pz = f.positions[k + 2] * sz;
+      // Rotation autour de la verticale (Three) : z' = −x sin θ + z cos θ.
+      min = Math.min(min, z + 0.6 - px * Math.sin(cap) + pz * Math.cos(cap));
+    }
+    return min;
+  }
+
+  it('aucun nuage ne passe sur un pont ni sur un chemin : tous au nord de l’archipel, dérive comprise', () => {
+    const nuage = formeDeNuage();
+    for (const a of ARCHIPELAGO_IDS) {
+      const b = worldBounds(a);
+      // Le plus au nord de ce qu'on parcourt : les îles (leurs chemins), les ponts, la route du navire.
+      const ponts = BRIDGES.filter((d) => archipelagoOfIsland(d.from) === a).flatMap((d) => bridgePath(d));
+      const archipel = ARCHIPELAGOS.find((d) => d.classe === a);
+      expect(archipel).toBeDefined();
+      const port = archipel?.port ?? 'plaine';
+      const nord = Math.max(b.maxY, ...mapOf(a).map((d) => d.core.y), ...ponts.map((c) => c.y), ...boardingRoute(port).map((c) => c.y)) + 1;
+      const nuages = placeDesNuagesDArchipeo(a, b);
+      expect(nuages).toHaveLength(nuagesDe(a).length);
+      // La dérive ne change que X, et le fondu ne fait que rapetisser : le bord sud de chaque nuage reste où il est.
+      nuages.forEach((n, i) => expect(bordSud(nuage, n.z, n.len, i, n.grossi), `${a} nuage ${i}`).toBeGreaterThan(nord));
+    }
+  });
+
+  it('au-dessus de leurs îles, et tous à leur hauteur : plus de nuage au ras de l’eau, ni sous les îles du Ciel', () => {
+    for (const a of ARCHIPELAGO_IDS) {
+      const b = worldBounds(a);
+      const altitude = mapOf(a)[0].altitude;
+      for (const n of placeDesNuagesDArchipeo(a, b)) expect(n.y).toBeGreaterThanOrEqual(altitude + 14);
+    }
+  });
+
+  it('pas de frise : hauteurs, profondeurs et tailles tirées hors de l’ordre des nuages, les gros au fond', () => {
+    const L = NUAGES_AU_LOIN;
+    for (const a of ARCHIPELAGO_IDS) {
+      const b = worldBounds(a);
+      const nuages = placeDesNuagesDArchipeo(a, b);
+      const hauts = nuages.map((n) => n.y);
+      const fonds = nuages.map((n) => n.z);
+      // Au moins 3 blocs d'écart de hauteur et la moitié de la plage en profondeur, dans les bornes.
+      expect(Math.max(...hauts) - Math.min(...hauts), a).toBeGreaterThanOrEqual(3);
+      expect(Math.max(...hauts) - Math.min(...hauts), a).toBeLessThanOrEqual(L.ecart);
+      expect(Math.max(...fonds) - Math.min(...fonds), a).toBeGreaterThanOrEqual(L.profondeur / 2);
+      // Deux voisins d'est en ouest ne se suivent pas en escalier régulier : pas le même pas de hauteur partout.
+      const pas = new Set(nuages.slice(1).map((n, i) => Math.round((n.y - nuages[i].y) * 10)));
+      expect(pas.size, a).toBeGreaterThan(2);
+      // Plus loin, plus gros.
+      for (const n of nuages) {
+        expect(n.grossi).toBeGreaterThanOrEqual(L.grossi[0]);
+        expect(n.grossi).toBeLessThanOrEqual(L.grossi[1]);
+        expect(n.grossi).toBeCloseTo(L.grossi[0] + ((n.z - b.maxY - L.recul) / L.profondeur) * (L.grossi[1] - L.grossi[0]), 6);
+      }
+    }
+  });
+
+  it('le retour de bord ne se voit pas : le nuage est défait aux deux bouts de sa dérive, entier au milieu', () => {
+    for (const a of ARCHIPELAGO_IDS) {
+      const b = worldBounds(a);
+      const d = deriveDesNuages(b);
+      expect(d.debut).toBeLessThan(b.minX);
+      expect(d.fin).toBeGreaterThan(b.maxX);
+      expect(d.taille(d.debut)).toBe(0);
+      expect(d.taille(d.fin)).toBe(0);
+      expect(d.taille(d.debut - 5)).toBe(0);
+      expect(d.taille((d.debut + d.fin) / 2)).toBe(1);
+      // Immobile avec « Réduire les animations », tout nuage est entier à sa place de départ.
+      for (const n of placeDesNuagesDArchipeo(a, b)) expect(d.taille(n.x + n.len / 2), `${a} ${n.x}`).toBe(1);
+      // Il se défait en douceur : jamais plus d'un quinzième de sa taille par case de dérive (plus d'une minute de fondu).
+      for (let x = d.debut; x < d.fin; x += 0.5) expect(Math.abs(d.taille(x + 0.5) - d.taille(x)), `${a} ${x}`).toBeLessThanOrEqual(1 / 15 / 2);
     }
   });
 });

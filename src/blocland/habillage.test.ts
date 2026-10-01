@@ -21,6 +21,7 @@ describe('L’habillage du monde', () => {
       figures: 'cubes',
       defi: 'arene',
       reperes: 'libres',
+      pose: 'geste',
     });
   });
 
@@ -37,6 +38,7 @@ describe('L’habillage du monde', () => {
       figures: 'modeles',
       defi: 'sentinelle',
       reperes: 'cadres',
+      pose: 'eclats',
     });
   });
 });

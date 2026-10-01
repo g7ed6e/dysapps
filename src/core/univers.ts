@@ -99,6 +99,23 @@ export const MESSAGE_UNIVERS = {
   rester: 'Rester dans Blocland',
 };
 
+// Les nouveaux noms des archipels de Blocland (GD-1, U4), notés par appareil comme le message unique, jamais dans la
+// sauvegarde : `{ dit: false }` quand ils restent à dire, `{ dit: true }` une fois lus ou pour un appareil neuf.
+export const RENOMMAGE_KEY = 'noms-archipels';
+
+/**
+ * Au premier lancement après les nouveaux noms (clé absente), ce qu'il faut noter : à dire si l'appareil a déjà une
+ * progression, déjà dit sinon (un nouvel élève n'a pas connu les anciens noms). `null` : déjà noté, rien à écrire.
+ */
+export function renommageANoter(note: unknown, progression: boolean): { dit: boolean } | null {
+  return note === null ? { dit: !progression } : null;
+}
+
+/** Les nouveaux noms restent à dire (noté `{ dit: false }`) ; absent ou illisible, rien à dire. */
+export function renommageADire(note: unknown): boolean {
+  return typeof note === 'object' && note !== null && (note as { dit?: unknown }).dit === false;
+}
+
 /** La confirmation d'un changement d'univers : ce qui change, ce qui reste (univers.md §6.1). */
 export const CONFIRMATION_UNIVERS = {
   titre: (vers: UniversChoice) => `Passer à ${UNIVERS[vers].nom} ?`,
