@@ -3,7 +3,7 @@
 // voisines s'écartent d'autant dans MAP. Les clés de sauvegarde restent relatives à l'origine `core`, qui ne bouge pas.
 import type { BiomeId } from '../biomes';
 import { BRIDGES } from './archipelago';
-import { dockOrigin, shoreY } from './harbour';
+import { dockBox, dockOrigin, shoreY } from './harbour';
 import {
   bornesDuCoeur,
   coeurDe,
@@ -25,7 +25,7 @@ import {
   type ArchipelagoId,
 } from './map';
 import { ORIGINE_DU_QUAI, PLAN_ZONE } from './plans';
-import { bossIsletCells, bridgePath, creatureSpot, origineDeLIlot, placeSpot, questStations, VILLAGE_PLACES } from './terrain';
+import { bossIsletCells, bossIsletSteps, bridgePath, creatureSpot, ILOT_DE_COTE, ISLET_H, ISLET_W, origineDeLIlot, placeSpot, questStations, VILLAGE_PLACES } from './terrain';
 
 /**
  * Les îles-écoles agrandies : leur origine et leur côte (qui ne bougent pas), leur archipel, et la longueur d'avant (cœur
@@ -174,7 +174,7 @@ it('dans le cœur d’une île-école, les bornes, la créature, les lieux et la
   expect(PLAN_ZONE).toEqual({ x: 8, y: 10, w: 6, h: 5 });
 });
 
-it('les ouvrages partent du cœur de 20 et l’îlot du Gardien suit la côte repoussée', () => {
+it('les ouvrages partent du cœur de 20', () => {
   const depart = (id: string) => bridgePath(BRIDGES.find((b) => b.id === id)!)[0];
   const arrivee = (id: string) => bridgePath(BRIDGES.find((b) => b.id === id)!).at(-1)!;
   // La Forêt. Vers la Plaine et vers l'Horloge : depuis le bord droit du cœur agrandi (x = 67 + 17).
@@ -193,11 +193,37 @@ it('les ouvrages partent du cœur de 20 et l’îlot du Gardien suit la côte re
   expect(depart('phare-belvedere').x).toBe(58 - 2 - 3);
   expect(depart('phare-donnees').x).toBe(58 + 18 + 3);
   expect(depart('phare-textes').y).toBe(912 + 18 + 3 - 1);
-  // L'îlot, au droit du bord gauche du cœur, à trois cases d'eau de la côte, comme avant.
+});
+
+it('l’îlot du Gardien d’une île-école glisse sur le côté : de l’eau franche avec sa terre, hors de l’axe du cœur, pas plus près de la caméra', () => {
+  // Relecture du DA (01/10/2026) : sur la Forêt agrandie, les liserés d'écume de l'îlot et de la côte se touchaient, et la
+  // statue se dressait dans l'axe de la caméra vers la créature, l'école et la salle des trophées.
+  expect(ILOT_DE_COTE).toBe(9);
   for (const id of IDS) {
     const def = islandDef(id);
-    expect(origineDeLIlot(def), id).toEqual({ x: def.core.x - 2, y: def.core.y - 2 - def.ext.front - 12 - 3, z: def.altitude });
-    expect(bossIsletCells(id).every((c) => !isLand(def, c.x, c.y)), id).toBe(true);
+    const c = coeurDe(def);
+    // Sa rangée, devant la côte repoussée (pas plus près de la caméra) ; sur le côté, à gauche (à droite, le navire).
+    expect(origineDeLIlot(def), id).toEqual({ x: def.core.x - 2 - 9, y: def.core.y - 2 - def.ext.front - ISLET_H - 3, z: def.altitude });
+    const ilot = bossIsletCells(id);
+    expect(ilot.every((p) => !isLand(def, p.x, p.y)), id).toBe(true);
+    // Au moins trois cases d'eau entre l'îlot et la terre de son île : deux d'eau franche entre les liserés, plus qu'il
+    // n'en faut (deux) ; quatre à la Forêt.
+    let eau = Infinity;
+    for (const p of ilot) for (const q of landCells(def)) eau = Math.min(eau, Math.max(Math.abs(p.x - q.x), Math.abs(p.y - q.y)) - 1);
+    expect(eau, id).toBeGreaterThanOrEqual(id === 'foret' ? 4 : 3);
+    // Le Gardien quitte l'axe du cœur : le milieu de l'îlot est à gauche de son bord.
+    const o = origineDeLIlot(def);
+    expect(o.x + ISLET_W / 2, id).toBeLessThan(c.x0);
+    // Les pas japonais vont toujours de l'îlot à la côte, droit derrière.
+    const pas = bossIsletSteps(id);
+    expect(pas.length, id).toBeGreaterThan(0);
+    const dernier = pas.at(-1)!;
+    expect(isLand(def, dernier.x, dernier.y + 1) || isLand(def, dernier.x - 1, dernier.y + 1), id).toBe(true);
+    // Au port, loin de la jetée et du navire.
+    if (id === 'marche' || id === 'atelier') {
+      const d = dockBox(id);
+      expect(ilot.every((p) => p.x < d.x0 - 2 || p.x > d.x1 + 2 || p.y < d.y0 - 2 || p.y > d.y1 + 2), id).toBe(true);
+    }
   }
 });
 

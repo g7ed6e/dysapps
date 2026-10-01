@@ -8,6 +8,7 @@ import { ARCHIPELAGOS, BRIDGES, bridgeState, bridgesOf, getArchipelago, isBiomeU
 import { walkPath, type WalkGround } from './paths';
 import {
   CORE,
+  COTE_DU_COEUR,
   archipelagoOfIsland,
   bornesDuCoeur,
   coeurDe,
@@ -891,12 +892,26 @@ export function bossIsletOrigin(index: number): { x: number; y: number; z: numbe
 }
 
 /**
+ * Sur une île au cœur agrandi (`COTE_DU_COEUR`), l'îlot glisse de tant de cases vers la gauche, sur sa rangée : le
+ * Gardien quitte l'axe de la caméra vers le cœur (créature, école, salle des trophées) et se tient devant la côte
+ * gauche, l'eau s'ouvre en biais entre l'îlot et la terre (relecture du DA, 01/10/2026). À gauche sur les quatre
+ * îles-écoles : à droite, le navire est à quai au Marché et à l'Atelier.
+ */
+export const ILOT_DE_COTE = 9;
+
+/**
  * Le coin de l'îlot du Gardien d'une île (voir `bossIsletOrigin`), pour qui tient déjà sa définition : devant la terre
- * de l'île, au droit du bord gauche de son cœur (`coeurDe`) et au-delà de sa côte ; il suit le cœur quand il grandit.
+ * de l'île, au droit du bord gauche de son cœur (`coeurDe`) et au-delà de sa côte ; il suit le cœur quand il grandit,
+ * et glisse sur le côté s'il est agrandi (`ILOT_DE_COTE`), sans s'avancer vers la caméra.
  */
 export function origineDeLIlot(def: IslandDef): { x: number; y: number; z: number } {
   const c = coeurDe(def);
-  return { x: c.x0, y: c.y0 - def.ext.front - ISLET_H - ISLET_GAP, z: def.altitude };
+  return { x: c.x0 - glisseDeLIlot(def.id), y: c.y0 - def.ext.front - ISLET_H - ISLET_GAP, z: def.altitude };
+}
+
+/** De combien de cases l'îlot d'une île a glissé sur le côté (`ILOT_DE_COTE`) : sa côte et son décor restent tirés là où il était. */
+function glisseDeLIlot(id: BiomeId): number {
+  return COTE_DU_COEUR[id] ? ILOT_DE_COTE : 0;
 }
 
 /**
@@ -940,12 +955,14 @@ export function bossIsletCells(id: BiomeId): IsletCell[] {
   const o = bossIsletOrigin(BIOMES.findIndex((b) => b.id === id));
   const off = guardianOffset(id);
   const under = new Set(gardienDuMonde(id).map((c) => `${off.x + c.x},${off.y + c.y}`));
+  const glisse = glisseDeLIlot(id);
   const land = new Set<string>();
   for (let x = 0; x < ISLET_W; x++)
     for (let y = 0; y < ISLET_H; y++) {
       const dx = (x - ISLET_CENTER.x) / (ISLET_W / 2);
       const dy = (y - ISLET_CENTER.y) / (ISLET_H / 2);
-      const t = tirage(def, o.x + x, o.y + y);
+      // Sa côte est tirée là où il se tenait avant de glisser sur le côté : il garde sa forme.
+      const t = tirage(def, o.x + glisse + x, o.y + y);
       const coast = (smoothNoise(def.seed + 7, t.x, t.y, 3) - 0.5) * 0.3;
       if (under.has(`${x},${y}`) || Math.hypot(dx, dy) + coast < 0.98) land.add(`${x},${y}`);
     }
@@ -968,17 +985,29 @@ export function bossIsletCells(id: BiomeId): IsletCell[] {
 
 /**
  * Les pas japonais : des pierres en quinconce dans l'eau, du fond de l'îlot à la côte de l'île, dans l'axe du
- * Gardien. Posées au niveau du sol de l'île (en altitude, elles flottent comme elle).
+ * Gardien. Posées au niveau du sol de l'île (en altitude, elles flottent comme elle). Quand l'îlot a glissé sur le
+ * côté (`ILOT_DE_COTE`), le gué le plus court à trois colonnes au plus de l'axe.
  */
 export function bossIsletSteps(id: BiomeId): { x: number; y: number; z: number }[] {
   const def = islandDef(id);
   const o = bossIsletOrigin(BIOMES.findIndex((b) => b.id === id));
-  const x = o.x + Math.round(ISLET_CENTER.x);
-  const back = Math.max(...bossIsletCells(id).filter((c) => c.x === x).map((c) => c.y));
-  let coast = back + 1;
-  while (!isLand(def, x, coast)) coast++;
+  const axe = o.x + Math.round(ISLET_CENTER.x);
+  const ilot = bossIsletCells(id);
+  let gue: { x: number; back: number; coast: number } | null = null;
+  for (const d of glisseDeLIlot(id) ? [0, 1, -1, 2, -2, 3, -3] : [0]) {
+    const x = axe + d;
+    const colonne = ilot.filter((c) => c.x === x);
+    if (!colonne.length) continue;
+    const back = Math.max(...colonne.map((c) => c.y));
+    // La côte, droit derrière (l'îlot est toujours devant sa terre : un test le tient) ; sans elle, pas de gué.
+    let coast = back + 1;
+    while (coast <= back + ISLET_H + ISLET_GAP && !isLand(def, x, coast)) coast++;
+    if (!isLand(def, x, coast)) continue;
+    if (!gue || coast - back < gue.coast - gue.back) gue = { x, back, coast };
+  }
+  if (!gue) return [];
   const steps: { x: number; y: number; z: number }[] = [];
-  for (let y = back + 1; y < coast; y++) steps.push({ x: x + ((y - back) % 2 === 0 ? 1 : 0), y, z: def.altitude });
+  for (let y = gue.back + 1; y < gue.coast; y++) steps.push({ x: gue.x + ((y - gue.back) % 2 === 0 ? 1 : 0), y, z: def.altitude });
   return steps;
 }
 
@@ -1053,7 +1082,7 @@ function bossIslet(biome: BiomeDef, beaten: boolean, cubes: VoxelCube[], pas = t
   const spots = cells
     .filter((c) => !c.arena && !c.guardian)
     .map((c) => {
-      const t = tirage(def, c.x, c.y);
+      const t = tirage(def, c.x + glisseDeLIlot(def.id), c.y);
       return { c, r: noise(def.seed + 8, t.x, t.y) };
     })
     .sort((p, q) => q.r - p.r)
@@ -1170,9 +1199,17 @@ export function whaleSpots(a: ArchipelagoId): { x: number; y: number; r: number 
       candidates.push({ x, y, r, score: Math.min(r, 9) + Math.hypot(x - cx, y - cy) * 0.12 });
     }
   candidates.sort((p, q) => q.score - p.score);
+  // Une baleine ne plonge pas sur l'îlot d'un monument (à deux cases près, comme `monumentBlocked`).
+  const surUnMonument = (x: number, y: number, r: number) =>
+    monumentsOf(a).some((m) => {
+      const px = Math.max(m.islet.x, Math.min(x, m.islet.x + MONUMENT_ISLET - 1));
+      const py = Math.max(m.islet.y, Math.min(y, m.islet.y + MONUMENT_ISLET - 1));
+      return Math.hypot(px - x, py - y) < r + 2;
+    });
   const spots: { x: number; y: number; r: number }[] = [];
   for (const c of candidates) {
     if (c.r < 4) continue;
+    if (surUnMonument(c.x, c.y, Math.min(c.r, 9))) continue;
     if (spots.some((s) => Math.hypot(s.x - c.x, s.y - c.y) < s.r + c.r + 20)) continue;
     spots.push({ x: c.x, y: c.y, r: Math.min(c.r, 9) });
     if (spots.length === 4) break;

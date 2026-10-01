@@ -47,19 +47,19 @@ exports[`Empreintes des personnages en facettes > les fusions, archipel par arch
 {
   "3e": {
     "creatures": "1944 959977e6 9663af62",
-    "gardiens": "1663 47d3d724",
+    "gardiens": "1663 40690acc",
   },
   "4e": {
     "creatures": "1819 1148d284 816a6196",
-    "gardiens": "1516 333457f9",
+    "gardiens": "1516 725f2b1b",
   },
   "5e": {
     "creatures": "1863 b4cbc53f 01d73d04",
-    "gardiens": "1791 081777ee",
+    "gardiens": "1791 a9b7a570",
   },
   "6e": {
     "creatures": "2488 3c782142 5a252033",
-    "gardiens": "1726 8ae291e2",
+    "gardiens": "1726 447df677",
   },
   "bonhomme": "472 045a95c7 1032f390",
 }
