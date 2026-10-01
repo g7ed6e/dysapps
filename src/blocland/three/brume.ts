@@ -39,6 +39,9 @@ export function creerBrume(monde: Monde, lumiere: Lumiere, instant: Instant): Pa
     scene.add(mist);
     mists.push(mist);
   }
+  // La nuit, les nappes prennent la couleur du plancher de nuit (l'eau de nuit de l'archipel), comme les bancs d'Archipéo
+  // s'assombrissent : jamais une auréole blanche sur le plancher de nuit (DA-35). Le jour, blanches comme avant.
+  if (mistMat) lumiere.suivre((jour) => mistMat.color.setHex(mixColor(ambience.waterNight, 0xffffff, Math.min(1, Math.max(0, jour)))));
 
   // Les bancs de brume (Archipéo, 5e) ou les nappes des sommets (3e) : sans lumière ; la nuit les assombrit vers le bleu
   // de crépuscule.
