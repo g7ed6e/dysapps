@@ -1,5 +1,5 @@
 // Le cœur agrandi des îles-écoles (décision du mainteneur, 01/10/2026 : « vraie terre en plus »). La Forêt d'abord, puis
-// le Marché : un cœur de 20 × 20 avec sa côte d'avant tout autour, la terre gagne deux cases de chaque côté, ses
+// le Marché et l'Atelier : un cœur de 20 × 20 avec sa côte d'avant tout autour, la terre gagne deux cases de chaque côté, ses
 // voisines s'écartent d'autant dans MAP. Les clés de sauvegarde restent relatives à l'origine `core`, qui ne bouge pas.
 import type { BiomeId } from '../biomes';
 import { BRIDGES } from './archipelago';
@@ -65,6 +65,19 @@ const ECOLES: Partial<Record<BiomeId, { archipel: ArchipelagoId; core: { x: numb
       'comptoir-relais': 10,
     },
   },
+  atelier: {
+    archipel: '4e',
+    core: { x: 62, y: 632 },
+    ext: { left: 3, right: 3, front: 2, back: 4 },
+    ouvrages: {
+      'atelier-forge': 9,
+      'atelier-falaise': 10,
+      'falaise-cabinet': 12,
+      'forge-gare': 11,
+      'cabinet-theatre': 10,
+      'theatre-jardin': 10,
+    },
+  },
 };
 const IDS = Object.keys(ECOLES) as BiomeId[];
 
@@ -117,12 +130,13 @@ it('les marges du cœur : une terre plate, au décor de la côte sur leur rangé
     }
     const bord = (m: { x: number; y: number }) => [-1, 0, 1].some((dx) => [-1, 0, 1].some((dy) => inCoeurDOrigine(def, m.x + dx, m.y + dy)));
     expect(marges.filter((m) => bord(m) && m.decor), id).toEqual([]);
-    // Pas un terrain vide : du décor sur la rangée extérieure ; au rythme de la côte (un quart des cases environ) quand
-    // l'enveloppe du décor de l'archipel le permet, allégé sinon (`DECOR_DES_MARGES`).
+    // Pas un terrain vide : du décor sur la rangée extérieure ; au rythme de la côte quand l'enveloppe du décor de
+    // l'archipel le permet (de 14 % des cases à l'Atelier, où le sapin ne pousse qu'à plat, au quart à la Forêt), allégé
+    // sinon (`DECOR_DES_MARGES`).
     const exterieur = marges.filter((m) => !bord(m));
     const part = exterieur.filter((m) => m.decor).length / exterieur.length;
     const allege = DECOR_DES_MARGES[id];
-    expect(part, id).toBeGreaterThan(allege ? 0.08 : 0.15);
+    expect(part, id).toBeGreaterThan(allege ? 0.08 : 0.12);
     if (allege?.genre) expect(new Set(marges.filter((m) => m.decor).map((m) => m.decor)), id).toEqual(new Set([allege.genre]));
     if (allege?.derriere) expect(marges.filter((m) => m.decor && m.y < def.core.y), id).toEqual([]);
     // Le paysage s'arrête au bord du cœur agrandi.
@@ -158,6 +172,9 @@ it('les ouvrages partent du cœur de 20 et l’îlot du Gardien suit la côte re
   // Le Marché. Vers le Comptoir, depuis sa côte droite repoussée ; le sentier du Glacier arrive au bord gauche de sa terre.
   expect(depart('marche-comptoir').x).toBe(69 + 18 + 4);
   expect(arrivee('glacier-marche').x).toBe(69 - 2 - 1);
+  // L'Atelier. Vers la Forge et vers la Falaise, depuis sa côte repoussée de part et d'autre.
+  expect(depart('atelier-forge').x).toBe(62 - 2 - 3 - 1);
+  expect(depart('atelier-falaise').x).toBe(62 + 18 + 3);
   // L'îlot, au droit du bord gauche du cœur, à trois cases d'eau de la côte, comme avant.
   for (const id of IDS) {
     const def = islandDef(id);
@@ -166,11 +183,15 @@ it('les ouvrages partent du cœur de 20 et l’îlot du Gardien suit la côte re
   }
 });
 
-it('le quai du Marché suit sa côte repoussée ; les clés de ses étapes ne bougent pas', () => {
-  // La côte au pied de la jetée, deux cases plus bas qu'avant (316) ; le navire recule d'autant (305 avant).
+it('le quai d’une île-école qui est un port suit sa côte repoussée ; les clés de ses étapes ne bougent pas', () => {
+  // La côte au pied de la jetée, deux cases plus bas qu'avant (316 au Marché, 630 à l'Atelier) ; le navire recule
+  // d'autant (305 et 618 avant).
   expect(shoreY('marche')).toBe(314);
   expect(dockOrigin('marche')).toEqual({ x: 69 + 15, y: 303, z: 0 });
   expect(ORIGINE_DU_QUAI.marche).toEqual({ x: 15, y: -12, z: -4 });
+  expect(shoreY('atelier')).toBe(628);
+  expect(dockOrigin('atelier')).toEqual({ x: 62 + 15, y: 616, z: 0 });
+  expect(ORIGINE_DU_QUAI.atelier).toEqual({ x: 15, y: -14, z: -7 });
 });
 
 it('les voisines d’une île-école s’écartent : les ouvrages de son archipel gardent leur longueur à deux cases près, les bras de mer restent ouverts', () => {

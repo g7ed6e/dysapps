@@ -206,10 +206,12 @@ const rocher: Forme = (o) => {
 export const GRUE = {
   ile: 'atelier',
   /**
-   * La case voulue, depuis les bornes du cœur (`coeurDe`) : `dx` depuis son bord gauche, `dyDuFond` depuis son bord du
-   * fond (bornes hautes exclues : −9, la septième rangée d'un cœur de 16) ; on prend la plus proche qui soit libre.
+   * La case voulue, depuis les bornes du cœur (`coeurDe`) : `dx` depuis son bord gauche (sur la côte, deux cases en
+   * dehors), `dyDuMilieu` depuis sa rangée du milieu (−1 : la septième rangée du cœur d'origine, un peu en avant de la
+   * mi-profondeur) ; on prend la plus proche qui soit libre. Depuis que le cœur de l'Atelier a 20 cases (01/10/2026), la
+   * grue suit sa côte repoussée et garde sa profondeur dans la vue de l'île (avant : −9 depuis le bord du fond).
    */
-  voulue: { dx: -2, dyDuFond: -9 },
+  voulue: { dx: -2, dyDuMilieu: -1 },
   hauteur: 9,
   section: 1,
   fleche: 6,
@@ -229,7 +231,7 @@ export function caseDeLaGrue(champ: ChampDuSol, elements: readonly ElementDeDeco
   for (const e of elements) for (let dx = 0; dx < e.emprise; dx++) for (let dy = 0; dy < e.emprise; dy++) pris.add(`${e.x + dx},${e.y + dy}`);
   const dansLeCoeur = (x: number, y: number) => inCore(def, x, y);
   const coeur = coeurDe(def);
-  const [wx, wy] = [coeur.x0 + GRUE.voulue.dx, coeur.y1 + GRUE.voulue.dyDuFond];
+  const [wx, wy] = [coeur.x0 + GRUE.voulue.dx, Math.floor((coeur.y0 + coeur.y1) / 2) + GRUE.voulue.dyDuMilieu];
   let best: { x: number; y: number; z: number } | null = null;
   let bestD = Infinity;
   for (let x = wx - 2; x <= wx + 4; x++)

@@ -45,9 +45,9 @@ export const CORE = 16;
  * C'est de la vraie terre en plus : la côte (`ext`) garde sa largeur autour du cœur agrandi, la terre de l'île gagne
  * deux cases de chaque côté, et ses voisines s'écartent d'autant dans `MAP` (choix du mainteneur, 01/10/2026). Les
  * marges du cœur (l'anneau de deux cases autour du cœur d'origine) sont plates, avec le décor de la côte
- * (`margesDuCoeur`, allégé île par île : `DECOR_DES_MARGES`). La Forêt d'abord, puis le Marché.
+ * (`margesDuCoeur`, allégé île par île : `DECOR_DES_MARGES`). La Forêt d'abord, puis le Marché et l'Atelier.
  */
-export const COTE_DU_COEUR: Partial<Record<BiomeId, number>> = { foret: 20, marche: 20 };
+export const COTE_DU_COEUR: Partial<Record<BiomeId, number>> = { foret: 20, marche: 20, atelier: 20 };
 
 /** Des bornes de cases : [x0, x1) × [y0, y1), bornes hautes exclues. */
 export interface Bornes {
@@ -118,10 +118,14 @@ export const MAP: IslandDef[] = [
   { id: 'marche', region: 'marais', core: { x: 69, y: 317 }, altitude: 3, ext: e(3, 4, 2, 3), relief: 'plat', seed: 22 },
   { id: 'carrefour', region: 'basses-terres', core: { x: 40, y: 362 }, altitude: 3, ext: e(4, 4, 3, 4), relief: 'collines', seed: 23 },
   { id: 'marais', region: 'marais', core: { x: 69, y: 367 }, altitude: 3, ext: e(4, 4, 2, 4), relief: 'plat', seed: 24 },
-  // Anciens Ateliers (4e), sur les monts : une crête en ligne brisée. Port : l'Atelier.
-  { id: 'forge', region: 'feu', core: { x: 30, y: 618 }, altitude: 6, ext: e(3, 4, 2, 5), relief: 'montagne', seed: 31 },
+  // Anciens Ateliers (4e), sur les monts : une crête en ligne brisée. Port : l'Atelier. L'Atelier, île-école, a un cœur
+  // de 20 et sa côte autour (01/10/2026) : la Forge s'écarte de 2 vers l'ouest, la Falaise de 2 vers l'est, chacune
+  // avec son dessin (`deplacee`) ; leurs ponts vers l'Atelier gardent leur longueur, ceux de la Forge à la Gare et de
+  // la Falaise au Cabinet y perdent deux cases. Les îles du bout de la crête ne bougent pas : l'archipel garde sa
+  // colonne centrale et sa largeur. La grue suit la côte repoussée (decor/4e.ts).
+  { id: 'forge', region: 'feu', core: { x: 28, y: 618 }, deplacee: { x: -2, y: 0 }, altitude: 6, ext: e(3, 4, 2, 5), relief: 'montagne', seed: 31 },
   { id: 'atelier', region: 'hauteurs', core: { x: 62, y: 632 }, altitude: 6, ext: e(3, 3, 2, 4), relief: 'collines', seed: 32 },
-  { id: 'falaise', region: 'montagne', core: { x: 94, y: 618 }, altitude: 6, ext: e(3, 4, 2, 7), relief: 'montagne', seed: 33 },
+  { id: 'falaise', region: 'montagne', core: { x: 96, y: 618 }, deplacee: { x: 2, y: 0 }, altitude: 6, ext: e(3, 4, 2, 7), relief: 'montagne', seed: 33 },
   { id: 'cabinet', region: 'hauteurs', core: { x: 126, y: 632 }, altitude: 6, ext: e(3, 3, 2, 4), relief: 'collines', seed: 34 },
   // Îles du Ciel (3e), sur les sommets : un arc, le Phare devant au centre. Port : le Phare.
   { id: 'belvedere', region: 'montagne', core: { x: 20, y: 930 }, altitude: 9, ext: e(3, 3, 2, 6), relief: 'montagne', seed: 41 },
