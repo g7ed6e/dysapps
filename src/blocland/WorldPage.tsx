@@ -94,7 +94,7 @@ export function WorldPage() {
   // « Voir le chantier » (bilan d'une mission) : la section du panneau à mettre en avant (plan, navire ou un ouvrage).
   const chantier = useSearchParams()[0].get('chantier');
   const navigate = useNavigate();
-  const { settings, speak } = useSettings();
+  const { settings, speak, stop } = useSettings();
   const univers = useUnivers();
   const reduceMotion = useMoinsDAnimations();
   const { state, moveTo, launch } = useBlocland();
@@ -164,10 +164,19 @@ export function WorldPage() {
   const vehicle = useMemo(() => vehiclePlacement(a, state.progress, state.village), [a, state.progress, state.village]);
   // Le panneau de l'île ouverte : replié, on reste sur l'île (la caméra aussi) ; il se rouvre à la demande.
   const [sheetOpen, setSheetOpen] = useState(true);
+  // Vrai le temps d'une navigation qui ferme un panneau du village : l'île du bonhomme revient, son panneau replié.
+  const replier = useRef(false);
   // Aller sur une île (ou y revenir) : son panneau s'ouvre, même si c'est déjà l'île ouverte.
   const openIsland = (id: BiomeId) => {
+    replier.current = false;
     setSheetOpen(true);
     navigate(`/aventure/${id}`);
+  };
+  // Fermer un panneau du village (Blocs, École, Trophées, Monuments) : retour au monde libre, sur l'île du bonhomme,
+  // son panneau replié. Il se rouvre à la demande (le bouton de l'île dans la barre, ou un toucher sur l'île).
+  const fermerLePanneau = () => {
+    replier.current = true;
+    navigate(`/aventure/${at}`);
   };
   // Les bornes de mission des îles de l'archipel, avec leur état : à faire, étoiles gagnées, ou fermée.
   // Le modèle du monde (world/modele.ts) : les îles, les bornes et leur état, en identifiants ; la grille dit où elles sont.
@@ -423,8 +432,10 @@ export function WorldPage() {
   // Une île d'un archipel pas encore atteint : la scène reste, la caméra cadre le port (le chantier du navire).
   useEffect(() => {
     // Pendant un voyage, rien ne change de cap : à l'arrivée, on va à l'île demandée au départ.
+    const plier = replier.current;
+    replier.current = false;
     if (voyage) return;
-    setSheetOpen(true);
+    setSheetOpen(!plier);
     setSaid(null);
     if (!island) setHighlight(null);
     if (!mapOpen) setMapTarget(null);
@@ -796,6 +807,14 @@ export function WorldPage() {
             <div className="creature-line world-line" role="status" aria-live="polite">
               <strong>{getBiome(said.id)?.creature.name} :</strong> <Syllabified text={said.text} />
               <SpeakButton text={said.text} compact />
+              <button type="button" className="icon-button" aria-label="Fermer"
+                onClick={() => {
+                  stop();
+                  setSaid(null);
+                }}
+              >
+                <Icon name="close" />
+              </button>
             </div>
           )}
         </div>
@@ -859,7 +878,7 @@ export function WorldPage() {
               aria-label="Mes blocs"
               data-tuto="blocs"
               aria-controls={blocsOpen ? 'panneau-blocs' : undefined}
-              onClick={() => (blocsOpen ? openIsland(at) : navigate('/aventure/blocs'))}
+              onClick={() => (blocsOpen ? fermerLePanneau() : navigate('/aventure/blocs'))}
             >
               <Icon name="blocks" /> <span className="world-bar-text">Blocs </span>
               <span className="world-bar-count">({blocksTotal})</span>
@@ -873,7 +892,7 @@ export function WorldPage() {
               aria-label={SCHOOL_TITLE}
               data-tuto="ecole"
               aria-controls={schoolOpen ? 'panneau-ecole' : undefined}
-              onClick={() => (schoolOpen ? openIsland(at) : navigate(SCHOOL_PATH))}
+              onClick={() => (schoolOpen ? fermerLePanneau() : navigate(SCHOOL_PATH))}
             >
               <Icon name="school" /> <span className="world-bar-text">École</span>
             </button>
@@ -900,15 +919,15 @@ export function WorldPage() {
       ) : voyage ? null : mondeOpen ? (
         <ArchipelsSheet onClose={() => navigate('/aventure')} onGo={openIsland} />
       ) : blocsOpen ? (
-        <InventorySheet onClose={() => openIsland(at)} />
+        <InventorySheet onClose={fermerLePanneau} />
       ) : schoolOpen ? (
-        <SchoolSheet onClose={() => openIsland(at)} />
+        <SchoolSheet onClose={fermerLePanneau} />
       ) : trophiesOpen ? (
-        <TrophySheet onClose={() => openIsland(at)} />
+        <TrophySheet onClose={fermerLePanneau} />
       ) : monumentsOpen ? (
-        <MonumentsSheet onClose={() => openIsland(at)} />
+        <MonumentsSheet onClose={fermerLePanneau} />
       ) : monument ? (
-        <MonumentSheet builder={monumentBuilder} onClose={() => openIsland(at)} />
+        <MonumentSheet builder={monumentBuilder} onClose={fermerLePanneau} />
       ) : menuOpen ? (
         <MenuSheet
           onClose={() => navigate('/aventure')}

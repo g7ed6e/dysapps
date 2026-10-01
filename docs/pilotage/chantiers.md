@@ -118,6 +118,10 @@ En conception avec le mainteneur dans le fil « Flux de l’idée aux assets » 
 
 Huit agents dans `.claude/agents/`, décrits dans [Contribuer](../conception/contribuer.md#les-agents). Le dernier venu, le **consultant UX UI** (`consultant-ux-ui`, demandé par le mainteneur le 1er octobre 2026), relit l’ergonomie et l’interface des écrans communes aux univers, sous l’autorité du directeur artistique, avec ses [bonnes pratiques UX UI](../conception/bonnes-pratiques-ux-ui.md) ; il est consulté avant toute pull request qui change un écran, un composant, la navigation ou un parcours.
 
+### L’allègement de l’interface
+
+Demande du mainteneur (1er octobre 2026) : l’interface est trop chargée, on n’arrive pas à agir dans le monde, il y a trop à lire, certaines fenêtres ne se ferment pas. Première étape, **les fenêtres qui coinçaient** (pull request ouverte) : fermer Blocs, l’École, la salle des trophées ou un monument rend le monde (le panneau de l’île reste replié au lieu de se rouvrir) ; le mot de la baleine en deux pages a un bouton **Passer** ; la bulle d’une créature a une croix. Ensuite : la liste de ce qu’on retire ou replie, écran par écran, attend le mot du mainteneur. La caméra (glisser pour se déplacer, Recentrer) avance dans son propre fil.
+
 ## Les défauts relevés en consolidant
 
 - Dans Archipéo, la baleine dit « … est bâtie » à l’île-port terminée, alors que la Carte dit « Restaurée » : sa phrase est héritée de Blocland (`src/univers/archipeo/index.ts`, `...BLOCLAND.baleine`).

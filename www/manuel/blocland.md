@@ -104,7 +104,7 @@ Le bouton **Blocs**, dans la barre du bas (ou le lien « Mes blocs » sur la car
 - **Prochains ouvrages** : combien de blocs peuvent payer un ouvrage (tous types d’île confondus), et les trois ouvrages les moins chers qu’on ne peut pas encore payer, avec leur coût.
 - **À aller chercher** : les blocs que réclament les plans en cours et le Bloc-Navire et que l’on n’a pas, avec l’île ouverte où les gagner (un lien). Les blocs qui se gagnent sur des îles encore fermées ne sont pas détaillés, seulement comptés (« Et 3 autres sortes de blocs, sur des îles que tu ouvriras plus tard »).
 
-La croix ramène sur l’île où se tient le bonhomme.
+La croix rend le monde : on reste sur l’île où se tient le bonhomme, son panneau replié (le bouton de l’île, dans la barre du bas, le rouvre). L’École, la salle des trophées et les monuments se ferment de la même façon.
 
 ## Les ouvrages entre les îles
 
@@ -265,7 +265,7 @@ La baleine est la voix de l’archipel. Elle parle rarement, seulement aux **gra
 | L’île-port bâtie (ses plans terminés) | « Plaine des nombres est bâtie. Tu avances bien : chaque île bâtie rend l’archipel plus beau. » |
 | Le premier ouvrage construit dans l’archipel | « Un chemin s’ouvre vers Mine des lettres. L’archipel s’agrandit. » |
 
-Son mot s’ouvre dans le panneau **Le mot de la baleine**, en bas du monde, un instant après l’étape (jamais pendant une mission, un voyage ou le tutoriel). La caméra cadre l’île concernée, et la baleine passe au large de cette île : elle fait surface, souffle, puis replonge. Il n’y a pas de baleine dans les Îles du Ciel, et quand l’appareil demande de réduire les animations, le panneau vient seul. Le texte est lu à voix haute si la lecture automatique est active, et le bouton Écouter le relit. L’arrivée a deux pages (**Suivant**, puis **J’ai compris**) ; les autres mots n’en ont qu’une. Échap ferme aussi le panneau. Sur la Carte, le panneau de la prochaine destination attend que le mot soit fermé ; en grand texte sur téléphone, la barre du bas s’efface aussi le temps du mot, pour lui laisser la place. En vue simple, le mot s’affiche en tête de la page Blocland et des pages d’île.
+Son mot s’ouvre dans le panneau **Le mot de la baleine**, en bas du monde, un instant après l’étape (jamais pendant une mission, un voyage ou le tutoriel). La caméra cadre l’île concernée, et la baleine passe au large de cette île : elle fait surface, souffle, puis replonge. Il n’y a pas de baleine dans les Îles du Ciel, et quand l’appareil demande de réduire les animations, le panneau vient seul. Le texte est lu à voix haute si la lecture automatique est active, et le bouton Écouter le relit. L’arrivée a deux pages (**Suivant**, puis **J’ai compris**), et **Passer** la ferme dès la première ; les autres mots n’en ont qu’une. Échap ferme aussi le panneau. Sur la Carte, le panneau de la prochaine destination attend que le mot soit fermé ; en grand texte sur téléphone, la barre du bas s’efface aussi le temps du mot, pour lui laisser la place. En vue simple, le mot s’affiche en tête de la page Blocland et des pages d’île.
 
 ![Le mot de la baleine en bas du monde : « Un chemin s'ouvre vers Mine des lettres. L'archipel s'agrandit. », avec les boutons Écouter et J'ai compris.](/captures/baleine.jpg)
 
@@ -284,7 +284,7 @@ Les sons sont générés par le code, sans aucun fichier : un « toc » à la po
 | Toucher une borne de mission | Lance la mission (ou explique pourquoi elle ne l’est pas) |
 | Toucher un ouvrage (construit ou fantôme) | Ouvre l’île qu’il touche, avec sa proposition mise en avant |
 | Toucher un fantôme de bâtiment | Pose le bloc attendu |
-| Toucher une créature | Ouvre le panneau de son île, où elle accueille ; si ce panneau est déjà ouvert, elle dit une phrase, lue à voix haute |
+| Toucher une créature | Ouvre le panneau de son île, où elle accueille ; si ce panneau est déjà ouvert, elle dit une phrase, lue à voix haute ; une croix ferme sa bulle |
 | Toucher le Bloc-Navire au quai (île-port) | Ouvre le panneau du port sur sa section Bloc-Navire ; une case transparente pose le bloc attendu |
 | Bouton « Embarquer » (panneau du port) | Le premier voyage vers l’archipel suivant, joué en entier |
 | Bouton « Revenir en … » ou « Repartir vers … », « Aller au port », sélecteur d’archipel (sous le bouton Menu), lien vers une île d’un autre archipel | Un archipel déjà atteint, d’un fondu court |
