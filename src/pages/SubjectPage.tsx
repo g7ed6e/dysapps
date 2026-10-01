@@ -10,6 +10,7 @@ import { useBlocland } from '../blocland/BloclandContext';
 import { Creature } from '../blocland/Creatures';
 import { questProgress } from '../blocland/exercises';
 import { ARCHIPELAGOS, archipelagoTitle, isArchipelagoReached, isBiomeUnlocked } from '../blocland/world/archipelago';
+import { useTextes } from '../univers';
 
 export function SubjectPage() {
   const { subject } = useParams();
@@ -71,10 +72,11 @@ function ArchipelagoIslands({ classe, subject }: { classe: Classe; subject: Subj
   const { state } = useBlocland();
   const islands = biomesOf(subject).filter((b) => b.classe === classe);
   const reached = isArchipelagoReached(classe, state.village.bridges);
+  const textes = useTextes();
   return (
     <section aria-labelledby={`matiere-archipel-${classe}`}>
       <h3 id={`matiere-archipel-${classe}`} className="section-subtitle">
-        {archipelagoTitle(classe)}
+        {archipelagoTitle(classe, textes.archipels)}
       </h3>
       <ul className="grid apps blocland-islands">
         {islands.map((biome) => {

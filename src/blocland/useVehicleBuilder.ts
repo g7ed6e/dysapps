@@ -9,6 +9,7 @@ import { voyageId } from './world/archipelago';
 import { VEHICLE_STAGES, kitReady, stageAt, type VehicleStage } from './world/vehicle';
 import { placeAll, whereToEarn, type Burst } from './usePlanBuilder';
 import { useHaptics } from '../core/haptics';
+import { useTextes } from '../univers';
 
 export interface VehicleBuilder {
   /** Le chantier de ce port : l'étape du Bloc-Navire qui s'y construit, ou `null` (pas un port, ou navire déjà parti d'ici). */
@@ -36,6 +37,7 @@ export interface VehicleBuilder {
 export function useVehicleBuilder(island: BiomeId): VehicleBuilder {
   const { state, fillPlan } = useBlocland();
   const { settings, speak } = useSettings();
+  const textes = useTextes();
   const [notice, setNotice] = useState<string | null>(null);
   const [burst, setBurst] = useState<Burst>({ seq: 0, cell: { ile: island, local: { x: 0, y: 0, z: 0 } }, color: '#fff' });
   useEffect(() => setNotice(null), [island]);
@@ -74,7 +76,7 @@ export function useVehicleBuilder(island: BiomeId): VehicleBuilder {
   };
   const finished = (done: VehicleStage) => {
     const msg = kit
-      ? `Le Bloc-Navire a tous ses blocs ! ${done.done}`
+      ? `Le Bloc-Navire a tous ses blocs ! ${done.fin(textes.archipels[done.to])}`
       : `Le Bloc-Navire a tous ses blocs ! Il attend encore ${done.guardians} Gardien${done.guardians > 1 ? 's' : ''} vaincu${done.guardians > 1 ? 's' : ''} pour ${done.short}.`;
     setNotice(msg);
     sound(playDone);

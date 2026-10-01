@@ -328,9 +328,18 @@ export const ARCHIPEO = {
     jaugeLue: (reussies, total, n) => `${reussies} épreuve${s(reussies)} réussie${s(reussies)} sur ${total}, il en faut ${n}`,
     rallume: (gardien) => `${gardien} brille à nouveau.`,
   },
+  // La baleine parle aux grandes étapes : ses textes sont ceux d'avant GD-1, gardés ici (Blocland a pris sa propre voix).
   baleine: {
-    ...BLOCLAND.baleine,
+    parle: 'baleine',
+    arrivee: {
+      '6e': 'Je suis la baleine. Je passe au large quand tu fais quelque chose de grand.',
+      '5e': 'Le Bloc-Navire a fait sa traversée. Te voilà dans les Îles Brumeuses : six îles, et les mêmes règles.',
+      '4e': 'Le Bloc-Navire a fait sa traversée. Te voilà dans les Anciens Ateliers : les vieux ateliers attendent qu’on les remette en marche.',
+      '3e': 'Le Bloc-Navire a fait sa traversée. Te voilà dans les Îles du Ciel : ici, les îles flottent dans les nuages.',
+    },
     gardiens: (archipel) => `Tous les Gardiens des ${archipel} brillent à nouveau. J’ai vu leur lumière depuis le large.`,
+    port: (ile) => `${ile} est bâtie. Tu avances bien : chaque île bâtie rend l’archipel plus beau.`,
+    ouvrage: (ile) => `Un chemin s’ouvre vers ${ile}. L’archipel s’agrandit.`,
   },
   // Le phare du large est dessiné pour Archipéo (revue d'ensemble, DA-4) : une tour ronde de pierre à feu ouvert.
   monuments: {
@@ -339,4 +348,10 @@ export const ARCHIPEO = {
       done: 'Le phare du large s’allume ! Plus aucun navire ne se perd dans la brume.',
     },
   },
+  // Les noms d'avant GD-1, ceux des données (world/archipelago.ts).
+  archipels: { '6e': 'Premiers Rivages', '5e': 'Îles Brumeuses', '4e': 'Anciens Ateliers', '3e': 'Îles du Ciel' },
+  // Les rôles d'avant GD-1, ceux de core/progress.ts (ROLES), et leurs succès inchangés.
+  roles: { explorateur: 'Explorateur', cartographe: 'Cartographe', batisseur: 'Bâtisseur', navigateur: 'Navigateur', architecte: 'Architecte de l’archipel' },
+  succes: {},
+  renommage: null,
 } satisfies TextesUnivers;

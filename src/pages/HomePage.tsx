@@ -3,7 +3,7 @@ import { SUBJECTS, subjectInfo, visibleSubjects, type Subject } from '../apps/re
 import { useBlocland } from '../blocland/BloclandContext';
 import { questsToReview } from '../blocland/review';
 import { VillageStageLine } from '../blocland/VillageStageLine';
-import { archipelagoOf, getArchipelago, reachedArchipelagos, ARCHIPELAGOS } from '../blocland/world/archipelago';
+import { archipelagoOf, reachedArchipelagos, ARCHIPELAGOS } from '../blocland/world/archipelago';
 import { nextDestination } from '../blocland/world/destination';
 import { Icon } from '../components/Icon';
 import { RoleBadge } from '../components/RoleBadge';
@@ -14,6 +14,7 @@ import { lastPlace } from '../core/lastPlace';
 import { levelFromXp } from '../core/progress';
 import { useSettings, useUnivers } from '../core/SettingsContext';
 import { UNIVERS } from '../core/univers';
+import { nomDuRole, useTextes } from '../univers';
 
 /** Les expéditions du menu ; la LV2 à côté de l'anglais, sauf avec « Pas de LV2 ». */
 const EXPEDITIONS: Subject[] = ['maths', 'francais', 'anglais', 'lv2'];
@@ -27,12 +28,13 @@ export function HomePage() {
   const { settings } = useSettings();
   const { progress } = useProgress();
   const { state } = useBlocland();
+  const textes = useTextes();
   const rank = levelFromXp(progress.xp);
   const firstTime = progress.totalAnswers === 0;
   const resume = lastPlace();
   const reviews = questsToReview(state.spaced, state.village.bridges);
   const here = archipelagoOf(state.village.at ?? 'foret').classe;
-  const destination = nextDestination(state);
+  const destination = nextDestination(state, textes.archipels);
   const destinationText = `Prochaine destination : ${destination.name}. ${destination.text}`;
   const reached = reachedArchipelagos(state.village.bridges).length;
   const univers = UNIVERS[useUnivers()];
@@ -53,7 +55,7 @@ export function HomePage() {
 
       <section className="panel home-village" aria-labelledby="ton-village">
         <h2 id="ton-village" className="home-heading">
-          <Icon name="map" /> Ton village : les {getArchipelago(here).name}
+          <Icon name="map" /> Ton village : les {textes.archipels[here]}
         </h2>
         <VillageStageLine village={state.village} archipelago={here} withNext={false} />
       </section>
@@ -113,7 +115,7 @@ export function HomePage() {
       <p className="panel home-progress">
         <RoleBadge tier={rank.tier} className="home-role" />
         <strong>
-          {rank.title}, niveau {rank.level}
+          {nomDuRole(textes, rank.tier)}, niveau {rank.level}
         </strong>
         <span>
           {reached} archipel{reached > 1 ? 's' : ''} sur {ARCHIPELAGOS.length}

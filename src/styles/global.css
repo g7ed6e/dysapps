@@ -3528,7 +3528,7 @@ figure.class-table {
   flex: none;
 }
 /*
- * Sur téléphone en grand texte, la bulle garde la place du texte : la baleine dessinée s'efface (décorative), Écouter
+ * Sur téléphone en grand texte, la bulle garde la place du texte : la baleine ou le portrait de la créature s'efface (décoratif, son nom reste écrit), Écouter
  * garde son icône seule (son nom reste lu par les lecteurs d'écran) : les boutons prennent moins de place.
  */
 @media (max-width: 640px) {
@@ -3536,7 +3536,7 @@ figure.class-table {
   :root[data-texte="grand"] .bulle-ouverte .world-bar {
     display: none;
   }
-  :root[data-texte="grand"] .world-overlay-bottom .whale-icon {
+  :root[data-texte="grand"] .world-overlay-bottom :is(.whale-icon, .whale-portrait) {
     display: none;
   }
   /* Le trait pointillé seul dit la suite, comme sur la Carte : un chevron à côté d'Écouter en icône se prendrait pour un bouton. */
@@ -5754,7 +5754,10 @@ button.island-quest {
   fill: var(--muted);
 }
 
-/* ===== Le mot de la baleine (Archipéo, lot 5) : rare, aux grandes étapes, opaque et uni comme les autres panneaux ===== */
+/*
+ * ===== Le mot des grandes étapes (lot 5) : rare, opaque et uni comme les autres panneaux. La baleine le dit dans
+ * Archipéo ; dans Blocland, la créature de l'île-école, son portrait en cubes à côté de son nom écrit (GD-1). =====
+ */
 .whale-word {
   margin-bottom: 1.2rem;
   border-color: var(--primary-bg);
@@ -5772,6 +5775,15 @@ button.island-quest {
   flex: none;
   color: var(--primary-bg);
 }
+.whale-portrait {
+  width: 3rem;
+  height: 3rem;
+  flex: none;
+}
+.whale-portrait .creature {
+  width: 100%;
+  height: 100%;
+}
 .whale-word-text {
   margin: 0 0 0.8rem;
   max-width: none;
@@ -5781,6 +5793,13 @@ button.island-quest {
   flex-wrap: wrap;
   gap: 0.6rem;
   align-items: center;
+}
+/* Les nouveaux noms des archipels (GD-1) : une phrase par archipel, une par ligne. */
+.renommage-lignes {
+  margin: 0 0 0.8rem;
+  padding-left: 1.2rem;
+  display: grid;
+  gap: 0.4rem;
 }
 /* Les points de page (deux pages à l'arrivée) : la page en cours est pleine, les autres creuses. */
 .whale-word-dots {

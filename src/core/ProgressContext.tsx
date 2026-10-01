@@ -15,6 +15,7 @@ import {
 } from './progress';
 import { loadJSON, removeKey, saveJSON } from './storage';
 import { forgetPlace } from './lastPlace';
+import { nomDuRole, texteDuSucces, useTextes } from '../univers';
 
 export interface Celebration {
   id: number;
@@ -55,6 +56,10 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
   const holdCelebrations = useCallback((hold: boolean) => setHolds((n) => Math.max(0, n + (hold ? 1 : -1))), []);
   // Référence synchrone pour enchaîner plusieurs évènements dans le même rendu.
   const progressRef = useRef(progress);
+  // Les noms des rôles et des succès dans l'univers affiché (GD-1), lus au moment de la récompense.
+  const textes = useTextes();
+  const textesRef = useRef(textes);
+  textesRef.current = textes;
   const nextId = useRef(1);
 
   useEffect(() => {
@@ -70,16 +75,17 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       const info = levelFromXp(update.progress.xp);
       const before = levelFromXp(previous.xp);
       const newRole = info.tier !== before.tier;
+      const role = nomDuRole(textesRef.current, info.tier);
       items.push({
         id: nextId.current++,
         kind: 'levelup',
         icon: 'zap',
-        title: newRole ? `Nouveau rôle : ${info.title}` : 'Niveau supérieur !',
-        message: `Niveau ${info.level} · ${info.title}`,
+        title: newRole ? `Nouveau rôle : ${role}` : 'Niveau supérieur !',
+        message: `Niveau ${info.level} · ${role}`,
       });
     }
     for (const b of update.newBadges) {
-      items.push({ id: nextId.current++, kind: 'badge', icon: b.icon, title: 'Succès débloqué', message: b.title });
+      items.push({ id: nextId.current++, kind: 'badge', icon: b.icon, title: 'Succès débloqué', message: texteDuSucces(textesRef.current, b).title });
     }
     if (items.length) setCelebrations((prev) => [...prev, ...items]);
     return update;

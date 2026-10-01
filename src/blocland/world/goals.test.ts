@@ -1,10 +1,16 @@
 import { BLOCKS, blockCount, type BlockId } from '../biomes';
 import { EMPTY_STATE, sanitizeState } from '../engine';
-import { lockedHint, nextGoal, nextGoalInfo } from './goals';
+import { NOMS_ARCHIPELS } from './archipelago';
+import * as goals from './goals';
 import { planCells, plansFor } from './plans';
 import { dockBox } from './harbour';
 import { overviewBounds, worldBounds } from './terrain';
 import { VEHICLE_STAGES } from './vehicle';
+
+// Les phrases avec les noms communs des données ; les noms d'un univers sont essayés dans src/univers/univers.test.ts.
+const nextGoal = (state: Parameters<typeof goals.nextGoal>[0], island: Parameters<typeof goals.nextGoal>[1]) => goals.nextGoal(state, island, NOMS_ARCHIPELS);
+const nextGoalInfo = (state: Parameters<typeof goals.nextGoal>[0], island: Parameters<typeof goals.nextGoal>[1]) => goals.nextGoalInfo(state, island, NOMS_ARCHIPELS);
+const lockedHint = (state: Parameters<typeof goals.nextGoal>[0], island: Parameters<typeof goals.nextGoal>[1]) => goals.lockedHint(state, island, NOMS_ARCHIPELS);
 
 const [coque] = VEHICLE_STAGES;
 const guardians = (ids: string[]) => Object.fromEntries(ids.map((id) => [`${id}-gardien`, { stars: 2 }]));

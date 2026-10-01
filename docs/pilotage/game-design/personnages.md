@@ -4,21 +4,23 @@
 
 Cette page est produite à partir des données du jeu (`docs/contenu/` pour les noms, `src/univers/` pour les espèces et les répliques) par `npm run pilotage:personnages`. Elle se corrige dans le code, puis se régénère ; jamais à la main.
 
-Chaque île a une **créature**, qui l’habite, donne les missions et parle à l’arrivée, et un **Gardien**, dont le défi ferme l’île. Les noms sont communs aux deux univers ; l’espèce de la créature et ce que dit le Gardien changent. Dans Blocland, on **vainc** le Gardien, qui devient une statue ; dans Archipéo, c’est une sentinelle de pierre éteinte que l’élève **rallume**. La **baleine** parle rarement, aux grandes étapes d’un archipel, dans les deux univers.
+Chaque île a une **créature**, qui l’habite, donne les missions et parle à l’arrivée, et un **Gardien**, dont le défi ferme l’île. Les noms sont communs aux deux univers ; l’espèce de la créature et ce que dit le Gardien changent. Dans Blocland, on **vainc** le Gardien, qui devient une statue ; dans Archipéo, c’est une sentinelle de pierre éteinte que l’élève **rallume**. Les noms des archipels changent d’un univers à l’autre (GD-1), leurs identifiants jamais.
 
-## La baleine
+## Le mot des grandes étapes
+
+Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l’île-port, le premier ouvrage). Dans Blocland, la **créature de l’île-école** de l’archipel le dit, son nom écrit et son portrait dans la bulle : Mousso en 6e, Bazar en 5e, Ixe en 4e, Fi en 3e. Dans Archipéo, la **baleine** le dit.
 
 | Moment | Blocland | Archipéo |
 | --- | --- | --- |
-| Arrivée en 6e | Je suis la baleine. Je passe au large quand tu fais quelque chose de grand. | Je suis la baleine. Je passe au large quand tu fais quelque chose de grand. |
-| Arrivée en 5e | Le Bloc-Navire a fait sa traversée. Te voilà dans les Îles Brumeuses : six îles, et les mêmes règles. | Le Bloc-Navire a fait sa traversée. Te voilà dans les Îles Brumeuses : six îles, et les mêmes règles. |
-| Arrivée en 4e | Le Bloc-Navire a fait sa traversée. Te voilà dans les Anciens Ateliers : les vieux ateliers attendent qu’on les remette en marche. | Le Bloc-Navire a fait sa traversée. Te voilà dans les Anciens Ateliers : les vieux ateliers attendent qu’on les remette en marche. |
-| Arrivée en 3e | Le Bloc-Navire a fait sa traversée. Te voilà dans les Îles du Ciel : ici, les îles flottent dans les nuages. | Le Bloc-Navire a fait sa traversée. Te voilà dans les Îles du Ciel : ici, les îles flottent dans les nuages. |
-| Tous les Gardiens d’un archipel (exemple) | Tous les Gardiens des Premiers Rivages ont reconnu ton savoir. Je l’ai vu depuis le large. | Tous les Gardiens des Premiers Rivages brillent à nouveau. J’ai vu leur lumière depuis le large. |
-| Île-port terminée (exemple) | Plaine des nombres est bâtie. Tu avances bien : chaque île bâtie rend l’archipel plus beau. | Plaine des nombres est bâtie. Tu avances bien : chaque île bâtie rend l’archipel plus beau. |
-| Premier ouvrage payé (exemple) | Un chemin s’ouvre vers Mine des lettres. L’archipel s’agrandit. | Un chemin s’ouvre vers Mine des lettres. L’archipel s’agrandit. |
+| Arrivée en 6e | Salut, bâtisseur ! Moi, c’est Mousso, un golem de mousse. Ici, tout se bâtit bloc par bloc, et je t’aide. | Je suis la baleine. Je passe au large quand tu fais quelque chose de grand. |
+| Arrivée en 5e | Le Bloc-Navire a fait sa traversée ! Bienvenue dans les Collines du Large. Ici, on compte ses blocs avant de bâtir. | Le Bloc-Navire a fait sa traversée. Te voilà dans les Îles Brumeuses : six îles, et les mêmes règles. |
+| Arrivée en 4e | Bip. Le Bloc-Navire a fait sa traversée. Bienvenue dans les Monts de Feu ! Les machines attendent qu’on les remette en route. | Le Bloc-Navire a fait sa traversée. Te voilà dans les Anciens Ateliers : les vieux ateliers attendent qu’on les remette en marche. |
+| Arrivée en 3e | Le Bloc-Navire a fait sa traversée. Bienvenue dans les Îles du Ciel ! Je t’éclaire, bâtisseur : on bâtit tout en haut. | Le Bloc-Navire a fait sa traversée. Te voilà dans les Îles du Ciel : ici, les îles flottent dans les nuages. |
+| Tous les Gardiens d’un archipel (exemple) | Tous les Gardiens des Basses Terres sont vaincus ! Leurs statues gardent maintenant ton chantier. | Tous les Gardiens des Premiers Rivages brillent à nouveau. J’ai vu leur lumière depuis le large. |
+| Île-port terminée (exemple) | Chantier fini : Plaine des nombres ! Bloc après bloc, ton archipel grandit. | Plaine des nombres est bâtie. Tu avances bien : chaque île bâtie rend l’archipel plus beau. |
+| Premier ouvrage payé (exemple) | Ton ouvrage tient bon ! Nouvelle île ouverte : Mine des lettres. | Un chemin s’ouvre vers Mine des lettres. L’archipel s’agrandit. |
 
-## Les Premiers Rivages (6e)
+## Les Basses Terres (Blocland), les Premiers Rivages (Archipéo), 6e
 
 | Île | Créature | Espèce (Blocland) | Espèce (Archipéo) | Gardien |
 | --- | --- | --- | --- | --- |
@@ -113,7 +115,7 @@ Chaque île a une **créature**, qui l’habite, donne les missions et parle à 
 | À la fin | Coucou… Je rentre dans mon horloge. Les verbes sont à toi… et à Tick. | Mon cadran se rallume. Les verbes sont à toi, et à Tick. |
 | Tick à l’arrivée | Hello, bâtisseur ! Dans mon horloge, chaque verbe a sa place : am, is ou are, have ou has. Regarde d’abord le sujet, la règle est affichée. Chaque bon verbe, c’est un cadran pour le village. | Hello, bâtisseur ! Dans mon horloge, chaque verbe a sa place : am, is ou are, have ou has. Regarde d’abord le sujet, la règle est affichée. Chaque bon verbe, c’est un cadran pour le village. |
 
-## Les Îles Brumeuses (5e)
+## Les Collines du Large (Blocland), les Îles Brumeuses (Archipéo), 5e
 
 | Île | Créature | Espèce (Blocland) | Espèce (Archipéo) | Gardien |
 | --- | --- | --- | --- | --- |
@@ -181,7 +183,7 @@ Chaque île a une **créature**, qui l’habite, donne les missions et parle à 
 | À la fin | Je dételle mes chevaux. Le Relais est à toi… et à Lina. | Ma boussole se rallume. Le Relais est à toi, et à Lina. |
 | Lina à l’arrivée | Bonjour, bâtisseur ! Au Relais, les voyageurs se présentent, comptent et parlent de leur famille, dans ta deuxième langue. Écoute bien : la voix lit chaque mot pour toi. Chaque bonne réponse, c’est une dalle pour le village. | Bonjour, bâtisseur ! Au Relais, les voyageurs se présentent, comptent et parlent de leur famille, dans ta deuxième langue. Écoute bien : la voix lit chaque mot pour toi. Chaque bonne réponse, c’est une dalle pour le village. |
 
-## Les Anciens Ateliers (4e)
+## Les Monts de Feu (Blocland), les Anciens Ateliers (Archipéo), 4e
 
 | Île | Créature | Espèce (Blocland) | Espèce (Archipéo) | Gardien |
 | --- | --- | --- | --- | --- |
@@ -249,7 +251,7 @@ Chaque île a une **créature**, qui l’habite, donne les missions et parle à 
 | À la fin | Je me couche… en pierre, pour ton village. Le Jardin est à toi… et à Muscade. | Mes rayons se rallument. Le jardin est à toi, et à Muscade. |
 | Muscade à l’arrivée | Salut, bâtisseur ! Au Jardin des heures, on dit l’heure, on raconte sa journée, on lit l’horaire et le menu, dans ta deuxième langue. Appuie sur Écouter : la voix lit chaque phrase pour toi. Chaque bonne réponse, c’est un bloc d’osier, le bois tressé des paniers, pour le village. | Salut, bâtisseur ! Au Jardin des heures, on dit l’heure, on raconte sa journée, on lit l’horaire et le menu, dans ta deuxième langue. Appuie sur Écouter : la voix lit chaque phrase pour toi. Chaque bonne réponse, c’est un bloc d’osier, le bois tressé des paniers, pour le village. |
 
-## Les Îles du Ciel (3e)
+## Les Îles du Ciel, 3e
 
 | Île | Créature | Espèce (Blocland) | Espèce (Archipéo) | Gardien |
 | --- | --- | --- | --- | --- |

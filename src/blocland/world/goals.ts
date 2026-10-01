@@ -1,5 +1,6 @@
 // Le prochain objectif d'une île, un seul, avec sa jauge : ce qu'il manque pour le plan en cours, pour l'ouvrage le
-// moins cher, ou pour le Bloc-Navire. Code pur, partagé par le panneau d'île.
+// moins cher, ou pour le Bloc-Navire. Code pur, partagé par le panneau d'île. Les noms des archipels viennent de
+// l'appelant (`noms` : ceux de l'univers affiché, GD-1).
 import { blockCount, getBiome, type BiomeId, type BlockId } from '../biomes';
 import type { BloclandState } from '../engine';
 import { canLaunch, currentPlan, planStatus } from '../engine';
@@ -8,7 +9,6 @@ import {
   archipelagoOf,
   buildableBridges,
   conditionMet,
-  getArchipelago,
   isArchipelagoReached,
   otherEnd,
   pathTo,
@@ -16,6 +16,7 @@ import {
   previousArchipelago,
   reachableIslands,
   remainingVoyages,
+  type NomsArchipels,
 } from './archipelago';
 import { VEHICLE_NAME, beatenGuardians, stageAt, stageTo } from './vehicle';
 
@@ -52,10 +53,10 @@ function missingBlocks(state: BloclandState, missing: [BlockId, number][]) {
  * blocs d'un plan, construire un ouvrage, poser les blocs du navire) ; sinon l'objectif le plus proche (le moins de
  * blocs à gagner), le plan en cas d'égalité. `null` s'il n'y a rien à dire (île fermée, tout construit).
  */
-export function nextGoalInfo(state: BloclandState, island: BiomeId): Goal | null {
+export function nextGoalInfo(state: BloclandState, island: BiomeId, noms: NomsArchipels): Goal | null {
   const stage = stageAt(island);
   const launch = stage ? canLaunch(state, stage) : null;
-  if (stage && launch?.ok) return { text: `${cap(VEHICLE_NAME)} est prêt : embarque vers les ${getArchipelago(stage.to).name} !`, have: 1, need: 1, ready: true };
+  if (stage && launch?.ok) return { text: `${cap(VEHICLE_NAME)} est prêt : embarque vers les ${noms[stage.to]} !`, have: 1, need: 1, ready: true };
   type Candidate = Goal & { ready: boolean };
   const candidates: Candidate[] = [];
   const current = currentPlan(state, island);
@@ -92,7 +93,7 @@ export function nextGoalInfo(state: BloclandState, island: BiomeId): Goal | null
     if (launch.reason === 'gardiens') {
       const left = launch.missing;
       candidates.push({
-        text: `Bats encore ${left} Gardien${left > 1 ? 's' : ''} des ${getArchipelago(stage.from).name} pour ${stage.short}`,
+        text: `Bats encore ${left} Gardien${left > 1 ? 's' : ''} des ${noms[stage.from]} pour ${stage.short}`,
         have: Math.max(0, stage.guardians - left),
         need: stage.guardians,
         ready: false,
@@ -115,15 +116,15 @@ export function nextGoalInfo(state: BloclandState, island: BiomeId): Goal | null
 }
 
 /** La phrase du prochain objectif seule (voir `nextGoalInfo`). */
-export function nextGoal(state: BloclandState, island: BiomeId): string | null {
-  return nextGoalInfo(state, island)?.text ?? null;
+export function nextGoal(state: BloclandState, island: BiomeId, noms: NomsArchipels): string | null {
+  return nextGoalInfo(state, island, noms)?.text ?? null;
 }
 
 /**
  * Ce que dit la créature d'une île fermée : l'ouvrage précis qui mène ici (depuis quelle île, combien de blocs,
  * quelle condition), ou l'île à ouvrir d'abord quand on est encore trop loin.
  */
-export function lockedHint(state: BloclandState, island: BiomeId): string {
+export function lockedHint(state: BloclandState, island: BiomeId, noms: NomsArchipels): string {
   const bridges = state.village.bridges;
   const open = reachableIslands(bridges);
   const world = { progress: state.progress, plans: state.village.plans };
@@ -133,14 +134,14 @@ export function lockedHint(state: BloclandState, island: BiomeId): string {
     const left = remainingVoyages(island, bridges);
     const stage = stageTo(left[0].toClasse)!;
     const port = getBiome(stage.biome)?.name ?? stage.biome;
-    const head = `Pas si vite ! Mon île est dans les ${archipelago.name}`;
-    if (left.length > 1) return `${head}. Va d’abord jusqu’aux ${previousArchipelago(archipelago.classe)!.name} avec ${VEHICLE_NAME}.`;
+    const head = `Pas si vite ! Mon île est dans les ${noms[archipelago.classe]}`;
+    if (left.length > 1) return `${head}. Va d’abord jusqu’aux ${noms[previousArchipelago(archipelago.classe)!.classe]} avec ${VEHICLE_NAME}.`;
     const travel = archipelago.travel === 'mer' ? 'de la mer' : archipelago.travel === 'airs' ? 'des airs' : 'du ciel';
     const launch = canLaunch(state, stage);
     if (launch.ok) return `${head}, de l’autre côté ${travel}. ${cap(VEHICLE_NAME)} est prêt sur ${port} : embarque !`;
     if (launch.reason === 'gardiens') {
       const k = stage.guardians - beatenGuardians(stage.from, state.progress);
-      return `${head}, de l’autre côté ${travel}. ${cap(VEHICLE_NAME)} attend sur ${port} : bats encore ${k} Gardien${k > 1 ? 's' : ''} des ${getArchipelago(stage.from).name}, puis embarque.`;
+      return `${head}, de l’autre côté ${travel}. ${cap(VEHICLE_NAME)} attend sur ${port} : bats encore ${k} Gardien${k > 1 ? 's' : ''} des ${noms[stage.from]}, puis embarque.`;
     }
     const status = planStatus(state, stage);
     const n = status.total - status.done;

@@ -2,7 +2,7 @@
 // réactivation, reconstruction, développement, port. Chaque état correspond à un geste de l'élève (un plan d'île, le
 // port et un ouvrage, un monument, le voyage). Code pur, partagé par le terrain (le port en cubes) et les panneaux.
 import type { Village } from '../engine';
-import { ARCHIPELAGOS, BRIDGES, getArchipelago, islandsOf, voyageId, type ArchipelagoId } from './archipelago';
+import { ARCHIPELAGOS, BRIDGES, NOMS_ARCHIPELS, getArchipelago, islandsOf, voyageId, type ArchipelagoId, type NomsArchipels } from './archipelago';
 import { monumentsOf } from './monuments';
 import { isPlanDone, plansFor } from './plans';
 
@@ -36,8 +36,11 @@ function nextArchipelago(a: ArchipelagoId): ArchipelagoId | null {
   return ARCHIPELAGOS[i + 1]?.classe ?? null;
 }
 
-/** L'état du village d'un archipel. */
-export function villageStage(village: Pick<Village, 'plans' | 'bridges'>, a: ArchipelagoId): VillageStage {
+/**
+ * L'état du village d'un archipel. `noms` : les noms des archipels de l'univers affiché, pour la phrase `next` (le
+ * terrain, qui ne lit que le rang, s'en passe).
+ */
+export function villageStage(village: Pick<Village, 'plans' | 'bridges'>, a: ArchipelagoId, noms: NomsArchipels = NOMS_ARCHIPELS): VillageStage {
   const { port } = getArchipelago(a);
   const plans = islandsOf(a).flatMap((b) => plansFor(b.id));
   const anyPlan = plans.some((p) => isPlanDone(p, village.plans));
@@ -51,7 +54,7 @@ export function villageStage(village: Pick<Village, 'plans' | 'bridges'>, a: Arc
   const portName = getArchipelagoPortName(a);
   const at = (rank: number, next: string | null): VillageStage => ({ ...VILLAGE_STAGES[rank - 1], next });
   if (sailed) return at(5, null);
-  if (portDone && linked && monument) return at(4, to ? `Fais partir le Bloc-Navire vers les ${getArchipelago(to).name}.` : null);
+  if (portDone && linked && monument) return at(4, to ? `Fais partir le Bloc-Navire vers les ${noms[to]}.` : null);
   if (portDone && linked) return at(3, 'Termine un monument de l’archipel.');
   if (anyPlan) {
     const left = [!portDone && `termine les plans de ${portName}`, !linked && `construis un ouvrage qui part de ${portName}`].filter(Boolean).join(' et ');
