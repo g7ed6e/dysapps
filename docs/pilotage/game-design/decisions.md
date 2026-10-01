@@ -20,3 +20,4 @@ Les décisions prises avant cette page restent dans les tableaux où elles ont �
 | --- | --- | --- | --- |
 | 30 septembre 2026 | Le game design se tient dans cette section, et chaque changement passe par une fiche GD-n | — | — |
 | 30 septembre 2026 | Combiner les blocs : un bloc assemblé par archipel, à la Fabrique (Blocland) ou à la Halle aux matériaux (Archipéo), sur l’île de l’école ; les huit monuments en demandent ; noms propres à chaque univers, écrits dans `docs/contenu/assemblage.md` ; le 1er octobre, un bloc assemblé en poche se défait | [GD-2](propositions/GD-2.md) | GD-2 |
+| 1er octobre 2026 | Plus aucun trophée sur le toit de la salle des trophées : la salle s’agrandit d’une travée tous les 6 succès, vers la gauche, jusqu’à 8 × 3 cases (commun aux deux univers) | [GD-3](propositions/GD-3.md) | lot 7 (avant 7c) |
