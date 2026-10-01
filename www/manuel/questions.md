@@ -47,7 +47,7 @@ Tout se règle dans Réglages : police, taille (18 px minimum), interlignage, es
 Demander à l’appareil de réduire les animations : sur iPad et iPhone, Réglages, Accessibilité, Mouvement, « Réduire les animations » ; sur Android, Accessibilité, « Supprimer les animations » ; sur Windows, Accessibilité, « Effets d’animation ». L’appli suit ce choix (voir [Réglages](reglages.md#animations-et-vue-du-monde)). Si la 3D est lourde, choisir dans « Vue du monde » la liste des îles : la vue simple offre exactement les mêmes actions. Sur un appareil sans WebGL, la liste des îles s’affiche d’elle-même. Le rendu se met en pause de lui-même quand l’onglet est caché et baisse sa finesse si l’appareil peine.
 
 **Il fait nuit dans le village.**
-Le village suit l’heure réelle de l’appareil (crépuscule à 20 h, aube à 7 h). Le bouton « Forcer le jour » repasse en plein jour ; la nuit reste toujours claire.
+Le village suit l’heure réelle de l’appareil (crépuscule à 20 h, aube à 7 h) ; la nuit reste toujours claire. Dans Réglages, « Vue du monde », **La lumière du monde** : « Toujours le jour » garde le plein jour.
 
 **Pas de son dans le village.**
 Les sons d’action sont activés par défaut, l’ambiance (vent, oiseaux, grillons) est désactivée par défaut : voir Réglages → Sons, vibrations et pastille. Aucun son n’est joué pendant la lecture à voix haute.
