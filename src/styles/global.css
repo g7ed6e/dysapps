@@ -6236,23 +6236,38 @@ fieldset {
 .assemblage-resultat {
   margin-top: 1rem;
   padding: 0.8rem 1rem;
+  /* Un résultat plus haut que l'écran s'ouvre sur son début, sous le bouton Pause fixé en haut à droite. */
+  scroll-margin-top: calc(56px + 1.2rem + env(safe-area-inset-top));
   scroll-margin-bottom: 1rem;
 }
-/* En grand texte, le résultat peut dépasser l'écran et passer sous le bouton Pause, fixé en haut à droite : son bouton
-   Écouter va sous le texte, à gauche. */
+/* En grand texte, tout le résultat se lit en colonne : le cri, le message sur toute la largeur, Écouter, puis les
+   boutons. Le message ne passe plus sous le bouton Pause. */
+:root[data-texte="grand"] .assemblage-resultat .feedback-compact,
 :root[data-texte="grand"] .assemblage-resultat .feedback-body {
   flex-direction: column;
   align-items: flex-start;
 }
+:root[data-texte="grand"] .assemblage-resultat .feedback-body {
+  flex: none;
+  align-self: stretch;
+}
+:root[data-texte="grand"] .assemblage-resultat .feedback-body p {
+  align-self: stretch;
+}
+/* Côte à côte, chaque bouton a la largeur de son texte ; l'un sous l'autre, les deux prennent toute la largeur
+   (la même), texte centré. */
 .assemblage-question-actions {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: stretch;
   gap: 0.5rem;
+  max-width: 48rem;
   flex-shrink: 0;
 }
 .assemblage-question-actions .button {
+  flex: 1 1 auto;
   min-height: 48px;
+  text-align: center;
 }
 /* Grisé sans quitter l'ordre du clavier (aria-disabled) : le focus reste sur le bouton après le dernier bloc assemblé. */
 .assemblage-recette .button[aria-disabled="true"] {

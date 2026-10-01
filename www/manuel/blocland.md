@@ -292,7 +292,7 @@ Chaque bloc assemblé demande de répondre à **une question** qui mêle les deu
 - **trois réponses** : des nombres, toujours rangés du plus petit au plus grand ; des phrases, dans un ordre qui change, la bonne réponse jamais toujours à la même place ;
 - le bouton **Un indice**, qui ne coûte rien.
 
-Le résultat s’affiche sous les réponses, en entier avec ses boutons : la page y descend d’elle-même et le premier bouton est sélectionné. Un seul bouton **Écouter** lit le résultat, puis ce qui suit (le bloc assemblé ou l’explication). L’écran reste en plein écran jusqu’à ce qu’on le quitte.
+Le résultat s’affiche sous les réponses, en entier avec ses boutons : la page y descend d’elle-même et le premier bouton est sélectionné. S’il est plus haut que l’écran (en grand texte, avec une longue explication), la page s’arrête au début du résultat, pour le lire avant les boutons. Un seul bouton **Écouter** lit le résultat, puis ce qui suit (le bloc assemblé ou l’explication). L’écran reste en plein écran jusqu’à ce qu’on le quitte.
 
 Une bonne réponse, du premier coup ou au second essai, assemble le bloc : les blocs de la recette sont pris, le bloc arrive dans la poche, et l’écran le dit : « Tu as assemblé 1 poutre. Tu en as 5. » Le bouton **Revenir à la Fabrique** ramène à la carte, qui le redit ; **Assembler 1 autre poutre** pose tout de suite une autre question, quand il reste assez de blocs.
 

@@ -126,10 +126,16 @@ function QuestionDAssemblage({
   useFocusMode(possible, () => navigate(retour, { replace: true }), notePause);
   useAnswerKeys(sectionRef);
   // Le résultat s'affiche sous les réponses, en entier, avec ses boutons : la page y défile, le focus va au bouton
-  // principal (relecture UX UI : le bandeau fixe passait sous la question ou hors de l'écran).
+  // principal (relecture UX UI : le bandeau fixe passait sous la question ou hors de l'écran). Plus haut que l'écran
+  // (grands réglages, longue explication), il s'ouvre sur son début : on lit le message avant les boutons.
   useEffect(() => {
-    if (!fin) return;
-    resultatRef.current?.scrollIntoView?.({ block: 'end', behavior: moinsDAnimations() ? 'auto' : 'smooth' });
+    const resultat = resultatRef.current;
+    if (!fin || !resultat) return;
+    // La place sous le bouton Pause : l'écran, moins les marges de défilement du résultat.
+    const style = getComputedStyle(resultat);
+    const place = window.innerHeight - (parseFloat(style.scrollMarginTop) || 0) - (parseFloat(style.scrollMarginBottom) || 0);
+    const block = resultat.getBoundingClientRect().height > place ? 'start' : 'end';
+    resultat.scrollIntoView?.({ block, behavior: moinsDAnimations() ? 'auto' : 'smooth' });
     principalRef.current?.focus({ preventScroll: true });
   }, [fin]);
   // La consigne et la question sont lues en ouvrant, comme au début d'une mission ; le document, à la demande.

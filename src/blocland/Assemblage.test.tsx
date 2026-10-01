@@ -167,6 +167,33 @@ it('un double toucher sur la bonne réponse n’assemble qu’un bloc', async ()
   expect(sauvegarde().inventory).toMatchObject({ bois: 2, brique: 1, poutre: 1 });
 });
 
+it('le résultat s’ouvre sur sa fin s’il tient dans l’écran, sur son début s’il est plus haut', async () => {
+  const user = userEvent.setup();
+  const defile = vi.fn();
+  const hauteur = vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect');
+  Element.prototype.scrollIntoView = defile;
+  try {
+    for (const [haut, block] of [
+      [200, 'end'],
+      [window.innerHeight + 100, 'start'],
+    ] as const) {
+      defile.mockClear();
+      hauteur.mockReturnValue({ height: haut } as DOMRect);
+      const { juste } = partie({ bois: 2, brique: 1 });
+      const { unmount } = renderFabrique('/aventure/assemblage/poutre');
+      await user.click(await screen.findByRole('button', { name: juste }));
+      expect(defile).toHaveBeenCalledWith(expect.objectContaining({ block }));
+      // Le focus reste sur le bouton principal, sans défiler jusqu'à lui.
+      expect(screen.getByRole('link', { name: /Revenir à la Fabrique/ })).toHaveFocus();
+      unmount();
+      localStorage.clear();
+    }
+  } finally {
+    hauteur.mockRestore();
+    delete (Element.prototype as { scrollIntoView?: unknown }).scrollIntoView;
+  }
+});
+
 it('sans assez de blocs, rien ne change : le bouton est grisé, la ligne de ce qui manque reste, aucune question', async () => {
   const user = userEvent.setup();
   partie({ bois: 3 });
