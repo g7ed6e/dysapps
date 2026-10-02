@@ -56,7 +56,7 @@ Les règles dys de l’application ([Principes](../../www/pedagogie/principes.md
 | --- | --- | --- |
 | Une chose à la fois | Mode concentration pendant une partie : la barre du haut disparaît, il reste un bouton Pause | `src/components/FocusMode.tsx` |
 | Toujours une sortie | Le menu Pause dit ce qui est gardé ; le bouton retour du téléphone l’ouvre au lieu de quitter | `src/components/FocusMode.tsx` |
-| Repères stables | Barre du haut : sur téléphone, le logo, Menu et Réglages ; sur tablette et ordinateur, le logo, Aventure, Missions, Succès et Réglages ; pas de barre du haut sur le monde en 3D (son menu Pause) ; retour en haut à gauche | [Principes](../../www/pedagogie/principes.md#sans-stress), `src/components/Layout.tsx` |
+| Repères stables | Barre du haut : sur téléphone, le logo, Menu et Réglages ; sur tablette et ordinateur, le logo, Aventure, Missions, Succès et Réglages ; pas de barre du haut sur le monde en 3D (son menu Pause) ; les mêmes mots partout ; retour en haut à gauche | [Principes](../../www/pedagogie/principes.md#sans-stress), `src/components/Layout.tsx` |
 | Rien sous le bandeau | Le bandeau de résultat réserve sa hauteur sous la question ; aux grandes tailles, il suit la question dans la page | `src/components/useSheetClearance.ts` |
 | Grandes cibles | 48 px au moins | `src/styles/global.css` |
 | Zones sûres | Les marges suivent les encoches de l’écran | `src/styles/global.css` (`safe-area-inset`) |
