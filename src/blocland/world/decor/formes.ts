@@ -1,4 +1,4 @@
-// Le registre des formes du décor d'Archipéo (le socle de la piste Rendu, docs/conception/cadrage-archipeo.md §6) :
+// Le registre des formes du décor d'Archipéo (le socle de la piste Rendu, docs/univers/archipeo/cadrage.md §6) :
 // pour chaque genre de décor, la fonction qui le dessine en primitives. Il remplace le `switch` de ../decorMesh.ts ;
 // chaque sous-lot écrit ses formes dans son fichier (./6e.ts…, R5 celles du quai et du cœur des îles) et les range ici
 // par une seule ligne. Un décor bâti sans forme propre se dessine en boîtes (`enBoites`).

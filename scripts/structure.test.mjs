@@ -13,7 +13,7 @@ const fichiers = execFileSync('git', ['ls-files', '-z', '--cached', '--others', 
 
 /** Ce que la racine peut contenir : un dossier (avec « / ») ou un fichier. */
 const RACINE = [
-  '.claude/', '.github/', 'design/', 'docs/', 'public/', 'scripts/', 'src/', 'www/',
+  '.claude/', '.github/', 'docs/', 'public/', 'scripts/', 'src/', 'www/',
   '.gitignore', '.npmrc', 'AGENTS.md', 'CLAUDE.md', 'LICENSE', 'README.md',
   'index.html', 'package-lock.json', 'package.json', 'tsconfig.json', 'vite.config.ts', 'wrangler.jsonc',
 ];
@@ -24,18 +24,18 @@ const page = String.raw`(?:[a-z0-9-]+|README)\.md`;
 const REGLES = [
   {
     dossier: 'docs/',
-    motif: new RegExp(String.raw`^docs/(conception/${page}|contenu/(${page}|portail/${page})|pilotage/(${page}|game-design/(${page}|propositions/(GD-\d+|modele)\.md)))$`),
-    consigne: 'docs/ ne tient que la documentation interne : docs/conception/<page>.md, docs/contenu/<île>.md ou portail/<mission>.md, docs/pilotage/ (game-design/, propositions/GD-<n>.md)',
+    motif: new RegExp(String.raw`^docs/(${[
+      String.raw`(conception|ux-ui|rendu|pilotage)/${page}`,
+      String.raw`contenu/(${page}|portail/${page})`,
+      String.raw`gameplay/(${page}|propositions/(GD-\d+|modele)\.md)`,
+      String.raw`univers/(${page}|blocland/${page}|archipeo/(${page}|intentions/${page}|esquisses/.+|source/.+))`,
+    ].join('|')})$`),
+    consigne: 'docs/ ne tient que la documentation interne : conception/, gameplay/ (propositions/GD-<n>.md), univers/ (archipeo/, blocland/), ux-ui/, rendu/, contenu/, pilotage/ ; une page <nom>.md, sauf les esquisses et le dossier source d’Archipéo',
   },
   {
     dossier: 'www/',
     motif: /^www\/(index\.md|manuel\/[a-z0-9-]+\.md|pedagogie\/[a-z0-9-]+\.md|_theme\/[^/]+|\.vitepress\/.+)$/,
     consigne: 'www/ ne publie que l’accueil, le manuel (www/manuel/) et le contenu pédagogique (www/pedagogie/) ; rien d’interne',
-  },
-  {
-    dossier: 'design/',
-    motif: /^design\/(archipeo|blocland)\//,
-    consigne: 'design/ range les références visuelles par univers : design/archipeo/ ou design/blocland/',
   },
   {
     dossier: '.claude/',

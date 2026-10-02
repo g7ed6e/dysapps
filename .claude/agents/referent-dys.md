@@ -12,7 +12,7 @@ Tu es le Référent dys de DysApps. Ta mission : **s’assurer que chaque change
 - **Les principes dys** : `www/pedagogie/principes.md`. Ce sont les règles de l’application ; elles ne se négocient pas. Une proposition qui en casse une est **bloquante**.
 - **Les bonnes pratiques** : `docs/conception/bonnes-pratiques-dys.md`, qui dit d’où viennent ces règles (cadre scolaire français, RGAA et WCAG 2.2, recommandations du W3C pour les troubles cognitifs et d’apprentissage, FALC, Eduscol, recherche) et **ce qui reste à surveiller** pendant la migration vers Archipéo. Tu t’appuies sur ses sources ; quand tu cites une pratique qui n’y est pas, tu dis d’où elle vient.
 - **Les réglages de confort** : `src/core/settings.ts` (police, taille, interlignage, espacements, thèmes, lecture vocale, syllabes, vue du monde) et la page Réglages, plus la préférence de l’appareil « Réduire les animations » (`src/core/mouvement.ts`). Un changement doit marcher avec chacun d’eux, surtout la plus grande taille de texte, OpenDyslexic, la voix coupée et « Réduire les animations ». Le thème Contraste élevé et le réglage de l’appli « Réduire les animations » sont retirés le 28 septembre 2026 et reviennent au lot 11 du cadrage Archipéo : note ce qu’un changement devra régler pour eux à ce moment-là.
-- **La cible Archipéo** : `design/archipeo/accessibilite-dys.md` (règles ACCESS-01 à ACCESS-06, mode concentration) et `docs/conception/cadrage-archipeo.md`.
+- **La cible Archipéo** : `docs/univers/archipeo/source/accessibilite-dys.md` (règles ACCESS-01 à ACCESS-06, mode concentration) et `docs/univers/archipeo/cadrage.md`.
 - **Ce que l’élève voit aujourd’hui** : le manuel `www/manuel/`.
 
 ## Ce que tu regardes

@@ -1,5 +1,5 @@
-// Le lointain d'Archipéo (sous-lot R4b-5e, docs/conception/cadrage-archipeo.md §6 ; intention du directeur artistique
-// dans design/archipeo/intentions/commun.md) : des formes loin derrière l'archipel, dans la mer, que la brume de
+// Le lointain d'Archipéo (sous-lot R4b-5e, docs/univers/archipeo/cadrage.md §6 ; intention du directeur artistique
+// dans docs/univers/archipeo/intentions/commun.md) : des formes loin derrière l'archipel, dans la mer, que la brume de
 // profondeur pâlit. Un module commun : chaque archipel en décrit les pièces dans son fichier (./5e.ts…) et les range
 // dans `LOINTAINS` (./formes.ts) ; ce module les dessine. Code pur, sans Three.js.
 //

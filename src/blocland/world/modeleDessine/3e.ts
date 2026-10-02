@@ -1,7 +1,7 @@
 // Le modelé dessiné des Îles du Ciel (3e), île par île, en repère d'île (./types.ts). Ce fichier appartient au sous-lot
-// R4b-3e (docs/conception/cadrage-archipeo.md §6). Une île absente garde son relief de marche.
+// R4b-3e (docs/univers/archipeo/cadrage.md §6). Une île absente garde son relief de marche.
 //
-// L'intention du directeur artistique (design/archipeo/intentions/3e-iles-du-ciel.md §3) : l'Observatoire des textes,
+// L'intention du directeur artistique (docs/univers/archipeo/intentions/3e-iles-du-ciel.md §3) : l'Observatoire des textes,
 // juste derrière le grand phare, reçoit trois gradins réguliers sur l'anneau du fond (2 blocs chacun, en retrait de
 // 1,5 case, neige sur celui du haut) ; le Belvédère perd ses deux pics, jumeaux de ceux du Glacier et de la Falaise, pour
 // un dôme bas en gradins de 6 blocs. L'île du Phare n'a pas de gradins (son anneau ne fait que 3 cases : ses gradins sont

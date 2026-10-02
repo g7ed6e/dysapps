@@ -1,7 +1,7 @@
 // Le modelé dessiné des Îles Brumeuses (5e), île par île, en repère d'île (./types.ts). Ce fichier appartient au sous-lot
-// R4b-5e (docs/conception/cadrage-archipeo.md §6). Une île absente garde son relief de marche.
+// R4b-5e (docs/univers/archipeo/cadrage.md §6). Une île absente garde son relief de marche.
 //
-// L'intention du directeur artistique (design/archipeo/intentions/5e-iles-brumeuses.md §3) : des crêtes de roche en
+// L'intention du directeur artistique (docs/univers/archipeo/intentions/5e-iles-brumeuses.md §3) : des crêtes de roche en
 // gradins sur l'anneau du fond (au nord, là où regarde la caméra), derrière le cœur, jamais devant ; le Marché (le port)
 // et le Marais restent bas, le creux de la ligne. Des marches de 2 à 3 blocs, chacune en retrait d'une case sur la
 // précédente. Ni le cœur, ni la première rangée de l'anneau, ni les abords d'un ouvrage ne bougent : la marche, les

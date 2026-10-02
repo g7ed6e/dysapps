@@ -1,4 +1,4 @@
-// Le modelé dessiné d'Archipéo (étape U2, docs/conception/univers.md §5), un fichier par archipel (./6e.ts…), écrit en
+// Le modelé dessiné d'Archipéo (étape U2, docs/univers/univers.md §5), un fichier par archipel (./6e.ts…), écrit en
 // repère d'île (./types.ts). `modelerLeSol` l'applique aux cubes du sol avant le sol à facettes ; sans modelé, le sol
 // est rendu tel quel (le même tableau).
 import type { ArchipelagoId } from '../archipels';

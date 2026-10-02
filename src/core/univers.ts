@@ -1,4 +1,4 @@
-// L'univers de l'appareil (lot 6, docs/conception/univers.md et cadrage-archipeo.md, « Les fils du lot 6 ») : Archipéo
+// L'univers de l'appareil (lot 6, docs/univers/univers.md et docs/univers/archipeo/cadrage.md, « Les fils du lot 6 ») : Archipéo
 // ou Blocland. Il choisit le dessin du monde et le titre ; jamais les règles, jamais la progression, commune aux deux.
 // Depuis la bascule du lot 6 (décision 10 de univers.md), l'univers se choisit dans Réglages › Univers : Blocland par
 // défaut, Archipéo au choix, en second. La section Expérimental d'avant n'existe plus.
@@ -8,7 +8,7 @@ export type UniversChoice = 'archipeo' | 'blocland';
 
 /**
  * L'univers par défaut : Blocland, le monde en blocs auquel les élèves tiennent (décision du mainteneur, 28 septembre
- * 2026, docs/conception/univers.md §7, décision 7). Archipéo se choisit dans les Réglages.
+ * 2026, docs/univers/univers.md §7, décision 7). Archipéo se choisit dans les Réglages.
  */
 export const UNIVERS_PAR_DEFAUT: UniversChoice = 'blocland';
 

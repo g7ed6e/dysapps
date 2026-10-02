@@ -1,4 +1,4 @@
-// La mer d'Archipéo (lot R3 de la piste Rendu, docs/conception/cadrage-archipeo.md) : code pur, sans Three.js. La vue
+// La mer d'Archipéo (lot R3 de la piste Rendu, docs/univers/archipeo/cadrage.md) : code pur, sans Three.js. La vue
 // 3D la dessine dans l’univers Archipéo (voir rendu.ts) (three/mer.ts), en un seul appel de dessin.
 //
 // - La carte de la mer (`carteDeLaMer`) : une image calculée, deux points par case, sur l'étendue de l'archipel et une

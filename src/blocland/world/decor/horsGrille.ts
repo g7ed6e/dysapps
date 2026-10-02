@@ -1,4 +1,4 @@
-// Le décor d'Archipéo hors de la grille (règle 2 des intentions du directeur artistique, design/archipeo/intentions/
+// Le décor d'Archipéo hors de la grille (règle 2 des intentions du directeur artistique, docs/univers/archipeo/intentions/
 // commun.md) : ce qui se dessine sur des cases où le bonhomme ne va jamais, ou au loin (la grue du 4e, le lointain).
 // Rien de cela n'a de cube : ni la marche, ni les empreintes de J0, ni Blocland, ni la 2D n'en savent rien, et rien ne
 // s'y touche (`caseDuDecor` et la vue 3D l'ignorent). Chaque sous-lot R4b range ici, par une ligne, ce qu'il pose et

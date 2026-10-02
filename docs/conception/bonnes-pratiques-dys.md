@@ -56,13 +56,13 @@ Les règles de l’application sont dans [Principes dys](../../www/pedagogie/pri
 | Pratique | Ce que fait le jeu | Où le voir |
 | --- | --- | --- |
 | Police, taille, interlignage, espacement | Luciole par défaut, OpenDyslexic, Atkinson Hyperlegible, Arial ; 18 px au moins, interlignage 1,5 au moins, espacement des lettres et des mots réglable, en mots | `src/core/settings.ts`, [Principes](../../www/pedagogie/principes.md#lire-moins-mieux-ou-autrement) |
-| Fond uni et doux | Thème Crème par défaut, panneaux opaques, thème Clair plat (Contraste élevé retiré le 28 septembre 2026, prévu au lot 11 du [cadrage Archipéo](cadrage-archipeo.md#_6-le-plan-en-lots)) | `src/styles/`, [Style](style.md) |
+| Fond uni et doux | Thème Crème par défaut, panneaux opaques, thème Clair plat (Contraste élevé retiré le 28 septembre 2026, prévu au lot 11 du [cadrage Archipéo](../univers/archipeo/cadrage.md#_6-le-plan-en-lots)) | `src/styles/`, [Style](../rendu/style.md) |
 | Tout s’entend | Consigne lue dès qu’elle apparaît et relançable, symboles dits en mots, voix anglaise pour l’anglais | [Principes](../../www/pedagogie/principes.md) |
 | Une chose à la fois | Un item par écran, mode concentration, succès affichés à la fin | [Principes](../../www/pedagogie/principes.md#une-chose-a-la-fois) |
 | Ne rien retenir | Consigne toujours écrite, aide visuelle et rappel de règle toujours affichés | [Principes](../../www/pedagogie/principes.md#aider-sans-penaliser) |
 | Pas de temps limité, pas de perte | Pas de chronomètre, deuxième essai, joker jamais pénalisant, pas de classement | [Principes](../../www/pedagogie/principes.md#sans-stress) |
 | Gestes | Cibles de 48 px au moins, touches 1 à 9 et Entrée | [Principes](../../www/pedagogie/principes.md#une-chose-a-la-fois) |
-| Animations | La préférence de l’appareil « Réduire les animations » (`prefers-reduced-motion`) ; le réglage de l’appli du même nom, retiré le 28 septembre 2026, revient au lot 11 du [cadrage Archipéo](cadrage-archipeo.md#_6-le-plan-en-lots) | `src/core/mouvement.ts`, `src/styles/global.css` |
+| Animations | La préférence de l’appareil « Réduire les animations » (`prefers-reduced-motion`) ; le réglage de l’appli du même nom, retiré le 28 septembre 2026, revient au lot 11 du [cadrage Archipéo](../univers/archipeo/cadrage.md#_6-le-plan-en-lots) | `src/core/mouvement.ts`, `src/styles/global.css` |
 | Pas de texte dans la 3D | Tout texte est dans un panneau HTML | [Principes](../../www/pedagogie/principes.md) |
 
 ### À surveiller

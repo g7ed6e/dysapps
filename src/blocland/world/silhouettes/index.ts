@@ -1,4 +1,4 @@
-// Le registre des reliefs (le socle de la piste Rendu, docs/conception/cadrage-archipeo.md §6) : le relief propre de
+// Le registre des reliefs (le socle de la piste Rendu, docs/univers/archipeo/cadrage.md §6) : le relief propre de
 // chaque île, un fichier par archipel (./6e.ts…), écrit en repère d'île (./types.ts). Chaque sous-lot de R4b n'écrit
 // que le fichier de son archipel ; ../map.ts les lit pour tirer le paysage de chaque île.
 import type { BiomeId } from '../../biomes';

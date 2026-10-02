@@ -1,5 +1,5 @@
 // Les Îles du Ciel (R4b-3e) : le grand phare sur son socle de salles, le massif enneigé, les nappes des sommets et
-// l'oiseau planeur (design/archipeo/intentions/3e-iles-du-ciel.md).
+// l'oiseau planeur (docs/univers/archipeo/intentions/3e-iles-du-ciel.md).
 import { BRIDGES } from '../archipelago';
 import { archipelagoOfIsland } from '../archipels';
 import { toutConstruit } from '../budget';

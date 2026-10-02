@@ -554,7 +554,7 @@ function islandPage(b, d) {
 }
 
 /**
- * La page « Personnages et Gardiens » du pilotage (docs/pilotage/game-design/personnages.md, hors du site de documentation,
+ * La page « Personnages et Gardiens » du pilotage (docs/gameplay/personnages.md, hors du site de documentation,
  * qui s'adresse aux élèves et aux adultes qui les accompagnent) : `npm run pilotage:personnages`.
  */
 export async function generatePersonnages() {

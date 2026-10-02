@@ -1,4 +1,4 @@
-// Le terrain d'Archipéo (lot R2 de la piste Rendu, docs/conception/cadrage-archipeo.md) : la grille reste, le cube
+// Le terrain d'Archipéo (lot R2 de la piste Rendu, docs/univers/archipeo/cadrage.md) : la grille reste, le cube
 // disparaît. Code pur, sans Three.js : il lit les cubes du sol (`sol` dans `VoxelCube`, posés par ./terrain.ts) et en
 // tire un maillage à facettes, en tableaux typés, que la vue 3D dessine en un ou deux appels de dessin.
 //

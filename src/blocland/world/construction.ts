@@ -1,4 +1,4 @@
-// La construction taillée d'Archipéo (lot R5 de la piste Rendu, docs/conception/cadrage-archipeo.md) : les bâtiments
+// La construction taillée d'Archipéo (lot R5 de la piste Rendu, docs/univers/archipeo/cadrage.md) : les bâtiments
 // des plans, les ouvrages, les monuments, l'école et la salle des trophées, les objets du quai et le décor du cœur, en
 // blocs de pierre taillée. Code pur, sans Three.js : il lit les cubes restés en cubes après le décor (`rangerLeDecor`,
 // posés par `poseDuDecor`) et les cubes du sol, et rend trois groupes de tableaux typés, trois appels de dessin :

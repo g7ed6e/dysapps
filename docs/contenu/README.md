@@ -101,7 +101,7 @@ Le fichier d’une île finit par ses plans, un tableau sous le titre `## Les pl
 - **coffre** : les blocs gagnés, `bloc × nombre` séparés par « · », ou une case vide. Le jeu y ajoute de lui-même les blocs de finition du plan suivant.
 - **quand c’est bâti** : ce que dit la créature quand le plan est fini.
 
-Changer un nom, une récompense ou une réplique se fait ici seulement. La forme du bâtiment est dessinée par le code (`src/blocland/world/architect.ts`) ; ajouter, retirer ou déplacer un plan demande aussi `src/blocland/world/plans.ts`, dont l’ordre doit rester celui du tableau (un test le vérifie). Les noms et les répliques sont ceux de l’univers Blocland ; où vivront ceux d’Archipéo reste à décider quand ses constructions seront renommées. Les récompenses (XP, coffre) règlent l’équilibre du jeu et sont communes aux univers : les changer passe par le directeur artistique, avec une fiche `GD-<n>` (`docs/pilotage/game-design/`). Un nom ou une réplique appartient à l’univers Blocland : le changer passe par le consultant de Blocland et par le référent dys.
+Changer un nom, une récompense ou une réplique se fait ici seulement. La forme du bâtiment est dessinée par le code (`src/blocland/world/architect.ts`) ; ajouter, retirer ou déplacer un plan demande aussi `src/blocland/world/plans.ts`, dont l’ordre doit rester celui du tableau (un test le vérifie). Les noms et les répliques sont ceux de l’univers Blocland ; où vivront ceux d’Archipéo reste à décider quand ses constructions seront renommées. Les récompenses (XP, coffre) règlent l’équilibre du jeu et sont communes aux univers : les changer passe par le directeur artistique, avec une fiche `GD-<n>` (`docs/gameplay/`). Un nom ou une réplique appartient à l’univers Blocland : le changer passe par le consultant de Blocland et par le référent dys.
 
 ## Les missions du portail
 
@@ -124,7 +124,7 @@ Les tests de chaque mission (`src/apps/<mission>/data.test.*`, lancés par `npm 
 
 ## L’assemblage des blocs
 
-`assemblage.md` n’est pas une île : il tient ce qu’on assemble sur l’île de l’école ([GD-2](../pilotage/game-design/propositions/GD-2.md)). `npm run contenu` en produit `src/blocland/world/recettes.ts`, et les questions de chaque bloc dans `src/blocland/exercises/data/assemblage-<bloc>.json`. Deux tableaux, puis les questions :
+`assemblage.md` n’est pas une île : il tient ce qu’on assemble sur l’île de l’école ([GD-2](../gameplay/propositions/GD-2.md)). `npm run contenu` en produit `src/blocland/world/recettes.ts`, et les questions de chaque bloc dans `src/blocland/exercises/data/assemblage-<bloc>.json`. Deux tableaux, puis les questions :
 
 - **« ## Le lieu »** : une rangée par univers (`` `blocland` ``, `` `archipeo` ``), avec le nom du lieu (le titre de sa page), où il est (« à la Fabrique ») et la phrase lue sous le titre.
 - **« ## Les blocs assemblés »** : une rangée par archipel, avec l’identifiant du bloc (entre accents graves, déclaré dans `src/blocland/biomes.ts`, qui tient aussi son dessin), l’archipel, la recette (`bois × 2 · pierre × 1`) et le nom du bloc dans chaque univers ; un pluriel qui ne s’écrit pas avec un « s » se met entre parenthèses (`Vitrail (vitraux)`).
