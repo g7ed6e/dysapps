@@ -11,8 +11,9 @@ import { SpeakButton } from '../components/SpeakButton';
 export function PauseSeance({ suite, onContinuer }: { suite?: string; onContinuer: () => void }) {
   const arreter = useRef<HTMLAnchorElement>(null);
   const texte = `Tu as bien travaillé. Ton cerveau retient mieux avec des pauses.${suite ? ` ${suite}` : ''}`;
+  // Sans preventScroll : le bouton qui reçoit le focus revient dans l'écran (grands réglages, téléphone).
   useEffect(() => {
-    arreter.current?.focus({ preventScroll: true });
+    arreter.current?.focus();
   }, []);
   return (
     <div className="pause-panel">

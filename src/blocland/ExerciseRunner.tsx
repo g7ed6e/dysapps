@@ -68,10 +68,10 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
   const [done, setDone] = useState<Completion | null>(null);
   const [paused, setPaused] = useState(false);
   // « Encore un peu » retire la pause : le focus va au bouton principal du bilan, pas dans le vide.
-  const [repris, setRepris] = useState(false);
+  const [repris, setRepris] = useState(0);
   const suiteRef = useRef<HTMLAnchorElement>(null);
   useEffect(() => {
-    if (repris) suiteRef.current?.focus({ preventScroll: true });
+    if (repris) suiteRef.current?.focus();
   }, [repris]);
   const sectionRef = useRef<HTMLElement>(null);
   const { settings, speak } = useSettings();
@@ -259,7 +259,7 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
               onContinuer={() => {
                 continueSession();
                 setPaused(false);
-                setRepris(true);
+                setRepris((n) => n + 1);
               }}
             />
           ) : (
@@ -321,7 +321,9 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
         ))}
       </ol>
 
-      {firstTry && !answered && <Feedback shout="Presque !" message={retryMessage(def.type, items)} tone="rate" speakKey={`${index}-essai`} />}
+      {firstTry && !answered && (
+        <Feedback shout="Presque !" message={retryMessage(def.type, items)} tone="rate" speakKey={`${index}-essai`} />
+      )}
 
       <Screen
         key={`${items[0].key}${firstTry ? '-2' : ''}`}

@@ -116,7 +116,7 @@ it('propose une pause après 3 exercices, et laisse continuer', async () => {
   await user.click(screen.getByRole('button', { name: /Encore un peu/ }));
   expect(screen.getByRole('button', { name: /Rejouer/ })).toBeInTheDocument();
   // Le focus revient au bouton principal du bilan.
-  expect(document.activeElement).toHaveClass('primary');
+  expect(screen.getByRole('link', { name: /Revenir sur|Voir le chantier/ })).toHaveFocus();
   expect(JSON.parse(localStorage.getItem('dysapps:blocland')!).progress[DEF.id].attempts).toBe(3);
 });
 
