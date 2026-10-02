@@ -1,22 +1,22 @@
 # Comparaison avec main
 
-Références : main au commit 36f92c2b5f027e330f46146d418f1f7d92ce4f63 (après : 90896109d6643e08630792771fec285bce059284). Une vue est changée au-delà de 0,3 % de pixels différents.
+Références : main au commit 4bf725143855768b1f929b9f13869ff068a56d89 (après : 163432be8fb24b90455acc4ce5f1bc2d13545324). Une vue est changée au-delà de 0,3 % de pixels différents.
 
 ## Changées (25) : planches dans `planches/`
 
+- 3e-defi-chateau.jpg : 1,8 %
+- 3e-defi-refuge.jpg : 0,5 %
 - 3e-defi-studio.jpg : 5,3 %
-- 3e-defi-textes.jpg : 3,0 %
 - 4e-defi-jardin.jpg : 0,5 %
 - 4e-defi-theatre.jpg : 1,4 %
 - 5e-defi-carrefour.jpg : 2,0 %
-- 5e-defi-comptoir.jpg : 2,0 %
-- 5e-defi-manoir.jpg : 0,9 %
-- 6e-defi-carriere.jpg : 0,7 %
+- 5e-defi-relais.jpg : 0,6 %
+- 6e-archipel.jpg : 0,4 %
 - 6e-defi-horloge.jpg : 1,6 %
-- 6e-defi-mine.jpg : 0,4 %
+- 6e-defi-mine.jpg : 0,3 %
 - 6e-lieux-archipel-nuit.jpg : 1,1 %
-- 6e-lieux-archipel.jpg : 1,2 %
-- 6e-lieux-nuit.jpg : 1,5 %
+- 6e-lieux-archipel.jpg : 1,3 %
+- 6e-lieux-nuit.jpg : 1,6 %
 - 6e-lieux-trophees-dix-huit-nuit.jpg : 100,0 %
 - 6e-lieux-trophees-dix-huit.jpg : 100,0 %
 - 6e-lieux-trophees-huit.jpg : 100,0 %
@@ -26,28 +26,29 @@ Références : main au commit 36f92c2b5f027e330f46146d418f1f7d92ce4f63 (après :
 - 6e-lieux-trophees-tous.jpg : 100,0 %
 - 6e-lieux-trophees-vide-nuit.jpg : 100,0 %
 - 6e-lieux-trophees-vide.jpg : 100,0 %
-- 6e-lieux-velours-nuit.jpg : 2,5 %
-- 6e-lieux-velours.jpg : 0,4 %
-- 6e-lieux.jpg : 1,6 %
+- 6e-lieux-velours-nuit.jpg : 6,2 %
+- 6e-lieux-velours.jpg : 7,5 %
+- 6e-lieux.jpg : 1,8 %
 
-## Inchangées (60) : non publiées
+## Inchangées (68) : non publiées
 
-- 3e-archipel-nuit.jpg : 0,0 %
-- 3e-archipel.jpg : 0,0 %
+- 3e-archipel-nuit.jpg : 0,1 %
+- 3e-archipel.jpg : 0,1 %
 - 3e-bulle-svg.jpg : 0,0 %
 - 3e-bulle.jpg : 0,0 %
 - 3e-carte-nuit.jpg : 0,0 %
 - 3e-carte.jpg : 0,0 %
 - 3e-defi-belvedere.jpg : 0,0 %
-- 3e-defi-chateau.jpg : 0,0 %
 - 3e-defi-donnees.jpg : 0,0 %
 - 3e-defi-phare.jpg : 0,0 %
-- 3e-defi-refuge.jpg : 0,0 %
 - 3e-defi-svg.jpg : 0,0 %
+- 3e-defi-textes.jpg : 0,0 %
+- 3e-ecole-phare-390x844.jpg : 0,0 %
+- 3e-ecole-phare.jpg : 0,1 %
 - 3e-ile-nuit.jpg : 0,0 %
 - 3e-ile.jpg : 0,0 %
 - 4e-archipel-nuit.jpg : 0,0 %
-- 4e-archipel.jpg : 0,0 %
+- 4e-archipel.jpg : 0,1 %
 - 4e-bulle-svg.jpg : 0,0 %
 - 4e-bulle.jpg : 0,0 %
 - 4e-carte-nuit.jpg : 0,0 %
@@ -58,28 +59,33 @@ Références : main au commit 36f92c2b5f027e330f46146d418f1f7d92ce4f63 (après :
 - 4e-defi-forge.jpg : 0,0 %
 - 4e-defi-gare.jpg : 0,0 %
 - 4e-defi-svg.jpg : 0,0 %
+- 4e-ecole-atelier-390x844.jpg : 0,1 %
+- 4e-ecole-atelier.jpg : 0,1 %
 - 4e-ile-nuit.jpg : 0,0 %
 - 4e-ile.jpg : 0,0 %
-- 5e-archipel-nuit.jpg : 0,0 %
-- 5e-archipel.jpg : 0,0 %
+- 5e-archipel-nuit.jpg : 0,1 %
+- 5e-archipel.jpg : 0,1 %
 - 5e-bulle-svg.jpg : 0,0 %
 - 5e-bulle.jpg : 0,0 %
 - 5e-carte-nuit.jpg : 0,0 %
 - 5e-carte.jpg : 0,0 %
+- 5e-defi-comptoir.jpg : 0,0 %
 - 5e-defi-glacier.jpg : 0,0 %
+- 5e-defi-manoir.jpg : 0,0 %
 - 5e-defi-marais.jpg : 0,0 %
 - 5e-defi-marche.jpg : 0,0 %
-- 5e-defi-relais.jpg : 0,0 %
 - 5e-defi-svg.jpg : 0,0 %
+- 5e-ecole-marche-390x844.jpg : 0,1 %
+- 5e-ecole-marche.jpg : 0,1 %
 - 5e-ile-nuit.jpg : 0,0 %
 - 5e-ile.jpg : 0,0 %
 - 6e-archipel-nuit.jpg : 0,2 %
-- 6e-archipel.jpg : 0,2 %
 - 6e-bulle-svg.jpg : 0,0 %
 - 6e-bulle.jpg : 0,0 %
 - 6e-carte-nuit.jpg : 0,0 %
 - 6e-carte.jpg : 0,0 %
 - 6e-defi-baie.jpg : 0,0 %
+- 6e-defi-carriere.jpg : 0,0 %
 - 6e-defi-ferme.jpg : 0,0 %
 - 6e-defi-foret.jpg : 0,0 %
 - 6e-defi-plaine.jpg : 0,0 %
@@ -87,13 +93,15 @@ Références : main au commit 36f92c2b5f027e330f46146d418f1f7d92ce4f63 (après :
 - 6e-defi-svg.jpg : 0,3 %
 - 6e-defi-tour.jpg : 0,0 %
 - 6e-defi-volcan.jpg : 0,0 %
+- 6e-ecole-foret-390x844.jpg : 0,1 %
+- 6e-ecole-foret.jpg : 0,1 %
 - 6e-ile-nuit.jpg : 0,1 %
-- 6e-ile.jpg : 0,0 %
+- 6e-ile.jpg : 0,2 %
 - 6e-lieux-ecole-pres-nuit.jpg : 0,0 %
 - 6e-lieux-ecole-pres.jpg : 0,0 %
 - 6e-lieux-sans-trophee.jpg : 0,1 %
 
-## Sans référence (33) : dans `planches/` telles quelles
+## Sans référence (35) : dans `planches/` telles quelles
 
 - 3e-salle-24-phare-nuit.jpg
 - 3e-salle-24-phare.jpg
@@ -101,6 +109,7 @@ Références : main au commit 36f92c2b5f027e330f46146d418f1f7d92ce4f63 (après :
 - 4e-salle-24-atelier.jpg
 - 5e-salle-0-marche.jpg
 - 5e-salle-24-marche-nuit.jpg
+- 5e-salle-24-marche-pres.jpg
 - 5e-salle-24-marche.jpg
 - 6e-salle-0-loin-nuit.jpg
 - 6e-salle-0-loin.jpg
@@ -110,6 +119,7 @@ Références : main au commit 36f92c2b5f027e330f46146d418f1f7d92ce4f63 (après :
 - 6e-salle-12-loin.jpg
 - 6e-salle-12-nuit.jpg
 - 6e-salle-12.jpg
+- 6e-salle-13-390x844-od32.jpg
 - 6e-salle-13-loin-nuit.jpg
 - 6e-salle-13-loin.jpg
 - 6e-salle-13-nuit.jpg
