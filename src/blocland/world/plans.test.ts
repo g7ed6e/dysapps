@@ -1,6 +1,6 @@
 import { BLOC, BIOMES, BLOCKS } from '../biomes';
 import { EMPTY_STATE, fillPlanCell, nextFillable, planStatus, sanitizeState, type GameState } from '../engine';
-import { ORIGINE_DES_MONUMENTS, ORIGINE_DU_QUAI, PLANS, PLAN_ZONE, activePlan, isPlanDone, planCells, plansFor } from './plans';
+import { ORIGINE_DES_MONUMENTS, ORIGINE_DU_QUAI, PLANS, PLAN_ZONE, isPlanDone, planCells, plansFor } from './plans';
 import { toutConstruit } from './budget';
 import { dockOrigin } from './harbour';
 import { MONUMENTS } from './monuments';
@@ -106,10 +106,8 @@ it('n’affiche les fantômes que du plan en cours, et enchaîne sur le suivant'
   const [first, second] = plansFor('french-6e-phonology');
   const none = worldCubes('6e', {}, { parts: {}, log: [], links: [] });
   expect(none.filter((c) => c.ghost && c.z > 0 && c.tag === 'french-6e-phonology').length).toBe(planCells(first).length);
-  expect(activePlan('french-6e-phonology', {})).toBe(first);
   const doneFirst = { [first.id]: planCells(first).map((c) => c.key) };
   expect(isPlanDone(first, doneFirst)).toBe(true);
-  expect(activePlan('french-6e-phonology', doneFirst)).toBe(second);
   const after = worldCubes('6e', {}, { parts: doneFirst, log: [], links: [] });
   expect(after.filter((c) => c.ghost && c.z > 0 && c.tag === 'french-6e-phonology').length).toBe(planCells(second).length);
   expect(after.filter((c) => !c.ghost && c.texture === 'planches' && c.tag === 'french-6e-phonology' && c.z >= 1).length).toBeGreaterThanOrEqual(planCells(first).length);

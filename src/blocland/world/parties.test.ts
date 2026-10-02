@@ -29,12 +29,15 @@ it('donne une partie par mission, de 2 à 4, faite des cases des trois plans, sa
 
 it('coupe les murs en deux par la hauteur pour quatre missions, réunit le toit et la cour pour deux', () => {
   const [bas, haut, toit, cour] = partiesDe('maths-6e-calculation');
-  expect([bas.nom, haut.nom, toit.nom, cour.nom]).toEqual(['Le nid de Coco (le bas)', 'Le nid de Coco (le haut)', 'Le toit du nid', 'La cour du nid']);
+  expect([bas.nom, haut.nom, toit.nom, cour.nom]).toEqual(['Le bas du nid de Coco', 'Le haut du nid de Coco', 'Le toit du nid', 'La cour du nid']);
+  expect(partiesDe('french-6e-grammar-spelling')[0].nom).toBe('Le bas de l’étable de Bloquette');
+  expect(partiesDe('lv2-5e-introductions')[1].nom).toBe('Le haut de l’auberge de Lina');
   const z = (keys: string[]) => keys.map((k) => Number(k.split(',')[2]));
   expect(Math.max(...z(bas.cases[0].keys))).toBeLessThan(Math.min(...z(haut.cases[0].keys)));
   const mine = partiesDe('french-6e-letter-confusion');
   expect(mine).toHaveLength(2);
   expect(mine[1].cases.map((c) => c.plan.id)).toEqual(['french-6e-letter-confusion-2', 'french-6e-letter-confusion-3']);
+  expect(mine.map((p) => p.nom)).toEqual(['La forge de Tunel', 'Le toit et la cour de la forge']);
   expect(partiesDe('french-6e-phonology').map((p) => p.nom)).toEqual(['La cabane de Mousso', 'Le toit de la cabane', 'La cour de la cabane']);
 });
 
@@ -128,4 +131,18 @@ it('rattrape une ancienne sauvegarde : les parties des missions déjà terminée
   const encore = rattraperLesParties(r.state, '2026-10-03');
   expect(encore.state).toBe(r.state);
   expect(encore.plansFinis).toEqual([]);
+});
+
+it('le lieu de la LV2 a quatre parties, posées par les missions des deux langues ensemble, sans dépendre du réglage', () => {
+  const id = 'lv2-5e-introductions';
+  expect(partiesDe(id)).toHaveLength(4);
+  const types = BIOMES.find((b) => b.id === id)!.exercises;
+  const es = types.filter((t) => t.lv2 === 'es').map((t) => t.id);
+  const de = types.filter((t) => t.lv2 === 'de').map((t) => t.id);
+  const progress = { ...joue(premierExercice(id, es[0])), ...joue(premierExercice(id, es[1])), ...joue(premierExercice(id, de[0])) };
+  expect(missionsTerminees(progress, id)).toBe(3);
+  // Toutes les missions des deux langues : quatre parties, pas plus.
+  const tout = Object.assign({}, ...[...es, ...de].map((t) => joue(premierExercice(id, t))));
+  expect(missionsTerminees(tout, id)).toBe(8);
+  expect(poserLesParties(id, {}, missionsTerminees(tout, id)).posees).toHaveLength(4);
 });

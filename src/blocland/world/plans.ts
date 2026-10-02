@@ -354,8 +354,3 @@ export function planOrigin(plan: PlanDef): { x: number; y: number; z: number } {
 export function isPlanDone(plan: PlanDef, done: Record<string, string[]>): boolean {
   return (done[plan.id]?.length ?? 0) >= plan.cells.length;
 }
-
-/** Le plan en cours d'une île : le premier qui n'est pas terminé, ou `null` si tout est construit. */
-export function activePlan(biome: BiomeId, done: Record<string, string[]>): PlanDef | null {
-  return plansFor(biome).find((p) => !isPlanDone(p, done)) ?? null;
-}

@@ -104,8 +104,8 @@ Le fichier d’une île finit par ses plans, un tableau sous le titre `## Les pl
 **Les missions posent les plans** ([GD-6](../gameplay/propositions/GD-6.md)). Le bâtiment d’une île a une partie par mission. La première fois que l’élève termine une mission de l’île, quels que soient le niveau, les étoiles et les jokers, une partie se pose toute seule, sans prendre de blocs, dans l’ordre du dessin. Les parties sont faites des cases des trois plans, et leurs noms viennent des noms des plans :
 
 - **3 missions** : une partie par plan, du même nom ;
-- **2 missions** : le premier plan, puis les deux autres ensemble (« <plan 2> et <plan 3> », par exemple « Le toit de la forge et la cour de la forge ») ;
-- **4 missions** (la plupart des îles, et le lieu de la LV2, qui en a quatre par langue) : le premier plan coupé en deux par la hauteur (« <plan 1> (le bas) », puis « <plan 1> (le haut) »), puis les deux autres.
+- **2 missions** : le premier plan, puis les deux autres ensemble (« <plan 2> et <plan 3> », le complément commun dit une fois : « Le toit et la cour de la forge ») ;
+- **4 missions** (la plupart des îles, et le lieu de la LV2, qui en a quatre par langue) : le premier plan coupé en deux par la hauteur (« Le bas du four de Rouxel », puis « Le haut du four de Rouxel », l’article du nom du plan contracté), puis les deux autres.
 
 Un plan n’a pas de coffre : ses blocs de finition (toit, porte, lanterne, barrière, escalier) se posent avec sa partie. Le découpage est fait par le code (`src/blocland/world/parties.ts`) : rien à écrire ici de plus que les plans. Les parties de chaque île sont listées dans les pages générées du site (« Le bâtiment »).
 

@@ -16,9 +16,14 @@ interface Props {
   biome: BiomeDef;
   /** Dans le panneau 3D : la section est repliée (rien à y faire à la main ; la clé change avec l'île). */
   fold?: string;
-  /** Le bâtiment mis en avant (une ancienne adresse « Voir le chantier ») : section ouverte, centrée. */
+  /** Le bâtiment mis en avant (« Voir le bâtiment », au bilan d'une mission qui pose une partie) : section ouverte, centrée. */
   highlight?: boolean;
+  /** Sous un titre « Le bâtiment » (vue simple) : le seul nom du bâtiment. */
+  titreCourt?: boolean;
 }
+
+/** Un nom après deux-points : sa minuscule. */
+const enMinuscule = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
 
 /** « à gagner dans Forêt des sons » (un lien vers l'île), « ici, dans les missions », ou un coffre (`whereToEarn`). */
 export function EarnLink({ block, here }: { block: BlockId; here?: BiomeId }) {
@@ -51,7 +56,7 @@ export function batimentSummary(posees: number, total: number): string {
  * parties sont posées, le nom de la prochaine et comment la poser, ou que le bâtiment est fini ; puis le lien vers
  * « Mes blocs » et le journal du village. Rien ne s'y pose à la main. Même contenu dans le panneau 3D et en vue simple.
  */
-export function PlanSection({ biome, fold, highlight = false }: Props) {
+export function PlanSection({ biome, fold, highlight = false, titreCourt = false }: Props) {
   const { state } = useBlocland();
   const section = useRef<HTMLElement>(null);
   useEffect(() => {
@@ -65,7 +70,7 @@ export function PlanSection({ biome, fold, highlight = false }: Props) {
   const built = state.world.log.filter((e) => getPlan(e.part)?.biome === biome.id);
   const heading = (
     <h3 id={`plan-${biome.id}`} className="island-sheet-heading">
-      <Icon name="map" /> {total ? `Le bâtiment : ${plans[0].name}` : 'Aucun bâtiment sur cette île'}
+      <Icon name="map" /> {total ? (titreCourt ? plans[0].name : `Le bâtiment : ${enMinuscule(plans[0].name)}`) : 'Aucun bâtiment sur cette île'}
     </h3>
   );
   return (
@@ -90,11 +95,11 @@ export function PlanSection({ biome, fold, highlight = false }: Props) {
                   <strong>{posees}</strong> partie{posees > 1 ? 's' : ''} posée{posees > 1 ? 's' : ''} sur {total}
                 </p>
                 <p className="plan-next">
-                  Prochaine partie : <strong>{prochaine.nom}</strong>.
+                  Prochaine partie : <strong>{enMinuscule(prochaine.nom)}</strong>.
                 </p>
                 <p className="plan-how">
                   <Icon name="play" />{' '}
-                  <Syllabified text={posees ? 'Réussis une nouvelle mission de l’île pour la poser.' : 'Réussis une mission de l’île pour la poser.'} />
+                  <Syllabified text={posees ? 'Termine une mission de l’île que tu n’as pas encore faite pour la poser.' : 'Termine une mission de l’île pour la poser.'} />
                 </p>
               </>
             ) : (

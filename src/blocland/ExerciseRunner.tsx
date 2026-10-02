@@ -47,9 +47,15 @@ interface Props {
 /** Le carillon de fin (`playDone`) : deux notes, la seconde à 160 ms, de 450 ms ; la voix vient après. */
 const CARILLON_MS = 610;
 
-/** La phrase de la pose, écrite et lue : « La cabane de Mousso : posée ! », puis la réplique et l'XP de chaque plan fini. */
+/** Un nom après deux-points : sa minuscule (« Partie posée : le toit de la cabane »). */
+const enMinuscule = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
+
+/**
+ * La phrase de la pose, écrite et lue : « Partie posée : le toit de la cabane. », l'accord porté par « partie », quel que
+ * soit le nom ; puis la réplique et l'XP de chaque plan fini.
+ */
 function phraseDeLaPose(pose: NonNullable<Completion['pose']>): string {
-  return [...pose.posees.map((p) => `${p.nom} : posée !`), ...pose.plansFinis.map((p) => `${p.done} +${p.reward.xp} XP.`)].join(' ');
+  return [...pose.posees.map((p) => `Partie posée : ${enMinuscule(p.nom)}.`), ...pose.plansFinis.map((p) => `${p.done} +${p.reward.xp} XP.`)].join(' ');
 }
 
 /** Découpe les items en écrans selon le type d'exercice. */
@@ -169,7 +175,7 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
   useAnswerKeys(sectionRef);
   // Mode concentration pendant la partie ; « Quitter » ramène au panneau de l'île.
   const navigate = useNavigate();
-  useFocusMode(!done, () => navigate(`/adventure/${biome.id}`), 'L’XP des réponses déjà données est gardée ; les blocs se gagnent en finissant la partie.');
+  useFocusMode(!done, () => navigate(`/adventure/${biome.id}`), 'L’XP des réponses déjà données est gardée ; les blocs se gagnent en finissant la mission.');
 
   if (!type) {
     return <p className="intro">Ce type d’exercice ({def.type}) n’est pas encore disponible.</p>;
@@ -228,6 +234,7 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
         : null;
     // À quoi servent les blocs gagnés : le chantier qu'ils font avancer, et « Voir le chantier » qui y mène.
     const site = worksiteFor(done.state, biome.id, done.block);
+    const pose = done.pose;
     return (
       <section className="quiz" ref={sectionRef} aria-labelledby="fin-titre">
         <div className="panel summary reward-panel">
@@ -250,19 +257,20 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
               <Icon name="zap" size="1.6rem" />
               <strong>+{done.xp}</strong> XP{done.perfect ? ' (bonus sans aide)' : ''}
             </li>
-            {done.pose?.posees.map((partie, i, posees) => (
+            {pose?.posees.map((partie, i, posees) => (
               <li key={`pose-${partie.rang}`} className="reward-pose">
                 <Icon name="home" size="1.6rem" />
                 <span>
-                  <strong>{partie.nom} : posée !</strong>
+                  <strong>Partie posée : {enMinuscule(partie.nom)}.</strong>
                   {i === posees.length - 1 &&
-                    done.pose!.plansFinis.map((plan) => (
+                    pose.plansFinis.map((plan) => (
                       <span key={plan.id} className="reward-pose-fin">
                         {' '}
                         <Syllabified text={plan.done} /> <strong>+{plan.reward.xp}</strong> XP
                       </span>
                     ))}
                 </span>
+                {i === posees.length - 1 && <SpeakButton text={frenchTypography(phraseDeLaPose(pose))} label="Écouter" compact />}
               </li>
             ))}
             {done.chestBlock && (
@@ -311,7 +319,12 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
             />
           ) : (
             <div className="actions">
-              {site.kind === 'aucun' ? (
+              {pose ? (
+                // Une partie vient d'être posée : on va la voir, sur l'île de la mission (GD-6).
+                <Link ref={suiteRef} to={`/adventure/${biome.id}?worksite=part`} className="button primary">
+                  <Icon name="home" /> Voir le bâtiment
+                </Link>
+              ) : site.kind === 'aucun' ? (
                 <Link ref={suiteRef} to={`/adventure/${biome.id}`} className="button primary">
                   <Icon name="map" /> Revenir sur {biome.name}
                 </Link>

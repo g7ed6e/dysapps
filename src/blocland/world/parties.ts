@@ -6,8 +6,8 @@
  *
  * - 3 missions : une partie par plan.
  * - 2 missions : le premier plan, puis les deux autres ensemble.
- * - 4 missions (et le lieu de la LV2, qui en a quatre par langue) : le premier plan en deux, par la hauteur (le bas,
- *   puis le haut), puis les deux autres.
+ * - 4 missions (et le lieu de la LV2, qui en a quatre par langue) : le premier plan en deux, par la hauteur (« Le bas
+ *   du four de Rouxel », puis « Le haut… »), puis les deux autres.
  */
 import { BIOMES, type BiomeDef, type BiomeId } from '../biomes';
 import { isPlanDone, planCells, plansFor, type PlanDef } from './plans';
@@ -33,6 +33,28 @@ export function nombreDeParties(biome: Pick<BiomeDef, 'id' | 'exercises'>): numb
 }
 
 const minuscule = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
+
+/** « Le four de Rouxel » → « du four de Rouxel » : le complément de « le bas », « le haut » (l'article contracté). */
+function complement(nom: string): string {
+  const m = /^(Le|La|Les|L’|L')\s?(.*)$/.exec(nom);
+  if (!m) return `de ${nom}`;
+  const [, article, reste] = m;
+  if (article === 'Le') return `du ${reste}`;
+  if (article === 'Les') return `des ${reste}`;
+  if (article === 'La') return `de la ${reste}`;
+  return `de l’${reste}`;
+}
+
+/**
+ * Deux noms réunis (le lieu à deux missions) : « Le toit de la forge » et « La cour de la forge » donnent « Le toit et la
+ * cour de la forge » quand ils finissent par le même complément, sinon les deux noms entiers.
+ */
+function ensemble(a: string, b: string): string {
+  const fin = / (de la|du|de l’|de l'|des|de) .+$/;
+  const ca = fin.exec(a)?.[0];
+  if (ca && b.endsWith(ca)) return `${a.slice(0, -ca.length)} et ${minuscule(b.slice(0, -ca.length))}${ca}`;
+  return `${a} et ${minuscule(b)}`;
+}
 
 /** Le premier plan coupé en deux par la hauteur : les rangées du bas jusqu'à la moitié des cases au moins, puis le reste. */
 function enDeux(plan: PlanDef): [string[], string[]] {
@@ -70,15 +92,15 @@ export function partiesDe(id: BiomeId): Partie[] {
   if (n === 2) {
     parties = [
       { nom: plans[0].name, cases: [tout(plans[0])] },
-      { nom: `${plans[1].name} et ${minuscule(plans[2].name)}`, cases: [tout(plans[1]), tout(plans[2])] },
+      { nom: ensemble(plans[1].name, plans[2].name), cases: [tout(plans[1]), tout(plans[2])] },
     ];
   } else if (n === 3) {
     parties = plans.slice(0, 3).map((p) => ({ nom: p.name, cases: [tout(p)] }));
   } else if (n === 4) {
     const [bas, haut] = enDeux(plans[0]);
     parties = [
-      { nom: `${plans[0].name} (le bas)`, cases: [{ plan: plans[0], keys: bas }] },
-      { nom: `${plans[0].name} (le haut)`, cases: [{ plan: plans[0], keys: haut }] },
+      { nom: `Le bas ${complement(plans[0].name)}`, cases: [{ plan: plans[0], keys: bas }] },
+      { nom: `Le haut ${complement(plans[0].name)}`, cases: [{ plan: plans[0], keys: haut }] },
       { nom: plans[1].name, cases: [tout(plans[1])] },
       { nom: plans[2].name, cases: [tout(plans[2])] },
     ];

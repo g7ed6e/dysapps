@@ -207,7 +207,7 @@ export function BiomePage() {
             <Icon name="map" /> Le bâtiment
           </h2>
           <div className="panel plan-panel">
-            <PlanSection biome={biome} highlight={chantier === 'part'} />
+            <PlanSection biome={biome} highlight={chantier === 'part'} titreCourt />
           </div>
         </>
       )}

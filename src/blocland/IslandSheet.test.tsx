@@ -42,7 +42,7 @@ it('le panneau d’une île ouverte liste ses missions, son Gardien verrouillé 
   expect(screen.getAllByText('Nouveau').length).toBeGreaterThanOrEqual(3);
   expect(screen.getByText('Le Grand Chêne')).toBeInTheDocument();
   expect(screen.queryByRole('link', { name: /Le Grand Chêne/ })).not.toBeInTheDocument();
-  expect(screen.getByRole('heading', { name: /Le bâtiment : La cabane de Mousso/ })).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: /Le bâtiment : la cabane de Mousso/ })).toBeInTheDocument();
   // Le bâtiment se pose tout seul (GD-6) : aucun bouton pour poser ses blocs à la main.
   expect(screen.queryByRole('button', { name: /Poser le bloc suivant/ })).not.toBeInTheDocument();
   expect(screen.queryByRole('button', { name: /Poser tout ce que j’ai/ })).not.toBeInTheDocument();
@@ -104,8 +104,8 @@ it('le bâtiment dit en mots ses parties posées, le nom de la prochaine et comm
   renderSheet('french-6e-phonology');
   const section = document.querySelector('.plan-section')!;
   expect(section).toHaveTextContent('1 partie posée sur 3');
-  expect(section).toHaveTextContent('Prochaine partie : Le toit de la cabane.');
-  expect(section).toHaveTextContent('Réussis une nouvelle mission de l’île pour la poser.');
+  expect(section).toHaveTextContent('Prochaine partie : le toit de la cabane.');
+  expect(section).toHaveTextContent('Termine une mission de l’île que tu n’as pas encore faite pour la poser.');
   expect(section.textContent).not.toMatch(/manqu/);
   expect(screen.getByRole('progressbar', { name: /Le bâtiment La cabane de Mousso/ })).toHaveAttribute('aria-valuenow', '1');
   // Toutes les parties posées : le bâtiment est fini, la créature le dit.
@@ -119,8 +119,8 @@ it('le bâtiment dit en mots ses parties posées, le nom de la prochaine et comm
   cleanup();
   localStorage.removeItem('dysapps:game');
   renderSheet('french-6e-phonology');
-  expect(document.querySelector('.plan-section')).toHaveTextContent(`Prochaine partie : ${partiesDe('french-6e-phonology')[0].nom}.`);
-  expect(document.querySelector('.plan-section')).toHaveTextContent('Réussis une mission de l’île pour la poser.');
+  expect(document.querySelector('.plan-section')).toHaveTextContent('Prochaine partie : la cabane de Mousso.');
+  expect(document.querySelector('.plan-section')).toHaveTextContent('Termine une mission de l’île pour la poser.');
 });
 
 it('le port montre le chantier du Bloc-Navire : ses blocs, ses Gardiens, puis le bouton pour embarquer', async () => {

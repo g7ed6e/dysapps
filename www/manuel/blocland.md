@@ -78,15 +78,15 @@ La **croix** du panneau le replie sans quitter l’île : la caméra reste cadr�
 
 ## Les missions et les étoiles
 
-Chaque île propose deux à quatre **missions**. Une partie enchaîne les items d’un exercice (souvent huit, ou quatre écrans de quatre mots), un item à la fois :
+Chaque île propose deux à quatre **missions**. Une mission enchaîne les items d’un exercice (souvent huit, ou quatre écrans de quatre mots), un item à la fois :
 
-- la **consigne** est écrite au-dessus de l’item, en syllabes colorées si le réglage est activé, et lue à voix haute au début de la partie ; le bouton 🔊 « Consigne » la relit. Une mission qui lit elle-même son mot en s’ouvrant (dictée, écoute en anglais) ne lit pas la consigne par-dessus ;
+- la **consigne** est écrite au-dessus de l’item, en syllabes colorées si le réglage est activé, et lue à voix haute au début de la mission ; le bouton 🔊 « Consigne » la relit. Une mission qui lit elle-même son mot en s’ouvrant (dictée, écoute en anglais) ne lit pas la consigne par-dessus ;
 - l’élève répond en un geste : toucher un mot, un bloc, une réponse, valider un écran ; dans le Filon, un repère court, « Lettre à piocher : d », garde la lettre cible sous les yeux, juste au-dessus du bloc qui passe ;
 - **un deuxième essai**, comme dans les missions du portail : après une erreur, « Presque ! » s’affiche avec l’indice de l’item s’il en a un, la réponse déjà tentée est barrée, et l’on réessaie une fois. Ce n’est pas proposé quand il ne reste qu’une réponse possible (deux choix, ou le Filon : piocher ou laisser passer), ni au Gardien, qui est l’épreuve. Pour un tri (Chasse au son, Rimes-échelle, Enclos), tout l’écran se refait, sans dire quelles cartes sont fausses ;
 - la correction est immédiate et jamais punitive : la bonne réponse et une explication d’une ligne, dans un bandeau fixe en bas de l’écran. Le bandeau ne cache pas la question : l’écran défile juste ce qu’il faut pour garder au-dessus la consigne et la question, ou, si elles sont trop hautes (téléphone), au moins l’énoncé, la réponse touchée et la bonne réponse ;
 - dans un tri, la correction **nomme toutes les erreurs** : « Tu as oublié gant et éléphant : on y entend [an]. Dans pain, on entend [in], pas [an]. » Sur les cartes, un bon mot trouvé est vert avec une coche, un bon mot oublié est orangé avec « oublié », un intrus touché est orangé avec « pas [an] » (ou « ne rime pas »), un intrus bien laissé reste neutre ;
 - pendant la partie, l’écran est en [mode concentration](quetes.md#le-mode-concentration) : un bouton Pause, un menu pour reprendre, régler le texte ou la voix, ou quitter vers le panneau de l’île ;
-- l’écran de récompense donne le score, les étoiles, les blocs et l’XP, l’un après l’autre. La première fois qu’une mission de l’île est terminée, il dit aussi **la partie du bâtiment qu’elle vient de poser** (« La cabane de Mousso : posée ! »), écrite et lue à voix haute, avec la phrase de la créature et l’XP quand un plan est fini (voir [Le bâtiment de chaque île](#le-batiment-de-chaque-ile)). Puis il dit **à quoi servent les blocs gagnés** : le chantier qu’ils font avancer, avec sa jauge (« Le sentier vers Mine des lettres : tu peux le construire ! », « Le Bloc-Navire, la coque et la voile : … »). C’est d’abord le Bloc-Navire de l’île, puis l’ouvrage le moins cher qui en part, puis un autre chantier de l’archipel (le navire, un monument) ; sinon la phrase dit qu’aucun chantier ne les attend pour l’instant. Le bouton principal, **Voir le chantier**, ouvre l’île avec ce chantier mis en avant dans son panneau (en vue simple, sur la page de l’île) ; quand il n’y a pas de chantier, il devient **Revenir sur** l’île. Les succès gagnés pendant la partie (« Succès débloqué », « Niveau supérieur ! ») attendent cet écran : rien ne tombe sur la question pendant qu’on lit.
+- l’écran de récompense donne le score, les étoiles, les blocs et l’XP, l’un après l’autre. La première fois qu’une mission de l’île est terminée, il dit aussi **la partie du bâtiment qu’elle vient de poser** (« Partie posée : la cabane de Mousso. »), écrite, lue à voix haute et à réécouter avec le bouton 🔊, avec la phrase de la créature et l’XP quand un plan est fini (voir [Le bâtiment de chaque île](#le-batiment-de-chaque-ile)). Puis il dit **à quoi servent les blocs gagnés** : le chantier qu’ils font avancer, avec sa jauge (« Le sentier vers Mine des lettres : tu peux le construire ! », « Le Bloc-Navire, la coque et la voile : … »). C’est d’abord le Bloc-Navire de l’île, puis l’ouvrage le moins cher qui en part, puis un autre chantier de l’archipel (le navire, un monument) ; sinon la phrase dit qu’aucun chantier ne les attend pour l’instant. Le bouton principal, **Voir le chantier**, ouvre l’île avec ce chantier mis en avant dans son panneau (en vue simple, sur la page de l’île) ; quand il n’y a pas de chantier, il devient **Revenir sur** l’île. Quand la mission vient de poser une partie, il devient **Voir le bâtiment** : il ouvre l’île de la mission, la section du bâtiment mise en avant. Les succès gagnés pendant la partie (« Succès débloqué », « Niveau supérieur ! ») attendent cet écran : rien ne tombe sur la question pendant qu’on lit.
 
 Les **étoiles** : une pour avoir terminé, deux à partir de 70 % de réussite, trois à partir de 90 %. La meilleure est gardée. Le score compte un point par item trouvé du premier coup et un demi-point avec une aide ou au deuxième essai. Dans un tri refait, un mot déjà juste au premier essai garde son point entier.
 
@@ -96,7 +96,7 @@ Les items ratés reviennent à **J+1, J+3, J+7, J+15** (répétition espacée) e
 
 ## Les blocs
 
-Une mission réussie donne des **blocs** du type de l’île (bois dans la Forêt, pierre dans la Mine, brique dans la Plaine…), proportionnels au score et jamais zéro dès qu’une réponse est juste. Deux étoiles ajoutent un bloc, trois en ajoutent deux, et la **première partie** d’une mission en donne deux de plus. Une première mission réussie rapporte donc de cinq à sept blocs : de quoi construire un premier ouvrage. Elle pose aussi, sans prendre de blocs, une partie du bâtiment de l’île.
+Une mission réussie donne des **blocs** du type de l’île (bois dans la Forêt, pierre dans la Mine, brique dans la Plaine…), proportionnels au score et jamais zéro dès qu’une réponse est juste. Deux étoiles ajoutent un bloc, trois en ajoutent deux, et la première fois qu’on finit une mission, elle en donne deux de plus. Une première mission réussie rapporte donc de cinq à sept blocs : de quoi construire un premier ouvrage. Elle pose aussi, sans prendre de blocs, une partie du bâtiment de l’île.
 
 Les missions du portail, jouées depuis l’[école du village](#lecole-du-village) ou depuis la page Missions, donnent elles aussi des blocs, ceux de l’île de l’école.
 
@@ -134,7 +134,7 @@ Aux Îles du Ciel (3e), la LV2 finit au **Refuge des carnets**, par un pont depu
 | Ouvrage | Coût | Condition en plus |
 | --- | --- | --- |
 | Pont, bac, sentier de pierres de gué | des blocs | aucune |
-| Escalier taillé | des blocs | une mission de l’île de départ réussie (« Réussis d’abord une mission de … ») |
+| Escalier taillé | des blocs | une mission de l’île de départ réussie (« Réussis aussi une mission sur … ») |
 | Tunnel à lanternes, col à garde-fou | des blocs | le Gardien de l’île de départ vaincu |
 
 Un ouvrage constructible est dessiné en fantôme dans le monde ; le toucher ouvre sa proposition. Quand il manque une condition, le panneau l’explique sans pénalité. La construction fait la fête par la transformation : la caméra vole jusqu’à l’île qui s’ouvre, sa créature accueille. La liste complète des ouvrages et de leurs coûts est dans [Ouvrages et plans](../pedagogie/ouvrages.md).
@@ -145,11 +145,11 @@ Chaque île a **un bâtiment**, la maison de la créature (la cabane de Mousso, 
 
 Les parties se posent toujours dans le même ordre, celui du dessin, quelle que soit la mission jouée. Le dessin suit trois plans : d’abord **les murs** (le bloc de l’île, avec l’emplacement de la porte et des fenêtres), puis **le toit** (les tuiles, la porte, des fenêtres éclairées par des lanternes, une cheminée ou un sommet), puis **la cour** (une barrière avec son portillon, une lanterne sur chaque poteau du bout, une marche devant la porte, une jardinière). Les parties en viennent :
 
-- une île à **quatre missions** (la plupart) : le bas des murs, le haut des murs, puis le toit, puis la cour (« Le four de Rouxel (le bas) », « Le four de Rouxel (le haut) »…) ;
+- une île à **quatre missions** (la plupart) : le bas des murs, le haut des murs, puis le toit, puis la cour (« Le bas du four de Rouxel », « Le haut du four de Rouxel »…) ;
 - une île à **trois missions** : une partie par plan (les murs, le toit, la cour) ;
-- une île à **deux missions** (la Mine des lettres) : les murs, puis le toit et la cour ensemble (« Le toit de la forge et la cour de la forge »).
+- une île à **deux missions** (la Mine des lettres) : les murs, puis le toit et la cour ensemble (« Le toit et la cour de la forge »).
 
-Ce qui reste à poser est dessiné en **fantômes bleutés** dans le monde. Rien ne se pose à la main : toucher un fantôme du bâtiment ne fait rien.
+Ce qui reste à poser est dessiné en **fantômes bleutés** dans le monde. Rien ne se pose à la main : toucher un fantôme du bâtiment y fait marcher le bonhomme, comme sur le sol.
 
 ![La cabane de Mousso en cours : les murs posés en bois, le reste en fantômes bleutés.](/captures/plan-en-cours.jpg)
 
@@ -162,9 +162,9 @@ Chaque île a sa forme de bâtiment :
 - **une hutte** au toit en pointe (Rivière, Volcan, Marais, Falaise) ;
 - **un kiosque** à colonnes (Belvédère).
 
-- **Quand une partie se pose**, l’écran de récompense de la mission le dit, après le score : « La cabane de Mousso : posée ! ». La phrase est écrite et lue à voix haute, avec le son de pose. Quand la partie finit un plan, la créature dit sa phrase (lue à voix haute) et le plan rapporte son XP ; le premier bâtiment fini donne un succès. On retrouve ensuite la partie posée dans le monde.
-- **Le panneau de l’île** dit, dans la section **Le bâtiment**, combien de parties sont posées (« 2 parties posées sur 4 »), le nom de la prochaine, et qu’il suffit de réussir une mission de l’île pour la poser. Quand tout est posé, il dit « Fini ».
-- Le bâtiment ne donne **pas de coffre** : les blocs de finition (toit, porte, lanterne, barrière, escalier) font partie de la pose. Les coffres, l’or et le cristal déjà gagnés restent dans l’inventaire, en trophées.
+- **Quand une partie se pose**, l’écran de récompense de la mission le dit, après le score : « Partie posée : la cabane de Mousso. ». La phrase est écrite, lue à voix haute avec le son de pose, et se réécoute avec le bouton 🔊. Quand la partie finit un plan, la créature dit sa phrase (lue à voix haute) et le plan rapporte son XP ; le premier bâtiment fini donne un succès. Le bouton **Voir le bâtiment** mène ensuite à la partie posée, dans le monde.
+- **Le panneau de l’île** dit, dans la section **Le bâtiment**, combien de parties sont posées (« 2 parties posées sur 4 »), le nom de la prochaine, et qu’il suffit de terminer une mission de l’île pas encore faite pour la poser. Quand tout est posé, il dit « Fini ».
+- Le bâtiment ne donne **pas de coffre** : les blocs de finition (toit, porte, lanterne, barrière, escalier) font partie de la pose. Les blocs de finition, l’or et le cristal déjà gagnés restent dans l’inventaire, en trophées (« Un trophée à garder »).
 - **Une partie commencée avant** (quand on posait le bâtiment bloc par bloc) reste posée. À l’ouverture, chaque île reçoit les parties des missions déjà terminées, posées d’un coup, avec l’XP des plans qu’elles finissent.
 - **Les bâtiments ont été redessinés** (plus grands, avec fenêtres, toits à deux pans, cheminées). Un bâtiment déjà construit avec l’ancien dessin est construit avec le nouveau ; les blocs posés dans un plan commencé qui ne servent plus reviennent dans l’inventaire.
 - Le **journal du village** date chaque plan fini, rappelé dans le panneau de son île ; la page Succès compte les bâtiments.

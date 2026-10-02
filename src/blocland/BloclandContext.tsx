@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { gelerSauvegarde, loadJSON, removeKey, saveJSON } from '../core/storage';
+import { gelerSauvegarde, loadJSON, removeKey, saveJSON, trySaveJSON } from '../core/storage';
 import { useProgress } from '../core/ProgressContext';
 import { bacASable, remplir } from './batisseur';
 import {
@@ -85,9 +85,11 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
   const stateRef = useRef(state);
   const rattrapes = useRef(ouverture.plansFinis);
   useEffect(() => {
-    for (const plan of rattrapes.current) completePlan(plan.reward.xp);
+    // L'XP n'est donnée que si la sauvegarde rattrapée est bien écrite : sinon, le rattrapage refait à la prochaine
+    // ouverture la donnerait deux fois.
+    if (rattrapes.current.length && trySaveJSON(STORAGE_KEY, ouverture.state)) for (const plan of rattrapes.current) completePlan(plan.reward.xp);
     rattrapes.current = [];
-  }, [completePlan]);
+  }, [completePlan, ouverture.state]);
   const [sessionCount, setSessionCount] = useState(0);
   const sessionStart = useRef(Date.now());
   const [batisseur, setBatisseur] = useState(false);

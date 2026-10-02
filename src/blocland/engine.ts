@@ -5,7 +5,7 @@ import { BIOMES, BLOCKS, getBiome } from './biomes';
 import { starsFor } from '../core/stars';
 import { GAME_VERSION, translateGame } from '../core/migration';
 import type { ExerciseDef, ItemResult } from './exercises/types';
-import { activePlan, cellKey, getPlan, planCells, plansFor as PLANS_OF, type PlanDef } from './world/plans';
+import { cellKey, getPlan, planCells, type PlanDef } from './world/plans';
 import {
   archipelagoOf,
   bridgesFromLegacyProgress,
@@ -398,14 +398,6 @@ export function nextFillable(state: GameState, plan: PlanDef): { x: number; y: n
   const done = new Set(state.world.parts[plan.id] ?? []);
   const cell = planCells(plan).find((c) => !done.has(c.key) && (state.stock[c.block] ?? 0) > 0);
   return cell ? { x: cell.x, y: cell.y, z: cell.z } : null;
-}
-
-/** Le plan en cours d'une île (voir plans.ts), ou le dernier si tout est terminé. */
-export function currentPlan(state: GameState, island: BiomeId): { plan: PlanDef; allDone: boolean } | null {
-  const active = activePlan(island, state.world.parts);
-  if (active) return { plan: active, allDone: false };
-  const all = PLANS_OF(island);
-  return all.length ? { plan: all[all.length - 1], allDone: true } : null;
 }
 
 /** La cellule d'un plan à ces coordonnées, si elle existe (posée ou non). */
