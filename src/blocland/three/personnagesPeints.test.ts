@@ -9,7 +9,7 @@ import type { Instant, Monde } from './partie';
 import { creerPersonnages } from './personnages';
 import { materiauALueur } from './personnagesPeints';
 
-const { progress, village } = toutConstruit();
+const { progress, world: village } = toutConstruit();
 
 function monde(habillage: Habillage): Monde {
   return {
@@ -40,8 +40,8 @@ function dessines(scene: THREE.Scene): THREE.Mesh[] {
 }
 
 describe('Les personnages d’Archipéo dans la scène 3D', () => {
-  const creatures = creaturePlacements('6e', village.bridges);
-  const gardiens = guardianPlacements('6e', progress, village.bridges);
+  const creatures = creaturePlacements('6e', village.links);
+  const gardiens = guardianPlacements('6e', progress, village.links);
 
   it('un appel pour le bonhomme, un pour les créatures, un pour les Gardiens', async () => {
     const m = monde(HABILLAGES.archipeo);

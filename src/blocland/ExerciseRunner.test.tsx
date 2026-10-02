@@ -83,8 +83,8 @@ it('joue un exercice : consigne, feedback, étoiles, blocs, XP, puis étoiles su
   expect(document.querySelector('.reward-site')).toHaveTextContent(/La cabane de Mousso, sur Forêt des sons : 6 blocs sur les \d+ qui manquent\./);
   expect(screen.getByRole('link', { name: /Voir le chantier/ })).toHaveAttribute('href', '/aventure/foret?chantier=plan');
 
-  const saved = JSON.parse(localStorage.getItem('dysapps:blocland')!);
-  expect(saved.inventory.bois).toBe(6);
+  const saved = JSON.parse(localStorage.getItem('dysapps:game')!);
+  expect(saved.stock.bois).toBe(6);
   expect(saved.progress[DEF.id]).toMatchObject({ stars: 2, attempts: 1 });
   expect(saved.spaced).toHaveLength(1);
   expect(saved.spaced[0].itemId).toBe(`${DEF.id}:${items[1].key}`);
@@ -117,7 +117,7 @@ it('propose une pause après 3 exercices, et laisse continuer', async () => {
   expect(screen.getByRole('button', { name: /Rejouer/ })).toBeInTheDocument();
   // Le focus revient au bouton principal du bilan.
   expect(screen.getByRole('link', { name: /Revenir sur|Voir le chantier/ })).toHaveFocus();
-  expect(JSON.parse(localStorage.getItem('dysapps:blocland')!).progress[DEF.id].attempts).toBe(3);
+  expect(JSON.parse(localStorage.getItem('dysapps:game')!).progress[DEF.id].attempts).toBe(3);
 });
 
 it('deuxième essai : juste au second coup, le point compte moitié', async () => {
@@ -138,7 +138,7 @@ it('deuxième essai : juste au second coup, le point compte moitié', async () =
     await user.click(within(sheet).getByRole('button', { name: i < items.length - 1 ? /Suivant/ : /Voir mes blocs/ }));
   }
   // 5 points et demi sur 6, trois étoiles mais pas « sans faute ».
-  expect(JSON.parse(localStorage.getItem('dysapps:blocland')!).progress[DEF.id].best).toBeCloseTo(5.5 / 6);
+  expect(JSON.parse(localStorage.getItem('dysapps:game')!).progress[DEF.id].best).toBeCloseTo(5.5 / 6);
   expect(screen.queryByRole('heading', { name: 'Sans faute !' })).not.toBeInTheDocument();
 });
 
@@ -239,7 +239,7 @@ describe('lecture automatique', () => {
         enCours = u;
       },
     });
-    localStorage.setItem('dysapps:blocland', JSON.stringify({ types: { 'es-familia': { level: 2 } } }));
+    localStorage.setItem('dysapps:game', JSON.stringify({ types: { 'es-familia': { level: 2 } } }));
     const dictee = getExercise('relais-es-familia-2')!;
     renderAt('/aventure/relais/es-familia');
     await loaded();

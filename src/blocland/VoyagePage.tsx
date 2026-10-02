@@ -25,7 +25,7 @@ export function VoyagePage() {
   const { launchVoyage } = useProgress();
   const to = ARCHIPELAGOS.find((a) => a.classe === vers)?.classe as ArchipelagoId | undefined;
   if (!to) return <NotFoundPage />;
-  const back = isArchipelagoReached(to, state.village.bridges);
+  const back = isArchipelagoReached(to, state.world.links);
   const stage = stageTo(to);
   if (!back && (!stage || !canLaunch(state, stage).ok)) return <NotFoundPage />;
   const port = getArchipelago(to).port;

@@ -40,7 +40,7 @@ const loaded = () => waitFor(() => expect(screen.queryByText('Chargement…')).n
 /** Débloque les biomes suivants : une étoile dans chacun des biomes précédents. */
 function unlockAll() {
   localStorage.setItem(
-    'dysapps:blocland',
+    'dysapps:game',
     JSON.stringify({
       progress: {
         'foret-x': { stars: 1, attempts: 1, best: 1 },
@@ -74,19 +74,19 @@ describe('déblocage des biomes', () => {
   }, 20_000);
 
   it('ouvre la Mine quand on construit le pont avec ses blocs', async () => {
-    localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: { bois: 2, pierre: 2 } }));
+    localStorage.setItem('dysapps:game', JSON.stringify({ stock: { bois: 2, pierre: 2 } }));
     const user = userEvent.setup();
     renderAt('/aventure/mine');
     expect(screen.queryByRole('link', { name: /Filon/ })).not.toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: /Construire/ }));
     expect(document.body.textContent).toMatch(/Le sentier vers Forêt des sons est tracé/);
     expect(screen.getByRole('link', { name: /Filon/ })).toBeInTheDocument();
-    expect(JSON.parse(localStorage.getItem('dysapps:blocland')!).village.bridges).toEqual(['foret-mine']);
-    expect(JSON.parse(localStorage.getItem('dysapps:blocland')!).inventory).toEqual({ pierre: 1 });
+    expect(JSON.parse(localStorage.getItem('dysapps:game')!).world.links).toEqual(['foret-mine']);
+    expect(JSON.parse(localStorage.getItem('dysapps:game')!).stock).toEqual({ pierre: 1 });
   });
 
   it('une sauvegarde d’avant les ponts garde la Mine ouverte', () => {
-    localStorage.setItem('dysapps:blocland', JSON.stringify({ progress: { 'foret-chasse-son-an': { stars: 1, attempts: 1, best: 0.5 } } }));
+    localStorage.setItem('dysapps:game', JSON.stringify({ progress: { 'foret-chasse-son-an': { stars: 1, attempts: 1, best: 0.5 } } }));
     renderAt('/aventure/mine');
     expect(screen.getByRole('link', { name: /Filon/ })).toBeInTheDocument();
     expect(screen.queryByText(/Pas si vite/)).not.toBeInTheDocument();
@@ -236,10 +236,10 @@ it('ascension : un étage par paragraphe validé, temps comparé à soi-même', 
   expect(screen.getByText(/Première lecture/)).toBeInTheDocument();
   await user.click(within(sheet()).getByRole('button', { name: /Voir mes blocs/ }));
   expect(screen.getByRole('img', { name: '3 étoiles sur 3' })).toBeInTheDocument();
-  const saved = JSON.parse(localStorage.getItem('dysapps:blocland')!);
-  expect(saved.fluence[def.id]).toHaveLength(1);
+  const saved = JSON.parse(localStorage.getItem('dysapps:game')!);
+  expect(saved.fluency[def.id]).toHaveLength(1);
   // 4 blocs, +2 pour trois étoiles, +2 la première fois.
-  expect(saved.inventory.verre).toBe(8);
+  expect(saved.stock.verre).toBe(8);
 });
 
 it('enclos et récolte : la carte de règle du niveau s’affiche avec les sujets et la phrase ; sans aide, pas de carte', () => {

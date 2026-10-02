@@ -79,7 +79,7 @@ describe('Le toucher des pièces du lot 7b : toute la case, pour chaque forme', 
   });
 
   it('les toits d’une maison et d’une hutte du 6e (versant, faîte, croupe, arêtier), et une pointe : la case sous le point touché', () => {
-    const { progress, village } = toutConstruit();
+    const { progress, world: village } = toutConstruit();
     const tous = worldCubes('6e', progress, village, false).filter((c) => !c.sol);
     const batiments = batimentsDe('6e');
     const vues = new Set<string>();

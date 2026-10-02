@@ -36,12 +36,12 @@ type SubjectInfo = (typeof SUBJECTS)[Subject];
 /** Une matière telle qu'elle s'affiche : la LV2 prend le nom de la langue choisie (« Espagnol », « Allemand »). */
 export function subjectInfo(subject: Subject, lv2: Lv2Choice): SubjectInfo {
   const info = SUBJECTS[subject];
-  return subject === 'lv2' && lv2 !== 'aucune' ? { ...info, title: LV2_LABELS[lv2] } : info;
+  return subject === 'lv2' && lv2 !== 'none' ? { ...info, title: LV2_LABELS[lv2] } : info;
 }
 
 /** Les matières à montrer : sans LV2 choisie (« Pas de LV2 »), la LV2 n'apparaît nulle part. */
 export function visibleSubjects(lv2: Lv2Choice): Subject[] {
-  return (Object.keys(SUBJECTS) as Subject[]).filter((s) => s !== 'lv2' || lv2 !== 'aucune');
+  return (Object.keys(SUBJECTS) as Subject[]).filter((s) => s !== 'lv2' || lv2 !== 'none');
 }
 
 export const APPS: AppDef[] = [

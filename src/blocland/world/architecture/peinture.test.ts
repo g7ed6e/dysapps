@@ -87,7 +87,7 @@ describe('Les murs peints', () => {
   });
 
   it('dans tout le 6e construit, deux décharges ne se touchent jamais (ni sur une façade, ni autour d’un angle, ni d’un étage à l’autre)', () => {
-    const { progress, village } = toutConstruit();
+    const { progress, world: village } = toutConstruit();
     const archi = architectureDe('6e', worldCubes('6e', progress, village, false), { batiments: batimentsDe('6e') });
     // Les deux bouts de chaque décharge, dans le monde.
     const bouts: { id: string; p: [number, number, number] }[] = [];

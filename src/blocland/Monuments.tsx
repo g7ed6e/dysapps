@@ -31,7 +31,7 @@ export function monumentPath(m: MonumentDef): string {
 /** Le monument est-il ouvert (son archipel atteint) ? */
 export function useMonumentOpen(m: MonumentDef): boolean {
   const { state } = useBlocland();
-  return isArchipelagoReached(m.archipelago, state.village.bridges);
+  return isArchipelagoReached(m.archipelago, state.world.links);
 }
 
 /** Le contenu d'un monument : ce que c'est, son avancement, les blocs qu'il manque et où les gagner, les boutons. */
@@ -44,7 +44,7 @@ export function MonumentBody({ builder }: { builder: MonumentBuilder }) {
     .filter(([, n]) => n > 0)
     .sort(([a], [b]) => Number(Boolean(BLOCKS[b].assemble)) - Number(Boolean(BLOCKS[a].assemble)));
   // Plus rien à poser, et seules des cases de blocs assemblés attendent : la ligne dit d'aller les assembler.
-  const manquants = missing.filter(([b]) => (state.inventory[b] ?? 0) < 1);
+  const manquants = missing.filter(([b]) => (state.stock[b] ?? 0) < 1);
   const aAssembler = !builder.canFill && manquants.length > 0 && manquants.every(([b]) => BLOCKS[b].assemble) ? manquants[0] : undefined;
   const textes = useTextes();
   const lieu = textes.assemblage;
@@ -104,7 +104,7 @@ export function MonumentBody({ builder }: { builder: MonumentBuilder }) {
                 !builder.canFill && (
                   // « Poser » ne peut rien : ce qui manque se lit tout de suite, sans ouvrir la liste.
                   <p className="monument-lacking">
-                    <Icon name="blocks" /> <Syllabified text={lackingLine(missing, state.inventory)} />
+                    <Icon name="blocks" /> <Syllabified text={lackingLine(missing, state.stock)} />
                   </p>
                 )
               )}
@@ -112,7 +112,7 @@ export function MonumentBody({ builder }: { builder: MonumentBuilder }) {
                 <summary>Les blocs qu’il faut</summary>
                 <ul className="plan-missing" aria-label="Blocs qu’il manque">
                   {missing.map(([block, n]) => {
-                    const have = state.inventory[block] ?? 0;
+                    const have = state.stock[block] ?? 0;
                     return (
                       <li key={block}>
                         <BlockIcon top={BLOCKS[block].top} side={BLOCKS[block].side} size={28} />
@@ -218,7 +218,7 @@ export function MonumentsList() {
         <Syllabified text={INTRO} />
       </p>
       {ARCHIPELAGOS.map((a) => {
-        const reached = isArchipelagoReached(a.classe, state.village.bridges);
+        const reached = isArchipelagoReached(a.classe, state.world.links);
         return (
           <section key={a.classe} aria-labelledby={`monuments-${a.classe}`}>
             <h3 id={`monuments-${a.classe}`} className="island-sheet-heading">

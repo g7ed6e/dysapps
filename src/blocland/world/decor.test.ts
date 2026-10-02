@@ -10,7 +10,7 @@ import { decorPose, kindOf, propsOf } from './props';
 import { creaturePlacements, seaDecor, worldCubes } from './terrain';
 
 const parties = (a: ArchipelagoId) => {
-  const { progress, village } = toutConstruit();
+  const { progress, world: village } = toutConstruit();
   return [worldCubes(a, {}), worldCubes(a, progress, village, false)];
 };
 const bati = (c: VoxelCube) => Boolean(c.decor) && DECOR_BATI.has(kindOf(c.decor!));
@@ -50,7 +50,7 @@ it('nommer le décor bâti ne fait bouger aucun des quatre archipels : sol, pent
       const autres = (list: VoxelCube[]) => list.filter((c) => !c.sol).map((c) => [c.x, c.y, c.z]);
       expect(autres(poseDuDecor(p, cubes.filter((c) => !c.sol)))).toEqual(autres(poseDuDecor(q, avant.filter((c) => !c.sol))));
       // La marche du bonhomme et des créatures.
-      const creatures = creaturePlacements(a, toutConstruit().village.bridges);
+      const creatures = creaturePlacements(a, toutConstruit().world.links);
       expect([...walkGround(cubes, creatures).feet]).toEqual([...walkGround(avant, creatures).feet]);
       // La vue 2D : son sol vu de dessus et ses sprites.
       expect([...surfaceOf(cubes)]).toEqual([...surfaceOf(avant)]);

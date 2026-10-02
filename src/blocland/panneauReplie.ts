@@ -3,7 +3,7 @@
 // le temps de la page.
 import { getBiome, type BiomeId } from './biomes';
 
-const CLE = 'dysapps:panneau-replie';
+const CLE = 'dysapps:panel-folded';
 let enMemoire: BiomeId | null = null;
 
 /** L'île dont le panneau est replié, ou `null` si aucun ne l'est. */

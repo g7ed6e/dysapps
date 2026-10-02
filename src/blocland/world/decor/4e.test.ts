@@ -12,7 +12,7 @@ import { BORNES_DU_LOINTAIN } from './lointain';
 import { hex } from './pinceau';
 
 function ranger(muted = false) {
-  const { progress, village } = toutConstruit();
+  const { progress, world: village } = toutConstruit();
   const cubes = worldCubes('4e', progress, village, false).map((c) => (muted && !c.sol ? { ...c, muted: true } : c));
   const { elements, reste } = rangerLeDecor(cubes.filter((c) => !c.sol));
   const champ = champDuSol(
@@ -91,7 +91,7 @@ it('la grue est hors de la grille, sur la terre de l’Atelier, hors du cœur, d
 
 it('la grue garde sa case à toute étape de la partie, hors du cœur', () => {
   const g = monde.maillage.elements[indice('grue')];
-  const vierge = worldCubes('4e', {}, { plans: {}, journal: [], bridges: [] }, false);
+  const vierge = worldCubes('4e', {}, { parts: {}, log: [], links: [] }, false);
   const { elements, reste } = rangerLeDecor(vierge.filter((c) => !c.sol));
   const champ = champDuSol(
     '4e',

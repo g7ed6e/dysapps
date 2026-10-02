@@ -1,6 +1,6 @@
 import { BLOCKS } from '../biomes';
 import { islandDef } from './map';
-import { EMPTY_STATE, canLaunch, currentStage, fillPlanCell, launchVehicle, planStatus, sanitizeState, type BloclandState } from '../engine';
+import { EMPTY_STATE, canLaunch, currentStage, fillPlanCell, launchVehicle, planStatus, sanitizeState, type GameState } from '../engine';
 import { BADGES, EMPTY_PROGRESS, recordVoyage, sanitizeProgress } from '../../core/progress';
 import { ARCHIPELAGOS, islandsOf, voyageId } from './archipelago';
 import { VEHICLE_SIZE, dockOrigin } from './harbour';
@@ -77,15 +77,15 @@ it('le kit arrive avec les Gardiens ; on embarque quand toutes les cases sont po
   expect(canLaunch(EMPTY_STATE, coque)).toEqual({ ok: false, reason: 'blocs', missing: coque.cells.length });
   expect(currentStage(EMPTY_STATE)).toBe(coque);
   // On pose tout, bloc par bloc, avec de quoi payer ; la dernière case donne le coffre.
-  let state: BloclandState = { ...EMPTY_STATE, inventory: { sable: 40, bois: 40, galet: 20, pierre: 5 }, village: { ...EMPTY_STATE.village, bridges: ['foret-mine'] } };
+  let state: GameState = { ...EMPTY_STATE, stock: { sable: 40, bois: 40, galet: 20, pierre: 5 }, world: { ...EMPTY_STATE.world, links: ['foret-mine'] } };
   for (const c of planCells(coque)) {
     const r = fillPlanCell(state, coque, c.x, c.y, c.z, '2026-09-26');
     expect(r.ok, c.key).toBe(true);
     if (r.ok) state = r.state;
   }
   expect(planStatus(state, coque).complete).toBe(true);
-  expect(state.inventory.lanterne).toBe(coque.reward.chest.lanterne);
-  expect(state.village.journal).toEqual([{ day: '2026-09-26', plan: coque.id }]);
+  expect(state.stock.lanterne).toBe(coque.reward.chest.lanterne);
+  expect(state.world.log).toEqual([{ day: '2026-09-26', part: coque.id }]);
   // Sans Gardiens : on attend.
   expect(canLaunch(state, coque)).toEqual({ ok: false, reason: 'gardiens', missing: 3 });
   state = { ...state, progress: guardians(['foret', 'plaine']) };
@@ -94,24 +94,24 @@ it('le kit arrive avec les Gardiens ; on embarque quand toutes les cases sont po
   state = { ...state, progress: guardians(['foret', 'plaine', 'mine']) };
   const gone = launchVehicle(state, coque);
   expect(gone.result).toEqual({ ok: true, to: 'marche' });
-  expect(gone.state.village.bridges).toContain('voyage-5e');
-  expect(gone.state.village.at).toBe('marche');
-  expect(vehicleAt(gone.state.village.bridges)).toBe('marche');
+  expect(gone.state.world.links).toContain('voyage-5e');
+  expect(gone.state.world.place).toBe('marche');
+  expect(vehicleAt(gone.state.world.links)).toBe('marche');
   expect(currentStage(gone.state)).toBe(VEHICLE_STAGES[1]);
   // Une deuxième fois : déjà fait. Le ballon depuis les Premiers Rivages seulement : trop loin.
   expect(launchVehicle(gone.state, coque).result).toEqual({ ok: false, reason: 'construit', missing: 0 });
   expect(canLaunch(EMPTY_STATE, VEHICLE_STAGES[1])).toEqual({ ok: false, reason: 'loin', missing: 0 });
   // Relu depuis la sauvegarde : rien ne bouge.
   const saved = sanitizeState(JSON.parse(JSON.stringify(gone.state)));
-  expect(saved.village.bridges).toEqual(gone.state.village.bridges);
-  expect(saved.village.at).toBe('marche');
-  expect(saved.village.plans[coque.id]).toHaveLength(coque.cells.length);
+  expect(saved.world.links).toEqual(gone.state.world.links);
+  expect(saved.world.place).toBe('marche');
+  expect(saved.world.parts[coque.id]).toHaveLength(coque.cells.length);
 });
 
 it('un voyage compte pour les succès : Capitaine, Aéronaute, Pilote du ciel', () => {
-  expect(sanitizeProgress({}).voyages).toBe(0);
+  expect(sanitizeProgress({}).passages).toBe(0);
   const first = recordVoyage(EMPTY_PROGRESS, 120);
-  expect(first.progress.voyages).toBe(1);
+  expect(first.progress.passages).toBe(1);
   expect(first.progress.xp).toBe(120);
   expect(first.newBadges.map((b) => b.id)).toContain('capitaine');
   const second = recordVoyage(first.progress, 160);

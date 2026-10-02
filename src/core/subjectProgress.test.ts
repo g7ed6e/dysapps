@@ -1,5 +1,5 @@
 import { biomesOf, type BiomeId } from '../blocland/biomes';
-import { EMPTY_STATE, type BloclandState } from '../blocland/engine';
+import { EMPTY_STATE, type GameState } from '../blocland/engine';
 import { exercisesOf } from '../blocland/exercises';
 import { REWORK_SHOWN, subjectProgress } from './subjectProgress';
 
@@ -7,10 +7,10 @@ import { REWORK_SHOWN, subjectProgress } from './subjectProgress';
 const played = (biome: BiomeId, type: string, stars: 0 | 1 | 2 | 3, best: number) => ({
   [exercisesOf(biome, type)[0].id]: { stars, attempts: 1, best },
 });
-const blocland = (progress: BloclandState['progress'], bridges: string[] = []): BloclandState => ({
+const blocland = (progress: GameState['progress'], bridges: string[] = []): GameState => ({
   ...EMPTY_STATE,
   progress,
-  village: { ...EMPTY_STATE.village, bridges },
+  world: { ...EMPTY_STATE.world, links: bridges },
 });
 const app = (bestScore: number) => ({ sessions: 1, bestScore, lastPlayed: null });
 

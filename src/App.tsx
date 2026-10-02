@@ -75,7 +75,7 @@ export function AppRoutes() {
 function StartEntry() {
   const { settings } = useSettings();
   const immersive = useImmersive();
-  return settings.startIn === 'village' && immersive ? <Navigate to="/aventure" replace /> : <HomePage />;
+  return settings.startIn === 'world' && immersive ? <Navigate to="/aventure" replace /> : <HomePage />;
 }
 
 // En 3D, la carte et les îles sont le monde en plein écran ; sinon, les pages simples (listes accessibles).

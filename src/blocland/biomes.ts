@@ -7,7 +7,7 @@ import { nomAssemble } from './world/assemblage';
 import { ILES } from './iles';
 
 /** Une deuxième langue vivante (pas « Pas de LV2 »). */
-export type Lv2 = Exclude<Lv2Choice, 'aucune'>;
+export type Lv2 = Exclude<Lv2Choice, 'none'>;
 
 /** Les identifiants des îles (ceux de docs/contenu/archipel.md, dans le même ordre ; vérifié par biomes.test.ts). */
 export const BIOME_IDS = [

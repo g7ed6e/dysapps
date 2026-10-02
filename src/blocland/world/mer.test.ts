@@ -31,7 +31,7 @@ const contraste = (a: number, b: number) => {
 };
 
 const reel = (a: ArchipelagoId) => {
-  const { progress, village } = toutConstruit();
+  const { progress, world: village } = toutConstruit();
   const cubes = worldCubes(a, progress, village, false);
   const autres = cubes.filter((c) => !c.sol);
   const champ = champDuSol(

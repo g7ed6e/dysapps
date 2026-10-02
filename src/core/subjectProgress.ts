@@ -3,7 +3,7 @@
 import { appsBySubject, bestScore, type Subject } from '../apps/registry';
 import { biomesOf, missionsJouables } from '../blocland/biomes';
 import { isBossBeaten } from '../blocland/bossCore';
-import { levelFor, type BloclandState } from '../blocland/engine';
+import { levelFor, type GameState } from '../blocland/engine';
 import { pickExercise, questProgress } from '../blocland/exercises';
 import { isBiomeUnlocked } from '../blocland/world/archipelago';
 import type { AppStats } from './progress';
@@ -32,11 +32,11 @@ export interface SubjectProgress {
 export function subjectProgress(
   subject: Subject,
   apps: Record<string, AppStats>,
-  blocland: BloclandState,
+  blocland: GameState,
 ): SubjectProgress {
   const biomes = biomesOf(subject);
   const { progress } = blocland;
-  const bridges = blocland.village.bridges;
+  const bridges = blocland.world.links;
   let earned = 0;
   let max = 0;
   const rework: ReworkItem[] = [];

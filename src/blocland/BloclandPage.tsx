@@ -40,7 +40,7 @@ import { UNIVERS } from '../core/univers';
 /** Ce qu'il faut pour rejoindre un archipel fermé, en une phrase. */
 function lockedArchipelagoText(state: ReturnType<typeof useBlocland>['state'], classe: (typeof ARCHIPELAGOS)[number]['classe']): string {
   const port = ARCHIPELAGOS.find((a) => a.classe === classe)!.port;
-  const left = remainingVoyages(port, state.village.bridges);
+  const left = remainingVoyages(port, state.world.links);
   const first = stageTo(left[0].toClasse)!;
   const shipyard = getBiome(first.biome)?.name ?? first.biome;
   if (left.length === 1) return `Archipel fermé. Pour y aller, il faut ${VEHICLE_NAME} avec ${first.short} : construis-le au port, sur ${shipyard}.`;
@@ -52,7 +52,7 @@ function lockedArchipelagoText(state: ReturnType<typeof useBlocland>['state'], c
 export function BloclandPage() {
   const univers = useUnivers();
   const { state } = useBlocland();
-  const at = state.village.at ?? 'foret';
+  const at = state.world.place ?? 'foret';
   const here = archipelagoOf(at).classe;
   const textes = useTextes();
   const destination = nextDestination(state, textes.archipels, textes.libelles);
@@ -110,10 +110,10 @@ export function BloclandPage() {
           </span>
         </p>
       </section>
-      <ArchipelagoMap bridges={state.village.bridges} here={here} />
+      <ArchipelagoMap bridges={state.world.links} here={here} />
 
       {ARCHIPELAGOS.map((a) => {
-        const reached = isArchipelagoReached(a.classe, state.village.bridges);
+        const reached = isArchipelagoReached(a.classe, state.world.links);
         const stage = stageAt(a.port);
         const status = stage && reached ? planStatus(state, stage) : null;
         return (
@@ -122,7 +122,7 @@ export function BloclandPage() {
               <Icon name="map" /> {archipelagoTitle(a.classe, textes.archipels)}{' '}
               <span className={`tag${a.classe === here ? ' tag-new' : reached ? ' tag-ok' : ''}`}>{a.classe === here ? 'Tu es ici' : reached ? 'Ouvert' : 'Dans la brume'}</span>
             </h2>
-            {reached && <VillageStageLine village={state.village} archipelago={a.classe} className="section-intro" />}
+            {reached && <VillageStageLine village={state.world} archipelago={a.classe} className="section-intro" />}
             {!reached && (
               <p className="section-intro">
                 <Syllabified text={lockedArchipelagoText(state, a.classe)} />
@@ -131,9 +131,9 @@ export function BloclandPage() {
             <ol className="biome-map">
               {islandsOf(a.classe).map((biome) => {
                 const block = BLOCKS[biome.block];
-                const unlocked = isBiomeUnlocked(biome.id, state.village.bridges);
-                const bridge = unlocked || !reached ? undefined : buildableBridges(state.village.bridges, biome.id, undefined, settings.lv2)[0];
-                const owned = state.inventory[biome.block] ?? 0;
+                const unlocked = isBiomeUnlocked(biome.id, state.world.links);
+                const bridge = unlocked || !reached ? undefined : buildableBridges(state.world.links, biome.id, undefined, settings.lv2)[0];
+                const owned = state.stock[biome.block] ?? 0;
                 const st = islandState(state, biome.id);
                 return (
                   <li key={biome.id}>

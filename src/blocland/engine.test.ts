@@ -115,7 +115,7 @@ describe('completeExercise', () => {
     expect(c.bonus).toEqual({ stars: 1, first: 2 });
     expect(c.xp).toBe(10);
     expect(c.perfect).toBe(false);
-    expect(c.state.inventory.bois).toBe(6);
+    expect(c.state.stock.bois).toBe(6);
     expect(c.state.progress[DEF.id]).toEqual({ stars: 2, attempts: 1, best: 0.75 });
     expect(c.state.spaced.map((s) => s.itemId)).toEqual(['foret-test-001:d']);
 
@@ -155,19 +155,19 @@ describe('completeExercise', () => {
     expect(c.chestBlock).toBe('bois');
     expect(c.state.chests).toBe(1);
     // 4 blocs par exercice sans faute (1 item juste = score 1) +2 pour trois étoiles, +2 la première fois, plus le coffre de 6.
-    expect(c.state.inventory.bois).toBe(4 + 2 + 2 + (4 + 2) + (4 + 2) + 6);
+    expect(c.state.stock.bois).toBe(4 + 2 + 2 + (4 + 2) + (4 + 2) + 6);
   });
 });
 
 it('sanitizeState répare des données corrompues', () => {
   const s = sanitizeState({
     progress: { x: { stars: 9, attempts: -1, best: 2 } },
-    inventory: { bois: '3', faux: 5 },
+    stock: { bois: '3', faux: 5 },
     spaced: [{ itemId: 'a' }, 'rien'],
     streak: null,
   });
   expect(s.progress.x).toEqual({ stars: 3, attempts: 0, best: 1 });
-  expect(s.inventory).toEqual({ bois: 3 });
+  expect(s.stock).toEqual({ bois: 3 });
   expect(s.spaced).toEqual([]);
   expect(s.streak).toEqual(EMPTY_STATE.streak);
   expect(sanitizeState(undefined)).toEqual(EMPTY_STATE);
@@ -190,17 +190,17 @@ it('sanitizeState rend à l’inventaire les blocs de l’ancien chantier et de 
       },
     },
   });
-  expect(s.inventory).toEqual({ bois: 3, pierre: 1 });
-  expect(s.village).toEqual({ plans: {}, journal: [], bridges: [] });
+  expect(s.stock).toEqual({ bois: 3, pierre: 1 });
+  expect(s.world).toEqual({ parts: {}, log: [], links: [] });
 });
 
 it('le bonhomme se souvient de son île, seulement si elle est ouverte', () => {
-  expect(sanitizeState({ village: { at: 'foret' } }).village.at).toBe('foret');
-  expect(sanitizeState({ village: { at: 'mine' } }).village.at).toBeUndefined();
-  expect(sanitizeState({ village: { at: 'mine', bridges: ['foret-mine'] } }).village.at).toBe('mine');
-  expect(sanitizeState({ village: { at: 'nulle-part' } }).village.at).toBeUndefined();
+  expect(sanitizeState({ world: { place: 'foret' } }).world.place).toBe('foret');
+  expect(sanitizeState({ world: { place: 'mine' } }).world.place).toBeUndefined();
+  expect(sanitizeState({ world: { place: 'mine', links: ['foret-mine'] } }).world.place).toBe('mine');
+  expect(sanitizeState({ world: { place: 'nulle-part' } }).world.place).toBeUndefined();
   const moved = moveAvatar(EMPTY_STATE, 'plaine');
-  expect(moved.village.at).toBe('plaine');
+  expect(moved.world.place).toBe('plaine');
   expect(moveAvatar(moved, 'mine')).toBe(moved);
   expect(moveAvatar(moved, 'plaine')).toBe(moved);
 });
@@ -209,7 +209,7 @@ it('une mission du portail (l’école du village) rapporte des blocs de l’îl
   // Toute juste la première fois : 4 blocs, +2 pour trois étoiles, +2 la première fois ; le streak démarre.
   const first = completePortalQuest(EMPTY_STATE, 1, true, '2026-09-27');
   expect(first).toMatchObject({ school: 'foret', block: 'bois', blocks: 8, bonus: { stars: 2, first: 2 } });
-  expect(first.state.inventory.bois).toBe(8);
+  expect(first.state.stock.bois).toBe(8);
   expect(first.state.streak.current).toBe(1);
   // À moitié : 2 blocs, rien en plus ; aucune bonne réponse : rien.
   expect(completePortalQuest(EMPTY_STATE, 0.5, false, '2026-09-27').blocks).toBe(2);
@@ -217,7 +217,7 @@ it('une mission du portail (l’école du village) rapporte des blocs de l’îl
   // Les étoiles et les Gardiens ne bougent pas.
   expect(first.state.progress).toEqual({});
   // Dans les Îles Brumeuses, l'école est au Marché : des blocs de toile.
-  const away = { ...EMPTY_STATE, village: { ...EMPTY_STATE.village, bridges: ['voyage-5e'], at: 'marche' as const } };
+  const away = { ...EMPTY_STATE, world: { ...EMPTY_STATE.world, links: ['voyage-5e'], place: 'marche' as const } };
   expect(completePortalQuest(away, 1, false, '2026-09-27')).toMatchObject({ school: 'marche', block: 'toile', blocks: 6 });
 });
 
@@ -228,11 +228,11 @@ describe('les sauvegardes d’avant le nouveau dessin des bâtiments', () => {
     const old = planV1('foret-cabane')!;
     const state = sanitizeState({ village: { plans: { 'foret-cabane': [...old.blocks.keys()] } }, inventory: { toit: 9, lanterne: 1, porte: 1 } });
     const cabane = getPlan('foret-cabane')!;
-    expect(state.village.plans['foret-cabane']).toEqual(planCells(cabane).map((c) => c.key));
+    expect(state.world.parts['foret-cabane']).toEqual(planCells(cabane).map((c) => c.key));
     // Le coffre d'avant donnait 9 toits et 1 lanterne ; le nouveau en donne 18 et 3 : la différence arrive.
-    expect(state.inventory.toit).toBe(9 + (cabane.reward.chest.toit ?? 0) - 9);
-    expect(state.inventory.lanterne).toBe(1 + (cabane.reward.chest.lanterne ?? 0) - 1);
-    expect(state.inventory.porte).toBe(1);
+    expect(state.stock.toit).toBe(9 + (cabane.reward.chest.toit ?? 0) - 9);
+    expect(state.stock.lanterne).toBe(1 + (cabane.reward.chest.lanterne ?? 0) - 1);
+    expect(state.stock.porte).toBe(1);
   });
 
   it('un plan commencé avec l’ancien dessin garde ses cases encore valables et rend les autres blocs', async () => {
@@ -242,17 +242,17 @@ describe('les sauvegardes d’avant le nouveau dessin des bâtiments', () => {
     const valid = new Set(planCells(getPlan('foret-cabane')!).map((c) => c.key));
     const state = sanitizeState({ village: { plans: { 'foret-cabane': oldKeys } } });
     const kept = oldKeys.filter((k) => valid.has(k));
-    expect(state.village.plans['foret-cabane'] ?? []).toEqual(kept);
-    expect(state.inventory.bois ?? 0).toBe(oldKeys.length - kept.length);
+    expect(state.world.parts['foret-cabane'] ?? []).toEqual(kept);
+    expect(state.stock.bois ?? 0).toBe(oldKeys.length - kept.length);
   });
 
   it('une sauvegarde du nouveau dessin ne change pas', async () => {
     const { getPlan, planCells } = await import('./world/plans');
     const keys = planCells(getPlan('foret-cabane')!).map((c) => c.key);
-    const partial = sanitizeState({ village: { plans: { 'foret-cabane': keys.slice(0, 20) } }, inventory: { bois: 3 } });
-    expect(partial.village.plans['foret-cabane']).toEqual(keys.slice(0, 20));
-    expect(partial.inventory).toEqual({ bois: 3 });
-    const done = sanitizeState({ village: { plans: { 'foret-cabane': keys } } });
-    expect(done.inventory).toEqual({});
+    const partial = sanitizeState({ world: { parts: { 'foret-cabane': keys.slice(0, 20) } }, stock: { bois: 3 } });
+    expect(partial.world.parts['foret-cabane']).toEqual(keys.slice(0, 20));
+    expect(partial.stock).toEqual({ bois: 3 });
+    const done = sanitizeState({ world: { parts: { 'foret-cabane': keys } } });
+    expect(done.stock).toEqual({});
   });
 });

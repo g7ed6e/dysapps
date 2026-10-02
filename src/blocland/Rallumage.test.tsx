@@ -41,7 +41,7 @@ describe('useRallumage quand rien ne s’écrit sur l’appareil', () => {
   });
 
   it('un Gardien vu ne revient pas : son moment ne tourne pas en boucle', () => {
-    saveJSON('rallumage', {});
+    saveJSON('guardians-seen', {});
     gelerSauvegarde();
     const { progress } = bacASable(EMPTY_STATE);
     const { result } = renderHook(() => useRallumage(progress, '6e', true));

@@ -17,7 +17,7 @@ import { dessinerLointain, type RangDeCretes } from './lointain';
 import { Pinceau } from './pinceau';
 import { PHARE, PHARES } from './phare';
 
-const { progress, village } = toutConstruit();
+const { progress, world: village } = toutConstruit();
 const cubes = worldCubes('3e', progress, village, false);
 const sol = cubes.filter((c) => c.sol);
 const { elements, reste } = rangerLeDecor(cubes.filter((c) => !c.sol));

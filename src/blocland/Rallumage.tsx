@@ -14,7 +14,7 @@ import { getBiome, guardianTitle, type BiomeId } from './biomes';
 import type { ArchipelagoId } from './world/archipelago';
 import { aRallumer, gardiensRallumes, vusSansMoment, type RallumagesVus } from './world/rallumage';
 
-const STORAGE_KEY = 'rallumage';
+const STORAGE_KEY = 'guardians-seen';
 
 /**
  * Ce que l'appareil a vu depuis le chargement de la page. Quand rien ne s'écrit (sauvegarde gelée, navigation privée,

@@ -24,8 +24,8 @@ interface Props {
 export function ArchipelsSheet({ onClose, onGo }: Props) {
   const { state } = useBlocland();
   const textes = useTextes();
-  const bridges = state.village.bridges;
-  const here = archipelagoOf(state.village.at ?? 'foret').classe;
+  const bridges = state.world.links;
+  const here = archipelagoOf(state.world.place ?? 'foret').classe;
   const open = reachableIslands(bridges);
   const level = launchedCount(bridges);
   return (
@@ -72,7 +72,7 @@ export function ArchipelsSheet({ onClose, onGo }: Props) {
               <p className="archipel-card-line">
                 {islands.length} îles · {opened} ouverte{opened > 1 ? 's' : ''} · {textes.libelles.faitsSur(guardians, islands.length)}
               </p>
-              {reached && <VillageStageLine village={state.village} archipelago={a.classe} className="archipel-card-line" />}
+              {reached && <VillageStageLine village={state.world} archipelago={a.classe} className="archipel-card-line" />}
               {a.classe === here && <VoxelScene cubes={vehicleModel(level)} s={5} pad={4} className="archipel-ship" label={`${VEHICLE_NAME}, amarré ici`} />}
               {need && (
                 <p className="archipel-card-need">

@@ -68,7 +68,7 @@
   /* Une seule ombre, douce, pour un panneau posé sur le monde. */
   --shadow-float: 0 2px 8px rgba(19, 40, 61, 0.18);
 }
-:root[data-theme="nuit"] {
+:root[data-theme="night"] {
   --bg: #0e1f2e;
   --surface: #16304a;
   --text: #f3eee3;
@@ -94,7 +94,7 @@
   color-scheme: dark;
 }
 /* Thème Clair : le Crème sans teinte, plat (aucune ombre). */
-:root[data-theme="clair"] {
+:root[data-theme="light"] {
   --bg: #f4f6f7;
   --surface: #ffffff;
   --topbar-bg: #ffffff;
@@ -1410,17 +1410,17 @@ button.app-card:active {
   font-family: Verdana, Arial, sans-serif;
 }
 /* Chaque pastille de thème montre les couleurs de son thème, quel que soit le thème en cours. */
-.theme-swatch.theme-creme {
+.theme-swatch.theme-cream {
   background: #f3eee3;
   color: #13283d;
   border-color: #566e7d;
 }
-.theme-swatch.theme-nuit {
+.theme-swatch.theme-night {
   background: #16304a;
   color: #f3eee3;
   border-color: #7f9bb0;
 }
-.theme-swatch.theme-clair {
+.theme-swatch.theme-light {
   background: #ffffff;
   color: #13283d;
   border-color: #566e7d;
@@ -1634,11 +1634,11 @@ button.app-card:active {
 .number-line .jump-label {
   fill: var(--violet);
 }
-:root[data-theme="nuit"] .number-line .jump-label,
-:root[data-theme="nuit"] .number-line path {
+:root[data-theme="night"] .number-line .jump-label,
+:root[data-theme="night"] .number-line path {
   fill: var(--yellow);
 }
-:root[data-theme="nuit"] .number-line path {
+:root[data-theme="night"] .number-line path {
   fill: none;
   stroke: var(--yellow);
 }
@@ -4556,10 +4556,10 @@ button.island-quest:active {
   stroke: var(--ink);
   stroke-width: 1.5;
 }
-:root[data-theme="nuit"] .graph .graph-line {
+:root[data-theme="night"] .graph .graph-line {
   stroke: var(--yellow);
 }
-:root[data-theme="nuit"] .graph .graph-point {
+:root[data-theme="night"] .graph .graph-point {
   fill: var(--yellow);
 }
 .graph figcaption {

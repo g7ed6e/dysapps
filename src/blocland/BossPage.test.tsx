@@ -48,11 +48,11 @@ it('sans les étoiles, le Gardien refuse et renvoie aux missions', async () => {
 });
 
 it('avec les étoiles, le défi démarre : première épreuve avec l’écran de sa mission', async () => {
-  localStorage.setItem('dysapps:blocland', JSON.stringify({ progress: ready('foret') }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ progress: ready('foret') }));
   renderAt('/aventure/foret');
   expect(screen.getByRole('link', { name: /Le Grand Chêne/ })).toBeInTheDocument();
   expect(screen.getByText(/Prêt à t’affronter/)).toBeInTheDocument();
-  localStorage.setItem('dysapps:blocland', JSON.stringify({ progress: ready('foret') }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ progress: ready('foret') }));
   renderAt('/aventure/foret/gardien');
   await loaded();
   expect(screen.getAllByText(/Épreuve : Abattage syllabique/).length).toBeGreaterThan(0);
@@ -67,7 +67,7 @@ it('avec les étoiles, le défi démarre : première épreuve avec l’écran de
 
 it('devant « Épreuve », un bouclier dans Blocland, la flamme de la sentinelle dans Archipéo (DA-8)', async () => {
   const icone = () => screen.getAllByText(/Épreuve : /)[0].querySelector('svg')?.getAttribute('class') ?? '';
-  localStorage.setItem('dysapps:blocland', JSON.stringify({ progress: ready('foret') }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ progress: ready('foret') }));
   const blocland = renderAt('/aventure/foret/gardien');
   await loaded();
   expect(icone()).toMatch(/shield/);
@@ -80,7 +80,7 @@ it('devant « Épreuve », un bouclier dans Blocland, la flamme de la sentinelle
 });
 
 it('à chaque épreuve, la résistance du Gardien baisse et il réagit', async () => {
-  localStorage.setItem('dysapps:blocland', JSON.stringify({ progress: ready('foret') }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ progress: ready('foret') }));
   const user = (await import('@testing-library/user-event')).default.setup();
   renderAt('/aventure/foret/gardien');
   await loaded();
@@ -100,10 +100,10 @@ it('un Gardien déjà vaincu reste ouvert à la revanche, même si une mission d
   // La victoire, puis une mission sans étoile (comme une mission arrivée après coup sur l'île).
   const progress = { ...ready('foret'), 'foret-gardien': { stars: 2, attempts: 1, best: 0.9 } } as Record<string, unknown>;
   delete progress[exercisesOf('foret', 'rimes')[0].id];
-  localStorage.setItem('dysapps:blocland', JSON.stringify({ progress }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ progress }));
   renderAt('/aventure/foret');
   expect(screen.getByRole('link', { name: /Le Grand Chêne/ })).toBeInTheDocument();
-  localStorage.setItem('dysapps:blocland', JSON.stringify({ progress }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ progress }));
   renderAt('/aventure/foret/gardien');
   await loaded();
   expect(document.body.textContent).not.toMatch(/Il te manque encore des étoiles/);
@@ -111,7 +111,7 @@ it('un Gardien déjà vaincu reste ouvert à la revanche, même si une mission d
 }, 30_000);
 
 it('le nom du Gardien une seule fois, et sa réplique entière au lancement puis repliée en une ligne (DA-34)', async () => {
-  localStorage.setItem('dysapps:blocland', JSON.stringify({ progress: ready('foret') }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ progress: ready('foret') }));
   const user = (await import('@testing-library/user-event')).default.setup();
   renderAt('/aventure/foret/gardien');
   await loaded();
@@ -144,7 +144,7 @@ it('la réplique repliée montre sa première phrase, le reste pour le lecteur d
   const avant = says.hit;
   says.hit = 'Mes branches tremblent jusqu’aux racines. Tu as l’oreille fine.';
   try {
-    localStorage.setItem('dysapps:blocland', JSON.stringify({ progress: ready('foret') }));
+    localStorage.setItem('dysapps:game', JSON.stringify({ progress: ready('foret') }));
     const user = (await import('@testing-library/user-event')).default.setup();
     renderAt('/aventure/foret/gardien');
     await loaded();

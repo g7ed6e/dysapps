@@ -122,16 +122,16 @@ export function toutConstruit() {
   ]);
   const plans = Object.fromEntries([...PLANS, ...VEHICLE_STAGES, ...MONUMENTS].map((p) => [p.id, planCells(p).map((c) => c.key)]));
   const bridges = [...BRIDGES, ...VOYAGES].map((b) => b.id);
-  return { progress, village: { plans, journal: [], bridges } };
+  return { progress, world: { parts: plans, log: [], links: bridges } };
 }
 
 /** Les modèles en blocs de la scène d'un archipel tout construit, chacun en groupes de `buildMesh`. */
 export function sceneModels(a: ArchipelagoId): { name: string; groups: MeshGroup[] }[] {
-  const { progress, village } = toutConstruit();
+  const { progress, world: village } = toutConstruit();
   const ship = vehiclePlacement(a, progress, village)?.cubes ?? [];
   return [
     { name: 'terrain', groups: buildMesh(worldCubes(a, progress, village, false)) },
-    ...[...creaturePlacements(a, village.bridges), ...guardianPlacements(a, progress, village.bridges)].map((c) => ({ name: c.id, groups: buildMesh(c.cubes) })),
+    ...[...creaturePlacements(a, village.links), ...guardianPlacements(a, progress, village.links)].map((c) => ({ name: c.id, groups: buildMesh(c.cubes) })),
     { name: 'coque', groups: buildMesh(ship.filter((c) => c.z < MAST_TOP)) },
     { name: 'ballon', groups: buildMesh(ship.filter((c) => c.z >= MAST_TOP)) },
     ...AVATAR_PARTS.map((p) => ({ name: p.name, groups: buildMesh(p.cubes) })),
@@ -152,7 +152,7 @@ export function sceneCost(a: ArchipelagoId): { triangles: number; drawCalls: num
  * qui ne fige plus sa case, et le reste (en cubes).
  */
 function archipelArchipeo(a: ArchipelagoId, trophees: readonly BlockId[] = []) {
-  const { progress, village } = toutConstruit();
+  const { progress, world: village } = toutConstruit();
   const cubes = worldCubes(a, progress, village, false, [...trophees], false, 'halle');
   const { elements, reste } = rangerLeDecor(cubes.filter((c) => !c.sol));
   // Le sol tel qu'Archipéo le dessine : le relief de marche, puis le modelé dessiné (U2).
@@ -210,9 +210,9 @@ export function fauneCost(a: ArchipelagoId): { triangles: number; drawCalls: num
  * Gardiens en sentinelles fusionnés (./personnages/fusions.ts), un appel de dessin chacun.
  */
 export function personnagesCost(a: ArchipelagoId): Record<'bonhomme' | 'creatures' | 'gardiens', { triangles: number; drawCalls: number }> {
-  const { progress, village } = toutConstruit();
-  const creatures = fusionDesCreatures(creaturePlacements(a, village.bridges));
-  const gardiens = fusionDesGardiens(guardianPlacements(a, progress, village.bridges));
+  const { progress, world: village } = toutConstruit();
+  const creatures = fusionDesCreatures(creaturePlacements(a, village.links));
+  const gardiens = fusionDesGardiens(guardianPlacements(a, progress, village.links));
   const appel = (n: number) => (n > 0 ? 1 : 0);
   return {
     bonhomme: { triangles: trianglesDeLaFusion(fusionDuBonhomme()), drawCalls: 1 },
@@ -238,7 +238,7 @@ export function bornesCost(a: ArchipelagoId): { triangles: number; drawCalls: nu
 
 /** Le Bloc-Navire d'Archipéo (lot R5) : la coque et le ballon en construction taillée (un appel par groupe non vide). */
 export function navireCost(a: ArchipelagoId): { triangles: number; drawCalls: number } {
-  const { progress, village } = toutConstruit();
+  const { progress, world: village } = toutConstruit();
   const ship = vehiclePlacement(a, progress, village)?.cubes ?? [];
   const parts = [ship.filter((c) => c.z < MAST_TOP), ship.filter((c) => c.z >= MAST_TOP)].map((cubes) => coutDeLaConstruction(maillageDeLaConstruction(a, cubes, [], { navire: true })));
   return { triangles: parts.reduce((n, p) => n + p.triangles, 0), drawCalls: parts.reduce((n, p) => n + p.drawCalls, 0) };

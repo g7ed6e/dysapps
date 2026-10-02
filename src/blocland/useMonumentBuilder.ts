@@ -72,7 +72,7 @@ export function useMonumentBuilder(monument: MonumentDef): MonumentBuilder {
     haptics.place();
   };
   const fillAll = () => {
-    const { placed, last, completed } = placeAll(monument, state.village.plans[monument.id] ?? [], fillPlan);
+    const { placed, last, completed } = placeAll(monument, state.world.parts[monument.id] ?? [], fillPlan);
     if (!last) return;
     burstAt(last.x, last.y, last.z, last.block);
     if (completed) return finished();

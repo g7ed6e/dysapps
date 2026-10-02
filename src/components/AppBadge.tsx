@@ -13,7 +13,7 @@ type BadgeNavigator = Navigator & { setAppBadge?: (n?: number) => Promise<void>;
 export function AppBadge() {
   const { state } = useBlocland();
   const { settings } = useSettings();
-  const due = questsToReview(state.spaced, state.village.bridges).length > 0;
+  const due = questsToReview(state.spaced, state.world.links).length > 0;
   const on = settings.appBadge && due;
   useEffect(() => {
     const nav = (typeof navigator !== 'undefined' ? navigator : undefined) as BadgeNavigator | undefined;

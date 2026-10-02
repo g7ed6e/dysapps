@@ -23,7 +23,7 @@ export function lireReglages(): { settings: Settings; message: boolean } {
   const settings = sanitizeSettings(loadJSON(SETTINGS_KEY, DEFAULT_SETTINGS));
   if (settings.univers !== undefined) return { settings, message: false };
   const { univers, message } = premierUnivers({
-    progression: aUneProgression(loadJSON<unknown>('progress', {}), loadJSON<unknown>('blocland', {})),
+    progression: aUneProgression(loadJSON<unknown>('progress', {}), loadJSON<unknown>('game', {})),
   });
   return { settings: { ...settings, univers }, message };
 }
@@ -37,7 +37,7 @@ export function noterRenommage(): void {
   const deja = loadJSON<unknown>(RENOMMAGE_KEY, null);
   // Déjà notée : rien à relire (le chemin de démarrage).
   if (deja !== null) return;
-  const note = renommageANoter(deja, aUneProgression(loadJSON<unknown>('progress', {}), loadJSON<unknown>('blocland', {})));
+  const note = renommageANoter(deja, aUneProgression(loadJSON<unknown>('progress', {}), loadJSON<unknown>('game', {})));
   if (note) saveJSON(RENOMMAGE_KEY, note);
 }
 
@@ -53,7 +53,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 
   // Le message unique à dire, noté une seule fois, au premier lancement après la bascule.
   useEffect(() => {
-    if (lus.message) saveJSON(MESSAGE_UNIVERS_KEY, { dit: false });
+    if (lus.message) saveJSON(MESSAGE_UNIVERS_KEY, { said: false });
   }, [lus]);
 
   useEffect(() => {

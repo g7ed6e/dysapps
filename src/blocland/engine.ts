@@ -3,6 +3,7 @@
 import type { BiomeId, BlockId } from './biomes';
 import { BLOCKS, getBiome } from './biomes';
 import { starsFor } from '../core/stars';
+import { GAME_VERSION, translateGame } from '../core/migration';
 import type { ExerciseDef, ItemResult } from './exercises/types';
 import { activePlan, cellKey, getPlan, planCells, plansFor as PLANS_OF, type PlanDef } from './world/plans';
 import {
@@ -54,50 +55,53 @@ export interface TypeStats {
   recent: number[];
 }
 
-export interface BloclandState {
+export interface GameState {
+  /** Le format de la partie (src/core/migration.ts) : 2 depuis les mots neutres. */
+  version: typeof GAME_VERSION;
   progress: Record<string, ExerciseProgress>;
   spaced: SpacedItem[];
-  inventory: Partial<Record<BlockId, number>>;
+  stock: Partial<Record<BlockId, number>>;
   streak: Streak;
   types: Record<string, TypeStats>;
   /** Nombre de coffres de régularité gagnés. */
   chests: number;
   /** Temps de lecture (secondes) par texte d'Ascension, du plus ancien au plus récent. */
-  fluence: Record<string, number[]>;
-  /** Le village : les blocs posés sur la zone libre de chaque île. */
-  village: Village;
+  fluency: Record<string, number[]>;
+  /** Le monde : les parties posées, les liaisons construites, le lieu où se tient le personnage. */
+  world: World;
   /**
    * Le tirage des questions des blocs assemblés (GD-2), par bloc : l'ordre propre à l'élève, les dernières posées, les
    * manquées. Absent tant qu'aucune question n'a reçu de réponse.
    */
-  assemblageTirage?: Partial<Record<BlockId, TirageAssemblage>>;
+  assemblyDraw?: Partial<Record<BlockId, TirageAssemblage>>;
 }
 
-export interface Village {
+export interface World {
   /** Cellules déjà posées de chaque plan (clés « x,y,z » relatives à l'île). */
-  plans: Record<string, string[]>;
+  parts: Record<string, string[]>;
   /** Journal de construction : un bâtiment terminé par ligne, du plus ancien au plus récent. */
-  journal: JournalEntry[];
+  log: LogEntry[];
   /** Les ponts construits (identifiants de `world/archipelago.ts`) : ils ouvrent les îles. */
-  bridges: string[];
+  links: string[];
   /** L'île où se tient le bonhomme (la dernière île ouverte visitée) ; la Forêt au début. */
-  at?: BiomeId;
+  place?: BiomeId;
 }
 
-export interface JournalEntry {
+export interface LogEntry {
   day: string;
-  plan: string;
+  part: string;
 }
 
-export const EMPTY_STATE: BloclandState = {
+export const EMPTY_STATE: GameState = {
+  version: GAME_VERSION,
   progress: {},
   spaced: [],
-  inventory: {},
+  stock: {},
   streak: { current: 0, lastDay: null, cracked: false },
   types: {},
   chests: 0,
-  fluence: {},
-  village: { plans: {}, journal: [], bridges: [] },
+  fluency: {},
+  world: { parts: {}, log: [], links: [] },
 };
 
 /** Intervalles de la répétition espacée, en jours. */
@@ -131,8 +135,10 @@ function isRecord(v: unknown): v is Record<string, unknown> {
 }
 const num = (v: unknown, fallback = 0) => (Number.isFinite(Number(v)) ? Number(v) : fallback);
 
-export function sanitizeState(input: unknown): BloclandState {
-  const raw = isRecord(input) ? input : {};
+export function sanitizeState(input: unknown): GameState {
+  // Une partie d'avant les mots neutres (2 octobre 2026) se lit traduite : la suite ne connaît que les nouveaux noms.
+  const translated = translateGame(input);
+  const raw = isRecord(translated) ? translated : {};
   const progress: Record<string, ExerciseProgress> = {};
   if (isRecord(raw.progress)) {
     for (const [id, p] of Object.entries(raw.progress)) {
@@ -154,9 +160,9 @@ export function sanitizeState(input: unknown): BloclandState {
           streak: Math.max(0, Math.round(num(s.streak))),
         }))
     : [];
-  const inventory: Partial<Record<BlockId, number>> = {};
-  if (isRecord(raw.inventory)) {
-    for (const [id, n] of Object.entries(raw.inventory)) if (id in BLOCKS) inventory[id as BlockId] = Math.max(0, Math.round(num(n)));
+  const stock: Partial<Record<BlockId, number>> = {};
+  if (isRecord(raw.stock)) {
+    for (const [id, n] of Object.entries(raw.stock)) if (id in BLOCKS) stock[id as BlockId] = Math.max(0, Math.round(num(n)));
   }
   const st = isRecord(raw.streak) ? raw.streak : {};
   const types: Record<string, TypeStats> = {};
@@ -166,11 +172,11 @@ export function sanitizeState(input: unknown): BloclandState {
       types[id] = { level: Math.max(1, Math.round(num(t.level, 1))), recent: Array.isArray(t.recent) ? t.recent.map((x) => num(x)).slice(-2) : [] };
     }
   }
-  const fluence: Record<string, number[]> = {};
-  if (isRecord(raw.fluence)) {
-    for (const [id, arr] of Object.entries(raw.fluence))
+  const fluency: Record<string, number[]> = {};
+  if (isRecord(raw.fluency)) {
+    for (const [id, arr] of Object.entries(raw.fluency))
       if (Array.isArray(arr))
-        fluence[id] = arr
+        fluency[id] = arr
           .map((x) => num(x))
           .filter((x) => x > 0)
           .slice(-10);
@@ -178,28 +184,28 @@ export function sanitizeState(input: unknown): BloclandState {
   // Ancien chantier (grille 8 × 8, avant le village) : les blocs reviennent dans l'inventaire.
   if (Array.isArray(raw.build)) {
     for (const c of raw.build) {
-      if (isRecord(c) && typeof c.block === 'string' && c.block in BLOCKS) inventory[c.block as BlockId] = (inventory[c.block as BlockId] ?? 0) + 1;
+      if (isRecord(c) && typeof c.block === 'string' && c.block in BLOCKS) stock[c.block as BlockId] = (stock[c.block as BlockId] ?? 0) + 1;
     }
   }
-  const village = isRecord(raw.village) ? raw.village : {};
+  const world = isRecord(raw.world) ? raw.world : {};
   // Ancienne zone libre (tapis jaune) : les blocs posés reviennent aussi dans l'inventaire.
-  if (isRecord(village.placed)) {
-    for (const cells of Object.values(village.placed)) {
+  if (isRecord(world.placed)) {
+    for (const cells of Object.values(world.placed)) {
       if (!Array.isArray(cells)) continue;
       for (const c of cells) {
-        if (isRecord(c) && typeof c.block === 'string' && c.block in BLOCKS) inventory[c.block as BlockId] = (inventory[c.block as BlockId] ?? 0) + 1;
+        if (isRecord(c) && typeof c.block === 'string' && c.block in BLOCKS) stock[c.block as BlockId] = (stock[c.block as BlockId] ?? 0) + 1;
       }
     }
   }
   // Les plans des îles et les étapes du Bloc-Navire se rangent au même endroit.
   const anyPlan = (id: string) => getPlan(id) ?? getStage(id) ?? getMonument(id);
-  const plans: Record<string, string[]> = {};
+  const parts: Record<string, string[]> = {};
   // Les sauvegardes d'avant le nouveau dessin des bâtiments (plansV1.ts) : on les reconnaît à une case posée hors du
   // nouveau dessin (aucun ancien plan n'y est tout entier). Un plan terminé avec l'ancien dessin reste terminé, et son
   // coffre, déjà ouvert, donne ce que le nouveau donne en plus ; sinon, les blocs posés hors du nouveau dessin reviennent
   // dans l'inventaire.
-  if (isRecord(village.plans)) {
-    for (const [id, keys] of Object.entries(village.plans)) {
+  if (isRecord(world.parts)) {
+    for (const [id, keys] of Object.entries(world.parts)) {
       const plan = anyPlan(id);
       if (!plan || !Array.isArray(keys)) continue;
       const cells = planCells(plan);
@@ -207,34 +213,34 @@ export function sanitizeState(input: unknown): BloclandState {
       const saved = [...new Set(keys.filter((k): k is string => typeof k === 'string'))];
       const old = saved.some((k) => !valid.has(k)) ? planV1(id) : undefined;
       if (old && [...old.blocks.keys()].every((k) => saved.includes(k))) {
-        plans[id] = cells.map((c) => c.key);
+        parts[id] = cells.map((c) => c.key);
         for (const [b, n] of Object.entries(plan.reward.chest)) {
           const more = (n ?? 0) - (old.chest[b as BlockId] ?? 0);
-          if (more > 0) inventory[b as BlockId] = (inventory[b as BlockId] ?? 0) + more;
+          if (more > 0) stock[b as BlockId] = (stock[b as BlockId] ?? 0) + more;
         }
         continue;
       }
       if (old)
         for (const k of saved) {
           const b = old.blocks.get(k);
-          if (b && !valid.has(k)) inventory[b] = (inventory[b] ?? 0) + 1;
+          if (b && !valid.has(k)) stock[b] = (stock[b] ?? 0) + 1;
         }
       const list = saved.filter((k) => valid.has(k));
-      if (list.length) plans[id] = list;
+      if (list.length) parts[id] = list;
     }
   }
-  const journal: JournalEntry[] = Array.isArray(village.journal)
-    ? village.journal
-        .filter((e): e is Record<string, unknown> => isRecord(e) && typeof e.day === 'string' && typeof e.plan === 'string' && Boolean(anyPlan(e.plan as string)))
-        .map((e) => ({ day: e.day as string, plan: e.plan as string }))
+  const log: LogEntry[] = Array.isArray(world.log)
+    ? world.log
+        .filter((e): e is Record<string, unknown> => isRecord(e) && typeof e.day === 'string' && typeof e.part === 'string' && Boolean(anyPlan(e.part as string)))
+        .map((e) => ({ day: e.day as string, part: e.part as string }))
         .slice(-100)
     : [];
   // Ouvrages et voyages : liste d'identifiants connus ; une sauvegarde d'avant les ponts reçoit ceux des îles déjà ouvertes.
   // Une sauvegarde du continent d'avant les archipels (escaliers, tunnels entre classes) garde toutes ses îles ouvertes :
   // les voyages et le chemin qui y mènent sont offerts.
-  const rawIds = Array.isArray(village.bridges) ? village.bridges.filter((id): id is string => typeof id === 'string') : null;
-  let bridges = rawIds ? [...new Set(rawIds.filter((id) => Boolean(getBridge(id) ?? getVoyage(id))))] : bridgesFromLegacyProgress(progress);
-  if (rawIds && rawIds.some((id) => !getBridge(id) && !getVoyage(id))) bridges = grantAccess(bridges, legacyReachable(rawIds));
+  const rawIds = Array.isArray(world.links) ? world.links.filter((id): id is string => typeof id === 'string') : null;
+  let links = rawIds ? [...new Set(rawIds.filter((id) => Boolean(getBridge(id) ?? getVoyage(id))))] : bridgesFromLegacyProgress(progress);
+  if (rawIds && rawIds.some((id) => !getBridge(id) && !getVoyage(id))) links = grantAccess(links, legacyReachable(rawIds));
   // Une île où l'on a déjà joué ou vaincu le Gardien reste ouverte, quoi qu'il arrive aux ouvrages.
   const played = new Set<BiomeId>();
   for (const [id, p] of Object.entries(progress)) {
@@ -242,32 +248,33 @@ export function sanitizeState(input: unknown): BloclandState {
     const biome = getBiome(id.slice(0, id.indexOf('-')));
     if (biome) played.add(biome.id);
   }
-  bridges = grantAccess(bridges, played);
+  links = grantAccess(links, played);
   // Un voyage fait : son étape du Bloc-Navire est forcément complète (on la dessine entière).
-  for (const id of bridges) {
+  for (const id of links) {
     const stage = stageFor(id);
-    if (stage && (plans[stage.id]?.length ?? 0) < stage.cells.length) plans[stage.id] = planCells(stage).map((c) => c.key);
+    if (stage && (parts[stage.id]?.length ?? 0) < stage.cells.length) parts[stage.id] = planCells(stage).map((c) => c.key);
   }
   // Le bonhomme : sur une île ouverte, sinon on l'oublie (il repart de la Forêt).
-  const at = typeof village.at === 'string' && getBiome(village.at) && isBiomeUnlocked(village.at as BiomeId, bridges) ? (village.at as BiomeId) : undefined;
+  const place = typeof world.place === 'string' && getBiome(world.place) && isBiomeUnlocked(world.place as BiomeId, links) ? (world.place as BiomeId) : undefined;
   // Le tirage des questions d'assemblage : seulement pour un bloc qui a sa recette, et seulement s'il y en a un.
-  const assemblageTirage: Partial<Record<BlockId, TirageAssemblage>> = {};
-  if (isRecord(raw.assemblageTirage)) {
-    for (const [bloc, t] of Object.entries(raw.assemblageTirage)) {
+  const assemblyDraw: Partial<Record<BlockId, TirageAssemblage>> = {};
+  if (isRecord(raw.assemblyDraw)) {
+    for (const [bloc, t] of Object.entries(raw.assemblyDraw)) {
       const lu = Object.hasOwn(BLOCKS, bloc) && recetteDe(bloc as BlockId) ? lireTirage(t) : undefined;
-      if (lu) assemblageTirage[bloc as BlockId] = lu;
+      if (lu) assemblyDraw[bloc as BlockId] = lu;
     }
   }
   return {
+    version: GAME_VERSION,
     progress,
     spaced,
-    inventory,
+    stock,
     streak: { current: Math.max(0, Math.round(num(st.current))), lastDay: typeof st.lastDay === 'string' ? st.lastDay : null, cracked: Boolean(st.cracked) },
     types,
     chests: Math.max(0, Math.round(num(raw.chests))),
-    fluence,
-    village: at ? { plans, journal, bridges, at } : { plans, journal, bridges },
-    ...(Object.keys(assemblageTirage).length ? { assemblageTirage } : {}),
+    fluency,
+    world: place ? { parts, log, links, place } : { parts, log, links },
+    ...(Object.keys(assemblyDraw).length ? { assemblyDraw } : {}),
   };
 }
 
@@ -281,8 +288,8 @@ export interface PlanStatus {
   missing: Partial<Record<BlockId, number>>;
 }
 
-export function planStatus(state: BloclandState, plan: PlanDef): PlanStatus {
-  const done = new Set(state.village.plans[plan.id] ?? []);
+export function planStatus(state: GameState, plan: PlanDef): PlanStatus {
+  const done = new Set(state.world.parts[plan.id] ?? []);
   const cells = planCells(plan);
   const missing: Partial<Record<BlockId, number>> = {};
   for (const c of cells) if (!done.has(c.key)) missing[c.block] = (missing[c.block] ?? 0) + 1;
@@ -292,17 +299,17 @@ export function planStatus(state: BloclandState, plan: PlanDef): PlanStatus {
 
 export type FillReason = 'pas-dans-le-plan' | 'deja-pose' | 'plus-de-blocs';
 export type FillResult =
-  | { state: BloclandState; ok: true; block: BlockId; completed: boolean }
-  | { state: BloclandState; ok: false; reason: FillReason; block?: BlockId };
+  | { state: GameState; ok: true; block: BlockId; completed: boolean }
+  | { state: GameState; ok: false; reason: FillReason; block?: BlockId };
 
 /** Pose le bloc attendu à une cellule du plan (le type est imposé par le plan). Termine le plan si c'était la dernière. */
-export function fillPlanCell(state: BloclandState, plan: PlanDef, x: number, y: number, z: number, today = todayISO()): FillResult {
+export function fillPlanCell(state: GameState, plan: PlanDef, x: number, y: number, z: number, today = todayISO()): FillResult {
   const cell = planCells(plan).find((c) => c.x === x && c.y === y && c.z === z);
   if (!cell) return { state, ok: false, reason: 'pas-dans-le-plan' };
-  const done = state.village.plans[plan.id] ?? [];
+  const done = state.world.parts[plan.id] ?? [];
   if (done.includes(cell.key)) return { state, ok: false, reason: 'deja-pose', block: cell.block };
-  if ((state.inventory[cell.block] ?? 0) <= 0) return { state, ok: false, reason: 'plus-de-blocs', block: cell.block };
-  const inventory = { ...state.inventory, [cell.block]: (state.inventory[cell.block] ?? 0) - 1 };
+  if ((state.stock[cell.block] ?? 0) <= 0) return { state, ok: false, reason: 'plus-de-blocs', block: cell.block };
+  const inventory = { ...state.stock, [cell.block]: (state.stock[cell.block] ?? 0) - 1 };
   const nextDone = [...done, cell.key];
   const completed = nextDone.length === plan.cells.length;
   if (completed) for (const [b, n] of Object.entries(plan.reward.chest)) inventory[b as BlockId] = (inventory[b as BlockId] ?? 0) + (n ?? 0);
@@ -312,35 +319,35 @@ export function fillPlanCell(state: BloclandState, plan: PlanDef, x: number, y: 
     completed,
     state: {
       ...state,
-      inventory,
-      village: {
-        ...state.village,
-        plans: { ...state.village.plans, [plan.id]: nextDone },
-        journal: completed ? [...state.village.journal, { day: today, plan: plan.id }] : state.village.journal,
+      stock: inventory,
+      world: {
+        ...state.world,
+        parts: { ...state.world.parts, [plan.id]: nextDone },
+        log: completed ? [...state.world.log, { day: today, part: plan.id }] : state.world.log,
       },
     },
   };
 }
 
-export type AssembleResult = { state: BloclandState; ok: true } | { state: BloclandState; ok: false; reason: 'pas-de-recette' | 'plus-de-blocs' };
+export type AssembleResult = { state: GameState; ok: true } | { state: GameState; ok: false; reason: 'pas-de-recette' | 'plus-de-blocs' };
 
 /**
  * Assemble un bloc (GD-2) : retire les ingrédients de la recette et ajoute le bloc assemblé. Un seul à la fois, et
  * rien ne se perd : sans assez de blocs, l'inventaire ne bouge pas.
  */
-export function assembleBlock(state: BloclandState, bloc: BlockId): AssembleResult {
+export function assembleBlock(state: GameState, bloc: BlockId): AssembleResult {
   const recette = recetteDe(bloc);
   if (!recette) return { state, ok: false, reason: 'pas-de-recette' };
-  if (assemblables(state.inventory, recette) < 1) return { state, ok: false, reason: 'plus-de-blocs' };
-  const inventory = { ...state.inventory };
+  if (assemblables(state.stock, recette) < 1) return { state, ok: false, reason: 'plus-de-blocs' };
+  const inventory = { ...state.stock };
   for (const i of recette.ingredients) inventory[i.bloc] = (inventory[i.bloc] ?? 0) - i.n;
   inventory[bloc] = (inventory[bloc] ?? 0) + 1;
-  return { state: { ...state, inventory }, ok: true };
+  return { state: { ...state, stock: inventory }, ok: true };
 }
 
 /** Le tirage des questions d'un bloc assemblé pour cet élève, ou un tirage neuf avec `graine`. */
-export function tirageDe(state: BloclandState, bloc: BlockId, graine: string): TirageAssemblage {
-  return state.assemblageTirage?.[bloc] ?? tirageNeuf(graine);
+export function tirageDe(state: GameState, bloc: BlockId, graine: string): TirageAssemblage {
+  return state.assemblyDraw?.[bloc] ?? tirageNeuf(graine);
 }
 
 /** La réponse finale d'un élève à la question d'un bloc assemblé, et le tirage qui l'a posée. */
@@ -353,18 +360,18 @@ export interface ReponseDonnee {
 }
 
 export type ReponseAssemblage =
-  | { state: BloclandState; assemble: true }
-  | { state: BloclandState; assemble: false; reason: 'manquee' | 'pas-de-recette' | 'plus-de-blocs' };
+  | { state: GameState; assemble: true }
+  | { state: GameState; assemble: false; reason: 'manquee' | 'pas-de-recette' | 'plus-de-blocs' };
 
 /**
  * La réponse finale à la question d'un bloc assemblé (GD-2) : juste (du premier coup ou au second essai), le bloc est
  * assemblé (`assembleBlock`) ; manquée, rien n'est pris. Dans les deux cas, la question est notée dans le tirage de
  * l'élève (`tirage` : celui qui l'a tirée). Ni blocs gagnés, ni XP, ni niveau : la question ne rapporte que le bloc.
  */
-export function repondreAssemblage(state: BloclandState, bloc: BlockId, reponse: ReponseDonnee): ReponseAssemblage {
+export function repondreAssemblage(state: GameState, bloc: BlockId, reponse: ReponseDonnee): ReponseAssemblage {
   if (!recetteDe(bloc)) return { state, assemble: false, reason: 'pas-de-recette' };
-  const tirage = noterQuestion(reponse.cles, state.assemblageTirage?.[bloc] ?? reponse.tirage, reponse.cle, reponse.juste);
-  const note: BloclandState = { ...state, assemblageTirage: { ...state.assemblageTirage, [bloc]: tirage } };
+  const tirage = noterQuestion(reponse.cles, state.assemblyDraw?.[bloc] ?? reponse.tirage, reponse.cle, reponse.juste);
+  const note: GameState = { ...state, assemblyDraw: { ...state.assemblyDraw, [bloc]: tirage } };
   if (!reponse.juste) return { state: note, assemble: false, reason: 'manquee' };
   const r = assembleBlock(note, bloc);
   return r.ok ? { state: r.state, assemble: true } : { state: note, assemble: false, reason: r.reason };
@@ -374,26 +381,26 @@ export function repondreAssemblage(state: BloclandState, bloc: BlockId, reponse:
  * Défait un bloc assemblé en poche (GD-2, choix du mainteneur après la relecture UX UI) : rend tous ses ingrédients.
  * Un bloc déjà posé dans un monument reste posé ; sans bloc en poche, l'inventaire ne bouge pas.
  */
-export function disassembleBlock(state: BloclandState, bloc: BlockId): AssembleResult {
+export function disassembleBlock(state: GameState, bloc: BlockId): AssembleResult {
   const recette = recetteDe(bloc);
   if (!recette) return { state, ok: false, reason: 'pas-de-recette' };
-  if ((state.inventory[bloc] ?? 0) < 1) return { state, ok: false, reason: 'plus-de-blocs' };
-  const inventory = { ...state.inventory };
+  if ((state.stock[bloc] ?? 0) < 1) return { state, ok: false, reason: 'plus-de-blocs' };
+  const inventory = { ...state.stock };
   for (const i of recette.ingredients) inventory[i.bloc] = (inventory[i.bloc] ?? 0) + i.n;
   inventory[bloc] = (inventory[bloc] ?? 0) - 1;
-  return { state: { ...state, inventory }, ok: true };
+  return { state: { ...state, stock: inventory }, ok: true };
 }
 
 /** La prochaine cellule du plan que l'on peut poser avec l'inventaire actuel (vue simple, bouton « Poser le bloc suivant »). */
-export function nextFillable(state: BloclandState, plan: PlanDef): { x: number; y: number; z: number } | null {
-  const done = new Set(state.village.plans[plan.id] ?? []);
-  const cell = planCells(plan).find((c) => !done.has(c.key) && (state.inventory[c.block] ?? 0) > 0);
+export function nextFillable(state: GameState, plan: PlanDef): { x: number; y: number; z: number } | null {
+  const done = new Set(state.world.parts[plan.id] ?? []);
+  const cell = planCells(plan).find((c) => !done.has(c.key) && (state.stock[c.block] ?? 0) > 0);
   return cell ? { x: cell.x, y: cell.y, z: cell.z } : null;
 }
 
 /** Le plan en cours d'une île (voir plans.ts), ou le dernier si tout est terminé. */
-export function currentPlan(state: BloclandState, island: BiomeId): { plan: PlanDef; allDone: boolean } | null {
-  const active = activePlan(island, state.village.plans);
+export function currentPlan(state: GameState, island: BiomeId): { plan: PlanDef; allDone: boolean } | null {
+  const active = activePlan(island, state.world.parts);
   if (active) return { plan: active, allDone: false };
   const all = PLANS_OF(island);
   return all.length ? { plan: all[all.length - 1], allDone: true } : null;
@@ -406,10 +413,10 @@ export function planCellAt(plan: PlanDef, x: number, y: number, z: number): { ke
 }
 
 /** Démonte tout ce qui est posé sur une île : les blocs reviennent dans l'inventaire. */
-export function recordFluence(state: BloclandState, textId: string, seconds: number): { state: BloclandState; previous: number | null } {
-  const history = state.fluence[textId] ?? [];
+export function recordFluence(state: GameState, textId: string, seconds: number): { state: GameState; previous: number | null } {
+  const history = state.fluency[textId] ?? [];
   const previous = history.length ? history[history.length - 1] : null;
-  return { state: { ...state, fluence: { ...state.fluence, [textId]: [...history, Math.round(seconds)].slice(-10) } }, previous };
+  return { state: { ...state, fluency: { ...state.fluency, [textId]: [...history, Math.round(seconds)].slice(-10) } }, previous };
 }
 
 // ---------- Score et étoiles ----------
@@ -483,14 +490,14 @@ export function adapt(stats: TypeStats | undefined, score: number, def: Exercise
   return { level, recent };
 }
 
-export function levelFor(state: BloclandState, type: string): number {
+export function levelFor(state: GameState, type: string): number {
   return state.types[type]?.level ?? 1;
 }
 
 // ---------- Fin d'exercice ----------
 
 export interface Completion {
-  state: BloclandState;
+  state: GameState;
   score: number;
   stars: 1 | 2 | 3;
   /** Meilleur résultat jamais obtenu sur cet exercice ? */
@@ -514,7 +521,7 @@ export function blocksBonus(stars: number, firstTime: boolean, anyCorrect = true
 }
 
 /** Enregistre un exercice terminé : progression, blocs, XP, répétition espacée, streak, adaptation. */
-export function completeExercise(state: BloclandState, def: ExerciseDef, results: ItemResult[], today: string, rng: () => number = Math.random): Completion {
+export function completeExercise(state: GameState, def: ExerciseDef, results: ItemResult[], today: string, rng: () => number = Math.random): Completion {
   const score = scoreOf(results);
   const stars = starsFor(score);
   const perfect = results.every((r) => r.correct && r.attempts <= 1 && !r.usedHelp);
@@ -540,7 +547,7 @@ export function completeExercise(state: BloclandState, def: ExerciseDef, results
   const types = { ...state.types, [def.type]: adapt(state.types[def.type], score, def.adaptive) };
 
   return {
-    state: { ...state, progress, spaced, inventory, streak: streak.streak, types, chests },
+    state: { ...state, progress, spaced, stock: inventory, streak: streak.streak, types, chests },
     score,
     stars,
     newBest,
@@ -559,14 +566,14 @@ export function completeExercise(state: BloclandState, def: ExerciseDef, results
  * d'affilée, un coffre de blocs communs. Partagé par les missions d'île et celles de l'école du village.
  */
 function playedToday(
-  state: BloclandState,
+  state: GameState,
   block: BlockId,
   blocks: number,
   today: string,
   rng: () => number,
-): { streak: StreakUpdate; inventory: BloclandState['inventory']; chests: number; chestBlock?: BlockId } {
+): { streak: StreakUpdate; inventory: GameState['stock']; chests: number; chestBlock?: BlockId } {
   const streak = updateStreak(state.streak, today);
-  const inventory = { ...state.inventory, [block]: (state.inventory[block] ?? 0) + blocks };
+  const inventory = { ...state.stock, [block]: (state.stock[block] ?? 0) + blocks };
   let chestBlock: BlockId | undefined;
   let chests = state.chests;
   if (streak.chest) {
@@ -585,7 +592,7 @@ function playedToday(
 export const PORTAL_BLOCKS = 4;
 
 export interface PortalCompletion {
-  state: BloclandState;
+  state: GameState;
   /** L'île de l'école de l'archipel où se tient le bonhomme : ses blocs sont gagnés. */
   school: BiomeId;
   block: BlockId;
@@ -600,34 +607,34 @@ export interface PortalCompletion {
  * d'île (proportionnels au score, +1 ou +2 selon les étoiles, +2 la première fois, rien sans bonne réponse), et le
  * streak du jour. Les étoiles et le Gardien ne changent pas : ils restent ceux des missions d'île.
  */
-export function completePortalQuest(state: BloclandState, score: number, firstTime: boolean, today: string, rng: () => number = Math.random): PortalCompletion {
-  const school = archipelagoOf(state.village.at ?? 'foret').school;
+export function completePortalQuest(state: GameState, score: number, firstTime: boolean, today: string, rng: () => number = Math.random): PortalCompletion {
+  const school = archipelagoOf(state.world.place ?? 'foret').school;
   const block = getBiome(school)!.block;
   const anyCorrect = score > 0;
   const bonus = blocksBonus(starsFor(score), firstTime, anyCorrect);
   const blocks = anyCorrect ? Math.max(1, Math.round(PORTAL_BLOCKS * score)) + bonus.stars + bonus.first : 0;
   const { streak, inventory, chests, chestBlock } = playedToday(state, block, blocks, today, rng);
-  return { state: { ...state, inventory, streak: streak.streak, chests }, school, block, blocks, bonus, streak, chestBlock };
+  return { state: { ...state, stock: inventory, streak: streak.streak, chests }, school, block, blocks, bonus, streak, chestBlock };
 }
 
 /** Construit un pont en payant avec les blocs de l'inventaire. */
-export function buildBridge(state: BloclandState, id: string): { state: BloclandState; result: BuildBridgeResult } {
-  const result = buildBridgePure(id, state.village.bridges, state.inventory, { progress: state.progress, plans: state.village.plans });
+export function buildBridge(state: GameState, id: string): { state: GameState; result: BuildBridgeResult } {
+  const result = buildBridgePure(id, state.world.links, state.stock, { progress: state.progress, plans: state.world.parts });
   if (!result.ok) return { state, result };
-  return { state: { ...state, inventory: result.inventory, village: { ...state.village, bridges: result.bridges } }, result };
+  return { state: { ...state, stock: result.inventory, world: { ...state.world, links: result.bridges } }, result };
 }
 
 /** Le bonhomme va sur une île ouverte (sinon, rien ne change). */
-export function moveAvatar(state: BloclandState, to: BiomeId): BloclandState {
-  if (!isBiomeUnlocked(to, state.village.bridges) || state.village.at === to) return state;
-  return { ...state, village: { ...state.village, at: to } };
+export function moveAvatar(state: GameState, to: BiomeId): GameState {
+  if (!isBiomeUnlocked(to, state.world.links) || state.world.place === to) return state;
+  return { ...state, world: { ...state.world, place: to } };
 }
 
 // ---------- Le Bloc-Navire ----------
 
 /** L'étape du Bloc-Navire en cours : la première dont le voyage n'est pas fait ; `null` quand les trois voyages sont faits. */
-export function currentStage(state: BloclandState): VehicleStage | null {
-  return VEHICLE_STAGES.find((s) => !state.village.bridges.includes(voyageId(s.to))) ?? null;
+export function currentStage(state: GameState): VehicleStage | null {
+  return VEHICLE_STAGES.find((s) => !state.world.links.includes(voyageId(s.to))) ?? null;
 }
 
 export type LaunchResult =
@@ -635,8 +642,8 @@ export type LaunchResult =
   | { ok: false; reason: 'loin' | 'construit' | 'blocs' | 'gardiens'; missing: number };
 
 /** Peut-on embarquer ? Le port de départ ouvert, le voyage pas encore fait, toutes les cases posées, assez de Gardiens vaincus. */
-export function canLaunch(state: BloclandState, stage: VehicleStage): LaunchResult {
-  const bridges = state.village.bridges;
+export function canLaunch(state: GameState, stage: VehicleStage): LaunchResult {
+  const bridges = state.world.links;
   if (!reachableIslands(bridges).has(stage.biome)) return { ok: false, reason: 'loin', missing: 0 };
   if (bridges.includes(voyageId(stage.to))) return { ok: false, reason: 'construit', missing: 0 };
   const status = planStatus(state, stage);
@@ -649,8 +656,8 @@ export function canLaunch(state: BloclandState, stage: VehicleStage): LaunchResu
  * Largue les amarres : le voyage est fait (et le reste : on revient quand on veut), le bonhomme arrive au port d'en face.
  * Un acte explicite, jamais un effet du dernier bloc posé.
  */
-export function launchVehicle(state: BloclandState, stage: VehicleStage): { state: BloclandState; result: LaunchResult } {
+export function launchVehicle(state: GameState, stage: VehicleStage): { state: GameState; result: LaunchResult } {
   const result = canLaunch(state, stage);
   if (!result.ok) return { state, result };
-  return { state: { ...state, village: { ...state.village, bridges: [...state.village.bridges, voyageId(stage.to)], at: result.to } }, result };
+  return { state: { ...state, world: { ...state.world, links: [...state.world.links, voyageId(stage.to)], place: result.to } }, result };
 }

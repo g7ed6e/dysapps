@@ -6,7 +6,7 @@ import { frenchTypography } from '../components/math/RichText';
 import { useSettings } from '../core/SettingsContext';
 import { loadJSON, saveJSON } from '../core/storage';
 
-const STORAGE_KEY = 'tutos';
+const STORAGE_KEY = 'tutorials';
 
 interface Seen {
   [id: string]: boolean;

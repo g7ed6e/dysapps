@@ -54,9 +54,9 @@ interface Props {
 export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, highlight = null, ship, onBoard }: Props) {
   const { state } = useBlocland();
   const { settings, speak } = useSettings();
-  const sansLv2 = estIleLv2(biome) && settings.lv2 === 'aucune';
+  const sansLv2 = estIleLv2(biome) && settings.lv2 === 'none';
   const textes = useTextes();
-  const unlocked = isBiomeUnlocked(biome.id, state.village.bridges);
+  const unlocked = isBiomeUnlocked(biome.id, state.world.links);
   // « Pas de LV2 » : un seul message, lu à l'ouverture, à la place de l'accueil et du prochain objectif.
   const greeting = accueilDeLIle(state, biome.id, sansLv2, textes);
   const bossReady = unlocked && isBossOpen(biome, state.progress);
@@ -230,12 +230,12 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, hi
       {/* Le prochain objectif et, sur l'île-port, l'état du village (qui se voit aussi au port en cubes) : un seul pli. */}
       {goal && port ? (
         <GoalFold key={`objectif-${biome.id}`} goal={goal}>
-          <VillageStageLine village={state.village} archipelago={biome.classe} />
+          <VillageStageLine village={state.world} archipelago={biome.classe} />
         </GoalFold>
       ) : goal ? (
         <GoalLine goal={goal} />
       ) : (
-        port && <VillageStageLine village={state.village} archipelago={biome.classe} className="island-village" />
+        port && <VillageStageLine village={state.world} archipelago={biome.classe} className="island-village" />
       )}
 
       {unlocked && <PlanSection biome={biome} builder={builder} in3d={in3d} fold={fold} highlight={highlight === 'plan'} />}

@@ -16,7 +16,7 @@ import { worldCubes } from './terrain';
 /** Un archipel tout construit, rangé comme le rend la vue 3D d'Archipéo. */
 const ranges = new Map<ArchipelagoId, ReturnType<typeof ranger>>();
 function ranger(a: ArchipelagoId, vide = false) {
-  const { progress, village } = toutConstruit();
+  const { progress, world: village } = toutConstruit();
   const cubes = vide ? worldCubes(a, {}) : worldCubes(a, progress, village, false);
   const sol = cubes.filter((c) => c.sol);
   const autres = cubes.filter((c) => !c.sol);

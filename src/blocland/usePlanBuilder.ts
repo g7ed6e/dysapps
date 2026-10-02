@@ -146,7 +146,7 @@ export function usePlanBuilder(island: BiomeId, avecGeste = false): PlanBuilder 
   };
   const fillAll = () => {
     if (!plan) return;
-    const { placed, last, completed } = placeAll(plan, state.village.plans[plan.id] ?? [], fillPlan);
+    const { placed, last, completed } = placeAll(plan, state.world.parts[plan.id] ?? [], fillPlan);
     if (!last) return;
     burstAt(last.x, last.y, last.z, last.block, completed);
     if (completed) return finished(plan);

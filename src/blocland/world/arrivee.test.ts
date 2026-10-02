@@ -7,10 +7,10 @@ import { isLand, islandDef, landBox, landCells } from './map';
 import { walkGround, walkPath } from './paths';
 import { avatarHome, casesDesLieux, creaturePlacements, guardianPlacements, worldCubes } from './terrain';
 
-const { progress, village } = toutConstruit();
+const { progress, world: village } = toutConstruit();
 const monde = (a: (typeof ARCHIPELAGO_IDS)[number]) => {
   const cubes = worldCubes(a, progress, village, false, []);
-  const creatures = [...creaturePlacements(a, village.bridges), ...guardianPlacements(a, progress, village.bridges)];
+  const creatures = [...creaturePlacements(a, village.links), ...guardianPlacements(a, progress, village.links)];
   return { cubes, creatures, ground: walkGround(cubes, creatures, casesDesLieux(a)) };
 };
 const k = (x: number, y: number) => `${x},${y}`;
@@ -87,7 +87,7 @@ describe('Toucher le sol : la case d’arrivée', () => {
 
   it('la disposition en grille : la case d’arrivée, et le trajet vers une île qui s’arrête là', () => {
     const { cubes, creatures, ground } = monde('6e');
-    const g = dispositionEnGrille('6e', village.bridges, { cubes, creatures });
+    const g = dispositionEnGrille('6e', village.links, { cubes, creatures });
     const def = islandDef('plaine');
     const cible = landCells(def).find((c) => ground.feet.has(k(c.x, c.y)) && (c.x + c.y) % 5 === 0)!;
     const r = g.arrivee('plaine', cible, avatarHome('plaine'))!;

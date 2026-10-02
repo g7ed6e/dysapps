@@ -30,11 +30,11 @@ import {
 // La disposition en grille enveloppe les fonctions de la grille sans rien changer à ce qu'elles calculent : chaque
 // réponse est comparée au calcul d'avant (celui que faisait la page du monde).
 
-const { progress, village } = toutConstruit();
+const { progress, world: village } = toutConstruit();
 const grilleDe = (a: (typeof ARCHIPELAGO_IDS)[number]) => {
   const cubes = worldCubes(a, progress, village, false, []);
-  const creatures = [...creaturePlacements(a, village.bridges), ...guardianPlacements(a, progress, village.bridges)];
-  return { g: dispositionEnGrille(a, village.bridges, { cubes, creatures }), ground: walkGround(cubes, creatures, casesDesLieux(a)) };
+  const creatures = [...creaturePlacements(a, village.links), ...guardianPlacements(a, progress, village.links)];
+  return { g: dispositionEnGrille(a, village.links, { cubes, creatures }), ground: walkGround(cubes, creatures, casesDesLieux(a)) };
 };
 
 describe('La disposition en grille', () => {
@@ -90,7 +90,7 @@ describe('La disposition en grille', () => {
       const { g, ground } = grilleDe(a);
       for (const from of islandsOf(a))
         for (const to of islandsOf(a)) {
-          const avant = avatarRoute(from.id, to.id, village.bridges, ground);
+          const avant = avatarRoute(from.id, to.id, village.links, ground);
           const t = g.trajet({ genre: 'ile', id: from.id }, { genre: 'ile', id: to.id });
           expect(t && t.etapes.map(g.versMonde), `${from.id} → ${to.id}`).toEqual(avant);
           if (t && avant) expect(t.duree).toBe(walkDuration(avant));
@@ -129,7 +129,7 @@ describe('La disposition en grille', () => {
       for (const place of ['ecole', 'trophees', 'assemblage'] as VillagePlaceId[])
         for (const from of islandsOf(a)) {
           const door = placeDoor(place, school);
-          const route = avatarRoute(from.id, school, village.bridges, ground);
+          const route = avatarRoute(from.id, school, village.links, ground);
           if (!route) continue;
           const last = route[route.length - 1];
           const toDoor = door ? (walkPath(ground, last, door) ?? [last, door]) : [last];
@@ -148,7 +148,7 @@ describe('La disposition en grille', () => {
   });
 
   it('une partie vierge : le bonhomme reste sur son île de départ', () => {
-    const g = dispositionEnGrille('6e', EMPTY_STATE.village.bridges);
+    const g = dispositionEnGrille('6e', EMPTY_STATE.world.links);
     expect(g.trajet({ genre: 'ile', id: 'foret' }, { genre: 'ile', id: 'foret' })!.etapes.map(g.versMonde)).toEqual([avatarHome('foret')]);
   });
 });

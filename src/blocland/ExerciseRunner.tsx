@@ -187,11 +187,11 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
     const port = archipelagoOf(biome.id).port;
     const stage = stageAt(port);
     const shipReady =
-      stage && !done.state.village.bridges.includes(voyageId(stage.to)) && (stage.stage === 1 || done.state.village.bridges.includes(voyageId(stage.from)))
+      stage && !done.state.world.links.includes(voyageId(stage.to)) && (stage.stage === 1 || done.state.world.links.includes(voyageId(stage.from)))
         ? (() => {
             const status = planStatus(done.state, stage);
             const missing = Object.entries(status.missing).filter(([, n]) => (n ?? 0) > 0);
-            return !status.complete && missing.every(([b, n]) => (done.state.inventory[b as keyof typeof BLOCKS] ?? 0) >= (n ?? 0)) ? stage : null;
+            return !status.complete && missing.every(([b, n]) => (done.state.stock[b as keyof typeof BLOCKS] ?? 0) >= (n ?? 0)) ? stage : null;
           })()
         : null;
     // À quoi servent les blocs gagnés : le chantier qu'ils font avancer, et « Voir le chantier » qui y mène.

@@ -11,7 +11,7 @@ import {
 } from "../core/sauvegarde";
 
 // Après une restauration, la page se recharge : ce drapeau (pour cet onglet seulement) dit au retour que c'est fait.
-const DRAPEAU_RESTAUREE = "dysapps-restauree";
+const DRAPEAU_RESTAUREE = "dysapps-restored";
 
 const REMPLACER =
   "Si tu veux garder la progression de cet appareil, enregistre-la d’abord.";

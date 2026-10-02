@@ -1,10 +1,15 @@
 // Sauvegarder et restaurer la progression dans un fichier : pour changer d'appareil ou réinstaller l'appli
 // (sur iPhone et iPad, supprimer l'appli de l'écran d'accueil efface ses données). Le fichier copie telles quelles
-// les valeurs rangées sur l'appareil sous le préfixe de l'appli : aucun format de sauvegarde n'est changé ni converti.
+// les valeurs rangées sur l'appareil sous le préfixe de l'appli. Depuis les mots neutres (2 octobre 2026), le fichier est
+// à la version 2 (`dysapps-backup`, `data`, `app`) ; un fichier de la version 1 (`dysapps-sauvegarde`, `donnees`,
+// `appli`) se lit toujours, se restaure tel quel, puis passe par la même traduction que l'appareil (migration.ts).
+import { migrateStorage } from "./migration";
 import { STORAGE_PREFIX } from "./storage";
 
-export const FORMAT_SAUVEGARDE = "dysapps-sauvegarde";
-const VERSION_FORMAT = 1;
+export const FORMAT_SAUVEGARDE = "dysapps-backup";
+const VERSION_FORMAT = 2;
+/** Le format d'avant les mots neutres, toujours lu. */
+const FORMAT_V1 = "dysapps-sauvegarde";
 /** Au-delà, ce n'est pas une sauvegarde de l'appli (le stockage d'un navigateur tient en quelques Mo). */
 export const TAILLE_MAX = 5 * 1024 * 1024;
 const CLE_VALIDE = /^dysapps:[\w.:-]{1,100}$/;
@@ -15,9 +20,9 @@ export interface Sauvegarde {
   /** Date de l'enregistrement, ISO 8601. */
   date: string;
   /** Version de l'appli qui l'a écrite. */
-  appli: string;
+  app: string;
   /** Clé complète (avec le préfixe) → valeur brute, telle qu'elle était rangée. */
-  donnees: Record<string, string>;
+  data: Record<string, string>;
 }
 
 function clesDeLAppli(): string[] {
@@ -41,15 +46,15 @@ function lireTout(): Record<string, string> {
 
 /** Ce qui est rangé sur l'appareil aujourd'hui, prêt à écrire dans un fichier. */
 export function creerSauvegarde(
-  appli: string,
+  app: string,
   maintenant = new Date(),
 ): Sauvegarde {
   return {
     format: FORMAT_SAUVEGARDE,
     version: VERSION_FORMAT,
     date: maintenant.toISOString(),
-    appli,
-    donnees: lireTout(),
+    app,
+    data: lireTout(),
   };
 }
 
@@ -68,28 +73,23 @@ export function lireSauvegarde(texte: string): Sauvegarde | null {
     return null;
   }
   if (typeof brut !== "object" || brut === null) return null;
-  const s = brut as Partial<Record<keyof Sauvegarde, unknown>>;
-  if (
-    s.format !== FORMAT_SAUVEGARDE ||
-    typeof s.version !== "number" ||
-    s.version < 1 ||
-    s.version > VERSION_FORMAT
-  )
-    return null;
+  const s = brut as Record<string, unknown>;
+  // La version 2 (mots neutres), ou la version 1 d'avant, avec ses noms français.
+  const v2 = s.format === FORMAT_SAUVEGARDE && s.version === VERSION_FORMAT;
+  const v1 = s.format === FORMAT_V1 && s.version === 1;
+  if (!v2 && !v1) return null;
+  const app = v2 ? s.app : s.appli;
+  const brutes = v2 ? s.data : s.donnees;
   if (
     typeof s.date !== "string" ||
     Number.isNaN(Date.parse(s.date)) ||
-    typeof s.appli !== "string"
+    typeof app !== "string"
   )
     return null;
-  if (
-    typeof s.donnees !== "object" ||
-    s.donnees === null ||
-    Array.isArray(s.donnees)
-  )
+  if (typeof brutes !== "object" || brutes === null || Array.isArray(brutes))
     return null;
-  const donnees: Record<string, string> = {};
-  for (const [cle, valeur] of Object.entries(s.donnees)) {
+  const data: Record<string, string> = {};
+  for (const [cle, valeur] of Object.entries(brutes)) {
     if (!CLE_VALIDE.test(cle) || typeof valeur !== "string") return null;
     // Chaque valeur rangée par l'appli est du JSON : une valeur qui n'en est pas trahit un fichier abîmé.
     try {
@@ -97,20 +97,21 @@ export function lireSauvegarde(texte: string): Sauvegarde | null {
     } catch {
       return null;
     }
-    donnees[cle] = valeur;
+    data[cle] = valeur;
   }
   return {
     format: FORMAT_SAUVEGARDE,
-    version: s.version,
+    version: VERSION_FORMAT,
     date: s.date,
-    appli: s.appli.slice(0, 40),
-    donnees,
+    app: app.slice(0, 40),
+    data,
   };
 }
 
 /**
  * Remplace ce qui est rangé sur l'appareil par la sauvegarde. Tout ou rien : si l'écriture échoue (stockage plein),
- * l'appareil retrouve ce qu'il avait. La page doit ensuite se recharger pour relire la progression.
+ * l'appareil retrouve ce qu'il avait. Une sauvegarde aux anciens noms est ensuite traduite (`migrateStorage`). La page
+ * doit enfin se recharger pour relire la progression.
  */
 export function restaurerSauvegarde(s: Sauvegarde): boolean {
   const avant = lireTout();
@@ -120,8 +121,7 @@ export function restaurerSauvegarde(s: Sauvegarde): boolean {
       localStorage.setItem(cle, valeur);
   };
   try {
-    remplacer(s.donnees);
-    return true;
+    remplacer(s.data);
   } catch {
     try {
       remplacer(avant);
@@ -130,4 +130,6 @@ export function restaurerSauvegarde(s: Sauvegarde): boolean {
     }
     return false;
   }
+  migrateStorage();
+  return true;
 }

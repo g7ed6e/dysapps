@@ -2,7 +2,7 @@
 // qui manquent. ») et où mène « Voir le chantier ». Code pur, déduit de la sauvegarde, sans rien y ajouter : les
 // chiffres sont ceux du panneau d'île et de « Mes blocs ».
 import { getBiome, ofBlock, type BiomeId, type BlockId } from '../biomes';
-import { currentPlan, planStatus, type BloclandState } from '../engine';
+import { currentPlan, planStatus, type GameState } from '../engine';
 import type { PlanDef } from './plans';
 import { BRIDGE_BLOCKS, KIND_NAME, archipelagoOf, buildableBridges, conditionMet, otherEnd, payableBlocks } from './archipelago';
 import { monumentsOf } from './monuments';
@@ -25,10 +25,10 @@ export interface Worksite {
 }
 
 /** Ce qu'il manque d'un plan, en blocs, et combien l'élève en a déjà en poche. */
-function gauge(state: BloclandState, plan: PlanDef) {
+function gauge(state: GameState, plan: PlanDef) {
   const missing = Object.entries(planStatus(state, plan).missing).filter(([, n]) => (n ?? 0) > 0) as [BlockId, number][];
   const need = missing.reduce((sum, [, n]) => sum + n, 0);
-  const have = missing.reduce((sum, [b, n]) => sum + Math.min(n, state.inventory[b] ?? 0), 0);
+  const have = missing.reduce((sum, [b, n]) => sum + Math.min(n, state.stock[b] ?? 0), 0);
   return { have, need, ready: need > 0 && have >= need };
 }
 
@@ -41,7 +41,7 @@ function count(have: number, need: number): string {
 }
 
 /** Le chantier d'un usage (plan, navire ou monument) : sa phrase et sa jauge. */
-function fromUse(state: BloclandState, use: Use): Worksite | null {
+function fromUse(state: GameState, use: Use): Worksite | null {
   const island = getBiome(use.island)?.name ?? use.island;
   if (use.kind === 'plan') {
     const current = currentPlan(state, use.island);
@@ -69,16 +69,16 @@ function fromUse(state: BloclandState, use: Use): Worksite | null {
 }
 
 /** L'ouvrage le moins cher qui part de cette île (tout bloc d'île le paie), s'il y en a un à construire. */
-function ouvrage(state: BloclandState, island: BiomeId, block: BlockId): Worksite | null {
+function ouvrage(state: GameState, island: BiomeId, block: BlockId): Worksite | null {
   if (!BRIDGE_BLOCKS.includes(block)) return null;
-  const world = { progress: state.progress, plans: state.village.plans };
-  const bridges = buildableBridges(state.village.bridges, island, world).filter((b) => conditionMet(b, state.village.bridges, world));
+  const world = { progress: state.progress, plans: state.world.parts };
+  const bridges = buildableBridges(state.world.links, island, world).filter((b) => conditionMet(b, state.world.links, world));
   if (!bridges.length) return null;
   const cheapest = bridges.reduce((a, b) => (b.cost < a.cost ? b : a));
   const to = getBiome(otherEnd(cheapest, island))?.name ?? cheapest.to;
   const kind = KIND_NAME[cheapest.kind].toLowerCase();
   const name = `${/^[aeiouy]/.test(kind) ? 'L’' : 'Le '}${kind} vers ${to}`;
-  const have = Math.min(cheapest.cost, payableBlocks(state.inventory));
+  const have = Math.min(cheapest.cost, payableBlocks(state.stock));
   const ready = have >= cheapest.cost;
   const text = ready ? `${name} : tu peux le construire !` : `${name} : ${have} bloc${have > 1 ? 's' : ''} sur ${cheapest.cost}.`;
   return { kind: 'ouvrage', text, have, need: cheapest.cost, ready, island, to: `/aventure/${island}?chantier=${cheapest.id}` };
@@ -89,7 +89,7 @@ function ouvrage(state: BloclandState, island: BiomeId, block: BlockId): Worksit
  * l'ouvrage le moins cher qui en part, puis un autre chantier de l'archipel (plan d'une autre île, navire, monument) ;
  * sinon les plans suivants qui attendent ce bloc, ou rien, dit tel quel.
  */
-export function worksiteFor(state: BloclandState, island: BiomeId, block: BlockId): Worksite {
+export function worksiteFor(state: GameState, island: BiomeId, block: BlockId): Worksite {
   const uses = blockUses(state, block);
   const here = uses.filter((u) => u.island === island && (u.kind === 'plan' || u.kind === 'navire'));
   for (const use of here) {

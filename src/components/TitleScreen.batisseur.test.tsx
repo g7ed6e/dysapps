@@ -10,7 +10,7 @@ import { degelerSauvegarde, saveJSON } from '../core/storage';
 
 function Inventaire() {
   const { state } = useBlocland();
-  return <p data-testid="bois">{state.inventory.bois ?? 0}</p>;
+  return <p data-testid="bois">{state.stock.bois ?? 0}</p>;
 }
 
 function renderTitle() {
@@ -36,17 +36,17 @@ afterEach(() => degelerSauvegarde());
 const FLECHES = '{ArrowUp}{ArrowUp}{ArrowDown}{ArrowDown}{ArrowLeft}{ArrowRight}{ArrowLeft}{ArrowRight}';
 
 it('au clavier, la suite ouvre le mode bâtisseur sans toucher la sauvegarde', async () => {
-  saveJSON('blocland', { inventory: { bois: 3 } });
+  saveJSON('game', { stock: { bois: 3 } });
   const user = userEvent.setup();
   renderTitle();
-  const avant = localStorage.getItem('dysapps:blocland');
+  const avant = localStorage.getItem('dysapps:game');
   expect(avant).toContain('"bois":3');
   expect(screen.getByTestId('bois')).toHaveTextContent('3');
   await user.keyboard(`${FLECHES}ba`);
   expect(screen.getByTestId('bois')).toHaveTextContent(String(BLOCS_DU_BATISSEUR));
   expect(screen.getAllByText('Mode bâtisseur : ta partie n’est pas enregistrée.')).toHaveLength(2);
   expect(screen.getByRole('button', { name: /Quitter/ })).toBeInTheDocument();
-  expect(localStorage.getItem('dysapps:blocland')).toBe(avant);
+  expect(localStorage.getItem('dysapps:game')).toBe(avant);
 });
 
 it('une suite de travers ne fait rien', async () => {

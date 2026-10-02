@@ -65,18 +65,18 @@ describe('avec « Pas de LV2 », ni pont ni amorce vers l’île de la LV2', () 
   for (const [voisine, ile, a] of cas) {
     const id = `${voisine}-${ile}`;
     const ouvert = grantAccess([], [voisine]);
-    const cubesDu = (lv2: Lv2Choice, ponts: string[]) => avecLv2(lv2, () => worldCubes(a, {}, { plans: {}, journal: [], bridges: ponts }, false));
+    const cubesDu = (lv2: Lv2Choice, ponts: string[]) => avecLv2(lv2, () => worldCubes(a, {}, { parts: {}, log: [], links: ponts }, false));
 
     it(`${ile} : pas de fantôme du pont sans LV2, un fantôme avec une LV2`, () => {
       expect(ouvert).not.toContain(id);
-      expect(cubesDu('aucune', ouvert).filter((c) => c.bridge === id)).toEqual([]);
+      expect(cubesDu('none', ouvert).filter((c) => c.bridge === id)).toEqual([]);
       const fantome = cubesDu('es', ouvert).filter((c) => c.bridge === id);
       expect(fantome.length).toBeGreaterThan(0);
       expect(fantome.every((c) => c.ghost)).toBe(true);
     });
 
     it(`${ile} : un pont déjà construit reste (la sauvegarde ne perd rien)`, () => {
-      const construit = cubesDu('aucune', [...ouvert, id]).filter((c) => c.bridge === id);
+      const construit = cubesDu('none', [...ouvert, id]).filter((c) => c.bridge === id);
       expect(construit.length).toBeGreaterThan(0);
       expect(construit.some((c) => c.ghost)).toBe(false);
     });
@@ -86,7 +86,7 @@ describe('avec « Pas de LV2 », ni pont ni amorce vers l’île de la LV2', () 
 it('le cœur du Jardin est en herbe ; l’osier reste aux bordures du potager, au panier et aux bâtiments', () => {
   const c = islandCenter('jardin');
   const def = islandDef('jardin');
-  const cubes = worldCubes('4e', {}, { plans: {}, journal: [], bridges: grantAccess([], ['jardin']) }, false);
+  const cubes = worldCubes('4e', {}, { parts: {}, log: [], links: grantAccess([], ['jardin']) }, false);
   const coeur = cubes.filter((q) => q.sol && q.x >= def.core.x && q.x < def.core.x + CORE && q.y >= def.core.y && q.y < def.core.y + CORE);
   const dessus = new Map<string, (typeof coeur)[number]>();
   for (const q of coeur) {
@@ -144,7 +144,7 @@ it('la tonnelle : le portique fermé à angles droits (le linteau en (4, 3, 2) e
 });
 
 it('le poteau-lanterne du potager est éteint : aucune lanterne dans le décor du Jardin', () => {
-  const cubes = worldCubes('4e', {}, { plans: {}, journal: [], bridges: grantAccess([], ['jardin']) }, false);
+  const cubes = worldCubes('4e', {}, { parts: {}, log: [], links: grantAccess([], ['jardin']) }, false);
   const decor = cubes.filter((q) => q.tag === 'jardin' && q.decor);
   expect(decor.some((q) => q.texture === 'lanterne')).toBe(false);
   expect(decor.some((q) => q.color === BLOCKS.lanterne.side)).toBe(false);
@@ -203,7 +203,7 @@ describe('l’osier en 3D, calé sur la vue peinte, et lisible en gris', () => {
 
 it('le ponton : l’échelle s’appuie sur la falaise, un pilier de pierre sous le rivage jusqu’à l’eau', () => {
   expect(DEPTH_DU_SOL).toBe(DEPTH);
-  const cubes = worldCubes('4e', {}, { plans: {}, journal: [], bridges: grantAccess([], ['jardin']) }, false);
+  const cubes = worldCubes('4e', {}, { parts: {}, log: [], links: grantAccess([], ['jardin']) }, false);
   const ponton = cubes.filter((q) => q.decor?.startsWith('jardin/ponton@'));
   const echelle = ponton.filter((q) => q.texture === 'escalier');
   expect(echelle.length).toBeGreaterThan(0);

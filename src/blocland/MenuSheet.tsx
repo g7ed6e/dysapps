@@ -42,7 +42,7 @@ export function MenuSheet({ onClose }: Props) {
   const { assemblage } = useTextes();
   const { progress } = useProgress();
   const resume = lastPlace();
-  const reviews = questsToReview(state.spaced, state.village.bridges);
+  const reviews = questsToReview(state.spaced, state.world.links);
   return (
     <section id="panneau-menu" className="island-sheet menu-sheet" role="dialog" aria-labelledby="menu-titre" aria-modal="false">
       <div className="island-sheet-head">

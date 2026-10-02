@@ -32,11 +32,11 @@ export function HomePage() {
   const rank = levelFromXp(progress.xp);
   const firstTime = progress.totalAnswers === 0;
   const resume = lastPlace();
-  const reviews = questsToReview(state.spaced, state.village.bridges);
-  const here = archipelagoOf(state.village.at ?? 'foret').classe;
+  const reviews = questsToReview(state.spaced, state.world.links);
+  const here = archipelagoOf(state.world.place ?? 'foret').classe;
   const destination = nextDestination(state, textes.archipels, textes.libelles);
   const destinationText = `Prochaine destination : ${destination.name}. ${destination.text}`;
-  const reached = reachedArchipelagos(state.village.bridges).length;
+  const reached = reachedArchipelagos(state.world.links).length;
   const univers = UNIVERS[useUnivers()];
 
   return (
@@ -57,7 +57,7 @@ export function HomePage() {
         <h2 id="ton-village" className="home-heading">
           <Icon name="map" /> Ton village : les {textes.archipels[here]}
         </h2>
-        <VillageStageLine village={state.village} archipelago={here} withNext={false} />
+        <VillageStageLine village={state.world} archipelago={here} withNext={false} />
       </section>
 
       {firstTime ? (

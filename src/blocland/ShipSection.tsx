@@ -56,12 +56,12 @@ export function ShipSection({ biome, builder, in3d = false, onBoard, highlight =
   if (!here) return null;
   const current = archipelagoOf(biome.id);
   const { stage, status, launch } = builder;
-  const reached = reachedArchipelagos(state.village.bridges).filter((a) => a.classe !== current.classe);
+  const reached = reachedArchipelagos(state.world.links).filter((a) => a.classe !== current.classe);
   const missing = status ? (Object.entries(status.missing) as [BlockId, number][]).filter(([, n]) => n > 0) : [];
   const next = getArchipelago(here.to);
   const ready = Boolean(launch?.ok);
   const waiting = launch && !launch.ok && launch.reason === 'gardiens' ? launch : null;
-  const departed = !stage && state.village.bridges.includes(`voyage-${here.to}`);
+  const departed = !stage && state.world.links.includes(`voyage-${here.to}`);
   const complete = departed && here.stage === VEHICLE_STAGES.length;
   const heading = (
     <h3 id={`navire-${biome.id}`} className="island-sheet-heading">
@@ -71,7 +71,7 @@ export function ShipSection({ biome, builder, in3d = false, onBoard, highlight =
   // Ouvert quand on peut poser, embarquer, ou que le navire vient d'être touché dans le monde ; replié sinon.
   const defaultOpen = builder.canFill || ready || highlight || builder.notice !== null;
   return (
-    <Foldable fold={fold} name="navire" heading={heading} status={shipSummary(builder, state.inventory, textes)} defaultOpen={defaultOpen}>
+    <Foldable fold={fold} name="navire" heading={heading} status={shipSummary(builder, state.stock, textes)} defaultOpen={defaultOpen}>
       <section
         ref={section}
         className={`plan-section ship-section${ready ? ' ship-ready' : ''}${highlight ? ' bridge-highlight' : ''}`}

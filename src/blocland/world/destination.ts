@@ -1,7 +1,7 @@
 // La prochaine destination de l'élève dans son archipel : une île, une phrase et une jauge, pour « Reprendre
 // l'aventure » au menu et la Carte. Code pur, déduit de la sauvegarde à chaque rendu, sans rien y ajouter.
 import { getBiome, type BiomeId } from '../biomes';
-import { canLaunch, type BloclandState } from '../engine';
+import { canLaunch, type GameState } from '../engine';
 import { archipelagoOf, islandsOf, reachableIslands, type MotsDesGardiens, type NomsArchipels } from './archipelago';
 import { nextGoalInfo } from './goals';
 import { isUnexplored } from './islandState';
@@ -25,10 +25,10 @@ export interface Destination {
  * explorée ; sinon l'objectif qui demande le moins de blocs. Rien à faire : le port, avec ce qu'il faut pour que le
  * village avance. `noms` : les noms des archipels de l'univers affiché ; `mots` : ses mots pour les Gardiens.
  */
-export function nextDestination(state: BloclandState, noms: NomsArchipels, mots: MotsDesGardiens): Destination {
-  const at = state.village.at ?? 'foret';
+export function nextDestination(state: GameState, noms: NomsArchipels, mots: MotsDesGardiens): Destination {
+  const at = state.world.place ?? 'foret';
   const archipelago = archipelagoOf(at);
-  const open = reachableIslands(state.village.bridges);
+  const open = reachableIslands(state.world.links);
   const islands = islandsOf(archipelago.classe)
     .map((b) => b.id)
     .filter((id) => open.has(id));
@@ -51,6 +51,6 @@ export function nextDestination(state: BloclandState, noms: NomsArchipels, mots:
     const closest = counted.reduce((a, b) => (b.goal.need - b.goal.have < a.goal.need - a.goal.have ? b : a));
     return make(closest.island, closest.goal.text, closest.goal.have, closest.goal.need);
   }
-  const village = villageStage(state.village, archipelago.classe, noms);
+  const village = villageStage(state.world, archipelago.classe, noms);
   return make(port, village.next ?? 'Le village est complet : reviens réviser quand tu veux.');
 }

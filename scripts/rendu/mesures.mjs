@@ -87,9 +87,9 @@ const CAPTURES = [
   // `<archipel>-defi-<île>.jpg`) et en SVG (la vue « liste », sans la 3D) ; la bulle d'une créature (le défi pas encore ouvert : la partie
   // sans étoiles), en 3D et en SVG.
   { nom: 'defi', vue: 'défi', famille: 'personnages', parIle: true },
-  { nom: 'defi-svg', vue: 'défi', famille: 'personnages', view: 'liste' },
+  { nom: 'defi-svg', vue: 'défi', famille: 'personnages', view: 'list' },
   { nom: 'bulle', vue: 'bulle', famille: 'personnages', sansEtoiles: true },
-  { nom: 'bulle-svg', vue: 'bulle', famille: 'personnages', view: 'liste', sansEtoiles: true },
+  { nom: 'bulle-svg', vue: 'bulle', famille: 'personnages', view: 'list', sansEtoiles: true },
   // Les repères des Îles du Ciel (R4b-3e) : le grand phare sur son socle, de jour et de nuit, les gradins de
   // l'Observatoire des textes.
   { nom: 'phare-du-ciel', vue: 'île', famille: 'ciel', ile: 'phare' },
@@ -308,10 +308,10 @@ async function scenes() {
   /** Les succès gagnés d'une capture (`succes` : leur nombre, ou `tous`), un trophée chacun dans la salle des trophées. */
   const succesDe = (n) => Object.fromEntries(BADGES.slice(0, n === 'tous' ? BADGES.length : (n ?? 0)).map((b) => [b.id, '2026-09-28T10:00:00.000Z']));
   // La même partie tout construite que le test du budget (world/budget.test.ts).
-  const { progress, village: built } = toutConstruit();
+  const { progress, world: built } = toutConstruit();
   /** Les plans d'une partie changée (voir `CAPTURES`, `partie`). */
   const plansDe = (partie, ile) => {
-    const plans = { ...built.plans };
+    const plans = { ...built.parts };
     // Avant : aucun plan de l'île posé.
     if (partie === 'avant') for (const p of plansFor(ile)) delete plans[p.id];
     if (partie === 'chantier')
@@ -373,7 +373,7 @@ async function scenes() {
               go: routeDe(c, parIle, routes),
               ile: c.ile,
               plans: c.partie ? plansDe(c.partie, c.ile) : null,
-              bridges: c.sansPonts ? built.bridges.filter((id) => !c.sansPonts.includes(id)) : null,
+              bridges: c.sansPonts ? built.links.filter((id) => !c.sansPonts.includes(id)) : null,
               time: c.nuit ? NIGHT : DAY,
               view: c.view,
               sansEtoiles: c.sansEtoiles,
@@ -400,17 +400,17 @@ async function scenes() {
       await page.addInitScript(figeable);
       await page.goto(`${base}/icon.svg`);
       await page.evaluate(
-        ({ village, progress, view, univers, lv2, reglages, badges, inventaire }) => {
+        ({ world, progress, view, univers, lv2, reglages, badges, inventaire }) => {
           localStorage.clear();
-          sessionStorage.setItem('dysapps:titre-vu', '1');
+          sessionStorage.setItem('dysapps:title-seen', '1');
           localStorage.setItem('dysapps:settings', JSON.stringify({ worldView: view, ...(univers ? { univers } : {}), ...(lv2 ? { lv2 } : {}), ...(reglages ?? {}) }));
-          localStorage.setItem('dysapps:tutos', JSON.stringify({ 'village-immersif': true, 'archipel-5e': true, 'archipel-4e': true, 'archipel-3e': true }));
-          localStorage.setItem('dysapps:noms-archipels', JSON.stringify({ dit: true }));
-          localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: inventaire ?? {}, progress, village }));
+          localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true, 'archipel-5e': true, 'archipel-4e': true, 'archipel-3e': true }));
+          localStorage.setItem('dysapps:region-names', JSON.stringify({ said: true }));
+          localStorage.setItem('dysapps:game', JSON.stringify({ version: 2, stock: inventaire ?? {}, progress, world }));
           localStorage.setItem('dysapps:progress', JSON.stringify({ xp: 20000, badges }));
         },
         {
-          village: { ...built, plans: sansLesIles(plans ?? built.plans, sansIles), ...(bridges ? { bridges } : {}), at: depuis ?? ile ?? at },
+          world: { ...built, parts: sansLesIles(plans ?? built.parts, sansIles), ...(bridges ? { links: bridges } : {}), place: depuis ?? ile ?? at },
           progress: sansEtoiles ? {} : sansLeGardien(sansLesIles(progress, sansIles), debout),
           view,
           univers: UNIVERS_DES_TEXTES,

@@ -15,7 +15,7 @@ import { frenchTypography } from './math/RichText';
 import { SpeakButton } from './SpeakButton';
 import { Syllabified } from './Syllabified';
 
-const SESSION_KEY = 'dysapps:titre-vu';
+const SESSION_KEY = 'dysapps:title-seen';
 
 function seenThisSession(): boolean {
   try {
@@ -45,7 +45,7 @@ export function useTitreOuvert(): boolean {
 
 /** Le message unique qui présente Archipéo reste-t-il à dire sur cet appareil ? */
 function messageADire(): boolean {
-  return PRESENTER_ARCHIPEO && loadJSON<{ dit?: boolean }>(MESSAGE_UNIVERS_KEY, {}).dit === false;
+  return PRESENTER_ARCHIPEO && loadJSON<{ said?: boolean }>(MESSAGE_UNIVERS_KEY, {}).said === false;
 }
 
 const MESSAGE_LU = `${MESSAGE_UNIVERS.titre}. ${MESSAGE_UNIVERS.texte}`;
@@ -164,7 +164,7 @@ export function TitleScreen() {
 
   // Noté dit au toucher de l'un ou l'autre bouton : il ne revient plus, sur cet appareil.
   const answer = (to?: string, section?: string) => {
-    saveJSON(MESSAGE_UNIVERS_KEY, { dit: true });
+    saveJSON(MESSAGE_UNIVERS_KEY, { said: true });
     close(to, section);
   };
 

@@ -45,8 +45,8 @@ export function useVehicleBuilder(island: BiomeId): VehicleBuilder {
   useEffect(() => setNotice(null), [island]);
 
   const here = stageAt(island);
-  const previousDone = here ? here.stage === 1 || state.village.bridges.includes(voyageId(VEHICLE_STAGES[here.stage - 2].to)) : false;
-  const stage = here && previousDone && !state.village.bridges.includes(voyageId(here.to)) ? here : null;
+  const previousDone = here ? here.stage === 1 || state.world.links.includes(voyageId(VEHICLE_STAGES[here.stage - 2].to)) : false;
+  const stage = here && previousDone && !state.world.links.includes(voyageId(here.to)) ? here : null;
   const status = stage ? planStatus(state, stage) : null;
   const launch = stage ? canLaunch(state, stage) : null;
   const kit = stage ? kitReady(stage, state.progress) : false;
@@ -88,7 +88,7 @@ export function useVehicleBuilder(island: BiomeId): VehicleBuilder {
   };
   const fillAll = () => {
     if (!stage) return;
-    const { placed, last, completed } = placeAll(stage, state.village.plans[stage.id] ?? [], fillPlan);
+    const { placed, last, completed } = placeAll(stage, state.world.parts[stage.id] ?? [], fillPlan);
     if (!last) return;
     burstAt(last.x, last.y, last.z, last.block);
     if (completed) return finished(stage);

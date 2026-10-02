@@ -1,5 +1,5 @@
 import { BIOMES, getBiome, guardianTitle } from './biomes';
-import { EMPTY_STATE, type BloclandState, type ExerciseProgress } from './engine';
+import { EMPTY_STATE, type GameState, type ExerciseProgress } from './engine';
 import { exercisesOf, loadExercise } from './exercises';
 import { SCREEN_TYPES } from './exercises/registry';
 import { ROUNDS_PER_TYPE, bossDef, bossId, bossesBeaten, guardianStatus, isBossBeaten, isBossOpen, isBossUnlocked, missingForBoss, typesWithContent } from './boss';
@@ -27,7 +27,7 @@ it('le Gardien se débloque avec deux étoiles dans chaque mission du biome, et 
 
 it('construit un défi avec deux manches par type de mission, aux items de l’exercice, sans doublon', async () => {
   for (const biome of BIOMES) {
-    const state: BloclandState = { ...EMPTY_STATE, progress: starsEverywhere(biome.id) };
+    const state: GameState = { ...EMPTY_STATE, progress: starsEverywhere(biome.id) };
     const def = await bossDef(biome, state, () => 0.5);
     expect(def.id).toBe(bossId(biome.id));
     expect(def.type).toBe('boss');

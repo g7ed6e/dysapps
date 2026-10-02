@@ -1,5 +1,5 @@
 import { Syllabified } from '../components/Syllabified';
-import type { Village } from './engine';
+import type { World } from './engine';
 import type { ArchipelagoId } from './world/archipelago';
 import { villageStage } from './world/villageStage';
 import { useTextes } from '../univers';
@@ -14,7 +14,7 @@ export function VillageStageLine({
   className = '',
   withNext = true,
 }: {
-  village: Pick<Village, 'plans' | 'bridges'>;
+  village: Pick<World, 'parts' | 'links'>;
   archipelago: ArchipelagoId;
   className?: string;
   /** Dire ce qu'il faut pour la suite (le menu s'en passe : « Reprendre l'aventure » le dit déjà). */

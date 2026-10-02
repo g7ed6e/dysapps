@@ -8,6 +8,6 @@ it('retient l’île dont le panneau est replié, et l’oublie quand un panneau
 });
 
 it('une valeur lue qui n’est pas une île ne replie rien', () => {
-  sessionStorage.setItem('dysapps:panneau-replie', 'atlantide');
+  sessionStorage.setItem('dysapps:panel-folded', 'atlantide');
   expect(panneauReplie()).toBeNull();
 });

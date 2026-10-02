@@ -44,14 +44,14 @@ export function BiomePage() {
   const builder = usePlanBuilder(biome?.id ?? 'foret');
   // Les nouveaux noms des archipels passent avant le mot des grandes étapes, comme dans le monde et la vue simple.
   const renommage = useRenommage(true, 1200);
-  const whale = useWhaleWord(state, archipelagoOf(state.village.at ?? 'foret').classe, !renommage.ouvert);
+  const whale = useWhaleWord(state, archipelagoOf(state.world.place ?? 'foret').classe, !renommage.ouvert);
   const ship = useVehicleBuilder(biome?.id ?? 'foret');
   if (!biome) return <NotFoundPage />;
   const block = BLOCKS[biome.block];
-  const owned = state.inventory[biome.block] ?? 0;
-  const unlocked = isBiomeUnlocked(biome.id, state.village.bridges);
+  const owned = state.stock[biome.block] ?? 0;
+  const unlocked = isBiomeUnlocked(biome.id, state.world.links);
   const port = archipelagoOf(biome.id).port === biome.id;
-  const sansLv2 = estIleLv2(biome) && settings.lv2 === 'aucune';
+  const sansLv2 = estIleLv2(biome) && settings.lv2 === 'none';
   const goal = unlocked && !sansLv2 ? nextGoalInfo(state, biome.id, textes.archipels, textes.libelles) : null;
 
   return (
@@ -77,7 +77,7 @@ export function BiomePage() {
       <CreatureBubble biome={biome} text={sansLv2 ? SANS_LV2 : unlocked ? textes.creatures[biome.id].greeting : lockedHint(state, biome.id, textes.archipels, textes.libelles)} />
 
       {goal && <GoalLine goal={goal} className="panel" />}
-      {port && unlocked && <VillageStageLine village={state.village} archipelago={biome.classe} className="panel" />}
+      {port && unlocked && <VillageStageLine village={state.world} archipelago={biome.classe} className="panel" />}
 
       {/* Un ouvrage construit ouvre l'île d'en face : on y va, sa créature accueille (comme en 3D). */}
       {sansLv2 ? (

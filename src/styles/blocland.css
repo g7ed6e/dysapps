@@ -51,7 +51,7 @@
 }
 
 /* ===== Thème Nuit ===== */
-:root[data-univers="blocland"][data-theme="nuit"] {
+:root[data-univers="blocland"][data-theme="night"] {
   --bg: #1c1813;
   --surface: #2a231b;
   --text: #f2ecdf;
@@ -75,7 +75,7 @@
 }
 
 /* ===== Thème Clair : plat, des faces plus sobres ===== */
-:root[data-univers="blocland"][data-theme="clair"] {
+:root[data-univers="blocland"][data-theme="light"] {
   --bg: #f6f5f1;
   --surface: #ffffff;
   --topbar-bg: #ffffff;
@@ -154,17 +154,17 @@
 }
 
 /* ===== Les pastilles des thèmes (Réglages) : les couleurs de chaque thème dans Blocland ===== */
-:root[data-univers="blocland"] .theme-swatch.theme-creme {
+:root[data-univers="blocland"] .theme-swatch.theme-cream {
   background: #f2ecdf;
   color: #2b2118;
   border-color: #7a5a3c;
 }
-:root[data-univers="blocland"] .theme-swatch.theme-nuit {
+:root[data-univers="blocland"] .theme-swatch.theme-night {
   background: #2a231b;
   color: #f2ecdf;
   border-color: #9c8262;
 }
-:root[data-univers="blocland"] .theme-swatch.theme-clair {
+:root[data-univers="blocland"] .theme-swatch.theme-light {
   background: #ffffff;
   color: #2b2118;
   border-color: #7a5a3c;

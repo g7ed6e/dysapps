@@ -2,7 +2,7 @@
 // (aucun chemin d'ouvrages n'y mène), À explorer (ouverte, aucune mission jouée), En chantier, Restaurée (ses trois
 // plans terminés ; « Bâtie » dans Blocland). Chaque état a son icône et son mot : il ne se lit jamais à la seule couleur (DP-08).
 import type { BiomeId } from '../biomes';
-import type { BloclandState } from '../engine';
+import type { GameState } from '../engine';
 import { CATALOG } from '../exercises';
 import type { AnyIconName } from '../../components/Icon';
 import { isBiomeUnlocked } from './archipelago';
@@ -24,14 +24,14 @@ export const ISLAND_STATES: Record<IslandStateId, IslandStateDef> = {
 };
 
 /** Aucune mission de l'île n'a encore été jouée. */
-export function isUnexplored(state: Pick<BloclandState, 'progress'>, island: BiomeId): boolean {
+export function isUnexplored(state: Pick<GameState, 'progress'>, island: BiomeId): boolean {
   return !CATALOG.some((e) => e.biome === island && state.progress[e.id] !== undefined);
 }
 
-export function islandState(state: Pick<BloclandState, 'progress' | 'village'>, island: BiomeId): IslandStateDef {
-  if (!isBiomeUnlocked(island, state.village.bridges)) return ISLAND_STATES.fermee;
+export function islandState(state: Pick<GameState, 'progress' | 'world'>, island: BiomeId): IslandStateDef {
+  if (!isBiomeUnlocked(island, state.world.links)) return ISLAND_STATES.fermee;
   const plans = plansFor(island);
-  if (plans.length > 0 && plans.every((p) => isPlanDone(p, state.village.plans))) return ISLAND_STATES.restauree;
+  if (plans.length > 0 && plans.every((p) => isPlanDone(p, state.world.parts))) return ISLAND_STATES.restauree;
   if (isUnexplored(state, island)) return ISLAND_STATES['a-explorer'];
   return ISLAND_STATES['en-chantier'];
 }

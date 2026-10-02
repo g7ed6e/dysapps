@@ -42,7 +42,7 @@ describe('Les baleines dans la vue de l’archipel depuis le port', () => {
       const tout = toutConstruit();
       // La plus haute case de chaque colonne, tout construit (les bâtiments du port comptent).
       const haut = new Map<string, number>();
-      for (const c of worldCubes(a, tout.progress, tout.village, true, [], true)) {
+      for (const c of worldCubes(a, tout.progress, tout.world, true, [], true)) {
         const k = `${c.x},${c.y}`;
         haut.set(k, Math.max(haut.get(k) ?? -Infinity, c.z + 1));
       }
