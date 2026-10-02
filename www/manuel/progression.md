@@ -35,7 +35,7 @@ Le bouton **Voir la matière** ouvre la page de la matière, avec toutes ses mis
 
 ## Succès
 
-Une vingtaine de succès jalonnent la progression : les premiers pas (première réponse, première mission), les combos (x5, x10), la mission parfaite, la persévérance (10 missions, 50 puis 200 réponses), les rôles atteints (Maçon, Mécanicien, Ingénieur, Architecte dans Blocland ; Cartographe, Bâtisseur, Navigateur, Architecte de l’archipel dans Archipéo), la construction (Premier bâtiment, Maître d’œuvre pour cinq, les quinze plans des cinq premières îles, tous les plans des quatre archipels), les Gardiens (un, cinq, dix, tous), les voyages du Bloc-Navire (Capitaine, Aéronaute, Pilote du ciel) et un premier monument (Patrimoine). La liste exacte est dans [Barème et succès](../pedagogie/bareme.md#succes).
+Une vingtaine de succès jalonnent la progression : les premiers pas (première réponse, première mission), les combos (x5, x10), la mission parfaite, la persévérance (10 missions, 50 puis 200 réponses), les rôles atteints (Maçon, Mécanicien, Ingénieur, Architecte dans Blocland ; Cartographe, Bâtisseur, Navigateur, Architecte de l’archipel dans Archipéo), la construction (Premier bâtiment, Maître d’œuvre pour cinq, les bâtiments de cinq îles, puis ceux de toutes les îles des quatre archipels), les Gardiens (un, cinq, dix, tous), les voyages du Bloc-Navire (Capitaine, Aéronaute, Pilote du ciel) et un premier monument (Patrimoine). La liste exacte est dans [Barème et succès](../pedagogie/bareme.md#succes).
 
 ## Dans l’aventure
 

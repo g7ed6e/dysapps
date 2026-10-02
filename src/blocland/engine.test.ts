@@ -156,6 +156,9 @@ describe('completeExercise', () => {
     expect(c.state.chests).toBe(1);
     // 4 blocs par exercice sans faute (1 item juste = score 1) +2 pour trois étoiles, +2 la première fois, plus le coffre de 6.
     expect(c.state.stock['french-6e-phonology']).toBe(4 + 2 + 2 + (4 + 2) + (4 + 2) + 6);
+    // Le coffre ne donne que des blocs d'îles : jamais d'or, de cristal ni de bloc de finition (GD-6).
+    const last = completeExercise(state, DEF, [ok('a')], '2026-09-26', () => 0.9999);
+    expect(['trophy-gold', 'trophy-crystal', 'roof', 'door', 'lantern', 'fence', 'stairs']).not.toContain(last.chestBlock);
   });
 });
 

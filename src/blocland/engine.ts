@@ -393,7 +393,7 @@ export function disassembleBlock(state: GameState, bloc: BlockId): AssembleResul
   return { state: { ...state, stock: inventory }, ok: true };
 }
 
-/** La prochaine cellule du plan que l'on peut poser avec l'inventaire actuel (vue simple, bouton « Poser le bloc suivant »). */
+/** La prochaine cellule d'un plan que l'on peut poser avec l'inventaire actuel (le Bloc-Navire, bouton « Poser le bloc suivant »). */
 export function nextFillable(state: GameState, plan: PlanDef): { x: number; y: number; z: number } | null {
   const done = new Set(state.world.parts[plan.id] ?? []);
   const cell = planCells(plan).find((c) => !done.has(c.key) && (state.stock[c.block] ?? 0) > 0);
@@ -617,7 +617,8 @@ function playedToday(
   let chests = state.chests;
   if (streak.chest) {
     // Ni les blocs rares, ni les blocs assemblés (GD-2), qu'on ne gagne jamais tout faits.
-    const common = (Object.keys(BLOCKS) as BlockId[]).filter((b) => !BLOCKS[b].rare && !BLOCKS[b].assemble);
+    // Les blocs des îles seulement : ni or ni cristal, ni blocs de finition, qui ne paient plus rien (GD-6).
+    const common = [...new Set(BIOMES.map((b) => b.block))].filter((b) => !BLOCKS[b].rare && !BLOCKS[b].assemble);
     chestBlock = common[Math.floor(rng() * common.length)];
     inventory[chestBlock] = (inventory[chestBlock] ?? 0) + CHEST_BLOCKS;
     chests += 1;

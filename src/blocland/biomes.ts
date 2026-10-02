@@ -245,7 +245,7 @@ export const BLOCKS: Record<BlockId, BlockDef> = {
   'compound-5e': { id: 'compound-5e', name: 'Vitrail', top: '#5f9fd8', side: '#d0594f', texture: 'vitrail', assemble: true },
   'compound-4e': { id: 'compound-4e', name: 'Engrenage', top: '#d2d8de', side: '#4f5864', texture: 'engrenage', assemble: true },
   'compound-3e': { id: 'compound-3e', name: 'Miroir', top: '#e6f0f7', side: '#8a7aa8', texture: 'miroir', assemble: true },
-  // Blocs de finition : ils viennent des coffres des plans (et des coffres de régularité), pas des biomes.
+  // Blocs de finition : ils venaient des coffres des plans, retirés par GD-6 ; ceux déjà gagnés restent des trophées.
   'roof': { id: 'roof', name: 'Toit', top: '#a8443a', side: '#8a3630', texture: 'toit' },
   'door': { id: 'door', name: 'Porte', top: '#8a6236', side: '#6f4d2a', texture: 'porte' },
   'lantern': { id: 'lantern', name: 'Lanterne', top: '#ffd85c', side: '#f0b42a', texture: 'lanterne' },

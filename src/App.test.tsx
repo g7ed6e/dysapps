@@ -200,8 +200,10 @@ it('en vue simple, « Mes blocs » est une page : ce que chaque bloc construit, 
   renderAt('/adventure');
   await user.click(screen.getByRole('link', { name: /Mes blocs \(4\)/ }));
   expect(screen.getByRole('heading', { level: 1, name: /Mes blocs/ })).toBeInTheDocument();
-  expect(screen.getByRole('link', { name: /Plan de Forêt des sons : encore 22 à gagner/ })).toHaveAttribute('href', '/adventure/french-6e-phonology');
-  expect(screen.getByRole('link', { name: 'Plaine des nombres' })).toHaveAttribute('href', '/adventure/maths-6e-calculation');
+  // Le bois sert au Bloc-Navire, jamais au bâtiment de l'île (il se pose tout seul, GD-6) ; le reste se gagne sur la Forêt.
+  expect(screen.getByRole('link', { name: /Bloc-Navire : encore 16 à gagner/ })).toHaveAttribute('href', '/adventure/maths-6e-calculation');
+  expect(screen.queryByText(/Plan de /)).not.toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Forêt des sons' })).toHaveAttribute('href', '/adventure/french-6e-phonology');
   // D'abord ce qu'on peut faire tout de suite : 4 blocs paient un ouvrage à 3 blocs.
   const now = screen.getByRole('list', { name: /Tu peux construire/ });
   expect(within(now).getByRole('link', { name: /Sentier vers Mine des lettres/ })).toHaveAttribute('href', '/adventure/french-6e-phonology');
