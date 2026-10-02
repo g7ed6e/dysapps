@@ -17,7 +17,7 @@ export type Relief = 'plat' | 'collines' | 'montagne' | 'volcan';
  * son décor) : son identifiant d'avant les mots neutres (2 octobre 2026), figé pour que le dessin ne bouge pas quand un
  * identifiant change. Un lieu nouveau n'y est pas : son identifiant tire son hasard.
  */
-const GRAINES_DU_DESSIN: Readonly<Partial<Record<string, string>>> = {
+export const GRAINES_DU_DESSIN: Readonly<Record<string, string>> = {
   'french-6e-phonology': 'foret',
   'french-6e-letter-confusion': 'mine',
   'french-6e-word-spelling': 'carriere',
@@ -55,8 +55,7 @@ const GRAINES_DU_DESSIN: Readonly<Partial<Record<string, string>>> = {
 export function graineDuDessin(nom: string): string {
   const i = nom.indexOf('/');
   const lieu = i < 0 ? nom : nom.slice(0, i);
-  const graine = GRAINES_DU_DESSIN[lieu];
-  return graine === undefined ? nom : graine + nom.slice(lieu.length);
+  return Object.hasOwn(GRAINES_DU_DESSIN, lieu) ? GRAINES_DU_DESSIN[lieu] + nom.slice(lieu.length) : nom;
 }
 
 export interface IslandDef {

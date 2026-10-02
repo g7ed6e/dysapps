@@ -70,6 +70,8 @@ function mapKeys(v: unknown, f: (k: string) => string): unknown {
   const out: Record<string, unknown> = {};
   for (const [k, x] of Object.entries(v)) {
     const t = f(k);
+    // Une clé `__proto__` (fichier abîmé ou fabriqué) changerait le prototype de l'objet : elle est laissée de côté.
+    if (t === '__proto__') continue;
     if (!Object.hasOwn(out, t)) out[t] = x;
   }
   return out;

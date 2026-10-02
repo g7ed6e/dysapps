@@ -462,7 +462,7 @@ export function translatePath(path: string): string {
       if (second !== undefined) out.push(first === 'assemblage' ? translateResourceId(second) : second);
     } else if (has(LEGACY_PLACES, first)) {
       out.push(LEGACY_PLACES[first]);
-      if (second !== undefined) out.push(second === 'gardien' ? 'challenge' : (LEGACY_MISSIONS[first][second] ?? second));
+      if (second !== undefined) out.push(second === 'gardien' ? 'challenge' : (has(LEGACY_MISSIONS[first], second) ? LEGACY_MISSIONS[first][second] : second));
     } else {
       out.push(translatePartId(first));
       if (second !== undefined) out.push(second);
@@ -476,6 +476,9 @@ export function translatePath(path: string): string {
     params.delete('chantier');
     params.set('worksite', chantier === 'navire' ? 'vehicle' : chantier === 'plan' ? 'part' : translateLinkId(chantier));
   }
+  // Le bloc assemblé demandé à la Fabrique (`?bloc=poutre`).
+  const bloc = params.get('bloc');
+  if (bloc !== null) params.set('bloc', translateResourceId(bloc));
   const porte = params.get('porte');
   if (porte !== null) {
     params.delete('porte');

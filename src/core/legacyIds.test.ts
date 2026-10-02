@@ -1,5 +1,6 @@
 // Les anciennes adresses et les anciens identifiants mènent aux neufs ; ce qui n'est pas d'avant passe tel quel.
-import { translateExerciseId, translateItemId, translateLinkId, translatePath } from './legacyIds';
+import { GRAINES_DU_DESSIN } from '../blocland/world/map';
+import { LEGACY_PLACES, translateExerciseId, translateItemId, translateLinkId, translatePath } from './legacyIds';
 
 it('une ancienne adresse de l’aventure mène à la même page sous les mots neutres', () => {
   expect(translatePath('/aventure')).toBe('/adventure');
@@ -33,4 +34,20 @@ it('les identifiants d’avant : exercices, questions, liaisons', () => {
   expect(translateItemId('assemblage-poutre:poutre-3')).toBe('assembly-compound-6e:compound-6e-3');
   expect(translateLinkId('voyage-4e')).toBe('passage-4e');
   expect(translateLinkId('foret-mine')).toBe('french-6e-phonology-french-6e-letter-confusion');
+});
+
+it('le dessin tire son hasard des noms d’avant : la même table que les lieux d’avant, à l’envers', () => {
+  expect(Object.fromEntries(Object.entries(GRAINES_DU_DESSIN).map(([lieu, avant]) => [avant, lieu]))).toEqual(LEGACY_PLACES);
+});
+
+it('les autres anciennes adresses : pages du village, monuments, bloc demandé, mots inconnus', () => {
+  expect(translatePath('/aventure/blocs')).toBe('/adventure/stock');
+  expect(translatePath('/aventure/monde')).toBe('/adventure/world');
+  expect(translatePath('/aventure/monuments')).toBe('/adventure/landmarks');
+  expect(translatePath('/aventure/trophees')).toBe('/adventure/trophies');
+  expect(translatePath('/aventure/ecole')).toBe('/adventure/school');
+  expect(translatePath('/aventure/foret?chantier=plan')).toBe('/adventure/french-6e-phonology?worksite=part');
+  expect(translatePath('/aventure/assemblage?bloc=poutre')).toBe('/adventure/assembly?bloc=compound-6e');
+  expect(translatePath('/aventure/monument-observatoire')).toBe('/adventure/landmark-6e-1');
+  expect(translatePath('/aventure/foret/constructor')).toBe('/adventure/french-6e-phonology/constructor');
 });

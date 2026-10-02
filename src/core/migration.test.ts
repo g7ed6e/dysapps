@@ -434,3 +434,10 @@ it('les valeurs inconnues des réglages et les données illisibles passent telle
   expect(localStorage.getItem('dysapps:blocland')).toBe('{abîmé');
   expect(localStorage.getItem('dysapps:game')).toBeNull();
 });
+
+it('une clé « __proto__ » d’une partie abîmée est laissée de côté, sans toucher au reste', () => {
+  const partie = JSON.parse('{"stock":{"__proto__":{"x":1},"bois":2}}') as unknown;
+  const t = translateGame(partie) as { stock: Record<string, unknown> };
+  expect(Object.getPrototypeOf(t.stock)).toBe(Object.prototype);
+  expect(t.stock).toEqual({ 'french-6e-phonology': 2 });
+});
