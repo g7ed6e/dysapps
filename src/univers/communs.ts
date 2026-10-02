@@ -1,4 +1,4 @@
-// Les textes communs aux deux univers d'aujourd'hui (étape J8 de U4, docs/conception/univers.md §5), déplacés sans un
+// Les textes communs aux deux univers d'aujourd'hui (étape J8 de U4, docs/univers/univers.md §5), déplacés sans un
 // mot changé : les répliques des créatures (de src/blocland/biomes.ts) et le mot de chaque état d'île (de
 // src/blocland/world/islandState.ts). Chaque univers les reprend dans ses textes ; il peut les remplacer (Blocland
 // remplace « Restaurée » par « Bâtie »).

@@ -1,4 +1,4 @@
-// La palette d'Archipéo (lot R1 de la piste Rendu, docs/conception/cadrage-archipeo.md) : les couleurs du monde peint,
+// La palette d'Archipéo (lot R1 de la piste Rendu, docs/univers/archipeo/cadrage.md) : les couleurs du monde peint,
 // par archipel, de jour et de nuit. Code pur, sans Three.js : la 3D la lit dans l’univers Archipéo (voir rendu.ts), la 2D
 // peinte la lira au lot R7 ; le monde en blocs garde `AMBIENCE` et `palette()` de ./daylight, inchangés.
 //
@@ -68,7 +68,7 @@ export interface PaletteArchipel {
 
 /**
  * L'ambiance d'un archipel : tout ce que son sous-lot R4b règle, et rien d'autre (la fiche de famille, dans
- * docs/conception/cadrage-archipeo.md §6). Le ciel et la lumière de jour, la brume de profondeur, le voile, les sols
+ * docs/univers/archipeo/cadrage.md §6). Le ciel et la lumière de jour, la brume de profondeur, le voile, les sols
  * propres, la mer. La direction du soleil (`SOLEIL_DIRECTION`), la nuit (`deNuit`), les matières (`MATIERES`) et les
  * sols communs (`SOLS`) sont les mêmes pour les quatre.
  */
@@ -93,7 +93,7 @@ export const PALETTES: Record<ArchipelagoId, Ambiance> = {
     // La mer : le vert d'eau de la fiche (`#178078`), un rien plus bleu au large.
     teinteDeMer: 0x1a7486,
   },
-  // Les Îles Brumeuses (R4b-5e, design/archipeo/intentions/5e-iles-brumeuses.md §5) : une lumière diffuse de matin
+  // Les Îles Brumeuses (R4b-5e, docs/univers/archipeo/intentions/5e-iles-brumeuses.md §5) : une lumière diffuse de matin
   // froid, un ciel pâle, la brume plus proche. La neige du sol se peint en roche claire et froide : la seule glace
   // blanche est la calotte du Glacier (world/decor/5e.ts).
   '5e': {
@@ -131,7 +131,7 @@ export const PALETTES: Record<ArchipelagoId, Ambiance> = {
   },
   // Les Îles du Ciel (R4b-3e) : un bleu franc, sans lavande ; l'horizon et la lueur de nuit sont ceux du directeur
   // artistique ; la neige et la roche froides du massif, le plancher de nuages d'un blanc bleuté, jamais sable
-  // (design/archipeo/intentions/3e-iles-du-ciel.md §5). La nuit reste de la famille des trois autres (revue du 3e,
+  // (docs/univers/archipeo/intentions/3e-iles-du-ciel.md §5). La nuit reste de la famille des trois autres (revue du 3e,
   // DA-21) : zénith, lune, ambiance et plancher ramenés de 223-225° vers 210-220° (220° au zénith, 209-212° pour la
   // lune, l'ambiance et le plancher), à clarté HSL égale : fini le lilas sur le plancher de nuages.
   '3e': {
@@ -239,7 +239,7 @@ export function domeDuCiel(c: Ciel, segments = 24): { positions: number[]; color
 
 // ---------- La mer (lot R3) ----------
 
-/** Les cinq valeurs de la planche maître du pack visuel (docs/conception/cadrage-archipeo.md, §3.4). */
+/** Les cinq valeurs de la planche maître du pack visuel (docs/univers/archipeo/cadrage.md, §3.4). */
 export const NUIT_OCEAN = 0x142b38;
 export const BLEU_LAGON = 0x178078;
 export const VERT_ILE = 0x438b82;

@@ -1,5 +1,5 @@
 // Les univers (lot 6) : Archipéo et Blocland habillent le même jeu de leurs textes, ceux de l'univers choisi dans les
-// Réglages (Blocland par défaut). Voir docs/conception/cadrage-archipeo.md, « Les fils du lot 6 ».
+// Réglages (Blocland par défaut). Voir docs/univers/archipeo/cadrage.md, « Les fils du lot 6 ».
 import { ARCHIPEO } from './archipeo';
 import { BLOCLAND } from './blocland';
 import { useUniversChoisi } from '../core/SettingsContext';

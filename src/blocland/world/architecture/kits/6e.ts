@@ -1,5 +1,5 @@
 // Le kit des Premiers Rivages (6e, lot 7b d'Archipéo), la référence des autres archipels : l'intention du directeur
-// artistique du 30 septembre 2026 (avis « Aligné », docs/conception/cadrage-archipeo.md, « L'intention du 6e »).
+// artistique du 30 septembre 2026 (avis « Aligné », docs/univers/archipeo/cadrage.md, « L'intention du 6e »).
 // - Le bois : le colombage (poteaux #795643 sur un remplissage crème #D8D9C9, peint, 0 triangle) ; bardé (#B1815E) aux
 //   pignons (et, en attente, sur les bâtiments de bois du quai : `bardes`) ; des pilotis (#6E4C30) là où il touche
 //   l'eau et où le sol manque dessous.

@@ -1,4 +1,4 @@
-// L'architecture modulaire d'Archipéo (lot 7, docs/conception/cadrage-archipeo.md) : les blocs posés des plans
+// L'architecture modulaire d'Archipéo (lot 7, docs/univers/archipeo/cadrage.md) : les blocs posés des plans
 // deviennent des pièces d'architecture (murs peints, toits en pente, pilotis), choisies selon leurs voisines dans le
 // plan. Code pur, sans Three.js : `architectureDe` lit les cubes d'un monde (ou d'une île) et rend
 // - les murs peints (./peinture.ts) : ils gardent la géométrie de leur bloc, et la fusion des faces de

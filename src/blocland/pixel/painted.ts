@@ -1,4 +1,4 @@
-// La 2D peinte (lot R7 de la piste Rendu, docs/conception/cadrage-archipeo.md) : les couleurs de la vue 2D dans l’univers
+// La 2D peinte (lot R7 de la piste Rendu, docs/univers/archipeo/cadrage.md) : les couleurs de la vue 2D dans l’univers
 // Archipéo (voir ../rendu.ts), toutes tirées de la palette d'Archipéo (world/palette.ts), par archipel, de jour et de nuit.
 // Calcul pur, testé sans canvas : les correspondances des sols, les couleurs d'une face, des bords, de la mer, des ombres,
 // les festons des franges et la clé des caches. Le dessin est dans ./paintedDraw.ts et ./paintedSprites.ts ; sans le

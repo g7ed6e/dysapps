@@ -1,4 +1,4 @@
-// Le décor d'Archipéo (lot R4 de la piste Rendu, docs/conception/cadrage-archipeo.md) : les arbres, les rochers, les
+// Le décor d'Archipéo (lot R4 de la piste Rendu, docs/univers/archipeo/cadrage.md) : les arbres, les rochers, les
 // repères, les cascades et l'habillage de la mer, en primitives basse résolution (troncs à cinq pans, feuillages en
 // icosaèdres, cônes de sapin, rochers bosselés), peintes par sommet avec la palette de l'archipel, et fusionnées en un
 // seul maillage pour tout le décor (un second pour ce qui brille : lanternes, lave). Code pur, sans Three.js : il lit

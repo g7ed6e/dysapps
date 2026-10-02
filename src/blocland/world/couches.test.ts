@@ -74,7 +74,7 @@ const GRILLE = [
 ];
 
 /**
- * Ce qui change d'un univers à l'autre (J7, docs/conception/univers.md §5) : ses textes, son habillage, sa palette, son
+ * Ce qui change d'un univers à l'autre (J7, docs/univers/univers.md §5) : ses textes, son habillage, sa palette, son
  * modelé dessiné. Le jeu, la grille et le contrat commun ne l'importent jamais : un univers habille le jeu sans le changer.
  */
 function estUnivers(file: string): boolean {

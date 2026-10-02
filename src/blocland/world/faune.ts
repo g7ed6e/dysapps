@@ -1,4 +1,4 @@
-// La faune et le ciel d'Archipéo (lot R3 de la piste Rendu, docs/conception/cadrage-archipeo.md) : code pur, sans
+// La faune et le ciel d'Archipéo (lot R3 de la piste Rendu, docs/univers/archipeo/cadrage.md) : code pur, sans
 // Three.js. Les baleines, les oiseaux et les nuages en formes facettées, peintes par sommet (une couleur par facette),
 // que la vue 3D dessine en une instanciation par famille (three/faune.ts) : un appel de dessin pour toutes les baleines
 // (souffle compris), un pour les oiseaux, un pour les nuages. Et la pose des baleines au fil du temps (leur ronde au

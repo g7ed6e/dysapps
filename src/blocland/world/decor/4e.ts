@@ -1,6 +1,6 @@
 // Les formes du décor propres aux Anciens Ateliers (4e) : leur repère, leurs retouches d'un genre commun et leur décor
-// hors de la grille. Ce fichier appartient au sous-lot R4b-4e (docs/conception/cadrage-archipeo.md §6 ; intention :
-// design/archipeo/intentions/4e-anciens-ateliers.md).
+// hors de la grille. Ce fichier appartient au sous-lot R4b-4e (docs/univers/archipeo/cadrage.md §6 ; intention :
+// docs/univers/archipeo/intentions/4e-anciens-ateliers.md).
 //
 // - Le fourneau de la Forge remplace le haut-fourneau de basalte (dans son emprise de 2 × 2) : de la maçonnerie, une
 //   gueule qui rougeoie, trois volutes minces.

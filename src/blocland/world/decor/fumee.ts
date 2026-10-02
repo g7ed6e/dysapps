@@ -1,6 +1,6 @@
 // La fumée et la brume d'Archipéo : une seule règle pour toutes les fumées des quatre archipels (le volcan, le
 // haut-fourneau, puis les fumées du village et du port en R5), celle de la fiche de famille (docs/conception/
-// cadrage-archipeo.md §6, règle 4), construite par le sous-lot R4b-6e. La forme reste celle du lot R4 ; le mouvement,
+// docs/univers/archipeo/cadrage.md §6, règle 4), construite par le sous-lot R4b-6e. La forme reste celle du lot R4 ; le mouvement,
 // la nuit et « Réduire les animations » sont réglés ici, en code pur : la vue 3D (three/decor.ts) ne fait que recopier
 // les positions et les couleurs que ces fonctions calculent.
 import type { VoxelCube } from '../cube';

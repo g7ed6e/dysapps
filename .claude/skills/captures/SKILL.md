@@ -29,7 +29,7 @@ Les captures sont souvent l'étape la plus longue d'un fil. Ce qui suit évite d
 
 ## Ce qu'un lot de rendu montre
 
-Jour et nuit, en 3D (`docs/conception/cadrage-archipeo.md`, `docs/conception/bonnes-pratiques-dys.md`). Ni 2D, ni Contraste élevé, ni « Réduire les animations » : ces captures sont retirées le 28 septembre 2026 (les deux réglages reviennent au lot 11 du cadrage Archipéo, avec leurs captures). Le référent dys demande en plus une courte vidéo sur tablette, que seul le mainteneur peut faire : la noter comme restant à faire.
+Jour et nuit, en 3D (`docs/univers/archipeo/cadrage.md`, `docs/conception/bonnes-pratiques-dys.md`). Ni 2D, ni Contraste élevé, ni « Réduire les animations » : ces captures sont retirées le 28 septembre 2026 (les deux réglages reviennent au lot 11 du cadrage Archipéo, avec leurs captures). Le référent dys demande en plus une courte vidéo sur tablette, que seul le mainteneur peut faire : la noter comme restant à faire.
 
 Le périmètre par défaut d'un lot :
 

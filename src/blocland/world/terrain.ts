@@ -324,7 +324,7 @@ export const LAYOUT_PAD = { x: 2, y: 3 };
 /**
  * Sur les quatre îles-écoles, le plateau s'arrête à la colonne 11 (x < `FIN_DU_PLATEAU_DES_ECOLES`) : il passait sous
  * l'école, qui se tient de (12, 3) à (16, 6) (redistribution « Trois bandes », choix du mainteneur, 02/10/2026 ; seule
- * exception au relief figé de Blocland, design/blocland/fiche.md). Le reste du relief ne bouge pas.
+ * exception au relief figé de Blocland, docs/univers/blocland/fiche.md). Le reste du relief ne bouge pas.
  */
 export const FIN_DU_PLATEAU_DES_ECOLES = 12;
 let indexDesEcoles: ReadonlySet<number> | undefined;

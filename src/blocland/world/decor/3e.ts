@@ -1,6 +1,6 @@
 // Les formes du décor propres aux Îles du Ciel (3e) : le grand phare sur son socle de salles et le massif enneigé du
-// lointain. Ce fichier appartient au sous-lot R4b-3e (docs/conception/cadrage-archipeo.md §6 ; intention du directeur
-// artistique dans design/archipeo/intentions/3e-iles-du-ciel.md). Rien n'y change le monde en blocs : les cubes du grand
+// lointain. Ce fichier appartient au sous-lot R4b-3e (docs/univers/archipeo/cadrage.md §6 ; intention du directeur
+// artistique dans docs/univers/archipeo/intentions/3e-iles-du-ciel.md). Rien n'y change le monde en blocs : les cubes du grand
 // phare restent ceux de Blocland, seule sa forme dans Archipéo change.
 import { mixColor } from '../daylight';
 import { coeurDe, islandDef } from '../map';
