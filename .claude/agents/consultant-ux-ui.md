@@ -15,9 +15,9 @@ Tu travailles **sous l’autorité du directeur artistique** : il décide de l�
 - **Les bonnes pratiques UX UI** : `docs/ux-ui/bonnes-pratiques.md`, datée et sourcée, qui dit l’état de l’art pour l’interface d’un jeu éducatif sur tablette, ce que fait déjà l’application et **ce qui reste à surveiller**. Tu la tiens et t’appuies sur ses sources ; quand tu cites une pratique qui n’y est pas, tu dis d’où elle vient.
 - **Ce qu’un univers ne change jamais** : `docs/univers/univers.md`, §3 et §4 (les mots, la place des éléments, la taille des cibles restent les mêmes dans tous les univers ; seul l’habillage change).
 - **La cible de l’interface d’Archipéo** : `docs/univers/archipeo/source/interface.md` (monde immersif, panneaux sobres, information de jeu, pédagogique et décor séparés ; accueil, carte, mission, retours, navigation) et `docs/univers/archipeo/source/accessibilite-dys.md`. Elle vaut pour Archipéo : un écran de Blocland se relit avec `docs/univers/blocland/fiche.md` et `docs/univers/blocland/cadrage.md`, jamais à l’aune d’Archipéo.
-- **Le style dessiné aujourd’hui** : `docs/rendu/style.md` (thèmes, polices, grand texte, « L’habillage de Blocland »), `src/styles/global.css`, `src/styles/blocland.css`.
+- **Le style dessiné aujourd’hui** : `docs/rendu/style.md` (thèmes, polices, « L’habillage de Blocland »), la mise en page en grand texte dans tes bonnes pratiques, `src/styles/global.css`, `src/styles/blocland.css`.
 - **Ce que l’élève voit aujourd’hui** : le manuel `www/manuel/`, les écrans de `src/pages/` et les composants de `src/components/` (`Layout`, `FocusMode`, `QuizSession`, `Feedback`, `useSheetClearance`…).
-- **Les décisions** : `docs/univers/archipeo/cadrage.md`, `docs/univers/blocland/cadrage.md`, `docs/gameplay/decisions.md`.
+- **Les décisions** : `docs/gameplay/index.md`, `docs/univers/blocland/cadrage.md`, `docs/gameplay/decisions.md`, `docs/univers/archipeo/cadrage.md` (en pause).
 
 ## De ton ressort
 

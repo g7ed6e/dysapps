@@ -18,7 +18,7 @@ Le tableau « Où va quoi » de [CLAUDE.md](CLAUDE.md) fait foi, et `scripts/str
 
 1. **Un élève, une famille, un enseignant ou un orthophoniste le lira-t-il ?** Alors `www/` (`manuel/` ou `pedagogie/`), et la page entre au sommaire `www/_theme/nav.json`. Sinon, rien dans `www/`.
 2. **Est-ce du contenu pédagogique (île, mission, exercice, portail, plans, recettes) ?** Alors `docs/contenu/`.
-3. **Est-ce une règle du jeu commune aux univers (boucle, progression, ressources, missions, Gardiens), une fiche GD-n ou une décision de game design ?** Alors `docs/gameplay/` (fiches dans `docs/gameplay/propositions/`, décision dans `docs/gameplay/decisions.md`).
+3. **Est-ce une règle du jeu commune aux univers (boucle, progression, ressources, missions, Gardiens), une fiche GD-n ou une décision de game design ?** Alors `docs/gameplay/` (le jeu, en mots neutres, dans `docs/gameplay/index.md`, fiches dans `docs/gameplay/propositions/`, décision dans `docs/gameplay/decisions.md`).
 4. **Est-ce propre à un univers (noms, récit, cadrage, fiche, intentions, esquisses, game design propre) ?** Alors `docs/univers/archipeo/` ou `docs/univers/blocland/` ; ce qui vaut pour tous les univers va dans `docs/univers/univers.md`. `docs/univers/archipeo/source/` est le dossier fourni par le mainteneur : on n’y écrit jamais. Archipéo est en pause (décision du mainteneur, 2 octobre 2026) : `docs/univers/archipeo/` est gelé tel quel, on n’y ajoute rien tant qu’il n’est pas repris.
 5. **Est-ce l’ergonomie des écrans, commune aux univers ?** Alors `docs/ux-ui/`.
 6. **Est-ce le style ou le rendu commun ?** Alors `docs/rendu/` ; le budget de dessin reste dans le code.
