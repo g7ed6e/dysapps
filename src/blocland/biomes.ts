@@ -301,7 +301,7 @@ export interface ExerciseTypeDef {
   /** Compétences du programme officiel que la mission travaille (identifiants de src/programme/). Au moins une. */
   programme: readonly ProgrammeId[];
   /**
-   * Une mission de LV2 (îles `relais`, `jardin`) : la langue qu'elle travaille. Seules les missions de la LV2 choisie dans les
+   * Une mission de LV2 (lieux `lv2-5e-introductions`, `lv2-4e-daily-life`, `lv2-3e-travel`) : la langue qu'elle travaille. Seules les missions de la LV2 choisie dans les
    * Réglages se jouent ; voir `missionsDe`.
    */
   lv2?: Lv2;

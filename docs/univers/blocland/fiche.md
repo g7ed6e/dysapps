@@ -46,7 +46,7 @@ Les textes sont dans `src/univers/blocland/index.ts` et dans `docs/contenu/`.
 
 ### Les identifiants
 
-Le code et la sauvegarde ne connaissent que des identifiants neutres, en anglais, sans mot d’univers ([La sauvegarde](../../gameplay/index.md#la-sauvegarde)) ; Blocland y met ses mots. Un lieu a pour identifiant sa matière, sa classe et son thème ; son bloc porte le même identifiant. Le rendu de Blocland (`src/blocland/world/`, `three/`, `pixel/`) écrit ses blocs avec ses propres mots par l’alias `BLOC` de `src/blocland/biomes.ts` (`BLOC.bois === 'french-6e-phonology'`) ; les textures gardent leurs noms (`planches`, `pierre`…).
+Le code et la sauvegarde ne connaissent que des identifiants neutres, en anglais, sans mot d’univers ([La sauvegarde](../../gameplay/index.md#la-sauvegarde)) ; Blocland y met ses mots. Un lieu a pour identifiant sa matière, sa classe et son thème ; son bloc porte le même identifiant. Le rendu de Blocland (`src/blocland/world/`, `three/`, `pixel/`) écrit ses blocs avec ses propres mots par l’alias `BLOC` de `src/blocland/biomes.ts` (`BLOC.bois === 'french-6e-phonology'`) ; les textures gardent leurs noms (`planches`, `pierre`…). Le hasard du dessin de chaque île garde l’ancien mot du lieu (`GRAINES_DU_DESSIN`, `src/blocland/world/map.ts`) : le monde de Blocland ne bouge pas d’un cube.
 
 | Identifiant | Île dans Blocland | Son bloc |
 | --- | --- | --- |
@@ -96,11 +96,11 @@ Le code et la sauvegarde ne connaissent que des identifiants neutres, en anglais
 | `fence` | Barrière (`BLOC.barriere`) |
 | `stairs` | Escalier (`BLOC.escalier`) |
 
-Les autres identifiants se nomment à partir du lieu ou de l’archipel : les trois plans d’une île `<lieu>-1` à `<lieu>-3` (la cabane, le toit, la cour de Mousso pour `french-6e-phonology`), le défi du Gardien `<lieu>-challenge`, les monuments `landmark-<classe>-<rang>` (`landmark-6e-1`, l’observatoire des baleines ; `landmark-6e-2`, le grand moulin ; `landmark-5e-1`, le phare du large ; `landmark-5e-2`, le kiosque à musique ; `landmark-4e-1`, le viaduc ; `landmark-4e-2`, l’amphithéâtre ; `landmark-3e-1`, l’observatoire des étoiles ; `landmark-3e-2`, le temple de marbre), le voyage du Bloc-Navire `passage-5e` à `passage-3e`, une mission sa notion (`syllables` pour Abattage syllabique).
+Les autres identifiants se nomment à partir du lieu ou de l’archipel : les trois plans d’une île `<lieu>-1` à `<lieu>-3` (la cabane de Mousso, le toit de la cabane, la cour de la cabane pour `french-6e-phonology`), le défi du Gardien `<lieu>-challenge`, les monuments `landmark-<classe>-<rang>` (`landmark-6e-1`, l’observatoire des baleines ; `landmark-6e-2`, le grand moulin ; `landmark-5e-1`, le phare du large ; `landmark-5e-2`, le kiosque à musique ; `landmark-4e-1`, le viaduc ; `landmark-4e-2`, l’amphithéâtre ; `landmark-3e-1`, l’observatoire des étoiles ; `landmark-3e-2`, le temple de marbre), le voyage du Bloc-Navire `passage-5e` à `passage-3e`, une mission sa notion (`syllables` pour Abattage syllabique).
 
 ### L’histoire des noms
 
-Avant le lot 1, l’application s’appelait **DysApps** et son aventure **Blocland**. Les lots 1 et 2 ont remplacé des noms pour tous les élèves. Aucun identifiant, aucune adresse, aucune donnée de sauvegarde n’a changé. Seul le type interne `Tier` a changé au lot 2 (`bronze`, `argent`… devenus `explorateur`, `cartographe`…) : il est calculé à partir du niveau, jamais enregistré.
+Avant le lot 1, l’application s’appelait **DysApps** et son aventure **Blocland**. Les lots 1 et 2 ont remplacé des noms pour tous les élèves. Aucun identifiant, aucune adresse, aucune donnée de sauvegarde n’a changé aux lots 1 et 2 ; le 2 octobre 2026, les identifiants sont devenus neutres (voir [Les identifiants](#les-identifiants)), et les anciennes sauvegardes et adresses sont traduites. Seul le type interne `Tier` a changé au lot 2 (`bronze`, `argent`… devenus `explorateur`, `cartographe`…) : il est calculé à partir du niveau, jamais enregistré.
 
 | Chose | Dans Blocland (avant le lot 1) | Aujourd’hui | Source |
 | --- | --- | --- | --- |
