@@ -104,9 +104,15 @@ export const KEY_MOVES: readonly { from: string; to: string; translate: (v: unkn
   { from: 'univers-message', to: 'universe-message', translate: translateSaid },
 ];
 
-/** Les clés qui gardent leur nom, mais dont le contenu se traduit sur place. */
+/** Une partie déjà au format courant ne se retraduit pas (elle est lue à chaque chargement). */
+const gameInPlace = (v: unknown): unknown => (isRecord(v) && v.version === GAME_VERSION ? v : withVersion(v));
+
+/**
+ * Les clés qui gardent leur nom, mais dont le contenu se traduit sur place. `region-names` et `universe-message` y
+ * reviennent après KEY_MOVES : leur nom a déjà changé, mais un ancien champ `dit` peut y être resté.
+ */
 const IN_PLACE: readonly { key: string; translate: (v: unknown) => unknown }[] = [
-  { key: 'game', translate: withVersion },
+  { key: 'game', translate: gameInPlace },
   { key: 'progress', translate: translateProgress },
   { key: 'settings', translate: translateSettings },
   { key: 'region-names', translate: translateSaid },
@@ -134,18 +140,15 @@ function writeChecked(key: string, value: unknown): boolean {
  * Traduit la sauvegarde de l'appareil aux mots neutres, avant le premier rendu (src/main.tsx) et après la restauration
  * d'un fichier. Pour chaque ancienne clé : sa traduction est écrite sous la nouvelle, relue, puis seulement l'ancienne est
  * effacée ; une écriture refusée (stockage plein) laisse l'ancienne, qui sera traduite au prochain chargement. Si la
- * nouvelle clé existe déjà, elle a priorité et l'ancienne, restée d'une migration interrompue, est effacée. Une
- * sauvegarde gelée n'est pas touchée. Idempotent.
+ * nouvelle clé existe déjà, l'ancienne a priorité : elle vient d'un onglet resté sur la version d'avant, qui a joué
+ * après la migration (ou d'une migration interrompue, et sa traduction est alors la même). Une sauvegarde gelée n'est
+ * pas touchée. Idempotent.
  */
 export function migrateStorage(): void {
   if (sauvegardeGelee()) return;
   for (const { from, to, translate } of KEY_MOVES) {
     const old = read(from);
     if (old === undefined) continue;
-    if (read(to) !== undefined) {
-      tryRemove(from);
-      continue;
-    }
     if (writeChecked(to, translate(old.value))) tryRemove(from);
   }
   for (const { key, translate } of IN_PLACE) {

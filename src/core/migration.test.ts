@@ -247,10 +247,17 @@ it('passer deux fois ne change rien de plus', () => {
   expect(appareil()).toEqual(neuve);
 });
 
-it('une nouvelle clé déjà là a priorité ; l’ancienne restée d’une migration interrompue s’efface', () => {
+it('une ancienne clé restée d’une migration interrompue s’efface, sans rien perdre', () => {
+  ranger({ ...ATTENDUE, blocland: ANCIENNE.blocland });
+  migrateStorage();
+  expect(lire('game')).toEqual(ATTENDUE.game);
+  expect(localStorage.getItem('dysapps:blocland')).toBeNull();
+});
+
+it('un vieil onglet a écrit `blocland` après la migration : sa partie, plus récente, est gardée', () => {
   ranger({ game: { stock: { bois: 3 }, version: GAME_VERSION }, blocland: { inventory: { bois: 99 } }, reprise: ANCIENNE.reprise });
   migrateStorage();
-  expect(lire('game')).toEqual({ stock: { bois: 3 }, version: GAME_VERSION });
+  expect(lire('game')).toEqual({ stock: { bois: 99 }, version: GAME_VERSION });
   expect(localStorage.getItem('dysapps:blocland')).toBeNull();
   expect(lire('resume')).toEqual(ANCIENNE.reprise);
 });
