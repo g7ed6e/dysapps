@@ -4,11 +4,11 @@ Ce cadrage décrit ce qui est propre à l’univers **Blocland**, le monde en bl
 
 L’interface suit l’univers : dans Blocland, ses panneaux, ses boutons et ses titres prennent un habillage propre, dans l’esprit de ses cubes, sans rien copier d’un autre jeu ; la place des éléments, leurs mots, la taille des cibles et les règles dys restent communs ([Style](../../rendu/style.md#lhabillage-de-blocland)).
 
-Les règles du jeu que ce cadrage décrivait (les archipels et les îles, les bornes, les deux vues, l’île de l’école, les ouvrages, le village et ses plans, les monuments, le Bloc-Navire, Mes blocs, la vie du monde, le bonhomme) sont communes aux univers : elles sont dans [Les systèmes du jeu](../../gameplay/systemes.md) ; l’écran titre, le menu, la première minute, la caméra et la Carte, dans les [bonnes pratiques UX UI](../../ux-ui/bonnes-pratiques.md#le-parcours-et-le-monde).
+Les règles du jeu sont communes aux univers et écrites en mots neutres dans [Le jeu](../../gameplay/index.md) ; les mots que Blocland affiche pour chacun sont dans sa [fiche](fiche.md#les-mots-de-blocland) ; l’écran titre, le menu, la première minute, la caméra et la Carte, dans les [bonnes pratiques UX UI](../../ux-ui/bonnes-pratiques.md#le-parcours-et-le-monde).
 
 ## Ce qu’on garde absolument
 
-Les règles qui ne se négocient jamais sont communes aux univers : [Les systèmes du jeu](../../gameplay/systemes.md#ce-qui-ne-se-négocie-jamais). Pour la tablette d’entrée de gamme, le monde en blocs a son plafond, vérifié par un test : 80 000 triangles et 240 appels de dessin par archipel tout construit (`src/blocland/world/budget.test.ts`, voir la [fiche](fiche.md#3-le-monde)).
+Les règles qui ne se négocient jamais sont communes aux univers : [Le jeu](../../gameplay/index.md#ce-qui-ne-se-négocie-jamais). Pour la tablette d’entrée de gamme, le monde en blocs a son plafond, vérifié par un test : 80 000 triangles et 240 appels de dessin par archipel tout construit (`src/blocland/world/budget.test.ts`, voir la [fiche](fiche.md#3-le-monde)).
 
 ## Le monde et les archipels
 

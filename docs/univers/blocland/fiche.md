@@ -13,6 +13,36 @@ L’étiquette git `blocland-reference` est posée sur `031b029`, le dernier com
 
 ## 1. Les noms
 
+### Les mots de Blocland
+
+Le jeu se décrit en mots neutres, en anglais, dans [Le jeu](../../gameplay/index.md#le-vocabulaire) ; voici ce que Blocland affiche pour chacun.
+
+| Mot neutre | Dans Blocland |
+| --- | --- |
+| `region` | archipel : les Basses Terres (6e), les Collines du Large (5e), les Monts de Feu (4e), les Îles du Ciel (3e) |
+| `place` | île (Forêt des sons, Mine des lettres…) |
+| `startPlace` | île de l’école |
+| `hub` | port |
+| `link` | ouvrage : pont, bac, sentier, escalier taillé, tunnel, col |
+| `passage` | le Bloc-Navire et son voyage |
+| `resource` | bloc d’île (bois, pierre, brique…) |
+| `compound` | bloc assemblé : Poutre, Vitrail, Engrenage, Miroir |
+| `assembly` | la Fabrique |
+| `stock` | Mes blocs |
+| `structure`, `part` | bâtiment, et ses plans |
+| `landmark` | monument |
+| `trophyHall` | salle des trophées |
+| `resident` | créature (Mousso, Tunel, Coco…) |
+| `guardian`, `challenge` | Gardien, son défi ; réussi, il est « vaincu » et devient une statue |
+| `placeState` | Fermée, À explorer, En chantier, Bâtie |
+| `regionState` | le village : abandonné, réactivation, reconstruction, développement, port |
+| `avatar` | le bonhomme |
+| `role` | Apprenti, Maçon, Mécanicien, Ingénieur, Architecte |
+
+Les textes sont dans `src/univers/blocland/index.ts` et dans `docs/contenu/`.
+
+### L’histoire des noms
+
 Avant le lot 1, l’application s’appelait **DysApps** et son aventure **Blocland**. Les lots 1 et 2 ont remplacé des noms pour tous les élèves. Aucun identifiant, aucune adresse, aucune donnée de sauvegarde n’a changé. Seul le type interne `Tier` a changé au lot 2 (`bronze`, `argent`… devenus `explorateur`, `cartographe`…) : il est calculé à partir du niveau, jamais enregistré.
 
 | Chose | Dans Blocland (avant le lot 1) | Aujourd’hui | Source |

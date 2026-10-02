@@ -64,7 +64,7 @@ Les règles dys de l’application ([Principes](../../www/pedagogie/principes.md
 
 ### Le parcours et le monde
 
-Tels qu’ils sont construits, ils valent pour tous les univers (les exemples sont ceux de Blocland) ; les règles du jeu sont dans [Les systèmes du jeu](../gameplay/systemes.md).
+Tels qu’ils sont construits, ils valent pour tous les univers (les exemples sont ceux de Blocland) ; les règles du jeu sont dans [Le jeu](../gameplay/index.md).
 
 - **Écran titre** : « Jouer » ouvre le village sur l’île du bonhomme ; « Continuer » (s’il y a une mission en cours) passe d’abord. L’écran titre retient l’adresse d’ouverture, pour ne pas faire perdre « Continuer ».
 - **Le village au démarrage**, par défaut, avec un réglage « Au démarrage » (le village ou le menu) : une option réversible, pour qui ne veut pas du village. Sans dessin du monde possible, l’accueil reste le menu.
