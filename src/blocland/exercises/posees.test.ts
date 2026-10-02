@@ -19,7 +19,7 @@ import type { ExerciseItem } from './types';
 const num = (c: string) => Number(c.replace(/[\s  ]/g, '').replace(',', '.'));
 const byId = (id: string) => POSEES_EXERCISES.find((d) => d.id === id)!;
 const runs = (level: number, count = 200): ExerciseItem[] => {
-  const def = byId(`riviere-colonnes-${level}`);
+  const def = byId(`maths-6e-fractions-place-value-${level}`);
   return Array.from({ length: count }, (_, s) => def.generate!(`${def.id}#posee${s}`)).flat();
 };
 
@@ -38,10 +38,10 @@ it('Galets en colonnes : trois niveaux de huit items, une consigne sans symbole,
   expect(POSEES_EXERCISES.map((d) => d.id)).toEqual(['maths-6e-fractions-place-value-1', 'maths-6e-fractions-place-value-2', 'maths-6e-fractions-place-value-3']);
   for (const def of POSEES_EXERCISES) {
     expect(def.biome).toBe('maths-6e-fractions');
-    expect(def.type).toBe('colonnes');
+    expect(def.type).toBe('place-value');
     expect(def.items).toHaveLength(8);
     expect(def.instruction).not.toMatch(/[/×÷=…+−]/);
-    expect(def.reward).toEqual({ block: 'galet', amount: 4, xp: 12 });
+    expect(def.reward).toEqual({ block: 'maths-6e-fractions', amount: 4, xp: 12 });
     for (const item of def.items) {
       const aid = item.aid as { kind: string; props: { lines: string[] } };
       expect(aid.kind).toBe('rule-card');

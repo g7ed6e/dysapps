@@ -39,8 +39,8 @@ it('un bloc dont l’île a fini ses plans sert aux monuments de l’archipel ; 
   const done = sanitizeState({ world: { parts: donePlans('maths-6e-calculation') }, stock: { [BLOC.brique]: 9 } });
   const uses = blockUses(done, BLOC.brique);
   expect(uses.map((u) => [u.kind, u.to])).toEqual([
-    ['monument', '/aventure/landmark-6e-1'],
-    ['monument', '/aventure/landmark-6e-2'],
+    ['monument', '/adventure/landmark-6e-1'],
+    ['monument', '/adventure/landmark-6e-2'],
   ]);
   expect(uses[0]).toMatchObject({ name: 'L’observatoire des baleines', need: 27, enough: false });
   const all = { ...donePlans('maths-6e-calculation'), ...Object.fromEntries(monumentsOf('6e').map((m) => [m.id, planCells(m).map((c) => c.key)])) };

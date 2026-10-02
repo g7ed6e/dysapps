@@ -90,14 +90,14 @@ const samePoint = (p: { x: number; y: number } | undefined, q: { x: number; y: n
  * Blocland en immersion : le monde en 3D occupe tout l'écran, un archipel à la fois (celui où se tient le bonhomme).
  * On touche une île : la caméra y vole et son panneau glisse depuis le bas (créature, missions, plan, Gardien, et sur le
  * port le Bloc-Navire) sans quitter le monde. On peut replier le panneau pour regarder l'île, puis le rouvrir, sans la
- * quitter. L'URL /aventure/:ile ouvre le panneau, pour revenir au même endroit après un exercice. /aventure/carte est la
+ * quitter. L'URL /adventure/:ile ouvre le panneau, pour revenir au même endroit après un exercice. /adventure/map est la
  * Carte : tout l'archipel vu du ciel, un fanion sur le bonhomme ; on touche une île pour y aller. Embarquer sur le
  * Bloc-Navire change d'archipel (et de scène).
  */
 export function WorldPage() {
   const { biomeId } = useParams();
   // « Voir le chantier » (bilan d'une mission) : la section du panneau à mettre en avant (plan, navire ou un ouvrage).
-  const chantier = useSearchParams()[0].get('chantier');
+  const chantier = useSearchParams()[0].get('worksite');
   const navigate = useNavigate();
   const { settings, speak, stop } = useSettings();
   const univers = useUnivers();
@@ -186,13 +186,13 @@ export function WorldPage() {
   const openIsland = (id: BiomeId) => {
     retenirPanneauReplie(null);
     setSheetOpen(true);
-    navigate(`/aventure/${id}`);
+    navigate(`/adventure/${id}`);
   };
   // Fermer un panneau du village (Blocs, École, Trophées, Monuments) : retour au monde libre, sur l'île du bonhomme,
   // son panneau replié. Il se rouvre à la demande (le bouton de l'île dans la barre, ou un toucher sur l'île).
   const fermerLePanneau = () => {
     retenirPanneauReplie(at);
-    navigate(`/aventure/${at}`);
+    navigate(`/adventure/${at}`);
   };
   // Les bornes de mission des îles de l'archipel, avec leur état : à faire, étoiles gagnées, ou fermée.
   // Le modèle du monde (world/modele.ts) : les îles, les bornes et leur état, en identifiants ; la grille dit où elles sont.
@@ -225,7 +225,7 @@ export function WorldPage() {
   );
   // Une borne touchée : sa mission si elle est jouable, sinon le panneau de son île (qui explique pourquoi).
   const onPickQuest = (id: BiomeId, typeId: string) => {
-    if (borneTouchee(modele.bornes, id, typeId) === 'jouer') navigate(`/aventure/${id}/${typeId}`);
+    if (borneTouchee(modele.bornes, id, typeId) === 'jouer') navigate(`/adventure/${id}/${typeId}`);
     else openIsland(id);
   };
   const [focus, setFocus] = useState<{ island: BiomeId | null; seq: number }>({ island: island?.id ?? null, seq: 0 });
@@ -332,7 +332,7 @@ export function WorldPage() {
       setWalk((w) => ({ route: [seTenir(dest)], seq: w.seq + 1 }));
       setFocus((f) => ({ island: dest, seq: f.seq + 1 }));
       setSheetOpen(true);
-      if (biomeId !== dest) navigate(`/aventure/${dest}`);
+      if (biomeId !== dest) navigate(`/adventure/${dest}`);
     };
     setHopTo(to);
     later(() => setHopTo(null), 3500);
@@ -402,7 +402,7 @@ export function WorldPage() {
     if (dest !== port) moveTo(dest);
     setSheetOpen(true);
     setFocus((f) => ({ island: dest, seq: f.seq + 1 }));
-    if (biomeId !== dest) navigate(`/aventure/${dest}`);
+    if (biomeId !== dest) navigate(`/adventure/${dest}`);
     if (settings.sounds) playArrival();
   };
   // L'écran fixe : « Arriver ».
@@ -645,7 +645,7 @@ export function WorldPage() {
   }, [moment?.seq, rallumage.enAttente.join()]);
 
   // Le bouton retour, dans le village sans panneau, ouvre le menu du village.
-  useBackOpensMenu(!biomeId && !voyage, '/aventure/menu');
+  useBackOpensMenu(!biomeId && !voyage, '/adventure/menu');
 
   if (biomeId && !panelOpen && !island) return <NotFoundPage />;
   const blocksTotal = Object.values(state.stock).reduce((n, v) => n + (v ?? 0), 0);
@@ -666,7 +666,7 @@ export function WorldPage() {
         : null;
   // Le navire touché : le panneau du port, sa section Bloc-Navire mise en avant.
   const onPickVehicle = (port: BiomeId) => {
-    setHighlight('navire');
+    setHighlight('vehicle');
     openIsland(port);
   };
 
@@ -709,7 +709,7 @@ export function WorldPage() {
         return onPickQuest(i.ile, i.mission);
       case 'lieu':
         return navigate(
-          i.id === 'school' ? SCHOOL_PATH : i.id === 'trophies' ? TROPHIES_PATH : i.id === 'assembly' ? ASSEMBLAGE_PATH : `/aventure/${i.id.slice('monument:'.length)}`,
+          i.id === 'school' ? SCHOOL_PATH : i.id === 'trophies' ? TROPHIES_PATH : i.id === 'assembly' ? ASSEMBLAGE_PATH : `/adventure/${i.id.slice('monument:'.length)}`,
         );
       case 'ouvrage':
         return onPickBridge(i.id);
@@ -733,7 +733,7 @@ export function WorldPage() {
   const onCreature = (id: BiomeId, kind: 'creature' | 'guardian') => {
     const biome = getBiome(id);
     if (!biome) return;
-    if (kind === 'guardian') return navigate(`/aventure/${id}/gardien`);
+    if (kind === 'guardian') return navigate(`/adventure/${id}/challenge`);
     // La créature est ce qu'on touche d'abord sur une île : on ouvre son panneau (elle y accueille, à voix haute).
     // Sur son île, panneau ouvert ou replié, la toucher la fait parler.
     if (island?.id !== id) {
@@ -803,7 +803,7 @@ export function WorldPage() {
             current={a}
             bridges={state.world.links}
             onGo={(to) => hop(to, getArchipelago(to).port)}
-            onMore={() => navigate('/aventure/monde')}
+            onMore={() => navigate('/adventure/world')}
           />
         )}
         {/* Le menu du village, toujours en haut à droite, comme la pause d'un jeu. */}
@@ -816,7 +816,7 @@ export function WorldPage() {
             aria-label="Menu"
             aria-pressed={menuOpen}
             aria-controls={menuOpen ? 'panneau-menu' : undefined}
-            onClick={() => navigate(menuOpen ? '/aventure' : '/aventure/menu')}
+            onClick={() => navigate(menuOpen ? '/adventure' : '/adventure/menu')}
           >
             <Icon name="pause" />
           </button>
@@ -870,7 +870,7 @@ export function WorldPage() {
                     <button type="button" className="button primary" onClick={() => openIsland(destination.island)}>
                       <Icon name="play" /> Y aller
                     </button>
-                    <button type="button" className="button" onClick={() => navigate('/aventure/monde')}>
+                    <button type="button" className="button" onClick={() => navigate('/adventure/world')}>
                       <Icon name="ship" /> Les quatre archipels
                     </button>
                   </p>
@@ -973,7 +973,7 @@ export function WorldPage() {
             className="button"
             data-tuto="carte"
             aria-pressed={mapOpen}
-            onClick={() => navigate(mapOpen ? (panneauReplie() === at ? `/aventure/${at}` : '/aventure') : '/aventure/carte')}
+            onClick={() => navigate(mapOpen ? (panneauReplie() === at ? `/adventure/${at}` : '/adventure') : '/adventure/map')}
           >
             <Icon name="map" /> <span className="world-bar-text">Carte</span>
           </button>
@@ -985,7 +985,7 @@ export function WorldPage() {
               aria-label="Mes blocs"
               data-tuto="blocs"
               aria-controls={blocsOpen ? 'panneau-blocs' : undefined}
-              onClick={() => (blocsOpen ? fermerLePanneau() : navigate('/aventure/blocs'))}
+              onClick={() => (blocsOpen ? fermerLePanneau() : navigate('/adventure/stock'))}
             >
               <Icon name="blocks" /> <span className="world-bar-text">Blocs </span>
               <span className="world-bar-count">({blocksTotal})</span>
@@ -1014,7 +1014,7 @@ export function WorldPage() {
           <VoyagePanel to={voyage.to} back={voyage.back} onArrive={arrive} />
         </div>
       ) : voyage ? null : mondeOpen ? (
-        <ArchipelsSheet onClose={() => navigate('/aventure')} onGo={openIsland} />
+        <ArchipelsSheet onClose={() => navigate('/adventure')} onGo={openIsland} />
       ) : blocsOpen ? (
         <InventorySheet onClose={fermerLePanneau} />
       ) : schoolOpen ? (
@@ -1028,7 +1028,7 @@ export function WorldPage() {
       ) : monument ? (
         <MonumentSheet builder={monumentBuilder} onClose={fermerLePanneau} />
       ) : menuOpen ? (
-        <MenuSheet onClose={() => navigate('/aventure')} />
+        <MenuSheet onClose={() => navigate('/adventure')} />
       ) : (
         island &&
         sheetOpen && (
@@ -1042,7 +1042,7 @@ export function WorldPage() {
             highlight={highlight}
             onBuilt={(to) => {
               // La fête, c'est la transformation : la caméra vole jusqu'à l'île qui s'ouvre, et sa créature accueille.
-              window.setTimeout(() => navigate(`/aventure/${to}`), 900);
+              window.setTimeout(() => navigate(`/adventure/${to}`), 900);
             }}
           />
         )

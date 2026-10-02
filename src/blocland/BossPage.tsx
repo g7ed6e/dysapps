@@ -128,7 +128,7 @@ export function BossPage() {
 
   return (
     <>
-      <Link to={`/aventure/${biome.id}`} className="back-link">
+      <Link to={`/adventure/${biome.id}`} className="back-link">
         <Icon name="back" /> {biome.name}
       </Link>
       <h1 className={`page-title biome-title biome-${biome.id}${sent ? ' defi-titre' : ''}`}>
@@ -147,7 +147,7 @@ export function BossPage() {
           <p className="intro">
             <Syllabified text={`Il te manque encore des étoiles dans : ${missingForBoss(biome, state.progress).join(', ')}.`} />
           </p>
-          <Link to={`/aventure/${biome.id}`} className="button primary">
+          <Link to={`/adventure/${biome.id}`} className="button primary">
             <Icon name="back" /> Voir les missions
           </Link>
         </>
@@ -281,7 +281,7 @@ export function BossPage() {
             <p className="panel ship-hint" role="status" aria-live="polite">
               <Icon name="ship" />{' '}
               <Syllabified text={`Le Bloc-Navire a ses Gardiens : ${shipHint.short} est là ! Va au port, sur ${getBiome(shipHint.biome)?.name ?? shipHint.biome}, finir de le construire.`} />{' '}
-              <Link to={`/aventure/${getArchipelago(shipHint.from).port}`} className="button">
+              <Link to={`/adventure/${getArchipelago(shipHint.from).port}`} className="button">
                 <Icon name="ship" /> Aller au port
               </Link>
             </p>

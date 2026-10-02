@@ -13,7 +13,7 @@ it('les items ratés dus aujourd’hui désignent leurs exercices et leurs missi
   expect(reviewKeys(spaced, 'french-6e-phonology-syllables-warmup-002', TODAY).sort()).toEqual(['chocolat', 'parapluie']);
   // La Mine est fermée au début : seule la Forêt est proposée ; les rimes ne sont dues que dans quelques jours.
   expect(questsToReview(spaced, EMPTY_STATE.world.links, TODAY)).toEqual([
-    { biome: 'french-6e-phonology', type: 'syllables', label: 'Abattage syllabique · Forêt des sons', path: '/aventure/foret/abattage' },
+    { biome: 'french-6e-phonology', type: 'syllables', label: 'Abattage syllabique · Forêt des sons', path: '/adventure/french-6e-phonology/syllables' },
   ]);
 });
 

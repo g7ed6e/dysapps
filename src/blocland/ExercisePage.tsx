@@ -23,7 +23,7 @@ export function ExercisePage() {
   // Une mission d'une autre LV2 que celle des Réglages ne se joue pas (adresse tapée, ancien lien).
   const type = biome && missionsJouables(biome, settings.lv2).find((e) => e.id === typeId);
   // « Continuer » (écran titre, menus) ramène ici.
-  useRememberPlace(biome && type ? { path: `/aventure/${biome.id}/${type.id}`, label: `${type.title} · ${biome.name}` } : null);
+  useRememberPlace(biome && type ? { path: `/adventure/${biome.id}/${type.id}`, label: `${type.title} · ${biome.name}` } : null);
   // L'exercice est choisi au lancement (et à chaque « Rejouer »), pas à chaque changement de progression :
   // sinon la fin de partie relancerait un autre exercice au lieu d'afficher la récompense.
   const picked = useMemo(
@@ -37,7 +37,7 @@ export function ExercisePage() {
 
   return (
     <>
-      <Link to={`/aventure/${biome.id}`} className="back-link">
+      <Link to={`/adventure/${biome.id}`} className="back-link">
         <Icon name="back" /> {biome.name}
       </Link>
       <h1 className={`page-title biome-title biome-${biome.id}`}>

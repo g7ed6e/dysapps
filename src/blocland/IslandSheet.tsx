@@ -159,7 +159,7 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, hi
           return (
             <li key={exercise.id}>
               {playable ? (
-                <Link to={`/aventure/${biome.id}/${exercise.id}`} className="island-quest">
+                <Link to={`/adventure/${biome.id}/${exercise.id}`} className="island-quest">
                   {inner}
                 </Link>
               ) : (
@@ -197,7 +197,7 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, hi
         {!sansLv2 && (
           <li>
             {bossReady ? (
-              <Link to={`/aventure/${biome.id}/gardien`} className="island-quest island-boss">
+              <Link to={`/adventure/${biome.id}/challenge`} className="island-quest island-boss">
                 <span className="island-quest-icon boss-icon">
                   <Icon name="shield" />
                 </span>
@@ -238,9 +238,9 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, hi
         port && <VillageStageLine village={state.world} archipelago={biome.classe} className="island-village" />
       )}
 
-      {unlocked && <PlanSection biome={biome} builder={builder} in3d={in3d} fold={fold} highlight={highlight === 'plan'} />}
+      {unlocked && <PlanSection biome={biome} builder={builder} in3d={in3d} fold={fold} highlight={highlight === 'part'} />}
 
-      {unlocked && ship && onBoard && <ShipSection biome={biome} builder={ship} in3d={in3d} onBoard={onBoard} highlight={highlight === 'navire'} fold={fold} />}
+      {unlocked && ship && onBoard && <ShipSection biome={biome} builder={ship} in3d={in3d} onBoard={onBoard} highlight={highlight === 'vehicle'} fold={fold} />}
 
       {unlocked && <Bridges island={biome.id} onBuilt={onBuilt} highlight={highlight} fold={fold} />}
 

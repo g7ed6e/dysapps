@@ -446,13 +446,13 @@ svg {
   font-size: 1.2rem;
   margin-top: 1.8rem;
 }
-.title-francais svg {
+.title-french svg {
   color: var(--pink);
 }
 .title-maths svg {
   color: var(--cyan);
 }
-.title-anglais svg {
+.title-english svg {
   color: var(--violet);
 }
 .title-lv2 svg {
@@ -529,19 +529,19 @@ button.app-card:active {
 /* Cartes d'une matière ou d'une île : un liseré de sa couleur en tête, jamais derrière le texte. */
 .subject-card,
 .subject-progress,
-.app-card.subject-francais,
+.app-card.subject-french,
 .app-card.subject-maths,
-.app-card.subject-anglais,
+.app-card.subject-english,
 .app-card.subject-lv2 {
   border-top-width: 8px;
 }
-.subject-francais {
+.subject-french {
   border-top-color: var(--pink);
 }
 .subject-maths {
   border-top-color: var(--cyan);
 }
-.subject-anglais {
+.subject-english {
   border-top-color: var(--violet);
 }
 .subject-lv2 {
@@ -563,27 +563,27 @@ button.app-card:active {
   color: var(--text);
 }
 /* Sur un aplat de couleur (matière, sable), l'icône est bleu nuit. */
-.subject-francais .subject-icon,
-.subject-francais .app-icon,
+.subject-french .subject-icon,
+.subject-french .app-icon,
 .subject-maths .subject-icon,
 .subject-maths .app-icon,
-.subject-anglais .subject-icon,
-.subject-anglais .app-icon,
+.subject-english .subject-icon,
+.subject-english .app-icon,
 .subject-lv2 .subject-icon,
 .subject-lv2 .app-icon,
 .app-card[class*="biome-"] .app-icon {
   color: var(--on-accent);
 }
-.subject-francais .subject-icon,
-.subject-francais .app-icon {
+.subject-french .subject-icon,
+.subject-french .app-icon {
   background: var(--pink);
 }
 .subject-maths .subject-icon,
 .subject-maths .app-icon {
   background: var(--cyan);
 }
-.subject-anglais .subject-icon,
-.subject-anglais .app-icon {
+.subject-english .subject-icon,
+.subject-english .app-icon {
   background: var(--violet);
 }
 .subject-lv2 .subject-icon,
@@ -2436,91 +2436,91 @@ figure.class-table {
   border-top: var(--border-width) dashed var(--ink);
 }
 /* La couleur de chaque île, pour son liseré (cartes, panneau d'île) ; toujours doublée de son nom. */
-.biome-foret {
+.biome-french-6e-phonology {
   --biome-color: var(--green);
 }
-.biome-mine {
+.biome-french-6e-letter-confusion {
   --biome-color: #8c93a0;
 }
-.biome-carriere {
+.biome-french-6e-word-spelling {
   --biome-color: var(--yellow);
 }
-.biome-ferme {
+.biome-french-6e-grammar-spelling {
   --biome-color: #a2694a;
 }
-.biome-tour {
+.biome-french-6e-reading {
   --biome-color: var(--cyan);
 }
-.biome-plaine {
+.biome-maths-6e-calculation {
   --biome-color: var(--pink);
 }
-.biome-riviere {
+.biome-maths-6e-fractions {
   --biome-color: #7f96ad;
 }
-.biome-volcan {
+.biome-maths-6e-decimals {
   --biome-color: #4a3d5c;
 }
-.biome-glacier {
+.biome-maths-5e-signed-numbers {
   --biome-color: #b6e0ee;
 }
-.biome-marche {
+.biome-maths-5e-proportionality {
   --biome-color: #c9463f;
 }
-.biome-carrefour {
+.biome-french-5e-homophones {
   --biome-color: #e0b73f;
 }
-.biome-marais {
+.biome-french-5e-conjugation {
   --biome-color: #5a4a2a;
 }
-.biome-forge {
+.biome-maths-4e-powers {
   --biome-color: #8f9aa6;
 }
-.biome-atelier {
+.biome-maths-4e-algebra {
   --biome-color: #96b4dc;
 }
-.biome-falaise {
+.biome-french-4e-agreement {
   --biome-color: #5c6470;
 }
-.biome-cabinet {
+.biome-french-4e-vocabulary {
   --biome-color: #cdb97f;
 }
-.biome-belvedere {
+.biome-maths-3e-geometry {
   --biome-color: #d6d1c8;
 }
-.biome-donnees {
+.biome-maths-3e-statistics {
   --biome-color: #b9a8d6;
 }
-.biome-phare {
+.biome-maths-3e-functions {
   --biome-color: #f0c95a;
 }
-.biome-textes {
+.biome-french-3e-close-reading {
   --biome-color: #7fb2cc;
 }
-.biome-baie {
+.biome-english-6e-vocabulary {
   --biome-color: #b02a24;
 }
-.biome-horloge {
+.biome-english-6e-grammar {
   --biome-color: #c9a24a;
 }
-.biome-studio {
+.biome-english-3e-comprehension {
   --biome-color: #9aa4ae;
 }
-.biome-chateau {
+.biome-english-3e-grammar {
   --biome-color: #d8ccb0;
 }
-.biome-theatre {
+.biome-english-4e-comprehension {
   --biome-color: #7a1f3a;
 }
-.biome-gare {
+.biome-english-4e-grammar {
   --biome-color: #4a4a50;
 }
-.biome-comptoir {
+.biome-english-5e-vocabulary {
   --biome-color: #b85a30;
 }
-.biome-manoir {
+.biome-english-5e-grammar {
   --biome-color: #5a3a22;
 }
-.biome-relais {
+.biome-lv2-5e-introductions {
   --biome-color: #9a8462;
 }
 .biome-name {

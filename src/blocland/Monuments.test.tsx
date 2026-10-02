@@ -32,7 +32,7 @@ it('un monument dit ce que c’est, ce qu’il demande et où gagner les blocs',
   expect(screen.getByRole('heading', { level: 1, name: /L’observatoire des baleines/ })).toBeInTheDocument();
   expect(document.body.textContent).toContain('longue-vue');
   expect(screen.getByRole('progressbar', { name: /Avancement du monument/ })).toHaveAttribute('aria-valuenow', '0');
-  expect(screen.getAllByRole('link', { name: 'Plaine des nombres' })[0]).toHaveAttribute('href', '/aventure/plaine');
+  expect(screen.getAllByRole('link', { name: 'Plaine des nombres' })[0]).toHaveAttribute('href', '/adventure/plaine');
   expect(screen.getByRole('button', { name: /Poser tout ce que j’ai/ })).toBeDisabled();
 });
 
@@ -68,12 +68,12 @@ it('quand il ne reste que des blocs assemblés à poser, il dit pourquoi les bou
   renderIn(<Page />);
   expect(screen.getByRole('button', { name: /Poser le bloc suivant/ })).toBeDisabled();
   expect(document.body.textContent).toContain(`Il te reste ${poutres} poutres à poser : va à la Fabrique pour les assembler.`);
-  for (const l of screen.getAllByRole('link', { name: 'à la Fabrique' })) expect(l).toHaveAttribute('href', '/aventure/assemblage?bloc=poutre');
+  for (const l of screen.getAllByRole('link', { name: 'à la Fabrique' })) expect(l).toHaveAttribute('href', '/adventure/assembly?bloc=poutre');
 });
 
 it('la liste des monuments : par archipel, ceux des archipels pas encore atteints sont fermés', () => {
   renderIn(<MonumentsList />);
-  expect(screen.getByRole('link', { name: /L’observatoire des baleines\s*0 \/ \d+ blocs posés/ })).toHaveAttribute('href', '/aventure/landmark-6e-1');
+  expect(screen.getByRole('link', { name: /L’observatoire des baleines\s*0 \/ \d+ blocs posés/ })).toHaveAttribute('href', '/adventure/landmark-6e-1');
   expect(screen.getByRole('link', { name: /Le temple de marbre\s*Archipel fermé/ })).toBeInTheDocument();
 });
 

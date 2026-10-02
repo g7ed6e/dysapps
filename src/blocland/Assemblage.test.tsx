@@ -11,7 +11,7 @@ import { BRIDGES, VOYAGES } from './world/archipelago';
 import { prochaineQuestion, tirageNeuf, type TirageAssemblage } from './world/assemblage';
 import type { AssemblageDef } from './exercises/types';
 
-function renderIn(node: React.ReactNode, at = '/aventure/assemblage') {
+function renderIn(node: React.ReactNode, at = '/adventure/assembly') {
   return render(
     <SettingsProvider>
       <ProgressProvider>
@@ -24,11 +24,11 @@ function renderIn(node: React.ReactNode, at = '/aventure/assemblage') {
 }
 
 /** Le lieu et la question d'un bloc, comme dans l'application. */
-function renderFabrique(at = '/aventure/assemblage') {
+function renderFabrique(at = '/adventure/assembly') {
   return renderIn(
     <Routes>
-      <Route path="/aventure/assemblage" element={<AssemblagePage />} />
-      <Route path="/aventure/assemblage/:bloc" element={<AssemblageQuestionPage />} />
+      <Route path="/adventure/assembly" element={<AssemblagePage />} />
+      <Route path="/adventure/assembly/:bloc" element={<AssemblageQuestionPage />} />
     </Routes>,
     at,
   );
@@ -65,7 +65,7 @@ it('la Fabrique montre la recette de l’archipel, ce qu’il manque et le monum
   expect(screen.getByRole('heading', { level: 3, name: /Poutre/ })).toBeInTheDocument();
   expect(screen.getByRole('list', { name: 'Pour 1 poutre, il faut' }).textContent).toMatch(/2 blocs de bois.*1 brique/);
   expect(document.body.textContent).toContain('Il te manque 1 bloc de bois');
-  expect(screen.getByRole('link', { name: 'L’observatoire des baleines' })).toHaveAttribute('href', '/aventure/landmark-6e-1');
+  expect(screen.getByRole('link', { name: 'L’observatoire des baleines' })).toHaveAttribute('href', '/adventure/landmark-6e-1');
   // Chaque monument dit combien il en attend (rien à retenir).
   expect(document.body.textContent).toMatch(/L’observatoire des baleines attend \d+ poutres/);
   expect(screen.getByRole('button', { name: /Assembler 1 poutre/ })).toHaveAttribute('aria-disabled', 'true');
@@ -122,7 +122,7 @@ it('« Assembler » ouvre la question du tirage ; juste du premier coup, le bloc
 it('une erreur laisse un second essai, avec l’indice et la réponse barrée ; juste au second, le bloc est assemblé', async () => {
   const user = userEvent.setup();
   const { item, juste, faux } = partie({ bois: 4, brique: 2 });
-  renderFabrique('/aventure/assemblage/poutre');
+  renderFabrique('/adventure/assembly/poutre');
   await user.click(await screen.findByRole('button', { name: faux[0] }));
   expect(screen.getByText('Presque !')).toBeInTheDocument();
   expect(page()).toContain(`Indice : ${sans(item.hint)}`);
@@ -140,7 +140,7 @@ it('une erreur laisse un second essai, avec l’indice et la réponse barrée ; 
 it('deux erreurs : rien n’est perdu, l’explication s’affiche, la question reviendra, une autre est proposée', async () => {
   const user = userEvent.setup();
   const { item, faux } = partie({ bois: 2, brique: 1 });
-  renderFabrique('/aventure/assemblage/poutre');
+  renderFabrique('/adventure/assembly/poutre');
   await user.click(await screen.findByRole('button', { name: faux[0] }));
   await user.click(choix(faux[1]));
   expect(screen.getByText('Pas tout à fait')).toBeInTheDocument();
@@ -162,7 +162,7 @@ it('deux erreurs : rien n’est perdu, l’explication s’affiche, la question 
 it('un double toucher sur la bonne réponse n’assemble qu’un bloc', async () => {
   const user = userEvent.setup();
   const { juste } = partie({ bois: 4, brique: 2 });
-  renderFabrique('/aventure/assemblage/poutre');
+  renderFabrique('/adventure/assembly/poutre');
   await user.dblClick(await screen.findByRole('button', { name: juste }));
   expect(sauvegarde().stock).toMatchObject({ bois: 2, brique: 1, poutre: 1 });
 });
@@ -180,7 +180,7 @@ it('le résultat s’ouvre sur sa fin s’il tient dans l’écran, sur son déb
       defile.mockClear();
       hauteur.mockReturnValue({ height: haut } as DOMRect);
       const { juste } = partie({ bois: 2, brique: 1 });
-      const { unmount } = renderFabrique('/aventure/assemblage/poutre');
+      const { unmount } = renderFabrique('/adventure/assembly/poutre');
       await user.click(await screen.findByRole('button', { name: juste }));
       expect(defile).toHaveBeenCalledWith(expect.objectContaining({ block }));
       // Le focus reste sur le bouton principal, sans défiler jusqu'à lui.
@@ -210,7 +210,7 @@ it('sans assez de blocs, rien ne change : le bouton est grisé, la ligne de ce q
 
 it('la question tapée à la main, sans assez de blocs, ramène au lieu', async () => {
   partie({ bois: 1 });
-  renderFabrique('/aventure/assemblage/poutre');
+  renderFabrique('/adventure/assembly/poutre');
   expect(await screen.findByRole('heading', { level: 1, name: /La Fabrique/ })).toBeInTheDocument();
 });
 
@@ -226,7 +226,7 @@ it('venue d’un monument, la Fabrique montre d’abord la recette du bloc deman
   // En 5e, la poutre (6e) passe devant le vitrail quand on vient d'un monument de 6e.
   const bridges = [...BRIDGES, ...VOYAGES].map((b) => b.id);
   localStorage.setItem('dysapps:game', JSON.stringify({ world: { place: 'maths-5e-proportionality', links: bridges } }));
-  renderIn(<AssemblagePage />, '/aventure/assemblage?bloc=poutre');
+  renderIn(<AssemblagePage />, '/adventure/assembly?bloc=poutre');
   const titres = screen.getAllByRole('heading', { level: 3 }).map((h) => h.textContent);
   expect(titres[0]).toMatch(/Poutre/);
   expect(screen.getByText('Les autres archipels')).toBeInTheDocument();

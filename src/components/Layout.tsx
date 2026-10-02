@@ -23,7 +23,7 @@ import { MENU_PATH } from '../core/paths';
  */
 const PLACES: { to: string; icon: AnyIconName; label: string; end?: boolean; phone: boolean; desktop: boolean }[] = [
   { to: MENU_PATH, icon: 'home', label: 'Menu', end: true, phone: true, desktop: false },
-  { to: '/aventure', icon: 'map', label: 'Aventure', phone: false, desktop: true },
+  { to: '/adventure', icon: 'map', label: 'Aventure', phone: false, desktop: true },
   { to: '/quetes', icon: 'dumbbell', label: 'Missions', phone: false, desktop: true },
   { to: '/succes', icon: 'trophy', label: 'Succès', phone: false, desktop: true },
   { to: '/reglages', icon: 'settings', label: 'Réglages', phone: true, desktop: true },
@@ -45,7 +45,7 @@ function Shell() {
   // Pendant une partie : ni barre du haut ni onglets, seulement le bouton Pause (mode concentration).
   const focus = useFocusActive();
   // Carte et îles de Blocland en 3D : le monde prend tout l'écran, sans barre du haut (son menu Pause la remplace).
-  const immersive = useImmersive() && /^\/aventure(\/[a-z-]+)?$/.test(pathname);
+  const immersive = useImmersive() && /^\/adventure(\/[a-z-]+)?$/.test(pathname);
   useEffect(() => startAppUpdates(), []);
 
   // Changer de page coupe la lecture vocale en cours.

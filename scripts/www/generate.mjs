@@ -285,7 +285,7 @@ function programmesPage(d) {
   }
   const { MOTS_OUTILS_CP, MOTS_OUTILS_CE1, MOTS_OUTILS_SOURCE, COFFRE_HORS_LISTE, motsOutilsDictables, motDictable } = d.motsOutils;
   const dictables = motsOutilsDictables();
-  const coffre = new Set(d.EXERCISES.filter((e) => e.type === 'coffre').flatMap((e) => e.items.map((it) => motDictable(String(it.word)))));
+  const coffre = new Set(d.EXERCISES.filter((e) => e.type === 'sight-words').flatMap((e) => e.items.map((it) => motDictable(String(it.word)))));
   const inList = [...coffre].filter((w) => dictables.has(w));
   lines.push(
     '## Mots-outils {#mots-outils}',
@@ -475,7 +475,7 @@ function islandPage(b, d) {
     const exos = EXERCISES.filter((e) => e.biome === b.id && e.type === q.id).sort((a, c) => a.level - c.level);
     lines.push(`### ${q.title}`, '', `*${q.description}*`, '');
     lines.push(programmeLine([...q.programme, ...exos.flatMap((e) => e.programme ?? [])], d, '../'), '');
-    if (b.id === 'carriere' && q.id === 'coffre') lines.push('Les mots dictés viennent de la liste officielle des mots-outils (fin de CP, fin de CE1) : voir [Programmes officiels](../programmes.md#mots-outils).', '');
+    if (b.id === 'french-6e-word-spelling' && q.id === 'sight-words') lines.push('Les mots dictés viennent de la liste officielle des mots-outils (fin de CP, fin de CE1) : voir [Programmes officiels](../programmes.md#mots-outils).', '');
     if (exos.length === 0) {
       lines.push('Aucun exercice n’est encore écrit pour cette mission.', '');
       continue;

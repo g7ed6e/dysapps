@@ -51,7 +51,7 @@ it('six exercices de huit items, une consigne sans symbole, la récompense des m
     expect(def.biome).toBe('maths-6e-decimals');
     expect(def.items).toHaveLength(8);
     expect(def.instruction).not.toMatch(/[/×÷=…+−'<>]/);
-    expect(def.reward).toEqual({ block: 'obsidienne', amount: 4, xp: 12 });
+    expect(def.reward).toEqual({ block: 'maths-6e-decimals', amount: 4, xp: 12 });
   }
   // Les cartes ne donnent aucun exemple chiffré (le 0 à écrire n’en est pas un) : jamais un item recopié.
   for (const line of [READ_RULES, WRITE_RULES, ORDER_RULES, BETWEEN_RULES, FRAME_RULES, countRules('milliers')].flat()) expect(line).not.toMatch(/[1-9]|\d\d|\d,/);

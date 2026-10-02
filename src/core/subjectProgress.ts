@@ -56,7 +56,7 @@ export function subjectProgress(
         where: biome.name,
         stars: done.stars,
         score: done.best,
-        href: `/aventure/${biome.id}/${quest.id}`,
+        href: `/adventure/${biome.id}/${quest.id}`,
       });
     }
   }

@@ -38,7 +38,7 @@ it('propose de retravailler les missions jouées sous 3 étoiles, les plus faibl
     }),
   );
   expect(r.rework.map((q) => q.title)).toEqual(['Abattage syllabique', 'Rimes-échelle']);
-  expect(r.rework[0]).toMatchObject({ kind: 'quete', where: 'Forêt des sons', stars: 1, href: '/aventure/foret/abattage' });
+  expect(r.rework[0]).toMatchObject({ kind: 'quete', where: 'Forêt des sons', stars: 1, href: '/adventure/french-6e-phonology/syllables' });
   expect(r.reworkTotal).toBe(2);
 });
 
@@ -47,7 +47,7 @@ it('ne propose pas une mission d’une île fermée, ni une mission jamais joué
   expect(closed.rework).toEqual([]);
   // Le même résultat, une fois l'île ouverte par son sentier.
   const open = subjectProgress('french', {}, blocland(played('french-6e-letter-confusion', 'letter-pairs', 1, 0.3), ['french-6e-phonology-french-6e-letter-confusion']));
-  expect(open.rework.map((q) => q.href)).toEqual(['/aventure/mine/filon']);
+  expect(open.rework.map((q) => q.href)).toEqual(['/adventure/french-6e-letter-confusion/letter-pairs']);
 });
 
 it('compte les records des applis, et propose celles sous 70 %', () => {
@@ -57,7 +57,7 @@ it('compte les records des applis, et propose celles sous 70 %', () => {
   expect(r.rework).toEqual([expect.objectContaining({ kind: 'appli', id: 'fractions', record: 55, href: '/app/fractions' })]);
   // Une mission plus faible passe devant l'appli.
   const mixed = subjectProgress('maths', { fractions: app(55) }, blocland(played('maths-6e-calculation', 'times-tables', 1, 0.3)));
-  expect(mixed.rework.map((q) => q.id)).toEqual(['plaine:tables', 'fractions']);
+  expect(mixed.rework.map((q) => q.id)).toEqual(['maths-6e-calculation:times-tables', 'fractions']);
 });
 
 it('ne mélange pas les matières, et montre au plus cinq missions à reprendre', () => {

@@ -52,7 +52,7 @@ it('propose de reprendre les missions faibles d’une matière, avec un lien qui
   const redo = within(francais).getAllByRole('link', { name: /^Reprendre/ });
   expect(redo).toHaveLength(1);
   expect(redo[0]).toHaveAccessibleName('Reprendre Rimes-échelle, Forêt des sons');
-  expect(redo[0]).toHaveAttribute('href', '/aventure/foret/rimes');
+  expect(redo[0]).toHaveAttribute('href', '/adventure/foret/rimes');
 
   const maths = subject('Maths');
   // Une mission jamais jouée n'est pas « à reprendre ».

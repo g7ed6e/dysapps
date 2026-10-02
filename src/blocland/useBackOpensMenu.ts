@@ -7,7 +7,7 @@ const MARK = 'dysapps-village';
 const marked = () => (window.history.state as Record<string, unknown> | null)?.[MARK] === true;
 
 /**
- * Tant que `active` (le village sans panneau, `/aventure`) : une entrée d'historique de plus à la même adresse ; revenir
+ * Tant que `active` (le village sans panneau, `/adventure`) : une entrée d'historique de plus à la même adresse ; revenir
  * en arrière la quitte, et le menu (`menuPath`) la remplace. Un retour depuis le menu mène donc à la page d'avant.
  */
 export function useBackOpensMenu(active: boolean, menuPath: string) {

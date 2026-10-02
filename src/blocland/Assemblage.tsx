@@ -169,7 +169,7 @@ function RecetteCarte({ recette }: { recette: Recette }) {
         </span>
         {dit && <SpeakButton text={dit.texte} label="Écouter" compact />}
         {dit?.retour && (
-          <Link to={`/aventure/${dit.retour.id}`} className="assemblage-retour">
+          <Link to={`/adventure/${dit.retour.id}`} className="assemblage-retour">
             <Icon name="castle" /> Retourner à {dit.retour.name}
           </Link>
         )}
@@ -178,7 +178,7 @@ function RecetteCarte({ recette }: { recette: Recette }) {
         <ul className="assemblage-pour" aria-label={`Les monuments qui attendent des ${blockName(recette.bloc, 2)}`}>
           {pour.map(({ m, n }) => (
             <li key={m.id}>
-              <Icon name="castle" /> <Link to={`/aventure/${m.id}`}>{m.name}</Link> attend {blockCount(recette.bloc, n)}.
+              <Icon name="castle" /> <Link to={`/adventure/${m.id}`}>{m.name}</Link> attend {blockCount(recette.bloc, n)}.
             </li>
           ))}
         </ul>
@@ -245,7 +245,7 @@ export function AssemblagePage() {
   const { assemblage } = useTextes();
   return (
     <>
-      <Link to="/aventure" className="back-link">
+      <Link to="/adventure" className="back-link">
         <Icon name="back" /> {UNIVERS[univers].nom}
       </Link>
       <h1 className="page-title">

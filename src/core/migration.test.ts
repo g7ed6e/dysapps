@@ -15,26 +15,63 @@ const cour = getPlan('french-6e-phonology-3')!;
 const courDebut = planCells(cour)
   .slice(0, 3)
   .map((c) => c.key);
-const tirage = { ...tirageNeuf('graine'), tour: 1, recentes: ['q1'], ratees: ['q2'] };
+const tirage = {
+  ...tirageNeuf('graine'),
+  tour: 1,
+  posees: ['poutre-1', 'poutre-4'],
+  recentes: ['poutre-4'],
+  ratees: ['poutre-2'],
+};
+const tirageNeutre = {
+  ...tirage,
+  posees: ['compound-6e-1', 'compound-6e-4'],
+  recentes: ['compound-6e-4'],
+  ratees: ['compound-6e-2'],
+};
 
-/** Une sauvegarde d'avant les mots neutres, avec toutes ses clés et tous ses champs, et les plus anciennes formes. */
+/**
+ * Une sauvegarde d'avant les mots neutres, avec toutes ses clés, tous ses champs et ses identifiants d'avant (noms
+ * français des îles, des blocs, des plans et des quêtes), et les plus anciennes formes.
+ */
 const ANCIENNE = {
   blocland: {
-    progress: { 'foret-rimes-1': { stars: 3, attempts: 2, best: 1 }, 'mine-lettres-1': { stars: 1, attempts: 1, best: 0.5 } },
-    spaced: [{ itemId: 'foret-rimes-1:chat', due: '2026-10-03', stage: 1, streak: 1 }],
-    inventory: { 'french-6e-phonology': 7, 'french-6e-letter-confusion': 2, 'roof': 9, 'lantern': 1 },
+    progress: {
+      'foret-rimes-eau': { stars: 3, attempts: 2, best: 1 },
+      'mine-filon-bd': { stars: 1, attempts: 1, best: 0.5 },
+      'foret-echauffement-002': { stars: 2, attempts: 1, best: 0.8 },
+      'foret-gardien': { stars: 1, attempts: 1, best: 0.7 },
+      'assemblage-poutre': { stars: 2, attempts: 3, best: 0.9 },
+    },
+    spaced: [
+      {
+        itemId: 'foret-rimes-eau:foret-rimes-eau-3',
+        due: '2026-10-03',
+        stage: 1,
+        streak: 1,
+      },
+      {
+        itemId: 'assemblage-poutre:poutre-2',
+        due: '2026-10-04',
+        stage: 0,
+        streak: 0,
+      },
+    ],
+    inventory: { bois: 7, pierre: 2, toit: 9, lanterne: 1, or: 2, poutre: 1 },
     streak: { current: 4, lastDay: '2026-10-01', cracked: false },
-    types: { rimes: { level: 2, recent: [0.8, 1] } },
+    types: {
+      rimes: { level: 2, recent: [0.8, 1] },
+      filon: { level: 3, recent: [1] },
+    },
     chests: 2,
-    fluence: { 'texte-loup': [52, 47] },
+    fluence: { 'tour-ascension-pont': [52, 47] },
     // L'ancien chantier (grille 8 × 8) et l'ancienne zone libre : leurs blocs reviennent au stock.
     build: [{ x: 1, y: 1, z: 0, block: 'bois' }],
     village: {
       // La cabane terminée avec l'ancien dessin (plansV1) ; la cour commencée avec le nouveau.
-      plans: { 'french-6e-phonology-1': cabaneV1, 'french-6e-phonology-3': courDebut },
-      journal: [{ day: '2026-09-20', plan: 'french-6e-phonology-1' }],
-      bridges: ['french-6e-phonology-french-6e-letter-confusion'],
-      at: 'french-6e-letter-confusion',
+      plans: { 'foret-cabane': cabaneV1, 'foret-cour': courDebut },
+      journal: [{ day: '2026-09-20', plan: 'foret-cabane' }],
+      bridges: ['foret-mine', 'voyage-5e'],
+      at: 'mine',
       placed: { foret: [{ x: 2, y: 1, z: 0, block: 'pierre' }] },
     },
     assemblageTirage: { poutre: tirage },
@@ -52,7 +89,13 @@ const ANCIENNE = {
     voyages: 1,
     monumentsCompleted: 1,
     badges: { 'premier-pas': '2026-09-01T10:00:00.000Z' },
-    apps: { tables: { sessions: 3, bestScore: 90, lastPlayed: '2026-09-30T10:00:00.000Z' } },
+    apps: {
+      tables: {
+        sessions: 3,
+        bestScore: 90,
+        lastPlayed: '2026-09-30T10:00:00.000Z',
+      },
+    },
   },
   settings: {
     font: 'luciole',
@@ -75,22 +118,64 @@ const ANCIENNE = {
 /** La même, aux mots neutres : rien n'est perdu, les anciennes formes passent telles quelles. */
 const ATTENDUE = {
   game: {
-    progress: ANCIENNE.blocland.progress,
-    spaced: ANCIENNE.blocland.spaced,
-    stock: { 'french-6e-phonology': 7, 'french-6e-letter-confusion': 2, 'roof': 9, 'lantern': 1 },
-    streak: ANCIENNE.blocland.streak,
-    types: ANCIENNE.blocland.types,
-    chests: 2,
-    fluency: { 'texte-loup': [52, 47] },
-    build: [{ x: 1, y: 1, z: 0, block: 'bois' }],
-    world: {
-      parts: { 'french-6e-phonology-1': cabaneV1, 'french-6e-phonology-3': courDebut },
-      log: [{ day: '2026-09-20', part: 'french-6e-phonology-1' }],
-      links: ['french-6e-phonology-french-6e-letter-confusion'],
-      place: 'french-6e-letter-confusion',
-      placed: { foret: [{ x: 2, y: 1, z: 0, block: 'pierre' }] },
+    progress: {
+      'french-6e-phonology-rhymes-eau': { stars: 3, attempts: 2, best: 1 },
+      'french-6e-letter-confusion-letter-pairs-bd': {
+        stars: 1,
+        attempts: 1,
+        best: 0.5,
+      },
+      'french-6e-phonology-syllables-warmup-002': {
+        stars: 2,
+        attempts: 1,
+        best: 0.8,
+      },
+      'french-6e-phonology-challenge': { stars: 1, attempts: 1, best: 0.7 },
+      'assembly-compound-6e': { stars: 2, attempts: 3, best: 0.9 },
     },
-    assemblyDraw: { poutre: tirage },
+    spaced: [
+      {
+        itemId: 'french-6e-phonology-rhymes-eau:french-6e-phonology-rhymes-eau-3',
+        due: '2026-10-03',
+        stage: 1,
+        streak: 1,
+      },
+      {
+        itemId: 'assembly-compound-6e:compound-6e-2',
+        due: '2026-10-04',
+        stage: 0,
+        streak: 0,
+      },
+    ],
+    stock: {
+      'french-6e-phonology': 7,
+      'french-6e-letter-confusion': 2,
+      roof: 9,
+      lantern: 1,
+      'trophy-gold': 2,
+      'compound-6e': 1,
+    },
+    streak: ANCIENNE.blocland.streak,
+    types: {
+      rhymes: { level: 2, recent: [0.8, 1] },
+      'letter-pairs': { level: 3, recent: [1] },
+    },
+    chests: 2,
+    fluency: { 'french-6e-reading-fluency-pont': [52, 47] },
+    build: [{ x: 1, y: 1, z: 0, block: 'french-6e-phonology' }],
+    world: {
+      parts: {
+        'french-6e-phonology-1': cabaneV1,
+        'french-6e-phonology-3': courDebut,
+      },
+      log: [{ day: '2026-09-20', part: 'french-6e-phonology-1' }],
+      links: ['french-6e-phonology-french-6e-letter-confusion', 'passage-5e'],
+      place: 'french-6e-letter-confusion',
+      placed: {
+        foret: [{ x: 2, y: 1, z: 0, block: 'french-6e-letter-confusion' }],
+      },
+    },
+    assemblyDraw: { 'compound-6e': tirageNeutre },
     version: GAME_VERSION,
   },
   progress: {
@@ -108,11 +193,21 @@ const ATTENDUE = {
     badges: ANCIENNE.progress.badges,
     apps: ANCIENNE.progress.apps,
   },
-  settings: { ...ANCIENNE.settings, theme: 'night', worldView: 'list', worldLight: 'day', startIn: 'world', lv2: 'none' },
-  resume: ANCIENNE.reprise,
+  settings: {
+    ...ANCIENNE.settings,
+    theme: 'night',
+    worldView: 'list',
+    worldLight: 'day',
+    startIn: 'world',
+    lv2: 'none',
+  },
+  resume: {
+    path: '/adventure/french-6e-phonology/rhymes',
+    label: 'Rimes · Forêt des sons',
+  },
   tutorials: ANCIENNE.tutos,
   'guide-messages': ANCIENNE.baleine,
-  'guardians-seen': ANCIENNE.rallumage,
+  'guardians-seen': { 'french-6e-phonology': true },
   'region-names': { said: true },
   'universe-message': { said: false },
 };
@@ -159,13 +254,17 @@ it('la partie et la progression lues gardent chaque compteur, un à un', () => {
   // La partie lue après la migration est celle qu'on lisait avant, au chiffre près.
   expect(partie).toEqual(avant);
   expect(partie.version).toBe(GAME_VERSION);
-  expect(partie.progress).toEqual(ANCIENNE.blocland.progress);
-  expect(partie.spaced).toEqual(ANCIENNE.blocland.spaced);
+  expect(partie.progress).toEqual(ATTENDUE.game.progress);
+  expect(partie.spaced).toEqual(ATTENDUE.game.spaced);
   expect(partie.streak).toEqual(ANCIENNE.blocland.streak);
   expect(partie.chests).toBe(2);
-  expect(partie.fluency).toEqual({ 'texte-loup': [52, 47] });
-  expect(partie.assemblyDraw).toEqual({ poutre: tirage });
+  expect(partie.types).toEqual(ATTENDUE.game.types);
+  expect(partie.fluency).toEqual({
+    'french-6e-reading-fluency-pont': [52, 47],
+  });
+  expect(partie.assemblyDraw).toEqual({ 'compound-6e': tirageNeutre });
   expect(partie.world.links).toContain('french-6e-phonology-french-6e-letter-confusion');
+  expect(partie.world.links).toContain('passage-5e');
   expect(partie.world.place).toBe('french-6e-letter-confusion');
   expect(partie.world.log).toEqual([{ day: '2026-09-20', part: 'french-6e-phonology-1' }]);
   // La cabane terminée avec l'ancien dessin reste terminée ; la cour garde ses trois cases.
@@ -174,6 +273,8 @@ it('la partie et la progression lues gardent chaque compteur, un à un', () => {
   // Le stock : 7 bois + 1 de l'ancien chantier ; 2 pierres + 1 de l'ancienne zone libre ; le coffre du nouveau dessin.
   expect(partie.stock['french-6e-phonology']).toBe(7 + 1);
   expect(partie.stock['french-6e-letter-confusion']).toBe(2 + 1);
+  expect(partie.stock['trophy-gold']).toBe(avant.stock['trophy-gold']);
+  expect(partie.stock['compound-6e']).toBe(1);
   expect(partie.stock['roof']).toBe(avant.stock['roof']);
   expect(partie.stock['lantern']).toBe(avant.stock['lantern']);
   const progression = sanitizeProgress(lire('progress'));
@@ -203,7 +304,7 @@ it('un stockage plein garde l’ancienne clé, à traduire au prochain chargemen
   expect(localStorage.getItem('dysapps:blocland')).toBe(JSON.stringify(ANCIENNE.blocland));
   expect(localStorage.getItem('dysapps:game')).toBeNull();
   // Les autres clés, elles, sont passées.
-  expect(lire('resume')).toEqual(ANCIENNE.reprise);
+  expect(lire('resume')).toEqual(ATTENDUE.resume);
   // Au chargement suivant, la place revenue, la partie passe à son tour.
   migrateStorage();
   expect(localStorage.getItem('dysapps:blocland')).toBeNull();
@@ -255,19 +356,64 @@ it('une ancienne clé restée d’une migration interrompue s’efface, sans rie
 });
 
 it('un vieil onglet a écrit `blocland` après la migration : sa partie, plus récente, est gardée', () => {
-  ranger({ game: { stock: { 'french-6e-phonology': 3 }, version: GAME_VERSION }, blocland: { inventory: { 'french-6e-phonology': 99 } }, reprise: ANCIENNE.reprise });
+  ranger({
+    game: { stock: { 'french-6e-phonology': 3 }, version: GAME_VERSION },
+    blocland: { inventory: { bois: 99 } },
+    reprise: ANCIENNE.reprise,
+  });
   migrateStorage();
-  expect(lire('game')).toEqual({ stock: { 'french-6e-phonology': 99 }, version: GAME_VERSION });
+  expect(lire('game')).toEqual({
+    stock: { 'french-6e-phonology': 99 },
+    version: GAME_VERSION,
+  });
   expect(localStorage.getItem('dysapps:blocland')).toBeNull();
-  expect(lire('resume')).toEqual(ANCIENNE.reprise);
+  expect(lire('resume')).toEqual(ATTENDUE.resume);
+});
+
+it('une partie au format 2 (champs neutres, identifiants d’avant) reçoit ses identifiants neutres', () => {
+  ranger({
+    game: {
+      stock: { bois: 3 },
+      progress: { 'foret-rimes-on': { stars: 2, attempts: 1, best: 0.9 } },
+      world: { parts: {}, log: [], links: ['foret-mine'], place: 'mine' },
+      version: 2,
+    },
+  });
+  migrateStorage();
+  expect(lire('game')).toEqual({
+    stock: { 'french-6e-phonology': 3 },
+    progress: {
+      'french-6e-phonology-rhymes-on': { stars: 2, attempts: 1, best: 0.9 },
+    },
+    world: {
+      parts: {},
+      log: [],
+      links: ['french-6e-phonology-french-6e-letter-confusion'],
+      place: 'french-6e-letter-confusion',
+    },
+    version: GAME_VERSION,
+  });
+});
+
+it('une partie au format courant garde ses identifiants, même s’ils ressemblent à d’anciens', () => {
+  const partie = { stock: { bois: 3 }, version: GAME_VERSION };
+  expect(translateGame(partie)).toEqual(partie);
 });
 
 it('dans une partie, un champ neuf a priorité sur l’ancien', () => {
-  expect(translateGame({ stock: { 'french-6e-phonology': 1 }, inventory: { 'french-6e-phonology': 9 }, world: { parts: {}, plans: { x: [] }, at: 'french-6e-letter-confusion' } })).toEqual({
+  expect(
+    translateGame({
+      stock: { 'french-6e-phonology': 1 },
+      inventory: { 'french-6e-phonology': 9 },
+      world: { parts: {}, plans: { x: [] }, at: 'french-6e-letter-confusion' },
+    }),
+  ).toEqual({
     stock: { 'french-6e-phonology': 1 },
     world: { parts: {}, place: 'french-6e-letter-confusion' },
   });
-  expect(translateProgress({ passages: 2, voyages: 1 })).toEqual({ passages: 2 });
+  expect(translateProgress({ passages: 2, voyages: 1 })).toEqual({
+    passages: 2,
+  });
 });
 
 it('une partie lue sans migration (tolérance) est traduite par sanitizeState', () => {
@@ -277,7 +423,10 @@ it('une partie lue sans migration (tolérance) est traduite par sanitizeState', 
 });
 
 it('les valeurs inconnues des réglages et les données illisibles passent telles quelles', () => {
-  expect(translateSettings({ theme: 'rose', font: 'luciole' })).toEqual({ theme: 'rose', font: 'luciole' });
+  expect(translateSettings({ theme: 'rose', font: 'luciole' })).toEqual({
+    theme: 'rose',
+    font: 'luciole',
+  });
   expect(translateGame(null)).toBeNull();
   expect(translateGame([1])).toEqual([1]);
   localStorage.setItem('dysapps:blocland', '{abîmé');

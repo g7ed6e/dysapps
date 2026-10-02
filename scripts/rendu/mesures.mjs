@@ -76,13 +76,13 @@ const CAPTURES = [
   // plus grand (OpenDyslexic, 32 px, `reglages`) sur la vue de l'archipel du 3e depuis le Refuge, en tablette et en
   // portrait ; le test en gris des créatures, chacune dans son archipel (l'Écho du 3e ; le Soleil et Muscade du 4e ; le
   // Hanneton et Moustache du 6e), pris en couleur : la mise en gris se fait à la relecture.
-  { nom: 'grand-texte-archipel', vue: 'archipel', famille: 'lisibilite', ile: 'refuge', reglages: { font: 'opendyslexic', fontSize: 32 } },
-  { nom: 'grand-texte-archipel-800x1280', vue: 'archipel', famille: 'lisibilite', ile: 'refuge', reglages: { font: 'opendyslexic', fontSize: 32 }, taille: { width: 800, height: 1280 } },
-  { nom: 'gris-echo', vue: 'défi', famille: 'lisibilite', ile: 'studio' },
-  { nom: 'gris-soleil', vue: 'défi', famille: 'lisibilite', ile: 'jardin' },
-  { nom: 'gris-muscade', vue: 'île', famille: 'lisibilite', ile: 'jardin' },
-  { nom: 'gris-hanneton', vue: 'défi', famille: 'lisibilite', ile: 'plaine' },
-  { nom: 'gris-moustache', vue: 'île', famille: 'lisibilite', ile: 'manoir' },
+  { nom: 'grand-texte-archipel', vue: 'archipel', famille: 'lisibilite', ile: 'lv2-3e-travel', reglages: { font: 'opendyslexic', fontSize: 32 } },
+  { nom: 'grand-texte-archipel-800x1280', vue: 'archipel', famille: 'lisibilite', ile: 'lv2-3e-travel', reglages: { font: 'opendyslexic', fontSize: 32 }, taille: { width: 800, height: 1280 } },
+  { nom: 'gris-echo', vue: 'défi', famille: 'lisibilite', ile: 'english-3e-comprehension' },
+  { nom: 'gris-soleil', vue: 'défi', famille: 'lisibilite', ile: 'lv2-4e-daily-life' },
+  { nom: 'gris-muscade', vue: 'île', famille: 'lisibilite', ile: 'lv2-4e-daily-life' },
+  { nom: 'gris-hanneton', vue: 'défi', famille: 'lisibilite', ile: 'maths-6e-calculation' },
+  { nom: 'gris-moustache', vue: 'île', famille: 'lisibilite', ile: 'english-5e-grammar' },
   // Les personnages hors du monde (lot R6) : chaque Gardien au défi, éteint, en 3D (`parIle` : un fichier par île,
   // `<archipel>-defi-<île>.jpg`) et en SVG (la vue « liste », sans la 3D) ; la bulle d'une créature (le défi pas encore ouvert : la partie
   // sans étoiles), en 3D et en SVG.
@@ -92,85 +92,85 @@ const CAPTURES = [
   { nom: 'bulle-svg', vue: 'bulle', famille: 'personnages', view: 'list', sansEtoiles: true },
   // Les repères des Îles du Ciel (R4b-3e) : le grand phare sur son socle, de jour et de nuit, les gradins de
   // l'Observatoire des textes.
-  { nom: 'phare-du-ciel', vue: 'île', famille: 'ciel', ile: 'phare' },
-  { nom: 'phare-du-ciel-nuit', vue: 'île', famille: 'ciel', ile: 'phare', nuit: true },
-  { nom: 'textes', vue: 'île', famille: 'ciel', ile: 'textes' },
+  { nom: 'phare-du-ciel', vue: 'île', famille: 'ciel', ile: 'maths-3e-functions' },
+  { nom: 'phare-du-ciel-nuit', vue: 'île', famille: 'ciel', ile: 'maths-3e-functions', nuit: true },
+  { nom: 'textes', vue: 'île', famille: 'ciel', ile: 'french-3e-close-reading' },
   // La vue de l'archipel depuis l'île du Phare : le phare au centre de l'arc, devant le massif (une vue de l'archipel
   // avec `ile` y place le bonhomme).
-  { nom: 'archipel-phare', vue: 'archipel', famille: 'ciel', ile: 'phare' },
-  { nom: 'archipel-phare-nuit', vue: 'archipel', famille: 'ciel', ile: 'phare', nuit: true },
+  { nom: 'archipel-phare', vue: 'archipel', famille: 'ciel', ile: 'maths-3e-functions' },
+  { nom: 'archipel-phare-nuit', vue: 'archipel', famille: 'ciel', ile: 'maths-3e-functions', nuit: true },
   // La vue de l'archipel depuis les deux Observatoires, voisins du Phare : le cadrage qui garde le grand phare en vue
   // (DA-17) vaut aussi pour elles.
-  { nom: 'archipel-donnees', vue: 'archipel', famille: 'cadrage', ile: 'donnees' },
-  { nom: 'archipel-donnees-nuit', vue: 'archipel', famille: 'cadrage', ile: 'donnees', nuit: true },
-  { nom: 'archipel-textes', vue: 'archipel', famille: 'cadrage', ile: 'textes' },
-  { nom: 'archipel-textes-nuit', vue: 'archipel', famille: 'cadrage', ile: 'textes', nuit: true },
+  { nom: 'archipel-donnees', vue: 'archipel', famille: 'cadrage', ile: 'maths-3e-statistics' },
+  { nom: 'archipel-donnees-nuit', vue: 'archipel', famille: 'cadrage', ile: 'maths-3e-statistics', nuit: true },
+  { nom: 'archipel-textes', vue: 'archipel', famille: 'cadrage', ile: 'french-3e-close-reading' },
+  { nom: 'archipel-textes-nuit', vue: 'archipel', famille: 'cadrage', ile: 'french-3e-close-reading', nuit: true },
   // L'assemblage des blocs (GD-2) : le lieu où l'on assemble, sur l'île de l'école (la Fabrique ou la Halle aux
   // matériaux, selon le rendu), et les blocs assemblés sur les monuments de chaque archipel, de près (`finesse` 2).
-  { nom: 'assemblage-ile', vue: 'île', famille: 'assemblage', ile: 'foret', finesse: 2 },
-  { nom: 'assemblage-observatoire', vue: 'île', famille: 'assemblage', ile: 'foret', lieu: 'landmark-6e-1', finesse: 2 },
-  { nom: 'assemblage-moulin', vue: 'île', famille: 'assemblage', ile: 'foret', lieu: 'landmark-6e-2', finesse: 2 },
+  { nom: 'assemblage-ile', vue: 'île', famille: 'assemblage', ile: 'french-6e-phonology', finesse: 2 },
+  { nom: 'assemblage-observatoire', vue: 'île', famille: 'assemblage', ile: 'french-6e-phonology', lieu: 'landmark-6e-1', finesse: 2 },
+  { nom: 'assemblage-moulin', vue: 'île', famille: 'assemblage', ile: 'french-6e-phonology', lieu: 'landmark-6e-2', finesse: 2 },
   // Le lieu de près (recadré sur la halle, derrière la salle des trophées), et son panneau ouvert, aux réglages par
   // défaut puis en OpenDyslexic 32 px, avec des blocs en poche (`inventaire`) : la poutre s'assemble, le vitrail non.
-  { nom: 'assemblage-lieu', vue: 'île', famille: 'assemblage', ile: 'foret', recadre: { x: 110, y: 150, width: 340, height: 250 }, finesse: 2 },
-  { nom: 'assemblage-lieu-nuit', vue: 'île', famille: 'assemblage', ile: 'foret', nuit: true, recadre: { x: 110, y: 150, width: 340, height: 250 }, finesse: 2 },
-  { nom: 'assemblage-panneau', vue: 'île', famille: 'assemblage', ile: 'foret', lieu: 'assemblage', inventaire: { bois: 5, pierre: 3, glace: 2 } },
+  { nom: 'assemblage-lieu', vue: 'île', famille: 'assemblage', ile: 'french-6e-phonology', recadre: { x: 110, y: 150, width: 340, height: 250 }, finesse: 2 },
+  { nom: 'assemblage-lieu-nuit', vue: 'île', famille: 'assemblage', ile: 'french-6e-phonology', nuit: true, recadre: { x: 110, y: 150, width: 340, height: 250 }, finesse: 2 },
+  { nom: 'assemblage-panneau', vue: 'île', famille: 'assemblage', ile: 'french-6e-phonology', lieu: 'assembly', inventaire: { 'french-6e-phonology': 5, 'french-6e-letter-confusion': 3, 'maths-5e-signed-numbers': 2 } },
   {
     nom: 'assemblage-panneau-od32',
     vue: 'île',
     famille: 'assemblage',
-    ile: 'foret',
-    lieu: 'assemblage',
-    inventaire: { bois: 5, pierre: 3, glace: 2 },
+    ile: 'french-6e-phonology',
+    lieu: 'assembly',
+    inventaire: { 'french-6e-phonology': 5, 'french-6e-letter-confusion': 3, 'maths-5e-signed-numbers': 2 },
     reglages: { font: 'opendyslexic', fontSize: 32 },
   },
   // Les mêmes, en hauteur, pour voir les deux cartes (« Assembler » actif, puis grisé) sans faire défiler.
-  { nom: 'assemblage-panneau-haut', vue: 'île', famille: 'assemblage-panneau', ile: 'foret', lieu: 'assemblage', inventaire: { bois: 5, pierre: 3, glace: 2 }, taille: { width: 1024, height: 1700 } },
+  { nom: 'assemblage-panneau-haut', vue: 'île', famille: 'assemblage-panneau', ile: 'french-6e-phonology', lieu: 'assembly', inventaire: { 'french-6e-phonology': 5, 'french-6e-letter-confusion': 3, 'maths-5e-signed-numbers': 2 }, taille: { width: 1024, height: 1700 } },
   {
     nom: 'assemblage-panneau-od32-haut',
     vue: 'île',
     famille: 'assemblage-panneau',
-    ile: 'foret',
-    lieu: 'assemblage',
-    inventaire: { bois: 5, pierre: 3, glace: 2 },
+    ile: 'french-6e-phonology',
+    lieu: 'assembly',
+    inventaire: { 'french-6e-phonology': 5, 'french-6e-letter-confusion': 3, 'maths-5e-signed-numbers': 2 },
     reglages: { font: 'opendyslexic', fontSize: 32 },
     taille: { width: 1024, height: 3000 },
   },
-  { nom: 'assemblage-ile', vue: 'île', famille: 'assemblage', ile: 'marche', finesse: 2 },
-  { nom: 'assemblage-kiosque', vue: 'île', famille: 'assemblage', ile: 'marche', lieu: 'landmark-5e-2', finesse: 2 },
-  { nom: 'assemblage-phare-large', vue: 'île', famille: 'assemblage', ile: 'glacier', lieu: 'landmark-5e-1', finesse: 2 },
-  { nom: 'assemblage-amphitheatre', vue: 'île', famille: 'assemblage', ile: 'atelier', lieu: 'landmark-4e-2', finesse: 2 },
-  { nom: 'assemblage-ile', vue: 'île', famille: 'assemblage', ile: 'atelier', finesse: 2 },
-  { nom: 'assemblage-viaduc', vue: 'île', famille: 'assemblage', ile: 'atelier', lieu: 'landmark-4e-1', finesse: 2 },
-  { nom: 'assemblage-ile', vue: 'île', famille: 'assemblage', ile: 'phare', finesse: 2 },
-  { nom: 'assemblage-etoiles', vue: 'île', famille: 'assemblage', ile: 'phare', lieu: 'landmark-3e-1', finesse: 2 },
+  { nom: 'assemblage-ile', vue: 'île', famille: 'assemblage', ile: 'maths-5e-proportionality', finesse: 2 },
+  { nom: 'assemblage-kiosque', vue: 'île', famille: 'assemblage', ile: 'maths-5e-proportionality', lieu: 'landmark-5e-2', finesse: 2 },
+  { nom: 'assemblage-phare-large', vue: 'île', famille: 'assemblage', ile: 'maths-5e-signed-numbers', lieu: 'landmark-5e-1', finesse: 2 },
+  { nom: 'assemblage-amphitheatre', vue: 'île', famille: 'assemblage', ile: 'maths-4e-algebra', lieu: 'landmark-4e-2', finesse: 2 },
+  { nom: 'assemblage-ile', vue: 'île', famille: 'assemblage', ile: 'maths-4e-algebra', finesse: 2 },
+  { nom: 'assemblage-viaduc', vue: 'île', famille: 'assemblage', ile: 'maths-4e-algebra', lieu: 'landmark-4e-1', finesse: 2 },
+  { nom: 'assemblage-ile', vue: 'île', famille: 'assemblage', ile: 'maths-3e-functions', finesse: 2 },
+  { nom: 'assemblage-etoiles', vue: 'île', famille: 'assemblage', ile: 'maths-3e-functions', lieu: 'landmark-3e-1', finesse: 2 },
   // L'école et la salle des trophées des Premiers Rivages (lot 7b, les lieux du village) : la vue de la Forêt, sans
   // trophée et avec tous (`succes` : le nombre de succès gagnés, `tous` pour tous, un trophée chacun), de jour et de
   // nuit ; de près, recadrées (`finesse` 3 : le colombage net) ; de loin, la vue de l'archipel.
-  { nom: 'lieux', vue: 'île', famille: 'lieux', ile: 'foret', succes: 'tous' },
-  { nom: 'lieux-nuit', vue: 'île', famille: 'lieux', ile: 'foret', succes: 'tous', nuit: true },
-  { nom: 'lieux-sans-trophee', vue: 'île', famille: 'lieux', ile: 'foret' },
-  { nom: 'lieux-archipel', vue: 'archipel', famille: 'lieux', ile: 'foret', succes: 'tous' },
-  { nom: 'lieux-archipel-nuit', vue: 'archipel', famille: 'lieux', ile: 'foret', succes: 'tous', nuit: true },
+  { nom: 'lieux', vue: 'île', famille: 'lieux', ile: 'french-6e-phonology', succes: 'tous' },
+  { nom: 'lieux-nuit', vue: 'île', famille: 'lieux', ile: 'french-6e-phonology', succes: 'tous', nuit: true },
+  { nom: 'lieux-sans-trophee', vue: 'île', famille: 'lieux', ile: 'french-6e-phonology' },
+  { nom: 'lieux-archipel', vue: 'archipel', famille: 'lieux', ile: 'french-6e-phonology', succes: 'tous' },
+  { nom: 'lieux-archipel-nuit', vue: 'archipel', famille: 'lieux', ile: 'french-6e-phonology', succes: 'tous', nuit: true },
   // De près (famille `lieux-pres`) : l'école, puis la salle des trophées avec six trophées (les socles) et avec tous (la
   // salle et ses deux travées, GD-3 : le cadre s'élargit), de jour et de nuit.
   // L'école à sa place des « Trois bandes », de (12, 3) à (16, 6) (02/10/2026) : le cadre suit, la dernière borne à droite.
-  { nom: 'lieux-ecole-pres', vue: 'île', famille: 'lieux-pres', ile: 'foret', recadre: { x: 90, y: 340, width: 240, height: 210 }, finesse: 3 },
-  { nom: 'lieux-ecole-pres-nuit', vue: 'île', famille: 'lieux-pres', ile: 'foret', nuit: true, recadre: { x: 90, y: 340, width: 240, height: 210 }, finesse: 3 },
-  { nom: 'lieux-trophees-six', vue: 'île', famille: 'lieux-pres', ile: 'foret', succes: 6, recadre: { x: 140, y: 170, width: 320, height: 250 }, finesse: 3 },
-  { nom: 'lieux-trophees-six-nuit', vue: 'île', famille: 'lieux-pres', ile: 'foret', succes: 6, nuit: true, recadre: { x: 140, y: 170, width: 320, height: 250 }, finesse: 3 },
-  { nom: 'lieux-trophees-tous', vue: 'île', famille: 'lieux-pres', ile: 'foret', succes: 'tous', recadre: { x: 140, y: 170, width: 320, height: 250 }, finesse: 3 },
-  { nom: 'lieux-trophees-tous-nuit', vue: 'île', famille: 'lieux-pres', ile: 'foret', succes: 'tous', nuit: true, recadre: { x: 140, y: 170, width: 320, height: 250 }, finesse: 3 },
+  { nom: 'lieux-ecole-pres', vue: 'île', famille: 'lieux-pres', ile: 'french-6e-phonology', recadre: { x: 90, y: 340, width: 240, height: 210 }, finesse: 3 },
+  { nom: 'lieux-ecole-pres-nuit', vue: 'île', famille: 'lieux-pres', ile: 'french-6e-phonology', nuit: true, recadre: { x: 90, y: 340, width: 240, height: 210 }, finesse: 3 },
+  { nom: 'lieux-trophees-six', vue: 'île', famille: 'lieux-pres', ile: 'french-6e-phonology', succes: 6, recadre: { x: 140, y: 170, width: 320, height: 250 }, finesse: 3 },
+  { nom: 'lieux-trophees-six-nuit', vue: 'île', famille: 'lieux-pres', ile: 'french-6e-phonology', succes: 6, nuit: true, recadre: { x: 140, y: 170, width: 320, height: 250 }, finesse: 3 },
+  { nom: 'lieux-trophees-tous', vue: 'île', famille: 'lieux-pres', ile: 'french-6e-phonology', succes: 'tous', recadre: { x: 140, y: 170, width: 320, height: 250 }, finesse: 3 },
+  { nom: 'lieux-trophees-tous-nuit', vue: 'île', famille: 'lieux-pres', ile: 'french-6e-phonology', succes: 'tous', nuit: true, recadre: { x: 140, y: 170, width: 320, height: 250 }, finesse: 3 },
   // La salle de près (famille `lieux-salle`) : sans trophée (l'ouverture devant, le fond de velours), avec huit (le
   // second rang), avec dix-huit (une travée, GD-3), de jour et de nuit ; le fond de velours au plus près, par l'ouverture (la
   // caméra de l'île ne se tourne pas : on le voit de biais), avec deux trophées.
-  { nom: 'lieux-trophees-vide', vue: 'île', famille: 'lieux-salle', ile: 'foret', recadre: { x: 140, y: 170, width: 320, height: 250 }, finesse: 3 },
-  { nom: 'lieux-trophees-vide-nuit', vue: 'île', famille: 'lieux-salle', ile: 'foret', nuit: true, recadre: { x: 140, y: 170, width: 320, height: 250 }, finesse: 3 },
-  { nom: 'lieux-trophees-huit', vue: 'île', famille: 'lieux-salle', ile: 'foret', succes: 8, recadre: { x: 140, y: 170, width: 320, height: 250 }, finesse: 3 },
-  { nom: 'lieux-trophees-dix-huit', vue: 'île', famille: 'lieux-salle', ile: 'foret', succes: 18, recadre: { x: 140, y: 170, width: 320, height: 250 }, finesse: 3 },
-  { nom: 'lieux-trophees-dix-huit-nuit', vue: 'île', famille: 'lieux-salle', ile: 'foret', succes: 18, nuit: true, recadre: { x: 140, y: 170, width: 320, height: 250 }, finesse: 3 },
-  { nom: 'lieux-velours', vue: 'île', famille: 'lieux-salle', ile: 'foret', succes: 2, recadre: { x: 225, y: 285, width: 130, height: 110 }, finesse: 4 },
-  { nom: 'lieux-velours-nuit', vue: 'île', famille: 'lieux-salle', ile: 'foret', succes: 2, nuit: true, recadre: { x: 225, y: 285, width: 130, height: 110 }, finesse: 4 },
+  { nom: 'lieux-trophees-vide', vue: 'île', famille: 'lieux-salle', ile: 'french-6e-phonology', recadre: { x: 140, y: 170, width: 320, height: 250 }, finesse: 3 },
+  { nom: 'lieux-trophees-vide-nuit', vue: 'île', famille: 'lieux-salle', ile: 'french-6e-phonology', nuit: true, recadre: { x: 140, y: 170, width: 320, height: 250 }, finesse: 3 },
+  { nom: 'lieux-trophees-huit', vue: 'île', famille: 'lieux-salle', ile: 'french-6e-phonology', succes: 8, recadre: { x: 140, y: 170, width: 320, height: 250 }, finesse: 3 },
+  { nom: 'lieux-trophees-dix-huit', vue: 'île', famille: 'lieux-salle', ile: 'french-6e-phonology', succes: 18, recadre: { x: 140, y: 170, width: 320, height: 250 }, finesse: 3 },
+  { nom: 'lieux-trophees-dix-huit-nuit', vue: 'île', famille: 'lieux-salle', ile: 'french-6e-phonology', succes: 18, nuit: true, recadre: { x: 140, y: 170, width: 320, height: 250 }, finesse: 3 },
+  { nom: 'lieux-velours', vue: 'île', famille: 'lieux-salle', ile: 'french-6e-phonology', succes: 2, recadre: { x: 225, y: 285, width: 130, height: 110 }, finesse: 4 },
+  { nom: 'lieux-velours-nuit', vue: 'île', famille: 'lieux-salle', ile: 'french-6e-phonology', succes: 2, nuit: true, recadre: { x: 225, y: 285, width: 130, height: 110 }, finesse: 4 },
   // La salle des trophées qui s'agrandit (GD-3, famille `salle`) : à la Forêt des sons, avec 0, 6, 12, 13, 18 et 24
   // succès (une travée au 13e, une autre au 19e), de jour et de nuit, de près (recadrée) et de loin (la vue de
   // l'archipel) ; la vue de l'île entière avec les 24 ; en téléphone, en grand texte, la salle et son panneau ouvert
@@ -178,41 +178,41 @@ const CAPTURES = [
   // l'entoure, la créature hors de sa vue) et le Marché de près, de jour, pour le profil de Bazar derrière la salle (le
   // cadre est estimé : à reprendre sur la première capture).
   ...[0, 6, 12, 13, 18, 24].flatMap((succes) => [
-    { nom: `salle-${succes}`, vue: 'île', famille: 'salle', ile: 'foret', succes, recadre: { x: 140, y: 170, width: 320, height: 250 }, finesse: 2 },
-    { nom: `salle-${succes}-nuit`, vue: 'île', famille: 'salle', ile: 'foret', succes, nuit: true, recadre: { x: 140, y: 170, width: 320, height: 250 }, finesse: 2 },
-    { nom: `salle-${succes}-loin`, vue: 'archipel', famille: 'salle', ile: 'foret', succes },
-    { nom: `salle-${succes}-loin-nuit`, vue: 'archipel', famille: 'salle', ile: 'foret', succes, nuit: true },
+    { nom: `salle-${succes}`, vue: 'île', famille: 'salle', ile: 'french-6e-phonology', succes, recadre: { x: 140, y: 170, width: 320, height: 250 }, finesse: 2 },
+    { nom: `salle-${succes}-nuit`, vue: 'île', famille: 'salle', ile: 'french-6e-phonology', succes, nuit: true, recadre: { x: 140, y: 170, width: 320, height: 250 }, finesse: 2 },
+    { nom: `salle-${succes}-loin`, vue: 'archipel', famille: 'salle', ile: 'french-6e-phonology', succes },
+    { nom: `salle-${succes}-loin-nuit`, vue: 'archipel', famille: 'salle', ile: 'french-6e-phonology', succes, nuit: true },
   ]),
-  { nom: 'salle-24-ile', vue: 'île', famille: 'salle', ile: 'foret', succes: 24 },
+  { nom: 'salle-24-ile', vue: 'île', famille: 'salle', ile: 'french-6e-phonology', succes: 24 },
   ...[13, 24].map((succes) => ({
     nom: `salle-${succes}-390x844-od32`,
     vue: 'île',
     famille: 'salle',
-    ile: 'foret',
-    lieu: 'trophees',
+    ile: 'french-6e-phonology',
+    lieu: 'trophies',
     succes,
     reglages: { font: 'opendyslexic', fontSize: 32 },
     taille: { width: 390, height: 844 },
   })),
-  ...['marche', 'atelier', 'phare'].flatMap((ile) => [
-    { nom: `salle-24-${ile}`, vue: 'île', famille: 'salle', ile, succes: 24 },
-    { nom: `salle-24-${ile}-nuit`, vue: 'île', famille: 'salle', ile, succes: 24, nuit: true },
+  ...[['marche', 'maths-5e-proportionality'], ['atelier', 'maths-4e-algebra'], ['phare', 'maths-3e-functions']].flatMap(([court, ile]) => [
+    { nom: `salle-24-${court}`, vue: 'île', famille: 'salle', ile, succes: 24 },
+    { nom: `salle-24-${court}-nuit`, vue: 'île', famille: 'salle', ile, succes: 24, nuit: true },
   ]),
-  { nom: 'salle-0-marche', vue: 'île', famille: 'salle', ile: 'marche' },
-  { nom: 'salle-24-marche-pres', vue: 'île', famille: 'salle', ile: 'marche', succes: 24, recadre: { x: 140, y: 40, width: 380, height: 330 }, finesse: 2 },
+  { nom: 'salle-0-marche', vue: 'île', famille: 'salle', ile: 'maths-5e-proportionality' },
+  { nom: 'salle-24-marche-pres', vue: 'île', famille: 'salle', ile: 'maths-5e-proportionality', succes: 24, recadre: { x: 140, y: 40, width: 380, height: 330 }, finesse: 2 },
   // Les îles-écoles au cœur de 20 × 20 (famille `ecoles`) : la vue de l'île de chacune, de jour, en tablette, puis en
   // téléphone portrait (390 × 844), pour juger le cadrage, les marges et l'îlot du Gardien (relectures du 01/10/2026).
-  ...['marche', 'atelier', 'phare', 'foret'].flatMap((ile) => [
-    { nom: `ecole-${ile}`, vue: 'île', famille: 'ecoles', ile },
-    { nom: `ecole-${ile}-390x844`, vue: 'île', famille: 'ecoles', ile, taille: { width: 390, height: 844 } },
+  ...[['marche', 'maths-5e-proportionality'], ['atelier', 'maths-4e-algebra'], ['phare', 'maths-3e-functions'], ['foret', 'french-6e-phonology']].flatMap(([court, ile]) => [
+    { nom: `ecole-${court}`, vue: 'île', famille: 'ecoles', ile },
+    { nom: `ecole-${court}-390x844`, vue: 'île', famille: 'ecoles', ile, taille: { width: 390, height: 844 } },
   ]),
   // Les îles-écoles en trois bandes (famille `trois-bandes`, lot en cours, 02/10/2026) : au Marché et à l'Atelier, la zone
   // des plans avec le troisième plan à moitié posé (`cour-mi` : sa première rangée, au fond de la zone depuis ce lot) ; à
   // la Forêt, le lieu où l'on assemble (la Fabrique, ou la Halle aux matériaux dans Archipéo) près d'un plan posé
   // (`un-plan`), de jour et de nuit. La vue de l'île entière : le cadre serré se fixera sur ces premières captures.
-  ...['marche', 'atelier'].map((ile) => ({ nom: `trois-bandes-plans-${ile}`, vue: 'île', famille: 'trois-bandes', ile, partie: 'cour-mi', finesse: 2 })),
-  { nom: 'trois-bandes-assemblage', vue: 'île', famille: 'trois-bandes', ile: 'foret', partie: 'un-plan', finesse: 2 },
-  { nom: 'trois-bandes-assemblage-nuit', vue: 'île', famille: 'trois-bandes', ile: 'foret', partie: 'un-plan', nuit: true, finesse: 2 },
+  ...[['marche', 'maths-5e-proportionality'], ['atelier', 'maths-4e-algebra']].map(([court, ile]) => ({ nom: `trois-bandes-plans-${court}`, vue: 'île', famille: 'trois-bandes', ile, partie: 'cour-mi', finesse: 2 })),
+  { nom: 'trois-bandes-assemblage', vue: 'île', famille: 'trois-bandes', ile: 'french-6e-phonology', partie: 'un-plan', finesse: 2 },
+  { nom: 'trois-bandes-assemblage-nuit', vue: 'île', famille: 'trois-bandes', ile: 'french-6e-phonology', partie: 'un-plan', nuit: true, finesse: 2 },
 ];
 /** La lueur la nuit, à la vue île : au plus 3 % de la scène. */
 const LUEUR_MAX = 0.03;
@@ -278,14 +278,14 @@ function sansLesIles(parCle, iles) {
  * de son Gardien (`ile`), sinon la route de la vue, le bonhomme là où la partie le pose (`routes`).
  */
 function routeDe(c, parIle, routes) {
-  if (parIle) return `/aventure/${parIle}/gardien`;
-  if (c.lieu) return `/aventure/${c.lieu}`;
-  if (c.ile && c.vue === 'île') return `/aventure/${c.ile}`;
-  if (c.ile && (c.vue === 'défi' || c.vue === 'bulle')) return `/aventure/${c.ile}/gardien`;
+  if (parIle) return `/adventure/${parIle}/challenge`;
+  if (c.lieu) return `/adventure/${c.lieu}`;
+  if (c.ile && c.vue === 'île') return `/adventure/${c.ile}`;
+  if (c.ile && (c.vue === 'défi' || c.vue === 'bulle')) return `/adventure/${c.ile}/challenge`;
   return routes[c.vue];
 }
 
-/** Une partie où le Gardien de l'île `ile` n'est pas encore vaincu (sa clé « <île>-gardien » retirée) : il est debout. */
+/** Une partie où le Gardien de l'île `ile` n'est pas encore vaincu (sa clé « <lieu>-challenge » retirée) : il est debout. */
 function sansLeGardien(parCle, ile) {
   if (!ile) return parCle;
   return Object.fromEntries(Object.entries(parCle).filter(([k]) => k !== `${ile}-challenge`));
@@ -335,7 +335,7 @@ async function scenes() {
         plans[l[moitie].id] = cells.filter((_, i) => i % 2 === 0);
       }
     if (partie === 'tour-avant' || partie === 'tour-debut' || partie === 'tour-mi') {
-      const l = plansFor('tour');
+      const l = plansFor('french-6e-reading');
       // Avant : aucun plan posé ; au début : la moitié du premier (les murs) ; pendant : le premier posé, la moitié du
       // deuxième (le toit).
       const faits = partie === 'tour-mi' ? 1 : 0;
@@ -360,7 +360,7 @@ async function scenes() {
   const rows = [];
   for (const a of ARCHIPELAGO_IDS.filter((id) => !ONLY || id === ONLY)) {
     const at = BIOMES.find((b) => b.classe === a).id;
-    const routes = { île: `/aventure/${at}`, archipel: '/aventure', carte: '/aventure/carte', défi: `/aventure/${at}/gardien`, bulle: `/aventure/${at}/gardien` };
+    const routes = { île: `/adventure/${at}`, archipel: '/adventure', carte: '/adventure/map', défi: `/adventure/${at}/challenge`, bulle: `/adventure/${at}/challenge` };
     const iles = BIOMES.filter((b) => b.classe === a).map((b) => b.id);
     const classe = (id) => BIOMES.find((b) => b.id === id).classe;
     // Les mesures : les trois vues de jour en 3D. Avec `--captures`, toutes les captures déclarées (voir `CAPTURES`).
@@ -406,7 +406,7 @@ async function scenes() {
           localStorage.setItem('dysapps:settings', JSON.stringify({ worldView: view, ...(univers ? { univers } : {}), ...(lv2 ? { lv2 } : {}), ...(reglages ?? {}) }));
           localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true, 'archipel-5e': true, 'archipel-4e': true, 'archipel-3e': true }));
           localStorage.setItem('dysapps:region-names', JSON.stringify({ said: true }));
-          localStorage.setItem('dysapps:game', JSON.stringify({ version: 2, stock: inventaire ?? {}, progress, world }));
+          localStorage.setItem('dysapps:game', JSON.stringify({ version: 3, stock: inventaire ?? {}, progress, world }));
           localStorage.setItem('dysapps:progress', JSON.stringify({ xp: 20000, badges }));
         },
         {

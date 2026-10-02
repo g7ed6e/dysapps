@@ -139,7 +139,7 @@ export function assemblageId(bloc: BlockId): string {
 /** Les blocs assemblés qui ont leurs questions (docs/contenu/assemblage.md, « Les questions »). */
 export const BLOCS_A_QUESTIONS: BlockId[] = [...JSON_BY_ID.values()]
   .filter((m) => m.type === 'assembly')
-  .map((m) => m.id.slice('assemblage-'.length) as BlockId);
+  .map((m) => m.id.slice('assembly-'.length) as BlockId);
 
 /** Les questions d'un bloc assemblé, chargées à la demande comme un exercice JSON. */
 export async function loadAssemblage(bloc: BlockId): Promise<AssemblageDef | undefined> {

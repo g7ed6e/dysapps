@@ -127,7 +127,7 @@ function maison(b: BlockId, w: 4 | 5 = 4, chimney: 1 | 2 = 1): Stages {
   const walls: ArchCell[] = [];
   for (let z = 0; z < h; z++) for (const [x, y] of ring(x0, y0, w, d)) walls.push({ x, y, z, block: b });
   const wallsDone = without(walls, [[doorX, y0, 0], ...windows]);
-  const roof: ArchCell[] = [{ x: doorX, y: y0, z: 0, block: BLOC.porte }, ...windows.map(([x, y, z]) => ({ x, y, z, block: 'lanterne' as BlockId }))];
+  const roof: ArchCell[] = [{ x: doorX, y: y0, z: 0, block: BLOC.porte }, ...windows.map(([x, y, z]) => ({ x, y, z, block: BLOC.lanterne }))];
   // Les deux pans (les rangées de devant et de derrière, au niveau h), le faîte au milieu (h + 1), les pignons.
   const seen = new Set<string>();
   const add = (c: ArchCell) => {
@@ -161,7 +161,7 @@ function tour(b: BlockId, top: TowerTop, stripes?: BlockId): Stages {
   ];
   const walls: ArchCell[] = [];
   for (let z = 0; z < h; z++) for (const [x, y] of ring(x0, y0, 3, 3)) walls.push({ x, y, z, block: stripes && z % 2 === 0 ? stripes : b });
-  const roof: ArchCell[] = [{ x: doorX, y: y0, z: 0, block: BLOC.porte }, ...windows.map(([x, y, z]) => ({ x, y, z, block: 'lanterne' as BlockId }))];
+  const roof: ArchCell[] = [{ x: doorX, y: y0, z: 0, block: BLOC.porte }, ...windows.map(([x, y, z]) => ({ x, y, z, block: BLOC.lanterne }))];
   const corners = new Set(['2,2', '4,2', '2,4', '4,4']);
   for (const [x, y] of ring(x0, y0, 3, 3)) {
     const corner = corners.has(`${x},${y}`);
@@ -288,7 +288,7 @@ function relais(b: BlockId): Stages {
   ];
   const walls: ArchCell[] = [];
   for (let z = 0; z < h; z++) for (const [x, y] of ring(x0, y0, w, d)) walls.push({ x, y, z, block: b });
-  const roof: ArchCell[] = [{ x: doorX, y: y0, z: 0, block: BLOC.porte }, ...windows.map(([x, y, z]) => ({ x, y, z, block: 'lanterne' as BlockId }))];
+  const roof: ArchCell[] = [{ x: doorX, y: y0, z: 0, block: BLOC.porte }, ...windows.map(([x, y, z]) => ({ x, y, z, block: BLOC.lanterne }))];
   // Le toit de l'auberge : deux pans et le faîte, qui débordent d'une case sur l'écurie ; les pignons ; la cheminée.
   for (let x = x0; x <= x0 + w; x++) {
     roof.push({ x, y: y0, z: h, block: BLOC.toit }, { x, y: y0 + d - 1, z: h, block: BLOC.toit }, { x, y: y0 + 1, z: h + 1, block: BLOC.toit });
@@ -341,7 +341,7 @@ function jardin(b: BlockId): Stages {
   ];
   const walls: ArchCell[] = [];
   for (let z = 0; z < h; z++) for (const [x, y] of ring(x0, y0, w, d)) walls.push({ x, y, z, block: b });
-  const roof: ArchCell[] = [{ x: doorX, y: y0, z: 0, block: BLOC.porte }, ...windows.map(([x, y, z]) => ({ x, y, z, block: 'lanterne' as BlockId }))];
+  const roof: ArchCell[] = [{ x: doorX, y: y0, z: 0, block: BLOC.porte }, ...windows.map(([x, y, z]) => ({ x, y, z, block: BLOC.lanterne }))];
   // Le toit de la cuisine : deux pans et le faîte, les pignons d'osier ; la cheminée d'ardoise sur le pan de derrière.
   for (let x = x0; x < x0 + w; x++) {
     roof.push({ x, y: y0, z: h, block: BLOC.toit }, { x, y: y0 + d - 1, z: h, block: BLOC.toit }, { x, y: y0 + 1, z: h + 1, block: BLOC.toit });
@@ -397,7 +397,7 @@ function refuge(b: BlockId): Stages {
     { x: 2, y: 1, z: 1, block: BLOC.bois },
     { x: 0, y: 0, z: 0, block: BLOC.bois },
   ];
-  const roof: ArchCell[] = [{ x: doorX, y: y0, z: 0, block: BLOC.porte }, ...windows.map(([x, y, z]) => ({ x, y, z, block: 'verre' as BlockId }))];
+  const roof: ArchCell[] = [{ x: doorX, y: y0, z: 0, block: BLOC.porte }, ...windows.map(([x, y, z]) => ({ x, y, z, block: BLOC.verre }))];
   // Le toit de la poste : deux pans et le faîte, les pignons de bardeau.
   for (let x = x0; x < x0 + w; x++) roof.push({ x, y: y0, z: h, block: BLOC.toit }, { x, y: y0 + d - 1, z: h, block: BLOC.toit }, { x, y: y0 + 1, z: h + 1, block: BLOC.toit });
   roof.push({ x: x0, y: y0 + 1, z: h, block: b }, { x: x0 + w - 1, y: y0 + 1, z: h, block: b });

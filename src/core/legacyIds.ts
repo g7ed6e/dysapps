@@ -40,9 +40,7 @@ export const LEGACY_PLACES: Readonly<Record<string, string>> = {
 };
 
 /** Les missions de chaque lieu, sous son ancien identifiant : l'ancienne mission → la neutre. */
-export const LEGACY_MISSIONS: Readonly<
-  Record<string, Readonly<Record<string, string>>>
-> = {
+export const LEGACY_MISSIONS: Readonly<Record<string, Readonly<Record<string, string>>>> = {
   foret: { abattage: 'syllables', 'chasse-son': 'sound-hunt', rimes: 'rhymes' },
   mine: { filon: 'letter-pairs', oreille: 'sound-discrimination' },
   carriere: {
@@ -352,3 +350,135 @@ export const LEGACY_PARTS: Readonly<Record<string, string>> = {
   'monument-etoiles': 'landmark-3e-1',
   'monument-temple': 'landmark-3e-2',
 };
+
+const has = (o: Readonly<Record<string, unknown>>, k: string): boolean => Object.hasOwn(o, k);
+
+/** Toutes les missions d'avant, de toutes les îles : elles étaient uniques d'une île à l'autre. */
+const MISSIONS = Object.fromEntries(Object.values(LEGACY_MISSIONS).flatMap((m) => Object.entries(m)));
+
+export function translatePlaceId(id: string): string {
+  return has(LEGACY_PLACES, id) ? LEGACY_PLACES[id] : id;
+}
+
+export function translateResourceId(id: string): string {
+  return has(LEGACY_RESOURCES, id) ? LEGACY_RESOURCES[id] : id;
+}
+
+export function translatePartId(id: string): string {
+  return has(LEGACY_PARTS, id) ? LEGACY_PARTS[id] : id;
+}
+
+/** Une mission (le `type` d'un exercice, la clé de son niveau adapté). */
+export function translateMissionId(id: string): string {
+  return has(MISSIONS, id) ? MISSIONS[id] : id;
+}
+
+/**
+ * Un exercice (ses étoiles, son temps de lecture) : `foret-chasse-son-an` → `french-6e-phonology-sound-hunt-an`. Le
+ * Gardien d'une île (`foret-gardien`) devient le défi de son lieu ; la question d'un bloc assemblé
+ * (`assemblage-poutre`), `assembly-compound-6e`.
+ */
+export function translateExerciseId(id: string): string {
+  const i = id.indexOf('-');
+  if (i < 0) return id;
+  const head = id.slice(0, i);
+  const rest = id.slice(i + 1);
+  if (head === 'assemblage') return has(LEGACY_RESOURCES, rest) ? `assembly-${LEGACY_RESOURCES[rest]}` : id;
+  if (!has(LEGACY_PLACES, head)) return id;
+  const place = LEGACY_PLACES[head];
+  if (rest === 'gardien') return `${place}-challenge`;
+  // Les trois premiers niveaux de l'Abattage s'appelaient « échauffement ».
+  if (head === 'foret' && rest.startsWith('echauffement-')) return `${place}-syllables-warmup-${rest.slice('echauffement-'.length)}`;
+  const missions = LEGACY_MISSIONS[head];
+  const mission = Object.keys(missions)
+    .sort((a, b) => b.length - a.length)
+    .find((m) => rest === m || rest.startsWith(`${m}-`));
+  return mission === undefined ? id : `${place}-${missions[mission]}${rest.slice(mission.length)}`;
+}
+
+/**
+ * Une question de la répétition espacée (`<exercice>:<clé>`) : l'exercice, et la clé quand elle se déduisait de son
+ * identifiant (`foret-rimes-eau-3`) ou du bloc assemblé (`poutre-3`).
+ */
+export function translateItemId(itemId: string): string {
+  const i = itemId.indexOf(':');
+  if (i < 0) return itemId;
+  const def = itemId.slice(0, i);
+  return `${translateExerciseId(def)}:${translateItemKey(def, itemId.slice(i + 1))}`;
+}
+
+/** La clé d'une question, dans l'exercice d'avant `def`. */
+export function translateItemKey(def: string, key: string): string {
+  if (key.startsWith(`${def}-`)) return `${translateExerciseId(def)}${key.slice(def.length)}`;
+  return translateAssemblyKey(key);
+}
+
+/** Une question d'un bloc assemblé, dans son tirage (`poutre-3` → `compound-6e-3`). */
+export function translateAssemblyKey(key: string): string {
+  const m = /^([a-z]+)-(\d+)$/.exec(key);
+  return m && has(LEGACY_RESOURCES, m[1]) && LEGACY_RESOURCES[m[1]].startsWith('compound-') ? `${LEGACY_RESOURCES[m[1]]}-${m[2]}` : key;
+}
+
+/** Une liaison construite (`foret-mine`) ou un passage fait (`voyage-5e` → `passage-5e`). */
+export function translateLinkId(id: string): string {
+  if (id.startsWith('voyage-')) return `passage-${id.slice('voyage-'.length)}`;
+  const parts = id.split('-');
+  return parts.length === 2 && parts.every((p) => has(LEGACY_PLACES, p)) ? `${LEGACY_PLACES[parts[0]]}-${LEGACY_PLACES[parts[1]]}` : id;
+}
+
+/** Les matières d'avant, dans `/matiere/…`. */
+const SUBJECTS: Readonly<Record<string, string>> = { francais: 'french', anglais: 'english' };
+
+/** Les lieux du village et les pages de l'aventure, dans les adresses d'avant. */
+const PAGES: Readonly<Record<string, string>> = {
+  monde: 'world',
+  carte: 'map',
+  menu: 'menu',
+  blocs: 'stock',
+  monuments: 'landmarks',
+  ecole: 'school',
+  trophees: 'trophies',
+  assemblage: 'assembly',
+  voyage: 'passage',
+};
+
+/**
+ * Une adresse d'avant (`/aventure/foret/chasse-son`, un favori, un lien d'enseignant, « Continuer ») → la neuve
+ * (`/adventure/french-6e-phonology/sound-hunt`) ; `/matiere/francais` → `/matiere/french`. Une autre adresse passe
+ * telle quelle.
+ */
+export function translatePath(path: string): string {
+  const q = path.indexOf('?');
+  const route = q < 0 ? path : path.slice(0, q);
+  const query = q < 0 ? '' : path.slice(q + 1);
+  const segs = route.split('/');
+  if (segs[1] === 'matiere' && segs.length === 3 && has(SUBJECTS, segs[2])) return `/matiere/${SUBJECTS[segs[2]]}${q < 0 ? '' : path.slice(q)}`;
+  if (segs[1] !== 'aventure') return path;
+  const [, , first, second] = segs;
+  const out = ['', 'adventure'];
+  if (first !== undefined && first !== '') {
+    if (has(PAGES, first)) {
+      out.push(PAGES[first]);
+      if (second !== undefined) out.push(first === 'assemblage' ? translateResourceId(second) : second);
+    } else if (has(LEGACY_PLACES, first)) {
+      out.push(LEGACY_PLACES[first]);
+      if (second !== undefined) out.push(second === 'gardien' ? 'challenge' : (LEGACY_MISSIONS[first][second] ?? second));
+    } else {
+      out.push(translatePartId(first));
+      if (second !== undefined) out.push(second);
+    }
+  }
+  const params = new URLSearchParams(query);
+  const chantier = params.get('chantier');
+  if (chantier !== null) {
+    params.delete('chantier');
+    params.set('worksite', chantier === 'navire' ? 'vehicle' : chantier === 'plan' ? 'part' : translateLinkId(chantier));
+  }
+  const porte = params.get('porte');
+  if (porte !== null) {
+    params.delete('porte');
+    params.set('door', porte === 'francais' ? 'french' : porte === 'anglais' ? 'english' : porte);
+  }
+  const rest = params.toString();
+  return out.join('/') + (rest ? `?${rest}` : '');
+}

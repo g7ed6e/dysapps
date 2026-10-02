@@ -41,11 +41,11 @@ it('s’ouvre au lancement ; « Jouer » débloque la voix et ne revient plus de
 });
 
 it('propose « Continuer » vers la dernière mission ouverte', async () => {
-  rememberPlace({ path: '/aventure/foret/abattage', label: 'Abattage syllabique · Forêt des sons' });
+  rememberPlace({ path: '/adventure/foret/abattage', label: 'Abattage syllabique · Forêt des sons' });
   const user = userEvent.setup();
   renderTitle();
   await user.click(screen.getByRole('button', { name: 'Continuer : Abattage syllabique · Forêt des sons' }));
-  expect(screen.getByTestId('ici')).toHaveTextContent('/aventure/foret/abattage');
+  expect(screen.getByTestId('ici')).toHaveTextContent('/adventure/foret/abattage');
 });
 
 it('ouvert sur un lien direct, il ne propose pas de repartir ailleurs', () => {

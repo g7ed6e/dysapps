@@ -1,4 +1,5 @@
-import { Link, useParams } from 'react-router-dom';
+import { Link, Navigate, useLocation, useParams } from 'react-router-dom';
+import { translatePath } from '../core/legacyIds';
 import { subjectInfo, visibleSubjects, type Subject } from '../apps/registry';
 import { useSettings, useUnivers } from '../core/SettingsContext';
 import { Icon } from '../components/Icon';
@@ -17,6 +18,10 @@ export function SubjectPage() {
   const { state } = useBlocland();
   const { settings } = useSettings();
   const univers = useUnivers();
+  const { pathname, search } = useLocation();
+  // Une ancienne adresse (`/matiere/francais`) : la même page sous son adresse neutre.
+  const neuve = translatePath(pathname + search);
+  if (neuve !== pathname + search) return <Navigate to={neuve} replace />;
   if (!subject || !visibleSubjects(settings.lv2).includes(subject as Subject)) return <NotFoundPage />;
   const info = subjectInfo(subject as Subject, settings.lv2);
   const withIslands = ARCHIPELAGOS.filter((a) => biomesOf(subject as Subject).some((b) => b.classe === a.classe));
@@ -84,7 +89,7 @@ function ArchipelagoIslands({ classe, subject }: { classe: Classe; subject: Subj
           const stars = missionsJouables(biome, lv2).reduce((n, x) => n + (questProgress(biome.id, x.id, state.progress)?.stars ?? 0), 0);
           return (
             <li key={biome.id}>
-              <Link to={`/aventure/${biome.id}`} className={`panel app-card biome-${biome.id}${unlocked ? '' : ' locked'}`}>
+              <Link to={`/adventure/${biome.id}`} className={`panel app-card biome-${biome.id}${unlocked ? '' : ' locked'}`}>
                 <span className="app-icon">
                   <Creature biome={biome.id} className="creature-small" />
                 </span>

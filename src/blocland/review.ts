@@ -42,7 +42,7 @@ export function questsToReview(spaced: SpacedItem[], bridges: string[], today = 
     const biome = getBiome(meta.biome);
     const title = biome && missionsJouables(biome).find((e) => e.id === meta.type)?.title;
     if (!biome || !title) continue;
-    out.push({ biome: meta.biome, type: meta.type, label: `${title} · ${biome.name}`, path: `/aventure/${meta.biome}/${meta.type}` });
+    out.push({ biome: meta.biome, type: meta.type, label: `${title} · ${biome.name}`, path: `/adventure/${meta.biome}/${meta.type}` });
   }
   return out;
 }

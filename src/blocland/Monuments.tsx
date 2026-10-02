@@ -22,10 +22,10 @@ import { texteDuMonument, useTextes } from '../univers';
 
 export const MONUMENTS_TITLE = 'Monuments';
 /** L'adresse de la liste des monuments (un panneau dans le monde, une page en vue simple). */
-export const MONUMENTS_PATH = '/aventure/monuments';
+export const MONUMENTS_PATH = '/adventure/landmarks';
 
 export function monumentPath(m: MonumentDef): string {
-  return `/aventure/${m.id}`;
+  return `/adventure/${m.id}`;
 }
 
 /** Le monument est-il ouvert (son archipel atteint) ? */
@@ -273,7 +273,7 @@ export function MonumentsPage() {
   const univers = useUnivers();
   return (
     <>
-      <Link to="/aventure" className="back-link">
+      <Link to="/adventure" className="back-link">
         <Icon name="back" /> {UNIVERS[univers].nom}
       </Link>
       <h1 className="page-title">

@@ -31,7 +31,7 @@ it('construit un défi avec deux manches par type de mission, aux items de l’e
     const def = await bossDef(biome, state, () => 0.5);
     expect(def.id).toBe(bossId(biome.id));
     expect(def.type).toBe('boss');
-    expect(def.reward.block).toBe('or');
+    expect(def.reward.block).toBe('trophy-gold');
     expect(def.instruction).toMatch(new RegExp(`^${guardianTitle(biome)} te lance`));
     const types = typesWithContent(biome);
     const expected = types.reduce((n, t) => n + (SCREEN_TYPES[t].batch === 'all' ? 1 : ROUNDS_PER_TYPE), 0);

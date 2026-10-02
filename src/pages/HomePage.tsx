@@ -79,7 +79,7 @@ export function HomePage() {
         </Link>
       ) : (
         <section className="panel home-resume" aria-label="Reprendre l’aventure">
-          <Link to={`/aventure/${destination.island}`} className="button primary home-resume-button">
+          <Link to={`/adventure/${destination.island}`} className="button primary home-resume-button">
             <Icon name="play" /> Reprendre l’aventure
           </Link>
           <p className="home-destination">

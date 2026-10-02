@@ -91,7 +91,7 @@ export function blockUses(state: GameState, block: BlockId): Use[] {
   // employer les blocs qui s'accumulent).
   for (const m of monumentsOf(archipelagoOf(state.world.place ?? 'french-6e-phonology').classe)) {
     const need = planStatus(state, m).missing[block] ?? 0;
-    if (need > 0) uses.push({ kind: 'monument', island: m.biome, name: m.name, need, enough: have >= need, to: `/aventure/${m.id}` });
+    if (need > 0) uses.push({ kind: 'monument', island: m.biome, name: m.name, need, enough: have >= need, to: `/adventure/${m.id}` });
   }
   // Rien à poser aujourd'hui : les plans suivants de son île (ou, pour un bloc de coffre, des îles ouvertes) l'attendent peut-être.
   const home = earnIsland(block);

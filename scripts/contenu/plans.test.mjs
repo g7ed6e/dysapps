@@ -9,9 +9,9 @@ function plansDuJeu() {
   return noms.map((n) => JSON.parse(readFileSync(`src/blocland/world/plans/${imports.get(n)}.json`, 'utf8')));
 }
 
-const debut = ['---', 'île : mine', '---', '', '# Mine', '', '## Les plans', ''];
+const debut = ['---', 'lieu : french-6e-letter-confusion', '---', '', '# Mine', '', '## Les plans', ''];
 const tete = ['| plan | nom | XP | coffre | quand c’est bâti |', '| --- | --- | --- | --- | --- |'];
-const lire = (...l) => () => lireIle([...debut, ...tete, ...l, ''].join('\n'), 'mine.md');
+const lire = (...l) => () => lireIle([...debut, ...tete, ...l, ''].join('\n'), 'french-6e-letter-confusion.md');
 
 describe('les plans des bâtiments en Markdown', () => {
   it('écrit puis relit les plans de chaque île à l’identique', () => {
@@ -31,15 +31,15 @@ describe('les plans des bâtiments en Markdown', () => {
   });
 
   it('refuse une rangée mal écrite, avec la ligne', () => {
-    expect(lire('| `french-6e-letter-confusion-1` | La forge | 50 | sable × 3 | Fini. |').call().plans).toEqual([
+    expect(lire('| `french-6e-letter-confusion-1` | La forge | 50 | french-6e-word-spelling × 3 | Fini. |').call().plans).toEqual([
       { id: 'french-6e-letter-confusion-1', biome: 'french-6e-letter-confusion', name: 'La forge', reward: { xp: 50, chest: { 'french-6e-word-spelling': 3 } }, done: 'Fini.' },
     ]);
-    expect(lire('| french-6e-letter-confusion-1 | La forge | 50 | | Fini. |')).toThrow('mine.md, ligne 11 : identifiant de plan attendu');
+    expect(lire('| french-6e-letter-confusion-1 | La forge | 50 | | Fini. |')).toThrow('french-6e-letter-confusion.md, ligne 11 : identifiant de plan attendu');
     expect(lire('| `french-6e-letter-confusion-1` | La forge | cinquante | | Fini. |')).toThrow('XP : nombre attendu');
     expect(lire('| `french-6e-letter-confusion-1` | La forge | 50 | sable 3 | Fini. |')).toThrow('coffre : « bloc × nombre » attendu');
     expect(lire('| `french-6e-letter-confusion-1` | La forge | 50 | sable × 1 · sable × 2 | Fini. |')).toThrow('« sable » écrit deux fois');
-    expect(lire('| `a` | A | 1 | | Fini. |', '| `a` | B | 1 | | Fini. |')).toThrow('mine.md, ligne 12 : le plan « a » est écrit deux fois');
-    expect(lire('| `a` | A | 1 | | "Fini. |')).toThrow(/^mine\.md, ligne 11 : chaîne entre guillemets/);
+    expect(lire('| `a` | A | 1 | | Fini. |', '| `a` | B | 1 | | Fini. |')).toThrow('french-6e-letter-confusion.md, ligne 12 : le plan « a » est écrit deux fois');
+    expect(lire('| `a` | A | 1 | | "Fini. |')).toThrow(/^french-6e-letter-confusion\.md, ligne 11 : chaîne entre guillemets/);
     expect(lire('| `a` | A | 1 | | Fini. |', '', 'du texte')).toThrow('ligne inattendue après le tableau des plans');
   });
 });

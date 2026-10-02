@@ -12,7 +12,7 @@ import { UNIVERS } from '../core/univers';
 import { useHoldCelebrations } from '../components/Celebrations';
 
 /**
- * Le voyage en vue simple : `#/aventure/voyage/:vers` (la classe de l'archipel d'arrivée). Un premier voyage largue les
+ * Le voyage en vue simple : `#/adventure/passage/:vers` (la classe de l'archipel d'arrivée). Un premier voyage largue les
  * amarres (le voyage reste fait) ; vers un archipel déjà atteint, le bonhomme y va simplement. Puis le port d'arrivée.
  */
 export function VoyagePage() {
@@ -35,11 +35,11 @@ export function VoyagePage() {
       const r = launch(stage);
       if (r.ok) launchVoyage(stage.reward.xp);
     }
-    navigate(`/aventure/${port}`, { replace: true });
+    navigate(`/adventure/${port}`, { replace: true });
   };
   return (
     <>
-      <Link to="/aventure" className="back-link">
+      <Link to="/adventure" className="back-link">
         <Icon name="back" /> {UNIVERS[univers].carte}
       </Link>
       <VoyagePanel to={to} back={back} onArrive={arrive} />

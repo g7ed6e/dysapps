@@ -34,7 +34,7 @@ import { UNIVERS } from '../core/univers';
 export function BiomePage() {
   const { biomeId } = useParams();
   // « Voir le chantier » (bilan d'une mission) : la section à mettre en avant, comme dans le panneau d'île.
-  const chantier = useSearchParams()[0].get('chantier');
+  const chantier = useSearchParams()[0].get('worksite');
   const navigate = useNavigate();
   const { state } = useBlocland();
   const { settings } = useSettings();
@@ -56,7 +56,7 @@ export function BiomePage() {
 
   return (
     <>
-      <Link to="/aventure" className="back-link">
+      <Link to="/adventure" className="back-link">
         <Icon name="back" /> {UNIVERS[univers].carte}
       </Link>
       <h1 className={`page-title biome-title biome-${biome.id}`}>
@@ -87,7 +87,7 @@ export function BiomePage() {
           </Link>
         </p>
       ) : (
-        <Bridges island={biome.id} highlight={chantier} onBuilt={(to) => window.setTimeout(() => navigate(`/aventure/${to}`), 900)} />
+        <Bridges island={biome.id} highlight={chantier} onBuilt={(to) => window.setTimeout(() => navigate(`/adventure/${to}`), 900)} />
       )}
 
       {/* « Pas de LV2 » : ni missions ni Gardien sur l'île de la LV2. */}
@@ -124,7 +124,7 @@ export function BiomePage() {
           return (
             <li key={exercise.id}>
               {def && unlocked ? (
-                <Link to={`/aventure/${biome.id}/${exercise.id}`} className={`panel app-card biome-${biome.id}`}>
+                <Link to={`/adventure/${biome.id}/${exercise.id}`} className={`panel app-card biome-${biome.id}`}>
                   {content}
                 </Link>
               ) : (
@@ -193,7 +193,7 @@ export function BiomePage() {
           </>
         );
         return ready ? (
-          <Link to={`/aventure/${biome.id}/gardien`} className={`panel app-card boss-card biome-${biome.id}`}>
+          <Link to={`/adventure/${biome.id}/challenge`} className={`panel app-card boss-card biome-${biome.id}`}>
             {content}
           </Link>
         ) : (
@@ -209,7 +209,7 @@ export function BiomePage() {
             <Icon name="map" /> Le plan
           </h2>
           <div className="panel plan-panel">
-            <PlanSection biome={biome} builder={builder} highlight={chantier === 'plan'} />
+            <PlanSection biome={biome} builder={builder} highlight={chantier === 'part'} />
           </div>
         </>
       )}
@@ -220,7 +220,7 @@ export function BiomePage() {
             <Icon name="ship" /> Le Bloc-Navire
           </h2>
           <div className="panel plan-panel">
-            <ShipSection biome={biome} builder={ship} highlight={chantier === 'navire'} onBoard={(to) => navigate(`/aventure/voyage/${to}`)} />
+            <ShipSection biome={biome} builder={ship} highlight={chantier === 'vehicle'} onBoard={(to) => navigate(`/adventure/passage/${to}`)} />
           </div>
         </>
       )}

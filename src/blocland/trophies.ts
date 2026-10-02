@@ -4,7 +4,7 @@ import type { BlockId } from './biomes';
 
 export const TROPHIES_TITLE = 'Salle des trophées';
 /** L'adresse de la salle (dans le monde : son panneau ; en vue simple : la page Succès). */
-export const TROPHIES_PATH = '/aventure/trophees';
+export const TROPHIES_PATH = '/adventure/trophies';
 
 /** Le bloc du trophée d'un succès : cristal pour les rôles, quartz pour les Gardiens, lentille pour les voyages, marbre pour les monuments, or sinon. */
 export function trophyBlock(badgeId: string): BlockId {

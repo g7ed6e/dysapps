@@ -429,7 +429,7 @@ it('Icebergs des fractions : une seule bonne réponse, calculée depuis l’éno
   const seen = { sumTrap: 0, unsimplified: 0, wrongInverse: 0, cross: 0 };
   for (let s = 0; s < 200; s++) {
     for (const level of [1, 2, 3]) {
-      const def = byId(`glacier-icebergs-${level}`);
+      const def = byId(`maths-5e-signed-numbers-fractions-${level}`);
       expect(def.instruction).not.toMatch(/[/×÷]/);
       for (const item of def.generate!(`${def.id}#glace${s}`)) {
         const list = (item.choices as string[]).map(String);
@@ -502,7 +502,7 @@ it('Relevés : la réponse se lit ou se calcule depuis le diagramme ou le tablea
   let withTotal = 0;
   for (let s = 0; s < 200; s++) {
     for (const level of [1, 2, 3]) {
-      const def = byId(`donnees-releves-${level}`);
+      const def = byId(`maths-3e-statistics-data-${level}`);
       expect(def.instruction).not.toMatch(/[/×÷=%]/);
       for (const item of def.generate!(`${def.id}#releve${s}`)) {
         const prompt = String(item.prompt);
@@ -593,7 +593,7 @@ it('Faisceaux : la réponse se lit sur le graphique, aux intersections du quadri
   const seen = { swapped: 0, start: 0, neighbour: 0, graduation: 0, otherAxis: 0, arrival: 0, intercept: 0 };
   for (let s = 0; s < 200; s++) {
     for (const level of [1, 2, 3]) {
-      const def = byId(`phare-faisceaux-${level}`);
+      const def = byId(`maths-3e-functions-graphs-${level}`);
       expect(def.instruction).not.toMatch(/[/×÷=…]/);
       for (const item of def.generate!(`${def.id}#graphe${s}`)) {
         const prompt = String(item.prompt);

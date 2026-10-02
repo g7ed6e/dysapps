@@ -100,7 +100,7 @@ export function BloclandPage() {
 
       {/* La Carte en vue simple : la prochaine destination, puis les quatre archipels, ceux non atteints dans la brume. */}
       <section className="panel home-resume" aria-label="Prochaine destination">
-        <Link to={`/aventure/${destination.island}`} className="button primary home-resume-button">
+        <Link to={`/adventure/${destination.island}`} className="button primary home-resume-button">
           <Icon name="play" /> Y aller
         </Link>
         <p className="home-destination">
@@ -137,7 +137,7 @@ export function BloclandPage() {
                 const st = islandState(state, biome.id);
                 return (
                   <li key={biome.id}>
-                    <Link to={`/aventure/${biome.id}`} className={`panel biome-card biome-${biome.id}${unlocked ? '' : ' locked'}`}>
+                    <Link to={`/adventure/${biome.id}`} className={`panel biome-card biome-${biome.id}${unlocked ? '' : ' locked'}`}>
                       <Creature biome={biome.id} className="creature-small" />
                       <span className="biome-name">{biome.name}</span>
                       <span className="biome-module">

@@ -46,8 +46,8 @@ it('les missions de la Rivière : figure ou aide sur chaque item, fractions lisi
     for (const it of def.items) {
       expect(it.choices).toContain(it.answer);
       expect(String(it.explanation).length).toBeGreaterThan(3);
-      if (def.type === 'nenuphars') expect(it.figure).toBeDefined();
-      if (def.type === 'deux-rives') expect(it.aid).toEqual({ kind: 'compare-bars', props: expect.anything() });
+      if (def.type === 'number-line') expect(it.figure).toBeDefined();
+      if (def.type === 'equivalence') expect(it.aid).toEqual({ kind: 'compare-bars', props: expect.anything() });
     }
   }
 });
@@ -70,7 +70,7 @@ it('les missions de la Plaine : une aide visuelle et une explication sur chaque 
       expect(it.choices).toContain(it.answer);
       const nums = (it.choices as string[]).map((c) => Number(c.replace(/[\s  ]/g, '')));
       expect([...nums].sort((a, b) => a - b)).toEqual(nums);
-      if (def.type !== 'doubles') expect(it.aid).toBeDefined();
+      if (def.type !== 'doubles-halves') expect(it.aid).toBeDefined();
     }
   }
   // Niveau 1 des tables : seulement 2, 5 et 10.

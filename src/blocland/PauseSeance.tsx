@@ -22,7 +22,7 @@ export function PauseSeance({ suite, onContinuer }: { suite?: string; onContinue
       </p>
       <SpeakButton text={`Belle séance ! ${texte}`} compact />
       <div className="actions">
-        <Link ref={arreter} to="/aventure" replace className="button primary">
+        <Link ref={arreter} to="/adventure" replace className="button primary">
           <Icon name="check" /> J’arrête pour aujourd’hui
         </Link>
         <button type="button" className="button" onClick={onContinuer}>

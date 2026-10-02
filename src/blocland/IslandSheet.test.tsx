@@ -46,7 +46,7 @@ it('le panneau d’une île ouverte liste ses missions, son Gardien verrouillé 
   expect(screen.getByText(/Plan 1 \/ 3 : La cabane de Mousso/)).toBeInTheDocument();
   expect(screen.getByRole('button', { name: /Poser le bloc suivant/ })).toBeDisabled();
   // L'inventaire est une page à part : le plan y renvoie.
-  expect(screen.getByRole('link', { name: /Mes blocs \(0\)/ })).toHaveAttribute('href', '/aventure/blocs');
+  expect(screen.getByRole('link', { name: /Mes blocs \(0\)/ })).toHaveAttribute('href', '/adventure/stock');
 });
 
 it('le panneau 3D replie le plan et les ouvrages quand il n’y a rien à y faire, et les ouvre dès que c’est possible', async () => {
@@ -79,7 +79,7 @@ it('les blocs qui manquent renvoient à l’île où les gagner, par un lien', (
   expect(navire).not.toHaveAttribute('open');
   expect(navire.textContent).toContain('0 / 45 posés · il manque');
   const links = screen.getAllByRole('link', { name: 'Forêt des sons' });
-  expect(links[0]).toHaveAttribute('href', '/aventure/foret');
+  expect(links[0]).toHaveAttribute('href', '/adventure/foret');
   expect(document.body.textContent).toContain('briques · à gagner ici, dans les missions');
 });
 

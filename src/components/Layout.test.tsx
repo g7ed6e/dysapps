@@ -25,7 +25,7 @@ function renderAt(path: string) {
 }
 
 it('sur l’écran du monde, pas de barre du haut : le menu Pause la remplace ; elle revient hors du monde', () => {
-  const monde = renderAt('/aventure/foret');
+  const monde = renderAt('/adventure/foret');
   expect(screen.getByText('Le monde')).toBeInTheDocument();
   expect(screen.queryByRole('navigation', { name: 'Navigation principale' })).not.toBeInTheDocument();
   expect(screen.queryByRole('link', { name: 'Voir mon rôle et mes succès' })).not.toBeInTheDocument();

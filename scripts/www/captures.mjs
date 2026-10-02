@@ -54,30 +54,30 @@ const badges = (n) => Object.fromEntries(BADGES.slice(0, n).map((b, i) => [b.id,
 const EARLY = {
   game: {
     stock: { 'french-6e-phonology': 9, 'maths-6e-calculation': 4 },
-    progress: stars(['foret'], 2),
-    world: { parts: { [plansFor('foret')[0].id]: keys(plansFor('foret')[0], 12) }, links: ['french-6e-phonology-maths-6e-calculation'], place: 'foret' },
+    progress: stars(['french-6e-phonology'], 2),
+    world: { parts: { [plansFor('french-6e-phonology')[0].id]: keys(plansFor('french-6e-phonology')[0], 12) }, links: ['french-6e-phonology-maths-6e-calculation'], place: 'french-6e-phonology' },
   },
   progress: { xp: 180, totalAnswers: 40, correctAnswers: 31, sessionsCompleted: 4, badges: badges(3) },
 };
 /** Assez de bois pour finir la cabane de Mousso. */
-const CABANE_READY = { ...EARLY, game: { ...EARLY.game, stock: { 'french-6e-phonology': planCells(plansFor('foret')[0]).length } } };
+const CABANE_READY = { ...EARLY, game: { ...EARLY.game, stock: { 'french-6e-phonology': planCells(plansFor('french-6e-phonology')[0]).length } } };
 /** Au milieu des Premiers Rivages : des îles ouvertes, des bâtiments finis, la coque du navire commencée. */
 const six = islandsOf('6e');
 const MID = {
   game: {
     stock: { 'french-6e-phonology': 14, 'maths-6e-calculation': 22, 'french-6e-letter-confusion': 9, 'french-6e-grammar-spelling': 6, 'french-6e-word-spelling': 5, 'maths-6e-fractions': 4, 'french-6e-reading': 3, 'trophy-gold': 2 },
-    progress: { ...stars(['foret', 'plaine', 'mine', 'ferme', 'riviere'], 2), ...stars(['foret'], 3), ...guardians(['foret', 'plaine']) },
+    progress: { ...stars(['french-6e-phonology', 'maths-6e-calculation', 'french-6e-letter-confusion', 'french-6e-grammar-spelling', 'maths-6e-fractions'], 2), ...stars(['french-6e-phonology'], 3), ...guardians(['french-6e-phonology', 'maths-6e-calculation']) },
     world: {
       parts: {
-        ...Object.fromEntries(['foret', 'plaine'].flatMap((id) => plansFor(id).slice(0, 2).map((p) => [p.id, keys(p)]))),
-        ...Object.fromEntries(['mine', 'ferme'].map((id) => [plansFor(id)[0].id, keys(plansFor(id)[0])])),
-        [plansFor('riviere')[0].id]: keys(plansFor('riviere')[0], 10),
+        ...Object.fromEntries(['french-6e-phonology', 'maths-6e-calculation'].flatMap((id) => plansFor(id).slice(0, 2).map((p) => [p.id, keys(p)]))),
+        ...Object.fromEntries(['french-6e-letter-confusion', 'french-6e-grammar-spelling'].map((id) => [plansFor(id)[0].id, keys(plansFor(id)[0])])),
+        [plansFor('maths-6e-fractions')[0].id]: keys(plansFor('maths-6e-fractions')[0], 10),
         [VEHICLE_STAGES[0].id]: keys(VEHICLE_STAGES[0], 24),
         [MONUMENTS[0].id]: keys(MONUMENTS[0], 50),
       },
-      log: [{ day: '2026-09-20', part: plansFor('foret')[0].id }],
+      log: [{ day: '2026-09-20', part: plansFor('french-6e-phonology')[0].id }],
       links: ['french-6e-phonology-maths-6e-calculation', 'french-6e-phonology-french-6e-letter-confusion', 'french-6e-phonology-french-6e-grammar-spelling', 'maths-6e-calculation-maths-6e-fractions', 'french-6e-letter-confusion-french-6e-word-spelling'],
-      place: 'foret',
+      place: 'french-6e-phonology',
     },
   },
   progress: { xp: 1450, totalAnswers: 310, correctAnswers: 250, sessionsCompleted: 28, structuresCompleted: 6, challengesWon: 2, bestStreak: 9, badges: badges(9) },
@@ -95,17 +95,17 @@ const DONE6 = {
       },
       log: [],
       links: [...bridgesOf('6e'), 'passage-5e'],
-      place: 'foret',
+      place: 'french-6e-phonology',
     },
   },
   progress: { xp: 5200, totalAnswers: 1200, correctAnswers: 1010, sessionsCompleted: 90, structuresCompleted: 33, challengesWon: 11, passages: 1, landmarksCompleted: 2, badges: badges(17) },
 };
 /** Arrivé dans les Îles Brumeuses. */
-const COLLINES = { ...DONE6, game: { ...DONE6.game, world: { ...DONE6.game.world, place: 'marche' } } };
+const COLLINES = { ...DONE6, game: { ...DONE6.game, world: { ...DONE6.game.world, place: 'maths-5e-proportionality' } } };
 
 // ---------- Les captures ----------
 
-const FOREST_QUEST = BIOMES.find((b) => b.id === 'foret').exercises[0].id;
+const FOREST_QUEST = BIOMES.find((b) => b.id === 'french-6e-phonology').exercises[0].id;
 
 /**
  * name: fichier ; state: partie préparée ; view: vue du monde ; go: adresse ; act: gestes avant la capture ; whale: ce
@@ -115,33 +115,33 @@ const SHOTS = [
   { name: 'titre', state: EARLY, title: true, go: '/' },
   { name: 'menu', state: MID, go: '/menu' },
   { name: 'telephone-menu', state: MID, go: '/menu', size: PHONE },
-  { name: 'menu-village', state: MID, go: '/aventure/menu' },
-  { name: 'village-premiere-visite', go: '/aventure', tutorial: true },
-  { name: 'panneau-ile', state: EARLY, go: '/aventure/foret' },
-  { name: 'plan-en-cours', state: EARLY, go: '/aventure/foret', act: closeSheet },
-  { name: 'plan-termine', state: CABANE_READY, go: '/aventure/foret', act: placeAll },
-  { name: 'quete-ile', state: EARLY, go: `/aventure/foret/${FOREST_QUEST}`, wait: 2500 },
+  { name: 'menu-village', state: MID, go: '/adventure/menu' },
+  { name: 'village-premiere-visite', go: '/adventure', tutorial: true },
+  { name: 'panneau-ile', state: EARLY, go: '/adventure/french-6e-phonology' },
+  { name: 'plan-en-cours', state: EARLY, go: '/adventure/french-6e-phonology', act: closeSheet },
+  { name: 'plan-termine', state: CABANE_READY, go: '/adventure/french-6e-phonology', act: placeAll },
+  { name: 'quete-ile', state: EARLY, go: `/adventure/french-6e-phonology/${FOREST_QUEST}`, wait: 2500 },
   // Le bandeau de correction monte du bas de l'écran : il faut l'attendre en entier.
   { name: 'quete-correction', go: '/app/demo', act: wrongAnswer, wait: 1500, after: 1500 },
   { name: 'quete-fin', go: '/app/demo', act: playWell, wait: 1500 },
-  { name: 'mes-blocs', state: MID, go: '/aventure/blocs' },
-  { name: 'carte', state: MID, go: '/aventure/carte' },
-  { name: 'archipels', state: MID, go: '/aventure/monde' },
+  { name: 'mes-blocs', state: MID, go: '/adventure/stock' },
+  { name: 'carte', state: MID, go: '/adventure/map' },
+  { name: 'archipels', state: MID, go: '/adventure/world' },
   // Le mot des grandes étapes : sa présentation déjà dite, reste le premier ouvrage (le sentier vers la Mine).
-  { name: 'baleine', state: MID, go: '/aventure', whale: { 'baleine-6e-arrivee': true }, wait: 9000 },
+  { name: 'baleine', state: MID, go: '/adventure', whale: { 'baleine-6e-arrivee': true }, wait: 9000 },
   // Les nouveaux noms des archipels (GD-1), dits une fois à un élève qui jouait déjà.
-  { name: 'renommage', state: MID, go: '/aventure', whale: { 'baleine-6e-arrivee': true }, renommage: true, wait: 9000 },
-  { name: 'ouvrages', state: MID, go: '/aventure/ferme', act: openFold('ouvrages') },
-  { name: 'navire-chantier', state: MID, go: '/aventure/plaine', act: openFold('navire') },
-  { name: 'gardien', state: MID, go: '/aventure/mine/gardien', wait: 2500 },
-  { name: 'ecole', state: MID, go: '/aventure/ecole' },
-  { name: 'trophees', state: MID, go: '/aventure/trophees' },
-  { name: 'monument', state: MID, go: '/aventure/landmark-6e-1' },
-  { name: 'village-reconstruit', state: DONE6, go: '/aventure' },
-  { name: 'collines-du-large', state: COLLINES, go: '/aventure/marche', act: closeSheet },
-  { name: 'vue-simple', state: MID, view: 'list', go: '/aventure' },
-  { name: 'telephone-village', state: MID, go: '/aventure/foret', size: PHONE },
-  { name: 'telephone-quete', state: EARLY, go: `/aventure/foret/${FOREST_QUEST}`, size: PHONE, wait: 2500 },
+  { name: 'renommage', state: MID, go: '/adventure', whale: { 'baleine-6e-arrivee': true }, renommage: true, wait: 9000 },
+  { name: 'ouvrages', state: MID, go: '/adventure/french-6e-grammar-spelling', act: openFold('ouvrages') },
+  { name: 'navire-chantier', state: MID, go: '/adventure/maths-6e-calculation', act: openFold('navire') },
+  { name: 'gardien', state: MID, go: '/adventure/french-6e-letter-confusion/challenge', wait: 2500 },
+  { name: 'ecole', state: MID, go: '/adventure/school' },
+  { name: 'trophees', state: MID, go: '/adventure/trophies' },
+  { name: 'monument', state: MID, go: '/adventure/landmark-6e-1' },
+  { name: 'village-reconstruit', state: DONE6, go: '/adventure' },
+  { name: 'collines-du-large', state: COLLINES, go: '/adventure/maths-5e-proportionality', act: closeSheet },
+  { name: 'vue-simple', state: MID, view: 'list', go: '/adventure' },
+  { name: 'telephone-village', state: MID, go: '/adventure/french-6e-phonology', size: PHONE },
+  { name: 'telephone-quete', state: EARLY, go: `/adventure/french-6e-phonology/${FOREST_QUEST}`, size: PHONE, wait: 2500 },
   { name: 'quetes', state: MID, go: '/quetes' },
   { name: 'succes', state: MID, go: '/succes' },
   { name: 'reglages', state: MID, go: '/reglages' },
@@ -313,7 +313,7 @@ async function take(shot) {
         // Les réglages par défaut (la page Réglages les montre tels quels), sauf la vue du monde et les réglages extrêmes.
         localStorage.setItem('dysapps:settings', JSON.stringify({ ...settings, worldView: view }));
         if (!tutorial) localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true, 'archipel-5e': true, 'archipel-4e': true, 'archipel-3e': true }));
-        if (state?.game) localStorage.setItem('dysapps:game', JSON.stringify({ version: 2, ...state.game }));
+        if (state?.game) localStorage.setItem('dysapps:game', JSON.stringify({ version: 3, ...state.game }));
         if (state?.progress) localStorage.setItem('dysapps:progress', JSON.stringify(state.progress));
         // Ce que la baleine a déjà dit : sans cette clé, les étapes déjà passées sont notées dites, sans parler.
         if (whale) localStorage.setItem('dysapps:guide-messages', JSON.stringify(whale));

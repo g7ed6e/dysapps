@@ -12,8 +12,8 @@ const relais = getBiome('lv2-5e-introductions')!;
 it('le Relais des voyageurs ouvre les missions de la LV2 choisie, au même rang dans les deux langues', () => {
   const es = missionsJouables(relais, 'es');
   const de = missionsJouables(relais, 'de');
-  expect(es.map((x) => x.id)).toEqual(['es-hola', 'es-numeros', 'es-familia', 'es-el-la']);
-  expect(de.map((x) => x.id)).toEqual(['de-hallo', 'de-zahlen', 'de-familie', 'de-der-die-das']);
+  expect(es.map((x) => x.id)).toEqual(['es-greetings', 'es-numbers', 'es-family', 'es-articles']);
+  expect(de.map((x) => x.id)).toEqual(['de-greetings', 'de-numbers', 'de-family', 'de-articles']);
   // Autant de bornes quelle que soit la langue : le monde ne change pas avec le réglage.
   expect(de).toHaveLength(es.length);
   expect(missionsJouables(relais, 'none')).toEqual([]);
@@ -54,7 +54,7 @@ it('« À revoir » ne propose que les missions de la LV2 choisie', () => {
   try {
     retenirReglages({ ...DEFAULT_SETTINGS, lv2: 'de' });
     const types = questsToReview(spaced, bridges, '2026-09-28').map((q) => q.type);
-    expect(types).toEqual(['de-hallo', 'de-zahlen', 'de-familie', 'de-der-die-das']);
+    expect(types).toEqual(['de-greetings', 'de-numbers', 'de-family', 'de-articles']);
     retenirReglages({ ...DEFAULT_SETTINGS, lv2: 'none' });
     expect(questsToReview(spaced, bridges, '2026-09-28')).toEqual([]);
   } finally {

@@ -18,7 +18,7 @@ import { UNIVERS } from '../core/univers';
 
 export const SCHOOL_TITLE = 'École du village';
 /** L'adresse de l'école (dans le monde en 3D ou en 2D : son panneau ; en vue simple : sa page). */
-export const SCHOOL_PATH = '/aventure/ecole';
+export const SCHOOL_PATH = '/adventure/school';
 const DOORS: Subject[] = ['french', 'maths', 'english'];
 
 /** L'île de l'école de l'archipel où se tient le bonhomme. */
@@ -31,13 +31,13 @@ function greetingOf(island: BiomeDef): string {
   return `Bienvenue à l’école ! Trois portes, une par matière : choisis-en une. Chaque mission finie ici te donne des blocs ${ofBlock(island.block)} pour le village, plus si tu as des étoiles.`;
 }
 
-/** Les trois portes, ou les missions de la porte choisie (`?porte=maths` : on y revient après une mission). */
+/** Les trois portes, ou les missions de la porte choisie (`?door=maths` : on y revient après une mission). */
 export function SchoolBody() {
   const island = useSchoolIsland();
   const univers = useUnivers();
   const { settings, speak } = useSettings();
   const [params, setParams] = useSearchParams();
-  const asked = params.get('porte');
+  const asked = params.get('door');
   const door = DOORS.find((d) => d === asked) ?? null;
   const greeting = greetingOf(island);
   const block = BLOCKS[island.block];
@@ -72,7 +72,7 @@ export function SchoolBody() {
               <Icon name="back" /> Les trois portes
             </button>
           </div>
-          <SubjectApps subject={door} from={`${SCHOOL_PATH}?porte=${door}`} />
+          <SubjectApps subject={door} from={`${SCHOOL_PATH}?door=${door}`} />
           <p className="school-more">
             <Link to={`/matiere/${door}`}>
               <Icon name="map" /> Les îles de {SUBJECTS[door].title.toLowerCase()} dans {UNIVERS[univers].nom}
@@ -83,7 +83,7 @@ export function SchoolBody() {
         <ul className="grid apps school-doors" aria-label="Les trois portes de l’école">
           {DOORS.map((d) => (
             <li key={d}>
-              <button type="button" className={`panel app-card school-door subject-${d}`} onClick={() => setParams({ porte: d })}>
+              <button type="button" className={`panel app-card school-door subject-${d}`} onClick={() => setParams({ door: d })}>
                 <span className="app-icon">
                   <Icon name={SUBJECTS[d].icon} size="1.8rem" />
                 </span>
@@ -127,7 +127,7 @@ export function SchoolPage() {
   const island = useSchoolIsland();
   return (
     <>
-      <Link to="/aventure" className="back-link">
+      <Link to="/adventure" className="back-link">
         <Icon name="back" /> {UNIVERS[univers].nom}
       </Link>
       <h1 className="page-title">

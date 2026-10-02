@@ -27,7 +27,7 @@
 > Une question à chaque bloc assemblé. Elle mobilise les deux matières scolaires des îles de sa recette ; ses compétences
 > sont celles de l’archipel (6e : cycle 3 seul ; 5e à 3e : au moins une du cycle 4). Douze questions par bloc
 > (au moins 8). Trois choix : la réponse, un piège de chaque matière. `lu` ne lit que le document : la question
-> a son propre bouton. `npm run contenu` les écrit dans `src/blocland/exercises/data/assemblage-<bloc>.json`.
+> a son propre bouton. `npm run contenu` les écrit dans `src/blocland/exercises/data/assembly-<bloc>.json`.
 
 ### La poutre · `compound-6e`
 
