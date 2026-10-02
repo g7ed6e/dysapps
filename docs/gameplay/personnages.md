@@ -24,16 +24,16 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 
 | Île | Créature | Espèce (Blocland) | Espèce (Archipéo) | Gardien |
 | --- | --- | --- | --- | --- |
-| [Forêt des sons](https://g7ed6e.github.io/dysapps/pedagogie/iles/foret.html) (Français) | Mousso | golem de mousse | golem de mousse | Le Grand Chêne |
-| [Mine des lettres](https://g7ed6e.github.io/dysapps/pedagogie/iles/mine.html) (Français) | Tunel | taupe cubique | taupe | Le Golem de roche |
-| [Carrière des mots](https://g7ed6e.github.io/dysapps/pedagogie/iles/carriere.html) (Français) | Rouxel | renard cubique | renard | La Dune vivante |
-| [Ferme des accords](https://g7ed6e.github.io/dysapps/pedagogie/iles/ferme.html) (Français) | Bloquette | vache carrée | brebis | Le Taureau de terre |
-| [Tour du lecteur](https://g7ed6e.github.io/dysapps/pedagogie/iles/tour.html) (Français) | Grimoire | hibou de pierre | tortue copiste | La Chouette de verre |
-| [Plaine des nombres](https://g7ed6e.github.io/dysapps/pedagogie/iles/plaine.html) (Maths) | Coco | coccinelle à dix points | coccinelle à dix points | Le Hanneton de bronze |
-| [Rivière des fractions](https://g7ed6e.github.io/dysapps/pedagogie/iles/riviere.html) (Maths) | Nénu | grenouille des nénuphars | grenouille des nénuphars | Le Brochet d’argent |
-| [Volcan des décimaux](https://g7ed6e.github.io/dysapps/pedagogie/iles/volcan.html) (Maths) | Lavi | salamandre de lave | salamandre de lave | Le Dragon de cendre |
-| [Baie des mots](https://g7ed6e.github.io/dysapps/pedagogie/iles/baie.html) (Anglais) | Robin | rouge-gorge des quais | rouge-gorge des quais | Le Lion de pierre |
-| [Horloge des verbes](https://g7ed6e.github.io/dysapps/pedagogie/iles/horloge.html) (Anglais) | Tick | hérisson horloger | hérisson horloger | Le Coucou de bronze |
+| [Forêt des sons](https://g7ed6e.github.io/dysapps/pedagogie/iles/french-6e-phonology.html) (Français) | Mousso | golem de mousse | golem de mousse | Le Grand Chêne |
+| [Mine des lettres](https://g7ed6e.github.io/dysapps/pedagogie/iles/french-6e-letter-confusion.html) (Français) | Tunel | taupe cubique | taupe | Le Golem de roche |
+| [Carrière des mots](https://g7ed6e.github.io/dysapps/pedagogie/iles/french-6e-word-spelling.html) (Français) | Rouxel | renard cubique | renard | La Dune vivante |
+| [Ferme des accords](https://g7ed6e.github.io/dysapps/pedagogie/iles/french-6e-grammar-spelling.html) (Français) | Bloquette | vache carrée | brebis | Le Taureau de terre |
+| [Tour du lecteur](https://g7ed6e.github.io/dysapps/pedagogie/iles/french-6e-reading.html) (Français) | Grimoire | hibou de pierre | tortue copiste | La Chouette de verre |
+| [Plaine des nombres](https://g7ed6e.github.io/dysapps/pedagogie/iles/maths-6e-calculation.html) (Maths) | Coco | coccinelle à dix points | coccinelle à dix points | Le Hanneton de bronze |
+| [Rivière des fractions](https://g7ed6e.github.io/dysapps/pedagogie/iles/maths-6e-fractions.html) (Maths) | Nénu | grenouille des nénuphars | grenouille des nénuphars | Le Brochet d’argent |
+| [Volcan des décimaux](https://g7ed6e.github.io/dysapps/pedagogie/iles/maths-6e-decimals.html) (Maths) | Lavi | salamandre de lave | salamandre de lave | Le Dragon de cendre |
+| [Baie des mots](https://g7ed6e.github.io/dysapps/pedagogie/iles/english-6e-vocabulary.html) (Anglais) | Robin | rouge-gorge des quais | rouge-gorge des quais | Le Lion de pierre |
+| [Horloge des verbes](https://g7ed6e.github.io/dysapps/pedagogie/iles/english-6e-grammar.html) (Anglais) | Tick | hérisson horloger | hérisson horloger | Le Coucou de bronze |
 
 ### Le Grand Chêne, Forêt des sons
 
@@ -119,13 +119,13 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 
 | Île | Créature | Espèce (Blocland) | Espèce (Archipéo) | Gardien |
 | --- | --- | --- | --- | --- |
-| [Glacier des relatifs](https://g7ed6e.github.io/dysapps/pedagogie/iles/glacier.html) (Maths) | Frimas | pingouin comptable | pingouin comptable | Le Mammouth de givre |
-| [Marché des proportions](https://g7ed6e.github.io/dysapps/pedagogie/iles/marche.html) (Maths) | Bazar | raton laveur marchand | raton laveur marchand | Le Colporteur |
-| [Carrefour des homophones](https://g7ed6e.github.io/dysapps/pedagogie/iles/carrefour.html) (Français) | Sema | caméléon des panneaux | caméléon des panneaux | Le Sphinx des routes |
-| [Marais des temps](https://g7ed6e.github.io/dysapps/pedagogie/iles/marais.html) (Français) | Kroa | triton des roseaux | triton des roseaux | L’Hydre des marais |
-| [Comptoir](https://g7ed6e.github.io/dysapps/pedagogie/iles/comptoir.html) (Anglais) | Pudding | bouledogue marchand | bouledogue marchand | La Reine du marché |
-| [Manoir du passé](https://g7ed6e.github.io/dysapps/pedagogie/iles/manoir.html) (Anglais) | Moustache | chat du manoir | chat du manoir | Le Spectre du manoir |
-| [Relais des voyageurs](https://g7ed6e.github.io/dysapps/pedagogie/iles/relais.html) (LV2 (espagnol ou allemand)) | Lina | cigogne voyageuse | cigogne voyageuse | La Diligence de cuivre |
+| [Glacier des relatifs](https://g7ed6e.github.io/dysapps/pedagogie/iles/maths-5e-signed-numbers.html) (Maths) | Frimas | pingouin comptable | pingouin comptable | Le Mammouth de givre |
+| [Marché des proportions](https://g7ed6e.github.io/dysapps/pedagogie/iles/maths-5e-proportionality.html) (Maths) | Bazar | raton laveur marchand | raton laveur marchand | Le Colporteur |
+| [Carrefour des homophones](https://g7ed6e.github.io/dysapps/pedagogie/iles/french-5e-homophones.html) (Français) | Sema | caméléon des panneaux | caméléon des panneaux | Le Sphinx des routes |
+| [Marais des temps](https://g7ed6e.github.io/dysapps/pedagogie/iles/french-5e-conjugation.html) (Français) | Kroa | triton des roseaux | triton des roseaux | L’Hydre des marais |
+| [Comptoir](https://g7ed6e.github.io/dysapps/pedagogie/iles/english-5e-vocabulary.html) (Anglais) | Pudding | bouledogue marchand | bouledogue marchand | La Reine du marché |
+| [Manoir du passé](https://g7ed6e.github.io/dysapps/pedagogie/iles/english-5e-grammar.html) (Anglais) | Moustache | chat du manoir | chat du manoir | Le Spectre du manoir |
+| [Relais des voyageurs](https://g7ed6e.github.io/dysapps/pedagogie/iles/lv2-5e-introductions.html) (LV2 (espagnol ou allemand)) | Lina | cigogne voyageuse | cigogne voyageuse | La Diligence de cuivre |
 
 ### Le Mammouth de givre, Glacier des relatifs
 
@@ -187,13 +187,13 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 
 | Île | Créature | Espèce (Blocland) | Espèce (Archipéo) | Gardien |
 | --- | --- | --- | --- | --- |
-| [Forge des puissances](https://g7ed6e.github.io/dysapps/pedagogie/iles/forge.html) (Maths) | Braise | golem forgeron | golem forgeron | Le Titan d’acier |
-| [Atelier du calcul littéral](https://g7ed6e.github.io/dysapps/pedagogie/iles/atelier.html) (Maths) | Ixe | robot dessinateur | automate dessinateur | Le Golem des équations |
-| [Falaise des accords](https://g7ed6e.github.io/dysapps/pedagogie/iles/falaise.html) (Français) | Cléa | chèvre des cimes | chèvre des cimes | Le Bélier de granit |
-| [Cabinet des mots](https://g7ed6e.github.io/dysapps/pedagogie/iles/cabinet.html) (Français) | Plume | pie collectionneuse | pie collectionneuse | Le Hibou lexicographe |
-| [Théâtre des voix](https://g7ed6e.github.io/dysapps/pedagogie/iles/theatre.html) (Anglais) | Puck | lutin souffleur | lutin souffleur | Le Masque |
-| [Gare du futur](https://g7ed6e.github.io/dysapps/pedagogie/iles/gare.html) (Anglais) | Vapeur | blaireau chef de gare | blaireau chef de gare | La Locomotive de fer |
-| [Jardin des heures](https://g7ed6e.github.io/dysapps/pedagogie/iles/jardin.html) (LV2 (espagnol ou allemand)) | Muscade | écureuil cuisinier | écureuil cuisinier | Le Soleil de cuivre |
+| [Forge des puissances](https://g7ed6e.github.io/dysapps/pedagogie/iles/maths-4e-powers.html) (Maths) | Braise | golem forgeron | golem forgeron | Le Titan d’acier |
+| [Atelier du calcul littéral](https://g7ed6e.github.io/dysapps/pedagogie/iles/maths-4e-algebra.html) (Maths) | Ixe | robot dessinateur | automate dessinateur | Le Golem des équations |
+| [Falaise des accords](https://g7ed6e.github.io/dysapps/pedagogie/iles/french-4e-agreement.html) (Français) | Cléa | chèvre des cimes | chèvre des cimes | Le Bélier de granit |
+| [Cabinet des mots](https://g7ed6e.github.io/dysapps/pedagogie/iles/french-4e-vocabulary.html) (Français) | Plume | pie collectionneuse | pie collectionneuse | Le Hibou lexicographe |
+| [Théâtre des voix](https://g7ed6e.github.io/dysapps/pedagogie/iles/english-4e-comprehension.html) (Anglais) | Puck | lutin souffleur | lutin souffleur | Le Masque |
+| [Gare du futur](https://g7ed6e.github.io/dysapps/pedagogie/iles/english-4e-grammar.html) (Anglais) | Vapeur | blaireau chef de gare | blaireau chef de gare | La Locomotive de fer |
+| [Jardin des heures](https://g7ed6e.github.io/dysapps/pedagogie/iles/lv2-4e-daily-life.html) (LV2 (espagnol ou allemand)) | Muscade | écureuil cuisinier | écureuil cuisinier | Le Soleil de cuivre |
 
 ### Le Titan d’acier, Forge des puissances
 
@@ -255,13 +255,13 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 
 | Île | Créature | Espèce (Blocland) | Espèce (Archipéo) | Gardien |
 | --- | --- | --- | --- | --- |
-| [Belvédère de Thalès](https://g7ed6e.github.io/dysapps/pedagogie/iles/belvedere.html) (Maths) | Théo | héron géomètre | héron géomètre | Le Sphinx de marbre |
-| [Observatoire des données](https://g7ed6e.github.io/dysapps/pedagogie/iles/donnees.html) (Maths) | Stat | chouette astronome | chouette astronome | Le Comptable des étoiles |
-| [Phare des fonctions](https://g7ed6e.github.io/dysapps/pedagogie/iles/phare.html) (Maths) | Fi | lampe de phare vivante | lampe de phare vivante | Le Dragon de lumière |
-| [Observatoire des textes](https://g7ed6e.github.io/dysapps/pedagogie/iles/textes.html) (Français) | Astra | luciole lectrice | luciole lectrice | Le Grand Lecteur |
-| [Studio des ondes](https://g7ed6e.github.io/dysapps/pedagogie/iles/studio.html) (Anglais) | Écho | chauve-souris animatrice radio | chauve-souris animatrice radio | La Grande Antenne |
-| [Château des hypothèses](https://g7ed6e.github.io/dysapps/pedagogie/iles/chateau.html) (Anglais) | Knight | petit chevalier | petit chevalier | Le Dragon gallois |
-| [Refuge des carnets](https://g7ed6e.github.io/dysapps/pedagogie/iles/refuge.html) (LV2 (espagnol ou allemand)) | Timbre | loutre factrice | loutre factrice | Le Papillon de cuivre |
+| [Belvédère de Thalès](https://g7ed6e.github.io/dysapps/pedagogie/iles/maths-3e-geometry.html) (Maths) | Théo | héron géomètre | héron géomètre | Le Sphinx de marbre |
+| [Observatoire des données](https://g7ed6e.github.io/dysapps/pedagogie/iles/maths-3e-statistics.html) (Maths) | Stat | chouette astronome | chouette astronome | Le Comptable des étoiles |
+| [Phare des fonctions](https://g7ed6e.github.io/dysapps/pedagogie/iles/maths-3e-functions.html) (Maths) | Fi | lampe de phare vivante | lampe de phare vivante | Le Dragon de lumière |
+| [Observatoire des textes](https://g7ed6e.github.io/dysapps/pedagogie/iles/french-3e-close-reading.html) (Français) | Astra | luciole lectrice | luciole lectrice | Le Grand Lecteur |
+| [Studio des ondes](https://g7ed6e.github.io/dysapps/pedagogie/iles/english-3e-comprehension.html) (Anglais) | Écho | chauve-souris animatrice radio | chauve-souris animatrice radio | La Grande Antenne |
+| [Château des hypothèses](https://g7ed6e.github.io/dysapps/pedagogie/iles/english-3e-grammar.html) (Anglais) | Knight | petit chevalier | petit chevalier | Le Dragon gallois |
+| [Refuge des carnets](https://g7ed6e.github.io/dysapps/pedagogie/iles/lv2-3e-travel.html) (LV2 (espagnol ou allemand)) | Timbre | loutre factrice | loutre factrice | Le Papillon de cuivre |
 
 ### Le Sphinx de marbre, Belvédère de Thalès
 
