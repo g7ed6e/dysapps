@@ -52,6 +52,7 @@ export async function generatePages() {
     // Les textes d'univers (Gardiens, espèces) : ceux de l'univers par défaut, Blocland.
     const universMod = await load('/src/univers/index.ts');
     const universCore = await load('/src/core/univers.ts');
+    const legacyMod = await load('/src/core/legacyIds.ts');
     const texts = JSON.parse(readFileSync(new URL('../../src/apps/lecture/texts.json', import.meta.url), 'utf8'));
     const data = {
       version: appVersion(root),
@@ -106,6 +107,9 @@ export async function generatePages() {
       anglaisPortailPage(data),
       ouvragesPage(data),
       baremePage(data),
+      // Les pages des îles sous leur ancienne adresse (avant les identifiants neutres, 2 octobre 2026) : un lien gardé
+      // par un enseignant mène à la page d'aujourd'hui.
+      ...Object.entries(legacyMod.LEGACY_PLACES).map(([avant, lieu]) => ({ path: `pedagogie/iles/${avant}.html`, redirect: `${lieu}.html` })),
     ];
   } finally {
     await server.close();

@@ -75,4 +75,4 @@ Dans [L’archipel](../pedagogie/archipel.md) puis la page de chaque île : cons
 Oui : fables de La Fontaine en texte intégral, Daudet et Jules Verne en textes adaptés, tous dans le domaine public. Les textes d’Ascension (Tour du lecteur) sont originaux.
 
 **Un mot, une règle, un item semble faux.**
-Ouvrir un ticket sur le [dépôt GitHub](https://github.com/g7ed6e/dysapps/issues) avec la page de la documentation concernée et l’identifiant de l’exercice (par exemple `french-6e-grammar-spelling-word-classes-2`).
+Ouvrir un ticket sur le [dépôt GitHub](https://github.com/g7ed6e/dysapps/issues) avec la page de la documentation concernée et l’exercice : le titre de la mission et son niveau suffisent, ou son identifiant, à copier depuis la page de l’île (par exemple `french-6e-grammar-spelling-word-classes-2`).
