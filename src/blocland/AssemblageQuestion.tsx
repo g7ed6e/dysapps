@@ -21,6 +21,7 @@ import { NotFoundPage } from '../pages/NotFoundPage';
 import { useTextes } from '../univers';
 import { blockName, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
+import { PauseSeance } from './PauseSeance';
 import { tirageDe, type ReponseDonnee } from './engine';
 import { loadAssemblage } from './exercises';
 import { autoReadText } from './exercises/lecture';
@@ -116,7 +117,6 @@ function QuestionDAssemblage({
   // L'horloge de séance (trois exercices ou dix minutes, questions d'assemblage comprises) : la pause s'affiche à la
   // place des boutons, comme au bilan d'une mission.
   const [pause, setPause] = useState(false);
-  const textePause = `Tu as bien travaillé. Ton cerveau retient mieux avec des pauses. Tu pourras revenir ${lieu.a} plus tard.`;
   // Les essais déjà comptés, lus sans attendre un rendu : un double toucher ne compte jamais deux erreurs, ni
   // n'assemble deux blocs.
   const essais = useRef<'aucun' | 'premier' | 'fini'>('aucun');
@@ -226,27 +226,13 @@ function QuestionDAssemblage({
             autoSpeak={false}
           />
           {pause ? (
-            <div className="pause-panel">
-              <p>
-                <strong>Belle séance !</strong> {textePause}
-              </p>
-              <SpeakButton text={`Belle séance ! ${textePause}`} compact />
-              <div className="actions">
-                <Link ref={principalRef} to="/aventure" replace className="button primary">
-                  <Icon name="check" /> J’arrête pour aujourd’hui
-                </Link>
-                <button
-                  type="button"
-                  className="button"
-                  onClick={() => {
-                    continueSession();
-                    setPause(false);
-                  }}
-                >
-                  Encore un peu
-                </button>
-              </div>
-            </div>
+            <PauseSeance
+              suite={`Tu pourras revenir ${lieu.a} plus tard.`}
+              onContinuer={() => {
+                continueSession();
+                setPause(false);
+              }}
+            />
           ) : (
             <div className="assemblage-question-actions">
               {fin.juste ? (

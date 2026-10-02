@@ -26,6 +26,7 @@ import { SCREEN_TYPES, retryAllowed, type ScreenAnswer } from './exercises/regis
 import { autoReadText, dicteeAutoText } from './exercises/lecture';
 import { runItems, runSeed } from './exercises/run';
 import { fillTemplate, type ExerciseDef, type ExerciseItem, type ItemResult } from './exercises/types';
+import { PauseSeance } from './PauseSeance';
 import { Stars } from './Stars';
 import { BlockIcon } from './Voxel';
 
@@ -66,6 +67,12 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
   const [results, setResults] = useState<ItemResult[]>([]);
   const [done, setDone] = useState<Completion | null>(null);
   const [paused, setPaused] = useState(false);
+  // « Encore un peu » retire la pause : le focus va au bouton principal du bilan, pas dans le vide.
+  const [repris, setRepris] = useState(false);
+  const suiteRef = useRef<HTMLAnchorElement>(null);
+  useEffect(() => {
+    if (repris) suiteRef.current?.focus({ preventScroll: true });
+  }, [repris]);
   const sectionRef = useRef<HTMLElement>(null);
   const { settings, speak } = useSettings();
   const haptics = useHaptics();
@@ -248,34 +255,21 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
           )}
 
           {paused ? (
-            <div className="pause-panel">
-              <p>
-                <strong>Belle séance !</strong> Trois exercices, c’est déjà bien. Ton cerveau retient mieux avec des pauses.
-              </p>
-              <div className="actions">
-                <Link to="/aventure" className="button primary">
-                  <Icon name="check" /> J’arrête pour aujourd’hui
-                </Link>
-                <button
-                  type="button"
-                  className="button"
-                  onClick={() => {
-                    continueSession();
-                    setPaused(false);
-                  }}
-                >
-                  Encore un peu
-                </button>
-              </div>
-            </div>
+            <PauseSeance
+              onContinuer={() => {
+                continueSession();
+                setPaused(false);
+                setRepris(true);
+              }}
+            />
           ) : (
             <div className="actions">
               {site.kind === 'aucun' || site.kind === 'garder' ? (
-                <Link to={`/aventure/${biome.id}`} className="button primary">
+                <Link ref={suiteRef} to={`/aventure/${biome.id}`} className="button primary">
                   <Icon name="map" /> Revenir sur {biome.name}
                 </Link>
               ) : (
-                <Link to={site.to} className="button primary">
+                <Link ref={suiteRef} to={site.to} className="button primary">
                   <Icon name="hammer" /> Voir le chantier
                 </Link>
               )}
@@ -327,9 +321,7 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
         ))}
       </ol>
 
-      {firstTry && !answered && (
-        <Feedback shout="Presque !" message={retryMessage(def.type, items)} tone="rate" speakKey={`${index}-essai`} />
-      )}
+      {firstTry && !answered && <Feedback shout="Presque !" message={retryMessage(def.type, items)} tone="rate" speakKey={`${index}-essai`} />}
 
       <Screen
         key={`${items[0].key}${firstTry ? '-2' : ''}`}
