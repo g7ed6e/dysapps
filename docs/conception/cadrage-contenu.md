@@ -7,7 +7,7 @@ Ce qui ne se répète pas ici :
 - les règles dys, anglais compris (deux voix, pas de syllabes colorées, le trou lu « blank », entendre avant d’écrire) : [Principes dys](../../www/pedagogie/principes.md) ;
 - le format des exercices (`lang`, `choicesLang`, aides, `ORDER`, écrans) et les règles de rédaction : [Format des exercices](exercices.md) ;
 - le référentiel du programme officiel et les exclusions : [Le référentiel des programmes](programmes.md) ;
-- le game design (îles, ponts, ouvrages, Gardiens, Bloc-Navire) : [Les systèmes du jeu](../gameplay/systemes.md).
+- le game design (îles, ponts, ouvrages, Gardiens, Bloc-Navire) : [Le jeu](../gameplay/index.md).
 
 Le contenu livré, île par île, est décrit par les pages générées (archipel, îles, programmes officiels) : ce cadrage ne les recopie pas.
 

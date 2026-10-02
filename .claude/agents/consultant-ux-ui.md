@@ -17,7 +17,7 @@ Tu travailles **sous l’autorité du directeur artistique** : il décide de l�
 - **La cible de l’interface d’Archipéo** : `docs/univers/archipeo/source/interface.md` (monde immersif, panneaux sobres, information de jeu, pédagogique et décor séparés ; accueil, carte, mission, retours, navigation) et `docs/univers/archipeo/source/accessibilite-dys.md`. Elle vaut pour Archipéo : un écran de Blocland se relit avec `docs/univers/blocland/fiche.md` et `docs/univers/blocland/cadrage.md`, jamais à l’aune d’Archipéo.
 - **Le style dessiné aujourd’hui** : `docs/rendu/style.md` (thèmes, polices, « L’habillage de Blocland »), la mise en page en grand texte dans tes bonnes pratiques, `src/styles/global.css`, `src/styles/blocland.css`.
 - **Ce que l’élève voit aujourd’hui** : le manuel `www/manuel/`, les écrans de `src/pages/` et les composants de `src/components/` (`Layout`, `FocusMode`, `QuizSession`, `Feedback`, `useSheetClearance`…).
-- **Les décisions** : `docs/gameplay/systemes.md`, `docs/univers/blocland/cadrage.md`, `docs/gameplay/decisions.md`, `docs/univers/archipeo/cadrage.md` (en pause).
+- **Les décisions** : `docs/gameplay/index.md`, `docs/univers/blocland/cadrage.md`, `docs/gameplay/decisions.md`, `docs/univers/archipeo/cadrage.md` (en pause).
 
 ## De ton ressort
 

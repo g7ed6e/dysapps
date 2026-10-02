@@ -13,6 +13,39 @@ L’étiquette git `blocland-reference` est posée sur `031b029`, le dernier com
 
 ## 1. Les noms
 
+### Les mots de Blocland
+
+Le jeu se décrit en mots neutres, en anglais, dans [Le jeu](../../gameplay/index.md#le-vocabulaire) ; voici ce que Blocland affiche pour chacun.
+
+| Mot neutre | Dans Blocland |
+| --- | --- |
+| `region` | archipel : les Basses Terres (6e), les Collines du Large (5e), les Monts de Feu (4e), les Îles du Ciel (3e) |
+| `place` | île (Forêt des sons, Mine des lettres…) |
+| `startPlace` | île de l’école |
+| `school` | l’école du village (trois portes, une par matière) |
+| `hub` | port |
+| `link` | ouvrage : pont, bac, sentier, escalier taillé, tunnel, col |
+| `passage` | le Bloc-Navire et son voyage |
+| `resource` | bloc d’île (bois, pierre, brique…) |
+| `compound` | bloc assemblé : Poutre, Vitrail, Engrenage, Miroir |
+| `assembly` | la Fabrique |
+| `stock` | Mes blocs |
+| `structure` | bâtiment |
+| `part` | partie du bâtiment ; aujourd’hui ses trois plans (murs, toit, cour), qui deviennent les parties des missions (GD-6) |
+| `landmark` | monument |
+| `trophyHall` | salle des trophées, et ses trophées d’or, de cristal, de quartz et de lentille |
+| `resident` | créature (Mousso, Tunel, Coco…) |
+| `guardian`, `challenge` | Gardien, son défi ; réussi, il est « vaincu » et devient une statue |
+| `placeState` | Fermée, À explorer, En chantier, Bâtie |
+| `regionState` | le village : abandonné, réactivation, reconstruction, développement, port |
+| `avatar` | le bonhomme ; les créatures appellent l’élève « bâtisseur » |
+| `request`, `fixture` | aucun mot encore : Blocland ne les montre pas (GD-7) |
+| `role` | Apprenti, Maçon, Mécanicien, Ingénieur, Architecte |
+
+Les textes sont dans `src/univers/blocland/index.ts` et dans `docs/contenu/`.
+
+### L’histoire des noms
+
 Avant le lot 1, l’application s’appelait **DysApps** et son aventure **Blocland**. Les lots 1 et 2 ont remplacé des noms pour tous les élèves. Aucun identifiant, aucune adresse, aucune donnée de sauvegarde n’a changé. Seul le type interne `Tier` a changé au lot 2 (`bronze`, `argent`… devenus `explorateur`, `cartographe`…) : il est calculé à partir du niveau, jamais enregistré.
 
 | Chose | Dans Blocland (avant le lot 1) | Aujourd’hui | Source |
@@ -95,6 +128,10 @@ Archipéo prévoit d’autres changements, pas encore faits. Les Gardiens en sen
 - **Les ambiances.** Une par archipel : mer tempérée, rochers qui affleurent et bancs de sable en 6e ; mer turquoise, ciel froid et plaques de glace en 5e ; bleu profond, brume proche et aiguilles d’ardoise en 4e ; plancher de nuages sans baleine en 3e. Le ciel, l’eau, la brume et le plancher de nuages sont dans `src/blocland/world/daylight.ts` ; les rochers, les bancs, les plaques et les aiguilles dans `world/decor.ts` et `world/terrain.ts`. Jour et nuit selon l’heure réelle, nuit toujours claire.
 - **La Fabrique et les blocs assemblés** ([GD-2](../../gameplay/propositions/GD-2.md), 30 septembre 2026). Sur l’île de l’école, à droite au fond du cœur, derrière l’école, à côté de la zone des plans : une halle de brique sur un soubassement de pierre, un toit plat de pierre de taille, une haute cheminée de pierre qu’on voit de loin, une potence de rondins qui porte le bloc assemblé de l’archipel, rien à lire. On y assemble un bloc par archipel, que demandent les monuments : **Poutre** (6e, rondin équarri à chevilles), **Vitrail** (5e, carreaux de couleur sertis de plomb), **Engrenage** (4e, roue dentée claire sur l’ardoise), **Miroir** (3e, disque clair cerclé de violet pâle). Une liste de recettes et un bouton, jamais de grille ni d’« établi ». Noms et recettes : `docs/contenu/assemblage.md`. Depuis le 1er octobre 2026, le bouton « Assembler 1 poutre » ouvre en plein écran une question sur les deux matières scolaires de la recette (douze par bloc, communes aux deux univers) ; la bonne réponse, du premier coup ou au second essai, assemble le bloc ; une erreur ne prend rien (« Tes blocs sont toujours dans ta poche. »). La poutre se fait de 2 bois et 1 brique (avant : pierre).
 - **Le plancher de nuages du 3e** (DA-35, 1er octobre 2026, option du consultant validée par le directeur artistique) : sous les Îles du Ciel, un aplat uni et opaque, sans texture, sans dégradé et sans dérive, de la couleur de l’eau de la palette du 3e, qui suit le jour comme l’eau des autres archipels : blanc bleuté le jour (`waterDay`, 0xf3f7fb), bleu ardoise la nuit (`waterNight`, 0x8b97b8) (`src/blocland/three/large.ts`, `src/blocland/world/daylight.ts`). Il remplace la nappe en dégradé répétée qui dérivait et faisait un damier de ronds blancs, surtout sur la Carte de nuit. Les nuages en rangées de cubes ne changent pas. C’est une correction du dessin figé, voulue. Les nappes sous les sommets (`three/brume.ts`) gardent leur blanc le jour et prennent le bleu du plancher la nuit, pour ne pas faire de halo clair autour des îles.
+- **L’altitude par classe** : mer, collines, monts et sommets (hauteurs 0, 3, 6 et 9), une ambiance uniforme de chaque archipel, gardée du continent d’avant.
+- **Le village en cubes au port** : ses cinq états se voient en cubes statiques (lanternes, barques, fumée, caisses, fanions, feu de port), et la montée d’un état sonne une cloche.
+- **La nuit** : les fenêtres des bâtiments s’éclairent, et les lanternes aux bouts des ouvrages dessinent les chemins.
+- **La statue du Gardien vaincu** reste, même quand une mission arrive ensuite sur son île, et sa revanche reste ouverte.
 - **Les silhouettes.** Des îles au relief par classe (mer, collines, monts, sommets), un repère visible de loin par région (grand chêne, champignon géant, volcan qui fume, tour de guet, grand phare, aiguille de glace, haut-fourneau), des bâtiments en six formes (maison, tour, dôme, échoppe, hutte, kiosque, `world/architect.ts`), le Bloc-Navire en cubes, le bonhomme en blocs.
 - **L’interface d’avant le lot 2** (pour mémoire) : fond crème à grain pixel, barre du haut en terre et herbe, boutons de pierre à biseau pixel et d’herbe pour l’action principale, bandeaux texturés, écusson de rang en minerai, polices Archivo Black (titres) et Silkscreen (décor), icône en bloc d’herbe isométrique (`git show 07bb03a^:docs/rendu/style.md`).
 - **L’interface** (décision 7 d’univers.md, construite derrière la bascule du lot 6) : des blocs vus de face, en aplats d’herbe, de bois, de terre et d’or, coins de 4 px ; ce qui se touche a une face de côté, plus sombre que le dessus (plus claire en Nuit, pour se voir), et s’enfonce de 3 px à l’appui ; barre du haut en terre, herbe au bord supérieur ; titres en Archivo Black. Valeurs : `docs/rendu/style.md`, « L’habillage de Blocland ».
