@@ -36,7 +36,7 @@ Ce qui ne se négocie jamais (voir [Principes dys](../../www/pedagogie/principes
 | Blocs assemblés | Un par archipel, qu’aucune île ne donne : trois blocs de deux îles de l’archipel, assemblés un à un sur l’île de l’école (la Fabrique, la Halle aux matériaux) ; recette fixe, toujours affichée | [GD-2](propositions/GD-2.md), `docs/contenu/assemblage.md` |
 | Gardiens | Un par île ; défi ouvert par les étoiles des missions de l’île ; réussi, il le reste | [Personnages et Gardiens](personnages.md) |
 | Village en cinq états | Abandonné, réactivation, reconstruction, développement, port ; déduits, jamais enregistrés | [Les systèmes du jeu](systemes.md#le-village-les-plans-et-les-coffres) |
-| États des îles | Fermée, À explorer, En chantier, Restaurée (« Bâtie » dans Blocland) | [Cadrage Archipéo](../univers/archipeo/cadrage.md), §5 |
+| États des îles | Fermée, À explorer, En chantier, Restaurée (« Bâtie » dans Blocland) | [La Carte](../ux-ui/bonnes-pratiques.md#le-parcours-et-le-monde) |
 | Bloc-Navire et voyage | Un véhicule qui s’améliore par étapes ; le kit arrive avec les Gardiens (3, 2, 2) ; embarquer est un acte explicite | [Les systèmes du jeu](systemes.md#le-bloc-navire-et-le-voyage) |
 | XP et rôles | Cinq rôles selon l’XP, sans divisions | [Progression et récompenses](../../www/manuel/progression.md) |
 | Succès | Peu nombreux ; un trophée par succès dans la salle des trophées, jamais sur son toit : la salle s’agrandit d’une travée tous les 6 succès après les 12 premiers (GD-3) | [Barème](https://g7ed6e.github.io/dysapps/pedagogie/bareme.html) |
