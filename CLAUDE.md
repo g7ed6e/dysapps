@@ -28,7 +28,7 @@ Chaque fichier a une place ; `scripts/structure.test.mjs` vérifie en CI la raci
 | Les univers : règles communes (`univers.md`), puis par univers son cadrage, sa fiche, son game design propre, ses intentions et esquisses | `docs/univers/`, `docs/univers/archipeo/`, `docs/univers/blocland/` ; le dossier fourni par le mainteneur, figé, dans `docs/univers/archipeo/source/` ; Archipéo est en pause depuis le 2 octobre 2026, son dossier est gelé |
 | L’interface (UX UI) | `docs/ux-ui/` |
 | Le rendu (le style) | `docs/rendu/` ; le budget reste dans le code |
-| Le pilotage (où en est chaque chantier) | `docs/pilotage/` (`chantiers.md`, `lv2-suites.md`) |
+| Le pilotage (où en est chaque chantier) | `docs/pilotage/chantiers.md`, seule page du dossier |
 | Les fichiers servis tels quels (icônes, polices, écrans de lancement) | `public/` |
 | Les scripts (build, contenu, site, rendu, version) | `scripts/`, ou son sous-dossier `contenu/`, `pilotage/`, `programme/`, `rendu/`, `www/` |
 | Les agents et les skills | `.claude/agents/<agent>.md`, `.claude/skills/<skill>/` (`SKILL.md` et ses ressources) |
