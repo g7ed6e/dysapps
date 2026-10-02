@@ -26,19 +26,17 @@ Une erreur n'est jamais punie. La correction s'affiche en bas, sans cacher la qu
 
 ![La correction du tutoriel : « Pas cette fois ». La bonne réponse « a » est en vert, « à » en orangé ; l'astuce dit « On peut dire Léa avait un chat ».](/captures/quete-correction.jpg)
 
-Au **bilan**, pas de pourcentage : des étoiles, « 4 sur 4 du premier coup », l'XP, et les **blocs** gagnés pour le village. Un succès débloqué s'affiche en haut, une seule fois.
+Au **bilan**, pas de pourcentage : des étoiles, « 4 sur 4 du premier coup », l'XP, et les **blocs** gagnés pour le village. La première fois qu'une mission de l'île est terminée, le bilan dit aussi la partie du bâtiment qu'elle vient de poser. Un succès débloqué s'affiche en haut, une seule fois.
 
 ![Le bilan d'une mission sans faute : trois étoiles, « Sans faute ! », +75 XP, +6 blocs de bois pour le village, et le succès Combo x5.](/captures/quete-fin.jpg)
 
 ## Reconstruire
 
-Avec les blocs gagnés, l'élève revient sur l'île. Le premier plan, **la cabane de Mousso**, est dessiné en fantômes bleutés à gauche de la créature ; une partie des murs est déjà posée. Toucher un fantôme pose le bloc attendu, ou bien on utilise les boutons du panneau.
+Chaque île a un **bâtiment**, avec une partie par mission. Il se pose tout seul, sans prendre de blocs : la première fois que l'élève termine une mission de l'île, une partie se pose, quels que soient les étoiles et les jokers. Sur la Forêt des sons, c'est **la cabane de Mousso** : ce qui reste à poser est dessiné en fantômes bleutés à gauche de la créature.
 
 ![La Forêt des sons, panneau fermé : la cabane commencée, murs en bois et fantômes bleutés du reste.](/captures/plan-en-cours.jpg)
 
-**Poser tout ce que j'ai** pose d'un coup tous les blocs en poche. Le dernier bloc termine le bâtiment : Mousso remercie (lu à voix haute), le **coffre** donne les blocs de finition du plan suivant (la porte, les lanternes, les tuiles du toit) et de l'XP. Le plan suivant, le toit, s'affiche aussitôt.
-
-![La cabane terminée : « Ma cabane ! Merci, bâtisseur. » Coffre : 3 blocs de pierre, 1 porte, 3 lanternes, 18 toits, +40 XP ; le village passe en Réactivation, 2 sur 5.](/captures/plan-termine.jpg)
+Au bilan, une phrase le dit, écrite et lue à voix haute : « La cabane de Mousso : posée ! ». Mousso remercie, et l'élève gagne de l'XP. La mission suivante posera le toit, puis la cour. Les blocs gagnés, eux, restent dans la poche : ils servent aux ouvrages, au Bloc-Navire et aux monuments.
 
 ## Ouvrir les îles
 
@@ -48,7 +46,7 @@ Les autres îles s'ouvrent par des **ouvrages** : un sentier, un pont, un bac. L
 
 Quelques séances plus tard, **Mes blocs** fait le point : ce qu'on peut construire tout de suite (un lien par chantier), puis chaque type de bloc et à quoi il sert.
 
-![Mes blocs : « Tu peux construire », avec les plans de quatre îles, le Bloc-Navire, deux monuments et les ouvrages.](/captures/mes-blocs.jpg)
+![Mes blocs : « Tu peux construire », avec le Bloc-Navire, deux monuments et les ouvrages.](/captures/mes-blocs.jpg)
 
 La **Carte** montre tout l'archipel vu d'en haut : le fanion jaune marque l'élève, les îles pâles sont encore fermées.
 

@@ -3,8 +3,7 @@
   "biome": "french-6e-reading",
   "name": "La lanterne du phare",
   "reward": {
-    "xp": 70,
-    "chest": {}
+    "xp": 70
   },
   "done": "Deux lanternes au sommet : mon phare se voit depuis la Forêt. Hou hou !"
 }

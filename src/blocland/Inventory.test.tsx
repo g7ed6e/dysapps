@@ -28,8 +28,9 @@ it('« Tu peux construire » montre trois chantiers, celui de l’île du bonhom
   expect(sheet.textContent).not.toContain('Touche une île');
   const now = screen.getByRole('list', { name: /Tu peux construire/ });
   expect(within(now).getAllByRole('link')).toHaveLength(READY_SHOWN);
-  // Le bonhomme est sur la Forêt : son plan d'abord.
-  expect(within(now).getAllByRole('link')[0]).toHaveTextContent('Plan de Forêt des sons');
+  // Le bonhomme est sur la Forêt : un ouvrage qui en part d'abord. Le bâtiment de l'île n'y est jamais (GD-6).
+  expect(within(now).getAllByRole('link')[0]).toHaveAttribute('href', '/adventure/french-6e-phonology');
+  expect(sheet.textContent).not.toContain('Plan de');
   const all = screen.getByRole('button', { name: /^Tout voir \((\d+)\)$/ });
   const n = Number(/\((\d+)\)/.exec(all.textContent!)![1]);
   expect(n).toBeGreaterThan(READY_SHOWN);
@@ -72,9 +73,17 @@ it('« Dans ta poche » ne redit pas les chantiers que « Tu peux construire » 
     .getAllByRole('link')
     .map((a) => a.getAttribute('href'));
   const poche = screen.getByRole('list', { name: /Dans ta poche/ });
-  // Le plan de la Forêt est en tête de « Tu peux construire » : la poche ne le redit pas.
-  expect(within(poche).queryByRole('link', { name: /Plan de Forêt des sons/ })).not.toBeInTheDocument();
   for (const link of within(poche).queryAllByRole('link')) expect(shown).not.toContain(link.getAttribute('href'));
+});
+
+it('les blocs de finition, l’or et le cristal sont des trophées à garder : ils ne servent plus aux bâtiments (GD-6)', () => {
+  localStorage.setItem('dysapps:game', JSON.stringify({ stock: { roof: 1, 'trophy-gold': 3 } }));
+  renderIn(<InventorySheet onClose={() => {}} />);
+  const poche = screen.getByRole('list', { name: /Dans ta poche/ });
+  const rows = within(poche).getAllByRole('listitem');
+  expect(rows.find((r) => r.textContent!.includes('toit'))).toHaveTextContent('Un trophée à garder');
+  expect(rows.find((r) => r.textContent!.includes('or'))).toHaveTextContent('Des trophées à garder');
+  expect(poche.textContent).not.toContain('Rien à construire');
 });
 
 describe('à l’ouverture, seul le texte visible est lu', () => {

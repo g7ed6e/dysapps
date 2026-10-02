@@ -319,8 +319,8 @@ Pour tous les items :
 
 ## Les plans
 
-| plan | nom | XP | coffre | quand c’est bâti |
-| --- | --- | --- | --- | --- |
-| `french-5e-homophones-1` | La cabane de Sema | 40 | maths-5e-signed-numbers × 3 | Ma cabane ! Merci, bâtisseur. Ses panneaux, ces panneaux : c’est réussi, tu ne t’es pas trompé. |
-| `french-5e-homophones-2` | Le toit de la cabane | 50 |  | Un toit et une porte ! La lanterne éclaire le panneau « ici ». |
-| `french-5e-homophones-3` | Le rond-point de la cabane | 60 | trophy-gold × 2 · trophy-crystal × 2 | Un rond-point, une barrière, un escalier… Ma cabane est complète, quel que soit le chemin. |
+| plan | nom | XP | quand c’est bâti |
+| --- | --- | --- | --- |
+| `french-5e-homophones-1` | La cabane de Sema | 40 | Ma cabane ! Merci, bâtisseur. Ses panneaux, ces panneaux : c’est réussi, tu ne t’es pas trompé. |
+| `french-5e-homophones-2` | Le toit de la cabane | 50 | Un toit et une porte ! La lanterne éclaire le panneau « ici ». |
+| `french-5e-homophones-3` | Le rond-point de la cabane | 60 | Un rond-point, une barrière, un escalier… Ma cabane est complète, quel que soit le chemin. |

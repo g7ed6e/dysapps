@@ -546,8 +546,8 @@ Pour tous les items :
 
 ## Les plans
 
-| plan | nom | XP | coffre | quand c’est bâti |
-| --- | --- | --- | --- | --- |
-| `french-4e-agreement-1` | La bergerie de Cléa | 40 | maths-4e-powers × 3 | Ma bergerie ! Merci, bâtisseur. Les ardoises sont posées, la bergerie est finie : tout est accordé. |
-| `french-4e-agreement-2` | Le toit de la bergerie | 50 |  | Un toit et une porte ! La lanterne, accrochée à la paroi, veille sur les chevreaux. |
-| `french-4e-agreement-3` | L’enclos de la bergerie | 60 | trophy-gold × 2 · trophy-crystal × 2 | Un enclos, une barrière, un escalier… Ma bergerie est complète. Les chèvres sont rentrées, accordées au pluriel. |
+| plan | nom | XP | quand c’est bâti |
+| --- | --- | --- | --- |
+| `french-4e-agreement-1` | La bergerie de Cléa | 40 | Ma bergerie ! Merci, bâtisseur. Les ardoises sont posées, la bergerie est finie : tout est accordé. |
+| `french-4e-agreement-2` | Le toit de la bergerie | 50 | Un toit et une porte ! La lanterne, accrochée à la paroi, veille sur les chevreaux. |
+| `french-4e-agreement-3` | L’enclos de la bergerie | 60 | Un enclos, une barrière, un escalier… Ma bergerie est complète. Les chèvres sont rentrées, accordées au pluriel. |

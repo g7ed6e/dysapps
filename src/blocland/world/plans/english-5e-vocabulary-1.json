@@ -3,10 +3,7 @@
   "biome": "english-5e-vocabulary",
   "name": "La boutique de Pudding",
   "reward": {
-    "xp": 40,
-    "chest": {
-      "english-5e-grammar": 3
-    }
+    "xp": 40
   },
   "done": "Ma boutique ! Thank you, bâtisseur. Come in, it’s open!"
 }

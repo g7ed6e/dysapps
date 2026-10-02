@@ -1135,8 +1135,8 @@ Pour tous les items :
 
 ## Les plans
 
-| plan | nom | XP | coffre | quand c’est bâti |
-| --- | --- | --- | --- | --- |
-| `lv2-5e-introductions-1` | L’auberge de Lina | 40 | english-5e-vocabulary × 3 | Les murs de mon auberge ! Merci, bâtisseur. Les voyageurs pourront bientôt s’y reposer. |
-| `lv2-5e-introductions-2` | L’écurie du relais | 50 |  | Un toit, une porte et une écurie ! Les chevaux de la diligence sont à l’abri, et mon nid est sur la cheminée. |
-| `lv2-5e-introductions-3` | La fontaine du relais | 60 | trophy-gold × 2 · trophy-crystal × 2 | Une fontaine, une barrière, une marche… Mon Relais est complet. Bon voyage, d’où que tu viennes ! |
+| plan | nom | XP | quand c’est bâti |
+| --- | --- | --- | --- |
+| `lv2-5e-introductions-1` | L’auberge de Lina | 40 | Les murs de mon auberge ! Merci, bâtisseur. Les voyageurs pourront bientôt s’y reposer. |
+| `lv2-5e-introductions-2` | L’écurie du relais | 50 | Un toit, une porte et une écurie ! Les chevaux de la diligence sont à l’abri, et mon nid est sur la cheminée. |
+| `lv2-5e-introductions-3` | La fontaine du relais | 60 | Une fontaine, une barrière, une marche… Mon Relais est complet. Bon voyage, d’où que tu viennes ! |

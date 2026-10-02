@@ -222,17 +222,15 @@ it('une mission du portail (l’école du village) rapporte des blocs de l’îl
 });
 
 describe('les sauvegardes d’avant le nouveau dessin des bâtiments', () => {
-  it('un plan terminé avec l’ancien dessin reste terminé, et son coffre donne ce que le nouveau donne en plus', async () => {
+  it('un plan terminé avec l’ancien dessin reste terminé ; les plans n’ont plus de coffre (GD-6), rien ne s’ajoute ni ne se perd', async () => {
     const { planV1 } = await import('./world/plansV1');
     const { getPlan, planCells } = await import('./world/plans');
     const old = planV1('french-6e-phonology-1')!;
     const state = sanitizeState({ village: { plans: { 'french-6e-phonology-1': [...old.blocks.keys()] } }, inventory: { 'roof': 9, 'lantern': 1, 'door': 1 } });
     const cabane = getPlan('french-6e-phonology-1')!;
     expect(state.world.parts['french-6e-phonology-1']).toEqual(planCells(cabane).map((c) => c.key));
-    // Le coffre d'avant donnait 9 toits et 1 lanterne ; le nouveau en donne 18 et 3 : la différence arrive.
-    expect(state.stock['roof']).toBe(9 + (cabane.reward.chest.roof ?? 0) - 9);
-    expect(state.stock['lantern']).toBe(1 + (cabane.reward.chest.lantern ?? 0) - 1);
-    expect(state.stock['door']).toBe(1);
+    expect(cabane.reward.chest).toEqual({});
+    expect(state.stock).toEqual({ 'roof': 9, 'lantern': 1, 'door': 1 });
   });
 
   it('un plan commencé avec l’ancien dessin garde ses cases encore valables et rend les autres blocs', async () => {

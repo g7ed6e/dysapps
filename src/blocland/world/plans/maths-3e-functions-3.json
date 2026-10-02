@@ -3,11 +3,7 @@
   "biome": "maths-3e-functions",
   "name": "La jetée de la lanterne",
   "reward": {
-    "xp": 60,
-    "chest": {
-      "trophy-gold": 2,
-      "trophy-crystal": 2
-    }
+    "xp": 60
   },
   "done": "Une jetée, une barrière, un escalier… Ma lanterne est complète : la droite est tracée."
 }

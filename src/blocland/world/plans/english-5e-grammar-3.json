@@ -3,11 +3,7 @@
   "biome": "english-5e-grammar",
   "name": "Le jardin du manoir",
   "reward": {
-    "xp": 60,
-    "chest": {
-      "trophy-gold": 2,
-      "trophy-crystal": 2
-    }
+    "xp": 60
   },
   "done": "Un jardin, une grille, un escalier… Mon manoir est complet, et plus beau que jamais."
 }

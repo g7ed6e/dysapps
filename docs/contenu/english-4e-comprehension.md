@@ -485,8 +485,8 @@ Pour tous les items :
 
 ## Les plans
 
-| plan | nom | XP | coffre | quand c’est bâti |
-| --- | --- | --- | --- | --- |
-| `english-4e-comprehension-1` | La loge de Puck | 40 | english-4e-grammar × 3 | Ma loge ! Thank you, bâtisseur. J’y souffle les répliques aux acteurs. |
-| `english-4e-comprehension-2` | Le toit de la loge | 50 |  | Un toit et une porte ! Les acteurs peuvent répéter à l’abri. |
-| `english-4e-comprehension-3` | La scène du théâtre | 60 | trophy-gold × 2 · trophy-crystal × 2 | Une scène, une barrière, un escalier… Mon théâtre est complet. Curtain up! |
+| plan | nom | XP | quand c’est bâti |
+| --- | --- | --- | --- |
+| `english-4e-comprehension-1` | La loge de Puck | 40 | Ma loge ! Thank you, bâtisseur. J’y souffle les répliques aux acteurs. |
+| `english-4e-comprehension-2` | Le toit de la loge | 50 | Un toit et une porte ! Les acteurs peuvent répéter à l’abri. |
+| `english-4e-comprehension-3` | La scène du théâtre | 60 | Une scène, une barrière, un escalier… Mon théâtre est complet. Curtain up! |

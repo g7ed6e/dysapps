@@ -2,29 +2,25 @@ import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { Syllabified } from '../components/Syllabified';
-import { BLOCKS, blockCount, blockName, type BiomeDef, type BiomeId, type BlockId } from './biomes';
+import { BLOCKS, type BiomeDef, type BiomeId, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { InventoryLink } from './Inventory';
 import { Foldable } from './IslandFold';
-import type { PlanBuilder } from './usePlanBuilder';
-import { BlockIcon } from './Voxel';
-import { getPlan } from './world/plans';
+import { partiesDe, partiesPosees, prochainePartie } from './world/parties';
+import { getPlan, plansFor } from './world/plans';
 import { earnIsland, whereToEarn } from './world/uses';
 import { ASSEMBLAGE_PATH } from './world/assemblage';
 import { useTextes } from '../univers';
 
 interface Props {
   biome: BiomeDef;
-  builder: PlanBuilder;
-  /** En 3D, on peut aussi toucher les cases transparentes (à poser) dans le monde. */
-  in3d?: boolean;
-  /** Dans le panneau 3D : la section se replie quand il n'y a rien à poser (la clé change avec l'île). */
+  /** Dans le panneau 3D : la section est repliée (rien à y faire à la main ; la clé change avec l'île). */
   fold?: string;
-  /** Le plan mis en avant (« Voir le chantier » du bilan) : section ouverte, centrée. */
+  /** Le bâtiment mis en avant (une ancienne adresse « Voir le chantier ») : section ouverte, centrée. */
   highlight?: boolean;
 }
 
-/** « à gagner dans Forêt des sons » (un lien vers l'île), « ici, dans les missions », ou le coffre d'un plan. */
+/** « à gagner dans Forêt des sons » (un lien vers l'île), « ici, dans les missions », ou un coffre (`whereToEarn`). */
 export function EarnLink({ block, here }: { block: BlockId; here?: BiomeId }) {
   const lieu = useTextes().assemblage;
   if (BLOCKS[block].assemble)
@@ -43,91 +39,71 @@ export function EarnLink({ block, here }: { block: BlockId; here?: BiomeId }) {
   );
 }
 
-/** L'état du plan en une ligne, pour le pli replié. */
-export function planSummary(builder: PlanBuilder, inventory: Partial<Record<BlockId, number>>): string {
-  const { plan, status } = builder;
-  if (!plan || !status) return '';
-  if (status.complete) return builder.allDone ? 'Tous les plans sont construits' : 'Terminé';
-  const missing = (Object.entries(status.missing) as [BlockId, number][]).filter(([, n]) => n > 0);
-  const lacking = missing.filter(([b, n]) => (inventory[b] ?? 0) < n);
-  const posed = `${status.done} / ${status.total} posés`;
-  if (lacking.length === 0) return `${posed} · tu as tout : pose-les`;
-  const [block, n] = lacking[0];
-  return `${posed} · il manque ${blockCount(block, n - (inventory[block] ?? 0))}`;
+/** L'état du bâtiment en une ligne, pour le pli replié : « 2 parties posées sur 4 », ou « Fini ». */
+export function batimentSummary(posees: number, total: number): string {
+  if (!total) return '';
+  if (posees >= total) return 'Fini';
+  return `${posees} partie${posees > 1 ? 's' : ''} posée${posees > 1 ? 's' : ''} sur ${total}`;
 }
 
 /**
- * Le plan de l'île : avancement, blocs qu'il manque et où les gagner (un lien vers l'île), bouton « Poser le bloc
- * suivant », le lien vers « Mes blocs » et les bâtiments déjà terminés ici. Même contenu dans le panneau 3D et en vue simple.
+ * Le bâtiment de l'île (GD-6) : il se pose tout seul, une partie par mission réussie. La section dit en mots combien de
+ * parties sont posées, le nom de la prochaine et comment la poser, ou que le bâtiment est fini ; puis le lien vers
+ * « Mes blocs » et le journal du village. Rien ne s'y pose à la main. Même contenu dans le panneau 3D et en vue simple.
  */
-export function PlanSection({ biome, builder, in3d = false, fold, highlight = false }: Props) {
+export function PlanSection({ biome, fold, highlight = false }: Props) {
   const { state } = useBlocland();
   const section = useRef<HTMLElement>(null);
   useEffect(() => {
     if (highlight) section.current?.scrollIntoView?.({ block: 'center', behavior: 'smooth' });
   }, [highlight, biome.id]);
-  const { plan, status } = builder;
-  const missing = status ? (Object.entries(status.missing) as [BlockId, number][]).filter(([, n]) => n > 0) : [];
+  const parties = partiesDe(biome.id);
+  const total = parties.length;
+  const posees = partiesPosees(biome.id, state.world.parts);
+  const prochaine = prochainePartie(biome.id, state.world.parts);
+  const plans = plansFor(biome.id);
   const built = state.world.log.filter((e) => getPlan(e.part)?.biome === biome.id);
   const heading = (
     <h3 id={`plan-${biome.id}`} className="island-sheet-heading">
-      <Icon name="map" /> {plan ? `Plan ${builder.index} / ${builder.total} : ${plan.name}` : 'Aucun plan sur cette île'}
+      <Icon name="map" /> {total ? `Le bâtiment : ${plans[0].name}` : 'Aucun bâtiment sur cette île'}
     </h3>
   );
-  // Ouvert quand on peut poser un bloc, ou qu'un plan vient d'être fini (sa phrase et son coffre) ; replié sinon.
-  const defaultOpen = builder.canFill || highlight || Boolean(status?.complete && !builder.allDone) || builder.notice !== null;
   return (
-    <Foldable fold={fold} name="plan" heading={heading} status={planSummary(builder, state.stock)} defaultOpen={defaultOpen}>
+    <Foldable fold={fold} name="plan" heading={heading} status={batimentSummary(posees, total)} defaultOpen={highlight}>
       <section ref={section} className={`plan-section${highlight ? ' bridge-highlight' : ''}`} aria-labelledby={`plan-${biome.id}`}>
-        {plan && status && (
+        {total > 0 && (
           <>
             <div
               className="plan-track"
               role="progressbar"
-              aria-label={`Avancement du plan ${plan.name}`}
+              aria-label={`Le bâtiment ${plans[0].name}`}
               aria-valuemin={0}
-              aria-valuemax={status.total}
-              aria-valuenow={status.done}
-              aria-valuetext={`${status.done} blocs posés sur ${status.total}`}
+              aria-valuemax={total}
+              aria-valuenow={posees}
+              aria-valuetext={batimentSummary(posees, total)}
             >
-              <div className="plan-fill" style={{ width: `${Math.round((status.done / status.total) * 100)}%` }} />
+              <div className="plan-fill" style={{ width: `${Math.round((posees / total) * 100)}%` }} />
             </div>
-            <p className="plan-count">
-              <strong>{status.done}</strong> / {status.total} blocs posés
-            </p>
-            {status.complete ? (
-              <p className="plan-done">
-                <Icon name="star" /> Terminé ! <Syllabified text={plan.done} />
-                {builder.allDone && ' Tous les plans de cette île sont construits.'}
-              </p>
-            ) : (
+            {prochaine ? (
               <>
-                {missing.length > 0 && (
-                  <ul className="plan-missing" aria-label="Blocs qu’il manque">
-                    {missing.map(([block, n]) => (
-                      <li key={block}>
-                        <BlockIcon top={BLOCKS[block].top} side={BLOCKS[block].side} size={28} />
-                        <span>
-                          <strong>{n}</strong> {blockName(block, n)} · <EarnLink block={block} here={biome.id} />
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-                {in3d && <p className="view-note">Touche une case transparente du bâtiment dans le monde, ou utilise le bouton.</p>}
-                <button type="button" className="button primary" disabled={!builder.canFill} onClick={builder.fillNext}>
-                  <Icon name="hammer" /> Poser le bloc suivant
-                </button>
-                <button type="button" className="button" disabled={!builder.canFill} onClick={builder.fillAll}>
-                  <Icon name="blocks" /> Poser tout ce que j’ai
-                </button>
+                <p className="plan-count">
+                  <strong>{posees}</strong> partie{posees > 1 ? 's' : ''} posée{posees > 1 ? 's' : ''} sur {total}
+                </p>
+                <p className="plan-next">
+                  Prochaine partie : <strong>{prochaine.nom}</strong>.
+                </p>
+                <p className="plan-how">
+                  <Icon name="play" />{' '}
+                  <Syllabified text={posees ? 'Réussis une nouvelle mission de l’île pour la poser.' : 'Réussis une mission de l’île pour la poser.'} />
+                </p>
               </>
+            ) : (
+              <p className="plan-done">
+                <Icon name="star" /> Le bâtiment est fini ! <Syllabified text={plans[plans.length - 1].done} />
+              </p>
             )}
           </>
         )}
-        <p className="build-status" role="status" aria-live="polite">
-          {builder.notice ?? ''}
-        </p>
         <p className="island-inventory-link">
           <InventoryLink />
         </p>

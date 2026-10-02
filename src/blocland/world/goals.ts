@@ -1,9 +1,9 @@
-// Le prochain objectif d'une île, un seul, avec sa jauge : ce qu'il manque pour le plan en cours, pour l'ouvrage le
-// moins cher, ou pour le Bloc-Navire. Code pur, partagé par le panneau d'île. Les noms des archipels viennent de
+// Le prochain objectif d'une île, un seul, avec sa jauge : ce qu'il manque pour l'ouvrage le moins cher, ou pour le
+// Bloc-Navire (le bâtiment de l'île se pose tout seul, une partie par mission réussie : GD-6). Code pur, partagé par le panneau d'île. Les noms des archipels viennent de
 // l'appelant (`noms` : ceux de l'univers affiché, GD-1).
 import { blockCount, getBiome, type BiomeId, type BlockId } from '../biomes';
 import type { GameState } from '../engine';
-import { canLaunch, currentPlan, planStatus } from '../engine';
+import { canLaunch, planStatus } from '../engine';
 import {
   KIND_NAME,
   archipelagoOf,
@@ -36,7 +36,7 @@ export interface Goal {
   ready?: boolean;
 }
 
-/** Ce qu'il manque d'un plan, en blocs : « 16 blocs de bois », « 10 briques et 3 blocs de verre ». */
+/** Ce qu'il manque au Bloc-Navire, en blocs : « 16 blocs de bois », « 10 briques et 3 blocs de verre ». */
 function missingBlocks(state: GameState, missing: [BlockId, number][]) {
   const left = missing.map(([b, n]) => [b, Math.max(0, n - (state.stock[b] ?? 0))] as const).filter(([, n]) => n > 0);
   const need = missing.reduce((sum, [, n]) => sum + n, 0);
@@ -49,10 +49,10 @@ function missingBlocks(state: GameState, missing: [BlockId, number][]) {
 }
 
 /**
- * Le prochain objectif d'une île, **un seul** : deux objectifs à la fois (du bois pour la cabane, des blocs pour un
- * pont) mélangeaient deux comptes. Ordre : le Bloc-Navire prêt à partir ; ce qu'on peut faire tout de suite (poser les
- * blocs d'un plan, construire un ouvrage, poser les blocs du navire) ; sinon l'objectif le plus proche (le moins de
- * blocs à gagner), le plan en cas d'égalité. `null` s'il n'y a rien à dire (île fermée, tout construit).
+ * Le prochain objectif d'une île, **un seul** : deux objectifs à la fois (des blocs pour un pont, d'autres pour le
+ * navire) mélangeaient deux comptes. Ordre : le Bloc-Navire prêt à partir ; ce qu'on peut faire tout de suite
+ * (construire un ouvrage, poser les blocs du navire) ; sinon l'objectif le plus proche (le moins de blocs à gagner),
+ * l'ouvrage en cas d'égalité. `null` s'il n'y a rien à dire (île fermée, tout construit).
  */
 export function nextGoalInfo(state: GameState, island: BiomeId, noms: NomsArchipels, mots: MotsDesGardiens): Goal | null {
   const stage = stageAt(island);
@@ -60,20 +60,6 @@ export function nextGoalInfo(state: GameState, island: BiomeId, noms: NomsArchip
   if (stage && launch?.ok) return { text: `${cap(VEHICLE_NAME)} est prêt : embarque vers les ${noms[stage.to]} !`, have: 1, need: 1, ready: true };
   type Candidate = Goal & { ready: boolean };
   const candidates: Candidate[] = [];
-  const current = currentPlan(state, island);
-  if (current && !current.allDone) {
-    const status = planStatus(state, current.plan);
-    const missing = Object.entries(status.missing).filter(([, n]) => (n ?? 0) > 0) as [BlockId, number][];
-    if (missing.length) {
-      const m = missingBlocks(state, missing);
-      candidates.push({
-        text: m.ready ? `Tu as tout pour finir ${current.plan.name} : pose tes blocs` : `Encore ${m.text} pour ${current.plan.name}`,
-        have: m.have,
-        need: m.need,
-        ready: m.ready,
-      });
-    }
-  }
   const world = { progress: state.progress, plans: state.world.parts };
   const bridges = buildableBridges(state.world.links, island, world).filter((b) => conditionMet(b, state.world.links, world));
   if (bridges.length) {
@@ -152,7 +138,7 @@ export function lockedHint(state: GameState, island: BiomeId, noms: NomsArchipel
   if (here.length) {
     const b = here.reduce((a, c) => (c.cost < a.cost ? c : a));
     const from = getBiome(otherEnd(b, island))?.name ?? '';
-    const cond = conditionMet(b, bridges, world) ? '' : ` ${conditionTextShort(b, mots.ouvrageGardien)}`;
+    const cond = conditionMet(b, bridges, world) ? '' : ` ${conditionTextShort(b, from, mots.ouvrageGardien)}`;
     return `Pas si vite ! Pour venir ici, construis ${ouvrageName(b.kind, '')}depuis ${from} : ${b.cost} blocs.${cond}`;
   }
   // Trop loin : la première île fermée sur le chemin est celle à ouvrir d'abord.
@@ -166,7 +152,8 @@ export function lockedHint(state: GameState, island: BiomeId, noms: NomsArchipel
 
 const cap = (text: string) => `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
 
-// `gardien` : la phrase de l'univers (un Gardien vaincu dans Blocland, rallumé dans Archipéo).
-function conditionTextShort(b: { kind: keyof typeof KIND_NAME }, gardien: string): string {
-  return b.kind === 'escalier' ? 'Il faut aussi un premier plan terminé de l’autre côté.' : b.kind === 'tunnel' || b.kind === 'col' ? gardien : '';
+// `gardien` : la phrase de l'univers (un Gardien vaincu dans Blocland, rallumé dans Archipéo). L'escalier demande une
+// mission réussie sur l'île de départ, qui y pose la première partie de son bâtiment (GD-6).
+function conditionTextShort(b: { kind: keyof typeof KIND_NAME }, from: string, gardien: string): string {
+  return b.kind === 'escalier' ? `Réussis aussi une mission sur ${from}.` : b.kind === 'tunnel' || b.kind === 'col' ? gardien : '';
 }

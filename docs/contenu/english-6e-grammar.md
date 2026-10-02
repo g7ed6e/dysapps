@@ -455,8 +455,8 @@ Pour tous les items :
 
 ## Les plans
 
-| plan | nom | XP | coffre | quand c’est bâti |
-| --- | --- | --- | --- | --- |
-| `english-6e-grammar-1` | La tour de Tick | 40 | english-6e-vocabulary × 3 | Ma tour ! Merci, bâtisseur. Tic, tac : elle donne l’heure à toute l’île. |
-| `english-6e-grammar-2` | Le toit de la tour | 50 |  | Un toit et une porte ! Le coucou a enfin sa maison. |
-| `english-6e-grammar-3` | La cour de l’horloge | 60 | trophy-gold × 2 · trophy-crystal × 2 | Une cour, une barrière, un escalier… Mon horloge est complète, et toujours à l’heure. |
+| plan | nom | XP | quand c’est bâti |
+| --- | --- | --- | --- |
+| `english-6e-grammar-1` | La tour de Tick | 40 | Ma tour ! Merci, bâtisseur. Tic, tac : elle donne l’heure à toute l’île. |
+| `english-6e-grammar-2` | Le toit de la tour | 50 | Un toit et une porte ! Le coucou a enfin sa maison. |
+| `english-6e-grammar-3` | La cour de l’horloge | 60 | Une cour, une barrière, un escalier… Mon horloge est complète, et toujours à l’heure. |

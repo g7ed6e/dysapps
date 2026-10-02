@@ -3,8 +3,7 @@
   "biome": "english-4e-comprehension",
   "name": "Le toit de la loge",
   "reward": {
-    "xp": 50,
-    "chest": {}
+    "xp": 50
   },
   "done": "Un toit et une porte ! Les acteurs peuvent répéter à l’abri."
 }

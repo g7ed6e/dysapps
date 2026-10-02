@@ -533,8 +533,8 @@ Pour tous les items :
 
 ## Les plans
 
-| plan | nom | XP | coffre | quand c’est bâti |
-| --- | --- | --- | --- | --- |
-| `english-3e-comprehension-1` | La régie d’Écho | 40 | english-3e-grammar × 3 | Ma régie ! Thank you, bâtisseur. On the air, dans trois, deux, un… |
-| `english-3e-comprehension-2` | Le toit de la régie | 50 |  | Un toit et une porte ! Plus de grésillement quand il pleut. |
-| `english-3e-comprehension-3` | La terrasse du studio | 60 | trophy-gold × 2 · trophy-crystal × 2 | Une terrasse, une barrière, un escalier… Mon studio est complet. Stay tuned! |
+| plan | nom | XP | quand c’est bâti |
+| --- | --- | --- | --- |
+| `english-3e-comprehension-1` | La régie d’Écho | 40 | Ma régie ! Thank you, bâtisseur. On the air, dans trois, deux, un… |
+| `english-3e-comprehension-2` | Le toit de la régie | 50 | Un toit et une porte ! Plus de grésillement quand il pleut. |
+| `english-3e-comprehension-3` | La terrasse du studio | 60 | Une terrasse, une barrière, un escalier… Mon studio est complet. Stay tuned! |

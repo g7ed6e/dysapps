@@ -29,6 +29,8 @@ import { fillTemplate, type ExerciseDef, type ExerciseItem, type ItemResult } fr
 import { PauseSeance } from './PauseSeance';
 import { Stars } from './Stars';
 import { BlockIcon } from './Voxel';
+import { habillageDuMonde } from './habillage';
+import { playDone, sonDePose } from './sound';
 
 interface Props {
   biome: BiomeDef;
@@ -40,6 +42,14 @@ interface Props {
   onRound?: (round: { index: number; total: number; correct: boolean }) => void;
   /** La barre des écrans ne dit que où l'on en est, jamais une réussite (le défi d'une sentinelle, lot 6). */
   etapesNeutres?: boolean;
+}
+
+/** Le carillon de fin (`playDone`) : deux notes, la seconde à 160 ms, de 450 ms ; la voix vient après. */
+const CARILLON_MS = 610;
+
+/** La phrase de la pose, écrite et lue : « La cabane de Mousso : posée ! », puis la réplique et l'XP de chaque plan fini. */
+function phraseDeLaPose(pose: NonNullable<Completion['pose']>): string {
+  return [...pose.posees.map((p) => `${p.nom} : posée !`), ...pose.plansFinis.map((p) => `${p.done} +${p.reward.xp} XP.`)].join(' ');
 }
 
 /** Découpe les items en écrans selon le type d'exercice. */
@@ -128,6 +138,28 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
     // Une lecture par écran.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index]);
+
+  // Une partie du bâtiment posée par cette mission (GD-6) : le « clac » de pose de l'univers, le carillon, puis la phrase
+  // lue (les sons se taisent pendant la voix). Une fois, à l'apparition de l'écran de fin, jamais pendant une question.
+  useEffect(() => {
+    const pose = done?.pose;
+    if (!pose?.posees.length) return;
+    const timers: number[] = [];
+    const plusTard = (f: () => void, ms: number) => timers.push(window.setTimeout(f, ms));
+    const dire = () => settings.autoRead && speak(frenchTypography(phraseDeLaPose(pose)));
+    if (!settings.sounds) dire();
+    else if (habillageDuMonde().pose === 'geste') {
+      sonDePose('geste')();
+      plusTard(playDone, 120);
+      plusTard(dire, 120 + CARILLON_MS);
+    } else {
+      playDone();
+      dire();
+    }
+    return () => timers.forEach((t) => window.clearTimeout(t));
+    // Une fois par fin de mission.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [done]);
 
   // Le bandeau de résultat ne cache pas la réponse.
   useSheetClearance(sectionRef, Boolean(answered) && !done);
@@ -218,6 +250,21 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
               <Icon name="zap" size="1.6rem" />
               <strong>+{done.xp}</strong> XP{done.perfect ? ' (bonus sans aide)' : ''}
             </li>
+            {done.pose?.posees.map((partie, i, posees) => (
+              <li key={`pose-${partie.rang}`} className="reward-pose">
+                <Icon name="home" size="1.6rem" />
+                <span>
+                  <strong>{partie.nom} : posée !</strong>
+                  {i === posees.length - 1 &&
+                    done.pose!.plansFinis.map((plan) => (
+                      <span key={plan.id} className="reward-pose-fin">
+                        {' '}
+                        <Syllabified text={plan.done} /> <strong>+{plan.reward.xp}</strong> XP
+                      </span>
+                    ))}
+                </span>
+              </li>
+            ))}
             {done.chestBlock && (
               <li className="reward-chest">
                 <BlockIcon top={BLOCKS[done.chestBlock].top} side={BLOCKS[done.chestBlock].side} size={44} />
@@ -264,7 +311,7 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
             />
           ) : (
             <div className="actions">
-              {site.kind === 'aucun' || site.kind === 'garder' ? (
+              {site.kind === 'aucun' ? (
                 <Link ref={suiteRef} to={`/adventure/${biome.id}`} className="button primary">
                   <Icon name="map" /> Revenir sur {biome.name}
                 </Link>

@@ -3,11 +3,7 @@
   "biome": "lv2-5e-introductions",
   "name": "La fontaine du relais",
   "reward": {
-    "xp": 60,
-    "chest": {
-      "trophy-gold": 2,
-      "trophy-crystal": 2
-    }
+    "xp": 60
   },
   "done": "Une fontaine, une barrière, une marche… Mon Relais est complet. Bon voyage, d’où que tu viennes !"
 }

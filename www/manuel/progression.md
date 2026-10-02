@@ -53,6 +53,6 @@ Pour un parent, un enseignant ou un orthophoniste, trois endroits résument la s
 
 1. **La page Succès** : niveau, précision globale, meilleur combo, nombre de missions, bâtiments, succès obtenus avec leur date ; et, matière par matière, les étoiles gagnées et les missions à retravailler.
 2. **Les cartes de mission** du portail : meilleur score par mission et par niveau.
-3. **Les panneaux d’île** de l’aventure : étoiles par mission, avancement du plan, Gardien vaincu ou non. La page de chaque île indique aussi le **prochain objectif**.
+3. **Les panneaux d’île** de l’aventure : étoiles par mission, parties du bâtiment posées, Gardien vaincu ou non. La page de chaque île indique aussi le **prochain objectif**.
 
 Tout reste sur l’appareil : il n’y a pas d’export ni de tableau de bord en ligne. Regarder ensemble la page Succès à la fin d’une séance est la manière la plus simple de faire le point.

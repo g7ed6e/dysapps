@@ -340,8 +340,8 @@ Pour tous les items :
 
 ## Les plans
 
-| plan | nom | XP | coffre | quand c’est bâti |
-| --- | --- | --- | --- | --- |
-| `english-3e-grammar-1` | La tour de Knight | 40 | english-3e-comprehension × 3 | Ma tour ! Thank you, bâtisseur. If I were a king, I would live here. |
-| `english-3e-grammar-2` | Le toit de la tour | 50 |  | Un toit et une porte ! Même le Dragon ne passera pas. |
-| `english-3e-grammar-3` | Le rempart du château | 60 | trophy-gold × 2 · trophy-crystal × 2 | Un rempart, une barrière, un escalier… Mon château est complet. It has been built by you! |
+| plan | nom | XP | quand c’est bâti |
+| --- | --- | --- | --- |
+| `english-3e-grammar-1` | La tour de Knight | 40 | Ma tour ! Thank you, bâtisseur. If I were a king, I would live here. |
+| `english-3e-grammar-2` | Le toit de la tour | 50 | Un toit et une porte ! Même le Dragon ne passera pas. |
+| `english-3e-grammar-3` | Le rempart du château | 60 | Un rempart, une barrière, un escalier… Mon château est complet. It has been built by you! |

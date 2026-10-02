@@ -532,8 +532,8 @@ Pour tous les items :
 
 ## Les plans
 
-| plan | nom | XP | coffre | quand c’est bâti |
-| --- | --- | --- | --- | --- |
-| `english-5e-vocabulary-1` | La boutique de Pudding | 40 | english-5e-grammar × 3 | Ma boutique ! Thank you, bâtisseur. Come in, it’s open! |
-| `english-5e-vocabulary-2` | Le toit de la boutique | 50 |  | Un toit et une porte ! Mes fruits restent au sec, même quand il pleut. |
-| `english-5e-vocabulary-3` | La terrasse de la boutique | 60 | trophy-gold × 2 · trophy-crystal × 2 | Une terrasse, une barrière, un escalier… Mon Comptoir est complet. Come again! |
+| plan | nom | XP | quand c’est bâti |
+| --- | --- | --- | --- |
+| `english-5e-vocabulary-1` | La boutique de Pudding | 40 | Ma boutique ! Thank you, bâtisseur. Come in, it’s open! |
+| `english-5e-vocabulary-2` | Le toit de la boutique | 50 | Un toit et une porte ! Mes fruits restent au sec, même quand il pleut. |
+| `english-5e-vocabulary-3` | La terrasse de la boutique | 60 | Une terrasse, une barrière, un escalier… Mon Comptoir est complet. Come again! |

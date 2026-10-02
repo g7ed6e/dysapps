@@ -22,27 +22,24 @@ const guardians = (ids: string[]) => Object.fromEntries(ids.map((id) => [`${id}-
 
 it('le prochain objectif est unique : d’abord ce qu’on peut faire tout de suite, sinon le plus proche', () => {
   const fresh = sanitizeState({});
-  // 3 blocs pour le sentier, c'est plus proche que les bois de la cabane.
+  // Le bâtiment de l'île se pose tout seul (GD-6) : l'objectif est le sentier.
   expect(nextGoal(fresh, 'french-6e-phonology')).toBe('Encore 3 blocs pour le sentier vers Mine des lettres.');
   expect(nextGoalInfo(fresh, 'french-6e-phonology')).toMatchObject({ have: 0, need: 3 });
   const some = sanitizeState({ stock: { [BLOC.bois]: 5 } });
   expect(nextGoal(some, 'french-6e-phonology')).toBe('Tu peux construire le sentier vers Mine des lettres.');
-  const cabane = plansFor('french-6e-phonology')[0].cells.length;
-  const rich = sanitizeState({ stock: { [BLOC.bois]: cabane } });
-  expect(nextGoal(rich, 'french-6e-phonology')).toBe('Tu as tout pour finir La cabane de Mousso : pose tes blocs.');
-  expect(nextGoalInfo(rich, 'french-6e-phonology')).toMatchObject({ have: cabane, need: cabane });
-  // Tous les plans posés et tous les ouvrages construits : plus rien à dire.
-  const plans = Object.fromEntries(plansFor('french-6e-phonology').map((p) => [p.id, planCells(p).map((c) => c.key)]));
-  const done = sanitizeState({ world: { parts: plans, links: ['french-6e-phonology-french-6e-letter-confusion', 'french-6e-phonology-french-6e-grammar-spelling', 'french-6e-phonology-english-6e-grammar'] } });
+  const rich = sanitizeState({ stock: { [BLOC.bois]: 40 } });
+  expect(nextGoal(rich, 'french-6e-phonology')).not.toMatch(/cabane/);
+  // Tous les ouvrages construits : plus rien à dire, que le bâtiment soit fini ou non.
+  const done = sanitizeState({ world: { links: ['french-6e-phonology-french-6e-letter-confusion', 'french-6e-phonology-french-6e-grammar-spelling', 'french-6e-phonology-english-6e-grammar'] } });
   expect(nextGoal(done, 'french-6e-phonology')).toBeNull();
   expect(nextGoal(EMPTY_STATE, 'french-6e-letter-confusion')).toBe('Encore 3 blocs pour le sentier vers Forêt des sons.');
 });
 
 it('sur le port, le prochain objectif parle du Bloc-Navire : ses blocs, puis ses Gardiens, puis l’embarquement', () => {
-  // Au début, sur la Plaine : l'ouvrage le moins cher (3 blocs) est plus proche que le plan.
+  // Au début, sur la Plaine : l'ouvrage le moins cher (3 blocs) est plus proche que le navire.
   const fresh = sanitizeState({});
   expect(nextGoal(fresh, 'maths-6e-calculation')).toMatch(/^Encore 3 blocs pour le (bac vers Rivière des fractions|pont vers Volcan des décimaux)\.$/);
-  // Les plans de la Plaine finis et ses ouvrages construits : le chantier du navire.
+  // Les ouvrages de la Plaine construits : le chantier du navire.
   const plans = Object.fromEntries(plansFor('maths-6e-calculation').map((p) => [p.id, planCells(p).map((c) => c.key)]));
   const built = ['maths-6e-calculation-maths-6e-fractions', 'maths-6e-calculation-maths-6e-decimals'];
   expect(nextGoal(sanitizeState({ world: { parts: plans, links: built } }), 'maths-6e-calculation')).toMatch(/^Encore \d+ blocs? de (sable|bois)( et \d+ [^.]+)? pour le Bloc-Navire\.$/);
@@ -61,13 +58,9 @@ it('sur le port, le prochain objectif parle du Bloc-Navire : ses blocs, puis ses
   expect(nextGoal(sailed, 'maths-6e-calculation')).toBeNull();
 });
 
-it('les quantités de blocs s’accordent : « 18 toits et 3 lanternes », « 3 blocs de sable » (référent dys, 28/09)', () => {
-  // Le deuxième plan de la Forêt : il manque des blocs de finition, qu'on compte comme des objets.
-  const cabane = plansFor('french-6e-phonology')[0];
-  const plans = { [cabane.id]: planCells(cabane).map((c) => c.key) };
-  expect(nextGoal(sanitizeState({ world: { parts: plans, links: ['french-6e-phonology-french-6e-letter-confusion', 'french-6e-phonology-french-6e-grammar-spelling', 'french-6e-phonology-english-6e-grammar'] } }), 'french-6e-phonology')).toBe(
-    'Encore 18 toits et 3 lanternes pour Le toit de la cabane.',
-  );
+it('les quantités de blocs s’accordent : « 18 toits », « 3 blocs de sable » (référent dys, 28/09)', () => {
+  // Les blocs de finition se comptent comme des objets.
+  expect(blockCount(BLOC.toit, 18)).toBe('18 toits');
   expect(blockCount(BLOC.lanterne, 1)).toBe('1 lanterne');
   expect(blockCount(BLOC.barriere, 5)).toBe('5 barrières');
   expect(blockCount(BLOC.panneau, 2)).toBe('2 panneaux');
@@ -106,7 +99,7 @@ it('une île fermée dit l’ouvrage précis qui y mène, ou l’île à ouvrir 
   // Un escalier dans les Monts : la condition est dite.
   const monts = sanitizeState({ world: { links: ['passage-5e', 'passage-4e', 'maths-4e-algebra-french-4e-agreement'] } });
   expect(lockedHint(monts, 'french-4e-vocabulary')).toBe(
-    'Pas si vite ! Pour venir ici, construis l’escalier taillé depuis Falaise des accords : 5 blocs. Il faut aussi un premier plan terminé de l’autre côté.',
+    'Pas si vite ! Pour venir ici, construis l’escalier taillé depuis Falaise des accords : 5 blocs. Réussis aussi une mission sur Falaise des accords.',
   );
 });
 

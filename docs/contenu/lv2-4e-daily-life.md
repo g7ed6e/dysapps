@@ -1249,8 +1249,8 @@ Pour tous les items :
 
 ## Les plans
 
-| plan | nom | XP | coffre | quand c’est bâti |
-| --- | --- | --- | --- | --- |
-| `lv2-4e-daily-life-1` | La cuisine de Muscade | 40 | english-4e-comprehension × 3 | Les murs de ma cuisine ! Merci, bâtisseur. Bientôt, la soupe mijotera ici. |
-| `lv2-4e-daily-life-2` | La tonnelle du jardin | 50 |  | Un toit, une cheminée et une tonnelle ! On mangera dehors, à l’ombre, à toute heure. |
-| `lv2-4e-daily-life-3` | La serre du jardin | 60 | trophy-gold × 2 · trophy-crystal × 2 | Une serre, une barrière, une marche… Mon jardin est complet. À table, bâtisseur ! |
+| plan | nom | XP | quand c’est bâti |
+| --- | --- | --- | --- |
+| `lv2-4e-daily-life-1` | La cuisine de Muscade | 40 | Les murs de ma cuisine ! Merci, bâtisseur. Bientôt, la soupe mijotera ici. |
+| `lv2-4e-daily-life-2` | La tonnelle du jardin | 50 | Un toit, une cheminée et une tonnelle ! On mangera dehors, à l’ombre, à toute heure. |
+| `lv2-4e-daily-life-3` | La serre du jardin | 60 | Une serre, une barrière, une marche… Mon jardin est complet. À table, bâtisseur ! |

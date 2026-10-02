@@ -1,13 +1,13 @@
-// À quoi servent les blocs que l'élève a en poche, et lesquels lui manquent : le plan en cours de chaque île
-// ouverte de son archipel, le chantier du Bloc-Navire, les monuments de l'archipel, les ouvrages. Code pur, partagé par l'inventaire (« Mes
-// blocs ») et les listes de blocs manquants du panneau d'île. Un bloc qui ne sert à rien maintenant est dit tel quel.
+// À quoi servent les blocs que l'élève a en poche, et lesquels lui manquent : le chantier du Bloc-Navire, les monuments
+// de l'archipel, les ouvrages (et l'assemblage, à part). Le bâtiment d'une île n'en prend pas : il se pose tout seul, une
+// partie par mission réussie (GD-6). Code pur, partagé par l'inventaire (« Mes blocs ») et le bilan d'une mission. Un
+// bloc qui ne sert à rien maintenant est dit tel quel ; les blocs de finition, l'or et le cristal sont des trophées.
 import { BIOMES, BLOCKS, type BiomeDef, type BiomeId, type BlockId } from '../biomes';
-import { canLaunch, currentPlan, currentStage, planStatus, type GameState } from '../engine';
+import { canLaunch, currentStage, planStatus, type GameState } from '../engine';
 import { BRIDGE_BLOCKS, archipelagoOf, buildableBridges, conditionMet, islandsOf, otherEnd, payableBlocks, reachableIslands, type BridgeDef } from './archipelago';
 import { monumentsOf } from './monuments';
 import { lieuDAssemblage } from './assemblage';
 import { universCourant } from '../../core/settings';
-import { plansFor } from './plans';
 import type { VehicleStage } from './vehicle';
 
 /** L'île dont c'est le bloc (où on le gagne), ou rien pour un bloc de finition ou d'or. */
@@ -15,9 +15,17 @@ export function earnIsland(block: BlockId): BiomeDef | undefined {
   return BIOMES.find((b) => b.block === block);
 }
 
-/** Où gagner un type de bloc, en mots : le nom de son île, sinon le coffre d'un plan (un bloc assemblé : voir `allerChercher`). */
+/** Où gagner un type de bloc, en mots : le nom de son île, sinon un coffre de régularité (un bloc assemblé : voir `allerChercher`). */
 export function whereToEarn(block: BlockId): string {
-  return earnIsland(block)?.name ?? 'le coffre du plan précédent (ou un coffre de régularité)';
+  return earnIsland(block)?.name ?? 'un coffre de régularité';
+}
+
+/**
+ * Un bloc gardé comme trophée : ni bloc d'île, ni bloc assemblé (les blocs de finition, l'or, le cristal). Depuis GD-6,
+ * aucun bâtiment d'île ne les demande ; ils restent dans la sauvegarde et le Bloc-Navire peut encore s'en servir.
+ */
+export function blocTrophee(block: BlockId): boolean {
+  return !earnIsland(block) && !BLOCKS[block].assemble;
 }
 
 /** Où aller chercher un bloc qui manque, en une consigne : « va dans Forêt des sons », « va à la Fabrique pour l’assembler ». */
@@ -26,10 +34,10 @@ export function allerChercher(block: BlockId): string {
 }
 
 export interface Use {
-  kind: 'plan' | 'navire' | 'monument' | 'garder';
-  /** L'île où poser (ou dont les plans suivants attendent le bloc). */
+  kind: 'navire' | 'monument';
+  /** L'île où poser (pour un monument, l'île d'où on le voit). */
   island: BiomeId;
-  /** Le nom du plan (ou de l'étape du navire). */
+  /** Le nom de l'étape du navire, ou du monument. */
   name: string;
   /** Combien de ces blocs il reste à poser. */
   need: number;
@@ -61,19 +69,6 @@ function shipyard(state: GameState): VehicleStage | null {
 export function blockUses(state: GameState, block: BlockId): Use[] {
   const have = state.stock[block] ?? 0;
   const uses: Use[] = [];
-  for (const island of openIslandsHere(state)) {
-    const current = currentPlan(state, island);
-    if (!current || current.allDone) continue;
-    const need = planStatus(state, current.plan).missing[block] ?? 0;
-    if (need > 0)
-      uses.push({
-        kind: 'plan',
-        island,
-        name: current.plan.name,
-        need,
-        enough: have >= need,
-      });
-  }
   const stage = shipyard(state);
   if (stage) {
     const need = planStatus(state, stage).missing[block] ?? 0;
@@ -87,28 +82,11 @@ export function blockUses(state: GameState, block: BlockId): Use[] {
       });
   }
   if (uses.length) return uses;
-  // Rien à poser dans un plan ni sur le navire : les monuments de l'archipel s'en servent peut-être (c'est leur rôle :
+  // Rien à poser sur le navire : les monuments de l'archipel s'en servent peut-être (c'est leur rôle :
   // employer les blocs qui s'accumulent).
   for (const m of monumentsOf(archipelagoOf(state.world.place ?? 'french-6e-phonology').classe)) {
     const need = planStatus(state, m).missing[block] ?? 0;
     if (need > 0) uses.push({ kind: 'monument', island: m.biome, name: m.name, need, enough: have >= need, to: `/adventure/${m.id}` });
-  }
-  // Rien à poser aujourd'hui : les plans suivants de son île (ou, pour un bloc de coffre, des îles ouvertes) l'attendent peut-être.
-  const home = earnIsland(block);
-  for (const island of home ? [home.id] : openIslandsHere(state)) {
-    const later = plansFor(island)
-      .filter((p) => !planStatus(state, p).complete)
-      .reduce((n, p) => n + (planStatus(state, p).missing[block] ?? 0), 0);
-    if (later > 0) {
-      uses.push({
-        kind: 'garder',
-        island,
-        name: BIOMES.find((b) => b.id === island)!.name,
-        need: later,
-        enough: have >= later,
-      });
-      break;
-    }
   }
   return uses;
 }
@@ -146,21 +124,16 @@ export interface Inventory {
   missing: MissingBlock[];
 }
 
-/** Rang d'une ligne : posable ici, posable ailleurs, à garder, sans usage. */
+/** Rang d'une ligne : posable ici, posable ailleurs, sans usage, trophée. */
 function rank(row: InventoryRow, at: BiomeId): number {
-  if (row.uses.some((u) => u.kind !== 'garder' && u.island === at)) return 0;
-  if (row.uses.some((u) => u.kind !== 'garder')) return 1;
-  return row.uses.length ? 2 : 3;
+  if (row.uses.some((u) => u.island === at)) return 0;
+  if (row.uses.length) return 1;
+  return blocTrophee(row.block) ? 3 : 2;
 }
 
-/** Les blocs que réclament les chantiers à portée et que l'élève n'a pas, avec l'île où les gagner. */
+/** Les blocs que réclame le chantier du Bloc-Navire à portée et que l'élève n'a pas, avec l'île où les gagner. */
 export function missingNow(state: GameState): MissingBlock[] {
   const need: Partial<Record<BlockId, number>> = {};
-  for (const island of openIslandsHere(state)) {
-    const current = currentPlan(state, island);
-    if (!current || current.allDone) continue;
-    for (const [b, n] of Object.entries(planStatus(state, current.plan).missing)) need[b as BlockId] = (need[b as BlockId] ?? 0) + (n ?? 0);
-  }
   const stage = shipyard(state);
   if (stage) for (const [b, n] of Object.entries(planStatus(state, stage).missing)) need[b as BlockId] = (need[b as BlockId] ?? 0) + (n ?? 0);
   const open = reachableIslands(state.world.links);

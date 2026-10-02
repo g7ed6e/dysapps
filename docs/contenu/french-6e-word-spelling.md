@@ -444,8 +444,8 @@ Pour tous les items :
 
 ## Les plans
 
-| plan | nom | XP | coffre | quand c’est bâti |
-| --- | --- | --- | --- | --- |
-| `french-6e-word-spelling-1` | Le four de Rouxel | 50 | french-6e-grammar-spelling × 3 | Mon four est reconstruit ! Le pain va sentir bon dans tout le village. |
-| `french-6e-word-spelling-2` | L’abri du four | 60 |  | Un abri sur mon four : plus de pluie sur le pain ! Merci. |
-| `french-6e-word-spelling-3` | La cour du four | 70 | trophy-gold × 2 · trophy-crystal × 2 | Une cour pour le four. Les mots bien écrits viendront y chercher leur pain. |
+| plan | nom | XP | quand c’est bâti |
+| --- | --- | --- | --- |
+| `french-6e-word-spelling-1` | Le four de Rouxel | 50 | Mon four est reconstruit ! Le pain va sentir bon dans tout le village. |
+| `french-6e-word-spelling-2` | L’abri du four | 60 | Un abri sur mon four : plus de pluie sur le pain ! Merci. |
+| `french-6e-word-spelling-3` | La cour du four | 70 | Une cour pour le four. Les mots bien écrits viendront y chercher leur pain. |

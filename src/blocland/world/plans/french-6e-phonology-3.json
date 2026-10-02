@@ -3,11 +3,7 @@
   "biome": "french-6e-phonology",
   "name": "La cour de la cabane",
   "reward": {
-    "xp": 60,
-    "chest": {
-      "trophy-gold": 2,
-      "trophy-crystal": 2
-    }
+    "xp": 60
   },
   "done": "Une cour, une barrière, un escalier… Ma maison est finie. Tu es un vrai bâtisseur, une vraie bâtisseuse."
 }

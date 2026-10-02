@@ -3,10 +3,7 @@
   "biome": "french-6e-reading",
   "name": "Le phare de Grimoire",
   "reward": {
-    "xp": 60,
-    "chest": {
-      "french-6e-phonology": 4
-    }
+    "xp": 60
   },
   "done": "Hou hou ! Mon phare brille à nouveau. Les lecteurs perdus retrouveront le chemin du village."
 }

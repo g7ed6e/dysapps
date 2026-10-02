@@ -361,8 +361,8 @@ Pour tous les items :
 
 ## Les plans
 
-| plan | nom | XP | coffre | quand c’est bâti |
-| --- | --- | --- | --- | --- |
-| `french-6e-phonology-1` | La cabane de Mousso | 40 | french-6e-letter-confusion × 3 | Ma cabane ! Merci, bâtisseur. Je vais enfin dormir au sec, à l’abri des sons qui hurlent la nuit. |
-| `french-6e-phonology-2` | Le toit de la cabane | 50 |  | Un toit de tuiles et une porte qui ferme ! La lanterne brillera pour les sons perdus. |
-| `french-6e-phonology-3` | La cour de la cabane | 60 | trophy-gold × 2 · trophy-crystal × 2 | Une cour, une barrière, un escalier… Ma maison est finie. Tu es un vrai bâtisseur, une vraie bâtisseuse. |
+| plan | nom | XP | quand c’est bâti |
+| --- | --- | --- | --- |
+| `french-6e-phonology-1` | La cabane de Mousso | 40 | Ma cabane ! Merci, bâtisseur. Je vais enfin dormir au sec, à l’abri des sons qui hurlent la nuit. |
+| `french-6e-phonology-2` | Le toit de la cabane | 50 | Un toit de tuiles et une porte qui ferme ! La lanterne brillera pour les sons perdus. |
+| `french-6e-phonology-3` | La cour de la cabane | 60 | Une cour, une barrière, un escalier… Ma maison est finie. Tu es un vrai bâtisseur, une vraie bâtisseuse. |

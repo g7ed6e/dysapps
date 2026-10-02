@@ -6,6 +6,7 @@ import { BandeauBatisseur } from './BandeauBatisseur';
 import { BloclandProvider, useBlocland } from '../blocland/BloclandContext';
 import { BLOCS_DU_BATISSEUR } from '../blocland/batisseur';
 import { SettingsProvider } from '../core/SettingsContext';
+import { ProgressProvider } from '../core/ProgressContext';
 import { degelerSauvegarde, saveJSON } from '../core/storage';
 
 function Inventaire() {
@@ -16,13 +17,15 @@ function Inventaire() {
 function renderTitle() {
   return render(
     <SettingsProvider>
-      <BloclandProvider>
-        <MemoryRouter>
-          <BandeauBatisseur />
-          <TitleScreen />
-          <Inventaire />
-        </MemoryRouter>
-      </BloclandProvider>
+      <ProgressProvider>
+        <BloclandProvider>
+          <MemoryRouter>
+            <BandeauBatisseur />
+            <TitleScreen />
+            <Inventaire />
+          </MemoryRouter>
+        </BloclandProvider>
+      </ProgressProvider>
     </SettingsProvider>,
   );
 }

@@ -456,10 +456,3 @@ export function buildingStages(biome: BiomeId, block: BlockId): Stages {
   }
 }
 
-/** Les blocs de finition (ceux qui ne se gagnent sur aucune île) que demande une étape. */
-export const FINISH_BLOCKS: BlockId[] = ['roof', 'door', 'lantern', 'fence', 'stairs'];
-export function finishNeeds(cells: ArchCell[]): Partial<Record<BlockId, number>> {
-  const out: Partial<Record<BlockId, number>> = {};
-  for (const c of cells) if (FINISH_BLOCKS.includes(c.block)) out[c.block] = (out[c.block] ?? 0) + 1;
-  return out;
-}

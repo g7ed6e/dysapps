@@ -3016,6 +3016,20 @@ figure.class-table {
   margin-top: 0.3em;
   color: var(--pink);
 }
+/* Le bâtiment de l'île (GD-6) : la prochaine partie, et la phrase qui dit comment la poser. */
+.plan-next {
+  margin: 0 0 0.4rem;
+}
+.plan-how {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  max-width: none;
+}
+.plan-how svg {
+  flex-shrink: 0;
+  margin-top: 0.3em;
+}
 
 /* ===== Village : ce que dit une créature quand on la touche ===== */
 .creature-line {
@@ -5075,7 +5089,8 @@ details.island-fold-objectif {
   gap: 0.5rem 0.8rem;
 }
 /* Le chantier que servent les blocs gagnés : sa phrase et sa jauge, sur toute la largeur. */
-.reward-site > span {
+.reward-site > span,
+.reward-pose > span {
   flex: 1;
 }
 .reward-site .goal-gauge {

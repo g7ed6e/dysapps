@@ -34,8 +34,8 @@ créature : Théo
 
 ## Les plans
 
-| plan | nom | XP | coffre | quand c’est bâti |
-| --- | --- | --- | --- | --- |
-| `maths-3e-geometry-1` | Le kiosque de Théo | 40 | french-4e-agreement × 3 | Mon kiosque ! Merci, bâtisseur. Ses angles sont droits, ses colonnes proportionnelles. |
-| `maths-3e-geometry-2` | Le toit du kiosque | 50 |  | Un toit et une porte ! La lanterne pend au sommet, à la verticale exacte. |
-| `maths-3e-geometry-3` | La terrasse du kiosque | 60 | trophy-gold × 2 · trophy-crystal × 2 | Une terrasse, une barrière, un escalier… Mon kiosque est complet : hypoténuse comprise. |
+| plan | nom | XP | quand c’est bâti |
+| --- | --- | --- | --- |
+| `maths-3e-geometry-1` | Le kiosque de Théo | 40 | Mon kiosque ! Merci, bâtisseur. Ses angles sont droits, ses colonnes proportionnelles. |
+| `maths-3e-geometry-2` | Le toit du kiosque | 50 | Un toit et une porte ! La lanterne pend au sommet, à la verticale exacte. |
+| `maths-3e-geometry-3` | La terrasse du kiosque | 60 | Une terrasse, une barrière, un escalier… Mon kiosque est complet : hypoténuse comprise. |

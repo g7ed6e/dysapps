@@ -7,7 +7,7 @@ import { useBlocland } from './BloclandContext';
 import { nextFillable, planStatus, type PlanStatus } from './engine';
 import { playDone, playNope, sonDePose } from './sound';
 import { habillageDuMonde } from './habillage';
-import { placeAll, type Burst } from './usePlanBuilder';
+import { placeAll, type Burst } from './poseCaseParCase';
 import { allerChercher } from './world/uses';
 import type { MonumentDef } from './world/monuments';
 import { monumentAnchor, origineDe } from './world/terrain';

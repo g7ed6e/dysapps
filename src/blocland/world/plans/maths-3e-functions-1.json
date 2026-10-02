@@ -3,10 +3,7 @@
   "biome": "maths-3e-functions",
   "name": "La lanterne de Fi",
   "reward": {
-    "xp": 40,
-    "chest": {
-      "maths-3e-geometry": 3
-    }
+    "xp": 40
   },
   "done": "Ma lanterne ! Merci, bâtisseur. Entre x blocs, sort une lumière."
 }

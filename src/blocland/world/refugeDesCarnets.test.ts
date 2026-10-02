@@ -121,11 +121,10 @@ describe('le refuge, sans lanterne', () => {
 describe('les trois plans du refuge', () => {
   const plans = plansFor('lv2-3e-travel');
 
-  it('la poste de Timbre, la salle commune, le pigeonnier du refuge : leurs noms, leurs XP, leurs coffres', () => {
+  it('la poste de Timbre, la salle commune, le pigeonnier du refuge : leurs noms, leurs XP, sans coffre (GD-6)', () => {
     expect(plans.map((p) => p.name)).toEqual(['La poste de Timbre', 'La salle commune', 'Le pigeonnier du refuge']);
     expect(plans.map((p) => p.reward.xp)).toEqual([40, 50, 60]);
-    expect(plans[0].reward.chest[BLOC.taille]).toBe(3);
-    expect(plans[2].reward.chest).toMatchObject({ [BLOC.or]: 2, [BLOC.cristal]: 2 });
+    for (const p of plans) expect(p.reward.chest).toEqual({});
     // « poste » en minuscule, jamais « La Poste » ; « refuge » aussi, dans les phrases.
     for (const p of plans) {
       expect(p.done).not.toMatch(/La Poste|Refuge/);

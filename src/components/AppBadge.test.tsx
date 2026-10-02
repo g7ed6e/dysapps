@@ -1,5 +1,6 @@
 import { render } from '@testing-library/react';
 import { SettingsProvider } from '../core/SettingsContext';
+import { ProgressProvider } from '../core/ProgressContext';
 import { BloclandProvider } from '../blocland/BloclandContext';
 import { todayISO } from '../blocland/engine';
 import { AppBadge } from './AppBadge';
@@ -7,9 +8,11 @@ import { AppBadge } from './AppBadge';
 function renderBadge() {
   return render(
     <SettingsProvider>
-      <BloclandProvider>
-        <AppBadge />
-      </BloclandProvider>
+      <ProgressProvider>
+        <BloclandProvider>
+          <AppBadge />
+        </BloclandProvider>
+      </ProgressProvider>
     </SettingsProvider>,
   );
 }

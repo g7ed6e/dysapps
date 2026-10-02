@@ -3,8 +3,7 @@
   "biome": "french-6e-word-spelling",
   "name": "L’abri du four",
   "reward": {
-    "xp": 60,
-    "chest": {}
+    "xp": 60
   },
   "done": "Un abri sur mon four : plus de pluie sur le pain ! Merci."
 }

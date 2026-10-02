@@ -3,8 +3,7 @@
   "biome": "english-3e-grammar",
   "name": "Le toit de la tour",
   "reward": {
-    "xp": 50,
-    "chest": {}
+    "xp": 50
   },
   "done": "Un toit et une porte ! Même le Dragon ne passera pas."
 }

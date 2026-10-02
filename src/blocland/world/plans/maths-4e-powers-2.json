@@ -3,8 +3,7 @@
   "biome": "maths-4e-powers",
   "name": "Le toit de l’atelier",
   "reward": {
-    "xp": 50,
-    "chest": {}
+    "xp": 50
   },
   "done": "Un toit et une porte ! La lanterne brûle à 10³ degrés, au moins."
 }

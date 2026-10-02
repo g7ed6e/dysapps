@@ -3,8 +3,7 @@
   "biome": "maths-5e-proportionality",
   "name": "L’auvent de l’échoppe",
   "reward": {
-    "xp": 50,
-    "chest": {}
+    "xp": 50
   },
   "done": "Un auvent et une porte ! La lanterne éclaire les comptes du soir."
 }

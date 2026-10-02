@@ -411,8 +411,8 @@ Pour tous les items :
 
 ## Les plans
 
-| plan | nom | XP | coffre | quand c’est bâti |
-| --- | --- | --- | --- | --- |
-| `french-6e-reading-1` | Le phare de Grimoire | 60 | french-6e-phonology × 4 | Hou hou ! Mon phare brille à nouveau. Les lecteurs perdus retrouveront le chemin du village. |
-| `french-6e-reading-2` | La lanterne du phare | 70 |  | Deux lanternes au sommet : mon phare se voit depuis la Forêt. Hou hou ! |
-| `french-6e-reading-3` | Le quai du phare | 80 | trophy-gold × 3 · trophy-crystal × 3 | Le quai est prêt. Le village est reconstruit, et chaque page lue l’a rendu plus beau. |
+| plan | nom | XP | quand c’est bâti |
+| --- | --- | --- | --- |
+| `french-6e-reading-1` | Le phare de Grimoire | 60 | Hou hou ! Mon phare brille à nouveau. Les lecteurs perdus retrouveront le chemin du village. |
+| `french-6e-reading-2` | La lanterne du phare | 70 | Deux lanternes au sommet : mon phare se voit depuis la Forêt. Hou hou ! |
+| `french-6e-reading-3` | Le quai du phare | 80 | Le quai est prêt. Le village est reconstruit, et chaque page lue l’a rendu plus beau. |

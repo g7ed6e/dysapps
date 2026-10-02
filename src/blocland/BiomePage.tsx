@@ -21,7 +21,6 @@ import { STARS_TO_UNLOCK, isBossBeaten, isBossOpen, missingForBoss } from './bos
 import { BlockIcon } from './Voxel';
 import { PlanSection } from './PlanSection';
 import { ShipSection } from './ShipSection';
-import { usePlanBuilder } from './usePlanBuilder';
 import { useVehicleBuilder } from './useVehicleBuilder';
 import { stageAt } from './world/vehicle';
 import { WhaleWordPanel, useWhaleWord } from './WhaleWord';
@@ -41,7 +40,6 @@ export function BiomePage() {
   const textes = useTextes();
   const univers = useUnivers();
   const biome = getBiome(biomeId);
-  const builder = usePlanBuilder(biome?.id ?? 'french-6e-phonology');
   // Les nouveaux noms des archipels passent avant le mot des grandes étapes, comme dans le monde et la vue simple.
   const renommage = useRenommage(true, 1200);
   const whale = useWhaleWord(state, archipelagoOf(state.world.place ?? 'french-6e-phonology').classe, !renommage.ouvert);
@@ -206,10 +204,10 @@ export function BiomePage() {
       {unlocked && (
         <>
           <h2 className="section-title">
-            <Icon name="map" /> Le plan
+            <Icon name="map" /> Le bâtiment
           </h2>
           <div className="panel plan-panel">
-            <PlanSection biome={biome} builder={builder} highlight={chantier === 'part'} />
+            <PlanSection biome={biome} highlight={chantier === 'part'} />
           </div>
         </>
       )}

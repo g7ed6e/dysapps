@@ -3,8 +3,7 @@
   "biome": "lv2-4e-daily-life",
   "name": "La tonnelle du jardin",
   "reward": {
-    "xp": 50,
-    "chest": {}
+    "xp": 50
   },
   "done": "Un toit, une cheminée et une tonnelle ! On mangera dehors, à l’ombre, à toute heure."
 }

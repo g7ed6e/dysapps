@@ -1,8 +1,9 @@
-// Le chantier que servent les blocs d'une mission : ce que dit le bilan (« La cabane de Mousso : 12 blocs sur les 20
-// qui manquent. ») et où mène « Voir le chantier ». Code pur, déduit de la sauvegarde, sans rien y ajouter : les
-// chiffres sont ceux du panneau d'île et de « Mes blocs ».
+// Le chantier que servent les blocs d'une mission : ce que dit le bilan (« Le sentier vers la Mine : 2 blocs sur 3. »)
+// et où mène « Voir le chantier » : un ouvrage, le Bloc-Navire ou un monument. Le bâtiment de l'île n'en fait pas
+// partie : il se pose tout seul, une partie par mission réussie (GD-6). Code pur, déduit de la sauvegarde, sans rien y
+// ajouter : les chiffres sont ceux du panneau d'île et de « Mes blocs ».
 import { getBiome, ofBlock, type BiomeId, type BlockId } from '../biomes';
-import { currentPlan, planStatus, type GameState } from '../engine';
+import { planStatus, type GameState } from '../engine';
 import type { PlanDef } from './plans';
 import { BRIDGE_BLOCKS, KIND_NAME, archipelagoOf, buildableBridges, conditionMet, otherEnd, payableBlocks } from './archipelago';
 import { monumentsOf } from './monuments';
@@ -10,7 +11,7 @@ import { blockUses, type Use } from './uses';
 import { VEHICLE_NAME, stageAt } from './vehicle';
 
 export interface Worksite {
-  kind: 'plan' | 'navire' | 'monument' | 'ouvrage' | 'garder' | 'aucun';
+  kind: 'navire' | 'monument' | 'ouvrage' | 'aucun';
   /** La phrase du bilan, qui se termine par un point. */
   text: string;
   /** La jauge : blocs en poche pour ce chantier, sur ceux qu'il lui manque (0 sur 0 quand rien ne se compte). */
@@ -24,7 +25,7 @@ export interface Worksite {
   to: string;
 }
 
-/** Ce qu'il manque d'un plan, en blocs, et combien l'élève en a déjà en poche. */
+/** Ce qu'il manque d'un plan posé case par case (navire, monument), en blocs, et combien l'élève en a déjà en poche. */
 function gauge(state: GameState, plan: PlanDef) {
   const missing = Object.entries(planStatus(state, plan).missing).filter(([, n]) => (n ?? 0) > 0) as [BlockId, number][];
   const need = missing.reduce((sum, [, n]) => sum + n, 0);
@@ -40,16 +41,8 @@ function count(have: number, need: number): string {
   return `${have} bloc${have > 1 ? 's' : ''} sur les ${need} qui manquent`;
 }
 
-/** Le chantier d'un usage (plan, navire ou monument) : sa phrase et sa jauge. */
+/** Le chantier d'un usage (navire ou monument) : sa phrase et sa jauge. */
 function fromUse(state: GameState, use: Use): Worksite | null {
-  const island = getBiome(use.island)?.name ?? use.island;
-  if (use.kind === 'plan') {
-    const current = currentPlan(state, use.island);
-    if (!current || current.allDone) return null;
-    const g = gauge(state, current.plan);
-    const text = g.ready ? `${current.plan.name} : tu as tous tes blocs. Va les poser !` : `${current.plan.name}, sur ${island} : ${count(g.have, g.need)}.`;
-    return { kind: 'plan', text, ...g, island: use.island, to: `/adventure/${use.island}?worksite=part` };
-  }
   if (use.kind === 'navire') {
     const stage = stageAt(use.island);
     if (!stage) return null;
@@ -85,34 +78,21 @@ function ouvrage(state: GameState, island: BiomeId, block: BlockId): Worksite | 
 }
 
 /**
- * Le chantier que servent les blocs gagnés sur une île : d'abord un plan ou le Bloc-Navire de cette île, puis
- * l'ouvrage le moins cher qui en part, puis un autre chantier de l'archipel (plan d'une autre île, navire, monument) ;
- * sinon les plans suivants qui attendent ce bloc, ou rien, dit tel quel.
+ * Le chantier que servent les blocs gagnés sur une île : d'abord le Bloc-Navire de cette île, puis l'ouvrage le moins
+ * cher qui en part, puis un autre chantier de l'archipel (navire, monument) ; sinon rien, dit tel quel.
  */
 export function worksiteFor(state: GameState, island: BiomeId, block: BlockId): Worksite {
   const uses = blockUses(state, block);
-  const here = uses.filter((u) => u.island === island && (u.kind === 'plan' || u.kind === 'navire'));
+  const here = uses.filter((u) => u.island === island && u.kind === 'navire');
   for (const use of here) {
     const site = fromUse(state, use);
     if (site) return site;
   }
   const bridge = ouvrage(state, island, block);
   if (bridge) return bridge;
-  for (const use of uses.filter((u) => u.kind !== 'garder' && !here.includes(u))) {
+  for (const use of uses.filter((u) => !here.includes(u))) {
     const site = fromUse(state, use);
     if (site) return site;
-  }
-  const later = uses.find((u) => u.kind === 'garder');
-  if (later) {
-    return {
-      kind: 'garder',
-      text: `Tes blocs ${ofBlock(block)} attendent le prochain plan de ${later.name}.`,
-      have: 0,
-      need: 0,
-      ready: false,
-      island: later.island,
-      to: `/adventure/${later.island}`,
-    };
   }
   return {
     kind: 'aucun',

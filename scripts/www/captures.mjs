@@ -59,8 +59,6 @@ const EARLY = {
   },
   progress: { xp: 180, totalAnswers: 40, correctAnswers: 31, sessionsCompleted: 4, badges: badges(3) },
 };
-/** Assez de bois pour finir la cabane de Mousso. */
-const CABANE_READY = { ...EARLY, game: { ...EARLY.game, stock: { 'french-6e-phonology': planCells(plansFor('french-6e-phonology')[0]).length } } };
 /** Au milieu des Premiers Rivages : des îles ouvertes, des bâtiments finis, la coque du navire commencée. */
 const six = islandsOf('6e');
 const MID = {
@@ -119,7 +117,6 @@ const SHOTS = [
   { name: 'village-premiere-visite', go: '/adventure', tutorial: true },
   { name: 'panneau-ile', state: EARLY, go: '/adventure/french-6e-phonology' },
   { name: 'plan-en-cours', state: EARLY, go: '/adventure/french-6e-phonology', act: closeSheet },
-  { name: 'plan-termine', state: CABANE_READY, go: '/adventure/french-6e-phonology', act: placeAll },
   { name: 'quete-ile', state: EARLY, go: `/adventure/french-6e-phonology/${FOREST_QUEST}`, wait: 2500 },
   // Le bandeau de correction monte du bas de l'écran : il faut l'attendre en entier.
   { name: 'quete-correction', go: '/app/demo', act: wrongAnswer, wait: 1500, after: 1500 },
@@ -195,14 +192,6 @@ async function showUnivers(page) {
   await page.waitForTimeout(300);
 }
 
-/** « Poser tout ce que j'ai » dans le panneau de l'île. */
-async function placeAll(page) {
-  await page.getByRole('button', { name: /Poser tout ce que j’ai/ }).first().click();
-  await page.waitForTimeout(2500);
-  // La phrase de la créature, le coffre et l'XP : sous les boutons du panneau.
-  await page.locator('.build-status').first().evaluate((el) => el.scrollIntoView({ block: 'center' }));
-  await page.waitForTimeout(300);
-}
 async function closeSheet(page) {
   const close = page.getByRole('button', { name: 'Fermer le panneau' });
   if (!(await close.count())) return;

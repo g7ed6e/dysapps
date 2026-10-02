@@ -3,10 +3,7 @@
   "biome": "english-5e-grammar",
   "name": "Le salon de Moustache",
   "reward": {
-    "xp": 40,
-    "chest": {
-      "english-5e-vocabulary": 3
-    }
+    "xp": 40
   },
   "done": "Mon salon ! Thank you, bâtisseur. Hier il était en ruine ; aujourd’hui, il brille."
 }
