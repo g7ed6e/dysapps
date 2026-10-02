@@ -2,7 +2,7 @@
 
 Cette page rassemble l’état de l’art, en septembre 2026, pour le code d’une application web comme Archipéo, et le met en face de ce que fait le dépôt. Elle sert de base à l’agent `expert-frontend` (voir [Contribuer](contribuer.md#les-agents)), qui relit toute pull request qui modifie du code.
 
-Trois priorités passent avant le reste, dans cet ordre : **la sécurité, la performance, la maintenabilité**. Les conventions qui s’imposent (aucune ressource externe, rien d’emprunté, sauvegardes jamais cassées) sont dans [Contribuer](contribuer.md#conventions-du-depot) ; cette page dit **comment bien les tenir dans le code** et **ce qui reste à surveiller**.
+Trois priorités passent avant le reste, dans cet ordre : **la sécurité, la performance, la maintenabilité**. Les conventions qui s’imposent (aucune ressource externe, rien d’emprunté, sauvegardes jamais cassées) sont dans [Contribuer](contribuer.md#conventions-du-dépôt) ; cette page dit **comment bien les tenir dans le code** et **ce qui reste à surveiller**.
 
 ## La pile
 

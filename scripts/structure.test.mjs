@@ -1,8 +1,8 @@
 // Le rangement du dépôt : chaque fichier suivi par git est à sa place, selon la section « Où va quoi » de CLAUDE.md.
 // Un nouvel emplacement se décide d'abord (avec l'expert frontend), s'écrit dans « Où va quoi », puis s'ajoute ici.
 import { execFileSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { existsSync, readFileSync } from 'node:fs';
+import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const racine = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -65,5 +65,44 @@ describe('le rangement du dépôt (CLAUDE.md, « Où va quoi »)', () => {
     const declarees = new Set(nav.sections.flatMap((s) => s.pages).filter((p) => typeof p === 'string'));
     const pages = fichiers.filter((f) => /^www\/(manuel|pedagogie)\/.+\.md$/.test(f)).map((f) => f.slice('www/'.length));
     expect(pages.filter((p) => !declarees.has(p)), 'page absente du sommaire www/_theme/nav.json').toEqual([]);
+  });
+  it('ne laisse aucun lien ni aucune ancre cassés dans la documentation interne (lue sur GitHub)', () => {
+    // L’ancre de GitHub : texte du titre sans lien ni accent grave, minuscules, accents gardés, ponctuation retirée,
+    // chaque espace devient un tiret, « -1 », « -2 »… pour un titre répété. Une ancre écrite en majuscules est refusée.
+    const ancre = (titre) => titre.trim().replace(/\[([^\]]*)\]\([^)]*\)/g, '$1').replace(/<[^>]+>/g, '').toLowerCase()
+      .replace(/[^\p{L}\p{N}\s_-]/gu, '').replace(/\s/g, '-');
+    const sansBlocs = (texte) => texte.replace(/```[\s\S]*?```/g, '');
+    const cache = new Map();
+    const ancres = (chemin) => {
+      if (!cache.has(chemin)) {
+        const vues = new Map();
+        cache.set(chemin, [...sansBlocs(readFileSync(join(racine, chemin), 'utf8')).matchAll(/^#+\s+(.*)$/gm)].map((m) => {
+          const a = ancre(m[1]);
+          const n = vues.get(a) ?? 0;
+          vues.set(a, n + 1);
+          return n ? `${a}-${n}` : a;
+        }));
+      }
+      return cache.get(chemin);
+    };
+    const suivis = new Set(fichiers);
+    const existe = (chemin) => suivis.has(chemin) || fichiers.some((f) => f.startsWith(`${chemin.replace(/\/$/, '')}/`));
+    const pages = fichiers.filter((f) => /^(docs\/.+|AGENTS|CLAUDE|README)\.md$/.test(f) && !f.startsWith('docs/univers/archipeo/source/') && existsSync(join(racine, f)));
+    const casses = pages.flatMap((page) => [...sansBlocs(readFileSync(join(racine, page), 'utf8')).replace(/`[^`\n]*`/g, '').matchAll(/\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g)]
+      .map((m) => m[1])
+      .filter((lien) => !/^(https?:|mailto:)/.test(lien))
+      .filter((lien) => {
+        const [chemin, cible] = lien.split('#');
+        let fichier;
+        try {
+          fichier = chemin ? relative(racine, resolve(racine, dirname(page), decodeURI(chemin))) : page;
+          if (!existe(fichier)) return true;
+          return Boolean(cible) && fichier.endsWith('.md') && !ancres(fichier).includes(decodeURIComponent(cible));
+        } catch {
+          return true;
+        }
+      })
+      .map((lien) => `${page} → ${lien}`));
+    expect(casses, 'lien ou ancre cassé : corriger le chemin, ou écrire l’ancre comme GitHub (accents gardés, ponctuation retirée)').toEqual([]);
   });
 });
