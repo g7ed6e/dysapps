@@ -127,7 +127,8 @@ it('le massif posé sur le plancher (DA-20) : ses bouts se perdent sous les nuag
   const b = worldBounds('3e');
   const sous = PLANCHER_DE_NUAGES - houleDe('3e').large;
   for (let k = 0; k < LOINTAIN_3E.pieces.length; k++) {
-    const r = LOINTAIN_3E.pieces[k] as RangDeCretes;
+    const r = LOINTAIN_3E.pieces[k];
+    if (r.genre !== 'cretes') throw new Error('crêtes attendues');
     expect(r.massif).toBe(MASSIF_3E);
     // Le rang seul, à sa place dans la liste (un tableau à trous : son hasard reste le sien).
     const seul: RangDeCretes[] = [];
@@ -154,8 +155,8 @@ it('le massif posé sur le plancher (DA-20) : ses bouts se perdent sous les nuag
     const roche: number[] = [];
     for (let v = 0; v < pts.length; v++) {
       if (Math.min(pts[v][0] - x0, x1 - pts[v][0]) < (x1 - x0) * MASSIF_3E.bouts) continue;
-      if (pts[v][1] > r.haut * (r.neige ?? 1) + 0.01) neige.push(lum(v));
-      else if (pts[v][1] > MASSIF_3E.plancher + MASSIF_3E.fondu && pts[v][1] < r.haut * (r.neige ?? 1) - 0.01) roche.push(lum(v));
+      if (pts[v][1] > r.haut * (r.neige ?? 1.01) + 0.01) neige.push(lum(v));
+      else if (pts[v][1] > MASSIF_3E.plancher + MASSIF_3E.fondu && pts[v][1] < r.haut * (r.neige ?? 1.01) - 0.01) roche.push(lum(v));
     }
     expect(neige.length).toBeGreaterThan(0);
     expect(roche.length).toBeGreaterThan(0);

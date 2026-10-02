@@ -55,14 +55,16 @@ export interface RangDeCretes extends Place {
 
 /**
  * Le massif d'un rang de crêtes (le 3e, DA-20) : rien n'y est coupé net ni ne flotte.
- * - Les bouts : sur la part `bouts` de la longueur à chaque bout, les cimes s'abaissent jusque sous le plancher et le rang
- *   recule de `fuite` cases au plus, dans la brume de profondeur.
- * - Le pied : un glacis de `glacis` cases (resserré avec la crête vers les bouts) plonge sous le plancher (à la hauteur `plancher`), et sa roche passe à la
- *   couleur du plancher (`couleurDuPlancher`, telle qu'on la peint sur une surface plate) sur les `fondu` blocs du bas,
- *   éclaircie d'autant qu'une facette penchée reçoit moins de lumière que le plancher (la lumière de `archipel`) : aucune
- *   arête droite et sombre au ras des nuages. Aux bouts, toute la roche y passe : le rang se perd dans le plancher.
+ * - Les bouts : sur la part `bouts` de la longueur à chaque bout, la crête descend en pente et s'enfonce sous le plancher
+ *   (au bout gauche, vu de biais, en une pente qui se raidit près des nuages) ; le rang recule de `fuite` cases dans la
+ *   brume de profondeur, sur la moitié des bouts côté cœur.
+ * - Le pied : un glacis de `glacis` cases plonge sous le plancher (à la hauteur `plancher`) et se resserre avec la crête
+ *   vers les bouts (au bout gauche, comme elle s'abaisse au-dessus du plancher). Sur les `fondu` blocs du bas, la roche
+ *   passe à la couleur du plancher (`couleurDuPlancher`, telle qu'on la peint sur une surface plate), éclaircie d'autant
+ *   qu'une facette penchée reçoit moins de lumière que le plancher (la lumière de `archipel`) : aucune arête droite et
+ *   sombre au ras des nuages. Sur la moitié extérieure des bouts, toute la roche y passe : le rang se perd dans le plancher.
  * - Les versants : un épaulement irrégulier entre le pied et la cime (des facettes qui prennent la lumière chacune à leur
- *   façon), et l'ombre de la roche à `ombreForce` (0,55 sinon).
+ *   façon) ; la roche tire vers son ombre d'au moins `ombreSocle`, jusqu'à `ombreForce` à l'opposé du soleil.
  */
 export interface Massif {
   archipel: ArchipelagoId;
@@ -73,7 +75,6 @@ export interface Massif {
   glacis: number;
   couleurDuPlancher: Couleur;
   ombreForce: number;
-  /** L'ombre de la roche partout, même au soleil : une roche d'une valeur nettement plus sombre que la neige. */
   ombreSocle: number;
 }
 
@@ -269,10 +270,15 @@ function massif(P: Pinceau, e: Etendue, r: RangDeCretes, m: Massif, hasard: () =
     // L'enveloppe des bouts (le recul, le pied) : 1 au cœur du rang, 0 à ses deux bouts.
     const env = lisse(t / m.bouts) * lisse((1 - t) / m.bouts);
     const h = bout ? PIED : cime ? r.haut * (0.7 + 0.3 * hasard()) : r.haut * (cols[0] + (cols[1] - cols[0]) * hasard());
-    // La crête, elle, descend en pente franche vers le bout et s'enfonce (sous le plancher sur le dernier septième de la
-    // part des bouts) : pas de longue traîne basse qui s'étirerait à plat au ras des nuages.
+    // La crête, elle, descend en pente vers le bout et s'enfonce sous le plancher (sur le tiers extérieur de la part des
+    // bouts). Au bout gauche, vu de biais depuis les îles, cimes et cols y tendent ensemble vers une même hauteur et la
+    // pente se raidit en approchant des nuages : la crête plonge, elle ne s'étire pas à plat à leur ras. Le bout droit
+    // garde son profil.
+    const gauche = t < 0.5;
     const u = clamp((Math.min(t, 1 - t) / m.bouts - 0.15) / 0.85, 0, 1);
-    const y = PIED + (h - PIED) * (1 - (1 - u) * (1 - u));
+    const y = gauche
+      ? PIED + (h + (r.haut * 0.7 - h) * (1 - u) - PIED) * (1 - (1 - u) ** 3)
+      : PIED + (h - PIED) * (1 - (1 - u) * (1 - u));
     const x = x0 + (x1 - x0) * (t + (bout ? 0 : ((hasard() - 0.5) * 0.4) / n));
     // Le recul se fait sur la moitié des bouts côté cœur ; la crête plonge ensuite sans plus reculer : vue de biais, une
     // plongée qui reculerait encore s'étirerait en lame plate au ras des nuages.
@@ -280,8 +286,10 @@ function massif(P: Pinceau, e: Etendue, r: RangDeCretes, m: Massif, hasard: () =
     const zc = z + recul + (hasard() - 0.5) * r.epaisseur * 0.3 * (0.2 + 0.8 * env);
     const pas = (x1 - x0) / n;
     // Un versant, du pied (sous le plancher) à la cime : le haut du glacis au ras des nuages, puis l'épaulement.
-    // Vers les bouts, le pied se resserre avec la crête (au cinquième de sa largeur au bout) : rien ne s'étire à plat.
-    const serre = 0.2 + 0.8 * env;
+    // Vers les bouts, le pied se resserre avec la crête (au cinquième de sa largeur au bout) ; au bout gauche, comme la
+    // crête s'abaisse au-dessus du plancher (au dixième au plus bas) : une crête basse n'y garde pas un glacis large.
+    const audessus = clamp((y - m.plancher) / Math.max(1e-6, h - m.plancher), 0, 1);
+    const serre = gauche ? Math.max(0.1, Math.min(0.2 + 0.8 * env, audessus)) : 0.2 + 0.8 * env;
     const versant = (sens: -1 | 1): V3[] => {
       const zPied = z + recul + sens * (r.epaisseur / 2) * serre;
       const pied: V3 = [x, PIED, zPied + sens * m.glacis * serre];

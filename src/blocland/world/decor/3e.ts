@@ -4,9 +4,9 @@
 // phare restent ceux de Blocland, seule sa forme dans Archipéo change.
 import { mixColor } from '../daylight';
 import { coeurDe, islandDef } from '../map';
+import { compense, exposition, PLANCHER_DE_NUAGES } from '../mer';
 import { eauxDe, type Couleur, type Faces } from '../palette';
 import type { Lointain, Massif } from './lointain';
-import { compense, exposition, PLANCHER_DE_NUAGES } from '../mer';
 import { enRepere, type Forme } from './outils';
 import { dessinerPhare, PHARES, PIECES_DU_PHARE } from './phare';
 import { boite, DELAVE, peintre, type Peindre, type Pinceau, type V3 } from './pinceau';
@@ -134,11 +134,12 @@ const grandPhare = enRepere(({ P, L, e, Z, plusBas, matiere }) => {
 export const FORMES_3E: Record<string, Forme> = { 'grand-phare': grandPhare };
 
 /**
- * Le massif posé sur le plancher de nuages (DA-20, revue d'ensemble : il faisait décor de théâtre, bouts coupés net, base
- * en l'air, roche peu lisible). Sur les quatre dixièmes de sa longueur à chaque bout, la crête s'abaisse jusque sous les
- * nuages et recule de 30 cases dans la brume ; son pied est un glacis qui plonge sous le plancher, sa roche prend la
- * couleur du plancher sur les 2,5 blocs du bas (éclaircie sur les pentes, pour qu'on la voie comme le plancher) ; ses versants ont un épaulement, et la roche tire vers son ombre
- * (au moins 0,3, jusqu'à 0,8 à l'opposé du soleil) : une valeur nettement plus sombre que la neige.
+ * Le massif posé sur le plancher de nuages (DA-20 : il faisait décor de théâtre, bouts coupés net, base en l'air, roche peu
+ * lisible). Sur les quatre dixièmes de sa longueur à chaque bout, la crête descend en pente jusque sous les nuages (au
+ * bout gauche, près de la lanterne du grand phare, elle plonge sans s'étirer à plat) et recule de 30 cases dans la brume ;
+ * son pied, un glacis de 14 cases qui plonge sous le plancher, se resserre avec elle. Sa roche prend la couleur du
+ * plancher sur les 2,5 blocs du bas et tire vers son ombre d'au moins 0,3, jusqu'à 0,8 à l'opposé du soleil : une valeur
+ * nettement plus sombre que la neige.
  */
 export const MASSIF_3E: Massif = {
   archipel: '3e',

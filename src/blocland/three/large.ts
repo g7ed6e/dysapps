@@ -20,8 +20,6 @@ import { blockMaterial } from './textures';
 
 /** Hauteur de l'eau : les deux couches de terre affleurent, le sol reste bien au-dessus. */
 const WATER_LEVEL = -0.45;
-/** Le plancher de nuages des Îles du Ciel (world/mer.ts : le massif du 3e y plonge son pied). */
-const CLOUD_FLOOR = PLANCHER_DE_NUAGES;
 /** La couleur moyenne de la texture de l'eau (world/pixels.ts) : Archipéo teinte la mer pour qu'elle ait, en moyenne, la couleur de la palette. */
 const EAU_MOYENNE = 0x54a2e4;
 
@@ -66,7 +64,7 @@ export function creerLarge(
   // un appel de dessin ; peinte avec le terrain, quand la côte est connue.
   const mer = peinte ? creerMer(archipel, bounds, width * 4) : null;
   if (mer) {
-    mer.mesh.position.y = ambience.sky ? CLOUD_FLOOR : WATER_LEVEL;
+    mer.mesh.position.y = ambience.sky ? PLANCHER_DE_NUAGES : WATER_LEVEL;
     scene.add(mer.mesh);
   }
   let merSignature = '';
@@ -75,7 +73,7 @@ export function creerLarge(
   const cloudFloorMat = new THREE.MeshBasicMaterial({ color: palette(1, archipel).water });
   const cloudFloor = new THREE.Mesh(new THREE.PlaneGeometry(width * 8, width * 8), cloudFloorMat);
   cloudFloor.rotation.x = -Math.PI / 2;
-  cloudFloor.position.set(center.x, CLOUD_FLOOR, center.y);
+  cloudFloor.position.set(center.x, PLANCHER_DE_NUAGES, center.y);
   cloudFloor.visible = ambience.sky && !peinte;
   scene.add(cloudFloor);
 
