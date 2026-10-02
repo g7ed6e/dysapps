@@ -1,5 +1,5 @@
 import type { VoxelCube } from '../Voxel';
-import { BIOMES, BLOCKS } from '../biomes';
+import { BLOC, BIOMES, BLOCKS } from '../biomes';
 import { buildingStages } from './architect';
 import { enveloppeDe, toutConstruit } from './budget';
 import {
@@ -375,8 +375,8 @@ describe('La construction taillée (lot R5)', () => {
   });
 
   it('les toits : ardoise de l’archipel, terre cuite sur une île sur quatre ou cinq (1 sur 3 accepté aux Îles du Ciel, 1 sur 6 aux Îles Brumeuses)', () => {
-    expect(toitDe('ferme')).toBe('terre-cuite');
-    expect(toitDe('foret')).toBe('ardoise');
+    expect(toitDe('french-6e-grammar-spelling')).toBe('terre-cuite');
+    expect(toitDe('french-6e-phonology')).toBe('ardoise');
     expect(toitDe(undefined)).toBe('ardoise');
     for (const a of ARCHIPELAGO_IDS) {
       const { cubes } = monde(a);
@@ -390,30 +390,30 @@ describe('La construction taillée (lot R5)', () => {
     }
     expect(TERRE_CUITE_SUR).toHaveLength(5);
     // Aux Îles du Ciel, le dessus est enneigé et les rives restent d'ardoise ; délavé sur une île fermée.
-    const ciel = couleursDuToit('3e', 'phare');
+    const ciel = couleursDuToit('3e', 'maths-3e-functions');
     expect(ciel.dessus).not.toBe(ciel.cote);
     // Les rives du 3e : un cran plus sombres que l'ardoise du 6e (consultant Archipéo, LV2-5).
     const luma = (c: number) => ((c >> 16) & 0xff) * 0.299 + ((c >> 8) & 0xff) * 0.587 + (c & 0xff) * 0.114;
     expect(luma(ARDOISES['3e'].rives)).toBeLessThan(luma(ARDOISES['6e'].dessus));
-    expect(couleursDuToit('6e', 'foret', true)).not.toEqual(couleursDuToit('6e', 'foret'));
+    expect(couleursDuToit('6e', 'french-6e-phonology', true)).not.toEqual(couleursDuToit('6e', 'french-6e-phonology'));
   });
 
   it('les fenêtres : les vitres prises dans un mur, les lanternes des cours et des toits à part', () => {
     const cubesDe = (biome: (typeof BIOMES)[number]['id']) =>
-      buildingStages(biome, 'pierre')
+      buildingStages(biome, BLOC.pierre)
         .flat()
         .map((c): VoxelCube => ({ x: c.x, y: c.y, z: c.z, color: BLOCKS[c.block].side, texture: BLOCKS[c.block].texture, tag: biome }));
     // La maison : trois vitres ; les deux lanternes de la cour restent des lanternes.
-    const maison = genresDesBlocs(cubesDe('foret'));
+    const maison = genresDesBlocs(cubesDe('french-6e-phonology'));
     const compte = (g: Map<VoxelCube, string>, genre: string) => [...g.values()].filter((v) => v === genre).length;
     expect(compte(maison, 'vitre')).toBe(3);
     expect(compte(maison, 'lanterne')).toBe(2);
     // Le phare : trois vitres ; la couronne de lanternes sous son toit et celles de la cour restent des lanternes.
-    const phare = genresDesBlocs(cubesDe('tour'));
+    const phare = genresDesBlocs(cubesDe('french-6e-reading'));
     expect(compte(phare, 'vitre')).toBe(3);
     expect(compte(phare, 'lanterne')).toBe(4 + 2);
     // L'échoppe, le kiosque, le dôme : aucune vitre.
-    for (const b of ['marche', 'belvedere', 'glacier'] as const) expect(compte(genresDesBlocs(cubesDe(b)), 'vitre'), b).toBe(0);
+    for (const b of ['maths-5e-proportionality', 'maths-3e-geometry', 'maths-5e-signed-numbers'] as const) expect(compte(genresDesBlocs(cubesDe(b)), 'vitre'), b).toBe(0);
   });
 
   it('au plus trois vitres allumées par bâtiment, aucune sur une île fermée', () => {
@@ -570,7 +570,7 @@ describe('Les trophées sous le toit de la halle (GD-3, retouches du directeur a
     const { reste } = rangerLeDecor(tous.filter((c) => !c.sol));
     const cubes = poseDuDecor(champDuSol(a, sol, reste), reste);
     const school = ARCHIPELAGOS.find((x) => x.classe === a)!.school;
-    const s = placeSpot('trophees', school)!;
+    const s = placeSpot('trophies', school)!;
     const coin = { x: s.x, y: s.y, z: islandDef(school).altitude + s.h };
     const places = TROPHY_SLOTS.map((t) => ({ x: coin.x + t.x, y: coin.y + t.y, z: coin.z + t.z }));
     return { m: maillageDeLaConstruction(a, cubes, sol), cubes, coin, places };
@@ -582,7 +582,7 @@ describe('Les trophées sous le toit de la halle (GD-3, retouches du directeur a
   it('au 6e, chaque trophée est plus petit que sa case : il ne touche ni le pilier voisin ni la sablière, le fond se voit au-dessus', () => {
     const { m, cubes, coin, places } = avecLesTrophees('6e');
     // Les 24 trophées sont dans le monde, à leur place.
-    const poses = new Set(cubes.filter((c) => c.place === 'trophees').map((c) => cle(c.x, c.y, c.z)));
+    const poses = new Set(cubes.filter((c) => c.place === 'trophies').map((c) => cle(c.x, c.y, c.z)));
     for (const p of places) expect(poses.has(cle(p.x, p.y, p.z))).toBe(true);
     const toit = coin.z + 4;
     for (const p of places) {
@@ -610,8 +610,8 @@ describe('Les trophées sous le toit de la halle (GD-3, retouches du directeur a
 function mondeDuPhare(murs: number, toit: number) {
   const { progress, world: village } = toutConstruit();
   const cles = (id: string, n: number) => planCells(getPlan(id)!).slice(0, n).map((c) => c.key);
-  const plans: Record<string, string[]> = { ...village.parts, 'tour-phare': cles('tour-phare', murs), 'tour-lanterne': cles('tour-lanterne', toit) };
-  delete plans['tour-quai'];
+  const plans: Record<string, string[]> = { ...village.parts, 'french-6e-reading-1': cles('french-6e-reading-1', murs), 'french-6e-reading-2': cles('french-6e-reading-2', toit) };
+  delete plans['french-6e-reading-3'];
   const tous = worldCubes('6e', progress, { ...village, parts: plans }, false);
   const sol = tous.filter((c) => c.sol);
   const { reste } = rangerLeDecor(tous.filter((c) => !c.sol));
@@ -619,8 +619,8 @@ function mondeDuPhare(murs: number, toit: number) {
 }
 
 describe('Le phare de Grimoire (lot R5, décision 16)', () => {
-  const MURS = getPlan('tour-phare')!.cells.length;
-  const TOIT = getPlan('tour-lanterne')!.cells.length;
+  const MURS = getPlan('french-6e-reading-1')!.cells.length;
+  const TOIT = getPlan('french-6e-reading-2')!.cells.length;
   const etats = { chantier: [3, 0], murs: [MURS, 0], toit: [MURS, 5], fini: [MURS, TOIT] } as const;
 
   it('une étape finie laisse la place à sa pièce du modèle : les murs, le fût et ses bandes ; le toit, la galerie, la lanterne et le cône', () => {
@@ -768,11 +768,11 @@ describe('Un maillage par île (lot R5)', () => {
     // Un bloc de bois au pied d'une maison de la Forêt, son sol descendu d'une case : rien juste dessous, du sol plus bas.
     const batis = batimentsDe('6e');
     const solEn = new Map(sol.map((c) => [cle(c.x, c.y, c.z), c]));
-    const pied = cubes.find((c) => c.tag === 'foret' && !c.ghost && batis.get(cle(c.x, c.y, c.z)) === 'planches' && solEn.has(cle(c.x, c.y, c.z - 1)))!;
+    const pied = cubes.find((c) => c.tag === 'french-6e-phonology' && !c.ghost && batis.get(cle(c.x, c.y, c.z)) === 'planches' && solEn.has(cle(c.x, c.y, c.z - 1)))!;
     expect(pied).toBeDefined();
     const sous = solEn.get(cle(pied.x, pied.y, pied.z - 1))!;
     const solBas = sol.map((c) => (c === sous ? { ...c, z: c.z - 1 } : c));
-    const foret = cubes.filter((c) => c.tag === 'foret');
+    const foret = cubes.filter((c) => c.tag === 'french-6e-phonology');
     const parIle = construireParIle('6e', foret, solBas, cacheDeLaConstruction()).maillage;
     const entier = maillageDeLaConstruction('6e', foret, solBas);
     // Pas de pilotis sur la terre ferme, ni d'un côté ni de l'autre : les mêmes triangles, les mêmes pièces.
@@ -781,9 +781,9 @@ describe('Un maillage par île (lot R5)', () => {
   }, 30_000);
 
   it('le phare garde ses triangles, décalés, une fois mis bout à bout', () => {
-    const { cubes, sol } = mondeDuPhare(getPlan('tour-phare')!.cells.length, getPlan('tour-lanterne')!.cells.length);
+    const { cubes, sol } = mondeDuPhare(getPlan('french-6e-reading-1')!.cells.length, getPlan('french-6e-reading-2')!.cells.length);
     const r = construireParIle('6e', cubes, sol, cacheDeLaConstruction());
-    const seul = maillageDeLaConstruction('6e', cubes.filter((c) => c.tag === 'tour'), sol);
+    const seul = maillageDeLaConstruction('6e', cubes.filter((c) => c.tag === 'french-6e-reading'), sol);
     const p = r.maillage.phare!;
     expect(p.opaque[1] - p.opaque[0]).toBe(seul.phare!.opaque[1] - seul.phare!.opaque[0]);
     // Le premier triangle du phare est le même.

@@ -35,9 +35,9 @@ const ruleOf = (level: number, item: ExerciseItem) =>
   RULES[level === 1 ? (item.figure as { props: { op: string } }).props.op : String(level)];
 
 it('Galets en colonnes : trois niveaux de huit items, une consigne sans symbole, la règle de l’opération affichée à chaque item', () => {
-  expect(POSEES_EXERCISES.map((d) => d.id)).toEqual(['riviere-colonnes-1', 'riviere-colonnes-2', 'riviere-colonnes-3']);
+  expect(POSEES_EXERCISES.map((d) => d.id)).toEqual(['maths-6e-fractions-place-value-1', 'maths-6e-fractions-place-value-2', 'maths-6e-fractions-place-value-3']);
   for (const def of POSEES_EXERCISES) {
-    expect(def.biome).toBe('riviere');
+    expect(def.biome).toBe('maths-6e-fractions');
     expect(def.type).toBe('colonnes');
     expect(def.items).toHaveLength(8);
     expect(def.instruction).not.toMatch(/[/×÷=…+−]/);

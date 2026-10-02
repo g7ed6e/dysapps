@@ -1,0 +1,230 @@
+{
+  "id": "french-6e-reading-comprehension-1",
+  "biome": "french-6e-reading",
+  "type": "comprehension",
+  "level": 1,
+  "instruction": "Lis la question, puis le petit texte. Trouve de qui ou de quoi on parle. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "french-6e-reading-comprehension-1-0",
+      "prompt": "Léa attend son frère devant le collège.\nIl arrive en courant, sans son sac.",
+      "question": "Qui est « il » ?",
+      "spoken": "Léa attend son frère devant le collège. Il arrive en courant, sans son sac.",
+      "choices": [
+        "le frère de Léa",
+        "le collège",
+        "Léa"
+      ],
+      "answer": "le frère de Léa",
+      "hint": "« il » est au masculin. Qui peut arriver en courant ?",
+      "explanation": "« il » reprend « son frère » : c’est le frère de Léa qui arrive. Pour Léa, on dirait « elle », et un collège ne court pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le pronom",
+          "lines": [
+            "Un pronom (il, elle, ils, le, la, lui, leur) remplace un nom déjà écrit.",
+            "Remonte dans le texte pour trouver ce nom.",
+            "Regarde le genre (il ou elle) et le nombre (il ou ils).",
+            "Mets ton choix à la place du pronom : la phrase doit avoir du sens."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-6e-reading-comprehension-1-1",
+      "prompt": "Inès a une tortue.\nElle la nourrit chaque matin avec de la salade.",
+      "question": "Qui est « elle » ?",
+      "spoken": "Inès a une tortue. Elle la nourrit chaque matin avec de la salade.",
+      "choices": [
+        "Inès",
+        "la tortue",
+        "la salade"
+      ],
+      "answer": "Inès",
+      "hint": "Qui donne à manger à qui ?",
+      "explanation": "« elle » est le sujet de « nourrit » : c’est Inès qui nourrit. « la » reprend la tortue : c’est la tortue qu’Inès nourrit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le pronom",
+          "lines": [
+            "Un pronom (il, elle, ils, le, la, lui, leur) remplace un nom déjà écrit.",
+            "Remonte dans le texte pour trouver ce nom.",
+            "Regarde le genre (il ou elle) et le nombre (il ou ils).",
+            "Mets ton choix à la place du pronom : la phrase doit avoir du sens."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-6e-reading-comprehension-1-2",
+      "prompt": "Karim a perdu son ballon dans le jardin.\nSa sœur le retrouve sous un buisson.",
+      "question": "Que retrouve la sœur de Karim ?",
+      "spoken": "Karim a perdu son ballon dans le jardin. Sa sœur le retrouve sous un buisson.",
+      "choices": [
+        "le ballon",
+        "le jardin",
+        "Karim"
+      ],
+      "answer": "le ballon",
+      "hint": "« le » reprend une chose que Karim a perdue.",
+      "explanation": "« le » reprend « son ballon » : la sœur de Karim retrouve le ballon sous un buisson.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le pronom",
+          "lines": [
+            "Un pronom (il, elle, ils, le, la, lui, leur) remplace un nom déjà écrit.",
+            "Remonte dans le texte pour trouver ce nom.",
+            "Regarde le genre (il ou elle) et le nombre (il ou ils).",
+            "Mets ton choix à la place du pronom : la phrase doit avoir du sens."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-6e-reading-comprehension-1-3",
+      "prompt": "Les élèves entrent dans la classe.\nLa professeure leur dit bonjour.",
+      "question": "Qui est « leur » ?",
+      "spoken": "Les élèves entrent dans la classe. La professeure leur dit bonjour.",
+      "choices": [
+        "les élèves",
+        "la classe",
+        "la professeure"
+      ],
+      "answer": "les élèves",
+      "hint": "« leur » est au pluriel. Cherche un nom au pluriel.",
+      "explanation": "« leur » est au pluriel : il reprend « les élèves ». La classe et la professeure sont au singulier.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le pronom",
+          "lines": [
+            "Un pronom (il, elle, ils, le, la, lui, leur) remplace un nom déjà écrit.",
+            "Remonte dans le texte pour trouver ce nom.",
+            "Regarde le genre (il ou elle) et le nombre (il ou ils).",
+            "Mets ton choix à la place du pronom : la phrase doit avoir du sens."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-6e-reading-comprehension-1-4",
+      "prompt": "Tom et Lucas jouent au basket.\nIls gagnent le match.\nL’entraîneur les félicite.",
+      "question": "Qui gagne le match ?",
+      "spoken": "Tom et Lucas jouent au basket. Ils gagnent le match. L’entraîneur les félicite.",
+      "choices": [
+        "Tom et Lucas",
+        "Lucas",
+        "l’entraîneur"
+      ],
+      "answer": "Tom et Lucas",
+      "hint": "« ils » est au pluriel : ce mot reprend plusieurs personnes.",
+      "explanation": "« ils » est au pluriel : il reprend Tom et Lucas, les deux joueurs. L’entraîneur ne joue pas : il les félicite.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le pronom",
+          "lines": [
+            "Un pronom (il, elle, ils, le, la, lui, leur) remplace un nom déjà écrit.",
+            "Remonte dans le texte pour trouver ce nom.",
+            "Regarde le genre (il ou elle) et le nombre (il ou ils).",
+            "Mets ton choix à la place du pronom : la phrase doit avoir du sens."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-6e-reading-comprehension-1-5",
+      "prompt": "Maya prête sa gomme à Chloé.\nLe soir, elle rend la gomme à Maya.",
+      "question": "Qui est « elle » ?",
+      "spoken": "Maya prête sa gomme à Chloé. Le soir, elle rend la gomme à Maya.",
+      "choices": [
+        "Chloé",
+        "Maya",
+        "la gomme"
+      ],
+      "answer": "Chloé",
+      "hint": "Qui garde la gomme pendant la journée ?",
+      "explanation": "Maya prête la gomme, Chloé garde la gomme pendant la journée : c’est donc Chloé qui la rend à Maya. Quand deux noms vont avec le pronom, choisis celui qui donne du sens à la phrase.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le pronom",
+          "lines": [
+            "Un pronom (il, elle, ils, le, la, lui, leur) remplace un nom déjà écrit.",
+            "Remonte dans le texte pour trouver ce nom.",
+            "Regarde le genre (il ou elle) et le nombre (il ou ils).",
+            "Mets ton choix à la place du pronom : la phrase doit avoir du sens."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-6e-reading-comprehension-1-6",
+      "prompt": "Le chat de Noé dort sur le canapé.\nSoudain, il se réveille et miaule.",
+      "question": "Qui est « il » ?",
+      "spoken": "Le chat de Noé dort sur le canapé. Soudain, il se réveille et miaule.",
+      "choices": [
+        "le chat",
+        "Noé",
+        "le canapé"
+      ],
+      "answer": "le chat",
+      "hint": "Qui dort sur le canapé ? Qui peut miauler ?",
+      "explanation": "« il » reprend « le chat » : c’est le chat qui dort, se réveille et miaule. « Noé » est aussi au masculin, mais un garçon ne miaule pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le pronom",
+          "lines": [
+            "Un pronom (il, elle, ils, le, la, lui, leur) remplace un nom déjà écrit.",
+            "Remonte dans le texte pour trouver ce nom.",
+            "Regarde le genre (il ou elle) et le nombre (il ou ils).",
+            "Mets ton choix à la place du pronom : la phrase doit avoir du sens."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-6e-reading-comprehension-1-7",
+      "prompt": "Sarah écrit une lettre à sa grand-mère.\nElle la poste le lendemain.",
+      "question": "Qui est « elle » ?",
+      "spoken": "Sarah écrit une lettre à sa grand-mère. Elle la poste le lendemain.",
+      "choices": [
+        "Sarah",
+        "la grand-mère",
+        "la lettre"
+      ],
+      "answer": "Sarah",
+      "hint": "« elle » fait l’action de poster. Qui a la lettre avant de l’envoyer ?",
+      "explanation": "« elle » est le sujet de « poste » : c’est Sarah, qui a écrit la lettre et qui la poste. « la » reprend la lettre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le pronom",
+          "lines": [
+            "Un pronom (il, elle, ils, le, la, lui, leur) remplace un nom déjà écrit.",
+            "Remonte dans le texte pour trouver ce nom.",
+            "Regarde le genre (il ou elle) et le nombre (il ou ils).",
+            "Mets ton choix à la place du pronom : la phrase doit avoir du sens."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien lu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "french-6e-reading",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

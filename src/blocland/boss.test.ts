@@ -13,16 +13,16 @@ function starsEverywhere(biomeId: string, stars: 0 | 1 | 2 | 3 = 2): Record<stri
 }
 
 it('le Gardien se débloque avec deux étoiles dans chaque mission du biome, et dit ce qui manque', () => {
-  const foret = getBiome('foret')!;
+  const foret = getBiome('french-6e-phonology')!;
   expect(isBossUnlocked(foret, {})).toBe(false);
   expect(missingForBoss(foret, {})).toEqual(['Abattage syllabique', 'Chasse au son', 'Rimes-échelle']);
-  const partial = starsEverywhere('foret');
-  delete partial[exercisesOf('foret', 'rimes')[0].id];
+  const partial = starsEverywhere('french-6e-phonology');
+  delete partial[exercisesOf('french-6e-phonology', 'rhymes')[0].id];
   expect(isBossUnlocked(foret, partial)).toBe(false);
   expect(missingForBoss(foret, partial)).toEqual(['Rimes-échelle']);
-  expect(isBossUnlocked(foret, starsEverywhere('foret', 1))).toBe(false);
-  expect(isBossUnlocked(foret, starsEverywhere('foret'))).toBe(true);
-  expect(missingForBoss(foret, starsEverywhere('foret'))).toEqual([]);
+  expect(isBossUnlocked(foret, starsEverywhere('french-6e-phonology', 1))).toBe(false);
+  expect(isBossUnlocked(foret, starsEverywhere('french-6e-phonology'))).toBe(true);
+  expect(missingForBoss(foret, starsEverywhere('french-6e-phonology'))).toEqual([]);
 });
 
 it('construit un défi avec deux manches par type de mission, aux items de l’exercice, sans doublon', async () => {
@@ -55,10 +55,10 @@ it('construit un défi avec deux manches par type de mission, aux items de l’e
 });
 
 it('un Gardien vaincu le reste, même si une mission sans étoile arrive sur son île', () => {
-  const foret = getBiome('foret')!;
+  const foret = getBiome('french-6e-phonology')!;
   // Une mission ajoutée après la victoire : les étoiles d'une mission manquent, le défi reste gagné.
-  const avantLaMission = { ...starsEverywhere('foret'), [bossId('foret')]: { stars: 2 } };
-  delete avantLaMission[exercisesOf('foret', 'rimes')[0].id];
+  const avantLaMission = { ...starsEverywhere('french-6e-phonology'), [bossId('french-6e-phonology')]: { stars: 2 } };
+  delete avantLaMission[exercisesOf('french-6e-phonology', 'rhymes')[0].id];
   expect(isBossUnlocked(foret, avantLaMission)).toBe(false);
   expect(guardianStatus(foret, avantLaMission, [])).toBe('beaten');
   expect(guardianStatus(foret, avantLaMission, [], true)).toBe('beaten');
@@ -66,16 +66,16 @@ it('un Gardien vaincu le reste, même si une mission sans étoile arrive sur son
   expect(isBossOpen(foret, avantLaMission)).toBe(true);
   // Sans victoire, les états ne changent pas.
   const sansVictoire = { ...avantLaMission };
-  delete sansVictoire[bossId('foret')];
+  delete sansVictoire[bossId('french-6e-phonology')];
   expect(guardianStatus(foret, sansVictoire, [])).toBe('hidden');
   expect(guardianStatus(foret, sansVictoire, [], true)).toBe('waiting');
   expect(isBossOpen(foret, sansVictoire)).toBe(false);
-  expect(guardianStatus(foret, starsEverywhere('foret'), [])).toBe('ready');
+  expect(guardianStatus(foret, starsEverywhere('french-6e-phonology'), [])).toBe('ready');
 });
 
 it('est vaincu avec deux étoiles au défi', () => {
-  expect(isBossBeaten('foret', {})).toBe(false);
-  expect(isBossBeaten('foret', { 'foret-gardien': { stars: 1 } })).toBe(false);
-  expect(isBossBeaten('foret', { 'foret-gardien': { stars: 2 } })).toBe(true);
-  expect(bossesBeaten({ 'foret-gardien': { stars: 3 }, 'tour-gardien': { stars: 2 } })).toEqual(['foret', 'tour']);
+  expect(isBossBeaten('french-6e-phonology', {})).toBe(false);
+  expect(isBossBeaten('french-6e-phonology', { 'french-6e-phonology-challenge': { stars: 1 } })).toBe(false);
+  expect(isBossBeaten('french-6e-phonology', { 'french-6e-phonology-challenge': { stars: 2 } })).toBe(true);
+  expect(bossesBeaten({ 'french-6e-phonology-challenge': { stars: 3 }, 'french-6e-reading-challenge': { stars: 2 } })).toEqual(['french-6e-phonology', 'french-6e-reading']);
 });

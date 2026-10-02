@@ -25,7 +25,7 @@ export function ArchipelsSheet({ onClose, onGo }: Props) {
   const { state } = useBlocland();
   const textes = useTextes();
   const bridges = state.world.links;
-  const here = archipelagoOf(state.world.place ?? 'foret').classe;
+  const here = archipelagoOf(state.world.place ?? 'french-6e-phonology').classe;
   const open = reachableIslands(bridges);
   const level = launchedCount(bridges);
   return (

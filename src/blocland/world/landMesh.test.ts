@@ -493,7 +493,7 @@ describe('la lumière et les strates', () => {
   it('les strates : deux ou trois blocs d’épaisseur selon l’île, discrètes sur les hautes parois', () => {
     const ep = BIOMES.map((b) => epaisseurDesStrates(b.id));
     expect(new Set(ep)).toEqual(new Set([2, 3]));
-    expect(epaisseurDesStrates('forge')).toBe(epaisseurDesStrates('forge'));
+    expect(epaisseurDesStrates('maths-4e-powers')).toBe(epaisseurDesStrates('maths-4e-powers'));
     expect(strate(0, 3)).toBe(1 + STRATES);
     expect(strate(2, 3)).toBe(1 + STRATES);
     expect(strate(3, 3)).toBe(1 - STRATES);
@@ -531,7 +531,7 @@ it('le rebord plat de la dalle : la Forge reste plate jusqu’à son bord, la ro
   const cubes = worldCubes('4e', progress, village, false);
   const sol = cubes.filter((c) => c.sol);
   const champ = champDuSol('4e', sol, rangerLeDecor(cubes.filter((c) => !c.sol)).reste);
-  const { core } = islandDef('forge');
+  const { core } = islandDef('maths-4e-powers');
   const dalle = champ.colonnes.filter((c) => c.x >= core.x && c.x < core.x + CORE && c.y >= core.y && c.y < core.y + CORE);
   const matiere = (c: { matieres: string[] }) => c.matieres[c.matieres.length - 1];
   const laDalle = matiere(dalle[0]);

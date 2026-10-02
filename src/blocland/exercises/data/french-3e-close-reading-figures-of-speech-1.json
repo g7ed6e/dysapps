@@ -1,0 +1,222 @@
+{
+  "id": "french-3e-close-reading-figures-of-speech-1",
+  "biome": "french-3e-close-reading",
+  "type": "figures-of-speech",
+  "level": 1,
+  "instruction": "Quelle figure de style ? Comparaison, métaphore, personnification ou hyperbole. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "french-3e-close-reading-figures-of-speech-1-0",
+      "prompt": "« Ce garçon est une vraie girouette : il change d’avis sans arrêt. »",
+      "spoken": "« Ce garçon est une vraie girouette : il change d’avis sans arrêt. »",
+      "choices": [
+        "comparaison",
+        "métaphore",
+        "personnification"
+      ],
+      "answer": "métaphore",
+      "hint": "Cherche un mot-outil comme « comme » ou « pareil à ». Y en a-t-il un ?",
+      "explanation": "On dit que le garçon « est » une girouette, sans mot-outil : c’est une métaphore. Avec « comme une girouette », ce serait une comparaison.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Figures de style",
+          "lines": [
+            "Comparaison : avec un mot-outil (comme, pareil à, ressembler à) : rapide comme l’éclair.",
+            "Métaphore : sans mot-outil, on dit que c’est : cet enfant est un ange.",
+            "Personnification : une chose agit comme une personne : le vent hurle.",
+            "Hyperbole : exagération : je meurs de faim."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-close-reading-figures-of-speech-1-1",
+      "prompt": "« Le matin, la cour de récréation est une fourmilière. »",
+      "spoken": "« Le matin, la cour de récréation est une fourmilière. »",
+      "choices": [
+        "personnification",
+        "comparaison",
+        "métaphore"
+      ],
+      "answer": "métaphore",
+      "hint": "On dit que la cour « est » une fourmilière : y a-t-il un mot-outil ?",
+      "explanation": "L’image rapproche la cour pleine d’élèves d’une fourmilière, sans mot-outil : métaphore.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Figures de style",
+          "lines": [
+            "Comparaison : avec un mot-outil (comme, pareil à, ressembler à) : rapide comme l’éclair.",
+            "Métaphore : sans mot-outil, on dit que c’est : cet enfant est un ange.",
+            "Personnification : une chose agit comme une personne : le vent hurle.",
+            "Hyperbole : exagération : je meurs de faim."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-close-reading-figures-of-speech-1-2",
+      "prompt": "« Mon vieux vélo se plaint à chaque coup de pédale. »",
+      "spoken": "« Mon vieux vélo se plaint à chaque coup de pédale. »",
+      "choices": [
+        "hyperbole",
+        "personnification",
+        "métaphore"
+      ],
+      "answer": "personnification",
+      "hint": "Qui se plaint, d’habitude ? Une personne ou un objet ?",
+      "explanation": "Se plaindre est une action humaine : le vélo agit comme une personne, c’est une personnification.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Figures de style",
+          "lines": [
+            "Comparaison : avec un mot-outil (comme, pareil à, ressembler à) : rapide comme l’éclair.",
+            "Métaphore : sans mot-outil, on dit que c’est : cet enfant est un ange.",
+            "Personnification : une chose agit comme une personne : le vent hurle.",
+            "Hyperbole : exagération : je meurs de faim."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-close-reading-figures-of-speech-1-3",
+      "prompt": "« Ce devoir m’a pris une éternité. »",
+      "spoken": "« Ce devoir m’a pris une éternité. »",
+      "choices": [
+        "métaphore",
+        "hyperbole",
+        "personnification"
+      ],
+      "answer": "hyperbole",
+      "hint": "Un devoir peut-il vraiment durer une éternité ?",
+      "explanation": "Aucun devoir ne dure une éternité : c’est une exagération, une hyperbole.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Figures de style",
+          "lines": [
+            "Comparaison : avec un mot-outil (comme, pareil à, ressembler à) : rapide comme l’éclair.",
+            "Métaphore : sans mot-outil, on dit que c’est : cet enfant est un ange.",
+            "Personnification : une chose agit comme une personne : le vent hurle.",
+            "Hyperbole : exagération : je meurs de faim."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-close-reading-figures-of-speech-1-4",
+      "prompt": "« Ses yeux brillaient, pareils à deux étoiles. »",
+      "spoken": "« Ses yeux brillaient, pareils à deux étoiles. »",
+      "choices": [
+        "comparaison",
+        "métaphore",
+        "hyperbole"
+      ],
+      "answer": "comparaison",
+      "hint": "Le mot-outil « pareils à ».",
+      "explanation": "« Pareils à » relie les yeux aux étoiles : c’est un mot-outil, donc une comparaison.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Figures de style",
+          "lines": [
+            "Comparaison : avec un mot-outil (comme, pareil à, ressembler à) : rapide comme l’éclair.",
+            "Métaphore : sans mot-outil, on dit que c’est : cet enfant est un ange.",
+            "Personnification : une chose agit comme une personne : le vent hurle.",
+            "Hyperbole : exagération : je meurs de faim."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-close-reading-figures-of-speech-1-5",
+      "prompt": "« Derrière les nuages, le soleil se cache, timide. »",
+      "spoken": "« Derrière les nuages, le soleil se cache, timide. »",
+      "choices": [
+        "comparaison",
+        "hyperbole",
+        "personnification"
+      ],
+      "answer": "personnification",
+      "hint": "Le soleil est « timide » : qui peut être timide ?",
+      "explanation": "Le soleil se cache et il est timide, comme une personne : personnification.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Figures de style",
+          "lines": [
+            "Comparaison : avec un mot-outil (comme, pareil à, ressembler à) : rapide comme l’éclair.",
+            "Métaphore : sans mot-outil, on dit que c’est : cet enfant est un ange.",
+            "Personnification : une chose agit comme une personne : le vent hurle.",
+            "Hyperbole : exagération : je meurs de faim."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-close-reading-figures-of-speech-1-6",
+      "prompt": "« À l’arrêt de bus, ce matin, j’ai cru mourir de froid. »",
+      "spoken": "« À l’arrêt de bus, ce matin, j’ai cru mourir de froid. »",
+      "choices": [
+        "hyperbole",
+        "personnification",
+        "comparaison"
+      ],
+      "answer": "hyperbole",
+      "hint": "Est-on vraiment mort de froid en attendant le bus ?",
+      "explanation": "On exagère pour dire qu’il faisait très froid : hyperbole.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Figures de style",
+          "lines": [
+            "Comparaison : avec un mot-outil (comme, pareil à, ressembler à) : rapide comme l’éclair.",
+            "Métaphore : sans mot-outil, on dit que c’est : cet enfant est un ange.",
+            "Personnification : une chose agit comme une personne : le vent hurle.",
+            "Hyperbole : exagération : je meurs de faim."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-close-reading-figures-of-speech-1-7",
+      "prompt": "« Au loin, la montagne ressemble à un géant endormi. »",
+      "spoken": "« Au loin, la montagne ressemble à un géant endormi. »",
+      "choices": [
+        "métaphore",
+        "hyperbole",
+        "comparaison"
+      ],
+      "answer": "comparaison",
+      "hint": "Relis le verbe : « ressemble à ». Regarde le rappel.",
+      "explanation": "« Ressembler à » est un mot-outil de comparaison, comme « comme » : la montagne est comparée à un géant. Sans lui (« la montagne est un géant endormi »), ce serait une métaphore.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Figures de style",
+          "lines": [
+            "Comparaison : avec un mot-outil (comme, pareil à, ressembler à) : rapide comme l’éclair.",
+            "Métaphore : sans mot-outil, on dit que c’est : cet enfant est un ange.",
+            "Personnification : une chose agit comme une personne : le vent hurle.",
+            "Hyperbole : exagération : je meurs de faim."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien lu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "french-3e-close-reading",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

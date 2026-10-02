@@ -665,7 +665,7 @@ function define({ biome, type, level, instruction, generators, block, xp }: Spec
 }
 
 const passeur = (level: number, instruction: string, generators: ItemGenerator[]) =>
-  define({ biome: 'plaine', type: 'passeur', level, instruction, generators, block: 'brique', xp: 12 });
+  define({ biome: 'maths-6e-calculation', type: 'word-problems', level, instruction, generators, block: 'maths-6e-calculation', xp: 12 });
 
 /** Les problèmes situés de 6e (Plaine des nombres). */
 export const PROBLEMES_EXERCISES: ExerciseDef[] = [
@@ -680,9 +680,9 @@ export const PROBLEMES_EXERCISES: ExerciseDef[] = [
  * Étals, le mât de Pythagore, l’ombre de Thalès.
  */
 export const PROBLEMES_COLLEGE_EXERCISES: ExerciseDef[] = [
-  define({ biome: 'marche', type: 'etals', level: 3, instruction: ETALS_RATIO, generators: [partageDeux, partDepuisPart, partageTrois], block: 'toile', xp: 14 }),
-  define({ biome: 'marche', type: 'balances', level: 3, instruction: BALANCES_CARTE, generators: [carteVersReel, reelVersCarte, carteFraction], block: 'toile', xp: 14 }),
-  define({ biome: 'marche', type: 'balances', level: 4, instruction: BALANCES_ROUTE, generators: [distanceRoute, vitesseRoute, dureeRoute], block: 'toile', xp: 14 }),
-  define({ biome: 'belvedere', type: 'pythagore', level: 3, instruction: PYTHAGORE_MAT, generators: [matCable, matHauteur], block: 'marbre', xp: 14 }),
-  define({ biome: 'belvedere', type: 'thales', level: 2, instruction: THALES_OMBRE, generators: [ombreHauteur, ombreLongueur], block: 'marbre', xp: 14 }),
+  define({ biome: 'maths-5e-proportionality', type: 'proportion-tables', level: 3, instruction: ETALS_RATIO, generators: [partageDeux, partDepuisPart, partageTrois], block: 'maths-5e-proportionality', xp: 14 }),
+  define({ biome: 'maths-5e-proportionality', type: 'ratios', level: 3, instruction: BALANCES_CARTE, generators: [carteVersReel, reelVersCarte, carteFraction], block: 'maths-5e-proportionality', xp: 14 }),
+  define({ biome: 'maths-5e-proportionality', type: 'ratios', level: 4, instruction: BALANCES_ROUTE, generators: [distanceRoute, vitesseRoute, dureeRoute], block: 'maths-5e-proportionality', xp: 14 }),
+  define({ biome: 'maths-3e-geometry', type: 'pythagoras', level: 3, instruction: PYTHAGORE_MAT, generators: [matCable, matHauteur], block: 'maths-3e-geometry', xp: 14 }),
+  define({ biome: 'maths-3e-geometry', type: 'thales', level: 2, instruction: THALES_OMBRE, generators: [ombreHauteur, ombreLongueur], block: 'maths-3e-geometry', xp: 14 }),
 ];

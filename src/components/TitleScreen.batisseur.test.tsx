@@ -10,7 +10,7 @@ import { degelerSauvegarde, saveJSON } from '../core/storage';
 
 function Inventaire() {
   const { state } = useBlocland();
-  return <p data-testid="bois">{state.stock.bois ?? 0}</p>;
+  return <p data-testid="bois">{state.stock['french-6e-phonology'] ?? 0}</p>;
 }
 
 function renderTitle() {
@@ -36,7 +36,7 @@ afterEach(() => degelerSauvegarde());
 const FLECHES = '{ArrowUp}{ArrowUp}{ArrowDown}{ArrowDown}{ArrowLeft}{ArrowRight}{ArrowLeft}{ArrowRight}';
 
 it('au clavier, la suite ouvre le mode bâtisseur sans toucher la sauvegarde', async () => {
-  saveJSON('game', { stock: { bois: 3 } });
+  saveJSON('game', { stock: { 'french-6e-phonology': 3 } });
   const user = userEvent.setup();
   renderTitle();
   const avant = localStorage.getItem('dysapps:game');

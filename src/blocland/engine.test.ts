@@ -17,13 +17,13 @@ import type { ExerciseDef, ItemResult } from './exercises/types';
 
 const DEF: ExerciseDef = {
   id: 'foret-test-001',
-  biome: 'foret',
+  biome: 'french-6e-phonology',
   type: 'qcm',
   level: 1,
   instruction: 'Test',
   items: [{ key: 'a' }, { key: 'b' }, { key: 'c' }, { key: 'd' }],
   feedback: { correct: 'Bravo', wrong: 'Non : {word}' },
-  reward: { block: 'bois', amount: 4, xp: 10 },
+  reward: { block: 'french-6e-phonology', amount: 4, xp: 10 },
   adaptive: { promoteAt: 0.85, demoteAt: 0.5 },
 };
 const ok = (key: string): ItemResult => ({ key, correct: true, attempts: 1, usedHelp: false });
@@ -115,7 +115,7 @@ describe('completeExercise', () => {
     expect(c.bonus).toEqual({ stars: 1, first: 2 });
     expect(c.xp).toBe(10);
     expect(c.perfect).toBe(false);
-    expect(c.state.stock.bois).toBe(6);
+    expect(c.state.stock['french-6e-phonology']).toBe(6);
     expect(c.state.progress[DEF.id]).toEqual({ stars: 2, attempts: 1, best: 0.75 });
     expect(c.state.spaced.map((s) => s.itemId)).toEqual(['foret-test-001:d']);
 
@@ -155,14 +155,14 @@ describe('completeExercise', () => {
     expect(c.chestBlock).toBe('bois');
     expect(c.state.chests).toBe(1);
     // 4 blocs par exercice sans faute (1 item juste = score 1) +2 pour trois étoiles, +2 la première fois, plus le coffre de 6.
-    expect(c.state.stock.bois).toBe(4 + 2 + 2 + (4 + 2) + (4 + 2) + 6);
+    expect(c.state.stock['french-6e-phonology']).toBe(4 + 2 + 2 + (4 + 2) + (4 + 2) + 6);
   });
 });
 
 it('sanitizeState répare des données corrompues', () => {
   const s = sanitizeState({
     progress: { x: { stars: 9, attempts: -1, best: 2 } },
-    stock: { bois: '3', faux: 5 },
+    stock: { 'french-6e-phonology': '3', faux: 5 },
     spaced: [{ itemId: 'a' }, 'rien'],
     streak: null,
   });
@@ -175,7 +175,7 @@ it('sanitizeState répare des données corrompues', () => {
 
 it('sanitizeState rend à l’inventaire les blocs de l’ancien chantier et de l’ancienne zone libre', () => {
   const s = sanitizeState({
-    inventory: { bois: 1 },
+    inventory: { 'french-6e-phonology': 1 },
     build: [
       { x: 1, y: 1, z: 0, block: 'bois' },
       { x: 0, y: 0, z: 0, block: 'neige' },
@@ -195,21 +195,21 @@ it('sanitizeState rend à l’inventaire les blocs de l’ancien chantier et de 
 });
 
 it('le bonhomme se souvient de son île, seulement si elle est ouverte', () => {
-  expect(sanitizeState({ world: { place: 'foret' } }).world.place).toBe('foret');
-  expect(sanitizeState({ world: { place: 'mine' } }).world.place).toBeUndefined();
-  expect(sanitizeState({ world: { place: 'mine', links: ['foret-mine'] } }).world.place).toBe('mine');
+  expect(sanitizeState({ world: { place: 'french-6e-phonology' } }).world.place).toBe('french-6e-phonology');
+  expect(sanitizeState({ world: { place: 'french-6e-letter-confusion' } }).world.place).toBeUndefined();
+  expect(sanitizeState({ world: { place: 'french-6e-letter-confusion', links: ['french-6e-phonology-french-6e-letter-confusion'] } }).world.place).toBe('french-6e-letter-confusion');
   expect(sanitizeState({ world: { place: 'nulle-part' } }).world.place).toBeUndefined();
-  const moved = moveAvatar(EMPTY_STATE, 'plaine');
-  expect(moved.world.place).toBe('plaine');
-  expect(moveAvatar(moved, 'mine')).toBe(moved);
-  expect(moveAvatar(moved, 'plaine')).toBe(moved);
+  const moved = moveAvatar(EMPTY_STATE, 'maths-6e-calculation');
+  expect(moved.world.place).toBe('maths-6e-calculation');
+  expect(moveAvatar(moved, 'french-6e-letter-confusion')).toBe(moved);
+  expect(moveAvatar(moved, 'maths-6e-calculation')).toBe(moved);
 });
 
 it('une mission du portail (l’école du village) rapporte des blocs de l’île de l’école, au barème des missions d’île', () => {
   // Toute juste la première fois : 4 blocs, +2 pour trois étoiles, +2 la première fois ; le streak démarre.
   const first = completePortalQuest(EMPTY_STATE, 1, true, '2026-09-27');
-  expect(first).toMatchObject({ school: 'foret', block: 'bois', blocks: 8, bonus: { stars: 2, first: 2 } });
-  expect(first.state.stock.bois).toBe(8);
+  expect(first).toMatchObject({ school: 'french-6e-phonology', block: 'bois', blocks: 8, bonus: { stars: 2, first: 2 } });
+  expect(first.state.stock['french-6e-phonology']).toBe(8);
   expect(first.state.streak.current).toBe(1);
   // À moitié : 2 blocs, rien en plus ; aucune bonne réponse : rien.
   expect(completePortalQuest(EMPTY_STATE, 0.5, false, '2026-09-27').blocks).toBe(2);
@@ -217,42 +217,42 @@ it('une mission du portail (l’école du village) rapporte des blocs de l’îl
   // Les étoiles et les Gardiens ne bougent pas.
   expect(first.state.progress).toEqual({});
   // Dans les Îles Brumeuses, l'école est au Marché : des blocs de toile.
-  const away = { ...EMPTY_STATE, world: { ...EMPTY_STATE.world, links: ['voyage-5e'], place: 'marche' as const } };
-  expect(completePortalQuest(away, 1, false, '2026-09-27')).toMatchObject({ school: 'marche', block: 'toile', blocks: 6 });
+  const away = { ...EMPTY_STATE, world: { ...EMPTY_STATE.world, links: ['passage-5e'], place: 'maths-5e-proportionality' as const } };
+  expect(completePortalQuest(away, 1, false, '2026-09-27')).toMatchObject({ school: 'maths-5e-proportionality', block: 'toile', blocks: 6 });
 });
 
 describe('les sauvegardes d’avant le nouveau dessin des bâtiments', () => {
   it('un plan terminé avec l’ancien dessin reste terminé, et son coffre donne ce que le nouveau donne en plus', async () => {
     const { planV1 } = await import('./world/plansV1');
     const { getPlan, planCells } = await import('./world/plans');
-    const old = planV1('foret-cabane')!;
-    const state = sanitizeState({ village: { plans: { 'foret-cabane': [...old.blocks.keys()] } }, inventory: { toit: 9, lanterne: 1, porte: 1 } });
-    const cabane = getPlan('foret-cabane')!;
-    expect(state.world.parts['foret-cabane']).toEqual(planCells(cabane).map((c) => c.key));
+    const old = planV1('french-6e-phonology-1')!;
+    const state = sanitizeState({ village: { plans: { 'french-6e-phonology-1': [...old.blocks.keys()] } }, inventory: { 'roof': 9, 'lantern': 1, 'door': 1 } });
+    const cabane = getPlan('french-6e-phonology-1')!;
+    expect(state.world.parts['french-6e-phonology-1']).toEqual(planCells(cabane).map((c) => c.key));
     // Le coffre d'avant donnait 9 toits et 1 lanterne ; le nouveau en donne 18 et 3 : la différence arrive.
-    expect(state.stock.toit).toBe(9 + (cabane.reward.chest.toit ?? 0) - 9);
-    expect(state.stock.lanterne).toBe(1 + (cabane.reward.chest.lanterne ?? 0) - 1);
-    expect(state.stock.porte).toBe(1);
+    expect(state.stock['roof']).toBe(9 + (cabane.reward.chest.roof ?? 0) - 9);
+    expect(state.stock['lantern']).toBe(1 + (cabane.reward.chest.lantern ?? 0) - 1);
+    expect(state.stock['door']).toBe(1);
   });
 
   it('un plan commencé avec l’ancien dessin garde ses cases encore valables et rend les autres blocs', async () => {
     const { planV1 } = await import('./world/plansV1');
     const { getPlan, planCells } = await import('./world/plans');
-    const oldKeys = [...planV1('foret-cabane')!.blocks.keys()].slice(0, 6);
-    const valid = new Set(planCells(getPlan('foret-cabane')!).map((c) => c.key));
-    const state = sanitizeState({ village: { plans: { 'foret-cabane': oldKeys } } });
+    const oldKeys = [...planV1('french-6e-phonology-1')!.blocks.keys()].slice(0, 6);
+    const valid = new Set(planCells(getPlan('french-6e-phonology-1')!).map((c) => c.key));
+    const state = sanitizeState({ village: { plans: { 'french-6e-phonology-1': oldKeys } } });
     const kept = oldKeys.filter((k) => valid.has(k));
-    expect(state.world.parts['foret-cabane'] ?? []).toEqual(kept);
-    expect(state.stock.bois ?? 0).toBe(oldKeys.length - kept.length);
+    expect(state.world.parts['french-6e-phonology-1'] ?? []).toEqual(kept);
+    expect(state.stock['french-6e-phonology'] ?? 0).toBe(oldKeys.length - kept.length);
   });
 
   it('une sauvegarde du nouveau dessin ne change pas', async () => {
     const { getPlan, planCells } = await import('./world/plans');
-    const keys = planCells(getPlan('foret-cabane')!).map((c) => c.key);
-    const partial = sanitizeState({ world: { parts: { 'foret-cabane': keys.slice(0, 20) } }, stock: { bois: 3 } });
-    expect(partial.world.parts['foret-cabane']).toEqual(keys.slice(0, 20));
+    const keys = planCells(getPlan('french-6e-phonology-1')!).map((c) => c.key);
+    const partial = sanitizeState({ world: { parts: { 'french-6e-phonology-1': keys.slice(0, 20) } }, stock: { 'french-6e-phonology': 3 } });
+    expect(partial.world.parts['french-6e-phonology-1']).toEqual(keys.slice(0, 20));
     expect(partial.stock).toEqual({ bois: 3 });
-    const done = sanitizeState({ world: { parts: { 'foret-cabane': keys } } });
+    const done = sanitizeState({ world: { parts: { 'french-6e-phonology-1': keys } } });
     expect(done.stock).toEqual({});
   });
 });

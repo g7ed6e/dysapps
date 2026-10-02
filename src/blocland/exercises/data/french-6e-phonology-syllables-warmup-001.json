@@ -1,0 +1,167 @@
+{
+  "id": "french-6e-phonology-syllables-warmup-001",
+  "biome": "french-6e-phonology",
+  "type": "syllables",
+  "level": 1,
+  "instruction": "Écoute le mot, puis tape le nombre de syllabes que tu entends.",
+  "items": [
+    {
+      "key": "cabane",
+      "prompt": "cabane",
+      "word": "cabane",
+      "heard": "ca-bane",
+      "choices": [
+        "1",
+        "2",
+        "3"
+      ],
+      "answer": "2"
+    },
+    {
+      "key": "bois",
+      "prompt": "bois",
+      "word": "bois",
+      "heard": "bois",
+      "choices": [
+        "1",
+        "2",
+        "3"
+      ],
+      "answer": "1"
+    },
+    {
+      "key": "village",
+      "prompt": "village",
+      "word": "village",
+      "heard": "vil-lage",
+      "choices": [
+        "1",
+        "2",
+        "3"
+      ],
+      "answer": "2"
+    },
+    {
+      "key": "pont",
+      "prompt": "pont",
+      "word": "pont",
+      "heard": "pont",
+      "choices": [
+        "1",
+        "2",
+        "3"
+      ],
+      "answer": "1"
+    },
+    {
+      "key": "lanterne",
+      "prompt": "lanterne",
+      "word": "lanterne",
+      "heard": "lan-terne",
+      "choices": [
+        "1",
+        "2",
+        "3"
+      ],
+      "answer": "2"
+    },
+    {
+      "key": "tour",
+      "prompt": "tour",
+      "word": "tour",
+      "heard": "tour",
+      "choices": [
+        "1",
+        "2",
+        "3"
+      ],
+      "answer": "1"
+    },
+    {
+      "key": "chapeau",
+      "prompt": "chapeau",
+      "word": "chapeau",
+      "heard": "cha-peau",
+      "choices": [
+        "1",
+        "2",
+        "3"
+      ],
+      "answer": "2"
+    },
+    {
+      "key": "papillon",
+      "prompt": "papillon",
+      "word": "papillon",
+      "heard": "pa-pil-lon",
+      "choices": [
+        "2",
+        "3",
+        "4"
+      ],
+      "answer": "3"
+    },
+    {
+      "key": "nuit",
+      "prompt": "nuit",
+      "word": "nuit",
+      "heard": "nuit",
+      "choices": [
+        "1",
+        "2",
+        "3"
+      ],
+      "answer": "1"
+    },
+    {
+      "key": "escalier",
+      "prompt": "escalier",
+      "word": "escalier",
+      "heard": "es-ca-lier",
+      "choices": [
+        "2",
+        "3",
+        "4"
+      ],
+      "answer": "3"
+    },
+    {
+      "key": "caméra",
+      "prompt": "caméra",
+      "word": "caméra",
+      "heard": "ca-mé-ra",
+      "choices": [
+        "2",
+        "3",
+        "4"
+      ],
+      "answer": "3"
+    },
+    {
+      "key": "ordinateur",
+      "prompt": "ordinateur",
+      "word": "ordinateur",
+      "heard": "or-di-na-teur",
+      "choices": [
+        "3",
+        "4",
+        "5"
+      ],
+      "answer": "4"
+    }
+  ],
+  "perRun": 6,
+  "feedback": {
+    "correct": "Bien entendu !",
+    "wrong": "On entend {heard} : {answer}, c’est le nombre de syllabes."
+  },
+  "reward": {
+    "block": "french-6e-phonology",
+    "amount": 3,
+    "xp": 10
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

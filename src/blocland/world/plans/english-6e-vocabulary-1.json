@@ -1,0 +1,12 @@
+{
+  "id": "english-6e-vocabulary-1",
+  "biome": "english-6e-vocabulary",
+  "name": "La cabine de Robin",
+  "reward": {
+    "xp": 40,
+    "chest": {
+      "english-6e-grammar": 3
+    }
+  },
+  "done": "Ma cabine ! Thank you, bâtisseur. Quand le téléphone sonne, je réponds : hello?"
+}

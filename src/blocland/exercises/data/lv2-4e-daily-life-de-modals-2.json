@@ -1,0 +1,250 @@
+{
+  "id": "lv2-4e-daily-life-de-modals-2",
+  "biome": "lv2-4e-daily-life",
+  "type": "de-modals",
+  "level": 2,
+  "lang": "de",
+  "instruction": "Lis ou écoute la question en allemand, puis choisis la bonne réponse. La règle est affichée.",
+  "programme": [
+    "c4.de.langue.modaux-passif"
+  ],
+  "items": [
+    {
+      "key": "lv2-4e-daily-life-de-modals-2-0",
+      "prompt": "Kannst du schwimmen?",
+      "spoken": "Kannst du schwimmen?",
+      "choices": [
+        "Ja, ich kann schwimmen.",
+        "Ja, ich kann schwimme.",
+        "Ja, ich schwimmen kann."
+      ],
+      "answer": "Ja, ich kann schwimmen.",
+      "hint": "Regarde la fin du 2e verbe : -en, l’infinitif, tout à la fin.",
+      "explanation": "Ja, ich kann schwimmen = oui, je sais nager. kann en 2e place, schwimmen à l’infinitif, à la fin.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Können, müssen, wollen",
+          "lines": [
+            "können = pouvoir, savoir : ich kann, du kannst, er kann",
+            "müssen = devoir : ich muss, du musst, er muss",
+            "wollen = vouloir : ich will, du willst, er will",
+            "Le modal en 2e place ; l’autre verbe, à l’infinitif, à la fin.",
+            "Ich kann gut malen. (je sais bien dessiner)",
+            "ich will = je veux : ce n’est pas le futur de l’anglais.",
+            "Après un modal, la particule reste collée : ich will fernsehen."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-de-modals-2-1",
+      "prompt": "Kommst du heute Nachmittag?",
+      "spoken": "Kommst du heute Nachmittag?",
+      "choices": [
+        "Nein, ich muss lernen.",
+        "Nein, ich muss lerne.",
+        "Nein, ich lernen muss."
+      ],
+      "answer": "Nein, ich muss lernen.",
+      "hint": "Regarde la fin du 2e verbe : -en, l’infinitif, tout à la fin.",
+      "explanation": "Nein, ich muss lernen = non, je dois apprendre mes leçons. muss en 2e place, lernen à l’infinitif, à la fin.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Können, müssen, wollen",
+          "lines": [
+            "können = pouvoir, savoir : ich kann, du kannst, er kann",
+            "müssen = devoir : ich muss, du musst, er muss",
+            "wollen = vouloir : ich will, du willst, er will",
+            "Le modal en 2e place ; l’autre verbe, à l’infinitif, à la fin.",
+            "Ich kann gut malen. (je sais bien dessiner)",
+            "ich will = je veux : ce n’est pas le futur de l’anglais.",
+            "Après un modal, la particule reste collée : ich will fernsehen."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-de-modals-2-2",
+      "prompt": "Was willst du am Samstag machen?",
+      "spoken": "Was willst du am Samstag machen?",
+      "choices": [
+        "Ich will Fußball spielen.",
+        "Ich will Fußball spiele.",
+        "Ich will spielen Fußball."
+      ],
+      "answer": "Ich will Fußball spielen.",
+      "hint": "Regarde la fin du 2e verbe : -en. Il va tout à la fin, après Fußball.",
+      "explanation": "Ich will Fußball spielen = je veux jouer au football. spielen, à l’infinitif, va tout à la fin, après Fußball.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Können, müssen, wollen",
+          "lines": [
+            "können = pouvoir, savoir : ich kann, du kannst, er kann",
+            "müssen = devoir : ich muss, du musst, er muss",
+            "wollen = vouloir : ich will, du willst, er will",
+            "Le modal en 2e place ; l’autre verbe, à l’infinitif, à la fin.",
+            "Ich kann gut malen. (je sais bien dessiner)",
+            "ich will = je veux : ce n’est pas le futur de l’anglais.",
+            "Après un modal, la particule reste collée : ich will fernsehen."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-de-modals-2-3",
+      "prompt": "Kann dein Bruder Gitarre spielen?",
+      "spoken": "Kann dein Bruder Gitarre spielen?",
+      "choices": [
+        "Ja, er kann Gitarre spielen.",
+        "Ja, er kannst Gitarre spielen.",
+        "Ja, er kann Gitarre spielt."
+      ],
+      "answer": "Ja, er kann Gitarre spielen.",
+      "hint": "Avec er : kann, sans -st. Le 2e verbe finit par -en.",
+      "explanation": "Avec er : er kann, sans -t ni -st. Puis l’infinitif à la fin : ja, er kann Gitarre spielen (il sait jouer de la guitare).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Können, müssen, wollen",
+          "lines": [
+            "können = pouvoir, savoir : ich kann, du kannst, er kann",
+            "müssen = devoir : ich muss, du musst, er muss",
+            "wollen = vouloir : ich will, du willst, er will",
+            "Le modal en 2e place ; l’autre verbe, à l’infinitif, à la fin.",
+            "Ich kann gut malen. (je sais bien dessiner)",
+            "ich will = je veux : ce n’est pas le futur de l’anglais.",
+            "Après un modal, la particule reste collée : ich will fernsehen."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-de-modals-2-4",
+      "prompt": "Musst du dein Zimmer aufräumen?",
+      "spoken": "Musst du dein Zimmer aufräumen?",
+      "choices": [
+        "Ja, ich muss aufräumen.",
+        "Ja, ich muss aufräume.",
+        "Ja, ich musst aufräumen."
+      ],
+      "answer": "Ja, ich muss aufräumen.",
+      "hint": "Avec ich : muss, sans -t. Le 2e verbe finit par -en.",
+      "explanation": "Avec ich : ich muss. Puis l’infinitif à la fin : ja, ich muss aufräumen (oui, je dois ranger). musst va avec du.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Können, müssen, wollen",
+          "lines": [
+            "können = pouvoir, savoir : ich kann, du kannst, er kann",
+            "müssen = devoir : ich muss, du musst, er muss",
+            "wollen = vouloir : ich will, du willst, er will",
+            "Le modal en 2e place ; l’autre verbe, à l’infinitif, à la fin.",
+            "Ich kann gut malen. (je sais bien dessiner)",
+            "ich will = je veux : ce n’est pas le futur de l’anglais.",
+            "Après un modal, la particule reste collée : ich will fernsehen."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-de-modals-2-5",
+      "prompt": "Will deine Schwester mitspielen?",
+      "spoken": "Will deine Schwester mitspielen?",
+      "choices": [
+        "Nein, sie will lesen.",
+        "Nein, sie willst lesen.",
+        "Nein, sie will liest."
+      ],
+      "answer": "Nein, sie will lesen.",
+      "hint": "Avec sie : will, sans -st. Le 2e verbe finit par -en.",
+      "explanation": "Avec sie (elle) : sie will. Puis l’infinitif : nein, sie will lesen (non, elle veut lire). willst va avec du.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Können, müssen, wollen",
+          "lines": [
+            "können = pouvoir, savoir : ich kann, du kannst, er kann",
+            "müssen = devoir : ich muss, du musst, er muss",
+            "wollen = vouloir : ich will, du willst, er will",
+            "Le modal en 2e place ; l’autre verbe, à l’infinitif, à la fin.",
+            "Ich kann gut malen. (je sais bien dessiner)",
+            "ich will = je veux : ce n’est pas le futur de l’anglais.",
+            "Après un modal, la particule reste collée : ich will fernsehen."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-de-modals-2-6",
+      "prompt": "Kannst du morgen kommen?",
+      "spoken": "Kannst du morgen kommen?",
+      "choices": [
+        "Nein, ich kann nicht.",
+        "Nein, ich kannst nicht.",
+        "Nein, ich können nicht."
+      ],
+      "answer": "Nein, ich kann nicht.",
+      "hint": "Avec ich : kann, sans -st ni -en.",
+      "explanation": "Avec ich : ich kann. Nein, ich kann nicht = non, je ne peux pas. kannst va avec du ; können est l’infinitif.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Können, müssen, wollen",
+          "lines": [
+            "können = pouvoir, savoir : ich kann, du kannst, er kann",
+            "müssen = devoir : ich muss, du musst, er muss",
+            "wollen = vouloir : ich will, du willst, er will",
+            "Le modal en 2e place ; l’autre verbe, à l’infinitif, à la fin.",
+            "Ich kann gut malen. (je sais bien dessiner)",
+            "ich will = je veux : ce n’est pas le futur de l’anglais.",
+            "Après un modal, la particule reste collée : ich will fernsehen."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-de-modals-2-7",
+      "prompt": "Muss Paul jetzt aufstehen?",
+      "spoken": "Muss Paul jetzt aufstehen?",
+      "choices": [
+        "Ja, er muss aufstehen.",
+        "Ja, er muss aufsteht.",
+        "Ja, er muss steht auf."
+      ],
+      "answer": "Ja, er muss aufstehen.",
+      "hint": "Regarde la fin : aufstehen finit par -en et reste en un seul mot.",
+      "explanation": "Ja, er muss aufstehen = oui, il doit se lever. Après muss, aufstehen reste à l’infinitif, en un seul mot, à la fin.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Können, müssen, wollen",
+          "lines": [
+            "können = pouvoir, savoir : ich kann, du kannst, er kann",
+            "müssen = devoir : ich muss, du musst, er muss",
+            "wollen = vouloir : ich will, du willst, er will",
+            "Le modal en 2e place ; l’autre verbe, à l’infinitif, à la fin.",
+            "Ich kann gut malen. (je sais bien dessiner)",
+            "ich will = je veux : ce n’est pas le futur de l’anglais.",
+            "Après un modal, la particule reste collée : ich will fernsehen."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien répondu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lv2-4e-daily-life",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

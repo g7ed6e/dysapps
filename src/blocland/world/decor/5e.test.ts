@@ -82,20 +82,20 @@ it('la tour en ruine, la calotte, le ponton et la girouette du Relais sont hors 
   }
   // La calotte : le point le plus haut du Glacier en est couvert.
   let pic = champ.colonnes[0];
-  for (const c of champ.colonnes) if (c.ile === 'glacier' && (pic.ile !== 'glacier' || c.haut > pic.haut)) pic = c;
+  for (const c of champ.colonnes) if (c.ile === 'maths-5e-signed-numbers' && (pic.ile !== 'maths-5e-signed-numbers' || c.haut > pic.haut)) pic = c;
   expect(couvert(triangles(m.elements.findIndex((e) => e.genre === 'calotte')), pic.x + 0.5, pic.y + 0.5)).toBe(true);
   // La tour en ruine, derrière le cœur du Carrefour, jamais dedans.
   const tour = hors.find((e) => e.genre === 'tour-en-ruine')!;
-  expect(colonneEn(champ, tour.x, tour.y)?.ile).toBe('carrefour');
-  expect(inCore(islandDef('carrefour'), tour.x, tour.y)).toBe(false);
+  expect(colonneEn(champ, tour.x, tour.y)?.ile).toBe('french-5e-homophones');
+  expect(inCore(islandDef('french-5e-homophones'), tour.x, tour.y)).toBe(false);
   // Le ponton du Relais, sur son rivage est, hors du cœur ; la girouette juste derrière le cœur, derrière l'auberge.
-  const relais = islandDef('relais');
+  const relais = islandDef('lv2-5e-introductions');
   const ponton = hors.find((e) => e.genre === 'ponton')!;
-  expect(colonneEn(champ, ponton.x, ponton.y)?.ile).toBe('relais');
+  expect(colonneEn(champ, ponton.x, ponton.y)?.ile).toBe('lv2-5e-introductions');
   expect(ponton.x).toBeGreaterThanOrEqual(relais.core.x + 16);
-  expect(colonneEn(champ, ponton.x + 1, ponton.y)?.ile === 'relais' && !colonneEn(champ, ponton.x + 1, ponton.y)?.liquide).toBe(false);
+  expect(colonneEn(champ, ponton.x + 1, ponton.y)?.ile === 'lv2-5e-introductions' && !colonneEn(champ, ponton.x + 1, ponton.y)?.liquide).toBe(false);
   const girouette = hors.find((e) => e.genre === 'girouette')!;
-  expect(colonneEn(champ, girouette.x, girouette.y)?.ile).toBe('relais');
+  expect(colonneEn(champ, girouette.x, girouette.y)?.ile).toBe('lv2-5e-introductions');
   expect(girouette.y - relais.core.y).toBeGreaterThanOrEqual(16);
   expect(girouette.y - relais.core.y).toBeLessThanOrEqual(17);
   expect(Math.abs(girouette.x - relais.core.x - 9.5)).toBeLessThanOrEqual(3);

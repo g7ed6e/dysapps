@@ -608,7 +608,7 @@ export interface PortalCompletion {
  * streak du jour. Les étoiles et le Gardien ne changent pas : ils restent ceux des missions d'île.
  */
 export function completePortalQuest(state: GameState, score: number, firstTime: boolean, today: string, rng: () => number = Math.random): PortalCompletion {
-  const school = archipelagoOf(state.world.place ?? 'foret').school;
+  const school = archipelagoOf(state.world.place ?? 'french-6e-phonology').school;
   const block = getBiome(school)!.block;
   const anyCorrect = score > 0;
   const bonus = blocksBonus(starsFor(score), firstTime, anyCorrect);

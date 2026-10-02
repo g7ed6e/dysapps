@@ -97,7 +97,7 @@ describe('La disposition en grille', () => {
         }
     }
     // Sans ouvrage construit, pas de chemin d'une île à l'autre.
-    expect(dispositionEnGrille('6e').trajet({ genre: 'ile', id: 'foret' }, { genre: 'ile', id: 'mine' })).toBeNull();
+    expect(dispositionEnGrille('6e').trajet({ genre: 'ile', id: 'french-6e-phonology' }, { genre: 'ile', id: 'french-6e-letter-confusion' })).toBeNull();
   });
 
   it('changer de but en chemin : le trajet part de l’île où il se trouve, sans finir de traverser l’ouvrage', () => {
@@ -126,7 +126,7 @@ describe('La disposition en grille', () => {
     for (const a of ARCHIPELAGO_IDS) {
       const { g, ground } = grilleDe(a);
       const school = getArchipelago(a).school;
-      for (const place of ['ecole', 'trophees', 'assemblage'] as VillagePlaceId[])
+      for (const place of ['school', 'trophies', 'assembly'] as VillagePlaceId[])
         for (const from of islandsOf(a)) {
           const door = placeDoor(place, school);
           const route = avatarRoute(from.id, school, village.links, ground);
@@ -149,6 +149,6 @@ describe('La disposition en grille', () => {
 
   it('une partie vierge : le bonhomme reste sur son île de départ', () => {
     const g = dispositionEnGrille('6e', EMPTY_STATE.world.links);
-    expect(g.trajet({ genre: 'ile', id: 'foret' }, { genre: 'ile', id: 'foret' })!.etapes.map(g.versMonde)).toEqual([avatarHome('foret')]);
+    expect(g.trajet({ genre: 'ile', id: 'french-6e-phonology' }, { genre: 'ile', id: 'french-6e-phonology' })!.etapes.map(g.versMonde)).toEqual([avatarHome('french-6e-phonology')]);
   });
 });

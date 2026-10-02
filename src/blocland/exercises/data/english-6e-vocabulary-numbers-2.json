@@ -1,0 +1,239 @@
+{
+  "id": "english-6e-vocabulary-numbers-2",
+  "biome": "english-6e-vocabulary",
+  "type": "numbers",
+  "level": 2,
+  "lang": "en",
+  "instruction": "Écoute l’heure ou la date en anglais et choisis la bonne. La règle est affichée.",
+  "items": [
+    {
+      "key": "english-6e-vocabulary-numbers-2-0",
+      "prompt": "It’s half past three.",
+      "spoken": "It’s half past three.",
+      "choices": [
+        "2 h 30",
+        "3 h 15",
+        "3 h 30"
+      ],
+      "choicesLang": "fr",
+      "answer": "3 h 30",
+      "hint": "Past = après l’heure, to = avant l’heure.",
+      "explanation": "half past three = la demie après 3 h : 3 h 30.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’heure et la date",
+          "lines": [
+            "o’clock = heure pile : five o’clock = 5 h.",
+            "past = après : ten past seven = 7 h 10.",
+            "to = avant : twenty to four = 4 h moins 20 = 3 h 40.",
+            "quarter = le quart (15 min), half = la demie (30 min).",
+            "La date : the third of May = le 3 mai."
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-6e-vocabulary-numbers-2-1",
+      "prompt": "It’s quarter past six.",
+      "spoken": "It’s quarter past six.",
+      "choices": [
+        "5 h 45",
+        "6 h 15",
+        "6 h 45"
+      ],
+      "choicesLang": "fr",
+      "answer": "6 h 15",
+      "hint": "Past = après l’heure, to = avant l’heure.",
+      "explanation": "quarter past six = 6 h et quart : 6 h 15.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’heure et la date",
+          "lines": [
+            "o’clock = heure pile : five o’clock = 5 h.",
+            "past = après : ten past seven = 7 h 10.",
+            "to = avant : twenty to four = 4 h moins 20 = 3 h 40.",
+            "quarter = le quart (15 min), half = la demie (30 min).",
+            "La date : the third of May = le 3 mai."
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-6e-vocabulary-numbers-2-2",
+      "prompt": "It’s quarter to nine.",
+      "spoken": "It’s quarter to nine.",
+      "choices": [
+        "8 h 45",
+        "9 h 15",
+        "9 h 45"
+      ],
+      "choicesLang": "fr",
+      "answer": "8 h 45",
+      "hint": "Past = après l’heure, to = avant l’heure.",
+      "explanation": "quarter to nine = 9 h moins le quart : 8 h 45.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’heure et la date",
+          "lines": [
+            "o’clock = heure pile : five o’clock = 5 h.",
+            "past = après : ten past seven = 7 h 10.",
+            "to = avant : twenty to four = 4 h moins 20 = 3 h 40.",
+            "quarter = le quart (15 min), half = la demie (30 min).",
+            "La date : the third of May = le 3 mai."
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-6e-vocabulary-numbers-2-3",
+      "prompt": "It’s five o’clock.",
+      "spoken": "It’s five o’clock.",
+      "choices": [
+        "5 h 00",
+        "5 h 30",
+        "12 h 05"
+      ],
+      "choicesLang": "fr",
+      "answer": "5 h 00",
+      "hint": "Past = après l’heure, to = avant l’heure.",
+      "explanation": "five o’clock = 5 h pile.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’heure et la date",
+          "lines": [
+            "o’clock = heure pile : five o’clock = 5 h.",
+            "past = après : ten past seven = 7 h 10.",
+            "to = avant : twenty to four = 4 h moins 20 = 3 h 40.",
+            "quarter = le quart (15 min), half = la demie (30 min).",
+            "La date : the third of May = le 3 mai."
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-6e-vocabulary-numbers-2-4",
+      "prompt": "It’s ten past seven.",
+      "spoken": "It’s ten past seven.",
+      "choices": [
+        "6 h 50",
+        "7 h 10",
+        "10 h 07"
+      ],
+      "choicesLang": "fr",
+      "answer": "7 h 10",
+      "hint": "Past = après l’heure, to = avant l’heure.",
+      "explanation": "ten past seven = 10 minutes après 7 h : 7 h 10.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’heure et la date",
+          "lines": [
+            "o’clock = heure pile : five o’clock = 5 h.",
+            "past = après : ten past seven = 7 h 10.",
+            "to = avant : twenty to four = 4 h moins 20 = 3 h 40.",
+            "quarter = le quart (15 min), half = la demie (30 min).",
+            "La date : the third of May = le 3 mai."
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-6e-vocabulary-numbers-2-5",
+      "prompt": "It’s twenty to four.",
+      "spoken": "It’s twenty to four.",
+      "choices": [
+        "3 h 40",
+        "4 h 20",
+        "4 h 40"
+      ],
+      "choicesLang": "fr",
+      "answer": "3 h 40",
+      "hint": "Past = après l’heure, to = avant l’heure.",
+      "explanation": "twenty to four = 4 h moins 20 : 3 h 40.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’heure et la date",
+          "lines": [
+            "o’clock = heure pile : five o’clock = 5 h.",
+            "past = après : ten past seven = 7 h 10.",
+            "to = avant : twenty to four = 4 h moins 20 = 3 h 40.",
+            "quarter = le quart (15 min), half = la demie (30 min).",
+            "La date : the third of May = le 3 mai."
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-6e-vocabulary-numbers-2-6",
+      "prompt": "It’s the third of May.",
+      "spoken": "It’s the third of May.",
+      "choices": [
+        "le 3 mai",
+        "le 13 mai",
+        "le 30 mai"
+      ],
+      "choicesLang": "fr",
+      "answer": "le 3 mai",
+      "hint": "Écoute le jour : third, thirteenth ou thirtieth ?",
+      "explanation": "the third of May = le 3 mai (third = troisième).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’heure et la date",
+          "lines": [
+            "o’clock = heure pile : five o’clock = 5 h.",
+            "past = après : ten past seven = 7 h 10.",
+            "to = avant : twenty to four = 4 h moins 20 = 3 h 40.",
+            "quarter = le quart (15 min), half = la demie (30 min).",
+            "La date : the third of May = le 3 mai."
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-6e-vocabulary-numbers-2-7",
+      "prompt": "It’s the twentieth of June.",
+      "spoken": "It’s the twentieth of June.",
+      "choices": [
+        "le 2 juin",
+        "le 12 juin",
+        "le 20 juin"
+      ],
+      "choicesLang": "fr",
+      "answer": "le 20 juin",
+      "hint": "Écoute le jour : twentieth, twelfth ou second ?",
+      "explanation": "the twentieth of June = le 20 juin (twentieth = vingtième).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’heure et la date",
+          "lines": [
+            "o’clock = heure pile : five o’clock = 5 h.",
+            "past = après : ten past seven = 7 h 10.",
+            "to = avant : twenty to four = 4 h moins 20 = 3 h 40.",
+            "quarter = le quart (15 min), half = la demie (30 min).",
+            "La date : the third of May = le 3 mai."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien compté !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "english-6e-vocabulary",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

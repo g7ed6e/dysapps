@@ -205,7 +205,7 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, hi
                   <span className="island-quest-title">{guardianTitle(biome)}</span>
                   <span className="island-quest-desc">{bossBeaten ? textes.libelles.dejaFait : textes.libelles.defiPret}</span>
                 </span>
-                {bossBeaten && <Stars count={state.progress[`${biome.id}-gardien`]?.stars ?? 0} label={textes.libelles.etoiles} />}
+                {bossBeaten && <Stars count={state.progress[`${biome.id}-challenge`]?.stars ?? 0} label={textes.libelles.etoiles} />}
               </Link>
             ) : (
               <button type="button" className="island-quest locked island-boss-locked" onClick={explainBoss} aria-describedby={`gardien-${biome.id}`}>

@@ -22,7 +22,7 @@ function renderIn(node: React.ReactNode) {
 
 it('« Tu peux construire » montre trois chantiers, celui de l’île du bonhomme en tête, et le reste derrière « Tout voir »', async () => {
   const user = userEvent.setup();
-  localStorage.setItem('dysapps:game', JSON.stringify({ stock: { bois: 200, brique: 200, pierre: 200, sable: 200 } }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ stock: { 'french-6e-phonology': 200, 'maths-6e-calculation': 200, 'french-6e-letter-confusion': 200, 'french-6e-word-spelling': 200 } }));
   renderIn(<InventorySheet onClose={() => {}} />);
   const sheet = screen.getByRole('dialog', { name: 'Mes blocs' });
   expect(sheet.textContent).not.toContain('Touche une île');
@@ -66,7 +66,7 @@ it('les trophées : l’accueil de la salle dans un pli, la salle tout de suite'
 });
 
 it('« Dans ta poche » ne redit pas les chantiers que « Tu peux construire » montre déjà', () => {
-  localStorage.setItem('dysapps:game', JSON.stringify({ stock: { bois: 200, brique: 200, pierre: 200, sable: 200 } }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ stock: { 'french-6e-phonology': 200, 'maths-6e-calculation': 200, 'french-6e-letter-confusion': 200, 'french-6e-word-spelling': 200 } }));
   renderIn(<InventorySheet onClose={() => {}} />);
   const shown = within(screen.getByRole('list', { name: /Tu peux construire/ }))
     .getAllByRole('link')

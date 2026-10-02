@@ -204,7 +204,7 @@ const rocher: Forme = (o) => {
  * 0,85, elle passait derrière lui). Une contre-flèche de 2 cases et son contrepoids ; un câble et un crochet immobiles.
  */
 export const GRUE = {
-  ile: 'atelier',
+  ile: 'maths-4e-algebra',
   /**
    * La case voulue, depuis les bornes du cœur (`coeurDe`) : `dx` depuis son bord gauche (sur la côte, deux cases en
    * dehors), `dyDuMilieu` depuis sa rangée du milieu (−1 : la septième rangée du cœur d'origine, un peu en avant de la

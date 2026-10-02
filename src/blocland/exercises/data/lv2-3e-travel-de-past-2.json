@@ -1,0 +1,231 @@
+{
+  "id": "lv2-3e-travel-de-past-2",
+  "biome": "lv2-3e-travel",
+  "type": "de-past",
+  "level": 2,
+  "lang": "de",
+  "instruction": "Lis la question en allemand, ou appuie sur Écouter. haben ou sein ? Choisis la bonne réponse. La règle est affichée.",
+  "items": [
+    {
+      "key": "lv2-3e-travel-de-past-2-0",
+      "prompt": "Wie bist du nach Berlin gereist?",
+      "spoken": "Wie bist du nach Berlin gereist?",
+      "choices": [
+        "Ich bin geflogen.",
+        "Ich habe geflogen.",
+        "Ich bin gefliegt."
+      ],
+      "answer": "Ich bin geflogen.",
+      "hint": "fliegen (prendre l’avion) est un déplacement : sein ou haben ?",
+      "explanation": "fliegen est un déplacement : ich bin geflogen = j’ai pris l’avion. Son participe est geflogen, pas gefliegt.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "haben oder sein?",
+          "lines": [
+            "sein avec un déplacement : fahren, fliegen, gehen, kommen",
+            "sein aussi avec bleiben (rester) ; haben avec les autres verbes",
+            "ich bin, du bist, er, sie ist, wir sind",
+            "fliegen : geflogen ; gehen : gegangen",
+            "kommen : gekommen ; bleiben : geblieben"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-de-past-2-1",
+      "prompt": "Was hast du in Berlin gesehen?",
+      "spoken": "Was hast du in Berlin gesehen?",
+      "choices": [
+        "Ich habe den Zoo gesehen.",
+        "Ich bin den Zoo gesehen.",
+        "Ich habe gesehen den Zoo."
+      ],
+      "answer": "Ich habe den Zoo gesehen.",
+      "hint": "sehen (voir) n’est pas un déplacement.",
+      "explanation": "sehen n’est pas un déplacement : ich habe gesehen = j’ai vu. Le participe va à la fin.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "haben oder sein?",
+          "lines": [
+            "sein avec un déplacement : fahren, fliegen, gehen, kommen",
+            "sein aussi avec bleiben (rester) ; haben avec les autres verbes",
+            "ich bin, du bist, er, sie ist, wir sind",
+            "fliegen : geflogen ; gehen : gegangen",
+            "kommen : gekommen ; bleiben : geblieben"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-de-past-2-2",
+      "prompt": "Wie lange bist du in Bonn geblieben?",
+      "spoken": "Wie lange bist du in Bonn geblieben?",
+      "choices": [
+        "Ich bin drei Tage geblieben.",
+        "Ich habe drei Tage geblieben.",
+        "Ich bin drei Tage gebleibt."
+      ],
+      "answer": "Ich bin drei Tage geblieben.",
+      "hint": "bleiben (rester) se construit avec sein.",
+      "explanation": "bleiben se construit avec sein : ich bin drei Tage geblieben = je suis resté trois jours. Son participe est geblieben.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "haben oder sein?",
+          "lines": [
+            "sein avec un déplacement : fahren, fliegen, gehen, kommen",
+            "sein aussi avec bleiben (rester) ; haben avec les autres verbes",
+            "ich bin, du bist, er, sie ist, wir sind",
+            "fliegen : geflogen ; gehen : gegangen",
+            "kommen : gekommen ; bleiben : geblieben"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-de-past-2-3",
+      "prompt": "Wann bist du nach Hause gekommen?",
+      "spoken": "Wann bist du nach Hause gekommen?",
+      "choices": [
+        "Ich bin um acht gekommen.",
+        "Ich habe um acht gekommen.",
+        "Ich bin um acht gekommt."
+      ],
+      "answer": "Ich bin um acht gekommen.",
+      "hint": "kommen est un déplacement : sein ou haben ?",
+      "explanation": "kommen est un déplacement : ich bin um acht gekommen = je suis rentré à huit heures. Son participe est gekommen.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "haben oder sein?",
+          "lines": [
+            "sein avec un déplacement : fahren, fliegen, gehen, kommen",
+            "sein aussi avec bleiben (rester) ; haben avec les autres verbes",
+            "ich bin, du bist, er, sie ist, wir sind",
+            "fliegen : geflogen ; gehen : gegangen",
+            "kommen : gekommen ; bleiben : geblieben"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-de-past-2-4",
+      "prompt": "Was hast du gegessen?",
+      "spoken": "Was hast du gegessen?",
+      "choices": [
+        "Ich habe Pizza gegessen.",
+        "Ich bin Pizza gegessen.",
+        "Ich habe gegessen Pizza."
+      ],
+      "answer": "Ich habe Pizza gegessen.",
+      "hint": "essen (manger) n’est pas un déplacement.",
+      "explanation": "essen n’est pas un déplacement : ich habe Pizza gegessen = j’ai mangé une pizza. Le participe va à la fin.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "haben oder sein?",
+          "lines": [
+            "sein avec un déplacement : fahren, fliegen, gehen, kommen",
+            "sein aussi avec bleiben (rester) ; haben avec les autres verbes",
+            "ich bin, du bist, er, sie ist, wir sind",
+            "fliegen : geflogen ; gehen : gegangen",
+            "kommen : gekommen ; bleiben : geblieben"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-de-past-2-5",
+      "prompt": "Wohin bist du gestern gegangen?",
+      "spoken": "Wohin bist du gestern gegangen?",
+      "choices": [
+        "Ich bin ins Kino gegangen.",
+        "Ich habe ins Kino gegangen.",
+        "Ich bin ins Kino gegeht."
+      ],
+      "answer": "Ich bin ins Kino gegangen.",
+      "hint": "gehen est un déplacement : sein ou haben ?",
+      "explanation": "gehen est un déplacement : ich bin ins Kino gegangen = je suis allé au cinéma. Son participe est gegangen, pas gegeht.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "haben oder sein?",
+          "lines": [
+            "sein avec un déplacement : fahren, fliegen, gehen, kommen",
+            "sein aussi avec bleiben (rester) ; haben avec les autres verbes",
+            "ich bin, du bist, er, sie ist, wir sind",
+            "fliegen : geflogen ; gehen : gegangen",
+            "kommen : gekommen ; bleiben : geblieben"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-de-past-2-6",
+      "prompt": "Was hat dein Vater gekauft?",
+      "spoken": "Was hat dein Vater gekauft?",
+      "choices": [
+        "Er hat ein Buch gekauft.",
+        "Er ist ein Buch gekauft.",
+        "Er hat gekauft ein Buch."
+      ],
+      "answer": "Er hat ein Buch gekauft.",
+      "hint": "kaufen (acheter) n’est pas un déplacement.",
+      "explanation": "kaufen n’est pas un déplacement : er hat ein Buch gekauft = il a acheté un livre. Le participe va à la fin.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "haben oder sein?",
+          "lines": [
+            "sein avec un déplacement : fahren, fliegen, gehen, kommen",
+            "sein aussi avec bleiben (rester) ; haben avec les autres verbes",
+            "ich bin, du bist, er, sie ist, wir sind",
+            "fliegen : geflogen ; gehen : gegangen",
+            "kommen : gekommen ; bleiben : geblieben"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-de-past-2-7",
+      "prompt": "Wohin seid ihr gefahren?",
+      "spoken": "Wohin seid ihr gefahren?",
+      "choices": [
+        "Wir sind ans Meer gefahren.",
+        "Wir haben ans Meer gefahren.",
+        "Wir sind ans Meer gefahrt."
+      ],
+      "answer": "Wir sind ans Meer gefahren.",
+      "hint": "fahren est un déplacement. Et ihr appelle une réponse avec wir.",
+      "explanation": "fahren est un déplacement : wir sind ans Meer gefahren = nous sommes allés à la mer. Son participe est gefahren, pas gefahrt.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "haben oder sein?",
+          "lines": [
+            "sein avec un déplacement : fahren, fliegen, gehen, kommen",
+            "sein aussi avec bleiben (rester) ; haben avec les autres verbes",
+            "ich bin, du bist, er, sie ist, wir sind",
+            "fliegen : geflogen ; gehen : gegangen",
+            "kommen : gekommen ; bleiben : geblieben"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien répondu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lv2-3e-travel",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

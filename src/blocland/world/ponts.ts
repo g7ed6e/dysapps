@@ -14,7 +14,7 @@ import type { Couleur, Faces } from './palette';
  * Les ponts à construire du 5e dessinés en pierre et en bois (décidé par le mainteneur le 28 septembre 2026), et celui
  * du Relais des voyageurs (LV2), venu après : tous les ponts du 5e.
  */
-export const PONTS_DE_PIERRE_ET_DE_BOIS: ReadonlySet<string> = new Set(['marche-marais', 'marche-comptoir', 'marais-manoir', 'comptoir-manoir', 'comptoir-relais']);
+export const PONTS_DE_PIERRE_ET_DE_BOIS: ReadonlySet<string> = new Set(['maths-5e-proportionality-french-5e-conjugation', 'maths-5e-proportionality-english-5e-vocabulary', 'french-5e-conjugation-english-5e-grammar', 'english-5e-vocabulary-english-5e-grammar', 'english-5e-vocabulary-lv2-5e-introductions']);
 
 /** Les couleurs du pont (fiche d'intention du 5e). */
 export const COULEURS_DU_PONT = {

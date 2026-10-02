@@ -1,0 +1,255 @@
+{
+  "id": "lv2-4e-daily-life-es-time-1",
+  "biome": "lv2-4e-daily-life",
+  "type": "es-time",
+  "level": 1,
+  "lang": "es",
+  "instruction": "Appuie sur Écouter pour entendre l’heure en espagnol, puis choisis la bonne heure. La règle est affichée.",
+  "items": [
+    {
+      "key": "lv2-4e-daily-life-es-time-1-0",
+      "prompt": "Son las tres y cuarto.",
+      "spoken": "Son las tres y cuarto.",
+      "choices": [
+        "2 h 45",
+        "3 h 15",
+        "3 h 45"
+      ],
+      "choicesLang": "fr",
+      "answer": "3 h 15",
+      "hint": "Comme en français : y cuarto, et quart ; menos cuarto, moins le quart.",
+      "explanation": "Son las tres y cuarto = 3 h 15 : tres (3), y cuarto (et quart). 2 h 45 se dirait las tres menos cuarto.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La hora",
+          "lines": [
+            "¿Qué hora es? = Quelle heure est-il ?",
+            "Es la una (1 h) ; son las dos (2 h), son las cuatro (4 h).",
+            "y cuarto = et quart ; y media = et demie",
+            "menos cuarto, comme en français : las cuatro menos cuarto = 3 h 45",
+            "y cinco = et cinq ; menos veinte = moins vingt",
+            "de la mañana = du matin ; de la tarde = de l’après-midi, du soir",
+            "en punto = pile"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-es-time-1-1",
+      "prompt": "Son las ocho y media.",
+      "spoken": "Son las ocho y media.",
+      "choices": [
+        "8 h 15",
+        "8 h 30",
+        "8 h 45"
+      ],
+      "choicesLang": "fr",
+      "answer": "8 h 30",
+      "hint": "media, c’est la moitié d’une heure.",
+      "explanation": "y media = et demie : son las ocho y media = 8 h 30. y cuarto serait 8 h 15.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La hora",
+          "lines": [
+            "¿Qué hora es? = Quelle heure est-il ?",
+            "Es la una (1 h) ; son las dos (2 h), son las cuatro (4 h).",
+            "y cuarto = et quart ; y media = et demie",
+            "menos cuarto, comme en français : las cuatro menos cuarto = 3 h 45",
+            "y cinco = et cinq ; menos veinte = moins vingt",
+            "de la mañana = du matin ; de la tarde = de l’après-midi, du soir",
+            "en punto = pile"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-es-time-1-2",
+      "prompt": "Son las diez menos cuarto.",
+      "spoken": "Son las diez menos cuarto.",
+      "choices": [
+        "9 h 15",
+        "9 h 45",
+        "10 h 15"
+      ],
+      "choicesLang": "fr",
+      "answer": "9 h 45",
+      "hint": "menos, c’est moins : on retire un quart d’heure à 10 h.",
+      "explanation": "Comme en français : las diez menos cuarto = 10 h moins le quart = 9 h 45. 10 h 15 se dirait las diez y cuarto ; 9 h 15, las nueve y cuarto.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La hora",
+          "lines": [
+            "¿Qué hora es? = Quelle heure est-il ?",
+            "Es la una (1 h) ; son las dos (2 h), son las cuatro (4 h).",
+            "y cuarto = et quart ; y media = et demie",
+            "menos cuarto, comme en français : las cuatro menos cuarto = 3 h 45",
+            "y cinco = et cinq ; menos veinte = moins vingt",
+            "de la mañana = du matin ; de la tarde = de l’après-midi, du soir",
+            "en punto = pile"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-es-time-1-3",
+      "prompt": "Es la una y diez.",
+      "spoken": "Es la una y diez.",
+      "choices": [
+        "1 h 10",
+        "10 h 00",
+        "12 h 50"
+      ],
+      "choicesLang": "fr",
+      "answer": "1 h 10",
+      "hint": "la una, c’est l’heure. y diez, ce sont les minutes.",
+      "explanation": "Es la una y diez = 1 h 10 : la una (1 h), y diez (et dix minutes). 12 h 50 se dirait la una menos diez.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La hora",
+          "lines": [
+            "¿Qué hora es? = Quelle heure est-il ?",
+            "Es la una (1 h) ; son las dos (2 h), son las cuatro (4 h).",
+            "y cuarto = et quart ; y media = et demie",
+            "menos cuarto, comme en français : las cuatro menos cuarto = 3 h 45",
+            "y cinco = et cinq ; menos veinte = moins vingt",
+            "de la mañana = du matin ; de la tarde = de l’après-midi, du soir",
+            "en punto = pile"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-es-time-1-4",
+      "prompt": "Son las cinco menos diez.",
+      "spoken": "Son las cinco menos diez.",
+      "choices": [
+        "4 h 50",
+        "5 h 10",
+        "5 h 50"
+      ],
+      "choicesLang": "fr",
+      "answer": "4 h 50",
+      "hint": "menos : on retire 10 minutes à 5 h.",
+      "explanation": "las cinco menos diez = 5 h moins dix = 4 h 50. 5 h 10 se dirait las cinco y diez ; 5 h 50, las seis menos diez.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La hora",
+          "lines": [
+            "¿Qué hora es? = Quelle heure est-il ?",
+            "Es la una (1 h) ; son las dos (2 h), son las cuatro (4 h).",
+            "y cuarto = et quart ; y media = et demie",
+            "menos cuarto, comme en français : las cuatro menos cuarto = 3 h 45",
+            "y cinco = et cinq ; menos veinte = moins vingt",
+            "de la mañana = du matin ; de la tarde = de l’après-midi, du soir",
+            "en punto = pile"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-es-time-1-5",
+      "prompt": "Son las doce en punto.",
+      "spoken": "Son las doce en punto.",
+      "choices": [
+        "2 h 00",
+        "11 h 00",
+        "12 h 00"
+      ],
+      "choicesLang": "fr",
+      "answer": "12 h 00",
+      "hint": "doce ou dos ? Et en punto, c’est pile.",
+      "explanation": "Son las doce en punto = 12 h pile : doce = 12, dos = 2, once = 11. en punto veut dire pile.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La hora",
+          "lines": [
+            "¿Qué hora es? = Quelle heure est-il ?",
+            "Es la una (1 h) ; son las dos (2 h), son las cuatro (4 h).",
+            "y cuarto = et quart ; y media = et demie",
+            "menos cuarto, comme en français : las cuatro menos cuarto = 3 h 45",
+            "y cinco = et cinq ; menos veinte = moins vingt",
+            "de la mañana = du matin ; de la tarde = de l’après-midi, du soir",
+            "en punto = pile"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-es-time-1-6",
+      "prompt": "Son las siete de la tarde.",
+      "spoken": "Son las siete de la tarde.",
+      "choices": [
+        "7 h 00",
+        "17 h 00",
+        "19 h 00"
+      ],
+      "choicesLang": "fr",
+      "answer": "19 h 00",
+      "hint": "de la tarde : l’après-midi ou le soir. Et siete, c’est 7.",
+      "explanation": "las siete de la tarde = 7 h du soir = 19 h. 7 h se dirait las siete de la mañana ; 17 h, las cinco de la tarde.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La hora",
+          "lines": [
+            "¿Qué hora es? = Quelle heure est-il ?",
+            "Es la una (1 h) ; son las dos (2 h), son las cuatro (4 h).",
+            "y cuarto = et quart ; y media = et demie",
+            "menos cuarto, comme en français : las cuatro menos cuarto = 3 h 45",
+            "y cinco = et cinq ; menos veinte = moins vingt",
+            "de la mañana = du matin ; de la tarde = de l’après-midi, du soir",
+            "en punto = pile"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-es-time-1-7",
+      "prompt": "Son las nueve de la mañana.",
+      "spoken": "Son las nueve de la mañana.",
+      "choices": [
+        "9 h 00",
+        "19 h 00",
+        "21 h 00"
+      ],
+      "choicesLang": "fr",
+      "answer": "9 h 00",
+      "hint": "de la mañana : le matin.",
+      "explanation": "las nueve de la mañana = 9 h du matin. 21 h, ce serait le soir, pas la mañana.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La hora",
+          "lines": [
+            "¿Qué hora es? = Quelle heure est-il ?",
+            "Es la una (1 h) ; son las dos (2 h), son las cuatro (4 h).",
+            "y cuarto = et quart ; y media = et demie",
+            "menos cuarto, comme en français : las cuatro menos cuarto = 3 h 45",
+            "y cinco = et cinq ; menos veinte = moins vingt",
+            "de la mañana = du matin ; de la tarde = de l’après-midi, du soir",
+            "en punto = pile"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien compris !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lv2-4e-daily-life",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

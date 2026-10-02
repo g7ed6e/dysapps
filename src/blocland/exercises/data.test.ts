@@ -100,7 +100,7 @@ it('mot troué : le trou reconstitue le mot, 3 blocs dont la réponse', () => {
 
 it('tri des graines : construit depuis les homophones, avec règle et astuce', () => {
   const defs = EXERCISES.filter((e) => e.type === 'graines');
-  expect(defs.map((d) => d.id).sort()).toEqual(['ferme-graines-a', 'ferme-graines-ce', 'ferme-graines-et', 'ferme-graines-on', 'ferme-graines-son']);
+  expect(defs.map((d) => d.id).sort()).toEqual(['french-6e-grammar-spelling-sorting-a', 'french-6e-grammar-spelling-sorting-ce', 'french-6e-grammar-spelling-sorting-et', 'french-6e-grammar-spelling-sorting-on', 'french-6e-grammar-spelling-sorting-son']);
   for (const def of defs)
     for (const it of def.items) {
       expect(String(it.prompt)).toContain('…');
@@ -236,38 +236,38 @@ it('chaque type de chaque biome a au moins un exercice', () => {
 });
 
 it('pickExercise varie entre les exercices d’un même niveau (le moins joué d’abord)', () => {
-  const first = pickExercise('foret', 'chasse-son', 1)!;
+  const first = pickExercise('french-6e-phonology', 'sound-hunt', 1)!;
   expect(first.level).toBe(1);
-  const second = pickExercise('foret', 'chasse-son', 1, { [first.id]: { attempts: 1 } })!;
+  const second = pickExercise('french-6e-phonology', 'sound-hunt', 1, { [first.id]: { attempts: 1 } })!;
   expect(second.id).not.toBe(first.id);
   expect(second.level).toBe(1);
   // Niveau 2 demandé : on reste au niveau 2 ; niveau 9 : le plus haut disponible.
-  expect(pickExercise('foret', 'chasse-son', 2)!.level).toBe(2);
-  expect(pickExercise('foret', 'chasse-son', 9)!.level).toBe(3);
-  expect(pickExercise('foret', 'rimes', 1)?.type).toBe('rimes');
-  expect(pickExercise('tour', 'inconnu', 1)).toBeUndefined();
+  expect(pickExercise('french-6e-phonology', 'sound-hunt', 2)!.level).toBe(2);
+  expect(pickExercise('french-6e-phonology', 'sound-hunt', 9)!.level).toBe(3);
+  expect(pickExercise('french-6e-phonology', 'rhymes', 1)?.type).toBe('rhymes');
+  expect(pickExercise('french-6e-reading', 'inconnu', 1)).toBeUndefined();
 });
 
 it('questProgress garde la progression d’une mission quand la partie suivante tombe sur une autre variante', () => {
-  expect(questProgress('foret', 'chasse-son', {})).toBeUndefined();
-  const first = pickExercise('foret', 'chasse-son', 1)!;
+  expect(questProgress('french-6e-phonology', 'sound-hunt', {})).toBeUndefined();
+  const first = pickExercise('french-6e-phonology', 'sound-hunt', 1)!;
   const progress = { [first.id]: { stars: 2, attempts: 1, best: 0.8 } };
   // La prochaine partie proposée est une autre variante, jamais jouée…
-  const next = pickExercise('foret', 'chasse-son', 1, progress)!;
+  const next = pickExercise('french-6e-phonology', 'sound-hunt', 1, progress)!;
   expect(next.id).not.toBe(first.id);
   expect(progress[next.id]).toBeUndefined();
   // … mais la mission affiche toujours ses étoiles.
-  expect(questProgress('foret', 'chasse-son', progress)).toEqual({ stars: 2, attempts: 1, best: 0.8 });
+  expect(questProgress('french-6e-phonology', 'sound-hunt', progress)).toEqual({ stars: 2, attempts: 1, best: 0.8 });
   // Toutes variantes et niveaux confondus : meilleures étoiles, meilleur score, parties cumulées.
-  const level2 = exercisesOf('foret', 'chasse-son').find((e) => e.level === 2)!;
+  const level2 = exercisesOf('french-6e-phonology', 'sound-hunt').find((e) => e.level === 2)!;
   const more = { ...progress, [next.id]: { stars: 1, attempts: 2, best: 0.5 }, [level2.id]: { stars: 3, attempts: 1, best: 0.95 } };
-  expect(questProgress('foret', 'chasse-son', more)).toEqual({ stars: 3, attempts: 4, best: 0.95 });
+  expect(questProgress('french-6e-phonology', 'sound-hunt', more)).toEqual({ stars: 3, attempts: 4, best: 0.95 });
   // Les exercices d’autres missions ne comptent pas.
-  expect(questProgress('foret', 'rimes', more)).toBeUndefined();
+  expect(questProgress('french-6e-phonology', 'rhymes', more)).toBeUndefined();
 });
 
 it('français du collège : phrase à trou (ou question), 2 à 3 choix, règle affichée et explication', () => {
-  const defs = EXERCISES.filter((e) => ['carrefour', 'marais', 'falaise', 'cabinet', 'textes'].includes(e.biome));
+  const defs = EXERCISES.filter((e) => ['french-5e-homophones', 'french-5e-conjugation', 'french-4e-agreement', 'french-4e-vocabulary', 'french-3e-close-reading'].includes(e.biome));
   expect(
     defs
       .filter((e) => e.type === 'panneaux')
@@ -287,7 +287,7 @@ it('français du collège : phrase à trou (ou question), 2 à 3 choix, règle a
 });
 
 it('anglais : tout le contenu en anglais (lang: en), la réponse parmi les choix, une correction en français', () => {
-  const islands = BIOMES.filter((b) => b.subject === 'anglais').map((b) => b.id);
+  const islands = BIOMES.filter((b) => b.subject === 'english').map((b) => b.id);
   const defs = EXERCISES.filter((e) => islands.includes(e.biome));
   expect(defs.length).toBeGreaterThan(0);
   for (const def of defs) {
@@ -371,7 +371,7 @@ it('LV2 : la bonne réponse ne se devine pas à sa longueur', () => {
   // moitié où elle est plus courte qu'un piège. Hors listes rangées (heures, nombres). Le Refuge des carnets d'abord :
   // le Relais et le Jardin ont des items où la réponse est la plus longue, à reprendre à part (cadrage du contenu).
   const fautes: string[] = [];
-  for (const def of EXERCISES.filter((e) => e.biome === 'refuge')) {
+  for (const def of EXERCISES.filter((e) => e.biome === 'lv2-3e-travel')) {
     let inegaux = 0;
     let plusCourte = 0;
     for (const it of def.items) {
@@ -387,7 +387,7 @@ it('LV2 : la bonne réponse ne se devine pas à sa longueur', () => {
     }
     if (plusCourte < Math.ceil(inegaux / 2)) fautes.push(`${def.id} : plus courte ${plusCourte} fois sur ${inegaux}`);
   }
-  expect(EXERCISES.some((e) => e.biome === 'refuge')).toBe(true);
+  expect(EXERCISES.some((e) => e.biome === 'lv2-3e-travel')).toBe(true);
   expect(fautes).toEqual([]);
 });
 

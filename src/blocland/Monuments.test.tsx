@@ -9,7 +9,7 @@ import { useMonumentBuilder } from './useMonumentBuilder';
 import { getMonument, monumentNeeds } from './world/monuments';
 import { planCells } from './world/plans';
 
-const OBS = getMonument('monument-observatoire')!;
+const OBS = getMonument('landmark-6e-1')!;
 
 function Page() {
   return <MonumentPage builder={useMonumentBuilder(OBS)} />;
@@ -38,13 +38,13 @@ it('un monument dit ce que c’est, ce qu’il demande et où gagner les blocs',
 
 it('« Poser tout ce que j’ai » emploie les blocs en poche ; fini, il rapporte l’XP et le succès Patrimoine', async () => {
   const user = userEvent.setup();
-  localStorage.setItem('dysapps:game', JSON.stringify({ stock: { brique: 40, bois: 5 } }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ stock: { 'maths-6e-calculation': 40, 'french-6e-phonology': 5 } }));
   renderIn(<Page />);
   await user.click(screen.getByRole('button', { name: /Poser tout ce que j’ai/ }));
-  const posed = monumentNeeds(OBS).brique! + 5;
+  const posed = monumentNeeds(OBS)['maths-6e-calculation']! + 5;
   expect(screen.getByText(new RegExp(`^${posed} blocs posés\\. Il en reste ${OBS.cells.length - posed} à poser`))).toBeInTheDocument();
   const saved = JSON.parse(localStorage.getItem('dysapps:game')!);
-  expect(saved.stock.brique).toBe(40 - monumentNeeds(OBS).brique!);
+  expect(saved.stock['maths-6e-calculation']).toBe(40 - monumentNeeds(OBS)['maths-6e-calculation']!);
   expect(saved.world.parts[OBS.id]).toHaveLength(posed);
 
   cleanup();
@@ -59,12 +59,12 @@ it('« Poser tout ce que j’ai » emploie les blocs en poche ; fini, il rapport
 });
 
 it('quand il ne reste que des blocs assemblés à poser, il dit pourquoi les boutons sont grisés et où aller', () => {
-  const poutres = monumentNeeds(OBS).poutre!;
+  const poutres = monumentNeeds(OBS)['compound-6e']!;
   // Tout le reste est posé : les cases restantes attendent des poutres.
   const posees = planCells(OBS)
-    .filter((c) => c.block !== 'poutre')
+    .filter((c) => c.block !== 'compound-6e')
     .map((c) => c.key);
-  localStorage.setItem('dysapps:game', JSON.stringify({ stock: { bois: 0 }, world: { parts: { [OBS.id]: posees } } }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ stock: { 'french-6e-phonology': 0 }, world: { parts: { [OBS.id]: posees } } }));
   renderIn(<Page />);
   expect(screen.getByRole('button', { name: /Poser le bloc suivant/ })).toBeDisabled();
   expect(document.body.textContent).toContain(`Il te reste ${poutres} poutres à poser : va à la Fabrique pour les assembler.`);
@@ -73,7 +73,7 @@ it('quand il ne reste que des blocs assemblés à poser, il dit pourquoi les bou
 
 it('la liste des monuments : par archipel, ceux des archipels pas encore atteints sont fermés', () => {
   renderIn(<MonumentsList />);
-  expect(screen.getByRole('link', { name: /L’observatoire des baleines\s*0 \/ \d+ blocs posés/ })).toHaveAttribute('href', '/aventure/monument-observatoire');
+  expect(screen.getByRole('link', { name: /L’observatoire des baleines\s*0 \/ \d+ blocs posés/ })).toHaveAttribute('href', '/aventure/landmark-6e-1');
   expect(screen.getByRole('link', { name: /Le temple de marbre\s*Archipel fermé/ })).toBeInTheDocument();
 });
 
@@ -87,15 +87,15 @@ it('« Poser » impossible : une ligne visible dit ce qui manque ; la liste des 
   expect(screen.getByRole('button', { name: /Poser le bloc suivant/ })).toBeDisabled();
   // Des blocs en poche : on peut poser, la ligne s'efface.
   cleanup();
-  localStorage.setItem('dysapps:game', JSON.stringify({ stock: { brique: 2 } }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ stock: { 'maths-6e-calculation': 2 } }));
   renderIn(<Page />);
   expect(document.querySelector('.monument-lacking')).toBeNull();
   expect(screen.getByRole('button', { name: /Poser le bloc suivant/ })).toBeEnabled();
 });
 
 it('la ligne de ce qui manque : les deux plus gros manques, puis « d’autres blocs »', () => {
-  expect(lackingLine([['pierre', 3]], {})).toBe('Il manque 3 blocs de pierre.');
-  expect(lackingLine([['bois', 5], ['brique', 30]], { bois: 2 })).toBe('Il manque 30 briques et 3 blocs de bois.');
-  expect(lackingLine([['bois', 5], ['brique', 30], ['pierre', 1]], {})).toBe('Il manque 30 briques, 5 blocs de bois et d’autres blocs.');
-  expect(lackingLine([['bois', 5]], { bois: 5 })).toBe('');
+  expect(lackingLine([['french-6e-letter-confusion', 3]], {})).toBe('Il manque 3 blocs de pierre.');
+  expect(lackingLine([['french-6e-phonology', 5], ['maths-6e-calculation', 30]], { 'french-6e-phonology': 2 })).toBe('Il manque 30 briques et 3 blocs de bois.');
+  expect(lackingLine([['french-6e-phonology', 5], ['maths-6e-calculation', 30], ['french-6e-letter-confusion', 1]], {})).toBe('Il manque 30 briques, 5 blocs de bois et d’autres blocs.');
+  expect(lackingLine([['french-6e-phonology', 5]], { 'french-6e-phonology': 5 })).toBe('');
 });

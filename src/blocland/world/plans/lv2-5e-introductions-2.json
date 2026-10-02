@@ -1,0 +1,10 @@
+{
+  "id": "lv2-5e-introductions-2",
+  "biome": "lv2-5e-introductions",
+  "name": "L’écurie du relais",
+  "reward": {
+    "xp": 50,
+    "chest": {}
+  },
+  "done": "Un toit, une porte et une écurie ! Les chevaux de la diligence sont à l’abri, et mon nid est sur la cheminée."
+}

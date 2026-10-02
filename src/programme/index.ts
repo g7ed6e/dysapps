@@ -12,11 +12,11 @@ export { SOURCES, LICENCE_OUVERTE } from './sources';
 
 /** Les disciplines, dans l'ordre du portail, avec le libellé et l'abréviation des identifiants (c3.fr.…). */
 export const DISCIPLINES: Record<Discipline, { label: string; short: string }> = {
-  francais: { label: 'Français', short: 'fr' },
+  french: { label: 'Français', short: 'fr' },
   maths: { label: 'Mathématiques', short: 'ma' },
-  anglais: { label: 'Anglais (langues vivantes)', short: 'en' },
-  allemand: { label: 'Allemand (LV2)', short: 'de' },
-  espagnol: { label: 'Espagnol (LV2)', short: 'es' },
+  english: { label: 'Anglais (langues vivantes)', short: 'en' },
+  german: { label: 'Allemand (LV2)', short: 'de' },
+  spanish: { label: 'Espagnol (LV2)', short: 'es' },
 };
 
 export const DOMAINES: readonly ProgrammeDomaine[] = [...DOMAINES_C3, ...DOMAINES_C4];

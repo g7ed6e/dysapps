@@ -52,7 +52,7 @@ function lockedArchipelagoText(state: ReturnType<typeof useBlocland>['state'], c
 export function BloclandPage() {
   const univers = useUnivers();
   const { state } = useBlocland();
-  const at = state.world.place ?? 'foret';
+  const at = state.world.place ?? 'french-6e-phonology';
   const here = archipelagoOf(at).classe;
   const textes = useTextes();
   const destination = nextDestination(state, textes.archipels, textes.libelles);

@@ -33,63 +33,63 @@ import { bossIsletCells, bossIsletSteps, bridgePath, creatureSpot, ILOT_DE_COTE,
  * de 16) des ouvrages de cet archipel, qui ne change pas de plus de deux cases.
  */
 const ECOLES: Partial<Record<BiomeId, { archipel: ArchipelagoId; core: { x: number; y: number }; ext: { left: number; right: number; front: number; back: number }; ouvrages: Record<string, number> }>> = {
-  foret: {
+  'french-6e-phonology': {
     archipel: '6e',
     core: { x: 67, y: 59 },
     ext: { left: 6, right: 5, front: 3, back: 6 },
     ouvrages: {
-      'foret-mine': 13,
-      'foret-ferme': 16,
-      'mine-carriere': 18,
-      'ferme-tour': 14,
-      'foret-plaine': 20,
-      'plaine-riviere': 21,
-      'mine-riviere': 34,
-      'plaine-volcan': 19,
-      'ferme-volcan': 25,
-      'ferme-baie': 29,
-      'foret-horloge': 21,
-      'baie-horloge': 14,
+      'french-6e-phonology-french-6e-letter-confusion': 13,
+      'french-6e-phonology-french-6e-grammar-spelling': 16,
+      'french-6e-letter-confusion-french-6e-word-spelling': 18,
+      'french-6e-grammar-spelling-french-6e-reading': 14,
+      'french-6e-phonology-maths-6e-calculation': 20,
+      'maths-6e-calculation-maths-6e-fractions': 21,
+      'french-6e-letter-confusion-maths-6e-fractions': 34,
+      'maths-6e-calculation-maths-6e-decimals': 19,
+      'french-6e-grammar-spelling-maths-6e-decimals': 25,
+      'french-6e-grammar-spelling-english-6e-vocabulary': 29,
+      'french-6e-phonology-english-6e-grammar': 21,
+      'english-6e-vocabulary-english-6e-grammar': 14,
     },
   },
-  marche: {
+  'maths-5e-proportionality': {
     archipel: '5e',
     core: { x: 69, y: 317 },
     ext: { left: 3, right: 4, front: 2, back: 3 },
     ouvrages: {
-      'glacier-marche': 13,
-      'marche-marais': 30,
-      'carrefour-marais': 13,
-      'marche-comptoir': 10,
-      'marais-manoir': 11,
-      'comptoir-manoir': 24,
-      'comptoir-relais': 10,
+      'maths-5e-signed-numbers-maths-5e-proportionality': 13,
+      'maths-5e-proportionality-french-5e-conjugation': 30,
+      'french-5e-homophones-french-5e-conjugation': 13,
+      'maths-5e-proportionality-english-5e-vocabulary': 10,
+      'french-5e-conjugation-english-5e-grammar': 11,
+      'english-5e-vocabulary-english-5e-grammar': 24,
+      'english-5e-vocabulary-lv2-5e-introductions': 10,
     },
   },
-  atelier: {
+  'maths-4e-algebra': {
     archipel: '4e',
     core: { x: 62, y: 632 },
     ext: { left: 3, right: 3, front: 2, back: 4 },
     ouvrages: {
-      'atelier-forge': 9,
-      'atelier-falaise': 10,
-      'falaise-cabinet': 12,
-      'forge-gare': 11,
-      'cabinet-theatre': 10,
-      'theatre-jardin': 10,
+      'maths-4e-algebra-maths-4e-powers': 9,
+      'maths-4e-algebra-french-4e-agreement': 10,
+      'french-4e-agreement-french-4e-vocabulary': 12,
+      'maths-4e-powers-english-4e-grammar': 11,
+      'french-4e-vocabulary-english-4e-comprehension': 10,
+      'english-4e-comprehension-lv2-4e-daily-life': 10,
     },
   },
-  phare: {
+  'maths-3e-functions': {
     archipel: '3e',
     core: { x: 58, y: 912 },
     ext: { left: 3, right: 3, front: 3, back: 3 },
     ouvrages: {
-      'phare-belvedere': 17,
-      'phare-donnees': 16,
-      'phare-textes': 28,
-      'belvedere-studio': 13,
-      'donnees-chateau': 11,
-      'chateau-refuge': 7,
+      'maths-3e-functions-maths-3e-geometry': 17,
+      'maths-3e-functions-maths-3e-statistics': 16,
+      'maths-3e-functions-french-3e-close-reading': 28,
+      'maths-3e-geometry-english-3e-comprehension': 13,
+      'maths-3e-statistics-english-3e-grammar': 11,
+      'english-3e-grammar-lv2-3e-travel': 7,
     },
   },
 };
@@ -122,12 +122,12 @@ it('la côte d’une île-école est celle d’avant, repoussée de deux cases :
     expect(tirage(def, x - 2, y + 17), id).toEqual({ x, y: y + 15 });
   }
   // Une île sans cœur agrandi ni déplacement lit son dessin à sa place.
-  expect(tirage(islandDef('volcan'), 10, 20)).toEqual({ x: 10, y: 20 });
+  expect(tirage(islandDef('maths-6e-decimals'), 10, 20)).toEqual({ x: 10, y: 20 });
   // Une île écartée le lit là où elle était.
-  const ferme = islandDef('ferme');
+  const ferme = islandDef('french-6e-grammar-spelling');
   expect(ferme.deplacee).toEqual({ x: -2, y: 0 });
   expect(tirage(ferme, 20, 70)).toEqual({ x: 22, y: 70 });
-  const glacier = islandDef('glacier');
+  const glacier = islandDef('maths-5e-signed-numbers');
   expect(glacier.deplacee).toEqual({ x: -2, y: 0 });
   expect(tirage(glacier, 30, 330)).toEqual({ x: 32, y: 330 });
 });
@@ -205,7 +205,7 @@ it('dans le cœur d’une île-école, les bornes, la créature, les lieux et la
     const spot = creatureSpot(id);
     const decorDesMarges = new Set(margesDuCoeur(def).filter((m) => m.decor).map((m) => `${m.x - def.core.x},${m.y - def.core.y}`));
     expect(decorDesMarges.has(`${spot.x},${spot.y}`), id).toBe(false);
-    for (const place of ['ecole', 'trophees'] as const)
+    for (const place of ['school', 'trophies'] as const)
       expect(placeSpot(place, id), `${id} ${place}`).toMatchObject({ x: def.core.x + VILLAGE_PLACES[place].at.x, y: def.core.y + VILLAGE_PLACES[place].at.y });
   }
   // Le coin de la zone des plans ne bouge jamais (les clés de sauvegarde en dépendent) ; sur les îles-écoles, elle
@@ -218,21 +218,21 @@ it('les ouvrages partent du cœur de 20', () => {
   const depart = (id: string) => bridgePath(BRIDGES.find((b) => b.id === id)!)[0];
   const arrivee = (id: string) => bridgePath(BRIDGES.find((b) => b.id === id)!).at(-1)!;
   // La Forêt. Vers la Plaine et vers l'Horloge : depuis le bord droit du cœur agrandi (x = 67 + 17).
-  expect(depart('foret-plaine').x).toBe(84);
-  expect(depart('foret-horloge').x).toBe(84);
+  expect(depart('french-6e-phonology-maths-6e-calculation').x).toBe(84);
+  expect(depart('french-6e-phonology-english-6e-grammar').x).toBe(84);
   // Le sentier de la Mine part du bord du cœur agrandi.
-  expect(depart('foret-mine').x).toBe(85);
+  expect(depart('french-6e-phonology-french-6e-letter-confusion').x).toBe(85);
   // Le Marché. Vers le Comptoir, depuis sa côte droite repoussée ; le sentier du Glacier arrive au bord gauche de sa terre.
-  expect(depart('marche-comptoir').x).toBe(69 + 18 + 4);
-  expect(arrivee('glacier-marche').x).toBe(69 - 2 - 1);
+  expect(depart('maths-5e-proportionality-english-5e-vocabulary').x).toBe(69 + 18 + 4);
+  expect(arrivee('maths-5e-signed-numbers-maths-5e-proportionality').x).toBe(69 - 2 - 1);
   // L'Atelier. Vers la Forge et vers la Falaise, depuis sa côte repoussée de part et d'autre.
-  expect(depart('atelier-forge').x).toBe(62 - 2 - 3 - 1);
-  expect(depart('atelier-falaise').x).toBe(62 + 18 + 3);
+  expect(depart('maths-4e-algebra-maths-4e-powers').x).toBe(62 - 2 - 3 - 1);
+  expect(depart('maths-4e-algebra-french-4e-agreement').x).toBe(62 + 18 + 3);
   // Le Phare. Vers le Belvédère et l'Observatoire des données, depuis sa côte repoussée ; le col des textes, depuis
   // l'arrière de sa terre.
-  expect(depart('phare-belvedere').x).toBe(58 - 2 - 3);
-  expect(depart('phare-donnees').x).toBe(58 + 18 + 3);
-  expect(depart('phare-textes').y).toBe(912 + 18 + 3 - 1);
+  expect(depart('maths-3e-functions-maths-3e-geometry').x).toBe(58 - 2 - 3);
+  expect(depart('maths-3e-functions-maths-3e-statistics').x).toBe(58 + 18 + 3);
+  expect(depart('maths-3e-functions-french-3e-close-reading').y).toBe(912 + 18 + 3 - 1);
 });
 
 it('l’îlot du Gardien d’une île-école glisse sur le côté : de l’eau franche avec sa terre, hors de l’axe du cœur, pas plus près de la caméra', () => {
@@ -244,8 +244,8 @@ it('l’îlot du Gardien d’une île-école glisse sur le côté : de l’eau f
     const c = coeurDe(def);
     // Sa rangée, devant la côte repoussée (pas plus près de la caméra) ; sur le côté, à gauche (à droite, le navire).
     // (Retouches : la Forêt recule d'une case vers sa terre, l'Atelier glisse de 7 cases.)
-    const glisse = id === 'atelier' ? 7 : 9;
-    const recul = id === 'foret' ? 1 : 0;
+    const glisse = id === 'maths-4e-algebra' ? 7 : 9;
+    const recul = id === 'french-6e-phonology' ? 1 : 0;
     expect(origineDeLIlot(def), id).toEqual({ x: def.core.x - 2 - glisse, y: def.core.y - 2 - def.ext.front - ISLET_H - 3 + recul, z: def.altitude });
     const ilot = bossIsletCells(id);
     expect(ilot.every((p) => !isLand(def, p.x, p.y)), id).toBe(true);
@@ -258,7 +258,7 @@ it('l’îlot du Gardien d’une île-école glisse sur le côté : de l’eau f
     const dernier = pas.at(-1)!;
     expect(isLand(def, dernier.x, dernier.y + 1) || isLand(def, dernier.x - 1, dernier.y + 1), id).toBe(true);
     // Au port, loin de la jetée et du navire.
-    if (id === 'marche' || id === 'atelier') {
+    if (id === 'maths-5e-proportionality' || id === 'maths-4e-algebra') {
       const d = dockBox(id);
       expect(ilot.every((p) => p.x < d.x0 - 2 || p.x > d.x1 + 2 || p.y < d.y0 - 2 || p.y > d.y1 + 2), id).toBe(true);
     }
@@ -306,16 +306,16 @@ it('l’îlot du Gardien d’une île-école : au moins trois cases d’eau de t
 it('le quai d’une île-école qui est un port suit sa côte repoussée ; les clés de ses étapes ne bougent pas', () => {
   // La côte au pied de la jetée, deux cases plus bas qu'avant (316 au Marché, 630 à l'Atelier) ; le navire recule
   // d'autant (305 et 618 avant).
-  expect(shoreY('marche')).toBe(314);
-  expect(dockOrigin('marche')).toEqual({ x: 69 + 15, y: 303, z: 0 });
-  expect(ORIGINE_DU_QUAI.marche).toEqual({ x: 15, y: -12, z: -4 });
-  expect(shoreY('atelier')).toBe(628);
-  expect(dockOrigin('atelier')).toEqual({ x: 62 + 15, y: 616, z: 0 });
-  expect(ORIGINE_DU_QUAI.atelier).toEqual({ x: 15, y: -14, z: -7 });
+  expect(shoreY('maths-5e-proportionality')).toBe(314);
+  expect(dockOrigin('maths-5e-proportionality')).toEqual({ x: 69 + 15, y: 303, z: 0 });
+  expect(ORIGINE_DU_QUAI['maths-5e-proportionality']).toEqual({ x: 15, y: -12, z: -4 });
+  expect(shoreY('maths-4e-algebra')).toBe(628);
+  expect(dockOrigin('maths-4e-algebra')).toEqual({ x: 62 + 15, y: 616, z: 0 });
+  expect(ORIGINE_DU_QUAI['maths-4e-algebra']).toEqual({ x: 15, y: -14, z: -7 });
   // Le Phare, port des Îles du Ciel, sans étape du Bloc-Navire : le navire s'y pose devant sa côte repoussée.
-  expect(shoreY('phare')).toBe(912 - 2 - 3 + 1);
-  expect(dockOrigin('phare')).toEqual({ x: 58 + 15, y: 896, z: 9 });
-  expect(ORIGINE_DU_QUAI.phare).toBeUndefined();
+  expect(shoreY('maths-3e-functions')).toBe(912 - 2 - 3 + 1);
+  expect(dockOrigin('maths-3e-functions')).toEqual({ x: 58 + 15, y: 896, z: 9 });
+  expect(ORIGINE_DU_QUAI['maths-3e-functions']).toBeUndefined();
 });
 
 it('les voisines d’une île-école s’écartent : les ouvrages de son archipel gardent leur longueur à deux cases près, les bras de mer restent ouverts', () => {

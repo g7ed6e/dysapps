@@ -121,7 +121,7 @@ const TOUR_DU_COUCOU: Anneau[] = [
 ];
 
 export const STATUES_6E: Partial<Record<BiomeId, Statue>> = {
-  foret: {
+  'french-6e-phonology': {
     nom: 'le Grand Chêne',
     allume: 'les nervures de sa couronne',
     sculpture: (T, a) => {
@@ -157,7 +157,7 @@ export const STATUES_6E: Partial<Record<BiomeId, Statue>> = {
         );
     },
   },
-  mine: {
+  'french-6e-letter-confusion': {
     nom: 'le Golem de roche',
     allume: 'la gemme de sa poitrine',
     sculpture: (T, a) => {
@@ -214,7 +214,7 @@ export const STATUES_6E: Partial<Record<BiomeId, Statue>> = {
       );
     },
   },
-  carriere: {
+  'french-6e-word-spelling': {
     nom: 'la Dune vivante',
     allume: 'ses strates',
     sculpture: (T, a) => {
@@ -253,7 +253,7 @@ export const STATUES_6E: Partial<Record<BiomeId, Statue>> = {
       }
     },
   },
-  ferme: {
+  'french-6e-grammar-spelling': {
     nom: 'le Taureau couché',
     allume: 'son joug',
     sculpture: (T, a) => {
@@ -296,7 +296,7 @@ export const STATUES_6E: Partial<Record<BiomeId, Statue>> = {
     },
     veines: (T, a) => pave(T, X_DU_TAUREAU - 1.1, 5.3, -0.62, X_DU_TAUREAU + 1.1, 5.55, -0.38, a.lueur),
   },
-  tour: {
+  'french-6e-reading': {
     nom: 'la Chouette de verre',
     allume: 'le vitrail de son poitrail',
     sculpture: (T, a) => {
@@ -323,7 +323,7 @@ export const STATUES_6E: Partial<Record<BiomeId, Statue>> = {
       plaque(T, 0.32, 4.15, 0.16, 0.28, 4, a.lueur, z);
     },
   },
-  plaine: {
+  'maths-6e-calculation': {
     nom: 'le Hanneton de bronze',
     allume: 'la jointure de ses élytres',
     sculpture: (T, a) => {
@@ -360,7 +360,7 @@ export const STATUES_6E: Partial<Record<BiomeId, Statue>> = {
       );
     },
   },
-  riviere: {
+  'maths-6e-fractions': {
     nom: 'le Brochet d’argent',
     allume: 'la bande de son flanc',
     sculpture: (T, a) => {
@@ -407,13 +407,13 @@ export const STATUES_6E: Partial<Record<BiomeId, Statue>> = {
       );
     },
   },
-  volcan: {
+  'maths-6e-decimals': {
     nom: 'le Dragon de cendre',
     allume: 'son ventre de braise',
     sculpture: (T, a) => dragonAssis(surLeSocle(T, 1, 7 / HAUTEUR_DU_DRAGON), a, 'repliees'),
     veines: (T, a) => ventreDuDragon(surLeSocle(T, 1, 7 / HAUTEUR_DU_DRAGON), a),
   },
-  baie: {
+  'english-6e-vocabulary': {
     nom: 'le Lion de pierre',
     allume: 'la lanterne devant ses pattes',
     sculpture: (T, a) => {
@@ -448,7 +448,7 @@ export const STATUES_6E: Partial<Record<BiomeId, Statue>> = {
     // La lanterne, près de deux fois plus grande, posée sur le quai devant les pattes.
     veines: (T, a) => fuseau(deTroisQuarts(T, X_DU_LION), LANTERNE_DU_LION, 4, a.lueur, { x: X_DU_LION, z: -0.9 }),
   },
-  horloge: {
+  'english-6e-grammar': {
     nom: 'le Coucou',
     allume: 'son cadran',
     sculpture: (T, a) => {

@@ -32,7 +32,7 @@ export { ASSEMBLAGE_PATH };
 function useRecettes(): { premiere: Recette | undefined; autres: Recette[] } {
   const { state } = useBlocland();
   const [params] = useSearchParams();
-  const ici = archipelagoOf(state.world.place ?? 'foret').classe;
+  const ici = archipelagoOf(state.world.place ?? 'french-6e-phonology').classe;
   const atteints = new Set<ArchipelagoId>([...reachableIslands(state.world.links)].map(archipelagoOfIsland));
   atteints.add(ici);
   const ouvertes = RECETTES.filter((r) => atteints.has(r.archipelago));

@@ -2,7 +2,7 @@
 // relectures (consultants Archipéo et Blocland, référent dys) : le cadrage de la voisine, le pont avec « Pas de LV2 », le
 // cœur en herbe, Muscade et le Soleil de Blocland, la tonnelle, le poteau-lanterne, l'osier et le ponton.
 import { DEFAULT_SETTINGS, retenirReglages, type Lv2Choice } from '../../core/settings';
-import { BIOMES, BLOCKS, type BiomeId } from '../biomes';
+import { BLOC, BIOMES, BLOCKS, type BiomeId } from '../biomes';
 import { bridgesOf, grantAccess, otherEnd } from './archipelago';
 import { buildingStages } from './architect';
 import { DEPTH_DU_SOL, GRASS } from './decor';
@@ -29,7 +29,7 @@ function avecLv2<T>(lv2: Lv2Choice, f: () => T): T {
 }
 
 it('les îles de la LV2 : le Relais au 5e, le Jardin des heures au 4e, le Refuge des carnets au 3e', () => {
-  expect(LV2.sort()).toEqual(['jardin', 'refuge', 'relais']);
+  expect(LV2.sort()).toEqual(['lv2-4e-daily-life', 'lv2-3e-travel', 'lv2-5e-introductions']);
 });
 
 it('l’île de la LV2 n’élargit jamais le cadrage de sa voisine (cadrage d’avant) ; depuis elle, la voisine compte', () => {
@@ -58,9 +58,9 @@ it('l’île de la LV2 n’élargit jamais le cadrage de sa voisine (cadrage d�
 
 describe('avec « Pas de LV2 », ni pont ni amorce vers l’île de la LV2', () => {
   const cas: [BiomeId, BiomeId, '5e' | '4e' | '3e'][] = [
-    ['comptoir', 'relais', '5e'],
-    ['theatre', 'jardin', '4e'],
-    ['chateau', 'refuge', '3e'],
+    ['english-5e-vocabulary', 'lv2-5e-introductions', '5e'],
+    ['english-4e-comprehension', 'lv2-4e-daily-life', '4e'],
+    ['english-3e-grammar', 'lv2-3e-travel', '3e'],
   ];
   for (const [voisine, ile, a] of cas) {
     const id = `${voisine}-${ile}`;
@@ -84,9 +84,9 @@ describe('avec « Pas de LV2 », ni pont ni amorce vers l’île de la LV2', () 
 });
 
 it('le cœur du Jardin est en herbe ; l’osier reste aux bordures du potager, au panier et aux bâtiments', () => {
-  const c = islandCenter('jardin');
-  const def = islandDef('jardin');
-  const cubes = worldCubes('4e', {}, { parts: {}, log: [], links: grantAccess([], ['jardin']) }, false);
+  const c = islandCenter('lv2-4e-daily-life');
+  const def = islandDef('lv2-4e-daily-life');
+  const cubes = worldCubes('4e', {}, { parts: {}, log: [], links: grantAccess([], ['lv2-4e-daily-life']) }, false);
   const coeur = cubes.filter((q) => q.sol && q.x >= def.core.x && q.x < def.core.x + CORE && q.y >= def.core.y && q.y < def.core.y + CORE);
   const dessus = new Map<string, (typeof coeur)[number]>();
   for (const q of coeur) {
@@ -96,7 +96,7 @@ it('le cœur du Jardin est en herbe ; l’osier reste aux bordures du potager, a
   expect(dessus.size).toBe(CORE * CORE);
   for (const q of dessus.values()) expect(q.color).toBe(GRASS);
   // L'osier du décor : les bordures du potager et le panier.
-  const osier = cubes.filter((q) => q.tag === 'jardin' && q.texture === 'osier');
+  const osier = cubes.filter((q) => q.tag === 'lv2-4e-daily-life' && q.texture === 'osier');
   expect(osier.length).toBeGreaterThan(0);
   // Jamais le sol : le décor (bordures, panier), les plans et les lieux de l'île (bâtis dans son bloc).
   expect(osier.some((q) => q.sol)).toBe(false);
@@ -106,7 +106,7 @@ it('le cœur du Jardin est en herbe ; l’osier reste aux bordures du potager, a
 
 describe('Blocland : Muscade et le Soleil de cuivre', () => {
   it('Muscade : le museau clair entre les yeux (le nez au ton du museau), le bout de la queue plus clair', () => {
-    const m = CREATURE_CUBES.jardin;
+    const m = CREATURE_CUBES['lv2-4e-daily-life'];
     const face = m.filter((q) => q.y === 0 && q.z === 4).sort((p, q) => p.x - q.x);
     expect(face.map((q) => q.color)).toEqual(['#1f1a16', '#c89a72', '#1f1a16']);
     const queue = m.filter((q) => q.y >= 3);
@@ -117,7 +117,7 @@ describe('Blocland : Muscade et le Soleil de cuivre', () => {
   });
 
   it('le Soleil : sans pied ni jambes, posé sur une dalle pleine d’un cube ; les rayons du bas en biais ne touchent pas le sol', () => {
-    const s = GUARDIAN_CUBES.jardin;
+    const s = GUARDIAN_CUBES['lv2-4e-daily-life'];
     const sol = s.filter((q) => q.z === 0);
     const xs = [...new Set(sol.map((q) => q.x))].sort((p, q) => p - q);
     const ys = [...new Set(sol.map((q) => q.y))].sort((p, q) => p - q);
@@ -134,20 +134,20 @@ describe('Blocland : Muscade et le Soleil de cuivre', () => {
 });
 
 it('la tonnelle : le portique fermé à angles droits (le linteau en (4, 3, 2) et (5, 3, 2)), la table en planches', () => {
-  const [, tonnelle] = buildingStages('jardin', 'osier');
+  const [, tonnelle] = buildingStages('lv2-4e-daily-life', BLOC.osier);
   const en = (x: number, y: number, z: number) => tonnelle.find((c) => c.x === x && c.y === y && c.z === z)?.block;
   expect(en(4, 3, 2)).toBe('osier');
   expect(en(5, 3, 2)).toBe('osier');
   expect(en(4, 3, 0)).toBe('bois');
   expect(en(5, 3, 0)).toBe('bois');
-  expect(tonnelle.some((c) => c.x >= 4 && c.block === 'barriere')).toBe(false);
+  expect(tonnelle.some((c) => c.x >= 4 && c.block === BLOC.barriere)).toBe(false);
 });
 
 it('le poteau-lanterne du potager est éteint : aucune lanterne dans le décor du Jardin', () => {
-  const cubes = worldCubes('4e', {}, { parts: {}, log: [], links: grantAccess([], ['jardin']) }, false);
-  const decor = cubes.filter((q) => q.tag === 'jardin' && q.decor);
+  const cubes = worldCubes('4e', {}, { parts: {}, log: [], links: grantAccess([], ['lv2-4e-daily-life']) }, false);
+  const decor = cubes.filter((q) => q.tag === 'lv2-4e-daily-life' && q.decor);
   expect(decor.some((q) => q.texture === 'lanterne')).toBe(false);
-  expect(decor.some((q) => q.color === BLOCKS.lanterne.side)).toBe(false);
+  expect(decor.some((q) => q.color === BLOCKS[BLOC.lanterne].side)).toBe(false);
 });
 
 describe('l’osier en 3D, calé sur la vue peinte, et lisible en gris', () => {
@@ -203,7 +203,7 @@ describe('l’osier en 3D, calé sur la vue peinte, et lisible en gris', () => {
 
 it('le ponton : l’échelle s’appuie sur la falaise, un pilier de pierre sous le rivage jusqu’à l’eau', () => {
   expect(DEPTH_DU_SOL).toBe(DEPTH);
-  const cubes = worldCubes('4e', {}, { parts: {}, log: [], links: grantAccess([], ['jardin']) }, false);
+  const cubes = worldCubes('4e', {}, { parts: {}, log: [], links: grantAccess([], ['lv2-4e-daily-life']) }, false);
   const ponton = cubes.filter((q) => q.decor?.startsWith('jardin/ponton@'));
   const echelle = ponton.filter((q) => q.texture === 'escalier');
   expect(echelle.length).toBeGreaterThan(0);
@@ -215,7 +215,7 @@ it('le ponton : l’échelle s’appuie sur la falaise, un pilier de pierre sous
 describe('le Soleil de cuivre d’Archipéo, jamais un rouage, lisible en gris', () => {
   const S = SOLEIL_DE_CUIVRE;
   // La statue droite (sans son tour), pour la lire dans son plan.
-  const f = sentinelleEnFacettes({ ...STATUES.jardin, tour: undefined });
+  const f = sentinelleEnFacettes({ ...STATUES['lv2-4e-daily-life'], tour: undefined });
   const sculpture = f.table.findIndex((p) => p.nom === 'sculpture');
   const veines = f.table.findIndex((p) => p.nom === 'veines');
   const centre = S.berceau + S.bout - S.enfonce;

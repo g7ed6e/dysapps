@@ -1,4 +1,4 @@
-import { BIOMES, BLOCKS } from '../biomes';
+import { BLOC, BIOMES, BLOCKS } from '../biomes';
 import { EMPTY_STATE, fillPlanCell, nextFillable, planStatus, sanitizeState, type GameState } from '../engine';
 import { ORIGINE_DES_MONUMENTS, ORIGINE_DU_QUAI, PLANS, PLAN_ZONE, activePlan, isPlanDone, planCells, plansFor } from './plans';
 import { toutConstruit } from './budget';
@@ -11,7 +11,7 @@ import { ARCHIPELAGO_IDS, islandDef } from './map';
 it('chaque île a un plan valide : dans la zone des plans, sur un sol plat et sans décor, avec des blocs gagnables', () => {
   // Le décor sans les créatures (elles se promènent) et sans les fantômes.
   const decor = ARCHIPELAGO_IDS.flatMap((a) =>
-    worldCubes(a, {}, { parts: {}, log: [], links: ['foret-mine', 'foret-ferme', 'mine-carriere', 'ferme-tour'] }, false),
+    worldCubes(a, {}, { parts: {}, log: [], links: ['french-6e-phonology-french-6e-letter-confusion', 'french-6e-phonology-french-6e-grammar-spelling', 'french-6e-letter-confusion-french-6e-word-spelling', 'french-6e-grammar-spelling-french-6e-reading'] }, false),
   ).filter((c) => !c.ghost);
   const at = new Set(decor.map((c) => `${c.x},${c.y},${c.z}`));
   BIOMES.forEach((b, i) => {
@@ -40,7 +40,7 @@ it('chaque île a un plan valide : dans la zone des plans, sur un sol plat et sa
 });
 
 it('pose les blocs du plan dans n’importe quel ordre, refuse sans bloc, et termine avec le coffre', () => {
-  const plan = plansFor('foret')[0];
+  const plan = plansFor('french-6e-phonology')[0];
   const cells = planCells(plan);
   const last = cells[cells.length - 1];
   const first = cells[0];
@@ -48,11 +48,11 @@ it('pose les blocs du plan dans n’importe quel ordre, refuse sans bloc, et ter
   expect(empty).toMatchObject({ ok: false, reason: 'plus-de-blocs', block: first.block });
   expect(fillPlanCell(EMPTY_STATE, plan, 0, 0, 0)).toMatchObject({ ok: false, reason: 'pas-dans-le-plan' });
 
-  let state: GameState = { ...EMPTY_STATE, stock: { bois: cells.length } };
+  let state: GameState = { ...EMPTY_STATE, stock: { [BLOC.bois]: cells.length } };
   const r = fillPlanCell(state, plan, last.x, last.y, last.z);
   expect(r.ok).toBe(true);
   state = r.state;
-  expect(state.stock.bois).toBe(cells.length - 1);
+  expect(state.stock[BLOC.bois]).toBe(cells.length - 1);
   expect(planStatus(state, plan)).toMatchObject({ done: 1, total: cells.length, complete: false });
   expect(fillPlanCell(state, plan, last.x, last.y, last.z)).toMatchObject({ ok: false, reason: 'deja-pose' });
 
@@ -75,13 +75,13 @@ it('pose les blocs du plan dans n’importe quel ordre, refuse sans bloc, et ter
 });
 
 it('affiche les fantômes d’un plan seulement sur une île ouverte, et les remplace une fois posés', () => {
-  const plan = plansFor('foret')[0];
+  const plan = plansFor('french-6e-phonology')[0];
   const first = planCells(plan)[0];
   const cubes = worldCubes('6e', {}, { parts: { [plan.id]: [first.key] }, log: [], links: [] });
   // Les fantômes des plans (les ponts fantômes sont au niveau du sol, z = 0).
-  const ghosts = cubes.filter((c) => c.ghost && c.z > 0 && c.tag === 'foret');
+  const ghosts = cubes.filter((c) => c.ghost && c.z > 0 && c.tag === 'french-6e-phonology');
   expect(ghosts.length).toBe(planCells(plan).length - 1);
-  expect(ghosts.every((c) => c.tag === 'foret')).toBe(true);
+  expect(ghosts.every((c) => c.tag === 'french-6e-phonology')).toBe(true);
   const { ox, oy } = islandOrigin(0);
   const built = cubes.find((c) => c.x === ox + first.x && c.y === oy + first.y && c.z === first.z + 1);
   expect(built?.ghost).toBeFalsy();
@@ -110,21 +110,21 @@ it('chaque île enchaîne trois plans sans chevauchement, et les coffres fournis
 });
 
 it('n’affiche les fantômes que du plan en cours, et enchaîne sur le suivant', () => {
-  const [first, second] = plansFor('foret');
+  const [first, second] = plansFor('french-6e-phonology');
   const none = worldCubes('6e', {}, { parts: {}, log: [], links: [] });
-  expect(none.filter((c) => c.ghost && c.z > 0 && c.tag === 'foret').length).toBe(planCells(first).length);
-  expect(activePlan('foret', {})).toBe(first);
+  expect(none.filter((c) => c.ghost && c.z > 0 && c.tag === 'french-6e-phonology').length).toBe(planCells(first).length);
+  expect(activePlan('french-6e-phonology', {})).toBe(first);
   const doneFirst = { [first.id]: planCells(first).map((c) => c.key) };
   expect(isPlanDone(first, doneFirst)).toBe(true);
-  expect(activePlan('foret', doneFirst)).toBe(second);
+  expect(activePlan('french-6e-phonology', doneFirst)).toBe(second);
   const after = worldCubes('6e', {}, { parts: doneFirst, log: [], links: [] });
-  expect(after.filter((c) => c.ghost && c.z > 0 && c.tag === 'foret').length).toBe(planCells(second).length);
-  expect(after.filter((c) => !c.ghost && c.texture === 'planches' && c.tag === 'foret' && c.z >= 1).length).toBeGreaterThanOrEqual(planCells(first).length);
+  expect(after.filter((c) => c.ghost && c.z > 0 && c.tag === 'french-6e-phonology').length).toBe(planCells(second).length);
+  expect(after.filter((c) => !c.ghost && c.texture === 'planches' && c.tag === 'french-6e-phonology' && c.z >= 1).length).toBeGreaterThanOrEqual(planCells(first).length);
 });
 
 it('écrit une ligne de journal quand un plan est terminé', () => {
-  const plan = plansFor('foret')[0];
-  let state: GameState = { ...EMPTY_STATE, stock: { bois: planCells(plan).length } };
+  const plan = plansFor('french-6e-phonology')[0];
+  let state: GameState = { ...EMPTY_STATE, stock: { [BLOC.bois]: planCells(plan).length } };
   for (const c of planCells(plan)) {
     const r = fillPlanCell(state, plan, c.x, c.y, c.z, '2026-09-25');
     if (r.ok) state = r.state;
@@ -141,14 +141,14 @@ describe('les origines figées des chantiers (séparation du jeu et du rendu, J1
       atelier: { x: 15, y: -14, z: -7 },
     });
     expect(ORIGINE_DES_MONUMENTS).toEqual({
-      'monument-observatoire': { x: 4, y: 23, z: 0 },
-      'monument-moulin': { x: 1, y: 24, z: 0 },
-      'monument-phare-large': { x: 23, y: 20, z: 0 },
-      'monument-kiosque': { x: -11, y: -12, z: 0 },
-      'monument-viaduc': { x: 16, y: -13, z: 0 },
-      'monument-amphitheatre': { x: -2, y: 24, z: 0 },
-      'monument-etoiles': { x: -14, y: 4, z: 0 },
-      'monument-temple': { x: -14, y: 6, z: 0 },
+      'landmark-6e-1': { x: 4, y: 23, z: 0 },
+      'landmark-6e-2': { x: 1, y: 24, z: 0 },
+      'landmark-5e-1': { x: 23, y: 20, z: 0 },
+      'landmark-5e-2': { x: -11, y: -12, z: 0 },
+      'landmark-4e-1': { x: 16, y: -13, z: 0 },
+      'landmark-4e-2': { x: -2, y: 24, z: 0 },
+      'landmark-3e-1': { x: -14, y: 4, z: 0 },
+      'landmark-3e-2': { x: -14, y: 6, z: 0 },
     });
     expect(Object.keys(ORIGINE_DU_QUAI).sort()).toEqual([...new Set(VEHICLE_STAGES.map((s) => s.biome))].sort());
     expect(Object.keys(ORIGINE_DES_MONUMENTS).sort()).toEqual(MONUMENTS.map((m) => m.id).sort());

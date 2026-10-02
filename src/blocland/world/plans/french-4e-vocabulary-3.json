@@ -1,0 +1,13 @@
+{
+  "id": "french-4e-vocabulary-3",
+  "biome": "french-4e-vocabulary",
+  "name": "Le perchoir du nid",
+  "reward": {
+    "xp": 60,
+    "chest": {
+      "trophy-gold": 2,
+      "trophy-crystal": 2
+    }
+  },
+  "done": "Un perchoir, une barrière, un escalier… Mon nid est complet, au sens propre comme au figuré."
+}

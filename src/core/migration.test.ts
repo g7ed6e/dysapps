@@ -9,9 +9,9 @@ import { sanitizeProgress } from './progress';
 import { sanitizeSettings } from './settings';
 import { degelerSauvegarde, gelerSauvegarde } from './storage';
 
-const cabane = getPlan('foret-cabane')!;
-const cabaneV1 = [...planV1('foret-cabane')!.blocks.keys()];
-const cour = getPlan('foret-cour')!;
+const cabane = getPlan('french-6e-phonology-1')!;
+const cabaneV1 = [...planV1('french-6e-phonology-1')!.blocks.keys()];
+const cour = getPlan('french-6e-phonology-3')!;
 const courDebut = planCells(cour)
   .slice(0, 3)
   .map((c) => c.key);
@@ -22,7 +22,7 @@ const ANCIENNE = {
   blocland: {
     progress: { 'foret-rimes-1': { stars: 3, attempts: 2, best: 1 }, 'mine-lettres-1': { stars: 1, attempts: 1, best: 0.5 } },
     spaced: [{ itemId: 'foret-rimes-1:chat', due: '2026-10-03', stage: 1, streak: 1 }],
-    inventory: { bois: 7, pierre: 2, toit: 9, lanterne: 1 },
+    inventory: { 'french-6e-phonology': 7, 'french-6e-letter-confusion': 2, 'roof': 9, 'lantern': 1 },
     streak: { current: 4, lastDay: '2026-10-01', cracked: false },
     types: { rimes: { level: 2, recent: [0.8, 1] } },
     chests: 2,
@@ -31,10 +31,10 @@ const ANCIENNE = {
     build: [{ x: 1, y: 1, z: 0, block: 'bois' }],
     village: {
       // La cabane terminée avec l'ancien dessin (plansV1) ; la cour commencée avec le nouveau.
-      plans: { 'foret-cabane': cabaneV1, 'foret-cour': courDebut },
-      journal: [{ day: '2026-09-20', plan: 'foret-cabane' }],
-      bridges: ['foret-mine'],
-      at: 'mine',
+      plans: { 'french-6e-phonology-1': cabaneV1, 'french-6e-phonology-3': courDebut },
+      journal: [{ day: '2026-09-20', plan: 'french-6e-phonology-1' }],
+      bridges: ['french-6e-phonology-french-6e-letter-confusion'],
+      at: 'french-6e-letter-confusion',
       placed: { foret: [{ x: 2, y: 1, z: 0, block: 'pierre' }] },
     },
     assemblageTirage: { poutre: tirage },
@@ -77,17 +77,17 @@ const ATTENDUE = {
   game: {
     progress: ANCIENNE.blocland.progress,
     spaced: ANCIENNE.blocland.spaced,
-    stock: { bois: 7, pierre: 2, toit: 9, lanterne: 1 },
+    stock: { 'french-6e-phonology': 7, 'french-6e-letter-confusion': 2, 'roof': 9, 'lantern': 1 },
     streak: ANCIENNE.blocland.streak,
     types: ANCIENNE.blocland.types,
     chests: 2,
     fluency: { 'texte-loup': [52, 47] },
     build: [{ x: 1, y: 1, z: 0, block: 'bois' }],
     world: {
-      parts: { 'foret-cabane': cabaneV1, 'foret-cour': courDebut },
-      log: [{ day: '2026-09-20', part: 'foret-cabane' }],
-      links: ['foret-mine'],
-      place: 'mine',
+      parts: { 'french-6e-phonology-1': cabaneV1, 'french-6e-phonology-3': courDebut },
+      log: [{ day: '2026-09-20', part: 'french-6e-phonology-1' }],
+      links: ['french-6e-phonology-french-6e-letter-confusion'],
+      place: 'french-6e-letter-confusion',
       placed: { foret: [{ x: 2, y: 1, z: 0, block: 'pierre' }] },
     },
     assemblyDraw: { poutre: tirage },
@@ -165,17 +165,17 @@ it('la partie et la progression lues gardent chaque compteur, un à un', () => {
   expect(partie.chests).toBe(2);
   expect(partie.fluency).toEqual({ 'texte-loup': [52, 47] });
   expect(partie.assemblyDraw).toEqual({ poutre: tirage });
-  expect(partie.world.links).toContain('foret-mine');
-  expect(partie.world.place).toBe('mine');
-  expect(partie.world.log).toEqual([{ day: '2026-09-20', part: 'foret-cabane' }]);
+  expect(partie.world.links).toContain('french-6e-phonology-french-6e-letter-confusion');
+  expect(partie.world.place).toBe('french-6e-letter-confusion');
+  expect(partie.world.log).toEqual([{ day: '2026-09-20', part: 'french-6e-phonology-1' }]);
   // La cabane terminée avec l'ancien dessin reste terminée ; la cour garde ses trois cases.
-  expect(partie.world.parts['foret-cabane']).toEqual(planCells(cabane).map((c) => c.key));
-  expect(partie.world.parts['foret-cour']).toEqual(courDebut);
+  expect(partie.world.parts['french-6e-phonology-1']).toEqual(planCells(cabane).map((c) => c.key));
+  expect(partie.world.parts['french-6e-phonology-3']).toEqual(courDebut);
   // Le stock : 7 bois + 1 de l'ancien chantier ; 2 pierres + 1 de l'ancienne zone libre ; le coffre du nouveau dessin.
-  expect(partie.stock.bois).toBe(7 + 1);
-  expect(partie.stock.pierre).toBe(2 + 1);
-  expect(partie.stock.toit).toBe(avant.stock.toit);
-  expect(partie.stock.lanterne).toBe(avant.stock.lanterne);
+  expect(partie.stock['french-6e-phonology']).toBe(7 + 1);
+  expect(partie.stock['french-6e-letter-confusion']).toBe(2 + 1);
+  expect(partie.stock['roof']).toBe(avant.stock['roof']);
+  expect(partie.stock['lantern']).toBe(avant.stock['lantern']);
   const progression = sanitizeProgress(lire('progress'));
   expect(progression).toEqual(progressionAvant);
   expect(progression.xp).toBe(1234);
@@ -255,17 +255,17 @@ it('une ancienne clé restée d’une migration interrompue s’efface, sans rie
 });
 
 it('un vieil onglet a écrit `blocland` après la migration : sa partie, plus récente, est gardée', () => {
-  ranger({ game: { stock: { bois: 3 }, version: GAME_VERSION }, blocland: { inventory: { bois: 99 } }, reprise: ANCIENNE.reprise });
+  ranger({ game: { stock: { 'french-6e-phonology': 3 }, version: GAME_VERSION }, blocland: { inventory: { 'french-6e-phonology': 99 } }, reprise: ANCIENNE.reprise });
   migrateStorage();
-  expect(lire('game')).toEqual({ stock: { bois: 99 }, version: GAME_VERSION });
+  expect(lire('game')).toEqual({ stock: { 'french-6e-phonology': 99 }, version: GAME_VERSION });
   expect(localStorage.getItem('dysapps:blocland')).toBeNull();
   expect(lire('resume')).toEqual(ANCIENNE.reprise);
 });
 
 it('dans une partie, un champ neuf a priorité sur l’ancien', () => {
-  expect(translateGame({ stock: { bois: 1 }, inventory: { bois: 9 }, world: { parts: {}, plans: { x: [] }, at: 'mine' } })).toEqual({
-    stock: { bois: 1 },
-    world: { parts: {}, place: 'mine' },
+  expect(translateGame({ stock: { 'french-6e-phonology': 1 }, inventory: { 'french-6e-phonology': 9 }, world: { parts: {}, plans: { x: [] }, at: 'french-6e-letter-confusion' } })).toEqual({
+    stock: { 'french-6e-phonology': 1 },
+    world: { parts: {}, place: 'french-6e-letter-confusion' },
   });
   expect(translateProgress({ passages: 2, voyages: 1 })).toEqual({ passages: 2 });
 });

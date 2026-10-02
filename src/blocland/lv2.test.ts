@@ -7,7 +7,7 @@ import { getBiome, missionsJouables } from './biomes';
 import { bossId, guardianStatus, isBossUnlocked, typesWithContent } from './boss';
 import { exercisesOf } from './exercises';
 
-const relais = getBiome('relais')!;
+const relais = getBiome('lv2-5e-introductions')!;
 
 it('le Relais des voyageurs ouvre les missions de la LV2 choisie, au même rang dans les deux langues', () => {
   const es = missionsJouables(relais, 'es');
@@ -18,7 +18,7 @@ it('le Relais des voyageurs ouvre les missions de la LV2 choisie, au même rang 
   expect(de).toHaveLength(es.length);
   expect(missionsJouables(relais, 'none')).toEqual([]);
   // Les autres îles ne changent pas.
-  const comptoir = getBiome('comptoir')!;
+  const comptoir = getBiome('english-5e-vocabulary')!;
   expect(missionsJouables(comptoir, 'de')).toEqual(comptoir.exercises);
   expect(missionsJouables(comptoir, 'none')).toEqual(comptoir.exercises);
 });
@@ -31,26 +31,26 @@ it('sans LV2, le Gardien du Relais ne propose pas de défi ; chaque langue a ses
 it('la matière LV2 prend le nom de la langue choisie, et disparaît avec « Pas de LV2 »', () => {
   expect(subjectInfo('lv2', 'es').title).toBe('Espagnol');
   expect(subjectInfo('lv2', 'de').title).toBe('Allemand');
-  expect(subjectInfo('anglais', 'de').title).toBe('Anglais');
+  expect(subjectInfo('english', 'de').title).toBe('Anglais');
   expect(visibleSubjects('es')).toContain('lv2');
   expect(visibleSubjects('none')).not.toContain('lv2');
-  expect(visibleSubjects('none')).toEqual(['francais', 'maths', 'anglais']);
+  expect(visibleSubjects('none')).toEqual(['french', 'maths', 'english']);
 });
 
 it('avec « Pas de LV2 », aucun pont ne mène au Relais ; avec une LV2, le pont depuis le Comptoir est proposé', () => {
   // Le Comptoir ouvert : le pont vers le Relais devient possible.
-  const faits = grantAccess([], ['comptoir']);
-  const versRelais = (lv2: 'es' | 'none') => buildableBridges(faits, 'relais', undefined, lv2).map((b) => b.id);
+  const faits = grantAccess([], ['english-5e-vocabulary']);
+  const versRelais = (lv2: 'es' | 'none') => buildableBridges(faits, 'lv2-5e-introductions', undefined, lv2).map((b) => b.id);
   expect(versRelais('none')).toEqual([]);
-  expect(buildableBridges(faits, 'comptoir', undefined, 'none').some((b) => b.to === 'relais' || b.from === 'relais')).toBe(false);
-  expect(bridgesOf('relais').map((b) => [b.from, b.to])).toEqual([['comptoir', 'relais']]);
-  expect(versRelais('es')).toHaveLength(bridgesOf('relais').length);
+  expect(buildableBridges(faits, 'english-5e-vocabulary', undefined, 'none').some((b) => b.to === 'lv2-5e-introductions' || b.from === 'lv2-5e-introductions')).toBe(false);
+  expect(bridgesOf('lv2-5e-introductions').map((b) => [b.from, b.to])).toEqual([['english-5e-vocabulary', 'lv2-5e-introductions']]);
+  expect(versRelais('es')).toHaveLength(bridgesOf('lv2-5e-introductions').length);
 });
 
 it('« À revoir » ne propose que les missions de la LV2 choisie', () => {
-  const ids = CATALOG.filter((m) => m.biome === 'relais').map((m) => m.id);
+  const ids = CATALOG.filter((m) => m.biome === 'lv2-5e-introductions').map((m) => m.id);
   const spaced = ids.map((id) => ({ itemId: `${id}:1`, due: '2026-01-01', stage: 0, streak: 0 }));
-  const bridges = grantAccess([], ['relais']);
+  const bridges = grantAccess([], ['lv2-5e-introductions']);
   try {
     retenirReglages({ ...DEFAULT_SETTINGS, lv2: 'de' });
     const types = questsToReview(spaced, bridges, '2026-09-28').map((q) => q.type);
@@ -63,10 +63,10 @@ it('« À revoir » ne propose que les missions de la LV2 choisie', () => {
 });
 
 it('la Diligence battue en espagnol reste vaincue quand l’élève passe à l’allemand ou à « Pas de LV2 »', () => {
-  const bridges = grantAccess([], ['relais']);
+  const bridges = grantAccess([], ['lv2-5e-introductions']);
   // Deux étoiles à chaque mission espagnole, puis le défi gagné.
-  const progress: Record<string, { stars: number }> = { [bossId('relais')]: { stars: 2 } };
-  for (const x of missionsJouables(relais, 'es')) progress[exercisesOf('relais', x.id)[0].id] = { stars: 2 };
+  const progress: Record<string, { stars: number }> = { [bossId('lv2-5e-introductions')]: { stars: 2 } };
+  for (const x of missionsJouables(relais, 'es')) progress[exercisesOf('lv2-5e-introductions', x.id)[0].id] = { stars: 2 };
   try {
     retenirReglages({ ...DEFAULT_SETTINGS, lv2: 'es' });
     expect(guardianStatus(relais, progress, bridges)).toBe('beaten');

@@ -1,0 +1,107 @@
+{
+  "id": "french-6e-phonology-sound-hunt-an",
+  "biome": "french-6e-phonology",
+  "type": "sound-hunt",
+  "level": 1,
+  "target": "an",
+  "instruction": "Tape les mots où tu entends le son [an], comme dans maman. Puis valide.",
+  "items": [
+    {
+      "key": "enfant",
+      "word": "enfant",
+      "image": "🧒",
+      "heard": "[an]",
+      "correct": true
+    },
+    {
+      "key": "bonbon",
+      "word": "bonbon",
+      "image": "🍬",
+      "heard": "[on]",
+      "correct": false
+    },
+    {
+      "key": "chanter",
+      "word": "chanter",
+      "image": "🎶",
+      "heard": "[an]",
+      "correct": true
+    },
+    {
+      "key": "pain",
+      "word": "pain",
+      "image": "🍞",
+      "heard": "[in]",
+      "correct": false
+    },
+    {
+      "key": "dent",
+      "word": "dent",
+      "image": "🦷",
+      "heard": "[an]",
+      "correct": true
+    },
+    {
+      "key": "vent",
+      "word": "vent",
+      "image": "🌬️",
+      "heard": "[an]",
+      "correct": true
+    },
+    {
+      "key": "poisson",
+      "word": "poisson",
+      "image": "🐟",
+      "heard": "[on]",
+      "correct": false
+    },
+    {
+      "key": "gant",
+      "word": "gant",
+      "image": "🧤",
+      "heard": "[an]",
+      "correct": true
+    },
+    {
+      "key": "lion",
+      "word": "lion",
+      "image": "🦁",
+      "heard": "[on]",
+      "correct": false
+    },
+    {
+      "key": "pantalon",
+      "word": "pantalon",
+      "image": "👖",
+      "heard": "[an]",
+      "correct": true
+    },
+    {
+      "key": "éléphant",
+      "word": "éléphant",
+      "image": "🐘",
+      "heard": "[an]",
+      "correct": true
+    },
+    {
+      "key": "tente",
+      "word": "tente",
+      "image": "⛺",
+      "heard": "[an]",
+      "correct": true
+    }
+  ],
+  "feedback": {
+    "wrong": "Dans {word}, on entend {heard}. Écoute encore et compare avec {target}.",
+    "correct": "Bravo, tu entends bien [an] !"
+  },
+  "reward": {
+    "block": "french-6e-phonology",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

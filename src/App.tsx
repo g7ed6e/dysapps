@@ -87,21 +87,21 @@ function IslandEntry() {
   const immersive = useImmersive();
   if (immersive) return <WorldPage />;
   // La Carte et la page des quatre archipels n'existent qu'en 3D : en vue simple, c'est la liste des îles (déjà par archipel).
-  if (biomeId === 'carte' || biomeId === 'monde') return <Navigate to="/aventure" replace />;
+  if (biomeId === 'map' || biomeId === 'world') return <Navigate to="/aventure" replace />;
   // Le menu du village : en vue simple, c'est le menu en page.
   if (biomeId === 'menu') return <Navigate to={MENU_PATH} replace />;
   // La salle des trophées : en vue simple, c'est la page Succès.
-  if (biomeId === 'trophees') return <Navigate to="/succes" replace />;
+  if (biomeId === 'trophies') return <Navigate to="/succes" replace />;
   // L'école du village : un panneau dans le monde, une page en vue simple.
-  if (biomeId === 'ecole') return <SchoolPage />;
+  if (biomeId === 'school') return <SchoolPage />;
   // Le lieu où l'on assemble les blocs (GD-2) : un panneau dans le monde, une page en vue simple.
-  if (biomeId === 'assemblage') return <AssemblagePage />;
+  if (biomeId === 'assembly') return <AssemblagePage />;
   // Les monuments : des panneaux dans le monde, des pages en vue simple.
-  if (biomeId === 'monuments') return <MonumentsPage />;
+  if (biomeId === 'landmarks') return <MonumentsPage />;
   const monument = biomeId ? getMonument(biomeId) : undefined;
   if (monument) return <MonumentEntry monument={monument} />;
   // « Mes blocs » : une page en vue simple, un panneau dans le monde en 3D.
-  return biomeId === 'blocs' ? <InventoryPage /> : <BiomePage />;
+  return biomeId === 'stock' ? <InventoryPage /> : <BiomePage />;
 }
 function MonumentEntry({ monument }: { monument: MonumentDef }) {
   return <MonumentPage builder={useMonumentBuilder(monument)} />;
@@ -109,5 +109,5 @@ function MonumentEntry({ monument }: { monument: MonumentDef }) {
 // Le voyage en Bloc-Navire : un écran HTML en vue simple ; en 3D, le monde le joue depuis le panneau du port.
 function VoyageEntry() {
   const { vers } = useParams();
-  return useImmersive() ? <Navigate to={`/aventure/${vers === '6e' ? 'plaine' : vers === '5e' ? 'marche' : vers === '4e' ? 'atelier' : 'phare'}`} replace /> : <VoyagePage />;
+  return useImmersive() ? <Navigate to={`/aventure/${vers === '6e' ? 'maths-6e-calculation' : vers === '5e' ? 'maths-5e-proportionality' : vers === '4e' ? 'maths-4e-algebra' : 'maths-3e-functions'}`} replace /> : <VoyagePage />;
 }

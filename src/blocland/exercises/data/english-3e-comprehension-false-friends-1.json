@@ -1,0 +1,239 @@
+{
+  "id": "english-3e-comprehension-false-friends-1",
+  "biome": "english-3e-comprehension",
+  "type": "false-friends",
+  "level": 1,
+  "lang": "en",
+  "instruction": "Que veut dire le mot entre guillemets ? Attention aux faux amis. La règle est affichée.",
+  "items": [
+    {
+      "key": "english-3e-comprehension-false-friends-1-0",
+      "prompt": "I thought he was French, but “actually” he is Belgian.",
+      "spoken": "I thought he was French, but “actually” he is Belgian.",
+      "choices": [
+        "en fait",
+        "actuellement",
+        "activement"
+      ],
+      "choicesLang": "fr",
+      "answer": "en fait",
+      "hint": "Ce mot ressemble à un mot français, mais il ne veut pas dire la même chose !",
+      "explanation": "actually = en fait (actuellement se dit now ou currently).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Faux amis",
+          "lines": [
+            "actually = en fait (actuellement = now, currently)",
+            "library = bibliothèque (une librairie = a bookshop)",
+            "sensible = raisonnable ; sensitive = sensible",
+            "eventually = finalement (éventuellement = maybe)",
+            "large = grand ; to attend = assister à ; a coin = une pièce de monnaie"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-comprehension-false-friends-1-1",
+      "prompt": "I borrow books at the “library”.",
+      "spoken": "I borrow books at the “library”.",
+      "choices": [
+        "la bibliothèque",
+        "la librairie",
+        "la liberté"
+      ],
+      "choicesLang": "fr",
+      "answer": "la bibliothèque",
+      "hint": "Ce mot ressemble à un mot français, mais il ne veut pas dire la même chose !",
+      "explanation": "library = la bibliothèque (une librairie = a bookshop).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Faux amis",
+          "lines": [
+            "actually = en fait (actuellement = now, currently)",
+            "library = bibliothèque (une librairie = a bookshop)",
+            "sensible = raisonnable ; sensitive = sensible",
+            "eventually = finalement (éventuellement = maybe)",
+            "large = grand ; to attend = assister à ; a coin = une pièce de monnaie"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-comprehension-false-friends-1-2",
+      "prompt": "Don’t be silly, be “sensible”!",
+      "spoken": "Don’t be silly, be “sensible”!",
+      "choices": [
+        "raisonnable",
+        "sensible",
+        "sucré"
+      ],
+      "choicesLang": "fr",
+      "answer": "raisonnable",
+      "hint": "Ce mot ressemble à un mot français, mais il ne veut pas dire la même chose !",
+      "explanation": "sensible = raisonnable (le français « sensible » se dit sensitive).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Faux amis",
+          "lines": [
+            "actually = en fait (actuellement = now, currently)",
+            "library = bibliothèque (une librairie = a bookshop)",
+            "sensible = raisonnable ; sensitive = sensible",
+            "eventually = finalement (éventuellement = maybe)",
+            "large = grand ; to attend = assister à ; a coin = une pièce de monnaie"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-comprehension-false-friends-1-3",
+      "prompt": "Tom will “attend” the meeting tomorrow.",
+      "spoken": "Tom will “attend” the meeting tomorrow.",
+      "choices": [
+        "assister à",
+        "attendre",
+        "atteindre"
+      ],
+      "choicesLang": "fr",
+      "answer": "assister à",
+      "hint": "Ce mot ressemble à un mot français, mais il ne veut pas dire la même chose !",
+      "explanation": "to attend = assister à (attendre = to wait).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Faux amis",
+          "lines": [
+            "actually = en fait (actuellement = now, currently)",
+            "library = bibliothèque (une librairie = a bookshop)",
+            "sensible = raisonnable ; sensitive = sensible",
+            "eventually = finalement (éventuellement = maybe)",
+            "large = grand ; to attend = assister à ; a coin = une pièce de monnaie"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-comprehension-false-friends-1-4",
+      "prompt": "I found a “coin” in the street: one pound!",
+      "spoken": "I found a “coin” in the street: one pound!",
+      "choices": [
+        "une pièce de monnaie",
+        "un coin",
+        "un caillou"
+      ],
+      "choicesLang": "fr",
+      "answer": "une pièce de monnaie",
+      "hint": "Ce mot ressemble à un mot français, mais il ne veut pas dire la même chose !",
+      "explanation": "a coin = une pièce de monnaie (un coin = a corner).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Faux amis",
+          "lines": [
+            "actually = en fait (actuellement = now, currently)",
+            "library = bibliothèque (une librairie = a bookshop)",
+            "sensible = raisonnable ; sensitive = sensible",
+            "eventually = finalement (éventuellement = maybe)",
+            "large = grand ; to attend = assister à ; a coin = une pièce de monnaie"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-comprehension-false-friends-1-5",
+      "prompt": "I’d like a “large” pizza, please.",
+      "spoken": "I’d like a “large” pizza, please.",
+      "choices": [
+        "grande",
+        "large",
+        "légère"
+      ],
+      "choicesLang": "fr",
+      "answer": "grande",
+      "hint": "Ce mot ressemble à un mot français, mais il ne veut pas dire la même chose !",
+      "explanation": "large = grand (le français « large » se dit wide).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Faux amis",
+          "lines": [
+            "actually = en fait (actuellement = now, currently)",
+            "library = bibliothèque (une librairie = a bookshop)",
+            "sensible = raisonnable ; sensitive = sensible",
+            "eventually = finalement (éventuellement = maybe)",
+            "large = grand ; to attend = assister à ; a coin = une pièce de monnaie"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-comprehension-false-friends-1-6",
+      "prompt": "It was hard, but “eventually” we won.",
+      "spoken": "It was hard, but “eventually” we won.",
+      "choices": [
+        "finalement",
+        "éventuellement",
+        "évidemment"
+      ],
+      "choicesLang": "fr",
+      "answer": "finalement",
+      "hint": "Ce mot ressemble à un mot français, mais il ne veut pas dire la même chose !",
+      "explanation": "eventually = finalement (éventuellement = maybe).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Faux amis",
+          "lines": [
+            "actually = en fait (actuellement = now, currently)",
+            "library = bibliothèque (une librairie = a bookshop)",
+            "sensible = raisonnable ; sensitive = sensible",
+            "eventually = finalement (éventuellement = maybe)",
+            "large = grand ; to attend = assister à ; a coin = une pièce de monnaie"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-comprehension-false-friends-1-7",
+      "prompt": "My brother is very “sensitive”: he cries at every film.",
+      "spoken": "My brother is very “sensitive”: he cries at every film.",
+      "choices": [
+        "sensible",
+        "raisonnable",
+        "sportif"
+      ],
+      "choicesLang": "fr",
+      "answer": "sensible",
+      "hint": "Relis la règle : sensible et sensitive ne veulent pas dire la même chose.",
+      "explanation": "sensitive = sensible (l’anglais sensible = raisonnable).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Faux amis",
+          "lines": [
+            "actually = en fait (actuellement = now, currently)",
+            "library = bibliothèque (une librairie = a bookshop)",
+            "sensible = raisonnable ; sensitive = sensible",
+            "eventually = finalement (éventuellement = maybe)",
+            "large = grand ; to attend = assister à ; a coin = une pièce de monnaie"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Pas piégé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "english-3e-comprehension",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

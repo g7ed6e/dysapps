@@ -16,7 +16,7 @@ export type Couverture = 'ardoise' | 'terre-cuite';
  * voisins en terre cuite), le Jardin des heures (4e, DA LV2-4), voisin du Théâtre, d'ardoise #3E3636 (le 4e garde
  * une île de terre cuite sur six), et le Refuge des carnets (3e, DA LV2-5), d'ardoise enneigée.
  */
-export const TERRE_CUITE_SUR: readonly string[] = ['ferme', 'mine', 'comptoir', 'theatre', 'belvedere'];
+export const TERRE_CUITE_SUR: readonly string[] = ['french-6e-grammar-spelling', 'french-6e-letter-confusion', 'english-5e-vocabulary', 'english-4e-comprehension', 'maths-3e-geometry'];
 
 /** La terre cuite, la même dans les quatre archipels. */
 export const TERRE_CUITE: Couleur = 0xc0764a;

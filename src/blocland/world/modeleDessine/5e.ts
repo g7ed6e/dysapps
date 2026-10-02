@@ -37,14 +37,14 @@ const ABORDS = 3;
  * d'ardoise de l'auberge se lit encore sur le ciel, et la ligne des crêtes ne finit pas à plat.
  */
 export const CRETES_5E: Partial<Record<BiomeId, Sommet[]>> = {
-  glacier: [
+  'maths-5e-signed-numbers': [
     { x: 4, h: 11, l: 7, pans: [5, 8] },
     { x: 13, h: 8, l: 5, pans: [6, 4] },
   ],
-  carrefour: [{ x: 9, h: 8, l: 9 }],
-  manoir: [{ x: 7, h: 9, l: 8 }],
-  comptoir: [{ x: 5, h: 7, l: 7 }],
-  relais: [{ x: 13, h: 6, l: 7 }],
+  'french-5e-homophones': [{ x: 9, h: 8, l: 9 }],
+  'english-5e-grammar': [{ x: 7, h: 9, l: 8 }],
+  'english-5e-vocabulary': [{ x: 5, h: 7, l: 7 }],
+  'lv2-5e-introductions': [{ x: 13, h: 6, l: 7 }],
 };
 
 const smooth = (t: number) => t * t * (3 - 2 * t);

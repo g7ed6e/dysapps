@@ -17,10 +17,10 @@
 
 | bloc | archipel | recette | Blocland | Archipéo |
 | --- | --- | --- | --- | --- |
-| `poutre` | 6e | bois × 2 · brique × 1 | Poutre | Madrier |
-| `vitrail` | 5e | glace × 2 · panneau × 1 | Vitrail (vitraux) | Hublot |
-| `engrenage` | 4e | acier × 2 · rail × 1 | Engrenage | Poulie |
-| `miroir` | 3e | lentille × 2 · quartz × 1 | Miroir | Loupe |
+| `compound-6e` | 6e | french-6e-phonology × 2 · maths-6e-calculation × 1 | Poutre | Madrier |
+| `compound-5e` | 5e | maths-5e-signed-numbers × 2 · french-5e-homophones × 1 | Vitrail (vitraux) | Hublot |
+| `compound-4e` | 4e | maths-4e-powers × 2 · english-4e-grammar × 1 | Engrenage | Poulie |
+| `compound-3e` | 3e | french-3e-close-reading × 2 · maths-3e-statistics × 1 | Miroir | Loupe |
 
 ## Les questions
 
@@ -29,7 +29,7 @@
 > (au moins 8). Trois choix : la réponse, un piège de chaque matière. `lu` ne lit que le document : la question
 > a son propre bouton. `npm run contenu` les écrit dans `src/blocland/exercises/data/assemblage-<bloc>.json`.
 
-### La poutre · `poutre`
+### La poutre · `compound-6e`
 
 - compétences : c3.fr.langue.genre-nombre · c3.fr.langue.accord-sujet-verbe · c3.fr.langue.homophonie · c3.fr.langue.phonemes-graphemes · c3.fr.langue.mots-invariables · c3.fr.lecture.reprises · c3.fr.lecture.explicite · c3.fr.lecture.lexique-contexte · c3.ma.nombres.problemes · c3.ma.nombres.calcul-mental · c3.ma.grandeurs.perimetre · c3.ma.grandeurs.durees
 - consigne : Lis, calcule, puis choisis la bonne réponse. Le rappel est affiché.
@@ -157,7 +157,7 @@
       - Il manque = ce qu’il faut encore pour arriver au prix.
       - Pour trouver ce qui manque, compte du plus petit au plus grand.
 
-### Le vitrail · `vitrail`
+### Le vitrail · `compound-5e`
 
 - compétences : c4.ma.a.relatifs · c4.ma.a.calcul-relatifs · c4.ma.a.fractions · c4.ma.a.calcul-fractions · c4.fr.langue.orthographe-lexicale · c3.fr.langue.homophonie
 - consigne : Lis, calcule, puis choisis la phrase juste et bien écrite. Le rappel est affiché.
@@ -285,7 +285,7 @@
       - Un tiers de 9 : on partage 9 en 3 parts égales, 9 ÷ 3 = 3.
       - s’en = se + en (il s’en va). sans = le contraire de avec.
 
-### L’engrenage · `engrenage`
+### L’engrenage · `compound-4e`
 
 - compétences : c4.ma.a.puissances · c4.ma.a.carres-racine · c4.ma.a.ecritures-ordres-de-grandeur · c4.ma.a.divisibilite-premiers · c4.en.langue.lexique · c4.en.langue.temps-verbaux · c4.en.langue.modaux-passif
 - langue : en
@@ -417,7 +417,7 @@ Pour tous les items :
       - will have = aura ; each year = chaque année ; times more = fois plus
       - Multiplier par 10, c’est ajouter un zéro.
 
-### Le miroir · `miroir`
+### Le miroir · `compound-3e`
 
 - compétences : c4.fr.langue.sens-des-mots · c4.fr.langue.enonciation · c4.fr.langue.discours-rapporte · c4.fr.langue.passif · c4.fr.langue.coherence-textuelle · c4.fr.lecture.procedes · c4.fr.lecture.controle · c3.fr.lecture.implicite · c4.ma.b.probabilites · c4.ma.b.indicateurs · c4.ma.b.effectifs-frequences · c4.ma.b.lire-donnees · c4.ma.b.pourcentages-echelles
 - consigne : Lis le texte, puis choisis la bonne réponse. Le rappel est affiché.

@@ -2,7 +2,7 @@
 // décor propre au cœur de chaque île, les repères (un grand ouvrage par région, visible de loin), les cascades des îles
 // en altitude et l'habillage de la mer (rochers qui affleurent, bancs de sable). Générateur pur, sans Three.js : il pose
 // des cubes par une fonction `put` que lui donne le terrain, qui décide où ils vont et ce qu'ils ne recouvrent pas.
-import { BLOCKS, type BiomeId } from '../biomes';
+import { BLOC, BLOCKS, type BiomeId } from '../biomes';
 import type { VoxelCube } from './cube';
 import { coeurDe, inCore, isLand, LACS, noise, type ArchipelagoId, type Decor, type IslandDef, type LandCell } from './map';
 
@@ -38,7 +38,7 @@ function tree(put: Put, x: number, y: number, base: number, tall = 2): void {
 
 /** Décor propre à chaque biome, en coordonnées relatives à l'île. `h` donne la hauteur du sol d'une case. */
 export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => number) => void> = {
-  foret: (put, h) => {
+  'french-6e-phonology': (put, h) => {
     // Derrière la salle des trophées, l'arbre de (1, 10) a laissé la place à Mousso, qui s'y tient hors de la vue des
     // lieux du village, avec ses pas, comme les créatures des trois autres îles-écoles (GD-3, directeur artistique).
     // Le grand arbre du plateau a quitté sa place (l'école s'y tient, et le plateau s'arrête à la colonne 11 ; redistribution
@@ -52,7 +52,7 @@ export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => numb
     ] as const)
       tree(put, tx, ty, h(tx, ty), tall);
   },
-  mine: (put, h) => {
+  'french-6e-letter-confusion': (put, h) => {
     // Un amas de roche et l'entrée sombre d'une galerie.
     for (const [x, y, z] of [
       [8, 3, 1],
@@ -60,7 +60,7 @@ export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => numb
       [9, 4, 1],
       [8, 3, 2],
     ] as const)
-      put(x, y, h(x, y) + z, BLOCKS.pierre.side);
+      put(x, y, h(x, y) + z, BLOCKS[BLOC.pierre].side);
     for (const [x, y] of [
       [2, 10],
       [3, 10],
@@ -68,15 +68,15 @@ export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => numb
       put(x, y, h(x, y) + 1, DARK);
       put(x, y, h(x, y) + 2, DARK);
     }
-    put(1, 9, h(1, 9) + 1, BLOCKS.pierre.side);
-    put(4, 11, h(4, 11) + 1, BLOCKS.pierre.side);
+    put(1, 9, h(1, 9) + 1, BLOCKS[BLOC.pierre].side);
+    put(4, 11, h(4, 11) + 1, BLOCKS[BLOC.pierre].side);
   },
-  carriere: (put, h) => {
-    for (let dx = 0; dx < 3; dx++) for (let dy = 0; dy < 3; dy++) put(8 + dx, 3 + dy, h(8 + dx, 3 + dy) + 1, BLOCKS.sable.side);
-    put(9, 4, h(9, 4) + 2, BLOCKS.sable.side);
-    put(3, 9, h(3, 9) + 1, BLOCKS.sable.side);
+  'french-6e-word-spelling': (put, h) => {
+    for (let dx = 0; dx < 3; dx++) for (let dy = 0; dy < 3; dy++) put(8 + dx, 3 + dy, h(8 + dx, 3 + dy) + 1, BLOCKS[BLOC.sable].side);
+    put(9, 4, h(9, 4) + 2, BLOCKS[BLOC.sable].side);
+    put(3, 9, h(3, 9) + 1, BLOCKS[BLOC.sable].side);
   },
-  ferme: (put, h) => {
+  'french-6e-grammar-spelling': (put, h) => {
     // Un champ de blé et deux poteaux de barrière.
     for (let dy = 2; dy <= 5; dy++) {
       put(8, dy, h(8, dy) + 1, HAY);
@@ -86,7 +86,7 @@ export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => numb
     put(3, 10, h(3, 10) + 1, TRUNK);
     tree(put, 4, 10, h(4, 10), 2);
   },
-  tour: (put, h) => {
+  'french-6e-reading': (put, h) => {
     // Une tour de verre avec un sommet en or.
     for (let z = 1; z <= 5; z++)
       for (const [dx, dy] of [
@@ -95,21 +95,21 @@ export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => numb
         [8, 5],
         [9, 5],
       ] as const)
-        put(dx, dy, h(dx, dy) + z, BLOCKS.verre.side);
-    put(8, 4, h(8, 4) + 6, BLOCKS.or.side);
-    put(3, 9, h(3, 9) + 1, BLOCKS.pierre.side);
+        put(dx, dy, h(dx, dy) + z, BLOCKS[BLOC.verre].side);
+    put(8, 4, h(8, 4) + 6, BLOCKS[BLOC.or].side);
+    put(3, 9, h(3, 9) + 1, BLOCKS[BLOC.pierre].side);
   },
-  plaine: (put, h) => {
+  'maths-6e-calculation': (put, h) => {
     // Un boulier de briques : deux rangées de cinq, séparées (on compte par cinq), et une borne de brique.
     for (let i = 0; i < 5; i++) {
-      put(7 + i, 2, h(7 + i, 2) + 1, i < 3 ? BLOCKS.brique.side : BLOCKS.sable.side);
-      put(7 + i, 4, h(7 + i, 4) + 1, i < 2 ? BLOCKS.brique.side : BLOCKS.sable.side);
+      put(7 + i, 2, h(7 + i, 2) + 1, i < 3 ? BLOCKS[BLOC.brique].side : BLOCKS[BLOC.sable].side);
+      put(7 + i, 4, h(7 + i, 4) + 1, i < 2 ? BLOCKS[BLOC.brique].side : BLOCKS[BLOC.sable].side);
     }
-    put(3, 9, h(3, 9) + 1, BLOCKS.brique.side);
-    put(3, 9, h(3, 9) + 2, BLOCKS.brique.side);
+    put(3, 9, h(3, 9) + 1, BLOCKS[BLOC.brique].side);
+    put(3, 9, h(3, 9) + 2, BLOCKS[BLOC.brique].side);
     tree(put, 1, 10, h(1, 10), 2);
   },
-  riviere: (put, h) => {
+  'maths-6e-fractions': (put, h) => {
     // Une mare de verre bordée de galets, un nénuphar, et des roseaux.
     for (const [x, y] of [
       [8, 3],
@@ -117,29 +117,29 @@ export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => numb
       [8, 4],
       [9, 4],
     ] as const)
-      put(x, y, h(x, y) + 1, BLOCKS.verre.side);
+      put(x, y, h(x, y) + 1, BLOCKS[BLOC.verre].side);
     put(9, 4, h(9, 4) + 2, LEAF);
     for (const [x, y] of [
       [7, 2],
       [10, 5],
       [7, 5],
     ] as const)
-      put(x, y, h(x, y) + 1, BLOCKS.galet.side);
+      put(x, y, h(x, y) + 1, BLOCKS[BLOC.galet].side);
     put(3, 9, h(3, 9) + 1, TRUNK);
     put(3, 9, h(3, 9) + 2, TRUNK);
     put(3, 9, h(3, 9) + 3, LEAF);
-    put(1, 10, h(1, 10) + 1, BLOCKS.galet.side);
+    put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.galet].side);
   },
-  volcan: (put, h) => {
+  'maths-6e-decimals': (put, h) => {
     // Un petit cône de pierre au sommet incandescent, des blocs d'obsidienne épars.
-    for (let dx = 0; dx < 3; dx++) for (let dy = 0; dy < 3; dy++) put(8 + dx, 3 + dy, h(8 + dx, 3 + dy) + 1, BLOCKS.pierre.side);
-    put(9, 4, h(9, 4) + 2, BLOCKS.pierre.side);
+    for (let dx = 0; dx < 3; dx++) for (let dy = 0; dy < 3; dy++) put(8 + dx, 3 + dy, h(8 + dx, 3 + dy) + 1, BLOCKS[BLOC.pierre].side);
+    put(9, 4, h(9, 4) + 2, BLOCKS[BLOC.pierre].side);
     put(9, 4, h(9, 4) + 3, HAY);
-    put(3, 9, h(3, 9) + 1, BLOCKS.obsidienne.side);
-    put(1, 10, h(1, 10) + 1, BLOCKS.obsidienne.side);
-    put(1, 10, h(1, 10) + 2, BLOCKS.obsidienne.side);
+    put(3, 9, h(3, 9) + 1, BLOCKS[BLOC.obsidienne].side);
+    put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.obsidienne].side);
+    put(1, 10, h(1, 10) + 2, BLOCKS[BLOC.obsidienne].side);
   },
-  glacier: (put, h) => {
+  'maths-5e-signed-numbers': (put, h) => {
     // Des congères de neige et une stalagmite de glace ; un thermomètre de blocs (froid en bas, chaud en haut).
     for (const [x, y] of [
       [8, 2],
@@ -148,12 +148,12 @@ export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => numb
       [10, 5],
     ] as const)
       put(x, y, h(x, y) + 1, SNOW);
-    for (let z = 1; z <= 4; z++) put(10, 3, h(10, 3) + z, z <= 2 ? BLOCKS.glace.side : z === 3 ? BLOCKS.verre.side : HAY);
+    for (let z = 1; z <= 4; z++) put(10, 3, h(10, 3) + z, z <= 2 ? BLOCKS[BLOC.glace].side : z === 3 ? BLOCKS[BLOC.verre].side : HAY);
     put(3, 9, h(3, 9) + 1, SNOW);
-    put(1, 10, h(1, 10) + 1, BLOCKS.glace.side);
-    put(1, 10, h(1, 10) + 2, BLOCKS.glace.side);
+    put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.glace].side);
+    put(1, 10, h(1, 10) + 2, BLOCKS[BLOC.glace].side);
   },
-  marche: (put, h) => {
+  'maths-5e-proportionality': (put, h) => {
     // Un étal à auvent de toile sur des poteaux, des caisses. L'école se tient maintenant à sa droite (redistribution
     // « Trois bandes », 02/10/2026) : l'étal s'arrête une case plus tôt, trois cases de large au lieu de quatre, sur le
     // plateau rogné. Glissé d'une case vers la gauche, son auvent cachait un trophée du bout de la salle (troisBandes.test.ts).
@@ -166,23 +166,23 @@ export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => numb
       put(x, y, h(x, y) + 1, TRUNK);
       put(x, y, h(x, y) + 2, TRUNK);
     }
-    for (let dx = 7; dx <= 9; dx++) for (let dy = 2; dy <= 5; dy++) put(dx, dy, h(dx, dy) + 3, BLOCKS.toile.side);
-    put(8, 3, h(8, 3) + 1, BLOCKS.bois.side);
-    put(9, 4, h(9, 4) + 1, BLOCKS.bois.side);
-    put(3, 9, h(3, 9) + 1, BLOCKS.bois.side);
-    put(1, 10, h(1, 10) + 1, BLOCKS.toile.side);
+    for (let dx = 7; dx <= 9; dx++) for (let dy = 2; dy <= 5; dy++) put(dx, dy, h(dx, dy) + 3, BLOCKS[BLOC.toile].side);
+    put(8, 3, h(8, 3) + 1, BLOCKS[BLOC.bois].side);
+    put(9, 4, h(9, 4) + 1, BLOCKS[BLOC.bois].side);
+    put(3, 9, h(3, 9) + 1, BLOCKS[BLOC.bois].side);
+    put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.toile].side);
   },
-  carrefour: (put, h) => {
+  'french-5e-homophones': (put, h) => {
     // Un poteau indicateur à trois panneaux, et une borne.
     for (let z = 1; z <= 4; z++) put(9, 3, h(9, 3) + z, TRUNK);
-    put(8, 3, h(8, 3) + 3, BLOCKS.panneau.side);
-    put(10, 3, h(10, 3) + 4, BLOCKS.panneau.side);
-    put(9, 4, h(9, 4) + 2, BLOCKS.panneau.side);
-    put(3, 9, h(3, 9) + 1, BLOCKS.pierre.side);
-    put(1, 10, h(1, 10) + 1, BLOCKS.panneau.side);
+    put(8, 3, h(8, 3) + 3, BLOCKS[BLOC.panneau].side);
+    put(10, 3, h(10, 3) + 4, BLOCKS[BLOC.panneau].side);
+    put(9, 4, h(9, 4) + 2, BLOCKS[BLOC.panneau].side);
+    put(3, 9, h(3, 9) + 1, BLOCKS[BLOC.pierre].side);
+    put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.panneau].side);
     tree(put, 7, 5, h(7, 5), 2);
   },
-  marais: (put, h) => {
+  'french-5e-conjugation': (put, h) => {
     // Des flaques de verre, des roseaux, une souche.
     for (const [x, y] of [
       [8, 2],
@@ -191,7 +191,7 @@ export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => numb
       [10, 4],
       [10, 5],
     ] as const)
-      put(x, y, h(x, y) + 1, BLOCKS.verre.side);
+      put(x, y, h(x, y) + 1, BLOCKS[BLOC.verre].side);
     for (const [x, y] of [
       [7, 4],
       [9, 5],
@@ -203,16 +203,16 @@ export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => numb
     }
     put(1, 10, h(1, 10) + 1, TRUNK);
   },
-  forge: (put, h) => {
+  'maths-4e-powers': (put, h) => {
     // Une cheminée de pierre au sommet incandescent, une enclume d'acier, des lingots.
-    for (let z = 1; z <= 4; z++) put(9, 3, h(9, 3) + z, z === 4 ? HAY : BLOCKS.pierre.side);
-    put(8, 5, h(8, 5) + 1, BLOCKS.acier.side);
-    put(10, 5, h(10, 5) + 1, BLOCKS.acier.side);
-    put(3, 9, h(3, 9) + 1, BLOCKS.or.side);
-    put(1, 10, h(1, 10) + 1, BLOCKS.acier.side);
-    put(1, 10, h(1, 10) + 2, BLOCKS.acier.side);
+    for (let z = 1; z <= 4; z++) put(9, 3, h(9, 3) + z, z === 4 ? HAY : BLOCKS[BLOC.pierre].side);
+    put(8, 5, h(8, 5) + 1, BLOCKS[BLOC.acier].side);
+    put(10, 5, h(10, 5) + 1, BLOCKS[BLOC.acier].side);
+    put(3, 9, h(3, 9) + 1, BLOCKS[BLOC.or].side);
+    put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.acier].side);
+    put(1, 10, h(1, 10) + 2, BLOCKS[BLOC.acier].side);
   },
-  atelier: (put, h) => {
+  'maths-4e-algebra': (put, h) => {
     // Une table à dessin (planches sur pieds) avec un calque, une pile de calques. L'école se tient à l'ancienne place de
     // la table, sur le bord du plateau rogné (redistribution « Trois bandes », 02/10/2026). Sur la place du village, la
     // table faisait fond à la borne du milieu, vue de la caméra (relectures du 02/10/2026) : elle se pose contre le flanc
@@ -220,32 +220,32 @@ export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => numb
     // de l'axe de la caméra vers une borne (troisBandes.test.ts). Le calque glisse au milieu du plateau, en (8, 4).
     put(-3, 5, h(-3, 5) + 1, TRUNK);
     put(-3, 7, h(-3, 7) + 1, TRUNK);
-    for (let dy = 5; dy <= 7; dy++) put(-3, dy, h(-3, dy) + 2, BLOCKS.bois.side);
-    put(-3, 6, h(-3, 6) + 3, BLOCKS.calque.side);
-    put(8, 4, h(8, 4) + 1, BLOCKS.calque.side);
-    put(3, 9, h(3, 9) + 1, BLOCKS.calque.side);
-    put(3, 9, h(3, 9) + 2, BLOCKS.calque.side);
-    put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
+    for (let dy = 5; dy <= 7; dy++) put(-3, dy, h(-3, dy) + 2, BLOCKS[BLOC.bois].side);
+    put(-3, 6, h(-3, 6) + 3, BLOCKS[BLOC.calque].side);
+    put(8, 4, h(8, 4) + 1, BLOCKS[BLOC.calque].side);
+    put(3, 9, h(3, 9) + 1, BLOCKS[BLOC.calque].side);
+    put(3, 9, h(3, 9) + 2, BLOCKS[BLOC.calque].side);
+    put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.pierre].side);
   },
-  falaise: (put, h) => {
+  'french-4e-agreement': (put, h) => {
     // Une paroi d'ardoise en escalier, une corde (barrière) qui pend, un rocher.
-    for (let z = 1; z <= 4; z++) for (let dx = 0; dx < 5 - z; dx++) put(7 + dx, 2, h(7 + dx, 2) + z, BLOCKS.ardoise.side);
-    put(9, 3, h(9, 3) + 1, BLOCKS.pierre.side);
-    put(3, 9, h(3, 9) + 1, BLOCKS.ardoise.side);
-    put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
-    put(1, 10, h(1, 10) + 2, BLOCKS.pierre.side);
+    for (let z = 1; z <= 4; z++) for (let dx = 0; dx < 5 - z; dx++) put(7 + dx, 2, h(7 + dx, 2) + z, BLOCKS[BLOC.ardoise].side);
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.pierre].side);
+    put(3, 9, h(3, 9) + 1, BLOCKS[BLOC.ardoise].side);
+    put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.pierre].side);
+    put(1, 10, h(1, 10) + 2, BLOCKS[BLOC.pierre].side);
   },
-  cabinet: (put, h) => {
+  'french-4e-vocabulary': (put, h) => {
     // Des étagères de bois chargées de parchemins, un pupitre.
-    for (const x of [8, 10]) for (let z = 1; z <= 3; z++) put(x, 3, h(x, 3) + z, z === 2 ? BLOCKS.parchemin.side : BLOCKS.bois.side);
-    put(9, 3, h(9, 3) + 3, BLOCKS.bois.side);
-    put(9, 3, h(9, 3) + 1, BLOCKS.parchemin.side);
-    put(8, 5, h(8, 5) + 1, BLOCKS.bois.side);
-    put(8, 5, h(8, 5) + 2, BLOCKS.parchemin.side);
-    put(3, 9, h(3, 9) + 1, BLOCKS.parchemin.side);
-    put(1, 10, h(1, 10) + 1, BLOCKS.bois.side);
+    for (const x of [8, 10]) for (let z = 1; z <= 3; z++) put(x, 3, h(x, 3) + z, z === 2 ? BLOCKS[BLOC.parchemin].side : BLOCKS[BLOC.bois].side);
+    put(9, 3, h(9, 3) + 3, BLOCKS[BLOC.bois].side);
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.parchemin].side);
+    put(8, 5, h(8, 5) + 1, BLOCKS[BLOC.bois].side);
+    put(8, 5, h(8, 5) + 2, BLOCKS[BLOC.parchemin].side);
+    put(3, 9, h(3, 9) + 1, BLOCKS[BLOC.parchemin].side);
+    put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.bois].side);
   },
-  belvedere: (put, h) => {
+  'maths-3e-geometry': (put, h) => {
     // Un kiosque : quatre colonnes de marbre et un toit de marbre, un triangle 3-4-5 au sol.
     for (const [x, y] of [
       [7, 2],
@@ -253,127 +253,127 @@ export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => numb
       [7, 5],
       [10, 5],
     ] as const)
-      for (let z = 1; z <= 3; z++) put(x, y, h(x, y) + z, BLOCKS.marbre.side);
-    for (let dx = 7; dx <= 10; dx++) for (let dy = 2; dy <= 5; dy++) put(dx, dy, h(dx, dy) + 4, BLOCKS.marbre.side);
-    put(3, 9, h(3, 9) + 1, BLOCKS.marbre.side);
-    put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
+      for (let z = 1; z <= 3; z++) put(x, y, h(x, y) + z, BLOCKS[BLOC.marbre].side);
+    for (let dx = 7; dx <= 10; dx++) for (let dy = 2; dy <= 5; dy++) put(dx, dy, h(dx, dy) + 4, BLOCKS[BLOC.marbre].side);
+    put(3, 9, h(3, 9) + 1, BLOCKS[BLOC.marbre].side);
+    put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.pierre].side);
   },
-  donnees: (put, h) => {
+  'maths-3e-statistics': (put, h) => {
     // Un télescope (tronc incliné en escalier) et un dôme de quartz.
-    for (let i = 0; i < 4; i++) put(7 + i, 3, h(7 + i, 3) + 1 + i, i === 3 ? BLOCKS.verre.side : TRUNK);
-    put(9, 5, h(9, 5) + 1, BLOCKS.quartz.side);
-    put(9, 5, h(9, 5) + 2, BLOCKS.quartz.side);
-    put(3, 9, h(3, 9) + 1, BLOCKS.quartz.side);
-    put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
+    for (let i = 0; i < 4; i++) put(7 + i, 3, h(7 + i, 3) + 1 + i, i === 3 ? BLOCKS[BLOC.verre].side : TRUNK);
+    put(9, 5, h(9, 5) + 1, BLOCKS[BLOC.quartz].side);
+    put(9, 5, h(9, 5) + 2, BLOCKS[BLOC.quartz].side);
+    put(3, 9, h(3, 9) + 1, BLOCKS[BLOC.quartz].side);
+    put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.pierre].side);
   },
-  phare: (put, h) => {
+  'maths-3e-functions': (put, h) => {
     // Un phare : tour de pierre, lanterne de prisme au sommet.
-    for (let z = 1; z <= 5; z++) put(9, 3, h(9, 3) + z, z === 5 ? BLOCKS.prisme.side : BLOCKS.pierre.side);
-    put(9, 3, h(9, 3) + 6, BLOCKS.or.side);
-    put(3, 9, h(3, 9) + 1, BLOCKS.prisme.side);
-    put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
+    for (let z = 1; z <= 5; z++) put(9, 3, h(9, 3) + z, z === 5 ? BLOCKS[BLOC.prisme].side : BLOCKS[BLOC.pierre].side);
+    put(9, 3, h(9, 3) + 6, BLOCKS[BLOC.or].side);
+    put(3, 9, h(3, 9) + 1, BLOCKS[BLOC.prisme].side);
+    put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.pierre].side);
   },
-  textes: (put, h) => {
+  'french-3e-close-reading': (put, h) => {
     // Une lunette d'observation sur son pied, une pile de livres (planches et parchemin), une lentille au sol.
-    put(9, 3, h(9, 3) + 1, BLOCKS.pierre.side);
-    put(9, 3, h(9, 3) + 2, BLOCKS.pierre.side);
-    for (let i = 0; i < 3; i++) put(8 + i, 4, h(8 + i, 4) + 3, i === 2 ? BLOCKS.lentille.side : TRUNK);
-    put(7, 2, h(7, 2) + 1, BLOCKS.bois.side);
-    put(7, 2, h(7, 2) + 2, BLOCKS.parchemin.side);
-    put(3, 9, h(3, 9) + 1, BLOCKS.lentille.side);
-    put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.pierre].side);
+    put(9, 3, h(9, 3) + 2, BLOCKS[BLOC.pierre].side);
+    for (let i = 0; i < 3; i++) put(8 + i, 4, h(8 + i, 4) + 3, i === 2 ? BLOCKS[BLOC.lentille].side : TRUNK);
+    put(7, 2, h(7, 2) + 1, BLOCKS[BLOC.bois].side);
+    put(7, 2, h(7, 2) + 2, BLOCKS[BLOC.parchemin].side);
+    put(3, 9, h(3, 9) + 1, BLOCKS[BLOC.lentille].side);
+    put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.pierre].side);
   },
-  baie: (put, h) => {
+  'english-6e-vocabulary': (put, h) => {
     // Une cabine téléphonique rouge (vitrée, toit sombre), un réverbère, une caisse de cabines au sol.
-    for (let z = 1; z <= 3; z++) put(9, 3, h(9, 3) + z, BLOCKS.cabine.side);
+    for (let z = 1; z <= 3; z++) put(9, 3, h(9, 3) + z, BLOCKS[BLOC.cabine].side);
     put(9, 3, h(9, 3) + 4, DARK);
     for (let z = 1; z <= 3; z++) put(11, 5, h(11, 5) + z, DARK);
-    put(11, 5, h(11, 5) + 4, BLOCKS.lanterne.side);
-    put(3, 9, h(3, 9) + 1, BLOCKS.cabine.side);
-    put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
+    put(11, 5, h(11, 5) + 4, BLOCKS[BLOC.lanterne].side);
+    put(3, 9, h(3, 9) + 1, BLOCKS[BLOC.cabine].side);
+    put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.pierre].side);
   },
-  horloge: (put, h) => {
+  'english-6e-grammar': (put, h) => {
     // Une tour d'horloge de pierre, cadran au sommet et flèche de laiton ; un rouage de cadrans au sol.
-    for (let z = 1; z <= 4; z++) put(9, 3, h(9, 3) + z, z === 4 ? BLOCKS.cadran.side : BLOCKS.pierre.side);
-    put(9, 3, h(9, 3) + 5, BLOCKS.or.side);
-    put(3, 9, h(3, 9) + 1, BLOCKS.cadran.side);
-    put(4, 9, h(4, 9) + 1, BLOCKS.cadran.side);
-    put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
+    for (let z = 1; z <= 4; z++) put(9, 3, h(9, 3) + z, z === 4 ? BLOCKS[BLOC.cadran].side : BLOCKS[BLOC.pierre].side);
+    put(9, 3, h(9, 3) + 5, BLOCKS[BLOC.or].side);
+    put(3, 9, h(3, 9) + 1, BLOCKS[BLOC.cadran].side);
+    put(4, 9, h(4, 9) + 1, BLOCKS[BLOC.cadran].side);
+    put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.pierre].side);
   },
-  comptoir: (put, h) => {
+  'english-5e-vocabulary': (put, h) => {
     // Un étal : deux poteaux, un auvent de tuiles, une caisse de bois devant ; une pile de tuiles au sol.
     for (const px of [8, 10]) for (let z = 1; z <= 2; z++) put(px, 3, h(px, 3) + z, TRUNK);
-    for (let x = 8; x <= 10; x++) put(x, 3, h(x, 3) + 3, BLOCKS.tuile.side);
-    put(9, 4, h(9, 4) + 1, BLOCKS.bois.side);
-    put(3, 9, h(3, 9) + 1, BLOCKS.tuile.side);
-    put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
+    for (let x = 8; x <= 10; x++) put(x, 3, h(x, 3) + 3, BLOCKS[BLOC.tuile].side);
+    put(9, 4, h(9, 4) + 1, BLOCKS[BLOC.bois].side);
+    put(3, 9, h(3, 9) + 1, BLOCKS[BLOC.tuile].side);
+    put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.pierre].side);
   },
-  manoir: (put, h) => {
+  'english-5e-grammar': (put, h) => {
     // Une tour de lambris sombre, un toit noir et une bougie au sommet ; un pilier de grille en pierre.
-    for (let z = 1; z <= 4; z++) put(9, 3, h(9, 3) + z, BLOCKS.lambris.side);
+    for (let z = 1; z <= 4; z++) put(9, 3, h(9, 3) + z, BLOCKS[BLOC.lambris].side);
     put(9, 3, h(9, 3) + 5, DARK);
-    put(9, 3, h(9, 3) + 6, BLOCKS.lanterne.side);
-    for (let z = 1; z <= 2; z++) put(7, 2, h(7, 2) + z, BLOCKS.pierre.side);
-    put(3, 9, h(3, 9) + 1, BLOCKS.lambris.side);
-    put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
+    put(9, 3, h(9, 3) + 6, BLOCKS[BLOC.lanterne].side);
+    for (let z = 1; z <= 2; z++) put(7, 2, h(7, 2) + z, BLOCKS[BLOC.pierre].side);
+    put(3, 9, h(3, 9) + 1, BLOCKS[BLOC.lambris].side);
+    put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.pierre].side);
   },
-  relais: (put, h) => {
+  'lv2-5e-introductions': (put, h) => {
     // Un poteau indicateur de bois, deux planches à deux hauteurs (deux routes) ; un montoir de dalles ; une botte de foin.
     for (let z = 1; z <= 3; z++) put(9, 3, h(9, 3) + z, TRUNK);
-    put(10, 3, h(10, 3) + 3, BLOCKS.bois.side);
-    put(8, 3, h(8, 3) + 2, BLOCKS.bois.side);
-    put(11, 5, h(11, 5) + 1, BLOCKS.dalle.side);
+    put(10, 3, h(10, 3) + 3, BLOCKS[BLOC.bois].side);
+    put(8, 3, h(8, 3) + 2, BLOCKS[BLOC.bois].side);
+    put(11, 5, h(11, 5) + 1, BLOCKS[BLOC.dalle].side);
     put(3, 9, h(3, 9) + 1, HAY);
-    put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
+    put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.pierre].side);
   },
-  jardin: (put, h) => {
+  'lv2-4e-daily-life': (put, h) => {
     // Un carré potager bordé d'osier (des rangs de feuilles dedans), un poteau-lanterne éteint à côté (sa tête d'ardoise :
     // la nuit, le jardin garde ses lueurs sous 3 % de l'image, DA, LV2-4) ; un panier d'osier posé au sol, une pierre.
     for (let x = 8; x <= 11; x++)
       for (let y = 2; y <= 4; y++) {
         const bord = x === 8 || x === 11 || y === 2 || y === 4;
-        put(x, y, h(x, y) + 1, bord ? BLOCKS.osier.side : LEAF);
+        put(x, y, h(x, y) + 1, bord ? BLOCKS[BLOC.osier].side : LEAF);
       }
     for (let z = 1; z <= 2; z++) put(6, 3, h(6, 3) + z, TRUNK);
-    put(6, 3, h(6, 3) + 3, BLOCKS.ardoise.side);
-    put(3, 9, h(3, 9) + 1, BLOCKS.osier.side);
-    put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
+    put(6, 3, h(6, 3) + 3, BLOCKS[BLOC.ardoise].side);
+    put(3, 9, h(3, 9) + 1, BLOCKS[BLOC.osier].side);
+    put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.pierre].side);
   },
-  theatre: (put, h) => {
+  'english-4e-comprehension': (put, h) => {
     // Une petite scène : deux colonnes de rideau pourpre, une frise au-dessus, deux lanternes de rampe devant.
-    for (const px of [8, 10]) for (let z = 1; z <= 3; z++) put(px, 3, h(px, 3) + z, BLOCKS.velours.side);
-    for (let x = 8; x <= 10; x++) put(x, 3, h(x, 3) + 4, BLOCKS.velours.side);
-    put(8, 2, h(8, 2) + 1, BLOCKS.lanterne.side);
-    put(10, 2, h(10, 2) + 1, BLOCKS.lanterne.side);
-    put(3, 9, h(3, 9) + 1, BLOCKS.velours.side);
-    put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
+    for (const px of [8, 10]) for (let z = 1; z <= 3; z++) put(px, 3, h(px, 3) + z, BLOCKS[BLOC.velours].side);
+    for (let x = 8; x <= 10; x++) put(x, 3, h(x, 3) + 4, BLOCKS[BLOC.velours].side);
+    put(8, 2, h(8, 2) + 1, BLOCKS[BLOC.lanterne].side);
+    put(10, 2, h(10, 2) + 1, BLOCKS[BLOC.lanterne].side);
+    put(3, 9, h(3, 9) + 1, BLOCKS[BLOC.velours].side);
+    put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.pierre].side);
   },
-  gare: (put, h) => {
+  'english-4e-grammar': (put, h) => {
     // Une voie ferrée courte, un signal (poteau et lanterne), une pile de rails au sol.
-    for (let x = 6; x <= 11; x++) put(x, 4, h(x, 4) + 1, BLOCKS.rail.side);
+    for (let x = 6; x <= 11; x++) put(x, 4, h(x, 4) + 1, BLOCKS[BLOC.rail].side);
     for (let z = 1; z <= 3; z++) put(12, 3, h(12, 3) + z, DARK);
-    put(12, 3, h(12, 3) + 4, BLOCKS.lanterne.side);
-    put(3, 9, h(3, 9) + 1, BLOCKS.rail.side);
-    put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
+    put(12, 3, h(12, 3) + 4, BLOCKS[BLOC.lanterne].side);
+    put(3, 9, h(3, 9) + 1, BLOCKS[BLOC.rail].side);
+    put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.pierre].side);
   },
-  studio: (put, h) => {
+  'english-3e-comprehension': (put, h) => {
     // Un mât d'antenne sur un socle de pierre, un voyant au sommet ; une antenne tombée au sol.
-    put(9, 3, h(9, 3) + 1, BLOCKS.pierre.side);
-    for (let z = 2; z <= 5; z++) put(9, 3, h(9, 3) + z, BLOCKS.antenne.side);
-    put(9, 3, h(9, 3) + 6, BLOCKS.lanterne.side);
-    put(3, 9, h(3, 9) + 1, BLOCKS.antenne.side);
-    put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.pierre].side);
+    for (let z = 2; z <= 5; z++) put(9, 3, h(9, 3) + z, BLOCKS[BLOC.antenne].side);
+    put(9, 3, h(9, 3) + 6, BLOCKS[BLOC.lanterne].side);
+    put(3, 9, h(3, 9) + 1, BLOCKS[BLOC.antenne].side);
+    put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.pierre].side);
   },
-  chateau: (put, h) => {
+  'english-3e-grammar': (put, h) => {
     // Une tourelle de pierre de taille, deux créneaux, une bannière d'or au sommet ; un bloc de taille au sol.
-    for (let z = 1; z <= 4; z++) put(9, 3, h(9, 3) + z, BLOCKS.taille.side);
-    put(8, 3, h(8, 3) + 1, BLOCKS.taille.side);
-    put(10, 3, h(10, 3) + 1, BLOCKS.taille.side);
-    put(9, 3, h(9, 3) + 5, BLOCKS.or.side);
-    put(3, 9, h(3, 9) + 1, BLOCKS.taille.side);
-    put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
+    for (let z = 1; z <= 4; z++) put(9, 3, h(9, 3) + z, BLOCKS[BLOC.taille].side);
+    put(8, 3, h(8, 3) + 1, BLOCKS[BLOC.taille].side);
+    put(10, 3, h(10, 3) + 1, BLOCKS[BLOC.taille].side);
+    put(9, 3, h(9, 3) + 5, BLOCKS[BLOC.or].side);
+    put(3, 9, h(3, 9) + 1, BLOCKS[BLOC.taille].side);
+    put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.pierre].side);
   },
-  refuge: (put, h) => {
+  'lv2-3e-travel': (put, h) => {
     // Un cœur d'herbe (DA, LV2-5) : une pile de bûches, un banc de pierre de taille, quelques fleurs de
     // prairie, une pierre. Aucune lanterne, même éteinte, ni cloche, ni boîte aux lettres : la nuit, rien n'y luit.
     for (const [x, z] of [
@@ -382,7 +382,7 @@ export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => numb
       [9, 2],
     ] as const)
       put(x, 3, h(x, 3) + z, TRUNK);
-    put(11, 5, h(11, 5) + 1, BLOCKS.taille.side);
+    put(11, 5, h(11, 5) + 1, BLOCKS[BLOC.taille].side);
     // Des fleurs blanches et mauves, pas de jaune : la nuit, un jaune vif se lirait comme une lueur.
     for (const [x, y, k] of [
       [8, 5, 2],
@@ -390,7 +390,7 @@ export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => numb
       [3, 9, 2],
     ] as const)
       put(x, y, h(x, y) + 1, FLOWERS[k], `fleur@${x},${y}`);
-    put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
+    put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.pierre].side);
   },
 };
 
@@ -417,8 +417,8 @@ export const BLOCS_DU_DECOR: Record<Decor, BlocsDuDecor> = {
   },
   fleur: (put, x, y, r) => put(x, y, 1, FLOWERS[Math.floor(r * FLOWERS.length) % FLOWERS.length]),
   rocher: (put, x, y, r) => {
-    put(x, y, 1, BLOCKS.pierre.side);
-    if (r > 0.8) put(x, y, 2, BLOCKS.pierre.side);
+    put(x, y, 1, BLOCKS[BLOC.pierre].side);
+    if (r > 0.8) put(x, y, 2, BLOCKS[BLOC.pierre].side);
   },
   roseau: (put, x, y) => {
     put(x, y, 1, REED);
@@ -445,13 +445,13 @@ export const SMOKE = '#a9a4a0';
 export const REPERES = ['grand-arbre', 'champignon-geant', 'fumee', 'tour-de-guet', 'grand-phare', 'aiguille-de-glace', 'haut-fourneau'] as const;
 export type Repere = (typeof REPERES)[number];
 export const LANDMARK_OF: Partial<Record<BiomeId, Repere>> = {
-  foret: 'grand-arbre',
-  marais: 'champignon-geant',
-  volcan: 'fumee',
-  mine: 'tour-de-guet',
-  phare: 'grand-phare',
-  glacier: 'aiguille-de-glace',
-  forge: 'haut-fourneau',
+  'french-6e-phonology': 'grand-arbre',
+  'french-5e-conjugation': 'champignon-geant',
+  'maths-6e-decimals': 'fumee',
+  'french-6e-letter-confusion': 'tour-de-guet',
+  'maths-3e-functions': 'grand-phare',
+  'maths-5e-signed-numbers': 'aiguille-de-glace',
+  'maths-4e-powers': 'haut-fourneau',
 };
 
 /**
@@ -546,7 +546,7 @@ export const REPERES_EN_BLOCS: Record<Repere, (o: OutilsDuRepereEnBlocs) => void
     const s = findSpot(def, scenery, coeurDe(def).x1 + 2, backY, 1);
     if (!s) return;
     named(s.x, s.y);
-    for (let z = 1; z <= 3; z++) put(s.x, s.y, s.h + z, BLOCKS.sable.side);
+    for (let z = 1; z <= 3; z++) put(s.x, s.y, s.h + z, BLOCKS[BLOC.sable].side);
     for (let dx = -2; dx <= 2; dx++)
       for (let dy = -2; dy <= 2; dy++)
         if (Math.abs(dx) + Math.abs(dy) <= 3) put(s.x + dx, s.y + dy, s.h + 4, (dx + dy) % 2 === 0 && Math.abs(dx) + Math.abs(dy) === 2 ? SNOW : MUSHROOM);
@@ -568,8 +568,8 @@ export const REPERES_EN_BLOCS: Record<Repere, (o: OutilsDuRepereEnBlocs) => void
     const s = findSpot(def, scenery, coeurDe(def).x0 - 4, backY, 2);
     if (!s) return;
     named(s.x, s.y);
-    for (let z = 1; z <= 5; z++) for (let dx = 0; dx < 2; dx++) for (let dy = 0; dy < 2; dy++) put(s.x + dx, s.y + dy, s.h + z, BLOCKS.glace.side);
-    for (let z = 6; z <= 8; z++) put(s.x, s.y, s.h + z, BLOCKS.glace.side);
+    for (let z = 1; z <= 5; z++) for (let dx = 0; dx < 2; dx++) for (let dy = 0; dy < 2; dy++) put(s.x + dx, s.y + dy, s.h + z, BLOCKS[BLOC.glace].side);
+    for (let z = 6; z <= 8; z++) put(s.x, s.y, s.h + z, BLOCKS[BLOC.glace].side);
     put(s.x, s.y, s.h + 9, CRYSTAL);
   },
   'haut-fourneau': ({ def, scenery, backY, named, put }) => {
@@ -585,10 +585,10 @@ export const REPERES_EN_BLOCS: Record<Repere, (o: OutilsDuRepereEnBlocs) => void
     // Une tour de guet de pierre au sommet du pic, sa bannière de toile en haut.
     const peak = scenery.reduce((a, c) => (c.h > a.h && c.ground !== 'lave' ? c : a), scenery[0]);
     named(peak.x, peak.y);
-    for (let z = 1; z <= 4; z++) put(peak.x, peak.y, peak.h + z, BLOCKS.pierre.side);
-    put(peak.x, peak.y, peak.h + 5, BLOCKS.lanterne.side);
-    put(peak.x + 1, peak.y, peak.h + 5, BLOCKS.toile.side);
-    put(peak.x + 1, peak.y, peak.h + 4, BLOCKS.toile.side);
+    for (let z = 1; z <= 4; z++) put(peak.x, peak.y, peak.h + z, BLOCKS[BLOC.pierre].side);
+    put(peak.x, peak.y, peak.h + 5, BLOCKS[BLOC.lanterne].side);
+    put(peak.x + 1, peak.y, peak.h + 5, BLOCKS[BLOC.toile].side);
+    put(peak.x + 1, peak.y, peak.h + 4, BLOCKS[BLOC.toile].side);
   },
   'grand-phare': ({ def, scenery, backY, named, put }) => {
     // Le grand phare : tour de pierre 2 × 2 de huit blocs, lanterne de quatre blocs au sommet, toit de prisme.
@@ -598,7 +598,7 @@ export const REPERES_EN_BLOCS: Record<Repere, (o: OutilsDuRepereEnBlocs) => void
     for (let z = 1; z <= 10; z++)
       for (let dx = 0; dx < 2; dx++)
         for (let dy = 0; dy < 2; dy++)
-          put(s.x + dx, s.y + dy, s.h + z, z === 9 ? BLOCKS.lanterne.side : z === 10 ? BLOCKS.prisme.side : z % 4 === 0 ? SNOW : BLOCKS.pierre.side);
+          put(s.x + dx, s.y + dy, s.h + z, z === 9 ? BLOCKS[BLOC.lanterne].side : z === 10 ? BLOCKS[BLOC.prisme].side : z % 4 === 0 ? SNOW : BLOCKS[BLOC.pierre].side);
   },
 };
 
@@ -623,7 +623,7 @@ export function landmark(def: IslandDef, scenery: LandCell[], place: Put): void 
 export const DEPTH_DU_SOL = 2;
 
 /** Les îles qui ont un ponton et sa barque, sur leur rivage est (DA, LV2-4 : le Jardin des heures). */
-export const PONTON_SUR: readonly BiomeId[] = ['jardin'];
+export const PONTON_SUR: readonly BiomeId[] = ['lv2-4e-daily-life'];
 
 /**
  * Le ponton et sa barque : sur le rivage est de l'île (+x), au milieu du cœur à trois cases près, une échelle qui
@@ -653,13 +653,13 @@ export function pontonEtBarque(def: IslandDef, scenery: LandCell[], place: Put):
   // L'échelle, de l'eau au haut du rivage, contre la falaise : sous l'île en altitude, qui flotte, un pilier de pierre
   // descend du rivage jusqu'à l'eau, où l'échelle s'appuie sur toute sa hauteur (DA, LV2-4). Le tablier, deux cases au
   // ras de l'eau (dans les deux cases de marge de l'archipel, `worldBounds`).
-  for (let z = mer; z < Math.min(0, h) - DEPTH_DU_SOL; z++) put(x, y, z, BLOCKS.pierre.side);
-  for (let z = mer + 1; z <= h; z++) put(x + 1, y, z, BLOCKS.escalier.side);
-  for (let dx = 1; dx <= 2; dx++) put(x + dx, y, mer, BLOCKS.bois.side);
+  for (let z = mer; z < Math.min(0, h) - DEPTH_DU_SOL; z++) put(x, y, z, BLOCKS[BLOC.pierre].side);
+  for (let z = mer + 1; z <= h; z++) put(x + 1, y, z, BLOCKS[BLOC.escalier].side);
+  for (let dx = 1; dx <= 2; dx++) put(x + dx, y, mer, BLOCKS[BLOC.bois].side);
   // La barque, amarrée au bout du tablier, le long de la falaise : son fond, la proue et la poupe relevées.
   for (let dy = 1; dy <= 3; dy++) put(x + 2, y + dy, mer, TRUNK);
-  put(x + 2, y + 1, mer + 1, BLOCKS.bois.side);
-  put(x + 2, y + 3, mer + 1, BLOCKS.bois.side);
+  put(x + 2, y + 1, mer + 1, BLOCKS[BLOC.bois].side);
+  put(x + 2, y + 3, mer + 1, BLOCKS[BLOC.bois].side);
 }
 
 /**
@@ -743,17 +743,17 @@ export function semerLaMer(
         const n = noise(74, gx, gy);
         if (a === '4e') {
           // Les Anciens Ateliers : des aiguilles d'ardoise qui sortent de l'eau, une pierre au pied.
-          put(x, y, -1, BLOCKS.pierre);
+          put(x, y, -1, BLOCKS[BLOC.pierre]);
           const tall = 1 + Math.floor(n * 4);
-          for (let z = 0; z < tall; z++) put(x, y, z, BLOCKS.ardoise);
-          if (n > 0.7) put(x + 1, y, -1, BLOCKS.ardoise);
+          for (let z = 0; z < tall; z++) put(x, y, z, BLOCKS[BLOC.ardoise]);
+          if (n > 0.7) put(x + 1, y, -1, BLOCKS[BLOC.ardoise]);
         } else {
           // Un rocher : un galet au ras de l'eau, parfois une pierre par-dessus, parfois un voisin.
-          put(x, y, -1, BLOCKS.galet);
-          if (n > 0.35) put(x, y, 0, BLOCKS.pierre);
-          if (n > 0.6) put(x + 1, y, -1, BLOCKS.galet);
-          if (n > 0.8) put(x, y + 1, -1, BLOCKS.pierre);
-          if (n > 0.9) put(x, y, 1, BLOCKS.pierre);
+          put(x, y, -1, BLOCKS[BLOC.galet]);
+          if (n > 0.35) put(x, y, 0, BLOCKS[BLOC.pierre]);
+          if (n > 0.6) put(x + 1, y, -1, BLOCKS[BLOC.galet]);
+          if (n > 0.8) put(x, y + 1, -1, BLOCKS[BLOC.pierre]);
+          if (n > 0.9) put(x, y, 1, BLOCKS[BLOC.pierre]);
         }
       } else {
         // Un banc de sable (une plaque de glace dans les Îles Brumeuses) : une petite tache de trois à sept cases au ras de l'eau.
@@ -768,7 +768,7 @@ export function semerLaMer(
         ];
         decor = `mer/banc@${x},${y}`;
         const n = 3 + Math.floor(noise(75, gx, gy) * 5);
-        const bank = a === '5e' ? BLOCKS.glace : a === '4e' ? BLOCKS.galet : BLOCKS.sable;
+        const bank = a === '5e' ? BLOCKS[BLOC.glace] : a === '4e' ? BLOCKS[BLOC.galet] : BLOCKS[BLOC.sable];
         for (const [dx, dy] of cells.slice(0, n)) put(x + dx, y + dy, -1, bank);
       }
     }

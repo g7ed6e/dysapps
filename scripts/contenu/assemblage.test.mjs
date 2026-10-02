@@ -78,7 +78,7 @@ describe('les questions des blocs assemblés en Markdown', () => {
     const [poutre, engrenage] = lireQuestions(avec(questions), 'assemblage.md', blocs);
     expect(Object.keys(poutre)).toEqual(['id', 'bloc', 'type', 'level', 'instruction', 'programme', 'items', 'feedback']);
     expect(poutre).toMatchObject({
-      id: 'assemblage-poutre',
+      id: 'assembly-compound-6e',
       bloc: 'poutre',
       type: 'assemblage',
       programme: ['c3.fr.langue.genre-nombre', 'c3.ma.nombres.problemes'],
@@ -87,7 +87,7 @@ describe('les questions des blocs assemblés en Markdown', () => {
     expect(poutre.items.map((it) => it.key)).toEqual(['poutre-0', 'poutre-billes']);
     expect(poutre.items[0]).toMatchObject({ prompt: 'Léa a 5 billes.\nElle en donne 4 à Tom.', question: 'Quelle phrase est juste ?' });
     expect(poutre.items[0].aid).toEqual({ kind: 'rule-card', props: { title: 'Un ou plusieurs ?', lines: ['Donner, c’est enlever.'] } });
-    expect(engrenage).toMatchObject({ id: 'assemblage-engrenage', lang: 'en' });
+    expect(engrenage).toMatchObject({ id: 'assembly-compound-4e', lang: 'en' });
     expect(engrenage.items[0]).toMatchObject({ key: 'engrenage-0', choicesLang: 'fr' });
     // Sans la section, aucune question.
     expect(lireQuestions(base, 'assemblage.md', blocs)).toEqual([]);

@@ -1,0 +1,12 @@
+{
+  "id": "english-3e-grammar-1",
+  "biome": "english-3e-grammar",
+  "name": "La tour de Knight",
+  "reward": {
+    "xp": 40,
+    "chest": {
+      "english-3e-comprehension": 3
+    }
+  },
+  "done": "Ma tour ! Thank you, bâtisseur. If I were a king, I would live here."
+}

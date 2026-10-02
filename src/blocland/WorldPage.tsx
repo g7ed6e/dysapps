@@ -104,28 +104,28 @@ export function WorldPage() {
   const reduceMotion = useMoinsDAnimations();
   const { state, moveTo, launch } = useBlocland();
   const { launchVoyage, progress } = useProgress();
-  const mapOpen = biomeId === 'carte';
+  const mapOpen = biomeId === 'map';
   // Les quatre archipels : un panneau HTML à la place de celui d'une île, le monde derrière.
-  const mondeOpen = biomeId === 'monde';
+  const mondeOpen = biomeId === 'world';
   // « Mes blocs » : l'inventaire commenté, un panneau à la place de celui d'une île.
-  const blocsOpen = biomeId === 'blocs';
+  const blocsOpen = biomeId === 'stock';
   // L'école du village : ses trois portes, un panneau à la place de celui d'une île.
-  const schoolOpen = biomeId === 'ecole';
+  const schoolOpen = biomeId === 'school';
   // Le menu du village (menu pause) : Reprendre, Continuer, les révisions, l'école, Missions, Succès, Réglages, Aide.
   const menuOpen = biomeId === 'menu';
   // La salle des trophées : un trophée par succès gagné dans le monde, le profil dans son panneau.
-  const trophiesOpen = biomeId === 'trophees';
+  const trophiesOpen = biomeId === 'trophies';
   // Le lieu où l'on assemble les blocs (GD-2), à côté de l'école.
-  const assemblageOpen = biomeId === 'assemblage';
+  const assemblageOpen = biomeId === 'assembly';
   // Le lieu du village ouvert (l'école, la salle des trophées ou le lieu où l'on assemble) : le bonhomme marche jusqu'à sa porte.
-  const placeOpen = schoolOpen ? 'ecole' : trophiesOpen ? 'trophees' : assemblageOpen ? 'assemblage' : null;
+  const placeOpen = schoolOpen ? 'school' : trophiesOpen ? 'trophies' : assemblageOpen ? 'assembly' : null;
   // Les monuments : leur liste, ou un monument (son îlot au large, où la caméra va).
-  const monumentsOpen = biomeId === 'monuments';
+  const monumentsOpen = biomeId === 'landmarks';
   const monument = biomeId ? getMonument(biomeId) : undefined;
   const panelOpen = mapOpen || mondeOpen || blocsOpen || schoolOpen || menuOpen || trophiesOpen || assemblageOpen || monumentsOpen || Boolean(monument);
   const island = biomeId && !panelOpen ? getBiome(biomeId) : undefined;
   // Le bonhomme : où il se tient ; l'archipel affiché est le sien.
-  const at = state.world.place ?? 'foret';
+  const at = state.world.place ?? 'french-6e-phonology';
   const archipelago = archipelagoOf(at);
   const a: ArchipelagoId = archipelago.classe;
   const trophyBlocks = useMemo(() => trophies(progress.badges), [progress.badges]);
@@ -246,7 +246,7 @@ export function WorldPage() {
   const [whaleSeq, setWhaleSeq] = useState(0);
   // Le village de l'archipel monte d'un état pendant la séance (un plan, un ouvrage, un monument) : une phrase, lue à
   // voix haute, et une cloche. Rien n'est enregistré : l'état se déduit de la progression.
-  const stageHere = archipelagoOf(state.world.place ?? 'foret').classe;
+  const stageHere = archipelagoOf(state.world.place ?? 'french-6e-phonology').classe;
   const stageRank = villageStage(state.world, stageHere).rank;
   const lastStage = useRef({ a: stageHere, rank: stageRank });
   const [villageSaid, setVillageSaid] = useState<string | null>(null);
@@ -662,7 +662,7 @@ export function WorldPage() {
     : mapOpen
       ? destination.island
       : !island && a === '6e' && Object.keys(state.progress).length === 0
-        ? 'foret'
+        ? 'french-6e-phonology'
         : null;
   // Le navire touché : le panneau du port, sa section Bloc-Navire mise en avant.
   const onPickVehicle = (port: BiomeId) => {
@@ -709,7 +709,7 @@ export function WorldPage() {
         return onPickQuest(i.ile, i.mission);
       case 'lieu':
         return navigate(
-          i.id === 'ecole' ? SCHOOL_PATH : i.id === 'trophees' ? TROPHIES_PATH : i.id === 'assemblage' ? ASSEMBLAGE_PATH : `/aventure/${i.id.slice('monument:'.length)}`,
+          i.id === 'school' ? SCHOOL_PATH : i.id === 'trophies' ? TROPHIES_PATH : i.id === 'assembly' ? ASSEMBLAGE_PATH : `/aventure/${i.id.slice('monument:'.length)}`,
         );
       case 'ouvrage':
         return onPickBridge(i.id);

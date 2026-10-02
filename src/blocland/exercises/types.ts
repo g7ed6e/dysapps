@@ -50,7 +50,7 @@ export interface ExerciseDef {
  * (`programme`) valent pour tout le bloc ; une question à la fois est posée (voir `world/assemblage.ts`).
  */
 export interface AssemblageDef extends Omit<ExerciseDef, 'biome' | 'reward' | 'adaptive' | 'generate' | 'perRun' | 'target'> {
-  type: 'assemblage';
+  type: 'assembly';
   /** Le bloc assemblé que la question fait gagner. */
   bloc: BlockId;
   programme: string[];

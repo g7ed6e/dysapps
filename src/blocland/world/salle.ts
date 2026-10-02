@@ -6,6 +6,7 @@
 // dalle ni marque, jusqu'à l'arrivée de la travée. Code pur, sans Three.js ni dépendance : les kits d'Archipéo
 // (./architecture/kits) y lisent les piliers.
 import type { BlockId } from '../biomes';
+import { BLOC } from '../biomes';
 
 /** L'emprise réservée de la salle : 8 cases de large (x), 3 de profondeur (y), ouverte devant (y = 0, côté caméra). */
 export const EMPRISE_DE_LA_SALLE = { w: 8, d: 3 } as const;
@@ -92,12 +93,12 @@ export function modeleDeLaSalle(trophies: readonly BlockId[] = []): CubeDeLaSall
   const x0 = debutDeLaSalle(traveesPour(Math.min(trophies.length, TROPHY_SLOTS.length)));
   for (let x = x0; x < w; x++)
     for (let y = 0; y < d; y++) {
-      if (estUnPilier(x, y, d)) for (let z = 1; z <= 3; z++) out.push({ x, y, z, block: 'marbre' });
-      else if (y === d - 1) for (let z = 1; z <= 3; z++) out.push({ x, y, z, block: 'velours' });
-      else out.push({ x, y, z: 1, block: 'marbre' });
+      if (estUnPilier(x, y, d)) for (let z = 1; z <= 3; z++) out.push({ x, y, z, block: BLOC.marbre });
+      else if (y === d - 1) for (let z = 1; z <= 3; z++) out.push({ x, y, z, block: BLOC.velours });
+      else out.push({ x, y, z: 1, block: BLOC.marbre });
     }
-  for (let x = x0; x < w; x++) for (let y = 0; y < d; y++) out.push({ x, y, z: 4, block: 'taille' });
-  for (let x = x0; x < w; x++) out.push({ x, y: (d - 1) / 2, z: 5, block: 'or' });
+  for (let x = x0; x < w; x++) for (let y = 0; y < d; y++) out.push({ x, y, z: 4, block: BLOC.taille });
+  for (let x = x0; x < w; x++) out.push({ x, y: (d - 1) / 2, z: 5, block: BLOC.or });
   trophies.slice(0, TROPHY_SLOTS.length).forEach((block, i) => out.push({ ...TROPHY_SLOTS[i], block }));
   return out;
 }

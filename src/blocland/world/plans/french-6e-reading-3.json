@@ -1,0 +1,13 @@
+{
+  "id": "french-6e-reading-3",
+  "biome": "french-6e-reading",
+  "name": "Le quai du phare",
+  "reward": {
+    "xp": 80,
+    "chest": {
+      "trophy-gold": 3,
+      "trophy-crystal": 3
+    }
+  },
+  "done": "Le quai est prêt. Le village est reconstruit, et chaque page lue l’a rendu plus beau."
+}

@@ -108,8 +108,8 @@ const CAPTURES = [
   // L'assemblage des blocs (GD-2) : le lieu où l'on assemble, sur l'île de l'école (la Fabrique ou la Halle aux
   // matériaux, selon le rendu), et les blocs assemblés sur les monuments de chaque archipel, de près (`finesse` 2).
   { nom: 'assemblage-ile', vue: 'île', famille: 'assemblage', ile: 'foret', finesse: 2 },
-  { nom: 'assemblage-observatoire', vue: 'île', famille: 'assemblage', ile: 'foret', lieu: 'monument-observatoire', finesse: 2 },
-  { nom: 'assemblage-moulin', vue: 'île', famille: 'assemblage', ile: 'foret', lieu: 'monument-moulin', finesse: 2 },
+  { nom: 'assemblage-observatoire', vue: 'île', famille: 'assemblage', ile: 'foret', lieu: 'landmark-6e-1', finesse: 2 },
+  { nom: 'assemblage-moulin', vue: 'île', famille: 'assemblage', ile: 'foret', lieu: 'landmark-6e-2', finesse: 2 },
   // Le lieu de près (recadré sur la halle, derrière la salle des trophées), et son panneau ouvert, aux réglages par
   // défaut puis en OpenDyslexic 32 px, avec des blocs en poche (`inventaire`) : la poutre s'assemble, le vitrail non.
   { nom: 'assemblage-lieu', vue: 'île', famille: 'assemblage', ile: 'foret', recadre: { x: 110, y: 150, width: 340, height: 250 }, finesse: 2 },
@@ -137,13 +137,13 @@ const CAPTURES = [
     taille: { width: 1024, height: 3000 },
   },
   { nom: 'assemblage-ile', vue: 'île', famille: 'assemblage', ile: 'marche', finesse: 2 },
-  { nom: 'assemblage-kiosque', vue: 'île', famille: 'assemblage', ile: 'marche', lieu: 'monument-kiosque', finesse: 2 },
-  { nom: 'assemblage-phare-large', vue: 'île', famille: 'assemblage', ile: 'glacier', lieu: 'monument-phare-large', finesse: 2 },
-  { nom: 'assemblage-amphitheatre', vue: 'île', famille: 'assemblage', ile: 'atelier', lieu: 'monument-amphitheatre', finesse: 2 },
+  { nom: 'assemblage-kiosque', vue: 'île', famille: 'assemblage', ile: 'marche', lieu: 'landmark-5e-2', finesse: 2 },
+  { nom: 'assemblage-phare-large', vue: 'île', famille: 'assemblage', ile: 'glacier', lieu: 'landmark-5e-1', finesse: 2 },
+  { nom: 'assemblage-amphitheatre', vue: 'île', famille: 'assemblage', ile: 'atelier', lieu: 'landmark-4e-2', finesse: 2 },
   { nom: 'assemblage-ile', vue: 'île', famille: 'assemblage', ile: 'atelier', finesse: 2 },
-  { nom: 'assemblage-viaduc', vue: 'île', famille: 'assemblage', ile: 'atelier', lieu: 'monument-viaduc', finesse: 2 },
+  { nom: 'assemblage-viaduc', vue: 'île', famille: 'assemblage', ile: 'atelier', lieu: 'landmark-4e-1', finesse: 2 },
   { nom: 'assemblage-ile', vue: 'île', famille: 'assemblage', ile: 'phare', finesse: 2 },
-  { nom: 'assemblage-etoiles', vue: 'île', famille: 'assemblage', ile: 'phare', lieu: 'monument-etoiles', finesse: 2 },
+  { nom: 'assemblage-etoiles', vue: 'île', famille: 'assemblage', ile: 'phare', lieu: 'landmark-3e-1', finesse: 2 },
   // L'école et la salle des trophées des Premiers Rivages (lot 7b, les lieux du village) : la vue de la Forêt, sans
   // trophée et avec tous (`succes` : le nombre de succès gagnés, `tous` pour tous, un trophée chacun), de jour et de
   // nuit ; de près, recadrées (`finesse` 3 : le colombage net) ; de loin, la vue de l'archipel.
@@ -288,7 +288,7 @@ function routeDe(c, parIle, routes) {
 /** Une partie où le Gardien de l'île `ile` n'est pas encore vaincu (sa clé « <île>-gardien » retirée) : il est debout. */
 function sansLeGardien(parCle, ile) {
   if (!ile) return parCle;
-  return Object.fromEntries(Object.entries(parCle).filter(([k]) => k !== `${ile}-gardien`));
+  return Object.fromEntries(Object.entries(parCle).filter(([k]) => k !== `${ile}-challenge`));
 }
 
 async function scenes() {

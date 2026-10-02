@@ -1,0 +1,107 @@
+{
+  "id": "french-6e-phonology-sound-hunt-in",
+  "biome": "french-6e-phonology",
+  "type": "sound-hunt",
+  "level": 2,
+  "target": "in",
+  "instruction": "Tape les mots où tu entends le son [in], comme dans lapin. Puis valide.",
+  "items": [
+    {
+      "key": "pain",
+      "word": "pain",
+      "image": "🍞",
+      "heard": "[in]",
+      "correct": true
+    },
+    {
+      "key": "bonbon",
+      "word": "bonbon",
+      "image": "🍬",
+      "heard": "[on]",
+      "correct": false
+    },
+    {
+      "key": "main",
+      "word": "main",
+      "image": "✋",
+      "heard": "[in]",
+      "correct": true
+    },
+    {
+      "key": "sapin",
+      "word": "sapin",
+      "image": "🌲",
+      "heard": "[in]",
+      "correct": true
+    },
+    {
+      "key": "enfant",
+      "word": "enfant",
+      "image": "🧒",
+      "heard": "[an]",
+      "correct": false
+    },
+    {
+      "key": "jardin",
+      "word": "jardin",
+      "image": "🏡",
+      "heard": "[in]",
+      "correct": true
+    },
+    {
+      "key": "lune",
+      "word": "lune",
+      "image": "🌙",
+      "heard": "[u]",
+      "correct": false
+    },
+    {
+      "key": "matin",
+      "word": "matin",
+      "image": "🌅",
+      "heard": "[in]",
+      "correct": true
+    },
+    {
+      "key": "chemin",
+      "word": "chemin",
+      "image": "🏞️",
+      "heard": "[in]",
+      "correct": true
+    },
+    {
+      "key": "pomme",
+      "word": "pomme",
+      "image": "🍎",
+      "heard": "[o]",
+      "correct": false
+    },
+    {
+      "key": "requin",
+      "word": "requin",
+      "image": "🦈",
+      "heard": "[in]",
+      "correct": true
+    },
+    {
+      "key": "pinceau",
+      "word": "pinceau",
+      "image": "🎨",
+      "heard": "[in]",
+      "correct": true
+    }
+  ],
+  "feedback": {
+    "wrong": "Dans {word}, on entend {heard}. Écoute encore et compare avec {target}.",
+    "correct": "Bravo, tu entends bien [in] !"
+  },
+  "reward": {
+    "block": "french-6e-phonology",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

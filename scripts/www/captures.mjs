@@ -47,25 +47,25 @@ function stars(islands, n = 2) {
   }
   return out;
 }
-const guardians = (islands) => Object.fromEntries(islands.map((id) => [`${id}-gardien`, { stars: 2, attempts: 1, best: 0.8 }]));
+const guardians = (islands) => Object.fromEntries(islands.map((id) => [`${id}-challenge`, { stars: 2, attempts: 1, best: 0.8 }]));
 const badges = (n) => Object.fromEntries(BADGES.slice(0, n).map((b, i) => [b.id, new Date(2026, 8, 1 + i).toISOString()]));
 
 /** Le début : deux missions jouées dans la Forêt, la cabane commencée. */
 const EARLY = {
   game: {
-    stock: { bois: 9, brique: 4 },
+    stock: { 'french-6e-phonology': 9, 'maths-6e-calculation': 4 },
     progress: stars(['foret'], 2),
-    world: { parts: { [plansFor('foret')[0].id]: keys(plansFor('foret')[0], 12) }, links: ['foret-plaine'], place: 'foret' },
+    world: { parts: { [plansFor('foret')[0].id]: keys(plansFor('foret')[0], 12) }, links: ['french-6e-phonology-maths-6e-calculation'], place: 'foret' },
   },
   progress: { xp: 180, totalAnswers: 40, correctAnswers: 31, sessionsCompleted: 4, badges: badges(3) },
 };
 /** Assez de bois pour finir la cabane de Mousso. */
-const CABANE_READY = { ...EARLY, game: { ...EARLY.game, stock: { bois: planCells(plansFor('foret')[0]).length } } };
+const CABANE_READY = { ...EARLY, game: { ...EARLY.game, stock: { 'french-6e-phonology': planCells(plansFor('foret')[0]).length } } };
 /** Au milieu des Premiers Rivages : des îles ouvertes, des bâtiments finis, la coque du navire commencée. */
 const six = islandsOf('6e');
 const MID = {
   game: {
-    stock: { bois: 14, brique: 22, pierre: 9, terre: 6, sable: 5, galet: 4, verre: 3, or: 2 },
+    stock: { 'french-6e-phonology': 14, 'maths-6e-calculation': 22, 'french-6e-letter-confusion': 9, 'french-6e-grammar-spelling': 6, 'french-6e-word-spelling': 5, 'maths-6e-fractions': 4, 'french-6e-reading': 3, 'trophy-gold': 2 },
     progress: { ...stars(['foret', 'plaine', 'mine', 'ferme', 'riviere'], 2), ...stars(['foret'], 3), ...guardians(['foret', 'plaine']) },
     world: {
       parts: {
@@ -76,7 +76,7 @@ const MID = {
         [MONUMENTS[0].id]: keys(MONUMENTS[0], 50),
       },
       log: [{ day: '2026-09-20', part: plansFor('foret')[0].id }],
-      links: ['foret-plaine', 'foret-mine', 'foret-ferme', 'plaine-riviere', 'mine-carriere'],
+      links: ['french-6e-phonology-maths-6e-calculation', 'french-6e-phonology-french-6e-letter-confusion', 'french-6e-phonology-french-6e-grammar-spelling', 'maths-6e-calculation-maths-6e-fractions', 'french-6e-letter-confusion-french-6e-word-spelling'],
       place: 'foret',
     },
   },
@@ -85,7 +85,7 @@ const MID = {
 /** Les Premiers Rivages reconstruits : tout est ouvert et bâti, le navire a pris la mer. */
 const DONE6 = {
   game: {
-    stock: { bois: 30, brique: 25, toile: 8 },
+    stock: { 'french-6e-phonology': 30, 'maths-6e-calculation': 25, 'maths-5e-proportionality': 8 },
     progress: { ...stars(six, 3), ...guardians(six) },
     world: {
       parts: {
@@ -94,7 +94,7 @@ const DONE6 = {
         ...Object.fromEntries(MONUMENTS.filter((m) => m.archipelago === '6e').map((m) => [m.id, keys(m)])),
       },
       log: [],
-      links: [...bridgesOf('6e'), 'voyage-5e'],
+      links: [...bridgesOf('6e'), 'passage-5e'],
       place: 'foret',
     },
   },
@@ -136,7 +136,7 @@ const SHOTS = [
   { name: 'gardien', state: MID, go: '/aventure/mine/gardien', wait: 2500 },
   { name: 'ecole', state: MID, go: '/aventure/ecole' },
   { name: 'trophees', state: MID, go: '/aventure/trophees' },
-  { name: 'monument', state: MID, go: '/aventure/monument-observatoire' },
+  { name: 'monument', state: MID, go: '/aventure/landmark-6e-1' },
   { name: 'village-reconstruit', state: DONE6, go: '/aventure' },
   { name: 'collines-du-large', state: COLLINES, go: '/aventure/marche', act: closeSheet },
   { name: 'vue-simple', state: MID, view: 'list', go: '/aventure' },

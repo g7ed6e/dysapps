@@ -46,9 +46,9 @@ function common(item: ExerciseItem, count = 4): string[] {
 }
 
 it('six exercices de huit items, une consigne sans symbole, la récompense des maths de 6e', () => {
-  expect(VOLCAN_EXERCISES.map((d) => d.id)).toEqual(['volcan-coulee-2', 'volcan-coulee-3', 'volcan-pente-3', 'volcan-geants-1', 'volcan-geants-2', 'volcan-geants-3']);
+  expect(VOLCAN_EXERCISES.map((d) => d.id)).toEqual(['maths-6e-decimals-operations-2', 'maths-6e-decimals-operations-3', 'maths-6e-decimals-scale-3', 'maths-6e-decimals-large-numbers-1', 'maths-6e-decimals-large-numbers-2', 'maths-6e-decimals-large-numbers-3']);
   for (const def of VOLCAN_EXERCISES) {
-    expect(def.biome).toBe('volcan');
+    expect(def.biome).toBe('maths-6e-decimals');
     expect(def.items).toHaveLength(8);
     expect(def.instruction).not.toMatch(/[/×÷=…+−'<>]/);
     expect(def.reward).toEqual({ block: 'obsidienne', amount: 4, xp: 12 });
@@ -87,7 +87,7 @@ it('les nombres en lettres : les accords de cent, vingt, mille, million et milli
 it('Nombres géants, niveau 1 : le chiffre d’un rang, dans le tableau par classes, les classes mal découpées en piège', () => {
   let neighbourClass = 0;
   let milliards = 0;
-  for (const item of runs('volcan-geants-1')) {
+  for (const item of runs('maths-6e-decimals-large-numbers-1')) {
     const list = common(item);
     const m = /^Dans ([\d\u00a0]+), quel est le chiffre des (.+) \?$/.exec(String(item.prompt))!;
     expect(m, String(item.prompt)).toBeTruthy();
@@ -112,7 +112,7 @@ it('Nombres géants, niveau 1 : le chiffre d’un rang, dans le tableau par clas
 
 it('Nombres géants, niveau 2 : écrire en chiffres, les classes en lettres dans le tableau, le 0 oublié proposé, chaque place autant', () => {
   const places = [0, 0, 0, 0];
-  for (const item of runs('volcan-geants-2')) {
+  for (const item of runs('maths-6e-decimals-large-numbers-2')) {
     const list = common(item);
     const words = /^Écris en chiffres : (.+)\.$/.exec(String(item.prompt))![1];
     expect(String(item.spoken)).toBe(`Écris en chiffres : ${words}.`);
@@ -143,7 +143,7 @@ it('Nombres géants, niveau 2 : écrire en chiffres, les classes en lettres dans
 it('Nombres géants, niveau 3 : le nombre de dizaines, de centaines, de milliers ou de millions, le chiffre en piège', () => {
   const units: Record<string, number> = { dizaines: 1, centaines: 2, milliers: 3, millions: 6 };
   let digitTrap = 0;
-  for (const item of runs('volcan-geants-3')) {
+  for (const item of runs('maths-6e-decimals-large-numbers-3')) {
     const list = common(item);
     const m = /^Combien de (\S+) y a-t-il dans ([\d\u00a0]+) \?$/.exec(String(item.prompt))!;
     expect(m, String(item.prompt)).toBeTruthy();
@@ -161,7 +161,7 @@ it('Nombres géants, niveau 3 : le nombre de dizaines, de centaines, de milliers
 
 it('Coulée de lave, niveau 2 : ranger trois décimaux, trois rangements, la lecture en entiers et l’envers toujours proposés', () => {
   const places = [0, 0, 0];
-  for (const item of runs('volcan-coulee-2')) {
+  for (const item of runs('maths-6e-decimals-operations-2')) {
     const list = common(item, 3);
     const shown = /^Range du plus petit au plus grand : (.+)$/.exec(String(item.prompt))![1].split(SEP);
     const sorted = [...shown].sort((a, b) => cents(a) - cents(b));
@@ -181,7 +181,7 @@ it('Coulée de lave, niveau 2 : ranger trois décimaux, trois rangements, la lec
 
 it('Coulée de lave, niveau 3 : un seul nombre entre les deux, les pièges lus en entiers', () => {
   let wholeReading = 0;
-  for (const item of runs('volcan-coulee-3')) {
+  for (const item of runs('maths-6e-decimals-operations-3')) {
     const list = common(item);
     const [, a, b] = /^Quel nombre est entre (\S+) et (\S+) \?$/.exec(String(item.prompt))!;
     const inside = list.filter((c) => cents(c) > cents(a) && cents(c) < cents(b));
@@ -197,7 +197,7 @@ it('Coulée de lave, niveau 3 : un seul nombre entre les deux, les pièges lus e
 
 it('Pente graduée, niveau 3 : encadrer une fraction, la droite graduée en parts, l’entier voisin du mauvais côté en piège', () => {
   let wrongSide = 0;
-  for (const item of runs('volcan-pente-3')) {
+  for (const item of runs('maths-6e-decimals-scale-3')) {
     const list = common(item);
     const [, n, d] = /^(\d+)\/(\d) est entre quels entiers qui se suivent \?$/.exec(String(item.prompt))!.map(Number);
     const q = Math.floor(n / d);

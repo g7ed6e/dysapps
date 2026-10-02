@@ -70,27 +70,27 @@ describe('le voyage du Bloc-Navire', () => {
   it('au départ : le bonhomme marche jusqu’au pont, monte à bord, le navire s’éloigne, puis la fin est annoncée une fois', () => {
     const run = startVoyage({ leg: 'depart', stage: 1, back: false }, 0);
     const { walk, sail } = legTiming('depart', false);
-    expect(boardingWalk('plaine', run, 0)!.route).toEqual(boardingRoute('plaine'));
-    expect(voyageFrame(run, 'plaine', walk / 2)).toMatchObject({ k: 0, aboard: false, underway: false, end: false });
-    const mid = voyageFrame(run, 'plaine', walk + sail / 2);
+    expect(boardingWalk('maths-6e-calculation', run, 0)!.route).toEqual(boardingRoute('maths-6e-calculation'));
+    expect(voyageFrame(run, 'maths-6e-calculation', walk / 2)).toMatchObject({ k: 0, aboard: false, underway: false, end: false });
+    const mid = voyageFrame(run, 'maths-6e-calculation', walk + sail / 2);
     expect(mid).toMatchObject({ aboard: true, underway: true, end: false });
     expect(mid.k).toBeCloseTo(0.5);
-    expect(voyageFrame(run, 'plaine', walk + sail).end).toBe(true);
-    expect(voyageFrame(run, 'plaine', walk + sail + 100).end).toBe(false);
+    expect(voyageFrame(run, 'maths-6e-calculation', walk + sail).end).toBe(true);
+    expect(voyageFrame(run, 'maths-6e-calculation', walk + sail + 100).end).toBe(false);
   });
 
   it('à l’arrivée : le navire accoste, le bonhomme débarque une seule fois, par le chemin d’embarquement à rebours', () => {
     const run = startVoyage({ leg: 'arrivee', stage: 2, back: true }, 0);
     const { walk, sail } = legTiming('arrivee', true);
-    expect(boardingWalk('marche', run, 0)).toBeNull();
-    const first = voyageFrame(run, 'marche', 0);
+    expect(boardingWalk('maths-5e-proportionality', run, 0)).toBeNull();
+    const first = voyageFrame(run, 'maths-5e-proportionality', 0);
     expect(first).toMatchObject({ k: 1, aboard: true, disembark: null });
-    const docked = voyageFrame(run, 'marche', sail);
+    const docked = voyageFrame(run, 'maths-5e-proportionality', sail);
     expect(docked.k).toBe(0);
     expect(docked.aboard).toBe(false);
-    expect(docked.disembark!.route).toEqual([...boardingRoute('marche')].reverse());
-    expect(voyageFrame(run, 'marche', sail + 10).disembark).toBeNull();
-    expect(voyageFrame(run, 'marche', sail + walk).end).toBe(true);
+    expect(docked.disembark!.route).toEqual([...boardingRoute('maths-5e-proportionality')].reverse());
+    expect(voyageFrame(run, 'maths-5e-proportionality', sail + 10).disembark).toBeNull();
+    expect(voyageFrame(run, 'maths-5e-proportionality', sail + walk).end).toBe(true);
   });
 });
 
@@ -100,8 +100,8 @@ describe('les créatures', () => {
   it('une créature fait un pas de temps en temps, puis se repose ; un Gardien ne bouge pas', () => {
     const [walker, guardian] = startStrolls(
       [
-        { id: 'foret', cubes: [], origin },
-        { id: 'mine', cubes: [], origin, kind: 'guardian', still: true },
+        { id: 'french-6e-phonology', cubes: [], origin },
+        { id: 'french-6e-letter-confusion', cubes: [], origin, kind: 'guardian', still: true },
       ],
       0,
     );
@@ -125,14 +125,14 @@ describe('les créatures', () => {
 describe('le clavier', () => {
   it('une flèche mène à l’île voisine dans cette direction, jamais à l’île où l’on est', () => {
     const islands = islandsOf('6e').map((b) => b.id);
-    const from = islandCenter('foret');
+    const from = islandCenter('french-6e-phonology');
     const found = Object.values(ARROW_DIRS)
       .map((dir) => islandInDirection('6e', from, dir))
       .filter((id) => id !== null);
     expect(found.length).toBeGreaterThan(0);
     for (const id of found) {
       expect(islands).toContain(id);
-      expect(id).not.toBe('foret');
+      expect(id).not.toBe('french-6e-phonology');
     }
     const east = islandInDirection('6e', from, ARROW_DIRS.ArrowRight);
     if (east) expect(islandCenter(east).x).toBeGreaterThan(from.x);
@@ -143,25 +143,25 @@ describe('toucher le sol', () => {
   const cell = { x: 3, y: 4, z: 1 };
   const next = { x: 3, y: 4, z: 2 };
   const tags = cubeTags([
-    { x: 3, y: 4, z: 1, color: '#fff', quest: 'foret:rimes', bridge: 'foret-mine' },
-    { x: 9, y: 9, z: 1, color: '#fff', bridge: 'foret-mine' },
+    { x: 3, y: 4, z: 1, color: '#fff', quest: 'foret:rimes', bridge: 'french-6e-phonology-french-6e-letter-confusion' },
+    { x: 9, y: 9, z: 1, color: '#fff', bridge: 'french-6e-phonology-french-6e-letter-confusion' },
   ]);
   const all = { quest: true, bridge: true, build: true };
 
   it('l’école se touche pour y entrer, même en chantier', () => {
-    const c = islandCenter('foret');
-    const school = cubeTags([{ x: c.x, y: c.y, z: 3, color: '#fff', place: 'ecole' }]);
+    const c = islandCenter('french-6e-phonology');
+    const school = cubeTags([{ x: c.x, y: c.y, z: 3, color: '#fff', place: 'school' }]);
     const hit = { cell: { x: c.x, y: c.y, z: 3 }, next: { x: c.x, y: c.y, z: 4 }, ground: { x: c.x + 0.5, y: c.y + 0.5 } };
-    expect(groundTap('6e', hit, school, { ...all, place: true })).toEqual({ kind: 'place', place: 'ecole', island: 'foret' });
+    expect(groundTap('6e', hit, school, { ...all, place: true })).toEqual({ kind: 'place', place: 'school', island: 'french-6e-phonology' });
     // Une vue qui ne sait pas y entrer : la face (chantier), comme avant.
     expect(groundTap('6e', hit, school, all)).toEqual({ kind: 'face', cell: hit.cell, next: hit.next });
   });
 
   it('la borne de mission d’abord, puis l’ouvrage, puis la face en chantier, sinon l’île', () => {
-    expect(groundTap('6e', { cell, next, ground: cell }, tags, all)).toEqual({ kind: 'quest', biome: 'foret', typeId: 'rimes' });
-    expect(groundTap('6e', { cell, next, ground: cell }, tags, { ...all, quest: false })).toEqual({ kind: 'bridge', id: 'foret-mine' });
+    expect(groundTap('6e', { cell, next, ground: cell }, tags, all)).toEqual({ kind: 'quest', biome: 'french-6e-phonology', typeId: 'rhymes' });
+    expect(groundTap('6e', { cell, next, ground: cell }, tags, { ...all, quest: false })).toEqual({ kind: 'bridge', id: 'french-6e-phonology-french-6e-letter-confusion' });
     expect(groundTap('6e', { cell, next, ground: cell }, tags, { quest: false, bridge: false, build: true })).toEqual({ kind: 'face', cell, next });
-    const c = islandCenter('foret');
+    const c = islandCenter('french-6e-phonology');
     expect(groundTap('6e', { cell: c, next: c, ground: { x: c.x + 0.4, y: c.y + 0.7 } }, cubeTags([]), all)).toEqual({ kind: 'face', cell: c, next: c });
     expect(groundTap('6e', { cell: c, next: c, ground: { x: c.x + 0.4, y: c.y + 0.7 } }, cubeTags([]), { quest: true, bridge: true, build: false })).toEqual({
       kind: 'island',
@@ -171,7 +171,7 @@ describe('toucher le sol', () => {
   });
 
   it('la vue revient à son cadrage sur une cible, jamais sur le sol (une face en chantier, le sol où le bonhomme va)', () => {
-    const c = islandCenter('foret');
+    const c = islandCenter('french-6e-phonology');
     const sol = groundTap('6e', { cell: c, next: c, ground: c }, cubeTags([]), { quest: true, bridge: true, build: false });
     const face = groundTap('6e', { cell: c, next: c, ground: c }, cubeTags([]), { quest: true, bridge: true, build: true });
     expect(recentrerApres(sol, false)).toBe(false);
@@ -179,8 +179,8 @@ describe('toucher le sol', () => {
     expect(recentrerApres(null, false)).toBe(false);
     // Une créature, le navire : une cible.
     expect(recentrerApres(null, true)).toBe(true);
-    expect(recentrerApres({ kind: 'quest', biome: 'foret', typeId: 'rimes' }, false)).toBe(true);
-    expect(recentrerApres({ kind: 'bridge', id: 'foret-mine' }, false)).toBe(true);
-    expect(recentrerApres({ kind: 'place', place: 'ecole', island: 'foret' }, false)).toBe(true);
+    expect(recentrerApres({ kind: 'quest', biome: 'french-6e-phonology', typeId: 'rhymes' }, false)).toBe(true);
+    expect(recentrerApres({ kind: 'bridge', id: 'french-6e-phonology-french-6e-letter-confusion' }, false)).toBe(true);
+    expect(recentrerApres({ kind: 'place', place: 'school', island: 'french-6e-phonology' }, false)).toBe(true);
   });
 });

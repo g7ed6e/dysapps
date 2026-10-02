@@ -51,7 +51,7 @@ it('chaque bloc assemblé a ses questions, au moins 8, et rien d’autre n’en 
     const def = QUESTIONS.get(r.bloc);
     expect(def, `${r.bloc} : aucune question dans docs/contenu/assemblage.md`).toBeDefined();
     expect(def!.bloc).toBe(r.bloc);
-    expect(def!.type).toBe('assemblage');
+    expect(def!.type).toBe('assembly');
     expect(def!.items.length, r.bloc).toBeGreaterThanOrEqual(8);
     expect(new Set(def!.items.map((it) => it.key)).size, r.bloc).toBe(def!.items.length);
   }
@@ -59,11 +59,11 @@ it('chaque bloc assemblé a ses questions, au moins 8, et rien d’autre n’en 
 });
 
 it('les questions d’assemblage ne sont ni dans une île ni au catalogue des missions', () => {
-  expect(CATALOG.some((e) => e.type === 'assemblage')).toBe(false);
+  expect(CATALOG.some((e) => e.type === 'assembly')).toBe(false);
   expect(UNORDERED).toEqual([]);
-  expect(BIOMES.some((b) => b.exercises.some((m) => m.id === 'assemblage'))).toBe(false);
+  expect(BIOMES.some((b) => b.exercises.some((m) => m.id === 'assembly'))).toBe(false);
   // Elles s'affichent sur l'écran à document, avec les pièges du fichier.
-  expect(SCREEN_TYPES.assemblage.batch).toBe(1);
+  expect(SCREEN_TYPES.assembly.batch).toBe(1);
   for (const def of QUESTIONS.values()) expect(piegesDe(def)).toBe('du-fichier');
 });
 
@@ -166,8 +166,8 @@ describe.each(RECETTES.map((r) => [r.bloc, r] as const))('les questions du bloc 
 it('« 8 × 10⁹ » se range comme un nombre, et un millier écrit avec une espace insécable aussi', () => {
   const def: AssemblageDef = {
     id: 'assemblage-test',
-    bloc: 'engrenage',
-    type: 'assemblage',
+    bloc: 'compound-4e',
+    type: 'assembly',
     level: 1,
     instruction: 'Consigne de test.',
     programme: [],

@@ -54,28 +54,28 @@ function dansLeCadre(cam: THREE.Camera, t: { w: number; h: number }, marge: numb
 
 describe('Le cadrage des grands repères', () => {
   it('le grand phare est le repère de son île et de la vue de l’archipel depuis ses voisines, pas au-delà', () => {
-    expect(repereDeLaVue('phare', null)).toBe(R);
-    for (const zone of ['phare', 'belvedere', 'donnees', 'textes'] as BiomeId[]) expect(repereDeLaVue(null, zone), zone).toBe(R);
-    for (const zone of ['studio', 'chateau', 'foret', 'atelier'] as BiomeId[]) expect(repereDeLaVue(null, zone), zone).toBeNull();
-    expect(repereDeLaVue('textes', null)).toBeNull();
+    expect(repereDeLaVue('maths-3e-functions', null)).toBe(R);
+    for (const zone of ['maths-3e-functions', 'maths-3e-geometry', 'maths-3e-statistics', 'french-3e-close-reading'] as BiomeId[]) expect(repereDeLaVue(null, zone), zone).toBe(R);
+    for (const zone of ['english-3e-comprehension', 'english-3e-grammar', 'french-6e-phonology', 'maths-4e-algebra'] as BiomeId[]) expect(repereDeLaVue(null, zone), zone).toBeNull();
+    expect(repereDeLaVue('french-3e-close-reading', null)).toBeNull();
   });
 
   it('Archipéo : le phare dans le cadre de la vue de l’archipel depuis chacune de ses voisines, et de la vue de son île', () => {
-    for (const home of ['phare', 'belvedere', 'donnees'] as BiomeId[])
+    for (const home of ['maths-3e-functions', 'maths-3e-geometry', 'maths-3e-statistics'] as BiomeId[])
       expect(dansLeCadre(placer(HABILLAGES.archipeo, ARCHIPEL, { island: null }, home), ARCHIPEL, 60), home).toBe(true);
     // Depuis l'Observatoire des textes, le phare est au premier plan : son fût et sa lanterne, au-dessus de son socle.
-    expect(dansLeCadre(placer(HABILLAGES.archipeo, ARCHIPEL, { island: null }, 'textes'), ARCHIPEL, 60, R.pied + 0.3 + PHARES['3e'].socle)).toBe(true);
-    expect(dansLeCadre(placer(HABILLAGES.archipeo, ILE, { island: 'phare' }, 'phare'), ILE, 40)).toBe(true);
+    expect(dansLeCadre(placer(HABILLAGES.archipeo, ARCHIPEL, { island: null }, 'french-3e-close-reading'), ARCHIPEL, 60, R.pied + 0.3 + PHARES['3e'].socle)).toBe(true);
+    expect(dansLeCadre(placer(HABILLAGES.archipeo, ILE, { island: 'maths-3e-functions' }, 'maths-3e-functions'), ILE, 40)).toBe(true);
     // Avant la retouche, depuis le Belvédère et dans la vue de l'île, il sortait du cadre : Blocland n'a pas changé.
-    expect(dansLeCadre(placer(HABILLAGES.blocland, ARCHIPEL, { island: null }, 'belvedere'), ARCHIPEL, 0)).toBe(false);
-    expect(dansLeCadre(placer(HABILLAGES.blocland, ILE, { island: 'phare' }, 'phare'), ILE, 0)).toBe(false);
+    expect(dansLeCadre(placer(HABILLAGES.blocland, ARCHIPEL, { island: null }, 'maths-3e-geometry'), ARCHIPEL, 0)).toBe(false);
+    expect(dansLeCadre(placer(HABILLAGES.blocland, ILE, { island: 'maths-3e-functions' }, 'maths-3e-functions'), ILE, 0)).toBe(false);
   });
 
-  it.each(['phare', 'textes'] as BiomeId[])('Archipéo, vue de l’archipel depuis %s : la lanterne ne se découpe plus sur l’île de l’Observatoire des textes', (home) => {
+  it.each(['maths-3e-functions', 'french-3e-close-reading'] as BiomeId[])('Archipéo, vue de l’archipel depuis %s : la lanterne ne se découpe plus sur l’île de l’Observatoire des textes', (home) => {
     const cam = placer(HABILLAGES.archipeo, ARCHIPEL, { island: null }, home);
     const l = ecran(cam, ARCHIPEL, R.x, lanterne, R.y);
     // L'île de l'Observatoire, sol et bâtiments (jusqu'à 7 blocs au-dessus de son sol), vue de la caméra.
-    const b = landBox(islandDef('textes'));
+    const b = landBox(islandDef('french-3e-close-reading'));
     const coins = [b.x0, b.x1].flatMap((x) => [b.y0, b.y1].flatMap((y) => [10, 16].map((z) => ecran(cam, ARCHIPEL, x, z, y))));
     const gauche = Math.min(...coins.map((p) => p.x));
     expect(l.x).toBeLessThan(gauche - 10);
@@ -157,7 +157,7 @@ describe('La Carte dans la place libre (DA-31)', () => {
     const b = worldBounds('4e');
     const monde: Monde = { scene: new THREE.Scene(), archipel: '4e', habillage: HABILLAGES.blocland, surface: null, etendue: b, centre: { x: 0, y: 0 }, largeur: 220 };
     const camera = new THREE.PerspectiveCamera(40, T.w / T.h, 0.5, 2000);
-    const derniers = { current: { carte: true, focus: { island: null }, home: 'forge', forceDay: true, sons: false } as unknown as Derniers };
+    const derniers = { current: { carte: true, focus: { island: null }, home: 'maths-4e-powers', forceDay: true, sons: false } as unknown as Derniers };
     const instant: Instant = { now: 0, marche: false, navigue: null, carte: true, but: { target: new THREE.Vector3(), pos: new THREE.Vector3() } };
     const lues: string[] = [];
     let place = { libre: { x0: 0, y0: 200, x1: 1024, y1: 578 }, w: T.w, h: T.h, saut: false };
@@ -166,7 +166,7 @@ describe('La Carte dans la place libre (DA-31)', () => {
         lues.push(contexte);
         return place;
       },
-      destination: () => 'gare',
+      destination: () => 'english-4e-grammar',
     });
     cam.animer!(0, 0.016, false);
     const avant = camera.position.clone();
@@ -189,7 +189,7 @@ describe('La Carte dans la place libre (DA-31)', () => {
     const b = worldBounds('6e');
     const monde: Monde = { scene: new THREE.Scene(), archipel: '6e', habillage: HABILLAGES.blocland, surface: null, etendue: b, centre: { x: 0, y: 0 }, largeur: 200 };
     const camera = new THREE.PerspectiveCamera(40, 1024 / 688, 0.5, 2000);
-    const derniers = { current: { carte: false, focus: { island: 'foret', seq: 1 }, home: 'foret', forceDay: true, sons: false } as unknown as Derniers };
+    const derniers = { current: { carte: false, focus: { island: 'french-6e-phonology', seq: 1 }, home: 'french-6e-phonology', forceDay: true, sons: false } as unknown as Derniers };
     const instant: Instant = { now: 0, marche: false, navigue: null, carte: false, but: { target: new THREE.Vector3(), pos: new THREE.Vector3() } };
     const cam = creerCamera(monde, camera, new THREE.Object3D(), derniers, instant);
     cam.animer!(0, 0.016, true);
@@ -220,7 +220,7 @@ describe('La Carte dans la place libre (DA-31)', () => {
     expect(cam.cible.distanceTo(t0)).toBeCloseTo(0);
     // Une nouvelle demande de cadrage efface le décalage, comme la Carte ouverte et la marche du bonhomme.
     for (const reprendre of [
-      () => (derniers.current = { ...derniers.current, focus: { island: 'foret', seq: 2 } }),
+      () => (derniers.current = { ...derniers.current, focus: { island: 'french-6e-phonology', seq: 2 } }),
       () => (derniers.current = { ...derniers.current, carte: true }),
       () => (instant.marche = true),
     ]) {
@@ -236,7 +236,7 @@ describe('La Carte dans la place libre (DA-31)', () => {
     const b = worldBounds('6e');
     const monde: Monde = { scene: new THREE.Scene(), archipel: '6e', habillage: HABILLAGES.blocland, surface: null, etendue: b, centre: { x: 0, y: 0 }, largeur: 200 };
     const camera = new THREE.PerspectiveCamera(40, 1024 / 688, 0.5, 2000);
-    const derniers = { current: { carte: false, focus: { island: 'foret', seq: 1 }, home: 'foret', forceDay: true, sons: false } as unknown as Derniers };
+    const derniers = { current: { carte: false, focus: { island: 'french-6e-phonology', seq: 1 }, home: 'french-6e-phonology', forceDay: true, sons: false } as unknown as Derniers };
     const instant: Instant = { now: 0, marche: false, navigue: null, carte: false, but: { target: new THREE.Vector3(), pos: new THREE.Vector3() } };
     const cam = creerCamera(monde, camera, new THREE.Object3D(), derniers, instant);
     // Avant la première image, aucun cadrage à rejoindre.
@@ -244,7 +244,7 @@ describe('La Carte dans la place libre (DA-31)', () => {
     cam.animer!(0, 0.016, false);
     const t0 = cam.cible.clone();
     // Une autre île : la caméra part en douceur, une image ne suffit pas.
-    derniers.current = { ...derniers.current, focus: { island: 'ferme', seq: 2 } };
+    derniers.current = { ...derniers.current, focus: { island: 'french-6e-grammar-spelling', seq: 2 } };
     cam.animer!(0.1, 0.016, false);
     const enRoute = cam.cible.clone();
     expect(enRoute.distanceTo(t0)).toBeGreaterThan(0);

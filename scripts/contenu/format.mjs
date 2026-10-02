@@ -3,15 +3,15 @@
 // Le format est strict : un champ inconnu ou mal écrit arrête la génération, avec le numéro de ligne.
 //
 //   ---
-//   île : baie                               ← en-tête : l'identifiant de l'île, puis ce qu'elle est
+//   lieu : english-6e-vocabulary             ← en-tête : l'identifiant du lieu (matière, classe, thème), puis ce qu'il est
 //   module : Vocabulaire et écoute
 //   ---
 //   # Baie des mots                          ← le nom de l'île
 //   > une note                               ← ignorée
-//   ## Écoute · `ears`                       ← une mission : son titre et son identifiant
+//   ## Écoute · `first-listening`            ← une mission : son titre et son identifiant
 //   - description : …                        ← la mission (description, compétences, lv2)
 //   - consigne : Écoute le mot anglais, …    ← champs communs à tous ses niveaux
-//   ### Niveau 1 · `baie-ears-1`             ← un niveau : l'identifiant de l'exercice
+//   ### Niveau 1 · `english-6e-vocabulary-first-listening-1` ← un niveau : l'identifiant de l'exercice
 //   - langue : en                            ← champs propres à ce niveau
 //   Pour tous les items :                    ← champs communs à tous les items du niveau (ou de la mission)
 //   - aide « Se présenter » :
@@ -42,7 +42,6 @@ const ILE = [
   ['matière', 'subject'],
   ['classe', 'classe'],
   ['description', 'description'],
-  ['bloc', 'block'],
   ['gardien', 'guardian'],
   ['icône', 'icon'],
   ['créature', 'creature.name'],
@@ -327,9 +326,9 @@ function commune(valeurs) {
  * lecture du trou, mot troué) ne s'écrit pas ; les items courts s'écrivent en tableau.
  */
 export function ecrireIle(ile, exercices, plans = []) {
-  verifierCles(ile, new Set(['id', 'name', 'exercises', ...ILE.map((c) => c[1].split('.')[0])]), ile.id);
+  verifierCles(ile, new Set(['id', 'name', 'exercises', 'block', ...ILE.map((c) => c[1].split('.')[0])]), ile.id);
   const entete = ILE.filter(([, chemin]) => obtenir(ile, chemin) !== undefined).map(([etiquette, chemin]) => `${etiquette} : ${ecrireTexte(obtenir(ile, chemin))}`);
-  const lignes = ['---', `île : ${ile.id}`, ...entete, '---', '', `# ${ile.name ?? ile.id}`, ''];
+  const lignes = ['---', `lieu : ${ile.id}`, ...entete, '---', '', `# ${ile.name ?? ile.id}`, ''];
   const missions = [...(ile.exercises ?? [])];
   for (const ex of exercices) {
     verifierCles(ex, CLES_NIVEAU, ex.id);
@@ -404,9 +403,9 @@ export function lireIle(md, fichier = 'md') {
   for (i = 1; i < lignes.length && lignes[i] !== '---'; i++) {
     const m = /^(.+?) : (.+)$/.exec(lignes[i]);
     if (!m) throw erreur(`« étiquette : valeur » attendu dans l’en-tête, lu « ${lignes[i]} »`);
-    if (m[1] === 'île') {
-      if (ile) throw erreur('« île » écrite deux fois dans l’en-tête');
-      if (!/^[a-z0-9-]+$/.test(m[2])) throw erreur(`identifiant d’île mal écrit : ${m[2]}`);
+    if (m[1] === 'lieu') {
+      if (ile) throw erreur('« lieu » écrit deux fois dans l’en-tête');
+      if (!/^[a-z0-9-]+$/.test(m[2])) throw erreur(`identifiant de lieu mal écrit : ${m[2]}`);
       ile = m[2];
       continue;
     }
@@ -415,7 +414,7 @@ export function lireIle(md, fichier = 'md') {
     if (obtenir(biome, def[1]) !== undefined) throw erreur(`« ${m[1]} » écrit deux fois`);
     poser(biome, def[1], lireTexte(m[2], i + 1));
   }
-  if (!ile) throw erreur('« île : … » manque dans l’en-tête');
+  if (!ile) throw erreur('« lieu : … » manque dans l’en-tête');
   let nom;
 
   const finirExercice = () => {
@@ -596,6 +595,8 @@ export function lireIle(md, fichier = 'md') {
   finirExercice();
   const ordreMission = ['id', 'title', ...MISSION.map((c) => c[1])];
   const exercises = missions.map((d) => Object.fromEntries(ordreMission.filter((k) => d[k] !== undefined).map((k) => [k, d[k]])));
+  // La ressource d'un lieu porte l'identifiant du lieu : elle ne s'écrit pas.
+  biome.block = ile;
   const champsIle = Object.fromEntries(['module', 'subject', 'classe', 'description', 'block', 'guardian', 'icon', 'creature'].filter((k) => biome[k] !== undefined).map((k) => [k, biome[k]]));
   return {
     ile,

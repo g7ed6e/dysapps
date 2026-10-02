@@ -5,6 +5,7 @@
 import type { BiomeId, BlockId } from '../biomes';
 import type { ArchipelagoId } from './archipels';
 import type { PlanCell, PlanDef } from './plans';
+import { BLOC } from '../biomes';
 
 /** Côté de l'îlot d'un monument (en cases) ; le monument tient dans ses 7 × 7 du milieu. */
 export const MONUMENT_ISLET = 9;
@@ -61,17 +62,17 @@ function disc(c: number, n: number): [number, number][] {
 /** L'observatoire des baleines : une plateforme de galets, une tour de brique aux fenêtres de verre, un belvédère de bois et sa longue-vue. */
 function observatoire(): PlanCell[] {
   const { cells, put, box } = drawer();
-  box(0, 0, 0, 7, 7, 1, 'galet');
-  for (let z = 1; z <= 4; z++) for (const [x, y] of ringOf(2, 3, 3, 3)) put(x, y, z, 'brique');
-  put(3, 3, 1, 'cabine');
+  box(0, 0, 0, 7, 7, 1, BLOC.galet);
+  for (let z = 1; z <= 4; z++) for (const [x, y] of ringOf(2, 3, 3, 3)) put(x, y, z, BLOC.brique);
+  put(3, 3, 1, BLOC.cabine);
   for (const [x, y] of [
     [3, 3],
     [2, 4],
     [4, 4],
     [3, 5],
   ])
-    put(x, y, 3, 'verre');
-  box(1, 2, 5, 5, 5, 1, 'bois');
+    put(x, y, 3, BLOC.verre);
+  box(1, 2, 5, 5, 5, 1, BLOC.bois);
   // Les poteaux du belvédère et le pied de la longue-vue : des poutres assemblées (GD-2).
   for (const [x, y] of [
     [1, 2],
@@ -79,29 +80,29 @@ function observatoire(): PlanCell[] {
     [1, 6],
     [5, 6],
   ])
-    put(x, y, 6, 'poutre');
+    put(x, y, 6, BLOC.poutre);
   // La longue-vue, pointée vers le large (et les baleines).
-  put(3, 4, 6, 'poutre');
-  put(3, 3, 7, 'obsidienne');
-  put(3, 2, 7, 'obsidienne');
-  put(3, 1, 8, 'obsidienne');
+  put(3, 4, 6, BLOC.poutre);
+  put(3, 3, 7, BLOC.obsidienne);
+  put(3, 2, 7, BLOC.obsidienne);
+  put(3, 1, 8, BLOC.obsidienne);
   // Des marches de sable jusqu'à la porte.
-  put(3, 2, 1, 'sable');
-  put(3, 1, 1, 'sable');
+  put(3, 2, 1, BLOC.sable);
+  put(3, 1, 1, BLOC.sable);
   return cells;
 }
 
 /** Le grand moulin : une butte de terre, une tour de brique puis de pierre, un toit de bois, quatre ailes en croix. */
 function moulin(): PlanCell[] {
   const { cells, put, box } = drawer();
-  box(1, 1, 0, 5, 5, 1, 'terre');
-  for (let z = 1; z <= 5; z++) for (const [x, y] of ringOf(2, 2, 3, 3)) put(x, y, z, z <= 3 ? 'brique' : 'pierre');
-  put(3, 2, 1, 'cabine');
-  put(3, 2, 3, 'verre');
-  box(2, 2, 6, 3, 3, 1, 'bois');
-  put(3, 3, 7, 'poutre');
+  box(1, 1, 0, 5, 5, 1, BLOC.terre);
+  for (let z = 1; z <= 5; z++) for (const [x, y] of ringOf(2, 2, 3, 3)) put(x, y, z, z <= 3 ? BLOC.brique : BLOC.pierre);
+  put(3, 2, 1, BLOC.cabine);
+  put(3, 2, 3, BLOC.verre);
+  box(2, 2, 6, 3, 3, 1, BLOC.bois);
+  put(3, 3, 7, BLOC.poutre);
   // Les ailes : un moyeu de cadran devant la tour, quatre bras de bois, de la toile de sable au bout de chacun.
-  put(3, 1, 5, 'cadran');
+  put(3, 1, 5, BLOC.cadran);
   for (const [dx, dz] of [
     [1, 1],
     [-1, 1],
@@ -109,9 +110,9 @@ function moulin(): PlanCell[] {
     [-1, -1],
   ]) {
     // Le pied de chaque aile, au moyeu : une poutre assemblée (GD-2).
-    put(3 + dx, 1, 5 + dz, 'poutre');
-    put(3 + 2 * dx, 1, 5 + 2 * dz, 'bois');
-    put(3 + 2 * dx, 1, 5 + dz, 'sable');
+    put(3 + dx, 1, 5 + dz, BLOC.poutre);
+    put(3 + 2 * dx, 1, 5 + 2 * dz, BLOC.bois);
+    put(3 + 2 * dx, 1, 5 + dz, BLOC.sable);
   }
   return cells;
 }
@@ -119,21 +120,21 @@ function moulin(): PlanCell[] {
 /** Le phare du large : un socle de glace, une tour rayée de tuiles et de glace, une galerie de lambris, une lanterne de vitraux. */
 function phareLarge(): PlanCell[] {
   const { cells, put, box } = drawer();
-  box(1, 1, 0, 5, 5, 1, 'glace');
-  for (let z = 1; z <= 7; z++) for (const [x, y] of ringOf(2, 2, 3, 3)) put(x, y, z, z % 2 === 1 ? 'tuile' : 'glace');
-  put(3, 2, 1, 'lambris');
-  for (const [x, y] of ringOf(1, 1, 5, 5)) put(x, y, 7, 'lambris');
+  box(1, 1, 0, 5, 5, 1, BLOC.glace);
+  for (let z = 1; z <= 7; z++) for (const [x, y] of ringOf(2, 2, 3, 3)) put(x, y, z, z % 2 === 1 ? BLOC.tuile : BLOC.glace);
+  put(3, 2, 1, BLOC.lambris);
+  for (const [x, y] of ringOf(1, 1, 5, 5)) put(x, y, 7, BLOC.lambris);
   // La lanterne : des vitraux assemblés (GD-2).
-  for (const [x, y] of ringOf(2, 2, 3, 3)) put(x, y, 8, 'vitrail');
-  box(2, 2, 9, 3, 3, 1, 'toile');
-  put(3, 3, 10, 'tuile');
+  for (const [x, y] of ringOf(2, 2, 3, 3)) put(x, y, 8, BLOC.vitrail);
+  box(2, 2, 9, 3, 3, 1, BLOC.toile);
+  put(3, 3, 10, BLOC.tuile);
   return cells;
 }
 
 /** Le kiosque à musique : un plancher rond de lambris, huit poteaux de tourbe, un toit rayé qui monte en pointe. */
 function kiosqueMusique(): PlanCell[] {
   const { cells, put } = drawer();
-  for (const [x, y] of disc(3, 7)) put(x, y, 0, 'lambris');
+  for (const [x, y] of disc(3, 7)) put(x, y, 0, BLOC.lambris);
   for (const [x, y] of [
     [1, 1],
     [3, 0],
@@ -144,32 +145,32 @@ function kiosqueMusique(): PlanCell[] {
     [1, 5],
     [0, 3],
   ])
-    for (let z = 1; z <= 3; z++) put(x, y, z, 'tourbe');
-  for (const [x, y] of disc(3, 7)) put(x, y, 4, (x + y) % 2 === 0 ? 'toile' : 'tuile');
-  for (const [x, y] of disc(3, 5)) put(x, y, 5, (x + y) % 2 === 0 ? 'tuile' : 'toile');
+    for (let z = 1; z <= 3; z++) put(x, y, z, BLOC.tourbe);
+  for (const [x, y] of disc(3, 7)) put(x, y, 4, (x + y) % 2 === 0 ? BLOC.toile : BLOC.tuile);
+  for (const [x, y] of disc(3, 5)) put(x, y, 5, (x + y) % 2 === 0 ? BLOC.tuile : BLOC.toile);
   // Le lanterneau au sommet du toit : des vitraux assemblés (GD-2).
-  for (const [x, y] of disc(3, 3)) put(x, y, 6, 'vitrail');
-  put(3, 3, 7, 'vitrail');
+  for (const [x, y] of disc(3, 3)) put(x, y, 6, BLOC.vitrail);
+  put(3, 3, 7, BLOC.vitrail);
   return cells;
 }
 
 /** Le viaduc : trois paires de piles d'ardoise, un tablier de rails, une locomotive d'acier à la cabine de velours. */
 function viaduc(): PlanCell[] {
   const { cells, put, box } = drawer();
-  for (const x of [0, 3, 6]) for (const y of [2, 4]) for (let z = 0; z <= 3; z++) put(x, y, z, 'ardoise');
+  for (const x of [0, 3, 6]) for (const y of [2, 4]) for (let z = 0; z <= 3; z++) put(x, y, z, BLOC.ardoise);
   // Les arches : une voûte d'ardoise entre deux piles, sous le tablier.
-  for (const x of [1, 2, 4, 5]) for (const y of [2, 4]) put(x, y, 3, 'ardoise');
-  box(0, 2, 4, 7, 3, 1, 'rail');
-  box(1, 3, 5, 3, 1, 2, 'acier');
+  for (const x of [1, 2, 4, 5]) for (const y of [2, 4]) put(x, y, 3, BLOC.ardoise);
+  box(0, 2, 4, 7, 3, 1, BLOC.rail);
+  box(1, 3, 5, 3, 1, 2, BLOC.acier);
   // Les roues de la locomotive : des engrenages assemblés (GD-2).
-  for (const x of [1, 2, 3]) put(x, 3, 5, 'engrenage');
-  put(4, 3, 5, 'velours');
-  put(4, 3, 6, 'velours');
-  put(1, 3, 7, 'acier');
+  for (const x of [1, 2, 3]) put(x, 3, 5, BLOC.engrenage);
+  put(4, 3, 5, BLOC.velours);
+  put(4, 3, 6, BLOC.velours);
+  put(1, 3, 7, BLOC.acier);
   // Des garde-corps de calque au bord du tablier.
-  for (const x of [0, 6]) for (const y of [2, 4]) put(x, y, 5, 'calque');
+  for (const x of [0, 6]) for (const y of [2, 4]) put(x, y, 5, BLOC.calque);
   // Le levier de l'aiguillage, un engrenage assemblé (GD-2).
-  put(3, 2, 5, 'engrenage');
+  put(3, 2, 5, BLOC.engrenage);
   return cells;
 }
 
@@ -179,51 +180,51 @@ function amphitheatre(): PlanCell[] {
   for (let t = 0; t < 3; t++) {
     const y = 4 + t;
     for (let x = 0; x < 7; x++) {
-      for (let z = 0; z < t; z++) put(x, y, z, 'ardoise');
-      put(x, y, t, 'velours');
+      for (let z = 0; z < t; z++) put(x, y, z, BLOC.ardoise);
+      put(x, y, t, BLOC.velours);
     }
   }
-  box(1, 0, 0, 5, 3, 1, 'parchemin');
+  box(1, 0, 0, 5, 3, 1, BLOC.parchemin);
   for (const x of [1, 5]) {
-    for (let z = 1; z <= 2; z++) put(x, 0, z, 'calque');
+    for (let z = 1; z <= 2; z++) put(x, 0, z, BLOC.calque);
     // Le haut des colonnes, leurs projecteurs et la machinerie de la scène : des engrenages assemblés (GD-2).
-    put(x, 0, 3, 'engrenage');
-    put(x, 0, 4, 'engrenage');
+    put(x, 0, 3, BLOC.engrenage);
+    put(x, 0, 4, BLOC.engrenage);
   }
-  put(3, 2, 1, 'engrenage');
+  put(3, 2, 1, BLOC.engrenage);
   return cells;
 }
 
 /** L'observatoire des étoiles : un socle de marbre, un tambour de quartz, une coupole de lentilles, une lunette d'antenne, deux prismes à la porte. */
 function etoiles(): PlanCell[] {
   const { cells, put } = drawer();
-  for (const [x, y] of disc(3, 7)) put(x, y, 0, 'marbre');
-  for (let z = 1; z <= 3; z++) for (const [x, y] of ringOf(1, 1, 5, 5)) put(x, y, z, 'quartz');
-  put(3, 1, 1, 'taille');
+  for (const [x, y] of disc(3, 7)) put(x, y, 0, BLOC.marbre);
+  for (let z = 1; z <= 3; z++) for (const [x, y] of ringOf(1, 1, 5, 5)) put(x, y, z, BLOC.quartz);
+  put(3, 1, 1, BLOC.taille);
   // Deux miroirs assemblés à la porte (GD-2).
-  put(2, 1, 2, 'miroir');
-  put(4, 1, 2, 'miroir');
-  for (const [x, y] of disc(3, 5)) put(x, y, 4, 'lentille');
-  for (const [x, y] of disc(3, 3)) put(x, y, 5, 'lentille');
+  put(2, 1, 2, BLOC.miroir);
+  put(4, 1, 2, BLOC.miroir);
+  for (const [x, y] of disc(3, 5)) put(x, y, 4, BLOC.lentille);
+  for (const [x, y] of disc(3, 3)) put(x, y, 5, BLOC.lentille);
   // La grande lunette : des miroirs assemblés (GD-2).
-  put(3, 3, 6, 'miroir');
-  put(3, 2, 6, 'miroir');
-  put(3, 1, 7, 'miroir');
+  put(3, 3, 6, BLOC.miroir);
+  put(3, 2, 6, BLOC.miroir);
+  put(3, 1, 7, BLOC.miroir);
   return cells;
 }
 
 /** Le temple de marbre : un soubassement de pierre de taille, huit colonnes de marbre, un entablement, un toit de prismes au faîte de miroirs. */
 function temple(): PlanCell[] {
   const { cells, put, box } = drawer();
-  box(0, 1, 0, 7, 5, 1, 'taille');
-  for (const x of [0, 2, 4, 6]) for (const y of [1, 5]) for (let z = 1; z <= 4; z++) put(x, y, z, 'marbre');
-  for (const [x, y] of ringOf(0, 1, 7, 5)) put(x, y, 5, 'taille');
-  for (const [x, y] of ringOf(0, 1, 7, 5)) put(x, y, 6, 'prisme');
+  box(0, 1, 0, 7, 5, 1, BLOC.taille);
+  for (const x of [0, 2, 4, 6]) for (const y of [1, 5]) for (let z = 1; z <= 4; z++) put(x, y, z, BLOC.marbre);
+  for (const [x, y] of ringOf(0, 1, 7, 5)) put(x, y, 5, BLOC.taille);
+  for (const [x, y] of ringOf(0, 1, 7, 5)) put(x, y, 6, BLOC.prisme);
   // Le faîte, qui renvoie le soleil : des miroirs assemblés (GD-2).
-  for (let x = 0; x < 7; x++) put(x, 3, 7, 'miroir');
+  for (let x = 0; x < 7; x++) put(x, 3, 7, BLOC.miroir);
   // L'autel au fond, une antenne qui capte les étoiles.
-  put(3, 4, 1, 'quartz');
-  put(3, 4, 2, 'antenne');
+  put(3, 4, 1, BLOC.quartz);
+  put(3, 4, 2, BLOC.antenne);
   return cells;
 }
 
@@ -239,8 +240,8 @@ type Fiche = Omit<MonumentDef, 'cells' | 'origin' | 'zone'> & { draw: () => Plan
  */
 const FICHES: Fiche[] = [
   {
-    id: 'monument-observatoire',
-    biome: 'tour',
+    id: 'landmark-6e-1',
+    biome: 'french-6e-reading',
     archipelago: '6e',
     name: 'L’observatoire des baleines',
     description: 'Une tour de brique sur une plateforme de galets, et au sommet une longue-vue tournée vers le large, là où soufflent les baleines.',
@@ -250,8 +251,8 @@ const FICHES: Fiche[] = [
     draw: observatoire,
   },
   {
-    id: 'monument-moulin',
-    biome: 'ferme',
+    id: 'landmark-6e-2',
+    biome: 'french-6e-grammar-spelling',
     archipelago: '6e',
     name: 'Le grand moulin',
     description: 'Un moulin de brique et de pierre, ses quatre ailes de bois et de toile tournées vers le vent du large.',
@@ -261,8 +262,8 @@ const FICHES: Fiche[] = [
     draw: moulin,
   },
   {
-    id: 'monument-phare-large',
-    biome: 'glacier',
+    id: 'landmark-5e-1',
+    biome: 'maths-5e-signed-numbers',
     archipelago: '5e',
     name: 'Le phare du large',
     description: 'Une haute tour rayée de tuiles et de glace, une galerie de lambris et une lanterne de vitraux, pour les navires qui passent.',
@@ -272,8 +273,8 @@ const FICHES: Fiche[] = [
     draw: phareLarge,
   },
   {
-    id: 'monument-kiosque',
-    biome: 'manoir',
+    id: 'landmark-5e-2',
+    biome: 'english-5e-grammar',
     archipelago: '5e',
     name: 'Le kiosque à musique',
     description: 'Un kiosque rond au plancher de lambris, huit poteaux et un toit rayé de toile et de tuiles, pour les fanfares du dimanche.',
@@ -283,8 +284,8 @@ const FICHES: Fiche[] = [
     draw: kiosqueMusique,
   },
   {
-    id: 'monument-viaduc',
-    biome: 'gare',
+    id: 'landmark-4e-1',
+    biome: 'english-4e-grammar',
     archipelago: '4e',
     name: 'Le viaduc',
     description: 'Des piles et des arches d’ardoise, un tablier de rails, et une locomotive d’acier qui attend le départ.',
@@ -294,8 +295,8 @@ const FICHES: Fiche[] = [
     draw: viaduc,
   },
   {
-    id: 'monument-amphitheatre',
-    biome: 'theatre',
+    id: 'landmark-4e-2',
+    biome: 'english-4e-comprehension',
     archipelago: '4e',
     name: 'L’amphithéâtre',
     description: 'Trois gradins de velours, une scène de parchemin entre deux colonnes, et des projecteurs pour les grands soirs.',
@@ -305,8 +306,8 @@ const FICHES: Fiche[] = [
     draw: amphitheatre,
   },
   {
-    id: 'monument-etoiles',
-    biome: 'textes',
+    id: 'landmark-3e-1',
+    biome: 'french-3e-close-reading',
     archipelago: '3e',
     name: 'L’observatoire des étoiles',
     description: 'Un tambour de quartz sous une coupole de lentilles, et une grande lunette pointée vers le ciel.',
@@ -316,8 +317,8 @@ const FICHES: Fiche[] = [
     draw: etoiles,
   },
   {
-    id: 'monument-temple',
-    biome: 'belvedere',
+    id: 'landmark-3e-2',
+    biome: 'maths-3e-geometry',
     archipelago: '3e',
     name: 'Le temple de marbre',
     description: 'Huit colonnes de marbre sur un soubassement de pierre de taille, un toit de prismes et un faîte de miroirs qui brillent au soleil.',

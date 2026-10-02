@@ -1,0 +1,206 @@
+{
+  "id": "french-6e-grammar-spelling-e-er-ez-1",
+  "biome": "french-6e-grammar-spelling",
+  "type": "e-er-ez",
+  "level": 1,
+  "instruction": "Choisis la bonne fin du verbe : é, er ou ez. Astuce : remplace par vendre ou vendu.",
+  "items": [
+    {
+      "key": "va-manger",
+      "prompt": "Il va mang… à midi.",
+      "spoken": "Il va mang(terminaison) à midi.",
+      "choices": [
+        "é",
+        "er",
+        "ez"
+      ],
+      "answer": "er",
+      "rule": "Après « va », on peut dire « vendre » : c’est -er.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "-é, -er ou -ez ?",
+          "lines": [
+            "On peut dire « vendre » : -er (elle va laver).",
+            "On peut dire « vendu » : -é (elle a lavé).",
+            "Avec « vous » : -ez (vous lavez)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "a-mange",
+      "prompt": "Il a mang… une pomme.",
+      "spoken": "Il a mang(terminaison) une pomme.",
+      "choices": [
+        "é",
+        "er",
+        "ez"
+      ],
+      "answer": "é",
+      "rule": "Après « a », on peut dire « vendu » : c’est -é.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "-é, -er ou -ez ?",
+          "lines": [
+            "On peut dire « vendre » : -er (elle va laver).",
+            "On peut dire « vendu » : -é (elle a lavé).",
+            "Avec « vous » : -ez (vous lavez)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "vous-mangez",
+      "prompt": "Vous mang… trop vite.",
+      "spoken": "Vous mang(terminaison) trop vite.",
+      "choices": [
+        "é",
+        "er",
+        "ez"
+      ],
+      "answer": "ez",
+      "rule": "Avec « vous », le verbe finit par -ez.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "-é, -er ou -ez ?",
+          "lines": [
+            "On peut dire « vendre » : -er (elle va laver).",
+            "On peut dire « vendu » : -é (elle a lavé).",
+            "Avec « vous » : -ez (vous lavez)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "veut-jouer",
+      "prompt": "Elle veut jou… dehors.",
+      "spoken": "Elle veut jou(terminaison) dehors.",
+      "choices": [
+        "é",
+        "er",
+        "ez"
+      ],
+      "answer": "er",
+      "rule": "Après « veut », on peut dire « vendre » : c’est -er.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "-é, -er ou -ez ?",
+          "lines": [
+            "On peut dire « vendre » : -er (elle va laver).",
+            "On peut dire « vendu » : -é (elle a lavé).",
+            "Avec « vous » : -ez (vous lavez)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "est-tombe",
+      "prompt": "Le vase est tomb… par terre.",
+      "spoken": "Le vase est tomb(terminaison) par terre.",
+      "choices": [
+        "é",
+        "er",
+        "ez"
+      ],
+      "answer": "é",
+      "rule": "Après « est », on peut dire « vendu » : c’est -é.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "-é, -er ou -ez ?",
+          "lines": [
+            "On peut dire « vendre » : -er (elle va laver).",
+            "On peut dire « vendu » : -é (elle a lavé).",
+            "Avec « vous » : -ez (vous lavez)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "vous-chantez",
+      "prompt": "Vous chant… très bien.",
+      "spoken": "Vous chant(terminaison) très bien.",
+      "choices": [
+        "é",
+        "er",
+        "ez"
+      ],
+      "answer": "ez",
+      "rule": "Avec « vous », le verbe finit par -ez.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "-é, -er ou -ez ?",
+          "lines": [
+            "On peut dire « vendre » : -er (elle va laver).",
+            "On peut dire « vendu » : -é (elle a lavé).",
+            "Avec « vous » : -ez (vous lavez)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "pour-chanter",
+      "prompt": "Je viens pour chant… avec toi.",
+      "spoken": "Je viens pour chant(terminaison) avec toi.",
+      "choices": [
+        "é",
+        "er",
+        "ez"
+      ],
+      "answer": "er",
+      "rule": "Après « pour », on peut dire « vendre » : c’est -er.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "-é, -er ou -ez ?",
+          "lines": [
+            "On peut dire « vendre » : -er (elle va laver).",
+            "On peut dire « vendu » : -é (elle a lavé).",
+            "Avec « vous » : -ez (vous lavez)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "ont-fini",
+      "prompt": "Ils ont termin… le travail.",
+      "spoken": "Ils ont termin(terminaison) le travail.",
+      "choices": [
+        "é",
+        "er",
+        "ez"
+      ],
+      "answer": "é",
+      "rule": "Après « ont », on peut dire « vendu » : c’est -é.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "-é, -er ou -ez ?",
+          "lines": [
+            "On peut dire « vendre » : -er (elle va laver).",
+            "On peut dire « vendu » : -é (elle a lavé).",
+            "Avec « vous » : -ez (vous lavez)."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bonne terminaison !",
+    "wrong": "{rule}"
+  },
+  "reward": {
+    "block": "french-6e-grammar-spelling",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

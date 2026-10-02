@@ -2,7 +2,7 @@
 // plus large au relief varié, à son altitude), reliées par des ponts et des rampes de bois.
 // Générateur pur (sans Three.js) : testable, et partagé entre la 3D et la vue simple. Le décor (arbres, décor du cœur,
 // repères, cascades, habillage de la mer) est dessiné par ./decor.ts, et posé ici.
-import { BIOMES, BLOCKS, missionsJouables, type BiomeDef, type BiomeId } from '../biomes';
+import { BLOC, BIOMES, BLOCKS, missionsJouables, type BiomeDef, type BiomeId } from '../biomes';
 import { lv2Courante } from '../../core/settings';
 import { ARCHIPELAGOS, BRIDGES, bridgeState, bridgesOf, getArchipelago, isBiomeUnlocked, islandsOf, otherEnd, reachableIslands, type BridgeDef } from './archipelago';
 import { walkPath, type WalkGround } from './paths';
@@ -93,45 +93,45 @@ const TEXTURES: Record<string, string> = {
   [TRUNK]: 'tronc',
   [LEAF]: 'feuilles',
   [GRASS]: 'herbe',
-  [BLOCKS.terre.side]: 'terre',
-  [BLOCKS.pierre.side]: 'pierre',
-  [BLOCKS.sable.side]: 'sable',
-  [BLOCKS.verre.side]: 'verre',
-  [BLOCKS.or.side]: 'or',
-  [BLOCKS.bois.side]: 'planches',
-  [BLOCKS.brique.side]: 'brique',
-  [BLOCKS.galet.side]: 'galet',
-  [BLOCKS.obsidienne.side]: 'obsidienne',
-  [BLOCKS.glace.side]: 'glace',
-  [BLOCKS.toile.side]: 'toile',
-  [BLOCKS.panneau.side]: 'panneau',
-  [BLOCKS.tourbe.side]: 'tourbe',
-  [BLOCKS.acier.side]: 'acier',
-  [BLOCKS.calque.side]: 'calque',
-  [BLOCKS.ardoise.side]: 'ardoise',
-  [BLOCKS.parchemin.side]: 'parchemin',
-  [BLOCKS.marbre.side]: 'marbre',
-  [BLOCKS.quartz.side]: 'quartz',
-  [BLOCKS.prisme.side]: 'prisme',
-  [BLOCKS.lentille.side]: 'lentille',
-  [BLOCKS.cabine.side]: 'cabine',
-  [BLOCKS.cadran.side]: 'cadran',
-  [BLOCKS.tuile.side]: 'tuile',
-  [BLOCKS.lambris.side]: 'lambris',
-  [BLOCKS.velours.side]: 'velours',
-  [BLOCKS.rail.side]: 'rail',
-  [BLOCKS.antenne.side]: 'antenne',
-  [BLOCKS.taille.side]: 'taille',
-  [BLOCKS.dalle.side]: 'dalle',
-  [BLOCKS.osier.side]: 'osier',
-  [BLOCKS.bardeau.side]: 'bardeau',
-  [BLOCKS.poutre.side]: 'poutre',
-  [BLOCKS.vitrail.side]: 'vitrail',
-  [BLOCKS.engrenage.side]: 'engrenage',
-  [BLOCKS.miroir.side]: 'miroir',
-  [BLOCKS.lanterne.side]: 'lanterne',
-  [BLOCKS.barriere.side]: 'barriere',
-  [BLOCKS.escalier.side]: 'escalier',
+  [BLOCKS[BLOC.terre].side]: 'terre',
+  [BLOCKS[BLOC.pierre].side]: 'pierre',
+  [BLOCKS[BLOC.sable].side]: 'sable',
+  [BLOCKS[BLOC.verre].side]: 'verre',
+  [BLOCKS[BLOC.or].side]: 'or',
+  [BLOCKS[BLOC.bois].side]: 'planches',
+  [BLOCKS[BLOC.brique].side]: 'brique',
+  [BLOCKS[BLOC.galet].side]: 'galet',
+  [BLOCKS[BLOC.obsidienne].side]: 'obsidienne',
+  [BLOCKS[BLOC.glace].side]: 'glace',
+  [BLOCKS[BLOC.toile].side]: 'toile',
+  [BLOCKS[BLOC.panneau].side]: 'panneau',
+  [BLOCKS[BLOC.tourbe].side]: 'tourbe',
+  [BLOCKS[BLOC.acier].side]: 'acier',
+  [BLOCKS[BLOC.calque].side]: 'calque',
+  [BLOCKS[BLOC.ardoise].side]: 'ardoise',
+  [BLOCKS[BLOC.parchemin].side]: 'parchemin',
+  [BLOCKS[BLOC.marbre].side]: 'marbre',
+  [BLOCKS[BLOC.quartz].side]: 'quartz',
+  [BLOCKS[BLOC.prisme].side]: 'prisme',
+  [BLOCKS[BLOC.lentille].side]: 'lentille',
+  [BLOCKS[BLOC.cabine].side]: 'cabine',
+  [BLOCKS[BLOC.cadran].side]: 'cadran',
+  [BLOCKS[BLOC.tuile].side]: 'tuile',
+  [BLOCKS[BLOC.lambris].side]: 'lambris',
+  [BLOCKS[BLOC.velours].side]: 'velours',
+  [BLOCKS[BLOC.rail].side]: 'rail',
+  [BLOCKS[BLOC.antenne].side]: 'antenne',
+  [BLOCKS[BLOC.taille].side]: 'taille',
+  [BLOCKS[BLOC.dalle].side]: 'dalle',
+  [BLOCKS[BLOC.osier].side]: 'osier',
+  [BLOCKS[BLOC.bardeau].side]: 'bardeau',
+  [BLOCKS[BLOC.poutre].side]: 'poutre',
+  [BLOCKS[BLOC.vitrail].side]: 'vitrail',
+  [BLOCKS[BLOC.engrenage].side]: 'engrenage',
+  [BLOCKS[BLOC.miroir].side]: 'miroir',
+  [BLOCKS[BLOC.lanterne].side]: 'lanterne',
+  [BLOCKS[BLOC.barriere].side]: 'barriere',
+  [BLOCKS[BLOC.escalier].side]: 'escalier',
   [SNOW]: 'nuage',
   [HAY]: 'or',
   [MOSS]: 'mousse',
@@ -145,12 +145,12 @@ const TEXTURES: Record<string, string> = {
 /** Couleur du dessus d'une case de paysage selon son sol. */
 const GROUND_COLOR: Record<Ground, string> = {
   herbe: GRASS,
-  sable: BLOCKS.sable.side,
-  roche: BLOCKS.pierre.side,
+  sable: BLOCKS[BLOC.sable].side,
+  roche: BLOCKS[BLOC.pierre].side,
   neige: SNOW,
   eau: WATER,
   lave: LAVA,
-  glace: BLOCKS.glace.side,
+  glace: BLOCKS[BLOC.glace].side,
   basalte: BASALT,
   mousse: MOSS,
 };
@@ -275,7 +275,7 @@ export function viewYaw(home: BiomeId): number {
  * ne fait pas pivoter les caméras des autres îles, qui gardent leur cadrage (DA, LV2-5). Le Relais des voyageurs (5e) et
  * le Jardin des heures (4e) y comptent : leurs lots ont validé avec eux le cadrage de leur archipel, qu'on ne rouvre pas.
  */
-export const HORS_DE_LA_COLONNE: readonly BiomeId[] = ['refuge'];
+export const HORS_DE_LA_COLONNE: readonly BiomeId[] = ['lv2-3e-travel'];
 
 const colonnes = new Map<ArchipelagoId, number>();
 /**
@@ -637,17 +637,17 @@ function bridge(def: BridgeDef, cubes: VoxelCube[], ghost: boolean, occupied: Se
     switch (def.kind) {
       case 'sentier':
         // Des pierres de gué une case sur deux, posées sur le sol de l'isthme.
-        if (i % 2 === 0) add(c.x, c.y, c.z + 1, BLOCKS.galet.side, 'galet');
+        if (i % 2 === 0) add(c.x, c.y, c.z + 1, BLOCKS[BLOC.galet].side, 'galet');
         break;
       case 'pont':
-        add(c.x, c.y, c.z, BLOCKS.bois.side, c.climbing ? 'escalier' : 'planches', c.climbing ? BLOCKS.escalier.top : undefined);
+        add(c.x, c.y, c.z, BLOCKS[BLOC.bois].side, c.climbing ? 'escalier' : 'planches', c.climbing ? BLOCKS[BLOC.escalier].top : undefined);
         break;
       case 'bac': {
         // Un radeau de trois planches au milieu, des poteaux de bois qui tiennent la corde de halage.
         const mid = Math.abs(i - (n - 1) / 2) <= 1;
         if (mid) {
-          add(c.x, c.y, c.z, BLOCKS.bois.side, 'planches');
-          if (i === Math.floor((n - 1) / 2)) add(c.x + px, c.y + py, c.z, BLOCKS.bois.side, 'planches');
+          add(c.x, c.y, c.z, BLOCKS[BLOC.bois].side, 'planches');
+          if (i === Math.floor((n - 1) / 2)) add(c.x + px, c.y + py, c.z, BLOCKS[BLOC.bois].side, 'planches');
         } else if (i % 3 === 0 || i === n - 1) add(c.x, c.y, c.z, TRUNK, 'tronc');
         break;
       }
@@ -656,16 +656,16 @@ function bridge(def: BridgeDef, cubes: VoxelCube[], ghost: boolean, occupied: Se
         break;
       case 'col':
         add(c.x, c.y, c.z, STEP, c.climbing ? 'marche' : 'pierre');
-        if (i % 2 === 0) beside(c.x + px, c.y + py, c.z + 1, BLOCKS.barriere.side, 'barriere');
+        if (i % 2 === 0) beside(c.x + px, c.y + py, c.z + 1, BLOCKS[BLOC.barriere].side, 'barriere');
         break;
       case 'tunnel': {
-        add(c.x, c.y, c.z, BLOCKS.bois.side, c.climbing ? 'escalier' : 'planches', c.climbing ? BLOCKS.escalier.top : undefined);
+        add(c.x, c.y, c.z, BLOCKS[BLOC.bois].side, c.climbing ? 'escalier' : 'planches', c.climbing ? BLOCKS[BLOC.escalier].top : undefined);
         // Une arche de pierre toutes les trois cases, une lanterne au sommet d'une arche sur deux.
         if (i % 3 === 1 && i < n - 1) {
           // Assez haute pour que le bonhomme (deux blocs) passe dessous : piliers de trois, clé de voûte au quatrième.
-          for (const side of [-1, 1]) for (let up = 1; up <= 3; up++) beside(c.x + side * px, c.y + side * py, c.z + up, BLOCKS.pierre.side, 'pierre');
+          for (const side of [-1, 1]) for (let up = 1; up <= 3; up++) beside(c.x + side * px, c.y + side * py, c.z + up, BLOCKS[BLOC.pierre].side, 'pierre');
           const lit = ((i - 1) / 3) % 2 === 0;
-          add(c.x, c.y, c.z + 4, lit ? BLOCKS.lanterne.side : BLOCKS.pierre.side, lit ? 'lanterne' : 'pierre');
+          add(c.x, c.y, c.z + 4, lit ? BLOCKS[BLOC.lanterne].side : BLOCKS[BLOC.pierre].side, lit ? 'lanterne' : 'pierre');
         }
         break;
       }
@@ -679,7 +679,7 @@ function bridge(def: BridgeDef, cubes: VoxelCube[], ghost: boolean, occupied: Se
     const py = c.dy !== 0 ? 0 : 1;
     const base = def.kind === 'sentier' ? c.z + 1 : c.z;
     beside(c.x + px, c.y + py, base, TRUNK, 'tronc');
-    beside(c.x + px, c.y + py, base + 1, BLOCKS.lanterne.side, 'lanterne');
+    beside(c.x + px, c.y + py, base + 1, BLOCKS[BLOC.lanterne].side, 'lanterne');
   }
 }
 
@@ -855,14 +855,14 @@ export const CREATURE_STEPS: [number, number][] = [
  * lui montre ses ailes de biais, jamais par la tranche (DA, retouches LV2-5). Orientation fixe, sans animation ; les
  * portraits (défi, bulle, panneau) gardent le modèle de face.
  */
-export const QUARTS_DE_TOUR: Partial<Record<BiomeId, number>> = { refuge: 1 };
+export const QUARTS_DE_TOUR: Partial<Record<BiomeId, number>> = { 'lv2-3e-travel': 1 };
 /**
  * Les créatures seules (pas leur Gardien) tournées d'un quart de tour de plus, même sens. Au Marché des proportions
  * (5e), Bazar est long (sept cases du museau à la queue) : de face, il n'a aucune place hors de la vue de la salle des
  * trophées (GD-3) ; tourné, il se tient derrière elle, le visage du côté des x croissants, celui de la caméra. Le quart
  * de tour dans l'autre sens lui ferait tourner le dos à la caméra (retouches de GD-3).
  */
-export const QUARTS_DE_TOUR_DE_LA_CREATURE: Partial<Record<BiomeId, number>> = { marche: 1 };
+export const QUARTS_DE_TOUR_DE_LA_CREATURE: Partial<Record<BiomeId, number>> = { 'maths-5e-proportionality': 1 };
 function tourner(cubes: CubeDeModele[], quarts = 0): CubeDeModele[] {
   let out = cubes;
   for (let i = 0; i < quarts; i++) {
@@ -1012,8 +1012,8 @@ export const ILOT_DE_COTE = 9;
  * Forge, à gauche, était plus près de l'îlot que l'Atelier lui-même ; il glisse de 7 cases au lieu de 9.
  */
 export const RETOUCHES_DE_L_ILOT: Readonly<Partial<Record<BiomeId, Readonly<{ glisse?: number; recul?: number; rogne?: number }>>>> = Object.freeze({
-  foret: Object.freeze({ recul: 1, rogne: 1 }),
-  atelier: Object.freeze({ glisse: 7 }),
+  'french-6e-phonology': Object.freeze({ recul: 1, rogne: 1 }),
+  'maths-4e-algebra': Object.freeze({ glisse: 7 }),
 });
 
 /**
@@ -1205,13 +1205,13 @@ function bossIslet(biome: BiomeDef, beaten: boolean, cubes: VoxelCube[], pas = t
   const ground = isletGround(def);
   const sandy = gz === 0 && def.region !== 'feu';
   for (const c of cells) {
-    for (let d = 1; d <= DEPTH; d++) sol(c.x, c.y, gz - d, BLOCKS.terre.side);
+    for (let d = 1; d <= DEPTH; d++) sol(c.x, c.y, gz - d, BLOCKS[BLOC.terre].side);
     // L'arène : pierre au milieu, galet sur son pourtour ; autour, le sol de l'île, et du sable au bord de la mer.
     const rim = c.arena && [`${c.x - 1},${c.y}`, `${c.x + 1},${c.y}`, `${c.x},${c.y - 1}`, `${c.x},${c.y + 1}`].some((k) => !at.get(k)?.arena);
-    const top = c.arena ? (rim ? BLOCKS.galet.side : BLOCKS.pierre.side) : c.shore && sandy ? BLOCKS.sable.side : ground;
+    const top = c.arena ? (rim ? BLOCKS[BLOC.galet].side : BLOCKS[BLOC.pierre].side) : c.shore && sandy ? BLOCKS[BLOC.sable].side : ground;
     sol(c.x, c.y, gz, top);
   }
-  if (gz > 0) for (const t of taperLayers(cells)) sol(t.x, t.y, gz - DEPTH - t.d, BLOCKS.pierre.side);
+  if (gz > 0) for (const t of taperLayers(cells)) sol(t.x, t.y, gz - DEPTH - t.d, BLOCKS[BLOC.pierre].side);
   // Quelques touches du décor de l'île, hors de l'arène et loin des pieds du Gardien.
   const kinds = [...new Set(landscape(def).map((c) => c.decor).filter((k): k is Decor => !!k && SMALL_DECOR.includes(k)))];
   if (kinds.length === 0) kinds.push('rocher');
@@ -1244,13 +1244,13 @@ function bossIslet(biome: BiomeDef, beaten: boolean, cubes: VoxelCube[], pas = t
   }
   if (pas)
     for (const s of bossIsletSteps(biome.id)) {
-      block(s.x, s.y, s.z, BLOCKS.galet.side);
-      if (s.z === 0) block(s.x, s.y, -1, BLOCKS.galet.side);
+      block(s.x, s.y, s.z, BLOCKS[BLOC.galet].side);
+      if (s.z === 0) block(s.x, s.y, -1, BLOCKS[BLOC.galet].side);
     }
   // Vaincu : un bloc d'or sur un socle de pierre, devant la statue.
   if (trophy) {
-    block(trophy.x, trophy.y, gz + 1, BLOCKS.pierre.side);
-    block(trophy.x, trophy.y, gz + 2, BLOCKS.or.side, BLOCKS.or.top);
+    block(trophy.x, trophy.y, gz + 1, BLOCKS[BLOC.pierre].side);
+    block(trophy.x, trophy.y, gz + 2, BLOCKS[BLOC.or].side, BLOCKS[BLOC.or].top);
   }
 }
 
@@ -1296,8 +1296,8 @@ export function planZoneOf(id: BiomeId): { x0: number; y0: number; x1: number; y
 /** Roche sous le sol d'une case de paysage, selon la région et la hauteur. */
 function underground(def: IslandDef, cell: LandCell, depthBelowTop: number): string {
   if (def.region === 'feu') return BASALT;
-  if (cell.h - depthBelowTop >= 2 || def.region === 'hauteurs' || def.region === 'montagne') return BLOCKS.pierre.side;
-  return BLOCKS.terre.side;
+  if (cell.h - depthBelowTop >= 2 || def.region === 'hauteurs' || def.region === 'montagne') return BLOCKS[BLOC.pierre].side;
+  return BLOCKS[BLOC.terre].side;
 }
 
 /**
@@ -1571,20 +1571,20 @@ function harbour(a: ArchipelagoId, village: Pick<World, 'parts' | 'links'>, cube
   const S = shoreY(port);
   const spots = quaySpots(port, cubes);
   const lantern = (x: number, y: number, z: number) =>
-    cubes.push({ x, y, z, color: BLOCKS.lanterne.side, top: BLOCKS.lanterne.top, texture: 'lanterne', tag: port });
+    cubes.push({ x, y, z, color: BLOCKS[BLOC.lanterne].side, top: BLOCKS[BLOC.lanterne].top, texture: 'lanterne', tag: port });
   const cells = dockCells(port);
   for (const c of cells)
-    cubes.push({ x: c.x, y: c.y, z: c.z, color: BLOCKS.bois.side, top: c.step ? BLOCKS.escalier.top : undefined, texture: c.step ? 'escalier' : 'planches', tag: port });
+    cubes.push({ x: c.x, y: c.y, z: c.z, color: BLOCKS[BLOC.bois].side, top: c.step ? BLOCKS[BLOC.escalier].top : undefined, texture: c.step ? 'escalier' : 'planches', tag: port });
   for (const p of dockPosts(port)) {
     cubes.push({ x: p.x, y: p.y, z: p.z, color: TRUNK, texture: 'tronc', tag: port });
     // Éteintes, les lanternes du bout de la jetée ne sont qu'un bouchon de bois (pas de lueur la nuit).
     if (rank >= 5 || (p.lantern && rank >= 2)) lantern(p.x, p.y, p.z + 1);
-    else if (p.lantern) cubes.push({ x: p.x, y: p.y, z: p.z + 1, color: BLOCKS.bois.side, top: BLOCKS.bois.top, texture: 'planches', tag: port });
+    else if (p.lantern) cubes.push({ x: p.x, y: p.y, z: p.z + 1, color: BLOCKS[BLOC.bois].side, top: BLOCKS[BLOC.bois].top, texture: 'planches', tag: port });
   }
   // Le feu de port, au large du bout de la jetée (à l'ouest de la proue du navire) : un pilier de pierre et sa lanterne.
   if (rank >= 5) {
     const end = cells[cells.length - 1];
-    for (let z = 0; z < 3; z++) cubes.push({ x: end.x, y: end.y - 1, z: rest + z, color: BLOCKS.pierre.side, top: BLOCKS.pierre.top, texture: 'pierre', tag: port });
+    for (let z = 0; z < 3; z++) cubes.push({ x: end.x, y: end.y - 1, z: rest + z, color: BLOCKS[BLOC.pierre].side, top: BLOCKS[BLOC.pierre].top, texture: 'pierre', tag: port });
     lantern(end.x, end.y - 1, rest + 3);
   }
   const prop = (kind: string, at: QuaySpot) => `${port}/${kind}@${at.x},${at.y}`;
@@ -1592,7 +1592,7 @@ function harbour(a: ArchipelagoId, village: Pick<World, 'parts' | 'links'>, cube
     for (const c of boatCells(along, overturned)) {
       // La coque goudronnée, d'une couleur unie sombre (elle ne se confond pas avec les planches de la jetée, et n'ajoute
       // pas de matériau : la mine a déjà ce brun), la proue et la poupe en bois clair.
-      const b = c.end ? BLOCKS.bois : { side: DARK, top: DARK, texture: undefined };
+      const b = c.end ? BLOCKS[BLOC.bois] : { side: DARK, top: DARK, texture: undefined };
       cubes.push({ x: x + c.dx, y: y + c.dy, z: z + c.dz, color: faded ? fade(b.side) : b.side, top: faded ? fade(b.top) : b.top, texture: b.texture, tag: port, decor, muted: faded || undefined });
     }
   };
@@ -1613,7 +1613,7 @@ function harbour(a: ArchipelagoId, village: Pick<World, 'parts' | 'links'>, cube
     // Le foyer : une pierre, et sa fumée qui monte au vent.
     const { x, y, z: base } = spots.hearth;
     const decor = prop('foyer', spots.hearth);
-    cubes.push({ x, y, z: base, color: BLOCKS.pierre.side, top: DARK, texture: 'pierre', tag: port, decor });
+    cubes.push({ x, y, z: base, color: BLOCKS[BLOC.pierre].side, top: DARK, texture: 'pierre', tag: port, decor });
     for (const [dx, dy, dz] of HEARTH_PUFFS) cubes.push({ x: x + dx, y: y + dy, z: base + dz - 1, color: SMOKE, tag: port, decor });
   }
   if (rank >= 4) {
@@ -1625,7 +1625,7 @@ function harbour(a: ArchipelagoId, village: Pick<World, 'parts' | 'links'>, cube
         [1, 0],
         [0, 1],
       ])
-        cubes.push({ x: x + dx, y, z: base + dz, color: BLOCKS.bois.side, top: BLOCKS.bois.top, texture: 'planches', tag: port, decor });
+        cubes.push({ x: x + dx, y, z: base + dz, color: BLOCKS[BLOC.bois].side, top: BLOCKS[BLOC.bois].top, texture: 'planches', tag: port, decor });
     }
     spots.flags.forEach((f) => {
       if (!f) return;
@@ -1633,7 +1633,7 @@ function harbour(a: ArchipelagoId, village: Pick<World, 'parts' | 'links'>, cube
       const base = f.z;
       for (let z = 0; z < 3; z++) cubes.push({ x: f.x, y: f.y, z: base + z, color: TRUNK, texture: 'tronc', tag: port, decor });
       // La toile flotte du côté opposé à la jetée.
-      cubes.push({ x: f.x + f.cells[1][0], y: f.y, z: base + 2, color: BLOCKS.toile.side, top: BLOCKS.toile.top, texture: 'toile', tag: port, decor });
+      cubes.push({ x: f.x + f.cells[1][0], y: f.y, z: base + 2, color: BLOCKS[BLOC.toile].side, top: BLOCKS[BLOC.toile].top, texture: 'toile', tag: port, decor });
     });
   }
 }
@@ -1708,9 +1708,9 @@ export const ASSEMBLAGE_AT = { x: 15, y: 11 };
 
 /** Les lieux du village, posés sur l'île de l'école de chaque archipel : leur coin dans le cœur, leur taille, la colonne de leur porte. */
 export const VILLAGE_PLACES: Record<VillagePlaceId, { at: { x: number; y: number }; size: { w: number; d: number }; door: number }> = {
-  ecole: { at: SCHOOL_AT, size: SCHOOL_SIZE, door: 2 },
-  trophees: { at: TROPHY_AT, size: TROPHY_SIZE, door: SALLE_DE_DEPART.x + 2 },
-  assemblage: { at: ASSEMBLAGE_AT, size: ASSEMBLAGE_SIZE, door: 1 },
+  school: { at: SCHOOL_AT, size: SCHOOL_SIZE, door: 2 },
+  trophies: { at: TROPHY_AT, size: TROPHY_SIZE, door: SALLE_DE_DEPART.x + 2 },
+  assembly: { at: ASSEMBLAGE_AT, size: ASSEMBLAGE_SIZE, door: 1 },
 };
 const PLACE_IDS = Object.keys(VILLAGE_PLACES) as VillagePlaceId[];
 
@@ -1822,15 +1822,15 @@ export function schoolModel(): ModelCube[] {
       for (let z = 1; z <= 3; z++) {
         const corner = (x === 0 || x === w - 1) && (y === 0 || y === d - 1);
         const front = y === 0;
-        const block = front && x === 2 && z <= 2 ? 'porte' : front && (x === 1 || x === 3) && z === 2 ? 'verre' : corner ? 'taille' : 'brique';
+        const block = front && x === 2 && z <= 2 ? BLOC.porte : front && (x === 1 || x === 3) && z === 2 ? BLOC.verre : corner ? BLOC.taille : BLOC.brique;
         out.push({ x, y, z, block });
       }
   // Le toit : un rang débordant de tuiles rouges, puis le faîte au milieu.
-  for (let x = 0; x < w; x++) for (let y = 0; y < d; y++) out.push({ x, y, z: 4, block: 'toit' });
-  for (let x = 0; x < w; x++) for (const y of [1, 2]) out.push({ x, y, z: 5, block: 'toit' });
+  for (let x = 0; x < w; x++) for (let y = 0; y < d; y++) out.push({ x, y, z: 4, block: BLOC.toit });
+  for (let x = 0; x < w; x++) for (const y of [1, 2]) out.push({ x, y, z: 5, block: BLOC.toit });
   // Le clocheton au-dessus de la porte, et sa cloche.
-  out.push({ x: 2, y: 1, z: 6, block: 'taille' });
-  out.push({ x: 2, y: 1, z: 7, block: 'or' });
+  out.push({ x: 2, y: 1, z: 6, block: BLOC.taille });
+  out.push({ x: 2, y: 1, z: 7, block: BLOC.or });
   return out;
 }
 
@@ -1871,8 +1871,8 @@ export type Atelier = 'fabrique' | 'halle';
 export function atelierModel(atelier: Atelier, a: ArchipelagoId): ModelCube[] {
   const out: ModelCube[] = [];
   const recette = recetteDeLArchipel(a);
-  const suspendu = recette?.bloc ?? 'bois';
-  const [premier, second] = recette ? [recette.ingredients[0].bloc, recette.ingredients[recette.ingredients.length - 1].bloc] : (['bois', 'pierre'] as const);
+  const suspendu = recette?.bloc ?? BLOC.bois;
+  const [premier, second] = recette ? [recette.ingredients[0].bloc, recette.ingredients[recette.ingredients.length - 1].bloc] : ([BLOC.bois, BLOC.pierre] as const);
   const halle = atelier === 'halle';
   const haut = halle ? HALLE.haut : 3;
   // La halle : les rangs 2 à 4 ; la porte (x = 1) ouverte sur deux cases de haut, et creuse jusqu'au mur du fond.
@@ -1880,22 +1880,22 @@ export function atelierModel(atelier: Atelier, a: ArchipelagoId): ModelCube[] {
     for (let y = HALLE.rang; y < ASSEMBLAGE_SIZE.d; y++)
       for (let z = 1; z <= haut; z++) {
         if (x === 1 && y <= 3 && z <= 2) continue;
-        out.push({ x, y, z, block: z === 1 ? 'pierre' : halle ? 'bois' : 'brique' });
+        out.push({ x, y, z, block: z === 1 ? BLOC.pierre : halle ? BLOC.bois : BLOC.brique });
       }
   if (halle) {
     // Le toit à deux pentes : un rang de tuiles, puis le faîte au milieu, dans le sens de la profondeur (le pignon en façade).
-    for (let x = 0; x < ASSEMBLAGE_SIZE.w; x++) for (let y = HALLE.rang; y < ASSEMBLAGE_SIZE.d; y++) out.push({ x, y, z: haut + 1, block: 'toit' });
-    for (let y = HALLE.rang; y < ASSEMBLAGE_SIZE.d; y++) out.push({ x: 1, y, z: haut + 2, block: 'toit' });
+    for (let x = 0; x < ASSEMBLAGE_SIZE.w; x++) for (let y = HALLE.rang; y < ASSEMBLAGE_SIZE.d; y++) out.push({ x, y, z: haut + 1, block: BLOC.toit });
+    for (let y = HALLE.rang; y < ASSEMBLAGE_SIZE.d; y++) out.push({ x: 1, y, z: haut + 2, block: BLOC.toit });
   } else {
     // Le toit plat, et la haute cheminée au coin du fond.
-    for (let x = 0; x < ASSEMBLAGE_SIZE.w; x++) for (let y = HALLE.rang; y < ASSEMBLAGE_SIZE.d; y++) out.push({ x, y, z: 4, block: 'taille' });
-    for (const z of [5, 6, 7]) out.push({ x: 2, y: 4, z, block: 'pierre' });
+    for (let x = 0; x < ASSEMBLAGE_SIZE.w; x++) for (let y = HALLE.rang; y < ASSEMBLAGE_SIZE.d; y++) out.push({ x, y, z: 4, block: BLOC.taille });
+    for (const z of [5, 6, 7]) out.push({ x: 2, y: 4, z, block: BLOC.pierre });
   }
   // La potence, sur le côté gauche de la cour : un mât de bois contre la façade, un bras vers l'avant, le bloc suspendu
   // dessous, une case sous le bras (rien ne le touche). Dans la Halle, plus haute : elle est son repère.
   const bras = halle ? 6 : 4;
-  for (let z = 1; z <= bras; z++) out.push({ x: 0, y: 1, z, block: 'bois' });
-  out.push({ x: 0, y: 0, z: bras, block: 'bois' });
+  for (let z = 1; z <= bras; z++) out.push({ x: 0, y: 1, z, block: BLOC.bois });
+  out.push({ x: 0, y: 0, z: bras, block: BLOC.bois });
   out.push({ x: 0, y: 0, z: bras - 2, block: suspendu });
   // Les blocs de la recette, empilés à droite de la cour.
   out.push({ x: 2, y: 0, z: 1, block: premier });
@@ -1979,7 +1979,7 @@ export function monumentCenter(m: MonumentDef): { x: number; y: number; z: numbe
 function monumentIslets(a: ArchipelagoId, village: World, cubes: VoxelCube[]): void {
   const alt = mapOf(a)[0]?.altitude ?? 0;
   const sky = DANS_LE_CIEL[a];
-  const top = sky ? SNOW : BLOCKS.sable.side;
+  const top = sky ? SNOW : BLOCKS[BLOC.sable].side;
   for (const m of monumentsOf(a)) {
     const place: PlaceId = `monument:${m.id}`;
     const n = MONUMENT_ISLET;
@@ -1995,10 +1995,10 @@ function monumentIslets(a: ArchipelagoId, village: World, cubes: VoxelCube[]): v
     for (const c of land) {
       cubes.push({ x: c.x, y: c.y, z: alt, color: top, texture: TEXTURES[top], tag: m.biome, place, sol: true });
       const bottom = sky ? alt - DEPTH : -DEPTH;
-      for (let z = alt - 1; z >= bottom; z--) cubes.push({ x: c.x, y: c.y, z, color: BLOCKS.pierre.side, texture: 'pierre', tag: m.biome, place, sol: true });
+      for (let z = alt - 1; z >= bottom; z--) cubes.push({ x: c.x, y: c.y, z, color: BLOCKS[BLOC.pierre].side, texture: 'pierre', tag: m.biome, place, sol: true });
     }
     if (sky)
-      for (const t of taperLayers(land)) cubes.push({ x: t.x, y: t.y, z: alt - DEPTH - t.d, color: BLOCKS.pierre.side, texture: 'pierre', tag: m.biome, place, sol: true });
+      for (const t of taperLayers(land)) cubes.push({ x: t.x, y: t.y, z: alt - DEPTH - t.d, color: BLOCKS[BLOC.pierre].side, texture: 'pierre', tag: m.biome, place, sol: true });
     const done = new Set(village.parts[m.id] ?? []);
     const o = monumentAnchor(m);
     for (const c of planCells(m)) {
@@ -2098,14 +2098,14 @@ function poserLIle(
   // Les cœurs en herbe ; le Jardin des heures aussi (DA, LV2-4) : l'osier, son bloc, reste aux bordures, aux paniers et
   // à la serre ; et le Refuge des carnets (DA, LV2-5) : le bardeau reste aux murs.
   const grassy =
-    biome.id === 'foret' ||
-    biome.id === 'ferme' ||
-    biome.id === 'plaine' ||
-    biome.id === 'riviere' ||
-    biome.id === 'marche' ||
-    biome.id === 'carrefour' ||
-    biome.id === 'jardin' ||
-    biome.id === 'refuge';
+    biome.id === 'french-6e-phonology' ||
+    biome.id === 'french-6e-grammar-spelling' ||
+    biome.id === 'maths-6e-calculation' ||
+    biome.id === 'maths-6e-fractions' ||
+    biome.id === 'maths-5e-proportionality' ||
+    biome.id === 'french-5e-homophones' ||
+    biome.id === 'lv2-4e-daily-life' ||
+    biome.id === 'lv2-3e-travel';
   const h = (x: number, y: number) => groundHeight(index, x, y);
   // Cubes du cœur (coordonnées relatives au cœur, z relatif au sol de l'île).
   // Cubes de la terre autour du cœur (coordonnées du monde). Île verrouillée : mêmes formes, couleurs délavées.
@@ -2139,9 +2139,9 @@ function poserLIle(
     if (!inCore(def, c.x, c.y)) continue;
     const x = c.x - ox;
     const y = c.y - oy;
-    for (let d = 1; d <= DEPTH; d++) putSol(c.x, c.y, -d, BLOCKS.terre.side);
+    for (let d = 1; d <= DEPTH; d++) putSol(c.x, c.y, -d, BLOCKS[BLOC.terre].side);
     const top = h(x, y);
-    if (top > 0) putSol(c.x, c.y, 0, BLOCKS.terre.side);
+    if (top > 0) putSol(c.x, c.y, 0, BLOCKS[BLOC.terre].side);
     putSol(c.x, c.y, top, grassy ? GRASS : block.side);
   }
   // Le paysage autour du cœur : collines, pics, lacs, cratère, sable des plages, neige des sommets, puis le décor.
@@ -2189,15 +2189,15 @@ function poserLIle(
     const spot = placeSpot(place, biome.id);
     if (!spot) continue;
     const { at, size } = VILLAGE_PLACES[place];
-    const modele = place === 'ecole' ? schoolModel() : place === 'trophees' ? trophyModel(trophies) : atelierModel(atelier, biome.classe);
+    const modele = place === 'school' ? schoolModel() : place === 'trophies' ? trophyModel(trophies) : atelierModel(atelier, biome.classe);
     // Le soubassement rattrape une marche du sol, sous toute l'emprise du lieu ; pour la salle des trophées, sous ce qui
     // est bâti seulement : la place réservée d'une travée à venir reste le sol de l'île, sans dalle ni marque (GD-3).
     const bati = new Map<string, [number, number]>();
-    if (place === 'trophees') for (const m of modele) bati.set(`${m.x},${m.y}`, [m.x, m.y]);
+    if (place === 'trophies') for (const m of modele) bati.set(`${m.x},${m.y}`, [m.x, m.y]);
     else for (let dx = 0; dx < size.w; dx++) for (let dy = 0; dy < size.d; dy++) bati.set(`${dx},${dy}`, [dx, dy]);
     const cases = bati.values();
     for (const [dx, dy] of cases)
-      for (let z = h(at.x + dx, at.y + dy) + 1; z <= spot.h; z++) cubes.push(placeCube(place, spot.x + dx, spot.y + dy, oz + z, 'taille', biome.id, unlocked));
+      for (let z = h(at.x + dx, at.y + dy) + 1; z <= spot.h; z++) cubes.push(placeCube(place, spot.x + dx, spot.y + dy, oz + z, BLOC.taille, biome.id, unlocked));
     for (const m of modele) cubes.push(placeCube(place, spot.x + m.x, spot.y + m.y, oz + spot.h + m.z, m.block, biome.id, unlocked));
   }
   landmark(def, scenery, (x, y, z, color, decor) => !taken.has(cleDeCube(x, y, z)) && putWorld(x, y, z, color, decor));
@@ -2249,7 +2249,7 @@ function poserLIle(
   }
   // Une île en altitude flotte : sa roche s'amincit dessous.
   if (def.altitude > 0)
-    for (const t of taperLayers(land)) if (!taken.has(cleDeCube(t.x, t.y, -DEPTH - t.d))) putSol(t.x, t.y, -DEPTH - t.d, BLOCKS.pierre.side);
+    for (const t of taperLayers(land)) if (!taken.has(cleDeCube(t.x, t.y, -DEPTH - t.d))) putSol(t.x, t.y, -DEPTH - t.d, BLOCKS[BLOC.pierre].side);
   // L'îlot du Gardien, devant l'île, dès qu'il accepte le défi : une petite île, son arène et ses pas japonais. Une
   // sentinelle (lot 6) est là dès l'ouverture de l'île, sans les pas japonais tant qu'elle attend.
   const guardian = guardianStatus(biome, progress, village.links, sentinelles);

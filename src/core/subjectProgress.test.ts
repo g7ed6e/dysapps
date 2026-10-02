@@ -15,26 +15,26 @@ const blocland = (progress: GameState['progress'], bridges: string[] = []): Game
 const app = (bestScore: number) => ({ sessions: 1, bestScore, lastPlayed: null });
 
 it('compte les étoiles sur toutes les îles de la matière, de la 6e à la 3e', () => {
-  const quests = biomesOf('francais').reduce((n, b) => n + b.exercises.length, 0);
-  const empty = subjectProgress('francais', {}, EMPTY_STATE);
+  const quests = biomesOf('french').reduce((n, b) => n + b.exercises.length, 0);
+  const empty = subjectProgress('french', {}, EMPTY_STATE);
   expect(empty.stars).toEqual({ earned: 0, max: quests * 3 });
   expect(empty.rework).toEqual([]);
-  expect(empty.islands.total).toBe(biomesOf('francais').length);
+  expect(empty.islands.total).toBe(biomesOf('french').length);
   expect(empty.islands.open).toBeGreaterThanOrEqual(1);
-  expect(empty.guardians).toEqual({ beaten: 0, total: biomesOf('francais').length });
+  expect(empty.guardians).toEqual({ beaten: 0, total: biomesOf('french').length });
 
-  const some = subjectProgress('francais', {}, blocland({ ...played('foret', 'rimes', 2, 0.75), ...played('foret', 'chasse-son', 3, 0.95) }));
+  const some = subjectProgress('french', {}, blocland({ ...played('french-6e-phonology', 'rhymes', 2, 0.75), ...played('french-6e-phonology', 'sound-hunt', 3, 0.95) }));
   expect(some.stars.earned).toBe(5);
 });
 
 it('propose de retravailler les missions jouées sous 3 étoiles, les plus faibles d’abord', () => {
   const r = subjectProgress(
-    'francais',
+    'french',
     {},
     blocland({
-      ...played('foret', 'rimes', 2, 0.75),
-      ...played('foret', 'abattage', 1, 0.4),
-      ...played('foret', 'chasse-son', 3, 0.95),
+      ...played('french-6e-phonology', 'rhymes', 2, 0.75),
+      ...played('french-6e-phonology', 'syllables', 1, 0.4),
+      ...played('french-6e-phonology', 'sound-hunt', 3, 0.95),
     }),
   );
   expect(r.rework.map((q) => q.title)).toEqual(['Abattage syllabique', 'Rimes-échelle']);
@@ -43,10 +43,10 @@ it('propose de retravailler les missions jouées sous 3 étoiles, les plus faibl
 });
 
 it('ne propose pas une mission d’une île fermée, ni une mission jamais jouée', () => {
-  const closed = subjectProgress('francais', {}, blocland(played('mine', 'filon', 1, 0.3)));
+  const closed = subjectProgress('french', {}, blocland(played('french-6e-letter-confusion', 'letter-pairs', 1, 0.3)));
   expect(closed.rework).toEqual([]);
   // Le même résultat, une fois l'île ouverte par son sentier.
-  const open = subjectProgress('francais', {}, blocland(played('mine', 'filon', 1, 0.3), ['foret-mine']));
+  const open = subjectProgress('french', {}, blocland(played('french-6e-letter-confusion', 'letter-pairs', 1, 0.3), ['french-6e-phonology-french-6e-letter-confusion']));
   expect(open.rework.map((q) => q.href)).toEqual(['/aventure/mine/filon']);
 });
 
@@ -56,16 +56,16 @@ it('compte les records des applis, et propose celles sous 70 %', () => {
   expect(r.apps.find((a) => a.id === 'decimaux')?.record).toBeUndefined();
   expect(r.rework).toEqual([expect.objectContaining({ kind: 'appli', id: 'fractions', record: 55, href: '/app/fractions' })]);
   // Une mission plus faible passe devant l'appli.
-  const mixed = subjectProgress('maths', { fractions: app(55) }, blocland(played('plaine', 'tables', 1, 0.3)));
+  const mixed = subjectProgress('maths', { fractions: app(55) }, blocland(played('maths-6e-calculation', 'times-tables', 1, 0.3)));
   expect(mixed.rework.map((q) => q.id)).toEqual(['plaine:tables', 'fractions']);
 });
 
 it('ne mélange pas les matières, et montre au plus cinq missions à reprendre', () => {
   const lots = blocland(
     {
-      ...played('plaine', 'tables', 1, 0.3),
-      ...played('plaine', 'complements', 1, 0.35),
-      ...played('plaine', 'doubles', 2, 0.72),
+      ...played('maths-6e-calculation', 'times-tables', 1, 0.3),
+      ...played('maths-6e-calculation', 'make-ten', 1, 0.35),
+      ...played('maths-6e-calculation', 'doubles-halves', 2, 0.72),
     },
     [],
   );
@@ -74,5 +74,5 @@ it('ne mélange pas les matières, et montre au plus cinq missions à reprendre'
   expect(maths.reworkTotal).toBe(6);
   expect(maths.rework).toHaveLength(REWORK_SHOWN);
   expect(maths.rework.map((q) => q.id)).not.toContain('homophones');
-  expect(subjectProgress('francais', apps, lots).rework.map((q) => q.id)).toEqual(['homophones']);
+  expect(subjectProgress('french', apps, lots).rework.map((q) => q.id)).toEqual(['homophones']);
 });

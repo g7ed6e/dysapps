@@ -61,7 +61,7 @@ export function ShipSection({ biome, builder, in3d = false, onBoard, highlight =
   const next = getArchipelago(here.to);
   const ready = Boolean(launch?.ok);
   const waiting = launch && !launch.ok && launch.reason === 'gardiens' ? launch : null;
-  const departed = !stage && state.world.links.includes(`voyage-${here.to}`);
+  const departed = !stage && state.world.links.includes(`passage-${here.to}`);
   const complete = departed && here.stage === VEHICLE_STAGES.length;
   const heading = (
     <h3 id={`navire-${biome.id}`} className="island-sheet-heading">

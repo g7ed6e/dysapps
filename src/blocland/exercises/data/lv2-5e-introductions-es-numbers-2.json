@@ -1,0 +1,255 @@
+{
+  "id": "lv2-5e-introductions-es-numbers-2",
+  "biome": "lv2-5e-introductions",
+  "type": "es-numbers",
+  "level": 2,
+  "lang": "es",
+  "instruction": "Écoute le nombre en espagnol et choisis le bon nombre. La règle est affichée.",
+  "items": [
+    {
+      "key": "lv2-5e-introductions-es-numbers-2-0",
+      "prompt": "cuarenta y ocho",
+      "spoken": "cuarenta y ocho",
+      "choices": [
+        "40",
+        "48",
+        "84"
+      ],
+      "choicesLang": "fr",
+      "answer": "48",
+      "hint": "La dizaine vient d’abord, puis y, puis l’unité.",
+      "explanation": "cuarenta y ocho = 48 : la dizaine (cuarenta, 40), puis y, puis l’unité (ocho, 8).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Los números hasta 100",
+          "lines": [
+            "20 veinte, 30 treinta, 40 cuarenta, 50 cincuenta, 60 sesenta",
+            "70 setenta, 80 ochenta, 90 noventa, 100 cien",
+            "De 21 à 29, un seul mot : veintitrés (23), veinticinco (25).",
+            "De 31 à 99 : la dizaine, puis y, puis l’unité : cuarenta y tres (43).",
+            "sesenta (60) comme seis ; setenta (70) comme siete ;",
+            "noventa (90) comme nueve.",
+            "-ce, c’est de 11 à 15 (trece, 13) ; -enta, ce sont les dizaines."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-es-numbers-2-1",
+      "prompt": "setenta y seis",
+      "spoken": "setenta y seis",
+      "choices": [
+        "66",
+        "76",
+        "77"
+      ],
+      "choicesLang": "fr",
+      "answer": "76",
+      "hint": "set- (comme siete, 7) ou ses- (comme seis, 6) ? La dizaine vient d’abord.",
+      "explanation": "setenta y seis = 76 : setenta (70, set- comme siete), puis y, puis seis (6). 66 se dit sesenta y seis, 77 setenta y siete.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Los números hasta 100",
+          "lines": [
+            "20 veinte, 30 treinta, 40 cuarenta, 50 cincuenta, 60 sesenta",
+            "70 setenta, 80 ochenta, 90 noventa, 100 cien",
+            "De 21 à 29, un seul mot : veintitrés (23), veinticinco (25).",
+            "De 31 à 99 : la dizaine, puis y, puis l’unité : cuarenta y tres (43).",
+            "sesenta (60) comme seis ; setenta (70) comme siete ;",
+            "noventa (90) comme nueve.",
+            "-ce, c’est de 11 à 15 (trece, 13) ; -enta, ce sont les dizaines."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-es-numbers-2-2",
+      "prompt": "sesenta y siete",
+      "spoken": "sesenta y siete",
+      "choices": [
+        "67",
+        "76",
+        "77"
+      ],
+      "choicesLang": "fr",
+      "answer": "67",
+      "hint": "ses- (comme seis, 6) ou set- (comme siete, 7) ? La dizaine vient d’abord.",
+      "explanation": "sesenta y siete = 67 : sesenta (60, ses- comme seis), puis y, puis siete (7).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Los números hasta 100",
+          "lines": [
+            "20 veinte, 30 treinta, 40 cuarenta, 50 cincuenta, 60 sesenta",
+            "70 setenta, 80 ochenta, 90 noventa, 100 cien",
+            "De 21 à 29, un seul mot : veintitrés (23), veinticinco (25).",
+            "De 31 à 99 : la dizaine, puis y, puis l’unité : cuarenta y tres (43).",
+            "sesenta (60) comme seis ; setenta (70) comme siete ;",
+            "noventa (90) comme nueve.",
+            "-ce, c’est de 11 à 15 (trece, 13) ; -enta, ce sont les dizaines."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-es-numbers-2-3",
+      "prompt": "noventa",
+      "spoken": "noventa",
+      "choices": [
+        "9",
+        "19",
+        "90"
+      ],
+      "choicesLang": "fr",
+      "answer": "90",
+      "hint": "Écoute la fin : -enta, ce sont les dizaines.",
+      "explanation": "noventa = 90 : -enta, c’est une dizaine, et nov- rappelle nueve (9). 19 se dit diecinueve.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Los números hasta 100",
+          "lines": [
+            "20 veinte, 30 treinta, 40 cuarenta, 50 cincuenta, 60 sesenta",
+            "70 setenta, 80 ochenta, 90 noventa, 100 cien",
+            "De 21 à 29, un seul mot : veintitrés (23), veinticinco (25).",
+            "De 31 à 99 : la dizaine, puis y, puis l’unité : cuarenta y tres (43).",
+            "sesenta (60) comme seis ; setenta (70) comme siete ;",
+            "noventa (90) comme nueve.",
+            "-ce, c’est de 11 à 15 (trece, 13) ; -enta, ce sont les dizaines."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-es-numbers-2-4",
+      "prompt": "veintidós",
+      "spoken": "veintidós",
+      "choices": [
+        "2",
+        "12",
+        "22"
+      ],
+      "choicesLang": "fr",
+      "answer": "22",
+      "hint": "veinti- veut dire « vingt et ».",
+      "explanation": "veintidós = « vingt et deux » = 22 : de 21 à 29, un seul mot en veinti-. 12 se dit doce.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Los números hasta 100",
+          "lines": [
+            "20 veinte, 30 treinta, 40 cuarenta, 50 cincuenta, 60 sesenta",
+            "70 setenta, 80 ochenta, 90 noventa, 100 cien",
+            "De 21 à 29, un seul mot : veintitrés (23), veinticinco (25).",
+            "De 31 à 99 : la dizaine, puis y, puis l’unité : cuarenta y tres (43).",
+            "sesenta (60) comme seis ; setenta (70) comme siete ;",
+            "noventa (90) comme nueve.",
+            "-ce, c’est de 11 à 15 (trece, 13) ; -enta, ce sont les dizaines."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-es-numbers-2-5",
+      "prompt": "dieciocho",
+      "spoken": "dieciocho",
+      "choices": [
+        "8",
+        "18",
+        "80"
+      ],
+      "choicesLang": "fr",
+      "answer": "18",
+      "hint": "dieci- veut dire « dix et… ».",
+      "explanation": "dieciocho = « dix et huit » = 18. 8 se dit ocho, 80 ochenta.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Los números hasta 100",
+          "lines": [
+            "20 veinte, 30 treinta, 40 cuarenta, 50 cincuenta, 60 sesenta",
+            "70 setenta, 80 ochenta, 90 noventa, 100 cien",
+            "De 21 à 29, un seul mot : veintitrés (23), veinticinco (25).",
+            "De 31 à 99 : la dizaine, puis y, puis l’unité : cuarenta y tres (43).",
+            "sesenta (60) comme seis ; setenta (70) comme siete ;",
+            "noventa (90) comme nueve.",
+            "-ce, c’est de 11 à 15 (trece, 13) ; -enta, ce sont les dizaines."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-es-numbers-2-6",
+      "prompt": "treinta y uno",
+      "spoken": "treinta y uno",
+      "choices": [
+        "13",
+        "30",
+        "31"
+      ],
+      "choicesLang": "fr",
+      "answer": "31",
+      "hint": "trece (13) ou treinta (30) ? Puis écoute ce qui vient après y.",
+      "explanation": "treinta y uno = 31 : treinta (30), puis y, puis uno (1). 13 se dit trece.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Los números hasta 100",
+          "lines": [
+            "20 veinte, 30 treinta, 40 cuarenta, 50 cincuenta, 60 sesenta",
+            "70 setenta, 80 ochenta, 90 noventa, 100 cien",
+            "De 21 à 29, un seul mot : veintitrés (23), veinticinco (25).",
+            "De 31 à 99 : la dizaine, puis y, puis l’unité : cuarenta y tres (43).",
+            "sesenta (60) comme seis ; setenta (70) comme siete ;",
+            "noventa (90) comme nueve.",
+            "-ce, c’est de 11 à 15 (trece, 13) ; -enta, ce sont les dizaines."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-es-numbers-2-7",
+      "prompt": "cincuenta y ocho",
+      "spoken": "cincuenta y ocho",
+      "choices": [
+        "58",
+        "80",
+        "85"
+      ],
+      "choicesLang": "fr",
+      "answer": "58",
+      "hint": "La dizaine vient d’abord, puis y, puis l’unité.",
+      "explanation": "cincuenta y ocho = 58 : cincuenta (50), puis y, puis ocho (8). 80 se dit ochenta, 85 ochenta y cinco.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Los números hasta 100",
+          "lines": [
+            "20 veinte, 30 treinta, 40 cuarenta, 50 cincuenta, 60 sesenta",
+            "70 setenta, 80 ochenta, 90 noventa, 100 cien",
+            "De 21 à 29, un seul mot : veintitrés (23), veinticinco (25).",
+            "De 31 à 99 : la dizaine, puis y, puis l’unité : cuarenta y tres (43).",
+            "sesenta (60) comme seis ; setenta (70) comme siete ;",
+            "noventa (90) comme nueve.",
+            "-ce, c’est de 11 à 15 (trece, 13) ; -enta, ce sont les dizaines."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien compté !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lv2-5e-introductions",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

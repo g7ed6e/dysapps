@@ -39,7 +39,7 @@ function renderAt(path: string) {
 /** Attend que le contenu de l'exercice (chargé à la demande) soit là. */
 const loaded = () => waitFor(() => expect(screen.queryByText('Chargement…')).not.toBeInTheDocument());
 
-const DEF = getExercise('foret-echauffement-001')!;
+const DEF = getExercise('french-6e-phonology-syllables-warmup-001')!;
 
 /** Joue l'exercice en entier : `wrongAt` = index des items à rater volontairement. */
 async function play(user: ReturnType<typeof userEvent.setup>, wrongAt: number[] = []) {
@@ -84,7 +84,7 @@ it('joue un exercice : consigne, feedback, étoiles, blocs, XP, puis étoiles su
   expect(screen.getByRole('link', { name: /Voir le chantier/ })).toHaveAttribute('href', '/aventure/foret?chantier=plan');
 
   const saved = JSON.parse(localStorage.getItem('dysapps:game')!);
-  expect(saved.stock.bois).toBe(6);
+  expect(saved.stock['french-6e-phonology']).toBe(6);
   expect(saved.progress[DEF.id]).toMatchObject({ stars: 2, attempts: 1 });
   expect(saved.spaced).toHaveLength(1);
   expect(saved.spaced[0].itemId).toBe(`${DEF.id}:${items[1].key}`);
@@ -179,7 +179,7 @@ describe('lecture automatique', () => {
 
   it('document à lire : la consigne puis la question au premier écran, la question seule ensuite', async () => {
     const user = userEvent.setup();
-    const notices = getExercise('comptoir-notices-1')!;
+    const notices = getExercise('english-5e-vocabulary-notices-1')!;
     renderAt('/aventure/comptoir/notices');
     await loaded();
     const [first, second] = runItems(notices, runSeed(notices));
@@ -208,7 +208,7 @@ describe('lecture automatique', () => {
         enCours = u;
       },
     });
-    const story = getExercise('horloge-story-1')!;
+    const story = getExercise('english-6e-grammar-story-1')!;
     renderAt('/aventure/horloge/story');
     await loaded();
     const [first, second] = runItems(story, runSeed(story));
@@ -240,7 +240,7 @@ describe('lecture automatique', () => {
       },
     });
     localStorage.setItem('dysapps:game', JSON.stringify({ types: { 'es-familia': { level: 2 } } }));
-    const dictee = getExercise('relais-es-familia-2')!;
+    const dictee = getExercise('lv2-5e-introductions-es-family-2')!;
     renderAt('/aventure/relais/es-familia');
     await loaded();
     const [first, second] = runItems(dictee, runSeed(dictee));

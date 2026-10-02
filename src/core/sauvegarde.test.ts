@@ -104,8 +104,8 @@ it("un fichier de la version 1, aux anciennes clés, se restaure puis passe aux 
     appli: "1.0.0",
     donnees: {
       "dysapps:blocland": JSON.stringify({
-        inventory: { bois: 3 },
-        village: { plans: {}, journal: [], bridges: [], at: "foret" },
+        inventory: { 'french-6e-phonology': 3 },
+        village: { plans: {}, journal: [], bridges: [], at: "french-6e-phonology" },
       }),
       "dysapps:progress": JSON.stringify({ xp: 40, plansCompleted: 2, bossesBeaten: 1 }),
       "dysapps:reprise": JSON.stringify({ path: "/app/tables", label: "Tables" }),
@@ -123,8 +123,8 @@ it("un fichier de la version 1, aux anciennes clés, se restaure puis passe aux 
   expect(localStorage.getItem("dysapps:reprise")).toBeNull();
   expect(localStorage.getItem("dysapps:noms-archipels")).toBeNull();
   expect(JSON.parse(localStorage.getItem("dysapps:game")!)).toEqual({
-    stock: { bois: 3 },
-    world: { parts: {}, log: [], links: [], place: "foret" },
+    stock: { 'french-6e-phonology': 3 },
+    world: { parts: {}, log: [], links: [], place: "french-6e-phonology" },
     version: 2,
   });
   expect(JSON.parse(localStorage.getItem("dysapps:progress")!)).toEqual({

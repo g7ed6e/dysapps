@@ -5,7 +5,7 @@ import { dueItems, todayISO, type SpacedItem } from './engine';
 import { CATALOG } from './exercises';
 import { isBiomeUnlocked } from './world/archipelago';
 
-/** L'exercice d'un item de la file (« foret-echauffement-001:cabane » → « foret-echauffement-001 »). */
+/** L'exercice d'un item de la file (« french-6e-phonology-syllables-warmup-001:cabane » → « french-6e-phonology-syllables-warmup-001 »). */
 const exerciseOf = (itemId: string) => itemId.slice(0, itemId.lastIndexOf(':'));
 const keyOf = (itemId: string) => itemId.slice(itemId.lastIndexOf(':') + 1);
 

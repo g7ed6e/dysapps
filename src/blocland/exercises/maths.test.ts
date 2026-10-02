@@ -19,14 +19,14 @@ it('convertit une aide React en données, et une question en item lisible', () =
 it('tire des items reproductibles et tous différents', () => {
   const rng = seeded('x');
   expect(seeded('x')()).toBe(rng());
-  const a = buildItems('plaine-tables-1', [() => multiplication(2, Math.ceil(Math.random() * 9) + 1, false, Math.random)], 6);
+  const a = buildItems('maths-6e-calculation-times-tables-1', [() => multiplication(2, Math.ceil(Math.random() * 9) + 1, false, Math.random)], 6);
   expect(new Set(a.map((i) => i.key)).size).toBe(6);
   expect(MATHS_EXERCISES.map((e) => e.items.map((i) => i.key))).toEqual(MATHS_EXERCISES.map((e) => e.items.map((i) => i.key)));
 });
 
 it('les missions du Volcan : tableau ou droite sur chaque item, décimaux à virgule', () => {
-  const volcan = MATHS_EXERCISES.filter((e) => e.biome === 'volcan');
-  expect(volcan.map((e) => e.id)).toEqual(['volcan-cratere-1', 'volcan-cratere-2', 'volcan-cratere-3', 'volcan-coulee-1', 'volcan-pente-1', 'volcan-pente-2']);
+  const volcan = MATHS_EXERCISES.filter((e) => e.biome === 'maths-6e-decimals');
+  expect(volcan.map((e) => e.id)).toEqual(['maths-6e-decimals-ordering-1', 'maths-6e-decimals-ordering-2', 'maths-6e-decimals-ordering-3', 'maths-6e-decimals-operations-1', 'maths-6e-decimals-scale-1', 'maths-6e-decimals-scale-2']);
   for (const def of volcan) {
     expect(def.items.length).toBe(8);
     for (const it of def.items) {
@@ -39,8 +39,8 @@ it('les missions du Volcan : tableau ou droite sur chaque item, décimaux à vir
 });
 
 it('les missions de la Rivière : figure ou aide sur chaque item, fractions lisibles', () => {
-  const riviere = MATHS_EXERCISES.filter((e) => e.biome === 'riviere');
-  expect(riviere.map((e) => e.id)).toEqual(['riviere-nenuphars-1', 'riviere-nenuphars-2', 'riviere-deux-rives-1', 'riviere-partage-1', 'riviere-partage-2']);
+  const riviere = MATHS_EXERCISES.filter((e) => e.biome === 'maths-6e-fractions');
+  expect(riviere.map((e) => e.id)).toEqual(['maths-6e-fractions-number-line-1', 'maths-6e-fractions-number-line-2', 'maths-6e-fractions-equivalence-1', 'maths-6e-fractions-sharing-1', 'maths-6e-fractions-sharing-2']);
   for (const def of riviere) {
     expect(def.items.length).toBe(8);
     for (const it of def.items) {
@@ -53,14 +53,14 @@ it('les missions de la Rivière : figure ou aide sur chaque item, fractions lisi
 });
 
 it('les missions de la Plaine : une aide visuelle et une explication sur chaque item, réponses dans l’ordre croissant', () => {
-  const plaine = MATHS_EXERCISES.filter((e) => e.biome === 'plaine');
+  const plaine = MATHS_EXERCISES.filter((e) => e.biome === 'maths-6e-calculation');
   expect(plaine.map((e) => e.id)).toEqual([
-    'plaine-tables-1',
-    'plaine-tables-2',
-    'plaine-tables-3',
-    'plaine-complements-1',
-    'plaine-complements-2',
-    'plaine-doubles-1',
+    'maths-6e-calculation-times-tables-1',
+    'maths-6e-calculation-times-tables-2',
+    'maths-6e-calculation-times-tables-3',
+    'maths-6e-calculation-make-ten-1',
+    'maths-6e-calculation-make-ten-2',
+    'maths-6e-calculation-doubles-halves-1',
   ]);
   for (const def of plaine) {
     expect(def.items.length).toBe(8);

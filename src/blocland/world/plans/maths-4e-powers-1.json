@@ -1,0 +1,12 @@
+{
+  "id": "maths-4e-powers-1",
+  "biome": "maths-4e-powers",
+  "name": "L’atelier de Braise",
+  "reward": {
+    "xp": 40,
+    "chest": {
+      "french-5e-conjugation": 3
+    }
+  },
+  "done": "Mon atelier ! Merci, bâtisseur. Chaque plaque d’acier vaut dix fois celle d’en dessous."
+}

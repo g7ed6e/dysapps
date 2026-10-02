@@ -98,7 +98,7 @@ export function lireAssemblage(md, fichier) {
 
 export const TITRE_QUESTIONS = '## Les questions';
 /** Le type des questions d'assemblage (src/blocland/exercises/registry.ts) et le début de l'identifiant de leurs fichiers. */
-export const TYPE_ASSEMBLAGE = 'assemblage';
+export const TYPE_ASSEMBLAGE = 'assembly';
 /** L'ordre des champs d'une question d'assemblage dans son JSON. */
 const ORDRE_QUESTIONS = ['id', 'bloc', 'type', 'level', 'title', 'lang', 'instruction', 'programme', 'items', 'feedback'];
 /** Ce qu'une question d'assemblage n'a pas : elle ne rapporte rien et n'adapte aucun niveau (GD-2). */
@@ -160,7 +160,7 @@ function lireUnBloc(titre, bloc, corps, n0, fichier) {
   // Chaque ligne du Markdown fabriqué et sa ligne dans le fichier (-1 : ajoutée).
   const fabrique = [
     ['---', -1],
-    [`île : ${TYPE_ASSEMBLAGE}`, -1],
+    [`lieu : ${TYPE_ASSEMBLAGE}`, -1],
     ['---', -1],
     [`## ${titre} · \`${bloc}\``, n0],
     ...corps.slice(0, items).map((l, i) => [l, n0 + 1 + i]),

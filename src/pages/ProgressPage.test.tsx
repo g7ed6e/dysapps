@@ -26,7 +26,7 @@ const subject = (name: string) => screen.getByRole('region', { name });
 
 it('montre la progression de chaque matière, et rien à reprendre au départ', () => {
   renderPage();
-  const slugs: Record<string, string> = { Français: 'francais', Maths: 'maths', Anglais: 'anglais' };
+  const slugs: Record<string, string> = { Français: 'french', Maths: 'maths', Anglais: 'english' };
   for (const name of Object.keys(slugs)) {
     const panel = subject(name);
     expect(within(panel).getByRole('progressbar', { name: `Étoiles en ${name}` })).toHaveAttribute('aria-valuenow', '0');
@@ -38,8 +38,8 @@ it('montre la progression de chaque matière, et rien à reprendre au départ', 
 });
 
 it('propose de reprendre les missions faibles d’une matière, avec un lien qui la relance', () => {
-  const rimes = exercisesOf('foret', 'rimes')[0].id;
-  const chasse = exercisesOf('foret', 'chasse-son')[0].id;
+  const rimes = exercisesOf('french-6e-phonology', 'rhymes')[0].id;
+  const chasse = exercisesOf('french-6e-phonology', 'sound-hunt')[0].id;
   localStorage.setItem(
     'dysapps:game',
     JSON.stringify({ progress: { [rimes]: { stars: 1, attempts: 2, best: 0.5 }, [chasse]: { stars: 3, attempts: 1, best: 1 } } }),

@@ -1,0 +1,10 @@
+{
+  "id": "english-5e-grammar-2",
+  "biome": "english-5e-grammar",
+  "name": "Le toit du manoir",
+  "reward": {
+    "xp": 50,
+    "chest": {}
+  },
+  "done": "Un toit et une porte ! Le Spectre ne passera plus par le plafond."
+}

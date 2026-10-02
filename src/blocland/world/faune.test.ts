@@ -115,7 +115,7 @@ describe('les nuages d’Archipéo (DA-11)', () => {
       const ponts = BRIDGES.filter((d) => archipelagoOfIsland(d.from) === a).flatMap((d) => bridgePath(d));
       const archipel = ARCHIPELAGOS.find((d) => d.classe === a);
       expect(archipel).toBeDefined();
-      const port = archipel?.port ?? 'plaine';
+      const port = archipel?.port ?? 'maths-6e-calculation';
       const nord = Math.max(b.maxY, ...mapOf(a).map((d) => d.core.y), ...ponts.map((c) => c.y), ...boardingRoute(port).map((c) => c.y)) + 1;
       const nuages = placeDesNuagesDArchipeo(a, b);
       expect(nuages).toHaveLength(nuagesDe(a).length);

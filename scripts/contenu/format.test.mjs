@@ -51,8 +51,8 @@ describe('le format Markdown du contenu', () => {
     items[3].choices = [];
     items[4].aid = { kind: 'rule-card', props: { title: 'Règle : x', lines: ['une ligne'] } };
     items[5].explanation = '';
-    const ex = { id: 'baie-x-1', biome: 'baie', type: 'x', level: 1, instruction: 'Consigne.', items };
-    const md = ecrireIle({ id: 'baie' }, [ex]);
+    const ex = { id: 'baie-x-1', biome: 'english-6e-vocabulary', type: 'x', level: 1, instruction: 'Consigne.', items };
+    const md = ecrireIle({ id: 'english-6e-vocabulary' }, [ex]);
     expect(lireIle(md).exercices).toEqual([ex]);
     expect(lireIle(md.replace(/\n/g, '\r\n')).exercices).toEqual([ex]);
     expect(lireIle('\uFEFF' + md).exercices).toEqual([ex]);
@@ -103,7 +103,7 @@ describe('le format Markdown du contenu', () => {
       { key: 'pantalon', word: 'pantalon', before: 'p', after: 'talon', choices: ['an', 'en'], answer: 'an' },
     ]);
     expect(deux.items).toEqual([{ key: 'p1', text: 'Premier paragraphe.' }, { key: 'p2', text: 'Second.', spoken: 'autre lecture' }]);
-    expect(lireIle(ecrireIle({ id: 'baie' }, [un, deux])).exercices).toEqual([un, deux]);
+    expect(lireIle(ecrireIle({ id: 'english-6e-vocabulary' }, [un, deux])).exercices).toEqual([un, deux]);
   });
 
   it('refuse un tableau mal formé ou mêlé à des items numérotés', () => {
@@ -134,8 +134,8 @@ describe('le format Markdown du contenu', () => {
   });
 
   it('écrit une liste vide hors du tableau', () => {
-    const ex = { id: 'baie-x-1', biome: 'baie', type: 'x', level: 1, items: [{ key: 'baie-x-1-0', word: 'a', choices: [] }, { key: 'baie-x-1-1', word: 'b', choices: ['c'] }] };
-    expect(lireIle(ecrireIle({ id: 'baie' }, [ex])).exercices).toEqual([ex]);
+    const ex = { id: 'baie-x-1', biome: 'english-6e-vocabulary', type: 'x', level: 1, items: [{ key: 'baie-x-1-0', word: 'a', choices: [] }, { key: 'baie-x-1-1', word: 'b', choices: ['c'] }] };
+    expect(lireIle(ecrireIle({ id: 'english-6e-vocabulary' }, [ex])).exercices).toEqual([ex]);
   });
 
   it('signale une clé remplacée par une autre au même rang', () => {

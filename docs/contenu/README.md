@@ -8,7 +8,7 @@ Ce dossier est la source des îles : un fichier par île (`<île>.md`, l’ident
 ---
 île : baie                                    ← l’en-tête : l’identifiant de l’île, puis ce qu’elle est
 module : Vocabulaire et écoute
-matière : anglais
+matière : english
 classe : 6e
 description : Se présenter, compter, dire l’heure, …
 bloc : cabine

@@ -1,0 +1,215 @@
+{
+  "id": "english-3e-grammar-passive-2",
+  "biome": "english-3e-grammar",
+  "type": "passive",
+  "level": 2,
+  "lang": "en",
+  "instruction": "Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.",
+  "items": [
+    {
+      "key": "english-3e-grammar-passive-2-0",
+      "prompt": "Someone stole my bike. → My bike … .",
+      "spoken": "Someone stole my bike. My bike blank.",
+      "choices": [
+        "was stolen",
+        "stole",
+        "is stealing"
+      ],
+      "answer": "was stolen",
+      "hint": "Be + participe passé : quelle forme de be (présent ou passé, singulier ou pluriel) ?",
+      "explanation": "Au passé : was + stolen (steal – stole – stolen).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le passif à tous les temps",
+          "lines": [
+            "Futur : will be + participe (will be built).",
+            "Present perfect : has / have been + participe (has been eaten).",
+            "Question : Was it built…? Is it made…?"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-grammar-passive-2-1",
+      "prompt": "They will build a new school. → A new school … built.",
+      "spoken": "They will build a new school. A new school blank built.",
+      "choices": [
+        "will be",
+        "will",
+        "is"
+      ],
+      "answer": "will be",
+      "hint": "Be + participe passé : quelle forme de be (présent ou passé, singulier ou pluriel) ?",
+      "explanation": "Au futur : will be + participe → will be built.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le passif à tous les temps",
+          "lines": [
+            "Futur : will be + participe (will be built).",
+            "Present perfect : has / have been + participe (has been eaten).",
+            "Question : Was it built…? Is it made…?"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-grammar-passive-2-2",
+      "prompt": "The new film … in cinemas next month.",
+      "spoken": "The new film blank in cinemas next month.",
+      "choices": [
+        "will be shown",
+        "will show",
+        "shows"
+      ],
+      "answer": "will be shown",
+      "hint": "Be + participe passé : quelle forme de be (présent ou passé, singulier ou pluriel) ?",
+      "explanation": "Le film ne se montre pas lui-même : passif futur → will be shown.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le passif à tous les temps",
+          "lines": [
+            "Futur : will be + participe (will be built).",
+            "Present perfect : has / have been + participe (has been eaten).",
+            "Question : Was it built…? Is it made…?"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-grammar-passive-2-3",
+      "prompt": "The cake … eaten! There is nothing left.",
+      "spoken": "The cake blank eaten! There is nothing left.",
+      "choices": [
+        "has been",
+        "have been",
+        "is being"
+      ],
+      "answer": "has been",
+      "hint": "Be + participe passé : quelle forme de be (présent ou passé, singulier ou pluriel) ?",
+      "explanation": "Present perfect, singulier → has been eaten.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le passif à tous les temps",
+          "lines": [
+            "Futur : will be + participe (will be built).",
+            "Present perfect : has / have been + participe (has been eaten).",
+            "Question : Was it built…? Is it made…?"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-grammar-passive-2-4",
+      "prompt": "Many languages … spoken in India.",
+      "spoken": "Many languages blank spoken in India.",
+      "choices": [
+        "are",
+        "is",
+        "was"
+      ],
+      "answer": "are",
+      "hint": "Be + participe passé : quelle forme de be (présent ou passé, singulier ou pluriel) ?",
+      "explanation": "Many languages (pluriel), aujourd’hui → are spoken.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le passif à tous les temps",
+          "lines": [
+            "Futur : will be + participe (will be built).",
+            "Present perfect : has / have been + participe (has been eaten).",
+            "Question : Was it built…? Is it made…?"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-grammar-passive-2-5",
+      "prompt": "The thief … by the police yesterday.",
+      "spoken": "The thief blank by the police yesterday.",
+      "choices": [
+        "was caught",
+        "caught",
+        "is caught"
+      ],
+      "answer": "was caught",
+      "hint": "Be + participe passé : quelle forme de be (présent ou passé, singulier ou pluriel) ?",
+      "explanation": "Le voleur subit l’action, hier → was caught.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le passif à tous les temps",
+          "lines": [
+            "Futur : will be + participe (will be built).",
+            "Present perfect : has / have been + participe (has been eaten).",
+            "Question : Was it built…? Is it made…?"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-grammar-passive-2-6",
+      "prompt": "These songs … sung by children.",
+      "spoken": "These songs blank sung by children.",
+      "choices": [
+        "are",
+        "is",
+        "be"
+      ],
+      "answer": "are",
+      "hint": "Be + participe passé : quelle forme de be (présent ou passé, singulier ou pluriel) ?",
+      "explanation": "These songs (pluriel) → are sung.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le passif à tous les temps",
+          "lines": [
+            "Futur : will be + participe (will be built).",
+            "Present perfect : has / have been + participe (has been eaten).",
+            "Question : Was it built…? Is it made…?"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-grammar-passive-2-7",
+      "prompt": "Was the castle … in the 12th century?",
+      "spoken": "Was the castle blank in the 12th century?",
+      "choices": [
+        "built",
+        "build",
+        "building"
+      ],
+      "answer": "built",
+      "hint": "Après be, le participe passé : 3e forme.",
+      "explanation": "build – built – built : Was the castle built…?",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le passif à tous les temps",
+          "lines": [
+            "Futur : will be + participe (will be built).",
+            "Present perfect : has / have been + participe (has been eaten).",
+            "Question : Was it built…? Is it made…?"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien dit !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "english-3e-grammar",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

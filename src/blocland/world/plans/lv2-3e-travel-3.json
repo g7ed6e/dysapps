@@ -1,0 +1,13 @@
+{
+  "id": "lv2-3e-travel-3",
+  "biome": "lv2-3e-travel",
+  "name": "Le pigeonnier du refuge",
+  "reward": {
+    "xp": 60,
+    "chest": {
+      "trophy-gold": 2,
+      "trophy-crystal": 2
+    }
+  },
+  "done": "Un pigeonnier, une barrière, une marche… Mon refuge est complet. Les lettres peuvent partir, et revenir !"
+}

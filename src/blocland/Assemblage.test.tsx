@@ -34,7 +34,7 @@ function renderFabrique(at = '/aventure/assemblage') {
   );
 }
 
-const POUTRE = JSON.parse(readFileSync('src/blocland/exercises/data/assemblage-poutre.json', 'utf8')) as AssemblageDef;
+const POUTRE = JSON.parse(readFileSync('src/blocland/exercises/data/assembly-compound-6e.json', 'utf8')) as AssemblageDef;
 const CLES = POUTRE.items.map((it) => it.key);
 const sauvegarde = () => JSON.parse(localStorage.getItem('dysapps:game')!);
 
@@ -59,13 +59,13 @@ afterEach(() => {
 });
 
 it('la Fabrique montre la recette de l’archipel, ce qu’il manque et le monument qui attend le bloc', () => {
-  localStorage.setItem('dysapps:game', JSON.stringify({ stock: { bois: 1 } }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ stock: { 'french-6e-phonology': 1 } }));
   renderIn(<AssemblagePage />);
   expect(screen.getByRole('heading', { level: 1, name: /La Fabrique/ })).toBeInTheDocument();
   expect(screen.getByRole('heading', { level: 3, name: /Poutre/ })).toBeInTheDocument();
   expect(screen.getByRole('list', { name: 'Pour 1 poutre, il faut' }).textContent).toMatch(/2 blocs de bois.*1 brique/);
   expect(document.body.textContent).toContain('Il te manque 1 bloc de bois');
-  expect(screen.getByRole('link', { name: 'L’observatoire des baleines' })).toHaveAttribute('href', '/aventure/monument-observatoire');
+  expect(screen.getByRole('link', { name: 'L’observatoire des baleines' })).toHaveAttribute('href', '/aventure/landmark-6e-1');
   // Chaque monument dit combien il en attend (rien à retenir).
   expect(document.body.textContent).toMatch(/L’observatoire des baleines attend \d+ poutres/);
   expect(screen.getByRole('button', { name: /Assembler 1 poutre/ })).toHaveAttribute('aria-disabled', 'true');
@@ -225,7 +225,7 @@ it('dans Archipéo, la Halle aux matériaux et le madrier', () => {
 it('venue d’un monument, la Fabrique montre d’abord la recette du bloc demandé, les autres sous un pli', () => {
   // En 5e, la poutre (6e) passe devant le vitrail quand on vient d'un monument de 6e.
   const bridges = [...BRIDGES, ...VOYAGES].map((b) => b.id);
-  localStorage.setItem('dysapps:game', JSON.stringify({ world: { place: 'marche', links: bridges } }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ world: { place: 'maths-5e-proportionality', links: bridges } }));
   renderIn(<AssemblagePage />, '/aventure/assemblage?bloc=poutre');
   const titres = screen.getAllByRole('heading', { level: 3 }).map((h) => h.textContent);
   expect(titres[0]).toMatch(/Poutre/);
@@ -234,7 +234,7 @@ it('venue d’un monument, la Fabrique montre d’abord la recette du bloc deman
 
 it('« Défaire » rend les blocs d’un bloc assemblé en poche', async () => {
   const user = userEvent.setup();
-  localStorage.setItem('dysapps:game', JSON.stringify({ stock: { poutre: 1 } }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ stock: { 'compound-6e': 1 } }));
   renderIn(<AssemblagePage />);
   // Refaire la poutre posera une question : la carte le dit sous le bouton.
   expect(screen.getByText('Pour refaire 1 poutre, tu répondras à une question.')).toBeInTheDocument();

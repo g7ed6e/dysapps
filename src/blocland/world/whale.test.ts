@@ -19,21 +19,21 @@ it('au début, la baleine n’a qu’un mot en 6e : elle se présente', () => {
 });
 
 it('les grandes étapes, de la plus grande à la plus petite', () => {
-  const guardians = Object.fromEntries(islandsOf('6e').map((b) => [`${b.id}-gardien`, { stars: 2, attempts: 1, best: 1 }]));
-  const plans = Object.fromEntries(plansFor('plaine').map((p) => [p.id, planCells(p).map((c) => c.key)]));
-  const state = sanitizeState({ progress: { ...guardians, [exercisesOf('foret', 'rimes')[0].id]: { stars: 2, attempts: 1, best: 1 } }, world: { parts: plans, links: ['foret-mine'] } });
+  const guardians = Object.fromEntries(islandsOf('6e').map((b) => [`${b.id}-challenge`, { stars: 2, attempts: 1, best: 1 }]));
+  const plans = Object.fromEntries(plansFor('maths-6e-calculation').map((p) => [p.id, planCells(p).map((c) => c.key)]));
+  const state = sanitizeState({ progress: { ...guardians, [exercisesOf('french-6e-phonology', 'rhymes')[0].id]: { stars: 2, attempts: 1, best: 1 } }, world: { parts: plans, links: ['french-6e-phonology-french-6e-letter-confusion'] } });
   const m = reachedWhaleMoments(state, '6e');
   expect(m.map((x) => x.kind)).toEqual(['arrivee', 'gardiens', 'port', 'ouvrage']);
   expect(pages(m[1])[0]).toBe('Tous les Gardiens des Premiers Rivages brillent à nouveau. J’ai vu leur lumière depuis le large.');
   expect(pages(m[2])[0]).toMatch(/^Plaine des nombres est bâtie\./);
   // Le sentier de la Forêt ouvre la Mine ; le pont gratuit vers la Plaine ne compte pas.
-  expect(m[3]).toMatchObject({ island: 'mine' });
+  expect(m[3]).toMatchObject({ island: 'french-6e-letter-confusion' });
   expect(pages(m[3])).toEqual(['Un chemin s’ouvre vers Mine des lettres. L’archipel s’agrandit.']);
 });
 
 it('l’arrivée en 5e garde la clé de l’ancienne bulle et sa page pratique', () => {
-  const m = reachedWhaleMoments(sanitizeState({ world: { links: ['voyage-5e'], place: 'marche' } }), '5e');
-  expect(m[0]).toMatchObject({ id: 'archipel-5e', kind: 'arrivee', island: 'marche' });
+  const m = reachedWhaleMoments(sanitizeState({ world: { links: ['passage-5e'], place: 'maths-5e-proportionality' } }), '5e');
+  expect(m[0]).toMatchObject({ id: 'archipel-5e', kind: 'arrivee', island: 'maths-5e-proportionality' });
   expect(pages(m[0])).toHaveLength(2);
   expect(pages(m[0]).join(' ')).not.toMatch(/rallum/);
 });

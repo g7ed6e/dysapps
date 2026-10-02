@@ -19,12 +19,12 @@ import { UNIVERS } from '../core/univers';
 export const SCHOOL_TITLE = 'École du village';
 /** L'adresse de l'école (dans le monde en 3D ou en 2D : son panneau ; en vue simple : sa page). */
 export const SCHOOL_PATH = '/aventure/ecole';
-const DOORS: Subject[] = ['francais', 'maths', 'anglais'];
+const DOORS: Subject[] = ['french', 'maths', 'english'];
 
 /** L'île de l'école de l'archipel où se tient le bonhomme. */
 export function useSchoolIsland(): BiomeDef {
   const { state } = useBlocland();
-  return getBiome(archipelagoOf(state.world.place ?? 'foret').school)!;
+  return getBiome(archipelagoOf(state.world.place ?? 'french-6e-phonology').school)!;
 }
 
 function greetingOf(island: BiomeDef): string {

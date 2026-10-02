@@ -65,19 +65,19 @@ export function BossScreen({ items, answered, onAnswer, onHelp, level }: ScreenP
 }
 
 const LABELS: Record<string, string> = {
-  abattage: 'Abattage syllabique',
-  'chasse-son': 'Chasse au son',
-  rimes: 'Rimes-échelle',
-  filon: 'Filon',
-  oreille: 'Oreille du mineur',
-  'mot-troue': 'Mot troué',
-  familles: 'Familles-craft',
-  coffre: 'Coffre à mots',
-  enclos: 'Enclos',
-  graines: 'Tri des graines',
-  recolte: 'Récolte',
-  ascension: 'Ascension',
-  notices: 'Notices',
+  'syllables': 'Abattage syllabique',
+  'sound-hunt': 'Chasse au son',
+  'rhymes': 'Rimes-échelle',
+  'letter-pairs': 'Filon',
+  'sound-discrimination': 'Oreille du mineur',
+  'missing-letters': 'Mot troué',
+  'word-families': 'Familles-craft',
+  'sight-words': 'Coffre à mots',
+  'word-classes': 'Enclos',
+  'sorting': 'Tri des graines',
+  'e-er-ez': 'Récolte',
+  'fluency': 'Ascension',
+  'notices': 'Notices',
 };
 
 /** Le nom d'une épreuve : son libellé, sinon le titre de sa mission (« Hola »), jamais un identifiant. */

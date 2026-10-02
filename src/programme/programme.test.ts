@@ -6,7 +6,7 @@ const ID = /^c[34]\.(fr|ma|en|de|es)\.[a-z0-9-]+\.[a-z0-9-]+$/;
 const straightApostrophe = (t: string) => t.includes("'");
 
 /** Les LV2 commencent en 5e : elles n'ont que le cycle 4. */
-const LV2 = ['allemand', 'espagnol'] as const;
+const LV2 = ['german', 'spanish'] as const;
 
 it('le référentiel a une taille raisonnable et chaque discipline est présente dans ses cycles', () => {
   // 188 compétences pour le français, les maths et l'anglais, plus 20 par LV2 (le programme de langues vivantes du
@@ -22,7 +22,7 @@ it('le référentiel a une taille raisonnable et chaque discipline est présente
 });
 
 it('chaque LV2 reprend le programme de langues vivantes de l’anglais au cycle 4 : mêmes compétences, libellés et pages', () => {
-  const en = entriesOf(4, 'anglais');
+  const en = entriesOf(4, 'english');
   for (const discipline of LV2) {
     const short = DISCIPLINES[discipline].short;
     const lv = entriesOf(4, discipline);

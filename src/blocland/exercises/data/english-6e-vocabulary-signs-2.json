@@ -1,0 +1,255 @@
+{
+  "id": "english-6e-vocabulary-signs-2",
+  "biome": "english-6e-vocabulary",
+  "type": "signs",
+  "level": 2,
+  "lang": "en",
+  "instruction": "Lis la question, puis le petit texte en anglais, et trouve la phrase qui répond. Le lexique est affiché.",
+  "items": [
+    {
+      "key": "english-6e-vocabulary-signs-2-0",
+      "prompt": "Dear Nina,\nI’m in London with my dad.\nIt’s rainy, but the parks are great!\nLove, Sara",
+      "question": "Avec qui Sara est-elle à Londres ?",
+      "image": "✉️",
+      "spoken": "Dear Nina, I’m in London with my dad. It’s rainy, but the parks are great! Love, Sara.",
+      "choices": [
+        "Avec son père",
+        "Avec sa mère",
+        "Avec son frère"
+      ],
+      "choicesLang": "fr",
+      "answer": "Avec son père",
+      "hint": "Lis la deuxième ligne jusqu’au bout : with my…",
+      "explanation": "with my dad = avec mon papa, mon père. La mère se dit mum, le frère brother.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un petit texte",
+          "lines": [
+            "Lis la question, trouve la phrase qui répond, puis lis-la jusqu’au bout.",
+            "he = il (un garçon), she = elle (une fille), it = il ou elle (un animal, une chose)",
+            "dad = papa, mum = maman, brother = frère, sister = sœur",
+            "sixteen = 16 (-teen : de 13 à 19) ; sixty = 60 (-ty : les dizaines)",
+            "Tuesday = mardi, Thursday = jeudi ; Saturday = samedi, Sunday = dimanche"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-6e-vocabulary-signs-2-1",
+      "prompt": "My name is Ben. I’m eleven.\nI have a dog and two cats.\nMy dog is called Rex.",
+      "question": "Combien de chats Ben a-t-il ?",
+      "image": "🐾",
+      "spoken": "My name is Ben. I’m eleven. I have a dog and two cats. My dog is called Rex.",
+      "choices": [
+        "Un chat",
+        "Deux chats",
+        "Trois chats"
+      ],
+      "choicesLang": "fr",
+      "answer": "Deux chats",
+      "hint": "Cherche le mot cats, puis lis le nombre juste avant.",
+      "explanation": "two cats = deux chats. a dog = un chien : Ben a trois animaux en tout, mais seulement deux chats.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un petit texte",
+          "lines": [
+            "Lis la question, trouve la phrase qui répond, puis lis-la jusqu’au bout.",
+            "he = il (un garçon), she = elle (une fille), it = il ou elle (un animal, une chose)",
+            "dad = papa, mum = maman, brother = frère, sister = sœur",
+            "sixteen = 16 (-teen : de 13 à 19) ; sixty = 60 (-ty : les dizaines)",
+            "Tuesday = mardi, Thursday = jeudi ; Saturday = samedi, Sunday = dimanche"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-6e-vocabulary-signs-2-2",
+      "prompt": "This is my friend Alex.\nShe is twelve.\nShe likes football and music.",
+      "question": "Qui est Alex ?",
+      "image": "⚽",
+      "spoken": "This is my friend Alex. She is twelve. She likes football and music.",
+      "choices": [
+        "Une fille de 12 ans",
+        "Un garçon de 12 ans",
+        "Une fille de 20 ans"
+      ],
+      "choicesLang": "fr",
+      "answer": "Une fille de 12 ans",
+      "hint": "Regarde le petit mot au début de la deuxième ligne : he ou she ?",
+      "explanation": "she = elle : Alex est une fille (he = il, pour un garçon). twelve = 12 ; 20 se dit twenty.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un petit texte",
+          "lines": [
+            "Lis la question, trouve la phrase qui répond, puis lis-la jusqu’au bout.",
+            "he = il (un garçon), she = elle (une fille), it = il ou elle (un animal, une chose)",
+            "dad = papa, mum = maman, brother = frère, sister = sœur",
+            "sixteen = 16 (-teen : de 13 à 19) ; sixty = 60 (-ty : les dizaines)",
+            "Tuesday = mardi, Thursday = jeudi ; Saturday = samedi, Sunday = dimanche"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-6e-vocabulary-signs-2-3",
+      "prompt": "Party time!\nCome to my party on Saturday.\nIt’s at my house.\nFrom Jack",
+      "question": "Quel jour a lieu la fête ?",
+      "image": "🎉",
+      "spoken": "Party time! Come to my party on Saturday. It’s at my house. From Jack.",
+      "choices": [
+        "Dimanche",
+        "Jeudi",
+        "Samedi"
+      ],
+      "choicesLang": "fr",
+      "answer": "Samedi",
+      "hint": "Cherche le mot après on : c’est le jour.",
+      "explanation": "Saturday = samedi. Sunday = dimanche : les deux commencent par S, lis le mot jusqu’au bout. Jeudi se dit Thursday.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un petit texte",
+          "lines": [
+            "Lis la question, trouve la phrase qui répond, puis lis-la jusqu’au bout.",
+            "he = il (un garçon), she = elle (une fille), it = il ou elle (un animal, une chose)",
+            "dad = papa, mum = maman, brother = frère, sister = sœur",
+            "sixteen = 16 (-teen : de 13 à 19) ; sixty = 60 (-ty : les dizaines)",
+            "Tuesday = mardi, Thursday = jeudi ; Saturday = samedi, Sunday = dimanche"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-6e-vocabulary-signs-2-4",
+      "prompt": "This is my monster.\nIt has three eyes and four legs.\nIt is green and yellow.",
+      "question": "Combien d’yeux le monstre a-t-il ?",
+      "image": "🖍️",
+      "spoken": "This is my monster. It has three eyes and four legs. It is green and yellow.",
+      "choices": [
+        "Deux yeux",
+        "Trois yeux",
+        "Quatre yeux"
+      ],
+      "choicesLang": "fr",
+      "answer": "Trois yeux",
+      "hint": "Cherche le mot eyes, puis lis le nombre juste avant.",
+      "explanation": "three eyes = trois yeux. four legs = quatre pattes : le nombre quatre est pour les pattes, pas pour les yeux.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un petit texte",
+          "lines": [
+            "Lis la question, trouve la phrase qui répond, puis lis-la jusqu’au bout.",
+            "he = il (un garçon), she = elle (une fille), it = il ou elle (un animal, une chose)",
+            "dad = papa, mum = maman, brother = frère, sister = sœur",
+            "sixteen = 16 (-teen : de 13 à 19) ; sixty = 60 (-ty : les dizaines)",
+            "Tuesday = mardi, Thursday = jeudi ; Saturday = samedi, Sunday = dimanche"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-6e-vocabulary-signs-2-5",
+      "prompt": "Hi! I’m Mia. I live in Dublin.\nMy brother is fifteen.\nMy sister is five.",
+      "question": "Quel âge a le frère de Mia ?",
+      "image": "👪",
+      "spoken": "Hi! I’m Mia. I live in Dublin. My brother is fifteen. My sister is five.",
+      "choices": [
+        "5 ans",
+        "15 ans",
+        "50 ans"
+      ],
+      "choicesLang": "fr",
+      "answer": "15 ans",
+      "hint": "Trouve la ligne du brother, puis écoute la fin du nombre : -teen ou -ty ?",
+      "explanation": "My brother is fifteen = mon frère a 15 ans (-teen, de 13 à 19). five = 5, c’est l’âge de la sœur ; 50 se dit fifty.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un petit texte",
+          "lines": [
+            "Lis la question, trouve la phrase qui répond, puis lis-la jusqu’au bout.",
+            "he = il (un garçon), she = elle (une fille), it = il ou elle (un animal, une chose)",
+            "dad = papa, mum = maman, brother = frère, sister = sœur",
+            "sixteen = 16 (-teen : de 13 à 19) ; sixty = 60 (-ty : les dizaines)",
+            "Tuesday = mardi, Thursday = jeudi ; Saturday = samedi, Sunday = dimanche"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-6e-vocabulary-signs-2-6",
+      "prompt": "My week\nOn Monday, I play tennis.\nOn Tuesday, I go to the swimming pool.",
+      "question": "Quel jour l’enfant va-t-il à la piscine ?",
+      "image": "🏊",
+      "spoken": "My week. On Monday, I play tennis. On Tuesday, I go to the swimming pool.",
+      "choices": [
+        "Le lundi",
+        "Le jeudi",
+        "Le mardi"
+      ],
+      "choicesLang": "fr",
+      "answer": "Le mardi",
+      "hint": "Trouve la ligne de la piscine, swimming pool, puis lis le jour au début.",
+      "explanation": "Tuesday = mardi. Thursday = jeudi : les deux commencent par T, lis le mot jusqu’au bout. Monday = lundi, c’est le jour du tennis.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un petit texte",
+          "lines": [
+            "Lis la question, trouve la phrase qui répond, puis lis-la jusqu’au bout.",
+            "he = il (un garçon), she = elle (une fille), it = il ou elle (un animal, une chose)",
+            "dad = papa, mum = maman, brother = frère, sister = sœur",
+            "sixteen = 16 (-teen : de 13 à 19) ; sixty = 60 (-ty : les dizaines)",
+            "Tuesday = mardi, Thursday = jeudi ; Saturday = samedi, Sunday = dimanche"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-6e-vocabulary-signs-2-7",
+      "prompt": "Fruit salad for four\nTwo bananas\nOne apple\nTen grapes",
+      "question": "Combien de pommes faut-il pour la salade ?",
+      "image": "🥣",
+      "spoken": "Fruit salad for four. Two bananas. One apple. Ten grapes.",
+      "choices": [
+        "Une pomme",
+        "Deux pommes",
+        "Quatre pommes"
+      ],
+      "choicesLang": "fr",
+      "answer": "Une pomme",
+      "hint": "Trouve la ligne du mot apple, puis lis le nombre au début.",
+      "explanation": "one apple = une pomme. two, c’est pour les bananes, et for four veut dire pour quatre personnes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un petit texte",
+          "lines": [
+            "Lis la question, trouve la phrase qui répond, puis lis-la jusqu’au bout.",
+            "he = il (un garçon), she = elle (une fille), it = il ou elle (un animal, une chose)",
+            "dad = papa, mum = maman, brother = frère, sister = sœur",
+            "sixteen = 16 (-teen : de 13 à 19) ; sixty = 60 (-ty : les dizaines)",
+            "Tuesday = mardi, Thursday = jeudi ; Saturday = samedi, Sunday = dimanche"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien lu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "english-6e-vocabulary",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

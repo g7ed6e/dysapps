@@ -1,0 +1,223 @@
+{
+  "id": "english-3e-comprehension-linking-words-2",
+  "biome": "english-3e-comprehension",
+  "type": "linking-words",
+  "level": 2,
+  "lang": "en",
+  "instruction": "Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.",
+  "items": [
+    {
+      "key": "english-3e-comprehension-linking-words-2-0",
+      "prompt": "… it was cold, we went swimming.",
+      "spoken": "blank it was cold, we went swimming.",
+      "choices": [
+        "Although",
+        "Because",
+        "So"
+      ],
+      "answer": "Although",
+      "hint": "Opposition, ordre ou condition ? Relis la règle.",
+      "explanation": "Il faisait froid, et pourtant on s’est baignés : although (bien que).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Connecteurs de 3e",
+          "lines": [
+            "although = bien que (+ phrase) ; despite = malgré (+ nom)",
+            "however = cependant (souvent en début de phrase, suivi d’une virgule)",
+            "first, then, finally = d’abord, ensuite, enfin",
+            "unless = à moins que ; until = jusqu’à ce que"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-comprehension-linking-words-2-1",
+      "prompt": "The film was long. …, it was very good.",
+      "spoken": "The film was long. blank, it was very good.",
+      "choices": [
+        "However",
+        "Because",
+        "So"
+      ],
+      "answer": "However",
+      "hint": "Opposition, ordre ou condition ? Relis la règle.",
+      "explanation": "Long, mais très bien : however (cependant), suivi d’une virgule.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Connecteurs de 3e",
+          "lines": [
+            "although = bien que (+ phrase) ; despite = malgré (+ nom)",
+            "however = cependant (souvent en début de phrase, suivi d’une virgule)",
+            "first, then, finally = d’abord, ensuite, enfin",
+            "unless = à moins que ; until = jusqu’à ce que"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-comprehension-linking-words-2-2",
+      "prompt": "… the rain, the match continued.",
+      "spoken": "blank the rain, the match continued.",
+      "choices": [
+        "Despite",
+        "Although",
+        "Because"
+      ],
+      "answer": "Despite",
+      "hint": "Après le trou, un nom (the rain) : pas une phrase.",
+      "explanation": "despite + nom : despite the rain (malgré la pluie).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Connecteurs de 3e",
+          "lines": [
+            "although = bien que (+ phrase) ; despite = malgré (+ nom)",
+            "however = cependant (souvent en début de phrase, suivi d’une virgule)",
+            "first, then, finally = d’abord, ensuite, enfin",
+            "unless = à moins que ; until = jusqu’à ce que"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-comprehension-linking-words-2-3",
+      "prompt": "I have studied a lot, … I’m sure I’ll pass.",
+      "spoken": "I have studied a lot, blank I’m sure I’ll pass.",
+      "choices": [
+        "so",
+        "although",
+        "however"
+      ],
+      "answer": "so",
+      "hint": "Cause, conséquence ou opposition ? Relis la règle.",
+      "explanation": "J’ai beaucoup travaillé, donc je vais réussir : so.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Connecteurs de 3e",
+          "lines": [
+            "although = bien que (+ phrase) ; despite = malgré (+ nom)",
+            "however = cependant (souvent en début de phrase, suivi d’une virgule)",
+            "first, then, finally = d’abord, ensuite, enfin",
+            "unless = à moins que ; until = jusqu’à ce que"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-comprehension-linking-words-2-4",
+      "prompt": "First, open the box. …, take out the pieces.",
+      "spoken": "First, open the box. blank, take out the pieces.",
+      "choices": [
+        "Then",
+        "However",
+        "Although"
+      ],
+      "answer": "Then",
+      "hint": "Opposition, ordre ou condition ? Relis la règle.",
+      "explanation": "D’abord…, ensuite… : then.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Connecteurs de 3e",
+          "lines": [
+            "although = bien que (+ phrase) ; despite = malgré (+ nom)",
+            "however = cependant (souvent en début de phrase, suivi d’une virgule)",
+            "first, then, finally = d’abord, ensuite, enfin",
+            "unless = à moins que ; until = jusqu’à ce que"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-comprehension-linking-words-2-5",
+      "prompt": "He is rich. …, he isn’t happy.",
+      "spoken": "He is rich. blank, he isn’t happy.",
+      "choices": [
+        "However",
+        "So",
+        "Because"
+      ],
+      "answer": "However",
+      "hint": "Opposition, ordre ou condition ? Relis la règle.",
+      "explanation": "Riche, mais pas heureux : however.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Connecteurs de 3e",
+          "lines": [
+            "although = bien que (+ phrase) ; despite = malgré (+ nom)",
+            "however = cependant (souvent en début de phrase, suivi d’une virgule)",
+            "first, then, finally = d’abord, ensuite, enfin",
+            "unless = à moins que ; until = jusqu’à ce que"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-comprehension-linking-words-2-6",
+      "prompt": "… you study, you won’t pass.",
+      "spoken": "blank you study, you won’t pass.",
+      "choices": [
+        "Unless",
+        "If",
+        "Because"
+      ],
+      "answer": "Unless",
+      "hint": "Tu ne réussiras pas… à moins que tu ne travailles.",
+      "explanation": "unless = à moins que : Unless you study, you won’t pass.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Connecteurs de 3e",
+          "lines": [
+            "although = bien que (+ phrase) ; despite = malgré (+ nom)",
+            "however = cependant (souvent en début de phrase, suivi d’une virgule)",
+            "first, then, finally = d’abord, ensuite, enfin",
+            "unless = à moins que ; until = jusqu’à ce que"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-comprehension-linking-words-2-7",
+      "prompt": "I’ll wait here … you come back.",
+      "spoken": "I’ll wait here blank you come back.",
+      "choices": [
+        "until",
+        "unless",
+        "although"
+      ],
+      "answer": "until",
+      "hint": "Opposition, ordre ou condition ? Relis la règle.",
+      "explanation": "J’attends jusqu’à ce que tu reviennes : until.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Connecteurs de 3e",
+          "lines": [
+            "although = bien que (+ phrase) ; despite = malgré (+ nom)",
+            "however = cependant (souvent en début de phrase, suivi d’une virgule)",
+            "first, then, finally = d’abord, ensuite, enfin",
+            "unless = à moins que ; until = jusqu’à ce que"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien relié !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "english-3e-comprehension",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

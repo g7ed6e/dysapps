@@ -1,0 +1,223 @@
+{
+  "id": "english-3e-comprehension-understanding-2",
+  "biome": "english-3e-comprehension",
+  "type": "understanding",
+  "level": 2,
+  "lang": "en",
+  "instruction": "Lis le petit texte en anglais, puis choisis la bonne réponse à la question. La règle est affichée.",
+  "items": [
+    {
+      "key": "english-3e-comprehension-understanding-2-0",
+      "prompt": "Emma put on her coat, her scarf and her gloves before going out. What’s the weather like?",
+      "spoken": "Emma put on her coat, her scarf and her gloves before going out. What’s the weather like?",
+      "choices": [
+        "It’s cold.",
+        "It’s hot.",
+        "It’s warm and sunny."
+      ],
+      "answer": "It’s cold.",
+      "hint": "La réponse n’est pas écrite : quels indices donne le texte ?",
+      "explanation": "Manteau, écharpe et gants : il fait froid.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire entre les lignes",
+          "lines": [
+            "La réponse n’est pas toujours écrite : cherche les indices.",
+            "umbrella = parapluie, boots = bottes : il pleut.",
+            "shaking = il tremble : scared = il a peur.",
+            "Sentiments : happy = content, sad = triste, angry = en colère, tired = fatigué, proud = fier, worried = inquiet."
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-comprehension-understanding-2-1",
+      "prompt": "The shops were full of people, and everybody was buying chocolate eggs. What time of year was it?",
+      "spoken": "The shops were full of people, and everybody was buying chocolate eggs. What time of year was it?",
+      "choices": [
+        "Easter.",
+        "Christmas.",
+        "Halloween."
+      ],
+      "answer": "Easter.",
+      "hint": "La réponse n’est pas écrite : quels indices donne le texte ?",
+      "explanation": "Des œufs en chocolat : c’est Pâques (Easter).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire entre les lignes",
+          "lines": [
+            "La réponse n’est pas toujours écrite : cherche les indices.",
+            "umbrella = parapluie, boots = bottes : il pleut.",
+            "shaking = il tremble : scared = il a peur.",
+            "Sentiments : happy = content, sad = triste, angry = en colère, tired = fatigué, proud = fier, worried = inquiet."
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-comprehension-understanding-2-2",
+      "prompt": "Oliver hasn’t slept for two days. He keeps yawning. How does Oliver feel?",
+      "spoken": "Oliver hasn’t slept for two days. He keeps yawning. How does Oliver feel?",
+      "choices": [
+        "Tired.",
+        "Hungry.",
+        "Excited."
+      ],
+      "answer": "Tired.",
+      "hint": "La réponse n’est pas écrite : quels indices donne le texte ?",
+      "explanation": "Pas dormi, il bâille : il est fatigué (tired).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire entre les lignes",
+          "lines": [
+            "La réponse n’est pas toujours écrite : cherche les indices.",
+            "umbrella = parapluie, boots = bottes : il pleut.",
+            "shaking = il tremble : scared = il a peur.",
+            "Sentiments : happy = content, sad = triste, angry = en colère, tired = fatigué, proud = fier, worried = inquiet."
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-comprehension-understanding-2-3",
+      "prompt": "Mia got the best mark in the class and her parents took her to a restaurant. How does Mia feel?",
+      "spoken": "Mia got the best mark in the class and her parents took her to a restaurant. How does Mia feel?",
+      "choices": [
+        "Proud.",
+        "Sad.",
+        "Angry."
+      ],
+      "answer": "Proud.",
+      "hint": "La réponse n’est pas écrite : quels indices donne le texte ?",
+      "explanation": "La meilleure note, un restaurant pour fêter ça : elle est fière (proud).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire entre les lignes",
+          "lines": [
+            "La réponse n’est pas toujours écrite : cherche les indices.",
+            "umbrella = parapluie, boots = bottes : il pleut.",
+            "shaking = il tremble : scared = il a peur.",
+            "Sentiments : happy = content, sad = triste, angry = en colère, tired = fatigué, proud = fier, worried = inquiet."
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-comprehension-understanding-2-4",
+      "prompt": "Dad opened the fridge: it was empty. He took his car keys and a shopping bag. Where is Dad going?",
+      "spoken": "Dad opened the fridge: it was empty. He took his car keys and a shopping bag. Where is Dad going?",
+      "choices": [
+        "To the supermarket.",
+        "To work.",
+        "To the cinema."
+      ],
+      "answer": "To the supermarket.",
+      "hint": "La réponse n’est pas écrite : quels indices donne le texte ?",
+      "explanation": "Frigo vide, sac de courses : il va au supermarché.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire entre les lignes",
+          "lines": [
+            "La réponse n’est pas toujours écrite : cherche les indices.",
+            "umbrella = parapluie, boots = bottes : il pleut.",
+            "shaking = il tremble : scared = il a peur.",
+            "Sentiments : happy = content, sad = triste, angry = en colère, tired = fatigué, proud = fier, worried = inquiet."
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-comprehension-understanding-2-5",
+      "prompt": "The lights went off, everybody shouted “Surprise!” and Leo saw a big cake. What is happening?",
+      "spoken": "The lights went off, everybody shouted “Surprise!” and Leo saw a big cake. What is happening?",
+      "choices": [
+        "Leo’s birthday party.",
+        "A school lesson.",
+        "A football match."
+      ],
+      "answer": "Leo’s birthday party.",
+      "hint": "La réponse n’est pas écrite : quels indices donne le texte ?",
+      "explanation": "Surprise et gros gâteau : c’est la fête d’anniversaire de Leo.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire entre les lignes",
+          "lines": [
+            "La réponse n’est pas toujours écrite : cherche les indices.",
+            "umbrella = parapluie, boots = bottes : il pleut.",
+            "shaking = il tremble : scared = il a peur.",
+            "Sentiments : happy = content, sad = triste, angry = en colère, tired = fatigué, proud = fier, worried = inquiet."
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-comprehension-understanding-2-6",
+      "prompt": "Sara looked at her watch, ran to the station and jumped on the train just in time. Why did Sara run?",
+      "spoken": "Sara looked at her watch, ran to the station and jumped on the train just in time. Why did Sara run?",
+      "choices": [
+        "She was late.",
+        "She was cold.",
+        "She loves running."
+      ],
+      "answer": "She was late.",
+      "hint": "La réponse n’est pas écrite : quels indices donne le texte ?",
+      "explanation": "Elle regarde sa montre et attrape le train de justesse : elle était en retard.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire entre les lignes",
+          "lines": [
+            "La réponse n’est pas toujours écrite : cherche les indices.",
+            "umbrella = parapluie, boots = bottes : il pleut.",
+            "shaking = il tremble : scared = il a peur.",
+            "Sentiments : happy = content, sad = triste, angry = en colère, tired = fatigué, proud = fier, worried = inquiet."
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-comprehension-understanding-2-7",
+      "prompt": "Ben lost his dog yesterday. Today, he is smiling: his dog is back home. How does Ben feel today?",
+      "spoken": "Ben lost his dog yesterday. Today, he is smiling: his dog is back home. How does Ben feel today?",
+      "choices": [
+        "Happy.",
+        "Worried.",
+        "Sad."
+      ],
+      "answer": "Happy.",
+      "hint": "La réponse n’est pas écrite : quels indices donne le texte ?",
+      "explanation": "Son chien est revenu et il sourit : il est heureux (happy).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire entre les lignes",
+          "lines": [
+            "La réponse n’est pas toujours écrite : cherche les indices.",
+            "umbrella = parapluie, boots = bottes : il pleut.",
+            "shaking = il tremble : scared = il a peur.",
+            "Sentiments : happy = content, sad = triste, angry = en colère, tired = fatigué, proud = fier, worried = inquiet."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Message reçu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "english-3e-comprehension",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

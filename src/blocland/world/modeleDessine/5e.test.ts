@@ -29,7 +29,7 @@ it('les crêtes montent au fond du Glacier, du Carrefour, du Comptoir, du Manoir
   for (const c of avant.colonnes) max[c.ile!] = Math.max(max[c.ile!] ?? 0, montee(c.x, c.y));
   expect(max.marche).toBe(0);
   expect(max.marais).toBe(0);
-  for (const id of ['glacier', 'carrefour', 'comptoir', 'manoir', 'relais']) expect(max[id], id).toBeGreaterThanOrEqual(5);
+  for (const id of ['maths-5e-signed-numbers', 'french-5e-homophones', 'english-5e-vocabulary', 'english-5e-grammar', 'lv2-5e-introductions']) expect(max[id], id).toBeGreaterThanOrEqual(5);
   expect(max.glacier).toBeGreaterThanOrEqual(max.carrefour);
 });
 
@@ -53,8 +53,8 @@ it('ni le cœur, ni la première rangée du fond, ni les abords d’un ouvrage, 
 });
 
 it('le Glacier (revue d’ensemble, DA-3) : des gradins de roche nue, dessus et flancs ; aucun sol blanc sous la calotte', () => {
-  const o = origineDe('glacier');
-  const modele = modelerLeSol('5e', sol, reste).filter((c) => c.tag === 'glacier');
+  const o = origineDe('maths-5e-signed-numbers');
+  const modele = modelerLeSol('5e', sol, reste).filter((c) => c.tag === 'maths-5e-signed-numbers');
   const colonnes = new Map<string, typeof modele>();
   for (const c of modele) {
     const k = `${c.x},${c.y}`;
@@ -79,11 +79,11 @@ it('le Glacier (revue d’ensemble, DA-3) : des gradins de roche nue, dessus et 
   // Le plus haut pic du Glacier est au fond, à gauche de l'île (celui de 11), et il garde au moins 10 blocs.
   const pic = [...colonnes.values()].map((l) => l.reduce((p, q) => (q.z > p.z ? q : p))).reduce((p, q) => (q.z > p.z ? q : p));
   expect(pic.z - o.z).toBeGreaterThanOrEqual(10);
-  expect(pic.x - o.x).toBeLessThan(CRETES_5E.glacier![1].x);
+  expect(pic.x - o.x).toBeLessThan(CRETES_5E['maths-5e-signed-numbers']![1].x);
 });
 
 it('le Glacier (DA-3) : des masses cassées, en marches de 2 à 3 blocs, dont le bord change d’une rangée à l’autre', () => {
-  const o = origineDe('glacier');
+  const o = origineDe('maths-5e-signed-numbers');
   const haut = (x: number, y: number) => {
     const i = apres.index.get(cle(x, y));
     return i === undefined ? null : apres.colonnes[i].haut;
@@ -92,7 +92,7 @@ it('le Glacier (DA-3) : des masses cassées, en marches de 2 à 3 blocs, dont le
   // s'arrondit, en font d'autres).
   const marches = new Map<number, number>();
   for (const c of apres.colonnes) {
-    if (c.ile !== 'glacier' || !montee(c.x, c.y)) continue;
+    if (c.ile !== 'maths-5e-signed-numbers' || !montee(c.x, c.y)) continue;
     const v = haut(c.x + 1, c.y);
     if (v === null || !montee(c.x + 1, c.y)) continue;
     const m = Math.abs(v - c.haut);
@@ -107,7 +107,7 @@ it('le Glacier (DA-3) : des masses cassées, en marches de 2 à 3 blocs, dont le
 it('les crêtes du Carrefour, du Manoir et du Comptoir (revue d’ensemble, DA-3 bis) : la roche du 5e, distincte de l’herbe et de la neige', () => {
   const modele = modelerLeSol('5e', sol, reste);
   let rocheuses = 0;
-  for (const id of ['carrefour', 'manoir', 'comptoir']) {
+  for (const id of ['french-5e-homophones', 'english-5e-grammar', 'english-5e-vocabulary']) {
     const tops = new Map<string, (typeof modele)[number]>();
     for (const c of modele) if (c.tag === id) {
       const k = `${c.x},${c.y}`;

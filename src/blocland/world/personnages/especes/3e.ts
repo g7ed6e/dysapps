@@ -8,7 +8,7 @@ import { devant, fuseau, pave, pose, repere } from '../peint';
 import { tube } from '../sentinelle';
 
 export const ESPECES_3E = {
-  belvedere: {
+  'maths-3e-geometry': {
     nom: 'Théo',
     metier: 'géomètre',
     gabarit: 'elance',
@@ -28,7 +28,7 @@ export const ESPECES_3E = {
       },
     },
   },
-  donnees: {
+  'maths-3e-statistics': {
     nom: 'Stat',
     metier: 'astronome',
     gabarit: 'elance',
@@ -62,7 +62,7 @@ export const ESPECES_3E = {
       },
     },
   },
-  phare: {
+  'maths-3e-functions': {
     nom: 'Fi',
     metier: 'allumeuse',
     gabarit: 'elance',
@@ -130,7 +130,7 @@ export const ESPECES_3E = {
       },
     },
   },
-  textes: {
+  'french-3e-close-reading': {
     nom: 'Astra',
     metier: 'copiste',
     dominante: 0x3a3a4a,
@@ -181,7 +181,7 @@ export const ESPECES_3E = {
       },
     },
   },
-  studio: {
+  'english-3e-comprehension': {
     nom: 'Écho',
     metier: 'opératrice radio',
     dominante: 0x5a4a6a,
@@ -213,7 +213,7 @@ export const ESPECES_3E = {
       },
     },
   },
-  chateau: {
+  'english-3e-grammar': {
     nom: 'Knight',
     metier: 'écuyer héraut',
     // Une souris gris froid.
@@ -249,7 +249,7 @@ export const ESPECES_3E = {
         ),
     },
   },
-  refuge: {
+  'lv2-3e-travel': {
     // La loutre factrice du Refuge des carnets (DA, LV2-5) : brun-gris (plus sombre que Tunel, plus chaud que Vapeur),
     // la gorge et le museau crème, sans masque ni moustaches ; la tête plate et large, deux petites oreilles rondes sur
     // les côtés ; une sacoche de cuir fauve unie en bandoulière (ni casquette, ni uniforme, ni cor, ni jaune) ; la queue

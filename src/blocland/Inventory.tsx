@@ -46,7 +46,7 @@ function useLabel(use: Use, count: number): string {
  */
 export function InventoryBody() {
   const { state } = useBlocland();
-  const at = state.world.place ?? 'foret';
+  const at = state.world.place ?? 'french-6e-phonology';
   const { rows, payable, ouvrages, missing } = inventoryUses(state);
   // Ce qu'on peut faire maintenant : les plans et le navire dont on a tous les blocs, les ouvrages qu'on peut payer.
   const seen = new Set<string>();

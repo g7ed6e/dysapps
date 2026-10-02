@@ -16,7 +16,7 @@ export const ETATS_D_ILE: Record<IslandStateId, string> = {
 
 /** Ce que disent les créatures, île par île. */
 export const REPLIQUES: Record<BiomeId, TextesCreature> = {
-  foret: {
+  'french-6e-phonology': {
     greeting: 'Salut, bâtisseur ! Dans ma forêt, on écoute les mots. Chaque son trouvé, c’est du bois pour le village.',
     lines: [
       'Tu entends ? Le vent coupe les mots en syllabes.',
@@ -25,7 +25,7 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
     ],
     home: 'J’habite ici maintenant ! Viens voir ma cabane quand tu veux.',
   },
-  mine: {
+  'french-6e-letter-confusion': {
     greeting: 'Bienvenue dans ma mine ! Ici, les lettres se ressemblent, mais mon œil ne se trompe jamais. Pioche les bonnes, je te donne de la pierre.',
     lines: [
       'Un b, un d… regarde bien de quel côté est le ventre.',
@@ -34,7 +34,7 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
     ],
     home: 'Ma forge ronfle à nouveau. Écoute : tac, tac, comme des syllabes.',
   },
-  carriere: {
+  'french-6e-word-spelling': {
     greeting: 'Hé, bâtisseur ! Dans ma carrière, chaque mot bien écrit devient du sable pour tes murs. Prêt ?',
     lines: [
       'Un mot bien écrit, c’est un bloc qui ne s’effrite pas.',
@@ -44,7 +44,7 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
     ],
     home: 'Le four est chaud ! Tu sens ? Ça sent le pain et les mots bien cuits.',
   },
-  ferme: {
+  'french-6e-grammar-spelling': {
     greeting: 'Meuh ! À la ferme, tout doit s’accorder. Trie bien les graines et je remplis tes sacs de terre.',
     lines: [
       'Meuh. Les vaches, au pluriel, prennent un s. Comme les murs.',
@@ -54,12 +54,12 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
     ],
     home: 'Meuh ! Mon étable est debout. Je dors au chaud, merci bâtisseur.',
   },
-  tour: {
+  'french-6e-reading': {
     greeting: 'Hou hou. Chaque paragraphe que tu lis construit un étage de ma tour. Prends ton temps, je ne compte pas les secondes à voix haute.',
     lines: ['Hou hou. La nuit, mon phare guide les lecteurs.', 'Du verre pour le phare : lis-moi une page.', 'Lire lentement, c’est lire quand même.'],
     home: 'Hou hou ! Mon phare est allumé. Regarde-le briller ce soir.',
   },
-  plaine: {
+  'maths-6e-calculation': {
     greeting:
       'Bonjour, bâtisseur ! Dans ma plaine, on calcule avec les yeux : les points, la boîte de dix, la droite. Chaque calcul réussi, c’est de la brique pour le village.',
     lines: [
@@ -71,7 +71,7 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
     ],
     home: 'Mon nid de brique est fini ! Il a exactement dix fenêtres, comme mes points.',
   },
-  riviere: {
+  'maths-6e-fractions': {
     greeting:
       'Coâ ! Bienvenue à la rivière. Ici, on coupe en parts égales et on regarde la figure avant de répondre. Chaque fraction lue, c’est un galet pour le village.',
     lines: [
@@ -82,7 +82,7 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
     ],
     home: 'Ma hutte de galets est finie ! Une moitié pour dormir, une moitié pour chanter.',
   },
-  volcan: {
+  'maths-6e-decimals': {
     greeting:
       'Salut, bâtisseur ! Sur mon volcan, la virgule sépare les unités des dixièmes. Regarde le tableau avant de répondre. Chaque nombre lu, c’est de l’obsidienne pour le village.',
     lines: [
@@ -93,7 +93,7 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
     ],
     home: 'Mon abri d’obsidienne est fini ! Il brille comme 1,0 : entier et sans un dixième qui manque.',
   },
-  glacier: {
+  'maths-5e-signed-numbers': {
     greeting:
       'Salut, bâtisseur ! Ici, il fait moins dix. Les nombres négatifs, c’est à gauche de zéro sur la droite. Chaque calcul réussi, c’est de la glace pour le village.',
     lines: [
@@ -104,7 +104,7 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
     ],
     home: 'Mon igloo est fini ! Dedans il fait plus deux, dehors moins huit.',
   },
-  marche: {
+  'maths-5e-proportionality': {
     greeting:
       'Bienvenue au marché, bâtisseur ! Ici tout est proportionnel : deux fois plus de pommes, deux fois plus d’euros. Chaque compte juste, c’est de la toile pour le village.',
     lines: [
@@ -116,7 +116,7 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
     ],
     home: 'Mon échoppe est montée ! Cent pour cent finie, pas une remise.',
   },
-  carrefour: {
+  'french-5e-homophones': {
     greeting:
       'Salut, bâtisseur ! Au carrefour, deux mots se ressemblent mais ne mènent pas au même endroit. Remplace-les pour vérifier. Chaque bonne route, c’est un panneau pour le village.',
     lines: [
@@ -126,7 +126,7 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
     ],
     home: 'Ma cabane est finie ! Tous ses panneaux montrent la bonne direction.',
   },
-  marais: {
+  'french-5e-conjugation': {
     greeting:
       'Coâ… non, ça c’est Nénu. Bienvenue au marais, bâtisseur ! Ici chaque rive est un temps : le passé, le futur, et le subjonctif dans les roseaux. Chaque verbe juste, c’est de la tourbe pour le village.',
     lines: [
@@ -137,7 +137,7 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
     ],
     home: 'Ma hutte de tourbe est finie ! Elle était en ruine, elle est debout, elle restera.',
   },
-  forge: {
+  'maths-4e-powers': {
     greeting:
       'Salut, bâtisseur ! À la forge, dix fois dix fois dix, ça s’écrit 10³. Regarde la règle avant de frapper. Chaque calcul juste, c’est de l’acier pour le village.',
     lines: [
@@ -147,7 +147,7 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
     ],
     home: 'Mon atelier d’acier est fini ! Solide comme 10 puissance 10.',
   },
-  atelier: {
+  'maths-4e-algebra': {
     greeting:
       'Bip. Bonjour, bâtisseur ! Ici, x est un bloc dont on ne connaît pas encore la taille. On le range, on le développe, on le trouve. Chaque calcul juste, c’est un calque pour le village.',
     lines: [
@@ -157,7 +157,7 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
     ],
     home: 'Mon bureau de calques est fini ! Plan développé, réduit, résolu.',
   },
-  falaise: {
+  'french-4e-agreement': {
     greeting:
       'Bêêê, bâtisseur ! Sur la falaise, chaque mot s’accroche à un autre : l’adjectif au nom, le verbe au sujet, le participe à qui de droit. Chaque accord juste, c’est une ardoise pour le village.',
     lines: [
@@ -168,7 +168,7 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
     ],
     home: 'Ma bergerie d’ardoise est finie ! Elle est solide, elles sont solides, tout est accordé.',
   },
-  cabinet: {
+  'french-4e-vocabulary': {
     greeting:
       'Bonjour, bâtisseur ! Dans mon cabinet, chaque mot est un objet qu’on démonte : une racine, un préfixe, un suffixe. Chaque mot compris, c’est un parchemin pour le village.',
     lines: [
@@ -178,7 +178,7 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
     ],
     home: 'Mon nid de parchemins est fini ! Au sens propre : il tient. Au figuré : c’est un trésor.',
   },
-  belvedere: {
+  'maths-3e-geometry': {
     greeting:
       'Bonjour, bâtisseur ! Du belvédère, on voit tous les triangles. L’hypoténuse est toujours en face de l’angle droit : regarde la figure avant de calculer. Chaque longueur trouvée, c’est du marbre pour le village.',
     lines: [
@@ -188,7 +188,7 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
     ],
     home: 'Mon kiosque de marbre est fini ! Ses colonnes sont proportionnelles, Thalès serait content.',
   },
-  donnees: {
+  'maths-3e-statistics': {
     greeting:
       'Hou ! Bienvenue à l’observatoire, bâtisseur. Ici, on résume une série en un seul nombre : la moyenne, la médiane. Et on prévoit avec les probabilités. Chaque calcul juste, c’est du quartz pour le village.',
     lines: [
@@ -199,7 +199,7 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
     ],
     home: 'Mon dôme de quartz est fini ! En moyenne, un bloc par calcul ; en médiane, pareil.',
   },
-  phare: {
+  'maths-3e-functions': {
     greeting:
       'Bonjour, bâtisseur ! Une fonction, c’est une machine : on entre x, il sort f(x). Le tableau de valeurs te montre les deux. Chaque image trouvée, c’est un prisme pour le village.',
     lines: [
@@ -210,7 +210,7 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
     ],
     home: 'Ma lanterne de prismes est finie ! f(nuit) = lumière.',
   },
-  textes: {
+  'french-3e-close-reading': {
     greeting:
       'Bonsoir, bâtisseur ! De l’observatoire, on lit les textes comme le ciel : on cherche ce qui brille derrière les mots. Chaque indice trouvé, c’est une lentille pour le village.',
     lines: [
@@ -221,7 +221,7 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
     ],
     home: 'Ma lanterne de lentilles est finie ! Elle grossit les mots pour mieux les lire.',
   },
-  baie: {
+  'english-6e-vocabulary': {
     greeting:
       'Hello, bâtisseur ! Dans la baie, on parle anglais. Écoute bien : le bouton Écouter lit chaque mot avec une voix anglaise. Chaque mot compris, c’est une cabine rouge pour le village.',
     lines: [
@@ -231,7 +231,7 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
     ],
     home: 'Ma cabine est finie ! On peut appeler jusqu’à Londres.',
   },
-  horloge: {
+  'english-6e-grammar': {
     greeting:
       'Hello, bâtisseur ! Dans mon horloge, chaque verbe a sa place : am, is ou are, have ou has. Regarde d’abord le sujet, la règle est affichée. Chaque bon verbe, c’est un cadran pour le village.',
     lines: [
@@ -241,7 +241,7 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
     ],
     home: 'Mon horloge est finie ! Elle sonne à chaque verbe juste.',
   },
-  comptoir: {
+  'english-5e-vocabulary': {
     greeting:
       'Hello, bâtisseur ! Au Comptoir, on achète, on compte, on raconte sa journée, en anglais. Écoute bien chaque phrase : la voix anglaise la lit pour toi. Chaque bonne réponse, c’est une tuile pour le village.',
     lines: [
@@ -252,7 +252,7 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
     ],
     home: 'Ma boutique est finie ! Open every day, même le dimanche.',
   },
-  manoir: {
+  'english-5e-grammar': {
     greeting:
       'Hello, bâtisseur ! Au manoir, chaque pièce a son temps : ce qui se passe now, ce qui s’est passé yesterday. Cherche le petit mot qui dit quand. Chaque bonne réponse, c’est un lambris pour le village.',
     lines: [
@@ -262,7 +262,7 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
     ],
     home: 'Mon salon est fini ! Il est bien plus beau qu’avant : more beautiful than before.',
   },
-  theatre: {
+  'english-4e-comprehension': {
     greeting:
       'Hello, bâtisseur ! Au théâtre, chaque question appelle une réplique : where, when, why… Écoute bien le premier mot. Chaque bonne réplique, c’est un velours pour le village.',
     lines: [
@@ -272,7 +272,7 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
     ],
     home: 'Ma loge est finie ! The show must go on.',
   },
-  gare: {
+  'english-4e-grammar': {
     greeting:
       'Hello, bâtisseur ! À la gare, on parle de demain (will, going to), de ce qu’on doit faire (must, have to) et de ce qu’on a déjà fait (have been). Chaque bonne réponse, c’est un rail pour le village.',
     lines: [
@@ -282,7 +282,7 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
     ],
     home: 'Mon abri est fini ! The next train will arrive on time.',
   },
-  studio: {
+  'english-3e-comprehension': {
     greeting:
       'Hello, bâtisseur ! Au studio, on lit et on écoute des messages entiers : qui, quand, pourquoi ? Et attention aux faux amis : library n’est pas une librairie ! Chaque message compris, c’est une antenne pour le village.',
     lines: [
@@ -292,7 +292,7 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
     ],
     home: 'Ma régie est finie ! On the air!',
   },
-  chateau: {
+  'english-3e-grammar': {
     greeting:
       'Hello, bâtisseur ! Au château, les phrases sont longues : depuis quand (for, since), et si (if), et par qui (by). Pas de panique, la règle est affichée. Chaque bonne réponse, c’est une pierre de taille pour le village.',
     lines: [
@@ -302,7 +302,7 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
     ],
     home: 'Ma tour est finie ! If I were you, I would climb to the top.',
   },
-  relais: {
+  'lv2-5e-introductions': {
     greeting:
       'Bonjour, bâtisseur ! Au Relais, les voyageurs se présentent, comptent et parlent de leur famille, dans ta deuxième langue. Écoute bien : la voix lit chaque mot pour toi. Chaque bonne réponse, c’est une dalle pour le village.',
     lines: [
@@ -313,7 +313,7 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
     ],
     home: 'Mon auberge est finie ! Les voyageurs peuvent entrer, d’où qu’ils viennent.',
   },
-  jardin: {
+  'lv2-4e-daily-life': {
     greeting:
       'Salut, bâtisseur ! Au Jardin des heures, on dit l’heure, on raconte sa journée, on lit l’horaire et le menu, dans ta deuxième langue. Appuie sur Écouter : la voix lit chaque phrase pour toi. Chaque bonne réponse, c’est un bloc d’osier, le bois tressé des paniers, pour le village.',
     lines: [
@@ -324,7 +324,7 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
     ],
     home: 'Ma cuisine est finie ! Il y a une place à table pour toi, à toute heure.',
   },
-  refuge: {
+  'lv2-3e-travel': {
     greeting:
       'Bonjour, bâtisseur ! Au refuge, les voyageurs racontent leurs voyages dans ta deuxième langue. Appuie sur Écouter : la voix lit la question et l’histoire pour toi. Chaque bonne réponse te donne un bardeau. Les bardeaux, ce sont les petites planches de bois qui couvrent les murs du refuge.',
     lines: [

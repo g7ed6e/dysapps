@@ -365,7 +365,7 @@ const COLONNES_3 = 'Divise : quand tu abaisses les dixièmes, écris la virgule 
 
 // La récompense des missions de la Rivière (6e) : 12 XP.
 const define = (level: number, instruction: string, generators: ItemGenerator[]): ExerciseDef =>
-  defineData({ biome: 'riviere', type: 'colonnes', level, instruction, generators, block: 'galet', xp: 12 });
+  defineData({ biome: 'maths-6e-fractions', type: 'place-value', level, instruction, generators, block: 'maths-6e-fractions', xp: 12 });
 
 /** Galets en colonnes, quatrième mission de la Rivière des fractions. */
 export const POSEES_EXERCISES: ExerciseDef[] = [

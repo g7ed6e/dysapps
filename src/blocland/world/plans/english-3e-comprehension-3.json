@@ -1,0 +1,13 @@
+{
+  "id": "english-3e-comprehension-3",
+  "biome": "english-3e-comprehension",
+  "name": "La terrasse du studio",
+  "reward": {
+    "xp": 60,
+    "chest": {
+      "trophy-gold": 2,
+      "trophy-crystal": 2
+    }
+  },
+  "done": "Une terrasse, une barrière, un escalier… Mon studio est complet. Stay tuned!"
+}

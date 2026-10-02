@@ -41,11 +41,11 @@ export function BiomePage() {
   const textes = useTextes();
   const univers = useUnivers();
   const biome = getBiome(biomeId);
-  const builder = usePlanBuilder(biome?.id ?? 'foret');
+  const builder = usePlanBuilder(biome?.id ?? 'french-6e-phonology');
   // Les nouveaux noms des archipels passent avant le mot des grandes étapes, comme dans le monde et la vue simple.
   const renommage = useRenommage(true, 1200);
-  const whale = useWhaleWord(state, archipelagoOf(state.world.place ?? 'foret').classe, !renommage.ouvert);
-  const ship = useVehicleBuilder(biome?.id ?? 'foret');
+  const whale = useWhaleWord(state, archipelagoOf(state.world.place ?? 'french-6e-phonology').classe, !renommage.ouvert);
+  const ship = useVehicleBuilder(biome?.id ?? 'french-6e-phonology');
   if (!biome) return <NotFoundPage />;
   const block = BLOCKS[biome.block];
   const owned = state.stock[biome.block] ?? 0;
@@ -173,7 +173,7 @@ export function BiomePage() {
       {!sansLv2 && (() => {
         const ready = unlocked && isBossOpen(biome, state.progress);
         const beaten = isBossBeaten(biome.id, state.progress);
-        const boss = state.progress[`${biome.id}-gardien`];
+        const boss = state.progress[`${biome.id}-challenge`];
         const content = (
           <>
             <span className="app-icon boss-icon">

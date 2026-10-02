@@ -21,7 +21,7 @@ it('pose un point sur l’icône quand des révisions attendent, et l’enlève 
   const { unmount } = renderBadge();
   expect(clearAppBadge).toHaveBeenCalled();
   unmount();
-  localStorage.setItem('dysapps:game', JSON.stringify({ spaced: [{ itemId: 'foret-echauffement-001:cabane', due: todayISO(), stage: 0, streak: 0 }] }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ spaced: [{ itemId: 'french-6e-phonology-syllables-warmup-001:cabane', due: todayISO(), stage: 0, streak: 0 }] }));
   renderBadge();
   // Un point, sans nombre : pas de pression.
   expect(setAppBadge).toHaveBeenCalledWith();

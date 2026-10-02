@@ -1,0 +1,12 @@
+{
+  "id": "maths-4e-algebra-1",
+  "biome": "maths-4e-algebra",
+  "name": "Le bureau d’Ixe",
+  "reward": {
+    "xp": 40,
+    "chest": {
+      "french-5e-homophones": 3
+    }
+  },
+  "done": "Mon bureau ! Merci, bâtisseur. Bip : x blocs posés, x = tous."
+}

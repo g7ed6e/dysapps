@@ -56,7 +56,7 @@ describe('les textes d’univers', () => {
     // grands nombres n'ont pas de virgule (décision du directeur artistique).
     const t = textesDe('blocland');
     // Les îles venues après le lot 6 (le Relais des voyageurs, LV2) n'ont pas de texte « d'avant » : hors de l'empreinte.
-    const APRES_LE_LOT_6 = new Set(['relais', 'jardin', 'refuge']);
+    const APRES_LE_LOT_6 = new Set(['lv2-5e-introductions', 'lv2-4e-daily-life', 'lv2-3e-travel']);
     const avant = Object.fromEntries(
       BIOMES.filter((b) => !APRES_LE_LOT_6.has(b.id)).map((b) => {
         const g = t.gardiens[b.id];
@@ -120,7 +120,7 @@ describe('les textes d’univers', () => {
   });
 
   it('le mot des grandes étapes : les mêmes étapes dans les deux univers', () => {
-    const guardians = Object.fromEntries(BIOMES.filter((b) => b.classe === '6e').map((b) => [`${b.id}-gardien`, { stars: 2, attempts: 1, best: 1 }]));
+    const guardians = Object.fromEntries(BIOMES.filter((b) => b.classe === '6e').map((b) => [`${b.id}-challenge`, { stars: 2, attempts: 1, best: 1 }]));
     const moments = reachedWhaleMoments(sanitizeState({ progress: guardians }), '6e');
     const gardiens = moments.find((m) => m.kind === 'gardiens');
     if (!gardiens) throw new Error('étape « gardiens » non atteinte');
@@ -170,7 +170,7 @@ describe('les textes communs (J8, U4)', () => {
     for (const u of UNIVERS) {
       const t = textesDe(u);
       // Les îles venues après U4 (le Jardin des heures, LV2-4 ; le Refuge des carnets, LV2-5) n'ont pas de réplique « d'avant » : hors de l'empreinte.
-      const r = Object.fromEntries(BIOMES.filter((b) => b.id !== 'jardin' && b.id !== 'refuge').map((b) => [b.id, t.creatures[b.id]]));
+      const r = Object.fromEntries(BIOMES.filter((b) => b.id !== 'lv2-4e-daily-life' && b.id !== 'lv2-3e-travel').map((b) => [b.id, t.creatures[b.id]]));
       expect(createHash('sha256').update(JSON.stringify(r)).digest('hex')).toBe('ee5d7b2fcc1a7a49749e0a41c5077b279215383439d33d63e023e6b85b618ccf');
     }
   });
@@ -216,7 +216,7 @@ describe('GD-1 : le chantier du bâtisseur, dans Blocland seulement', () => {
     expect(t.archipels).toEqual({ '6e': 'Basses Terres', '5e': 'Collines du Large', '4e': 'Monts de Feu', '3e': 'Îles du Ciel' });
     expect(t.libelles.navireGardiens(1, 3, t.archipels['6e'], 'la voile')).toBe('Gardiens : encore 2 à vaincre dans les Basses Terres pour la voile.');
     // Les monuments qui nommaient un archipel prennent le nom de Blocland, et gardent leur description.
-    const moulin = { id: 'monument-moulin', description: 'Un grand moulin.', done: 'Le grand moulin tourne ! Il moud le grain de toutes les îles des Premiers Rivages.' };
+    const moulin = { id: 'landmark-6e-2', description: 'Un grand moulin.', done: 'Le grand moulin tourne ! Il moud le grain de toutes les îles des Premiers Rivages.' };
     expect(texteDuMonument(t, moulin)).toEqual({ description: 'Un grand moulin.', done: 'Le grand moulin tourne ! Il moud le grain de toutes les îles des Basses Terres.' });
     expect(texteDuMonument(textesDe('archipeo'), moulin)).toEqual({ description: moulin.description, done: moulin.done });
     // Aucun ancien nom d'archipel dans ce que dit Blocland, hors de l'écran qui les annonce.

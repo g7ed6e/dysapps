@@ -20,7 +20,7 @@ const BOSSE: Anneau[] = [
 ];
 
 export const ESPECES_6E = {
-  foret: {
+  'french-6e-phonology': {
     nom: 'Mousso',
     metier: 'charpentier',
     dominante: 0x4c7a3b,
@@ -57,7 +57,7 @@ export const ESPECES_6E = {
       },
     },
   },
-  mine: {
+  'french-6e-letter-confusion': {
     nom: 'Tunel',
     metier: 'mineur',
     gabarit: 'trapu',
@@ -90,7 +90,7 @@ export const ESPECES_6E = {
       },
     },
   },
-  carriere: {
+  'french-6e-word-spelling': {
     nom: 'Rouxel',
     metier: 'tailleur de pierre',
     dominante: 0xb8662e,
@@ -123,7 +123,7 @@ export const ESPECES_6E = {
     },
     autreMain: { pose: [-0.6, 0, 0], dessiner: (T, k) => manche(T, -0.04, 0.3, 0.024, k.fer) },
   },
-  ferme: {
+  'french-6e-grammar-spelling': {
     nom: 'Bloquette',
     metier: 'fermière',
     dominante: 0xe6e0d2,
@@ -167,7 +167,7 @@ export const ESPECES_6E = {
         ),
     },
   },
-  tour: {
+  'french-6e-reading': {
     nom: 'Grimoire',
     metier: 'relieur copiste',
     gabarit: 'trapu',
@@ -202,7 +202,7 @@ export const ESPECES_6E = {
       },
     },
   },
-  plaine: {
+  'maths-6e-calculation': {
     nom: 'Coco',
     metier: 'arpenteuse',
     dominante: 0xa8443a,
@@ -229,7 +229,7 @@ export const ESPECES_6E = {
     },
     outil: { pose: [0, 0, 0], dessiner: (T, k) => jalon(T, -1.12, 0.9, 0.028, 4, k.bois, k.lin) },
   },
-  riviere: {
+  'maths-6e-fractions': {
     nom: 'Nénu',
     metier: 'passeuse',
     gabarit: 'elance',
@@ -244,7 +244,7 @@ export const ESPECES_6E = {
     yeux: { y: 2.5, ecart: 0.17, taille: 0.036, z: devant(BOSSE, 5, 2.5, -0.05).z },
     outil: { pose: [0.05, 0, -0.1], dessiner: (T, k) => manche(T, -1.12, 1.4, 0.028, k.bois) },
   },
-  volcan: {
+  'maths-6e-decimals': {
     nom: 'Lavi',
     metier: 'fondeuse',
     dominante: 0xd08a3a,
@@ -277,7 +277,7 @@ export const ESPECES_6E = {
       },
     },
   },
-  baie: {
+  'english-6e-vocabulary': {
     nom: 'Robin',
     metier: 'amarreur',
     dominante: 0x70563f,
@@ -306,7 +306,7 @@ export const ESPECES_6E = {
       dessiner: (T, k) => manche(T, -0.4, 0.04, 0.035, k.lin, 4),
     },
   },
-  horloge: {
+  'english-6e-grammar': {
     nom: 'Tick',
     metier: 'horloger',
     dominante: 0x6a6258,

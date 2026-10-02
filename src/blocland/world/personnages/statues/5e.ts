@@ -121,7 +121,7 @@ const VOILE: Anneau[] = [
 ];
 
 export const STATUES_5E: Partial<Record<BiomeId, Statue>> = {
-  glacier: {
+  'maths-5e-signed-numbers': {
     nom: 'le Mammouth',
     allume: 'ses veines de givre',
     sculpture: (T, a) => {
@@ -196,7 +196,7 @@ export const STATUES_5E: Partial<Record<BiomeId, Statue>> = {
       );
     },
   },
-  marche: {
+  'maths-5e-proportionality': {
     nom: 'le Colporteur',
     allume: 'sa lanterne',
     sculpture: (T, a) => {
@@ -260,7 +260,7 @@ export const STATUES_5E: Partial<Record<BiomeId, Statue>> = {
         { x: 0.85, z: -1.45 },
       ),
   },
-  carrefour: {
+  'french-5e-homophones': {
     nom: 'le Sphinx couché',
     allume: 'les bandes de sa coiffe',
     sculpture: (T, a) => {
@@ -326,7 +326,7 @@ export const STATUES_5E: Partial<Record<BiomeId, Statue>> = {
       );
     },
   },
-  marais: {
+  'french-5e-conjugation': {
     nom: 'l’Hydre',
     allume: 'ses collerettes',
     sculpture: (T, a) => {
@@ -354,7 +354,7 @@ export const STATUES_5E: Partial<Record<BiomeId, Statue>> = {
         );
     },
   },
-  comptoir: {
+  'english-5e-vocabulary': {
     nom: 'la Reine',
     allume: 'son sceptre et sa couronne',
     sculpture: (T, a) => {
@@ -420,7 +420,7 @@ export const STATUES_5E: Partial<Record<BiomeId, Statue>> = {
       for (const s of [-1, 1]) pointe(T, [s * 0.34, 7.18, 0], 0.08, 0.6, a.lueur, [0, 0, 0], 3);
     },
   },
-  manoir: {
+  'english-5e-grammar': {
     nom: 'le Spectre',
     allume: 'la lanterne sous son voile',
     sculpture: (T, a) => {
@@ -451,7 +451,7 @@ export const STATUES_5E: Partial<Record<BiomeId, Statue>> = {
         { z: -1.1 },
       ),
   },
-  relais: {
+  'lv2-5e-introductions': {
     // La Diligence de cuivre (DA, LV2-2), dessinée de profil face à −Z puis tournée vers chaque caméra (`tour`), plus
     // longue que haute : la caisse basse sur quatre roues (les grandes derrière), les bagages à l'arrière de
     // l'impériale, le siège du cocher à l'avant ; la vitre de la portière, à meneau, fait ses orbites. Ses roues portent

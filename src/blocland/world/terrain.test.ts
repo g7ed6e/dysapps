@@ -1,4 +1,4 @@
-import { BIOMES, missionsJouables } from '../biomes';
+import { BLOC, BIOMES, missionsJouables } from '../biomes';
 import { ARCHIPELAGO_IDS, CORE, MAP, bornesDuCoeur, isLand, islandDef, landBox, landCells, mapOf } from './map';
 import { BADGES } from '../../core/progress';
 import { trophyBlock } from '../trophies';
@@ -82,36 +82,36 @@ it('construit une île par biome, avec créature seulement si un pont y mène', 
   for (const b of BIOMES) expect(cubes.filter((c) => c.tag === b.id).length).toBeGreaterThanOrEqual(ISLAND * ISLAND * (DEPTH + 1));
   const o = islandOrigin(1);
   const onIsland = (c: { x: number; y: number }) => c.x >= o.ox && c.x < o.ox + ISLAND && c.y >= o.oy && c.y < o.oy + ISLAND;
-  const foret = cubes.filter((c) => c.tag === 'foret');
-  const mine = cubes.filter((c) => c.tag === 'mine' && onIsland(c));
+  const foret = cubes.filter((c) => c.tag === 'french-6e-phonology');
+  const mine = cubes.filter((c) => c.tag === 'french-6e-letter-confusion' && onIsland(c));
   // La Forêt (ouverte) a des cubes de créature au-dessus du sol ; la Mine (fermée) est délavée et sans créature.
   expect(foret.some((c) => c.z >= 1 && c.color === '#5e9b4a')).toBe(true);
   // Sans créatures dans le terrain (elles sont animées à part), la Forêt n'a plus de cube de Mousso.
   expect(worldCubes('6e', {}, undefined, false).some((c) => c.color === '#5e9b4a')).toBe(false);
-  expect(creaturePlacements('6e', []).map((c) => c.id)).toEqual(['foret', 'plaine']);
-  expect(creaturePlacements('6e', ['foret-mine']).map((c) => c.id)).toEqual(['foret', 'mine', 'plaine']);
+  expect(creaturePlacements('6e', []).map((c) => c.id)).toEqual(['french-6e-phonology', 'maths-6e-calculation']);
+  expect(creaturePlacements('6e', ['french-6e-phonology-french-6e-letter-confusion']).map((c) => c.id)).toEqual(['french-6e-phonology', 'french-6e-letter-confusion', 'maths-6e-calculation']);
   // Les créatures d'un autre archipel ne sont pas dans cette scène.
-  expect(creaturePlacements('5e', ['voyage-5e']).map((c) => c.id)).toEqual(['marche']);
+  expect(creaturePlacements('5e', ['passage-5e']).map((c) => c.id)).toEqual(['maths-5e-proportionality']);
   expect(mine.every((c) => c.muted)).toBe(true);
   expect(mine.some((c) => c.texture === 'pierre')).toBe(true);
   expect(foret.some((c) => c.muted)).toBe(false);
-  const unlocked = worldCubes('6e', {}, village(['foret-mine']));
-  expect(unlocked.filter((c) => c.tag === 'mine' && onIsland(c)).some((c) => c.muted)).toBe(false);
+  const unlocked = worldCubes('6e', {}, village(['french-6e-phonology-french-6e-letter-confusion']));
+  expect(unlocked.filter((c) => c.tag === 'french-6e-letter-confusion' && onIsland(c)).some((c) => c.muted)).toBe(false);
   // Délavé : plus clair et moins saturé, jamais gris uniforme.
   expect(fade('#6cb33f')).not.toBe(fade('#b8623a'));
 });
 
 it('place les îles de chaque archipel dans leur bande, à leur altitude', () => {
   const at = (id: string) => islandOrigin(BIOMES.findIndex((b) => b.id === id));
-  expect(at('foret')).toEqual({ ox: 67, oy: 59, oz: 0 });
-  expect(at('plaine').oz).toBe(0);
-  expect(at('glacier').oz).toBe(3);
-  expect(at('forge').oz).toBe(6);
-  expect(at('phare').oz).toBe(9);
-  expect(islandCenter('phare').z).toBe(9);
+  expect(at('french-6e-phonology')).toEqual({ ox: 67, oy: 59, oz: 0 });
+  expect(at('maths-6e-calculation').oz).toBe(0);
+  expect(at('maths-5e-signed-numbers').oz).toBe(3);
+  expect(at('maths-4e-powers').oz).toBe(6);
+  expect(at('maths-3e-functions').oz).toBe(9);
+  expect(islandCenter('maths-3e-functions').z).toBe(9);
   // Le sol d'une île en altitude est bien à son altitude, et elle flotte : de la roche dessous, rien au niveau de la mer.
   const cubes = worldCubes('3e', {});
-  const phare = cubes.filter((c) => c.tag === 'phare');
+  const phare = cubes.filter((c) => c.tag === 'maths-3e-functions');
   expect(phare.some((c) => c.z === 9)).toBe(true);
   expect(phare.some((c) => c.z < 9 - DEPTH && c.texture === 'pierre')).toBe(true);
   // (Seule une cascade descend jusqu'à la mer ; le quai du Phare est à hauteur d'île.)
@@ -152,12 +152,12 @@ it('le cœur a un relief léger : sol à 0 ou 1, jamais de trou, terre sous les 
 it('relie les îles par des ponts continus (fantômes tant qu’ils ne sont pas construits), tous dans leur archipel', () => {
   const bridgeCubes = (bridges: string[], id: string) => allCubes({}, village(bridges)).filter((c) => c.bridge === id);
   // Forêt–Mine : un sentier sur l'isthme, constructible dès le début, donc en fantôme : des pierres de gué sur le sol.
-  const trail = bridgeCubes([], 'foret-mine');
+  const trail = bridgeCubes([], 'french-6e-phonology-french-6e-letter-confusion');
   expect(trail.length).toBeGreaterThanOrEqual(4);
   expect(trail.every((c) => c.ghost)).toBe(true);
   expect(trail.filter((c) => c.texture === 'galet').every((c) => c.z >= 1 && c.z <= 4)).toBe(true);
   // Forêt–Ferme : un pont, en planches, à plat (même altitude).
-  const ghost = bridgeCubes([], 'foret-ferme').filter((c) => c.ghost);
+  const ghost = bridgeCubes([], 'french-6e-phonology-french-6e-grammar-spelling').filter((c) => c.ghost);
   expect(ghost.length).toBeGreaterThanOrEqual(4);
   expect(ghost.filter((c) => c.texture !== 'lanterne' && c.texture !== 'tronc').every((c) => c.texture === 'planches' && c.z === 0)).toBe(true);
   // Une lanterne sur un poteau à chaque bout, à côté du tablier (jamais sur le passage).
@@ -165,20 +165,20 @@ it('relie les îles par des ponts continus (fantômes tant qu’ils ne sont pas 
   expect(lanterns).toHaveLength(2);
   const deck = new Set(ghost.filter((c) => c.texture === 'planches').map((c) => `${c.x},${c.y}`));
   for (const l of lanterns) expect(deck.has(`${l.x},${l.y}`)).toBe(false);
-  const built = bridgeCubes(['foret-ferme'], 'foret-ferme').filter((c) => !c.ghost);
+  const built = bridgeCubes(['french-6e-phonology-french-6e-grammar-spelling'], 'french-6e-phonology-french-6e-grammar-spelling').filter((c) => !c.ghost);
   expect(built.length).toBe(ghost.length);
   // Mine–Carrière : trop loin tant que la Mine est fermée, aucun cube de pont côté Carrière.
-  expect(bridgeCubes([], 'mine-carriere')).toHaveLength(0);
-  expect(bridgeCubes(['foret-mine'], 'mine-carriere').filter((c) => c.ghost).length).toBeGreaterThanOrEqual(4);
+  expect(bridgeCubes([], 'french-6e-letter-confusion-french-6e-word-spelling')).toHaveLength(0);
+  expect(bridgeCubes(['french-6e-phonology-french-6e-letter-confusion'], 'french-6e-letter-confusion-french-6e-word-spelling').filter((c) => c.ghost).length).toBeGreaterThanOrEqual(4);
   // Plaine–Rivière : un bac, des poteaux de bois et un radeau, au fil de l'eau.
-  const ferry = bridgeCubes([], 'plaine-riviere');
+  const ferry = bridgeCubes([], 'maths-6e-calculation-maths-6e-fractions');
   expect(ferry.some((c) => c.texture === 'tronc')).toBe(true);
   expect(ferry.filter((c) => c.texture === 'planches').length).toBeGreaterThanOrEqual(3);
   expect(ferry.filter((c) => c.texture !== 'lanterne').every((c) => c.z === 0)).toBe(true);
   // Falaise → Cabinet : un escalier taillé (à plat dans un archipel : de la pierre), Phare → Textes : un col à garde-fou.
-  const stairs = bridgeCubes(['voyage-5e', 'voyage-4e', 'atelier-falaise'], 'falaise-cabinet');
+  const stairs = bridgeCubes(['passage-5e', 'passage-4e', 'maths-4e-algebra-french-4e-agreement'], 'french-4e-agreement-french-4e-vocabulary');
   expect(stairs.some((c) => c.texture === 'pierre')).toBe(true);
-  const pass = bridgeCubes(['voyage-5e', 'voyage-4e', 'voyage-3e'], 'phare-textes');
+  const pass = bridgeCubes(['passage-5e', 'passage-4e', 'passage-3e'], 'maths-3e-functions-french-3e-close-reading');
   expect(pass.some((c) => c.texture === 'barriere')).toBe(true);
   // Chaque ouvrage relie deux îles du même archipel.
   for (const b of BRIDGES) expect(archipelagoOf(b.from).classe, b.id).toBe(archipelagoOf(b.to).classe);
@@ -219,16 +219,16 @@ it('le Gardien apparaît sur un îlot devant son île quand il accepte le défi,
   const { exercisesOf } = await import('../exercises');
   const { getBiome } = await import('../biomes');
   const ready: Record<string, { stars: number }> = {};
-  for (const type of typesWithContent(getBiome('foret')!)) ready[exercisesOf('foret', type)[0].id] = { stars: 2 };
+  for (const type of typesWithContent(getBiome('french-6e-phonology')!)) ready[exercisesOf('french-6e-phonology', type)[0].id] = { stars: 2 };
   expect(guardianPlacements('6e', {}, [])).toEqual([]);
   const front = bossIsletOrigin(0).y;
   // Caché, l'îlot et ses pas japonais n'existent pas.
   // (Devant la terre de la Forêt : l'îlot s'en est rapproché d'une case, `RETOUCHES_DE_L_ILOT`.)
-  expect(worldCubes('6e', {}).some((c) => c.tag === 'foret' && c.y < landBox(islandDef('foret')).y0)).toBe(false);
+  expect(worldCubes('6e', {}).some((c) => c.tag === 'french-6e-phonology' && c.y < landBox(islandDef('french-6e-phonology')).y0)).toBe(false);
   const [g] = guardianPlacements('6e', ready, []);
-  expect(g).toMatchObject({ id: 'foret', kind: 'guardian', still: true, beaten: false });
-  const islet = worldCubes('6e', ready).filter((c) => c.tag === 'foret' && c.y < front + ISLET_H);
-  const cells = bossIsletCells('foret');
+  expect(g).toMatchObject({ id: 'french-6e-phonology', kind: 'guardian', still: true, beaten: false });
+  const islet = worldCubes('6e', ready).filter((c) => c.tag === 'french-6e-phonology' && c.y < front + ISLET_H);
+  const cells = bossIsletCells('french-6e-phonology');
   const land = new Set(cells.map((c) => `${c.x},${c.y}`));
   // Une petite île : pas un rectangle plein, mais plus large que le Gardien ; deux couches de terre sous le sol.
   expect(cells.length).toBeLessThan(ISLET_W * ISLET_H);
@@ -246,9 +246,9 @@ it('le Gardien apparaît sur un îlot devant son île quand il accepte le défi,
   expect(g.origin.z).toBe(1);
   expect(islet.some((c) => c.texture === 'or')).toBe(false);
   // Les pas japonais : des galets dans l'eau, de l'îlot à la côte, chacun touchant le précédent.
-  const steps = bossIsletSteps('foret');
+  const steps = bossIsletSteps('french-6e-phonology');
   expect(steps.length).toBeGreaterThanOrEqual(ISLET_GAP);
-  const def = islandDef('foret');
+  const def = islandDef('french-6e-phonology');
   expect(land.has(`${Math.round(steps[0].x)},${steps[0].y - 1}`) || land.has(`${steps[0].x - 1},${steps[0].y - 1}`)).toBe(true);
   const last = steps[steps.length - 1];
   expect(isLand(def, last.x, last.y + 1) || isLand(def, last.x - 1, last.y + 1)).toBe(true);
@@ -256,11 +256,11 @@ it('le Gardien apparaît sur un îlot devant son île quand il accepte le défi,
   const world = worldCubes('6e', ready);
   for (const s of steps) expect(world.some((c) => c.x === s.x && c.y === s.y && c.z === s.z && c.texture === 'galet')).toBe(true);
   // Vaincu : statue grise et bloc d'or sur un socle de pierre, sur l'îlot, hors de l'emprise du Gardien.
-  const beaten = { ...ready, 'foret-gardien': { stars: 2 } };
+  const beaten = { ...ready, 'french-6e-phonology-challenge': { stars: 2 } };
   const [s] = guardianPlacements('6e', beaten, []);
   expect(s.beaten).toBe(true);
   expect(s.cubes.every((c) => /^#([0-9a-f]{2})\1\1$/.test(c.color))).toBe(true);
-  const gold = worldCubes('6e', beaten).find((c) => c.tag === 'foret' && c.y < front + ISLET_H && c.texture === 'or')!;
+  const gold = worldCubes('6e', beaten).find((c) => c.tag === 'french-6e-phonology' && c.y < front + ISLET_H && c.texture === 'or')!;
   expect(gold.z).toBe(2);
   expect(land.has(`${gold.x},${gold.y}`)).toBe(true);
   expect(cells.find((c) => c.x === gold.x && c.y === gold.y)!.guardian).toBe(false);
@@ -271,15 +271,15 @@ it('avec les sentinelles (Archipéo, lot 6), l’îlot et le Gardien sont là d�
   const { exercisesOf } = await import('../exercises');
   const { getBiome } = await import('../biomes');
   const ready: Record<string, { stars: number }> = {};
-  for (const type of typesWithContent(getBiome('foret')!)) ready[exercisesOf('foret', type)[0].id] = { stars: 2 };
+  for (const type of typesWithContent(getBiome('french-6e-phonology')!)) ready[exercisesOf('french-6e-phonology', type)[0].id] = { stars: 2 };
   const galets = (cubes: ReturnType<typeof worldCubes>) =>
-    bossIsletSteps('foret').filter((s) => cubes.some((c) => c.x === s.x && c.y === s.y && c.z === s.z && c.texture === 'galet')).length;
+    bossIsletSteps('french-6e-phonology').filter((s) => cubes.some((c) => c.x === s.x && c.y === s.y && c.z === s.z && c.texture === 'galet')).length;
   // La Forêt est ouverte dès le début : sa sentinelle attend, éteinte, sur son îlot, sans chemin.
   const [g] = guardianPlacements('6e', {}, [], true);
-  expect(g).toMatchObject({ id: 'foret', kind: 'guardian', beaten: false });
+  expect(g).toMatchObject({ id: 'french-6e-phonology', kind: 'guardian', beaten: false });
   const attend = worldCubes('6e', {}, undefined, false, [], true);
-  const cells = bossIsletCells('foret');
-  expect(attend.filter((c) => c.tag === 'foret' && c.z === 0 && cells.some((k) => k.x === c.x && k.y === c.y))).toHaveLength(cells.length);
+  const cells = bossIsletCells('french-6e-phonology');
+  expect(attend.filter((c) => c.tag === 'french-6e-phonology' && c.z === 0 && cells.some((k) => k.x === c.x && k.y === c.y))).toHaveLength(cells.length);
   expect(galets(attend)).toBe(0);
   // Une île fermée n'a pas de sentinelle.
   const { isBiomeUnlocked } = await import('./archipelago');
@@ -287,10 +287,10 @@ it('avec les sentinelles (Archipéo, lot 6), l’îlot et le Gardien sont là d�
   expect(ouvertes.length).toBeLessThan(BIOMES.filter((b) => b.classe === '6e').length);
   expect(guardianPlacements('6e', {}, [], true).map((p) => p.id)).toEqual(ouvertes);
   // Le défi prêt : le chemin s'ouvre, comme sans sentinelles.
-  expect(galets(worldCubes('6e', ready, undefined, false, [], true))).toBe(bossIsletSteps('foret').length);
+  expect(galets(worldCubes('6e', ready, undefined, false, [], true))).toBe(bossIsletSteps('french-6e-phonology').length);
   // L'îlot de la Forêt est alors le même qu'avant le lot 6 (l'îlot de la Plaine, qui attend, peut couvrir un arbre voisin).
   const front = bossIsletOrigin(0).y;
-  const foret = (cubes: ReturnType<typeof worldCubes>) => cubes.filter((c) => c.tag === 'foret' && c.y < front + ISLET_H + ISLET_GAP);
+  const foret = (cubes: ReturnType<typeof worldCubes>) => cubes.filter((c) => c.tag === 'french-6e-phonology' && c.y < front + ISLET_H + ISLET_GAP);
   expect(foret(worldCubes('6e', ready, undefined, false, [], true))).toEqual(foret(worldCubes('6e', ready)));
 });
 
@@ -300,7 +300,7 @@ it('chaque îlot porte tout son Gardien, a ses pas japonais, et flotte sur sa ro
   const everyone: Record<string, { stars: number }> = {};
   for (const b of BIOMES) {
     for (const type of typesWithContent(b)) everyone[exercisesOf(b.id, type)[0].id] = { stars: 2 };
-    everyone[`${b.id}-gardien`] = { stars: 2 };
+    everyone[`${b.id}-challenge`] = { stars: 2 };
   }
   for (const a of ARCHIPELAGO_IDS) {
     const world = worldCubes(a, everyone, village(everything));
@@ -321,14 +321,14 @@ it('chaque îlot porte tout son Gardien, a ses pas japonais, et flotte sur sa ro
 it('les repères et les cascades : un grand arbre à la Forêt, un phare au Phare, de la fumée au Volcan, une cascade jusqu’à la mer', () => {
   const cubes = allCubes({}, village(everything), false);
   const of = (id: string) => cubes.filter((c) => c.tag === id && !c.bridge);
-  const foret = of('foret');
+  const foret = of('french-6e-phonology');
   expect(Math.max(...foret.filter((c) => c.texture === 'feuilles').map((c) => c.z))).toBeGreaterThanOrEqual(8);
-  const phare = of('phare');
+  const phare = of('maths-3e-functions');
   expect(phare.filter((c) => c.texture === 'lanterne').length).toBeGreaterThanOrEqual(4);
   expect(Math.max(...phare.map((c) => c.z))).toBeGreaterThanOrEqual(9 + 10);
-  expect(of('volcan').some((c) => c.color === '#a9a4a0')).toBe(true);
-  expect(of('mine').some((c) => c.texture === 'toile')).toBe(true);
-  expect(of('marais').filter((c) => c.color === '#d9453f').length).toBeGreaterThanOrEqual(20);
+  expect(of('maths-6e-decimals').some((c) => c.color === '#a9a4a0')).toBe(true);
+  expect(of('french-6e-letter-confusion').some((c) => c.texture === 'toile')).toBe(true);
+  expect(of('french-5e-conjugation').filter((c) => c.color === '#d9453f').length).toBeGreaterThanOrEqual(20);
   // Au moins une île en altitude a une cascade : une colonne d'eau qui descend jusqu'au niveau de la mer.
   const falls = cubes.filter((c) => c.texture === 'eau' && c.z === 0 && BIOMES.some((b) => b.id === c.tag && islandCenter(b.id).z > 0));
   expect(falls.length).toBeGreaterThanOrEqual(1);
@@ -337,10 +337,10 @@ it('les repères et les cascades : un grand arbre à la Forêt, un phare au Phar
   for (const m of mistPatches('3e')) expect(m.z).toBe(7.5);
   expect(mistPatches('6e')).toEqual([]);
   // Un repère par archipel du collège aussi : l'aiguille de glace du Glacier, le haut-fourneau de la Forge.
-  const glacier = of('glacier');
+  const glacier = of('maths-5e-signed-numbers');
   expect(glacier.filter((c) => c.texture === 'glace' && c.z >= 3 + 6).length).toBeGreaterThanOrEqual(3);
   expect(glacier.some((c) => c.texture === 'cristal' && c.z >= 3 + 9)).toBe(true);
-  const forge = of('forge');
+  const forge = of('maths-4e-powers');
   expect(forge.filter((c) => c.texture === 'basalte' && c.z >= 6 + 9).length).toBeGreaterThanOrEqual(4);
   expect(forge.some((c) => c.texture === 'lave' && c.z >= 6 + 10)).toBe(true);
   expect(forge.some((c) => c.color === '#a9a4a0' && c.z >= 6 + 12)).toBe(true);
@@ -365,7 +365,7 @@ it('le bonhomme avance au même pas le long d’un itinéraire, quelle que soit 
   const still = [route[0], route[0]];
   expect(routeAt(still, routeLengths(still), 0.5)).toEqual(route[0]);
   // Un vrai trajet Forêt → Mine : à temps égaux, des pas égaux, sur l’île comme sur le sentier.
-  const walk = avatarRoute('foret', 'mine', ['foret-mine'])!;
+  const walk = avatarRoute('french-6e-phonology', 'french-6e-letter-confusion', ['french-6e-phonology-french-6e-letter-confusion'])!;
   const walkCum = routeLengths(walk);
   const total = walkCum[walkCum.length - 1];
   const steps = 40;
@@ -381,29 +381,29 @@ it('le bonhomme avance au même pas le long d’un itinéraire, quelle que soit 
 });
 
 it('le bonhomme marche d’île en île sur les ouvrages construits, jamais sur l’eau, et pas d’un archipel à l’autre', () => {
-  expect(avatarRoute('foret', 'foret', [])).toEqual([avatarHome('foret')]);
+  expect(avatarRoute('french-6e-phonology', 'french-6e-phonology', [])).toEqual([avatarHome('french-6e-phonology')]);
   // Sans ouvrage construit vers la Mine : pas de chemin.
-  expect(avatarRoute('foret', 'mine', [])).toBeNull();
-  const route = avatarRoute('foret', 'mine', ['foret-mine'])!;
-  expect(route[0]).toEqual(avatarHome('foret'));
-  expect(route[route.length - 1]).toEqual(avatarHome('mine'));
+  expect(avatarRoute('french-6e-phonology', 'french-6e-letter-confusion', [])).toBeNull();
+  const route = avatarRoute('french-6e-phonology', 'french-6e-letter-confusion', ['french-6e-phonology-french-6e-letter-confusion'])!;
+  expect(route[0]).toEqual(avatarHome('french-6e-phonology'));
+  expect(route[route.length - 1]).toEqual(avatarHome('french-6e-letter-confusion'));
   // Un sentier se marche de pierre de gué en pierre de gué (sur la pierre, pas dedans : ses pieds sont sur son dessus).
   expect(route.length).toBeGreaterThan(5);
   for (const p of route) expect(p.z).toBeGreaterThanOrEqual(0);
   const stones = new Set(
-    worldCubes('6e', {}, village(['foret-mine']))
-      .filter((c) => c.bridge === 'foret-mine' && c.texture === 'galet')
+    worldCubes('6e', {}, village(['french-6e-phonology-french-6e-letter-confusion']))
+      .filter((c) => c.bridge === 'french-6e-phonology-french-6e-letter-confusion' && c.texture === 'galet')
       .map((c) => `${c.x},${c.y},${c.z}`),
   );
   for (const p of route.slice(1, -1)) expect(stones.has(`${p.x},${p.y},${p.z - 1}`)).toBe(true);
   // Deux ouvrages : Forêt → Ferme (pont) → Tour (sentier) ; le pont se marche sur le tablier (z = 1).
-  const far = avatarRoute('foret', 'tour', ['foret-ferme', 'ferme-tour'])!;
-  expect(far[far.length - 1]).toEqual(avatarHome('tour'));
+  const far = avatarRoute('french-6e-phonology', 'french-6e-reading', ['french-6e-phonology-french-6e-grammar-spelling', 'french-6e-grammar-spelling-french-6e-reading'])!;
+  expect(far[far.length - 1]).toEqual(avatarHome('french-6e-reading'));
   expect(far.some((p) => p.z === 1)).toBe(true);
   // D'un archipel à l'autre, on ne marche pas : c'est le Bloc-Navire (changement de scène).
-  expect(avatarRoute('plaine', 'marche', ['voyage-5e'])).toBeNull();
+  expect(avatarRoute('maths-6e-calculation', 'maths-5e-proportionality', ['passage-5e'])).toBeNull();
   // Dans les Collines, on marche à leur altitude.
-  const up = avatarRoute('marche', 'marais', ['voyage-5e', 'marche-marais'])!;
+  const up = avatarRoute('maths-5e-proportionality', 'french-5e-conjugation', ['passage-5e', 'maths-5e-proportionality-french-5e-conjugation'])!;
   expect(Math.min(...up.map((p) => p.z))).toBe(4);
 });
 
@@ -501,7 +501,7 @@ it('sur une île-école, la rangée de côte devant les bornes reste nue : aucun
       }
   }
   // Les autres îles n'en ont pas.
-  expect(rangeeDevantLesBornes('ferme').size).toBe(0);
+  expect(rangeeDevantLesBornes('french-6e-grammar-spelling').size).toBe(0);
 });
 
 it('chaque mission a sa borne sur la rangée de devant, dans le cœur, hors de la zone des plans et loin de la créature', () => {
@@ -545,19 +545,19 @@ it('chaque Gardien tient sur son îlot, et chaque créature reste petite devant 
 
 it('la caméra cadre l’île du bonhomme et ses voisines, et pivote vers le centre de l’archipel sans dépasser 40 degrés', () => {
   // La Forêt et ses voisines (Mine, Ferme, Plaine) : la zone englobe toutes leurs terres ; le Carrefour est ailleurs.
-  const z = viewZone('foret');
-  for (const id of ['foret', 'mine', 'ferme', 'plaine'] as const) {
+  const z = viewZone('french-6e-phonology');
+  for (const id of ['french-6e-phonology', 'french-6e-letter-confusion', 'french-6e-grammar-spelling', 'maths-6e-calculation'] as const) {
     const b = landBox(islandDef(id));
     expect(b.x0).toBeGreaterThanOrEqual(z.minX);
     expect(b.x1).toBeLessThanOrEqual(z.maxX);
     expect(b.y0).toBeGreaterThanOrEqual(z.minY);
     expect(b.y1).toBeLessThanOrEqual(z.maxY);
   }
-  expect(landBox(islandDef('carrefour')).y0).toBeGreaterThan(z.maxY);
+  expect(landBox(islandDef('french-5e-homophones')).y0).toBeGreaterThan(z.maxY);
   // Au centre, pas de pivot ; sur le bord ouest (Tour), la caméra tourne vers l'est ; à l'est (Carrière), vers l'ouest.
-  expect(Math.abs(viewYaw('foret'))).toBeLessThan(0.25);
-  expect(viewYaw('tour')).toBeGreaterThan(0.3);
-  expect(viewYaw('carriere')).toBeLessThan(-0.3);
+  expect(Math.abs(viewYaw('french-6e-phonology'))).toBeLessThan(0.25);
+  expect(viewYaw('french-6e-reading')).toBeGreaterThan(0.3);
+  expect(viewYaw('french-6e-word-spelling')).toBeLessThan(-0.3);
   for (const b of BIOMES) expect(Math.abs(viewYaw(b.id))).toBeLessThanOrEqual(VIEW_YAW_MAX + 1e-9);
 });
 
@@ -574,7 +574,7 @@ it('la mer est habillée de rochers et de bancs de sable, loin des terres, des �
     for (let x = 0; x < ISLET_W; x++) for (let y = 0; y < ISLET_H; y++) solid.add(`${o.x + x},${o.y + y}`);
   }
   for (const def of BRIDGES.filter((b) => archipelagoOf(b.from).classe === '6e')) for (const c of bridgePath(def)) solid.add(`${c.x},${c.y}`);
-  const dock = dockBox('plaine');
+  const dock = dockBox('maths-6e-calculation');
   for (let x = dock.x0; x <= dock.x1; x++) for (let y = dock.y0; y <= dock.y1; y++) solid.add(`${x},${y}`);
   const whales = whaleSpots('6e');
   for (const c of decor) {
@@ -727,13 +727,13 @@ it('le bonhomme embarque : de son île à la jetée, planche par planche, jusqu�
 it('le Bloc-Navire : le chantier du port montre ses cases en fantôme, les étapes parties sont dessinées entières', () => {
   const [coque, ballon] = VEHICLE_STAGES;
   // Le navire n'est pas dans le terrain (il tangue, c'est un objet à part) : le terrain ne garde que la jetée.
-  const terrain = worldCubes('6e', {}, village([]), false).filter((c) => c.tag === 'plaine' && c.y < islandDef('plaine').core.y - 4);
+  const terrain = worldCubes('6e', {}, village([]), false).filter((c) => c.tag === 'maths-6e-calculation' && c.y < islandDef('maths-6e-calculation').core.y - 4);
   expect(terrain.some((c) => c.ghost)).toBe(false);
   expect(terrain.every((c) => c.texture === 'planches' || c.texture === 'escalier' || c.texture === 'tronc' || c.texture === 'lanterne')).toBe(true);
   // Au début, sur la Plaine : la coque en fantôme (la voile aussi, tant que les Gardiens ne sont pas vaincus), amarrée au quai.
   const fresh = vehiclePlacement('6e', {}, village([]));
-  expect(fresh.port).toBe('plaine');
-  expect(fresh.origin).toEqual(dockOrigin('plaine'));
+  expect(fresh.port).toBe('maths-6e-calculation');
+  expect(fresh.origin).toEqual(dockOrigin('maths-6e-calculation'));
   expect(fresh.afloat).toBe(true);
   expect(fresh.building).toBe(coque.id);
   expect(fresh.cubes.filter((c) => c.ghost).length).toBe(coque.cells.length + coque.kit.length);
@@ -744,33 +744,33 @@ it('le Bloc-Navire : le chantier du port montre ses cases en fantôme, les étap
     expect(c.y).toBeLessThan(VEHICLE_SIZE.d);
   }
   // Trois Gardiens vaincus : la voile est là, en dur.
-  const guardians = Object.fromEntries(['foret', 'plaine', 'mine'].map((id) => [`${id}-gardien`, { stars: 2 }]));
+  const guardians = Object.fromEntries(['french-6e-phonology', 'maths-6e-calculation', 'french-6e-letter-confusion'].map((id) => [`${id}-challenge`, { stars: 2 }]));
   const sail = vehiclePlacement('6e', guardians, village([])).cubes.filter((c) => c.texture === 'toile');
-  expect(sail).toHaveLength(coque.kit.filter((c) => c.block === 'toile').length);
+  expect(sail).toHaveLength(coque.kit.filter((c) => c.block === BLOC.toile).length);
   expect(sail.every((c) => !c.ghost)).toBe(true);
   // Le voyage fait : la coque entière et en dur ; au Marché, le ballon en fantôme au-dessus.
-  const sailed = vehiclePlacement('5e', {}, village(['voyage-5e']));
-  expect(sailed.port).toBe('marche');
+  const sailed = vehiclePlacement('5e', {}, village(['passage-5e']));
+  expect(sailed.port).toBe('maths-5e-proportionality');
   expect(sailed.building).toBe(ballon.id);
   expect(sailed.cubes.filter((c) => !c.ghost && c.texture === 'planches').length).toBeGreaterThan(0);
   expect(sailed.cubes.filter((c) => c.ghost).length).toBe(ballon.cells.length + ballon.kit.length);
   // Revenu dans les Premiers Rivages après le deuxième voyage : le navire porte son ballon, rien en fantôme, rien à construire ici.
-  const back = vehiclePlacement('6e', {}, village(['voyage-5e', 'voyage-4e']));
+  const back = vehiclePlacement('6e', {}, village(['passage-5e', 'passage-4e']));
   expect(back.cubes.some((c) => c.ghost)).toBe(false);
   expect(back.building).toBeNull();
   expect(back.cubes.filter((c) => c.texture === 'toile').length).toBeGreaterThan(coque.kit.length);
   // Dans les Îles du Ciel, il plane à hauteur de quai.
-  expect(vehiclePlacement('3e', {}, village(['voyage-5e', 'voyage-4e', 'voyage-3e'])).afloat).toBe(false);
+  expect(vehiclePlacement('3e', {}, village(['passage-5e', 'passage-4e', 'passage-3e'])).afloat).toBe(false);
 });
 
 it('l’école, la salle des trophées et le lieu où l’on assemble : sur l’île de l’école de chaque archipel, libres, leur porte accessible, les ouvrages aussi', () => {
   for (const [a, atelier] of ARCHIPELAGOS.flatMap((x) => (['fabrique', 'halle'] as const).map((t) => [x, t] as const))) {
     const island = a.school;
     expect(a.starts).toContain(island);
-    const cubes = worldCubes(a.classe, {}, village(everything), true, ['or', 'cristal', 'quartz'], false, atelier);
+    const cubes = worldCubes(a.classe, {}, village(everything), true, [BLOC.or, BLOC.cristal, BLOC.quartz], false, atelier);
     const { ox, oy } = islandOrigin(BIOMES.findIndex((b) => b.id === island));
     const ground = walkGround(cubes, creaturePlacements(a.classe, everything));
-    for (const place of ['ecole', 'trophees', 'assemblage'] as const) {
+    for (const place of ['school', 'trophies', 'assembly'] as const) {
       const cells = cubes.filter((c) => c.place === place);
       expect(cells.length, place).toBeGreaterThan(0);
       // Rien que sur l'île de l'école.
@@ -795,7 +795,7 @@ it('l’école, la salle des trophées et le lieu où l’on assemble : sur l’
       expect(ground.feet.get(`${door.x},${door.y}`)).toBe(door.z);
       expect(walkPath(ground, avatarHome(island), door)).not.toBeNull();
       // Hors de l'emprise que la salle des trophées prendra en grandissant (GD-3 : jusqu'à 8 × 3, de (0,8) à (7,10)).
-      if (place !== 'trophees') {
+      if (place !== 'trophies') {
         const dx = door.x - ox;
         const dy = door.y - oy;
         expect(dx >= 0 && dx <= 7 && dy >= 8 && dy <= 10, `${place} : porte en ${dx},${dy}`).toBe(false);
@@ -803,9 +803,9 @@ it('l’école, la salle des trophées et le lieu où l’on assemble : sur l’
       }
     }
     // L'école : murs, porte, toit et cloche. La salle : un trophée par succès, à sa place.
-    expect(cubes.filter((c) => c.place === 'ecole').some((c) => c.texture === 'porte')).toBe(true);
-    const hall = placeSpot('trophees', island)!;
-    const trophy = (i: number) => cubes.find((c) => c.place === 'trophees' && c.x === hall.x + TROPHY_SLOTS[i].x && c.y === hall.y + TROPHY_SLOTS[i].y && c.z === islandDef(island).altitude + hall.h + TROPHY_SLOTS[i].z);
+    expect(cubes.filter((c) => c.place === 'school').some((c) => c.texture === 'porte')).toBe(true);
+    const hall = placeSpot('trophies', island)!;
+    const trophy = (i: number) => cubes.find((c) => c.place === 'trophies' && c.x === hall.x + TROPHY_SLOTS[i].x && c.y === hall.y + TROPHY_SLOTS[i].y && c.z === islandDef(island).altitude + hall.h + TROPHY_SLOTS[i].z);
     expect([0, 1, 2].map((i) => trophy(i)?.texture)).toEqual(['or', 'cristal', 'quartz']);
     expect(trophy(3)).toBeUndefined();
     // Les ouvrages qui partent de l'île restent accessibles à pied depuis la place du bonhomme.
@@ -816,8 +816,8 @@ it('l’école, la salle des trophées et le lieu où l’on assemble : sur l’
     }
   }
   // Ailleurs, rien.
-  expect(placeSpot('ecole', 'mine')).toBeNull();
-  expect(allCubes({}, village(everything)).filter((c) => c.place === 'ecole' || c.place === 'trophees' || c.place === 'assemblage').every((c) => ARCHIPELAGOS.some((a) => a.school === c.tag))).toBe(true);
+  expect(placeSpot('school', 'french-6e-letter-confusion')).toBeNull();
+  expect(allCubes({}, village(everything)).filter((c) => c.place === 'school' || c.place === 'trophies' || c.place === 'assembly').every((c) => ARCHIPELAGOS.some((a) => a.school === c.tag))).toBe(true);
 });
 
 it('le lieu où l’on assemble (GD-2) : la Fabrique de Blocland et la Halle d’Archipéo, même emprise, même porte ouverte, le bloc de l’archipel suspendu', () => {
@@ -830,7 +830,7 @@ it('le lieu où l’on assemble (GD-2) : la Fabrique de Blocland et la Halle d�
       expect(new Set(m.map((c) => `${c.x},${c.y},${c.z}`)).size).toBe(m.length);
       expect(m.every((c) => c.x >= 0 && c.x < ASSEMBLAGE_SIZE.w && c.y >= 0 && c.y < ASSEMBLAGE_SIZE.d && c.z >= 1)).toBe(true);
       // La grande porte ouverte, en face de la case où le bonhomme s'arrête : la cour et la porte sont libres.
-      const door = VILLAGE_PLACES.assemblage.door;
+      const door = VILLAGE_PLACES.assembly.door;
       for (const [y, z] of [[0, 1], [0, 2], [1, 1], [1, 2], [2, 1], [2, 2], [3, 1], [3, 2]]) expect(at(door, y, z), `${y},${z}`).toBeUndefined();
       expect(at(door, 4, 1)).toBeDefined();
       // Le bloc assemblé de l'archipel, suspendu sous le bras de bois de la potence (rien autour de lui), et les blocs de
@@ -844,7 +844,7 @@ it('le lieu où l’on assemble (GD-2) : la Fabrique de Blocland et la Halle d�
       if (atelier === 'fabrique') {
         // Un soubassement de pierre sous la brique, une haute cheminée (sommet à 7).
         expect([at(0, 2, 1), at(0, 2, 2)]).toEqual(['pierre', 'brique']);
-        expect(m.filter((c) => c.z === 4 && c.y >= 2).every((c) => c.block === 'taille')).toBe(true);
+        expect(m.filter((c) => c.z === 4 && c.y >= 2).every((c) => c.block === BLOC.taille)).toBe(true);
         expect([5, 6, 7].map((z) => at(2, 4, z))).toEqual(['pierre', 'pierre', 'pierre']);
         expect(Math.max(...m.map((c) => c.z))).toBe(7);
       } else {
@@ -892,7 +892,7 @@ describe('les bornes dans la vue de l’île', () => {
     for (const a of ARCHIPELAGOS) {
       const cubes = worldCubes(a.classe, progress, village, true, tous);
       const o = origineDe(a.school);
-      const salle = cubes.filter((c) => c.place === 'trophees');
+      const salle = cubes.filter((c) => c.place === 'trophies');
       // Les deux travées sont là : la salle va de x = 0 à 7 dans son emprise.
       expect(new Set(salle.map((c) => c.x - o.x - TROPHY_AT.x)).size, a.school).toBe(TROPHY_SIZE.w);
       const bornes = questStations(a.school).map((st) => {
@@ -910,8 +910,8 @@ describe('les bornes dans la vue de l’île', () => {
 
   it('à la Tour du lecteur, rien ne se dresse devant la deuxième borne, entre elle et la caméra', () => {
     const cubes = worldCubes('6e', {});
-    const o = origineDe('tour');
-    const st = questStations('tour')[1];
+    const o = origineDe('french-6e-reading');
+    const st = questStations('french-6e-reading')[1];
     const socle = cubes.find((c) => c.quest && c.x === o.x + st.x && c.y === o.y + st.y);
     expect(socle).toBeDefined();
     const base = socle!.z - 1;
@@ -921,7 +921,7 @@ describe('les bornes dans la vue de l’île', () => {
 
   it('sur les quatre îles-écoles, la créature et ses pas ne se tiennent jamais entre la caméra de l’île et un lieu du village, emprise réservée de la salle comprise (GD-3)', () => {
     const ecoles = ARCHIPELAGOS.map((a) => a.school);
-    expect(ecoles.sort()).toEqual(['atelier', 'foret', 'marche', 'phare']);
+    expect(ecoles.sort()).toEqual(['maths-4e-algebra', 'french-6e-phonology', 'maths-5e-proportionality', 'maths-3e-functions']);
     for (const id of ecoles) {
       const lieux = lieuxVus(id);
       // Toute l'emprise de la salle (8 × 3, sur deux rangs), l'école et le lieu où l'on assemble.
@@ -933,12 +933,12 @@ describe('les bornes dans la vue de l’île', () => {
       expect(caches, id).toEqual([]);
     }
     // Ailleurs, pas de lieu : rien à cacher.
-    expect(lieuxVus('plaine')).toEqual([]);
+    expect(lieuxVus('maths-6e-calculation')).toEqual([]);
   });
 
   it('un cube devant la salle des trophées, entre elle et la caméra, la cache ; derrière elle ou au-dessus des rayons, jamais', () => {
-    const lieux = lieuxVus('foret');
-    const vers = versLaCamera('foret');
+    const lieux = lieuxVus('french-6e-phonology');
+    const vers = versLaCamera('french-6e-phonology');
     // Devant la première travée (vers la caméra : x croissants, y décroissants), à hauteur d'homme.
     expect(cacheUnLieu(lieux, vers, TROPHY_AT.x + 3, TROPHY_AT.y - 2, 2)).toBe(true);
     // Sur l'emprise réservée elle-même.
@@ -950,7 +950,7 @@ describe('les bornes dans la vue de l’île', () => {
 
   it('un cube collé à la borne, à sa hauteur, la cache quelle que soit la direction ; un cube sous son sol ou au-delà de la portée, jamais', () => {
     const bornes = [{ x: 0, y: 0, base: 0 }];
-    for (const vers of [versLaCamera('tour'), [0, 0, 1] as [number, number, number], [-0.6, 0.6, 0.53] as [number, number, number]]) {
+    for (const vers of [versLaCamera('french-6e-reading'), [0, 0, 1] as [number, number, number], [-0.6, 0.6, 0.53] as [number, number, number]]) {
       expect(cacheUneBorne(bornes, vers, 1, 0, 1)).toBe(true);
       expect(cacheUneBorne(bornes, vers, 0, 1, 2)).toBe(true);
       expect(cacheUneBorne(bornes, vers, 1, 0, 0)).toBe(false);

@@ -4,7 +4,7 @@
 // sur l'île de départ. Une île s'ouvre quand un chemin d'ouvrages construits (et de voyages faits) y mène depuis une
 // île de départ. Un voyage fait reste fait : on revient toujours en arrière.
 // Générateur pur : partagé entre le monde 3D, les pages simples et le moteur.
-import { BIOMES, getBiome, type BiomeDef, type BiomeId, type BlockId } from '../biomes';
+import { BLOC, BIOMES, getBiome, type BiomeDef, type BiomeId, type BlockId } from '../biomes';
 import { lv2Courante, type Lv2Choice } from '../../core/settings';
 import { isBossBeaten } from '../bossCore';
 import { ARCHIPELAGO_IDS, archipelagoOfIsland, type ArchipelagoId } from './archipels';
@@ -33,10 +33,10 @@ export interface ArchipelagoDef {
 }
 
 export const ARCHIPELAGOS: ArchipelagoDef[] = [
-  { classe: '6e', name: 'Premiers Rivages', port: 'plaine', starts: ['foret', 'plaine'], travel: null, school: 'foret' },
-  { classe: '5e', name: 'Îles Brumeuses', port: 'marche', starts: ['marche'], travel: 'mer', school: 'marche' },
-  { classe: '4e', name: 'Anciens Ateliers', port: 'atelier', starts: ['atelier'], travel: 'airs', school: 'atelier' },
-  { classe: '3e', name: 'Îles du Ciel', port: 'phare', starts: ['phare'], travel: 'ciel', school: 'phare' },
+  { classe: '6e', name: 'Premiers Rivages', port: 'maths-6e-calculation', starts: ['french-6e-phonology', 'maths-6e-calculation'], travel: null, school: 'french-6e-phonology' },
+  { classe: '5e', name: 'Îles Brumeuses', port: 'maths-5e-proportionality', starts: ['maths-5e-proportionality'], travel: 'mer', school: 'maths-5e-proportionality' },
+  { classe: '4e', name: 'Anciens Ateliers', port: 'maths-4e-algebra', starts: ['maths-4e-algebra'], travel: 'airs', school: 'maths-4e-algebra' },
+  { classe: '3e', name: 'Îles du Ciel', port: 'maths-3e-functions', starts: ['maths-3e-functions'], travel: 'ciel', school: 'maths-3e-functions' },
 ];
 
 /**
@@ -122,47 +122,47 @@ const b = (from: BiomeId, to: BiomeId, kind: BridgeKind, cost: number): BridgeDe
 /** Les ouvrages possibles, entre îles voisines d'un même archipel. Depuis la Forêt, deux directions : la Mine ou la Ferme. */
 export const BRIDGES: BridgeDef[] = [
   // Premiers Rivages (6e) : des ponts, et deux bacs sur les bras de mer les plus larges.
-  b('foret', 'mine', 'sentier', 3),
-  b('foret', 'ferme', 'pont', 3),
-  b('mine', 'carriere', 'pont', 5),
-  b('ferme', 'tour', 'sentier', 5),
-  b('foret', 'plaine', 'pont', 0),
-  b('plaine', 'riviere', 'bac', 3),
-  b('mine', 'riviere', 'pont', 4),
-  b('plaine', 'volcan', 'pont', 3),
-  b('ferme', 'volcan', 'bac', 4),
+  b('french-6e-phonology', 'french-6e-letter-confusion', 'sentier', 3),
+  b('french-6e-phonology', 'french-6e-grammar-spelling', 'pont', 3),
+  b('french-6e-letter-confusion', 'french-6e-word-spelling', 'pont', 5),
+  b('french-6e-grammar-spelling', 'french-6e-reading', 'sentier', 5),
+  b('french-6e-phonology', 'maths-6e-calculation', 'pont', 0),
+  b('maths-6e-calculation', 'maths-6e-fractions', 'bac', 3),
+  b('french-6e-letter-confusion', 'maths-6e-fractions', 'pont', 4),
+  b('maths-6e-calculation', 'maths-6e-decimals', 'pont', 3),
+  b('french-6e-grammar-spelling', 'maths-6e-decimals', 'bac', 4),
   // Les îles d'anglais, derrière : un pont depuis la Ferme, un depuis la Forêt, un sentier entre les deux.
-  b('ferme', 'baie', 'pont', 5),
-  b('foret', 'horloge', 'pont', 5),
-  b('baie', 'horloge', 'sentier', 4),
+  b('french-6e-grammar-spelling', 'english-6e-vocabulary', 'pont', 5),
+  b('french-6e-phonology', 'english-6e-grammar', 'pont', 5),
+  b('english-6e-vocabulary', 'english-6e-grammar', 'sentier', 4),
   // Îles Brumeuses (5e) : le Marché est le port ; deux isthmes et un pont entre les deux paires.
-  b('glacier', 'marche', 'sentier', 6),
-  b('marche', 'marais', 'pont', 4),
-  b('carrefour', 'marais', 'sentier', 6),
+  b('maths-5e-signed-numbers', 'maths-5e-proportionality', 'sentier', 6),
+  b('maths-5e-proportionality', 'french-5e-conjugation', 'pont', 4),
+  b('french-5e-homophones', 'french-5e-conjugation', 'sentier', 6),
   // Les îles d'anglais, à droite : un pont depuis le Marché (le port), un depuis le Marais, un entre les deux.
-  b('marche', 'comptoir', 'pont', 6),
-  b('marais', 'manoir', 'pont', 6),
-  b('comptoir', 'manoir', 'pont', 5),
+  b('maths-5e-proportionality', 'english-5e-vocabulary', 'pont', 6),
+  b('french-5e-conjugation', 'english-5e-grammar', 'pont', 6),
+  b('english-5e-vocabulary', 'english-5e-grammar', 'pont', 5),
   // La LV2, en bout de chemin : un pont depuis le Comptoir vers le Relais des voyageurs, à l'est ; rien n'en dépend.
-  b('comptoir', 'relais', 'pont', 6),
+  b('english-5e-vocabulary', 'lv2-5e-introductions', 'pont', 6),
   // Anciens Ateliers (4e) : l'Atelier est le port ; un escalier taillé vers le Cabinet (un plan de la Falaise).
-  b('atelier', 'forge', 'pont', 4),
-  b('atelier', 'falaise', 'pont', 4),
-  b('falaise', 'cabinet', 'escalier', 5),
+  b('maths-4e-algebra', 'maths-4e-powers', 'pont', 4),
+  b('maths-4e-algebra', 'french-4e-agreement', 'pont', 4),
+  b('french-4e-agreement', 'french-4e-vocabulary', 'escalier', 5),
   // Les îles d'anglais, aux deux bouts de la crête : un pont depuis la Forge, un depuis le Cabinet.
-  b('forge', 'gare', 'pont', 6),
-  b('cabinet', 'theatre', 'pont', 6),
+  b('maths-4e-powers', 'english-4e-grammar', 'pont', 6),
+  b('french-4e-vocabulary', 'english-4e-comprehension', 'pont', 6),
   // La LV2, en bout de chemin : un pont depuis le Théâtre vers le Jardin des heures, à l'est ; rien n'en dépend.
-  b('theatre', 'jardin', 'pont', 6),
+  b('english-4e-comprehension', 'lv2-4e-daily-life', 'pont', 6),
   // Îles du Ciel (3e) : le Phare est le port ; un col à garde-fou vers l'Observatoire des textes (le Gardien du Phare).
-  b('phare', 'belvedere', 'pont', 5),
-  b('phare', 'donnees', 'pont', 5),
-  b('phare', 'textes', 'col', 6),
+  b('maths-3e-functions', 'maths-3e-geometry', 'pont', 5),
+  b('maths-3e-functions', 'maths-3e-statistics', 'pont', 5),
+  b('maths-3e-functions', 'french-3e-close-reading', 'col', 6),
   // Les îles d'anglais, aux deux bouts de l'arc : un pont depuis le Belvédère, un depuis l'Observatoire des données.
-  b('belvedere', 'studio', 'pont', 7),
-  b('donnees', 'chateau', 'pont', 7),
+  b('maths-3e-geometry', 'english-3e-comprehension', 'pont', 7),
+  b('maths-3e-statistics', 'english-3e-grammar', 'pont', 7),
   // La LV2, en bout de chemin : un pont depuis le Château vers le Refuge des carnets, à l'est ; rien n'en dépend.
-  b('chateau', 'refuge', 'pont', 7),
+  b('english-3e-grammar', 'lv2-3e-travel', 'pont', 7),
 ];
 
 /**
@@ -170,22 +170,22 @@ export const BRIDGES: BridgeDef[] = [
  * mais gardées pour lire les anciennes sauvegardes, où elles ouvraient les îles du collège.
  */
 export const LEGACY_BRIDGES: BridgeDef[] = [
-  b('plaine', 'glacier', 'escalier', 5),
-  b('riviere', 'marche', 'escalier', 5),
-  b('foret', 'carrefour', 'escalier', 5),
-  b('mine', 'marais', 'escalier', 5),
-  b('volcan', 'forge', 'tunnel', 5),
-  b('glacier', 'forge', 'escalier', 6),
-  b('marche', 'atelier', 'escalier', 6),
-  b('ferme', 'falaise', 'tunnel', 5),
-  b('carrefour', 'falaise', 'escalier', 6),
-  b('carriere', 'cabinet', 'tunnel', 5),
-  b('marais', 'cabinet', 'escalier', 6),
-  b('forge', 'belvedere', 'escalier', 7),
-  b('marche', 'donnees', 'tunnel', 6),
-  b('forge', 'phare', 'escalier', 7),
-  b('tour', 'textes', 'col', 6),
-  b('falaise', 'textes', 'escalier', 7),
+  b('maths-6e-calculation', 'maths-5e-signed-numbers', 'escalier', 5),
+  b('maths-6e-fractions', 'maths-5e-proportionality', 'escalier', 5),
+  b('french-6e-phonology', 'french-5e-homophones', 'escalier', 5),
+  b('french-6e-letter-confusion', 'french-5e-conjugation', 'escalier', 5),
+  b('maths-6e-decimals', 'maths-4e-powers', 'tunnel', 5),
+  b('maths-5e-signed-numbers', 'maths-4e-powers', 'escalier', 6),
+  b('maths-5e-proportionality', 'maths-4e-algebra', 'escalier', 6),
+  b('french-6e-grammar-spelling', 'french-4e-agreement', 'tunnel', 5),
+  b('french-5e-homophones', 'french-4e-agreement', 'escalier', 6),
+  b('french-6e-word-spelling', 'french-4e-vocabulary', 'tunnel', 5),
+  b('french-5e-conjugation', 'french-4e-vocabulary', 'escalier', 6),
+  b('maths-4e-powers', 'maths-3e-geometry', 'escalier', 7),
+  b('maths-5e-proportionality', 'maths-3e-statistics', 'tunnel', 6),
+  b('maths-4e-powers', 'maths-3e-functions', 'escalier', 7),
+  b('french-6e-reading', 'french-3e-close-reading', 'col', 6),
+  b('french-4e-agreement', 'french-3e-close-reading', 'escalier', 7),
 ];
 
 // ---------- Les voyages du Bloc-Navire ----------
@@ -199,7 +199,7 @@ export interface VoyageDef {
   toClasse: ArchipelagoId;
 }
 
-export const voyageId = (to: ArchipelagoId): string => `voyage-${to}`;
+export const voyageId = (to: ArchipelagoId): string => `passage-${to}`;
 
 export const VOYAGES: VoyageDef[] = ARCHIPELAGOS.slice(1).map((a, i) => ({
   id: voyageId(a.classe),
@@ -243,39 +243,39 @@ export function launchedCount(bridges: string[]): number {
 
 /** Les blocs qui servent à payer un ouvrage : ceux des îles (et les coffres), jamais les kits de finition des plans. */
 export const BRIDGE_BLOCKS: BlockId[] = [
-  'bois',
-  'pierre',
-  'sable',
-  'terre',
-  'verre',
-  'brique',
-  'galet',
-  'obsidienne',
-  'glace',
-  'toile',
-  'panneau',
-  'tourbe',
-  'acier',
-  'calque',
-  'ardoise',
-  'parchemin',
-  'marbre',
-  'quartz',
-  'prisme',
-  'lentille',
-  'cabine',
-  'cadran',
-  'tuile',
-  'lambris',
-  'velours',
-  'rail',
-  'antenne',
-  'taille',
-  'dalle',
-  'osier',
-  'bardeau',
-  'or',
-  'cristal',
+  BLOC.bois,
+  BLOC.pierre,
+  BLOC.sable,
+  BLOC.terre,
+  BLOC.verre,
+  BLOC.brique,
+  BLOC.galet,
+  BLOC.obsidienne,
+  BLOC.glace,
+  BLOC.toile,
+  BLOC.panneau,
+  BLOC.tourbe,
+  BLOC.acier,
+  BLOC.calque,
+  BLOC.ardoise,
+  BLOC.parchemin,
+  BLOC.marbre,
+  BLOC.quartz,
+  BLOC.prisme,
+  BLOC.lentille,
+  BLOC.cabine,
+  BLOC.cadran,
+  BLOC.tuile,
+  BLOC.lambris,
+  BLOC.velours,
+  BLOC.rail,
+  BLOC.antenne,
+  BLOC.taille,
+  BLOC.dalle,
+  BLOC.osier,
+  BLOC.bardeau,
+  BLOC.or,
+  BLOC.cristal,
 ];
 
 export function getBridge(id: string): BridgeDef | undefined {

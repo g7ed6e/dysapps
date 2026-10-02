@@ -40,7 +40,7 @@ export function VoyagePanel({ to, back, onArrive }: Props) {
   const { settings, speak } = useSettings();
   const { state } = useBlocland();
   const textes = useTextes();
-  const text = voyageSentence(to, back, textes.archipels, archipelagoOf(state.world.place ?? 'foret').classe);
+  const text = voyageSentence(to, back, textes.archipels, archipelagoOf(state.world.place ?? 'french-6e-phonology').classe);
   useEffect(() => {
     if (settings.autoRead) speak(frenchTypography(text));
     // Une lecture par voyage.

@@ -23,7 +23,7 @@ export function shuffleRunChoices(def: ExerciseDef, items: ExerciseItem[], seed:
  * d'assemblage (GD-2) n'a pas d'île : ses pièges sont écrits exprès, un de chaque matière.
  */
 export function piegesDe(def: Pick<ExerciseDef, 'type'> & { biome?: string }): 'calcules' | 'du-fichier' {
-  if (def.type === 'assemblage') return 'du-fichier';
+  if (def.type === 'assembly') return 'du-fichier';
   return BIOMES.find((b) => b.id === def.biome)?.subject === 'maths' ? 'calcules' : 'du-fichier';
 }
 

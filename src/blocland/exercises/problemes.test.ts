@@ -89,13 +89,13 @@ const value = (c: string): number => {
 const kindsOf = (defs: ExerciseDef[]) => defs.map((def) => [...new Set(def.items.map((it) => sceneOf(it).scene))].sort());
 
 it('les missions de problèmes situés : des niveaux de huit items, un schéma et un rappel de méthode sur chacun', () => {
-  expect(PROBLEMES_EXERCISES.map((e) => e.id)).toEqual(['plaine-passeur-1', 'plaine-passeur-2', 'plaine-passeur-3']);
+  expect(PROBLEMES_EXERCISES.map((e) => e.id)).toEqual(['maths-6e-calculation-word-problems-1', 'maths-6e-calculation-word-problems-2', 'maths-6e-calculation-word-problems-3']);
   expect(PROBLEMES_COLLEGE_EXERCISES.map((e) => e.id)).toEqual([
-    'marche-etals-3',
-    'marche-balances-3',
-    'marche-balances-4',
-    'belvedere-pythagore-3',
-    'belvedere-thales-2',
+    'maths-5e-proportionality-proportion-tables-3',
+    'maths-5e-proportionality-ratios-3',
+    'maths-5e-proportionality-ratios-4',
+    'maths-3e-geometry-pythagoras-3',
+    'maths-3e-geometry-thales-2',
   ]);
   for (const def of ALL) {
     expect(def.items).toHaveLength(8);

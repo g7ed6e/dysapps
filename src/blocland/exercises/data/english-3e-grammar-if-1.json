@@ -1,0 +1,215 @@
+{
+  "id": "english-3e-grammar-if-1",
+  "biome": "english-3e-grammar",
+  "type": "if",
+  "level": 1,
+  "lang": "en",
+  "instruction": "Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.",
+  "items": [
+    {
+      "key": "english-3e-grammar-if-1-0",
+      "prompt": "If you heat ice, it … .",
+      "spoken": "If you heat ice, it blank .",
+      "choices": [
+        "melts",
+        "melted",
+        "melting"
+      ],
+      "answer": "melts",
+      "hint": "Après if : le présent. Dans l’autre partie : présent (toujours vrai) ou will (futur) ?",
+      "explanation": "Toujours vrai : If + présent, présent → it melts.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "If : le réel",
+          "lines": [
+            "Toujours vrai : If + présent, présent (If you heat ice, it melts).",
+            "Futur possible : If + présent, will + verbe (If it rains, we will stay).",
+            "Jamais will juste après if !"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-grammar-if-1-1",
+      "prompt": "If it rains tomorrow, we … at home.",
+      "spoken": "If it rains tomorrow, we blank at home.",
+      "choices": [
+        "will stay",
+        "stayed",
+        "would stay"
+      ],
+      "answer": "will stay",
+      "hint": "Après if : le présent. Dans l’autre partie : présent (toujours vrai) ou will (futur) ?",
+      "explanation": "tomorrow : futur possible → will stay.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "If : le réel",
+          "lines": [
+            "Toujours vrai : If + présent, présent (If you heat ice, it melts).",
+            "Futur possible : If + présent, will + verbe (If it rains, we will stay).",
+            "Jamais will juste après if !"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-grammar-if-1-2",
+      "prompt": "If you … hard, you will pass.",
+      "spoken": "If you blank hard, you will pass.",
+      "choices": [
+        "work",
+        "will work",
+        "worked"
+      ],
+      "answer": "work",
+      "hint": "Juste après if : pas de will.",
+      "explanation": "Après if : présent → If you work.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "If : le réel",
+          "lines": [
+            "Toujours vrai : If + présent, présent (If you heat ice, it melts).",
+            "Futur possible : If + présent, will + verbe (If it rains, we will stay).",
+            "Jamais will juste après if !"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-grammar-if-1-3",
+      "prompt": "If she comes, I … happy.",
+      "spoken": "If she comes, I blank happy.",
+      "choices": [
+        "will be",
+        "was",
+        "would be"
+      ],
+      "answer": "will be",
+      "hint": "Après if : le présent. Dans l’autre partie : présent (toujours vrai) ou will (futur) ?",
+      "explanation": "If + présent (comes) → will be.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "If : le réel",
+          "lines": [
+            "Toujours vrai : If + présent, présent (If you heat ice, it melts).",
+            "Futur possible : If + présent, will + verbe (If it rains, we will stay).",
+            "Jamais will juste après if !"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-grammar-if-1-4",
+      "prompt": "I’ll call you if I … time.",
+      "spoken": "I’ll call you if I blank time.",
+      "choices": [
+        "have",
+        "will have",
+        "had"
+      ],
+      "answer": "have",
+      "hint": "Juste après if : pas de will.",
+      "explanation": "Après if : présent → if I have time.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "If : le réel",
+          "lines": [
+            "Toujours vrai : If + présent, présent (If you heat ice, it melts).",
+            "Futur possible : If + présent, will + verbe (If it rains, we will stay).",
+            "Jamais will juste après if !"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-grammar-if-1-5",
+      "prompt": "If you mix red and blue, you … purple.",
+      "spoken": "If you mix red and blue, you blank purple.",
+      "choices": [
+        "get",
+        "got",
+        "getting"
+      ],
+      "answer": "get",
+      "hint": "Après if : le présent. Dans l’autre partie : présent (toujours vrai) ou will (futur) ?",
+      "explanation": "Toujours vrai : If + présent, présent → you get purple.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "If : le réel",
+          "lines": [
+            "Toujours vrai : If + présent, présent (If you heat ice, it melts).",
+            "Futur possible : If + présent, will + verbe (If it rains, we will stay).",
+            "Jamais will juste après if !"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-grammar-if-1-6",
+      "prompt": "If you don’t hurry, you … the bus.",
+      "spoken": "If you don’t hurry, you blank the bus.",
+      "choices": [
+        "will miss",
+        "miss",
+        "missed"
+      ],
+      "answer": "will miss",
+      "hint": "Après if : le présent. Dans l’autre partie : présent (toujours vrai) ou will (futur) ?",
+      "explanation": "Futur possible → you will miss the bus.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "If : le réel",
+          "lines": [
+            "Toujours vrai : If + présent, présent (If you heat ice, it melts).",
+            "Futur possible : If + présent, will + verbe (If it rains, we will stay).",
+            "Jamais will juste après if !"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-3e-grammar-if-1-7",
+      "prompt": "What will you do if it … sunny?",
+      "spoken": "What will you do if it blank sunny?",
+      "choices": [
+        "is",
+        "will be",
+        "was"
+      ],
+      "answer": "is",
+      "hint": "Juste après if : pas de will.",
+      "explanation": "Après if : présent → if it is sunny.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "If : le réel",
+          "lines": [
+            "Toujours vrai : If + présent, présent (If you heat ice, it melts).",
+            "Futur possible : If + présent, will + verbe (If it rains, we will stay).",
+            "Jamais will juste après if !"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien dit !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "english-3e-grammar",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

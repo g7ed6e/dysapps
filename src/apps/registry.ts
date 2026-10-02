@@ -7,7 +7,7 @@ import type { ProgrammeId } from '../programme';
 import { LV2_LABELS, type Lv2Choice } from '../core/settings';
 
 /** Les matières ; `lv2` est la deuxième langue (espagnol ou allemand), dont le titre affiché suit les Réglages (`subjectTitle`). */
-export type Subject = 'francais' | 'maths' | 'anglais' | 'lv2';
+export type Subject = 'french' | 'maths' | 'english' | 'lv2';
 
 export interface AppDef {
   id: string;
@@ -25,9 +25,9 @@ export interface AppDef {
 
 /** Chaque matière est une expédition d’Archipéo : le français les archives, les maths les mécanismes, l’anglais les routes maritimes. */
 export const SUBJECTS: Record<Subject, { title: string; icon: AnyIconName; description: string; expedition: string }> = {
-  francais: { title: 'Français', icon: 'book', description: 'Homophones, lecture, compréhension', expedition: 'Archives et récits' },
+  french: { title: 'Français', icon: 'book', description: 'Homophones, lecture, compréhension', expedition: 'Archives et récits' },
   maths: { title: 'Maths', icon: 'calculator', description: 'Calcul mental, fractions, décimaux', expedition: 'Mécanismes et énigmes' },
-  anglais: { title: 'Anglais', icon: 'globe', description: 'Vocabulaire, verbes irréguliers, grammaire', expedition: 'Cartes et messages' },
+  english: { title: 'Anglais', icon: 'globe', description: 'Vocabulaire, verbes irréguliers, grammaire', expedition: 'Cartes et messages' },
   lv2: { title: 'LV2', icon: 'languages', description: 'Se présenter, compter, parler de sa famille', expedition: 'Escales et rencontres' },
 };
 
@@ -47,7 +47,7 @@ export function visibleSubjects(lv2: Lv2Choice): Subject[] {
 export const APPS: AppDef[] = [
   {
     id: 'demo',
-    subject: 'francais',
+    subject: 'french',
     title: 'Tutoriel',
     description: 'Une mission d’entraînement pour prendre les commandes en main.',
     icon: 'compass',
@@ -57,7 +57,7 @@ export const APPS: AppDef[] = [
   },
   {
     id: 'homophones',
-    subject: 'francais',
+    subject: 'french',
     programme: ['c3.fr.langue.homophonie'],
     title: 'Homophones',
     description: 'a / à, et / est, son / sont, ces / ses… 3 niveaux et 13 paires à maîtriser.',
@@ -67,7 +67,7 @@ export const APPS: AppDef[] = [
   },
   {
     id: 'lecture',
-    subject: 'francais',
+    subject: 'french',
     programme: ['c3.fr.lecture.explicite', 'c3.fr.lecture.implicite', 'c3.fr.lecture.lexique-contexte', 'c3.fr.lecture.genres'],
     title: 'Lecture',
     description: 'Fables de La Fontaine, Daudet, Jules Verne : écoute, lis à ton rythme, réponds aux questions.',
@@ -107,7 +107,7 @@ export const APPS: AppDef[] = [
   },
   {
     id: 'vocabulaire',
-    subject: 'anglais',
+    subject: 'english',
     programme: ['c3.en.culture.vie-quotidienne', 'c3.en.ecouter.mots-familiers', 'c3.en.lire.mots-isoles', 'c3.en.ecrire.dictee'],
     title: 'Vocabulaire',
     description: 'Couleurs, famille, école, maison… 12 thèmes : écoute, traduis, écris, avec une voix anglaise.',
@@ -117,7 +117,7 @@ export const APPS: AppDef[] = [
   },
   {
     id: 'irreguliers',
-    subject: 'anglais',
+    subject: 'english',
     programme: ['c4.en.langue.temps-verbaux'],
     title: 'Verbes irréguliers',
     description: 'go – went – gone : 60 verbes du collège en 3 niveaux, au prétérit et au participe passé.',

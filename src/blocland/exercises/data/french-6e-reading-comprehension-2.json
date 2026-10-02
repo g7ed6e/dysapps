@@ -1,0 +1,246 @@
+{
+  "id": "french-6e-reading-comprehension-2",
+  "biome": "french-6e-reading",
+  "type": "comprehension",
+  "level": 2,
+  "instruction": "Un texte reprend souvent un nom avec d’autres mots. Lis la question, puis le texte. Trouve de qui ou de quoi on parle. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "french-6e-reading-comprehension-2-0",
+      "prompt": "Max a un nouveau vélo.\nLe garçon le montre à tous ses amis.",
+      "question": "Qui est « le garçon » ?",
+      "spoken": "Max a un nouveau vélo. Le garçon le montre à tous ses amis.",
+      "choices": [
+        "Max",
+        "un ami de Max",
+        "le vélo"
+      ],
+      "answer": "Max",
+      "hint": "Le texte parle de Max, puis d’un garçon. Est-ce le même ?",
+      "explanation": "« Le garçon » reprend Max : le texte parle de lui avec un autre mot. Ce sont ses amis qui regardent le vélo.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le même, avec d’autres mots",
+          "lines": [
+            "Un texte reprend souvent un nom par un autre : « Zoé », puis « la fillette ».",
+            "Avec un autre nom, le genre peut changer : « une maison », puis « ce logement ».",
+            "« Celui-ci » ou « celle-ci » : la dernière personne ou chose nommée avant, du même genre, qui peut faire l’action.",
+            "« Ce dernier », « cette dernière » : le dernier nommé.",
+            "« Le premier », « le second » (le deuxième) : dans l’ordre du texte.",
+            "Mets ton choix à la place du groupe de mots : la phrase doit avoir du sens."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-6e-reading-comprehension-2-1",
+      "prompt": "Un chien court sur la plage.\nL’animal attrape un bâton.\nPuis il le rapporte à sa maîtresse.",
+      "question": "Qui est « l’animal » ?",
+      "spoken": "Un chien court sur la plage. L’animal attrape un bâton. Puis il le rapporte à sa maîtresse.",
+      "choices": [
+        "le chien",
+        "le bâton",
+        "la maîtresse"
+      ],
+      "answer": "le chien",
+      "hint": "Qui est un animal dans ce texte ?",
+      "explanation": "« L’animal » reprend « un chien » : le chien est un animal. Il attrape le bâton et le rapporte.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le même, avec d’autres mots",
+          "lines": [
+            "Un texte reprend souvent un nom par un autre : « Zoé », puis « la fillette ».",
+            "Avec un autre nom, le genre peut changer : « une maison », puis « ce logement ».",
+            "« Celui-ci » ou « celle-ci » : la dernière personne ou chose nommée avant, du même genre, qui peut faire l’action.",
+            "« Ce dernier », « cette dernière » : le dernier nommé.",
+            "« Le premier », « le second » (le deuxième) : dans l’ordre du texte.",
+            "Mets ton choix à la place du groupe de mots : la phrase doit avoir du sens."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-6e-reading-comprehension-2-2",
+      "prompt": "Nora et Hugo travaillent ensemble.\nCelui-ci cherche les images.\nCelle-ci écrit le texte.",
+      "question": "Qui écrit le texte ?",
+      "spoken": "Nora et Hugo travaillent ensemble. Celui-ci cherche les images. Celle-ci écrit le texte.",
+      "choices": [
+        "Nora",
+        "Hugo",
+        "Nora et Hugo"
+      ],
+      "answer": "Nora",
+      "hint": "« Celle-ci » est au féminin.",
+      "explanation": "« Celle-ci » est au féminin : ce mot reprend Nora. « Celui-ci », au masculin, reprend Hugo, qui cherche les images.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le même, avec d’autres mots",
+          "lines": [
+            "Un texte reprend souvent un nom par un autre : « Zoé », puis « la fillette ».",
+            "Avec un autre nom, le genre peut changer : « une maison », puis « ce logement ».",
+            "« Celui-ci » ou « celle-ci » : la dernière personne ou chose nommée avant, du même genre, qui peut faire l’action.",
+            "« Ce dernier », « cette dernière » : le dernier nommé.",
+            "« Le premier », « le second » (le deuxième) : dans l’ordre du texte.",
+            "Mets ton choix à la place du groupe de mots : la phrase doit avoir du sens."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-6e-reading-comprehension-2-3",
+      "prompt": "Mon oncle habite une vieille ferme près du village.\nCe bâtiment a plus de cent ans.",
+      "question": "Quel est « ce bâtiment » ?",
+      "spoken": "Mon oncle habite une vieille ferme près du village. Ce bâtiment a plus de cent ans.",
+      "choices": [
+        "la ferme",
+        "le village",
+        "mon oncle"
+      ],
+      "answer": "la ferme",
+      "hint": "Un bâtiment, c’est une construction : laquelle est nommée ?",
+      "explanation": "« Ce bâtiment » est au masculin, mais il reprend « une vieille ferme » : avec d’autres mots, le genre peut changer. Une ferme est un bâtiment. Un village, c’est tout un ensemble de maisons, et un oncle n’est pas un bâtiment.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le même, avec d’autres mots",
+          "lines": [
+            "Un texte reprend souvent un nom par un autre : « Zoé », puis « la fillette ».",
+            "Avec un autre nom, le genre peut changer : « une maison », puis « ce logement ».",
+            "« Celui-ci » ou « celle-ci » : la dernière personne ou chose nommée avant, du même genre, qui peut faire l’action.",
+            "« Ce dernier », « cette dernière » : le dernier nommé.",
+            "« Le premier », « le second » (le deuxième) : dans l’ordre du texte.",
+            "Mets ton choix à la place du groupe de mots : la phrase doit avoir du sens."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-6e-reading-comprehension-2-4",
+      "prompt": "Le surveillant parle à Samir.\nCe dernier doit ranger les ballons.",
+      "question": "Qui doit ranger les ballons ?",
+      "spoken": "Le surveillant parle à Samir. Ce dernier doit ranger les ballons.",
+      "choices": [
+        "Samir",
+        "le surveillant",
+        "le surveillant et Samir"
+      ],
+      "answer": "Samir",
+      "hint": "« Ce dernier » : le dernier nommé.",
+      "explanation": "« Ce dernier » reprend le dernier nommé : Samir. Le surveillant est nommé en premier.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le même, avec d’autres mots",
+          "lines": [
+            "Un texte reprend souvent un nom par un autre : « Zoé », puis « la fillette ».",
+            "Avec un autre nom, le genre peut changer : « une maison », puis « ce logement ».",
+            "« Celui-ci » ou « celle-ci » : la dernière personne ou chose nommée avant, du même genre, qui peut faire l’action.",
+            "« Ce dernier », « cette dernière » : le dernier nommé.",
+            "« Le premier », « le second » (le deuxième) : dans l’ordre du texte.",
+            "Mets ton choix à la place du groupe de mots : la phrase doit avoir du sens."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-6e-reading-comprehension-2-5",
+      "prompt": "Emma lit un roman de Jules Verne.\nDans ce livre, l’auteur raconte un tour du monde.",
+      "question": "Qui est « l’auteur » ?",
+      "spoken": "Emma lit un roman de Jules Verne. Dans ce livre, l’auteur raconte un tour du monde.",
+      "choices": [
+        "Jules Verne",
+        "Emma",
+        "le roman"
+      ],
+      "answer": "Jules Verne",
+      "hint": "L’auteur, c’est celui qui a écrit le livre.",
+      "explanation": "« L’auteur » reprend Jules Verne : c’est lui qui a écrit le roman. Emma le lit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le même, avec d’autres mots",
+          "lines": [
+            "Un texte reprend souvent un nom par un autre : « Zoé », puis « la fillette ».",
+            "Avec un autre nom, le genre peut changer : « une maison », puis « ce logement ».",
+            "« Celui-ci » ou « celle-ci » : la dernière personne ou chose nommée avant, du même genre, qui peut faire l’action.",
+            "« Ce dernier », « cette dernière » : le dernier nommé.",
+            "« Le premier », « le second » (le deuxième) : dans l’ordre du texte.",
+            "Mets ton choix à la place du groupe de mots : la phrase doit avoir du sens."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-6e-reading-comprehension-2-6",
+      "prompt": "Une abeille entre dans la cuisine.\nLa petite bête tourne autour de la confiture.\nPapa la chasse avec un torchon.",
+      "question": "Qui est « la petite bête » ?",
+      "spoken": "Une abeille entre dans la cuisine. La petite bête tourne autour de la confiture. Papa la chasse avec un torchon.",
+      "choices": [
+        "l’abeille",
+        "la confiture",
+        "la cuisine"
+      ],
+      "answer": "l’abeille",
+      "hint": "Quelle bête est entrée dans la cuisine ?",
+      "explanation": "« La petite bête » reprend « une abeille ». « la », dans « Papa la chasse », la reprend aussi : Papa chasse l’abeille.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le même, avec d’autres mots",
+          "lines": [
+            "Un texte reprend souvent un nom par un autre : « Zoé », puis « la fillette ».",
+            "Avec un autre nom, le genre peut changer : « une maison », puis « ce logement ».",
+            "« Celui-ci » ou « celle-ci » : la dernière personne ou chose nommée avant, du même genre, qui peut faire l’action.",
+            "« Ce dernier », « cette dernière » : le dernier nommé.",
+            "« Le premier », « le second » (le deuxième) : dans l’ordre du texte.",
+            "Mets ton choix à la place du groupe de mots : la phrase doit avoir du sens."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-6e-reading-comprehension-2-7",
+      "prompt": "Julie a deux chats, Pixel et Caramel.\nLe premier est tout noir.\nLe second dort toute la journée.",
+      "question": "Qui dort toute la journée ?",
+      "spoken": "Julie a deux chats, Pixel et Caramel. Le premier est tout noir. Le second dort toute la journée.",
+      "choices": [
+        "Caramel",
+        "Pixel",
+        "Julie"
+      ],
+      "answer": "Caramel",
+      "hint": "« Le second » : le deuxième nommé.",
+      "explanation": "« Le second » reprend le deuxième chat nommé : Caramel. « Le premier », c’est Pixel, le chat noir.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le même, avec d’autres mots",
+          "lines": [
+            "Un texte reprend souvent un nom par un autre : « Zoé », puis « la fillette ».",
+            "Avec un autre nom, le genre peut changer : « une maison », puis « ce logement ».",
+            "« Celui-ci » ou « celle-ci » : la dernière personne ou chose nommée avant, du même genre, qui peut faire l’action.",
+            "« Ce dernier », « cette dernière » : le dernier nommé.",
+            "« Le premier », « le second » (le deuxième) : dans l’ordre du texte.",
+            "Mets ton choix à la place du groupe de mots : la phrase doit avoir du sens."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien lu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "french-6e-reading",
+    "amount": 5,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

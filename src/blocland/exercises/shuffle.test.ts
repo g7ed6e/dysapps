@@ -1,6 +1,6 @@
-import cabinet from './data/cabinet-nuances-1.json';
-import mine from './data/mine-oreille-1.json';
-import foret from './data/foret-echauffement-002.json';
+import cabinet from './data/french-4e-vocabulary-nuances-1.json';
+import mine from './data/french-6e-letter-confusion-sound-discrimination-1.json';
+import foret from './data/french-6e-phonology-syllables-warmup-002.json';
 import { loadAllExercises } from './index';
 import { runItems } from './run';
 import type { ExerciseDef, ExerciseItem } from './types';
@@ -58,7 +58,7 @@ it('garde les nombres dans l’ordre croissant, mais décale la fenêtre pour qu
 });
 
 it('déplace la réponse d’une liste de nombres en retournant un piège, et l’écrit comme ses voisins', () => {
-  const def = { id: 'test', biome: 'plaine', items: [{ key: 'k', choices: ['−3', '1 200', '2 000,5'], answer: '1 200' }] } as unknown as ExerciseDef;
+  const def = { id: 'test', biome: 'maths-6e-calculation', items: [{ key: 'k', choices: ['−3', '1 200', '2 000,5'], answer: '1 200' }] } as unknown as ExerciseDef;
   const lists = ['a', 'b', 'c', 'd', 'e', 'f'].map((seed) => shuffleRunChoices(def, def.items, seed)[0].choices as string[]);
   const value = (c: string) => Number(c.replace('−', '-').replace(/\s/g, '').replace(',', '.'));
   for (const list of lists) {
@@ -73,7 +73,7 @@ it('déplace la réponse d’une liste de nombres en retournant un piège, et l�
 });
 
 it('hors maths, des nombres entendus gardent leurs pièges : 3, 13, 30 restent 3, 13, 30', () => {
-  const def = { id: 'n', biome: 'baie', items: [{ key: 'k', choices: ['3', '13', '30'], answer: '13' }] } as unknown as ExerciseDef;
+  const def = { id: 'n', biome: 'english-6e-vocabulary', items: [{ key: 'k', choices: ['3', '13', '30'], answer: '13' }] } as unknown as ExerciseDef;
   for (const seed of ['a', 'b', 'c', 'd']) expect(shuffleRunChoices(def, def.items, seed)[0].choices).toEqual(['3', '13', '30']);
 });
 

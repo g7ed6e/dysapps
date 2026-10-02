@@ -6,7 +6,7 @@ import { anneau, disque, jalon, manche, pointe, type Espece } from '../gabarit';
 import { facette, fuseau, parFace, pave, pose, repere } from '../peint';
 
 export const ESPECES_5E = {
-  glacier: {
+  'maths-5e-signed-numbers': {
     nom: 'Frimas',
     metier: 'guetteur',
     gabarit: 'elance',
@@ -17,7 +17,7 @@ export const ESPECES_5E = {
     museau: { forme: 'bec', long: 0.12, r: 0.05, y: 2.2 },
     outil: { pose: [0, 0, -0.05], dessiner: (T, k) => jalon(T, -1.12, 1.35, 0.026, 6, k.bois, k.lin) },
   },
-  marche: {
+  'maths-5e-proportionality': {
     nom: 'Bazar',
     metier: 'marchand',
     gabarit: 'trapu',
@@ -55,7 +55,7 @@ export const ESPECES_5E = {
       },
     },
   },
-  carrefour: {
+  'french-5e-homophones': {
     nom: 'Sema',
     metier: 'peintre d’enseignes',
     dominante: 0x7fa048,
@@ -104,7 +104,7 @@ export const ESPECES_5E = {
       },
     },
   },
-  marais: {
+  'french-5e-conjugation': {
     nom: 'Kroa',
     metier: 'vannier',
     gabarit: 'trapu',
@@ -147,7 +147,7 @@ export const ESPECES_5E = {
         ),
     },
   },
-  comptoir: {
+  'english-5e-vocabulary': {
     nom: 'Pudding',
     metier: 'commis',
     gabarit: 'trapu',
@@ -167,7 +167,7 @@ export const ESPECES_5E = {
       },
     },
   },
-  manoir: {
+  'english-5e-grammar': {
     nom: 'Moustache',
     metier: 'intendant',
     dominante: 0x4a4a55,
@@ -206,7 +206,7 @@ export const ESPECES_5E = {
       },
     },
   },
-  relais: {
+  'lv2-5e-introductions': {
     // La cigogne voyageuse (DA, LV2-2) : corps blanc, bouts d'ailes noirs, long bec et hautes pattes orange, sans coiffe.
     nom: 'Lina',
     metier: 'aubergiste',

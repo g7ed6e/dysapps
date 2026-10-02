@@ -46,8 +46,8 @@ describe('Toucher le sol : la case d’arrivée', () => {
 
   it('une case qui ne s’atteint pas (un arbre, une borne, l’eau du rivage) : la case accessible la plus proche', () => {
     const { ground } = monde('6e');
-    const def = islandDef('foret');
-    const home = avatarHome('foret');
+    const def = islandDef('french-6e-phonology');
+    const home = avatarHome('french-6e-phonology');
     const box = landBox(def);
     let vues = 0;
     for (let x = box.x0; x < box.x1; x++)
@@ -67,8 +67,8 @@ describe('Toucher le sol : la case d’arrivée', () => {
 
   it('hors de l’étendue de l’île : rien (la page l’envoie à sa place) ; sur sa case : il y reste', () => {
     const { ground } = monde('6e');
-    const def = islandDef('foret');
-    const home = avatarHome('foret');
+    const def = islandDef('french-6e-phonology');
+    const home = avatarHome('french-6e-phonology');
     const box = landBox(def);
     expect(caseDArrivee(ground, def, home, { x: box.x1 + margeDeRecherche(def), y: box.y0 })).toBeNull();
     expect(caseDArrivee(ground, def, home, { x: box.x0 - 1, y: box.y1 + 3 })).toBeNull();
@@ -81,26 +81,26 @@ describe('Toucher le sol : la case d’arrivée', () => {
     expect(eau).toBeDefined();
     const top = Math.max(...cubes.filter((c) => c.x === eau!.x && c.y === eau!.y && !c.ghost).map((c) => c.z));
     if (top === eau!.z) expect(toucheLEau(ground, { x: eau!.x + 0.5, y: eau!.y + 0.5 })).toBe(true);
-    const home = avatarHome('foret');
+    const home = avatarHome('french-6e-phonology');
     expect(toucheLEau(ground, home)).toBe(false);
   });
 
   it('la disposition en grille : la case d’arrivée, et le trajet vers une île qui s’arrête là', () => {
     const { cubes, creatures, ground } = monde('6e');
     const g = dispositionEnGrille('6e', village.links, { cubes, creatures });
-    const def = islandDef('plaine');
+    const def = islandDef('maths-6e-calculation');
     const cible = landCells(def).find((c) => ground.feet.has(k(c.x, c.y)) && (c.x + c.y) % 5 === 0)!;
-    const r = g.arrivee('plaine', cible, avatarHome('plaine'))!;
-    expect(r).toEqual(caseDArrivee(ground, def, avatarHome('plaine'), cible));
-    const t = g.trajet({ genre: 'ile', id: 'foret' }, { genre: 'ile', id: 'plaine' }, { arrivee: r.case })!;
+    const r = g.arrivee('maths-6e-calculation', cible, avatarHome('maths-6e-calculation'))!;
+    expect(r).toEqual(caseDArrivee(ground, def, avatarHome('maths-6e-calculation'), cible));
+    const t = g.trajet({ genre: 'ile', id: 'french-6e-phonology' }, { genre: 'ile', id: 'maths-6e-calculation' }, { arrivee: r.case })!;
     expect(g.versMonde(t.etapes[t.etapes.length - 1])).toEqual(r.case);
-    expect(g.versMonde(t.etapes[0])).toEqual(avatarHome('foret'));
+    expect(g.versMonde(t.etapes[0])).toEqual(avatarHome('french-6e-phonology'));
     // Parti d'ailleurs que de sa place.
-    const depart = { ...avatarHome('foret'), x: avatarHome('foret').x + 1 };
-    const t2 = g.trajet({ genre: 'ile', id: 'foret' }, { genre: 'ile', id: 'plaine' }, { arrivee: r.case, depart })!;
+    const depart = { ...avatarHome('french-6e-phonology'), x: avatarHome('french-6e-phonology').x + 1 };
+    const t2 = g.trajet({ genre: 'ile', id: 'french-6e-phonology' }, { genre: 'ile', id: 'maths-6e-calculation' }, { arrivee: r.case, depart })!;
     expect(g.versMonde(t2.etapes[0])).toEqual(depart);
     // Sans grille de marche, pas de case d'arrivée : sa place.
-    expect(dispositionEnGrille('6e').arrivee('plaine', cible, avatarHome('plaine'))).toBeNull();
+    expect(dispositionEnGrille('6e').arrivee('maths-6e-calculation', cible, avatarHome('maths-6e-calculation'))).toBeNull();
   });
 });
 
