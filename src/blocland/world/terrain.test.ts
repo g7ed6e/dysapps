@@ -930,22 +930,7 @@ describe('les bornes dans la vue de l’île', () => {
       const vers = versLaCamera(id);
       const spot = creatureSpot(id);
       const caches = spot.steps.flatMap(([sx, sy]) => creatureDuMonde(id).filter((c) => cacheUnLieu(lieux, vers, spot.x + sx + c.x, spot.y + sy + c.y, c.z + 1)));
-      if (id !== 'foret') {
-        expect(caches.length, id).toBe(0);
-        continue;
-      }
-      // À la Forêt des sons, aucune place n'est hors de la vue des lieux (la forêt derrière la salle, l'ouvrage de la Mine
-      // près du lieu où l'on assemble) : Mousso se tient immobile là où il en cache le moins, et seulement des places de
-      // la seconde travée (19 à 24) ; jamais l'école, le lieu où l'on assemble, ni la salle de départ et sa première travée.
-      expect(spot.steps, id).toEqual([[0, 0]]);
-      const cubes = creatureDuMonde(id);
-      TROPHY_SLOTS.forEach((t, i) => {
-        const place = [{ x: TROPHY_AT.x + t.x, y: TROPHY_AT.y + t.y, base: t.z - 1 }];
-        const cache = cubes.some((c) => cacheUneBorne(place, vers, spot.x + c.x, spot.y + c.y, c.z + 1));
-        if (i < 18) expect(cache, `${id}, place ${i + 1}`).toBe(false);
-      });
-      const autres = lieux.filter((l) => !(l.y >= TROPHY_AT.y && l.y < TROPHY_AT.y + TROPHY_SIZE.d && l.x >= TROPHY_AT.x && l.x < TROPHY_AT.x + TROPHY_SIZE.w));
-      expect(cubes.filter((c) => cacheUnLieu(autres, vers, spot.x + c.x, spot.y + c.y, c.z + 1)), id).toEqual([]);
+      expect(caches, id).toEqual([]);
     }
     // Ailleurs, pas de lieu : rien à cacher.
     expect(lieuxVus('plaine')).toEqual([]);

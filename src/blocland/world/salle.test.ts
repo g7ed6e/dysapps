@@ -168,11 +168,12 @@ describe('La salle des trophées (GD-3)', () => {
     expect(new Set(treize.filter((c) => !avant.has(cle(c))).map((c) => c.x - o.x))).toEqual(new Set([2, 3]));
   });
 
-  it('la créature de chaque île-école se tient hors de la vue de la salle, derrière elle ; à la Forêt, glissée vers la côte, immobile (GD-3, retouches)', () => {
-    // Le Marché et la Forêt : immobiles (derrière la salle, Bazar n'a pas la place de ses pas ; la Forêt, voir terrain.test.ts).
+  it('la créature de chaque île-école se tient hors de la vue de la salle, derrière elle (GD-3, retouches)', () => {
+    // Le Marché : immobile (derrière la salle, Bazar n'a pas la place de ses pas). La Forêt : l'arbre de (1, 10) du décor
+    // a laissé la place à Mousso et à ses pas (`DECOR.foret`).
     // Les places mesurées (coordonnées du cœur) : la règle est dans `creatureSpot` (cacheUnLieu), ce test garde la trace.
     expect(Object.fromEntries(ARCHIPELAGOS.map((a) => [a.school, (({ x, y, steps }) => ({ x, y, pas: steps.length }))(creatureSpot(a.school))]))).toEqual({
-      foret: { x: -1, y: 3, pas: 1 },
+      foret: { x: 0, y: 13, pas: 3 },
       marche: { x: -4, y: 12, pas: 1 },
       atelier: { x: 1, y: 14, pas: 2 },
       phare: { x: 3, y: 13, pas: 3 },
@@ -193,5 +194,9 @@ describe('La salle des trophées (GD-3)', () => {
     // Derrière la salle (côté opposé à la caméra), hors de son emprise.
     const spot = creatureSpot('marche');
     expect(spot.y).toBeGreaterThanOrEqual(TROPHY_AT.y + TROPHY_SIZE.d);
+  });
+
+  it('sur les quatre îles-écoles, la créature se tient derrière la salle (côté opposé à la caméra), hors de son emprise', () => {
+    for (const a of ARCHIPELAGOS) expect(creatureSpot(a.school).y, a.school).toBeGreaterThanOrEqual(TROPHY_AT.y + TROPHY_SIZE.d);
   });
 });

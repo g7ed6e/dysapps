@@ -866,8 +866,8 @@ export interface CreatureSpot {
  * ne touchent ni le décor, ni la zone des plans, ni le bonhomme, ni une colline, ni l'eau. On préfère une place
  * d'où elle peut se promener ; sinon elle reste immobile. Sur une île-école, ni elle ni ses pas ne se tiennent entre la
  * caméra de l'île et un lieu du village, l'emprise réservée de la salle des trophées comprise (`cacheUnLieu`) : devant
- * le cœur, aucune place ne la tient hors de leur vue, elle va derrière la salle ; à défaut, elle se tient immobile là
- * où elle en cache le moins (GD-3, retouches du directeur artistique).
+ * le cœur, aucune place ne la tient hors de leur vue, elle va derrière la salle, sur les quatre îles-écoles (à la Forêt
+ * des sons, un arbre du décor lui a laissé la place : `DECOR.foret`) (GD-3, retouches du directeur artistique).
  */
 export function creatureSpot(id: BiomeId): CreatureSpot {
   const cle = `${id}:${lv2Courante()}`;
@@ -912,9 +912,9 @@ export function creatureSpot(id: BiomeId): CreatureSpot {
   const vers = versLaCamera(id);
   // La créature se tient sur le sol de l'île (z = 1 au-dessus, comme les lieux, sur un sol plat : voir `free`).
   const libre = (x: number, y: number, [sx, sy]: [number, number]) => cubes.every((c) => free(x + sx + c.x, y + sy + c.y));
-  /** Les cubes de la créature (au pas `st`) qui se tiennent entre la caméra et un lieu du village. */
-  const caches = (x: number, y: number, [sx, sy]: [number, number]) => cubes.filter((c) => cacheUnLieu(lieux, vers, x + sx + c.x, y + sy + c.y, c.z + 1)).length;
-  const fits = (x: number, y: number, st: [number, number]) => libre(x, y, st) && caches(x, y, st) === 0;
+  /** Un cube de la créature (au pas `st`) se tient-il entre la caméra et un lieu du village ? */
+  const cache = (x: number, y: number, [sx, sy]: [number, number]) => cubes.some((c) => cacheUnLieu(lieux, vers, x + sx + c.x, y + sy + c.y, c.z + 1));
+  const fits = (x: number, y: number, st: [number, number]) => libre(x, y, st) && !cache(x, y, st);
   let best: CreatureSpot | null = null;
   let bestScore = Infinity;
   for (let x = coeur.x0 - 2; x < coeur.x1; x++) {
@@ -927,23 +927,6 @@ export function creatureSpot(id: BiomeId): CreatureSpot {
         bestScore = score;
       }
     }
-  }
-  // Sans place hors de la vue des lieux (à la Forêt des sons, la forêt prend l'arrière de la salle, et l'ouvrage de la
-  // Mine la place libre près du lieu où l'on assemble) : la place qui en cache le moins, immobile (directeur artistique,
-  // retouches de GD-3 : « la glisser de trois ou quatre cases vers la côte, immobile »).
-  if (!best) {
-    let moins = Infinity;
-    for (let x = coeur.x0 - 2; x < coeur.x1; x++)
-      for (let y = coeur.y0; y < coeur.y1; y++) {
-        if (!libre(x, y, [0, 0])) continue;
-        const n = caches(x, y, [0, 0]);
-        const score = Math.abs(x - 2) + Math.abs(y - 4);
-        if (n < moins || (n === moins && score < bestScore)) {
-          best = { x, y, steps: [[0, 0]] };
-          moins = n;
-          bestScore = score;
-        }
-      }
   }
   const spot = best ?? { x: 2, y: 4, steps: [[0, 0]] };
   creatureSpots.set(cle, spot);

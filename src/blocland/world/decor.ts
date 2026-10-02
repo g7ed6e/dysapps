@@ -39,11 +39,12 @@ function tree(put: Put, x: number, y: number, base: number, tall = 2): void {
 /** Décor propre à chaque biome, en coordonnées relatives à l'île. `h` donne la hauteur du sol d'une case. */
 export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => number) => void> = {
   foret: (put, h) => {
+    // Derrière la salle des trophées, l'arbre de (1, 10) a laissé la place à Mousso, qui s'y tient hors de la vue des
+    // lieux du village, avec ses pas, comme les créatures des trois autres îles-écoles (GD-3, directeur artistique).
     for (const [tx, ty, tall] of [
       [8, 2, 2],
       [10, 4, 3],
       [3, 9, 2],
-      [1, 10, 3],
     ] as const)
       tree(put, tx, ty, h(tx, ty), tall);
   },
