@@ -1,7 +1,7 @@
 # GD-5 : Allier le jeu et l’apprentissage, trois modèles de boucle
 
-**État** : Décidée le 2 octobre 2026 (A tout de suite, B petit à petit, C pour les grands ; le même jour, un seul mot « mission » et l’île reconstruite qui devient fournisseur) ; chaque modèle aura sa propre fiche avant d’être construit
-**Portée** : Commun ; la fiche ne nomme aucun univers, chacun habille les demandes, les spécialités, les outils et les projets à sa manière
+**État** : Décidée le 2 octobre 2026 (A tout de suite, B petit à petit, C pour les grands ; le même jour, un seul mot « mission », l’île reconstruite qui devient fournisseur de son bloc, et aucune ressource nouvelle) ; chaque modèle aura sa propre fiche avant d’être construit
+**Portée** : Commun ; la fiche ne nomme aucun univers, chacun habille les demandes, les outils et les projets à sa manière
 
 Le mainteneur, le 2 octobre 2026 : « Fais-moi des propositions pour allier jeu à apprentissage en poursuivant des quêtes / missions et construire un monde. Essaie d’abstraire l’univers. » Cette fiche prolonge [GD-4](GD-4.md) (le monde ouvert au centre) : les mots restent généraux (le monde, les lieux, les habitants, les gardiens, la ressource, les ouvrages).
 
@@ -24,7 +24,7 @@ Chaque modèle ci-dessous part de l'une de ces trois choses.
 | Échelle | Durée | Ce qui se passe | Ce qu’on voit dans le monde |
 | --- | --- | --- | --- |
 | Courte | 5 à 10 minutes | Une mission | Une partie de l’île se construit, l’habitant réagit |
-| Moyenne | Quelques séances | Toutes les missions d’une île, puis son gardien | L’île reconstruite, qui se met à fabriquer sa spécialité |
+| Moyenne | Quelques séances | Toutes les missions d’une île, puis son gardien | L’île reconstruite, qui produit son bloc pour le reste du monde |
 | Longue | Une année scolaire | Un territoire : toutes les îles d’une classe | Le territoire transformé, le passage au suivant |
 
 ## Modèle A : le monde a des besoins
@@ -36,12 +36,12 @@ Chaque modèle ci-dessous part de l'une de ces trois choses.
 2. L’habitant dit ce qu’il demande en deux phrases, dans un panneau lu à voix haute.
 3. La mission réussie construit sa partie de l’île : les blocs gagnés **se posent tout seuls** sur le bâtiment de l’habitant et le restaurent (mainteneur, 2 octobre 2026, voir GD-4).
 4. Quand toutes les missions de l’île sont faites, le gardien propose son défi, comme aujourd’hui.
-5. **L’île reconstruite devient fournisseur** (mainteneur, 2 octobre 2026). Son bâtiment restauré fabrique sa spécialité (de la laine, du métal, du verre…), dont les autres îles, les monuments et les grands projets ont besoin. Pour en obtenir, l’élève rejoue les missions de l’île, à son niveau adapté. Rejouer sert le monde, et c’est la répétition qui fait apprendre. Une île n’est donc jamais « sans rien à faire ».
+5. **L’île reconstruite devient fournisseur** (mainteneur, 2 octobre 2026). Son bâtiment restauré produit **le bloc de l’île** : il n’y a pas de ressource nouvelle (mainteneur, 2 octobre 2026). Tant que l’île n’est pas restaurée, les blocs gagnés par ses missions se posent tout seuls sur son bâtiment ; une fois restaurée, ses missions remplissent le stock de son bloc, qui sert aux ouvrages entre les îles, aux monuments, au navire, aux autres îles et aux grands projets. Pour en obtenir, l’élève rejoue les missions de l’île, à son niveau adapté. Rejouer sert le monde, et c’est la répétition qui fait apprendre. Une île n’est donc jamais « sans rien à faire ».
 6. L’habitant revient aussi vers l’élève pour consolider, par la répétition espacée : « On revérifie l’ouvrage ensemble ? »
 
 **Le lien avec l’apprentissage.** Il n’y a pas de nouvelle unité de programme : les missions existent, et chacune fait déjà progresser une compétence par ses niveaux. La mission reste un exercice comme aujourd’hui ; ce sont le **récit**, la **conséquence** et l’**utilité de rejouer** qui changent.
 
-**Ce que ça demande.** Peu de nouveau code pour les demandes : les missions, les plans et les habitants existent déjà. Il faut écrire la demande de chaque mission, relier chaque mission à une partie de l’île, et ajouter la liste des missions ouvertes. Pour l’île fournisseur : une spécialité par île, et ce qui la demande ailleurs ; c’est proche des blocs assemblés de [GD-2](GD-2.md), qui prennent déjà des blocs de deux îles.
+**Ce que ça demande.** Peu de nouveau code pour les demandes : les missions, les plans et les habitants existent déjà. Il faut écrire la demande de chaque mission, relier chaque mission à une partie de l’île, et ajouter la liste des missions ouvertes. Pour l’île fournisseur : rien de nouveau dans les ressources (chaque île a déjà son bloc) ; il faut dire où vont les blocs avant et après la restauration, et ce qui demande le bloc de chaque île ailleurs.
 
 **Points forts.** C'est proche de ce qui existe et de GD-4. Les habitants deviennent utiles, et l'effet de la réussite se voit.
 **Limites.** L'exercice reste un exercice : le lien entre savoir et monde passe par le récit, pas par le geste.
@@ -86,11 +86,11 @@ Chaque modèle ci-dessous part de l'une de ces trois choses.
 ## Ce qui vaut pour les trois
 
 - **Rien ne se perd** : pas de chrono, pas de baisse montrée, refuser une mission ou un projet ne coûte rien, et aucun endroit du monde ne se ferme selon la maîtrise.
-- **Rien à lire dans le monde** : tout texte est dans un panneau, en police dys, lu à voix haute. Chaque mot nouveau (projet, spécialité) est expliqué la première fois.
+- **Rien à lire dans le monde** : tout texte est dans un panneau, en police dys, lu à voix haute. Chaque mot nouveau (projet) est expliqué la première fois.
 - **Un seul objectif mis en avant à la fois**, même quand plusieurs sont ouverts.
 - **Les gardiens restent** l'épreuve qui ferme un lieu, dans les trois modèles.
 - **La ressource reste la monnaie commune**, la sauvegarde n'est jamais touchée et les identifiants des quêtes ne changent pas.
-- **Chaque univers habille** les demandes, les spécialités, les outils et les projets à sa manière (bâtir du neuf, restaurer…), avec les mêmes règles.
+- **Chaque univers habille** les demandes, les outils et les projets à sa manière (bâtir du neuf, restaurer…), avec les mêmes règles.
 - **Le dessin a un plafond** : tout ajout au monde est mesuré par l'artiste technique 3D avant d'être décidé.
 
 ## La recommandation
@@ -104,7 +104,7 @@ Voir « Ce qui vaut pour les trois », plus haut. Les règles en jeu : DP-09, DP
 
 ## Le coût
 
-- **A** : petit pour les demandes (une demande écrite par mission dans `docs/contenu/<île>.md`, chaque mission reliée à une partie de l’île, la liste des missions ouvertes) ; moyen pour l’île fournisseur (une spécialité par île et ce qui la demande ailleurs, avec [GD-2](GD-2.md)). Il rejoint l’étape 1 de GD-4.
+- **A** : petit pour les demandes (une demande écrite par mission dans `docs/contenu/<île>.md`, chaque mission reliée à une partie de l’île, la liste des missions ouvertes) ; petit aussi pour l’île fournisseur (le bloc de l’île, qui existe déjà, change seulement de destination après la restauration). Il rejoint l’étape 1 de GD-4.
 - **B** : grand. Une scène par notion, validée par le contenu et le référent dys ; des endroits placés dans le monde, mesurés par l’artiste technique 3D. Des maquettes avant de décider de la première notion.
 - **C** : moyen. Des plans de projets adossés aux monuments et aux blocs assemblés de [GD-2](GD-2.md). Des maquettes relues par le référent dys avant de décider.
 
@@ -119,3 +119,5 @@ Voir « Ce qui vaut pour les trois », plus haut. Les règles en jeu : DP-09, DP
 2 octobre 2026, mainteneur, sur la recommandation « A tout de suite, B petit à petit, C pour les grands » : « Ok, ça me paraît bien. »
 
 Le même jour, sur « on garde le seul mot mission : une mission est une demande de l’habitant et construit une partie de son île ; une fois reconstruite, l’île fabrique sa spécialité, que l’élève obtient en rejouant ses missions à son niveau, pour les autres îles, les monuments et les projets » : « oui ».
+
+Le même jour, sur « la spécialité d’une île, c’est son bloc : pas de ressource nouvelle ; seulement deux sortes de ressources, le bloc d’île et le bloc assemblé » : « oui ».
