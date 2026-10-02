@@ -96,6 +96,9 @@ Ces points sont connus ; le consultant UX UI les regarde en priorité.
 - **Les écrans qui défilent sur tablette** : en OpenDyslexic grande taille, en 1024 × 768, les écrans avec document défilent (ticket #231) ; l’en-tête commun des écrans de calcul fait défiler d’environ 124 px (Faisceaux, Relevés, Thalès).
 - **Le téléphone en grand texte** : le panneau de la Carte et le nom de destination (DA-31), les noms d’îles sous la bulle de la baleine (DA-10).
 - **Le défi du Gardien sur téléphone** (DA-34) : dans Archipéo, la phrase du seuil tient sur trois lignes et l’écran déborde encore ; en grand texte, le défi défile.
+- **Les titres des missions de LV2 et d’anglais** sont découpés en syllabes à la française et lus par la voix française (`BossPage.tsx`, `IslandSheet.tsx`, `BiomePage.tsx`) ; les virgules de « Porque, cuando, pero » se mêlent à la liste. Il faudrait les afficher hors du découpage, marqués dans leur langue (`lang`), un par ligne ou entre guillemets.
+- **Les signes doubles** : sans espace fine insécable avant « : », « ? » et « ! » dans les textes affichés, un signe peut partir seul en début de ligne.
+- **Le mot « Écouter »** : une réplique qui nomme le bouton de lecture suppose qu’il porte ce mot partout ; le panneau de l’île n’en montre que l’icône.
 - **Ce qui se pose sur le monde en 3D** : étiquettes, bulles et boutons sur la scène ne cachent ni une île, ni une borne, ni une consigne.
 
 ## Sources

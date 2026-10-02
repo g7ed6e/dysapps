@@ -51,23 +51,25 @@ Les règles de l’application sont dans [Principes dys](../../www/pedagogie/pri
 - Mouvements de caméra doux et désactivables, pas de secousse ni de flou de mouvement, pas de flash (risque de crise photosensible et de surcharge sensorielle) ; le texte n’est jamais dans la scène 3D.
 - Le confort est pour tous : un mode « moins d’animations » n’est pas présenté comme un mode « pour dys » (objectif 8 du W3C : adaptation et personnalisation).
 
-## Ce que fait Archipéo
+## Ce que fait l’application
+
+Le tableau vaut pour les deux univers : Blocland, l’univers construit et par défaut, et Archipéo, en pause depuis le 2 octobre 2026 (décision du mainteneur).
 
 | Pratique | Ce que fait le jeu | Où le voir |
 | --- | --- | --- |
 | Police, taille, interlignage, espacement | Luciole par défaut, OpenDyslexic, Atkinson Hyperlegible, Arial ; 18 px au moins, interlignage 1,5 au moins, espacement des lettres et des mots réglable, en mots | `src/core/settings.ts`, [Principes](../../www/pedagogie/principes.md#lire-moins-mieux-ou-autrement) |
-| Fond uni et doux | Thème Crème par défaut, panneaux opaques, thème Clair plat (Contraste élevé retiré le 28 septembre 2026, prévu au lot 11 du [cadrage Archipéo](../univers/archipeo/cadrage.md#6-le-plan-en-lots)) | `src/styles/`, [Style](../rendu/style.md) |
+| Fond uni et doux | Thème Crème par défaut, panneaux opaques, thème Clair plat (Contraste élevé retiré le 28 septembre 2026, à refaire pour tous les univers : [état des chantiers](../pilotage/chantiers.md#laccessibilité-dans-lappli)) | `src/styles/`, [Style](../rendu/style.md) |
 | Tout s’entend | Consigne lue dès qu’elle apparaît et relançable, symboles dits en mots, voix anglaise pour l’anglais | [Principes](../../www/pedagogie/principes.md) |
 | Une chose à la fois | Un item par écran, mode concentration, succès affichés à la fin | [Principes](../../www/pedagogie/principes.md#une-chose-à-la-fois) |
 | Ne rien retenir | Consigne toujours écrite, aide visuelle et rappel de règle toujours affichés | [Principes](../../www/pedagogie/principes.md#aider-sans-pénaliser) |
 | Pas de temps limité, pas de perte | Pas de chronomètre, deuxième essai, joker jamais pénalisant, pas de classement | [Principes](../../www/pedagogie/principes.md#sans-stress) |
 | Gestes | Cibles de 48 px au moins, touches 1 à 9 et Entrée | [Principes](../../www/pedagogie/principes.md#une-chose-à-la-fois) |
-| Animations | La préférence de l’appareil « Réduire les animations » (`prefers-reduced-motion`) ; le réglage de l’appli du même nom, retiré le 28 septembre 2026, revient au lot 11 du [cadrage Archipéo](../univers/archipeo/cadrage.md#6-le-plan-en-lots) | `src/core/mouvement.ts`, `src/styles/global.css` |
+| Animations | La préférence de l’appareil « Réduire les animations » (`prefers-reduced-motion`) ; le réglage de l’appli du même nom, retiré le 28 septembre 2026, est à refaire pour tous les univers ([état des chantiers](../pilotage/chantiers.md#laccessibilité-dans-lappli)) | `src/core/mouvement.ts`, `src/styles/global.css` |
 | Pas de texte dans la 3D | Tout texte est dans un panneau HTML | [Principes](../../www/pedagogie/principes.md) |
 
 ### À surveiller
 
-Ces points ne sont pas des défauts constatés : ce sont les endroits où la migration vers Archipéo peut s’éloigner des bonnes pratiques, et que le référent dys regarde en priorité.
+Ces points ne sont pas des défauts constatés : ce sont les endroits où le jeu, dans Blocland comme dans Archipéo s’il reprend, peut s’éloigner des bonnes pratiques, et que le référent dys regarde en priorité.
 
 - **Le monde en 3D** : trajets de caméra (voyage entre îles, arrivée sur une île), célébrations, eau et lumière qui bougent. Ils respectent « Réduire les animations », sans flash ni secousse.
 - **La couleur seule** : nouvelles couleurs des matières et des archipels, états d’île ; chaque information passe aussi par un mot, une forme ou une icône.

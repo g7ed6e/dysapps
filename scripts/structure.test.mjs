@@ -25,12 +25,13 @@ const REGLES = [
   {
     dossier: 'docs/',
     motif: new RegExp(String.raw`^docs/(${[
-      String.raw`(conception|ux-ui|rendu|pilotage)/${page}`,
+      String.raw`(conception|ux-ui|rendu)/${page}`,
+      String.raw`pilotage/chantiers\.md`,
       String.raw`contenu/(${page}|portail/${page})`,
       String.raw`gameplay/(${page}|propositions/(GD-\d+|modele)\.md)`,
       String.raw`univers/(${page}|blocland/${page}|archipeo/(${page}|intentions/${page}|esquisses/(${page}|atelier/[a-z0-9-]+\.(html|js|mjs))|source/.+))`,
     ].join('|')})$`),
-    consigne: 'docs/ ne tient que la documentation interne : conception/, gameplay/ (propositions/GD-<n>.md), univers/ (archipeo/, blocland/), ux-ui/, rendu/, contenu/, pilotage/ ; une page <nom>.md, sauf les esquisses et le dossier source d’Archipéo',
+    consigne: 'docs/ ne tient que la documentation interne : conception/, gameplay/ (propositions/GD-<n>.md), univers/ (archipeo/, blocland/), ux-ui/, rendu/, contenu/, pilotage/ (chantiers.md seul) ; une page <nom>.md, sauf les esquisses et le dossier source d’Archipéo',
   },
   {
     dossier: 'www/',
