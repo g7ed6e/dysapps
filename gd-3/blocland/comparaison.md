@@ -1,40 +1,37 @@
 # Comparaison avec main
 
-Références : main au commit 4bf725143855768b1f929b9f13869ff068a56d89 (après : 163432be8fb24b90455acc4ce5f1bc2d13545324). Une vue est changée au-delà de 0,3 % de pixels différents.
+Références : main au commit 4bf725143855768b1f929b9f13869ff068a56d89 (après : 31b2fd6b759eac83f0ad1e36609630fcc30223b5). Une vue est changée au-delà de 0,3 % de pixels différents.
 
-## Changées (43) : planches dans `planches/`
+## Changées (40) : planches dans `planches/`
 
-- 3e-defi-chateau.jpg : 1,8 %
-- 3e-defi-refuge.jpg : 0,5 %
-- 3e-defi-textes.jpg : 3,0 %
+- 3e-defi-studio.jpg : 7,1 %
 - 3e-ecole-phare-390x844.jpg : 2,3 %
-- 3e-ecole-phare.jpg : 3,5 %
+- 3e-ecole-phare.jpg : 3,3 %
 - 4e-archipel-nuit.jpg : 1,0 %
 - 4e-archipel.jpg : 1,0 %
-- 4e-defi-falaise.jpg : 1,7 %
-- 4e-defi-jardin.jpg : 0,5 %
-- 4e-defi-theatre.jpg : 1,4 %
 - 4e-ecole-atelier-390x844.jpg : 2,6 %
-- 4e-ecole-atelier.jpg : 3,0 %
-- 5e-archipel-nuit.jpg : 2,7 %
+- 4e-ecole-atelier.jpg : 3,1 %
+- 5e-archipel-nuit.jpg : 2,6 %
 - 5e-archipel.jpg : 2,8 %
+- 5e-carte.jpg : 0,3 %
 - 5e-defi-carrefour.jpg : 2,0 %
 - 5e-defi-comptoir.jpg : 2,0 %
-- 5e-defi-manoir.jpg : 0,9 %
 - 5e-defi-marais.jpg : 2,1 %
+- 5e-defi-relais.jpg : 0,6 %
 - 5e-ecole-marche-390x844.jpg : 2,6 %
-- 5e-ecole-marche.jpg : 3,4 %
-- 6e-archipel-nuit.jpg : 1,2 %
-- 6e-archipel.jpg : 1,7 %
+- 5e-ecole-marche.jpg : 3,3 %
+- 6e-archipel-nuit.jpg : 1,3 %
+- 6e-archipel.jpg : 1,3 %
+- 6e-defi-baie.jpg : 1,9 %
 - 6e-defi-horloge.jpg : 1,6 %
-- 6e-ecole-foret-390x844.jpg : 1,9 %
-- 6e-ecole-foret.jpg : 2,6 %
-- 6e-ile-nuit.jpg : 2,1 %
-- 6e-ile.jpg : 2,6 %
-- 6e-lieux-archipel-nuit.jpg : 1,6 %
-- 6e-lieux-archipel.jpg : 2,0 %
-- 6e-lieux-nuit.jpg : 3,1 %
-- 6e-lieux-sans-trophee.jpg : 2,6 %
+- 6e-ecole-foret-390x844.jpg : 2,0 %
+- 6e-ecole-foret.jpg : 2,7 %
+- 6e-ile-nuit.jpg : 2,4 %
+- 6e-ile.jpg : 2,7 %
+- 6e-lieux-archipel-nuit.jpg : 1,5 %
+- 6e-lieux-archipel.jpg : 1,7 %
+- 6e-lieux-nuit.jpg : 3,2 %
+- 6e-lieux-sans-trophee.jpg : 2,7 %
 - 6e-lieux-trophees-dix-huit-nuit.jpg : 100,0 %
 - 6e-lieux-trophees-dix-huit.jpg : 100,0 %
 - 6e-lieux-trophees-huit.jpg : 100,0 %
@@ -44,11 +41,11 @@ Références : main au commit 4bf725143855768b1f929b9f13869ff068a56d89 (après :
 - 6e-lieux-trophees-tous.jpg : 100,0 %
 - 6e-lieux-trophees-vide-nuit.jpg : 100,0 %
 - 6e-lieux-trophees-vide.jpg : 100,0 %
-- 6e-lieux-velours-nuit.jpg : 43,7 %
-- 6e-lieux-velours.jpg : 45,3 %
-- 6e-lieux.jpg : 3,5 %
+- 6e-lieux-velours-nuit.jpg : 45,4 %
+- 6e-lieux-velours.jpg : 46,7 %
+- 6e-lieux.jpg : 3,6 %
 
-## Inchangées (50) : non publiées
+## Inchangées (53) : non publiées
 
 - 3e-archipel-nuit.jpg : 0,0 %
 - 3e-archipel.jpg : 0,0 %
@@ -57,30 +54,34 @@ Références : main au commit 4bf725143855768b1f929b9f13869ff068a56d89 (après :
 - 3e-carte-nuit.jpg : 0,1 %
 - 3e-carte.jpg : 0,1 %
 - 3e-defi-belvedere.jpg : 0,0 %
+- 3e-defi-chateau.jpg : 0,0 %
 - 3e-defi-donnees.jpg : 0,0 %
 - 3e-defi-phare.jpg : 0,0 %
-- 3e-defi-studio.jpg : 0,0 %
+- 3e-defi-refuge.jpg : 0,0 %
 - 3e-defi-svg.jpg : 0,0 %
-- 3e-ile-nuit.jpg : 0,0 %
-- 3e-ile.jpg : 0,2 %
+- 3e-defi-textes.jpg : 0,0 %
+- 3e-ile-nuit.jpg : 0,1 %
+- 3e-ile.jpg : 0,0 %
 - 4e-bulle-svg.jpg : 0,0 %
 - 4e-bulle.jpg : 0,0 %
 - 4e-carte-nuit.jpg : 0,1 %
-- 4e-carte.jpg : 0,1 %
+- 4e-carte.jpg : 0,2 %
 - 4e-defi-atelier.jpg : 0,0 %
 - 4e-defi-cabinet.jpg : 0,0 %
+- 4e-defi-falaise.jpg : 0,0 %
 - 4e-defi-forge.jpg : 0,0 %
 - 4e-defi-gare.jpg : 0,0 %
+- 4e-defi-jardin.jpg : 0,0 %
 - 4e-defi-svg.jpg : 0,0 %
+- 4e-defi-theatre.jpg : 0,0 %
 - 4e-ile-nuit.jpg : 0,1 %
-- 4e-ile.jpg : 0,0 %
+- 4e-ile.jpg : 0,2 %
 - 5e-bulle-svg.jpg : 0,0 %
 - 5e-bulle.jpg : 0,0 %
-- 5e-carte-nuit.jpg : 0,3 %
-- 5e-carte.jpg : 0,2 %
+- 5e-carte-nuit.jpg : 0,2 %
 - 5e-defi-glacier.jpg : 0,0 %
+- 5e-defi-manoir.jpg : 0,0 %
 - 5e-defi-marche.jpg : 0,0 %
-- 5e-defi-relais.jpg : 0,0 %
 - 5e-defi-svg.jpg : 0,0 %
 - 5e-ile-nuit.jpg : 0,1 %
 - 5e-ile.jpg : 0,2 %
@@ -88,18 +89,17 @@ Références : main au commit 4bf725143855768b1f929b9f13869ff068a56d89 (après :
 - 6e-bulle.jpg : 0,0 %
 - 6e-carte-nuit.jpg : 0,0 %
 - 6e-carte.jpg : 0,0 %
-- 6e-defi-baie.jpg : 0,0 %
 - 6e-defi-carriere.jpg : 0,0 %
 - 6e-defi-ferme.jpg : 0,0 %
-- 6e-defi-foret.jpg : 0,0 %
-- 6e-defi-mine.jpg : 0,1 %
+- 6e-defi-foret.jpg : 0,3 %
+- 6e-defi-mine.jpg : 0,3 %
 - 6e-defi-plaine.jpg : 0,0 %
 - 6e-defi-riviere.jpg : 0,0 %
-- 6e-defi-svg.jpg : 0,0 %
+- 6e-defi-svg.jpg : 0,3 %
 - 6e-defi-tour.jpg : 0,0 %
 - 6e-defi-volcan.jpg : 0,0 %
 - 6e-lieux-ecole-pres-nuit.jpg : 0,1 %
-- 6e-lieux-ecole-pres.jpg : 0,2 %
+- 6e-lieux-ecole-pres.jpg : 0,1 %
 
 ## Sans référence (35) : dans `planches/` telles quelles
 
