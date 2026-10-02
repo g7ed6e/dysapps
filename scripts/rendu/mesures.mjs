@@ -53,7 +53,7 @@ const DAY = new Date('2026-09-28T10:30:00');
 const NIGHT = new Date('2026-09-28T22:30:00');
 
 /**
- * Les captures déclarées d'avance (le socle de la piste Rendu, docs/conception/cadrage-archipeo.md §6) : pour chaque
+ * Les captures déclarées d'avance (le socle de la piste Rendu, docs/univers/archipeo/cadrage.md §6) : pour chaque
  * archipel tout construit, tout ce que montrent les lots de rendu et la revue d'ensemble du directeur artistique, de près
  * et de loin (une île, l'archipel, la Carte), de jour et de nuit. Ni Contraste élevé ni « Réduire les animations » : ces
  * deux réglages sont retirés et inscrits au plan pour un lot ultérieur (décision du mainteneur, 28/09/2026).

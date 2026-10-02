@@ -1,4 +1,4 @@
-// Le filet du rendu Archipéo (lot S, le socle de la piste Rendu, docs/conception/cadrage-archipeo.md §6) : une empreinte,
+// Le filet du rendu Archipéo (lot S, le socle de la piste Rendu, docs/univers/archipeo/cadrage.md §6) : une empreinte,
 // archipel par archipel, de ce que le rendu calcule sans Three.js et que la grille (./empreintes.test.ts) ne voit pas :
 // le relief de chaque île, le décor en primitives et l'ambiance (ciel, lumière, surfaces, eaux). Chaque sous-lot de R4b
 // ne change que les empreintes de son archipel ; il les régénère avec

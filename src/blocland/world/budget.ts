@@ -1,4 +1,4 @@
-// Le budget de rendu d'un archipel tout construit, décidé pour Archipéo (docs/conception/cadrage-archipeo.md, §5) :
+// Le budget de rendu d'un archipel tout construit, décidé pour Archipéo (docs/univers/archipeo/cadrage.md, §5) :
 // ce qu'une tablette de collégien dessine sans peiner. `sceneCost()` compte, sans Three.js, les modèles en blocs de la
 // scène (terrain, créatures, Gardiens, Bloc-Navire, bonhomme) tels que la vue 3D les dessine : un appel de dessin par
 // groupe de `buildMesh`. La mer, les nuages, les baleines, les oiseaux, les étiquettes et les repères de borne s'y
@@ -41,7 +41,7 @@ export interface Enveloppe {
 }
 
 /**
- * Les postes du budget (docs/conception/cadrage-archipeo.md §6, « Le budget par poste »), décidés le 28 septembre
+ * Les postes du budget (docs/univers/archipeo/cadrage.md §6, « Le budget par poste »), décidés le 28 septembre
  * 2026 : chaque lot de rendu tient ses postes dans leur enveloppe, et la somme tient dans `RENDER_BUDGET`. Les Premiers
  * Rivages ont leur colonne (leur phare, leur volcan) ; les trois autres archipels partagent la leur. Chaque lot n'écrit
  * que sa ligne ; le socle les a toutes posées.

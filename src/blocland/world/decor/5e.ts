@@ -1,6 +1,6 @@
 // Les formes du décor propres aux Îles Brumeuses (5e) : leurs repères, leurs roches moussues, leurs ornements et leur
-// lointain. Ce fichier appartient au sous-lot R4b-5e (docs/conception/cadrage-archipeo.md §6 ; intention du directeur
-// artistique dans design/archipeo/intentions/5e-iles-brumeuses.md). Rien n'y change le monde en blocs : les cubes des
+// lointain. Ce fichier appartient au sous-lot R4b-5e (docs/univers/archipeo/cadrage.md §6 ; intention du directeur
+// artistique dans docs/univers/archipeo/intentions/5e-iles-brumeuses.md). Rien n'y change le monde en blocs : les cubes des
 // repères restent ceux de Blocland, seule leur forme dans Archipéo change.
 import { mixColor } from '../daylight';
 import type { ElementDeDecor } from '../decorMesh';

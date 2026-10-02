@@ -2,7 +2,7 @@
 
 Cette page dit, chantier par chantier, où en est le projet : ce qui est construit, ce qui est en cours, ce qui attend une décision et de qui. Elle est le point d’entrée ; le détail reste dans les cadrages, cités à chaque ligne. **Mise à jour le 30 septembre 2026 au soir.**
 
-Chaque pull request qui fait avancer un chantier met à jour sa ligne ici, dans la même pull request (règle du `CLAUDE.md`). Une décision de game design ne s’écrit pas ici mais dans le [game design](game-design/index.md).
+Chaque pull request qui fait avancer un chantier met à jour sa ligne ici, dans la même pull request (règle du `CLAUDE.md`). Une décision de game design ne s’écrit pas ici mais dans le [game design](../gameplay/index.md).
 
 ## Les références
 
@@ -10,17 +10,17 @@ Chaque chantier a son préfixe ; on ne les mélange jamais (dans les fils, les p
 
 | Préfixe | Chantier | Plan détaillé |
 | --- | --- | --- |
-| **lot 1** à **lot 11** | La migration vers Archipéo, piste Jeu et suite | [Cadrage Archipéo](../conception/cadrage-archipeo.md), §6 |
-| **R0** à **R7**, **R4b-6e** à **R4b-3e**, **S** | Le rendu d’Archipéo | [Cadrage Archipéo](../conception/cadrage-archipeo.md), piste Rendu |
+| **lot 1** à **lot 11** | La migration vers Archipéo, piste Jeu et suite | [Cadrage Archipéo](../univers/archipeo/cadrage.md), §6 |
+| **R0** à **R7**, **R4b-6e** à **R4b-3e**, **S** | Le rendu d’Archipéo | [Cadrage Archipéo](../univers/archipeo/cadrage.md), piste Rendu |
 | **DA-1** à **DA-34** | Les retouches de la revue d’ensemble du directeur artistique | Liste tenue hors du dépôt par le fil « Revue d’ensemble du DA » ; résumé ci-dessous |
 | **J0** à **J8**, **D** | Séparer le jeu du rendu | [Séparer le jeu du rendu](../conception/separation-jeu-rendu.md), §3 |
-| **U0** à **U6** | Les univers | [Plusieurs univers](../conception/univers.md), §6 |
+| **U0** à **U6** | Les univers | [Plusieurs univers](../univers/univers.md), §6 |
 | **LV2-1** à **LV2-5** | La deuxième langue vivante | [Cadrage du contenu](../conception/cadrage-contenu.md), la LV2 |
 | **C-1** à **C-15** | Le contenu pédagogique à couvrir | [Cadrage du contenu](../conception/cadrage-contenu.md), le plan |
 | **M1** à **M5** | Le contenu écrit en Markdown, source du jeu et du site | [Contenu en Markdown](../contenu/README.md) et ci-dessous |
-| **GD-n** | Les propositions de game design | [Game design](game-design/propositions/modele.md) |
+| **GD-n** | Les propositions de game design | [Game design](../gameplay/propositions/modele.md) |
 
-À ne pas confondre : **DA-01** à **DA-05** (avec un zéro) sont les règles de direction artistique du dossier Archipéo (`design/archipeo/direction-artistique.md`), **DA-1** à **DA-34** les retouches du directeur artistique.
+À ne pas confondre : **DA-01** à **DA-05** (avec un zéro) sont les règles de direction artistique du dossier Archipéo (`docs/univers/archipeo/source/direction-artistique.md`), **DA-1** à **DA-34** les retouches du directeur artistique.
 
 ## Ce qui attend le mainteneur
 
@@ -94,12 +94,12 @@ J0 à J5 et D construits ; l’habillage des univers (objet `Habillage`, textes 
 | Étape | État | Suite |
 | --- | --- | --- |
 | U0 à U3 | Faites | — |
-| U4 (l’habillage sans changement d’image) | Code fait (#220, #222, #225) | Les noms propres à Blocland sont revenus avec [GD-1](game-design/propositions/GD-1.md) (Basses Terres, Collines du Large, Monts de Feu), avec leur écran de renommage, une fois par appareil ; reste le lexique court |
-| Le caractère de Blocland ([GD-1](game-design/propositions/GD-1.md)) | Construit : la créature de l’île-école parle aux grandes étapes (Mousso, Bazar, Ixe, Fi, nom écrit et portrait dans la bulle) ; noms d’origine des archipels (Basses Terres, Collines du Large, Monts de Feu, Îles du Ciel), annoncés une fois à un élève qui jouait déjà (écran « De nouveaux noms ») ; rôles en métiers (Apprenti, Maçon, Mécanicien, Ingénieur, Architecte) et leurs succès ; geste et son de pose (logo qui se construit à l’écran titre, dernier bloc d’un plan qui s’enclenche, « clac » de pose ; dégel ciblé du dessin). Archipéo garde ses textes | Attend la fusion, puis la vidéo sur tablette du mainteneur |
+| U4 (l’habillage sans changement d’image) | Code fait (#220, #222, #225) | Les noms propres à Blocland sont revenus avec [GD-1](../gameplay/propositions/GD-1.md) (Basses Terres, Collines du Large, Monts de Feu), avec leur écran de renommage, une fois par appareil ; reste le lexique court |
+| Le caractère de Blocland ([GD-1](../gameplay/propositions/GD-1.md)) | Construit : la créature de l’île-école parle aux grandes étapes (Mousso, Bazar, Ixe, Fi, nom écrit et portrait dans la bulle) ; noms d’origine des archipels (Basses Terres, Collines du Large, Monts de Feu, Îles du Ciel), annoncés une fois à un élève qui jouait déjà (écran « De nouveaux noms ») ; rôles en métiers (Apprenti, Maçon, Mécanicien, Ingénieur, Architecte) et leurs succès ; geste et son de pose (logo qui se construit à l’écran titre, dernier bloc d’un plan qui s’enclenche, « clac » de pose ; dégel ciblé du dessin). Archipéo garde ses textes | Attend la fusion, puis la vidéo sur tablette du mainteneur |
 | U5 (l’habillage pédagogique de Blocland) | À faire | Se cadre avec le directeur contenu pédagogique |
 | U6 (un troisième univers) | Après les lots 8 et 8b | « Périple » abandonné pour l’instant |
 
-Blocland est l’univers par défaut ; Archipéo se choisit dans les Réglages et n’est pas mis en avant (décisions 7 à 9 de [Plusieurs univers](../conception/univers.md)).
+Blocland est l’univers par défaut ; Archipéo se choisit dans les Réglages et n’est pas mis en avant (décisions 7 à 9 de [Plusieurs univers](../univers/univers.md)).
 
 ### La deuxième langue vivante (LV2)
 
@@ -120,15 +120,23 @@ Encore ouverts : le découpage syllabique selon l’écrit ou selon l’oral (le
 
 ### Le flux de l’idée aux assets
 
-En conception avec le mainteneur dans le fil « Flux de l’idée aux assets » ; rien n’entre dans le dépôt avant sa validation. Décidé le 30 septembre 2026 : la règle « aucun modèle ni texture importé » s’ouvre, avec un cadre (une fiche par asset : outil, prompt, licence ; le budget de l’archipel ; servi depuis l’appli, hors ligne ; validé par le directeur artistique et le référent dys). Le cadre reste à écrire dans le [cadrage Archipéo](../conception/cadrage-archipeo.md) avec le flux. En cours : comment générer les images et les modèles 3D ; proposition d’un banc d’essai sur un seul asset, jugé sur le rendu, le poids et le coût. Blocland reste dessiné par le code.
+En conception avec le mainteneur dans le fil « Flux de l’idée aux assets » ; rien n’entre dans le dépôt avant sa validation. Décidé le 30 septembre 2026 : la règle « aucun modèle ni texture importé » s’ouvre, avec un cadre (une fiche par asset : outil, prompt, licence ; le budget de l’archipel ; servi depuis l’appli, hors ligne ; validé par le directeur artistique et le référent dys). Le cadre reste à écrire dans le [cadrage Archipéo](../univers/archipeo/cadrage.md) avec le flux. En cours : comment générer les images et les modèles 3D ; proposition d’un banc d’essai sur un seul asset, jugé sur le rendu, le poids et le coût. Blocland reste dessiné par le code.
 
 ### Combiner les blocs (GD-2)
 
-Décidé par le mainteneur le 30 septembre 2026 ([GD-2](game-design/propositions/GD-2.md)) : un lieu de plus sur l’île de l’école (la Fabrique dans Blocland, la Halle aux matériaux dans Archipéo) où l’on assemble un bloc par archipel (Poutre, Vitrail, Engrenage, Miroir ; Madrier, Hublot, Poulie, Loupe dans Archipéo), que les huit monuments demandent. Recettes et noms dans `docs/contenu/assemblage.md`. **Fusionné** (#272, 1er octobre 2026). Aux Premiers Rivages, la Halle aux matériaux prend le colombage, comme l’école et la salle des trophées. Enveloppe de construction des archipels 5e à 3e : 7 100 → 7 260 triangles, somme des « autres » à 53 060 (« ok budget » puis « ok 7260 » du mainteneur, 1er octobre 2026 ; enveloppe commune avec la salle des trophées de GD-3). Reste ouvert : l’étiquette de l’île qui couvre le lieu, le hublot du phare du large (petit), l’icône du Hublot aux couleurs du vitrail, une explication courte des mots rares d’Archipéo (madrier, poulie, hublot). **Une question à chaque bloc assemblé** (décision du mainteneur, 1er octobre 2026) : construite dans la même pull request. 12 questions par bloc sur les deux matières de la recette (`docs/contenu/assemblage.md`, « Les questions »), posées en plein écran sur l’écran des documents à lire ; un tirage par élève et par bloc (jamais l’une des 6 dernières ; une manquée revient après 6 autres, règle du mainteneur), gardé dans la sauvegarde (`assemblageTirage`, optionnel) ; une erreur ne fait rien perdre et laisse un second essai. Les questions d’assemblage comptent dans l’horloge de séance (trois exercices ou dix minutes) : la pause s’affiche à la fin d’une question (choix du mainteneur, 1er octobre 2026). La pause du bilan de mission est alignée sur celle de l’assemblage, un seul composant (`PauseSeance.tsx`) : bouton Écouter, retour sans historique, focus sur « J’arrête pour aujourd’hui », puis sur le bouton principal après « Encore un peu ».
+Décidé par le mainteneur le 30 septembre 2026 ([GD-2](../gameplay/propositions/GD-2.md)) : un lieu de plus sur l’île de l’école (la Fabrique dans Blocland, la Halle aux matériaux dans Archipéo) où l’on assemble un bloc par archipel (Poutre, Vitrail, Engrenage, Miroir ; Madrier, Hublot, Poulie, Loupe dans Archipéo), que les huit monuments demandent. Recettes et noms dans `docs/contenu/assemblage.md`. **Fusionné** (#272, 1er octobre 2026). Aux Premiers Rivages, la Halle aux matériaux prend le colombage, comme l’école et la salle des trophées. Enveloppe de construction des archipels 5e à 3e : 7 100 → 7 260 triangles, somme des « autres » à 53 060 (« ok budget » puis « ok 7260 » du mainteneur, 1er octobre 2026 ; enveloppe commune avec la salle des trophées de GD-3). Reste ouvert : l’étiquette de l’île qui couvre le lieu, le hublot du phare du large (petit), l’icône du Hublot aux couleurs du vitrail, une explication courte des mots rares d’Archipéo (madrier, poulie, hublot). **Une question à chaque bloc assemblé** (décision du mainteneur, 1er octobre 2026) : construite dans la même pull request. 12 questions par bloc sur les deux matières de la recette (`docs/contenu/assemblage.md`, « Les questions »), posées en plein écran sur l’écran des documents à lire ; un tirage par élève et par bloc (jamais l’une des 6 dernières ; une manquée revient après 6 autres, règle du mainteneur), gardé dans la sauvegarde (`assemblageTirage`, optionnel) ; une erreur ne fait rien perdre et laisse un second essai. Les questions d’assemblage comptent dans l’horloge de séance (trois exercices ou dix minutes) : la pause s’affiche à la fin d’une question (choix du mainteneur, 1er octobre 2026). La pause du bilan de mission est alignée sur celle de l’assemblage, un seul composant (`PauseSeance.tsx`) : bouton Écouter, retour sans historique, focus sur « J’arrête pour aujourd’hui », puis sur le bouton principal après « Encore un peu ».
+
+### Le monde ouvert au centre (GD-4)
+
+Décidé par le mainteneur le 2 octobre 2026 ([GD-4](../gameplay/propositions/GD-4.md)) : trois étapes, dans l’ordre (tout dans le monde, chemins au choix, explorer pour découvrir). Étape 1 : la créature qui se souvient et propose les révisions dans le monde. Les niveaux d’île, d’abord retenus, sont retirés le même jour au profit du modèle A de GD-5. Rien n’est construit ; chaque étape aura sa fiche avant son lot. Les trois modèles de boucle de [GD-5](../gameplay/propositions/GD-5.md) (décidés le même jour) : le modèle A (chaque mission est une demande de l’habitant ; l’île reconstruite devient fournisseur) rejoint l’étape 1, avec des blocs qui se posent tout seuls et restaurent le bâtiment de l’île, qui produit ensuite son bloc pour le reste du monde ; B et C attendent des maquettes.
+
+### La documentation rangée par métier
+
+Demande du mainteneur (2 octobre 2026) : un dossier pour le gameplay, un pour les univers, un pour l’UX UI et un pour le rendu. Piste « quatre dossiers » choisie le même jour, après l’avis du directeur artistique et de l’expert frontend : [`docs/gameplay/`](../gameplay/index.md), [`docs/univers/`](../univers/univers.md) (avec `archipeo/` et `blocland/` ; `design/` y entre, le dossier fourni par le mainteneur figé dans `archipeo/source/`), [`docs/ux-ui/`](../ux-ui/README.md) et [`docs/rendu/`](../rendu/README.md) ; `pilotage/` ne garde que l’état des chantiers. Première pull request : les fichiers déplacés tels quels et les liens corrigés. Suites, chacune dans sa pull request : découper le cadrage de Blocland (les systèmes communs vers `docs/gameplay/`) et le style (repères et polices vers `ux-ui/`, habillages vers chaque univers) ; relier `archipeo/source/accessibilite-dys.md` aux bonnes pratiques dys.
 
 ### Les agents
 
-Huit agents dans `.claude/agents/`, décrits dans [Contribuer](../conception/contribuer.md#les-agents). Le dernier venu, le **consultant UX UI** (`consultant-ux-ui`, demandé par le mainteneur le 1er octobre 2026), relit l’ergonomie et l’interface des écrans communes aux univers, sous l’autorité du directeur artistique, avec ses [bonnes pratiques UX UI](../conception/bonnes-pratiques-ux-ui.md) ; il est consulté avant toute pull request qui change un écran, un composant, la navigation ou un parcours.
+Huit agents dans `.claude/agents/`, décrits dans [Contribuer](../conception/contribuer.md#les-agents). Le dernier venu, le **consultant UX UI** (`consultant-ux-ui`, demandé par le mainteneur le 1er octobre 2026), relit l’ergonomie et l’interface des écrans communes aux univers, sous l’autorité du directeur artistique, avec ses [bonnes pratiques UX UI](../ux-ui/bonnes-pratiques.md) ; il est consulté avant toute pull request qui change un écran, un composant, la navigation ou un parcours.
 
 ### L’allègement de l’interface
 
@@ -153,6 +161,6 @@ Demande du mainteneur (1er octobre 2026) : moins de captures, prises plus vite. 
 
 Relevées le 30 septembre 2026 en consolidant ; chacune se corrige dans le document qui la porte, par le fil qui le tient.
 
-- L’univers d’un appareil sans choix vaut Blocland dans le code et dans le cadrage Archipéo (fils du lot 6, A), mais Archipéo à deux autres endroits (cadrage Archipéo, bascule ; [Plusieurs univers](../conception/univers.md), §5).
-- « J6 » désigne à la fois l’objet `Habillage` ([Plusieurs univers](../conception/univers.md), §5) et la disposition en réseau ([Séparer le jeu du rendu](../conception/separation-jeu-rendu.md), §3).
+- L’univers d’un appareil sans choix vaut Blocland dans le code et dans le cadrage Archipéo (fils du lot 6, A), mais Archipéo à deux autres endroits (cadrage Archipéo, bascule ; [Plusieurs univers](../univers/univers.md), §5).
+- « J6 » désigne à la fois l’objet `Habillage` ([Plusieurs univers](../univers/univers.md), §5) et la disposition en réseau ([Séparer le jeu du rendu](../conception/separation-jeu-rendu.md), §3).
 - U4 n’est pas marqué fait dans sa ligne alors que J6, J7 et J8 le disent fait.

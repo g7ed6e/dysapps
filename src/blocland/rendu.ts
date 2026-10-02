@@ -4,7 +4,7 @@
 // l'adresse, avant le `#` (la navigation ne change que la route, le drapeau tient donc toute la session) :
 // `?rendu=archipeo` ou `?rendu=blocs` l'emporte sur l'univers ; `?style=a|b|c`, avec le rendu d'Archipéo, peint les
 // cubes d'une des trois options de style du lot R1 (world/style.ts). L'application publiée les ignore : aucune adresse
-// ne fait passer un appareil d'élève à Archipéo (décisions 8 et 10 de docs/conception/univers.md).
+// ne fait passer un appareil d'élève à Archipéo (décisions 8 et 10 de docs/univers/univers.md).
 // `?mesures` affiche en plus, dans la vue 3D, les appels de dessin, les triangles et les images par seconde, pour mesurer
 // sur une tablette.
 import { DEFAULT_SETTINGS, reglagesCourants, sanitizeSettings, SETTINGS_KEY, type Settings } from '../core/settings';

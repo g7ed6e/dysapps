@@ -1,4 +1,4 @@
-// Le phare de référence d'Archipéo (sous-lot R4b-6e, docs/conception/cadrage-archipeo.md §6, « La fiche de famille »,
+// Le phare de référence d'Archipéo (sous-lot R4b-6e, docs/univers/archipeo/cadrage.md §6, « La fiche de famille »,
 // règle 1) : un seul modèle, en primitives peintes, que les Premiers Rivages construisent, que les Îles du Ciel
 // reprennent en changeant la taille, le socle et le site, et que R5 réutilise pour les plans du phare, pièce par pièce,
 // sans en changer ni les proportions ni les couleurs. Code pur : il trace dans les pinceaux qu'on lui donne.
@@ -48,7 +48,7 @@ export const COULEURS_DU_PHARE = {
  * L'éclat du fût : sous la lumière de la scène, un crème peint tel quel se lit grège, et gris à l'ombre (relecture du
  * DA, 28/09). Le fût est donc peint plus clair que blanc dans l'espace linéaire (×`ECLAT_DU_FUT`), sans assombrir son
  * pied ni griser son ombre : à l'écran, sous la lumière du 6e, environ `#DDCCAE` au soleil et `#B0AA9A` à l'ombre (lu et
- * validé par le DA, docs/conception/cadrage-archipeo.md, R4b-6e), la note la plus claire du phare. La couleur de la
+ * validé par le DA, docs/univers/archipeo/cadrage.md, R4b-6e), la note la plus claire du phare. La couleur de la
  * fiche (`fut`) ne change pas.
  */
 export const ECLAT_DU_FUT = 1.55;

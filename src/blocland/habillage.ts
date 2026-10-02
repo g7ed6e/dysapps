@@ -1,4 +1,4 @@
-// L'habillage du monde de cette page (étape J6 de docs/conception/univers.md §5, rangée par J7) : celui de l'univers
+// L'habillage du monde de cette page (étape J6 de docs/univers/univers.md §5, rangée par J7) : celui de l'univers
 // choisi, lu une fois. Les habillages eux-mêmes sont des données, dans world/habillage/ (un fichier par univers) ;
 // les parties de la scène, la 2D, les figures et la page du monde lisent chacune la ligne qui les concerne.
 import { HABILLAGES, type Habillage } from './world/habillage';

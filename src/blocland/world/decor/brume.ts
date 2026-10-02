@@ -1,4 +1,4 @@
-// Les bancs de brume des Îles Brumeuses (sous-lot R4b-5e ; intention du directeur artistique, design/archipeo/
+// Les bancs de brume des Îles Brumeuses (sous-lot R4b-5e ; intention du directeur artistique, docs/univers/archipeo/source/
 // intentions/5e-iles-brumeuses.md §2 et §6) : deux ou trois couches étagées, translucides, sur la mer libre seulement,
 // toujours sous le sol des îles. Code pur, sans Three.js : un maillage à couleurs par sommet, avec leur opacité, que
 // three/brume.ts dessine en un appel et fait respirer selon la règle commune (`respirationDeLaBrume`, ./fumee.ts).

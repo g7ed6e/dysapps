@@ -25,7 +25,7 @@ npm run build      # vérification TypeScript + build de production dans dist/
 npm run www:dev   # la documentation (VitePress) : http://localhost:4173/
 npm run www:build # construit la documentation dans dist-www/
 npm run www:preview # sert dist-www/ tel que publié : http://localhost:4173/
-npm run pilotage:personnages # refait docs/pilotage/game-design/personnages.md
+npm run pilotage:personnages # refait docs/gameplay/personnages.md
 npm run www:captures # rejoue le jeu dans Chromium et fait les captures d’écran (www/_captures/, hors du dépôt, refaites par la CI sur main)
 npm run rendu:mesures # appels de dessin, triangles et images par seconde (rendu logiciel) du monde 3D par archipel, poids de Three.js (--captures <dossier> : captures 3D ; --comparer <références> : planches avant/après des vues changées)
 npm run rendu:budget # triangles et appels de dessin de chaque poste du budget d’Archipéo, son enveloppe et sa marge, par archipel tout construit, sans navigateur (--archipel 6e,3e ; --json)

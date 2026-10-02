@@ -1,4 +1,4 @@
-// Les formes des Anciens Ateliers (sous-lot R4b-4e ; intention : design/archipeo/intentions/4e-anciens-ateliers.md).
+// Les formes des Anciens Ateliers (sous-lot R4b-4e ; intention : docs/univers/archipeo/intentions/4e-anciens-ateliers.md).
 import { toutConstruit } from '../budget';
 import { caseDuDecor, maillageDuDecor, rangerLeDecor, type MaillageDuDecor } from '../decorMesh';
 import { getArchipelago } from '../archipelago';
