@@ -34,9 +34,9 @@ Chaque modèle ci-dessous part de l'une de ces trois choses.
 **La boucle.**
 1. Plusieurs missions sont ouvertes, mais **un seul habitant fait signe** dans le monde à la fois : c’est la mission conseillée. Les autres attendent dans une liste.
 2. L’habitant dit ce qu’il demande en deux phrases, dans un panneau lu à voix haute.
-3. La mission réussie construit sa partie de l’île. La forme exacte (blocs posés seuls ou par l’élève en un geste) est la question encore ouverte de GD-4, « la réussite visible ».
+3. La mission réussie construit sa partie de l’île : les blocs gagnés **se posent tout seuls** sur le bâtiment de l’habitant et le restaurent (mainteneur, 2 octobre 2026, voir GD-4).
 4. Quand toutes les missions de l’île sont faites, le gardien propose son défi, comme aujourd’hui.
-5. **L’île reconstruite devient fournisseur** (mainteneur, 2 octobre 2026). Elle fabrique sa spécialité (de la laine, du métal, du verre…), dont les autres îles, les monuments et les grands projets ont besoin. Pour en obtenir, l’élève rejoue les missions de l’île, à son niveau adapté. Rejouer sert le monde, et c’est la répétition qui fait apprendre. Une île n’est donc jamais « sans rien à faire ».
+5. **L’île reconstruite devient fournisseur** (mainteneur, 2 octobre 2026). Son bâtiment restauré fabrique sa spécialité (de la laine, du métal, du verre…), dont les autres îles, les monuments et les grands projets ont besoin. Pour en obtenir, l’élève rejoue les missions de l’île, à son niveau adapté. Rejouer sert le monde, et c’est la répétition qui fait apprendre. Une île n’est donc jamais « sans rien à faire ».
 6. L’habitant revient aussi vers l’élève pour consolider, par la répétition espacée : « On revérifie l’ouvrage ensemble ? »
 
 **Le lien avec l’apprentissage.** Il n’y a pas de nouvelle unité de programme : les missions existent, et chacune fait déjà progresser une compétence par ses niveaux. La mission reste un exercice comme aujourd’hui ; ce sont le **récit**, la **conséquence** et l’**utilité de rejouer** qui changent.

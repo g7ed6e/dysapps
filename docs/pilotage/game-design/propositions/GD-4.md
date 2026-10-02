@@ -31,7 +31,7 @@ Missions, révisions, chantiers et Gardiens se lancent en allant voir quelqu’u
    - Exemple dans la voix de Blocland : « Les accords sont restés sur le chantier. On les remonte ensemble ? » La réplique est propre à chaque univers ; celle d’Archipéo est à écrire par son consultant.
    - Ensuite, dans une autre fiche : **la créature qui commande un ouvrage**. Chaque mission devient un mécanisme à bâtir pour elle. Dans Blocland : l’écluse de Nénu, l’aiguillage des wagonnets de Tunel, le moulin à engrenages de Coco, la scierie de Mousso.
 2. ~~**Les îles ont des niveaux**~~ **Retiré le 2 octobre 2026** (mainteneur : « Oui corriges GD4 »). L’idée était qu’une île « Bâtie » gagne un étage, puis une tour ou un jardin. Elle est remplacée par le modèle A de [GD-5](GD-5.md) : chaque mission est une demande de l’habitant et construit une partie de son île, et l’île reconstruite devient fournisseur de sa spécialité, si bien qu’elle n’est jamais sans rien à faire. Ce qui reste de l’idée vaut pour ce que construisent les missions : ils ne rapportent que le monde, ne se perdent jamais, et leur annonce passe par un son court et une phrase de l’habitant, jamais par le son seul.
-3. **Une réussite se voit dans le monde** (piste choisie le 30 septembre 2026, forme à trancher). Les blocs gagnés vont vers un chantier que l’élève choisit en le touchant dans le monde ou sur la Carte (« Construire ici », au même endroit dans le monde, sur la Carte et en vue simple). Par défaut, c’est le prochain objectif. Le chantier choisi a un repère fixe, visible dans le monde et sur la Carte ; en changer se fait en un toucher, sans confirmation.
+3. **Une réussite se voit dans le monde** (décidé le 2 octobre 2026, mainteneur : « Je pense que les blocs devraient se poser tout seul et permettre de restaurer le bâtiment qui justement produirait la ressource spécifique. »). À la fin d’une mission, les blocs gagnés **se posent tout seuls** sur le bâtiment de l’île, sous les yeux de l’élève, en une animation courte. Ils restaurent ce bâtiment, et le bâtiment restauré produit la spécialité de l’île ([GD-5](GD-5.md), modèle A). L’élève n’a pas de chantier à choisir pour le bâtiment de l’île.
 
 ### Étape 2 : des chemins au choix
 
@@ -47,7 +47,7 @@ Le monde cache des choses à trouver en se promenant (une créature de passage, 
 
 ## Les questions ouvertes
 
-- **La réussite visible** : les blocs se posent-ils seuls sur le chantier choisi, à la fin d’une mission, ou l’élève les pose-t-il lui-même en un geste ? Le chantier choisi règle la question des ouvrages, des monuments et du navire, qui ont aussi besoin de blocs.
+- **Ce que paient les blocs et les spécialités** : si les blocs servent au bâtiment de l’île, les ouvrages entre les îles, les monuments et le navire se paient-ils en spécialités (recommandé : les blocs restent la ressource, les spécialités s’y ajoutent pour les grands ouvrages, comme les blocs assemblés de GD-2) ?
 
 ## Ce qui ne bouge pas
 

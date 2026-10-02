@@ -35,6 +35,7 @@ Chaque chantier a son préfixe ; on ne les mélange jamais (dans les fils, les p
 | La recherche « rien d’emprunté » sur « Jardin des heures » et ses replis | LV2-4 | — |
 | La limite de 40 appels de dessin : par archipel tout construit, ou pour la vue d’une île seulement | R | Aujourd’hui 45 à 65 appels en vue d’archipel, 81 à 115 sur la Carte |
 | Le premier voyage : nombre de Gardiens exigés (3, 2, 2) et taille du premier chantier | Blocland | Selon les retours des élèves |
+| Ce que paient les blocs et les spécialités : ouvrages entre les îles, monuments, navire | GD-4 | Les blocs restent la ressource ; les spécialités s’y ajoutent pour les grands ouvrages |
 
 ### À vérifier sur tablette
 
@@ -128,7 +129,7 @@ Décidé par le mainteneur le 30 septembre 2026 ([GD-2](game-design/propositions
 
 ### Le monde ouvert au centre (GD-4)
 
-Décidé par le mainteneur le 2 octobre 2026 ([GD-4](game-design/propositions/GD-4.md)) : trois étapes, dans l’ordre (tout dans le monde, chemins au choix, explorer pour découvrir). Étape 1 : la créature qui se souvient et propose les révisions dans le monde. Les niveaux d’île, d’abord retenus, sont retirés le même jour au profit du modèle A de GD-5. Rien n’est construit ; chaque étape aura sa fiche avant son lot. Les trois modèles de boucle de [GD-5](game-design/propositions/GD-5.md) (décidés le même jour) : le modèle A (chaque mission est une demande de l’habitant ; l’île reconstruite devient fournisseur) rejoint l’étape 1 ; B et C attendent des maquettes.
+Décidé par le mainteneur le 2 octobre 2026 ([GD-4](game-design/propositions/GD-4.md)) : trois étapes, dans l’ordre (tout dans le monde, chemins au choix, explorer pour découvrir). Étape 1 : la créature qui se souvient et propose les révisions dans le monde. Les niveaux d’île, d’abord retenus, sont retirés le même jour au profit du modèle A de GD-5. Rien n’est construit ; chaque étape aura sa fiche avant son lot. Les trois modèles de boucle de [GD-5](game-design/propositions/GD-5.md) (décidés le même jour) : le modèle A (chaque mission est une demande de l’habitant ; l’île reconstruite devient fournisseur) rejoint l’étape 1, avec des blocs qui se posent tout seuls et restaurent le bâtiment de l’île, qui produit sa spécialité ; B et C attendent des maquettes.
 
 ### Les agents
 
