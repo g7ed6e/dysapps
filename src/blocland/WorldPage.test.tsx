@@ -15,6 +15,7 @@ vi.mock('./three', () => ({
   VoxelCanvas: () => null,
   WorldCanvas: ({
     focus,
+    cubes,
     onIntent,
     vehicle,
     archipelago,
@@ -25,6 +26,7 @@ vi.mock('./three', () => ({
     avatar,
   }: {
     focus: { island: string | null; seq: number; spot?: { ile: string; local: { x: number; y: number } } };
+    cubes: { x: number; place?: string }[];
     onIntent: (i: { genre: string; [k: string]: unknown }) => void;
     vehicle: { port: string; cubes: { ghost?: boolean }[] } | null;
     archipelago: string;
@@ -38,6 +40,7 @@ vi.mock('./three', () => ({
       <p data-testid="lumiere">{forceDay ? 'jour' : 'heure réelle'}</p>
       <p data-testid="cadrage">{focus.island ?? 'aucune'}</p>
       <p data-testid="demandes-de-cadrage">{focus.seq}</p>
+      <p data-testid="salle">{new Set(cubes.filter((c) => c.place === 'trophees').map((c) => c.x)).size} colonnes</p>
       <p data-testid="bonhomme">
         {avatar
           ? `${avatar.route.length > 1 ? 'marche' : 'se tient'} ${avatar.flanerie ? 'sur son île' : ''} ${avatar.vise ? 'rond' : 'sans rond'} ${avatar.route[avatar.route.length - 1].ile} ${avatar.route[avatar.route.length - 1].local.x},${avatar.route[avatar.route.length - 1].local.y}`
@@ -97,6 +100,16 @@ function Retenus() {
   return <p data-testid="retenus">{useProgress().celebrationsHeld ? 'oui' : 'non'}</p>;
 }
 
+/** Répond juste à une question (pour gagner un succès pendant le test). */
+function UneBonneReponse() {
+  const { answer } = useProgress();
+  return (
+    <button type="button" onClick={() => answer(true)}>
+      Répondre juste
+    </button>
+  );
+}
+
 function renderAt(path: string) {
   return render(
     <SettingsProvider>
@@ -108,6 +121,7 @@ function renderAt(path: string) {
             </Routes>
             <Where />
             <Retenus />
+            <UneBonneReponse />
           </MemoryRouter>
         </BloclandProvider>
       </ProgressProvider>
@@ -558,6 +572,24 @@ it('la salle des trophées : on la touche dans le monde, son panneau montre les 
   expect(within(sheet).getByText(`1 / ${BADGES.length} trophées`)).toBeInTheDocument();
   expect(within(sheet).getByRole('heading', { name: `Succès 1 / ${BADGES.length}` })).toBeInTheDocument();
   await user.click(within(sheet).getByRole('button', { name: 'Fermer le panneau' }));
+  expect(screen.queryByRole('dialog', { name: /Salle des trophées/ })).not.toBeInTheDocument();
+});
+
+it('le 13e succès : une travée s’ajoute à la salle d’un coup, sans panneau ni caméra imposée, quand l’appareil demande moins d’animations (GD-3)', async () => {
+  demanderMoinsDAnimations();
+  // Douze succès gagnés, pas encore « Échauffement » (le premier de la liste, gagné à la première réponse).
+  expect(BADGES[0].id).toBe('premier-pas');
+  const douze = Object.fromEntries(BADGES.slice(1, 13).map((b) => [b.id, '2026-09-27T10:00:00Z']));
+  localStorage.setItem('dysapps:progress', JSON.stringify({ totalAnswers: 0, badges: douze }));
+  const user = userEvent.setup();
+  renderAt('/aventure');
+  expect(await screen.findByTestId('salle')).toHaveTextContent('4 colonnes');
+  const cadrages = screen.getByTestId('demandes-de-cadrage').textContent;
+  await user.click(screen.getByRole('button', { name: 'Répondre juste' }));
+  // La travée est là tout de suite, entière : deux colonnes de plus ; la vue ne bouge pas, aucun panneau ne s'ouvre.
+  expect(screen.getByTestId('salle')).toHaveTextContent('6 colonnes');
+  expect(screen.getByTestId('demandes-de-cadrage').textContent).toBe(cadrages);
+  expect(screen.getByTestId('adresse')).toHaveTextContent(/^\/aventure$/);
   expect(screen.queryByRole('dialog', { name: /Salle des trophées/ })).not.toBeInTheDocument();
 });
 

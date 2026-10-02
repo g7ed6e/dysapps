@@ -17,6 +17,7 @@ import {
   avatarRoute,
   boardingRoute,
   bridgePath,
+  casesDesLieux,
   creaturePlacements,
   guardianPlacements,
   islandCenter,
@@ -85,7 +86,7 @@ function empreintesDe(a: ArchipelagoId, { progress, village }: Partie): Record<s
   const autres = cubes.filter((c) => !c.sol);
   const champ = champDuSol(a, sol, autres);
   const maillage = landMesh(champ);
-  const ground = walkGround(cubes, creatures);
+  const ground = walkGround(cubes, creatures, casesDesLieux(a));
   const iles = islandsOf(a).map((b) => b.id);
   const port = getArchipelago(a).port;
   // Du port vers chaque île, comme le bonhomme qui part du quai : par les ouvrages construits de la partie.

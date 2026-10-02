@@ -13,7 +13,7 @@ import { caseDArrivee, toucheLEau, type Arrivee } from './arrivee';
 import { islandDef } from './map';
 import { getMonument } from './monuments';
 import { walkGround, walkPath, type Cell, type CreaturePlacement, type WalkGround } from './paths';
-import { avatarHome, avatarRoute, bossIsletCenter, bridgePath, islandAt, islandCenter, monumentCenter, origineDe, placeDoor, questStations, routeLengths, viewZone, worldBounds } from './terrain';
+import { avatarHome, avatarRoute, bossIsletCenter, bridgePath, casesDesLieux, islandAt, islandCenter, monumentCenter, origineDe, placeDoor, questStations, routeLengths, viewZone, worldBounds } from './terrain';
 
 /** Le bonhomme marche à six cases par seconde ; au-delà de six secondes, il accélère. */
 export const WALK_SPEED = 6;
@@ -82,7 +82,7 @@ export function dispositionEnGrille(
   sol?: { cubes: VoxelCube[]; creatures: CreaturePlacement[] },
 ): DispositionEnGrille {
   let ground: WalkGround | undefined;
-  const marche = () => (sol ? (ground ??= walkGround(sol.cubes, sol.creatures)) : undefined);
+  const marche = () => (sol ? (ground ??= walkGround(sol.cubes, sol.creatures, casesDesLieux(a))) : undefined);
   const seTenir = (ile: BiomeId) => ancre(ile, avatarHome(ile));
   const versMonde = (x: Ancrage): Point => {
     const o = origineDe(x.ile);

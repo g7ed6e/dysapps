@@ -43,6 +43,7 @@ import type { PlaceId, VillagePlaceId, VoxelCube } from './cube';
 import type { Village } from '../engine';
 import { ORIGINE_DES_MONUMENTS, PLAN_ZONE, isPlanDone, planCells, planOrigin, plansFor, type PlanDef } from './plans';
 import { MONUMENT_ISLET, monumentsOf, type MonumentDef } from './monuments';
+import { EMPRISE_DE_LA_SALLE, SALLE_DE_DEPART, modeleDeLaSalle } from './salle';
 import { recetteDeLArchipel } from './assemblage';
 import {
   BASALT,
@@ -822,6 +823,13 @@ export const CREATURE_STEPS: [number, number][] = [
  * portraits (défi, bulle, panneau) gardent le modèle de face.
  */
 export const QUARTS_DE_TOUR: Partial<Record<BiomeId, number>> = { refuge: 1 };
+/**
+ * Les créatures seules (pas leur Gardien) tournées d'un quart de tour de plus, même sens. Au Marché des proportions
+ * (5e), Bazar est long (sept cases du museau à la queue) : de face, il n'a aucune place hors de la vue de la salle des
+ * trophées (GD-3) ; tourné, il se tient derrière elle, le visage du côté des x croissants, celui de la caméra. Le quart
+ * de tour dans l'autre sens lui ferait tourner le dos à la caméra (retouches de GD-3).
+ */
+export const QUARTS_DE_TOUR_DE_LA_CREATURE: Partial<Record<BiomeId, number>> = { marche: 1 };
 function tourner(cubes: CubeDeModele[], quarts = 0): CubeDeModele[] {
   let out = cubes;
   for (let i = 0; i < quarts; i++) {
@@ -831,13 +839,14 @@ function tourner(cubes: CubeDeModele[], quarts = 0): CubeDeModele[] {
   return out;
 }
 const personnagesTournes = new Map<string, CubeDeModele[]>();
-const tourne = (genre: string, id: BiomeId, cubes: CubeDeModele[]) => {
+const tourne = (genre: 'creature' | 'gardien', id: BiomeId, cubes: CubeDeModele[]) => {
   const cle = `${genre}:${id}`;
   let t = personnagesTournes.get(cle);
-  if (!t) personnagesTournes.set(cle, (t = tourner(cubes, QUARTS_DE_TOUR[id])));
+  const quarts = (QUARTS_DE_TOUR[id] ?? 0) + (genre === 'creature' ? (QUARTS_DE_TOUR_DE_LA_CREATURE[id] ?? 0) : 0);
+  if (!t) personnagesTournes.set(cle, (t = tourner(cubes, quarts)));
   return t;
 };
-/** La créature d'une île telle qu'elle se tient dans le monde (voir `QUARTS_DE_TOUR`). */
+/** La créature d'une île telle qu'elle se tient dans le monde (voir `QUARTS_DE_TOUR` et `QUARTS_DE_TOUR_DE_LA_CREATURE`). */
 export const creatureDuMonde = (id: BiomeId): CubeDeModele[] => tourne('creature', id, CREATURE_CUBES[id]);
 /** Le Gardien d'une île tel qu'il se tient sur son îlot (voir `QUARTS_DE_TOUR`). */
 export const gardienDuMonde = (id: BiomeId): CubeDeModele[] => tourne('gardien', id, GUARDIAN_CUBES[id]);
@@ -855,7 +864,10 @@ export interface CreatureSpot {
 /**
  * Où la créature d'une île se tient (case relative au cœur) : la place la plus proche de (2, 4) où elle et ses pas
  * ne touchent ni le décor, ni la zone des plans, ni le bonhomme, ni une colline, ni l'eau. On préfère une place
- * d'où elle peut se promener ; sinon elle reste immobile.
+ * d'où elle peut se promener ; sinon elle reste immobile. Sur une île-école, ni elle ni ses pas ne se tiennent entre la
+ * caméra de l'île et un lieu du village, l'emprise réservée de la salle des trophées comprise (`cacheUnLieu`) : devant
+ * le cœur, aucune place ne la tient hors de leur vue, elle va derrière la salle, sur les quatre îles-écoles (à la Forêt
+ * des sons, un arbre du décor lui a laissé la place : `DECOR.foret`) (GD-3, retouches du directeur artistique).
  */
 export function creatureSpot(id: BiomeId): CreatureSpot {
   const cle = `${id}:${lv2Courante()}`;
@@ -872,12 +884,23 @@ export function creatureSpot(id: BiomeId): CreatureSpot {
   for (let x = PLAN_ZONE.x; x < PLAN_ZONE.x + PLAN_ZONE.w; x++) for (let y = PLAN_ZONE.y; y < PLAN_ZONE.y + PLAN_ZONE.h; y++) blocked.add(`${x},${y}`);
   for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) blocked.add(`${AVATAR_HOME.x + dx},${AVATAR_HOME.y + dy}`);
   for (const k of placeCells(id)) blocked.add(k);
+  // … ni sur la case devant la porte d'un lieu, où le bonhomme s'arrête.
+  for (const k of portesDesLieux(id)) blocked.add(k);
+  // Ni sur un ouvrage qui part de l'île, ni à côté (sa rampe, son pied sur la côte).
+  for (const b of BRIDGES.filter((d) => d.from === id || d.to === id))
+    for (const c of bridgePath(b)) for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) blocked.add(`${c.x + dx - def.core.x},${c.y + dy - def.core.y}`);
   // Le décor des marges du cœur (un cœur agrandi) : la créature ne s'y pose pas.
   for (const m of margesDuCoeur(def)) if (m.decor) blocked.add(`${m.x - def.core.x},${m.y - def.core.y}`);
   const coeur = bornesDuCoeur(def);
   for (let x = coeur.x0; x < coeur.x1; x++) for (let y = coeur.y0; y < coeur.y1; y++) if (groundHeight(index, x, y) > 0) blocked.add(`${x},${y}`);
   // Hors du cœur : la terre plate et nue seulement (pas l'eau, pas un arbre, pas une pente).
   const scenery = new Map(landscape(def).map((c) => [`${c.x - def.core.x},${c.y - def.core.y}`, c]));
+  // … ni sous la couronne d'un arbre de la côte ou des marges, qui déborde de son tronc (le décor tel que l'île le pose).
+  for (const c of [...scenery.values(), ...margesDuCoeur(def)]) {
+    if (!c.decor) continue;
+    const t = tirage(def, c.x, c.y);
+    decorate((x, y) => blocked.add(`${x - def.core.x},${y - def.core.y}`), c.decor, c.x, c.y, noise(def.seed + 5, t.x, t.y));
+  }
   const free = (x: number, y: number) => {
     if (blocked.has(`${x},${y}`)) return false;
     if (x >= coeur.x0 && y >= coeur.y0 && x < coeur.x1 && y < coeur.y1) return true;
@@ -885,7 +908,13 @@ export function creatureSpot(id: BiomeId): CreatureSpot {
     return Boolean(c) && c!.h === 0 && !c!.decor && c!.ground !== 'eau' && c!.ground !== 'lave';
   };
   const cubes = creatureDuMonde(id);
-  const fits = (x: number, y: number, [sx, sy]: [number, number]) => cubes.every((c) => free(x + sx + c.x, y + sy + c.y));
+  const lieux = lieuxVus(id);
+  const vers = versLaCamera(id);
+  // La créature se tient sur le sol de l'île (z = 1 au-dessus, comme les lieux, sur un sol plat : voir `free`).
+  const libre = (x: number, y: number, [sx, sy]: [number, number]) => cubes.every((c) => free(x + sx + c.x, y + sy + c.y));
+  /** Un cube de la créature (au pas `st`) se tient-il entre la caméra et un lieu du village ? */
+  const cache = (x: number, y: number, [sx, sy]: [number, number]) => cubes.some((c) => cacheUnLieu(lieux, vers, x + sx + c.x, y + sy + c.y, c.z + 1));
+  const fits = (x: number, y: number, st: [number, number]) => libre(x, y, st) && !cache(x, y, st);
   let best: CreatureSpot | null = null;
   let bestScore = Infinity;
   for (let x = coeur.x0 - 2; x < coeur.x1; x++) {
@@ -1411,10 +1440,7 @@ function quaySpots(port: BiomeId, cubes: VoxelCube[]): { boat: QuaySpot | null; 
   const vers = versLaCamera(port);
   for (let x = PLAN_ZONE.x; x < PLAN_ZONE.x + PLAN_ZONE.w; x++) for (let y = PLAN_ZONE.y; y < PLAN_ZONE.y + PLAN_ZONE.h; y++) core(x, y);
   for (const st of questStations(port)) for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) core(st.x + dx, st.y + dy);
-  for (const k of placeCells(port)) {
-    const [x, y] = k.split(',').map(Number);
-    core(x, y);
-  }
+  for (const [x, y] of casesDuVillage(port)) core(x, y);
   for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) core(AVATAR_HOME.x + dx, AVATAR_HOME.y + dy);
   // Les marges d'un cœur agrandi (le Marché, 01/10/2026) : le passage devant les bornes, où l'on marche et construit ; les
   // objets du quai restent sur la grève, devant elles, comme avant.
@@ -1615,9 +1641,13 @@ export function vehiclePlacement(a: ArchipelagoId, progress: Record<string, { st
 export const SCHOOL_SIZE = { w: 5, d: 4 };
 /** Le coin de l'école dans le cœur de son île : devant à droite, entre les bornes de mission et le bord (la rangée de devant reste libre pour marcher jusqu'au port). */
 export const SCHOOL_AT = { x: 11, y: 1 };
-/** La salle des trophées : 4 × 3 cases, ouverte devant, au milieu du cœur (derrière les bornes, à côté de la place de la créature, devant la zone des plans). */
-export const TROPHY_SIZE = { w: 4, d: 3 };
-export const TROPHY_AT = { x: 4, y: 8 };
+/**
+ * La salle des trophées : son emprise de 8 × 3 cases, réservée dès le départ (GD-3, ./salle.ts), au milieu du cœur
+ * (derrière les bornes, devant la zone des plans). La salle de départ (4 × 3, ouverte devant) en tient la droite, de
+ * x = 4 à 7 ; ses travées s'ajoutent à gauche. Sa porte (x = 6) ne bouge pas.
+ */
+export const TROPHY_SIZE = EMPRISE_DE_LA_SALLE;
+export const TROPHY_AT = { x: 0, y: 8 };
 /**
  * Le lieu où l'on assemble les blocs (GD-2) : 3 × 5 cases, à droite au fond du cœur agrandi des îles-écoles, derrière
  * l'école et à côté de la zone des plans, hors de l'emprise que la salle des trophées prend en grandissant (GD-3 : de
@@ -1630,7 +1660,7 @@ export const ASSEMBLAGE_AT = { x: 14, y: 11 };
 /** Les lieux du village, posés sur l'île de l'école de chaque archipel : leur coin dans le cœur, leur taille, la colonne de leur porte. */
 export const VILLAGE_PLACES: Record<VillagePlaceId, { at: { x: number; y: number }; size: { w: number; d: number }; door: number }> = {
   ecole: { at: SCHOOL_AT, size: SCHOOL_SIZE, door: 2 },
-  trophees: { at: TROPHY_AT, size: TROPHY_SIZE, door: 2 },
+  trophees: { at: TROPHY_AT, size: TROPHY_SIZE, door: SALLE_DE_DEPART.x + 2 },
   assemblage: { at: ASSEMBLAGE_AT, size: ASSEMBLAGE_SIZE, door: 1 },
 };
 const PLACE_IDS = Object.keys(VILLAGE_PLACES) as VillagePlaceId[];
@@ -1655,15 +1685,62 @@ export function placeSpot(place: VillagePlaceId, id: BiomeId): PlaceSpot | null 
   return { x: def.core.x + at.x, y: def.core.y + at.y, h };
 }
 
-/** Les cases qu'occupent les lieux du village (coordonnées relatives au cœur). */
-function placeCells(id: BiomeId): Set<string> {
-  const out = new Set<string>();
+/** Les cases qu'occupent les lieux du village (coordonnées relatives au cœur), toute leur emprise. */
+function casesDuVillage(id: BiomeId): [number, number][] {
+  const out: [number, number][] = [];
   if (!isSchoolIsland(id)) return out;
   for (const place of PLACE_IDS) {
     const { at, size } = VILLAGE_PLACES[place];
-    for (let dx = 0; dx < size.w; dx++) for (let dy = 0; dy < size.d; dy++) out.add(`${at.x + dx},${at.y + dy}`);
+    for (let dx = 0; dx < size.w; dx++) for (let dy = 0; dy < size.d; dy++) out.push([at.x + dx, at.y + dy]);
   }
   return out;
+}
+
+/** Les mêmes cases, en clés « x,y ». */
+const placeCells = (id: BiomeId): Set<string> => new Set(casesDuVillage(id).map(([x, y]) => `${x},${y}`));
+
+/**
+ * Les lieux du village d'une île-école tels que la vue de l'île les voit (coordonnées du cœur), pour `cacheUnLieu` :
+ * chaque case de leur emprise, l'emprise réservée de la salle des trophées comprise, sur ses deux premiers rangs au-dessus
+ * du sol (socles et trophées, porte, rez-de-chaussée), comme deux bornes l'une sur l'autre. Vide ailleurs.
+ */
+export function lieuxVus(id: BiomeId): BorneVue[] {
+  const out: BorneVue[] = [];
+  for (const place of PLACE_IDS) {
+    const spot = placeSpot(place, id);
+    if (!spot) continue;
+    const { at, size } = VILLAGE_PLACES[place];
+    for (let dx = 0; dx < size.w; dx++) for (let dy = 0; dy < size.d; dy++) for (const rang of [0, 1]) out.push({ x: at.x + dx, y: at.y + dy, base: spot.h + rang });
+  }
+  return out;
+}
+
+/**
+ * Le cube (x, y, z) (coordonnées du cœur, z au-dessus du sol de l'île) se tient-il entre la caméra de l'île et un lieu
+ * du village (`lieuxVus`) ? Le même rayon que pour une borne (`cacheUneBorne`) : la créature d'une île-école n'y va pas.
+ */
+export function cacheUnLieu(lieux: readonly BorneVue[], vers: readonly [number, number, number], x: number, y: number, z: number): boolean {
+  return lieux.length > 0 && cacheUneBorne(lieux, vers, x, y, z);
+}
+
+/**
+ * Les cases qu'occupent les lieux du village d'un archipel (coordonnées du monde, sur l'île de son école) : toute leur
+ * emprise, la place réservée des travées de la salle des trophées comprise. Le bonhomme n'y marche pas (paths.ts,
+ * `walkGround`) : toucher la place d'une travée à venir l'envoie à la case libre la plus proche, comme ailleurs.
+ */
+export function casesDesLieux(a: ArchipelagoId): { x: number; y: number }[] {
+  const id = getArchipelago(a).school;
+  const { core } = islandDef(id);
+  return casesDuVillage(id).map(([x, y]) => ({ x: core.x + x, y: core.y + y }));
+}
+
+/** Les cases devant la porte des lieux du village d'une île (coordonnées relatives au cœur), où le bonhomme s'arrête. */
+function portesDesLieux(id: BiomeId): string[] {
+  if (!isSchoolIsland(id)) return [];
+  return PLACE_IDS.map((place) => {
+    const { at, door } = VILLAGE_PLACES[place];
+    return `${at.x + door},${at.y - 1}`;
+  });
 }
 
 /** La porte d'un lieu : la case devant elle, où le bonhomme s'arrête (coordonnées du monde, z : le sol sous ses pieds). */
@@ -1706,53 +1783,18 @@ export function schoolModel(): ModelCube[] {
   return out;
 }
 
-/**
- * Les places des trophées, dans l'ordre où elles se remplissent : d'abord sur les socles de marbre (bien en vue, sous
- * le toit), puis sur le faîte, puis en second rang sur les socles, puis au bord du toit. Une place par succès.
- */
-export const TROPHY_SLOTS: { x: number; y: number; z: number }[] = [
-  ...[
-    [1, 0],
-    [2, 0],
-    [1, 1],
-    [2, 1],
-    [0, 1],
-    [3, 1],
-  ].map(([x, y]) => ({ x, y, z: 2 })),
-  ...[0, 1, 2, 3].map((x) => ({ x, y: 1, z: 6 })),
-  ...[
-    [1, 0],
-    [2, 0],
-    [1, 1],
-    [2, 1],
-    [0, 1],
-    [3, 1],
-  ].map(([x, y]) => ({ x, y, z: 3 })),
-  ...[0, 1, 2, 3].flatMap((x) => [
-    { x, y: 0, z: 5 },
-    { x, y: 2, z: 5 },
-  ]),
-];
+// Les places des trophées dans l'emprise de la salle, dans l'ordre où elles se remplissent : sous le toit, jamais dessus
+// (GD-3). Une place par succès.
+export { TROPHY_SLOTS } from './salle';
 
 /**
- * La salle des trophées (coordonnées relatives à son coin) : un pavillon ouvert devant, quatre colonnes de marbre, un
- * fond de velours rouge, des socles de marbre, un toit de pierre de taille au faîte d'or. `trophies` : le bloc de chaque
- * succès gagné, posé à sa place (voir TROPHY_SLOTS).
+ * La salle des trophées (coordonnées relatives au coin de son emprise) : un pavillon ouvert devant, des piliers de
+ * marbre, un fond de velours rouge, des socles de marbre, un toit de pierre de taille au faîte d'or, et une travée de
+ * plus tous les six succès après les douze premiers (./salle.ts). `trophies` : le bloc de chaque succès gagné, posé à
+ * sa place (voir TROPHY_SLOTS).
  */
 export function trophyModel(trophies: (keyof typeof BLOCKS)[] = []): ModelCube[] {
-  const out: ModelCube[] = [];
-  const { w, d } = TROPHY_SIZE;
-  for (let x = 0; x < w; x++)
-    for (let y = 0; y < d; y++) {
-      const corner = (x === 0 || x === w - 1) && (y === 0 || y === d - 1);
-      if (corner) for (let z = 1; z <= 3; z++) out.push({ x, y, z, block: 'marbre' });
-      else if (y === d - 1) for (let z = 1; z <= 3; z++) out.push({ x, y, z, block: 'velours' });
-      else out.push({ x, y, z: 1, block: 'marbre' });
-    }
-  for (let x = 0; x < w; x++) for (let y = 0; y < d; y++) out.push({ x, y, z: 4, block: 'taille' });
-  for (let x = 0; x < w; x++) out.push({ x, y: 1, z: 5, block: 'or' });
-  trophies.slice(0, TROPHY_SLOTS.length).forEach((block, i) => out.push({ ...TROPHY_SLOTS[i], block }));
-  return out;
+  return modeleDeLaSalle(trophies);
 }
 
 /**
@@ -2096,12 +2138,16 @@ function poserLIle(
     const spot = placeSpot(place, biome.id);
     if (!spot) continue;
     const { at, size } = VILLAGE_PLACES[place];
-    // Le soubassement rattrape une marche du sol.
-    for (let dx = 0; dx < size.w; dx++)
-      for (let dy = 0; dy < size.d; dy++)
-        for (let z = h(at.x + dx, at.y + dy) + 1; z <= spot.h; z++) cubes.push(placeCube(place, spot.x + dx, spot.y + dy, oz + z, 'taille', biome.id, unlocked));
-    for (const m of place === 'ecole' ? schoolModel() : place === 'trophees' ? trophyModel(trophies) : atelierModel(atelier, biome.classe))
-      cubes.push(placeCube(place, spot.x + m.x, spot.y + m.y, oz + spot.h + m.z, m.block, biome.id, unlocked));
+    const modele = place === 'ecole' ? schoolModel() : place === 'trophees' ? trophyModel(trophies) : atelierModel(atelier, biome.classe);
+    // Le soubassement rattrape une marche du sol, sous toute l'emprise du lieu ; pour la salle des trophées, sous ce qui
+    // est bâti seulement : la place réservée d'une travée à venir reste le sol de l'île, sans dalle ni marque (GD-3).
+    const bati = new Map<string, [number, number]>();
+    if (place === 'trophees') for (const m of modele) bati.set(`${m.x},${m.y}`, [m.x, m.y]);
+    else for (let dx = 0; dx < size.w; dx++) for (let dy = 0; dy < size.d; dy++) bati.set(`${dx},${dy}`, [dx, dy]);
+    const cases = bati.values();
+    for (const [dx, dy] of cases)
+      for (let z = h(at.x + dx, at.y + dy) + 1; z <= spot.h; z++) cubes.push(placeCube(place, spot.x + dx, spot.y + dy, oz + z, 'taille', biome.id, unlocked));
+    for (const m of modele) cubes.push(placeCube(place, spot.x + m.x, spot.y + m.y, oz + spot.h + m.z, m.block, biome.id, unlocked));
   }
   landmark(def, scenery, (x, y, z, color, decor) => !taken.has(cleDeCube(x, y, z)) && putWorld(x, y, z, color, decor));
   cascades(def, scenery, (x, y, z, color, decor) => !taken.has(cleDeCube(x, y, z)) && !placed.has(cleDeCube(x, y, oz + z)) && putWorld(x, y, z, color, decor));

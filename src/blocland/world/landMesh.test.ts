@@ -34,7 +34,7 @@ import { couleurDeMatiere } from './palette';
 import { ARCHIPELAGO_IDS, type ArchipelagoId } from './map';
 import { walkGround } from './paths';
 import { cubeTags, groundTap } from './scene';
-import { avatarRoute, creaturePlacements, guardianPlacements, worldCubes } from './terrain';
+import { avatarRoute, casesDesLieux, creaturePlacements, guardianPlacements, worldCubes } from './terrain';
 
 /** Une colonne de sol de `bas` à `haut`, en herbe. */
 const colonne = (x: number, y: number, haut: number, bas = -2): VoxelCube[] =>
@@ -421,7 +421,7 @@ describe('la marche sur le terrain', () => {
     const { progress, village } = toutConstruit();
     const { cubes, champ } = reel(a);
     const creatures = [...creaturePlacements(a, village.bridges), ...guardianPlacements(a, progress, village.bridges)];
-    const ground = walkGround(cubes, creatures);
+    const ground = walkGround(cubes, creatures, casesDesLieux(a));
     const islands = BIOMES.filter((b) => b.classe === a).map((b) => b.id);
     let checked = 0;
     for (const to of islands.slice(1)) {
