@@ -1,6 +1,6 @@
 # Le game design
 
-Cette section est le document de game design **vivant** de DysApps : ce qu’est le jeu aujourd’hui, ce qu’on veut en faire, et ce qui reste à décider. C’est là qu’on itère. Le jeu est **commun** aux univers (mêmes règles, même progression, même sauvegarde) ; chaque univers ([Blocland](../univers/blocland/game-design.md), [Archipéo](../univers/archipeo/game-design.md)) l’habille de son récit, de ses noms et de son dessin.
+Cette section est le document de game design **vivant** de DysApps : ce qu’est le jeu aujourd’hui, ce qu’on veut en faire, et ce qui reste à décider. C’est là qu’on itère. Le jeu est **commun** aux univers (mêmes règles, même progression, même sauvegarde) ; chaque univers ([Blocland](../univers/blocland/fiche.md), [Archipéo](../univers/archipeo/game-design.md), en pause) l’habille de son récit, de ses noms et de son dessin.
 
 Chaque sujet a trois parties : **Construit** (ce que fait l’application en ligne), **Cible** (ce qu’on veut), **Questions ouvertes** (ce qui reste à décider, et qui décide). Le détail de ce qui est construit, système par système, est dans [Les systèmes du jeu](systemes.md) ; l’histoire reste dans les cadrages, cités à chaque sujet ; l’état des lots est dans [l’état des chantiers](../pilotage/chantiers.md).
 
@@ -60,12 +60,11 @@ Ce qui ne se négocie jamais (voir [Principes dys](../../www/pedagogie/principes
 
 ## Les univers
 
-**Construit.** Deux univers, choisis dans Réglages › Univers : **Blocland** par défaut, **Archipéo** au choix, pas mis en avant. L’univers change le récit, les noms, le dessin et l’habillage de l’interface ; jamais les règles ni la progression, portable de l’un à l’autre ([Plusieurs univers](../univers/univers.md), §4).
+**Construit.** Deux univers, choisis dans Réglages › Univers : **Blocland** par défaut, **Archipéo** au choix, pas mis en avant. Archipéo est en pause depuis le 2 octobre 2026 (décision du mainteneur) : le nouveau gameplay se met en place dans Blocland seul. L’univers change le récit, les noms, le dessin et l’habillage de l’interface ; jamais les règles ni la progression, portable de l’un à l’autre ([Plusieurs univers](../univers/univers.md), §4).
 
 **Questions ouvertes.**
-- Quand et comment Archipéo sort de la discrétion (décision 9 ; aperçus fixes reportés après les lots 8 et 8b).
-- Les noms propres à Blocland (Basses Terres, Collines du Large, Monts de Feu) et ses rôles reviennent-ils (U4, proposé par son consultant) ?
-- Ce que doit fournir un troisième univers (U6), après les lots 8 et 8b.
+- Si et quand Archipéo reprend (mainteneur).
+- Ce que doit fournir un troisième univers (U6).
 
 ## Personnages et Gardiens
 
@@ -73,7 +72,6 @@ La liste complète, île par île, avec ce qui change d’un univers à l’autr
 
 **Questions ouvertes.**
 - Des créatures utiles (cap de [GD-4](propositions/GD-4.md)) : d’abord la créature qui se souvient et propose les révisions dans le monde ; ensuite celle qui commande un ouvrage ; plus tard, des défis de Gardien variés, de forme propre à chaque univers.
-- Qui parle aux grandes étapes dans Blocland, à la place de la baleine, et pour dire quoi ?
 - Les répliques des créatures, le mot de la baleine et une partie des espèces, encore communs aux deux univers (reste de R6) ; les répliques des Gardiens sont déjà propres à chaque univers.
 
 ## Récompenses et célébrations
