@@ -19,7 +19,8 @@
     "contenu": "node scripts/contenu/generer.mjs",
     "www:captures": "node scripts/www/captures.mjs",
     "programme:extract": "node scripts/programme/extract.mjs",
-    "rendu:mesures": "node scripts/rendu/mesures.mjs"
+    "rendu:mesures": "node scripts/rendu/mesures.mjs",
+    "rendu:budget": "node scripts/rendu/budget.mjs"
   },
   "dependencies": {
     "@fontsource/archivo-black": "^5.3.0",

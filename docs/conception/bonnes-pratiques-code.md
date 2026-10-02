@@ -64,7 +64,7 @@ Ce que l’élève doit vivre est dans les [Bonnes pratiques dys](bonnes-pratiqu
 | TypeScript strict | `strict`, variables et paramètres inutilisés refusés, aucun `any` hors tests ; typage vérifié à chaque build | `tsconfig.json`, `npm run build` |
 | Chargement à la demande | 3D, 2D et missions en `lazy` ; exercices lus seulement au lancement d’une partie | `src/blocland/three/index.ts`, `src/blocland/pixel/index.ts`, `src/apps/registry.ts` |
 | Ressources 3D libérées | `dispose` des géométries, matériaux et textures ; boucle arrêtée quand l’onglet est caché | `src/blocland/three/` (chaque partie de la scène a son `dispose`) |
-| Budget du rendu | Mesures d’appels de dessin et de triangles par archipel | `npm run rendu:mesures`, `src/blocland/world/budget.ts` |
+| Budget du rendu | Mesures d’appels de dessin et de triangles par archipel | `npm run rendu:mesures`, `npm run rendu:budget` (par poste, sans navigateur), `src/blocland/world/budget.ts` |
 | Logique pure et testée | Monde calculé en fonctions pures, empreintes du monde | `src/blocland/world/`, `separation-jeu-rendu.md` |
 | Bornes d’erreur | Une page ou une scène qui ne charge pas propose de recharger | `src/components/ErrorBoundary.tsx` |
 | Hors ligne | Tout précaché, mise à jour proposée, jamais imposée | `vite.config.ts` (`VitePWA`) |

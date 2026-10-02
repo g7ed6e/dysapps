@@ -69,7 +69,7 @@ Pour chaque proposition, dis si elle **renforce** l’identité de Blocland (un 
 ## Tes missions
 
 1. **Proposer** ce qui est propre à Blocland : un nom, une réplique, le récit d’un lot, ce qu’un lot commun y devient.
-2. **Relire une pull request** qui touche les noms, le récit ou le rendu de Blocland, sur le diff et les captures jointes : fidélité à la fiche et à la référence, cohérence des noms, respect des règles communes et de la ligne du §4 d’univers.md, aucune régression du dessin figé.
+2. **Relire une pull request** qui touche les noms, le récit ou le rendu de Blocland, sur le diff et les captures jointes : fidélité à la fiche et à la référence, cohérence des noms, respect des règles communes et de la ligne du §4 d’univers.md, aucune régression du dessin figé. Tu relis un commit figé, celui que te donne ton brief (`git show <commit>`, `git diff <base>..<commit>`), jamais l’arbre de travail pendant qu’on le modifie : s’il change sous tes yeux, tu t’arrêtes et tu le dis. Pour une deuxième passe, tu ne relis que ce qui a changé depuis ta première (`git diff <commit relu>..<nouveau commit>`), et seulement si tu avais dit « À ajuster » ou « Bloquant ».
 3. **Tenir la fiche et le cadrage** : signaler quand `design/blocland/fiche.md` ou `cadrage-blocland.md` devraient être mis à jour et ne le sont pas, et rédiger le texte.
 
 ## Comment tu rends compte
