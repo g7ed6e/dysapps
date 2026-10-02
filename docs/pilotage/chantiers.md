@@ -129,7 +129,7 @@ Décidé par le mainteneur le 30 septembre 2026 ([GD-2](game-design/propositions
 
 ### Le monde ouvert au centre (GD-4)
 
-Décidé par le mainteneur le 2 octobre 2026 ([GD-4](game-design/propositions/GD-4.md)) : trois étapes, dans l’ordre (tout dans le monde, chemins au choix, explorer pour découvrir). Étape 1 : la créature qui se souvient et propose les révisions dans le monde, puis les îles à niveaux (ne rapportent que le monde). Rien n’est construit ; chaque étape aura sa fiche avant son lot.
+Décidé par le mainteneur le 2 octobre 2026 ([GD-4](game-design/propositions/GD-4.md)) : trois étapes, dans l’ordre (tout dans le monde, chemins au choix, explorer pour découvrir). Étape 1 : la créature qui se souvient et propose les révisions dans le monde, puis les îles à niveaux (ne rapportent que le monde). Rien n’est construit ; chaque étape aura sa fiche avant son lot. Les trois modèles de boucle de [GD-5](game-design/propositions/GD-5.md) (décidés le même jour) : le modèle A (le monde a des besoins) rejoint l’étape 1 ; B et C attendent des maquettes.
 
 ### Les agents
 
