@@ -155,11 +155,12 @@ it('les colonnes des bornes d’une île-école selon son nombre de missions : a
 const SEUIL_DU_TOIT = 6;
 
 /**
- * Point ouvert (02/10/2026), à trancher par le directeur artistique : à l'Atelier, même une rangée plus au fond, la cloche
+ * Tranché par le directeur artistique (02/10/2026), accepté : à l'Atelier, même une rangée plus au fond, la cloche
  * d'or du clocheton de l'école (son cube le plus haut, z = 7 ; le toit seul reste sous le seuil) cache le bas des cases 11
  * et 12 de la première rangée de plans. Ces cases seules dépassent le seuil, et seulement par la cloche.
  */
 const AU_DELA_DU_SEUIL: Partial<Record<(typeof ECOLES)[number], readonly string[]>> = { atelier: ['ecole@11', 'ecole@12'] };
+const PLAFOND_DE_LA_CLOCHE = 12;
 const laCloche = (c: { place?: string; z: number; texture?: string }) => c.place === 'ecole' && c.texture === 'or';
 
 it(`la première rangée où se pose un plan : l’école en cache au plus ${SEUIL_DU_TOIT} points sur 45 par case, aucun autre lieu rien`, () => {
@@ -171,7 +172,7 @@ it(`la première rangée où se pose un plan : l’école en cache au plus ${SEU
       const r = pointsCaches(id, atelier);
       expect(Object.keys(r).filter((k) => !k.startsWith('ecole@')), `${id} (${atelier})`).toEqual([]);
       const ouverts = AU_DELA_DU_SEUIL[id] ?? [];
-      for (const [k, n] of Object.entries(r)) if (!ouverts.includes(k)) expect(n, `${id} (${atelier}) ${k}`).toBeLessThanOrEqual(SEUIL_DU_TOIT);
+      for (const [k, n] of Object.entries(r)) expect(n, `${id} (${atelier}) ${k}`).toBeLessThanOrEqual(ouverts.includes(k) ? PLAFOND_DE_LA_CLOCHE : SEUIL_DU_TOIT);
       // Sans la cloche, toutes les cases tiennent le seuil : le reste de l'école (le toit) ne le dépasse nulle part.
       for (const [k, n] of Object.entries(pointsCaches(id, atelier, laCloche))) expect(n, `${id} (${atelier}) ${k}, sans la cloche`).toBeLessThanOrEqual(SEUIL_DU_TOIT);
     }
@@ -228,7 +229,7 @@ it('une sauvegarde d’avant la redistribution (plans posés dans la zone de 6 �
 });
 
 /**
- * Point ouvert (02/10/2026), d'avant ce lot, laissé au consultant de Blocland : sur l'île du Phare, la petite tour du phare
+ * Point à suivre (02/10/2026), d'avant ce lot, exception validée par le consultant de Blocland pour ce lot : sur l'île du Phare, la petite tour du phare
  * du décor du cœur (layout (9, 3), cœur (11, 6), six cubes) cache, de sa lanterne, deux trophées du bout de la salle.
  */
 const DECOR_QUI_CACHE_UN_TROPHEE: Partial<Record<(typeof ECOLES)[number], string>> = { phare: 'la tour du phare du cœur' };

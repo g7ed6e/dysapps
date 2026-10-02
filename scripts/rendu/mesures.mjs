@@ -319,10 +319,10 @@ async function scenes() {
         const l = plansFor(b.id);
         if (l.length) delete plans[l[l.length - 1].id];
       }
-    // Sur chaque île : les plans d'avant posés, la moitié de celui-ci (0 : les murs, 1 : le toit, 2 : la cour), rien après.
     // Sur chaque île : le premier plan posé, rien après.
     if (partie === 'un-plan')
       for (const b of BIOMES) plansFor(b.id).forEach((p, i) => i > 0 && delete plans[p.id]);
+    // Sur chaque île : les plans d'avant posés, la moitié de celui-ci (0 : les murs, 1 : le toit, 2 : la cour), rien après.
     const moitie = { 'murs-mi': 0, 'toit-mi': 1, 'cour-mi': 2 }[partie];
     if (moitie !== undefined)
       for (const b of BIOMES) {
