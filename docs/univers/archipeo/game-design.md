@@ -1,5 +1,7 @@
 # Archipéo
 
+> **En pause** depuis le 2 octobre 2026 (décision du mainteneur) : le projet Archipéo est arrêté, le nouveau gameplay se met en place dans Blocland seul. Ce document est gelé ; l’état des chantiers d’Archipéo est dans [En pause : Archipéo](../../pilotage/chantiers.md#en-pause--archipéo).
+
 Archipéo est l’aventure maritime où **le savoir construit ton monde** : l’archipel, autrefois relié, a été fragmenté, et l’élève le restaure. C’est l’univers de la migration décidée le 27 septembre 2026, **au choix dans les Réglages et pas mis en avant pour l’instant** (décisions 8 et 9 de [Plusieurs univers](../univers.md)). Il habille le jeu commun ([Le game design](../../gameplay/index.md)) sans en changer les règles. Il est tenu par l’agent `consultant-archipeo`, sous l’autorité du directeur artistique. La cible d’origine est le dossier de game design et le pack visuel fournis par le mainteneur (`docs/univers/archipeo/source/`, figés) ; les décisions et le plan en lots sont dans le [Cadrage Archipéo](cadrage.md).
 
 ## Construit

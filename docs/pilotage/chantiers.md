@@ -1,6 +1,6 @@
 # État des chantiers
 
-Cette page dit, chantier par chantier, où en est le projet : ce qui est construit, ce qui est en cours, ce qui attend une décision et de qui. Elle est le point d’entrée ; le détail reste dans les cadrages, cités à chaque ligne. **Mise à jour le 30 septembre 2026 au soir.**
+Cette page dit, chantier par chantier, où en est le projet : ce qui est construit, ce qui est en cours, ce qui attend une décision et de qui. Elle est le point d’entrée ; le détail reste dans les cadrages, cités à chaque ligne. **Mise à jour le 2 octobre 2026.**
 
 Chaque pull request qui fait avancer un chantier met à jour sa ligne ici, dans la même pull request (règle du `CLAUDE.md`). Une décision de game design ne s’écrit pas ici mais dans le [game design](../gameplay/index.md).
 
@@ -10,8 +10,8 @@ Chaque chantier a son préfixe ; on ne les mélange jamais (dans les fils, les p
 
 | Préfixe | Chantier | Plan détaillé |
 | --- | --- | --- |
-| **lot 1** à **lot 11** | La migration vers Archipéo, piste Jeu et suite | [Cadrage Archipéo](../univers/archipeo/cadrage.md), §6 |
-| **R0** à **R7**, **R4b-6e** à **R4b-3e**, **S** | Le rendu d’Archipéo | [Cadrage Archipéo](../univers/archipeo/cadrage.md), piste Rendu |
+| **lot 1** à **lot 11** | La migration vers Archipéo, piste Jeu et suite (en pause) | [Cadrage Archipéo](../univers/archipeo/cadrage.md), §6 |
+| **R0** à **R7**, **R4b-6e** à **R4b-3e**, **S** | Le rendu d’Archipéo (en pause) | [Cadrage Archipéo](../univers/archipeo/cadrage.md), piste Rendu |
 | **DA-1** à **DA-34** | Les retouches de la revue d’ensemble du directeur artistique | Liste tenue hors du dépôt par le fil « Revue d’ensemble du DA » ; résumé ci-dessous |
 | **J0** à **J8**, **D** | Séparer le jeu du rendu | [Séparer le jeu du rendu](../conception/separation-jeu-rendu.md), §3 |
 | **U0** à **U6** | Les univers | [Plusieurs univers](../univers/univers.md), §6 |
@@ -26,14 +26,9 @@ Chaque chantier a son préfixe ; on ne les mélange jamais (dans les fils, les p
 
 | Quoi | Chantier | Recommandation |
 | --- | --- | --- |
-| Voir sur tablette le 7b et les lieux du 6e | lot 7 | Oui : moiré en mouvement, images par seconde, pose d’un bloc à la Forêt |
-| Choisir l’asset du banc d’essai, puis qui lance les outils de génération | Assets | Un Gardien d’Archipéo, en portrait 2D puis en 3D ; lancés d’abord à la main par le mainteneur sur une commande préparée |
 | Confier l’en-tête commun des écrans de calcul, qui fait défiler d’environ 124 px sur tablette (Faisceaux, Relevés, Thalès) | — | Un fil court, relu par le référent dys ; personne ne l’a pour l’instant |
-| Valider le budget des bornes du 6e (1 250 triangles, pris sur la faune ; total inchangé à 57 800) | C-2, R | Oui : la quatrième borne du Volcan dépasse de 8 triangles, la faune a de la marge |
 | Entendre sur iPad et Android un nombre de dix chiffres lu en milliards (Nombres géants) | C-2 | — |
-| La vidéo de l’oiseau planeur | DA-22 | — |
 | La recherche « rien d’emprunté » sur « Jardin des heures » et ses replis | LV2-4 | — |
-| La limite de 40 appels de dessin : par archipel tout construit, ou pour la vue d’une île seulement | R | Aujourd’hui 45 à 65 appels en vue d’archipel, 81 à 115 sur la Carte |
 | Le premier voyage : nombre de Gardiens exigés (3, 2, 2) et taille du premier chantier | Blocland | Selon les retours des élèves |
 
 ### À vérifier sur tablette
@@ -51,43 +46,13 @@ Chaque chantier a son préfixe ; on ne les mélange jamais (dans les fils, les p
 
 ## Les chantiers
 
-### La migration vers Archipéo (lots)
+### L’accessibilité dans l’appli
 
-| Lot | Titre | État | Suite |
-| --- | --- | --- | --- |
-| lot 1 à lot 5 (3a, 3b, 4a, 4b) | Les mots, l’interface, le monde qui change, le menu et la Carte, le mot de la baleine | Construits | — |
-| lot 6 | Le nouveau monde, à deux univers (avec U3) | **Fini** le 29 septembre 2026 (#241) | Aperçus fixes des univers reportés après les lots 8 et 8b |
-| lot 7 | L’architecture modulaire (Archipéo seulement) | 7a construit (#229) ; choix du mainteneur inscrits (#250) ; 7b (le 6e : colombage peint, toits en pente) fusionné (#273) ; **l’école et la salle des trophées au kit du 6e** fusionnées (#279) ; **la place des trophées (GD-3)** en pull request : aucun trophée sur le toit, une travée tous les 6 succès après les 12 premiers, vers la gauche, jusqu’à 8 × 3, dans les deux univers ; la créature de l’île-école quitte la vue de la salle (derrière elle ; à la Forêt des sons, un arbre retiré pour Mousso) ; au 6e, des trophées plus petits que leur case | Attend : la dernière relecture du directeur artistique sur les captures de la Forêt, puis le mot du mainteneur pour fusionner. **Reportée par le mainteneur (2 octobre 2026) : la phrase « La salle s’agrandit. »**, écrite et lue à l’arrivée d’une travée (pistes : une ligne au bandeau du 13e et du 19e succès, recommandée par le consultant UX UI ; ou dans le panneau de la salle) ; l’avis du référent dys reste réservé tant qu’elle n’est pas faite. Proposition de l’artiste : des trophées plus petits que leur case au 5e avant son kit demanderaient environ 240 triangles de plus à l’enveloppe de construction du 5e. Ensuite : le bardage des pignons (à trancher par le directeur artistique), le dessus des fantômes un peu plus distinct du crème (référent dys) ; puis 7c et 7d en parallèle, 7e avec le lot 8 |
-| lot 8 | L’Horizon et le navire maritime | À faire | Migration de sauvegarde des pièces du navire ; monde en réseau (J6) |
-| lot 8b | La Carte des quatre archipels en 3D | À faire | Après le lot 8 |
-| lot 9 | L’archipel vivant | À faire | Le faisceau et la rotation du phare l’attendent |
-| lot 10 | Un village à soi | À faire | — |
-| lot 11 | Contraste élevé et « Réduire les animations » dans l’appli | À refaire (retirés le 28 septembre 2026, #196) | — |
-
-### Le rendu d’Archipéo (R) et la revue d’ensemble (DA-n)
-
-Tous les lots R sont construits : R0 à R7, S, les quatre R4b (6e, 5e, 4e, 3e), R5 avec les ponts du 5e, R6. La 2D peinte (R7) reste dans le code sans écran qui l’affiche (sans WebGL, la vue simple est la liste des îles).
-
-| Retouches | État |
-| --- | --- |
-| DA-3 à DA-6, DA-8 à DA-10, DA-14 à DA-18, DA-23 à DA-31 | Fusionnées |
-| DA-7, DA-32 | Sans objet |
-| DA-19 (lueur de nuit du 3e au-dessus de 3 %) | Close sans code : les 3 % venaient du bouton doré du lieu posé sur la scène ; la scène seule reste sous 0,3 %, et la mesure masque l’interface depuis #252 |
-| **DA-11** (nuages au ras de l’eau, nuage sur un pont du 3e) | Fusionnée (#278, 1er octobre) : les nuages d’Archipéo partent au loin, au nord de l’archipel, jamais au-dessus d’une île, d’un pont ni d’un chemin |
-| **DA-21** (nuit lilas du 3e) | Fusionnée (#285, 1er octobre) : la nuit des Îles du Ciel perd son lilas (204-213° à l’image, comme le 6e et le 5e), l’horizon, le jour et Blocland ne changent pas |
-| **DA-35** (ronds blancs trop réguliers sur le fond du 3e, remarqués par le mainteneur) | En pull request, dans les deux univers : plancher de nuages uni de Blocland, nappes assombries la nuit, nappes d’Archipéo variées ; restent les cumulus d’Archipéo, après la fusion des îles agrandies |
-| **DA-20** (massif du 3e) | En pull request : le massif enneigé posé sur le plancher de nuages, bouts qui plongent sous les nuages, pied fondu, roche lisible ; validée par le directeur artistique |
-| DA-22 (oiseau planeur) | Attend la vidéo du mainteneur |
-| DA-1 (fumée plus grise), DA-2 (fourneau du 4e), DA-13 (lointain du 6e, facultatif), DA-12 (capture du pont Marché–Marais) | À faire, en dernier |
-| DA-33 (à la revanche, « brille déjà » alors que la sentinelle repart éteinte) | À valider par le directeur artistique |
-| DA-34 (le défi du Gardien qui déborde : le nom une fois, la réplique repliée, l’arène basse) | Décidée par le mainteneur le 1er octobre 2026, faite dans la pull request de l’allègement de l’interface |
-| Bornes cachées (dans la vue d’une île, un arbre, un fanion ou une fumée se dressait devant une borne de mission, relevé par C-4 et C-5) | Pull request ouverte : aucun décor ne cache plus une borne, sur les 31 îles |
-
-Restes de R6 (cadrage Archipéo, les personnages) : répliques des créatures, mot de la baleine et une partie des espèces propres à Archipéo (encore communs), miniature en cubes du panneau d’île, créatures un peu moins contrastées de nuit.
+Le contraste élevé et « Réduire les animations » dans l’application (ancien lot 11, pour tous les univers) sont à refaire : ils ont été retirés le 28 septembre 2026 (#196) ; la préférence de l’appareil s’applique toujours.
 
 ### Séparer le jeu du rendu (J)
 
-J0 à J5 et D construits ; l’habillage des univers (objet `Habillage`, textes dans `src/univers/`, couche `univers`) fait avec U4. **Reste la disposition en réseau** (le monde d’Archipéo en lieux sans marche, décision du mainteneur), avec les lots 8 et 8b, à cadrer d’abord avec le directeur artistique.
+J0 à J5 et D construits ; l’habillage des univers (objet `Habillage`, textes dans `src/univers/`, couche `univers`) fait avec U4. La disposition en réseau (le monde d’Archipéo en lieux sans marche) est en pause avec Archipéo.
 
 ### Les univers (U)
 
@@ -118,21 +83,17 @@ Le plan C-1 à C-15 est dans le [cadrage du contenu](../conception/cadrage-conte
 
 Encore ouverts : le découpage syllabique selon l’écrit ou selon l’oral (le référent dys tranche), le nom de Tunel et « Bien piochée ! » (le directeur artistique), « Entendre les choix » (technique).
 
-### Le flux de l’idée aux assets
-
-En conception avec le mainteneur dans le fil « Flux de l’idée aux assets » ; rien n’entre dans le dépôt avant sa validation. Décidé le 30 septembre 2026 : la règle « aucun modèle ni texture importé » s’ouvre, avec un cadre (une fiche par asset : outil, prompt, licence ; le budget de l’archipel ; servi depuis l’appli, hors ligne ; validé par le directeur artistique et le référent dys). Le cadre reste à écrire dans le [cadrage Archipéo](../univers/archipeo/cadrage.md) avec le flux. En cours : comment générer les images et les modèles 3D ; proposition d’un banc d’essai sur un seul asset, jugé sur le rendu, le poids et le coût. Blocland reste dessiné par le code.
-
 ### Combiner les blocs (GD-2)
 
 Décidé par le mainteneur le 30 septembre 2026 ([GD-2](../gameplay/propositions/GD-2.md)) : un lieu de plus sur l’île de l’école (la Fabrique dans Blocland, la Halle aux matériaux dans Archipéo) où l’on assemble un bloc par archipel (Poutre, Vitrail, Engrenage, Miroir ; Madrier, Hublot, Poulie, Loupe dans Archipéo), que les huit monuments demandent. Recettes et noms dans `docs/contenu/assemblage.md`. **Fusionné** (#272, 1er octobre 2026). Aux Premiers Rivages, la Halle aux matériaux prend le colombage, comme l’école et la salle des trophées. Enveloppe de construction des archipels 5e à 3e : 7 100 → 7 260 triangles, somme des « autres » à 53 060 (« ok budget » puis « ok 7260 » du mainteneur, 1er octobre 2026 ; enveloppe commune avec la salle des trophées de GD-3). Reste ouvert : l’étiquette de l’île qui couvre le lieu, le hublot du phare du large (petit), l’icône du Hublot aux couleurs du vitrail, une explication courte des mots rares d’Archipéo (madrier, poulie, hublot). **Une question à chaque bloc assemblé** (décision du mainteneur, 1er octobre 2026) : construite dans la même pull request. 12 questions par bloc sur les deux matières de la recette (`docs/contenu/assemblage.md`, « Les questions »), posées en plein écran sur l’écran des documents à lire ; un tirage par élève et par bloc (jamais l’une des 6 dernières ; une manquée revient après 6 autres, règle du mainteneur), gardé dans la sauvegarde (`assemblageTirage`, optionnel) ; une erreur ne fait rien perdre et laisse un second essai. Les questions d’assemblage comptent dans l’horloge de séance (trois exercices ou dix minutes) : la pause s’affiche à la fin d’une question (choix du mainteneur, 1er octobre 2026). La pause du bilan de mission est alignée sur celle de l’assemblage, un seul composant (`PauseSeance.tsx`) : bouton Écouter, retour sans historique, focus sur « J’arrête pour aujourd’hui », puis sur le bouton principal après « Encore un peu ».
 
 ### Le monde ouvert au centre (GD-4)
 
-Décidé par le mainteneur le 2 octobre 2026 ([GD-4](../gameplay/propositions/GD-4.md)) : trois étapes, dans l’ordre (tout dans le monde, chemins au choix, explorer pour découvrir). Étape 1 : la créature qui se souvient et propose les révisions dans le monde. Les niveaux d’île, d’abord retenus, sont retirés le même jour au profit du modèle A de GD-5. Rien n’est construit ; chaque étape aura sa fiche avant son lot. Les trois modèles de boucle de [GD-5](../gameplay/propositions/GD-5.md) (décidés le même jour) : le modèle A (chaque mission est une demande de l’habitant ; l’île reconstruite devient fournisseur) rejoint l’étape 1, avec des blocs qui se posent tout seuls et restaurent le bâtiment de l’île, qui produit ensuite son bloc pour le reste du monde ; B et C attendent des maquettes.
+Décidé par le mainteneur le 2 octobre 2026 ([GD-4](../gameplay/propositions/GD-4.md)) : trois étapes, dans l’ordre (tout dans le monde, chemins au choix, explorer pour découvrir). Étape 1 : la créature qui se souvient et propose les révisions dans le monde. Les niveaux d’île, d’abord retenus, sont retirés le même jour au profit du modèle A de GD-5. Rien n’est construit ; chaque étape aura sa fiche avant son lot. Les trois modèles de boucle de [GD-5](../gameplay/propositions/GD-5.md) (décidés le même jour) : le modèle A (chaque mission est une demande de l’habitant ; l’île reconstruite devient fournisseur) rejoint l’étape 1, avec des blocs qui se posent tout seuls et restaurent le bâtiment de l’île, qui produit ensuite son bloc pour le reste du monde ; B et C attendent des maquettes. La boucle des blocs, éprouvée par le directeur artistique dans quatre moments, est fixée par [GD-6](../gameplay/propositions/GD-6.md) (décidée le même jour) : une partie du bâtiment par mission, le bloc de l’île de l’école dès le début, les plans devenus les parties des missions (coffres retirés, or et cristal en trophées), le bloc d’une île restaurée par les missions rejouées et les révisions, seul le bâtiment posé tout seul, les blocs des archipels quittés demandés ensuite. Rien n’est construit ; les avis des consultants et du référent dys sont à recueillir sur la fiche du lot. Étape 2, des chemins au choix : [GD-7](../gameplay/propositions/GD-7.md) (décidée le même jour), le port en étoile, sans Gardien comme condition d’une liaison, avec des demandes d’habitants qui posent un petit ouvrage (trois au plus). Rien n’est construit.
 
 ### La documentation rangée par métier
 
-Demande du mainteneur (2 octobre 2026) : un dossier pour le gameplay, un pour les univers, un pour l’UX UI et un pour le rendu. Piste « quatre dossiers » choisie le même jour, après l’avis du directeur artistique et de l’expert frontend : [`docs/gameplay/`](../gameplay/index.md), [`docs/univers/`](../univers/univers.md) (avec `archipeo/` et `blocland/` ; `design/` y entre, le dossier fourni par le mainteneur figé dans `archipeo/source/`), [`docs/ux-ui/`](../ux-ui/README.md) et [`docs/rendu/`](../rendu/README.md) ; `pilotage/` ne garde que l’état des chantiers. Première pull request : les fichiers déplacés tels quels et les liens corrigés. Suites, chacune dans sa pull request : découper le cadrage de Blocland (les systèmes communs vers `docs/gameplay/`) et le style (repères et polices vers `ux-ui/`, habillages vers chaque univers) ; relier `archipeo/source/accessibilite-dys.md` aux bonnes pratiques dys.
+Demande du mainteneur (2 octobre 2026) : un dossier pour le gameplay, un pour les univers, un pour l’UX UI et un pour le rendu. Piste « quatre dossiers » choisie le même jour, après l’avis du directeur artistique et de l’expert frontend : [`docs/gameplay/`](../gameplay/index.md), [`docs/univers/`](../univers/univers.md) (avec `archipeo/` et `blocland/` ; `design/` y entre, le dossier fourni par le mainteneur figé dans `archipeo/source/`), [`docs/ux-ui/`](../ux-ui/README.md) et [`docs/rendu/`](../rendu/README.md) ; `pilotage/` ne garde que l’état des chantiers. Première pull request : les fichiers déplacés tels quels et les liens corrigés. Suites, chacune dans sa pull request : découper le cadrage de Blocland (les systèmes communs vers `docs/gameplay/`) et le style (repères et polices vers `ux-ui/`, habillages vers chaque univers) ; relier `archipeo/source/accessibilite-dys.md` aux bonnes pratiques dys. Pour éviter une nouvelle dérive (mainteneur, 2 octobre 2026), `AGENTS.md` donne les questions qui disent où ranger un document, et les règles qui l’empêchent de dériver (compléter plutôt que créer, un sujet à un seul endroit, aucune place nouvelle sans décision, un gardien par dossier).
 
 ### Les agents
 
@@ -151,6 +112,16 @@ Demande du mainteneur (1er octobre 2026) : agrandir les îles pour la lisibilit�
 Demande du mainteneur (1er octobre 2026) : moins de captures, prises plus vite. Il a choisi les deux étapes et les deux pistes suivantes. **Première étape, l’accélération** (#291, fusionnée) : la boucle de rendu est bridée à 8 images/s pendant les captures et la caméra est posée d’un coup à son cadrage au lieu d’attentes fixes (`scripts/prise-de-vue.mjs`) ; le 6e de jour et de nuit passe de 149 s à 35 s, le manuel de 8 min 56 à 4 min 34. Dans la même pull request, **les animations identiques d’une prise à l’autre** : l’horloge des captures de rendu est pilotée et le hasard a une graine fixe, deux prises du même état ne diffèrent plus que de 0,3 % des pixels au plus. **Deuxième étape, moins de captures** (accord écrit du mainteneur, 1er octobre 2026, sur l’avis du directeur artistique ; #292, fusionnée) : le socle (île, archipel, Carte, de jour et de nuit, 4 archipels, 2 univers) est refait par la CI à chaque publication sur `main` (branche `captures-main`) ; un lot s’y compare (`--comparer`) et ne publie que les planches avant/après des vues qui changent, avec la liste des inchangées ; un périmètre par défaut (l’univers du lot et une vue témoin de l’autre, l’archipel touché, la nuit si la lumière ou une construction change, le téléphone si l’interface, le cadrage ou la taille d’une île change) ; `CAPTURES` passe de 153 à 46 vues (le socle, les familles communes personnages et lisibilité, celles des lots en cours). **Troisième étape, les captures d’un lot sur la CI** (« Ok pour 1 » du mainteneur, 1er octobre 2026 ; #293, fusionnée) : un fil lance le workflow « Captures d’un lot » sur sa branche ; une machine par univers, archipel et côté (avant, après) prend les captures en parallèle, puis la CI compare et range les planches des vues changées sur la branche `captures`, dans le dossier du lot. Le conteneur du fil ne prend plus de captures de rendu.
 
 **Suite, le travail de l’artiste technique 3D** (« go 1 2 3 » du mainteneur, 1er octobre 2026, après une revue de ses fils GD-3 et DA-20) : l’artiste code, commite et s’arrête, et le fil lance les captures sur la CI au lieu que l’artiste les attende avec un long contexte ; une retouche est confiée à un artiste neuf avec un brief court ; pas de captures finales quand une pull request qui passe avant va fusionner ; les relecteurs lisent un commit figé et ne lancent ni captures ni `rendu:mesures` ; `npm run rendu:budget` compte les triangles et les appels poste par poste, sans test jetable (fiche de l’artiste, de l’expert frontend, skill `captures`). Reste : compter le budget selon le nombre de succès une fois GD-3 fusionnée (salle des trophées qui s’agrandit). Puis, sur l’accord du mainteneur aux quatre points suivants (« Ok pour les 4 points additionnels », 1er octobre 2026) : une demande qui change un parcours, la navigation, le game design ou un univers commence par deux ou trois pistes écrites que le mainteneur choisit avant le code (`CLAUDE.md`, fiches du consultant UX UI et du directeur artistique) ; tous les relecteurs lisent un commit figé ; une deuxième passe ne relit que ce qui a changé, chez le relecteur qui avait demandé un ajustement ; `sceneCostArchipeo` compte les personnages fusionnés (lot R6) au lieu de leurs cubes : tout construit, le code compte 55 076 triangles et 17 appels au 6e, 48 933 et 16 au 5e, 45 995 et 17 au 4e, 42 917 et 16 au 3e, sans « Dans la scène » (`npm run rendu:budget`). **À faire, un lot à part :** la Carte dessine 51 à 67 appels (mesuré par `npm run rendu:mesures -- --rendu archipeo`, au-dessus des 40 du plan), 14 à 32 de plus que la vue de l’archipel ; chaque étiquette d’île y est un sprite avec sa propre texture, et la Carte nomme toutes les îles (`three/etiquettes.ts`, `WorldPage.tsx`) : un sprite reste un appel de dessin même avec une texture partagée : il faudrait réunir les étiquettes dans un atlas dessiné en un seul objet (instancié ou fusionné), technique que choisira l’artiste technique 3D, pour ramener la Carte vers la vue de l’archipel (déduit du code par l’expert frontend, à mesurer). À proposer au mainteneur après la pause des fils, `labelLayout.ts` étant partagé.
+
+## En pause : Archipéo
+
+Décision du mainteneur (2 octobre 2026) : le projet Archipéo est arrêté, il sera peut-être repris plus tard ; le nouveau gameplay se met en place dans Blocland seul. Le code d’Archipéo reste dans l’application, et [son dossier](../univers/archipeo/cadrage.md) est gelé tel quel. Rien de ce qui suit ne reprend sans le mot du mainteneur ; le détail est dans le cadrage d’Archipéo et dans l’historique git de cette page.
+
+- **Lots** : 1 à 6 construits (le lot 6, à deux univers, fini le 29 septembre 2026, #241) ; lot 7 : 7a, 7b (le 6e en colombage), l’école, la salle des trophées et la Halle au kit du 6e fusionnés ; le bardage des pignons, 7c, 7d et 7e ne sont pas faits ; lots 8 (l’Horizon et le navire), 8b (la Carte en 3D), 9 (l’archipel vivant) et 10 (un village à soi) pas commencés, avec la disposition en réseau (J).
+- **Rendu (R)** : R0 à R7, S, les quatre R4b, R5 et R6 construits ; la 2D peinte (R7) reste dans le code sans écran qui l’affiche. Restes de R6 : répliques des créatures et mot de la baleine propres à Archipéo, miniature du panneau d’île.
+- **Retouches du directeur artistique** : les cumulus d’Archipéo (fin de DA-35), DA-1, DA-2, DA-12, DA-13, DA-22 (la vidéo de l’oiseau planeur), DA-33 ; Archipéo sur téléphone au défi du Gardien, qui déborde encore.
+- **Le flux de l’idée aux assets** : le cadre (une fiche par asset, licence, budget, hors ligne) et le banc d’essai sur un Gardien d’Archipéo ne sont pas faits.
+- **Les questions gelées** : voir sur tablette le 7b ; le budget des bornes du 6e ; la limite des 40 appels de dessin par archipel ; les étiquettes de la Carte réunies en un seul objet (la Carte d’Archipéo dessine 51 à 67 appels) ; la baleine d’Archipéo qui dit « bâtie ».
 
 ## Les défauts relevés en consolidant
 

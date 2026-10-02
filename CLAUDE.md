@@ -15,7 +15,7 @@
 
 ## Où va quoi
 
-Chaque fichier a une place ; `scripts/structure.test.mjs` vérifie en CI la racine, `docs/`, `www/`, `.claude/` et `scripts/` (l’arborescence de `src/` relève d’`architecture.md` et de la relecture). Une place nouvelle se décide d’abord (l’`expert-frontend` en juge), s’écrit dans ce tableau, puis dans le test, dans la même pull request.
+Chaque fichier a une place ; `scripts/structure.test.mjs` vérifie en CI la racine, `docs/`, `www/`, `.claude/` et `scripts/` (l’arborescence de `src/` relève d’`architecture.md` et de la relecture). Une place nouvelle se décide d’abord (l’`expert-frontend` en juge), s’écrit dans ce tableau, puis dans le test, dans la même pull request. Pour choisir la place d’un document, suivre les questions de [AGENTS.md](AGENTS.md) (« Ranger la documentation »).
 
 | Quoi | Où |
 | --- | --- |
@@ -25,7 +25,7 @@ Chaque fichier a une place ; `scripts/structure.test.mjs` vérifie en CI la raci
 | Le site public (élèves, familles, enseignants, orthophonistes) | `www/` : accueil, `www/manuel/`, `www/pedagogie/` ; chaque page au sommaire `www/_theme/nav.json` ; thème et configuration dans `www/_theme/` et `www/.vitepress/` |
 | La conception transverse (architecture, code, règles dys, contenu, exercices, programmes, contribuer, déploiement) | `docs/conception/` |
 | Le game design commun (index, décisions, fiches `propositions/GD-<n>.md`, personnages) | `docs/gameplay/` |
-| Les univers : règles communes (`univers.md`), puis par univers son cadrage, sa fiche, son game design propre, ses intentions et esquisses | `docs/univers/`, `docs/univers/archipeo/`, `docs/univers/blocland/` ; le dossier fourni par le mainteneur, figé, dans `docs/univers/archipeo/source/` |
+| Les univers : règles communes (`univers.md`), puis par univers son cadrage, sa fiche, son game design propre, ses intentions et esquisses | `docs/univers/`, `docs/univers/archipeo/`, `docs/univers/blocland/` ; le dossier fourni par le mainteneur, figé, dans `docs/univers/archipeo/source/` ; Archipéo est en pause depuis le 2 octobre 2026, son dossier est gelé |
 | L’interface (UX UI) | `docs/ux-ui/` |
 | Le rendu (le style) | `docs/rendu/` ; le budget reste dans le code |
 | Le pilotage (où en est chaque chantier) | `docs/pilotage/` (`chantiers.md`, `lv2-suites.md`) |
