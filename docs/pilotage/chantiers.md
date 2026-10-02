@@ -35,6 +35,7 @@ Chaque chantier a son préfixe ; on ne les mélange jamais (dans les fils, les p
 | La recherche « rien d’emprunté » sur « Jardin des heures » et ses replis | LV2-4 | — |
 | La limite de 40 appels de dessin : par archipel tout construit, ou pour la vue d’une île seulement | R | Aujourd’hui 45 à 65 appels en vue d’archipel, 81 à 115 sur la Carte |
 | Le premier voyage : nombre de Gardiens exigés (3, 2, 2) et taille du premier chantier | Blocland | Selon les retours des élèves |
+| Ce qui débloque un niveau d’île : les étoiles, les items retenus ou les deux | GD-4 | Les deux : les étoiles pour le niveau 2, les items retenus pour le niveau 3 |
 
 ### À vérifier sur tablette
 
@@ -125,6 +126,10 @@ En conception avec le mainteneur dans le fil « Flux de l’idée aux assets » 
 ### Combiner les blocs (GD-2)
 
 Décidé par le mainteneur le 30 septembre 2026 ([GD-2](game-design/propositions/GD-2.md)) : un lieu de plus sur l’île de l’école (la Fabrique dans Blocland, la Halle aux matériaux dans Archipéo) où l’on assemble un bloc par archipel (Poutre, Vitrail, Engrenage, Miroir ; Madrier, Hublot, Poulie, Loupe dans Archipéo), que les huit monuments demandent. Recettes et noms dans `docs/contenu/assemblage.md`. **Construit** par sa pull request (brouillon). Aux Premiers Rivages, la Halle aux matériaux prend le colombage, comme l’école et la salle des trophées. Enveloppe de construction des archipels 5e à 3e : 7 100 → 7 260 triangles, somme des « autres » à 53 060 (« ok budget » puis « ok 7260 » du mainteneur, 1er octobre 2026 ; enveloppe commune avec la salle des trophées de GD-3). Reste ouvert : l’étiquette de l’île qui couvre le lieu, le hublot du phare du large (petit), l’icône du Hublot aux couleurs du vitrail, une explication courte des mots rares d’Archipéo (madrier, poulie, hublot). **Une question à chaque bloc assemblé** (décision du mainteneur, 1er octobre 2026) : construite dans la même pull request. 12 questions par bloc sur les deux matières de la recette (`docs/contenu/assemblage.md`, « Les questions »), posées en plein écran sur l’écran des documents à lire ; un tirage par élève et par bloc (jamais l’une des 6 dernières ; une manquée revient après 6 autres, règle du mainteneur), gardé dans la sauvegarde (`assemblageTirage`, optionnel) ; une erreur ne fait rien perdre et laisse un second essai. Les questions d’assemblage comptent dans l’horloge de séance (trois exercices ou dix minutes) : la pause s’affiche à la fin d’une question (choix du mainteneur, 1er octobre 2026). Hors de cette pull request : aligner la pause du bilan de mission sur celle de l’assemblage (bouton Écouter, retour sans historique, focus) et en faire un composant commun (relectures dys, UX UI et code).
+
+### Le monde ouvert au centre (GD-4)
+
+Décidé par le mainteneur le 2 octobre 2026 ([GD-4](game-design/propositions/GD-4.md)) : trois étapes, dans l’ordre (tout dans le monde, chemins au choix, explorer pour découvrir). Étape 1 : la créature qui se souvient et propose les révisions dans le monde, puis les îles à niveaux (ne rapportent que le monde). Rien n’est construit ; chaque étape aura sa fiche avant son lot.
 
 ### Les agents
 

@@ -18,6 +18,8 @@ Ce qui ne se négocie jamais (voir [Principes dys](../../../www/pedagogie/princi
 
 **Cible.** Une réussite produit, quand c’est pertinent, une conséquence visible dans le monde ; trois échelles d’objectifs : réussir une mission, réparer un bâtiment ou une infrastructure, restaurer le village et construire le Bloc-Navire ([Cadrage Archipéo](../../conception/cadrage-archipeo.md), §3.1).
 
+**Cap** ([GD-4](propositions/GD-4.md), décidé le 2 octobre 2026) : le monde ouvert au centre. D’abord tout se passe dans le monde (créatures utiles, îles à niveaux), puis des chemins au choix, puis des choses à découvrir en explorant.
+
 **Questions ouvertes.**
 - La montée en autonomie de la 6e à la 3e (chaînes de missions, missions à plusieurs compétences) : rien n’est posé côté boucle ; à cadrer avec le directeur contenu pédagogique, après le lot 8.
 - Les problèmes situés dans l’archipel (une consigne qui dessine une scène du monde) : l’aide `scene` existe ; leur place dans la boucle reste à cadrer ([Cadrage du contenu](../../conception/cadrage-contenu.md)).
@@ -70,6 +72,7 @@ Ce qui ne se négocie jamais (voir [Principes dys](../../../www/pedagogie/princi
 La liste complète, île par île, avec ce qui change d’un univers à l’autre, est une page produite depuis le code : [Personnages et Gardiens](personnages.md). Les règles communes : une créature par île, qui habite, donne les missions et parle à l’arrivée ; un Gardien par île, dont le défi ferme l’île ; la baleine parle rarement, aux grandes étapes. Un Gardien se **vainc** dans Blocland (il devient une statue) et se **rallume** dans Archipéo (une sentinelle de pierre éteinte).
 
 **Questions ouvertes.**
+- Des créatures utiles (cap de [GD-4](propositions/GD-4.md)) : d’abord la créature qui se souvient et propose les révisions dans le monde ; ensuite celle qui commande un ouvrage ; plus tard, des défis de Gardien variés, de forme propre à chaque univers.
 - Qui parle aux grandes étapes dans Blocland, à la place de la baleine, et pour dire quoi ?
 - Les répliques des créatures, le mot de la baleine et une partie des espèces, encore communs aux deux univers (reste de R6) ; les répliques des Gardiens sont déjà propres à chaque univers.
 
