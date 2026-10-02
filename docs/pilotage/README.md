@@ -4,4 +4,4 @@ Ce dossier sert au mainteneur et aux agents : où en est le projet. Le game desi
 
 - [État des chantiers](chantiers.md) : le point d’entrée.
 - [La LV2 : ce qui reste](lv2-suites.md) : les suites relevées après LV2-5.
-- [Le game design](../gameplay/index.md) : le jeu commun, [Blocland](../univers/blocland/game-design.md), [Archipéo](../univers/archipeo/game-design.md), [les personnages et Gardiens](../gameplay/personnages.md) (produite par `npm run pilotage:personnages`), [les décisions](../gameplay/decisions.md), [proposer un changement](../gameplay/propositions/modele.md).
+- [Le game design](../gameplay/index.md) : le jeu commun, [Blocland](../univers/blocland/fiche.md), [Archipéo](../univers/archipeo/game-design.md) (en pause), [les personnages et Gardiens](../gameplay/personnages.md) (produite par `npm run pilotage:personnages`), [les décisions](../gameplay/decisions.md), [proposer un changement](../gameplay/propositions/modele.md).
