@@ -2,7 +2,7 @@
 
 Cette section est le document de game design **vivant** de DysApps : ce qu’est le jeu aujourd’hui, ce qu’on veut en faire, et ce qui reste à décider. C’est là qu’on itère. Le jeu est **commun** aux univers (mêmes règles, même progression, même sauvegarde) ; chaque univers ([Blocland](../univers/blocland/game-design.md), [Archipéo](../univers/archipeo/game-design.md)) l’habille de son récit, de ses noms et de son dessin.
 
-Chaque sujet a trois parties : **Construit** (ce que fait l’application en ligne), **Cible** (ce qu’on veut), **Questions ouvertes** (ce qui reste à décider, et qui décide). Le détail et l’histoire restent dans les cadrages, cités à chaque sujet ; l’état des lots est dans [l’état des chantiers](../pilotage/chantiers.md).
+Chaque sujet a trois parties : **Construit** (ce que fait l’application en ligne), **Cible** (ce qu’on veut), **Questions ouvertes** (ce qui reste à décider, et qui décide). Le détail de ce qui est construit, système par système, est dans [Les systèmes du jeu](systemes.md) ; l’histoire reste dans les cadrages, cités à chaque sujet ; l’état des lots est dans [l’état des chantiers](../pilotage/chantiers.md).
 
 Pour changer le game design : une fiche de proposition (voir [Proposer un changement](propositions/modele.md)), relue par les agents, décidée par le mainteneur, inscrite dans [les décisions](decisions.md).
 
@@ -10,7 +10,7 @@ Pour changer le game design : une fiche de proposition (voir [Proposer un change
 
 Un jeu d’entraînement pour les élèves dys du collège, de la 6e à la 3e, en français, maths, anglais et LV2, où **le savoir construit le monde** : chaque réussite rapporte de quoi bâtir, et le monde montre la progression. L’élève est un explorateur et un bâtisseur, pas un élève devant un manuel déguisé.
 
-Ce qui ne se négocie jamais (voir [Principes dys](../../www/pedagogie/principes.md) et [Cadrage de Blocland](../univers/blocland/cadrage.md#ce-quon-garde-absolument)) : rien à lire dans le monde ; pas de chrono, de classement ni de perte ; aucun geste de réflexe ; sessions courtes ; la vue simple fait tout ce que fait le monde ; rien d’emprunté ; une tablette d’entrée de gamme suffit.
+Ce qui ne se négocie jamais (voir [Principes dys](../../www/pedagogie/principes.md) et [Les systèmes du jeu](systemes.md#ce-qui-ne-se-négocie-jamais)) : rien à lire dans le monde ; pas de chrono, de classement ni de perte ; aucun geste de réflexe ; sessions courtes ; la vue simple fait tout ce que fait le monde ; rien d’emprunté ; une tablette d’entrée de gamme suffit.
 
 ## La boucle
 
@@ -30,17 +30,17 @@ Ce qui ne se négocie jamais (voir [Principes dys](../../www/pedagogie/principes
 | --- | --- | --- |
 | Étoiles | 1 à 3 par mission, la meilleure gardée | [Barème](https://g7ed6e.github.io/dysapps/pedagogie/bareme.html) |
 | Blocs | Proportionnels au score, bonus d’étoiles et de première fois ; un bloc par île, tout bloc d’île paie tout ouvrage | [Barème](https://g7ed6e.github.io/dysapps/pedagogie/bareme.html), [Mes blocs](../../www/manuel/blocland.md#mes-blocs) |
-| Plans et coffres | Trois plans guidés par île (murs, toit, cour) ; le coffre donne les blocs de finition du plan suivant | [Cadrage de Blocland](../univers/blocland/cadrage.md#le-village-les-plans-et-les-coffres) |
+| Plans et coffres | Trois plans guidés par île (murs, toit, cour) ; le coffre donne les blocs de finition du plan suivant | [Les systèmes du jeu](systemes.md#le-village-les-plans-et-les-coffres) |
 | Ouvrages | Pont, bac, sentier, escalier (premier plan), tunnel et col (Gardien) | [Ouvrages et plans](https://g7ed6e.github.io/dysapps/pedagogie/ouvrages.html) |
-| Monuments | Deux par archipel, 60 à 125 blocs, dont 4 à 8 blocs assemblés ; n’ouvrent rien | [Cadrage de Blocland](../univers/blocland/cadrage.md#les-monuments) |
+| Monuments | Deux par archipel, 60 à 125 blocs, dont 4 à 8 blocs assemblés ; n’ouvrent rien | [Les systèmes du jeu](systemes.md#les-monuments) |
 | Blocs assemblés | Un par archipel, qu’aucune île ne donne : trois blocs de deux îles de l’archipel, assemblés un à un sur l’île de l’école (la Fabrique, la Halle aux matériaux) ; recette fixe, toujours affichée | [GD-2](propositions/GD-2.md), `docs/contenu/assemblage.md` |
 | Gardiens | Un par île ; défi ouvert par les étoiles des missions de l’île ; réussi, il le reste | [Personnages et Gardiens](personnages.md) |
-| Village en cinq états | Abandonné, réactivation, reconstruction, développement, port ; déduits, jamais enregistrés | [Cadrage Archipéo](../univers/archipeo/cadrage.md), §5 |
+| Village en cinq états | Abandonné, réactivation, reconstruction, développement, port ; déduits, jamais enregistrés | [Les systèmes du jeu](systemes.md#le-village-les-plans-et-les-coffres) |
 | États des îles | Fermée, À explorer, En chantier, Restaurée (« Bâtie » dans Blocland) | [Cadrage Archipéo](../univers/archipeo/cadrage.md), §5 |
-| Bloc-Navire et voyage | Un véhicule qui s’améliore par étapes ; le kit arrive avec les Gardiens (3, 2, 2) ; embarquer est un acte explicite | [Cadrage de Blocland](../univers/blocland/cadrage.md#le-bloc-navire-et-le-voyage) |
+| Bloc-Navire et voyage | Un véhicule qui s’améliore par étapes ; le kit arrive avec les Gardiens (3, 2, 2) ; embarquer est un acte explicite | [Les systèmes du jeu](systemes.md#le-bloc-navire-et-le-voyage) |
 | XP et rôles | Cinq rôles selon l’XP, sans divisions | [Progression et récompenses](../../www/manuel/progression.md) |
 | Succès | Peu nombreux ; un trophée par succès dans la salle des trophées, jamais sur son toit : la salle s’agrandit d’une travée tous les 6 succès après les 12 premiers (GD-3) | [Barème](https://g7ed6e.github.io/dysapps/pedagogie/bareme.html) |
-| École du village | Les missions du portail, sur l’île de l’école de chaque archipel ; elles rapportent des blocs, pas d’étoiles d’île | [Cadrage de Blocland](../univers/blocland/cadrage.md#lappli-entière) |
+| École du village | Les missions du portail, sur l’île de l’école de chaque archipel ; elles rapportent des blocs, pas d’étoiles d’île | [Les systèmes du jeu](systemes.md#lîle-de-lécole) |
 | Le mot de la baleine | Un mot par grande étape et par archipel, dit une fois par appareil | [Personnages et Gardiens](personnages.md) |
 
 **Questions ouvertes.**
