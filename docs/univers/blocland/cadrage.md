@@ -36,7 +36,7 @@ L’élève voyait deux applis collées : un portail de missions par matière et
 - **Le menu en page** suit la hiérarchie d’Archipéo (lot 4a) : l’identité, le village de l’archipel où se tient le bonhomme, un seul bouton principal « Reprendre l’aventure » vers la prochaine destination, la progression, puis les trois Expéditions (une par matière), qui remplacent les tuiles Missions, Succès et Réglages, gardées en liens. La prochaine destination se calcule depuis la sauvegarde (`world/destination.ts`) : le Bloc-Navire prêt à partir, sinon une île où tout est prêt (celle du bonhomme d’abord), sinon une île ouverte pas encore explorée, sinon l’objectif le plus proche, sinon le port avec ce qu’il faut pour que le village avance.
 - **Les mots** : « le menu » (en page ou dans le village), jamais « l’accueil », qui n’est que l’adresse `/`.
 
-Le détail des écrans : [Le menu du village](../../../www/manuel/blocland.md#le-menu-du-village), [L’école du village](../../../www/manuel/blocland.md#lecole-du-village), [La salle des trophées](../../../www/manuel/blocland.md#la-salle-des-trophees).
+Le détail des écrans : [Le menu du village](../../../www/manuel/blocland.md#le-menu-du-village), [L’école du village](../../../www/manuel/blocland.md#lécole-du-village), [La salle des trophées](../../../www/manuel/blocland.md#la-salle-des-trophées).
 
 ## Le monde et les archipels
 

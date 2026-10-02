@@ -60,7 +60,7 @@ Les règles dys de l’application ([Principes](../../www/pedagogie/principes.md
 | Rien sous le bandeau | Le bandeau de résultat réserve sa hauteur sous la question ; aux grandes tailles, il suit la question dans la page | `src/components/useSheetClearance.ts` |
 | Grandes cibles | 48 px au moins | `src/styles/global.css` |
 | Zones sûres | Les marges suivent les encoches de l’écran | `src/styles/global.css` (`safe-area-inset`) |
-| Habillage par univers | Le style de Blocland est une couche à part | `src/styles/blocland.css`, [Style](../rendu/style.md#l-habillage-de-blocland) |
+| Habillage par univers | Le style de Blocland est une couche à part | `src/styles/blocland.css`, [Style](../rendu/style.md#lhabillage-de-blocland) |
 
 ### À surveiller
 

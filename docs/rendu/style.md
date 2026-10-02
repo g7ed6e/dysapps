@@ -20,7 +20,7 @@ Cette page décrit le style en ligne aujourd’hui, dans les deux univers ([Plus
 - **Crème** (par défaut) : la palette ci-dessus.
 - **Nuit** : fond `#0E1F2E`, panneaux `#16304A`, texte crème `#F3EEE3` ; l’action principale passe au sable `#E2B865`, texte bleu nuit ; accent `#4FB3A4`.
 - **Clair** : le Crème sans teinte (fond `#F4F6F7`, panneaux et barre du haut blancs), plat, sans ombre.
-- **Contraste élevé** : retiré le 28 septembre 2026, il revient au lot 11 du [cadrage Archipéo](../univers/archipeo/cadrage.md#_6-le-plan-en-lots) (il était noir, blanc et jaune `#FFE600`, focus cyan, avec des angles de 4 px partout, sans ombre).
+- **Contraste élevé** : retiré le 28 septembre 2026, il revient au lot 11 du [cadrage Archipéo](../univers/archipeo/cadrage.md#6-le-plan-en-lots) (il était noir, blanc et jaune `#FFE600`, focus cyan, avec des angles de 4 px partout, sans ombre).
 
 Les couleurs des matières (brique, verre, cristal) et des syllabes ne changent pas avec le thème de l’interface.
 
