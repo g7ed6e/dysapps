@@ -1,6 +1,6 @@
 # GD-6 : La boucle des blocs, de la première mission au dernier archipel
 
-**État** : Décidée le 2 octobre 2026 (les six choix ; le détail est à cadrer dans le lot, voir « Le coût »)
+**État** : Décidée le 2 octobre 2026 (les six choix, puis le découpage, la réussite qui pose une partie et l’île de l’école ; le reste est à cadrer dans le lot, voir « Le coût »)
 **Portée** : Commun (les noms, les voix et le dessin restent propres à chaque univers)
 
 ## Le constat
@@ -17,8 +17,8 @@
 
 Cette fiche **précise GD-5** (modèle A, étapes 3 et 5) : ce n’est plus chaque bloc qui se pose sur le bâtiment, c’est une partie entière ; les blocs gagnés vont au stock.
 
-1. **Une partie par mission.** Chaque mission réussie pose d’un coup une partie entière du bâtiment de l’île, sous les yeux de l’élève. Les blocs gagnés vont au stock, comme aujourd’hui (le barème ne change pas).
-2. **L’île de l’école fournit son bloc dès le début**, comme son école : l’élève a toujours de quoi payer les ouvrages du port, dès la première séance.
+1. **Une partie par mission.** Le bâtiment d’une île a autant de parties que l’île a de missions (2 à 4) : chaque mission a la sienne, et l’habitant dit laquelle. La partie se pose d’un coup, sous les yeux de l’élève, dès la **première réussite** de la mission, quels que soient le niveau et le nombre d’étoiles, jokers compris ; les étoiles gardent leur rôle pour le Gardien. Les blocs gagnés vont au stock, comme aujourd’hui (le barème ne change pas).
+2. **L’île de l’école fournit son bloc dès le début**, comme son école : l’élève a toujours de quoi payer les ouvrages du port, dès la première séance. Rien n’est ajouté pour cela : les missions du portail rapportent déjà ce bloc, et le bâtiment de l’île de l’école se pose par ses propres missions, comme les autres.
 3. **Les plans des bâtiments d’île deviennent les parties des missions.** Ce qu’un plan terminé donnait (XP, succès, réplique de fin, ligne du journal du village, geste et son de pose de [GD-1](GD-1.md), point 4) passe à la mission qui pose la partie. Les coffres sont retirés et la finition est comprise dans la pose. L’or et le cristal sortent des coûts et ne restent que des trophées. Les monuments et le Bloc-Navire ne changent pas : ils se posent toujours case par case.
 4. **Rejouer et réviser rapportent le bloc d’une île restaurée** : les missions rejouées, et les révisions que propose la créature de l’île ([GD-4](GD-4.md), étape 1). Ce sont les révisions que la répétition espacée juge dues, pas une mission maîtrisée rejouée à volonté. Les révisions donnent la raison de revenir qui fait le plus apprendre.
 5. **Seul le bâtiment de l’île se pose seul.** Les ouvrages, les ponts, les monuments et le navire restent un geste de l’élève, qui choisit où dépenser ses blocs : le bâtisseur de Blocland garde son geste ([GD-1](GD-1.md), le pilier « le chantier du bâtisseur »).
@@ -52,9 +52,8 @@ On restaure : la partie passe de ruine à restaurée, dans la lumière (DA-05), 
 
 Un lot à part, après la fiche de l’étape 1 de GD-4. À cadrer dans le lot, par le directeur artistique avec l’artiste technique 3D, l’expert frontend et le directeur du contenu :
 
-- **Le découpage** : un bâtiment d’île a autant de parties que l’île a de missions (2 à 4) ; quelle mission pose quelle partie ; quel succès la pose (le directeur du contenu propose le premier niveau réussi, pour qu’un élève qui reste au niveau 1 voie son bâtiment avancer).
+- **Le découpage** : quelle mission pose quelle partie, île par île (le nombre de parties et la réussite qui les pose sont décidés, point 1).
 - **Les états déduits** : « Restaurée » (« Bâtie » dans Blocland), les cinq états du village et les grandes étapes dites par la baleine dans Archipéo se déduisent des missions réussies au lieu des plans.
-- **L’île de l’école** : ce que le point 2 ajoute aux missions du portail, qui rapportent déjà son bloc, sans toucher la sauvegarde ; et si son bâtiment se pose lui aussi par ses missions.
 - **Les ouvrages** : le retrait de l’or et du cristal dans leurs coûts ; l’escalier taillé, qui demande aujourd’hui « le premier plan de l’île de départ terminé », demandera la première mission réussie.
 - **Le dessin** : la pose automatique dans chaque univers, mesurée par l’artiste technique 3D (dans Archipéo, dans le poste Construction, 6 500 triangles et 3 appels, sans appel de plus) ; les boutons « Poser le bloc suivant » et « Poser tout ce que j’ai » ne servent plus aux bâtiments d’île.
 - **Les textes** : `docs/contenu/<île>.md` (« ## Les plans » devient les parties des missions), Mes blocs, le manuel, la phrase de reprise de chaque univers.
@@ -72,4 +71,4 @@ Un lot à part, après la fiche de l’étape 1 de GD-4. À cadrer dans le lot, 
 
 ## La décision
 
-2 octobre 2026, mainteneur : les six choix, un par un (« Une partie par mission », « L’île de l’école », « Plans = missions », « Rejouer et réviser », « Seul le bâtiment », « Suite puis projets »), puis, par écrit, « oui » à la boucle qui en sort.
+2 octobre 2026, mainteneur : les six choix, un par un (« Une partie par mission », « L’île de l’école », « Plans = missions », « Rejouer et réviser », « Seul le bâtiment », « Suite puis projets »), puis, par écrit, « oui » à la boucle qui en sort. Le même jour, trois précisions choisies une par une (« Une par mission », « Première réussite », « Rien de plus »), puis « oui » par écrit.
