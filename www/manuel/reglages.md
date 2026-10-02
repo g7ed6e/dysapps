@@ -101,7 +101,7 @@ Deux liens s’ouvrent dans un nouvel onglet : **La documentation** (ce site, ht
 
 **Enregistrer ma progression** range dans un fichier (`dysapps-progression-<date>.json`) tout ce que l’appli garde sur l’appareil : XP, succès, étoiles, blocs, bâtiments, répétition espacée et réglages. Sur iPhone et iPad, la feuille de partage s’ouvre pour le ranger (Fichiers, e-mail) ; ailleurs, et quand l’appareil ne sait pas partager ce fichier, il se télécharge.
 
-**Restaurer une sauvegarde…** ouvre un fichier enregistré ainsi. L’appli dit de quel jour il date et qu’il va **remplacer** la progression de l’appareil ; sous la date, elle rappelle d’enregistrer d’abord la progression qu’on veut garder ; rien ne change avant d’avoir touché **Restaurer**. La page se recharge ensuite, et « Ta progression est restaurée. » s’affiche. Un fichier qui n’est pas une sauvegarde de l’appli est refusé, sans rien changer.
+**Restaurer une sauvegarde…** ouvre un fichier enregistré ainsi. L’appli dit de quel jour il date et qu’il va **remplacer** la progression de l’appareil ; sous la date, elle rappelle d’enregistrer d’abord la progression qu’on veut garder ; rien ne change avant d’avoir touché **Restaurer**. La page se recharge ensuite, et « Ta progression est restaurée. » s’affiche. Un fichier qui n’est pas une sauvegarde de l’appli est refusé, sans rien changer. Un fichier enregistré avec une version précédente de l’appli se restaure aussi, sans rien perdre.
 
 Le fichier sert à changer d’appareil, ou à réinstaller l’appli sans rien perdre.
 
