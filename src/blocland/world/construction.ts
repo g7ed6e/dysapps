@@ -49,6 +49,7 @@ import { dessinerPont, FANTOME_DU_PONT, pontsDePierreEtDeBois } from './ponts';
 import { dessinerPhareDuLarge, hublotsDuPhareDuLarge, phareDuLarge } from './phareDuLarge';
 import { islandDef, mapOf, type ArchipelagoId } from './map';
 import { LAYOUT_PAD, origineDe, placeSpot, VILLAGE_PLACES } from './terrain';
+import { estUnePlaceDeTrophee, TROPHY_SLOTS } from './salle';
 import { getPlan, planCells, plansFor } from './plans';
 import { ambianceDe, BLEU_LAGON, BRUME, couleurDeMatiere, DETAILS_ASSEMBLES, MATIERES, type Couleur, type Faces } from './palette';
 import type { TextureKind } from './pixels';
@@ -74,6 +75,17 @@ export const LANTERNES_ALLUMEES = 2;
  * et de haut, posé au milieu de sa case, et sur lui un cœur de `coeur` case, qui s'allume. Rien ne sort de la case.
  */
 export const LANTERNE = { corps: 0.3, coeur: 0.18 } as const;
+/**
+ * Un trophée de la salle des trophées, dans Archipéo, quand le kit de l'archipel reprend la salle (GD-3, retouches du
+ * directeur artistique : la halle ne se lit plus comme un mur de panneaux) : un bloc plus petit que sa case, au milieu,
+ * pour qu'il ne touche ni le pilier voisin ni la sablière et qu'on voie le fond de velours autour et au-dessus de lui.
+ * `bas` : le côté du trophée posé sur son socle ; `haut` : celui du second rang, posé sur lui (et non sur le sol de sa
+ * case : il ne flotte pas) ; `hauteur` : la hauteur de chacun. Les deux rangs laissent `2 - 2 × hauteur` case d'ombre
+ * sous le toit. Blocland garde ses trophées en blocs entiers (three/cubes.ts).
+ */
+export const TROPHEE = { bas: 0.62, haut: 0.46, hauteur: 0.66 } as const;
+/** Le rang des trophées posés sur leur socle (les autres sont posés sur eux). */
+const RANG_DES_SOCLES = Math.min(...TROPHY_SLOTS.map((t) => t.z));
 /** Le verre hors d'un mur (provisoire, jusqu'au phare de R4b) : 80 % Brume, 20 % Bleu lagon, avec une arête par case. */
 export const VERRE_HORS_MUR: Couleur = mixColor(BRUME, BLEU_LAGON, 0.2);
 /** L'arête du verre hors d'un mur : `ARETE`, à cette opacité, sur 1,5 pixel. */
@@ -870,9 +882,18 @@ export function maillageDeLaConstruction(
   // Le genre des blocs se lit avant les pièces : une vitre prise entre deux pièces de mur reste une vitre (comme en 2D).
   const genres = genresDesBlocs(avantLesPieces);
   const decalages = decalagesDe(genres);
-  // Un fantôme ne cache rien, ni une lanterne (elle ne remplit plus sa case).
+  // Les trophées de la salle des trophées, quand le kit de l'archipel reprend la salle (au 6e, la halle en colombage ;
+  // les autres archipels avec leur kit, lot 7c) : plus petits que leur case (`TROPHEE`), et le rang de chacun.
+  const trophees = new Map<VoxelCube, number>();
+  if (archi && kit.lieux?.trophees)
+    for (const c of dessines) {
+      if (c.place !== 'trophees' || c.ghost) continue;
+      const m = caseDuLieu(c);
+      if (m && estUnePlaceDeTrophee(m.x, m.y, m.z)) trophees.set(c, m.z);
+    }
+  // Un fantôme ne cache rien, ni une lanterne ni un trophée (ils ne remplissent plus leur case).
   const plein = new Map<string, VoxelCube>();
-  for (const c of dessines) if (!c.ghost && genres.get(c) !== 'lanterne') plein.set(cle(c.x, c.y, c.z), c);
+  for (const c of dessines) if (!c.ghost && genres.get(c) !== 'lanterne' && !trophees.has(c)) plein.set(cle(c.x, c.y, c.z), c);
   const sous = new Set(sol.map((c) => cle(c.x, c.y, c.z)));
 
   // Les couleurs d'un bloc, de jour.
@@ -1086,7 +1107,26 @@ export function maillageDeLaConstruction(
     boite(F, c.x + b0, c.x + b1, c.y + b0, c.y + b1, z0, z0 + LANTERNE.coeur, eteint, { extra: decalages.get(c) ?? -1 });
   };
 
-  // ---- Les faces des blocs, des vitres et des lanternes.
+  /**
+   * Un trophée (`TROPHEE`) : une boîte au milieu de sa case, sans son dessous (il est posé) ni sa face du fond (contre le
+   * velours ou le trophée de derrière : la caméra regarde toujours vers le nord), aux couleurs de son bloc.
+   */
+  const trophee = (c: VoxelCube, rang: number) => {
+    const premier = rang === RANG_DES_SOCLES;
+    const w = premier ? TROPHEE.bas : TROPHEE.haut;
+    const [x0, x1, y0, y1] = [c.x + 0.5 - w / 2, c.x + 0.5 + w / 2, c.y + 0.5 - w / 2, c.y + 0.5 + w / 2];
+    const z0 = premier ? c.z : c.z - 1 + TROPHEE.hauteur;
+    const z1 = z0 + TROPHEE.hauteur;
+    const f = couleursDe(c);
+    const sansBiseau = mode === 'peint' ? [0, 1, 2, 3].map(() => [SANS_BISEAU, SANS_BISEAU, SANS_BISEAU, SANS_BISEAU]) : undefined;
+    const q = (pts: V3[], n: V3, col: Couleur) => O.poly(pts, n, [col, col, col, col], { teinte: teinteDe(c), biseaux: sansBiseau });
+    q([[x0, y0, z1], [x1, y0, z1], [x1, y1, z1], [x0, y1, z1]], [0, 0, 1], f.dessus);
+    q([[x0, y0, z0], [x1, y0, z0], [x1, y0, z1], [x0, y0, z1]], [0, -1, 0], f.cote);
+    q([[x0, y0, z0], [x0, y1, z0], [x0, y1, z1], [x0, y0, z1]], [-1, 0, 0], f.cote);
+    q([[x1, y0, z0], [x1, y1, z0], [x1, y1, z1], [x1, y0, z1]], [1, 0, 0], f.cote);
+  };
+
+  // ---- Les faces des blocs, des vitres, des lanternes et des trophées.
   interface Case {
     u: number;
     v: number;
@@ -1128,6 +1168,11 @@ export function maillageDeLaConstruction(
     const g = genres.get(c);
     if (g === 'lanterne') {
       lanterne(c);
+      continue;
+    }
+    const rang = trophees.get(c);
+    if (rang !== undefined) {
+      trophee(c, rang);
       continue;
     }
     for (let d = 0; d < 6; d++) {

@@ -28,6 +28,7 @@ import {
   PLEINE_NUIT,
   SANS_BISEAU,
   TEINTE,
+  TROPHEE,
   TEINTE_GLSL,
   teinteDeCase,
   type GroupeDeConstruction,
@@ -43,10 +44,13 @@ import { PHARE, PHARES } from './decor/phare';
 import { lineaire } from './landMesh';
 import { ambianceDe } from './palette';
 import { mixColor } from './daylight';
-import { worldCubes } from './terrain';
+import { placeSpot, TROPHY_SLOTS, worldCubes } from './terrain';
+import { BADGES } from '../../core/progress';
+import { trophyBlock } from '../trophies';
+import { islandDef } from './map';
 import { ARDOISES, couleursDuToit, TERRE_CUITE_SUR, toitDe } from './toits';
 import { sansToursDuCoeur } from './construction';
-import { BRIDGES } from './archipelago';
+import { ARCHIPELAGOS, BRIDGES } from './archipelago';
 import { pontsDePierreEtDeBois } from './ponts';
 import { phareDuLarge } from './phareDuLarge';
 import { kitVide } from './architecture';
@@ -554,6 +558,51 @@ describe('Les toits de terre cuite (lot R5)', () => {
     const avec = [...m.opaque.aretes].filter((v) => v === 1).length;
     expect(avec).toBeGreaterThan(0);
     expect(avec).toBeLessThan(m.opaque.aretes.length / 4);
+  });
+});
+
+describe('Les trophées sous le toit de la halle (GD-3, retouches du directeur artistique)', () => {
+  /** L'archipel avec les 24 succès, rendu comme Archipéo le rend ; les trophées posés, et le coin de leur salle. */
+  function avecLesTrophees(a: ArchipelagoId) {
+    const { progress, village } = toutConstruit();
+    const tous = worldCubes(a, progress, village, false, BADGES.map((b) => trophyBlock(b.id)), false, 'halle');
+    const sol = tous.filter((c) => c.sol);
+    const { reste } = rangerLeDecor(tous.filter((c) => !c.sol));
+    const cubes = poseDuDecor(champDuSol(a, sol, reste), reste);
+    const school = ARCHIPELAGOS.find((x) => x.classe === a)!.school;
+    const s = placeSpot('trophees', school)!;
+    const coin = { x: s.x, y: s.y, z: islandDef(school).altitude + s.h };
+    const places = TROPHY_SLOTS.map((t) => ({ x: coin.x + t.x, y: coin.y + t.y, z: coin.z + t.z }));
+    return { m: maillageDeLaConstruction(a, cubes, sol), cubes, coin, places };
+  }
+  /** Les triangles posés au-dessus de l'intérieur d'une case (sans toucher ses bords) : ceux d'un trophée plus petit qu'elle. */
+  const dansLaCase = (m: MaillageDeLaConstruction, x: number, y: number) =>
+    triangles(m.opaque).filter((t) => t.p.every(([px, , pz]) => px > x + 0.05 && px < x + 0.95 && pz > y + 0.05 && pz < y + 0.95));
+
+  it('au 6e, chaque trophée est plus petit que sa case : il ne touche ni le pilier voisin ni la sablière, le fond se voit au-dessus', () => {
+    const { m, cubes, coin, places } = avecLesTrophees('6e');
+    // Les 24 trophées sont dans le monde, à leur place.
+    const poses = new Set(cubes.filter((c) => c.place === 'trophees').map((c) => cle(c.x, c.y, c.z)));
+    for (const p of places) expect(poses.has(cle(p.x, p.y, p.z))).toBe(true);
+    const toit = coin.z + 4;
+    for (const p of places) {
+      const t = dansLaCase(m, p.x, p.y).filter((u) => u.p.every(([, h]) => h >= p.z - 1 && h <= p.z + 1));
+      expect(t.length, cle(p.x, p.y, p.z)).toBeGreaterThan(0);
+      // De l'ombre au-dessus : le haut du trophée du second rang est à plus d'une demi-case sous le toit.
+      const haut = Math.max(...dansLaCase(m, p.x, p.y).map((u) => Math.max(...u.p.map(([, h]) => h))));
+      expect(haut, cle(p.x, p.y, p.z)).toBeLessThanOrEqual(coin.z + 2 + 2 * TROPHEE.hauteur + 1e-6);
+      expect(toit - haut).toBeGreaterThanOrEqual(0.5);
+    }
+    // Les deux rangs : celui du socle, puis le second, plus étroit, posé sur lui.
+    expect(TROPHEE.haut).toBeLessThan(TROPHEE.bas);
+    expect(TROPHEE.bas).toBeLessThan(1);
+  });
+
+  it('ailleurs, tant que le kit de l’archipel ne reprend pas la salle, les trophées restent des blocs entiers (et Blocland les garde)', () => {
+    for (const a of ['5e', '4e', '3e'] as const) {
+      const { m, places } = avecLesTrophees(a);
+      for (const p of places) expect(dansLaCase(m, p.x, p.y).length, `${a} ${cle(p.x, p.y, p.z)}`).toBe(0);
+    }
   });
 });
 

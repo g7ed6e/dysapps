@@ -172,8 +172,10 @@ const CAPTURES = [
   { nom: 'lieux-velours-nuit', vue: 'île', famille: 'lieux-salle', ile: 'foret', succes: 2, nuit: true, recadre: { x: 225, y: 285, width: 130, height: 110 }, finesse: 4 },
   // La salle des trophées qui s'agrandit (GD-3, famille `salle`) : à la Forêt des sons, avec 0, 6, 12, 13, 18 et 24
   // succès (une travée au 13e, une autre au 19e), de jour et de nuit, de près (recadrée) et de loin (la vue de
-  // l'archipel) ; la vue de l'île entière avec les 24 ; la même en téléphone, en grand texte ; puis la vue de chaque autre
-  // île-école avec les 24 (la salle de 8 × 3 et ce qui l'entoure, la créature du Marché tournée d'un quart).
+  // l'archipel) ; la vue de l'île entière avec les 24 ; en téléphone, en grand texte, la salle et son panneau ouvert
+  // (`lieu`), avec 13 et 24 succès ; puis la vue de chaque autre île-école avec les 24 (la salle de 8 × 3 et ce qui
+  // l'entoure, la créature hors de sa vue) et le Marché de près, de jour, pour le profil de Bazar derrière la salle (le
+  // cadre est estimé : à reprendre sur la première capture).
   ...[0, 6, 12, 13, 18, 24].flatMap((succes) => [
     { nom: `salle-${succes}`, vue: 'île', famille: 'salle', ile: 'foret', succes, recadre: { x: 140, y: 170, width: 320, height: 250 }, finesse: 2 },
     { nom: `salle-${succes}-nuit`, vue: 'île', famille: 'salle', ile: 'foret', succes, nuit: true, recadre: { x: 140, y: 170, width: 320, height: 250 }, finesse: 2 },
@@ -181,12 +183,22 @@ const CAPTURES = [
     { nom: `salle-${succes}-loin-nuit`, vue: 'archipel', famille: 'salle', ile: 'foret', succes, nuit: true },
   ]),
   { nom: 'salle-24-ile', vue: 'île', famille: 'salle', ile: 'foret', succes: 24 },
-  { nom: 'salle-24-390x844-od32', vue: 'île', famille: 'salle', ile: 'foret', succes: 24, reglages: { font: 'opendyslexic', fontSize: 32 }, taille: { width: 390, height: 844 } },
+  ...[13, 24].map((succes) => ({
+    nom: `salle-${succes}-390x844-od32`,
+    vue: 'île',
+    famille: 'salle',
+    ile: 'foret',
+    lieu: 'trophees',
+    succes,
+    reglages: { font: 'opendyslexic', fontSize: 32 },
+    taille: { width: 390, height: 844 },
+  })),
   ...['marche', 'atelier', 'phare'].flatMap((ile) => [
     { nom: `salle-24-${ile}`, vue: 'île', famille: 'salle', ile, succes: 24 },
     { nom: `salle-24-${ile}-nuit`, vue: 'île', famille: 'salle', ile, succes: 24, nuit: true },
   ]),
   { nom: 'salle-0-marche', vue: 'île', famille: 'salle', ile: 'marche' },
+  { nom: 'salle-24-marche-pres', vue: 'île', famille: 'salle', ile: 'marche', succes: 24, recadre: { x: 140, y: 40, width: 380, height: 330 }, finesse: 2 },
   // Les îles-écoles au cœur de 20 × 20 (famille `ecoles`) : la vue de l'île de chacune, de jour, en tablette, puis en
   // téléphone portrait (390 × 844), pour juger le cadrage, les marges et l'îlot du Gardien (relectures du 01/10/2026).
   ...['marche', 'atelier', 'phare', 'foret'].flatMap((ile) => [

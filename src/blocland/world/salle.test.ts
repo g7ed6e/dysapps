@@ -11,7 +11,9 @@ import { islandDef } from './map';
 import { COLONNES_DES_PILIERS, EMPRISE_DE_LA_SALLE, PLACES_DE_LA_SALLE, PLACES_PAR_TRAVEE, SALLE_DE_DEPART, TRAVEES_AU_PLUS, traveesPour } from './salle';
 import { CREATURE_CUBES } from './personnages/creatures';
 import { GUARDIAN_CUBES } from './personnages/gardiens';
-import { creatureDuMonde, creatureSpot, gardienDuMonde, QUARTS_DE_TOUR_DE_LA_CREATURE, groundHeight, origineDe, placeDoor, placeSpot, TROPHY_AT, TROPHY_SIZE, TROPHY_SLOTS, trophyModel, VILLAGE_PLACES, worldCubes } from './terrain';
+import { casesDesLieux, creatureDuMonde, creaturePlacements, creatureSpot, gardienDuMonde, groundHeight, origineDe, placeDoor, placeSpot, QUARTS_DE_TOUR, QUARTS_DE_TOUR_DE_LA_CREATURE, TROPHY_AT, TROPHY_SIZE, TROPHY_SLOTS, trophyModel, versLaCamera, VILLAGE_PLACES, worldCubes } from './terrain';
+import { walkGround } from './paths';
+import { caseDArrivee } from './arrivee';
 
 const TOUS: BlockId[] = BADGES.map((b) => trophyBlock(b.id));
 const cle = (c: { x: number; y: number; z: number }) => `${c.x},${c.y},${c.z}`;
@@ -118,6 +120,17 @@ describe('La salle des trophées (GD-3)', () => {
       // Ni la créature (avec ses pas) ni ses voisins n'y entrent.
       const spot = creatureSpot(id);
       for (const [sx, sy] of spot.steps) for (const c of creatureDuMonde(id)) expect(dansLEmprise(spot.x + sx + c.x, spot.y + sy + c.y), `${id} créature`).toBe(false);
+      // Ni cible au toucher : le bonhomme ne s'arrête sur aucune case de l'emprise (grille de marche). Toucher la place
+      // d'une travée à venir l'envoie à la case libre la plus proche, hors de l'emprise, comme ailleurs.
+      const marche = walkGround(cubes, creaturePlacements(a.classe, village.bridges), casesDesLieux(a.classe));
+      for (let x = 0; x < TROPHY_SIZE.w; x++) for (let y = 0; y < TROPHY_SIZE.d; y++) expect(marche.feet.has(`${o.x + TROPHY_AT.x + x},${o.y + TROPHY_AT.y + y}`), `${id} ${x},${y}`).toBe(false);
+      const depart = placeDoor('trophees', id)!;
+      const touche = { x: o.x + TROPHY_AT.x + 1, y: o.y + TROPHY_AT.y + 1 };
+      const arrivee = caseDArrivee(marche, islandDef(id), depart, touche);
+      expect(arrivee, id).not.toBeNull();
+      expect(arrivee!.touchee, id).toBe(false);
+      expect(dansLEmprise(arrivee!.case.x - o.x, arrivee!.case.y - o.y), id).toBe(false);
+      expect(Math.hypot(arrivee!.case.x - touche.x, arrivee!.case.y - touche.y), id).toBeLessThanOrEqual(2.5);
     }
   });
 
@@ -155,14 +168,30 @@ describe('La salle des trophées (GD-3)', () => {
     expect(new Set(treize.filter((c) => !avant.has(cle(c))).map((c) => c.x - o.x))).toEqual(new Set([2, 3]));
   });
 
-  it('au Marché des proportions, la créature tourne d’un quart pour tenir devant le cœur, hors de l’emprise ; son Gardien ne tourne pas', () => {
+  it('la créature de chaque île-école se tient hors de la vue de la salle, derrière elle ; à la Forêt, glissée vers la côte, immobile (GD-3, retouches)', () => {
+    // Le Marché et la Forêt : immobiles (derrière la salle, Bazar n'a pas la place de ses pas ; la Forêt, voir terrain.test.ts).
+    // Les places mesurées (coordonnées du cœur) : la règle est dans `creatureSpot` (cacheUnLieu), ce test garde la trace.
+    expect(Object.fromEntries(ARCHIPELAGOS.map((a) => [a.school, (({ x, y, steps }) => ({ x, y, pas: steps.length }))(creatureSpot(a.school))]))).toEqual({
+      foret: { x: -1, y: 3, pas: 1 },
+      marche: { x: -4, y: 12, pas: 1 },
+      atelier: { x: 1, y: 14, pas: 2 },
+      phare: { x: 3, y: 13, pas: 3 },
+    });
+  });
+
+  it('au Marché des proportions, Bazar tourne d’un quart, le visage du côté de la caméra (x croissants), pour tenir derrière la salle ; son Gardien ne tourne pas', () => {
     expect(QUARTS_DE_TOUR_DE_LA_CREATURE).toEqual({ marche: 1 });
+    expect(QUARTS_DE_TOUR.marche).toBeUndefined();
     expect(gardienDuMonde('marche')).toEqual(GUARDIAN_CUBES.marche);
     const tournee = creatureDuMonde('marche');
     const maxY = Math.max(...CREATURE_CUBES.marche.map((c) => c.y));
     expect(tournee).toEqual(CREATURE_CUBES.marche.map((c) => ({ ...c, x: maxY - c.y, y: c.x })));
-    // Devant la salle (côté caméra), pas derrière elle.
+    // Le visage (le rang y = 0 du modèle, ses yeux) passe du côté des x croissants, vers la caméra de l'île.
+    const visage = CREATURE_CUBES.marche.filter((c) => c.y === 0).map((c) => maxY - c.y);
+    expect(new Set(visage)).toEqual(new Set([Math.max(...tournee.map((c) => c.x))]));
+    expect(versLaCamera('marche')[0]).toBeGreaterThan(0);
+    // Derrière la salle (côté opposé à la caméra), hors de son emprise.
     const spot = creatureSpot('marche');
-    expect(spot.y + Math.max(...tournee.map((c) => c.y))).toBeLessThan(TROPHY_AT.y);
+    expect(spot.y).toBeGreaterThanOrEqual(TROPHY_AT.y + TROPHY_SIZE.d);
   });
 });

@@ -73,6 +73,10 @@ export const TROPHY_SLOTS: readonly { x: number; y: number; z: number }[] = Arra
   [2, 3].flatMap((z) => soclesDe(k).map(([x, y]) => ({ x, y, z }))),
 );
 
+const CLES_DES_PLACES = new Set(TROPHY_SLOTS.map(({ x, y, z }) => `${x},${y},${z}`));
+/** La case (x, y, z) de l'emprise (z = 1 au-dessus du sol) est-elle la place d'un trophée ? */
+export const estUnePlaceDeTrophee = (x: number, y: number, z: number): boolean => CLES_DES_PLACES.has(`${x},${y},${z}`);
+
 export type CubeDeLaSalle = { x: number; y: number; z: number; block: BlockId };
 
 /**

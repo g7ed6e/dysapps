@@ -5,13 +5,13 @@ import { toutConstruit } from './budget';
 import { dispositionEnGrille } from './grille';
 import { isLand, islandDef, landBox, landCells } from './map';
 import { walkGround, walkPath } from './paths';
-import { avatarHome, creaturePlacements, guardianPlacements, worldCubes } from './terrain';
+import { avatarHome, casesDesLieux, creaturePlacements, guardianPlacements, worldCubes } from './terrain';
 
 const { progress, village } = toutConstruit();
 const monde = (a: (typeof ARCHIPELAGO_IDS)[number]) => {
   const cubes = worldCubes(a, progress, village, false, []);
   const creatures = [...creaturePlacements(a, village.bridges), ...guardianPlacements(a, progress, village.bridges)];
-  return { cubes, creatures, ground: walkGround(cubes, creatures) };
+  return { cubes, creatures, ground: walkGround(cubes, creatures, casesDesLieux(a)) };
 };
 const k = (x: number, y: number) => `${x},${y}`;
 

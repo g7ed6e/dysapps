@@ -82,16 +82,18 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
   });
 
   // GD-3 : la salle des trophées change avec les succès (une travée au 13e et au 19e, les trophées sous le toit) ; la
-  // construction tient son enveloppe à chaque nombre de succès, de 0 à 24, pas seulement sans succès.
-  it('R5 et GD-3 : la construction tient son enveloppe avec 0 à 24 succès, dans chaque archipel', () => {
+  // construction tient son enveloppe à chaque palier : sans succès, la salle de départ pleine (12), chaque travée à son
+  // arrivée (13, 19) et pleine (18, 24). Entre deux paliers, un succès de plus n'ajoute qu'un trophée : le plus haut
+  // compte d'un palier est à sa fin.
+  it('R5 et GD-3 : la construction tient son enveloppe à chaque palier de la salle (0, 12, 13, 18, 19, 24 succès), dans chaque archipel', () => {
     const blocs = BADGES.map((b) => trophyBlock(b.id));
     for (const a of ARCHIPELAGO_IDS)
-      for (let n = 0; n <= blocs.length; n++) {
+      for (const n of [0, 12, 13, 18, 19, blocs.length]) {
         const m = constructionCost(a, blocs.slice(0, n));
         expect(m.triangles, `${a}, ${n} succès`).toBeLessThanOrEqual(enveloppeDe('construction', a).triangles);
         expect(m.drawCalls, `${a}, ${n} succès`).toBeLessThanOrEqual(enveloppeDe('construction', a).drawCalls);
       }
-  }, 600_000);
+  }, 60_000);
 
   // Chaque lot change la ligne de son poste en plafond, mesuré sur le rendu Archipéo de chaque archipel tout construit :
   // triangles ≤ enveloppeDe(poste, a).triangles et appels ≤ enveloppeDe(poste, a).drawCalls.
