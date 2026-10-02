@@ -52,56 +52,56 @@ const badges = (n) => Object.fromEntries(BADGES.slice(0, n).map((b, i) => [b.id,
 
 /** Le début : deux missions jouées dans la Forêt, la cabane commencée. */
 const EARLY = {
-  blocland: {
-    inventory: { bois: 9, brique: 4 },
+  game: {
+    stock: { bois: 9, brique: 4 },
     progress: stars(['foret'], 2),
-    village: { plans: { [plansFor('foret')[0].id]: keys(plansFor('foret')[0], 12) }, bridges: ['foret-plaine'], at: 'foret' },
+    world: { parts: { [plansFor('foret')[0].id]: keys(plansFor('foret')[0], 12) }, links: ['foret-plaine'], place: 'foret' },
   },
   progress: { xp: 180, totalAnswers: 40, correctAnswers: 31, sessionsCompleted: 4, badges: badges(3) },
 };
 /** Assez de bois pour finir la cabane de Mousso. */
-const CABANE_READY = { ...EARLY, blocland: { ...EARLY.blocland, inventory: { bois: planCells(plansFor('foret')[0]).length } } };
+const CABANE_READY = { ...EARLY, game: { ...EARLY.game, stock: { bois: planCells(plansFor('foret')[0]).length } } };
 /** Au milieu des Premiers Rivages : des îles ouvertes, des bâtiments finis, la coque du navire commencée. */
 const six = islandsOf('6e');
 const MID = {
-  blocland: {
-    inventory: { bois: 14, brique: 22, pierre: 9, terre: 6, sable: 5, galet: 4, verre: 3, or: 2 },
+  game: {
+    stock: { bois: 14, brique: 22, pierre: 9, terre: 6, sable: 5, galet: 4, verre: 3, or: 2 },
     progress: { ...stars(['foret', 'plaine', 'mine', 'ferme', 'riviere'], 2), ...stars(['foret'], 3), ...guardians(['foret', 'plaine']) },
-    village: {
-      plans: {
+    world: {
+      parts: {
         ...Object.fromEntries(['foret', 'plaine'].flatMap((id) => plansFor(id).slice(0, 2).map((p) => [p.id, keys(p)]))),
         ...Object.fromEntries(['mine', 'ferme'].map((id) => [plansFor(id)[0].id, keys(plansFor(id)[0])])),
         [plansFor('riviere')[0].id]: keys(plansFor('riviere')[0], 10),
         [VEHICLE_STAGES[0].id]: keys(VEHICLE_STAGES[0], 24),
         [MONUMENTS[0].id]: keys(MONUMENTS[0], 50),
       },
-      journal: [{ day: '2026-09-20', plan: plansFor('foret')[0].id }],
-      bridges: ['foret-plaine', 'foret-mine', 'foret-ferme', 'plaine-riviere', 'mine-carriere'],
-      at: 'foret',
+      log: [{ day: '2026-09-20', part: plansFor('foret')[0].id }],
+      links: ['foret-plaine', 'foret-mine', 'foret-ferme', 'plaine-riviere', 'mine-carriere'],
+      place: 'foret',
     },
   },
-  progress: { xp: 1450, totalAnswers: 310, correctAnswers: 250, sessionsCompleted: 28, plansCompleted: 6, bossesBeaten: 2, bestStreak: 9, badges: badges(9) },
+  progress: { xp: 1450, totalAnswers: 310, correctAnswers: 250, sessionsCompleted: 28, structuresCompleted: 6, challengesWon: 2, bestStreak: 9, badges: badges(9) },
 };
 /** Les Premiers Rivages reconstruits : tout est ouvert et bâti, le navire a pris la mer. */
 const DONE6 = {
-  blocland: {
-    inventory: { bois: 30, brique: 25, toile: 8 },
+  game: {
+    stock: { bois: 30, brique: 25, toile: 8 },
     progress: { ...stars(six, 3), ...guardians(six) },
-    village: {
-      plans: {
+    world: {
+      parts: {
         ...Object.fromEntries(six.flatMap((id) => plansFor(id).map((p) => [p.id, keys(p)]))),
         [VEHICLE_STAGES[0].id]: keys(VEHICLE_STAGES[0]),
         ...Object.fromEntries(MONUMENTS.filter((m) => m.archipelago === '6e').map((m) => [m.id, keys(m)])),
       },
-      journal: [],
-      bridges: [...bridgesOf('6e'), 'voyage-5e'],
-      at: 'foret',
+      log: [],
+      links: [...bridgesOf('6e'), 'voyage-5e'],
+      place: 'foret',
     },
   },
-  progress: { xp: 5200, totalAnswers: 1200, correctAnswers: 1010, sessionsCompleted: 90, plansCompleted: 33, bossesBeaten: 11, voyages: 1, monumentsCompleted: 2, badges: badges(17) },
+  progress: { xp: 5200, totalAnswers: 1200, correctAnswers: 1010, sessionsCompleted: 90, structuresCompleted: 33, challengesWon: 11, passages: 1, landmarksCompleted: 2, badges: badges(17) },
 };
 /** Arrivé dans les Îles Brumeuses. */
-const COLLINES = { ...DONE6, blocland: { ...DONE6.blocland, village: { ...DONE6.blocland.village, at: 'marche' } } };
+const COLLINES = { ...DONE6, game: { ...DONE6.game, world: { ...DONE6.game.world, place: 'marche' } } };
 
 // ---------- Les captures ----------
 
@@ -139,7 +139,7 @@ const SHOTS = [
   { name: 'monument', state: MID, go: '/aventure/monument-observatoire' },
   { name: 'village-reconstruit', state: DONE6, go: '/aventure' },
   { name: 'collines-du-large', state: COLLINES, go: '/aventure/marche', act: closeSheet },
-  { name: 'vue-simple', state: MID, view: 'liste', go: '/aventure' },
+  { name: 'vue-simple', state: MID, view: 'list', go: '/aventure' },
   { name: 'telephone-village', state: MID, go: '/aventure/foret', size: PHONE },
   { name: 'telephone-quete', state: EARLY, go: `/aventure/foret/${FOREST_QUEST}`, size: PHONE, wait: 2500 },
   { name: 'quetes', state: MID, go: '/quetes' },
@@ -156,7 +156,9 @@ const SHOTS = [
 // Les bornes de sanitizeSettings (src/core/settings.ts) : une valeur au-delà serait ramenée sans erreur.
 const EXTREMES = { font: 'opendyslexic', fontSize: 32, lineHeight: 2.4, letterSpacing: 0.2, wordSpacing: 0.5, autoRead: false };
 const deBase = (n) => SHOTS.find((s) => s.name === n) ?? (() => { throw new Error(`capture inconnue : ${n}`); })();
-const extreme = (name, theme) => ({ ...deBase(name), name: `extreme-${name}-${theme}`, settings: { ...EXTREMES, theme }, reduit: true, surDemande: true });
+// Le nom de la capture garde le mot affiché du thème ; le réglage, sa valeur neutre.
+const THEMES = { creme: 'cream', nuit: 'night', clair: 'light' };
+const extreme = (name, theme) => ({ ...deBase(name), name: `extreme-${name}-${theme}`, settings: { ...EXTREMES, theme: THEMES[theme] }, reduit: true, surDemande: true });
 SHOTS.push(
   extreme('quete-correction', 'creme'),
   extreme('telephone-quete', 'creme'),
@@ -178,7 +180,7 @@ SHOTS.push(
   archipeo({ base: 'collines-du-large', name: 'archipeo-collines-du-large' }),
 );
 // Les réglages extrêmes dans Archipéo (rendez-vous 4 du lot 6, référent dys) : sur demande seulement, comme ceux de Blocland.
-const extremeArchipeo = (base, theme) => ({ ...extreme(base, theme), name: `extreme-archipeo-${base}-${theme}`, settings: { ...EXTREMES, theme, univers: 'archipeo' } });
+const extremeArchipeo = (base, theme) => ({ ...extreme(base, theme), name: `extreme-archipeo-${base}-${theme}`, settings: { ...EXTREMES, theme: THEMES[theme], univers: 'archipeo' } });
 SHOTS.push(
   extremeArchipeo('gardien', 'clair'),
   extremeArchipeo('carte', 'nuit'),
@@ -307,16 +309,16 @@ async function take(shot) {
       ({ state, view, settings, title, tutorial, whale, renommage }) => {
         localStorage.clear();
         sessionStorage.clear();
-        if (!title) sessionStorage.setItem('dysapps:titre-vu', '1');
+        if (!title) sessionStorage.setItem('dysapps:title-seen', '1');
         // Les réglages par défaut (la page Réglages les montre tels quels), sauf la vue du monde et les réglages extrêmes.
         localStorage.setItem('dysapps:settings', JSON.stringify({ ...settings, worldView: view }));
-        if (!tutorial) localStorage.setItem('dysapps:tutos', JSON.stringify({ 'village-immersif': true, 'archipel-5e': true, 'archipel-4e': true, 'archipel-3e': true }));
-        if (state?.blocland) localStorage.setItem('dysapps:blocland', JSON.stringify(state.blocland));
+        if (!tutorial) localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true, 'archipel-5e': true, 'archipel-4e': true, 'archipel-3e': true }));
+        if (state?.game) localStorage.setItem('dysapps:game', JSON.stringify({ version: 2, ...state.game }));
         if (state?.progress) localStorage.setItem('dysapps:progress', JSON.stringify(state.progress));
         // Ce que la baleine a déjà dit : sans cette clé, les étapes déjà passées sont notées dites, sans parler.
-        if (whale) localStorage.setItem('dysapps:baleine', JSON.stringify(whale));
+        if (whale) localStorage.setItem('dysapps:guide-messages', JSON.stringify(whale));
         // Les nouveaux noms des archipels : déjà dits, sauf sur leur capture (une partie préparée les ferait dire).
-        localStorage.setItem('dysapps:noms-archipels', JSON.stringify({ dit: !renommage }));
+        localStorage.setItem('dysapps:region-names', JSON.stringify({ said: !renommage }));
       },
       {
         state: shot.state ?? null,
