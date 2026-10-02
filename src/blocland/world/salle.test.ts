@@ -93,11 +93,11 @@ describe('La salle des trophées (GD-3)', () => {
     expect(new Set(neufs.filter((c) => !(c.z === 2 && c.x === 3 && c.y === 0)).map((c) => c.block))).toEqual(new Set([BLOC.marbre, BLOC.velours, BLOC.taille, BLOC.or]));
     // Deux piliers (devant et au fond, au bord gauche), un fond de velours, trois socles, un pan de toit de 2 × 3, le faîte.
     const de = (x: number, y: number) => neufs.filter((c) => c.x === x && c.y === y);
-    expect(de(2, 0).map((c) => `${c.z}${c.block}`)).toEqual(['1marbre', '2marbre', '3marbre', '4taille']);
-    expect(de(2, 2).map((c) => `${c.z}${c.block}`)).toEqual(['1marbre', '2marbre', '3marbre', '4taille']);
-    expect(de(3, 2).map((c) => `${c.z}${c.block}`)).toEqual(['1velours', '2velours', '3velours', '4taille']);
+    expect(de(2, 0).map((c) => `${c.z}${c.block}`)).toEqual([`1${BLOC.marbre}`, `2${BLOC.marbre}`, `3${BLOC.marbre}`, `4${BLOC.taille}`]);
+    expect(de(2, 2).map((c) => `${c.z}${c.block}`)).toEqual([`1${BLOC.marbre}`, `2${BLOC.marbre}`, `3${BLOC.marbre}`, `4${BLOC.taille}`]);
+    expect(de(3, 2).map((c) => `${c.z}${c.block}`)).toEqual([`1${BLOC.velours}`, `2${BLOC.velours}`, `3${BLOC.velours}`, `4${BLOC.taille}`]);
     expect(neufs.filter((c) => c.z === 1 && c.block === BLOC.marbre && c.y < 2 && !(c.x === 2 && c.y === 0)).length).toBe(3);
-    expect(neufs.filter((c) => c.z === 5).map((c) => `${c.x},${c.y}:${c.block}`).sort()).toEqual(['2,1:or', '3,1:or']);
+    expect(neufs.filter((c) => c.z === 5).map((c) => `${c.x},${c.y}:${c.block}`).sort()).toEqual([`2,1:${BLOC.or}`, `3,1:${BLOC.or}`]);
     // Les piliers, lus par colonne.
     expect(COLONNES_DES_PILIERS).toEqual([7, 4, 2, 0]);
   });

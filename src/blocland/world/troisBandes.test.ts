@@ -159,7 +159,7 @@ const SEUIL_DU_TOIT = 6;
  * d'or du clocheton de l'école (son cube le plus haut, z = 7 ; le toit seul reste sous le seuil) cache le bas des cases 11
  * et 12 de la première rangée de plans. Ces cases seules dépassent le seuil, et seulement par la cloche.
  */
-const AU_DELA_DU_SEUIL: Partial<Record<(typeof ECOLES)[number], readonly string[]>> = { 'maths-4e-algebra': ['ecole@11', 'ecole@12'] };
+const AU_DELA_DU_SEUIL: Partial<Record<(typeof ECOLES)[number], readonly string[]>> = { 'maths-4e-algebra': ['school@11', 'school@12'] };
 const PLAFOND_DE_LA_CLOCHE = 12;
 const laCloche = (c: { place?: string; z: number; texture?: string }) => c.place === 'school' && c.texture === 'or';
 
@@ -170,7 +170,7 @@ it(`la première rangée où se pose un plan : l’école en cache au plus ${SEU
   for (const atelier of ['fabrique', 'halle'] as const)
     for (const id of ECOLES) {
       const r = pointsCaches(id, atelier);
-      expect(Object.keys(r).filter((k) => !k.startsWith('ecole@')), `${id} (${atelier})`).toEqual([]);
+      expect(Object.keys(r).filter((k) => !k.startsWith('school@')), `${id} (${atelier})`).toEqual([]);
       const ouverts = AU_DELA_DU_SEUIL[id] ?? [];
       for (const [k, n] of Object.entries(r)) expect(n, `${id} (${atelier}) ${k}`).toBeLessThanOrEqual(ouverts.includes(k) ? PLAFOND_DE_LA_CLOCHE : SEUIL_DU_TOIT);
       // Sans la cloche, toutes les cases tiennent le seuil : le reste de l'école (le toit) ne le dépasse nulle part.

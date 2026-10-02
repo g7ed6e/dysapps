@@ -143,7 +143,7 @@ describe('toucher le sol', () => {
   const cell = { x: 3, y: 4, z: 1 };
   const next = { x: 3, y: 4, z: 2 };
   const tags = cubeTags([
-    { x: 3, y: 4, z: 1, color: '#fff', quest: 'foret:rimes', bridge: 'french-6e-phonology-french-6e-letter-confusion' },
+    { x: 3, y: 4, z: 1, color: '#fff', quest: 'french-6e-phonology:rhymes', bridge: 'french-6e-phonology-french-6e-letter-confusion' },
     { x: 9, y: 9, z: 1, color: '#fff', bridge: 'french-6e-phonology-french-6e-letter-confusion' },
   ]);
   const all = { quest: true, bridge: true, build: true };

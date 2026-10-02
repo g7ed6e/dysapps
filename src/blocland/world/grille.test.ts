@@ -63,7 +63,7 @@ describe('La disposition en grille', () => {
         for (const st of questStations(b.id))
           expect(g.versMonde(g.placeDe({ genre: 'borne', id: `${b.id}:${st.typeId}` })!)).toEqual({ x: ox + st.x, y: oy + st.y, z: oz });
       }
-      expect(g.placeDe({ genre: 'borne', id: 'foret:inconnue' })).toBeNull();
+      expect(g.placeDe({ genre: 'borne', id: 'french-6e-phonology:inconnue' })).toBeNull();
     }
   });
 

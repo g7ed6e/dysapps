@@ -520,11 +520,11 @@ it('chaque mission a sa borne sur la rangée de devant, dans le cœur, hors de l
   }
   // Dans le monde : un socle et une ardoise étoilée par borne, étiquetés « île:mission », délavés sur une île fermée.
   const cubes = worldCubes('6e', {}, { parts: {}, log: [], links: [] });
-  const foret = cubes.filter((c) => c.quest?.startsWith('foret:'));
+  const foret = cubes.filter((c) => c.quest?.startsWith('french-6e-phonology:'));
   expect(foret).toHaveLength(2 * 3);
   expect(foret.filter((c) => c.texture === 'borne')).toHaveLength(3);
   expect(foret.every((c) => !c.muted)).toBe(true);
-  const mine = cubes.filter((c) => c.quest?.startsWith('mine:'));
+  const mine = cubes.filter((c) => c.quest?.startsWith('french-6e-letter-confusion:'));
   expect(mine.length).toBeGreaterThan(0);
   expect(mine.every((c) => c.muted)).toBe(true);
 });
@@ -838,18 +838,18 @@ it('le lieu où l’on assemble (GD-2) : la Fabrique de Blocland et la Halle d�
       const bras = atelier === 'halle' ? 6 : 4;
       expect(at(0, 0, bras - 2)).toBe(recette.bloc);
       for (let z = 1; z < bras; z++) if (z !== bras - 2) expect(at(0, 0, z), `${z}`).toBeUndefined();
-      expect([at(0, 0, bras), at(0, 1, bras), at(0, 1, 1)]).toEqual(['bois', 'bois', 'bois']);
+      expect([at(0, 0, bras), at(0, 1, bras), at(0, 1, 1)]).toEqual([BLOC.bois, BLOC.bois, BLOC.bois]);
       for (const i of recette.ingredients) expect(m.some((c) => c.y < 2 && c.block === i.bloc), i.bloc).toBe(true);
       // Ce qui change d'un univers à l'autre : la brique, le toit plat et la cheminée ; le bois sur la pierre et les deux pentes.
       if (atelier === 'fabrique') {
         // Un soubassement de pierre sous la brique, une haute cheminée (sommet à 7).
-        expect([at(0, 2, 1), at(0, 2, 2)]).toEqual(['pierre', 'brique']);
+        expect([at(0, 2, 1), at(0, 2, 2)]).toEqual([BLOC.pierre, BLOC.brique]);
         expect(m.filter((c) => c.z === 4 && c.y >= 2).every((c) => c.block === BLOC.taille)).toBe(true);
-        expect([5, 6, 7].map((z) => at(2, 4, z))).toEqual(['pierre', 'pierre', 'pierre']);
+        expect([5, 6, 7].map((z) => at(2, 4, z))).toEqual([BLOC.pierre, BLOC.pierre, BLOC.pierre]);
         expect(Math.max(...m.map((c) => c.z))).toBe(7);
       } else {
-        expect([at(0, 2, 1), at(0, 2, 2)]).toEqual(['pierre', 'bois']);
-        expect(at(1, 2, 4)).toBe('toit');
+        expect([at(0, 2, 1), at(0, 2, 2)]).toEqual([BLOC.pierre, BLOC.bois]);
+        expect(at(1, 2, 4)).toBe(BLOC.toit);
         expect(at(0, 2, 4)).toBeUndefined();
         expect(m.filter((c) => c.z > 4).every((c) => c.x === 0 && c.y <= 1)).toBe(true);
       }
@@ -921,7 +921,7 @@ describe('les bornes dans la vue de l’île', () => {
 
   it('sur les quatre îles-écoles, la créature et ses pas ne se tiennent jamais entre la caméra de l’île et un lieu du village, emprise réservée de la salle comprise (GD-3)', () => {
     const ecoles = ARCHIPELAGOS.map((a) => a.school);
-    expect(ecoles.sort()).toEqual(['maths-4e-algebra', 'french-6e-phonology', 'maths-5e-proportionality', 'maths-3e-functions']);
+    expect(ecoles.sort()).toEqual(['french-6e-phonology', 'maths-3e-functions', 'maths-4e-algebra', 'maths-5e-proportionality']);
     for (const id of ecoles) {
       const lieux = lieuxVus(id);
       // Toute l'emprise de la salle (8 × 3, sur deux rangs), l'école et le lieu où l'on assemble.

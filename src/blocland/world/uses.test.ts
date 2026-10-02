@@ -82,7 +82,7 @@ it('l’inventaire commenté : les lignes rangées par utilité, les ouvrages un
   const inv = inventoryUses(state);
   expect(inv.total).toBe(10);
   // Posable ici (Plaine : brique), puis ailleurs (bois : Forêt), puis à garder (toit), puis sans usage (or).
-  expect(inv.rows.map((r) => r.block)).toEqual(['brique', 'bois', 'toit', 'or']);
+  expect(inv.rows.map((r) => r.block)).toEqual([BLOC.brique, BLOC.bois, BLOC.toit, BLOC.or]);
   expect(inv.rows[1].uses).toEqual([{ kind: 'plan', island: 'french-6e-phonology', name: 'La cabane de Mousso', need: CABANE, enough: false }]);
   // Le toit (bloc de coffre) : attendu d'abord par le toit de la maison de la Plaine (l'île où l'on est), plan 2.
   expect(inv.rows[2].uses[0]).toMatchObject({ kind: 'garder', island: 'maths-6e-calculation' });
