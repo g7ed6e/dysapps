@@ -17,6 +17,8 @@ import { eauxDe, type Couleur } from './palette';
 
 /** Les points de la carte de la mer par case (sur chaque axe). */
 export const PAR_CASE = 2;
+/** Le plancher de nuages des Îles du Ciel : sa hauteur, sous la roche des îles (à 9), au-dessus de la mer qu'on ne voit plus. */
+export const PLANCHER_DE_NUAGES = 2.5;
 /** La marge de la carte autour de l'étendue de l'archipel, en cases : au-delà, le large. */
 export const MARGE = 24;
 /** La distance à la terre gardée dans la carte (canal alpha), en cases. */

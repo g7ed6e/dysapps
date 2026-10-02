@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import { AMBIENCE, palette } from '../world/daylight';
 import { capDuNuage, deriveDesNuages, oiseauxDe, placeDesNuages, placeDesNuagesDArchipeo, PLANEUR, planeurDe, poseDePassage, poseDeRonde, poseDuPlaneur, type NuageAuLoin, type PoseDeBaleine, type Ronde } from '../world/faune';
 import type { ChampDuSol } from '../world/landMesh';
-import { signatureDesTerres, terresDeLaMer } from '../world/mer';
+import { PLANCHER_DE_NUAGES, signatureDesTerres, terresDeLaMer } from '../world/mer';
 import { cielDe, teinteSur } from '../world/palette';
 import { viewYaw, whaleSpots } from '../world/terrain';
 import { passingWhale, whalePassRoute, type WhaleRoute } from '../world/whalePass';
@@ -20,8 +20,6 @@ import { blockMaterial } from './textures';
 
 /** Hauteur de l'eau : les deux couches de terre affleurent, le sol reste bien au-dessus. */
 const WATER_LEVEL = -0.45;
-/** Le plancher de nuages des Îles du Ciel : sous la roche des îles (à 9), au-dessus de la mer qu'on ne voit plus. */
-const CLOUD_FLOOR = 2.5;
 /** La couleur moyenne de la texture de l'eau (world/pixels.ts) : Archipéo teinte la mer pour qu'elle ait, en moyenne, la couleur de la palette. */
 const EAU_MOYENNE = 0x54a2e4;
 
@@ -66,7 +64,7 @@ export function creerLarge(
   // un appel de dessin ; peinte avec le terrain, quand la côte est connue.
   const mer = peinte ? creerMer(archipel, bounds, width * 4) : null;
   if (mer) {
-    mer.mesh.position.y = ambience.sky ? CLOUD_FLOOR : WATER_LEVEL;
+    mer.mesh.position.y = ambience.sky ? PLANCHER_DE_NUAGES : WATER_LEVEL;
     scene.add(mer.mesh);
   }
   let merSignature = '';
@@ -75,7 +73,7 @@ export function creerLarge(
   const cloudFloorMat = new THREE.MeshBasicMaterial({ color: palette(1, archipel).water });
   const cloudFloor = new THREE.Mesh(new THREE.PlaneGeometry(width * 8, width * 8), cloudFloorMat);
   cloudFloor.rotation.x = -Math.PI / 2;
-  cloudFloor.position.set(center.x, CLOUD_FLOOR, center.y);
+  cloudFloor.position.set(center.x, PLANCHER_DE_NUAGES, center.y);
   cloudFloor.visible = ambience.sky && !peinte;
   scene.add(cloudFloor);
 
