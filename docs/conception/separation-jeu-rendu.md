@@ -127,4 +127,4 @@ Le mainteneur a tranché le 28 septembre 2026 :
 
 Pour plusieurs univers (Archipéo et Blocland au choix de l’élève, chacun avec son récit, son rendu et l’habillage de ses énoncés, sur le même jeu), la feuille de route [Plusieurs univers](../univers/univers.md) ajoute à ce plan une note en J5, l’objet `Habillage` en J6, une couche `univers` en J7 et une étape J8 (les textes d’Archipéo sortis en données, sans changement d’image) ; elle n’en change aucune décision. Les noms se recoupent : dans ce plan, J6 est la disposition en réseau et J7 le rangement en `jeu/` et `disposition/` ; dans Plusieurs univers, « J6 » et « J7 » désignent ce qui s’y ajoute (l’objet `Habillage`, la couche `univers`), fait avec U4.
 
-Reste à cadrer avec le directeur artistique, avant J6 : la maquette d’une île en réseau (échelle, ce qu’elle montre de loin et de près), la place des Gardiens et des monuments, la Carte et la carte des quatre archipels (lot 8b), la 2D en réseau.
+Ce qui reste à cadrer avant J6 est au [pilotage](../pilotage/chantiers.md#séparer-le-jeu-du-rendu-j).

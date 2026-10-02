@@ -43,7 +43,7 @@ Le mot neutre est le mot anglais : c’est lui qu’emploient le code et la sauv
 
 ## La promesse
 
-Un jeu d’entraînement pour les élèves dys du collège, de la 6e à la 3e, en français, maths, anglais et LV2, où **le savoir construit le monde** : chaque réussite fait naître quelque chose dans le monde, et le monde montre la progression. Le monde ouvert est au centre ([GD-4](propositions/GD-4.md)) : tout se passe dans le monde, les chemins sont au choix, et l’on découvre en explorant. L’élève est un explorateur et un bâtisseur, pas un élève devant un manuel déguisé.
+Un jeu d’entraînement pour les élèves dys du collège, de la 6e à la 3e, en français, maths, anglais et LV2, où **le savoir construit le monde** : chaque réussite fait naître quelque chose dans le monde, et le monde montre la progression. Le monde ouvert est au centre ([GD-4](propositions/GD-4.md)) : tout se passe dans le monde, et les chemins sont au choix. L’élève est un bâtisseur, pas un élève devant un manuel déguisé.
 
 ## Ce qui ne se négocie jamais
 
