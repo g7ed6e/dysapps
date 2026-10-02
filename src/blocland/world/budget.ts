@@ -4,7 +4,7 @@
 // groupe de `buildMesh`. La mer, les nuages, les baleines, les oiseaux, les étiquettes et les repères de borne s'y
 // ajoutent dans le navigateur : `npm run rendu:mesures` mesure la scène entière. `sceneCostArchipeo()` compte en plus,
 // pour le rendu Archipéo, le sol (R2), la mer et la faune (R3), le décor (R4), la construction taillée, les bornes et
-// le navire (R5). Vérifié par world/budget.test.ts.
+// le navire (R5), et les personnages fusionnés (R6). Vérifié par world/budget.test.ts.
 import { AVATAR_PARTS } from '../Avatar';
 import { BIOMES } from '../biomes';
 import { CATALOG } from '../exercises';
@@ -246,8 +246,9 @@ export function navireCost(a: ArchipelagoId): { triangles: number; drawCalls: nu
 
 /**
  * Les modèles de la scène d'un archipel tout construit dans le rendu Archipéo, lot par lot : le sol en facettes (R2),
- * la mer et la faune (R3), le décor en primitives (R4), la construction taillée, les bornes et le navire (R5), et le
- * reste encore en blocs (créatures, Gardiens, bonhomme). `triangles` et `drawCalls` comptent tout.
+ * la mer et la faune (R3), le décor en primitives (R4), la construction taillée, les bornes et le navire (R5), le
+ * bonhomme, les créatures et les Gardiens fusionnés (R6). `triangles` et `drawCalls` comptent tout, sauf « Dans la
+ * scène » (étiquettes, flèche, fanion, balises), que seul le navigateur mesure.
  */
 export function sceneCostArchipeo(a: ArchipelagoId): {
   triangles: number;
@@ -259,6 +260,7 @@ export function sceneCostArchipeo(a: ArchipelagoId): {
   construction: { triangles: number; drawCalls: number };
   bornes: { triangles: number; drawCalls: number };
   navire: { triangles: number; drawCalls: number };
+  personnages: { triangles: number; drawCalls: number };
 } {
   const sol = solCost(a);
   const decor = decorCost(a);
@@ -266,13 +268,15 @@ export function sceneCostArchipeo(a: ArchipelagoId): {
   const construction = constructionCost(a);
   const bornes = bornesCost(a);
   const navire = navireCost(a);
-  const models = sceneModels(a).filter((m) => m.name !== 'terrain' && m.name !== 'coque' && m.name !== 'ballon');
+  // Lot R6 : le bonhomme, les créatures et les Gardiens fusionnés (three/personnagesPeints.ts), plus en cubes.
+  const { bonhomme, creatures, gardiens } = personnagesCost(a);
+  const personnages = { triangles: bonhomme.triangles + creatures.triangles + gardiens.triangles, drawCalls: bonhomme.drawCalls + creatures.drawCalls + gardiens.drawCalls };
   const mer = merCost(a);
   const faune = fauneCost(a);
-  const parts = [sol, mer, faune, decor, construction, bornes, navire];
+  const parts = [sol, mer, faune, decor, construction, bornes, navire, personnages];
   return {
-    triangles: parts.reduce((n, p) => n + p.triangles, 0) + models.reduce((n, m) => n + faceCount(m.groups) * 2, 0),
-    drawCalls: parts.reduce((n, p) => n + p.drawCalls, 0) + models.reduce((n, m) => n + m.groups.length, 0),
+    triangles: parts.reduce((n, p) => n + p.triangles, 0),
+    drawCalls: parts.reduce((n, p) => n + p.drawCalls, 0),
     sol,
     mer,
     faune,
@@ -280,5 +284,24 @@ export function sceneCostArchipeo(a: ArchipelagoId): {
     construction,
     bornes,
     navire,
+    personnages,
   };
 }
+
+/**
+ * Chaque poste que le code compte, avec sa fonction de coût (celle que vérifie world/budget.test.ts) : `npm run
+ * rendu:budget` (scripts/rendu/budget.mjs) les lit ici. « Dans la scène » ne se compte que dans le navigateur. Un poste
+ * ajouté à `ENVELOPPES` sans sa fonction ne compile pas.
+ */
+export const COUTS_DES_POSTES = {
+  sol: solCost,
+  mer: merCost,
+  faune: fauneCost,
+  decor: decorCost,
+  construction: constructionCost,
+  bornes: bornesCost,
+  navire: navireCost,
+  bonhomme: (a: ArchipelagoId) => personnagesCost(a).bonhomme,
+  creatures: (a: ArchipelagoId) => personnagesCost(a).creatures,
+  gardiens: (a: ArchipelagoId) => personnagesCost(a).gardiens,
+} satisfies Record<Exclude<Poste, 'scene'>, (a: ArchipelagoId) => Enveloppe>;
