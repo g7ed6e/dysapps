@@ -467,6 +467,8 @@ export function translatePath(path: string): string {
       out.push(translatePartId(first));
       if (second !== undefined) out.push(second);
     }
+    // Ce qui suit (une adresse fausse) passe tel quel : la page introuvable s'affiche, comme avant.
+    out.push(...segs.slice(4));
   }
   const params = new URLSearchParams(query);
   const chantier = params.get('chantier');

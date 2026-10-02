@@ -53,7 +53,7 @@ L’aide du village (les trois bulles) se revoit avec le bouton **Revoir l’aid
 
 On l’ouvre aussi avec le **bouton retour** du téléphone (ou du navigateur), quand aucun panneau n’est ouvert : le retour ne quitte plus l’appli sans prévenir. Depuis le menu, un second retour quitte l’appli, ou revient à la page d’avant.
 
-Son adresse est `#/adventure/menu` ; en vue simple, elle mène au menu en page. Les adresses de l’aventure commencent toutes par `#/adventure/` ; les anciennes adresses, en `#/aventure/…`, mènent toujours à la même page.
+Son adresse est `#/adventure/menu` ; en vue simple, elle mène au menu en page. Les adresses de l’aventure commencent toutes par `#/adventure` ; les anciennes adresses, en `#/aventure/…`, mènent toujours à la même page.
 
 ## Le panneau d’une île
 
