@@ -22,6 +22,7 @@ Le jeu se décrit en mots neutres, en anglais, dans [Le jeu](../../gameplay/inde
 | `region` | archipel : les Basses Terres (6e), les Collines du Large (5e), les Monts de Feu (4e), les Îles du Ciel (3e) |
 | `place` | île (Forêt des sons, Mine des lettres…) |
 | `startPlace` | île de l’école |
+| `school` | l’école du village (trois portes, une par matière) |
 | `hub` | port |
 | `link` | ouvrage : pont, bac, sentier, escalier taillé, tunnel, col |
 | `passage` | le Bloc-Navire et son voyage |
