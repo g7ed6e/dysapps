@@ -1,6 +1,7 @@
 import { BIOMES, missionsJouables } from '../biomes';
 import { ARCHIPELAGO_IDS, CORE, MAP, bornesDuCoeur, isLand, islandDef, landBox, landCells, mapOf } from './map';
 import { BADGES } from '../../core/progress';
+import { trophyBlock } from '../trophies';
 import { PLAN_ZONE, planCells, plansFor } from './plans';
 import { MONUMENT_ISLET, monumentsOf } from './monuments';
 import { archipelagoOfIsland } from './archipels';
@@ -25,6 +26,8 @@ import {
   bossIsletSteps,
   bridgePath,
   cacheUneBorne,
+  cacheUnLieu,
+  creatureDuMonde,
   creaturePlacements,
   creatureSpot,
   DEPTH,
@@ -46,8 +49,11 @@ import {
   routeLengths,
   placeDoor,
   placeSpot,
+  TROPHY_AT,
+  TROPHY_SIZE,
   TROPHY_SLOTS,
   trophyModel,
+  lieuxVus,
   VILLAGE_PLACES,
   ASSEMBLAGE_SIZE,
   atelierModel,
@@ -880,6 +886,28 @@ describe('les bornes dans la vue de l’île', () => {
       }
   });
 
+  it('la salle des trophées avec ses 24 succès (ses deux travées) ne couvre ni le pied ni le haut d’une borne (GD-3)', () => {
+    const { progress, village } = toutConstruit();
+    const tous = BADGES.map((x) => trophyBlock(x.id));
+    for (const a of ARCHIPELAGOS) {
+      const cubes = worldCubes(a.classe, progress, village, true, tous);
+      const o = origineDe(a.school);
+      const salle = cubes.filter((c) => c.place === 'trophees');
+      // Les deux travées sont là : la salle va de x = 0 à 7 dans son emprise.
+      expect(new Set(salle.map((c) => c.x - o.x - TROPHY_AT.x)).size, a.school).toBe(TROPHY_SIZE.w);
+      const bornes = questStations(a.school).map((st) => {
+        const socle = cubes.find((c) => c.quest === `${a.school}:${st.typeId}` && c.texture !== 'borne');
+        expect(socle, `${a.school}, borne ${st.typeId}`).toBeDefined();
+        return { x: o.x + st.x, y: o.y + st.y, base: socle!.z - 1 };
+      });
+      const vers = versLaCamera(a.school);
+      expect(
+        salle.filter((c) => cacheUneBorne(bornes, vers, c.x, c.y, c.z)).map((c) => `${c.x - o.x},${c.y - o.y},${c.z}`),
+        a.school,
+      ).toEqual([]);
+    }
+  });
+
   it('à la Tour du lecteur, rien ne se dresse devant la deuxième borne, entre elle et la caméra', () => {
     const cubes = worldCubes('6e', {});
     const o = origineDe('tour');
@@ -889,6 +917,35 @@ describe('les bornes dans la vue de l’île', () => {
     const base = socle!.z - 1;
     // Le tronc de l’arbre qui la cachait était en (6, −1), deux rangées devant elle.
     expect(cubes.filter((c) => c.decor && c.x === o.x + st.x && c.y < o.y + st.y && c.y >= o.y + st.y - 3 && c.z > base + 1)).toEqual([]);
+  });
+
+  it('sur les quatre îles-écoles, la créature et ses pas ne se tiennent jamais entre la caméra de l’île et un lieu du village, emprise réservée de la salle comprise (GD-3)', () => {
+    const ecoles = ARCHIPELAGOS.map((a) => a.school);
+    expect(ecoles.sort()).toEqual(['atelier', 'foret', 'marche', 'phare']);
+    for (const id of ecoles) {
+      const lieux = lieuxVus(id);
+      // Toute l'emprise de la salle (8 × 3, sur deux rangs), l'école et le lieu où l'on assemble.
+      for (let x = 0; x < TROPHY_SIZE.w; x++)
+        for (let y = 0; y < TROPHY_SIZE.d; y++) expect(lieux.filter((l) => l.x === TROPHY_AT.x + x && l.y === TROPHY_AT.y + y).length, `${id} ${x},${y}`).toBe(2);
+      const vers = versLaCamera(id);
+      const spot = creatureSpot(id);
+      const caches = spot.steps.flatMap(([sx, sy]) => creatureDuMonde(id).filter((c) => cacheUnLieu(lieux, vers, spot.x + sx + c.x, spot.y + sy + c.y, c.z + 1)));
+      expect(caches, id).toEqual([]);
+    }
+    // Ailleurs, pas de lieu : rien à cacher.
+    expect(lieuxVus('plaine')).toEqual([]);
+  });
+
+  it('un cube devant la salle des trophées, entre elle et la caméra, la cache ; derrière elle ou au-dessus des rayons, jamais', () => {
+    const lieux = lieuxVus('foret');
+    const vers = versLaCamera('foret');
+    // Devant la première travée (vers la caméra : x croissants, y décroissants), à hauteur d'homme.
+    expect(cacheUnLieu(lieux, vers, TROPHY_AT.x + 3, TROPHY_AT.y - 2, 2)).toBe(true);
+    // Sur l'emprise réservée elle-même.
+    expect(cacheUnLieu(lieux, vers, TROPHY_AT.x, TROPHY_AT.y, 1)).toBe(true);
+    // Derrière la salle, ou sous le sol.
+    expect(cacheUnLieu(lieux, vers, TROPHY_AT.x + 3, TROPHY_AT.y + TROPHY_SIZE.d + 2, 2)).toBe(false);
+    expect(cacheUnLieu(lieux, vers, TROPHY_AT.x + 3, TROPHY_AT.y - 2, -1)).toBe(false);
   });
 
   it('un cube collé à la borne, à sa hauteur, la cache quelle que soit la direction ; un cube sous son sol ou au-delà de la portée, jamais', () => {

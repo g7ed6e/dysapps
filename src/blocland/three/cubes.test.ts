@@ -14,6 +14,8 @@ import type { Lumiere } from './lumiere';
 import type { Instant, Monde } from './partie';
 import type { VoxelCube } from '../Voxel';
 import { GESTE_DE_POSE } from '../world/pose';
+import { BADGES } from '../../core/progress';
+import { trophyBlock } from '../trophies';
 
 function monde(habillage: Habillage): Monde {
   return { scene: new THREE.Scene(), archipel: '6e', habillage, surface: null, etendue: { minX: 0, maxX: 10, minY: 0, maxY: 10 }, centre: { x: 5, y: 5 }, largeur: 10 };
@@ -29,7 +31,13 @@ describe('Le rendu de Blocland ne montre aucune pièce d’architecture', () => 
     expect(m.opaque.motifs.some((v) => v > 0)).toBe(true);
   });
 
-  it('Blocland aux Premiers Rivages, tout construit : les cubes du monde en blocs, sans motif ni pièce', () => {
+  // Avec les 24 succès (GD-3) : la salle des trophées et ses deux travées, en cubes entiers comme le reste.
+  const salleEntiere = worldCubes('6e', progress, village, false, BADGES.map((b) => trophyBlock(b.id)));
+
+  it.each([
+    ['sans succès', cubes],
+    ['avec les 24 succès (la salle et ses deux travées)', salleEntiere],
+  ])('Blocland aux Premiers Rivages, tout construit, %s : les cubes du monde en blocs, sans motif ni pièce', (_, cubes) => {
     const m = monde(HABILLAGES.blocland);
     const lumiere = { nuit: () => 0, suivre: () => {} } as unknown as Lumiere;
     const c = creerCubes(m, { rivage: () => {} } as unknown as Large, lumiere, {} as Instant);

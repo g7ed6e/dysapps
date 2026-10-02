@@ -58,6 +58,8 @@ const GRILLE = [
   'world/arrivee',
   // Le monde en cubes : un cube en cases du monde, ce qu'on touche pour entrer (J5).
   'world/cube',
+  // La salle des trophées qui s'agrandit (GD-3) : son emprise, ses travées et les places des trophées, en cases.
+  'world/salle',
   // Le relief de chaque île, en repère d'île, un fichier par archipel (socle de la piste Rendu).
   'world/silhouettes',
   'world/silhouettes/types',

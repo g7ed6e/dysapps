@@ -48,10 +48,11 @@ const key = (x: number, y: number) => `${x},${y}`;
 
 /**
  * La grille de marche d'un archipel : le haut de chaque colonne (sans le décor ni les fantômes), moins l'eau, la lave,
- * les bornes de mission, les cases où un décor haut occupe la place du corps (tronc, feuillage bas, rocher) et celles des
- * créatures.
+ * les bornes de mission, les cases où un décor haut occupe la place du corps (tronc, feuillage bas, rocher), celles des
+ * créatures et les cases `reservees` (l'emprise des lieux du village, la place d'une travée à venir comprise : le
+ * bonhomme ne s'arrête pas là où une travée arrivera, terrain.ts, `casesDesLieux`).
  */
-export function walkGround(cubes: VoxelCube[], creatures: CreaturePlacement[] = []): WalkGround {
+export function walkGround(cubes: VoxelCube[], creatures: CreaturePlacement[] = [], reservees: Iterable<{ x: number; y: number }> = []): WalkGround {
   const top = new Map<string, { z: number; liquid: boolean }>();
   for (const c of cubes) {
     if (c.ghost || decorPose(c.decor)) continue;
@@ -71,6 +72,7 @@ export function walkGround(cubes: VoxelCube[], creatures: CreaturePlacement[] = 
     // Le corps occupe les deux blocs au-dessus du sol : un feuillage plus haut laisse passer dessous.
     if (!ground || c.z <= ground.z + 2) blocked.add(k);
   }
+  for (const r of reservees) blocked.add(key(r.x, r.y));
   for (const cr of creatures) {
     const steps: [number, number][] = [[0, 0], ...(cr.steps ?? [])];
     for (const [sx, sy] of steps)

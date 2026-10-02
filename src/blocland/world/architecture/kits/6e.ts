@@ -14,6 +14,7 @@ import { MOTIF } from '../peinture';
 import { piecesDeToit } from '../toits';
 import type { IdDeMur, Forme, Tete } from '../choix';
 import type { VillagePlaceId } from '../../cube';
+import { estUnPilier } from '../../salle';
 import { HALLE } from '../../terrain';
 import type { CaseDuLieu, Kit, LieuDuKit } from './types';
 
@@ -52,8 +53,8 @@ function piecesSurPilotis(): Partial<Record<IdDeMur, DessinDePiece>> {
   return out;
 }
 
-/** Un pilier de la salle des trophées : un coin du pavillon. */
-const pilier = ({ x, y, w, d }: CaseDuLieu) => (x === 0 || x === w - 1) && (y === 0 || y === d - 1);
+/** Un pilier de la salle des trophées, lu par colonne (GD-3) : les bouts de la salle de départ et le bord de chaque travée. */
+const pilier = ({ x, y, d }: CaseDuLieu) => estUnPilier(x, y, d);
 /**
  * Les rangs de la halle du lieu où l'on assemble (world/terrain.ts, `atelierModel`, `HALLE`) : à partir de son premier
  * rang ; devant, la cour (la potence, le bloc suspendu, les blocs de la recette), qui reste en blocs.
@@ -67,9 +68,11 @@ const souche = ({ x, y, z, w }: CaseDuLieu) => x === (w - 1) / 2 && y === 1 && z
  * - l'école : ses murs de brique aux coins de pierre de taille (les trois rangs posés sur le sol) en colombage, son toit
  *   à deux pans en pentes ; la porte, les deux fenêtres, le clocheton et sa cloche d'or restent des blocs, et la souche
  *   du clocheton prend sa pierre de taille : un seul fût de deux cases (décision du directeur artistique, 1er octobre) ;
- * - la salle des trophées : ses quatre piliers de marbre en colombage, sans décharge (des piliers isolés : poteaux et
- *   sablières seulement) ; son toit de pierre de taille en pentes, dans la couverture de l'île, et son faîte d'or en
- *   faîte ; le fond de velours (le fond des trophées), les socles de marbre et les trophées restent des blocs ;
+ * - la salle des trophées : ses piliers de marbre en colombage, sans décharge (des piliers isolés : poteaux et
+ *   sablières seulement), ceux de ses travées aussi (GD-3 : la halle s'allonge, une travée tous les six succès après
+ *   les douze premiers) ; son toit de pierre de taille en pentes, dans la couverture de l'île, d'un seul tenant d'un
+ *   bout à l'autre (le pignon au bout de la halle, aucun au milieu), et son faîte d'or en faîte, qui s'allonge avec
+ *   elle ; le fond de velours (le fond des trophées), les socles de marbre et les trophées restent des blocs ;
  * - la Halle aux matériaux (le lieu où l'on assemble, dans son dessin d'Archipéo : `atelierModel('halle')`) : ses murs
  *   de bois sur leur rang de pierre en colombage (le rang de pierre devient le soubassement, comme aux maisons), son toit
  *   à deux pentes en pentes et son faîte ; la porte reste ouverte, et la cour (la potence, le bloc suspendu, les blocs de
@@ -90,7 +93,7 @@ export const LIEUX_6E: Partial<Record<VillagePlaceId, LieuDuKit>> = {
       ? { famille: 'bois', sansDecharge: true }
       : m.z === 4 && m.texture === 'taille'
         ? { famille: 'toit', couverture: true }
-        : // Le faîte d'or, au rang du milieu : la salle a une profondeur impaire (TROPHY_SIZE, 4 × 3), sinon il n'y en a pas.
+        : // Le faîte d'or, au rang du milieu : la salle a une profondeur impaire (TROPHY_SIZE, 3 cases), sinon il n'y en a pas.
           m.z === 5 && m.y === (m.d - 1) / 2 && m.texture === 'or'
           ? { famille: 'toit' }
           : undefined,

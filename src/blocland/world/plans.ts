@@ -120,8 +120,51 @@ export interface PlanDef {
   zone?: 'plans' | 'port' | 'monument';
 }
 
-/** Zone des plans de chaque île (coordonnées relatives à l'île) : plate, sans décor. */
+/**
+ * Zone des plans de chaque île (coordonnées relatives à l'île) : plate, sans décor. Son coin (x, y) est l'origine des
+ * plans, donc des clés de sauvegarde (`planCells`) : il ne bouge jamais. Sa taille se lit par île (`zoneDesPlans`).
+ */
 export const PLAN_ZONE = { x: 8, y: 10, w: 6, h: 5 };
+
+/**
+ * La zone des plans des quatre îles-écoles (cœur de 20, `COTE_DU_COEUR`) : une rangée de plus vers le fond, 6 × 6 au
+ * lieu de 6 × 5, même coin (redistribution « Trois bandes », choix du mainteneur, 02/10/2026). Agrandie vers +y
+ * seulement : aucune clé de sauvegarde ne change.
+ */
+const ZONE_DES_ILES_ECOLES = Object.freeze({ ...PLAN_ZONE, h: 6 });
+export const ZONES_AGRANDIES: Readonly<Partial<Record<BiomeId, Readonly<typeof PLAN_ZONE>>>> = Object.freeze({
+  foret: ZONE_DES_ILES_ECOLES,
+  marche: ZONE_DES_ILES_ECOLES,
+  atelier: ZONE_DES_ILES_ECOLES,
+  phare: ZONE_DES_ILES_ECOLES,
+});
+
+/** La zone des plans d'une île : `PLAN_ZONE`, ou plus profonde sur une île-école (`ZONES_AGRANDIES`). */
+export function zoneDesPlans(id: BiomeId): Readonly<typeof PLAN_ZONE> {
+  return ZONES_AGRANDIES[id] ?? PLAN_ZONE;
+}
+
+const SANS_DECALAGE = Object.freeze({ x: 0, y: 0, z: 0 });
+/**
+ * Au Marché et à l'Atelier, les plans se dessinent une rangée plus au fond (y 11 à 15 de la zone de 6 × 6) : vu de leur
+ * caméra, le toit de l'école cachait le rang avant de la zone. La rangée y = 10 reste une allée nue (décision du
+ * directeur artistique, 02/10/2026). Décalage de rendu seulement, sur le modèle de `decalageDuQuai` : les clés de
+ * sauvegarde (`planCells`, depuis `PLAN_ZONE`) ne changent pas.
+ */
+export const PLANS_AU_FOND: Readonly<Partial<Record<BiomeId, Readonly<{ x: number; y: number; z: number }>>>> = Object.freeze({
+  marche: Object.freeze({ x: 0, y: 1, z: 0 }),
+  atelier: Object.freeze({ x: 0, y: 1, z: 0 }),
+});
+
+/**
+ * Ce qui sépare la clé d'une case d'un plan de la zone des plans (`planCells`, repère de l'île) de la case où elle est
+ * dessinée, pointée et posée : (0, 0, 0) partout, sauf au Marché et à l'Atelier (`PLANS_AU_FOND`). Les plans du port
+ * et des monuments ont leur propre ancre (`ancreDuQuai`, `monumentAnchor`).
+ */
+export function decalageDesPlans(plan: Pick<PlanDef, 'biome' | 'zone'>): Readonly<{ x: number; y: number; z: number }> {
+  if (plan.zone === 'port' || plan.zone === 'monument') return SANS_DECALAGE;
+  return PLANS_AU_FOND[plan.biome] ?? SANS_DECALAGE;
+}
 
 /** Les fiches des plans (nom, phrases, XP, coffre ; produites par `npm run contenu` depuis la section « Les plans » de docs/contenu/<île>.md, dans le même ordre) : sur chaque île, le plan suivant se débloque quand le précédent est terminé. */
 const PLAN_FILES = [
