@@ -15,7 +15,7 @@
 
 ## Où va quoi
 
-Chaque fichier a une place ; `scripts/structure.test.mjs` vérifie en CI la racine, `docs/`, `www/`, `.claude/` et `scripts/` (l’arborescence de `src/` relève d’`architecture.md` et de la relecture). Une place nouvelle se décide d’abord (l’`expert-frontend` en juge), s’écrit dans ce tableau, puis dans le test, dans la même pull request.
+Chaque fichier a une place ; `scripts/structure.test.mjs` vérifie en CI la racine, `docs/`, `www/`, `.claude/` et `scripts/` (l’arborescence de `src/` relève d’`architecture.md` et de la relecture). Une place nouvelle se décide d’abord (l’`expert-frontend` en juge), s’écrit dans ce tableau, puis dans le test, dans la même pull request. Pour choisir la place d’un document, suivre les questions de [AGENTS.md](AGENTS.md) (« Ranger la documentation »).
 
 | Quoi | Où |
 | --- | --- |
