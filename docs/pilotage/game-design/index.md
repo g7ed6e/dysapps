@@ -18,7 +18,7 @@ Ce qui ne se négocie jamais (voir [Principes dys](../../../www/pedagogie/princi
 
 **Cible.** Une réussite produit, quand c’est pertinent, une conséquence visible dans le monde ; trois échelles d’objectifs : réussir une mission, réparer un bâtiment ou une infrastructure, restaurer le village et construire le Bloc-Navire ([Cadrage Archipéo](../../conception/cadrage-archipeo.md), §3.1).
 
-**Cap** ([GD-4](propositions/GD-4.md), décidé le 2 octobre 2026) : le monde ouvert au centre. D’abord tout se passe dans le monde (créatures utiles, besoins des habitants), puis des chemins au choix, puis des choses à découvrir en explorant. Trois modèles allient le jeu et l’apprentissage ([GD-5](propositions/GD-5.md)) : le monde a des besoins, tout de suite ; le savoir est un outil, petit à petit ; les grands projets, pour la 4e et la 3e, qui répondent à la montée en autonomie.
+**Cap** ([GD-4](propositions/GD-4.md), décidé le 2 octobre 2026) : le monde ouvert au centre. D’abord tout se passe dans le monde (créatures utiles, missions qui sont des demandes des habitants, îles reconstruites qui deviennent fournisseurs), puis des chemins au choix, puis des choses à découvrir en explorant. Trois modèles allient le jeu et l’apprentissage ([GD-5](propositions/GD-5.md)) : le monde a des besoins, tout de suite ; le savoir est un outil, petit à petit ; les grands projets, pour la 4e et la 3e, qui répondent à la montée en autonomie.
 
 **Questions ouvertes.**
 - La montée en autonomie de la 6e à la 3e (chaînes de missions, missions à plusieurs compétences) : rien n’est posé côté boucle ; à cadrer avec le directeur contenu pédagogique, après le lot 8.
