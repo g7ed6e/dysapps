@@ -49,3 +49,25 @@ export function removeKey(key: string): void {
     // ignoré
   }
 }
+
+/** Comme `saveJSON`, mais dit si la valeur est écrite : faux si la sauvegarde est gelée ou si l'appareil refuse (quota). */
+export function trySaveJSON<T>(key: string, value: T): boolean {
+  if (gelee) return false;
+  try {
+    localStorage.setItem(PREFIX + key, JSON.stringify(value));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** Comme `removeKey`, mais dit si la clé est effacée : faux si la sauvegarde est gelée ou si l'appareil refuse. */
+export function tryRemove(key: string): boolean {
+  if (gelee) return false;
+  try {
+    localStorage.removeItem(PREFIX + key);
+    return true;
+  } catch {
+    return false;
+  }
+}
