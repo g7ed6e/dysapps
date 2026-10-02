@@ -79,7 +79,7 @@ Tels qu’ils sont construits, ils valent pour tous les univers (les exemples so
 
 ### En grand texte
 
-Quand les lettres sont nettement plus larges qu’avec les réglages par défaut, la page porte l’attribut `data-texte="grand"` ([Style](../rendu/style.md#en-grand-texte)). Les écrans se mettent alors en page ainsi :
+Quand les lettres sont nettement plus larges qu’avec les réglages par défaut, la page porte l’attribut `data-texte="grand"` ([Style](../rendu/style.md#en-grand-texte)). Les écrans se mettent alors en page ainsi, avec ce qui doit tenir à toutes les tailles :
 
 - **Sur téléphone**, rien ne sort de l’écran : les titres coulent comme le texte, l’icône en tête ; dans le panneau d’une île, la créature et la croix sont sur une ligne, le nom de l’île dessous ; une icône, une case à cocher ou un bouton Écouter passe au-dessus de son texte quand les deux ne tiennent pas côte à côte ; les marges intérieures sont fixes ; ce qui s’écrit plus grand que le texte (titre de page, énoncé, calcul) revient à la taille du texte ; les cartes de mots et les réponses longues prennent la place d’un mot entier (une par ligne sur téléphone, deux sur tablette), les réponses courtes restent côte à côte tant qu’elles tiennent. Un mot ne se coupe que s’il est plus long que toute la ligne (en OpenDyslexic 32 px, une ligne de téléphone tient une dizaine de lettres).
 - **Le bandeau de correction** suit la question dans la page quand, fixé en bas, il ne laisserait plus la place à l’énoncé et aux réponses : l’écran montre les réponses marquées et le début du résultat, et seul « Suivante » reste en bas.

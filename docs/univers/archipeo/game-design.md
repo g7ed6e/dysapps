@@ -28,7 +28,7 @@ Voir le [Cadrage Archipéo](cadrage.md), §3 et §4 (la cible et les écarts) : 
 
 Déplacé tel quel de `docs/rendu/style.md` le 2 octobre 2026, quand Archipéo a été mis en pause.
 
-Dans Blocland, le monde est en blocs, comme décrit plus haut. L’élève qui choisit Archipéo dans les Réglages voit le rendu d’Archipéo, construit lot par lot (piste Rendu du [cadrage « De Blocland à Archipéo »](cadrage.md)) ; le rendu du monde de chaque univers se règle dans `src/blocland/world/habillage/`. Depuis le lot R1, il a en 3D :
+Dans Blocland, le monde est en blocs ([Le style](../../rendu/style.md)). L’élève qui choisit Archipéo dans les Réglages voit le rendu d’Archipéo, construit lot par lot (piste Rendu du [cadrage « De Blocland à Archipéo »](cadrage.md)) ; le rendu du monde de chaque univers se règle dans `src/blocland/world/habillage/`. Depuis le lot R1, il a en 3D :
 
 - **une palette commune** (`src/blocland/world/palette.ts`) : par archipel, le ciel, la mer, la lumière, et une couleur de dessus et de côté pour chaque sol et chaque matière, de jour et de nuit ; les nuits restent un bleu de crépuscule, jamais un noir ;
 - **un ciel en dôme dégradé**, du zénith à l’horizon, avec une lueur claire sur la ligne d’horizon ; **une brume de profondeur** de la couleur de l’horizon, qui fond les îles lointaines dans le ciel, jamais les noms d’îles ;
