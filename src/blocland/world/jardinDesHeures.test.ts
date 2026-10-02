@@ -29,7 +29,7 @@ function avecLv2<T>(lv2: Lv2Choice, f: () => T): T {
 }
 
 it('les îles de la LV2 : le Relais au 5e, le Jardin des heures au 4e, le Refuge des carnets au 3e', () => {
-  expect(LV2.sort()).toEqual(['lv2-4e-daily-life', 'lv2-3e-travel', 'lv2-5e-introductions']);
+  expect(LV2.sort()).toEqual(['lv2-3e-travel', 'lv2-4e-daily-life', 'lv2-5e-introductions']);
 });
 
 it('l’île de la LV2 n’élargit jamais le cadrage de sa voisine (cadrage d’avant) ; depuis elle, la voisine compte', () => {
@@ -136,10 +136,10 @@ describe('Blocland : Muscade et le Soleil de cuivre', () => {
 it('la tonnelle : le portique fermé à angles droits (le linteau en (4, 3, 2) et (5, 3, 2)), la table en planches', () => {
   const [, tonnelle] = buildingStages('lv2-4e-daily-life', BLOC.osier);
   const en = (x: number, y: number, z: number) => tonnelle.find((c) => c.x === x && c.y === y && c.z === z)?.block;
-  expect(en(4, 3, 2)).toBe('osier');
-  expect(en(5, 3, 2)).toBe('osier');
-  expect(en(4, 3, 0)).toBe('bois');
-  expect(en(5, 3, 0)).toBe('bois');
+  expect(en(4, 3, 2)).toBe(BLOC.osier);
+  expect(en(5, 3, 2)).toBe(BLOC.osier);
+  expect(en(4, 3, 0)).toBe(BLOC.bois);
+  expect(en(5, 3, 0)).toBe(BLOC.bois);
   expect(tonnelle.some((c) => c.x >= 4 && c.block === BLOC.barriere)).toBe(false);
 });
 
@@ -204,7 +204,7 @@ describe('l’osier en 3D, calé sur la vue peinte, et lisible en gris', () => {
 it('le ponton : l’échelle s’appuie sur la falaise, un pilier de pierre sous le rivage jusqu’à l’eau', () => {
   expect(DEPTH_DU_SOL).toBe(DEPTH);
   const cubes = worldCubes('4e', {}, { parts: {}, log: [], links: grantAccess([], ['lv2-4e-daily-life']) }, false);
-  const ponton = cubes.filter((q) => q.decor?.startsWith('jardin/ponton@'));
+  const ponton = cubes.filter((q) => q.decor?.startsWith('lv2-4e-daily-life/ponton@'));
   const echelle = ponton.filter((q) => q.texture === 'escalier');
   expect(echelle.length).toBeGreaterThan(0);
   const pris = new Set(cubes.map((q) => `${q.x},${q.y},${q.z}`));

@@ -159,7 +159,7 @@ it('les marges du cœur : une terre plate, au décor de la côte sur leur rangé
   // Les autres îles n'ont pas de marges.
   for (const d of MAP) if (!IDS.includes(d.id)) expect(margesDuCoeur(d), d.id).toEqual([]);
   // Le Marché, le port des Îles Brumeuses, reste bas (intention du 5e, §3) : des roseaux, une case sur deux, sur les côtés et derrière.
-  expect(DECOR_DES_MARGES).toEqual({ marche: { genre: 'roseau', unSurDeux: true, derriere: true } });
+  expect(DECOR_DES_MARGES).toEqual({ 'maths-5e-proportionality': { genre: 'roseau', unSurDeux: true, derriere: true } });
 });
 
 it('la rangée extérieure des marges est cassée de loin en loin (une pierre, une touffe, un rondin) ; la rangée où l’on marche reste nue', () => {
@@ -190,7 +190,7 @@ it('la rangée extérieure des marges est cassée de loin en loin (une pierre, u
     if (!DECOR_DES_MARGES[id]) expect(plusLongue, id).toBeLessThan(PAS_DES_JALONS);
   }
   // Le Marché, allégé (des roseaux, une case sur deux, rien devant), garde sa rangée de devant nue.
-  expect(nues).toEqual({ foret: 4, marche: 20, atelier: 4, phare: 4 });
+  expect(nues).toEqual({ 'french-6e-phonology': 4, 'maths-5e-proportionality': 20, 'maths-4e-algebra': 4, 'maths-3e-functions': 4 });
 });
 
 it('dans le cœur d’une île-école, les bornes, la créature, les lieux et la zone des plans gardent leur place', () => {
@@ -296,10 +296,10 @@ it('l’îlot du Gardien d’une île-école : au moins trois cases d’eau de t
   }
   // Les mesures (eau : en cases, au plus court en tous sens ; distances : de case à case).
   expect(mesures).toEqual({
-    foret: { eau: 3, propre: 4, autre: 5 },
-    marche: { eau: 3, propre: 4, autre: 8.5 },
-    atelier: { eau: 3, propre: 4.1, autre: 6.1 },
-    phare: { eau: 4, propre: 5, autre: 24.8 },
+    'french-6e-phonology': { eau: 3, propre: 4, autre: 5 },
+    'maths-5e-proportionality': { eau: 3, propre: 4, autre: 8.5 },
+    'maths-4e-algebra': { eau: 3, propre: 4.1, autre: 6.1 },
+    'maths-3e-functions': { eau: 4, propre: 5, autre: 24.8 },
   });
 });
 

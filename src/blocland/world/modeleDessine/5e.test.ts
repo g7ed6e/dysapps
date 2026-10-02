@@ -27,10 +27,10 @@ const montee = (x: number, y: number) => {
 it('les crêtes montent au fond du Glacier, du Carrefour, du Comptoir, du Manoir et du Relais ; le Marché et le Marais restent bas', () => {
   const max: Record<string, number> = {};
   for (const c of avant.colonnes) max[c.ile!] = Math.max(max[c.ile!] ?? 0, montee(c.x, c.y));
-  expect(max.marche).toBe(0);
-  expect(max.marais).toBe(0);
+  expect(max['maths-5e-proportionality']).toBe(0);
+  expect(max['french-5e-conjugation']).toBe(0);
   for (const id of ['maths-5e-signed-numbers', 'french-5e-homophones', 'english-5e-vocabulary', 'english-5e-grammar', 'lv2-5e-introductions']) expect(max[id], id).toBeGreaterThanOrEqual(5);
-  expect(max.glacier).toBeGreaterThanOrEqual(max.carrefour);
+  expect(max['maths-5e-signed-numbers']).toBeGreaterThanOrEqual(max['french-5e-homophones']);
 });
 
 it('ni le cœur, ni la première rangée du fond, ni les abords d’un ouvrage, ni ce qui est posé ne bougent ; rien ne descend', () => {

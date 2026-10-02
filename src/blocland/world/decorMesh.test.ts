@@ -342,7 +342,7 @@ it('écueils et bancs : moins de 2 500 triangles aux Premiers Rivages ; les roch
   // La Forge : ses rochers sur la roche ont la valeur de la roche (0,9 à 1,1 fois), pas le beige de la pierre ; sur le
   // basalte, celle de la pierre chaude (R4b-4e), pas le basalte.
   const forge = monde('4e');
-  const rochers = forge.elements.map((e, i) => ({ e, i })).filter(({ e }) => e.genre === 'rocher' && e.id.startsWith('forge/'));
+  const rochers = forge.elements.map((e, i) => ({ e, i })).filter(({ e }) => e.genre === 'rocher' && e.id.startsWith('maths-4e-powers/'));
   expect(rochers.length).toBeGreaterThan(5);
   for (const { e, i } of rochers) {
     const col = colonneEn(forge.champ, e.x, e.y)!;

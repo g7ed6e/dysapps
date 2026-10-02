@@ -14,6 +14,7 @@ import { creaturePeinte } from './creaturesPeintes';
 import { fusionDesCreatures, fusionDesGardiens, fusionDuBonhomme, trianglesDeLaFusion, type Fusion } from './fusions';
 import type { FacettesDePersonnage } from './peint';
 import { sentinellePeinte } from './sentinellesPeintes';
+import { texteDAvant, versLesIdsDAvant } from '../idsDAvant.testing';
 
 /** FNV-1a sur 32 bits : une empreinte courte et stable d'un texte. */
 function fnv(text: string): string {
@@ -34,8 +35,11 @@ function empreinte(f: FacettesDePersonnage): string {
 /** Empreinte d'une fusion : ses tableaux arrondis au dix-millième, ses os (ou ses lueurs) et ses plages. */
 function empreinteDeFusion(f: Fusion, extra: ArrayLike<number>): string {
   const arrondi = (a: Float32Array) => Array.from(a, (x) => Math.round(x * 1e4)).join(',');
-  return `${trianglesDeLaFusion(f)} ${fnv([arrondi(f.positions), arrondi(f.normals), arrondi(f.colors), Array.from(extra).join(','), JSON.stringify(f.plages)].join('|'))}`;
+  return `${trianglesDeLaFusion(f)} ${fnv([arrondi(f.positions), arrondi(f.normals), arrondi(f.colors), Array.from(extra).join(','), JSON.stringify(versLesIdsDAvant(f.plages))].join('|'))}`;
 }
+
+/** Une île sous son identifiant d'avant les mots neutres (../idsDAvant.testing.ts) : les empreintes n'en dépendent pas. */
+const ile = (id: string) => texteDAvant(id);
 
 describe('Empreintes des personnages en facettes', () => {
   it('le bonhomme', () => {
@@ -43,12 +47,12 @@ describe('Empreintes des personnages en facettes', () => {
   });
 
   it('les créatures, île par île', () => {
-    const toutes = Object.fromEntries(BIOMES.map((b) => [b.id, `${creaturePeinte(b.id).pieces.length} ${empreinte(creaturePeinte(b.id))}`]));
+    const toutes = Object.fromEntries(BIOMES.map((b) => [ile(b.id), `${creaturePeinte(b.id).pieces.length} ${empreinte(creaturePeinte(b.id))}`]));
     expect(toutes).toMatchSnapshot();
   });
 
   it('les sentinelles, île par île (éteintes)', () => {
-    const toutes = Object.fromEntries(BIOMES.map((b) => [b.id, `${sentinellePeinte(b.id).pieces.length} ${empreinte(sentinellePeinte(b.id))}`]));
+    const toutes = Object.fromEntries(BIOMES.map((b) => [ile(b.id), `${sentinellePeinte(b.id).pieces.length} ${empreinte(sentinellePeinte(b.id))}`]));
     expect(toutes).toMatchSnapshot();
   });
 
@@ -58,7 +62,7 @@ describe('Empreintes des personnages en facettes', () => {
       ARCHIPELAGO_IDS.map((a) => {
         const c = fusionDesCreatures(creaturePlacements(a, village.links));
         const g = fusionDesGardiens(guardianPlacements(a, progress, village.links));
-        return [a, { creatures: `${empreinteDeFusion(c, c.os)} ${fnv(JSON.stringify(c.squelette))}`, gardiens: empreinteDeFusion(g, g.lueur) }];
+        return [a, { creatures: `${empreinteDeFusion(c, c.os)} ${fnv(JSON.stringify(versLesIdsDAvant(c.squelette)))}`, gardiens: empreinteDeFusion(g, g.lueur) }];
       }),
     );
     const b = fusionDuBonhomme();
@@ -72,8 +76,8 @@ describe('Empreintes des personnages en facettes', () => {
     const bonhomme = Object.fromEntries(
       (['down', 'up', 'left', 'right'] as Facing[]).flatMap((d) => [0, 1].map((s) => [`${d}:${s}`, jourNuit(bonhommePeint(), { archipel: '6e', angle: ANGLE_DU_BONHOMME[d], gestes: s ? GESTES_DU_PAS : {} })])),
     );
-    const creatures = Object.fromEntries(BIOMES.map((b) => [b.id, jourNuit(creaturePeinte(b.id), { archipel: b.classe })]));
-    const sentinelles = Object.fromEntries(BIOMES.map((b) => [b.id, jourNuit(sentinellePeinte(b.id), { archipel: b.classe, allumage: 0 })]));
+    const creatures = Object.fromEntries(BIOMES.map((b) => [ile(b.id), jourNuit(creaturePeinte(b.id), { archipel: b.classe })]));
+    const sentinelles = Object.fromEntries(BIOMES.map((b) => [ile(b.id), jourNuit(sentinellePeinte(b.id), { archipel: b.classe, allumage: 0 })]));
     expect({ bonhomme, creatures, sentinelles }).toMatchSnapshot();
   });
 });

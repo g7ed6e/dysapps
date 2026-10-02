@@ -27,6 +27,6 @@ it('une île où tout est prêt passe devant, puis une île pas encore explorée
 
 it('sans objectif, la destination est le port, avec ce qu’il faut pour le village', () => {
   const plans = Object.fromEntries(['french-6e-phonology', 'maths-6e-calculation'].flatMap((b) => plansFor(b as never)).map((p) => [p.id, planCells(p).map((c) => c.key)]));
-  const state = sanitizeState({ progress: { ...played('french-6e-phonology', 'rimes'), ...played('maths-6e-calculation', 'tables') }, world: { place: 'french-6e-phonology', parts: plans, links: ['french-6e-phonology-french-6e-letter-confusion', 'french-6e-phonology-french-6e-grammar-spelling', 'french-6e-phonology-english-6e-grammar', 'maths-6e-calculation-maths-6e-fractions', 'maths-6e-calculation-maths-6e-decimals'] } });
+  const state = sanitizeState({ progress: { ...played('french-6e-phonology', 'rhymes'), ...played('maths-6e-calculation', 'times-tables') }, world: { place: 'french-6e-phonology', parts: plans, links: ['french-6e-phonology-french-6e-letter-confusion', 'french-6e-phonology-french-6e-grammar-spelling', 'french-6e-phonology-english-6e-grammar', 'maths-6e-calculation-maths-6e-fractions', 'maths-6e-calculation-maths-6e-decimals'] } });
   expect(nextDestination(state, NOMS_ARCHIPELS, mots).text).toMatch(/\.$/);
 });

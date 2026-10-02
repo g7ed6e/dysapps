@@ -89,7 +89,7 @@ describe('Les personnages de la 2D peinte (lot R6)', () => {
   const SOUS_LE_CHAPEAU = ['maths-3e-statistics'];
   const avecOrbites = BIOMES.filter((b) => sentinellePeinte(b.id).palette.some((p) => p.role === 'yeux') && !SOUS_LE_CHAPEAU.includes(b.id)).map((b) => b.id);
   it('les sentinelles sans orbites sont celles qui n’ont pas de visage (Locomotive, Spectre, Antenne, Soleil et Papillon de cuivre)', () => {
-    expect(BIOMES.filter((b) => !sentinellePeinte(b.id).palette.some((p) => p.role === 'yeux')).map((b) => b.id).sort()).toEqual(['english-4e-grammar', 'lv2-4e-daily-life', 'english-5e-grammar', 'lv2-3e-travel', 'english-3e-comprehension']);
+    expect(BIOMES.filter((b) => !sentinellePeinte(b.id).palette.some((p) => p.role === 'yeux')).map((b) => b.id).sort()).toEqual(['english-3e-comprehension', 'english-4e-grammar', 'english-5e-grammar', 'lv2-3e-travel', 'lv2-4e-daily-life']);
   });
   it.each(avecOrbites)('sentinelle %s : ses orbites se voient, d’au moins 2 × 2 pixels', (id) => {
     const r = rasterDuModele(sentinellePeinte(id), { archipel: archipelDe(id), light: 1, allumage: 0 });

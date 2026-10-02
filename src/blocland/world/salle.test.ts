@@ -90,7 +90,7 @@ describe('La salle des trophées (GD-3)', () => {
     expect(apres.length - travee).toBe(neufs.length);
     expect(new Set(neufs.map((c) => c.x))).toEqual(new Set([2, 3]));
     // Les matières de la salle de départ, et le treizième trophée.
-    expect(new Set(neufs.filter((c) => !(c.z === 2 && c.x === 3 && c.y === 0)).map((c) => c.block))).toEqual(new Set(['marbre', 'velours', 'taille', 'or']));
+    expect(new Set(neufs.filter((c) => !(c.z === 2 && c.x === 3 && c.y === 0)).map((c) => c.block))).toEqual(new Set([BLOC.marbre, BLOC.velours, BLOC.taille, BLOC.or]));
     // Deux piliers (devant et au fond, au bord gauche), un fond de velours, trois socles, un pan de toit de 2 × 3, le faîte.
     const de = (x: number, y: number) => neufs.filter((c) => c.x === x && c.y === y);
     expect(de(2, 0).map((c) => `${c.z}${c.block}`)).toEqual(['1marbre', '2marbre', '3marbre', '4taille']);
@@ -174,15 +174,15 @@ describe('La salle des trophées (GD-3)', () => {
     // a laissé la place à Mousso et à ses pas (`DECOR.foret`).
     // Les places mesurées (coordonnées du cœur) : la règle est dans `creatureSpot` (cacheUnLieu), ce test garde la trace.
     expect(Object.fromEntries(ARCHIPELAGOS.map((a) => [a.school, (({ x, y, steps }) => ({ x, y, pas: steps.length }))(creatureSpot(a.school))]))).toEqual({
-      foret: { x: 0, y: 13, pas: 3 },
-      marche: { x: -4, y: 12, pas: 1 },
-      atelier: { x: 1, y: 14, pas: 2 },
-      phare: { x: 3, y: 13, pas: 3 },
+      'french-6e-phonology': { x: 0, y: 13, pas: 3 },
+      'maths-5e-proportionality': { x: -4, y: 12, pas: 1 },
+      'maths-4e-algebra': { x: 1, y: 14, pas: 2 },
+      'maths-3e-functions': { x: 3, y: 13, pas: 3 },
     });
   });
 
   it('au Marché des proportions, Bazar tourne d’un quart, le visage du côté de la caméra (x croissants), pour tenir derrière la salle ; son Gardien ne tourne pas', () => {
-    expect(QUARTS_DE_TOUR_DE_LA_CREATURE).toEqual({ marche: 1 });
+    expect(QUARTS_DE_TOUR_DE_LA_CREATURE).toEqual({ 'maths-5e-proportionality': 1 });
     expect(QUARTS_DE_TOUR['maths-5e-proportionality']).toBeUndefined();
     expect(gardienDuMonde('maths-5e-proportionality')).toEqual(GUARDIAN_CUBES['maths-5e-proportionality']);
     const tournee = creatureDuMonde('maths-5e-proportionality');

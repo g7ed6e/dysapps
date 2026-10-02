@@ -37,7 +37,7 @@ it('l’Observatoire des textes monte en trois gradins de 2 blocs, neige en haut
   const o = origineDe('french-3e-close-reading');
   const hauts = apres.colonnes.filter((c) => c.ile === 'french-3e-close-reading').map((c) => c.haut - o.z);
   expect(Math.max(...hauts)).toBe(GRADINS_3E.marche * GRADINS_3E.gradins);
-  expect(min.textes).toBe(0);
+  expect(min['french-3e-close-reading']).toBe(0);
   // Le sommet des gradins est enneigé.
   const neige = modele.filter((c) => c.tag === 'french-3e-close-reading' && c.texture === 'neige');
   expect(neige.length).toBeGreaterThan(3);
@@ -45,7 +45,7 @@ it('l’Observatoire des textes monte en trois gradins de 2 blocs, neige en haut
   const b = origineDe('maths-3e-geometry');
   const belvedere = apres.colonnes.filter((c) => c.ile === 'maths-3e-geometry').map((c) => c.haut - b.z);
   expect(Math.max(...belvedere)).toBeLessThanOrEqual(DOME_DU_BELVEDERE.h);
-  expect(min.belvedere).toBeLessThan(0);
+  expect(min['maths-3e-geometry']).toBeLessThan(0);
 });
 
 it('ni le cœur, ni la première rangée du fond, ni les abords d’un ouvrage, ni ce qui est posé ne bougent', () => {

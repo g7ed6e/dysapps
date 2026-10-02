@@ -243,7 +243,7 @@ describe('Les Gardiens en sentinelles', () => {
 
 describe('Les sentinelles qui se tournent pour se montrer de profil (la Diligence)', () => {
   const tournees = BIOMES.filter((b) => STATUES[b.id].tour);
-  it('la Diligence, et le Soleil et le Papillon de cuivre, qu’on ne doit pas voir par la tranche', () => expect(tournees.map((b) => b.id).sort()).toEqual(['lv2-4e-daily-life', 'lv2-3e-travel', 'lv2-5e-introductions']));
+  it('la Diligence, et le Soleil et le Papillon de cuivre, qu’on ne doit pas voir par la tranche', () => expect(tournees.map((b) => b.id).sort()).toEqual(['lv2-3e-travel', 'lv2-4e-daily-life', 'lv2-5e-introductions']));
 
   it('le Soleil de cuivre, dans le monde : de face (à 33° au plus) pour la caméra du Jardin (72°), du Théâtre (20 à 42°) et du rallumage (85°) ; dans les cinq cases', () => {
     const f = sentinellePeinte('lv2-4e-daily-life');

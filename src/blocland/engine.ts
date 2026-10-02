@@ -1,7 +1,7 @@
 // Moteur Blocland : étoiles, récompenses, répétition espacée, streak et adaptation.
 // Logique pure (l'heure et le hasard sont passés en paramètres) pour être testée facilement.
 import type { BiomeId, BlockId } from './biomes';
-import { BLOCKS, getBiome } from './biomes';
+import { BIOMES, BLOCKS, getBiome } from './biomes';
 import { starsFor } from '../core/stars';
 import { GAME_VERSION, translateGame } from '../core/migration';
 import type { ExerciseDef, ItemResult } from './exercises/types';
@@ -245,7 +245,8 @@ export function sanitizeState(input: unknown): GameState {
   const played = new Set<BiomeId>();
   for (const [id, p] of Object.entries(progress)) {
     if (p.stars < 1) continue;
-    const biome = getBiome(id.slice(0, id.indexOf('-')));
+    // L'exercice commence par l'identifiant de son lieu, qui contient lui-même des tirets (`french-6e-phonology-…`).
+    const biome = BIOMES.find((b) => id.startsWith(`${b.id}-`));
     if (biome) played.add(biome.id);
   }
   links = grantAccess(links, played);

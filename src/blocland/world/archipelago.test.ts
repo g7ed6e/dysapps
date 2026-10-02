@@ -93,7 +93,7 @@ it('la Forêt et la Plaine sont ouvertes au début (pont déjà là) ; depuis la
     buildableBridges([])
       .map((b) => b.id)
       .sort(),
-  ).toEqual(['french-6e-phonology-french-6e-grammar-spelling', 'french-6e-phonology-english-6e-grammar', 'french-6e-phonology-french-6e-letter-confusion', 'maths-6e-calculation-maths-6e-fractions', 'maths-6e-calculation-maths-6e-decimals']);
+  ).toEqual(['french-6e-phonology-english-6e-grammar', 'french-6e-phonology-french-6e-grammar-spelling', 'french-6e-phonology-french-6e-letter-confusion', 'maths-6e-calculation-maths-6e-decimals', 'maths-6e-calculation-maths-6e-fractions']);
   expect(isBiomeUnlocked('maths-6e-decimals', ['french-6e-phonology-french-6e-grammar-spelling', 'french-6e-grammar-spelling-maths-6e-decimals'])).toBe(true);
   // La Rivière s'atteint par la Plaine ou par la Mine.
   expect(isBiomeUnlocked('maths-6e-fractions', ['maths-6e-calculation-maths-6e-fractions'])).toBe(true);
@@ -133,7 +133,16 @@ it('un voyage ouvre le port de l’archipel suivant, et rien de plus ; il faut l
     buildableBridges(['passage-5e'])
       .map((b) => b.id)
       .sort(),
-  ).toEqual(['french-6e-phonology-french-6e-grammar-spelling', 'french-6e-phonology-english-6e-grammar', 'french-6e-phonology-french-6e-letter-confusion', 'maths-5e-signed-numbers-maths-5e-proportionality', 'maths-5e-proportionality-english-5e-vocabulary', 'maths-5e-proportionality-french-5e-conjugation', 'maths-6e-calculation-maths-6e-fractions', 'maths-6e-calculation-maths-6e-decimals']);
+  ).toEqual([
+    'french-6e-phonology-english-6e-grammar',
+    'french-6e-phonology-french-6e-grammar-spelling',
+    'french-6e-phonology-french-6e-letter-confusion',
+    'maths-5e-proportionality-english-5e-vocabulary',
+    'maths-5e-proportionality-french-5e-conjugation',
+    'maths-5e-signed-numbers-maths-5e-proportionality',
+    'maths-6e-calculation-maths-6e-decimals',
+    'maths-6e-calculation-maths-6e-fractions',
+  ]);
 });
 
 it('un pont se paie avec les blocs des îles, les plus nombreux d’abord, jamais avec les kits de finition', () => {
@@ -144,8 +153,8 @@ it('un pont se paie avec les blocs des îles, les plus nombreux d’abord, jamai
   expect(r.ok).toBe(true);
   if (!r.ok) return;
   expect(r.bridges).toEqual(['french-6e-phonology-french-6e-letter-confusion']);
-  expect(r.used).toEqual({ pierre: 3 });
-  expect(r.inventory).toEqual({ bois: 2, pierre: 1, toit: 9 });
+  expect(r.used).toEqual({ [BLOC.pierre]: 3 });
+  expect(r.inventory).toEqual({ [BLOC.bois]: 2, [BLOC.pierre]: 1, [BLOC.toit]: 9 });
   // À égalité, on pioche dans plusieurs types.
   const mix = buildBridge('french-6e-phonology-french-6e-grammar-spelling', [], { [BLOC.bois]: 2, [BLOC.sable]: 2 });
   expect(mix.ok && Object.values(mix.used).reduce((a, b) => a + b, 0)).toBe(3);
@@ -170,13 +179,13 @@ it('le chemin vers une île part des départs de son archipel ; l’accès offer
 
 it('les anciennes sauvegardes gardent leurs îles ouvertes : voyages et chemin offerts', () => {
   expect(bridgesFromLegacyProgress({})).toEqual([]);
-  expect(bridgesFromLegacyProgress({ 'foret-abattage-1': { stars: 1 } })).toEqual(['french-6e-phonology-french-6e-letter-confusion']);
+  expect(bridgesFromLegacyProgress({ 'french-6e-phonology-syllables-1': { stars: 1 } })).toEqual(['french-6e-phonology-french-6e-letter-confusion']);
   // Sous l'ancienne règle, la Ferme s'ouvrait après la Carrière : on offre le chemin nouveau vers elle.
-  const old = { 'foret-a': { stars: 1 }, 'mine-a': { stars: 2 }, 'carriere-a': { stars: 1 } };
-  expect(bridgesFromLegacyProgress(old).sort()).toEqual(['french-6e-phonology-french-6e-grammar-spelling', 'french-6e-phonology-french-6e-letter-confusion', 'french-6e-letter-confusion-french-6e-word-spelling']);
+  const old = { 'french-6e-phonology-a': { stars: 1 }, 'french-6e-letter-confusion-a': { stars: 2 }, 'french-6e-word-spelling-a': { stars: 1 } };
+  expect(bridgesFromLegacyProgress(old).sort()).toEqual(['french-6e-letter-confusion-french-6e-word-spelling', 'french-6e-phonology-french-6e-grammar-spelling', 'french-6e-phonology-french-6e-letter-confusion']);
   // Sanitize : sauvegarde sans `bridges` → migration ; avec → identifiants inconnus filtrés, îles jouées gardées ouvertes.
-  expect(sanitizeState({ progress: old }).world.links.sort()).toEqual(['french-6e-phonology-french-6e-grammar-spelling', 'french-6e-phonology-french-6e-letter-confusion', 'french-6e-letter-confusion-french-6e-word-spelling']);
-  expect(sanitizeState({ progress: old, world: { links: ['french-6e-phonology-french-6e-letter-confusion', 'x', 'french-6e-phonology-french-6e-letter-confusion'] } }).world.links.sort()).toEqual(['french-6e-phonology-french-6e-letter-confusion', 'french-6e-letter-confusion-french-6e-word-spelling']);
+  expect(sanitizeState({ progress: old }).world.links.sort()).toEqual(['french-6e-letter-confusion-french-6e-word-spelling', 'french-6e-phonology-french-6e-grammar-spelling', 'french-6e-phonology-french-6e-letter-confusion']);
+  expect(sanitizeState({ progress: old, world: { links: ['french-6e-phonology-french-6e-letter-confusion', 'x', 'french-6e-phonology-french-6e-letter-confusion'] } }).world.links.sort()).toEqual(['french-6e-letter-confusion-french-6e-word-spelling', 'french-6e-phonology-french-6e-letter-confusion']);
   expect(sanitizeState({ world: { links: ['french-6e-phonology-french-6e-letter-confusion', 'x'] } }).world.links).toEqual(['french-6e-phonology-french-6e-letter-confusion']);
   // Le continent d'avant : un escalier vers le Glacier valait l'accès aux Collines. Le voyage et le sentier sont offerts,
   // et l'étape du Bloc-Navire est complète.

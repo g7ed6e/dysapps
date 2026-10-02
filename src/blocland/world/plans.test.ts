@@ -70,7 +70,7 @@ it('pose les blocs du plan dans n’importe quel ordre, refuse sans bloc, et ter
   expect(completed).toBe(true);
   expect(planStatus(state, plan).complete).toBe(true);
   expect(planStatus(state, plan).missing).toEqual({});
-  expect(state.stock).toMatchObject({ bois: 0, ...plan.reward.chest });
+  expect(state.stock).toMatchObject({ [BLOC.bois]: 0, ...plan.reward.chest });
   expect(nextFillable(state, plan)).toBeNull();
 });
 
@@ -136,9 +136,9 @@ describe('les origines figées des chantiers (séparation du jeu et du rendu, J1
   it('figées : les clés des sauvegardes ne suivent ni le quai, ni l’îlot, ni le cœur', () => {
     // Les valeurs écrites dans les sauvegardes depuis le début : les changer rendrait illisibles les chantiers des élèves.
     expect(ORIGINE_DU_QUAI).toEqual({
-      plaine: { x: 15, y: -14, z: -1 },
-      marche: { x: 15, y: -12, z: -4 },
-      atelier: { x: 15, y: -14, z: -7 },
+      'maths-6e-calculation': { x: 15, y: -14, z: -1 },
+      'maths-5e-proportionality': { x: 15, y: -12, z: -4 },
+      'maths-4e-algebra': { x: 15, y: -14, z: -7 },
     });
     expect(ORIGINE_DES_MONUMENTS).toEqual({
       'landmark-6e-1': { x: 4, y: 23, z: 0 },

@@ -51,11 +51,11 @@ it('assemble un bloc à la fois, sans rien perdre quand il manque des blocs', ()
   expect(assemblables(state.stock, poutre)).toBe(1);
   const r = assembleBlock(state, BLOC.poutre);
   expect(r.ok).toBe(true);
-  expect(r.state.stock).toEqual({ bois: 3, brique: 0, poutre: 1 });
+  expect(r.state.stock).toEqual({ [BLOC.bois]: 3, [BLOC.brique]: 0, [BLOC.poutre]: 1 });
   const encore = assembleBlock(r.state, BLOC.poutre);
   expect(encore.ok).toBe(false);
   expect(encore.state).toBe(r.state);
-  expect(manquePour(r.state.stock, poutre)).toEqual([{ bloc: 'brique', n: 1 }]);
+  expect(manquePour(r.state.stock, poutre)).toEqual([{ bloc: BLOC.brique, n: 1 }]);
   expect(assembleBlock(state, BLOC.bois)).toMatchObject({
     ok: false,
     reason: 'pas-de-recette',
@@ -66,13 +66,13 @@ it('défait un bloc assemblé en poche : ses blocs reviennent, rien ne se perd',
   const state = { ...EMPTY_STATE, stock: { [BLOC.bois]: 0, [BLOC.brique]: 0, [BLOC.poutre]: 1 } };
   const r = disassembleBlock(state, BLOC.poutre);
   expect(r.ok).toBe(true);
-  expect(r.state.stock).toEqual({ bois: 2, brique: 1, poutre: 0 });
+  expect(r.state.stock).toEqual({ [BLOC.bois]: 2, [BLOC.brique]: 1, [BLOC.poutre]: 0 });
   // Plus de poutre en poche : rien ne bouge.
   expect(disassembleBlock(r.state, BLOC.poutre)).toMatchObject({ ok: false, reason: 'plus-de-blocs', state: r.state });
   expect(disassembleBlock(state, BLOC.bois)).toMatchObject({ ok: false, reason: 'pas-de-recette' });
   // Assembler puis défaire rend l'inventaire d'avant.
   const avant = { ...EMPTY_STATE, stock: { [BLOC.bois]: 5, [BLOC.brique]: 3 } };
-  expect(disassembleBlock(assembleBlock(avant, BLOC.poutre).state, BLOC.poutre).state.stock).toEqual({ bois: 5, brique: 3, poutre: 0 });
+  expect(disassembleBlock(assembleBlock(avant, BLOC.poutre).state, BLOC.poutre).state.stock).toEqual({ [BLOC.bois]: 5, [BLOC.brique]: 3, [BLOC.poutre]: 0 });
 });
 
 it('garde les blocs assemblés d’une sauvegarde, et une case déjà posée d’un monument le reste', () => {
@@ -84,9 +84,9 @@ it('garde les blocs assemblés d’une sauvegarde, et une case déjà posée d�
     world: { parts: { [m.id]: [case_.key] } },
   });
   expect(avant.world.parts[m.id]).toEqual([case_.key]);
-  expect(avant.stock).toEqual({ bois: 4 });
+  expect(avant.stock).toEqual({ [BLOC.bois]: 4 });
   expect(sanitizeState({ stock: { [BLOC.poutre]: 2 } }).stock).toEqual({
-    poutre: 2,
+    [BLOC.poutre]: 2,
   });
   // Une poutre se pose à une case de poutre du monument.
   const libre = planCells(m).find((c) => c.block === BLOC.poutre && c.key !== case_.key)!;
@@ -104,7 +104,7 @@ it('nomme les blocs assemblés et leur lieu selon l’univers, depuis docs/conte
   expect(Object.keys(ASSEMBLAGE.lieu).sort()).toEqual([...UNIVERS_IDS].sort());
   for (const r of ASSEMBLAGE.recettes) expect(Object.keys(r.noms).sort(), r.bloc).toEqual([...UNIVERS_IDS].sort());
   const md = readFileSync('docs/contenu/assemblage.md', 'utf8');
-  expect(md).toContain('| `poutre` | 6e | bois × 2 · brique × 1 | Poutre | Madrier |');
+  expect(md).toContain('| `compound-6e` | 6e | french-6e-phonology × 2 · maths-6e-calculation × 1 | Poutre | Madrier |');
   expect(nomDuBloc(BLOC.poutre)).toBe('Poutre');
   expect(blockCount(BLOC.vitrail, 3)).toBe('3 vitraux');
   expect(textesDe('blocland').assemblage.titre).toBe('La Fabrique');
@@ -118,7 +118,7 @@ it('nomme les blocs assemblés et leur lieu selon l’univers, depuis docs/conte
 });
 
 describe('le tirage des questions d’un bloc assemblé', () => {
-  const cles = Array.from({ length: 12 }, (_, i) => `poutre-${i}`);
+  const cles = Array.from({ length: 12 }, (_, i) => `${BLOC.poutre}-${i}`);
 
   /** Pose `n` questions de suite, chacune juste ou non selon `juste(rang, cle)` ; rend les clés posées et le tirage. */
   function poser(n: number, juste: (rang: number, cle: string) => boolean, t: TirageAssemblage = tirageNeuf('eleve'), liste = cles) {
@@ -164,11 +164,11 @@ describe('le tirage des questions d’un bloc assemblé', () => {
   });
 
   it('ignore une question qui n’existe plus, et se lit dans une sauvegarde sans rien casser', () => {
-    const t = noterQuestion(cles, tirageNeuf('g'), 'poutre-0', false);
-    expect(noterQuestion(cles, t, 'poutre-99', true)).toBe(t);
+    const t = noterQuestion(cles, tirageNeuf('g'), `${BLOC.poutre}-0`, false);
+    expect(noterQuestion(cles, t, `${BLOC.poutre}-99`, true)).toBe(t);
     expect(prochaineQuestion([], t)).toBeUndefined();
     // Une question retirée du fichier sort des listes.
-    expect(noterQuestion(cles.slice(1), t, 'poutre-1', true).ratees).toEqual([]);
+    expect(noterQuestion(cles.slice(1), t, `${BLOC.poutre}-1`, true).ratees).toEqual([]);
     expect(lireTirage({ graine: 'g', tour: 2, posees: ['a', 'a', 3], recentes: 'x', ratees: ['b'] })).toEqual({
       graine: 'g',
       tour: 2,
@@ -184,9 +184,9 @@ describe('le tirage des questions d’un bloc assemblé', () => {
   it('la sauvegarde garde le tirage d’un bloc assemblé, et une sauvegarde d’avant n’en a pas', () => {
     expect('assemblyDraw' in sanitizeState({ stock: { [BLOC.bois]: 2 } })).toBe(false);
     expect('assemblyDraw' in sanitizeState(EMPTY_STATE)).toBe(false);
-    const t = noterQuestion(cles, tirageNeuf('g'), 'poutre-3', false);
-    const lu = sanitizeState({ assemblyDraw: { poutre: t, bois: t, inconnu: t, vitrail: { tour: 1 } } });
-    expect(lu.assemblyDraw).toEqual({ poutre: t });
+    const t = noterQuestion(cles, tirageNeuf('g'), `${BLOC.poutre}-3`, false);
+    const lu = sanitizeState({ assemblyDraw: { [BLOC.poutre]: t, [BLOC.bois]: t, inconnu: t, [BLOC.vitrail]: { tour: 1 } } });
+    expect(lu.assemblyDraw).toEqual({ [BLOC.poutre]: t });
     expect(sanitizeState(JSON.parse(JSON.stringify(lu)))).toEqual(lu);
   });
 
@@ -204,10 +204,10 @@ describe('le tirage des questions d’un bloc assemblé', () => {
     expect(autre).not.toBe(cle);
     const juste = repondreAssemblage(rate.state, BLOC.poutre, { cles, cle: autre, juste: true, tirage });
     expect(juste.assemble).toBe(true);
-    expect(juste.state.stock).toEqual({ bois: 0, brique: 0, poutre: 1 });
+    expect(juste.state.stock).toEqual({ [BLOC.bois]: 0, [BLOC.brique]: 0, [BLOC.poutre]: 1 });
     expect(juste.state.assemblyDraw?.[BLOC.poutre]?.recentes).toEqual([cle, autre]);
     // Plus assez de blocs : la réponse est notée, rien n'est assemblé ni perdu.
-    const sans = repondreAssemblage(juste.state, BLOC.poutre, { cles, cle: 'poutre-5', juste: true, tirage });
+    const sans = repondreAssemblage(juste.state, BLOC.poutre, { cles, cle: `${BLOC.poutre}-5`, juste: true, tirage });
     expect(sans).toMatchObject({ assemble: false, reason: 'plus-de-blocs' });
     expect(sans.state.stock).toEqual(juste.state.stock);
     expect(repondreAssemblage(state, BLOC.bois, { cles, cle, juste: true, tirage })).toMatchObject({ assemble: false, reason: 'pas-de-recette' });

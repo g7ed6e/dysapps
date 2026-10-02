@@ -92,7 +92,7 @@ describe('le cœur d’herbe et le lac d’altitude', () => {
       }
     expect(cells.filter((c) => c.ground === 'herbe').length).toBeGreaterThan(cells.length / 2);
     // Pas de ponton ni de barque.
-    expect(cubes.some((q) => q.decor?.startsWith('refuge/ponton'))).toBe(false);
+    expect(cubes.some((q) => q.decor?.startsWith('lv2-3e-travel/ponton'))).toBe(false);
     // Ni cascade : le lac ne déborde pas vers le bord.
     expect(cubes.some((q) => q.tag === 'lv2-3e-travel' && q.decor?.includes('cascade'))).toBe(false);
   });
@@ -125,7 +125,7 @@ describe('les trois plans du refuge', () => {
     expect(plans.map((p) => p.name)).toEqual(['La poste de Timbre', 'La salle commune', 'Le pigeonnier du refuge']);
     expect(plans.map((p) => p.reward.xp)).toEqual([40, 50, 60]);
     expect(plans[0].reward.chest[BLOC.taille]).toBe(3);
-    expect(plans[2].reward.chest).toMatchObject({ or: 2, cristal: 2 });
+    expect(plans[2].reward.chest).toMatchObject({ [BLOC.or]: 2, [BLOC.cristal]: 2 });
     // « poste » en minuscule, jamais « La Poste » ; « refuge » aussi, dans les phrases.
     for (const p of plans) {
       expect(p.done).not.toMatch(/La Poste|Refuge/);
@@ -135,7 +135,7 @@ describe('les trois plans du refuge', () => {
 
   it('le premier plan ne demande que le bardeau et le bois (le casier à lettres) ; le bardeau et la pierre de taille partout', () => {
     const [poste, salle, pigeonnier] = buildingStages('lv2-3e-travel', BLOC.bardeau);
-    expect(new Set(poste.map((c) => c.block))).toEqual(new Set(['bardeau', 'bois']));
+    expect(new Set(poste.map((c) => c.block))).toEqual(new Set([BLOC.bardeau, BLOC.bois]));
     expect(salle.some((c) => c.block === BLOC.taille)).toBe(true);
     expect(pigeonnier.some((c) => c.block === BLOC.taille)).toBe(true);
   });
@@ -147,9 +147,9 @@ describe('les trois plans du refuge', () => {
     expect(Math.max(...pigeonnier.map((c) => c.z))).toBeLessThanOrEqual(3);
     const en = (x: number, z: number) => pigeonnier.find((c) => c.x === x && c.z === z)?.block;
     expect(en(1, 2)).toBeUndefined();
-    for (const [x, z] of [[2, 0], [2, 1], [2, 2], [0, 1], [0, 2]] as const) expect(en(x, z), `${x},${z}`).toBe('taille');
-    expect(en(1, 3)).toBe('toit');
-    expect(en(1, 1)).toBe('bois');
+    for (const [x, z] of [[2, 0], [2, 1], [2, 2], [0, 1], [0, 2]] as const) expect(en(x, z), `${x},${z}`).toBe(BLOC.taille);
+    expect(en(1, 3)).toBe(BLOC.toit);
+    expect(en(1, 1)).toBe(BLOC.bois);
   });
 
   it('la poste devant, face à la caméra de l’île : trois rangs de bardeau sous l’avant-toit, sa fenêtre', () => {
@@ -437,7 +437,7 @@ describe('les caméras des îles', () => {
   // de 1,6° (−0,4 avant) ; la Forge, écartée vers l'ouest, reste au pivot maximal. Aux Îles du Ciel, le cœur du Phare
   // passé à 20 (01/10/2026) : le Belvédère et l'Observatoire des données, écartés de deux cases, pivotent de 1,6° de plus
   // (30,4 et −30,4 avant).
-  const AVANT_LE_REFUGE: Record<string, number> = { foret: 0, ferme: 33.6, mine: -24.8, tour: 40, carriere: -40, plaine: 2.4, riviere: -33.6, volcan: 36.8, baie: 24.8, horloge: -0.8, glacier: 37.6, marche: 12.8, carrefour: 36, marais: 12.8, comptoir: -14.4, manoir: -14.4, relais: -38.4, forge: 40, atelier: 25.2, falaise: -2, cabinet: -26, theatre: -40, jardin: -40, gare: 40, belvedere: 32, phare: 0, donnees: -32, textes: 0, studio: 40, chateau: -40 };
+  const AVANT_LE_REFUGE: Record<string, number> = { 'french-6e-phonology': 0, 'french-6e-grammar-spelling': 33.6, 'french-6e-letter-confusion': -24.8, 'french-6e-reading': 40, 'french-6e-word-spelling': -40, 'maths-6e-calculation': 2.4, 'maths-6e-fractions': -33.6, 'maths-6e-decimals': 36.8, 'english-6e-vocabulary': 24.8, 'english-6e-grammar': -0.8, 'maths-5e-signed-numbers': 37.6, 'maths-5e-proportionality': 12.8, 'french-5e-homophones': 36, 'french-5e-conjugation': 12.8, 'english-5e-vocabulary': -14.4, 'english-5e-grammar': -14.4, 'lv2-5e-introductions': -38.4, 'maths-4e-powers': 40, 'maths-4e-algebra': 25.2, 'french-4e-agreement': -2, 'french-4e-vocabulary': -26, 'english-4e-comprehension': -40, 'lv2-4e-daily-life': -40, 'english-4e-grammar': 40, 'maths-3e-geometry': 32, 'maths-3e-functions': 0, 'maths-3e-statistics': -32, 'french-3e-close-reading': 0, 'english-3e-comprehension': 40, 'english-3e-grammar': -40 };
   it('gardent le cadrage d’avant le refuge, dans chaque archipel', () => {
     for (const [ile, deg] of Object.entries(AVANT_LE_REFUGE))
       expect((viewYaw(ile as BiomeId) * 180) / Math.PI, ile).toBeCloseTo(deg, 3);

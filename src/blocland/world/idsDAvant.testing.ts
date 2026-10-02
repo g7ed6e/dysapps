@@ -12,15 +12,17 @@ const RESSOURCES = new Map([...inverse(LEGACY_RESOURCES)].filter(([neutre]) => !
 const MISSIONS = new Map(
   Object.entries(LEGACY_MISSIONS).map(([lieu, missions]) => [LEGACY_PLACES[lieu], inverse(missions)] as const),
 );
+/** Une mission seule (le `typeId` d'une borne) : les missions neutres sont uniques d'un lieu à l'autre. */
+const TOUTES_LES_MISSIONS = new Map([...MISSIONS.values()].flatMap((m) => [...m]));
 const LIEUX_DU_VILLAGE = new Map([
   ['school', 'ecole'],
   ['trophies', 'trophees'],
   ['assembly', 'assemblage'],
 ]);
 
-/** Un texte : un lieu, une partie, une ressource, `monument:<partie>`, `<lieu>:<mission>`, `<lieu>/<nom>`, `<lieu>-<lieu>`. */
+/** Un texte : un lieu, une partie, une ressource, une mission, `monument:<partie>`, `<lieu>:<mission>`, `<lieu>/<nom>`, `<lieu>-<lieu>`. */
 export function texteDAvant(s: string): string {
-  const exact = LIEUX.get(s) ?? PARTIES.get(s) ?? RESSOURCES.get(s) ?? LIEUX_DU_VILLAGE.get(s);
+  const exact = LIEUX.get(s) ?? PARTIES.get(s) ?? RESSOURCES.get(s) ?? TOUTES_LES_MISSIONS.get(s) ?? LIEUX_DU_VILLAGE.get(s);
   if (exact !== undefined) return exact;
   if (s.startsWith('monument:')) return `monument:${texteDAvant(s.slice('monument:'.length))}`;
   const passage = /^passage-(\de)$/.exec(s);

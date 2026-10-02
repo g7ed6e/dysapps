@@ -182,7 +182,7 @@ describe('La Carte dans la place libre (DA-31)', () => {
     cam.animer!(0.3, 0.016, false);
     instant.carte = true;
     cam.animer!(0.4, 0.016, false);
-    expect(new Set(lues)).toEqual(new Set(['1|gare', '2|gare']));
+    expect(new Set(lues)).toEqual(new Set(['1|english-4e-grammar', '2|english-4e-grammar']));
   });
 
   it('glisser déplace la vue à plat, borné à l’archipel ; une nouvelle île ou la Carte l’efface, « Recentrer » aussi', () => {

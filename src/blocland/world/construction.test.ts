@@ -799,7 +799,7 @@ describe('Les tours du décor du cœur (lot R5, Archipéo seulement)', () => {
       const cubes = worldCubes(a, progress, village, false);
       const gardes = new Set(sansToursDuCoeur(cubes));
       const retires = cubes.filter((c) => !gardes.has(c));
-      const attendu = a === '6e' ? { tour: 21 } : a === '3e' ? { phare: 6 } : {};
+      const attendu = a === '6e' ? { 'french-6e-reading': 21 } : a === '3e' ? { 'maths-3e-functions': 6 } : {};
       const parIle: Record<string, number> = {};
       for (const c of retires) parIle[c.tag ?? ''] = (parIle[c.tag ?? ''] ?? 0) + 1;
       expect(parIle, a).toEqual(attendu);

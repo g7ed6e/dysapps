@@ -71,7 +71,7 @@ describe('Les personnages fusionnés, archipel par archipel', () => {
       });
       return { f, ids: [...ids].sort() };
     };
-    expect(brillent('3e').ids).toEqual(['maths-3e-functions', 'french-3e-close-reading']);
+    expect(brillent('3e').ids).toEqual(['french-3e-close-reading', 'maths-3e-functions']);
     expect(brillent('4e').ids).toEqual(['maths-4e-powers']);
     // Le verre de Fi est ambre le jour (sa couleur de sommet) et prend la lueur la nuit (#FFD866 : rouge linéaire 1).
     const { f } = brillent('3e');
