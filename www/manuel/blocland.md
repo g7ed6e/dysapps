@@ -162,6 +162,8 @@ Chaque île a sa forme de bâtiment :
 
 Un rappel de pause s’affiche après dix minutes de construction, sans rien bloquer.
 
+Après trois exercices ou dix minutes (missions et questions de la Fabrique comprises), le bilan d’une mission propose une pause : « Belle séance ! », avec un bouton pour l’écouter. **J’arrête pour aujourd’hui** ramène à l’aventure (le bouton retour du téléphone ne rouvre pas le bilan) ; **Encore un peu** rend les boutons du bilan.
+
 ### Le village en cinq états
 
 Le village de chaque archipel passe par **cinq états**, déduits de ce que l’élève a construit (rien de plus n’est enregistré) :

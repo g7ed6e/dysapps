@@ -111,9 +111,12 @@ it('propose une pause après 3 exercices, et laisse continuer', async () => {
     }
   }
   expect(screen.getByText(/Belle séance/)).toBeInTheDocument();
-  expect(screen.getByRole('link', { name: /J’arrête pour aujourd’hui/ })).toBeInTheDocument();
+  // Le focus va à « J'arrête pour aujourd'hui ».
+  expect(screen.getByRole('link', { name: /J’arrête pour aujourd’hui/ })).toHaveFocus();
   await user.click(screen.getByRole('button', { name: /Encore un peu/ }));
   expect(screen.getByRole('button', { name: /Rejouer/ })).toBeInTheDocument();
+  // Le focus revient au bouton principal du bilan.
+  expect(screen.getByRole('link', { name: /Revenir sur|Voir le chantier/ })).toHaveFocus();
   expect(JSON.parse(localStorage.getItem('dysapps:blocland')!).progress[DEF.id].attempts).toBe(3);
 });
 
