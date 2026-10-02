@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 20` le plus long temps réel laissé au monde pour se construire (en secondes, 10 par défaut). L'horloge de la
 // page est pilotée (`preparerLaScene`, scripts/prise-de-vue.mjs) : deux prises du même état donnent la même image, les
@@ -154,8 +154,9 @@ const CAPTURES = [
   { nom: 'lieux-archipel-nuit', vue: 'archipel', famille: 'lieux', ile: 'foret', succes: 'tous', nuit: true },
   // De près (famille `lieux-pres`) : l'école, puis la salle des trophées avec six trophées (les socles) et avec tous (la
   // salle et ses deux travées, GD-3 : le cadre s'élargit), de jour et de nuit.
-  { nom: 'lieux-ecole-pres', vue: 'île', famille: 'lieux-pres', ile: 'foret', recadre: { x: 130, y: 390, width: 240, height: 210 }, finesse: 3 },
-  { nom: 'lieux-ecole-pres-nuit', vue: 'île', famille: 'lieux-pres', ile: 'foret', nuit: true, recadre: { x: 130, y: 390, width: 240, height: 210 }, finesse: 3 },
+  // L'école à sa place des « Trois bandes », de (12, 3) à (16, 6) (02/10/2026) : le cadre suit, la dernière borne à droite.
+  { nom: 'lieux-ecole-pres', vue: 'île', famille: 'lieux-pres', ile: 'foret', recadre: { x: 90, y: 340, width: 240, height: 210 }, finesse: 3 },
+  { nom: 'lieux-ecole-pres-nuit', vue: 'île', famille: 'lieux-pres', ile: 'foret', nuit: true, recadre: { x: 90, y: 340, width: 240, height: 210 }, finesse: 3 },
   { nom: 'lieux-trophees-six', vue: 'île', famille: 'lieux-pres', ile: 'foret', succes: 6, recadre: { x: 140, y: 170, width: 320, height: 250 }, finesse: 3 },
   { nom: 'lieux-trophees-six-nuit', vue: 'île', famille: 'lieux-pres', ile: 'foret', succes: 6, nuit: true, recadre: { x: 140, y: 170, width: 320, height: 250 }, finesse: 3 },
   { nom: 'lieux-trophees-tous', vue: 'île', famille: 'lieux-pres', ile: 'foret', succes: 'tous', recadre: { x: 140, y: 170, width: 320, height: 250 }, finesse: 3 },
@@ -205,6 +206,13 @@ const CAPTURES = [
     { nom: `ecole-${ile}`, vue: 'île', famille: 'ecoles', ile },
     { nom: `ecole-${ile}-390x844`, vue: 'île', famille: 'ecoles', ile, taille: { width: 390, height: 844 } },
   ]),
+  // Les îles-écoles en trois bandes (famille `trois-bandes`, lot en cours, 02/10/2026) : au Marché et à l'Atelier, la zone
+  // des plans avec le troisième plan à moitié posé (`cour-mi` : sa première rangée, au fond de la zone depuis ce lot) ; à
+  // la Forêt, le lieu où l'on assemble (la Fabrique, ou la Halle aux matériaux dans Archipéo) près d'un plan posé
+  // (`un-plan`), de jour et de nuit. La vue de l'île entière : le cadre serré se fixera sur ces premières captures.
+  ...['marche', 'atelier'].map((ile) => ({ nom: `trois-bandes-plans-${ile}`, vue: 'île', famille: 'trois-bandes', ile, partie: 'cour-mi', finesse: 2 })),
+  { nom: 'trois-bandes-assemblage', vue: 'île', famille: 'trois-bandes', ile: 'foret', partie: 'un-plan', finesse: 2 },
+  { nom: 'trois-bandes-assemblage-nuit', vue: 'île', famille: 'trois-bandes', ile: 'foret', partie: 'un-plan', nuit: true, finesse: 2 },
 ];
 /** La lueur la nuit, à la vue île : au plus 3 % de la scène. */
 const LUEUR_MAX = 0.03;
@@ -311,8 +319,11 @@ async function scenes() {
         const l = plansFor(b.id);
         if (l.length) delete plans[l[l.length - 1].id];
       }
-    // Sur chaque île : les plans d'avant posés, la moitié de celui-ci (0 : les murs, 1 : le toit), rien après.
-    const moitie = { 'murs-mi': 0, 'toit-mi': 1 }[partie];
+    // Sur chaque île : le premier plan posé, rien après.
+    if (partie === 'un-plan')
+      for (const b of BIOMES) plansFor(b.id).forEach((p, i) => i > 0 && delete plans[p.id]);
+    // Sur chaque île : les plans d'avant posés, la moitié de celui-ci (0 : les murs, 1 : le toit, 2 : la cour), rien après.
+    const moitie = { 'murs-mi': 0, 'toit-mi': 1, 'cour-mi': 2 }[partie];
     if (moitie !== undefined)
       for (const b of BIOMES) {
         const l = plansFor(b.id);

@@ -25,7 +25,7 @@ import {
   tirage,
   type ArchipelagoId,
 } from './map';
-import { ORIGINE_DU_QUAI, PLAN_ZONE } from './plans';
+import { ORIGINE_DU_QUAI, PLAN_ZONE, zoneDesPlans } from './plans';
 import { bossIsletCells, bossIsletSteps, bridgePath, creatureSpot, ILOT_DE_COTE, ISLET_H, ISLET_W, origineDeLIlot, placeSpot, questStations, VILLAGE_PLACES } from './terrain';
 
 /**
@@ -196,14 +196,22 @@ it('la rangée extérieure des marges est cassée de loin en loin (une pierre, u
 it('dans le cœur d’une île-école, les bornes, la créature, les lieux et la zone des plans gardent leur place', () => {
   for (const id of IDS) {
     const def = islandDef(id);
-    expect(questStations(id).map((s) => [s.x, s.y]), id).toEqual(questStations(id).map((_, i) => [3 + 3 * i, 1]));
+    // Les bornes au pas de 4, centrées sur la visée (redistribution « Trois bandes », 02/10/2026).
+    expect(questStations(id).map((s) => [s.x, s.y]), id).toEqual([
+      [4, 1],
+      [8, 1],
+      [12, 1],
+    ]);
     const spot = creatureSpot(id);
     const decorDesMarges = new Set(margesDuCoeur(def).filter((m) => m.decor).map((m) => `${m.x - def.core.x},${m.y - def.core.y}`));
     expect(decorDesMarges.has(`${spot.x},${spot.y}`), id).toBe(false);
     for (const place of ['ecole', 'trophees'] as const)
       expect(placeSpot(place, id), `${id} ${place}`).toMatchObject({ x: def.core.x + VILLAGE_PLACES[place].at.x, y: def.core.y + VILLAGE_PLACES[place].at.y });
   }
+  // Le coin de la zone des plans ne bouge jamais (les clés de sauvegarde en dépendent) ; sur les îles-écoles, elle
+  // gagne une rangée vers le fond.
   expect(PLAN_ZONE).toEqual({ x: 8, y: 10, w: 6, h: 5 });
+  for (const id of IDS) expect(zoneDesPlans(id), id).toEqual({ x: 8, y: 10, w: 6, h: 6 });
 });
 
 it('les ouvrages partent du cœur de 20', () => {

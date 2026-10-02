@@ -50,7 +50,7 @@ import { dessinerPhareDuLarge, hublotsDuPhareDuLarge, phareDuLarge } from './pha
 import { islandDef, mapOf, type ArchipelagoId } from './map';
 import { LAYOUT_PAD, origineDe, placeSpot, VILLAGE_PLACES } from './terrain';
 import { estUnePlaceDeTrophee, TROPHY_SLOTS } from './salle';
-import { getPlan, planCells, plansFor } from './plans';
+import { decalageDesPlans, getPlan, planCells, plansFor } from './plans';
 import { ambianceDe, BLEU_LAGON, BRUME, couleurDeMatiere, DETAILS_ASSEMBLES, MATIERES, type Couleur, type Faces } from './palette';
 import type { TextureKind } from './pixels';
 import { couleursDuToit } from './toits';
@@ -662,7 +662,8 @@ export function phareDeGrimoire(cubes: VoxelCube[], a: ArchipelagoId = PHARE_DE_
   for (const e of P.etapes) {
     const plan = getPlan(e.plan);
     if (!plan) continue;
-    const cases = planCells(plan).map((c) => ({ x: def.core.x + c.x, y: def.core.y + c.y, z: def.altitude + c.z + 1 }));
+    const d = decalageDesPlans(plan);
+    const cases = planCells(plan).map((c) => ({ x: def.core.x + c.x + d.x, y: def.core.y + c.y + d.y, z: def.altitude + c.z + d.z + 1 }));
     emprise ??= cases;
     const posees = cases.map((c) => tour.get(cle(c.x, c.y, c.z)));
     // Une étape pas encore dans le monde (la précédente n'est pas finie) : les suivantes non plus.
@@ -718,9 +719,13 @@ export function batimentsDe(a: ArchipelagoId): ReadonlyMap<string, string> {
   if (deja) return deja;
   const out = new Map<string, string>();
   for (const def of mapOf(a))
-    for (const plan of plansFor(def.id).slice(0, ETAPES_DU_BATIMENT))
-      // Comme world/terrain.ts : la case (x, y, z) d'un plan est posée en (cœur + x, cœur + y, altitude + z + 1).
-      for (const c of planCells(plan)) out.set(`${def.core.x + c.x},${def.core.y + c.y},${def.altitude + c.z + 1}`, BLOCKS[c.block].texture);
+    for (const plan of plansFor(def.id).slice(0, ETAPES_DU_BATIMENT)) {
+      // Comme world/terrain.ts : la case (x, y, z) d'un plan est posée en (cœur + x, cœur + y, altitude + z + 1), décalée
+      // au fond de la zone au Marché et à l'Atelier (`decalageDesPlans`).
+      const d = decalageDesPlans(plan);
+      for (const c of planCells(plan))
+        out.set(`${def.core.x + c.x + d.x},${def.core.y + c.y + d.y},${def.altitude + c.z + d.z + 1}`, BLOCKS[c.block].texture);
+    }
   batiments.set(a, out);
   return out;
 }

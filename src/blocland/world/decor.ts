@@ -41,9 +41,13 @@ export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => numb
   foret: (put, h) => {
     // Derrière la salle des trophées, l'arbre de (1, 10) a laissé la place à Mousso, qui s'y tient hors de la vue des
     // lieux du village, avec ses pas, comme les créatures des trois autres îles-écoles (GD-3, directeur artistique).
+    // Le grand arbre du plateau a quitté sa place (l'école s'y tient, et le plateau s'arrête à la colonne 11 ; redistribution
+    // « Trois bandes », 02/10/2026) : derrière la salle des trophées, en (4, 12) (cœur : (6, 15)), à côté de la zone des
+    // plans. Sur le plateau, en (9, 5), il cachait le trophée du bout de la salle (relecture du référent dys, 02/10/2026) ;
+    // là, il ne cache ni un trophée, ni une borne, ni le rang avant de la zone des plans (troisBandes.test.ts).
     for (const [tx, ty, tall] of [
       [8, 2, 2],
-      [10, 4, 3],
+      [4, 12, 3],
       [3, 9, 2],
     ] as const)
       tree(put, tx, ty, h(tx, ty), tall);
@@ -150,17 +154,19 @@ export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => numb
     put(1, 10, h(1, 10) + 2, BLOCKS.glace.side);
   },
   marche: (put, h) => {
-    // Un étal à auvent de toile sur des poteaux, des caisses.
+    // Un étal à auvent de toile sur des poteaux, des caisses. L'école se tient maintenant à sa droite (redistribution
+    // « Trois bandes », 02/10/2026) : l'étal s'arrête une case plus tôt, trois cases de large au lieu de quatre, sur le
+    // plateau rogné. Glissé d'une case vers la gauche, son auvent cachait un trophée du bout de la salle (troisBandes.test.ts).
     for (const [x, y] of [
       [7, 2],
-      [10, 2],
+      [9, 2],
       [7, 5],
-      [10, 5],
+      [9, 5],
     ] as const) {
       put(x, y, h(x, y) + 1, TRUNK);
       put(x, y, h(x, y) + 2, TRUNK);
     }
-    for (let dx = 7; dx <= 10; dx++) for (let dy = 2; dy <= 5; dy++) put(dx, dy, h(dx, dy) + 3, BLOCKS.toile.side);
+    for (let dx = 7; dx <= 9; dx++) for (let dy = 2; dy <= 5; dy++) put(dx, dy, h(dx, dy) + 3, BLOCKS.toile.side);
     put(8, 3, h(8, 3) + 1, BLOCKS.bois.side);
     put(9, 4, h(9, 4) + 1, BLOCKS.bois.side);
     put(3, 9, h(3, 9) + 1, BLOCKS.bois.side);
@@ -207,12 +213,16 @@ export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => numb
     put(1, 10, h(1, 10) + 2, BLOCKS.acier.side);
   },
   atelier: (put, h) => {
-    // Une table à dessin (planches sur pieds) avec un calque, une pile de calques.
-    put(8, 3, h(8, 3) + 1, TRUNK);
-    put(10, 3, h(10, 3) + 1, TRUNK);
-    for (let dx = 8; dx <= 10; dx++) put(dx, 3, h(dx, 3) + 2, BLOCKS.bois.side);
-    put(9, 3, h(9, 3) + 3, BLOCKS.calque.side);
-    put(9, 5, h(9, 5) + 1, BLOCKS.calque.side);
+    // Une table à dessin (planches sur pieds) avec un calque, une pile de calques. L'école se tient à l'ancienne place de
+    // la table, sur le bord du plateau rogné (redistribution « Trois bandes », 02/10/2026). Sur la place du village, la
+    // table faisait fond à la borne du milieu, vue de la caméra (relectures du 02/10/2026) : elle se pose contre le flanc
+    // gauche de la salle des trophées, en long, de (-3, 5) à (-3, 7) (cœur : de (-1, 8) à (-1, 10)), sur un sol plat, hors
+    // de l'axe de la caméra vers une borne (troisBandes.test.ts). Le calque glisse au milieu du plateau, en (8, 4).
+    put(-3, 5, h(-3, 5) + 1, TRUNK);
+    put(-3, 7, h(-3, 7) + 1, TRUNK);
+    for (let dy = 5; dy <= 7; dy++) put(-3, dy, h(-3, dy) + 2, BLOCKS.bois.side);
+    put(-3, 6, h(-3, 6) + 3, BLOCKS.calque.side);
+    put(8, 4, h(8, 4) + 1, BLOCKS.calque.side);
     put(3, 9, h(3, 9) + 1, BLOCKS.calque.side);
     put(3, 9, h(3, 9) + 2, BLOCKS.calque.side);
     put(1, 10, h(1, 10) + 1, BLOCKS.pierre.side);
