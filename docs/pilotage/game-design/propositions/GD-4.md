@@ -1,6 +1,6 @@
 # GD-4 : Le monde ouvert au centre
 
-**État** : Décidée le 2 octobre 2026 (le cap, les trois étapes et leur ordre, les choix de l’étape 1 notés « décidé ») ; chaque étape aura sa propre fiche avant d’être construite
+**État** : Décidée le 2 octobre 2026 (le cap, les trois étapes et leur ordre, les choix de l’étape 1 notés « décidé » ; les niveaux d’île retirés le même jour au profit des besoins de GD-5) ; chaque étape aura sa propre fiche avant d’être construite
 **Portée** : Commun (les noms, les voix et le dessin restent propres à chaque univers)
 
 ## Le constat
@@ -30,8 +30,7 @@ Missions, révisions, chantiers et Gardiens se lancent en allant voir quelqu’u
 1. **Les créatures utiles** (décidé). Première version, petite : **la créature qui se souvient**. Quand une mission de son île a des items à revoir aujourd’hui (la répétition espacée, `src/blocland/review.ts`), la créature fait signe dans le monde : un geste lent et court, puis l’icône de la notion au-dessus d’elle, seule, fixe, sans clignoter, sans texte. À l’arrivée sur son île, elle propose de reprendre, avec un bouton « Reprendre » et un « Plus tard » qui ne coûte rien. Après « Plus tard », elle ne repropose rien avant la visite suivante. Après « Reprendre », l’élève revient sur l’île de la créature. Le menu garde sa ligne « À revoir aujourd’hui » comme raccourci. En vue simple, l’icône apparaît sur l’île dans la Carte, et un toucher ouvre le même panneau ; dans le monde en réseau d’Archipéo (lots 8 et 8b), sur l’île dans le réseau. La révision rapporte des blocs comme une mission. La répétition espacée ne change pas : la créature lui donne un visage.
    - Exemple dans la voix de Blocland : « Les accords sont restés sur le chantier. On les remonte ensemble ? » La réplique est propre à chaque univers ; celle d’Archipéo est à écrire par son consultant.
    - Ensuite, dans une autre fiche : **la créature qui commande un ouvrage**. Chaque mission devient un mécanisme à bâtir pour elle. Dans Blocland : l’écluse de Nénu, l’aiguillage des wagonnets de Tunel, le moulin à engrenages de Coco, la scierie de Mousso.
-2. **Les îles ont des niveaux** (décidé). Une île « Bâtie » peut encore grandir. Au niveau 2, les blocs fantômes d’un plan proposent un étage. Au niveau 3, une tour ou un jardin. Dans Archipéo, on restaure : le niveau 2 relève un étage en ruine, le niveau 3 un vestige. L’élève les construit avec ses blocs, comme un plan, et le coffre donne les blocs de finition. La montée de niveau se dit par un son court (dans Blocland, la pose d’un bloc et son « clac », à valider par le directeur artistique) et une phrase courte de la créature, dans un panneau, lue à voix haute : le son ne porte jamais seul l’information. Une fois le plan fini, l’île a l’air plus vivante, et la Carte montre son niveau par un petit insigne à côté de son état, avec un chiffre ou une forme, jamais la seule couleur, et distinct de l’état de l’île et des cinq états du village. **Un niveau ne rapporte que le monde** (décidé) : ni bonus de blocs ni production. Un niveau atteint est gardé pour toujours.
-   - Ce qui débloque un niveau : question ouverte, ci-dessous. Dans tous les cas, ce sont la maîtrise et les blocs qui le débloquent, jamais le temps qui passe.
+2. ~~**Les îles ont des niveaux**~~ **Retiré le 2 octobre 2026** (mainteneur : « Oui corriges GD4 »). L’idée était qu’une île « Bâtie » gagne un étage, puis une tour ou un jardin. Elle est remplacée par les besoins des habitants de [GD-5](GD-5.md) (modèle A) : chaque besoin réglé fait apparaître un ouvrage et arriver un nouvel habitant, si bien qu’une île grandit déjà à chaque besoin réglé, avec une raison qui se voit. Ce qui reste de l’idée vaut pour les ouvrages des besoins : ils ne rapportent que le monde, ne se perdent jamais, et leur annonce passe par un son court et une phrase de l’habitant, jamais par le son seul.
 3. **Une réussite se voit dans le monde** (piste choisie le 30 septembre 2026, forme à trancher). Les blocs gagnés vont vers un chantier que l’élève choisit en le touchant dans le monde ou sur la Carte (« Construire ici », au même endroit dans le monde, sur la Carte et en vue simple). Par défaut, c’est le prochain objectif. Le chantier choisi a un repère fixe, visible dans le monde et sur la Carte ; en changer se fait en un toucher, sans confirmation.
 
 ### Étape 2 : des chemins au choix
@@ -48,7 +47,6 @@ Le monde cache des choses à trouver en se promenant (une créature de passage, 
 
 ## Les questions ouvertes
 
-- **Ce qui débloque un niveau d’île** : les étoiles (toutes les missions à 2, puis à 3 étoiles) ; les items retenus (la répétition espacée) ; ou les deux, les étoiles pour le niveau 2 et les items retenus pour le niveau 3 (recommandé). Avec les items retenus, la progression vers le niveau ne montre jamais de baisse.
 - **La réussite visible** : les blocs se posent-ils seuls sur le chantier choisi, à la fin d’une mission, ou l’élève les pose-t-il lui-même en un geste ? Le chantier choisi règle la question des ouvrages, des monuments et du navire, qui ont aussi besoin de blocs.
 
 ## Ce qui ne bouge pas
@@ -57,14 +55,14 @@ Le monde cache des choses à trouver en se promenant (une créature de passage, 
 - **Les règles du référent dys pour les créatures** : ne jamais rappeler un échec ni une date (ni « hier », ni « raté », ni « t’a résisté ») ; deux phrases courtes au plus ; une seule proposition par visite, jamais pendant une partie ; la créature ne réagit qu’aux progrès ; refuser ne coûte rien ; la proposition se comprend sans le son et sans lire, grâce à l’icône de la notion.
 - **Pour le directeur artistique** : aucune jauge d’amitié ou d’humeur, aucune créature triste après une absence, aucune demande avec délai, aucune nouvelle monnaie : les blocs restent la ressource (DP-09, DP-12, DA-05).
 - **Les univers** ([Plusieurs univers](../../../conception/univers.md), §4) : les règles, la progression et la sauvegarde sont communes ; chaque univers habille les créatures, leurs répliques et les niveaux des îles. Dans Blocland, on bâtit du neuf et des mécanismes ([GD-1](GD-1.md)) ; dans Archipéo, on restaure.
-- **La sauvegarde et les identifiants** : jamais touchés. La mémoire d’une créature se déduit de la répétition espacée déjà enregistrée ; le niveau d’une île se déduit des étoiles ou des items retenus, et ses plans s’ajoutent à ceux qui existent.
+- **La sauvegarde et les identifiants** : jamais touchés. La mémoire d’une créature se déduit de la répétition espacée déjà enregistrée ; les ouvrages des besoins s’ajoutent aux plans qui existent.
 
 ## Le coût
 
 Cette fiche fixe le cap ; chaque étape a sa fiche et son lot. Pour se faire une idée :
 
 - **Étape 1, créatures** : une réplique de rappel par île et par univers (`src/univers/`), le signe de la créature dans le monde (une animation et une icône, à mesurer par l’artiste technique 3D), le panneau d’arrivée. Sauvegarde non touchée.
-- **Étape 1, niveaux d’île** : deux plans de plus par île (forme et blocs dans le code, noms et répliques dans `docs/contenu/<île>.md`, « ## Les plans »), l’insigne sur la Carte. Le dessin de Blocland est figé : un dégel ciblé, comme le point 4 de [GD-1](GD-1.md), dans un lot à part, sur la grille et avec les textures existantes, dans son plafond (80 000 triangles, 240 appels), captures avant et après, de jour et de nuit. Archipéo est déjà serré (55 874 triangles au 6e) : l’artiste technique 3D mesure avant tout plan ajouté.
+- **Étape 1, ouvrages des besoins** ([GD-5](GD-5.md), modèle A) : des ouvrages de plus par île (forme et blocs dans le code, noms et répliques dans `docs/contenu/<île>.md`, « ## Les plans »). Le dessin de Blocland est figé : un dégel ciblé, comme le point 4 de [GD-1](GD-1.md), dans un lot à part, sur la grille et avec les textures existantes, dans son plafond (80 000 triangles, 240 appels), captures avant et après, de jour et de nuit. Archipéo est déjà serré (55 874 triangles au 6e) : l’artiste technique 3D mesure avant tout ouvrage ajouté.
 - **Étapes 2 et 3** : à cadrer.
 
 ## Les avis
@@ -77,4 +75,4 @@ Cette fiche fixe le cap ; chaque étape a sa fiche et son lot. Pour se faire une
 
 ## La décision
 
-2 octobre 2026, mainteneur : « Le gameplay doit remettre le monde ouvert au centre. » Les trois étapes : « Les 3 me semblent des bonnes idées. » La fiche, avec les choix de l’étape 1 notés « décidé » : « go pour gd 4 ».
+2 octobre 2026, mainteneur : « Le gameplay doit remettre le monde ouvert au centre. » Les trois étapes : « Les 3 me semblent des bonnes idées. » La fiche, avec les choix de l’étape 1 notés « décidé » : « go pour gd 4 ». Les niveaux d’île retirés au profit des besoins de GD-5 : « Oui corriges GD4 ».
