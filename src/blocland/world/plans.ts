@@ -120,8 +120,29 @@ export interface PlanDef {
   zone?: 'plans' | 'port' | 'monument';
 }
 
-/** Zone des plans de chaque île (coordonnées relatives à l'île) : plate, sans décor. */
+/**
+ * Zone des plans de chaque île (coordonnées relatives à l'île) : plate, sans décor. Son coin (x, y) est l'origine des
+ * plans, donc des clés de sauvegarde (`planCells`) : il ne bouge jamais. Sa taille se lit par île (`zoneDesPlans`).
+ */
 export const PLAN_ZONE = { x: 8, y: 10, w: 6, h: 5 };
+
+/**
+ * La zone des plans des quatre îles-écoles (cœur de 20, `COTE_DU_COEUR`) : une rangée de plus vers le fond, 6 × 6 au
+ * lieu de 6 × 5, même coin (redistribution « Trois bandes », choix du mainteneur, 02/10/2026). Agrandie vers +y
+ * seulement : aucune clé de sauvegarde ne change.
+ */
+const ZONE_DES_ILES_ECOLES = Object.freeze({ ...PLAN_ZONE, h: 6 });
+export const ZONES_AGRANDIES: Readonly<Partial<Record<BiomeId, Readonly<typeof PLAN_ZONE>>>> = Object.freeze({
+  foret: ZONE_DES_ILES_ECOLES,
+  marche: ZONE_DES_ILES_ECOLES,
+  atelier: ZONE_DES_ILES_ECOLES,
+  phare: ZONE_DES_ILES_ECOLES,
+});
+
+/** La zone des plans d'une île : `PLAN_ZONE`, ou plus profonde sur une île-école (`ZONES_AGRANDIES`). */
+export function zoneDesPlans(id: BiomeId): Readonly<typeof PLAN_ZONE> {
+  return ZONES_AGRANDIES[id] ?? PLAN_ZONE;
+}
 
 /** Les fiches des plans (nom, phrases, XP, coffre ; produites par `npm run contenu` depuis la section « Les plans » de docs/contenu/<île>.md, dans le même ordre) : sur chaque île, le plan suivant se débloque quand le précédent est terminé. */
 const PLAN_FILES = [

@@ -63,12 +63,12 @@ vi.mock('./three', () => ({
       <button type="button" onClick={() => onIntent({ genre: 'ile', id: 'foret' })}>
         Toucher la Forêt dans le monde
       </button>
-      <button type="button" onClick={() => onIntent({ genre: 'ile', id: 'foret', sol: { ile: 'foret', local: { x: 12, y: 6, z: 0 } } })}>
+      <button type="button" onClick={() => onIntent({ genre: 'ile', id: 'foret', sol: { ile: 'foret', local: { x: 8, y: 4, z: 0 } } })}>
         Toucher le sol de la Forêt
       </button>
       <button
         type="button"
-        onClick={() => onIntent({ genre: 'face', ile: 'foret', case: { x: 12, y: 6, z: -1 }, voisine: { x: 12, y: 6, z: 0 }, sol: { ile: 'foret', local: { x: 12, y: 6, z: 0 } } })}
+        onClick={() => onIntent({ genre: 'face', ile: 'foret', case: { x: 8, y: 4, z: -1 }, voisine: { x: 8, y: 4, z: 0 }, sol: { ile: 'foret', local: { x: 8, y: 4, z: 0 } } })}
       >
         Toucher le sol de la Forêt ouverte
       </button>

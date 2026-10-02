@@ -41,7 +41,7 @@ import type { CubeDeModele } from './personnages/ascii';
 import { guardianStatus } from '../boss';
 import type { PlaceId, VillagePlaceId, VoxelCube } from './cube';
 import type { Village } from '../engine';
-import { ORIGINE_DES_MONUMENTS, PLAN_ZONE, isPlanDone, planCells, planOrigin, plansFor, type PlanDef } from './plans';
+import { ORIGINE_DES_MONUMENTS, isPlanDone, zoneDesPlans, planCells, planOrigin, plansFor, type PlanDef } from './plans';
 import { MONUMENT_ISLET, monumentsOf, type MonumentDef } from './monuments';
 import { EMPRISE_DE_LA_SALLE, SALLE_DE_DEPART, modeleDeLaSalle } from './salle';
 import { recetteDeLArchipel } from './assemblage';
@@ -321,10 +321,21 @@ export function islandAt(a: ArchipelagoId, x: number, y: number): BiomeId {
 const LAYOUT = 12;
 export const LAYOUT_PAD = { x: 2, y: 3 };
 
+/**
+ * Sur les quatre îles-écoles, le plateau s'arrête à la colonne 11 (x < `FIN_DU_PLATEAU_DES_ECOLES`) : il passait sous
+ * l'école, qui se tient de (12, 3) à (16, 6) (redistribution « Trois bandes », choix du mainteneur, 02/10/2026 ; seule
+ * exception au relief figé de Blocland, design/blocland/fiche.md). Le reste du relief ne bouge pas.
+ */
+export const FIN_DU_PLATEAU_DES_ECOLES = 12;
+let indexDesEcoles: ReadonlySet<number> | undefined;
+const estIndexDEcole = (index: number) =>
+  (indexDesEcoles ??= new Set(ARCHIPELAGOS.map((a) => BIOMES.findIndex((b) => b.id === a.school)))).has(index);
+
 export function groundHeight(index: number, x: number, y: number): number {
   const lx = x - LAYOUT_PAD.x;
   const ly = y - LAYOUT_PAD.y;
   if (lx < 0 || ly < 0 || lx >= LAYOUT || ly >= LAYOUT) return 0;
+  if (x >= FIN_DU_PLATEAU_DES_ECOLES && estIndexDEcole(index)) return 0;
   const fromBack = LAYOUT - 1 - lx;
   const shape = index % 3;
   // Le plateau est à l'arrière-droite, devant la zone des plans (qui reste plate).
@@ -340,10 +351,23 @@ export function groundHeight(index: number, x: number, y: number): number {
  * au cœur. On touche une borne pour lancer sa mission.
  */
 export const QUEST_ROW = 1;
+/**
+ * Les places des bornes d'une île-école, au pas de 4, centrées sur la visée de la caméra (le milieu du cœur, x = 8) :
+ * trois missions prennent les trois du milieu, (4,1) (8,1) (12,1) ; (0,1) et (16,1) attendent une île à cinq missions
+ * (redistribution « Trois bandes », choix du mainteneur, 02/10/2026). Seules les bornes se tiennent devant : l'école est
+ * au milieu, derrière la dernière.
+ */
+export const PLACES_DES_BORNES_DES_ECOLES = [0, 4, 8, 12, 16] as const;
 export function questStations(id: BiomeId): { typeId: string; x: number; y: number }[] {
   const biome = BIOMES.find((b) => b.id === id);
   if (!biome) return [];
-  return missionsJouables(biome).map((ex, i) => ({ typeId: ex.id, x: 3 + 3 * i, y: QUEST_ROW }));
+  const missions = missionsJouables(biome);
+  const places = PLACES_DES_BORNES_DES_ECOLES;
+  if (isSchoolIsland(id) && missions.length <= places.length) {
+    const debut = Math.floor((places.length - missions.length) / 2);
+    return missions.map((ex, i) => ({ typeId: ex.id, x: places[debut + i], y: QUEST_ROW }));
+  }
+  return missions.map((ex, i) => ({ typeId: ex.id, x: 3 + 3 * i, y: QUEST_ROW }));
 }
 
 /** La direction de la vue d'une île (x, y de la grille, et hauteur) : de trois quarts avant-droite, plus haute que la vue du bonhomme. */
@@ -881,7 +905,8 @@ export function creatureSpot(id: BiomeId): CreatureSpot {
     (x, y) => groundHeight(index, x + LAYOUT_PAD.x, y + LAYOUT_PAD.y),
   );
   for (const st of questStations(id)) for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) blocked.add(`${st.x + dx},${st.y + dy}`);
-  for (let x = PLAN_ZONE.x; x < PLAN_ZONE.x + PLAN_ZONE.w; x++) for (let y = PLAN_ZONE.y; y < PLAN_ZONE.y + PLAN_ZONE.h; y++) blocked.add(`${x},${y}`);
+  const zone = zoneDesPlans(id);
+  for (let x = zone.x; x < zone.x + zone.w; x++) for (let y = zone.y; y < zone.y + zone.h; y++) blocked.add(`${x},${y}`);
   for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) blocked.add(`${AVATAR_HOME.x + dx},${AVATAR_HOME.y + dy}`);
   for (const k of placeCells(id)) blocked.add(k);
   // … ni sur la case devant la porte d'un lieu, où le bonhomme s'arrête.
@@ -1255,7 +1280,8 @@ export function guardianPlacements(
 /** Zone des plans d'une île en coordonnées du monde (bornes hautes exclues). */
 export function planZoneOf(id: BiomeId): { x0: number; y0: number; x1: number; y1: number } {
   const { ox, oy } = islandOrigin(BIOMES.findIndex((b) => b.id === id));
-  return { x0: ox + PLAN_ZONE.x, y0: oy + PLAN_ZONE.y, x1: ox + PLAN_ZONE.x + PLAN_ZONE.w, y1: oy + PLAN_ZONE.y + PLAN_ZONE.h };
+  const zone = zoneDesPlans(id);
+  return { x0: ox + zone.x, y0: oy + zone.y, x1: ox + zone.x + zone.w, y1: oy + zone.y + zone.h };
 }
 
 /** Roche sous le sol d'une case de paysage, selon la région et la hauteur. */
@@ -1438,7 +1464,8 @@ function quaySpots(port: BiomeId, cubes: VoxelCube[]): { boat: QuaySpot | null; 
   const index = BIOMES.findIndex((b) => b.id === port);
   const bornes = questStations(port).map((st) => ({ x: def.core.x + st.x, y: def.core.y + st.y, base: def.altitude + groundHeight(index, st.x, st.y) }));
   const vers = versLaCamera(port);
-  for (let x = PLAN_ZONE.x; x < PLAN_ZONE.x + PLAN_ZONE.w; x++) for (let y = PLAN_ZONE.y; y < PLAN_ZONE.y + PLAN_ZONE.h; y++) core(x, y);
+  const zone = zoneDesPlans(port);
+  for (let x = zone.x; x < zone.x + zone.w; x++) for (let y = zone.y; y < zone.y + zone.h; y++) core(x, y);
   for (const st of questStations(port)) for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) core(st.x + dx, st.y + dy);
   for (const [x, y] of casesDuVillage(port)) core(x, y);
   for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) core(AVATAR_HOME.x + dx, AVATAR_HOME.y + dy);
@@ -1639,8 +1666,12 @@ export function vehiclePlacement(a: ArchipelagoId, progress: Record<string, { st
 
 /** Encombrement de l'école : 5 cases de large (x), 4 de profondeur (y), la façade et sa porte côté caméra (y bas). */
 export const SCHOOL_SIZE = { w: 5, d: 4 };
-/** Le coin de l'école dans le cœur de son île : devant à droite, entre les bornes de mission et le bord (la rangée de devant reste libre pour marcher jusqu'au port). */
-export const SCHOOL_AT = { x: 11, y: 1 };
+/**
+ * Le coin de l'école dans le cœur de son île : au milieu à droite, derrière la dernière borne, une case libre entre elle
+ * et le bord du cœur ; sa porte en (14, 2). La rangée de devant ne porte que les bornes (redistribution « Trois
+ * bandes », choix du mainteneur, 02/10/2026 ; elle était devant, en (11, 1)).
+ */
+export const SCHOOL_AT = { x: 12, y: 3 };
 /**
  * La salle des trophées : son emprise de 8 × 3 cases, réservée dès le départ (GD-3, ./salle.ts), au milieu du cœur
  * (derrière les bornes, devant la zone des plans). La salle de départ (4 × 3, ouverte devant) en tient la droite, de
@@ -1652,10 +1683,12 @@ export const TROPHY_AT = { x: 0, y: 8 };
  * Le lieu où l'on assemble les blocs (GD-2) : 3 × 5 cases, à droite au fond du cœur agrandi des îles-écoles, derrière
  * l'école et à côté de la zone des plans, hors de l'emprise que la salle des trophées prend en grandissant (GD-3 : de
  * (0,8) à (7,10)) ; la halle au fond (trois rangs), la cour devant (deux rangs : la potence, les blocs empilés). La
- * porte au milieu, sa case devant la cour. Loin de la créature (et de ses pas), des bornes et du port.
+ * porte au milieu, sa case devant la cour. Loin de la créature (et de ses pas), des bornes et du port. Au bord droit,
+ * en (15, 11) : une allée d'une case (x = 14) entre elle et la zone des plans, plus profonde d'une rangée sur les
+ * îles-écoles (`zoneDesPlans` ; redistribution « Trois bandes », 02/10/2026).
  */
 export const ASSEMBLAGE_SIZE = { w: 3, d: 5 };
-export const ASSEMBLAGE_AT = { x: 14, y: 11 };
+export const ASSEMBLAGE_AT = { x: 15, y: 11 };
 
 /** Les lieux du village, posés sur l'île de l'école de chaque archipel : leur coin dans le cœur, leur taille, la colonne de leur porte. */
 export const VILLAGE_PLACES: Record<VillagePlaceId, { at: { x: number; y: number }; size: { w: number; d: number }; door: number }> = {
@@ -1672,7 +1705,9 @@ export interface PlaceSpot {
   h: number;
 }
 
-const isSchoolIsland = (id: BiomeId) => ARCHIPELAGOS.some((a) => a.school === id);
+function isSchoolIsland(id: BiomeId): boolean {
+  return ARCHIPELAGOS.some((a) => a.school === id);
+}
 
 /** La place d'un lieu du village sur l'île de l'école de son archipel, `null` ailleurs. */
 export function placeSpot(place: VillagePlaceId, id: BiomeId): PlaceSpot | null {
@@ -2159,6 +2194,17 @@ function poserLIle(
   // Le décor de la côte, puis celui des marges d'un cœur agrandi (au même rythme), hors des abords de ses ouvrages.
   const abords = abordsDansLesMarges(def);
   const marges = margesDuCoeur(def);
+  // Les lieux du village en cases du monde : un élément de la côte ou des marges qui toucherait l'un d'eux (la Halle au
+  // bord droit du cœur agrandi, 02/10/2026) n'est pas posé, plutôt que coupé.
+  const lieuxDuMonde = new Set([...placesAt].map((k) => {
+    const [x, y] = k.split(',').map(Number);
+    return `${ox + x},${oy + y}`;
+  }));
+  const presDUnLieu = (x: number, y: number) => {
+    if (lieuxDuMonde.size === 0) return false;
+    for (let dx = -2; dx <= 2; dx++) for (let dy = -2; dy <= 2; dy++) if (lieuxDuMonde.has(`${x + dx},${y + dy}`)) return true;
+    return false;
+  };
   for (let k = 0; k < scenery.length + marges.length; k++) {
     const c = k < scenery.length ? scenery[k] : marges[k - scenery.length];
     if (!c.decor || nearSentier(c.x, c.y)) continue;
@@ -2171,13 +2217,13 @@ function poserLIle(
     // Loin des bornes, rien ne peut en cacher une : posé directement. Près d'elles (une case de plus pour le feuillage),
     // un élément qui cacherait le pied d'une borne n'est pas posé (voir `cacheUneBorne`), ni un élément qui toucherait
     // la rangée de côte devant les bornes d'une île-école.
-    if (!presDUneBorne(bornes, c.x, c.y, 1)) {
+    if (!presDUneBorne(bornes, c.x, c.y, 1) && !presDUnLieu(c.x, c.y)) {
       decorate(poser, c.decor, c.x, c.y, r);
       continue;
     }
     const poses: [number, number, number, string, string | undefined][] = [];
     decorate((x, y, z, color, decor) => poses.push([x, y, z, color, decor]), c.decor, c.x, c.y, r);
-    if (poses.some(([x, y, z]) => devant.has(`${x},${y}`) || cacheUneBorne(bornes, vers, x, y, c.h + z))) continue;
+    if (poses.some(([x, y, z]) => devant.has(`${x},${y}`) || lieuxDuMonde.has(`${x},${y}`) || cacheUneBorne(bornes, vers, x, y, c.h + z))) continue;
     for (const [x, y, z, color, decor] of poses) poser(x, y, z, color, decor);
   }
   // Une île en altitude flotte : sa roche s'amincit dessous.
