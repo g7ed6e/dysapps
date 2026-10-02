@@ -6,7 +6,6 @@ import { ProgressProvider } from '../core/ProgressContext';
 import { getBiome } from './biomes';
 import { BloclandProvider } from './BloclandContext';
 import { useVehicleBuilder } from './useVehicleBuilder';
-import { partiesDe } from './world/parties';
 import { planCells, plansFor } from './world/plans';
 import { VEHICLE_STAGES } from './world/vehicle';
 import { IslandSheet } from './IslandSheet';
