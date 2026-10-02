@@ -65,7 +65,7 @@ J0 à J5 et D construits ; l’habillage des univers (objet `Habillage`, textes 
 | U5 (l’habillage pédagogique de Blocland) | À faire | Se cadre avec le directeur contenu pédagogique |
 | U6 (un troisième univers) | Après les lots 8 et 8b | « Périple » abandonné pour l’instant |
 
-Blocland est l’univers par défaut ; Archipéo se choisit dans les Réglages et n’est pas mis en avant (décisions 7 à 9 de [Plusieurs univers](../univers/univers.md)). Dans [Plusieurs univers](../univers/univers.md), la ligne U4 n’est pas marquée faite, alors que J6, J7 et J8 le disent : à reprendre par le directeur artistique, qui tient ce document.
+Blocland est l’univers par défaut ; Archipéo se choisit dans les Réglages et n’est pas mis en avant (décisions 7 à 9 de [Plusieurs univers](../univers/univers.md)). Dans [Plusieurs univers](../univers/univers.md), la ligne U4 n’est pas marquée faite, alors que J6, J7 et J8 le disent : à reprendre par le directeur artistique, qui tient ce document. « J6 » y désigne aussi l’objet `Habillage`, alors que dans [Séparer le jeu du rendu](../conception/separation-jeu-rendu.md#3-les-étapes) J6 est la disposition en réseau : à reprendre de même par le directeur artistique.
 
 ### La deuxième langue vivante (LV2)
 

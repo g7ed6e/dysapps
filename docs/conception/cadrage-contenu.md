@@ -126,7 +126,7 @@ Les étapes du contenu portent le préfixe **C-n**, jamais « lot n » (réserv�
 Maths 6e, automatismes (point 2) :
 
 - **C-1. Rivière des fractions : division posée.** Quatrième mission, la division et les opérations posées, sur le thème du partage : « Galets en colonnes » (`colonnes`), détail au point 2 ; aucune exclusion à lever (`c3.ma.nombres.calcul-pose` était citée par le portail, sans calcul posé).
-- **C-2. Volcan des décimaux : grands nombres et encadrements.** Quatrième mission, « Nombres géants », puis encadrer une fraction, ranger et intercaler des décimaux (niveaux de plus). Lève `c3.ma.nombres.grands-entiers`. « Nombres géants » (`geants`), ranger et intercaler à la Coulée de lave (niveaux 2 et 3), encadrer une fraction à la Pente graduée (niveau 3), détail au point 2.
+- **C-2. Volcan des décimaux : grands nombres et encadrements.** Quatrième mission, « Nombres géants », puis encadrer une fraction, ranger et intercaler des décimaux (niveaux de plus). Lève `c3.ma.nombres.grands-entiers`. Missions : « Nombres géants » (`geants`), ranger et intercaler à la Coulée de lave (niveaux 2 et 3), encadrer une fraction à la Pente graduée (niveau 3), détail au point 2.
   - Relecture du 28/09, faite avec C-2 : à la Pente graduée, `volcan-pente-1` (générateur `onLine`, `src/apps/decimaux/generators.tsx`) ne propose plus le piège en millièmes (« 5,001 » pour 5,1), et `volcan-pente-2` (`complementToOne`) plus de piège à 0,01 près quand la réponse est en dixièmes ; le portail Décimaux, qui partage ces générateurs, suit.
 
 Français 6e (point 3) :

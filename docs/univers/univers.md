@@ -133,9 +133,9 @@ Le plan [Séparer le jeu du rendu](../conception/separation-jeu-rendu.md) fait d
 - **Sécurité.** Un univers est un **module TypeScript du dépôt**, relu en pull request. Jamais un fichier chargé à l’exécution, jamais un fichier fourni par un tiers ou par l’élève. Il contient du texte brut seulement, affiché par React : ni HTML, ni Markdown interprété, ni adresse. Les couleurs sont validées par un test, contraste AA compris.
 - **Rangement.** `src/univers/<id>/index.ts`, typé `Univers` avec `satisfies`. Ses clés sont **dérivées** des identifiants stables : `Record<BiomeId, …>`, missions, ouvrages, Gardiens, plans. Il les habille sans les remplacer. Aucune règle ne l’importe.
 - **Le choix** est une **préférence d’appareil**, rangée dans `Settings` à côté de `worldView`.
-  - Aucune migration. Un champ absent vaut Archipéo pour un appareil sans progression. Pour un appareil qui a déjà une progression au lot 6, il vaut Blocland (décision 5) : l’élève ne découvre pas, sans l’avoir choisi, des noms tous nouveaux.
+  - Aucune migration. Un champ absent vaut Blocland, l’univers par défaut (décision 7, qui remplace sur ce point la décision 5), avec ou sans progression (`premierUnivers`, `src/core/univers.ts`) : l’élève ne découvre pas, sans l’avoir choisi, des noms tous nouveaux.
   - Pourquoi une préférence d’appareil plutôt qu’un champ de la sauvegarde : la progression est elle-même enregistrée sur l’appareil, sans export ([Questions](../../www/manuel/questions.md)). Les deux voyagent donc ensemble. Le jour où un export de la progression existera, l’univers partira avec elle, pour qu’un élève n’ait pas deux jeux de noms au collège et à la maison.
-  - `sanitizeSettings` remplace un univers inconnu par Archipéo sans planter.
+  - `sanitizeSettings` remplace un univers inconnu par l’univers par défaut, Blocland, sans planter.
   - Un test relit une même sauvegarde sous les deux univers et obtient le même état : c’est la portabilité de la progression.
 - **Performance.**
   - Un `import()` par univers. L’univers par défaut reste dans le paquet principal, sans attente au démarrage.

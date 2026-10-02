@@ -121,7 +121,7 @@ Le mainteneur a tranché le 28 septembre 2026 :
 
 | Question | Options | Décision |
 | --- | --- | --- |
-| **Jusqu’où va l’abstraction ?** | (a) le monde entier, des îles en lieux sans marche ; (b) deux échelles, l’île sur la grille et la mer en réseau (recommandé par le directeur artistique) ; (c) rien de plus que la carte des quatre archipels du lot 8b |
+| **Jusqu’où va l’abstraction ?** | (a) le monde entier, des îles en lieux sans marche ; (b) deux échelles, l’île sur la grille et la mer en réseau (recommandé par le directeur artistique) ; (c) rien de plus que la carte des quatre archipels du lot 8b | **(a) le monde entier.** Le directeur artistique recommandait (b) : un mode tout abstrait, à côté de la grille, fait changer le trajet en changeant de rendu. La parade : les mêmes gestes donnent les mêmes intentions partout, et la construction reste case par case. |
 | **Quand ?** | (a) avant le lot 6 ; (b) J0 à J5 maintenant, entre les lots R, et la disposition en réseau avec les lots 8 et 8b ; (c) tout après le lot 8 | **(b).** Le lot 6 s’ouvre en grille. |
 | **Entre deux îles, que voit l’élève en réseau ?** | (a) il marche le long de l’ouvrage ; (b) un trajet court par la liaison, qu’on peut sauter ; (c) un fondu | **(b).** « Réduire les animations » le ramène à (c). |
 
