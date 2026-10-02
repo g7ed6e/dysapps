@@ -21,6 +21,7 @@ import {
   type BuildBridgeResult,
 } from './world/archipelago';
 import { planV1 } from './world/plansV1';
+import { missionsTerminees, poserLesParties, type Partie } from './world/parties';
 import { getMonument } from './world/monuments';
 import { assemblables, lireTirage, noterQuestion, recetteDe, tirageNeuf, type TirageAssemblage } from './world/assemblage';
 import { VEHICLE_STAGES, beatenGuardians, getStage, kitReady, stageFor, type VehicleStage } from './world/vehicle';
@@ -512,6 +513,40 @@ export interface Completion {
   perfect: boolean;
   streak: StreakUpdate;
   chestBlock?: BlockId;
+  /** La partie du bâtiment du lieu posée par cette mission, la première fois qu'elle est terminée (GD-6). */
+  pose?: PoseDUneMission;
+}
+
+/** Ce qu'une mission terminée a posé sur le bâtiment de son lieu : les parties et les plans qu'elles finissent. */
+export interface PoseDUneMission {
+  posees: Partie[];
+  plansFinis: PlanDef[];
+}
+
+/**
+ * Pose sur le bâtiment d'un lieu les parties dues à ses missions terminées (GD-6), sans rien prendre au stock : une
+ * ligne du journal par plan fini. Sans effet si le compte y est.
+ */
+export function poserLesPartiesDues(state: GameState, biome: BiomeId, today = todayISO()): { state: GameState; pose: PoseDUneMission | null } {
+  const r = poserLesParties(biome, state.world.parts, missionsTerminees(state.progress, biome));
+  if (!r.posees.length) return { state, pose: null };
+  const log = [...state.world.log, ...r.plansFinis.map((p) => ({ day: today, part: p.id }))].slice(-100);
+  return { state: { ...state, world: { ...state.world, parts: r.parts, log } }, pose: { posees: r.posees, plansFinis: r.plansFinis } };
+}
+
+/**
+ * Le rattrapage d'une sauvegarde d'avant GD-6 : chaque lieu reçoit les parties de ses missions déjà terminées, posées
+ * d'un coup. Les plans qu'elles finissent sont rendus pour leur XP.
+ */
+export function rattraperLesParties(state: GameState, today = todayISO()): { state: GameState; plansFinis: PlanDef[] } {
+  let next = state;
+  const plansFinis: PlanDef[] = [];
+  for (const b of BIOMES) {
+    const r = poserLesPartiesDues(next, b.id, today);
+    next = r.state;
+    if (r.pose) plansFinis.push(...r.pose.plansFinis);
+  }
+  return { state: next, plansFinis };
 }
 
 /** Blocs en plus : +1 à deux étoiles, +2 à trois ; +2 la première fois qu'une mission est jouée. Rien sans bonne réponse. */
@@ -547,8 +582,11 @@ export function completeExercise(state: GameState, def: ExerciseDef, results: It
 
   const types = { ...state.types, [def.type]: adapt(state.types[def.type], score, def.adaptive) };
 
+  // La première fois qu'une mission du lieu est terminée, une partie de son bâtiment se pose (GD-6).
+  const posee = poserLesPartiesDues({ ...state, progress, spaced, stock: inventory, streak: streak.streak, types, chests }, def.biome, today);
   return {
-    state: { ...state, progress, spaced, stock: inventory, streak: streak.streak, types, chests },
+    state: posee.state,
+    ...(posee.pose ? { pose: posee.pose } : {}),
     score,
     stars,
     newBest,

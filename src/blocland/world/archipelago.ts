@@ -8,7 +8,7 @@ import { BLOC, BIOMES, getBiome, type BiomeDef, type BiomeId, type BlockId } fro
 import { lv2Courante, type Lv2Choice } from '../../core/settings';
 import { isBossBeaten } from '../bossCore';
 import { ARCHIPELAGO_IDS, archipelagoOfIsland, type ArchipelagoId } from './archipels';
-import { plansFor, isPlanDone } from './plans';
+import { premierePartiePosee } from './parties';
 
 /** La place de chaque île est dans `map.ts` (MAP). */
 
@@ -98,7 +98,7 @@ export interface BridgeDef {
   cost: number;
 }
 
-/** La condition d'un ouvrage dépend de sa nature : l'escalier veut des bâtisseurs (un plan), le tunnel et le col un Gardien vaincu. */
+/** La condition d'un ouvrage dépend de sa nature : l'escalier veut des bâtisseurs (la première partie du bâtiment d'une de ses îles, posée par une mission), le tunnel et le col un Gardien vaincu. */
 export const CONDITION_OF: Record<BridgeKind, BridgeCondition> = {
   pont: 'aucune',
   bac: 'aucune',
@@ -241,7 +241,7 @@ export function launchedCount(bridges: string[]): number {
 
 // ---------- Les blocs qui paient ----------
 
-/** Les blocs qui servent à payer un ouvrage : ceux des îles (et les coffres), jamais les kits de finition des plans. */
+/** Les blocs qui servent à payer un ouvrage : ceux des îles ; ni l'or ni le cristal, devenus des trophées (GD-6), ni les kits de finition. */
 export const BRIDGE_BLOCKS: BlockId[] = [
   BLOC.bois,
   BLOC.pierre,
@@ -274,8 +274,6 @@ export const BRIDGE_BLOCKS: BlockId[] = [
   BLOC.dalle,
   BLOC.osier,
   BLOC.bardeau,
-  BLOC.or,
-  BLOC.cristal,
 ];
 
 export function getBridge(id: string): BridgeDef | undefined {
@@ -337,8 +335,7 @@ export function conditionMet(bridge: BridgeDef, bridges: string[], world: WorldP
     .filter((island) => open.has(island))
     .some((island) => {
       if (condition === 'gardien') return isBossBeaten(island, world.progress);
-      const first = plansFor(island)[0];
-      return Boolean(first) && isPlanDone(first, world.plans);
+      return premierePartiePosee(island, world.plans);
     });
 }
 
@@ -361,8 +358,7 @@ export function conditionText(bridge: BridgeDef, bridges: string[], mots: MotsDe
   const island = [bridge.from, bridge.to].find((i) => open.has(i)) ?? bridge.from;
   const name = getBiome(island)?.name ?? island;
   if (condition === 'gardien') return mots.gardienDabord(name);
-  const first = plansFor(island)[0];
-  return `Termine d’abord le plan « ${first?.name ?? 'premier plan'} » de ${name}.`;
+  return `Réussis d’abord une mission de ${name}.`;
 }
 
 /**
