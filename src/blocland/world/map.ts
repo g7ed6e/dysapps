@@ -12,6 +12,53 @@ export { ARCHIPELAGO_IDS, archipelagoOfIsland, type ArchipelagoId } from './arch
 export type RegionId = 'basses-terres' | 'marais' | 'feu' | 'montagne' | 'hauteurs';
 export type Relief = 'plat' | 'collines' | 'montagne' | 'volcan';
 
+/**
+ * Le nom qui tire le hasard du dessin d'une île (l'épaisseur des strates de ses falaises, la pose de chaque élément de
+ * son décor) : son identifiant d'avant les mots neutres (2 octobre 2026), figé pour que le dessin ne bouge pas quand un
+ * identifiant change. Un lieu nouveau n'y est pas : son identifiant tire son hasard.
+ */
+const GRAINES_DU_DESSIN: Readonly<Partial<Record<string, string>>> = {
+  'french-6e-phonology': 'foret',
+  'french-6e-letter-confusion': 'mine',
+  'french-6e-word-spelling': 'carriere',
+  'french-6e-grammar-spelling': 'ferme',
+  'french-6e-reading': 'tour',
+  'maths-6e-calculation': 'plaine',
+  'maths-6e-fractions': 'riviere',
+  'maths-6e-decimals': 'volcan',
+  'maths-5e-signed-numbers': 'glacier',
+  'maths-5e-proportionality': 'marche',
+  'french-5e-homophones': 'carrefour',
+  'french-5e-conjugation': 'marais',
+  'maths-4e-powers': 'forge',
+  'maths-4e-algebra': 'atelier',
+  'french-4e-agreement': 'falaise',
+  'french-4e-vocabulary': 'cabinet',
+  'maths-3e-geometry': 'belvedere',
+  'maths-3e-statistics': 'donnees',
+  'maths-3e-functions': 'phare',
+  'french-3e-close-reading': 'textes',
+  'english-6e-vocabulary': 'baie',
+  'english-6e-grammar': 'horloge',
+  'english-5e-vocabulary': 'comptoir',
+  'english-5e-grammar': 'manoir',
+  'english-4e-comprehension': 'theatre',
+  'english-4e-grammar': 'gare',
+  'english-3e-comprehension': 'studio',
+  'english-3e-grammar': 'chateau',
+  'lv2-5e-introductions': 'relais',
+  'lv2-4e-daily-life': 'jardin',
+  'lv2-3e-travel': 'refuge',
+};
+
+/** Le nom qui tire le hasard du dessin d'un lieu (`GRAINES_DU_DESSIN`), ou d'un élément `<lieu>/<nom>` de son décor. */
+export function graineDuDessin(nom: string): string {
+  const i = nom.indexOf('/');
+  const lieu = i < 0 ? nom : nom.slice(0, i);
+  const graine = GRAINES_DU_DESSIN[lieu];
+  return graine === undefined ? nom : graine + nom.slice(lieu.length);
+}
+
 export interface IslandDef {
   id: BiomeId;
   region: RegionId;

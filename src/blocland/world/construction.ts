@@ -590,14 +590,14 @@ function decalagesDe(genres: Map<VoxelCube, Genre>): Map<VoxelCube, number> {
  * l'île du Phare (3e), la petite tour de pierre à lanterne doublait le grand phare. Cases du cœur (world/decor.ts,
  * `DECOR`), que Blocland garde : son dessin ne change pas.
  */
-export const TOURS_DU_COEUR: Partial<Record<string, readonly (readonly [number, number])[]>> = {
-  tour: [
+export const TOURS_DU_COEUR: Partial<Record<BiomeId, readonly (readonly [number, number])[]>> = {
+  'french-6e-reading': [
     [8, 4],
     [9, 4],
     [8, 5],
     [9, 5],
   ],
-  phare: [[9, 3]],
+  'maths-3e-functions': [[9, 3]],
 };
 
 /** Les cubes du monde sans les tours du décor du cœur (`TOURS_DU_COEUR`) : le rendu Archipéo seulement. */

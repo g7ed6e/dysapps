@@ -358,7 +358,12 @@ export function planV1(id: string): PlanV1 | undefined {
   if (!raw) return undefined;
   let v = cache.get(id);
   if (!v) {
-    v = { blocks: new Map(raw.cells.split(' ').map((c) => c.split(':') as [string, BlockId])), chest: raw.chest };
+    // Les cases gardent le mot de Blocland du bloc (`bois`) : `BLOC` le traduit en identifiant neutre.
+    const cell = (c: string): [string, BlockId] => {
+      const [key, word] = c.split(':');
+      return [key, BLOC[word as keyof typeof BLOC]];
+    };
+    v = { blocks: new Map(raw.cells.split(' ').map(cell)), chest: raw.chest };
     cache.set(id, v);
   }
   return v;

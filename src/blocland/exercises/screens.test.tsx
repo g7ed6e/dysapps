@@ -76,18 +76,18 @@ describe('déblocage des biomes', () => {
   it('ouvre la Mine quand on construit le pont avec ses blocs', async () => {
     localStorage.setItem('dysapps:game', JSON.stringify({ stock: { 'french-6e-phonology': 2, 'french-6e-letter-confusion': 2 } }));
     const user = userEvent.setup();
-    renderAt('/adventure/mine');
+    renderAt('/adventure/french-6e-letter-confusion');
     expect(screen.queryByRole('link', { name: /Filon/ })).not.toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: /Construire/ }));
     expect(document.body.textContent).toMatch(/Le sentier vers Forêt des sons est tracé/);
     expect(screen.getByRole('link', { name: /Filon/ })).toBeInTheDocument();
     expect(JSON.parse(localStorage.getItem('dysapps:game')!).world.links).toEqual(['french-6e-phonology-french-6e-letter-confusion']);
-    expect(JSON.parse(localStorage.getItem('dysapps:game')!).stock).toEqual({ pierre: 1 });
+    expect(JSON.parse(localStorage.getItem('dysapps:game')!).stock).toEqual({ 'french-6e-letter-confusion': 1 });
   });
 
   it('une sauvegarde d’avant les ponts garde la Mine ouverte', () => {
     localStorage.setItem('dysapps:game', JSON.stringify({ progress: { 'french-6e-phonology-sound-hunt-an': { stars: 1, attempts: 1, best: 0.5 } } }));
-    renderAt('/adventure/mine');
+    renderAt('/adventure/french-6e-letter-confusion');
     expect(screen.getByRole('link', { name: /Filon/ })).toBeInTheDocument();
     expect(screen.queryByText(/Pas si vite/)).not.toBeInTheDocument();
   });
@@ -96,7 +96,7 @@ describe('déblocage des biomes', () => {
 it('chasse au son : on choisit les mots, on valide, la correction nomme le son entendu', async () => {
   const user = userEvent.setup();
   const def = getExercise('french-6e-phonology-sound-hunt-an')!;
-  renderAt('/adventure/foret/chasse-son');
+  renderAt('/adventure/french-6e-phonology/sound-hunt');
   await loaded();
   expect(screen.getByRole('heading', { name: def.instruction })).toBeInTheDocument();
   const first = def.items.slice(0, 4);
@@ -121,7 +121,7 @@ it('chasse au son : on choisit les mots, on valide, la correction nomme le son e
 it('chasse au son : la correction nomme tous les mots oubliés et chaque intrus, et les cartes le montrent', async () => {
   const user = userEvent.setup();
   const def = getExercise('french-6e-phonology-sound-hunt-an')!;
-  renderAt('/adventure/foret/chasse-son');
+  renderAt('/adventure/french-6e-phonology/sound-hunt');
   await loaded();
   const first = def.items.slice(0, 4);
   const good = first.filter((i) => i.correct).map((i) => String(i.word));
@@ -141,7 +141,7 @@ it('chasse au son : la correction nomme tous les mots oubliés et chaque intrus,
 it('chasse au son au clavier : les chiffres cochent les cartes, Entrée valide puis passe à la suite', async () => {
   const user = userEvent.setup();
   const def = getExercise('french-6e-phonology-sound-hunt-an')!;
-  renderAt('/adventure/foret/chasse-son');
+  renderAt('/adventure/french-6e-phonology/sound-hunt');
   await loaded();
   const first = def.items.slice(0, 4);
   const keys = first.map((it, i) => (it.correct ? String(i + 1) : '')).join('');
@@ -158,7 +158,7 @@ it('filon : piocher la cible est juste, laisser passer une autre lettre aussi', 
   demanderMoinsDAnimations();
   const user = userEvent.setup();
   const def = getExercise('french-6e-letter-confusion-letter-pairs-b')!;
-  renderAt('/adventure/mine/filon');
+  renderAt('/adventure/french-6e-letter-confusion/letter-pairs');
   await loaded();
   for (let i = 0; i < 3; i++) {
     const it = def.items[i];
@@ -180,7 +180,7 @@ it('filon : sans « réduire les animations », le bloc qui sort de la galerie c
   // Sans historique, l'exercice proposé est le premier du catalogue pour ce type.
   const def = getExercise('french-6e-letter-confusion-letter-pairs-b')!;
   vi.useFakeTimers();
-  renderAt('/adventure/mine/filon');
+  renderAt('/adventure/french-6e-letter-confusion/letter-pairs');
   // Le contenu de l'exercice arrive par un import dynamique : on l'attend sans horloge.
   await act(() => vi.dynamicImportSettled());
   const it = def.items[0];
@@ -196,7 +196,7 @@ it('mot troué : le bon bloc remplit le trou, la correction montre la bonne écr
   unlockAll();
   const user = userEvent.setup();
   const def = getExercise('french-6e-word-spelling-missing-letters-1')!;
-  renderAt('/adventure/carriere/mot-troue');
+  renderAt('/adventure/french-6e-word-spelling/missing-letters');
   await loaded();
   const it = def.items[0];
   const [wrong, other] = (it.choices as string[]).filter((c) => c !== it.answer);
@@ -212,7 +212,7 @@ it('mot troué : le bon bloc remplit le trou, la correction montre la bonne écr
 it('tri des graines : phrase à trou, puis règle et astuce de substitution après une erreur', async () => {
   unlockAll();
   const user = userEvent.setup();
-  renderAt('/adventure/ferme/graines');
+  renderAt('/adventure/french-6e-grammar-spelling/sorting');
   await loaded();
   const def = getExercise('french-6e-grammar-spelling-sorting-a')!;
   const it = def.items[0];
@@ -224,7 +224,7 @@ it('tri des graines : phrase à trou, puis règle et astuce de substitution apr�
 it('ascension : un étage par paragraphe validé, temps comparé à soi-même', async () => {
   unlockAll();
   const user = userEvent.setup();
-  renderAt('/adventure/tour/ascension');
+  renderAt('/adventure/french-6e-reading/fluency');
   await loaded();
   const def = getExercise('french-6e-reading-fluency-mousso')!;
   expect(screen.getByRole('img', { name: 'Tour : 0 étage sur 4' })).toBeInTheDocument();

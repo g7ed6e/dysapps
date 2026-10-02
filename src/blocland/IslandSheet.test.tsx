@@ -79,7 +79,7 @@ it('les blocs qui manquent renvoient à l’île où les gagner, par un lien', (
   expect(navire).not.toHaveAttribute('open');
   expect(navire.textContent).toContain('0 / 45 posés · il manque');
   const links = screen.getAllByRole('link', { name: 'Forêt des sons' });
-  expect(links[0]).toHaveAttribute('href', '/adventure/foret');
+  expect(links[0]).toHaveAttribute('href', '/adventure/french-6e-phonology');
   expect(document.body.textContent).toContain('briques · à gagner ici, dans les missions');
 });
 
@@ -149,7 +149,7 @@ it('l’ouvrage touché dans le monde est mis en avant dans la liste, et son pli
 });
 
 it('le navire touché dans le monde ouvre son pli', () => {
-  renderSheet('maths-6e-calculation', () => {}, 'navire', true);
+  renderSheet('maths-6e-calculation', () => {}, 'vehicle', true);
   expect(document.querySelector('.island-fold-navire')).toHaveAttribute('open');
   expect(document.querySelector('.ship-section')!.className).toContain('bridge-highlight');
 });

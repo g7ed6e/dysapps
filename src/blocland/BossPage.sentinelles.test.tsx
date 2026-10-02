@@ -39,7 +39,7 @@ function ready(biomeId: string) {
 }
 
 it('sans les étoiles, la créature dit que le Gardien attend encore, sans « bâtisseur »', async () => {
-  renderAt('/adventure/foret/challenge');
+  renderAt('/adventure/french-6e-phonology/challenge');
   await loaded();
   expect(document.body.textContent).toMatch(/Le Grand Chêne attend encore\. Obtiens 2 étoiles dans chaque mission de l’île/);
   expect(document.body.textContent).not.toMatch(/bâtisseur/);
@@ -47,7 +47,7 @@ it('sans les étoiles, la créature dit que le Gardien attend encore, sans « b�
 
 it('la page de l’île dit que le défi est prêt, sans combat', () => {
   localStorage.setItem('dysapps:game', JSON.stringify({ progress: ready('french-6e-phonology') }));
-  renderAt('/adventure/foret');
+  renderAt('/adventure/french-6e-phonology');
   expect(screen.getByText('Défi prêt')).toBeInTheDocument();
   expect(document.body.textContent).not.toMatch(/affronter/);
 });
@@ -57,7 +57,7 @@ it('le défi compte les épreuves réussies, dit le seuil, et une épreuve raté
   const drum = vi.spyOn(sound, 'playDrum').mockImplementation(() => {});
   const growl = vi.spyOn(sound, 'playGrowl').mockImplementation(() => {});
   const user = (await import('@testing-library/user-event')).default.setup();
-  renderAt('/adventure/foret/challenge');
+  renderAt('/adventure/french-6e-phonology/challenge');
   await loaded();
   expect(screen.getByRole('region', { name: 'Le défi du Grand Chêne' })).toBeInTheDocument();
   const gauge = () => screen.getByRole('progressbar', { name: 'Épreuves réussies' });
@@ -89,7 +89,7 @@ it('le défi compte les épreuves réussies, dit le seuil, et une épreuve raté
 it('le nom du Gardien seulement dans le titre ; la réplique et la règle se replient à la première épreuve (DA-34)', async () => {
   localStorage.setItem('dysapps:game', JSON.stringify({ progress: ready('french-6e-phonology') }));
   const user = (await import('@testing-library/user-event')).default.setup();
-  renderAt('/adventure/foret/challenge');
+  renderAt('/adventure/french-6e-phonology/challenge');
   await loaded();
   const arene = screen.getByRole('region', { name: 'Le défi du Grand Chêne' });
   expect(arene.querySelector('.arena-name')).toBeNull();
@@ -124,7 +124,7 @@ const pli = () => screen.getByRole('region', { name: 'Le défi du Grand Chêne' 
 
 it('la règle est un pli dans l’arène : sa phrase courte toujours lue, ouvert au premier défi (DA-28)', async () => {
   localStorage.setItem('dysapps:game', JSON.stringify({ progress: ready('french-6e-phonology') }));
-  renderAt('/adventure/foret/challenge');
+  renderAt('/adventure/french-6e-phonology/challenge');
   await loaded();
   expect(pli().querySelector('summary')!.textContent).toBe('Une épreuve ratée n’éteint rien.');
   expect(pli().textContent).toContain('Chaque épreuve réussie allume une partie de sa lumière');
@@ -136,7 +136,7 @@ it('déjà affronté (une partie enregistrée, même perdue), le pli de la règl
     'dysapps:game',
     JSON.stringify({ progress: { ...ready('french-6e-phonology'), 'french-6e-phonology-challenge': { stars: 0, attempts: 1, best: 0.4 } } }),
   );
-  renderAt('/adventure/foret/challenge');
+  renderAt('/adventure/french-6e-phonology/challenge');
   await loaded();
   expect(pli().open).toBe(false);
   expect(pli().querySelector('summary')!.textContent).toBe('Une épreuve ratée n’éteint rien.');

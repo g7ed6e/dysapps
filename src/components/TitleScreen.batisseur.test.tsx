@@ -40,7 +40,7 @@ it('au clavier, la suite ouvre le mode bâtisseur sans toucher la sauvegarde', a
   const user = userEvent.setup();
   renderTitle();
   const avant = localStorage.getItem('dysapps:game');
-  expect(avant).toContain('"bois":3');
+  expect(avant).toContain('"french-6e-phonology":3');
   expect(screen.getByTestId('bois')).toHaveTextContent('3');
   await user.keyboard(`${FLECHES}ba`);
   expect(screen.getByTestId('bois')).toHaveTextContent(String(BLOCS_DU_BATISSEUR));

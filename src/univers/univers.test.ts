@@ -3,11 +3,15 @@ import { BIOMES } from '../blocland/biomes';
 import { sanitizeState } from '../blocland/engine';
 import { ARCHIPELAGOS, NOMS_ARCHIPELS } from '../blocland/world/archipelago';
 import { reachedWhaleMoments, type WhaleMoment } from '../blocland/world/whale';
+import { LEGACY_PLACES } from '../core/legacyIds';
 import { BADGES, ROLES } from '../core/progress';
 import { pagesBaleine, quiParle, titreDuMot } from './baleine';
 import { nomDuRole, texteDuMonument, texteDuSucces, textesDe, universAffiche, type TextesUnivers, type UniversId } from '.';
 
 const UNIVERS: UniversId[] = ['archipeo', 'blocland'];
+
+/** L'identifiant d'avant les mots neutres d'un lieu (`foret`) : les empreintes ont été prises avec lui. */
+const ANCIEN_LIEU: Record<string, string> = Object.fromEntries(Object.entries(LEGACY_PLACES).map(([ancien, neutre]) => [neutre, ancien]));
 
 /** Tout ce qu'un univers peut afficher : ses textes, et ses libellés essayés au singulier et au pluriel. */
 function tousLesTextes(t: TextesUnivers): string[] {
@@ -60,7 +64,7 @@ describe('les textes d’univers', () => {
     const avant = Object.fromEntries(
       BIOMES.filter((b) => !APRES_LE_LOT_6.has(b.id)).map((b) => {
         const g = t.gardiens[b.id];
-        return [b.id, { challenge: g.challenge, ...g.guardianSays, species: t.especes[b.id] }];
+        return [ANCIEN_LIEU[b.id], { challenge: g.challenge, ...g.guardianSays, species: t.especes[b.id] }];
       }),
     );
     expect(createHash('sha256').update(JSON.stringify(avant)).digest('hex')).toBe('b3577afc0728587b76c52dfc290d094076cf0c659bca850af786367175759431');
@@ -170,7 +174,7 @@ describe('les textes communs (J8, U4)', () => {
     for (const u of UNIVERS) {
       const t = textesDe(u);
       // Les îles venues après U4 (le Jardin des heures, LV2-4 ; le Refuge des carnets, LV2-5) n'ont pas de réplique « d'avant » : hors de l'empreinte.
-      const r = Object.fromEntries(BIOMES.filter((b) => b.id !== 'lv2-4e-daily-life' && b.id !== 'lv2-3e-travel').map((b) => [b.id, t.creatures[b.id]]));
+      const r = Object.fromEntries(BIOMES.filter((b) => b.id !== 'lv2-4e-daily-life' && b.id !== 'lv2-3e-travel').map((b) => [ANCIEN_LIEU[b.id], t.creatures[b.id]]));
       expect(createHash('sha256').update(JSON.stringify(r)).digest('hex')).toBe('ee5d7b2fcc1a7a49749e0a41c5077b279215383439d33d63e023e6b85b618ccf');
     }
   });

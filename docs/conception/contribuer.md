@@ -35,7 +35,7 @@ Une pull request qui ajoute une page au manuel ou au contenu pédagogique la dé
 
 ## Les agents
 
-Le dépôt fournit huit agents partagés pour Claude Code, dans `.claude/agents/`. Toute personne qui clone le dépôt a les mêmes ; leurs consignes se modifient par pull request, comme le reste. On les sollicite par leur nom (« demande au directeur contenu pédagogique de relire `carriere-coffre-3` ») ou avec `claude --agent <nom>`.
+Le dépôt fournit huit agents partagés pour Claude Code, dans `.claude/agents/`. Toute personne qui clone le dépôt a les mêmes ; leurs consignes se modifient par pull request, comme le reste. On les sollicite par leur nom (« demande au directeur contenu pédagogique de relire `french-6e-word-spelling-sight-words-3` ») ou avec `claude --agent <nom>`.
 
 - Le **Directeur contenu pédagogique** (`directeur-contenu-pedagogique`) garantit le programme officiel, les règles dys et la qualité des items. Il cadre un lot de contenu à partir de ce qui reste à couvrir, relit et écrit des exercices, et tient les exclusions du référentiel à jour. Il peut modifier des fichiers.
 - Le **directeur artistique** (`directeur-artistique`) est le game designer. Il conduit les [univers](../univers/univers.md) : Blocland, où se construit le nouveau gameplay, et Archipéo, en pause depuis le 2 octobre 2026 (décision du mainteneur). Il cadre un lot de game design, relit une proposition sous cet angle, garde les règles communes à tous les univers, valide ce que proposent les consultants et tranche entre eux. Il lit et propose, sans modifier de fichier.
@@ -94,4 +94,4 @@ Une question qui touche aux deux (une mission qui doit produire une conséquence
 
 ## Signaler un problème
 
-Ouvrir un ticket sur GitHub avec : l’appareil et le navigateur, la version (Réglages → Application), la page ou l’exercice concerné (l’identifiant, par exemple `carriere-coffre-2`, figure sur la page de l’île dans la documentation), et ce qui était attendu.
+Ouvrir un ticket sur GitHub avec : l’appareil et le navigateur, la version (Réglages → Application), la page ou l’exercice concerné (l’identifiant, par exemple `french-6e-word-spelling-sight-words-2`, figure sur la page de l’île dans la documentation), et ce qui était attendu.

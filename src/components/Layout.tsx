@@ -45,7 +45,7 @@ function Shell() {
   // Pendant une partie : ni barre du haut ni onglets, seulement le bouton Pause (mode concentration).
   const focus = useFocusActive();
   // Carte et îles de Blocland en 3D : le monde prend tout l'écran, sans barre du haut (son menu Pause la remplace).
-  const immersive = useImmersive() && /^\/adventure(\/[a-z-]+)?$/.test(pathname);
+  const immersive = useImmersive() && /^\/adventure(\/[a-z0-9-]+)?$/.test(pathname);
   useEffect(() => startAppUpdates(), []);
 
   // Changer de page coupe la lecture vocale en cours.

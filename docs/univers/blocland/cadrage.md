@@ -4,7 +4,7 @@ Ce cadrage décrit ce qui est propre à l’univers **Blocland**, le monde en bl
 
 L’interface suit l’univers : dans Blocland, ses panneaux, ses boutons et ses titres prennent un habillage propre, dans l’esprit de ses cubes, sans rien copier d’un autre jeu ; la place des éléments, leurs mots, la taille des cibles et les règles dys restent communs ([Style](../../rendu/style.md#lhabillage-de-blocland)).
 
-Les règles du jeu sont communes aux univers et écrites en mots neutres dans [Le jeu](../../gameplay/index.md) ; les mots que Blocland affiche pour chacun sont dans sa [fiche](fiche.md#les-mots-de-blocland) ; l’écran titre, le menu, la première minute, la caméra et la Carte, dans les [bonnes pratiques UX UI](../../ux-ui/bonnes-pratiques.md#le-parcours-et-le-monde).
+Les règles du jeu sont communes aux univers et écrites en mots neutres dans [Le jeu](../../gameplay/index.md) ; les mots que Blocland affiche pour chacun sont dans sa [fiche](fiche.md#les-mots-de-blocland), avec le mot de Blocland de chaque identifiant neutre ([Les identifiants](fiche.md#les-identifiants) : `french-6e-phonology`, la Forêt des sons et son bois ; le code les relie par l’alias `BLOC`) ; l’écran titre, le menu, la première minute, la caméra et la Carte, dans les [bonnes pratiques UX UI](../../ux-ui/bonnes-pratiques.md#le-parcours-et-le-monde).
 
 ## Ce qu’on garde absolument
 

@@ -65,7 +65,7 @@ async function play(user: ReturnType<typeof userEvent.setup>, wrongAt: number[] 
 
 it('joue un exercice : consigne, feedback, étoiles, blocs, XP, puis étoiles sur la page du biome', async () => {
   const user = userEvent.setup();
-  renderAt('/adventure/foret');
+  renderAt('/adventure/french-6e-phonology');
   expect(screen.getByRole('link', { name: /Abattage syllabique.*Nouveau/ })).toBeInTheDocument();
   await user.click(screen.getByRole('link', { name: /Abattage syllabique/ }));
   // La consigne est écrite (pas seulement lue), et le mot n'est pas découpé en syllabes (ce serait la réponse).
@@ -81,7 +81,7 @@ it('joue un exercice : consigne, feedback, étoiles, blocs, XP, puis étoiles su
   expect(screen.getByText(/1 jour d’affilée/)).toBeInTheDocument();
   // À quoi servent les blocs : le plan de l'île, avec sa jauge, et « Voir le chantier » qui l'ouvre.
   expect(document.querySelector('.reward-site')).toHaveTextContent(/La cabane de Mousso, sur Forêt des sons : 6 blocs sur les \d+ qui manquent\./);
-  expect(screen.getByRole('link', { name: /Voir le chantier/ })).toHaveAttribute('href', '/adventure/foret?worksite=part');
+  expect(screen.getByRole('link', { name: /Voir le chantier/ })).toHaveAttribute('href', '/adventure/french-6e-phonology?worksite=part');
 
   const saved = JSON.parse(localStorage.getItem('dysapps:game')!);
   expect(saved.stock['french-6e-phonology']).toBe(6);
@@ -99,7 +99,7 @@ it('joue un exercice : consigne, feedback, étoiles, blocs, XP, puis étoiles su
 
 it('propose une pause après 3 exercices, et laisse continuer', async () => {
   const user = userEvent.setup();
-  renderAt('/adventure/foret/abattage');
+  renderAt('/adventure/french-6e-phonology/syllables');
   await loaded();
   for (let round = 1; round <= 3; round++) {
     // Une erreur par partie : on reste au niveau 1 (une partie quasi parfaite ferait monter au niveau 2, un autre exercice).
@@ -122,7 +122,7 @@ it('propose une pause après 3 exercices, et laisse continuer', async () => {
 
 it('deuxième essai : juste au second coup, le point compte moitié', async () => {
   const user = userEvent.setup();
-  renderAt('/adventure/foret/abattage');
+  renderAt('/adventure/french-6e-phonology/syllables');
   await loaded();
   const items = runItems(DEF, runSeed(DEF));
   for (let i = 0; i < items.length; i++) {
@@ -169,7 +169,7 @@ describe('lecture automatique', () => {
 
   it('sans question : la consigne seule à l’ouverture, rien de plus à l’item suivant', async () => {
     const user = userEvent.setup();
-    renderAt('/adventure/foret/abattage');
+    renderAt('/adventure/french-6e-phonology/syllables');
     await loaded();
     // La lecture part d'un effet : on attend qu'elle ait eu lieu.
     await waitFor(() => expect(dit).toEqual([DEF.instruction]));
@@ -180,7 +180,7 @@ describe('lecture automatique', () => {
   it('document à lire : la consigne puis la question au premier écran, la question seule ensuite', async () => {
     const user = userEvent.setup();
     const notices = getExercise('english-5e-vocabulary-notices-1')!;
-    renderAt('/adventure/comptoir/notices');
+    renderAt('/adventure/english-5e-vocabulary/notices');
     await loaded();
     const [first, second] = runItems(notices, runSeed(notices));
     // Une seule phrase, avec l'espace insécable de la typographie française avant « ? ».
@@ -209,7 +209,7 @@ describe('lecture automatique', () => {
       },
     });
     const story = getExercise('english-6e-grammar-story-1')!;
-    renderAt('/adventure/horloge/story');
+    renderAt('/adventure/english-6e-grammar/story');
     await loaded();
     const [first, second] = runItems(story, runSeed(story));
     // La première lecture part avec l'écran : sur une machine lente, après la fin du chargement.
@@ -239,9 +239,9 @@ describe('lecture automatique', () => {
         enCours = u;
       },
     });
-    localStorage.setItem('dysapps:game', JSON.stringify({ types: { 'es-familia': { level: 2 } } }));
+    localStorage.setItem('dysapps:game', JSON.stringify({ types: { 'es-family': { level: 2 } } }));
     const dictee = getExercise('lv2-5e-introductions-es-family-2')!;
-    renderAt('/adventure/relais/es-familia');
+    renderAt('/adventure/lv2-5e-introductions/es-family');
     await loaded();
     const [first, second] = runItems(dictee, runSeed(dictee));
     // La première lecture part après le rendu de l'écran : on l'attend (une CI lente la lance plus tard).

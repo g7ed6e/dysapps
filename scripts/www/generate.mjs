@@ -114,11 +114,11 @@ export async function generatePages() {
 
 // ---------- Outils ----------
 
-const SUBJECT_NAME = { francais: 'Français', maths: 'Maths', anglais: 'Anglais', lv2: 'LV2 (espagnol ou allemand)' };
+const SUBJECT_NAME = { french: 'Français', maths: 'Maths', english: 'Anglais', lv2: 'LV2 (espagnol ou allemand)' };
 /** Les matières, dans l'ordre du portail. */
 const SUBJECT_IDS = Object.keys(SUBJECT_NAME);
 /** « 3 d’anglais », « 1 de LV2 » : le complément de chaque matière dans le décompte des îles. */
-const SUBJECT_DE = { francais: 'de français', maths: 'de maths', anglais: 'd’anglais', lv2: 'de LV2' };
+const SUBJECT_DE = { french: 'de français', maths: 'de maths', english: 'd’anglais', lv2: 'de LV2' };
 const CONDITION_TEXT = {
   aucune: 'aucune condition',
   plan: 'le premier plan de l’île de départ terminé',

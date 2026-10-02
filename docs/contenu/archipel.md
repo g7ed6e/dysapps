@@ -1,6 +1,6 @@
 # L’archipel
 
-Les îles, dans l’ordre du jeu : `npm run contenu` en produit `src/blocland/iles.ts` dans cet ordre, chacune depuis `<île>.md`. Une île nouvelle s’ajoute ici et dans `BIOME_IDS` (`src/blocland/biomes.ts`).
+Les îles, dans l’ordre du jeu : `npm run contenu` en produit `src/blocland/iles.ts` dans cet ordre, chacune depuis `<lieu>.md`. Une île nouvelle s’ajoute ici et dans `BIOME_IDS` (`src/blocland/biomes.ts`).
 
 1. `french-6e-phonology`
 2. `french-6e-letter-confusion`

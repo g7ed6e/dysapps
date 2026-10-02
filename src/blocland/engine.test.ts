@@ -152,7 +152,7 @@ describe('completeExercise', () => {
     let state = EMPTY_STATE;
     for (const day of ['2026-09-24', '2026-09-25']) state = completeExercise(state, DEF, [ok('a')], day).state;
     const c = completeExercise(state, DEF, [ok('a')], '2026-09-26', () => 0);
-    expect(c.chestBlock).toBe('bois');
+    expect(c.chestBlock).toBe('french-6e-phonology');
     expect(c.state.chests).toBe(1);
     // 4 blocs par exercice sans faute (1 item juste = score 1) +2 pour trois étoiles, +2 la première fois, plus le coffre de 6.
     expect(c.state.stock['french-6e-phonology']).toBe(4 + 2 + 2 + (4 + 2) + (4 + 2) + 6);
@@ -167,7 +167,7 @@ it('sanitizeState répare des données corrompues', () => {
     streak: null,
   });
   expect(s.progress.x).toEqual({ stars: 3, attempts: 0, best: 1 });
-  expect(s.stock).toEqual({ bois: 3 });
+  expect(s.stock).toEqual({ 'french-6e-phonology': 3 });
   expect(s.spaced).toEqual([]);
   expect(s.streak).toEqual(EMPTY_STATE.streak);
   expect(sanitizeState(undefined)).toEqual(EMPTY_STATE);
@@ -175,7 +175,7 @@ it('sanitizeState répare des données corrompues', () => {
 
 it('sanitizeState rend à l’inventaire les blocs de l’ancien chantier et de l’ancienne zone libre', () => {
   const s = sanitizeState({
-    inventory: { 'french-6e-phonology': 1 },
+    inventory: { bois: 1 },
     build: [
       { x: 1, y: 1, z: 0, block: 'bois' },
       { x: 0, y: 0, z: 0, block: 'neige' },
@@ -190,7 +190,7 @@ it('sanitizeState rend à l’inventaire les blocs de l’ancien chantier et de 
       },
     },
   });
-  expect(s.stock).toEqual({ bois: 3, pierre: 1 });
+  expect(s.stock).toEqual({ 'french-6e-phonology': 3, 'french-6e-letter-confusion': 1 });
   expect(s.world).toEqual({ parts: {}, log: [], links: [] });
 });
 
@@ -208,7 +208,7 @@ it('le bonhomme se souvient de son île, seulement si elle est ouverte', () => {
 it('une mission du portail (l’école du village) rapporte des blocs de l’île de l’école, au barème des missions d’île', () => {
   // Toute juste la première fois : 4 blocs, +2 pour trois étoiles, +2 la première fois ; le streak démarre.
   const first = completePortalQuest(EMPTY_STATE, 1, true, '2026-09-27');
-  expect(first).toMatchObject({ school: 'french-6e-phonology', block: 'bois', blocks: 8, bonus: { stars: 2, first: 2 } });
+  expect(first).toMatchObject({ school: 'french-6e-phonology', block: 'french-6e-phonology', blocks: 8, bonus: { stars: 2, first: 2 } });
   expect(first.state.stock['french-6e-phonology']).toBe(8);
   expect(first.state.streak.current).toBe(1);
   // À moitié : 2 blocs, rien en plus ; aucune bonne réponse : rien.
@@ -218,7 +218,7 @@ it('une mission du portail (l’école du village) rapporte des blocs de l’îl
   expect(first.state.progress).toEqual({});
   // Dans les Îles Brumeuses, l'école est au Marché : des blocs de toile.
   const away = { ...EMPTY_STATE, world: { ...EMPTY_STATE.world, links: ['passage-5e'], place: 'maths-5e-proportionality' as const } };
-  expect(completePortalQuest(away, 1, false, '2026-09-27')).toMatchObject({ school: 'maths-5e-proportionality', block: 'toile', blocks: 6 });
+  expect(completePortalQuest(away, 1, false, '2026-09-27')).toMatchObject({ school: 'maths-5e-proportionality', block: 'maths-5e-proportionality', blocks: 6 });
 });
 
 describe('les sauvegardes d’avant le nouveau dessin des bâtiments', () => {
@@ -251,7 +251,7 @@ describe('les sauvegardes d’avant le nouveau dessin des bâtiments', () => {
     const keys = planCells(getPlan('french-6e-phonology-1')!).map((c) => c.key);
     const partial = sanitizeState({ world: { parts: { 'french-6e-phonology-1': keys.slice(0, 20) } }, stock: { 'french-6e-phonology': 3 } });
     expect(partial.world.parts['french-6e-phonology-1']).toEqual(keys.slice(0, 20));
-    expect(partial.stock).toEqual({ bois: 3 });
+    expect(partial.stock).toEqual({ 'french-6e-phonology': 3 });
     const done = sanitizeState({ world: { parts: { 'french-6e-phonology-1': keys } } });
     expect(done.stock).toEqual({});
   });
