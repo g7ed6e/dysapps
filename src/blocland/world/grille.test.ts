@@ -12,6 +12,7 @@ import {
   avatarHome,
   avatarRoute,
   bridgePath,
+  casesDesLieux,
   creaturePlacements,
   guardianPlacements,
   islandAt,
@@ -33,7 +34,7 @@ const { progress, village } = toutConstruit();
 const grilleDe = (a: (typeof ARCHIPELAGO_IDS)[number]) => {
   const cubes = worldCubes(a, progress, village, false, []);
   const creatures = [...creaturePlacements(a, village.bridges), ...guardianPlacements(a, progress, village.bridges)];
-  return { g: dispositionEnGrille(a, village.bridges, { cubes, creatures }), ground: walkGround(cubes, creatures) };
+  return { g: dispositionEnGrille(a, village.bridges, { cubes, creatures }), ground: walkGround(cubes, creatures, casesDesLieux(a)) };
 };
 
 describe('La disposition en grille', () => {

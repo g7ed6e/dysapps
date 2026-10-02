@@ -10,7 +10,8 @@
 //   et la vue 3D les cache sur la Carte. La 2D ne le montre pas.
 // - Tout va dans le pinceau du décor, après ses éléments : aucun appel de dessin de plus.
 import { SOLEIL_DIRECTION, type Couleur } from '../palette';
-import { lineaire, NIVEAU_EAU } from '../landMesh';
+import { eclairement, lineaire, NIVEAU_EAU } from '../landMesh';
+import type { ArchipelagoId } from '../map';
 import { clamp, hasardDe, rgb, type Peindre, type Pinceau, type RGB, type V3 } from './pinceau';
 
 /** L'élément des triangles du lointain : aucun (le toucher ne les retrouve pas). */
@@ -48,6 +49,33 @@ export interface RangDeCretes extends Place {
   ombre?: Couleur;
   /** La hauteur des cols entre les cimes, en part de `haut` (de 0,35 à 0,55 par défaut) : plus haut, une crête continue. */
   cols?: [number, number];
+  /** Un massif posé sur un plancher (le 3e, DA-20) : ses bouts, son pied et ses versants en facettes (voir `Massif`). */
+  massif?: Massif;
+}
+
+/**
+ * Le massif d'un rang de crêtes (le 3e, DA-20) : rien n'y est coupé net ni ne flotte.
+ * - Les bouts : sur la part `bouts` de la longueur à chaque bout, la crête descend en pente et s'enfonce sous le plancher
+ *   (au bout gauche, vu de biais, en une pente qui se raidit près des nuages) ; le rang recule de `fuite` cases dans la
+ *   brume de profondeur, sur la moitié des bouts côté cœur.
+ * - Le pied : un glacis de `glacis` cases plonge sous le plancher (à la hauteur `plancher`) et se resserre avec la crête
+ *   vers les bouts (au bout gauche, comme elle s'abaisse au-dessus du plancher). Sur les `fondu` blocs du bas, la roche
+ *   passe à la couleur du plancher (`couleurDuPlancher`, telle qu'on la peint sur une surface plate), éclaircie d'autant
+ *   qu'une facette penchée reçoit moins de lumière que le plancher (la lumière de `archipel`) : aucune arête droite et
+ *   sombre au ras des nuages. Sur la moitié extérieure des bouts, toute la roche y passe : le rang se perd dans le plancher.
+ * - Les versants : un épaulement irrégulier entre le pied et la cime (des facettes qui prennent la lumière chacune à leur
+ *   façon) ; la roche tire vers son ombre d'au moins `ombreSocle`, jusqu'à `ombreForce` à l'opposé du soleil.
+ */
+export interface Massif {
+  archipel: ArchipelagoId;
+  bouts: number;
+  fuite: number;
+  plancher: number;
+  fondu: number;
+  glacis: number;
+  couleurDuPlancher: Couleur;
+  ombreForce: number;
+  ombreSocle: number;
 }
 
 /** Une masse en gradins : des marches de `marche` blocs, en retrait de `retrait` cases, un sommet plat. */
@@ -124,12 +152,12 @@ const SOLEIL = (() => {
   return SOLEIL_DIRECTION.map((v) => v / l) as [number, number, number];
 })();
 
-/** Une peinture qui tire vers `ombre` sur les faces à l'opposé du soleil (jusqu'à `force`). */
-function ombree(peindre: Peindre, ombre: Couleur, force = 0.55): Peindre {
+/** Une peinture qui tire vers `ombre` sur les faces à l'opposé du soleil (jusqu'à `force`), et partout d'au moins `socle`. */
+function ombree(peindre: Peindre, ombre: Couleur, force = 0.55, socle = 0): Peindre {
   const o = lin(ombre);
   return (p, n) => {
     const c = peindre(p, n);
-    const s = force * clamp((0.35 - (n[0] * SOLEIL[0] + n[1] * SOLEIL[1] + n[2] * SOLEIL[2])) / 0.9, 0, 1);
+    const s = socle + (force - socle) * clamp((0.35 - (n[0] * SOLEIL[0] + n[1] * SOLEIL[1] + n[2] * SOLEIL[2])) / 0.9, 0, 1);
     return [c[0] + (o[0] - c[0]) * s, c[1] + (o[1] - c[1]) * s, c[2] + (o[2] - c[2]) * s];
   };
 }
@@ -165,6 +193,7 @@ function ancre(e: Etendue, p: Place): [number, number] {
 }
 
 function cretes(P: Pinceau, e: Etendue, r: RangDeCretes, hasard: () => number): void {
+  if (r.massif) return massif(P, e, r, r.massif, hasard);
   const [x0, z] = ancre(e, r);
   const x1 = e.minX + r.a * (e.maxX - e.minX);
   // Le profil : des cimes et des cols, de hauteurs irrégulières ; le rang descend dans la mer à ses deux bouts.
@@ -199,6 +228,95 @@ function cretes(P: Pinceau, e: Etendue, r: RangDeCretes, hasard: () => number): 
     }
     P.quad([a.x, PIED, avant], [b.x, PIED, avant], cb, ca, dedans, peindre);
     P.quad([a.x, PIED, arriere], [b.x, PIED, arriere], cb, ca, dedans, peindre);
+  }
+}
+
+const lisse = (t: number) => {
+  const c = clamp(t, 0, 1);
+  return c * c * (3 - 2 * c);
+};
+
+/**
+ * Un rang de crêtes en massif (`RangDeCretes.massif`, DA-20) : chaque point du profil porte une coupe, du pied avant au
+ * pied arrière (pied sous le plancher, haut du glacis au ras des nuages, épaulement, cime), et deux coupes voisines se
+ * joignent en facettes. Les bouts s'abaissent et reculent ; la neige franche coupe les facettes à sa limite.
+ */
+function massif(P: Pinceau, e: Etendue, r: RangDeCretes, m: Massif, hasard: () => number): void {
+  const [x0, z] = ancre(e, r);
+  const x1 = e.minX + r.a * (e.maxX - e.minX);
+  const n = r.cimes * 2 + 1;
+  const cols = r.cols ?? [0.35, 0.55];
+  const seuil = r.haut * (r.neige ?? 1.01);
+  const plancher = lin(m.couleurDuPlancher);
+  const aplat = eclairement(m.archipel, [0, 1, 0]);
+  const fondue = (peindre: Peindre): Peindre => (p, nn) => {
+    const c = peindre(p, nn);
+    // Au pied, sur les `fondu` blocs du bas ; aux bouts, sur toute la hauteur (la première moitié de leur part `bouts`).
+    const t = (p[0] - x0) / (x1 - x0);
+    const w = Math.max(lisse((m.plancher + m.fondu - p[1]) / m.fondu), 1 - lisse(Math.min(t, 1 - t) / (m.bouts / 2)));
+    if (w <= 0) return c;
+    // Une facette penchée reçoit moins de lumière que le plancher : sa couleur est éclaircie d'autant (au plus du triple).
+    const k = Math.min(3, aplat / Math.max(1e-6, eclairement(m.archipel, nn)));
+    const cible = plancher.map((v) => Math.min(1, v * k)) as RGB;
+    return [c[0] + (cible[0] - c[0]) * w, c[1] + (cible[1] - c[1]) * w, c[2] + (cible[2] - c[2]) * w];
+  };
+  const roche = fondue(r.ombre === undefined ? peinture(r.couleur, undefined, seuil) : ombree(peinture(r.couleur, undefined, seuil), r.ombre, m.ombreForce, m.ombreSocle));
+  const neige = fondue(peinture(r.sommet ?? r.couleur, undefined, seuil));
+  const coupes: { avant: V3[]; arriere: V3[]; centre: V3 }[] = [];
+  for (let i = 0; i <= n; i++) {
+    const t = i / n;
+    const bout = i === 0 || i === n;
+    const cime = i % 2 === 1;
+    // L'enveloppe des bouts (le recul, le pied) : 1 au cœur du rang, 0 à ses deux bouts.
+    const env = lisse(t / m.bouts) * lisse((1 - t) / m.bouts);
+    const h = bout ? PIED : cime ? r.haut * (0.7 + 0.3 * hasard()) : r.haut * (cols[0] + (cols[1] - cols[0]) * hasard());
+    // La crête, elle, descend en pente vers le bout et s'enfonce sous le plancher (sur le tiers extérieur de la part des
+    // bouts). Au bout gauche, vu de biais depuis les îles, cimes et cols y tendent ensemble vers une même hauteur et la
+    // pente se raidit en approchant des nuages : la crête plonge, elle ne s'étire pas à plat à leur ras. Le bout droit
+    // garde son profil.
+    const gauche = t < 0.5;
+    const u = clamp((Math.min(t, 1 - t) / m.bouts - 0.15) / 0.85, 0, 1);
+    const y = gauche
+      ? PIED + (h + (r.haut * 0.7 - h) * (1 - u) - PIED) * (1 - (1 - u) ** 3)
+      : PIED + (h - PIED) * (1 - (1 - u) * (1 - u));
+    const x = x0 + (x1 - x0) * (t + (bout ? 0 : ((hasard() - 0.5) * 0.4) / n));
+    // Le recul se fait sur la moitié des bouts côté cœur ; la crête plonge ensuite sans plus reculer : vue de biais, une
+    // plongée qui reculerait encore s'étirerait en lame plate au ras des nuages.
+    const recul = m.fuite * (1 - lisse((Math.min(t, 1 - t) / m.bouts - 0.5) / 0.5));
+    const zc = z + recul + (hasard() - 0.5) * r.epaisseur * 0.3 * (0.2 + 0.8 * env);
+    const pas = (x1 - x0) / n;
+    // Un versant, du pied (sous le plancher) à la cime : le haut du glacis au ras des nuages, puis l'épaulement.
+    // Vers les bouts, le pied se resserre avec la crête (au cinquième de sa largeur au bout) ; au bout gauche, comme la
+    // crête s'abaisse au-dessus du plancher (au dixième au plus bas) : une crête basse n'y garde pas un glacis large.
+    const audessus = clamp((y - m.plancher) / Math.max(1e-6, h - m.plancher), 0, 1);
+    const serre = gauche ? Math.max(0.1, Math.min(0.2 + 0.8 * env, audessus)) : 0.2 + 0.8 * env;
+    const versant = (sens: -1 | 1): V3[] => {
+      const zPied = z + recul + sens * (r.epaisseur / 2) * serre;
+      const pied: V3 = [x, PIED, zPied + sens * m.glacis * serre];
+      const yGlacis = Math.min(m.plancher + 0.3 + 1.2 * hasard(), PIED + (y - PIED) * 0.5);
+      const glacis: V3 = [x + (hasard() - 0.5) * pas * 0.5, yGlacis, zPied + (hasard() - 0.5) * 3];
+      const k = 0.4 + 0.25 * hasard();
+      const epaule: V3 = [
+        glacis[0] + (x - glacis[0]) * k + (hasard() - 0.5) * pas * 0.6,
+        yGlacis + (y - yGlacis) * (k + (hasard() - 0.5) * 0.12),
+        glacis[2] + (zc - glacis[2]) * k + (hasard() - 0.5) * r.epaisseur * 0.12,
+      ];
+      return [pied, glacis, epaule, [x, y, zc]];
+    };
+    coupes.push({ avant: versant(-1), arriere: versant(1), centre: [x, PIED, z + recul] });
+  }
+  for (let i = 0; i < n; i++) {
+    const a = coupes[i];
+    const b = coupes[i + 1];
+    const dedans: V3 = [(a.centre[0] + b.centre[0]) / 2, PIED, (a.centre[2] + b.centre[2]) / 2];
+    for (const cote of ['avant', 'arriere'] as const) {
+      const [pa, pb] = [a[cote], b[cote]];
+      for (let k = 0; k < 3; k++) {
+        // Deux triangles par bande ; la neige franche les coupe à sa limite.
+        coupe(P, [pa[k], pb[k], pb[k + 1]], seuil, dedans, roche, neige);
+        coupe(P, [pa[k], pb[k + 1], pa[k + 1]], seuil, dedans, roche, neige);
+      }
+    }
   }
 }
 

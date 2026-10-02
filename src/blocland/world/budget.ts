@@ -6,7 +6,7 @@
 // pour le rendu Archipéo, le sol (R2), la mer et la faune (R3), le décor (R4), la construction taillée, les bornes et
 // le navire (R5), et les personnages fusionnés (R6). Vérifié par world/budget.test.ts.
 import { AVATAR_PARTS } from '../Avatar';
-import { BIOMES } from '../biomes';
+import { BIOMES, type BlockId } from '../biomes';
 import { CATALOG } from '../exercises';
 import { BRIDGES, VOYAGES } from './archipelago';
 import type { ArchipelagoId } from './map';
@@ -151,9 +151,9 @@ export function sceneCost(a: ArchipelagoId): { triangles: number; drawCalls: num
  * Un archipel tout construit comme le rendu Archipéo le range : le sol (en facettes), le décor en primitives (lot R4),
  * qui ne fige plus sa case, et le reste (en cubes).
  */
-function archipelArchipeo(a: ArchipelagoId) {
+function archipelArchipeo(a: ArchipelagoId, trophees: readonly BlockId[] = []) {
   const { progress, village } = toutConstruit();
-  const cubes = worldCubes(a, progress, village, false, [], false, 'halle');
+  const cubes = worldCubes(a, progress, village, false, [...trophees], false, 'halle');
   const { elements, reste } = rangerLeDecor(cubes.filter((c) => !c.sol));
   // Le sol tel qu'Archipéo le dessine : le relief de marche, puis le modelé dessiné (U2).
   const ground = modelerLeSol(a, cubes.filter((c) => c.sol), reste);
@@ -225,8 +225,8 @@ export function personnagesCost(a: ArchipelagoId): Record<'bonhomme' | 'creature
  * La construction taillée d'Archipéo (lot R5) : bâtiments, ouvrages, monuments, quai et cœur des îles, fantômes et
  * fenêtres compris (./construction.ts), sans les bornes : trois appels de dessin au plus.
  */
-export function constructionCost(a: ArchipelagoId): { triangles: number; drawCalls: number } {
-  const { ground, reste, champ } = archipelArchipeo(a);
+export function constructionCost(a: ArchipelagoId, trophees: readonly BlockId[] = []): { triangles: number; drawCalls: number } {
+  const { ground, reste, champ } = archipelArchipeo(a, trophees);
   const { triangles, drawCalls } = coutDeLaConstruction(maillageDeLaConstruction(a, poseDuDecor(champ, sansToursDuCoeur(reste)), ground));
   return { triangles, drawCalls };
 }

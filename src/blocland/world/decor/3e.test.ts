@@ -9,10 +9,12 @@ import { champDuSol } from '../landMesh';
 import { inCore, islandDef, landCells, mapOf } from '../map';
 import { ambianceDe } from '../palette';
 import { bridgePath, worldBounds, worldCubes } from '../terrain';
-import { empriseDuSocle, GRAND_PHARE_3E, LOINTAIN_3E, SOCLE_3E } from './3e';
+import { houleDe, PLANCHER_DE_NUAGES } from '../mer';
+import { empriseDuSocle, GRAND_PHARE_3E, LOINTAIN_3E, MASSIF_3E, SOCLE_3E } from './3e';
 import { nappesDesSommets, NAPPES_3E } from './brume';
 import { MOUVEMENT_DE_LA_BRUME } from './fumee';
-import type { RangDeCretes } from './lointain';
+import { dessinerLointain, type RangDeCretes } from './lointain';
+import { Pinceau } from './pinceau';
 import { PHARE, PHARES } from './phare';
 
 const { progress, village } = toutConstruit();
@@ -119,6 +121,47 @@ it('le massif enneigé : continu, 1,2 fois plus large que l’arc des îles, de 
   }
   // Le premier rang, le plus proche, est aussi le plus bas : le second fait l'épaisseur de la chaîne.
   expect(rangs[0].recul).toBeLessThan(rangs[1].recul);
+});
+
+it('le massif posé sur le plancher (DA-20) : ses bouts se perdent sous les nuages, son pied y plonge partout, sa roche plus sombre que la neige', () => {
+  const b = worldBounds('3e');
+  const sous = PLANCHER_DE_NUAGES - houleDe('3e').large;
+  for (let k = 0; k < LOINTAIN_3E.pieces.length; k++) {
+    const r = LOINTAIN_3E.pieces[k];
+    if (r.genre !== 'cretes') throw new Error('crêtes attendues');
+    expect(r.massif).toBe(MASSIF_3E);
+    // Le rang seul, à sa place dans la liste (un tableau à trous : son hasard reste le sien).
+    const seul: RangDeCretes[] = [];
+    seul[k] = r;
+    const P = new Pinceau();
+    dessinerLointain(P, b, { graine: LOINTAIN_3E.graine, pieces: seul });
+    const f = P.fin();
+    const pts: [number, number, number][] = [];
+    for (let v = 0; v < f.positions.length; v += 3) pts.push([f.positions[v], f.positions[v + 1], f.positions[v + 2]]);
+    const [x0, x1] = [Math.min(...pts.map((p) => p[0])), Math.max(...pts.map((p) => p[0]))];
+    const pas = (x1 - x0) / (r.cimes * 2 + 1);
+    // Les bouts : sur un pas à chaque bout, rien ne dépasse du plancher, même au creux de sa houle.
+    for (const p of pts) if (p[0] < x0 + pas || p[0] > x1 - pas) expect(p[1], `${k} ${p}`).toBeLessThan(sous);
+    // Le pied : sur toute la longueur, à chaque pas, des sommets sous le plancher, devant et derrière la crête.
+    for (let x = x0; x <= x1; x += pas / 2) {
+      const pres = pts.filter((p) => Math.abs(p[0] - x) <= pas * 0.75);
+      const milieu = pres.reduce((s, p) => s + p[2], 0) / pres.length;
+      expect(Math.min(...pres.filter((p) => p[2] < milieu).map((p) => p[1])), `${k} ${x}`).toBeLessThan(sous);
+      expect(Math.min(...pres.filter((p) => p[2] > milieu).map((p) => p[1])), `${k} ${x}`).toBeLessThan(sous);
+    }
+    // La roche (sous la neige, au-dessus du fondu, hors des bouts qui se perdent) : nettement plus sombre que la neige.
+    const lum = (v: number) => 0.2126 * f.colors[v * 3] + 0.7152 * f.colors[v * 3 + 1] + 0.0722 * f.colors[v * 3 + 2];
+    const neige: number[] = [];
+    const roche: number[] = [];
+    for (let v = 0; v < pts.length; v++) {
+      if (Math.min(pts[v][0] - x0, x1 - pts[v][0]) < (x1 - x0) * MASSIF_3E.bouts) continue;
+      if (pts[v][1] > r.haut * (r.neige ?? 1.01) + 0.01) neige.push(lum(v));
+      else if (pts[v][1] > MASSIF_3E.plancher + MASSIF_3E.fondu && pts[v][1] < r.haut * (r.neige ?? 1.01) - 0.01) roche.push(lum(v));
+    }
+    expect(neige.length).toBeGreaterThan(0);
+    expect(roche.length).toBeGreaterThan(0);
+    expect(Math.max(...roche)).toBeLessThan(Math.min(...neige) * 0.75);
+  }
 });
 
 it('les nappes des sommets : une seule couche plate sous chaque île, sous son sol, environ 300 triangles, qui s’efface vers ses bords', () => {
