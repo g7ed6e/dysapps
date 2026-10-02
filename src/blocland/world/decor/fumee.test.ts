@@ -14,7 +14,7 @@ const decors = new Map<ArchipelagoId, ReturnType<typeof maillageDuDecor>>();
 function decorDe(a: ArchipelagoId) {
   let m = decors.get(a);
   if (!m) {
-    const { progress, village } = toutConstruit();
+    const { progress, world: village } = toutConstruit();
     const cubes = worldCubes(a, progress, village, false);
     const { elements, reste } = rangerLeDecor(cubes.filter((c) => !c.sol));
     decors.set(a, (m = maillageDuDecor(a, champDuSol(a, cubes.filter((c) => c.sol), reste), elements)));
@@ -119,7 +119,7 @@ it('au 6e, le volcan fume à peine : une fumée mince, plus basse que le phare (
 });
 
 it('au 6e, la fumée sort du flanc sud du cône, sous sa crête : jamais au-dessus du cratère, donc jamais derrière le nom de l’île', () => {
-  const { progress, village } = toutConstruit();
+  const { progress, world: village } = toutConstruit();
   const cubes = worldCubes('6e', progress, village, false);
   const { reste } = rangerLeDecor(cubes.filter((c) => !c.sol));
   const champ = champDuSol('6e', cubes.filter((c) => c.sol), reste);

@@ -32,7 +32,7 @@ export function BossPage() {
   const textes = useTextes();
   const [run, setRun] = useState(0);
   const biome = getBiome(biomeId);
-  const unlocked = Boolean(biome && isBiomeUnlocked(biome.id, state.village.bridges) && isBossOpen(biome, state.progress));
+  const unlocked = Boolean(biome && isBiomeUnlocked(biome.id, state.world.links) && isBossOpen(biome, state.progress));
   const alreadyBeaten = biome ? isBossBeaten(biome.id, state.progress) : false;
   // Jamais affronté : aucune partie de son défi n'est encore enregistrée. Lu à l'arrivée, pas à la fin de la partie.
   const [regleOuverte, setRegleOuverte] = useState(() => (biome ? !state.progress[bossId(biome.id)] : false));

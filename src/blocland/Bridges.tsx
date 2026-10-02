@@ -45,9 +45,9 @@ export function Bridges({ island, onBuilt, highlight = null, fold }: Props) {
     const el = list.current?.querySelector<HTMLElement>(`[data-bridge="${highlight}"]`);
     el?.scrollIntoView?.({ block: 'center', behavior: 'smooth' });
   }, [highlight, island]);
-  const world = { progress: state.progress, plans: state.village.plans };
-  const bridges = buildableBridges(state.village.bridges, island, world, settings.lv2);
-  const have = payableBlocks(state.inventory);
+  const world = { progress: state.progress, plans: state.world.parts };
+  const bridges = buildableBridges(state.world.links, island, world, settings.lv2);
+  const have = payableBlocks(state.stock);
   if (!bridges.length && !said) return null;
 
   const build = (b: BridgeDef, name: string) => {
@@ -66,7 +66,7 @@ export function Bridges({ island, onBuilt, highlight = null, fold }: Props) {
       text = `Il manque encore ${r.missing} bloc${(r.missing ?? 0) > 1 ? 's' : ''}. Fais une mission pour en gagner.`;
       if (settings.sounds) playNope();
     } else if (r.reason === 'plan' || r.reason === 'gardien') {
-      text = conditionText(b, state.village.bridges, textes.libelles) ?? 'Il reste une étape avant de construire.';
+      text = conditionText(b, state.world.links, textes.libelles) ?? 'Il reste une étape avant de construire.';
       if (settings.sounds) playNope();
     } else text = `${what.charAt(0).toUpperCase()}${what.slice(1)} ne peut pas être construit pour l’instant.`;
     setSaid(text);
@@ -78,7 +78,7 @@ export function Bridges({ island, onBuilt, highlight = null, fold }: Props) {
       <Icon name="map" /> Ouvrages
     </h3>
   );
-  const readyOnes = bridges.filter((b) => have >= b.cost && conditionMet(b, state.village.bridges, world));
+  const readyOnes = bridges.filter((b) => have >= b.cost && conditionMet(b, state.world.links, world));
   const cheapest = bridges.length ? bridges.reduce((a, b) => (b.cost < a.cost ? b : a)) : null;
   const status = readyOnes.length
     ? `${readyOnes.length} possible${readyOnes.length > 1 ? 's' : ''} · tu as ${have} bloc${have > 1 ? 's' : ''}`
@@ -99,7 +99,7 @@ export function Bridges({ island, onBuilt, highlight = null, fold }: Props) {
           {bridges.map((b) => {
             const other = getBiome(otherEnd(b, island))!;
             const enough = have >= b.cost;
-            const met = conditionMet(b, state.village.bridges, world);
+            const met = conditionMet(b, state.world.links, world);
             const ready = enough && met;
             const condition = CONDITION_OF[b.kind];
             const title = `${KIND_NAME[b.kind]} vers ${other.name}`;
@@ -120,7 +120,7 @@ export function Bridges({ island, onBuilt, highlight = null, fold }: Props) {
                     <span className="island-quest-desc">
                       {!enough && `Encore ${b.cost - have} bloc${b.cost - have > 1 ? 's' : ''} (${b.cost} en tout)`}
                       {!enough && !met && ' · '}
-                      {!met && conditionText(b, state.village.bridges, textes.libelles)}
+                      {!met && conditionText(b, state.world.links, textes.libelles)}
                     </span>
                   </span>
                 </li>

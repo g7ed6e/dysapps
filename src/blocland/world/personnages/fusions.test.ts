@@ -7,7 +7,7 @@ import { allumageDuGardien, couleursDesGardiens, fusionDesCreatures, lueursDesGa
 import { couleursAllumees } from './sentinelle';
 import { sentinellePeinte } from './sentinellesPeintes';
 
-const { progress, village } = toutConstruit();
+const { progress, world: village } = toutConstruit();
 
 describe('Les personnages fusionnés, archipel par archipel', () => {
   it('pose un personnage au milieu de l’emprise de ses cubes, sur le haut de sa case (repère de Three.js)', () => {
@@ -17,7 +17,7 @@ describe('Les personnages fusionnés, archipel par archipel', () => {
 
   for (const a of ARCHIPELAGO_IDS) {
     it(`${a} : chaque créature garde son modèle, son corps et son bras sur deux os, sa boîte de toucher`, () => {
-      const places = creaturePlacements(a, village.bridges);
+      const places = creaturePlacements(a, village.links);
       const f = fusionDesCreatures(places);
       expect(f.plages.map((p) => p.id)).toEqual(places.map((p) => p.id));
       expect(f.squelette).toHaveLength(2 * places.length);
@@ -44,7 +44,7 @@ describe('Les personnages fusionnés, archipel par archipel', () => {
     });
 
     it(`${a} : les Gardiens en sentinelles, éteints, et ce qui s'allume marqué sommet par sommet`, () => {
-      const places = guardianPlacements(a, progress, village.bridges);
+      const places = guardianPlacements(a, progress, village.links);
       const f = fusionDesGardiens(places);
       expect(f.plages.map((p) => p.id)).toEqual(places.map((p) => p.id));
       expect(Array.from(couleursDesGardiens(f, {}))).toEqual(Array.from(f.colors));
@@ -61,7 +61,7 @@ describe('Les personnages fusionnés, archipel par archipel', () => {
 
   it('ce qui brille la nuit : la lanterne de Fi (verre ambre le jour, lueur la nuit), l’abdomen d’Astra, la braise de Braise', () => {
     const brillent = (a: '3e' | '4e') => {
-      const f = fusionDesCreatures(creaturePlacements(a, village.bridges));
+      const f = fusionDesCreatures(creaturePlacements(a, village.links));
       const ids = new Set<string>();
       f.plages.forEach((p) => {
         for (let v = p.debut * 3; v < p.fin * 3; v++) {
@@ -85,7 +85,7 @@ describe('Les personnages fusionnés, archipel par archipel', () => {
     expect(allumageDuGardien({ beaten: true })).toBe(1);
     expect(allumageDuGardien({ beaten: false })).toBe(0);
     expect(allumageDuGardien({})).toBe(0);
-    const places = guardianPlacements('6e', progress, village.bridges);
+    const places = guardianPlacements('6e', progress, village.links);
     const f = fusionDesGardiens(places);
     expect(lueursDesGardiens(f, {}).every((x) => x === 0)).toBe(true);
     const l = lueursDesGardiens(f, { [places[0].id]: 1 });
@@ -94,7 +94,7 @@ describe('Les personnages fusionnés, archipel par archipel', () => {
   });
 
   it('le fondu ne repeint que le Gardien qui se rallume (seul) : les autres gardent leurs couleurs et leurs lueurs', () => {
-    const places = guardianPlacements('6e', progress, village.bridges);
+    const places = guardianPlacements('6e', progress, village.links);
     const f = fusionDesGardiens(places);
     const [a, b] = places.map((p) => p.id);
     const tout = { [a]: 1, [b]: 1 };

@@ -1,5 +1,5 @@
 import { BIOMES, BLOCKS } from '../biomes';
-import { EMPTY_STATE, fillPlanCell, nextFillable, planStatus, sanitizeState, type BloclandState } from '../engine';
+import { EMPTY_STATE, fillPlanCell, nextFillable, planStatus, sanitizeState, type GameState } from '../engine';
 import { ORIGINE_DES_MONUMENTS, ORIGINE_DU_QUAI, PLANS, PLAN_ZONE, activePlan, isPlanDone, planCells, plansFor } from './plans';
 import { toutConstruit } from './budget';
 import { dockOrigin } from './harbour';
@@ -11,7 +11,7 @@ import { ARCHIPELAGO_IDS, islandDef } from './map';
 it('chaque île a un plan valide : dans la zone des plans, sur un sol plat et sans décor, avec des blocs gagnables', () => {
   // Le décor sans les créatures (elles se promènent) et sans les fantômes.
   const decor = ARCHIPELAGO_IDS.flatMap((a) =>
-    worldCubes(a, {}, { plans: {}, journal: [], bridges: ['foret-mine', 'foret-ferme', 'mine-carriere', 'ferme-tour'] }, false),
+    worldCubes(a, {}, { parts: {}, log: [], links: ['foret-mine', 'foret-ferme', 'mine-carriere', 'ferme-tour'] }, false),
   ).filter((c) => !c.ghost);
   const at = new Set(decor.map((c) => `${c.x},${c.y},${c.z}`));
   BIOMES.forEach((b, i) => {
@@ -48,11 +48,11 @@ it('pose les blocs du plan dans n’importe quel ordre, refuse sans bloc, et ter
   expect(empty).toMatchObject({ ok: false, reason: 'plus-de-blocs', block: first.block });
   expect(fillPlanCell(EMPTY_STATE, plan, 0, 0, 0)).toMatchObject({ ok: false, reason: 'pas-dans-le-plan' });
 
-  let state: BloclandState = { ...EMPTY_STATE, inventory: { bois: cells.length } };
+  let state: GameState = { ...EMPTY_STATE, stock: { bois: cells.length } };
   const r = fillPlanCell(state, plan, last.x, last.y, last.z);
   expect(r.ok).toBe(true);
   state = r.state;
-  expect(state.inventory.bois).toBe(cells.length - 1);
+  expect(state.stock.bois).toBe(cells.length - 1);
   expect(planStatus(state, plan)).toMatchObject({ done: 1, total: cells.length, complete: false });
   expect(fillPlanCell(state, plan, last.x, last.y, last.z)).toMatchObject({ ok: false, reason: 'deja-pose' });
 
@@ -70,14 +70,14 @@ it('pose les blocs du plan dans n’importe quel ordre, refuse sans bloc, et ter
   expect(completed).toBe(true);
   expect(planStatus(state, plan).complete).toBe(true);
   expect(planStatus(state, plan).missing).toEqual({});
-  expect(state.inventory).toMatchObject({ bois: 0, ...plan.reward.chest });
+  expect(state.stock).toMatchObject({ bois: 0, ...plan.reward.chest });
   expect(nextFillable(state, plan)).toBeNull();
 });
 
 it('affiche les fantômes d’un plan seulement sur une île ouverte, et les remplace une fois posés', () => {
   const plan = plansFor('foret')[0];
   const first = planCells(plan)[0];
-  const cubes = worldCubes('6e', {}, { plans: { [plan.id]: [first.key] }, journal: [], bridges: [] });
+  const cubes = worldCubes('6e', {}, { parts: { [plan.id]: [first.key] }, log: [], links: [] });
   // Les fantômes des plans (les ponts fantômes sont au niveau du sol, z = 0).
   const ghosts = cubes.filter((c) => c.ghost && c.z > 0 && c.tag === 'foret');
   expect(ghosts.length).toBe(planCells(plan).length - 1);
@@ -111,25 +111,25 @@ it('chaque île enchaîne trois plans sans chevauchement, et les coffres fournis
 
 it('n’affiche les fantômes que du plan en cours, et enchaîne sur le suivant', () => {
   const [first, second] = plansFor('foret');
-  const none = worldCubes('6e', {}, { plans: {}, journal: [], bridges: [] });
+  const none = worldCubes('6e', {}, { parts: {}, log: [], links: [] });
   expect(none.filter((c) => c.ghost && c.z > 0 && c.tag === 'foret').length).toBe(planCells(first).length);
   expect(activePlan('foret', {})).toBe(first);
   const doneFirst = { [first.id]: planCells(first).map((c) => c.key) };
   expect(isPlanDone(first, doneFirst)).toBe(true);
   expect(activePlan('foret', doneFirst)).toBe(second);
-  const after = worldCubes('6e', {}, { plans: doneFirst, journal: [], bridges: [] });
+  const after = worldCubes('6e', {}, { parts: doneFirst, log: [], links: [] });
   expect(after.filter((c) => c.ghost && c.z > 0 && c.tag === 'foret').length).toBe(planCells(second).length);
   expect(after.filter((c) => !c.ghost && c.texture === 'planches' && c.tag === 'foret' && c.z >= 1).length).toBeGreaterThanOrEqual(planCells(first).length);
 });
 
 it('écrit une ligne de journal quand un plan est terminé', () => {
   const plan = plansFor('foret')[0];
-  let state: BloclandState = { ...EMPTY_STATE, inventory: { bois: planCells(plan).length } };
+  let state: GameState = { ...EMPTY_STATE, stock: { bois: planCells(plan).length } };
   for (const c of planCells(plan)) {
     const r = fillPlanCell(state, plan, c.x, c.y, c.z, '2026-09-25');
     if (r.ok) state = r.state;
   }
-  expect(state.village.journal).toEqual([{ day: '2026-09-25', plan: plan.id }]);
+  expect(state.world.log).toEqual([{ day: '2026-09-25', part: plan.id }]);
 });
 
 describe('les origines figées des chantiers (séparation du jeu et du rendu, J1 ; origine de rendu et origine des clés)', () => {
@@ -181,8 +181,8 @@ describe('les origines figées des chantiers (séparation du jeu et du rendu, J1
   });
 
   it('une sauvegarde tout construite, relue, garde chacune de ses cases', () => {
-    const { progress, village } = toutConstruit();
-    const relue = sanitizeState(JSON.parse(JSON.stringify({ ...EMPTY_STATE, progress, village })));
-    for (const [id, keys] of Object.entries(village.plans)) expect(relue.village.plans[id], id).toEqual(keys);
+    const { progress, world: village } = toutConstruit();
+    const relue = sanitizeState(JSON.parse(JSON.stringify({ ...EMPTY_STATE, progress, world: village })));
+    for (const [id, keys] of Object.entries(village.parts)) expect(relue.world.parts[id], id).toEqual(keys);
   });
 });

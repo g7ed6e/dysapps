@@ -11,6 +11,10 @@ import './styles/roles.css';
 // Après global.css : ses sélecteurs ont la même spécificité que ceux des thèmes, l'ordre les départage.
 import './styles/blocland.css';
 import { App } from './App';
+import { migrateStorage } from './core/migration';
+
+// Une sauvegarde d'avant les mots neutres est traduite avant que l'appli ne la lise.
+migrateStorage();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

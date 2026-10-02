@@ -11,7 +11,7 @@ import { modelerLeSol } from '.';
 import { DOME_DU_BELVEDERE, GRADINS_3E } from './3e';
 import type { BiomeId } from '../../biomes';
 
-const { progress, village } = toutConstruit();
+const { progress, world: village } = toutConstruit();
 const cubes = worldCubes('3e', progress, village, false);
 const sol = cubes.filter((c) => c.sol);
 const { reste } = rangerLeDecor(cubes.filter((c) => !c.sol));

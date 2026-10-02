@@ -13,5 +13,5 @@ it('une île a quatre états, chacun avec son icône (le mot est un texte d’un
   expect(islandState(sanitizeState({ progress: played }), 'foret')).toMatchObject({ id: 'en-chantier' });
   // Ses trois plans terminés : restaurée, même sans mission jouée (un ancien plan compte).
   const plans = Object.fromEntries(plansFor('foret').map((p) => [p.id, planCells(p).map((c) => c.key)]));
-  expect(islandState(sanitizeState({ progress: played, village: { plans } }), 'foret')).toMatchObject({ id: 'restauree' });
+  expect(islandState(sanitizeState({ progress: played, world: { parts: plans } }), 'foret')).toMatchObject({ id: 'restauree' });
 });

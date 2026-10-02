@@ -53,11 +53,11 @@ describe('Empreintes des personnages en facettes', () => {
   });
 
   it('les fusions, archipel par archipel (tout construit)', () => {
-    const { progress, village } = toutConstruit();
+    const { progress, world: village } = toutConstruit();
     const toutes = Object.fromEntries(
       ARCHIPELAGO_IDS.map((a) => {
-        const c = fusionDesCreatures(creaturePlacements(a, village.bridges));
-        const g = fusionDesGardiens(guardianPlacements(a, progress, village.bridges));
+        const c = fusionDesCreatures(creaturePlacements(a, village.links));
+        const g = fusionDesGardiens(guardianPlacements(a, progress, village.links));
         return [a, { creatures: `${empreinteDeFusion(c, c.os)} ${fnv(JSON.stringify(c.squelette))}`, gardiens: empreinteDeFusion(g, g.lueur) }];
       }),
     );

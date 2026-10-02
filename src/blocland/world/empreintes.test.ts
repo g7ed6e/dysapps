@@ -49,7 +49,7 @@ const empreinteFacettes = (f: Facettes) =>
 
 type Partie = ReturnType<typeof toutConstruit>;
 
-const vierge = (): Partie => ({ progress: {}, village: { plans: {}, journal: [], bridges: [] } });
+const vierge = (): Partie => ({ progress: {}, world: { parts: {}, log: [], links: [] } });
 
 /**
  * À mi-parcours dans l'archipel `a` : arrivé par la mer (tous les voyages), la première moitié (dans l'ordre des données)
@@ -64,10 +64,10 @@ function miParcours(a: ArchipelagoId): Partie {
   const plans = PLANS.filter((p) => iles.includes(p.biome)).map((p) => p.id);
   return {
     progress: Object.fromEntries(Object.entries(tout.progress).filter(([id]) => premieres.some((i) => id.startsWith(`${i}-`)))),
-    village: {
-      plans: Object.fromEntries(Object.entries(tout.village.plans).filter(([id]) => moitie(plans).includes(id))),
-      journal: [],
-      bridges: [...VOYAGES.map((v) => v.id), ...moitie(ouvrages)],
+    world: {
+      parts: Object.fromEntries(Object.entries(tout.world.parts).filter(([id]) => moitie(plans).includes(id))),
+      log: [],
+      links: [...VOYAGES.map((v) => v.id), ...moitie(ouvrages)],
     },
   };
 }
@@ -79,9 +79,9 @@ const PARTIES: [string, (a: ArchipelagoId) => Partie][] = [
 ];
 
 /** Ce que la grille calcule d'un archipel pour une partie : les cubes, le sol, les créatures, le navire, les trajets. */
-function empreintesDe(a: ArchipelagoId, { progress, village }: Partie): Record<string, string> {
+function empreintesDe(a: ArchipelagoId, { progress, world: village }: Partie): Record<string, string> {
   const cubes = worldCubes(a, progress, village, false);
-  const creatures = [...creaturePlacements(a, village.bridges), ...guardianPlacements(a, progress, village.bridges)];
+  const creatures = [...creaturePlacements(a, village.links), ...guardianPlacements(a, progress, village.links)];
   const sol = cubes.filter((c) => c.sol);
   const autres = cubes.filter((c) => !c.sol);
   const champ = champDuSol(a, sol, autres);
@@ -90,7 +90,7 @@ function empreintesDe(a: ArchipelagoId, { progress, village }: Partie): Record<s
   const iles = islandsOf(a).map((b) => b.id);
   const port = getArchipelago(a).port;
   // Du port vers chaque île, comme le bonhomme qui part du quai : par les ouvrages construits de la partie.
-  const routes = iles.map((id) => [id, avatarRoute(port, id, village.bridges, ground)]);
+  const routes = iles.map((id) => [id, avatarRoute(port, id, village.links, ground)]);
   return {
     cubes: empreinteTriee(cubes),
     'cubes avec créatures': empreinteTriee(worldCubes(a, progress, village, true)),

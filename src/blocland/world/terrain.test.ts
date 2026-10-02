@@ -68,7 +68,7 @@ import {
   worldCubes,
 } from './terrain';
 
-const village = (bridges: string[]) => ({ plans: {}, journal: [], bridges });
+const village = (bridges: string[]) => ({ parts: {}, log: [], links: bridges });
 /** Tous les archipels d'un coup, pour les tests qui parcourent toutes les îles. */
 const allCubes = (progress: Record<string, { stars: number }>, v = village([]), withCreatures = true) =>
   ARCHIPELAGO_IDS.flatMap((a) => worldCubes(a, progress, v, withCreatures));
@@ -489,9 +489,9 @@ it('sur une île-école, la rangée de côte devant les bornes reste nue : aucun
     // La rangée de côte, droit devant toutes les bornes (et plus loin sur l'axe de la caméra).
     const y = def.core.y + bornesDuCoeur(def).y0 - 1;
     for (const st of questStations(id)) expect(rangee.has(`${def.core.x + st.x},${y}`), `${id}, borne ${st.typeId}`).toBe(true);
-    for (const partie of [{ progress: {}, village: { plans: {}, journal: [], bridges: [] } }, tout])
+    for (const partie of [{ progress: {}, world: { parts: {}, log: [], links: [] } }, tout])
       for (const sentinelles of [false, true]) {
-        const surLaRangee = worldCubes(archipel.classe, partie.progress, partie.village, true, [], sentinelles).filter(
+        const surLaRangee = worldCubes(archipel.classe, partie.progress, partie.world, true, [], sentinelles).filter(
           (c) => c.y === y && rangee.has(`${c.x},${c.y}`) && (c.decor !== undefined || !c.sol),
         );
         expect(
@@ -519,7 +519,7 @@ it('chaque mission a sa borne sur la rangée de devant, dans le cœur, hors de l
     }
   }
   // Dans le monde : un socle et une ardoise étoilée par borne, étiquetés « île:mission », délavés sur une île fermée.
-  const cubes = worldCubes('6e', {}, { plans: {}, journal: [], bridges: [] });
+  const cubes = worldCubes('6e', {}, { parts: {}, log: [], links: [] });
   const foret = cubes.filter((c) => c.quest?.startsWith('foret:'));
   expect(foret).toHaveLength(2 * 3);
   expect(foret.filter((c) => c.texture === 'borne')).toHaveLength(3);
@@ -583,7 +583,7 @@ it('la mer est habillée de rochers et de bancs de sable, loin des terres, des �
     for (const w of whales) expect(Math.hypot(w.x - c.x, w.y - c.y)).toBeGreaterThan(w.r + 2);
   }
   // Les cubes du monde contiennent l'habillage, et un ouvrage ne le remplace jamais.
-  const world = worldCubes('6e', {}, { plans: {}, journal: [], bridges: BRIDGES.map((b) => b.id) });
+  const world = worldCubes('6e', {}, { parts: {}, log: [], links: BRIDGES.map((b) => b.id) });
   expect(world.filter((c) => c.tag === 'mer')).toHaveLength(decor.length);
   // Chaque archipel habille sa mer à sa façon : plaques de glace dans les Collines, aiguilles d'ardoise dans les Monts, rien dans le ciel.
   const collines = seaDecor('5e');
@@ -625,7 +625,7 @@ it('le port : une jetée dans l’eau devant l’île-port, et le Bloc-Navire à
         expect(y).toBeGreaterThanOrEqual(bounds.minY);
       }
     // Dans le monde : les planches et deux lanternes du quai (allumées dès qu'un plan est fini), étiquetées du port.
-    const cubes = worldCubes(a.classe, {}, { ...village(everything), plans: builtPlans(plansFor(a.port)) }, false).filter((c) => c.tag === a.port);
+    const cubes = worldCubes(a.classe, {}, { ...village(everything), parts: builtPlans(plansFor(a.port)) }, false).filter((c) => c.tag === a.port);
     expect(cubes.filter((c) => c.texture === 'planches' || c.texture === 'escalier').length).toBeGreaterThanOrEqual(cells.length);
     expect(cubes.filter((c) => c.texture === 'lanterne' && c.y < def.core.y).length).toBeGreaterThanOrEqual(2);
   }
@@ -643,10 +643,10 @@ it('le port montre l’état du village : lanternes, barques, foyer, caisses, fa
     // Un village à chaque état, du 1 au 5 (le 3e s'arrête à 4 : pas de voyage suivant).
     const states = [
       village([]),
-      { ...village([]), plans: portPlans },
-      { ...village(paid), plans: portPlans },
-      { ...village(paid), plans: all },
-      { ...village(everything), plans: all },
+      { ...village([]), parts: portPlans },
+      { ...village(paid), parts: portPlans },
+      { ...village(paid), parts: all },
+      { ...village(everything), parts: all },
     ].slice(0, a.classe === '3e' ? 4 : 5);
     const cells = dockCells(port);
     const jetty = new Set(cells.map((c) => `${c.x},${c.y}`));
@@ -698,7 +698,7 @@ it('le port montre l’état du village : lanternes, barques, foyer, caisses, fa
       expect(has('caisse'), `${port} caisses`).toBe(rank >= 4);
       expect(new Set(props.filter((c) => c.decor!.includes('/fanion@')).map((c) => c.decor)).size, `${port} fanions`).toBe(rank >= 4 ? 2 : 0);
       // Le bonhomme marche toujours de sa place au pied de la jetée, et les objets du quai ne sont pas un sol.
-      const ground = walkGround(world, creaturePlacements(a.classe, v.bridges));
+      const ground = walkGround(world, creaturePlacements(a.classe, v.links));
       const route = boardingRoute(port);
       const foot = route[2];
       expect(walkPath(ground, route[0], foot), `${port} état ${rank}`).not.toBeNull();
@@ -869,8 +869,8 @@ describe('les bornes dans la vue de l’île', () => {
   it('aucun décor posé (arbre, buisson, rocher, objet du quai) ne cache une borne, pied compris, partie vierge ou tout construit', () => {
     const tout = toutConstruit();
     for (const a of ARCHIPELAGO_IDS)
-      for (const partie of [{ progress: {}, village: { plans: {}, journal: [], bridges: [] } }, tout]) {
-        const cubes = worldCubes(a, partie.progress, partie.village);
+      for (const partie of [{ progress: {}, world: { parts: {}, log: [], links: [] } }, tout]) {
+        const cubes = worldCubes(a, partie.progress, partie.world);
         for (const b of BIOMES.filter((x) => x.classe === a)) {
           const o = origineDe(b.id);
           const socles = new Map(cubes.filter((c) => c.quest?.startsWith(`${b.id}:`)).map((c) => [`${c.x},${c.y}`, c]));
@@ -887,7 +887,7 @@ describe('les bornes dans la vue de l’île', () => {
   });
 
   it('la salle des trophées avec ses 24 succès (ses deux travées) ne couvre ni le pied ni le haut d’une borne (GD-3)', () => {
-    const { progress, village } = toutConstruit();
+    const { progress, world: village } = toutConstruit();
     const tous = BADGES.map((x) => trophyBlock(x.id));
     for (const a of ARCHIPELAGOS) {
       const cubes = worldCubes(a.classe, progress, village, true, tous);

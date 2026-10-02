@@ -46,14 +46,14 @@ it('sans les étoiles, la créature dit que le Gardien attend encore, sans « b�
 });
 
 it('la page de l’île dit que le défi est prêt, sans combat', () => {
-  localStorage.setItem('dysapps:blocland', JSON.stringify({ progress: ready('foret') }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ progress: ready('foret') }));
   renderAt('/aventure/foret');
   expect(screen.getByText('Défi prêt')).toBeInTheDocument();
   expect(document.body.textContent).not.toMatch(/affronter/);
 });
 
 it('le défi compte les épreuves réussies, dit le seuil, et une épreuve ratée n’a ni son ni pastille', async () => {
-  localStorage.setItem('dysapps:blocland', JSON.stringify({ progress: ready('foret') }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ progress: ready('foret') }));
   const drum = vi.spyOn(sound, 'playDrum').mockImplementation(() => {});
   const growl = vi.spyOn(sound, 'playGrowl').mockImplementation(() => {});
   const user = (await import('@testing-library/user-event')).default.setup();
@@ -87,7 +87,7 @@ it('le défi compte les épreuves réussies, dit le seuil, et une épreuve raté
 });
 
 it('le nom du Gardien seulement dans le titre ; la réplique et la règle se replient à la première épreuve (DA-34)', async () => {
-  localStorage.setItem('dysapps:blocland', JSON.stringify({ progress: ready('foret') }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ progress: ready('foret') }));
   const user = (await import('@testing-library/user-event')).default.setup();
   renderAt('/aventure/foret/gardien');
   await loaded();
@@ -123,7 +123,7 @@ it('le nom du Gardien seulement dans le titre ; la réplique et la règle se rep
 const pli = () => screen.getByRole('region', { name: 'Le défi du Grand Chêne' }).querySelector('.arena-regle details') as HTMLDetailsElement;
 
 it('la règle est un pli dans l’arène : sa phrase courte toujours lue, ouvert au premier défi (DA-28)', async () => {
-  localStorage.setItem('dysapps:blocland', JSON.stringify({ progress: ready('foret') }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ progress: ready('foret') }));
   renderAt('/aventure/foret/gardien');
   await loaded();
   expect(pli().querySelector('summary')!.textContent).toBe('Une épreuve ratée n’éteint rien.');
@@ -133,7 +133,7 @@ it('la règle est un pli dans l’arène : sa phrase courte toujours lue, ouvert
 
 it('déjà affronté (une partie enregistrée, même perdue), le pli de la règle est fermé et sa phrase courte reste (DA-28)', async () => {
   localStorage.setItem(
-    'dysapps:blocland',
+    'dysapps:game',
     JSON.stringify({ progress: { ...ready('foret'), 'foret-gardien': { stars: 0, attempts: 1, best: 0.4 } } }),
   );
   renderAt('/aventure/foret/gardien');

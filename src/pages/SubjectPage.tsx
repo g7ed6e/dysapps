@@ -20,8 +20,8 @@ export function SubjectPage() {
   if (!subject || !visibleSubjects(settings.lv2).includes(subject as Subject)) return <NotFoundPage />;
   const info = subjectInfo(subject as Subject, settings.lv2);
   const withIslands = ARCHIPELAGOS.filter((a) => biomesOf(subject as Subject).some((b) => b.classe === a.classe));
-  const reachedArchipelagos = withIslands.filter((a) => isArchipelagoReached(a.classe, state.village.bridges));
-  const laterArchipelagos = withIslands.filter((a) => !isArchipelagoReached(a.classe, state.village.bridges));
+  const reachedArchipelagos = withIslands.filter((a) => isArchipelagoReached(a.classe, state.world.links));
+  const laterArchipelagos = withIslands.filter((a) => !isArchipelagoReached(a.classe, state.world.links));
   const laterIslands = biomesOf(subject as Subject).filter((b) => laterArchipelagos.some((a) => a.classe === b.classe)).length;
 
   return (
@@ -71,7 +71,7 @@ function ArchipelagoIslands({ classe, subject }: { classe: Classe; subject: Subj
   const lv2 = useSettings().settings.lv2;
   const { state } = useBlocland();
   const islands = biomesOf(subject).filter((b) => b.classe === classe);
-  const reached = isArchipelagoReached(classe, state.village.bridges);
+  const reached = isArchipelagoReached(classe, state.world.links);
   const textes = useTextes();
   return (
     <section aria-labelledby={`matiere-archipel-${classe}`}>
@@ -80,7 +80,7 @@ function ArchipelagoIslands({ classe, subject }: { classe: Classe; subject: Subj
       </h3>
       <ul className="grid apps blocland-islands">
         {islands.map((biome) => {
-          const unlocked = isBiomeUnlocked(biome.id, state.village.bridges);
+          const unlocked = isBiomeUnlocked(biome.id, state.world.links);
           const stars = missionsJouables(biome, lv2).reduce((n, x) => n + (questProgress(biome.id, x.id, state.progress)?.stars ?? 0), 0);
           return (
             <li key={biome.id}>

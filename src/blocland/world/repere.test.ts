@@ -8,7 +8,7 @@ import { dispositionEnGrille } from './grille';
 import { planCells, plansFor } from './plans';
 import { bridgePath, cubesDeLIle, origineDe, portsDAttache, questStations, worldCubes } from './terrain';
 
-const { progress, village } = toutConstruit();
+const { progress, world: village } = toutConstruit();
 
 describe('Chaque île dans son repère', () => {
   it('le monde commence par ses îles, chacune née dans son repère et posée à son origine', () => {

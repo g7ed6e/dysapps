@@ -7,7 +7,7 @@ import { dessinerPont, PONTS_DE_PIERRE_ET_DE_BOIS, pontsDePierreEtDeBois } from 
 import { bridgePath, worldCubes } from './terrain';
 
 describe('Les ponts de pierre et de bois du 5e (lot R5, Archipéo seulement)', () => {
-  const { progress, village } = toutConstruit();
+  const { progress, world: village } = toutConstruit();
 
   it('sont les cinq ponts à construire du 5e (le Relais des voyageurs compris), de vrais ponts', () => {
     const ponts = BRIDGES.filter((b) => PONTS_DE_PIERRE_ET_DE_BOIS.has(b.id));
@@ -33,7 +33,7 @@ describe('Les ponts de pierre et de bois du 5e (lot R5, Archipéo seulement)', (
   });
 
   it('à restaurer, gardent leurs cases en fantômes et ne montrent que leurs culées', () => {
-    const cubes = worldCubes('5e', progress, { ...village, bridges: village.bridges.filter((id) => id !== 'comptoir-manoir') }, false);
+    const cubes = worldCubes('5e', progress, { ...village, links: village.links.filter((id) => id !== 'comptoir-manoir') }, false);
     const { ponts, remplacees } = pontsDePierreEtDeBois(cubes);
     const pont = ponts.find((p) => p.id === 'comptoir-manoir');
     if (!pont) throw new Error('pont Comptoir–Manoir absent');

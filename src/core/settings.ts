@@ -1,22 +1,23 @@
+import { translateSettings } from './migration';
 import { UNIVERS, UNIVERS_PAR_DEFAUT, universAffiche, type UniversChoice } from './univers';
 
 export type FontChoice = 'luciole' | 'opendyslexic' | 'atkinson' | 'arial';
-export type ThemeChoice = 'creme' | 'nuit' | 'clair';
+export type ThemeChoice = 'cream' | 'night' | 'light';
 /**
  * La vue de Blocland : le monde en 3D, ou la liste des îles. Le monde en 2D (src/blocland/pixel/) n'est plus au choix :
  * il reste le repli d'un appareil sans WebGL, et la base d'un futur univers dessiné en 2D.
  */
-export type WorldViewChoice = '3d' | 'liste';
+export type WorldViewChoice = '3d' | 'list';
 /** La lumière du monde : celle de l'heure réelle (la nuit tombe le soir), ou toujours le jour. */
-export type WorldLightChoice = 'reelle' | 'jour';
+export type WorldLightChoice = 'real' | 'day';
 /** Où l'appli s'ouvre : le village de Blocland (si l'appareil sait le dessiner), ou le menu. */
-export type StartChoice = 'village' | 'menu';
+export type StartChoice = 'world' | 'menu';
 export type { UniversChoice } from './univers';
 /**
  * La deuxième langue vivante, à partir de la 5e : une seule, comme au collège. Par défaut l'espagnol (décision de G du
  * 28/09/2026), la LV2 de la grande majorité des collégiens ; « aucune » pour un élève qui en est dispensé.
  */
-export type Lv2Choice = 'es' | 'de' | 'aucune';
+export type Lv2Choice = 'es' | 'de' | 'none';
 
 /** La clé des réglages dans le stockage de l'appareil. */
 export const SETTINGS_KEY = 'settings';
@@ -66,17 +67,17 @@ export const DEFAULT_SETTINGS: Settings = {
   lineHeight: 1.7,
   letterSpacing: 0.03,
   wordSpacing: 0.12,
-  theme: 'creme',
+  theme: 'cream',
   speechRate: 0.9,
   autoRead: true,
   syllables: true,
   worldView: '3d',
-  worldLight: 'reelle',
+  worldLight: 'real',
   sounds: true,
   ambience: false,
   haptics: true,
   appBadge: true,
-  startIn: 'village',
+  startIn: 'world',
   lv2: 'es',
 };
 
@@ -89,36 +90,36 @@ export const FONT_LABELS: Record<FontChoice, string> = {
 
 export const WORLD_VIEW_LABELS: Record<WorldViewChoice, string> = {
   '3d': 'Le monde en 3D',
-  liste: 'La liste des îles',
+  list: 'La liste des îles',
 };
 
 export const WORLD_LIGHT_LABELS: Record<WorldLightChoice, string> = {
-  reelle: 'L’heure réelle',
-  jour: 'Toujours le jour',
+  real: 'L’heure réelle',
+  day: 'Toujours le jour',
 };
 
 export const START_LABELS: Record<StartChoice, string> = {
-  village: 'Le village',
+  world: 'Le village',
   menu: 'Le menu',
 };
 
 export const LV2_LABELS: Record<Lv2Choice, string> = {
   es: 'Espagnol',
   de: 'Allemand',
-  aucune: 'Pas de LV2',
+  none: 'Pas de LV2',
 };
 
 export const THEME_LABELS: Record<ThemeChoice, string> = {
-  creme: 'Crème',
-  nuit: 'Nuit',
-  clair: 'Clair',
+  cream: 'Crème',
+  night: 'Nuit',
+  light: 'Clair',
 };
 
 /**
  * Anciens identifiants (versions précédentes) vers les nouveaux. Le Contraste élevé n'est plus au choix (28/09/2026) :
  * un appareil qui l'avait choisi retrouve le thème sombre le plus proche, la Nuit.
  */
-const LEGACY_THEMES: Record<string, ThemeChoice> = { bd: 'creme', sombre: 'nuit', contraste: 'nuit' };
+const LEGACY_THEMES: Record<string, ThemeChoice> = { bd: 'cream', sombre: 'night', contraste: 'night' };
 const LEGACY_FONTS: Record<string, FontChoice> = { systeme: 'arial' };
 
 const FONT_STACKS: Record<FontChoice, string> = {
@@ -133,10 +134,12 @@ function clamp(value: number, min: number, max: number): number {
 }
 
 /** Corrige des réglages lus depuis le stockage (valeurs manquantes ou hors bornes). */
-export function sanitizeSettings(input: Partial<Settings> & { view3d?: unknown }): Settings {
+export function sanitizeSettings(raw: Partial<Settings> & { view3d?: unknown }): Settings {
+  // Des réglages d'avant les mots neutres (2 octobre 2026) se lisent traduits : « liste » devient « list »…
+  const input = translateSettings(raw) as Partial<Settings> & { view3d?: unknown };
   const s = { ...DEFAULT_SETTINGS, ...input };
   // Avant les trois vues : un interrupteur « vues en 3D » (éteint : la liste des îles).
-  if (input.worldView === undefined && input.view3d !== undefined) s.worldView = input.view3d ? '3d' : 'liste';
+  if (input.worldView === undefined && input.view3d !== undefined) s.worldView = input.view3d ? '3d' : 'list';
   // Le monde en 2D n'est plus au choix (28/09/2026) : un appareil qui l'avait choisi retrouve le monde en 3D.
   if ((s.worldView as string) === '2d') s.worldView = '3d';
   if (typeof s.theme === 'string' && s.theme in LEGACY_THEMES) s.theme = LEGACY_THEMES[s.theme];

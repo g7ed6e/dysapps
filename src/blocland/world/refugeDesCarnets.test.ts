@@ -21,7 +21,7 @@ import { planCells, plansFor } from './plans';
 import { HAUT_DES_NUAGES, NUAGES, nuagesDe, placeDesNuages } from './faune';
 import { bossIsletOrigin, HORS_DE_LA_COLONNE, ISLET_H, ISLET_W, viewYaw, worldBounds, worldCubes } from './terrain';
 
-const ouvert = { plans: {}, journal: [], bridges: grantAccess([], ['refuge']) };
+const ouvert = { parts: {}, log: [], links: grantAccess([], ['refuge']) };
 
 describe('la place du Refuge sur la carte du 3e', () => {
   it('à l’est du Château, un cran derrière, sans toucher sa terre', () => {
@@ -100,7 +100,7 @@ describe('le cœur d’herbe et le lac d’altitude', () => {
 
 describe('le refuge, sans lanterne', () => {
   it('aucune lanterne, allumée ou non, ni au décor ni aux plans (Blocland, la nuit : rien n’y luit)', () => {
-    const { progress, village } = { progress: {}, village: { ...ouvert, plans: Object.fromEntries(plansFor('refuge').map((p) => [p.id, []])) } };
+    const { progress, world: village } = { progress: {}, world: { ...ouvert, parts: Object.fromEntries(plansFor('refuge').map((p) => [p.id, []])) } };
     const cubes = worldCubes('3e', progress, village, false);
     expect(cubes.filter((q) => q.tag === 'refuge' && !q.bridge && (q.texture === 'lanterne' || q.color === BLOCKS.lanterne.side))).toEqual([]);
     for (const etape of buildingStages('refuge', 'bardeau')) expect(etape.some((c) => c.block === 'lanterne')).toBe(false);
@@ -110,7 +110,7 @@ describe('le refuge, sans lanterne', () => {
     const plans = Object.fromEntries(
       plansFor('refuge').map((p) => [p.id, planCells(p).map((c) => c.key)]),
     );
-    const cubes = worldCubes('3e', {}, { ...ouvert, plans }, false);
+    const cubes = worldCubes('3e', {}, { ...ouvert, parts: plans }, false);
     expect(cubes.filter((q) => q.tag === 'refuge' && q.color === BLOCKS.bardeau.side).length).toBeGreaterThan(20);
     const vitres = [...fenetresDe(cubes)].filter(([c, f]) => c.tag === 'refuge' && f.genre === 'vitre');
     expect(vitres.length).toBeLessThanOrEqual(1);

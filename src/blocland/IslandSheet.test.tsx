@@ -64,7 +64,7 @@ it('le panneau 3D replie le plan et les ouvrages quand il n’y a rien à y fair
   await userEvent.click(plan().querySelector('summary')!);
   expect(plan()).toHaveAttribute('open');
   // Des blocs en poche : le plan et les ouvrages s'ouvrent d'eux-mêmes.
-  localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: { bois: 4 } }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ stock: { bois: 4 } }));
   cleanup();
   renderSheet('foret', () => {}, undefined, true);
   expect(plan()).toHaveAttribute('open');
@@ -100,12 +100,12 @@ it('une île fermée montre ses missions verrouillées et renvoie à l’île pr
 it('le panneau pose les blocs du plan avec le bouton et affiche l’avancement', async () => {
   const [plan] = plansFor('foret');
   const cells = planCells(plan);
-  localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: { bois: cells.length } }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ stock: { bois: cells.length } }));
   renderSheet('foret');
   await userEvent.click(screen.getByRole('button', { name: /Poser le bloc suivant/ }));
-  const saved = JSON.parse(localStorage.getItem('dysapps:blocland')!);
-  expect(saved.village.plans[plan.id]).toHaveLength(1);
-  expect(saved.inventory.bois).toBe(cells.length - 1);
+  const saved = JSON.parse(localStorage.getItem('dysapps:game')!);
+  expect(saved.world.parts[plan.id]).toHaveLength(1);
+  expect(saved.stock.bois).toBe(cells.length - 1);
   expect(screen.getByRole('progressbar', { name: /Avancement du plan/ })).toHaveAttribute('aria-valuenow', '1');
   expect(screen.getByText(/Bloc posé : 1 sur/)).toBeInTheDocument();
 });
@@ -122,7 +122,7 @@ it('le port montre le chantier du Bloc-Navire : ses blocs, ses Gardiens, puis le
   // Tout posé et trois Gardiens vaincus : on peut embarquer.
   const plans = { [coque.id]: planCells(coque).map((c) => c.key) };
   const progress = Object.fromEntries(['foret', 'plaine', 'mine'].map((id) => [`${id}-gardien`, { stars: 2, attempts: 1, best: 1 }]));
-  localStorage.setItem('dysapps:blocland', JSON.stringify({ progress, village: { plans, bridges: ['foret-mine'] } }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ progress, world: { parts: plans, links: ['foret-mine'] } }));
   cleanup();
   renderSheet('plaine');
   expect(document.body.textContent).toContain('Gardiens : c’est fait ! 3 sur 3, la voile est là.');
@@ -157,13 +157,13 @@ it('le navire touché dans le monde ouvre son pli', () => {
 it('« Poser tout ce que j’ai » pose d’un coup les blocs que l’inventaire permet, jusqu’au coffre si tout y est', async () => {
   const user = userEvent.setup();
   const cabane = plansFor('foret')[0];
-  localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: { bois: 10 } }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ stock: { bois: 10 } }));
   renderSheet('foret');
   await user.click(screen.getByRole('button', { name: /Poser tout ce que j’ai/ }));
   expect(screen.getByText(`10 blocs posés. Il en reste ${cabane.cells.length - 10} à poser : gagne les blocs qui manquent.`)).toBeInTheDocument();
-  expect(JSON.parse(localStorage.getItem('dysapps:blocland')!).village.plans[cabane.id]).toHaveLength(10);
+  expect(JSON.parse(localStorage.getItem('dysapps:game')!).world.parts[cabane.id]).toHaveLength(10);
   cleanup();
-  localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: { bois: cabane.cells.length } }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ stock: { bois: cabane.cells.length } }));
   renderSheet('foret');
   await user.click(screen.getByRole('button', { name: /Poser tout ce que j’ai/ }));
   expect(screen.getByText(/La cabane de Mousso : terminé !/)).toBeInTheDocument();
@@ -213,7 +213,7 @@ it('la jauge du prochain objectif se compte tant qu’il manque des blocs, et s�
   renderSheet('foret');
   expect(document.querySelector('.island-goal .goal-gauge')).toHaveTextContent('0 / 3');
   cleanup();
-  localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: { bois: 4 } }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ stock: { bois: 4 } }));
   renderSheet('foret');
   expect(document.querySelector('.island-goal')).toHaveTextContent('Tu peux construire le sentier');
   // Plus de « 3 / 3 » à côté d'un ouvrage pas encore construit.

@@ -16,7 +16,7 @@ const TOUS: BlockId[] = BADGES.map((b) => trophyBlock(b.id));
 
 /** Les blocs des lieux du village d'un archipel tout construit (le lieu où l'on assemble : la Halle d'Archipéo), avec `n` trophées, et le sol. */
 function lieux(a: '6e' | '5e' | '4e' | '3e', trophees: BlockId[] = []) {
-  const { progress, village } = toutConstruit();
+  const { progress, world: village } = toutConstruit();
   const tous = worldCubes(a, progress, village, false, trophees, false, 'halle');
   return { tous, cubes: tous.filter((c) => estUnLieuDuVillage(c.place)), sol: tous.filter((c) => c.sol) };
 }
@@ -216,7 +216,7 @@ describe('Les lieux du village au kit du 6e', () => {
   });
 
   it('les monuments gardent leurs blocs taillés ; au 5e, au 4e et au 3e, l’école, la salle et la Halle gardent leur dessin', () => {
-    const { progress, village } = toutConstruit();
+    const { progress, world: village } = toutConstruit();
     const tous = worldCubes('6e', progress, village, false).filter((c) => !c.sol);
     const archi = archiDe('6e', tous);
     for (const [k, p] of archi.peints) expect(p.cube.place?.startsWith('monument:') ?? false, k).toBe(false);

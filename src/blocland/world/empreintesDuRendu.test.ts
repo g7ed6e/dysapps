@@ -30,7 +30,7 @@ const empreinteDuDecor = (f: FacettesDuDecor) =>
   fnv([f.positions, f.normals, f.colors].map((a) => Array.from(a, (x) => Math.round(x * 1e4)).join(',')).join('|') + '|' + f.elements.join(','));
 
 function empreintesDuRendu(a: ArchipelagoId): Record<string, string> {
-  const { progress, village } = toutConstruit();
+  const { progress, world: village } = toutConstruit();
   // Le rendu Archipéo : la Halle aux matériaux (GD-2) à la place de la Fabrique.
   const cubes = worldCubes(a, progress, village, false, [], false, 'halle');
   const { elements, reste } = rangerLeDecor(cubes.filter((c) => !c.sol));

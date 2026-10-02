@@ -22,7 +22,7 @@ function monde(habillage: Habillage): Monde {
 }
 
 describe('Le rendu de Blocland ne montre aucune pièce d’architecture', () => {
-  const { progress, village } = toutConstruit();
+  const { progress, world: village } = toutConstruit();
   const cubes = worldCubes('6e', progress, village, false);
 
   it('le kit du 6e est rempli, et le monde d’Archipéo en a des murs peints', () => {

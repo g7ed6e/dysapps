@@ -8,7 +8,7 @@ import { bancsDeBrume, COUCHES_5E, placeDeLaBrume } from './brume';
 import { COULEURS_5E } from './5e';
 import { MOUVEMENT_DE_LA_BRUME, respirationDeLaBrume } from './fumee';
 
-const { progress, village } = toutConstruit();
+const { progress, world: village } = toutConstruit();
 const cubes = worldCubes('5e', progress, village, false);
 const sol = cubes.filter((c) => c.sol);
 const { elements, reste } = rangerLeDecor(cubes.filter((c) => !c.sol));

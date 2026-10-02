@@ -154,8 +154,8 @@ it('replie le panneau d’une île et le rouvre, sans quitter l’île', async (
 });
 
 it('la créature touchée parle dans une bulle qu’on peut fermer', async () => {
-  localStorage.setItem('dysapps:tutos', JSON.stringify({ 'village-immersif': true }));
-  localStorage.setItem('dysapps:baleine', JSON.stringify({ 'baleine-6e-arrivee': true }));
+  localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true }));
+  localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'baleine-6e-arrivee': true }));
   const user = userEvent.setup();
   renderAt('/aventure/foret');
   await user.click(screen.getByRole('button', { name: 'Toucher la créature de la Forêt' }));
@@ -245,7 +245,7 @@ it('embarquer joue le voyage en deux temps : le départ, le changement d’archi
   const { planCells } = await import('./world/plans');
   const [coque] = VEHICLE_STAGES;
   const progress = Object.fromEntries(['foret', 'plaine', 'mine'].map((id) => [`${id}-gardien`, { stars: 2, attempts: 1, best: 1 }]));
-  localStorage.setItem('dysapps:blocland', JSON.stringify({ progress, village: { plans: { [coque.id]: planCells(coque).map((c) => c.key) }, bridges: ['foret-mine'] } }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ progress, world: { parts: { [coque.id]: planCells(coque).map((c) => c.key) }, links: ['foret-mine'] } }));
   const user = userEvent.setup();
   renderAt('/aventure/plaine');
   expect(screen.getByTestId('archipel')).toHaveTextContent('6e');
@@ -258,9 +258,9 @@ it('embarquer joue le voyage en deux temps : le départ, le changement d’archi
   await user.click(screen.getByRole('button', { name: 'Fin du temps' }));
   await waitFor(() => expect(screen.getByTestId('archipel')).toHaveTextContent('5e'), { timeout: 2000 });
   await waitFor(() => expect(screen.getByTestId('voyage')).toHaveTextContent('arrivee 1 aller'));
-  const saved = JSON.parse(localStorage.getItem('dysapps:blocland')!);
-  expect(saved.village.bridges).toContain('voyage-5e');
-  expect(saved.village.at).toBe('marche');
+  const saved = JSON.parse(localStorage.getItem('dysapps:game')!);
+  expect(saved.world.links).toContain('voyage-5e');
+  expect(saved.world.place).toBe('marche');
   // Fin de l'arrivée : le panneau du port s'ouvre.
   await user.click(screen.getByRole('button', { name: 'Fin du temps' }));
   expect(screen.getByTestId('voyage')).toHaveTextContent('aucun');
@@ -273,7 +273,7 @@ it('quand l’appareil demande moins d’animations, le voyage est un écran fix
   const { planCells } = await import('./world/plans');
   const [coque] = VEHICLE_STAGES;
   const progress = Object.fromEntries(['foret', 'plaine', 'mine'].map((id) => [`${id}-gardien`, { stars: 2, attempts: 1, best: 1 }]));
-  localStorage.setItem('dysapps:blocland', JSON.stringify({ progress, village: { plans: { [coque.id]: planCells(coque).map((c) => c.key) }, bridges: ['foret-mine'] } }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ progress, world: { parts: { [coque.id]: planCells(coque).map((c) => c.key) }, links: ['foret-mine'] } }));
   demanderMoinsDAnimations();
   const user = userEvent.setup();
   renderAt('/aventure/plaine');
@@ -286,7 +286,7 @@ it('quand l’appareil demande moins d’animations, le voyage est un écran fix
 });
 
 it('« Aller au port » d’un archipel déjà atteint : un fondu court, sans cinématique, et une ligne qui dit où l’on arrive', async () => {
-  localStorage.setItem('dysapps:blocland', JSON.stringify({ village: { bridges: ['plaine-riviere', 'voyage-5e'], at: 'riviere' } }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ world: { links: ['plaine-riviere', 'voyage-5e'], place: 'riviere' } }));
   const user = userEvent.setup();
   renderAt('/aventure/monde');
   expect(screen.getByTestId('archipel')).toHaveTextContent('6e');
@@ -298,11 +298,11 @@ it('« Aller au port » d’un archipel déjà atteint : un fondu court, sans ci
   expect(screen.getByTestId('voyage')).toHaveTextContent('aucun');
   await waitFor(() => expect(screen.getByTestId('adresse')).toHaveTextContent('/aventure/marche'));
   expect(screen.getByRole('dialog', { name: /Marché des proportions/ })).toBeInTheDocument();
-  expect(JSON.parse(localStorage.getItem('dysapps:blocland')!).village.at).toBe('marche');
+  expect(JSON.parse(localStorage.getItem('dysapps:game')!).world.place).toBe('marche');
 });
 
 it('une île ouverte d’un autre archipel (lien, retour d’exercice) : on y arrive directement, d’un fondu', async () => {
-  localStorage.setItem('dysapps:blocland', JSON.stringify({ village: { bridges: ['voyage-5e'], at: 'marche' } }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ world: { links: ['voyage-5e'], place: 'marche' } }));
   renderAt('/aventure/foret');
   expect(screen.getByTestId('voyage')).toHaveTextContent('aucun');
   expect(document.body.textContent).toContain('Archipel de 6e : les Basses Terres');
@@ -311,12 +311,12 @@ it('une île ouverte d’un autre archipel (lien, retour d’exercice) : on y ar
   expect(screen.getByTestId('cadrage')).toHaveTextContent('foret');
   expect(sheet()).toBeInTheDocument();
   // La sauvegarde suit l'arrivée : l'attendre, sans supposer qu'elle est déjà écrite quand l'écran change.
-  await waitFor(() => expect(JSON.parse(localStorage.getItem('dysapps:blocland')!).village.at).toBe('foret'));
+  await waitFor(() => expect(JSON.parse(localStorage.getItem('dysapps:game')!).world.place).toBe('foret'));
 });
 
 it('quand l’appareil demande moins d’animations, un archipel déjà atteint s’ouvre tout de suite, sans écran du voyage', async () => {
   demanderMoinsDAnimations();
-  localStorage.setItem('dysapps:blocland', JSON.stringify({ village: { bridges: ['voyage-5e'], at: 'marche' } }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ world: { links: ['voyage-5e'], place: 'marche' } }));
   renderAt('/aventure/foret');
   expect(screen.queryByRole('dialog', { name: /Le voyage/ })).not.toBeInTheDocument();
   expect(screen.getByTestId('archipel')).toHaveTextContent('6e');
@@ -329,7 +329,7 @@ it('le sélecteur d’archipel : l’archipel où l’on est, et les autres déj
   // Un seul archipel atteint : pas de sélecteur.
   expect(screen.queryByRole('button', { name: /changer d’archipel/ })).not.toBeInTheDocument();
   cleanup();
-  localStorage.setItem('dysapps:blocland', JSON.stringify({ village: { bridges: ['voyage-5e'], at: 'foret' } }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ world: { links: ['voyage-5e'], place: 'foret' } }));
   renderAt('/aventure');
   const button = screen.getByRole('button', { name: /Archipel de 6e, les Basses Terres : changer d’archipel/ });
   await user.click(button);
@@ -359,8 +359,8 @@ it('la page des quatre archipels : où l’on est, ce qui est ouvert, ce qu’il
 });
 
 it('à la première arrivée dans un archipel, le mot de la créature de l’île-école, en deux pages, une seule fois', async () => {
-  localStorage.setItem('dysapps:blocland', JSON.stringify({ village: { bridges: ['voyage-5e'], at: 'marche' } }));
-  localStorage.setItem('dysapps:tutos', JSON.stringify({ 'village-immersif': true }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ world: { links: ['voyage-5e'], place: 'marche' } }));
+  localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true }));
   const user = userEvent.setup();
   renderAt('/aventure');
   expect(screen.getByTestId('archipel')).toHaveTextContent('5e');
@@ -378,8 +378,8 @@ it('à la première arrivée dans un archipel, le mot de la créature de l’îl
 });
 
 it('le mot de l’arrivée en deux pages se ferme dès la première avec « Passer »', async () => {
-  localStorage.setItem('dysapps:blocland', JSON.stringify({ village: { bridges: ['voyage-5e'], at: 'marche' } }));
-  localStorage.setItem('dysapps:tutos', JSON.stringify({ 'village-immersif': true }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ world: { links: ['voyage-5e'], place: 'marche' } }));
+  localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true }));
   const user = userEvent.setup();
   renderAt('/aventure');
   const word = await screen.findByRole('dialog', { name: 'Le mot de Bazar' }, { timeout: 3000 });
@@ -388,8 +388,8 @@ it('le mot de l’arrivée en deux pages se ferme dès la première avec « Pass
 });
 
 it('les bandeaux de récompense attendent que le mot de l’arrivée soit fermé (DA-9)', async () => {
-  localStorage.setItem('dysapps:blocland', JSON.stringify({ village: { bridges: ['voyage-5e'], at: 'marche' } }));
-  localStorage.setItem('dysapps:tutos', JSON.stringify({ 'village-immersif': true }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ world: { links: ['voyage-5e'], place: 'marche' } }));
+  localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true }));
   const user = userEvent.setup();
   renderAt('/aventure');
   const word = await screen.findByRole('dialog', { name: 'Le mot de Bazar' }, { timeout: 3000 });
@@ -400,7 +400,7 @@ it('les bandeaux de récompense attendent que le mot de l’arrivée soit fermé
 });
 
 it('sur la Carte, le panneau de la prochaine destination attend que le mot des grandes étapes soit fermé (DA-25)', async () => {
-  localStorage.setItem('dysapps:tutos', JSON.stringify({ 'village-immersif': true }));
+  localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true }));
   const user = userEvent.setup();
   renderAt('/aventure/carte');
   const word = await screen.findByRole('dialog', { name: 'Le mot de Mousso' }, { timeout: 3000 });
@@ -412,8 +412,8 @@ it('sur la Carte, le panneau de la prochaine destination attend que le mot des g
 
 it('les nouveaux noms des archipels, une fois, avant le mot des grandes étapes : un seul panneau à la fois (GD-1)', async () => {
   // Un élève qui jouait déjà, arrivé en 5e : les nouveaux noms d'abord, le mot de Bazar ensuite.
-  localStorage.setItem('dysapps:blocland', JSON.stringify({ progress: { 'foret:sons': { stars: 2 } }, village: { bridges: ['voyage-5e'], at: 'marche' } }));
-  localStorage.setItem('dysapps:tutos', JSON.stringify({ 'village-immersif': true }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ progress: { 'foret:sons': { stars: 2 } }, world: { links: ['voyage-5e'], place: 'marche' } }));
+  localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true }));
   const user = userEvent.setup();
   renderAt('/aventure');
   const noms = await screen.findByRole('dialog', { name: /De nouveaux noms/ }, { timeout: 3000 });
@@ -430,8 +430,8 @@ it('les nouveaux noms des archipels, une fois, avant le mot des grandes étapes 
 });
 
 it('marque pour la vue ce qu’elle pose sur la scène : le haut, la barre du bas, Pause, les bulles (DA-10)', () => {
-  localStorage.setItem('dysapps:tutos', JSON.stringify({ 'village-immersif': true }));
-  localStorage.setItem('dysapps:baleine', JSON.stringify({ 'baleine-6e-arrivee': true }));
+  localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true }));
+  localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'baleine-6e-arrivee': true }));
   renderAt('/aventure');
   const scene = document.querySelector('[data-scene]')!;
   expect(scene.querySelector('[data-couvre="bouton"][data-tuto="menu"]')).not.toBeNull();
@@ -446,8 +446,8 @@ it('les bandeaux de récompense attendent la fin du tutoriel, et de nouveau quan
   expect(screen.getByTestId('retenus')).toHaveTextContent('oui');
   premier.unmount();
   // Tutoriel vu, mot d'arrivée de la baleine déjà dit : plus rien n'est ouvert.
-  localStorage.setItem('dysapps:tutos', JSON.stringify({ 'village-immersif': true }));
-  localStorage.setItem('dysapps:baleine', JSON.stringify({ 'baleine-6e-arrivee': true }));
+  localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true }));
+  localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'baleine-6e-arrivee': true }));
   renderAt('/aventure/foret');
   await waitFor(() => expect(screen.getByTestId('retenus')).toHaveTextContent('non'));
   await user.click(screen.getByRole('button', { name: 'Revoir l’aide' }));
@@ -455,7 +455,7 @@ it('les bandeaux de récompense attendent la fin du tutoriel, et de nouveau quan
 });
 
 it('le bouton Blocs ouvre « Mes blocs » ; une puce mène à l’île (caméra et panneau) ; la croix rend le monde, sur l’île du bonhomme', async () => {
-  localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: { bois: 4, brique: 2 } }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ stock: { bois: 4, brique: 2 } }));
   const user = userEvent.setup();
   renderAt('/aventure/plaine');
   const blocs = screen.getByRole('button', { name: 'Mes blocs' });
@@ -618,8 +618,8 @@ it('« Recentrer » apparaît quand la vue a glissé, la ramène d’un appui, e
 });
 
 it('le panneau replié reste replié après la Carte ; « Y aller » le rouvre', async () => {
-  localStorage.setItem('dysapps:tutos', JSON.stringify({ 'village-immersif': true }));
-  localStorage.setItem('dysapps:baleine', JSON.stringify({ 'baleine-6e-arrivee': true }));
+  localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true }));
+  localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'baleine-6e-arrivee': true }));
   const user = userEvent.setup();
   renderAt('/aventure/foret');
   await user.click(screen.getByRole('button', { name: 'Fermer le panneau' }));
@@ -673,8 +673,8 @@ it('le tutoriel du village tient en trois bulles : l’île, les bornes, le bout
 });
 
 it('au premier toucher d’une île pâle, sa créature dit ce que sont les ouvrages, une seule fois par appareil', async () => {
-  localStorage.setItem('dysapps:tutos', JSON.stringify({ 'village-immersif': true }));
-  localStorage.setItem('dysapps:baleine', JSON.stringify({ 'baleine-6e-arrivee': true }));
+  localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true }));
+  localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'baleine-6e-arrivee': true }));
   const ligne = () => screen.queryAllByRole('status').find((el) => el.classList.contains('world-line') && el.textContent?.includes('Les îles pâles sont fermées'));
   const premier = renderAt('/aventure/mine');
   expect(ligne()).toBeDefined();
@@ -685,8 +685,8 @@ it('au premier toucher d’une île pâle, sa créature dit ce que sont les ouvr
 });
 
 it('à la première arrivée au port, sa créature parle du Bloc-Navire, une seule fois par appareil', async () => {
-  localStorage.setItem('dysapps:tutos', JSON.stringify({ 'village-immersif': true }));
-  localStorage.setItem('dysapps:baleine', JSON.stringify({ 'baleine-6e-arrivee': true }));
+  localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true }));
+  localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'baleine-6e-arrivee': true }));
   const ligne = () => screen.queryAllByRole('status').find((el) => el.classList.contains('world-line') && el.textContent?.includes('le Bloc-Navire attend ses blocs'));
   const premier = renderAt('/aventure/plaine');
   expect(ligne()).toBeDefined();
@@ -700,11 +700,11 @@ it('le soleil et la lune ne sont plus dans la barre : le jour est forcé tant qu
   expect(screen.getByTestId('lumiere')).toHaveTextContent('jour');
   expect(screen.queryByRole('button', { name: /Forcer le jour|heure réelle/ })).not.toBeInTheDocument();
   premier.unmount();
-  localStorage.setItem('dysapps:tutos', JSON.stringify({ 'village-immersif': true }));
+  localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true }));
   const second = renderAt('/aventure');
   expect(screen.getByTestId('lumiere')).toHaveTextContent('heure réelle');
   second.unmount();
-  localStorage.setItem('dysapps:settings', JSON.stringify({ worldLight: 'jour' }));
+  localStorage.setItem('dysapps:settings', JSON.stringify({ worldLight: 'day' }));
   renderAt('/aventure');
   expect(screen.getByTestId('lumiere')).toHaveTextContent('jour');
 });

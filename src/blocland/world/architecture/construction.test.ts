@@ -55,7 +55,7 @@ const batiment = (dx = 0, tag = 'port'): VoxelCube[] => [
 
 describe('Les pièces d’architecture dans la construction', () => {
   it('hors des Premiers Rivages (kits vides), rien ne change : ni pièce, ni motif, sur une île construite', () => {
-    const { progress, village } = toutConstruit();
+    const { progress, world: village } = toutConstruit();
     const tous = worldCubes('5e', progress, village, false).filter((c) => !c.sol);
     const ile = tous.find((c) => c.tag)!.tag;
     const m = maillageDeLaConstruction('5e', tous.filter((c) => c.tag === ile));
@@ -110,7 +110,7 @@ describe('Les pièces d’architecture dans la construction', () => {
   });
 
   it('mis bout à bout, les ponts de pierre et de bois du 5e gardent leurs tranches, île par île', () => {
-    const { progress, village } = toutConstruit();
+    const { progress, world: village } = toutConstruit();
     const tous = worldCubes('5e', progress, village, false).filter((c) => !c.sol);
     const iles = [...new Set(tous.map((c) => c.tag ?? ''))];
     const maillages = iles.map((t) => maillageDeLaConstruction('5e', tous.filter((c) => (c.tag ?? '') === t)));

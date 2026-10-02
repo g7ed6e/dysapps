@@ -40,13 +40,13 @@ export function VoyagePanel({ to, back, onArrive }: Props) {
   const { settings, speak } = useSettings();
   const { state } = useBlocland();
   const textes = useTextes();
-  const text = voyageSentence(to, back, textes.archipels, archipelagoOf(state.village.at ?? 'foret').classe);
+  const text = voyageSentence(to, back, textes.archipels, archipelagoOf(state.world.place ?? 'foret').classe);
   useEffect(() => {
     if (settings.autoRead) speak(frenchTypography(text));
     // Une lecture par voyage.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [text]);
-  const level = Math.max(launchedCount(state.village.bridges), ARCHIPELAGOS.findIndex((a) => a.classe === to));
+  const level = Math.max(launchedCount(state.world.links), ARCHIPELAGOS.findIndex((a) => a.classe === to));
   return (
     <section className="panel voyage-panel" role="dialog" aria-labelledby="voyage-title" aria-modal="false">
       <h2 id="voyage-title" className="voyage-title">

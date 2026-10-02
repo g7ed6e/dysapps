@@ -21,7 +21,7 @@ const LV2_TEXTE = 'À partir de la 5e. Tu peux en changer quand tu veux : ce que
 const sansVoixLv2 = (voix: string) =>
   `Cet appareil n’a pas de voix ${voix} : les mots seraient lus avec un accent français. Ajoute une voix ${voix} dans les réglages de l’appareil, rubrique Langue ou Synthèse vocale.`;
 /** Une phrase de 5e dans chaque LV2, pour tester sa voix. */
-const SAMPLE_LV2: Record<Exclude<Lv2Choice, 'aucune'>, { text: string; voix: string }> = {
+const SAMPLE_LV2: Record<Exclude<Lv2Choice, 'none'>, { text: string; voix: string }> = {
   es: { text: '¡Hola! Me llamo Robin. Tengo tres bloques azules.', voix: 'espagnole' },
   de: { text: 'Hallo! Ich heiße Robin. Ich habe drei blaue Blöcke.', voix: 'allemande' },
 };
@@ -32,7 +32,7 @@ export function SettingsPage() {
   const [confirmReset, setConfirmReset] = useState(false);
   const [typed, setTyped] = useState('');
   const appUpdate = useAppUpdate();
-  const lv2 = settings.lv2 === 'aucune' ? null : settings.lv2;
+  const lv2 = settings.lv2 === 'none' ? null : settings.lv2;
   const voixLv2 = useVoixDisponible(lv2);
   // Le changement d'univers attend sa confirmation : ce qui change, ce qui reste.
   const [universDemande, setUniversDemande] = useState<UniversChoice | null>(null);

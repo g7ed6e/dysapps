@@ -258,7 +258,7 @@ const reels = new Map<ArchipelagoId, { cubes: VoxelCube[]; champ: ChampDuSol; me
 function reel(a: ArchipelagoId) {
   let r = reels.get(a);
   if (!r) {
-    const { progress, village } = toutConstruit();
+    const { progress, world: village } = toutConstruit();
     const cubes = worldCubes(a, progress, village, false);
     const champ = champDuSol(
       a,
@@ -418,14 +418,14 @@ describe('la marche sur le terrain', () => {
   });
 
   it.each(ARCHIPELAGO_IDS)('%s : le bonhomme marche posé sur la surface, sans traverser les pentes ni sauter', (a) => {
-    const { progress, village } = toutConstruit();
+    const { progress, world: village } = toutConstruit();
     const { cubes, champ } = reel(a);
-    const creatures = [...creaturePlacements(a, village.bridges), ...guardianPlacements(a, progress, village.bridges)];
+    const creatures = [...creaturePlacements(a, village.links), ...guardianPlacements(a, progress, village.links)];
     const ground = walkGround(cubes, creatures, casesDesLieux(a));
     const islands = BIOMES.filter((b) => b.classe === a).map((b) => b.id);
     let checked = 0;
     for (const to of islands.slice(1)) {
-      const route = avatarRoute(islands[0], to, village.bridges, ground);
+      const route = avatarRoute(islands[0], to, village.links, ground);
       if (!route) continue;
       let before: number | null = null;
       for (let i = 0; i + 1 < route.length; i++) {
@@ -527,7 +527,7 @@ it('le rebord plat de la dalle : la Forge reste plate jusqu’à son bord, la ro
   // Lot R4 (décision du directeur artistique au lot R3). Comme la vue 3D : le décor en primitives ne fige pas sa case.
   const { rangerLeDecor } = await import('./decorMesh');
   const { islandDef, CORE } = await import('./map');
-  const { progress, village } = toutConstruit();
+  const { progress, world: village } = toutConstruit();
   const cubes = worldCubes('4e', progress, village, false);
   const sol = cubes.filter((c) => c.sol);
   const champ = champDuSol('4e', sol, rangerLeDecor(cubes.filter((c) => !c.sol)).reste);

@@ -4,10 +4,10 @@ import { APPEL_DU_PASSAGE, bornesCost, constructionCost, decorCost, ENVELOPPES, 
 import { ARCHIPELAGO_IDS, type ArchipelagoId } from './map';
 
 it('prépare une partie vraiment tout construite (Gardiens vaincus, navire, ouvrages)', () => {
-  const { progress, village } = toutConstruit();
+  const { progress, world: village } = toutConstruit();
   expect(progress['foret-gardien'].stars).toBe(3);
-  expect(Object.keys(village.plans).length).toBeGreaterThan(40);
-  expect(village.bridges).toContain('voyage-5e');
+  expect(Object.keys(village.parts).length).toBeGreaterThan(40);
+  expect(village.links).toContain('voyage-5e');
 });
 
 it('le monde en blocs ne recule pas : triangles et appels de dessin de chaque archipel tout construit', () => {

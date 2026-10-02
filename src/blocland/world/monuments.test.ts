@@ -51,7 +51,7 @@ it('dans le monde : l’îlot et le monument en fantôme, touchables ; posé, un
   const keys = new Set(cells.map((c) => `${o.x + c.x},${o.y + c.y},${o.z + c.z}`));
   expect(cubes.filter((c) => keys.has(`${c.x},${c.y},${c.z}`))).toHaveLength(cells.length);
   const first = cells[0];
-  const built = worldCubes('6e', {}, { plans: { [m.id]: [first.key] }, journal: [], bridges: [] }).find(
+  const built = worldCubes('6e', {}, { parts: { [m.id]: [first.key] }, log: [], links: [] }).find(
     (k) => k.place === `monument:${m.id}` && k.x === o.x + first.x && k.y === o.y + first.y && k.z === o.z + first.z,
   );
   expect(built?.ghost).toBe(false);
@@ -62,5 +62,5 @@ it('les cases posées d’un monument sont gardées par la sauvegarde', () => {
   const keys = planCells(m)
     .slice(0, 3)
     .map((c) => c.key);
-  expect(sanitizeState({ village: { plans: { [m.id]: [...keys, '99,99,99'] } } }).village.plans[m.id]).toEqual(keys);
+  expect(sanitizeState({ world: { parts: { [m.id]: [...keys, '99,99,99'] } } }).world.parts[m.id]).toEqual(keys);
 });

@@ -3,7 +3,7 @@
 // gelée pendant qu'il est ouvert, et le quitter recharge la vraie partie.
 import { BLOCKS, BIOMES, type BlockId } from './biomes';
 import { STARS_TO_BEAT, bossId } from './bossCore';
-import type { BloclandState } from './engine';
+import type { GameState } from './engine';
 import { BRIDGES } from './world/archipelago';
 
 /** Les blocs de chaque sorte, remis à ce compte après chaque pose. */
@@ -15,18 +15,18 @@ export function inventairePlein(): Partial<Record<BlockId, number>> {
 }
 
 /** Remet l'inventaire plein (après une pose, un pont). */
-export function remplir(state: BloclandState): BloclandState {
-  return { ...state, inventory: inventairePlein() };
+export function remplir(state: GameState): GameState {
+  return { ...state, stock: inventairePlein() };
 }
 
 /** La copie de la partie qu'ouvre le mode bâtisseur. Les plans déjà posés restent posés. */
-export function bacASable(state: BloclandState): BloclandState {
+export function bacASable(state: GameState): GameState {
   const progress = { ...state.progress };
   for (const b of BIOMES) {
     const id = bossId(b.id);
     const avant = progress[id];
     if ((avant?.stars ?? 0) < STARS_TO_BEAT) progress[id] = { stars: STARS_TO_BEAT, attempts: avant?.attempts ?? 0, best: avant?.best ?? 1 };
   }
-  const bridges = [...new Set([...state.village.bridges, ...BRIDGES.map((b) => b.id)])];
-  return { ...state, progress, inventory: inventairePlein(), village: { ...state.village, bridges } };
+  const bridges = [...new Set([...state.world.links, ...BRIDGES.map((b) => b.id)])];
+  return { ...state, progress, stock: inventairePlein(), world: { ...state.world, links: bridges } };
 }

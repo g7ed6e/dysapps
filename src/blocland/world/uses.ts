@@ -2,7 +2,7 @@
 // ouverte de son archipel, le chantier du Bloc-Navire, les monuments de l'archipel, les ouvrages. Code pur, partagé par l'inventaire (« Mes
 // blocs ») et les listes de blocs manquants du panneau d'île. Un bloc qui ne sert à rien maintenant est dit tel quel.
 import { BIOMES, BLOCKS, type BiomeDef, type BiomeId, type BlockId } from '../biomes';
-import { canLaunch, currentPlan, currentStage, planStatus, type BloclandState } from '../engine';
+import { canLaunch, currentPlan, currentStage, planStatus, type GameState } from '../engine';
 import { BRIDGE_BLOCKS, archipelagoOf, buildableBridges, conditionMet, islandsOf, otherEnd, payableBlocks, reachableIslands, type BridgeDef } from './archipelago';
 import { monumentsOf } from './monuments';
 import { lieuDAssemblage } from './assemblage';
@@ -40,9 +40,9 @@ export interface Use {
 }
 
 /** Les îles ouvertes de l'archipel où se tient le bonhomme, la sienne en premier. */
-function openIslandsHere(state: BloclandState): BiomeId[] {
-  const at = state.village.at ?? 'foret';
-  const open = reachableIslands(state.village.bridges);
+function openIslandsHere(state: GameState): BiomeId[] {
+  const at = state.world.place ?? 'foret';
+  const open = reachableIslands(state.world.links);
   const ids = islandsOf(archipelagoOf(at).classe)
     .map((b) => b.id)
     .filter((id) => open.has(id));
@@ -50,7 +50,7 @@ function openIslandsHere(state: BloclandState): BiomeId[] {
 }
 
 /** Le chantier du navire quand il est à portée (son port ouvert, son voyage pas encore fait). */
-function shipyard(state: BloclandState): VehicleStage | null {
+function shipyard(state: GameState): VehicleStage | null {
   const stage = currentStage(state);
   if (!stage) return null;
   const launch = canLaunch(state, stage);
@@ -58,8 +58,8 @@ function shipyard(state: BloclandState): VehicleStage | null {
 }
 
 /** Ce qu'un type de bloc peut construire maintenant ; vide s'il ne sert à rien pour l'instant. */
-export function blockUses(state: BloclandState, block: BlockId): Use[] {
-  const have = state.inventory[block] ?? 0;
+export function blockUses(state: GameState, block: BlockId): Use[] {
+  const have = state.stock[block] ?? 0;
   const uses: Use[] = [];
   for (const island of openIslandsHere(state)) {
     const current = currentPlan(state, island);
@@ -89,7 +89,7 @@ export function blockUses(state: BloclandState, block: BlockId): Use[] {
   if (uses.length) return uses;
   // Rien à poser dans un plan ni sur le navire : les monuments de l'archipel s'en servent peut-être (c'est leur rôle :
   // employer les blocs qui s'accumulent).
-  for (const m of monumentsOf(archipelagoOf(state.village.at ?? 'foret').classe)) {
+  for (const m of monumentsOf(archipelagoOf(state.world.place ?? 'foret').classe)) {
     const need = planStatus(state, m).missing[block] ?? 0;
     if (need > 0) uses.push({ kind: 'monument', island: m.biome, name: m.name, need, enough: have >= need, to: `/aventure/${m.id}` });
   }
@@ -154,7 +154,7 @@ function rank(row: InventoryRow, at: BiomeId): number {
 }
 
 /** Les blocs que réclament les chantiers à portée et que l'élève n'a pas, avec l'île où les gagner. */
-export function missingNow(state: BloclandState): MissingBlock[] {
+export function missingNow(state: GameState): MissingBlock[] {
   const need: Partial<Record<BlockId, number>> = {};
   for (const island of openIslandsHere(state)) {
     const current = currentPlan(state, island);
@@ -163,11 +163,11 @@ export function missingNow(state: BloclandState): MissingBlock[] {
   }
   const stage = shipyard(state);
   if (stage) for (const [b, n] of Object.entries(planStatus(state, stage).missing)) need[b as BlockId] = (need[b as BlockId] ?? 0) + (n ?? 0);
-  const open = reachableIslands(state.village.bridges);
+  const open = reachableIslands(state.world.links);
   return (Object.keys(BLOCKS) as BlockId[])
     .map((block) => ({
       block,
-      need: (need[block] ?? 0) - (state.inventory[block] ?? 0),
+      need: (need[block] ?? 0) - (state.stock[block] ?? 0),
     }))
     .filter(({ need: n }) => n > 0)
     .map(({ block, need: n }) => {
@@ -182,25 +182,25 @@ export function missingNow(state: BloclandState): MissingBlock[] {
 }
 
 /** L'inventaire commenté : chaque type possédé et ses usages, les ouvrages payables, les blocs à aller chercher. */
-export function inventoryUses(state: BloclandState): Inventory {
-  const at = state.village.at ?? 'foret';
+export function inventoryUses(state: GameState): Inventory {
+  const at = state.world.place ?? 'foret';
   const rows = (Object.keys(BLOCKS) as BlockId[])
-    .filter((b) => (state.inventory[b] ?? 0) > 0)
+    .filter((b) => (state.stock[b] ?? 0) > 0)
     .map((block) => ({
       block,
-      count: state.inventory[block] ?? 0,
+      count: state.stock[block] ?? 0,
       uses: blockUses(state, block),
     }))
     .map((row, i) => ({ row, i }))
     .sort((a, b) => rank(a.row, at) - rank(b.row, at) || a.i - b.i)
     .map(({ row }) => row);
   const total = rows.reduce((n, r) => n + r.count, 0);
-  const payable = payableBlocks(state.inventory);
-  const world = { progress: state.progress, plans: state.village.plans };
+  const payable = payableBlocks(state.stock);
+  const world = { progress: state.progress, plans: state.world.parts };
   const here = new Set(openIslandsHere(state));
-  const ouvrages = buildableBridges(state.village.bridges, undefined, world)
+  const ouvrages = buildableBridges(state.world.links, undefined, world)
     .filter((b) => here.has(b.from) || here.has(b.to))
-    .filter((b) => conditionMet(b, state.village.bridges, world))
+    .filter((b) => conditionMet(b, state.world.links, world))
     .map((bridge) => {
       const from = here.has(bridge.from) ? bridge.from : bridge.to;
       return {

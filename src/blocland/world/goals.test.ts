@@ -25,15 +25,15 @@ it('le prochain objectif est unique : d’abord ce qu’on peut faire tout de su
   // 3 blocs pour le sentier, c'est plus proche que les bois de la cabane.
   expect(nextGoal(fresh, 'foret')).toBe('Encore 3 blocs pour le sentier vers Mine des lettres.');
   expect(nextGoalInfo(fresh, 'foret')).toMatchObject({ have: 0, need: 3 });
-  const some = sanitizeState({ inventory: { bois: 5 } });
+  const some = sanitizeState({ stock: { bois: 5 } });
   expect(nextGoal(some, 'foret')).toBe('Tu peux construire le sentier vers Mine des lettres.');
   const cabane = plansFor('foret')[0].cells.length;
-  const rich = sanitizeState({ inventory: { bois: cabane } });
+  const rich = sanitizeState({ stock: { bois: cabane } });
   expect(nextGoal(rich, 'foret')).toBe('Tu as tout pour finir La cabane de Mousso : pose tes blocs.');
   expect(nextGoalInfo(rich, 'foret')).toMatchObject({ have: cabane, need: cabane });
   // Tous les plans posés et tous les ouvrages construits : plus rien à dire.
   const plans = Object.fromEntries(plansFor('foret').map((p) => [p.id, planCells(p).map((c) => c.key)]));
-  const done = sanitizeState({ village: { plans, bridges: ['foret-mine', 'foret-ferme', 'foret-horloge'] } });
+  const done = sanitizeState({ world: { parts: plans, links: ['foret-mine', 'foret-ferme', 'foret-horloge'] } });
   expect(nextGoal(done, 'foret')).toBeNull();
   expect(nextGoal(EMPTY_STATE, 'mine')).toBe('Encore 3 blocs pour le sentier vers Forêt des sons.');
 });
@@ -45,19 +45,19 @@ it('sur le port, le prochain objectif parle du Bloc-Navire : ses blocs, puis ses
   // Les plans de la Plaine finis et ses ouvrages construits : le chantier du navire.
   const plans = Object.fromEntries(plansFor('plaine').map((p) => [p.id, planCells(p).map((c) => c.key)]));
   const built = ['plaine-riviere', 'plaine-volcan'];
-  expect(nextGoal(sanitizeState({ village: { plans, bridges: built } }), 'plaine')).toMatch(/^Encore \d+ blocs? de (sable|bois)( et \d+ [^.]+)? pour le Bloc-Navire\.$/);
-  const stocked = sanitizeState({ village: { plans, bridges: built }, inventory: { sable: 30, bois: 30, galet: 10, pierre: 5 } });
+  expect(nextGoal(sanitizeState({ world: { parts: plans, links: built } }), 'plaine')).toMatch(/^Encore \d+ blocs? de (sable|bois)( et \d+ [^.]+)? pour le Bloc-Navire\.$/);
+  const stocked = sanitizeState({ world: { parts: plans, links: built }, stock: { sable: 30, bois: 30, galet: 10, pierre: 5 } });
   expect(nextGoal(stocked, 'plaine')).toBe('Tu as tout pour le Bloc-Navire : pose tes blocs.');
   // Toutes ses cases posées : il manque des Gardiens.
   const hull = { ...plans, [coque.id]: planCells(coque).map((c) => c.key) };
-  const posed = sanitizeState({ village: { plans: hull, bridges: built }, progress: guardians(['foret']) });
+  const posed = sanitizeState({ world: { parts: hull, links: built }, progress: guardians(['foret']) });
   expect(nextGoal(posed, 'plaine')).toBe('Bats encore 2 Gardiens des Premiers Rivages pour la voile.');
   expect(nextGoal(posed, 'plaine', 'archipeo')).toBe('Rallume encore 2 Gardiens des Premiers Rivages pour la voile.');
   // Trois Gardiens : prêt à partir, et c'est la seule phrase.
-  const ready = sanitizeState({ village: { plans: hull, bridges: built }, progress: guardians(['foret', 'plaine', 'mine']) });
+  const ready = sanitizeState({ world: { parts: hull, links: built }, progress: guardians(['foret', 'plaine', 'mine']) });
   expect(nextGoal(ready, 'plaine')).toBe('Le Bloc-Navire est prêt : embarque vers les Îles Brumeuses !');
   // Parti : plus un mot du navire sur ce port.
-  const sailed = sanitizeState({ village: { plans: hull, bridges: [...built, 'voyage-5e'] }, progress: guardians(['foret', 'plaine', 'mine']) });
+  const sailed = sanitizeState({ world: { parts: hull, links: [...built, 'voyage-5e'] }, progress: guardians(['foret', 'plaine', 'mine']) });
   expect(nextGoal(sailed, 'plaine')).toBeNull();
 });
 
@@ -65,7 +65,7 @@ it('les quantités de blocs s’accordent : « 18 toits et 3 lanternes », « 3 
   // Le deuxième plan de la Forêt : il manque des blocs de finition, qu'on compte comme des objets.
   const cabane = plansFor('foret')[0];
   const plans = { [cabane.id]: planCells(cabane).map((c) => c.key) };
-  expect(nextGoal(sanitizeState({ village: { plans, bridges: ['foret-mine', 'foret-ferme', 'foret-horloge'] } }), 'foret')).toBe(
+  expect(nextGoal(sanitizeState({ world: { parts: plans, links: ['foret-mine', 'foret-ferme', 'foret-horloge'] } }), 'foret')).toBe(
     'Encore 18 toits et 3 lanternes pour Le toit de la cabane.',
   );
   expect(blockCount('lanterne', 1)).toBe('1 lanterne');
@@ -102,9 +102,9 @@ it('une île fermée dit l’ouvrage précis qui y mène, ou l’île à ouvrir 
   expect(lockedHint(fresh, 'mine')).toBe('Pas si vite ! Pour venir ici, construis le sentier depuis Forêt des sons : 3 blocs.');
   // La Carrière est à deux ouvrages : il faut d'abord ouvrir la Mine.
   expect(lockedHint(fresh, 'carriere')).toBe('Pas si vite ! Ouvre d’abord Mine des lettres : de là, un ouvrage mène jusqu’ici.');
-  expect(lockedHint(sanitizeState({ village: { bridges: ['foret-mine'] } }), 'carriere')).toContain('construis le pont depuis Mine des lettres : 5 blocs');
+  expect(lockedHint(sanitizeState({ world: { links: ['foret-mine'] } }), 'carriere')).toContain('construis le pont depuis Mine des lettres : 5 blocs');
   // Un escalier dans les Monts : la condition est dite.
-  const monts = sanitizeState({ village: { bridges: ['voyage-5e', 'voyage-4e', 'atelier-falaise'] } });
+  const monts = sanitizeState({ world: { links: ['voyage-5e', 'voyage-4e', 'atelier-falaise'] } });
   expect(lockedHint(monts, 'cabinet')).toBe(
     'Pas si vite ! Pour venir ici, construis l’escalier taillé depuis Falaise des accords : 5 blocs. Il faut aussi un premier plan terminé de l’autre côté.',
   );
@@ -117,29 +117,29 @@ it('une île d’un autre archipel parle du Bloc-Navire : ses blocs, ses Gardien
     `Pas si vite ! Mon île est dans les Îles Brumeuses, de l’autre côté de la mer. Finis le Bloc-Navire sur Plaine des nombres : encore ${total} blocs.`,
   );
   const hull = { [coque.id]: planCells(coque).map((c) => c.key) };
-  expect(lockedHint(sanitizeState({ village: { plans: hull }, progress: guardians(['foret', 'plaine']) }), 'marche')).toBe(
+  expect(lockedHint(sanitizeState({ world: { parts: hull }, progress: guardians(['foret', 'plaine']) }), 'marche')).toBe(
     'Pas si vite ! Mon île est dans les Îles Brumeuses, de l’autre côté de la mer. Le Bloc-Navire attend sur Plaine des nombres : bats encore 1 Gardien des Premiers Rivages, puis embarque.',
   );
-  expect(lockedHint(sanitizeState({ village: { plans: hull }, progress: guardians(['foret', 'plaine', 'mine']) }), 'marche')).toBe(
+  expect(lockedHint(sanitizeState({ world: { parts: hull }, progress: guardians(['foret', 'plaine', 'mine']) }), 'marche')).toBe(
     'Pas si vite ! Mon île est dans les Îles Brumeuses, de l’autre côté de la mer. Le Bloc-Navire est prêt sur Plaine des nombres : embarque !',
   );
   // Deux archipels plus loin : d'abord le précédent.
   expect(lockedHint(fresh, 'forge')).toBe('Pas si vite ! Mon île est dans les Anciens Ateliers. Va d’abord jusqu’aux Îles Brumeuses avec le Bloc-Navire.');
-  expect(lockedHint(sanitizeState({ village: { bridges: ['voyage-5e'] } }), 'phare')).toBe(
+  expect(lockedHint(sanitizeState({ world: { links: ['voyage-5e'] } }), 'phare')).toBe(
     'Pas si vite ! Mon île est dans les Îles du Ciel. Va d’abord jusqu’aux Anciens Ateliers avec le Bloc-Navire.',
   );
-  expect(lockedHint(sanitizeState({ village: { bridges: ['voyage-5e', 'voyage-4e'] } }), 'phare')).toContain('de l’autre côté du ciel. Finis le Bloc-Navire sur Atelier du calcul littéral');
+  expect(lockedHint(sanitizeState({ world: { links: ['voyage-5e', 'voyage-4e'] } }), 'phare')).toContain('de l’autre côté du ciel. Finis le Bloc-Navire sur Atelier du calcul littéral');
 });
 
 it('dans Archipéo, l’indice d’une île fermée dit un Gardien rallumé, jamais vaincu ni battu', () => {
   const hull = { [coque.id]: planCells(coque).map((c) => c.key) };
-  expect(lockedHint(sanitizeState({ village: { plans: hull }, progress: guardians(['foret', 'plaine']) }), 'marche', 'archipeo')).toBe(
+  expect(lockedHint(sanitizeState({ world: { parts: hull }, progress: guardians(['foret', 'plaine']) }), 'marche', 'archipeo')).toBe(
     'Pas si vite ! Mon île est dans les Îles Brumeuses, de l’autre côté de la mer. Le Bloc-Navire attend sur Plaine des nombres : rallume encore 1 Gardien des Premiers Rivages, puis embarque.',
   );
   // L'Atelier des textes, que seul le col du Phare des fonctions peut ouvrir : ses autres voisines restent fermées.
   const voisines: string[] = BRIDGES.filter((b) => b.from === 'textes' || b.to === 'textes').flatMap((b) => [b.from, b.to]).filter((id) => id !== 'phare');
   const ouverts = BRIDGES.filter((b) => !voisines.includes(b.from) && !voisines.includes(b.to)).map((b) => b.id);
-  const col = sanitizeState({ village: { bridges: ['voyage-5e', 'voyage-4e', 'voyage-3e', ...ouverts] } });
+  const col = sanitizeState({ world: { links: ['voyage-5e', 'voyage-4e', 'voyage-3e', ...ouverts] } });
   expect(lockedHint(col, 'textes', 'archipeo')).toBe(
     'Pas si vite ! Pour venir ici, construis le col depuis Phare des fonctions : 6 blocs. Il faut aussi avoir rallumé le Gardien de l’autre côté.',
   );

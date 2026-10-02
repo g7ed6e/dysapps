@@ -21,7 +21,7 @@ it('au début, la baleine n’a qu’un mot en 6e : elle se présente', () => {
 it('les grandes étapes, de la plus grande à la plus petite', () => {
   const guardians = Object.fromEntries(islandsOf('6e').map((b) => [`${b.id}-gardien`, { stars: 2, attempts: 1, best: 1 }]));
   const plans = Object.fromEntries(plansFor('plaine').map((p) => [p.id, planCells(p).map((c) => c.key)]));
-  const state = sanitizeState({ progress: { ...guardians, [exercisesOf('foret', 'rimes')[0].id]: { stars: 2, attempts: 1, best: 1 } }, village: { plans, bridges: ['foret-mine'] } });
+  const state = sanitizeState({ progress: { ...guardians, [exercisesOf('foret', 'rimes')[0].id]: { stars: 2, attempts: 1, best: 1 } }, world: { parts: plans, links: ['foret-mine'] } });
   const m = reachedWhaleMoments(state, '6e');
   expect(m.map((x) => x.kind)).toEqual(['arrivee', 'gardiens', 'port', 'ouvrage']);
   expect(pages(m[1])[0]).toBe('Tous les Gardiens des Premiers Rivages brillent à nouveau. J’ai vu leur lumière depuis le large.');
@@ -32,7 +32,7 @@ it('les grandes étapes, de la plus grande à la plus petite', () => {
 });
 
 it('l’arrivée en 5e garde la clé de l’ancienne bulle et sa page pratique', () => {
-  const m = reachedWhaleMoments(sanitizeState({ village: { bridges: ['voyage-5e'], at: 'marche' } }), '5e');
+  const m = reachedWhaleMoments(sanitizeState({ world: { links: ['voyage-5e'], place: 'marche' } }), '5e');
   expect(m[0]).toMatchObject({ id: 'archipel-5e', kind: 'arrivee', island: 'marche' });
   expect(pages(m[0])).toHaveLength(2);
   expect(pages(m[0]).join(' ')).not.toMatch(/rallum/);

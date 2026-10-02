@@ -53,7 +53,7 @@ it('sur un appareil qui a une progression, ne présente pas Archipéo : il n’e
 
 // Le message unique, éteint (`PRESENTER_ARCHIPEO`) : noté à dire comme s'il était rallumé.
 it('rallumé, dit une seule fois le message qui présente Archipéo', async () => {
-  saveJSON(MESSAGE_UNIVERS_KEY, { dit: false });
+  saveJSON(MESSAGE_UNIVERS_KEY, { said: false });
   const user = userEvent.setup();
   const { unmount } = renderTitle();
   expect(screen.getByRole('dialog', { name: 'Blocland' })).toHaveTextContent('Chaque bloc construit ton monde.');
@@ -62,7 +62,7 @@ it('rallumé, dit une seule fois le message qui présente Archipéo', async () =
   await user.click(screen.getByRole('button', { name: /Voir le réglage/ }));
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   expect(screen.getByTestId('ici')).toHaveTextContent('/reglages {"section":"univers"}');
-  expect(loadJSON(MESSAGE_UNIVERS_KEY, {})).toEqual({ dit: true });
+  expect(loadJSON(MESSAGE_UNIVERS_KEY, {})).toEqual({ said: true });
   unmount();
   // Au lancement suivant, plus de message.
   sessionStorage.clear();
@@ -72,11 +72,11 @@ it('rallumé, dit une seule fois le message qui présente Archipéo', async () =
 });
 
 it('rallumé, « Rester dans Blocland » va où l’élève allait, sans nouveau toucher', async () => {
-  saveJSON(MESSAGE_UNIVERS_KEY, { dit: false });
+  saveJSON(MESSAGE_UNIVERS_KEY, { said: false });
   const user = userEvent.setup();
   renderTitle();
   await user.click(screen.getByRole('button', { name: /Jouer/ }));
   await user.click(screen.getByRole('button', { name: /Rester dans Blocland/ }));
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
-  expect(loadJSON(MESSAGE_UNIVERS_KEY, {})).toEqual({ dit: true });
+  expect(loadJSON(MESSAGE_UNIVERS_KEY, {})).toEqual({ said: true });
 });

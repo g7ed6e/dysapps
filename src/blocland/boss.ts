@@ -1,7 +1,7 @@
 // Le Gardien d'un biome : un défi qui enchaîne des manches de chaque mission du biome, au niveau de l'élève.
 // Logique pure : déblocage, construction du défi, état « vaincu ».
 import { BIOMES, guardianTitle, missionsJouables, type BiomeDef, type BiomeId } from './biomes';
-import { levelFor, type BloclandState } from './engine';
+import { levelFor, type GameState } from './engine';
 import { SCREEN_TYPES } from './exercises/registry';
 import { exercisesOf, loadExercise, pickExercise } from './exercises';
 import { runItems } from './exercises/run';
@@ -86,7 +86,7 @@ export function bossesBeaten(progress: Record<string, { stars: number }>): Biome
  * ceux d'une partie tirée au hasard : d'autres nombres, d'autres mots, et des réponses qui changent de place.
  * Le contenu des exercices est chargé à la demande (voir `loadExercise`).
  */
-export async function bossDef(biome: BiomeDef, state: BloclandState, rng: () => number = Math.random): Promise<ExerciseDef> {
+export async function bossDef(biome: BiomeDef, state: GameState, rng: () => number = Math.random): Promise<ExerciseDef> {
   const types = typesWithContent(biome);
   const defs = await Promise.all(
     types.map((type) => {

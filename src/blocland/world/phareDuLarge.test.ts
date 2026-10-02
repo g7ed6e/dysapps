@@ -22,7 +22,7 @@ function triangle(g: GroupeDeConstruction, t: number) {
 }
 
 describe('Le phare du large du 5e (revue d’ensemble, DA-4 : Archipéo seulement)', () => {
-  const { progress, village } = toutConstruit();
+  const { progress, world: village } = toutConstruit();
   const m = getMonument(PHARE_DU_LARGE);
   if (!m) throw new Error('monument absent');
 
@@ -41,7 +41,7 @@ describe('Le phare du large du 5e (revue d’ensemble, DA-4 : Archipéo seulemen
     expect(remplacees.size).toBe(siens.length);
     expect(pose!.cellules).toHaveLength(siens.length);
 
-    const moitie = { ...village, plans: { ...village.plans, [PHARE_DU_LARGE]: (village.plans[PHARE_DU_LARGE] ?? []).slice(1) } };
+    const moitie = { ...village, parts: { ...village.parts, [PHARE_DU_LARGE]: (village.parts[PHARE_DU_LARGE] ?? []).slice(1) } };
     const enCours = phareDuLarge(worldCubes('5e', progress, moitie, false));
     expect(enCours.pose).toBeNull();
     expect(enCours.remplacees.size).toBe(0);

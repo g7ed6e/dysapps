@@ -32,8 +32,8 @@ export { ASSEMBLAGE_PATH };
 function useRecettes(): { premiere: Recette | undefined; autres: Recette[] } {
   const { state } = useBlocland();
   const [params] = useSearchParams();
-  const ici = archipelagoOf(state.village.at ?? 'foret').classe;
-  const atteints = new Set<ArchipelagoId>([...reachableIslands(state.village.bridges)].map(archipelagoOfIsland));
+  const ici = archipelagoOf(state.world.place ?? 'foret').classe;
+  const atteints = new Set<ArchipelagoId>([...reachableIslands(state.world.links)].map(archipelagoOfIsland));
   atteints.add(ici);
   const ouvertes = RECETTES.filter((r) => atteints.has(r.archipelago));
   const demande = params.get('bloc');
@@ -69,9 +69,9 @@ function RecetteCarte({ recette }: { recette: Recette }) {
   const location = useLocation();
   const nom = nomDuBloc(recette.bloc);
   const un = blockName(recette.bloc, 1);
-  const peut = assemblables(state.inventory, recette) > 0;
-  const manque = manquePour(state.inventory, recette);
-  const en = state.inventory[recette.bloc] ?? 0;
+  const peut = assemblables(state.stock, recette) > 0;
+  const manque = manquePour(state.stock, recette);
+  const en = state.stock[recette.bloc] ?? 0;
   const pour = monumentsOf(recette.archipelago)
     .map((m) => ({ m, n: planStatus(state, m).missing[recette.bloc] ?? 0 }))
     .filter((x) => x.n > 0);
@@ -123,7 +123,7 @@ function RecetteCarte({ recette }: { recette: Recette }) {
       <p className="assemblage-archipel">{getArchipelago(recette.archipelago).name}</p>
       <ul className="assemblage-ingredients" aria-label={`Pour 1 ${un}, il faut`}>
         {recette.ingredients.map((i) => {
-          const a = state.inventory[i.bloc] ?? 0;
+          const a = state.stock[i.bloc] ?? 0;
           return (
             <li key={i.bloc}>
               <Vignettes bloc={i.bloc} n={i.n} />

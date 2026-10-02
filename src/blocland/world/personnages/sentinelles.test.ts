@@ -282,7 +282,7 @@ describe('Les sentinelles qui se tournent pour se montrer de profil (la Diligenc
 });
 
 describe('Les sentinelles dans le monde (revue d’ensemble du directeur artistique, DA-5)', () => {
-  const { progress, village } = toutConstruit();
+  const { progress, world: village } = toutConstruit();
 
   it('font environ 5 blocs socle compris (la Diligence, basse, à l’échelle), plus basses que le phare de Grimoire (6 cases) et que la grue de l’Atelier (9)', () => {
     expect(HAUTEUR_DANS_LE_MONDE).toBeGreaterThanOrEqual(4.8);
@@ -290,7 +290,7 @@ describe('Les sentinelles dans le monde (revue d’ensemble du directeur artisti
     expect(HAUTEUR_DANS_LE_MONDE).toBeLessThan(PHARES['6e'].H);
     expect(HAUTEUR_DANS_LE_MONDE).toBeLessThan(GRUE.hauteur);
     for (const a of ARCHIPELAGO_IDS) {
-      const places = guardianPlacements(a, progress, village.bridges);
+      const places = guardianPlacements(a, progress, village.links);
       const f = fusionDesGardiens(places);
       places.forEach((p, i) => {
         const pied = pointDePose(p)[1];
@@ -317,7 +317,7 @@ describe('Les sentinelles dans le monde (revue d’ensemble du directeur artisti
 
   it('la caméra du rallumage vise le milieu de la sentinelle, un bloc au-dessus du point de l’îlot', () => {
     for (const b of BIOMES.filter((x) => x.classe === '6e')) {
-      const g = guardianPlacements('6e', progress, village.bridges).find((p) => p.id === b.id);
+      const g = guardianPlacements('6e', progress, village.links).find((p) => p.id === b.id);
       if (!g) continue;
       const pied = pointDePose(g)[1];
       expect(bossIsletCenter(b.id).z + 1, b.id).toBeCloseTo(pied + HAUTEUR_DANS_LE_MONDE / 2, 1);

@@ -1,6 +1,6 @@
 import { textesDe } from '../../univers';
 import { BIOMES } from '../biomes';
-import { EMPTY_STATE, levelFor, type BloclandState } from '../engine';
+import { EMPTY_STATE, levelFor, type GameState } from '../engine';
 import { pickExercise, questProgress } from '../exercises';
 import { BRIDGES, NOMS_ARCHIPELS, getArchipelago, isBiomeUnlocked, islandsOf } from './archipelago';
 import { ARCHIPELAGO_IDS } from './archipels';
@@ -23,8 +23,8 @@ import { questStations } from './terrain';
 
 const mots = textesDe('blocland').libelles;
 
-const vierge: BloclandState = EMPTY_STATE;
-const fini = (): BloclandState => ({ ...EMPTY_STATE, ...toutConstruit() }) as BloclandState;
+const vierge: GameState = EMPTY_STATE;
+const fini = (): GameState => ({ ...EMPTY_STATE, ...toutConstruit() }) as GameState;
 
 it('les missions d’une île sont celles de ses bornes, dans le même ordre', () => {
   for (const b of BIOMES) expect(missionsDe(b.id), b.id).toEqual(questStations(b.id).map((s) => s.typeId));
@@ -35,7 +35,7 @@ it('l’état des bornes est celui que calculait la page du monde', () => {
     for (const a of ARCHIPELAGO_IDS) {
       const attendu = islandsOf(a).flatMap((b) =>
         questStations(b.id).map((st) => {
-          const open = isBiomeUnlocked(b.id, state.village.bridges);
+          const open = isBiomeUnlocked(b.id, state.world.links);
           const def = open ? pickExercise(b.id, st.typeId, levelFor(state, st.typeId), state.progress) : undefined;
           const progress = def ? questProgress(b.id, st.typeId, state.progress) : undefined;
           return { id: `${b.id}:${st.typeId}`, ile: b.id, mission: st.typeId, etat: !def ? 'locked' : progress ? progress.stars : 'new' };
@@ -68,10 +68,10 @@ it('un ouvrage touché ouvre l’île ouverte qu’il touche', () => {
 });
 
 it('le cap vers une île : dans l’archipel, en voyage, ou le port quand elle est fermée', () => {
-  const { village } = toutConstruit();
+  const { world: village } = toutConstruit();
   expect(capVers('mine', '6e', [])).toBe('archipel');
   expect(capVers('marche', '6e', [])).toBe('port');
-  expect(capVers('marche', '6e', village.bridges)).toBe('voyage');
+  expect(capVers('marche', '6e', village.links)).toBe('voyage');
 });
 
 describe('la machine du voyage', () => {
@@ -105,6 +105,6 @@ describe('la machine du voyage', () => {
     expect(etapeDuVoyage('5e', false, [])).toBe(1);
     expect(etapeDuVoyage('3e', false, [])).toBe(3);
     expect(etapeDuVoyage('6e', true, [])).toBe(1);
-    expect(etapeDuVoyage('6e', true, toutConstruit().village.bridges)).toBe(3);
+    expect(etapeDuVoyage('6e', true, toutConstruit().world.links)).toBe(3);
   });
 });

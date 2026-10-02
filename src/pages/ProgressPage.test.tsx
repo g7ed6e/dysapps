@@ -41,7 +41,7 @@ it('propose de reprendre les missions faibles d’une matière, avec un lien qui
   const rimes = exercisesOf('foret', 'rimes')[0].id;
   const chasse = exercisesOf('foret', 'chasse-son')[0].id;
   localStorage.setItem(
-    'dysapps:blocland',
+    'dysapps:game',
     JSON.stringify({ progress: { [rimes]: { stars: 1, attempts: 2, best: 0.5 }, [chasse]: { stars: 3, attempts: 1, best: 1 } } }),
   );
   localStorage.setItem('dysapps:progress', JSON.stringify({ apps: { 'tables:niveau-1': { sessions: 1, bestScore: 40, lastPlayed: null } } }));

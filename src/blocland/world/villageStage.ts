@@ -1,7 +1,7 @@
 // Le village d'un archipel en cinq états, déduits de la progression à chaque rendu et jamais enregistrés : abandonné,
 // réactivation, reconstruction, développement, port. Chaque état correspond à un geste de l'élève (un plan d'île, le
 // port et un ouvrage, un monument, le voyage). Code pur, partagé par le terrain (le port en cubes) et les panneaux.
-import type { Village } from '../engine';
+import type { World } from '../engine';
 import { ARCHIPELAGOS, BRIDGES, NOMS_ARCHIPELS, getArchipelago, islandsOf, voyageId, type ArchipelagoId, type NomsArchipels } from './archipelago';
 import { monumentsOf } from './monuments';
 import { isPlanDone, plansFor } from './plans';
@@ -40,17 +40,17 @@ function nextArchipelago(a: ArchipelagoId): ArchipelagoId | null {
  * L'état du village d'un archipel. `noms` : les noms des archipels de l'univers affiché, pour la phrase `next` (le
  * terrain, qui ne lit que le rang, s'en passe).
  */
-export function villageStage(village: Pick<Village, 'plans' | 'bridges'>, a: ArchipelagoId, noms: NomsArchipels = NOMS_ARCHIPELS): VillageStage {
+export function villageStage(village: Pick<World, 'parts' | 'links'>, a: ArchipelagoId, noms: NomsArchipels = NOMS_ARCHIPELS): VillageStage {
   const { port } = getArchipelago(a);
   const plans = islandsOf(a).flatMap((b) => plansFor(b.id));
-  const anyPlan = plans.some((p) => isPlanDone(p, village.plans));
+  const anyPlan = plans.some((p) => isPlanDone(p, village.parts));
   const portPlans = plansFor(port);
-  const portDone = portPlans.length > 0 && portPlans.every((p) => isPlanDone(p, village.plans));
+  const portDone = portPlans.length > 0 && portPlans.every((p) => isPlanDone(p, village.parts));
   // Un ouvrage payé par l'élève (le pont gratuit de la Forêt à la Plaine ne compte pas) qui part de l'île-port.
-  const linked = BRIDGES.some((b) => b.cost > 0 && (b.from === port || b.to === port) && village.bridges.includes(b.id));
-  const monument = monumentsOf(a).some((m) => isPlanDone(m, village.plans));
+  const linked = BRIDGES.some((b) => b.cost > 0 && (b.from === port || b.to === port) && village.links.includes(b.id));
+  const monument = monumentsOf(a).some((m) => isPlanDone(m, village.parts));
   const to = nextArchipelago(a);
-  const sailed = to !== null && village.bridges.includes(voyageId(to));
+  const sailed = to !== null && village.links.includes(voyageId(to));
   const portName = getArchipelagoPortName(a);
   const at = (rank: number, next: string | null): VillageStage => ({ ...VILLAGE_STAGES[rank - 1], next });
   if (sailed) return at(5, null);

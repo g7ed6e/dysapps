@@ -125,7 +125,7 @@ export function WorldPage() {
   const panelOpen = mapOpen || mondeOpen || blocsOpen || schoolOpen || menuOpen || trophiesOpen || assemblageOpen || monumentsOpen || Boolean(monument);
   const island = biomeId && !panelOpen ? getBiome(biomeId) : undefined;
   // Le bonhomme : où il se tient ; l'archipel affiché est le sien.
-  const at = state.village.at ?? 'foret';
+  const at = state.world.place ?? 'foret';
   const archipelago = archipelagoOf(at);
   const a: ArchipelagoId = archipelago.classe;
   const trophyBlocks = useMemo(() => trophies(progress.badges), [progress.badges]);
@@ -138,22 +138,22 @@ export function WorldPage() {
   const rallumage = useRallumage(state.progress, a, sentinelles);
   const eteints = rallumage.enAttente.join();
   const cubes = useMemo(
-    () => worldCubes(a, state.progress, state.village, false, trophyBlocks, sentinelles, habillage.atelier),
+    () => worldCubes(a, state.progress, state.world, false, trophyBlocks, sentinelles, habillage.atelier),
     // La LV2 choisit les bornes de l'île de la LV2 (world/terrain.ts, `questStations`) ; l'habillage (le lieu
     // d'assemblage) ne change pas tant que la page est montée (useState).
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [a, state.progress, state.village, trophyBlocks, sentinelles, settings.lv2, habillage.atelier],
+    [a, state.progress, state.world, trophyBlocks, sentinelles, settings.lv2, habillage.atelier],
   );
   const creatures = useMemo(
     () => [
-      ...creaturePlacements(a, state.village.bridges),
-      ...guardianPlacements(a, state.progress, state.village.bridges, sentinelles).map((c) => (eteints.split(',').includes(c.id) ? { ...c, beaten: false } : c)),
+      ...creaturePlacements(a, state.world.links),
+      ...guardianPlacements(a, state.progress, state.world.links, sentinelles).map((c) => (eteints.split(',').includes(c.id) ? { ...c, beaten: false } : c)),
     ],
-    [a, state.progress, state.village.bridges, sentinelles, eteints],
+    [a, state.progress, state.world.links, sentinelles, eteints],
   );
   // La disposition en grille (world/grille.ts) : où sont les îles, les bornes, les ouvrages, et les trajets du bonhomme,
   // qui suit le sol et contourne arbres, bornes, maisons et créatures.
-  const grille = useMemo(() => dispositionEnGrille(a, state.village.bridges, { cubes, creatures }), [a, state.village.bridges, cubes, creatures]);
+  const grille = useMemo(() => dispositionEnGrille(a, state.world.links, { cubes, creatures }), [a, state.world.links, cubes, creatures]);
   /** Où le bonhomme se tient sur une île (en cases du monde). */
   const seTenir = (id: BiomeId) => grille.versMonde(grille.seTenir(id));
   /**
@@ -173,7 +173,7 @@ export function WorldPage() {
     return path ? [...path, ...route.slice(1)] : [here, ...route];
   };
   // Le Bloc-Navire amarré au port de l'archipel : un objet à part, qui tangue.
-  const vehicle = useMemo(() => vehiclePlacement(a, state.progress, state.village), [a, state.progress, state.village]);
+  const vehicle = useMemo(() => vehiclePlacement(a, state.progress, state.world), [a, state.progress, state.world]);
   // Le panneau de l'île ouverte : replié, on reste sur l'île (la caméra aussi) ; il se rouvre à la demande. Replié, il
   // le reste après la Carte, un panneau du village ou un exercice (le monde se remonte) : panneauReplie.ts le retient.
   const [sheetOpen, setSheetOpen] = useState(() => !(island && panneauReplie() === island.id));
@@ -221,7 +221,7 @@ export function WorldPage() {
         .filter((i) => mapOpen || i.ouverte)
         .map((i) => ({ id: i.id, text: i.nom, ...(mapOpen ? { state: { id: i.etat.id, name: textes.etatsDIle[i.etat.id] } } : {}) })),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [a, mapOpen, state.village.bridges, state.village.plans, state.progress, textes],
+    [a, mapOpen, state.world.links, state.world.parts, state.progress, textes],
   );
   // Une borne touchée : sa mission si elle est jouable, sinon le panneau de son île (qui explique pourquoi).
   const onPickQuest = (id: BiomeId, typeId: string) => {
@@ -232,7 +232,7 @@ export function WorldPage() {
   // Tant que le tutoriel n'est pas vu, c'est le jour : une première minute lisible, même à 20 h. Ensuite, le réglage
   // « Vue du monde » : l'heure réelle, ou toujours le jour.
   const [jourDuTutoriel] = useState(() => !hasSeenTutorial('village-immersif'));
-  const forceDay = jourDuTutoriel || settings.worldLight === 'jour';
+  const forceDay = jourDuTutoriel || settings.worldLight === 'day';
   const [said, setSaid] = useState<{ id: BiomeId; text: string } | null>(null);
   const ileDeLaBulle = useRef<BiomeId | null | undefined>(undefined);
   // Le mot de la baleine : aux grandes étapes de l'archipel, une fois le tutoriel fermé et hors voyage. Il attend un
@@ -246,8 +246,8 @@ export function WorldPage() {
   const [whaleSeq, setWhaleSeq] = useState(0);
   // Le village de l'archipel monte d'un état pendant la séance (un plan, un ouvrage, un monument) : une phrase, lue à
   // voix haute, et une cloche. Rien n'est enregistré : l'état se déduit de la progression.
-  const stageHere = archipelagoOf(state.village.at ?? 'foret').classe;
-  const stageRank = villageStage(state.village, stageHere).rank;
+  const stageHere = archipelagoOf(state.world.place ?? 'foret').classe;
+  const stageRank = villageStage(state.world, stageHere).rank;
   const lastStage = useRef({ a: stageHere, rank: stageRank });
   const [villageSaid, setVillageSaid] = useState<string | null>(null);
   useEffect(() => {
@@ -267,14 +267,14 @@ export function WorldPage() {
   // L'ouvrage touché dans le monde : on ouvre l'île ouverte qu'il touche, sa proposition mise en avant.
   const [highlight, setHighlight] = useState<string | null>(null);
   const onPickBridge = (id: string) => {
-    const from = ileDeLOuvrage(id, state.village.bridges);
+    const from = ileDeLOuvrage(id, state.world.links);
     if (!from) return;
     setHighlight(id);
     openIsland(from);
   };
   // Sur la Carte, l'île fermée touchée : on montre le chemin d'ouvrages qui y mène (balises dans le monde, liste ici).
   const [mapTarget, setMapTarget] = useState<BiomeId | null>(null);
-  const remaining = useMemo(() => (mapTarget ? remainingPath(mapTarget, state.village.bridges) : []), [mapTarget, state.village.bridges]);
+  const remaining = useMemo(() => (mapTarget ? remainingPath(mapTarget, state.world.links) : []), [mapTarget, state.world.links]);
   const [destinationRef, destinationSuite] = useASuivre<HTMLSpanElement>(
     // La phrase n'existe que sans chemin à construire : la clé change quand elle apparaît.
     mapOpen && !(mapTarget && remaining.length) ? destinationText : null,
@@ -346,9 +346,9 @@ export function WorldPage() {
   const onBoard = (to: ArchipelagoId, back: boolean, dest: BiomeId = getArchipelago(to).port) => {
     if (back) return hop(to, dest);
     clearTimers();
-    const trip = { to, from: a, back, dest, bridges: state.village.bridges, reduceMotion };
+    const trip = { to, from: a, back, dest, bridges: state.world.links, reduceMotion };
     if (reduceMotion) return setVoyage((v) => nouveauVoyage({ ...trip, approach: false }, v));
-    const stage = etapeDuVoyage(to, back, state.village.bridges);
+    const stage = etapeDuVoyage(to, back, state.world.links);
     const text = voyageSentence(to, back, textes.archipels, a);
     if (settings.autoRead) speak(frenchTypography(text));
     // Le bonhomme n'est pas au port : il y marche d'abord, la caméra sur le port ; le départ suit.
@@ -477,7 +477,7 @@ export function WorldPage() {
     }
     if (!island) setHighlight(null);
     if (!mapOpen) setMapTarget(null);
-    const cap = island ? capVers(island.id, a, state.village.bridges) : 'archipel';
+    const cap = island ? capVers(island.id, a, state.world.links) : 'archipel';
     if (cap === 'port') {
       setFocus((f) => ({ island: archipelago.port, seq: f.seq + 1 }));
       return;
@@ -511,7 +511,7 @@ export function WorldPage() {
     const but = island && touchee ? (grille.arrivee(island.id, touchee.sol, seTenir(island.id))?.case ?? seTenir(island.id)) : null;
     const ici = walk.route[walk.route.length - 1];
     const enPlace = samePoint(ici, seTenir(at)) || (flanee.current !== null && samePoint(ici, flanee.current));
-    if (island && (island.id !== at || !enPlace || but) && isBiomeUnlocked(island.id, state.village.bridges)) {
+    if (island && (island.id !== at || !enPlace || but) && isBiomeUnlocked(island.id, state.world.links)) {
       // Il part de là où il en est en route (`enRoute`), ou de la case où l'élève l'avait envoyé, sans repasser par sa place.
       const depart = touchee?.enRoute ?? (flanee.current && samePoint(ici, flanee.current) ? ici : undefined);
       // En route, `at` est déjà l'île où il allait (moveTo) : le trajet part de l'île où il se trouve, sans finir de
@@ -535,7 +535,7 @@ export function WorldPage() {
     setSaid({ id, text });
     // Lue à la suite de ce que dit la créature à l'ouverture du panneau (l'indice d'île fermée, ou son accueil).
     const biome = getBiome(id);
-    const avant = accueilDeLIle(state, id, Boolean(biome && estIleLv2(biome) && settings.lv2 === 'aucune'), textes);
+    const avant = accueilDeLIle(state, id, Boolean(biome && estIleLv2(biome) && settings.lv2 === 'none'), textes);
     if (settings.autoRead) speak(frenchTypography(panneauOuvert ? `${avant} ${text}` : text));
   }
 
@@ -648,7 +648,7 @@ export function WorldPage() {
   useBackOpensMenu(!biomeId && !voyage, '/aventure/menu');
 
   if (biomeId && !panelOpen && !island) return <NotFoundPage />;
-  const blocksTotal = Object.values(state.inventory).reduce((n, v) => n + (v ?? 0), 0);
+  const blocksTotal = Object.values(state.stock).reduce((n, v) => n + (v ?? 0), 0);
   // La flèche « Commence ici » flotte sur la Forêt tant qu'aucune mission n'a été jouée ; sur le chantier du navire quand
   // le panneau du port est ouvert et qu'il reste des cases à poser.
   const shipyard = island && island.id === archipelago.port && ship.stage && ship.status && !ship.status.complete;
@@ -693,11 +693,11 @@ export function WorldPage() {
   // l'île choisie au clavier, le panneau replié, sa créature parle, pour que le geste réponde ; le bouton de l'île,
   // dans la barre du bas, rouvre le panneau.
   const onIsland = (id: BiomeId, sol?: Point, enRoute?: Point) => {
-    if (mapOpen && !isBiomeUnlocked(id, state.village.bridges)) return setMapTarget(id);
+    if (mapOpen && !isBiomeUnlocked(id, state.world.links)) return setMapTarget(id);
     if (sol && !voyage && island?.id === id && at === id) return flaner(id, sol, enRoute);
     if (island?.id === id && !sheetOpen) return onCreature(id, 'creature');
     // Une autre île ouverte : l'effet du changement d'île l'y emmène, jusqu'à la case touchée.
-    if (sol && island?.id !== id && isBiomeUnlocked(id, state.village.bridges)) arriveeDemandee.current = { ile: id, sol, ...(enRoute ? { enRoute } : {}) };
+    if (sol && island?.id !== id && isBiomeUnlocked(id, state.world.links)) arriveeDemandee.current = { ile: id, sol, ...(enRoute ? { enRoute } : {}) };
     openIsland(id);
   };
   // Ce que l'élève fait dans le monde : la vue renvoie une intention, la page décide.
@@ -741,7 +741,7 @@ export function WorldPage() {
       return openIsland(id);
     }
     const first = plansFor(id)[0];
-    const home = first && isPlanDone(first, state.village.plans);
+    const home = first && isPlanDone(first, state.world.parts);
     const lines = home && Math.random() < 0.5 ? [textes.creatures[id].home] : textes.creatures[id].lines;
     const text = lines[Math.floor(Math.random() * lines.length)];
     setSaid({ id, text });
@@ -775,7 +775,7 @@ export function WorldPage() {
             focus={focus}
             reduceMotion={reduceMotion}
             forceDay={forceDay}
-            bridges={state.village.bridges}
+            bridges={state.world.links}
             marker={marker}
             vehicle={vehicle}
             voyage={voyageAJouer(voyage)}
@@ -801,7 +801,7 @@ export function WorldPage() {
         {!voyage && (
           <ArchipelSwitcher
             current={a}
-            bridges={state.village.bridges}
+            bridges={state.world.links}
             onGo={(to) => hop(to, getArchipelago(to).port)}
             onMore={() => navigate('/aventure/monde')}
           />

@@ -3,7 +3,7 @@
 // aujourd'hui, le réseau d'Archipéo demain) dit ensuite où dessiner chaque chose. Et les décisions que prend le jeu
 // quand l'élève touche le monde : jouer une borne, ouvrir l'île d'un ouvrage, aller vers une île, voyager.
 import { BIOMES, missionsJouables, type BiomeId } from '../biomes';
-import type { BloclandState } from '../engine';
+import type { GameState } from '../engine';
 import { levelFor } from '../engine';
 import { pickExercise, questProgress } from '../exercises';
 import { archipelagoOf, getBridge, isBiomeUnlocked, islandsOf, launchedCount, type ArchipelagoId, type MotsDesGardiens, type NomsArchipels } from './archipelago';
@@ -45,8 +45,8 @@ export function missionsDe(ile: BiomeId): string[] {
 }
 
 /** L'état d'une borne : fermée si son île l'est ou s'il n'y a rien à jouer, sinon à faire ou ses étoiles. */
-export function etatDeBorne(state: BloclandState, ile: BiomeId, mission: string): BorneDuModele['etat'] {
-  if (!isBiomeUnlocked(ile, state.village.bridges)) return 'locked';
+export function etatDeBorne(state: GameState, ile: BiomeId, mission: string): BorneDuModele['etat'] {
+  if (!isBiomeUnlocked(ile, state.world.links)) return 'locked';
   const def = pickExercise(ile, mission, levelFor(state, mission), state.progress);
   if (!def) return 'locked';
   const progress = questProgress(ile, mission, state.progress);
@@ -54,15 +54,15 @@ export function etatDeBorne(state: BloclandState, ile: BiomeId, mission: string)
 }
 
 /** Les îles d'un archipel, ouvertes ou non, et leur état (il ne dépend que de la progression et du village). */
-export function ilesDuModele(state: Pick<BloclandState, 'progress' | 'village'>, a: ArchipelagoId): IleDuModele[] {
-  return islandsOf(a).map((b) => ({ id: b.id, nom: b.name, ouverte: isBiomeUnlocked(b.id, state.village.bridges), etat: islandState(state, b.id) }));
+export function ilesDuModele(state: Pick<GameState, 'progress' | 'world'>, a: ArchipelagoId): IleDuModele[] {
+  return islandsOf(a).map((b) => ({ id: b.id, nom: b.name, ouverte: isBiomeUnlocked(b.id, state.world.links), etat: islandState(state, b.id) }));
 }
 
 /**
  * Tout ce qui existe dans un archipel, et son état ; `noms` et `mots` : les noms des archipels et les mots des Gardiens
  * de l'univers affiché (la destination).
  */
-export function modeleDuMonde(state: BloclandState, a: ArchipelagoId, noms: NomsArchipels, mots: MotsDesGardiens): ModeleDuMonde {
+export function modeleDuMonde(state: GameState, a: ArchipelagoId, noms: NomsArchipels, mots: MotsDesGardiens): ModeleDuMonde {
   const iles = islandsOf(a);
   return {
     archipel: a,

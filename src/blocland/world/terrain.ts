@@ -40,7 +40,7 @@ import { GUARDIAN_CUBES } from './personnages/gardiens';
 import type { CubeDeModele } from './personnages/ascii';
 import { guardianStatus } from '../boss';
 import type { PlaceId, VillagePlaceId, VoxelCube } from './cube';
-import type { Village } from '../engine';
+import type { World } from '../engine';
 import { ORIGINE_DES_MONUMENTS, decalageDesPlans, isPlanDone, zoneDesPlans, planCells, planOrigin, plansFor, type PlanDef } from './plans';
 import { MONUMENT_ISLET, monumentsOf, type MonumentDef } from './monuments';
 import { EMPRISE_DE_LA_SALLE, SALLE_DE_DEPART, modeleDeLaSalle } from './salle';
@@ -1562,7 +1562,7 @@ function quaySpots(port: BiomeId, cubes: VoxelCube[]): { boat: QuaySpot | null; 
  * dans les Îles du Ciel. Le Bloc-Navire amarré à côté n'est pas dans le terrain : il tangue, c'est un objet à part
  * (`vehiclePlacement`).
  */
-function harbour(a: ArchipelagoId, village: Pick<Village, 'plans' | 'bridges'>, cubes: VoxelCube[]): void {
+function harbour(a: ArchipelagoId, village: Pick<World, 'parts' | 'links'>, cubes: VoxelCube[]): void {
   const port = getArchipelago(a).port;
   const rank = villageStage(village, a).rank;
   const def = islandDef(port);
@@ -1656,7 +1656,7 @@ export interface VehiclePlacement {
  * partout où il accoste) ; celle qui se construit ici montre ses cases posées en dur et les autres en fantôme ; son kit
  * (voile, ballon, feux) arrive avec les Gardiens.
  */
-export function vehiclePlacement(a: ArchipelagoId, progress: Record<string, { stars: number }>, village: Village): VehiclePlacement {
+export function vehiclePlacement(a: ArchipelagoId, progress: Record<string, { stars: number }>, village: World): VehiclePlacement {
   const port = getArchipelago(a).port;
   const origin = dockOrigin(port);
   const cubes: VoxelCube[] = [];
@@ -1664,12 +1664,12 @@ export function vehiclePlacement(a: ArchipelagoId, progress: Record<string, { st
     const bd = BLOCKS[c.block];
     cubes.push({ x: c.x, y: c.y, z: c.z, color: bd.side, top: bd.top, texture: bd.texture, tag: port, ghost: ghost || undefined });
   };
-  const bridges = village.bridges;
+  const bridges = village.links;
   for (const stage of launchedStages(bridges)) for (const c of [...stage.cells, ...stage.kit]) put(c, false);
   // Le chantier de ce port : l'étape qui s'y construit, si l'étape d'avant est partie.
   const building = stageBuildingAt(port, bridges);
   if (building) {
-    const done = new Set(village.plans[building.id] ?? []);
+    const done = new Set(village.parts[building.id] ?? []);
     const placed = planCells(building);
     building.cells.forEach((c, i) => put(c, !done.has(placed[i].key)));
     const kit = kitReady(building, progress);
@@ -1976,7 +1976,7 @@ export function monumentCenter(m: MonumentDef): { x: number; y: number; z: numbe
  * niveau du sol de l'archipel, sa roche jusqu'à la mer (ou qui s'amincit sous lui dans le ciel), puis les cases du
  * monument, posées ou en fantôme. Tous leurs cubes se touchent pour ouvrir le panneau du monument.
  */
-function monumentIslets(a: ArchipelagoId, village: Village, cubes: VoxelCube[]): void {
+function monumentIslets(a: ArchipelagoId, village: World, cubes: VoxelCube[]): void {
   const alt = mapOf(a)[0]?.altitude ?? 0;
   const sky = DANS_LE_CIEL[a];
   const top = sky ? SNOW : BLOCKS.sable.side;
@@ -1999,7 +1999,7 @@ function monumentIslets(a: ArchipelagoId, village: Village, cubes: VoxelCube[]):
     }
     if (sky)
       for (const t of taperLayers(land)) cubes.push({ x: t.x, y: t.y, z: alt - DEPTH - t.d, color: BLOCKS.pierre.side, texture: 'pierre', tag: m.biome, place, sol: true });
-    const done = new Set(village.plans[m.id] ?? []);
+    const done = new Set(village.parts[m.id] ?? []);
     const o = monumentAnchor(m);
     for (const c of planCells(m)) {
       const bd = BLOCKS[c.block];
@@ -2024,7 +2024,7 @@ export function origineDe(id: BiomeId): { x: number; y: number; z: number } {
 export function cubesDeLIle(
   id: BiomeId,
   progress: Record<string, { stars: number }>,
-  village: Village = { plans: {}, journal: [], bridges: [] },
+  village: World = { parts: {}, log: [], links: [] },
   withCreatures = true,
   /** Les succès gagnés, un bloc par succès : les trophées de la salle des trophées. */
   trophies: (keyof typeof BLOCKS)[] = [],
@@ -2053,7 +2053,7 @@ export function cubesDeLIle(
 export function worldCubes(
   a: ArchipelagoId,
   progress: Record<string, { stars: number }>,
-  village: Village = { plans: {}, journal: [], bridges: [] },
+  village: World = { parts: {}, log: [], links: [] },
   withCreatures = true,
   /** Les succès gagnés, un bloc par succès : les trophées de la salle des trophées. */
   trophies: (keyof typeof BLOCKS)[] = [],
@@ -2083,7 +2083,7 @@ function poserLIle(
   biome: (typeof BIOMES)[number],
   index: number,
   progress: Record<string, { stars: number }>,
-  village: Village,
+  village: World,
   withCreatures: boolean,
   trophies: (keyof typeof BLOCKS)[],
   placed: Set<number>,
@@ -2093,7 +2093,7 @@ function poserLIle(
 ): void {
   const def = islandDef(biome.id);
   const { ox, oy, oz } = islandOrigin(index);
-  const unlocked = isBiomeUnlocked(biome.id, village.bridges);
+  const unlocked = isBiomeUnlocked(biome.id, village.links);
   const block = BLOCKS[biome.block];
   // Les cœurs en herbe ; le Jardin des heures aussi (DA, LV2-4) : l'osier, son bloc, reste aux bordures, aux paniers et
   // à la serre ; et le Refuge des carnets (DA, LV2-5) : le bardeau reste aux murs.
@@ -2252,7 +2252,7 @@ function poserLIle(
     for (const t of taperLayers(land)) if (!taken.has(cleDeCube(t.x, t.y, -DEPTH - t.d))) putSol(t.x, t.y, -DEPTH - t.d, BLOCKS.pierre.side);
   // L'îlot du Gardien, devant l'île, dès qu'il accepte le défi : une petite île, son arène et ses pas japonais. Une
   // sentinelle (lot 6) est là dès l'ouverture de l'île, sans les pas japonais tant qu'elle attend.
-  const guardian = guardianStatus(biome, progress, village.bridges, sentinelles);
+  const guardian = guardianStatus(biome, progress, village.links, sentinelles);
   if (guardian !== 'hidden') bossIslet(biome, guardian === 'beaten', cubes, guardian !== 'waiting');
   if (unlocked && withCreatures) {
     const spot = creatureSpot(biome.id);
@@ -2269,8 +2269,8 @@ function poserLIle(
   if (unlocked) {
     let ghostsShown = false;
     for (const plan of plansFor(biome.id)) {
-      const done = new Set(village.plans[plan.id] ?? []);
-      const finished = isPlanDone(plan, village.plans);
+      const done = new Set(village.parts[plan.id] ?? []);
+      const finished = isPlanDone(plan, village.parts);
       if (!finished && ghostsShown) break;
       if (!finished) ghostsShown = true;
       // Dessinées au fond de la zone au Marché et à l'Atelier (`decalageDesPlans`) ; les clés restent celles du plan.
@@ -2285,7 +2285,7 @@ function poserLIle(
 }
 
 /** Ce qui est entre les îles, en cases du monde, ajouté à `cubes` : le port, les îlots des monuments, la mer, les ouvrages. */
-function entreLesIles(a: ArchipelagoId, village: Village, cubes: VoxelCube[]): VoxelCube[] {
+function entreLesIles(a: ArchipelagoId, village: World, cubes: VoxelCube[]): VoxelCube[] {
   // Le port : la jetée (le Bloc-Navire est un objet à part, voir vehiclePlacement).
   harbour(a, village, cubes);
   // Les monuments, chacun sur son îlot au large : bâtis, ou en fantômes à construire.
@@ -2296,11 +2296,11 @@ function entreLesIles(a: ArchipelagoId, village: Village, cubes: VoxelCube[]): V
   // Avec « Pas de LV2 », pas de fantôme vers l'île de la LV2 : il n'est pas proposé (`buildableBridges`), rien ne
   // l'annonce (DA, 28/09, LV2-4). Un pont déjà construit reste : la sauvegarde de l'élève ne perd rien.
   const occupied = new Set(cubes.map((c) => `${c.x},${c.y},${c.z}`));
-  const sansLv2 = lv2Courante() === 'aucune';
+  const sansLv2 = lv2Courante() === 'none';
   const versLaLv2 = (def: BridgeDef) => [def.from, def.to].some((id) => BIOMES.find((x) => x.id === id)?.subject === 'lv2');
   for (const def of BRIDGES) {
     if (archipelagoOfIsland(def.from) !== a) continue;
-    const state = bridgeState(def, village.bridges);
+    const state = bridgeState(def, village.links);
     if (state === 'far' || (state !== 'built' && sansLv2 && versLaLv2(def))) continue;
     bridge(def, cubes, state === 'buildable', occupied);
   }

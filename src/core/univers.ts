@@ -88,8 +88,8 @@ export function universAffiche(univers?: UniversChoice): UniversChoice {
 }
 
 // Le message unique, noté par appareil comme ce que la baleine a déjà dit (WhaleWord), jamais dans la sauvegarde :
-// `{ dit: false }` quand il reste à dire, `{ dit: true }` une fois lu ; absent, il n'y a rien à dire.
-export const MESSAGE_UNIVERS_KEY = 'univers-message';
+// `{ said: false }` quand il reste à dire, `{ said: true }` une fois lu ; absent, il n'y a rien à dire.
+export const MESSAGE_UNIVERS_KEY = 'universe-message';
 
 export const MESSAGE_UNIVERS = {
   titre: 'Un nouvel univers : Archipéo',
@@ -100,20 +100,20 @@ export const MESSAGE_UNIVERS = {
 };
 
 // Les nouveaux noms des archipels de Blocland (GD-1, U4), notés par appareil comme le message unique, jamais dans la
-// sauvegarde : `{ dit: false }` quand ils restent à dire, `{ dit: true }` une fois lus ou pour un appareil neuf.
-export const RENOMMAGE_KEY = 'noms-archipels';
+// sauvegarde : `{ said: false }` quand ils restent à dire, `{ said: true }` une fois lus ou pour un appareil neuf.
+export const RENOMMAGE_KEY = 'region-names';
 
 /**
  * Au premier lancement après les nouveaux noms (clé absente), ce qu'il faut noter : à dire si l'appareil a déjà une
  * progression, déjà dit sinon (un nouvel élève n'a pas connu les anciens noms). `null` : déjà noté, rien à écrire.
  */
-export function renommageANoter(note: unknown, progression: boolean): { dit: boolean } | null {
-  return note === null ? { dit: !progression } : null;
+export function renommageANoter(note: unknown, progression: boolean): { said: boolean } | null {
+  return note === null ? { said: !progression } : null;
 }
 
-/** Les nouveaux noms restent à dire (noté `{ dit: false }`) ; absent ou illisible, rien à dire. */
+/** Les nouveaux noms restent à dire (noté `{ said: false }`) ; absent ou illisible, rien à dire. */
 export function renommageADire(note: unknown): boolean {
-  return typeof note === 'object' && note !== null && (note as { dit?: unknown }).dit === false;
+  return typeof note === 'object' && note !== null && (note as { said?: unknown }).said === false;
 }
 
 /** La confirmation d'un changement d'univers : ce qui change, ce qui reste (univers.md §6.1). */

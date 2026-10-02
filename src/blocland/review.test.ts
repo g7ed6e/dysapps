@@ -12,7 +12,7 @@ it('les items ratés dus aujourd’hui désignent leurs exercices et leurs missi
   expect(exercisesToReview(spaced, TODAY)).toEqual(new Set(['foret-echauffement-002', 'mine-filon-b']));
   expect(reviewKeys(spaced, 'foret-echauffement-002', TODAY).sort()).toEqual(['chocolat', 'parapluie']);
   // La Mine est fermée au début : seule la Forêt est proposée ; les rimes ne sont dues que dans quelques jours.
-  expect(questsToReview(spaced, EMPTY_STATE.village.bridges, TODAY)).toEqual([
+  expect(questsToReview(spaced, EMPTY_STATE.world.links, TODAY)).toEqual([
     { biome: 'foret', type: 'abattage', label: 'Abattage syllabique · Forêt des sons', path: '/aventure/foret/abattage' },
   ]);
 });

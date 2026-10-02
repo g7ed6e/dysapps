@@ -68,7 +68,7 @@ export function PlanSection({ biome, builder, in3d = false, fold, highlight = fa
   }, [highlight, biome.id]);
   const { plan, status } = builder;
   const missing = status ? (Object.entries(status.missing) as [BlockId, number][]).filter(([, n]) => n > 0) : [];
-  const built = state.village.journal.filter((e) => getPlan(e.plan)?.biome === biome.id);
+  const built = state.world.log.filter((e) => getPlan(e.part)?.biome === biome.id);
   const heading = (
     <h3 id={`plan-${biome.id}`} className="island-sheet-heading">
       <Icon name="map" /> {plan ? `Plan ${builder.index} / ${builder.total} : ${plan.name}` : 'Aucun plan sur cette île'}
@@ -77,7 +77,7 @@ export function PlanSection({ biome, builder, in3d = false, fold, highlight = fa
   // Ouvert quand on peut poser un bloc, ou qu'un plan vient d'être fini (sa phrase et son coffre) ; replié sinon.
   const defaultOpen = builder.canFill || highlight || Boolean(status?.complete && !builder.allDone) || builder.notice !== null;
   return (
-    <Foldable fold={fold} name="plan" heading={heading} status={planSummary(builder, state.inventory)} defaultOpen={defaultOpen}>
+    <Foldable fold={fold} name="plan" heading={heading} status={planSummary(builder, state.stock)} defaultOpen={defaultOpen}>
       <section ref={section} className={`plan-section${highlight ? ' bridge-highlight' : ''}`} aria-labelledby={`plan-${biome.id}`}>
         {plan && status && (
           <>
@@ -138,7 +138,7 @@ export function PlanSection({ biome, builder, in3d = false, fold, highlight = fa
             <span>
               Terminé ici :{' '}
               {built
-                .map((e) => `${getPlan(e.plan)?.name} (${new Date(e.day + 'T12:00:00').toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })})`)
+                .map((e) => `${getPlan(e.part)?.name} (${new Date(e.day + 'T12:00:00').toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' })})`)
                 .join(', ')}
               .
             </span>

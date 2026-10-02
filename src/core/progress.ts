@@ -1,3 +1,4 @@
+import { translateProgress } from './migration';
 import { BIOMES } from '../blocland/biomes';
 import { PLANS } from '../blocland/world/plans';
 // Gamification : XP, niveaux et badges. Logique pure, facile à tester.
@@ -17,13 +18,13 @@ export interface Progress {
   sessionsCompleted: number;
   perfectSessions: number;
   /** Bâtiments du village terminés. */
-  plansCompleted: number;
+  structuresCompleted: number;
   /** Gardiens de biome vaincus. */
-  bossesBeaten: number;
+  challengesWon: number;
   /** Voyages du Bloc-Navire (un archipel de plus atteint). */
-  voyages: number;
+  passages: number;
   /** Monuments terminés (l'observatoire des baleines…). */
-  monumentsCompleted: number;
+  landmarksCompleted: number;
   badges: Record<string, string>; // id du badge -> date d'obtention (ISO)
   apps: Record<string, AppStats>;
 }
@@ -36,10 +37,10 @@ export const EMPTY_PROGRESS: Progress = {
   bestStreak: 0,
   sessionsCompleted: 0,
   perfectSessions: 0,
-  plansCompleted: 0,
-  bossesBeaten: 0,
-  voyages: 0,
-  monumentsCompleted: 0,
+  structuresCompleted: 0,
+  challengesWon: 0,
+  passages: 0,
+  landmarksCompleted: 0,
   badges: {},
   apps: {},
 };
@@ -55,7 +56,9 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 /** Corrige une progression lue depuis le stockage (champs manquants, types invalides). */
 export function sanitizeProgress(input: unknown): Progress {
-  const raw = isRecord(input) ? input : {};
+  // Une progression d'avant les mots neutres (2 octobre 2026) se lit traduite.
+  const translated = translateProgress(input);
+  const raw = isRecord(translated) ? translated : {};
   const badges: Record<string, string> = {};
   if (isRecord(raw.badges)) {
     for (const [id, date] of Object.entries(raw.badges)) if (typeof date === 'string') badges[id] = date;
@@ -78,10 +81,10 @@ export function sanitizeProgress(input: unknown): Progress {
     currentStreak: nonNegativeInt(raw.currentStreak),
     bestStreak: nonNegativeInt(raw.bestStreak),
     sessionsCompleted: nonNegativeInt(raw.sessionsCompleted),
-    plansCompleted: nonNegativeInt(raw.plansCompleted),
-    bossesBeaten: nonNegativeInt(raw.bossesBeaten),
-    voyages: nonNegativeInt(raw.voyages),
-    monumentsCompleted: nonNegativeInt(raw.monumentsCompleted),
+    structuresCompleted: nonNegativeInt(raw.structuresCompleted),
+    challengesWon: nonNegativeInt(raw.challengesWon),
+    passages: nonNegativeInt(raw.passages),
+    landmarksCompleted: nonNegativeInt(raw.landmarksCompleted),
     perfectSessions: nonNegativeInt(raw.perfectSessions),
     badges,
     apps,
@@ -210,35 +213,35 @@ export const BADGES: BadgeDef[] = [
   { id: 'rang-or', icon: 'trophy', title: 'Bâtisseur', description: 'Devenir Bâtisseur.', earned: (p) => reached(p, 'batisseur') },
   { id: 'rang-diamant', icon: 'gem', title: 'Navigateur', description: 'Devenir Navigateur.', earned: (p) => reached(p, 'navigateur') },
   { id: 'rang-legende', icon: 'crown', title: 'Architecte de l’archipel', description: 'Devenir Architecte de l’archipel.', earned: (p) => reached(p, 'architecte') },
-  { id: 'batisseur', icon: 'hammer', title: 'Premier bâtiment', description: 'Terminer un bâtiment du village.', earned: (p) => p.plansCompleted >= 1 },
-  { id: 'architecte', icon: 'blocks', title: 'Maître d’œuvre', description: 'Terminer cinq bâtiments du village.', earned: (p) => p.plansCompleted >= 5 },
+  { id: 'batisseur', icon: 'hammer', title: 'Premier bâtiment', description: 'Terminer un bâtiment du village.', earned: (p) => p.structuresCompleted >= 1 },
+  { id: 'architecte', icon: 'blocks', title: 'Maître d’œuvre', description: 'Terminer cinq bâtiments du village.', earned: (p) => p.structuresCompleted >= 5 },
   {
     id: 'village',
     icon: 'crown',
     title: 'Village reconstruit',
     description: 'Terminer les quinze plans des cinq premières îles.',
-    earned: (p) => p.plansCompleted >= 15,
+    earned: (p) => p.structuresCompleted >= 15,
   },
   {
     id: 'archipel-bati',
     icon: 'castle',
     title: 'Archipel bâti',
     description: `Terminer les ${PLANS.length} plans des quatre archipels.`,
-    earned: (p) => p.plansCompleted >= PLANS.length,
+    earned: (p) => p.structuresCompleted >= PLANS.length,
   },
-  { id: 'patrimoine', icon: 'castle', title: 'Patrimoine', description: 'Terminer un monument, comme l’observatoire des baleines.', earned: (p) => p.monumentsCompleted >= 1 },
-  { id: 'capitaine', icon: 'ship', title: 'Capitaine', description: 'Larguer les amarres : premier voyage du Bloc-Navire.', earned: (p) => p.voyages >= 1 },
-  { id: 'aeronaute', icon: 'ship', title: 'Aéronaute', description: 'Gonfler le ballon du Bloc-Navire et rejoindre les Anciens Ateliers.', earned: (p) => p.voyages >= 2 },
-  { id: 'pilote-du-ciel', icon: 'ship', title: 'Pilote du ciel', description: 'Allumer le réacteur et monter jusqu’aux Îles du Ciel.', earned: (p) => p.voyages >= 3 },
-  { id: 'gardien', icon: 'shield', title: 'Face au Gardien', description: 'Vaincre le Gardien d’un biome.', earned: (p) => p.bossesBeaten >= 1 },
-  { id: 'cinq-iles', icon: 'shield', title: 'Maître des cinq îles', description: 'Vaincre cinq Gardiens.', earned: (p) => p.bossesBeaten >= 5 },
-  { id: 'dix-gardiens', icon: 'medal', title: 'Collégien', description: 'Vaincre dix Gardiens.', earned: (p) => p.bossesBeaten >= 10 },
+  { id: 'patrimoine', icon: 'castle', title: 'Patrimoine', description: 'Terminer un monument, comme l’observatoire des baleines.', earned: (p) => p.landmarksCompleted >= 1 },
+  { id: 'capitaine', icon: 'ship', title: 'Capitaine', description: 'Larguer les amarres : premier voyage du Bloc-Navire.', earned: (p) => p.passages >= 1 },
+  { id: 'aeronaute', icon: 'ship', title: 'Aéronaute', description: 'Gonfler le ballon du Bloc-Navire et rejoindre les Anciens Ateliers.', earned: (p) => p.passages >= 2 },
+  { id: 'pilote-du-ciel', icon: 'ship', title: 'Pilote du ciel', description: 'Allumer le réacteur et monter jusqu’aux Îles du Ciel.', earned: (p) => p.passages >= 3 },
+  { id: 'gardien', icon: 'shield', title: 'Face au Gardien', description: 'Vaincre le Gardien d’un biome.', earned: (p) => p.challengesWon >= 1 },
+  { id: 'cinq-iles', icon: 'shield', title: 'Maître des cinq îles', description: 'Vaincre cinq Gardiens.', earned: (p) => p.challengesWon >= 5 },
+  { id: 'dix-gardiens', icon: 'medal', title: 'Collégien', description: 'Vaincre dix Gardiens.', earned: (p) => p.challengesWon >= 10 },
   {
     id: 'archipel',
     icon: 'crown',
     title: 'Maître de l’archipel',
     description: `Vaincre les ${BIOMES.length} Gardiens des quatre archipels.`,
-    earned: (p) => p.bossesBeaten >= BIOMES.length,
+    earned: (p) => p.challengesWon >= BIOMES.length,
   },
 ];
 
@@ -295,21 +298,21 @@ export function recordAnswer(p: Progress, correct: boolean, attempt = 1, now = n
 /** Un bâtiment du village est terminé : XP du plan et compteur pour les succès. */
 /** Un Gardien de biome vaincu (deux étoiles au défi) : compteur pour les succès. */
 export function recordBoss(p: Progress, now = new Date().toISOString()): ProgressUpdate {
-  return finish(p, { ...p, bossesBeaten: p.bossesBeaten + 1 }, 0, now);
+  return finish(p, { ...p, challengesWon: p.challengesWon + 1 }, 0, now);
 }
 
 /** Un voyage du Bloc-Navire : l'XP de l'étape et le compteur pour les succès. */
 export function recordVoyage(p: Progress, xp: number, now = new Date().toISOString()): ProgressUpdate {
-  return finish(p, { ...p, xp: p.xp + xp, voyages: p.voyages + 1 }, xp, now);
+  return finish(p, { ...p, xp: p.xp + xp, passages: p.passages + 1 }, xp, now);
 }
 
 /** Un monument terminé : son XP et le compteur pour les succès. */
 export function recordMonument(p: Progress, xp: number, now = new Date().toISOString()): ProgressUpdate {
-  return finish(p, { ...p, xp: p.xp + xp, monumentsCompleted: p.monumentsCompleted + 1 }, xp, now);
+  return finish(p, { ...p, xp: p.xp + xp, landmarksCompleted: p.landmarksCompleted + 1 }, xp, now);
 }
 
 export function recordPlan(p: Progress, xp: number, now = new Date().toISOString()): ProgressUpdate {
-  const after: Progress = { ...p, xp: p.xp + xp, plansCompleted: p.plansCompleted + 1 };
+  const after: Progress = { ...p, xp: p.xp + xp, structuresCompleted: p.structuresCompleted + 1 };
   return finish(p, after, xp, now);
 }
 

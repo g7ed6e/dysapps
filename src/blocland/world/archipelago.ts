@@ -382,7 +382,7 @@ export function bridgeState(bridge: BridgeDef, bridges: string[], world?: WorldP
  */
 export function buildableBridges(bridges: string[], island?: BiomeId, world?: WorldProgress, lv2: Lv2Choice = lv2Courante()): BridgeDef[] {
   return (island ? bridgesOf(island) : BRIDGES).filter((b) => {
-    if (lv2 === 'aucune' && [b.from, b.to].some((id) => getBiome(id)?.subject === 'lv2')) return false;
+    if (lv2 === 'none' && [b.from, b.to].some((id) => getBiome(id)?.subject === 'lv2')) return false;
     const state = bridgeState(b, bridges, world);
     return state === 'buildable' || state === 'blocked';
   });

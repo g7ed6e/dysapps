@@ -3,7 +3,7 @@
 // par appareil (voir useWhaleWord), jamais dans la sauvegarde. Les créatures restent les voix de leur île. Ce que dit
 // la baleine est un texte d'univers : src/univers/baleine.ts.
 import type { BiomeId } from '../biomes';
-import type { BloclandState } from '../engine';
+import type { GameState } from '../engine';
 import { BRIDGES, getArchipelago, islandsOf, isArchipelagoReached, reachableIslands, type ArchipelagoId } from './archipelago';
 import { isPlanDone, plansFor } from './plans';
 import { beatenGuardians } from './vehicle';
@@ -23,9 +23,9 @@ export interface WhaleMoment {
  * Les grandes étapes atteintes dans un archipel, de la plus grande à la plus petite : l'arrivée (en 6e, la baleine se
  * présente), le dernier Gardien vaincu, l'île-port restaurée, le premier ouvrage payé par l'élève.
  */
-export function reachedWhaleMoments(state: Pick<BloclandState, 'progress' | 'village'>, a: ArchipelagoId): WhaleMoment[] {
+export function reachedWhaleMoments(state: Pick<GameState, 'progress' | 'world'>, a: ArchipelagoId): WhaleMoment[] {
   const { port } = getArchipelago(a);
-  const bridges = state.village.bridges;
+  const bridges = state.world.links;
   const out: WhaleMoment[] = [];
   if (!isArchipelagoReached(a, bridges)) return out;
   out.push({ id: a === '6e' ? 'baleine-6e-arrivee' : `archipel-${a}`, kind: 'arrivee', archipelago: a, island: port });
@@ -34,7 +34,7 @@ export function reachedWhaleMoments(state: Pick<BloclandState, 'progress' | 'vil
     out.push({ id: `baleine-${a}-gardiens`, kind: 'gardiens', archipelago: a, island: port });
   }
   const portPlans = plansFor(port);
-  if (portPlans.length > 0 && portPlans.every((p) => isPlanDone(p, state.village.plans))) {
+  if (portPlans.length > 0 && portPlans.every((p) => isPlanDone(p, state.world.parts))) {
     out.push({ id: `baleine-${a}-port`, kind: 'port', archipelago: a, island: port });
   }
   // Le premier ouvrage payé par l'élève (le pont gratuit de la Forêt à la Plaine ne compte pas), dans l'ordre où il a

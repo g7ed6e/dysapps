@@ -64,8 +64,8 @@ function monde(a: ArchipelagoId, etat: Etat = 'tout') {
   const k = `${a}|${etat}`;
   let m = mondes.get(k);
   if (m) return m;
-  const { progress, village } = toutConstruit();
-  const plans: Record<string, string[]> = etat === 'chantier' ? {} : { ...village.plans };
+  const { progress, world: village } = toutConstruit();
+  const plans: Record<string, string[]> = etat === 'chantier' ? {} : { ...village.parts };
   // « dernier » : tout est posé sauf le dernier plan de chaque île, en fantômes.
   if (etat === 'dernier')
     for (const b of BIOMES) {
@@ -73,7 +73,7 @@ function monde(a: ArchipelagoId, etat: Etat = 'tout') {
       if (l.length) delete plans[l[l.length - 1].id];
     }
   // Le rendu Archipéo : la Halle aux matériaux (GD-2) à la place de la Fabrique.
-  const tous = worldCubes(a, progress, { ...village, plans }, false, [], false, 'halle');
+  const tous = worldCubes(a, progress, { ...village, parts: plans }, false, [], false, 'halle');
   const sol = tous.filter((c) => c.sol);
   const { reste } = rangerLeDecor(tous.filter((c) => !c.sol));
   m = { cubes: poseDuDecor(champDuSol(a, sol, reste), reste), sol };
@@ -564,7 +564,7 @@ describe('Les toits de terre cuite (lot R5)', () => {
 describe('Les trophées sous le toit de la halle (GD-3, retouches du directeur artistique)', () => {
   /** L'archipel avec les 24 succès, rendu comme Archipéo le rend ; les trophées posés, et le coin de leur salle. */
   function avecLesTrophees(a: ArchipelagoId) {
-    const { progress, village } = toutConstruit();
+    const { progress, world: village } = toutConstruit();
     const tous = worldCubes(a, progress, village, false, BADGES.map((b) => trophyBlock(b.id)), false, 'halle');
     const sol = tous.filter((c) => c.sol);
     const { reste } = rangerLeDecor(tous.filter((c) => !c.sol));
@@ -608,11 +608,11 @@ describe('Les trophées sous le toit de la halle (GD-3, retouches du directeur a
 
 /** Le 6e, tout construit sauf l'île de la Tour : son phare de Grimoire à tant de cases posées par étape. */
 function mondeDuPhare(murs: number, toit: number) {
-  const { progress, village } = toutConstruit();
+  const { progress, world: village } = toutConstruit();
   const cles = (id: string, n: number) => planCells(getPlan(id)!).slice(0, n).map((c) => c.key);
-  const plans: Record<string, string[]> = { ...village.plans, 'tour-phare': cles('tour-phare', murs), 'tour-lanterne': cles('tour-lanterne', toit) };
+  const plans: Record<string, string[]> = { ...village.parts, 'tour-phare': cles('tour-phare', murs), 'tour-lanterne': cles('tour-lanterne', toit) };
   delete plans['tour-quai'];
-  const tous = worldCubes('6e', progress, { ...village, plans }, false);
+  const tous = worldCubes('6e', progress, { ...village, parts: plans }, false);
   const sol = tous.filter((c) => c.sol);
   const { reste } = rangerLeDecor(tous.filter((c) => !c.sol));
   return { cubes: poseDuDecor(champDuSol('6e', sol, reste), reste), sol };
@@ -795,7 +795,7 @@ describe('Un maillage par île (lot R5)', () => {
 describe('Les tours du décor du cœur (lot R5, Archipéo seulement)', () => {
   it('ne retire que la tour de verre de la Tour et la petite tour du Phare, rien ailleurs', () => {
     for (const a of ARCHIPELAGO_IDS) {
-      const { progress, village } = toutConstruit();
+      const { progress, world: village } = toutConstruit();
       const cubes = worldCubes(a, progress, village, false);
       const gardes = new Set(sansToursDuCoeur(cubes));
       const retires = cubes.filter((c) => !gardes.has(c));

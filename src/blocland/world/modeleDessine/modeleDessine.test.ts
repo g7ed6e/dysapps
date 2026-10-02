@@ -9,7 +9,7 @@ import { islandsOf } from '../archipelago';
 import { MODELES, modelerLeSol } from '.';
 import type { Modele } from './types';
 
-const { progress, village } = toutConstruit();
+const { progress, world: village } = toutConstruit();
 const monde = (a: (typeof ARCHIPELAGO_IDS)[number]) => {
   const cubes = worldCubes(a, progress, village, false);
   const { reste } = rangerLeDecor(cubes.filter((c) => !c.sol));

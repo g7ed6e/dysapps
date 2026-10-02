@@ -105,7 +105,7 @@ function QuestionDAssemblage({
   // Fixés à l'ouverture : le tirage de l'élève (un neuf la première fois), la question tirée, ses choix placés (la même
   // place pour une question tout au long d'un tour), et ce qu'il peut assembler.
   const [tirage] = useState(() => tirageDe(state, recette.bloc, graineAuHasard()));
-  const [possible] = useState(() => assemblables(state.inventory, recette) > 0);
+  const [possible] = useState(() => assemblables(state.stock, recette) > 0);
   const [item] = useState(() => {
     const cle = prochaineQuestion(cles, tirage);
     return placerChoixAssemblage(def, `${tirage.graine}:${tirage.tour}`).find((it) => it.key === cle);
@@ -170,8 +170,8 @@ function QuestionDAssemblage({
     setPause(pauseAfterNext);
     if (r.assemble) {
       haptics.success();
-      setFin({ juste: true, assemble: true, texte: messageAssemble(recette.bloc, r.state.inventory[recette.bloc] ?? 0) });
-      setEncore(assemblables(r.state.inventory, recette) > 0);
+      setFin({ juste: true, assemble: true, texte: messageAssemble(recette.bloc, r.state.stock[recette.bloc] ?? 0) });
+      setEncore(assemblables(r.state.stock, recette) > 0);
       return;
     }
     // Juste, mais les blocs ont été pris ailleurs entre-temps : rien n'est assemblé ni perdu.

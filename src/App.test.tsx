@@ -56,7 +56,7 @@ it('l’accueil est le menu de Blocland : le village, les Expéditions (la LV2 �
 
 it('les révisions du jour ont leur carte sur l’accueil, vers la mission', () => {
   localStorage.setItem('dysapps:progress', JSON.stringify({ totalAnswers: 3 }));
-  localStorage.setItem('dysapps:blocland', JSON.stringify({ spaced: [{ itemId: 'foret-echauffement-001:cabane', due: '2000-01-01', stage: 0, streak: 0 }] }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ spaced: [{ itemId: 'foret-echauffement-001:cabane', due: '2000-01-01', stage: 0, streak: 0 }] }));
   renderAt('/');
   expect(screen.getByRole('link', { name: /À revoir aujourd’hui.*Abattage syllabique · Forêt des sons/ })).toHaveAttribute('href', '/aventure/foret/abattage');
 });
@@ -108,16 +108,16 @@ it('en vue simple, le voyage en Bloc-Navire est un écran avec une phrase et un 
   const { planCells } = await import('./blocland/world/plans');
   const [coque] = VEHICLE_STAGES;
   const progress = Object.fromEntries(['foret', 'plaine', 'mine'].map((id) => [`${id}-gardien`, { stars: 2, attempts: 1, best: 1 }]));
-  localStorage.setItem('dysapps:blocland', JSON.stringify({ progress, village: { plans: { [coque.id]: planCells(coque).map((c) => c.key) }, bridges: ['foret-mine'] } }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ progress, world: { parts: { [coque.id]: planCells(coque).map((c) => c.key) }, links: ['foret-mine'] } }));
   const user = userEvent.setup();
   renderAt('/aventure/voyage/5e');
   expect(screen.getByRole('dialog', { name: /Le voyage/ })).toBeInTheDocument();
   expect(document.body.textContent).toContain('Tu embarques sur le Bloc-Navire. Cap sur les Collines du Large !');
   await user.click(screen.getByRole('button', { name: /Arriver/ }));
   expect(screen.getByRole('heading', { name: /Marché des proportions/ })).toBeInTheDocument();
-  const saved = JSON.parse(localStorage.getItem('dysapps:blocland')!);
-  expect(saved.village.bridges).toContain('voyage-5e');
-  expect(saved.village.at).toBe('marche');
+  const saved = JSON.parse(localStorage.getItem('dysapps:game')!);
+  expect(saved.world.links).toContain('voyage-5e');
+  expect(saved.world.place).toBe('marche');
   // Un voyage impossible (rien de construit) : page introuvable.
   localStorage.clear();
   document.body.innerHTML = '';
@@ -129,8 +129,8 @@ it('applique et sauvegarde les réglages', async () => {
   const user = userEvent.setup();
   renderAt('/reglages');
   await user.click(screen.getByLabelText('Nuit'));
-  expect(document.documentElement.dataset.theme).toBe('nuit');
-  expect(JSON.parse(localStorage.getItem('dysapps:settings')!).theme).toBe('nuit');
+  expect(document.documentElement.dataset.theme).toBe('night');
+  expect(JSON.parse(localStorage.getItem('dysapps:settings')!).theme).toBe('night');
 });
 
 it('les réglages mènent à la documentation et au code, dans un nouvel onglet', () => {
@@ -144,7 +144,7 @@ it('les réglages mènent à la documentation et au code, dans un nouvel onglet'
 
 it('effacer la progression demande d’écrire « effacer » : un toucher de trop n’efface rien', async () => {
   localStorage.setItem('dysapps:progress', JSON.stringify({ xp: 120 }));
-  localStorage.setItem('dysapps:reprise', JSON.stringify({ path: '/app/tables', label: 'Tables' }));
+  localStorage.setItem('dysapps:resume', JSON.stringify({ path: '/app/tables', label: 'Tables' }));
   const user = userEvent.setup();
   renderAt('/reglages');
   // Les espacements sont dits en mots.
@@ -158,7 +158,7 @@ it('effacer la progression demande d’écrire « effacer » : un toucher de tro
   await user.click(erase);
   expect(JSON.parse(localStorage.getItem('dysapps:progress')!).xp).toBe(0);
   // « Continuer » est oublié aussi.
-  expect(localStorage.getItem('dysapps:reprise')).toBeNull();
+  expect(localStorage.getItem('dysapps:resume')).toBeNull();
 });
 
 it('redirige l’ancienne adresse de progression vers les succès', () => {
@@ -195,7 +195,7 @@ it('ouvre la carte de Blocland puis un biome, dont la créature donne la mission
 });
 
 it('en vue simple, « Mes blocs » est une page : ce que chaque bloc construit, et où aller chercher ceux qui manquent', async () => {
-  localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: { bois: 4 } }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ stock: { bois: 4 } }));
   const user = userEvent.setup();
   renderAt('/aventure');
   await user.click(screen.getByRole('link', { name: /Mes blocs \(4\)/ }));
@@ -243,7 +243,7 @@ it('l’accueil annonce le Bloc-Navire quand il est prêt à partir', async () =
   const { planCells } = await import('./blocland/world/plans');
   const [coque] = VEHICLE_STAGES;
   const progress = Object.fromEntries(['foret', 'plaine', 'mine'].map((id) => [`${id}-gardien`, { stars: 2, attempts: 1, best: 1 }]));
-  localStorage.setItem('dysapps:blocland', JSON.stringify({ progress, village: { plans: { [coque.id]: planCells(coque).map((c) => c.key) }, bridges: ['foret-mine'] } }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ progress, world: { parts: { [coque.id]: planCells(coque).map((c) => c.key) }, links: ['foret-mine'] } }));
   localStorage.setItem('dysapps:progress', JSON.stringify({ totalAnswers: 3 }));
   renderAt('/');
   expect(screen.getByRole('link', { name: /Reprendre l’aventure/ })).toHaveAttribute('href', '/aventure/plaine');

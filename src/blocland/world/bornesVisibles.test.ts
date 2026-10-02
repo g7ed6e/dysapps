@@ -31,9 +31,9 @@ function coupe(o: number[], d: number[], p: Float32Array, i: number): number {
 it('rendu Archipéo : aucun triangle du décor (arbres, rochers, repères, lueurs, fumées au repos) ne cache une borne, partie vierge ou tout construit', () => {
   const tout = toutConstruit();
   for (const a of ARCHIPELAGO_IDS)
-    for (const partie of [{ progress: {}, village: { plans: {}, journal: [], bridges: [] } }, tout]) {
+    for (const partie of [{ progress: {}, world: { parts: {}, log: [], links: [] } }, tout]) {
       // Comme la vue 3D d'Archipéo (three/cubes.ts) : sans les tours du cœur, le décor en primitives sur le sol modelé.
-      const cubes = sansToursDuCoeur(worldCubes(a, partie.progress, partie.village, false, [], true));
+      const cubes = sansToursDuCoeur(worldCubes(a, partie.progress, partie.world, false, [], true));
       const { elements, reste } = rangerLeDecor(cubes.filter((c) => !c.sol));
       const champ = champDuSol(a, modelerLeSol(a, cubes.filter((c) => c.sol), reste), reste);
       const m = maillageDuDecor(a, champ, elements);

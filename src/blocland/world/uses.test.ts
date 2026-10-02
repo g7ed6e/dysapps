@@ -23,7 +23,7 @@ it('un bloc sert au plan en cours de son île et au Bloc-Navire, avec ce qu’il
   expect(uses[0]).toMatchObject({ island: 'foret', name: 'La cabane de Mousso', need: CABANE, enough: false });
   expect(uses[1]).toMatchObject({ island: 'plaine', need: 20 });
   // Avec assez de blocs, le plan est faisable.
-  const rich = sanitizeState({ inventory: { bois: CABANE } });
+  const rich = sanitizeState({ stock: { bois: CABANE } });
   expect(blockUses(rich, 'bois')[0].enough).toBe(true);
 });
 
@@ -35,7 +35,7 @@ it('un bloc de finition sans plan à l’attendre est à garder pour les plans s
 });
 
 it('un bloc dont l’île a fini ses plans sert aux monuments de l’archipel ; eux finis, il ne sert plus à rien', () => {
-  const done = sanitizeState({ village: { plans: donePlans('plaine') }, inventory: { brique: 9 } });
+  const done = sanitizeState({ world: { parts: donePlans('plaine') }, stock: { brique: 9 } });
   const uses = blockUses(done, 'brique');
   expect(uses.map((u) => [u.kind, u.to])).toEqual([
     ['monument', '/aventure/monument-observatoire'],
@@ -43,7 +43,7 @@ it('un bloc dont l’île a fini ses plans sert aux monuments de l’archipel ; 
   ]);
   expect(uses[0]).toMatchObject({ name: 'L’observatoire des baleines', need: 27, enough: false });
   const all = { ...donePlans('plaine'), ...Object.fromEntries(monumentsOf('6e').map((m) => [m.id, planCells(m).map((c) => c.key)])) };
-  expect(blockUses(sanitizeState({ village: { plans: all }, inventory: { brique: 9 } }), 'brique')).toEqual([]);
+  expect(blockUses(sanitizeState({ world: { parts: all }, stock: { brique: 9 } }), 'brique')).toEqual([]);
 });
 
 it('ne regarde que les îles ouvertes de l’archipel où l’on est, et le navire seulement à portée', () => {
@@ -54,13 +54,13 @@ it('ne regarde que les îles ouvertes de l’archipel où l’on est, et le navi
   expect(blockUses(fresh, 'sable').map((u) => u.kind)).toContain('navire');
   expect(blockUses(fresh, 'sable').some((u) => u.island === 'carriere')).toBe(false);
   // Dans les Îles Brumeuses, le ballon se construit sur le Marché ; la coque (voyage fait) n'est plus un chantier.
-  const away = sanitizeState({ village: { bridges: ['voyage-5e'], at: 'marche' } });
+  const away = sanitizeState({ world: { links: ['voyage-5e'], place: 'marche' } });
   expect(blockUses(away, 'sable').map((u) => u.kind)).toEqual(['garder']);
   expect(blockUses(away, 'toile').map((u) => u.kind)).toContain('navire');
 });
 
 it('les blocs à aller chercher : ceux qui manquent aux chantiers à portée, avec leur île', () => {
-  const fresh = sanitizeState({ inventory: { bois: 10 } });
+  const fresh = sanitizeState({ stock: { bois: 10 } });
   const missing = missingNow(fresh);
   const bois = missing.find((m) => m.block === 'bois')!;
   // La cabane + 20 pour la coque, moins 10 en poche.
@@ -77,7 +77,7 @@ it('l’inventaire commenté : les lignes rangées par utilité, les ouvrages un
   // Sur la Plaine, la coque du navire déjà posée (elle prendrait tous les blocs) : le plan de la Plaine est « ici ».
   const [coque] = VEHICLE_STAGES;
   const plans = { [coque.id]: planCells(coque).map((c) => c.key) };
-  const state = sanitizeState({ village: { at: 'plaine', plans }, inventory: { bois: 3, brique: 2, toit: 1, or: 4 } });
+  const state = sanitizeState({ world: { place: 'plaine', parts: plans }, stock: { bois: 3, brique: 2, toit: 1, or: 4 } });
   const inv = inventoryUses(state);
   expect(inv.total).toBe(10);
   // Posable ici (Plaine : brique), puis ailleurs (bois : Forêt), puis à garder (toit), puis sans usage (or).

@@ -38,7 +38,7 @@ it('un chemin à pied contourne un arbre, ne marche pas sur l’eau et ne monte 
 
 it('d’île en île, le bonhomme ne repasse pas par le milieu des îles traversées et contourne le décor', () => {
   const bridges = ['foret-plaine', 'plaine-riviere', 'foret-mine'];
-  const village = { plans: {}, journal: [], bridges };
+  const village = { parts: {}, log: [], links: bridges };
   const cubes = worldCubes('6e', {}, village);
   const ground = walkGround(cubes, creaturePlacements('6e', bridges));
   const route = avatarRoute('riviere', 'mine', bridges, ground)!;

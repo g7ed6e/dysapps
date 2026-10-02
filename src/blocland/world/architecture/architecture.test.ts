@@ -27,7 +27,7 @@ const cube = (x: number, y: number, z: number, texture = 'pierre', autre: Partia
 
 describe('L’architecture modulaire', () => {
   it('seul le kit des Premiers Rivages est rempli (lot 7b) : ailleurs, aucun bloc remplacé ni peint, sur tout un archipel construit', () => {
-    const { progress, village } = toutConstruit();
+    const { progress, world: village } = toutConstruit();
     for (const a of ARCHIPELAGO_IDS) {
       const archi = architectureDe(a, worldCubes(a, progress, village, false), { batiments: batimentsDe(a) });
       if (a === '6e') {
@@ -110,7 +110,7 @@ describe('Le kit des Premiers Rivages (lot 7b)', () => {
   });
 
   it('les maisons de bois en colombage, celles de pierre en mur plein, les toits en pente ; ni la cour, ni l’école, ni les monuments', () => {
-    const { progress, village } = toutConstruit();
+    const { progress, world: village } = toutConstruit();
     const cubes = worldCubes('6e', progress, village, false);
     const archi = architectureDe('6e', cubes, { batiments: batimentsDe('6e') });
     const parIle = (ile: string) => [...archi.peints.values()].filter((p) => p.cube.tag === ile);
@@ -144,11 +144,11 @@ describe('Le kit des Premiers Rivages (lot 7b)', () => {
   }, 30_000);
 
   it('un mur ne change pas quand l’étape suivante de son bâtiment arrive dans le monde (la règle lit le bâtiment entier)', () => {
-    const { progress, village } = toutConstruit();
+    const { progress, world: village } = toutConstruit();
     const tout = architectureDe('6e', worldCubes('6e', progress, village, false), { batiments: batimentsDe('6e') });
     // Les murs seuls de la Forêt : sans le toit ni la cour dans le monde.
-    const plans = Object.fromEntries(Object.entries(village.plans).filter(([k]) => k !== 'foret-toit' && k !== 'foret-cour'));
-    const murs = architectureDe('6e', worldCubes('6e', progress, { ...village, plans }, false), { batiments: batimentsDe('6e') });
+    const plans = Object.fromEntries(Object.entries(village.parts).filter(([k]) => k !== 'foret-toit' && k !== 'foret-cour'));
+    const murs = architectureDe('6e', worldCubes('6e', progress, { ...village, parts: plans }, false), { batiments: batimentsDe('6e') });
     const foret = [...murs.peints].filter(([, p]) => p.cube.tag === 'foret');
     expect(foret.length).toBeGreaterThan(20);
     for (const [k, p] of foret) expect(p.peinture, k).toEqual(tout.peints.get(k)!.peinture);

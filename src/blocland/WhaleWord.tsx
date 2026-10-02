@@ -7,7 +7,7 @@ import { useSettings } from '../core/SettingsContext';
 import { pagesBaleine, quiParle, titreDuMot } from '../univers/baleine';
 import { useTextes } from '../univers';
 import { loadJSON, saveJSON } from '../core/storage';
-import type { BloclandState } from './engine';
+import type { GameState } from './engine';
 import { hasSeenTutorial, markTutorialSeen } from './Tutorial';
 import type { ArchipelagoId } from './world/archipelago';
 import { reachedWhaleMoments, type WhaleMoment } from './world/whale';
@@ -16,7 +16,7 @@ import { Creature } from './Creatures';
 
 // Ce que la baleine a déjà dit, par appareil (comme les tutoriels), jamais dans la sauvegarde. L'arrivée dans un
 // archipel garde la clé de l'ancienne bulle d'accueil, dans les tutoriels : qui l'a vue ne l'entend pas deux fois.
-const STORAGE_KEY = 'baleine';
+const STORAGE_KEY = 'guide-messages';
 
 type Said = Record<string, boolean>;
 
@@ -37,7 +37,7 @@ function markSaid(moments: WhaleMoment[]): void {
  * Une seule fois par appareil : ce qui était déjà atteint avant la baleine est noté dit sans parler (sauf sa
  * présentation en 6e à un élève qui n'a encore rien joué).
  */
-function initWhaleMemory(state: Pick<BloclandState, 'progress' | 'village'>): void {
+function initWhaleMemory(state: Pick<GameState, 'progress' | 'world'>): void {
   if (loadJSON<Said | null>(STORAGE_KEY, null) !== null) return;
   const fresh = Object.keys(state.progress).length === 0;
   const all = (['6e', '5e', '4e', '3e'] as ArchipelagoId[]).flatMap((x) => reachedWhaleMoments(state, x));
@@ -49,7 +49,7 @@ function initWhaleMemory(state: Pick<BloclandState, 'progress' | 'village'>): vo
  * Le mot de la baleine à dire maintenant dans cet archipel, ou rien : la plus grande étape atteinte et pas encore dite.
  * Quand plusieurs tombent ensemble, une seule parle ; les autres sont notées dites à la fermeture, sans file d'attente.
  */
-export function useWhaleWord(state: Pick<BloclandState, 'progress' | 'village'>, a: ArchipelagoId, ready = true) {
+export function useWhaleWord(state: Pick<GameState, 'progress' | 'world'>, a: ArchipelagoId, ready = true) {
   const [tick, setTick] = useState(() => {
     initWhaleMemory(state);
     return 0;

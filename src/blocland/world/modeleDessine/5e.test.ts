@@ -12,7 +12,7 @@ import { CRETES_5E, ROCHE_NUE } from './5e';
 import type { BiomeId } from '../../biomes';
 import { couleurDuSol } from '../palette';
 
-const { progress, village } = toutConstruit();
+const { progress, world: village } = toutConstruit();
 const cubes = worldCubes('5e', progress, village, false);
 const sol = cubes.filter((c) => c.sol);
 const { reste } = rangerLeDecor(cubes.filter((c) => !c.sol));

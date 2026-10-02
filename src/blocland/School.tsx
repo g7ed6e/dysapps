@@ -24,7 +24,7 @@ const DOORS: Subject[] = ['francais', 'maths', 'anglais'];
 /** L'île de l'école de l'archipel où se tient le bonhomme. */
 export function useSchoolIsland(): BiomeDef {
   const { state } = useBlocland();
-  return getBiome(archipelagoOf(state.village.at ?? 'foret').school)!;
+  return getBiome(archipelagoOf(state.world.place ?? 'foret').school)!;
 }
 
 function greetingOf(island: BiomeDef): string {

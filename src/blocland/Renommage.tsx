@@ -35,7 +35,7 @@ export function useRenommage(ready = true, attenteMs = 0): { ouvert: boolean; fe
   }, [pret, attenteMs]);
   const ouvert = pret && attendu;
   const fermer = () => {
-    saveJSON(RENOMMAGE_KEY, { dit: true });
+    saveJSON(RENOMMAGE_KEY, { said: true });
     setADire(false);
   };
   return { ouvert, fermer };

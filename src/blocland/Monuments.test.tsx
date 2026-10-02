@@ -38,23 +38,23 @@ it('un monument dit ce que c’est, ce qu’il demande et où gagner les blocs',
 
 it('« Poser tout ce que j’ai » emploie les blocs en poche ; fini, il rapporte l’XP et le succès Patrimoine', async () => {
   const user = userEvent.setup();
-  localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: { brique: 40, bois: 5 } }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ stock: { brique: 40, bois: 5 } }));
   renderIn(<Page />);
   await user.click(screen.getByRole('button', { name: /Poser tout ce que j’ai/ }));
   const posed = monumentNeeds(OBS).brique! + 5;
   expect(screen.getByText(new RegExp(`^${posed} blocs posés\\. Il en reste ${OBS.cells.length - posed} à poser`))).toBeInTheDocument();
-  const saved = JSON.parse(localStorage.getItem('dysapps:blocland')!);
-  expect(saved.inventory.brique).toBe(40 - monumentNeeds(OBS).brique!);
-  expect(saved.village.plans[OBS.id]).toHaveLength(posed);
+  const saved = JSON.parse(localStorage.getItem('dysapps:game')!);
+  expect(saved.stock.brique).toBe(40 - monumentNeeds(OBS).brique!);
+  expect(saved.world.parts[OBS.id]).toHaveLength(posed);
 
   cleanup();
-  localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: monumentNeeds(OBS) }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ stock: monumentNeeds(OBS) }));
   renderIn(<Page />);
   await user.click(screen.getByRole('button', { name: /Poser tout ce que j’ai/ }));
   expect(screen.getAllByText(/L’observatoire des baleines : terminé !/).length).toBeGreaterThan(0);
   expect(screen.getByText(/Terminé !/, { selector: '.plan-done' })).toBeInTheDocument();
   const progress = JSON.parse(localStorage.getItem('dysapps:progress')!);
-  expect(progress.monumentsCompleted).toBe(1);
+  expect(progress.landmarksCompleted).toBe(1);
   expect(progress.badges.patrimoine).toBeTruthy();
 });
 
@@ -64,7 +64,7 @@ it('quand il ne reste que des blocs assemblés à poser, il dit pourquoi les bou
   const posees = planCells(OBS)
     .filter((c) => c.block !== 'poutre')
     .map((c) => c.key);
-  localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: { bois: 0 }, village: { plans: { [OBS.id]: posees } } }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ stock: { bois: 0 }, world: { parts: { [OBS.id]: posees } } }));
   renderIn(<Page />);
   expect(screen.getByRole('button', { name: /Poser le bloc suivant/ })).toBeDisabled();
   expect(document.body.textContent).toContain(`Il te reste ${poutres} poutres à poser : va à la Fabrique pour les assembler.`);
@@ -87,7 +87,7 @@ it('« Poser » impossible : une ligne visible dit ce qui manque ; la liste des 
   expect(screen.getByRole('button', { name: /Poser le bloc suivant/ })).toBeDisabled();
   // Des blocs en poche : on peut poser, la ligne s'efface.
   cleanup();
-  localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: { brique: 2 } }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ stock: { brique: 2 } }));
   renderIn(<Page />);
   expect(document.querySelector('.monument-lacking')).toBeNull();
   expect(screen.getByRole('button', { name: /Poser le bloc suivant/ })).toBeEnabled();

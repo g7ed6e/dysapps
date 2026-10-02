@@ -43,5 +43,5 @@ it('« Vue du monde » : la lumière du monde, l’heure réelle par défaut ou 
   expect(within(lumiere).getByRole('radio', { name: 'L’heure réelle' })).toBeChecked();
   fireEvent.click(within(lumiere).getByRole('radio', { name: 'Toujours le jour' }));
   expect(within(lumiere).getByRole('radio', { name: 'Toujours le jour' })).toBeChecked();
-  expect(JSON.parse(localStorage.getItem('dysapps:settings')!).worldLight).toBe('jour');
+  expect(JSON.parse(localStorage.getItem('dysapps:settings')!).worldLight).toBe('day');
 });

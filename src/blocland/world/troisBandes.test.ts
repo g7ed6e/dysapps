@@ -107,7 +107,7 @@ function pointsCaches(
 ): Record<string, number> {
   // La salle des trophées à sa plus grande, tout construit.
   const tout = toutConstruit();
-  const lieux = cubesDeLIle(id, tout.progress, tout.village, false, SALLE_PLEINE, new Set(), false, atelier).filter((c) => c.place && !sauf(c));
+  const lieux = cubesDeLIle(id, tout.progress, tout.world, false, SALLE_PLEINE, new Set(), false, atelier).filter((c) => c.place && !sauf(c));
   expect(lieux.length).toBeGreaterThan(0);
   const vers = versLaCamera(id);
   const zone = zoneDesPlans(id);
@@ -134,7 +134,7 @@ it('rien devant les bornes : ni un lieu du village ni le décor (table, étal, a
     const bornes = bornesVues(id);
     for (const [partie, cubes] of [
       ['vierge', cubesDeLIle(id, {}, undefined, false)],
-      ['tout construit', cubesDeLIle(id, tout.progress, tout.village, false, SALLE_PLEINE)],
+      ['tout construit', cubesDeLIle(id, tout.progress, tout.world, false, SALLE_PLEINE)],
     ] as const) {
       const cachent = cubes.filter((c) => !c.sol && !c.quest && cacheUneBorne(bornes, vers, c.x, c.y, c.z));
       expect(cachent.map((c) => `${c.place ?? c.decor ?? c.texture} ${c.x},${c.y},${c.z}`), `${id}, ${partie}`).toEqual([]);
@@ -187,7 +187,7 @@ it('au Marché et à l’Atelier, les plans se dessinent une rangée plus au fon
     for (const plan of plansFor(id)) expect(decalageDesPlans(plan), plan.id).toEqual({ x: 0, y: fond ? 1 : 0, z: 0 });
     expect(premiereRangee(id), id).toBe(fond ? zone.y + 1 : zone.y);
     // Tout construit, chaque case posée se dessine à sa clé décalée, dans la zone ; rien que le sol sur la rangée avant.
-    const cubes = cubesDeLIle(id, tout.progress, tout.village, false);
+    const cubes = cubesDeLIle(id, tout.progress, tout.world, false);
     const ici = new Set(cubes.filter((c) => !c.sol && !c.ghost).map((c) => `${c.x},${c.y},${c.z}`));
     for (const plan of plansFor(id)) {
       const d = decalageDesPlans(plan);
@@ -220,8 +220,8 @@ it('une sauvegarde d’avant la redistribution (plans posés dans la zone de 6 �
     'phare-toit': ['11,12,0', '11,14,5'],
     'phare-jetee': ['8,10,0', '9,11,0'],
   };
-  const etat = sanitizeState({ ...EMPTY_STATE, village: { ...EMPTY_STATE.village, plans: avant } });
-  expect(etat.village.plans).toEqual(avant);
+  const etat = sanitizeState({ ...EMPTY_STATE, world: { ...EMPTY_STATE.world, parts: avant } });
+  expect(etat.world.parts).toEqual(avant);
   // Et chaque plan des îles-écoles tient toujours dans l'ancienne zone : la rangée gagnée (y = 15) est libre.
   for (const id of ECOLES)
     for (const plan of plansFor(id))
@@ -240,8 +240,8 @@ it('le décor ne cache aucun trophée de la salle à sa plus grande, vue de la c
   const tout = toutConstruit();
   for (const id of ECOLES.filter((i) => !DECOR_QUI_CACHE_UN_TROPHEE[i])) {
     const vers = versLaCamera(id);
-    const sans = new Set(cubesDeLIle(id, tout.progress, tout.village, false).map((c) => `${c.x},${c.y},${c.z}`));
-    const avec = cubesDeLIle(id, tout.progress, tout.village, false, TOUS_LES_SUCCES);
+    const sans = new Set(cubesDeLIle(id, tout.progress, tout.world, false).map((c) => `${c.x},${c.y},${c.z}`));
+    const avec = cubesDeLIle(id, tout.progress, tout.world, false, TOUS_LES_SUCCES);
     const trophees = avec.filter((c) => c.place === 'trophees' && !sans.has(`${c.x},${c.y},${c.z}`));
     expect(trophees.length, id).toBeGreaterThan(0);
     const decor = avec.filter((c) => !c.sol && !c.place && !c.quest);
@@ -257,7 +257,7 @@ it('devant la porte d’un lieu du village, et une case autour, rien n’est pos
     const id = a.school;
     const def = islandDef(id);
     // Le monde entier, pour les objets du quai (le Marché et l'Atelier sont des ports), ramené au repère du cœur.
-    const cubes = worldCubes(a.classe, tout.progress, tout.village, false).map((c) => ({ ...c, x: c.x - def.core.x, y: c.y - def.core.y }));
+    const cubes = worldCubes(a.classe, tout.progress, tout.world, false).map((c) => ({ ...c, x: c.x - def.core.x, y: c.y - def.core.y }));
     for (const lieu of ['ecole', 'trophees', 'assemblage'] as const) {
       const p = placeDoor(lieu, id)!;
       const [px, py] = [p.x - def.core.x, p.y - def.core.y];

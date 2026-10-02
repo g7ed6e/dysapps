@@ -16,7 +16,7 @@ import {
   sanitizeState,
   todayISO,
   type AssembleResult,
-  type BloclandState,
+  type GameState,
   type Completion,
   type FillResult,
   type LaunchResult,
@@ -35,7 +35,7 @@ export const SESSION_MAX_EXERCISES = 3;
 export const SESSION_MAX_MINUTES = 10;
 
 interface BloclandContextValue {
-  state: BloclandState;
+  state: GameState;
   complete: (def: ExerciseDef, results: ItemResult[]) => Completion;
   /** Une mission du portail (l'école du village) terminée, score entre 0 et 1 : des blocs de l'île de l'école. */
   completePortal: (score: number, firstTime: boolean) => PortalCompletion;
@@ -72,10 +72,10 @@ interface BloclandContextValue {
 }
 
 const BloclandContext = createContext<BloclandContextValue | null>(null);
-const STORAGE_KEY = 'blocland';
+const STORAGE_KEY = 'game';
 
 export function BloclandProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<BloclandState>(() => sanitizeState(loadJSON<unknown>(STORAGE_KEY, {})));
+  const [state, setState] = useState<GameState>(() => sanitizeState(loadJSON<unknown>(STORAGE_KEY, {})));
   const stateRef = useRef(state);
   const [sessionCount, setSessionCount] = useState(0);
   const sessionStart = useRef(Date.now());
@@ -119,7 +119,7 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
     return r;
   }, []);
   /** Enregistre un état nouveau de l'assemblage (inventaire plein en mode bâtisseur) et le rend. */
-  const pousser = useCallback((state: BloclandState): BloclandState => {
+  const pousser = useCallback((state: GameState): GameState => {
     const next = batisseurRef.current ? remplir(state) : state;
     stateRef.current = next;
     setState(next);

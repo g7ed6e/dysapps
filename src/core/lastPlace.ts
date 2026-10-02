@@ -2,7 +2,7 @@
 import { useEffect } from 'react';
 import { loadJSON, removeKey, saveJSON } from './storage';
 
-const STORAGE_KEY = 'reprise';
+const STORAGE_KEY = 'resume';
 
 export interface Place {
   /** Adresse dans l'appli (« /aventure/foret/abattage », « /app/tables »). */

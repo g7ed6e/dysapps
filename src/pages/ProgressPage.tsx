@@ -152,7 +152,7 @@ export function ProgressBody() {
           </div>
           <div>
             <dt>Bâtiments</dt>
-            <dd>{progress.plansCompleted}</dd>
+            <dd>{progress.structuresCompleted}</dd>
           </div>
         </dl>
       </div>

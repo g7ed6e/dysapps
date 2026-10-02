@@ -102,7 +102,7 @@ describe('La salle des trophées (GD-3)', () => {
   });
 
   it('l’emprise de 8 × 3 est réservée dès le départ, en sol nu : sans dalle, sans marque, sans décor, ni créature, ni cible au toucher', () => {
-    const { progress, village } = toutConstruit();
+    const { progress, world: village } = toutConstruit();
     for (const a of ARCHIPELAGOS) {
       const id = a.school;
       const index = BIOMES.findIndex((b) => b.id === id);
@@ -122,7 +122,7 @@ describe('La salle des trophées (GD-3)', () => {
       for (const [sx, sy] of spot.steps) for (const c of creatureDuMonde(id)) expect(dansLEmprise(spot.x + sx + c.x, spot.y + sy + c.y), `${id} créature`).toBe(false);
       // Ni cible au toucher : le bonhomme ne s'arrête sur aucune case de l'emprise (grille de marche). Toucher la place
       // d'une travée à venir l'envoie à la case libre la plus proche, hors de l'emprise, comme ailleurs.
-      const marche = walkGround(cubes, creaturePlacements(a.classe, village.bridges), casesDesLieux(a.classe));
+      const marche = walkGround(cubes, creaturePlacements(a.classe, village.links), casesDesLieux(a.classe));
       for (let x = 0; x < TROPHY_SIZE.w; x++) for (let y = 0; y < TROPHY_SIZE.d; y++) expect(marche.feet.has(`${o.x + TROPHY_AT.x + x},${o.y + TROPHY_AT.y + y}`), `${id} ${x},${y}`).toBe(false);
       const depart = placeDoor('trophees', id)!;
       const touche = { x: o.x + TROPHY_AT.x + 1, y: o.y + TROPHY_AT.y + 1 };
@@ -156,7 +156,7 @@ describe('La salle des trophées (GD-3)', () => {
   });
 
   it('la travée arrive d’un coup : la salle ne se déduit que des succès gagnés, sans étape, sans fantôme, avec ou sans « Réduire les animations »', () => {
-    const { progress, village } = toutConstruit();
+    const { progress, world: village } = toutConstruit();
     const salle = (n: number) => worldCubes('6e', progress, village, false, TOUS.slice(0, n)).filter((c) => c.place === 'trophees');
     const douze = salle(12);
     const treize = salle(13);

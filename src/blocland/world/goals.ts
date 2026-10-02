@@ -2,7 +2,7 @@
 // moins cher, ou pour le Bloc-Navire. Code pur, partagé par le panneau d'île. Les noms des archipels viennent de
 // l'appelant (`noms` : ceux de l'univers affiché, GD-1).
 import { blockCount, getBiome, type BiomeId, type BlockId } from '../biomes';
-import type { BloclandState } from '../engine';
+import type { GameState } from '../engine';
 import { canLaunch, currentPlan, planStatus } from '../engine';
 import {
   KIND_NAME,
@@ -37,10 +37,10 @@ export interface Goal {
 }
 
 /** Ce qu'il manque d'un plan, en blocs : « 16 blocs de bois », « 10 briques et 3 blocs de verre ». */
-function missingBlocks(state: BloclandState, missing: [BlockId, number][]) {
-  const left = missing.map(([b, n]) => [b, Math.max(0, n - (state.inventory[b] ?? 0))] as const).filter(([, n]) => n > 0);
+function missingBlocks(state: GameState, missing: [BlockId, number][]) {
+  const left = missing.map(([b, n]) => [b, Math.max(0, n - (state.stock[b] ?? 0))] as const).filter(([, n]) => n > 0);
   const need = missing.reduce((sum, [, n]) => sum + n, 0);
-  const have = missing.reduce((sum, [b, n]) => sum + Math.min(n, state.inventory[b] ?? 0), 0);
+  const have = missing.reduce((sum, [b, n]) => sum + Math.min(n, state.stock[b] ?? 0), 0);
   const words = left
     .sort((a, b) => b[1] - a[1])
     .slice(0, 2)
@@ -54,7 +54,7 @@ function missingBlocks(state: BloclandState, missing: [BlockId, number][]) {
  * blocs d'un plan, construire un ouvrage, poser les blocs du navire) ; sinon l'objectif le plus proche (le moins de
  * blocs à gagner), le plan en cas d'égalité. `null` s'il n'y a rien à dire (île fermée, tout construit).
  */
-export function nextGoalInfo(state: BloclandState, island: BiomeId, noms: NomsArchipels, mots: MotsDesGardiens): Goal | null {
+export function nextGoalInfo(state: GameState, island: BiomeId, noms: NomsArchipels, mots: MotsDesGardiens): Goal | null {
   const stage = stageAt(island);
   const launch = stage ? canLaunch(state, stage) : null;
   if (stage && launch?.ok) return { text: `${cap(VEHICLE_NAME)} est prêt : embarque vers les ${noms[stage.to]} !`, have: 1, need: 1, ready: true };
@@ -74,12 +74,12 @@ export function nextGoalInfo(state: BloclandState, island: BiomeId, noms: NomsAr
       });
     }
   }
-  const world = { progress: state.progress, plans: state.village.plans };
-  const bridges = buildableBridges(state.village.bridges, island, world).filter((b) => conditionMet(b, state.village.bridges, world));
+  const world = { progress: state.progress, plans: state.world.parts };
+  const bridges = buildableBridges(state.world.links, island, world).filter((b) => conditionMet(b, state.world.links, world));
   if (bridges.length) {
     const cheapest = bridges.reduce((a, b) => (b.cost < a.cost ? b : a));
     const to = getBiome(otherEnd(cheapest, island))?.name ?? cheapest.to;
-    const have = Math.min(cheapest.cost, payableBlocks(state.inventory));
+    const have = Math.min(cheapest.cost, payableBlocks(state.stock));
     const left = cheapest.cost - have;
     const what = ouvrageName(cheapest.kind, to);
     candidates.push({
@@ -117,7 +117,7 @@ export function nextGoalInfo(state: BloclandState, island: BiomeId, noms: NomsAr
 }
 
 /** La phrase du prochain objectif seule (voir `nextGoalInfo`). */
-export function nextGoal(state: BloclandState, island: BiomeId, noms: NomsArchipels, mots: MotsDesGardiens): string | null {
+export function nextGoal(state: GameState, island: BiomeId, noms: NomsArchipels, mots: MotsDesGardiens): string | null {
   return nextGoalInfo(state, island, noms, mots)?.text ?? null;
 }
 
@@ -125,10 +125,10 @@ export function nextGoal(state: BloclandState, island: BiomeId, noms: NomsArchip
  * Ce que dit la créature d'une île fermée : l'ouvrage précis qui mène ici (depuis quelle île, combien de blocs,
  * quelle condition), ou l'île à ouvrir d'abord quand on est encore trop loin.
  */
-export function lockedHint(state: BloclandState, island: BiomeId, noms: NomsArchipels, mots: MotsDesGardiens): string {
-  const bridges = state.village.bridges;
+export function lockedHint(state: GameState, island: BiomeId, noms: NomsArchipels, mots: MotsDesGardiens): string {
+  const bridges = state.world.links;
   const open = reachableIslands(bridges);
-  const world = { progress: state.progress, plans: state.village.plans };
+  const world = { progress: state.progress, plans: state.world.parts };
   // Une île d'un autre archipel : il faut le Bloc-Navire.
   const archipelago = archipelagoOf(island);
   if (!isArchipelagoReached(archipelago.classe, bridges)) {

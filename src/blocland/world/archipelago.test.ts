@@ -175,26 +175,26 @@ it('les anciennes sauvegardes gardent leurs îles ouvertes : voyages et chemin o
   const old = { 'foret-a': { stars: 1 }, 'mine-a': { stars: 2 }, 'carriere-a': { stars: 1 } };
   expect(bridgesFromLegacyProgress(old).sort()).toEqual(['foret-ferme', 'foret-mine', 'mine-carriere']);
   // Sanitize : sauvegarde sans `bridges` → migration ; avec → identifiants inconnus filtrés, îles jouées gardées ouvertes.
-  expect(sanitizeState({ progress: old }).village.bridges.sort()).toEqual(['foret-ferme', 'foret-mine', 'mine-carriere']);
-  expect(sanitizeState({ progress: old, village: { bridges: ['foret-mine', 'x', 'foret-mine'] } }).village.bridges.sort()).toEqual(['foret-mine', 'mine-carriere']);
-  expect(sanitizeState({ village: { bridges: ['foret-mine', 'x'] } }).village.bridges).toEqual(['foret-mine']);
+  expect(sanitizeState({ progress: old }).world.links.sort()).toEqual(['foret-ferme', 'foret-mine', 'mine-carriere']);
+  expect(sanitizeState({ progress: old, world: { links: ['foret-mine', 'x', 'foret-mine'] } }).world.links.sort()).toEqual(['foret-mine', 'mine-carriere']);
+  expect(sanitizeState({ world: { links: ['foret-mine', 'x'] } }).world.links).toEqual(['foret-mine']);
   // Le continent d'avant : un escalier vers le Glacier valait l'accès aux Collines. Le voyage et le sentier sont offerts,
   // et l'étape du Bloc-Navire est complète.
   expect(LEGACY_BRIDGES.map((b) => b.id)).toContain('plaine-glacier');
   expect([...legacyReachable(['plaine-glacier'])].sort()).toEqual(['foret', 'glacier', 'plaine']);
-  const climbed = sanitizeState({ village: { bridges: ['plaine-glacier'] } });
-  expect(climbed.village.bridges.sort()).toEqual(['glacier-marche', 'voyage-5e']);
-  expect(climbed.village.plans['navire-coque']).toHaveLength(VEHICLE_STAGES[0].cells.length);
-  const summit = sanitizeState({ village: { bridges: ['plaine-volcan', 'volcan-forge', 'forge-phare'], at: 'phare' } });
-  expect(summit.village.bridges.sort()).toEqual(['atelier-forge', 'plaine-volcan', 'voyage-3e', 'voyage-4e', 'voyage-5e']);
-  expect(summit.village.at).toBe('phare');
+  const climbed = sanitizeState({ world: { links: ['plaine-glacier'] } });
+  expect(climbed.world.links.sort()).toEqual(['glacier-marche', 'voyage-5e']);
+  expect(climbed.world.parts['navire-coque']).toHaveLength(VEHICLE_STAGES[0].cells.length);
+  const summit = sanitizeState({ world: { links: ['plaine-volcan', 'volcan-forge', 'forge-phare'], place: 'phare' } });
+  expect(summit.world.links.sort()).toEqual(['atelier-forge', 'plaine-volcan', 'voyage-3e', 'voyage-4e', 'voyage-5e']);
+  expect(summit.world.place).toBe('phare');
   // Des étoiles sur une île du collège, sans ouvrage : l'accès est offert aussi.
-  expect(sanitizeState({ progress: { 'glacier-thermometre-1': { stars: 2 } }, village: { bridges: [] } }).village.bridges.sort()).toEqual([
+  expect(sanitizeState({ progress: { 'glacier-thermometre-1': { stars: 2 } }, world: { links: [] } }).world.links.sort()).toEqual([
     'glacier-marche',
     'voyage-5e',
   ]);
   // Rien d'offert quand tout est cohérent.
-  expect(sanitizeState({ village: { bridges: ['foret-mine', 'mine-riviere'] } }).village.bridges).toEqual(['foret-mine', 'mine-riviere']);
+  expect(sanitizeState({ world: { links: ['foret-mine', 'mine-riviere'] } }).world.links).toEqual(['foret-mine', 'mine-riviere']);
 });
 
 it('un escalier veut un plan terminé, un tunnel ou un col un Gardien vaincu ; un pont ou un bac, des blocs seulement', () => {
