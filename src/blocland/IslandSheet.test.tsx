@@ -104,7 +104,7 @@ it('le bâtiment dit en mots ses parties posées, le nom de la prochaine et comm
   const section = document.querySelector('.plan-section')!;
   expect(section).toHaveTextContent('1 partie posée sur 3');
   expect(section).toHaveTextContent('Prochaine partie : le toit de la cabane.');
-  expect(section).toHaveTextContent('Termine une mission de l’île que tu n’as pas encore faite pour la poser.');
+  expect(section).toHaveTextContent('Termine une autre mission de l’île pour la poser.');
   expect(section.textContent).not.toMatch(/manqu/);
   expect(screen.getByRole('progressbar', { name: /Le bâtiment La cabane de Mousso/ })).toHaveAttribute('aria-valuenow', '1');
   // Toutes les parties posées : le bâtiment est fini, la créature le dit.

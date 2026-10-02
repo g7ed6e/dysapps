@@ -36,7 +36,7 @@ Chaque île a un **bâtiment**, avec une partie par mission. Il se pose tout seu
 
 ![La Forêt des sons, panneau fermé : la cabane commencée, murs en bois et fantômes bleutés du reste.](/captures/plan-en-cours.jpg)
 
-Au bilan, une phrase le dit, écrite et lue à voix haute : « Partie posée : la cabane de Mousso. ». Mousso remercie, et l'élève gagne de l'XP. La mission suivante posera le toit, puis la cour. Les blocs gagnés, eux, restent dans la poche : ils servent aux ouvrages, au Bloc-Navire et aux monuments.
+Au bilan, une phrase le dit, écrite et lue à voix haute : « Partie posée : la cabane de Mousso. » Mousso remercie, et l'élève gagne de l'XP. La mission suivante posera le toit, puis la cour. Les blocs gagnés, eux, restent dans la poche : ils servent aux ouvrages, au Bloc-Navire et aux monuments.
 
 ## Ouvrir les îles
 

@@ -32,7 +32,8 @@ export function nombreDeParties(biome: Pick<BiomeDef, 'id' | 'exercises'>): numb
   return Math.max(2, Math.min(PARTIES_MAX, biome.exercises.length));
 }
 
-const minuscule = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
+/** Un nom en milieu de phrase, après deux-points : sa minuscule (« Partie posée : le toit de la cabane »). */
+export const minuscule = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
 
 /** « Le four de Rouxel » → « du four de Rouxel » : le complément de « le bas », « le haut » (l'article contracté). */
 function complement(nom: string): string {

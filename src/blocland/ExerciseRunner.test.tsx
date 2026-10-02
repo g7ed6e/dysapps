@@ -93,8 +93,6 @@ it('joue un exercice : consigne, feedback, étoiles, blocs, XP, puis étoiles su
   // Une partie vient d'être posée : le bouton principal mène la voir, sur l'île de la mission.
   expect(screen.getByRole('link', { name: /Voir le bâtiment/ })).toHaveAttribute('href', '/adventure/french-6e-phonology?worksite=part');
   expect(screen.queryByRole('link', { name: /Voir le chantier/ })).not.toBeInTheDocument();
-  // La phrase de la pose se réécoute.
-  expect(within(pose as HTMLElement).queryAllByRole('button', { name: /Écouter/ }).length).toBeLessThanOrEqual(1);
 
   const saved = JSON.parse(localStorage.getItem('dysapps:game')!);
   // Les blocs gagnés restent dans la poche : la partie se pose sans rien y prendre.
@@ -193,6 +191,8 @@ describe('lecture automatique', () => {
     // Après le « clac » et le carillon (les sons sont actifs par défaut) : une seule phrase, celle que l'écran montre.
     await waitFor(() => expect(dit).toContain(frenchTypography(`Partie posée : la cabane de Mousso. ${cabane.done} +${cabane.reward.xp} XP.`)), { timeout: 2000 });
     expect(document.querySelector('.reward-pose')).toHaveTextContent('Partie posée : la cabane de Mousso.');
+    // La phrase se réécoute : un bouton Écouter, sur la ligne de la pose.
+    expect(within(document.querySelector('.reward-pose') as HTMLElement).getAllByRole('button', { name: /Écouter/ })).toHaveLength(1);
   }, 30_000);
 
   it('sans question : la consigne seule à l’ouverture, rien de plus à l’item suivant', async () => {

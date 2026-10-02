@@ -6,7 +6,7 @@ import { BLOCKS, type BiomeDef, type BiomeId, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { InventoryLink } from './Inventory';
 import { Foldable } from './IslandFold';
-import { partiesDe, partiesPosees, prochainePartie } from './world/parties';
+import { minuscule, partiesDe, partiesPosees, prochainePartie } from './world/parties';
 import { getPlan, plansFor } from './world/plans';
 import { earnIsland, whereToEarn } from './world/uses';
 import { ASSEMBLAGE_PATH } from './world/assemblage';
@@ -22,8 +22,6 @@ interface Props {
   titreCourt?: boolean;
 }
 
-/** Un nom après deux-points : sa minuscule. */
-const enMinuscule = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
 
 /** « à gagner dans Forêt des sons » (un lien vers l'île), « ici, dans les missions », ou un coffre (`whereToEarn`). */
 export function EarnLink({ block, here }: { block: BlockId; here?: BiomeId }) {
@@ -70,7 +68,7 @@ export function PlanSection({ biome, fold, highlight = false, titreCourt = false
   const built = state.world.log.filter((e) => getPlan(e.part)?.biome === biome.id);
   const heading = (
     <h3 id={`plan-${biome.id}`} className="island-sheet-heading">
-      <Icon name="map" /> {total ? (titreCourt ? plans[0].name : `Le bâtiment : ${enMinuscule(plans[0].name)}`) : 'Aucun bâtiment sur cette île'}
+      <Icon name="map" /> {total ? (titreCourt ? plans[0].name : `Le bâtiment : ${minuscule(plans[0].name)}`) : 'Aucun bâtiment sur cette île'}
     </h3>
   );
   return (
@@ -95,11 +93,11 @@ export function PlanSection({ biome, fold, highlight = false, titreCourt = false
                   <strong>{posees}</strong> partie{posees > 1 ? 's' : ''} posée{posees > 1 ? 's' : ''} sur {total}
                 </p>
                 <p className="plan-next">
-                  Prochaine partie : <strong>{enMinuscule(prochaine.nom)}</strong>.
+                  Prochaine partie : <strong>{minuscule(prochaine.nom)}</strong>.
                 </p>
                 <p className="plan-how">
                   <Icon name="play" />{' '}
-                  <Syllabified text={posees ? 'Termine une mission de l’île que tu n’as pas encore faite pour la poser.' : 'Termine une mission de l’île pour la poser.'} />
+                  <Syllabified text={posees ? 'Termine une autre mission de l’île pour la poser.' : 'Termine une mission de l’île pour la poser.'} />
                 </p>
               </>
             ) : (

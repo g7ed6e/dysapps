@@ -17,6 +17,7 @@ import { planStatus } from './engine';
 import { archipelagoOf } from './world/archipelago';
 import { stageAt } from './world/vehicle';
 import { worksiteFor } from './world/worksite';
+import { minuscule } from './world/parties';
 import { voyageId } from './world/archipelago';
 import { useBlocland } from './BloclandContext';
 import type { Completion } from './engine';
@@ -47,15 +48,12 @@ interface Props {
 /** Le carillon de fin (`playDone`) : deux notes, la seconde à 160 ms, de 450 ms ; la voix vient après. */
 const CARILLON_MS = 610;
 
-/** Un nom après deux-points : sa minuscule (« Partie posée : le toit de la cabane »). */
-const enMinuscule = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
-
 /**
  * La phrase de la pose, écrite et lue : « Partie posée : le toit de la cabane. », l'accord porté par « partie », quel que
  * soit le nom ; puis la réplique et l'XP de chaque plan fini.
  */
 function phraseDeLaPose(pose: NonNullable<Completion['pose']>): string {
-  return [...pose.posees.map((p) => `Partie posée : ${enMinuscule(p.nom)}.`), ...pose.plansFinis.map((p) => `${p.done} +${p.reward.xp} XP.`)].join(' ');
+  return [...pose.posees.map((p) => `Partie posée : ${minuscule(p.nom)}.`), ...pose.plansFinis.map((p) => `${p.done} +${p.reward.xp} XP.`)].join(' ');
 }
 
 /** Découpe les items en écrans selon le type d'exercice. */
@@ -261,7 +259,7 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
               <li key={`pose-${partie.rang}`} className="reward-pose">
                 <Icon name="home" size="1.6rem" />
                 <span>
-                  <strong>Partie posée : {enMinuscule(partie.nom)}.</strong>
+                  <strong>Partie posée : {minuscule(partie.nom)}.</strong>
                   {i === posees.length - 1 &&
                     pose.plansFinis.map((plan) => (
                       <span key={plan.id} className="reward-pose-fin">
