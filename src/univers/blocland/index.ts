@@ -11,7 +11,7 @@ const s = (n: number) => (n > 1 ? 's' : '');
 
 export const BLOCLAND = {
   gardiens: {
-    foret: {
+    'french-6e-phonology': {
       challenge: 'Le Grand Chêne craque : « Tu as bien écouté ma forêt. Montre-moi tout ce que tu sais faire. »',
       guardianSays: {
         hit: 'Mes branches tremblent. Tu as l’oreille fine.',
@@ -19,7 +19,7 @@ export const BLOCLAND = {
         beaten: 'Je m’incline, bâtisseur. La forêt est à toi… et à Mousso.',
       },
     },
-    mine: {
+    'french-6e-letter-confusion': {
       challenge: 'Le Golem de roche gronde : « Mes lettres se ressemblent toutes. Toi, tu les reconnais ? Prouve-le. »',
       guardianSays: {
         hit: 'Une fissure ! Tes yeux ne se trompent pas.',
@@ -27,7 +27,7 @@ export const BLOCLAND = {
         beaten: 'Je m’écroule… en pierres pour ton village. Bien joué.',
       },
     },
-    carriere: {
+    'french-6e-word-spelling': {
       challenge: 'La Dune vivante siffle : « Chaque mot bien écrit me fait reculer. Écris juste, et je te laisserai passer. »',
       guardianSays: {
         hit: 'Je recule d’un pas. Ce mot était bien écrit.',
@@ -35,7 +35,7 @@ export const BLOCLAND = {
         beaten: 'Je me couche sur la plage. Le chemin est libre, bâtisseur.',
       },
     },
-    ferme: {
+    'french-6e-grammar-spelling': {
       challenge: 'Le Taureau de terre frappe le sol : « Ici, tout s’accorde ou tout s’écroule. À toi de jouer. »',
       guardianSays: {
         hit: 'Meuh ! Mes sabots glissent. C’était bien accordé.',
@@ -43,7 +43,7 @@ export const BLOCLAND = {
         beaten: 'Je m’assieds dans l’herbe. Tout s’accorde, tu as gagné.',
       },
     },
-    tour: {
+    'french-6e-reading': {
       challenge: 'La Chouette de verre cligne des yeux : « Lis-moi, à ton rythme. Le phare t’attend en haut. »',
       guardianSays: {
         hit: 'Hou… Tu lis mieux que je ne vois la nuit.',
@@ -51,7 +51,7 @@ export const BLOCLAND = {
         beaten: 'Hou hou. Le phare est à toi. Je te confie la nuit.',
       },
     },
-    plaine: {
+    'maths-6e-calculation': {
       challenge: 'Le Hanneton de bronze bourdonne : « Tu as compté toute ma plaine. Montre-moi ce que tu sais calculer. »',
       guardianSays: {
         hit: 'Bzzz… Juste ! Mes ailes de bronze grincent.',
@@ -59,7 +59,7 @@ export const BLOCLAND = {
         beaten: 'Bzzz. Tu calcules plus vite que mes ailes. La plaine est à toi… et à Coco.',
       },
     },
-    riviere: {
+    'maths-6e-fractions': {
       challenge: 'Le Brochet d’argent fend l’eau : « Tu as partagé toute ma rivière. Montre-moi comment tu lis les parts. »',
       guardianSays: {
         hit: 'Plouf ! Juste. Mes écailles frissonnent.',
@@ -67,7 +67,7 @@ export const BLOCLAND = {
         beaten: 'Glou. Tu partages mieux que la rivière elle-même. Elle est à toi… et à Nénu.',
       },
     },
-    volcan: {
+    'maths-6e-decimals': {
       challenge: 'Le Dragon de cendre gronde : « Tu as gravi tout mon volcan. Montre-moi comment tu lis la virgule. »',
       guardianSays: {
         hit: 'Grrr… Exact. Ma fumée se dissipe.',
@@ -75,7 +75,7 @@ export const BLOCLAND = {
         beaten: 'Grrr. Tu lis les rangs mieux que mes flammes. Le volcan est à toi… et à Lavi.',
       },
     },
-    glacier: {
+    'maths-5e-signed-numbers': {
       challenge: 'Le Mammouth de givre barrit : « Tu as traversé toute ma banquise. Montre-moi comment tu comptes sous zéro. »',
       guardianSays: {
         hit: 'Brrr… Juste. Mes défenses en tremblent.',
@@ -83,7 +83,7 @@ export const BLOCLAND = {
         beaten: 'Brrr. Tu comptes même sous zéro. Le glacier est à toi… et à Frimas.',
       },
     },
-    marche: {
+    'maths-5e-proportionality': {
       challenge: 'Le Colporteur pose sa besace : « Tu as fait le tour de mes étals. Montre-moi comment tu fais les comptes. »',
       guardianSays: {
         hit: 'Hé hé… Juste ! Tu sais compter tes sous.',
@@ -91,7 +91,7 @@ export const BLOCLAND = {
         beaten: 'Hé hé. Tu marchandes mieux que moi. Le marché est à toi… et à Bazar.',
       },
     },
-    carrefour: {
+    'french-5e-homophones': {
       challenge: 'Le Sphinx des routes se dresse : « Tu as lu tous mes panneaux. Montre-moi que tu ne te trompes plus de chemin. »',
       guardianSays: {
         hit: 'Hmm… Juste. Tu connais le chemin des mots.',
@@ -99,7 +99,7 @@ export const BLOCLAND = {
         beaten: 'Je m’écarte. Toutes les routes sont à toi… et à Sema.',
       },
     },
-    marais: {
+    'french-5e-conjugation': {
       challenge: 'L’Hydre des marais sort de la vase : « Tu as traversé mes trois eaux. Montre-moi que tu connais le passé, le futur et le doute. »',
       guardianSays: {
         hit: 'Sss… Juste. Une de mes têtes s’incline.',
@@ -107,7 +107,7 @@ export const BLOCLAND = {
         beaten: 'Sss. Mes trois têtes se taisent. Le marais est à toi… et à Kroa.',
       },
     },
-    forge: {
+    'maths-4e-powers': {
       challenge: 'Le Titan d’acier lève son marteau : « Tu as chauffé toute ma forge. Montre-moi la puissance de tes calculs. »',
       guardianSays: {
         hit: 'Clang ! Juste. Mon armure sonne creux.',
@@ -115,7 +115,7 @@ export const BLOCLAND = {
         beaten: 'Clang. Tu frappes plus fort que mon marteau. La forge est à toi… et à Braise.',
       },
     },
-    atelier: {
+    'maths-4e-algebra': {
       challenge: 'Le Golem des équations se met en équilibre : « Tu as tracé tous mes plans. Montre-moi que tu sais trouver l’inconnue. »',
       guardianSays: {
         hit: 'Égal… Juste. Mes deux plateaux sont à niveau.',
@@ -123,7 +123,7 @@ export const BLOCLAND = {
         beaten: 'Égal. Tu as trouvé tous mes x. L’atelier est à toi… et à Ixe.',
       },
     },
-    falaise: {
+    'french-4e-agreement': {
       challenge: 'Le Bélier de granit frappe le rocher : « Tu as gravi toute ma paroi. Montre-moi que tes accords tiennent la corde. »',
       guardianSays: {
         hit: 'Boum… Juste. Mes cornes s’émoussent.',
@@ -131,7 +131,7 @@ export const BLOCLAND = {
         beaten: 'Boum. Tu grimpes plus sûrement que moi. La falaise est à toi… et à Cléa.',
       },
     },
-    cabinet: {
+    'french-4e-vocabulary': {
       challenge: 'Le Hibou lexicographe ferme son dictionnaire : « Tu as ouvert tous mes tiroirs. Montre-moi que tu sais démonter les mots. »',
       guardianSays: {
         hit: 'Hou… Juste. Tu as lu jusqu’à la racine.',
@@ -139,7 +139,7 @@ export const BLOCLAND = {
         beaten: 'Hou. Tu connais mes mots mieux que mon dictionnaire. Le cabinet est à toi… et à Plume.',
       },
     },
-    belvedere: {
+    'maths-3e-geometry': {
       challenge: 'Le Sphinx de marbre se redresse : « Tu as mesuré tout mon belvédère. Montre-moi que tu trouves ce qui manque. »',
       guardianSays: {
         hit: 'Hmm… Juste. L’angle droit te salue.',
@@ -147,7 +147,7 @@ export const BLOCLAND = {
         beaten: 'Je m’incline. Toutes les longueurs sont à toi… et à Théo.',
       },
     },
-    donnees: {
+    'maths-3e-statistics': {
       challenge: 'Le Comptable des étoiles ouvre son grand livre : « Tu as relevé toutes mes séries. Montre-moi que tu sais les résumer. »',
       guardianSays: {
         hit: 'Tic… Juste. Une étoile de plus dans ma colonne.',
@@ -155,7 +155,7 @@ export const BLOCLAND = {
         beaten: 'Tic. Tu comptes les étoiles mieux que moi. L’observatoire est à toi… et à Stat.',
       },
     },
-    phare: {
+    'maths-3e-functions': {
       challenge: 'Le Dragon de lumière déploie ses ailes : « Tu as allumé tout mon phare. Montre-moi que tu suis la lumière de x jusqu’à f(x). »',
       guardianSays: {
         hit: 'Flash… Juste. Ma lumière trouve son image.',
@@ -163,7 +163,7 @@ export const BLOCLAND = {
         beaten: 'Flash. Tu éclaires plus loin que moi. Le phare est à toi… et à Fi.',
       },
     },
-    textes: {
+    'french-3e-close-reading': {
       challenge: 'Le Grand Lecteur lève les yeux de son livre : « Tu as observé tous mes textes. Montre-moi que tu vois ce qu’ils cachent. »',
       guardianSays: {
         hit: 'Mmh… Juste. Tu lis ce qui n’est pas écrit.',
@@ -171,7 +171,7 @@ export const BLOCLAND = {
         beaten: 'Je ferme mon livre. L’observatoire est à toi… et à Astra. Tu sais lire, vraiment lire.',
       },
     },
-    baie: {
+    'english-6e-vocabulary': {
       challenge: 'Le Lion de pierre se dresse sur son socle : « Tu as écouté tous les mots de la baie. Montre-moi que tu les comprends. »',
       guardianSays: {
         hit: 'Rrr… Juste. Tu as l’oreille anglaise.',
@@ -179,7 +179,7 @@ export const BLOCLAND = {
         beaten: 'Je me recouche sur mon socle. La baie est à toi… et à Robin. Well done!',
       },
     },
-    horloge: {
+    'english-6e-grammar': {
       challenge: 'Le Coucou de bronze jaillit de son horloge : « Tu as remonté tous mes rouages. Montre-moi que tes verbes sonnent juste. »',
       guardianSays: {
         hit: 'Coucou ! Juste. Ton verbe est à l’heure.',
@@ -187,7 +187,7 @@ export const BLOCLAND = {
         beaten: 'Coucou… Je rentre dans mon horloge. Les verbes sont à toi… et à Tick.',
       },
     },
-    comptoir: {
+    'english-5e-vocabulary': {
       challenge: 'La Reine du marché descend de son estrade : « Tu as fait toutes tes courses en anglais. Montre-moi que tu comprends tout ce qu’on te dit. »',
       guardianSays: {
         hit: 'Splendid! Juste. Tu parles comme au marché de Londres.',
@@ -195,7 +195,7 @@ export const BLOCLAND = {
         beaten: 'Je range ma couronne. Le Comptoir est à toi… et à Pudding.',
       },
     },
-    relais: {
+    'lv2-5e-introductions': {
       challenge: 'La Diligence de cuivre s’arrête devant l’auberge : « Tu as accueilli tous mes voyageurs. Montre-moi que tu comprends ce qu’ils te disent. »',
       guardianSays: {
         hit: 'Hue ! Juste. Mes roues tournent rond.',
@@ -203,7 +203,7 @@ export const BLOCLAND = {
         beaten: 'Je dételle mes chevaux. Le Relais est à toi… et à Lina.',
       },
     },
-    jardin: {
+    'lv2-4e-daily-life': {
       challenge: 'Le Soleil de cuivre se lève au-dessus du jardin : « Tu as suivi toute ma journée, du matin au soir. Montre-moi que tu sais dire l’heure et raconter ta journée. »',
       guardianSays: {
         hit: 'Juste. Je descends un peu vers le soir.',
@@ -211,7 +211,7 @@ export const BLOCLAND = {
         beaten: 'Je me couche… en pierre, pour ton village. Le Jardin est à toi… et à Muscade.',
       },
     },
-    refuge: {
+    'lv2-3e-travel': {
       challenge: 'Le Papillon de cuivre attend devant le refuge : « Tu as rencontré tous les voyageurs du refuge. Montre-moi que tu comprends leurs voyages. »',
       guardianSays: {
         hit: 'Juste. Je me souviens : avant, j’étais chenille.',
@@ -219,7 +219,7 @@ export const BLOCLAND = {
         beaten: 'Je me pose… en pierre, pour ton village. Le refuge est à toi… et à Timbre.',
       },
     },
-    manoir: {
+    'english-5e-grammar': {
       challenge: 'Le Spectre du manoir traverse le mur : « Tu as fouillé toutes mes pièces. Montre-moi que tu sais dire maintenant, hier, et plus fort que moi. »',
       guardianSays: {
         hit: 'Bouh… Juste. Tu ne crains pas le passé.',
@@ -227,7 +227,7 @@ export const BLOCLAND = {
         beaten: 'Je m’efface… Le manoir est à toi… et à Moustache.',
       },
     },
-    theatre: {
+    'english-4e-comprehension': {
       challenge: 'Le Masque descend des cintres : « Tu connais toutes mes répliques. Montre-moi que tu sais donner la bonne. »',
       guardianSays: {
         hit: 'Bravo! Juste. La salle applaudit.',
@@ -235,7 +235,7 @@ export const BLOCLAND = {
         beaten: 'Le rideau tombe. Le théâtre est à toi… et à Puck.',
       },
     },
-    gare: {
+    'english-4e-grammar': {
       challenge: 'La Locomotive de fer entre en gare dans un nuage de vapeur : « Tu as pris tous mes trains. Montre-moi que tu sais où tu vas. »',
       guardianSays: {
         hit: 'Tchou ! Juste. Tu es sur les bons rails.',
@@ -243,7 +243,7 @@ export const BLOCLAND = {
         beaten: 'Je m’arrête en gare. Les voies sont à toi… et à Vapeur.',
       },
     },
-    studio: {
+    'english-3e-comprehension': {
       challenge: 'La Grande Antenne grésille et s’allume : « Tu as capté toutes mes ondes. Montre-moi que tu comprends chaque message. »',
       guardianSays: {
         hit: 'Bip… Juste. Message bien reçu.',
@@ -251,7 +251,7 @@ export const BLOCLAND = {
         beaten: 'Fin de l’émission. Le studio est à toi… et à Écho.',
       },
     },
-    chateau: {
+    'english-3e-grammar': {
       challenge: 'Le Dragon gallois se pose sur le donjon : « Tu as franchi tous mes remparts. Montre-moi que tu maîtrises les phrases les plus longues. »',
       guardianSays: {
         hit: 'Grrr… Juste. Ma flamme vacille.',
@@ -265,37 +265,37 @@ export const BLOCLAND = {
   // l'identifiant, l'icône et la place ne changent pas (décision du mainteneur, 28 septembre 2026).
   etatsDIle: { ...ETATS_D_ILE, restauree: 'Bâtie' },
   especes: {
-    foret: 'golem de mousse',
-    mine: 'taupe cubique',
-    carriere: 'renard cubique',
-    ferme: 'vache carrée',
-    tour: 'hibou de pierre',
-    plaine: 'coccinelle à dix points',
-    riviere: 'grenouille des nénuphars',
-    volcan: 'salamandre de lave',
-    glacier: 'pingouin comptable',
-    marche: 'raton laveur marchand',
-    carrefour: 'caméléon des panneaux',
-    marais: 'triton des roseaux',
-    forge: 'golem forgeron',
-    atelier: 'robot dessinateur',
-    falaise: 'chèvre des cimes',
-    cabinet: 'pie collectionneuse',
-    belvedere: 'héron géomètre',
-    donnees: 'chouette astronome',
-    phare: 'lampe de phare vivante',
-    textes: 'luciole lectrice',
-    baie: 'rouge-gorge des quais',
-    horloge: 'hérisson horloger',
-    comptoir: 'bouledogue marchand',
-    relais: 'cigogne voyageuse',
-    jardin: 'écureuil cuisinier',
-    refuge: 'loutre factrice',
-    manoir: 'chat du manoir',
-    theatre: 'lutin souffleur',
-    gare: 'blaireau chef de gare',
-    studio: 'chauve-souris animatrice radio',
-    chateau: 'petit chevalier',
+    'french-6e-phonology': 'golem de mousse',
+    'french-6e-letter-confusion': 'taupe cubique',
+    'french-6e-word-spelling': 'renard cubique',
+    'french-6e-grammar-spelling': 'vache carrée',
+    'french-6e-reading': 'hibou de pierre',
+    'maths-6e-calculation': 'coccinelle à dix points',
+    'maths-6e-fractions': 'grenouille des nénuphars',
+    'maths-6e-decimals': 'salamandre de lave',
+    'maths-5e-signed-numbers': 'pingouin comptable',
+    'maths-5e-proportionality': 'raton laveur marchand',
+    'french-5e-homophones': 'caméléon des panneaux',
+    'french-5e-conjugation': 'triton des roseaux',
+    'maths-4e-powers': 'golem forgeron',
+    'maths-4e-algebra': 'robot dessinateur',
+    'french-4e-agreement': 'chèvre des cimes',
+    'french-4e-vocabulary': 'pie collectionneuse',
+    'maths-3e-geometry': 'héron géomètre',
+    'maths-3e-statistics': 'chouette astronome',
+    'maths-3e-functions': 'lampe de phare vivante',
+    'french-3e-close-reading': 'luciole lectrice',
+    'english-6e-vocabulary': 'rouge-gorge des quais',
+    'english-6e-grammar': 'hérisson horloger',
+    'english-5e-vocabulary': 'bouledogue marchand',
+    'lv2-5e-introductions': 'cigogne voyageuse',
+    'lv2-4e-daily-life': 'écureuil cuisinier',
+    'lv2-3e-travel': 'loutre factrice',
+    'english-5e-grammar': 'chat du manoir',
+    'english-4e-comprehension': 'lutin souffleur',
+    'english-4e-grammar': 'blaireau chef de gare',
+    'english-3e-comprehension': 'chauve-souris animatrice radio',
+    'english-3e-grammar': 'petit chevalier',
   },
   libelles: {
     dejaFait: 'Déjà vaincu. Une revanche ?',
@@ -323,8 +323,8 @@ export const BLOCLAND = {
   sentinelles: null,
   // Les monuments qui nomment un archipel : le même message, avec le nom de Blocland.
   monuments: {
-    'monument-moulin': { done: 'Le grand moulin tourne ! Il moud le grain de toutes les îles des Basses Terres.' },
-    'monument-amphitheatre': { done: 'L’amphithéâtre est prêt ! Tout le monde des Monts de Feu viendra au spectacle.' },
+    'landmark-6e-2': { done: 'Le grand moulin tourne ! Il moud le grain de toutes les îles des Basses Terres.' },
+    'landmark-4e-2': { done: 'L’amphithéâtre est prêt ! Tout le monde des Monts de Feu viendra au spectacle.' },
   },
   // Les blocs assemblés et leur lieu (GD-2) : écrits dans docs/contenu/assemblage.md.
   blocs: nomsAssembles('blocland'),

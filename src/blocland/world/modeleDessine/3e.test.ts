@@ -32,20 +32,20 @@ it('l’Observatoire des textes monte en trois gradins de 2 blocs, neige en haut
     max[c.ile!] = Math.max(max[c.ile!] ?? 0, d);
     min[c.ile!] = Math.min(min[c.ile!] ?? 0, d);
   }
-  for (const id of ['phare', 'donnees', 'studio', 'chateau']) expect([max[id], min[id]], id).toEqual([0, 0]);
+  for (const id of ['maths-3e-functions', 'maths-3e-statistics', 'english-3e-comprehension', 'english-3e-grammar']) expect([max[id], min[id]], id).toEqual([0, 0]);
   // Les textes : jusqu'à 6 blocs au-dessus de l'île, en marches de 2.
-  const o = origineDe('textes');
-  const hauts = apres.colonnes.filter((c) => c.ile === 'textes').map((c) => c.haut - o.z);
+  const o = origineDe('french-3e-close-reading');
+  const hauts = apres.colonnes.filter((c) => c.ile === 'french-3e-close-reading').map((c) => c.haut - o.z);
   expect(Math.max(...hauts)).toBe(GRADINS_3E.marche * GRADINS_3E.gradins);
-  expect(min.textes).toBe(0);
+  expect(min['french-3e-close-reading']).toBe(0);
   // Le sommet des gradins est enneigé.
-  const neige = modele.filter((c) => c.tag === 'textes' && c.texture === 'neige');
+  const neige = modele.filter((c) => c.tag === 'french-3e-close-reading' && c.texture === 'neige');
   expect(neige.length).toBeGreaterThan(3);
   // Le Belvédère : ses pics redescendent, rien ne dépasse le dôme.
-  const b = origineDe('belvedere');
-  const belvedere = apres.colonnes.filter((c) => c.ile === 'belvedere').map((c) => c.haut - b.z);
+  const b = origineDe('maths-3e-geometry');
+  const belvedere = apres.colonnes.filter((c) => c.ile === 'maths-3e-geometry').map((c) => c.haut - b.z);
   expect(Math.max(...belvedere)).toBeLessThanOrEqual(DOME_DU_BELVEDERE.h);
-  expect(min.belvedere).toBeLessThan(0);
+  expect(min['maths-3e-geometry']).toBeLessThan(0);
 });
 
 it('ni le cœur, ni la première rangée du fond, ni les abords d’un ouvrage, ni ce qui est posé ne bougent', () => {

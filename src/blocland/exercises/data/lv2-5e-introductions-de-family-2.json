@@ -1,0 +1,250 @@
+{
+  "id": "lv2-5e-introductions-de-family-2",
+  "biome": "lv2-5e-introductions",
+  "type": "de-family",
+  "level": 2,
+  "lang": "de",
+  "instruction": "Écoute le mot en allemand, puis choisis les lettres qui manquent. La règle est affichée.",
+  "programme": [
+    "c4.de.ecrire.dictee-fiche"
+  ],
+  "items": [
+    {
+      "key": "lv2-5e-introductions-de-family-2-0",
+      "prompt": "Bl…stift",
+      "spoken": "Bleistift",
+      "choices": [
+        "ai",
+        "ei",
+        "ie"
+      ],
+      "answer": "ei",
+      "hint": "Écoute : entends-tu « aï » ou « i » ?",
+      "explanation": "der Bleistift (le crayon) : on entend « aï », qui s’écrit ei en allemand. ie se dirait « i ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Écrire l’allemand",
+          "lines": [
+            "ei se dit « aï » : drei, klein, das Eis.",
+            "ie se dit « i » : vier, sieben, das Tier.",
+            "ä se dit « è » (der Käse) ; ö se dit « eu » (schön).",
+            "ü se dit « u » (fünf).",
+            "Sans les deux points : a se dit « a », o se dit « o »,",
+            "u se dit « ou » (gut).",
+            "Un nom prend toujours une majuscule : der Tisch, die Tür."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-de-family-2-1",
+      "prompt": "Pap…r",
+      "spoken": "Papier",
+      "choices": [
+        "ei",
+        "i",
+        "ie"
+      ],
+      "answer": "ie",
+      "hint": "Écoute : entends-tu « aï » ou « i » ?",
+      "explanation": "das Papier (le papier) : on entend un « i » long, qui s’écrit ie. ei se dirait « aï ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Écrire l’allemand",
+          "lines": [
+            "ei se dit « aï » : drei, klein, das Eis.",
+            "ie se dit « i » : vier, sieben, das Tier.",
+            "ä se dit « è » (der Käse) ; ö se dit « eu » (schön).",
+            "ü se dit « u » (fünf).",
+            "Sans les deux points : a se dit « a », o se dit « o »,",
+            "u se dit « ou » (gut).",
+            "Un nom prend toujours une majuscule : der Tisch, die Tür."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-de-family-2-2",
+      "prompt": "Sp…l",
+      "spoken": "Spiel",
+      "choices": [
+        "ei",
+        "i",
+        "ie"
+      ],
+      "answer": "ie",
+      "hint": "Écoute : entends-tu « aï » ou « i » ?",
+      "explanation": "das Spiel (le jeu) : on entend un « i » long, qui s’écrit ie. ei se dirait « aï ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Écrire l’allemand",
+          "lines": [
+            "ei se dit « aï » : drei, klein, das Eis.",
+            "ie se dit « i » : vier, sieben, das Tier.",
+            "ä se dit « è » (der Käse) ; ö se dit « eu » (schön).",
+            "ü se dit « u » (fünf).",
+            "Sans les deux points : a se dit « a », o se dit « o »,",
+            "u se dit « ou » (gut).",
+            "Un nom prend toujours une majuscule : der Tisch, die Tür."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-de-family-2-3",
+      "prompt": "l…se",
+      "spoken": "leise",
+      "choices": [
+        "ai",
+        "ei",
+        "ie"
+      ],
+      "answer": "ei",
+      "hint": "Écoute : entends-tu « aï » ou « i » ?",
+      "explanation": "leise (doucement, sans bruit) : on entend « aï », qui s’écrit ei. ie se dirait « i ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Écrire l’allemand",
+          "lines": [
+            "ei se dit « aï » : drei, klein, das Eis.",
+            "ie se dit « i » : vier, sieben, das Tier.",
+            "ä se dit « è » (der Käse) ; ö se dit « eu » (schön).",
+            "ü se dit « u » (fünf).",
+            "Sans les deux points : a se dit « a », o se dit « o »,",
+            "u se dit « ou » (gut).",
+            "Un nom prend toujours une majuscule : der Tisch, die Tür."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-de-family-2-4",
+      "prompt": "M…dchen",
+      "spoken": "Mädchen",
+      "choices": [
+        "a",
+        "ä",
+        "è"
+      ],
+      "answer": "ä",
+      "hint": "Écoute : entends-tu « a » ou « è » ?",
+      "explanation": "das Mädchen (la fille) : le son « è » s’écrit ä, un a avec deux points. L’allemand n’écrit jamais è.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Écrire l’allemand",
+          "lines": [
+            "ei se dit « aï » : drei, klein, das Eis.",
+            "ie se dit « i » : vier, sieben, das Tier.",
+            "ä se dit « è » (der Käse) ; ö se dit « eu » (schön).",
+            "ü se dit « u » (fünf).",
+            "Sans les deux points : a se dit « a », o se dit « o »,",
+            "u se dit « ou » (gut).",
+            "Un nom prend toujours une majuscule : der Tisch, die Tür."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-de-family-2-5",
+      "prompt": "Sch…ler",
+      "spoken": "Schüler",
+      "choices": [
+        "ou",
+        "u",
+        "ü"
+      ],
+      "answer": "ü",
+      "hint": "Écoute : entends-tu « ou » ou « u » ?",
+      "explanation": "der Schüler (l’élève) : le son « u », comme dans « rue », s’écrit ü. u seul se dit « ou ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Écrire l’allemand",
+          "lines": [
+            "ei se dit « aï » : drei, klein, das Eis.",
+            "ie se dit « i » : vier, sieben, das Tier.",
+            "ä se dit « è » (der Käse) ; ö se dit « eu » (schön).",
+            "ü se dit « u » (fünf).",
+            "Sans les deux points : a se dit « a », o se dit « o »,",
+            "u se dit « ou » (gut).",
+            "Un nom prend toujours une majuscule : der Tisch, die Tür."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-de-family-2-6",
+      "prompt": "h…ren",
+      "spoken": "hören",
+      "choices": [
+        "eu",
+        "o",
+        "ö"
+      ],
+      "answer": "ö",
+      "hint": "Écoute : entends-tu « o » ou « eu » ?",
+      "explanation": "hören (entendre, écouter) : le son « eu » s’écrit ö, un o avec deux points. o seul se dit « o ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Écrire l’allemand",
+          "lines": [
+            "ei se dit « aï » : drei, klein, das Eis.",
+            "ie se dit « i » : vier, sieben, das Tier.",
+            "ä se dit « è » (der Käse) ; ö se dit « eu » (schön).",
+            "ü se dit « u » (fünf).",
+            "Sans les deux points : a se dit « a », o se dit « o »,",
+            "u se dit « ou » (gut).",
+            "Un nom prend toujours une majuscule : der Tisch, die Tür."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-de-family-2-7",
+      "prompt": "Tsch…ss",
+      "spoken": "Tschüss",
+      "choices": [
+        "ou",
+        "u",
+        "ü"
+      ],
+      "answer": "ü",
+      "hint": "Écoute : entends-tu « ou » ou « u » ?",
+      "explanation": "Tschüss (salut, au revoir) : le son « u », comme dans « rue », s’écrit ü. u seul se dit « ou ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Écrire l’allemand",
+          "lines": [
+            "ei se dit « aï » : drei, klein, das Eis.",
+            "ie se dit « i » : vier, sieben, das Tier.",
+            "ä se dit « è » (der Käse) ; ö se dit « eu » (schön).",
+            "ü se dit « u » (fünf).",
+            "Sans les deux points : a se dit « a », o se dit « o »,",
+            "u se dit « ou » (gut).",
+            "Un nom prend toujours une majuscule : der Tisch, die Tür."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "wrong": "{explanation}",
+    "correct": "Bien écrit !"
+  },
+  "reward": {
+    "block": "lv2-5e-introductions",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

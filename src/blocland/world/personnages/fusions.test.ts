@@ -11,7 +11,7 @@ const { progress, world: village } = toutConstruit();
 
 describe('Les personnages fusionnés, archipel par archipel', () => {
   it('pose un personnage au milieu de l’emprise de ses cubes, sur le haut de sa case (repère de Three.js)', () => {
-    const p = { id: 'foret' as const, origin: { x: 10, y: 20, z: 3 }, cubes: [0, 1, 2].flatMap((x) => [0, 1].map((y) => ({ x, y, z: 0 }))) };
+    const p = { id: 'french-6e-phonology' as const, origin: { x: 10, y: 20, z: 3 }, cubes: [0, 1, 2].flatMap((x) => [0, 1].map((y) => ({ x, y, z: 0 }))) };
     expect(pointDePose(p)).toEqual([11.5, 3, 21]);
   });
 
@@ -71,11 +71,11 @@ describe('Les personnages fusionnés, archipel par archipel', () => {
       });
       return { f, ids: [...ids].sort() };
     };
-    expect(brillent('3e').ids).toEqual(['phare', 'textes']);
-    expect(brillent('4e').ids).toEqual(['forge']);
+    expect(brillent('3e').ids).toEqual(['french-3e-close-reading', 'maths-3e-functions']);
+    expect(brillent('4e').ids).toEqual(['maths-4e-powers']);
     // Le verre de Fi est ambre le jour (sa couleur de sommet) et prend la lueur la nuit (#FFD866 : rouge linéaire 1).
     const { f } = brillent('3e');
-    const fi = f.plages.find((p) => p.id === 'phare')!;
+    const fi = f.plages.find((p) => p.id === 'maths-3e-functions')!;
     let lueur = false;
     for (let v = fi.debut * 3; v < fi.fin * 3; v++) if (f.lueur[v * 4 + 3] && Math.abs(f.lueur[v * 4] - 1) < 1e-6) lueur = true;
     expect(lueur).toBe(true);

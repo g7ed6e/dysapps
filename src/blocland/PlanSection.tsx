@@ -38,7 +38,7 @@ export function EarnLink({ block, here }: { block: BlockId; here?: BiomeId }) {
   if (island.id === here) return <>à gagner ici, dans les missions</>;
   return (
     <>
-      à gagner dans <Link to={`/aventure/${island.id}`}>{island.name}</Link>
+      à gagner dans <Link to={`/adventure/${island.id}`}>{island.name}</Link>
     </>
   );
 }

@@ -1,0 +1,142 @@
+{
+  "id": "french-6e-word-spelling-missing-letters-2",
+  "biome": "french-6e-word-spelling",
+  "type": "missing-letters",
+  "level": 2,
+  "instruction": "Écoute le mot, puis tape le bloc de lettres qui manque.",
+  "items": [
+    {
+      "key": "beaucoup",
+      "word": "beaucoup",
+      "before": "b",
+      "after": "coup",
+      "choices": [
+        "eau",
+        "au",
+        "o"
+      ],
+      "answer": "eau"
+    },
+    {
+      "key": "bateau",
+      "word": "bateau",
+      "before": "bat",
+      "after": "",
+      "choices": [
+        "eau",
+        "au",
+        "o"
+      ],
+      "answer": "eau"
+    },
+    {
+      "key": "toujours",
+      "word": "toujours",
+      "before": "t",
+      "after": "jours",
+      "choices": [
+        "ou",
+        "oo",
+        "u"
+      ],
+      "answer": "ou"
+    },
+    {
+      "key": "jamais",
+      "word": "jamais",
+      "before": "jam",
+      "after": "",
+      "choices": [
+        "ais",
+        "ai",
+        "é"
+      ],
+      "answer": "ais"
+    },
+    {
+      "key": "longtemps",
+      "word": "longtemps",
+      "before": "longt",
+      "after": "",
+      "choices": [
+        "emps",
+        "ent",
+        "an"
+      ],
+      "answer": "emps"
+    },
+    {
+      "key": "quand",
+      "word": "quand",
+      "before": "qu",
+      "after": "",
+      "choices": [
+        "and",
+        "an",
+        "ant"
+      ],
+      "answer": "and"
+    },
+    {
+      "key": "parce",
+      "word": "parce que",
+      "before": "par",
+      "after": " que",
+      "choices": [
+        "ce",
+        "se",
+        "sse"
+      ],
+      "answer": "ce"
+    },
+    {
+      "key": "aujourd'hui",
+      "word": "aujourd’hui",
+      "before": "aujourd",
+      "after": "",
+      "choices": [
+        "’hui",
+        "ui",
+        "oui"
+      ],
+      "answer": "’hui"
+    },
+    {
+      "key": "temps",
+      "word": "temps",
+      "before": "t",
+      "after": "",
+      "choices": [
+        "emps",
+        "ent",
+        "ant"
+      ],
+      "answer": "emps"
+    },
+    {
+      "key": "plusieurs",
+      "word": "plusieurs",
+      "before": "plusi",
+      "after": "s",
+      "choices": [
+        "eur",
+        "eure",
+        "er"
+      ],
+      "answer": "eur"
+    }
+  ],
+  "feedback": {
+    "correct": "Le mot est complet !",
+    "wrong": "{word} s’écrit avec « {answer} », pas « {chosen} »."
+  },
+  "reward": {
+    "block": "french-6e-word-spelling",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

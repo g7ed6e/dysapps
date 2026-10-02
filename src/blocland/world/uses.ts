@@ -41,7 +41,7 @@ export interface Use {
 
 /** Les îles ouvertes de l'archipel où se tient le bonhomme, la sienne en premier. */
 function openIslandsHere(state: GameState): BiomeId[] {
-  const at = state.world.place ?? 'foret';
+  const at = state.world.place ?? 'french-6e-phonology';
   const open = reachableIslands(state.world.links);
   const ids = islandsOf(archipelagoOf(at).classe)
     .map((b) => b.id)
@@ -89,9 +89,9 @@ export function blockUses(state: GameState, block: BlockId): Use[] {
   if (uses.length) return uses;
   // Rien à poser dans un plan ni sur le navire : les monuments de l'archipel s'en servent peut-être (c'est leur rôle :
   // employer les blocs qui s'accumulent).
-  for (const m of monumentsOf(archipelagoOf(state.world.place ?? 'foret').classe)) {
+  for (const m of monumentsOf(archipelagoOf(state.world.place ?? 'french-6e-phonology').classe)) {
     const need = planStatus(state, m).missing[block] ?? 0;
-    if (need > 0) uses.push({ kind: 'monument', island: m.biome, name: m.name, need, enough: have >= need, to: `/aventure/${m.id}` });
+    if (need > 0) uses.push({ kind: 'monument', island: m.biome, name: m.name, need, enough: have >= need, to: `/adventure/${m.id}` });
   }
   // Rien à poser aujourd'hui : les plans suivants de son île (ou, pour un bloc de coffre, des îles ouvertes) l'attendent peut-être.
   const home = earnIsland(block);
@@ -183,7 +183,7 @@ export function missingNow(state: GameState): MissingBlock[] {
 
 /** L'inventaire commenté : chaque type possédé et ses usages, les ouvrages payables, les blocs à aller chercher. */
 export function inventoryUses(state: GameState): Inventory {
-  const at = state.world.place ?? 'foret';
+  const at = state.world.place ?? 'french-6e-phonology';
   const rows = (Object.keys(BLOCKS) as BlockId[])
     .filter((b) => (state.stock[b] ?? 0) > 0)
     .map((block) => ({

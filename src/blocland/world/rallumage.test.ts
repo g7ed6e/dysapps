@@ -3,15 +3,15 @@ import { lueursDuDefi } from './personnages/allumage';
 import { aRallumer, gardiensRallumes, MOMENTS_DE_SUITE, vusSansMoment } from './rallumage';
 
 /** Les Gardiens rallumés au défi : une étoile au moins à leur défi. */
-const rallumes = (...ids: string[]) => Object.fromEntries(ids.map((id) => [`${id}-gardien`, { stars: 2 }]));
+const rallumes = (...ids: string[]) => Object.fromEntries(ids.map((id) => [`${id}-challenge`, { stars: 2 }]));
 
 describe('Le moment du rallumage (lot 6)', () => {
   it('attend, dans l’archipel de l’élève et dans l’ordre des îles, les Gardiens rallumés que l’appareil n’a pas vus', () => {
-    const progress = rallumes('mine', 'foret', 'glacier');
-    expect(gardiensRallumes(progress)).toEqual(['foret', 'mine', 'glacier']);
-    expect(aRallumer(progress, '6e', {})).toEqual(['foret', 'mine']);
-    expect(aRallumer(progress, '6e', { foret: true })).toEqual(['mine']);
-    expect(aRallumer(progress, '5e', {})).toEqual(['glacier']);
+    const progress = rallumes('french-6e-letter-confusion', 'french-6e-phonology', 'maths-5e-signed-numbers');
+    expect(gardiensRallumes(progress)).toEqual(['french-6e-phonology', 'french-6e-letter-confusion', 'maths-5e-signed-numbers']);
+    expect(aRallumer(progress, '6e', {})).toEqual(['french-6e-phonology', 'french-6e-letter-confusion']);
+    expect(aRallumer(progress, '6e', { 'french-6e-phonology': true })).toEqual(['french-6e-letter-confusion']);
+    expect(aRallumer(progress, '5e', {})).toEqual(['maths-5e-signed-numbers']);
   });
 
   it('au plus trois moments de suite : les suivants s’allument sans moment', () => {
@@ -22,9 +22,9 @@ describe('Le moment du rallumage (lot 6)', () => {
   });
 
   it('sans sentinelles (Blocland, avant la bascule), tout Gardien rallumé est noté vu, partout : un passage à Archipéo n’en rejoue aucun', () => {
-    const progress = rallumes('mine', 'glacier');
-    expect(vusSansMoment(progress, '6e', {}, false)).toEqual(['mine', 'glacier']);
-    expect(vusSansMoment(progress, '6e', { mine: true, glacier: true }, false)).toEqual([]);
+    const progress = rallumes('french-6e-letter-confusion', 'maths-5e-signed-numbers');
+    expect(vusSansMoment(progress, '6e', {}, false)).toEqual(['french-6e-letter-confusion', 'maths-5e-signed-numbers']);
+    expect(vusSansMoment(progress, '6e', { 'french-6e-letter-confusion': true, 'maths-5e-signed-numbers': true }, false)).toEqual([]);
   });
 });
 

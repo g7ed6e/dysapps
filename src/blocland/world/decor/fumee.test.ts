@@ -109,7 +109,7 @@ it('au 6e, le volcan fume à peine : une fumée mince, plus basse que le phare (
   expect(f.panaches[0].n).toBe(FUMEE_DU_VOLCAN.volutes);
   expect(f.panaches[0].rayons[0]).toBeLessThan(0.42);
   // À tout moment, le haut de la fumée reste sous le sommet du phare du 6e posé au niveau de la mer (île de la Tour).
-  const sommetDuPhare = islandCenter('tour').z + PHARES['6e'].socle + PHARES['6e'].H;
+  const sommetDuPhare = islandCenter('french-6e-reading').z + PHARES['6e'].socle + PHARES['6e'].H;
   for (const t of [0, 1.5, 3, 4.5, 6, 7.5, 9]) {
     const { positions } = poser('6e', t, 1, false);
     let haut = -Infinity;

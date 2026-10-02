@@ -3,6 +3,8 @@
 // construit). Les étapes suivantes déplacent ce code sans rien changer à l'image : ces empreintes ne doivent pas bouger.
 // Si une empreinte change, c'est que le monde a changé ; un lot qui le veut (un lot de rendu, par exemple) met à jour
 // l'instantané avec `npx vitest run -u src/blocland/world/empreintes.test.ts` et le dit dans sa pull request.
+// Les identifiants y sont remis dans leurs mots d'avant (./idsDAvant.testing.ts) : un identifiant qui change ne change
+// pas l'image, ni donc les empreintes.
 import { BIOMES, type BiomeId } from '../biomes';
 import { ARCHIPELAGO_IDS, archipelagoOfIsland, type ArchipelagoId } from './map';
 import { BRIDGES, getArchipelago, islandsOf, VOYAGES } from './archipelago';
@@ -12,6 +14,7 @@ import { walkGround } from './paths';
 import { PLANS, planCells } from './plans';
 import { VEHICLE_STAGES } from './vehicle';
 import { MONUMENTS } from './monuments';
+import { versLesIdsDAvant } from './idsDAvant.testing';
 import {
   avatarHome,
   avatarRoute,
@@ -37,11 +40,11 @@ function fnv(text: string): string {
   return h.toString(16).padStart(8, '0');
 }
 
-/** Empreinte d'une valeur : son JSON, clés dans l'ordre d'écriture. */
-const empreinte = (v: unknown) => fnv(JSON.stringify(v));
+/** Empreinte d'une valeur : son JSON, clés dans l'ordre d'écriture, identifiants dans leurs mots d'avant. */
+const empreinte = (v: unknown) => fnv(JSON.stringify(versLesIdsDAvant(v)));
 
 /** Empreinte d'une liste dont l'ordre ne compte pas (des cubes). */
-const empreinteTriee = (list: unknown[]) => fnv(list.map((x) => JSON.stringify(x)).sort().join('\n'));
+const empreinteTriee = (list: unknown[]) => fnv(list.map((x) => JSON.stringify(versLesIdsDAvant(x))).sort().join('\n'));
 
 /** Empreinte de tableaux typés, arrondis au dix-millième (l'image ne bouge pas en deçà). */
 const empreinteFacettes = (f: Facettes) =>
@@ -117,7 +120,7 @@ describe('Empreintes de la grille (filet de la séparation du jeu et du rendu)',
     it(`${a}, la place des îles, des bornes, des lieux et du bonhomme`, () => {
       const places = BIOMES.filter((b) => archipelagoOfIsland(b.id as BiomeId) === a).map((b) => {
         const id = b.id as BiomeId;
-        return [id, islandCenter(id), avatarHome(id), questStations(id), placeDoor('ecole', id), placeDoor('trophees', id), placeDoor('assemblage', id)];
+        return [id, islandCenter(id), avatarHome(id), questStations(id), placeDoor('school', id), placeDoor('trophies', id), placeDoor('assembly', id)];
       });
       expect(empreinte(places)).toMatchSnapshot();
     });

@@ -22,9 +22,9 @@ const LOADERS = new Map(Object.entries(JSON_META).map(([path, meta]) => [meta.id
 /** Tri des graines : les phrases à trous viennent de la mission Homophones (a/à, et/est, on/ont, son/sont, ce/se). */
 const GRAINES_SETS = ['a', 'et', 'on', 'son', 'ce'];
 const graines: ExerciseDef[] = SETS.filter((s) => GRAINES_SETS.includes(s.id)).map((set) => ({
-  id: `ferme-graines-${set.id}`,
-  biome: 'ferme',
-  type: 'graines',
+  id: `french-6e-grammar-spelling-sorting-${set.id}`,
+  biome: 'french-6e-grammar-spelling',
+  type: 'sorting',
   level: 1,
   instruction: `Complète chaque phrase avec ${set.label}. Astuce : ${set.hint}`,
   target: set.label,
@@ -38,16 +38,16 @@ const graines: ExerciseDef[] = SETS.filter((s) => GRAINES_SETS.includes(s.id)).m
     hint: set.hint,
   })),
   feedback: { correct: 'Bien trié !', wrong: '{rule} Astuce : {hint}' },
-  reward: { block: 'terre', amount: 4, xp: 12 },
+  reward: { block: 'french-6e-grammar-spelling', amount: 4, xp: 12 },
   adaptive: { promoteAt: 0.85, demoteAt: 0.5 },
 }));
 
 /** Panneaux (Carrefour des homophones) : les autres jeux de la mission Homophones, avec la règle affichée. */
 const PANNEAUX_SETS: Record<string, number> = { ces: 1, ou: 1, la: 1, leur: 1, quand: 2, peu: 2, cest: 2 };
 const panneaux: ExerciseDef[] = SETS.filter((s) => s.id in PANNEAUX_SETS).map((set) => ({
-  id: `carrefour-panneaux-${set.id}`,
-  biome: 'carrefour',
-  type: 'panneaux',
+  id: `french-5e-homophones-pairs-${set.id}`,
+  biome: 'french-5e-homophones',
+  type: 'pairs',
   level: PANNEAUX_SETS[set.id],
   instruction: `Complète chaque phrase avec ${set.label}. La règle est affichée : lis-la avant de répondre.`,
   target: set.label,
@@ -62,7 +62,7 @@ const panneaux: ExerciseDef[] = SETS.filter((s) => s.id in PANNEAUX_SETS).map((s
     aid: { kind: 'rule-card', props: { title: set.label, lines: Object.values(set.rules) } },
   })),
   feedback: { correct: 'Bonne route !', wrong: '{explanation}' },
-  reward: { block: 'panneau', amount: 4, xp: 14 },
+  reward: { block: 'french-5e-homophones', amount: 4, xp: 14 },
   adaptive: { promoteAt: 0.85, demoteAt: 0.5 },
 }));
 
@@ -75,46 +75,46 @@ const CODE_EXERCISES: ExerciseDef[] = [...graines, ...MATHS_EXERCISES, ...POSEES
  * Un fichier de data/ absent de cette liste fait échouer les tests (data.test.ts).
  */
 const ORDER: (string | ExerciseDef[])[] = [
-  'foret-echauffement-001', 'foret-echauffement-002', 'foret-echauffement-003', 'foret-chasse-son-an', 'foret-chasse-son-on',
-  'foret-chasse-son-oi', 'foret-chasse-son-in', 'foret-chasse-son-ch', 'foret-chasse-son-s', 'foret-chasse-son-in-3', 'mine-filon-b',
-  'mine-filon-d', 'mine-filon-p', 'mine-filon-q', 'mine-filon-mix-1', 'mine-filon-mix-2', 'carriere-mot-troue-1',
-  'carriere-mot-troue-2', graines, 'tour-ascension-mousso', 'tour-ascension-tunel', 'tour-ascension-pont', 'tour-etages-1', 'tour-etages-2', 'tour-vitraux-1', 'tour-vitraux-2', 'tour-vitraux-3',
-  'foret-rimes-eau', 'foret-rimes-on', 'foret-rimes-ette', 'foret-rimes-oire', 'mine-oreille-1', 'mine-oreille-2', 'carriere-coffre-1',
-  'carriere-coffre-2', 'carriere-coffre-3', 'carriere-coffre-4', 'carriere-familles-1', 'carriere-familles-2', 'carriere-facettes-1', 'carriere-facettes-2', 'ferme-enclos-1', 'ferme-enclos-2',
-  'ferme-recolte-1', 'ferme-recolte-2', 'ferme-troupeau-1', 'ferme-troupeau-2', MATHS_EXERCISES, POSEES_EXERCISES, VOLCAN_EXERCISES, PROBLEMES_EXERCISES, COLLEGE_EXERCISES, PROBLEMES_COLLEGE_EXERCISES, panneaux, 'carrefour-aiguillage-1',
-  'carrefour-aiguillage-2', 'carrefour-aiguillage-3', 'carrefour-bifurcation-1', 'carrefour-bifurcation-2', 'marais-rives-1', 'marais-rives-2',
-  'marais-brume-1', 'marais-brume-2', 'marais-roseaux-1', 'marais-roseaux-2', 'marais-gue-1', 'marais-gue-2', 'marais-gue-3', 'falaise-corde-1', 'falaise-corde-2',
-  'falaise-paroi-1', 'falaise-paroi-2', 'falaise-sommet-1', 'falaise-sommet-2', 'falaise-echo-1', 'falaise-echo-2', 'falaise-echo-3', 'cabinet-racines-1',
-  'cabinet-racines-2', 'cabinet-sens-1', 'cabinet-sens-2', 'cabinet-sens-3', 'cabinet-nuances-1', 'cabinet-nuances-2', 'cabinet-nuances-3',
-  'textes-inferences-1', 'textes-inferences-2', 'textes-inferences-3',
-  'textes-figures-1', 'textes-figures-2', 'textes-figures-3', 'textes-rouages-1', 'textes-rouages-2', 'textes-rouages-3', 'textes-voix-1', 'textes-voix-2', 'textes-voix-3', 'baie-hello-1', 'baie-hello-2',
-  'baie-numbers-1', 'baie-numbers-2', 'baie-ears-1', 'baie-ears-2', 'baie-signs-1', 'baie-signs-2', 'horloge-to-be-1', 'horloge-to-be-2',
-  'horloge-have-got-1', 'horloge-have-got-2', 'horloge-present-simple-1', 'horloge-present-simple-2',
-  'horloge-story-1', 'horloge-story-2',
-  'comptoir-shopping-1', 'comptoir-shopping-2', 'comptoir-routine-1', 'comptoir-routine-2', 'comptoir-listening-1',
-  'comptoir-listening-2', 'comptoir-notices-1', 'comptoir-notices-2', 'manoir-ing-1', 'manoir-ing-2', 'manoir-preterit-1', 'manoir-preterit-2',
-  'manoir-comparatifs-1', 'manoir-comparatifs-2', 'theatre-dialogues-1', 'theatre-dialogues-2', 'theatre-quantites-1',
-  'theatre-quantites-2', 'theatre-preterit-irregulier-1', 'theatre-preterit-irregulier-2',
-  'theatre-stories-1', 'theatre-stories-2', 'gare-futur-1',
-  'gare-futur-2', 'gare-modaux-1', 'gare-modaux-2', 'gare-present-perfect-1', 'gare-present-perfect-2', 'gare-traditions-1', 'gare-traditions-2',
-  'studio-comprendre-1', 'studio-comprendre-2', 'studio-connecteurs-1', 'studio-connecteurs-2', 'studio-faux-amis-1',
-  'studio-faux-amis-2', 'studio-medias-1', 'studio-medias-2', 'chateau-for-since-1', 'chateau-for-since-2', 'chateau-if-1', 'chateau-if-2',
-  'chateau-passif-1', 'chateau-passif-2',
+  'french-6e-phonology-syllables-warmup-001', 'french-6e-phonology-syllables-warmup-002', 'french-6e-phonology-syllables-warmup-003', 'french-6e-phonology-sound-hunt-an', 'french-6e-phonology-sound-hunt-on',
+  'french-6e-phonology-sound-hunt-oi', 'french-6e-phonology-sound-hunt-in', 'french-6e-phonology-sound-hunt-ch', 'french-6e-phonology-sound-hunt-s', 'french-6e-phonology-sound-hunt-in-3', 'french-6e-letter-confusion-letter-pairs-b',
+  'french-6e-letter-confusion-letter-pairs-d', 'french-6e-letter-confusion-letter-pairs-p', 'french-6e-letter-confusion-letter-pairs-q', 'french-6e-letter-confusion-letter-pairs-mix-1', 'french-6e-letter-confusion-letter-pairs-mix-2', 'french-6e-word-spelling-missing-letters-1',
+  'french-6e-word-spelling-missing-letters-2', graines, 'french-6e-reading-fluency-mousso', 'french-6e-reading-fluency-tunel', 'french-6e-reading-fluency-pont', 'french-6e-reading-comprehension-1', 'french-6e-reading-comprehension-2', 'french-6e-reading-sentence-order-1', 'french-6e-reading-sentence-order-2', 'french-6e-reading-sentence-order-3',
+  'french-6e-phonology-rhymes-eau', 'french-6e-phonology-rhymes-on', 'french-6e-phonology-rhymes-ette', 'french-6e-phonology-rhymes-oire', 'french-6e-letter-confusion-sound-discrimination-1', 'french-6e-letter-confusion-sound-discrimination-2', 'french-6e-word-spelling-sight-words-1',
+  'french-6e-word-spelling-sight-words-2', 'french-6e-word-spelling-sight-words-3', 'french-6e-word-spelling-sight-words-4', 'french-6e-word-spelling-word-families-1', 'french-6e-word-spelling-word-families-2', 'french-6e-word-spelling-word-forms-1', 'french-6e-word-spelling-word-forms-2', 'french-6e-grammar-spelling-word-classes-1', 'french-6e-grammar-spelling-word-classes-2',
+  'french-6e-grammar-spelling-e-er-ez-1', 'french-6e-grammar-spelling-e-er-ez-2', 'french-6e-grammar-spelling-plurals-1', 'french-6e-grammar-spelling-plurals-2', MATHS_EXERCISES, POSEES_EXERCISES, VOLCAN_EXERCISES, PROBLEMES_EXERCISES, COLLEGE_EXERCISES, PROBLEMES_COLLEGE_EXERCISES, panneaux, 'french-5e-homophones-choices-1',
+  'french-5e-homophones-choices-2', 'french-5e-homophones-choices-3', 'french-5e-homophones-homophone-sentences-1', 'french-5e-homophones-homophone-sentences-2', 'french-5e-conjugation-past-tenses-1', 'french-5e-conjugation-past-tenses-2',
+  'french-5e-conjugation-future-tense-1', 'french-5e-conjugation-future-tense-2', 'french-5e-conjugation-subjunctive-1', 'french-5e-conjugation-subjunctive-2', 'french-5e-conjugation-tense-choice-1', 'french-5e-conjugation-tense-choice-2', 'french-5e-conjugation-tense-choice-3', 'french-4e-agreement-past-participle-1', 'french-4e-agreement-past-participle-2',
+  'french-4e-agreement-adjectives-1', 'french-4e-agreement-adjectives-2', 'french-4e-agreement-subject-verb-1', 'french-4e-agreement-subject-verb-2', 'french-4e-agreement-reflexive-verbs-1', 'french-4e-agreement-reflexive-verbs-2', 'french-4e-agreement-reflexive-verbs-3', 'french-4e-vocabulary-word-roots-1',
+  'french-4e-vocabulary-word-roots-2', 'french-4e-vocabulary-meaning-1', 'french-4e-vocabulary-meaning-2', 'french-4e-vocabulary-meaning-3', 'french-4e-vocabulary-nuances-1', 'french-4e-vocabulary-nuances-2', 'french-4e-vocabulary-nuances-3',
+  'french-3e-close-reading-inference-1', 'french-3e-close-reading-inference-2', 'french-3e-close-reading-inference-3',
+  'french-3e-close-reading-figures-of-speech-1', 'french-3e-close-reading-figures-of-speech-2', 'french-3e-close-reading-figures-of-speech-3', 'french-3e-close-reading-text-connectives-1', 'french-3e-close-reading-text-connectives-2', 'french-3e-close-reading-text-connectives-3', 'french-3e-close-reading-voices-1', 'french-3e-close-reading-voices-2', 'french-3e-close-reading-voices-3', 'english-6e-vocabulary-hello-1', 'english-6e-vocabulary-hello-2',
+  'english-6e-vocabulary-numbers-1', 'english-6e-vocabulary-numbers-2', 'english-6e-vocabulary-first-listening-1', 'english-6e-vocabulary-first-listening-2', 'english-6e-vocabulary-signs-1', 'english-6e-vocabulary-signs-2', 'english-6e-grammar-to-be-1', 'english-6e-grammar-to-be-2',
+  'english-6e-grammar-have-got-1', 'english-6e-grammar-have-got-2', 'english-6e-grammar-present-simple-1', 'english-6e-grammar-present-simple-2',
+  'english-6e-grammar-story-1', 'english-6e-grammar-story-2',
+  'english-5e-vocabulary-shopping-1', 'english-5e-vocabulary-shopping-2', 'english-5e-vocabulary-routine-1', 'english-5e-vocabulary-routine-2', 'english-5e-vocabulary-listening-1',
+  'english-5e-vocabulary-listening-2', 'english-5e-vocabulary-notices-1', 'english-5e-vocabulary-notices-2', 'english-5e-grammar-ing-1', 'english-5e-grammar-ing-2', 'english-5e-grammar-past-simple-1', 'english-5e-grammar-past-simple-2',
+  'english-5e-grammar-comparatives-1', 'english-5e-grammar-comparatives-2', 'english-4e-comprehension-dialogues-1', 'english-4e-comprehension-dialogues-2', 'english-4e-comprehension-quantities-1',
+  'english-4e-comprehension-quantities-2', 'english-4e-comprehension-irregular-past-1', 'english-4e-comprehension-irregular-past-2',
+  'english-4e-comprehension-stories-1', 'english-4e-comprehension-stories-2', 'english-4e-grammar-future-1',
+  'english-4e-grammar-future-2', 'english-4e-grammar-modals-1', 'english-4e-grammar-modals-2', 'english-4e-grammar-present-perfect-1', 'english-4e-grammar-present-perfect-2', 'english-4e-grammar-traditions-1', 'english-4e-grammar-traditions-2',
+  'english-3e-comprehension-understanding-1', 'english-3e-comprehension-understanding-2', 'english-3e-comprehension-linking-words-1', 'english-3e-comprehension-linking-words-2', 'english-3e-comprehension-false-friends-1',
+  'english-3e-comprehension-false-friends-2', 'english-3e-comprehension-media-1', 'english-3e-comprehension-media-2', 'english-3e-grammar-for-since-1', 'english-3e-grammar-for-since-2', 'english-3e-grammar-if-1', 'english-3e-grammar-if-2',
+  'english-3e-grammar-passive-1', 'english-3e-grammar-passive-2',
   // LV2 (Relais des voyageurs, 5e) : une mission par langue et par thème, l’allemand puis l’espagnol.
-  'relais-de-hallo-1', 'relais-de-hallo-2', 'relais-de-zahlen-1', 'relais-de-zahlen-2', 'relais-de-familie-1',
-  'relais-de-familie-2', 'relais-de-der-die-das-1', 'relais-de-der-die-das-2', 'relais-es-hola-1', 'relais-es-hola-2',
-  'relais-es-numeros-1', 'relais-es-numeros-2', 'relais-es-familia-1', 'relais-es-familia-2', 'relais-es-el-la-1',
-  'relais-es-el-la-2',
+  'lv2-5e-introductions-de-greetings-1', 'lv2-5e-introductions-de-greetings-2', 'lv2-5e-introductions-de-numbers-1', 'lv2-5e-introductions-de-numbers-2', 'lv2-5e-introductions-de-family-1',
+  'lv2-5e-introductions-de-family-2', 'lv2-5e-introductions-de-articles-1', 'lv2-5e-introductions-de-articles-2', 'lv2-5e-introductions-es-greetings-1', 'lv2-5e-introductions-es-greetings-2',
+  'lv2-5e-introductions-es-numbers-1', 'lv2-5e-introductions-es-numbers-2', 'lv2-5e-introductions-es-family-1', 'lv2-5e-introductions-es-family-2', 'lv2-5e-introductions-es-articles-1',
+  'lv2-5e-introductions-es-articles-2',
   // LV2 (Jardin des heures, 4e) : de même, l’allemand puis l’espagnol.
-  'jardin-de-uhrzeit-1', 'jardin-de-uhrzeit-2', 'jardin-de-mein-tag-1', 'jardin-de-mein-tag-2', 'jardin-de-stundenplan-1',
-  'jardin-de-stundenplan-2', 'jardin-de-ich-kann-1', 'jardin-de-ich-kann-2', 'jardin-es-hora-1', 'jardin-es-hora-2',
-  'jardin-es-mi-dia-1', 'jardin-es-mi-dia-2', 'jardin-es-horario-1', 'jardin-es-horario-2', 'jardin-es-ser-estar-1',
-  'jardin-es-ser-estar-2',
+  'lv2-4e-daily-life-de-time-1', 'lv2-4e-daily-life-de-time-2', 'lv2-4e-daily-life-de-my-day-1', 'lv2-4e-daily-life-de-my-day-2', 'lv2-4e-daily-life-de-timetable-1',
+  'lv2-4e-daily-life-de-timetable-2', 'lv2-4e-daily-life-de-modals-1', 'lv2-4e-daily-life-de-modals-2', 'lv2-4e-daily-life-es-time-1', 'lv2-4e-daily-life-es-time-2',
+  'lv2-4e-daily-life-es-my-day-1', 'lv2-4e-daily-life-es-my-day-2', 'lv2-4e-daily-life-es-timetable-1', 'lv2-4e-daily-life-es-timetable-2', 'lv2-4e-daily-life-es-ser-estar-1',
+  'lv2-4e-daily-life-es-ser-estar-2',
   // LV2 (Refuge des carnets, 3e) : de même, l’allemand puis l’espagnol.
-  'refuge-de-reise-1', 'refuge-de-reise-2', 'refuge-de-geschichte-1', 'refuge-de-geschichte-2', 'refuge-de-unterwegs-1',
-  'refuge-de-unterwegs-2', 'refuge-de-weil-dass-1', 'refuge-de-weil-dass-2', 'refuge-es-viaje-1', 'refuge-es-viaje-2',
-  'refuge-es-relato-1', 'refuge-es-relato-2', 'refuge-es-paises-1', 'refuge-es-paises-2', 'refuge-es-porque-1',
-  'refuge-es-porque-2',
+  'lv2-3e-travel-de-past-1', 'lv2-3e-travel-de-past-2', 'lv2-3e-travel-de-stories-1', 'lv2-3e-travel-de-stories-2', 'lv2-3e-travel-de-on-the-road-1',
+  'lv2-3e-travel-de-on-the-road-2', 'lv2-3e-travel-de-connectives-1', 'lv2-3e-travel-de-connectives-2', 'lv2-3e-travel-es-past-1', 'lv2-3e-travel-es-past-2',
+  'lv2-3e-travel-es-stories-1', 'lv2-3e-travel-es-stories-2', 'lv2-3e-travel-es-countries-1', 'lv2-3e-travel-es-countries-2', 'lv2-3e-travel-es-connectives-1',
+  'lv2-3e-travel-es-connectives-2',
 ];
 
 const metaOf = ({ id, biome, type, level }: ExerciseMeta): ExerciseMeta => ({ id, biome, type, level });
@@ -127,19 +127,19 @@ export const CATALOG: ExerciseMeta[] = ORDER.flatMap((entry) =>
 
 /**
  * Les exercices JSON de data/ que `ORDER` oublie (vide : vérifié par les tests). Les questions des blocs assemblés
- * (`type: 'assemblage'`) n'y sont pas : elles ne sont pas dans une île, et ne sont pas au catalogue.
+ * (`type: 'assembly'`) n'y sont pas : elles ne sont pas dans une île, et ne sont pas au catalogue.
  */
-export const UNORDERED = [...JSON_BY_ID.values()].filter((m) => m.type !== 'assemblage' && !ORDER.includes(m.id)).map((m) => m.id);
+export const UNORDERED = [...JSON_BY_ID.values()].filter((m) => m.type !== 'assembly' && !ORDER.includes(m.id)).map((m) => m.id);
 
-/** L'identifiant des questions d'un bloc assemblé (GD-2) : data/assemblage-<bloc>.json. */
+/** L'identifiant des questions d'un bloc assemblé (GD-2) : data/assembly-<bloc>.json. */
 export function assemblageId(bloc: BlockId): string {
-  return `assemblage-${bloc}`;
+  return `assembly-${bloc}`;
 }
 
 /** Les blocs assemblés qui ont leurs questions (docs/contenu/assemblage.md, « Les questions »). */
 export const BLOCS_A_QUESTIONS: BlockId[] = [...JSON_BY_ID.values()]
-  .filter((m) => m.type === 'assemblage')
-  .map((m) => m.id.slice('assemblage-'.length) as BlockId);
+  .filter((m) => m.type === 'assembly')
+  .map((m) => m.id.slice('assembly-'.length) as BlockId);
 
 /** Les questions d'un bloc assemblé, chargées à la demande comme un exercice JSON. */
 export async function loadAssemblage(bloc: BlockId): Promise<AssemblageDef | undefined> {

@@ -342,7 +342,7 @@ it('écueils et bancs : moins de 2 500 triangles aux Premiers Rivages ; les roch
   // La Forge : ses rochers sur la roche ont la valeur de la roche (0,9 à 1,1 fois), pas le beige de la pierre ; sur le
   // basalte, celle de la pierre chaude (R4b-4e), pas le basalte.
   const forge = monde('4e');
-  const rochers = forge.elements.map((e, i) => ({ e, i })).filter(({ e }) => e.genre === 'rocher' && e.id.startsWith('forge/'));
+  const rochers = forge.elements.map((e, i) => ({ e, i })).filter(({ e }) => e.genre === 'rocher' && e.id.startsWith('maths-4e-powers/'));
   expect(rochers.length).toBeGreaterThan(5);
   for (const { e, i } of rochers) {
     const col = colonneEn(forge.champ, e.x, e.y)!;
@@ -362,7 +362,7 @@ it('toucher une couronne qui surplombe une borne de la Forêt des sons redonne l
   const { cubes, champ } = monde('6e');
   const tags = cubeTags(cubes);
   const can = { quest: true, bridge: true, build: false, place: true };
-  const { ox, oy } = islandOrigin(BIOMES.findIndex((b) => b.id === 'foret'));
+  const { ox, oy } = islandOrigin(BIOMES.findIndex((b) => b.id === 'french-6e-phonology'));
   // Le rayon de la vue d'une île (three/WorldCanvas.tsx, ISLAND_VIEW), vers la caméra, repère Three.
   const versCamera = [0.7, 0.9, -0.7];
   const l = Math.hypot(...versCamera);
@@ -396,7 +396,7 @@ it('toucher une couronne qui surplombe une borne de la Forêt des sons redonne l
     return t1 >= t0 && t0 > 0 ? t0 : null;
   };
   let vus = 0;
-  for (const st of questStations('foret')) {
+  for (const st of questStations('french-6e-phonology')) {
     const bx = ox + st.x;
     const by = oy + st.y;
     const borne = cubes.filter((c) => c.x === bx && c.y === by && c.quest);

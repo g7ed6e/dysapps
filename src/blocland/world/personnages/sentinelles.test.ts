@@ -74,14 +74,14 @@ function lueurs(f: FacettesDePersonnage): number {
 }
 
 /** Les sentinelles sans visage : le Spectre voilé, la Locomotive, la Grande Antenne, le Soleil et le Papillon de cuivre. */
-const SANS_VISAGE: BiomeId[] = ['manoir', 'gare', 'studio', 'jardin', 'refuge'];
+const SANS_VISAGE: BiomeId[] = ['english-5e-grammar', 'english-4e-grammar', 'english-3e-comprehension', 'lv2-4e-daily-life', 'lv2-3e-travel'];
 /**
  * Les sentinelles basses : leur haut, en blocs. La Diligence, plus longue que haute (retouche du directeur artistique) ;
  * le Soleil de cuivre, sans mât (DA, LV2-4), qui repose sur son rayon du bas.
  */
-const BASSES: Partial<Record<BiomeId, [number, number]>> = { relais: [5, 5.5], jardin: [5.8, 6.3] };
+const BASSES: Partial<Record<BiomeId, [number, number]>> = { 'lv2-5e-introductions': [5, 5.5], 'lv2-4e-daily-life': [5.8, 6.3] };
 /** Les sentinelles basses plus longues que hautes. */
-const LONGUES: BiomeId[] = ['relais'];
+const LONGUES: BiomeId[] = ['lv2-5e-introductions'];
 
 describe('L’allumage des sentinelles', () => {
   it('éteinte (0) et rallumée (1), exactement les couleurs du directeur artistique', () => {
@@ -107,7 +107,7 @@ describe('L’allumage des sentinelles', () => {
   });
 
   it('au défi (lot 6), les lueurs s’allument avant la pierre : chaque partie à son degré', () => {
-    const f = sentinellePeinte('mine');
+    const f = sentinellePeinte('french-6e-letter-confusion');
     const lueursSeules = couleursAllumees(f, { pierre: 0, lueurs: 1 });
     const pleine = couleursAllumees(f, 1);
     let lueurs = 0;
@@ -123,7 +123,7 @@ describe('L’allumage des sentinelles', () => {
   });
 
   it('les couleurs d’un modèle : éteintes par défaut, la lueur pleine et la pierre rallumée à 1', () => {
-    const f = sentinellePeinte('mine');
+    const f = sentinellePeinte('french-6e-letter-confusion');
     expect(Array.from(couleursAllumees(f, 0))).toEqual(Array.from(f.colors));
     const allumees = couleursAllumees(f, 1);
     const dans = new Float32Array(f.colors.length);
@@ -161,7 +161,7 @@ describe('Les Gardiens en sentinelles', () => {
       const i = f.table.findIndex((p) => p.nom === 'socle');
       return Array.from(f.positions).filter((_, j) => f.pieces[Math.floor(j / 9)] === i);
     };
-    const reference = socleDe('foret');
+    const reference = socleDe('french-6e-phonology');
     expect(reference.length).toBeGreaterThan(0);
     for (const b of BIOMES) expect(socleDe(b.id), b.id).toEqual(reference);
   });
@@ -243,10 +243,10 @@ describe('Les Gardiens en sentinelles', () => {
 
 describe('Les sentinelles qui se tournent pour se montrer de profil (la Diligence)', () => {
   const tournees = BIOMES.filter((b) => STATUES[b.id].tour);
-  it('la Diligence, et le Soleil et le Papillon de cuivre, qu’on ne doit pas voir par la tranche', () => expect(tournees.map((b) => b.id).sort()).toEqual(['jardin', 'refuge', 'relais']));
+  it('la Diligence, et le Soleil et le Papillon de cuivre, qu’on ne doit pas voir par la tranche', () => expect(tournees.map((b) => b.id).sort()).toEqual(['lv2-3e-travel', 'lv2-4e-daily-life', 'lv2-5e-introductions']));
 
   it('le Soleil de cuivre, dans le monde : de face (à 33° au plus) pour la caméra du Jardin (72°), du Théâtre (20 à 42°) et du rallumage (85°) ; dans les cinq cases', () => {
-    const f = sentinellePeinte('jardin');
+    const f = sentinellePeinte('lv2-4e-daily-life');
     const sculpture = f.table.findIndex((p) => p.nom === 'sculpture');
     // La patine du disque, sur la sculpture (le socle a sa mousse, qui ne tourne pas).
     const lichen = [...f.teintes.keys()].filter((t) => f.teintes[t] === SENTINELLE.lichen && f.pieces[t] === sculpture);
@@ -261,7 +261,7 @@ describe('Les sentinelles qui se tournent pour se montrer de profil (la Diligenc
     }
   });
 
-  for (const b of tournees.filter((x) => x.id === 'relais'))
+  for (const b of tournees.filter((x) => x.id === 'lv2-5e-introductions'))
     it(`${STATUES[b.id].nom} : au défi, sa portière face à la caméra de trois quarts, dans les cinq cases ; le socle ne tourne pas`, () => {
       const f = sentinelleAuDefi(b.id);
       const monde = sentinellePeinte(b.id);

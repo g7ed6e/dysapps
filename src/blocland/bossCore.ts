@@ -5,7 +5,7 @@ import type { BiomeId } from './biomes';
 export const STARS_TO_UNLOCK = 2;
 export const STARS_TO_BEAT = 2;
 
-export const bossId = (biome: BiomeId) => `${biome}-gardien`;
+export const bossId = (biome: BiomeId) => `${biome}-challenge`;
 
 export function isBossBeaten(biome: BiomeId, progress: Record<string, { stars: number }>): boolean {
   return (progress[bossId(biome)]?.stars ?? 0) >= STARS_TO_BEAT;

@@ -13,7 +13,7 @@ const LENTILLE: Anneau[] = [
 ];
 
 export const ESPECES_4E = {
-  forge: {
+  'maths-4e-powers': {
     nom: 'Braise',
     metier: 'forgeron',
     gabarit: 'trapu',
@@ -45,7 +45,7 @@ export const ESPECES_4E = {
       },
     },
   },
-  atelier: {
+  'maths-4e-algebra': {
     nom: 'Ixe',
     metier: 'automate dessinateur',
     dominante: 0xc9a24a,
@@ -82,7 +82,7 @@ export const ESPECES_4E = {
       },
     },
   },
-  falaise: {
+  'french-4e-agreement': {
     nom: 'Cléa',
     metier: 'cordière',
     gabarit: 'elance',
@@ -130,7 +130,7 @@ export const ESPECES_4E = {
       },
     },
   },
-  cabinet: {
+  'french-4e-vocabulary': {
     nom: 'Plume',
     metier: 'archiviste',
     dominante: 0x2a3040,
@@ -157,7 +157,7 @@ export const ESPECES_4E = {
       },
     },
   },
-  theatre: {
+  'english-4e-comprehension': {
     nom: 'Puck',
     metier: 'souffleur',
     dominante: 0x4e7a4a,
@@ -194,7 +194,7 @@ export const ESPECES_4E = {
         ),
     },
   },
-  gare: {
+  'english-4e-grammar': {
     nom: 'Vapeur',
     metier: 'chef de gare',
     dominante: 0x6e6e70,
@@ -218,7 +218,7 @@ export const ESPECES_4E = {
       },
     },
   },
-  jardin: {
+  'lv2-4e-daily-life': {
     // L'écureuil cuisinier du Jardin des heures (DA, LV2-4) : pelage châtain (pas le roux de Rouxel), une queue en
     // panache haute qui dépasse de la tête, un tablier crème uni, une louche de bois ; pas de toque.
     nom: 'Muscade',

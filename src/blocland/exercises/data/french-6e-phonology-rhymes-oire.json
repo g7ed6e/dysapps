@@ -1,0 +1,79 @@
+{
+  "id": "french-6e-phonology-rhymes-oire",
+  "biome": "french-6e-phonology",
+  "type": "rhymes",
+  "level": 3,
+  "target": "histoire",
+  "instruction": "Tape les mots qui riment avec histoire : écoute la fin du mot, pas son orthographe. Puis valide.",
+  "items": [
+    {
+      "key": "mémoire",
+      "word": "mémoire",
+      "ending": "[oir]",
+      "image": "🧠",
+      "correct": true
+    },
+    {
+      "key": "voiture",
+      "word": "voiture",
+      "ending": "[ure]",
+      "image": "🚗",
+      "correct": false
+    },
+    {
+      "key": "tiroir",
+      "word": "tiroir",
+      "ending": "[oir]",
+      "image": "🗄️",
+      "correct": true
+    },
+    {
+      "key": "horaire",
+      "word": "horaire",
+      "ending": "[ère]",
+      "image": "🕐",
+      "correct": false
+    },
+    {
+      "key": "victoire",
+      "word": "victoire",
+      "ending": "[oir]",
+      "image": "🏆",
+      "correct": true
+    },
+    {
+      "key": "soirée",
+      "word": "soirée",
+      "ending": "[é]",
+      "image": "🌙",
+      "correct": false
+    },
+    {
+      "key": "miroir",
+      "word": "miroir",
+      "ending": "[oir]",
+      "image": "🪞",
+      "correct": true
+    },
+    {
+      "key": "devoir",
+      "word": "devoir",
+      "ending": "[oir]",
+      "image": "📝",
+      "correct": true
+    }
+  ],
+  "feedback": {
+    "wrong": "Écoute la fin de {word} : ça finit par {ending}.",
+    "correct": "Ça rime, même avec une autre orthographe !"
+  },
+  "reward": {
+    "block": "french-6e-phonology",
+    "amount": 5,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

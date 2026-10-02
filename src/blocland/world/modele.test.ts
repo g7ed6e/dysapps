@@ -48,30 +48,30 @@ it('l’état des bornes est celui que calculait la page du monde', () => {
 it('les îles du modèle : ouvertes ou non, et leur état', () => {
   const m = modeleDuMonde(vierge, '6e', NOMS_ARCHIPELS, mots);
   expect(m.iles.map((i) => i.id)).toEqual(islandsOf('6e').map((b) => b.id));
-  expect(m.iles.find((i) => i.id === 'foret')).toMatchObject({ ouverte: true, etat: { id: 'a-explorer' } });
-  expect(m.iles.find((i) => i.id === 'mine')).toMatchObject({ ouverte: false, etat: { id: 'fermee' } });
+  expect(m.iles.find((i) => i.id === 'french-6e-phonology')).toMatchObject({ ouverte: true, etat: { id: 'a-explorer' } });
+  expect(m.iles.find((i) => i.id === 'french-6e-letter-confusion')).toMatchObject({ ouverte: false, etat: { id: 'fermee' } });
 });
 
 it('une borne touchée : jouer si elle est jouable, sinon ouvrir son île', () => {
   const { bornes } = modeleDuMonde(vierge, '6e', NOMS_ARCHIPELS, mots);
-  const ouverte = bornes.find((b) => b.ile === 'foret')!;
-  const fermee = bornes.find((b) => b.ile === 'mine')!;
-  expect(borneTouchee(bornes, 'foret', ouverte.mission)).toBe('jouer');
-  expect(borneTouchee(bornes, 'mine', fermee.mission)).toBe('ile');
-  expect(borneTouchee(bornes, 'foret', 'inconnue')).toBe('ile');
+  const ouverte = bornes.find((b) => b.ile === 'french-6e-phonology')!;
+  const fermee = bornes.find((b) => b.ile === 'french-6e-letter-confusion')!;
+  expect(borneTouchee(bornes, 'french-6e-phonology', ouverte.mission)).toBe('jouer');
+  expect(borneTouchee(bornes, 'french-6e-letter-confusion', fermee.mission)).toBe('ile');
+  expect(borneTouchee(bornes, 'french-6e-phonology', 'inconnue')).toBe('ile');
 });
 
 it('un ouvrage touché ouvre l’île ouverte qu’il touche', () => {
-  const b = BRIDGES.find((x) => x.from === 'foret' || x.to === 'foret')!;
-  expect(ileDeLOuvrage(b.id, [])).toBe('foret');
+  const b = BRIDGES.find((x) => x.from === 'french-6e-phonology' || x.to === 'french-6e-phonology')!;
+  expect(ileDeLOuvrage(b.id, [])).toBe('french-6e-phonology');
   expect(ileDeLOuvrage('inconnu', [])).toBeNull();
 });
 
 it('le cap vers une île : dans l’archipel, en voyage, ou le port quand elle est fermée', () => {
   const { world: village } = toutConstruit();
-  expect(capVers('mine', '6e', [])).toBe('archipel');
-  expect(capVers('marche', '6e', [])).toBe('port');
-  expect(capVers('marche', '6e', village.links)).toBe('voyage');
+  expect(capVers('french-6e-letter-confusion', '6e', [])).toBe('archipel');
+  expect(capVers('maths-5e-proportionality', '6e', [])).toBe('port');
+  expect(capVers('maths-5e-proportionality', '6e', village.links)).toBe('voyage');
 });
 
 describe('la machine du voyage', () => {

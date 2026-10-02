@@ -1,0 +1,230 @@
+{
+  "id": "french-3e-close-reading-text-connectives-1",
+  "biome": "french-3e-close-reading",
+  "type": "text-connectives",
+  "level": 1,
+  "instruction": "Quelle est la nature du mot ? Le tableau des natures est affiché.",
+  "items": [
+    {
+      "key": "french-3e-close-reading-text-connectives-1-0",
+      "prompt": "Dans « Je le vois chaque matin », « le » est …",
+      "spoken": "Dans « Je le vois chaque matin », « le » est  (mot manquant) ",
+      "choices": [
+        "un déterminant",
+        "un pronom",
+        "un nom"
+      ],
+      "answer": "un pronom",
+      "hint": "« le » est-il devant un nom ou devant un verbe ?",
+      "explanation": "« le » est placé devant le verbe « vois » et remplace une personne ou une chose : pronom. Devant un nom (« le bus »), ce serait un déterminant.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Nature des mots",
+          "lines": [
+            "Déterminant : devant un nom (le, mes, leurs).",
+            "Pronom : à la place d’un nom ; « le » et « leur » devant un verbe sont pronoms.",
+            "« que » : après un nom, pronom relatif ; après un verbe, conjonction.",
+            "Préposition : suivie de son complément (avant moi). Adverbe : invariable (vite, bien).",
+            "Conjonction : relie deux mots ou deux propositions (et, mais, que, quand)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-close-reading-text-connectives-1-1",
+      "prompt": "Dans « Nous leur parlons souvent », « leur » est …",
+      "spoken": "Dans « Nous leur parlons souvent », « leur » est  (mot manquant) ",
+      "choices": [
+        "un pronom",
+        "un déterminant",
+        "un adverbe"
+      ],
+      "answer": "un pronom",
+      "hint": "« leur » est-il devant un nom ou devant un verbe ?",
+      "explanation": "« leur » est devant le verbe « parlons » et veut dire « à eux » : pronom. Il ne prend jamais de s dans ce cas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Nature des mots",
+          "lines": [
+            "Déterminant : devant un nom (le, mes, leurs).",
+            "Pronom : à la place d’un nom ; « le » et « leur » devant un verbe sont pronoms.",
+            "« que » : après un nom, pronom relatif ; après un verbe, conjonction.",
+            "Préposition : suivie de son complément (avant moi). Adverbe : invariable (vite, bien).",
+            "Conjonction : relie deux mots ou deux propositions (et, mais, que, quand)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-close-reading-text-connectives-1-2",
+      "prompt": "Dans « Ils ont rangé leurs affaires », « leurs » est …",
+      "spoken": "Dans « Ils ont rangé leurs affaires », « leurs » est  (mot manquant) ",
+      "choices": [
+        "un pronom",
+        "un nom",
+        "un déterminant"
+      ],
+      "answer": "un déterminant",
+      "hint": "Quel mot suit « leurs » ?",
+      "explanation": "« leurs » est devant le nom « affaires » et l’accompagne : déterminant possessif, au pluriel comme le nom.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Nature des mots",
+          "lines": [
+            "Déterminant : devant un nom (le, mes, leurs).",
+            "Pronom : à la place d’un nom ; « le » et « leur » devant un verbe sont pronoms.",
+            "« que » : après un nom, pronom relatif ; après un verbe, conjonction.",
+            "Préposition : suivie de son complément (avant moi). Adverbe : invariable (vite, bien).",
+            "Conjonction : relie deux mots ou deux propositions (et, mais, que, quand)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-close-reading-text-connectives-1-3",
+      "prompt": "Dans « Il est arrivé avant moi », « avant » est …",
+      "spoken": "Dans « Il est arrivé avant moi », « avant » est  (mot manquant) ",
+      "choices": [
+        "une préposition",
+        "un adverbe",
+        "une conjonction"
+      ],
+      "answer": "une préposition",
+      "hint": "« avant » est-il suivi d’un complément ?",
+      "explanation": "« avant » introduit le complément « moi » : préposition. Seul, comme dans « il est arrivé avant », ce serait un adverbe.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Nature des mots",
+          "lines": [
+            "Déterminant : devant un nom (le, mes, leurs).",
+            "Pronom : à la place d’un nom ; « le » et « leur » devant un verbe sont pronoms.",
+            "« que » : après un nom, pronom relatif ; après un verbe, conjonction.",
+            "Préposition : suivie de son complément (avant moi). Adverbe : invariable (vite, bien).",
+            "Conjonction : relie deux mots ou deux propositions (et, mais, que, quand)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-close-reading-text-connectives-1-4",
+      "prompt": "Dans « Je pense que tu as raison », « que » est …",
+      "spoken": "Dans « Je pense que tu as raison », « que » est  (mot manquant) ",
+      "choices": [
+        "un pronom",
+        "une conjonction",
+        "un adverbe"
+      ],
+      "answer": "une conjonction",
+      "hint": "Quel mot vient juste avant « que » : un nom ou un verbe ?",
+      "explanation": "« que » suit le verbe « pense » et introduit ce que je pense : conjonction de subordination. Il ne remplace aucun nom.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Nature des mots",
+          "lines": [
+            "Déterminant : devant un nom (le, mes, leurs).",
+            "Pronom : à la place d’un nom ; « le » et « leur » devant un verbe sont pronoms.",
+            "« que » : après un nom, pronom relatif ; après un verbe, conjonction.",
+            "Préposition : suivie de son complément (avant moi). Adverbe : invariable (vite, bien).",
+            "Conjonction : relie deux mots ou deux propositions (et, mais, que, quand)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-close-reading-text-connectives-1-5",
+      "prompt": "Dans « Le livre que tu lis est à moi », « que » est …",
+      "spoken": "Dans « Le livre que tu lis est à moi », « que » est  (mot manquant) ",
+      "choices": [
+        "une conjonction",
+        "un déterminant",
+        "un pronom"
+      ],
+      "answer": "un pronom",
+      "hint": "Quel mot vient juste avant « que » : un nom ou un verbe ?",
+      "explanation": "« que » suit le nom « livre » et le remplace dans la relative (tu lis le livre) : pronom relatif.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Nature des mots",
+          "lines": [
+            "Déterminant : devant un nom (le, mes, leurs).",
+            "Pronom : à la place d’un nom ; « le » et « leur » devant un verbe sont pronoms.",
+            "« que » : après un nom, pronom relatif ; après un verbe, conjonction.",
+            "Préposition : suivie de son complément (avant moi). Adverbe : invariable (vite, bien).",
+            "Conjonction : relie deux mots ou deux propositions (et, mais, que, quand)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-close-reading-text-connectives-1-6",
+      "prompt": "Dans « Mes amis arrivent », « mes » est …",
+      "spoken": "Dans « Mes amis arrivent », « mes » est  (mot manquant) ",
+      "choices": [
+        "un déterminant",
+        "un pronom",
+        "un verbe"
+      ],
+      "answer": "un déterminant",
+      "hint": "Quel mot suit « mes » ?",
+      "explanation": "« mes » accompagne le nom « amis » : déterminant possessif. « Met », sans s, est le verbe mettre (il met son manteau).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Nature des mots",
+          "lines": [
+            "Déterminant : devant un nom (le, mes, leurs).",
+            "Pronom : à la place d’un nom ; « le » et « leur » devant un verbe sont pronoms.",
+            "« que » : après un nom, pronom relatif ; après un verbe, conjonction.",
+            "Préposition : suivie de son complément (avant moi). Adverbe : invariable (vite, bien).",
+            "Conjonction : relie deux mots ou deux propositions (et, mais, que, quand)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-close-reading-text-connectives-1-7",
+      "prompt": "Dans « Elle chante vraiment bien », « bien » est …",
+      "spoken": "Dans « Elle chante vraiment bien », « bien » est  (mot manquant) ",
+      "choices": [
+        "un adjectif",
+        "un adverbe",
+        "un nom"
+      ],
+      "answer": "un adverbe",
+      "hint": "« bien » précise le verbe « chante ». Change-t-il si on dit « elles chantent » ?",
+      "explanation": "« bien » précise le verbe « chante » et ne s’accorde jamais (elles chantent bien) : adverbe. L’adjectif serait « bon » (une bonne chanteuse).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Nature des mots",
+          "lines": [
+            "Déterminant : devant un nom (le, mes, leurs).",
+            "Pronom : à la place d’un nom ; « le » et « leur » devant un verbe sont pronoms.",
+            "« que » : après un nom, pronom relatif ; après un verbe, conjonction.",
+            "Préposition : suivie de son complément (avant moi). Adverbe : invariable (vite, bien).",
+            "Conjonction : relie deux mots ou deux propositions (et, mais, que, quand)."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien lu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "french-3e-close-reading",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

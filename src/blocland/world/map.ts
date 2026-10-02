@@ -12,6 +12,52 @@ export { ARCHIPELAGO_IDS, archipelagoOfIsland, type ArchipelagoId } from './arch
 export type RegionId = 'basses-terres' | 'marais' | 'feu' | 'montagne' | 'hauteurs';
 export type Relief = 'plat' | 'collines' | 'montagne' | 'volcan';
 
+/**
+ * Le nom qui tire le hasard du dessin d'une île (l'épaisseur des strates de ses falaises, la pose de chaque élément de
+ * son décor) : son identifiant d'avant les mots neutres (2 octobre 2026), figé pour que le dessin ne bouge pas quand un
+ * identifiant change. Un lieu nouveau n'y est pas : son identifiant tire son hasard.
+ */
+export const GRAINES_DU_DESSIN: Readonly<Record<string, string>> = {
+  'french-6e-phonology': 'foret',
+  'french-6e-letter-confusion': 'mine',
+  'french-6e-word-spelling': 'carriere',
+  'french-6e-grammar-spelling': 'ferme',
+  'french-6e-reading': 'tour',
+  'maths-6e-calculation': 'plaine',
+  'maths-6e-fractions': 'riviere',
+  'maths-6e-decimals': 'volcan',
+  'maths-5e-signed-numbers': 'glacier',
+  'maths-5e-proportionality': 'marche',
+  'french-5e-homophones': 'carrefour',
+  'french-5e-conjugation': 'marais',
+  'maths-4e-powers': 'forge',
+  'maths-4e-algebra': 'atelier',
+  'french-4e-agreement': 'falaise',
+  'french-4e-vocabulary': 'cabinet',
+  'maths-3e-geometry': 'belvedere',
+  'maths-3e-statistics': 'donnees',
+  'maths-3e-functions': 'phare',
+  'french-3e-close-reading': 'textes',
+  'english-6e-vocabulary': 'baie',
+  'english-6e-grammar': 'horloge',
+  'english-5e-vocabulary': 'comptoir',
+  'english-5e-grammar': 'manoir',
+  'english-4e-comprehension': 'theatre',
+  'english-4e-grammar': 'gare',
+  'english-3e-comprehension': 'studio',
+  'english-3e-grammar': 'chateau',
+  'lv2-5e-introductions': 'relais',
+  'lv2-4e-daily-life': 'jardin',
+  'lv2-3e-travel': 'refuge',
+};
+
+/** Le nom qui tire le hasard du dessin d'un lieu (`GRAINES_DU_DESSIN`), ou d'un élément `<lieu>/<nom>` de son décor. */
+export function graineDuDessin(nom: string): string {
+  const i = nom.indexOf('/');
+  const lieu = i < 0 ? nom : nom.slice(0, i);
+  return Object.hasOwn(GRAINES_DU_DESSIN, lieu) ? GRAINES_DU_DESSIN[lieu] + nom.slice(lieu.length) : nom;
+}
+
 export interface IslandDef {
   id: BiomeId;
   region: RegionId;
@@ -47,7 +93,7 @@ export const CORE = 16;
  * marges du cœur (l'anneau de deux cases autour du cœur d'origine) sont plates, avec le décor de la côte
  * (`margesDuCoeur`, allégé île par île : `DECOR_DES_MARGES`). La Forêt d'abord, puis le Marché, l'Atelier et le Phare.
  */
-export const COTE_DU_COEUR: Readonly<Partial<Record<BiomeId, number>>> = Object.freeze({ foret: 20, marche: 20, atelier: 20, phare: 20 });
+export const COTE_DU_COEUR: Readonly<Partial<Record<BiomeId, number>>> = Object.freeze({ 'french-6e-phonology': 20, 'maths-5e-proportionality': 20, 'maths-4e-algebra': 20, 'maths-3e-functions': 20 });
 
 /** Des bornes de cases : [x0, x1) × [y0, y1), bornes hautes exclues. */
 export interface Bornes {
@@ -99,14 +145,14 @@ export const MAP: IslandDef[] = [
   // Tour, la Carrière, le Volcan, la Rivière) ne bougent pas : rien de la Forêt ne les approche, et l'archipel garde sa
   // colonne centrale (le cadrage des caméras) et sa largeur (la mer). L'isthme de la Ferme à la Tour, les ponts de la
   // Mine à la Carrière et à la Rivière, et le bac de la Ferme au Volcan y perdent deux cases.
-  { id: 'foret', region: 'basses-terres', core: { x: 67, y: 59 }, altitude: 0, ext: e(6, 5, 3, 6), relief: 'collines', seed: 11 },
-  { id: 'ferme', region: 'basses-terres', core: { x: 25, y: 61 }, deplacee: { x: -2, y: 0 }, altitude: 0, ext: e(3, 4, 2, 4), relief: 'plat', seed: 12 },
-  { id: 'mine', region: 'montagne', core: { x: 98, y: 61 }, deplacee: { x: 2, y: 0 }, altitude: 0, ext: e(3, 4, 2, 5), relief: 'montagne', seed: 13 },
-  { id: 'tour', region: 'basses-terres', core: { x: -3, y: 56 }, altitude: 0, ext: e(2, 3, 2, 3), relief: 'plat', seed: 14 },
-  { id: 'carriere', region: 'montagne', core: { x: 136, y: 56 }, altitude: 0, ext: e(3, 3, 2, 4), relief: 'collines', seed: 15 },
-  { id: 'plaine', region: 'basses-terres', core: { x: 64, y: 19 }, deplacee: { x: 0, y: -2 }, altitude: 0, ext: e(5, 5, 3, 2), relief: 'plat', seed: 16 },
-  { id: 'riviere', region: 'marais', core: { x: 109, y: 19 }, altitude: 0, ext: e(4, 4, 3, 3), relief: 'plat', seed: 17 },
-  { id: 'volcan', region: 'feu', core: { x: 21, y: 19 }, altitude: 0, ext: e(4, 4, 2, 6), relief: 'volcan', seed: 18 },
+  { id: 'french-6e-phonology', region: 'basses-terres', core: { x: 67, y: 59 }, altitude: 0, ext: e(6, 5, 3, 6), relief: 'collines', seed: 11 },
+  { id: 'french-6e-grammar-spelling', region: 'basses-terres', core: { x: 25, y: 61 }, deplacee: { x: -2, y: 0 }, altitude: 0, ext: e(3, 4, 2, 4), relief: 'plat', seed: 12 },
+  { id: 'french-6e-letter-confusion', region: 'montagne', core: { x: 98, y: 61 }, deplacee: { x: 2, y: 0 }, altitude: 0, ext: e(3, 4, 2, 5), relief: 'montagne', seed: 13 },
+  { id: 'french-6e-reading', region: 'basses-terres', core: { x: -3, y: 56 }, altitude: 0, ext: e(2, 3, 2, 3), relief: 'plat', seed: 14 },
+  { id: 'french-6e-word-spelling', region: 'montagne', core: { x: 136, y: 56 }, altitude: 0, ext: e(3, 3, 2, 4), relief: 'collines', seed: 15 },
+  { id: 'maths-6e-calculation', region: 'basses-terres', core: { x: 64, y: 19 }, deplacee: { x: 0, y: -2 }, altitude: 0, ext: e(5, 5, 3, 2), relief: 'plat', seed: 16 },
+  { id: 'maths-6e-fractions', region: 'marais', core: { x: 109, y: 19 }, altitude: 0, ext: e(4, 4, 3, 3), relief: 'plat', seed: 17 },
+  { id: 'maths-6e-decimals', region: 'feu', core: { x: 21, y: 19 }, altitude: 0, ext: e(4, 4, 2, 6), relief: 'volcan', seed: 18 },
   // Îles Brumeuses (5e), sur les collines : deux paires d'isthmes l'une devant l'autre. Port : le Marché. Le Marché,
   // île-école, a un cœur de 20 et sa côte autour (01/10/2026) : le Glacier s'écarte de 2 vers l'ouest (l'isthme garde
   // sa largeur), le Comptoir et le Manoir de 2 vers l'est (le pont du Comptoir au Manoir reste droit), chacun avec son
@@ -114,19 +160,19 @@ export const MAP: IslandDef[] = [
   // pas : le pont du Marché au Marais était long (30 cases), celui du Comptoir au Relais y perd deux cases ; écarter
   // aussi le Relais, pour garder la colonne centrale, élargissait la mer semée de 157 triangles de décor, au-delà de son
   // enveloppe : la colonne recule d'une case, et les caméras du 5e tournent de 0,8°.
-  { id: 'glacier', region: 'montagne', core: { x: 38, y: 320 }, deplacee: { x: -2, y: 0 }, altitude: 3, ext: e(4, 4, 3, 6), relief: 'montagne', seed: 21 },
-  { id: 'marche', region: 'marais', core: { x: 69, y: 317 }, altitude: 3, ext: e(3, 4, 2, 3), relief: 'plat', seed: 22 },
-  { id: 'carrefour', region: 'basses-terres', core: { x: 40, y: 362 }, altitude: 3, ext: e(4, 4, 3, 4), relief: 'collines', seed: 23 },
-  { id: 'marais', region: 'marais', core: { x: 69, y: 367 }, altitude: 3, ext: e(4, 4, 2, 4), relief: 'plat', seed: 24 },
+  { id: 'maths-5e-signed-numbers', region: 'montagne', core: { x: 38, y: 320 }, deplacee: { x: -2, y: 0 }, altitude: 3, ext: e(4, 4, 3, 6), relief: 'montagne', seed: 21 },
+  { id: 'maths-5e-proportionality', region: 'marais', core: { x: 69, y: 317 }, altitude: 3, ext: e(3, 4, 2, 3), relief: 'plat', seed: 22 },
+  { id: 'french-5e-homophones', region: 'basses-terres', core: { x: 40, y: 362 }, altitude: 3, ext: e(4, 4, 3, 4), relief: 'collines', seed: 23 },
+  { id: 'french-5e-conjugation', region: 'marais', core: { x: 69, y: 367 }, altitude: 3, ext: e(4, 4, 2, 4), relief: 'plat', seed: 24 },
   // Anciens Ateliers (4e), sur les monts : une crête en ligne brisée. Port : l'Atelier. L'Atelier, île-école, a un cœur
   // de 20 et sa côte autour (01/10/2026) : la Forge s'écarte de 2 vers l'ouest, la Falaise de 2 vers l'est, chacune
   // avec son dessin (`deplacee`) ; leurs ponts vers l'Atelier gardent leur longueur, ceux de la Forge à la Gare et de
   // la Falaise au Cabinet y perdent deux cases. Les îles du bout de la crête ne bougent pas : l'archipel garde sa
   // colonne centrale et sa largeur. La grue suit la côte repoussée (decor/4e.ts).
-  { id: 'forge', region: 'feu', core: { x: 28, y: 618 }, deplacee: { x: -2, y: 0 }, altitude: 6, ext: e(3, 4, 2, 5), relief: 'montagne', seed: 31 },
-  { id: 'atelier', region: 'hauteurs', core: { x: 62, y: 632 }, altitude: 6, ext: e(3, 3, 2, 4), relief: 'collines', seed: 32 },
-  { id: 'falaise', region: 'montagne', core: { x: 96, y: 618 }, deplacee: { x: 2, y: 0 }, altitude: 6, ext: e(3, 4, 2, 7), relief: 'montagne', seed: 33 },
-  { id: 'cabinet', region: 'hauteurs', core: { x: 126, y: 632 }, altitude: 6, ext: e(3, 3, 2, 4), relief: 'collines', seed: 34 },
+  { id: 'maths-4e-powers', region: 'feu', core: { x: 28, y: 618 }, deplacee: { x: -2, y: 0 }, altitude: 6, ext: e(3, 4, 2, 5), relief: 'montagne', seed: 31 },
+  { id: 'maths-4e-algebra', region: 'hauteurs', core: { x: 62, y: 632 }, altitude: 6, ext: e(3, 3, 2, 4), relief: 'collines', seed: 32 },
+  { id: 'french-4e-agreement', region: 'montagne', core: { x: 96, y: 618 }, deplacee: { x: 2, y: 0 }, altitude: 6, ext: e(3, 4, 2, 7), relief: 'montagne', seed: 33 },
+  { id: 'french-4e-vocabulary', region: 'hauteurs', core: { x: 126, y: 632 }, altitude: 6, ext: e(3, 3, 2, 4), relief: 'collines', seed: 34 },
   // Îles du Ciel (3e), sur les sommets : un arc, le Phare devant au centre. Port : le Phare. Le Phare, île-école, a un
   // cœur de 20 et sa côte autour (01/10/2026) : le Belvédère s'écarte de 2 vers l'ouest, l'Observatoire des données de
   // 2 vers l'est (leurs ponts vers le Phare gardent leur longueur, ceux du Studio et du Château y perdent deux cases),
@@ -134,30 +180,30 @@ export const MAP: IslandDef[] = [
   // n'avait plus de marge, garde ses rangs (le devant du Phare l'a agrandie de deux cases, le fond la reprend), et le
   // col n'y perd que deux cases. Les îles du bord (le Studio, le Château, le Refuge) ne bougent pas : la colonne
   // centrale et la largeur restent. Le temple de marbre suit le Belvédère, le grand phare la côte repoussée (decor/3e.ts).
-  { id: 'belvedere', region: 'montagne', core: { x: 18, y: 930 }, deplacee: { x: -2, y: 0 }, altitude: 9, ext: e(3, 3, 2, 6), relief: 'montagne', seed: 41 },
-  { id: 'phare', region: 'hauteurs', core: { x: 58, y: 912 }, altitude: 9, ext: e(3, 3, 3, 3), relief: 'collines', seed: 42 },
-  { id: 'donnees', region: 'hauteurs', core: { x: 98, y: 930 }, deplacee: { x: 2, y: 0 }, altitude: 9, ext: e(4, 3, 3, 3), relief: 'collines', seed: 43 },
-  { id: 'textes', region: 'hauteurs', core: { x: 58, y: 958 }, deplacee: { x: 0, y: -2 }, altitude: 9, ext: e(3, 3, 2, 5), relief: 'collines', seed: 44 },
+  { id: 'maths-3e-geometry', region: 'montagne', core: { x: 18, y: 930 }, deplacee: { x: -2, y: 0 }, altitude: 9, ext: e(3, 3, 2, 6), relief: 'montagne', seed: 41 },
+  { id: 'maths-3e-functions', region: 'hauteurs', core: { x: 58, y: 912 }, altitude: 9, ext: e(3, 3, 3, 3), relief: 'collines', seed: 42 },
+  { id: 'maths-3e-statistics', region: 'hauteurs', core: { x: 98, y: 930 }, deplacee: { x: 2, y: 0 }, altitude: 9, ext: e(4, 3, 3, 3), relief: 'collines', seed: 43 },
+  { id: 'french-3e-close-reading', region: 'hauteurs', core: { x: 58, y: 958 }, deplacee: { x: 0, y: -2 }, altitude: 9, ext: e(3, 3, 2, 5), relief: 'collines', seed: 44 },
   // Anglais 6e : derrière la Ferme et la Forêt, les deux îles se touchent (un isthme).
-  { id: 'baie', region: 'basses-terres', core: { x: 36, y: 102 }, deplacee: { x: -2, y: 1 }, altitude: 0, ext: e(4, 3, 2, 4), relief: 'plat', seed: 51 },
-  { id: 'horloge', region: 'basses-terres', core: { x: 68, y: 102 }, deplacee: { x: 0, y: 1 }, altitude: 0, ext: e(3, 4, 2, 4), relief: 'collines', seed: 52 },
+  { id: 'english-6e-vocabulary', region: 'basses-terres', core: { x: 36, y: 102 }, deplacee: { x: -2, y: 1 }, altitude: 0, ext: e(4, 3, 2, 4), relief: 'plat', seed: 51 },
+  { id: 'english-6e-grammar', region: 'basses-terres', core: { x: 68, y: 102 }, deplacee: { x: 0, y: 1 }, altitude: 0, ext: e(3, 4, 2, 4), relief: 'collines', seed: 52 },
   // Anglais 5e : une colonne à droite du Marché et du Marais.
-  { id: 'comptoir', region: 'basses-terres', core: { x: 103, y: 320 }, deplacee: { x: 2, y: 0 }, altitude: 3, ext: e(3, 4, 2, 4), relief: 'plat', seed: 61 },
-  { id: 'manoir', region: 'hauteurs', core: { x: 103, y: 366 }, deplacee: { x: 2, y: 0 }, altitude: 3, ext: e(3, 4, 2, 4), relief: 'collines', seed: 62 },
+  { id: 'english-5e-vocabulary', region: 'basses-terres', core: { x: 103, y: 320 }, deplacee: { x: 2, y: 0 }, altitude: 3, ext: e(3, 4, 2, 4), relief: 'plat', seed: 61 },
+  { id: 'english-5e-grammar', region: 'hauteurs', core: { x: 103, y: 366 }, deplacee: { x: 2, y: 0 }, altitude: 3, ext: e(3, 4, 2, 4), relief: 'collines', seed: 62 },
   // LV2 5e : à l'est du Comptoir, dans son alignement (le pont reste droit), en bout de chemin : rien n'en dépend.
-  { id: 'relais', region: 'basses-terres', core: { x: 133, y: 320 }, altitude: 3, ext: e(2, 3, 2, 4), relief: 'plat', seed: 94 },
+  { id: 'lv2-5e-introductions', region: 'basses-terres', core: { x: 133, y: 320 }, altitude: 3, ext: e(2, 3, 2, 4), relief: 'plat', seed: 94 },
   // Anglais 4e : aux deux bouts de la crête, la Gare avant la Forge, le Théâtre après le Cabinet.
-  { id: 'theatre', region: 'hauteurs', core: { x: 158, y: 618 }, altitude: 6, ext: e(3, 4, 2, 4), relief: 'collines', seed: 71 },
+  { id: 'english-4e-comprehension', region: 'hauteurs', core: { x: 158, y: 618 }, altitude: 6, ext: e(3, 4, 2, 4), relief: 'collines', seed: 71 },
   // LV2 4e : au bout est de la crête, après le Théâtre, un cran plus bas (le rythme de la crête), en bout de chemin : rien
   // n'en dépend.
-  { id: 'jardin', region: 'basses-terres', core: { x: 190, y: 632 }, altitude: 6, ext: e(2, 3, 2, 4), relief: 'plat', seed: 95 },
-  { id: 'gare', region: 'feu', core: { x: -2, y: 632 }, altitude: 6, ext: e(4, 3, 2, 4), relief: 'collines', seed: 72 },
+  { id: 'lv2-4e-daily-life', region: 'basses-terres', core: { x: 190, y: 632 }, altitude: 6, ext: e(2, 3, 2, 4), relief: 'plat', seed: 95 },
+  { id: 'english-4e-grammar', region: 'feu', core: { x: -2, y: 632 }, altitude: 6, ext: e(4, 3, 2, 4), relief: 'collines', seed: 72 },
   // Anglais 3e : de part et d'autre de l'arc, le Studio avant le Belvédère, le Château après l'Observatoire des données.
-  { id: 'studio', region: 'hauteurs', core: { x: -14, y: 912 }, altitude: 9, ext: e(3, 4, 2, 4), relief: 'collines', seed: 81 },
-  { id: 'chateau', region: 'hauteurs', core: { x: 130, y: 912 }, altitude: 9, ext: e(4, 3, 2, 4), relief: 'collines', seed: 82 },
+  { id: 'english-3e-comprehension', region: 'hauteurs', core: { x: -14, y: 912 }, altitude: 9, ext: e(3, 4, 2, 4), relief: 'collines', seed: 81 },
+  { id: 'english-3e-grammar', region: 'hauteurs', core: { x: 130, y: 912 }, altitude: 9, ext: e(4, 3, 2, 4), relief: 'collines', seed: 82 },
   // LV2 3e : à l'est du Château, un cran derrière, en bout de chemin : rien n'en dépend. Un refuge d'altitude, bas et
   // arrondi (intention du 3e, §3), son lac d'altitude au fond, sur l'herbe (`LACS`).
-  { id: 'refuge', region: 'montagne', core: { x: 158, y: 926 }, altitude: 9, ext: e(2, 2, 2, 9), relief: 'plat', seed: 96 },
+  { id: 'lv2-3e-travel', region: 'montagne', core: { x: 158, y: 926 }, altitude: 9, ext: e(2, 2, 2, 9), relief: 'plat', seed: 96 },
 ];
 
 /** Les îles d'un archipel, dans l'ordre de MAP. */
@@ -170,11 +216,11 @@ export function mapOf(a: ArchipelagoId): IslandDef[] {
  * un semis d'îles : quatre paires forment de petits continents. L'ouvrage entre elles est un sentier.
  */
 export const ISTHMUSES: [BiomeId, BiomeId][] = [
-  ['foret', 'mine'],
-  ['ferme', 'tour'],
-  ['glacier', 'marche'],
-  ['carrefour', 'marais'],
-  ['baie', 'horloge'],
+  ['french-6e-phonology', 'french-6e-letter-confusion'],
+  ['french-6e-grammar-spelling', 'french-6e-reading'],
+  ['maths-5e-signed-numbers', 'maths-5e-proportionality'],
+  ['french-5e-homophones', 'french-5e-conjugation'],
+  ['english-6e-vocabulary', 'english-6e-grammar'],
 ];
 
 /** L'île avec laquelle une île partage un isthme, s'il y en a un. */
@@ -308,7 +354,7 @@ const margesCache = new Map<BiomeId, LandCell[]>();
  * (5e, 01/10/2026) : le port reste bas (intention du 5e, §3), des roseaux sur les côtés et derrière.
  */
 export const DECOR_DES_MARGES: Readonly<Partial<Record<BiomeId, Readonly<{ genre?: Decor; unSurDeux?: true; derriere?: true }>>>> = Object.freeze({
-  marche: Object.freeze({ genre: 'roseau', unSurDeux: true, derriere: true } as const),
+  'maths-5e-proportionality': Object.freeze({ genre: 'roseau', unSurDeux: true, derriere: true } as const),
 });
 
 /**
@@ -319,7 +365,7 @@ const SEUIL_DU_DECOR = 0.62;
 
 /** Le sol d'une terre à plat de l'île, hors de son bord (la côte de `computeLandscape`, l'isthme, les marges du cœur). */
 function solAPlat(def: IslandDef): Ground {
-  if (def.id === 'glacier') return 'glace';
+  if (def.id === 'maths-5e-signed-numbers') return 'glace';
   if (def.region === 'feu') return 'basalte';
   if (def.region === 'marais') return 'mousse';
   return 'herbe';
@@ -547,7 +593,7 @@ function peaks(def: IslandDef): { x: number; y: number; h: number; r: number }[]
  * l'île, bordé d'une rangée de pierre plate (la roche, au ras du sol : pas de ponton), puis d'une rive d'herbe nue. Sur une île qui a son lac, le hasard n'en creuse pas d'autre.
  */
 export const LACS: Partial<Record<BiomeId, { x: number; y: number; w: number; d: number }>> = {
-  refuge: { x: 6, y: 17, w: 4, d: 2 },
+  'lv2-3e-travel': { x: 6, y: 17, w: 4, d: 2 },
 };
 
 /**
@@ -612,10 +658,10 @@ function computeLandscape(def: IslandDef): LandCell[] {
     if (def.region === 'feu') ground = 'basalte';
     else if (def.region === 'hauteurs') ground = h > 0 ? 'roche' : 'herbe';
     else if (def.region === 'marais') ground = 'mousse';
-    if (def.id === 'glacier') ground = 'glace';
+    if (def.id === 'maths-5e-signed-numbers') ground = 'glace';
     if (h >= 3) ground = def.region === 'feu' ? 'basalte' : 'roche';
     if (h >= 5 && def.region !== 'feu') ground = 'neige';
-    if (def.id === 'glacier' && h >= 2) ground = 'neige';
+    if (def.id === 'maths-5e-signed-numbers' && h >= 2) ground = 'neige';
     if (crater) ground = 'lave';
     if (edge && def.altitude === 0 && h === 0 && def.region !== 'feu') ground = 'sable';
     // Lacs et mares : dans un creux, loin du bord et du cœur ; le lac dessiné d'une île, et sa bordure de pierre.

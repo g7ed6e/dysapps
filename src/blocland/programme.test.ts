@@ -7,7 +7,7 @@ import { BIOMES } from './biomes';
 import { loadAllExercises } from './exercises';
 
 /** La discipline attendue d'une mission : celle de son île, ou pour l'île de la LV2 la langue de la mission. */
-const LV2_DISCIPLINE = { de: 'allemand', es: 'espagnol' } as const;
+const LV2_DISCIPLINE = { de: 'german', es: 'spanish' } as const;
 function disciplineDe(b: (typeof BIOMES)[number], mission: string): string {
   const lv2 = b.exercises.find((x) => x.id === mission)?.lv2;
   return lv2 ? LV2_DISCIPLINE[lv2] : b.subject;

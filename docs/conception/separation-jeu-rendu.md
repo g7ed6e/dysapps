@@ -8,7 +8,7 @@ Ce document est un **plan**, construit étape par étape ; l’état de chaque �
 
 La vue simple (les pages HTML de Blocland) en est un quatrième consommateur : elle joue déjà tout le jeu sans aucune géométrie, preuve que la logique n’a pas besoin de cases.
 
-Les règles de la migration valent ici : **les sauvegardes ne sont jamais touchées, aucun identifiant ne change, les blocs restent la ressource.** Chaque étape se livre seule, testée, et sans changer une seule image, sauf J6, qui ajoute le mode abstrait derrière un drapeau.
+Les règles de la migration valent ici : **la séparation ne touche ni aux sauvegardes ni aux identifiants (les mots neutres de la sauvegarde), les blocs restent la ressource.** Chaque étape se livre seule, testée, et sans changer une seule image, sauf J6, qui ajoute le mode abstrait derrière un drapeau.
 
 ## 1. Ce qui existe déjà
 
@@ -111,7 +111,7 @@ Une étape à la fois : chacune attend la fusion de la précédente.
 - **La marche** : elle n’existe qu’en grille. En réseau, le bonhomme passe d’un lieu à l’autre par un trajet court le long de la liaison ; ni grille de marche ni marche libre. `world/scene.ts` sépare donc le trajet (commun) de la marche case à case (propre à la grille).
 - **Le voyage** : le départ et l’arrivée supposent un quai en coordonnées du monde ; ils passent en ancrages, et la durée d’une traversée ne dépend plus d’une distance en cases.
 - **La 2D peinte** : sa projection et son découpage en tuiles aiment une grille. Le réseau est d’abord un rendu 3D ; une 2D en réseau (chaque île peinte dans sa tuile, les liaisons en traits) serait une reprise notable de `WorldCanvas2D.tsx`, à cadrer avec le directeur artistique avec les lots 8 et 8b.
-- **Les sauvegardes** : aucune migration. Les identifiants (îles, ouvrages, plans) ne changent pas, et les clés des plans restent en cases du plan, avec des origines figées.
+- **Les sauvegardes** : la séparation n’en migre aucune. Elle ne change aucun identifiant (îles, ouvrages, plans), et les clés des plans restent en cases du plan, avec des origines figées.
 - **Les captures de la documentation** : J0 à J5 et D n’en changent aucune ; J6 en ajoute sous son drapeau.
 - **Les performances** : `versMonde` se calcule une fois par île (une matrice), pas à chaque image pour chaque objet.
 

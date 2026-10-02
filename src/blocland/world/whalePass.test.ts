@@ -54,10 +54,10 @@ it("chaque île avec la mer a un passage de baleine sur l’eau libre, au large 
 });
 
 it("le passage se voit depuis la caméra : derrière l’île, en haut de l’écran", () => {
-  const south = whalePassRoute("plaine")!;
+  const south = whalePassRoute("maths-6e-calculation")!;
   // Caméra au sud : la baleine passe derrière l'île (au nord), en haut de l'écran, loin des panneaux, en travers ;
   // sur le côté, pas derrière le nom de l'île, en s'éloignant de l'axe de vue.
-  const c = islandCenter("plaine");
+  const c = islandCenter("maths-6e-calculation");
   const mid = {
     x: (south.from.x + south.to.x) / 2,
     y: (south.from.y + south.to.y) / 2,
@@ -69,13 +69,13 @@ it("le passage se voit depuis la caméra : derrière l’île, en haut de l’é
     Math.abs(south.from.x - c.x),
   );
   // Vue étroite (téléphone) : plus loin derrière, au-dessus du nom de l'île.
-  const narrow = whalePassRoute("plaine", { x: 0, y: -1 }, true)!;
+  const narrow = whalePassRoute("maths-6e-calculation", { x: 0, y: -1 }, true)!;
   const nmid = {
     x: (narrow.from.x + narrow.to.x) / 2,
     y: (narrow.from.y + narrow.to.y) / 2,
   };
   expect(nmid.y).toBeGreaterThan(mid.y);
-  const north = whalePassRoute("plaine", { x: 0, y: 1 });
+  const north = whalePassRoute("maths-6e-calculation", { x: 0, y: 1 });
   const midY = (r: typeof south) => (r.from.y + r.to.y) / 2;
   if (north) expect(midY(north)).toBeLessThan(midY(south));
 });

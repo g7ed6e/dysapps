@@ -14,7 +14,7 @@ const du = (nom: string) => nom.replace(/^le /, 'du ').replace(/^(la |l’)/, 'd
 
 export const ARCHIPEO = {
   gardiens: {
-    foret: {
+    'french-6e-phonology': {
       challenge: 'Le Grand Chêne murmure : « Ma couronne est éteinte. Tu as bien écouté ma forêt, je t’écoute à mon tour. »',
       guardianSays: {
         hit: 'Une branche s’allume dans ma couronne. Tu as l’oreille fine.',
@@ -22,7 +22,7 @@ export const ARCHIPEO = {
         beaten: 'Ma couronne se rallume. La forêt est à toi, et à Mousso.',
       },
     },
-    mine: {
+    'french-6e-letter-confusion': {
       challenge: 'Le Golem de roche dit doucement : « Ma gemme est éteinte, et mes lettres se ressemblent. Regarde-les bien, prends ton temps. »',
       guardianSays: {
         hit: 'Une veine d’or s’allume jusqu’à ma gemme. Tu regardes bien.',
@@ -30,7 +30,7 @@ export const ARCHIPEO = {
         beaten: 'Ma gemme se rallume. La mine est à toi, et à Tunel.',
       },
     },
-    carriere: {
+    'french-6e-word-spelling': {
       challenge: 'La Dune vivante souffle : « Mes couches de pierre sont éteintes. Écris chaque mot juste, et elles s’allumeront une à une. »',
       guardianSays: {
         hit: 'Une couche de pierre s’allume. Ce mot était bien écrit.',
@@ -38,7 +38,7 @@ export const ARCHIPEO = {
         beaten: 'Mes couches de pierre se rallument. La carrière est à toi, et à Rouxel.',
       },
     },
-    ferme: {
+    'french-6e-grammar-spelling': {
       challenge: 'Le Taureau de terre parle doucement : « Mon collier est éteint. Ici, tout doit s’accorder, cherche à ton rythme. »',
       guardianSays: {
         hit: 'Une veine d’or s’allume sur mon collier. C’était bien accordé.',
@@ -46,7 +46,7 @@ export const ARCHIPEO = {
         beaten: 'Mon collier se rallume. Tout s’accorde. La ferme est à toi, et à Bloquette.',
       },
     },
-    tour: {
+    'french-6e-reading': {
       challenge: 'La Chouette de verre chuchote : « Mon vitrail est éteint. Lis-moi sans te presser, le phare t’attend en haut. »',
       guardianSays: {
         hit: 'Un morceau de mon vitrail s’allume. Tu lis bien.',
@@ -54,7 +54,7 @@ export const ARCHIPEO = {
         beaten: 'Mon vitrail se rallume. La tour et son phare sont à toi, et à Grimoire.',
       },
     },
-    plaine: {
+    'maths-6e-calculation': {
       challenge: 'Le Hanneton de bronze bourdonne doucement : « Mes ailes de bronze sont éteintes. Tu as compté toute ma plaine, calcule avec moi. »',
       guardianSays: {
         hit: 'Une veine d’or s’allume entre mes ailes. C’est juste.',
@@ -62,7 +62,7 @@ export const ARCHIPEO = {
         beaten: 'Mes ailes se rallument. La plaine est à toi, et à Coco.',
       },
     },
-    riviere: {
+    'maths-6e-fractions': {
       challenge: 'Le Brochet d’argent murmure dans sa fontaine : « Mon flanc est éteint. Tu as partagé toute ma rivière, lis maintenant mes parts. »',
       guardianSays: {
         hit: 'Une part de mon flanc s’allume. C’est juste.',
@@ -70,7 +70,7 @@ export const ARCHIPEO = {
         beaten: 'Mon flanc se rallume. La rivière est à toi, et à Nénu.',
       },
     },
-    volcan: {
+    'maths-6e-decimals': {
       challenge: 'Le Dragon de cendre souffle une fumée tiède : « Ma braise est éteinte. Tu as gravi tout mon volcan, lis chaque nombre rang par rang. »',
       guardianSays: {
         hit: 'Une braise s’allume sur mon ventre. C’est exact.',
@@ -78,7 +78,7 @@ export const ARCHIPEO = {
         beaten: 'Mon ventre de braise se rallume. Le volcan est à toi, et à Lavi.',
       },
     },
-    glacier: {
+    'maths-5e-signed-numbers': {
       challenge: 'Le Mammouth de givre dit à voix basse : « Mes veines de givre sont éteintes. Tu as traversé toute ma banquise, compte avec moi sous zéro. »',
       guardianSays: {
         hit: 'Une veine s’allume dans mon givre. C’est juste.',
@@ -86,7 +86,7 @@ export const ARCHIPEO = {
         beaten: 'Mes veines de givre se rallument. Le glacier est à toi, et à Frimas.',
       },
     },
-    marche: {
+    'maths-5e-proportionality': {
       challenge: 'Le Colporteur chuchote derrière son étal : « Ma lanterne est éteinte. Tu as fait le tour de mes étals, faisons les comptes ensemble. »',
       guardianSays: {
         hit: 'Une lueur s’allume dans ma lanterne. Tu sais compter tes sous.',
@@ -94,7 +94,7 @@ export const ARCHIPEO = {
         beaten: 'Ma lanterne se rallume. Le marché est à toi, et à Bazar.',
       },
     },
-    carrefour: {
+    'french-5e-homophones': {
       challenge: 'Le Sphinx des routes dit doucement : « Ma coiffe est éteinte. Tu as lu tous mes panneaux, choisis le bon chemin. »',
       guardianSays: {
         hit: 'Une bande de ma coiffe s’allume. Tu connais le chemin des mots.',
@@ -102,7 +102,7 @@ export const ARCHIPEO = {
         beaten: 'Ma coiffe se rallume. Toutes les routes sont à toi, et à Sema.',
       },
     },
-    marais: {
+    'french-5e-conjugation': {
       challenge: 'L’Hydre des marais murmure de ses trois voix : « Mes trois cous sont éteints. Parle-moi du présent, du passé, du futur et du doute. »',
       guardianSays: {
         hit: 'Une écaille de mes cous s’allume. C’est juste.',
@@ -110,7 +110,7 @@ export const ARCHIPEO = {
         beaten: 'Mes trois cous se rallument. Le marais est à toi, et à Kroa.',
       },
     },
-    forge: {
+    'maths-4e-powers': {
       challenge: 'Le Titan d’acier parle d’une voix lente : « Mon cœur de forge est éteint. Tu as chauffé toute ma forge, prends le temps de tes calculs. »',
       guardianSays: {
         hit: 'Une veine d’or s’allume vers mon cœur. C’est juste.',
@@ -118,7 +118,7 @@ export const ARCHIPEO = {
         beaten: 'Mon cœur de forge se rallume. La forge est à toi, et à Braise.',
       },
     },
-    atelier: {
+    'maths-4e-algebra': {
       challenge: 'Le Golem des équations dit posément : « Ma balance est éteinte. Tu as tracé tous mes plans, cherche l’inconnue avec moi. »',
       guardianSays: {
         hit: 'Un plateau de ma balance s’allume. Les deux côtés sont égaux.',
@@ -126,7 +126,7 @@ export const ARCHIPEO = {
         beaten: 'Ma balance se rallume. L’atelier est à toi, et à Ixe.',
       },
     },
-    falaise: {
+    'french-4e-agreement': {
       challenge: 'Le Bélier de granit souffle depuis sa corniche : « Mes cornes sont éteintes. Tu as gravi toute ma paroi, accorde chaque mot avec soin. »',
       guardianSays: {
         hit: 'Une spirale de mes cornes s’allume. C’est juste.',
@@ -134,7 +134,7 @@ export const ARCHIPEO = {
         beaten: 'Mes cornes se rallument. La falaise est à toi, et à Cléa.',
       },
     },
-    cabinet: {
+    'french-4e-vocabulary': {
       challenge: 'Le Hibou lexicographe chuchote entre ses tiroirs : « Mon livre est éteint. Tu as ouvert tous mes tiroirs, démontons les mots ensemble. »',
       guardianSays: {
         hit: 'Une veine d’or s’allume sur mon livre. Tu as trouvé la racine.',
@@ -142,7 +142,7 @@ export const ARCHIPEO = {
         beaten: 'Mon livre se rallume. Le cabinet est à toi, et à Plume.',
       },
     },
-    belvedere: {
+    'maths-3e-geometry': {
       challenge: 'Le Sphinx de marbre dit à voix basse : « Ma coiffe est éteinte. Tu as mesuré tout mon belvédère, cherche ce qui manque. »',
       guardianSays: {
         hit: 'Un angle droit s’allume sur ma coiffe. C’est juste.',
@@ -150,7 +150,7 @@ export const ARCHIPEO = {
         beaten: 'Ma coiffe se rallume. Toutes les longueurs sont à toi, et à Théo.',
       },
     },
-    donnees: {
+    'maths-3e-statistics': {
       challenge: 'Le Comptable des étoiles dit doucement, son grand livre ouvert : « Mes étoiles gravées sont éteintes. Tu as relevé toutes mes séries, résumons-les ensemble. »',
       guardianSays: {
         hit: 'Une étoile gravée s’allume sur ma robe. C’est juste.',
@@ -158,7 +158,7 @@ export const ARCHIPEO = {
         beaten: 'Mes étoiles se rallument. L’observatoire des données est à toi, et à Stat.',
       },
     },
-    phare: {
+    'maths-3e-functions': {
       challenge: 'Le Dragon de lumière souffle du haut de sa colonne : « Mes ailes de verre sont éteintes. Suis chaque nombre jusqu’à son image, à ton rythme. »',
       guardianSays: {
         hit: 'Une veine s’allume dans mes ailes. C’est juste.',
@@ -166,7 +166,7 @@ export const ARCHIPEO = {
         beaten: 'Mes ailes de verre se rallument. Le phare est à toi, et à Fi.',
       },
     },
-    textes: {
+    'french-3e-close-reading': {
       challenge: 'Le Grand Lecteur murmure, son livre ouvert : « Mes pages sont éteintes. Tu as observé tous mes textes, cherche ce qu’ils cachent. »',
       guardianSays: {
         hit: 'Une page de mon livre s’allume. Tu lis ce qui n’est pas écrit.',
@@ -174,7 +174,7 @@ export const ARCHIPEO = {
         beaten: 'Mes pages se rallument. L’observatoire des textes est à toi, et à Astra. Tu sais lire, vraiment lire.',
       },
     },
-    baie: {
+    'english-6e-vocabulary': {
       challenge: 'Le Lion de pierre parle doucement depuis son quai : « Ma crinière est éteinte. Tu as écouté tous les mots de la baie, écoute-les encore. »',
       guardianSays: {
         hit: 'Une veine d’or s’allume dans ma crinière. Tu as l’oreille anglaise.',
@@ -182,7 +182,7 @@ export const ARCHIPEO = {
         beaten: 'Ma crinière se rallume. La baie est à toi, et à Robin.',
       },
     },
-    horloge: {
+    'english-6e-grammar': {
       challenge: 'Le Coucou de bronze chuchote du haut de son horloge : « Mon cadran est éteint. Tu as remonté tous mes rouages, vérifie chaque verbe avec moi. »',
       guardianSays: {
         hit: 'Une heure s’allume sur mon cadran. Ton verbe est juste.',
@@ -190,7 +190,7 @@ export const ARCHIPEO = {
         beaten: 'Mon cadran se rallume. Les verbes sont à toi, et à Tick.',
       },
     },
-    comptoir: {
+    'english-5e-vocabulary': {
       challenge: 'La Reine du marché dit doucement depuis son estrade : « Ma couronne est éteinte. Tu as fait tes courses en anglais, écoute bien ce qu’on te dit. »',
       guardianSays: {
         hit: 'Une pierre de ma couronne s’allume. C’est juste.',
@@ -198,7 +198,7 @@ export const ARCHIPEO = {
         beaten: 'Ma couronne se rallume. Le Comptoir est à toi, et à Pudding.',
       },
     },
-    relais: {
+    'lv2-5e-introductions': {
       challenge: 'La Diligence de cuivre dit doucement depuis le ponton : « La boussole de mon siège est éteinte. Tu as fait escale chez mes voyageurs : écoute bien ce qu’ils te disent. »',
       guardianSays: {
         hit: 'Une pointe de ma rose des vents s’allume. C’est juste.',
@@ -206,7 +206,7 @@ export const ARCHIPEO = {
         beaten: 'Ma boussole se rallume. Le Relais est à toi, et à Lina.',
       },
     },
-    jardin: {
+    'lv2-4e-daily-life': {
       challenge: 'Le Soleil de cuivre dit doucement depuis son socle : « Mes rayons sont éteints. Tu as suivi toutes les heures du jardin : écoute bien, et raconte-moi ta journée. »',
       guardianSays: {
         hit: 'Mes rayons brillent un peu plus. C’est juste.',
@@ -214,7 +214,7 @@ export const ARCHIPEO = {
         beaten: 'Mes rayons se rallument. Le jardin est à toi, et à Muscade.',
       },
     },
-    refuge: {
+    'lv2-3e-travel': {
       challenge: 'Le Papillon de cuivre dit doucement : « Le bord de mes ailes est éteint. Tu as rencontré tous les voyageurs du refuge : dis-moi ce qu’ils ont vécu. »',
       guardianSays: {
         hit: 'Le bord de mes ailes brille un peu plus. C’est juste.',
@@ -222,7 +222,7 @@ export const ARCHIPEO = {
         beaten: 'Le bord de mes ailes se rallume. Le refuge est à toi, et à Timbre.',
       },
     },
-    manoir: {
+    'english-5e-grammar': {
       challenge: 'Le Spectre du manoir murmure sous son voile : « Ma lanterne est éteinte. Tu as fouillé toutes mes pièces, raconte-moi aujourd’hui, hier, et ce qui est plus grand. »',
       guardianSays: {
         hit: 'Ma lanterne s’allume un peu plus sous mon voile. C’est juste.',
@@ -230,7 +230,7 @@ export const ARCHIPEO = {
         beaten: 'Ma lanterne se rallume sous mon voile. Le manoir est à toi, et à Moustache.',
       },
     },
-    theatre: {
+    'english-4e-comprehension': {
       challenge: 'Le Masque souffle depuis sa stèle : « Ma rampe est éteinte. Tu connais toutes mes répliques, cherche la bonne. »',
       guardianSays: {
         hit: 'Une lampe de ma rampe s’allume. C’est la bonne réplique.',
@@ -238,7 +238,7 @@ export const ARCHIPEO = {
         beaten: 'Ma rampe se rallume. Le théâtre est à toi, et à Puck.',
       },
     },
-    gare: {
+    'english-4e-grammar': {
       challenge: 'La Locomotive de fer attend sur son rail et dit doucement : « Ma lampe est éteinte. Tu as pris tous mes trains, dis-moi où tu vas. »',
       guardianSays: {
         hit: 'Une lueur s’allume dans ma lampe. Tu es sur les bons rails.',
@@ -246,7 +246,7 @@ export const ARCHIPEO = {
         beaten: 'Ma lampe se rallume. Les voies sont à toi, et à Vapeur.',
       },
     },
-    studio: {
+    'english-3e-comprehension': {
       challenge: 'La Grande Antenne grésille doucement : « Mon voyant est éteint. Tu as capté toutes mes ondes, écoute chaque message. »',
       guardianSays: {
         hit: 'Mon voyant s’allume un peu plus. Message bien reçu.',
@@ -254,7 +254,7 @@ export const ARCHIPEO = {
         beaten: 'Mon voyant se rallume. Le studio est à toi, et à Écho.',
       },
     },
-    chateau: {
+    'english-3e-grammar': {
       challenge: 'Le Dragon gallois dit à voix basse : « Mon bouclier est éteint. Tu as franchi tous mes remparts, lis les phrases les plus longues à ton rythme. »',
       guardianSays: {
         hit: 'Une veine d’or s’allume sur mon bouclier. C’est juste.',
@@ -266,37 +266,37 @@ export const ARCHIPEO = {
   creatures: REPLIQUES,
   etatsDIle: ETATS_D_ILE,
   especes: {
-    foret: 'golem de mousse',
-    mine: 'taupe',
-    carriere: 'renard',
-    ferme: 'brebis',
-    tour: 'tortue copiste',
-    plaine: 'coccinelle à dix points',
-    riviere: 'grenouille des nénuphars',
-    volcan: 'salamandre de lave',
-    glacier: 'pingouin comptable',
-    marche: 'raton laveur marchand',
-    carrefour: 'caméléon des panneaux',
-    marais: 'triton des roseaux',
-    forge: 'golem forgeron',
-    atelier: 'automate dessinateur',
-    falaise: 'chèvre des cimes',
-    cabinet: 'pie collectionneuse',
-    belvedere: 'héron géomètre',
-    donnees: 'chouette astronome',
-    phare: 'lampe de phare vivante',
-    textes: 'luciole lectrice',
-    baie: 'rouge-gorge des quais',
-    horloge: 'hérisson horloger',
-    comptoir: 'bouledogue marchand',
-    relais: 'cigogne voyageuse',
-    jardin: 'écureuil cuisinier',
-    refuge: 'loutre factrice',
-    manoir: 'chat du manoir',
-    theatre: 'lutin souffleur',
-    gare: 'blaireau chef de gare',
-    studio: 'chauve-souris animatrice radio',
-    chateau: 'petit chevalier',
+    'french-6e-phonology': 'golem de mousse',
+    'french-6e-letter-confusion': 'taupe',
+    'french-6e-word-spelling': 'renard',
+    'french-6e-grammar-spelling': 'brebis',
+    'french-6e-reading': 'tortue copiste',
+    'maths-6e-calculation': 'coccinelle à dix points',
+    'maths-6e-fractions': 'grenouille des nénuphars',
+    'maths-6e-decimals': 'salamandre de lave',
+    'maths-5e-signed-numbers': 'pingouin comptable',
+    'maths-5e-proportionality': 'raton laveur marchand',
+    'french-5e-homophones': 'caméléon des panneaux',
+    'french-5e-conjugation': 'triton des roseaux',
+    'maths-4e-powers': 'golem forgeron',
+    'maths-4e-algebra': 'automate dessinateur',
+    'french-4e-agreement': 'chèvre des cimes',
+    'french-4e-vocabulary': 'pie collectionneuse',
+    'maths-3e-geometry': 'héron géomètre',
+    'maths-3e-statistics': 'chouette astronome',
+    'maths-3e-functions': 'lampe de phare vivante',
+    'french-3e-close-reading': 'luciole lectrice',
+    'english-6e-vocabulary': 'rouge-gorge des quais',
+    'english-6e-grammar': 'hérisson horloger',
+    'english-5e-vocabulary': 'bouledogue marchand',
+    'lv2-5e-introductions': 'cigogne voyageuse',
+    'lv2-4e-daily-life': 'écureuil cuisinier',
+    'lv2-3e-travel': 'loutre factrice',
+    'english-5e-grammar': 'chat du manoir',
+    'english-4e-comprehension': 'lutin souffleur',
+    'english-4e-grammar': 'blaireau chef de gare',
+    'english-3e-comprehension': 'chauve-souris animatrice radio',
+    'english-3e-grammar': 'petit chevalier',
   },
   libelles: {
     dejaFait: 'Déjà rallumé. Tu veux rejouer ?',
@@ -347,7 +347,7 @@ export const ARCHIPEO = {
   },
   // Le phare du large est dessiné pour Archipéo (revue d'ensemble, DA-4) : une tour ronde de pierre à feu ouvert.
   monuments: {
-    'monument-phare-large': {
+    'landmark-5e-1': {
       description: 'Une haute tour ronde de pierre grise, percée de hublots, dont le feu guide les navires dans la brume.',
       done: 'Le phare du large s’allume ! Plus aucun navire ne se perd dans la brume.',
     },

@@ -83,7 +83,7 @@ describe('Le toucher des pièces du lot 7b : toute la case, pour chaque forme', 
     const tous = worldCubes('6e', progress, village, false).filter((c) => !c.sol);
     const batiments = batimentsDe('6e');
     const vues = new Set<string>();
-    for (const ile of ['foret', 'riviere']) {
+    for (const ile of ['french-6e-phonology', 'maths-6e-fractions']) {
       const cubes = tous.filter((c) => c.tag === ile);
       const m = maillageDeLaConstruction('6e', cubes);
       const archi = architectureDe('6e', cubes, { batiments });

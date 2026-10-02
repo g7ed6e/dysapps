@@ -1,0 +1,10 @@
+{
+  "id": "maths-5e-proportionality-2",
+  "biome": "maths-5e-proportionality",
+  "name": "L’auvent de l’échoppe",
+  "reward": {
+    "xp": 50,
+    "chest": {}
+  },
+  "done": "Un auvent et une porte ! La lanterne éclaire les comptes du soir."
+}

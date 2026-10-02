@@ -118,7 +118,7 @@ export function enveloppeDe(poste: Poste, a: ArchipelagoId): Enveloppe {
 export function toutConstruit() {
   const progress: Record<string, { stars: number; attempts: number; best: number }> = Object.fromEntries([
     ...CATALOG.map((e) => [e.id, { stars: 3, attempts: 1, best: 1 }]),
-    ...BIOMES.map((b) => [`${b.id}-gardien`, { stars: 3, attempts: 1, best: 1 }]),
+    ...BIOMES.map((b) => [`${b.id}-challenge`, { stars: 3, attempts: 1, best: 1 }]),
   ]);
   const plans = Object.fromEntries([...PLANS, ...VEHICLE_STAGES, ...MONUMENTS].map((p) => [p.id, planCells(p).map((c) => c.key)]));
   const bridges = [...BRIDGES, ...VOYAGES].map((b) => b.id);

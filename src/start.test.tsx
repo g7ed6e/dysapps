@@ -36,7 +36,7 @@ beforeEach(() => sessionStorage.clear());
 it('l’appli s’ouvre sur le village ; le menu reste à son adresse', () => {
   renderAt('/');
   expect(screen.getByText('Le village')).toBeInTheDocument();
-  expect(screen.getByTestId('adresse')).toHaveTextContent('/aventure');
+  expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure');
   document.body.innerHTML = '';
   renderAt('/menu');
   expect(screen.getByRole('navigation', { name: 'Menu principal' })).toBeInTheDocument();
@@ -52,7 +52,7 @@ it('avec le réglage « Au démarrage : le menu », l’accueil est le menu', ()
 it('l’écran titre garde « Continuer » alors que l’accueil a déjà mené au village', () => {
   rememberPlace({ path: '/app/tables', label: 'Tables & calcul mental' });
   renderAt('/', true);
-  expect(screen.getByTestId('adresse')).toHaveTextContent('/aventure');
+  expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure');
   expect(screen.getByRole('button', { name: 'Continuer : Tables & calcul mental' })).toBeInTheDocument();
   expect(screen.getByRole('button', { name: /Jouer/ })).toBeInTheDocument();
 });

@@ -20,10 +20,10 @@ export const RECETTES = join(racine, 'src/blocland/world/recettes.ts');
 /** Ce qu'une île et chacune de ses missions doivent donner pour que le jeu les montre. */
 const CHAMPS_ILE = ['name', 'module', 'subject', 'classe', 'description', 'block', 'guardian', 'icon', 'creature'];
 const CHAMPS_MISSION = ['description', 'programme'];
-const MATIERES = ['francais', 'maths', 'anglais', 'lv2'];
+const MATIERES = ['french', 'maths', 'english', 'lv2'];
 const CLASSES = ['6e', '5e', '4e', '3e'];
 
-/** L'ordre des îles : docs/contenu/archipel.md, une ligne « 1. `foret` » par île. */
+/** L'ordre des îles : docs/contenu/archipel.md, une ligne « 1. `french-6e-phonology` » par lieu. */
 function ordreDesIles() {
   const texte = readFileSync(join(CONTENU, 'archipel.md'), 'utf8').replace(/\r\n/g, '\n');
   return [...texte.matchAll(/^\d+\. `([a-z0-9-]+)`$/gm)].map((m) => m[1]);

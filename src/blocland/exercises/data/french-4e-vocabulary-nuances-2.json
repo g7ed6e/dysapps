@@ -1,0 +1,214 @@
+{
+  "id": "french-4e-vocabulary-nuances-2",
+  "biome": "french-4e-vocabulary",
+  "type": "nuances",
+  "level": 2,
+  "instruction": "Degré d’intensité : trouve le mot le plus fort, ou la liste bien rangée.",
+  "items": [
+    {
+      "key": "french-4e-vocabulary-nuances-2-0",
+      "prompt": "Le mot le plus fort pour dire la colère :",
+      "spoken": "Le mot le plus fort pour dire la colère :",
+      "choices": [
+        "furieux",
+        "agacé",
+        "fâché"
+      ],
+      "answer": "furieux",
+      "hint": "Imagine quelqu’un qui crie de colère.",
+      "explanation": "Du plus faible au plus fort : agacé, fâché, furieux.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Degré d’intensité",
+          "lines": [
+            "Des mots de sens proche disent plus ou moins fort : c’est le degré d’intensité.",
+            "Du plus faible au plus fort : tiède, chaud, brûlant.",
+            "Pour choisir, imagine la scène : quel mot va le plus loin ?"
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-vocabulary-nuances-2-1",
+      "prompt": "Le mot le plus fort pour dire la peur :",
+      "spoken": "Le mot le plus fort pour dire la peur :",
+      "choices": [
+        "terrifié",
+        "inquiet",
+        "effrayé"
+      ],
+      "answer": "terrifié",
+      "hint": "Imagine quelqu’un qui ne peut plus bouger de peur.",
+      "explanation": "Du plus faible au plus fort : inquiet, effrayé, terrifié.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Degré d’intensité",
+          "lines": [
+            "Des mots de sens proche disent plus ou moins fort : c’est le degré d’intensité.",
+            "Du plus faible au plus fort : tiède, chaud, brûlant.",
+            "Pour choisir, imagine la scène : quel mot va le plus loin ?"
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-vocabulary-nuances-2-2",
+      "prompt": "Le mot le plus fort pour dire qu’un plat est bon :",
+      "spoken": "Le mot le plus fort pour dire qu’un plat est bon :",
+      "choices": [
+        "délicieux",
+        "bon",
+        "mangeable"
+      ],
+      "answer": "délicieux",
+      "hint": "Quel mot donne le plus envie de le manger ?",
+      "explanation": "Du plus faible au plus fort : mangeable, bon, délicieux.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Degré d’intensité",
+          "lines": [
+            "Des mots de sens proche disent plus ou moins fort : c’est le degré d’intensité.",
+            "Du plus faible au plus fort : tiède, chaud, brûlant.",
+            "Pour choisir, imagine la scène : quel mot va le plus loin ?"
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-vocabulary-nuances-2-3",
+      "prompt": "Le mot le plus fort pour dire qu’il fait chaud :",
+      "spoken": "Le mot le plus fort pour dire qu’il fait chaud :",
+      "choices": [
+        "brûlant",
+        "chaud",
+        "doux"
+      ],
+      "answer": "brûlant",
+      "hint": "Imagine le jour le plus chaud de l’été.",
+      "explanation": "Du plus faible au plus fort : doux, chaud, brûlant.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Degré d’intensité",
+          "lines": [
+            "Des mots de sens proche disent plus ou moins fort : c’est le degré d’intensité.",
+            "Du plus faible au plus fort : tiède, chaud, brûlant.",
+            "Pour choisir, imagine la scène : quel mot va le plus loin ?"
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-vocabulary-nuances-2-4",
+      "prompt": "Le mot le plus fort pour parler d’un bruit de voix :",
+      "spoken": "Le mot le plus fort pour parler d’un bruit de voix :",
+      "choices": [
+        "un hurlement",
+        "un murmure",
+        "un cri"
+      ],
+      "answer": "un hurlement",
+      "hint": "Imagine la voix la plus forte.",
+      "explanation": "Du plus faible au plus fort : un murmure, un cri, un hurlement.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Degré d’intensité",
+          "lines": [
+            "Des mots de sens proche disent plus ou moins fort : c’est le degré d’intensité.",
+            "Du plus faible au plus fort : tiède, chaud, brûlant.",
+            "Pour choisir, imagine la scène : quel mot va le plus loin ?"
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-vocabulary-nuances-2-5",
+      "prompt": "Le mot le plus fort pour dire que c’est beau :",
+      "spoken": "Le mot le plus fort pour dire que c’est beau :",
+      "choices": [
+        "magnifique",
+        "agréable",
+        "beau"
+      ],
+      "answer": "magnifique",
+      "hint": "Quel mot va le plus loin ?",
+      "explanation": "Du plus faible au plus fort : agréable, beau, magnifique.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Degré d’intensité",
+          "lines": [
+            "Des mots de sens proche disent plus ou moins fort : c’est le degré d’intensité.",
+            "Du plus faible au plus fort : tiède, chaud, brûlant.",
+            "Pour choisir, imagine la scène : quel mot va le plus loin ?"
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-vocabulary-nuances-2-6",
+      "prompt": "Quelle liste va du plus faible au plus fort ?",
+      "spoken": "Quelle liste va du plus faible au plus fort ?",
+      "choices": [
+        "frais, froid, glacial",
+        "glacial, froid, frais",
+        "froid, frais, glacial"
+      ],
+      "answer": "frais, froid, glacial",
+      "hint": "Commence par le mot le plus doux.",
+      "explanation": "On commence par le plus faible : frais, puis froid, puis glacial.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Degré d’intensité",
+          "lines": [
+            "Des mots de sens proche disent plus ou moins fort : c’est le degré d’intensité.",
+            "Du plus faible au plus fort : tiède, chaud, brûlant.",
+            "Pour choisir, imagine la scène : quel mot va le plus loin ?"
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-4e-vocabulary-nuances-2-7",
+      "prompt": "Quelle liste va du plus faible au plus fort ?",
+      "spoken": "Quelle liste va du plus faible au plus fort ?",
+      "choices": [
+        "humide, mouillé, trempé",
+        "trempé, mouillé, humide",
+        "mouillé, humide, trempé"
+      ],
+      "answer": "humide, mouillé, trempé",
+      "hint": "Commence par le moins mouillé.",
+      "explanation": "On commence par le plus faible : humide, puis mouillé, puis trempé.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Degré d’intensité",
+          "lines": [
+            "Des mots de sens proche disent plus ou moins fort : c’est le degré d’intensité.",
+            "Du plus faible au plus fort : tiède, chaud, brûlant.",
+            "Pour choisir, imagine la scène : quel mot va le plus loin ?"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "french-4e-vocabulary",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

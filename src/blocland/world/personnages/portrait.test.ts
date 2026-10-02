@@ -5,7 +5,7 @@ import { sentinellePeinte } from './sentinellesPeintes';
 
 describe('Le portrait d’un personnage, sans WebGL', () => {
   it('ne garde que les facettes tournées vers l’élève, du fond vers l’avant, dans leur cadre', () => {
-    const f = creaturePeinte('foret');
+    const f = creaturePeinte('french-6e-phonology');
     const p = portraitDe(f);
     expect(p.facettes.length).toBeGreaterThan(f.pieces.length / 4);
     expect(p.facettes.length).toBeLessThan(f.pieces.length);
@@ -29,7 +29,7 @@ describe('Le portrait d’un personnage, sans WebGL', () => {
   });
 
   it('une sentinelle rallumée n’a pas les couleurs d’une éteinte', () => {
-    const f = sentinellePeinte('foret');
+    const f = sentinellePeinte('french-6e-phonology');
     const eteinte = portraitDe(f, { allumage: 0 }).facettes.map((q) => q.couleur);
     const allumee = portraitDe(f, { allumage: 1 }).facettes.map((q) => q.couleur);
     expect(allumee).not.toEqual(eteinte);

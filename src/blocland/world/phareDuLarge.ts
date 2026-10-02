@@ -15,7 +15,7 @@ import type { Couleur, Faces } from './palette';
 import type { Cell } from './view';
 
 /** Le monument dessiné ainsi, et le lieu que portent ses cubes (le toucher ouvre son panneau). */
-export const PHARE_DU_LARGE = 'monument-phare-large';
+export const PHARE_DU_LARGE = 'landmark-5e-1';
 const LIEU = `monument:${PHARE_DU_LARGE}`;
 
 /** Les couleurs du phare du large (décision du directeur artistique, revue d'ensemble du 28/09). */

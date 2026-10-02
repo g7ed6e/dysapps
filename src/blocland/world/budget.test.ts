@@ -5,9 +5,9 @@ import { ARCHIPELAGO_IDS, type ArchipelagoId } from './map';
 
 it('prépare une partie vraiment tout construite (Gardiens vaincus, navire, ouvrages)', () => {
   const { progress, world: village } = toutConstruit();
-  expect(progress['foret-gardien'].stars).toBe(3);
+  expect(progress['french-6e-phonology-challenge'].stars).toBe(3);
   expect(Object.keys(village.parts).length).toBeGreaterThan(40);
-  expect(village.links).toContain('voyage-5e');
+  expect(village.links).toContain('passage-5e');
 });
 
 it('le monde en blocs ne recule pas : triangles et appels de dessin de chaque archipel tout construit', () => {

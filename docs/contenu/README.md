@@ -1,17 +1,16 @@
 # Le contenu en Markdown
 
-Ce dossier est la source des îles : un fichier par île (`<île>.md`, l’identifiant de l’île), avec ce que l’île est (nom, module, Gardien, créature…), ses missions et leurs exercices, les plans de ses bâtiments, et `archipel.md`, l’ordre des îles. `npm run contenu` en produit les JSON du jeu (`src/blocland/iles.ts`, `src/blocland/exercises/data/<exercice>.json` et `src/blocland/world/plans/<plan>.json`), qu’on n’édite jamais à la main ; la CI vérifie qu’ils suivent le Markdown (`npm run contenu -- --check`). `portail/` tient le contenu de quatre missions du portail (plus bas).
+Ce dossier est la source des îles : un fichier par île (`<lieu>.md`, l’identifiant du lieu, par exemple `english-6e-vocabulary.md`), avec ce que l’île est (nom, module, Gardien, créature…), ses missions et leurs exercices, les plans de ses bâtiments, et `archipel.md`, l’ordre des îles. `npm run contenu` en produit les JSON du jeu (`src/blocland/iles.ts`, `src/blocland/exercises/data/<exercice>.json` et `src/blocland/world/plans/<plan>.json`), qu’on n’édite jamais à la main ; la CI vérifie qu’ils suivent le Markdown (`npm run contenu -- --check`). `portail/` tient le contenu de quatre missions du portail (plus bas).
 
 ## Le format
 
 ```md
 ---
-île : baie                                    ← l’en-tête : l’identifiant de l’île, puis ce qu’elle est
+lieu : english-6e-vocabulary                 ← l’en-tête : l’identifiant du lieu, puis ce qu’est l’île
 module : Vocabulaire et écoute
-matière : anglais
+matière : english
 classe : 6e
 description : Se présenter, compter, dire l’heure, …
-bloc : cabine
 gardien : le Lion de pierre
 icône : languages
 créature : Robin
@@ -28,7 +27,7 @@ créature : Robin
 - langue : en                                 ← champs communs à tous les niveaux de la mission
 - consigne : Choisis le mot qui complète la phrase en anglais.
 
-### Niveau 1 · `baie-hello-1`                 ← un niveau : son numéro, puis l’identifiant de l’exercice
+### Niveau 1 · `english-6e-vocabulary-hello-1` ← un niveau : son numéro, puis l’identifiant de l’exercice
 
 Pour tous les items :                         ← champs communs à tous les items du niveau (ou, placé avant le
 - aide « Se présenter » :                        premier niveau, à tous les items de la mission)
@@ -40,8 +39,8 @@ Pour tous les items :                         ← champs communs à tous les ite
    - réponse : Hello
 ```
 
-- **Identifiants** : ceux de la mission, du niveau et de l’item ne changent jamais (les sauvegardes des élèves et la répétition espacée s’y rattachent). La clé d’un item vaut par défaut `<exercice>-<rang depuis 0>`, ou ce que dit `clé des items` (plus bas) ; quand elle est autre, elle s’écrit en champ (`- clé : cabane`) ou dans la colonne `clé`. Avec la clé par défaut, un item s’ajoute donc **à la fin** du niveau ; pour en insérer ou en retirer un au milieu, écrire `- clé :` avec l’ancienne clé sur les items qui suivent, et une clé nouvelle sur l’item ajouté (deux items ne partagent jamais une clé). `npm run contenu` refuse d’écrire si un item existant changerait de clé ; corriger le texte d’un item à sa place reste permis.
-- **L’île** : l’en-tête donne `module`, `matière` (`francais`, `maths`, `anglais` ou `lv2`), `classe` (`6e` à `3e`, qui est aussi l’archipel), `description`, `bloc` (un bloc de `BLOCKS`, `src/blocland/biomes.ts`), `gardien` (avec son article : « le Grand Chêne »), `icône` et `créature` (son nom) ; le titre `# …` est son nom. Ce qu’ils disent et leur espèce sont des textes d’univers, dans `src/univers/`. Les tests (`src/blocland/biomes.test.ts`) vérifient la matière, la classe, le bloc, l’icône et les compétences.
+- **Identifiants** : des mots neutres, en anglais, sans mot d’univers : le lieu `<matière>-<classe>-<thème>` (`french-6e-phonology`), la mission sa notion (`syllables`), l’exercice `<lieu>-<mission>-<suffixe>` (`english-6e-vocabulary-hello-1`). Ceux de la mission, du niveau et de l’item ne changent jamais (les sauvegardes des élèves et la répétition espacée s’y rattachent). La clé d’un item vaut par défaut `<exercice>-<rang depuis 0>`, ou ce que dit `clé des items` (plus bas) ; quand elle est autre, elle s’écrit en champ (`- clé : cabane`) ou dans la colonne `clé`. Avec la clé par défaut, un item s’ajoute donc **à la fin** du niveau ; pour en insérer ou en retirer un au milieu, écrire `- clé :` avec l’ancienne clé sur les items qui suivent, et une clé nouvelle sur l’item ajouté (deux items ne partagent jamais une clé). `npm run contenu` refuse d’écrire si un item existant changerait de clé ; corriger le texte d’un item à sa place reste permis.
+- **L’île** : l’en-tête donne `lieu` (l’identifiant, qui est aussi le nom du fichier), `module`, `matière` (`french`, `maths`, `english` ou `lv2`), `classe` (`6e` à `3e`, qui est aussi l’archipel), `description`, `gardien` (avec son article : « le Grand Chêne »), `icône` et `créature` (son nom) ; le titre `# …` est son nom. Le bloc de l’île ne s’écrit pas : il porte l’identifiant du lieu (`bloc gagné : english-6e-vocabulary`). Ce qu’ils disent et leur espèce sont des textes d’univers, dans `src/univers/`. Les tests (`src/blocland/biomes.test.ts`) vérifient la matière, la classe, l’icône et les compétences.
 - **Une mission** : son titre et son identifiant dans `## …`, puis `description`, `compétences` (au moins une, identifiants de `src/programme/` ; une île de 6e ne cite que le cycle 3, une île de 5e à 3e au moins une compétence du cycle 4) et, sur l’île de la LV2, `lv2` (qui va avec la `langue` de ses niveaux : `es` ou `de`). L’identifiant d’une mission est unique dans tout le jeu, et une île porte au plus quatre missions jouables (l’île de la LV2 en a quatre par langue) ; `biomes.test.ts` le vérifie. Une mission sans niveau a ses exercices produits par le code (les maths : `maths.ts`, `college.ts`, `problemes.ts` ; le Tri des graines, les panneaux) : une note « > » le rappelle sous son titre.
 - **Champs d’un niveau** (ou de la mission, s’ils valent pour tous ses niveaux, sans être répétés dans un niveau) : `titre`, `langue`, `cible`, `consigne`, `programme`, `par partie`, `bravo`, `erreur`, `bloc gagné`, `blocs`, `XP`, `monte à`, `descend à`. Le barème (`blocs`, `XP`, `monte à`, `descend à`) reste écrit ici, niveau par niveau.
 - **Champs d’un item** : `clé`, `texte`, `énoncé`, `question`, `phrase`, `mot`, `lettre`, `racine`, `racine lue`, `sujet`, `singulier`, `pluriel`, `avant`, `après`, `case`, `terminaison`, `cible`, `image`, `lu`, `entendu`, `choix`, `langue des choix`, `réponse`, `juste` (oui ou non), `sens`, `règle`, `indice`, `astuce`, `explication`, `pourquoi`, `mot troué`, et `aide « titre » :` suivie de ses lignes en sous-liste (en anglais, une ligne de lexique s’écrit `mot anglais = sens`, plusieurs paires séparées par « , » ou « ; » : le bouton Écouter de la ligne lit les mots de gauche en voix anglaise ; un mot français à gauche, accentué ou avec un petit mot comme « une », n’est pas lu. Jamais `mot (sens)`, `mot : sens` ni `sens = mot` : le bouton ne lirait rien, ou lirait du français. Une phrase de méthode peut précéder la première paire, suivie de « : » (« Lis d’abord la question : who = qui, when = quand »), et une précision entre parenthèses n’est pas lue. Le mot anglais commence par une minuscule, sauf un nom propre et « I » ; le sens ne recopie jamais la réponse d’un item de la mission, et l’exemple d’une ligne n’est jamais celui d’un item). Ce que chaque champ veut dire, selon le type d’écran : [Le format des exercices](../conception/exercices.md).
@@ -61,20 +60,20 @@ Un nouvel exercice part du modèle de son écran : copier un niveau d’une île
 
 | Écran (missions) | Champs d’un item | Exemple dans |
 | --- | --- | --- |
-| Question à trou, la plus courante (hello, rives, figures, es-hola…) | énoncé avec « … », choix, réponse, indice, explication ; `trou lu` et l’aide pour tous | `baie.md`, `marais.md` |
-| Question sur un document (notices, signs, es-horario, de-geschichte…) | énoncé, question, choix, réponse, `langue des choix`, indice, explication ; `image` (un emoji) aux Signs | `comptoir.md`, `refuge.md` |
-| Histoire à écouter (story, stories) | énoncé (l’histoire, une phrase par ligne), lu, question, choix, réponse, `langue des choix`, indice, explication | `horloge.md`, `theatre.md` |
-| Écoute (ears, listening) | mot (lu à voix haute), choix, `langue des choix`, réponse, indice, explication ; les nombres (numbers) : énoncé et lu à la place du mot | `baie.md` |
-| Syllabes (abattage) | énoncé, mot, entendu (syllabes), choix, réponse ; en tableau | `foret.md` |
-| Chasse au son, rimes | mot, image, entendu ou terminaison, juste (oui ou non) ; en tableau | `foret.md` |
-| Filon (lettres b, d, p, q) | lettre, juste, astuce, parfois cible | `mine.md` |
-| Oreille du mineur | phrase, mot, choix, réponse, indice | `mine.md` |
-| Mot troué | mot troué, choix ; `clé des items : mot` | `carriere.md` |
-| Familles, coffre à mots | mot, racine (le morceau écrit), racine lue (le mot de la famille, quand le morceau ne se lit pas seul), case (`prefix` ou `suffix`), choix, réponse, sens (familles) ; mot, choix, réponse, indice (coffre) | `carriere.md` |
-| Enclos (accord sujet-verbe) | sujet, singulier, pluriel, réponse, pourquoi | `ferme.md` |
-| Récolte (-é, -er, -ez) | énoncé, choix, réponse, règle ; `trou lu : (terminaison)` pour tous | `ferme.md` |
-| Dialogues | mot, choix, réponse, indice, explication | `theatre.md` |
-| Ascension (lecture à voix haute) | texte, un paragraphe par item ; `clé des items : paragraphe` ; `monte à : 2` et `descend à : -1` coupent l’adaptation | `tour.md` |
+| Question à trou, la plus courante (hello, past-tenses, figures-of-speech, es-greetings…) | énoncé avec « … », choix, réponse, indice, explication ; `trou lu` et l’aide pour tous | `english-6e-vocabulary.md`, `french-5e-conjugation.md` |
+| Question sur un document (notices, signs, es-timetable, de-stories…) | énoncé, question, choix, réponse, `langue des choix`, indice, explication ; `image` (un emoji) aux Signs | `english-5e-vocabulary.md`, `lv2-3e-travel.md` |
+| Histoire à écouter (story, stories) | énoncé (l’histoire, une phrase par ligne), lu, question, choix, réponse, `langue des choix`, indice, explication | `english-6e-grammar.md`, `english-4e-comprehension.md` |
+| Écoute (first-listening, listening) | mot (lu à voix haute), choix, `langue des choix`, réponse, indice, explication ; les nombres (numbers) : énoncé et lu à la place du mot | `english-6e-vocabulary.md` |
+| Syllabes (syllables) | énoncé, mot, entendu (syllabes), choix, réponse ; en tableau | `french-6e-phonology.md` |
+| Chasse au son, rimes (sound-hunt, rhymes) | mot, image, entendu ou terminaison, juste (oui ou non) ; en tableau | `french-6e-phonology.md` |
+| Filon, lettres b, d, p, q (letter-pairs) | lettre, juste, astuce, parfois cible | `french-6e-letter-confusion.md` |
+| Oreille du mineur (sound-discrimination) | phrase, mot, choix, réponse, indice | `french-6e-letter-confusion.md` |
+| Mot troué (missing-letters) | mot troué, choix ; `clé des items : mot` | `french-6e-word-spelling.md` |
+| Familles, coffre à mots (word-families, sight-words) | mot, racine (le morceau écrit), racine lue (le mot de la famille, quand le morceau ne se lit pas seul), case (`prefix` ou `suffix`), choix, réponse, sens (familles) ; mot, choix, réponse, indice (coffre) | `french-6e-word-spelling.md` |
+| Enclos, accord sujet-verbe (word-classes) | sujet, singulier, pluriel, réponse, pourquoi | `french-6e-grammar-spelling.md` |
+| Récolte, -é, -er, -ez (e-er-ez) | énoncé, choix, réponse, règle ; `trou lu : (terminaison)` pour tous | `french-6e-grammar-spelling.md` |
+| Dialogues | mot, choix, réponse, indice, explication | `english-4e-comprehension.md` |
+| Ascension, lecture à voix haute (fluency) | texte, un paragraphe par item ; `clé des items : paragraphe` ; `monte à : 2` et `descend à : -1` coupent l’adaptation | `french-6e-reading.md` |
 
 Plusieurs exercices d’une mission peuvent porter le même numéro de niveau (les textes de la Tour, les lettres du Filon) : ce sont des variantes, que distingue leur identifiant.
 
@@ -93,12 +92,12 @@ Le fichier d’une île finit par ses plans, un tableau sous le titre `## Les pl
 
 | plan | nom | XP | coffre | quand c’est bâti |
 | --- | --- | --- | --- | --- |
-| `mine-forge` | La forge de Tunel | 50 | sable × 3 | Une vraie forge ! Avec la poutre en bois, elle tiendra cent ans. Tu as l’œil, bâtisseur. |
-| `mine-toit` | Le toit de la forge | 60 | | Le toit est posé, la porte aussi. Dedans, il fait chaud comme au fond de la mine. |
+| `french-6e-letter-confusion-1` | La forge de Tunel | 50 | french-6e-word-spelling × 3 | Une vraie forge ! Avec la poutre en bois, elle tiendra cent ans. Tu as l’œil, bâtisseur. |
+| `french-6e-letter-confusion-2` | Le toit de la forge | 60 | | Le toit est posé, la porte aussi. Dedans, il fait chaud comme au fond de la mine. |
 ```
 
-- **plan** : l’identifiant, qui ne change jamais (les sauvegardes y rattachent les blocs posés).
-- **coffre** : les blocs gagnés, `bloc × nombre` séparés par « · », ou une case vide. Le jeu y ajoute de lui-même les blocs de finition du plan suivant.
+- **plan** : l’identifiant, `<lieu>-<rang>`, qui ne change jamais (les sauvegardes y rattachent les blocs posés).
+- **coffre** : les blocs gagnés, `bloc × nombre` séparés par « · » (le bloc d’une île porte l’identifiant de son lieu ; `trophy-gold`, `trophy-crystal` pour l’or et le cristal), ou une case vide. Le jeu y ajoute de lui-même les blocs de finition du plan suivant.
 - **quand c’est bâti** : ce que dit la créature quand le plan est fini.
 
 Changer un nom, une récompense ou une réplique se fait ici seulement. La forme du bâtiment est dessinée par le code (`src/blocland/world/architect.ts`) ; ajouter, retirer ou déplacer un plan demande aussi `src/blocland/world/plans.ts`, dont l’ordre doit rester celui du tableau (un test le vérifie). Les noms et les répliques sont ceux de l’univers Blocland ; où vivront ceux d’Archipéo reste à décider quand ses constructions seront renommées. Les récompenses (XP, coffre) règlent l’équilibre du jeu et sont communes aux univers : les changer passe par le directeur artistique, avec une fiche `GD-<n>` (`docs/gameplay/`). Un nom ou une réplique appartient à l’univers Blocland : le changer passe par le consultant de Blocland et par le référent dys.
@@ -124,19 +123,19 @@ Les tests de chaque mission (`src/apps/<mission>/data.test.*`, lancés par `npm 
 
 ## L’assemblage des blocs
 
-`assemblage.md` n’est pas une île : il tient ce qu’on assemble sur l’île de l’école ([GD-2](../gameplay/propositions/GD-2.md)). `npm run contenu` en produit `src/blocland/world/recettes.ts`, et les questions de chaque bloc dans `src/blocland/exercises/data/assemblage-<bloc>.json`. Deux tableaux, puis les questions :
+`assemblage.md` n’est pas une île : il tient ce qu’on assemble sur l’île de l’école ([GD-2](../gameplay/propositions/GD-2.md)). `npm run contenu` en produit `src/blocland/world/recettes.ts`, et les questions de chaque bloc dans `src/blocland/exercises/data/assembly-<bloc>.json`. Deux tableaux, puis les questions :
 
 - **« ## Le lieu »** : une rangée par univers (`` `blocland` ``, `` `archipeo` ``), avec le nom du lieu (le titre de sa page), où il est (« à la Fabrique ») et la phrase lue sous le titre.
-- **« ## Les blocs assemblés »** : une rangée par archipel, avec l’identifiant du bloc (entre accents graves, déclaré dans `src/blocland/biomes.ts`, qui tient aussi son dessin), l’archipel, la recette (`bois × 2 · pierre × 1`) et le nom du bloc dans chaque univers ; un pluriel qui ne s’écrit pas avec un « s » se met entre parenthèses (`Vitrail (vitraux)`).
+- **« ## Les blocs assemblés »** : une rangée par archipel, avec l’identifiant du bloc (entre accents graves, déclaré dans `src/blocland/biomes.ts`, qui tient aussi son dessin), l’archipel, la recette (`french-6e-phonology × 2 · maths-6e-calculation × 1`) et le nom du bloc dans chaque univers ; un pluriel qui ne s’écrit pas avec un « s » se met entre parenthèses (`Vitrail (vitraux)`).
 
 Les cases des monuments qui demandent ces blocs restent dans le code (`src/blocland/world/monuments.ts`).
 
 ### Les questions
 
-**« ## Les questions »**, à la fin du fichier, donne la question posée à chaque bloc assemblé (décision du mainteneur du 1er octobre 2026) : un **« ### Nom · `bloc` »** par bloc du tableau, écrit comme une mission d’île à un seul niveau (mêmes champs, même lecteur, `scripts/contenu/format.mjs`), sur l’écran des documents à lire (type `assemblage`, qui reprend `CalculScreen`) :
+**« ## Les questions »**, à la fin du fichier, donne la question posée à chaque bloc assemblé (décision du mainteneur du 1er octobre 2026) : un **« ### Nom · `bloc` »** par bloc du tableau, écrit comme une mission d’île à un seul niveau (mêmes champs, même lecteur, `scripts/contenu/format.mjs`), sur l’écran des documents à lire (type `assembly`, qui reprend `CalculScreen`) :
 
 ```md
-### La poutre · `poutre`
+### La poutre · `compound-6e`
 
 - compétences : c3.fr.langue.genre-nombre · c3.ma.nombres.problemes
 - consigne : Lis, calcule, puis choisis la bonne réponse. Le rappel est affiché.
@@ -157,10 +156,10 @@ Les cases des monuments qui demandent ces blocs restent dans le code (`src/blocl
 
 - **Les champs du bloc**, avant la première question : `compétences` (pour tout le bloc, jamais par question), `consigne`, `bravo`, `erreur`, et `langue : en` quand l’énoncé est en anglais (l’engrenage). Un bloc « Pour tous les items : » peut suivre, après une ligne vide (`langue des choix : fr` pour des réponses lues en français). Ni `description`, ni `blocs`, ni `XP`, ni `monte à` : une question d’assemblage ne rapporte que le bloc et n’adapte aucun niveau ; le générateur les refuse.
 - **Une question** : `énoncé` (le document, une ligne par `\n`), `question` (courte, lue à part par l’écran), `lu` (le document seul, sans la question, sans « … », les nombres et les symboles écrits comme on les dit : « moins 3 degrés »), trois `choix` dont la `réponse`, `indice`, `explication` et une `aide` (le rappel des deux matières, toujours affiché).
-- **Les clés** : `<bloc>-<rang>` par défaut (`poutre-0`, `poutre-1`…), ou `- clé :` pour garder celle d’une question déplacée, comme dans une île. Elles servent au tirage de l’élève : une question s’ajoute à la fin.
+- **Les clés** : `<bloc>-<rang>` par défaut (`compound-6e-0`, `compound-6e-1`…), ou `- clé :` pour garder celle d’une question déplacée, comme dans une île. Elles servent au tirage de l’élève : une question s’ajoute à la fin.
 - **Les choix** : des nombres (même unité, milliers avec une espace insécable, ou « 8 × 10⁹ ») sont toujours affichés du plus petit au plus grand ; des phrases sont mélangées avec la graine de l’élève, la bonne réponse autant de fois à chaque place sur les questions du bloc. Un piège de chaque matière, écrit dans le fichier : aucun n’est calculé.
 - **Vérifié par `src/blocland/exercises/assemblage.test.ts`** : chaque bloc a au moins 8 questions ; ses compétences existent dans `src/programme/`, couvrent les deux matières des îles de sa recette, sont déjà travaillées par une île ou le portail, et sont du cycle 3 seul en 6e, avec au moins une du cycle 4 de la 5e à la 3e ; trois choix différents dont la réponse ; une aide sur chaque question ; ni « … » ni la question dans `lu` ; des apostrophes typographiques.
 
 ## Ajouter une île
 
-Écrire `<île>.md` (en-tête, nom, missions), ajouter l’île à sa place dans `archipel.md` et son identifiant dans `BIOME_IDS` (`src/blocland/biomes.ts`), puis lancer `npm run contenu`. Le monde (terrain, constructions, textes d’univers) se prépare à part : voir [Le format des exercices](../conception/exercices.md).
+Écrire `<lieu>.md` (en-tête, nom, missions), ajouter l’île à sa place dans `archipel.md` et son identifiant dans `BIOME_IDS` (`src/blocland/biomes.ts`), puis lancer `npm run contenu`. Le monde (terrain, constructions, textes d’univers) se prépare à part : voir [Le format des exercices](../conception/exercices.md).

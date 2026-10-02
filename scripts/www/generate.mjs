@@ -52,6 +52,7 @@ export async function generatePages() {
     // Les textes d'univers (Gardiens, espèces) : ceux de l'univers par défaut, Blocland.
     const universMod = await load('/src/univers/index.ts');
     const universCore = await load('/src/core/univers.ts');
+    const legacyMod = await load('/src/core/legacyIds.ts');
     const texts = JSON.parse(readFileSync(new URL('../../src/apps/lecture/texts.json', import.meta.url), 'utf8'));
     const data = {
       version: appVersion(root),
@@ -106,6 +107,9 @@ export async function generatePages() {
       anglaisPortailPage(data),
       ouvragesPage(data),
       baremePage(data),
+      // Les pages des îles sous leur ancienne adresse (avant les identifiants neutres, 2 octobre 2026) : un lien gardé
+      // par un enseignant mène à la page d'aujourd'hui.
+      ...Object.entries(legacyMod.LEGACY_PLACES).map(([avant, lieu]) => ({ path: `pedagogie/iles/${avant}.html`, redirect: `${lieu}.html` })),
     ];
   } finally {
     await server.close();
@@ -114,11 +118,11 @@ export async function generatePages() {
 
 // ---------- Outils ----------
 
-const SUBJECT_NAME = { francais: 'Français', maths: 'Maths', anglais: 'Anglais', lv2: 'LV2 (espagnol ou allemand)' };
+const SUBJECT_NAME = { french: 'Français', maths: 'Maths', english: 'Anglais', lv2: 'LV2 (espagnol ou allemand)' };
 /** Les matières, dans l'ordre du portail. */
 const SUBJECT_IDS = Object.keys(SUBJECT_NAME);
 /** « 3 d’anglais », « 1 de LV2 » : le complément de chaque matière dans le décompte des îles. */
-const SUBJECT_DE = { francais: 'de français', maths: 'de maths', anglais: 'd’anglais', lv2: 'de LV2' };
+const SUBJECT_DE = { french: 'de français', maths: 'de maths', english: 'd’anglais', lv2: 'de LV2' };
 const CONDITION_TEXT = {
   aucune: 'aucune condition',
   plan: 'le premier plan de l’île de départ terminé',
@@ -285,7 +289,7 @@ function programmesPage(d) {
   }
   const { MOTS_OUTILS_CP, MOTS_OUTILS_CE1, MOTS_OUTILS_SOURCE, COFFRE_HORS_LISTE, motsOutilsDictables, motDictable } = d.motsOutils;
   const dictables = motsOutilsDictables();
-  const coffre = new Set(d.EXERCISES.filter((e) => e.type === 'coffre').flatMap((e) => e.items.map((it) => motDictable(String(it.word)))));
+  const coffre = new Set(d.EXERCISES.filter((e) => e.type === 'sight-words').flatMap((e) => e.items.map((it) => motDictable(String(it.word)))));
   const inList = [...coffre].filter((w) => dictables.has(w));
   lines.push(
     '## Mots-outils {#mots-outils}',
@@ -475,7 +479,7 @@ function islandPage(b, d) {
     const exos = EXERCISES.filter((e) => e.biome === b.id && e.type === q.id).sort((a, c) => a.level - c.level);
     lines.push(`### ${q.title}`, '', `*${q.description}*`, '');
     lines.push(programmeLine([...q.programme, ...exos.flatMap((e) => e.programme ?? [])], d, '../'), '');
-    if (b.id === 'carriere' && q.id === 'coffre') lines.push('Les mots dictés viennent de la liste officielle des mots-outils (fin de CP, fin de CE1) : voir [Programmes officiels](../programmes.md#mots-outils).', '');
+    if (b.id === 'french-6e-word-spelling' && q.id === 'sight-words') lines.push('Les mots dictés viennent de la liste officielle des mots-outils (fin de CP, fin de CE1) : voir [Programmes officiels](../programmes.md#mots-outils).', '');
     if (exos.length === 0) {
       lines.push('Aucun exercice n’est encore écrit pour cette mission.', '');
       continue;

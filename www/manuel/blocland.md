@@ -53,7 +53,7 @@ L’aide du village (les trois bulles) se revoit avec le bouton **Revoir l’aid
 
 On l’ouvre aussi avec le **bouton retour** du téléphone (ou du navigateur), quand aucun panneau n’est ouvert : le retour ne quitte plus l’appli sans prévenir. Depuis le menu, un second retour quitte l’appli, ou revient à la page d’avant.
 
-Son adresse est `#/aventure/menu` ; en vue simple, elle mène au menu en page.
+Son adresse est `#/adventure/menu` ; en vue simple, elle mène au menu en page. Les adresses de l’aventure commencent toutes par `#/adventure` ; les anciennes adresses, en `#/aventure/…`, mènent toujours à la même page.
 
 ## Le panneau d’une île
 
@@ -195,7 +195,7 @@ Quand les bâtiments sont finis, les blocs s’accumulent. Les **monuments** les
 - Fini : sa phrase (lue à voix haute), de l’XP (150 dans les Basses Terres, jusqu’à 240 dans les Îles du Ciel), et le premier monument donne le succès **Patrimoine**. Il reste construit dans le monde.
 - Le monument d’un archipel pas encore atteint est fermé : son panneau dit de le rejoindre d’abord avec le Bloc-Navire.
 
-Leurs adresses : `#/aventure/monuments` pour la liste, `#/aventure/monument-observatoire` (etc.) pour un monument. Le détail de leurs blocs est dans [Ouvrages et plans](../pedagogie/ouvrages.md#les-monuments).
+Leurs adresses : `#/adventure/landmarks` pour la liste, `#/adventure/landmark-6e-1` (etc.) pour un monument. Le détail de leurs blocs est dans [Ouvrages et plans](../pedagogie/ouvrages.md#les-monuments).
 
 ## Le Bloc-Navire et les archipels
 
@@ -252,7 +252,7 @@ Une ligne dit l’essentiel, avec le bloc de l’île de l’école : « Chaque 
 
 Une mission du portail finie, d’où qu’on l’ait lancée, rapporte des **blocs de l’île de l’école de l’archipel où se tient le bonhomme** (du bois dans les Basses Terres, de la toile dans les Collines du Large, du calque dans les Monts de Feu, du prisme dans les Îles du Ciel), au même barème qu’une mission d’île : proportionnels au score, jamais zéro dès qu’une réponse est juste, un ou deux de plus avec deux ou trois étoiles, deux de plus la première fois. Le bilan de la mission les montre (« +8 blocs de bois pour le village »). Elle compte aussi pour la série de jours et ses coffres, mais ni pour les étoiles des îles ni pour les Gardiens.
 
-L’adresse de l’école est `#/aventure/ecole` (en vue simple, c’est une page) ; `#/aventure/ecole?porte=maths` l’ouvre directement sur une porte.
+L’adresse de l’école est `#/adventure/school` (en vue simple, c’est une page) ; `#/adventure/school?door=maths` l’ouvre directement sur une porte.
 
 ## La salle des trophées
 
@@ -264,7 +264,7 @@ L’adresse de l’école est `#/aventure/ecole` (en vue simple, c’est une pag
 
 On y entre en touchant le pavillon ou un trophée, avec la ligne « Salle des trophées » du panneau de l’île, ou avec **Succès** dans le menu du village. Le bonhomme marche jusqu’à la salle, et son panneau s’ouvre : le nombre de trophées sous le titre, lu à voix haute (« Salle des trophées : 3 trophées sur 24. »), une phrase écrite dans le pli **En savoir plus** (fermé au départ, avec le bouton **Écouter**, qui la lit), puis tout le contenu de la page Succès (rôle, chiffres, étoiles par matière, à retravailler, succès). La page Succès reste accessible hors du village (barre du haut, menu, lien en bas du panneau).
 
-L’adresse de la salle est `#/aventure/trophees` ; en vue simple, elle mène à la page Succès.
+L’adresse de la salle est `#/adventure/trophies` ; en vue simple, elle mène à la page Succès.
 
 ## La Fabrique
 
@@ -306,7 +306,7 @@ Chaque question compte comme un exercice pour la pause : après trois exercices 
 
 Chaque bloc a **12 questions**, au niveau de son archipel. Elles viennent dans un ordre propre à chaque élève, puis recommencent dans un autre ordre ; une question ne revient jamais avant 6 autres. Une question manquée revient plus tard, après au moins 6 autres, pour s’y essayer de nouveau. Les questions ne rapportent ni XP ni étoiles et ne changent pas le niveau des missions : elles ne rapportent que le bloc assemblé. Elles sont les mêmes dans Blocland et dans Archipéo.
 
-Les cases d’un monument déjà posées avant l’arrivée des blocs assemblés restent posées. L’adresse de la Fabrique est `#/aventure/assemblage` (en vue simple, c’est une page) ; celle d’une question, `#/aventure/assemblage/poutre` (ou `vitrail`, `engrenage`, `miroir`).
+Les cases d’un monument déjà posées avant l’arrivée des blocs assemblés restent posées. L’adresse de la Fabrique est `#/adventure/assembly` (en vue simple, c’est une page) ; celle d’une question, `#/adventure/assembly/compound-6e` (ou `compound-5e`, `compound-4e`, `compound-3e`, un par archipel).
 
 ## Le mot des grandes étapes
 

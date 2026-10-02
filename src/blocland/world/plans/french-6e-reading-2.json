@@ -1,0 +1,10 @@
+{
+  "id": "french-6e-reading-2",
+  "biome": "french-6e-reading",
+  "name": "La lanterne du phare",
+  "reward": {
+    "xp": 70,
+    "chest": {}
+  },
+  "done": "Deux lanternes au sommet : mon phare se voit depuis la Forêt. Hou hou !"
+}

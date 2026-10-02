@@ -52,7 +52,7 @@ function lockedArchipelagoText(state: ReturnType<typeof useBlocland>['state'], c
 export function BloclandPage() {
   const univers = useUnivers();
   const { state } = useBlocland();
-  const at = state.world.place ?? 'foret';
+  const at = state.world.place ?? 'french-6e-phonology';
   const here = archipelagoOf(at).classe;
   const textes = useTextes();
   const destination = nextDestination(state, textes.archipels, textes.libelles);
@@ -100,7 +100,7 @@ export function BloclandPage() {
 
       {/* La Carte en vue simple : la prochaine destination, puis les quatre archipels, ceux non atteints dans la brume. */}
       <section className="panel home-resume" aria-label="Prochaine destination">
-        <Link to={`/aventure/${destination.island}`} className="button primary home-resume-button">
+        <Link to={`/adventure/${destination.island}`} className="button primary home-resume-button">
           <Icon name="play" /> Y aller
         </Link>
         <p className="home-destination">
@@ -137,7 +137,7 @@ export function BloclandPage() {
                 const st = islandState(state, biome.id);
                 return (
                   <li key={biome.id}>
-                    <Link to={`/aventure/${biome.id}`} className={`panel biome-card biome-${biome.id}${unlocked ? '' : ' locked'}`}>
+                    <Link to={`/adventure/${biome.id}`} className={`panel biome-card biome-${biome.id}${unlocked ? '' : ' locked'}`}>
                       <Creature biome={biome.id} className="creature-small" />
                       <span className="biome-name">{biome.name}</span>
                       <span className="biome-module">

@@ -1,4 +1,4 @@
-import { HashRouter, Navigate, Route, Routes, useParams } from 'react-router-dom';
+import { HashRouter, Navigate, Route, Routes, useLocation, useParams } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { TitleScreen } from './components/TitleScreen';
 import { AppBadge } from './components/AppBadge';
@@ -26,6 +26,7 @@ import { MonumentPage, MonumentsPage } from './blocland/Monuments';
 import { useMonumentBuilder } from './blocland/useMonumentBuilder';
 import { getMonument, type MonumentDef } from './blocland/world/monuments';
 import { MENU_PATH } from './core/paths';
+import { translatePath } from './core/legacyIds';
 import { useImmersive } from './blocland/useImmersive';
 
 // HashRouter : les URL en « #/… » fonctionnent sur GitHub Pages sans configuration serveur.
@@ -54,13 +55,15 @@ export function AppRoutes() {
         <Route path="quetes" element={<QuestsPage />} />
         <Route path="matiere/:subject" element={<SubjectPage />} />
         <Route path="app/:appId" element={<AppPage />} />
-        <Route path="aventure" element={<AventureEntry />} />
-        <Route path="aventure/:biomeId" element={<IslandEntry />} />
-        <Route path="aventure/voyage/:vers" element={<VoyageEntry />} />
+        <Route path="adventure" element={<AventureEntry />} />
+        <Route path="adventure/:biomeId" element={<IslandEntry />} />
+        <Route path="adventure/passage/:vers" element={<VoyageEntry />} />
         {/* La question d'un bloc assemblé (GD-2), en plein écran comme une mission, en 3D comme en vue simple. */}
-        <Route path="aventure/assemblage/:bloc" element={<AssemblageQuestionPage />} />
-        <Route path="aventure/:biomeId/gardien" element={<BossPage />} />
-        <Route path="aventure/:biomeId/:typeId" element={<ExercisePage />} />
+        <Route path="adventure/assembly/:bloc" element={<AssemblageQuestionPage />} />
+        <Route path="adventure/:biomeId/challenge" element={<BossPage />} />
+        <Route path="adventure/:biomeId/:typeId" element={<ExercisePage />} />
+        {/* Les anciennes adresses (/aventure/…, noms français) mènent à leur page sous les noms neutres. */}
+        <Route path="aventure/*" element={<LegacyAdventure />} />
         <Route path="reglages" element={<SettingsPage />} />
         <Route path="succes" element={<ProgressPage />} />
         <Route path="progression" element={<Navigate to="/succes" replace />} />
@@ -70,12 +73,18 @@ export function AppRoutes() {
   );
 }
 
+// Une ancienne adresse (favori, lien partagé) : la même page sous son adresse neutre.
+function LegacyAdventure() {
+  const { pathname, search } = useLocation();
+  return <Navigate to={translatePath(pathname + search)} replace />;
+}
+
 // L'accueil : le village (en 3D ou en 2D), sur l'île où se tient le bonhomme ; le menu si le réglage « Au démarrage »
 // le demande, ou si l'appareil ne sait pas dessiner le monde (la vue simple commence par le menu).
 function StartEntry() {
   const { settings } = useSettings();
   const immersive = useImmersive();
-  return settings.startIn === 'world' && immersive ? <Navigate to="/aventure" replace /> : <HomePage />;
+  return settings.startIn === 'world' && immersive ? <Navigate to="/adventure" replace /> : <HomePage />;
 }
 
 // En 3D, la carte et les îles sont le monde en plein écran ; sinon, les pages simples (listes accessibles).
@@ -87,21 +96,21 @@ function IslandEntry() {
   const immersive = useImmersive();
   if (immersive) return <WorldPage />;
   // La Carte et la page des quatre archipels n'existent qu'en 3D : en vue simple, c'est la liste des îles (déjà par archipel).
-  if (biomeId === 'carte' || biomeId === 'monde') return <Navigate to="/aventure" replace />;
+  if (biomeId === 'map' || biomeId === 'world') return <Navigate to="/adventure" replace />;
   // Le menu du village : en vue simple, c'est le menu en page.
   if (biomeId === 'menu') return <Navigate to={MENU_PATH} replace />;
   // La salle des trophées : en vue simple, c'est la page Succès.
-  if (biomeId === 'trophees') return <Navigate to="/succes" replace />;
+  if (biomeId === 'trophies') return <Navigate to="/succes" replace />;
   // L'école du village : un panneau dans le monde, une page en vue simple.
-  if (biomeId === 'ecole') return <SchoolPage />;
+  if (biomeId === 'school') return <SchoolPage />;
   // Le lieu où l'on assemble les blocs (GD-2) : un panneau dans le monde, une page en vue simple.
-  if (biomeId === 'assemblage') return <AssemblagePage />;
+  if (biomeId === 'assembly') return <AssemblagePage />;
   // Les monuments : des panneaux dans le monde, des pages en vue simple.
-  if (biomeId === 'monuments') return <MonumentsPage />;
+  if (biomeId === 'landmarks') return <MonumentsPage />;
   const monument = biomeId ? getMonument(biomeId) : undefined;
   if (monument) return <MonumentEntry monument={monument} />;
   // « Mes blocs » : une page en vue simple, un panneau dans le monde en 3D.
-  return biomeId === 'blocs' ? <InventoryPage /> : <BiomePage />;
+  return biomeId === 'stock' ? <InventoryPage /> : <BiomePage />;
 }
 function MonumentEntry({ monument }: { monument: MonumentDef }) {
   return <MonumentPage builder={useMonumentBuilder(monument)} />;
@@ -109,5 +118,12 @@ function MonumentEntry({ monument }: { monument: MonumentDef }) {
 // Le voyage en Bloc-Navire : un écran HTML en vue simple ; en 3D, le monde le joue depuis le panneau du port.
 function VoyageEntry() {
   const { vers } = useParams();
-  return useImmersive() ? <Navigate to={`/aventure/${vers === '6e' ? 'plaine' : vers === '5e' ? 'marche' : vers === '4e' ? 'atelier' : 'phare'}`} replace /> : <VoyagePage />;
+  return useImmersive() ? (
+    <Navigate
+      to={`/adventure/${vers === '6e' ? 'maths-6e-calculation' : vers === '5e' ? 'maths-5e-proportionality' : vers === '4e' ? 'maths-4e-algebra' : 'maths-3e-functions'}`}
+      replace
+    />
+  ) : (
+    <VoyagePage />
+  );
 }

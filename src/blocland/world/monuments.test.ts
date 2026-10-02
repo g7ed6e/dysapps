@@ -9,7 +9,7 @@ import { recetteDe, recetteDeLArchipel } from './assemblage';
 
 it('deux monuments par archipel, chacun avec ses blocs gagnés dans les îles de son archipel ou assemblés avec eux', () => {
   for (const a of ARCHIPELAGOS) expect(monumentsOf(a.classe)).toHaveLength(2);
-  expect(getMonument('monument-observatoire')?.name).toBe('L’observatoire des baleines');
+  expect(getMonument('landmark-6e-1')?.name).toBe('L’observatoire des baleines');
   for (const m of MONUMENTS) {
     expect(m.cells.length, m.id).toBeGreaterThanOrEqual(60);
     expect(Object.keys(monumentNeeds(m)).length, m.id).toBeGreaterThanOrEqual(4);
@@ -40,7 +40,7 @@ it('chaque îlot de monument est libre (loin des îles, des ouvrages, du port, d
 });
 
 it('dans le monde : l’îlot et le monument en fantôme, touchables ; posé, un bloc n’est plus un fantôme', () => {
-  const m = getMonument('monument-observatoire')!;
+  const m = getMonument('landmark-6e-1')!;
   const cubes = worldCubes('6e', {});
   const mine = cubes.filter((c) => c.place === `monument:${m.id}`);
   const o = monumentAnchor(m);

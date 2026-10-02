@@ -2,7 +2,7 @@
 // texture pixel de Blocland (3D et 2D) comme dans la construction taillée d'Archipéo (peint par le shader, sans un
 // triangle de plus). Voir world/pixels.ts, world/palette.ts (`DETAILS_ASSEMBLES`) et world/construction.ts
 // (`MOTIF_ASSEMBLE`, `MOTIF_ASSEMBLE_GLSL`).
-import { BLOCKS, type BlockId } from '../biomes';
+import { BLOC, BLOCKS } from '../biomes';
 import type { VoxelCube } from './cube';
 import { MOTIF } from './architecture';
 import { detailDuMotif, maillageDeLaConstruction, MOTIF_ASSEMBLE, MOTIF_ASSEMBLE_DEBUT, MOTIF_ASSEMBLE_GLSL, type BlocAssemble } from './construction';
@@ -41,8 +41,9 @@ const ecart = (a: boolean[], b: boolean[]) => a.filter((v, i) => v !== b[i]).len
 describe('Les blocs assemblés dans Blocland (textures pixel)', () => {
   it('chaque bloc assemblé a sa texture, ses deux faces peintes', () => {
     for (const b of ASSEMBLES) {
-      expect(BLOCKS[b as BlockId].assemble, b).toBe(true);
-      expect(BLOCKS[b as BlockId].texture, b).toBe(b);
+      // Le motif porte le nom de la texture (le mot de Blocland) ; le bloc, son identifiant neutre.
+      expect(BLOCKS[BLOC[b]].assemble, b).toBe(true);
+      expect(BLOCKS[BLOC[b]].texture, b).toBe(b);
       expect([typeof PAINTERS[b].top, typeof PAINTERS[b].side], b).toEqual(['function', 'function']);
     }
   });

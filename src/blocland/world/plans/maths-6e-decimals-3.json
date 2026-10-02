@@ -1,0 +1,13 @@
+{
+  "id": "maths-6e-decimals-3",
+  "biome": "maths-6e-decimals",
+  "name": "La terrasse de l’abri",
+  "reward": {
+    "xp": 60,
+    "chest": {
+      "trophy-gold": 2,
+      "trophy-crystal": 2
+    }
+  },
+  "done": "Une terrasse, une barrière, un escalier vers le cratère… Mon abri est complet, à 1,00 exactement."
+}

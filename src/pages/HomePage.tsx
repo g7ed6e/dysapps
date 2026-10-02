@@ -17,7 +17,7 @@ import { UNIVERS } from '../core/univers';
 import { nomDuRole, useTextes } from '../univers';
 
 /** Les expéditions du menu ; la LV2 à côté de l'anglais, sauf avec « Pas de LV2 ». */
-const EXPEDITIONS: Subject[] = ['maths', 'francais', 'anglais', 'lv2'];
+const EXPEDITIONS: Subject[] = ['maths', 'french', 'english', 'lv2'];
 
 /**
  * Le menu d'Archipéo, dans l'ordre du dossier : l'identité, ton village, « Reprendre l'aventure » vers la prochaine
@@ -33,7 +33,7 @@ export function HomePage() {
   const firstTime = progress.totalAnswers === 0;
   const resume = lastPlace();
   const reviews = questsToReview(state.spaced, state.world.links);
-  const here = archipelagoOf(state.world.place ?? 'foret').classe;
+  const here = archipelagoOf(state.world.place ?? 'french-6e-phonology').classe;
   const destination = nextDestination(state, textes.archipels, textes.libelles);
   const destinationText = `Prochaine destination : ${destination.name}. ${destination.text}`;
   const reached = reachedArchipelagos(state.world.links).length;
@@ -79,7 +79,7 @@ export function HomePage() {
         </Link>
       ) : (
         <section className="panel home-resume" aria-label="Reprendre l’aventure">
-          <Link to={`/aventure/${destination.island}`} className="button primary home-resume-button">
+          <Link to={`/adventure/${destination.island}`} className="button primary home-resume-button">
             <Icon name="play" /> Reprendre l’aventure
           </Link>
           <p className="home-destination">

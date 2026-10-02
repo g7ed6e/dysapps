@@ -1,0 +1,215 @@
+{
+  "id": "english-4e-grammar-present-perfect-2",
+  "biome": "english-4e-grammar",
+  "type": "present-perfect",
+  "level": 2,
+  "lang": "en",
+  "instruction": "Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.",
+  "items": [
+    {
+      "key": "english-4e-grammar-present-perfect-2-0",
+      "prompt": "I have … finished my homework. Can I play?",
+      "spoken": "I have blank finished my homework. Can I play?",
+      "choices": [
+        "already",
+        "yet",
+        "ever"
+      ],
+      "answer": "already",
+      "hint": "Affirmation, question ou négation ? Relis la règle.",
+      "explanation": "Phrase affirmative : already (déjà).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Already, yet, just",
+          "lines": [
+            "already = déjà (phrase affirmative) : I have already eaten.",
+            "yet = déjà (question) ou pas encore (négation), en fin de phrase.",
+            "just = venir de : She has just left (elle vient de partir)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-4e-grammar-present-perfect-2-1",
+      "prompt": "Have you done your homework …?",
+      "spoken": "Have you done your homework blank?",
+      "choices": [
+        "yet",
+        "ever",
+        "just"
+      ],
+      "answer": "yet",
+      "hint": "Affirmation, question ou négation ? Relis la règle.",
+      "explanation": "Question, en fin de phrase : yet.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Already, yet, just",
+          "lines": [
+            "already = déjà (phrase affirmative) : I have already eaten.",
+            "yet = déjà (question) ou pas encore (négation), en fin de phrase.",
+            "just = venir de : She has just left (elle vient de partir)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-4e-grammar-present-perfect-2-2",
+      "prompt": "She hasn’t called me … .",
+      "spoken": "She hasn’t called me blank .",
+      "choices": [
+        "yet",
+        "already",
+        "just"
+      ],
+      "answer": "yet",
+      "hint": "Affirmation, question ou négation ? Relis la règle.",
+      "explanation": "Négation, en fin de phrase : yet (pas encore).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Already, yet, just",
+          "lines": [
+            "already = déjà (phrase affirmative) : I have already eaten.",
+            "yet = déjà (question) ou pas encore (négation), en fin de phrase.",
+            "just = venir de : She has just left (elle vient de partir)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-4e-grammar-present-perfect-2-3",
+      "prompt": "The train has … left. You missed it by one minute!",
+      "spoken": "The train has blank left. You missed it by one minute!",
+      "choices": [
+        "just",
+        "yet",
+        "ever"
+      ],
+      "answer": "just",
+      "hint": "Il y a une minute : ça vient d’arriver.",
+      "explanation": "just = venir de : the train has just left.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Already, yet, just",
+          "lines": [
+            "already = déjà (phrase affirmative) : I have already eaten.",
+            "yet = déjà (question) ou pas encore (négation), en fin de phrase.",
+            "just = venir de : She has just left (elle vient de partir)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-4e-grammar-present-perfect-2-4",
+      "prompt": "We have … eaten, thank you.",
+      "spoken": "We have blank eaten, thank you.",
+      "choices": [
+        "already",
+        "yet",
+        "ever"
+      ],
+      "answer": "already",
+      "hint": "Affirmation, question ou négation ? Relis la règle.",
+      "explanation": "Phrase affirmative : already (déjà).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Already, yet, just",
+          "lines": [
+            "already = déjà (phrase affirmative) : I have already eaten.",
+            "yet = déjà (question) ou pas encore (négation), en fin de phrase.",
+            "just = venir de : She has just left (elle vient de partir)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-4e-grammar-present-perfect-2-5",
+      "prompt": "Has he arrived …?",
+      "spoken": "Has he arrived blank?",
+      "choices": [
+        "yet",
+        "ever",
+        "never"
+      ],
+      "answer": "yet",
+      "hint": "Affirmation, question ou négation ? Relis la règle.",
+      "explanation": "Question, en fin de phrase : yet.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Already, yet, just",
+          "lines": [
+            "already = déjà (phrase affirmative) : I have already eaten.",
+            "yet = déjà (question) ou pas encore (négation), en fin de phrase.",
+            "just = venir de : She has just left (elle vient de partir)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-4e-grammar-present-perfect-2-6",
+      "prompt": "I’ve … seen your brother: he’s in the kitchen.",
+      "spoken": "I’ve blank seen your brother: he’s in the kitchen.",
+      "choices": [
+        "just",
+        "yet",
+        "ever"
+      ],
+      "answer": "just",
+      "hint": "Ça vient d’arriver.",
+      "explanation": "just = venir de : I’ve just seen.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Already, yet, just",
+          "lines": [
+            "already = déjà (phrase affirmative) : I have already eaten.",
+            "yet = déjà (question) ou pas encore (négation), en fin de phrase.",
+            "just = venir de : She has just left (elle vient de partir)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-4e-grammar-present-perfect-2-7",
+      "prompt": "They haven’t decided … .",
+      "spoken": "They haven’t decided blank .",
+      "choices": [
+        "yet",
+        "already",
+        "just"
+      ],
+      "answer": "yet",
+      "hint": "Affirmation, question ou négation ? Relis la règle.",
+      "explanation": "Négation, en fin de phrase : yet (pas encore).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Already, yet, just",
+          "lines": [
+            "already = déjà (phrase affirmative) : I have already eaten.",
+            "yet = déjà (question) ou pas encore (négation), en fin de phrase.",
+            "just = venir de : She has just left (elle vient de partir)."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien dit !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "english-4e-grammar",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

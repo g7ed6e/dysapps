@@ -145,7 +145,7 @@ function rentre(c: [number, number][], k: number): [number, number][] {
 }
 
 export const STATUES_3E: Partial<Record<BiomeId, Statue>> = {
-  belvedere: {
+  'maths-3e-geometry': {
     nom: 'le Sphinx de marbre',
     allume: 'les rayures de sa coiffe',
     sculpture: (T, a) => {
@@ -203,7 +203,7 @@ export const STATUES_3E: Partial<Record<BiomeId, Statue>> = {
       );
     },
   },
-  donnees: {
+  'maths-3e-statistics': {
     nom: 'le Comptable',
     allume: 'les étoiles gravées de sa robe',
     sculpture: (T, a) => {
@@ -276,7 +276,7 @@ export const STATUES_3E: Partial<Record<BiomeId, Statue>> = {
       etoile(T, 0.22, 3.3, 0.17, 4, a.lueur, robe);
     },
   },
-  phare: {
+  'maths-3e-functions': {
     nom: 'le Dragon de lumière',
     allume: 'ses ailes de verre',
     sculpture: (T, a) => {
@@ -285,7 +285,7 @@ export const STATUES_3E: Partial<Record<BiomeId, Statue>> = {
     },
     veines: (T, a) => ailesDeployees(surLeSocle(T, DRAGON_DU_PHARE.base, DRAGON_DU_PHARE.e), a.lueur, DRAGON_DU_PHARE.ailes),
   },
-  textes: {
+  'french-3e-close-reading': {
     nom: 'le Grand Lecteur',
     allume: 'les pages de son livre',
     sculpture: (T, a) => {
@@ -332,7 +332,7 @@ export const STATUES_3E: Partial<Record<BiomeId, Statue>> = {
         );
     },
   },
-  studio: {
+  'english-3e-comprehension': {
     nom: 'la Grande Antenne',
     allume: 'son voyant',
     sculpture: (T, a) => {
@@ -417,7 +417,7 @@ export const STATUES_3E: Partial<Record<BiomeId, Statue>> = {
         a.lueur,
       ),
   },
-  chateau: {
+  'english-3e-grammar': {
     nom: 'le Dragon gallois',
     allume: 'son écu',
     sculpture: (T, a) => {
@@ -452,7 +452,7 @@ export const STATUES_3E: Partial<Record<BiomeId, Statue>> = {
       );
     },
   },
-  refuge: {
+  'lv2-3e-travel': {
     // Le Papillon de cuivre (DA, LV2-5) : une statue de cuivre patiné, sans visage ni lueur orange, sans mât ; deux paires
     // d'ailes (celles du haut plus grandes, en V franc face à la caméra), un corps en colonne, deux antennes courtes. Il
     // ne vole pas et n'a aucune animation propre. Ce qui se rallume est commun à tous les Gardiens : le fil qui suit le

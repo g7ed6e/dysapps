@@ -123,7 +123,7 @@ export async function bossDef(biome: BiomeDef, state: GameState, rng: () => numb
     instruction: `${guardianTitle(biome)} te lance ${rounds.length} épreuves, une de chaque mission. Prends ton temps : il ne compte pas les secondes.`,
     items: rounds,
     feedback: { correct: `${guardianTitle(biome)} hoche la tête.`, wrong: '{explain}' },
-    reward: { block: 'or', amount: 3, xp: 60 },
+    reward: { block: 'trophy-gold', amount: 3, xp: 60 },
     adaptive: { promoteAt: 1.1, demoteAt: -1 },
   };
 }

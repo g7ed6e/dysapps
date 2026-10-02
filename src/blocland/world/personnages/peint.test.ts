@@ -314,23 +314,23 @@ describe('Le bonhomme en facettes', () => {
 });
 
 describe('Les créatures en facettes', () => {
-  const LUMINEUSES: BiomeId[] = ['phare', 'textes', 'forge'];
+  const LUMINEUSES: BiomeId[] = ['maths-3e-functions', 'french-3e-close-reading', 'maths-4e-powers'];
   /**
    * Les exceptions à la règle « dominante lue d'abord, à 40 pixels » (DA, 28/09) : celles dont la tenue est le métier et
    * dont une signature de silhouette porte l'identité. Fi, l'allumeuse (son ciré, sa tête-lanterne) ; Knight, le héraut
    * (sa tunique, ses oreilles rondes, son étendard).
    */
-  const TENUE_D_ABORD: BiomeId[] = ['phare', 'chateau'];
+  const TENUE_D_ABORD: BiomeId[] = ['maths-3e-functions', 'english-3e-grammar'];
   const MATIERES_D_OUTIL = new Set<number>([...Object.values(OUTIL), ...Object.values(TENUE)]);
 
   it('le verre de Fi est ambre mat le jour et prend la lueur la nuit', () => {
-    const f = creaturePeinte('phare');
+    const f = creaturePeinte('maths-3e-functions');
     const lanterne = f.table.find((p) => p.lueur);
     expect(lanterne).toEqual(expect.objectContaining({ nom: 'lanterne', lueur: 'nuit', nuit: LUEUR }));
     expect(f.palette.filter((p) => p.role === 'lueur').map((p) => p.couleur)).toEqual([VERRE_DE_FI.jour]);
     expect(VERRE_DE_FI).toEqual({ jour: 0xd9c99a, nuit: 0xffd866 });
     // Les autres lueurs brillent de leur couleur, de jour comme de nuit.
-    for (const id of ['textes', 'forge'] as const) expect(creaturePeinte(id).table.some((p) => p.nuit !== undefined), id).toBe(false);
+    for (const id of ['french-3e-close-reading', 'maths-4e-powers'] as const) expect(creaturePeinte(id).table.some((p) => p.nuit !== undefined), id).toBe(false);
   });
 
   it('chaque île a sa créature, une espèce par île', () => {
@@ -379,9 +379,9 @@ describe('Les créatures en facettes', () => {
         for (const nom of ['corps', 'tete', 'bras', 'outil']) expect(f.pieces.includes(piece(nom)), nom).toBe(true);
       });
 
-      it(b.id === 'phare' ? 'n’a pas d’yeux (sa tête est une lanterne)' : 'a deux petits yeux sombres, sans blanc ni sourire', () => {
+      it(b.id === 'maths-3e-functions' ? 'n’a pas d’yeux (sa tête est une lanterne)' : 'a deux petits yeux sombres, sans blanc ni sourire', () => {
         const yeux = [...f.teintes.keys()].filter((t) => f.teintes[t] === OEIL);
-        if (b.id === 'phare') return expect(yeux).toEqual([]);
+        if (b.id === 'maths-3e-functions') return expect(yeux).toEqual([]);
         expect(yeux).toHaveLength(4);
         for (const t of yeux) {
           expect(f.table[f.pieces[t]].nom).toBe('yeux');

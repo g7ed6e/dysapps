@@ -5,7 +5,7 @@ import { dueItems, todayISO, type SpacedItem } from './engine';
 import { CATALOG } from './exercises';
 import { isBiomeUnlocked } from './world/archipelago';
 
-/** L'exercice d'un item de la file (« foret-echauffement-001:cabane » → « foret-echauffement-001 »). */
+/** L'exercice d'un item de la file (« french-6e-phonology-syllables-warmup-001:cabane » → « french-6e-phonology-syllables-warmup-001 »). */
 const exerciseOf = (itemId: string) => itemId.slice(0, itemId.lastIndexOf(':'));
 const keyOf = (itemId: string) => itemId.slice(itemId.lastIndexOf(':') + 1);
 
@@ -42,7 +42,7 @@ export function questsToReview(spaced: SpacedItem[], bridges: string[], today = 
     const biome = getBiome(meta.biome);
     const title = biome && missionsJouables(biome).find((e) => e.id === meta.type)?.title;
     if (!biome || !title) continue;
-    out.push({ biome: meta.biome, type: meta.type, label: `${title} · ${biome.name}`, path: `/aventure/${meta.biome}/${meta.type}` });
+    out.push({ biome: meta.biome, type: meta.type, label: `${title} · ${biome.name}`, path: `/adventure/${meta.biome}/${meta.type}` });
   }
   return out;
 }

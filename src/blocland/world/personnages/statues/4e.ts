@@ -106,7 +106,7 @@ const CHEMINEE: Anneau[] = [
 ];
 
 export const STATUES_4E: Partial<Record<BiomeId, Statue>> = {
-  forge: {
+  'maths-4e-powers': {
     nom: 'le Titan',
     allume: 'son cœur de forge',
     sculpture: (T, a) => {
@@ -155,7 +155,7 @@ export const STATUES_4E: Partial<Record<BiomeId, Statue>> = {
         );
     },
   },
-  atelier: {
+  'maths-4e-algebra': {
     nom: 'le Golem des équations',
     allume: 'les plateaux de sa balance',
     sculpture: (T, a) => {
@@ -226,7 +226,7 @@ export const STATUES_4E: Partial<Record<BiomeId, Statue>> = {
         );
     },
   },
-  falaise: {
+  'french-4e-agreement': {
     nom: 'le Bélier',
     allume: 'les spirales de ses cornes',
     sculpture: (T, a) => {
@@ -261,7 +261,7 @@ export const STATUES_4E: Partial<Record<BiomeId, Statue>> = {
       for (const s of [-1, 1]) tube(haut(T), spirale(s), [0.2, 0.18, 0.15, 0.12, 0.09, 0.05], 3, a.lueur);
     },
   },
-  cabinet: {
+  'french-4e-vocabulary': {
     nom: 'le Hibou',
     allume: 'la tranche du livre sous son aile',
     sculpture: (T, a) => {
@@ -314,7 +314,7 @@ export const STATUES_4E: Partial<Record<BiomeId, Statue>> = {
       );
     },
   },
-  theatre: {
+  'english-4e-comprehension': {
     nom: 'le Masque',
     allume: 'la rampe de son socle',
     sculpture: (T, a) => {
@@ -339,7 +339,7 @@ export const STATUES_4E: Partial<Record<BiomeId, Statue>> = {
     // La rampe, allumée sur tout l'avant du socle (la face du devant et ses deux voisines).
     veines: (T, a) => bandeauDuSocle(T, [6, 7, 0], 0.64, 0.82, a.lueur),
   },
-  jardin: {
+  'lv2-4e-daily-life': {
     // Le Soleil de cuivre (DA, LV2-4) : un disque de cuivre patiné, sans visage ni lueur orange, ses huit rayons droits
     // et pointus. Ce qui se rallume est commun à tous les Gardiens : le fil de ses rayons, plus clair à chaque épreuve
     // réussie du défi, et, à la victoire, toute la statue en Sable. Sans mât.
@@ -385,7 +385,7 @@ export const STATUES_4E: Partial<Record<BiomeId, Statue>> = {
       }
     },
   },
-  gare: {
+  'english-4e-grammar': {
     nom: 'la Locomotive',
     allume: 'son fanal',
     sculpture: (T, a) => {

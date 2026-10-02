@@ -102,12 +102,12 @@ describe('le cadrage', () => {
 
   it('au port, la vue peut aller jusqu’au navire ; un point à montrer (le chantier du navire) passe avant le bonhomme', async () => {
     const { dockOrigin } = await import('../world/harbour');
-    const o = dockOrigin('plaine');
+    const o = dockOrigin('maths-6e-calculation');
     const spot = { x: o.x + 2, y: o.y + 5, z: o.z + 3 };
-    const v = frame2D({ archipelago: '6e', map: false, island: 'plaine', home: 'plaine', spot }, map, screen);
+    const v = frame2D({ archipelago: '6e', map: false, island: 'maths-6e-calculation', home: 'maths-6e-calculation', spot }, map, screen);
     const want = project(spot.x + 0.5, spot.y + 0.5, spot.z);
     // La salle du port comprend la jetée et le navire : la vue s'en approche bien plus que du cœur de l'île.
-    const heart = frame2D({ archipelago: '6e', map: false, island: 'plaine', home: 'plaine' }, map, screen);
+    const heart = frame2D({ archipelago: '6e', map: false, island: 'maths-6e-calculation', home: 'maths-6e-calculation' }, map, screen);
     expect(Math.abs(v.cy - want.by)).toBeLessThan(Math.abs(heart.cy - want.by));
   });
 
@@ -125,18 +125,18 @@ describe('le cadrage', () => {
   });
 
   it('de près, comme une salle : sur le bonhomme, ou l’île ouverte, sans sortir de l’île ; la Carte en entier', () => {
-    const c = islandCenter('foret');
-    const island = frame2D({ archipelago: '6e', map: false, island: 'foret', home: 'foret' }, map, screen);
+    const c = islandCenter('french-6e-phonology');
+    const island = frame2D({ archipelago: '6e', map: false, island: 'french-6e-phonology', home: 'french-6e-phonology' }, map, screen);
     expect(island.cx).toBe(project(c.x + 0.5, c.y + 0.5, c.z + 1).bx);
     expect(island.s).toBe(Math.round(700 / (CLOSE_TILES * TILE)));
     // Le bonhomme au milieu de l'île : la vue le suit.
     const avatar = { x: c.x + 2, y: c.y - 1, z: c.z + 1 };
-    const near = frame2D({ archipelago: '6e', map: false, island: null, home: 'foret', avatar }, map, screen);
+    const near = frame2D({ archipelago: '6e', map: false, island: null, home: 'french-6e-phonology', avatar }, map, screen);
     expect(near.cx).toBe(project(avatar.x + 0.5, avatar.y + 0.5, avatar.z).bx);
     // Au bord de l'île : la vue s'arrête avant de montrer trop de mer.
-    const far = frame2D({ archipelago: '6e', map: false, island: null, home: 'foret', avatar: { ...avatar, x: avatar.x - 60 } }, map, screen);
+    const far = frame2D({ archipelago: '6e', map: false, island: null, home: 'french-6e-phonology', avatar: { ...avatar, x: avatar.x - 60 } }, map, screen);
     expect(far.cx).toBeGreaterThan(project(avatar.x - 60, 0, 0).bx);
-    const carte = frame2D({ archipelago: '6e', map: true, island: null, home: 'foret' }, map, screen);
+    const carte = frame2D({ archipelago: '6e', map: true, island: null, home: 'french-6e-phonology' }, map, screen);
     expect(carte.s).toBeLessThan(near.s);
   });
 });

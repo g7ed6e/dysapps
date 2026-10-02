@@ -24,7 +24,7 @@ import { dessinerLointain } from './decor/lointain';
 import { Fumees, type FumeeDuDecor } from './decor/fumee';
 import { clamp, DELAVE, FAMILLES, hasardDe, hex, Pinceau, rgb, valeur, type FacettesDuDecor, type RGB } from './decor/pinceau';
 import { colonneEn, hauteurDuSol, type ChampDuSol } from './landMesh';
-import type { ArchipelagoId } from './map';
+import { graineDuDessin, type ArchipelagoId } from './map';
 import { cielDe, couleurDeMatiere, couleurDuSol, MATIERES, type Faces } from './palette';
 import type { TextureKind } from './pixels';
 import { kindOf, PROP_KINDS } from './props';
@@ -201,7 +201,7 @@ export function maillageDuDecor(a: ArchipelagoId, champ: ChampDuSol, poses: Elem
   elements.forEach((e, i) => {
     P.element = i;
     L.element = i;
-    const hasard = hasardDe(e.id);
+    const hasard = hasardDe(graineDuDessin(e.id));
     const vari = style === 'a' ? () => 1 : () => 0.94 + 0.12 * hasard();
     const cx = e.x + 0.5;
     const cz = e.y + 0.5;

@@ -1,0 +1,13 @@
+{
+  "id": "english-5e-vocabulary-3",
+  "biome": "english-5e-vocabulary",
+  "name": "La terrasse de la boutique",
+  "reward": {
+    "xp": 60,
+    "chest": {
+      "trophy-gold": 2,
+      "trophy-crystal": 2
+    }
+  },
+  "done": "Une terrasse, une barrière, un escalier… Mon Comptoir est complet. Come again!"
+}

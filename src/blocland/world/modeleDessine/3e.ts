@@ -38,7 +38,7 @@ function repere(id: BiomeId) {
  * rangée derrière le cœur et depuis les deux flancs de l'île ; le plus haut est enneigé.
  */
 function gradinsDesTextes(): Modele {
-  const { cases, pres, fond } = repere('textes');
+  const { cases, pres, fond } = repere('french-3e-close-reading');
   const G = GRADINS_3E;
   // Les bords de chaque rangée, pour le retrait sur les flancs.
   const bords = new Map<number, [number, number]>();
@@ -71,7 +71,7 @@ function gradinsDesTextes(): Modele {
  * de roche dessous. Seul l'anneau du fond bouge ; ailleurs, l'île garde ses collines basses.
  */
 function domeDuBelvedere(): Modele {
-  const { pres, fond } = repere('belvedere');
+  const { pres, fond } = repere('maths-3e-geometry');
   const D = DOME_DU_BELVEDERE;
   const dome = (x: number, y: number) => {
     const d = ((x - D.x) / D.rx) ** 2 + ((y - D.y) / D.ry) ** 2;
@@ -91,4 +91,4 @@ function domeDuBelvedere(): Modele {
   };
 }
 
-export const MODELES_3E: Partial<Record<BiomeId, Modele>> = { textes: gradinsDesTextes(), belvedere: domeDuBelvedere() };
+export const MODELES_3E: Partial<Record<BiomeId, Modele>> = { 'french-3e-close-reading': gradinsDesTextes(), 'maths-3e-geometry': domeDuBelvedere() };

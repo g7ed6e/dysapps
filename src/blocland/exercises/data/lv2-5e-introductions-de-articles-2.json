@@ -1,0 +1,245 @@
+{
+  "id": "lv2-5e-introductions-de-articles-2",
+  "biome": "lv2-5e-introductions",
+  "type": "de-articles",
+  "level": 2,
+  "lang": "de",
+  "instruction": "Écoute le nom allemand, puis choisis le bon article, écrit avec son nom. La règle est affichée : lis-la avant de répondre.",
+  "items": [
+    {
+      "key": "lv2-5e-introductions-de-articles-2-0",
+      "prompt": "Bücher",
+      "spoken": "Bücher",
+      "choices": [
+        "die Bücher",
+        "das Bücher"
+      ],
+      "answer": "die Bücher",
+      "hint": "Bücher, ce sont plusieurs livres : un pluriel.",
+      "explanation": "das Buch (le livre), mais die Bücher (les livres) : au pluriel, l’article est toujours die.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Der, die, das : plus loin",
+          "lines": [
+            "Au pluriel, l’article est toujours die : das Heft, die Hefte.",
+            "Les jours, les mois et les saisons sont der :",
+            "der Freitag, der Mai, der Sommer.",
+            "Un nom en -ung est toujours die : die Zeitung.",
+            "Un mot composé prend l’article de son dernier nom :",
+            "die Haustür (die Tür).",
+            "Apprends toujours le nom avec son article et sa majuscule."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-de-articles-2-1",
+      "prompt": "Kinder",
+      "spoken": "Kinder",
+      "choices": [
+        "die Kinder",
+        "das Kinder"
+      ],
+      "answer": "die Kinder",
+      "hint": "Kinder, ce sont plusieurs enfants : un pluriel.",
+      "explanation": "das Kind (l’enfant), mais die Kinder (les enfants) : au pluriel, l’article est toujours die.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Der, die, das : plus loin",
+          "lines": [
+            "Au pluriel, l’article est toujours die : das Heft, die Hefte.",
+            "Les jours, les mois et les saisons sont der :",
+            "der Freitag, der Mai, der Sommer.",
+            "Un nom en -ung est toujours die : die Zeitung.",
+            "Un mot composé prend l’article de son dernier nom :",
+            "die Haustür (die Tür).",
+            "Apprends toujours le nom avec son article et sa majuscule."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-de-articles-2-2",
+      "prompt": "Montag",
+      "spoken": "Montag",
+      "choices": [
+        "der Montag",
+        "die Montag",
+        "das Montag"
+      ],
+      "answer": "der Montag",
+      "hint": "Montag est un jour de la semaine.",
+      "explanation": "der Montag (le lundi) : les jours de la semaine sont tous der.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Der, die, das : plus loin",
+          "lines": [
+            "Au pluriel, l’article est toujours die : das Heft, die Hefte.",
+            "Les jours, les mois et les saisons sont der :",
+            "der Freitag, der Mai, der Sommer.",
+            "Un nom en -ung est toujours die : die Zeitung.",
+            "Un mot composé prend l’article de son dernier nom :",
+            "die Haustür (die Tür).",
+            "Apprends toujours le nom avec son article et sa majuscule."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-de-articles-2-3",
+      "prompt": "Übung",
+      "spoken": "Übung",
+      "choices": [
+        "der Übung",
+        "die Übung",
+        "das Übung"
+      ],
+      "answer": "die Übung",
+      "hint": "Regarde la fin du mot : -ung.",
+      "explanation": "die Übung (l’exercice) : un nom en -ung est toujours die.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Der, die, das : plus loin",
+          "lines": [
+            "Au pluriel, l’article est toujours die : das Heft, die Hefte.",
+            "Les jours, les mois et les saisons sont der :",
+            "der Freitag, der Mai, der Sommer.",
+            "Un nom en -ung est toujours die : die Zeitung.",
+            "Un mot composé prend l’article de son dernier nom :",
+            "die Haustür (die Tür).",
+            "Apprends toujours le nom avec son article et sa majuscule."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-de-articles-2-4",
+      "prompt": "Tischtennis",
+      "spoken": "Tischtennis",
+      "choices": [
+        "der Tischtennis",
+        "die Tischtennis",
+        "das Tischtennis"
+      ],
+      "answer": "das Tischtennis",
+      "hint": "Tischtennis = Tisch + Tennis : lequel décide ?",
+      "explanation": "das Tischtennis (le tennis de table) : le dernier nom décide, das Tennis. der Tisch (la table) ne compte pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Der, die, das : plus loin",
+          "lines": [
+            "Au pluriel, l’article est toujours die : das Heft, die Hefte.",
+            "Les jours, les mois et les saisons sont der :",
+            "der Freitag, der Mai, der Sommer.",
+            "Un nom en -ung est toujours die : die Zeitung.",
+            "Un mot composé prend l’article de son dernier nom :",
+            "die Haustür (die Tür).",
+            "Apprends toujours le nom avec son article et sa majuscule."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-de-articles-2-5",
+      "prompt": "Klassenzimmer",
+      "spoken": "Klassenzimmer",
+      "choices": [
+        "der Klassenzimmer",
+        "die Klassenzimmer",
+        "das Klassenzimmer"
+      ],
+      "answer": "das Klassenzimmer",
+      "hint": "Klassenzimmer = Klasse + Zimmer : lequel décide ?",
+      "explanation": "das Klassenzimmer (la salle de classe) : le dernier nom décide, das Zimmer (la pièce). die Klasse ne compte pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Der, die, das : plus loin",
+          "lines": [
+            "Au pluriel, l’article est toujours die : das Heft, die Hefte.",
+            "Les jours, les mois et les saisons sont der :",
+            "der Freitag, der Mai, der Sommer.",
+            "Un nom en -ung est toujours die : die Zeitung.",
+            "Un mot composé prend l’article de son dernier nom :",
+            "die Haustür (die Tür).",
+            "Apprends toujours le nom avec son article et sa majuscule."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-de-articles-2-6",
+      "prompt": "Schulbuch",
+      "spoken": "Schulbuch",
+      "choices": [
+        "der Schulbuch",
+        "die Schulbuch",
+        "das Schulbuch"
+      ],
+      "answer": "das Schulbuch",
+      "hint": "Schulbuch = Schule + Buch : lequel décide ?",
+      "explanation": "das Schulbuch (le manuel) : le dernier nom décide, das Buch. die Schule ne compte pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Der, die, das : plus loin",
+          "lines": [
+            "Au pluriel, l’article est toujours die : das Heft, die Hefte.",
+            "Les jours, les mois et les saisons sont der :",
+            "der Freitag, der Mai, der Sommer.",
+            "Un nom en -ung est toujours die : die Zeitung.",
+            "Un mot composé prend l’article de son dernier nom :",
+            "die Haustür (die Tür).",
+            "Apprends toujours le nom avec son article et sa majuscule."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-de-articles-2-7",
+      "prompt": "Schulhof",
+      "spoken": "Schulhof",
+      "choices": [
+        "der Schulhof",
+        "die Schulhof",
+        "das Schulhof"
+      ],
+      "answer": "der Schulhof",
+      "hint": "Schulhof = Schule + Hof : lequel décide ?",
+      "explanation": "der Schulhof (la cour de l’école) : le dernier nom décide, der Hof (la cour). die Schule ne compte pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Der, die, das : plus loin",
+          "lines": [
+            "Au pluriel, l’article est toujours die : das Heft, die Hefte.",
+            "Les jours, les mois et les saisons sont der :",
+            "der Freitag, der Mai, der Sommer.",
+            "Un nom en -ung est toujours die : die Zeitung.",
+            "Un mot composé prend l’article de son dernier nom :",
+            "die Haustür (die Tür).",
+            "Apprends toujours le nom avec son article et sa majuscule."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bon article !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lv2-5e-introductions",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

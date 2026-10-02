@@ -1,0 +1,206 @@
+{
+  "id": "french-6e-grammar-spelling-e-er-ez-2",
+  "biome": "french-6e-grammar-spelling",
+  "type": "e-er-ez",
+  "level": 2,
+  "instruction": "Choisis la bonne fin du verbe : é, er ou ez. Pense à remplacer par vendre ou vendu, et regarde qui parle.",
+  "items": [
+    {
+      "key": "sans-parler",
+      "prompt": "Il sort sans parl….",
+      "spoken": "Il sort sans parl(terminaison).",
+      "choices": [
+        "é",
+        "er",
+        "ez"
+      ],
+      "answer": "er",
+      "rule": "Après « sans », on peut dire « vendre » : c’est -er.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "-é, -er ou -ez ?",
+          "lines": [
+            "On peut dire « vendre » : -er (elle va laver).",
+            "On peut dire « vendu » : -é (elle a lavé).",
+            "Avec « vous » : -ez (vous lavez)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "avait-oublie",
+      "prompt": "Elle avait oubli… son sac.",
+      "spoken": "Elle avait oubli(terminaison) son sac.",
+      "choices": [
+        "é",
+        "er",
+        "ez"
+      ],
+      "answer": "é",
+      "rule": "Après « avait », on peut dire « vendu » : c’est -é.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "-é, -er ou -ez ?",
+          "lines": [
+            "On peut dire « vendre » : -er (elle va laver).",
+            "On peut dire « vendu » : -é (elle a lavé).",
+            "Avec « vous » : -ez (vous lavez)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "vous-arrivez",
+      "prompt": "Vous arriv… à quelle heure ?",
+      "spoken": "Vous arriv(terminaison) à quelle heure ?",
+      "choices": [
+        "é",
+        "er",
+        "ez"
+      ],
+      "answer": "ez",
+      "rule": "Avec « vous », le verbe finit par -ez.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "-é, -er ou -ez ?",
+          "lines": [
+            "On peut dire « vendre » : -er (elle va laver).",
+            "On peut dire « vendu » : -é (elle a lavé).",
+            "Avec « vous » : -ez (vous lavez)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "de-danser",
+      "prompt": "Il rêve de dans… sur scène.",
+      "spoken": "Il rêve de dans(terminaison) sur scène.",
+      "choices": [
+        "é",
+        "er",
+        "ez"
+      ],
+      "answer": "er",
+      "rule": "Après « de », on peut dire « vendre » : c’est -er.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "-é, -er ou -ez ?",
+          "lines": [
+            "On peut dire « vendre » : -er (elle va laver).",
+            "On peut dire « vendu » : -é (elle a lavé).",
+            "Avec « vous » : -ez (vous lavez)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "gateau-decore",
+      "prompt": "Un gâteau décor… de fraises.",
+      "spoken": "Un gâteau décor(terminaison) de fraises.",
+      "choices": [
+        "é",
+        "er",
+        "ez"
+      ],
+      "answer": "é",
+      "rule": "On peut dire « vendu » : le gâteau est décoré, c’est -é.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "-é, -er ou -ez ?",
+          "lines": [
+            "On peut dire « vendre » : -er (elle va laver).",
+            "On peut dire « vendu » : -é (elle a lavé).",
+            "Avec « vous » : -ez (vous lavez)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "vous-regardez",
+      "prompt": "Vous regard… le ciel.",
+      "spoken": "Vous regard(terminaison) le ciel.",
+      "choices": [
+        "é",
+        "er",
+        "ez"
+      ],
+      "answer": "ez",
+      "rule": "Avec « vous », le verbe finit par -ez.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "-é, -er ou -ez ?",
+          "lines": [
+            "On peut dire « vendre » : -er (elle va laver).",
+            "On peut dire « vendu » : -é (elle a lavé).",
+            "Avec « vous » : -ez (vous lavez)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "faut-ranger",
+      "prompt": "Il faut rang… la chambre.",
+      "spoken": "Il faut rang(terminaison) la chambre.",
+      "choices": [
+        "é",
+        "er",
+        "ez"
+      ],
+      "answer": "er",
+      "rule": "Après « faut », on peut dire « vendre » : c’est -er.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "-é, -er ou -ez ?",
+          "lines": [
+            "On peut dire « vendre » : -er (elle va laver).",
+            "On peut dire « vendu » : -é (elle a lavé).",
+            "Avec « vous » : -ez (vous lavez)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "sont-arrives",
+      "prompt": "Il est arriv… en retard.",
+      "spoken": "Il est arriv(terminaison) en retard.",
+      "choices": [
+        "é",
+        "er",
+        "ez"
+      ],
+      "answer": "é",
+      "rule": "Après « est », on peut dire « vendu » : c’est -é.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "-é, -er ou -ez ?",
+          "lines": [
+            "On peut dire « vendre » : -er (elle va laver).",
+            "On peut dire « vendu » : -é (elle a lavé).",
+            "Avec « vous » : -ez (vous lavez)."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bonne terminaison !",
+    "wrong": "{rule}"
+  },
+  "reward": {
+    "block": "french-6e-grammar-spelling",
+    "amount": 5,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

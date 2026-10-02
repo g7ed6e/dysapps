@@ -46,7 +46,7 @@ describe('useRallumage quand rien ne s’écrit sur l’appareil', () => {
     const { progress } = bacASable(EMPTY_STATE);
     const { result } = renderHook(() => useRallumage(progress, '6e', true));
     const premier = result.current.enAttente[0];
-    expect(premier).toBe('foret');
+    expect(premier).toBe('french-6e-phonology');
     act(() => result.current.noterVu(premier));
     expect(result.current.enAttente).not.toContain(premier);
   });

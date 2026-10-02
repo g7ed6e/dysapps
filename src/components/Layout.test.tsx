@@ -14,7 +14,7 @@ function renderAt(path: string) {
         <MemoryRouter initialEntries={[path]}>
           <Routes>
             <Route element={<Layout />}>
-              <Route path="aventure/:biomeId?" element={<p>Le monde</p>} />
+              <Route path="adventure/:biomeId?" element={<p>Le monde</p>} />
               <Route path="reglages" element={<p>Les réglages</p>} />
             </Route>
           </Routes>
@@ -25,7 +25,7 @@ function renderAt(path: string) {
 }
 
 it('sur l’écran du monde, pas de barre du haut : le menu Pause la remplace ; elle revient hors du monde', () => {
-  const monde = renderAt('/aventure/foret');
+  const monde = renderAt('/adventure/french-6e-phonology');
   expect(screen.getByText('Le monde')).toBeInTheDocument();
   expect(screen.queryByRole('navigation', { name: 'Navigation principale' })).not.toBeInTheDocument();
   expect(screen.queryByRole('link', { name: 'Voir mon rôle et mes succès' })).not.toBeInTheDocument();

@@ -3,13 +3,13 @@ import type { BiomeDef } from './biomes';
 
 export const ILES = [
   {
-    "id": "foret",
+    "id": "french-6e-phonology",
     "name": "Forêt des sons",
     "module": "Conscience phonologique",
-    "subject": "francais",
+    "subject": "french",
     "classe": "6e",
     "description": "Écouter, couper en syllabes, repérer les sons et les rimes.",
-    "block": "bois",
+    "block": "french-6e-phonology",
     "guardian": "le Grand Chêne",
     "icon": "tree",
     "creature": {
@@ -17,7 +17,7 @@ export const ILES = [
     },
     "exercises": [
       {
-        "id": "abattage",
+        "id": "syllables",
         "title": "Abattage syllabique",
         "description": "Tape autant de coups que de syllabes.",
         "programme": [
@@ -25,7 +25,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "chasse-son",
+        "id": "sound-hunt",
         "title": "Chasse au son",
         "description": "Tape les mots où tu entends le son demandé.",
         "programme": [
@@ -33,7 +33,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "rimes",
+        "id": "rhymes",
         "title": "Rimes-échelle",
         "description": "Empile les mots qui riment pour monter à la cabane.",
         "programme": [
@@ -43,13 +43,13 @@ export const ILES = [
     ]
   },
   {
-    "id": "mine",
+    "id": "french-6e-letter-confusion",
     "name": "Mine des lettres",
     "module": "Confusions de lettres",
-    "subject": "francais",
+    "subject": "french",
     "classe": "6e",
     "description": "b/d, p/q, f/v, ch/j, t/d : ne plus les confondre.",
-    "block": "pierre",
+    "block": "french-6e-letter-confusion",
     "guardian": "le Golem de roche",
     "icon": "pickaxe",
     "creature": {
@@ -57,7 +57,7 @@ export const ILES = [
     },
     "exercises": [
       {
-        "id": "filon",
+        "id": "letter-pairs",
         "title": "Filon",
         "description": "Pioche seulement la lettre cible parmi b, d, p, q.",
         "programme": [
@@ -65,7 +65,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "oreille",
+        "id": "sound-discrimination",
         "title": "Oreille du mineur",
         "description": "Écoute le mot, choisis le bon bloc : vin ou fin ?",
         "programme": [
@@ -75,13 +75,13 @@ export const ILES = [
     ]
   },
   {
-    "id": "carriere",
+    "id": "french-6e-word-spelling",
     "name": "Carrière des mots",
     "module": "Orthographe lexicale",
-    "subject": "francais",
+    "subject": "french",
     "classe": "6e",
     "description": "Écrire les mots juste, les familles de mots, les mots-outils, le sens des mots.",
-    "block": "sable",
+    "block": "french-6e-word-spelling",
     "guardian": "la Dune vivante",
     "icon": "mountain",
     "creature": {
@@ -89,7 +89,7 @@ export const ILES = [
     },
     "exercises": [
       {
-        "id": "mot-troue",
+        "id": "missing-letters",
         "title": "Mot troué",
         "description": "Glisse le bloc de lettres qui manque.",
         "programme": [
@@ -97,7 +97,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "familles",
+        "id": "word-families",
         "title": "Familles-craft",
         "description": "Assemble préfixe, racine et suffixe.",
         "programme": [
@@ -107,7 +107,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "coffre",
+        "id": "sight-words",
         "title": "Coffre à mots",
         "description": "Les mots-outils à réviser, en dictée.",
         "programme": [
@@ -115,7 +115,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "facettes",
+        "id": "word-forms",
         "title": "Facettes",
         "description": "Trouver un mot de même sens, puis le sens d’un mot selon la phrase.",
         "programme": [
@@ -125,13 +125,13 @@ export const ILES = [
     ]
   },
   {
-    "id": "ferme",
+    "id": "french-6e-grammar-spelling",
     "name": "Ferme des accords",
     "module": "Orthographe grammaticale",
-    "subject": "francais",
+    "subject": "french",
     "classe": "6e",
     "description": "Accorder sujet et verbe, accorder dans le groupe nominal, choisir a/à, et/est, -é/-er.",
-    "block": "terre",
+    "block": "french-6e-grammar-spelling",
     "guardian": "le Taureau de terre",
     "icon": "wheat",
     "creature": {
@@ -139,7 +139,7 @@ export const ILES = [
     },
     "exercises": [
       {
-        "id": "enclos",
+        "id": "word-classes",
         "title": "Enclos",
         "description": "Glisse les sujets vers le bon verbe : singulier ou pluriel.",
         "programme": [
@@ -147,7 +147,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "graines",
+        "id": "sorting",
         "title": "Tri des graines",
         "description": "Phrases à trous : a/à, et/est, on/ont, son/sont, ce/se.",
         "programme": [
@@ -155,7 +155,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "recolte",
+        "id": "e-er-ez",
         "title": "Récolte -é / -er / -ez",
         "description": "Clique la bonne terminaison.",
         "programme": [
@@ -163,7 +163,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "troupeau",
+        "id": "plurals",
         "title": "Troupeau",
         "description": "Accorder le déterminant, le nom et l’adjectif, puis trouver le sujet placé après le verbe ou fait de deux noms.",
         "programme": [
@@ -174,13 +174,13 @@ export const ILES = [
     ]
   },
   {
-    "id": "tour",
+    "id": "french-6e-reading",
     "name": "Tour du lecteur",
     "module": "Lecture et grammaire",
-    "subject": "francais",
+    "subject": "french",
     "classe": "6e",
     "description": "Lire à voix haute, étage par étage, savoir de qui ou de quoi parle un texte, et analyser la phrase.",
-    "block": "verre",
+    "block": "french-6e-reading",
     "guardian": "la Chouette de verre",
     "icon": "castle",
     "creature": {
@@ -188,7 +188,7 @@ export const ILES = [
     },
     "exercises": [
       {
-        "id": "ascension",
+        "id": "fluency",
         "title": "Ascension",
         "description": "Lis un texte court, un paragraphe = un étage.",
         "programme": [
@@ -196,7 +196,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "etages",
+        "id": "comprehension",
         "title": "Étages du sens",
         "description": "Lis un texte court et trouve de qui ou de quoi il parle.",
         "programme": [
@@ -205,7 +205,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "vitraux",
+        "id": "sentence-order",
         "title": "Vitraux des phrases",
         "description": "Lis une phrase courte : trouve son type, la fonction d’un mot, ou comment ses propositions sont reliées.",
         "programme": [
@@ -217,13 +217,13 @@ export const ILES = [
     ]
   },
   {
-    "id": "plaine",
+    "id": "maths-6e-calculation",
     "name": "Plaine des nombres",
     "module": "Calcul et problèmes",
     "subject": "maths",
     "classe": "6e",
     "description": "Tables, compléments, doubles et moitiés, puis les problèmes du port, avec des aides visuelles toujours affichées.",
-    "block": "brique",
+    "block": "maths-6e-calculation",
     "guardian": "le Hanneton de bronze",
     "icon": "calculator",
     "creature": {
@@ -231,7 +231,7 @@ export const ILES = [
     },
     "exercises": [
       {
-        "id": "tables",
+        "id": "times-tables",
         "title": "Champ des tables",
         "description": "Une multiplication, et la grille de points pour la voir.",
         "programme": [
@@ -239,7 +239,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "complements",
+        "id": "make-ten",
         "title": "Pont de dix",
         "description": "Trouve ce qui manque pour arriver à 10 ou à 100.",
         "programme": [
@@ -247,7 +247,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "doubles",
+        "id": "doubles-halves",
         "title": "Doubles et moitiés",
         "description": "Le double ou la moitié d’un nombre, en deux étapes.",
         "programme": [
@@ -255,7 +255,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "passeur",
+        "id": "word-problems",
         "title": "Carnet du passeur",
         "description": "Un pont, un quai, une traversée : lis le schéma, puis calcule la longueur, le tour ou l’heure.",
         "programme": [
@@ -267,13 +267,13 @@ export const ILES = [
     ]
   },
   {
-    "id": "riviere",
+    "id": "maths-6e-fractions",
     "name": "Rivière des fractions",
     "module": "Fractions",
     "subject": "maths",
     "classe": "6e",
     "description": "Lire, comparer et partager des fractions, puis poser les opérations et la division, toujours avec la figure sous les yeux.",
-    "block": "galet",
+    "block": "maths-6e-fractions",
     "guardian": "le Brochet d’argent",
     "icon": "pizza",
     "creature": {
@@ -281,7 +281,7 @@ export const ILES = [
     },
     "exercises": [
       {
-        "id": "nenuphars",
+        "id": "number-line",
         "title": "Nénuphars",
         "description": "Quelle fraction de la figure est coloriée ? Puis sur la droite.",
         "programme": [
@@ -289,7 +289,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "deux-rives",
+        "id": "equivalence",
         "title": "Deux rives",
         "description": "Compare deux fractions avec les barres sous les yeux.",
         "programme": [
@@ -297,7 +297,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "partage",
+        "id": "sharing",
         "title": "Partage du gâteau",
         "description": "Une fraction d’une quantité, puis des fractions égales.",
         "programme": [
@@ -306,7 +306,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "colonnes",
+        "id": "place-value",
         "title": "Galets en colonnes",
         "description": "Pose l’opération, puis la division : partage en parts égales et trouve ce qui reste.",
         "programme": [
@@ -316,13 +316,13 @@ export const ILES = [
     ]
   },
   {
-    "id": "volcan",
+    "id": "maths-6e-decimals",
     "name": "Volcan des décimaux",
     "module": "Nombres décimaux",
     "subject": "maths",
     "classe": "6e",
     "description": "Lire, comparer et placer des nombres à virgule, puis les grands nombres, le tableau de numération toujours affiché.",
-    "block": "obsidienne",
+    "block": "maths-6e-decimals",
     "guardian": "le Dragon de cendre",
     "icon": "flame",
     "creature": {
@@ -330,7 +330,7 @@ export const ILES = [
     },
     "exercises": [
       {
-        "id": "cratere",
+        "id": "ordering",
         "title": "Cratère des rangs",
         "description": "Quel est le chiffre des dixièmes ? Puis la fraction décimale.",
         "programme": [
@@ -339,7 +339,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "coulee",
+        "id": "operations",
         "title": "Coulée de lave",
         "description": "Compare deux décimaux, puis range-les et trouve un nombre entre deux, tableau sous les yeux.",
         "programme": [
@@ -347,7 +347,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "pente",
+        "id": "scale",
         "title": "Pente graduée",
         "description": "Repère un décimal sur la droite, complète jusqu’à 1, puis encadre une fraction entre deux entiers.",
         "programme": [
@@ -357,7 +357,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "geants",
+        "id": "large-numbers",
         "title": "Nombres géants",
         "description": "Lis et écris les grands nombres, classe par classe, jusqu’aux milliards.",
         "programme": [
@@ -367,13 +367,13 @@ export const ILES = [
     ]
   },
   {
-    "id": "glacier",
+    "id": "maths-5e-signed-numbers",
     "name": "Glacier des relatifs",
     "module": "Nombres relatifs et fractions",
     "subject": "maths",
     "classe": "5e",
     "description": "Comparer et calculer avec des nombres négatifs, la droite sous les yeux, puis avec des fractions.",
-    "block": "glace",
+    "block": "maths-5e-signed-numbers",
     "guardian": "le Mammouth de givre",
     "icon": "mountain",
     "creature": {
@@ -381,7 +381,7 @@ export const ILES = [
     },
     "exercises": [
       {
-        "id": "thermometre",
+        "id": "thermometer",
         "title": "Thermomètre",
         "description": "Compare deux relatifs, puis lis un point sur la droite.",
         "programme": [
@@ -390,7 +390,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "banquise",
+        "id": "adding",
         "title": "Banquise",
         "description": "Additionne et soustrais des relatifs avec le bond sur la droite.",
         "programme": [
@@ -398,7 +398,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "crevasses",
+        "id": "subtracting",
         "title": "Crevasses",
         "description": "Multiplie et divise avec la règle des signes affichée.",
         "programme": [
@@ -406,7 +406,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "icebergs",
+        "id": "fractions",
         "title": "Icebergs des fractions",
         "description": "Compare, puis additionne, soustrais, multiplie et divise des fractions : la règle reste affichée.",
         "programme": [
@@ -417,13 +417,13 @@ export const ILES = [
     ]
   },
   {
-    "id": "marche",
+    "id": "maths-5e-proportionality",
     "name": "Marché des proportions",
     "module": "Proportionnalité",
     "subject": "maths",
     "classe": "5e",
     "description": "Tableaux de proportionnalité, pourcentages, vitesses, échelles et partages, avec le tableau ou le schéma toujours affiché.",
-    "block": "toile",
+    "block": "maths-5e-proportionality",
     "guardian": "le Colporteur",
     "icon": "ruler",
     "creature": {
@@ -431,7 +431,7 @@ export const ILES = [
     },
     "exercises": [
       {
-        "id": "etals",
+        "id": "proportion-tables",
         "title": "Étals",
         "description": "Complète un tableau de proportionnalité, puis partage une cargaison entre les navires selon un ratio.",
         "programme": [
@@ -441,7 +441,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "remises",
+        "id": "percentages",
         "title": "Remises",
         "description": "Prends un pourcentage, puis applique une hausse ou une baisse.",
         "programme": [
@@ -450,7 +450,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "balances",
+        "id": "ratios",
         "title": "Balances",
         "description": "Vitesses constantes et échelles de carte, puis la carte de l’archipel, en mots ou en fraction, puis une traversée : la distance, la vitesse ou la durée, les minutes changées en heures.",
         "programme": [
@@ -463,13 +463,13 @@ export const ILES = [
     ]
   },
   {
-    "id": "carrefour",
+    "id": "french-5e-homophones",
     "name": "Carrefour des homophones",
     "module": "Homophones grammaticaux",
-    "subject": "francais",
+    "subject": "french",
     "classe": "5e",
     "description": "Ses ou ces, quel ou qu’elle, sans ou s’en : choisir le bon mot, la règle sous les yeux.",
-    "block": "panneau",
+    "block": "french-5e-homophones",
     "guardian": "le Sphinx des routes",
     "icon": "compass",
     "creature": {
@@ -477,7 +477,7 @@ export const ILES = [
     },
     "exercises": [
       {
-        "id": "panneaux",
+        "id": "pairs",
         "title": "Panneaux",
         "description": "Ses / ces, ou / où, la / là / l’a, leur / leurs, quand, peu, c’est / s’est.",
         "programme": [
@@ -486,7 +486,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "aiguillage",
+        "id": "choices",
         "title": "Aiguillage",
         "description": "Quel / qu’elle, sans / s’en, dans / d’en, ni / n’y, plus tôt / plutôt, mais / mes / met / m’est…",
         "programme": [
@@ -495,7 +495,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "bifurcation",
+        "id": "homophone-sentences",
         "title": "Bifurcation",
         "description": "Deux trous dans la phrase : choisis la bonne paire de mots.",
         "programme": [
@@ -506,13 +506,13 @@ export const ILES = [
     ]
   },
   {
-    "id": "marais",
+    "id": "french-5e-conjugation",
     "name": "Marais des temps",
     "module": "Conjugaison",
-    "subject": "francais",
+    "subject": "french",
     "classe": "5e",
     "description": "Présent, imparfait, passé composé, passé simple, futur, conditionnel, subjonctif : le bon temps, la règle affichée.",
-    "block": "tourbe",
+    "block": "french-5e-conjugation",
     "guardian": "l’Hydre des marais",
     "icon": "footprints",
     "creature": {
@@ -520,7 +520,7 @@ export const ILES = [
     },
     "exercises": [
       {
-        "id": "rives",
+        "id": "past-tenses",
         "title": "Rives du passé",
         "description": "Imparfait ou passé composé, puis le passé simple du récit.",
         "programme": [
@@ -529,7 +529,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "brume",
+        "id": "future-tense",
         "title": "Brume du futur",
         "description": "Futur ou conditionnel, puis les formes du futur.",
         "programme": [
@@ -538,7 +538,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "roseaux",
+        "id": "subjunctive",
         "title": "Roseaux du subjonctif",
         "description": "Le subjonctif présent, puis reconnaître le temps d’un verbe.",
         "programme": [
@@ -548,7 +548,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "gue",
+        "id": "tense-choice",
         "title": "Gué des temps",
         "description": "Le présent et l’impératif, puis le plus-que-parfait et le futur antérieur, puis ce que dit chaque temps.",
         "programme": [
@@ -561,13 +561,13 @@ export const ILES = [
     ]
   },
   {
-    "id": "forge",
+    "id": "maths-4e-powers",
     "name": "Forge des puissances",
     "module": "Puissances et racines",
     "subject": "maths",
     "classe": "4e",
     "description": "Puissances de 10, notation scientifique, puissances, racines carrées, nombres premiers.",
-    "block": "acier",
+    "block": "maths-4e-powers",
     "guardian": "le Titan d’acier",
     "icon": "zap",
     "creature": {
@@ -575,7 +575,7 @@ export const ILES = [
     },
     "exercises": [
       {
-        "id": "etincelles",
+        "id": "powers",
         "title": "Étincelles",
         "description": "Puissances de 10, puis notation scientifique.",
         "programme": [
@@ -584,7 +584,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "enclume",
+        "id": "square-roots",
         "title": "Enclume",
         "description": "Puissances d’un nombre, puis produits et quotients de puissances.",
         "programme": [
@@ -592,7 +592,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "trempe",
+        "id": "scientific-notation",
         "title": "Trempe",
         "description": "Racines carrées, puis diviseurs et nombres premiers, puis décomposition en facteurs premiers.",
         "programme": [
@@ -604,13 +604,13 @@ export const ILES = [
     ]
   },
   {
-    "id": "atelier",
+    "id": "maths-4e-algebra",
     "name": "Atelier du calcul littéral",
     "module": "Calcul littéral et équations",
     "subject": "maths",
     "classe": "4e",
     "description": "Réduire, développer, résoudre une équation : les lettres comme des blocs, la règle affichée.",
-    "block": "calque",
+    "block": "maths-4e-algebra",
     "guardian": "le Golem des équations",
     "icon": "ruler",
     "creature": {
@@ -618,7 +618,7 @@ export const ILES = [
     },
     "exercises": [
       {
-        "id": "reduire",
+        "id": "simplifying",
         "title": "Réduire",
         "description": "Regroupe les x et les nombres.",
         "programme": [
@@ -626,7 +626,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "developper",
+        "id": "expanding",
         "title": "Développer",
         "description": "Distributivité simple, puis double, puis factoriser.",
         "programme": [
@@ -634,7 +634,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "equilibre",
+        "id": "equations",
         "title": "Équilibre",
         "description": "Équations du premier degré, en une puis deux étapes, puis tester une égalité et les équations produits.",
         "programme": [
@@ -644,13 +644,13 @@ export const ILES = [
     ]
   },
   {
-    "id": "falaise",
+    "id": "french-4e-agreement",
     "name": "Falaise des accords",
     "module": "Accords",
-    "subject": "francais",
+    "subject": "french",
     "classe": "4e",
     "description": "Participe passé, adjectifs, sujet caché, verbes pronominaux : accorder sans se tromper, la règle sous les yeux.",
-    "block": "ardoise",
+    "block": "french-4e-agreement",
     "guardian": "le Bélier de granit",
     "icon": "mountain",
     "creature": {
@@ -658,7 +658,7 @@ export const ILES = [
     },
     "exercises": [
       {
-        "id": "corde",
+        "id": "past-participle",
         "title": "Corde du participe",
         "description": "Participe passé avec être, avec avoir, puis avec le COD placé avant.",
         "programme": [
@@ -667,7 +667,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "paroi",
+        "id": "adjectives",
         "title": "Paroi des adjectifs",
         "description": "Accord de l’adjectif et de l’attribut, puis les couleurs et cas particuliers.",
         "programme": [
@@ -676,7 +676,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "sommet",
+        "id": "subject-verb",
         "title": "Sommet du sujet",
         "description": "Trouver le sujet : inversé, éloigné, « on », « qui », deux sujets.",
         "programme": [
@@ -684,7 +684,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "echo",
+        "id": "reflexive-verbs",
         "title": "Écho des pronominaux",
         "description": "Les verbes pronominaux, puis l’accord de leur participe passé, puis le groupe apposé.",
         "programme": [
@@ -695,13 +695,13 @@ export const ILES = [
     ]
   },
   {
-    "id": "cabinet",
+    "id": "french-4e-vocabulary",
     "name": "Cabinet des mots",
     "module": "Vocabulaire",
-    "subject": "francais",
+    "subject": "french",
     "classe": "4e",
     "description": "Racines grecques et latines, préfixes et suffixes, sens propre et figuré, champ lexical, synonymes, registres et intensité.",
-    "block": "parchemin",
+    "block": "french-4e-vocabulary",
     "guardian": "le Hibou lexicographe",
     "icon": "library",
     "creature": {
@@ -709,7 +709,7 @@ export const ILES = [
     },
     "exercises": [
       {
-        "id": "racines",
+        "id": "word-roots",
         "title": "Racines",
         "description": "Racines grecques et latines, puis préfixes et suffixes.",
         "programme": [
@@ -717,7 +717,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "sens",
+        "id": "meaning",
         "title": "Sens",
         "description": "Sens propre ou sens figuré, expressions imagées, puis le champ lexical, dans une liste puis dans une phrase.",
         "programme": [
@@ -739,13 +739,13 @@ export const ILES = [
     ]
   },
   {
-    "id": "belvedere",
+    "id": "maths-3e-geometry",
     "name": "Belvédère de Thalès",
     "module": "Géométrie : Pythagore, Thalès, trigonométrie",
     "subject": "maths",
     "classe": "3e",
     "description": "Une longueur manquante dans un triangle rectangle ou une configuration de Thalès, la figure codée sous les yeux ; puis les réciproques : le triangle est-il rectangle, les droites sont-elles parallèles ?",
-    "block": "marbre",
+    "block": "maths-3e-geometry",
     "guardian": "le Sphinx de marbre",
     "icon": "compass",
     "creature": {
@@ -753,7 +753,7 @@ export const ILES = [
     },
     "exercises": [
       {
-        "id": "pythagore",
+        "id": "pythagoras",
         "title": "Pythagore",
         "description": "L’hypoténuse, puis un côté de l’angle droit, puis le câble d’un mât, enfin la réciproque : le triangle est-il rectangle ?",
         "programme": [
@@ -770,7 +770,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "trigo",
+        "id": "trigonometry",
         "title": "Trigo",
         "description": "Cosinus, sinus ou tangente : le bon rapport.",
         "programme": [
@@ -780,13 +780,13 @@ export const ILES = [
     ]
   },
   {
-    "id": "donnees",
+    "id": "maths-3e-statistics",
     "name": "Observatoire des données",
     "module": "Statistiques et probabilités",
     "subject": "maths",
     "classe": "3e",
     "description": "Moyenne, médiane, étendue d’une petite série, probabilités simples, diagrammes et fréquences, les barres sous les yeux.",
-    "block": "quartz",
+    "block": "maths-3e-statistics",
     "guardian": "le Comptable des étoiles",
     "icon": "star",
     "creature": {
@@ -794,7 +794,7 @@ export const ILES = [
     },
     "exercises": [
       {
-        "id": "moyenne",
+        "id": "mean",
         "title": "Moyenne",
         "description": "La moyenne, puis la médiane et l’étendue d’une petite série.",
         "programme": [
@@ -802,7 +802,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "chances",
+        "id": "probability",
         "title": "Chances",
         "description": "Probabilités simples : sac de boules, dé.",
         "programme": [
@@ -810,7 +810,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "releves",
+        "id": "data",
         "title": "Relevés",
         "description": "Lis un diagramme ou un tableau, puis calcule une fréquence, en fraction et en pourcentage.",
         "programme": [
@@ -821,13 +821,13 @@ export const ILES = [
     ]
   },
   {
-    "id": "phare",
+    "id": "maths-3e-functions",
     "name": "Phare des fonctions",
     "module": "Fonctions",
     "subject": "maths",
     "classe": "3e",
     "description": "Image, antécédent, fonction linéaire ou affine, lecture d’un graphique : le tableau de valeurs ou le graphique toujours affiché.",
-    "block": "prisme",
+    "block": "maths-3e-functions",
     "guardian": "le Dragon de lumière",
     "icon": "lightbulb",
     "creature": {
@@ -843,7 +843,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "droites",
+        "id": "linear",
         "title": "Droites",
         "description": "Coefficient directeur, fonction linéaire ou affine.",
         "programme": [
@@ -851,7 +851,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "faisceaux",
+        "id": "graphs",
         "title": "Faisceaux",
         "description": "Sur le graphique : une image, un antécédent, puis la droite.",
         "programme": [
@@ -862,13 +862,13 @@ export const ILES = [
     ]
   },
   {
-    "id": "textes",
+    "id": "french-3e-close-reading",
     "name": "Observatoire des textes",
     "module": "Lecture fine et grammaire",
-    "subject": "francais",
+    "subject": "french",
     "classe": "3e",
     "description": "Lire entre les lignes et lire un document, reconnaître les figures de style et les types de phrase, analyser la phrase et ses mots, et savoir qui parle dans un texte.",
-    "block": "lentille",
+    "block": "french-3e-close-reading",
     "guardian": "le Grand Lecteur",
     "icon": "book",
     "creature": {
@@ -876,7 +876,7 @@ export const ILES = [
     },
     "exercises": [
       {
-        "id": "inferences",
+        "id": "inference",
         "title": "Inférences",
         "description": "Ce que le texte laisse comprendre sans le dire, et lire un court document (menu, horaire, article, mot aux familles).",
         "programme": [
@@ -886,7 +886,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "figures",
+        "id": "figures-of-speech",
         "title": "Figures",
         "description": "Figures de style, types et formes de phrase : les reconnaître et dire l’effet qu’ils produisent.",
         "programme": [
@@ -895,7 +895,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "rouages",
+        "id": "text-connectives",
         "title": "Rouages",
         "description": "Nature et fonction des mots, phrase simple et phrase complexe, connecteurs logiques.",
         "programme": [
@@ -910,7 +910,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "voix",
+        "id": "voices",
         "title": "Voix des textes",
         "description": "Qui parle et comment ses paroles sont rapportées, voix active ou passive, subordonnées.",
         "programme": [
@@ -923,13 +923,13 @@ export const ILES = [
     ]
   },
   {
-    "id": "baie",
+    "id": "english-6e-vocabulary",
     "name": "Baie des mots",
     "module": "Vocabulaire et écoute",
-    "subject": "anglais",
+    "subject": "english",
     "classe": "6e",
     "description": "Se présenter, compter, dire l’heure, reconnaître un mot à l’oreille : l’anglais de tous les jours.",
-    "block": "cabine",
+    "block": "english-6e-vocabulary",
     "guardian": "le Lion de pierre",
     "icon": "languages",
     "creature": {
@@ -956,7 +956,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "ears",
+        "id": "first-listening",
         "title": "Ears",
         "description": "Écouter un mot anglais et trouver son sens (house ou horse ?).",
         "programme": [
@@ -977,13 +977,13 @@ export const ILES = [
     ]
   },
   {
-    "id": "horloge",
+    "id": "english-6e-grammar",
     "name": "Horloge des verbes",
     "module": "Grammaire : to be, have got, présent simple",
-    "subject": "anglais",
+    "subject": "english",
     "classe": "6e",
     "description": "Am, is ou are ; have ou has ; le s de he, she, it : les verbes de base, la règle sous les yeux.",
-    "block": "cadran",
+    "block": "english-6e-grammar",
     "guardian": "le Coucou de bronze",
     "icon": "history",
     "creature": {
@@ -1027,13 +1027,13 @@ export const ILES = [
     ]
   },
   {
-    "id": "comptoir",
+    "id": "english-5e-vocabulary",
     "name": "Comptoir",
     "module": "Vocabulaire et compréhension",
-    "subject": "anglais",
+    "subject": "english",
     "classe": "5e",
     "description": "Faire ses courses, raconter sa journée, comprendre une phrase entendue, lire un panneau ou un horaire : l’anglais du quotidien.",
-    "block": "tuile",
+    "block": "english-5e-vocabulary",
     "guardian": "la Reine du marché",
     "icon": "languages",
     "creature": {
@@ -1080,13 +1080,13 @@ export const ILES = [
     ]
   },
   {
-    "id": "manoir",
+    "id": "english-5e-grammar",
     "name": "Manoir du passé",
     "module": "Grammaire : -ing, prétérit, comparatifs",
-    "subject": "anglais",
+    "subject": "english",
     "classe": "5e",
     "description": "Ce qui se passe maintenant, ce qui s’est passé hier, et qui est le plus grand : la règle sous les yeux.",
-    "block": "lambris",
+    "block": "english-5e-grammar",
     "guardian": "le Spectre du manoir",
     "icon": "history",
     "creature": {
@@ -1102,7 +1102,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "preterit",
+        "id": "past-simple",
         "title": "Prétérit",
         "description": "Was, were, les verbes en -ed ; did pour la question et la négation.",
         "programme": [
@@ -1110,7 +1110,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "comparatifs",
+        "id": "comparatives",
         "title": "Comparatifs",
         "description": "Taller than, the tallest, more… than, better, the best.",
         "programme": [
@@ -1121,13 +1121,13 @@ export const ILES = [
     ]
   },
   {
-    "id": "theatre",
+    "id": "english-4e-comprehension",
     "name": "Théâtre des voix",
     "module": "Compréhension, quantités, prétérit irrégulier",
-    "subject": "anglais",
+    "subject": "english",
     "classe": "4e",
     "description": "Répondre à une question entendue, dire combien, raconter au passé : l’anglais sur scène.",
-    "block": "velours",
+    "block": "english-4e-comprehension",
     "guardian": "le Masque",
     "icon": "languages",
     "creature": {
@@ -1145,7 +1145,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "quantites",
+        "id": "quantities",
         "title": "Quantités",
         "description": "Some, any, much, many, a few, a little, enough.",
         "programme": [
@@ -1153,7 +1153,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "preterit-irregulier",
+        "id": "irregular-past",
         "title": "Prétérit irrégulier",
         "description": "Went, saw, bought : les verbes irréguliers au passé.",
         "programme": [
@@ -1172,13 +1172,13 @@ export const ILES = [
     ]
   },
   {
-    "id": "gare",
+    "id": "english-4e-grammar",
     "name": "Gare du futur",
     "module": "Grammaire : futur, modaux, present perfect",
-    "subject": "anglais",
+    "subject": "english",
     "classe": "4e",
     "description": "Ce qui arrivera, ce qu’on peut ou doit faire, ce qu’on a déjà fait : la règle sous les yeux.",
-    "block": "rail",
+    "block": "english-4e-grammar",
     "guardian": "la Locomotive de fer",
     "icon": "history",
     "creature": {
@@ -1186,7 +1186,7 @@ export const ILES = [
     },
     "exercises": [
       {
-        "id": "futur",
+        "id": "future",
         "title": "Futur",
         "description": "Will et be going to.",
         "programme": [
@@ -1194,7 +1194,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "modaux",
+        "id": "modals",
         "title": "Modaux",
         "description": "Can, must, should, have to.",
         "programme": [
@@ -1222,13 +1222,13 @@ export const ILES = [
     ]
   },
   {
-    "id": "studio",
+    "id": "english-3e-comprehension",
     "name": "Studio des ondes",
     "module": "Compréhension, connecteurs, faux amis",
-    "subject": "anglais",
+    "subject": "english",
     "classe": "3e",
     "description": "Comprendre un petit texte, relier ses idées, se méfier des faux amis : l’anglais de la radio.",
-    "block": "antenne",
+    "block": "english-3e-comprehension",
     "guardian": "la Grande Antenne",
     "icon": "languages",
     "creature": {
@@ -1236,7 +1236,7 @@ export const ILES = [
     },
     "exercises": [
       {
-        "id": "comprendre",
+        "id": "understanding",
         "title": "Comprendre",
         "description": "Un petit texte, une question : trouver la réponse, même quand elle n’est pas écrite.",
         "programme": [
@@ -1245,7 +1245,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "connecteurs",
+        "id": "linking-words",
         "title": "Connecteurs",
         "description": "Because, so, but, although, however, unless…",
         "programme": [
@@ -1253,7 +1253,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "faux-amis",
+        "id": "false-friends",
         "title": "Faux amis",
         "description": "Actually, library, sensible : des mots qui ressemblent au français, mais trompent.",
         "programme": [
@@ -1261,7 +1261,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "medias",
+        "id": "media",
         "title": "École et médias",
         "description": "L’école au Royaume-Uni (classes, uniforme, lycée) et les médias (programme télé, concert, réseau, podcast) : lire un document inventé.",
         "programme": [
@@ -1272,13 +1272,13 @@ export const ILES = [
     ]
   },
   {
-    "id": "chateau",
+    "id": "english-3e-grammar",
     "name": "Château des hypothèses",
     "module": "Grammaire : for et since, if, passif",
-    "subject": "anglais",
+    "subject": "english",
     "classe": "3e",
     "description": "Depuis quand, et si…, et par qui : les phrases longues de 3e, la règle sous les yeux.",
-    "block": "taille",
+    "block": "english-3e-grammar",
     "guardian": "le Dragon gallois",
     "icon": "castle",
     "creature": {
@@ -1302,7 +1302,7 @@ export const ILES = [
         ]
       },
       {
-        "id": "passif",
+        "id": "passive",
         "title": "Passif",
         "description": "Is spoken, was built, will be shown : be + participe passé.",
         "programme": [
@@ -1312,13 +1312,13 @@ export const ILES = [
     ]
   },
   {
-    "id": "relais",
+    "id": "lv2-5e-introductions",
     "name": "Relais des voyageurs",
     "module": "Se présenter, compter, décrire",
     "subject": "lv2",
     "classe": "5e",
     "description": "Se présenter, compter, parler de sa famille et de son école : les premiers mots du voyage, dans ta deuxième langue.",
-    "block": "dalle",
+    "block": "lv2-5e-introductions",
     "guardian": "la Diligence de cuivre",
     "icon": "languages",
     "creature": {
@@ -1326,7 +1326,7 @@ export const ILES = [
     },
     "exercises": [
       {
-        "id": "es-hola",
+        "id": "es-greetings",
         "title": "Hola",
         "description": "Se présenter : une question en espagnol, la bonne réponse (ser et tener).",
         "programme": [
@@ -1337,7 +1337,7 @@ export const ILES = [
         "lv2": "es"
       },
       {
-        "id": "es-numeros",
+        "id": "es-numbers",
         "title": "Números",
         "description": "Les nombres entendus : sesenta ou setenta, doce ou dos ?",
         "programme": [
@@ -1347,7 +1347,7 @@ export const ILES = [
         "lv2": "es"
       },
       {
-        "id": "es-familia",
+        "id": "es-family",
         "title": "Familia y colegio",
         "description": "La famille, les consignes de la classe, un panneau ; tu ou tú ?",
         "programme": [
@@ -1357,7 +1357,7 @@ export const ILES = [
         "lv2": "es"
       },
       {
-        "id": "es-el-la",
+        "id": "es-articles",
         "title": "El, la, los, las",
         "description": "L’article du nom, au singulier et au pluriel (el día).",
         "programme": [
@@ -1366,7 +1366,7 @@ export const ILES = [
         "lv2": "es"
       },
       {
-        "id": "de-hallo",
+        "id": "de-greetings",
         "title": "Hallo",
         "description": "Se présenter : une question en allemand, la bonne réponse (sein et haben).",
         "programme": [
@@ -1377,7 +1377,7 @@ export const ILES = [
         "lv2": "de"
       },
       {
-        "id": "de-zahlen",
+        "id": "de-numbers",
         "title": "Zahlen",
         "description": "Les nombres entendus : -zehn ou -zig, 24 ou 42 ?",
         "programme": [
@@ -1387,7 +1387,7 @@ export const ILES = [
         "lv2": "de"
       },
       {
-        "id": "de-familie",
+        "id": "de-family",
         "title": "Familie und Schule",
         "description": "La famille, les consignes de la classe, un panneau ; schon ou schön ?",
         "programme": [
@@ -1397,7 +1397,7 @@ export const ILES = [
         "lv2": "de"
       },
       {
-        "id": "de-der-die-das",
+        "id": "de-articles",
         "title": "Der, die, das",
         "description": "L’article du nom, toujours avec sa majuscule (das Mädchen).",
         "programme": [
@@ -1408,13 +1408,13 @@ export const ILES = [
     ]
   },
   {
-    "id": "jardin",
+    "id": "lv2-4e-daily-life",
     "name": "Jardin des heures",
     "module": "La journée, l’heure, les repas",
     "subject": "lv2",
     "classe": "4e",
     "description": "Dire l’heure, raconter sa journée, lire un horaire ou un menu : une journée au jardin, dans ta deuxième langue.",
-    "block": "osier",
+    "block": "lv2-4e-daily-life",
     "guardian": "le Soleil de cuivre",
     "icon": "languages",
     "creature": {
@@ -1422,7 +1422,7 @@ export const ILES = [
     },
     "exercises": [
       {
-        "id": "es-hora",
+        "id": "es-time",
         "title": "¿Qué hora es?",
         "description": "L’heure entendue : y cuarto, menos cuarto ; puis où est-on, qui parle ?",
         "programme": [
@@ -1433,7 +1433,7 @@ export const ILES = [
         "lv2": "es"
       },
       {
-        "id": "es-mi-dia",
+        "id": "es-my-day",
         "title": "Mi día",
         "description": "La journée : me levanto, se ducha ; puis e devient ie, o devient ue.",
         "programme": [
@@ -1444,7 +1444,7 @@ export const ILES = [
         "lv2": "es"
       },
       {
-        "id": "es-horario",
+        "id": "es-timetable",
         "title": "Horarios y menús",
         "description": "Un emploi du temps, un menu, un programme de loisirs : la bonne ligne.",
         "programme": [
@@ -1465,7 +1465,7 @@ export const ILES = [
         "lv2": "es"
       },
       {
-        "id": "de-uhrzeit",
+        "id": "de-time",
         "title": "Wie spät ist es?",
         "description": "L’heure entendue : Viertel nach, halb ; puis où est-on, qui parle ?",
         "programme": [
@@ -1476,7 +1476,7 @@ export const ILES = [
         "lv2": "de"
       },
       {
-        "id": "de-mein-tag",
+        "id": "de-my-day",
         "title": "Mein Tag",
         "description": "La journée : le verbe en deuxième place, puis la particule à la fin.",
         "programme": [
@@ -1486,7 +1486,7 @@ export const ILES = [
         "lv2": "de"
       },
       {
-        "id": "de-stundenplan",
+        "id": "de-timetable",
         "title": "Stundenplan und Mensa",
         "description": "Un emploi du temps, un menu, un programme de loisirs : la bonne ligne.",
         "programme": [
@@ -1497,7 +1497,7 @@ export const ILES = [
         "lv2": "de"
       },
       {
-        "id": "de-ich-kann",
+        "id": "de-modals",
         "title": "Ich esse, ich kann",
         "description": "L’accusatif (einen, den), puis können, müssen, wollen.",
         "programme": [
@@ -1509,13 +1509,13 @@ export const ILES = [
     ]
   },
   {
-    "id": "refuge",
+    "id": "lv2-3e-travel",
     "name": "Refuge des carnets",
     "module": "Le voyage, le récit, relier ses idées",
     "subject": "lv2",
     "classe": "3e",
     "description": "Raconter un voyage au passé, lire les carnets des voyageurs, comparer, relier deux idées : dans ta deuxième langue.",
-    "block": "bardeau",
+    "block": "lv2-3e-travel",
     "guardian": "le Papillon de cuivre",
     "icon": "languages",
     "creature": {
@@ -1523,7 +1523,7 @@ export const ILES = [
     },
     "exercises": [
       {
-        "id": "es-viaje",
+        "id": "es-past",
         "title": "¿Adónde fuiste?",
         "description": "Le voyage au passé : fui, visitó ; puis hier ou demain, ir a + infinitif.",
         "programme": [
@@ -1533,7 +1533,7 @@ export const ILES = [
         "lv2": "es"
       },
       {
-        "id": "es-relato",
+        "id": "es-stories",
         "title": "Historias de viaje",
         "description": "Une petite histoire de voyage, puis l’ordre de l’histoire : primero, luego, al final.",
         "programme": [
@@ -1543,7 +1543,7 @@ export const ILES = [
         "lv2": "es"
       },
       {
-        "id": "es-paises",
+        "id": "es-countries",
         "title": "Países y ciudades",
         "description": "Les documents du voyage, puis comparer : más, menos, tan… como.",
         "programme": [
@@ -1555,7 +1555,7 @@ export const ILES = [
         "lv2": "es"
       },
       {
-        "id": "es-porque",
+        "id": "es-connectives",
         "title": "Porque, cuando, pero",
         "description": "Relier deux idées, puis les faux amis.",
         "programme": [
@@ -1565,7 +1565,7 @@ export const ILES = [
         "lv2": "es"
       },
       {
-        "id": "de-reise",
+        "id": "de-past",
         "title": "Wohin bist du gefahren?",
         "description": "Le Perfekt avec haben, puis haben ou sein.",
         "programme": [
@@ -1575,7 +1575,7 @@ export const ILES = [
         "lv2": "de"
       },
       {
-        "id": "de-geschichte",
+        "id": "de-stories",
         "title": "Reisegeschichten",
         "description": "Une petite histoire de voyage, puis l’ordre de l’histoire : zuerst, dann, am Ende.",
         "programme": [
@@ -1585,7 +1585,7 @@ export const ILES = [
         "lv2": "de"
       },
       {
-        "id": "de-unterwegs",
+        "id": "de-on-the-road",
         "title": "Unterwegs",
         "description": "Mit + datif, puis comparer : größer als, so… wie.",
         "programme": [
@@ -1597,7 +1597,7 @@ export const ILES = [
         "lv2": "de"
       },
       {
-        "id": "de-weil-dass",
+        "id": "de-connectives",
         "title": "Weil und dass",
         "description": "Weil et dass : le verbe à la fin ; puis les faux amis.",
         "programme": [

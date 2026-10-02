@@ -59,7 +59,9 @@ export async function prepareSite() {
       const body = readFileSync(full, 'utf8');
       return { path, body, title: titleOf(body, path), generated: false, updated: gitDate(posix.join('www', path)) };
     });
-  const generated = (await generatePages()).map((p) => ({ ...p, note: GAME_NOTE })).map((p) => ({
+  const produites = await generatePages();
+  const redirections = produites.filter((p) => p.redirect);
+  const generated = produites.filter((p) => !p.redirect).map((p) => ({ ...p, note: GAME_NOTE })).map((p) => ({
     ...p,
     generated: true,
     updated: today,
@@ -82,6 +84,14 @@ export async function prepareSite() {
   cpSync(join(root, 'public', 'blocland.svg'), join(pub, 'blocland.svg'));
   cpSync(join(root, 'public', 'fonts', 'luciole'), join(pub, 'fonts', 'luciole'), { recursive: true });
   cpSync(join(THEME, 'sw.js'), join(pub, 'sw.js'));
+  // Une ancienne adresse de page (une île avant les identifiants neutres) : un renvoi vers la page d'aujourd'hui.
+  for (const { path, redirect } of redirections) {
+    mkdirSync(dirname(join(pub, path)), { recursive: true });
+    writeFileSync(
+      join(pub, path),
+      `<!doctype html>\n<html lang="fr">\n<head>\n<meta charset="utf-8">\n<meta http-equiv="refresh" content="0; url=${redirect}">\n<link rel="canonical" href="${redirect}">\n<title>Page déplacée</title>\n</head>\n<body>\n<p>Cette page a changé d’adresse : <a href="${redirect}">la page de l’île</a>.</p>\n</body>\n</html>\n`,
+    );
+  }
   // Les captures d'écran du jeu : servies sous /captures/. Elles ne sont pas dans le dépôt ; la CI les fait
   // (npm run www:captures) avant ce build. Une image citée par une page doit être une capture déclarée dans
   // scripts/www/captures.mjs : une capture renommée ou oubliée casse le build, pas seulement l'image.

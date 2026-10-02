@@ -1,8 +1,8 @@
 import { panneauReplie, retenirPanneauReplie } from './panneauReplie';
 
 it('retient l’île dont le panneau est replié, et l’oublie quand un panneau s’ouvre', () => {
-  retenirPanneauReplie('foret');
-  expect(panneauReplie()).toBe('foret');
+  retenirPanneauReplie('french-6e-phonology');
+  expect(panneauReplie()).toBe('french-6e-phonology');
   retenirPanneauReplie(null);
   expect(panneauReplie()).toBeNull();
 });

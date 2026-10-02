@@ -37,21 +37,21 @@ it('un chemin à pied contourne un arbre, ne marche pas sur l’eau et ne monte 
 });
 
 it('d’île en île, le bonhomme ne repasse pas par le milieu des îles traversées et contourne le décor', () => {
-  const bridges = ['foret-plaine', 'plaine-riviere', 'foret-mine'];
+  const bridges = ['french-6e-phonology-maths-6e-calculation', 'maths-6e-calculation-maths-6e-fractions', 'french-6e-phonology-french-6e-letter-confusion'];
   const village = { parts: {}, log: [], links: bridges };
   const cubes = worldCubes('6e', {}, village);
   const ground = walkGround(cubes, creaturePlacements('6e', bridges));
-  const route = avatarRoute('riviere', 'mine', bridges, ground)!;
-  expect(route[0]).toEqual(avatarHome('riviere'));
-  expect(route[route.length - 1]).toEqual(avatarHome('mine'));
+  const route = avatarRoute('maths-6e-fractions', 'french-6e-letter-confusion', bridges, ground)!;
+  expect(route[0]).toEqual(avatarHome('maths-6e-fractions'));
+  expect(route[route.length - 1]).toEqual(avatarHome('french-6e-letter-confusion'));
   // La Plaine et la Forêt sont traversées : pas de détour par la place du bonhomme.
-  for (const id of ['plaine', 'foret'] as const) {
+  for (const id of ['maths-6e-calculation', 'french-6e-phonology'] as const) {
     const home = avatarHome(id);
     expect(route.some((p) => p.x === home.x && p.y === home.y)).toBe(false);
   }
   // Chaque point hors ouvrage est une case libre du sol, et les pieds ne sautent jamais plus d'un bloc entre deux points.
   const deck = new Set(BRIDGES.filter((b) => bridges.includes(b.id)).flatMap((b) => bridgePath(b).map((c) => `${c.x},${c.y}`)));
-  const homes = new Set(['riviere', 'mine'].map((id) => `${avatarHome(id as 'mine').x},${avatarHome(id as 'mine').y}`));
+  const homes = new Set(['maths-6e-fractions', 'french-6e-letter-confusion'].map((id) => `${avatarHome(id as 'french-6e-letter-confusion').x},${avatarHome(id as 'french-6e-letter-confusion').y}`));
   for (const p of route) {
     const k = `${p.x},${p.y}`;
     if (deck.has(k) || homes.has(k)) continue;
@@ -66,5 +66,5 @@ it('d’île en île, le bonhomme ne repasse pas par le milieu des îles travers
   const lastStone = route.map((p) => deck.has(`${p.x},${p.y}`)).lastIndexOf(true);
   expect(route.length - 1 - lastStone).toBeGreaterThanOrEqual(2);
   // Les îles traversées sont bien celles du chemin.
-  expect(new Set(route.map((p) => islandAt('6e', p.x, p.y)))).toEqual(new Set(['riviere', 'plaine', 'foret', 'mine']));
+  expect(new Set(route.map((p) => islandAt('6e', p.x, p.y)))).toEqual(new Set(['maths-6e-fractions', 'maths-6e-calculation', 'french-6e-phonology', 'french-6e-letter-confusion']));
 });

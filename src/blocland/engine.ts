@@ -1,7 +1,7 @@
 // Moteur Blocland : étoiles, récompenses, répétition espacée, streak et adaptation.
 // Logique pure (l'heure et le hasard sont passés en paramètres) pour être testée facilement.
 import type { BiomeId, BlockId } from './biomes';
-import { BLOCKS, getBiome } from './biomes';
+import { BIOMES, BLOCKS, getBiome } from './biomes';
 import { starsFor } from '../core/stars';
 import { GAME_VERSION, translateGame } from '../core/migration';
 import type { ExerciseDef, ItemResult } from './exercises/types';
@@ -245,7 +245,8 @@ export function sanitizeState(input: unknown): GameState {
   const played = new Set<BiomeId>();
   for (const [id, p] of Object.entries(progress)) {
     if (p.stars < 1) continue;
-    const biome = getBiome(id.slice(0, id.indexOf('-')));
+    // L'exercice commence par l'identifiant de son lieu, qui contient lui-même des tirets (`french-6e-phonology-…`).
+    const biome = BIOMES.find((b) => id.startsWith(`${b.id}-`));
     if (biome) played.add(biome.id);
   }
   links = grantAccess(links, played);
@@ -608,7 +609,7 @@ export interface PortalCompletion {
  * streak du jour. Les étoiles et le Gardien ne changent pas : ils restent ceux des missions d'île.
  */
 export function completePortalQuest(state: GameState, score: number, firstTime: boolean, today: string, rng: () => number = Math.random): PortalCompletion {
-  const school = archipelagoOf(state.world.place ?? 'foret').school;
+  const school = archipelagoOf(state.world.place ?? 'french-6e-phonology').school;
   const block = getBiome(school)!.block;
   const anyCorrect = score > 0;
   const bonus = blocksBonus(starsFor(score), firstTime, anyCorrect);

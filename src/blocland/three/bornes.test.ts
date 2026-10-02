@@ -10,7 +10,7 @@ function bornes() {
   bonhomme.position.set(4, 2, 6);
   const b = creerBornes({ scene } as Monde, () => bonhomme, { carte: true } as Instant);
   type Mission = NonNullable<EnCasesDuMonde['quests']>[number];
-  const mission = (id: string, x: number, state: Mission['state']) => ({ id, biome: 'volcan', typeId: 't', cell: { x, y: 0, z: 1 }, state }) as Mission;
+  const mission = (id: string, x: number, state: Mission['state']) => ({ id, biome: 'maths-6e-decimals', typeId: 't', cell: { x, y: 0, z: 1 }, state }) as Mission;
   b.poserLesMissions([mission('volcan:a', 0, 'new'), mission('volcan:b', 3, 2)]);
   b.poserLeChemin([0, 1, 2, 3].map((x) => ({ x, y: 5, z: 1 })));
   b.poserLaFleche({ x: 2, y: 2, z: 1 });
@@ -51,7 +51,7 @@ it('les étoiles gagnées d’une borne : une pile en un seul maillage (un appel
   const scene = new THREE.Scene();
   const b = creerBornes({ scene } as Monde, () => new THREE.Object3D(), { carte: false } as Instant);
   type Mission = NonNullable<EnCasesDuMonde['quests']>[number];
-  const mission = (id: string, x: number, state: Mission['state']) => ({ id, biome: 'volcan', typeId: 't', cell: { x, y: 0, z: 1 }, state }) as Mission;
+  const mission = (id: string, x: number, state: Mission['state']) => ({ id, biome: 'maths-6e-decimals', typeId: 't', cell: { x, y: 0, z: 1 }, state }) as Mission;
   b.poserLesMissions([mission('volcan:a', 0, 3), mission('volcan:b', 3, 1)]);
   const [trois, une] = b.missions.children;
   expect(trois.children).toHaveLength(1);

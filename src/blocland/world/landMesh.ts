@@ -24,7 +24,7 @@
 //   une case, et le bonhomme reste posé sur la surface qu'on voit.
 import type { VoxelCube } from './cube';
 import { AMBIENCE, mixColor } from './daylight';
-import { ALTITUDE, type ArchipelagoId, type Ground } from './map';
+import { ALTITUDE, graineDuDessin, type ArchipelagoId, type Ground } from './map';
 import { cielDe, couleurDeMatiere, couleurDuSol, laveQuiBrille, MATIERES, SOLEIL_DIRECTION, SOLS, type Couleur } from './palette';
 import type { TextureKind } from './pixels';
 import { decorPose } from './decor';
@@ -638,8 +638,9 @@ export function nuanceDuSol(x: number, y: number, z: number, dessus: boolean, al
 
 /** L'épaisseur des strates d'une île : 2 ou 3 blocs, tirée une fois par île. */
 export function epaisseurDesStrates(ile: string): 2 | 3 {
+  const graine = graineDuDessin(ile);
   let h = 2166136261;
-  for (let i = 0; i < ile.length; i++) h = Math.imul(h ^ ile.charCodeAt(i), 16777619);
+  for (let i = 0; i < graine.length; i++) h = Math.imul(h ^ graine.charCodeAt(i), 16777619);
   return (h >>> 0) % 2 === 0 ? 2 : 3;
 }
 

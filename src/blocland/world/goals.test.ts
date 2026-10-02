@@ -1,4 +1,4 @@
-import { BLOCKS, blockCount, type BlockId } from '../biomes';
+import { BLOC, BLOCKS, blockCount, type BlockId } from '../biomes';
 import { EMPTY_STATE, sanitizeState } from '../engine';
 import { textesDe } from '../../univers';
 import { BRIDGES, NOMS_ARCHIPELS } from './archipelago';
@@ -18,65 +18,65 @@ const nextGoal = (state: Etat, island: Ile, univers: Univers = 'blocland') => ne
 const nextGoalInfo = (state: Etat, island: Ile) => nextGoalInfoDe(state, island, NOMS_ARCHIPELS, textesDe('blocland').libelles);
 
 const [coque] = VEHICLE_STAGES;
-const guardians = (ids: string[]) => Object.fromEntries(ids.map((id) => [`${id}-gardien`, { stars: 2 }]));
+const guardians = (ids: string[]) => Object.fromEntries(ids.map((id) => [`${id}-challenge`, { stars: 2 }]));
 
 it('le prochain objectif est unique : d’abord ce qu’on peut faire tout de suite, sinon le plus proche', () => {
   const fresh = sanitizeState({});
   // 3 blocs pour le sentier, c'est plus proche que les bois de la cabane.
-  expect(nextGoal(fresh, 'foret')).toBe('Encore 3 blocs pour le sentier vers Mine des lettres.');
-  expect(nextGoalInfo(fresh, 'foret')).toMatchObject({ have: 0, need: 3 });
-  const some = sanitizeState({ stock: { bois: 5 } });
-  expect(nextGoal(some, 'foret')).toBe('Tu peux construire le sentier vers Mine des lettres.');
-  const cabane = plansFor('foret')[0].cells.length;
-  const rich = sanitizeState({ stock: { bois: cabane } });
-  expect(nextGoal(rich, 'foret')).toBe('Tu as tout pour finir La cabane de Mousso : pose tes blocs.');
-  expect(nextGoalInfo(rich, 'foret')).toMatchObject({ have: cabane, need: cabane });
+  expect(nextGoal(fresh, 'french-6e-phonology')).toBe('Encore 3 blocs pour le sentier vers Mine des lettres.');
+  expect(nextGoalInfo(fresh, 'french-6e-phonology')).toMatchObject({ have: 0, need: 3 });
+  const some = sanitizeState({ stock: { [BLOC.bois]: 5 } });
+  expect(nextGoal(some, 'french-6e-phonology')).toBe('Tu peux construire le sentier vers Mine des lettres.');
+  const cabane = plansFor('french-6e-phonology')[0].cells.length;
+  const rich = sanitizeState({ stock: { [BLOC.bois]: cabane } });
+  expect(nextGoal(rich, 'french-6e-phonology')).toBe('Tu as tout pour finir La cabane de Mousso : pose tes blocs.');
+  expect(nextGoalInfo(rich, 'french-6e-phonology')).toMatchObject({ have: cabane, need: cabane });
   // Tous les plans posés et tous les ouvrages construits : plus rien à dire.
-  const plans = Object.fromEntries(plansFor('foret').map((p) => [p.id, planCells(p).map((c) => c.key)]));
-  const done = sanitizeState({ world: { parts: plans, links: ['foret-mine', 'foret-ferme', 'foret-horloge'] } });
-  expect(nextGoal(done, 'foret')).toBeNull();
-  expect(nextGoal(EMPTY_STATE, 'mine')).toBe('Encore 3 blocs pour le sentier vers Forêt des sons.');
+  const plans = Object.fromEntries(plansFor('french-6e-phonology').map((p) => [p.id, planCells(p).map((c) => c.key)]));
+  const done = sanitizeState({ world: { parts: plans, links: ['french-6e-phonology-french-6e-letter-confusion', 'french-6e-phonology-french-6e-grammar-spelling', 'french-6e-phonology-english-6e-grammar'] } });
+  expect(nextGoal(done, 'french-6e-phonology')).toBeNull();
+  expect(nextGoal(EMPTY_STATE, 'french-6e-letter-confusion')).toBe('Encore 3 blocs pour le sentier vers Forêt des sons.');
 });
 
 it('sur le port, le prochain objectif parle du Bloc-Navire : ses blocs, puis ses Gardiens, puis l’embarquement', () => {
   // Au début, sur la Plaine : l'ouvrage le moins cher (3 blocs) est plus proche que le plan.
   const fresh = sanitizeState({});
-  expect(nextGoal(fresh, 'plaine')).toMatch(/^Encore 3 blocs pour le (bac vers Rivière des fractions|pont vers Volcan des décimaux)\.$/);
+  expect(nextGoal(fresh, 'maths-6e-calculation')).toMatch(/^Encore 3 blocs pour le (bac vers Rivière des fractions|pont vers Volcan des décimaux)\.$/);
   // Les plans de la Plaine finis et ses ouvrages construits : le chantier du navire.
-  const plans = Object.fromEntries(plansFor('plaine').map((p) => [p.id, planCells(p).map((c) => c.key)]));
-  const built = ['plaine-riviere', 'plaine-volcan'];
-  expect(nextGoal(sanitizeState({ world: { parts: plans, links: built } }), 'plaine')).toMatch(/^Encore \d+ blocs? de (sable|bois)( et \d+ [^.]+)? pour le Bloc-Navire\.$/);
-  const stocked = sanitizeState({ world: { parts: plans, links: built }, stock: { sable: 30, bois: 30, galet: 10, pierre: 5 } });
-  expect(nextGoal(stocked, 'plaine')).toBe('Tu as tout pour le Bloc-Navire : pose tes blocs.');
+  const plans = Object.fromEntries(plansFor('maths-6e-calculation').map((p) => [p.id, planCells(p).map((c) => c.key)]));
+  const built = ['maths-6e-calculation-maths-6e-fractions', 'maths-6e-calculation-maths-6e-decimals'];
+  expect(nextGoal(sanitizeState({ world: { parts: plans, links: built } }), 'maths-6e-calculation')).toMatch(/^Encore \d+ blocs? de (sable|bois)( et \d+ [^.]+)? pour le Bloc-Navire\.$/);
+  const stocked = sanitizeState({ world: { parts: plans, links: built }, stock: { [BLOC.sable]: 30, [BLOC.bois]: 30, [BLOC.galet]: 10, [BLOC.pierre]: 5 } });
+  expect(nextGoal(stocked, 'maths-6e-calculation')).toBe('Tu as tout pour le Bloc-Navire : pose tes blocs.');
   // Toutes ses cases posées : il manque des Gardiens.
   const hull = { ...plans, [coque.id]: planCells(coque).map((c) => c.key) };
-  const posed = sanitizeState({ world: { parts: hull, links: built }, progress: guardians(['foret']) });
-  expect(nextGoal(posed, 'plaine')).toBe('Bats encore 2 Gardiens des Premiers Rivages pour la voile.');
-  expect(nextGoal(posed, 'plaine', 'archipeo')).toBe('Rallume encore 2 Gardiens des Premiers Rivages pour la voile.');
+  const posed = sanitizeState({ world: { parts: hull, links: built }, progress: guardians(['french-6e-phonology']) });
+  expect(nextGoal(posed, 'maths-6e-calculation')).toBe('Bats encore 2 Gardiens des Premiers Rivages pour la voile.');
+  expect(nextGoal(posed, 'maths-6e-calculation', 'archipeo')).toBe('Rallume encore 2 Gardiens des Premiers Rivages pour la voile.');
   // Trois Gardiens : prêt à partir, et c'est la seule phrase.
-  const ready = sanitizeState({ world: { parts: hull, links: built }, progress: guardians(['foret', 'plaine', 'mine']) });
-  expect(nextGoal(ready, 'plaine')).toBe('Le Bloc-Navire est prêt : embarque vers les Îles Brumeuses !');
+  const ready = sanitizeState({ world: { parts: hull, links: built }, progress: guardians(['french-6e-phonology', 'maths-6e-calculation', 'french-6e-letter-confusion']) });
+  expect(nextGoal(ready, 'maths-6e-calculation')).toBe('Le Bloc-Navire est prêt : embarque vers les Îles Brumeuses !');
   // Parti : plus un mot du navire sur ce port.
-  const sailed = sanitizeState({ world: { parts: hull, links: [...built, 'voyage-5e'] }, progress: guardians(['foret', 'plaine', 'mine']) });
-  expect(nextGoal(sailed, 'plaine')).toBeNull();
+  const sailed = sanitizeState({ world: { parts: hull, links: [...built, 'passage-5e'] }, progress: guardians(['french-6e-phonology', 'maths-6e-calculation', 'french-6e-letter-confusion']) });
+  expect(nextGoal(sailed, 'maths-6e-calculation')).toBeNull();
 });
 
 it('les quantités de blocs s’accordent : « 18 toits et 3 lanternes », « 3 blocs de sable » (référent dys, 28/09)', () => {
   // Le deuxième plan de la Forêt : il manque des blocs de finition, qu'on compte comme des objets.
-  const cabane = plansFor('foret')[0];
+  const cabane = plansFor('french-6e-phonology')[0];
   const plans = { [cabane.id]: planCells(cabane).map((c) => c.key) };
-  expect(nextGoal(sanitizeState({ world: { parts: plans, links: ['foret-mine', 'foret-ferme', 'foret-horloge'] } }), 'foret')).toBe(
+  expect(nextGoal(sanitizeState({ world: { parts: plans, links: ['french-6e-phonology-french-6e-letter-confusion', 'french-6e-phonology-french-6e-grammar-spelling', 'french-6e-phonology-english-6e-grammar'] } }), 'french-6e-phonology')).toBe(
     'Encore 18 toits et 3 lanternes pour Le toit de la cabane.',
   );
-  expect(blockCount('lanterne', 1)).toBe('1 lanterne');
-  expect(blockCount('barriere', 5)).toBe('5 barrières');
-  expect(blockCount('panneau', 2)).toBe('2 panneaux');
-  expect(blockCount('cristal', 2)).toBe('2 cristaux');
-  expect(blockCount('taille', 4)).toBe('4 pierres de taille');
+  expect(blockCount(BLOC.lanterne, 1)).toBe('1 lanterne');
+  expect(blockCount(BLOC.barriere, 5)).toBe('5 barrières');
+  expect(blockCount(BLOC.panneau, 2)).toBe('2 panneaux');
+  expect(blockCount(BLOC.cristal, 2)).toBe('2 cristaux');
+  expect(blockCount(BLOC.taille, 4)).toBe('4 pierres de taille');
   // Les matières se comptent en blocs, le nom reste au singulier : ni « 2 ors », ni « 3 verres ».
-  expect(blockCount('sable', 3)).toBe('3 blocs de sable');
-  expect(blockCount('or', 2)).toBe('2 blocs d’or');
-  expect(blockCount('bois', 1)).toBe('1 bloc de bois');
+  expect(blockCount(BLOC.sable, 3)).toBe('3 blocs de sable');
+  expect(blockCount(BLOC.or, 2)).toBe('2 blocs d’or');
+  expect(blockCount(BLOC.bois, 1)).toBe('1 bloc de bois');
   // Aucun bloc ne reste au singulier après un nombre de 2 ou plus.
   for (const id of Object.keys(BLOCKS) as BlockId[]) {
     const text = blockCount(id, 2);
@@ -89,23 +89,23 @@ it('la vue d’ensemble cadre les îles ouvertes et leurs voisines, puis s’él
   const start = overviewBounds('6e', []);
   const all = worldBounds('6e');
   expect(start.maxX - start.minX).toBeLessThan(all.maxX - all.minX);
-  const later = overviewBounds('6e', ['foret-mine', 'mine-carriere']);
+  const later = overviewBounds('6e', ['french-6e-phonology-french-6e-letter-confusion', 'french-6e-letter-confusion-french-6e-word-spelling']);
   expect(later.maxX).toBeGreaterThan(start.maxX);
   // L'étendue de la scène comprend le port (la jetée et le navire, devant la Plaine).
-  const dock = dockBox('plaine');
+  const dock = dockBox('maths-6e-calculation');
   expect(all.minY).toBeLessThanOrEqual(dock.y0 - 2);
   expect(all.maxX).toBeGreaterThanOrEqual(dock.x1 + 2);
 });
 
 it('une île fermée dit l’ouvrage précis qui y mène, ou l’île à ouvrir d’abord', () => {
   const fresh = sanitizeState({});
-  expect(lockedHint(fresh, 'mine')).toBe('Pas si vite ! Pour venir ici, construis le sentier depuis Forêt des sons : 3 blocs.');
+  expect(lockedHint(fresh, 'french-6e-letter-confusion')).toBe('Pas si vite ! Pour venir ici, construis le sentier depuis Forêt des sons : 3 blocs.');
   // La Carrière est à deux ouvrages : il faut d'abord ouvrir la Mine.
-  expect(lockedHint(fresh, 'carriere')).toBe('Pas si vite ! Ouvre d’abord Mine des lettres : de là, un ouvrage mène jusqu’ici.');
-  expect(lockedHint(sanitizeState({ world: { links: ['foret-mine'] } }), 'carriere')).toContain('construis le pont depuis Mine des lettres : 5 blocs');
+  expect(lockedHint(fresh, 'french-6e-word-spelling')).toBe('Pas si vite ! Ouvre d’abord Mine des lettres : de là, un ouvrage mène jusqu’ici.');
+  expect(lockedHint(sanitizeState({ world: { links: ['french-6e-phonology-french-6e-letter-confusion'] } }), 'french-6e-word-spelling')).toContain('construis le pont depuis Mine des lettres : 5 blocs');
   // Un escalier dans les Monts : la condition est dite.
-  const monts = sanitizeState({ world: { links: ['voyage-5e', 'voyage-4e', 'atelier-falaise'] } });
-  expect(lockedHint(monts, 'cabinet')).toBe(
+  const monts = sanitizeState({ world: { links: ['passage-5e', 'passage-4e', 'maths-4e-algebra-french-4e-agreement'] } });
+  expect(lockedHint(monts, 'french-4e-vocabulary')).toBe(
     'Pas si vite ! Pour venir ici, construis l’escalier taillé depuis Falaise des accords : 5 blocs. Il faut aussi un premier plan terminé de l’autre côté.',
   );
 });
@@ -113,35 +113,35 @@ it('une île fermée dit l’ouvrage précis qui y mène, ou l’île à ouvrir 
 it('une île d’un autre archipel parle du Bloc-Navire : ses blocs, ses Gardiens, l’embarquement, ou l’archipel d’avant', () => {
   const fresh = sanitizeState({});
   const total = coque.cells.length;
-  expect(lockedHint(fresh, 'carrefour')).toBe(
+  expect(lockedHint(fresh, 'french-5e-homophones')).toBe(
     `Pas si vite ! Mon île est dans les Îles Brumeuses, de l’autre côté de la mer. Finis le Bloc-Navire sur Plaine des nombres : encore ${total} blocs.`,
   );
   const hull = { [coque.id]: planCells(coque).map((c) => c.key) };
-  expect(lockedHint(sanitizeState({ world: { parts: hull }, progress: guardians(['foret', 'plaine']) }), 'marche')).toBe(
+  expect(lockedHint(sanitizeState({ world: { parts: hull }, progress: guardians(['french-6e-phonology', 'maths-6e-calculation']) }), 'maths-5e-proportionality')).toBe(
     'Pas si vite ! Mon île est dans les Îles Brumeuses, de l’autre côté de la mer. Le Bloc-Navire attend sur Plaine des nombres : bats encore 1 Gardien des Premiers Rivages, puis embarque.',
   );
-  expect(lockedHint(sanitizeState({ world: { parts: hull }, progress: guardians(['foret', 'plaine', 'mine']) }), 'marche')).toBe(
+  expect(lockedHint(sanitizeState({ world: { parts: hull }, progress: guardians(['french-6e-phonology', 'maths-6e-calculation', 'french-6e-letter-confusion']) }), 'maths-5e-proportionality')).toBe(
     'Pas si vite ! Mon île est dans les Îles Brumeuses, de l’autre côté de la mer. Le Bloc-Navire est prêt sur Plaine des nombres : embarque !',
   );
   // Deux archipels plus loin : d'abord le précédent.
-  expect(lockedHint(fresh, 'forge')).toBe('Pas si vite ! Mon île est dans les Anciens Ateliers. Va d’abord jusqu’aux Îles Brumeuses avec le Bloc-Navire.');
-  expect(lockedHint(sanitizeState({ world: { links: ['voyage-5e'] } }), 'phare')).toBe(
+  expect(lockedHint(fresh, 'maths-4e-powers')).toBe('Pas si vite ! Mon île est dans les Anciens Ateliers. Va d’abord jusqu’aux Îles Brumeuses avec le Bloc-Navire.');
+  expect(lockedHint(sanitizeState({ world: { links: ['passage-5e'] } }), 'maths-3e-functions')).toBe(
     'Pas si vite ! Mon île est dans les Îles du Ciel. Va d’abord jusqu’aux Anciens Ateliers avec le Bloc-Navire.',
   );
-  expect(lockedHint(sanitizeState({ world: { links: ['voyage-5e', 'voyage-4e'] } }), 'phare')).toContain('de l’autre côté du ciel. Finis le Bloc-Navire sur Atelier du calcul littéral');
+  expect(lockedHint(sanitizeState({ world: { links: ['passage-5e', 'passage-4e'] } }), 'maths-3e-functions')).toContain('de l’autre côté du ciel. Finis le Bloc-Navire sur Atelier du calcul littéral');
 });
 
 it('dans Archipéo, l’indice d’une île fermée dit un Gardien rallumé, jamais vaincu ni battu', () => {
   const hull = { [coque.id]: planCells(coque).map((c) => c.key) };
-  expect(lockedHint(sanitizeState({ world: { parts: hull }, progress: guardians(['foret', 'plaine']) }), 'marche', 'archipeo')).toBe(
+  expect(lockedHint(sanitizeState({ world: { parts: hull }, progress: guardians(['french-6e-phonology', 'maths-6e-calculation']) }), 'maths-5e-proportionality', 'archipeo')).toBe(
     'Pas si vite ! Mon île est dans les Îles Brumeuses, de l’autre côté de la mer. Le Bloc-Navire attend sur Plaine des nombres : rallume encore 1 Gardien des Premiers Rivages, puis embarque.',
   );
   // L'Atelier des textes, que seul le col du Phare des fonctions peut ouvrir : ses autres voisines restent fermées.
-  const voisines: string[] = BRIDGES.filter((b) => b.from === 'textes' || b.to === 'textes').flatMap((b) => [b.from, b.to]).filter((id) => id !== 'phare');
+  const voisines: string[] = BRIDGES.filter((b) => b.from === 'french-3e-close-reading' || b.to === 'french-3e-close-reading').flatMap((b) => [b.from, b.to]).filter((id) => id !== 'maths-3e-functions');
   const ouverts = BRIDGES.filter((b) => !voisines.includes(b.from) && !voisines.includes(b.to)).map((b) => b.id);
-  const col = sanitizeState({ world: { links: ['voyage-5e', 'voyage-4e', 'voyage-3e', ...ouverts] } });
-  expect(lockedHint(col, 'textes', 'archipeo')).toBe(
+  const col = sanitizeState({ world: { links: ['passage-5e', 'passage-4e', 'passage-3e', ...ouverts] } });
+  expect(lockedHint(col, 'french-3e-close-reading', 'archipeo')).toBe(
     'Pas si vite ! Pour venir ici, construis le col depuis Phare des fonctions : 6 blocs. Il faut aussi avoir rallumé le Gardien de l’autre côté.',
   );
-  expect(lockedHint(col, 'textes')).toContain('Il faut aussi avoir vaincu le Gardien de l’autre côté.');
+  expect(lockedHint(col, 'french-3e-close-reading')).toContain('Il faut aussi avoir vaincu le Gardien de l’autre côté.');
 });

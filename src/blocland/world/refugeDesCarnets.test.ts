@@ -1,7 +1,7 @@
 // Le rendu du Refuge des carnets (LV2, 3e), décidé par le directeur artistique le 29/09 après les relectures
 // (consultants Archipéo et Blocland, référent dys) : la place sur la carte, le cœur d'herbe et le lac, le refuge sans
 // lanterne, ses trois plans, le bardeau, Timbre et le Papillon de cuivre dans les deux univers.
-import { BIOMES, BLOCKS, estIleLv2, type BiomeId } from '../biomes';
+import { BLOC, BIOMES, BLOCKS, estIleLv2, type BiomeId } from '../biomes';
 import { grantAccess } from './archipelago';
 import { buildingStages } from './architect';
 import { fenetresDe } from './construction';
@@ -21,19 +21,19 @@ import { planCells, plansFor } from './plans';
 import { HAUT_DES_NUAGES, NUAGES, nuagesDe, placeDesNuages } from './faune';
 import { bossIsletOrigin, HORS_DE_LA_COLONNE, ISLET_H, ISLET_W, viewYaw, worldBounds, worldCubes } from './terrain';
 
-const ouvert = { parts: {}, log: [], links: grantAccess([], ['refuge']) };
+const ouvert = { parts: {}, log: [], links: grantAccess([], ['lv2-3e-travel']) };
 
 describe('la place du Refuge sur la carte du 3e', () => {
   it('à l’est du Château, un cran derrière, sans toucher sa terre', () => {
-    const [r, c] = [landBox(islandDef('refuge')), landBox(islandDef('chateau'))];
+    const [r, c] = [landBox(islandDef('lv2-3e-travel')), landBox(islandDef('english-3e-grammar'))];
     expect(r.x0).toBeGreaterThan(c.x1);
-    expect(islandDef('refuge').core.y).toBeGreaterThan(islandDef('chateau').core.y);
-    expect(islandDef('refuge').altitude).toBe(9);
+    expect(islandDef('lv2-3e-travel').core.y).toBeGreaterThan(islandDef('english-3e-grammar').core.y);
+    expect(islandDef('lv2-3e-travel').altitude).toBe(9);
   });
 });
 
 describe('le cœur d’herbe et le lac d’altitude', () => {
-  const def = islandDef('refuge');
+  const def = islandDef('lv2-3e-travel');
   const cubes = worldCubes('3e', {}, ouvert, false);
 
   it('le cœur est en herbe ; le bardeau n’est jamais le sol', () => {
@@ -45,7 +45,7 @@ describe('le cœur d’herbe et le lac d’altitude', () => {
     }
     expect(dessus.size).toBe(CORE * CORE);
     for (const q of dessus.values()) expect(q.color).toBe(GRASS);
-    expect(cubes.some((q) => q.tag === 'refuge' && q.sol && q.texture === 'bardeau')).toBe(false);
+    expect(cubes.some((q) => q.tag === 'lv2-3e-travel' && q.sol && q.texture === 'bardeau')).toBe(false);
   });
 
   it('un seul lac, posé sur l’herbe (au niveau du sol, pas un trou), loin du bord, bordé de pierre plate (sans ponton)', () => {
@@ -92,40 +92,40 @@ describe('le cœur d’herbe et le lac d’altitude', () => {
       }
     expect(cells.filter((c) => c.ground === 'herbe').length).toBeGreaterThan(cells.length / 2);
     // Pas de ponton ni de barque.
-    expect(cubes.some((q) => q.decor?.startsWith('refuge/ponton'))).toBe(false);
+    expect(cubes.some((q) => q.decor?.startsWith('lv2-3e-travel/ponton'))).toBe(false);
     // Ni cascade : le lac ne déborde pas vers le bord.
-    expect(cubes.some((q) => q.tag === 'refuge' && q.decor?.includes('cascade'))).toBe(false);
+    expect(cubes.some((q) => q.tag === 'lv2-3e-travel' && q.decor?.includes('cascade'))).toBe(false);
   });
 });
 
 describe('le refuge, sans lanterne', () => {
   it('aucune lanterne, allumée ou non, ni au décor ni aux plans (Blocland, la nuit : rien n’y luit)', () => {
-    const { progress, world: village } = { progress: {}, world: { ...ouvert, parts: Object.fromEntries(plansFor('refuge').map((p) => [p.id, []])) } };
+    const { progress, world: village } = { progress: {}, world: { ...ouvert, parts: Object.fromEntries(plansFor('lv2-3e-travel').map((p) => [p.id, []])) } };
     const cubes = worldCubes('3e', progress, village, false);
-    expect(cubes.filter((q) => q.tag === 'refuge' && !q.bridge && (q.texture === 'lanterne' || q.color === BLOCKS.lanterne.side))).toEqual([]);
-    for (const etape of buildingStages('refuge', 'bardeau')) expect(etape.some((c) => c.block === 'lanterne')).toBe(false);
+    expect(cubes.filter((q) => q.tag === 'lv2-3e-travel' && !q.bridge && (q.texture === 'lanterne' || q.color === BLOCKS[BLOC.lanterne].side))).toEqual([]);
+    for (const etape of buildingStages('lv2-3e-travel', BLOC.bardeau)) expect(etape.some((c) => c.block === BLOC.lanterne)).toBe(false);
   });
 
   it('en Archipéo, une seule fenêtre peut s’allumer', () => {
     const plans = Object.fromEntries(
-      plansFor('refuge').map((p) => [p.id, planCells(p).map((c) => c.key)]),
+      plansFor('lv2-3e-travel').map((p) => [p.id, planCells(p).map((c) => c.key)]),
     );
     const cubes = worldCubes('3e', {}, { ...ouvert, parts: plans }, false);
-    expect(cubes.filter((q) => q.tag === 'refuge' && q.color === BLOCKS.bardeau.side).length).toBeGreaterThan(20);
-    const vitres = [...fenetresDe(cubes)].filter(([c, f]) => c.tag === 'refuge' && f.genre === 'vitre');
+    expect(cubes.filter((q) => q.tag === 'lv2-3e-travel' && q.color === BLOCKS[BLOC.bardeau].side).length).toBeGreaterThan(20);
+    const vitres = [...fenetresDe(cubes)].filter(([c, f]) => c.tag === 'lv2-3e-travel' && f.genre === 'vitre');
     expect(vitres.length).toBeLessThanOrEqual(1);
-    expect([...fenetresDe(cubes)].filter(([c, f]) => c.tag === 'refuge' && !c.bridge && f.genre === 'lanterne')).toEqual([]);
+    expect([...fenetresDe(cubes)].filter(([c, f]) => c.tag === 'lv2-3e-travel' && !c.bridge && f.genre === 'lanterne')).toEqual([]);
   });
 });
 
 describe('les trois plans du refuge', () => {
-  const plans = plansFor('refuge');
+  const plans = plansFor('lv2-3e-travel');
 
   it('la poste de Timbre, la salle commune, le pigeonnier du refuge : leurs noms, leurs XP, leurs coffres', () => {
     expect(plans.map((p) => p.name)).toEqual(['La poste de Timbre', 'La salle commune', 'Le pigeonnier du refuge']);
     expect(plans.map((p) => p.reward.xp)).toEqual([40, 50, 60]);
-    expect(plans[0].reward.chest.taille).toBe(3);
-    expect(plans[2].reward.chest).toMatchObject({ or: 2, cristal: 2 });
+    expect(plans[0].reward.chest[BLOC.taille]).toBe(3);
+    expect(plans[2].reward.chest).toMatchObject({ [BLOC.or]: 2, [BLOC.cristal]: 2 });
     // « poste » en minuscule, jamais « La Poste » ; « refuge » aussi, dans les phrases.
     for (const p of plans) {
       expect(p.done).not.toMatch(/La Poste|Refuge/);
@@ -134,29 +134,29 @@ describe('les trois plans du refuge', () => {
   });
 
   it('le premier plan ne demande que le bardeau et le bois (le casier à lettres) ; le bardeau et la pierre de taille partout', () => {
-    const [poste, salle, pigeonnier] = buildingStages('refuge', 'bardeau');
-    expect(new Set(poste.map((c) => c.block))).toEqual(new Set(['bardeau', 'bois']));
-    expect(salle.some((c) => c.block === 'taille')).toBe(true);
-    expect(pigeonnier.some((c) => c.block === 'taille')).toBe(true);
+    const [poste, salle, pigeonnier] = buildingStages('lv2-3e-travel', BLOC.bardeau);
+    expect(new Set(poste.map((c) => c.block))).toEqual(new Set([BLOC.bardeau, BLOC.bois]));
+    expect(salle.some((c) => c.block === BLOC.taille)).toBe(true);
+    expect(pigeonnier.some((c) => c.block === BLOC.taille)).toBe(true);
   });
 
   it('le pigeonnier : en pierre claire, quatre blocs de haut au plus, un trou d’envol entre deux blocs, la planche-perchoir dessous', () => {
-    const [, , cour] = buildingStages('refuge', 'bardeau');
+    const [, , cour] = buildingStages('lv2-3e-travel', BLOC.bardeau);
     // Le chantier est retourné d'est en ouest (la caméra du refuge le voit par l'est) : le pigeonnier de x = 0 à 2.
     const pigeonnier = cour.filter((c) => c.x <= 2 && c.y === 0);
     expect(Math.max(...pigeonnier.map((c) => c.z))).toBeLessThanOrEqual(3);
     const en = (x: number, z: number) => pigeonnier.find((c) => c.x === x && c.z === z)?.block;
     expect(en(1, 2)).toBeUndefined();
-    for (const [x, z] of [[2, 0], [2, 1], [2, 2], [0, 1], [0, 2]] as const) expect(en(x, z), `${x},${z}`).toBe('taille');
-    expect(en(1, 3)).toBe('toit');
-    expect(en(1, 1)).toBe('bois');
+    for (const [x, z] of [[2, 0], [2, 1], [2, 2], [0, 1], [0, 2]] as const) expect(en(x, z), `${x},${z}`).toBe(BLOC.taille);
+    expect(en(1, 3)).toBe(BLOC.toit);
+    expect(en(1, 1)).toBe(BLOC.bois);
   });
 
   it('la poste devant, face à la caméra de l’île : trois rangs de bardeau sous l’avant-toit, sa fenêtre', () => {
-    const [poste, finitions] = buildingStages('refuge', 'bardeau');
+    const [poste, finitions] = buildingStages('lv2-3e-travel', BLOC.bardeau);
     const facade = [...poste, ...finitions].filter((c) => c.x === 5 && c.y >= 2 && c.y <= 4 && c.z <= 2);
-    expect(facade.filter((c) => c.block === 'bardeau').length).toBe(8);
-    expect(facade.filter((c) => c.block === 'verre').length).toBe(1);
+    expect(facade.filter((c) => c.block === BLOC.bardeau).length).toBe(8);
+    expect(facade.filter((c) => c.block === BLOC.verre).length).toBe(1);
     // Rien devant elle, plus haut qu'un bloc (la caisse, le casier sont de côté).
     expect([...poste, ...finitions].some((c) => c.x > 5)).toBe(false);
   });
@@ -204,7 +204,7 @@ describe('le bardeau', () => {
       const d = max - Math.min(r, g, b);
       return { h: (((max === r ? ((g - b) / d) % 6 : max === g ? (b - r) / d + 2 : (r - g) / d + 4) * 60 + 360) % 360), s: max ? d / max : 0 };
     };
-    for (const c of [MATIERES.bardeau.cote, parseInt(BLOCKS.bardeau.side.slice(1), 16)]) {
+    for (const c of [MATIERES.bardeau.cote, parseInt(BLOCKS[BLOC.bardeau].side.slice(1), 16)]) {
       const t = teinte(c);
       expect(t.h).toBeGreaterThan(20);
       expect(t.h).toBeLessThan(38);
@@ -235,7 +235,7 @@ describe('le bardeau', () => {
 describe('le bardeau d’Archipéo', () => {
   it('en gris, ses murs se détachent des rives d’ardoise des toits du 3e', () => {
     const mur = couleurDeMatiere('3e', 'bardeau').cote;
-    const rives = couleursDuToit('3e', 'refuge').cote;
+    const rives = couleursDuToit('3e', 'lv2-3e-travel').cote;
     const [a, b] = [luminance(mur), luminance(rives)];
     expect((Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05)).toBeGreaterThanOrEqual(2);
   });
@@ -282,7 +282,7 @@ describe('le bardeau peint en 2D', () => {
 });
 
 describe('Timbre en cubes (Blocland)', () => {
-  const m = CREATURE_CUBES.refuge;
+  const m = CREATURE_CUBES['lv2-3e-travel'];
   const couleurEn = (x: number, y: number, z: number) => m.find((q) => q.x === x && q.y === y && q.z === z)?.color;
 
   it('la tête plate de cinq sur deux couches, sa rangée de devant crème, deux yeux sombres cernés de crème, sans moustaches', () => {
@@ -329,7 +329,7 @@ describe('Timbre en cubes (Blocland)', () => {
 });
 
 describe('le Papillon de cuivre en cubes (Blocland)', () => {
-  const g = GUARDIAN_CUBES.refuge;
+  const g = GUARDIAN_CUBES['lv2-3e-travel'];
   const [BORD, DEDANS] = ['#b87333', '#8a5226'];
   const en = (x: number, z: number) => g.find((q) => q.x === x && q.z === z);
 
@@ -384,7 +384,7 @@ describe('le Papillon de cuivre d’Archipéo', () => {
   });
 
   it('les fils suivent le contour des ailes, jamais des rayons : chaque sommet d’un fil est près du bord de son aile', () => {
-    const f = sentinelleEnFacettes({ ...STATUES.refuge, tour: undefined });
+    const f = sentinelleEnFacettes({ ...STATUES['lv2-3e-travel'], tour: undefined });
     const veines = f.table.findIndex((p) => p.nom === 'veines');
     const distanceAuBord = (px: number, py: number, c: readonly (readonly [number, number])[]) => {
       let d = Infinity;
@@ -413,7 +413,7 @@ describe('le Papillon de cuivre d’Archipéo', () => {
   });
 
   it('dans le monde, ses ailes se montrent de face aux caméras du Refuge (77°), du Château (19°) et du rallumage (85°)', () => {
-    const f = sentinellePeinte('refuge');
+    const f = sentinellePeinte('lv2-3e-travel');
     const sculpture = f.table.findIndex((p) => p.nom === 'sculpture');
     const lichen = [...f.teintes.keys()].filter((t) => f.teintes[t] === SENTINELLE.lichen && f.pieces[t] === sculpture);
     expect(lichen.length).toBeGreaterThan(0);
@@ -437,7 +437,7 @@ describe('les caméras des îles', () => {
   // de 1,6° (−0,4 avant) ; la Forge, écartée vers l'ouest, reste au pivot maximal. Aux Îles du Ciel, le cœur du Phare
   // passé à 20 (01/10/2026) : le Belvédère et l'Observatoire des données, écartés de deux cases, pivotent de 1,6° de plus
   // (30,4 et −30,4 avant).
-  const AVANT_LE_REFUGE: Record<string, number> = { foret: 0, ferme: 33.6, mine: -24.8, tour: 40, carriere: -40, plaine: 2.4, riviere: -33.6, volcan: 36.8, baie: 24.8, horloge: -0.8, glacier: 37.6, marche: 12.8, carrefour: 36, marais: 12.8, comptoir: -14.4, manoir: -14.4, relais: -38.4, forge: 40, atelier: 25.2, falaise: -2, cabinet: -26, theatre: -40, jardin: -40, gare: 40, belvedere: 32, phare: 0, donnees: -32, textes: 0, studio: 40, chateau: -40 };
+  const AVANT_LE_REFUGE: Record<string, number> = { 'french-6e-phonology': 0, 'french-6e-grammar-spelling': 33.6, 'french-6e-letter-confusion': -24.8, 'french-6e-reading': 40, 'french-6e-word-spelling': -40, 'maths-6e-calculation': 2.4, 'maths-6e-fractions': -33.6, 'maths-6e-decimals': 36.8, 'english-6e-vocabulary': 24.8, 'english-6e-grammar': -0.8, 'maths-5e-signed-numbers': 37.6, 'maths-5e-proportionality': 12.8, 'french-5e-homophones': 36, 'french-5e-conjugation': 12.8, 'english-5e-vocabulary': -14.4, 'english-5e-grammar': -14.4, 'lv2-5e-introductions': -38.4, 'maths-4e-powers': 40, 'maths-4e-algebra': 25.2, 'french-4e-agreement': -2, 'french-4e-vocabulary': -26, 'english-4e-comprehension': -40, 'lv2-4e-daily-life': -40, 'english-4e-grammar': 40, 'maths-3e-geometry': 32, 'maths-3e-functions': 0, 'maths-3e-statistics': -32, 'french-3e-close-reading': 0, 'english-3e-comprehension': 40, 'english-3e-grammar': -40 };
   it('gardent le cadrage d’avant le refuge, dans chaque archipel', () => {
     for (const [ile, deg] of Object.entries(AVANT_LE_REFUGE))
       expect((viewYaw(ile as BiomeId) * 180) / Math.PI, ile).toBeCloseTo(deg, 3);

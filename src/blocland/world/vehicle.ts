@@ -2,7 +2,7 @@
 // d'un archipel. La coque et la voile mènent aux Îles Brumeuses (par la mer), le ballon aux Anciens Ateliers (par les
 // airs), le réacteur aux Îles du Ciel. Les cases « kit » (voile, haut du ballon, feux) ne se gagnent pas : elles
 // arrivent d'elles-mêmes quand assez de Gardiens de l'archipel sont vaincus. Le reste se pose bloc par bloc.
-import { BLOCKS, type BiomeId, type BlockId } from '../biomes';
+import { BLOC, BLOCKS, type BiomeId, type BlockId } from '../biomes';
 import { isBossBeaten } from '../bossCore';
 import { ARCHIPELAGOS, islandsOf, reachedArchipelagos, voyageId, type ArchipelagoId } from './archipelago';
 import type { PlanCell, PlanDef } from './plans';
@@ -40,20 +40,20 @@ function fill(cells: PlanCell[], x0: number, y0: number, z0: number, w: number, 
 function coque(): { cells: PlanCell[]; kit: PlanCell[] } {
   const cells: PlanCell[] = [];
   // Le pont en sable clair (Carrière), la proue et la poupe en bois.
-  fill(cells, 1, 1, 0, 3, 6, 1, 'sable');
-  cells.push({ x: 2, y: 0, z: 0, block: 'bois' }, { x: 2, y: 7, z: 0, block: 'bois' });
+  fill(cells, 1, 1, 0, 3, 6, 1, BLOC.sable);
+  cells.push({ x: 2, y: 0, z: 0, block: BLOC.bois }, { x: 2, y: 7, z: 0, block: BLOC.bois });
   // Les bastingages en bois (Forêt).
-  fill(cells, 0, 1, 1, 1, 6, 1, 'bois');
-  fill(cells, 4, 1, 1, 1, 6, 1, 'bois');
+  fill(cells, 0, 1, 1, 1, 6, 1, BLOC.bois);
+  fill(cells, 4, 1, 1, 1, 6, 1, BLOC.bois);
   // La cabine de poupe en galet (Rivière), l'ancre en pierre (Mine).
-  fill(cells, 1, 6, 1, 3, 1, 2, 'galet');
-  cells.push({ x: 0, y: 0, z: 1, block: 'pierre' });
+  fill(cells, 1, 6, 1, 3, 1, 2, BLOC.galet);
+  cells.push({ x: 0, y: 0, z: 1, block: BLOC.pierre });
   // Le mât.
-  fill(cells, 2, 3, 1, 1, 1, 6, 'bois');
+  fill(cells, 2, 3, 1, 1, 1, 6, BLOC.bois);
   // Le kit : la voile de toile de part et d'autre du mât, la lanterne de proue.
   const kit: PlanCell[] = [];
-  for (const x of [0, 1, 3, 4]) fill(kit, x, 3, 3, 1, 1, 3, 'toile');
-  kit.push({ x: 2, y: 0, z: 1, block: 'lanterne' });
+  for (const x of [0, 1, 3, 4]) fill(kit, x, 3, 3, 1, 1, 3, BLOC.toile);
+  kit.push({ x: 2, y: 0, z: 1, block: BLOC.lanterne });
   return { cells, kit };
 }
 
@@ -66,28 +66,28 @@ function ballon(): { cells: PlanCell[]; kit: PlanCell[] } {
     [1, 4],
     [3, 4],
   ])
-    cells.push({ x, y, z: 7, block: 'glace' });
+    cells.push({ x, y, z: 7, block: BLOC.glace });
   // La nacelle du ballon en panneaux peints (Carrefour), puis la grande couronne de toile (Marché).
-  fill(cells, 1, 2, 8, 3, 3, 1, 'panneau');
-  fill(cells, 0, 1, 9, 5, 5, 1, 'toile');
+  fill(cells, 1, 2, 8, 3, 3, 1, BLOC.panneau);
+  fill(cells, 0, 1, 9, 5, 5, 1, BLOC.toile);
   const corners = new Set(['0,1', '4,1', '0,5', '4,5']);
   const trimmed = cells.filter((c) => !(c.z === 9 && corners.has(`${c.x},${c.y}`)));
   // Le kit : le haut du ballon et la corde qui le retient au mât.
   const kit: PlanCell[] = [];
-  fill(kit, 1, 2, 10, 3, 3, 1, 'toile');
-  kit.push({ x: 2, y: 3, z: 7, block: 'barriere' });
+  fill(kit, 1, 2, 10, 3, 3, 1, BLOC.toile);
+  kit.push({ x: 2, y: 3, z: 7, block: BLOC.barriere });
   return { cells: trimmed, kit };
 }
 
 function reacteur(): { cells: PlanCell[]; kit: PlanCell[] } {
   const cells: PlanCell[] = [];
   // Le bloc du réacteur en acier (Forge), derrière la poupe.
-  fill(cells, 1, 8, 0, 3, 2, 3, 'acier');
+  fill(cells, 1, 8, 0, 3, 2, 3, BLOC.acier);
   // Les ailerons en calque (Atelier), la tuyère en ardoise (Falaise).
-  cells.push({ x: 0, y: 8, z: 1, block: 'calque' }, { x: 4, y: 8, z: 1, block: 'calque' }, { x: 0, y: 9, z: 2, block: 'calque' }, { x: 4, y: 9, z: 2, block: 'calque' });
-  fill(cells, 1, 10, 1, 3, 1, 1, 'ardoise');
+  cells.push({ x: 0, y: 8, z: 1, block: BLOC.calque }, { x: 4, y: 8, z: 1, block: BLOC.calque }, { x: 0, y: 9, z: 2, block: BLOC.calque }, { x: 4, y: 9, z: 2, block: BLOC.calque });
+  fill(cells, 1, 10, 1, 3, 1, 1, BLOC.ardoise);
   // Le kit : les feux de position.
-  const kit: PlanCell[] = [{ x: 1, y: 9, z: 3, block: 'lanterne' }, { x: 3, y: 9, z: 3, block: 'lanterne' }];
+  const kit: PlanCell[] = [{ x: 1, y: 9, z: 3, block: BLOC.lanterne }, { x: 3, y: 9, z: 3, block: BLOC.lanterne }];
   return { cells, kit };
 }
 
@@ -108,9 +108,9 @@ function stage(
 
 /** Les trois étapes, dans l'ordre. Chaque étape mène à l'archipel suivant. */
 export const VEHICLE_STAGES: VehicleStage[] = [
-  stage(1, 'navire-coque', 'La coque et la voile', 'la voile', coque(), 3, { xp: 120, chest: { lanterne: 2, barriere: 4 } }, (archipel) => `La voile est hissée ! Pose les derniers blocs et embarque : les ${archipel} t’attendent.`),
-  stage(2, 'navire-ballon', 'Le ballon', 'le ballon', ballon(), 2, { xp: 160, chest: { lanterne: 2, escalier: 2 } }, (archipel) => `Le ballon est gonflé ! Le Bloc-Navire peut voler. Embarque quand tu veux : les ${archipel} t’attendent.`),
-  stage(3, 'navire-reacteur', 'Le réacteur', 'le réacteur', reacteur(), 2, { xp: 200, chest: { lanterne: 3 } }, (archipel) => `Le réacteur ronronne ! Le Bloc-Navire peut monter jusqu’au ciel. Embarque quand tu veux : les ${archipel} t’attendent.`),
+  stage(1, 'navire-coque', 'La coque et la voile', 'la voile', coque(), 3, { xp: 120, chest: { [BLOC.lanterne]: 2, [BLOC.barriere]: 4 } }, (archipel) => `La voile est hissée ! Pose les derniers blocs et embarque : les ${archipel} t’attendent.`),
+  stage(2, 'navire-ballon', 'Le ballon', 'le ballon', ballon(), 2, { xp: 160, chest: { [BLOC.lanterne]: 2, [BLOC.escalier]: 2 } }, (archipel) => `Le ballon est gonflé ! Le Bloc-Navire peut voler. Embarque quand tu veux : les ${archipel} t’attendent.`),
+  stage(3, 'navire-reacteur', 'Le réacteur', 'le réacteur', reacteur(), 2, { xp: 200, chest: { [BLOC.lanterne]: 3 } }, (archipel) => `Le réacteur ronronne ! Le Bloc-Navire peut monter jusqu’au ciel. Embarque quand tu veux : les ${archipel} t’attendent.`),
 ];
 
 export function getStage(id: string): VehicleStage | undefined {

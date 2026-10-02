@@ -32,8 +32,8 @@ describe('Les silhouettes des créatures, archipel par archipel', () => {
     });
 
   it('la projection voit ce qu’elle doit voir : une créature se recouvre toute, deux gabarits différents non', () => {
-    const tunel = projeter(creaturePeinte('mine'));
-    expect(recouvrement(tunel, projeter(creaturePeinte('mine')))).toBe(1);
+    const tunel = projeter(creaturePeinte('french-6e-letter-confusion'));
+    expect(recouvrement(tunel, projeter(creaturePeinte('french-6e-letter-confusion')))).toBe(1);
     // Le gabarit standard fait 40 pixels de haut (outil à part : la perche de Nénu dépasse).
     const lignes = (id: BiomeId) => {
       const p = projeter(creaturePeinte(id));
@@ -41,8 +41,8 @@ describe('Les silhouettes des créatures, archipel par archipel', () => {
       p.triangle.forEach((t, k) => t >= 0 && pleines.add(Math.floor(k / p.largeur)));
       return pleines.size;
     };
-    expect(lignes('volcan')).toBeGreaterThanOrEqual(38);
-    expect(lignes('volcan')).toBeLessThanOrEqual(42);
-    expect(lignes('mine')).toBeLessThan(lignes('volcan'));
+    expect(lignes('maths-6e-decimals')).toBeGreaterThanOrEqual(38);
+    expect(lignes('maths-6e-decimals')).toBeLessThanOrEqual(42);
+    expect(lignes('french-6e-letter-confusion')).toBeLessThan(lignes('maths-6e-decimals'));
   });
 });

@@ -1,0 +1,12 @@
+{
+  "id": "english-4e-comprehension-1",
+  "biome": "english-4e-comprehension",
+  "name": "La loge de Puck",
+  "reward": {
+    "xp": 40,
+    "chest": {
+      "english-4e-grammar": 3
+    }
+  },
+  "done": "Ma loge ! Thank you, bâtisseur. J’y souffle les répliques aux acteurs."
+}

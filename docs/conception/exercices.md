@@ -33,17 +33,17 @@ Une `Question` porte l’énoncé (`prompt`, et `spokenPrompt` quand il contient
 
 Un exercice est un objet (`ExerciseDef`, dans `src/blocland/exercises/types.ts`) : un fichier JSON dans `src/blocland/exercises/data/`, ou un objet produit par un générateur (`maths.ts`, `college.ts`).
 
-Les exercices des îles s’écrivent en Markdown dans `docs/contenu/<île>.md` (format et modèles par écran : le [README](../contenu/README.md) de ce dossier), jamais dans leurs JSON : `npm run contenu` produit les JSON, et la CI vérifie qu’ils suivent le Markdown (`npm run contenu -- --check`).
+Les exercices des îles s’écrivent en Markdown dans `docs/contenu/<lieu>.md` (format et modèles par écran : le [README](../contenu/README.md) de ce dossier), jamais dans leurs JSON : `npm run contenu` produit les JSON, et la CI vérifie qu’ils suivent le Markdown (`npm run contenu -- --check`).
 
-Les **questions des blocs assemblés** (GD-2) sont aussi dans `data/`, un fichier par bloc (`assemblage-<bloc>.json`, type `assemblage`, écran `CalculScreen`), écrites dans `docs/contenu/assemblage.md`, section « Les questions ». Elles n’ont ni île, ni récompense, ni adaptation (`AssemblageDef` dans `types.ts`) : elles ne sont ni dans `ORDER` ni au `CATALOG`, et se chargent par `loadAssemblage(bloc)`. Leurs choix sont placés par `placerChoixAssemblage` (`shuffle.ts`) et la question est tirée par `prochaineQuestion` (`world/assemblage.ts`). Leurs règles de contenu sont vérifiées par `assemblage.test.ts`.
+Les **questions des blocs assemblés** (GD-2) sont aussi dans `data/`, un fichier par bloc (`assembly-<bloc>.json`, de `assembly-compound-6e.json` à `assembly-compound-3e.json`, type `assembly`, écran `CalculScreen`), écrites dans `docs/contenu/assemblage.md`, section « Les questions ». Elles n’ont ni île, ni récompense, ni adaptation (`AssemblageDef` dans `types.ts`) : elles ne sont ni dans `ORDER` ni au `CATALOG`, et se chargent par `loadAssemblage(bloc)`. Leurs choix sont placés par `placerChoixAssemblage` (`shuffle.ts`) et la question est tirée par `prochaineQuestion` (`world/assemblage.ts`). Leurs règles de contenu sont vérifiées par `assemblage.test.ts`.
 
 Les fichiers JSON sont **chargés à la demande**. Le bundle principal n’en garde que l’index (`id`, `biome`, `type`, `level` : le catalogue `CATALOG` de `index.ts`, extrait au build par le plugin `scripts/exerciseMeta.mjs`), qui suffit aux listes de missions, aux étoiles et au choix de la partie. Le contenu (consigne, items, corrections) est chargé par `loadExercise(id)` au lancement d’une partie ou d’un Gardien. Le service worker met tous ces fichiers en cache à l’installation : ils restent disponibles hors ligne. Les exercices écrits en code (générateurs, tri des graines, panneaux) sont toujours là.
 
 ```json
 {
-  "id": "foret-chasse-son-an",
-  "biome": "foret",
-  "type": "chasse-son",
+  "id": "french-6e-phonology-sound-hunt-an",
+  "biome": "french-6e-phonology",
+  "type": "sound-hunt",
   "level": 1,
   "target": "[an]",
   "instruction": "Tape les mots où tu entends le son [an], comme dans maman. Puis valide.",
@@ -51,16 +51,16 @@ Les fichiers JSON sont **chargés à la demande**. Le bundle principal n’en ga
     { "key": "enfant", "word": "enfant", "image": "👧", "correct": true, "heard": "[an]" }
   ],
   "feedback": { "correct": "Bien entendu !", "wrong": "Dans {word}, on entend {heard}." },
-  "reward": { "block": "bois", "amount": 4, "xp": 12 },
+  "reward": { "block": "french-6e-phonology", "amount": 4, "xp": 12 },
   "adaptive": { "promoteAt": 0.85, "demoteAt": 0.5 }
 }
 ```
 
 | Champ | Rôle |
 | --- | --- |
-| `id` | Identifiant stable, préfixé par l’île (`<île>-<mission>-<variante>`). |
-| `biome` | L’île (`BiomeId` de `biomes.ts`, son fichier `docs/contenu/<île>.md`). |
-| `type` | La mission, identique à son identifiant dans `docs/contenu/<île>.md` ; choisit l’écran dans `registry.ts`. |
+| `id` | Identifiant stable, en mots neutres, préfixé par le lieu (`<lieu>-<mission>-<variante>`). |
+| `biome` | L’île (`BiomeId` de `biomes.ts`, son fichier `docs/contenu/<lieu>.md`). |
+| `type` | La mission, identique à son identifiant dans `docs/contenu/<lieu>.md` ; choisit l’écran dans `registry.ts`. |
 | `level` | Niveau de difficulté ; le moteur choisit l’exercice au niveau adapté de l’élève, le moins joué à niveau égal. |
 | `instruction` | Consigne unique, courte, écrite au-dessus de chaque item et lue à voix haute au démarrage (sauf pour un écran qui lit lui-même son mot en s’ouvrant : `speaksOnOpen` dans `registry.ts`). Au Gardien, chaque manche affiche la consigne de sa mission. |
 | `target` | Paramètre de l’exercice (son cible, lettre, mot repère). |
@@ -98,15 +98,15 @@ La phrase lue par un lecteur d’écran (`aria-label`) est composée à partir d
 
 ## Ajouter un exercice à une mission existante
 
-1. Écrire le niveau dans `docs/contenu/<île>.md`, en suivant le modèle de son écran (un niveau voisin du même `type`), puis lancer `npm run contenu`. Pour une île qui n’a pas encore d’exercice, créer `docs/contenu/<île>.md` avec son en-tête (`île : <id>`).
+1. Écrire le niveau dans `docs/contenu/<lieu>.md`, en suivant le modèle de son écran (un niveau voisin du même `type`), puis lancer `npm run contenu`. Pour une île qui n’a pas encore d’exercice, créer `docs/contenu/<lieu>.md` avec son en-tête (`lieu : <id>`).
 2. Ajouter son `id` à `ORDER` dans `src/blocland/exercises/index.ts`, à sa place dans la progression de l’île : cet ordre départage les variantes d’un même niveau et ordonne la page de l’île. Il n’y a rien à importer : le fichier est trouvé par son dossier.
 3. Lancer `npm test` : `data.test.ts` vérifie que chaque fichier de `data/` a sa place dans `ORDER`, puis le format et les règles du type.
 4. Vérifier la page de l’île dans la documentation (`npm run www:build`) : l’exercice y apparaît avec sa consigne et ses items.
 
 ## Ajouter une mission ou une île
 
-- **Une mission** : ajouter sa section `## Titre · \`id\`` dans `docs/contenu/<île>.md` avec sa `description` et, dans `compétences`, au moins une compétence du programme officiel (`src/programme/`, voir [Le référentiel des programmes](programmes.md) ; `biomes.test.ts` et le test de couverture le vérifient, et une compétence désormais couverte quitte `exclusions.ts`), écrire au moins un exercice, l’ajouter à `ORDER`, et si le geste est nouveau, créer l’écran et le déclarer dans `registry.ts`. L’identifiant d’une mission est unique dans tout le jeu (le niveau adapté est retenu par mission) ; une île porte au plus quatre missions (les bornes sont posées tous les trois blocs dans un cœur de seize).
-- **Une île** : un fichier `docs/contenu/<île>.md` (en-tête : module, matière, classe, description, bloc, Gardien, icône, créature ; puis ses missions), son rang dans `docs/contenu/archipel.md` et son identifiant dans `BIOME_IDS` (`biomes.ts`), un bloc et sa texture si nécessaire (`BLOCKS` dans `biomes.ts`, `world/pixels.ts`, `pixel/tiles.ts` pour un grain, et la classe `.biome-<id>` de `styles/global.css`, qui donne la couleur du liseré de ses cartes, `--biome-color`), sa créature et son Gardien en cubes (`world/personnages/creatures.ts`, `world/personnages/gardiens.ts`), son décor (`world/terrain.ts`), sa place et son relief dans `world/map.ts`, ses ouvrages dans `world/archipelago.ts`, ses trois plans à la fin de son fichier Markdown (section « Les plans ») et dans `PLAN_FILES` de `world/plans.ts`, ses exercices dans `ORDER`. Les tests qui comptent les îles, les ouvrages ou les îles atteignables (`archipelago.test.ts`, `screens.test.tsx`, `terrain.test.ts`, `mesher.test.ts`) sont à mettre à jour. Le [cadrage du contenu](cadrage-contenu.md) et le [cadrage de Blocland](../univers/blocland/cadrage.md) donnent les décisions déjà prises.
+- **Une mission** : ajouter sa section `## Titre · \`id\`` dans `docs/contenu/<lieu>.md` avec sa `description` et, dans `compétences`, au moins une compétence du programme officiel (`src/programme/`, voir [Le référentiel des programmes](programmes.md) ; `biomes.test.ts` et le test de couverture le vérifient, et une compétence désormais couverte quitte `exclusions.ts`), écrire au moins un exercice, l’ajouter à `ORDER`, et si le geste est nouveau, créer l’écran et le déclarer dans `registry.ts`. L’identifiant d’une mission est unique dans tout le jeu (le niveau adapté est retenu par mission) ; une île porte au plus quatre missions (les bornes sont posées tous les trois blocs dans un cœur de seize).
+- **Une île** : un identifiant neutre, `<matière>-<classe>-<thème>` en anglais, qui nomme aussi son bloc ; un fichier `docs/contenu/<lieu>.md` (en-tête : lieu, module, matière, classe, description, Gardien, icône, créature ; puis ses missions), son rang dans `docs/contenu/archipel.md` et son identifiant dans `BIOME_IDS` (`biomes.ts`), son bloc et sa texture (`BLOCKS` dans `biomes.ts` et son mot de Blocland dans l’alias `BLOC`, `world/pixels.ts`, `pixel/tiles.ts` pour un grain, et la classe `.biome-<id>` de `styles/global.css`, qui donne la couleur du liseré de ses cartes, `--biome-color`), sa créature et son Gardien en cubes (`world/personnages/creatures.ts`, `world/personnages/gardiens.ts`), son décor (`world/terrain.ts`), sa place et son relief dans `world/map.ts`, ses ouvrages dans `world/archipelago.ts`, ses trois plans à la fin de son fichier Markdown (section « Les plans ») et dans `PLAN_FILES` de `world/plans.ts`, ses exercices dans `ORDER`. Les tests qui comptent les îles, les ouvrages ou les îles atteignables (`archipelago.test.ts`, `screens.test.tsx`, `terrain.test.ts`, `mesher.test.ts`) sont à mettre à jour. Le [cadrage du contenu](cadrage-contenu.md) et le [cadrage de Blocland](../univers/blocland/cadrage.md) donnent les décisions déjà prises.
 
 Dans tous les cas, la documentation du contenu (archipel, page de l’île, ouvrages, barème) se met à jour toute seule au build ; le manuel s’écrit à la main. Voir [Contribuer](contribuer.md).
 

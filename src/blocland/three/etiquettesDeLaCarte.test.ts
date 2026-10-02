@@ -96,12 +96,12 @@ describe('La Carte : chaque île a son nom (tablette 1024 × 768)', () => {
   });
 
   it('le Marais des temps (5e) garde son nom, et l’Atelier (4e, la destination) le sien au-dessus de son île', () => {
-    expect(nomsTus('5e', ETATS.blocland, 'atkinson-hyperlegible', 1)).not.toContain('marais');
+    expect(nomsTus('5e', ETATS.blocland, 'atkinson-hyperlegible', 1)).not.toContain('french-5e-conjugation');
     for (const etat of Object.values(ETATS)) {
       const atelier = laCarte('4e', etat, 'atkinson-hyperlegible', 1);
-      expect(getArchipelago('4e').port).toBe('atelier');
+      expect(getArchipelago('4e').port).toBe('maths-4e-algebra');
       expect(atelier.tus).toEqual([]);
-      expect(atelier.dessus.get('atelier')).toBeGreaterThan(0);
+      expect(atelier.dessus.get('maths-4e-algebra')).toBeGreaterThan(0);
     }
   });
 

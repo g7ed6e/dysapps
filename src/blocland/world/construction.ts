@@ -116,10 +116,10 @@ export const TOILE_DU_NAVIRE: Couleur = BRUME;
  */
 export const PHARE_DE_GRIMOIRE = {
   archipel: '6e',
-  ile: 'tour',
+  ile: 'french-6e-reading',
   etapes: [
-    { plan: 'tour-phare', pieces: ['anneau', 'fut'] },
-    { plan: 'tour-lanterne', pieces: ['galerie', 'lanterne', 'toit'] },
+    { plan: 'french-6e-reading-1', pieces: ['anneau', 'fut'] },
+    { plan: 'french-6e-reading-2', pieces: ['galerie', 'lanterne', 'toit'] },
   ],
 } as const satisfies { archipel: ArchipelagoId; ile: string; etapes: readonly { plan: string; pieces: readonly PieceDuPhare[] }[] };
 /** Le crème des cases posées du phare, tant que leur étape n'est pas finie. */
@@ -590,14 +590,14 @@ function decalagesDe(genres: Map<VoxelCube, Genre>): Map<VoxelCube, number> {
  * l'île du Phare (3e), la petite tour de pierre à lanterne doublait le grand phare. Cases du cœur (world/decor.ts,
  * `DECOR`), que Blocland garde : son dessin ne change pas.
  */
-export const TOURS_DU_COEUR: Partial<Record<string, readonly (readonly [number, number])[]>> = {
-  tour: [
+export const TOURS_DU_COEUR: Partial<Record<BiomeId, readonly (readonly [number, number])[]>> = {
+  'french-6e-reading': [
     [8, 4],
     [9, 4],
     [8, 5],
     [9, 5],
   ],
-  phare: [[9, 3]],
+  'maths-3e-functions': [[9, 3]],
 };
 
 /** Les cubes du monde sans les tours du décor du cœur (`TOURS_DU_COEUR`) : le rendu Archipéo seulement. */
@@ -890,9 +890,9 @@ export function maillageDeLaConstruction(
   // Les trophées de la salle des trophées, quand le kit de l'archipel reprend la salle (au 6e, la halle en colombage ;
   // les autres archipels avec leur kit, lot 7c) : plus petits que leur case (`TROPHEE`), et le rang de chacun.
   const trophees = new Map<VoxelCube, number>();
-  if (archi && kit.lieux?.trophees)
+  if (archi && kit.lieux?.trophies)
     for (const c of dessines) {
-      if (c.place !== 'trophees' || c.ghost) continue;
+      if (c.place !== 'trophies' || c.ghost) continue;
       const m = caseDuLieu(c);
       if (m && estUnePlaceDeTrophee(m.x, m.y, m.z)) trophees.set(c, m.z);
     }

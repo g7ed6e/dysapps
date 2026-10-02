@@ -80,7 +80,7 @@ const souche = ({ x, y, z, w }: CaseDuLieu) => x === (w - 1) / 2 && y === 1 && z
  *   celle d'Archipéo.
  */
 export const LIEUX_6E: Partial<Record<VillagePlaceId, LieuDuKit>> = {
-  ecole: (m) =>
+  school: (m) =>
     m.z <= 3 && (m.texture === 'brique' || m.texture === 'taille')
       ? { famille: 'bois' }
       : m.texture === 'toit' && souche(m)
@@ -88,7 +88,7 @@ export const LIEUX_6E: Partial<Record<VillagePlaceId, LieuDuKit>> = {
         : m.texture === 'toit'
           ? { famille: 'toit' }
           : undefined,
-  trophees: (m) =>
+  trophies: (m) =>
     m.texture === 'marbre' && m.z <= 3 && pilier(m)
       ? { famille: 'bois', sansDecharge: true }
       : m.z === 4 && m.texture === 'taille'
@@ -97,7 +97,7 @@ export const LIEUX_6E: Partial<Record<VillagePlaceId, LieuDuKit>> = {
           m.z === 5 && m.y === (m.d - 1) / 2 && m.texture === 'or'
           ? { famille: 'toit' }
           : undefined,
-  assemblage: (m) =>
+  assembly: (m) =>
     !dansLaHalle(m)
       ? undefined
       : m.z <= HALLE.haut && (m.texture === 'planches' || m.texture === 'pierre')
@@ -115,7 +115,7 @@ export const KIT_6E: Kit = {
   // En attente (décision du directeur artistique, 30/09) : au 6e, le bardage reste aux pignons. Les îles au quai ou au
   // ponton (la Baie, la Rivière, la Tour) n'ont aucun mur de bois (la cabine de la Baie reste en blocs) : la règle attend
   // les bâtiments de bois qu'on y posera.
-  bardes: ['baie', 'riviere', 'tour'],
+  bardes: ['english-6e-vocabulary', 'maths-6e-fractions', 'french-6e-reading'],
   pieces: { toit: piecesDeToit(), bois: piecesSurPilotis() },
   lieux: LIEUX_6E,
 };

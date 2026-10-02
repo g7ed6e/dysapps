@@ -1,0 +1,215 @@
+{
+  "id": "english-4e-comprehension-irregular-past-2",
+  "biome": "english-4e-comprehension",
+  "type": "irregular-past",
+  "level": 2,
+  "lang": "en",
+  "instruction": "Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.",
+  "items": [
+    {
+      "key": "english-4e-comprehension-irregular-past-2-0",
+      "prompt": "I … my keys this morning!",
+      "spoken": "I blank my keys this morning!",
+      "choices": [
+        "lost",
+        "losed",
+        "lose"
+      ],
+      "answer": "lost",
+      "hint": "C’est un verbe irrégulier : pas de -ed. Quelle est sa deuxième forme ?",
+      "explanation": "lose – lost – lost : au prétérit, lost.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Prétérit : irréguliers, négation, question",
+          "lines": [
+            "lose → lost, begin → began, sing → sang, take → took",
+            "break → broke, hear → heard, win → won",
+            "Négation et question : did + base (I didn’t go. Did you see?)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-4e-comprehension-irregular-past-2-1",
+      "prompt": "The film … at eight.",
+      "spoken": "The film blank at eight.",
+      "choices": [
+        "began",
+        "beginned",
+        "begun"
+      ],
+      "answer": "began",
+      "hint": "C’est un verbe irrégulier : pas de -ed. Quelle est sa deuxième forme ?",
+      "explanation": "begin – began – begun : au prétérit, began.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Prétérit : irréguliers, négation, question",
+          "lines": [
+            "lose → lost, begin → began, sing → sang, take → took",
+            "break → broke, hear → heard, win → won",
+            "Négation et question : did + base (I didn’t go. Did you see?)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-4e-comprehension-irregular-past-2-2",
+      "prompt": "She … a beautiful song.",
+      "spoken": "She blank a beautiful song.",
+      "choices": [
+        "sang",
+        "singed",
+        "sung"
+      ],
+      "answer": "sang",
+      "hint": "C’est un verbe irrégulier : pas de -ed. Quelle est sa deuxième forme ?",
+      "explanation": "sing – sang – sung : au prétérit, sang.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Prétérit : irréguliers, négation, question",
+          "lines": [
+            "lose → lost, begin → began, sing → sang, take → took",
+            "break → broke, hear → heard, win → won",
+            "Négation et question : did + base (I didn’t go. Did you see?)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-4e-comprehension-irregular-past-2-3",
+      "prompt": "We … the bus to London.",
+      "spoken": "We blank the bus to London.",
+      "choices": [
+        "took",
+        "taked",
+        "taken"
+      ],
+      "answer": "took",
+      "hint": "C’est un verbe irrégulier : pas de -ed. Quelle est sa deuxième forme ?",
+      "explanation": "take – took – taken : au prétérit, took.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Prétérit : irréguliers, négation, question",
+          "lines": [
+            "lose → lost, begin → began, sing → sang, take → took",
+            "break → broke, hear → heard, win → won",
+            "Négation et question : did + base (I didn’t go. Did you see?)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-4e-comprehension-irregular-past-2-4",
+      "prompt": "He … the window with his ball.",
+      "spoken": "He blank the window with his ball.",
+      "choices": [
+        "broke",
+        "breaked",
+        "broken"
+      ],
+      "answer": "broke",
+      "hint": "C’est un verbe irrégulier : pas de -ed. Quelle est sa deuxième forme ?",
+      "explanation": "break – broke – broken : au prétérit, broke.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Prétérit : irréguliers, négation, question",
+          "lines": [
+            "lose → lost, begin → began, sing → sang, take → took",
+            "break → broke, hear → heard, win → won",
+            "Négation et question : did + base (I didn’t go. Did you see?)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-4e-comprehension-irregular-past-2-5",
+      "prompt": "I … a strange noise last night.",
+      "spoken": "I blank a strange noise last night.",
+      "choices": [
+        "heard",
+        "heared",
+        "hear"
+      ],
+      "answer": "heard",
+      "hint": "C’est un verbe irrégulier : pas de -ed. Quelle est sa deuxième forme ?",
+      "explanation": "hear – heard – heard : au prétérit, heard.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Prétérit : irréguliers, négation, question",
+          "lines": [
+            "lose → lost, begin → began, sing → sang, take → took",
+            "break → broke, hear → heard, win → won",
+            "Négation et question : did + base (I didn’t go. Did you see?)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-4e-comprehension-irregular-past-2-6",
+      "prompt": "They didn’t … the match.",
+      "spoken": "They didn’t blank the match.",
+      "choices": [
+        "win",
+        "won",
+        "winned"
+      ],
+      "answer": "win",
+      "hint": "Après didn’t, le verbe reste à la base.",
+      "explanation": "didn’t + base : they didn’t win.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Prétérit : irréguliers, négation, question",
+          "lines": [
+            "lose → lost, begin → began, sing → sang, take → took",
+            "break → broke, hear → heard, win → won",
+            "Négation et question : did + base (I didn’t go. Did you see?)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-4e-comprehension-irregular-past-2-7",
+      "prompt": "… you see the fireworks last night?",
+      "spoken": "blank you see the fireworks last night?",
+      "choices": [
+        "Did",
+        "Saw",
+        "Do"
+      ],
+      "answer": "Did",
+      "hint": "Question au passé : quel auxiliaire ?",
+      "explanation": "Question au passé : Did you see…?",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Prétérit : irréguliers, négation, question",
+          "lines": [
+            "lose → lost, begin → began, sing → sang, take → took",
+            "break → broke, hear → heard, win → won",
+            "Négation et question : did + base (I didn’t go. Did you see?)"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien dit !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "english-4e-comprehension",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

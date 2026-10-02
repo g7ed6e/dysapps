@@ -33,12 +33,12 @@ describe('Les ponts de pierre et de bois du 5e (lot R5, Archipéo seulement)', (
   });
 
   it('à restaurer, gardent leurs cases en fantômes et ne montrent que leurs culées', () => {
-    const cubes = worldCubes('5e', progress, { ...village, links: village.links.filter((id) => id !== 'comptoir-manoir') }, false);
+    const cubes = worldCubes('5e', progress, { ...village, links: village.links.filter((id) => id !== 'english-5e-vocabulary-english-5e-grammar') }, false);
     const { ponts, remplacees } = pontsDePierreEtDeBois(cubes);
-    const pont = ponts.find((p) => p.id === 'comptoir-manoir');
+    const pont = ponts.find((p) => p.id === 'english-5e-vocabulary-english-5e-grammar');
     if (!pont) throw new Error('pont Comptoir–Manoir absent');
     expect(pont.construit).toBe(false);
-    expect([...remplacees].some((k) => cubes.some((c) => c.bridge === 'comptoir-manoir' && `${c.x},${c.y},${c.z}` === k))).toBe(false);
+    expect([...remplacees].some((k) => cubes.some((c) => c.bridge === 'english-5e-vocabulary-english-5e-grammar' && `${c.x},${c.y},${c.z}` === k))).toBe(false);
     const avant = new Pinceau();
     dessinerPont(avant, pont);
     const apres = new Pinceau();

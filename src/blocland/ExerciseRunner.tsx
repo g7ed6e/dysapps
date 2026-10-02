@@ -137,7 +137,7 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
   useAnswerKeys(sectionRef);
   // Mode concentration pendant la partie ; « Quitter » ramène au panneau de l'île.
   const navigate = useNavigate();
-  useFocusMode(!done, () => navigate(`/aventure/${biome.id}`), 'L’XP des réponses déjà données est gardée ; les blocs se gagnent en finissant la partie.');
+  useFocusMode(!done, () => navigate(`/adventure/${biome.id}`), 'L’XP des réponses déjà données est gardée ; les blocs se gagnent en finissant la partie.');
 
   if (!type) {
     return <p className="intro">Ce type d’exercice ({def.type}) n’est pas encore disponible.</p>;
@@ -265,7 +265,7 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
           ) : (
             <div className="actions">
               {site.kind === 'aucun' || site.kind === 'garder' ? (
-                <Link ref={suiteRef} to={`/aventure/${biome.id}`} className="button primary">
+                <Link ref={suiteRef} to={`/adventure/${biome.id}`} className="button primary">
                   <Icon name="map" /> Revenir sur {biome.name}
                 </Link>
               ) : (

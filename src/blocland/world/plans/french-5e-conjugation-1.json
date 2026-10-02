@@ -1,0 +1,12 @@
+{
+  "id": "french-5e-conjugation-1",
+  "biome": "french-5e-conjugation",
+  "name": "La hutte de Kroa",
+  "reward": {
+    "xp": 40,
+    "chest": {
+      "maths-5e-proportionality": 3
+    }
+  },
+  "done": "Ma hutte ! Merci, bâtisseur. Elle était en ruine, elle est debout, elle restera debout."
+}

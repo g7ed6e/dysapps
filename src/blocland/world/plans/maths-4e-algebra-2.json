@@ -1,0 +1,10 @@
+{
+  "id": "maths-4e-algebra-2",
+  "biome": "maths-4e-algebra",
+  "name": "Le toit du bureau",
+  "reward": {
+    "xp": 50,
+    "chest": {}
+  },
+  "done": "Un toit et une porte ! La lanterne éclaire mes calques la nuit."
+}

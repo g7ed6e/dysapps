@@ -46,7 +46,7 @@ function useLabel(use: Use, count: number): string {
  */
 export function InventoryBody() {
   const { state } = useBlocland();
-  const at = state.world.place ?? 'foret';
+  const at = state.world.place ?? 'french-6e-phonology';
   const { rows, payable, ouvrages, missing } = inventoryUses(state);
   // Ce qu'on peut faire maintenant : les plans et le navire dont on a tous les blocs, les ouvrages qu'on peut payer.
   const seen = new Set<string>();
@@ -89,7 +89,7 @@ export function InventoryBody() {
         {ready.length === 0 ? (
           <p className="inventory-line">
             <Syllabified text="Rien pour l’instant : fais une mission pour gagner des blocs." />{' '}
-            <Link to={`/aventure/${at}`} className="tag">
+            <Link to={`/adventure/${at}`} className="tag">
               <Icon name="play" /> Aller sur {getBiome(at)?.name}
             </Link>
           </p>
@@ -99,12 +99,12 @@ export function InventoryBody() {
               {shown.map((r) => (
                 <li key={r.key}>
                   {r.genre === 'usage' ? (
-                    <Link to={r.use.to ?? `/aventure/${r.use.island}`} className="tag tag-ok">
+                    <Link to={r.use.to ?? `/adventure/${r.use.island}`} className="tag tag-ok">
                       <Icon name={useIcon(r.use)} />{' '}
                       {r.use.kind === 'navire' ? cap(VEHICLE_NAME) : r.use.kind === 'monument' ? r.use.name : `Plan de ${getBiome(r.use.island)?.name ?? r.use.island}`}
                     </Link>
                   ) : (
-                    <Link to={`/aventure/${r.ouvrage.from}`} className="tag tag-ok">
+                    <Link to={`/adventure/${r.ouvrage.from}`} className="tag tag-ok">
                       <Icon name="map" /> {KIND_NAME[r.ouvrage.bridge.kind]} vers {getBiome(r.ouvrage.to)?.name}
                     </Link>
                   )}
@@ -144,7 +144,7 @@ export function InventoryBody() {
                     <span className="inventory-none">Pour un chantier plus haut</span>
                   ) : (
                     uses.map((use) => (
-                      <Link key={useKey(use)} to={use.to ?? `/aventure/${use.island}`} className={`tag${use.enough || use.kind === 'monument' ? ' tag-ok' : ''}`}>
+                      <Link key={useKey(use)} to={use.to ?? `/adventure/${use.island}`} className={`tag${use.enough || use.kind === 'monument' ? ' tag-ok' : ''}`}>
                         <Icon name={useIcon(use)} /> {useLabel(use, row.count)}
                       </Link>
                     ))
@@ -167,7 +167,7 @@ export function InventoryBody() {
           <ul className="inventory-uses inventory-ouvrages" aria-label="Ouvrages possibles">
             {laterOuvrages.map((o) => (
               <li key={o.bridge.id}>
-                <Link to={`/aventure/${o.from}`} className={`tag${o.enough ? ' tag-ok' : ''}`}>
+                <Link to={`/adventure/${o.from}`} className={`tag${o.enough ? ' tag-ok' : ''}`}>
                   <Icon name="hammer" /> {KIND_NAME[o.bridge.kind]} vers {getBiome(o.to)?.name} : {o.bridge.cost} blocs
                 </Link>
               </li>
@@ -194,7 +194,7 @@ export function InventoryBody() {
                 <span>
                   <strong>{m.need}</strong> {blockName(m.block, m.need)} · à gagner dans{' '}
                   {m.island ? (
-                    <Link to={`/aventure/${m.island}`}>{getBiome(m.island)?.name}</Link>
+                    <Link to={`/adventure/${m.island}`}>{getBiome(m.island)?.name}</Link>
                   ) : (
                     whereToEarn(m.block)
                   )}
@@ -250,7 +250,7 @@ export function InventoryPage() {
   const total = inventoryUses(state).total;
   return (
     <>
-      <Link to="/aventure" className="back-link">
+      <Link to="/adventure" className="back-link">
         <Icon name="back" /> {UNIVERS[univers].carte}
       </Link>
       <h1 className="page-title">
@@ -271,7 +271,7 @@ export function InventoryLink({ className = 'tag' }: { className?: string }) {
   const { state } = useBlocland();
   const total = Object.values(state.stock).reduce((n, v) => n + (v ?? 0), 0);
   return (
-    <Link to="/aventure/blocs" className={className}>
+    <Link to="/adventure/stock" className={className}>
       <Icon name="blocks" /> Mes blocs ({total})
     </Link>
   );

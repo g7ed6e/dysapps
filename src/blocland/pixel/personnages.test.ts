@@ -86,10 +86,10 @@ describe('Les personnages de la 2D peinte (lot R6)', () => {
   );
 
   // Le Comptable (Données) a les orbites sous le bord de son chapeau : d'en haut, en 2D comme en 3D, on ne les voit pas.
-  const SOUS_LE_CHAPEAU = ['donnees'];
+  const SOUS_LE_CHAPEAU = ['maths-3e-statistics'];
   const avecOrbites = BIOMES.filter((b) => sentinellePeinte(b.id).palette.some((p) => p.role === 'yeux') && !SOUS_LE_CHAPEAU.includes(b.id)).map((b) => b.id);
   it('les sentinelles sans orbites sont celles qui n’ont pas de visage (Locomotive, Spectre, Antenne, Soleil et Papillon de cuivre)', () => {
-    expect(BIOMES.filter((b) => !sentinellePeinte(b.id).palette.some((p) => p.role === 'yeux')).map((b) => b.id).sort()).toEqual(['gare', 'jardin', 'manoir', 'refuge', 'studio']);
+    expect(BIOMES.filter((b) => !sentinellePeinte(b.id).palette.some((p) => p.role === 'yeux')).map((b) => b.id).sort()).toEqual(['english-3e-comprehension', 'english-4e-grammar', 'english-5e-grammar', 'lv2-3e-travel', 'lv2-4e-daily-life']);
   });
   it.each(avecOrbites)('sentinelle %s : ses orbites se voient, d’au moins 2 × 2 pixels', (id) => {
     const r = rasterDuModele(sentinellePeinte(id), { archipel: archipelDe(id), light: 1, allumage: 0 });
@@ -123,14 +123,14 @@ describe('Les personnages de la 2D peinte (lot R6)', () => {
       expect(vues.some(Boolean), b.id).toBe(true);
     }
     // Les autres créatures n'ont rien de la couleur de jour à la nuit.
-    const f = creaturePeinte('foret');
+    const f = creaturePeinte('french-6e-phonology');
     const jour = couleurs(rasterDuModele(f, { archipel: '6e', light: 1 }));
     const nuit = couleurs(rasterDuModele(f, { archipel: '6e', light: 0 }));
     for (const c of nuit) expect(jour.has(c)).toBe(false);
   });
 
   it('la braise de Braise, la nuit : au moins 3 × 3 pixels de lueur, et un halo chaud fixe sur le tablier autour', () => {
-    const f = creaturePeinte('forge');
+    const f = creaturePeinte('maths-4e-powers');
     const lueur = f.palette.find((p) => p.role === 'lueur')!.couleur;
     const nuit = rasterDuModele(f, { archipel: '4e', light: 0 });
     const jour = rasterDuModele(f, { archipel: '4e', light: 1 });
@@ -169,9 +169,9 @@ describe('Les personnages de la 2D peinte (lot R6)', () => {
   });
 
   it('les aplats restent peu nombreux : une ombre bleutée, jamais noire', () => {
-    const r = rasterDuModele(creaturePeinte('foret'), { archipel: '6e', light: 1 });
+    const r = rasterDuModele(creaturePeinte('french-6e-phonology'), { archipel: '6e', light: 1 });
     // Couleurs de base × trois aplats, les yeux et le bord.
-    expect(couleurs(r).size).toBeLessThanOrEqual(creaturePeinte('foret').palette.length * 3 + 2);
+    expect(couleurs(r).size).toBeLessThanOrEqual(creaturePeinte('french-6e-phonology').palette.length * 3 + 2);
     expect(NUIT_OCEAN & 0xff).toBeGreaterThan((NUIT_OCEAN >> 16) & 0xff);
   });
 
@@ -180,7 +180,7 @@ describe('Les personnages de la 2D peinte (lot R6)', () => {
     const atelier = new AtelierDePersonnages<string>((r) => `${r.largeur}`, 100);
     const raster = (nom: string) => () => {
       faits.push(nom);
-      return rasterDuModele(creaturePeinte('foret'), { archipel: '6e', light: 1 });
+      return rasterDuModele(creaturePeinte('french-6e-phonology'), { archipel: '6e', light: 1 });
     };
     const paliers = Array.from({ length: PALIERS + 1 }, (_, p) => peinture('6e', p).cle);
     expect(new Set(paliers).size).toBe(PALIERS + 1);
@@ -193,7 +193,7 @@ describe('Les personnages de la 2D peinte (lot R6)', () => {
   it(`au plus ${RASTERS_PAR_IMAGE} rasters par image : les autres gardent leur sprite d’avant, le bonhomme passe toujours`, () => {
     let n = 0;
     const atelier = new AtelierDePersonnages<number>(() => ++n);
-    const raster = () => rasterDuModele(creaturePeinte('foret'), { archipel: '6e', light: 1 });
+    const raster = () => rasterDuModele(creaturePeinte('french-6e-phonology'), { archipel: '6e', light: 1 });
     const ids = ['a', 'b', 'c', 'd', 'e'];
     // Le premier passage : deux par image, les autres attendent (rien à montrer encore).
     atelier.nouvelleImage();

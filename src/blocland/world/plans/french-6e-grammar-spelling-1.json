@@ -1,0 +1,12 @@
+{
+  "id": "french-6e-grammar-spelling-1",
+  "biome": "french-6e-grammar-spelling",
+  "name": "L’étable de Bloquette",
+  "reward": {
+    "xp": 50,
+    "chest": {
+      "french-6e-reading": 3
+    }
+  },
+  "done": "Meuh ! Une étable rien que pour moi. Les accords, c’est comme les murs : il faut que tout tienne ensemble."
+}

@@ -16,15 +16,15 @@ export const ASSEMBLAGE = {
   },
   "recettes": [
     {
-      "bloc": "poutre",
+      "bloc": "compound-6e",
       "archipelago": "6e",
       "ingredients": [
         {
-          "bloc": "bois",
+          "bloc": "french-6e-phonology",
           "n": 2
         },
         {
-          "bloc": "brique",
+          "bloc": "maths-6e-calculation",
           "n": 1
         }
       ],
@@ -38,15 +38,15 @@ export const ASSEMBLAGE = {
       }
     },
     {
-      "bloc": "vitrail",
+      "bloc": "compound-5e",
       "archipelago": "5e",
       "ingredients": [
         {
-          "bloc": "glace",
+          "bloc": "maths-5e-signed-numbers",
           "n": 2
         },
         {
-          "bloc": "panneau",
+          "bloc": "french-5e-homophones",
           "n": 1
         }
       ],
@@ -61,15 +61,15 @@ export const ASSEMBLAGE = {
       }
     },
     {
-      "bloc": "engrenage",
+      "bloc": "compound-4e",
       "archipelago": "4e",
       "ingredients": [
         {
-          "bloc": "acier",
+          "bloc": "maths-4e-powers",
           "n": 2
         },
         {
-          "bloc": "rail",
+          "bloc": "english-4e-grammar",
           "n": 1
         }
       ],
@@ -83,15 +83,15 @@ export const ASSEMBLAGE = {
       }
     },
     {
-      "bloc": "miroir",
+      "bloc": "compound-3e",
       "archipelago": "3e",
       "ingredients": [
         {
-          "bloc": "lentille",
+          "bloc": "french-3e-close-reading",
           "n": 2
         },
         {
-          "bloc": "quartz",
+          "bloc": "maths-3e-statistics",
           "n": 1
         }
       ],

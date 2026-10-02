@@ -86,8 +86,8 @@ it('les pourcentages : nouveau prix cohérent', () => {
 });
 
 it('Glacier et Marché : neuf et six exercices, huit items avec aide et explication', () => {
-  const glacier = COLLEGE_EXERCISES.filter((e) => e.biome === 'glacier');
-  const marche = COLLEGE_EXERCISES.filter((e) => e.biome === 'marche');
+  const glacier = COLLEGE_EXERCISES.filter((e) => e.biome === 'maths-5e-signed-numbers');
+  const marche = COLLEGE_EXERCISES.filter((e) => e.biome === 'maths-5e-proportionality');
   expect(glacier).toHaveLength(9);
   expect(marche).toHaveLength(6);
   for (const def of [...glacier, ...marche]) {
@@ -106,7 +106,7 @@ it('Glacier et Marché : neuf et six exercices, huit items avec aide et explicat
 it('Forge et Atelier : exposants lisibles, notation scientifique et équations cohérentes', () => {
   expect(pow(10, 4)).toBe('10⁴');
   expect(pow(2, 12)).toBe('2¹²');
-  const rng = seededItems('forge');
+  const rng = seededItems('maths-4e-powers');
   for (let i = 0; i < 20; i++) {
     const s = scientific(rng);
     expect(s.choices).toContain(s.answer);
@@ -119,8 +119,8 @@ it('Forge et Atelier : exposants lisibles, notation scientifique et équations c
     expect(d.choices).toContain(d.answer);
     expect(new Set(d.choices as string[]).size).toBe((d.choices as string[]).length);
   }
-  const forge = COLLEGE_EXERCISES.filter((e) => e.biome === 'forge');
-  const atelier = COLLEGE_EXERCISES.filter((e) => e.biome === 'atelier');
+  const forge = COLLEGE_EXERCISES.filter((e) => e.biome === 'maths-4e-powers');
+  const atelier = COLLEGE_EXERCISES.filter((e) => e.biome === 'maths-4e-algebra');
   expect(forge).toHaveLength(7);
   expect(atelier).toHaveLength(9);
   for (const def of [...forge, ...atelier]) {
@@ -245,7 +245,7 @@ it('3e : Pythagore, Thalès, moyenne cohérents ; figures et barres en données'
     const vals = (m.aid as { props: { values: number[] } }).props.values;
     expect(Number(m.answer)).toBe(vals.reduce((a, b) => a + b, 0) / vals.length);
   }
-  for (const biome of ['belvedere', 'donnees', 'phare']) {
+  for (const biome of ['maths-3e-geometry', 'maths-3e-statistics', 'maths-3e-functions']) {
     const defs = COLLEGE_EXERCISES.filter((e) => e.biome === biome);
     expect(defs.length).toBeGreaterThanOrEqual(3);
     for (const def of defs) {
@@ -328,7 +328,7 @@ it('Belvédère, réciproques : la réponse se calcule depuis l’énoncé, les 
   expect(mixedOrder).toBeGreaterThan(100);
 
   // Les deux niveaux : huit items, une règle affichée, la consigne unique du niveau.
-  for (const id of ['belvedere-pythagore-4', 'belvedere-thales-3']) {
+  for (const id of ['maths-3e-geometry-pythagoras-4', 'maths-3e-geometry-thales-3']) {
     const def = COLLEGE_EXERCISES.find((e) => e.id === id)!;
     expect(def.items).toHaveLength(8);
     for (const it of def.items) expect((it.aid as { kind: string }).kind).toBe('rule-card');
@@ -340,7 +340,7 @@ it('Glacier et Forge : pendant la partie, une seule bonne réponse et les nombre
   const num = (c: string) => Number(c.replace('−', '-').replace(/\s/g, ''));
   const isPrime = (n: number) => n > 1 && Array.from({ length: n - 2 }, (_, i) => i + 2).every((d) => n % d !== 0);
   for (let s = 0; s < 300; s++) {
-    for (const id of ['glacier-thermometre-1', 'forge-trempe-2']) {
+    for (const id of ['maths-5e-signed-numbers-thermometer-1', 'maths-4e-powers-scientific-notation-2']) {
       const def = byId(id);
       const seed = `${id}#garde${s}`;
       const raw = def.generate!(seed);
@@ -351,7 +351,7 @@ it('Glacier et Forge : pendant la partie, une seule bonne réponse et les nombre
         expect([...list].sort()).toEqual([...(raw[i].choices as string[])].sort());
         expect(list.filter((c) => c === item.answer)).toHaveLength(1);
         const prompt = String(item.prompt);
-        if (id === 'glacier-thermometre-1') {
+        if (id === 'maths-5e-signed-numbers-thermometer-1') {
           const [, a, b] = /: (\S+) ou (\S+) \?/.exec(prompt)!;
           expect(a).not.toBe(b);
           expect([...list].sort()).toEqual([a, b].sort());
@@ -401,8 +401,8 @@ it('maths générées : la partie garde les choix tirés, et la bonne réponse p
         const place = list.indexOf(String(item.answer));
         expect(place, `${def.id} ${item.key}`).toBeGreaterThanOrEqual(0);
         expect(new Set(list).size, `${def.id} ${item.key}`).toBe(list.length);
-        if (def.id === 'donnees-chances-1' && String(item.prompt).startsWith('Un sac')) expect(list, String(item.prompt)).toHaveLength(4);
-        if (def.id === 'marche-balances-2') expect(list).not.toContain(`${/représente (\d+) km/.exec(String(item.prompt))![1]} km`);
+        if (def.id === 'maths-3e-statistics-probability-1' && String(item.prompt).startsWith('Un sac')) expect(list, String(item.prompt)).toHaveLength(4);
+        if (def.id === 'maths-5e-proportionality-ratios-2') expect(list).not.toContain(`${/représente (\d+) km/.exec(String(item.prompt))![1]} km`);
         if (!byPlace.has(list.length)) byPlace.set(list.length, Array(list.length).fill(0));
         byPlace.get(list.length)![place]++;
       }
@@ -429,7 +429,7 @@ it('Icebergs des fractions : une seule bonne réponse, calculée depuis l’éno
   const seen = { sumTrap: 0, unsimplified: 0, wrongInverse: 0, cross: 0 };
   for (let s = 0; s < 200; s++) {
     for (const level of [1, 2, 3]) {
-      const def = byId(`glacier-icebergs-${level}`);
+      const def = byId(`maths-5e-signed-numbers-fractions-${level}`);
       expect(def.instruction).not.toMatch(/[/×÷]/);
       for (const item of def.generate!(`${def.id}#glace${s}`)) {
         const list = (item.choices as string[]).map(String);
@@ -502,7 +502,7 @@ it('Relevés : la réponse se lit ou se calcule depuis le diagramme ou le tablea
   let withTotal = 0;
   for (let s = 0; s < 200; s++) {
     for (const level of [1, 2, 3]) {
-      const def = byId(`donnees-releves-${level}`);
+      const def = byId(`maths-3e-statistics-data-${level}`);
       expect(def.instruction).not.toMatch(/[/×÷=%]/);
       for (const item of def.generate!(`${def.id}#releve${s}`)) {
         const prompt = String(item.prompt);
@@ -593,7 +593,7 @@ it('Faisceaux : la réponse se lit sur le graphique, aux intersections du quadri
   const seen = { swapped: 0, start: 0, neighbour: 0, graduation: 0, otherAxis: 0, arrival: 0, intercept: 0 };
   for (let s = 0; s < 200; s++) {
     for (const level of [1, 2, 3]) {
-      const def = byId(`phare-faisceaux-${level}`);
+      const def = byId(`maths-3e-functions-graphs-${level}`);
       expect(def.instruction).not.toMatch(/[/×÷=…]/);
       for (const item of def.generate!(`${def.id}#graphe${s}`)) {
         const prompt = String(item.prompt);

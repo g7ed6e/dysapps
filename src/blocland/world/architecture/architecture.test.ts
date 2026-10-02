@@ -56,7 +56,7 @@ describe('L’architecture modulaire', () => {
       cube(5, 0, 1, 'pierre', { sol: true }),
       cube(6, 0, 1, 'brique'),
       cube(7, 0, 1, 'pierre'),
-      cube(8, 0, 1, 'pierre', { place: 'ecole' }),
+      cube(8, 0, 1, 'pierre', { place: 'school' }),
     ];
     const archi = architectureDe('6e', cubes, { kit, exclure: (c) => c.x === 7 });
     expect([...archi.remplacees].sort()).toEqual(['0,0,1', '1,0,1']);
@@ -115,11 +115,11 @@ describe('Le kit des Premiers Rivages (lot 7b)', () => {
     const archi = architectureDe('6e', cubes, { batiments: batimentsDe('6e') });
     const parIle = (ile: string) => [...archi.peints.values()].filter((p) => p.cube.tag === ile);
     // La cabane de la Forêt (planches) : du colombage, des pignons bardés, une cheminée maçonnée.
-    const foret = parIle('foret');
+    const foret = parIle('french-6e-phonology');
     expect(new Set(foret.map((p) => p.peinture.fond))).toEqual(new Set(['remplissage', 'bardage', 'soubassement']));
     expect(foret.filter((p) => p.peinture.fond === 'remplissage').every((p) => (p.peinture.motifs[0] & 3) === MOTIF.colombage)).toBe(true);
     // La forge de la Mine (pierre) : un mur plein.
-    expect(parIle('mine').every((p) => p.peinture.fond === 'matiere' && (p.peinture.motifs[0] & 3) === MOTIF.plein)).toBe(true);
+    expect(parIle('french-6e-letter-confusion').every((p) => p.peinture.fond === 'matiere' && (p.peinture.motifs[0] & 3) === MOTIF.plein)).toBe(true);
     // Les toits : des pentes (versants, faîtes, arêtiers, croupes), aucune pièce hors d'un toit ni de pilotis.
     const pentes = new Set(archi.pieces.map((p) => p.piece.split('.').slice(0, 2).join('.')));
     expect([...pentes].sort()).toEqual(['toit.aretier', 'toit.croupe', 'toit.faite', 'toit.versant']);
@@ -147,9 +147,9 @@ describe('Le kit des Premiers Rivages (lot 7b)', () => {
     const { progress, world: village } = toutConstruit();
     const tout = architectureDe('6e', worldCubes('6e', progress, village, false), { batiments: batimentsDe('6e') });
     // Les murs seuls de la Forêt : sans le toit ni la cour dans le monde.
-    const plans = Object.fromEntries(Object.entries(village.parts).filter(([k]) => k !== 'foret-toit' && k !== 'foret-cour'));
+    const plans = Object.fromEntries(Object.entries(village.parts).filter(([k]) => k !== 'french-6e-phonology-2' && k !== 'french-6e-phonology-3'));
     const murs = architectureDe('6e', worldCubes('6e', progress, { ...village, parts: plans }, false), { batiments: batimentsDe('6e') });
-    const foret = [...murs.peints].filter(([, p]) => p.cube.tag === 'foret');
+    const foret = [...murs.peints].filter(([, p]) => p.cube.tag === 'french-6e-phonology');
     expect(foret.length).toBeGreaterThan(20);
     for (const [k, p] of foret) expect(p.peinture, k).toEqual(tout.peints.get(k)!.peinture);
   }, 30_000);

@@ -48,7 +48,7 @@ function fromUse(state: GameState, use: Use): Worksite | null {
     if (!current || current.allDone) return null;
     const g = gauge(state, current.plan);
     const text = g.ready ? `${current.plan.name} : tu as tous tes blocs. Va les poser !` : `${current.plan.name}, sur ${island} : ${count(g.have, g.need)}.`;
-    return { kind: 'plan', text, ...g, island: use.island, to: `/aventure/${use.island}?chantier=plan` };
+    return { kind: 'plan', text, ...g, island: use.island, to: `/adventure/${use.island}?worksite=part` };
   }
   if (use.kind === 'navire') {
     const stage = stageAt(use.island);
@@ -56,14 +56,14 @@ function fromUse(state: GameState, use: Use): Worksite | null {
     const g = gauge(state, stage);
     const name = `${cap(VEHICLE_NAME)}, ${stage.name.charAt(0).toLowerCase()}${stage.name.slice(1)}`;
     const text = g.ready ? `${name} : tu as tous tes blocs. Va les poser au port !` : `${name} : ${count(g.have, g.need)}.`;
-    return { kind: 'navire', text, ...g, island: use.island, to: `/aventure/${use.island}?chantier=navire` };
+    return { kind: 'navire', text, ...g, island: use.island, to: `/adventure/${use.island}?worksite=vehicle` };
   }
   if (use.kind === 'monument') {
     const monument = monumentsOf(archipelagoOf(use.island).classe).find((m) => m.name === use.name);
     if (!monument) return null;
     const g = gauge(state, monument);
     const text = g.ready ? `${monument.name} : tu as tous tes blocs. Va les poser !` : `${monument.name} : ${count(g.have, g.need)}.`;
-    return { kind: 'monument', text, ...g, island: use.island, to: `/aventure/${monument.id}` };
+    return { kind: 'monument', text, ...g, island: use.island, to: `/adventure/${monument.id}` };
   }
   return null;
 }
@@ -81,7 +81,7 @@ function ouvrage(state: GameState, island: BiomeId, block: BlockId): Worksite | 
   const have = Math.min(cheapest.cost, payableBlocks(state.stock));
   const ready = have >= cheapest.cost;
   const text = ready ? `${name} : tu peux le construire !` : `${name} : ${have} bloc${have > 1 ? 's' : ''} sur ${cheapest.cost}.`;
-  return { kind: 'ouvrage', text, have, need: cheapest.cost, ready, island, to: `/aventure/${island}?chantier=${cheapest.id}` };
+  return { kind: 'ouvrage', text, have, need: cheapest.cost, ready, island, to: `/adventure/${island}?worksite=${cheapest.id}` };
 }
 
 /**
@@ -111,7 +111,7 @@ export function worksiteFor(state: GameState, island: BiomeId, block: BlockId): 
       need: 0,
       ready: false,
       island: later.island,
-      to: `/aventure/${later.island}`,
+      to: `/adventure/${later.island}`,
     };
   }
   return {
@@ -121,7 +121,7 @@ export function worksiteFor(state: GameState, island: BiomeId, block: BlockId): 
     need: 0,
     ready: false,
     island,
-    to: `/aventure/${island}`,
+    to: `/adventure/${island}`,
   };
 }
 

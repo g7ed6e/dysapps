@@ -1,0 +1,10 @@
+{
+  "id": "english-5e-vocabulary-2",
+  "biome": "english-5e-vocabulary",
+  "name": "Le toit de la boutique",
+  "reward": {
+    "xp": 50,
+    "chest": {}
+  },
+  "done": "Un toit et une porte ! Mes fruits restent au sec, même quand il pleut."
+}

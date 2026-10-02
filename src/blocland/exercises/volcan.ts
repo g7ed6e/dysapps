@@ -409,14 +409,14 @@ const PENTE_ENCADRER = 'Trouve les deux entiers qui se suivent et encadrent la f
 
 // La récompense des missions du Volcan (6e) : 12 XP et de l’obsidienne, comme celles de maths.ts.
 const define = (type: string, level: number, instruction: string, generators: ItemGenerator[]): ExerciseDef =>
-  defineData({ biome: 'volcan', type, level, instruction, generators, block: 'obsidienne', xp: 12 });
+  defineData({ biome: 'maths-6e-decimals', type, level, instruction, generators, block: 'maths-6e-decimals', xp: 12 });
 
 /** Nombres géants, et les niveaux de plus de la Coulée de lave et de la Pente graduée. */
 export const VOLCAN_EXERCISES: ExerciseDef[] = [
-  define('coulee', 2, COULEE_RANGER, [orderDecimals]),
-  define('coulee', 3, COULEE_ENTRE, [betweenDecimals]),
-  define('pente', 3, PENTE_ENCADRER, [frameFraction]),
-  define('geants', 1, GEANTS_1, [rankDigit]),
-  define('geants', 2, GEANTS_2, [writeInDigits]),
-  define('geants', 3, GEANTS_3, [countOf]),
+  define('operations', 2, COULEE_RANGER, [orderDecimals]),
+  define('operations', 3, COULEE_ENTRE, [betweenDecimals]),
+  define('scale', 3, PENTE_ENCADRER, [frameFraction]),
+  define('large-numbers', 1, GEANTS_1, [rankDigit]),
+  define('large-numbers', 2, GEANTS_2, [writeInDigits]),
+  define('large-numbers', 3, GEANTS_3, [countOf]),
 ];

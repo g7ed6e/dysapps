@@ -1,4 +1,4 @@
-import { BLOCKS } from '../biomes';
+import { BLOC, BLOCKS } from '../biomes';
 import { islandDef } from './map';
 import { EMPTY_STATE, canLaunch, currentStage, fillPlanCell, launchVehicle, planStatus, sanitizeState, type GameState } from '../engine';
 import { BADGES, EMPTY_PROGRESS, recordVoyage, sanitizeProgress } from '../../core/progress';
@@ -7,7 +7,7 @@ import { VEHICLE_SIZE, dockOrigin } from './harbour';
 import { PLANS, planCells } from './plans';
 import { VEHICLE_STAGES, beatenGuardians, getStage, kitReady, stageAt, stageFor, stageTo, vehicleAt, vehicleModel } from './vehicle';
 
-const guardians = (ids: string[]) => Object.fromEntries(ids.map((id) => [`${id}-gardien`, { stars: 2 as const, attempts: 1, best: 1 }]));
+const guardians = (ids: string[]) => Object.fromEntries(ids.map((id) => [`${id}-challenge`, { stars: 2 as const, attempts: 1, best: 1 }]));
 
 it('trois étapes, de port en port, faites de blocs gagnables dans leur archipel, jamais rares', () => {
   expect(VEHICLE_STAGES.map((s) => s.stage)).toEqual([1, 2, 3]);
@@ -44,7 +44,7 @@ it('trois étapes, de port en port, faites de blocs gagnables dans leur archipel
   });
   const keys = VEHICLE_STAGES.flatMap((s) => [...s.cells, ...s.kit].map((c) => `${c.x},${c.y},${c.z}`));
   expect(new Set(keys).size).toBe(keys.length);
-  expect(stageAt('foret')).toBeUndefined();
+  expect(stageAt('french-6e-phonology')).toBeUndefined();
   // Le modèle SVG grandit avec les voyages.
   expect(vehicleModel(0).length).toBe(VEHICLE_STAGES[0].cells.length + VEHICLE_STAGES[0].kit.length);
   expect(vehicleModel(3).length).toBe(keys.length);
@@ -69,34 +69,34 @@ it('les cases du navire sont sur le quai, devant l’île-port, sous le niveau d
 it('le kit arrive avec les Gardiens ; on embarque quand toutes les cases sont posées et les Gardiens vaincus', () => {
   const [coque] = VEHICLE_STAGES;
   expect(beatenGuardians('6e', {})).toBe(0);
-  expect(beatenGuardians('6e', guardians(['foret', 'plaine']))).toBe(2);
-  expect(beatenGuardians('6e', guardians(['foret', 'marche']))).toBe(1);
-  expect(kitReady(coque, guardians(['foret', 'plaine']))).toBe(false);
-  expect(kitReady(coque, guardians(['foret', 'plaine', 'mine']))).toBe(true);
+  expect(beatenGuardians('6e', guardians(['french-6e-phonology', 'maths-6e-calculation']))).toBe(2);
+  expect(beatenGuardians('6e', guardians(['french-6e-phonology', 'maths-5e-proportionality']))).toBe(1);
+  expect(kitReady(coque, guardians(['french-6e-phonology', 'maths-6e-calculation']))).toBe(false);
+  expect(kitReady(coque, guardians(['french-6e-phonology', 'maths-6e-calculation', 'french-6e-letter-confusion']))).toBe(true);
   // Rien de posé : il manque toutes les cases.
   expect(canLaunch(EMPTY_STATE, coque)).toEqual({ ok: false, reason: 'blocs', missing: coque.cells.length });
   expect(currentStage(EMPTY_STATE)).toBe(coque);
   // On pose tout, bloc par bloc, avec de quoi payer ; la dernière case donne le coffre.
-  let state: GameState = { ...EMPTY_STATE, stock: { sable: 40, bois: 40, galet: 20, pierre: 5 }, world: { ...EMPTY_STATE.world, links: ['foret-mine'] } };
+  let state: GameState = { ...EMPTY_STATE, stock: { [BLOC.sable]: 40, [BLOC.bois]: 40, [BLOC.galet]: 20, [BLOC.pierre]: 5 }, world: { ...EMPTY_STATE.world, links: ['french-6e-phonology-french-6e-letter-confusion'] } };
   for (const c of planCells(coque)) {
     const r = fillPlanCell(state, coque, c.x, c.y, c.z, '2026-09-26');
     expect(r.ok, c.key).toBe(true);
     if (r.ok) state = r.state;
   }
   expect(planStatus(state, coque).complete).toBe(true);
-  expect(state.stock.lanterne).toBe(coque.reward.chest.lanterne);
+  expect(state.stock[BLOC.lanterne]).toBe(coque.reward.chest[BLOC.lanterne]);
   expect(state.world.log).toEqual([{ day: '2026-09-26', part: coque.id }]);
   // Sans Gardiens : on attend.
   expect(canLaunch(state, coque)).toEqual({ ok: false, reason: 'gardiens', missing: 3 });
-  state = { ...state, progress: guardians(['foret', 'plaine']) };
+  state = { ...state, progress: guardians(['french-6e-phonology', 'maths-6e-calculation']) };
   expect(canLaunch(state, coque)).toEqual({ ok: false, reason: 'gardiens', missing: 1 });
   // Trois Gardiens : on largue les amarres, le voyage est fait, le bonhomme est au Marché.
-  state = { ...state, progress: guardians(['foret', 'plaine', 'mine']) };
+  state = { ...state, progress: guardians(['french-6e-phonology', 'maths-6e-calculation', 'french-6e-letter-confusion']) };
   const gone = launchVehicle(state, coque);
-  expect(gone.result).toEqual({ ok: true, to: 'marche' });
-  expect(gone.state.world.links).toContain('voyage-5e');
-  expect(gone.state.world.place).toBe('marche');
-  expect(vehicleAt(gone.state.world.links)).toBe('marche');
+  expect(gone.result).toEqual({ ok: true, to: 'maths-5e-proportionality' });
+  expect(gone.state.world.links).toContain('passage-5e');
+  expect(gone.state.world.place).toBe('maths-5e-proportionality');
+  expect(vehicleAt(gone.state.world.links)).toBe('maths-5e-proportionality');
   expect(currentStage(gone.state)).toBe(VEHICLE_STAGES[1]);
   // Une deuxième fois : déjà fait. Le ballon depuis les Premiers Rivages seulement : trop loin.
   expect(launchVehicle(gone.state, coque).result).toEqual({ ok: false, reason: 'construit', missing: 0 });
@@ -104,7 +104,7 @@ it('le kit arrive avec les Gardiens ; on embarque quand toutes les cases sont po
   // Relu depuis la sauvegarde : rien ne bouge.
   const saved = sanitizeState(JSON.parse(JSON.stringify(gone.state)));
   expect(saved.world.links).toEqual(gone.state.world.links);
-  expect(saved.world.place).toBe('marche');
+  expect(saved.world.place).toBe('maths-5e-proportionality');
   expect(saved.world.parts[coque.id]).toHaveLength(coque.cells.length);
 });
 

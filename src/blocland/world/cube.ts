@@ -5,7 +5,7 @@
  * Les lieux du village où l'on entre : l'école (ses trois portes, une par matière), la salle des trophées, et le lieu où
  * l'on assemble les blocs (GD-2 : la Fabrique dans Blocland, la Halle aux matériaux dans Archipéo).
  */
-export type VillagePlaceId = 'ecole' | 'trophees' | 'assemblage';
+export type VillagePlaceId = 'school' | 'trophies' | 'assembly';
 /** Ce qu'on touche pour y entrer : un lieu du village, ou un monument (« monument:<identifiant du monument> »). */
 export type PlaceId = VillagePlaceId | `monument:${string}`;
 

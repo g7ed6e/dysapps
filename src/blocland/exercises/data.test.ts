@@ -46,7 +46,7 @@ describe.each(EXERCISES.map((e) => [e.id, e] as const))('exercice %s', (_, def) 
 });
 
 it('chasse au son : 4 mots par écran, 2 à 3 bons par écran, pictogramme et son entendu', () => {
-  for (const def of EXERCISES.filter((e) => e.type === 'chasse-son')) {
+  for (const def of EXERCISES.filter((e) => e.type === 'sound-hunt')) {
     expect(def.items.length % 4).toBe(0);
     for (let i = 0; i < def.items.length; i += 4) {
       const screen = def.items.slice(i, i + 4);
@@ -62,7 +62,7 @@ it('chasse au son : 4 mots par écran, 2 à 3 bons par écran, pictogramme et so
 });
 
 it('abattage : on compte les syllabes entendues, sans e muet final', () => {
-  const defs = EXERCISES.filter((e) => e.type === 'abattage');
+  const defs = EXERCISES.filter((e) => e.type === 'syllables');
   expect(defs.length).toBeGreaterThanOrEqual(2);
   for (const def of defs) {
     expect(def.instruction).toMatch(/entends/);
@@ -77,7 +77,7 @@ it('abattage : on compte les syllabes entendues, sans e muet final', () => {
 });
 
 it('filon : moitié de lettres cibles, lettres proches seulement', () => {
-  for (const def of EXERCISES.filter((e) => e.type === 'filon')) {
+  for (const def of EXERCISES.filter((e) => e.type === 'letter-pairs')) {
     expect(def.items.filter((i) => i.correct).length).toBe(def.items.length / 2);
     for (const it of def.items) {
       expect(['b', 'd', 'p', 'q']).toContain(it.letter);
@@ -88,7 +88,7 @@ it('filon : moitié de lettres cibles, lettres proches seulement', () => {
 });
 
 it('mot troué : le trou reconstitue le mot, 3 blocs dont la réponse', () => {
-  for (const def of EXERCISES.filter((e) => e.type === 'mot-troue')) {
+  for (const def of EXERCISES.filter((e) => e.type === 'missing-letters')) {
     for (const it of def.items) {
       expect(`${it.before}${it.answer}${it.after}`).toBe(it.word);
       expect(it.choices).toHaveLength(3);
@@ -99,8 +99,8 @@ it('mot troué : le trou reconstitue le mot, 3 blocs dont la réponse', () => {
 });
 
 it('tri des graines : construit depuis les homophones, avec règle et astuce', () => {
-  const defs = EXERCISES.filter((e) => e.type === 'graines');
-  expect(defs.map((d) => d.id).sort()).toEqual(['ferme-graines-a', 'ferme-graines-ce', 'ferme-graines-et', 'ferme-graines-on', 'ferme-graines-son']);
+  const defs = EXERCISES.filter((e) => e.type === 'sorting');
+  expect(defs.map((d) => d.id).sort()).toEqual(['french-6e-grammar-spelling-sorting-a', 'french-6e-grammar-spelling-sorting-ce', 'french-6e-grammar-spelling-sorting-et', 'french-6e-grammar-spelling-sorting-on', 'french-6e-grammar-spelling-sorting-son']);
   for (const def of defs)
     for (const it of def.items) {
       expect(String(it.prompt)).toContain('…');
@@ -111,7 +111,7 @@ it('tri des graines : construit depuis les homophones, avec règle et astuce', (
 });
 
 it('ascension : textes de 60 à 120 mots en 3 à 5 paragraphes', () => {
-  const defs = EXERCISES.filter((e) => e.type === 'ascension');
+  const defs = EXERCISES.filter((e) => e.type === 'fluency');
   expect(defs.length).toBeGreaterThanOrEqual(3);
   for (const def of defs) {
     const words = def.items.reduce((n, it) => n + String(it.text).split(/\s+/).length, 0);
@@ -123,7 +123,7 @@ it('ascension : textes de 60 à 120 mots en 3 à 5 paragraphes', () => {
 });
 
 it('rimes : 4 mots par écran, 2 à 3 qui riment, pictogramme et fin entendue', () => {
-  const defs = EXERCISES.filter((e) => e.type === 'rimes');
+  const defs = EXERCISES.filter((e) => e.type === 'rhymes');
   expect(defs.length).toBeGreaterThanOrEqual(3);
   for (const def of defs) {
     expect(def.target).toBeTruthy();
@@ -141,7 +141,7 @@ it('rimes : 4 mots par écran, 2 à 3 qui riment, pictogramme et fin entendue', 
 });
 
 it('dictées à choix (oreille, coffre) : le mot est parmi 2 ou 3 écritures différentes, avec un indice', () => {
-  const defs = EXERCISES.filter((e) => e.type === 'oreille' || e.type === 'coffre');
+  const defs = EXERCISES.filter((e) => e.type === 'sound-discrimination' || e.type === 'sight-words');
   expect(defs.length).toBeGreaterThanOrEqual(4);
   for (const def of defs)
     for (const it of def.items) {
@@ -158,7 +158,7 @@ it('dictées à choix (oreille, coffre) : le mot est parmi 2 ou 3 écritures dif
 it('coffre à mots : chaque mot dicté vient de la liste officielle des mots-outils (CP, CE1), ou des exceptions motivées', () => {
   const official = motsOutilsDictables();
   const used = new Set<string>();
-  for (const def of EXERCISES.filter((e) => e.type === 'coffre'))
+  for (const def of EXERCISES.filter((e) => e.type === 'sight-words'))
     for (const it of def.items) {
       const w = motDictable(String(it.word));
       used.add(w);
@@ -168,7 +168,7 @@ it('coffre à mots : chaque mot dicté vient de la liste officielle des mots-out
 });
 
 it('familles : le morceau choisi et la racine reconstituent le mot', () => {
-  const defs = EXERCISES.filter((e) => e.type === 'familles');
+  const defs = EXERCISES.filter((e) => e.type === 'word-families');
   expect(defs.length).toBeGreaterThanOrEqual(2);
   for (const def of defs)
     for (const it of def.items) {
@@ -181,7 +181,7 @@ it('familles : le morceau choisi et la racine reconstituent le mot', () => {
 });
 
 it('enclos : 4 sujets par écran, réponse singulier ou pluriel, avec une explication', () => {
-  const defs = EXERCISES.filter((e) => e.type === 'enclos');
+  const defs = EXERCISES.filter((e) => e.type === 'word-classes');
   expect(defs.length).toBeGreaterThanOrEqual(2);
   for (const def of defs) {
     expect(def.items.length % 4).toBe(0);
@@ -195,7 +195,7 @@ it('enclos : 4 sujets par écran, réponse singulier ou pluriel, avec une explic
 });
 
 it('récolte : phrase à trou, trois terminaisons, règle', () => {
-  const defs = EXERCISES.filter((e) => e.type === 'recolte');
+  const defs = EXERCISES.filter((e) => e.type === 'e-er-ez');
   expect(defs.length).toBeGreaterThanOrEqual(2);
   for (const def of defs)
     for (const it of def.items) {
@@ -207,7 +207,7 @@ it('récolte : phrase à trou, trois terminaisons, règle', () => {
     }
 });
 
-it.each(['troupeau', 'facettes'])('%s : la réponse parmi 2 à 3 choix distincts, règle affichée et explication', (type) => {
+it.each(['plurals', 'word-forms'])('%s : la réponse parmi 2 à 3 choix distincts, règle affichée et explication', (type) => {
   const defs = EXERCISES.filter((e) => e.type === type);
   expect(defs.length).toBeGreaterThanOrEqual(2);
   for (const def of defs)
@@ -217,7 +217,7 @@ it.each(['troupeau', 'facettes'])('%s : la réponse parmi 2 à 3 choix distincts
       expect(choices.length).toBeLessThanOrEqual(3);
       expect(new Set(choices).size).toBe(choices.length);
       expect(choices).toContain(it.answer);
-      if (type === 'troupeau') expect(String(it.prompt)).toContain('…');
+      if (type === 'plurals') expect(String(it.prompt)).toContain('…');
       if (String(it.prompt).includes('…')) expect(String(it.spoken)).not.toContain('…');
       expect((it.aid as { kind: string }).kind).toBe('rule-card');
       expect(String(it.explanation).length).toBeGreaterThan(5);
@@ -236,44 +236,44 @@ it('chaque type de chaque biome a au moins un exercice', () => {
 });
 
 it('pickExercise varie entre les exercices d’un même niveau (le moins joué d’abord)', () => {
-  const first = pickExercise('foret', 'chasse-son', 1)!;
+  const first = pickExercise('french-6e-phonology', 'sound-hunt', 1)!;
   expect(first.level).toBe(1);
-  const second = pickExercise('foret', 'chasse-son', 1, { [first.id]: { attempts: 1 } })!;
+  const second = pickExercise('french-6e-phonology', 'sound-hunt', 1, { [first.id]: { attempts: 1 } })!;
   expect(second.id).not.toBe(first.id);
   expect(second.level).toBe(1);
   // Niveau 2 demandé : on reste au niveau 2 ; niveau 9 : le plus haut disponible.
-  expect(pickExercise('foret', 'chasse-son', 2)!.level).toBe(2);
-  expect(pickExercise('foret', 'chasse-son', 9)!.level).toBe(3);
-  expect(pickExercise('foret', 'rimes', 1)?.type).toBe('rimes');
-  expect(pickExercise('tour', 'inconnu', 1)).toBeUndefined();
+  expect(pickExercise('french-6e-phonology', 'sound-hunt', 2)!.level).toBe(2);
+  expect(pickExercise('french-6e-phonology', 'sound-hunt', 9)!.level).toBe(3);
+  expect(pickExercise('french-6e-phonology', 'rhymes', 1)?.type).toBe('rhymes');
+  expect(pickExercise('french-6e-reading', 'inconnu', 1)).toBeUndefined();
 });
 
 it('questProgress garde la progression d’une mission quand la partie suivante tombe sur une autre variante', () => {
-  expect(questProgress('foret', 'chasse-son', {})).toBeUndefined();
-  const first = pickExercise('foret', 'chasse-son', 1)!;
+  expect(questProgress('french-6e-phonology', 'sound-hunt', {})).toBeUndefined();
+  const first = pickExercise('french-6e-phonology', 'sound-hunt', 1)!;
   const progress = { [first.id]: { stars: 2, attempts: 1, best: 0.8 } };
   // La prochaine partie proposée est une autre variante, jamais jouée…
-  const next = pickExercise('foret', 'chasse-son', 1, progress)!;
+  const next = pickExercise('french-6e-phonology', 'sound-hunt', 1, progress)!;
   expect(next.id).not.toBe(first.id);
   expect(progress[next.id]).toBeUndefined();
   // … mais la mission affiche toujours ses étoiles.
-  expect(questProgress('foret', 'chasse-son', progress)).toEqual({ stars: 2, attempts: 1, best: 0.8 });
+  expect(questProgress('french-6e-phonology', 'sound-hunt', progress)).toEqual({ stars: 2, attempts: 1, best: 0.8 });
   // Toutes variantes et niveaux confondus : meilleures étoiles, meilleur score, parties cumulées.
-  const level2 = exercisesOf('foret', 'chasse-son').find((e) => e.level === 2)!;
+  const level2 = exercisesOf('french-6e-phonology', 'sound-hunt').find((e) => e.level === 2)!;
   const more = { ...progress, [next.id]: { stars: 1, attempts: 2, best: 0.5 }, [level2.id]: { stars: 3, attempts: 1, best: 0.95 } };
-  expect(questProgress('foret', 'chasse-son', more)).toEqual({ stars: 3, attempts: 4, best: 0.95 });
+  expect(questProgress('french-6e-phonology', 'sound-hunt', more)).toEqual({ stars: 3, attempts: 4, best: 0.95 });
   // Les exercices d’autres missions ne comptent pas.
-  expect(questProgress('foret', 'rimes', more)).toBeUndefined();
+  expect(questProgress('french-6e-phonology', 'rhymes', more)).toBeUndefined();
 });
 
 it('français du collège : phrase à trou (ou question), 2 à 3 choix, règle affichée et explication', () => {
-  const defs = EXERCISES.filter((e) => ['carrefour', 'marais', 'falaise', 'cabinet', 'textes'].includes(e.biome));
+  const defs = EXERCISES.filter((e) => ['french-5e-homophones', 'french-5e-conjugation', 'french-4e-agreement', 'french-4e-vocabulary', 'french-3e-close-reading'].includes(e.biome));
   expect(
     defs
-      .filter((e) => e.type === 'panneaux')
+      .filter((e) => e.type === 'pairs')
       .map((e) => e.id)
       .sort(),
-  ).toEqual(['ces', 'cest', 'la', 'leur', 'ou', 'peu', 'quand'].map((s) => `carrefour-panneaux-${s}`).sort());
+  ).toEqual(['ces', 'cest', 'la', 'leur', 'ou', 'peu', 'quand'].map((s) => `french-5e-homophones-pairs-${s}`).sort());
   expect(defs.length).toBe(50);
   for (const def of defs)
     for (const it of def.items) {
@@ -287,7 +287,7 @@ it('français du collège : phrase à trou (ou question), 2 à 3 choix, règle a
 });
 
 it('anglais : tout le contenu en anglais (lang: en), la réponse parmi les choix, une correction en français', () => {
-  const islands = BIOMES.filter((b) => b.subject === 'anglais').map((b) => b.id);
+  const islands = BIOMES.filter((b) => b.subject === 'english').map((b) => b.id);
   const defs = EXERCISES.filter((e) => islands.includes(e.biome));
   expect(defs.length).toBeGreaterThan(0);
   for (const def of defs) {
@@ -371,7 +371,7 @@ it('LV2 : la bonne réponse ne se devine pas à sa longueur', () => {
   // moitié où elle est plus courte qu'un piège. Hors listes rangées (heures, nombres). Le Refuge des carnets d'abord :
   // le Relais et le Jardin ont des items où la réponse est la plus longue, à reprendre à part (cadrage du contenu).
   const fautes: string[] = [];
-  for (const def of EXERCISES.filter((e) => e.biome === 'refuge')) {
+  for (const def of EXERCISES.filter((e) => e.biome === 'lv2-3e-travel')) {
     let inegaux = 0;
     let plusCourte = 0;
     for (const it of def.items) {
@@ -387,7 +387,7 @@ it('LV2 : la bonne réponse ne se devine pas à sa longueur', () => {
     }
     if (plusCourte < Math.ceil(inegaux / 2)) fautes.push(`${def.id} : plus courte ${plusCourte} fois sur ${inegaux}`);
   }
-  expect(EXERCISES.some((e) => e.biome === 'refuge')).toBe(true);
+  expect(EXERCISES.some((e) => e.biome === 'lv2-3e-travel')).toBe(true);
   expect(fautes).toEqual([]);
 });
 

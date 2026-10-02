@@ -26,7 +26,7 @@ export interface Destination {
  * village avance. `noms` : les noms des archipels de l'univers affiché ; `mots` : ses mots pour les Gardiens.
  */
 export function nextDestination(state: GameState, noms: NomsArchipels, mots: MotsDesGardiens): Destination {
-  const at = state.world.place ?? 'foret';
+  const at = state.world.place ?? 'french-6e-phonology';
   const archipelago = archipelagoOf(at);
   const open = reachableIslands(state.world.links);
   const islands = islandsOf(archipelago.classe)

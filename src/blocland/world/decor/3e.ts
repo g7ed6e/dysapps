@@ -35,7 +35,7 @@ export const RETRAIT_3E = { bandeau: 0.16, joint: 0.12, ombre: 0.75, decolle: 0.
  * ajoutés au pivot de la vue ; depuis ces îles, la vue ne glisse pas vers le phare). Depuis que le cœur du Phare a 20
  * cases (01/10/2026), le phare suit la côte repoussée, deux cases plus loin en x et en y (75,5 et 929,5 avant).
  */
-export const GRAND_PHARE_3E = { ile: 'phare', x: 77.5, y: 931.5, pied: 9.7, haut: 26, rayon: 1.2, pivot: { phare: -0.3, textes: -0.3 } } as const;
+export const GRAND_PHARE_3E = { ile: 'maths-3e-functions', x: 77.5, y: 931.5, pied: 9.7, haut: 26, rayon: 1.2, pivot: { 'maths-3e-functions': -0.3, 'french-3e-close-reading': -0.3 } } as const;
 
 const delave = (f: Faces, muted: boolean): Faces => (muted ? { dessus: mixColor(f.dessus, DELAVE[0], DELAVE[1]), cote: mixColor(f.cote, DELAVE[0], DELAVE[1]) } : f);
 const uni = (c: Couleur, muted: boolean): Faces => delave({ dessus: c, cote: c }, muted);
@@ -45,7 +45,7 @@ const uni = (c: Couleur, muted: boolean): Faces => delave({ dessus: c, cote: c }
  * cœur de l'île, pour ne jamais en couvrir une case (fiche, §2 ; test `3e.test.ts`). En cases du monde.
  */
 export function empriseDuSocle(e: { x: number; y: number; emprise: number }): { x0: number; y0: number } {
-  const def = islandDef('phare');
+  const def = islandDef('maths-3e-functions');
   const c = coeurDe(def);
   const [mx, my] = [(c.x0 + c.x1) / 2, (c.y0 + c.y1) / 2];
   const plus = SOCLE_3E.cote - e.emprise;

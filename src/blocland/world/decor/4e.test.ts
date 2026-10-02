@@ -75,7 +75,7 @@ it('la grue est hors de la grille, sur la terre de l’Atelier, hors du cœur, d
   expect(g.cubes).toHaveLength(0);
   const def = MAP.find((d) => d.id === GRUE.ile)!;
   const col = colonneEn(monde.champ, g.x, g.y);
-  expect(col?.ile).toBe('atelier');
+  expect(col?.ile).toBe('maths-4e-algebra');
   const dansLeCoeur = g.x >= def.core.x && g.x < def.core.x + CORE && g.y >= def.core.y && g.y < def.core.y + CORE;
   expect(dansLeCoeur).toBe(false);
   // Sur le flanc droit (−x) du cœur (décision du directeur artistique, 28/09).
@@ -147,12 +147,12 @@ it('le ponton du Jardin des heures (LV2) : sur son rivage est, au ras de l’eau
   const i = indice('ponton');
   expect(i).toBeGreaterThanOrEqual(0);
   const e = monde.maillage.elements[i];
-  const jardin = MAP.find((d) => d.id === 'jardin')!;
+  const jardin = MAP.find((d) => d.id === 'lv2-4e-daily-life')!;
   // Sur une case de terre du Jardin, à l'est du cœur ; de l'eau devant.
-  expect(colonneEn(monde.champ, e.x, e.y)?.ile).toBe('jardin');
+  expect(colonneEn(monde.champ, e.x, e.y)?.ile).toBe('lv2-4e-daily-life');
   expect(e.x).toBeGreaterThanOrEqual(jardin.core.x + CORE);
   const devant = colonneEn(monde.champ, e.x + 1, e.y);
-  expect(devant === undefined || devant.ile !== 'jardin' || devant.liquide).toBe(true);
+  expect(devant === undefined || devant.ile !== 'lv2-4e-daily-life' || devant.liquide).toBe(true);
   // Ses cubes de Blocland : l'échelle, le tablier et la barque, dans l'archipel.
   const b = worldBounds('4e');
   for (const c of e.cubes) expect(c.x).toBeLessThan(b.maxX);

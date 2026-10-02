@@ -43,7 +43,7 @@ it('le socle de 3 × 3 couvre les cases du phare de Blocland, jamais une case du
   for (let dx = 0; dx < SOCLE_3E.cote; dx++) for (let dy = 0; dy < SOCLE_3E.cote; dy++) socle.push(`${x0 + dx},${y0 + dy}`);
   // Règle 1 du directeur artistique : toutes les cases bloquées sont sous le socle.
   for (const k of bloquees) expect(socle, k).toContain(k);
-  const def = islandDef('phare');
+  const def = islandDef('maths-3e-functions');
   const chemins = new Set(BRIDGES.filter((b) => archipelagoOfIsland(b.from) === '3e').flatMap((b) => bridgePath(b).map((c) => `${c.x},${c.y}`)));
   const posees = new Set(reste.filter((c) => !c.decor).map((c) => `${c.x},${c.y}`));
   for (const k of socle) {

@@ -68,6 +68,10 @@ Deux pull requests menées en parallèle ne touchent donc aucun numéro commun e
 
 La version est affichée dans les réglages de l’application et dans le pied de page de la documentation. Il n’y a pas de journal des versions : l’historique est celui de git et des pull requests.
 
+## Revenir en arrière
+
+Une version qui change le format de la partie (`GAME_VERSION`, `src/core/migration.ts`) ne se défait pas une fois en ligne : la partie traduite par un appareil n'est plus lisible par la version d'avant, qui jetterait ce qu'elle ne connaît pas (identifiants neutres du format 3 : stock, constructions, liaisons). En cas d'incident après une telle version, on corrige en avant, sans revert de `main`.
+
 ## Dépendances
 
 `npm ci --ignore-scripts` en CI et `ignore-scripts=true` dans `.npmrc` en local : aucun script d’installation de dépendance n’est exécuté. `npm audit signatures` vérifie les signatures des paquets. Dependabot groupe les mises à jour hebdomadaires des actions et des dépendances npm (mineures et correctives).
