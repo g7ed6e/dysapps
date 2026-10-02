@@ -2,10 +2,12 @@
 // seules, au pas de 4 ; au milieu, le village (la salle des trophées, l'école) ; au fond, la zone des plans (6 × 6) et le
 // lieu où l'on assemble. Le plateau s'arrête à la colonne 11. Les clés de sauvegarde des plans ne changent pas.
 import { BIOMES } from '../biomes';
+import { BADGES } from '../../core/progress';
+import { trophyBlock } from '../trophies';
 import { EMPTY_STATE, sanitizeState } from '../engine';
 import { ARCHIPELAGOS } from './archipelago';
 import { toutConstruit } from './budget';
-import { PLAN_ZONE, ZONES_AGRANDIES, planCells, plansFor, zoneDesPlans } from './plans';
+import { PLAN_ZONE, PLANS_AU_FOND, ZONES_AGRANDIES, decalageDesPlans, planCells, plansFor, zoneDesPlans } from './plans';
 import {
   cacheUneBorne,
   cubesDeLIle,
@@ -13,10 +15,12 @@ import {
   groundHeight,
   PLACES_DES_BORNES_DES_ECOLES,
   placeDoor,
+  placesDesBornes,
   questStations,
   VILLAGE_PLACES,
   versLaCamera,
   type BorneVue,
+  worldCubes,
 } from './terrain';
 import { islandDef } from './map';
 
@@ -82,51 +86,121 @@ function coupe(o: readonly number[], d: readonly number[], c: { x: number; y: nu
   return t0 <= t1;
 }
 
+/** La salle des trophées à sa plus grande : plus de succès qu'elle n'a de places. */
+const SALLE_PLEINE = Array.from({ length: 60 }, () => 'or' as const);
+/** Tous les succès gagnés, un trophée chacun (la salle telle qu'un élève peut la remplir). */
+const TOUS_LES_SUCCES = BADGES.map((b) => trophyBlock(b.id));
+
+/** La première rangée (y, repère de l'île) où se dessine une case d'un plan de la zone des plans. */
+const premiereRangee = (id: (typeof ECOLES)[number]) =>
+  Math.min(...plansFor(id).flatMap((p) => planCells(p).map((c) => c.y + decalageDesPlans(p).y)));
+
 /**
- * Les points d'une case du rang avant de la zone des plans cachés par un lieu, vus de la caméra de l'île : la case porte
- * comme une borne (deux cubes sur le sol, `cacheUneBorne`), ses points pris aux mêmes places, sans marge. Par lieu et
- * par colonne de la zone (« lieu@x » : nombre de points cachés, sur 45).
+ * Les points d'une case de la première rangée où se pose un plan cachés par un lieu, vus de la caméra de l'île : la case
+ * porte comme une borne (deux cubes sur le sol, `cacheUneBorne`), ses points pris aux mêmes places, sans marge. Par lieu
+ * et par colonne de la zone (« lieu@x » : nombre de points cachés, sur 45).
  */
-function pointsCaches(id: (typeof ECOLES)[number], atelier: 'fabrique' | 'halle'): Record<string, number> {
-  // La salle des trophées à sa plus grande (tous les succès), tout construit.
+function pointsCaches(
+  id: (typeof ECOLES)[number],
+  atelier: 'fabrique' | 'halle',
+  sauf: (c: { place?: string; z: number; texture?: string }) => boolean = () => false,
+): Record<string, number> {
+  // La salle des trophées à sa plus grande, tout construit.
   const tout = toutConstruit();
-  const trophees = Array.from({ length: 60 }, () => 'or' as const);
-  const lieux = cubesDeLIle(id, tout.progress, tout.village, false, trophees, new Set(), false, atelier).filter((c) => c.place);
+  const lieux = cubesDeLIle(id, tout.progress, tout.village, false, SALLE_PLEINE, new Set(), false, atelier).filter((c) => c.place && !sauf(c));
   expect(lieux.length).toBeGreaterThan(0);
   const vers = versLaCamera(id);
   const zone = zoneDesPlans(id);
+  const y = premiereRangee(id);
   const out: Record<string, number> = {};
   for (let x = zone.x; x < zone.x + zone.w; x++)
     for (const u of [0.05, 0.5, 0.95])
       for (const v of [0.05, 0.5, 0.95])
         for (const w of [1.05, 1.5, 2, 2.5, 2.95]) {
-          const c = lieux.find((c) => coupe([x + u, zone.y + v, w], vers, c));
+          const c = lieux.find((c) => coupe([x + u, y + v, w], vers, c));
           if (c) out[`${c.place}@${x}`] = (out[`${c.place}@${x}`] ?? 0) + 1;
         }
   return out;
 }
 
-it('aucun lieu du village ne cache une borne', () => {
+/** Les bornes d'une île-école, vues comme `cacheUneBorne` les voit (repère de l'île). */
+const bornesVues = (id: (typeof ECOLES)[number]): BorneVue[] =>
+  questStations(id).map((b) => ({ x: b.x, y: b.y, base: groundHeight(indexDe(id), b.x, b.y) }));
+
+it('rien devant les bornes : ni un lieu du village ni le décor (table, étal, arbres, objets du quai) n’en cache une, partie vierge ou tout construit, la salle à sa plus grande', () => {
+  const tout = toutConstruit();
   for (const id of ECOLES) {
     const vers = versLaCamera(id);
-    const bornes: BorneVue[] = questStations(id).map((b) => ({ x: b.x, y: b.y, base: groundHeight(indexDe(id), b.x, b.y) }));
-    const lieux = cubesDeLIle(id, {}, undefined, false).filter((c) => c.place);
-    expect(lieux.filter((c) => cacheUneBorne(bornes, vers, c.x, c.y, c.z)).map((c) => `${c.place} ${c.x},${c.y},${c.z}`), id).toEqual([]);
+    const bornes = bornesVues(id);
+    for (const [partie, cubes] of [
+      ['vierge', cubesDeLIle(id, {}, undefined, false)],
+      ['tout construit', cubesDeLIle(id, tout.progress, tout.village, false, SALLE_PLEINE)],
+    ] as const) {
+      const cachent = cubes.filter((c) => !c.sol && !c.quest && cacheUneBorne(bornes, vers, c.x, c.y, c.z));
+      expect(cachent.map((c) => `${c.place ?? c.decor ?? c.texture} ${c.x},${c.y},${c.z}`), `${id}, ${partie}`).toEqual([]);
+    }
   }
 });
 
-it('le rang avant de la zone des plans : ni la salle des trophées ni le lieu où l’on assemble n’en cachent rien ; ce que l’école en cache est relevé', () => {
-  // Ce que l'école, au milieu à droite, cache du rang avant de la zone des plans (points sur 45 par case) : sur la Forêt et
-  // le Phare, le bord avant du sol seulement ; au Marché et à l'Atelier, dont la caméra pivote vers le milieu de leur
-  // archipel (presque de face à l'Atelier), le bas des cases du milieu, sous le toit de l'école. Le concept demande « aucune
-  // case cachée » (point ouvert, à trancher par le directeur artistique sur captures) : ce relevé ne doit pas grandir.
-  const ecole: Record<string, Record<string, number>> = {
-    foret: { 'ecole@8': 2, 'ecole@9': 6, 'ecole@10': 3, 'ecole@11': 3, 'ecole@12': 3, 'ecole@13': 3 },
-    marche: { 'ecole@9': 7, 'ecole@10': 21, 'ecole@11': 19, 'ecole@12': 9, 'ecole@13': 9 },
-    atelier: { 'ecole@10': 11, 'ecole@11': 21, 'ecole@12': 33, 'ecole@13': 20 },
-    phare: { 'ecole@8': 2, 'ecole@9': 6, 'ecole@10': 3, 'ecole@11': 3, 'ecole@12': 3, 'ecole@13': 3 },
-  };
-  for (const atelier of ['fabrique', 'halle'] as const) for (const id of ECOLES) expect(pointsCaches(id, atelier), `${id} (${atelier})`).toEqual(ecole[id]);
+it('les colonnes des bornes d’une île-école selon son nombre de missions : au milieu, penchées d’une place à gauche si le nombre est pair', () => {
+  expect(placesDesBornes(1)).toEqual([8]);
+  expect(placesDesBornes(2)).toEqual([4, 8]);
+  expect(placesDesBornes(3)).toEqual([4, 8, 12]);
+  expect(placesDesBornes(4)).toEqual([0, 4, 8, 12]);
+  expect(placesDesBornes(5)).toEqual([0, 4, 8, 12, 16]);
+  expect(placesDesBornes(6)).toBeNull();
+});
+
+/** Ce que le toit de l'école peut cacher d'une case de la première rangée où se pose un plan, au plus (points sur 45). */
+const SEUIL_DU_TOIT = 6;
+
+/**
+ * Point ouvert (02/10/2026), à trancher par le directeur artistique : à l'Atelier, même une rangée plus au fond, la cloche
+ * d'or du clocheton de l'école (son cube le plus haut, z = 7 ; le toit seul reste sous le seuil) cache le bas des cases 11
+ * et 12 de la première rangée de plans. Ces cases seules dépassent le seuil, et seulement par la cloche.
+ */
+const AU_DELA_DU_SEUIL: Partial<Record<(typeof ECOLES)[number], readonly string[]>> = { atelier: ['ecole@11', 'ecole@12'] };
+const laCloche = (c: { place?: string; z: number; texture?: string }) => c.place === 'ecole' && c.texture === 'or';
+
+it(`la première rangée où se pose un plan : l’école en cache au plus ${SEUIL_DU_TOIT} points sur 45 par case, aucun autre lieu rien`, () => {
+  // Décision du directeur artistique (02/10/2026) : à la Forêt et au Phare, le toit de l'école mord le bord avant du sol
+  // (accepté) ; au Marché et à l'Atelier, dont la caméra pivote vers le milieu de leur archipel, les plans se posent une
+  // rangée plus au fond (`PLANS_AU_FOND`).
+  for (const atelier of ['fabrique', 'halle'] as const)
+    for (const id of ECOLES) {
+      const r = pointsCaches(id, atelier);
+      expect(Object.keys(r).filter((k) => !k.startsWith('ecole@')), `${id} (${atelier})`).toEqual([]);
+      const ouverts = AU_DELA_DU_SEUIL[id] ?? [];
+      for (const [k, n] of Object.entries(r)) if (!ouverts.includes(k)) expect(n, `${id} (${atelier}) ${k}`).toBeLessThanOrEqual(SEUIL_DU_TOIT);
+      // Sans la cloche, toutes les cases tiennent le seuil : le reste de l'école (le toit) ne le dépasse nulle part.
+      for (const [k, n] of Object.entries(pointsCaches(id, atelier, laCloche))) expect(n, `${id} (${atelier}) ${k}, sans la cloche`).toBeLessThanOrEqual(SEUIL_DU_TOIT);
+    }
+});
+
+it('au Marché et à l’Atelier, les plans se dessinent une rangée plus au fond (y 11 à 15) ; la rangée y = 10 reste une allée nue', () => {
+  expect(Object.keys(PLANS_AU_FOND).sort()).toEqual(['atelier', 'marche']);
+  const tout = toutConstruit();
+  for (const id of ECOLES) {
+    const fond = id === 'marche' || id === 'atelier';
+    const zone = zoneDesPlans(id);
+    for (const plan of plansFor(id)) expect(decalageDesPlans(plan), plan.id).toEqual({ x: 0, y: fond ? 1 : 0, z: 0 });
+    expect(premiereRangee(id), id).toBe(fond ? zone.y + 1 : zone.y);
+    // Tout construit, chaque case posée se dessine à sa clé décalée, dans la zone ; rien que le sol sur la rangée avant.
+    const cubes = cubesDeLIle(id, tout.progress, tout.village, false);
+    const ici = new Set(cubes.filter((c) => !c.sol && !c.ghost).map((c) => `${c.x},${c.y},${c.z}`));
+    for (const plan of plansFor(id)) {
+      const d = decalageDesPlans(plan);
+      for (const c of planCells(plan)) {
+        expect(ici.has(`${c.x + d.x},${c.y + d.y},${c.z + d.z + 1}`), `${plan.id} ${c.key}`).toBe(true);
+        expect(c.y + d.y, `${plan.id} ${c.key}`).toBeLessThan(zone.y + zone.h);
+      }
+    }
+    if (fond)
+      expect(cubes.filter((c) => !c.sol && c.y === zone.y && c.x >= zone.x && c.x < zone.x + zone.w).map((c) => `${c.x},${c.z}`), id).toEqual([]);
+  }
+  // Le Bloc-Navire et les monuments gardent leur ancre (`ancreDuQuai`, `monumentAnchor`).
+  expect(decalageDesPlans({ biome: 'marche', zone: 'port' })).toEqual({ x: 0, y: 0, z: 0 });
+  expect(decalageDesPlans({ biome: 'atelier', zone: 'monument' })).toEqual({ x: 0, y: 0, z: 0 });
 });
 
 it('une sauvegarde d’avant la redistribution (plans posés dans la zone de 6 × 5) reste valide, case pour case', () => {
@@ -151,4 +225,43 @@ it('une sauvegarde d’avant la redistribution (plans posés dans la zone de 6 �
   for (const id of ECOLES)
     for (const plan of plansFor(id))
       for (const c of planCells(plan)) expect(c.y >= PLAN_ZONE.y && c.y < PLAN_ZONE.y + PLAN_ZONE.h, `${plan.id} ${c.key}`).toBe(true);
+});
+
+/**
+ * Point ouvert (02/10/2026), d'avant ce lot, laissé au consultant de Blocland : sur l'île du Phare, la petite tour du phare
+ * du décor du cœur (layout (9, 3), cœur (11, 6), six cubes) cache, de sa lanterne, deux trophées du bout de la salle.
+ */
+const DECOR_QUI_CACHE_UN_TROPHEE: Partial<Record<(typeof ECOLES)[number], string>> = { phare: 'la tour du phare du cœur' };
+
+it('le décor ne cache aucun trophée de la salle à sa plus grande, vue de la caméra de l’île', () => {
+  // L'arbre du plateau de la Forêt cachait le trophée du bout de la salle (relecture du référent dys, 02/10/2026) ; l'étal
+  // du Marché, glissé d'une case vers la gauche, en cachait un aussi.
+  const tout = toutConstruit();
+  for (const id of ECOLES.filter((i) => !DECOR_QUI_CACHE_UN_TROPHEE[i])) {
+    const vers = versLaCamera(id);
+    const sans = new Set(cubesDeLIle(id, tout.progress, tout.village, false).map((c) => `${c.x},${c.y},${c.z}`));
+    const avec = cubesDeLIle(id, tout.progress, tout.village, false, TOUS_LES_SUCCES);
+    const trophees = avec.filter((c) => c.place === 'trophees' && !sans.has(`${c.x},${c.y},${c.z}`));
+    expect(trophees.length, id).toBeGreaterThan(0);
+    const decor = avec.filter((c) => !c.sol && !c.place && !c.quest);
+    const caches = trophees.filter((t) => decor.some((c) => coupe([t.x + 0.5, t.y + 0.5, t.z + 0.5], vers, c)));
+    expect(caches.map((t) => `${t.x},${t.y},${t.z}`), id).toEqual([]);
+  }
+});
+
+it('devant la porte d’un lieu du village, et une case autour, rien n’est posé (ni décor ni objet du quai)', () => {
+  // Les caisses du quai s'empilaient devant la porte de l'école du Marché (relecture du consultant de Blocland, 02/10/2026).
+  const tout = toutConstruit();
+  for (const a of ARCHIPELAGOS) {
+    const id = a.school;
+    const def = islandDef(id);
+    // Le monde entier, pour les objets du quai (le Marché et l'Atelier sont des ports), ramené au repère du cœur.
+    const cubes = worldCubes(a.classe, tout.progress, tout.village, false).map((c) => ({ ...c, x: c.x - def.core.x, y: c.y - def.core.y }));
+    for (const lieu of ['ecole', 'trophees', 'assemblage'] as const) {
+      const p = placeDoor(lieu, id)!;
+      const [px, py] = [p.x - def.core.x, p.y - def.core.y];
+      const devant = cubes.filter((c) => !c.sol && !c.place && !c.bridge && Math.abs(c.x - px) <= 1 && Math.abs(c.y - py) <= 1);
+      expect(devant.map((c) => `${c.decor ?? c.texture} ${c.x},${c.y},${c.z}`), `${id}, ${lieu}`).toEqual([]);
+    }
+  }
 });

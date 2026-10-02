@@ -15,8 +15,8 @@ exports[`Empreintes du rendu Archipéo, par archipel (filet du socle) > 4e 1`] =
 {
   "ambiance": "de0f1ef0",
   "décor (lueurs)": "9bde5e8f",
-  "décor (primitives)": "80252f08",
-  "décor (style a)": "0712d4b5",
+  "décor (primitives)": "5bdfe017",
+  "décor (style a)": "8ea9a0b5",
   "modelé dessiné": "09a13b11",
   "relief": "dbf8cbb1",
 }
@@ -37,8 +37,8 @@ exports[`Empreintes du rendu Archipéo, par archipel (filet du socle) > 6e 1`] =
 {
   "ambiance": "c5e32c31",
   "décor (lueurs)": "6ae32213",
-  "décor (primitives)": "b2a11ad2",
-  "décor (style a)": "0e527cce",
+  "décor (primitives)": "cbb2998b",
+  "décor (style a)": "ffb7a597",
   "modelé dessiné": "0732ed59",
   "relief": "46437afd",
 }

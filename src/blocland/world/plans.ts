@@ -144,6 +144,28 @@ export function zoneDesPlans(id: BiomeId): Readonly<typeof PLAN_ZONE> {
   return ZONES_AGRANDIES[id] ?? PLAN_ZONE;
 }
 
+const SANS_DECALAGE = Object.freeze({ x: 0, y: 0, z: 0 });
+/**
+ * Au Marché et à l'Atelier, les plans se dessinent une rangée plus au fond (y 11 à 15 de la zone de 6 × 6) : vu de leur
+ * caméra, le toit de l'école cachait le rang avant de la zone. La rangée y = 10 reste une allée nue (décision du
+ * directeur artistique, 02/10/2026). Décalage de rendu seulement, sur le modèle de `decalageDuQuai` : les clés de
+ * sauvegarde (`planCells`, depuis `PLAN_ZONE`) ne changent pas.
+ */
+export const PLANS_AU_FOND: Readonly<Partial<Record<BiomeId, Readonly<{ x: number; y: number; z: number }>>>> = Object.freeze({
+  marche: Object.freeze({ x: 0, y: 1, z: 0 }),
+  atelier: Object.freeze({ x: 0, y: 1, z: 0 }),
+});
+
+/**
+ * Ce qui sépare la clé d'une case d'un plan de la zone des plans (`planCells`, repère de l'île) de la case où elle est
+ * dessinée, pointée et posée : (0, 0, 0) partout, sauf au Marché et à l'Atelier (`PLANS_AU_FOND`). Les plans du port
+ * et des monuments ont leur propre ancre (`ancreDuQuai`, `monumentAnchor`).
+ */
+export function decalageDesPlans(plan: Pick<PlanDef, 'biome' | 'zone'>): Readonly<{ x: number; y: number; z: number }> {
+  if (plan.zone === 'port' || plan.zone === 'monument') return SANS_DECALAGE;
+  return PLANS_AU_FOND[plan.biome] ?? SANS_DECALAGE;
+}
+
 /** Les fiches des plans (nom, phrases, XP, coffre ; produites par `npm run contenu` depuis la section « Les plans » de docs/contenu/<île>.md, dans le même ordre) : sur chaque île, le plan suivant se débloque quand le précédent est terminé. */
 const PLAN_FILES = [
   foretCabane,

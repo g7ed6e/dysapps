@@ -41,7 +41,7 @@ import type { CubeDeModele } from './personnages/ascii';
 import { guardianStatus } from '../boss';
 import type { PlaceId, VillagePlaceId, VoxelCube } from './cube';
 import type { Village } from '../engine';
-import { ORIGINE_DES_MONUMENTS, isPlanDone, zoneDesPlans, planCells, planOrigin, plansFor, type PlanDef } from './plans';
+import { ORIGINE_DES_MONUMENTS, decalageDesPlans, isPlanDone, zoneDesPlans, planCells, planOrigin, plansFor, type PlanDef } from './plans';
 import { MONUMENT_ISLET, monumentsOf, type MonumentDef } from './monuments';
 import { EMPRISE_DE_LA_SALLE, SALLE_DE_DEPART, modeleDeLaSalle } from './salle';
 import { recetteDeLArchipel } from './assemblage';
@@ -358,15 +358,24 @@ export const QUEST_ROW = 1;
  * au milieu, derrière la dernière.
  */
 export const PLACES_DES_BORNES_DES_ECOLES = [0, 4, 8, 12, 16] as const;
+/**
+ * Les colonnes des bornes d'une île-école à `n` missions, prises dans `PLACES_DES_BORNES_DES_ECOLES` à partir du milieu :
+ * 1 → 8 ; 3 → 4, 8, 12 ; 5 → toutes. Un nombre pair ne se centre pas au pas de 4 : il penche d'une place vers la gauche
+ * (x bas), 2 → 4, 8 et 4 → 0, 4, 8, 12, plutôt que de quitter la grille des places. Au-delà de 5, `null` : l'île reprend
+ * le pas de 3 des autres îles. Aujourd'hui, les quatre îles-écoles ont 3 missions (troisBandes.test.ts).
+ */
+export function placesDesBornes(n: number): readonly number[] | null {
+  const places = PLACES_DES_BORNES_DES_ECOLES;
+  if (n > places.length) return null;
+  const debut = Math.floor((places.length - n) / 2);
+  return places.slice(debut, debut + n);
+}
 export function questStations(id: BiomeId): { typeId: string; x: number; y: number }[] {
   const biome = BIOMES.find((b) => b.id === id);
   if (!biome) return [];
   const missions = missionsJouables(biome);
-  const places = PLACES_DES_BORNES_DES_ECOLES;
-  if (isSchoolIsland(id) && missions.length <= places.length) {
-    const debut = Math.floor((places.length - missions.length) / 2);
-    return missions.map((ex, i) => ({ typeId: ex.id, x: places[debut + i], y: QUEST_ROW }));
-  }
+  const places = isSchoolIsland(id) ? placesDesBornes(missions.length) : null;
+  if (places) return missions.map((ex, i) => ({ typeId: ex.id, x: places[i], y: QUEST_ROW }));
   return missions.map((ex, i) => ({ typeId: ex.id, x: 3 + 3 * i, y: QUEST_ROW }));
 }
 
@@ -1468,6 +1477,13 @@ function quaySpots(port: BiomeId, cubes: VoxelCube[]): { boat: QuaySpot | null; 
   for (let x = zone.x; x < zone.x + zone.w; x++) for (let y = zone.y; y < zone.y + zone.h; y++) core(x, y);
   for (const st of questStations(port)) for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) core(st.x + dx, st.y + dy);
   for (const [x, y] of casesDuVillage(port)) core(x, y);
+  // Devant la porte d'un lieu du village et une case autour : rien (les caisses du quai s'empilaient devant la porte de
+  // l'école du Marché, à côté de la dernière borne ; relecture du consultant de Blocland, 02/10/2026).
+  if (isSchoolIsland(port))
+    for (const place of PLACE_IDS) {
+      const { at, door } = VILLAGE_PLACES[place];
+      for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) core(at.x + door + dx, at.y - 1 + dy);
+    }
   for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) core(AVATAR_HOME.x + dx, AVATAR_HOME.y + dy);
   // Les marges d'un cœur agrandi (le Marché, 01/10/2026) : le passage devant les bornes, où l'on marche et construit ; les
   // objets du quai restent sur la grève, devant elles, comme avant.
@@ -2196,13 +2212,18 @@ function poserLIle(
   const marges = margesDuCoeur(def);
   // Les lieux du village en cases du monde : un élément de la côte ou des marges qui toucherait l'un d'eux (la Halle au
   // bord droit du cœur agrandi, 02/10/2026) n'est pas posé, plutôt que coupé.
-  const lieuxDuMonde = new Set([...placesAt].map((k) => {
-    const [x, y] = k.split(',').map(Number);
-    return `${ox + x},${oy + y}`;
-  }));
+  // En clés numériques (`cleDeCube`) : testées à chaque élément de décor, sans chaîne construite.
+  // Devant la porte d'un lieu, et une case autour, rien non plus (un rocher de la côte se tenait à côté de la porte de la
+  // Fabrique de l'Atelier, 02/10/2026).
+  const lieuxDuMonde = new Set(casesDuVillage(biome.id).map(([x, y]) => cleDeCube(ox + x, oy + y)));
+  if (lieuxDuMonde.size > 0)
+    for (const place of PLACE_IDS) {
+      const { at, door } = VILLAGE_PLACES[place];
+      for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) lieuxDuMonde.add(cleDeCube(ox + at.x + door + dx, oy + at.y - 1 + dy));
+    }
   const presDUnLieu = (x: number, y: number) => {
     if (lieuxDuMonde.size === 0) return false;
-    for (let dx = -2; dx <= 2; dx++) for (let dy = -2; dy <= 2; dy++) if (lieuxDuMonde.has(`${x + dx},${y + dy}`)) return true;
+    for (let dx = -2; dx <= 2; dx++) for (let dy = -2; dy <= 2; dy++) if (lieuxDuMonde.has(cleDeCube(x + dx, y + dy))) return true;
     return false;
   };
   for (let k = 0; k < scenery.length + marges.length; k++) {
@@ -2223,7 +2244,7 @@ function poserLIle(
     }
     const poses: [number, number, number, string, string | undefined][] = [];
     decorate((x, y, z, color, decor) => poses.push([x, y, z, color, decor]), c.decor, c.x, c.y, r);
-    if (poses.some(([x, y, z]) => devant.has(`${x},${y}`) || lieuxDuMonde.has(`${x},${y}`) || cacheUneBorne(bornes, vers, x, y, c.h + z))) continue;
+    if (poses.some(([x, y, z]) => devant.has(`${x},${y}`) || lieuxDuMonde.has(cleDeCube(x, y)) || cacheUneBorne(bornes, vers, x, y, c.h + z))) continue;
     for (const [x, y, z, color, decor] of poses) poser(x, y, z, color, decor);
   }
   // Une île en altitude flotte : sa roche s'amincit dessous.
@@ -2252,10 +2273,12 @@ function poserLIle(
       const finished = isPlanDone(plan, village.plans);
       if (!finished && ghostsShown) break;
       if (!finished) ghostsShown = true;
+      // Dessinées au fond de la zone au Marché et à l'Atelier (`decalageDesPlans`) ; les clés restent celles du plan.
+      const d = decalageDesPlans(plan);
       for (const c of planCells(plan)) {
         const bd = BLOCKS[c.block];
         const built = done.has(c.key);
-        cubes.push({ x: ox + c.x, y: oy + c.y, z: oz + c.z + 1, color: bd.side, top: bd.top, texture: bd.texture, tag: biome.id, ghost: !built });
+        cubes.push({ x: ox + c.x + d.x, y: oy + c.y + d.y, z: oz + c.z + d.z + 1, color: bd.side, top: bd.top, texture: bd.texture, tag: biome.id, ghost: !built });
       }
     }
   }

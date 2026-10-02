@@ -8,7 +8,7 @@ import { playDone, playNope, sonDePose } from './sound';
 import { habillageDuMonde } from './habillage';
 import { moinsDAnimations } from '../core/mouvement';
 import { GESTE_DE_POSE } from './world/pose';
-import { planCells, plansFor, type PlanDef } from './world/plans';
+import { decalageDesPlans, planCells, plansFor, type PlanDef } from './world/plans';
 import { allerChercher, whereToEarn } from './world/uses';
 import type { Ancrage } from './world/disposition';
 import type { Burst } from './world/view';
@@ -118,8 +118,10 @@ export function usePlanBuilder(island: BiomeId, avecGeste = false): PlanBuilder 
     }
   };
   const burstAt = (x: number, y: number, z: number, block: BlockId, last = false) => {
-    // Dans le repère de l'île, la case de plan (x, y, z) est le cube (x, y, z + 1). Le dernier bloc d'un plan : le geste.
-    setBurst((b) => ({ seq: b.seq + 1, cell: { ile: island, local: { x, y, z: z + 1 } }, color: BLOCKS[block].top, ...(last ? { pose: true } : {}) }));
+    // Dans le repère de l'île, la case de plan (x, y, z) est le cube (x, y, z + 1), décalé au fond de la zone au Marché et
+    // à l'Atelier (`decalageDesPlans`). Le dernier bloc d'un plan : le geste.
+    const d = plan ? decalageDesPlans(plan) : { x: 0, y: 0, z: 0 };
+    setBurst((b) => ({ seq: b.seq + 1, cell: { ile: island, local: { x: x + d.x, y: y + d.y, z: z + d.z + 1 } }, color: BLOCKS[block].top, ...(last ? { pose: true } : {}) }));
   };
   // Le plan terminé : la phrase de la créature, le coffre, l'XP, le son.
   const finished = (done: PlanDef) => {
@@ -160,8 +162,11 @@ export function usePlanBuilder(island: BiomeId, avecGeste = false): PlanBuilder 
   };
   const tryFill = (ile: BiomeId, c: { x: number; y: number; z: number }) => {
     if (!plan || ile !== island) return false;
-    if (!planCellAt(plan, c.x, c.y, c.z)) return false;
-    fillAt(c.x, c.y, c.z);
+    // La case touchée est dans le repère de l'île ; la clé de la case du plan s'en déduit (`decalageDesPlans`).
+    const d = decalageDesPlans(plan);
+    const k = { x: c.x - d.x, y: c.y - d.y, z: c.z - d.z };
+    if (!planCellAt(plan, k.x, k.y, k.z)) return false;
+    fillAt(k.x, k.y, k.z);
     return true;
   };
 
