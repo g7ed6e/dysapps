@@ -12,7 +12,7 @@ Pour se promener sur une île, on **touche le sol** : le bonhomme y marche en co
 
 **Ce qui se touche se voit.** Un petit cube flotte un peu au-dessus de chaque chose qu’on peut toucher dans le monde. Il y en a trois, qu’on reconnaît à leur forme et à leur taille, pas seulement à leur couleur :
 
-- **Le losange d’or** : à faire maintenant. Un cube d’or posé sur sa pointe, au-dessus d’une mission à faire, d’un Gardien qui attend son défi, du Bloc-Navire quand il a un bloc à poser ou qu’il peut partir, d’un ouvrage qu’on peut construire tout de suite, d’un monument où l’on peut poser un bloc. Sur l’île où se tient le bonhomme, les losanges flottent doucement et tournent lentement, tous ensemble ; sur les autres îles, ils restent immobiles.
+- **Le losange d’or** : à faire maintenant. Un cube d’or bordé de brun, posé sur sa pointe, au-dessus d’une mission à faire, d’un Gardien qui attend son défi, du Bloc-Navire quand il a un bloc à poser ou qu’il peut partir, d’un ouvrage qu’on peut construire tout de suite, d’un monument où l’on peut poser un bloc. Sur l’île où se tient le bonhomme, les losanges flottent doucement et tournent lentement, tous ensemble ; sur les autres îles, ils restent immobiles.
 - **Le cube de pierre** : pas encore. Un petit cube gris, posé à plat, bordé de crème, immobile : une mission pas encore jouable, un Gardien dont le défi n’est pas prêt, le Bloc-Navire ou un chantier (un ouvrage, un monument) qui attend des blocs. Il se voit aussi la nuit.
 - **Le cube crème** : un lieu où entrer. Un cube clair, posé à plat, bordé de brun, immobile, au-dessus de l’école, de la salle des trophées et de chaque monument bâti.
 

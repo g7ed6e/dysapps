@@ -1,12 +1,14 @@
 // Les signes des objets qu'on touche, dans la scène 3D de Blocland (les règles : world/affordance.ts). Un maillage
 // instancié par état (l'or, la pierre, le crème) : trois appels de dessin au plus, les arêtes en couleurs de sommets
 // dans la même géométrie. Chaque image, chaque cube se pose à sa place, à la taille qui le garde lisible de loin
-// (14 pixels au moins) ; seuls les losanges d'or de l'île du bonhomme flottent et tournent, tous en phase ; un signe
+// (14 pixels au moins), grossi vers le haut (son bas ne descend jamais sur l'objet) ; le losange d'or reste sur sa
+// pointe, le tour se fait autour de la verticale du monde ; seuls les losanges d'or de l'île du bonhomme flottent et tournent, tous en phase ; un signe
 // touché fait son petit saut. Rien sur la Carte ni pendant le voyage ; avec la préférence de mouvement réduit de
 // l'appareil, aucun ne bouge. Archipéo (l'habillage, `signesDesObjets`) n'en dessine aucun : il garde ses losanges
 // (./bornes.ts).
 import * as THREE from 'three';
 import {
+  centreDuSigneGrossi,
   COTE_DU_SIGNE,
   COULEURS_DU_SIGNE,
   echelleDuSigne,
@@ -57,9 +59,11 @@ function geometrieDe(etat: EtatDuSigne): THREE.BufferGeometry {
   return geo;
 }
 
-/** Le matériau d'un état : l'or brille un peu, comme la flèche « Commence ici » ; la pierre garde une lueur minimale, pour se lire la nuit. */
+/**
+ * Le matériau d'un état : la pierre garde une lueur minimale, pour se lire la nuit ; l'or n'en a pas (les lanternes et les
+ * blocs d'or du décor gardent la lumière : ses arêtes brun sombre le font lire).
+ */
 function materiauDe(etat: EtatDuSigne): THREE.MeshLambertMaterial {
-  if (etat === 'aFaire') return new THREE.MeshLambertMaterial({ vertexColors: true, emissive: 0x7a5a00, emissiveIntensity: 0.4 });
   if (etat === 'pasEncore') return new THREE.MeshLambertMaterial({ vertexColors: true, emissive: 0x4a4a44, emissiveIntensity: 0.5 });
   return new THREE.MeshLambertMaterial({ vertexColors: true });
 }
@@ -101,6 +105,8 @@ export function creerAffordance(monde: Monde, el: HTMLElement, camera: THREE.Per
   const coin = new THREE.Vector3();
   /** L'échelle de chaque signe à la dernière image (la zone de toucher compte le cube à sa taille à l'écran). */
   let echelles: number[] = [];
+  /** La hauteur du centre de chaque signe à la dernière image, au repos (grossi, il monte : `centreDuSigneGrossi`). */
+  let centres: number[] = [];
 
   /** Le maillage d'un état, d'au moins `n` places (`count` : `n`), dans la scène ; sans signe de cet état, hors de la scène. */
   const maillageDe = (e: EtatDuSigne, n: number) => {
@@ -157,6 +163,7 @@ export function creerAffordance(monde: Monde, el: HTMLElement, camera: THREE.Per
       const rangs: Record<EtatDuSigne, number> = { aFaire: 0, pasEncore: 0, lieu: 0 };
       poses = signes.map((s) => ({ s, rang: rangs[s.etat]++, saut: avant.get(s.cle) ?? null }));
       echelles = poses.map(() => 1);
+      centres = poses.map((p) => p.s.z);
       for (const e of ETATS) maillageDe(e, rangs[e]);
     },
     sauter: (cle) => {
@@ -176,8 +183,8 @@ export function creerAffordance(monde: Monde, el: HTMLElement, camera: THREE.Per
         const distance = boiteDeLObjet.distanceToPoint(cam.position);
         // Le signe à sa taille à l'écran, flottement compris.
         const demi = (COTE_DU_SIGNE[s.etat] * echelles[i]) / 2 + SIGNE.flotte.amplitude;
-        boite.min.set(s.x - demi, s.z - demi, s.y - demi);
-        boite.max.set(s.x + demi, s.z + demi, s.y + demi);
+        boite.min.set(s.x - demi, centres[i] - demi, s.y - demi);
+        boite.max.set(s.x + demi, centres[i] + demi, s.y + demi);
         const r = projeter(boite, cam, W, H);
         // Un coin derrière la caméra : le signe n'est pas devant elle, pas de zone.
         if (!r) return;
@@ -207,10 +214,13 @@ export function creerAffordance(monde: Monde, el: HTMLElement, camera: THREE.Per
         const bouge = !reduit && s.etat === 'aFaire' && home !== null && s.iles.includes(home);
         const saut = !reduit && p.saut !== null ? sautDuSigne(instant.now - p.saut) : 0;
         if (p.saut !== null && (reduit || instant.now - p.saut >= SIGNE.saut.monteeMs + SIGNE.saut.descenteMs)) p.saut = null;
-        position.set(s.x, s.z + (bouge ? dy : 0) + saut, s.y);
+        position.set(s.x, s.z, s.y);
+        // Le tour, autour de la verticale du monde, après la pose sur la pointe (dans la géométrie) : il l'y garde.
         rotation.setFromAxisAngle(haut, bouge ? angle : 0);
         const profondeur = -vue.copy(position).applyMatrix4(camera.matrixWorldInverse).z;
         echelles[i] = echelleDuSigne(COTE_DU_SIGNE[s.etat], profondeur, pxParUnite);
+        centres[i] = centreDuSigneGrossi(s.etat, s.z, echelles[i]);
+        position.y = centres[i] + (bouge ? dy : 0) + saut;
         echelle.setScalar(echelles[i]);
         maillages[s.etat]?.setMatrixAt(p.rang, matrice.compose(position, rotation, echelle));
       });

@@ -4,12 +4,16 @@
 import * as THREE from 'three';
 import type { BiomeId } from '../biomes';
 import { HABILLAGES, type Habillage } from '../habillage';
-import { COTE_DU_SIGNE, cleDeLObjet, SIGNE, type EtatDuSigne, type ObjetTouche, type SigneDObjet } from '../world/affordance';
+import { basDuSigne, COTE_DU_SIGNE, cleDeLObjet, SIGNE, signesDesObjets, type EtatDuSigne, type ObjetTouche, type SigneDObjet } from '../world/affordance';
+import { guardianPlacements } from '../world/terrain';
 import { creerAffordance } from './affordance';
+import { creerPersonnages } from './personnages';
 import type { Derniers, Instant, Monde } from './partie';
 
 const FORET: BiomeId = 'french-6e-phonology';
 const MINE: BiomeId = 'french-6e-letter-confusion';
+
+const instant0 = () => ({ now: 0, marche: false, traversee: null, navigue: null, carte: false, but: { target: new THREE.Vector3(), pos: new THREE.Vector3() } }) as Instant;
 
 function scene(habillage: Habillage = HABILLAGES.blocland) {
   const monde = { scene: new THREE.Scene(), habillage } as unknown as Monde;
@@ -115,6 +119,27 @@ it('seuls les losanges d’or de l’île du bonhomme flottent et tournent, tous
   expect(poses(affordance.maillages.lieu)[0].p).toEqual(creme.p);
 });
 
+it('le losange d’or, dans la scène, reste sur sa pointe à tout moment de son tour : son sommet le plus bas sous son centre', () => {
+  const { affordance } = scene();
+  affordance.poser(SIGNES);
+  const or = affordance.maillages.aFaire!;
+  const position = or.geometry.getAttribute('position');
+  const m = new THREE.Matrix4();
+  const v = new THREE.Vector3();
+  for (const [t, reduit] of [[0, true], [0.4, false], [1.1, false], [2.6, false], [4.9, false]] as const) {
+    affordance.animer!(t, 0.016, reduit);
+    or.getMatrixAt(0, m);
+    const centre = new THREE.Vector3().setFromMatrixPosition(m);
+    let bas: THREE.Vector3 | null = null;
+    for (let i = 0; i < position.count; i++) {
+      v.fromBufferAttribute(position, i).applyMatrix4(m);
+      if (!bas || v.y < bas.y) bas = v.clone();
+    }
+    expect(Math.hypot(bas!.x - centre.x, bas!.z - centre.z), `t=${t}`).toBeLessThan(1e-5);
+    expect(centre.y - bas!.y, `t=${t}`).toBeCloseTo(basDuSigne('aFaire'), 5);
+  }
+});
+
 it('avec le mouvement réduit de l’appareil, aucun signe ne bouge ni ne saute', () => {
   const { affordance, instant } = scene();
   affordance.poser(SIGNES);
@@ -170,7 +195,10 @@ it('vu de loin, un cube grossit pour garder 14 pixels à l’écran ; ses zones 
   affordance.animer!(0, 0.016, true);
   const { p, s } = poses(affordance.maillages.pasEncore)[0];
   expect(s.x).toBeGreaterThan(1);
-  const profondeur = p.clone().applyMatrix4(camera.matrixWorldInverse).z * -1;
+  // Grossi, il monte d'autant : son bas reste où il était de près (jamais sur l'objet).
+  expect(p.y - s.x * basDuSigne('pasEncore')).toBeCloseTo(4 - basDuSigne('pasEncore'), 6);
+  // La taille se mesure à sa place de près.
+  const profondeur = new THREE.Vector3(p.x, 4, p.z).applyMatrix4(camera.matrixWorldInverse).z * -1;
   const pxParUnite = 768 / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2));
   expect((COTE_DU_SIGNE.pasEncore * s.x * pxParUnite) / profondeur).toBeCloseTo(SIGNE.minPx, 3);
   for (const { zone } of affordance.zones(camera, 1024, 768)) {
@@ -187,4 +215,25 @@ it('Archipéo garde ses losanges (./bornes.ts) : aucun signe ici', () => {
   expect(monde.scene.children).toHaveLength(0);
   expect(affordance.sauter(SIGNES[0].cle)).toBe(false);
   expect(affordance.zones(camera, 1024, 768)).toEqual([]);
+});
+
+it('le Golem de roche dans la scène de Blocland : son losange, sa pointe comprise, au-dessus de son cube le plus haut tel qu’il est dessiné', () => {
+  const ile: BiomeId = 'french-6e-letter-confusion';
+  const golem = guardianPlacements('6e', {}, ['french-6e-phonology-french-6e-letter-confusion'], true).find((g) => g.id === ile)!;
+  const { monde, affordance } = scene();
+  Object.assign(monde, { archipel: '6e', surface: null });
+  const personnages = creerPersonnages(monde, () => null, instant0());
+  personnages.poserLesCreatures([golem]);
+  const dessin = personnages.creatures.children.find((o) => o.userData.creature === ile)!;
+  dessin.updateMatrixWorld(true);
+  // Tous ses cubes dessinés, à sa place dans le monde.
+  const haut = new THREE.Box3().setFromObject(dessin).max.y;
+  expect(haut).toBeCloseTo(golem.origin.z + Math.max(...golem.cubes.map((c) => c.z)) + 1, 6);
+  const [s] = signesDesObjets({ cubes: [], creatures: [golem] });
+  expect(s.z).toBeCloseTo(haut + SIGNE.auDessus, 6);
+  affordance.poser([s]);
+  affordance.animer!(0, 0.016, true);
+  const [{ p }] = poses(affordance.maillages.aFaire);
+  expect(p.y - basDuSigne('aFaire')).toBeGreaterThan(haut + 0.5);
+  personnages.dispose();
 });

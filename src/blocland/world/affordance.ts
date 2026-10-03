@@ -2,7 +2,8 @@
 // directeur artistique le 3 octobre 2026) : un cube flotte 1,2 bloc au-dessus du sommet de chaque objet touchable, en
 // trois états, chacun avec sa pose, sa taille et son mouvement, jamais la couleur seule :
 // - « à faire » : le losange d'or des bornes (un cube de 0,7 posé sur sa pointe), qui flotte en douceur et tourne, seul
-//   cube qui bouge, et seulement sur l'île du bonhomme, tous en phase ;
+//   cube qui bouge, et seulement sur l'île du bonhomme, tous en phase ; ses arêtes brun sombre, sans lueur (les
+//   lanternes et les blocs d'or du décor gardent la lumière) ;
 // - « pas encore » : un cube de pierre gris mat de 0,5, posé à plat, immobile, aux arêtes crème ;
 // - « lieu » : un cube crème de 0,8, posé à plat, immobile, aux arêtes brun sombre.
 // Qui porte quoi : une borne à faire (or) ou pas jouable (pierre), un Gardien pas encore vaincu, le Bloc-Navire, chaque
@@ -28,7 +29,8 @@ export const COTE_DU_SIGNE: Readonly<Record<EtatDuSigne, number>> = { aFaire: 0.
 
 /** Les couleurs des signes (sRGB) : la face et ses arêtes. L'or est celui de la flèche « Commence ici ». */
 export const COULEURS_DU_SIGNE: Readonly<Record<EtatDuSigne, { face: string; arete: string }>> = {
-  aFaire: { face: '#ffc83c', arete: '#ffc83c' },
+  // Les arêtes brun sombre, comme le crème : l'or du signe ne se confond pas avec l'or du décor (lanternes, casques).
+  aFaire: { face: '#ffc83c', arete: '#2b2118' },
   // Plus clair que la roche (#7d7d7d, #9c9c9c) : on ne le prend pas pour un bloc du décor.
   pasEncore: { face: '#b3b3ab', arete: '#fff6e0' },
   // Le crème et le brun de la plaque des créatures (three/signes.ts) : la même famille de signes.
@@ -37,7 +39,10 @@ export const COULEURS_DU_SIGNE: Readonly<Record<EtatDuSigne, { face: string; are
 
 /** Le mouvement et la taille des signes, et la zone de toucher. */
 export const SIGNE = {
-  /** Le centre du cube, au-dessus du sommet de l'objet, en blocs. */
+  /**
+   * Le centre du cube, au-dessus du sommet de l'objet, en blocs (à sa taille de près ; grossi de loin, il monte d'autant :
+   * son bas garde sa place, jamais sur l'objet).
+   */
   auDessus: 1.2,
   /** Le losange d'or flotte en douceur : un sinus de ± 0,15 bloc, en 3 s, sans rebond. */
   flotte: { amplitude: 0.15, periodeS: 3 },
@@ -273,10 +278,9 @@ const FACES: [V3, V3, V3][] = [
 ];
 
 /**
- * La forme d'un signe, centrée : le losange d'or, un cube plein (12 triangles) posé sur sa pointe (tourné d'un huitième
- * de tour autour de la profondeur, puis de la largeur, comme le losange d'avant) ; la pierre et le crème, un cube posé à
- * plat dont chaque face est un cadre (ses quatre arêtes) autour d'un carré, sans le dessous, qu'aucune caméra ne voit
- * (50 triangles).
+ * La forme d'un signe, centrée : chaque face est un cadre (ses quatre arêtes) autour d'un carré. Le losange d'or est
+ * posé sur sa pointe (`surSaPointe`), ses six faces dessinées (60 triangles) ; la pierre et le crème, posés à plat, sans
+ * le dessous, qu'aucune caméra ne voit (50 triangles).
  */
 export function formeDuSigne(etat: EtatDuSigne): FormeDuSigne {
   const h = COTE_DU_SIGNE[etat] / 2;
@@ -290,14 +294,10 @@ export function formeDuSigne(etat: EtatDuSigne): FormeDuSigne {
       are.push(arete);
     }
   };
-  const plein = etat === 'aFaire';
+  const pointe = etat === 'aFaire';
   for (const [n, u, v] of FACES) {
-    if (!plein && n[1] < 0) continue;
+    if (!pointe && n[1] < 0) continue;
     const p = (a: number, b: number): V3 => [0, 1, 2].map((i) => n[i] * h + u[i] * a + v[i] * b) as V3;
-    if (plein) {
-      quad([p(-h, -h), p(h, -h), p(h, h), p(-h, h)], n, 0);
-      continue;
-    }
     const i = h - SIGNE.arete * 2 * h;
     quad([p(-h, -h), p(h, -h), p(i, -i), p(-i, -i)], n, 1);
     quad([p(h, -h), p(h, h), p(i, i), p(i, -i)], n, 1);
@@ -307,19 +307,39 @@ export function formeDuSigne(etat: EtatDuSigne): FormeDuSigne {
   }
   const positions = Float32Array.from(pos);
   const normals = Float32Array.from(nrm);
-  if (plein) {
-    // Sur sa pointe : un huitième de tour autour de z, puis autour de x (l'ordre des angles d'Euler de Three.js).
-    const c = Math.SQRT1_2;
-    for (const t of [positions, normals])
-      for (let k = 0; k < t.length; k += 3) {
-        const [x, y, z] = [t[k], t[k + 1], t[k + 2]];
-        const [x1, y1] = [c * x - c * y, c * x + c * y];
-        t[k] = x1;
-        t[k + 1] = c * y1 - c * z;
-        t[k + 2] = c * y1 + c * z;
-      }
-  }
+  if (pointe) for (const t of [positions, normals]) surSaPointe(t);
   return { positions, normals, aretes: Uint8Array.from(are) };
+}
+
+/**
+ * Pose un cube sur sa pointe, en place (x, y, z à la suite) : sa grande diagonale (1, 1, 1) devient la verticale, un
+ * sommet en bas et un en haut, sur l'axe du cube. Le tour du losange (autour de la verticale du monde, appliqué après)
+ * le garde donc sur sa pointe à tout moment, et figé il y reste. Au repos, vu de face (le long de z), ses deux arêtes
+ * des côtés sont verticales : la base (a, d, b) a pour axe y la diagonale d, pour axe z la direction au sol de l'arête
+ * (h, h, −h)–(h, −h, −h).
+ */
+export function surSaPointe(t: Float32Array): void {
+  const [r2, r3, r6] = [Math.SQRT2, Math.sqrt(3), Math.sqrt(6)];
+  for (let k = 0; k < t.length; k += 3) {
+    const [x, y, z] = [t[k], t[k + 1], t[k + 2]];
+    t[k] = (x - z) / r2;
+    t[k + 1] = (x + y + z) / r3;
+    t[k + 2] = (x - 2 * y + z) / r6;
+  }
+}
+
+/** Le bas d'un signe, sous son centre, en blocs (à l'échelle 1) : sa pointe pour le losange, sa demi-arête à plat. */
+export function basDuSigne(etat: EtatDuSigne): number {
+  const h = COTE_DU_SIGNE[etat] / 2;
+  return etat === 'aFaire' ? h * Math.sqrt(3) : h;
+}
+
+/**
+ * La hauteur du centre d'un signe grossi d'`echelle` (`echelleDuSigne`), posé en `z` à sa taille de près : il monte
+ * d'autant qu'il grossit, son bas ne descend jamais vers l'objet.
+ */
+export function centreDuSigneGrossi(etat: EtatDuSigne, z: number, echelle: number): number {
+  return z + (echelle - 1) * basDuSigne(etat);
 }
 
 /** Les triangles d'un signe de chaque état. */
