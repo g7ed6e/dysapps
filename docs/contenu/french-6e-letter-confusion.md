@@ -236,4 +236,4 @@ Pour tous les items :
 - prête : Tu as les {blocs} ! Livre-les à Tunel.
 - posée : Puits posé chez Tunel !
 
-> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : l’anneau `ring()` de 3 × 3 au sol, case du milieu vide : 4 briques au milieu des côtés, 4 pierres aux coins ; 2 barrières sur les briques de gauche et de droite (z 1) ; 10 cubes, 9 cases, 2 de haut.
+> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : l’anneau `ring()` de 3 × 3 au sol : 4 briques au milieu des côtés, 4 toits (`roof`) aux coins ; 2 portes (`door`) en poteaux sur les briques de gauche et de droite vues de la caméra de l’île (z 1) ; de l’eau au milieu, plein jusqu’à la margelle (un cube d’eau du terrain, hors des cubes de la forme) ; 10 cubes, 9 cases, 2 de haut (retouche du directeur artistique, 3 octobre 2026).

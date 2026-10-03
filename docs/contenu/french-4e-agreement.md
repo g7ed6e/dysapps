@@ -564,4 +564,4 @@ Pour tous les items :
 - prête : Tu as les {blocs} ! Livre-les à Cléa.
 - posée : Perchoir posé chez Cléa !
 
-> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : les gradins de la coupole (`dome()`) en escalier : 3 marches de 1, 2 et 3 cubes, l’ardoise dessous, un acier sur chaque marche ; 6 cubes, 3 cases, 3 de haut.
+> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : les gradins de la coupole (`dome()`) en escalier : 3 marches de 1, 2 et 3 cubes, l’escalier (`stairs`) dessous, un acier sur chaque marche ; 6 cubes, 3 cases, 3 de haut (retouche du directeur artistique, 3 octobre 2026 : l’ardoise se perdait sur le sol d’ardoise).

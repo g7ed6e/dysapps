@@ -52,4 +52,4 @@ créature : Théo
 - prête : Tu as les {blocs} ! Livre-les à Théo.
 - posée : Équerre posée chez Théo !
 
-> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : la colonne de la cheminée (`maison()`) et un rang bas : une branche debout de 3 prismes, une branche couchée de 2 marbres au sol ; 5 cubes, 3 cases, 3 de haut.
+> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : la colonne de la cheminée (`maison()`) et un rang bas : une branche debout de 3 prismes, une branche couchée de 2 portes (`door`) au sol ; 5 cubes, 3 cases, 3 de haut (retouche du directeur artistique, 3 octobre 2026 : le marbre se perdait sur le sol de marbre).

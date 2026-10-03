@@ -153,8 +153,8 @@ it('une révision et une commande ont chacune leur case, dans le même maillage'
   expect(monde.scene.children.filter((o) => o instanceof THREE.Mesh)).toHaveLength(1);
 });
 
-it('les plaques montrées sont des obstacles pour les étiquettes, et leur version change quand elles changent', () => {
-  const { signes, derniers } = scene();
+it('les plaques sont des obstacles pour les étiquettes ; leur version ne change qu’à l’arrivée d’une plaque', () => {
+  const { signes, derniers, instant } = scene();
   signes.poser([{ id: FORET, icone: 'tree' }]);
   signes.animer!(0, 0, true);
   const v = signes.version;
@@ -165,14 +165,56 @@ it('les plaques montrées sont des obstacles pour les étiquettes, et leur versi
   const [b] = signes.boites(camera, 1024, 768);
   expect(b.w).toBe(48);
   expect(b.x).toBeCloseTo(512, 0);
-  // La même plaque à l'image suivante : rien ne change.
+  // La plaque se pose sur la tête : son bas à l'écran est au-dessus de la tête.
+  const tete = new THREE.Vector3(0, 3, 0).project(camera);
+  expect(b.y + b.h / 2).toBeLessThan(((1 - tete.y) / 2) * 768);
+  // Les images suivantes, la caméra qui vole, la Carte : rien ne change (les étiquettes ne se replacent pas en vol).
   signes.animer!(0, 0, true);
-  expect(signes.version).toBe(v);
-  // Sur la Carte, plus de plaque.
+  instant.now = 5000;
+  camera.position.set(10, 30, -20);
+  signes.animer!(0, 0, false);
   derniers.current.carte = true;
   signes.animer!(0, 0, true);
+  expect(signes.version).toBe(v);
+  // Une plaque qui s'en va (une commande livrée) : rien ne bouge non plus, et elle n'est plus un obstacle.
+  signes.poser([]);
+  expect(signes.version).toBe(v);
   expect(signes.boites(camera, 1024, 768)).toEqual([]);
+  // Une plaque de plus : les étiquettes se replacent.
+  signes.poser([{ id: MINE, icone: 'pickaxe' }]);
   expect(signes.version).not.toBe(v);
+  // Celle qui attend la fin du geste compte déjà (l'étiquette ne bouge pas quand elle apparaît).
+  expect(signes.boites(camera, 1024, 768)).toHaveLength(1);
+});
+
+it('la créature d’une plaque est aussi un obstacle : aucune étiquette ne se pose sur elle', () => {
+  const { signes } = scene();
+  const corps = new THREE.Mesh(new THREE.BoxGeometry(2, 3, 2));
+  corps.position.set(0, 1.5, 0);
+  corps.userData.creature = FORET;
+  const creatures = new THREE.Group().add(corps);
+  creatures.updateMatrixWorld(true);
+  const { signes: avecCorps } = (() => {
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null);
+    const monde = { scene: new THREE.Scene(), habillage: HABILLAGES.blocland } as unknown as Monde;
+    const personnages = { creatures, faireSigne: vi.fn(), teteDe: (_id: BiomeId, out: THREE.Vector3) => (out.set(0, 3, 0), true) } as unknown as Personnages;
+    const derniers = { current: { carte: false, focus: { island: null, seq: 1 } } as unknown as Derniers };
+    const instant = { now: 0, carte: false, navigue: null } as unknown as Instant;
+    return { signes: creerSignes(monde, { clientHeight: 768 } as HTMLElement, new THREE.PerspectiveCamera(), personnages, derniers, instant) };
+  })();
+  avecCorps.poser([{ id: FORET, icone: 'tree' }]);
+  const camera = new THREE.PerspectiveCamera(40, 4 / 3, 0.5, 1000);
+  camera.position.set(0, 20, -30);
+  camera.lookAt(0, 0, 0);
+  camera.updateMatrixWorld();
+  const [plaque, corpsALEcran] = avecCorps.boites(camera, 1024, 768);
+  expect(plaque.w).toBe(48);
+  expect(corpsALEcran.x).toBeCloseTo(512, 0);
+  // Sous la plaque, et plus haut qu'une case.
+  expect(corpsALEcran.y).toBeGreaterThan(plaque.y);
+  expect(corpsALEcran.h).toBeGreaterThan(40);
+  avecCorps.dispose!();
+  signes.dispose!();
 });
 
 it('la hauteur de la vue ne se lit pas dans le DOM image par image : le redimensionnement la donne', () => {

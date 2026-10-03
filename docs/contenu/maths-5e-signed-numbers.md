@@ -59,4 +59,4 @@ créature : Frimas
 - prête : Tu as les {blocs} ! Livre-les à Frimas.
 - posée : Cabane de pêche posée chez Frimas !
 
-> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : la hutte (`hutte()`) en petit : des murs de glace de 2 × 2 sur 2 rangs, avec une porte vide devant à gauche (7 cubes), et un toit plat de 4 tuiles (z 2) ; 11 cubes, 4 cases, 3 de haut.
+> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : la hutte (`hutte()`) en petit : des murs de portes (`door`) de 2 × 2 sur 2 rangs, avec une porte vide devant à gauche (7 cubes), et un toit plat de 4 tuiles (z 2) ; 11 cubes, 4 cases, 3 de haut (retouche du directeur artistique, 3 octobre 2026 : la glace se perdait sur le sol de glace).

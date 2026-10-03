@@ -533,4 +533,4 @@ Pour tous les items :
 - prête : Tu as les {blocs} ! Livre-les à Plume.
 - posée : Banquette posée chez Plume !
 
-> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : le banc de la salle commune (`refuge()`) : une assise de 2 velours devant, un dossier de 2 × 2 parchemins derrière ; 6 cubes, 4 cases, 2 de haut.
+> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : le banc de la salle commune (`refuge()`) : une assise de 2 velours devant, un dossier de 2 × 2 portes (`door`) derrière ; 6 cubes, 4 cases, 2 de haut (retouche du directeur artistique, 3 octobre 2026 : le parchemin se perdait sur le sol de parchemin).

@@ -43,11 +43,17 @@ export interface Signes extends PartieDeLaScene {
   /** La hauteur de la vue, en pixels CSS, donnée au redimensionnement (jamais lue dans le DOM image par image). */
   redimensionner(hauteur: number): void;
   /**
-   * Les plaques montrées, à l'écran vu par `cam` (W × H pixels CSS) : des obstacles pour les étiquettes des îles, qui
-   * s'en écartent (une étiquette ne couvre jamais une plaque). Hors de la Carte seulement.
+   * Les plaques des créatures qui font signe et ces créatures, à l'écran vu par `cam` (W × H pixels CSS, la caméra visée
+   * à son arrivée) : des obstacles pour les étiquettes des îles, qui s'en écartent (une étiquette ne se pose ni sur une
+   * plaque ni sur sa créature). Celles qui attendent la fin du geste comptent déjà : l'étiquette ne bouge pas quand la
+   * plaque apparaît. Hors de la Carte seulement.
    */
   boites(cam: THREE.Camera, W: number, H: number): LabelBox[];
-  /** Change quand une plaque apparaît, disparaît ou se déplace d'une case : les étiquettes se replacent alors. */
+  /**
+   * Change quand une plaque de plus est posée, ou que la créature d'une plaque arrive dans la scène : les étiquettes se
+   * replacent alors. Jamais quand une plaque s'en va (l'étiquette ne saute pas pendant la pose d'une petite
+   * construction : elle se replacera à la prochaine visée), ni pendant un vol de la caméra.
+   */
   readonly version: number;
 }
 
@@ -173,8 +179,11 @@ export function creerSignes(monde: Monde, el: HTMLElement, camera: THREE.Perspec
   maillage.visible = false;
   scene.add(maillage);
 
-  /** Les signes posés, leur case dans la texture et la hauteur de l'icône, mesurée une fois au repos. */
-  let signes: { id: BiomeId; rang: number; y: number | null }[] = [];
+  /**
+   * Les signes posés, leur case dans la texture, la hauteur de l'icône, mesurée une fois au repos, et si la tête de leur
+   * créature a déjà été trouvée (pour `version`).
+   */
+  let signes: { id: BiomeId; rang: number; y: number | null; vue: boolean }[] = [];
   /** Le début du geste de chaque île arrivée (une fois par île pour la vie de la scène). */
   const gestes = new Map<BiomeId, number>();
   /** La dernière demande de cadrage vue (l'île et son numéro) : une nouvelle arrivée sur une île déclenche son geste. */
@@ -202,26 +211,26 @@ export function creerSignes(monde: Monde, el: HTMLElement, camera: THREE.Perspec
 
   /** La case de texture écrite dans chaque place du maillage (-1 : aucune) : on ne la réécrit que si elle change. */
   const casesEcrites = new Array<number>(SIGNES_MAX).fill(-1);
-  /** Le centre de chaque plaque montrée (les `montrees` premières), et la case de chacune (pour `version`). */
-  const centres = Array.from({ length: SIGNES_MAX }, () => new THREE.Vector3());
-  const casesVues = new Int32Array(SIGNES_MAX * 3);
-  let montrees = 0;
   let version = 0;
   const aLEcran = new THREE.Vector3();
+  const boite = new THREE.Box3();
+  const coin = new THREE.Vector3();
 
-  /** Les plaques montrées ont changé (nombre, ou case de l'une) : la version monte. Sans rien allouer. */
-  const noter = (n: number) => {
-    let change = n !== montrees;
-    for (let i = 0; i < n; i++)
-      for (let j = 0; j < 3; j++) {
-        const v = Math.round(centres[i].getComponent(j));
-        if (casesVues[3 * i + j] !== v) {
-          casesVues[3 * i + j] = v;
-          change = true;
-        }
-      }
-    montrees = n;
-    if (change) version++;
+  /** Le rectangle à l'écran (`cam`, W × H) de la créature d'une île, ou `null` si elle n'est pas dans la scène. */
+  const creatureALEcran = (id: BiomeId, cam: THREE.Camera, W: number, H: number): LabelBox | null => {
+    const o = personnages.creatures?.children.find((c) => c.userData.creature === id && c.userData.kind !== 'guardian');
+    if (!o) return null;
+    boite.setFromObject(o);
+    if (boite.isEmpty()) return null;
+    let [x0, y0, x1, y1] = [Infinity, Infinity, -Infinity, -Infinity];
+    for (let i = 0; i < 8; i++) {
+      coin.set(i & 1 ? boite.max.x : boite.min.x, i & 2 ? boite.max.y : boite.min.y, i & 4 ? boite.max.z : boite.min.z).project(cam);
+      if (coin.z > 1) return null;
+      const x = ((coin.x + 1) / 2) * W;
+      const y = ((1 - coin.y) / 2) * H;
+      [x0, y0, x1, y1] = [Math.min(x0, x), Math.min(y0, y), Math.max(x1, x), Math.max(y1, y)];
+    }
+    return { x: (x0 + x1) / 2, y: (y0 + y1) / 2, w: x1 - x0, h: y1 - y0 };
   };
 
   return {
@@ -230,12 +239,18 @@ export function creerSignes(monde: Monde, el: HTMLElement, camera: THREE.Perspec
       return version;
     },
     boites: (cam, W, H) => {
+      // Lu seulement quand les étiquettes se replacent (une visée nouvelle), jamais image par image.
       const out: LabelBox[] = [];
       const cote = ICONE_DU_SIGNE.css + 8;
-      for (let i = 0; i < montrees; i++) {
-        aLEcran.copy(centres[i]).project(cam);
+      for (const s of signes) {
+        if (!personnages.teteDe(s.id, tete)) continue;
+        // La plaque se pose sur la tête (sa hauteur au repos, une fois mesurée) : son bas à l'écran est là.
+        tete.y = s.y ?? tete.y + ICONE_DU_SIGNE.auDessus;
+        aLEcran.copy(tete).project(cam);
         if (aLEcran.z > 1) continue;
-        out.push({ x: ((aLEcran.x + 1) / 2) * W, y: ((1 - aLEcran.y) / 2) * H, w: cote, h: cote });
+        out.push({ x: ((aLEcran.x + 1) / 2) * W, y: ((1 - aLEcran.y) / 2) * H - ICONE_DU_SIGNE.css / 2, w: cote, h: cote });
+        const creature = creatureALEcran(s.id, cam, W, H);
+        if (creature) out.push(creature);
       }
       return out;
     },
@@ -243,7 +258,10 @@ export function creerSignes(monde: Monde, el: HTMLElement, camera: THREE.Perspec
       hauteurDeLaVue = hauteur;
     },
     poser: (liste) => {
-      signes = liste.slice(0, SIGNES_MAX).map((s) => ({ id: s.id, rang: caseDe(s.bloc ? { bloc: s.bloc } : { icone: s.icone }), y: null }));
+      const avant = new Map(signes.map((s) => [s.id, s]));
+      signes = liste.slice(0, SIGNES_MAX).map((s) => ({ id: s.id, rang: caseDe(s.bloc ? { bloc: s.bloc } : { icone: s.icone }), y: avant.get(s.id)?.y ?? null, vue: avant.get(s.id)?.vue ?? false }));
+      // Une plaque de plus : les étiquettes se replacent. Une plaque qui s'en va ne les fait pas bouger.
+      if (signes.some((s) => !avant.has(s.id))) version++;
     },
     animer: (_t, _dt, reduit) => {
       const { focus, carte } = derniers.current;
@@ -258,9 +276,14 @@ export function creerSignes(monde: Monde, el: HTMLElement, camera: THREE.Perspec
           personnages.faireSigne(ile, debut);
         }
       }
+      // La créature d'une plaque arrive dans la scène (posée après la plaque) : les étiquettes se replacent, une fois.
+      for (const s of signes)
+        if (!s.vue && personnages.teteDe(s.id, tete)) {
+          s.vue = true;
+          version++;
+        }
       if (!signes.length || carte || instant.carte || instant.navigue) {
         maillage.visible = false;
-        if (montrees) noter(0);
         return;
       }
       camera.updateMatrixWorld();
@@ -278,7 +301,6 @@ export function creerSignes(monde: Monde, el: HTMLElement, camera: THREE.Perspec
         const profondeur = Math.max(0.5, -vue.copy(tete).applyMatrix4(camera.matrixWorldInverse).z);
         const demi = (ICONE_DU_SIGNE.css * profondeur) / Math.max(1, pxParUnite) / 2;
         centre.copy(tete).addScaledVector(haut, demi);
-        centres[n].copy(centre);
         for (let j = 0; j < 4; j++) {
           const sx = COINS[2 * j] * demi;
           const sy = COINS[2 * j + 1] * demi;
@@ -299,7 +321,6 @@ export function creerSignes(monde: Monde, el: HTMLElement, camera: THREE.Perspec
         }
         n++;
       }
-      noter(n);
       geometrie.setDrawRange(0, n * 6);
       attrPositions.needsUpdate = true;
       maillage.visible = n > 0;

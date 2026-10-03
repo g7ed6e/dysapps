@@ -72,19 +72,21 @@ it('les objets du quai gardent leurs cases : aucun décor bâti ne couvre le sol
       for (const c of cubes) if (bati(c) && c.tag === port) expect(c.z, `${a} ${c.decor}`).not.toBe(sol.get(`${c.x},${c.y}`));
     }
   }
-  // Et les objets du quai, tout construit, sont là où ils étaient avant les noms (barque, caisses, fanions, foyer).
+  // Et les objets du quai, tout construit, sont là où ils étaient avant les noms (barque, caisses, fanions, foyer) ; à la
+  // Plaine, la barque de la grève et le foyer laissent sa place à l'étal de Coco (GD-7, PR 3, retouche du directeur
+  // artistique : les objets du quai réservent celle de la petite construction de l'île-port).
   const quai = ARCHIPELAGO_IDS.map((a) =>
     [...new Set(parties(a)[1].filter((c) => c.decor && c.tag === getArchipelago(a).port && !bati(c) && !/arbre|sapin|buisson|fleur|rocher|roseau|souche|champignon|cristal/.test(kindOf(c.decor))).map((c) => c.decor))].sort(),
   );
   expect(quai).toMatchInlineSnapshot(`
     [
       [
-        "maths-6e-calculation/barque@73,22",
         "maths-6e-calculation/barque@75,12",
+        "maths-6e-calculation/barque@76,22",
         "maths-6e-calculation/caisse@79,16",
         "maths-6e-calculation/fanion@73,16",
         "maths-6e-calculation/fanion@80,18",
-        "maths-6e-calculation/foyer@79,21",
+        "maths-6e-calculation/foyer@70,22",
       ],
       [
         "maths-5e-proportionality/barque@80,310",
