@@ -128,7 +128,6 @@ const SUBJECT_DE = { french: 'de français', maths: 'de maths', english: 'd’an
 const CONDITION_TEXT = {
   aucune: 'aucune condition',
   plan: 'une mission de l’île de départ réussie (la première partie de son bâtiment posée)',
-  gardien: 'le Gardien de l’île de départ vaincu',
 };
 const AID_NAME = {
   dots: 'grille de points (par cinq)',
