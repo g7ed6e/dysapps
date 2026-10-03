@@ -7,6 +7,8 @@ import { frenchTypography } from '../components/math/RichText';
 import { useSettings } from '../core/SettingsContext';
 import { estIleLv2, guardianTitle, missionsJouables, type BiomeDef } from './biomes';
 import { Bridges } from './Bridges';
+import { Commandes, TuYEs } from './Commandes';
+import type { Commande } from './world/commandes';
 import { isBiomeUnlocked } from './world/archipelago';
 import { PlanSection } from './PlanSection';
 import { ShipSection } from './ShipSection';
@@ -47,6 +49,10 @@ interface Props {
   posees?: Partie[] | null;
   /** Les parties que la vague est en train de poser (GD-6) : le compte du bâtiment les attend. */
   enCoursDePose?: Partie[] | null;
+  /** Une commande livrée dans ce panneau (GD-7, PR 3) : la scène pose sa petite construction ; `true` si elle en prend le son. */
+  onLivree?: (c: Commande) => boolean;
+  /** La commande dont la petite construction se pose (la vague) : la phrase « posée » attend la fin (GD-7, PR 3). */
+  commandeEnCoursDePose?: string | null;
 }
 
 /**
@@ -55,7 +61,7 @@ interface Props {
  * il n'y a rien à y faire ; au pied, la matière, la classe et l'archipel. Tout est en HTML (police dys), on ne quitte
  * pas le monde.
  */
-export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight = null, ship, onBoard, posees = null, enCoursDePose = null }: Props) {
+export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight = null, ship, onBoard, posees = null, enCoursDePose = null, onLivree, commandeEnCoursDePose = null }: Props) {
   const { state } = useBlocland();
   const { settings, speak } = useSettings();
   const sansLv2 = estIleLv2(biome) && settings.lv2 === 'none';
@@ -81,6 +87,8 @@ export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight =
     titreRef.current?.focus();
   };
   const [bossSaid, setBossSaid] = useState<string | null>(null);
+  // « Y aller » d'une commande dont le bloc se gagne ici : « Tu y es » sous le titre « Missions ».
+  const [ici, setIci] = useState(false);
   // En 3D, le bâtiment, le navire et les ouvrages se replient quand il n'y a rien à y faire : le panneau reste court.
   // Le choix de l'élève (ouvrir, fermer) est oublié quand l'île change ou qu'un ouvrage est mis en avant.
   const fold = in3d ? `${biome.id}:${highlight ?? ''}` : undefined;
@@ -98,6 +106,7 @@ export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight =
   useEffect(() => {
     setBossSaid(null);
     setRemis(false);
+    setIci(false);
     if (settings.autoRead) speak(frenchTypography(rappel ? `${greeting} ${rappel.lu}` : greeting));
     // Une lecture par île.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -149,10 +158,11 @@ export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight =
       )}
 
       {!sansLv2 && (
-        <h3 className="island-sheet-heading">
+        <h3 id={`missions-${biome.id}`} tabIndex={-1} className="island-sheet-heading">
           <Icon name="hammer" /> Missions
         </h3>
       )}
+      {!sansLv2 && <TuYEs dit={ici} />}
       <ul className="island-quests" aria-label="Missions de l’île">
         {missionsJouables(biome, settings.lv2).map((exercise) => {
           const def = pickExercise(biome.id, exercise.id, levelFor(state, exercise.id), state.progress);
@@ -242,7 +252,7 @@ export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight =
         )}
       </ul>
       <p id={`gardien-${biome.id}`} className="bridges-said" role="status" aria-live="polite">
-        {bossSaid ? <Syllabified text={bossSaid} /> : ''}
+        {bossSaid ? <Syllabified text={bossSaid} /> : null}
       </p>
 
       {/* Le prochain objectif et, sur l'île-port, l'état du village (qui se voit aussi au port en cubes) : un seul pli. */}
@@ -255,6 +265,9 @@ export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight =
       ) : (
         port && <VillageStageLine village={state.world} archipelago={biome.classe} className="island-village" />
       )}
+
+      {/* Les commandes des créatures de l'archipel (GD-7) : entre le prochain objectif et le bâtiment. */}
+      {unlocked && !sansLv2 && <Commandes island={biome.id} fold={fold} highlight={highlight} onLivree={onLivree} poseEnCours={commandeEnCoursDePose} onAuxMissions={() => setIci(true)} />}
 
       {unlocked && <PlanSection biome={biome} fold={fold} highlight={highlight === 'part'} vientDePoser={posees} enCoursDePose={enCoursDePose} />}
 

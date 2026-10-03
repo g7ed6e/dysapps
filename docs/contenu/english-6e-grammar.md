@@ -460,3 +460,17 @@ Pour tous les items :
 | `english-6e-grammar-1` | La tour de Tick | 40 | Ma tour ! Merci, bâtisseur. Tic, tac : elle donne l’heure à toute l’île. |
 | `english-6e-grammar-2` | Le toit de la tour | 50 | Un toit et une porte ! Le coucou a enfin sa maison. |
 | `english-6e-grammar-3` | La cour de l’horloge | 60 | Une cour, une barrière, un escalier… Mon horloge est complète, et toujours à l’heure. |
+
+## Les demandes
+
+### `english-6e-grammar-request-1`
+
+- habitant : Tick
+- bloc : `french-6e-reading`
+- combien : 3
+- petite construction : la vitrine
+- demande : Il me faut {objet} pour ma vitrine. Joue une mission de la Tour du lecteur.
+- prête : Tu as les {blocs} ! Livre-les à Tick.
+- posée : Vitrine posée chez Tick !
+
+> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : la serre de `jardin()` : un soubassement de 3 portes (les cadrans se perdaient sur le sol de cadrans), 3 verres dessus, 3 toits par-dessus ; 9 cubes, 3 cases, 3 de haut (retouche du directeur artistique, 3 octobre 2026 : le bloc du sol, sans exception).

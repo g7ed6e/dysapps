@@ -517,3 +517,17 @@ Pour tous les items :
 | `english-4e-grammar-1` | L’abri de Vapeur | 40 | Mon abri ! Thank you, bâtisseur. D’ici, je verrai arriver tous les trains. |
 | `english-4e-grammar-2` | Le toit de l’abri | 50 | Un toit et une porte ! Les voyageurs attendront au sec. |
 | `english-4e-grammar-3` | Le quai de la gare | 60 | Un quai, une barrière, un escalier… Ma gare est complète. All aboard! |
+
+## Les demandes
+
+### `english-4e-grammar-request-1`
+
+- habitant : Vapeur
+- bloc : `maths-4e-algebra`
+- combien : 3
+- petite construction : l’auvent
+- demande : Il me faut {objet} pour mon auvent. Joue une mission de l’Atelier du calcul littéral.
+- prête : Tu as les {blocs} ! Livre-les à Vapeur.
+- posée : Auvent posé chez Vapeur !
+
+> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : le portique de la tonnelle (`jardin()`) : 2 poteaux de 2 cubes, une barrière en bas et un rail dessus (le rail se perdait sur le sol de rails), un toit de 3 calques (le verre dépoli de la serre du Jardin) ; 7 cubes, 3 cases, 3 de haut (retouche du directeur artistique, 3 octobre 2026 : le bloc du sol, sans exception).

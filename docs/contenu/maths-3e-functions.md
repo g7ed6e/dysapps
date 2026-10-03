@@ -39,3 +39,17 @@ créature : Fi
 | `maths-3e-functions-1` | La lanterne de Fi | 40 | Ma lanterne ! Merci, bâtisseur. Entre x blocs, sort une lumière. |
 | `maths-3e-functions-2` | Le toit de la lanterne | 50 | Un toit et une porte ! f(nuit) = lumière, pour tous les bateaux. |
 | `maths-3e-functions-3` | La jetée de la lanterne | 60 | Une jetée, une barrière, un escalier… Ma lanterne est complète : la droite est tracée. |
+
+## Les demandes
+
+### `maths-3e-functions-request-1`
+
+- habitant : Fi
+- bloc : `compound-3e`
+- combien : 2
+- petite construction : le réflecteur
+- demande : Il me faut {objet} pour mon réflecteur. Assemble-les {à}.
+- prête : Tu as les {blocs} ! Livre-les à Fi.
+- posée : Réflecteur posé chez Fi !
+
+> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : la serre de `jardin()` : un socle de 2 prismes, 2 miroirs dessus, un cadre de 2 prismes par-dessus ; 6 cubes, 2 cases, 3 de haut.

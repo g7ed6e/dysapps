@@ -14,7 +14,8 @@ import { useBlocland } from './BloclandContext';
 import { ArchipelsSheet } from './ArchipelsSheet';
 import { InventorySheet } from './Inventory';
 import { IslandSheet } from './IslandSheet';
-import { creaturesQuiFontSigne, usePlusTard } from './rappels';
+import { creaturesQuiFontSigne, signesDesCreatures, usePlusTard } from './rappels';
+import { sansCommandes, type Commande } from './world/commandes';
 import { SCHOOL_PATH, SCHOOL_TITLE, SchoolSheet } from './School';
 import { MonumentSheet, MonumentsSheet } from './Monuments';
 import { useMonumentBuilder } from './useMonumentBuilder';
@@ -69,6 +70,7 @@ import { VAGUE, cubesDeLaVague, sansLaPartie } from './world/vague';
 import { Loading } from '../components/Loading';
 import {
   casesDesPlansDansLeMonde,
+  casesDeLaPetiteConstructionDansLeMonde,
   creaturePlacements,
   guardianPlacements,
   vehiclePlacement,
@@ -113,7 +115,8 @@ export function WorldPage() {
   const { state, moveTo, launch } = useBlocland();
   // La pose d'une partie en vague (GD-6, Blocland) : ses cases, absentes du monde jusqu'à ce que la vue les pose ; puis
   // la phrase « Partie posée : … » du panneau, une fois le dernier cube posé (ou l'écran touché).
-  const [vague, setVague] = useState<{ seq: number; biome: BiomeId; parties: Partie[]; cases: Set<string> } | null>(null);
+  // La petite construction d'une commande livrée (GD-7, PR 3) se pose de la même vague : `commande`, sans partie.
+  const [vague, setVague] = useState<{ seq: number; biome: BiomeId; parties: Partie[]; cases: Set<string>; commande?: string } | null>(null);
   const [partiesDites, setPartiesDites] = useState<{ biome: BiomeId; parties: Partie[]; toc: boolean; muet: boolean; seq: number } | null>(null);
   const { launchVoyage, progress } = useProgress();
   const mapOpen = biomeId === 'map';
@@ -149,12 +152,15 @@ export function WorldPage() {
   const sentinelles = textes.sentinelles !== null && habillage.defi === 'sentinelle';
   const rallumage = useRallumage(state.progress, a, sentinelles);
   const eteints = rallumage.enAttente.join();
+  // Les commandes des habitants (GD-7, PR 3) : seulement dans un univers qui les montre (Blocland) ; ailleurs, le monde
+  // se lit sans elles (ni petite construction, ni suggestion), la sauvegarde restant la même.
+  const vu = useMemo(() => (textes.commandes ? state : sansCommandes(state)), [state, textes.commandes]);
   const cubes = useMemo(
-    () => worldCubes(a, state.progress, state.world, false, trophyBlocks, sentinelles, habillage.atelier),
+    () => worldCubes(a, vu.progress, vu.world, false, trophyBlocks, sentinelles, habillage.atelier),
     // La LV2 choisit les bornes de l'île de la LV2 (world/terrain.ts, `questStations`) ; l'habillage (le lieu
     // d'assemblage) ne change pas tant que la page est montée (useState).
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [a, state.progress, state.world, trophyBlocks, sentinelles, settings.lv2, habillage.atelier],
+    [a, vu.progress, vu.world, trophyBlocks, sentinelles, settings.lv2, habillage.atelier],
   );
   const creatures = useMemo(
     () => [
@@ -165,7 +171,7 @@ export function WorldPage() {
   );
   // La créature qui se souvient (GD-4, étape 1) : celles dont l'île a des révisions dues font signe, sauf après « Plus tard ».
   const { remises } = usePlusTard();
-  const signes = useMemo(
+  const revisions = useMemo(
     () => creaturesQuiFontSigne(state.spaced, state.world.links, a, remises, settings.lv2),
     [state.spaced, state.world.links, a, remises, settings.lv2],
   );
@@ -205,6 +211,7 @@ export function WorldPage() {
   const openIsland = (id: BiomeId, ouvrage?: string) => {
     retenirPanneauReplie(null);
     setSheetOpen(true);
+    // Un ouvrage, ou une commande prête (GD-7, PR 3) : la même mise en avant (`worksite`), dans son pli.
     navigate(lienDeLaDestination({ island: id, ouvrage }));
   };
   // Fermer un panneau du village (Blocs, École, Trophées, Monuments) : retour au monde libre, sur l'île du bonhomme,
@@ -216,7 +223,7 @@ export function WorldPage() {
   // Les bornes de mission des îles de l'archipel, avec leur état : à faire, étoiles gagnées, ou fermée.
   // Le modèle du monde (world/modele.ts) : les îles, les bornes et leur état, en identifiants ; la grille dit où elles sont.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const modele = useMemo(() => modeleDuMonde(state, a, textes.archipels, textes.libelles), [a, state, settings.lv2, textes]);
+  const modele = useMemo(() => modeleDuMonde(vu, a, textes.archipels, textes.libelles), [a, vu, settings.lv2, textes]);
   const quests = useMemo<QuestMark[]>(
     () =>
       modele.bornes.map((b) => ({
@@ -230,6 +237,8 @@ export function WorldPage() {
   );
   // La prochaine destination (la même que « Reprendre l'aventure » au menu), dite et marquée sur la Carte.
   const destination = modele.destination;
+  // Un seul signe par créature : sa commande prête et suggérée (GD-7, PR 3), sinon ses révisions (GD-4, étape 1).
+  const signes = useMemo(() => signesDesCreatures(vu, a, revisions, destination.commande), [vu, a, revisions, destination.commande]);
   const destinationText = `Prochaine destination : ${destination.name}. ${destination.text}`;
   // Un ouvrage à construire (GD-7) : sur la Carte, la flèche se pose sur lui, avec l'icône d'un ouvrage, pas sur l'île
   // d'où il part (quatre ouvrages peuvent en partir) ; sur sa liaison, du côté de cette île.
@@ -629,17 +638,44 @@ export function WorldPage() {
     return () => window.clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [partiesDites?.seq]);
+  /**
+   * La vague finie, touchée ou interrompue. Une partie : sa phrase dans le panneau (`direLaPose`). Une petite construction
+   * (GD-7, PR 3) : la section Commandes écrit sa phrase à la place de la ligne livrée, avec le carillon (sauf `muet`).
+   */
+  const finirLaVague = (muet = false) => {
+    if (!vague) return;
+    if (vague.commande === undefined) return direLaPose(vague.biome, vague.parties, false, muet);
+    setVague(null);
+    if (!muet && settings.sounds) playDone();
+  };
   const onPose = (moment: 'couche' | 'finie') => {
     if (!vague) return;
     if (moment === 'couche') {
       if (settings.sounds) sonDeLaPose();
-    } else direLaPose(vague.biome, vague.parties);
+    } else finirLaVague();
   };
-  const poserToutDUnCoup = () => {
-    if (vague) direLaPose(vague.biome, vague.parties);
-  };
-  const poserEnSilence = () => {
-    if (vague) direLaPose(vague.biome, vague.parties, false, true);
+  const poserToutDUnCoup = () => finirLaVague();
+  const poserEnSilence = () => finirLaVague(true);
+  /**
+   * « Livrer » (GD-7, PR 3) : la petite construction se pose chez la créature avec le geste d'une partie (GD-6), la caméra
+   * immobile, cube par cube et couche par couche, un « clac » par couche, puis le carillon et, au même moment, la phrase
+   * « posée » dans le panneau, à la place de la ligne livrée (directeur artistique ; la fête ne passe jamais sur elle).
+   * « Réduire les animations », ou la vague sautée : posée d'un coup, la phrase tout de suite, un « clac » puis le
+   * carillon. Rend `true` : le son est pris ici, la section n'en joue pas.
+   */
+  const poserLaCommande = (c: Commande): boolean => {
+    if (habillage.pose !== 'geste') return false;
+    const cases = casesDeLaPetiteConstructionDansLeMonde(c.biome, c.fixture);
+    if (reduceMotion || !cases.size) {
+      if (settings.sounds) {
+        sonDeLaPose();
+        // Annulé si la page se démonte avant (`later`).
+        later(playDone, VAGUE.finApresMs);
+      }
+      return true;
+    }
+    setVague((v) => ({ seq: (v?.seq ?? 0) + 1, biome: c.biome, parties: [], cases, commande: c.id }));
+    return true;
   };
   const cubesVus = useMemo(() => (vague ? sansLaPartie(cubes, vague.cases) : cubes), [cubes, vague]);
   const poseVue = useMemo(() => (vague ? { seq: vague.seq, cubes: cubesDeLaVague(cubes, vague.cases) } : null), [cubes, vague]);
@@ -988,7 +1024,7 @@ export function WorldPage() {
                     </span>
                   </p>
                   <p className="world-map-actions">
-                    <button type="button" className="button primary" onClick={() => openIsland(destination.island, destination.ouvrage)}>
+                    <button type="button" className="button primary" onClick={() => openIsland(destination.island, destination.ouvrage ?? destination.commande)}>
                       <Icon name="play" /> Y aller
                     </button>
                     <button type="button" className="button" onClick={() => navigate('/adventure/world')}>
@@ -1153,7 +1189,7 @@ export function WorldPage() {
       ) : monument ? (
         <MonumentSheet builder={monumentBuilder} onClose={fermerLePanneau} />
       ) : menuOpen ? (
-        <MenuSheet onClose={() => navigate('/adventure')} />
+        <MenuSheet onClose={() => navigate('/adventure')} onAller={openIsland} />
       ) : (
         island &&
         panneauOuvert && (
@@ -1165,7 +1201,9 @@ export function WorldPage() {
             onClose={() => montrerLePanneau(false)}
             highlight={highlight}
             posees={partiesDites?.biome === island.id ? partiesDites.parties : null}
-            enCoursDePose={vague?.biome === island.id ? vague.parties : null}
+            enCoursDePose={vague?.biome === island.id && vague.commande === undefined ? vague.parties : null}
+            onLivree={poserLaCommande}
+            commandeEnCoursDePose={vague?.biome === island.id ? (vague.commande ?? null) : null}
             onBuilt={(to) => {
               // La fête, c'est la transformation : la caméra vole jusqu'à l'île qui s'ouvre, et sa créature accueille.
               window.setTimeout(() => navigate(`/adventure/${to}`), 900);

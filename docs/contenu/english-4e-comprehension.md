@@ -490,3 +490,17 @@ Pour tous les items :
 | `english-4e-comprehension-1` | La loge de Puck | 40 | Ma loge ! Thank you, bâtisseur. J’y souffle les répliques aux acteurs. |
 | `english-4e-comprehension-2` | Le toit de la loge | 50 | Un toit et une porte ! Les acteurs peuvent répéter à l’abri. |
 | `english-4e-comprehension-3` | La scène du théâtre | 60 | Une scène, une barrière, un escalier… Mon théâtre est complet. Curtain up! |
+
+## Les demandes
+
+### `english-4e-comprehension-request-1`
+
+- habitant : Puck
+- bloc : `french-4e-vocabulary`
+- combien : 3
+- petite construction : le pupitre
+- demande : Il me faut {objet} pour mon pupitre. Joue une mission du Cabinet des mots.
+- prête : Tu as les {blocs} ! Livre-les à Puck.
+- posée : Pupitre posé chez Puck !
+
+> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : la colonne de la cheminée (`maison()`) et un linteau : un pied au milieu, une barrière en bas (le velours se perdait sur le sol de velours, retouche du directeur artistique, 3 octobre 2026 : le bloc du sol, sans exception) et un velours dessus, une tablette de 3 parchemins à z 2, le long des y, perpendiculaire à l’axe de la caméra de l’île ; 5 cubes, 3 cases, 3 de haut (retouche du directeur artistique, 3 octobre 2026).

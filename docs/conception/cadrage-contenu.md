@@ -103,6 +103,15 @@ Décidé par le mainteneur le 1er octobre 2026, sur la proposition du directeur 
 - **Le tirage** : une permutation des questions par élève et par bloc, parcourue en boucle ; jamais une question parmi les 6 dernières posées pour ce bloc ; une question manquée revient après au moins 3 autres (en pratique après 6, à cause de la règle précédente).
 - **Rien ne se perd** : les blocs ne sont pris qu’à la bonne réponse ; une erreur laisse un second essai avec l’indice ; deux erreurs montrent l’explication, gardent les blocs et proposent une autre question. Ni XP, ni étoiles, ni adaptation du niveau : la question ne rapporte que le bloc. « Défaire » ne pose pas de question.
 
+### Les commandes des habitants (GD-7)
+
+Cadrées le 3 octobre 2026 (format) ; liste du consultant de Blocland validée le même jour par le directeur artistique, avec ses quatre corrections (le lavoir de Nénu couvert de toits, le parasol de Lavi en cabines, la glacière de Pudding en coffre, Grimoire après « La lanterne du phare »).
+
+- **Une commande par île** de français, de maths et d’anglais (28), aucune en LV2, écrite dans la section « Les demandes » de `docs/contenu/<lieu>.md` (format : [README du contenu](../contenu/README.md)) ; `npm run contenu` en produit `src/blocland/world/requests.json`. La forme de la petite construction est dans le code ; une note la décrit pour l’artiste technique 3D.
+- **Ce qu’elle dit** : le lieu et le geste (« Joue une mission de la Plaine des nombres. », « Assemble-les à la Fabrique. »), jamais une notion, une matière ni une note : la commande donne une raison d’aller sur une île, pas un exercice de plus. Deux phrases courtes au plus, une idée par phrase.
+- **Le même nom partout** : le nombre et le nom du bloc ne s’écrivent pas dans les phrases ; le jeu les prend dans Mes blocs (`blockCount`), par les jetons `{objet}` et `{blocs}`. La petite construction a un seul nom, avec son article, dans la liste, la demande et la réplique.
+- **Les phrases sont celles de Blocland** (« commande », « petite construction ») ; Archipéo, en pause, n’affiche pas les commandes. La phrase de la première fois est commune et va avec les textes de l’univers.
+
 ### Les leçons du test élève de 6e
 
 Le test, joué comme un élève de 6e dyslexique (11 ans, lecture lente, souvent sur tablette, parfois sans le son), a fixé la plupart des règles des principes dys : syllabes entendues, pas de couleurs sur le mot à découper, consigne toujours écrite, correction complète, mots de résultat courts, pas de question piège, astuce du facteur le plus simple. S’y ajoutent, pour écrire un item :

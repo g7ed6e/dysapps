@@ -49,7 +49,8 @@ export function Bridges({ island, onBuilt, highlight = null, fold, objectif }: P
   const list = useRef<HTMLUListElement>(null);
   useEffect(() => {
     if (!highlight) return;
-    const el = list.current?.querySelector<HTMLElement>(`[data-bridge="${highlight}"]`);
+    // Par `dataset`, jamais dans un sélecteur : `highlight` vient de l'adresse (`?worksite=`).
+    const el = [...(list.current?.querySelectorAll<HTMLElement>('[data-bridge]') ?? [])].find((e) => e.dataset.bridge === highlight);
     el?.scrollIntoView?.({ block: 'center', behavior: 'smooth' });
   }, [highlight, island]);
   const world = { progress: state.progress, plans: state.world.parts };

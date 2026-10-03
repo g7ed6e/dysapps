@@ -32,12 +32,14 @@ import { useSettings } from '../core/SettingsContext';
 import { useTextes } from '../univers';
 import { ArchipelagoMap } from './ArchipelagoMap';
 import { lienDeLaDestination, nextDestination } from './world/destination';
+import { sansCommandes } from './world/commandes';
 import { islandState } from './world/islandState';
 import { SpeakButton } from '../components/SpeakButton';
 import { useUnivers } from '../core/SettingsContext';
 import { UNIVERS } from '../core/univers';
-import { signesParmi, usePlusTard } from './rappels';
+import { signesDesCreatures, signesParmi, usePlusTard } from './rappels';
 import { questsToReview } from './review';
+import { Commandes } from './Commandes';
 
 /** Ce qu'il faut pour rejoindre un archipel fermé, en une phrase. */
 function lockedArchipelagoText(state: ReturnType<typeof useBlocland>['state'], classe: (typeof ARCHIPELAGOS)[number]['classe']): string {
@@ -57,7 +59,8 @@ export function BloclandPage() {
   const at = state.world.place ?? 'french-6e-phonology';
   const here = archipelagoOf(at).classe;
   const textes = useTextes();
-  const destination = nextDestination(state, textes.archipels, textes.libelles);
+  // Les commandes (GD-7) ne se suggèrent que dans un univers qui les montre (Blocland).
+  const destination = nextDestination(textes.commandes ? state : sansCommandes(state), textes.archipels, textes.libelles);
   // La vue simple n'a pas de monde : pas de moment du rallumage, mais son mot et sa cloche, une fois (lot 6).
   const { settings } = useSettings();
   const rallumage = useRallumage(state.progress, here, textes.sentinelles !== null);
@@ -73,10 +76,15 @@ export function BloclandPage() {
   // La créature qui se souvient (GD-4, étape 1) : l'icône de la notion sur son île, comme son signe dans le monde.
   const { remises } = usePlusTard();
   // Les révisions dues, calculées une fois pour toute la Carte (pas une fois par île).
+  // Un seul signe par créature : sa commande prête et suggérée (GD-7, PR 3 : l'icône du bloc), sinon ses révisions.
+  const avecCommandes = Boolean(textes.commandes);
   const fontSigne = useMemo(() => {
     const dues = questsToReview(state.spaced, state.world.links);
-    return new Set(ARCHIPELAGOS.flatMap((a) => signesParmi(dues, a.classe, remises, settings.lv2)).map((x) => x.id));
-  }, [state.spaced, state.world.links, remises, settings.lv2]);
+    const vu = avecCommandes ? state : sansCommandes(state);
+    return new Map(
+      ARCHIPELAGOS.flatMap((a) => signesDesCreatures(vu, a.classe, signesParmi(dues, a.classe, remises, settings.lv2), destination.commande)).map((x) => [x.id, x]),
+    );
+  }, [state, remises, settings.lv2, avecCommandes, destination.commande]);
   return (
     <>
       <Link to={MENU_PATH} className="back-link">
@@ -119,6 +127,8 @@ export function BloclandPage() {
           </span>
         </p>
       </section>
+      {/* Les commandes des créatures de l'archipel du bonhomme (GD-7), sous la prochaine destination. */}
+      <Commandes niveau="h2" className="panel" />
       <ArchipelagoMap bridges={state.world.links} here={here} />
 
       {ARCHIPELAGOS.map((a) => {
@@ -144,16 +154,25 @@ export function BloclandPage() {
                 const bridge = unlocked || !reached ? undefined : buildableBridges(state.world.links, biome.id, undefined, settings.lv2)[0];
                 const owned = state.stock[biome.block] ?? 0;
                 const st = islandState(state, biome.id);
+                const signe = fontSigne.get(biome.id);
                 return (
                   <li key={biome.id}>
                     <Link to={`/adventure/${biome.id}`} className={`panel biome-card biome-${biome.id}${unlocked ? '' : ' locked'}`}>
                       <Creature biome={biome.id} className="creature-small" />
-                      {fontSigne.has(biome.id) && (
-                        // Le signe de la créature : l'icône de la notion, fixe ; le panneau de l'île propose de reprendre.
-                        <span className="biome-rappel">
-                          <Icon name={biome.icon} size="1.4rem" />
-                          <span className="visually-hidden">{biome.creature.name} te propose de reprendre.</span>
+                      {signe?.bloc ? (
+                        // Le signe d'une commande prête et suggérée : l'icône du bloc demandé, à la place de celle des révisions.
+                        <span className="biome-rappel biome-commande">
+                          <BlockIcon top={BLOCKS[signe.bloc].top} side={BLOCKS[signe.bloc].side} size={22} />
+                          <span className="visually-hidden">{biome.creature.name} attend sa commande.</span>
                         </span>
+                      ) : (
+                        signe && (
+                          // Le signe de la créature : l'icône de la notion, fixe ; le panneau de l'île propose de reprendre.
+                          <span className="biome-rappel">
+                            <Icon name={biome.icon} size="1.4rem" />
+                            <span className="visually-hidden">{biome.creature.name} te propose de reprendre.</span>
+                          </span>
+                        )
                       )}
                       <span className="biome-name">{biome.name}</span>
                       <span className="biome-module">

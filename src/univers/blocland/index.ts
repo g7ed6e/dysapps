@@ -327,6 +327,17 @@ export const BLOCLAND = {
   // Les blocs assemblés et leur lieu (GD-2) : écrits dans docs/contenu/assemblage.md.
   // La créature qui se souvient (GD-4, étape 1) : sa proposition, au tutoiement complice de Blocland.
   rappel: (mission) => `J’ai gardé « ${mission} » de côté. On s’y remet ensemble ?`,
+  // Les commandes des habitants (GD-7, PR 3) : « commande » (la « demande » est la mission depuis GD-5) et « petite
+  // construction » (« ouvrage » est réservé aux liaisons), mots du directeur artistique (3 octobre 2026).
+  commandes: {
+    titre: 'Commandes',
+    premiereFois: 'Une commande, c’est une créature qui te demande des blocs pour une petite construction. Rien ne presse.',
+    livrer: 'Livrer',
+    liste: 'Les commandes des créatures',
+    compte: (n, pretes) => (pretes ? `${pretes} prête${pretes > 1 ? 's' : ''}` : `${n} en attente`),
+    tuEnAs: (have, count) => `Tu en as ${have} sur ${count}.`,
+    tuYEs: 'Tu y es : joue une mission ici.',
+  },
   blocs: nomsAssembles('blocland'),
   assemblage: lieuDAssemblage('blocland'),
   // La créature de l'île-école de l'archipel parle : Mousso en 6e, Bazar en 5e, Ixe en 4e, Fi en 3e (GD-1, point 1).

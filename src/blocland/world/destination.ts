@@ -9,6 +9,8 @@ import { nextGoalInfo, ouvrageSuggere } from './goals';
 import { isUnexplored } from './islandState';
 import { villageStage } from './villageStage';
 import { stageAt } from './vehicle';
+import { commandeMiseEnAvant, texteDeLaCommande } from './commandes';
+import { lieuDAssemblage } from './assemblage';
 
 export interface Destination {
   island: BiomeId;
@@ -24,14 +26,20 @@ export interface Destination {
    * au-dessus de lui, avec l'icône d'un ouvrage, pour le distinguer des autres fantômes de l'île.
    */
   ouvrage?: string;
+  /**
+   * La commande prête à livrer que la phrase propose (GD-7, PR 3), quand c'en est une : son identifiant. « Y aller »
+   * ouvre l'île de la créature sur sa ligne, dans le pli Commandes.
+   */
+  commande?: string;
 }
 
 /**
  * Où mènent « Y aller » et « Reprendre l'aventure » : l'île de la destination ; quand c'est un ouvrage, avec lui en
  * `worksite`, comme « Voir le chantier » : le pli Ouvrages s'ouvre sur sa ligne, mise en avant.
  */
-export function lienDeLaDestination(d: Pick<Destination, 'island' | 'ouvrage'>): string {
-  return `/adventure/${d.island}${d.ouvrage ? `?worksite=${encodeURIComponent(d.ouvrage)}` : ''}`;
+export function lienDeLaDestination(d: Pick<Destination, 'island' | 'ouvrage' | 'commande'>): string {
+  const mise = d.ouvrage ?? d.commande;
+  return `/adventure/${d.island}${mise ? `?worksite=${encodeURIComponent(mise)}` : ''}`;
 }
 
 /**
@@ -40,7 +48,8 @@ export function lienDeLaDestination(d: Pick<Destination, 'island' | 'ouvrage'>):
  * 1. le Bloc-Navire prêt à partir (le port) ;
  * 2. l'île où se tient le bonhomme, où l'élève est allé de lui-même, quand il y reste quelque chose à faire tout de
  *    suite (un objectif prêt, une mission jamais jouée) ;
- * 3. une commande prête à livrer (GD-7, PR 3) ;
+ * 3. la plus ancienne commande prête à livrer de l'archipel (GD-7, PR 3, world/commandes.ts) : l'île de sa créature,
+ *    avec sa phrase « prête » (un univers qui ne montre pas les commandes passe un état `sansCommandes`) ;
  * 4. une île ouverte pas encore explorée ;
  * 5. l'ouvrage suggéré (`ouvrageSuggere`) : celui qu'on peut payer et qui ouvre une île de la matière la moins jouée ;
  *    sans assez de blocs, ce qu'il en manque ; la destination est l'île d'où il part, et sa phrase est l'objectif de
@@ -57,13 +66,14 @@ export function nextDestination(state: GameState, noms: NomsArchipels, mots: Mot
   const islands = islandsOf(archipelago.classe)
     .map((b) => b.id)
     .filter((id) => open.has(id));
-  const make = (island: BiomeId, text: string, have = 0, need = 0, ouvrage?: string): Destination => ({
+  const make = (island: BiomeId, text: string, have = 0, need = 0, ouvrage?: string, commande?: string): Destination => ({
     island,
     name: getBiome(island)?.name ?? island,
     text,
     have,
     need,
     ...(ouvrage ? { ouvrage } : {}),
+    ...(commande ? { commande } : {}),
   });
 
   // 1. Le Bloc-Navire prêt à partir.
@@ -79,7 +89,10 @@ export function nextDestination(state: GameState, noms: NomsArchipels, mots: Mot
     if (goal?.ready) return make(at, goal.text, goal.have, goal.need, goal.ouvrage);
     if (resteAJouer(state, at)) return make(at, isUnexplored(state, at) ? A_EXPLORER : 'Tu y es : d’autres missions t’attendent.');
   }
-  // 3. Une commande prête à livrer : elle viendra ici avec les commandes (GD-7, PR 3).
+  // 3. La plus ancienne commande prête à livrer de l'archipel : chez sa créature (GD-7, PR 3).
+  const prete = commandeMiseEnAvant(state, archipelago.classe);
+  if (prete && open.has(prete.biome))
+    return make(prete.biome, texteDeLaCommande(prete, 'ready', lieuDAssemblage('blocland').a), prete.count, prete.count, undefined, prete.id);
   // 4. Une île ouverte pas encore explorée.
   const fresh = islands.find((island) => island !== at && isUnexplored(state, island) && resteAJouer(state, island));
   if (fresh) return make(fresh, A_EXPLORER);

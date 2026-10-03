@@ -538,3 +538,17 @@ Pour tous les items :
 | `english-3e-comprehension-1` | La régie d’Écho | 40 | Ma régie ! Thank you, bâtisseur. On the air, dans trois, deux, un… |
 | `english-3e-comprehension-2` | Le toit de la régie | 50 | Un toit et une porte ! Plus de grésillement quand il pleut. |
 | `english-3e-comprehension-3` | La terrasse du studio | 60 | Une terrasse, une barrière, un escalier… Mon studio est complet. Stay tuned! |
+
+## Les demandes
+
+### `english-3e-comprehension-request-1`
+
+- habitant : Écho
+- bloc : `french-3e-close-reading`
+- combien : 2
+- petite construction : le haut-parleur
+- demande : Il me faut {objet} pour mon haut-parleur. Joue une mission de l’Observatoire des textes.
+- prête : Tu as les {blocs} ! Livre-les à Écho.
+- posée : Haut-parleur posé chez Écho !
+
+> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : un rang bas et ce qu’on pose dessus (la serre, `jardin()`) : un caisson de 2 portes (les antennes se perdaient sur le sol d’antennes), 2 lentilles dessus (le cercle du bloc fait la membrane) ; 4 cubes, 2 cases, 2 de haut (retouche du directeur artistique, 3 octobre 2026 : le bloc du sol, sans exception).

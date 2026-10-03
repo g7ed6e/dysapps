@@ -551,3 +551,17 @@ Pour tous les items :
 | `french-4e-agreement-1` | La bergerie de Cléa | 40 | Ma bergerie ! Merci, bâtisseur. Les ardoises sont posées, la bergerie est finie : tout est accordé. |
 | `french-4e-agreement-2` | Le toit de la bergerie | 50 | Un toit et une porte ! La lanterne, accrochée à la paroi, veille sur les chevreaux. |
 | `french-4e-agreement-3` | L’enclos de la bergerie | 60 | Un enclos, une barrière, un escalier… Ma bergerie est complète. Les chèvres sont rentrées, accordées au pluriel. |
+
+## Les demandes
+
+### `french-4e-agreement-request-1`
+
+- habitant : Cléa
+- bloc : `maths-4e-powers`
+- combien : 3
+- petite construction : le perchoir
+- demande : Il me faut {objet} pour mon perchoir. Joue une mission de la Forge des puissances.
+- prête : Tu as les {blocs} ! Livre-les à Cléa.
+- posée : Perchoir posé chez Cléa !
+
+> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : les gradins de la coupole (`dome()`) en escalier : 3 marches de 1, 2 et 3 cubes, l’escalier (`stairs`) dessous, un acier sur chaque marche ; 6 cubes, 3 cases, 3 de haut (retouche du directeur artistique, 3 octobre 2026 : l’ardoise se perdait sur le sol d’ardoise).

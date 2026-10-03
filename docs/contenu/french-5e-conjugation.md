@@ -527,3 +527,17 @@ Pour tous les items :
 | `french-5e-conjugation-1` | La hutte de Kroa | 40 | Ma hutte ! Merci, bâtisseur. Elle était en ruine, elle est debout, elle restera debout. |
 | `french-5e-conjugation-2` | Le toit de la hutte | 50 | Un toit et une porte ! Il faut que la lanterne brille toute la nuit. |
 | `french-5e-conjugation-3` | Le ponton de la hutte | 60 | Un ponton, une barrière, un escalier… Ma hutte est complète. Demain, je m’y reposerai. |
+
+## Les demandes
+
+### `french-5e-conjugation-request-1`
+
+- habitant : Kroa
+- bloc : `maths-5e-proportionality`
+- combien : 4
+- petite construction : l’abri
+- demande : Il me faut {objet} pour mon abri. Joue une mission du Marché des proportions.
+- prête : Tu as les {blocs} ! Livre-les à Kroa.
+- posée : Abri posé chez Kroa !
+
+> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : le toit rayé d’`echoppe()` : 2 poteaux de tourbe de 2 cubes au fond, un toit de 3 × 2 à z 2 (toiles à gauche et à droite, tourbe au milieu), qui déborde devant ; 10 cubes, 6 cases, 3 de haut.

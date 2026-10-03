@@ -548,3 +548,17 @@ Pour tous les items :
 | `english-6e-vocabulary-1` | La cabine de Robin | 40 | Ma cabine ! Thank you, bâtisseur. Quand le téléphone sonne, je réponds : hello? |
 | `english-6e-vocabulary-2` | Le toit de la cabine | 50 | Un toit et une porte ! Même sous la pluie anglaise, je reste au sec. |
 | `english-6e-vocabulary-3` | Le quai de la cabine | 60 | Un quai, une barrière, un escalier… Ma baie est complète. See you soon! |
+
+## Les demandes
+
+### `english-6e-vocabulary-request-1`
+
+- habitant : Robin
+- bloc : `english-6e-grammar`
+- combien : 2
+- petite construction : la pendule
+- demande : Il me faut {objet} pour ma pendule. Joue une mission de l’Horloge des verbes.
+- prête : Tu as les {blocs} ! Livre-les à Robin.
+- posée : Pendule posée chez Robin !
+
+> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : le haut de la tour à horloge (`tour()`, `top: 'horloge'`) en petit : 2 piliers de 2 cubes, une porte en bas et une cabine dessus (la cabine se perdait sur le sol de cabines), 2 cadrans dessus ; 6 cubes, 2 cases, 3 de haut (retouche du directeur artistique, 3 octobre 2026 : le bloc du sol, sans exception).

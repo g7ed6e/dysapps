@@ -175,6 +175,32 @@ export interface TextesUnivers {
    * deux phrases courtes au plus, au présent, sans échec ni date. Sans elle, la phrase commune (`RAPPEL`, communs.ts).
    */
   rappel?: (mission: string) => string;
+  /**
+   * Les commandes des habitants (GD-7, PR 3 ; mot neutre : les demandes) : les mots de la section et la phrase de la
+   * première fois. Sans eux, l'univers ne montre pas les commandes (Archipéo, en pause).
+   */
+  commandes?: TextesCommandes;
+}
+
+/** Les mots des commandes des habitants dans un univers (GD-7). */
+export interface TextesCommandes {
+  /** Le nom de la section, le même dans le panneau d'île, le menu et la vue simple. */
+  titre: string;
+  /** La phrase qui explique ce qu'est une commande, tant qu'aucune n'a été livrée. */
+  premiereFois: string;
+  /** Le geste de la livraison, sur le bouton. */
+  livrer: string;
+  /** La liste, pour un lecteur d'écran. */
+  liste: string;
+  /**
+   * Le compte, à côté du titre (« Commandes · 1 prête ») : combien sont prêtes à livrer, ou, sans aucune prête, combien
+   * attendent (`n` ≥ 1).
+   */
+  compte: (n: number, pretes: number) => string;
+  /** Une commande pas prête dont l'élève a déjà une partie des blocs : « Tu en as 1 sur 3. », écrit et lu. */
+  tuEnAs: (have: number, count: number) => string;
+  /** « Y aller » quand l'élève est déjà sur l'île qui donne le bloc. */
+  tuYEs: string;
 }
 
 /** Les noms qu'un univers donne à des blocs (GD-2 : les blocs assemblés). */

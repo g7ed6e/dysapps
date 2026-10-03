@@ -366,3 +366,17 @@ Pour tous les items :
 | `french-6e-phonology-1` | La cabane de Mousso | 40 | Ma cabane ! Merci, bâtisseur. Je vais enfin dormir au sec, à l’abri des sons qui hurlent la nuit. |
 | `french-6e-phonology-2` | Le toit de la cabane | 50 | Un toit de tuiles et une porte qui ferme ! La lanterne brillera pour les sons perdus. |
 | `french-6e-phonology-3` | La cour de la cabane | 60 | Une cour, une barrière, un escalier… Ma maison est finie. Tu es un vrai bâtisseur, une vraie bâtisseuse. |
+
+## Les demandes
+
+### `french-6e-phonology-request-1`
+
+- habitant : Mousso
+- bloc : `french-6e-grammar-spelling`
+- combien : 3
+- petite construction : le potager
+- demande : Il me faut {objet} pour mon potager. Joue une mission de la Ferme des accords.
+- prête : Tu as les {blocs} ! Livre-les à Mousso.
+- posée : Potager posé chez Mousso !
+
+> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : les jardinières de `yard()` : un rang de 3 bois au sol (z 0), 3 terre posés dessus (z 1) ; 6 cubes, 3 cases, 2 de haut.

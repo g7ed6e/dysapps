@@ -39,3 +39,17 @@ créature : Ixe
 | `maths-4e-algebra-1` | Le bureau d’Ixe | 40 | Mon bureau ! Merci, bâtisseur. Bip : x blocs posés, x = tous. |
 | `maths-4e-algebra-2` | Le toit du bureau | 50 | Un toit et une porte ! La lanterne éclaire mes calques la nuit. |
 | `maths-4e-algebra-3` | La terrasse du bureau | 60 | Une terrasse, une barrière, un escalier… Mon bureau est complet : équation résolue. |
+
+## Les demandes
+
+### `maths-4e-algebra-request-1`
+
+- habitant : Ixe
+- bloc : `compound-4e`
+- combien : 2
+- petite construction : la machine
+- demande : Il me faut {objet} pour ma machine. Assemble-les {à}.
+- prête : Tu as les {blocs} ! Livre-les à Ixe.
+- posée : Machine posée chez Ixe !
+
+> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : la mangeoire entre deux poteaux (`relais()`) : 2 poteaux de calque de 2 cubes, 2 engrenages empilés entre eux ; 6 cubes, 3 cases, 2 de haut.

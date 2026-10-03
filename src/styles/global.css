@@ -4208,12 +4208,116 @@ button.island-quest:active {
 .bridge-icon {
   background: var(--cyan);
 }
+/* Les commandes des créatures (GD-7, PR 3) : les lignes du pli Ouvrages, avec l'habitant en icône. La commande mise en
+   avant (la plus ancienne des prêtes) a un bord plus épais : la forme, pas seulement la couleur. */
+.commandes-list .commande-habitant {
+  background: var(--surface);
+}
+.commandes-list .commande-habitant .creature {
+  width: 2.4rem;
+  height: 2.4rem;
+}
+/* Une grille fixe, la même à toutes les tailles de texte : l'habitant, la phrase, le bouton de lecture sur la première
+   rangée ; le bouton d'action dessous, aligné sur la phrase. Les boutons viennent toujours après le texte. */
+.commandes-list .commande-item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    'habitant texte lire'
+    '. action action';
+  align-items: center;
+  column-gap: 0.7rem;
+  row-gap: 0.4rem;
+}
+.commandes-list .commande-item > .commande-habitant {
+  grid-area: habitant;
+}
+.commandes-list .commande-item > .island-quest-text {
+  grid-area: texte;
+}
+.commandes-list .commande-item > .speak-button {
+  grid-area: lire;
+}
+.commandes-list .commande-item > .button {
+  grid-area: action;
+  justify-self: start;
+}
+.commande-item .island-quest-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+/* En grand texte, trois rangées, comme une mission : l'habitant et le haut-parleur, puis le titre et la phrase sur toute
+   la largeur, puis le bouton. Un mot ne se coupe jamais au milieu (un mot plus long que toute la ligne seulement, en
+   dernier recours, comme une consigne). */
+:root[data-texte="grand"] .commandes-list .commande-item {
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas:
+    'habitant lire'
+    'texte texte'
+    'action action';
+}
+:root[data-texte="grand"] .commandes-list .commande-item > .speak-button {
+  justify-self: start;
+}
+:root[data-texte="grand"] .commandes-list .commande-item :is(.island-quest-title, .island-quest-desc, .button) {
+  overflow-wrap: break-word;
+  word-break: normal;
+  hyphens: manual;
+}
+/* La commande livrée : le vert des réussites, avec une forme en plus de la couleur (la coche devant le bloc, un bord
+   deux fois plus épais) ; sa phrase à la taille du texte, pas en gris. */
+.commandes-list .commande-livree {
+  border-color: var(--success);
+  border-width: calc(var(--border-width) * 2);
+  background: var(--success-bg);
+}
+.commande-livree .commande-coche {
+  color: var(--success);
+}
+.commande-livree .commande-posee {
+  font-size: 1rem;
+  color: var(--text);
+}
+/* « Tu y es : joue une mission ici. », sous le titre « Missions » ; vide, la zone reste là pour le lecteur d'écran. */
+.commande-ici-missions {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin: 0 0 0.6rem;
+}
+.commande-ici-missions.vide {
+  margin: 0;
+}
+/* Le compte, à côté du titre (« Commandes · 1 prête »). */
+.commandes-compte {
+  font-weight: normal;
+  color: var(--muted);
+}
+.commande-en-avant {
+  border-width: calc(var(--border-width) * 2);
+}
+.commandes-premiere-fois {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin: 0 0 0.6rem;
+}
+.menu-commandes {
+  margin: 0.6rem 0;
+}
 .bridges-said {
   margin: 0.6rem 0 0;
   padding: 0.5rem 0.8rem;
   border: var(--border-width) solid var(--success);
   border-radius: var(--radius-control);
   background: var(--success-bg);
+}
+/* Vide (rien à dire encore ; la zone reste là pour le lecteur d'écran) : pas de cadre. */
+.bridges-said:empty {
+  margin: 0;
+  padding: 0;
+  border: none;
 }
 
 /* ===== Blocland : écran de calcul (Plaine des nombres) ===== */

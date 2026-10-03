@@ -1,0 +1,367 @@
+[
+  {
+    "id": "french-6e-phonology-request-1",
+    "biome": "french-6e-phonology",
+    "block": "french-6e-grammar-spelling",
+    "count": 3,
+    "fixture": "french-6e-phonology-fixture-1",
+    "blocland": {
+      "name": "le potager",
+      "ask": "Il me faut {objet} pour mon potager. Joue une mission de la Ferme des accords.",
+      "ready": "Tu as les {blocs} ! Livre-les à Mousso.",
+      "done": "Potager posé chez Mousso !"
+    }
+  },
+  {
+    "id": "french-6e-letter-confusion-request-1",
+    "biome": "french-6e-letter-confusion",
+    "block": "maths-6e-calculation",
+    "count": 4,
+    "fixture": "french-6e-letter-confusion-fixture-1",
+    "blocland": {
+      "name": "le puits",
+      "ask": "Il me faut {objet} pour mon puits. Joue une mission de la Plaine des nombres.",
+      "ready": "Tu as les {blocs} ! Livre-les à Tunel.",
+      "done": "Puits posé chez Tunel !"
+    }
+  },
+  {
+    "id": "french-6e-word-spelling-request-1",
+    "biome": "french-6e-word-spelling",
+    "block": "compound-6e",
+    "count": 2,
+    "fixture": "french-6e-word-spelling-fixture-1",
+    "blocland": {
+      "name": "la grue",
+      "ask": "Il me faut {objet} pour ma grue. Assemble-les {à}.",
+      "ready": "Tu as les {blocs} ! Livre-les à Rouxel.",
+      "done": "Grue posée chez Rouxel !"
+    }
+  },
+  {
+    "id": "french-6e-grammar-spelling-request-1",
+    "biome": "french-6e-grammar-spelling",
+    "block": "maths-6e-fractions",
+    "count": 2,
+    "fixture": "french-6e-grammar-spelling-fixture-1",
+    "blocland": {
+      "name": "le bac à eau",
+      "ask": "Il me faut {objet} pour mon bac à eau. Joue une mission de la Rivière des fractions.",
+      "ready": "Tu as les {blocs} ! Livre-les à Bloquette.",
+      "done": "Bac à eau posé chez Bloquette !"
+    }
+  },
+  {
+    "id": "french-6e-reading-request-1",
+    "biome": "french-6e-reading",
+    "block": "maths-6e-decimals",
+    "count": 3,
+    "fixture": "french-6e-reading-fixture-1",
+    "afterPlan": "french-6e-reading-2",
+    "blocland": {
+      "name": "le poteau-lanterne",
+      "ask": "Il me faut {objet} pour mon poteau-lanterne. Joue une mission du Volcan des décimaux.",
+      "ready": "Tu as les {blocs} ! Livre-les à Grimoire.",
+      "done": "Poteau-lanterne posé chez Grimoire !"
+    }
+  },
+  {
+    "id": "maths-6e-calculation-request-1",
+    "biome": "maths-6e-calculation",
+    "block": "french-6e-phonology",
+    "count": 3,
+    "fixture": "maths-6e-calculation-fixture-1",
+    "blocland": {
+      "name": "la boutique",
+      "ask": "Il me faut {objet} pour ma boutique. Joue une mission de la Forêt des sons.",
+      "ready": "Tu as les {blocs} ! Livre-les à Coco.",
+      "done": "Boutique posée chez Coco !"
+    }
+  },
+  {
+    "id": "maths-6e-fractions-request-1",
+    "biome": "maths-6e-fractions",
+    "block": "french-6e-letter-confusion",
+    "count": 4,
+    "fixture": "maths-6e-fractions-fixture-1",
+    "blocland": {
+      "name": "le lavoir",
+      "ask": "Il me faut {objet} pour mon lavoir. Joue une mission de la Mine des lettres.",
+      "ready": "Tu as les {blocs} ! Livre-les à Nénu.",
+      "done": "Lavoir posé chez Nénu !"
+    }
+  },
+  {
+    "id": "maths-6e-decimals-request-1",
+    "biome": "maths-6e-decimals",
+    "block": "english-6e-vocabulary",
+    "count": 4,
+    "fixture": "maths-6e-decimals-fixture-1",
+    "blocland": {
+      "name": "le parasol",
+      "ask": "Il me faut {objet} pour mon parasol. Joue une mission de la Baie des mots.",
+      "ready": "Tu as les {blocs} ! Livre-les à Lavi.",
+      "done": "Parasol posé chez Lavi !"
+    }
+  },
+  {
+    "id": "maths-5e-signed-numbers-request-1",
+    "biome": "maths-5e-signed-numbers",
+    "block": "english-5e-vocabulary",
+    "count": 4,
+    "fixture": "maths-5e-signed-numbers-fixture-1",
+    "blocland": {
+      "name": "la cabane",
+      "ask": "Il me faut {objet} pour ma cabane. Joue une mission du Comptoir.",
+      "ready": "Tu as les {blocs} ! Livre-les à Frimas.",
+      "done": "Cabane posée chez Frimas !"
+    }
+  },
+  {
+    "id": "maths-5e-proportionality-request-1",
+    "biome": "maths-5e-proportionality",
+    "block": "french-5e-homophones",
+    "count": 3,
+    "fixture": "maths-5e-proportionality-fixture-1",
+    "blocland": {
+      "name": "l’étagère",
+      "ask": "Il me faut {objet} pour mon étagère. Joue une mission du Carrefour des homophones.",
+      "ready": "Tu as les {blocs} ! Livre-les à Bazar.",
+      "done": "Étagère posée chez Bazar !"
+    }
+  },
+  {
+    "id": "french-5e-homophones-request-1",
+    "biome": "french-5e-homophones",
+    "block": "english-5e-grammar",
+    "count": 3,
+    "fixture": "french-5e-homophones-fixture-1",
+    "blocland": {
+      "name": "le poteau indicateur",
+      "ask": "Il me faut {objet} pour mon poteau indicateur. Joue une mission du Manoir du passé.",
+      "ready": "Tu as les {blocs} ! Livre-les à Sema.",
+      "done": "Poteau indicateur posé chez Sema !"
+    }
+  },
+  {
+    "id": "french-5e-conjugation-request-1",
+    "biome": "french-5e-conjugation",
+    "block": "maths-5e-proportionality",
+    "count": 4,
+    "fixture": "french-5e-conjugation-fixture-1",
+    "blocland": {
+      "name": "l’abri",
+      "ask": "Il me faut {objet} pour mon abri. Joue une mission du Marché des proportions.",
+      "ready": "Tu as les {blocs} ! Livre-les à Kroa.",
+      "done": "Abri posé chez Kroa !"
+    }
+  },
+  {
+    "id": "maths-4e-powers-request-1",
+    "biome": "maths-4e-powers",
+    "block": "english-4e-grammar",
+    "count": 3,
+    "fixture": "maths-4e-powers-fixture-1",
+    "blocland": {
+      "name": "le wagonnet",
+      "ask": "Il me faut {objet} pour mon wagonnet. Joue une mission de la Gare du futur.",
+      "ready": "Tu as les {blocs} ! Livre-les à Braise.",
+      "done": "Wagonnet posé chez Braise !"
+    }
+  },
+  {
+    "id": "maths-4e-algebra-request-1",
+    "biome": "maths-4e-algebra",
+    "block": "compound-4e",
+    "count": 2,
+    "fixture": "maths-4e-algebra-fixture-1",
+    "blocland": {
+      "name": "la machine",
+      "ask": "Il me faut {objet} pour ma machine. Assemble-les {à}.",
+      "ready": "Tu as les {blocs} ! Livre-les à Ixe.",
+      "done": "Machine posée chez Ixe !"
+    }
+  },
+  {
+    "id": "french-4e-agreement-request-1",
+    "biome": "french-4e-agreement",
+    "block": "maths-4e-powers",
+    "count": 3,
+    "fixture": "french-4e-agreement-fixture-1",
+    "blocland": {
+      "name": "le perchoir",
+      "ask": "Il me faut {objet} pour mon perchoir. Joue une mission de la Forge des puissances.",
+      "ready": "Tu as les {blocs} ! Livre-les à Cléa.",
+      "done": "Perchoir posé chez Cléa !"
+    }
+  },
+  {
+    "id": "french-4e-vocabulary-request-1",
+    "biome": "french-4e-vocabulary",
+    "block": "english-4e-comprehension",
+    "count": 2,
+    "fixture": "french-4e-vocabulary-fixture-1",
+    "blocland": {
+      "name": "la banquette",
+      "ask": "Il me faut {objet} pour ma banquette. Joue une mission du Théâtre des voix.",
+      "ready": "Tu as les {blocs} ! Livre-les à Plume.",
+      "done": "Banquette posée chez Plume !"
+    }
+  },
+  {
+    "id": "maths-3e-geometry-request-1",
+    "biome": "maths-3e-geometry",
+    "block": "maths-3e-functions",
+    "count": 3,
+    "fixture": "maths-3e-geometry-fixture-1",
+    "blocland": {
+      "name": "l’équerre",
+      "ask": "Il me faut {objet} pour mon équerre. Joue une mission du Phare des fonctions.",
+      "ready": "Tu as les {blocs} ! Livre-les à Théo.",
+      "done": "Équerre posée chez Théo !"
+    }
+  },
+  {
+    "id": "maths-3e-statistics-request-1",
+    "biome": "maths-3e-statistics",
+    "block": "english-3e-comprehension",
+    "count": 2,
+    "fixture": "maths-3e-statistics-fixture-1",
+    "blocland": {
+      "name": "le mât de relevés",
+      "ask": "Il me faut {objet} pour mon mât de relevés. Joue une mission du Studio des ondes.",
+      "ready": "Tu as les {blocs} ! Livre-les à Stat.",
+      "done": "Mât de relevés posé chez Stat !"
+    }
+  },
+  {
+    "id": "maths-3e-functions-request-1",
+    "biome": "maths-3e-functions",
+    "block": "compound-3e",
+    "count": 2,
+    "fixture": "maths-3e-functions-fixture-1",
+    "blocland": {
+      "name": "le réflecteur",
+      "ask": "Il me faut {objet} pour mon réflecteur. Assemble-les {à}.",
+      "ready": "Tu as les {blocs} ! Livre-les à Fi.",
+      "done": "Réflecteur posé chez Fi !"
+    }
+  },
+  {
+    "id": "french-3e-close-reading-request-1",
+    "biome": "french-3e-close-reading",
+    "block": "english-3e-grammar",
+    "count": 3,
+    "fixture": "french-3e-close-reading-fixture-1",
+    "blocland": {
+      "name": "le banc",
+      "ask": "Il me faut {objet} pour mon banc. Joue une mission du Château des hypothèses.",
+      "ready": "Tu as les {blocs} ! Livre-les à Astra.",
+      "done": "Banc posé chez Astra !"
+    }
+  },
+  {
+    "id": "english-6e-vocabulary-request-1",
+    "biome": "english-6e-vocabulary",
+    "block": "english-6e-grammar",
+    "count": 2,
+    "fixture": "english-6e-vocabulary-fixture-1",
+    "blocland": {
+      "name": "la pendule",
+      "ask": "Il me faut {objet} pour ma pendule. Joue une mission de l’Horloge des verbes.",
+      "ready": "Tu as les {blocs} ! Livre-les à Robin.",
+      "done": "Pendule posée chez Robin !"
+    }
+  },
+  {
+    "id": "english-6e-grammar-request-1",
+    "biome": "english-6e-grammar",
+    "block": "french-6e-reading",
+    "count": 3,
+    "fixture": "english-6e-grammar-fixture-1",
+    "blocland": {
+      "name": "la vitrine",
+      "ask": "Il me faut {objet} pour ma vitrine. Joue une mission de la Tour du lecteur.",
+      "ready": "Tu as les {blocs} ! Livre-les à Tick.",
+      "done": "Vitrine posée chez Tick !"
+    }
+  },
+  {
+    "id": "english-5e-vocabulary-request-1",
+    "biome": "english-5e-vocabulary",
+    "block": "maths-5e-signed-numbers",
+    "count": 3,
+    "fixture": "english-5e-vocabulary-fixture-1",
+    "blocland": {
+      "name": "la glacière",
+      "ask": "Il me faut {objet} pour ma glacière. Joue une mission du Glacier des relatifs.",
+      "ready": "Tu as les {blocs} ! Livre-les à Pudding.",
+      "done": "Glacière posée chez Pudding !"
+    }
+  },
+  {
+    "id": "english-5e-grammar-request-1",
+    "biome": "english-5e-grammar",
+    "block": "compound-5e",
+    "count": 2,
+    "fixture": "english-5e-grammar-fixture-1",
+    "blocland": {
+      "name": "la serre",
+      "ask": "Il me faut {objet} pour ma serre. Assemble-les {à}.",
+      "ready": "Tu as les {blocs} ! Livre-les à Moustache.",
+      "done": "Serre posée chez Moustache !"
+    }
+  },
+  {
+    "id": "english-4e-comprehension-request-1",
+    "biome": "english-4e-comprehension",
+    "block": "french-4e-vocabulary",
+    "count": 3,
+    "fixture": "english-4e-comprehension-fixture-1",
+    "blocland": {
+      "name": "le pupitre",
+      "ask": "Il me faut {objet} pour mon pupitre. Joue une mission du Cabinet des mots.",
+      "ready": "Tu as les {blocs} ! Livre-les à Puck.",
+      "done": "Pupitre posé chez Puck !"
+    }
+  },
+  {
+    "id": "english-4e-grammar-request-1",
+    "biome": "english-4e-grammar",
+    "block": "maths-4e-algebra",
+    "count": 3,
+    "fixture": "english-4e-grammar-fixture-1",
+    "blocland": {
+      "name": "l’auvent",
+      "ask": "Il me faut {objet} pour mon auvent. Joue une mission de l’Atelier du calcul littéral.",
+      "ready": "Tu as les {blocs} ! Livre-les à Vapeur.",
+      "done": "Auvent posé chez Vapeur !"
+    }
+  },
+  {
+    "id": "english-3e-comprehension-request-1",
+    "biome": "english-3e-comprehension",
+    "block": "french-3e-close-reading",
+    "count": 2,
+    "fixture": "english-3e-comprehension-fixture-1",
+    "blocland": {
+      "name": "le haut-parleur",
+      "ask": "Il me faut {objet} pour mon haut-parleur. Joue une mission de l’Observatoire des textes.",
+      "ready": "Tu as les {blocs} ! Livre-les à Écho.",
+      "done": "Haut-parleur posé chez Écho !"
+    }
+  },
+  {
+    "id": "english-3e-grammar-request-1",
+    "biome": "english-3e-grammar",
+    "block": "maths-3e-geometry",
+    "count": 2,
+    "fixture": "english-3e-grammar-fixture-1",
+    "blocland": {
+      "name": "la fontaine",
+      "ask": "Il me faut {objet} pour ma fontaine. Joue une mission du Belvédère de Thalès.",
+      "ready": "Tu as les {blocs} ! Livre-les à Knight.",
+      "done": "Fontaine posée chez Knight !"
+    }
+  }
+]

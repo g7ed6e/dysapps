@@ -39,3 +39,17 @@ créature : Théo
 | `maths-3e-geometry-1` | Le kiosque de Théo | 40 | Mon kiosque ! Merci, bâtisseur. Ses angles sont droits, ses colonnes proportionnelles. |
 | `maths-3e-geometry-2` | Le toit du kiosque | 50 | Un toit et une porte ! La lanterne pend au sommet, à la verticale exacte. |
 | `maths-3e-geometry-3` | La terrasse du kiosque | 60 | Une terrasse, une barrière, un escalier… Mon kiosque est complet : hypoténuse comprise. |
+
+## Les demandes
+
+### `maths-3e-geometry-request-1`
+
+- habitant : Théo
+- bloc : `maths-3e-functions`
+- combien : 3
+- petite construction : l’équerre
+- demande : Il me faut {objet} pour mon équerre. Joue une mission du Phare des fonctions.
+- prête : Tu as les {blocs} ! Livre-les à Théo.
+- posée : Équerre posée chez Théo !
+
+> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : la colonne de la cheminée (`maison()`) et un rang bas : une branche debout de 3 prismes, une branche couchée de 2 portes (`door`) au sol ; 5 cubes, 3 cases, 3 de haut (retouche du directeur artistique, 3 octobre 2026 : le marbre se perdait sur le sol de marbre).

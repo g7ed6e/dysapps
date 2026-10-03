@@ -50,6 +50,8 @@ export async function generatePages() {
     const monumentsMod = await load('/src/blocland/world/monuments.ts');
     const recettesMod = await load('/src/blocland/world/recettes.ts');
     const partiesMod = await load('/src/blocland/world/parties.ts');
+    // Les commandes des créatures (GD-7) : qui demande quoi, contre quoi.
+    const commandesMod = await load('/src/blocland/world/commandes.ts');
     // Les textes d'univers (Gardiens, espèces) : ceux de l'univers par défaut, Blocland.
     const universMod = await load('/src/univers/index.ts');
     const universCore = await load('/src/core/univers.ts');
@@ -66,6 +68,9 @@ export async function generatePages() {
       EXERCISES: await exercisesMod.loadAllExercises(),
       PLANS: plansMod.PLANS,
       partiesDe: partiesMod.partiesDe,
+      commandeDeLIle: commandesMod.commandeDeLIle,
+      texteDeLaCommande: commandesMod.texteDeLaCommande,
+      SEUIL_DE_LA_PREMIERE_COMMANDE: commandesMod.SEUIL_DE_LA_PREMIERE_COMMANDE,
       BRIDGES: archMod.BRIDGES,
       KIND_NAME: archMod.KIND_NAME,
       CONDITION_OF: archMod.CONDITION_OF,
@@ -125,6 +130,16 @@ const SUBJECT_NAME = { french: 'Français', maths: 'Maths', english: 'Anglais', 
 const SUBJECT_IDS = Object.keys(SUBJECT_NAME);
 /** « 3 d’anglais », « 1 de LV2 » : le complément de chaque matière dans le décompte des îles. */
 const SUBJECT_DE = { french: 'de français', maths: 'de maths', english: 'd’anglais', lv2: 'de LV2' };
+// Quand arrive la première commande d'un archipel, selon `SEUIL_DE_LA_PREMIERE_COMMANDE` (src/blocland/world/commandes.ts).
+const QUAND_LA_PREMIERE_COMMANDE = {
+  'premier-ouvrage': 'après le premier ouvrage construit dans l’archipel',
+  'premiere-mission': 'après la première mission réussie dans l’archipel',
+};
+function quandLaPremiereCommande(seuil) {
+  const texte = QUAND_LA_PREMIERE_COMMANDE[seuil];
+  if (!texte) throw new Error(`Seuil de la première commande inconnu : ${seuil} (à décrire dans QUAND_LA_PREMIERE_COMMANDE).`);
+  return texte;
+}
 const CONDITION_TEXT = {
   aucune: 'aucune condition',
   plan: 'une mission de l’île de départ réussie (la première partie de son bâtiment posée)',
@@ -546,6 +561,25 @@ function islandPage(b, d) {
       `Étape ${stage.stage} : **${stage.name}**, vers les ${d.ARCHIPELAGOS.find((a) => a.classe === stage.to).name}. Blocs à poser : ${count(stage.cells)}. Kit qui arrive avec ${stage.guardians} Gardien${stage.guardians > 1 ? 's' : ''} vaincu${stage.guardians > 1 ? 's' : ''} : ${count(stage.kit)}. ${stage.reward.xp} XP au départ.`,
       '',
       `Quand le kit arrive : « ${stage.done} »`,
+      '',
+    );
+  }
+  const commande = d.commandeDeLIle(b.id);
+  if (commande) {
+    const lieu = d.ASSEMBLAGE.lieu.blocland.a;
+    lines.push(
+      '## La commande',
+      '',
+      `Dans Blocland, ${b.creature.name} passe une commande : ${d.blockCount(commande.block, commande.count)} pour ${commande.blocland.name}. Elle arrive ${quandLaPremiereCommande(d.SEUIL_DE_LA_PREMIERE_COMMANDE)}, une fois qu’une mission de l’île est réussie et que l’île qui donne ce bloc est ouverte${commande.afterPlan ? `, et seulement quand « ${d.PLANS.find((p) => p.id === commande.afterPlan)?.name ?? commande.afterPlan} » est bâti` : ''}. Livrée, elle pose ${commande.blocland.name} à côté de ${b.creature.name}, avec les blocs livrés : ni coffre ni XP, ni délai, rien à perdre si on la laisse de côté.`,
+      '',
+      table(
+        ['Quand', 'Ce que dit la ligne'],
+        [
+          ['Demandée', `« ${d.texteDeLaCommande(commande, 'ask', lieu)} »`],
+          ['Les blocs sont là', `« ${d.texteDeLaCommande(commande, 'ready', lieu)} »`],
+          ['Livrée', `« ${d.texteDeLaCommande(commande, 'done', lieu)} »`],
+        ],
+      ),
       '',
     );
   }
