@@ -90,6 +90,11 @@ it('une créature qui a des révisions dues : « Reprendre » et « Plus tard »
   ouvrir({ objet: { genre: 'creature', id: FORET }, seq: 1, saut: false, phrase: 'Bonjour !' });
   const f = screen.getByRole('dialog', { name: 'Mousso' });
   expect(within(f).getByRole('link', { name: /Reprendre/ })).toHaveAttribute('href', `/adventure/${FORET}/syllables?revision=1`);
+  // Les boutons de la fiche, sous le texte qui défile : « Reprendre » en principal, « Plus tard » en second.
+  const actions = f.querySelector('.world-fiche-actions') as HTMLElement;
+  expect(within(actions).getByRole('link', { name: /Reprendre/ })).toHaveClass('primary');
+  expect(within(actions).getByRole('button', { name: 'Plus tard' })).not.toHaveClass('primary');
+  expect(f.querySelector('.world-fiche-texte .button')).toBeNull();
   await userEvent.click(within(f).getByRole('button', { name: 'Plus tard' }));
   expect(within(f).queryByRole('link', { name: /Reprendre/ })).not.toBeInTheDocument();
   expect(f).toHaveTextContent('Bonjour !');
@@ -110,7 +115,7 @@ it('le Bloc-Navire : « Poser le bloc suivant » et « Poser tout ce que j’ai 
   const fillNext = vi.fn();
   const pose = chantier({ stage: VEHICLE_STAGES[0], status: { done: 3, total: 45, complete: false, missing: {} } as unknown as VehicleBuilder['status'], canFill: true, fillNext });
   const { unmount } = ouvrir({ objet: { genre: 'navire', port: PLAINE }, seq: 1, saut: false }, { ship: pose });
-  const f = screen.getByRole('dialog', { name: /Le Bloc-Navire : étape 1 sur 3/ });
+  const f = screen.getByRole('dialog', { name: /Le Bloc-Navire\s:\sétape 1 sur 3/ });
   await userEvent.click(within(f).getByRole('button', { name: /Poser le bloc suivant/ }));
   expect(fillNext).toHaveBeenCalled();
   expect(within(f).getByRole('button', { name: /Poser tout ce que j’ai/ })).toBeInTheDocument();
@@ -131,4 +136,31 @@ it('le Gardien vaincu : « Défier » de nouveau, avec ses étoiles', () => {
   expect(f).toHaveTextContent('Déjà vaincu. Une revanche ?');
   expect(within(f).getByRole('img', { name: 'Gardien vaincu' }).querySelectorAll('.star.lit')).toHaveLength(3);
   expect(within(f).getByRole('link', { name: 'Défier' })).toHaveAttribute('href', `/adventure/${FORET}/challenge`);
+});
+
+it('le Bloc-Navire dont le voyage de ce port est fait : le titre sans étape, la prochaine étape, « Y aller »', async () => {
+  sauver({ world: { parts: {}, log: [], links: ['passage-5e'], place: PLAINE } });
+  const onBoard = vi.fn();
+  ouvrir({ objet: { genre: 'navire', port: PLAINE }, seq: 1, saut: false }, { onBoard });
+  const f = screen.getByRole('dialog', { name: 'Le Bloc-Navire' });
+  expect(f).toHaveTextContent('La prochaine étape est au port des Collines du Large.');
+  expect(f).not.toHaveTextContent('étape 1');
+  await userEvent.click(within(f).getByRole('button', { name: /Y aller/ }));
+  expect(onBoard).toHaveBeenCalledWith('5e', true, 'maths-5e-proportionality');
+});
+
+it('une île pâle touchée la première fois : l’indice, puis la découverte, dans la fiche', () => {
+  sauver({});
+  ouvrir({ objet: { genre: 'ile', id: 'french-6e-letter-confusion' }, seq: 1, saut: false, decouverte: 'Les îles pâles sont fermées.' });
+  const f = screen.getByRole('dialog', { name: 'Mine des lettres' });
+  const phrases = [...f.querySelectorAll('.world-fiche-phrase')].map((p) => p.textContent);
+  expect(phrases).toHaveLength(2);
+  expect(phrases[0]).toMatch(/^Tunel\u00a0:/);
+  expect(phrases[1]).toBe('Les îles pâles sont fermées.');
+});
+
+it('la ponctuation des fiches : une espace insécable avant « ! »', () => {
+  sauver({ progress: joue(FORET) });
+  ouvrir({ objet: { genre: 'gardien', id: FORET }, seq: 1, saut: false });
+  expect(screen.getByRole('dialog', { name: 'Le Grand Chêne' }).querySelector('.world-fiche-phrase')!.textContent).toContain('défi\u00a0!');
 });

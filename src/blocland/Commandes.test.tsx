@@ -71,14 +71,14 @@ it('dans le panneau de l’île de la créature : « Livrer » pose la petite co
   expect(document.body.textContent).toContain('Une commande, c’est une créature qui te demande des blocs pour une petite construction. Rien ne presse.');
   // Mousso : prête, sur son île : « Livrer ». Coco : pas prête : la phrase dit quoi faire, et « Y aller » vers la Forêt.
   expect(lignes[0].textContent).toContain('3 blocs de terre');
-  expect(lignes[0].textContent).toContain('Tu as les blocs de terre ! Livre-les à Mousso.');
+  expect(lignes[0].textContent).toContain('Tu as les blocs de terre\u00a0! Livre-les à Mousso.');
   expect(within(lignes[1]).queryByRole('button', { name: /Livrer/ })).toBeNull();
   // Pas prête : le nom de la créature devant la phrase.
   expect(lignes[1].textContent).toContain('Coco : Il me faut');
   await userEvent.click(within(lignes[0]).getByRole('button', { name: /Livrer/ }));
   // La phrase prend la place de la ligne livrée, et le focus.
   const livree = document.querySelector(`[data-commande="${MOUSSO}"]`) as HTMLElement;
-  expect(livree.textContent).toContain('Potager posé chez Mousso !');
+  expect(livree.textContent).toContain('Potager posé chez Mousso\u00a0!');
   expect(within(liste).getAllByRole('listitem').map((l) => l.getAttribute('data-commande'))).toEqual([MOUSSO, COCO]);
   expect(livree.querySelector('.commande-posee')).toHaveFocus();
   expect(within(livree).queryByRole('button', { name: /Livrer/ })).toBeNull();
@@ -171,10 +171,10 @@ it('en 3D, la phrase « posée » attend la fin de la vague de pose', async () =
   );
   await userEvent.click(screen.getByRole('button', { name: /Livrer/ }));
   const livree = document.querySelector(`[data-commande="${MOUSSO}"]`) as HTMLElement;
-  expect(livree.textContent).not.toContain('Potager posé chez Mousso !');
+  expect(livree.textContent).not.toContain('Potager posé chez Mousso\u00a0!');
   expect(livree.querySelector('.commande-posee')).toHaveFocus();
   await userEvent.click(screen.getByRole('button', { name: 'Fin de la vague' }));
-  expect(livree.textContent).toContain('Potager posé chez Mousso !');
+  expect(livree.textContent).toContain('Potager posé chez Mousso\u00a0!');
 });
 
 it('une adresse bizarre (`?worksite=`) ne casse rien : la ligne se cherche par son identifiant, pas par un sélecteur', () => {

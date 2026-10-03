@@ -302,7 +302,7 @@ it('le Bloc-Navire est amarré au port de l’archipel ; le toucher ouvre sa fic
   // Pas de panneau : la fiche, sans quitter le monde.
   expect(screen.getByTestId('adresse')).toHaveTextContent(/^\/adventure$/);
   expect(screen.queryByRole('dialog', { name: /Plaine des nombres/ })).not.toBeInTheDocument();
-  const f = screen.getByRole('dialog', { name: /Le Bloc-Navire : étape 1 sur 3/ });
+  const f = screen.getByRole('dialog', { name: /Le Bloc-Navire\s:\sétape 1 sur 3/ });
   expect(f.textContent).toMatch(/0 \/ 45 blocs posés\. Il manque 18 blocs de sable, à gagner dans Carrière des mots\./);
   expect(within(f).getByRole('link', { name: 'Carrière des mots' })).toHaveAttribute('href', expect.stringMatching(/^\/adventure\//));
   // Rien à poser : pas de bouton grisé.

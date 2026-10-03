@@ -830,6 +830,8 @@ export function WorldPage() {
   useEffect(() => {
     if (!(import.meta.env.DEV || mesuresDemandees())) return;
     const ouvrir = (objet: ObjetDeLaFiche) => {
+      // Une île pâle : comme un toucher, avec la découverte la première fois.
+      if (objet.genre === 'ile') return ouvrirLIlePaleRef.current(objet.id);
       setSheetOpen(false);
       setFiche({ objet, seq: ++ficheSeq.current, saut: true });
     };
@@ -881,8 +883,8 @@ export function WorldPage() {
   /**
    * La fiche d'un objet touché (lot 2 de « Toucher le monde ») : elle remplace la fiche ouverte (une seule à la fois) et
    * replie le panneau de l'île (une chose à la fois en bas). Aucune pendant un voyage ni sur la Carte. `saut` : ouverte
-   * autrement que d'un toucher sur l'objet, son signe saute ; `phrase` : ce que dit une créature ; `dejaLue` : la page
-   * l'a déjà lue à voix haute.
+   * autrement que d'un toucher sur l'objet, son signe saute ; `phrase` : ce que dit une créature ; `decouverte` : la
+   * découverte d'une île pâle, dite la première fois.
    */
   const ouvrirFiche = (objet: ObjetDeLaFiche, options: Omit<FicheOuverte, 'objet' | 'seq' | 'saut'> & { saut?: boolean } = {}) => {
     if (voyage || mapOpen) return;
@@ -890,7 +892,7 @@ export function WorldPage() {
       retenirPanneauReplie(island.id);
       setSheetOpen(false);
     }
-    setFiche({ objet, seq: ++ficheSeq.current, saut: options.saut ?? false, ...(options.phrase ? { phrase: options.phrase } : {}), ...(options.dejaLue ? { dejaLue: true } : {}) });
+    setFiche({ objet, seq: ++ficheSeq.current, saut: options.saut ?? false, ...(options.phrase ? { phrase: options.phrase } : {}), ...(options.decouverte ? { decouverte: options.decouverte } : {}) });
   };
   /** Aller sur une île sans ouvrir son panneau, et y ouvrir la fiche d'un objet (« Y aller », « Voir le premier ouvrage »). */
   const allerALaFiche = (ile: BiomeId, objet: ObjetDeLaFiche) => {
@@ -906,11 +908,13 @@ export function WorldPage() {
     if (mapOpen) allerALaFiche(from, { genre: 'ouvrage', id });
     else ouvrirFiche({ genre: 'ouvrage', id }, { saut: true });
   };
-  /** Une île pâle touchée : sa fiche, et une fois par appareil, la découverte des ouvrages, lue avec l'indice. */
+  /** Une île pâle touchée : sa fiche, et une fois par appareil, la découverte des ouvrages dans la fiche, après l'indice. */
   const ouvrirLIlePale = (id: BiomeId) => {
-    const dite = decouvrir(id, true);
-    ouvrirFiche({ genre: 'ile', id }, { dejaLue: dite && settings.autoRead });
+    const decouverte = decouverteDeLIle(state, id, { port: archipelago.port, navire: Boolean(ship.stage), textes });
+    ouvrirFiche({ genre: 'ile', id }, decouverte ? { decouverte } : {});
   };
+  const ouvrirLIlePaleRef = useRef(ouvrirLIlePale);
+  ouvrirLIlePaleRef.current = ouvrirLIlePale;
   // Toucher une île : on y va (le bonhomme marche si un chemin y mène), jusqu'à la case du sol touchée s'il y en a une.
   // Sur la Carte, une île fermée montre son chemin ; dans le monde, elle ouvre sa fiche. Sur l'île où l'on est, toucher
   // le sol l'y fait marcher (`flaner`), et ferme la fiche ouverte ; l'île choisie au clavier, le panneau replié, ouvre

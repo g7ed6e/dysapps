@@ -5959,6 +5959,13 @@ button.island-quest {
     max-height: 60%;
   }
 }
+/* Un titre long (le Bloc-Navire, un ouvrage) en paysage : jusqu'à 70 %, pour que le titre, une ligne et les boutons
+   tiennent en grand texte (la fiche reste à gauche, la caméra recadre l'objet à droite). */
+@media (orientation: landscape) {
+  .world-fiche-place:has(.titre-long) {
+    max-height: 70%;
+  }
+}
 .world-fiche {
   pointer-events: auto;
   display: flex;
@@ -5970,6 +5977,9 @@ button.island-quest {
   background: var(--surface);
   border: var(--border-width) solid var(--ink);
   border-radius: var(--radius);
+  /* Dernier recours (grand texte, deux boutons, titre long) : la fiche entière défile plutôt que de passer sur la barre. */
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 .world-fiche-tete {
   flex: none;
@@ -5995,9 +6005,26 @@ button.island-quest {
 .world-fiche-titre svg {
   flex: none;
 }
+/* Un titre long dans une fiche étroite pour sa taille de texte (grand texte, tablette en paysage) : il passe sur sa
+   propre ligne, sous Écouter et la croix, plutôt que sur quatre lignes dans une colonne. */
+.world-fiche {
+  container: fiche / inline-size;
+}
+@container fiche (max-width: 17rem) {
+  .titre-long .world-fiche-tete {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .titre-long .world-fiche-titre {
+    order: 1;
+    flex-basis: 100%;
+    font-size: 1rem;
+  }
+}
 .world-fiche-texte {
   flex: 1 1 auto;
-  min-height: 0;
+  /* Toujours au moins une ligne de la phrase visible. */
+  min-height: 1.6em;
   overflow: auto;
   overscroll-behavior: contain;
   overflow-wrap: break-word;
@@ -6022,13 +6049,6 @@ button.island-quest {
   min-height: 48px;
   max-width: 100%;
   white-space: normal;
-}
-/* Dans la fiche d'une créature, la plaque des révisions n'est plus un cadre : la fiche en est un. */
-.creature-rappel.dans-une-fiche {
-  margin: 0;
-  padding: 0;
-  border: none;
-  background: none;
 }
 /* La fiche ouverte : le haut garde un peu moins de place (une chose à la fois en bas). */
 .fiche-ouverte .world-overlay-top {
