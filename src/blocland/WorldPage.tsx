@@ -126,7 +126,8 @@ export function WorldPage() {
   const [fiche, setFiche] = useState<FicheOuverte | null>(null);
   const ficheSeq = useRef(0);
   const mapOpen = biomeId === 'map';
-  // Les quatre archipels : un panneau HTML à la place de celui d'une île, le monde derrière.
+  // Les quatre archipels (`/adventure/world`) : un panneau HTML à la place de celui d'une île, le monde derrière. Plus
+  // aucun lien du monde n'y mène (lot 2 de « Toucher le monde ») ; l'adresse reste.
   const mondeOpen = biomeId === 'world';
   // « Mes blocs » : l'inventaire commenté, un panneau à la place de celui d'une île.
   const blocsOpen = biomeId === 'stock';
@@ -1031,15 +1032,8 @@ export function WorldPage() {
           />
         </Suspense>
         <div className={`world-veil${veil ? ' on' : ''}`} aria-hidden="true" />
-        {/* Sous le bouton Menu : l'archipel où l'on est, et les autres déjà atteints, à un toucher. */}
-        {!voyage && (
-          <ArchipelSwitcher
-            current={a}
-            bridges={state.world.links}
-            onGo={(to) => hop(to, getArchipelago(to).port)}
-            onMore={() => navigate('/adventure/world')}
-          />
-        )}
+        {/* Sous le bouton Menu : une classe par archipel atteint, la sienne marquée ; un toucher change de classe. */}
+        {!voyage && <ArchipelSwitcher current={a} bridges={state.world.links} onGo={(to) => hop(to, getArchipelago(to).port)} />}
         {/* Le menu du village, toujours en haut à droite, comme la pause d'un jeu. */}
         {!voyage && (
           <button
@@ -1103,9 +1097,6 @@ export function WorldPage() {
                   <p className="world-map-actions">
                     <button type="button" className="button primary" onClick={allerALaDestination}>
                       <Icon name="play" /> Y aller
-                    </button>
-                    <button type="button" className="button" onClick={() => navigate('/adventure/world')}>
-                      <Icon name="ship" /> Les quatre archipels
                     </button>
                   </p>
                   {/* Les îles et leur état, en mots : ce que la Carte dessine sur chaque île, lisible sans la voir. */}

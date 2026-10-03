@@ -392,23 +392,28 @@ it('quand l’appareil demande moins d’animations, un archipel déjà atteint 
   expect(sheet()).toBeInTheDocument();
 });
 
-it('le sélecteur d’archipel : l’archipel où l’on est, et les autres déjà atteints à un toucher', async () => {
+it('la rangée de classes : une par archipel atteint, la sienne marquée ; un toucher change de classe, sans fenêtre', async () => {
   const user = userEvent.setup();
   renderAt('/adventure');
-  // Un seul archipel atteint : pas de sélecteur.
-  expect(screen.queryByRole('button', { name: /changer d’archipel/ })).not.toBeInTheDocument();
+  // Une seule classe atteinte : pas de rangée.
+  expect(screen.queryByRole('list', { name: 'Changer de classe' })).not.toBeInTheDocument();
   cleanup();
   localStorage.setItem('dysapps:game', JSON.stringify({ world: { links: ['passage-5e'], place: 'french-6e-phonology' } }));
   renderAt('/adventure');
-  const button = screen.getByRole('button', { name: /Archipel de 6e, les Basses Terres : changer d’archipel/ });
-  await user.click(button);
-  const list = screen.getByRole('group', { name: 'Changer d’archipel' });
-  expect(within(list).getByRole('button', { name: /6e Les Basses Terres Tu es ici/ })).toBeDisabled();
-  expect(within(list).getByRole('button', { name: /4e Les Monts de Feu Fermé/ })).toBeDisabled();
-  await user.click(within(list).getByRole('button', { name: /5e Les Collines du Large/ }));
+  const rangee = screen.getByRole('list', { name: 'Changer de classe' });
+  // 6e et 5e, pas les classes fermées ; la classe où l'on est n'est pas un bouton, marquée par sa forme (coche) et en mots.
+  expect(within(rangee).getAllByRole('listitem').map((li) => li.textContent?.replace(/,.*/, '').trim())).toEqual(['6e', '5e']);
+  const ici = rangee.querySelector('[aria-current="true"]')!;
+  expect(ici).toHaveTextContent('6e, les Basses Terres : tu es ici');
+  expect(ici.querySelector('svg')).not.toBeNull();
+  expect(within(rangee).getAllByRole('button')).toHaveLength(1);
+  expect(screen.queryByRole('button', { name: /Les quatre archipels/ })).not.toBeInTheDocument();
+  // Un toucher : le fondu court, sans voyage ni liste.
+  await user.click(within(rangee).getByRole('button', { name: 'Aller en 5e, les Collines du Large' }));
   expect(screen.getByTestId('voyage')).toHaveTextContent('aucun');
   await waitFor(() => expect(screen.getByTestId('archipel')).toHaveTextContent('5e'), { timeout: 2000 });
   await waitFor(() => expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/maths-5e-proportionality'));
+  expect(screen.getByRole('list', { name: 'Changer de classe' }).querySelector('[aria-current="true"]')).toHaveTextContent(/^5e/);
 });
 
 it('la page des quatre archipels : où l’on est, ce qui est ouvert, ce qu’il faut pour aller plus loin', async () => {
@@ -725,6 +730,8 @@ it('« Y aller » vers un ouvrage ouvre la fiche de l’ouvrage sur son île, le
   localStorage.setItem('dysapps:game', JSON.stringify({ progress, stock: { 'french-6e-phonology': 3 }, world }));
   const user = userEvent.setup();
   renderAt('/adventure/map');
+  // Le panneau de la Carte n'a plus « Les quatre archipels ».
+  expect(screen.queryByRole('button', { name: /Les quatre archipels/ })).not.toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: /Y aller/ }));
   expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/french-6e-phonology');
   expect(sheet()).not.toBeInTheDocument();

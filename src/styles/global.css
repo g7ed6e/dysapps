@@ -245,7 +245,6 @@ svg {
    de l'interface, douce ; aucune en Clair. */
 .world-overlay-top .panel,
 .world-overlay-bottom .panel,
-.world-archipel-list,
 .world-fiche,
 .island-sheet {
   box-shadow: var(--shadow-float);
@@ -5811,6 +5810,7 @@ button.app-card {
   :root[data-texte="grand"] .world-page .world-archipel {
     top: 0.6rem;
     right: calc(0.6rem + 52px + 0.5rem);
+    flex-direction: row;
   }
   :root[data-texte="grand"] .world-page .world-overlay-top {
     top: calc(0.6rem + 52px + 0.5rem);
@@ -5896,7 +5896,8 @@ button.island-quest {
   white-space: nowrap;
 }
 
-/* Le sélecteur d'archipel : sous le bouton Menu, et sa petite liste. */
+/* La rangée de classes (lot 2 de « Toucher le monde ») : sous le bouton Menu, une classe par archipel atteint. La
+   classe où l'on est se reconnaît à sa forme (bord épais, coche), pas seulement à sa couleur ; elle ne se touche pas. */
 .world-archipel {
   position: absolute;
   top: calc(0.6rem + 52px + 0.5rem);
@@ -5906,64 +5907,31 @@ button.island-quest {
   flex-direction: column;
   align-items: flex-end;
   gap: 0.4rem;
-}
-.world-archipel-button {
-  min-width: 52px;
-  min-height: 48px;
-  padding: 0.2rem 0.5rem;
-  justify-content: center;
-  gap: 0.25rem;
-}
-.world-archipel-button[aria-expanded="true"] {
-  background: var(--sand);
-  border-color: var(--on-sand);
-  color: var(--on-sand);
-}
-.world-archipel-list {
-  width: min(19rem, calc(100vw - 2rem));
-  padding: 0.5rem;
-}
-.world-archipel-list ul {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: grid;
-  gap: 0.3rem;
 }
-.world-archipel-item,
-.world-archipel-more {
-  display: flex;
+.world-archipel-classe {
+  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  width: 100%;
+  justify-content: center;
+  gap: 0.25rem;
+  min-width: 52px;
   min-height: 48px;
-  padding: 0.3rem 0.6rem;
+  padding: 0.2rem 0.5rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.world-archipel-classe.ici {
   font: inherit;
-  text-align: left;
-  color: var(--text);
-  background: var(--surface);
-  border: var(--border-width) solid var(--ink);
-  border-radius: var(--radius-control);
-  cursor: pointer;
-}
-.world-archipel-item:disabled {
-  cursor: default;
-  opacity: 0.65;
-}
-.world-archipel-item.here {
-  opacity: 1;
+  font-weight: 700;
   background: var(--sand);
-  border-color: var(--on-sand);
   color: var(--on-sand);
+  border: calc(var(--border-width) * 2) solid var(--on-sand);
+  border-radius: var(--radius-control);
+  box-shadow: var(--shadow-float);
 }
-.world-archipel-state {
-  margin-left: auto;
-  font-size: 0.85rem;
-}
-.world-archipel-more {
-  margin-top: 0.4rem;
-  border-style: dashed;
-}
+
 /* La fiche d'un objet du monde (lot 2 de « Toucher le monde ») : toujours à la même place, en bas, toute la largeur,
    juste au-dessus de la barre ; en paysage, une carte en bas à gauche. Au plus 45 % de la scène (60 % sur téléphone en
    paysage) : au-delà, le texte défile dans la fiche, le titre et les boutons restent entiers, jamais de points de
