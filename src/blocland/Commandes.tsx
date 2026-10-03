@@ -8,7 +8,8 @@
 // - prête, ailleurs : « Y aller », qui ouvre l'île de la créature sur sa ligne (comme `?worksite=` pour un ouvrage) ;
 // - pas prête : la phrase, précédée du nom de la créature, dit ce qu'il faut faire (et « Tu en as 1 sur 3. »), et
 //   « Y aller » mène à l'île qui donne le bloc (ou au lieu où l'on assemble) ; déjà sur cette île, il mène aux missions
-//   et le dit (« Tu y es : joue une mission ici. ») ; jamais de « Livrer » grisé.
+//   et le dit (« Tu y es : joue une mission ici. »), sur la ligne (et dans sa lecture) et sous le titre « Missions »,
+//   où le panneau défile ; jamais de « Livrer » grisé.
 // Le compte est à côté du titre (« Commandes · 1 prête »). Au menu, la section est un pli, ouvert de lui-même quand une
 // commande est prête (directeur artistique, 3 octobre 2026). Après « Livrer », la phrase « … posée chez … ! » prend la
 // place de la ligne livrée, à la fin de la vague de pose (tout de suite sans vague), et reçoit le focus ; la ligne
@@ -60,6 +61,28 @@ interface Props {
    * elle, un simple lien.
    */
   onAller?: (island: BiomeId, commande?: string) => void;
+  /**
+   * « Y aller » touché sur l'île qui donne déjà le bloc : le panneau (ou la page) pose « Tu y es » sous le titre
+   * « Missions » (`<TuYEs />`), là où il défile.
+   */
+  onAuxMissions?: () => void;
+}
+
+/** « Tu y es : joue une mission ici. », sous le titre « Missions » quand « Y aller » d'une commande y amène. */
+export function TuYEs({ dit }: { dit: boolean }) {
+  const texte = useTextes().commandes?.tuYEs;
+  return (
+    <p className={`commande-ici-missions${dit && texte ? '' : ' vide'}`} role="status" aria-live="polite">
+      {dit && texte && (
+        <>
+          <SpeakButton text={texte} compact />
+          <span>
+            <Syllabified text={texte} />
+          </span>
+        </>
+      )}
+    </p>
+  );
 }
 
 /** Où mène « Y aller » pour une commande pas encore prête : l'île qui donne le bloc, ou le lieu où l'on assemble (`null`). */
@@ -68,7 +91,7 @@ function ileDuBloc(c: Commande, links: string[]): BiomeId | null {
   return ilesQuiDonnent(c.block).find((id) => isBiomeUnlocked(id, links)) ?? ilesQuiDonnent(c.block)[0];
 }
 
-export function Commandes({ island, fold, highlight = null, niveau = 'h3', className, onLivree, poseEnCours = null, onAller }: Props) {
+export function Commandes({ island, fold, highlight = null, niveau = 'h3', className, onLivree, poseEnCours = null, onAller, onAuxMissions }: Props) {
   const { state, deliver } = useBlocland();
   const { settings, speak } = useSettings();
   const textes = useTextes();
@@ -128,6 +151,8 @@ export function Commandes({ island, fold, highlight = null, niveau = 'h3', class
   // Déjà sur l'île qui donne le bloc : « Y aller » mène aux missions de l'île, et la ligne le dit.
   const allerAuxMissions = (c: Commande) => {
     setIci(c.id);
+    onAuxMissions?.();
+    if (settings.autoRead) speak(frenchTypography(mots.tuYEs));
     const missions = island ? document.getElementById(`missions-${island}`) : null;
     missions?.scrollIntoView?.({ block: 'start', behavior: moinsDAnimations() ? 'auto' : 'smooth' });
     missions?.focus({ preventScroll: true });
@@ -171,12 +196,18 @@ export function Commandes({ island, fold, highlight = null, niveau = 'h3', class
               </span>
             );
             if (c === livree && said) {
-              // La commande livrée : sa phrase, à la fin de la pose, à la place de la ligne.
+              // La commande livrée : sa phrase, à la fin de la pose, à la place de la ligne ; une coche devant le bloc
+              // (une forme en plus du vert).
               return (
                 <li key={c.id} data-commande={c.id} className="island-quest bridge-item commande-item commande-livree">
                   {habitant}
                   <span className="island-quest-text">
-                    {titre}
+                    <span className="island-quest-title">
+                      <span className="commande-coche">
+                        <Icon name="check" />
+                      </span>
+                      <BlockIcon top={bloc.top} side={bloc.side} size={24} /> {blockCount(c.block, c.count)}
+                    </span>
                     <span ref={dite} tabIndex={-1} className="island-quest-desc commande-posee" role="status" aria-live="polite">
                       {posee ? <Syllabified text={said.text} /> : null}
                     </span>
@@ -191,6 +222,7 @@ export function Commandes({ island, fold, highlight = null, niveau = 'h3', class
             // Pas prête : le nom de la créature devant (la phrase « prête » le dit déjà), et ce que l'élève a déjà.
             const nom = prete ? null : creature.creature.name;
             const dit = !prete && have > 0 ? `${phrase} ${mots.tuEnAs(have, c.count)}` : phrase;
+            const lu = nom ? `${nom} : ${dit}` : dit;
             const ileDonne = prete ? c.biome : ileDuBloc(c, state.world.links);
             const surPlace = !prete && island !== undefined && ileDonne === island;
             const to = prete ? lienDeLaDestination({ island: c.biome, commande: c.id }) : ileDonne ? `/adventure/${ileDonne}` : ASSEMBLAGE_PATH;
@@ -212,14 +244,14 @@ export function Commandes({ island, fold, highlight = null, niveau = 'h3', class
                     {nom && <strong>{nom} : </strong>}
                     <Syllabified text={dit} />
                     {ici === c.id && surPlace && (
-                      <span className="commande-ici" role="status">
+                      <span className="commande-ici">
                         {' '}
                         <Syllabified text={mots.tuYEs} />
                       </span>
                     )}
                   </span>
                 </span>
-                <SpeakButton text={nom ? `${nom} : ${dit}` : dit} compact />
+                <SpeakButton text={ici === c.id && surPlace ? `${lu} ${mots.tuYEs}` : lu} compact />
                 {prete && island === c.biome ? (
                   <button type="button" className="button primary" onClick={() => livrer(c)}>
                     <Icon name="hammer" /> {mots.livrer}

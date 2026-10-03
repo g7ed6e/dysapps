@@ -4247,6 +4247,48 @@ button.island-quest:active {
   align-items: center;
   gap: 0.4rem;
 }
+/* En grand texte, trois rangées, comme une mission : l'habitant et le haut-parleur, puis le titre et la phrase sur toute
+   la largeur, puis le bouton. Un mot ne se coupe jamais au milieu (un mot plus long que toute la ligne seulement, en
+   dernier recours, comme une consigne). */
+:root[data-texte="grand"] .commandes-list .commande-item {
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas:
+    'habitant lire'
+    'texte texte'
+    'action action';
+}
+:root[data-texte="grand"] .commandes-list .commande-item > .speak-button {
+  justify-self: start;
+}
+:root[data-texte="grand"] .commandes-list .commande-item :is(.island-quest-title, .island-quest-desc, .button) {
+  overflow-wrap: break-word;
+  word-break: normal;
+  hyphens: manual;
+}
+/* La commande livrée : le vert des réussites, avec une forme en plus de la couleur (la coche devant le bloc, un bord
+   deux fois plus épais) ; sa phrase à la taille du texte, pas en gris. */
+.commandes-list .commande-livree {
+  border-color: var(--success);
+  border-width: calc(var(--border-width) * 2);
+  background: var(--success-bg);
+}
+.commande-livree .commande-coche {
+  color: var(--success);
+}
+.commande-livree .commande-posee {
+  font-size: 1rem;
+  color: var(--text);
+}
+/* « Tu y es : joue une mission ici. », sous le titre « Missions » ; vide, la zone reste là pour le lecteur d'écran. */
+.commande-ici-missions {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin: 0 0 0.6rem;
+}
+.commande-ici-missions.vide {
+  margin: 0;
+}
 /* Le compte, à côté du titre (« Commandes · 1 prête »). */
 .commandes-compte {
   font-weight: normal;

@@ -96,6 +96,38 @@ it('déjà sur l’île qui donne le bloc, « Y aller » mène aux missions de l
   expect(screen.getByRole('heading', { name: /Missions/ })).toHaveFocus();
 });
 
+it('« Tu y es » se réécoute sur la ligne, se lit en lecture automatique et s’écrit sous le titre « Missions »', async () => {
+  const dit: string[] = [];
+  vi.stubGlobal(
+    'SpeechSynthesisUtterance',
+    class {
+      constructor(public text: string) {}
+    },
+  );
+  vi.stubGlobal('speechSynthesis', { cancel: () => {}, getVoices: () => [], speak: (u: { text: string }) => dit.push(u.text) });
+  try {
+    sauver(pret);
+    localStorage.setItem('dysapps:settings', JSON.stringify({ univers: 'blocland', autoRead: true, sounds: false }));
+    ouvrir(FORET);
+    const sousMissions = document.querySelector('.commande-ici-missions') as HTMLElement;
+    expect(sousMissions.textContent).toBe('');
+    const coco = document.querySelector(`[data-commande="${COCO}"]`) as HTMLElement;
+    await userEvent.click(within(coco).getByRole('button', { name: /Y aller/ }));
+    // Le bouton de lecture de la ligne le relit.
+    expect(within(coco).getByRole('button', { name: /Écouter : Coco : Il me faut.*Tu y es : joue une mission ici\./ })).toBeInTheDocument();
+    // Lu tout de suite, la lecture automatique étant réglée.
+    expect(dit.some((t) => t.includes('Tu y es'))).toBe(true);
+    // Sous le titre « Missions », là où le panneau défile, avec son bouton de lecture.
+    const titre = screen.getByRole('heading', { name: /Missions/ });
+    expect(titre.nextElementSibling).toBe(sousMissions);
+    expect(sousMissions).toHaveAttribute('role', 'status');
+    expect(sousMissions.textContent).toContain('Tu y es : joue une mission ici.');
+    expect(within(sousMissions).getByRole('button', { name: /Écouter : Tu y es/ })).toBeInTheDocument();
+  } finally {
+    vi.unstubAllGlobals();
+  }
+});
+
 it('pas prête, avec une partie des blocs : « Tu en as 1 sur 3. » dans la phrase écrite et lue', () => {
   sauver({ ...pret, stock: { [BLOC.terre]: 1 } });
   ouvrir(PLAINE);

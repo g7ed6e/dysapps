@@ -8,7 +8,7 @@ import { SchoolLink } from './School';
 import { AssemblageLink } from './Assemblage';
 import { TROPHIES_TITLE } from './trophies';
 import { Bridges } from './Bridges';
-import { Commandes } from './Commandes';
+import { Commandes, TuYEs } from './Commandes';
 import { lockedHint, nextGoalInfo } from './world/goals';
 import { GoalLine } from './GoalLine';
 import { VillageStageLine } from './VillageStageLine';
@@ -53,6 +53,8 @@ export function BiomePage() {
   const titreRef = useRef<HTMLHeadingElement>(null);
   const [remis, setRemis] = useState(false);
   useEffect(() => setRemis(false), [biome?.id]);
+  // « Y aller » d'une commande dont le bloc se gagne ici : « Tu y es » sous le titre « Missions » (l'île où on l'a dit).
+  const [ici, setIci] = useState<string | null>(null);
   if (!biome) return <NotFoundPage />;
   const block = BLOCKS[biome.block];
   const owned = state.stock[biome.block] ?? 0;
@@ -103,7 +105,7 @@ export function BiomePage() {
 
       {goal && <GoalLine goal={goal} className="panel" />}
       {/* Les commandes des créatures de l'archipel (GD-7) : « Livrer » se touche ici pour celle de cette île. */}
-      {unlocked && !sansLv2 && <Commandes island={biome.id} highlight={chantier} niveau="h2" className="panel" />}
+      {unlocked && !sansLv2 && <Commandes island={biome.id} highlight={chantier} niveau="h2" className="panel" onAuxMissions={() => setIci(biome.id)} />}
       {port && unlocked && <VillageStageLine village={state.world} archipelago={biome.classe} className="panel" />}
 
       {/* Un ouvrage construit ouvre l'île d'en face : on y va, sa créature accueille (comme en 3D). */}
@@ -128,6 +130,7 @@ export function BiomePage() {
       <h2 id={`missions-${biome.id}`} tabIndex={-1} className="section-title">
         <Icon name="hammer" /> Missions
       </h2>
+      <TuYEs dit={ici === biome.id} />
       <ul className="grid apps">
         {missionsJouables(biome, settings.lv2).map((exercise) => {
           const def = pickExercise(biome.id, exercise.id, levelFor(state, exercise.id), state.progress);

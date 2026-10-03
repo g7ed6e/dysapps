@@ -540,4 +540,4 @@ Pour tous les items :
 - prête : Tu as les {blocs} ! Livre-les à Kroa.
 - posée : Abri posé chez Kroa !
 
-> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : l’auvent rayé d’`echoppe()` : 2 poteaux de tourbe de 2 cubes au fond, un auvent de 3 × 2 à z 2 (toiles à gauche et à droite, tourbe au milieu), qui déborde devant ; 10 cubes, 6 cases, 3 de haut.
+> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : le toit rayé d’`echoppe()` : 2 poteaux de tourbe de 2 cubes au fond, un auvent de 3 × 2 à z 2 (toiles à gauche et à droite, tourbe au milieu), qui déborde devant ; 10 cubes, 6 cases, 3 de haut.
