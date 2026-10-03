@@ -183,9 +183,10 @@ const FORMES: Record<string, Cube[]> = {
   'french-3e-close-reading-fixture-1': [[0, 0, 0, 'fence'], [2, 0, 0, 'fence'], ...rangee(0, 2, 0, 1, BLOC.taille)],
   // Écho, le haut-parleur : un caisson de deux portes (l'antenne se perdait sur le sol d'antennes), deux lentilles dessus.
   'english-3e-comprehension-fixture-1': [...rangee(0, 1, 0, 0, 'door'), ...rangee(0, 1, 0, 1, BLOC.lentille)],
-  // Knight, la fontaine : un bassin en U de cinq marches d'escalier (la pierre de taille se perdait sur le sol de pierre
-  // de taille), une colonne de deux marbres au milieu.
-  'english-3e-grammar-fixture-1': [[0, 0, 0, 'stairs'], [2, 0, 0, 'stairs'], ...rangee(0, 2, 1, 0, 'stairs'), ...colonne(1, 0, 0, 1, BLOC.marbre)],
+  // Knight, la fontaine : un bassin en U de cinq barrières (la pierre de taille se perdait sur le sol de pierre de taille,
+  // puis l'escalier beige sur ce sol beige : le bois brun de la barrière, déjà dessiné en 3e, arbitrage du directeur
+  // artistique), une colonne de deux marbres au milieu.
+  'english-3e-grammar-fixture-1': [[0, 0, 0, 'fence'], [2, 0, 0, 'fence'], ...rangee(0, 2, 1, 0, 'fence'), ...colonne(1, 0, 0, 1, BLOC.marbre)],
 };
 
 /**

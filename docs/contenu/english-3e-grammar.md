@@ -358,4 +358,4 @@ Pour tous les items :
 - prête : Tu as les {blocs} ! Livre-les à Knight.
 - posée : Fontaine posée chez Knight !
 
-> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : la fontaine du relais (`relais()`) : un bassin en U de 5 marches d’escalier au sol (la pierre de taille se perdait sur le sol de pierre de taille), une colonne de 2 marbres au milieu ; 7 cubes, 6 cases, 2 de haut (retouche du directeur artistique, 3 octobre 2026 : le bloc du sol, sans exception).
+> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : la fontaine du relais (`relais()`) : un bassin en U de 5 barrières au sol (la pierre de taille se perdait sur le sol de pierre de taille, puis l’escalier beige sur ce sol beige : le bois brun de la barrière, déjà dessiné en 3e), une colonne de 2 marbres au milieu ; 7 cubes, 6 cases, 2 de haut (retouches du directeur artistique, 3 octobre 2026 : le bloc du sol, sans exception, puis la barrière).
