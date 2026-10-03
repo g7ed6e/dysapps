@@ -1157,37 +1157,148 @@ function solLibre(id: BiomeId): (x: number, y: number) => boolean {
 // Par île, par LV2 et par petite construction : sa place, calculée une fois.
 const placesDesPetitesConstructions = new Map<string, { x: number; y: number } | null>();
 
+/** Jusqu'où, en cases, la petite construction cherche sa place autour de la créature. */
+const PORTEE_DE_LA_PETITE_CONSTRUCTION = 8;
+
+/**
+ * Le rayon qui part du point (x, y, z) (repère de l'île, z en hauteur) vers la caméra de l'île (`camera`, même repère)
+ * touche-t-il une case de `pleines` (clés « x,y,z ») avant de passer au-dessus de `plafond` ?
+ */
+function rayonArrete(pleines: ReadonlySet<string>, camera: { x: number; y: number; z: number }, x: number, y: number, z: number, plafond: number): boolean {
+  const dx = camera.x - x;
+  const dy = camera.y - y;
+  const dz = camera.z - z;
+  const l = Math.hypot(dx, dy, dz) || 1;
+  for (let t = 0.2; t < l && z + (dz / l) * t <= plafond; t += 0.2) {
+    if (pleines.has(`${Math.floor(x + (dx / l) * t)},${Math.floor(y + (dy / l) * t)},${Math.floor(z + (dz / l) * t)}`)) return true;
+  }
+  return false;
+}
+
 /**
  * Où se pose la petite construction d'une commande livrée (GD-7, PR 3) : le coin (x, y) de sa forme, relatif au cœur de
- * l'île, à côté de la créature. Sur le sol libre de l'île (`solLibre` : jamais devant une porte, jamais sur une borne,
- * un lieu, la zone des plans ou un ouvrage), jamais sur la créature ni sur ses pas (avec une case d'écart, pour qu'elle
- * s'y promène sans la toucher) ; la place la plus proche d'elle. `null` si rien ne la tient. Une place simple, que
- * l'artiste technique 3D reprendra.
+ * l'île, à côté de la créature, lisible de la caméra de l'île. Une place convient quand :
+ * - chaque case de la forme est sur le sol libre de l'île (`solLibre` : ni décor, ni borne et son pourtour, ni lieu ou
+ *   la case devant sa porte, ni zone des plans, ni ouvrage et ses abords, ni colline, ni eau), jamais devant la rangée
+ *   des bornes (le passage du bonhomme ; en dernier recours seulement, sur la Plaine des nombres, où le quai prend la
+ *   place), hors de la rangée nue devant les bornes d'une île-école et du chemin du bonhomme vers le navire sur l'île-port, à une case au moins de la
+ *   créature et de ses pas (elle s'y promène sans la toucher) ;
+ * - aucun de ses cubes ne cache, dans la vue de l'île, une borne (`cacheUneBorne`), un lieu du village (`cacheUnLieu`)
+ *   ou la créature (le rayon de chaque cube de la créature vers la caméra ne la traverse pas) ;
+ * - le dessus de chaque colonne de la forme se voit de la caméra : aucun cube de l'île tout construite (ses plans
+ *   bâtis), ni la créature à sa place ou à l'un de ses pas, ne s'y met devant ; de préférence, le milieu de chacun de
+ *   ses cubes se voit aussi (la forme entière) ;
+ * - de préférence, une case nue autour d'elle (ni mur, ni tronc, ni borne au-dessus du sol), pour que sa silhouette se
+ *   détache ; sans place qui l'ait, cette condition seule tombe.
+ * Parmi elles, la plus proche de la créature, en préférant le côté au devant : une forme posée entre la caméra et la
+ * créature compte deux cases de plus par case d'avance. `null` si rien ne la tient (le test l'interdit).
  */
 export function placeDeLaPetiteConstruction(id: BiomeId, fixture: string): { x: number; y: number } | null {
   const cle = `${id}:${lv2Courante()}:${fixture}`;
   if (placesDesPetitesConstructions.has(cle)) return placesDesPetitesConstructions.get(cle)!;
   const cases = casesDeLaPetiteConstruction(fixture) ?? [];
   const pied = [...new Map(cases.map((c) => [`${c.x},${c.y}`, { x: c.x, y: c.y }])).values()];
+  const dessus = pied.map((p) => ({ ...p, z: Math.max(...cases.filter((c) => c.x === p.x && c.y === p.y).map((c) => c.z)) + 1 }));
   const spot = creatureSpot(id);
   const free = solLibre(id);
   const creature = creatureDuMonde(id);
+  const vers = versLaCamera(id);
+  const index = BIOMES.findIndex((b) => b.id === id);
+  const def = islandDef(id);
+  const bornes = questStations(id).map((st) => ({ x: st.x, y: st.y, base: groundHeight(index, st.x, st.y) }));
+  const lieux = lieuxVus(id);
+  // Hors de la rangée nue devant les bornes (île-école) et du chemin du bonhomme vers le navire (île-port).
+  const interdites = new Set<string>();
+  for (const k of rangeeDevantLesBornes(id)) {
+    const [x, y] = k.split(',').map(Number);
+    interdites.add(`${x - def.core.x},${y - def.core.y}`);
+  }
+  for (const a of ARCHIPELAGOS)
+    if (a.port === id) {
+      const route = boardingRoute(id);
+      for (let i = 1; i < route.length; i++) {
+        const [p, q] = [route[i - 1], route[i]];
+        const n = Math.max(Math.abs(q.x - p.x), Math.abs(q.y - p.y), 1);
+        for (let t = 0; t <= n; t++)
+          for (let dx = -1; dx <= 1; dx++)
+            for (let dy = -1; dy <= 1; dy++)
+              interdites.add(`${Math.round(p.x + ((q.x - p.x) * t) / n) - def.core.x + dx},${Math.round(p.y + ((q.y - p.y) * t) / n) - def.core.y + dy}`);
+      }
+    }
+  // Jamais devant la rangée des bornes : c'est par là que le bonhomme arrive et passe d'une borne à l'autre.
+  const devant = Math.min(...questStations(id).map((st) => st.y), Infinity);
   const aCote = new Set<string>();
-  const elle: { x: number; y: number }[] = creature.map((c) => ({ x: spot.x + c.x, y: spot.y + c.y }));
   for (const [sx, sy] of [[0, 0], ...spot.steps])
     for (const c of creature) for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) aCote.add(`${spot.x + sx + c.x + dx},${spot.y + sy + c.y + dy}`);
-  let best: { x: number; y: number } | null = null;
-  let bestScore = Infinity;
-  const R = 10;
-  for (let ox = spot.x - R; ox <= spot.x + R; ox++)
-    for (let oy = spot.y - R; oy <= spot.y + R; oy++) {
-      if (!pied.length || !pied.every((p) => free(ox + p.x, oy + p.y) && !aCote.has(`${ox + p.x},${oy + p.y}`))) continue;
-      const score = Math.min(...pied.flatMap((p) => elle.map((e) => Math.abs(ox + p.x - e.x) + Math.abs(oy + p.y - e.y))));
-      if (score < bestScore) {
+  // L'île tout construite, sans créature (elle est animée à part) et sans petite construction posée : ce qui peut se
+  // mettre devant la forme.
+  const plans = Object.fromEntries(plansFor(id).map((p) => [p.id, planCells(p).map((c) => c.key)]));
+  const ile = cubesDeLIle(id, {}, { parts: plans, log: [], links: BRIDGES.map((b) => b.id) }, false);
+  const pleines = new Set(ile.map((c) => `${c.x},${c.y},${c.z}`));
+  // … les lieux du village d'une île-école dans toute leur emprise et leur hauteur (la salle des trophées grandit avec
+  // les succès : sa place réservée compte pleine) …
+  for (const l of lieuxVus(id)) for (let z = 1; z <= 12; z++) pleines.add(`${l.x},${l.y},${l.base + z}`);
+  // … et la créature, à sa place et à chacun de ses pas : elle ne se tient jamais devant la forme.
+  for (const [sx, sy] of [[0, 0], ...spot.steps]) for (const c of creature) pleines.add(`${spot.x + sx + c.x},${spot.y + sy + c.y},${c.z + 1}`);
+  const plafond = Math.max(...ile.map((c) => c.z), ...creature.map((c) => c.z + 1)) + 1;
+  // La caméra de la vue de l'île, dans le repère de l'île : les rayons vont vers elle (en perspective).
+  const o = origineDe(id);
+  const vue = cameraDeLIle(id);
+  const camera = { x: vue.x - o.x, y: vue.y - o.y, z: vue.z - o.z };
+  // Sur l'île-port, les objets du quai (la barque, les caisses, les fanions, le foyer) et une case autour : leur place
+  // ne dépend pas de la petite construction (`quaySpots` ne la voit pas), elle les évite.
+  if (ARCHIPELAGOS.some((a) => a.port === id)) {
+    const quai = quaySpots(id, ile.map((c) => ({ ...c, x: c.x + o.x, y: c.y + o.y, z: c.z + o.z })));
+    for (const objet of [quai.boat, quai.crates, quai.hearth, ...quai.flags])
+      if (objet)
+        for (const [cx, cy] of objet.cells)
+          for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) interdites.add(`${objet.x + cx + dx - def.core.x},${objet.y + cy + dy - def.core.y}`);
+  }
+  const elle = creature.map((c) => ({ x: spot.x + c.x + 0.5, y: spot.y + c.y + 0.5, z: c.z + 1.5 }));
+  // Vers la caméra, à plat : une forme dont le centre est de ce côté de la créature se tient devant elle.
+  const plat = Math.hypot(vers[0], vers[1]) || 1;
+  const [ux, uy] = [vers[0] / plat, vers[1] / plat];
+  const cx = elle.reduce((n, e) => n + e.x, 0) / elle.length;
+  const cy = elle.reduce((n, e) => n + e.y, 0) / elle.length;
+  const px = pied.reduce((n, p) => n + p.x + 0.5, 0) / Math.max(1, pied.length);
+  const py = pied.reduce((n, p) => n + p.y + 0.5, 0) / Math.max(1, pied.length);
+  const largeur = Math.max(...pied.map((p) => p.x)) + 1;
+  const profondeur = Math.max(...pied.map((p) => p.y)) + 1;
+
+  // Une case libre autour de la forme : rien de posé au-dessus du sol (un mur, un tronc, une borne), pour que sa
+  // silhouette se détache ; essayé d'abord, puis sans, si aucune place ne l'a.
+  const autour = new Set<string>();
+  for (const p of pied) for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) autour.add(`${p.x + dx},${p.y + dy}`);
+  const degagee = (ox: number, oy: number) =>
+    [...autour].every((k) => {
+      const [x, y] = k.split(',').map(Number);
+      for (let z = 1; z <= 4; z++) if (pleines.has(`${ox + x},${oy + y},${z}`)) return false;
+      return true;
+    });
+  const R = PORTEE_DE_LA_PETITE_CONSTRUCTION;
+  const chercher = (degagement: boolean, entiere: boolean, derriere = true): { x: number; y: number } | null => {
+    let best: { x: number; y: number } | null = null;
+    let bestScore = Infinity;
+    for (let ox = spot.x - R - largeur; ox <= spot.x + R; ox++)
+      for (let oy = spot.y - R - profondeur; oy <= spot.y + R; oy++) {
+        if (!pied.length) continue;
+        const distance = Math.min(...pied.flatMap((p) => elle.map((e) => Math.abs(ox + p.x + 0.5 - e.x) + Math.abs(oy + p.y + 0.5 - e.y))));
+        const avance = (ox + px - cx) * ux + (oy + py - cy) * uy;
+        const score = distance + 2 * Math.max(0, avance - 1);
+        if (score >= bestScore || distance > R) continue;
+        if (!pied.every((p) => (!derriere || oy + p.y >= devant) && free(ox + p.x, oy + p.y) && !aCote.has(`${ox + p.x},${oy + p.y}`) && !interdites.has(`${ox + p.x},${oy + p.y}`))) continue;
+        if (degagement && !degagee(ox, oy)) continue;
+        if (cases.some((c) => cacheUneBorne(bornes, vers, ox + c.x, oy + c.y, c.z + 1) || cacheUnLieu(lieux, vers, ox + c.x, oy + c.y, c.z + 1))) continue;
+        const forme = new Set(cases.map((c) => `${ox + c.x},${oy + c.y},${c.z + 1}`));
+        if (elle.some((e) => rayonArrete(forme, camera, e.x, e.y, e.z, 4))) continue;
+        if (dessus.some((d) => rayonArrete(pleines, camera, ox + d.x + 0.5, oy + d.y + 0.5, d.z + 1.02, plafond))) continue;
+        if (entiere && cases.some((c) => rayonArrete(pleines, camera, ox + c.x + 0.5, oy + c.y + 0.5, c.z + 1.5, plafond))) continue;
         best = { x: ox, y: oy };
         bestScore = score;
       }
-    }
+    return best;
+  };
+  const best = chercher(true, true) ?? chercher(false, true) ?? chercher(true, false) ?? chercher(false, false) ?? chercher(false, false, false);
   placesDesPetitesConstructions.set(cle, best);
   return best;
 }
@@ -1690,6 +1801,9 @@ function quaySpots(port: BiomeId, cubes: VoxelCube[]): { boat: QuaySpot | null; 
   const S = shoreY(port);
   const top = new Map<string, VoxelCube>();
   for (const c of cubes) {
+    // Une petite construction posée (GD-7, PR 3) ne compte pas : les objets du quai ne bougent pas quand elle se pose
+    // (sa place les évite, `placeDeLaPetiteConstruction`, et le test le vérifie).
+    if (c.sansDessous) continue;
     const k = `${c.x},${c.y}`;
     const t = top.get(k);
     if (!t || c.z > t.z) top.set(k, c);
@@ -2500,7 +2614,7 @@ function poserLIle(
     if (place)
       for (const c of casesDeLaPetiteConstruction(commande.fixture) ?? []) {
         const bd = BLOCKS[c.block];
-        cubes.push({ x: ox + place.x + c.x, y: oy + place.y + c.y, z: oz + c.z + 1, color: bd.side, top: bd.top, texture: bd.texture, tag: biome.id });
+        cubes.push({ x: ox + place.x + c.x, y: oy + place.y + c.y, z: oz + c.z + 1, color: bd.side, top: bd.top, texture: bd.texture, tag: biome.id, sansDessous: true });
       }
   }
   // Les plans : cellules posées en dur ; fantômes seulement pour le plan en cours (le premier non terminé) d'une île ouverte.
@@ -2520,6 +2634,19 @@ function poserLIle(
       }
     }
   }
+}
+
+/**
+ * Les cases de la petite construction d'une commande (GD-7, PR 3), en clés « x,y,z » du monde, là où `poserLIle` la
+ * dessine : la vague de la livraison les pose (world/vague.ts). Vide si elle n'a pas de place.
+ */
+export function casesDeLaPetiteConstructionDansLeMonde(id: BiomeId, fixture: string): Set<string> {
+  const out = new Set<string>();
+  const place = placeDeLaPetiteConstruction(id, fixture);
+  if (!place) return out;
+  const { ox, oy, oz } = islandOrigin(BIOMES.findIndex((b) => b.id === id));
+  for (const c of casesDeLaPetiteConstruction(fixture) ?? []) out.add(`${ox + place.x + c.x},${oy + place.y + c.y},${oz + c.z + 1}`);
+  return out;
 }
 
 /**

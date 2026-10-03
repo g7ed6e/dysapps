@@ -38,4 +38,10 @@ export interface VoxelCube {
    * lieu d'un cube. Les autres vues l'ignorent.
    */
   sol?: true;
+  /**
+   * Cube d'une petite construction (GD-7, PR 3) : son dessous n'est pas dessiné. Posé sur le sol, il est caché ; sous un
+   * porte-à-faux, il regarde vers le bas, et aucune caméra ne le voit d'en haut. Sans lui, la face du dessous d'un bloc
+   * qui n'en a pas ailleurs ajouterait un appel de dessin (le maillage fait un groupe par texture et par face).
+   */
+  sansDessous?: true;
 }

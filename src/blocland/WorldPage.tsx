@@ -15,7 +15,7 @@ import { ArchipelsSheet } from './ArchipelsSheet';
 import { InventorySheet } from './Inventory';
 import { IslandSheet } from './IslandSheet';
 import { creaturesQuiFontSigne, signesDesCreatures, usePlusTard } from './rappels';
-import { sansCommandes } from './world/commandes';
+import { sansCommandes, type Commande } from './world/commandes';
 import { SCHOOL_PATH, SCHOOL_TITLE, SchoolSheet } from './School';
 import { MonumentSheet, MonumentsSheet } from './Monuments';
 import { useMonumentBuilder } from './useMonumentBuilder';
@@ -70,6 +70,7 @@ import { VAGUE, cubesDeLaVague, sansLaPartie } from './world/vague';
 import { Loading } from '../components/Loading';
 import {
   casesDesPlansDansLeMonde,
+  casesDeLaPetiteConstructionDansLeMonde,
   creaturePlacements,
   guardianPlacements,
   vehiclePlacement,
@@ -114,7 +115,8 @@ export function WorldPage() {
   const { state, moveTo, launch } = useBlocland();
   // La pose d'une partie en vague (GD-6, Blocland) : ses cases, absentes du monde jusqu'à ce que la vue les pose ; puis
   // la phrase « Partie posée : … » du panneau, une fois le dernier cube posé (ou l'écran touché).
-  const [vague, setVague] = useState<{ seq: number; biome: BiomeId; parties: Partie[]; cases: Set<string> } | null>(null);
+  // La petite construction d'une commande livrée (GD-7, PR 3) se pose de la même vague : `commande`, sans partie.
+  const [vague, setVague] = useState<{ seq: number; biome: BiomeId; parties: Partie[]; cases: Set<string>; commande?: string } | null>(null);
   const [partiesDites, setPartiesDites] = useState<{ biome: BiomeId; parties: Partie[]; toc: boolean; muet: boolean; seq: number } | null>(null);
   const { launchVoyage, progress } = useProgress();
   const mapOpen = biomeId === 'map';
@@ -636,17 +638,42 @@ export function WorldPage() {
     return () => window.clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [partiesDites?.seq]);
+  /**
+   * La vague finie, touchée ou interrompue. Une partie : sa phrase dans le panneau (`direLaPose`). Une petite construction
+   * (GD-7, PR 3) : sa phrase est déjà écrite dans la section Commandes, seul le carillon reste (sauf `muet`).
+   */
+  const finirLaVague = (muet = false) => {
+    if (!vague) return;
+    if (vague.commande === undefined) return direLaPose(vague.biome, vague.parties, false, muet);
+    setVague(null);
+    if (!muet && settings.sounds) playDone();
+  };
   const onPose = (moment: 'couche' | 'finie') => {
     if (!vague) return;
     if (moment === 'couche') {
       if (settings.sounds) sonDeLaPose();
-    } else direLaPose(vague.biome, vague.parties);
+    } else finirLaVague();
   };
-  const poserToutDUnCoup = () => {
-    if (vague) direLaPose(vague.biome, vague.parties);
-  };
-  const poserEnSilence = () => {
-    if (vague) direLaPose(vague.biome, vague.parties, false, true);
+  const poserToutDUnCoup = () => finirLaVague();
+  const poserEnSilence = () => finirLaVague(true);
+  /**
+   * « Livrer » (GD-7, PR 3) : la petite construction se pose chez la créature avec le geste d'une partie (GD-6), la caméra
+   * immobile, cube par cube et couche par couche, un « clac » par couche, puis le carillon ; la phrase « posée » est déjà
+   * dans le panneau, à côté de la scène (la fête ne passe jamais sur elle). « Réduire les animations » : posée d'un coup,
+   * un « clac » puis le carillon. Rend `true` : le son est pris ici, la section n'en joue pas.
+   */
+  const poserLaCommande = (c: Commande): boolean => {
+    if (habillage.pose !== 'geste') return false;
+    const cases = casesDeLaPetiteConstructionDansLeMonde(c.biome, c.fixture);
+    if (reduceMotion || !cases.size) {
+      if (settings.sounds) {
+        sonDeLaPose();
+        window.setTimeout(playDone, VAGUE.finApresMs);
+      }
+      return true;
+    }
+    setVague((v) => ({ seq: (v?.seq ?? 0) + 1, biome: c.biome, parties: [], cases, commande: c.id }));
+    return true;
   };
   const cubesVus = useMemo(() => (vague ? sansLaPartie(cubes, vague.cases) : cubes), [cubes, vague]);
   const poseVue = useMemo(() => (vague ? { seq: vague.seq, cubes: cubesDeLaVague(cubes, vague.cases) } : null), [cubes, vague]);
@@ -1172,7 +1199,8 @@ export function WorldPage() {
             onClose={() => montrerLePanneau(false)}
             highlight={highlight}
             posees={partiesDites?.biome === island.id ? partiesDites.parties : null}
-            enCoursDePose={vague?.biome === island.id ? vague.parties : null}
+            enCoursDePose={vague?.biome === island.id && vague.commande === undefined ? vague.parties : null}
+            onLivree={poserLaCommande}
             onBuilt={(to) => {
               // La fête, c'est la transformation : la caméra vole jusqu'à l'île qui s'ouvre, et sa créature accueille.
               window.setTimeout(() => navigate(`/adventure/${to}`), 900);

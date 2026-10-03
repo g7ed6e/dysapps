@@ -109,6 +109,7 @@ export function buildMesh(cubes: VoxelCube[], sol: VoxelCube[] = []): MeshGroup[
       // Un fantôme ne cache jamais une face, et garde toutes les siennes.
       if (neighbour && !neighbour.ghost && !c.ghost && !(seeThrough(neighbour) && !seeThrough(c))) continue;
       if (face === 'bottom' && !c.ghost && ground.has(key(c.x, c.y, c.z - 1))) continue;
+      if (face === 'bottom' && c.sansDessous) continue;
       const gkey = (c.muted ? 'muted:' : '') + (c.ghost ? `ghost:${c.texture ?? c.color}` : c.texture ? `tex:${c.texture}:${face}` : `tint:${c.color}`);
       let g = groups.get(gkey);
       if (!g) {

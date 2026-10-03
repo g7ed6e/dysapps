@@ -181,7 +181,9 @@ export default function WorldCanvas({
     const brume = creerBrume(monde, lumiere, instant);
     const large = creerLarge(monde, camera, lumiere, derniers, passSeqRef);
     const bornes = creerBornes(monde, () => personnages.avatar, instant);
-    const etiquettes = creerEtiquettes(monde, el, camera, bornes.fleche, bornes.donneesDeLaFleche, () => personnages.avatar, instant);
+    // Les plaques des créatures (créées plus bas, lues seulement à l'animation) : les étiquettes s'en écartent.
+    const plaques = { boites: (cam: THREE.Camera, W: number, H: number) => signesDesCreatures.boites(cam, W, H), get version() { return signesDesCreatures.version; } };
+    const etiquettes = creerEtiquettes(monde, el, camera, bornes.fleche, bornes.donneesDeLaFleche, () => personnages.avatar, instant, plaques);
     const personnages = creerPersonnages(monde, () => cubesDuMonde.champ(), instant, lumiere);
     const cubesDuMonde = creerCubes(monde, large, lumiere, instant);
     const navire = creerNavire(monde, personnages, cubesDuMonde, derniers, instant, vehicleRef, voyageRef);
@@ -567,7 +569,7 @@ export default function WorldCanvas({
   }, [creatures]);
 
   // ---- Les créatures qui font signe (GD-4, étape 1) : un geste à l'arrivée sur leur île, puis l'icône de la notion
-  const signesKey = signes.map((x) => `${x.id}:${x.icone}`).join('|');
+  const signesKey = signes.map((x) => `${x.id}:${x.icone}:${x.bloc ?? ''}`).join('|');
   useEffect(() => {
     world.current?.signes.poser(signes);
     // La liste refaite à chaque rendu de la page : on ne repose que si elle change.

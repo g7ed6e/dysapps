@@ -5,8 +5,8 @@
 //
 // Des données seulement, sans coordonnées du monde : chaque cube est en repère propre (x vers la droite, y vers le fond,
 // z vers le haut, z = 0 sur le sol, comme dans architect.ts). La place de la forme sur l'île, à côté de la créature,
-// est calculée par la grille (`placeDeLaPetiteConstruction`, world/terrain.ts) ; l'artiste technique 3D reprendra la
-// place exacte et le dessin. Les clés de ces cases (`cellKey`) sont celles de la sauvegarde : une commande livrée pose
+// est calculée par la grille (`placeDeLaPetiteConstruction`, world/terrain.ts : lisible de la caméra de l'île, sans
+// rien cacher ; voir docs/rendu/style.md, « Les petites constructions »). Les clés de ces cases (`cellKey`) sont celles de la sauvegarde : une commande livrée pose
 // toutes les cases de sa forme dans `world.parts`, sous l'identifiant de sa petite construction (`<lieu>-fixture-<n>`),
 // sans champ nouveau. Elles ne changent donc jamais.
 //

@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 20` le plus long temps réel laissé au monde pour se construire (en secondes, 10 par défaut). L'horloge de la
 // page est pilotée (`preparerLaScene`, scripts/prise-de-vue.mjs) : deux prises du même état donnent la même image, les
@@ -309,6 +309,76 @@ const CAPTURES = [
   })),
   { nom: 'etoile-phare-ponts', vue: 'archipel', famille: 'etoile', ile: 'maths-3e-functions', finesse: 2 },
   { nom: 'etoile-phare-ponts-nuit', vue: 'archipel', famille: 'etoile', ile: 'maths-3e-functions', finesse: 2, nuit: true },
+  // Les commandes des habitants (GD-7, PR 3, famille `commandes`, lot en cours) : à la Mine des lettres, la commande de
+  // Tunel (4 briques) prête et suggérée (`commandes` : les commandes arrivées, `inventaire` : les briques), la plaque
+  // avec la brique au-dessus de lui, de jour et de nuit ; le puits posé (`posees`), de jour et de nuit ; la vague de la
+  // pose, « Livrer » touché (`cliquer`), à mi-chemin ; la Tour du lecteur de nuit, la lanterne de Grimoire posée ; le
+  // panneau de l'île avec ses trois commandes (tablette, téléphone au grand texte), le menu, la vue de l'archipel ; puis
+  // chaque archipel avec toutes ses petites constructions posées, de près, et (famille `commandes-iles`) chaque île
+  // qui en porte une.
+  ...[
+    { suffixe: '' },
+    { suffixe: '-nuit', nuit: true },
+  ].flatMap(({ suffixe, ...autres }) => [
+    { nom: `commandes-plaque${suffixe}`, vue: 'île', ile: 'french-6e-letter-confusion', commandes: ['french-6e-letter-confusion-request-1'], pasEnPlus: 24, ...autres },
+    { nom: `commandes-puits${suffixe}`, vue: 'île', ile: 'french-6e-letter-confusion', posees: ['french-6e-letter-confusion-fixture-1'], ...autres },
+  ]).map((c) => ({ famille: 'commandes', inventaire: c.commandes ? { 'maths-6e-calculation': 4 } : undefined, finesse: 2, ...c })),
+  {
+    nom: 'commandes-pose-en-cours',
+    vue: 'île',
+    famille: 'commandes',
+    ile: 'french-6e-letter-confusion',
+    commandes: ['french-6e-letter-confusion-request-1'],
+    inventaire: { 'maths-6e-calculation': 4 },
+    cliquer: '.commandes-list .button.primary',
+    pasEnPlus: 13,
+    finesse: 2,
+  },
+  { nom: 'commandes-tour-nuit', vue: 'île', famille: 'commandes', ile: 'french-6e-reading', posees: ['french-6e-reading-fixture-1'], nuit: true, finesse: 2 },
+  ...[
+    { suffixe: '' },
+    { suffixe: '-390x844-od32', taille: { width: 390, height: 844 }, reglages: { font: 'opendyslexic', fontSize: 32 } },
+  ].map(({ suffixe, ...autres }) => ({
+    nom: `commandes-panneau${suffixe}`,
+    vue: 'île',
+    famille: 'commandes',
+    ile: 'french-6e-letter-confusion',
+    commandes: ['french-6e-phonology-request-1', 'french-6e-letter-confusion-request-1', 'maths-6e-calculation-request-1'],
+    inventaire: { 'maths-6e-calculation': 4, 'french-6e-grammar-spelling': 1 },
+    voir: '.commandes-list',
+    ...autres,
+  })),
+  {
+    nom: 'commandes-menu',
+    vue: 'île',
+    famille: 'commandes',
+    ile: 'french-6e-letter-confusion',
+    lieu: 'menu',
+    commandes: ['french-6e-phonology-request-1', 'french-6e-letter-confusion-request-1', 'maths-6e-calculation-request-1'],
+    inventaire: { 'maths-6e-calculation': 4, 'french-6e-grammar-spelling': 1 },
+    voir: '.commandes-list',
+  },
+  {
+    nom: 'commandes-archipel',
+    vue: 'archipel',
+    famille: 'commandes',
+    ile: 'french-6e-letter-confusion',
+    commandes: ['french-6e-phonology-request-1', 'french-6e-letter-confusion-request-1', 'maths-6e-calculation-request-1'],
+    inventaire: { 'maths-6e-calculation': 4, 'french-6e-grammar-spelling': 1 },
+  },
+  ...[
+    ['6e', 'french-6e-letter-confusion'],
+    ['5e', 'maths-5e-proportionality'],
+    ['4e', 'maths-4e-algebra'],
+    ['3e', 'maths-3e-functions'],
+  ].map(([a, ile]) => ({ nom: `commandes-toutes-${a}`, vue: 'archipel', famille: 'commandes', ile, posees: 'toutes', finesse: 2 })),
+  ...[
+    'french-6e-phonology', 'french-6e-letter-confusion', 'french-6e-word-spelling', 'french-6e-grammar-spelling', 'french-6e-reading', 'maths-6e-calculation',
+    'maths-6e-fractions', 'maths-6e-decimals', 'english-6e-vocabulary', 'english-6e-grammar', 'maths-5e-signed-numbers', 'maths-5e-proportionality',
+    'french-5e-homophones', 'french-5e-conjugation', 'english-5e-vocabulary', 'english-5e-grammar', 'maths-4e-powers', 'maths-4e-algebra',
+    'french-4e-agreement', 'french-4e-vocabulary', 'english-4e-comprehension', 'english-4e-grammar', 'maths-3e-geometry', 'maths-3e-statistics',
+    'maths-3e-functions', 'french-3e-close-reading', 'english-3e-comprehension', 'english-3e-grammar',
+  ].map((ile) => ({ nom: `commandes-ile-${ile}`, vue: 'île', famille: 'commandes-iles', ile, posees: 'toutes' })),
 ];
 /** La lueur la nuit, à la vue île : au plus 3 % de la scène. */
 const LUEUR_MAX = 0.03;
@@ -413,6 +483,7 @@ async function scenes() {
     load('/src/core/progress.ts'),
     load('/src/blocland/exercises/index.ts'),
   ]);
+  const { PETITES_CONSTRUCTIONS, casesDeLaPetiteConstruction } = await load('/src/blocland/world/petitesConstructions.ts');
   /** Une partie où les îles `iles` ont chacune toutes leurs missions jouées une fois (`jouees`), le premier exercice de chacune. */
   const missionsJouees = (iles) =>
     Object.fromEntries(
@@ -440,6 +511,11 @@ async function scenes() {
   const succesDe = (n) => Object.fromEntries(BADGES.slice(0, n === 'tous' ? BADGES.length : (n ?? 0)).map((b) => [b.id, '2026-09-28T10:00:00.000Z']));
   // La même partie tout construite que le test du budget (world/budget.test.ts).
   const { progress, world: built } = toutConstruit();
+  /** Les cases des petites constructions posées (GD-7, PR 3) : `posees`, leurs identifiants, ou `toutes`. */
+  const petitesConstructions = (posees) =>
+    Object.fromEntries(
+      (posees === 'toutes' ? PETITES_CONSTRUCTIONS : (posees ?? [])).map((id) => [id, casesDeLaPetiteConstruction(id).map((k) => k.key)]),
+    );
   /** Les plans d'une partie changée (voir `CAPTURES`, `partie`). */
   const plansDe = (partie, ile) => {
     const plans = { ...built.parts };
@@ -528,12 +604,15 @@ async function scenes() {
               jouees: c.jouees,
               liens: c.liens,
               xp: c.xp,
+              commandes: c.commandes,
+              posees: c.posees,
+              cliquer: c.cliquer,
               nom: parIle ? `${c.nom}-${parIle}` : c.nom,
             })),
           )
         : []),
     ];
-    for (const { vue, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages, succes, inventaire, pose, pasEnPlus, revisions, voir, allerA, depart, jouees, liens, xp } of views) {
+    for (const { vue, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages, succes, inventaire, pose, pasEnPlus, revisions, voir, allerA, depart, jouees, liens, xp, commandes, posees, cliquer } of views) {
       const page = await browser.newPage({ viewport: taille ?? TABLET, deviceScaleFactor: finesse ?? (recadre ? 1.5 : 1), ...(fige ? { reducedMotion: 'reduce' } : {}) });
       await piloterLHorloge(page, time);
       await page.addInitScript(hasardFixe);
@@ -562,7 +641,13 @@ async function scenes() {
           // les ouvrages `liens`).
           world: depart
             ? { parts: {}, log: [], links: liens ?? [], place: ile ?? at }
-            : { ...built, parts: sansLesIles(plans ?? built.parts, sansIles), ...(bridges ? { links: bridges } : {}), place: depuis ?? ile ?? at },
+            : {
+                ...built,
+                parts: { ...sansLesIles(plans ?? built.parts, sansIles), ...petitesConstructions(posees) },
+                ...(bridges ? { links: bridges } : {}),
+                ...(commandes ? { requests: commandes } : {}),
+                place: depuis ?? ile ?? at,
+              },
           progress: jouees ? missionsJouees(jouees) : sansEtoiles || depart ? {} : premieresMissions(sansLeGardien(sansLesIles(progress, sansIles), debout), pose ? ile : null, pose),
           pose: pose ? { biome: ile, rangs: Array.from({ length: pose }, (_, i) => i + 1) } : null,
           view,
@@ -584,6 +669,8 @@ async function scenes() {
         await preparerLaScene(page, VUES_SANS_MONDE.has(vue) || view === 'list' ? 0 : WAIT);
         // Une île touchée une fois la scène prête (`allerA`) : le bonhomme part, la caméra prend le trajet.
         if (allerA) await page.evaluate((id) => (location.hash = `#/adventure/${id}`), allerA);
+        // Un bouton touché une fois la scène prête (`cliquer` : « Livrer », GD-7), qui lance une vague de pose.
+        if (cliquer) await page.locator(cliquer).first().click();
         // Plus loin dans le temps de la scène (la pose finie, par exemple), du même pas que la préparation.
         for (let i = 0; i < (pasEnPlus ?? 0); i++) {
           await page.clock.runFor(125);

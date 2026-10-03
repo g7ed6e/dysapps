@@ -7,6 +7,8 @@ import { GESTE_DU_SIGNE } from '../world/signe';
 import type { Derniers, Instant, Monde } from './partie';
 import type { Personnages } from './personnages';
 import { HABILLAGES } from '../habillage';
+import { BLOCKS } from '../biomes';
+import { shade } from '../Voxel';
 import { creerSignes, dessinerLaCase } from './signes';
 
 const FORET: BiomeId = 'french-6e-phonology';
@@ -102,7 +104,7 @@ it('dans Blocland, une plaque carrée aux coins presque droits ; dans Archipéo,
   expect(HABILLAGES.blocland.signe).toBe('plaque');
   expect(HABILLAGES.archipeo.signe).toBe('disque');
   const plaque = traceur();
-  dessinerLaCase(plaque.ctx, 0, 'tree', 'plaque');
+  dessinerLaCase(plaque.ctx, 0, { icone: 'tree' }, 'plaque');
   // Quatre côtés droits, quatre petits coins (rayon de 6 sur une case de 128), aucun cercle.
   expect(plaque.appels.filter((a) => a.startsWith('lineTo'))).toHaveLength(4);
   const coins = plaque.appels.filter((a) => a.startsWith('arcTo'));
@@ -110,9 +112,67 @@ it('dans Blocland, une plaque carrée aux coins presque droits ; dans Archipéo,
   expect(coins.every((a) => a.endsWith(',6'))).toBe(true);
   expect(plaque.appels.some((a) => a.startsWith('arc:'))).toBe(false);
   const disque = traceur();
-  dessinerLaCase(disque.ctx, 0, 'tree', 'disque');
+  dessinerLaCase(disque.ctx, 0, { icone: 'tree' }, 'disque');
   expect(disque.appels.some((a) => a.startsWith('arc:'))).toBe(true);
   expect(disque.appels.some((a) => a.startsWith('arcTo'))).toBe(false);
+});
+
+it('une commande (GD-7) : la même plaque, avec le cube du bloc demandé aux couleurs de Mes blocs, cerné de sombre', () => {
+  const remplis: string[] = [];
+  const traits: number[] = [];
+  const appels: string[] = [];
+  const ctx = new Proxy({} as Record<string, unknown>, {
+    get: (cible, nom: string) => {
+      if (nom === 'fill') return () => remplis.push(String(cible.fillStyle));
+      if (nom === 'stroke') return () => traits.push(Number(cible.lineWidth));
+      return cible[nom] ?? ((...args: unknown[]) => void appels.push(`${nom}:${args.join(',')}`));
+    },
+    set: (cible, nom: string, valeur) => ((cible[nom] = valeur), true),
+  }) as unknown as CanvasRenderingContext2D;
+  const brique = BLOCKS['maths-6e-calculation'];
+  dessinerLaCase(ctx, 0, { bloc: 'maths-6e-calculation' }, 'plaque');
+  // La plaque (son fond clair), puis le dessus, la face gauche et la face droite plus sombre du cube : celles de BlockIcon.
+  expect(remplis).toEqual(['#fff6e0', brique.top ?? shade(brique.side, 0.16), brique.side, shade(brique.side, -0.18)]);
+  // Le cadre de la plaque, le contour du cube, ses arêtes intérieures.
+  expect(traits).toEqual([6, 5, 3]);
+  // Les mêmes quatre coins presque droits que la plaque des révisions.
+  expect(appels.filter((a) => a.startsWith('arcTo'))).toHaveLength(4);
+});
+
+it('une révision et une commande ont chacune leur case, dans le même maillage', () => {
+  const { signes, monde } = scene();
+  signes.poser([
+    { id: FORET, icone: 'blocks', bloc: 'maths-6e-calculation' },
+    { id: MINE, icone: 'blocks' },
+  ]);
+  signes.animer!(0, 0, true);
+  expect(signes.maillage.geometry.drawRange.count).toBe(12);
+  const uv = signes.maillage.geometry.getAttribute('uv');
+  // Deux cases différentes de la texture : l'image du bloc n'est pas l'icône des blocs.
+  expect(uv.getX(0)).not.toBe(uv.getX(4));
+  expect(monde.scene.children.filter((o) => o instanceof THREE.Mesh)).toHaveLength(1);
+});
+
+it('les plaques montrées sont des obstacles pour les étiquettes, et leur version change quand elles changent', () => {
+  const { signes, derniers } = scene();
+  signes.poser([{ id: FORET, icone: 'tree' }]);
+  signes.animer!(0, 0, true);
+  const v = signes.version;
+  const camera = new THREE.PerspectiveCamera(40, 4 / 3, 0.5, 1000);
+  camera.position.set(0, 20, -30);
+  camera.lookAt(0, 0, 0);
+  camera.updateMatrixWorld();
+  const [b] = signes.boites(camera, 1024, 768);
+  expect(b.w).toBe(48);
+  expect(b.x).toBeCloseTo(512, 0);
+  // La même plaque à l'image suivante : rien ne change.
+  signes.animer!(0, 0, true);
+  expect(signes.version).toBe(v);
+  // Sur la Carte, plus de plaque.
+  derniers.current.carte = true;
+  signes.animer!(0, 0, true);
+  expect(signes.boites(camera, 1024, 768)).toEqual([]);
+  expect(signes.version).not.toBe(v);
 });
 
 it('la hauteur de la vue ne se lit pas dans le DOM image par image : le redimensionnement la donne', () => {

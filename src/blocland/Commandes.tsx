@@ -42,6 +42,11 @@ interface Props {
   /** Le titre de la section : `h3` dans un panneau, `h2` sur une page. */
   niveau?: 'h2' | 'h3';
   className?: string;
+  /**
+   * Une commande livrée (le panneau d'île en 3D) : la scène pose la petite construction, avec son geste et son son
+   * (« clac » et carillon) ; rend `true` si elle prend le son. Sans elle (vue simple), le carillon tout de suite.
+   */
+  onLivree?: (c: Commande) => boolean;
 }
 
 /** Où mène « Y aller » pour une commande pas encore prête : l'île qui donne le bloc, ou le lieu où l'on assemble. */
@@ -51,7 +56,7 @@ function versLeBloc(c: Commande, links: string[]): string {
   return `/adventure/${ile}`;
 }
 
-export function Commandes({ island, fold, highlight = null, niveau = 'h3', className }: Props) {
+export function Commandes({ island, fold, highlight = null, niveau = 'h3', className, onLivree }: Props) {
   const { state, deliver } = useBlocland();
   const { settings, speak } = useSettings();
   const textes = useTextes();
@@ -80,7 +85,8 @@ export function Commandes({ island, fold, highlight = null, niveau = 'h3', class
     if (!r.ok) return;
     const text = texteDeLaCommande(c, 'done', lieu);
     setSaid(text);
-    if (settings.sounds) playDone();
+    const sonPris = onLivree?.(c) ?? false;
+    if (settings.sounds && !sonPris) playDone();
     if (settings.autoRead) speak(frenchTypography(text));
   };
 

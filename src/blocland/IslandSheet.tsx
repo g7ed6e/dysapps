@@ -8,6 +8,7 @@ import { useSettings } from '../core/SettingsContext';
 import { estIleLv2, guardianTitle, missionsJouables, type BiomeDef } from './biomes';
 import { Bridges } from './Bridges';
 import { Commandes } from './Commandes';
+import type { Commande } from './world/commandes';
 import { isBiomeUnlocked } from './world/archipelago';
 import { PlanSection } from './PlanSection';
 import { ShipSection } from './ShipSection';
@@ -48,6 +49,8 @@ interface Props {
   posees?: Partie[] | null;
   /** Les parties que la vague est en train de poser (GD-6) : le compte du bâtiment les attend. */
   enCoursDePose?: Partie[] | null;
+  /** Une commande livrée dans ce panneau (GD-7, PR 3) : la scène pose sa petite construction ; `true` si elle en prend le son. */
+  onLivree?: (c: Commande) => boolean;
 }
 
 /**
@@ -56,7 +59,7 @@ interface Props {
  * il n'y a rien à y faire ; au pied, la matière, la classe et l'archipel. Tout est en HTML (police dys), on ne quitte
  * pas le monde.
  */
-export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight = null, ship, onBoard, posees = null, enCoursDePose = null }: Props) {
+export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight = null, ship, onBoard, posees = null, enCoursDePose = null, onLivree }: Props) {
   const { state } = useBlocland();
   const { settings, speak } = useSettings();
   const sansLv2 = estIleLv2(biome) && settings.lv2 === 'none';
@@ -258,7 +261,7 @@ export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight =
       )}
 
       {/* Les commandes des créatures de l'archipel (GD-7) : entre le prochain objectif et le bâtiment. */}
-      {unlocked && !sansLv2 && <Commandes island={biome.id} fold={fold} highlight={highlight} />}
+      {unlocked && !sansLv2 && <Commandes island={biome.id} fold={fold} highlight={highlight} onLivree={onLivree} />}
 
       {unlocked && <PlanSection biome={biome} fold={fold} highlight={highlight === 'part'} vientDePoser={posees} enCoursDePose={enCoursDePose} />}
 

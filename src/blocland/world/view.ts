@@ -128,8 +128,8 @@ export interface SigneDeCreature {
   /** L'icône de la plaque : celle de la notion (révisions), celle des blocs (commande). */
   icone: BiomeDef['icon'];
   /**
-   * Une commande (GD-7) : le bloc demandé, dont la plaque montrera l'image (celle de Mes blocs). Le dessin de cette image
-   * sur la plaque, en 3D et en vue simple, reste à faire par l'artiste technique 3D : la plaque montre l'icône des blocs.
+   * Une commande (GD-7) : le bloc demandé, dont la plaque montre l'image, celle de Mes blocs (en 3D, three/signes.ts ; en
+   * vue simple, `BlockIcon` sur la Carte), à la place de l'icône.
    */
   bloc?: BlockId;
 }

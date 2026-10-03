@@ -4,7 +4,25 @@ import { BIOMES, BLOCKS, type BlockId } from '../biomes';
 import { BRIDGES, VOYAGES } from './archipelago';
 import { COMMANDES } from './commandes';
 import { PETITES_CONSTRUCTIONS, casesDeLaPetiteConstruction, estPosee } from './petitesConstructions';
-import { creatureDuMonde, creatureSpot, cubesDeLIle, placeDeLaPetiteConstruction } from './terrain';
+import { toutConstruit } from './budget';
+import { ARCHIPELAGO_IDS, islandDef } from './map';
+import {
+  boardingRoute,
+  cacheUneBorne,
+  cacheUnLieu,
+  casesDeLaPetiteConstructionDansLeMonde,
+  creatureDuMonde,
+  creatureSpot,
+  cubesDeLIle,
+  lieuxVus,
+  placeDeLaPetiteConstruction,
+  questStations,
+  rangeeDevantLesBornes,
+  versLaCamera,
+  worldCubes,
+} from './terrain';
+import { cubesDeLaVague } from './vague';
+import { getArchipelago } from './archipelago';
 
 const FINITION: ReadonlySet<BlockId> = new Set<BlockId>(['roof', 'door', 'lantern', 'fence', 'stairs']);
 
@@ -77,7 +95,7 @@ describe.each(COMMANDES.map((c) => [c.fixture, c] as const))('%s', (_id, c) => {
     for (const p of ou) expect(pas.has(`${p.x},${p.y}`)).toBe(false);
     // À côté d'elle : à quelques cases au plus.
     const distance = Math.min(...ou.flatMap((p) => creatureDuMonde(c.biome).map((k) => Math.abs(p.x - spot.x - k.x) + Math.abs(p.y - spot.y - k.y))));
-    expect(distance).toBeLessThanOrEqual(6);
+    expect(distance).toBeLessThanOrEqual(8);
     // Livrée, elle se dessine là, en cubes posés.
     const parts = { [c.fixture]: cases.map((k) => k.key) };
     expect(estPosee(parts, c.fixture)).toBe(true);
@@ -85,5 +103,54 @@ describe.each(COMMANDES.map((c) => [c.fixture, c] as const))('%s', (_id, c) => {
     const poses = new Set(apres.map((k) => `${k.x},${k.y},${k.z}`));
     for (const p of ou) expect(poses.has(`${p.x},${p.y},${p.z}`)).toBe(true);
     expect(apres.length).toBe(avant.length + cases.length);
+  });
+});
+
+describe.each(COMMANDES.map((c) => [c.fixture, c] as const))('%s, sa place dans la vue de l’île', (_id, c) => {
+  const cases = casesDeLaPetiteConstruction(c.fixture)!;
+  const place = placeDeLaPetiteConstruction(c.biome, c.fixture)!;
+  const def = islandDef(c.biome);
+
+  it('ne cache ni une borne ni un lieu du village', () => {
+    const vers = versLaCamera(c.biome);
+    const bornes = questStations(c.biome).map((st) => ({ x: st.x, y: st.y, base: 0 }));
+    for (const k of cases) {
+      expect(cacheUneBorne(bornes, vers, place.x + k.x, place.y + k.y, k.z + 1)).toBe(false);
+      expect(cacheUnLieu(lieuxVus(c.biome), vers, place.x + k.x, place.y + k.y, k.z + 1)).toBe(false);
+    }
+  });
+
+  it('jamais sur la rangée nue devant les bornes, ni sur le chemin du bonhomme vers le navire', () => {
+    const pied = cases.map((k) => `${def.core.x + place.x + k.x},${def.core.y + place.y + k.y}`);
+    const rangee = rangeeDevantLesBornes(c.biome);
+    for (const p of pied) expect(rangee.has(p)).toBe(false);
+    if (getArchipelago(BIOMES.find((b) => b.id === c.biome)!.classe).port === c.biome) {
+      const route = new Set(boardingRoute(c.biome).map((p) => `${p.x},${p.y}`));
+      for (const p of pied) expect(route.has(p)).toBe(false);
+    }
+  });
+});
+
+describe.each(ARCHIPELAGO_IDS.map((a) => [a]))('%s, toutes les petites constructions posées', (a) => {
+  it('rien d’autre ne bouge (les objets du quai compris), et la vague de la livraison trouve chacune de ses cases', () => {
+    const { progress, world } = toutConstruit();
+    const ici = COMMANDES.filter((c) => BIOMES.find((b) => b.id === c.biome)!.classe === a);
+    const parts = { ...world.parts, ...Object.fromEntries(ici.map((c) => [c.fixture, casesDeLaPetiteConstruction(c.fixture)!.map((k) => k.key)])) };
+    const avant = worldCubes(a, progress, world, false);
+    const apres = worldCubes(a, progress, { ...world, parts }, false);
+    const cle = (k: { x: number; y: number; z: number }) => `${k.x},${k.y},${k.z}`;
+    const restent = new Set(apres.map(cle));
+    expect(avant.filter((k) => !restent.has(cle(k)))).toEqual([]);
+    // Aucune case d'une petite construction n'est déjà prise (un objet du quai, un arbre, un ouvrage).
+    const prises = new Set(avant.map(cle));
+    for (const c of ici) for (const k of casesDeLaPetiteConstructionDansLeMonde(c.biome, c.fixture)) expect(prises.has(k), `${c.fixture} ${k}`).toBe(false);
+    expect(apres.length).toBe(avant.length + ici.reduce((n, c) => n + casesDeLaPetiteConstruction(c.fixture)!.length, 0));
+    for (const c of ici) {
+      const vague = casesDeLaPetiteConstructionDansLeMonde(c.biome, c.fixture);
+      expect(vague.size).toBe(casesDeLaPetiteConstruction(c.fixture)!.length);
+      expect(cubesDeLaVague(apres, vague)).toHaveLength(vague.size);
+      // Le dessous d'une petite construction n'est jamais dessiné (aucun groupe de faces de plus : world/budget.test.ts).
+      expect(cubesDeLaVague(apres, vague).every((k) => k.sansDessous)).toBe(true);
+    }
   });
 });

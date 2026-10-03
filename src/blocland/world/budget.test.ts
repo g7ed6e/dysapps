@@ -1,6 +1,6 @@
 import { BADGES } from '../../core/progress';
 import { trophyBlock } from '../trophies';
-import { APPEL_DU_PASSAGE, bornesCost, constructionCost, decorCost, ENVELOPPES, enveloppeDe, fauneCost, merCost, navireCost, personnagesCost, RENDER_BUDGET, sceneCost, sceneCostArchipeo, solCost, toutConstruit, type Poste } from './budget';
+import { APPEL_DU_PASSAGE, bornesCost, constructionCost, decorCost, ENVELOPPES, enveloppeDe, fauneCost, merCost, navireCost, personnagesCost, PLAFOND_DU_MONDE_EN_BLOCS, RENDER_BUDGET, sceneCost, sceneCostArchipeo, solCost, toutConstruit, type Poste } from './budget';
 import { ARCHIPELAGO_IDS, type ArchipelagoId } from './map';
 
 it('prépare une partie vraiment tout construite (Gardiens vaincus, navire, ouvrages)', () => {
@@ -16,10 +16,20 @@ it('le monde en blocs ne recule pas : triangles et appels de dessin de chaque ar
   // le monde en blocs ne le tiendra pas ; ces plafonds l'empêchent seulement de grossir jusqu'à son remplacement (lot 6).
   for (const a of ARCHIPELAGO_IDS) {
     const { triangles, drawCalls } = sceneCost(a);
-    expect(triangles, a).toBeLessThanOrEqual(80_000);
-    expect(drawCalls, a).toBeLessThanOrEqual(240);
+    expect(triangles, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.triangles);
+    expect(drawCalls, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.drawCalls);
   }
   expect(RENDER_BUDGET).toEqual({ triangles: 60_000, drawCalls: 40 });
+});
+
+it('les petites constructions des commandes (GD-7, PR 3) se fondent dans le terrain : aucun appel de plus, sous le plafond', () => {
+  for (const a of ARCHIPELAGO_IDS) {
+    const sans = sceneCost(a);
+    const avec = sceneCost(a, true);
+    expect(avec.drawCalls, a).toBe(sans.drawCalls);
+    expect(avec.triangles, a).toBeGreaterThan(sans.triangles);
+    expect(avec.triangles, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.triangles);
+  }
 });
 
 it('le rendu Archipéo : le sol en facettes tient en deux appels de dessin et la moitié du budget des triangles', () => {

@@ -22,6 +22,8 @@ import { trianglesDeLaBrume } from './decor/brume';
 import { coutDeLaConstruction, coutDesPiliers, maillageDeLaConstruction, piliersDe, sansToursDuCoeur } from './construction';
 import { formeDeBaleine, formeDeNuage, formeDOiseau, nuagesDe, oiseauxDe, planeurDe, trianglesDe } from './faune';
 import { MAST_TOP, VEHICLE_STAGES } from './vehicle';
+import { COMMANDES } from './commandes';
+import { casesDeLaPetiteConstruction } from './petitesConstructions';
 import { fusionDesCreatures, fusionDesGardiens, fusionDuBonhomme, trianglesDeLaFusion } from './personnages/fusions';
 
 export const RENDER_BUDGET = {
@@ -30,6 +32,13 @@ export const RENDER_BUDGET = {
   /** Appels de dessin de la scène 3D d'un archipel, tout construit. */
   drawCalls: 40,
 } as const;
+
+/**
+ * Le plafond du monde en blocs (Blocland), tout construit : mesuré au lot R0 (77 216 triangles et 234 appels aux
+ * Premiers Rivages), il l'empêche seulement de grossir ; les liaisons du port (GD-7) et les petites constructions des
+ * commandes y tiennent sans le changer (`sceneCost`).
+ */
+export const PLAFOND_DU_MONDE_EN_BLOCS = { triangles: 80_000, drawCalls: 240 } as const;
 
 /** Un poste du budget d'Archipéo : une part de la scène, et le lot qui la dessine. */
 export type Poste = 'sol' | 'mer' | 'faune' | 'decor' | 'construction' | 'bornes' | 'navire' | 'bonhomme' | 'creatures' | 'gardiens' | 'scene';
@@ -130,9 +139,23 @@ export function toutConstruit() {
   return { progress, world: { parts: plans, log: [], links: bridges } };
 }
 
-/** Les modèles en blocs de la scène d'un archipel tout construit, chacun en groupes de `buildMesh`. */
-export function sceneModels(a: ArchipelagoId): { name: string; groups: MeshGroup[] }[] {
-  const { progress, world: village } = toutConstruit();
+/**
+ * La même partie, avec en plus toutes les commandes livrées (GD-7, PR 3) : la petite construction de chaque créature
+ * posée chez elle, pour compter le monde en blocs de Blocland au pire. Archipéo, en pause, ne les montre pas : ses postes
+ * se comptent sur `toutConstruit`.
+ */
+export function toutConstruitAvecLesCommandes() {
+  const partie = toutConstruit();
+  const fixtures = Object.fromEntries(COMMANDES.map((c) => [c.fixture, (casesDeLaPetiteConstruction(c.fixture) ?? []).map((k) => k.key)]));
+  return { ...partie, world: { ...partie.world, parts: { ...partie.world.parts, ...fixtures } } };
+}
+
+/**
+ * Les modèles en blocs de la scène d'un archipel tout construit, chacun en groupes de `buildMesh`. `commandes` : avec
+ * les petites constructions des commandes posées (Blocland).
+ */
+export function sceneModels(a: ArchipelagoId, commandes = false): { name: string; groups: MeshGroup[] }[] {
+  const { progress, world: village } = commandes ? toutConstruitAvecLesCommandes() : toutConstruit();
   const ship = vehiclePlacement(a, progress, village)?.cubes ?? [];
   return [
     { name: 'terrain', groups: buildMesh(worldCubes(a, progress, village, false)) },
@@ -144,8 +167,8 @@ export function sceneModels(a: ArchipelagoId): { name: string; groups: MeshGroup
 }
 
 /** Triangles et appels de dessin des modèles en blocs d'un archipel tout construit. */
-export function sceneCost(a: ArchipelagoId): { triangles: number; drawCalls: number } {
-  const models = sceneModels(a);
+export function sceneCost(a: ArchipelagoId, commandes = false): { triangles: number; drawCalls: number } {
+  const models = sceneModels(a, commandes);
   return {
     triangles: models.reduce((n, m) => n + faceCount(m.groups) * 2, 0),
     drawCalls: models.reduce((n, m) => n + m.groups.length, 0),
