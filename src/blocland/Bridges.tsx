@@ -3,7 +3,6 @@ import { Icon } from '../components/Icon';
 import { Syllabified } from '../components/Syllabified';
 import { frenchTypography } from '../components/math/RichText';
 import { useSettings } from '../core/SettingsContext';
-import { useTextes } from '../univers';
 import { BLOCKS, blockCount, getBiome, type BiomeId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { Foldable } from './IslandFold';
@@ -34,7 +33,6 @@ function withArticle(kind: BridgeDef['kind']): string {
 export function Bridges({ island, onBuilt, highlight = null, fold }: Props) {
   const { state, buildBridge } = useBlocland();
   const { settings, speak } = useSettings();
-  const textes = useTextes();
   const [said, setSaid] = useState<string | null>(null);
   // Le message d'un ouvrage construit ne suit pas sur une autre île.
   useEffect(() => setSaid(null), [island]);
@@ -65,8 +63,8 @@ export function Bridges({ island, onBuilt, highlight = null, fold }: Props) {
     } else if (r.reason === 'blocs') {
       text = `Il manque encore ${r.missing} bloc${(r.missing ?? 0) > 1 ? 's' : ''}. Fais une mission pour en gagner.`;
       if (settings.sounds) playNope();
-    } else if (r.reason === 'plan' || r.reason === 'gardien') {
-      text = conditionText(b, state.world.links, textes.libelles) ?? 'Il reste une étape avant de construire.';
+    } else if (r.reason === 'plan') {
+      text = conditionText(b, state.world.links) ?? 'Il reste une étape avant de construire.';
       if (settings.sounds) playNope();
     } else text = `${what.charAt(0).toUpperCase()}${what.slice(1)} ne peut pas être construit pour l’instant.`;
     setSaid(text);
@@ -113,14 +111,14 @@ export function Bridges({ island, onBuilt, highlight = null, fold }: Props) {
                   aria-disabled="true"
                 >
                   <span className="island-quest-icon bridge-icon">
-                    <Icon name={condition === 'gardien' ? 'shield' : condition === 'plan' ? 'hammer' : 'blocks'} />
+                    <Icon name={condition === 'plan' ? 'hammer' : 'blocks'} />
                   </span>
                   <span className="island-quest-text">
                     <span className="island-quest-title">{title}</span>
                     <span className="island-quest-desc">
                       {!enough && `Encore ${b.cost - have} bloc${b.cost - have > 1 ? 's' : ''} (${b.cost} en tout)`}
                       {!enough && !met && ' · '}
-                      {!met && conditionText(b, state.world.links, textes.libelles)}
+                      {!met && conditionText(b, state.world.links)}
                     </span>
                   </span>
                 </li>
@@ -128,7 +126,7 @@ export function Bridges({ island, onBuilt, highlight = null, fold }: Props) {
             return (
               <li key={b.id} data-bridge={b.id} className={`island-quest bridge-item bridge-${b.kind}${highlight === b.id ? ' bridge-highlight' : ''}`}>
                 <span className="island-quest-icon bridge-icon">
-                  <Icon name={condition === 'gardien' ? 'shield' : condition === 'plan' ? 'hammer' : 'blocks'} />
+                  <Icon name={condition === 'plan' ? 'hammer' : 'blocks'} />
                 </span>
                 <span className="island-quest-text">
                   <span className="island-quest-title">{title}</span>

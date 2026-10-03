@@ -65,15 +65,11 @@ export interface LibellesGardiens {
   arene: (gardien: string) => string;
   /**
    * Dite une fois par appareil, au premier toucher d'une île pâle, par sa créature, après l'indice d'île fermée : ce
-   * qu'est un ouvrage et ce qu'il demande (un Gardien vaincu dans Blocland, rallumé dans Archipéo).
+   * qu'est un ouvrage et ce qu'il demande (des blocs ; une mission réussie pour l'escalier).
    */
   decouverteOuvrages: string;
-  /** Ce que dit la créature d'une île fermée quand l'ouvrage qui y mène demande aussi le Gardien de l'autre côté. */
-  ouvrageGardien: string;
   /** Ce que dit la créature d'une île d'un autre archipel quand le Bloc-Navire attend encore des Gardiens (`archipel` : son nom). */
   navireGardiensManquants: (n: number, archipel: string) => string;
-  /** Ce qu'il reste à faire pour un tunnel ou un col, dans la liste des ouvrages (`ile` : l'île de l'autre côté). */
-  gardienDabord: (ile: string) => string;
   /** Dite une fois par appareil, à la première arrivée au port, par sa créature, après son accueil : le Bloc-Navire. */
   decouverteNavire: string;
 }

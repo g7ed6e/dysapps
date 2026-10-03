@@ -138,7 +138,7 @@ export function lockedHint(state: GameState, island: BiomeId, noms: NomsArchipel
   if (here.length) {
     const b = here.reduce((a, c) => (c.cost < a.cost ? c : a));
     const from = getBiome(otherEnd(b, island))?.name ?? '';
-    const cond = conditionMet(b, bridges, world) ? '' : ` ${conditionTextShort(b, from, mots.ouvrageGardien)}`;
+    const cond = conditionMet(b, bridges, world) ? '' : ` ${conditionTextShort(b, from)}`;
     return `Pas si vite ! Pour venir ici, construis ${ouvrageName(b.kind, '')}depuis ${from} : ${b.cost} blocs.${cond}`;
   }
   // Trop loin : la première île fermée sur le chemin est celle à ouvrir d'abord.
@@ -152,8 +152,8 @@ export function lockedHint(state: GameState, island: BiomeId, noms: NomsArchipel
 
 const cap = (text: string) => `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
 
-// `gardien` : la phrase de l'univers (un Gardien vaincu dans Blocland, rallumé dans Archipéo). L'escalier demande une
-// mission réussie sur l'île de départ, qui y pose la première partie de son bâtiment (GD-6).
-function conditionTextShort(b: { kind: keyof typeof KIND_NAME }, from: string, gardien: string): string {
-  return b.kind === 'escalier' ? `Réussis aussi une mission sur ${from}.` : b.kind === 'tunnel' || b.kind === 'col' ? gardien : '';
+// L'escalier demande une mission réussie sur l'île de départ, qui y pose la première partie de son bâtiment (GD-6) ;
+// aucun ouvrage ne demande un Gardien (GD-7).
+function conditionTextShort(b: { kind: keyof typeof KIND_NAME }, from: string): string {
+  return b.kind === 'escalier' ? `Réussis aussi une mission sur ${from}.` : '';
 }

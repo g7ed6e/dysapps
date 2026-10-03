@@ -316,10 +316,8 @@ export const ARCHIPEO = {
     defiFerme: (gardien, etoiles) => `${gardien} attend encore. Obtiens ${etoiles} étoiles dans chaque mission de l’île, puis reviens relever son défi.`,
     arene: (gardien) => `Le défi ${du(gardien)}`,
     decouverteOuvrages:
-      'Les îles pâles sont fermées. Pour y aller, construis un ouvrage. Un pont, un bac ou un sentier se paie en blocs. Un escalier demande une mission réussie, un col un Gardien rallumé.',
-    ouvrageGardien: 'Il faut aussi avoir rallumé le Gardien de l’autre côté.',
+      'Les îles pâles sont fermées. Pour y aller, construis un ouvrage. Un pont, un bac ou un sentier se paie en blocs. Un escalier demande aussi une mission réussie.',
     navireGardiensManquants: (n, archipel) => `rallume encore ${n} Gardien${s(n)} des ${archipel}`,
-    gardienDabord: (ile) => `Rallume d’abord le Gardien de ${ile}.`,
     decouverteNavire: BLOCLAND.libelles.decouverteNavire,
   },
   // La lumière ne dit que les réussites : « la rallumer » renvoie à « sa lumière », sans accord selon le Gardien.

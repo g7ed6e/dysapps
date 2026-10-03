@@ -1,4 +1,3 @@
-import { textesDe } from '../../univers';
 import { BLOC, BIOMES } from '../biomes';
 import { sanitizeState } from '../engine';
 import { MAP } from './map';
@@ -226,17 +225,18 @@ it('les anciennes sauvegardes gardent leurs îles ouvertes : voyages et chemin o
   expect(sanitizeState({ world: { links: ['french-6e-phonology-french-6e-letter-confusion', 'french-6e-letter-confusion-maths-6e-fractions'] } }).world.links).toEqual(['french-6e-phonology-french-6e-letter-confusion', 'french-6e-letter-confusion-maths-6e-fractions']);
 });
 
-it('un escalier veut la première partie d’un bâtiment posée, un tunnel ou un col un Gardien vaincu ; un pont ou un bac, des blocs seulement', () => {
+it('un escalier veut la première partie d’un bâtiment posée, le tunnel, le col, le pont, le bac et le sentier des blocs seulement, aucun Gardien (GD-7)', () => {
   const kinds = new Set(BRIDGES.map((b) => b.kind));
   expect([...kinds].sort()).toEqual(['bac', 'col', 'escalier', 'pont', 'sentier']);
   expect(CONDITION_OF.pont).toBe('aucune');
-  expect(CONDITION_OF.tunnel).toBe('gardien');
+  expect(CONDITION_OF.tunnel).toBe('aucune');
+  expect(CONDITION_OF.col).toBe('aucune');
   const empty = { progress: {}, plans: {} };
   const reached = ['passage-5e', 'passage-4e', 'maths-4e-algebra-french-4e-agreement'];
   const stairs = BRIDGES.find((b) => b.id === 'french-4e-agreement-french-4e-vocabulary')!;
   expect(bridgeState(stairs, reached, empty)).toBe('blocked');
   expect(bridgeState(stairs, reached)).toBe('buildable');
-  expect(conditionText(stairs, reached, textesDe('blocland').libelles)).toBe('Réussis d’abord une mission de Falaise des accords.');
+  expect(conditionText(stairs, reached)).toBe('Réussis d’abord une mission de Falaise des accords.');
   expect(buildBridge('french-4e-agreement-french-4e-vocabulary', reached, { [BLOC.bois]: 9 }, empty)).toEqual({ ok: false, reason: 'plan' });
   // La première partie de la Falaise posée (le bas de la bergerie : quatre missions) : l'escalier se construit.
   const bas = partiesDe('french-4e-agreement')[0];
@@ -247,15 +247,14 @@ it('un escalier veut la première partie d’un bâtiment posée, un tunnel ou u
   const withPlan = { progress: {}, plans: { [bergerie.id]: planCells(bergerie).map((c) => c.key) } };
   expect(conditionMet(stairs, reached, withPlan)).toBe(true);
   expect(buildBridge('french-4e-agreement-french-4e-vocabulary', reached, { [BLOC.bois]: 9 }, withPlan).ok).toBe(true);
-  // Le col Phare → Textes : le Gardien du Phare.
+  // Le col Phare → Textes : des blocs seulement, le Gardien du Phare n'est plus une condition (GD-7).
   const sky = ['passage-5e', 'passage-4e', 'passage-3e'];
   const pass = BRIDGES.find((b) => b.id === 'maths-3e-functions-french-3e-close-reading')!;
-  expect(bridgeState(pass, sky, empty)).toBe('blocked');
-  expect(conditionText(pass, sky, textesDe('blocland').libelles)).toBe('Bats d’abord le Gardien de Phare des fonctions.');
-  expect(conditionText(pass, sky, textesDe('archipeo').libelles)).toBe('Rallume d’abord le Gardien de Phare des fonctions.');
-  expect(buildBridge('maths-3e-functions-french-3e-close-reading', sky, { [BLOC.bois]: 9 }, empty)).toEqual({ ok: false, reason: 'gardien' });
-  expect(bridgeState(pass, sky, { progress: { 'maths-3e-functions-challenge': { stars: 2 } }, plans: {} })).toBe('buildable');
+  expect(bridgeState(pass, sky, empty)).toBe('buildable');
+  expect(conditionText(pass, sky)).toBeNull();
+  expect(buildBridge('maths-3e-functions-french-3e-close-reading', sky, { [BLOC.bois]: 9 }, empty).ok).toBe(true);
   // Les ouvrages proposés comprennent ceux qui sont bloqués (on explique la condition), pas ceux qui sont loin.
+  expect(buildableBridges(reached, 'french-4e-agreement', empty).map((b) => b.id)).toContain('french-4e-agreement-french-4e-vocabulary');
   expect(buildableBridges(sky, 'maths-3e-functions', empty).map((b) => b.id)).toContain('maths-3e-functions-french-3e-close-reading');
   expect(buildableBridges(sky, 'french-3e-close-reading', empty).map((b) => b.id)).toEqual(['maths-3e-functions-french-3e-close-reading']);
   expect(buildableBridges([], 'french-3e-close-reading', empty)).toEqual([]);

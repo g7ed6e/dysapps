@@ -6,7 +6,6 @@
 // Générateur pur : partagé entre le monde 3D, les pages simples et le moteur.
 import { BLOC, BIOMES, getBiome, type BiomeDef, type BiomeId, type BlockId } from '../biomes';
 import { lv2Courante, type Lv2Choice } from '../../core/settings';
-import { isBossBeaten } from '../bossCore';
 import { ARCHIPELAGO_IDS, archipelagoOfIsland, type ArchipelagoId } from './archipels';
 import { premierePartiePosee } from './parties';
 
@@ -86,8 +85,8 @@ export const START_ISLANDS: BiomeId[] = ARCHIPELAGOS[0].starts;
  */
 export type BridgeKind = 'pont' | 'bac' | 'escalier' | 'tunnel' | 'col' | 'sentier';
 
-/** Ce qu'il faut en plus des blocs : rien, le premier plan de l'île de départ terminé, ou son Gardien vaincu. */
-export type BridgeCondition = 'aucune' | 'plan' | 'gardien';
+/** Ce qu'il faut en plus des blocs : rien, ou une mission réussie sur l'île de départ. Aucun Gardien (GD-7). */
+export type BridgeCondition = 'aucune' | 'plan';
 
 export interface BridgeDef {
   id: string;
@@ -109,13 +108,13 @@ export interface BridgeDef {
   via?: readonly { x: number; y: number }[];
 }
 
-/** La condition d'un ouvrage dépend de sa nature : l'escalier veut des bâtisseurs (la première partie du bâtiment d'une de ses îles, posée par une mission), le tunnel et le col un Gardien vaincu. */
+/** La condition d'un ouvrage dépend de sa nature : l'escalier veut des bâtisseurs (la première partie du bâtiment d'une de ses îles, posée par une mission) ; le tunnel et le col ne demandent que des blocs, aucun Gardien n'étant la condition d'une liaison (GD-7). */
 export const CONDITION_OF: Record<BridgeKind, BridgeCondition> = {
   pont: 'aucune',
   bac: 'aucune',
   escalier: 'plan',
-  tunnel: 'gardien',
-  col: 'gardien',
+  tunnel: 'aucune',
+  col: 'aucune',
   sentier: 'aucune',
 };
 
@@ -393,31 +392,25 @@ export function conditionMet(bridge: BridgeDef, bridges: string[], world: WorldP
   const open = reachableIslands(bridges);
   return [bridge.from, bridge.to]
     .filter((island) => open.has(island))
-    .some((island) => {
-      if (condition === 'gardien') return isBossBeaten(island, world.progress);
-      return premierePartiePosee(island, world.plans);
-    });
+    .some((island) => premierePartiePosee(island, world.plans));
 }
 
 /**
- * Les mots de l'univers pour les Gardiens dans ce que disent les ouvrages et les objectifs (vaincus dans Blocland,
- * rallumés dans Archipéo) : les libellés de l'univers en cours (`textes.libelles`), passés par l'écran, la règle
+ * Les mots de l'univers pour les Gardiens dans ce que disent les objectifs (vaincus dans Blocland, rallumés dans
+ * Archipéo) : les libellés de l'univers en cours (`textes.libelles`), passés par l'écran, la règle
  * n'important pas d'univers.
  */
 export interface MotsDesGardiens {
-  ouvrageGardien: string;
   navireGardiensManquants: (n: number, archipel: string) => string;
-  gardienDabord: (ile: string) => string;
 }
 
 /** Ce qu'il reste à faire pour la condition d'un ouvrage, depuis une île ouverte (pour l'expliquer à l'élève). */
-export function conditionText(bridge: BridgeDef, bridges: string[], mots: MotsDesGardiens): string | null {
+export function conditionText(bridge: BridgeDef, bridges: string[]): string | null {
   const condition = CONDITION_OF[bridge.kind];
   if (condition === 'aucune') return null;
   const open = reachableIslands(bridges);
   const island = [bridge.from, bridge.to].find((i) => open.has(i)) ?? bridge.from;
   const name = getBiome(island)?.name ?? island;
-  if (condition === 'gardien') return mots.gardienDabord(name);
   return `Réussis d’abord une mission de ${name}.`;
 }
 
@@ -451,7 +444,7 @@ export function payableBlocks(inventory: Partial<Record<BlockId, number>>): numb
 
 export type BuildBridgeResult =
   | { ok: true; bridges: string[]; inventory: Partial<Record<BlockId, number>>; used: Partial<Record<BlockId, number>> }
-  | { ok: false; reason: 'inconnu' | 'construit' | 'loin' | 'blocs' | 'plan' | 'gardien'; missing?: number };
+  | { ok: false; reason: 'inconnu' | 'construit' | 'loin' | 'blocs' | 'plan'; missing?: number };
 
 /**
  * Paie et construit un pont : les blocs sont pris dans l'inventaire, les types les plus nombreux d'abord
@@ -463,7 +456,7 @@ export function buildBridge(id: string, bridges: string[], inventory: Partial<Re
   const state = bridgeState(bridge, bridges, world);
   if (state === 'built') return { ok: false, reason: 'construit' };
   if (state === 'far') return { ok: false, reason: 'loin' };
-  if (state === 'blocked') return { ok: false, reason: CONDITION_OF[bridge.kind] === 'gardien' ? 'gardien' : 'plan' };
+  if (state === 'blocked') return { ok: false, reason: 'plan' };
   const have = payableBlocks(inventory);
   if (have < bridge.cost) return { ok: false, reason: 'blocs', missing: bridge.cost - have };
   const next = { ...inventory };

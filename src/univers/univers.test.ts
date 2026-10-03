@@ -25,7 +25,7 @@ function tousLesTextes(t: TextesUnivers): string[] {
   }
   out.push(l.dejaFaitArene('Le Grand Chêne'), t.baleine.gardiens(t.archipels['6e']), t.baleine.port('Plaine des nombres'), t.baleine.ouvrage('Mine des lettres'));
   out.push(l.defiPret, l.defiPretCourt, l.defiFerme('Le Grand Chêne', 2), l.arene('le Grand Chêne'));
-  out.push(l.decouverteOuvrages, l.decouverteNavire, l.ouvrageGardien, l.gardienDabord('Phare des fonctions'));
+  out.push(l.decouverteOuvrages, l.decouverteNavire);
   out.push(...Object.values(t.archipels), ...Object.values(t.roles));
   for (const s of Object.values(t.succes)) if (s) out.push(s.title, s.description);
   for (const m of Object.values(t.monuments)) if (m) out.push(...Object.values(m));

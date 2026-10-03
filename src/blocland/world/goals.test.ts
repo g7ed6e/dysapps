@@ -137,12 +137,13 @@ it('dans Archipéo, l’indice d’une île fermée dit un Gardien rallumé, jam
   expect(lockedHint(sanitizeState({ world: { parts: hull }, progress: guardians(['french-6e-phonology', 'maths-6e-calculation']) }), 'maths-5e-proportionality', 'archipeo')).toBe(
     'Pas si vite ! Mon île est dans les Îles Brumeuses, de l’autre côté de la mer. Le Bloc-Navire attend sur Plaine des nombres : rallume encore 1 Gardien des Premiers Rivages, puis embarque.',
   );
-  // L'Atelier des textes, que seul le col du Phare des fonctions peut ouvrir : ses autres voisines restent fermées.
+  // L'Atelier des textes, que seul le col du Phare des fonctions peut ouvrir : ses autres voisines restent fermées. Le col
+  // ne demande que des blocs : aucun Gardien n'est la condition d'une liaison (GD-7).
   const voisines: string[] = BRIDGES.filter((b) => b.from === 'french-3e-close-reading' || b.to === 'french-3e-close-reading').flatMap((b) => [b.from, b.to]).filter((id) => id !== 'maths-3e-functions');
   const ouverts = BRIDGES.filter((b) => !voisines.includes(b.from) && !voisines.includes(b.to)).map((b) => b.id);
   const col = sanitizeState({ world: { links: ['passage-5e', 'passage-4e', 'passage-3e', ...ouverts] } });
   expect(lockedHint(col, 'french-3e-close-reading', 'archipeo')).toBe(
-    'Pas si vite ! Pour venir ici, construis le col depuis Phare des fonctions : 5 blocs. Il faut aussi avoir rallumé le Gardien de l’autre côté.',
+    'Pas si vite ! Pour venir ici, construis le col depuis Phare des fonctions : 5 blocs.',
   );
-  expect(lockedHint(col, 'french-3e-close-reading')).toContain('Il faut aussi avoir vaincu le Gardien de l’autre côté.');
+  expect(lockedHint(col, 'french-3e-close-reading')).not.toContain('Gardien');
 });
