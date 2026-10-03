@@ -105,7 +105,7 @@ Décidé par le mainteneur le 1er octobre 2026, sur la proposition du directeur 
 
 ### Les commandes des habitants (GD-7)
 
-Cadrées le 3 octobre 2026 (format) ; liste du consultant de Blocland validée le même jour par le directeur artistique, avec ses quatre corrections (le lavoir de Nénu couvert de toits, l’abri de Lavi, la glacière de Pudding en coffre, Grimoire après « La lanterne du phare »).
+Cadrées le 3 octobre 2026 (format) ; liste du consultant de Blocland validée le même jour par le directeur artistique, avec ses quatre corrections (le lavoir de Nénu couvert de toits, le parasol de Lavi en cabines, la glacière de Pudding en coffre, Grimoire après « La lanterne du phare »).
 
 - **Une commande par île** de français, de maths et d’anglais (28), aucune en LV2, écrite dans la section « Les demandes » de `docs/contenu/<lieu>.md` (format : [README du contenu](../contenu/README.md)) ; `npm run contenu` en produit `src/blocland/world/requests.json`. La forme de la petite construction est dans le code ; une note la décrit pour l’artiste technique 3D.
 - **Ce qu’elle dit** : le lieu et le geste (« Joue une mission de la Plaine des nombres. », « Assemble-les à la Fabrique. »), jamais une notion, une matière ni une note : la commande donne une raison d’aller sur une île, pas un exercice de plus. Deux phrases courtes au plus, une idée par phrase.
