@@ -6025,6 +6025,14 @@ button.island-quest {
   overscroll-behavior: contain;
   overflow-wrap: break-word;
 }
+.world-fiche.a-suivre {
+  border-bottom-style: dashed;
+}
+/* Deux boutons : une ligne de texte suffit (le trait pointillé dit la suite), pour que les boutons tiennent entiers. */
+.world-fiche:has(.world-fiche-actions > :nth-child(2)) .world-fiche-texte {
+  min-height: 1.6em;
+  min-height: 1lh;
+}
 .world-fiche-texte.a-suivre {
   border-bottom: var(--border-width) dashed currentColor;
 }

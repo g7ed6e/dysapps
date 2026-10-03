@@ -103,6 +103,8 @@ function Fiche({ titre, icone, lecture, onClose, actions, children }: CadreProps
   const titreRef = useRef<HTMLHeadingElement>(null);
   // Le texte continue plus bas (grand texte, une découverte) : un trait pointillé le dit, comme sur la Carte.
   const [texteRef, suite] = useASuivre<HTMLDivElement>(lecture);
+  // Dernier recours, la fiche entière défile (grand texte, deux boutons) : son bord du bas en pointillé le dit.
+  const [ficheRef, ficheSuite] = useASuivre<HTMLElement>(lecture);
   useEffect(() => {
     titreRef.current?.focus({ preventScroll: true });
     if (settings.autoRead) speak(frenchTypography(lecture));
@@ -110,7 +112,7 @@ function Fiche({ titre, icone, lecture, onClose, actions, children }: CadreProps
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
-    <section className="world-fiche" role="dialog" aria-modal="false" aria-labelledby="fiche-titre">
+    <section ref={ficheRef} className={`world-fiche${ficheSuite ? ' a-suivre' : ''}`} role="dialog" aria-modal="false" aria-labelledby="fiche-titre">
       <div className="world-fiche-tete">
         <h2 id="fiche-titre" ref={titreRef} tabIndex={-1} className="world-fiche-titre">
           {icone && <Icon name={icone} />} <span>{frenchTypography(titre)}</span>
