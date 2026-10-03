@@ -333,7 +333,7 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
                 </Link>
               ) : revisionSuivante ? (
                 <Link ref={suiteRef} to={cheminDeRevision(revisionSuivante)} className="button primary">
-                  <Icon name="replay" /> Révision suivante
+                  <Icon name="chevronRight" /> Révision suivante
                 </Link>
               ) : revisionDeLIle || site.kind === 'aucun' ? (
                 <Link ref={suiteRef} to={`/adventure/${biome.id}`} className="button primary">
