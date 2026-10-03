@@ -3,7 +3,7 @@
 // effets des vues en dépendent (poser les bornes, faire marcher le bonhomme, faire jaillir les éclats).
 import { useMemo } from 'react';
 import { dispositionEnGrille } from './world/grille';
-import { estUnOuvrage, milieuDeLaLiaison, type EnCasesDuMonde, type WorldViewProps } from './world/view';
+import { estUnOuvrage, type EnCasesDuMonde, type WorldViewProps } from './world/view';
 
 export function useEnCasesDuMonde({
   archipelago,
@@ -21,12 +21,13 @@ export function useEnCasesDuMonde({
       const { spot, ...f } = focus;
       return spot ? { ...f, spot: enMonde(spot) } : f;
     }, [focus, enMonde]),
-    // Un ouvrage : le milieu de sa liaison (sans case, pas de flèche).
+    // Un ouvrage : sa place sur la liaison, côté île de départ, et celles où elle glisse ; le tracé de toute la liaison
+    // (sans case, pas de flèche).
     marker: useMemo(() => {
       if (marker === null || typeof marker === 'string') return marker;
       if (!estUnOuvrage(marker)) return enMonde(marker);
-      const cell = milieuDeLaLiaison(disposition.liaison(marker.ouvrage));
-      return cell ? { ouvrage: marker.ouvrage, cell } : null;
+      const places = disposition.placesDeLaFleche(marker.ouvrage, marker.depuis);
+      return places.length ? { ...marker, cell: places[0], places, trace: disposition.liaison(marker.ouvrage) } : null;
     }, [marker, enMonde, disposition]),
     avatar: useMemo(() => avatar && { ...avatar, route: avatar.route.map(enMonde) }, [avatar, enMonde]),
     trail: useMemo(() => trail?.map(enMonde), [trail, enMonde]),

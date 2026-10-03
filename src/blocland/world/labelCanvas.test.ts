@@ -1,5 +1,7 @@
 // La flèche d'un ouvrage sur la Carte (GD-7) : une autre forme que celle d'une île, dans la même boîte.
 import { formeDeLaFlecheDOuvrage } from './labelCanvas';
+import { tracesDeLIcone } from '../../components/iconeTracee';
+import { CHEMIN_DE_L_OUVRAGE, TRAITS_DE_L_OUVRAGE } from '../../components/iconeOuvrage';
 
 it('la flèche d’un ouvrage tient dans la boîte de la flèche d’une île, pointe en bas, l’icône dans sa plaque', () => {
   const h = 48;
@@ -24,4 +26,18 @@ it('la flèche d’un ouvrage tient dans la boîte de la flèche d’une île, p
       expect(p.y).toBeLessThan(plaque.y + plaque.h);
     }
   expect(plaque.w).toBeGreaterThanOrEqual(0.5 * h);
+});
+
+it('l’icône de la plaque est celle des ouvrages de l’application (le pli Ouvrages, Mes blocs) : la même image partout', () => {
+  // L'icône `ouvrage` de Icon.tsx, telle que l'application la dessine, en chemin SVG.
+  expect(tracesDeLIcone('ouvrage')).toEqual([CHEMIN_DE_L_OUVRAGE]);
+  // La plaque reprend ses traits, à l'échelle : mêmes rapports entre les points.
+  const { pont } = formeDeLaFlecheDOuvrage(0, 0, 100);
+  const u = (pont[0][1].x - pont[0][0].x) / (TRAITS_DE_L_OUVRAGE[0][1][0] - TRAITS_DE_L_OUVRAGE[0][0][0]);
+  pont.forEach((trait, i) =>
+    trait.forEach((p, k) => {
+      expect(p.x - pont[0][0].x).toBeCloseTo((TRAITS_DE_L_OUVRAGE[i][k][0] - TRAITS_DE_L_OUVRAGE[0][0][0]) * u, 6);
+      expect(p.y - pont[0][0].y).toBeCloseTo((TRAITS_DE_L_OUVRAGE[i][k][1] - TRAITS_DE_L_OUVRAGE[0][0][1]) * u, 6);
+    }),
+  );
 });

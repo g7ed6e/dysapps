@@ -73,10 +73,15 @@ it('pileDEtoiles : une géométrie neuve à chaque appel (vider la dispose sans 
   expect(c.getAttribute('position').count).toBe(72);
 });
 
-it('sur un ouvrage (GD-7), la flèche dit lequel et pose sa pointe au-dessus de son milieu ; sur une case, pas de flèche de la Carte', () => {
+it('sur un ouvrage (GD-7), la flèche dit lequel, pose sa pointe au-dessus de sa place et garde les autres ; sur une case, pas de flèche de la Carte', () => {
   const { b } = bornes();
-  b.poserLaFleche({ ouvrage: 'a-b', cell: { x: 10, y: 20, z: 3 } });
+  const c = (x: number) => ({ x, y: 20, z: 3 });
+  b.poserLaFleche({ ouvrage: 'a-b', cell: c(10), places: [c(10), c(11)], trace: [c(7), c(8), c(9), c(10), c(11), c(12)] });
   expect(b.fleche.userData).toMatchObject({ island: null, ouvrage: 'a-b', on: true, pointe: { x: 10.5, y: 20.5, z: 5 } });
+  expect(b.fleche.userData.pointes).toEqual([
+    { x: 10.5, y: 20.5, z: 5 },
+    { x: 11.5, y: 20.5, z: 5 },
+  ]);
   b.poserLaFleche('french-6e-phonology');
   expect(b.fleche.userData).toMatchObject({ island: 'french-6e-phonology', ouvrage: null });
   expect(b.fleche.userData.pointe).not.toBeNull();
@@ -85,4 +90,30 @@ it('sur un ouvrage (GD-7), la flèche dit lequel et pose sa pointe au-dessus de 
   expect(b.fleche.userData).toMatchObject({ island: null, ouvrage: null, pointe: null });
   b.poserLaFleche(null);
   expect(b.fleche.userData).toMatchObject({ on: false, pointe: null });
+});
+
+it('sur la Carte, le tracé de l’ouvrage désigné (GD-7) : un seul maillage, avec la flèche seulement, immobile', () => {
+  const scene = new THREE.Scene();
+  const instant = { carte: true } as Instant;
+  const b = creerBornes({ scene } as Monde, () => new THREE.Object3D(), instant);
+  const trace = () => scene.getObjectByName('trace-suggere') as THREE.Mesh;
+  const c = (x: number) => ({ x, y: 20, z: 3 });
+  b.poserLaFleche({ ouvrage: 'a-b', cell: c(3), places: [c(3)], trace: [0, 1, 2, 3, 4, 5, 6].map(c) });
+  b.animer!(1, 0.016, false);
+  expect(trace().visible).toBe(true);
+  // Sept cases : cinq tirets (deux cases sur trois, et la rive d'arrivée), de 12 triangles chacun.
+  expect(trace().geometry.getAttribute('position').count / 3).toBe(5 * 12);
+  const avant = trace().geometry.getAttribute('position').array.slice();
+  b.animer!(2.7, 0.016, false);
+  expect(trace().geometry.getAttribute('position').array).toEqual(avant);
+  // Hors de la Carte, ou la flèche sur une île : pas de tracé.
+  instant.carte = false;
+  b.animer!(3, 0.016, false);
+  expect(trace().visible).toBe(false);
+  instant.carte = true;
+  b.poserLaFleche('french-6e-phonology');
+  b.animer!(3, 0.016, false);
+  expect(trace().visible).toBe(false);
+  b.dispose();
+  expect(scene.getObjectByName('trace-suggere')).toBeUndefined();
 });

@@ -3,6 +3,7 @@
 // seconde ligne donne l'état de l'île : une petite icône dessinée ici (aucune police d'emoji, rien d'importé) et le mot,
 // jamais la couleur seule (DP-08). Une île Fermée a une étiquette plus discrète, mais son texte garde un fort contraste.
 import type { IslandStateId } from './islandState';
+import { TRAITS_DE_L_OUVRAGE } from '../../components/iconeOuvrage';
 
 export interface IslandLabelState {
   id: IslandStateId;
@@ -235,7 +236,8 @@ type P2 = { x: number; y: number };
 
 /**
  * La flèche d'un ouvrage (GD-7), pointe en bas sur (cx, tipY), haute de `h` : une pointe jaune, et à la place de la
- * tige une plaque carrée jaune qui porte l'icône d'un pont (un tablier, deux piles et une arche, à l'encre). Elle tient
+ * tige une plaque carrée jaune qui porte l'icône des ouvrages (`TRAITS_DE_L_OUVRAGE` : un tablier, deux piles et une
+ * arche, à l'encre ; la même que le pli Ouvrages du panneau d'île). Elle tient
  * dans la boîte de la flèche d'une île (`h` de haut, 0,8 `h` de large), que le placement des étiquettes et le cadrage
  * de la Carte réservent déjà : elle se distingue d'elle par sa forme et son icône, pas par sa taille ni sa couleur.
  * `pont` : les traits de l'icône, segments (deux points) ou courbes (trois : départ, contrôle, arrivée).
@@ -250,11 +252,7 @@ export function formeDeLaFlecheDOuvrage(cx: number, tipY: number, h: number): { 
   const x0 = cx - 12 * u;
   const y0 = plaque.y + (cote - 24 * u) / 2;
   const at = (x: number, y: number): P2 => ({ x: x0 + x * u, y: y0 + y * u });
-  const pont = [
-    [at(1, 9), at(23, 9)],
-    [at(4, 9), at(4, 21)],
-    [at(20, 9), at(20, 21)],
-    [at(4, 21), at(12, 5), at(20, 21)],
-  ];
+  // L'icône des ouvrages de l'application (le pli Ouvrages, Mes blocs) : la même image partout.
+  const pont = TRAITS_DE_L_OUVRAGE.map((trait) => trait.map(([x, y]) => at(x, y)));
   return { plaque, pointe: [{ x: cx - demiTete, y: tipY - tete }, { x: cx + demiTete, y: tipY - tete }, { x: cx, y: tipY }], pont };
 }

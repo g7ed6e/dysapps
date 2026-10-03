@@ -6,7 +6,7 @@
 import * as THREE from 'three';
 import { drawIslandLabel, drawMapArrow, measureIslandLabel } from '../world/labelCanvas';
 import { reperesDe } from '../world/cadrage';
-import { placerEtiquettes, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
+import { placerAvecLaFlecheDOuvrage, placerEtiquettes, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
 import { islandCenter } from '../world/terrain';
 import { lecteurDeZones } from '../zonesCouvertes';
 import type { WorldViewProps } from '../world/view';
@@ -88,8 +88,24 @@ export function creerEtiquettes(
   };
   const beaconBase = new THREE.Vector3();
   const beaconTop = new THREE.Vector3();
-  /** Le fanion et la flèche, en pixels d'écran vus par `cam` (la flèche déjà écartée du fanion) : ce que les étiquettes évitent. */
-  const marksOnScreen = (cam: THREE.Camera, W: number, H: number) => {
+  const pointeAt = new THREE.Vector3();
+  type Pointe = { x: number; y: number; z: number };
+  /**
+   * La flèche d'un ouvrage (GD-7) glisse le long de sa liaison si une étiquette occupe sa place (`placerAvecLaFlecheDOuvrage`) :
+   * l'indice de la place prise parmi `fleche.userData.pointes`, pour l'ouvrage dit, refait avec l'écart des étiquettes.
+   */
+  let placeDeLOuvrage = { ouvrage: '', i: 0 };
+  /** La pointe de la flèche de la Carte : sur une île, ou sur la place prise de l'ouvrage. */
+  const laPointe = (): Pointe | null => {
+    const pointes = fleche.userData.pointes as Pointe[] | null | undefined;
+    if (fleche.userData.ouvrage && pointes?.length) return pointes[placeDeLOuvrage.ouvrage === fleche.userData.ouvrage ? Math.min(placeDeLOuvrage.i, pointes.length - 1) : 0];
+    return (fleche.userData.pointe as Pointe | null | undefined) ?? null;
+  };
+  /**
+   * Le fanion et la flèche, en pixels d'écran vus par `cam` (la flèche déjà écartée du fanion) : ce que les étiquettes
+   * évitent. `pointe` : la pointe de la flèche, si ce n'est pas celle d'aujourd'hui (une autre place d'un ouvrage).
+   */
+  const marksOnScreen = (cam: THREE.Camera, W: number, H: number, pointe: Pointe | null = laPointe()) => {
     const out: { arrow: LabelBox | null; arrowShift: LabelOffset; beacon: LabelBox | null } = { arrow: null, arrowShift: { dx: 0, dy: 0 }, beacon: null };
     const avatar = bonhomme();
     if (avatar.visible) {
@@ -100,8 +116,8 @@ export function creerEtiquettes(
       const h = Math.max(24, Math.abs(a.y - b.y));
       out.beacon = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, w: Math.max(24, h * 0.9), h };
     }
-    if (fleche.userData.pointe) {
-      const tip = toScreen(mapArrow.position, cam, W, H);
+    if (pointe) {
+      const tip = toScreen(pointeAt.set(pointe.x, pointe.z, pointe.y), cam, W, H);
       if (out.beacon) out.arrowShift = separateMark(tip, { x: out.beacon.x, y: out.beacon.y + out.beacon.h / 2 }, ARROW_GAP);
       const { w: aw, h: ah } = mapArrow.userData.px;
       out.arrow = { x: tip.x + out.arrowShift.dx, y: tip.y + out.arrowShift.dy - ah / 2, w: aw, h: ah };
@@ -109,8 +125,8 @@ export function creerEtiquettes(
     return out;
   };
   const placeMarks = (onMap: boolean, t: number, reduit: boolean) => {
-    // Sa pointe : au-dessus du cœur d'une île, ou du milieu d'un ouvrage (three/bornes.ts, `poserLaFleche`).
-    const pointe = fleche.userData.pointe as { x: number; y: number; z: number } | null | undefined;
+    // Sa pointe : au-dessus du cœur d'une île, ou d'une case de la liaison d'un ouvrage (three/bornes.ts, `poserLaFleche`).
+    const pointe = laPointe();
     const show = onMap && Boolean(pointe);
     mapArrow.visible = show;
     if (fleche.userData.island !== undefined) fleche.visible = Boolean(fleche.userData.on) && !show;
@@ -184,7 +200,11 @@ export function creerEtiquettes(
   // Sans page autour (un aperçu), la bande des boutons du bas reste réservée.
   const lireZones = lecteurDeZones(el, () => [{ x: el.clientWidth / 2, y: el.clientHeight - LABEL_RESERVE / 2, w: el.clientWidth, h: LABEL_RESERVE }]);
   /** Sur la Carte, ce que coûte d'écarter ou de cacher chaque étiquette : la prochaine destination d'abord, une île fermée en dernier. */
-  const poidsDesEtiquettes = (sprites: THREE.Sprite[]) => sprites.map((s) => (s.userData.id === fleche.userData.island ? 2 : s.userData.fermee ? 0.5 : 1));
+  const poidsDesEtiquettes = (sprites: THREE.Sprite[]) => {
+    // La destination : l'île de la flèche, ou celle d'où part l'ouvrage qu'elle désigne (GD-7).
+    const destination = fleche.userData.island ?? fleche.userData.depuis;
+    return sprites.map((s) => (s.userData.id === destination ? 2 : s.userData.fermee ? 0.5 : 1));
+  };
   const placeLabels = (spread: boolean) => {
     const sprites = labelsGroup.children as THREE.Sprite[];
     if (!sprites.length) return;
@@ -236,10 +256,22 @@ export function creerEtiquettes(
     // la Carte : les étiquettes restent au-dessus de leur île ; seules celles posées sur l'interface ou sur un grand
     // repère (Archipéo) s'en écartent, et celles que coupe le bord du cadre y rentrent. Entière ou absente : celle qui ne
     // trouve pas de place libre près de son île ne se montre pas à moitié.
-    const marques = spread ? marksOnScreen(goalCamera, W, H) : null;
+    // La flèche d'un ouvrage (GD-7) : la première de ses places libres, et aucune étiquette ne se pose jamais sur elle
+    // (`placerAvecLaFlecheDOuvrage`).
+    const ouvrage = spread ? (fleche.userData.ouvrage as string | null) : null;
+    const pointes = ouvrage ? ((fleche.userData.pointes as Pointe[] | null | undefined) ?? []) : [];
+    const marques = spread ? marksOnScreen(goalCamera, W, H, ouvrage ? null : laPointe()) : null;
     const obstacles = marques ? [marques.arrow, marques.beacon].filter((b): b is LabelBox => b !== null) : colonnes(goalCamera, W, H);
     const carte = spread ? { weights: poidsDesEtiquettes(sprites) } : null;
-    const { offsets, visibles } = placerEtiquettes(boxes, iles, { zones, bulles, obstacles, bounds: cadre, gap: 6 }, carte, tenues);
+    const vue = { zones, bulles, obstacles, bounds: cadre, gap: 6 };
+    let offsets: LabelOffset[];
+    let visibles: boolean[];
+    if (ouvrage && carte) {
+      const fleches = pointes.map((p) => marksOnScreen(goalCamera, W, H, p).arrow).filter((b): b is LabelBox => b !== null);
+      const r = placerAvecLaFlecheDOuvrage(fleches, boxes, iles, vue, carte);
+      placeDeLOuvrage = { ouvrage, i: r.fleche };
+      ({ offsets, visibles } = r);
+    } else ({ offsets, visibles } = placerEtiquettes(boxes, iles, vue, carte, tenues));
     labelLayout = { key, offsets };
     offsets.forEach((o, i) => {
       const s = sprites[i];

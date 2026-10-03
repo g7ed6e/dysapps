@@ -230,8 +230,11 @@ export function WorldPage() {
   const destination = modele.destination;
   const destinationText = `Prochaine destination : ${destination.name}. ${destination.text}`;
   // Un ouvrage à construire (GD-7) : sur la Carte, la flèche se pose sur lui, avec l'icône d'un ouvrage, pas sur l'île
-  // d'où il part (quatre ouvrages peuvent en partir).
-  const flecheDeLOuvrage = useMemo(() => (destination.ouvrage ? { ouvrage: destination.ouvrage } : null), [destination.ouvrage]);
+  // d'où il part (quatre ouvrages peuvent en partir) ; sur sa liaison, du côté de cette île.
+  const flecheDeLOuvrage = useMemo(
+    () => (destination.ouvrage ? { ouvrage: destination.ouvrage, depuis: destination.island } : null),
+    [destination.ouvrage, destination.island],
+  );
   // En grand texte, la phrase défile dans le panneau de la Carte : un repère dit qu'il y a une suite.
   // Le nom de chaque île ouverte de l'archipel, écrit au-dessus d'elle dans le monde ; sur la Carte, toutes les îles,
   // avec leur état en icône et en mot.

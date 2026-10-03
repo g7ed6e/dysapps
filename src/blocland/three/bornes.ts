@@ -6,12 +6,15 @@ import { DELAVE } from '../world/decor/pinceau';
 import type { ArchipelagoId } from '../world/map';
 import { islandCenter } from '../world/terrain';
 import { estUnOuvrage, type EnCasesDuMonde } from '../world/view';
+import { creerTraceSuggere } from './traceSuggere';
 import type { Instant, Monde, PartieDeLaScene } from './partie';
 
 export interface Bornes extends PartieDeLaScene {
   /**
    * La flèche « Commence ici » : sa place et, dans `userData`, ce qu'elle montre (la Carte la remplace par sa flèche) :
-   * `island`, l'île ; `ouvrage`, l'ouvrage (GD-7) ; `pointe`, la case du monde où la flèche de la Carte pose sa pointe.
+   * `island`, l'île ; `ouvrage`, l'ouvrage (GD-7), et `depuis`, son île de départ ; `pointe`, le point du monde où la flèche de la Carte pose sa pointe ;
+   * `pointes`, sur un ouvrage, ses places le long de la liaison (la première est `pointe`), où elle glisse si une
+   * étiquette occupe sa place (three/etiquettes.ts).
    */
   fleche: THREE.Group;
   /** Les repères des bornes de mission (on les touche). */
@@ -81,6 +84,9 @@ export function creerBornes(monde: Monde, bonhomme: () => THREE.Object3D, instan
   scene.add(trailGroup);
   const questMarksGroup = new THREE.Group();
   scene.add(questMarksGroup);
+  // Sur la Carte, le tracé renforcé de l'ouvrage que désigne la flèche (GD-7) : un seul maillage, refait quand il change.
+  const leTrace = creerTraceSuggere();
+  scene.add(leTrace.mesh);
 
   const vider = (g: THREE.Group) => {
     for (const child of [...g.children]) {
@@ -95,14 +101,18 @@ export function creerBornes(monde: Monde, bonhomme: () => THREE.Object3D, instan
     fleche: markerGroup,
     missions: questMarksGroup,
     // La flèche « Commence ici » (sur une île, ou sur une case du monde : le chantier du navire), ou sur la Carte celle
-    // d'un ouvrage (le milieu de sa liaison).
+    // d'un ouvrage (sur sa liaison, côté île de départ) et le tracé renforcé de cette liaison.
     poserLaFleche: (marker) => {
       const ouvrage = estUnOuvrage(marker) ? marker : null;
       markerGroup.userData.island = typeof marker === 'string' ? marker : null;
       markerGroup.userData.ouvrage = ouvrage?.ouvrage ?? null;
+      // L'île d'où il part : la prochaine destination, dont le nom pèse sur la Carte comme celui d'une île désignée.
+      markerGroup.userData.depuis = ouvrage ? (ouvrage.depuis ?? null) : null;
       markerGroup.userData.on = Boolean(marker);
+      leTrace.poser(ouvrage?.trace ?? null);
       if (!marker) {
         markerGroup.userData.pointe = null;
+        markerGroup.userData.pointes = null;
         markerGroup.visible = false;
         return;
       }
@@ -111,6 +121,7 @@ export function creerBornes(monde: Monde, bonhomme: () => THREE.Object3D, instan
       const base = ile ? c.z + 8 : ouvrage ? c.z + 2 : c.z;
       // La pointe de la flèche de la Carte : au-dessus du cœur d'une île, juste au-dessus du tablier d'un ouvrage.
       markerGroup.userData.pointe = ile || ouvrage ? { x: c.x + 0.5, y: c.y + 0.5, z: base } : null;
+      markerGroup.userData.pointes = ouvrage ? ouvrage.places.map((p) => ({ x: p.x + 0.5, y: p.y + 0.5, z: p.z + 2 })) : null;
       markerGroup.userData.base = base;
       markerGroup.position.set(c.x, base + 0.5, c.y);
       markerGroup.visible = true;
@@ -154,6 +165,8 @@ export function creerBornes(monde: Monde, bonhomme: () => THREE.Object3D, instan
     animer: (t, _dt, reduit) => {
       const avatar = bonhomme();
       beaconGroup.visible = instant.carte && avatar.visible;
+      // Le tracé de l'ouvrage désigné : sur la Carte seulement, avec la flèche ; immobile.
+      leTrace.mesh.visible = instant.carte && leTrace.pose();
       // « Réduire les animations » : le fanion, les repères de mission et les balises du chemin restent dans leur pose de
       // base, sans rotation, rebond ni pulsation, comme la flèche « Commence ici ».
       if (beaconGroup.visible) {
@@ -181,6 +194,8 @@ export function creerBornes(monde: Monde, bonhomme: () => THREE.Object3D, instan
       vider(trailGroup);
       for (const g of [markerGroup, beaconGroup]) vider(g);
       markerMat.dispose();
+      scene.remove(leTrace.mesh);
+      leTrace.dispose();
     },
   };
 }

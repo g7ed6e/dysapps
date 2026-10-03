@@ -53,8 +53,13 @@ import {
   Wheat,
   X,
   Zap,
+  createLucideIcon,
   type LucideIcon,
 } from 'lucide-react';
+import { CHEMIN_DE_L_OUVRAGE } from './iconeOuvrage';
+
+/** Un ouvrage (GD-7) : la même image que la plaque de la flèche de la Carte (./iconeOuvrage.ts). */
+const Ouvrage = createLucideIcon('ouvrage', [['path', { d: CHEMIN_DE_L_OUVRAGE, key: 'ouvrage' }]]);
 
 export const ICONS = {
   back: ArrowLeft,
@@ -112,6 +117,7 @@ export const ICONS = {
   ancre: Anchor,
   cube: Box,
   recentrer: Undo2,
+  ouvrage: Ouvrage,
 } satisfies Record<string, LucideIcon>;
 
 export type AnyIconName = keyof typeof ICONS;

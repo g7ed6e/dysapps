@@ -26,22 +26,25 @@ export interface Bonhomme<P> {
   vise?: boolean;
 }
 
-/** La flèche posée sur un ouvrage (GD-7) : son identifiant ; la vue trouve sa place par la disposition (`liaison`). */
+/**
+ * La flèche posée sur un ouvrage (GD-7) : son identifiant, et l'île d'où la prochaine destination propose de le
+ * construire (`depuis`, l'île de départ ; sans elle, l'île `from` de l'ouvrage). La vue trouve sa place par la
+ * disposition en grille (`placesDeLaFleche`).
+ */
 export interface MarqueDOuvrage {
   ouvrage: string;
-}
-
-/** La flèche sur un ouvrage, en cases du monde : la case du milieu de sa liaison, où se pose sa pointe. */
-export interface MarqueDOuvrageEnCases extends MarqueDOuvrage {
-  cell: Cell;
+  depuis?: BiomeId;
 }
 
 /**
- * Le milieu d'une liaison (ses cases, de bout en bout) : la case où se pose la flèche d'un ouvrage. Sur un bac, celle
- * du radeau (terrain.ts, `bridge`). `null` pour une liaison sans case.
+ * La flèche sur un ouvrage, en cases du monde : `cell`, la case où elle se pose ; `places`, les cases où elle peut
+ * glisser si une étiquette occupe déjà sa place (de `cell` vers l'arrivée) ; `trace`, toutes les cases de la liaison,
+ * dont le tracé se renforce sur la Carte.
  */
-export function milieuDeLaLiaison(cases: readonly Cell[]): Cell | null {
-  return cases.length ? cases[Math.floor((cases.length - 1) / 2)] : null;
+export interface MarqueDOuvrageEnCases extends MarqueDOuvrage {
+  cell: Cell;
+  places: Cell[];
+  trace: Cell[];
 }
 
 /** La flèche est-elle posée sur un ouvrage ? */
@@ -150,8 +153,8 @@ export interface WorldViewProps {
   bridges?: string[];
   /**
    * Une flèche jaune qui flotte au-dessus d'une île (« Commence ici »), d'un point (le chantier du navire) ou, sur la
-   * Carte, d'un ouvrage (la prochaine destination est un ouvrage à construire, GD-7) : posée sur le milieu de sa liaison,
-   * avec l'icône d'un ouvrage.
+   * Carte, d'un ouvrage (la prochaine destination est un ouvrage à construire, GD-7) : posée sur sa liaison, côté île de
+   * départ (`placesDeLaFleche`), avec l'icône d'un ouvrage.
    */
   marker?: BiomeId | Ancrage | MarqueDOuvrage | null;
   /** Le bonhomme : son itinéraire (un seul point : il se tient là ; plusieurs : il marche). `seq` change à chaque trajet. */

@@ -191,16 +191,23 @@ export function montrees(boxes: LabelBox[], offsets: LabelOffset[], zones: Label
  * l'interface (`zones`) et des `obstacles` (la flèche et le fanion de la Carte, les grands repères d'Archipéo) : avec
  * `carte`, les unes des autres aussi (voir `layoutLabels`) ; sans, seules celles posées dessus ou coupées par le bord
  * bougent (voir `ecarterDesObstacles`). Puis `montrees` dit lesquelles se montrent (`bulles` : les bulles passagères,
- * qui cachent sans pousser) ; celles qu'il écarte essaient encore les places simples autour de leur île.
+ * qui cachent sans pousser) ; celles qu'il écarte essaient encore les places simples autour de leur île. `dures` : des
+ * obstacles qu'aucune étiquette ne couvre jamais, même faute d'autre place (elle se tait plutôt) : la flèche d'un
+ * ouvrage (GD-7).
  */
 export function placerEtiquettes(
   boxes: LabelBox[],
   iles: { x: number; y: number }[],
-  vue: { zones: LabelBox[]; bulles: LabelBox[]; obstacles: LabelBox[]; bounds: { w: number; h: number }; gap: number },
+  vue: { zones: LabelBox[]; bulles: LabelBox[]; obstacles: LabelBox[]; bounds: { w: number; h: number }; gap: number; dures?: LabelBox[] },
   carte: { weights: number[] } | null,
   tenues: number[] = [],
 ): { offsets: LabelOffset[]; visibles: boolean[] } {
-  const { zones, bulles, obstacles, bounds, gap } = vue;
+  const { zones, bulles, bounds, gap, dures = [] } = vue;
+  // Les obstacles durs (la flèche d'un ouvrage, GD-7) sont aussi des obstacles : les étiquettes s'en écartent d'abord.
+  // Mais ce ne sont pas des repères posés sur l'île de destination (`reperes`) : son nom ne passe pas par-dessus pour
+  // s'y lire, il prend une autre place.
+  const obstacles = dures.length ? [...vue.obstacles, ...dures] : vue.obstacles;
+  const reperes = vue.obstacles;
   // Hors de la Carte, les étiquettes tenues (l'île « Commence ici », l'île du bonhomme) pèsent plus que les autres : elles
   // se montrent d'abord, et prennent leur place simple à un nom plus léger (référent dys, LV2-5).
   const poidsHors = !carte && tenues.length ? boxes.map((_, i) => (tenues.includes(i) ? 2 : 1)) : undefined;
@@ -217,6 +224,12 @@ export function placerEtiquettes(
   gardees.forEach((i, k) => (offsets[i] = placees[k]));
   const couvert = [...zones, ...bulles];
   const visibles = montrees(boxes, offsets, couvert, bounds, w, iles);
+  // Une étiquette que l'écart laisse sur un obstacle dur ne s'y montre pas : elle cherche plus bas une autre place (les
+  // places simples autour de son île, puis la dernière chance de la Carte), qui évitent les obstacles.
+  if (dures.length)
+    boxes.forEach((b, i) => {
+      if (visibles[i] && dures.some((v) => overlap({ ...b, x: b.x + offsets[i].dx, y: b.y + offsets[i].dy }, v, 0) > 0)) visibles[i] = false;
+    });
   // Avant de renoncer à un nom dont l'île se voit : les places simples autour d'elle, dessus, dessous, à gauche, à
   // droite (DA-31), sans trait de rappel ni place plus loin. La plus lourde d'abord ; une place prise n'en change pas
   // tant que le cadrage ne bouge pas (le calcul ne dépend que de lui). Sur la Carte, le nom de la destination ne se
@@ -224,7 +237,7 @@ export function placerEtiquettes(
   const poids = (i: number) => (w ? w[i] : 1);
   const lourd = w ? Math.max(1, ...gardees.map(poids)) : Infinity;
   const destination = carte && lourd > 1 ? gardees.find((i) => poids(i) >= lourd) : undefined;
-  const garde = destination === undefined ? null : gardeDeLaDestination(iles[destination], obstacles);
+  const garde = destination === undefined ? null : gardeDeLaDestination(iles[destination], reperes);
   const vues = new Map<number, LabelBox>();
   boxes.forEach((b, i) => {
     if (!visibles[i]) return;
@@ -242,7 +255,7 @@ export function placerEtiquettes(
     const chasse = poids(i) >= lourd && lourd > 1;
     // Dessus et dessous passent un repère posé sur l'île (la flèche de la destination, le fanion) plutôt que d'y renoncer.
     const passe = (y: number, sens: 1 | -1) => {
-      const gene = obstacles.filter((v) => overlap({ ...b, x: ile.x, y }, v, gap) > 0);
+      const gene = reperes.filter((v) => overlap({ ...b, x: ile.x, y }, v, gap) > 0);
       if (!gene.length) return y;
       return sens < 0 ? Math.min(...gene.map((v) => v.y - v.h / 2)) - b.h / 2 - gap : Math.max(...gene.map((v) => v.y + v.h / 2)) + b.h / 2 + gap;
     };
@@ -291,7 +304,7 @@ export function placerEtiquettes(
     if (destination !== undefined && visibles[destination] && offsets[destination].dy > 0) {
       const b = boxes[destination];
       const ile = iles[destination];
-      const fleches = obstacles.filter((v) => overlap({ ...b, x: ile.x, y: ile.y - b.h / 2 - gap }, v, gap) > 0);
+      const fleches = reperes.filter((v) => overlap({ ...b, x: ile.x, y: ile.y - b.h / 2 - gap }, v, gap) > 0);
       const at = { ...b, x: ile.x, y: Math.min(ile.y, ...fleches.map((v) => v.y - v.h / 2)) - b.h / 2 - gap };
       if (entiere(b, { dx: at.x - b.x, dy: at.y - b.y }, couvert, bounds) && !obstacles.some((v) => overlap(at, v, gap) > 0)) dessus = { i: destination, at };
     }
@@ -417,6 +430,48 @@ function gardeDeLaDestination(ile: { x: number; y: number }, obstacles: LabelBox
 /** La distance d'un point à une étiquette (nulle s'il est dessous). */
 function distanceA(r: LabelBox, p: { x: number; y: number }): number {
   return Math.hypot(Math.max(0, Math.abs(p.x - r.x) - r.w / 2), Math.max(0, Math.abs(p.y - r.y) - r.h / 2));
+}
+
+/**
+ * Sur la Carte, la flèche d'un ouvrage (GD-7) et les étiquettes : `fleches`, sa boîte à l'écran à chacune de ses places
+ * sur la liaison (de la voulue, côté île de départ, à la dernière permise vers l'arrivée ; terrain.ts,
+ * `placesDeLaFleche`). La flèche est un obstacle dur (`placerEtiquettes`, `dures`) : aucune étiquette ne se pose sur
+ * elle. Elle prend la première place libre, dans le cadre et hors de l'interface : où aucune étiquette ne bouge ni ne se
+ * tait à cause d'elle (comparé au placement sans la flèche) ; sinon la première où autant de noms se montrent, celui de
+ * la destination compris (des étiquettes s'écartent) ; sinon la voulue, et c'est l'étiquette qui se déplace ou se tait, jamais la flèche hors
+ * de sa liaison. Rend l'indice de la place prise (`fleche`) et le placement des étiquettes. Le calcul (un placement par
+ * place, une dizaine au plus) se fait une fois par cadrage, pas image par image.
+ */
+export function placerAvecLaFlecheDOuvrage(
+  fleches: LabelBox[],
+  boxes: LabelBox[],
+  iles: { x: number; y: number }[],
+  vue: { zones: LabelBox[]; bulles: LabelBox[]; obstacles: LabelBox[]; bounds: { w: number; h: number }; gap: number },
+  carte: { weights: number[] },
+): { fleche: number; offsets: LabelOffset[]; visibles: boolean[] } {
+  const { zones, bounds } = vue;
+  const avec = (k: number) => ({ fleche: k, ...placerEtiquettes(boxes, iles, { ...vue, dures: fleches[k] ? [fleches[k]] : [] }, carte) });
+  if (!fleches.length) return avec(0);
+  const dansLeCadre = (f: LabelBox) => outside(f, bounds) < 1 && !zones.some((z) => overlap(f, z, 0) > 0);
+  const sans = placerEtiquettes(boxes, iles, vue, carte);
+  const rienNeBouge = (r: { offsets: LabelOffset[]; visibles: boolean[] }) =>
+    r.visibles.every((v, i) => v === sans.visibles[i] && (!v || Math.hypot(r.offsets[i].dx - sans.offsets[i].dx, r.offsets[i].dy - sans.offsets[i].dy) < 0.5));
+  // Autant de noms montrés qu'avant (pas forcément les mêmes : la flèche peut en déplacer un vers une place libérée), et
+  // celui de la destination (le plus lourd) s'il se montrait.
+  const montres = (v: boolean[]) => v.filter(Boolean).length;
+  const lourd = Math.max(...carte.weights);
+  const aucunNeSeTait = (r: { visibles: boolean[] }) =>
+    montres(r.visibles) >= montres(sans.visibles) && r.visibles.every((v, i) => v || !sans.visibles[i] || carte.weights[i] < lourd || lourd <= 1);
+  let secours: ReturnType<typeof avec> | null = null;
+  let voulue: ReturnType<typeof avec> | null = null;
+  for (let k = 0; k < fleches.length; k++) {
+    if (!dansLeCadre(fleches[k])) continue;
+    const r = avec(k);
+    if (rienNeBouge(r)) return r;
+    if (!secours && aucunNeSeTait(r)) secours = r;
+    if (k === 0) voulue = r;
+  }
+  return secours ?? voulue ?? avec(0);
 }
 
 /**

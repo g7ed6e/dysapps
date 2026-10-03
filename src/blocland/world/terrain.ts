@@ -5,7 +5,7 @@
 import { BLOC, BIOMES, BLOCKS, missionsJouables, type BiomeDef, type BiomeId } from '../biomes';
 import { lv2Courante } from '../../core/settings';
 import { ARCHIPELAGOS, BRIDGES, bridgeState, bridgesOf, getArchipelago, isBiomeUnlocked, islandsOf, otherEnd, reachableIslands, type BridgeDef } from './archipelago';
-import { walkPath, type WalkGround } from './paths';
+import { walkPath, type Cell, type WalkGround } from './paths';
 import {
   CORE,
   COTE_DU_COEUR,
@@ -571,6 +571,14 @@ export function portsDAttache(id: BiomeId): { ouvrage: string; local: { x: numbe
  * passe par ses points de passage. Chaque case a son altitude (interpolée).
  */
 export function bridgePath(def: BridgeDef): { x: number; y: number; z: number; climbing: boolean; dx: number; dy: number }[] {
+  return casesDeLOuvrage(def).map((c) => ({ x: c.x, y: c.y, z: c.z, climbing: c.climbing, dx: c.dx, dy: c.dy }));
+}
+
+/**
+ * Les cases d'un ouvrage (`bridgePath`), chacune avec son tronçon : le segment du tracé, d'un point au suivant (0 depuis
+ * l'île `from`). La flèche de la Carte reste sur le premier depuis l'île de départ (`placesDeLaFleche`).
+ */
+export function casesDeLOuvrage(def: BridgeDef): { x: number; y: number; z: number; climbing: boolean; dx: number; dy: number; troncon: number }[] {
   const a = islandDef(def.from);
   const b = islandDef(def.to);
   const vertical = Math.abs(b.core.y - a.core.y) >= Math.abs(b.core.x - a.core.x);
@@ -589,7 +597,7 @@ export function bridgePath(def: BridgeDef): { x: number; y: number; z: number; c
     points.push({ x: ca.x, y: jog }, { x: cb.x, y: jog });
   }
   points.push(cb);
-  const cells: { x: number; y: number }[] = [];
+  const cells: { x: number; y: number; troncon: number }[] = [];
   const seen = new Set<string>();
   for (let s = 0; s + 1 < points.length; s++) {
     const p = points[s];
@@ -601,7 +609,7 @@ export function bridgePath(def: BridgeDef): { x: number; y: number; z: number; c
       const key = `${x},${y}`;
       if (seen.has(key)) continue;
       seen.add(key);
-      cells.push({ x, y });
+      cells.push({ x, y, troncon: s });
     }
   }
   // Un sentier suit la terre : de bord de cœur à bord de cœur, posé sur le sol. Les autres ouvrages franchissent
@@ -621,8 +629,61 @@ export function bridgePath(def: BridgeDef): { x: number; y: number; z: number; c
     prevZ = z;
     const next = span[Math.min(i + 1, span.length - 1)];
     const prev = span[Math.max(i - 1, 0)];
-    return { x: c.x, y: c.y, z, climbing, dx: Math.sign(next.x - prev.x), dy: Math.sign(next.y - prev.y) };
+    return { x: c.x, y: c.y, z, climbing, dx: Math.sign(next.x - prev.x), dy: Math.sign(next.y - prev.y), troncon: c.troncon };
   });
+}
+
+/** Une case d'une liaison, et le tronçon de son tracé où elle est (`casesDeLOuvrage`). */
+export interface CaseDeLiaison extends Cell {
+  troncon: number;
+}
+
+/**
+ * L'indice de la dernière case du premier tronçon d'une liaison (`cases`, depuis l'île de départ), avant son premier
+ * coude. Un décalage d'une seule case entre deux tronçons de même sens (le pas de côté d'un pont presque droit, quand ses
+ * deux ancrages ne sont pas alignés) n'est pas un coude : le tracé y continue tout droit.
+ */
+export function premierCoude(cases: readonly CaseDeLiaison[]): number {
+  const fin = (debut: number) => {
+    let i = debut;
+    while (i + 1 < cases.length && cases[i + 1].troncon === cases[debut].troncon) i++;
+    return i;
+  };
+  const sens = (a: number, b: number) => `${Math.sign(cases[b].x - cases[a].x)},${Math.sign(cases[b].y - cases[a].y)}`;
+  let coude = fin(0);
+  if (coude === 0) return 0;
+  const premier = sens(0, coude);
+  // Un pas de côté d'une case, puis un tronçon dans le même sens que le premier : le tracé continue.
+  while (coude + 2 < cases.length && fin(coude + 1) === coude + 1) {
+    const suite = fin(coude + 2);
+    if (suite === coude + 2 || sens(coude + 2, suite) !== premier) break;
+    coude = suite;
+  }
+  return coude;
+}
+
+/** La flèche d'un ouvrage se pose à tant de cases de la première case d'eau, vers l'arrivée. */
+export const FLECHE_APRES_LA_RIVE = 3;
+
+/**
+ * Les places de la flèche d'un ouvrage sur sa liaison (`cases`, de l'île de départ à l'île d'arrivée), de la voulue à
+ * la dernière permise (décision du directeur artistique, GD-7, PR 2) : la première case d'eau du tracé, puis
+ * `FLECHE_APRES_LA_RIVE` cases plus loin ; jamais au-delà du milieu de la liaison ni hors du premier tronçon (le premier
+ * coude d'un ouvrage en contour) ; jamais sur une case de terre (`terre`, n'importe quelle île). Les suivantes : celles où
+ * elle glisse vers l'arrivée quand une étiquette occupe sa place, aux mêmes limites. Sans aucune case d'eau (un sentier,
+ * posé sur l'isthme), les cases du tracé comptent toutes. Vide pour une liaison sans case.
+ */
+export function placesDeLaFleche(cases: readonly CaseDeLiaison[], terre: (x: number, y: number) => boolean): Cell[] {
+  if (!cases.length) return [];
+  const eau = cases.some((c) => !terre(c.x, c.y)) ? (c: Cell) => !terre(c.x, c.y) : () => true;
+  const milieu = Math.floor((cases.length - 1) / 2);
+  const limite = Math.min(milieu, premierCoude(cases));
+  const rive = cases.findIndex(eau);
+  const cell = (c: CaseDeLiaison): Cell => ({ x: c.x, y: c.y, z: c.z });
+  // La rive au-delà de la limite (une liaison qui longe une terre) : la flèche se pose sur la première case d'eau.
+  if (rive > limite) return [cell(cases[rive])];
+  const places = cases.slice(Math.min(rive + FLECHE_APRES_LA_RIVE, limite), limite + 1).filter(eau);
+  return (places.length ? places : [cases[rive]]).map(cell);
 }
 
 /**

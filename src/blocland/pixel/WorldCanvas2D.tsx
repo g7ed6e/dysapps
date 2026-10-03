@@ -27,7 +27,8 @@ import {
 } from '../world/scene';
 import { islandCenter } from '../world/terrain';
 import { drawIslandLabel, drawMapArrow, measureIslandLabel } from '../world/labelCanvas';
-import { placerEtiquettes, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
+import { placerAvecLaFlecheDOuvrage, placerEtiquettes, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
+import { casesDesTirets, TIRET_SUGGERE } from '../world/traceSuggere';
 import { VEHICLE_DECK } from '../world/harbour';
 import { vehiclePath } from '../world/voyage';
 import { islandsOf } from '../world/archipelago';
@@ -445,7 +446,8 @@ export default function WorldCanvas2D({
     const t0 = performance.now();
     let last = t0;
     // L'écart des étiquettes, calculé pour un cadrage (sa clé) et gardé tant qu'il ne change pas.
-    let labelLayout: { key: string; offsets: LabelOffset[]; visibles: boolean[] } | null = null;
+    // `fleche` : sur la Carte, la place prise par la flèche d'un ouvrage parmi les siennes (GD-7), refaite avec l'écart.
+    let labelLayout: { key: string; offsets: LabelOffset[]; visibles: boolean[]; fleche: number } | null = null;
     // Sans page autour (un aperçu), la bande des boutons du bas (72 px) reste réservée.
     const lireZones = lecteurDeZones(
       el,
@@ -812,7 +814,22 @@ export default function WorldCanvas2D({
       // plus bas, par-dessus les étiquettes ; sa pointe sur le cœur de l'île, ou juste au-dessus du milieu de l'ouvrage.
       const mapArrowIsland = p.map && typeof mk === 'string' ? mk : null;
       const mapArrowOuvrage = p.map && estUnOuvrage(mk) ? mk : null;
-      const mapArrowAt = mapArrowIsland ? islandCenter(mapArrowIsland) : mapArrowOuvrage ? mapArrowOuvrage.cell : null;
+      // Sur un ouvrage, la place que l'écart des étiquettes a laissée libre (la voulue, tant qu'il n'est pas fait).
+      const placeOuvrage = mapArrowOuvrage ? (mapArrowOuvrage.places[Math.min(labelLayout?.fleche ?? 0, mapArrowOuvrage.places.length - 1)] ?? mapArrowOuvrage.cell) : null;
+      const mapArrowAt = mapArrowIsland ? islandCenter(mapArrowIsland) : placeOuvrage;
+      // Le tracé renforcé de l'ouvrage désigné (world/traceSuggere.ts) : sous la flèche et les étiquettes, des tirets
+      // foncés cernés de clair, immobiles, plus épais qu'une case.
+      if (mapArrowOuvrage) {
+        const { lisere, coeur } = TIRET_SUGGERE;
+        for (const c of casesDesTirets(mapArrowOuvrage.trace)) {
+          const { sx, sy } = at(c.x + 0.5, c.y + 0.5, c.z + 1);
+          for (const { large, couleur } of [lisere, coeur]) {
+            const w = Math.max(2, large * TILE * cam.s);
+            ctx.fillStyle = couleur;
+            ctx.fillRect(Math.round(sx - w / 2), Math.round(sy - w / 2), Math.round(w), Math.round(w));
+          }
+        }
+      }
       if (mk && !mapArrowAt) {
         const c = typeof mk === 'string' ? islandCenter(mk) : estUnOuvrage(mk) ? mk.cell : mk;
         // Une île : au-dessus de son cœur. Une case (le chantier du navire, calée sur le haut du mât en 3D) : juste
@@ -829,7 +846,7 @@ export default function WorldCanvas2D({
       // sa pointe sur l'île et s'écarte de côté si le fanion est tout près (le bonhomme sur la même île).
       const dprMarks = Math.min(window.devicePixelRatio || 1, 3);
       const arrowH = 48 * dprMarks;
-      const mapMarks = (c: typeof cam) => {
+      const mapMarks = (c: typeof cam, place: Cell | null = mapArrowAt) => {
         const out: { arrow: LabelBox | null; tip: { x: number; y: number } | null; beacon: LabelBox | null } = { arrow: null, tip: null, beacon: null };
         if (h.at && p.avatar && p.map) {
           const b = project(h.at.x + 0.5, h.at.y + 0.5, h.at.z);
@@ -838,8 +855,8 @@ export default function WorldCanvas2D({
           const cy = feet.sy - 24 * c.s;
           out.beacon = { x: feet.sx, y: cy - 3.5 * s, w: 14 * s + 4, h: 13 * s + 3 };
         }
-        if (mapArrowAt) {
-          const i = mapArrowAt;
+        if (place) {
+          const i = place;
           const b = project(i.x + 0.5, i.y + 0.5, i.z + (mapArrowOuvrage ? 1 : 2));
           const tip = toScreen(c, scr, b.bx, b.by);
           const shift = out.beacon ? separateMark({ x: tip.sx, y: tip.sy }, { x: out.beacon.x, y: out.beacon.y + out.beacon.h / 2 }, 56 * dprMarks) : { dx: 0, dy: 0 };
@@ -873,10 +890,18 @@ export default function WorldCanvas2D({
           const cadre = { w: scr.w, h: scr.h };
           // Sur la Carte : la prochaine destination d'abord, une île fermée en dernier ; la flèche et le fanion restent
           // visibles. Entière ou absente : celle qui ne trouve pas de place libre près de son île ne se dessine pas à moitié.
-          const marques = p.map ? mapMarks(target) : null;
+          // La destination : l'île de la flèche, ou celle d'où part l'ouvrage qu'elle désigne (GD-7).
+          const destination = mapArrowIsland ?? mapArrowOuvrage?.depuis;
+          const carte = p.map ? { weights: list.map((l) => (l.id === destination ? 2 : l.state?.id === 'fermee' ? 0.5 : 1)) } : null;
+          // La flèche d'un ouvrage : la première de ses places libres, et aucune étiquette ne se pose jamais sur elle
+          // (`placerAvecLaFlecheDOuvrage`).
+          const marques = p.map ? mapMarks(target, mapArrowOuvrage ? null : mapArrowAt) : null;
           const obstacles = marques ? [marques.arrow, marques.beacon].filter((b): b is LabelBox => b !== null) : [];
-          const carte = p.map ? { weights: list.map((l) => (l.id === mapArrowIsland ? 2 : l.state?.id === 'fermee' ? 0.5 : 1)) } : null;
-          labelLayout = { key, ...placerEtiquettes(boxes, iles, { zones, bulles, obstacles, bounds: cadre, gap: 6 * dpr }, carte) };
+          const vue = { zones, bulles, obstacles, bounds: cadre, gap: 6 * dpr };
+          if (mapArrowOuvrage && carte) {
+            const fleches = mapArrowOuvrage.places.map((c) => mapMarks(target, c).arrow).filter((b): b is LabelBox => b !== null);
+            labelLayout = { key, ...placerAvecLaFlecheDOuvrage(fleches, boxes, iles, vue, carte) };
+          } else labelLayout = { key, fleche: 0, ...placerEtiquettes(boxes, iles, vue, carte) };
         }
         const { offsets, visibles } = labelLayout;
         list.forEach((l, i) => {

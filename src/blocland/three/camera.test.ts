@@ -11,7 +11,6 @@ import { islandDef, landBox, mapOf } from '../world/map';
 import { BRIDGES } from '../world/archipelago';
 import { archipelagoOfIsland } from '../world/archipels';
 import { grilleDe } from '../world/grille';
-import { milieuDeLaLiaison } from '../world/view';
 import { placeLibre, type Rect } from '../placeLibre';
 import { avatarRoute, cadreDeTraversee, islandCenter, worldBounds } from '../world/terrain';
 import { AUTOUR_DE_LA_DESTINATION, cadrageDeLaCarte, cadrageDeLaTraversee, creerCamera, ECHELLE_MIN_DE_LA_TRAVERSEE, PLANCHER_DE_LA_CARTE } from './camera';
@@ -137,7 +136,7 @@ describe('La Carte dans la place libre (DA-31)', () => {
   it('la flèche posée sur un ouvrage (GD-7) : sa pointe reste dans la place libre, au large comme serré', () => {
     for (const def of BRIDGES) {
       const a = archipelagoOfIsland(def.from);
-      const m = milieuDeLaLiaison(grilleDe(a).liaison(def.id))!;
+      const m = grilleDe(a).placesDeLaFleche(def.id)[0];
       // La pointe, comme three/bornes.ts la pose (`poserLaFleche`) : juste au-dessus du tablier.
       const pointe = { x: m.x + 0.5, y: m.y + 0.5, z: m.z + 2 };
       for (const libre of [

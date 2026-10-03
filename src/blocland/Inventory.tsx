@@ -102,7 +102,7 @@ export function InventoryBody() {
                     </Link>
                   ) : (
                     <Link to={`/adventure/${r.ouvrage.from}`} className="tag tag-ok">
-                      <Icon name="map" /> {KIND_NAME[r.ouvrage.bridge.kind]} vers {getBiome(r.ouvrage.to)?.name}
+                      <Icon name="ouvrage" /> {KIND_NAME[r.ouvrage.bridge.kind]} vers {getBiome(r.ouvrage.to)?.name}
                     </Link>
                   )}
                 </li>
@@ -161,7 +161,7 @@ export function InventoryBody() {
       {laterOuvrages.length > 0 && (
         <section className="inventory-section" aria-labelledby="inventaire-ouvrages">
           <h3 id="inventaire-ouvrages" className="island-sheet-heading">
-            <Icon name="map" /> Prochains ouvrages
+            <Icon name="ouvrage" /> Prochains ouvrages
           </h3>
           <p className="inventory-line">
             Tu as <strong>{payable}</strong> bloc{payable > 1 ? 's' : ''} pour construire, de n’importe quel type.

@@ -82,7 +82,7 @@ export function Bridges({ island, onBuilt, highlight = null, fold, objectif }: P
 
   const heading = (
     <h3 id={`ponts-${island}`} className="island-sheet-heading">
-      <Icon name="map" /> Ouvrages
+      <Icon name="ouvrage" /> Ouvrages
     </h3>
   );
   const readyOnes = bridges.filter((b) => have >= b.cost && conditionMet(b, state.world.links, world));
