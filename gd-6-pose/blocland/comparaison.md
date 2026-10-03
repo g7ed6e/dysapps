@@ -1,6 +1,6 @@
 # Comparaison avec main
 
-Références : main au commit cd58d1dc776a9afa22b3959bb00f25a9a42f508e (après : 4801231b6099bf0c121bbacd8b800b2805170e1a). Une vue est changée au-delà de 0,3 % de pixels différents.
+Références : main au commit cd58d1dc776a9afa22b3959bb00f25a9a42f508e (après : 0ae957f1db7488efe6216e0fe80e549585262152). Une vue est changée au-delà de 0,3 % de pixels différents.
 
 ## Changées (0) : planches dans `planches/`
 
