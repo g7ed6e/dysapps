@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, signes ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 20` le plus long temps réel laissé au monde pour se construire (en secondes, 10 par défaut). L'horloge de la
 // page est pilotée (`preparerLaScene`, scripts/prise-de-vue.mjs) : deux prises du même état donnent la même image, les
@@ -83,6 +83,15 @@ const CAPTURES = [
   { nom: 'gris-muscade', vue: 'île', famille: 'lisibilite', ile: 'lv2-4e-daily-life' },
   { nom: 'gris-hanneton', vue: 'défi', famille: 'lisibilite', ile: 'maths-6e-calculation' },
   { nom: 'gris-moustache', vue: 'île', famille: 'lisibilite', ile: 'english-5e-grammar' },
+  // Les signes de ce qui se touche (Toucher le monde, lot 1) : l'île de l'école et une île à Gardien sur téléphone, en
+  // portrait et en paysage, de jour et de nuit, et l'archipel de loin (le cube garde 14 px à l'écran). À retirer une
+  // fois le lot fusionné.
+  { nom: 'signes-ecole', vue: 'île', famille: 'signes', ile: 'french-6e-phonology', taille: { width: 390, height: 844 } },
+  { nom: 'signes-ecole-nuit', vue: 'île', famille: 'signes', ile: 'french-6e-phonology', nuit: true, taille: { width: 390, height: 844 } },
+  { nom: 'signes-ecole-paysage', vue: 'île', famille: 'signes', ile: 'french-6e-phonology', taille: { width: 844, height: 390 } },
+  { nom: 'signes-ile', vue: 'île', famille: 'signes', ile: 'french-6e-letter-confusion', taille: { width: 390, height: 844 } },
+  { nom: 'signes-ile-nuit', vue: 'île', famille: 'signes', ile: 'french-6e-letter-confusion', nuit: true, taille: { width: 390, height: 844 } },
+  { nom: 'signes-archipel', vue: 'archipel', famille: 'signes', ile: 'french-6e-phonology', taille: { width: 390, height: 844 } },
   // Les personnages hors du monde (lot R6) : chaque Gardien au défi, éteint, en 3D (`parIle` : un fichier par île,
   // `<archipel>-defi-<île>.jpg`) et en SVG (la vue « liste », sans la 3D) ; la bulle d'une créature (le défi pas encore ouvert : la partie
   // sans étoiles), en 3D et en SVG.
