@@ -241,7 +241,8 @@ const CAPTURES = [
   // Le port en étoile (GD-7, famille `etoile`, lot en cours) : une longue traversée en cours, de la Plaine à la Carrière
   // par le long bac du port (`allerA` : l'île touchée une fois la scène prête, `pasEnPlus` : le bonhomme au milieu du bac ;
   // le pont de la Mine retiré, sinon le plus court passe par lui), le panneau de la Carrière fermé (il attend l'arrivée,
-  // le cadre fixe prend toute la vue), en tablette, en portrait et en téléphone au grand texte ; une longue traversée
+  // le cadre fixe prend toute la vue), en tablette, en portrait, en téléphone (où la caméra suit le bonhomme : le cadre fixe y
+  // serait trop petit, `ECHELLE_MIN_DE_LA_TRAVERSEE`) et en téléphone au grand texte ; une longue traversée
   // sur le pont du Phare au Château des hypothèses (3e), en tablette ; la vue de l'archipel au départ (`depart` : une partie neuve, les liaisons
   // du port à construire, la Carte : la vue d'ensemble) ; le panneau de la Plaine au départ avec 4 blocs (quatre ouvrages
   // constructibles, un seul « Construire » principal), en téléphone au grand texte, défilé jusqu'au bouton principal, puis
@@ -249,6 +250,7 @@ const CAPTURES = [
   ...[
     { suffixe: '' },
     { suffixe: '-800x1280', taille: { width: 800, height: 1280 } },
+    { suffixe: '-390x844', taille: { width: 390, height: 844 } },
     { suffixe: '-390x844-od32', taille: { width: 390, height: 844 }, reglages: { font: 'opendyslexic', fontSize: 32 } },
   ].map(({ suffixe, ...autres }) => ({
     nom: `etoile-traversee${suffixe}`,

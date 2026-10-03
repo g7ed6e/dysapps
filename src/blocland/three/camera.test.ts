@@ -10,7 +10,7 @@ import { PHARE, PHARES } from '../world/decor/phare';
 import { islandDef, landBox, mapOf } from '../world/map';
 import { placeLibre, type Rect } from '../placeLibre';
 import { avatarRoute, cadreDeTraversee, islandCenter, worldBounds } from '../world/terrain';
-import { AUTOUR_DE_LA_DESTINATION, cadrageDeLaCarte, creerCamera, PLANCHER_DE_LA_CARTE } from './camera';
+import { AUTOUR_DE_LA_DESTINATION, cadrageDeLaCarte, cadrageDeLaTraversee, creerCamera, ECHELLE_MIN_DE_LA_TRAVERSEE, PLANCHER_DE_LA_CARTE } from './camera';
 import type { Derniers, Instant, Monde } from './partie';
 
 /** La scène de la tablette de référence (1024 × 768, moins la barre du haut) ; la vue d'une île, à gauche du panneau. */
@@ -352,5 +352,45 @@ describe('Une longue traversée (GD-7)', () => {
       expect(new Set(lues)).toEqual(new Set(['traversee|1']));
     }
   });
-});
 
+  it('le cadre fixe seulement à une taille lisible : gardé en 1024 × 768 et 800 × 1280 (et au Phare, 3e), la caméra suit le bonhomme en 390 × 844', () => {
+    const port = avatarRoute('maths-6e-calculation', 'french-6e-word-spelling', ['maths-6e-calculation-french-6e-word-spelling'])!;
+    const phare = avatarRoute('maths-3e-functions', 'english-3e-grammar', ['maths-3e-functions-english-3e-grammar'])!;
+    // La vue entière, panneau fermé (il attend l'arrivée), sous la barre du haut (80 px).
+    const cas = [
+      { nom: '6e, 1024 × 768', archipel: '6e' as const, route: port, w: 1024, h: 688, fixe: true },
+      { nom: '6e, 800 × 1280', archipel: '6e' as const, route: port, w: 800, h: 1200, fixe: true },
+      { nom: '3e, 1024 × 768', archipel: '3e' as const, route: phare, w: 1024, h: 688, fixe: true },
+      { nom: '6e, 390 × 844', archipel: '6e' as const, route: port, w: 390, h: 764, fixe: false },
+    ];
+    for (const t of cas) {
+      const cadre = cadreDeTraversee(t.archipel, t.route)!;
+      const libre = placeLibre(t.w, t.h, [{ x: t.w / 2, y: t.h - 34, w: t.w, h: 64 }], [{ x: t.w - 30, y: 60, w: 52, h: 110 }]);
+      const altitude = mapOf(t.archipel)[0]?.altitude ?? 0;
+      const { echelle } = cadrageDeLaTraversee(cadre, altitude, t.w, t.h, libre, 40);
+      expect(echelle >= ECHELLE_MIN_DE_LA_TRAVERSEE, `${t.nom} : ${echelle.toFixed(1)} px la case`).toBe(t.fixe);
+      const b = worldBounds(t.archipel);
+      const monde: Monde = { scene: new THREE.Scene(), archipel: t.archipel, habillage: HABILLAGES.blocland, surface: null, etendue: b, centre: { x: 0, y: 0 }, largeur: 200 };
+      const camera = new THREE.PerspectiveCamera(40, t.w / t.h, 0.5, 2000);
+      const derniers = { current: { carte: false, focus: { island: null, seq: 0 }, home: null, forceDay: true } as unknown as Derniers };
+      const instant: Instant = { now: 0, marche: true, traversee: cadre, navigue: null, carte: false, but: { target: new THREE.Vector3(), pos: new THREE.Vector3() } };
+      const avatar = new THREE.Object3D();
+      const cam = creerCamera(monde, camera, avatar, derniers, instant, { place: () => ({ libre, w: t.w, h: t.h, saut: false }), destination: () => null });
+      const poser = (c: { x: number; y: number; z: number }) => {
+        avatar.position.set(c.x + 0.5, c.z, c.y + 0.5);
+        cam.animer!(0, 0.016, true);
+        camera.updateMatrixWorld();
+        return camera.position.clone();
+      };
+      const depart = poser(t.route[0]);
+      const milieu = t.route[Math.floor(t.route.length / 2)];
+      const ici = poser(milieu);
+      // Cadre fixe : la caméra ne bouge pas. Sinon, elle suit le bonhomme, à la distance d'avant GD-7 : il est au centre.
+      expect(ici.distanceTo(depart) < 1e-6, t.nom).toBe(t.fixe);
+      if (!t.fixe) {
+        const p = ecran(camera, t, milieu.x + 0.5, milieu.z + 1, milieu.y + 0.5);
+        expect(Math.abs(p.x - t.w / 2) < t.w / 4 && Math.abs(p.y - t.h / 2) < t.h / 4, `${p.x},${p.y}`).toBe(true);
+      }
+    }
+  });
+});
