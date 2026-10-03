@@ -61,8 +61,8 @@ export function sousLaFiche(ecran: { x: number; y: number }, fiche: Rect, marge 
 }
 
 /**
- * Ce qui s'ouvre dans l'interface compte fermé : le pli « Les îles et leur état » (un `details` ouvert) et la liste du
- * choix de l'archipel (un bouton `aria-expanded`). La zone qui les porte s'arrête où elle s'arrêterait fermée, défilement
+ * Ce qui s'ouvre dans l'interface compte fermé : le pli « Les îles et leur état » (un `details` ouvert) et ce qu'ouvre
+ * un bouton `aria-expanded`, s'il y en a un. La zone qui les porte s'arrête où elle s'arrêterait fermée, défilement
  * du haut remis à zéro (fermé, le panneau tient sans défiler) : la caméra ne bouge pas quand l'élève ouvre ou referme un pli.
  */
 function plisFermes(stage: Element, vue: DOMRect, zones: LabelBox[]): LabelBox[] {

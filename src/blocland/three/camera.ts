@@ -333,9 +333,12 @@ export interface Camera extends PartieDeLaScene {
  * normalisées de l'écran) pour la caméra `cam` déjà placée : le point du plan de `point` vu en `vers` avant le glissement
  * devient `point`. Zéro si ce plan n'est pas devant la caméra en `vers` (l'horizon).
  */
+/** Le point visé de l'écran, réutilisé d'un appel à l'autre (le recadrage le demande à chaque image). */
+const VISEE = new THREE.Vector2();
+
 export function decalagePourViser(cam: THREE.PerspectiveCamera, point: THREE.Vector3, vers: { x: number; y: number }, out: THREE.Vector3, ray = new THREE.Raycaster()): THREE.Vector3 {
   cam.updateMatrixWorld();
-  ray.setFromCamera(new THREE.Vector2(vers.x, vers.y), cam);
+  ray.setFromCamera(VISEE.set(vers.x, vers.y), cam);
   const { origin: o, direction: d } = ray.ray;
   if (Math.abs(d.y) < 1e-6) return out.set(0, 0, 0);
   const t = (point.y - o.y) / d.y;
