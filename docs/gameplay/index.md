@@ -4,7 +4,7 @@ Ce document décrit le jeu de DysApps une seule fois, sans univers. Il dit les r
 
 Le jeu est **themable** (décision du mainteneur, 2 octobre 2026) : il se décrit avec des mots neutres, et un univers n’apporte que son habillage, c’est-à-dire le mot qu’il affiche pour chaque mot neutre, son récit et son dessin. Blocland est l’univers par défaut et le seul où le jeu évolue, son dessin restant figé hors des lots communs ; ses mots sont dans sa [fiche](../univers/blocland/fiche.md). Archipéo est en pause depuis le 2 octobre 2026 ([son dossier](../univers/archipeo/game-design.md)). Un univers nouveau, dans l’espace ou sur la terre ferme, n’aurait qu’à remplir sa table : les règles ne bougent pas ([Plusieurs univers](../univers/univers.md), §4).
 
-Pour changer le jeu : une fiche `propositions/GD-<n>.md` (voir [Proposer un changement](propositions/modele.md)), relue par les agents, décidée par le mainteneur, inscrite dans [les décisions](decisions.md), puis versée dans ce document.
+Pour changer le jeu : une fiche `propositions/GD-<n>.md` (voir [Proposer un changement](propositions/modele.md)), relue par les agents, décidée par le mainteneur, inscrite dans [les décisions](decisions.md), puis versée dans ce document ; une fiche entièrement construite part dans `propositions/archives/`.
 
 ## Le vocabulaire
 
@@ -97,7 +97,7 @@ Trois échelles : une mission (5 à 10 minutes, une partie posée) ; un lieu (qu
 - **Deux sortes seulement** : la ressource du lieu et la ressource composée. Aucune monnaie nouvelle, aucune jauge.
 - **Toute ressource de lieu paie toute liaison** : ce qu’on gagne n’importe où sert.
 - **Une ressource demandée** se montre par son icône et son nom, jamais par la seule couleur ; les nombres sont petits et dits en mots ; une seule phrase dit où la gagner ; on ne dit jamais « manquant ».
-- **La ressource composée**, une par région, n’est fournie par aucun lieu : elle se fait au lieu d’assemblage du lieu de départ, à partir de trois ressources de deux lieux de la région, une à la fois, sur une recette fixe et toujours affichée. Chacune demande de répondre à une question qui mêle les deux matières de la recette, sans XP ni étoiles ; rien ne se perd en cas d’erreur ou en quittant ([GD-2](propositions/GD-2.md)). Les recettes, les questions et les noms propres à chaque univers sont dans `docs/contenu/assemblage.md`.
+- **La ressource composée**, une par région, n’est fournie par aucun lieu : elle se fait au lieu d’assemblage du lieu de départ, à partir de trois ressources de deux lieux de la région, une à la fois, sur une recette fixe et toujours affichée. Chacune demande de répondre à une question qui mêle les deux matières de la recette, sans XP ni étoiles ; rien ne se perd en cas d’erreur ou en quittant ([GD-2](propositions/archives/GD-2.md)). Les recettes, les questions et les noms propres à chaque univers sont dans `docs/contenu/assemblage.md`.
 - **Le stock dit, pour chaque ressource, ce qu’elle construit maintenant**, et chaque chantier est un lien qui y emmène. Quand une ressource ne sert à rien, il le dit honnêtement.
 - **Les ressources d’une région quittée servent encore** : la région suivante en demande un peu, en révision en spirale, puis les grands projets de 4e et de 3e. Ce qui est demandé ne bloque jamais, et une ressource qui manque se gagne par des missions rejouées ou des révisions dues.
 - **Les trophées des succès** ne sont pas des ressources : ils ne paient rien et restent dans la salle des succès. Les ressources d’avant [GD-6](propositions/GD-6.md) qui ne sont ni d’un lieu ni composées (les ressources rares, les finitions, les coffres déjà gagnés) restent dans la sauvegarde et se montrent en trophées : elles ne paient rien.
@@ -141,7 +141,7 @@ La liste des habitants et des gardiens, lieu par lieu, avec ce qui change d’un
 Le lieu de départ de chaque région rassemble ce qui était un portail à part : **un seul jeu**, où chaque chose de l’application a sa place dans le monde.
 
 - **L’école**, là dès le début, qu’on ne construit pas : trois portes, une par matière, et derrière elles les missions du portail. Elles rapportent la ressource du lieu de départ de la région où se tient l’élève, au barème des missions, et ne comptent ni pour le défi ni pour les étoiles des lieux.
-- **La salle des succès** : un trophée par succès, à une place fixe, dans l’ordre de la liste. La salle garde douze places, puis s’agrandit d’une travée au 13e succès et au 19e, jusqu’à 8 × 3 cases ; rien n’est posé sur son toit ([GD-3](propositions/GD-3.md)). Une travée apparaît entière, d’un coup, sans mouvement imposé ni son.
+- **La salle des succès** : un trophée par succès, à une place fixe, dans l’ordre de la liste. La salle garde douze places, puis s’agrandit d’une travée au 13e succès et au 19e, jusqu’à 8 × 3 cases ; rien n’est posé sur son toit ([GD-3](propositions/archives/GD-3.md)). Une travée apparaît entière, d’un coup, sans mouvement imposé ni son.
 - **Le lieu d’assemblage**, où se font les ressources composées.
 - **En trois bandes** : devant, les bornes seules ; au milieu, la salle des succès, une place libre, puis l’école ; au fond, la construction du lieu et le lieu d’assemblage. Rien ne se pose devant la porte d’un lieu ni une case autour. Les coordonnées sont dans le code (`world/terrain.ts`, `world/plans.ts`, `world/salle.ts`).
 

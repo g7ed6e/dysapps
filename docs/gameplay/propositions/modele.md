@@ -14,7 +14,7 @@ Pour faire évoluer le game design, on écrit une **fiche de proposition** : un 
 ```md
 # GD-<n> : <le changement, en quelques mots>
 
-**État** : Proposée | Décidée le <date> | Écartée le <date> (<motif>)
+**État** : Proposée | Décidée le <date> | Écartée le <date> (<motif>) | Construite le <date>, consolidée dans index.md, archivée (la fiche part dans `archives/`)
 **Portée** : Commun | Blocland | Archipéo
 
 ## Le constat
