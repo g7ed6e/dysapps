@@ -6,10 +6,10 @@
     "count": 3,
     "fixture": "french-6e-phonology-fixture-1",
     "blocland": {
-      "name": "le carré de semis",
-      "ask": "Il me faut {objet} pour mon carré de semis. Joue une mission de la Ferme des accords.",
+      "name": "le potager",
+      "ask": "Il me faut {objet} pour mon potager. Joue une mission de la Ferme des accords.",
       "ready": "Tu as les {blocs} ! Livre-les à Mousso.",
-      "done": "Carré de semis posé chez Mousso !"
+      "done": "Potager posé chez Mousso !"
     }
   },
   {
@@ -45,10 +45,10 @@
     "count": 2,
     "fixture": "french-6e-grammar-spelling-fixture-1",
     "blocland": {
-      "name": "l’abreuvoir",
-      "ask": "Il me faut {objet} pour mon abreuvoir. Joue une mission de la Rivière des fractions.",
+      "name": "le bac à eau",
+      "ask": "Il me faut {objet} pour mon bac à eau. Joue une mission de la Rivière des fractions.",
       "ready": "Tu as les {blocs} ! Livre-les à Bloquette.",
-      "done": "Abreuvoir posé chez Bloquette !"
+      "done": "Bac à eau posé chez Bloquette !"
     }
   },
   {
@@ -72,10 +72,10 @@
     "count": 3,
     "fixture": "maths-6e-calculation-fixture-1",
     "blocland": {
-      "name": "l’étal",
-      "ask": "Il me faut {objet} pour mon étal. Joue une mission de la Forêt des sons.",
+      "name": "la boutique",
+      "ask": "Il me faut {objet} pour ma boutique. Joue une mission de la Forêt des sons.",
       "ready": "Tu as les {blocs} ! Livre-les à Coco.",
-      "done": "Étal posé chez Coco !"
+      "done": "Boutique posée chez Coco !"
     }
   },
   {
@@ -98,10 +98,10 @@
     "count": 4,
     "fixture": "maths-6e-decimals-fixture-1",
     "blocland": {
-      "name": "l’abri",
-      "ask": "Il me faut {objet} pour mon abri. Joue une mission de la Baie des mots.",
+      "name": "le parasol",
+      "ask": "Il me faut {objet} pour mon parasol. Joue une mission de la Baie des mots.",
       "ready": "Tu as les {blocs} ! Livre-les à Lavi.",
-      "done": "Abri posé chez Lavi !"
+      "done": "Parasol posé chez Lavi !"
     }
   },
   {
@@ -111,10 +111,10 @@
     "count": 4,
     "fixture": "maths-5e-signed-numbers-fixture-1",
     "blocland": {
-      "name": "la cabane de pêche",
-      "ask": "Il me faut {objet} pour ma cabane de pêche. Joue une mission du Comptoir.",
+      "name": "la cabane",
+      "ask": "Il me faut {objet} pour ma cabane. Joue une mission du Comptoir.",
       "ready": "Tu as les {blocs} ! Livre-les à Frimas.",
-      "done": "Cabane de pêche posée chez Frimas !"
+      "done": "Cabane posée chez Frimas !"
     }
   },
   {
@@ -124,10 +124,10 @@
     "count": 3,
     "fixture": "maths-5e-proportionality-fixture-1",
     "blocland": {
-      "name": "le présentoir",
-      "ask": "Il me faut {objet} pour mon présentoir. Joue une mission du Carrefour des homophones.",
+      "name": "l’étagère",
+      "ask": "Il me faut {objet} pour mon étagère. Joue une mission du Carrefour des homophones.",
       "ready": "Tu as les {blocs} ! Livre-les à Bazar.",
-      "done": "Présentoir posé chez Bazar !"
+      "done": "Étagère posée chez Bazar !"
     }
   },
   {
@@ -150,10 +150,10 @@
     "count": 4,
     "fixture": "french-5e-conjugation-fixture-1",
     "blocland": {
-      "name": "l’abri du gué",
-      "ask": "Il me faut {objet} pour mon abri du gué. Joue une mission du Marché des proportions.",
+      "name": "l’abri",
+      "ask": "Il me faut {objet} pour mon abri. Joue une mission du Marché des proportions.",
       "ready": "Tu as les {blocs} ! Livre-les à Kroa.",
-      "done": "Abri du gué posé chez Kroa !"
+      "done": "Abri posé chez Kroa !"
     }
   },
   {
@@ -176,10 +176,10 @@
     "count": 2,
     "fixture": "maths-4e-algebra-fixture-1",
     "blocland": {
-      "name": "le treuil",
-      "ask": "Il me faut {objet} pour mon treuil. Assemble-les {à}.",
+      "name": "la machine",
+      "ask": "Il me faut {objet} pour ma machine. Assemble-les {à}.",
       "ready": "Tu as les {blocs} ! Livre-les à Ixe.",
-      "done": "Treuil posé chez Ixe !"
+      "done": "Machine posée chez Ixe !"
     }
   },
   {
@@ -267,10 +267,10 @@
     "count": 2,
     "fixture": "english-6e-vocabulary-fixture-1",
     "blocland": {
-      "name": "l’horloge du quai",
-      "ask": "Il me faut {objet} pour mon horloge du quai. Joue une mission de l’Horloge des verbes.",
+      "name": "la pendule",
+      "ask": "Il me faut {objet} pour ma pendule. Joue une mission de l’Horloge des verbes.",
       "ready": "Tu as les {blocs} ! Livre-les à Robin.",
-      "done": "Horloge du quai posée chez Robin !"
+      "done": "Pendule posée chez Robin !"
     }
   },
   {
@@ -332,10 +332,10 @@
     "count": 3,
     "fixture": "english-4e-grammar-fixture-1",
     "blocland": {
-      "name": "la marquise",
-      "ask": "Il me faut {objet} pour ma marquise. Joue une mission de l’Atelier du calcul littéral.",
+      "name": "l’auvent",
+      "ask": "Il me faut {objet} pour mon auvent. Joue une mission de l’Atelier du calcul littéral.",
       "ready": "Tu as les {blocs} ! Livre-les à Vapeur.",
-      "done": "Marquise posée chez Vapeur !"
+      "done": "Auvent posé chez Vapeur !"
     }
   },
   {

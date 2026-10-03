@@ -12,6 +12,7 @@ import {
   commandeDeLIle,
   commandeMiseEnAvant,
   commandesOuvertes,
+  estLivree,
   estPrete,
   faireArriverUneCommande,
   getCommande,
@@ -141,7 +142,7 @@ describe('prête, livrée', () => {
 
   it('les phrases : le nombre et le nom de Mes blocs, le lieu où l’on assemble', () => {
     const mousso = getCommande(MOUSSO)!;
-    expect(texteDeLaCommande(mousso, 'ask', FABRIQUE)).toBe('Il me faut 3 blocs de terre pour mon carré de semis. Joue une mission de la Ferme des accords.');
+    expect(texteDeLaCommande(mousso, 'ask', FABRIQUE)).toBe('Il me faut 3 blocs de terre pour mon potager. Joue une mission de la Ferme des accords.');
     expect(texteDeLaCommande(mousso, 'ready', FABRIQUE)).toBe('Tu as les blocs de terre ! Livre-les à Mousso.');
     expect(texteDeLaCommande(getCommande('french-6e-letter-confusion-request-1')!, 'ready', FABRIQUE)).toBe('Tu as les briques ! Livre-les à Tunel.');
     expect(texteDeLaCommande(getCommande('french-6e-word-spelling-request-1')!, 'ask', FABRIQUE)).toBe('Il me faut 2 poutres pour ma grue. Assemble-les à la Fabrique.');
@@ -172,7 +173,7 @@ describe('prête, livrée', () => {
     // Rien d'autre ne change : ni les plans, ni le journal, ni les coffres.
     expect(r.state.world.log).toEqual(avant.world.log);
     expect(r.state.chests).toBe(avant.chests);
-    expect(texteDeLaCommande(r.commande, 'done', FABRIQUE)).toBe('Carré de semis posé chez Mousso !');
+    expect(texteDeLaCommande(r.commande, 'done', FABRIQUE)).toBe('Potager posé chez Mousso !');
     // Livrée, elle ne revient jamais.
     expect(peutCommander(r.state, mousso)).toBe(false);
     // La dernière livrée : le champ disparaît.
@@ -239,13 +240,13 @@ describe('la sauvegarde', () => {
     expect(relue.world.requests).toEqual([COCO]);
   });
 
-  it('nettoie ce qui ne se lit pas : une commande inconnue, en double, déjà livrée, une quatrième ; une forme à moitié posée', () => {
+  it('nettoie ce qui ne se lit pas : une commande inconnue, en double, déjà livrée, une quatrième ; une petite construction inconnue ou sans case', () => {
     const mousso = getCommande(MOUSSO)!;
     const cles = casesDeLaPetiteConstruction(mousso.fixture)!.map((c) => c.key);
     const lue = sanitizeState({
       world: {
         links: [],
-        parts: { [mousso.fixture]: cles, 'maths-6e-calculation-fixture-1': cles.slice(0, 1), 'inconnue-fixture-1': ['0,0,0'] },
+        parts: { [mousso.fixture]: cles, 'maths-6e-calculation-fixture-1': [], 'maths-6e-fractions-fixture-1': 'oui', 'inconnue-fixture-1': ['0,0,0'] },
         requests: [
           'inconnue',
           COCO,
@@ -261,6 +262,18 @@ describe('la sauvegarde', () => {
     });
     expect(lue.world.parts).toEqual({ [mousso.fixture]: cles });
     expect(lue.world.requests).toEqual([COCO, 'french-6e-letter-confusion-request-1', 'french-6e-word-spelling-request-1', 'maths-5e-proportionality-request-1']);
+  });
+
+  it('l’identifiant prouve la livraison : des clés anciennes, d’une forme redessinée ou à moitié, se relisent livrées avec la forme d’aujourd’hui', () => {
+    const coco = getCommande(COCO)!;
+    const forme = casesDeLaPetiteConstruction(coco.fixture)!.map((c) => c.key);
+    for (const anciennes of [['0,0,0'], ['9,9,9', '8,8,8'], forme.slice(0, 1)]) {
+      const lue = sanitizeState({ world: { links: [], parts: { [coco.fixture]: anciennes } } });
+      expect(lue.world.parts[coco.fixture]).toEqual(forme);
+      expect(estLivree(lue.world, coco)).toBe(true);
+      // Relue, elle ne change plus.
+      expect(sanitizeState(JSON.parse(JSON.stringify(lue)))).toEqual(lue);
+    }
   });
 });
 

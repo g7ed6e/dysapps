@@ -383,9 +383,9 @@ Pour tous les items :
 - habitant : Bloquette
 - bloc : `maths-6e-fractions`
 - combien : 2
-- petite construction : l’abreuvoir
-- demande : Il me faut {objet} pour mon abreuvoir. Joue une mission de la Rivière des fractions.
+- petite construction : le bac à eau
+- demande : Il me faut {objet} pour mon bac à eau. Joue une mission de la Rivière des fractions.
 - prête : Tu as les {blocs} ! Livre-les à Bloquette.
-- posée : Abreuvoir posé chez Bloquette !
+- posée : Bac à eau posé chez Bloquette !
 
 > Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : la mangeoire entre deux poteaux (`relais()`) : 2 poteaux de terre de 2 cubes aux bouts, 2 galets entre eux au sol ; 6 cubes, 4 cases en ligne, 2 de haut.

@@ -1,8 +1,9 @@
 // Les commandes des habitants (GD-7, points 4 et 5), écrites à la fin du Markdown d'une île (docs/contenu/<île>.md), après
 // « ## Les plans », sous « ## Les demandes » : un « ### `<lieu>-request-<n>` » par commande, puis ses champs. Elles
 // redonnent src/blocland/world/requests.json (toutes les îles, dans l'ordre de docs/contenu/archipel.md). La forme de la
-// petite construction que pose une commande livrée reste dans le code (src/blocland/world/architect.ts) ; le Markdown la
-// décrit dans une note (« > Forme : … »), pour l'artiste technique 3D, que le jeu ne lit pas.
+// petite construction que pose une commande livrée, et sa place, restent dans le code
+// (src/blocland/world/petitesConstructions.ts) ; le Markdown la décrit dans une note (« > Forme : … »), pour l'artiste
+// technique 3D, que le jeu ne lit pas.
 //
 //   ## Les demandes
 //

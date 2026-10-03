@@ -192,8 +192,15 @@ export interface TextesCommandes {
   livrer: string;
   /** La liste, pour un lecteur d'écran. */
   liste: string;
-  /** Le pli replié : combien de commandes attendent (`n` ≥ 1), et combien sont prêtes. */
-  enAttente: (n: number, pretes: number) => string;
+  /**
+   * Le compte, à côté du titre (« Commandes · 1 prête ») : combien sont prêtes à livrer, ou, sans aucune prête, combien
+   * attendent (`n` ≥ 1).
+   */
+  compte: (n: number, pretes: number) => string;
+  /** Une commande pas prête dont l'élève a déjà une partie des blocs : « Tu en as 1 sur 3. », écrit et lu. */
+  tuEnAs: (have: number, count: number) => string;
+  /** « Y aller » quand l'élève est déjà sur l'île qui donne le bloc. */
+  tuYEs: string;
 }
 
 /** Les noms qu'un univers donne à des blocs (GD-2 : les blocs assemblés). */

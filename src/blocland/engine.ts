@@ -215,11 +215,12 @@ export function sanitizeState(input: unknown): GameState {
   // dans l'inventaire.
   if (isRecord(world.parts)) {
     for (const [id, keys] of Object.entries(world.parts)) {
-      // La petite construction d'une commande livrée (GD-7) : posée tout entière, ou pas du tout.
+      // La petite construction d'une commande livrée (GD-7) : son identifiant prouve la livraison, pas le dessin de sa
+      // forme. Une liste de clés non vide se relit posée avec la forme d'aujourd'hui, même si la forme a changé depuis
+      // (retouches du directeur artistique) ; une liste vide ou illisible, pas posée.
       const petite = casesDeLaPetiteConstruction(id);
       if (petite) {
-        const saved = new Set(Array.isArray(keys) ? keys : []);
-        if (petite.every((c) => saved.has(c.key))) parts[id] = petite.map((c) => c.key);
+        if (Array.isArray(keys) && keys.some((k) => typeof k === 'string')) parts[id] = petite.map((c) => c.key);
         continue;
       }
       const plan = anyPlan(id);

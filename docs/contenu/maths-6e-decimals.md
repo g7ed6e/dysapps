@@ -54,9 +54,9 @@ créature : Lavi
 - habitant : Lavi
 - bloc : `english-6e-vocabulary`
 - combien : 4
-- petite construction : l’abri
-- demande : Il me faut {objet} pour mon abri. Joue une mission de la Baie des mots.
+- petite construction : le parasol
+- demande : Il me faut {objet} pour mon parasol. Joue une mission de la Baie des mots.
 - prête : Tu as les {blocs} ! Livre-les à Lavi.
-- posée : Abri posé chez Lavi !
+- posée : Parasol posé chez Lavi !
 
 > Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : la croix du toit en pointe de `tour()` : un mât de 3 obsidiennes au milieu, 4 cabines en croix autour de son sommet (z 2) ; 7 cubes, 5 cases sur 3 × 3, 3 de haut.

@@ -525,9 +525,9 @@ Pour tous les items :
 - habitant : Vapeur
 - bloc : `maths-4e-algebra`
 - combien : 3
-- petite construction : la marquise
-- demande : Il me faut {objet} pour ma marquise. Joue une mission de l’Atelier du calcul littéral.
+- petite construction : l’auvent
+- demande : Il me faut {objet} pour mon auvent. Joue une mission de l’Atelier du calcul littéral.
 - prête : Tu as les {blocs} ! Livre-les à Vapeur.
-- posée : Marquise posée chez Vapeur !
+- posée : Auvent posé chez Vapeur !
 
 > Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : le portique de la tonnelle (`jardin()`) : 2 poteaux de rail de 2 cubes, un toit de 3 calques (le verre dépoli de la serre du Jardin) ; 7 cubes, 3 cases, 3 de haut.

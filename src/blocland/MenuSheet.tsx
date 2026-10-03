@@ -16,10 +16,13 @@ import { TROPHIES_PATH } from './trophies';
 import { ASSEMBLAGE_PATH } from './world/assemblage';
 import { useTextes } from '../univers';
 import { Commandes } from './Commandes';
+import type { BiomeId } from './biomes';
 
 interface Props {
   /** Reprendre : le panneau se ferme, on est dans le village. */
   onClose: () => void;
+  /** « Y aller » d'une commande : ouvre le panneau de l'île visée, comme un toucher sur l'île (le monde 3D). */
+  onAller?: (island: BiomeId, commande?: string) => void;
 }
 
 function Row({ to, icon, title, desc }: { to: string; icon: AnyIconName; title: string; desc?: string }) {
@@ -38,7 +41,7 @@ function Row({ to, icon, title, desc }: { to: string; icon: AnyIconName; title: 
   );
 }
 
-export function MenuSheet({ onClose }: Props) {
+export function MenuSheet({ onClose, onAller }: Props) {
   const { state } = useBlocland();
   const { assemblage } = useTextes();
   const { progress } = useProgress();
@@ -79,8 +82,9 @@ export function MenuSheet({ onClose }: Props) {
           )}
         </ul>
       )}
-      {/* Les commandes des créatures de l'archipel du bonhomme (GD-7), sous les révisions du jour : « Y aller » seulement. */}
-      <Commandes className="menu-commandes" />
+      {/* Les commandes des créatures de l'archipel du bonhomme (GD-7), sous les révisions du jour : « Y aller » seulement,
+          dans un pli qui s'ouvre de lui-même quand une commande est prête (directeur artistique). */}
+      <Commandes className="menu-commandes" fold="menu" onAller={onAller} />
       <ul className="island-quests menu-list" aria-label="Lieux du village">
         <Row to={SCHOOL_PATH} icon="school" title={SCHOOL_TITLE} desc="Français, maths, anglais" />
         <Row to={MONUMENTS_PATH} icon="castle" title={MONUMENTS_TITLE} desc="Bâtis avec tes blocs" />

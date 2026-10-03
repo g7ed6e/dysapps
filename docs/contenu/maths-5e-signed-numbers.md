@@ -54,9 +54,9 @@ créature : Frimas
 - habitant : Frimas
 - bloc : `english-5e-vocabulary`
 - combien : 4
-- petite construction : la cabane de pêche
-- demande : Il me faut {objet} pour ma cabane de pêche. Joue une mission du Comptoir.
+- petite construction : la cabane
+- demande : Il me faut {objet} pour ma cabane. Joue une mission du Comptoir.
 - prête : Tu as les {blocs} ! Livre-les à Frimas.
-- posée : Cabane de pêche posée chez Frimas !
+- posée : Cabane posée chez Frimas !
 
 > Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : la hutte (`hutte()`) en petit : des murs de portes (`door`) de 2 × 2 sur 2 rangs, avec une porte vide devant à gauche (7 cubes), et un toit plat de 4 tuiles (z 2) ; 11 cubes, 4 cases, 3 de haut (retouche du directeur artistique, 3 octobre 2026 : la glace se perdait sur le sol de glace).

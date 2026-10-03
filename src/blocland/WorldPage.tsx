@@ -640,7 +640,7 @@ export function WorldPage() {
   }, [partiesDites?.seq]);
   /**
    * La vague finie, touchée ou interrompue. Une partie : sa phrase dans le panneau (`direLaPose`). Une petite construction
-   * (GD-7, PR 3) : sa phrase est déjà écrite dans la section Commandes, seul le carillon reste (sauf `muet`).
+   * (GD-7, PR 3) : la section Commandes écrit sa phrase à la place de la ligne livrée, avec le carillon (sauf `muet`).
    */
   const finirLaVague = (muet = false) => {
     if (!vague) return;
@@ -658,9 +658,10 @@ export function WorldPage() {
   const poserEnSilence = () => finirLaVague(true);
   /**
    * « Livrer » (GD-7, PR 3) : la petite construction se pose chez la créature avec le geste d'une partie (GD-6), la caméra
-   * immobile, cube par cube et couche par couche, un « clac » par couche, puis le carillon ; la phrase « posée » est déjà
-   * dans le panneau, à côté de la scène (la fête ne passe jamais sur elle). « Réduire les animations » : posée d'un coup,
-   * un « clac » puis le carillon. Rend `true` : le son est pris ici, la section n'en joue pas.
+   * immobile, cube par cube et couche par couche, un « clac » par couche, puis le carillon et, au même moment, la phrase
+   * « posée » dans le panneau, à la place de la ligne livrée (directeur artistique ; la fête ne passe jamais sur elle).
+   * « Réduire les animations », ou la vague sautée : posée d'un coup, la phrase tout de suite, un « clac » puis le
+   * carillon. Rend `true` : le son est pris ici, la section n'en joue pas.
    */
   const poserLaCommande = (c: Commande): boolean => {
     if (habillage.pose !== 'geste') return false;
@@ -668,7 +669,8 @@ export function WorldPage() {
     if (reduceMotion || !cases.size) {
       if (settings.sounds) {
         sonDeLaPose();
-        window.setTimeout(playDone, VAGUE.finApresMs);
+        // Annulé si la page se démonte avant (`later`).
+        later(playDone, VAGUE.finApresMs);
       }
       return true;
     }
@@ -1187,7 +1189,7 @@ export function WorldPage() {
       ) : monument ? (
         <MonumentSheet builder={monumentBuilder} onClose={fermerLePanneau} />
       ) : menuOpen ? (
-        <MenuSheet onClose={() => navigate('/adventure')} />
+        <MenuSheet onClose={() => navigate('/adventure')} onAller={openIsland} />
       ) : (
         island &&
         panneauOuvert && (
@@ -1201,6 +1203,7 @@ export function WorldPage() {
             posees={partiesDites?.biome === island.id ? partiesDites.parties : null}
             enCoursDePose={vague?.biome === island.id && vague.commande === undefined ? vague.parties : null}
             onLivree={poserLaCommande}
+            commandeEnCoursDePose={vague?.biome === island.id ? (vague.commande ?? null) : null}
             onBuilt={(to) => {
               // La fête, c'est la transformation : la caméra vole jusqu'à l'île qui s'ouvre, et sa créature accueille.
               window.setTimeout(() => navigate(`/adventure/${to}`), 900);

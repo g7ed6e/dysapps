@@ -47,9 +47,9 @@ créature : Bazar
 - habitant : Bazar
 - bloc : `french-5e-homophones`
 - combien : 3
-- petite construction : le présentoir
-- demande : Il me faut {objet} pour mon présentoir. Joue une mission du Carrefour des homophones.
+- petite construction : l’étagère
+- demande : Il me faut {objet} pour mon étagère. Joue une mission du Carrefour des homophones.
 - prête : Tu as les {blocs} ! Livre-les à Bazar.
-- posée : Présentoir posé chez Bazar !
+- posée : Étagère posée chez Bazar !
 
 > Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : les gradins de la coupole (`dome()`) : devant, une marche de 3 panneaux au sol ; derrière, 3 toiles au sol et 3 toiles dessus ; 9 cubes, 6 cases, 2 de haut.

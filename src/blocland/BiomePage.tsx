@@ -125,7 +125,7 @@ export function BiomePage() {
       {/* « Pas de LV2 » : ni missions ni Gardien sur l'île de la LV2. */}
       {!sansLv2 && (
         <>
-      <h2 className="section-title">
+      <h2 id={`missions-${biome.id}`} tabIndex={-1} className="section-title">
         <Icon name="hammer" /> Missions
       </h2>
       <ul className="grid apps">

@@ -1999,7 +1999,7 @@ function quaySpots(port: BiomeId, cubes: VoxelCube[]): { boat: QuaySpot | null; 
   for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) core(AVATAR_HOME.x + dx, AVATAR_HOME.y + dy);
   // La petite construction de la commande de l'île (GD-7, PR 3), à sa place écrite, qu'elle soit posée ou non : les
   // objets du quai ne bougent jamais quand elle se pose. Sans case de marge : avec elle, la barque de la grève de la
-  // Plaine, dont l'étal de Coco prend la place, n'en trouvait plus.
+  // Plaine, dont la boutique de Coco prend la place, n'en trouvait plus.
   const commande = commandeDeLIle(port);
   const place = commande ? placeDeLaPetiteConstruction(port, commande.fixture) : null;
   if (commande && place)

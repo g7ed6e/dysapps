@@ -51,6 +51,8 @@ interface Props {
   enCoursDePose?: Partie[] | null;
   /** Une commande livrée dans ce panneau (GD-7, PR 3) : la scène pose sa petite construction ; `true` si elle en prend le son. */
   onLivree?: (c: Commande) => boolean;
+  /** La commande dont la petite construction se pose (la vague) : la phrase « posée » attend la fin (GD-7, PR 3). */
+  commandeEnCoursDePose?: string | null;
 }
 
 /**
@@ -59,7 +61,7 @@ interface Props {
  * il n'y a rien à y faire ; au pied, la matière, la classe et l'archipel. Tout est en HTML (police dys), on ne quitte
  * pas le monde.
  */
-export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight = null, ship, onBoard, posees = null, enCoursDePose = null, onLivree }: Props) {
+export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight = null, ship, onBoard, posees = null, enCoursDePose = null, onLivree, commandeEnCoursDePose = null }: Props) {
   const { state } = useBlocland();
   const { settings, speak } = useSettings();
   const sansLv2 = estIleLv2(biome) && settings.lv2 === 'none';
@@ -153,7 +155,7 @@ export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight =
       )}
 
       {!sansLv2 && (
-        <h3 className="island-sheet-heading">
+        <h3 id={`missions-${biome.id}`} tabIndex={-1} className="island-sheet-heading">
           <Icon name="hammer" /> Missions
         </h3>
       )}
@@ -246,7 +248,7 @@ export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight =
         )}
       </ul>
       <p id={`gardien-${biome.id}`} className="bridges-said" role="status" aria-live="polite">
-        {bossSaid ? <Syllabified text={bossSaid} /> : ''}
+        {bossSaid ? <Syllabified text={bossSaid} /> : null}
       </p>
 
       {/* Le prochain objectif et, sur l'île-port, l'état du village (qui se voit aussi au port en cubes) : un seul pli. */}
@@ -261,7 +263,7 @@ export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight =
       )}
 
       {/* Les commandes des créatures de l'archipel (GD-7) : entre le prochain objectif et le bâtiment. */}
-      {unlocked && !sansLv2 && <Commandes island={biome.id} fold={fold} highlight={highlight} onLivree={onLivree} />}
+      {unlocked && !sansLv2 && <Commandes island={biome.id} fold={fold} highlight={highlight} onLivree={onLivree} poseEnCours={commandeEnCoursDePose} />}
 
       {unlocked && <PlanSection biome={biome} fold={fold} highlight={highlight === 'part'} vientDePoser={posees} enCoursDePose={enCoursDePose} />}
 

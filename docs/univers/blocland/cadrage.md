@@ -32,12 +32,16 @@ Dans Blocland, « ouvrage » ne nomme que les liaisons : pont, bac, sentier de p
 
 | Archipel | Créature : petite construction (bloc demandé) |
 | --- | --- |
-| 6e | Mousso : le carré de semis (terre) · Tunel : le puits (briques) · Rouxel : la grue (poutres) · Bloquette : l’abreuvoir (galets) · Grimoire : le poteau-lanterne (obsidienne, après « La lanterne du phare ») · Coco : l’étal (bois) · Nénu : le lavoir (pierre) · Lavi : l’abri (cabines) · Robin : l’horloge du quai (cadrans) · Tick : la vitrine (verre) |
-| 5e | Frimas : la cabane de pêche (tuiles) · Bazar : le présentoir (panneaux) · Sema : le poteau indicateur (lambris) · Kroa : l’abri du gué (toile) · Pudding : la glacière (glace) · Moustache : la serre (vitraux) |
-| 4e | Braise : le wagonnet (rails) · Ixe : le treuil (engrenages) · Cléa : le perchoir (acier) · Plume : la banquette (velours) · Puck : le pupitre (parchemins) · Vapeur : la marquise (calques) |
+| 6e | Mousso : le potager (terre) · Tunel : le puits (briques) · Rouxel : la grue (poutres) · Bloquette : le bac à eau (galets) · Grimoire : le poteau-lanterne (obsidienne, après « La lanterne du phare ») · Coco : la boutique (bois) · Nénu : le lavoir (pierre) · Lavi : le parasol (cabines) · Robin : la pendule (cadrans) · Tick : la vitrine (verre) |
+| 5e | Frimas : la cabane (tuiles) · Bazar : l’étagère (panneaux) · Sema : le poteau indicateur (lambris) · Kroa : l’abri (toile) · Pudding : la glacière (glace) · Moustache : la serre (vitraux) |
+| 4e | Braise : le wagonnet (rails) · Ixe : la machine (engrenages) · Cléa : le perchoir (acier) · Plume : la banquette (velours) · Puck : le pupitre (parchemins) · Vapeur : l’auvent (calques) |
 | 3e | Théo : l’équerre (prismes) · Stat : le mât de relevés (antennes) · Fi : le réflecteur (miroirs) · Astra : le banc (pierres de taille) · Écho : le haut-parleur (lentilles) · Knight : la fontaine (marbre) |
 
 Le nombre de blocs et les phrases sont dans `docs/contenu/<lieu>.md` (« Les demandes ») ; les formes dans `src/blocland/world/petitesConstructions.ts` ; la règle des commandes dans [le jeu](../../gameplay/index.md#les-habitants-les-commandes-et-les-gardiens).
+
+Les noms des petites constructions sont des mots courants, choisis par le directeur artistique le 3 octobre 2026 sur la proposition du consultant et l’avis du référent dys (« la pendule » de Robin, pour ne pas se confondre avec l’île de l’Horloge des verbes ; « l’abri », « l’auvent », « le potager » au lieu de mots peu courants) ; « posé » s’accorde au nom (« Pendule posée chez Robin ! », « Abri posé chez Kroa ! »). Les identifiants ne changent pas.
+
+**Les mots des commandes** (directeur artistique, 3 octobre 2026) : « commande » nomme ce qu’une créature demande (« demande » reste le mot neutre du jeu commun et ne s’affiche pas) ; « petite construction » nomme ce que pose la livraison, « ouvrage » restant réservé aux liaisons.
 
 ## La vue 2D oblique
 

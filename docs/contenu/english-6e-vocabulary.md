@@ -556,9 +556,9 @@ Pour tous les items :
 - habitant : Robin
 - bloc : `english-6e-grammar`
 - combien : 2
-- petite construction : l’horloge du quai
-- demande : Il me faut {objet} pour mon horloge du quai. Joue une mission de l’Horloge des verbes.
+- petite construction : la pendule
+- demande : Il me faut {objet} pour ma pendule. Joue une mission de l’Horloge des verbes.
 - prête : Tu as les {blocs} ! Livre-les à Robin.
-- posée : Horloge du quai posée chez Robin !
+- posée : Pendule posée chez Robin !
 
 > Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : le haut de la tour à horloge (`tour()`, `top: 'horloge'`) en petit : 2 piliers de cabine de 2 cubes, 2 cadrans dessus ; 6 cubes, 2 cases, 3 de haut.

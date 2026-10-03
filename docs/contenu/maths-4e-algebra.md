@@ -47,9 +47,9 @@ créature : Ixe
 - habitant : Ixe
 - bloc : `compound-4e`
 - combien : 2
-- petite construction : le treuil
-- demande : Il me faut {objet} pour mon treuil. Assemble-les {à}.
+- petite construction : la machine
+- demande : Il me faut {objet} pour ma machine. Assemble-les {à}.
 - prête : Tu as les {blocs} ! Livre-les à Ixe.
-- posée : Treuil posé chez Ixe !
+- posée : Machine posée chez Ixe !
 
 > Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : la mangeoire entre deux poteaux (`relais()`) : 2 poteaux de calque de 2 cubes, 2 engrenages empilés entre eux ; 6 cubes, 3 cases, 2 de haut.

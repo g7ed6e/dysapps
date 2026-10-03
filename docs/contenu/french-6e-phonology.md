@@ -374,9 +374,9 @@ Pour tous les items :
 - habitant : Mousso
 - bloc : `french-6e-grammar-spelling`
 - combien : 3
-- petite construction : le carré de semis
-- demande : Il me faut {objet} pour mon carré de semis. Joue une mission de la Ferme des accords.
+- petite construction : le potager
+- demande : Il me faut {objet} pour mon potager. Joue une mission de la Ferme des accords.
 - prête : Tu as les {blocs} ! Livre-les à Mousso.
-- posée : Carré de semis posé chez Mousso !
+- posée : Potager posé chez Mousso !
 
 > Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : les jardinières de `yard()` : un rang de 3 bois au sol (z 0), 3 terre posés dessus (z 1) ; 6 cubes, 3 cases, 2 de haut.

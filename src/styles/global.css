@@ -4217,10 +4217,40 @@ button.island-quest:active {
   width: 2.4rem;
   height: 2.4rem;
 }
+/* Une grille fixe, la même à toutes les tailles de texte : l'habitant, la phrase, le bouton de lecture sur la première
+   rangée ; le bouton d'action dessous, aligné sur la phrase. Les boutons viennent toujours après le texte. */
+.commandes-list .commande-item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    'habitant texte lire'
+    '. action action';
+  align-items: center;
+  column-gap: 0.7rem;
+  row-gap: 0.4rem;
+}
+.commandes-list .commande-item > .commande-habitant {
+  grid-area: habitant;
+}
+.commandes-list .commande-item > .island-quest-text {
+  grid-area: texte;
+}
+.commandes-list .commande-item > .speak-button {
+  grid-area: lire;
+}
+.commandes-list .commande-item > .button {
+  grid-area: action;
+  justify-self: start;
+}
 .commande-item .island-quest-title {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
+}
+/* Le compte, à côté du titre (« Commandes · 1 prête »). */
+.commandes-compte {
+  font-weight: normal;
+  color: var(--muted);
 }
 .commande-en-avant {
   border-width: calc(var(--border-width) * 2);
@@ -4240,6 +4270,12 @@ button.island-quest:active {
   border: var(--border-width) solid var(--success);
   border-radius: var(--radius-control);
   background: var(--success-bg);
+}
+/* Vide (rien à dire encore ; la zone reste là pour le lecteur d'écran) : pas de cadre. */
+.bridges-said:empty {
+  margin: 0;
+  padding: 0;
+  border: none;
 }
 
 /* ===== Blocland : écran de calcul (Plaine des nombres) ===== */

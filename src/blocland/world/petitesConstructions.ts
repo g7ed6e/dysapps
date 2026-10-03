@@ -1,18 +1,21 @@
 // Les petites constructions des commandes (GD-7, points 4 et 5 ; PR 3) : la forme que pose une commande livrée chez la
 // créature qui l'a demandée. Liste du consultant de Blocland (docs/contenu/<lieu>.md, « ## Les demandes », note
 // « > Forme ») avec les corrections du directeur artistique (3 octobre 2026) : le lavoir de Nénu sous trois toits,
-// l'abri de Lavi, la glacière de Pudding en coffre (trois glaces au sol, trois tuiles dessus) ; puis ses retouches sur
+// le parasol de Lavi, la glacière de Pudding en coffre (trois glaces au sol, trois tuiles dessus) ; puis ses retouches sur
 // captures : les cubes livrés ne changent jamais, seuls ceux de l'île de la créature qui se perdaient sur son sol
 // deviennent un bloc de finition (le puits, la grue, la cabane, le perchoir, la banquette, l'équerre), et la grue, le
 // pupitre et les poteaux du puits se voient de travers.
+// Les noms (« la pendule », « le potager »…) sont ceux du contenu, choisis par le directeur artistique (3 octobre 2026) :
+// les identifiants, et donc la sauvegarde, n'en dépendent pas.
 //
 // Des données seulement, sans coordonnées du monde : chaque cube est en repère propre (x vers la droite, y vers le fond,
 // z vers le haut, z = 0 sur le sol, comme dans architect.ts). La place de la forme sur l'île, à côté de la créature,
 // est écrite ici (`PLACES`), calculée par la grille et vérifiée par le test (`calculerLaPlaceDeLaPetiteConstruction`,
 // world/terrain.ts : lisible dans la vue de l'île panneau ouvert, sans rien cacher ; voir docs/rendu/style.md, « Les
-// petites constructions »). Les clés de ces cases (`cellKey`) sont celles de la sauvegarde : une commande livrée pose
+// petites constructions »). Les clés de ces cases (`cellKey`) vont dans la sauvegarde : une commande livrée pose
 // toutes les cases de sa forme dans `world.parts`, sous l'identifiant de sa petite construction (`<lieu>-fixture-<n>`),
-// sans champ nouveau. Elles ne changent donc jamais.
+// sans champ nouveau. C'est l'identifiant qui prouve la livraison, pas les clés : une forme redessinée se relit posée,
+// avec son dessin d'aujourd'hui (`sanitizeState`, engine.ts).
 //
 // Les règles (testées) : de 4 à 12 cubes, 9 cases au plus (3 × 3), 3 de haut au plus, rien de penché ; un cube en
 // porte-à-faux est tenu par le côté, à 2 cubes au plus d'un appui ; un cube du bloc livré par bloc demandé ; les autres
@@ -37,7 +40,7 @@ const colonne = (x: number, y: number, z0: number, z1: number, b: BlockId): Cube
 /** Les formes, par identifiant de petite construction (`fixture` de requests.json). */
 const FORMES: Record<string, Cube[]> = {
   // 6e : les Basses Terres.
-  // Mousso, le carré de semis : les jardinières de `yard()`, un rang de bois, la terre dessus.
+  // Mousso, le potager : les jardinières de `yard()`, un rang de bois, la terre dessus.
   'french-6e-phonology-fixture-1': [...rangee(0, 2, 0, 0, BLOC.bois), ...rangee(0, 2, 0, 1, BLOC.terre)],
   // Tunel, le puits : l'anneau de `ring()`, briques au milieu des côtés, toits aux coins (la pierre se perdait sur le
   // sol de pierre de la Mine) ; deux poteaux de porte sur les briques de gauche et de droite, vues de la caméra de l'île,
@@ -58,7 +61,7 @@ const FORMES: Record<string, Cube[]> = {
   // une charge de sable sous son bout. La flèche le long des y : la caméra de l'île regarde la Carrière le long des x,
   // elle la voit de travers (retouche du directeur artistique).
   'french-6e-word-spelling-fixture-1': [...colonne(0, 0, 0, 2, 'fence'), [0, 1, 2, BLOC.poutre], [0, 2, 2, BLOC.poutre], [0, 2, 0, BLOC.sable]],
-  // Bloquette, l'abreuvoir : deux poteaux de terre, deux galets entre eux.
+  // Bloquette, le bac à eau : deux poteaux de terre, deux galets entre eux.
   'french-6e-grammar-spelling-fixture-1': [
     ...colonne(0, 0, 0, 1, BLOC.terre),
     ...colonne(3, 0, 0, 1, BLOC.terre),
@@ -72,7 +75,7 @@ const FORMES: Record<string, Cube[]> = {
     [0, 0, 1, BLOC.obsidienne],
     [0, 0, 2, 'lantern'],
   ],
-  // Coco, l'étal : un comptoir de bois devant, deux poteaux de brique derrière, l'auvent rayé.
+  // Coco, la boutique : un comptoir de bois devant, deux poteaux de brique derrière, l'auvent rayé.
   'maths-6e-calculation-fixture-1': [
     ...rangee(0, 2, 0, 0, BLOC.bois),
     ...colonne(0, 1, 0, 1, BLOC.brique),
@@ -89,7 +92,7 @@ const FORMES: Record<string, Cube[]> = {
     [1, 0, 0, BLOC.galet],
     ...rangee(0, 2, 1, 2, 'roof'),
   ],
-  // Lavi, l'abri (correction du DA) : un mât d'obsidienne, quatre cabines en croix autour de son sommet.
+  // Lavi, le parasol (correction du DA) : un mât d'obsidienne, quatre cabines en croix autour de son sommet.
   'maths-6e-decimals-fixture-1': [
     ...colonne(1, 1, 0, 2, BLOC.obsidienne),
     [0, 1, 2, BLOC.cabine],
@@ -97,13 +100,13 @@ const FORMES: Record<string, Cube[]> = {
     [1, 0, 2, BLOC.cabine],
     [1, 2, 2, BLOC.cabine],
   ],
-  // Robin, l'horloge du quai : deux piliers de cabine, deux cadrans dessus.
+  // Robin, la pendule : deux piliers de cabine, deux cadrans dessus.
   'english-6e-vocabulary-fixture-1': [...colonne(0, 0, 0, 1, BLOC.cabine), ...colonne(1, 0, 0, 1, BLOC.cabine), [0, 0, 2, BLOC.cadran], [1, 0, 2, BLOC.cadran]],
   // Tick, la vitrine : un soubassement de cadrans, trois verres, trois toits.
   'english-6e-grammar-fixture-1': [...rangee(0, 2, 0, 0, BLOC.cadran), ...rangee(0, 2, 0, 1, BLOC.verre), ...rangee(0, 2, 0, 2, 'roof')],
 
   // 5e : les Collines du Large.
-  // Frimas, la cabane de pêche : des murs de portes sur deux rangs (la glace se perdait sur le sol de glace du Glacier,
+  // Frimas, la cabane : des murs de portes sur deux rangs (la glace se perdait sur le sol de glace du Glacier,
   // retouche du directeur artistique), une porte vide devant à gauche, un toit de tuiles.
   'maths-5e-signed-numbers-fixture-1': [
     [1, 0, 0, 'door'],
@@ -116,11 +119,11 @@ const FORMES: Record<string, Cube[]> = {
     ...rangee(0, 1, 0, 2, BLOC.tuile),
     ...rangee(0, 1, 1, 2, BLOC.tuile),
   ],
-  // Bazar, le présentoir : une marche de panneaux devant, deux rangs de toile derrière.
+  // Bazar, l'étagère : une marche de panneaux devant, deux rangs de toile derrière.
   'maths-5e-proportionality-fixture-1': [...rangee(0, 2, 0, 0, BLOC.panneau), ...rangee(0, 2, 1, 0, BLOC.toile), ...rangee(0, 2, 1, 1, BLOC.toile)],
   // Sema, le poteau indicateur : un poteau de lambris, deux panneaux de part et d'autre de son sommet.
   'french-5e-homophones-fixture-1': [...colonne(1, 0, 0, 2, BLOC.lambris), [0, 0, 2, BLOC.panneau], [2, 0, 2, BLOC.panneau]],
-  // Kroa, l'abri du gué : deux poteaux de tourbe au fond, un auvent de 3 × 2 (toile, tourbe, toile) qui déborde devant.
+  // Kroa, l'abri : deux poteaux de tourbe au fond, un auvent de 3 × 2 (toile, tourbe, toile) qui déborde devant.
   'french-5e-conjugation-fixture-1': [
     ...colonne(0, 1, 0, 1, BLOC.tourbe),
     ...colonne(2, 1, 0, 1, BLOC.tourbe),
@@ -139,7 +142,7 @@ const FORMES: Record<string, Cube[]> = {
   // 4e : les Monts de Feu.
   // Braise, le wagonnet : une voie de trois rails, un wagonnet de deux aciers.
   'maths-4e-powers-fixture-1': [...rangee(0, 2, 0, 0, BLOC.rail), [0, 0, 1, BLOC.acier], [1, 0, 1, BLOC.acier]],
-  // Ixe, le treuil : deux poteaux de calque, deux engrenages empilés entre eux.
+  // Ixe, la machine : deux poteaux de calque, deux engrenages empilés entre eux.
   'maths-4e-algebra-fixture-1': [...colonne(0, 0, 0, 1, BLOC.calque), ...colonne(2, 0, 0, 1, BLOC.calque), ...colonne(1, 0, 0, 1, BLOC.engrenage)],
   // Cléa, le perchoir : trois marches de 1, 2 et 3 cubes, l'escalier dessous (l'ardoise se perdait sur le sol d'ardoise
   // de la Falaise, retouche du directeur artistique), un acier sur chaque marche.
@@ -157,7 +160,7 @@ const FORMES: Record<string, Cube[]> = {
   // Puck, le pupitre du souffleur : un pied de deux velours, une tablette de trois parchemins, le long des y : la caméra
   // de l'île regarde le Théâtre le long des x, elle la voit de travers (retouche du directeur artistique).
   'english-4e-comprehension-fixture-1': [...colonne(0, 1, 0, 1, BLOC.velours), [0, 0, 2, BLOC.parchemin], [0, 1, 2, BLOC.parchemin], [0, 2, 2, BLOC.parchemin]],
-  // Vapeur, la marquise du quai : deux poteaux de rail, un toit de trois calques.
+  // Vapeur, l'auvent : deux poteaux de rail, un toit de trois calques.
   'english-4e-grammar-fixture-1': [...colonne(0, 0, 0, 1, BLOC.rail), ...colonne(2, 0, 0, 1, BLOC.rail), ...rangee(0, 2, 0, 2, BLOC.calque)],
 
   // 3e : les Îles du Ciel.
@@ -205,12 +208,12 @@ export function casesDeLaPetiteConstruction(id: string): readonly CaseDePetiteCo
   return CASES.get(id);
 }
 
-/** Une petite construction est posée quand toutes ses cases sont dans `world.parts`. */
+/**
+ * Une petite construction est posée quand son identifiant a des cases dans `world.parts` : l'identifiant prouve la
+ * livraison, et la relecture de la sauvegarde y remet toujours la forme d'aujourd'hui tout entière.
+ */
 export function estPosee(parts: Record<string, string[]>, id: string): boolean {
-  const cases = CASES.get(id);
-  if (!cases) return false;
-  const posees = new Set(parts[id] ?? []);
-  return cases.every((c) => posees.has(c.key));
+  return CASES.has(id) && (parts[id]?.length ?? 0) > 0;
 }
 
 /**

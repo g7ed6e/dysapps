@@ -73,7 +73,7 @@ it('les objets du quai gardent leurs cases : aucun décor bâti ne couvre le sol
     }
   }
   // Et les objets du quai, tout construit, sont là où ils étaient avant les noms (barque, caisses, fanions, foyer) ; à la
-  // Plaine, la barque de la grève et le foyer laissent sa place à l'étal de Coco (GD-7, PR 3, retouche du directeur
+  // Plaine, la barque de la grève et le foyer laissent sa place à la boutique de Coco (GD-7, PR 3, retouche du directeur
   // artistique : les objets du quai réservent celle de la petite construction de l'île-port).
   const quai = ARCHIPELAGO_IDS.map((a) =>
     [...new Set(parties(a)[1].filter((c) => c.decor && c.tag === getArchipelago(a).port && !bati(c) && !/arbre|sapin|buisson|fleur|rocher|roseau|souche|champignon|cristal/.test(kindOf(c.decor))).map((c) => c.decor))].sort(),
