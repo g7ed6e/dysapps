@@ -1,6 +1,6 @@
 # GD-3 : Les trophées sous le toit, une salle qui s’agrandit au fil des succès
 
-**État** : Décidée le 1er octobre 2026 (option B)
+**État** : Décidée le 1er octobre 2026 (option B) ; construite le 2 octobre 2026 (#298) ; consolidée dans [le jeu](../../index.md), archivée le 3 octobre 2026
 **Portée** : Commun
 
 ## Le constat

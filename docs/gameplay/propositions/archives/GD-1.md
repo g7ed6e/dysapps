@@ -1,13 +1,13 @@
 # GD-1 : Le caractère de Blocland, le chantier du bâtisseur
 
-**État** : Décidée le 30 septembre 2026 ; construite le 1er octobre 2026 (points 1 à 4)
+**État** : Décidée le 30 septembre 2026 ; construite le 1er octobre 2026 (points 1 à 4) ; consolidée dans [le jeu](../../index.md) et la [fiche de Blocland](../../../univers/blocland/fiche.md), archivée le 3 octobre 2026
 **Portée** : Blocland
 
 ## Le constat
 
 Le mainteneur veut donner plus de caractère à Blocland, l’univers par défaut. Le dessin en a déjà : cubes texturés de 16 × 16, interface en blocs vus de face, 31 créatures qui tutoient le « bâtisseur », Gardiens qui deviennent statues et « aiment les revanches ». Ce qui lui manque, c’est sa voix et ses noms, parce qu’il parle encore avec les mots d’Archipéo :
 
-- la première voix qu’entend un élève neuf est la baleine (« Je suis la baleine… », `src/univers/blocland/index.ts`), figure d’Archipéo ([Plusieurs univers](../../univers/univers.md), §4.1) ;
+- la première voix qu’entend un élève neuf est la baleine (« Je suis la baleine… », `src/univers/blocland/index.ts`), figure d’Archipéo ([Plusieurs univers](../../../univers/univers.md), §4.1) ;
 - les archipels de 5e et de 4e s’appellent « Îles Brumeuses » et « Anciens Ateliers » (`src/blocland/world/archipelago.ts`), la brume et les ruines étant le vocabulaire d’Archipéo (le réglage « Au démarrage », lui, dit « Le village » dans les deux univers) ;
 - trois des cinq rôles ont un lexique d’explorateur marin (Explorateur, Cartographe, Navigateur, Architecte de l’archipel) ;
 - aucun geste ni aucun son n’est propre à Blocland.
@@ -33,7 +33,7 @@ Un pilier : **le chantier du bâtisseur**. Dans Blocland, tout se nomme, se dit 
 
 - Changements 1 à 3 : textes seulement, dans `src/univers/blocland/`, `src/blocland/world/archipelago.ts` (le nom passe par les textes de l’univers), les rôles affichés par univers, l’écran de renommage d’U4. Taille M. Fichiers partagés avec les fils de contenu (`communs.ts`, empreinte de `src/univers/univers.test.ts`) : chaque pull request se remet sur `main` avant fusion.
 - Changement 4 : un **dégel ciblé** du dessin de Blocland, figé depuis l’étiquette `blocland-reference` : un lot distinct des lots R, qui ajoute sans rien redessiner, sans toucher aux empreintes ni aux cases d’un plan, validé sur captures avant et après (jour et nuit). Code écrit par l’artiste technique 3D. Taille S à M.
-- Pages à tenir : le manuel (rôles, noms des archipels, bulles des étapes), [Personnages et Gardiens](../personnages.md) (régénérée), la [fiche de Blocland](../../univers/blocland/fiche.md), le [cadrage de Blocland](../../univers/blocland/cadrage.md).
+- Pages à tenir : le manuel (rôles, noms des archipels, bulles des étapes), [Personnages et Gardiens](../../personnages.md) (régénérée), la [fiche de Blocland](../../../univers/blocland/fiche.md), le [cadrage de Blocland](../../../univers/blocland/cadrage.md).
 
 ## Les avis
 

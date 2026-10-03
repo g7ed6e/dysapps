@@ -1,6 +1,6 @@
 # GD-2 : combiner les blocs pour les monuments
 
-**État** : Décidée le 30 septembre 2026
+**État** : Décidée le 30 septembre 2026 ; construite le 1er octobre 2026 (#272) ; consolidée dans [le jeu](../../index.md), archivée le 3 octobre 2026
 **Portée** : Commun (les noms sont propres à chaque univers)
 
 ## Le constat
@@ -31,7 +31,7 @@ Les recettes, les noms des blocs et du lieu s’écrivent dans `docs/contenu/ass
 - Les blocs restent la ressource ; aucun identifiant ne change ; les sauvegardes restent lisibles (les blocs assemblés s’ajoutent à l’inventaire, les cases des monuments gardent leurs clés).
 - DP-09 (les récompenses servent le monde), DP-12 (pas de pression : rien ne se perd, pas de délai), « rien d’emprunté » (pas de table de craft).
 - Principes dys : un bouton principal, rien à lire dans le monde, deux sortes de blocs au plus par recette, jamais la couleur seule.
-- §4 de [Plusieurs univers](../../univers/univers.md) : la règle est commune, les noms et le dessin sont propres à chaque univers.
+- §4 de [Plusieurs univers](../../../univers/univers.md) : la règle est commune, les noms et le dessin sont propres à chaque univers.
 
 ## Le coût
 

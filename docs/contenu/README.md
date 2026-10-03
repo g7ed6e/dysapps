@@ -132,7 +132,7 @@ Les tests de chaque mission (`src/apps/<mission>/data.test.*`, lancés par `npm 
 
 ## L’assemblage des blocs
 
-`assemblage.md` n’est pas une île : il tient ce qu’on assemble sur l’île de l’école ([GD-2](../gameplay/propositions/GD-2.md)). `npm run contenu` en produit `src/blocland/world/recettes.ts`, et les questions de chaque bloc dans `src/blocland/exercises/data/assembly-<bloc>.json`. Deux tableaux, puis les questions :
+`assemblage.md` n’est pas une île : il tient ce qu’on assemble sur l’île de l’école ([GD-2](../gameplay/propositions/archives/GD-2.md)). `npm run contenu` en produit `src/blocland/world/recettes.ts`, et les questions de chaque bloc dans `src/blocland/exercises/data/assembly-<bloc>.json`. Deux tableaux, puis les questions :
 
 - **« ## Le lieu »** : une rangée par univers (`` `blocland` ``, `` `archipeo` ``), avec le nom du lieu (le titre de sa page), où il est (« à la Fabrique ») et la phrase lue sous le titre.
 - **« ## Les blocs assemblés »** : une rangée par archipel, avec l’identifiant du bloc (entre accents graves, déclaré dans `src/blocland/biomes.ts`, qui tient aussi son dessin), l’archipel, la recette (`french-6e-phonology × 2 · maths-6e-calculation × 1`) et le nom du bloc dans chaque univers ; un pluriel qui ne s’écrit pas avec un « s » se met entre parenthèses (`Vitrail (vitraux)`).

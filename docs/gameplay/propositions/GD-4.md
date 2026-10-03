@@ -36,7 +36,7 @@ Missions, révisions, chantiers et Gardiens se lancent en allant voir quelqu’u
 
 ### Étape 2 : des chemins au choix
 
-Plusieurs îles ouvertes en même temps, et l’élève choisit son ordre ; une suggestion reste toujours mise en avant. Des demandes passent d’une créature à l’autre (Bloquette a besoin d’un outil forgé chez Lavi), en lien avec les blocs assemblés ([GD-2](GD-2.md)), et restent dans une liste toujours visible. À cadrer avec le monde en réseau d’Archipéo (lots 8 et 8b).
+Plusieurs îles ouvertes en même temps, et l’élève choisit son ordre ; une suggestion reste toujours mise en avant. Des demandes passent d’une créature à l’autre (Bloquette a besoin d’un outil forgé chez Lavi), en lien avec les blocs assemblés ([GD-2](archives/GD-2.md)), et restent dans une liste toujours visible. À cadrer avec le monde en réseau d’Archipéo (lots 8 et 8b).
 
 ### Étape 3 : explorer pour découvrir
 
@@ -54,7 +54,7 @@ Le monde cache des choses à trouver en se promenant (une créature de passage, 
 - **Les règles dys** : rien à lire dans le monde (tout texte est dans un panneau, en police dys, lu à voix haute) ; aucun geste de réflexe ; pas de chrono ; rien ne se perd ; la vue simple fait tout ce que fait le monde ; un adulte ouvre toujours une mission en deux touchers, même si le menu devient un raccourci.
 - **Les règles du référent dys pour les créatures** : ne jamais rappeler un échec ni une date (ni « hier », ni « raté », ni « t’a résisté ») ; deux phrases courtes au plus ; une seule proposition par visite, jamais pendant une partie ; la créature ne réagit qu’aux progrès ; refuser ne coûte rien ; la proposition se comprend sans le son et sans lire, grâce à l’icône de la notion.
 - **Pour le directeur artistique** : aucune jauge d’amitié ou d’humeur, aucune créature triste après une absence, aucune demande avec délai, aucune nouvelle monnaie : les blocs restent la ressource (DP-09, DP-12, DA-05).
-- **Les univers** ([Plusieurs univers](../../univers/univers.md), §4) : les règles, la progression et la sauvegarde sont communes ; chaque univers habille les créatures, leurs répliques et les niveaux des îles. Dans Blocland, on bâtit du neuf et des mécanismes ([GD-1](GD-1.md)) ; dans Archipéo, on restaure.
+- **Les univers** ([Plusieurs univers](../../univers/univers.md), §4) : les règles, la progression et la sauvegarde sont communes ; chaque univers habille les créatures, leurs répliques et les niveaux des îles. Dans Blocland, on bâtit du neuf et des mécanismes ([GD-1](archives/GD-1.md)) ; dans Archipéo, on restaure.
 - **La sauvegarde et les identifiants** : jamais touchés. La mémoire d’une créature se déduit de la répétition espacée déjà enregistrée ; ce que construisent les missions s’ajoute aux plans qui existent.
 
 ## Le coût
@@ -62,7 +62,7 @@ Le monde cache des choses à trouver en se promenant (une créature de passage, 
 Cette fiche fixe le cap ; chaque étape a sa fiche et son lot. Pour se faire une idée :
 
 - **Étape 1, créatures** : une réplique de rappel par île et par univers (`src/univers/`), le signe de la créature dans le monde (une animation et une icône, à mesurer par l’artiste technique 3D), le panneau d’arrivée. Sauvegarde non touchée.
-- **Étape 1, ce que construisent les missions** ([GD-5](GD-5.md), modèle A) : des ouvrages de plus par île (forme et blocs dans le code, noms et répliques dans `docs/contenu/<île>.md`, « ## Les plans »). Le dessin de Blocland est figé : un dégel ciblé, comme le point 4 de [GD-1](GD-1.md), dans un lot à part, sur la grille et avec les textures existantes, dans son plafond (80 000 triangles, 240 appels), captures avant et après, de jour et de nuit. Archipéo est déjà serré (55 874 triangles au 6e) : l’artiste technique 3D mesure avant tout ouvrage ajouté.
+- **Étape 1, ce que construisent les missions** ([GD-5](GD-5.md), modèle A) : des ouvrages de plus par île (forme et blocs dans le code, noms et répliques dans `docs/contenu/<île>.md`, « ## Les plans »). Le dessin de Blocland est figé : un dégel ciblé, comme le point 4 de [GD-1](archives/GD-1.md), dans un lot à part, sur la grille et avec les textures existantes, dans son plafond (80 000 triangles, 240 appels), captures avant et après, de jour et de nuit. Archipéo est déjà serré (55 874 triangles au 6e) : l’artiste technique 3D mesure avant tout ouvrage ajouté.
 - **Étapes 2 et 3** : à cadrer.
 
 ## Les avis

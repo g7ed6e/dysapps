@@ -106,7 +106,7 @@ Voir « Ce qui vaut pour les trois », plus haut. Les règles en jeu : DP-09, DP
 
 - **A** : petit pour les demandes (une demande écrite par mission dans `docs/contenu/<île>.md`, chaque mission reliée à une partie de l’île, la liste des missions ouvertes) ; petit aussi pour l’île fournisseur (le bloc de l’île, qui existe déjà, change seulement de destination après la restauration). Il rejoint l’étape 1 de GD-4.
 - **B** : grand. Une scène par notion, validée par le contenu et le référent dys ; des endroits placés dans le monde, mesurés par l’artiste technique 3D. Des maquettes avant de décider de la première notion.
-- **C** : moyen. Des plans de projets adossés aux monuments et aux blocs assemblés de [GD-2](GD-2.md). Des maquettes relues par le référent dys avant de décider.
+- **C** : moyen. Des plans de projets adossés aux monuments et aux blocs assemblés de [GD-2](archives/GD-2.md). Des maquettes relues par le référent dys avant de décider.
 
 ## Les avis
 
