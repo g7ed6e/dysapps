@@ -175,7 +175,7 @@ function sensJuste(g: GroupeDeConstruction): boolean {
 }
 
 describe('La construction taillée (lot R5)', () => {
-  it('chaque archipel tout construit tient dans son enveloppe (6 500 triangles aux Premiers Rivages, 7 300 ailleurs) et 3 appels de dessin, fantômes et fenêtres compris', () => {
+  it('chaque archipel tout construit tient dans son enveloppe (7 200 triangles aux Premiers Rivages, 7 500 ailleurs) et 3 appels de dessin, fantômes et fenêtres compris', () => {
     for (const a of ARCHIPELAGO_IDS) {
       for (const etat of ['tout', 'chantier', 'dernier'] as Etat[]) {
         const { cubes, sol } = monde(a, etat);
@@ -700,7 +700,7 @@ describe('Le phare de Grimoire (lot R5, décision 16)', () => {
     expect(caseDeLaPiece(m, 'opaque', 0, { x: 0, y: 0, z: 0 }, { x: 0, y: 1, z: 0 })).toBeNull();
   }, 30_000);
 
-  it('dans l’enveloppe de la construction du 6e, à chaque étape (6 500 triangles, 3 appels) : les cubes remplacés libèrent des triangles', () => {
+  it('dans l’enveloppe de la construction du 6e, à chaque étape (7 200 triangles, 3 appels) : les cubes remplacés libèrent des triangles', () => {
     const couts: number[] = [];
     for (const [nom, [murs, toit]] of Object.entries(etats)) {
       const { cubes, sol } = mondeDuPhare(murs, toit);

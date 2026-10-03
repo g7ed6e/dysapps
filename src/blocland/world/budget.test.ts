@@ -74,11 +74,11 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
 
   // Ailleurs, 52 300 jusqu'au cœur agrandi de l'Atelier (01/10/2026) : son sol en demande 660 de plus (world/budget.ts),
   // enveloppe validée par le mainteneur le 01/10/2026 ; 53 040 avec la Halle aux matériaux (GD-2, validé par le mainteneur le 01/10/2026, world/budget.ts), 53 060 avec la salle des trophées (GD-3, même jour).
-  it('les enveloppes décidées le 28 septembre 2026 : 57 800 triangles et 25 appels aux Premiers Rivages, 53 060 et 24 ailleurs', () => {
+  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-7 : les liaisons du port) : 58 500 triangles et 25 appels aux Premiers Rivages, 53 320 et 24 ailleurs', () => {
     const total = (a: '6e' | '5e') => postes.reduce((n, p) => n + enveloppeDe(p, a).triangles, 0);
     const appels = (a: '6e' | '5e') => postes.reduce((n, p) => n + enveloppeDe(p, a).drawCalls, 0);
-    expect([total('6e'), appels('6e')]).toEqual([57_800, 25]);
-    expect([total('5e'), appels('5e')]).toEqual([53_060, 24]);
+    expect([total('6e'), appels('6e')]).toEqual([58_500, 25]);
+    expect([total('5e'), appels('5e')]).toEqual([53_320, 24]);
   });
 
   // GD-3 : la salle des trophées change avec les succès (une travée au 13e et au 19e, les trophées sous le toit) ; la
