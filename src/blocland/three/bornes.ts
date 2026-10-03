@@ -5,11 +5,14 @@ import { formeDuPilier, type Pilier } from '../world/construction';
 import { DELAVE } from '../world/decor/pinceau';
 import type { ArchipelagoId } from '../world/map';
 import { islandCenter } from '../world/terrain';
-import type { EnCasesDuMonde } from '../world/view';
+import { estUnOuvrage, type EnCasesDuMonde } from '../world/view';
 import type { Instant, Monde, PartieDeLaScene } from './partie';
 
 export interface Bornes extends PartieDeLaScene {
-  /** La flèche « Commence ici » : sa place et, dans `userData`, l'île qu'elle montre (la Carte la remplace par sa flèche). */
+  /**
+   * La flèche « Commence ici » : sa place et, dans `userData`, ce qu'elle montre (la Carte la remplace par sa flèche) :
+   * `island`, l'île ; `ouvrage`, l'ouvrage (GD-7) ; `pointe`, la case du monde où la flèche de la Carte pose sa pointe.
+   */
   fleche: THREE.Group;
   /** Les repères des bornes de mission (on les touche). */
   missions: THREE.Group;
@@ -91,16 +94,23 @@ export function creerBornes(monde: Monde, bonhomme: () => THREE.Object3D, instan
   return {
     fleche: markerGroup,
     missions: questMarksGroup,
-    // La flèche « Commence ici » (sur une île, ou sur une case du monde : le chantier du navire).
+    // La flèche « Commence ici » (sur une île, ou sur une case du monde : le chantier du navire), ou sur la Carte celle
+    // d'un ouvrage (le milieu de sa liaison).
     poserLaFleche: (marker) => {
+      const ouvrage = estUnOuvrage(marker) ? marker : null;
       markerGroup.userData.island = typeof marker === 'string' ? marker : null;
+      markerGroup.userData.ouvrage = ouvrage?.ouvrage ?? null;
       markerGroup.userData.on = Boolean(marker);
       if (!marker) {
+        markerGroup.userData.pointe = null;
         markerGroup.visible = false;
         return;
       }
-      const c = typeof marker === 'string' ? islandCenter(marker) : marker;
-      const base = typeof marker === 'string' ? c.z + 8 : c.z;
+      const ile = typeof marker === 'string';
+      const c = typeof marker === 'string' ? islandCenter(marker) : estUnOuvrage(marker) ? marker.cell : marker;
+      const base = ile ? c.z + 8 : ouvrage ? c.z + 2 : c.z;
+      // La pointe de la flèche de la Carte : au-dessus du cœur d'une île, juste au-dessus du tablier d'un ouvrage.
+      markerGroup.userData.pointe = ile || ouvrage ? { x: c.x + 0.5, y: c.y + 0.5, z: base } : null;
       markerGroup.userData.base = base;
       markerGroup.position.set(c.x, base + 0.5, c.y);
       markerGroup.visible = true;

@@ -31,6 +31,11 @@ it('l’île où l’élève est allé passe devant tant qu’il y reste une mis
   // Assez de blocs pour un ouvrage qui part de la Forêt : on peut le construire tout de suite.
   const riche = sanitizeState({ progress: joue('french-6e-phonology', 1), stock: { [BLOC.bois]: 5 }, world: { place: 'french-6e-phonology', links: [] } });
   expect(nextDestination(riche)).toMatchObject({ island: 'french-6e-phonology', text: expect.stringMatching(/^Tu peux construire .* : il ouvre une île (de français|de maths|d’anglais)\.$/) });
+  // L'objectif prêt est un ouvrage : la destination le désigne aussi.
+  expect(nextDestination(riche).ouvrage).toBe(nextGoalInfo(riche, 'french-6e-phonology', NOMS_ARCHIPELS, mots)?.ouvrage);
+  expect(nextDestination(riche).ouvrage).toBeTruthy();
+  // Une île, sans ouvrage à proposer : pas d'ouvrage.
+  expect(nextDestination(foret).ouvrage).toBeUndefined();
   // Toutes les missions de la Forêt jouées, rien de prêt : la Plaine, ouverte et jamais jouée.
   const finie = sanitizeState({ progress: joue('french-6e-phonology'), world: { place: 'french-6e-phonology', links: [] } });
   expect(nextDestination(finie)).toMatchObject({ island: 'maths-6e-calculation', text: 'Une île à explorer : ses missions t’attendent.' });
@@ -44,11 +49,13 @@ it('ensuite, l’ouvrage qui ouvre une île de la matière la moins jouée, depu
   const world = { place: 'french-6e-letter-confusion', links: ['french-6e-phonology-french-6e-letter-confusion', 'maths-6e-calculation-maths-6e-fractions'] };
   const paye = sanitizeState({ progress, stock: { [BLOC.bois]: 4 }, world });
   expect(nextDestination(paye)).toMatchObject({ island: 'french-6e-phonology', text: 'Tu peux construire le pont vers Horloge des verbes : il ouvre une île d’anglais.', have: 4, need: 4 });
+  // La destination dit quel ouvrage : la flèche de la Carte se pose sur lui, pas sur l'île (quatre ouvrages en partent).
+  expect(nextDestination(paye).ouvrage).toBe('french-6e-phonology-english-6e-grammar');
   // Le panneau de la Forêt met le même ouvrage en avant (son seul « Construire » principal).
   expect(nextGoalInfo(paye, 'french-6e-phonology', NOMS_ARCHIPELS, mots)?.ouvrage).toBe('french-6e-phonology-english-6e-grammar');
   // Sans assez de blocs : ce qu'il manque, pour le même ouvrage.
   const pauvre = sanitizeState({ progress, stock: { [BLOC.bois]: 1 }, world });
-  expect(nextDestination(pauvre)).toMatchObject({ island: 'french-6e-phonology', text: 'Encore 3 blocs pour le pont vers Horloge des verbes : il ouvre une île d’anglais.', have: 1, need: 4 });
+  expect(nextDestination(pauvre)).toMatchObject({ island: 'french-6e-phonology', text: 'Encore 3 blocs pour le pont vers Horloge des verbes : il ouvre une île d’anglais.', have: 1, need: 4, ouvrage: 'french-6e-phonology-english-6e-grammar' });
   // La même sauvegarde, la même suggestion : rien ne change tant que l'élève n'a rien fait.
   expect(nextDestination(structuredClone(paye))).toEqual(nextDestination(paye));
 });

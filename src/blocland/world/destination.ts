@@ -18,6 +18,11 @@ export interface Destination {
   /** La jauge (0 sur 0 quand rien ne se compte). */
   have: number;
   need: number;
+  /**
+   * L'ouvrage que la phrase propose de construire (GD-7), quand c'en est un : son identifiant. La Carte pose sa flèche
+   * au-dessus de lui, avec l'icône d'un ouvrage, pour le distinguer des autres fantômes de l'île.
+   */
+  ouvrage?: string;
 }
 
 /**
@@ -42,7 +47,14 @@ export function nextDestination(state: GameState, noms: NomsArchipels, mots: Mot
   const islands = islandsOf(archipelago.classe)
     .map((b) => b.id)
     .filter((id) => open.has(id));
-  const make = (island: BiomeId, text: string, have = 0, need = 0): Destination => ({ island, name: getBiome(island)?.name ?? island, text, have, need });
+  const make = (island: BiomeId, text: string, have = 0, need = 0, ouvrage?: string): Destination => ({
+    island,
+    name: getBiome(island)?.name ?? island,
+    text,
+    have,
+    need,
+    ...(ouvrage ? { ouvrage } : {}),
+  });
 
   // 1. Le Bloc-Navire prêt à partir.
   const port = archipelago.port;
@@ -54,7 +66,7 @@ export function nextDestination(state: GameState, noms: NomsArchipels, mots: Mot
   // 2. L'île où il est : un objectif prêt, sinon une mission jamais jouée.
   if (open.has(at)) {
     const goal = nextGoalInfo(state, at, noms, mots);
-    if (goal?.ready) return make(at, goal.text, goal.have, goal.need);
+    if (goal?.ready) return make(at, goal.text, goal.have, goal.need, goal.ouvrage);
     if (resteAJouer(state, at)) return make(at, isUnexplored(state, at) ? A_EXPLORER : 'Tu y es : d’autres missions t’attendent.');
   }
   // 3. Une commande prête à livrer : elle viendra ici avec les commandes (GD-7, PR 3).
@@ -63,7 +75,7 @@ export function nextDestination(state: GameState, noms: NomsArchipels, mots: Mot
   if (fresh) return make(fresh, A_EXPLORER);
   // 5. L'ouvrage suggéré.
   const ouvrage = ouvrageSuggere(state, archipelago.classe);
-  if (ouvrage) return make(ouvrage.ile, ouvrage.goal.text, ouvrage.goal.have, ouvrage.goal.need);
+  if (ouvrage) return make(ouvrage.ile, ouvrage.goal.text, ouvrage.goal.have, ouvrage.goal.need, ouvrage.goal.ouvrage);
   // 6. L'objectif le plus proche, sinon le village.
   const counted = islands.flatMap((island) => {
     const goal = nextGoalInfo(state, island, noms, mots);
@@ -71,7 +83,7 @@ export function nextDestination(state: GameState, noms: NomsArchipels, mots: Mot
   });
   if (counted.length) {
     const closest = counted.reduce((a, b) => (b.goal.need - b.goal.have < a.goal.need - a.goal.have ? b : a));
-    return make(closest.island, closest.goal.text, closest.goal.have, closest.goal.need);
+    return make(closest.island, closest.goal.text, closest.goal.have, closest.goal.need, closest.goal.ouvrage);
   }
   const village = villageStage(state.world, archipelago.classe, noms);
   return make(port, village.next ?? 'Le village est complet : reviens réviser quand tu veux.');

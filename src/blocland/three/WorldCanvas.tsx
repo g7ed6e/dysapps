@@ -8,7 +8,7 @@ import * as THREE from 'three';
 import { type BiomeId } from '../biomes';
 import { worldBounds } from '../world/terrain';
 import { ARROW_DIRS, cubeTags, enRoute, finishWalk, groundTap, islandInDirection, recentrerApres, toucheRetenue, walkPose, type Touche, type VoyageRun } from '../world/scene';
-import { rappelsDeLaVue, type WorldViewProps } from '../world/view';
+import { rappelsDeLaVue, type Cell, type WorldViewProps } from '../world/view';
 import { useEnCasesDuMonde } from '../useEnCasesDuMonde';
 import { createMeter } from './meter';
 import { habillageDe } from '../habillage';
@@ -188,7 +188,11 @@ export default function WorldCanvas({
     const rond = creerRond(monde, personnages, () => cubesDuMonde.champ(), lumiere, instant);
     const signesDesCreatures = creerSignes(monde, el, camera, personnages, derniers, instant);
     // La Carte se cadre dans la place que l'interface laisse libre, autour de la flèche de la destination (DA-31).
-    const lecture = { place: lecteurDePlaceLibre(el), destination: () => (bornes.fleche.userData.island as BiomeId | null | undefined) ?? null };
+    const lecture = {
+      place: lecteurDePlaceLibre(el),
+      // L'île de la flèche, ou la case où elle se pose sur un ouvrage (GD-7) : le cadrage garde la flèche dans la vue.
+      destination: () => (bornes.fleche.userData.ouvrage ? (bornes.fleche.userData.pointe as Cell) : ((bornes.fleche.userData.island as BiomeId | null | undefined) ?? null)),
+    };
     const cadrage = creerCamera(monde, camera, personnages.avatar, derniers, instant, lecture);
     world.current = { camera, cadrage, bornes, etiquettes, personnages, signes: signesDesCreatures, cubes: cubesDuMonde, navire, recentrer: () => recentrer() };
     // Les captures (scripts/prise-de-vue.mjs) posent la caméra à son cadrage sans attendre son pas : lisible par les

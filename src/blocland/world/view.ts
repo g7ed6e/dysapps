@@ -26,6 +26,29 @@ export interface Bonhomme<P> {
   vise?: boolean;
 }
 
+/** La flèche posée sur un ouvrage (GD-7) : son identifiant ; la vue trouve sa place par la disposition (`liaison`). */
+export interface MarqueDOuvrage {
+  ouvrage: string;
+}
+
+/** La flèche sur un ouvrage, en cases du monde : la case du milieu de sa liaison, où se pose sa pointe. */
+export interface MarqueDOuvrageEnCases extends MarqueDOuvrage {
+  cell: Cell;
+}
+
+/**
+ * Le milieu d'une liaison (ses cases, de bout en bout) : la case où se pose la flèche d'un ouvrage. Sur un bac, celle
+ * du radeau (terrain.ts, `bridge`). `null` pour une liaison sans case.
+ */
+export function milieuDeLaLiaison(cases: readonly Cell[]): Cell | null {
+  return cases.length ? cases[Math.floor((cases.length - 1) / 2)] : null;
+}
+
+/** La flèche est-elle posée sur un ouvrage ? */
+export function estUnOuvrage<M>(m: M): m is Extract<M, MarqueDOuvrage> {
+  return typeof m === 'object' && m !== null && 'ouvrage' in m;
+}
+
 export interface WorldFocus {
   /** Île à cadrer, ou `null` pour la vue d'ensemble. */
   island: BiomeId | null;
@@ -125,8 +148,12 @@ export interface WorldViewProps {
   forceDay?: boolean;
   /** Les ouvrages construits : la vue d'ensemble cadre les îles ouvertes et leurs voisines. */
   bridges?: string[];
-  /** Une flèche jaune qui flotte au-dessus d'une île (« Commence ici »), ou d'un point (le chantier du navire). */
-  marker?: BiomeId | Ancrage | null;
+  /**
+   * Une flèche jaune qui flotte au-dessus d'une île (« Commence ici »), d'un point (le chantier du navire) ou, sur la
+   * Carte, d'un ouvrage (la prochaine destination est un ouvrage à construire, GD-7) : posée sur le milieu de sa liaison,
+   * avec l'icône d'un ouvrage.
+   */
+  marker?: BiomeId | Ancrage | MarqueDOuvrage | null;
   /** Le bonhomme : son itinéraire (un seul point : il se tient là ; plusieurs : il marche). `seq` change à chaque trajet. */
   avatar?: Bonhomme<Ancrage>;
   /** La Carte : tout le continent vu du ciel, un fanion au-dessus du bonhomme. */
@@ -177,7 +204,7 @@ export interface WorldViewProps {
  */
 export interface EnCasesDuMonde {
   focus: Omit<WorldFocus, 'spot'> & { spot?: Cell };
-  marker: BiomeId | Cell | null;
+  marker: BiomeId | Cell | MarqueDOuvrageEnCases | null;
   avatar?: Bonhomme<Cell>;
   trail?: Cell[];
   quests?: (Omit<QuestMark, 'place'> & { cell: Cell })[];

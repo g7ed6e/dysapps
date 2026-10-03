@@ -53,9 +53,15 @@ const PAS = 0.016;
 export interface LectureDeLaCarte {
   /** La place libre de la vue, relue quand `contexte` change (../placeLibre.ts, `lecteurDePlaceLibre`). */
   place(contexte: string): PlaceLue;
-  /** L'île sous la flèche de la Carte, ou `null`. */
-  destination(): BiomeId | null;
+  /** L'île sous la flèche de la Carte, ou le point du monde où elle pose sa pointe (un ouvrage, GD-7), ou `null`. */
+  destination(): DestinationDeLaCarte;
 }
+
+/** Ce que la flèche de la Carte désigne : une île, ou le point du monde (x, y au sol, z en hauteur) de sa pointe. */
+export type DestinationDeLaCarte = BiomeId | { x: number; y: number; z: number } | null;
+
+/** Une clé de la destination, pour savoir si elle a changé (un point se compare par ses coordonnées). */
+const cleDeLaDestination = (d: DestinationDeLaCarte): string => (d === null ? '' : typeof d === 'string' ? d : `${d.x},${d.y},${d.z}`);
 
 /**
  * Le cadrage de la Carte dans la place libre `libre` d'une vue `w` × `h` (pixels CSS) : la caméra recule assez pour que
@@ -65,7 +71,7 @@ export interface LectureDeLaCarte {
  */
 export function cadrageDeLaCarte(
   archipel: ArchipelagoId,
-  destination: BiomeId | null,
+  destination: DestinationDeLaCarte,
   w: number,
   h: number,
   libre: Rect,
@@ -77,9 +83,10 @@ export function cadrageDeLaCarte(
   const altitude = mapOf(archipel)[0]?.altitude ?? 0;
   const e = worldBounds(archipel);
   const terres = [e.minX, e.maxX].flatMap((x) => [e.minY, e.maxY].map((y) => new THREE.Vector3(x, altitude, y)));
-  const c = destination ? islandCenter(destination) : null;
-  // La pointe de la flèche se pose au centre de l'île (three/etiquettes.ts).
-  const dest = c ? new THREE.Vector3(c.x + 0.5, c.z, c.y + 0.5) : null;
+  // La pointe de la flèche se pose au centre de l'île (three/etiquettes.ts), ou sur le point donné (un ouvrage).
+  const c = typeof destination === 'string' ? islandCenter(destination) : null;
+  const point = typeof destination === 'string' ? null : destination;
+  const dest = c ? new THREE.Vector3(c.x + 0.5, c.z, c.y + 0.5) : point ? new THREE.Vector3(point.x, point.z, point.y) : null;
   const sol = dest?.y ?? altitude;
   const v = new THREE.Vector3();
   const target = new THREE.Vector3();
@@ -326,8 +333,8 @@ export function creerCamera(
   /** Combien de fois la Carte s'est ouverte : à chaque ouverture, la place libre est relue. */
   let ouvertures = 0;
   let surLaCarte = false;
-  let contexte = { ouvertures: -1, destination: null as BiomeId | null, cle: '' };
-  let cadrageCarte: { lue: PlaceLue | null; destination: BiomeId | null; aspect: number; target: THREE.Vector3; pos: THREE.Vector3 } | null = null;
+  let contexte = { ouvertures: -1, destination: '', cle: '' };
+  let cadrageCarte: { lue: PlaceLue | null; destination: string; aspect: number; target: THREE.Vector3; pos: THREE.Vector3 } | null = null;
   /**
    * Le cadrage de la Carte, recalculé seulement quand la place libre lue (le même objet tant qu'elle ne change pas) ou
    * la destination changent (pas image par image). `saut` : sans mouvement.
@@ -336,14 +343,15 @@ export function creerCamera(
     if (!surLaCarte) ouvertures++;
     surLaCarte = true;
     const destination = carte?.destination() ?? null;
-    if (contexte.ouvertures !== ouvertures || contexte.destination !== destination) contexte = { ouvertures, destination, cle: `${ouvertures}|${destination ?? ''}` };
+    const cle = cleDeLaDestination(destination);
+    if (contexte.ouvertures !== ouvertures || contexte.destination !== cle) contexte = { ouvertures, destination: cle, cle: `${ouvertures}|${cle}` };
     const lue = carte?.place(contexte.cle) ?? null;
-    if (!cadrageCarte || cadrageCarte.lue !== lue || cadrageCarte.destination !== destination || (!lue && cadrageCarte.aspect !== aspect)) {
+    if (!cadrageCarte || cadrageCarte.lue !== lue || cadrageCarte.destination !== cle || (!lue && cadrageCarte.aspect !== aspect)) {
       // Sans lecture (un test) : une vue de tablette, moins la bande des boutons du bas.
       const w = lue ? Math.max(1, lue.w) : HAUTEUR_DE_TABLETTE * aspect;
       const h = lue ? Math.max(1, lue.h) : HAUTEUR_DE_TABLETTE;
       const libre = lue?.libre ?? { x0: 0, y0: 0, x1: w, y1: h - RESERVE_DU_BAS };
-      cadrageCarte = { lue, destination, aspect, ...cadrageDeLaCarte(monde.archipel, destination, w, h, libre) };
+      cadrageCarte = { lue, destination: cle, aspect, ...cadrageDeLaCarte(monde.archipel, destination, w, h, libre) };
     }
     return { target: cadrageCarte.target, pos: cadrageCarte.pos, saut: lue?.saut ?? false };
   };

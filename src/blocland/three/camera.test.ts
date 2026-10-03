@@ -8,6 +8,10 @@ import { repereDeLaVue } from '../world/cadrage';
 import { GRAND_PHARE_3E } from '../world/decor/3e';
 import { PHARE, PHARES } from '../world/decor/phare';
 import { islandDef, landBox, mapOf } from '../world/map';
+import { BRIDGES } from '../world/archipelago';
+import { archipelagoOfIsland } from '../world/archipels';
+import { grilleDe } from '../world/grille';
+import { milieuDeLaLiaison } from '../world/view';
 import { placeLibre, type Rect } from '../placeLibre';
 import { avatarRoute, cadreDeTraversee, islandCenter, worldBounds } from '../world/terrain';
 import { AUTOUR_DE_LA_DESTINATION, cadrageDeLaCarte, cadrageDeLaTraversee, creerCamera, ECHELLE_MIN_DE_LA_TRAVERSEE, PLANCHER_DE_LA_CARTE } from './camera';
@@ -127,6 +131,22 @@ describe('La Carte dans la place libre (DA-31)', () => {
       expect(dedans(centre(dest, c, T), { x0: 0, y0: 0, x1: T.w, y1: T.h - 64 }), a).toBe(true);
       // Plus serré, l'archipel se resserre ou passe au plancher, mais la destination reste dans la place.
       expect(dedans(centre(dest, cadrageDeLaCarte(a, dest, T.w, T.h, libre), T), libre), `${a} serré`).toBe(true);
+    }
+  });
+
+  it('la flèche posée sur un ouvrage (GD-7) : sa pointe reste dans la place libre, au large comme serré', () => {
+    for (const def of BRIDGES) {
+      const a = archipelagoOfIsland(def.from);
+      const m = milieuDeLaLiaison(grilleDe(a).liaison(def.id))!;
+      // La pointe, comme three/bornes.ts la pose (`poserLaFleche`) : juste au-dessus du tablier.
+      const pointe = { x: m.x + 0.5, y: m.y + 0.5, z: m.z + 2 };
+      for (const libre of [
+        { x0: 0, y0: 0, x1: T.w, y1: T.h - 64 },
+        { x0: 0, y0: 250, x1: 1024, y1: 578 },
+      ]) {
+        const c = cadrageDeLaCarte(a, pointe, T.w, T.h, libre);
+        expect(dedans(vu(c, T, pointe.x, pointe.z, pointe.y), libre), `${def.id} ${libre.y0}`).toBe(true);
+      }
     }
   });
 

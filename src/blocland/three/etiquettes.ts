@@ -4,7 +4,6 @@
 // Dans Archipéo, hors de la Carte, elles s'écartent aussi des grands repères (world/cadrage.ts). Partout, elles
 // s'écartent de l'interface posée sur la scène, et se montrent entières ou pas du tout (DA-10).
 import * as THREE from 'three';
-import type { BiomeId } from '../biomes';
 import { drawIslandLabel, drawMapArrow, measureIslandLabel } from '../world/labelCanvas';
 import { reperesDe } from '../world/cadrage';
 import { placerEtiquettes, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
@@ -49,7 +48,15 @@ export function creerEtiquettes(
   arrowCanvas.width = 96;
   arrowCanvas.height = 124;
   const arrowCtx = arrowCanvas.getContext('2d');
-  if (arrowCtx) drawMapArrow(arrowCtx, 48, 114, 104);
+  /** La flèche dessinée : d'une île (`false`) ou d'un ouvrage (`true`, avec son icône, GD-7) ; redessinée quand cela change. */
+  let flecheDOuvrage = false;
+  const dessinerLaFleche = (ouvrage: boolean) => {
+    flecheDOuvrage = ouvrage;
+    if (!arrowCtx) return;
+    arrowCtx.clearRect(0, 0, arrowCanvas.width, arrowCanvas.height);
+    drawMapArrow(arrowCtx, 48, 114, 104, ouvrage ? 'ouvrage' : undefined);
+  };
+  dessinerLaFleche(false);
   const arrowTex = new THREE.CanvasTexture(arrowCanvas);
   arrowTex.colorSpace = THREE.SRGBColorSpace;
   const mapArrow = new THREE.Sprite(new THREE.SpriteMaterial({ map: arrowTex, depthTest: false, transparent: true, sizeAttenuation: false, fog: false }));
@@ -93,7 +100,7 @@ export function creerEtiquettes(
       const h = Math.max(24, Math.abs(a.y - b.y));
       out.beacon = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, w: Math.max(24, h * 0.9), h };
     }
-    if (fleche.userData.island) {
+    if (fleche.userData.pointe) {
       const tip = toScreen(mapArrow.position, cam, W, H);
       if (out.beacon) out.arrowShift = separateMark(tip, { x: out.beacon.x, y: out.beacon.y + out.beacon.h / 2 }, ARROW_GAP);
       const { w: aw, h: ah } = mapArrow.userData.px;
@@ -102,13 +109,18 @@ export function creerEtiquettes(
     return out;
   };
   const placeMarks = (onMap: boolean, t: number, reduit: boolean) => {
-    const island = fleche.userData.island as BiomeId | null;
-    const show = onMap && Boolean(island);
+    // Sa pointe : au-dessus du cœur d'une île, ou du milieu d'un ouvrage (three/bornes.ts, `poserLaFleche`).
+    const pointe = fleche.userData.pointe as { x: number; y: number; z: number } | null | undefined;
+    const show = onMap && Boolean(pointe);
     mapArrow.visible = show;
     if (fleche.userData.island !== undefined) fleche.visible = Boolean(fleche.userData.on) && !show;
-    if (!show || !island) return;
-    const c = islandCenter(island);
-    mapArrow.position.set(c.x + 0.5, c.z + 8, c.y + 0.5);
+    if (!show || !pointe) return;
+    const ouvrage = Boolean(fleche.userData.ouvrage);
+    if (ouvrage !== flecheDOuvrage) {
+      dessinerLaFleche(ouvrage);
+      arrowTex.needsUpdate = true;
+    }
+    mapArrow.position.set(pointe.x, pointe.z, pointe.y);
     const H = Math.max(1, el.clientHeight);
     const W = Math.max(1, el.clientWidth);
     const perPx = 2 / (camera.projectionMatrix.elements[5] * H);
@@ -190,7 +202,7 @@ export function creerEtiquettes(
     // ici » et celle du bonhomme (l'île la plus proche de lui).
     const tenues = indicesTenus(tenuesCle);
     vise.tenues = tenuesCle;
-    const marks = spread ? `${fleche.userData.island ?? ''}:${av.toArray().map((v) => v.toFixed(0))}` : `reperes:${tenues.join(',')}`;
+    const marks = spread ? `${fleche.userData.ouvrage ?? fleche.userData.island ?? ''}:${av.toArray().map((v) => v.toFixed(0))}` : `reperes:${tenues.join(',')}`;
     const key = `${sprites.map((s) => s.id).join(',')}@${camGoal.pos.toArray().map((v) => v.toFixed(1))}>${camGoal.target.toArray().map((v) => v.toFixed(1))}@${W}x${H}@${marks}@${zonesCle}`;
     // Sur la Carte, l'écart est autre : au retour, il se refait.
     if (spread) vise.n = -1;

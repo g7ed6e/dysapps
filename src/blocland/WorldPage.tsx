@@ -229,6 +229,9 @@ export function WorldPage() {
   // La prochaine destination (la même que « Reprendre l'aventure » au menu), dite et marquée sur la Carte.
   const destination = modele.destination;
   const destinationText = `Prochaine destination : ${destination.name}. ${destination.text}`;
+  // Un ouvrage à construire (GD-7) : sur la Carte, la flèche se pose sur lui, avec l'icône d'un ouvrage, pas sur l'île
+  // d'où il part (quatre ouvrages peuvent en partir).
+  const flecheDeLOuvrage = useMemo(() => (destination.ouvrage ? { ouvrage: destination.ouvrage } : null), [destination.ouvrage]);
   // En grand texte, la phrase défile dans le panneau de la Carte : un repère dit qu'il y a une suite.
   // Le nom de chaque île ouverte de l'archipel, écrit au-dessus d'elle dans le monde ; sur la Carte, toutes les îles,
   // avec leur état en icône et en mot.
@@ -749,7 +752,7 @@ export function WorldPage() {
   // La flèche « Commence ici » flotte sur la Forêt tant qu'aucune mission n'a été jouée ; sur le chantier du navire quand
   // le panneau du port est ouvert et qu'il reste des cases à poser.
   const shipyard = island && island.id === archipelago.port && ship.stage && ship.status && !ship.status.complete;
-  // Sur la Carte, elle marque la prochaine destination.
+  // Sur la Carte, elle marque la prochaine destination : son île, ou l'ouvrage qu'elle propose de construire.
   const flecheDuNavire = useMemo(
     () => repere.versIle({ x: vehicle.origin.x + 2, y: vehicle.origin.y + 5, z: vehicle.origin.z + 12 }, vehicle.port),
     [repere, vehicle.origin.x, vehicle.origin.y, vehicle.origin.z, vehicle.port],
@@ -757,7 +760,7 @@ export function WorldPage() {
   const marker = shipyard
     ? flecheDuNavire
     : mapOpen
-      ? destination.island
+      ? (flecheDeLOuvrage ?? destination.island)
       : !island && a === '6e' && Object.keys(state.progress).length === 0
         ? 'french-6e-phonology'
         : null;

@@ -72,3 +72,17 @@ it('pileDEtoiles : une géométrie neuve à chaque appel (vider la dispose sans 
   a.dispose();
   expect(c.getAttribute('position').count).toBe(72);
 });
+
+it('sur un ouvrage (GD-7), la flèche dit lequel et pose sa pointe au-dessus de son milieu ; sur une case, pas de flèche de la Carte', () => {
+  const { b } = bornes();
+  b.poserLaFleche({ ouvrage: 'a-b', cell: { x: 10, y: 20, z: 3 } });
+  expect(b.fleche.userData).toMatchObject({ island: null, ouvrage: 'a-b', on: true, pointe: { x: 10.5, y: 20.5, z: 5 } });
+  b.poserLaFleche('french-6e-phonology');
+  expect(b.fleche.userData).toMatchObject({ island: 'french-6e-phonology', ouvrage: null });
+  expect(b.fleche.userData.pointe).not.toBeNull();
+  // Le chantier du navire : une case, la petite flèche seule.
+  b.poserLaFleche({ x: 2, y: 2, z: 1 });
+  expect(b.fleche.userData).toMatchObject({ island: null, ouvrage: null, pointe: null });
+  b.poserLaFleche(null);
+  expect(b.fleche.userData).toMatchObject({ on: false, pointe: null });
+});

@@ -177,15 +177,44 @@ export function drawIslandLabel(ctx: CanvasRenderingContext2D, text: string, cx:
 /**
  * La flèche de la prochaine destination, sur la Carte : une grande flèche jaune cernée de brun, pointe en bas sur
  * (cx, tipY), haute de `h` pixels du canvas. Plus grande et plus contrastée que le fanion du bonhomme, dont elle se
- * distingue aussi par sa forme (une flèche pleine, pas un chevron).
+ * distingue aussi par sa forme (une flèche pleine, pas un chevron). `icone` : la flèche d'un ouvrage (GD-7), dont la
+ * tige est une plaque carrée qui porte l'icône d'un pont (`formeDeLaFlecheDOuvrage`), de la même taille au plus.
  */
-export function drawMapArrow(ctx: CanvasRenderingContext2D, cx: number, tipY: number, h: number): void {
+export function drawMapArrow(ctx: CanvasRenderingContext2D, cx: number, tipY: number, h: number, icone?: 'ouvrage'): void {
+  ctx.save();
+  ctx.lineJoin = 'round';
+  ctx.lineCap = 'round';
+  ctx.lineWidth = Math.max(3, h * 0.1);
+  ctx.strokeStyle = FLECHE.encre;
+  ctx.fillStyle = FLECHE.jaune;
+  ctx.beginPath();
+  if (icone === 'ouvrage') {
+    // La pointe, puis la plaque posée dessus, chacune cernée de brun, enfin l'icône à l'encre.
+    const { plaque, pointe, pont } = formeDeLaFlecheDOuvrage(cx, tipY, h);
+    ctx.moveTo(pointe[0].x, pointe[0].y);
+    for (const p of pointe.slice(1)) ctx.lineTo(p.x, p.y);
+    ctx.closePath();
+    ctx.stroke();
+    ctx.fill();
+    ctx.beginPath();
+    ctx.rect(plaque.x, plaque.y, plaque.w, plaque.h);
+    ctx.stroke();
+    ctx.fill();
+    ctx.lineWidth = Math.max(2, h * 0.06);
+    ctx.beginPath();
+    for (const trait of pont) {
+      ctx.moveTo(trait[0].x, trait[0].y);
+      if (trait.length === 3) ctx.quadraticCurveTo(trait[1].x, trait[1].y, trait[2].x, trait[2].y);
+      else ctx.lineTo(trait[1].x, trait[1].y);
+    }
+    ctx.stroke();
+    ctx.restore();
+    return;
+  }
   const head = h * 0.5;
   const halfHead = h * 0.36;
   const halfShaft = h * 0.14;
   const top = tipY - h;
-  ctx.save();
-  ctx.beginPath();
   ctx.moveTo(cx - halfShaft, top);
   ctx.lineTo(cx + halfShaft, top);
   ctx.lineTo(cx + halfShaft, tipY - head);
@@ -194,11 +223,38 @@ export function drawMapArrow(ctx: CanvasRenderingContext2D, cx: number, tipY: nu
   ctx.lineTo(cx - halfHead, tipY - head);
   ctx.lineTo(cx - halfShaft, tipY - head);
   ctx.closePath();
-  ctx.lineJoin = 'round';
-  ctx.lineWidth = Math.max(3, h * 0.1);
-  ctx.strokeStyle = '#3b2d20';
   ctx.stroke();
-  ctx.fillStyle = '#ffc83c';
   ctx.fill();
   ctx.restore();
+}
+
+/** Le jaune de la flèche de la Carte et son encre (le contraste porte, la couleur seule ne dit rien). */
+const FLECHE = { jaune: '#ffc83c', encre: '#3b2d20' };
+
+type P2 = { x: number; y: number };
+
+/**
+ * La flèche d'un ouvrage (GD-7), pointe en bas sur (cx, tipY), haute de `h` : une pointe jaune, et à la place de la
+ * tige une plaque carrée jaune qui porte l'icône d'un pont (un tablier, deux piles et une arche, à l'encre). Elle tient
+ * dans la boîte de la flèche d'une île (`h` de haut, 0,8 `h` de large), que le placement des étiquettes et le cadrage
+ * de la Carte réservent déjà : elle se distingue d'elle par sa forme et son icône, pas par sa taille ni sa couleur.
+ * `pont` : les traits de l'icône, segments (deux points) ou courbes (trois : départ, contrôle, arrivée).
+ */
+export function formeDeLaFlecheDOuvrage(cx: number, tipY: number, h: number): { plaque: { x: number; y: number; w: number; h: number }; pointe: P2[]; pont: P2[][] } {
+  const tete = h * 0.44;
+  const demiTete = h * 0.36;
+  const cote = h - tete;
+  const plaque = { x: cx - cote / 2, y: tipY - h, w: cote, h: cote };
+  // L'icône sur une grille de 24, dans les trois quarts de la plaque.
+  const u = (cote * 0.75) / 24;
+  const x0 = cx - 12 * u;
+  const y0 = plaque.y + (cote - 24 * u) / 2;
+  const at = (x: number, y: number): P2 => ({ x: x0 + x * u, y: y0 + y * u });
+  const pont = [
+    [at(1, 9), at(23, 9)],
+    [at(4, 9), at(4, 21)],
+    [at(20, 9), at(20, 21)],
+    [at(4, 21), at(12, 5), at(20, 21)],
+  ];
+  return { plaque, pointe: [{ x: cx - demiTete, y: tipY - tete }, { x: cx + demiTete, y: tipY - tete }, { x: cx, y: tipY }], pont };
 }
