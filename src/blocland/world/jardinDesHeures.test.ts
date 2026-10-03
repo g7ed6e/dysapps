@@ -39,7 +39,7 @@ it('l’île de la LV2 n’élargit jamais le cadrage de sa voisine (cadrage d�
       const voisine = otherEnd(b, lv2);
       const z = viewZone(voisine);
       // Sans l'île de la LV2 : la zone de la voisine et de ses autres voisines seulement.
-      const ids = [voisine, ...bridgesOf(voisine).map((x) => otherEnd(x, voisine)).filter((id) => id !== lv2)];
+      const ids = [voisine, ...bridgesOf(voisine).filter((x) => !x.etoile).map((x) => otherEnd(x, voisine)).filter((id) => id !== lv2)];
       const boxes = ids.map((id) => landBox(islandDef(id)));
       expect(z).toEqual({
         minX: Math.min(...boxes.map((x) => x.x0)),

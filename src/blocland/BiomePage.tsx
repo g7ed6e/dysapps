@@ -111,7 +111,12 @@ export function BiomePage() {
           </Link>
         </p>
       ) : (
-        <Bridges island={biome.id} highlight={chantier} onBuilt={(to) => window.setTimeout(() => navigate(`/adventure/${to}`), 900)} />
+        <Bridges
+          island={biome.id}
+          highlight={chantier}
+          objectif={unlocked ? (goal?.ouvrage ?? null) : undefined}
+          onBuilt={(to) => window.setTimeout(() => navigate(`/adventure/${to}`), 900)}
+        />
       )}
 
       {/* « Pas de LV2 » : ni missions ni Gardien sur l'île de la LV2. */}

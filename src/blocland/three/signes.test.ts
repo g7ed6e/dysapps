@@ -26,7 +26,7 @@ function scene() {
     teteDe: (_id: BiomeId, out: THREE.Vector3) => (out.set(0, 3, 0), true),
   } as unknown as Personnages;
   const derniers = { current: { carte: false, focus: { island: FORET, seq: 1 }, home: null, forceDay: false, whalePass: null, sons: false } as Derniers };
-  const instant = { now: 0, marche: false, navigue: null, carte: false, but: { target: new THREE.Vector3(), pos: new THREE.Vector3() } } as Instant;
+  const instant = { now: 0, marche: false, traversee: null, navigue: null, carte: false, but: { target: new THREE.Vector3(), pos: new THREE.Vector3() } } as Instant;
   const signes = creerSignes(monde, el, camera, personnages, derniers, instant);
   return { monde, signes, faireSigne, derniers, instant };
 }

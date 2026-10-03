@@ -34,6 +34,8 @@ export interface Goal {
   need: number;
   /** Tout est là pour le faire tout de suite (la jauge, pleine, n'a plus rien à dire). */
   ready?: boolean;
+  /** L'objectif est un ouvrage : son identifiant (le pli Ouvrages en fait le seul bouton principal). */
+  ouvrage?: string;
 }
 
 /** Ce qu'il manque au Bloc-Navire, en blocs : « 16 blocs de bois », « 10 briques et 3 blocs de verre ». */
@@ -73,6 +75,7 @@ export function nextGoalInfo(state: GameState, island: BiomeId, noms: NomsArchip
       have,
       need: cheapest.cost,
       ready: left === 0,
+      ouvrage: cheapest.id,
     });
   }
   // Le chantier du Bloc-Navire (sur un port, tant que son voyage n'est pas fait).
@@ -99,7 +102,7 @@ export function nextGoalInfo(state: GameState, island: BiomeId, noms: NomsArchip
   }
   if (!candidates.length) return null;
   const pick = candidates.find((c) => c.ready) ?? candidates.reduce((a, b) => (b.need - b.have < a.need - a.have ? b : a));
-  return { text: `${cap(pick.text)}.`, have: pick.have, need: pick.need, ready: pick.ready };
+  return { text: `${cap(pick.text)}.`, have: pick.have, need: pick.need, ready: pick.ready, ...(pick.ouvrage ? { ouvrage: pick.ouvrage } : {}) };
 }
 
 /** La phrase du prochain objectif seule (voir `nextGoalInfo`). */
@@ -138,7 +141,7 @@ export function lockedHint(state: GameState, island: BiomeId, noms: NomsArchipel
   if (here.length) {
     const b = here.reduce((a, c) => (c.cost < a.cost ? c : a));
     const from = getBiome(otherEnd(b, island))?.name ?? '';
-    const cond = conditionMet(b, bridges, world) ? '' : ` ${conditionTextShort(b, from, mots.ouvrageGardien)}`;
+    const cond = conditionMet(b, bridges, world) ? '' : ` ${conditionTextShort(b, from)}`;
     return `Pas si vite ! Pour venir ici, construis ${ouvrageName(b.kind, '')}depuis ${from} : ${b.cost} blocs.${cond}`;
   }
   // Trop loin : la première île fermée sur le chemin est celle à ouvrir d'abord.
@@ -152,8 +155,8 @@ export function lockedHint(state: GameState, island: BiomeId, noms: NomsArchipel
 
 const cap = (text: string) => `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
 
-// `gardien` : la phrase de l'univers (un Gardien vaincu dans Blocland, rallumé dans Archipéo). L'escalier demande une
-// mission réussie sur l'île de départ, qui y pose la première partie de son bâtiment (GD-6).
-function conditionTextShort(b: { kind: keyof typeof KIND_NAME }, from: string, gardien: string): string {
-  return b.kind === 'escalier' ? `Réussis aussi une mission sur ${from}.` : b.kind === 'tunnel' || b.kind === 'col' ? gardien : '';
+// L'escalier demande une mission réussie sur l'île de départ, qui y pose la première partie de son bâtiment (GD-6) ;
+// aucun ouvrage ne demande un Gardien (GD-7).
+function conditionTextShort(b: { kind: keyof typeof KIND_NAME }, from: string): string {
+  return b.kind === 'escalier' ? `Réussis aussi une mission sur ${from}.` : '';
 }

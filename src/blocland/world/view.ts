@@ -199,6 +199,8 @@ export interface RappelsDeLaVue {
   build?: BuildProps;
   onVoyageLegEnd?: () => void;
   onVoyageSkip?: () => void;
+  /** Le bonhomme arrivé tout de suite (un toucher dans le vide pendant un trajet). */
+  onArrive?: () => void;
 }
 
 export function rappelsDeLaVue(onIntent: ((i: Intention) => void) | undefined, archipel: ArchipelagoId, chantier = false): RappelsDeLaVue {
@@ -227,5 +229,6 @@ export function rappelsDeLaVue(onIntent: ((i: Intention) => void) | undefined, a
     build: chantier ? { onPickFace: (cell, next, options) => onIntent(face(cell, next, options)) } : undefined,
     onVoyageLegEnd: () => onIntent({ genre: 'fin-du-voyage' }),
     onVoyageSkip: () => onIntent({ genre: 'voyage-saute' }),
+    onArrive: () => onIntent({ genre: 'arrivee' }),
   };
 }

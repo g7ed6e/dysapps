@@ -65,7 +65,7 @@ Les textures ne servent plus qu’à dessiner le monde ; dans l’interface, un 
 
 ## Le rendu d’Archipéo
 
-Archipéo est en pause depuis le 2 octobre 2026 (décision du mainteneur). Son rendu (palette commune par archipel, terrain à facettes, mer et faune peintes, décor, construction taillée, architecture du lot 7b, blocs assemblés, 2D peinte, personnages) est décrit dans [sa fiche](../univers/archipeo/game-design.md#le-rendu) ; le rendu du monde de chaque univers se règle dans `src/blocland/world/habillage/`.
+Archipéo est en pause depuis le 2 octobre 2026 (décision du mainteneur). Les ouvrages du port de GD-7 valent aussi pour lui, refaits comme une correction voulue, sans habillage nouveau ; leur règle (poteaux des longs bacs, lanterne à chaque bout) est dans la [fiche de Blocland](../univers/blocland/fiche.md). Son rendu (palette commune par archipel, terrain à facettes, mer et faune peintes, décor, construction taillée, architecture du lot 7b, blocs assemblés, 2D peinte, personnages) est décrit dans [sa fiche](../univers/archipeo/game-design.md#le-rendu) ; le rendu du monde de chaque univers se règle dans `src/blocland/world/habillage/`.
 
 ## Créatures et Gardiens
 

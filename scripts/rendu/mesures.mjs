@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 20` le plus long temps réel laissé au monde pour se construire (en secondes, 10 par défaut). L'horloge de la
 // page est pilotée (`preparerLaScene`, scripts/prise-de-vue.mjs) : deux prises du même état donnent la même image, les
@@ -238,6 +238,47 @@ const CAPTURES = [
   ...[['marche', 'maths-5e-proportionality'], ['atelier', 'maths-4e-algebra']].map(([court, ile]) => ({ nom: `trois-bandes-plans-${court}`, vue: 'île', famille: 'trois-bandes', ile, partie: 'cour-mi', finesse: 2 })),
   { nom: 'trois-bandes-assemblage', vue: 'île', famille: 'trois-bandes', ile: 'french-6e-phonology', partie: 'un-plan', finesse: 2 },
   { nom: 'trois-bandes-assemblage-nuit', vue: 'île', famille: 'trois-bandes', ile: 'french-6e-phonology', partie: 'un-plan', nuit: true, finesse: 2 },
+  // Le port en étoile (GD-7, famille `etoile`, lot en cours) : une longue traversée en cours, de la Plaine à la Carrière
+  // par le long bac du port (`allerA` : l'île touchée une fois la scène prête, `pasEnPlus` : le bonhomme au milieu du bac ;
+  // le pont de la Mine retiré, sinon le plus court passe par lui), le panneau de la Carrière fermé (il attend l'arrivée,
+  // le cadre fixe prend toute la vue), en tablette, en portrait, en téléphone (où la caméra suit le bonhomme : le cadre fixe y
+  // serait trop petit, `ECHELLE_MIN_DE_LA_TRAVERSEE`) et en téléphone au grand texte ; une longue traversée
+  // sur le pont du Phare au Château des hypothèses (3e), en tablette ; la vue de l'archipel au départ (`depart` : une partie neuve, les liaisons
+  // du port à construire, la Carte : la vue d'ensemble) ; le panneau de la Plaine au départ avec 4 blocs (quatre ouvrages
+  // constructibles, un seul « Construire » principal), en téléphone au grand texte, défilé jusqu'au bouton principal, puis
+  // en hauteur pour voir toute la liste ; les deux ponts du Phare (3e) de près, de jour et de nuit.
+  ...[
+    { suffixe: '' },
+    { suffixe: '-800x1280', taille: { width: 800, height: 1280 } },
+    { suffixe: '-390x844', taille: { width: 390, height: 844 } },
+    { suffixe: '-390x844-od32', taille: { width: 390, height: 844 }, reglages: { font: 'opendyslexic', fontSize: 32 } },
+  ].map(({ suffixe, ...autres }) => ({
+    nom: `etoile-traversee${suffixe}`,
+    vue: 'île',
+    famille: 'etoile',
+    ile: 'maths-6e-calculation',
+    allerA: 'french-6e-word-spelling',
+    sansPonts: ['french-6e-letter-confusion-french-6e-word-spelling'],
+    pasEnPlus: 24,
+    ...autres,
+  })),
+  { nom: 'etoile-traversee-3e', vue: 'île', famille: 'etoile', ile: 'maths-3e-functions', allerA: 'english-3e-grammar', pasEnPlus: 24 },
+  { nom: 'etoile-depart', vue: 'carte', famille: 'etoile', ile: 'maths-6e-calculation', depart: true },
+  ...[
+    { suffixe: '', taille: { width: 390, height: 844 }, voir: '.bridges-list .button.primary' },
+    { suffixe: '-haut', taille: { width: 390, height: 3200 } },
+  ].map(({ suffixe, ...autres }) => ({
+    nom: `etoile-plaine-390x844-od32${suffixe}`,
+    vue: 'île',
+    famille: 'etoile',
+    ile: 'maths-6e-calculation',
+    depart: true,
+    inventaire: { 'french-6e-phonology': 4 },
+    reglages: { font: 'opendyslexic', fontSize: 32 },
+    ...autres,
+  })),
+  { nom: 'etoile-phare-ponts', vue: 'archipel', famille: 'etoile', ile: 'maths-3e-functions', finesse: 2 },
+  { nom: 'etoile-phare-ponts-nuit', vue: 'archipel', famille: 'etoile', ile: 'maths-3e-functions', finesse: 2, nuit: true },
 ];
 /** La lueur la nuit, à la vue île : au plus 3 % de la scène. */
 const LUEUR_MAX = 0.03;
@@ -437,19 +478,21 @@ async function scenes() {
               pasEnPlus: c.pasEnPlus,
               revisions: c.revisions,
               voir: c.voir,
+              allerA: c.allerA,
+              depart: c.depart,
               nom: parIle ? `${c.nom}-${parIle}` : c.nom,
             })),
           )
         : []),
     ];
-    for (const { vue, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages, succes, inventaire, pose, pasEnPlus, revisions, voir } of views) {
+    for (const { vue, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages, succes, inventaire, pose, pasEnPlus, revisions, voir, allerA, depart } of views) {
       const page = await browser.newPage({ viewport: taille ?? TABLET, deviceScaleFactor: finesse ?? (recadre ? 1.5 : 1), ...(fige ? { reducedMotion: 'reduce' } : {}) });
       await piloterLHorloge(page, time);
       await page.addInitScript(hasardFixe);
       await page.addInitScript(figeable);
       await page.goto(`${base}/icon.svg`);
       await page.evaluate(
-        ({ world, progress, view, univers, lv2, reglages, badges, inventaire, pose, spaced }) => {
+        ({ world, progress, view, univers, lv2, reglages, badges, inventaire, pose, spaced, depart }) => {
           localStorage.clear();
           sessionStorage.removeItem('dysapps:poses-montrees');
           sessionStorage.removeItem('dysapps:revisions-plus-tard');
@@ -460,12 +503,17 @@ async function scenes() {
           localStorage.setItem('dysapps:settings', JSON.stringify({ worldView: view, ...(univers ? { univers } : {}), ...(lv2 ? { lv2 } : {}), ...(reglages ?? {}) }));
           localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true, 'archipel-5e': true, 'archipel-4e': true, 'archipel-3e': true }));
           localStorage.setItem('dysapps:region-names', JSON.stringify({ said: true }));
+          // Au départ, le mot d'arrivée de la créature est déjà dit : il couvrirait la vue.
+          if (depart) localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'baleine-6e-arrivee': true }));
           localStorage.setItem('dysapps:game', JSON.stringify({ version: 3, stock: inventaire ?? {}, progress, world, spaced }));
           localStorage.setItem('dysapps:progress', JSON.stringify({ xp: 20000, badges }));
         },
         {
-          world: { ...built, parts: sansLesIles(plans ?? built.parts, sansIles), ...(bridges ? { links: bridges } : {}), place: depuis ?? ile ?? at },
-          progress: sansEtoiles ? {} : premieresMissions(sansLeGardien(sansLesIles(progress, sansIles), debout), pose ? ile : null, pose),
+          // Au départ (`depart`) : une partie neuve, rien de construit ni de joué.
+          world: depart
+            ? { parts: {}, log: [], links: [], place: ile ?? at }
+            : { ...built, parts: sansLesIles(plans ?? built.parts, sansIles), ...(bridges ? { links: bridges } : {}), place: depuis ?? ile ?? at },
+          progress: sansEtoiles || depart ? {} : premieresMissions(sansLeGardien(sansLesIles(progress, sansIles), debout), pose ? ile : null, pose),
           pose: pose ? { biome: ile, rangs: Array.from({ length: pose }, (_, i) => i + 1) } : null,
           view,
           univers: UNIVERS_DES_TEXTES,
@@ -474,6 +522,7 @@ async function scenes() {
           inventaire,
           badges: succesDe(succes),
           spaced: revisions ? revisionsDues(progress, ile) : [],
+          depart,
         },
       );
       await page.goto(`${base}/${QUERY}#${go}`);
@@ -481,11 +530,21 @@ async function scenes() {
       if (!mesure) {
         // Les autres captures (nuit, personnages, chantier, ponts) : pas de mesure, seulement l'image.
         await preparerLaScene(page, VUES_SANS_MONDE.has(vue) || view === 'list' ? 0 : WAIT);
+        // Une île touchée une fois la scène prête (`allerA`) : le bonhomme part, la caméra prend le trajet.
+        if (allerA) await page.evaluate((id) => (location.hash = `#/adventure/${id}`), allerA);
         // Plus loin dans le temps de la scène (la pose finie, par exemple), du même pas que la préparation.
         for (let i = 0; i < (pasEnPlus ?? 0); i++) {
           await page.clock.runFor(125);
           await page.waitForTimeout(30);
         }
+        // Après un trajet lancé (`allerA`) : la caméra posée d'un coup à son cadrage, comme à la préparation (un pas de
+        // plus entre les deux, pour que les étiquettes suivent).
+        if (allerA)
+          for (let i = 0; i < 2; i++) {
+            await page.evaluate(() => window.__dysappsCamera?.poser());
+            await page.clock.runFor(125);
+            await page.waitForTimeout(30);
+          }
         // Un élément à montrer plus bas (dans la page ou dans un panneau qui défile) : on y fait défiler, sans animation.
         if (voir) await page.locator(voir).first().evaluate((el) => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
         await capturer(page, { path: file, type: 'jpeg', quality: 85, timeout: 90000, ...(recadre ? { clip: recadre } : {}) });

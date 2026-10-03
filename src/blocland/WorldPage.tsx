@@ -57,7 +57,7 @@ import {
 } from './world/modele';
 import { VILLAGE_STAGES, villageStage } from './world/villageStage';
 import { VEIL_MS, legTiming } from './world/voyage';
-import { walkDuration } from './world/scene';
+import { estUneLongueTraversee, walkDuration } from './world/scene';
 import { dispositionEnGrille, type BoutsDuTrajet } from './world/grille';
 import type { Entite, Intention, Point } from './world/disposition';
 import { resteDuTrajet } from './world/arrivee';
@@ -470,6 +470,21 @@ export function WorldPage() {
   // à part, qui ne dépend que de l'archipel : `grille` change avec les cubes, et le bonhomme repartirait à chaque bloc posé.
   const repere = useMemo(() => dispositionEnGrille(a), [a]);
   const avatar = useMemo(() => ({ ...walk, route: walk.route.map((p) => repere.versIle(p)) }), [walk, repere]);
+  // Une longue traversée (GD-7, à cadre fixe) : le panneau de l'île d'arrivée attend que le bonhomme soit arrivé, et le
+  // cadre prend toute la vue. Il s'ouvre à l'arrivée (la durée du trajet, celle de la vue), à un toucher dans le vide
+  // (l'intention `arrivee`) ou au bouton de l'île. « Réduire les animations » : il arrive tout de suite, le panneau
+  // s'ouvre comme pour un trajet ordinaire. `arriveA` : le `seq` du dernier trajet arrivé.
+  const traverseeLongue = useMemo(() => !reduceMotion && estUneLongueTraversee(walk, a), [walk, a, reduceMotion]);
+  const [arriveA, setArriveA] = useState(-1);
+  useEffect(() => {
+    if (!traverseeLongue) return;
+    const { seq, route } = walk;
+    const t = window.setTimeout(() => setArriveA(seq), walkDuration(route));
+    return () => window.clearTimeout(t);
+  }, [walk, traverseeLongue]);
+  const attendLArrivee = traverseeLongue && arriveA !== walk.seq;
+  /** Le panneau de l'île ouverte, tel qu'on le voit : ouvert, et pas en attente de l'arrivée. */
+  const panneauOuvert = sheetOpen && !attendLArrivee;
 
   // L'île de l'URL est cadrée (vol) à chaque changement ; le bonhomme s'y rend si un chemin d'ouvrages y mène.
   // Une île ouverte d'un autre archipel (« Aller au port », lien, retour d'exercice) : le Bloc-Navire y mène (voyage).
@@ -777,7 +792,7 @@ export function WorldPage() {
   const onIsland = (id: BiomeId, sol?: Point, enRoute?: Point) => {
     if (mapOpen && !isBiomeUnlocked(id, state.world.links)) return setMapTarget(id);
     if (sol && !voyage && island?.id === id && at === id) return flaner(id, sol, enRoute);
-    if (island?.id === id && !sheetOpen) return onCreature(id, 'creature');
+    if (island?.id === id && !panneauOuvert) return onCreature(id, 'creature');
     // Une autre île ouverte : l'effet du changement d'île l'y emmène, jusqu'à la case touchée.
     if (sol && island?.id !== id && isBiomeUnlocked(id, state.world.links)) arriveeDemandee.current = { ile: id, sol, ...(enRoute ? { enRoute } : {}) };
     openIsland(id);
@@ -807,6 +822,8 @@ export function WorldPage() {
       case 'fin-du-voyage':
       case 'voyage-saute':
         return onLegEnd();
+      case 'arrivee':
+        return setArriveA(walk.seq);
     }
   };
   const ouvrageLabel = (b: { kind: keyof typeof KIND_NAME; from: BiomeId; to: BiomeId; cost: number }) =>
@@ -846,7 +863,7 @@ export function WorldPage() {
 
   return (
     <div
-      className={`world-page${(island && sheetOpen) || (panelOpen && !mapOpen) || voyage?.mode === 'panel' ? ' has-sheet' : ''}${whaleWord || motRallume || renommageOuvert ? ' bulle-ouverte' : ''}`}
+      className={`world-page${(island && panneauOuvert) || (panelOpen && !mapOpen) || voyage?.mode === 'panel' ? ' has-sheet' : ''}${whaleWord || motRallume || renommageOuvert ? ' bulle-ouverte' : ''}`}
     >
       <div
         className="world-stage"
@@ -1056,10 +1073,14 @@ export function WorldPage() {
             <button
               type="button"
               className="button"
-              aria-pressed={sheetOpen}
-              aria-controls={sheetOpen ? `panneau-${island.id}` : undefined}
-              onClick={() => montrerLePanneau(!sheetOpen)}
-              aria-label={sheetOpen ? `Replier le panneau de ${island.name}` : `Ouvrir le panneau de ${island.name}`}
+              aria-pressed={panneauOuvert}
+              aria-controls={panneauOuvert ? `panneau-${island.id}` : undefined}
+              onClick={() => {
+                // Pendant une longue traversée, le bouton ouvre le panneau qui attendait l'arrivée.
+                if (attendLArrivee) setArriveA(walk.seq);
+                montrerLePanneau(!panneauOuvert);
+              }}
+              aria-label={panneauOuvert ? `Replier le panneau de ${island.name}` : `Ouvrir le panneau de ${island.name}`}
             >
               <Icon name={island.icon} /> <span className="world-bar-text">{island.name}</span>
             </button>
@@ -1127,7 +1148,7 @@ export function WorldPage() {
         <MenuSheet onClose={() => navigate('/adventure')} />
       ) : (
         island &&
-        sheetOpen && (
+        panneauOuvert && (
           <IslandSheet
             biome={island}
             ship={ship}

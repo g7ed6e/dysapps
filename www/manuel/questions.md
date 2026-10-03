@@ -33,7 +33,7 @@ Chaque partie change (autres nombres en maths, autre tirage de mots en français
 Il faut au moins deux étoiles sur chaque mission de l’île. Toucher la ligne du Gardien dans le panneau dit quelles missions manquent.
 
 **Comment ouvrir une île fermée ?**
-Toucher l’île (ou l’ouvrir depuis la Carte) : sa créature dit l’ouvrage à construire, depuis quelle île, combien de blocs et la condition éventuelle (une mission réussie sur l’île de départ pour un escalier, Gardien vaincu pour un tunnel ou un col). Si l’île est dans un autre archipel, elle dit ce qu’il manque au Bloc-Navire, ou l’archipel où aller d’abord.
+Toucher l’île (ou l’ouvrir depuis la Carte) : sa créature dit l’ouvrage à construire, depuis quelle île, combien de blocs et la condition éventuelle (une mission réussie sur l’île de départ, seulement pour un escalier ; aucun Gardien n’est une condition). Si l’île est dans un autre archipel, elle dit ce qu’il manque au Bloc-Navire, ou l’archipel où aller d’abord.
 
 ## Affichage et son
 

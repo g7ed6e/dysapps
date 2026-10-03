@@ -25,6 +25,7 @@ function monde(habillage: Habillage): Monde {
 const instant = (): Instant => ({
   now: 0,
   marche: false,
+  traversee: null,
   navigue: null,
   carte: false,
   but: { target: new THREE.Vector3(), pos: new THREE.Vector3() },

@@ -1,4 +1,3 @@
-import { textesDe } from '../../univers';
 import { BLOC, BIOMES } from '../biomes';
 import { sanitizeState } from '../engine';
 import { MAP } from './map';
@@ -44,7 +43,7 @@ it('chaque île a une place ; les ouvrages ouvrent son archipel, les voyages ouv
   // Tous les ouvrages construits sans voyage : seules les Premiers Rivages ; avec les voyages : tout.
   expect(reachableIslands(BRIDGES.map((b) => b.id)).size).toBe(10);
   expect(reachableIslands([...BRIDGES, ...VOYAGES].map((b) => b.id)).size).toBe(BIOMES.length);
-  expect(BRIDGES).toHaveLength(31);
+  expect(BRIDGES).toHaveLength(39);
   expect(VOYAGES.map((v) => v.id)).toEqual(['passage-5e', 'passage-4e', 'passage-3e']);
   expect(BIOMES.length).toBe(31);
   // Le Relais des voyageurs (LV2) est en bout de chemin : un seul ouvrage y mène, depuis le Comptoir.
@@ -87,14 +86,23 @@ it('quatre archipels, un par classe, chacun avec son port, connexe depuis ses î
   });
 });
 
-it('la Forêt et la Plaine sont ouvertes au début (pont déjà là) ; depuis la Forêt, trois ponts au choix', () => {
+it('la Forêt et la Plaine sont ouvertes au début (pont déjà là) ; de l’une ou de l’autre, une liaison vers chaque île (GD-7)', () => {
   expect([...reachableIslands([])].sort()).toEqual(['french-6e-phonology', 'maths-6e-calculation']);
   expect(bridgeState(BRIDGES.find((b) => b.id === 'french-6e-phonology-maths-6e-calculation')!, [])).toBe('built');
   expect(
     buildableBridges([])
       .map((b) => b.id)
       .sort(),
-  ).toEqual(['french-6e-phonology-english-6e-grammar', 'french-6e-phonology-french-6e-grammar-spelling', 'french-6e-phonology-french-6e-letter-confusion', 'maths-6e-calculation-maths-6e-decimals', 'maths-6e-calculation-maths-6e-fractions']);
+  ).toEqual([
+    'french-6e-phonology-english-6e-grammar',
+    'french-6e-phonology-english-6e-vocabulary',
+    'french-6e-phonology-french-6e-grammar-spelling',
+    'french-6e-phonology-french-6e-letter-confusion',
+    'maths-6e-calculation-french-6e-reading',
+    'maths-6e-calculation-french-6e-word-spelling',
+    'maths-6e-calculation-maths-6e-decimals',
+    'maths-6e-calculation-maths-6e-fractions',
+  ]);
   expect(isBiomeUnlocked('maths-6e-decimals', ['french-6e-phonology-french-6e-grammar-spelling', 'french-6e-grammar-spelling-maths-6e-decimals'])).toBe(true);
   // La Rivière s'atteint par la Plaine ou par la Mine.
   expect(isBiomeUnlocked('maths-6e-fractions', ['maths-6e-calculation-maths-6e-fractions'])).toBe(true);
@@ -136,11 +144,15 @@ it('un voyage ouvre le port de l’archipel suivant, et rien de plus ; il faut l
       .sort(),
   ).toEqual([
     'french-6e-phonology-english-6e-grammar',
+    'french-6e-phonology-english-6e-vocabulary',
     'french-6e-phonology-french-6e-grammar-spelling',
     'french-6e-phonology-french-6e-letter-confusion',
     'maths-5e-proportionality-english-5e-vocabulary',
     'maths-5e-proportionality-french-5e-conjugation',
+    'maths-5e-proportionality-french-5e-homophones',
     'maths-5e-signed-numbers-maths-5e-proportionality',
+    'maths-6e-calculation-french-6e-reading',
+    'maths-6e-calculation-french-6e-word-spelling',
     'maths-6e-calculation-maths-6e-decimals',
     'maths-6e-calculation-maths-6e-fractions',
   ]);
@@ -148,32 +160,37 @@ it('un voyage ouvre le port de l’archipel suivant, et rien de plus ; il faut l
 
 it('un pont se paie avec les blocs des îles, les plus nombreux d’abord, jamais avec les kits de finition', () => {
   expect(payableBlocks({ [BLOC.bois]: 2, [BLOC.toit]: 9, [BLOC.porte]: 3 })).toBe(2);
+  // Une liaison du port : 4 blocs aux Premiers Rivages (GD-7).
   const short = buildBridge('french-6e-phonology-french-6e-letter-confusion', [], { [BLOC.bois]: 2 });
-  expect(short).toEqual({ ok: false, reason: 'blocs', missing: 1 });
+  expect(short).toEqual({ ok: false, reason: 'blocs', missing: 2 });
   const r = buildBridge('french-6e-phonology-french-6e-letter-confusion', [], { [BLOC.bois]: 2, [BLOC.pierre]: 4, [BLOC.toit]: 9 });
   expect(r.ok).toBe(true);
   if (!r.ok) return;
   expect(r.bridges).toEqual(['french-6e-phonology-french-6e-letter-confusion']);
-  expect(r.used).toEqual({ [BLOC.pierre]: 3 });
-  expect(r.inventory).toEqual({ [BLOC.bois]: 2, [BLOC.pierre]: 1, [BLOC.toit]: 9 });
+  expect(r.used).toEqual({ [BLOC.pierre]: 4 });
+  expect(r.inventory).toEqual({ [BLOC.bois]: 2, [BLOC.toit]: 9 });
   // À égalité, on pioche dans plusieurs types.
   const mix = buildBridge('french-6e-phonology-french-6e-grammar-spelling', [], { [BLOC.bois]: 2, [BLOC.sable]: 2 });
-  expect(mix.ok && Object.values(mix.used).reduce((a, b) => a + b, 0)).toBe(3);
+  expect(mix.ok && Object.values(mix.used).reduce((a, b) => a + b, 0)).toBe(4);
   expect(buildBridge('french-6e-phonology-french-6e-letter-confusion', ['french-6e-phonology-french-6e-letter-confusion'], { [BLOC.bois]: 9 })).toEqual({ ok: false, reason: 'construit' });
   expect(buildBridge('french-6e-letter-confusion-french-6e-word-spelling', [], { [BLOC.bois]: 9 })).toEqual({ ok: false, reason: 'loin' });
   expect(buildBridge('nulle-part', [], { [BLOC.bois]: 9 })).toEqual({ ok: false, reason: 'inconnu' });
 });
 
 it('le chemin vers une île part des départs de son archipel ; l’accès offert ajoute voyages puis ouvrages', () => {
-  expect(pathTo('french-6e-reading').map((b) => b.id)).toEqual(['french-6e-phonology-french-6e-grammar-spelling', 'french-6e-grammar-spelling-french-6e-reading']);
+  // La Tour : la liaison du port depuis la Plaine (GD-7), un seul ouvrage.
+  expect(pathTo('french-6e-reading').map((b) => b.id)).toEqual(['maths-6e-calculation-french-6e-reading']);
+  expect(pathTo('french-6e-letter-confusion').map((b) => b.id)).toEqual(['french-6e-phonology-french-6e-letter-confusion']);
   // La Plaine est une île de départ : aucun pont à offrir.
   expect(pathTo('maths-6e-calculation')).toEqual([]);
   expect(pathTo('french-5e-conjugation').map((b) => b.id)).toEqual(['maths-5e-proportionality-french-5e-conjugation']);
-  expect(pathTo('french-4e-vocabulary').map((b) => b.id)).toEqual(['maths-4e-algebra-french-4e-agreement', 'french-4e-agreement-french-4e-vocabulary']);
+  expect(pathTo('french-4e-vocabulary').map((b) => b.id)).toEqual(['maths-4e-algebra-french-4e-vocabulary']);
+  expect(pathTo('english-4e-comprehension').map((b) => b.id)).toEqual(['maths-4e-algebra-french-4e-vocabulary', 'french-4e-vocabulary-english-4e-comprehension']);
   // Le chemin qu'il reste à construire : les ouvrages construits en sont retirés.
-  expect(remainingPath('french-6e-reading', []).map((b) => b.id)).toEqual(['french-6e-phonology-french-6e-grammar-spelling', 'french-6e-grammar-spelling-french-6e-reading']);
-  expect(remainingPath('french-6e-reading', ['french-6e-phonology-french-6e-grammar-spelling']).map((b) => b.id)).toEqual(['french-6e-grammar-spelling-french-6e-reading']);
-  expect(remainingPath('french-6e-reading', ['french-6e-phonology-french-6e-grammar-spelling', 'french-6e-grammar-spelling-french-6e-reading'])).toEqual([]);
+  expect(remainingPath('maths-6e-fractions', []).map((b) => b.id)).toEqual(['maths-6e-calculation-maths-6e-fractions']);
+  expect(remainingPath('french-5e-homophones', ['passage-5e']).map((b) => b.id)).toEqual(['maths-5e-proportionality-french-5e-homophones']);
+  expect(remainingPath('english-4e-comprehension', ['passage-5e', 'passage-4e', 'maths-4e-algebra-french-4e-vocabulary']).map((b) => b.id)).toEqual(['french-4e-vocabulary-english-4e-comprehension']);
+  expect(remainingPath('french-6e-reading', ['maths-6e-calculation-french-6e-reading'])).toEqual([]);
   expect(grantAccess([], ['maths-5e-signed-numbers']).sort()).toEqual(['maths-5e-signed-numbers-maths-5e-proportionality', 'passage-5e']);
   expect(grantAccess(['french-6e-phonology-french-6e-letter-confusion'], ['french-6e-phonology', 'french-6e-letter-confusion'])).toEqual(['french-6e-phonology-french-6e-letter-confusion']);
 });
@@ -181,12 +198,13 @@ it('le chemin vers une île part des départs de son archipel ; l’accès offer
 it('les anciennes sauvegardes gardent leurs îles ouvertes : voyages et chemin offerts', () => {
   expect(bridgesFromLegacyProgress({})).toEqual([]);
   expect(bridgesFromLegacyProgress({ 'french-6e-phonology-syllables-1': { stars: 1 } })).toEqual(['french-6e-phonology-french-6e-letter-confusion']);
-  // Sous l'ancienne règle, la Ferme s'ouvrait après la Carrière : on offre le chemin nouveau vers elle.
+  // Sous l'ancienne règle, la Ferme s'ouvrait après la Carrière : on offre le chemin nouveau vers elle (la Carrière, depuis
+  // GD-7, par la liaison du port).
   const old = { 'french-6e-phonology-a': { stars: 1 }, 'french-6e-letter-confusion-a': { stars: 2 }, 'french-6e-word-spelling-a': { stars: 1 } };
-  expect(bridgesFromLegacyProgress(old).sort()).toEqual(['french-6e-letter-confusion-french-6e-word-spelling', 'french-6e-phonology-french-6e-grammar-spelling', 'french-6e-phonology-french-6e-letter-confusion']);
+  expect(bridgesFromLegacyProgress(old).sort()).toEqual(['french-6e-phonology-french-6e-grammar-spelling', 'french-6e-phonology-french-6e-letter-confusion', 'maths-6e-calculation-french-6e-word-spelling']);
   // Sanitize : sauvegarde sans `bridges` → migration ; avec → identifiants inconnus filtrés, îles jouées gardées ouvertes.
-  expect(sanitizeState({ progress: old }).world.links.sort()).toEqual(['french-6e-letter-confusion-french-6e-word-spelling', 'french-6e-phonology-french-6e-grammar-spelling', 'french-6e-phonology-french-6e-letter-confusion']);
-  expect(sanitizeState({ progress: old, world: { links: ['french-6e-phonology-french-6e-letter-confusion', 'x', 'french-6e-phonology-french-6e-letter-confusion'] } }).world.links.sort()).toEqual(['french-6e-letter-confusion-french-6e-word-spelling', 'french-6e-phonology-french-6e-letter-confusion']);
+  expect(sanitizeState({ progress: old }).world.links.sort()).toEqual(['french-6e-phonology-french-6e-grammar-spelling', 'french-6e-phonology-french-6e-letter-confusion', 'maths-6e-calculation-french-6e-word-spelling']);
+  expect(sanitizeState({ progress: old, world: { links: ['french-6e-phonology-french-6e-letter-confusion', 'x', 'french-6e-phonology-french-6e-letter-confusion'] } }).world.links.sort()).toEqual(['french-6e-phonology-french-6e-letter-confusion', 'maths-6e-calculation-french-6e-word-spelling']);
   expect(sanitizeState({ world: { links: ['french-6e-phonology-french-6e-letter-confusion', 'x'] } }).world.links).toEqual(['french-6e-phonology-french-6e-letter-confusion']);
   // Le continent d'avant : un escalier vers le Glacier valait l'accès aux Collines. Le voyage et le sentier sont offerts,
   // et l'étape du Bloc-Navire est complète.
@@ -207,17 +225,18 @@ it('les anciennes sauvegardes gardent leurs îles ouvertes : voyages et chemin o
   expect(sanitizeState({ world: { links: ['french-6e-phonology-french-6e-letter-confusion', 'french-6e-letter-confusion-maths-6e-fractions'] } }).world.links).toEqual(['french-6e-phonology-french-6e-letter-confusion', 'french-6e-letter-confusion-maths-6e-fractions']);
 });
 
-it('un escalier veut la première partie d’un bâtiment posée, un tunnel ou un col un Gardien vaincu ; un pont ou un bac, des blocs seulement', () => {
+it('un escalier veut la première partie d’un bâtiment posée, le tunnel, le col, le pont, le bac et le sentier des blocs seulement, aucun Gardien (GD-7)', () => {
   const kinds = new Set(BRIDGES.map((b) => b.kind));
   expect([...kinds].sort()).toEqual(['bac', 'col', 'escalier', 'pont', 'sentier']);
   expect(CONDITION_OF.pont).toBe('aucune');
-  expect(CONDITION_OF.tunnel).toBe('gardien');
+  expect(CONDITION_OF.tunnel).toBe('aucune');
+  expect(CONDITION_OF.col).toBe('aucune');
   const empty = { progress: {}, plans: {} };
   const reached = ['passage-5e', 'passage-4e', 'maths-4e-algebra-french-4e-agreement'];
   const stairs = BRIDGES.find((b) => b.id === 'french-4e-agreement-french-4e-vocabulary')!;
   expect(bridgeState(stairs, reached, empty)).toBe('blocked');
   expect(bridgeState(stairs, reached)).toBe('buildable');
-  expect(conditionText(stairs, reached, textesDe('blocland').libelles)).toBe('Réussis d’abord une mission de Falaise des accords.');
+  expect(conditionText(stairs, reached)).toBe('Réussis d’abord une mission de Falaise des accords.');
   expect(buildBridge('french-4e-agreement-french-4e-vocabulary', reached, { [BLOC.bois]: 9 }, empty)).toEqual({ ok: false, reason: 'plan' });
   // La première partie de la Falaise posée (le bas de la bergerie : quatre missions) : l'escalier se construit.
   const bas = partiesDe('french-4e-agreement')[0];
@@ -228,15 +247,14 @@ it('un escalier veut la première partie d’un bâtiment posée, un tunnel ou u
   const withPlan = { progress: {}, plans: { [bergerie.id]: planCells(bergerie).map((c) => c.key) } };
   expect(conditionMet(stairs, reached, withPlan)).toBe(true);
   expect(buildBridge('french-4e-agreement-french-4e-vocabulary', reached, { [BLOC.bois]: 9 }, withPlan).ok).toBe(true);
-  // Le col Phare → Textes : le Gardien du Phare.
+  // Le col Phare → Textes : des blocs seulement, le Gardien du Phare n'est plus une condition (GD-7).
   const sky = ['passage-5e', 'passage-4e', 'passage-3e'];
   const pass = BRIDGES.find((b) => b.id === 'maths-3e-functions-french-3e-close-reading')!;
-  expect(bridgeState(pass, sky, empty)).toBe('blocked');
-  expect(conditionText(pass, sky, textesDe('blocland').libelles)).toBe('Bats d’abord le Gardien de Phare des fonctions.');
-  expect(conditionText(pass, sky, textesDe('archipeo').libelles)).toBe('Rallume d’abord le Gardien de Phare des fonctions.');
-  expect(buildBridge('maths-3e-functions-french-3e-close-reading', sky, { [BLOC.bois]: 9 }, empty)).toEqual({ ok: false, reason: 'gardien' });
-  expect(bridgeState(pass, sky, { progress: { 'maths-3e-functions-challenge': { stars: 2 } }, plans: {} })).toBe('buildable');
+  expect(bridgeState(pass, sky, empty)).toBe('buildable');
+  expect(conditionText(pass, sky)).toBeNull();
+  expect(buildBridge('maths-3e-functions-french-3e-close-reading', sky, { [BLOC.bois]: 9 }, empty).ok).toBe(true);
   // Les ouvrages proposés comprennent ceux qui sont bloqués (on explique la condition), pas ceux qui sont loin.
+  expect(buildableBridges(reached, 'french-4e-agreement', empty).map((b) => b.id)).toContain('french-4e-agreement-french-4e-vocabulary');
   expect(buildableBridges(sky, 'maths-3e-functions', empty).map((b) => b.id)).toContain('maths-3e-functions-french-3e-close-reading');
   expect(buildableBridges(sky, 'french-3e-close-reading', empty).map((b) => b.id)).toEqual(['maths-3e-functions-french-3e-close-reading']);
   expect(buildableBridges([], 'french-3e-close-reading', empty)).toEqual([]);

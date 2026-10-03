@@ -260,7 +260,7 @@ export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight =
 
       {unlocked && ship && onBoard && <ShipSection biome={biome} builder={ship} in3d={in3d} onBoard={onBoard} highlight={highlight === 'vehicle'} fold={fold} />}
 
-      {unlocked && <Bridges island={biome.id} onBuilt={onBuilt} highlight={highlight} fold={fold} />}
+      {unlocked && <Bridges island={biome.id} onBuilt={onBuilt} highlight={highlight} fold={fold} objectif={goal?.ouvrage ?? null} />}
 
       {/* La matière, la classe (cadrage-contenu) et l'archipel : une ligne au pied du panneau. */}
       <p className="island-sheet-module island-sheet-foot">

@@ -65,7 +65,12 @@ export const ENVELOPPES: Record<Poste, { lot: 'R4b' | 'R5' | 'R6' | 'socle'; nom
   // 24 043 → 24 756). Rien à alléger sans retirer de la terre (les marges sont déjà plates, deux triangles par case), et
   // aucun poste « autres » n'a 660 triangles de marge dans les trois archipels (100 en tout) : l'enveloppe du sol passe
   // de 24 100 à 24 760, et la somme des « autres » de 52 300 à 52 960 (toujours sous les 60 000 des tablettes).
-  sol: { lot: 'R4b', nom: 'Sol', premiersRivages: { triangles: 25_000, drawCalls: 2 }, autres: { triangles: 24_760, drawCalls: 1 } },
+  // Les liaisons du port en étoile (GD-7), enveloppes relevées par le mainteneur le 3 octobre 2026 (« 2a ») : les longs
+  // bacs ajoutent des poteaux et des abordages ; la construction des Premiers Rivages passe de 6 500 à 7 200 (6 885
+  // mesurés tout construit, 7 157 au pire de la salle des trophées), celle des autres archipels de 7 260 à 7 500 (7 435
+  // au pire, aux Îles Brumeuses), le sol des autres de 24 760 à 24 780 (24 774 aux Anciens Ateliers). Les sommes passent
+  // à 58 500 aux Premiers Rivages et 53 320 ailleurs, toujours sous les 60 000 des tablettes.
+  sol: { lot: 'R4b', nom: 'Sol', premiersRivages: { triangles: 25_000, drawCalls: 2 }, autres: { triangles: 24_780, drawCalls: 1 } },
   // Proposition de l'artiste technique 3D pour le Relais des voyageurs (LV2, 5e), à valider par le mainteneur : une île
   // de plus aux Îles Brumeuses coûte environ 800 triangles de décor et 850 de construction. Les enveloppes « autres » en
   // passent 1 600 du navire, de la mer, des créatures et des bornes (qui ont de la marge dans les trois archipels) au
@@ -89,8 +94,8 @@ export const ENVELOPPES: Record<Poste, { lot: 'R4b' | 'R5' | 'R6' | 'socle'; nom
   construction: {
     lot: 'R5',
     nom: 'Construction (bâtiments, ouvrages, monuments, quai, cœur des îles ; fantômes et fenêtres compris)',
-    premiersRivages: { triangles: 6_500, drawCalls: 3 },
-    autres: { triangles: 7_260, drawCalls: 3 },
+    premiersRivages: { triangles: 7_200, drawCalls: 3 },
+    autres: { triangles: 7_500, drawCalls: 3 },
   },
   bornes: { lot: 'R5', nom: 'Bornes (instanciées)', premiersRivages: { triangles: 1_250, drawCalls: 1 }, autres: { triangles: 715, drawCalls: 1 } },
   navire: { lot: 'R5', nom: 'Navire', premiersRivages: { triangles: 1_000, drawCalls: 3 }, autres: { triangles: 420, drawCalls: 3 } },

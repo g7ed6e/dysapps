@@ -36,12 +36,12 @@ it('aucune terre ne chevauche une autre, ni l’îlot d’un Gardien', () => {
   });
 });
 
-it('les ponts relient des îles proches, jamais séparées de plus d’un niveau', () => {
+it('les ponts relient des îles proches (sauf les liaisons du port, GD-7), jamais séparées de plus d’un niveau', () => {
   for (const b of BRIDGES) {
     const a = islandDef(b.from);
     const c = islandDef(b.to);
     const dist = Math.hypot(a.core.x - c.core.x, a.core.y - c.core.y);
-    expect(dist, b.id).toBeLessThan(56);
+    if (!b.etoile) expect(dist, b.id).toBeLessThan(56);
     expect(Math.abs(a.altitude - c.altitude), b.id).toBeLessThanOrEqual(9);
   }
 });

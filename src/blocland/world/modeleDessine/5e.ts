@@ -68,9 +68,9 @@ function crete(id: BiomeId, sommets: Sommet[]): Modele {
   const fond = Math.max(...cases.map((c) => c.y));
   // Le bord du fond du cœur (borne exclue), en repère d'île.
   const bordDuCoeur = bornesDuCoeur(islandDef(id)).y1;
-  // Les abords des ouvrages de l'île : leurs cases, en repère d'île.
+  // Les abords des ouvrages de l'île, et des liaisons du port qui la longent (GD-7) : leurs cases, en repère d'île.
   const abords: { x: number; y: number }[] = [];
-  for (const b of BRIDGES) if ((b.from === id || b.to === id) && archipelagoOfIsland(b.from) === '5e') for (const c of bridgePath(b)) abords.push({ x: c.x - o.x, y: c.y - o.y });
+  for (const b of BRIDGES) if ((b.from === id || b.to === id || b.etoile) && archipelagoOfIsland(b.from) === '5e') for (const c of bridgePath(b)) abords.push({ x: c.x - o.x, y: c.y - o.y });
   const pres = (x: number, y: number) => abords.some((c) => Math.abs(c.x - x) <= ABORDS && Math.abs(c.y - y) <= ABORDS);
   const casse = sommets.some((s) => s.pans);
   // Les paliers de chaque sommet, calculés une fois.

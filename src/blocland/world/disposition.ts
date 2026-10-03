@@ -88,4 +88,6 @@ export type Intention =
    */
   | { genre: 'face'; ile: BiomeId; case: Point; voisine: Point; sol?: Ancrage; enRoute?: Ancrage }
   | { genre: 'fin-du-voyage' }
-  | { genre: 'voyage-saute' };
+  | { genre: 'voyage-saute' }
+  /** Un toucher dans le vide pendant un trajet : le bonhomme est arrivé tout de suite (la page ouvre le panneau qui l'attendait). */
+  | { genre: 'arrivee' };
