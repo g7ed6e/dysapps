@@ -1,6 +1,6 @@
 import { BADGES } from '../../core/progress';
 import { trophyBlock } from '../trophies';
-import { APPEL_DU_PASSAGE, bornesCost, constructionCost, decorCost, ENVELOPPES, enveloppeDe, fauneCost, merCost, navireCost, personnagesCost, PLAFOND_DU_MONDE_EN_BLOCS, RENDER_BUDGET, sceneCost, sceneCostArchipeo, solCost, toutConstruit, type Poste } from './budget';
+import { APPEL_DU_PASSAGE, bornesCost, constructionCost, decorCost, ENVELOPPES, enveloppeDe, fauneCost, merCost, navireCost, personnagesCost, PLAFOND_DU_MONDE_EN_BLOCS, RENDER_BUDGET, sceneCost, sceneCostArchipeo, signesCost, solCost, toutConstruit, type Poste } from './budget';
 import { ARCHIPELAGO_IDS, type ArchipelagoId } from './map';
 
 it('prépare une partie vraiment tout construite (Gardiens vaincus, navire, ouvrages)', () => {
@@ -29,6 +29,24 @@ it('les petites constructions des commandes (GD-7, PR 3) se fondent dans le terr
     expect(avec.drawCalls, a).toBe(sans.drawCalls);
     expect(avec.triangles, a).toBeGreaterThan(sans.triangles);
     expect(avec.triangles, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.triangles);
+  }
+});
+
+it('les signes des objets touchables (affordance-blocland.md §9) : trois appels au plus, et le monde en blocs reste sous son plafond', () => {
+  for (const a of ARCHIPELAGO_IDS) {
+    const signes = signesCost(a);
+    const pire = signesCost(a, true);
+    // Un maillage instancié par état (l'or, la pierre, le crème), quel que soit le nombre de signes.
+    expect(signes.drawCalls, a).toBeLessThanOrEqual(3);
+    expect(pire.drawCalls, a).toBeLessThanOrEqual(3);
+    // Tout construit : l'école, la salle des trophées, les monuments et le navire (plus aucune borne à faire).
+    expect(signes.triangles, a).toBeGreaterThan(0);
+    // Au pire (chaque borne à faire, chaque monument à bâtir), quelques milliers de triangles.
+    expect(pire.triangles, a).toBeLessThan(3_000);
+    // Avec les petites constructions des commandes, sous le plafond.
+    const blocs = sceneCost(a, true);
+    expect(blocs.triangles + signes.triangles, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.triangles);
+    expect(blocs.drawCalls + signes.drawCalls, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.drawCalls);
   }
 });
 

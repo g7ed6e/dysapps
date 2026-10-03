@@ -16,4 +16,5 @@ export const HABILLAGE_BLOCLAND = {
   atelier: 'fabrique',
   pose: 'geste',
   signe: 'plaque',
+  signesDesObjets: 'cubes',
 } as const satisfies Readonly<Habillage> & { univers: 'blocland' };

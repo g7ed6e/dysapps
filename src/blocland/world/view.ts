@@ -8,6 +8,7 @@ import type { VehiclePlacement } from './terrain';
 import type { VoyageLeg } from './voyage';
 import type { Cell, CreaturePlacement } from './paths';
 import type { Ancrage, Intention } from './disposition';
+import type { EtatsDesObjets } from './modele';
 import { grilleDe } from './grille';
 
 // Une case du monde et la place d'une créature : définies avec la grille de marche (./paths.ts), qui les lit.
@@ -89,7 +90,10 @@ export interface QuestMark {
   typeId: string;
   /** Le socle : son île et sa case dans le repère de l'île (z : le sol sous le socle). */
   place: Ancrage;
-  /** `'new'` : à faire (repère jaune) ; un nombre : les étoiles gagnées ; `'locked'` : rien. */
+  /**
+   * `'new'` : à faire (le losange d'or) ; un nombre : les étoiles gagnées (sans étoile : la pierre, comme `'locked'`, pas
+   * encore jouable ; world/affordance.ts).
+   */
   state: 'new' | 'locked' | number;
 }
 
@@ -180,6 +184,11 @@ export interface WorldViewProps {
   trail?: Ancrage[];
   /** Les bornes de mission : leur case et leur état (à faire, étoiles gagnées, fermée), pour le repère au-dessus. */
   quests?: QuestMark[];
+  /**
+   * L'état des autres objets qui portent un signe (Gardiens, Bloc-Navire, chantiers en fantôme ; world/modele.ts,
+   * `etatsDesObjets`) : le cube au-dessus d'eux, l'or ou la pierre (world/affordance.ts). La 2D n'en dessine rien.
+   */
+  etatsDesObjets?: EtatsDesObjets;
   /** Les noms des îles ouvertes, écrits au-dessus de chacune dans la police de lecture (sans nom, on ne sait pas où aller). */
   islandLabels?: IslandLabel[];
   /**

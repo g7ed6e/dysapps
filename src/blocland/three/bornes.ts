@@ -1,9 +1,11 @@
 // Les repères de la scène 3D : la flèche « Commence ici », le fanion du bonhomme sur la Carte (« tu es ici »), les
-// balises du chemin à construire et les repères des bornes de mission (un losange à faire, ou les étoiles gagnées).
+// balises du chemin à construire et les repères des bornes de mission : les étoiles gagnées et, dans Archipéo, le
+// losange à faire (dans Blocland, le losange est l'un des signes des objets touchables : ./affordance.ts).
 import * as THREE from 'three';
 import { formeDuPilier, type Pilier } from '../world/construction';
 import { DELAVE } from '../world/decor/pinceau';
 import type { ArchipelagoId } from '../world/map';
+import { sautDuSigne, SIGNE } from '../world/affordance';
 import { islandCenter } from '../world/terrain';
 import { estUnOuvrage, type EnCasesDuMonde } from '../world/view';
 import type { BiomeId } from '../biomes';
@@ -45,7 +47,13 @@ export interface Bornes extends PartieDeLaScene {
   /** Les repères des bornes de mission (on les touche). */
   missions: THREE.Group;
   poserLaFleche(marker: EnCasesDuMonde['marker']): void;
-  poserLesMissions(quests: EnCasesDuMonde['quests']): void;
+  /**
+   * Les repères des bornes, posés au-dessus du sommet de chacune (`sommets`, par « île:mission » : world/affordance.ts,
+   * `sommetsDesBornes` ; sans lui, trois cubes au-dessus de sa case).
+   */
+  poserLesMissions(quests: EnCasesDuMonde['quests'], sommets?: ReadonlyMap<string, number>): void;
+  /** La pile d'étoiles d'une borne réussie fait le petit saut du toucher ; `false` si cette borne n'en a pas. */
+  sauterLaPile(id: string): boolean;
   poserLeChemin(trail: EnCasesDuMonde['trail']): void;
 }
 
@@ -82,6 +90,8 @@ export function pileDEtoiles(n: number): THREE.BufferGeometry {
  */
 export function creerBornes(monde: Monde, bonhomme: () => THREE.Object3D, instant: Instant): Bornes {
   const { scene } = monde;
+  // Dans Blocland, le losange à faire est dessiné avec les autres signes (./affordance.ts) : ici, les étoiles seules.
+  const losanges = monde.habillage.signesDesObjets === 'losanges';
   // La flèche « Commence ici » : un chevron jaune qui flotte et pointe vers le bas.
   const markerMat = new THREE.MeshLambertMaterial({ color: 0xffc83c, emissive: 0x7a5a00, emissiveIntensity: 0.4 });
   const markerGroup = new THREE.Group();
@@ -164,28 +174,37 @@ export function creerBornes(monde: Monde, bonhomme: () => THREE.Object3D, instan
       markerGroup.position.set(c.x, base + 0.5, c.y);
       markerGroup.visible = true;
     },
-    // Les repères des bornes de mission : un losange jaune qui flotte (à faire), ou les étoiles gagnées en petits cubes
-    // d'or empilés. Rien sur une île fermée.
-    poserLesMissions: (quests) => {
+    // Les repères des bornes de mission : les étoiles gagnées en petits cubes d'or empilés, qui tournent lentement ; dans
+    // Archipéo, un losange jaune qui rebondit (à faire). Rien sur une île fermée.
+    poserLesMissions: (quests, sommets) => {
       vider(questMarksGroup);
       if (!quests?.length) return;
       const gold = markerMat;
       quests.forEach((q, i) => {
-        if (q.state === 'locked' || q.state === 0) return;
+        if (q.state === 'locked' || q.state === 0 || (q.state === 'new' && !losanges)) return;
         const g = new THREE.Group();
         g.userData = { quest: q.id, phase: i * 0.7 };
-        const base = q.cell.z + 3.4;
+        // Juste au-dessus de l'ardoise de la borne (le socle et l'ardoise : deux cubes sur le sol de sa case).
+        const base = (sommets?.get(q.id) ?? q.cell.z + 3) + 0.4;
+        g.userData.base = base;
         if (q.state === 'new') {
           const m = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.7, 0.7), gold);
           m.rotation.x = Math.PI / 4;
           m.rotation.z = Math.PI / 4;
           g.add(m);
           g.userData.bob = true;
-          g.userData.base = base;
         } else g.add(new THREE.Mesh(pileDEtoiles(q.state), gold));
         g.position.set(q.cell.x + 0.5, base, q.cell.y + 0.5);
         questMarksGroup.add(g);
       });
+    },
+    // Le saut au toucher est celui des signes de Blocland : Archipéo, en pause, garde son dessin.
+    sauterLaPile: (id) => {
+      if (losanges) return false;
+      const pile = questMarksGroup.children.find((g) => g.userData.quest === id && !g.userData.bob);
+      if (!pile) return false;
+      pile.userData.saut = instant.now;
+      return true;
     },
     // Le chemin à construire (sur la Carte) : une balise toutes les trois cases, au-dessus du sol.
     poserLeChemin: (trail) => {
@@ -204,8 +223,9 @@ export function creerBornes(monde: Monde, bonhomme: () => THREE.Object3D, instan
       beaconGroup.visible = instant.carte && avatar.visible;
       // Le tracé de l'ouvrage désigné : sur la Carte seulement, avec la flèche ; immobile.
       leTrace.mesh.visible = instant.carte && leTrace.pose();
-      // « Réduire les animations » : le fanion, les repères de mission et les balises du chemin restent dans leur pose de
-      // base, sans rotation, rebond ni pulsation, comme la flèche « Commence ici ».
+      // Le mouvement réduit, une préférence du téléphone ou de la tablette (core/mouvement.ts) : le fanion, les repères de
+      // mission et les balises du chemin restent dans leur pose de base, sans rotation, rebond, pulsation ni saut, comme
+      // la flèche « Commence ici ».
       if (beaconGroup.visible) {
         beaconGroup.position.set(avatar.position.x, avatar.position.y + 8 + (reduit ? 0 : Math.abs(Math.sin(t * 2.2)) * 1.5), avatar.position.z);
         beaconGroup.rotation.y = reduit ? 0 : t * 0.8;
@@ -214,7 +234,14 @@ export function creerBornes(monde: Monde, bonhomme: () => THREE.Object3D, instan
         if (mk.userData.bob) {
           mk.position.y = mk.userData.base + (reduit ? 0 : Math.abs(Math.sin(t * 2.4 + mk.userData.phase)) * 0.5);
           mk.rotation.y = reduit ? 0 : t * 1.2;
-        } else mk.rotation.y = reduit ? 0 : t * 0.4;
+        } else {
+          // Une pile d'étoiles touchée fait le petit saut du toucher (world/affordance.ts), puis reprend sa place.
+          const debut = mk.userData.saut as number | undefined;
+          const ms = debut === undefined ? 0 : instant.now - debut;
+          if (debut !== undefined && (reduit || ms >= SIGNE.saut.monteeMs + SIGNE.saut.descenteMs)) delete mk.userData.saut;
+          mk.position.y = mk.userData.base + (reduit ? 0 : sautDuSigne(ms));
+          mk.rotation.y = reduit ? 0 : t * 0.4;
+        }
       }
       if (trailGroup.children.length) {
         const pulse = reduit ? 1 : 0.85 + Math.sin(t * 3) * 0.15;

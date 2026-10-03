@@ -52,6 +52,7 @@ import {
   ileDeLOuvrage,
   ilesDuModele,
   modeleDuMonde,
+  etatsDesObjets,
   nouveauVoyage,
   versLArrivee,
   voyageAJouer,
@@ -224,6 +225,8 @@ export function WorldPage() {
   // Le modèle du monde (world/modele.ts) : les îles, les bornes et leur état, en identifiants ; la grille dit où elles sont.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const modele = useMemo(() => modeleDuMonde(vu, a, textes.archipels, textes.libelles), [a, vu, settings.lv2, textes]);
+  // Ce qui donne au Gardien, au Bloc-Navire et aux chantiers en fantôme leur signe (l'or ou la pierre, world/affordance.ts).
+  const etats = useMemo(() => etatsDesObjets(vu, a), [vu, a]);
   const quests = useMemo<QuestMark[]>(
     () =>
       modele.bornes.map((b) => ({
@@ -939,6 +942,7 @@ export function WorldPage() {
             home={at}
             trail={trail}
             quests={quests}
+            etatsDesObjets={etats}
             islandLabels={voyage ? undefined : islandLabels}
             whalePass={whaleWord && !reduceMotion ? { island: whaleWord.island, seq: whaleSeq } : null}
             rallumage={moment?.phase === 'fondu' ? { id: moment.id, seq: moment.seq, dureeMs: DEROULE.fondu } : null}

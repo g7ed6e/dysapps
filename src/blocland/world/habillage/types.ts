@@ -52,4 +52,10 @@ export interface Habillage {
    * coins presque droits (un bloc vu de face, décision du directeur artistique du 3 octobre 2026), ou un disque.
    */
   signe: 'plaque' | 'disque';
+  /**
+   * Ce qui montre les objets qu'on touche dans le monde (affordance-blocland.md §8) : un cube au-dessus de chacun, en
+   * trois états (le losange d'or à faire, la pierre pas encore, le crème d'un lieu ; world/affordance.ts), ou le seul
+   * losange qui rebondit au-dessus d'une borne à faire (Archipéo, en pause, garde son dessin).
+   */
+  signesDesObjets: 'cubes' | 'losanges';
 }

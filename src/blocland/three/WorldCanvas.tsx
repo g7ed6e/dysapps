@@ -3,12 +3,13 @@
 // promènent. Chargé à la demande (voir ./index.ts).
 // La scène est faite de parties (cubes, navire, bornes, personnages, lumière, brume, étiquettes, le large, la caméra) :
 // ce composant les crée, leur passe les props, écoute le toucher et le clavier, et sa boucle ne fait qu'itérer sur elles.
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import { type BiomeId } from '../biomes';
 import { worldBounds } from '../world/terrain';
 import { ARROW_DIRS, cubeTags, enRoute, finishWalk, groundTap, islandInDirection, recentrerApres, toucheRetenue, walkPose, type Touche, type VoyageRun } from '../world/scene';
 import { rappelsDeLaVue, type WorldViewProps } from '../world/view';
+import { cleDeLObjet, signesDesObjets, sommetsDesBornes, zoneRetenue, type ObjetTouche } from '../world/affordance';
 import { useEnCasesDuMonde } from '../useEnCasesDuMonde';
 import { createMeter } from './meter';
 import { habillageDe } from '../habillage';
@@ -20,6 +21,7 @@ import { creerLumiere } from './lumiere';
 import { creerBrume } from './brume';
 import { creerLarge } from './large';
 import { creerBornes, type Bornes } from './bornes';
+import { creerAffordance, type Affordance } from './affordance';
 import { creerEtiquettes, type Etiquettes } from './etiquettes';
 import { creerPersonnages, type Personnages } from './personnages';
 import { creerSignes, type Signes } from './signes';
@@ -43,6 +45,8 @@ interface Scene3D {
   camera: THREE.PerspectiveCamera;
   cadrage: Camera;
   bornes: Bornes;
+  /** Les signes des objets touchables (Blocland). */
+  affordance: Affordance;
   etiquettes: Etiquettes;
   personnages: Personnages;
   signes: Signes;
@@ -52,12 +56,15 @@ interface Scene3D {
   recentrer(): void;
 }
 
+/** Pas de créatures : une seule liste vide, pour que les signes des objets ne se recalculent pas à chaque rendu. */
+const SANS_CREATURES: NonNullable<WorldViewProps['creatures']> = [];
+
 export default function WorldCanvas({
   archipelago,
   cubes,
   focus: focusEnAncrages,
   reduceMotion = false,
-  creatures = [],
+  creatures = SANS_CREATURES,
   signes = [],
   forceDay = false,
   bridges = [],
@@ -69,6 +76,7 @@ export default function WorldCanvas({
   home,
   trail: trailEnAncrages,
   quests: questsEnAncrages,
+  etatsDesObjets,
   islandLabels,
   whalePass = null,
   rallumage = null,
@@ -189,6 +197,7 @@ export default function WorldCanvas({
     const navire = creerNavire(monde, personnages, cubesDuMonde, derniers, instant, vehicleRef, voyageRef);
     const rond = creerRond(monde, personnages, () => cubesDuMonde.champ(), lumiere, instant);
     const signesDesCreatures = creerSignes(monde, el, camera, personnages, derniers, instant);
+    const affordance = creerAffordance(monde, el, camera, derniers, instant);
     // La Carte se cadre dans la place que l'interface laisse libre, autour de la flèche de la destination (DA-31).
     const lecture = {
       place: lecteurDePlaceLibre(el),
@@ -199,7 +208,7 @@ export default function WorldCanvas({
       },
     };
     const cadrage = creerCamera(monde, camera, personnages.avatar, derniers, instant, lecture);
-    world.current = { camera, cadrage, bornes, etiquettes, personnages, signes: signesDesCreatures, cubes: cubesDuMonde, navire, recentrer: () => recentrer() };
+    world.current = { camera, cadrage, bornes, affordance, etiquettes, personnages, signes: signesDesCreatures, cubes: cubesDuMonde, navire, recentrer: () => recentrer() };
     // Les captures (scripts/prise-de-vue.mjs) posent la caméra à son cadrage sans attendre son pas : lisible par les
     // scripts, comme le compteur de mesures.
     const pourLesCaptures = { poser: () => cadrage.poser() };
@@ -219,7 +228,7 @@ export default function WorldCanvas({
     /** Ce qui bouge dans le monde, avant la caméra : le bonhomme, puis le navire (qui le fait embarquer et débarquer). */
     const deplacements: PartieDeLaScene[] = [personnages, navire];
     /** Le reste de l'image, dans cet ordre : la caméra suit ce qui a bougé ; les étiquettes se placent pour elle, en dernier. */
-    const parties: PartieDeLaScene[] = [personnages, cadrage, bornes, brume, lumiere, large, navire, cubesDuMonde, rond, signesDesCreatures, etiquettes];
+    const parties: PartieDeLaScene[] = [personnages, cadrage, bornes, affordance, brume, lumiere, large, navire, cubesDuMonde, rond, signesDesCreatures, etiquettes];
 
     // Clavier (le canvas prend le focus) : les flèches vont à l'île voisine dans cette direction.
     el.tabIndex = 0;
@@ -362,6 +371,40 @@ export default function WorldCanvas({
       );
     /** Un cube touché qui est une cible : borne, lieu, ouvrage, ou face à construire en chantier. */
     const estUneCible = (h: THREE.Intersection): boolean => tapSur(h).kind !== 'island';
+    /** Le signe d'un objet touché fait son petit saut : la pile d'étoiles d'une borne réussie, sinon son cube. */
+    const sauterLeSigne = (objet: ObjetTouche) => {
+      if (reduceMotion) return;
+      if (objet.genre === 'borne' && bornes.sauterLaPile(objet.id)) return;
+      affordance.sauter(cleDeLObjet(objet));
+    };
+    /**
+     * Rien de touchable sous le doigt (le sol, une face en chantier, le vide) : l'objet dont la zone de toucher (48 pixels
+     * au moins autour de lui et de son signe) contient le doigt, s'il n'est pas caché derrière le sol touché (`sol`).
+     */
+    const objetDansLaZone = (x: number, y: number, sol: THREE.Intersection | undefined): ObjetTouche | null => {
+      const rect = renderer.domElement.getBoundingClientRect();
+      const zones = affordance.zones(camera, rect.width, rect.height);
+      if (!zones.length) return null;
+      const i = zoneRetenue(
+        zones.map((z) => z.zone),
+        { x: x - rect.left, y: y - rect.top },
+        sol ? sol.distance : null,
+      );
+      return i < 0 ? null : zones[i].objet;
+    };
+    /** Un objet retenu par sa zone : comme s'il avait été touché (la vue revient à son cadrage, son signe saute). */
+    const toucherLObjet = (objet: ObjetTouche) => {
+      recentrer();
+      sauterLeSigne(objet);
+      if (objet.genre === 'borne') {
+        const [biome, typeId] = objet.id.split(':');
+        return pickQuestRef.current?.(biome as BiomeId, typeId);
+      }
+      if (objet.genre === 'gardien') return creatureRef.current?.(objet.id, 'guardian');
+      if (objet.genre === 'navire') return pickVehicleRef.current?.(objet.port);
+      if (objet.genre === 'ouvrage') return pickBridgeRef.current?.(objet.id);
+      return pickPlaceRef.current?.(objet.id, objet.ile);
+    };
     const onUp = (e: PointerEvent) => {
       if (!down || e.pointerId !== down.id) return;
       const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y);
@@ -372,6 +415,13 @@ export default function WorldCanvas({
       // Pendant le voyage, un tap n'importe où fait arriver le navire tout de suite.
       if (voyageRef.current) return voyageSkipRef.current?.();
       const { creature, hit } = aim(e);
+      // Un toucher direct sur un objet passe d'abord ; sinon (le sol, une face en chantier, le vide), la zone de toucher
+      // d'un objet qui porte un signe le retient (world/affordance.ts, `zoneRetenue`).
+      const touche = hit ? tapSur(hit).kind : null;
+      if (!creature && touche !== 'quest' && touche !== 'place' && touche !== 'bridge') {
+        const objet = objetDansLaZone(e.clientX, e.clientY, hit);
+        if (objet) return toucherLObjet(objet);
+      }
       // Pendant un trajet, un tap dans le vide le fait arriver tout de suite ; sur le sol, il change son but (la page
       // décide, depuis là où il en est : `enRoute`) ; une cible garde sa priorité.
       const now = performance.now();
@@ -385,6 +435,7 @@ export default function WorldCanvas({
         const n = creature.face?.normal ?? new THREE.Vector3(0, 1, 0);
         const local = navire.groupe.worldToLocal(creature.point.clone().addScaledVector(n, -0.5));
         const cell = { x: v.origin.x + Math.floor(local.x), y: v.origin.y + Math.floor(local.z), z: v.origin.z + Math.floor(local.y) };
+        sauterLeSigne({ genre: 'navire', port: v.port });
         if (v.ghosts.has(`${Math.floor(local.x)},${Math.floor(local.z)},${Math.floor(local.y)}`) && buildRef.current) return buildRef.current.onPickFace(cell, cell, { ile: v.port });
         return pickVehicleRef.current?.(v.port);
       }
@@ -395,12 +446,17 @@ export default function WorldCanvas({
       if (recentrerApres(tap, Boolean(creature))) recentrer();
       if (creature) {
         const quest = questIdOf(creature.object);
+        if (quest) sauterLeSigne({ genre: 'borne', id: `${quest.biome}:${quest.typeId}` });
         if (quest && pickQuestRef.current) return pickQuestRef.current(quest.biome, quest.typeId);
         const found = creatureIdOf(creature.object);
+        if (found?.kind === 'guardian') sauterLeSigne({ genre: 'gardien', id: found.id });
         if (found && creatureRef.current) return creatureRef.current(found.id, found.kind);
         if (found && !buildRef.current) return pickRef.current?.(found.id);
       }
       if (!tap) return;
+      if (tap.kind === 'quest') sauterLeSigne({ genre: 'borne', id: `${tap.biome}:${tap.typeId}` });
+      else if (tap.kind === 'place') sauterLeSigne({ genre: 'lieu', id: tap.place, ile: tap.island });
+      else if (tap.kind === 'bridge') sauterLeSigne({ genre: 'ouvrage', id: tap.id });
       if (tap.kind === 'quest') pickQuestRef.current?.(tap.biome, tap.typeId);
       else if (tap.kind === 'place') pickPlaceRef.current?.(tap.place, tap.island);
       else if (tap.kind === 'bridge') pickBridgeRef.current?.(tap.id);
@@ -435,6 +491,7 @@ export default function WorldCanvas({
       camera.updateProjectionMatrix();
       renderer.setSize(w, h, false);
       signesDesCreatures.redimensionner(h);
+      affordance.redimensionner(h);
     };
     const observer = new ResizeObserver(resize);
     observer.observe(el);
@@ -636,11 +693,25 @@ export default function WorldCanvas({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [avatar?.seq]);
 
-  // ---- Les repères des bornes de mission : un losange jaune qui flotte (à faire), ou les étoiles gagnées en petits
-  // cubes d'or empilés. Rien sur une île fermée.
+  // ---- Les repères des bornes de mission : les étoiles gagnées en petits cubes d'or empilés (dans Archipéo, aussi le
+  // losange jaune qui rebondit, à faire). Rien sur une île fermée.
+  const sommets = useMemo(() => sommetsDesBornes(cubes), [cubes]);
   useEffect(() => {
-    world.current?.bornes.poserLesMissions(quests);
-  }, [quests]);
+    world.current?.bornes.poserLesMissions(quests, sommets);
+    // Refaits aussi quand la scène l'est (un autre archipel, la préférence de mouvement).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [quests, sommets, reduceMotion, archipelago]);
+
+  // ---- Les signes des objets touchables (Blocland, world/affordance.ts) : un cube au-dessus de chacun, l'or, la pierre
+  // ou le crème.
+  const signesDuMonde = useMemo(
+    () => signesDesObjets({ cubes, quests, creatures, vehicle, etats: etatsDesObjets }),
+    [cubes, quests, creatures, vehicle, etatsDesObjets],
+  );
+  useEffect(() => {
+    world.current?.affordance.poser(signesDuMonde);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [signesDuMonde, reduceMotion, archipelago]);
 
   // ---- Le chemin à construire (sur la Carte) : une balise toutes les trois cases, au-dessus du sol.
   useEffect(() => {
