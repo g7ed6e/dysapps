@@ -890,12 +890,16 @@ export default function WorldCanvas2D({
           // Sur la Carte : la prochaine destination d'abord, une île fermée en dernier ; la flèche et le fanion restent
           // visibles. Entière ou absente : celle qui ne trouve pas de place libre près de son île ne se dessine pas à moitié.
           // La destination : l'île de la flèche, ou celle d'où part l'ouvrage qu'elle désigne (GD-7).
-          // L'île d'arrivée de l'ouvrage pèse autant : son nom se pose au bout du tracé, pas dessus.
+          // L'île d'arrivée de l'ouvrage pèse autant, si cela ne tait aucun nom : son nom se pose au bout du tracé.
           const destination = mapArrowIsland ?? mapArrowOuvrage?.depuis;
-          const arrivee = mapArrowOuvrage?.arrivee;
           const indice = list.findIndex((l) => l.id === destination);
+          const arrivee = mapArrowOuvrage?.arrivee ? list.findIndex((l) => l.id === mapArrowOuvrage.arrivee) : -1;
           const carte = p.map
-            ? { weights: list.map((l) => (l.id === destination || l.id === arrivee ? 2 : l.state?.id === 'fermee' ? 0.5 : 1)), ...(indice >= 0 ? { destination: indice } : {}) }
+            ? {
+                weights: list.map((l) => (l.id === destination ? 2 : l.state?.id === 'fermee' ? 0.5 : 1)),
+                ...(indice >= 0 ? { destination: indice } : {}),
+                ...(arrivee >= 0 ? { arrivee } : {}),
+              }
             : null;
           // La flèche d'un ouvrage : la première de ses places libres, et aucune étiquette ne se pose jamais sur elle
           // (`placerAvecLaFlecheDOuvrage`).

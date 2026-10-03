@@ -410,18 +410,32 @@ describe('la flèche d’un ouvrage sur la Carte (GD-7)', () => {
     expect(placerAvecLaFlecheDOuvrage([fleche(60), fleche(90)], [etiquette], [ile], vue, carte).fleche).toBe(0);
   });
 
-  it('l’île d’arrivée pèse comme celle de départ : un nom plus léger lui laisse sa place ; la garde reste à la destination', () => {
+  it('l’île d’arrivée pèse comme celle de départ, tant que cela ne tait aucun nom', () => {
     const vue = { zones: [] as LabelBox[], bulles: [], obstacles: [], bounds: cadre, gap: 6 };
-    // L'arrivée (indice 1) et une île ouverte (indice 2) se chevauchent ; la destination (0) est loin.
+    // L'arrivée (indice 1, fermée) et une île ouverte (indice 2) se chevauchent ; la destination (0) est loin.
     const boxes: LabelBox[] = [
       { x: 80, y: 60, w: 100, h: 30 },
       { x: 250, y: 150, w: 120, h: 30 },
       { x: 270, y: 155, w: 120, h: 30 },
     ];
     const iles = boxes.map((b) => ({ x: b.x, y: b.y + 15 }));
-    const r = placerEtiquettes(boxes, iles, vue, { weights: [2, 2, 1], destination: 0 });
-    expect(r.visibles[1]).toBe(true);
+    const weights = [2, 0.5, 1];
+    // Sans elle, le nom fermé, plus léger, s'écarte ; avec elle, il garde sa place et l'autre s'écarte, tous montrés.
+    expect(placerEtiquettes(boxes, iles, vue, { weights, destination: 0 }).offsets[1]).not.toEqual({ dx: 0, dy: 0 });
+    const r = placerEtiquettes(boxes, iles, vue, { weights, destination: 0, arrivee: 1 });
+    expect(r.visibles).toEqual([true, true, true]);
     expect(r.offsets[1]).toEqual({ dx: 0, dy: 0 });
+    // Un cadre trop bas pour deux rangées : l'arrivée qui garde sa place tairait l'autre nom ; on ne la fait pas peser.
+    const bas = { ...vue, bounds: { w: 400, h: 50 }, souples: [{ x: 250, y: 25, w: 300, h: 8 }] };
+    const serres: LabelBox[] = [
+      { x: 60, y: 20, w: 100, h: 30 },
+      { x: 250, y: 25, w: 140, h: 30 },
+      { x: 262, y: 25, w: 140, h: 30 },
+    ];
+    const pres = serres.map((b) => ({ x: b.x, y: b.y + 10 }));
+    const sans = placerEtiquettes(serres, pres, { ...bas, souples: [] }, { weights, destination: 0 });
+    const avec = placerEtiquettes(serres, pres, bas, { weights, destination: 0, arrivee: 1 });
+    expect(sans.visibles.some((v, i) => v && !avec.visibles[i])).toBe(false);
   });
 
   it('aucune étiquette ne se pose sur elle, même faute de place : elle se déplace ou se tait', () => {

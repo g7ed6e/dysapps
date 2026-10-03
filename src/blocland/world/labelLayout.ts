@@ -209,10 +209,11 @@ export function montrees(boxes: LabelBox[], offsets: LabelOffset[], zones: Label
  * bougent (voir `ecarterDesObstacles`). Puis `montrees` dit lesquelles se montrent (`bulles` : les bulles passagères,
  * qui cachent sans pousser) ; celles qu'il écarte essaient encore les places simples autour de leur île. `dures` : des
  * obstacles qu'aucune étiquette ne couvre jamais, même faute d'autre place (elle se tait plutôt) : la flèche d'un
- * ouvrage (GD-7). `souples` : des obstacles qu'une étiquette évite si elle peut, mais pour lesquels elle ne se tait
- * jamais : le tracé de l'ouvrage suggéré (GD-7) ; si les éviter tait un nom qui se montrait sans eux, le placement
- * sans eux l'emporte. `carte.destination` : l'indice de la prochaine destination (sinon, la plus lourde), seule à
- * avoir sa garde ; une autre étiquette peut peser autant qu'elle (l'île d'arrivée de l'ouvrage suggéré).
+ * ouvrage (GD-7). Sur la Carte, deux préférences qui ne taisent jamais un nom (GD-7) : `souples`, des obstacles
+ * qu'une étiquette évite si elle peut (le tracé de l'ouvrage suggéré), et `carte.arrivee`, l'île d'arrivée de cet
+ * ouvrage, dont le nom pèse alors autant que celui de la destination pour se poser au bout du tracé. Si les deux
+ * ensemble taisent un nom qui se montrait sans elles, le tracé seul est essayé, puis rien. `carte.destination` :
+ * l'indice de la prochaine destination (sinon, la plus lourde), seule à avoir sa garde.
  */
 export function placerEtiquettes(
   boxes: LabelBox[],
@@ -222,13 +223,22 @@ export function placerEtiquettes(
   tenues: number[] = [],
 ): { offsets: LabelOffset[]; visibles: boolean[] } {
   const souples = carte ? (vue.souples ?? []) : [];
-  if (!souples.length) return placerSansSouples(boxes, iles, vue, carte, tenues, []);
-  const avec = placerSansSouples(boxes, iles, vue, carte, tenues, souples);
-  // Tous les noms se montrent : le tracé n'en a tu aucun.
-  if (avec.visibles.every(Boolean)) return avec;
-  const sans = placerSansSouples(boxes, iles, vue, carte, tenues, []);
-  // Le tracé ne tait jamais un nom : s'il en tait un qui se montrait sans lui, on l'oublie.
-  return sans.visibles.some((v, i) => v && !avec.visibles[i]) ? sans : avec;
+  const arrivee = carte?.arrivee;
+  const lourde = carte && arrivee !== undefined && carte.weights[arrivee] !== undefined ? carte.weights.map((p, i) => (i === arrivee ? Math.max(p, ...carte.weights) : p)) : null;
+  if (!carte || (!souples.length && !lourde)) return placerSansSouples(boxes, iles, vue, carte, tenues, []);
+  const essais: [CarteDesEtiquettes, LabelBox[]][] = [];
+  if (lourde) essais.push([{ ...carte, weights: lourde }, souples]);
+  if (souples.length) essais.push([carte, souples]);
+  let sans: { offsets: LabelOffset[]; visibles: boolean[] } | null = null;
+  for (const [c, s] of essais) {
+    const r = placerSansSouples(boxes, iles, vue, c, tenues, s);
+    // Tous les noms se montrent : rien n'en a tu aucun.
+    if (r.visibles.every(Boolean)) return r;
+    // Ni le tracé ni l'arrivée ne taisent un nom : s'ils en taisent un qui se montrait sans eux, l'essai suivant.
+    const base = (sans ??= placerSansSouples(boxes, iles, vue, carte, tenues, []));
+    if (!base.visibles.some((v, i) => v && !r.visibles[i])) return r;
+  }
+  return sans ?? placerSansSouples(boxes, iles, vue, carte, tenues, []);
 }
 
 /** Ce que reçoit le placement des étiquettes d'une vue (voir `placerEtiquettes`). */
@@ -242,10 +252,14 @@ export interface VueDesEtiquettes {
   souples?: LabelBox[];
 }
 
-/** Sur la Carte, le poids de chaque étiquette, et l'indice de la prochaine destination (sinon, la plus lourde). */
+/**
+ * Sur la Carte, le poids de chaque étiquette ; l'indice de la prochaine destination (sinon, la plus lourde) ; et celui
+ * de l'île d'arrivée de l'ouvrage suggéré (GD-7), qui pèse autant que la destination tant que cela ne tait aucun nom.
+ */
 export interface CarteDesEtiquettes {
   weights: number[];
   destination?: number;
+  arrivee?: number;
 }
 
 function placerSansSouples(

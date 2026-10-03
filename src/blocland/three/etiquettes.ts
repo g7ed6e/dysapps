@@ -204,17 +204,18 @@ export function creerEtiquettes(
   // Sans page autour (un aperçu), la bande des boutons du bas reste réservée.
   const lireZones = lecteurDeZones(el, () => [{ x: el.clientWidth / 2, y: el.clientHeight - LABEL_RESERVE / 2, w: el.clientWidth, h: LABEL_RESERVE }]);
   /**
-   * Sur la Carte, ce que coûte d'écarter ou de cacher chaque étiquette : la prochaine destination d'abord (et l'île
-   * d'arrivée de l'ouvrage qu'elle désigne, autant : son nom se pose au bout du tracé), une île fermée en dernier ; et
-   * l'indice de la destination.
+   * Sur la Carte, ce que coûte d'écarter ou de cacher chaque étiquette : la prochaine destination d'abord, une île
+   * fermée en dernier ; l'indice de la destination, et celui de l'île d'arrivée de l'ouvrage qu'elle désigne, qui pèse
+   * autant si cela ne tait aucun nom (`placerEtiquettes`) : son nom se pose au bout du tracé.
    */
   const carteDesEtiquettes = (sprites: THREE.Sprite[]) => {
     // La destination : l'île de la flèche, ou celle d'où part l'ouvrage qu'elle désigne (GD-7).
     const { island, depuis, arrivee } = donnees();
     const destination = island ?? depuis;
     const indice = sprites.findIndex((s) => s.userData.id === destination);
-    const weights = sprites.map((s) => (s.userData.id === destination || (arrivee && s.userData.id === arrivee) ? 2 : s.userData.fermee ? 0.5 : 1));
-    return indice >= 0 ? { weights, destination: indice } : { weights };
+    const auBout = arrivee ? sprites.findIndex((s) => s.userData.id === arrivee) : -1;
+    const weights = sprites.map((s) => (s.userData.id === destination ? 2 : s.userData.fermee ? 0.5 : 1));
+    return { weights, ...(indice >= 0 ? { destination: indice } : {}), ...(auBout >= 0 ? { arrivee: auBout } : {}) };
   };
   /** Le tracé de l'ouvrage désigné à l'écran, vu par `cam` : des obstacles souples pour les étiquettes (GD-7). */
   const souplesDuTrace = (cam: THREE.Camera, W: number, H: number): LabelBox[] => {

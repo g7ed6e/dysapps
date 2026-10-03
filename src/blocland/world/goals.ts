@@ -117,13 +117,14 @@ export function ouvragesParSuggestion(state: GameState, ouvrages: BridgeDef[], d
       BRIDGES.indexOf(b),
     ];
   };
-  const cles = new Map(ouvrages.map((b) => [b, cle(b)]));
-  return [...ouvrages].sort((a, b) => {
-    const x = cles.get(a)!;
-    const y = cles.get(b)!;
-    const i = x.findIndex((v, k) => v !== y[k]);
-    return i < 0 ? 0 : x[i] - y[i];
-  });
+  // Chaque ouvrage avec sa clé, calculée une fois ; trié par clés.
+  return ouvrages
+    .map((b) => ({ b, k: cle(b) }))
+    .sort((x, y) => {
+      const i = x.k.findIndex((v, n) => v !== y.k[n]);
+      return i < 0 ? 0 : x.k[i] - y.k[i];
+    })
+    .map(({ b }) => b);
 }
 
 /** « de français », « de maths », « d'anglais », « d'espagnol » : la matière d'une île, dans « une île de… ». */
