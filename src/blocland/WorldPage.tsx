@@ -87,6 +87,9 @@ import { UNIVERS } from '../core/univers';
 import { useHoldCelebrations } from '../components/Celebrations';
 import { useASuivre } from '../components/useASuivre';
 
+/** Le temps laissé à la phrase « Partie posée » avant qu’un bandeau de récompense ne tombe (DA-9). */
+const LAISSER_LIRE_LA_POSE_MS = 4000;
+
 const samePoint = (p: { x: number; y: number } | undefined, q: { x: number; y: number }) => Boolean(p) && p!.x === q.x && p!.y === q.y;
 
 /**
@@ -575,7 +578,15 @@ export function WorldPage() {
   function direLaPose(biome: BiomeId, parties: Partie[], toc = false, muet = false) {
     setVague(null);
     setPartiesDites((d) => ({ biome, parties, toc, muet, seq: (d?.seq ?? 0) + 1 }));
+    setPhraseALire(true);
   }
+  // Le temps de lire la phrase : un bandeau de récompense attend encore (un message à la fois, DA-9).
+  const [phraseALire, setPhraseALire] = useState(false);
+  useEffect(() => {
+    if (!phraseALire) return;
+    const timer = window.setTimeout(() => setPhraseALire(false), LAISSER_LIRE_LA_POSE_MS);
+    return () => window.clearTimeout(timer);
+  }, [phraseALire, partiesDites?.seq]);
   useEffect(() => {
     if (!partiesDites || partiesDites.muet) return;
     const dire = () => {
@@ -636,7 +647,7 @@ export function WorldPage() {
   // Un bandeau de récompense attend que le panneau ouvert se ferme (le tutoriel, le mot de la baleine, un rallumage, un
   // voyage), et aussi pendant l'instant qui précède le mot ou le rallumage attendu : il ne tombe jamais sur la phrase que
   // l'élève lit, ni ne s'affiche pour être caché aussitôt (DA-9).
-  useHoldCelebrations(!tutoDone || !!voyage || !!whaleNext || !!aRallumer || !!moment || !!motRallume || !!vague);
+  useHoldCelebrations(!tutoDone || !!voyage || !!whaleNext || !!aRallumer || !!moment || !!motRallume || !!vague || phraseALire);
   useEffect(() => {
     if (!aRallumer || moment) return;
     const timer = window.setTimeout(

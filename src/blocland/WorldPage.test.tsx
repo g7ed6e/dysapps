@@ -766,6 +766,9 @@ describe('la pose d’une partie en vague, après « Voir le bâtiment » (GD-6,
 
   it('cache la partie jusqu’à la vague, la donne à poser, puis dit la phrase après le dernier cube', async () => {
     const { cases, dansLaPartie } = await preparer();
+    // Ni tutoriel ni mot de la baleine : seuls la pose et le temps de lire la phrase retiennent les bandeaux.
+    localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true, 'archipel-6e': true }));
+    localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'baleine-6e-arrivee': true }));
     renderAt('/adventure/french-6e-phonology?worksite=part');
     // Pendant la pose : le monde n'a pas les cases de la partie, la vague les a toutes ; pas encore de phrase.
     await waitFor(() => expect(vu.pose?.cubes).toHaveLength(cases.size));
@@ -781,7 +784,10 @@ describe('la pose d’une partie en vague, après « Voir le bâtiment » (GD-6,
     expect(vu.pose).toBeNull();
     expect(dansLaPartie()).toBe(cases.size);
     expect(within(sheet()!).getByText('Partie posée : la cabane de Mousso.')).toBeInTheDocument();
-  });
+    // Le temps de lire la phrase, les bandeaux attendent encore : un message à la fois (DA-9).
+    expect(screen.getByTestId('retenus')).toHaveTextContent('oui');
+    await waitFor(() => expect(screen.getByTestId('retenus')).toHaveTextContent('non'), { timeout: 6000 });
+  }, 10000);
 
   it('pendant la pose, le compte du bâtiment reste à l’ancien ; la région de la phrase est là, vide', async () => {
     await preparer();
