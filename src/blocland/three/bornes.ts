@@ -174,8 +174,9 @@ export function creerBornes(monde: Monde, bonhomme: () => THREE.Object3D, instan
       markerGroup.position.set(c.x, base + 0.5, c.y);
       markerGroup.visible = true;
     },
-    // Les repères des bornes de mission : les étoiles gagnées en petits cubes d'or empilés, qui tournent lentement ; dans
-    // Archipéo, un losange jaune qui rebondit (à faire). Rien sur une île fermée.
+    // Les repères des bornes de mission : les étoiles gagnées en petits cubes d'or empilés, immobiles dans Blocland (le
+    // losange d'or est seul à bouger, affordance-blocland.md §8), qui tournent lentement dans Archipéo, où un losange
+    // jaune rebondit aussi (à faire). Rien sur une île fermée.
     poserLesMissions: (quests, sommets) => {
       vider(questMarksGroup);
       if (!quests?.length) return;
@@ -235,12 +236,13 @@ export function creerBornes(monde: Monde, bonhomme: () => THREE.Object3D, instan
           mk.position.y = mk.userData.base + (reduit ? 0 : Math.abs(Math.sin(t * 2.4 + mk.userData.phase)) * 0.5);
           mk.rotation.y = reduit ? 0 : t * 1.2;
         } else {
-          // Une pile d'étoiles touchée fait le petit saut du toucher (world/affordance.ts), puis reprend sa place.
+          // Une pile d'étoiles touchée fait le petit saut du toucher (world/affordance.ts), puis reprend sa place. Dans
+          // Blocland, elle ne tourne pas : un seul mouvement à l'écran, celui du losange d'or.
           const debut = mk.userData.saut as number | undefined;
           const ms = debut === undefined ? 0 : instant.now - debut;
           if (debut !== undefined && (reduit || ms >= SIGNE.saut.monteeMs + SIGNE.saut.descenteMs)) delete mk.userData.saut;
           mk.position.y = mk.userData.base + (reduit ? 0 : sautDuSigne(ms));
-          mk.rotation.y = reduit ? 0 : t * 0.4;
+          mk.rotation.y = reduit || !losanges ? 0 : t * 0.4;
         }
       }
       if (trailGroup.children.length) {

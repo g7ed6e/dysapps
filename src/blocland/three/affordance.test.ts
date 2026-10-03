@@ -75,6 +75,26 @@ it('un maillage instancié par état : trois appels de dessin au plus, quel que 
   expect(monde.scene.children).toHaveLength(0);
 });
 
+it('reposés, les maillages restent (count) tant qu’ils ont la place ; ils ne se refont que pour grandir', () => {
+  const { monde, affordance } = scene();
+  affordance.poser(SIGNES);
+  const or = affordance.maillages.aFaire;
+  affordance.poser(SIGNES.slice(0, 2));
+  expect(affordance.maillages.aFaire).toBe(or);
+  expect(or?.count).toBe(2);
+  // Sans signe d'un état, son maillage quitte la scène (aucun appel de dessin), puis y revient tel quel.
+  expect(affordance.maillages.lieu).toBeNull();
+  affordance.poser(SIGNES);
+  expect(affordance.maillages.aFaire).toBe(or);
+  expect(or?.count).toBe(3);
+  expect(monde.scene.children.filter((o) => o instanceof THREE.InstancedMesh)).toHaveLength(3);
+  // Plus de losanges que de places : un maillage neuf.
+  affordance.poser([...SIGNES, signe({ genre: 'borne', id: `${MINE}:c` }, 'aFaire', MINE, 6)]);
+  expect(affordance.maillages.aFaire).not.toBe(or);
+  expect(affordance.maillages.aFaire?.count).toBe(4);
+  expect(monde.scene.children.filter((o) => o instanceof THREE.InstancedMesh)).toHaveLength(3);
+});
+
 it('seuls les losanges d’or de l’île du bonhomme flottent et tournent, tous en phase ; ailleurs, et la pierre et le crème, figés', () => {
   const { affordance } = scene();
   affordance.poser(SIGNES);
@@ -129,7 +149,7 @@ it('rien sur la Carte ni pendant le voyage, et aucune zone de toucher', () => {
   affordance.poser(SIGNES);
   affordance.animer!(1, 0.016, false);
   expect(affordance.maillages.aFaire?.visible).toBe(true);
-  expect(affordance.zones(camera, 1024, 768).length).toBe(SIGNES.length);
+  expect(new Set(affordance.zones(camera, 1024, 768).map((z) => cleDeLObjet(z.objet))).size).toBe(SIGNES.length);
   derniers.current.carte = true;
   affordance.animer!(1, 0.016, false);
   expect(affordance.maillages.aFaire?.visible).toBe(false);

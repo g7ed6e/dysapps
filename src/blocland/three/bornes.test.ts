@@ -167,4 +167,13 @@ describe('Dans Blocland (l’habillage, `signesDesObjets`)', () => {
     expect(pile.position.y).toBe(base);
     expect(pile.rotation.y).toBe(0);
   });
+  it('la pile d’étoiles ne tourne pas : le losange d’or est seul à bouger', () => {
+    const { b } = blocland();
+    b.poserLesMissions([mission('volcan:b', 3, 2)]);
+    const pile = b.missions.children[0];
+    for (const t of [0.5, 2, 7.3]) {
+      b.animer!(t, 0.016, false);
+      expect(pile.rotation.y, `t=${t}`).toBe(0);
+    }
+  });
 });

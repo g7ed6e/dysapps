@@ -13,10 +13,20 @@ Pour se promener sur une île, on **touche le sol** : le bonhomme y marche en co
 **Ce qui se touche se voit.** Un petit cube flotte un peu au-dessus de chaque chose qu’on peut toucher dans le monde. Il y en a trois, qu’on reconnaît à leur forme et à leur taille, pas seulement à leur couleur :
 
 - **Le losange d’or** : à faire maintenant. Un cube d’or posé sur sa pointe, au-dessus d’une mission à faire, d’un Gardien qui attend son défi, du Bloc-Navire quand il a un bloc à poser ou qu’il peut partir, d’un ouvrage qu’on peut construire tout de suite, d’un monument où l’on peut poser un bloc. Sur l’île où se tient le bonhomme, les losanges flottent doucement et tournent lentement, tous ensemble ; sur les autres îles, ils restent immobiles.
-- **Le cube de pierre** : pas encore. Un petit cube gris, posé à plat, bordé de crème, immobile : une mission pas encore jouable, le Bloc-Navire ou un chantier (un ouvrage, un monument) qui attend des blocs. Il se voit aussi la nuit.
+- **Le cube de pierre** : pas encore. Un petit cube gris, posé à plat, bordé de crème, immobile : une mission pas encore jouable, un Gardien dont le défi n’est pas prêt, le Bloc-Navire ou un chantier (un ouvrage, un monument) qui attend des blocs. Il se voit aussi la nuit.
 - **Le cube crème** : un lieu où entrer. Un cube clair, posé à plat, bordé de brun, immobile, au-dessus de l’école, de la salle des trophées et de chaque monument bâti.
 
-Une chose ne porte jamais deux cubes. Une mission réussie garde sa pile de cubes d’or (ses étoiles), sans cube de plus ; un Gardien vaincu, un ouvrage construit et les créatures n’en ont pas (une créature qui a des révisions ou une commande porte sa plaque, voir [La créature qui se souvient](#la-creature-qui-se-souvient)). Il n’y a aucun cube sur la Carte ni pendant un voyage, et la flèche « Commence ici » reste la même. Vu de loin, un cube ne devient jamais minuscule. Quand on touche une chose qui porte un cube, **son cube fait un petit saut** (la pile d’étoiles pour une mission réussie), vif et court, au moment où le doigt se lève : l’appli a entendu. Pas besoin de viser juste : un toucher tout près d’une chose qui porte un cube (à environ un doigt de large, son cube compris) la touche aussi, sauf si elle est cachée derrière une colline ou une maison ; si deux sont proches, c’est celle dont le milieu est le plus près du doigt. Quand le téléphone ou la tablette demande de [réduire les animations](reglages.md#animations-et-vue-du-monde), aucun cube ne bouge ni ne saute : ils restent là, immobiles, et se lisent encore. Dans Archipéo, il n’y a pas de cubes : seul un losange jaune rebondit au-dessus d’une mission à faire.
+Ce qu’il faut savoir des cubes :
+
+- **Un cube par chose.** Une chose ne porte jamais deux cubes.
+- **Sans cube.** Une mission réussie garde sa pile de cubes d’or (ses étoiles), immobile. Un Gardien vaincu, un ouvrage construit et les créatures n’ont pas de cube ; une créature qui a des révisions ou une commande porte sa plaque (voir [La créature qui se souvient](#la-creature-qui-se-souvient)).
+- **Sur la Carte.** Aucun cube sur la Carte ni pendant un voyage. La flèche « Commence ici » reste la même.
+- **De loin.** Un cube ne devient jamais minuscule.
+- **Le saut.** On touche une chose qui porte un cube : son cube fait un petit saut, vif et court, quand le doigt se lève. L’appli a entendu. Pour une mission réussie, c’est sa pile d’étoiles qui saute.
+- **Toucher tout près.** Pas besoin de viser juste. Un toucher tout près du cube (à environ un doigt de large), ou sur le sol juste à côté de la chose, la touche aussi. Une chose cachée derrière une colline ou une maison ne se touche pas ainsi. Si deux sont proches, c’est celle dont le cube est le plus près du doigt.
+- **Sur un chantier.** Toucher un fantôme pose le bloc attendu, même tout près d’une chose qui porte un cube. Pour l’ouvrir, on la touche elle-même.
+- **Moins d’animations.** Quand le téléphone ou la tablette demande de [réduire les animations](reglages.md#animations-et-vue-du-monde), aucun cube ne bouge ni ne saute. Ils restent là, immobiles, et se lisent encore.
+- **Dans Archipéo**, il n’y a pas de cubes : seul un losange jaune rebondit au-dessus d’une mission à faire, et les piles d’étoiles tournent lentement.
 
 Pour explorer, on peut **faire glisser le monde** d’un doigt (ou à la souris) : la vue suit le doigt, sans zoom ni rotation, et s’arrête au bord de l’archipel. Un petit mouvement compte encore comme un toucher ; un vrai glissé n’ouvre rien quand on lève le doigt.
 

@@ -5,11 +5,11 @@
 // ce composant les crée, leur passe les props, écoute le toucher et le clavier, et sa boucle ne fait qu'itérer sur elles.
 import { useEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
-import { type BiomeId } from '../biomes';
+import { estUnBiome, type BiomeId } from '../biomes';
 import { worldBounds } from '../world/terrain';
 import { ARROW_DIRS, cubeTags, enRoute, finishWalk, groundTap, islandInDirection, recentrerApres, toucheRetenue, walkPose, type Touche, type VoyageRun } from '../world/scene';
 import { rappelsDeLaVue, type WorldViewProps } from '../world/view';
-import { cleDeLObjet, signesDesObjets, sommetsDesBornes, zoneRetenue, type ObjetTouche } from '../world/affordance';
+import { borneDe, cleDeLObjet, SIGNE, signesDesObjets, sommetsDesBornes, zoneDuToucher, type ObjetTouche, type ToucherDirect } from '../world/affordance';
 import { useEnCasesDuMonde } from '../useEnCasesDuMonde';
 import { createMeter } from './meter';
 import { habillageDe } from '../habillage';
@@ -281,8 +281,8 @@ export default function WorldCanvas({
       let cur: THREE.Object3D | null = o;
       while (cur) {
         if (typeof cur.userData.quest === 'string') {
-          const [biome, typeId] = (cur.userData.quest as string).split(':');
-          return { biome: biome as BiomeId, typeId };
+          const borne = borneDe(cur.userData.quest);
+          return borne && { biome: borne.ile, typeId: borne.mission };
         }
         cur = cur.parent;
       }
@@ -291,8 +291,8 @@ export default function WorldCanvas({
     const creatureIdOf = (o: THREE.Object3D): { id: BiomeId; kind: 'creature' | 'guardian' } | null => {
       let cur: THREE.Object3D | null = o;
       while (cur) {
-        if (typeof cur.userData.creature === 'string')
-          return { id: cur.userData.creature as BiomeId, kind: cur.userData.kind === 'guardian' ? 'guardian' : 'creature' };
+        const id: unknown = cur.userData.creature;
+        if (typeof id === 'string') return estUnBiome(id) ? { id, kind: cur.userData.kind === 'guardian' ? 'guardian' : 'creature' } : null;
         cur = cur.parent;
       }
       return null;
@@ -377,18 +377,34 @@ export default function WorldCanvas({
       if (objet.genre === 'borne' && bornes.sauterLaPile(objet.id)) return;
       affordance.sauter(cleDeLObjet(objet));
     };
+    const centre = new THREE.Vector3();
+    const versLeCentre = new THREE.Vector3();
     /**
-     * Rien de touchable sous le doigt (le sol, une face en chantier, le vide) : l'objet dont la zone de toucher (48 pixels
-     * au moins autour de lui et de son signe) contient le doigt, s'il n'est pas caché derrière le sol touché (`sol`).
+     * Le doigt hors de tout objet : l'objet dont la zone de toucher (48 pixels au moins autour de son signe) le prend,
+     * selon ce qu'il a touché directement (`direct` ; world/affordance.ts, `zoneDuToucher` : jamais une face en chantier,
+     * le sol seulement tout près de l'objet). Dans le ciel, un objet dont le centre est caché par le relief est écarté.
      */
-    const objetDansLaZone = (x: number, y: number, sol: THREE.Intersection | undefined): ObjetTouche | null => {
+    const objetDansLaZone = (x: number, y: number, direct: ToucherDirect): ObjetTouche | null => {
+      if (direct?.genre === 'objet' || direct?.genre === 'face') return null;
       const rect = renderer.domElement.getBoundingClientRect();
       const zones = affordance.zones(camera, rect.width, rect.height);
       if (!zones.length) return null;
-      const i = zoneRetenue(
+      const estCache = (i: number) => {
+        const { min, max } = zones[i].zone.boite;
+        centre.set((min.x + max.x) / 2, (min.z + max.z) / 2, (min.y + max.y) / 2);
+        const loin = versLeCentre.subVectors(centre, camera.position).length();
+        ray.set(camera.position, versLeCentre.normalize());
+        const h = ray.intersectObjects(cubesDuMonde.cibles(), false)[0];
+        if (!h || h.distance >= loin - SIGNE.masque) return false;
+        // Le premier cube traversé est celui de l'objet (une borne, un lieu) : il n'est pas caché.
+        const c = cubesDuMonde.casesTouchees(h).cell;
+        return !(c.x >= min.x && c.x < max.x && c.y >= min.y && c.y < max.y && c.z >= min.z && c.z < max.z);
+      };
+      const i = zoneDuToucher(
+        direct,
         zones.map((z) => z.zone),
         { x: x - rect.left, y: y - rect.top },
-        sol ? sol.distance : null,
+        estCache,
       );
       return i < 0 ? null : zones[i].objet;
     };
@@ -397,8 +413,8 @@ export default function WorldCanvas({
       recentrer();
       sauterLeSigne(objet);
       if (objet.genre === 'borne') {
-        const [biome, typeId] = objet.id.split(':');
-        return pickQuestRef.current?.(biome as BiomeId, typeId);
+        const borne = borneDe(objet.id);
+        return borne ? pickQuestRef.current?.(borne.ile, borne.mission) : undefined;
       }
       if (objet.genre === 'gardien') return creatureRef.current?.(objet.id, 'guardian');
       if (objet.genre === 'navire') return pickVehicleRef.current?.(objet.port);
@@ -415,13 +431,20 @@ export default function WorldCanvas({
       // Pendant le voyage, un tap n'importe où fait arriver le navire tout de suite.
       if (voyageRef.current) return voyageSkipRef.current?.();
       const { creature, hit } = aim(e);
-      // Un toucher direct sur un objet passe d'abord ; sinon (le sol, une face en chantier, le vide), la zone de toucher
-      // d'un objet qui porte un signe le retient (world/affordance.ts, `zoneRetenue`).
+      // Un toucher direct sur un objet passe d'abord, une face en chantier aussi (le bloc s'y pose) ; sinon, dans le vide
+      // ou sur le sol tout près d'un objet qui porte un signe, la zone de son signe le retient (world/affordance.ts,
+      // `zoneDuToucher`).
       const touche = hit ? tapSur(hit).kind : null;
-      if (!creature && touche !== 'quest' && touche !== 'place' && touche !== 'bridge') {
-        const objet = objetDansLaZone(e.clientX, e.clientY, hit);
-        if (objet) return toucherLObjet(objet);
-      }
+      const direct: ToucherDirect =
+        creature || (touche && touche !== 'face' && touche !== 'island')
+          ? { genre: 'objet' }
+          : touche === 'face'
+            ? { genre: 'face' }
+            : hit
+              ? { genre: 'sol', case: cubesDuMonde.casesTouchees(hit).cell, distance: hit.distance }
+              : null;
+      const objet = objetDansLaZone(e.clientX, e.clientY, direct);
+      if (objet) return toucherLObjet(objet);
       // Pendant un trajet, un tap dans le vide le fait arriver tout de suite ; sur le sol, il change son but (la page
       // décide, depuis là où il en est : `enRoute`) ; une cible garde sa priorité.
       const now = performance.now();

@@ -10,9 +10,10 @@
 // monument bâti (crème). Rien sur une borne réussie (sa pile d'étoiles reste, three/bornes.ts), un Gardien vaincu, un
 // ouvrage construit, une créature (sa plaque, three/signes.ts) ; rien sur la Carte. Une chose ne porte jamais deux signes.
 // Au toucher, c'est toujours le signe qui fait un petit saut (`sautDuSigne`), jamais l'objet. Et la zone de toucher :
-// au moins 48 pixels à l'écran autour de chaque objet qui porte un signe (`zoneRetenue`). Code pur, sans Three.js :
+// au moins 48 pixels à l'écran autour de chaque signe (`zoneDuToucher`), qui ne remplace jamais un toucher direct ni une
+// face en chantier. Code pur, sans Three.js :
 // three/affordance.ts le dessine, world/budget.ts le compte (`signesCost`).
-import type { BiomeId } from '../biomes';
+import { estUnBiome, type BiomeId } from '../biomes';
 import { getBridge } from './archipelago';
 import type { PlaceId, VoxelCube } from './cube';
 import type { EtatsDesObjets } from './modele';
@@ -46,8 +47,10 @@ export const SIGNE = {
   minPx: 14,
   /** Le saut au toucher : une bosse de 0,2 bloc en 180 ms (70 ms de montée, 110 de descente), sans rebond. */
   saut: { hauteur: 0.2, monteeMs: 70, descenteMs: 110 },
-  /** La zone de toucher d'un objet qui porte un signe, au moins ce carré à l'écran, en pixels CSS. */
+  /** La zone de toucher d'un signe (et d'une borne ou d'un Gardien, petits), au moins ce carré à l'écran, en pixels CSS. */
   zonePx: 48,
+  /** Le sol touché garde la zone d'un objet seulement à moins de tant de cases de sa boîte (une case voisine). */
+  presDuSol: 1,
   /** Une zone est masquée quand le sol touché est plus proche que l'objet d'au moins tant de blocs. */
   masque: 2,
   /** La largeur des arêtes, en part du côté du cube (environ 2 pixels à la taille minimale). */
@@ -61,6 +64,13 @@ export type ObjetTouche =
   | { genre: 'navire'; port: BiomeId }
   | { genre: 'ouvrage'; id: string }
   | { genre: 'lieu'; id: PlaceId; ile: BiomeId };
+
+/** L'île et la mission d'une borne, lues de son identifiant « île:mission » ; `null` si l'île n'en est pas une. */
+export function borneDe(id: string): { ile: BiomeId; mission: string } | null {
+  const i = id.indexOf(':');
+  const ile = id.slice(0, i);
+  return i > 0 && estUnBiome(ile) ? { ile, mission: id.slice(i + 1) } : null;
+}
 
 /** La clé d'un objet : un signe par objet. */
 export function cleDeLObjet(o: ObjetTouche): string {
@@ -164,7 +174,7 @@ export function signesDesObjets({ cubes, quests = [], creatures = [], vehicle = 
       if (l) {
         l.cubes.push(c);
         l.fantome ||= Boolean(c.ghost);
-      } else lieux.set(c.place, { cubes: [c], ile: c.tag as BiomeId, fantome: Boolean(c.ghost) });
+      } else if (estUnBiome(c.tag)) lieux.set(c.place, { cubes: [c], ile: c.tag, fantome: Boolean(c.ghost) });
     } else if (c.bridge && c.ghost) {
       const l = ouvrages.get(c.bridge);
       if (l) l.push(c);
@@ -176,8 +186,9 @@ export function signesDesObjets({ cubes, quests = [], creatures = [], vehicle = 
   // rien (leur pile d'étoiles).
   for (const q of quests) {
     const l = bornes.get(q.id);
-    if (!l || fermees.has(q.id) || (typeof q.state === 'number' && q.state > 0)) continue;
-    out.push(signeAuDessus({ genre: 'borne', id: q.id }, q.state === 'locked' ? 'pasEncore' : 'aFaire', [q.id.split(':')[0] as BiomeId], boiteDe(l)));
+    const borne = borneDe(q.id);
+    if (!l || !borne || fermees.has(q.id) || (typeof q.state === 'number' && q.state > 0)) continue;
+    out.push(signeAuDessus({ genre: 'borne', id: q.id }, q.state === 'locked' ? 'pasEncore' : 'aFaire', [borne.ile], boiteDe(l)));
   }
   // L'école, la salle des trophées, un monument bâti : le crème. Un monument à bâtir est un chantier : l'or si l'élève
   // peut y poser un bloc, sinon la pierre.
@@ -192,7 +203,7 @@ export function signesDesObjets({ cubes, quests = [], creatures = [], vehicle = 
     const milieu = l[Math.floor(l.length / 2)];
     const colonne = l.filter((c) => c.x === milieu.x && c.y === milieu.y);
     const def = getBridge(id);
-    const iles = def ? [def.from, def.to] : [milieu.tag as BiomeId];
+    const iles = def ? [def.from, def.to] : estUnBiome(milieu.tag) ? [milieu.tag] : [];
     out.push({ ...signeAuDessus({ genre: 'ouvrage', id }, prets.has(id) ? 'aFaire' : 'pasEncore', iles, boiteDe(l)), x: milieu.x + 0.5, y: milieu.y + 0.5, z: hauteurDuSigneDeLObjet(colonne) });
   }
   // Un Gardien pas encore vaincu : l'or si son défi est prêt, sinon la pierre. Les créatures n'ont jamais de cube.
@@ -326,7 +337,7 @@ export function coutDesSignes(signes: readonly Pick<SigneDObjet, 'etat'>[]): { t
 
 // ---- La zone de toucher
 
-/** La zone de toucher d'un objet à l'écran : son centre et sa taille en pixels CSS, et sa distance à la caméra (en blocs). */
+/** La zone de toucher d'un signe à l'écran : son centre et sa taille en pixels CSS, et la distance de son objet à la caméra (en blocs). */
 export interface ZoneDeToucher {
   x: number;
   y: number;
@@ -336,29 +347,64 @@ export interface ZoneDeToucher {
   distance: number;
 }
 
-/** La zone de toucher d'un rectangle à l'écran (l'objet et son signe projetés) : élargie à `SIGNE.zonePx` au moins, autour de son centre. */
+/** La zone de toucher d'un objet, et sa boîte en cases du monde (le sol touché tout près d'elle garde la zone). */
+export interface ZoneDObjet extends ZoneDeToucher {
+  boite: Boite;
+}
+
+/** La zone de toucher d'un rectangle à l'écran (le signe projeté) : élargie à `SIGNE.zonePx` au moins, autour de son centre. */
 export function zoneDeToucher(x0: number, y0: number, x1: number, y1: number, distance: number): ZoneDeToucher {
   return { x: (x0 + x1) / 2, y: (y0 + y1) / 2, w: Math.max(SIGNE.zonePx, x1 - x0), h: Math.max(SIGNE.zonePx, y1 - y0), distance };
 }
 
 /**
- * La zone retenue sous le doigt levé, quand rien n'a été touché directement (un toucher direct sur la géométrie passe
- * d'abord : world/scene.ts, `toucheRetenue`) : parmi les zones qui contiennent le doigt, celle dont le centre est le plus
- * proche du doigt (en pixels), puis l'objet le plus proche de la caméra. Une zone est écartée quand le sol touché
- * (`sol`, sa distance le long du rayon, ou `null`) est plus proche que l'objet de `SIGNE.masque` blocs : l'objet est
- * caché derrière une colline, une maison. L'indice dans `zones`, ou −1.
+ * La zone retenue sous le doigt levé, parmi les zones qui le contiennent : celle dont le centre est le plus proche du
+ * doigt (en pixels), puis l'objet le plus proche de la caméra. Une zone est écartée quand le sol touché (`sol`, sa
+ * distance le long du rayon, ou `null`) est plus proche que l'objet de `SIGNE.masque` blocs : l'objet est caché derrière
+ * une colline, une maison ; et quand `garde` la refuse (appelée seulement pour une zone qui contient le doigt). L'indice
+ * dans `zones`, ou −1.
  */
-export function zoneRetenue(zones: readonly ZoneDeToucher[], doigt: { x: number; y: number }, sol: number | null): number {
+export function zoneRetenue(zones: readonly ZoneDeToucher[], doigt: { x: number; y: number }, sol: number | null, garde?: (i: number) => boolean): number {
   let best = -1;
   let bestPx = Infinity;
   zones.forEach((z, i) => {
     if (Math.abs(doigt.x - z.x) > z.w / 2 || Math.abs(doigt.y - z.y) > z.h / 2) return;
     if (sol !== null && sol < z.distance - SIGNE.masque) return;
     const px = Math.hypot(doigt.x - z.x, doigt.y - z.y);
-    if (px < bestPx || (px === bestPx && z.distance < zones[best].distance)) {
-      best = i;
-      bestPx = px;
-    }
+    if (px > bestPx || (px === bestPx && z.distance >= zones[best].distance)) return;
+    if (garde && !garde(i)) return;
+    best = i;
+    bestPx = px;
   });
   return best;
+}
+
+/** Le nombre de cases vides entre une case du sol et la boîte d'un objet, sur la grille (0 : la case la touche ou est dessous). */
+export function ecartALaBoite(c: { x: number; y: number }, boite: Boite): number {
+  const gx = Math.max(0, boite.min.x - (c.x + 1), c.x - boite.max.x);
+  const gy = Math.max(0, boite.min.y - (c.y + 1), c.y - boite.max.y);
+  return Math.max(gx, gy);
+}
+
+/**
+ * Ce que le doigt a touché directement, le long du rayon (world/scene.ts, `toucheRetenue`) : un objet (une borne, un
+ * lieu, un ouvrage, une créature, le navire), une face en chantier, le sol d'une île (sa case et sa distance), ou rien
+ * (le vide, le ciel : `null`).
+ */
+export type ToucherDirect = { genre: 'objet' } | { genre: 'face' } | { genre: 'sol'; case: { x: number; y: number }; distance: number } | null;
+
+/**
+ * La priorité d'un toucher (affordance-blocland.md §9) : l'indice de la zone qui le prend, ou −1 quand le toucher
+ * direct garde la main.
+ * - Un objet touché directement passe toujours : −1.
+ * - Une face en chantier n'est jamais remplacée (le toucher y pose le bloc) : −1.
+ * - Le sol d'une île : seulement une zone dont l'objet est à moins d'une case (`SIGNE.presDuSol`) de la case touchée,
+ *   et qui n'est pas cachée derrière ce sol ; sinon le bonhomme y va.
+ * - Le vide ou le ciel : la zone la plus proche du doigt, sauf un objet dont le centre est caché (`estCache`, un rayon
+ *   lancé vers lui ; appelé seulement pour une zone qui contient le doigt).
+ */
+export function zoneDuToucher(direct: ToucherDirect, zones: readonly ZoneDObjet[], doigt: { x: number; y: number }, estCache?: (i: number) => boolean): number {
+  if (direct === null) return zoneRetenue(zones, doigt, null, estCache && ((i) => !estCache(i)));
+  if (direct.genre !== 'sol') return -1;
+  return zoneRetenue(zones, doigt, direct.distance, (i) => ecartALaBoite(direct.case, zones[i].boite) < SIGNE.presDuSol);
 }

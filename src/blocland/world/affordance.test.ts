@@ -16,7 +16,11 @@ import {
   tourDuSigne,
   TRIANGLES_DU_SIGNE,
   zoneDeToucher,
+  zoneDuToucher,
   zoneRetenue,
+  borneDe,
+  ecartALaBoite,
+  type ZoneDObjet,
   type SigneDObjet,
 } from './affordance';
 import { isBiomeUnlocked } from './archipelago';
@@ -248,4 +252,46 @@ describe('zoneRetenue : la zone de toucher de 48 pixels', () => {
     expect(zoneRetenue([z], { x: 105, y: 105 }, 29)).toBe(0);
     expect(zoneRetenue([z], { x: 105, y: 105 }, 40)).toBe(0);
   });
+});
+
+describe('zoneDuToucher : la priorité du toucher (direct, puis zone, sinon rien ; une face jamais remplacée)', () => {
+  // Une école de 6 × 4 cases (x de 10 à 16, y de 20 à 24), son signe projeté autour de (200, 100), à 30 blocs.
+  const ecole: ZoneDObjet = { ...zoneDeToucher(195, 95, 205, 105, 30), boite: { min: { x: 10, y: 20, z: 3 }, max: { x: 16, y: 24, z: 9 } } };
+  const doigt = { x: 210, y: 110 };
+
+  it('un toucher sur une face en chantier, dans la zone : la pose du bloc, pas l’objet', () => {
+    expect(zoneDuToucher({ genre: 'face' }, [ecole], doigt)).toBe(-1);
+  });
+
+  it('un objet touché directement garde la main', () => {
+    expect(zoneDuToucher({ genre: 'objet' }, [ecole], doigt)).toBe(-1);
+  });
+
+  it('le sol à deux cases de l’école ne la retient pas ; une case voisine, oui', () => {
+    expect(zoneDuToucher({ genre: 'sol', case: { x: 18, y: 21 }, distance: 31 }, [ecole], doigt)).toBe(-1);
+    expect(zoneDuToucher({ genre: 'sol', case: { x: 17, y: 21 }, distance: 31 }, [ecole], doigt)).toBe(-1);
+    expect(zoneDuToucher({ genre: 'sol', case: { x: 16, y: 21 }, distance: 31 }, [ecole], doigt)).toBe(0);
+    // Le sol tout près, mais nettement devant l'objet : il le cache.
+    expect(zoneDuToucher({ genre: 'sol', case: { x: 16, y: 21 }, distance: 12 }, [ecole], doigt)).toBe(-1);
+    expect(ecartALaBoite({ x: 16, y: 24 }, ecole.boite)).toBe(0);
+    expect(ecartALaBoite({ x: 8, y: 22 }, ecole.boite)).toBe(1);
+  });
+
+  it('un toucher dans le vide près d’un signe le retient ; loin, rien ; un objet au centre caché, écarté', () => {
+    expect(zoneDuToucher(null, [ecole], doigt)).toBe(0);
+    expect(zoneDuToucher(null, [ecole], { x: 300, y: 300 })).toBe(-1);
+    expect(zoneDuToucher(null, [ecole], doigt, () => true)).toBe(-1);
+  });
+
+  it('deux zones voisines : la plus proche du doigt', () => {
+    const borne: ZoneDObjet = { ...zoneDeToucher(225, 100, 235, 110, 30), boite: { min: { x: 20, y: 20, z: 3 }, max: { x: 21, y: 21, z: 5 } } };
+    expect(zoneDuToucher(null, [ecole, borne], { x: 212, y: 104 })).toBe(0);
+    expect(zoneDuToucher(null, [ecole, borne], { x: 220, y: 104 })).toBe(1);
+  });
+});
+
+it('borneDe : l’île et la mission d’une borne, seulement pour une île du jeu', () => {
+  expect(borneDe('french-6e-phonology:sons')).toEqual({ ile: 'french-6e-phonology', mission: 'sons' });
+  expect(borneDe('volcan:a')).toBeNull();
+  expect(borneDe('sans-mission')).toBeNull();
 });

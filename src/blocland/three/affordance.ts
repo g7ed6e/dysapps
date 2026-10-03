@@ -19,7 +19,7 @@ import {
   type EtatDuSigne,
   type ObjetTouche,
   type SigneDObjet,
-  type ZoneDeToucher,
+  type ZoneDObjet,
 } from '../world/affordance';
 import type { Derniers, Instant, Monde, PartieDeLaScene } from './partie';
 
@@ -31,10 +31,12 @@ export interface Affordance extends PartieDeLaScene {
   /** Le signe de cet objet fait son petit saut ; `false` s'il n'en porte pas. */
   sauter(cle: string): boolean;
   /**
-   * Les zones de toucher des objets qui portent un signe, à l'écran vu par `cam` (W × H pixels CSS) : l'objet et son
-   * signe projetés, élargis à 48 pixels. Calculées au doigt levé seulement ; aucune quand les signes sont cachés.
+   * Les zones de toucher des objets qui portent un signe, à l'écran vu par `cam` (W × H pixels CSS) : le signe projeté,
+   * élargi à 48 pixels autour de son centre (l'objet se touche directement) ; une borne ou un Gardien plus petits que
+   * 48 pixels à l'écran ont aussi la leur, élargie de même. Calculées au doigt levé seulement ; aucune quand les signes
+   * sont cachés.
    */
-  zones(cam: THREE.PerspectiveCamera, W: number, H: number): { objet: ObjetTouche; zone: ZoneDeToucher }[];
+  zones(cam: THREE.PerspectiveCamera, W: number, H: number): { objet: ObjetTouche; zone: ZoneDObjet }[];
   /** La hauteur de la vue, en pixels CSS, donnée au redimensionnement (jamais lue dans le DOM image par image). */
   redimensionner(hauteur: number): void;
   /** Les maillages, un par état (pour les tests et les mesures). */
@@ -81,20 +83,12 @@ export function creerAffordance(monde: Monde, el: HTMLElement, camera: THREE.Per
   const geometries = Object.fromEntries(ETATS.map((e) => [e, geometrieDe(e)])) as Record<EtatDuSigne, THREE.BufferGeometry>;
   const materiaux = Object.fromEntries(ETATS.map((e) => [e, materiauDe(e)])) as Record<EtatDuSigne, THREE.MeshLambertMaterial>;
   const maillages: Record<EtatDuSigne, THREE.InstancedMesh | null> = { aFaire: null, pasEncore: null, lieu: null };
+  /** Le maillage de chaque état, gardé d'une pose à l'autre : il ne se refait que s'il doit grandir. */
+  const reserve: Record<EtatDuSigne, THREE.InstancedMesh | null> = { aFaire: null, pasEncore: null, lieu: null };
   /** Les signes posés, leur place dans le maillage de leur état, et le début de leur saut (`performance.now`), s'il saute. */
   let poses: { s: SigneDObjet; rang: number; saut: number | null }[] = [];
   /** Les signes se montrent (ni Carte ni voyage) : sinon, aucune zone de toucher. */
   let montres = false;
-
-  const vider = () => {
-    for (const e of ETATS) {
-      const m = maillages[e];
-      if (!m) continue;
-      scene.remove(m);
-      m.dispose();
-      maillages[e] = null;
-    }
-  };
 
   const matrice = new THREE.Matrix4();
   const position = new THREE.Vector3();
@@ -103,30 +97,67 @@ export function creerAffordance(monde: Monde, el: HTMLElement, camera: THREE.Per
   const haut = new THREE.Vector3(0, 1, 0);
   const vue = new THREE.Vector3();
   const boite = new THREE.Box3();
+  const boiteDeLObjet = new THREE.Box3();
   const coin = new THREE.Vector3();
   /** L'échelle de chaque signe à la dernière image (la zone de toucher compte le cube à sa taille à l'écran). */
   let echelles: number[] = [];
 
+  /** Le maillage d'un état, d'au moins `n` places (`count` : `n`), dans la scène ; sans signe de cet état, hors de la scène. */
+  const maillageDe = (e: EtatDuSigne, n: number) => {
+    let m = reserve[e];
+    if (m && (n === 0 || m.instanceMatrix.count < n)) {
+      scene.remove(m);
+      maillages[e] = null;
+      if (n > 0) {
+        m.dispose();
+        m = reserve[e] = null;
+      }
+    }
+    if (n === 0) return;
+    if (!m) {
+      m = new THREE.InstancedMesh(geometries[e], materiaux[e], n);
+      m.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+      m.frustumCulled = false;
+      // On touche l'objet (ou la zone de son signe), jamais son signe : le rayon le traverse.
+      m.raycast = () => {};
+      m.visible = false;
+      m.userData = { signes: e };
+      reserve[e] = m;
+    }
+    m.count = n;
+    if (!maillages[e]) scene.add(m);
+    maillages[e] = m;
+  };
+  const vider = () => {
+    for (const e of ETATS) {
+      const m = reserve[e];
+      if (!m) continue;
+      scene.remove(m);
+      m.dispose();
+      maillages[e] = reserve[e] = null;
+    }
+  };
+  /** Le rectangle à l'écran d'une boîte du monde de la scène, ou `null` si un de ses coins est derrière la caméra. */
+  const projeter = (b: THREE.Box3, cam: THREE.Camera, W: number, H: number): [number, number, number, number] | null => {
+    let [x0, y0, x1, y1] = [Infinity, Infinity, -Infinity, -Infinity];
+    for (let k = 0; k < 8; k++) {
+      coin.set(k & 1 ? b.max.x : b.min.x, k & 2 ? b.max.y : b.min.y, k & 4 ? b.max.z : b.min.z).project(cam);
+      if (coin.z > 1) return null;
+      const x = ((coin.x + 1) / 2) * W;
+      const y = ((1 - coin.y) / 2) * H;
+      [x0, y0, x1, y1] = [Math.min(x0, x), Math.min(y0, y), Math.max(x1, x), Math.max(y1, y)];
+    }
+    return [x0, y0, x1, y1];
+  };
+
   return {
     maillages,
     poser: (signes) => {
-      vider();
       const avant = new Map(poses.map((p) => [p.s.cle, p.saut]));
       const rangs: Record<EtatDuSigne, number> = { aFaire: 0, pasEncore: 0, lieu: 0 };
       poses = signes.map((s) => ({ s, rang: rangs[s.etat]++, saut: avant.get(s.cle) ?? null }));
       echelles = poses.map(() => 1);
-      for (const e of ETATS) {
-        if (!rangs[e]) continue;
-        const m = new THREE.InstancedMesh(geometries[e], materiaux[e], rangs[e]);
-        m.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-        m.frustumCulled = false;
-        // On touche l'objet (ou sa zone), jamais son signe : le rayon le traverse.
-        m.raycast = () => {};
-        m.visible = false;
-        m.userData = { signes: e };
-        scene.add(m);
-        maillages[e] = m;
-      }
+      for (const e of ETATS) maillageDe(e, rangs[e]);
     },
     sauter: (cle) => {
       const p = poses.find((x) => x.s.cle === cle);
@@ -136,25 +167,25 @@ export function creerAffordance(monde: Monde, el: HTMLElement, camera: THREE.Per
     },
     zones: (cam, W, H) => {
       if (!montres) return [];
-      const out: { objet: ObjetTouche; zone: ZoneDeToucher }[] = [];
+      const out: { objet: ObjetTouche; zone: ZoneDObjet }[] = [];
       cam.updateMatrixWorld();
       poses.forEach(({ s }, i) => {
-        // L'objet, et son signe à sa taille à l'écran, flottement compris.
+        // La distance de l'objet à la caméra : le sol touché devant lui le cache.
+        boiteDeLObjet.min.set(s.boite.min.x, s.boite.min.z, s.boite.min.y);
+        boiteDeLObjet.max.set(s.boite.max.x, s.boite.max.z, s.boite.max.y);
+        const distance = boiteDeLObjet.distanceToPoint(cam.position);
+        // Le signe à sa taille à l'écran, flottement compris.
         const demi = (COTE_DU_SIGNE[s.etat] * echelles[i]) / 2 + SIGNE.flotte.amplitude;
-        boite.min.set(s.boite.min.x, s.boite.min.z, s.boite.min.y);
-        boite.max.set(s.boite.max.x, s.boite.max.z, s.boite.max.y);
-        boite.expandByPoint(coin.set(s.x - demi, s.z - demi, s.y - demi));
-        boite.expandByPoint(coin.set(s.x + demi, s.z + demi, s.y + demi));
-        let [x0, y0, x1, y1] = [Infinity, Infinity, -Infinity, -Infinity];
-        for (let k = 0; k < 8; k++) {
-          coin.set(k & 1 ? boite.max.x : boite.min.x, k & 2 ? boite.max.y : boite.min.y, k & 4 ? boite.max.z : boite.min.z).project(cam);
-          // Un coin derrière la caméra : l'objet n'est pas devant elle, pas de zone.
-          if (coin.z > 1) return;
-          const x = ((coin.x + 1) / 2) * W;
-          const y = ((1 - coin.y) / 2) * H;
-          [x0, y0, x1, y1] = [Math.min(x0, x), Math.min(y0, y), Math.max(x1, x), Math.max(y1, y)];
-        }
-        out.push({ objet: s.objet, zone: zoneDeToucher(x0, y0, x1, y1, boite.distanceToPoint(cam.position)) });
+        boite.min.set(s.x - demi, s.z - demi, s.y - demi);
+        boite.max.set(s.x + demi, s.z + demi, s.y + demi);
+        const r = projeter(boite, cam, W, H);
+        // Un coin derrière la caméra : le signe n'est pas devant elle, pas de zone.
+        if (!r) return;
+        out.push({ objet: s.objet, zone: { ...zoneDeToucher(...r, distance), boite: s.boite } });
+        // Une borne, un Gardien : petits, ils ont aussi leur zone de 48 pixels, autour de leur centre.
+        if (s.objet.genre !== 'borne' && s.objet.genre !== 'gardien') return;
+        const o = projeter(boiteDeLObjet, cam, W, H);
+        if (o && (o[2] - o[0] < SIGNE.zonePx || o[3] - o[1] < SIGNE.zonePx)) out.push({ objet: s.objet, zone: { ...zoneDeToucher(...o, distance), boite: s.boite } });
       });
       return out;
     },

@@ -83,15 +83,38 @@ const CAPTURES = [
   { nom: 'gris-muscade', vue: 'île', famille: 'lisibilite', ile: 'lv2-4e-daily-life' },
   { nom: 'gris-hanneton', vue: 'défi', famille: 'lisibilite', ile: 'maths-6e-calculation' },
   { nom: 'gris-moustache', vue: 'île', famille: 'lisibilite', ile: 'english-5e-grammar' },
-  // Les signes de ce qui se touche (Toucher le monde, lot 1) : l'île de l'école et une île à Gardien sur téléphone, en
-  // portrait et en paysage, de jour et de nuit, et l'archipel de loin (le cube garde 14 px à l'écran). À retirer une
-  // fois le lot fusionné.
+  // Les signes de ce qui se touche (Toucher le monde, lot 1, famille `signes`), à retirer une fois le lot fusionné :
+  // - l'île de l'école et une île à Gardien sur téléphone, en portrait et en paysage, de jour et de nuit (la nuit est
+  //   l'heure pilotée, `nuit` : la même que `ile-nuit` du socle ; la nuit de Blocland reste claire, elle se lit surtout à
+  //   l'eau, aux fenêtres et à la lueur du cube de pierre, d'où aussi le chantier de nuit) ;
+  // - avec le mouvement réduit de l'appareil (`fige` : `prefers-reduced-motion: reduce`), chaque cube figé ;
+  // - un chantier en fantôme : une partie neuve (`depart`) où la Forêt et la Plaine sont jouées, avec 4 blocs de bois
+  //   (`inventaire`) qui paient le pont vers l'Horloge des verbes (le cube d'or), les autres ouvrages en pierre ; de nuit ;
+  // - la salle des trophées de près (le cube crème) ; le Gardien de la Mine debout (`debout`), sa borne voisine, de près ;
+  // - l'archipel de loin sur téléphone (le cube garde 14 px), en portrait et en paysage (le zoom le plus éloigné) ;
+  // - l'archipel en tablette, net (`finesse` 2), depuis la Forêt : aucun cube sur Mousso (une créature n'en porte jamais).
   { nom: 'signes-ecole', vue: 'île', famille: 'signes', ile: 'french-6e-phonology', taille: { width: 390, height: 844 } },
   { nom: 'signes-ecole-nuit', vue: 'île', famille: 'signes', ile: 'french-6e-phonology', nuit: true, taille: { width: 390, height: 844 } },
   { nom: 'signes-ecole-paysage', vue: 'île', famille: 'signes', ile: 'french-6e-phonology', taille: { width: 844, height: 390 } },
+  { nom: 'signes-ecole-fige', vue: 'île', famille: 'signes', ile: 'french-6e-phonology', fige: true, taille: { width: 390, height: 844 } },
   { nom: 'signes-ile', vue: 'île', famille: 'signes', ile: 'french-6e-letter-confusion', taille: { width: 390, height: 844 } },
   { nom: 'signes-ile-nuit', vue: 'île', famille: 'signes', ile: 'french-6e-letter-confusion', nuit: true, taille: { width: 390, height: 844 } },
+  ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].map(({ suffixe, ...autres }) => ({
+    nom: `signes-chantier${suffixe}`,
+    vue: 'île',
+    famille: 'signes',
+    ile: 'french-6e-phonology',
+    depart: true,
+    jouees: ['french-6e-phonology', 'maths-6e-calculation'],
+    inventaire: { 'french-6e-phonology': 4 },
+    taille: { width: 390, height: 844 },
+    ...autres,
+  })),
+  { nom: 'signes-trophees-pres', vue: 'île', famille: 'signes', ile: 'french-6e-phonology', recadre: { x: 140, y: 170, width: 320, height: 250 }, finesse: 2 },
+  { nom: 'signes-gardien-pres', vue: 'île', famille: 'signes', ile: 'french-6e-letter-confusion', debout: 'french-6e-letter-confusion', finesse: 2 },
   { nom: 'signes-archipel', vue: 'archipel', famille: 'signes', ile: 'french-6e-phonology', taille: { width: 390, height: 844 } },
+  { nom: 'signes-archipel-paysage', vue: 'archipel', famille: 'signes', ile: 'french-6e-phonology', taille: { width: 844, height: 390 } },
+  { nom: 'signes-creature-pres', vue: 'archipel', famille: 'signes', ile: 'french-6e-phonology', finesse: 2 },
   // Les personnages hors du monde (lot R6) : chaque Gardien au défi, éteint, en 3D (`parIle` : un fichier par île,
   // `<archipel>-defi-<île>.jpg`) et en SVG (la vue « liste », sans la 3D) ; la bulle d'une créature (le défi pas encore ouvert : la partie
   // sans étoiles), en 3D et en SVG.
