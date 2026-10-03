@@ -24,7 +24,7 @@ Le jeu se décrit en mots neutres, en anglais, dans [Le jeu](../../gameplay/inde
 | `startPlace` | île de l’école |
 | `school` | l’école du village (trois portes, une par matière) |
 | `hub` | port |
-| `link` | ouvrage : pont, bac, sentier, escalier taillé, tunnel, col |
+| `link` | ouvrage : pont, bac, sentier, escalier taillé, tunnel, col ; « ouvrage » ne nomme que les liaisons ; ceux qui partent du port sont les ouvrages du port (GD-7) |
 | `passage` | le Bloc-Navire et son voyage |
 | `resource` | bloc d’île (bois, pierre, brique…) |
 | `compound` | bloc assemblé : Poutre, Vitrail, Engrenage, Miroir |
@@ -39,7 +39,8 @@ Le jeu se décrit en mots neutres, en anglais, dans [Le jeu](../../gameplay/inde
 | `placeState` | Fermée, À explorer, En chantier, Bâtie |
 | `regionState` | le village : abandonné, réactivation, reconstruction, développement, port |
 | `avatar` | le bonhomme ; les créatures appellent l’élève « bâtisseur » |
-| `request`, `fixture` | aucun mot encore : Blocland ne les montre pas (GD-7) |
+| `request` | commande (« demande » est la mission depuis GD-5), dans la section « Commandes », avec le bouton « Livrer » (GD-7, validé par le directeur artistique le 3 octobre 2026) |
+| `fixture` | petite construction, nommée par son objet (« le puits de Tunel ») ; jamais « petit ouvrage », « ouvrage » étant réservé aux liaisons (GD-7) |
 | `role` | Apprenti, Maçon, Mécanicien, Ingénieur, Architecte |
 
 Les textes sont dans `src/univers/blocland/index.ts` et dans `docs/contenu/`.
@@ -186,6 +187,8 @@ Ce qui change dans Archipéo ne touche pas Blocland. Les Gardiens en sentinelles
 - **L’altitude par classe** : mer, collines, monts et sommets (hauteurs 0, 3, 6 et 9), une ambiance uniforme de chaque archipel, gardée du continent d’avant.
 - **Le village en cubes au port** : ses cinq états se voient en cubes statiques (lanternes, barques, fumée, caisses, fanions, feu de port), et la montée d’un état sonne une cloche.
 - **La nuit** : les fenêtres des bâtiments s’éclairent, et les lanternes aux bouts des ouvrages dessinent les chemins.
+- **Les ouvrages du port** ([GD-7](../../gameplay/propositions/GD-7.md), 3 octobre 2026) : des bacs et un pont, ouvrages déjà connus, qui partent du port vers les îles qu’il ne touchait pas ; les longs bacs longent l’archipel en contour, avec un poteau toutes les quatre cases au-delà de 36 cases et une lanterne à chaque bout seulement ([cadrage](cadrage.md#les-ouvrages-de-blocland)). Les empreintes de la grille sont refaites comme une correction voulue. Sur un long bac, la caméra ne suit pas le bonhomme : elle cadre le départ et l’arrivée et le laisse traverser.
+- **Le signe de l’habitant qui a une commande** (GD-7, décision du directeur artistique) : le signe des révisions tel quel, le saut lent puis la plaque carrée claire et fixe, avec l’image du bloc demandé (celle de Mes blocs) ; un seul signe par créature.
 - **La statue du Gardien vaincu** reste, même quand une mission arrive ensuite sur son île, et sa revanche reste ouverte.
 - **Les silhouettes.** Des îles au relief par classe (mer, collines, monts, sommets), un repère visible de loin par région (grand chêne, champignon géant, volcan qui fume, tour de guet, grand phare, aiguille de glace, haut-fourneau), des bâtiments en six formes (maison, tour, dôme, échoppe, hutte, kiosque, `world/architect.ts`), le Bloc-Navire en cubes, le bonhomme en blocs.
 - **L’interface d’avant le lot 2** (pour mémoire) : fond crème à grain pixel, barre du haut en terre et herbe, boutons de pierre à biseau pixel et d’herbe pour l’action principale, bandeaux texturés, écusson de rang en minerai, polices Archivo Black (titres) et Silkscreen (décor), icône en bloc d’herbe isométrique (`git show 07bb03a^:docs/rendu/style.md`).

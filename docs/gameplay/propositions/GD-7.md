@@ -1,6 +1,6 @@
 # GD-7 : Des chemins au choix, le port en étoile
 
-**État** : Décidée le 2 octobre 2026 (la piste, ce que fait une demande, combien de demandes à la fois) ; le détail est à cadrer dans le lot, voir « Le coût »
+**État** : Décidée le 2 octobre 2026 (la piste, ce que fait une demande, combien de demandes à la fois) ; cadrée le 3 octobre 2026 (voir « Le cadrage du lot ») ; en construction
 **Portée** : Commun (les noms, les voix et le dessin restent propres à chaque univers)
 
 ## Le constat
@@ -31,7 +31,7 @@ L’étape 2 de [GD-4](GD-4.md) veut des chemins au choix. Le graphe des ouvrage
 
 ### Dans Blocland
 
-Aucune forme nouvelle : les liaisons du port sont des ouvrages déjà connus (bac de préférence, pont, sentier), en cubes et sur la grille, dans le plafond (80 000 triangles, 240 appels), de jour comme de nuit ; les empreintes et les captures sont refaites et relues comme une correction voulue. Les petits ouvrages sont des cubes posés sur les cases d’un plan, dans les matières existantes, avec une forme d’`architect.ts` ou un objet du même genre (puits, étal, lanterne en blocs) ; le consultant propose une liste par île au directeur artistique. Le signe de la créature est un saut ou une rotation par crans, sans halo. Au lot : le cadrage de Blocland (« Les ouvrages ») et sa fiche sont mis à jour par le consultant.
+Aucune forme nouvelle : les liaisons du port sont des ouvrages déjà connus (bac de préférence, pont, sentier), en cubes et sur la grille, dans le plafond (80 000 triangles, 240 appels), de jour comme de nuit ; les empreintes et les captures sont refaites et relues comme une correction voulue. Les petits ouvrages sont des cubes posés sur les cases d’un plan, dans les matières existantes, avec une forme d’`architect.ts` ou un objet du même genre (puits, étal, lanterne en blocs) ; le consultant propose une liste par île au directeur artistique. Le signe de la créature est le saut lent et la plaque des révisions, avec l’image du bloc demandé, sans halo. Au lot : le cadrage de Blocland (« Les ouvrages ») et sa fiche sont mis à jour par le consultant.
 
 ### Dans Archipéo
 
@@ -49,6 +49,27 @@ Un lot à part, après ceux de GD-6. À cadrer dans le lot :
 - **Les textes** : le manuel (les ouvrages, la Carte), Mes blocs, `docs/ux-ui/bonnes-pratiques.md`, les mots de chaque univers.
 - **Les captures** : la Carte avec trois îles et trois demandes, sur tablette et téléphone, à la plus grande taille et en vue simple, relues par le référent dys et le consultant UX UI.
 - Sauvegarde non touchée.
+
+## Le cadrage du lot
+
+**Les choix du mainteneur** (3 octobre 2026, écrits « 1a 2a 3b 4b », puis « 4a finalement ») :
+
+1. **L’étoile part du couple de départ** en 6e : la Plaine des nombres et la Forêt des sons, déjà reliées, font ensemble le port.
+2. **On livre chez l’habitant** : « Y aller » mène sur son île, puis « Livrer » se touche dans le panneau de l’île, au même endroit que « Construire ».
+3. **« La matière la moins jouée »** se mesure en missions réussies par matière, divisées par le nombre d’îles de la matière dans la classe.
+4. **Les liaisons du port valent pour les deux univers** : leurs empreintes dans Archipéo sont refaites comme une correction voulue.
+
+Le même jour : les deux îles d’anglais que la géographie ferme au port (le Manoir du passé en 5e, le Théâtre des voix en 4e : un monument, l’îlot d’un Gardien ou une baleine sur tous les tracés) restent sans liaison directe, à une liaison d’une île reliée au port (« 1a ») ; dans Archipéo, les enveloppes de la construction et du sol sont relevées pour les liaisons du port (« 2a »).
+
+**Les arbitrages du directeur artistique** (Aligné, 3 octobre 2026) :
+
+- **Les liaisons** : bacs en contour acceptés, qui longent l’archipel ; la Carrière à l’écart de la jetée ; le Théâtre sans élargir le cadre du monde ; la nuit, une lanterne à chaque bout seulement ; sur un bac de plus de 36 cases, un poteau toutes les quatre cases ; le plafond de Blocland ne change pas.
+- **La caméra** : le bonhomme prend le chemin le plus court en cases ; au-delà de 36 cases sur un ouvrage, la caméra se pose sur un cadre qui tient le départ et l’arrivée, et le bonhomme traverse ; la vue d’ensemble cadre les liaisons du port dès le départ.
+- **Les mots de Blocland** : « commande » (« demande » est la mission depuis GD-5) et « petite construction » (dans Blocland, « ouvrage » est réservé aux liaisons), nommée par son objet (« le puits de Tunel ») ; la liste des petites constructions de la 6e est validée si chaque bloc vient d’une autre île ; celles de la 5e à la 3e lui sont soumises.
+- **Le signe** : l’habitant qui a une commande reprend le signe des révisions, le saut lent puis la plaque carrée claire et fixe, avec l’image du bloc demandé (celle de Mes blocs) ; un seul signe par créature : la commande prête et suggérée d’abord, sinon la révision ; prête mais pas suggérée, pas de signe.
+- **La Carte** (proposition du consultant UX UI validée) : liaisons ouvertes en trait plein, payables en fantôme, la suggérée avec la flèche jaune et une icône ; les commandes pas sur la Carte ; l’état de chaque île en mots.
+
+**Le découpage** : PR 1, les liaisons du port, leurs prix, les conditions de Gardien retirées et la traversée ; PR 2, la suggestion qui suit l’élève ; PR 3, les commandes et les petites constructions.
 
 ## Les avis
 
