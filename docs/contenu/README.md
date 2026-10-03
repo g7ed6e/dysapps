@@ -113,7 +113,7 @@ Changer un nom, une XP ou une réplique se fait ici seulement. La forme du bâti
 
 ## Les demandes
 
-Après ses plans, le fichier d’une île de français, de maths ou d’anglais finit par la commande de son habitant ([GD-7](../gameplay/propositions/GD-7.md), points 4 et 5), sous le titre `## Les demandes` (les îles de LV2 n’en ont pas). Livrée, la commande pose une petite construction chez la créature. `npm run contenu` les écrit toutes dans `src/blocland/world/requests.json`, dans l’ordre de `archipel.md` :
+Après ses plans, le fichier d’une île de français, de maths ou d’anglais finit par la commande de son habitant ([GD-7](../gameplay/propositions/archives/GD-7.md), points 4 et 5), sous le titre `## Les demandes` (les îles de LV2 n’en ont pas). Livrée, la commande pose une petite construction chez la créature. `npm run contenu` les écrit toutes dans `src/blocland/world/requests.json`, dans l’ordre de `archipel.md` :
 
 ```md
 ## Les demandes
