@@ -27,7 +27,7 @@ import {
 } from '../world/scene';
 import { islandCenter } from '../world/terrain';
 import { drawIslandLabel, drawMapArrow, measureIslandLabel } from '../world/labelCanvas';
-import { boitesDuTrace, placerAvecLaFlecheDOuvrage, placerEtiquettes, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
+import { PLACES_DE_LA_FLECHE_MAX, boitesDuTrace, placerAvecLaFlecheDOuvrage, placerEtiquettes, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
 import { COUCHES_DU_TIRET } from '../world/traceSuggere';
 import { VEHICLE_DECK } from '../world/harbour';
 import { vehiclePath } from '../world/voyage';
@@ -917,7 +917,7 @@ export default function WorldCanvas2D({
             : [];
           const vue = { zones, bulles, obstacles, souples, bounds: cadre, gap: 6 * dpr };
           if (mapArrowOuvrage && carte) {
-            const fleches = mapArrowOuvrage.places.map((c) => mapMarks(target, c).arrow).filter((b): b is LabelBox => b !== null);
+            const fleches = mapArrowOuvrage.places.slice(0, PLACES_DE_LA_FLECHE_MAX).map((c) => mapMarks(target, c).arrow).filter((b): b is LabelBox => b !== null);
             labelLayout = { key, ...placerAvecLaFlecheDOuvrage(fleches, boxes, iles, vue, carte) };
           } else labelLayout = { key, fleche: 0, ...placerEtiquettes(boxes, iles, vue, carte) };
         }

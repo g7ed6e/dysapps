@@ -547,8 +547,8 @@ export const PLACES_DE_LA_FLECHE_MAX = 8;
  * se montrent, celui de la destination compris (des étiquettes s'écartent) ; sinon la voulue, et c'est l'étiquette qui
  * se déplace ou se tait, jamais la flèche hors de sa liaison. Seules les `PLACES_DE_LA_FLECHE_MAX` premières places
  * s'essaient. Rend l'indice de la place prise (`fleche`) et le placement des étiquettes. Le calcul (un placement par
- * place essayée, neuf au plus avec celui sans la flèche, deux fois s'il y a un tracé souple) se fait une fois par
- * cadrage, pas image par image.
+ * place essayée, neuf au plus avec celui sans la flèche ; avec un tracé souple, chacun en trois essais au plus :
+ * l'arrivée lourde avec le tracé, le tracé seul, puis sans tracé) se fait une fois par cadrage, pas image par image.
  */
 export function placerAvecLaFlecheDOuvrage(
   toutes: LabelBox[],
