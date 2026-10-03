@@ -71,6 +71,9 @@ vi.mock('./three', () => ({
         La vue revient à son cadrage
       </button>
       <p data-testid="voyage">{voyage ? `${voyage.leg} ${voyage.stage} ${voyage.back ? 'retour' : 'aller'}` : 'aucun'}</p>
+      <button type="button" onClick={() => onIntent({ genre: 'arrivee' })}>
+        Toucher le vide pendant la marche
+      </button>
       <button type="button" onClick={() => onIntent({ genre: 'fin-du-voyage' })}>
         Fin du temps
       </button>
@@ -860,5 +863,56 @@ describe('la pose d’une partie en vague, après « Voir le bâtiment » (GD-6,
     expect(await within(sheet()!).findByText('Partie posée : la cabane de Mousso.')).toBeInTheDocument();
     expect(vu.pose).toBeNull();
     expect(dansLaPartie()).toBe(cases.size);
+  });
+});
+
+describe('une longue traversée (GD-7) : le panneau de l’île d’arrivée attend l’arrivée', () => {
+  const carriere = () => screen.queryByRole('dialog', { name: /^Carrière des mots/ });
+  const bac = 'maths-6e-calculation-french-6e-word-spelling';
+  beforeEach(() => {
+    // De la Plaine à la Carrière par le seul long bac du port.
+    localStorage.setItem('dysapps:game', JSON.stringify({ world: { links: [bac], place: 'maths-6e-calculation' } }));
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+  });
+  afterEach(() => vi.useRealTimers());
+
+  it('fermé pendant la traversée, le cadre prend toute la vue ; ouvert à l’arrivée', () => {
+    const { container } = renderAt('/adventure/french-6e-word-spelling');
+    expect(screen.getByTestId('bonhomme')).toHaveTextContent(/^marche .*french-6e-word-spelling/);
+    expect(carriere()).not.toBeInTheDocument();
+    expect(container.querySelector('.world-page')).not.toHaveClass('has-sheet');
+    expect(screen.getByRole('button', { name: 'Ouvrir le panneau de Carrière des mots' })).toHaveAttribute('aria-pressed', 'false');
+    act(() => void vi.advanceTimersByTime(1000));
+    expect(carriere()).not.toBeInTheDocument();
+    // Jamais plus de six secondes de marche.
+    act(() => void vi.advanceTimersByTime(5000));
+    expect(carriere()).toBeInTheDocument();
+    expect(container.querySelector('.world-page')).toHaveClass('has-sheet');
+  });
+
+  it('un toucher dans le vide le fait arriver tout de suite : le panneau s’ouvre', () => {
+    renderAt('/adventure/french-6e-word-spelling');
+    expect(carriere()).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Toucher le vide pendant la marche' }));
+    expect(carriere()).toBeInTheDocument();
+  });
+
+  it('le bouton de l’île ouvre le panneau qui attendait', () => {
+    renderAt('/adventure/french-6e-word-spelling');
+    fireEvent.click(screen.getByRole('button', { name: 'Ouvrir le panneau de Carrière des mots' }));
+    expect(carriere()).toBeInTheDocument();
+  });
+
+  it('« Réduire les animations » : le panneau s’ouvre tout de suite', () => {
+    demanderMoinsDAnimations();
+    renderAt('/adventure/french-6e-word-spelling');
+    expect(carriere()).toBeInTheDocument();
+  });
+
+  it('un trajet ordinaire ne change pas : le panneau s’ouvre au départ', () => {
+    localStorage.setItem('dysapps:game', JSON.stringify({ world: { links: [], place: 'maths-6e-calculation' } }));
+    renderAt('/adventure/french-6e-phonology');
+    expect(screen.getByTestId('bonhomme')).toHaveTextContent(/^marche .*french-6e-phonology/);
+    expect(sheet()).toBeInTheDocument();
   });
 });

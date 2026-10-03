@@ -153,7 +153,7 @@ export default function WorldCanvas2D({
     burst: burstEnAncrage,
   });
   // Les gestes deviennent des intentions (world/view.ts) : la vue garde ses rappels, tirés d'elles.
-  const { onPickIsland, onPickBridge, onPickQuest, onPickPlace, onPickCreature, onPickVehicle, build, onVoyageLegEnd, onVoyageSkip } = rappelsDeLaVue(
+  const { onPickIsland, onPickBridge, onPickQuest, onPickPlace, onPickCreature, onPickVehicle, build, onVoyageLegEnd, onVoyageSkip, onArrive } = rappelsDeLaVue(
     onIntent,
     archipelago,
     chantier,
@@ -182,7 +182,7 @@ export default function WorldCanvas2D({
   // Le palier de lumière de la 2D peinte (la boucle le relit chaque image ; un changement repeint le terrain).
   const palier = useRef(palierDe(forceDay ? 1 : daylight().light));
   // Ce que la vue reçoit, lu au moment du geste ou de l'image (sans reconstruire la scène).
-  const latest = { avatar: Boolean(avatar), onPickVehicle, onPickIsland, onPickBridge, onPickQuest, onPickPlace, onPickCreature, build, onVoyageLegEnd, onVoyageSkip, map, home, focus: focus.island, focusSpot: focus.spot ?? null, archipelago, vehicle, marker, trail, quests, forceDay, islandLabels };
+  const latest = { avatar: Boolean(avatar), onPickVehicle, onPickIsland, onPickBridge, onPickQuest, onPickPlace, onPickCreature, build, onVoyageLegEnd, onVoyageSkip, onArrive, map, home, focus: focus.island, focusSpot: focus.spot ?? null, archipelago, vehicle, marker, trail, quests, forceDay, islandLabels };
   const props = useRef(latest);
   props.current = latest;
   const terrain = useRef<{
@@ -379,7 +379,7 @@ export default function WorldCanvas2D({
       const p = props.current;
       // Pendant le voyage, un tap n'importe où fait arriver tout de suite ; pendant un trajet, le bonhomme arrive.
       if (voyageRef.current) return p.onVoyageSkip?.();
-      if (finishWalk(hero.current.walk, performance.now())) return;
+      if (finishWalk(hero.current.walk, performance.now())) return p.onArrive?.();
       const hit = hitAt(e);
       if (hit) {
         const { sx, sy } = toCanvas(e);

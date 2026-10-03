@@ -93,7 +93,7 @@ export default function WorldCanvas({
     burst: burstEnAncrage,
   });
   // Les gestes deviennent des intentions (world/view.ts) : la vue garde ses rappels, tirés d'elles.
-  const { onPickIsland, onPickBridge, onPickQuest, onPickPlace, onPickCreature, onPickVehicle, build, onVoyageLegEnd, onVoyageSkip } = rappelsDeLaVue(
+  const { onPickIsland, onPickBridge, onPickQuest, onPickPlace, onPickCreature, onPickVehicle, build, onVoyageLegEnd, onVoyageSkip, onArrive } = rappelsDeLaVue(
     onIntent,
     archipelago,
     chantier,
@@ -108,6 +108,8 @@ export default function WorldCanvas({
   pickVehicleRef.current = onPickVehicle;
   const voyageSkipRef = useRef(onVoyageSkip);
   voyageSkipRef.current = onVoyageSkip;
+  const arriveRef = useRef(onArrive);
+  arriveRef.current = onArrive;
   /** Le voyage en cours dans la scène : son temps (départ ou arrivée), son début, où l'on en est. */
   const voyageRef = useRef<VoyageRun | null>(null);
   /** Le navire amarré : son origine dans le monde et les cases fantômes que l'on peut poser. */
@@ -365,7 +367,7 @@ export default function WorldCanvas({
       // décide, depuis là où il en est : `enRoute`) ; une cible garde sa priorité.
       const now = performance.now();
       const marche = personnages.marche;
-      if (!creature && !hit && finishWalk(marche, now)) return;
+      if (!creature && !hit && finishWalk(marche, now)) return arriveRef.current?.();
       const ici = enRoute(marche, now) ? walkPose(marche, now) : null;
       const enRouteIci = ici ? { x: ici.x, y: ici.y, z: ici.z } : undefined;
       if (creature && vehicleRef.current && isInside(creature.object, navire.groupe)) {

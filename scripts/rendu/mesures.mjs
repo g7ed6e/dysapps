@@ -240,8 +240,9 @@ const CAPTURES = [
   { nom: 'trois-bandes-assemblage-nuit', vue: 'île', famille: 'trois-bandes', ile: 'french-6e-phonology', partie: 'un-plan', nuit: true, finesse: 2 },
   // Le port en étoile (GD-7, famille `etoile`, lot en cours) : une longue traversée en cours, de la Plaine à la Carrière
   // par le long bac du port (`allerA` : l'île touchée une fois la scène prête, `pasEnPlus` : le bonhomme au milieu du bac ;
-  // le pont de la Mine retiré, sinon le plus court passe par lui), panneau de la Carrière ouvert, en tablette, en
-  // portrait et en téléphone au grand texte ; la vue de l'archipel au départ (`depart` : une partie neuve, les liaisons
+  // le pont de la Mine retiré, sinon le plus court passe par lui), le panneau de la Carrière fermé (il attend l'arrivée,
+  // le cadre fixe prend toute la vue), en tablette, en portrait et en téléphone au grand texte ; une longue traversée
+  // sur le pont du Phare au Château des hypothèses (3e), en tablette ; la vue de l'archipel au départ (`depart` : une partie neuve, les liaisons
   // du port à construire, la Carte : la vue d'ensemble) ; le panneau de la Plaine au départ avec 4 blocs (quatre ouvrages
   // constructibles, un seul « Construire » principal), en téléphone au grand texte, défilé jusqu'au bouton principal, puis
   // en hauteur pour voir toute la liste ; les deux ponts du Phare (3e) de près, de jour et de nuit.
@@ -259,6 +260,7 @@ const CAPTURES = [
     pasEnPlus: 24,
     ...autres,
   })),
+  { nom: 'etoile-traversee-3e', vue: 'île', famille: 'etoile', ile: 'maths-3e-functions', allerA: 'english-3e-grammar', pasEnPlus: 24 },
   { nom: 'etoile-depart', vue: 'carte', famille: 'etoile', ile: 'maths-6e-calculation', depart: true },
   ...[
     { suffixe: '', taille: { width: 390, height: 844 }, voir: '.bridges-list .button.primary' },

@@ -50,9 +50,23 @@ export function avatarWalk(avatar: Bonhomme<Cell>, now: number, archipel?: Archi
   const walk = startWalk(route, now, avatar.seq === 0 ? 0 : walkDuration(route));
   if (avatar.flanerie) walk.flanerie = true;
   if (avatar.vise) walk.vise = true;
-  const cadre = archipel && !avatar.flanerie && route.length > BAC_LONG ? cadreDeTraversee(archipel, route) : null;
+  const cadre = archipel ? cadreDuTrajet(avatar, archipel) : null;
   if (cadre) walk.cadre = cadre;
   return walk;
+}
+
+/** Le cadre fixe d'un trajet qui prend une longue traversée (hors flânerie et premier placement), sinon `null`. */
+function cadreDuTrajet(avatar: Bonhomme<Cell>, archipel: ArchipelagoId): CadreDeCases | null {
+  const { route } = avatar;
+  return avatar.seq !== 0 && !avatar.flanerie && route.length > BAC_LONG ? cadreDeTraversee(archipel, route) : null;
+}
+
+/**
+ * Le trajet `avatar` (en cases du monde) prend une longue traversée, à cadre fixe (GD-7) : le panneau de l'île d'arrivée
+ * attend qu'il soit arrivé (WorldPage.tsx), sauf avec « Réduire les animations ». Les trajets ordinaires, non.
+ */
+export function estUneLongueTraversee(avatar: Bonhomme<Cell>, archipel: ArchipelagoId): boolean {
+  return cadreDuTrajet(avatar, archipel) !== null;
 }
 
 /** Le bonhomme est encore en route. */
