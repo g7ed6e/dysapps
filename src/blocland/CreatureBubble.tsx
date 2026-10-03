@@ -12,16 +12,19 @@ interface Props {
   text: string;
   /** Lit le message à l'arrivée si la lecture automatique est activée (une seule consigne à la fois). */
   autoSpeak?: boolean;
+  /** Ce qui se lit juste après le message, dans la même lecture (la proposition de la créature qui se souvient). */
+  ensuite?: string;
 }
 
 /** La créature du biome parle : une bulle courte, lue à voix haute, relançable au haut-parleur. */
-export function CreatureBubble({ biome, text, autoSpeak = true }: Props) {
+export function CreatureBubble({ biome, text, autoSpeak = true, ensuite }: Props) {
   const { settings, speak } = useSettings();
   const textes = useTextes();
   const spoken = frenchTypography(text);
 
   useEffect(() => {
-    if (autoSpeak && settings.autoRead) speak(spoken);
+    // Une seule lecture : l'accueil, puis la suite (pas deux voix qui se coupent).
+    if (autoSpeak && settings.autoRead) speak(ensuite ? `${spoken} ${ensuite}` : spoken);
     // Relu seulement quand le message change.
   }, [spoken]);
 

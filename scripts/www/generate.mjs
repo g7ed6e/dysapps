@@ -1000,6 +1000,10 @@ function baremePage(d) {
           'Blocs d’une mission du portail (école du village)',
           `${PORTAL_BLOCKS} × le score, jamais 0 dès une bonne réponse, mêmes bonus d’étoiles et de première fois ; des blocs de l’île de l’école de l’archipel où se tient le bonhomme (${d.ARCHIPELAGOS.map((a) => `${d.BIOMES.find((b) => b.id === a.school).name} en ${a.classe}`).join(', ')}) ; la mission compte pour la régularité, pas pour les étoiles ni les Gardiens`,
         ],
+        [
+          'Blocs d’une révision (une mission qui a des questions à revoir aujourd’hui)',
+          `toujours autant qu’une mission sans faute (la base de la mission, +${d.engine.blocksBonus(3, false).stars} des trois étoiles), quel que soit le score : ni le joker ni les erreurs n’en retirent`,
+        ],
         ['XP', '+50 % sans aide ni erreur'],
         ['Répétition espacée des items ratés', `J+${INTERVALS.join(', J+')} ; sortie après ${GRADUATE_AT} réussites d’affilée`],
         ['Régularité', `un coffre de ${CHEST_BLOCKS} blocs tous les ${CHEST_EVERY} jours de suite ; la série se fissure après un jour manqué, réparable le lendemain`],

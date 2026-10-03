@@ -5,6 +5,7 @@ import { BLOCLAND } from './blocland';
 import { useUniversChoisi } from '../core/SettingsContext';
 import { universAffiche } from '../core/univers';
 import type { Tier } from '../core/progress';
+import { RAPPEL } from './communs';
 import type { TextesUnivers, UniversId } from './types';
 
 export type { TextesUnivers, UniversId } from './types';
@@ -39,4 +40,9 @@ export function texteDuSucces(textes: TextesUnivers, succes: { id: string; title
 /** Le nom d'un rôle dans un univers (« Maçon »). */
 export function nomDuRole(textes: TextesUnivers, tier: Tier): string {
   return textes.roles[tier];
+}
+
+/** Ce que dit la créature qui propose les révisions dues de son île (GD-4, étape 1) : la phrase de l'univers, sinon la commune. */
+export function rappelDeLaCreature(textes: TextesUnivers, mission: string): string {
+  return (textes.rappel ?? RAPPEL)(mission);
 }

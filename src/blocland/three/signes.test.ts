@@ -1,0 +1,132 @@
+// Le signe de la créature dans la scène 3D (GD-4, étape 1), sans WebGL : le geste une fois à l'arrivée de la caméra sur
+// l'île, l'icône ensuite, un seul appel de dessin pour toutes, rien sur la Carte, et rien que l'icône avec « Réduire les
+// animations ».
+import * as THREE from 'three';
+import type { BiomeId } from '../biomes';
+import { GESTE_DU_SIGNE } from '../world/signe';
+import type { Derniers, Instant, Monde } from './partie';
+import type { Personnages } from './personnages';
+import { HABILLAGES } from '../habillage';
+import { creerSignes, dessinerLaCase } from './signes';
+
+const FORET: BiomeId = 'french-6e-phonology';
+const MINE: BiomeId = 'french-6e-letter-confusion';
+
+function scene() {
+  // jsdom ne dessine pas dans un canvas : la texture reste vide, le reste se vérifie.
+  vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null);
+  const monde = { scene: new THREE.Scene(), habillage: HABILLAGES.blocland } as unknown as Monde;
+  const el = { clientHeight: 768 } as HTMLElement;
+  const camera = new THREE.PerspectiveCamera(40, 4 / 3, 0.5, 1000);
+  camera.position.set(0, 20, -30);
+  camera.lookAt(0, 0, 0);
+  const faireSigne = vi.fn();
+  const personnages = {
+    faireSigne,
+    teteDe: (_id: BiomeId, out: THREE.Vector3) => (out.set(0, 3, 0), true),
+  } as unknown as Personnages;
+  const derniers = { current: { carte: false, focus: { island: FORET, seq: 1 }, home: null, forceDay: false, whalePass: null, sons: false } as Derniers };
+  const instant = { now: 0, marche: false, navigue: null, carte: false, but: { target: new THREE.Vector3(), pos: new THREE.Vector3() } } as Instant;
+  const signes = creerSignes(monde, el, camera, personnages, derniers, instant);
+  return { monde, signes, faireSigne, derniers, instant };
+}
+
+afterEach(() => vi.restoreAllMocks());
+
+it('à l’arrivée sur l’île, un seul geste, puis l’icône ; toutes les icônes en un appel de dessin', () => {
+  const { monde, signes, faireSigne, derniers, instant } = scene();
+  signes.poser([
+    { id: FORET, icone: 'tree' },
+    { id: MINE, icone: 'pickaxe' },
+  ]);
+  instant.now = 1000;
+  signes.animer!(0, 0, false);
+  expect(faireSigne).toHaveBeenCalledTimes(1);
+  expect(faireSigne).toHaveBeenCalledWith(FORET, 1000 + GESTE_DU_SIGNE.attenteMs);
+  // Pendant le geste : l'icône de la Forêt attend ; celle de la Mine (pas d'arrivée chez elle) est là.
+  expect(signes.maillage.visible).toBe(true);
+  expect(signes.maillage.geometry.drawRange.count).toBe(6);
+  // Le geste fini : les deux icônes, dans le même maillage.
+  instant.now = 1000 + GESTE_DU_SIGNE.attenteMs + GESTE_DU_SIGNE.dureeMs;
+  signes.animer!(0, 0, false);
+  expect(signes.maillage.geometry.drawRange.count).toBe(12);
+  expect(monde.scene.children.filter((o) => o instanceof THREE.Mesh)).toHaveLength(1);
+  // Le geste ne se répète pas : la même île cadrée de nouveau, rien de plus.
+  derniers.current.focus = { island: FORET, seq: 2 };
+  signes.animer!(0, 0, false);
+  expect(faireSigne).toHaveBeenCalledTimes(1);
+  // L'icône ne se touche pas (c'est la créature qu'on touche).
+  const touche: THREE.Intersection[] = [];
+  signes.maillage.raycast(new THREE.Raycaster(), touche);
+  expect(touche).toHaveLength(0);
+});
+
+it('rien sur la Carte', () => {
+  const { signes, faireSigne, derniers } = scene();
+  derniers.current.carte = true;
+  signes.poser([{ id: FORET, icone: 'tree' }]);
+  signes.animer!(0, 0, false);
+  expect(faireSigne).not.toHaveBeenCalled();
+  expect(signes.maillage.visible).toBe(false);
+});
+
+it('avec « Réduire les animations » : pas de geste, l’icône tout de suite', () => {
+  const { signes, faireSigne } = scene();
+  signes.poser([{ id: FORET, icone: 'tree' }]);
+  signes.animer!(0, 0, true);
+  expect(faireSigne).not.toHaveBeenCalled();
+  expect(signes.maillage.visible).toBe(true);
+  expect(signes.maillage.geometry.drawRange.count).toBe(6);
+});
+
+it('sans révision due, rien n’est dessiné, et tout se libère', () => {
+  const { monde, signes } = scene();
+  signes.poser([]);
+  signes.animer!(0, 0, false);
+  expect(signes.maillage.visible).toBe(false);
+  const geometrie = vi.spyOn(signes.maillage.geometry, 'dispose');
+  signes.dispose();
+  expect(geometrie).toHaveBeenCalled();
+  expect(monde.scene.children).toHaveLength(0);
+});
+
+it('dans Blocland, une plaque carrée aux coins presque droits ; dans Archipéo, le disque', () => {
+  const traceur = () => {
+    const appels: string[] = [];
+    const ctx = new Proxy({} as Record<string, unknown>, {
+      get: (cible, nom: string) => cible[nom] ?? ((...args: unknown[]) => void appels.push(`${nom}:${args.join(',')}`)),
+      set: (cible, nom: string, valeur) => ((cible[nom] = valeur), true),
+    }) as unknown as CanvasRenderingContext2D;
+    return { ctx, appels };
+  };
+  expect(HABILLAGES.blocland.signe).toBe('plaque');
+  expect(HABILLAGES.archipeo.signe).toBe('disque');
+  const plaque = traceur();
+  dessinerLaCase(plaque.ctx, 0, 'tree', 'plaque');
+  // Quatre côtés droits, quatre petits coins (rayon de 6 sur une case de 128), aucun cercle.
+  expect(plaque.appels.filter((a) => a.startsWith('lineTo'))).toHaveLength(4);
+  const coins = plaque.appels.filter((a) => a.startsWith('arcTo'));
+  expect(coins).toHaveLength(4);
+  expect(coins.every((a) => a.endsWith(',6'))).toBe(true);
+  expect(plaque.appels.some((a) => a.startsWith('arc:'))).toBe(false);
+  const disque = traceur();
+  dessinerLaCase(disque.ctx, 0, 'tree', 'disque');
+  expect(disque.appels.some((a) => a.startsWith('arc:'))).toBe(true);
+  expect(disque.appels.some((a) => a.startsWith('arcTo'))).toBe(false);
+});
+
+it('la hauteur de la vue ne se lit pas dans le DOM image par image : le redimensionnement la donne', () => {
+  const { signes, instant } = scene();
+  signes.poser([{ id: FORET, icone: 'tree' }]);
+  instant.now = 1;
+  signes.animer!(0, 0, true);
+  const taille = () => {
+    const p = signes.maillage.geometry.getAttribute('position');
+    return Math.abs(p.getX(1) - p.getX(0)) + Math.abs(p.getZ(1) - p.getZ(0));
+  };
+  const avant = taille();
+  // La vue deux fois plus haute : la plaque garde ses 40 px, donc deux fois plus petite dans le monde.
+  signes.redimensionner(768 * 2);
+  signes.animer!(0, 0, true);
+  expect(taille()).toBeCloseTo(avant / 2, 5);
+});

@@ -14,6 +14,7 @@ import { useBlocland } from './BloclandContext';
 import { ArchipelsSheet } from './ArchipelsSheet';
 import { InventorySheet } from './Inventory';
 import { IslandSheet } from './IslandSheet';
+import { creaturesQuiFontSigne, usePlusTard } from './rappels';
 import { SCHOOL_PATH, SCHOOL_TITLE, SchoolSheet } from './School';
 import { MonumentSheet, MonumentsSheet } from './Monuments';
 import { useMonumentBuilder } from './useMonumentBuilder';
@@ -160,6 +161,12 @@ export function WorldPage() {
       ...guardianPlacements(a, state.progress, state.world.links, sentinelles).map((c) => (eteints.split(',').includes(c.id) ? { ...c, beaten: false } : c)),
     ],
     [a, state.progress, state.world.links, sentinelles, eteints],
+  );
+  // La créature qui se souvient (GD-4, étape 1) : celles dont l'île a des révisions dues font signe, sauf après « Plus tard ».
+  const { remises } = usePlusTard();
+  const signes = useMemo(
+    () => creaturesQuiFontSigne(state.spaced, state.world.links, a, remises, settings.lv2),
+    [state.spaced, state.world.links, a, remises, settings.lv2],
   );
   // La disposition en grille (world/grille.ts) : où sont les îles, les bornes, les ouvrages, et les trajets du bonhomme,
   // qui suit le sol et contourne arbres, bornes, maisons et créatures.
@@ -858,6 +865,7 @@ export function WorldPage() {
             archipelago={a}
             cubes={cubesVus}
             creatures={creatures}
+            signes={voyage ? undefined : signes}
             focus={focus}
             reduceMotion={reduceMotion}
             forceDay={forceDay}

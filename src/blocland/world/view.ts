@@ -1,7 +1,7 @@
 // Le contrat commun des vues du monde de Blocland : la 3D (three/WorldCanvas.tsx) et la 2D (à venir).
 // WorldPage ne connaît que ce contrat : il choisit la vue, le reste (panneaux, voyages, chantier) ne change pas.
 import type { IslandStateId } from './islandState';
-import type { BiomeId } from '../biomes';
+import type { BiomeDef, BiomeId } from '../biomes';
 import type { PlaceId, VoxelCube } from './cube';
 import type { ArchipelagoId } from './archipelago';
 import type { VehiclePlacement } from './terrain';
@@ -89,6 +89,12 @@ export interface IslandLabel {
   state?: { id: IslandStateId; name: string };
 }
 
+/** Une créature qui fait signe (GD-4, étape 1) : celle de cette île, avec l'icône de la notion (celle de l'île). */
+export interface SigneDeCreature {
+  id: BiomeId;
+  icone: BiomeDef['icon'];
+}
+
 export interface WorldViewProps {
   /** L'archipel affiché : la scène (mer, brume, baleines, cadrage) est la sienne. */
   archipelago: ArchipelagoId;
@@ -109,6 +115,12 @@ export interface WorldViewProps {
   voyage?: { seq: number; leg: VoyageLeg; stage: 1 | 2 | 3; back: boolean } | null;
   /** Les créatures, animées à part du terrain. */
   creatures?: CreaturePlacement[];
+  /**
+   * Les créatures qui font signe (GD-4, étape 1 : des révisions dues sur leur île) : un geste lent et court à l'arrivée
+   * de la caméra sur leur île, puis l'icône de la notion au-dessus d'elles, fixe (./signe.ts). La 2D n'en dessine rien :
+   * la vue simple montre l'icône sur la Carte.
+   */
+  signes?: SigneDeCreature[];
   /** Ignorer l'heure réelle : toujours en plein jour. */
   forceDay?: boolean;
   /** Les ouvrages construits : la vue d'ensemble cadre les îles ouvertes et leurs voisines. */

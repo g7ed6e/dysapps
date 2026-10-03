@@ -22,6 +22,7 @@ import { creerLarge } from './large';
 import { creerBornes, type Bornes } from './bornes';
 import { creerEtiquettes, type Etiquettes } from './etiquettes';
 import { creerPersonnages, type Personnages } from './personnages';
+import { creerSignes, type Signes } from './signes';
 import { creerCubes, type Cubes } from './cubes';
 import { creerNavire, type Amarre, type Navire } from './navire';
 import { creerCamera, type Camera } from './camera';
@@ -44,6 +45,7 @@ interface Scene3D {
   bornes: Bornes;
   etiquettes: Etiquettes;
   personnages: Personnages;
+  signes: Signes;
   cubes: Cubes;
   navire: Navire;
   /** Efface le décalage de l'élève et le dit à la page. */
@@ -56,6 +58,7 @@ export default function WorldCanvas({
   focus: focusEnAncrages,
   reduceMotion = false,
   creatures = [],
+  signes = [],
   forceDay = false,
   bridges = [],
   marker: markerEnAncrage = null,
@@ -181,10 +184,11 @@ export default function WorldCanvas({
     const cubesDuMonde = creerCubes(monde, large, lumiere, instant);
     const navire = creerNavire(monde, personnages, cubesDuMonde, derniers, instant, vehicleRef, voyageRef);
     const rond = creerRond(monde, personnages, () => cubesDuMonde.champ(), lumiere, instant);
+    const signesDesCreatures = creerSignes(monde, el, camera, personnages, derniers, instant);
     // La Carte se cadre dans la place que l'interface laisse libre, autour de la flèche de la destination (DA-31).
     const lecture = { place: lecteurDePlaceLibre(el), destination: () => (bornes.fleche.userData.island as BiomeId | null | undefined) ?? null };
     const cadrage = creerCamera(monde, camera, personnages.avatar, derniers, instant, lecture);
-    world.current = { camera, cadrage, bornes, etiquettes, personnages, cubes: cubesDuMonde, navire, recentrer: () => recentrer() };
+    world.current = { camera, cadrage, bornes, etiquettes, personnages, signes: signesDesCreatures, cubes: cubesDuMonde, navire, recentrer: () => recentrer() };
     // Les captures (scripts/prise-de-vue.mjs) posent la caméra à son cadrage sans attendre son pas : lisible par les
     // scripts, comme le compteur de mesures.
     const pourLesCaptures = { poser: () => cadrage.poser() };
@@ -204,7 +208,7 @@ export default function WorldCanvas({
     /** Ce qui bouge dans le monde, avant la caméra : le bonhomme, puis le navire (qui le fait embarquer et débarquer). */
     const deplacements: PartieDeLaScene[] = [personnages, navire];
     /** Le reste de l'image, dans cet ordre : la caméra suit ce qui a bougé ; les étiquettes se placent pour elle, en dernier. */
-    const parties: PartieDeLaScene[] = [personnages, cadrage, bornes, brume, lumiere, large, navire, cubesDuMonde, rond, etiquettes];
+    const parties: PartieDeLaScene[] = [personnages, cadrage, bornes, brume, lumiere, large, navire, cubesDuMonde, rond, signesDesCreatures, etiquettes];
 
     // Clavier (le canvas prend le focus) : les flèches vont à l'île voisine dans cette direction.
     el.tabIndex = 0;
@@ -419,6 +423,7 @@ export default function WorldCanvas({
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h, false);
+      signesDesCreatures.redimensionner(h);
     };
     const observer = new ResizeObserver(resize);
     observer.observe(el);
@@ -551,6 +556,14 @@ export default function WorldCanvas({
   useEffect(() => {
     world.current?.personnages.poserLesCreatures(creatures);
   }, [creatures]);
+
+  // ---- Les créatures qui font signe (GD-4, étape 1) : un geste à l'arrivée sur leur île, puis l'icône de la notion
+  const signesKey = signes.map((x) => `${x.id}:${x.icone}`).join('|');
+  useEffect(() => {
+    world.current?.signes.poser(signes);
+    // La liste refaite à chaque rendu de la page : on ne repose que si elle change.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [signesKey, reduceMotion, archipelago]);
 
   // ---- Le moment du rallumage (lot 6) : la sentinelle se rallume en fondu, d'un coup avec moins d'animations
   useEffect(() => {

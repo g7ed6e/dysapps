@@ -8,6 +8,7 @@ import { AVATAR_PARTS, AVATAR_SCALE } from '../Avatar';
 import { piedsSur, type ChampDuSol } from '../world/landMesh';
 import { buildMesh } from '../world/mesher';
 import { avatarWalk, startStrolls, strollAt, walkPose, type Stroll, type Walk } from '../world/scene';
+import { hauteurDuSigne } from '../world/signe';
 import type { EnCasesDuMonde, WorldViewProps } from '../world/view';
 import type { Lumiere } from './lumiere';
 import { meshOf } from './maillage';
@@ -30,6 +31,13 @@ export interface Personnages extends PartieDeLaScene {
   poserLesCreatures(creatures: NonNullable<WorldViewProps['creatures']>): void;
   /** Le moment du rallumage (lot 6) : la sentinelle de ce Gardien se rallume en fondu ; `null` : plus de moment. */
   rallumer(id: BiomeId | null, dureeMs: number): void;
+  /** Le geste de la créature qui se souvient (GD-4, étape 1) : un saut lent, qui commence à `debut` (`performance.now`). */
+  faireSigne(id: BiomeId, debut: number): void;
+  /**
+   * Le haut de la tête de la créature de cette île (pas d'un Gardien), au repos, dans `out` ; `false` si elle n'est pas
+   * (encore) dans la scène.
+   */
+  teteDe(id: BiomeId, out: THREE.Vector3): boolean;
 }
 
 /** Le dessin des personnages, dans les groupes du bonhomme et des créatures : en cubes, ou ceux d'Archipéo. */
@@ -44,6 +52,8 @@ export interface Habits {
    * placement ; `null` rend à chaque Gardien le degré de son placement. Les personnages en cubes n'en font rien.
    */
   rallumer?(id: BiomeId | null, dureeMs: number): void;
+  /** Le geste du signe (GD-4, étape 1) ; les personnages d'Archipéo n'en font rien (ils ont déjà leur geste du bras). */
+  faireSigne?(id: BiomeId, debut: number): void;
   dispose(): void;
 }
 
@@ -80,6 +90,8 @@ function habitsEnCubes(monde: Monde, champ: () => ChampDuSol | null, instant: In
   }
   membres.push({ os: arms[0], sens: 1 }, { os: arms[1], sens: -1 }, { os: legs[0], sens: -1 }, { os: legs[1], sens: 1 });
   let walkers: Walker[] = [];
+  /** Le début du geste de chaque créature qui fait signe, gardé quand les créatures sont reposées. */
+  const signes = new Map<BiomeId, number>();
 
   const viderLesCreatures = () => {
     for (const child of [...creaturesGroup.children]) {
@@ -116,8 +128,14 @@ function habitsEnCubes(monde: Monde, champ: () => ChampDuSol | null, instant: In
         const { dx, dy, bob } = strollAt(stroll, instant.now, t);
         const x = stroll.origin.x + dx;
         const y = stroll.origin.y + dy;
-        group.position.set(x, piedsSur(champ(), x + centre.x, y + centre.y, stroll.origin.z) + bob, y);
+        // Le signe : un saut lent, une fois, par-dessus le balancement.
+        const debut = signes.get(group.userData.creature as BiomeId);
+        const saut = debut === undefined || group.userData.kind !== 'creature' ? 0 : hauteurDuSigne(instant.now - debut);
+        group.position.set(x, piedsSur(champ(), x + centre.x, y + centre.y, stroll.origin.z) + bob + saut, y);
       }
+    },
+    faireSigne: (id, debut) => {
+      signes.set(id, debut);
     },
     dispose: () => {
       viderLesCreatures();
@@ -143,6 +161,13 @@ export function creerPersonnages(monde: Monde, champ: () => ChampDuSol | null, i
   scene.add(creaturesGroup);
 
   let habits: Habits | null = null;
+  /** La boîte d'une créature, pour mesurer sa tête une fois (`teteDe`). */
+  const boite = new THREE.Box3();
+  /**
+   * La tête de chaque créature, mesurée une seule fois : son objet et l'écart entre le haut de sa tête et sa position.
+   * Image après image, on ne lit plus que la position (pas de boîte recalculée sur tous ses cubes).
+   */
+  const tetes = new Map<BiomeId, { objet: THREE.Object3D; ecart: THREE.Vector3 }>();
   let places: NonNullable<WorldViewProps['creatures']> | null = null;
   // Le rallumage demandé avant que les personnages d'Archipéo soient chargés.
   let rallumage: { id: BiomeId | null; dureeMs: number } | null = null;
@@ -185,6 +210,24 @@ export function creerPersonnages(monde: Monde, champ: () => ChampDuSol | null, i
       rallumage = { id, dureeMs };
       habits?.rallumer?.(id, dureeMs);
     },
+    faireSigne: (id, debut) => habits?.faireSigne?.(id, debut),
+    teteDe: (id, out) => {
+      let tete = tetes.get(id);
+      // Remesurée seulement si la créature a été reposée ou rhabillée (son objet n'est plus dans la scène).
+      if (!tete || tete.objet.parent !== creaturesGroup) {
+        // L'objet touchable de la créature (son groupe en cubes, ou sa boîte chez les personnages d'Archipéo).
+        const o = creaturesGroup.children.find((c) => c.userData.creature === id && c.userData.kind !== 'guardian');
+        if (!o) return false;
+        boite.setFromObject(o);
+        if (boite.isEmpty()) return false;
+        boite.getCenter(out);
+        out.y = boite.max.y;
+        tete = { objet: o, ecart: out.clone().sub(o.getWorldPosition(new THREE.Vector3())) };
+        tetes.set(id, tete);
+      }
+      tete.objet.getWorldPosition(out).add(tete.ecart);
+      return true;
+    },
     // Le bonhomme marche le long de son itinéraire (à vitesse constante, un petit pas sautillant), puis attend.
     deplacer: (t, _dt, reduit) => {
       instant.marche = false;
@@ -209,6 +252,7 @@ export function creerPersonnages(monde: Monde, champ: () => ChampDuSol | null, i
     },
     dispose: () => {
       fini = true;
+      tetes.clear();
       habits?.dispose();
       habits = null;
       scene.remove(avatarGroup, creaturesGroup);

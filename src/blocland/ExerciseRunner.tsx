@@ -24,6 +24,7 @@ import { useBlocland } from './BloclandContext';
 import type { Completion } from './engine';
 import { levelFor } from './engine';
 import { reviewKeys } from './review';
+import { cheminDeRevision, revisionsDeLIle } from './rappels';
 import { SCREEN_TYPES, retryAllowed, type ScreenAnswer } from './exercises/registry';
 import { autoReadText, dicteeAutoText } from './exercises/lecture';
 import { runItems, runSeed } from './exercises/run';
@@ -44,6 +45,11 @@ interface Props {
   onRound?: (round: { index: number; total: number; correct: boolean }) => void;
   /** La barre des écrans ne dit que où l'on en est, jamais une réussite (le défi d'une sentinelle, lot 6). */
   etapesNeutres?: boolean;
+  /**
+   * Une révision lancée par la créature de l'île (« Reprendre », GD-4, étape 1) : à la fin, la révision suivante de la
+   * même île s'il en reste, sinon le retour sur l'île de la créature.
+   */
+  revisionDeLIle?: boolean;
 }
 
 /** Le carillon de fin (`playDone`) : deux notes, la seconde à 160 ms, de 450 ms ; la voix vient après. */
@@ -71,7 +77,7 @@ export function screensOf(def: ExerciseDef, seed = def.id, review: string[] = []
  * Lanceur d'exercice générique : la consigne reste écrite au-dessus de l'item (et lue à voix haute au début),
  * les écrans défilent un par un, feedback immédiat jamais punitif, puis récompense.
  */
-export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etapesNeutres = false }: Props) {
+export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etapesNeutres = false, revisionDeLIle = false }: Props) {
   const { state, complete, pauseAfterNext, continueSession } = useBlocland();
   const { answer, completeSession } = useProgress();
   const [index, setIndex] = useState(0);
@@ -234,6 +240,8 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
     // À quoi servent les blocs gagnés : le chantier qu'ils font avancer, et « Voir le chantier » qui y mène.
     const site = worksiteFor(done.state, biome.id, done.block);
     const pose = done.pose;
+    // « Reprendre » chez la créature : la révision suivante de l'île, ou le retour sur l'île.
+    const revisionSuivante = revisionDeLIle ? revisionsDeLIle(done.state.spaced, done.state.world.links, biome.id, settings.lv2).find((q) => q.type !== def.type) : undefined;
     return (
       <section className="quiz" ref={sectionRef} aria-labelledby="fin-titre">
         <div className="panel summary reward-panel">
@@ -323,7 +331,11 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
                 <Link ref={suiteRef} to={`/adventure/${biome.id}?worksite=part`} className="button primary" onClick={() => retenirLaPose(biome.id, pose.posees)}>
                   <Icon name="home" /> Voir le bâtiment
                 </Link>
-              ) : site.kind === 'aucun' ? (
+              ) : revisionSuivante ? (
+                <Link ref={suiteRef} to={cheminDeRevision(revisionSuivante)} className="button primary">
+                  <Icon name="chevronRight" /> Révision suivante
+                </Link>
+              ) : revisionDeLIle || site.kind === 'aucun' ? (
                 <Link ref={suiteRef} to={`/adventure/${biome.id}`} className="button primary">
                   <Icon name="map" /> Revenir sur {biome.name}
                 </Link>

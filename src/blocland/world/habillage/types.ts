@@ -47,4 +47,9 @@ export interface Habillage {
    * leurs poussières claires. Archipéo : poussières et « toc » commun.
    */
   pose: 'geste' | 'eclats';
+  /**
+   * Le signe de la créature qui se souvient (GD-4, étape 1), au-dessus d'elle dans le monde : une plaque carrée aux
+   * coins presque droits (un bloc vu de face, décision du directeur artistique du 3 octobre 2026), ou un disque.
+   */
+  signe: 'plaque' | 'disque';
 }
