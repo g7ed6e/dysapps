@@ -72,6 +72,8 @@ Le même jour : les deux îles d’anglais que la géographie ferme au port (le 
 
 **Le découpage** : PR 1, les liaisons du port, leurs prix, les conditions de Gardien retirées et la traversée ; PR 2, la suggestion qui suit l’élève ; PR 3, les commandes et les petites constructions.
 
+**Les précisions de la PR 2** (choix par défaut du fil, 3 octobre 2026, à confirmer à la relecture) : « l’île où l’élève est allé de lui-même » est celle où se tient le bonhomme, tant qu’il y reste une mission jamais jouée ou un objectif prêt ; l’ouvrage suggéré se choisit parmi ceux qu’on peut construire et qui ouvrent une île, depuis n’importe quelle île ouverte de l’archipel, les îles de LV2 en dernier, puis ceux qu’on peut payer, puis la matière la moins jouée, l’ordre des matières, le moins cher et l’ordre fixe des ouvrages ; sans ouvrage payable, la suggestion dit ce qu’il manque pour le premier, depuis son île de départ ; le « Construire » principal du pli Ouvrages suit le même ordre.
+
 ## Les avis
 
 - Directeur artistique : a écrit les trois pistes et recommandé le port en étoile.

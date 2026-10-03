@@ -1,10 +1,13 @@
-// Le prochain objectif d'une île, un seul, avec sa jauge : ce qu'il manque pour l'ouvrage le moins cher, ou pour le
-// Bloc-Navire (le bâtiment de l'île se pose tout seul, une partie par mission réussie : GD-6). Code pur, partagé par le panneau d'île. Les noms des archipels viennent de
-// l'appelant (`noms` : ceux de l'univers affiché, GD-1).
-import { blockCount, getBiome, type BiomeId, type BlockId } from '../biomes';
+// Le prochain objectif d'une île, un seul, avec sa jauge : ce qu'il manque pour l'ouvrage suggéré (celui qui ouvre une
+// île de la matière la moins jouée, GD-7), ou pour le Bloc-Navire (le bâtiment de l'île se pose tout seul, une partie par
+// mission réussie : GD-6). Code pur, partagé par le panneau d'île et la prochaine destination. Les noms des archipels
+// viennent de l'appelant (`noms` : ceux de l'univers affiché, GD-1).
+import { BIOMES, blockCount, getBiome, type BiomeDef, type BiomeId, type BlockId } from '../biomes';
+import { LV2_LABELS, lv2Courante } from '../../core/settings';
 import type { GameState } from '../engine';
 import { canLaunch, planStatus } from '../engine';
 import {
+  BRIDGES,
   KIND_NAME,
   archipelagoOf,
   buildableBridges,
@@ -16,10 +19,121 @@ import {
   previousArchipelago,
   reachableIslands,
   remainingVoyages,
+  type ArchipelagoId,
+  type BridgeDef,
   type MotsDesGardiens,
   type NomsArchipels,
 } from './archipelago';
+import { missionsTerminees } from './parties';
 import { VEHICLE_NAME, beatenGuardians, stageAt, stageTo } from './vehicle';
+
+type Matiere = BiomeDef['subject'];
+
+/** L'ordre des matières à égalité : celui de docs/contenu/archipel.md (français, maths, anglais, puis la LV2). */
+const ORDRE_DES_MATIERES: Matiere[] = ['french', 'maths', 'english', 'lv2'];
+
+/**
+ * Combien chaque matière est jouée dans une classe (GD-7, mesure choisie par le mainteneur le 3 octobre 2026) : les
+ * missions réussies au moins une fois sur ses îles (`missionsTerminees` : ni le défi du Gardien, ni le portail, ni le
+ * mode bâtisseur), divisées par le nombre de ses îles dans la classe, pour qu'une matière n'ait pas l'air moins jouée
+ * parce qu'elle a moins d'îles. La LV2 n'est pas comptée : ses îles passent après les autres. Jamais la réussite (les
+ * étoiles) : une matière moins réussie n'est pas montrée du doigt.
+ */
+export function partJouee(progress: Record<string, { attempts: number }>, classe: ArchipelagoId): Record<Exclude<Matiere, 'lv2'>, number> {
+  const part = { french: 0, maths: 0, english: 0 };
+  for (const matiere of ['french', 'maths', 'english'] as const) {
+    const iles = BIOMES.filter((b) => b.classe === classe && b.subject === matiere);
+    if (iles.length) part[matiere] = iles.reduce((n, b) => n + missionsTerminees(progress, b.id), 0) / iles.length;
+  }
+  return part;
+}
+
+/** L'île où mène un ouvrage : celle qui est fermée (celle qu'il ouvre), sinon celle d'en face depuis `depuis`. */
+function arriveeDe(b: BridgeDef, open: Set<BiomeId>, depuis?: BiomeId): BiomeId {
+  if (!open.has(b.to)) return b.to;
+  if (!open.has(b.from)) return b.from;
+  return depuis ? otherEnd(b, depuis) : b.to;
+}
+
+/**
+ * Les ouvrages proposés, le suggéré d'abord (GD-7, point 3) ; le même tri pour la prochaine destination et pour le seul
+ * « Construire » principal du panneau d'une île. D'abord ceux qui ouvrent une île ; les îles de LV2 après les autres
+ * (elles restent en bout de chemin) ; puis ceux qu'on peut payer ; puis l'île de la matière la moins jouée (`partJouee`) ;
+ * à égalité, l'ordre des matières, puis le moins cher, puis l'ordre de `BRIDGES`. Déduit de la sauvegarde seule, sans
+ * hasard ni horloge : la suggestion ne change pas tant que l'élève n'a rien fait.
+ */
+export function ouvragesParSuggestion(state: GameState, ouvrages: BridgeDef[], depuis?: BiomeId): BridgeDef[] {
+  const open = reachableIslands(state.world.links);
+  const have = payableBlocks(state.stock);
+  const parts = new Map<ArchipelagoId, ReturnType<typeof partJouee>>();
+  const cle = (b: BridgeDef) => {
+    const arrivee = getBiome(arriveeDe(b, open, depuis));
+    const matiere = arrivee?.subject ?? 'lv2';
+    const classe = archipelagoOf(b.from).classe;
+    if (!parts.has(classe)) parts.set(classe, partJouee(state.progress, classe));
+    const part = matiere === 'lv2' ? 0 : parts.get(classe)![matiere];
+    return [
+      arrivee && !open.has(arrivee.id) ? 0 : 1,
+      matiere === 'lv2' ? 1 : 0,
+      have >= b.cost ? 0 : 1,
+      part,
+      ORDRE_DES_MATIERES.indexOf(matiere),
+      b.cost,
+      BRIDGES.indexOf(b),
+    ];
+  };
+  const cles = new Map(ouvrages.map((b) => [b, cle(b)]));
+  return [...ouvrages].sort((a, b) => {
+    const x = cles.get(a)!;
+    const y = cles.get(b)!;
+    const i = x.findIndex((v, k) => v !== y[k]);
+    return i < 0 ? 0 : x[i] - y[i];
+  });
+}
+
+/** « de français », « de maths », « d'anglais », « d'espagnol » : la matière d'une île, dans « une île de… ». */
+function deLaMatiere(matiere: Matiere): string {
+  const mot = { french: 'français', maths: 'maths', english: 'anglais', lv2: LV2_LABELS[lv2Courante()].toLowerCase() }[matiere];
+  return /^[aeiouy]/.test(mot) ? `d’${mot}` : `de ${mot}`;
+}
+
+/**
+ * L'objectif d'un ouvrage vu d'une île qu'il touche : ce qu'il manque, ou qu'on peut le construire, et la raison quand il
+ * ouvre une île (« il ouvre une île d'anglais ») : la matière, jamais une notion ni une note.
+ */
+function objectifDOuvrage(state: GameState, b: BridgeDef, depuis: BiomeId): Goal & { ready: boolean; ouvrage: string } {
+  const open = reachableIslands(state.world.links);
+  const arrivee = getBiome(otherEnd(b, depuis));
+  const what = ouvrageName(b.kind, arrivee?.name ?? b.to);
+  const raison = arrivee && !open.has(arrivee.id) ? ` : il ouvre une île ${deLaMatiere(arrivee.subject)}` : '';
+  const have = Math.min(b.cost, payableBlocks(state.stock));
+  const left = b.cost - have;
+  return {
+    text: `${left > 0 ? `Encore ${left} bloc${left > 1 ? 's' : ''} pour ${what}` : `Tu peux construire ${what}`}${raison}`,
+    have,
+    need: b.cost,
+    ready: left === 0,
+    ouvrage: b.id,
+  };
+}
+
+/**
+ * L'ouvrage suggéré dans un archipel (GD-7) : parmi ceux qu'on peut construire depuis une île ouverte et qui ouvrent une
+ * île, le premier de `ouvragesParSuggestion` ; l'île d'où il part, et son objectif (la phrase et la jauge). `null` quand
+ * plus aucun ouvrage n'ouvre d'île.
+ */
+export function ouvrageSuggere(state: GameState, classe: ArchipelagoId): { ile: BiomeId; goal: Goal } | null {
+  const open = reachableIslands(state.world.links);
+  const world = { progress: state.progress, plans: state.world.parts };
+  const ouvrages = buildableBridges(state.world.links, undefined, world).filter(
+    (b) => archipelagoOf(b.from).classe === classe && conditionMet(b, state.world.links, world) && (!open.has(b.from) || !open.has(b.to)),
+  );
+  const b = ouvragesParSuggestion(state, ouvrages)[0];
+  if (!b) return null;
+  const ile = open.has(b.from) ? b.from : b.to;
+  const goal = objectifDOuvrage(state, b, ile);
+  return { ile, goal: { ...goal, text: `${cap(goal.text)}.` } };
+}
 
 /** « le pont vers la Mine », « l'escalier taillé vers le Carrefour ». */
 function ouvrageName(kind: keyof typeof KIND_NAME, to: string): string {
@@ -54,7 +168,8 @@ function missingBlocks(state: GameState, missing: [BlockId, number][]) {
  * Le prochain objectif d'une île, **un seul** : deux objectifs à la fois (des blocs pour un pont, d'autres pour le
  * navire) mélangeaient deux comptes. Ordre : le Bloc-Navire prêt à partir ; ce qu'on peut faire tout de suite
  * (construire un ouvrage, poser les blocs du navire) ; sinon l'objectif le plus proche (le moins de blocs à gagner),
- * l'ouvrage en cas d'égalité. `null` s'il n'y a rien à dire (île fermée, tout construit).
+ * l'ouvrage en cas d'égalité. L'ouvrage est le suggéré de l'île (`ouvragesParSuggestion`). `null` s'il n'y a rien à
+ * dire (île fermée, tout construit).
  */
 export function nextGoalInfo(state: GameState, island: BiomeId, noms: NomsArchipels, mots: MotsDesGardiens): Goal | null {
   const stage = stageAt(island);
@@ -64,20 +179,8 @@ export function nextGoalInfo(state: GameState, island: BiomeId, noms: NomsArchip
   const candidates: Candidate[] = [];
   const world = { progress: state.progress, plans: state.world.parts };
   const bridges = buildableBridges(state.world.links, island, world).filter((b) => conditionMet(b, state.world.links, world));
-  if (bridges.length) {
-    const cheapest = bridges.reduce((a, b) => (b.cost < a.cost ? b : a));
-    const to = getBiome(otherEnd(cheapest, island))?.name ?? cheapest.to;
-    const have = Math.min(cheapest.cost, payableBlocks(state.stock));
-    const left = cheapest.cost - have;
-    const what = ouvrageName(cheapest.kind, to);
-    candidates.push({
-      text: left > 0 ? `Encore ${left} bloc${left > 1 ? 's' : ''} pour ${what}` : `Tu peux construire ${what}`,
-      have,
-      need: cheapest.cost,
-      ready: left === 0,
-      ouvrage: cheapest.id,
-    });
-  }
+  // L'ouvrage suggéré de l'île, par le même tri que la prochaine destination (GD-7).
+  if (bridges.length) candidates.push(objectifDOuvrage(state, ouvragesParSuggestion(state, bridges, island)[0], island));
   // Le chantier du Bloc-Navire (sur un port, tant que son voyage n'est pas fait).
   if (stage && launch && !launch.ok && launch.reason !== 'construit' && launch.reason !== 'loin') {
     if (launch.reason === 'gardiens') {
