@@ -1,21 +1,37 @@
 # Comparaison avec main
 
-Références : main au commit 9bfe50b811e918d25657b8139e7de9e6313530af (après : d0669dd19c49029bfda22ba83b3dbc2aa5e78cfa). Une vue est changée au-delà de 0,3 % de pixels différents.
+Références : main au commit 9bfe50b811e918d25657b8139e7de9e6313530af (après : c23deef9865848b77433f17411347db4569f1aab). Une vue est changée au-delà de 0,3 % de pixels différents.
 
-## Changées (2) : planches dans `planches/`
+## Changées (6) : planches dans `planches/`
 
-- 6e-archipel.jpg : 0,4 %
-- 6e-ile.jpg : 0,4 %
+- 6e-archipel-nuit.jpg : 5,0 %
+- 6e-archipel.jpg : 5,2 %
+- 6e-carte-nuit.jpg : 34,6 %
+- 6e-carte.jpg : 36,8 %
+- 6e-ile-nuit.jpg : 3,2 %
+- 6e-ile.jpg : 3,3 %
 
-## Inchangées (4) : non publiées
+## Inchangées (0) : non publiées
 
-- 6e-archipel-nuit.jpg : 0,3 %
-- 6e-carte-nuit.jpg : 0,0 %
-- 6e-carte.jpg : 0,1 %
-- 6e-ile-nuit.jpg : 0,2 %
 
-## Sans référence (13) : dans `planches/` telles quelles
+## Sans référence (29) : dans `planches/` telles quelles
 
+- 6e-fiches-borne-grand-texte-800x1280.jpg
+- 6e-fiches-borne-grand-texte.jpg
+- 6e-fiches-borne-paysage.jpg
+- 6e-fiches-borne.jpg
+- 6e-fiches-creature-grand-texte-800x1280.jpg
+- 6e-fiches-creature-grand-texte.jpg
+- 6e-fiches-creature-paysage.jpg
+- 6e-fiches-creature.jpg
+- 6e-fiches-gardien-grand-texte-800x1280.jpg
+- 6e-fiches-gardien-grand-texte.jpg
+- 6e-fiches-gardien-paysage.jpg
+- 6e-fiches-gardien.jpg
+- 6e-fiches-navire-grand-texte-800x1280.jpg
+- 6e-fiches-navire-grand-texte.jpg
+- 6e-fiches-navire-paysage.jpg
+- 6e-fiches-navire.jpg
 - 6e-signes-archipel-paysage.jpg
 - 6e-signes-archipel.jpg
 - 6e-signes-chantier-nuit.jpg
