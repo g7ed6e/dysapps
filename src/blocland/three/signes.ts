@@ -1,6 +1,7 @@
 // Le signe de la créature qui se souvient, dans la scène 3D (GD-4, étape 1 ; le geste et ses temps : world/signe.ts).
 // À l'arrivée de la caméra sur l'île d'une créature qui fait signe, la créature fait un saut lent, une fois ; puis
-// l'icône de la notion se pose au-dessus d'elle : un disque clair cerclé de sombre, l'icône au trait, toujours face à
+// l'icône de la notion se pose au-dessus d'elle : une plaque carrée aux coins presque droits dans Blocland (un bloc vu
+// de face), un disque dans Archipéo (l'habillage, `signe`), claire et cerclée de sombre, l'icône au trait, toujours face à
 // l'écran, de taille fixe, sans brume ni lumière (lisible de jour comme de nuit), qui ne bouge pas et ne clignote pas.
 // Toutes les icônes de l'archipel tiennent en un seul appel de dessin : un maillage de quadrilatères, une texture
 // (une case par icône), refait image par image face à la caméra. Rien sur la Carte ni pendant le voyage.
@@ -10,10 +11,11 @@ import type { AnyIconName } from '../../components/Icon';
 import { tracesDeLIcone } from '../../components/iconeTracee';
 import { GESTE_DU_SIGNE, ICONE_DU_SIGNE, iconeDuSigneVisible } from '../world/signe';
 import type { SigneDeCreature } from '../world/view';
+import type { Habillage } from '../habillage';
 import type { Derniers, Instant, Monde, PartieDeLaScene } from './partie';
 import type { Personnages } from './personnages';
 
-/** Une case de la texture, en pixels (le disque et son icône, assez grands pour un écran à deux pixels par point). */
+/** Une case de la texture, en pixels (la plaque et son icône, assez grandes pour un écran à deux pixels par point). */
 const CASE = 128;
 /** Quatre cases par côté : seize icônes, plus que d'îles dans un archipel. */
 const COTE = 4;
@@ -21,25 +23,45 @@ export const SIGNES_MAX = COTE * COTE;
 /** Les quatre coins d'un quadrilatère, en demi-tailles : bas gauche, bas droite, haut droite, haut gauche. */
 const COINS = [-1, -1, 1, -1, 1, 1, -1, 1] as const;
 
-/** Le disque et le trait (générés ici, rien d'emprunté) : clair et chaud, cerclé et tracé d'un brun presque noir. */
+/** Le fond et le trait (générés ici, rien d'emprunté) : clair et chaud, cerclé et tracé d'un brun presque noir. */
 const FOND = '#fff6e0';
 const ENCRE = '#2b2118';
+/** La marge autour de la plaque dans sa case, et le rayon de ses coins presque droits, en pixels de la case. */
+const MARGE = 6;
+const COIN = 6;
 
 export interface Signes extends PartieDeLaScene {
   /** Les créatures qui font signe (refait quand la liste change). */
   poser(signes: SigneDeCreature[]): void;
   /** Le maillage des icônes (pour les tests et les mesures). */
   readonly maillage: THREE.Mesh;
+  /** La hauteur de la vue, en pixels CSS, donnée au redimensionnement (jamais lue dans le DOM image par image). */
+  redimensionner(hauteur: number): void;
 }
 
-/** Dessine une case : le disque, puis l'icône au trait rond, comme `Icon` (trait de 2,5 sur 24). */
-function dessinerLaCase(ctx: CanvasRenderingContext2D, rang: number, icone: AnyIconName): void {
+/** Le contour d'une plaque carrée aux coins presque droits, en lignes et petits arcs (sans `roundRect`, absent des vieux Safari). */
+function contourDeLaPlaque(ctx: CanvasRenderingContext2D, x: number, y: number, cote: number, r: number): void {
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + cote - r, y);
+  ctx.arcTo(x + cote, y, x + cote, y + r, r);
+  ctx.lineTo(x + cote, y + cote - r);
+  ctx.arcTo(x + cote, y + cote, x + cote - r, y + cote, r);
+  ctx.lineTo(x + r, y + cote);
+  ctx.arcTo(x, y + cote, x, y + cote - r, r);
+  ctx.lineTo(x, y + r);
+  ctx.arcTo(x, y, x + r, y, r);
+  ctx.closePath();
+}
+
+/** Dessine une case : la plaque (ou le disque), puis l'icône au trait rond, comme `Icon` (trait de 2,5 sur 24). */
+export function dessinerLaCase(ctx: CanvasRenderingContext2D, rang: number, icone: AnyIconName, forme: Habillage['signe']): void {
   const x0 = (rang % COTE) * CASE;
   const y0 = Math.floor(rang / COTE) * CASE;
   ctx.save();
   ctx.clearRect(x0, y0, CASE, CASE);
   ctx.beginPath();
-  ctx.arc(x0 + CASE / 2, y0 + CASE / 2, CASE / 2 - 6, 0, Math.PI * 2);
+  if (forme === 'plaque') contourDeLaPlaque(ctx, x0 + MARGE, y0 + MARGE, CASE - 2 * MARGE, COIN);
+  else ctx.arc(x0 + CASE / 2, y0 + CASE / 2, CASE / 2 - MARGE, 0, Math.PI * 2);
   ctx.fillStyle = FOND;
   ctx.fill();
   ctx.lineWidth = 6;
@@ -59,6 +81,9 @@ function dessinerLaCase(ctx: CanvasRenderingContext2D, rang: number, icone: AnyI
 
 export function creerSignes(monde: Monde, el: HTMLElement, camera: THREE.PerspectiveCamera, personnages: Personnages, derniers: { current: Derniers }, instant: Instant): Signes {
   const { scene } = monde;
+  const forme = monde.habillage.signe;
+  /** La hauteur de la vue : lue une fois ici, puis donnée par le redimensionnement de la scène. */
+  let hauteurDeLaVue = el.clientHeight;
   const toile = document.createElement('canvas');
   toile.width = toile.height = CASE * COTE;
   const ctx = toile.getContext('2d');
@@ -103,7 +128,7 @@ export function creerSignes(monde: Monde, el: HTMLElement, camera: THREE.Perspec
     const rang = dessinees++ % SIGNES_MAX;
     // Plus de seize icônes dans la vie de la scène (jamais vu : une scène par archipel) : la case la plus ancienne sert.
     for (const [autre, r] of cases) if (r === rang) cases.delete(autre);
-    if (ctx) dessinerLaCase(ctx, rang, icone);
+    if (ctx) dessinerLaCase(ctx, rang, icone, forme);
     texture.needsUpdate = true;
     cases.set(icone, rang);
     return rang;
@@ -120,6 +145,9 @@ export function creerSignes(monde: Monde, el: HTMLElement, camera: THREE.Perspec
 
   return {
     maillage,
+    redimensionner: (hauteur) => {
+      hauteurDeLaVue = hauteur;
+    },
     poser: (liste) => {
       signes = liste.slice(0, SIGNES_MAX).map((s) => ({ id: s.id, rang: caseDe(s.icone), y: null }));
     },
@@ -144,7 +172,7 @@ export function creerSignes(monde: Monde, el: HTMLElement, camera: THREE.Perspec
       const e = camera.matrixWorld.elements;
       droite.set(e[0], e[1], e[2]).normalize();
       haut.set(e[4], e[5], e[6]).normalize();
-      const pxParUnite = el.clientHeight / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2));
+      const pxParUnite = hauteurDeLaVue / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2));
       let n = 0;
       for (const s of signes) {
         if (!iconeDuSigneVisible(gestes.get(s.id) ?? null, instant.now, reduit) || !personnages.teteDe(s.id, tete)) continue;

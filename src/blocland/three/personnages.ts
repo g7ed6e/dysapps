@@ -161,8 +161,13 @@ export function creerPersonnages(monde: Monde, champ: () => ChampDuSol | null, i
   scene.add(creaturesGroup);
 
   let habits: Habits | null = null;
-  /** La boîte d'une créature, réutilisée image après image (`teteDe`). */
+  /** La boîte d'une créature, pour mesurer sa tête une fois (`teteDe`). */
   const boite = new THREE.Box3();
+  /**
+   * La tête de chaque créature, mesurée une seule fois : son objet et l'écart entre le haut de sa tête et sa position.
+   * Image après image, on ne lit plus que la position (pas de boîte recalculée sur tous ses cubes).
+   */
+  const tetes = new Map<BiomeId, { objet: THREE.Object3D; ecart: THREE.Vector3 }>();
   let places: NonNullable<WorldViewProps['creatures']> | null = null;
   // Le rallumage demandé avant que les personnages d'Archipéo soient chargés.
   let rallumage: { id: BiomeId | null; dureeMs: number } | null = null;
@@ -207,13 +212,20 @@ export function creerPersonnages(monde: Monde, champ: () => ChampDuSol | null, i
     },
     faireSigne: (id, debut) => habits?.faireSigne?.(id, debut),
     teteDe: (id, out) => {
-      // L'objet touchable de la créature (son groupe en cubes, ou sa boîte chez les personnages d'Archipéo).
-      const o = creaturesGroup.children.find((c) => c.userData.creature === id && c.userData.kind !== 'guardian');
-      if (!o) return false;
-      boite.setFromObject(o);
-      if (boite.isEmpty()) return false;
-      boite.getCenter(out);
-      out.y = boite.max.y;
+      let tete = tetes.get(id);
+      // Remesurée seulement si la créature a été reposée ou rhabillée (son objet n'est plus dans la scène).
+      if (!tete || tete.objet.parent !== creaturesGroup) {
+        // L'objet touchable de la créature (son groupe en cubes, ou sa boîte chez les personnages d'Archipéo).
+        const o = creaturesGroup.children.find((c) => c.userData.creature === id && c.userData.kind !== 'guardian');
+        if (!o) return false;
+        boite.setFromObject(o);
+        if (boite.isEmpty()) return false;
+        boite.getCenter(out);
+        out.y = boite.max.y;
+        tete = { objet: o, ecart: out.clone().sub(o.getWorldPosition(new THREE.Vector3())) };
+        tetes.set(id, tete);
+      }
+      tete.objet.getWorldPosition(out).add(tete.ecart);
       return true;
     },
     // Le bonhomme marche le long de son itinéraire (à vitesse constante, un petit pas sautillant), puis attend.
@@ -240,6 +252,7 @@ export function creerPersonnages(monde: Monde, champ: () => ChampDuSol | null, i
     },
     dispose: () => {
       fini = true;
+      tetes.clear();
       habits?.dispose();
       habits = null;
       scene.remove(avatarGroup, creaturesGroup);

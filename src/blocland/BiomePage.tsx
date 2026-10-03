@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { NotFoundPage } from '../pages/NotFoundPage';
@@ -28,7 +29,7 @@ import { RenommagePanel, useRenommage } from './Renommage';
 import { useTextes } from '../univers';
 import { useUnivers } from '../core/SettingsContext';
 import { UNIVERS } from '../core/univers';
-import { RappelDeLaCreature, useRappelDeLaCreature } from './RappelDeLaCreature';
+import { PlusTardDit, RappelDeLaCreature, useRappelDeLaCreature } from './RappelDeLaCreature';
 
 /** Un biome : sa créature donne la mission, puis la liste des exercices. */
 export function BiomePage() {
@@ -47,12 +48,17 @@ export function BiomePage() {
   const ship = useVehicleBuilder(biome?.id ?? 'french-6e-phonology');
   // La créature qui se souvient (GD-4, étape 1) : le même panneau que dans le monde.
   const rappelDue = useRappelDeLaCreature(biome);
+  // Après « Plus tard » : le focus revient au titre de l'île, et une courte ligne le dit.
+  const titreRef = useRef<HTMLHeadingElement>(null);
+  const [remis, setRemis] = useState(false);
+  useEffect(() => setRemis(false), [biome?.id]);
   if (!biome) return <NotFoundPage />;
   const block = BLOCKS[biome.block];
   const owned = state.stock[biome.block] ?? 0;
   const unlocked = isBiomeUnlocked(biome.id, state.world.links);
   const port = archipelagoOf(biome.id).port === biome.id;
   const sansLv2 = estIleLv2(biome) && settings.lv2 === 'none';
+  const rappel = unlocked && !sansLv2 ? rappelDue : null;
   const goal = unlocked && !sansLv2 ? nextGoalInfo(state, biome.id, textes.archipels, textes.libelles) : null;
 
   return (
@@ -60,7 +66,7 @@ export function BiomePage() {
       <Link to="/adventure" className="back-link">
         <Icon name="back" /> {UNIVERS[univers].carte}
       </Link>
-      <h1 className={`page-title biome-title biome-${biome.id}`}>
+      <h1 ref={titreRef} tabIndex={-1} className={`page-title biome-title biome-${biome.id}`}>
         <Icon name={biome.icon} /> {biome.name}
       </h1>
       <p className="biome-archipel">
@@ -75,9 +81,24 @@ export function BiomePage() {
         whale.word && <WhaleWordPanel word={whale.word} onClose={whale.close} />
       )}
 
-      <CreatureBubble biome={biome} text={sansLv2 ? SANS_LV2 : unlocked ? textes.creatures[biome.id].greeting : lockedHint(state, biome.id, textes.archipels, textes.libelles)} />
+      {/* La proposition de la créature se lit après l'accueil, dans la même lecture (comme dans le panneau du monde). */}
+      <CreatureBubble
+        biome={biome}
+        text={sansLv2 ? SANS_LV2 : unlocked ? textes.creatures[biome.id].greeting : lockedHint(state, biome.id, textes.archipels, textes.libelles)}
+        ensuite={rappel?.lu}
+      />
 
-      {unlocked && !sansLv2 && rappelDue && <RappelDeLaCreature biome={biome} rappel={rappelDue} />}
+      {rappel && (
+        <RappelDeLaCreature
+          biome={biome}
+          rappel={rappel}
+          onRemis={() => {
+            setRemis(true);
+            titreRef.current?.focus();
+          }}
+        />
+      )}
+      <PlusTardDit dit={remis} />
 
       {goal && <GoalLine goal={goal} className="panel" />}
       {port && unlocked && <VillageStageLine village={state.world} archipelago={biome.classe} className="panel" />}

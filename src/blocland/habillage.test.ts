@@ -23,6 +23,7 @@ describe('L’habillage du monde', () => {
       reperes: 'libres',
       atelier: 'fabrique',
       pose: 'geste',
+      signe: 'plaque',
     });
   });
 
@@ -41,6 +42,7 @@ describe('L’habillage du monde', () => {
       reperes: 'cadres',
       atelier: 'halle',
       pose: 'eclats',
+      signe: 'disque',
     });
   });
 });

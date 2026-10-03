@@ -1,9 +1,11 @@
 // La créature qui se souvient (GD-4, étape 1) : elle fait signe seulement quand une mission de son île a des questions
 // à revoir aujourd'hui ; à l'arrivée sur son île, elle propose « Reprendre » (les révisions de l'île, puis l'île) et
 // « Plus tard », qui la fait taire jusqu'à la visite suivante ; la vue simple montre l'icône sur la Carte.
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { SettingsProvider } from '../core/SettingsContext';
 import { ProgressProvider } from '../core/ProgressContext';
 import { getBiome, type BiomeId } from './biomes';
@@ -12,6 +14,9 @@ import { addDays, todayISO, type SpacedItem } from './engine';
 import { CATALOG } from './exercises';
 import { IslandSheet } from './IslandSheet';
 import { BloclandPage } from './BloclandPage';
+import { BiomePage } from './BiomePage';
+import { PLUS_TARD_DIT, RappelDeLaCreature, phraseDuRappel, titrePourLaVoix } from './RappelDeLaCreature';
+import { textesDe } from '../univers';
 import { cheminDeRevision, creaturesQuiFontSigne, oublierLesRemises, remettreAPlusTard, remisesAPlusTard, revisionsDeLIle } from './rappels';
 import { BRIDGES } from './world/archipelago';
 
@@ -68,6 +73,19 @@ function Providers({ children }: { children: React.ReactNode }) {
   );
 }
 
+/** La voix, sans navigateur : ce qu'elle dit, dans l'ordre. */
+function voix(): string[] {
+  const dit: string[] = [];
+  vi.stubGlobal('SpeechSynthesisUtterance', class {
+    lang = '';
+    rate = 1;
+    voice: unknown = null;
+    constructor(public text: string) {}
+  });
+  vi.stubGlobal('speechSynthesis', { cancel: () => {}, getVoices: () => [], speak: (u: { text: string }) => dit.push(u.text) });
+  return dit;
+}
+
 const sauver = (spaced: SpacedItem[]) =>
   localStorage.setItem('dysapps:game', JSON.stringify({ spaced, progress: { [SYLLABES.id]: { stars: 1, attempts: 1, best: 0.3 } } }));
 
@@ -94,7 +112,8 @@ describe('le panneau de l’île', () => {
     // Ni date, ni échec, ni blocs à gagner.
     expect(rappel.textContent).not.toMatch(/hier|raté|bloc|jour/i);
     expect(screen.getByRole('link', { name: /Reprendre/ })).toHaveAttribute('href', `/adventure/${FORET}/syllables?revision=1`);
-    expect(screen.getByRole('button', { name: /Écouter : J’ai gardé «\s?Abattage syllabique\s?» de côté/ })).toBeInTheDocument();
+    // Le même mot que le bouton de l'accueil, juste au-dessus.
+    expect(screen.getByRole('button', { name: /Réécouter : J’ai gardé «\s?Abattage syllabique\s?» de côté/ })).toBeInTheDocument();
     expect(dit.at(-1)).toMatch(/Mousso|forêt/i);
     expect(dit.at(-1)).toMatch(/On s’y remet ensemble\s?\?$/);
     expect(screen.getByRole('button', { name: 'Plus tard' })).toBeInTheDocument();
@@ -131,9 +150,107 @@ describe('le panneau de l’île', () => {
     ouvrir();
     expect(screen.getByRole('link', { name: /Reprendre/ })).toBeInTheDocument();
   });
+
+  it('après « Plus tard », le focus revient au titre de l’île, et une courte ligne le dit', async () => {
+    sauver([due(SYLLABES.id)]);
+    render(
+      <Providers>
+        <IslandSheet biome={getBiome(FORET)!} onClose={() => {}} in3d />
+      </Providers>,
+    );
+    // La région qui le dit est là d'avance, vide.
+    const dit = document.querySelector('.creature-rappel-remis')!;
+    expect(dit).toHaveAttribute('role', 'status');
+    expect(dit).toBeEmptyDOMElement();
+    await userEvent.click(screen.getByRole('button', { name: 'Plus tard' }));
+    expect(document.activeElement).toBe(screen.getByRole('heading', { level: 2, name: /Forêt/ }));
+    expect(document.activeElement).toHaveAttribute('tabindex', '-1');
+    expect(dit).toHaveTextContent(PLUS_TARD_DIT);
+  });
 });
 
+describe('la phrase de la créature', () => {
+  const textes = textesDe('blocland');
+
+  it('un « / » dans un titre n’est pas lu comme un symbole', () => {
+    expect(titrePourLaVoix('Récolte -é / -er / -ez')).toBe('Récolte -é, -er, -ez');
+    const r = phraseDuRappel(textes, 'Récolte -é / -er / -ez', undefined, '/x');
+    expect(r.texte).toContain('Récolte -é / -er / -ez');
+    expect(r.lu).toContain('Récolte -é, -er, -ez');
+    expect(r.lu).not.toContain('/');
+    expect(r.etranger).toBeNull();
+  });
+
+  it('un titre d’anglais ou de LV2 : écrit à part, dans sa langue ; la phrase lue ne le dit pas', () => {
+    const r = phraseDuRappel(textes, 'For / since', 'en', '/x');
+    expect(r.texte).toMatch(/J’ai gardé «\s?For \/ since\s?» de côté/);
+    expect(r.lu).toMatch(/^J’ai gardé cette mission de côté\. On s’y remet ensemble\s?\?$/);
+    expect(r.lu).not.toMatch(/For|since|«|»/);
+    // La phrase commune (Archipéo) aussi.
+    expect(phraseDuRappel(textesDe('archipeo'), 'Hola', 'es', '/x').lu).toMatch(/^On reprend cette mission ensemble\s?\?$/);
+  });
+
+  it('le titre étranger s’écrit sans syllabes colorées, avec sa langue', () => {
+    localStorage.setItem('dysapps:settings', JSON.stringify({ syllables: true }));
+    render(
+      <Providers>
+        <RappelDeLaCreature biome={getBiome(FORET)!} rappel={phraseDuRappel(textes, 'For / since', 'en', '/x')} />
+      </Providers>,
+    );
+    const titre = screen.getByText('For / since');
+    expect(titre).toHaveAttribute('lang', 'en');
+    expect(titre.closest('.syllables')).toBeNull();
+    expect(titre.querySelector('.syl')).toBeNull();
+    // Le reste de la phrase garde ses syllabes.
+    expect(document.querySelector('.creature-rappel-texte .syl')).not.toBeNull();
+  });
+});
+
+function pageDeLIle() {
+  return render(
+    <SettingsProvider>
+      <ProgressProvider>
+        <BloclandProvider>
+          <MemoryRouter initialEntries={[`/adventure/${FORET}`]}>
+            <Routes>
+              <Route path="/adventure/:biomeId" element={<BiomePage />} />
+            </Routes>
+          </MemoryRouter>
+        </BloclandProvider>
+      </ProgressProvider>
+    </SettingsProvider>,
+  );
+}
+
 describe('la vue simple', () => {
+  it('la phrase de la créature est lue après l’accueil, en une seule lecture', () => {
+    const dit = voix();
+    localStorage.setItem('dysapps:settings', JSON.stringify({ autoRead: true }));
+    sauver([due(SYLLABES.id)]);
+    pageDeLIle();
+    expect(dit).toHaveLength(1);
+    expect(dit[0]).toMatch(/On s’y remet ensemble\s?\?$/);
+    expect(dit[0].indexOf('J’ai gardé')).toBeGreaterThan(0);
+  });
+
+  it('après « Plus tard », le focus revient au titre de l’île, et une courte ligne le dit', async () => {
+    sauver([due(SYLLABES.id)]);
+    pageDeLIle();
+    await userEvent.click(screen.getByRole('button', { name: 'Plus tard' }));
+    expect(document.activeElement).toBe(screen.getByRole('heading', { level: 1 }));
+    expect(document.querySelector('.creature-rappel-remis')).toHaveTextContent(PLUS_TARD_DIT);
+  });
+
+  it('le signe suit l’habillage : une plaque dans Blocland, le cercle dans Archipéo', () => {
+    const css = (f: string) => readFileSync(join(process.cwd(), 'src/styles', f), 'utf8');
+    expect(css('global.css')).toMatch(/--radius-signe:\s*50%/);
+    expect(css('blocland.css')).toMatch(/--radius-signe:\s*4px/);
+    for (const classe of ['creature-rappel-icone', 'biome-rappel']) {
+      const regle = css('global.css').match(new RegExp(`\\.${classe} \\{[^}]*\\}`))![0];
+      expect(regle).toContain('border-radius: var(--radius-signe)');
+    }
+  });
+
   it('montre l’icône de la notion sur l’île dans la Carte, et le toucher mène au même panneau', () => {
     sauver([due(SYLLABES.id)]);
     render(

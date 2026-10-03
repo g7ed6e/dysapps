@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { SpeakButton } from '../components/SpeakButton';
@@ -29,7 +29,7 @@ import { TROPHIES_PATH, TROPHIES_TITLE } from './trophies';
 import { archipelagoOf } from './world/archipelago';
 import { useTextes } from '../univers';
 import type { Partie } from './world/parties';
-import { RappelDeLaCreature, useRappelDeLaCreature } from './RappelDeLaCreature';
+import { PlusTardDit, RappelDeLaCreature, useRappelDeLaCreature } from './RappelDeLaCreature';
 
 interface Props {
   biome: BiomeDef;
@@ -73,6 +73,13 @@ export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight =
   // La créature qui se souvient (GD-4, étape 1) : des révisions dues sur l'île, elle propose de reprendre.
   const rappelDue = useRappelDeLaCreature(biome);
   const rappel = unlocked && !sansLv2 ? rappelDue : null;
+  // Après « Plus tard » : le focus revient au titre de l'île, et une courte ligne le dit.
+  const titreRef = useRef<HTMLHeadingElement>(null);
+  const [remis, setRemis] = useState(false);
+  const remettre = () => {
+    setRemis(true);
+    titreRef.current?.focus();
+  };
   const [bossSaid, setBossSaid] = useState<string | null>(null);
   // En 3D, le bâtiment, le navire et les ouvrages se replient quand il n'y a rien à y faire : le panneau reste court.
   // Le choix de l'élève (ouvrir, fermer) est oublié quand l'île change ou qu'un ouvrage est mis en avant.
@@ -90,7 +97,8 @@ export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight =
   // La créature accueille à voix haute quand le panneau s'ouvre, puis dit sa proposition s'il y en a une.
   useEffect(() => {
     setBossSaid(null);
-    if (settings.autoRead) speak(frenchTypography(rappel ? `${greeting} ${rappel.texte}` : greeting));
+    setRemis(false);
+    if (settings.autoRead) speak(frenchTypography(rappel ? `${greeting} ${rappel.lu}` : greeting));
     // Une lecture par île.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [biome.id]);
@@ -100,7 +108,7 @@ export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight =
       <div className="island-sheet-head">
         <Creature biome={biome.id} className="creature-small" />
         <div className="island-sheet-titles">
-          <h2 id={`ile-${biome.id}`} className="island-sheet-title">
+          <h2 id={`ile-${biome.id}`} ref={titreRef} tabIndex={-1} className="island-sheet-title">
             <Icon name={biome.icon} /> {biome.name}
           </h2>
         </div>
@@ -126,7 +134,8 @@ export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight =
         </details>
       )}
 
-      {rappel && <RappelDeLaCreature biome={biome} rappel={rappel} />}
+      {rappel && <RappelDeLaCreature biome={biome} rappel={rappel} onRemis={remettre} />}
+      <PlusTardDit dit={remis} />
 
       {sansLv2 ? (
         // « Pas de LV2 » : rien à construire, rien à jouer ; le chemin vers le réglage (décision du directeur artistique).

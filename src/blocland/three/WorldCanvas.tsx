@@ -423,6 +423,7 @@ export default function WorldCanvas({
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h, false);
+      signesDesCreatures.redimensionner(h);
     };
     const observer = new ResizeObserver(resize);
     observer.observe(el);

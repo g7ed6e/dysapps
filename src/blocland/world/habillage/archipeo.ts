@@ -16,4 +16,5 @@ export const HABILLAGE_ARCHIPEO = {
   reperes: 'cadres',
   atelier: 'halle',
   pose: 'eclats',
+  signe: 'disque',
 } as const satisfies Readonly<Habillage> & { univers: 'archipeo' };

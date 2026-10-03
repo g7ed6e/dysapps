@@ -14,12 +14,17 @@ import type { Lv2Choice } from '../core/settings';
 /** Le paramètre d'adresse d'une révision lancée par la créature : à la fin, on revient sur son île. */
 export const PARAM_REVISION = 'revision';
 
-/** Les révisions dues aujourd'hui sur une île ouverte, une par mission jouable (la LV2 des Réglages), dans l'ordre du catalogue. */
-export function revisionsDeLIle(spaced: SpacedItem[], links: string[], biome: BiomeId, lv2?: Lv2Choice, today = todayISO()): ReviewQuest[] {
+/** Parmi les révisions dues (`questsToReview`), celles d'une île, une par mission jouable (la LV2 des Réglages). */
+export function revisionsDeLIleParmi(dues: readonly ReviewQuest[], biome: BiomeId, lv2?: Lv2Choice): ReviewQuest[] {
   const b = getBiome(biome);
   if (!b) return [];
   const jouables = new Set(missionsJouables(b, lv2).map((m) => m.id));
-  return questsToReview(spaced, links, today).filter((q) => q.biome === biome && jouables.has(q.type));
+  return dues.filter((q) => q.biome === biome && jouables.has(q.type));
+}
+
+/** Les révisions dues aujourd'hui sur une île ouverte, une par mission jouable (la LV2 des Réglages), dans l'ordre du catalogue. */
+export function revisionsDeLIle(spaced: SpacedItem[], links: string[], biome: BiomeId, lv2?: Lv2Choice, today = todayISO()): ReviewQuest[] {
+  return revisionsDeLIleParmi(questsToReview(spaced, links, today), biome, lv2);
 }
 
 /** L'adresse d'une révision lancée depuis la créature : la mission, qui met les questions dues en tête, puis l'île. */
@@ -39,8 +44,13 @@ export function creaturesQuiFontSigne(
   lv2?: Lv2Choice,
   today = todayISO(),
 ): SigneDeCreature[] {
+  return signesParmi(questsToReview(spaced, links, today), archipel, remises, lv2);
+}
+
+/** Les créatures qui font signe dans un archipel, parmi des révisions dues déjà calculées (une fois pour toute la Carte). */
+export function signesParmi(dues: readonly ReviewQuest[], archipel: ArchipelagoId, remises: ReadonlySet<BiomeId>, lv2?: Lv2Choice): SigneDeCreature[] {
   return islandsOf(archipel)
-    .filter((b) => !remises.has(b.id) && revisionsDeLIle(spaced, links, b.id, lv2, today).length > 0)
+    .filter((b) => !remises.has(b.id) && revisionsDeLIleParmi(dues, b.id, lv2).length > 0)
     .map((b) => ({ id: b.id, icone: b.icon }));
 }
 

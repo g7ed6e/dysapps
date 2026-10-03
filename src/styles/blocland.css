@@ -42,6 +42,8 @@
   --radius: 4px;
   --radius-control: 4px;
   --radius-pill: 4px;
+  /* Le signe de la créature qui se souvient (GD-4) : une plaque carrée, comme dans le monde. */
+  --radius-signe: 4px;
   /* La face de côté de ce qui se touche, et l'appui qui l'enfonce (sans transition : instantané). */
   --face: 4px;
   --face-pressed: 1px;

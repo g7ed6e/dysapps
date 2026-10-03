@@ -152,7 +152,8 @@ const CAPTURES = [
   // La créature qui se souvient (GD-4, étape 1, famille `revisions`) : à la Ferme des accords, chaque mission a des
   // questions à revoir (`revisions`) ; la créature a fait son geste à l'arrivée (`pasEnPlus` : 3 s de plus), l'icône de la
   // notion est au-dessus d'elle et le panneau de l'île propose « Reprendre » ou « Plus tard », de jour et de nuit, puis
-  // en téléphone et en grand texte ; de loin, la vue de l'archipel ; en vue simple, l'icône sur l'île dans la Carte.
+  // en téléphone et en grand texte, le panneau défilé jusqu'à la proposition (`voir`) ; de loin, la vue de l'archipel ;
+  // en vue simple, la carte de l'île et sa plaque dans la Carte en liste (défilée jusqu'à elle, pas l'en-tête de la page).
   { nom: 'revisions-ile', vue: 'île', famille: 'revisions', ile: 'french-6e-grammar-spelling', revisions: true, pasEnPlus: 24 },
   { nom: 'revisions-ile-nuit', vue: 'île', famille: 'revisions', ile: 'french-6e-grammar-spelling', revisions: true, pasEnPlus: 24, nuit: true },
   {
@@ -164,9 +165,10 @@ const CAPTURES = [
     pasEnPlus: 24,
     reglages: { font: 'opendyslexic', fontSize: 32 },
     taille: { width: 390, height: 844 },
+    voir: '.creature-rappel',
   },
   { nom: 'revisions-archipel', vue: 'archipel', famille: 'revisions', ile: 'french-6e-grammar-spelling', revisions: true, pasEnPlus: 24 },
-  { nom: 'revisions-vue-simple', vue: 'archipel', famille: 'revisions', ile: 'french-6e-grammar-spelling', revisions: true, view: 'list' },
+  { nom: 'revisions-vue-simple', vue: 'archipel', famille: 'revisions', ile: 'french-6e-grammar-spelling', revisions: true, view: 'list', voir: 'a.biome-french-6e-grammar-spelling' },
   // L'école et la salle des trophées des Premiers Rivages (lot 7b, les lieux du village) : la vue de la Forêt, sans
   // trophée et avec tous (`succes` : le nombre de succès gagnés, `tous` pour tous, un trophée chacun), de jour et de
   // nuit ; de près, recadrées (`finesse` 3 : le colombage net) ; de loin, la vue de l'archipel.
@@ -434,12 +436,13 @@ async function scenes() {
               pose: c.pose,
               pasEnPlus: c.pasEnPlus,
               revisions: c.revisions,
+              voir: c.voir,
               nom: parIle ? `${c.nom}-${parIle}` : c.nom,
             })),
           )
         : []),
     ];
-    for (const { vue, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages, succes, inventaire, pose, pasEnPlus, revisions } of views) {
+    for (const { vue, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages, succes, inventaire, pose, pasEnPlus, revisions, voir } of views) {
       const page = await browser.newPage({ viewport: taille ?? TABLET, deviceScaleFactor: finesse ?? (recadre ? 1.5 : 1), ...(fige ? { reducedMotion: 'reduce' } : {}) });
       await piloterLHorloge(page, time);
       await page.addInitScript(hasardFixe);
@@ -483,6 +486,8 @@ async function scenes() {
           await page.clock.runFor(125);
           await page.waitForTimeout(30);
         }
+        // Un élément à montrer plus bas (dans la page ou dans un panneau qui défile) : on y fait défiler, sans animation.
+        if (voir) await page.locator(voir).first().evaluate((el) => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
         await capturer(page, { path: file, type: 'jpeg', quality: 85, timeout: 90000, ...(recadre ? { clip: recadre } : {}) });
         if (time === NIGHT && view === '3d') {
           // La part de lueur, sur la scène seule (le canvas, sans les panneaux ni les boutons autour) : les boutons posés
