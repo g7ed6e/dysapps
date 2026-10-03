@@ -29,7 +29,7 @@ function cameraDuPort(a: ArchipelagoId): THREE.PerspectiveCamera {
   const camera = new THREE.PerspectiveCamera(40, VUE.w / VUE.h, 0.5, 2000);
   const focus = { island: null };
   const derniers = { current: { carte: false, focus, home, forceDay: true, whalePass: undefined, sons: false } as unknown as Derniers };
-  const instant: Instant = { now: 0, marche: false, navigue: null, carte: false, but: { target: new THREE.Vector3(), pos: new THREE.Vector3() } };
+  const instant: Instant = { now: 0, marche: false, traversee: null, navigue: null, carte: false, but: { target: new THREE.Vector3(), pos: new THREE.Vector3() } };
   creerCamera(monde, camera, new THREE.Object3D(), derniers, instant).cadrer(focus as Derniers['focus'], false, home);
   camera.updateMatrixWorld();
   return camera;

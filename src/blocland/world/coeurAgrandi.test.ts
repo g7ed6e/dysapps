@@ -322,7 +322,8 @@ it('les voisines d’une île-école s’écartent : les ouvrages de son archipe
   for (const id of IDS) {
     const { archipel, ouvrages } = ECOLES[id]!;
     for (const b of BRIDGES.filter((d) => d.id in ouvrages)) expect(Math.abs(bridgePath(b).length - ouvrages[b.id]), b.id).toBeLessThanOrEqual(2);
-    expect(BRIDGES.filter((b) => mapOf(archipel).some((d) => d.id === b.from)).every((b) => b.id in ouvrages), archipel).toBe(true);
+    // (Les liaisons du port, GD-7, sont venues après les cœurs agrandis : elles n'ont pas de longueur d'avant.)
+    expect(BRIDGES.filter((b) => !b.etoile && mapOf(archipel).some((d) => d.id === b.from)).every((b) => b.id in ouvrages), archipel).toBe(true);
     // Entre deux terres (îles et îlots des Gardiens) qui ne partagent pas d'isthme, au moins deux cases d'eau.
     const iles = mapOf(archipel);
     const terres: { id: string; ile: BiomeId; ilot: boolean; cases: readonly { x: number; y: number }[] }[] = [

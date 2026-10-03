@@ -96,6 +96,17 @@ export interface BridgeDef {
   kind: BridgeKind;
   /** Nombre de blocs (de n'importe quel type gagné sur une île) pour le construire ; 0 = pont déjà construit. */
   cost: number;
+  /**
+   * Une liaison du port en étoile (GD-7) : elle part de l'île-port (au 6e, de la Plaine ou de la Forêt) vers une île de
+   * la classe qu'aucun ouvrage du port ne touchait, dans les deux univers. Souvent longue : la vue de l'île l'ignore
+   * (`viewZone`), la vue d'ensemble la cadre dès le départ (`overviewBounds`), les baleines s'en écartent (`whaleSpots`).
+   */
+  etoile?: boolean;
+  /**
+   * Les points de passage du tracé, entre le point d'ancrage des deux îles (`bridgePath`, world/terrain.ts) : un bac en
+   * contour qui longe l'archipel plutôt que de traverser les îles et les ouvrages d'entre elles. Sans eux, la ligne droite.
+   */
+  via?: readonly { x: number; y: number }[];
 }
 
 /** La condition d'un ouvrage dépend de sa nature : l'escalier veut des bâtisseurs (la première partie du bâtiment d'une de ses îles, posée par une mission), le tunnel et le col un Gardien vaincu. */
@@ -118,49 +129,98 @@ export const KIND_NAME: Record<BridgeKind, string> = {
 };
 
 const b = (from: BiomeId, to: BiomeId, kind: BridgeKind, cost: number): BridgeDef => ({ id: `${from}-${to}`, from, to, kind, cost });
+/**
+ * Le prix d'une liaison du port (GD-7) : 4 blocs aux Premiers Rivages, 5 ailleurs. Il vaut pour toutes les liaisons qui
+ * partent du port (au 6e, de la Plaine ou de la Forêt), nouvelles ou non ; les raccourcis entre deux autres îles gardent
+ * le leur, le pont déjà construit reste gratuit.
+ */
+export const PRIX_DU_PORT: Record<ArchipelagoId, number> = { '6e': 4, '5e': 5, '4e': 5, '3e': 5 };
+
+type Point = { x: number; y: number };
+
+/** Une liaison du port qui existait avant GD-7 (même identifiant), au prix du port. */
+const p = (from: BiomeId, to: BiomeId, kind: BridgeKind): BridgeDef => b(from, to, kind, PRIX_DU_PORT[archipelagoOfIsland(from)]);
+
+/** Une liaison du port en étoile (GD-7), au prix du port, avec ses points de passage s'il en faut. */
+const e = (from: BiomeId, to: BiomeId, kind: BridgeKind, via?: readonly Point[]): BridgeDef => ({
+  ...p(from, to, kind),
+  etoile: true,
+  ...(via ? { via } : {}),
+});
+
+/**
+ * Les points de passage des liaisons du port (GD-7), entre l'ancrage des deux îles (`bridgePath`, world/terrain.ts) :
+ * chaque tracé longe l'archipel sans toucher une autre île, un autre ouvrage, l'îlot d'un Gardien ou d'un monument ni la
+ * jetée, et reste dans `worldBounds` (portEnEtoile.test.ts). Sans points de passage, la ligne droite.
+ */
+const VIA: Record<string, readonly Point[]> = {
+  'maths-6e-calculation-french-6e-reading': [{ x: 61, y: 14 }, { x: 13, y: 14 }, { x: 13, y: 52 }],
+  'maths-6e-calculation-french-6e-word-spelling': [{ x: 91, y: 21 }, { x: 91, y: 14 }, { x: 131, y: 14 }, { x: 131, y: 52 }],
+  'french-6e-phonology-english-6e-vocabulary': [{ x: 61, y: 67 }, { x: 61, y: 84 }, { x: 56, y: 84 }, { x: 56, y: 104 }],
+  'maths-5e-proportionality-french-5e-homophones': [{ x: 70, y: 336 }, { x: 70, y: 342 }, { x: 54, y: 342 }],
+  'maths-3e-functions-english-3e-comprehension': [{ x: 50, y: 911 }, { x: 8, y: 911 }],
+  'maths-3e-functions-english-3e-grammar': [{ x: 82, y: 915 }, { x: 87, y: 910 }, { x: 114, y: 910 }],
+  'maths-4e-algebra-french-4e-vocabulary': [{ x: 86, y: 646 }, { x: 121, y: 646 }],
+};
 
 /** Les ouvrages possibles, entre îles voisines d'un même archipel. Depuis la Forêt, deux directions : la Mine ou la Ferme. */
 export const BRIDGES: BridgeDef[] = [
   // Premiers Rivages (6e) : des ponts, et deux bacs sur les bras de mer les plus larges.
-  b('french-6e-phonology', 'french-6e-letter-confusion', 'sentier', 3),
-  b('french-6e-phonology', 'french-6e-grammar-spelling', 'pont', 3),
+  p('french-6e-phonology', 'french-6e-letter-confusion', 'sentier'),
+  p('french-6e-phonology', 'french-6e-grammar-spelling', 'pont'),
   b('french-6e-letter-confusion', 'french-6e-word-spelling', 'pont', 5),
   b('french-6e-grammar-spelling', 'french-6e-reading', 'sentier', 5),
   b('french-6e-phonology', 'maths-6e-calculation', 'pont', 0),
-  b('maths-6e-calculation', 'maths-6e-fractions', 'bac', 3),
+  p('maths-6e-calculation', 'maths-6e-fractions', 'bac'),
   b('french-6e-letter-confusion', 'maths-6e-fractions', 'pont', 4),
-  b('maths-6e-calculation', 'maths-6e-decimals', 'pont', 3),
+  p('maths-6e-calculation', 'maths-6e-decimals', 'pont'),
   b('french-6e-grammar-spelling', 'maths-6e-decimals', 'bac', 4),
   // Les îles d'anglais, derrière : un pont depuis la Ferme, un depuis la Forêt, un sentier entre les deux.
   b('french-6e-grammar-spelling', 'english-6e-vocabulary', 'pont', 5),
-  b('french-6e-phonology', 'english-6e-grammar', 'pont', 5),
+  p('french-6e-phonology', 'english-6e-grammar', 'pont'),
   b('english-6e-vocabulary', 'english-6e-grammar', 'sentier', 4),
+  // Le port en étoile (GD-7) : de la Plaine ou de la Forêt, une liaison vers chaque île qu'elles ne touchaient pas. Deux
+  // bacs longent l'archipel par le devant, entre les îlots des Gardiens et les côtes (la Carrière par l'est de la Plaine,
+  // à l'écart de la jetée ; la Tour par l'est de son îlot) ; un pont de la Forêt à la Baie, à l'écart de l'Horloge.
+  e('maths-6e-calculation', 'french-6e-reading', 'bac', VIA['maths-6e-calculation-french-6e-reading']),
+  e('maths-6e-calculation', 'french-6e-word-spelling', 'bac', VIA['maths-6e-calculation-french-6e-word-spelling']),
+  e('french-6e-phonology', 'english-6e-vocabulary', 'pont', VIA['french-6e-phonology-english-6e-vocabulary']),
   // Îles Brumeuses (5e) : le Marché est le port ; deux isthmes et un pont entre les deux paires.
-  b('maths-5e-signed-numbers', 'maths-5e-proportionality', 'sentier', 6),
-  b('maths-5e-proportionality', 'french-5e-conjugation', 'pont', 4),
+  p('maths-5e-signed-numbers', 'maths-5e-proportionality', 'sentier'),
+  p('maths-5e-proportionality', 'french-5e-conjugation', 'pont'),
   b('french-5e-homophones', 'french-5e-conjugation', 'sentier', 6),
   // Les îles d'anglais, à droite : un pont depuis le Marché (le port), un depuis le Marais, un entre les deux.
-  b('maths-5e-proportionality', 'english-5e-vocabulary', 'pont', 6),
+  p('maths-5e-proportionality', 'english-5e-vocabulary', 'pont'),
   b('french-5e-conjugation', 'english-5e-grammar', 'pont', 6),
   b('english-5e-vocabulary', 'english-5e-grammar', 'pont', 5),
+  // Le port en étoile (GD-7) : un bac vers le Carrefour, entre l'arrière du Glacier et le phare du large. Le Manoir n'en a
+  // pas : l'îlot du kiosque à musique, celui du Gardien du Manoir et une baleine ferment le passage (à décider).
+  e('maths-5e-proportionality', 'french-5e-homophones', 'bac', VIA['maths-5e-proportionality-french-5e-homophones']),
   // La LV2, en bout de chemin : un pont depuis le Comptoir vers le Relais des voyageurs, à l'est ; rien n'en dépend.
   b('english-5e-vocabulary', 'lv2-5e-introductions', 'pont', 6),
   // Anciens Ateliers (4e) : l'Atelier est le port ; un escalier taillé vers le Cabinet (un plan de la Falaise).
-  b('maths-4e-algebra', 'maths-4e-powers', 'pont', 4),
-  b('maths-4e-algebra', 'french-4e-agreement', 'pont', 4),
+  p('maths-4e-algebra', 'maths-4e-powers', 'pont'),
+  p('maths-4e-algebra', 'french-4e-agreement', 'pont'),
   b('french-4e-agreement', 'french-4e-vocabulary', 'escalier', 5),
   // Les îles d'anglais, aux deux bouts de la crête : un pont depuis la Forge, un depuis le Cabinet.
   b('maths-4e-powers', 'english-4e-grammar', 'pont', 6),
   b('french-4e-vocabulary', 'english-4e-comprehension', 'pont', 6),
+  // Le port en étoile (GD-7) : un bac droit vers la Gare, sous la Forge ; un bac vers le Cabinet, derrière la Falaise.
+  // Le Théâtre n'en a pas : l'îlot de l'amphithéâtre et la clairière d'une baleine ferment le passage (à décider).
+  e('maths-4e-algebra', 'english-4e-grammar', 'bac', VIA['maths-4e-algebra-english-4e-grammar']),
+  e('maths-4e-algebra', 'french-4e-vocabulary', 'bac', VIA['maths-4e-algebra-french-4e-vocabulary']),
   // La LV2, en bout de chemin : un pont depuis le Théâtre vers le Jardin des heures, à l'est ; rien n'en dépend.
   b('english-4e-comprehension', 'lv2-4e-daily-life', 'pont', 6),
   // Îles du Ciel (3e) : le Phare est le port ; un col à garde-fou vers l'Observatoire des textes (le Gardien du Phare).
-  b('maths-3e-functions', 'maths-3e-geometry', 'pont', 5),
-  b('maths-3e-functions', 'maths-3e-statistics', 'pont', 5),
-  b('maths-3e-functions', 'french-3e-close-reading', 'col', 6),
+  p('maths-3e-functions', 'maths-3e-geometry', 'pont'),
+  p('maths-3e-functions', 'maths-3e-statistics', 'pont'),
+  p('maths-3e-functions', 'french-3e-close-reading', 'col'),
   // Les îles d'anglais, aux deux bouts de l'arc : un pont depuis le Belvédère, un depuis l'Observatoire des données.
   b('maths-3e-geometry', 'english-3e-comprehension', 'pont', 7),
   b('maths-3e-statistics', 'english-3e-grammar', 'pont', 7),
+  // Le port en étoile (GD-7) : deux bacs vers les îles d'anglais, aux deux bouts de l'arc.
+  e('maths-3e-functions', 'english-3e-comprehension', 'bac', VIA['maths-3e-functions-english-3e-comprehension']),
+  e('maths-3e-functions', 'english-3e-grammar', 'bac', VIA['maths-3e-functions-english-3e-grammar']),
   // La LV2, en bout de chemin : un pont depuis le Château vers le Refuge des carnets, à l'est ; rien n'en dépend.
   b('english-3e-grammar', 'lv2-3e-travel', 'pont', 7),
 ];

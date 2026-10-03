@@ -90,7 +90,18 @@ it('l’inventaire commenté : les lignes rangées par utilité, les ouvrages un
   expect(inv.rows[3].uses).toEqual([]);
   // Les ouvrages : payables par 5 blocs (ni le toit ni l'or ne comptent, GD-6), depuis une île ouverte, sans doublon.
   expect(inv.payable).toBe(5);
-  expect(inv.ouvrages.map((o) => o.bridge.id).sort()).toEqual(['french-6e-phonology-french-6e-grammar-spelling', 'french-6e-phonology-english-6e-grammar', 'french-6e-phonology-french-6e-letter-confusion', 'maths-6e-calculation-maths-6e-fractions', 'maths-6e-calculation-maths-6e-decimals'].sort());
+  expect(inv.ouvrages.map((o) => o.bridge.id).sort()).toEqual(
+    [
+      'french-6e-phonology-french-6e-grammar-spelling',
+      'french-6e-phonology-english-6e-grammar',
+      'french-6e-phonology-english-6e-vocabulary',
+      'french-6e-phonology-french-6e-letter-confusion',
+      'maths-6e-calculation-maths-6e-fractions',
+      'maths-6e-calculation-maths-6e-decimals',
+      'maths-6e-calculation-french-6e-reading',
+      'maths-6e-calculation-french-6e-word-spelling',
+    ].sort(),
+  );
   expect(inv.ouvrages.every((o) => o.enough)).toBe(true);
   expect(inv.ouvrages.find((o) => o.bridge.id === 'french-6e-phonology-french-6e-letter-confusion')).toMatchObject({ from: 'french-6e-phonology', to: 'french-6e-letter-confusion' });
   expect(inventoryUses(sanitizeState({})).rows).toEqual([]);

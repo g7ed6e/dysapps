@@ -4,7 +4,7 @@
 import type { BiomeId } from '../biomes';
 import type { PlaceId, VoxelCube } from './cube';
 import { islandsOf, type ArchipelagoId } from './archipelago';
-import { CREATURE_STEPS, boardingRoute, routeAt, routeLengths } from './terrain';
+import { BAC_LONG, CREATURE_STEPS, boardingRoute, cadreDeTraversee, routeAt, routeLengths } from './terrain';
 import { WALK_MAX_MS, WALK_SPEED, dureeDeMarche, grilleDe } from './grille';
 import { legTiming, type LegTiming, type VoyageLeg } from './voyage';
 import type { Bonhomme, Cell, CreaturePlacement } from './view';
@@ -28,6 +28,11 @@ export interface Walk {
   flanerie?: boolean;
   /** Le but vient d'un toucher sur le sol : un rond le montre jusqu'à l'arrivée. */
   vise?: boolean;
+  /**
+   * Une longue traversée (GD-7, `cadreDeTraversee`) : le cadre fixe de la caméra, du départ à l'arrivée ; elle ne suit
+   * pas le bonhomme.
+   */
+  cadre?: { minX: number; maxX: number; minY: number; maxY: number };
 }
 
 export function startWalk(route: Cell[], start: number, duration: number): Walk {
@@ -36,14 +41,17 @@ export function startWalk(route: Cell[], start: number, duration: number): Walk 
 
 /**
  * Le trajet demandé par la vue (`avatar`) : un seul point, il se tient là ; plusieurs, il marche. Six cases par
- * seconde, jamais plus de six secondes ; le premier placement (`seq` 0) est immédiat.
+ * seconde, jamais plus de six secondes ; le premier placement (`seq` 0) est immédiat. Dans l'archipel `archipel`, un
+ * trajet qui prend une longue traversée reçoit le cadre fixe de la caméra (`cadre`).
  */
-export function avatarWalk(avatar: Bonhomme<Cell>, now: number): Walk | null {
+export function avatarWalk(avatar: Bonhomme<Cell>, now: number, archipel?: ArchipelagoId): Walk | null {
   if (!avatar.route.length) return null;
   const route = avatar.route.length < 2 ? [avatar.route[0], avatar.route[0]] : avatar.route;
   const walk = startWalk(route, now, avatar.seq === 0 ? 0 : walkDuration(route));
   if (avatar.flanerie) walk.flanerie = true;
   if (avatar.vise) walk.vise = true;
+  const cadre = archipel && !avatar.flanerie && route.length > BAC_LONG ? cadreDeTraversee(archipel, route) : null;
+  if (cadre) walk.cadre = cadre;
   return walk;
 }
 

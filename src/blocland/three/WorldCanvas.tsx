@@ -169,7 +169,7 @@ export default function WorldCanvas({
       largeur: Math.max(bounds.maxX - bounds.minX, bounds.maxY - bounds.minY),
     };
     const camera = new THREE.PerspectiveCamera(40, el.clientWidth / Math.max(1, el.clientHeight), 0.5, monde.largeur * 10);
-    const instant: Instant = { now: 0, marche: false, navigue: null, carte: false, but: { target: new THREE.Vector3(), pos: new THREE.Vector3() } };
+    const instant: Instant = { now: 0, marche: false, traversee: null, navigue: null, carte: false, but: { target: new THREE.Vector3(), pos: new THREE.Vector3() } };
 
     // Les parties, créées dans l'ordre d'avant la découpe, à quelques objets près (les nappes de brume avant l'eau, la
     // flèche de la Carte après les balises, les créatures avant le terrain, la case visée avant le navire) : sans effet

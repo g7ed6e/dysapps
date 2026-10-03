@@ -20,6 +20,8 @@ const ISLAND_DISTANCE = DISTANCE_DE_LA_VUE_DE_L_ILE;
 /** Vue autour du bonhomme : assez loin pour voir son île et les voisines (bornes du cadrage de zone). */
 const FOLLOW_DISTANCE = 50;
 const FOLLOW_MAX = 64;
+/** Autour d'une longue traversée (GD-7), en cases : les deux îles du bout dépassent un peu du trajet. */
+const MARGE_DE_LA_TRAVERSEE = 8;
 /** La Carte : presque à la verticale, le même nord ; la distance se règle sur la place libre (`cadrageDeLaCarte`). */
 const MAP_VIEW = { dx: 0.03, dy: -0.4, up: 1 };
 const MAP_FOV = 40;
@@ -299,6 +301,25 @@ export function creerCamera(
     return { target, pos };
   };
 
+  /**
+   * Une longue traversée (GD-7) : la caméra se pose sur tout le trajet, du départ à l'arrivée, et ne bouge plus ; le
+   * bonhomme traverse le cadre. Même direction de vue qu'en le suivant, sans pivot, assez loin pour que tout tienne.
+   */
+  const altitude = mapOf(monde.archipel)[0]?.altitude ?? 0;
+  const cadreDeTraversee = { target: new THREE.Vector3(), pos: new THREE.Vector3() };
+  const traversee = (z: NonNullable<Instant['traversee']>, aspect: number) => {
+    const portrait = aspect < 1 ? 1 / Math.sqrt(Math.max(0.4, aspect)) : 1;
+    const c = { x: (z.minX + z.maxX) / 2 + 0.5, y: (z.minY + z.maxY) / 2 + 0.5 };
+    const ex = z.maxX - z.minX + MARGE_DE_LA_TRAVERSEE;
+    const ey = z.maxY - z.minY + MARGE_DE_LA_TRAVERSEE;
+    const need = (Math.max(ex / Math.max(0.6, aspect), ey * 1.1) * 0.5) / Math.tan((20 * Math.PI) / 180);
+    const d = Math.max(FOLLOW_DISTANCE, need) * portrait;
+    // Sans allocation : le cadre ne change pas de toute la traversée, la caméra le relit à chaque image.
+    cadreDeTraversee.target.set(c.x, altitude + VISEE_AU_DESSUS_DU_SOL, c.y);
+    cadreDeTraversee.pos.set(c.x + d * VIEW.dx, altitude + VISEE_AU_DESSUS_DU_SOL + d * VIEW.up, c.y + d * VIEW.dy);
+    return cadreDeTraversee;
+  };
+
   const camTarget = new THREE.Vector3();
   const camPos = new THREE.Vector3();
   const { but } = instant;
@@ -380,14 +401,16 @@ export function creerCamera(
             const pos = new THREE.Vector3(target.x + (dist * VOYAGE_VIEW.dx) / len, target.y + (dist * VOYAGE_VIEW.up) / len, target.z + (dist * VOYAGE_VIEW.dy) / len);
             return { target, pos };
           })()
-        : framing(
-            walking ? null : focus.island,
-            avatar.position,
-            camera.aspect,
-            instant.carte,
-            walking ? null : home,
-            walking ? null : (focus.spot ?? null),
-          );
+        : walking && instant.traversee
+          ? traversee(instant.traversee, camera.aspect)
+          : framing(
+              walking ? null : focus.island,
+              avatar.position,
+              camera.aspect,
+              instant.carte,
+              walking ? null : home,
+              walking ? null : (focus.spot ?? null),
+            );
       // Le cadrage de la Carte est gardé d'une image à l'autre : le décalage s'ajoute à une copie.
       const target = vise.copy(frame.target);
       const pos = place.copy(frame.pos);

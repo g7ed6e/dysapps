@@ -57,7 +57,7 @@ it('le panneau 3D replie le bâtiment et les ouvrages quand il n’y a rien à y
   expect(plan()).not.toHaveAttribute('open');
   expect(plan().textContent).toContain('0 partie posée sur 3');
   expect(ouvrages()).not.toHaveAttribute('open');
-  expect(ouvrages().textContent).toContain('Encore 3 blocs pour le moins cher');
+  expect(ouvrages().textContent).toContain('Encore 4 blocs pour le moins cher');
   expect(screen.getByRole('list', { name: 'Missions de l’île' })).toBeInTheDocument();
   // L'élève ouvre le pli lui-même : son choix tient.
   await userEvent.click(plan().querySelector('summary')!);
@@ -85,11 +85,11 @@ it('les blocs qui manquent renvoient à l’île où les gagner, par un lien', (
 it('une île fermée montre ses missions verrouillées et renvoie à l’île précédente', async () => {
   const onClose = vi.fn();
   renderSheet('french-6e-letter-confusion', onClose);
-  expect(document.body.textContent).toContain('Pas si vite ! Pour venir ici, construis le sentier depuis Forêt des sons : 3 blocs.');
+  expect(document.body.textContent).toContain('Pas si vite ! Pour venir ici, construis le sentier depuis Forêt des sons : 4 blocs.');
   // Sans bloc : l'ouvrage est une ligne compacte qui dit ce qu'il manque, sans bouton grisé.
   expect(screen.queryByRole('button', { name: /Construire/ })).not.toBeInTheDocument();
   expect(document.body.textContent).toContain('Sentier vers Forêt des sons');
-  expect(document.body.textContent).toContain('Encore 3 blocs (3 en tout)');
+  expect(document.body.textContent).toContain('Encore 4 blocs (4 en tout)');
   expect(screen.getByRole('list', { name: 'Missions de l’île' }).querySelectorAll('a.island-quest')).toHaveLength(0);
   expect(screen.getAllByText('Verrouillé').length).toBeGreaterThan(0);
   await userEvent.click(screen.getByRole('button', { name: 'Fermer le panneau' }));
@@ -207,12 +207,12 @@ it('la matière, la classe et l’archipel descendent au pied du panneau ; les m
 
 it('la jauge du prochain objectif se compte tant qu’il manque des blocs, et s’efface quand tout est là', () => {
   renderSheet('french-6e-phonology');
-  expect(document.querySelector('.island-goal .goal-gauge')).toHaveTextContent('0 / 3');
+  expect(document.querySelector('.island-goal .goal-gauge')).toHaveTextContent('0 / 4');
   cleanup();
   localStorage.setItem('dysapps:game', JSON.stringify({ stock: { 'french-6e-phonology': 4 } }));
   renderSheet('french-6e-phonology');
   expect(document.querySelector('.island-goal')).toHaveTextContent('Tu peux construire le sentier');
-  // Plus de « 3 / 3 » à côté d'un ouvrage pas encore construit.
+  // Plus de « 4 / 4 » à côté d'un ouvrage pas encore construit.
   expect(document.querySelector('.island-goal .goal-gauge')).toBeNull();
 });
 

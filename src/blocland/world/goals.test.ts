@@ -23,25 +23,25 @@ const guardians = (ids: string[]) => Object.fromEntries(ids.map((id) => [`${id}-
 it('le prochain objectif est unique : d’abord ce qu’on peut faire tout de suite, sinon le plus proche', () => {
   const fresh = sanitizeState({});
   // Le bâtiment de l'île se pose tout seul (GD-6) : l'objectif est le sentier.
-  expect(nextGoal(fresh, 'french-6e-phonology')).toBe('Encore 3 blocs pour le sentier vers Mine des lettres.');
-  expect(nextGoalInfo(fresh, 'french-6e-phonology')).toMatchObject({ have: 0, need: 3 });
+  expect(nextGoal(fresh, 'french-6e-phonology')).toBe('Encore 4 blocs pour le sentier vers Mine des lettres.');
+  expect(nextGoalInfo(fresh, 'french-6e-phonology')).toMatchObject({ have: 0, need: 4 });
   const some = sanitizeState({ stock: { [BLOC.bois]: 5 } });
   expect(nextGoal(some, 'french-6e-phonology')).toBe('Tu peux construire le sentier vers Mine des lettres.');
   const rich = sanitizeState({ stock: { [BLOC.bois]: 40 } });
   expect(nextGoal(rich, 'french-6e-phonology')).not.toMatch(/cabane/);
   // Tous les ouvrages construits : plus rien à dire, que le bâtiment soit fini ou non.
-  const done = sanitizeState({ world: { links: ['french-6e-phonology-french-6e-letter-confusion', 'french-6e-phonology-french-6e-grammar-spelling', 'french-6e-phonology-english-6e-grammar'] } });
+  const done = sanitizeState({ world: { links: ['french-6e-phonology-french-6e-letter-confusion', 'french-6e-phonology-french-6e-grammar-spelling', 'french-6e-phonology-english-6e-grammar', 'french-6e-phonology-english-6e-vocabulary'] } });
   expect(nextGoal(done, 'french-6e-phonology')).toBeNull();
-  expect(nextGoal(EMPTY_STATE, 'french-6e-letter-confusion')).toBe('Encore 3 blocs pour le sentier vers Forêt des sons.');
+  expect(nextGoal(EMPTY_STATE, 'french-6e-letter-confusion')).toBe('Encore 4 blocs pour le sentier vers Forêt des sons.');
 });
 
 it('sur le port, le prochain objectif parle du Bloc-Navire : ses blocs, puis ses Gardiens, puis l’embarquement', () => {
-  // Au début, sur la Plaine : l'ouvrage le moins cher (3 blocs) est plus proche que le navire.
+  // Au début, sur la Plaine : l'ouvrage le moins cher (4 blocs, GD-7) est plus proche que le navire.
   const fresh = sanitizeState({});
-  expect(nextGoal(fresh, 'maths-6e-calculation')).toMatch(/^Encore 3 blocs pour le (bac vers Rivière des fractions|pont vers Volcan des décimaux)\.$/);
+  expect(nextGoal(fresh, 'maths-6e-calculation')).toMatch(/^Encore 4 blocs pour le (bac vers Rivière des fractions|pont vers Volcan des décimaux)\.$/);
   // Les ouvrages de la Plaine construits : le chantier du navire.
   const plans = Object.fromEntries(plansFor('maths-6e-calculation').map((p) => [p.id, planCells(p).map((c) => c.key)]));
-  const built = ['maths-6e-calculation-maths-6e-fractions', 'maths-6e-calculation-maths-6e-decimals'];
+  const built = ['maths-6e-calculation-maths-6e-fractions', 'maths-6e-calculation-maths-6e-decimals', 'maths-6e-calculation-french-6e-reading', 'maths-6e-calculation-french-6e-word-spelling'];
   expect(nextGoal(sanitizeState({ world: { parts: plans, links: built } }), 'maths-6e-calculation')).toMatch(/^Encore \d+ blocs? de (sable|bois)( et \d+ [^.]+)? pour le Bloc-Navire\.$/);
   const stocked = sanitizeState({ world: { parts: plans, links: built }, stock: { [BLOC.sable]: 30, [BLOC.bois]: 30, [BLOC.galet]: 10, [BLOC.pierre]: 5 } });
   expect(nextGoal(stocked, 'maths-6e-calculation')).toBe('Tu as tout pour le Bloc-Navire : pose tes blocs.');
@@ -79,11 +79,17 @@ it('les quantités de blocs s’accordent : « 18 toits », « 3 blocs de sable 
 });
 
 it('la vue d’ensemble cadre les îles ouvertes et leurs voisines, puis s’élargit', () => {
+  // Aux Premiers Rivages, le port en étoile (GD-7) mène dès le départ à chaque île : tout l'archipel est cadré, et le
+  // cadre ne bouge plus.
   const start = overviewBounds('6e', []);
   const all = worldBounds('6e');
-  expect(start.maxX - start.minX).toBeLessThan(all.maxX - all.minX);
-  const later = overviewBounds('6e', ['french-6e-phonology-french-6e-letter-confusion', 'french-6e-letter-confusion-french-6e-word-spelling']);
-  expect(later.maxX).toBeGreaterThan(start.maxX);
+  expect(start.minX).toBeLessThanOrEqual(all.minX);
+  expect(start.maxX).toBeGreaterThanOrEqual(all.maxX);
+  expect(overviewBounds('6e', ['french-6e-phonology-french-6e-letter-confusion', 'french-6e-letter-confusion-french-6e-word-spelling'])).toEqual(start);
+  // Aux Îles Brumeuses, le Relais des voyageurs (LV2) n'entre dans le cadre qu'une fois le Comptoir ouvert.
+  const marche = overviewBounds('5e', ['passage-5e']);
+  const later = overviewBounds('5e', ['passage-5e', 'maths-5e-proportionality-english-5e-vocabulary']);
+  expect(later.maxX).toBeGreaterThan(marche.maxX);
   // L'étendue de la scène comprend le port (la jetée et le navire, devant la Plaine).
   const dock = dockBox('maths-6e-calculation');
   expect(all.minY).toBeLessThanOrEqual(dock.y0 - 2);
@@ -92,10 +98,12 @@ it('la vue d’ensemble cadre les îles ouvertes et leurs voisines, puis s’él
 
 it('une île fermée dit l’ouvrage précis qui y mène, ou l’île à ouvrir d’abord', () => {
   const fresh = sanitizeState({});
-  expect(lockedHint(fresh, 'french-6e-letter-confusion')).toBe('Pas si vite ! Pour venir ici, construis le sentier depuis Forêt des sons : 3 blocs.');
-  // La Carrière est à deux ouvrages : il faut d'abord ouvrir la Mine.
-  expect(lockedHint(fresh, 'french-6e-word-spelling')).toBe('Pas si vite ! Ouvre d’abord Mine des lettres : de là, un ouvrage mène jusqu’ici.');
-  expect(lockedHint(sanitizeState({ world: { links: ['french-6e-phonology-french-6e-letter-confusion'] } }), 'french-6e-word-spelling')).toContain('construis le pont depuis Mine des lettres : 5 blocs');
+  expect(lockedHint(fresh, 'french-6e-letter-confusion')).toBe('Pas si vite ! Pour venir ici, construis le sentier depuis Forêt des sons : 4 blocs.');
+  // La Carrière : la liaison du port, depuis la Plaine (GD-7).
+  expect(lockedHint(fresh, 'french-6e-word-spelling')).toBe('Pas si vite ! Pour venir ici, construis le bac depuis Plaine des nombres : 4 blocs.');
+  // Le Théâtre est à deux ouvrages du port : il faut d'abord ouvrir le Cabinet.
+  const ateliers = sanitizeState({ world: { links: ['passage-5e', 'passage-4e', 'maths-4e-algebra-french-4e-agreement'] } });
+  expect(lockedHint(ateliers, 'english-4e-comprehension')).toBe('Pas si vite ! Ouvre d’abord Cabinet des mots : de là, un ouvrage mène jusqu’ici.');
   // Un escalier dans les Monts : la condition est dite.
   const monts = sanitizeState({ world: { links: ['passage-5e', 'passage-4e', 'maths-4e-algebra-french-4e-agreement'] } });
   expect(lockedHint(monts, 'french-4e-vocabulary')).toBe(
@@ -134,7 +142,7 @@ it('dans Archipéo, l’indice d’une île fermée dit un Gardien rallumé, jam
   const ouverts = BRIDGES.filter((b) => !voisines.includes(b.from) && !voisines.includes(b.to)).map((b) => b.id);
   const col = sanitizeState({ world: { links: ['passage-5e', 'passage-4e', 'passage-3e', ...ouverts] } });
   expect(lockedHint(col, 'french-3e-close-reading', 'archipeo')).toBe(
-    'Pas si vite ! Pour venir ici, construis le col depuis Phare des fonctions : 6 blocs. Il faut aussi avoir rallumé le Gardien de l’autre côté.',
+    'Pas si vite ! Pour venir ici, construis le col depuis Phare des fonctions : 5 blocs. Il faut aussi avoir rallumé le Gardien de l’autre côté.',
   );
   expect(lockedHint(col, 'french-3e-close-reading')).toContain('Il faut aussi avoir vaincu le Gardien de l’autre côté.');
 });

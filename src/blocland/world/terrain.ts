@@ -206,8 +206,10 @@ function bornesDesIles(a: ArchipelagoId, iles: IslandDef[]): { minX: number; max
 export function overviewBounds(a: ArchipelagoId, bridges: string[]): { minX: number; maxX: number; minY: number; maxY: number } {
   const open = reachableIslands(bridges);
   const shown = new Set<BiomeId>([...open].filter((id) => archipelagoOfIsland(id) === a));
+  // Les liaisons du port (GD-7) comptent dès le départ, avec leur tracé : le cadre ne bouge pas quand on les ouvre.
+  const etoiles = BRIDGES.filter((b) => b.etoile && archipelagoOfIsland(b.from) === a);
   for (const b of BRIDGES) {
-    if (archipelagoOfIsland(b.from) !== a || bridgeState(b, bridges) === 'far') continue;
+    if (archipelagoOfIsland(b.from) !== a || (!b.etoile && bridgeState(b, bridges) === 'far')) continue;
     shown.add(b.from);
     shown.add(b.to);
   }
@@ -215,6 +217,13 @@ export function overviewBounds(a: ArchipelagoId, bridges: string[]): { minX: num
   let maxX = -Infinity;
   let minY = Infinity;
   let maxY = -Infinity;
+  for (const b of etoiles)
+    for (const c of bridgePath(b)) {
+      minX = Math.min(minX, c.x);
+      maxX = Math.max(maxX, c.x);
+      minY = Math.min(minY, c.y);
+      maxY = Math.max(maxY, c.y);
+    }
   for (const id of shown) {
     const b = landBox(islandDef(id));
     minX = Math.min(minX, b.x0);
@@ -237,10 +246,14 @@ export const VIEW_YAW_MAX = (40 * Math.PI) / 180;
  * Gardien et son étiquette tenaient entiers au-dessus des boutons en 1024 × 768, 1280 × 800 et 800 × 1280 sans que
  * l'île du bonhomme rapetisse, ce qui n'est pas le cas (au bout de la crête, l'étiquette sort de l'écran à gauche, de
  * 65 à 340 px ; au 5e, celle du Relais aussi) : cadrage d'avant, sans entre-deux. Depuis l'île de la LV2, la voisine compte.
+ *
+ * Les liaisons du port (GD-7, `etoile`) n'y comptent pas : l'île au bout d'un long bac n'est pas une voisine, la vue
+ * reste celle d'avant.
  */
 export function viewZone(home: BiomeId): { minX: number; maxX: number; minY: number; maxY: number } {
   const ids = new Set<BiomeId>([home]);
   for (const b of bridgesOf(home)) {
+    if (b.etoile) continue;
     const other = otherEnd(b, home);
     if (BIOMES.find((x) => x.id === other)?.subject === 'lv2') continue;
     ids.add(other);
@@ -554,7 +567,8 @@ export function portsDAttache(id: BiomeId): { ouvrage: string; local: { x: numbe
 /**
  * Le tracé d'un ouvrage entre deux îles : de bord de terre à bord de terre, sur la ligne qui joint les deux cœurs.
  * Deux îles l'une devant l'autre : l'ouvrage part du côté droit du cœur (l'îlot du Gardien est devant, à gauche),
- * descend jusqu'au bord de l'île de devant, fait un coude, puis y entre. Chaque case a son altitude (interpolée).
+ * descend jusqu'au bord de l'île de devant, fait un coude, puis y entre. Une liaison du port en contour (`via`, GD-7)
+ * passe par ses points de passage. Chaque case a son altitude (interpolée).
  */
 export function bridgePath(def: BridgeDef): { x: number; y: number; z: number; climbing: boolean; dx: number; dy: number }[] {
   const a = islandDef(def.from);
@@ -567,7 +581,9 @@ export function bridgePath(def: BridgeDef): { x: number; y: number; z: number; c
   const ca = anchor(a);
   const cb = anchor(b);
   const points = [ca];
-  if (vertical && ca.x !== cb.x) {
+  // Un bac en contour (GD-7) : ses points de passage, puis l'ancrage de l'île d'arrivée ; pas de coude calculé.
+  if (def.via) points.push(...def.via);
+  else if (vertical && ca.x !== cb.x) {
     const front = a.core.y < b.core.y ? a : b;
     const jog = coeurDe(front).y1 + front.ext.back + 1;
     points.push({ x: ca.x, y: jog }, { x: cb.x, y: jog });
@@ -610,6 +626,13 @@ export function bridgePath(def: BridgeDef): { x: number; y: number; z: number; c
 }
 
 /**
+ * Au-delà de ce nombre de cases, un ouvrage est une longue traversée (GD-7) : un bac n'a plus qu'un poteau toutes les
+ * quatre cases (`bridge`), et la caméra ne suit plus le bonhomme qui le prend, elle cadre son départ et son arrivée
+ * (`cadreDeTraversee`).
+ */
+export const BAC_LONG = 36;
+
+/**
  * Un ouvrage entre deux îles, selon sa nature : pont de planches (marches quand il monte), bac (poteaux et radeau
  * au fil de l'eau), escalier taillé dans la pierre, tunnel (galerie voûtée, lanternes), col (escalier à garde-fou).
  * Fantôme tant qu'il n'est pas construit.
@@ -643,12 +666,13 @@ function bridge(def: BridgeDef, cubes: VoxelCube[], ghost: boolean, occupied: Se
         add(c.x, c.y, c.z, BLOCKS[BLOC.bois].side, c.climbing ? 'escalier' : 'planches', c.climbing ? BLOCKS[BLOC.escalier].top : undefined);
         break;
       case 'bac': {
-        // Un radeau de trois planches au milieu, des poteaux de bois qui tiennent la corde de halage.
+        // Un radeau de trois planches au milieu, des poteaux de bois qui tiennent la corde de halage : toutes les trois
+        // cases, toutes les quatre sur un long bac (GD-7, `BAC_LONG`).
         const mid = Math.abs(i - (n - 1) / 2) <= 1;
         if (mid) {
           add(c.x, c.y, c.z, BLOCKS[BLOC.bois].side, 'planches');
           if (i === Math.floor((n - 1) / 2)) add(c.x + px, c.y + py, c.z, BLOCKS[BLOC.bois].side, 'planches');
-        } else if (i % 3 === 0 || i === n - 1) add(c.x, c.y, c.z, TRUNK, 'tronc');
+        } else if (i % (n > BAC_LONG ? 4 : 3) === 0 || i === n - 1) add(c.x, c.y, c.z, TRUNK, 'tronc');
         break;
       }
       case 'escalier':
@@ -730,12 +754,28 @@ export function avatarHome(id: BiomeId): { x: number; y: number; z: number } {
   return { x: def.core.x + AVATAR_HOME.x, y: def.core.y + AVATAR_HOME.y, z };
 }
 
+/** Les cases où marche le bonhomme sur un ouvrage, dans le sens de `from` à l'autre bout. */
+function tablier(def: BridgeDef, from: BiomeId): { x: number; y: number; z: number }[] {
+  // Sur un ouvrage on marche sur le tablier (z + 1) ; sur un sentier, de pierre de gué en pierre de gué (la pierre est
+  // posée sur le sol en z + 1, on marche dessus : z + 2).
+  const deck =
+    def.kind === 'sentier'
+      ? bridgePath(def)
+          .map((c, i) => ({ x: c.x, y: c.y, z: c.z + 2, stone: i % 2 === 0 }))
+          .filter((c) => c.stone)
+          .map(({ x, y, z }) => ({ x, y, z }))
+      : bridgePath(def).map((c) => ({ x: c.x, y: c.y, z: c.z + 1 }));
+  if (def.from !== from) deck.reverse();
+  return deck;
+}
+
 /**
  * L'itinéraire du bonhomme d'une île à une autre, en marchant sur les ouvrages construits (le plus court chemin en
- * nombre d'ouvrages), ou `null` s'il n'y en a pas. Une suite de points (x, y, z du sol sous ses pieds). Une île
- * traversée n'est pas un détour par sa place : il va d'un ouvrage au suivant. Avec la grille de marche (`ground`), il
- * suit le sol et contourne arbres, bornes, maisons et créatures ; sans elle, il va en ligne droite. Il s'arrête à sa
- * place sur l'île d'arrivée, ou en `end` (la case du sol qu'on a touchée) ; il part de sa place, ou de `start`.
+ * cases, GD-7 : un long bac du port ne sert que s'il raccourcit vraiment), ou `null` s'il n'y en a pas. Une suite de
+ * points (x, y, z du sol sous ses pieds). Une île traversée n'est pas un détour par sa place : il va d'un ouvrage au
+ * suivant. Avec la grille de marche (`ground`), il suit le sol et contourne arbres, bornes, maisons et créatures ; sans
+ * elle, il va en ligne droite. Il s'arrête à sa place sur l'île d'arrivée, ou en `end` (la case du sol qu'on a touchée) ;
+ * il part de sa place, ou de `start`.
  */
 export function avatarRoute(
   from: BiomeId,
@@ -749,52 +789,99 @@ export function avatarRoute(
   { end, start }: { end?: { x: number; y: number; z: number }; start?: { x: number; y: number; z: number } } = {},
 ): { x: number; y: number; z: number }[] | null {
   if (from === to) return [end ?? avatarHome(from)];
-  const built = (b: BridgeDef) => bridgeState(b, bridges) === 'built';
-  const prev = new Map<BiomeId, BridgeDef | null>([[from, null]]);
-  const queue: BiomeId[] = [from];
-  while (queue.length && !prev.has(to)) {
-    const here = queue.shift()!;
+  const depart = start ?? avatarHome(from);
+  const arrivee = end ?? avatarHome(to);
+  // Le plus court chemin en cases (Dijkstra sur les îles) : sur une île, à vol d'oiseau du bout d'un ouvrage au début du
+  // suivant ; sur un ouvrage, sa longueur. Une île est atteinte au bout d'un ouvrage : c'est de là qu'on repart.
+  type Etape = { cout: number; at: { x: number; y: number; z: number }; via: BridgeDef | null; deck: { x: number; y: number; z: number }[] };
+  const best = new Map<BiomeId, Etape>([[from, { cout: 0, at: depart, via: null, deck: [] }]]);
+  const done = new Set<BiomeId>();
+  for (;;) {
+    let here: BiomeId | null = null;
+    for (const [id, e] of best) if (!done.has(id) && (here === null || e.cout < best.get(here)!.cout)) here = id;
+    if (here === null || here === to) break;
+    done.add(here);
+    const e = best.get(here)!;
     for (const b of bridgesOf(here)) {
-      if (!built(b)) continue;
+      if (bridgeState(b, bridges) !== 'built') continue;
       const there = otherEnd(b, here);
-      if (prev.has(there)) continue;
-      prev.set(there, b);
-      queue.push(there);
+      if (done.has(there)) continue;
+      const deck = tablier(b, here);
+      if (!deck.length) continue;
+      const bout = deck[deck.length - 1];
+      // Sur l'île d'arrivée, le pas jusqu'à sa place (ou la case touchée) compte : deux ouvrages n'y abordent pas au même endroit.
+      const fin = there === to ? Math.hypot(arrivee.x - bout.x, arrivee.y - bout.y) : 0;
+      const cout = e.cout + Math.hypot(deck[0].x - e.at.x, deck[0].y - e.at.y) + routeLengths(deck)[deck.length - 1] + fin;
+      const connu = best.get(there);
+      if (!connu || cout < connu.cout) best.set(there, { cout, at: deck[deck.length - 1], via: b, deck });
     }
   }
-  if (!prev.has(to)) return null;
-  const hops: { def: BridgeDef; from: BiomeId; to: BiomeId }[] = [];
-  let at = to;
-  while (prev.get(at)) {
-    const b = prev.get(at)!;
-    const before = otherEnd(b, at);
-    hops.unshift({ def: b, from: before, to: at });
-    at = before;
+  if (!best.has(to)) return null;
+  const hops: { x: number; y: number; z: number }[][] = [];
+  for (let at = to; best.get(at)!.via; ) {
+    const e = best.get(at)!;
+    hops.unshift(e.deck);
+    at = otherEnd(e.via!, at);
   }
-  const route: { x: number; y: number; z: number }[] = [start ?? avatarHome(from)];
+  const route: { x: number; y: number; z: number }[] = [depart];
   // Sur une île : de là où il est jusqu'au point suivant, à pied (ou tout droit, sans grille).
   const walkTo = (next: { x: number; y: number; z: number }) => {
     const here = route[route.length - 1];
     const path = ground ? walkPath(ground, here, next) : null;
     route.push(...(path ? path.slice(1) : [next]));
   };
-  for (const hop of hops) {
-    // Sur un ouvrage on marche sur le tablier (z + 1) ; sur un sentier, de pierre de gué en pierre de gué (la pierre
-    // est posée sur le sol en z + 1, on marche dessus : z + 2).
-    const deck =
-      hop.def.kind === 'sentier'
-        ? bridgePath(hop.def)
-            .map((c, i) => ({ x: c.x, y: c.y, z: c.z + 2, stone: i % 2 === 0 }))
-            .filter((c) => c.stone)
-            .map(({ x, y, z }) => ({ x, y, z }))
-        : bridgePath(hop.def).map((c) => ({ x: c.x, y: c.y, z: c.z + 1 }));
-    if (hop.def.from !== hop.from) deck.reverse();
-    if (!deck.length) continue;
+  for (const deck of hops) {
     walkTo(deck[0]);
     route.push(...deck.slice(1));
   }
-  walkTo(end ?? avatarHome(to));
+  walkTo(arrivee);
   return route;
+}
+
+/** Les cases des longues traversées (plus de `BAC_LONG` cases) d'un archipel, et l'ouvrage de chacune. */
+const traverseesCache = new Map<ArchipelagoId, Map<string, string>>();
+function casesDesTraversees(a: ArchipelagoId): Map<string, string> {
+  let m = traverseesCache.get(a);
+  if (!m) {
+    m = new Map();
+    for (const b of BRIDGES) {
+      if (archipelagoOfIsland(b.from) !== a) continue;
+      const path = bridgePath(b);
+      if (path.length > BAC_LONG) for (const c of path) m.set(`${c.x},${c.y}`, b.id);
+    }
+    traverseesCache.set(a, m);
+  }
+  return m;
+}
+
+/**
+ * Le cadre de la caméra pendant un trajet qui prend une longue traversée (GD-7, plus de `BAC_LONG` cases sur un même
+ * ouvrage) : tout le trajet, du départ à l'arrivée ; la caméra s'y pose et ne bouge plus, le bonhomme traverse. `null`
+ * pour un trajet ordinaire : la caméra le suit.
+ */
+export function cadreDeTraversee(a: ArchipelagoId, route: readonly { x: number; y: number }[]): { minX: number; maxX: number; minY: number; maxY: number } | null {
+  const cases = casesDesTraversees(a);
+  const parOuvrage = new Map<string, number>();
+  let longue = false;
+  for (const c of route) {
+    const id = cases.get(`${Math.round(c.x)},${Math.round(c.y)}`);
+    if (!id) continue;
+    const n = (parOuvrage.get(id) ?? 0) + 1;
+    parOuvrage.set(id, n);
+    if (n > BAC_LONG) longue = true;
+  }
+  if (!longue) return null;
+  let minX = Infinity;
+  let maxX = -Infinity;
+  let minY = Infinity;
+  let maxY = -Infinity;
+  for (const c of route) {
+    minX = Math.min(minX, c.x);
+    maxX = Math.max(maxX, c.x);
+    minY = Math.min(minY, c.y);
+    maxY = Math.max(maxY, c.y);
+  }
+  return { minX, maxX, minY, maxY };
 }
 
 /**
@@ -1327,6 +1414,9 @@ export function whaleSpots(a: ArchipelagoId): { x: number; y: number; r: number 
   }
   const dock = dockBox(getArchipelago(a).port);
   for (let x = dock.x0; x <= dock.x1; x++) for (let y = dock.y0; y <= dock.y1; y++) land.push({ x, y });
+  // Les liaisons du port (GD-7) passent au large : une baleine n'y fait pas surface (les autres ouvrages, entre deux îles
+  // proches, sont déjà loin des clairières).
+  for (const br of BRIDGES) if (br.etoile && archipelagoOfIsland(br.from) === a) land.push(...bridgePath(br));
   const b = worldBounds(a);
   const clearance = (x: number, y: number) => {
     let best = Infinity;

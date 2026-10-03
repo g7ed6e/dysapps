@@ -506,7 +506,9 @@ it('le bouton Blocs ouvre « Mes blocs » ; une puce mène à l’île (caméra 
   expect(sheet.textContent).toContain('6 blocs en poche');
   expect(sheet.textContent).toContain('4 blocs de bois');
   expect(screen.getByTestId('cadrage')).toHaveTextContent('aucune');
-  // Le bois paie le sentier qui part de la Forêt : la puce y mène, la caméra cadre la Forêt et son panneau s'ouvre.
+  // Le bois paie le sentier qui part de la Forêt (après les quatre liaisons de la Plaine, GD-7 : « Tout voir ») : la puce
+  // y mène, la caméra cadre la Forêt et son panneau s'ouvre.
+  await user.click(screen.getByRole('button', { name: /Tout voir/ }));
   await user.click(screen.getAllByRole('link', { name: /Sentier vers Mine des lettres/ })[0]);
   expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/french-6e-phonology');
   expect(screen.getByTestId('cadrage')).toHaveTextContent('french-6e-phonology');

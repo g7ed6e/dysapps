@@ -200,7 +200,7 @@ export function creerPersonnages(monde: Monde, champ: () => ChampDuSol | null, i
     },
     marcher: (avatar) => {
       // Six cases par seconde, mais jamais plus de six secondes de marche (un tap dans le vide fait arriver tout de suite).
-      p.marche = p.trajet = avatarWalk(avatar, performance.now());
+      p.marche = p.trajet = avatarWalk(avatar, performance.now(), monde.archipel);
     },
     poserLesCreatures: (creatures) => {
       places = creatures;
@@ -231,6 +231,7 @@ export function creerPersonnages(monde: Monde, champ: () => ChampDuSol | null, i
     // Le bonhomme marche le long de son itinéraire (à vitesse constante, un petit pas sautillant), puis attend.
     deplacer: (t, _dt, reduit) => {
       instant.marche = false;
+      instant.traversee = null;
       if (!p.marche) return;
       const pose = walkPose(p.marche, instant.now, reduit);
       const swing = pose.moving ? Math.sin(t * 11) * 0.8 : 0;
@@ -242,7 +243,10 @@ export function creerPersonnages(monde: Monde, champ: () => ChampDuSol | null, i
       if (pose.facing) p.cap = Math.atan2(-pose.facing.dx, -pose.facing.dy);
       // Une flânerie sur son île (vers une case touchée) n'est pas une marche pour la caméra : elle garde son cadrage.
       if (!pose.moving) p.marche = null;
-      else if (!p.marche.flanerie) instant.marche = true;
+      else if (!p.marche.flanerie) {
+        instant.marche = true;
+        instant.traversee = p.marche.cadre ?? null;
+      }
     },
     animer: (t, dt, reduit) => {
       // Il se tourne vers son cap en douceur, par le plus court.

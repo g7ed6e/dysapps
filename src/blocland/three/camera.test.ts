@@ -30,7 +30,7 @@ function placer(habillage: Habillage, taille: { w: number; h: number }, focus: {
   };
   const camera = new THREE.PerspectiveCamera(40, taille.w / taille.h, 0.5, 2000);
   const derniers = { current: { carte: false, focus, home, forceDay: true, whalePass: undefined, sons: false } as unknown as Derniers };
-  const instant: Instant = { now: 0, marche: false, navigue: null, carte: false, but: { target: new THREE.Vector3(), pos: new THREE.Vector3() } };
+  const instant: Instant = { now: 0, marche: false, traversee: null, navigue: null, carte: false, but: { target: new THREE.Vector3(), pos: new THREE.Vector3() } };
   creerCamera(monde, camera, new THREE.Object3D(), derniers, instant).cadrer(focus as Derniers['focus'], false, home);
   camera.updateMatrixWorld();
   return camera;
@@ -158,7 +158,7 @@ describe('La Carte dans la place libre (DA-31)', () => {
     const monde: Monde = { scene: new THREE.Scene(), archipel: '4e', habillage: HABILLAGES.blocland, surface: null, etendue: b, centre: { x: 0, y: 0 }, largeur: 220 };
     const camera = new THREE.PerspectiveCamera(40, T.w / T.h, 0.5, 2000);
     const derniers = { current: { carte: true, focus: { island: null }, home: 'maths-4e-powers', forceDay: true, sons: false } as unknown as Derniers };
-    const instant: Instant = { now: 0, marche: false, navigue: null, carte: true, but: { target: new THREE.Vector3(), pos: new THREE.Vector3() } };
+    const instant: Instant = { now: 0, marche: false, traversee: null, navigue: null, carte: true, but: { target: new THREE.Vector3(), pos: new THREE.Vector3() } };
     const lues: string[] = [];
     let place = { libre: { x0: 0, y0: 200, x1: 1024, y1: 578 }, w: T.w, h: T.h, saut: false };
     const cam = creerCamera(monde, camera, new THREE.Object3D(), derniers, instant, {
@@ -190,7 +190,7 @@ describe('La Carte dans la place libre (DA-31)', () => {
     const monde: Monde = { scene: new THREE.Scene(), archipel: '6e', habillage: HABILLAGES.blocland, surface: null, etendue: b, centre: { x: 0, y: 0 }, largeur: 200 };
     const camera = new THREE.PerspectiveCamera(40, 1024 / 688, 0.5, 2000);
     const derniers = { current: { carte: false, focus: { island: 'french-6e-phonology', seq: 1 }, home: 'french-6e-phonology', forceDay: true, sons: false } as unknown as Derniers };
-    const instant: Instant = { now: 0, marche: false, navigue: null, carte: false, but: { target: new THREE.Vector3(), pos: new THREE.Vector3() } };
+    const instant: Instant = { now: 0, marche: false, traversee: null, navigue: null, carte: false, but: { target: new THREE.Vector3(), pos: new THREE.Vector3() } };
     const cam = creerCamera(monde, camera, new THREE.Object3D(), derniers, instant);
     cam.animer!(0, 0.016, true);
     const t0 = cam.cible.clone();
@@ -237,7 +237,7 @@ describe('La Carte dans la place libre (DA-31)', () => {
     const monde: Monde = { scene: new THREE.Scene(), archipel: '6e', habillage: HABILLAGES.blocland, surface: null, etendue: b, centre: { x: 0, y: 0 }, largeur: 200 };
     const camera = new THREE.PerspectiveCamera(40, 1024 / 688, 0.5, 2000);
     const derniers = { current: { carte: false, focus: { island: 'french-6e-phonology', seq: 1 }, home: 'french-6e-phonology', forceDay: true, sons: false } as unknown as Derniers };
-    const instant: Instant = { now: 0, marche: false, navigue: null, carte: false, but: { target: new THREE.Vector3(), pos: new THREE.Vector3() } };
+    const instant: Instant = { now: 0, marche: false, traversee: null, navigue: null, carte: false, but: { target: new THREE.Vector3(), pos: new THREE.Vector3() } };
     const cam = creerCamera(monde, camera, new THREE.Object3D(), derniers, instant);
     // Avant la première image, aucun cadrage à rejoindre.
     expect(cam.poser()).toBe(Infinity);
@@ -255,5 +255,49 @@ describe('La Carte dans la place libre (DA-31)', () => {
     cam.animer!(0.2, 0.016, false);
     expect(cam.cible.distanceTo(posee)).toBeCloseTo(0);
     expect(cam.poser()).toBeLessThan(0.01);
+  });
+});
+
+describe('Une longue traversée (GD-7)', () => {
+  it('la caméra se pose sur le cadre du départ à l’arrivée et ne suit pas le bonhomme ; les deux bouts sont à l’écran', () => {
+    const b = worldBounds('6e');
+    const monde: Monde = {
+      scene: new THREE.Scene(),
+      archipel: '6e',
+      habillage: HABILLAGES.blocland,
+      surface: null,
+      etendue: b,
+      centre: { x: (b.minX + b.maxX) / 2, y: (b.minY + b.maxY) / 2 },
+      largeur: Math.max(b.maxX - b.minX, b.maxY - b.minY),
+    };
+    const camera = new THREE.PerspectiveCamera(40, ARCHIPEL.w / ARCHIPEL.h, 0.5, 2000);
+    const derniers = { current: { carte: false, focus: { island: null, seq: 0 }, home: 'maths-6e-calculation', forceDay: true } as unknown as Derniers };
+    const cadre = { minX: 70, maxX: 145, minY: 14, maxY: 64 };
+    const instant: Instant = { now: 0, marche: true, traversee: cadre, navigue: null, carte: false, but: { target: new THREE.Vector3(), pos: new THREE.Vector3() } };
+    const avatar = new THREE.Object3D();
+    const cam = creerCamera(monde, camera, avatar, derniers, instant);
+    const poser = () => {
+      cam.animer?.(0, 0.016, true);
+      camera.updateMatrixWorld();
+      return camera.position.clone();
+    };
+    avatar.position.set(80, 0, 20);
+    const ici = poser();
+    // Le bonhomme avance sur le bac : la caméra ne bouge pas.
+    avatar.position.set(140, 0, 30);
+    expect(poser().distanceTo(ici)).toBeLessThan(1e-6);
+    // Le départ et l'arrivée tiennent dans la vue.
+    for (const [x, y] of [
+      [cadre.minX, cadre.minY],
+      [cadre.maxX, cadre.maxY],
+    ]) {
+      const p = ecran(camera, ARCHIPEL, x, 0, y);
+      expect(p.x >= 0 && p.x <= ARCHIPEL.w && p.y >= 0 && p.y <= ARCHIPEL.h, `${x},${y}`).toBe(true);
+    }
+    // Sans traversée, elle suit le bonhomme.
+    instant.traversee = null;
+    const suivi = poser();
+    avatar.position.set(80, 0, 20);
+    expect(poser().distanceTo(suivi)).toBeGreaterThan(1);
   });
 });

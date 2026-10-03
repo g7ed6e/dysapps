@@ -39,6 +39,8 @@ export interface Instant {
   now: number;
   /** Le bonhomme marche, et la caméra le suit (pas pendant une flânerie sur son île, vers une case touchée). */
   marche: boolean;
+  /** Le bonhomme prend une longue traversée (GD-7) : le cadre fixe de la caméra, du départ à l'arrivée, ou `null`. */
+  traversee: { minX: number; maxX: number; minY: number; maxY: number } | null;
   /** Le navire est en route : où il est, où il en est de son temps (0 à 1), à quelle étape du navire. */
   navigue: { at: THREE.Vector3; k: number; stage: 1 | 2 | 3 } | null;
   /** La Carte est montrée (ni marche ni voyage en cours). */

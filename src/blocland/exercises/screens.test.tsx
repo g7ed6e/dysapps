@@ -60,10 +60,11 @@ describe('déblocage des biomes', () => {
   it('verrouille la Mine tant que le pont n’est pas construit', async () => {
     const user = userEvent.setup();
     renderAt('/adventure');
-    expect(screen.getAllByText(/Pont à construire : 3 blocs/).length).toBe(2);
-    expect(screen.getAllByText(/Sentier à construire : 3 blocs/).length).toBe(1);
-    expect(screen.getAllByText(/Bac à construire : 3 blocs/).length).toBe(1);
-    expect(screen.getAllByText(/Île lointaine/).length).toBe(3);
+    // Le port en étoile (GD-7) : de la Plaine ou de la Forêt, une liaison vers chaque île, 4 blocs chacune.
+    expect(screen.getAllByText(/Pont à construire : 4 blocs/).length).toBe(4);
+    expect(screen.getAllByText(/Sentier à construire : 4 blocs/).length).toBe(1);
+    expect(screen.getAllByText(/Bac à construire : 4 blocs/).length).toBe(3);
+    expect(screen.queryAllByText(/Île lointaine/).length).toBe(0);
     expect(screen.getAllByText(/Archipel à rejoindre/).length).toBe(21);
     await user.click(screen.getByRole('link', { name: /^Mine des lettres/ }));
     // Le message est découpé en syllabes (plusieurs éléments) : on lit le texte complet.
@@ -74,7 +75,7 @@ describe('déblocage des biomes', () => {
   }, 20_000);
 
   it('ouvre la Mine quand on construit le pont avec ses blocs', async () => {
-    localStorage.setItem('dysapps:game', JSON.stringify({ stock: { 'french-6e-phonology': 2, 'french-6e-letter-confusion': 2 } }));
+    localStorage.setItem('dysapps:game', JSON.stringify({ stock: { 'french-6e-phonology': 2, 'french-6e-letter-confusion': 3 } }));
     const user = userEvent.setup();
     renderAt('/adventure/french-6e-letter-confusion');
     expect(screen.queryByRole('link', { name: /Filon/ })).not.toBeInTheDocument();
@@ -82,7 +83,7 @@ describe('déblocage des biomes', () => {
     expect(document.body.textContent).toMatch(/Le sentier vers Forêt des sons est tracé/);
     expect(screen.getByRole('link', { name: /Filon/ })).toBeInTheDocument();
     expect(JSON.parse(localStorage.getItem('dysapps:game')!).world.links).toEqual(['french-6e-phonology-french-6e-letter-confusion']);
-    expect(JSON.parse(localStorage.getItem('dysapps:game')!).stock).toEqual({ 'french-6e-letter-confusion': 1 });
+    expect(JSON.parse(localStorage.getItem('dysapps:game')!).stock).toEqual({ 'french-6e-phonology': 1 });
   });
 
   it('une sauvegarde d’avant les ponts garde la Mine ouverte', () => {
