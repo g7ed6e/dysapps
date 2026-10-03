@@ -27,11 +27,12 @@ import {
 } from '../world/scene';
 import { islandCenter } from '../world/terrain';
 import { drawIslandLabel, drawMapArrow, measureIslandLabel } from '../world/labelCanvas';
-import { placerEtiquettes, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
+import { PLACES_DE_LA_FLECHE_MAX, boitesDuTrace, placerAvecLaFlecheDOuvrage, placerEtiquettes, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
+import { COUCHES_DU_TIRET } from '../world/traceSuggere';
 import { VEHICLE_DECK } from '../world/harbour';
 import { vehiclePath } from '../world/voyage';
 import { islandsOf } from '../world/archipelago';
-import { rappelsDeLaVue, type Cell, type WorldViewProps } from '../world/view';
+import { estUnOuvrage, rappelsDeLaVue, type Cell, type WorldViewProps } from '../world/view';
 import { useEnCasesDuMonde } from '../useEnCasesDuMonde';
 import { lecteurDeZones } from '../zonesCouvertes';
 import { drawChunk, drawTileMap, type DrawEnv } from './draw';
@@ -445,7 +446,8 @@ export default function WorldCanvas2D({
     const t0 = performance.now();
     let last = t0;
     // L'écart des étiquettes, calculé pour un cadrage (sa clé) et gardé tant qu'il ne change pas.
-    let labelLayout: { key: string; offsets: LabelOffset[]; visibles: boolean[] } | null = null;
+    // `fleche` : sur la Carte, la place prise par la flèche d'un ouvrage parmi les siennes (GD-7), refaite avec l'écart.
+    let labelLayout: { key: string; offsets: LabelOffset[]; visibles: boolean[]; fleche: number } | null = null;
     // Sans page autour (un aperçu), la bande des boutons du bas (72 px) reste réservée.
     const lireZones = lecteurDeZones(
       el,
@@ -534,7 +536,7 @@ export default function WorldCanvas2D({
       // La caméra rejoint son cadrage en douceur (le bonhomme, pas à pas) ; le changement d'échelle aussi.
       // Le chantier du navire (la flèche posée sur lui) : la caméra va le montrer.
       // (La flèche flotte en haut du mât : on regarde plus bas, le milieu du navire.)
-      const spot = p.focus && p.focusSpot ? p.focusSpot : p.focus && p.marker && typeof p.marker !== 'string' ? { ...p.marker, z: p.marker.z - 9 } : null;
+      const spot = p.focus && p.focusSpot ? p.focusSpot : p.focus && p.marker && typeof p.marker !== 'string' && !estUnOuvrage(p.marker) ? { ...p.marker, z: p.marker.z - 9 } : null;
       const target = frame2D({ archipelago: p.archipelago, map: p.map, island: p.focus, home: p.home ?? null, avatar: h.at, spot, far: Boolean(p.focusSpot) }, tm.map, scr);
       if (sailing && shipAt) {
         // En mer (ou dans les airs) : la caméra suit le navire, et recule un peu à mesure qu'il s'éloigne.
@@ -808,10 +810,27 @@ export default function WorldCanvas2D({
       // Les repères jaunes : au-dessus des bornes, la flèche « Commence ici », les balises d'un chemin à construire.
       for (const o of overlays) o();
       const mk = p.marker;
-      // Sur la Carte, la flèche d'une île (la prochaine destination) se dessine plus bas, par-dessus les étiquettes.
+      // Sur la Carte, la flèche d'une île (la prochaine destination) ou d'un ouvrage (GD-7, avec son icône) se dessine
+      // plus bas, par-dessus les étiquettes ; sa pointe sur le cœur de l'île, ou juste au-dessus du milieu de l'ouvrage.
       const mapArrowIsland = p.map && typeof mk === 'string' ? mk : null;
-      if (mk && !mapArrowIsland) {
-        const c = typeof mk === 'string' ? islandCenter(mk) : mk;
+      const mapArrowOuvrage = p.map && estUnOuvrage(mk) ? mk : null;
+      // Sur un ouvrage, la place que l'écart des étiquettes a laissée libre (la voulue, tant qu'il n'est pas fait).
+      const placeOuvrage = mapArrowOuvrage ? (mapArrowOuvrage.places[Math.min(labelLayout?.fleche ?? 0, mapArrowOuvrage.places.length - 1)] ?? mapArrowOuvrage.cell) : null;
+      const mapArrowAt = mapArrowIsland ? islandCenter(mapArrowIsland) : placeOuvrage;
+      // Le tracé renforcé de l'ouvrage désigné (world/traceSuggere.ts) : sous la flèche et les étiquettes, des tirets
+      // foncés cernés de clair, immobiles, plus épais qu'une case.
+      if (mapArrowOuvrage) {
+        for (const c of mapArrowOuvrage.tirets) {
+          const { sx, sy } = at(c.x + 0.5, c.y + 0.5, c.z + 1);
+          for (const { large, couleur } of COUCHES_DU_TIRET) {
+            const w = Math.max(2, large * TILE * cam.s);
+            ctx.fillStyle = couleur;
+            ctx.fillRect(Math.round(sx - w / 2), Math.round(sy - w / 2), Math.round(w), Math.round(w));
+          }
+        }
+      }
+      if (mk && !mapArrowAt) {
+        const c = typeof mk === 'string' ? islandCenter(mk) : estUnOuvrage(mk) ? mk.cell : mk;
         // Une île : au-dessus de son cœur. Une case (le chantier du navire, calée sur le haut du mât en 3D) : juste
         // au-dessus de la coque, qui se voit de dessus.
         const top = p.vehicle ? p.vehicle.origin.z + 4 : c.z;
@@ -826,7 +845,7 @@ export default function WorldCanvas2D({
       // sa pointe sur l'île et s'écarte de côté si le fanion est tout près (le bonhomme sur la même île).
       const dprMarks = Math.min(window.devicePixelRatio || 1, 3);
       const arrowH = 48 * dprMarks;
-      const mapMarks = (c: typeof cam) => {
+      const mapMarks = (c: typeof cam, place: Cell | null = mapArrowAt) => {
         const out: { arrow: LabelBox | null; tip: { x: number; y: number } | null; beacon: LabelBox | null } = { arrow: null, tip: null, beacon: null };
         if (h.at && p.avatar && p.map) {
           const b = project(h.at.x + 0.5, h.at.y + 0.5, h.at.z);
@@ -835,9 +854,9 @@ export default function WorldCanvas2D({
           const cy = feet.sy - 24 * c.s;
           out.beacon = { x: feet.sx, y: cy - 3.5 * s, w: 14 * s + 4, h: 13 * s + 3 };
         }
-        if (mapArrowIsland) {
-          const i = islandCenter(mapArrowIsland);
-          const b = project(i.x + 0.5, i.y + 0.5, i.z + 2);
+        if (place) {
+          const i = place;
+          const b = project(i.x + 0.5, i.y + 0.5, i.z + (mapArrowOuvrage ? 1 : 2));
           const tip = toScreen(c, scr, b.bx, b.by);
           const shift = out.beacon ? separateMark({ x: tip.sx, y: tip.sy }, { x: out.beacon.x, y: out.beacon.y + out.beacon.h / 2 }, 56 * dprMarks) : { dx: 0, dy: 0 };
           out.tip = { x: tip.sx + shift.dx, y: tip.sy + shift.dy };
@@ -861,7 +880,7 @@ export default function WorldCanvas2D({
         // Carte, les étiquettes s'écartent aussi les unes des autres, de la flèche et du fanion ; ailleurs, seules celles
         // posées sur l'interface ou coupées par le bord bougent, comme en 3D.
         const { zones, bulles, cle: zonesCle } = lireZones();
-        const marks = p.map ? `${mapArrowIsland ?? ''}:${h.at && p.avatar ? `${h.at.x},${h.at.y},${h.at.z}` : ''}` : 'monde';
+        const marks = p.map ? `${mapArrowOuvrage?.ouvrage ?? mapArrowIsland ?? ''}:${h.at && p.avatar ? `${h.at.x},${h.at.y},${h.at.z}` : ''}` : 'monde';
         const key = `${list.map((l) => `${l.id}:${l.text}:${l.state?.id ?? ''}`).join('|')}@${target.cx.toFixed(1)},${target.cy.toFixed(1)},${target.s.toFixed(3)},${scr.w}x${scr.h}@${marks}@${zonesCle}`;
         if (labelLayout?.key !== key) {
           const boxes = list.map((l) => ({ ...anchor(l, target), ...measureIslandLabel(ctx, l.text, px, l.state) }));
@@ -870,10 +889,37 @@ export default function WorldCanvas2D({
           const cadre = { w: scr.w, h: scr.h };
           // Sur la Carte : la prochaine destination d'abord, une île fermée en dernier ; la flèche et le fanion restent
           // visibles. Entière ou absente : celle qui ne trouve pas de place libre près de son île ne se dessine pas à moitié.
-          const marques = p.map ? mapMarks(target) : null;
+          // La destination : l'île de la flèche, ou celle d'où part l'ouvrage qu'elle désigne (GD-7).
+          // L'île d'arrivée de l'ouvrage pèse autant, si cela ne tait aucun nom : son nom se pose au bout du tracé.
+          const destination = mapArrowIsland ?? mapArrowOuvrage?.depuis;
+          const indice = list.findIndex((l) => l.id === destination);
+          const arrivee = mapArrowOuvrage?.arrivee ? list.findIndex((l) => l.id === mapArrowOuvrage.arrivee) : -1;
+          const carte = p.map
+            ? {
+                weights: list.map((l) => (l.id === destination ? 2 : l.state?.id === 'fermee' ? 0.5 : 1)),
+                ...(indice >= 0 ? { destination: indice } : {}),
+                ...(arrivee >= 0 ? { arrivee } : {}),
+              }
+            : null;
+          // La flèche d'un ouvrage : la première de ses places libres, et aucune étiquette ne se pose jamais sur elle
+          // (`placerAvecLaFlecheDOuvrage`).
+          const marques = p.map ? mapMarks(target, mapArrowOuvrage ? null : mapArrowAt) : null;
           const obstacles = marques ? [marques.arrow, marques.beacon].filter((b): b is LabelBox => b !== null) : [];
-          const carte = p.map ? { weights: list.map((l) => (l.id === mapArrowIsland ? 2 : l.state?.id === 'fermee' ? 0.5 : 1)) } : null;
-          labelLayout = { key, ...placerEtiquettes(boxes, iles, { zones, bulles, obstacles, bounds: cadre, gap: 6 * dpr }, carte) };
+          // Le tracé de l'ouvrage, un obstacle souple : les étiquettes l'évitent si elles peuvent, sans se taire pour lui.
+          const souples = mapArrowOuvrage
+            ? boitesDuTrace(
+                mapArrowOuvrage.trace.map((c) => {
+                  const b = project(c.x + 0.5, c.y + 0.5, c.z + 1);
+                  const e = toScreen(target, scr, b.bx, b.by);
+                  return { x: e.sx, y: e.sy };
+                }),
+              )
+            : [];
+          const vue = { zones, bulles, obstacles, souples, bounds: cadre, gap: 6 * dpr };
+          if (mapArrowOuvrage && carte) {
+            const fleches = mapArrowOuvrage.places.slice(0, PLACES_DE_LA_FLECHE_MAX).map((c) => mapMarks(target, c).arrow).filter((b): b is LabelBox => b !== null);
+            labelLayout = { key, ...placerAvecLaFlecheDOuvrage(fleches, boxes, iles, vue, carte) };
+          } else labelLayout = { key, fleche: 0, ...placerEtiquettes(boxes, iles, vue, carte) };
         }
         const { offsets, visibles } = labelLayout;
         list.forEach((l, i) => {
@@ -882,9 +928,9 @@ export default function WorldCanvas2D({
           drawIslandLabel(ctx, l.text, a.x + offsets[i].dx, a.y + offsets[i].dy, px, l.state);
         });
       }
-      if (mapArrowIsland) {
+      if (mapArrowAt) {
         const { tip } = mapMarks(cam);
-        if (tip) drawMapArrow(ctx, tip.x, tip.y - Math.abs(Math.sin(t * 2.2)) * 6 * dprMarks, arrowH);
+        if (tip) drawMapArrow(ctx, tip.x, tip.y - Math.abs(Math.sin(t * 2.2)) * 6 * dprMarks, arrowH, mapArrowOuvrage ? 'ouvrage' : undefined);
       }
       if (p.trail?.length) {
         const pulse = 0.85 + Math.sin(t * 3) * 0.15;

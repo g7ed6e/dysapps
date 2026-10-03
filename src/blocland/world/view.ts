@@ -26,6 +26,35 @@ export interface Bonhomme<P> {
   vise?: boolean;
 }
 
+/**
+ * La flèche posée sur un ouvrage (GD-7) : son identifiant, et l'île d'où la prochaine destination propose de le
+ * construire (`depuis`, l'île de départ ; sans elle, l'île `from` de l'ouvrage). La vue trouve sa place par la
+ * disposition en grille (`placesDeLaFleche`).
+ */
+export interface MarqueDOuvrage {
+  ouvrage: string;
+  depuis?: BiomeId;
+}
+
+/**
+ * La flèche sur un ouvrage, en cases du monde : `cell`, la case où elle se pose ; `places`, les cases où elle peut
+ * glisser si une étiquette occupe déjà sa place (de `cell` vers l'arrivée) ; `trace`, toutes les cases de la liaison,
+ * dont le tracé se renforce sur la Carte, et `tirets`, celles qu'il dessine (`casesDesTirets`, calculées une fois) ;
+ * `arrivee`, l'île d'en face, dont le nom pèse sur la Carte autant que celui de l'île de départ.
+ */
+export interface MarqueDOuvrageEnCases extends MarqueDOuvrage {
+  cell: Cell;
+  places: Cell[];
+  trace: Cell[];
+  tirets: Cell[];
+  arrivee?: BiomeId;
+}
+
+/** La flèche est-elle posée sur un ouvrage ? */
+export function estUnOuvrage<M>(m: M): m is Extract<M, MarqueDOuvrage> {
+  return typeof m === 'object' && m !== null && 'ouvrage' in m;
+}
+
 export interface WorldFocus {
   /** Île à cadrer, ou `null` pour la vue d'ensemble. */
   island: BiomeId | null;
@@ -125,8 +154,12 @@ export interface WorldViewProps {
   forceDay?: boolean;
   /** Les ouvrages construits : la vue d'ensemble cadre les îles ouvertes et leurs voisines. */
   bridges?: string[];
-  /** Une flèche jaune qui flotte au-dessus d'une île (« Commence ici »), ou d'un point (le chantier du navire). */
-  marker?: BiomeId | Ancrage | null;
+  /**
+   * Une flèche jaune qui flotte au-dessus d'une île (« Commence ici »), d'un point (le chantier du navire) ou, sur la
+   * Carte, d'un ouvrage (la prochaine destination est un ouvrage à construire, GD-7) : posée sur sa liaison, côté île de
+   * départ (`placesDeLaFleche`), avec l'icône d'un ouvrage.
+   */
+  marker?: BiomeId | Ancrage | MarqueDOuvrage | null;
   /** Le bonhomme : son itinéraire (un seul point : il se tient là ; plusieurs : il marche). `seq` change à chaque trajet. */
   avatar?: Bonhomme<Ancrage>;
   /** La Carte : tout le continent vu du ciel, un fanion au-dessus du bonhomme. */
@@ -177,7 +210,7 @@ export interface WorldViewProps {
  */
 export interface EnCasesDuMonde {
   focus: Omit<WorldFocus, 'spot'> & { spot?: Cell };
-  marker: BiomeId | Cell | null;
+  marker: BiomeId | Cell | MarqueDOuvrageEnCases | null;
   avatar?: Bonhomme<Cell>;
   trail?: Cell[];
   quests?: (Omit<QuestMark, 'place'> & { cell: Cell })[];

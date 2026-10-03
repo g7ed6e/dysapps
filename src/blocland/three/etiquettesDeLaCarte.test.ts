@@ -15,8 +15,11 @@ import * as THREE from 'three';
 import type { BiomeId } from '../biomes';
 import { getArchipelago, islandsOf } from '../world/archipelago';
 import { ARCHIPELAGO_IDS, type ArchipelagoId } from '../world/archipels';
-import { placerEtiquettes, separateMark, type LabelBox } from '../world/labelLayout';
+import { placerAvecLaFlecheDOuvrage, placerEtiquettes, separateMark, type LabelBox } from '../world/labelLayout';
 import { avatarHome, islandCenter } from '../world/terrain';
+import { BRIDGES } from '../world/archipelago';
+import { archipelagoOfIsland } from '../world/archipels';
+import { grilleDe } from '../world/grille';
 import { placeLibre } from '../placeLibre';
 import { cadrageDeLaCarte } from './camera';
 import { largeurEnGras, type PoliceDeTest } from './policesDeTest';
@@ -46,9 +49,13 @@ function etiquette(nom: string, etat: string, largeur: (t: string) => number, el
  * le bonhomme sur la première île de l'archipel. Rend les îles dont le nom se tait alors que l'île se voit (`tus`), et
  * de combien chaque nom se pose au-dessus de son île, en pixels (`dessus`).
  */
-function laCarte(a: ArchipelagoId, etat: string, police: PoliceDeTest, elargir: number, destination: BiomeId = getArchipelago(a).port) {
+function laCarte(a: ArchipelagoId, etat: string, police: PoliceDeTest, elargir: number, destination: BiomeId | { ouvrage: string; depuis?: BiomeId } = getArchipelago(a).port) {
   const { w: W, h: H } = TABLETTE;
-  const c = cadrageDeLaCarte(a, destination, W, H, placeLibre(W, H, [PANNEAU, BARRE], BOUTONS));
+  // Une île : la pointe au-dessus de son cœur ; un ouvrage (GD-7) : juste au-dessus de ses places sur la liaison, la
+  // première pour le cadrage (`bornes.ts`).
+  const places = typeof destination === 'string' ? [] : grilleDe(a).placesDeLaFleche(destination.ouvrage, destination.depuis).map((m) => ({ x: m.x + 0.5, y: m.y + 0.5, z: m.z + 2 }));
+  const ici = places[0] ?? null;
+  const c = cadrageDeLaCarte(a, ici ?? (destination as BiomeId), W, H, placeLibre(W, H, [PANNEAU, BARRE], BOUTONS));
   const cam = new THREE.PerspectiveCamera(40, W / H, 0.5, 1e5);
   cam.position.copy(c.pos);
   cam.lookAt(c.target);
@@ -70,16 +77,32 @@ function laCarte(a: ArchipelagoId, etat: string, police: PoliceDeTest, elargir: 
   const tete = ecran(av.x + 0.5, av.z + 17, av.y + 0.5);
   const fh = Math.max(24, Math.abs(pied.y - tete.y));
   const fanion = { x: (pied.x + tete.x) / 2, y: (pied.y + tete.y) / 2, w: Math.max(24, fh * 0.9), h: fh };
-  const d = islandCenter(destination);
-  const pointe = ecran(d.x + 0.5, d.z + 8, d.y + 0.5);
-  const ecart = separateMark(pointe, { x: fanion.x, y: fanion.y + fanion.h / 2 }, 56);
-  const fleche = { x: pointe.x + ecart.dx, y: pointe.y + ecart.dy - 24, w: (48 * 96) / 124, h: 48 };
-  const poids = iles.map((b) => (b.id === destination ? 2 : 1));
-  const { visibles, offsets } = placerEtiquettes(boxes, points, { zones: ZONES, bulles: [], obstacles: [fleche, fanion], bounds: { w: W, h: H }, gap: 6 }, { weights: poids });
+  const flecheEn = (pointe: { x: number; y: number }) => {
+    const ecart = separateMark(pointe, { x: fanion.x, y: fanion.y + fanion.h / 2 }, 56);
+    return { x: pointe.x + ecart.dx, y: pointe.y + ecart.dy - 24, w: (48 * 96) / 124, h: 48 };
+  };
+  // Sur un ouvrage, la flèche prend la première de ses places libres, et aucune étiquette ne se pose sur elle
+  // (`placerAvecLaFlecheDOuvrage`, comme `etiquettes.ts`).
+  const cadre = { w: W, h: H };
+  const d = islandCenter((typeof destination === 'string' ? destination : iles[0].id) as BiomeId);
+  const fleches = places.map((p) => flecheEn(ecran(p.x, p.z, p.y)));
+  // La destination : l'île, ou celle d'où part l'ouvrage (`etiquettes.ts`).
+  const dest = typeof destination === 'string' ? destination : destination.depuis;
+  const poids = { weights: iles.map((b) => (b.id === dest ? 2 : 1)) };
+  const vue = { zones: ZONES, bulles: [], bounds: cadre, gap: 6 };
+  const { visibles, offsets, fleche: prise } = places.length
+    ? placerAvecLaFlecheDOuvrage(fleches, boxes, points, { ...vue, obstacles: [fanion] }, poids)
+    : { fleche: 0, ...placerEtiquettes(boxes, points, { ...vue, obstacles: [flecheEn(ecran(d.x + 0.5, d.z + 8, d.y + 0.5)), fanion] }, poids) };
+  const fleche = places.length ? fleches[prise] : flecheEn(ecran(d.x + 0.5, d.z + 8, d.y + 0.5));
   const sousLInterface = (p: { x: number; y: number }) => ZONES.some((z) => Math.abs(p.x - z.x) < z.w / 2 && Math.abs(p.y - z.y) < z.h / 2);
   const seVoit = (p: { x: number; y: number }) => p.x >= 0 && p.x <= W && p.y >= 0 && p.y <= H && !sousLInterface(p);
+  const recouvre = (p: LabelBox, q: LabelBox) => Math.abs(p.x - q.x) < (p.w + q.w) / 2 && Math.abs(p.y - q.y) < (p.h + q.h) / 2;
   return {
+    /** Sur un ouvrage, l'indice de la place prise par la flèche. */
+    prise,
     tus: iles.filter((_, i) => !visibles[i] && seVoit(points[i])).map((b) => b.id),
+    /** Les étiquettes montrées posées sur la flèche. */
+    surLaFleche: iles.filter((_, i) => visibles[i] && recouvre({ ...boxes[i], x: boxes[i].x + offsets[i].dx, y: boxes[i].y + offsets[i].dy }, fleche)).map((b) => b.id),
     dessus: new Map(iles.map((b, i) => [b.id, points[i].y - (boxes[i].y + offsets[i].dy)])),
   };
 }
@@ -107,5 +130,25 @@ describe('La Carte : chaque île a son nom (tablette 1024 × 768)', () => {
 
   it.each(['5e', '4e', '3e'] as const)('%s : quelle que soit la destination, chaque île qui se voit garde son nom', (a) => {
     for (const dest of islandsOf(a).map((b) => b.id)) expect(nomsTus(a, ETATS.blocland, 'atkinson-hyperlegible', 1, dest), `${a} → ${dest}`).toEqual([]);
+  });
+
+  it.each(ARCHIPELAGO_IDS)('%s : la flèche sur un ouvrage (GD-7), depuis chacune de ses îles, reste libre, aucune étiquette dessus', (a) => {
+    for (const def of BRIDGES.filter((b) => archipelagoOfIsland(b.from) === a))
+      for (const depuis of [def.from, def.to]) {
+        const carte = laCarte(a, ETATS.blocland, 'atkinson-hyperlegible', 1, { ouvrage: def.id, depuis });
+        expect(carte.surLaFleche, `${def.id} depuis ${depuis}`).toEqual([]);
+      }
+  });
+
+  it.each(ARCHIPELAGO_IDS)('%s : la flèche sur un ouvrage, l’île de départ (la destination) garde son nom', (a) => {
+    for (const def of BRIDGES.filter((b) => archipelagoOfIsland(b.from) === a))
+      for (const depuis of [def.from, def.to]) expect(nomsTus(a, ETATS.blocland, 'atkinson-hyperlegible', 1, { ouvrage: def.id, depuis }), `${def.id} depuis ${depuis}`).not.toContain(depuis);
+  });
+
+  it.each(['5e', '4e', '3e'] as const)('%s : la flèche sur un ouvrage, chaque île qui se voit garde son nom', (a) => {
+    for (const def of BRIDGES.filter((b) => archipelagoOfIsland(b.from) === a))
+      for (const depuis of [def.from, def.to]) {
+        expect(nomsTus(a, ETATS.blocland, 'atkinson-hyperlegible', 1, { ouvrage: def.id, depuis }), `${def.id} depuis ${depuis}`).toEqual([]);
+      }
   });
 });

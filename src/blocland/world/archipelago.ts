@@ -388,11 +388,13 @@ export interface WorldProgress {
 
 export type BridgeState = 'built' | 'buildable' | 'blocked' | 'far';
 
-/** La condition d'un ouvrage est-elle remplie depuis une île ouverte qu'il touche ? */
-export function conditionMet(bridge: BridgeDef, bridges: string[], world: WorldProgress): boolean {
+/**
+ * La condition d'un ouvrage est-elle remplie depuis une île ouverte qu'il touche ? `open` : les îles ouvertes, quand
+ * l'appelant les a déjà (`reachableIslands(bridges)`), pour ne pas les refaire à chaque ouvrage.
+ */
+export function conditionMet(bridge: BridgeDef, bridges: string[], world: WorldProgress, open = reachableIslands(bridges)): boolean {
   const condition = CONDITION_OF[bridge.kind];
   if (condition === 'aucune') return true;
-  const open = reachableIslands(bridges);
   return [bridge.from, bridge.to]
     .filter((island) => open.has(island))
     .some((island) => premierePartiePosee(island, world.plans));
@@ -419,23 +421,25 @@ export function conditionText(bridge: BridgeDef, bridges: string[]): string | nu
 
 /**
  * Construit ; constructible (une de ses deux îles est ouverte, la condition est remplie) ; bloqué (île ouverte mais
- * condition à remplir) ; ou trop loin pour l'instant. Sans `world`, les conditions ne sont pas regardées.
+ * condition à remplir) ; ou trop loin pour l'instant. Sans `world`, les conditions ne sont pas regardées. `open` : les
+ * îles ouvertes, si l'appelant les a déjà.
  */
-export function bridgeState(bridge: BridgeDef, bridges: string[], world?: WorldProgress): BridgeState {
+export function bridgeState(bridge: BridgeDef, bridges: string[], world?: WorldProgress, open?: Set<BiomeId>): BridgeState {
   if (bridge.cost === 0 || bridges.includes(bridge.id)) return 'built';
-  const open = reachableIslands(bridges);
-  if (!open.has(bridge.from) && !open.has(bridge.to)) return 'far';
-  return !world || conditionMet(bridge, bridges, world) ? 'buildable' : 'blocked';
+  const ouvertes = open ?? reachableIslands(bridges);
+  if (!ouvertes.has(bridge.from) && !ouvertes.has(bridge.to)) return 'far';
+  return !world || conditionMet(bridge, bridges, world, ouvertes) ? 'buildable' : 'blocked';
 }
 
 /**
  * Les ouvrages proposés maintenant (constructibles ou bloqués par une condition), qui touchent une île donnée (ou tous).
- * Avec « Pas de LV2 », aucun ne mène à l'île de la LV2 : l'élève n'y dépense pas de blocs.
+ * Avec « Pas de LV2 », aucun ne mène à l'île de la LV2 : l'élève n'y dépense pas de blocs. `open` : les îles ouvertes
+ * (`reachableIslands(bridges)`), si l'appelant les a déjà.
  */
-export function buildableBridges(bridges: string[], island?: BiomeId, world?: WorldProgress, lv2: Lv2Choice = lv2Courante()): BridgeDef[] {
+export function buildableBridges(bridges: string[], island?: BiomeId, world?: WorldProgress, lv2: Lv2Choice = lv2Courante(), open = reachableIslands(bridges)): BridgeDef[] {
   return (island ? bridgesOf(island) : BRIDGES).filter((b) => {
     if (lv2 === 'none' && [b.from, b.to].some((id) => getBiome(id)?.subject === 'lv2')) return false;
-    const state = bridgeState(b, bridges, world);
+    const state = bridgeState(b, bridges, world, open);
     return state === 'buildable' || state === 'blocked';
   });
 }

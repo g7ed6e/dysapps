@@ -181,14 +181,21 @@ export default function WorldCanvas({
     const brume = creerBrume(monde, lumiere, instant);
     const large = creerLarge(monde, camera, lumiere, derniers, passSeqRef);
     const bornes = creerBornes(monde, () => personnages.avatar, instant);
-    const etiquettes = creerEtiquettes(monde, el, camera, bornes.fleche, () => personnages.avatar, instant);
+    const etiquettes = creerEtiquettes(monde, el, camera, bornes.fleche, bornes.donneesDeLaFleche, () => personnages.avatar, instant);
     const personnages = creerPersonnages(monde, () => cubesDuMonde.champ(), instant, lumiere);
     const cubesDuMonde = creerCubes(monde, large, lumiere, instant);
     const navire = creerNavire(monde, personnages, cubesDuMonde, derniers, instant, vehicleRef, voyageRef);
     const rond = creerRond(monde, personnages, () => cubesDuMonde.champ(), lumiere, instant);
     const signesDesCreatures = creerSignes(monde, el, camera, personnages, derniers, instant);
     // La Carte se cadre dans la place que l'interface laisse libre, autour de la flèche de la destination (DA-31).
-    const lecture = { place: lecteurDePlaceLibre(el), destination: () => (bornes.fleche.userData.island as BiomeId | null | undefined) ?? null };
+    const lecture = {
+      place: lecteurDePlaceLibre(el),
+      // L'île de la flèche, ou la case où elle se pose sur un ouvrage (GD-7) : le cadrage garde la flèche dans la vue.
+      destination: () => {
+        const { ouvrage, pointe, island } = bornes.donneesDeLaFleche();
+        return ouvrage ? pointe : island;
+      },
+    };
     const cadrage = creerCamera(monde, camera, personnages.avatar, derniers, instant, lecture);
     world.current = { camera, cadrage, bornes, etiquettes, personnages, signes: signesDesCreatures, cubes: cubesDuMonde, navire, recentrer: () => recentrer() };
     // Les captures (scripts/prise-de-vue.mjs) posent la caméra à son cadrage sans attendre son pas : lisible par les

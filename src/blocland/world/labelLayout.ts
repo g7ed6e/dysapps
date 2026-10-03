@@ -39,8 +39,22 @@ function outside(a: LabelBox, bounds: { w: number; h: number }): number {
   return a.w * a.h - inX * inY;
 }
 
+/**
+ * Ce que coûte de couvrir un obstacle souple (le tracé de l'ouvrage suggéré, GD-7), par pixel couvert, quand une
+ * étiquette ou un obstacle dur coûte 1 : une étiquette s'en écarte si une place proche est libre, mais le couvre plutôt
+ * que d'en couvrir une autre.
+ */
+const SOUPLE = 0.25;
+
 /** Un placement glouton, dans l'ordre donné : chaque étiquette prend la place libre la plus proche. */
-function greedy(boxes: LabelBox[], order: number[], gap: number, bounds: { w: number; h: number } | undefined, obstacles: LabelBox[]): { out: LabelOffset[]; residue: number } {
+function greedy(
+  boxes: LabelBox[],
+  order: number[],
+  gap: number,
+  bounds: { w: number; h: number } | undefined,
+  obstacles: LabelBox[],
+  souples: LabelBox[] = [],
+): { out: LabelOffset[]; residue: number } {
   const placed: LabelBox[] = [...obstacles];
   const out: LabelOffset[] = new Array(boxes.length);
   let residue = 0;
@@ -55,6 +69,7 @@ function greedy(boxes: LabelBox[], order: number[], gap: number, bounds: { w: nu
       const at = { x: b.x + t.dx, y: b.y + t.dy, w: b.w, h: b.h };
       let cost = 0;
       for (const p of placed) cost += overlap(at, p, gap);
+      for (const p of souples) cost += overlap(at, p, 0) * SOUPLE;
       if (bounds) cost += outside(at, bounds) * 3;
       if (cost < bestCost) {
         best = t;
@@ -76,9 +91,10 @@ function greedy(boxes: LabelBox[], order: number[], gap: number, bounds: { w: nu
  * île fermée pèse moins : c'est elle qui s'écarte). Le calcul est fait pour le cadrage où la caméra arrive, pas image
  * par image : les étiquettes ne sautent pas pendant qu'elle glisse. `gap` : l'écart minimal. `bounds` : le cadre de
  * l'écran (moins la barre du bas), dont aucune étiquette ne sort si elle peut l'éviter. `obstacles` : ce qu'aucune
- * étiquette ne doit cacher (sur la Carte, la flèche de la destination et le fanion du bonhomme).
+ * étiquette ne doit cacher (sur la Carte, la flèche de la destination et le fanion du bonhomme). `souples` : ce qu'une
+ * étiquette évite si elle peut, sans que cela l'éloigne plus que ce que coûte d'en couvrir une autre (`SOUPLE`).
  */
-export function layoutLabels(boxes: LabelBox[], gap = 4, bounds?: { w: number; h: number }, weights?: number[], obstacles: LabelBox[] = []): LabelOffset[] {
+export function layoutLabels(boxes: LabelBox[], gap = 4, bounds?: { w: number; h: number }, weights?: number[], obstacles: LabelBox[] = [], souples: LabelBox[] = []): LabelOffset[] {
   const ids = boxes.map((_, i) => i);
   const byWeight = (o: number[]) => (weights ? [...o].sort((a, b) => weights[b] - weights[a]) : o);
   const base = [
@@ -92,7 +108,7 @@ export function layoutLabels(boxes: LabelBox[], gap = 4, bounds?: { w: number; h
   let best: LabelOffset[] = boxes.map(() => ({ dx: 0, dy: 0 }));
   let bestCost = Infinity;
   for (const order of orders) {
-    const { out, residue } = greedy(boxes, order, gap, bounds, obstacles);
+    const { out, residue } = greedy(boxes, order, gap, bounds, obstacles, souples);
     const moved = out.reduce((sum, o, i) => sum + (weights?.[i] ?? 1) * Math.hypot(o.dx, o.dy), 0);
     const cost = residue * 100 + moved;
     if (cost < bestCost) {
@@ -191,16 +207,75 @@ export function montrees(boxes: LabelBox[], offsets: LabelOffset[], zones: Label
  * l'interface (`zones`) et des `obstacles` (la flèche et le fanion de la Carte, les grands repères d'Archipéo) : avec
  * `carte`, les unes des autres aussi (voir `layoutLabels`) ; sans, seules celles posées dessus ou coupées par le bord
  * bougent (voir `ecarterDesObstacles`). Puis `montrees` dit lesquelles se montrent (`bulles` : les bulles passagères,
- * qui cachent sans pousser) ; celles qu'il écarte essaient encore les places simples autour de leur île.
+ * qui cachent sans pousser) ; celles qu'il écarte essaient encore les places simples autour de leur île. `dures` : des
+ * obstacles qu'aucune étiquette ne couvre jamais, même faute d'autre place (elle se tait plutôt) : la flèche d'un
+ * ouvrage (GD-7). Sur la Carte, deux préférences qui ne taisent jamais un nom (GD-7) : `souples`, des obstacles
+ * qu'une étiquette évite si elle peut (le tracé de l'ouvrage suggéré), et `carte.arrivee`, l'île d'arrivée de cet
+ * ouvrage, dont le nom pèse alors autant que celui de la destination pour se poser au bout du tracé. Si les deux
+ * ensemble taisent un nom qui se montrait sans elles, le tracé seul est essayé, puis rien. `carte.destination` :
+ * l'indice de la prochaine destination (sinon, la plus lourde), seule à avoir sa garde.
  */
 export function placerEtiquettes(
   boxes: LabelBox[],
   iles: { x: number; y: number }[],
-  vue: { zones: LabelBox[]; bulles: LabelBox[]; obstacles: LabelBox[]; bounds: { w: number; h: number }; gap: number },
-  carte: { weights: number[] } | null,
+  vue: VueDesEtiquettes & { dures?: LabelBox[] },
+  carte: CarteDesEtiquettes | null,
   tenues: number[] = [],
 ): { offsets: LabelOffset[]; visibles: boolean[] } {
-  const { zones, bulles, obstacles, bounds, gap } = vue;
+  const souples = carte ? (vue.souples ?? []) : [];
+  const arrivee = carte?.arrivee;
+  const lourde = carte && arrivee !== undefined && carte.weights[arrivee] !== undefined ? carte.weights.map((p, i) => (i === arrivee ? Math.max(p, ...carte.weights) : p)) : null;
+  if (!carte || (!souples.length && !lourde)) return placerSansSouples(boxes, iles, vue, carte, tenues, []);
+  const essais: [CarteDesEtiquettes, LabelBox[]][] = [];
+  if (lourde) essais.push([{ ...carte, weights: lourde }, souples]);
+  if (souples.length) essais.push([carte, souples]);
+  let sans: { offsets: LabelOffset[]; visibles: boolean[] } | null = null;
+  for (const [c, s] of essais) {
+    const r = placerSansSouples(boxes, iles, vue, c, tenues, s);
+    // Tous les noms se montrent : rien n'en a tu aucun.
+    if (r.visibles.every(Boolean)) return r;
+    // Ni le tracé ni l'arrivée ne taisent un nom : s'ils en taisent un qui se montrait sans eux, l'essai suivant.
+    const base = (sans ??= placerSansSouples(boxes, iles, vue, carte, tenues, []));
+    if (!base.visibles.some((v, i) => v && !r.visibles[i])) return r;
+  }
+  return sans ?? placerSansSouples(boxes, iles, vue, carte, tenues, []);
+}
+
+/** Ce que reçoit le placement des étiquettes d'une vue (voir `placerEtiquettes`). */
+export interface VueDesEtiquettes {
+  zones: LabelBox[];
+  bulles: LabelBox[];
+  obstacles: LabelBox[];
+  bounds: { w: number; h: number };
+  gap: number;
+  /** Sur la Carte, les obstacles souples : le tracé de l'ouvrage suggéré (GD-7). */
+  souples?: LabelBox[];
+}
+
+/**
+ * Sur la Carte, le poids de chaque étiquette ; l'indice de la prochaine destination (sinon, la plus lourde) ; et celui
+ * de l'île d'arrivée de l'ouvrage suggéré (GD-7), qui pèse autant que la destination tant que cela ne tait aucun nom.
+ */
+export interface CarteDesEtiquettes {
+  weights: number[];
+  destination?: number;
+  arrivee?: number;
+}
+
+function placerSansSouples(
+  boxes: LabelBox[],
+  iles: { x: number; y: number }[],
+  vue: VueDesEtiquettes & { dures?: LabelBox[] },
+  carte: CarteDesEtiquettes | null,
+  tenues: number[],
+  souples: LabelBox[],
+): { offsets: LabelOffset[]; visibles: boolean[] } {
+  const { zones, bulles, bounds, gap, dures = [] } = vue;
+  // Les obstacles durs (la flèche d'un ouvrage, GD-7) sont aussi des obstacles : les étiquettes s'en écartent d'abord.
+  // Mais ce ne sont pas des repères posés sur l'île de destination (`reperes`) : son nom ne passe pas par-dessus pour
+  // s'y lire, il prend une autre place.
+  const obstacles = dures.length ? [...vue.obstacles, ...dures] : vue.obstacles;
+  const reperes = vue.obstacles;
   // Hors de la Carte, les étiquettes tenues (l'île « Commence ici », l'île du bonhomme) pèsent plus que les autres : elles
   // se montrent d'abord, et prennent leur place simple à un nom plus léger (référent dys, LV2-5).
   const poidsHors = !carte && tenues.length ? boxes.map((_, i) => (tenues.includes(i) ? 2 : 1)) : undefined;
@@ -211,26 +286,32 @@ export function placerEtiquettes(
   });
   const sous = gardees.map((i) => boxes[i]);
   const placees = carte
-    ? layoutLabels(sous, gap, bounds, gardees.map((i) => carte.weights[i]), [...obstacles, ...zones])
+    ? layoutLabels(sous, gap, bounds, gardees.map((i) => carte.weights[i]), [...obstacles, ...zones], souples)
     : ecarterDesObstacles(sous, [...obstacles, ...zones], gap, bounds);
   const offsets: LabelOffset[] = boxes.map(() => ({ dx: 0, dy: 0 }));
   gardees.forEach((i, k) => (offsets[i] = placees[k]));
   const couvert = [...zones, ...bulles];
   const visibles = montrees(boxes, offsets, couvert, bounds, w, iles);
+  // Une étiquette que l'écart laisse sur un obstacle dur ne s'y montre pas : elle cherche plus bas une autre place (les
+  // places simples autour de son île, puis la dernière chance de la Carte), qui évitent les obstacles.
+  if (dures.length)
+    boxes.forEach((b, i) => {
+      if (visibles[i] && dures.some((v) => overlap({ ...b, x: b.x + offsets[i].dx, y: b.y + offsets[i].dy }, v, 0) > 0)) visibles[i] = false;
+    });
   // Avant de renoncer à un nom dont l'île se voit : les places simples autour d'elle, dessus, dessous, à gauche, à
   // droite (DA-31), sans trait de rappel ni place plus loin. La plus lourde d'abord ; une place prise n'en change pas
   // tant que le cadrage ne bouge pas (le calcul ne dépend que de lui). Sur la Carte, le nom de la destination ne se
   // retire jamais pour un autre : il prend sa place simple, et le nom plus léger qui l'occupait cherche la sienne.
   const poids = (i: number) => (w ? w[i] : 1);
   const lourd = w ? Math.max(1, ...gardees.map(poids)) : Infinity;
-  const destination = carte && lourd > 1 ? gardees.find((i) => poids(i) >= lourd) : undefined;
-  const garde = destination === undefined ? null : gardeDeLaDestination(iles[destination], obstacles);
+  const destination = carte && lourd > 1 ? (carte.destination !== undefined && gardees.includes(carte.destination) ? carte.destination : gardees.find((i) => poids(i) >= lourd)) : undefined;
+  const garde = destination === undefined ? null : gardeDeLaDestination(iles[destination], reperes);
   const vues = new Map<number, LabelBox>();
   boxes.forEach((b, i) => {
     if (!visibles[i]) return;
     const at = { ...b, x: b.x + offsets[i].dx, y: b.y + offsets[i].dy };
     // Un autre nom posé sur l'île de destination ou contre sa flèche s'y lirait : il cherche une autre place.
-    if (garde && poids(i) < lourd && overlap(at, garde, 0) > 0) visibles[i] = false;
+    if (garde && i !== destination && overlap(at, garde, 0) > 0) visibles[i] = false;
     else vues.set(i, at);
   });
   const autour = gardees.filter((i) => !visibles[i]).sort((a, b) => poids(b) - poids(a) || a - b);
@@ -242,7 +323,7 @@ export function placerEtiquettes(
     const chasse = poids(i) >= lourd && lourd > 1;
     // Dessus et dessous passent un repère posé sur l'île (la flèche de la destination, le fanion) plutôt que d'y renoncer.
     const passe = (y: number, sens: 1 | -1) => {
-      const gene = obstacles.filter((v) => overlap({ ...b, x: ile.x, y }, v, gap) > 0);
+      const gene = reperes.filter((v) => overlap({ ...b, x: ile.x, y }, v, gap) > 0);
       if (!gene.length) return y;
       return sens < 0 ? Math.min(...gene.map((v) => v.y - v.h / 2)) - b.h / 2 - gap : Math.max(...gene.map((v) => v.y + v.h / 2)) + b.h / 2 + gap;
     };
@@ -252,15 +333,18 @@ export function placerEtiquettes(
       { x: ile.x - b.w / 2 - gap, y: ile.y },
       { x: ile.x + b.w / 2 + gap, y: ile.y },
     ];
-    // La destination essaie d'abord les places libres, puis celles qu'un nom plus léger occupe.
-    for (const pousser of chasse ? [false, true] : [false]) {
+    // La destination essaie d'abord les places libres, puis celles qu'un nom plus léger occupe ; chacune, d'abord hors
+    // du tracé suggéré (souple), puis dessus.
+    const essais = (chasse ? [false, true] : [false]).flatMap((pousser) => (souples.length ? [true, false] : [false]).map((eviter) => ({ pousser, eviter })));
+    for (const { pousser, eviter } of essais) {
       const p = places.find((p, k) => {
         const at = { ...b, x: p.x, y: p.y };
         if (!entiere(b, { dx: p.x - b.x, dy: p.y - b.y }, couvert, bounds) || obstacles.some((v) => overlap(at, v, gap) > 0)) return false;
+        if (eviter && souples.some((v) => overlap(at, v, 0) > 0)) return false;
         if ([...vues].some(([j, v]) => overlap(at, v, gap) > 0 && !(pousser && poids(j) < poids(i)))) return false;
-        if (garde && !chasse && overlap(at, garde, gap) > 0) return false;
+        if (garde && i !== destination && overlap(at, garde, gap) > 0) return false;
         // Posé sur la flèche, le nom de la destination se lit sur son île, même au-dessus d'une île voisine.
-        if (chasse && k === 0) return true;
+        if (chasse && (destination === undefined || i === destination) && k === 0) return true;
         return !iles.some((q, j) => j !== i && distanceA(at, q) < distanceA(at, ile));
       });
       if (!p) continue;
@@ -291,7 +375,7 @@ export function placerEtiquettes(
     if (destination !== undefined && visibles[destination] && offsets[destination].dy > 0) {
       const b = boxes[destination];
       const ile = iles[destination];
-      const fleches = obstacles.filter((v) => overlap({ ...b, x: ile.x, y: ile.y - b.h / 2 - gap }, v, gap) > 0);
+      const fleches = reperes.filter((v) => overlap({ ...b, x: ile.x, y: ile.y - b.h / 2 - gap }, v, gap) > 0);
       const at = { ...b, x: ile.x, y: Math.min(ile.y, ...fleches.map((v) => v.y - v.h / 2)) - b.h / 2 - gap };
       if (entiere(b, { dx: at.x - b.x, dy: at.y - b.y }, couvert, bounds) && !obstacles.some((v) => overlap(at, v, gap) > 0)) dessus = { i: destination, at };
     }
@@ -417,6 +501,86 @@ function gardeDeLaDestination(ile: { x: number; y: number }, obstacles: LabelBox
 /** La distance d'un point à une étiquette (nulle s'il est dessous). */
 function distanceA(r: LabelBox, p: { x: number; y: number }): number {
   return Math.hypot(Math.max(0, Math.abs(p.x - r.x) - r.w / 2), Math.max(0, Math.abs(p.y - r.y) - r.h / 2));
+}
+
+/** Combien de cases du tracé une boîte d'obstacle souple couvre (voir `boitesDuTrace`). */
+const CASES_PAR_BOITE = 3;
+
+/**
+ * Le tracé de l'ouvrage suggéré (GD-7) en obstacles souples pour les étiquettes : `points`, ses cases à l'écran, de
+ * bout en bout. Une boîte toutes les trois cases (une liaison de 96 cases en fait 32), qui les couvre avec une marge
+ * de trois quarts de case (le liseré d'un tiret est large d'une case et demie) ; la taille d'une case à l'écran est
+ * l'écart moyen entre deux cases voisines.
+ */
+export function boitesDuTrace(points: readonly { x: number; y: number }[]): LabelBox[] {
+  if (!points.length) return [];
+  let pas = 0;
+  for (let i = 1; i < points.length; i++) pas += Math.hypot(points[i].x - points[i - 1].x, points[i].y - points[i - 1].y);
+  const marge = Math.max(3, (points.length > 1 ? pas / (points.length - 1) : 0) * 0.75);
+  const out: LabelBox[] = [];
+  for (let i = 0; i < points.length; i += CASES_PAR_BOITE) {
+    let x0 = Infinity;
+    let x1 = -Infinity;
+    let y0 = Infinity;
+    let y1 = -Infinity;
+    for (let k = i; k < Math.min(points.length, i + CASES_PAR_BOITE); k++) {
+      x0 = Math.min(x0, points[k].x);
+      x1 = Math.max(x1, points[k].x);
+      y0 = Math.min(y0, points[k].y);
+      y1 = Math.max(y1, points[k].y);
+    }
+    out.push({ x: (x0 + x1) / 2, y: (y0 + y1) / 2, w: x1 - x0 + 2 * marge, h: y1 - y0 + 2 * marge });
+  }
+  return out;
+}
+
+/** Sur la Carte, combien de places la flèche d'un ouvrage essaie au plus le long de sa liaison (voir `placerAvecLaFlecheDOuvrage`). */
+export const PLACES_DE_LA_FLECHE_MAX = 8;
+
+/**
+ * Sur la Carte, la flèche d'un ouvrage (GD-7) et les étiquettes : `fleches`, sa boîte à l'écran à chacune de ses places
+ * sur la liaison (de la voulue, côté île de départ, à la dernière permise vers l'arrivée ; terrain.ts,
+ * `placesDeLaFleche`). La flèche est un obstacle dur (`placerEtiquettes`, `dures`) : aucune étiquette ne se pose sur
+ * elle. Elle reste à sa place voulue (la première) tant qu'aucune étiquette n'y bouge ni ne s'y tait à cause d'elle
+ * (comparé au placement sans la flèche, le tracé suggéré compris : le tracé seul ne la fait pas glisser) ; sinon elle
+ * prend la première place libre suivante, dans le cadre et hors de l'interface ; sinon la première où autant de noms
+ * se montrent, celui de la destination compris (des étiquettes s'écartent) ; sinon la voulue, et c'est l'étiquette qui
+ * se déplace ou se tait, jamais la flèche hors de sa liaison. Seules les `PLACES_DE_LA_FLECHE_MAX` premières places
+ * s'essaient. Rend l'indice de la place prise (`fleche`) et le placement des étiquettes. Le calcul (un placement par
+ * place essayée, neuf au plus avec celui sans la flèche ; avec un tracé souple, chacun en trois essais au plus :
+ * l'arrivée lourde avec le tracé, le tracé seul, puis sans tracé) se fait une fois par cadrage, pas image par image.
+ */
+export function placerAvecLaFlecheDOuvrage(
+  toutes: LabelBox[],
+  boxes: LabelBox[],
+  iles: { x: number; y: number }[],
+  vue: VueDesEtiquettes,
+  carte: CarteDesEtiquettes,
+): { fleche: number; offsets: LabelOffset[]; visibles: boolean[] } {
+  const fleches = toutes.slice(0, PLACES_DE_LA_FLECHE_MAX);
+  const { zones, bounds } = vue;
+  const avec = (k: number) => ({ fleche: k, ...placerEtiquettes(boxes, iles, { ...vue, dures: fleches[k] ? [fleches[k]] : [] }, carte) });
+  if (!fleches.length) return avec(0);
+  const dansLeCadre = (f: LabelBox) => outside(f, bounds) < 1 && !zones.some((z) => overlap(f, z, 0) > 0);
+  const sans = placerEtiquettes(boxes, iles, vue, carte);
+  const rienNeBouge = (r: { offsets: LabelOffset[]; visibles: boolean[] }) =>
+    r.visibles.every((v, i) => v === sans.visibles[i] && (!v || Math.hypot(r.offsets[i].dx - sans.offsets[i].dx, r.offsets[i].dy - sans.offsets[i].dy) < 0.5));
+  // Autant de noms montrés qu'avant (pas forcément les mêmes : la flèche peut en déplacer un vers une place libérée), et
+  // celui de la destination (le plus lourd) s'il se montrait.
+  const montres = (v: boolean[]) => v.filter(Boolean).length;
+  const lourd = Math.max(...carte.weights);
+  const aucunNeSeTait = (r: { visibles: boolean[] }) =>
+    montres(r.visibles) >= montres(sans.visibles) && r.visibles.every((v, i) => v || !sans.visibles[i] || carte.weights[i] < lourd || lourd <= 1);
+  let secours: ReturnType<typeof avec> | null = null;
+  let voulue: ReturnType<typeof avec> | null = null;
+  for (let k = 0; k < fleches.length; k++) {
+    if (!dansLeCadre(fleches[k])) continue;
+    const r = avec(k);
+    if (rienNeBouge(r)) return r;
+    if (!secours && aucunNeSeTait(r)) secours = r;
+    if (k === 0) voulue = r;
+  }
+  return secours ?? voulue ?? avec(0);
 }
 
 /**

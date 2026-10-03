@@ -57,7 +57,9 @@ it('le panneau 3D replie le bâtiment et les ouvrages quand il n’y a rien à y
   expect(plan()).not.toHaveAttribute('open');
   expect(plan().textContent).toContain('0 partie posée sur 3');
   expect(ouvrages()).not.toHaveAttribute('open');
-  expect(ouvrages().textContent).toContain('Encore 4 blocs pour le moins cher');
+  // Le pli replié nomme l'ouvrage suggéré, avec les mots de la Carte ; il est en tête de la liste.
+  expect(ouvrages().textContent).toContain('Encore 4 blocs pour le sentier vers Mine des lettres');
+  expect(ouvrages().querySelector('[data-bridge]')).toHaveAttribute('data-bridge', 'french-6e-phonology-french-6e-letter-confusion');
   expect(screen.getByRole('list', { name: 'Missions de l’île' })).toBeInTheDocument();
   // L'élève ouvre le pli lui-même : son choix tient.
   await userEvent.click(plan().querySelector('summary')!);

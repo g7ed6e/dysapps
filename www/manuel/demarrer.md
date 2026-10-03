@@ -9,7 +9,7 @@ L’application se parcourt comme un jeu. Elle **s’ouvre sur le village**, sur
 - **Menu** (adresse `#/menu`) : le menu principal, en page. C’est l’accueil quand le réglage « Au démarrage » choisit le menu, ou quand l’appareil ne sait pas dessiner le monde (vue simple). De haut en bas :
   - **Blocland** et « Chaque bloc construit ton monde. » ;
   - **Ton village** : l’état du village de l’archipel où se tient le bonhomme, en cinq crans (voir [Le village en cinq états](blocland.md#le-village-en-cinq-etats)) ;
-  - **Reprendre l’aventure**, le gros bouton, qui mène à la **prochaine destination**, dite en une phrase et lue avec Écouter (« Prochaine destination : Forêt des sons. Tu as tout pour finir La cabane de Mousso : pose tes blocs. ») ; en dessous, **Continuer** (la dernière mission ouverte) et **À revoir aujourd’hui** quand il y en a ;
+  - **Reprendre l’aventure**, le gros bouton, qui mène à la **prochaine destination**, dite en une phrase et lue avec Écouter (« Prochaine destination : Plaine des nombres. Tu peux construire le bac vers Rivière des fractions. Il ouvre une île de maths. » ; l’ordre de la suggestion est dans [L’aventure](blocland.md)) ; en dessous, **Continuer** (la dernière mission ouverte) et **À revoir aujourd’hui** quand il y en a ;
   - la **progression** : le rôle et le niveau, le nombre d’archipels atteints sur quatre, et le lien **Succès** ;
   - les trois **Expéditions** : Maths, Français et Anglais, chacune avec le nom de son expédition, qui mènent aux missions de la matière ;
   - en bas, les liens **Toutes les missions**, **Réglages** et **Revoir le tutoriel**.

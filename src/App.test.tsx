@@ -252,6 +252,27 @@ it('l’accueil annonce le Bloc-Navire quand il est prêt à partir', async () =
   expect(document.querySelector('.home-destination')).toHaveTextContent(/^Prochaine destination : Plaine.*Bloc-Navire/);
 });
 
+it('quand la prochaine destination est un ouvrage, « Reprendre l’aventure » et « Y aller » ouvrent son île sur lui, mis en avant', async () => {
+  const { getBiome, missionsJouables } = await import('./blocland/biomes');
+  const { exercisesOf } = await import('./blocland/exercises');
+  // La Forêt, la Plaine, la Mine et la Rivière jouées, 4 blocs : le pont de la Forêt vers l'Horloge des verbes.
+  const iles = ['french-6e-phonology', 'maths-6e-calculation', 'french-6e-letter-confusion', 'maths-6e-fractions'] as const;
+  const progress = Object.fromEntries(iles.flatMap((ile) => missionsJouables(getBiome(ile)!).map((m) => [exercisesOf(ile, m.id)[0].id, { stars: 2, attempts: 1, best: 0.8 }])));
+  const world = { place: 'french-6e-letter-confusion', links: ['french-6e-phonology-french-6e-letter-confusion', 'maths-6e-calculation-maths-6e-fractions'] };
+  localStorage.setItem('dysapps:game', JSON.stringify({ progress, stock: { 'french-6e-phonology': 4 }, world }));
+  localStorage.setItem('dysapps:progress', JSON.stringify({ totalAnswers: 3 }));
+  const lien = '/adventure/french-6e-phonology?worksite=french-6e-phonology-english-6e-grammar';
+  renderAt('/');
+  expect(screen.getByRole('link', { name: /Reprendre l’aventure/ })).toHaveAttribute('href', lien);
+  document.body.innerHTML = '';
+  // La vue simple : la Carte y mène aussi, et la page de l'île met la ligne de l'ouvrage en avant.
+  renderAt('/adventure/map');
+  expect(screen.getByRole('link', { name: /Y aller/ })).toHaveAttribute('href', lien);
+  document.body.innerHTML = '';
+  renderAt(lien);
+  expect(document.querySelector('[data-bridge="french-6e-phonology-english-6e-grammar"]')).toHaveClass('bridge-highlight');
+});
+
 it('surligne les syllabes en couleurs alternées quand le réglage est actif', () => {
   localStorage.setItem('dysapps:settings', JSON.stringify({ syllables: true }));
   const { container } = renderAt('/adventure');

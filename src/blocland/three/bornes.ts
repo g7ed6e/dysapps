@@ -5,12 +5,43 @@ import { formeDuPilier, type Pilier } from '../world/construction';
 import { DELAVE } from '../world/decor/pinceau';
 import type { ArchipelagoId } from '../world/map';
 import { islandCenter } from '../world/terrain';
-import type { EnCasesDuMonde } from '../world/view';
+import { estUnOuvrage, type EnCasesDuMonde } from '../world/view';
+import type { BiomeId } from '../biomes';
+import { creerTraceSuggere } from './traceSuggere';
 import type { Instant, Monde, PartieDeLaScene } from './partie';
 
+/** Un point du monde de la scène 3D : `x` et `y` sur la grille, `z` la hauteur. */
+export interface Pointe {
+  x: number;
+  y: number;
+  z: number;
+}
+
+/**
+ * Ce que montre la flèche « Commence ici » (la Carte la remplace par sa flèche), lu par les étiquettes et le cadrage de
+ * la Carte : `posee`, elle a été posée au moins une fois ; `on`, elle montre quelque chose ; `island`, l'île ;
+ * `ouvrage`, l'ouvrage (GD-7), `depuis`, son île de départ et `arrivee`, l'île d'en face ; `pointe`, le point du monde
+ * où la flèche de la Carte pose sa pointe ; `pointes`, sur un ouvrage, ses places le long de la liaison (la première
+ * est `pointe`), où elle glisse si une étiquette occupe sa place ; `trace`, les cases de sa liaison, de bout en bout,
+ * que les étiquettes évitent si elles peuvent (three/etiquettes.ts).
+ */
+export interface DonneesDeLaFleche {
+  posee: boolean;
+  on: boolean;
+  island: BiomeId | null;
+  ouvrage: string | null;
+  depuis: BiomeId | null;
+  arrivee: BiomeId | null;
+  pointe: Pointe | null;
+  pointes: Pointe[] | null;
+  trace: Pointe[] | null;
+}
+
 export interface Bornes extends PartieDeLaScene {
-  /** La flèche « Commence ici » : sa place et, dans `userData`, l'île qu'elle montre (la Carte la remplace par sa flèche). */
+  /** La flèche « Commence ici » : sa place ; ce qu'elle montre : `donneesDeLaFleche`. */
   fleche: THREE.Group;
+  /** Ce que montre la flèche (à lire, pas à modifier : `poserLaFleche` le tient). */
+  donneesDeLaFleche(): Readonly<DonneesDeLaFleche>;
   /** Les repères des bornes de mission (on les touche). */
   missions: THREE.Group;
   poserLaFleche(marker: EnCasesDuMonde['marker']): void;
@@ -78,6 +109,13 @@ export function creerBornes(monde: Monde, bonhomme: () => THREE.Object3D, instan
   scene.add(trailGroup);
   const questMarksGroup = new THREE.Group();
   scene.add(questMarksGroup);
+  // Sur la Carte, le tracé renforcé de l'ouvrage que désigne la flèche (GD-7) : un seul maillage, refait quand il change.
+  const leTrace = creerTraceSuggere();
+  scene.add(leTrace.mesh);
+  const donnees: DonneesDeLaFleche = { posee: false, on: false, island: null, ouvrage: null, depuis: null, arrivee: null, pointe: null, pointes: null, trace: null };
+  /** La hauteur de base de la flèche « Commence ici », d'où elle rebondit. */
+  let baseDeLaFleche = 0;
+  let traceSource: readonly { x: number; y: number; z: number }[] | null = null;
 
   const vider = (g: THREE.Group) => {
     for (const child of [...g.children]) {
@@ -90,21 +128,41 @@ export function creerBornes(monde: Monde, bonhomme: () => THREE.Object3D, instan
 
   return {
     fleche: markerGroup,
+    donneesDeLaFleche: () => donnees,
     missions: questMarksGroup,
-    // La flèche « Commence ici » (sur une île, ou sur une case du monde : le chantier du navire).
+    // La flèche « Commence ici » (sur une île, ou sur une case du monde : le chantier du navire), ou sur la Carte celle
+    // d'un ouvrage (sur sa liaison, côté île de départ) et le tracé renforcé de cette liaison.
     poserLaFleche: (marker) => {
-      markerGroup.userData.island = typeof marker === 'string' ? marker : null;
-      markerGroup.userData.on = Boolean(marker);
+      const ouvrage = estUnOuvrage(marker) ? marker : null;
+      donnees.posee = true;
+      donnees.island = typeof marker === 'string' ? marker : null;
+      donnees.ouvrage = ouvrage?.ouvrage ?? null;
+      // L'île d'où il part : la prochaine destination, dont le nom pèse sur la Carte comme celui d'une île désignée ; et
+      // l'île d'en face, dont le nom pèse autant, pour se poser au bout du tracé.
+      donnees.depuis = ouvrage ? (ouvrage.depuis ?? null) : null;
+      donnees.arrivee = ouvrage ? (ouvrage.arrivee ?? null) : null;
+      donnees.on = Boolean(marker);
+      leTrace.poser(ouvrage?.tirets ?? null);
+      // Refaite seulement quand la liaison change (la vue garde la même liste tant qu'elle ne change pas).
+      if (traceSource !== (ouvrage?.trace ?? null)) {
+        traceSource = ouvrage?.trace ?? null;
+        donnees.trace = traceSource ? traceSource.map((p) => ({ x: p.x + 0.5, y: p.y + 0.5, z: p.z + 1 })) : null;
+      }
       if (!marker) {
+        donnees.pointe = null;
+        donnees.pointes = null;
         markerGroup.visible = false;
         return;
       }
-      const c = typeof marker === 'string' ? islandCenter(marker) : marker;
-      const base = typeof marker === 'string' ? c.z + 8 : c.z;
-      markerGroup.userData.base = base;
+      const ile = typeof marker === 'string';
+      const c = typeof marker === 'string' ? islandCenter(marker) : estUnOuvrage(marker) ? marker.cell : marker;
+      const base = ile ? c.z + 8 : ouvrage ? c.z + 2 : c.z;
+      // La pointe de la flèche de la Carte : au-dessus du cœur d'une île, juste au-dessus du tablier d'un ouvrage.
+      donnees.pointe = ile || ouvrage ? { x: c.x + 0.5, y: c.y + 0.5, z: base } : null;
+      donnees.pointes = ouvrage ? ouvrage.places.map((p) => ({ x: p.x + 0.5, y: p.y + 0.5, z: p.z + 2 })) : null;
+      baseDeLaFleche = base;
       markerGroup.position.set(c.x, base + 0.5, c.y);
       markerGroup.visible = true;
-      markerGroup.userData.on = true;
     },
     // Les repères des bornes de mission : un losange jaune qui flotte (à faire), ou les étoiles gagnées en petits cubes
     // d'or empilés. Rien sur une île fermée.
@@ -144,6 +202,8 @@ export function creerBornes(monde: Monde, bonhomme: () => THREE.Object3D, instan
     animer: (t, _dt, reduit) => {
       const avatar = bonhomme();
       beaconGroup.visible = instant.carte && avatar.visible;
+      // Le tracé de l'ouvrage désigné : sur la Carte seulement, avec la flèche ; immobile.
+      leTrace.mesh.visible = instant.carte && leTrace.pose();
       // « Réduire les animations » : le fanion, les repères de mission et les balises du chemin restent dans leur pose de
       // base, sans rotation, rebond ni pulsation, comme la flèche « Commence ici ».
       if (beaconGroup.visible) {
@@ -162,7 +222,7 @@ export function creerBornes(monde: Monde, bonhomme: () => THREE.Object3D, instan
         for (const m of trailGroup.children) m.scale.setScalar(pulse);
       }
       if (markerGroup.visible) {
-        markerGroup.position.y = markerGroup.userData.base + 0.5 + (reduit ? 0 : Math.abs(Math.sin(t * 2.2)) * 0.8);
+        markerGroup.position.y = baseDeLaFleche + 0.5 + (reduit ? 0 : Math.abs(Math.sin(t * 2.2)) * 0.8);
         markerGroup.rotation.y = reduit ? 0 : t * 0.8;
       }
     },
@@ -171,6 +231,8 @@ export function creerBornes(monde: Monde, bonhomme: () => THREE.Object3D, instan
       vider(trailGroup);
       for (const g of [markerGroup, beaconGroup]) vider(g);
       markerMat.dispose();
+      scene.remove(leTrace.mesh);
+      leTrace.dispose();
     },
   };
 }

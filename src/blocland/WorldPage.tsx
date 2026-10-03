@@ -25,6 +25,7 @@ import { useBackOpensMenu } from './useBackOpensMenu';
 import { TrophySheet } from './TrophySheet';
 import { AssemblageSheet } from './Assemblage';
 import { ASSEMBLAGE_PATH } from './world/assemblage';
+import { lienDeLaDestination } from './world/destination';
 import { TROPHIES_PATH, trophies } from './trophies';
 import { WorldCanvas } from './three';
 import { Tutorial, hasSeenTutorial } from './Tutorial';
@@ -199,11 +200,12 @@ export function WorldPage() {
     if (island) retenirPanneauReplie(open ? null : island.id);
     setSheetOpen(open);
   };
-  // Aller sur une île (ou y revenir) : son panneau s'ouvre, même si c'est déjà l'île ouverte.
-  const openIsland = (id: BiomeId) => {
+  // Aller sur une île (ou y revenir) : son panneau s'ouvre, même si c'est déjà l'île ouverte. `ouvrage` : la prochaine
+  // destination est un ouvrage (GD-7) : le pli Ouvrages s'ouvre sur sa ligne, mise en avant (`worksite`).
+  const openIsland = (id: BiomeId, ouvrage?: string) => {
     retenirPanneauReplie(null);
     setSheetOpen(true);
-    navigate(`/adventure/${id}`);
+    navigate(lienDeLaDestination({ island: id, ouvrage }));
   };
   // Fermer un panneau du village (Blocs, École, Trophées, Monuments) : retour au monde libre, sur l'île du bonhomme,
   // son panneau replié. Il se rouvre à la demande (le bouton de l'île dans la barre, ou un toucher sur l'île).
@@ -229,6 +231,12 @@ export function WorldPage() {
   // La prochaine destination (la même que « Reprendre l'aventure » au menu), dite et marquée sur la Carte.
   const destination = modele.destination;
   const destinationText = `Prochaine destination : ${destination.name}. ${destination.text}`;
+  // Un ouvrage à construire (GD-7) : sur la Carte, la flèche se pose sur lui, avec l'icône d'un ouvrage, pas sur l'île
+  // d'où il part (quatre ouvrages peuvent en partir) ; sur sa liaison, du côté de cette île.
+  const flecheDeLOuvrage = useMemo(
+    () => (destination.ouvrage ? { ouvrage: destination.ouvrage, depuis: destination.island } : null),
+    [destination.ouvrage, destination.island],
+  );
   // En grand texte, la phrase défile dans le panneau de la Carte : un repère dit qu'il y a une suite.
   // Le nom de chaque île ouverte de l'archipel, écrit au-dessus d'elle dans le monde ; sur la Carte, toutes les îles,
   // avec leur état en icône et en mot.
@@ -749,7 +757,7 @@ export function WorldPage() {
   // La flèche « Commence ici » flotte sur la Forêt tant qu'aucune mission n'a été jouée ; sur le chantier du navire quand
   // le panneau du port est ouvert et qu'il reste des cases à poser.
   const shipyard = island && island.id === archipelago.port && ship.stage && ship.status && !ship.status.complete;
-  // Sur la Carte, elle marque la prochaine destination.
+  // Sur la Carte, elle marque la prochaine destination : son île, ou l'ouvrage qu'elle propose de construire.
   const flecheDuNavire = useMemo(
     () => repere.versIle({ x: vehicle.origin.x + 2, y: vehicle.origin.y + 5, z: vehicle.origin.z + 12 }, vehicle.port),
     [repere, vehicle.origin.x, vehicle.origin.y, vehicle.origin.z, vehicle.port],
@@ -757,7 +765,7 @@ export function WorldPage() {
   const marker = shipyard
     ? flecheDuNavire
     : mapOpen
-      ? destination.island
+      ? (flecheDeLOuvrage ?? destination.island)
       : !island && a === '6e' && Object.keys(state.progress).length === 0
         ? 'french-6e-phonology'
         : null;
@@ -980,7 +988,7 @@ export function WorldPage() {
                     </span>
                   </p>
                   <p className="world-map-actions">
-                    <button type="button" className="button primary" onClick={() => openIsland(destination.island)}>
+                    <button type="button" className="button primary" onClick={() => openIsland(destination.island, destination.ouvrage)}>
                       <Icon name="play" /> Y aller
                     </button>
                     <button type="button" className="button" onClick={() => navigate('/adventure/world')}>

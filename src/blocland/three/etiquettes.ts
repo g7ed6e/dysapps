@@ -4,14 +4,14 @@
 // Dans Archipéo, hors de la Carte, elles s'écartent aussi des grands repères (world/cadrage.ts). Partout, elles
 // s'écartent de l'interface posée sur la scène, et se montrent entières ou pas du tout (DA-10).
 import * as THREE from 'three';
-import type { BiomeId } from '../biomes';
 import { drawIslandLabel, drawMapArrow, measureIslandLabel } from '../world/labelCanvas';
 import { reperesDe } from '../world/cadrage';
-import { placerEtiquettes, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
+import { boitesDuTrace, placerAvecLaFlecheDOuvrage, placerEtiquettes, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
 import { islandCenter } from '../world/terrain';
 import { lecteurDeZones } from '../zonesCouvertes';
 import type { WorldViewProps } from '../world/view';
 import type { Instant, Monde, PartieDeLaScene } from './partie';
+import type { DonneesDeLaFleche, Pointe } from './bornes';
 
 /** Les étiquettes des îles : le nom dessiné à 40 px dans sa texture, affiché à 18 px CSS à l'écran (comme en 2D). */
 const LABEL_PX = 40;
@@ -32,13 +32,15 @@ export interface Etiquettes extends PartieDeLaScene {
 
 /**
  * Les étiquettes, dans l'élément `el` (sa taille en pixels CSS) ; `fleche` : la flèche « Commence ici » (sur la Carte,
- * la flèche de la destination la remplace) ; `bonhomme` rend le bonhomme, que surmonte son fanion.
+ * la flèche de la destination la remplace), et `donnees` ce qu'elle montre (three/bornes.ts) ; `bonhomme` rend le
+ * bonhomme, que surmonte son fanion.
  */
 export function creerEtiquettes(
   monde: Monde,
   el: HTMLElement,
   camera: THREE.PerspectiveCamera,
   fleche: THREE.Object3D,
+  donnees: () => Readonly<DonneesDeLaFleche>,
   bonhomme: () => THREE.Object3D,
   instant: Instant,
 ): Etiquettes {
@@ -49,7 +51,15 @@ export function creerEtiquettes(
   arrowCanvas.width = 96;
   arrowCanvas.height = 124;
   const arrowCtx = arrowCanvas.getContext('2d');
-  if (arrowCtx) drawMapArrow(arrowCtx, 48, 114, 104);
+  /** La flèche dessinée : d'une île (`false`) ou d'un ouvrage (`true`, avec son icône, GD-7) ; redessinée quand cela change. */
+  let flecheDOuvrage = false;
+  const dessinerLaFleche = (ouvrage: boolean) => {
+    flecheDOuvrage = ouvrage;
+    if (!arrowCtx) return;
+    arrowCtx.clearRect(0, 0, arrowCanvas.width, arrowCanvas.height);
+    drawMapArrow(arrowCtx, 48, 114, 104, ouvrage ? 'ouvrage' : undefined);
+  };
+  dessinerLaFleche(false);
   const arrowTex = new THREE.CanvasTexture(arrowCanvas);
   arrowTex.colorSpace = THREE.SRGBColorSpace;
   const mapArrow = new THREE.Sprite(new THREE.SpriteMaterial({ map: arrowTex, depthTest: false, transparent: true, sizeAttenuation: false, fog: false }));
@@ -81,8 +91,23 @@ export function creerEtiquettes(
   };
   const beaconBase = new THREE.Vector3();
   const beaconTop = new THREE.Vector3();
-  /** Le fanion et la flèche, en pixels d'écran vus par `cam` (la flèche déjà écartée du fanion) : ce que les étiquettes évitent. */
-  const marksOnScreen = (cam: THREE.Camera, W: number, H: number) => {
+  const pointeAt = new THREE.Vector3();
+  /**
+   * La flèche d'un ouvrage (GD-7) glisse le long de sa liaison si une étiquette occupe sa place (`placerAvecLaFlecheDOuvrage`) :
+   * l'indice de la place prise parmi les `pointes` de la flèche, pour l'ouvrage dit, refait avec l'écart des étiquettes.
+   */
+  let placeDeLOuvrage = { ouvrage: '', i: 0 };
+  /** La pointe de la flèche de la Carte : sur une île, ou sur la place prise de l'ouvrage. */
+  const laPointe = (): Pointe | null => {
+    const { pointes, ouvrage, pointe } = donnees();
+    if (ouvrage && pointes?.length) return pointes[placeDeLOuvrage.ouvrage === ouvrage ? Math.min(placeDeLOuvrage.i, pointes.length - 1) : 0];
+    return pointe;
+  };
+  /**
+   * Le fanion et la flèche, en pixels d'écran vus par `cam` (la flèche déjà écartée du fanion) : ce que les étiquettes
+   * évitent. `pointe` : la pointe de la flèche, si ce n'est pas celle d'aujourd'hui (une autre place d'un ouvrage).
+   */
+  const marksOnScreen = (cam: THREE.Camera, W: number, H: number, pointe: Pointe | null = laPointe()) => {
     const out: { arrow: LabelBox | null; arrowShift: LabelOffset; beacon: LabelBox | null } = { arrow: null, arrowShift: { dx: 0, dy: 0 }, beacon: null };
     const avatar = bonhomme();
     if (avatar.visible) {
@@ -93,8 +118,8 @@ export function creerEtiquettes(
       const h = Math.max(24, Math.abs(a.y - b.y));
       out.beacon = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, w: Math.max(24, h * 0.9), h };
     }
-    if (fleche.userData.island) {
-      const tip = toScreen(mapArrow.position, cam, W, H);
+    if (pointe) {
+      const tip = toScreen(pointeAt.set(pointe.x, pointe.z, pointe.y), cam, W, H);
       if (out.beacon) out.arrowShift = separateMark(tip, { x: out.beacon.x, y: out.beacon.y + out.beacon.h / 2 }, ARROW_GAP);
       const { w: aw, h: ah } = mapArrow.userData.px;
       out.arrow = { x: tip.x + out.arrowShift.dx, y: tip.y + out.arrowShift.dy - ah / 2, w: aw, h: ah };
@@ -102,13 +127,19 @@ export function creerEtiquettes(
     return out;
   };
   const placeMarks = (onMap: boolean, t: number, reduit: boolean) => {
-    const island = fleche.userData.island as BiomeId | null;
-    const show = onMap && Boolean(island);
+    // Sa pointe : au-dessus du cœur d'une île, ou d'une case de la liaison d'un ouvrage (three/bornes.ts, `poserLaFleche`).
+    const pointe = laPointe();
+    const show = onMap && Boolean(pointe);
     mapArrow.visible = show;
-    if (fleche.userData.island !== undefined) fleche.visible = Boolean(fleche.userData.on) && !show;
-    if (!show || !island) return;
-    const c = islandCenter(island);
-    mapArrow.position.set(c.x + 0.5, c.z + 8, c.y + 0.5);
+    const d = donnees();
+    if (d.posee) fleche.visible = d.on && !show;
+    if (!show || !pointe) return;
+    const ouvrage = Boolean(d.ouvrage);
+    if (ouvrage !== flecheDOuvrage) {
+      dessinerLaFleche(ouvrage);
+      arrowTex.needsUpdate = true;
+    }
+    mapArrow.position.set(pointe.x, pointe.z, pointe.y);
     const H = Math.max(1, el.clientHeight);
     const W = Math.max(1, el.clientWidth);
     const perPx = 2 / (camera.projectionMatrix.elements[5] * H);
@@ -145,9 +176,10 @@ export function creerEtiquettes(
    */
   const ilesTenues = (sprites: THREE.Sprite[]): number => {
     let f = 0;
-    if (fleche.userData.on && fleche.userData.island)
+    const { on, island } = donnees();
+    if (on && island)
       for (let i = 0; i < sprites.length; i++)
-        if (sprites[i].userData.id === fleche.userData.island) {
+        if (sprites[i].userData.id === island) {
           f = i + 1;
           break;
         }
@@ -171,8 +203,26 @@ export function creerEtiquettes(
   // dessous (DA-10). Relue quatre fois par seconde au plus, pas à chaque image.
   // Sans page autour (un aperçu), la bande des boutons du bas reste réservée.
   const lireZones = lecteurDeZones(el, () => [{ x: el.clientWidth / 2, y: el.clientHeight - LABEL_RESERVE / 2, w: el.clientWidth, h: LABEL_RESERVE }]);
-  /** Sur la Carte, ce que coûte d'écarter ou de cacher chaque étiquette : la prochaine destination d'abord, une île fermée en dernier. */
-  const poidsDesEtiquettes = (sprites: THREE.Sprite[]) => sprites.map((s) => (s.userData.id === fleche.userData.island ? 2 : s.userData.fermee ? 0.5 : 1));
+  /**
+   * Sur la Carte, ce que coûte d'écarter ou de cacher chaque étiquette : la prochaine destination d'abord, une île
+   * fermée en dernier ; l'indice de la destination, et celui de l'île d'arrivée de l'ouvrage qu'elle désigne, qui pèse
+   * autant si cela ne tait aucun nom (`placerEtiquettes`) : son nom se pose au bout du tracé.
+   */
+  const carteDesEtiquettes = (sprites: THREE.Sprite[]) => {
+    // La destination : l'île de la flèche, ou celle d'où part l'ouvrage qu'elle désigne (GD-7).
+    const { island, depuis, arrivee } = donnees();
+    const destination = island ?? depuis;
+    const indice = sprites.findIndex((s) => s.userData.id === destination);
+    const auBout = arrivee ? sprites.findIndex((s) => s.userData.id === arrivee) : -1;
+    const weights = sprites.map((s) => (s.userData.id === destination ? 2 : s.userData.fermee ? 0.5 : 1));
+    return { weights, ...(indice >= 0 ? { destination: indice } : {}), ...(auBout >= 0 ? { arrivee: auBout } : {}) };
+  };
+  /** Le tracé de l'ouvrage désigné à l'écran, vu par `cam` : des obstacles souples pour les étiquettes (GD-7). */
+  const souplesDuTrace = (cam: THREE.Camera, W: number, H: number): LabelBox[] => {
+    const trace = donnees().trace;
+    if (!trace?.length) return [];
+    return boitesDuTrace(trace.map((p) => toScreen(pointeAt.set(p.x, p.z, p.y), cam, W, H)));
+  };
   const placeLabels = (spread: boolean) => {
     const sprites = labelsGroup.children as THREE.Sprite[];
     if (!sprites.length) return;
@@ -190,7 +240,8 @@ export function creerEtiquettes(
     // ici » et celle du bonhomme (l'île la plus proche de lui).
     const tenues = indicesTenus(tenuesCle);
     vise.tenues = tenuesCle;
-    const marks = spread ? `${fleche.userData.island ?? ''}:${av.toArray().map((v) => v.toFixed(0))}` : `reperes:${tenues.join(',')}`;
+    const montre = donnees();
+    const marks = spread ? `${montre.ouvrage ?? montre.island ?? ''}:${av.toArray().map((v) => v.toFixed(0))}` : `reperes:${tenues.join(',')}`;
     const key = `${sprites.map((s) => s.id).join(',')}@${camGoal.pos.toArray().map((v) => v.toFixed(1))}>${camGoal.target.toArray().map((v) => v.toFixed(1))}@${W}x${H}@${marks}@${zonesCle}`;
     // Sur la Carte, l'écart est autre : au retour, il se refait.
     if (spread) vise.n = -1;
@@ -224,10 +275,24 @@ export function creerEtiquettes(
     // la Carte : les étiquettes restent au-dessus de leur île ; seules celles posées sur l'interface ou sur un grand
     // repère (Archipéo) s'en écartent, et celles que coupe le bord du cadre y rentrent. Entière ou absente : celle qui ne
     // trouve pas de place libre près de son île ne se montre pas à moitié.
-    const marques = spread ? marksOnScreen(goalCamera, W, H) : null;
+    // La flèche d'un ouvrage (GD-7) : la première de ses places libres, et aucune étiquette ne se pose jamais sur elle
+    // (`placerAvecLaFlecheDOuvrage`).
+    const ouvrage = spread ? montre.ouvrage : null;
+    const pointes: readonly Pointe[] = ouvrage ? (montre.pointes ?? []) : [];
+    const marques = spread ? marksOnScreen(goalCamera, W, H, ouvrage ? null : laPointe()) : null;
     const obstacles = marques ? [marques.arrow, marques.beacon].filter((b): b is LabelBox => b !== null) : colonnes(goalCamera, W, H);
-    const carte = spread ? { weights: poidsDesEtiquettes(sprites) } : null;
-    const { offsets, visibles } = placerEtiquettes(boxes, iles, { zones, bulles, obstacles, bounds: cadre, gap: 6 }, carte, tenues);
+    const carte = spread ? carteDesEtiquettes(sprites) : null;
+    // Le tracé de l'ouvrage, un obstacle souple : les étiquettes l'évitent si elles peuvent, sans se taire pour lui.
+    const souples = ouvrage ? souplesDuTrace(goalCamera, W, H) : [];
+    const vue = { zones, bulles, obstacles, souples, bounds: cadre, gap: 6 };
+    let offsets: LabelOffset[];
+    let visibles: boolean[];
+    if (ouvrage && carte) {
+      const fleches = pointes.map((p) => marksOnScreen(goalCamera, W, H, p).arrow).filter((b): b is LabelBox => b !== null);
+      const r = placerAvecLaFlecheDOuvrage(fleches, boxes, iles, vue, carte);
+      placeDeLOuvrage = { ouvrage, i: r.fleche };
+      ({ offsets, visibles } = r);
+    } else ({ offsets, visibles } = placerEtiquettes(boxes, iles, vue, carte, tenues));
     labelLayout = { key, offsets };
     offsets.forEach((o, i) => {
       const s = sprites[i];

@@ -277,6 +277,36 @@ const CAPTURES = [
     reglages: { font: 'opendyslexic', fontSize: 32 },
     ...autres,
   })),
+  // La Carte qui désigne un ouvrage (GD-7, PR 2) : une partie neuve (`depart`) où la Forêt et la Plaine ont toutes leurs
+  // missions jouées (`jouees` : sinon l'île où se tient le bonhomme reste la destination), aucune autre île ouverte, et 4
+  // blocs de bois (`inventaire`) qui paient un ouvrage. Depuis la Forêt (`ile`, où se tient le bonhomme), la flèche se
+  // pose au-dessus du pont vers l'Horloge des verbes (il ouvre une île d'anglais), en tablette, en téléphone et en
+  // téléphone au grand texte ; depuis la Plaine, au-dessus du long bac vers la Tour du lecteur (une île de français) ;
+  // un ouvrage court sous l'étiquette de son île de départ (la règle du directeur artistique, PR 2) : le pont de la
+  // Forêt vers la Ferme des accords, quand l'Horloge et la Mine sont ouvertes (`liens`) et jouées (`xp` : au début du
+  // niveau 40, pour que les parties posées au chargement n'annoncent pas un niveau par-dessus le panneau).
+  // Pas de vue en 2D : le réglage n'existe plus (`2d` se lit `3d`, core/settings.ts).
+  ...[
+    { suffixe: '' },
+    { suffixe: '-390x844', taille: { width: 390, height: 844 } },
+    { suffixe: '-390x844-od32', taille: { width: 390, height: 844 }, reglages: { font: 'opendyslexic', fontSize: 32 } },
+    { suffixe: '-plaine', ile: 'maths-6e-calculation' },
+    {
+      suffixe: '-ferme',
+      liens: ['french-6e-phonology-english-6e-grammar', 'french-6e-phonology-french-6e-letter-confusion'],
+      jouees: ['french-6e-phonology', 'maths-6e-calculation', 'english-6e-grammar', 'french-6e-letter-confusion'],
+      xp: 20475,
+    },
+  ].map(({ suffixe, ...autres }) => ({
+    nom: `etoile-carte-ouvrage${suffixe}`,
+    vue: 'carte',
+    famille: 'etoile',
+    ile: 'french-6e-phonology',
+    depart: true,
+    jouees: ['french-6e-phonology', 'maths-6e-calculation'],
+    inventaire: { 'french-6e-phonology': 4 },
+    ...autres,
+  })),
   { nom: 'etoile-phare-ponts', vue: 'archipel', famille: 'etoile', ile: 'maths-3e-functions', finesse: 2 },
   { nom: 'etoile-phare-ponts-nuit', vue: 'archipel', famille: 'etoile', ile: 'maths-3e-functions', finesse: 2, nuit: true },
 ];
@@ -375,13 +405,19 @@ async function scenes() {
   await server.listen();
   const base = server.resolvedUrls.local[0].replace(/\/$/, '');
   const load = (p) => server.ssrLoadModule(p);
-  const [{ BIOMES }, { ARCHIPELAGO_IDS }, { toutConstruit }, { plansFor, planCells }, { BADGES }] = await Promise.all([
+  const [{ BIOMES, missionsJouables }, { ARCHIPELAGO_IDS }, { toutConstruit }, { plansFor, planCells }, { BADGES, sanitizeProgress }, { exercisesOf }] = await Promise.all([
     load('/src/blocland/biomes.ts'),
     load('/src/blocland/world/map.ts'),
     load('/src/blocland/world/budget.ts'),
     load('/src/blocland/world/plans.ts'),
     load('/src/core/progress.ts'),
+    load('/src/blocland/exercises/index.ts'),
   ]);
+  /** Une partie où les îles `iles` ont chacune toutes leurs missions jouées une fois (`jouees`), le premier exercice de chacune. */
+  const missionsJouees = (iles) =>
+    Object.fromEntries(
+      iles.flatMap((ile) => missionsJouables(BIOMES.find((b) => b.id === ile)).map((m) => [exercisesOf(ile, m.id)[0].id, { stars: 2, attempts: 1, best: 0.8 }])),
+    );
   /**
    * Une partie où l'île `ile` n'a que ses `n` premières missions terminées (la pose d'une partie, `pose`) : ses autres
    * exercices et son défi sont retirés, sans quoi l'ouverture poserait aussitôt les parties suivantes.
@@ -390,6 +426,15 @@ async function scenes() {
     if (!ile) return parCle;
     const types = BIOMES.find((b) => b.id === ile).exercises.slice(0, n).map((x) => `${ile}-${x.id}-`);
     return Object.fromEntries(Object.entries(parCle).filter(([k]) => !k.startsWith(`${ile}-`) || types.some((t) => k.startsWith(t))));
+  };
+  /**
+   * Les succès déjà gagnés d'une partie où les îles `iles` ont leurs missions jouées (`jouees`) : ceux des 20 000 points
+   * et de leurs bâtiments, que le jeu pose au chargement (une partie par mission), sans quoi leur bandeau « Succès
+   * débloqué » couvrirait la vue.
+   */
+  const succesMerites = (iles) => {
+    const p = sanitizeProgress({ xp: 20000, structuresCompleted: iles.reduce((n, ile) => n + plansFor(ile).length, 0) });
+    return Object.fromEntries(BADGES.filter((b) => b.earned(p)).map((b) => [b.id, '2026-09-28T10:00:00.000Z']));
   };
   /** Les succès gagnés d'une capture (`succes` : leur nombre, ou `tous`), un trophée chacun dans la salle des trophées. */
   const succesDe = (n) => Object.fromEntries(BADGES.slice(0, n === 'tous' ? BADGES.length : (n ?? 0)).map((b) => [b.id, '2026-09-28T10:00:00.000Z']));
@@ -480,19 +525,22 @@ async function scenes() {
               voir: c.voir,
               allerA: c.allerA,
               depart: c.depart,
+              jouees: c.jouees,
+              liens: c.liens,
+              xp: c.xp,
               nom: parIle ? `${c.nom}-${parIle}` : c.nom,
             })),
           )
         : []),
     ];
-    for (const { vue, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages, succes, inventaire, pose, pasEnPlus, revisions, voir, allerA, depart } of views) {
+    for (const { vue, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages, succes, inventaire, pose, pasEnPlus, revisions, voir, allerA, depart, jouees, liens, xp } of views) {
       const page = await browser.newPage({ viewport: taille ?? TABLET, deviceScaleFactor: finesse ?? (recadre ? 1.5 : 1), ...(fige ? { reducedMotion: 'reduce' } : {}) });
       await piloterLHorloge(page, time);
       await page.addInitScript(hasardFixe);
       await page.addInitScript(figeable);
       await page.goto(`${base}/icon.svg`);
       await page.evaluate(
-        ({ world, progress, view, univers, lv2, reglages, badges, inventaire, pose, spaced, depart }) => {
+        ({ world, progress, view, univers, lv2, reglages, badges, inventaire, pose, spaced, depart, jouees, xp }) => {
           localStorage.clear();
           sessionStorage.removeItem('dysapps:poses-montrees');
           sessionStorage.removeItem('dysapps:revisions-plus-tard');
@@ -503,26 +551,30 @@ async function scenes() {
           localStorage.setItem('dysapps:settings', JSON.stringify({ worldView: view, ...(univers ? { univers } : {}), ...(lv2 ? { lv2 } : {}), ...(reglages ?? {}) }));
           localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true, 'archipel-5e': true, 'archipel-4e': true, 'archipel-3e': true }));
           localStorage.setItem('dysapps:region-names', JSON.stringify({ said: true }));
-          // Au départ, le mot d'arrivée de la créature est déjà dit : il couvrirait la vue.
-          if (depart) localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'baleine-6e-arrivee': true }));
+          // Au départ, le mot d'arrivée de la créature est déjà dit : il couvrirait la vue. Avec des missions jouées
+          // (`jouees`), rien n'est posé : le jeu tient alors pour dits tous les mots déjà mérités (« Chantier fini »…).
+          if (depart && !jouees) localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'baleine-6e-arrivee': true }));
           localStorage.setItem('dysapps:game', JSON.stringify({ version: 3, stock: inventaire ?? {}, progress, world, spaced }));
-          localStorage.setItem('dysapps:progress', JSON.stringify({ xp: 20000, badges }));
+          localStorage.setItem('dysapps:progress', JSON.stringify({ xp: xp ?? 20000, badges }));
         },
         {
-          // Au départ (`depart`) : une partie neuve, rien de construit ni de joué.
+          // Au départ (`depart`) : une partie neuve, rien de construit ni de joué (sauf les missions des îles `jouees` et
+          // les ouvrages `liens`).
           world: depart
-            ? { parts: {}, log: [], links: [], place: ile ?? at }
+            ? { parts: {}, log: [], links: liens ?? [], place: ile ?? at }
             : { ...built, parts: sansLesIles(plans ?? built.parts, sansIles), ...(bridges ? { links: bridges } : {}), place: depuis ?? ile ?? at },
-          progress: sansEtoiles || depart ? {} : premieresMissions(sansLeGardien(sansLesIles(progress, sansIles), debout), pose ? ile : null, pose),
+          progress: jouees ? missionsJouees(jouees) : sansEtoiles || depart ? {} : premieresMissions(sansLeGardien(sansLesIles(progress, sansIles), debout), pose ? ile : null, pose),
           pose: pose ? { biome: ile, rangs: Array.from({ length: pose }, (_, i) => i + 1) } : null,
           view,
           univers: UNIVERS_DES_TEXTES,
           lv2,
           reglages,
           inventaire,
-          badges: succesDe(succes),
+          badges: jouees ? succesMerites(jouees) : succesDe(succes),
           spaced: revisions ? revisionsDues(progress, ile) : [],
           depart,
+          jouees,
+          xp,
         },
       );
       await page.goto(`${base}/${QUERY}#${go}`);

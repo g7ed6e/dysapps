@@ -10,10 +10,10 @@ import type { VillagePlaceId, VoxelCube } from './cube';
 import { getBridge, type ArchipelagoId } from './archipelago';
 import type { Ancrage, Disposition, Entite, Etendue, Point, Trajet } from './disposition';
 import { caseDArrivee, toucheLEau, type Arrivee } from './arrivee';
-import { islandDef } from './map';
+import { isLand, islandDef, mapOf } from './map';
 import { getMonument } from './monuments';
 import { walkGround, walkPath, type Cell, type CreaturePlacement, type WalkGround } from './paths';
-import { avatarHome, avatarRoute, bossIsletCenter, bridgePath, casesDesLieux, islandAt, islandCenter, monumentCenter, origineDe, placeDoor, questStations, routeLengths, viewZone, worldBounds } from './terrain';
+import { avatarHome, avatarRoute, bossIsletCenter, bridgePath, casesDeLOuvrage, casesDesLieux, islandAt, islandCenter, monumentCenter, origineDe, placeDoor, placesDeLaFleche, questStations, routeLengths, viewZone, worldBounds } from './terrain';
 
 /** Le bonhomme marche à six cases par seconde ; au-delà de six secondes, il accélère. */
 export const WALK_SPEED = 6;
@@ -53,6 +53,11 @@ export interface DispositionEnGrille extends Disposition {
   arrivee(ile: BiomeId, touche: { x: number; y: number }, depuis: Point): Arrivee | null;
   /** Le doigt est tombé sur l'eau (ou la lave). */
   surLEau(touche: { x: number; y: number }): boolean;
+  /**
+   * Les places de la flèche de la Carte sur l'ouvrage `ouvrage` construit depuis l'île `depuis` (sans elle, son île
+   * `from`) : la voulue d'abord, puis celles où elle glisse vers l'arrivée (terrain.ts, `placesDeLaFleche`).
+   */
+  placesDeLaFleche(ouvrage: string, depuis?: BiomeId): Cell[];
 }
 
 /** Un point du monde, ancré à l'île `ile` : dans son repère. */
@@ -169,6 +174,14 @@ export function dispositionEnGrille(
     surLEau: (touche) => {
       const g = marche();
       return g ? toucheLEau(g, touche) : false;
+    },
+    placesDeLaFleche: (id, depuis) => {
+      const def = getBridge(id);
+      if (!def) return [];
+      const cases = casesDeLOuvrage(def);
+      // Toutes les îles de l'archipel : une liaison en contour ne pose jamais la flèche sur une terre qu'elle longe.
+      const iles = mapOf(a);
+      return placesDeLaFleche(depuis === def.to ? [...cases].reverse() : cases, (x, y) => iles.some((d) => isLand(d, x, y)));
     },
   };
 }
