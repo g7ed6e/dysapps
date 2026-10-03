@@ -70,18 +70,23 @@ interface Props {
   rappel: Rappel;
   /** Après « Plus tard » : la page rend le focus (au titre de l'île) et le dit. */
   onRemis?: () => void;
+  /**
+   * Dans la fiche de la créature (lot 2 de « Toucher le monde ») : son nom est le titre de la fiche, et l'Écouter de la
+   * fiche relit tout ; la plaque ne les répète pas.
+   */
+  dansUneFiche?: boolean;
 }
 
-export function RappelDeLaCreature({ biome, rappel, onRemis }: Props) {
+export function RappelDeLaCreature({ biome, rappel, onRemis, dansUneFiche = false }: Props) {
   const { remettre } = usePlusTard();
   const { etranger } = rappel;
   return (
-    <div className="creature-rappel" role="group" aria-labelledby={`rappel-${biome.id}`}>
+    <div className={`creature-rappel${dansUneFiche ? ' dans-une-fiche' : ''}`} role="group" aria-labelledby={`rappel-${biome.id}`}>
       <span className="creature-rappel-icone" aria-hidden="true">
         <Icon name={biome.icon} size="1.8rem" />
       </span>
       <p id={`rappel-${biome.id}`} className="creature-rappel-texte">
-        <strong>{biome.creature.name} :</strong>{' '}
+        {!dansUneFiche && <strong>{biome.creature.name} : </strong>}
         {etranger ? (
           <>
             <Syllabified text={etranger.avant} />
@@ -94,7 +99,7 @@ export function RappelDeLaCreature({ biome, rappel, onRemis }: Props) {
       </p>
       <div className="creature-rappel-actions">
         {/* Le même mot que pour l'accueil, juste au-dessus : « Réécouter ». */}
-        <SpeakButton text={rappel.lu} label="Réécouter" compact />
+        {!dansUneFiche && <SpeakButton text={rappel.lu} label="Réécouter" compact />}
         <Link to={rappel.chemin} className="button primary">
           <Icon name="replay" /> Reprendre
         </Link>

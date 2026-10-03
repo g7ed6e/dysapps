@@ -17,6 +17,7 @@ const vu = vi.hoisted(() => ({
   cubes: [] as { x: number; y: number; z: number; ghost?: boolean }[],
   pose: null as { seq: number; cubes: { x: number; y: number; z: number }[] } | null,
   onPose: undefined as ((moment: 'couche' | 'finie') => void) | undefined,
+  fiche: null as { objet: { genre: string }; seq: number; saut: boolean } | null,
 }));
 // Le carillon de la fin de pose (GD-6) : compté, sans son.
 const carillon = vi.hoisted(() => vi.fn());
@@ -37,6 +38,7 @@ vi.mock('./three', () => ({
     avatar,
     pose = null,
     onPose,
+    fiche = null,
   }: {
     focus: { island: string | null; seq: number; spot?: { ile: string; local: { x: number; y: number } } };
     cubes: { x: number; y: number; z: number; ghost?: boolean; place?: string }[];
@@ -50,8 +52,9 @@ vi.mock('./three', () => ({
     avatar?: { route: { ile: string; local: { x: number; y: number } }[]; seq: number; flanerie?: boolean; vise?: boolean };
     pose?: { seq: number; cubes: { x: number; y: number; z: number }[] } | null;
     onPose?: (moment: 'couche' | 'finie') => void;
+    fiche?: { objet: { genre: string }; seq: number; saut: boolean } | null;
   }) => (
-    <div className="voxel-canvas" tabIndex={0} ref={() => void Object.assign(vu, { cubes, pose, onPose })}>
+    <div className="voxel-canvas" tabIndex={0} ref={() => void Object.assign(vu, { cubes, pose, onPose, fiche })}>
       <p data-testid="lumiere">{forceDay ? 'jour' : 'heure réelle'}</p>
       <p data-testid="cadrage">{focus.island ?? 'aucune'}</p>
       <p data-testid="demandes-de-cadrage">{focus.seq}</p>
@@ -110,6 +113,24 @@ vi.mock('./three', () => ({
       </button>
       <button type="button" onClick={() => vehicle && onIntent({ genre: 'navire', port: vehicle.port })}>
         Toucher le Bloc-Navire
+      </button>
+      <button type="button" onClick={() => onIntent({ genre: 'borne', ile: 'french-6e-phonology', mission: 'syllables' })}>
+        Toucher une borne de la Forêt
+      </button>
+      <button type="button" onClick={() => onIntent({ genre: 'borne', ile: 'french-6e-letter-confusion', mission: 'letter-pairs' })}>
+        Toucher une borne de la Mine
+      </button>
+      <button type="button" onClick={() => onIntent({ genre: 'creature', id: 'french-6e-phonology', gardien: true })}>
+        Toucher le Gardien de la Forêt
+      </button>
+      <button type="button" onClick={() => onIntent({ genre: 'creature', id: 'french-6e-letter-confusion' })}>
+        Toucher la créature de la Mine
+      </button>
+      <button type="button" onClick={() => onIntent({ genre: 'ile', id: 'french-6e-letter-confusion', sol: { ile: 'french-6e-letter-confusion', local: { x: 6, y: 6, z: 0 } } })}>
+        Toucher la Mine pâle
+      </button>
+      <button type="button" onClick={() => onIntent({ genre: 'ouvrage', id: 'french-6e-phonology-french-6e-letter-confusion' })}>
+        Toucher le sentier vers la Mine
       </button>
     </div>
   ),
@@ -177,34 +198,38 @@ it('replie le panneau d’une île et le rouvre, sans quitter l’île', async (
   expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/french-6e-phonology');
 });
 
-it('la créature touchée parle dans une bulle qu’on peut fermer', async () => {
+const vuSansAide = () => {
   localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true }));
   localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'baleine-6e-arrivee': true }));
+};
+
+it('la créature touchée parle dans sa fiche, qu’on peut fermer ; la bulle du haut n’est plus pour elle', async () => {
+  vuSansAide();
   const user = userEvent.setup();
   renderAt('/adventure/french-6e-phonology');
   await user.click(screen.getByRole('button', { name: 'Toucher la créature de la Forêt' }));
-  const bulle = () => screen.queryAllByRole('status').find((el) => el.classList.contains('world-line'));
-  expect(bulle()).toBeDefined();
-  await user.click(within(bulle()!).getByRole('button', { name: 'Fermer' }));
-  expect(bulle()).toBeUndefined();
+  const f = screen.getByRole('dialog', { name: 'Mousso' });
+  expect(f).toHaveAttribute('aria-modal', 'false');
+  expect(f.querySelector('.world-fiche-phrase')?.textContent).not.toBe('');
+  expect(screen.queryAllByRole('status').find((el) => el.classList.contains('world-line'))).toBeUndefined();
+  // Le panneau de l'île se replie : une chose à la fois en bas.
+  expect(sheet()).not.toBeInTheDocument();
+  await user.click(within(f).getByRole('button', { name: 'Fermer la fiche' }));
+  expect(screen.queryByRole('dialog', { name: 'Mousso' })).not.toBeInTheDocument();
+  // Le focus revient au monde.
+  expect(document.activeElement).toHaveClass('voxel-canvas');
 });
 
 it('le panneau replié reste replié quand on touche l’île où l’on est ; une autre île ouvre le sien', async () => {
+  vuSansAide();
   const user = userEvent.setup();
   renderAt('/adventure/french-6e-phonology');
   await user.click(screen.getByRole('button', { name: 'Fermer le panneau' }));
   expect(sheet()).not.toBeInTheDocument();
-  const bulle = () => screen.queryAllByRole('status').find((el) => el.classList.contains('world-line'));
-  expect(bulle()).toBeUndefined();
-  // Toucher l'île : sa créature parle (une réponse visible), le panneau reste replié.
+  // Toucher l'île (au clavier, sans case du sol) : la fiche de sa créature répond, le panneau reste replié.
   await user.click(screen.getByRole('button', { name: 'Toucher la Forêt dans le monde' }));
   expect(sheet()).not.toBeInTheDocument();
-  expect(bulle()).toHaveTextContent(/^Mousso :/);
-  // Toucher la créature fait de même.
-  await user.click(within(bulle()!).getByRole('button', { name: 'Fermer' }));
-  await user.click(screen.getByRole('button', { name: 'Toucher la créature de la Forêt' }));
-  expect(sheet()).not.toBeInTheDocument();
-  expect(bulle()).toBeDefined();
+  expect(screen.getByRole('dialog', { name: 'Mousso' })).toBeInTheDocument();
   // Depuis le village sans île, toucher la Forêt ouvre son panneau.
   cleanup();
   renderAt('/adventure');
@@ -267,18 +292,21 @@ it('toucher un fantôme du bâtiment de l’île ne pose rien : le bâtiment se 
   expect(within(sheet()!).queryByRole('button', { name: /Poser le bloc suivant|Poser tout ce que j’ai/ })).not.toBeInTheDocument();
 });
 
-it('le Bloc-Navire est amarré au port de l’archipel ; le toucher ouvre le panneau du port sur sa section', async () => {
+it('le Bloc-Navire est amarré au port de l’archipel ; le toucher ouvre sa fiche : l’étape, ce qui manque et où le gagner', async () => {
+  vuSansAide();
   const user = userEvent.setup();
   renderAt('/adventure');
   // Sur la Plaine, en chantier : ses cases à poser sont en fantôme.
   expect(screen.getByTestId('navire')).toHaveTextContent(/^maths-6e-calculation \d+$/);
   await user.click(screen.getByRole('button', { name: 'Toucher le Bloc-Navire' }));
-  expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/maths-6e-calculation');
-  expect(screen.getByRole('dialog', { name: /Plaine des nombres/ })).toBeInTheDocument();
-  const section = document.querySelector('.ship-section');
-  expect(section).not.toBeNull();
-  expect(section!.className).toContain('bridge-highlight');
-  expect(screen.getByText(/Le Bloc-Navire — Étape 1 \/ 3/)).toBeInTheDocument();
+  // Pas de panneau : la fiche, sans quitter le monde.
+  expect(screen.getByTestId('adresse')).toHaveTextContent(/^\/adventure$/);
+  expect(screen.queryByRole('dialog', { name: /Plaine des nombres/ })).not.toBeInTheDocument();
+  const f = screen.getByRole('dialog', { name: /Le Bloc-Navire : étape 1 sur 3/ });
+  expect(f.textContent).toMatch(/0 \/ 45 blocs posés\. Il manque 18 blocs de sable, à gagner dans Carrière des mots\./);
+  expect(within(f).getByRole('link', { name: 'Carrière des mots' })).toHaveAttribute('href', expect.stringMatching(/^\/adventure\//));
+  // Rien à poser : pas de bouton grisé.
+  expect(within(f).queryByRole('button', { name: /Poser/ })).not.toBeInTheDocument();
 });
 
 it('embarquer joue le voyage en deux temps : le départ, le changement d’archipel sous le voile, l’arrivée au port', async () => {
@@ -544,9 +572,13 @@ it('sans île ouverte, pas de panneau ni de bouton de panneau', () => {
   expect(screen.queryByRole('button', { name: /panneau de/ })).not.toBeInTheDocument();
 });
 
-it('l’école du village : on la touche dans le monde (ou « École » dans la barre), son panneau montre les trois portes', async () => {
+it('l’école du village : on la touche dans le monde (plus de bouton École dans la barre), son panneau montre les trois portes', async () => {
   const user = userEvent.setup();
   renderAt('/adventure');
+  // La barre du bas : Carte, Blocs et l'aide (l'île quand une île est ouverte), plus d'École.
+  const bar = screen.getByRole('navigation', { name: 'Village' });
+  expect(within(bar).getAllByRole('button').map((b) => b.getAttribute('aria-label') ?? b.textContent?.trim())).toEqual(['Carte', 'Mes blocs', 'Revoir l’aide']);
+  expect(within(bar).queryByRole('button', { name: /École/ })).not.toBeInTheDocument();
   await user.click(await screen.findByRole('button', { name: 'Toucher l’école dans le monde' }));
   const sheet = await screen.findByRole('dialog', { name: /École du village/ });
   expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/school');
@@ -554,12 +586,13 @@ it('l’école du village : on la touche dans le monde (ou « École » dans la 
   expect(screen.getByTestId('cadrage')).toHaveTextContent('french-6e-phonology');
   await user.click(within(sheet).getByRole('button', { name: /Français/ }));
   expect(within(sheet).getByRole('link', { name: /Homophones/ })).toHaveAttribute('href', '/app/homophones');
-  // Le bouton de la barre referme l'école.
-  const bar = screen.getByRole('navigation', { name: 'Village' });
-  const button = within(bar).getByRole('button', { name: 'École du village' });
-  expect(button).toHaveAttribute('aria-pressed', 'true');
-  await user.click(button);
+  await user.click(within(sheet).getByRole('button', { name: 'Fermer le panneau' }));
   expect(screen.queryByRole('dialog', { name: /École du village/ })).not.toBeInTheDocument();
+  // Sur une île ouverte, la barre a le bouton de l'île en tête, puis Carte, Blocs et l'aide.
+  cleanup();
+  renderAt('/adventure/french-6e-phonology');
+  const barre = screen.getByRole('navigation', { name: 'Village' });
+  expect(within(barre).getAllByRole('button')).toHaveLength(4);
 });
 
 it('un monument : on le touche dans le monde, la caméra va sur son îlot, son panneau le construit ; le menu les liste', async () => {
@@ -681,11 +714,10 @@ it('le panneau replié reste replié après la Carte ; « Y aller » le rouvre',
   expect(sheet()).toBeInTheDocument();
 });
 
-it('« Y aller » vers un ouvrage ouvre le pli Ouvrages de son île sur sa ligne, mise en avant (GD-7)', async () => {
+it('« Y aller » vers un ouvrage ouvre la fiche de l’ouvrage sur son île, le panneau replié, son signe qui saute (GD-7)', async () => {
   const { getBiome, missionsJouables } = await import('./biomes');
   const { exercisesOf } = await import('./exercises');
-  localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true }));
-  localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'baleine-6e-arrivee': true }));
+  vuSansAide();
   // La Forêt, la Plaine, la Mine et la Rivière jouées, 3 blocs : il en manque un pour le pont vers l'Horloge des verbes.
   const iles = ['french-6e-phonology', 'maths-6e-calculation', 'french-6e-letter-confusion', 'maths-6e-fractions'] as const;
   const progress = Object.fromEntries(iles.flatMap((ile) => missionsJouables(getBiome(ile)!).map((m) => [exercisesOf(ile, m.id)[0].id, { stars: 2, attempts: 1, best: 0.8 }])));
@@ -695,10 +727,11 @@ it('« Y aller » vers un ouvrage ouvre le pli Ouvrages de son île sur sa ligne
   renderAt('/adventure/map');
   await user.click(screen.getByRole('button', { name: /Y aller/ }));
   expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/french-6e-phonology');
-  const pli = document.querySelector<HTMLDetailsElement>('.island-fold-ouvrages');
-  expect(pli).toHaveAttribute('open');
-  expect(pli?.querySelector('[data-bridge]')).toHaveAttribute('data-bridge', 'french-6e-phonology-english-6e-grammar');
-  expect(pli?.querySelector('[data-bridge="french-6e-phonology-english-6e-grammar"]')).toHaveClass('bridge-highlight');
+  expect(sheet()).not.toBeInTheDocument();
+  const f = screen.getByRole('dialog', { name: /entre Forêt des sons et Horloge des verbes/ });
+  expect(f).toHaveTextContent('4 blocs. Il t’en manque 1.');
+  expect(within(f).queryByRole('button', { name: /Construire/ })).not.toBeInTheDocument();
+  expect(vu.fiche).toMatchObject({ objet: { genre: 'ouvrage', id: 'french-6e-phonology-english-6e-grammar' }, saut: true });
 });
 
 it('le panneau replié reste replié au retour d’un exercice (le monde se remonte) ; une autre île ouvre le sien', async () => {
@@ -726,7 +759,7 @@ it('le tutoriel du village tient en trois bulles : l’île, les bornes, le bout
   expect(tuto()).toHaveTextContent('1/3');
   expect(tuto()).toHaveTextContent(/Bienvenue à Blocland !.*Touche la Forêt des sons, sous la flèche jaune\./);
   await user.click(screen.getByRole('button', { name: /Suivant/ }));
-  expect(tuto()).toHaveTextContent(/touche une borne pour jouer.*Chaque mission te donne des blocs pour construire l’île\./);
+  expect(tuto()).toHaveTextContent(/touche une borne, puis Jouer\..*Chaque mission te donne des blocs pour construire l’île\./);
   await user.click(screen.getByRole('button', { name: /Suivant/ }));
   expect(tuto()).toHaveTextContent('Le bouton Menu (⏸), en haut à droite, ouvre le menu : missions, succès, réglages, accueil.');
   // La bulle montre le bouton Menu.
@@ -934,5 +967,141 @@ describe('une longue traversée (GD-7) : le panneau de l’île d’arrivée att
     renderAt('/adventure/french-6e-phonology');
     expect(screen.getByTestId('bonhomme')).toHaveTextContent(/^marche .*french-6e-phonology/);
     expect(sheet()).toBeInTheDocument();
+  });
+});
+
+describe('les fiches du monde (lot 2 de « Toucher le monde »)', () => {
+  const ficheOuverte = () => document.querySelector<HTMLElement>('.world-fiche');
+
+  it('toucher une borne ouvre sa fiche, pas la mission ; « Jouer » lance la mission', async () => {
+    vuSansAide();
+    const user = userEvent.setup();
+    renderAt('/adventure');
+    await user.click(screen.getByRole('button', { name: 'Toucher une borne de la Forêt' }));
+    expect(screen.getByTestId('adresse')).toHaveTextContent(/^\/adventure$/);
+    const f = screen.getByRole('dialog', { name: 'Abattage syllabique' });
+    expect(f).toHaveAttribute('aria-modal', 'false');
+    // Le focus va au titre ; la fiche est comptée sur la scène (la vue s'en écarte).
+    expect(document.activeElement).toBe(within(f).getByRole('heading', { name: 'Abattage syllabique' }));
+    expect(f.closest('[data-couvre="scene"]')).not.toBeNull();
+    // Touchée sur l'objet : la vue a déjà fait sauter son signe.
+    expect(vu.fiche).toMatchObject({ objet: { genre: 'borne', id: 'french-6e-phonology:syllables' }, saut: false });
+    await user.click(within(f).getByRole('link', { name: 'Jouer' }));
+    expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/french-6e-phonology/syllables');
+  });
+
+  it('une borne fermée dit pourquoi en une phrase, sans bouton grisé', async () => {
+    vuSansAide();
+    const user = userEvent.setup();
+    renderAt('/adventure');
+    await user.click(screen.getByRole('button', { name: 'Toucher une borne de la Mine' }));
+    const f = ficheOuverte()!;
+    expect(f).toHaveTextContent('Il faut d’abord un chemin jusqu’à cette île.');
+    expect(within(f).queryByRole('link')).not.toBeInTheDocument();
+    // (Écouter n'existe pas sans synthèse vocale, comme ici.)
+    expect(within(f).getAllByRole('button').map((b) => b.getAttribute('aria-label'))).toEqual(['Fermer la fiche']);
+  });
+
+  it('le Gardien : ce qui manque en une phrase, sans « Défier » tant qu’il n’est pas prêt ; « Défier » quand il l’est', async () => {
+    vuSansAide();
+    const user = userEvent.setup();
+    renderAt('/adventure');
+    await user.click(screen.getByRole('button', { name: 'Toucher le Gardien de la Forêt' }));
+    const f = screen.getByRole('dialog', { name: 'Le Grand Chêne' });
+    expect(f).toHaveTextContent('Pas tout de suite ! le Grand Chêne veut 2 étoiles dans Abattage syllabique, Chasse au son, Rimes-échelle.');
+    expect(within(f).queryByRole('link', { name: /Défier/ })).not.toBeInTheDocument();
+    cleanup();
+    const { getBiome, missionsJouables } = await import('./biomes');
+    const { exercisesOf } = await import('./exercises');
+    const progress = Object.fromEntries(missionsJouables(getBiome('french-6e-phonology')!).map((m) => [exercisesOf('french-6e-phonology', m.id)[0].id, { stars: 2, attempts: 1, best: 0.8 }]));
+    localStorage.setItem('dysapps:game', JSON.stringify({ progress }));
+    renderAt('/adventure');
+    await user.click(screen.getByRole('button', { name: 'Toucher le Gardien de la Forêt' }));
+    await user.click(within(screen.getByRole('dialog', { name: 'Le Grand Chêne' })).getByRole('link', { name: 'Défier' }));
+    expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/french-6e-phonology/challenge');
+  });
+
+  it('une seule fiche à la fois ; toucher le sol la ferme et le bonhomme marche ; Échap la ferme', async () => {
+    vuSansAide();
+    const user = userEvent.setup();
+    renderAt('/adventure/french-6e-phonology');
+    await user.click(screen.getByRole('button', { name: 'Toucher une borne de la Forêt' }));
+    await user.click(screen.getByRole('button', { name: 'Toucher le Gardien de la Forêt' }));
+    expect(document.querySelectorAll('.world-fiche')).toHaveLength(1);
+    expect(screen.getByRole('dialog', { name: 'Le Grand Chêne' })).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Toucher le sol de la Forêt ouverte' }));
+    expect(ficheOuverte()).toBeNull();
+    expect(screen.getByTestId('bonhomme').textContent).toMatch(/^marche sur son île rond/);
+    await user.click(screen.getByRole('button', { name: 'Toucher la créature de la Forêt' }));
+    expect(ficheOuverte()).not.toBeNull();
+    await user.keyboard('{Escape}');
+    expect(ficheOuverte()).toBeNull();
+    expect(document.activeElement).toHaveClass('voxel-canvas');
+  });
+
+  it('la Carte, le menu, Blocs ou le panneau de l’île ferment la fiche ; aucune fiche sur la Carte', async () => {
+    vuSansAide();
+    const user = userEvent.setup();
+    renderAt('/adventure/french-6e-phonology');
+    const barre = () => screen.getByRole('navigation', { name: 'Village' });
+    await user.click(screen.getByRole('button', { name: 'Toucher une borne de la Forêt' }));
+    // Le panneau de l'île s'est replié ; son bouton le rouvre, et la fiche se ferme.
+    await user.click(within(barre()).getByRole('button', { name: 'Ouvrir le panneau de Forêt des sons' }));
+    expect(sheet()).toBeInTheDocument();
+    expect(ficheOuverte()).toBeNull();
+    await user.click(screen.getByRole('button', { name: 'Toucher une borne de la Forêt' }));
+    await user.click(within(barre()).getByRole('button', { name: /Carte/ }));
+    expect(ficheOuverte()).toBeNull();
+    await user.click(screen.getByRole('button', { name: 'Toucher une borne de la Forêt' }));
+    expect(ficheOuverte()).toBeNull();
+    await user.click(within(barre()).getByRole('button', { name: /Carte/ }));
+    await user.click(screen.getByRole('button', { name: 'Toucher une borne de la Forêt' }));
+    await user.click(screen.getByRole('button', { name: 'Mes blocs' }));
+    expect(ficheOuverte()).toBeNull();
+    await user.click(screen.getByRole('button', { name: 'Fermer le panneau' }));
+    await user.click(screen.getByRole('button', { name: 'Toucher une borne de la Forêt' }));
+    await user.click(screen.getByRole('button', { name: 'Menu' }));
+    expect(ficheOuverte()).toBeNull();
+  });
+
+  it('la fiche attend la fermeture du tutoriel', async () => {
+    const user = userEvent.setup();
+    renderAt('/adventure');
+    await user.click(screen.getByRole('button', { name: 'Toucher une borne de la Forêt' }));
+    expect(ficheOuverte()).toBeNull();
+    await user.click(screen.getByRole('button', { name: /Passer/ }));
+    expect(screen.getByRole('dialog', { name: 'Abattage syllabique' })).toBeInTheDocument();
+  });
+
+  it('une île pâle : l’indice de sa créature, et « Voir le premier ouvrage » ouvre la fiche de cet ouvrage', async () => {
+    vuSansAide();
+    localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true, 'decouverte-ouvrages': true }));
+    const user = userEvent.setup();
+    renderAt('/adventure');
+    await user.click(screen.getByRole('button', { name: 'Toucher la Mine pâle' }));
+    // Pas de panneau : la caméra reste, la fiche s'ouvre.
+    expect(screen.getByTestId('adresse')).toHaveTextContent(/^\/adventure$/);
+    const f = screen.getByRole('dialog', { name: 'Mine des lettres' });
+    expect(f).toHaveTextContent(/^Mine des lettres.*Tunel :/);
+    await user.click(within(f).getByRole('button', { name: 'Voir le premier ouvrage' }));
+    const o = screen.getByRole('dialog', { name: /entre Forêt des sons et Mine des lettres/ });
+    expect(o).toHaveTextContent(/\d+ blocs\. Il t’en manque \d+\./);
+    expect(document.querySelectorAll('.world-fiche')).toHaveLength(1);
+    expect(vu.fiche).toMatchObject({ objet: { genre: 'ouvrage', id: 'french-6e-phonology-french-6e-letter-confusion' }, saut: true });
+  });
+
+  it('un ouvrage en fantôme : « Construire » quand on a les blocs ; construit, il ne s’ouvre plus (il se touche comme le sol)', async () => {
+    vuSansAide();
+    localStorage.setItem('dysapps:game', JSON.stringify({ stock: { 'french-6e-phonology': 20 } }));
+    const user = userEvent.setup();
+    renderAt('/adventure');
+    await user.click(screen.getByRole('button', { name: 'Toucher le sentier vers la Mine' }));
+    const f = screen.getByRole('dialog', { name: /entre Forêt des sons et Mine des lettres/ });
+    await user.click(within(f).getByRole('button', { name: /Construire/ }));
+    expect(f).toHaveTextContent(/vers Mine des lettres est tracé/);
+    expect(JSON.parse(localStorage.getItem('dysapps:game')!).world.links).toContain('french-6e-phonology-french-6e-letter-confusion');
+    await user.click(within(f).getByRole('button', { name: 'Fermer la fiche' }));
+    await user.click(screen.getByRole('button', { name: 'Toucher le sentier vers la Mine' }));
+    expect(ficheOuverte()).toBeNull();
   });
 });

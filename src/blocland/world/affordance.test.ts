@@ -3,6 +3,7 @@ import { EMPTY_STATE, type GameState } from '../engine';
 import {
   basDuSigne,
   centreDuSigneGrossi,
+  centreDeLObjet,
   cleDeLObjet,
   COULEURS_DU_SIGNE,
   COTE_DU_SIGNE,
@@ -351,4 +352,23 @@ it('borneDe : l’île et la mission d’une borne, seulement pour une île du j
   expect(borneDe('french-6e-phonology:sons')).toEqual({ ile: 'french-6e-phonology', mission: 'sons' });
   expect(borneDe('volcan:a')).toBeNull();
   expect(borneDe('sans-mission')).toBeNull();
+});
+
+it('le centre de l’objet d’une fiche (lot 2 de « Toucher le monde ») : dans ses cubes, ou le cœur d’une île', () => {
+  const a: ArchipelagoId = '6e';
+  const cubes = worldCubes(a, EMPTY_STATE.progress, EMPTY_STATE.world, false);
+  const creatures = [...creaturePlacements(a, EMPTY_STATE.world.links), ...guardianPlacements(a, EMPTY_STATE.progress, EMPTY_STATE.world.links)];
+  const vehicle = vehiclePlacement(a, EMPTY_STATE.progress, EMPTY_STATE.world);
+  const entree = { cubes, creatures, vehicle };
+  const borne = signesDe(EMPTY_STATE, a).find((x) => x.objet.genre === 'borne')!;
+  const c = centreDeLObjet(borne.objet, entree)!;
+  // Le centre de la borne, sous son signe.
+  expect(c.x).toBeCloseTo(borne.x, 0);
+  expect(c.y).toBeCloseTo(borne.y, 0);
+  expect(c.z).toBeLessThan(borne.z);
+  // La créature de la Forêt, à sa place ; le navire au port ; une île, par la fonction donnée ; un inconnu : rien.
+  expect(centreDeLObjet({ genre: 'creature', id: 'french-6e-phonology' }, entree)).not.toBeNull();
+  expect(centreDeLObjet({ genre: 'navire', port: vehicle.port }, entree)).not.toBeNull();
+  expect(centreDeLObjet({ genre: 'ile', id: 'french-6e-letter-confusion' }, { ...entree, ile: () => ({ x: 1, y: 2, z: 3 }) })).toEqual({ x: 1, y: 2, z: 3 });
+  expect(centreDeLObjet({ genre: 'ouvrage', id: 'inconnu' }, entree)).toBeNull();
 });

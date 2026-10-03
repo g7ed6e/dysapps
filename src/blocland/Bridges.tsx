@@ -33,31 +33,16 @@ function withArticle(kind: BridgeDef['kind']): string {
 }
 
 /**
- * Les ouvrages que l'on peut construire depuis (ou vers) une île : un pont, un bac, un escalier taillé, un tunnel,
- * un col. Chacun coûte quelques blocs, de n'importe quel type gagné sur une île ; l'escalier demande aussi un plan
- * terminé, et plus aucun ouvrage n'attend un Gardien vaincu (GD-7). Un seul bouton par ouvrage : « Construire » en
- * bouton principal pour l'ouvrage du prochain objectif de l'île, en bouton secondaire pour les autres ; ce qui manque
- * est dit clairement.
+ * Construire un ouvrage depuis une île ouverte qu'il touche : les blocs payés, le son, l'île d'en face ouverte
+ * (`onBuilt`), et la phrase qui le dit (ou ce qui manque), lue si la lecture est automatique. Le pli Ouvrages et la
+ * fiche d'un ouvrage (lot 2 de « Toucher le monde »).
  */
-export function Bridges({ island, onBuilt, highlight = null, fold, objectif }: Props) {
+export function useConstruireUnOuvrage(island: BiomeId, onBuilt?: (to: BiomeId) => void) {
   const { state, buildBridge } = useBlocland();
   const { settings, speak } = useSettings();
   const [said, setSaid] = useState<string | null>(null);
   // Le message d'un ouvrage construit ne suit pas sur une autre île.
   useEffect(() => setSaid(null), [island]);
-  // L'ouvrage touché dans le monde : on amène sa proposition sous les yeux.
-  const list = useRef<HTMLUListElement>(null);
-  useEffect(() => {
-    if (!highlight) return;
-    // Par `dataset`, jamais dans un sélecteur : `highlight` vient de l'adresse (`?worksite=`).
-    const el = [...(list.current?.querySelectorAll<HTMLElement>('[data-bridge]') ?? [])].find((e) => e.dataset.bridge === highlight);
-    el?.scrollIntoView?.({ block: 'center', behavior: 'smooth' });
-  }, [highlight, island]);
-  const world = { progress: state.progress, plans: state.world.parts };
-  const bridges = buildableBridges(state.world.links, island, world, settings.lv2);
-  const have = payableBlocks(state.stock);
-  if (!bridges.length && !said) return null;
-
   const build = (b: BridgeDef, name: string) => {
     const r = buildBridge(b.id);
     let text: string;
@@ -80,6 +65,33 @@ export function Bridges({ island, onBuilt, highlight = null, fold, objectif }: P
     setSaid(text);
     if (settings.autoRead) speak(frenchTypography(text));
   };
+  return { said, build };
+}
+
+/**
+ * Les ouvrages que l'on peut construire depuis (ou vers) une île : un pont, un bac, un escalier taillé, un tunnel,
+ * un col. Chacun coûte quelques blocs, de n'importe quel type gagné sur une île ; l'escalier demande aussi un plan
+ * terminé, et plus aucun ouvrage n'attend un Gardien vaincu (GD-7). Un seul bouton par ouvrage : « Construire » en
+ * bouton principal pour l'ouvrage du prochain objectif de l'île, en bouton secondaire pour les autres ; ce qui manque
+ * est dit clairement.
+ */
+export function Bridges({ island, onBuilt, highlight = null, fold, objectif }: Props) {
+  const { state } = useBlocland();
+  const { settings } = useSettings();
+  const { said, build } = useConstruireUnOuvrage(island, onBuilt);
+  // L'ouvrage touché dans le monde : on amène sa proposition sous les yeux.
+  const list = useRef<HTMLUListElement>(null);
+  useEffect(() => {
+    if (!highlight) return;
+    // Par `dataset`, jamais dans un sélecteur : `highlight` vient de l'adresse (`?worksite=`).
+    const el = [...(list.current?.querySelectorAll<HTMLElement>('[data-bridge]') ?? [])].find((e) => e.dataset.bridge === highlight);
+    el?.scrollIntoView?.({ block: 'center', behavior: 'smooth' });
+  }, [highlight, island]);
+  const world = { progress: state.progress, plans: state.world.parts };
+  const bridges = buildableBridges(state.world.links, island, world, settings.lv2);
+  const have = payableBlocks(state.stock);
+  if (!bridges.length && !said) return null;
+
 
   const heading = (
     <h3 id={`ponts-${island}`} className="island-sheet-heading">

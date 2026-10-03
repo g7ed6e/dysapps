@@ -4,7 +4,7 @@ import { sanitizeState } from '../engine';
 import { planCells, plansFor } from './plans';
 import { NOMS_ARCHIPELS } from './archipelago';
 import { textesDe } from '../../univers';
-import { nextDestination as nextDestinationDe } from './destination';
+import { laDestinationEstLeNavire, nextDestination as nextDestinationDe } from './destination';
 import { nextGoalInfo } from './goals';
 import { VEHICLE_STAGES } from './vehicle';
 
@@ -73,4 +73,21 @@ it('sans objectif, la destination est le port, avec ce qu’il faut pour le vill
   const plans = Object.fromEntries(['french-6e-phonology', 'maths-6e-calculation'].flatMap((b) => plansFor(b as never)).map((p) => [p.id, planCells(p).map((c) => c.key)]));
   const state = sanitizeState({ progress: { ...joue('french-6e-phonology', 1), ...joue('maths-6e-calculation', 1) }, world: { place: 'french-6e-phonology', parts: plans, links: ['french-6e-phonology-french-6e-letter-confusion', 'french-6e-phonology-french-6e-grammar-spelling', 'french-6e-phonology-english-6e-grammar', 'maths-6e-calculation-maths-6e-fractions', 'maths-6e-calculation-maths-6e-decimals'] } });
   expect(nextDestination(state).text).toMatch(/\.$/);
+});
+
+it('la destination est le Bloc-Navire quand c’est le port et que sa phrase est l’objectif du navire (« Y aller » ouvre sa fiche)', () => {
+  const objectif = (state: Etat) => nextGoalInfo(state, 'maths-6e-calculation', NOMS_ARCHIPELS, mots);
+  // Au début : une île à explorer, pas le navire.
+  const debut = sanitizeState({});
+  expect(laDestinationEstLeNavire(nextDestination(debut), objectif(debut))).toBe(false);
+  // Le navire prêt à partir : le port, sa phrase est celle du navire.
+  const [coque] = VEHICLE_STAGES;
+  const progress = Object.fromEntries(['french-6e-phonology', 'maths-6e-calculation', 'french-6e-letter-confusion'].map((id) => [`${id}-challenge`, { stars: 2, attempts: 1, best: 1 }]));
+  const pret = sanitizeState({ progress, world: { parts: { [coque.id]: planCells(coque).map((c) => c.key) }, links: ['french-6e-phonology-french-6e-letter-confusion'], place: 'maths-6e-calculation' } });
+  const d = nextDestination(pret);
+  expect(d.island).toBe('maths-6e-calculation');
+  expect(laDestinationEstLeNavire(d, objectif(pret))).toBe(true);
+  // Un ouvrage ou une commande n'est jamais le navire.
+  expect(laDestinationEstLeNavire({ ...d, ouvrage: 'x' }, objectif(pret))).toBe(false);
+  expect(laDestinationEstLeNavire({ ...d, commande: 'x' }, objectif(pret))).toBe(false);
 });

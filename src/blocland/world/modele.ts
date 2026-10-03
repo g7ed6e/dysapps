@@ -123,12 +123,6 @@ export function etatsDesObjets(state: GameState, a: ArchipelagoId): EtatsDesObje
 
 // ---- Les décisions
 
-/** Une borne touchée : jouer sa mission si elle est jouable, sinon ouvrir son île (qui explique pourquoi). */
-export function borneTouchee(bornes: BorneDuModele[], ile: BiomeId, mission: string): 'jouer' | 'ile' {
-  const b = bornes.find((m) => m.ile === ile && m.mission === mission);
-  return b && b.etat !== 'locked' ? 'jouer' : 'ile';
-}
-
 /** Un ouvrage touché : l'île ouverte qu'il touche (celle de départ si aucune ne l'est), `null` s'il n'existe pas. */
 export function ileDeLOuvrage(id: string, bridges: string[]): BiomeId | null {
   const def = getBridge(id);

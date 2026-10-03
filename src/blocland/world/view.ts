@@ -7,7 +7,7 @@ import type { ArchipelagoId } from './archipelago';
 import type { VehiclePlacement } from './terrain';
 import type { VoyageLeg } from './voyage';
 import type { Cell, CreaturePlacement } from './paths';
-import type { Ancrage, Intention } from './disposition';
+import type { Ancrage, Intention, ObjetDeLaFiche } from './disposition';
 import type { EtatsDesObjets } from './modele';
 import { grilleDe } from './grille';
 
@@ -218,6 +218,12 @@ export interface WorldViewProps {
   onVueDeplacee?: (deplacee: boolean) => void;
   /** Change à chaque appui sur « Recentrer » : la vue efface son décalage et revient en douceur à son cadrage. */
   recentrage?: number;
+  /**
+   * La fiche ouverte (lot 2 de « Toucher le monde »), une fois posée dans la page : la vue garde son objet hors d'elle
+   * (si elle le cache, le cadrage glisse pour le poser dans la place libre ; sinon rien ne bouge) et, quand elle ne s'est
+   * pas ouverte d'un toucher sur l'objet (`saut`), fait sauter son signe. Une fois par `seq`. La 2D n'en fait rien.
+   */
+  fiche?: { objet: ObjetDeLaFiche; seq: number; saut: boolean } | null;
   className?: string;
   label: string;
 }

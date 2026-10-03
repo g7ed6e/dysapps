@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { SettingsProvider } from '../core/SettingsContext';
@@ -251,4 +251,13 @@ it('le pli Ouvrages : un seul « Construire » principal, celui de l’ouvrage d
   const vers = titre.replace(/^.* vers /, '');
   expect(document.querySelector('.island-goal')!.textContent).toContain(`vers ${vers}`);
   expect(document.querySelector('.island-goal')!.textContent).toMatch(new RegExp(`construire l[e’] ?${titre.split(' vers ')[0].toLowerCase()}`));
+});
+
+it('le panneau de l’île de l’école n’a plus l’école, le lieu où l’on assemble ni la salle des trophées : ce sont des lieux du monde', () => {
+  renderSheet('french-6e-phonology', () => {}, undefined, true);
+  const sheet = screen.getByRole('dialog', { name: /Forêt des sons/ });
+  expect(within(sheet).queryByRole('link', { name: /École du village|Salle des trophées|Fabrique|assembl/i })).not.toBeInTheDocument();
+  // Il garde le reste : les missions et le Gardien.
+  expect(within(sheet).getByRole('list', { name: 'Missions de l’île' })).toBeInTheDocument();
+  expect(within(sheet).getByRole('button', { name: /Le Grand Chêne/ })).toBeInTheDocument();
 });

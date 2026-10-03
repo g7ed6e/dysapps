@@ -18,6 +18,9 @@ import { estUnBiome, type BiomeId } from '../biomes';
 import { getBridge } from './archipelago';
 import type { PlaceId, VoxelCube } from './cube';
 import type { EtatsDesObjets } from './modele';
+import type { ObjetDeLaFiche } from './disposition';
+
+export type { ObjetDeLaFiche };
 import type { Cell, CreaturePlacement } from './paths';
 import type { VehiclePlacement } from './terrain';
 
@@ -221,6 +224,40 @@ export function signesDesObjets({ cubes, quests = [], creatures = [], vehicle = 
   if (vehicle?.cubes.length)
     out.push(signeAuDessus({ genre: 'navire', port: vehicle.port }, etats?.navirePret ? 'aFaire' : 'pasEncore', [vehicle.port], boiteDe(vehicle.cubes, vehicle.origin)));
   return out;
+}
+
+/**
+ * Le centre de l'objet d'une fiche, en cases du monde (`x`, `y` au sol, `z` en hauteur), lu dans ses cubes : une borne,
+ * un lieu, un ouvrage, un Gardien ou une créature (à sa place de départ), le navire ; une île, son cœur (`ile`, donné
+ * par l'appelant). `null` si l'objet n'est pas dans le monde.
+ */
+export function centreDeLObjet(
+  objet: ObjetDeLaFiche | ObjetTouche,
+  { cubes, creatures = [], vehicle = null, ile }: Pick<EntreeDesSignes, 'cubes' | 'creatures' | 'vehicle'> & { ile?: (id: BiomeId) => Cell },
+): Cell | null {
+  const centre = (b: Boite): Cell => ({ x: (b.min.x + b.max.x) / 2, y: (b.min.y + b.max.y) / 2, z: (b.min.z + b.max.z) / 2 });
+  const deCubes = (garder: (c: VoxelCube) => boolean) => {
+    const l = cubes.filter(garder);
+    return l.length ? centre(boiteDe(l)) : null;
+  };
+  switch (objet.genre) {
+    case 'borne':
+      return deCubes((c) => c.quest === objet.id);
+    case 'ouvrage':
+      return deCubes((c) => c.bridge === objet.id);
+    case 'lieu':
+      return deCubes((c) => c.place === objet.id && !c.sol);
+    case 'navire':
+      return vehicle?.cubes.length ? centre(boiteDe(vehicle.cubes, vehicle.origin)) : null;
+    case 'gardien':
+    case 'creature': {
+      const gardien = objet.genre === 'gardien';
+      const p = creatures.find((c) => c.id === objet.id && (c.kind === 'guardian') === gardien);
+      return p?.cubes.length ? centre(boiteDe(p.cubes, p.origin)) : null;
+    }
+    case 'ile':
+      return ile ? ile(objet.id) : null;
+  }
 }
 
 // ---- Le mouvement

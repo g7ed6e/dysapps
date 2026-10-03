@@ -246,6 +246,7 @@ svg {
 .world-overlay-top .panel,
 .world-overlay-bottom .panel,
 .world-archipel-list,
+.world-fiche,
 .island-sheet {
   box-shadow: var(--shadow-float);
 }
@@ -5962,6 +5963,108 @@ button.island-quest {
 .world-archipel-more {
   margin-top: 0.4rem;
   border-style: dashed;
+}
+/* La fiche d'un objet du monde (lot 2 de « Toucher le monde ») : toujours à la même place, en bas, toute la largeur,
+   juste au-dessus de la barre ; en paysage, une carte en bas à gauche. Au plus 45 % de la scène (60 % sur téléphone en
+   paysage) : au-delà, le texte défile dans la fiche, le titre et les boutons restent entiers, jamais de points de
+   suspension. */
+.world-fiche-place {
+  position: absolute;
+  left: 0.6rem;
+  right: 0.6rem;
+  bottom: calc(var(--barre-h, 4rem) + 0.6rem);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  max-height: 45%;
+  pointer-events: none;
+}
+@media (orientation: landscape) {
+  .world-fiche-place {
+    right: auto;
+    width: min(24rem, 50%);
+  }
+}
+@media (orientation: landscape) and (max-height: 500px) {
+  .world-fiche-place {
+    max-height: 60%;
+  }
+}
+.world-fiche {
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-height: 0;
+  max-height: 100%;
+  padding: 0.5rem 0.6rem 0.7rem 0.9rem;
+  background: var(--surface);
+  border: var(--border-width) solid var(--ink);
+  border-radius: var(--radius);
+}
+.world-fiche-tete {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.world-fiche-titre {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 1.15rem;
+  /* Un mot plus long que la fiche (grand texte sur téléphone) passe à la ligne : rien n'est coupé. */
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+.world-fiche-titre > span {
+  min-width: 0;
+}
+.world-fiche-titre svg {
+  flex: none;
+}
+.world-fiche-texte {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  overflow-wrap: break-word;
+}
+.world-fiche-phrase {
+  margin: 0.2rem 0;
+}
+.world-fiche-texte .stars {
+  display: inline-flex;
+  margin: 0.2rem 0;
+}
+.world-fiche-texte .build-status:empty {
+  display: none;
+}
+.world-fiche-actions {
+  flex: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.world-fiche-actions .button {
+  min-height: 48px;
+  max-width: 100%;
+  white-space: normal;
+}
+/* Dans la fiche d'une créature, la plaque des révisions n'est plus un cadre : la fiche en est un. */
+.creature-rappel.dans-une-fiche {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+}
+/* La fiche ouverte : le haut garde un peu moins de place (une chose à la fois en bas). */
+.fiche-ouverte .world-overlay-top {
+  max-height: 40%;
 }
 .hop-line {
   display: flex;
