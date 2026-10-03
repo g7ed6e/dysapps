@@ -133,8 +133,6 @@ const CAPTURES = [
     ile: 'french-6e-letter-confusion',
     debout: 'french-6e-letter-confusion',
     fiche: { genre: 'gardien', id: 'french-6e-letter-confusion' },
-    recadre: { x: 560, y: 100, width: 330, height: 250 },
-    finesse: 2,
   },
   { nom: 'signes-archipel', vue: 'archipel', famille: 'signes', ile: 'french-6e-phonology', taille: { width: 390, height: 844 } },
   { nom: 'signes-archipel-paysage', vue: 'archipel', famille: 'signes', ile: 'french-6e-phonology', taille: { width: 844, height: 390 } },

@@ -10,6 +10,7 @@ import { Link } from 'react-router-dom';
 import { Icon, type AnyIconName } from '../components/Icon';
 import { SpeakButton } from '../components/SpeakButton';
 import { Syllabified } from '../components/Syllabified';
+import { useASuivre } from '../components/useASuivre';
 import { frenchTypography } from '../components/math/RichText';
 import { useSettings } from '../core/SettingsContext';
 import { useTextes } from '../univers';
@@ -100,6 +101,8 @@ interface CadreProps {
 function Fiche({ titre, icone, lecture, onClose, actions, children }: CadreProps) {
   const { settings, speak } = useSettings();
   const titreRef = useRef<HTMLHeadingElement>(null);
+  // Le texte continue plus bas (grand texte, une découverte) : un trait pointillé le dit, comme sur la Carte.
+  const [texteRef, suite] = useASuivre<HTMLDivElement>(lecture);
   useEffect(() => {
     titreRef.current?.focus({ preventScroll: true });
     if (settings.autoRead) speak(frenchTypography(lecture));
@@ -107,7 +110,7 @@ function Fiche({ titre, icone, lecture, onClose, actions, children }: CadreProps
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
-    <section className={`world-fiche${titre.length > 18 ? ' titre-long' : ''}`} role="dialog" aria-modal="false" aria-labelledby="fiche-titre">
+    <section className="world-fiche" role="dialog" aria-modal="false" aria-labelledby="fiche-titre">
       <div className="world-fiche-tete">
         <h2 id="fiche-titre" ref={titreRef} tabIndex={-1} className="world-fiche-titre">
           {icone && <Icon name={icone} />} <span>{frenchTypography(titre)}</span>
@@ -117,7 +120,11 @@ function Fiche({ titre, icone, lecture, onClose, actions, children }: CadreProps
           <Icon name="close" />
         </button>
       </div>
-      {children && <div className="world-fiche-texte">{children}</div>}
+      {children && (
+        <div ref={texteRef} className={`world-fiche-texte${suite ? ' a-suivre' : ''}`}>
+          {children}
+        </div>
+      )}
       {actions && <div className="world-fiche-actions">{actions}</div>}
     </section>
   );
@@ -246,7 +253,7 @@ function FicheDuNavire({ port, ship, onBoard, onClose }: Props & { port: BiomeId
   const manque = !ready && !attend ? ((Object.entries(status.missing) as [BlockId, number][]).find(([b, n]) => n > (state.stock[b] ?? 0)) ?? null) : null;
   const ou = manque ? (earnIsland(manque[0])?.name ?? whereToEarn(manque[0])) : '';
   const phrase = manque
-    ? `${status.done} / ${status.total} blocs posés. Il manque ${blockCount(manque[0], manque[1] - (state.stock[manque[0]] ?? 0))}, `
+    ? `${status.done} blocs posés sur ${status.total}. Il manque ${blockCount(manque[0], manque[1] - (state.stock[manque[0]] ?? 0))}, `
     : attend && status.complete
       ? textes.libelles.navireAttend(attend.missing)
       : finDePhrase(shipSummary(ship, state.stock, textes));

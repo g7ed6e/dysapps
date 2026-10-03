@@ -995,8 +995,10 @@ export function WorldPage() {
   const ligneDuVoyage = voyage?.mode === 'cinema';
   // Une chose à la fois : le panneau de la Carte attend que le mot de la baleine ou du rallumage soit fermé (DA-25).
   const panneauDeLaCarte = mapOpen && !whaleWord && !motRallume && !renommageOuvert;
-  const phraseDuVillage = villageSaid && !whaleWord && !renommageOuvert;
-  const bulleEnHaut = Boolean(ligneDuVoyage || panneauDeLaCarte || hopTo || phraseDuVillage || said);
+  // Une chose à la fois : la phrase du village et celle d'une créature attendent que la fiche ouverte soit fermée.
+  const phraseDuVillage = villageSaid && !whaleWord && !renommageOuvert && !ficheVue;
+  const phraseDeCreature = said && !ficheVue ? said : null;
+  const bulleEnHaut = Boolean(ligneDuVoyage || panneauDeLaCarte || hopTo || phraseDuVillage || phraseDeCreature);
   /**
    * « Recentrer » : le focus passe d'abord au monde (le bouton va disparaître, le focus ne tombe pas sur la page), puis
    * la vue revient à son cadrage.
@@ -1163,10 +1165,10 @@ export function WorldPage() {
               </button>
             </div>
           )}
-          {said && (
+          {phraseDeCreature && (
             <div className="creature-line world-line" role="status" aria-live="polite">
-              <strong>{getBiome(said.id)?.creature.name} :</strong> <Syllabified text={said.text} />
-              <SpeakButton text={said.text} compact />
+              <strong>{getBiome(phraseDeCreature.id)?.creature.name} :</strong> <Syllabified text={phraseDeCreature.text} />
+              <SpeakButton text={phraseDeCreature.text} compact />
               <button type="button" className="icon-button" aria-label="Fermer"
                 onClick={() => {
                   stop();

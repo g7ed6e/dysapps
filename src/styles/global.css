@@ -5933,7 +5933,7 @@ button.island-quest {
 }
 
 /* La fiche d'un objet du monde (lot 2 de « Toucher le monde ») : toujours à la même place, en bas, toute la largeur,
-   juste au-dessus de la barre ; en paysage, une carte en bas à gauche. Au plus 45 % de la scène (60 % sur téléphone en
+   juste au-dessus de la barre ; en paysage, une carte en bas à gauche. Au plus 45 % de la scène en portrait (70 % en
    paysage) : au-delà, le texte défile dans la fiche, le titre et les boutons restent entiers, jamais de points de
    suspension. */
 .world-fiche-place {
@@ -5954,15 +5954,10 @@ button.island-quest {
     width: min(24rem, 50%);
   }
 }
-@media (orientation: landscape) and (max-height: 500px) {
-  .world-fiche-place {
-    max-height: 60%;
-  }
-}
-/* Un titre long (le Bloc-Navire, un ouvrage) en paysage : jusqu'à 70 %, pour que le titre, une ligne et les boutons
-   tiennent en grand texte (la fiche reste à gauche, la caméra recadre l'objet à droite). */
+/* En paysage, jusqu'à 70 % : le titre, deux lignes et les boutons tiennent en grand texte (la fiche reste à gauche, la
+   caméra recadre l'objet à droite). */
 @media (orientation: landscape) {
-  .world-fiche-place:has(.titre-long) {
+  .world-fiche-place {
     max-height: 70%;
   }
 }
@@ -6011,11 +6006,11 @@ button.island-quest {
   container: fiche / inline-size;
 }
 @container fiche (max-width: 17rem) {
-  .titre-long .world-fiche-tete {
+  .world-fiche-tete {
     flex-wrap: wrap;
     justify-content: flex-end;
   }
-  .titre-long .world-fiche-titre {
+  .world-fiche-titre {
     order: 1;
     flex-basis: 100%;
     font-size: 1rem;
@@ -6023,11 +6018,15 @@ button.island-quest {
 }
 .world-fiche-texte {
   flex: 1 1 auto;
-  /* Toujours au moins une ligne de la phrase visible. */
-  min-height: 1.6em;
+  /* Toujours au moins deux lignes de la phrase visibles ; s'il en reste, un trait pointillé le dit (.a-suivre). */
+  min-height: 3.2em;
+  min-height: 2lh;
   overflow: auto;
   overscroll-behavior: contain;
   overflow-wrap: break-word;
+}
+.world-fiche-texte.a-suivre {
+  border-bottom: var(--border-width) dashed currentColor;
 }
 .world-fiche-phrase {
   margin: 0.2rem 0;
