@@ -794,3 +794,17 @@ Pour tous les items :
 | `french-3e-close-reading-1` | La lanterne d’Astra | 40 | Ma lanterne ! Merci, bâtisseur. Elle grossit les mots : on y lit même ce qui n’est pas écrit. |
 | `french-3e-close-reading-2` | Le toit de la lanterne | 50 | Un toit et une porte ! La nuit, je lis à ma propre lumière. |
 | `french-3e-close-reading-3` | La coupole de la lanterne | 60 | Une coupole, une barrière, un escalier… Ma lanterne est complète : fin du chapitre, pas de l’histoire. |
+
+## Les demandes
+
+### `french-3e-close-reading-request-1`
+
+- habitant : Astra
+- bloc : `english-3e-grammar`
+- combien : 3
+- petite construction : le banc
+- demande : Il me faut {objet} pour mon banc. Joue une mission du Château des hypothèses.
+- prête : Tu as les {blocs} ! Livre-les à Astra.
+- posée : Banc posé chez Astra !
+
+> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : le banc de pierre de taille de la salle commune (`refuge()`) : 2 pieds de lentille aux bouts, une assise de 3 pierres de taille dessus ; 5 cubes, 3 cases, 2 de haut.

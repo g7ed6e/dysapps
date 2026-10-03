@@ -1,6 +1,6 @@
 # Le contenu en Markdown
 
-Ce dossier est la source des îles : un fichier par île (`<lieu>.md`, l’identifiant du lieu, par exemple `english-6e-vocabulary.md`), avec ce que l’île est (nom, module, Gardien, créature…), ses missions et leurs exercices, les plans de son bâtiment (que ses missions posent), et `archipel.md`, l’ordre des îles. `npm run contenu` en produit les JSON du jeu (`src/blocland/iles.ts`, `src/blocland/exercises/data/<exercice>.json` et `src/blocland/world/plans/<plan>.json`), qu’on n’édite jamais à la main ; la CI vérifie qu’ils suivent le Markdown (`npm run contenu -- --check`). `portail/` tient le contenu de quatre missions du portail (plus bas).
+Ce dossier est la source des îles : un fichier par île (`<lieu>.md`, l’identifiant du lieu, par exemple `english-6e-vocabulary.md`), avec ce que l’île est (nom, module, Gardien, créature…), ses missions et leurs exercices, les plans de son bâtiment (que ses missions posent), la commande de son habitant, et `archipel.md`, l’ordre des îles. `npm run contenu` en produit les JSON du jeu (`src/blocland/iles.ts`, `src/blocland/exercises/data/<exercice>.json`, `src/blocland/world/plans/<plan>.json` et `src/blocland/world/requests.json`), qu’on n’édite jamais à la main ; la CI vérifie qu’ils suivent le Markdown (`npm run contenu -- --check`). `portail/` tient le contenu de quatre missions du portail (plus bas).
 
 ## Le format
 
@@ -110,6 +110,40 @@ Le fichier d’une île finit par ses plans, un tableau sous le titre `## Les pl
 Un plan n’a pas de coffre : ses blocs de finition (toit, porte, lanterne, barrière, escalier) se posent avec sa partie. Le découpage est fait par le code (`src/blocland/world/parties.ts`) : rien à écrire ici de plus que les plans. Les parties de chaque île sont listées dans les pages générées du site (« Le bâtiment »).
 
 Changer un nom, une XP ou une réplique se fait ici seulement. La forme du bâtiment est dessinée par le code (`src/blocland/world/architect.ts`) ; ajouter, retirer ou déplacer un plan demande aussi `src/blocland/world/plans.ts`, dont l’ordre doit rester celui du tableau (un test le vérifie). Les noms et les répliques sont ceux de l’univers Blocland ; où vivront ceux d’Archipéo reste à décider quand ses constructions seront renommées. L’XP règle l’équilibre du jeu et est commune aux univers : la changer passe par le directeur artistique, avec une fiche `GD-<n>` (`docs/gameplay/`). Un nom ou une réplique appartient à l’univers Blocland : le changer passe par le consultant de Blocland et par le référent dys.
+
+## Les demandes
+
+Après ses plans, le fichier d’une île de français, de maths ou d’anglais finit par la commande de son habitant ([GD-7](../gameplay/propositions/GD-7.md), points 4 et 5), sous le titre `## Les demandes` (les îles de LV2 n’en ont pas). Livrée, la commande pose une petite construction chez la créature. `npm run contenu` les écrit toutes dans `src/blocland/world/requests.json`, dans l’ordre de `archipel.md` :
+
+```md
+## Les demandes
+
+### `french-6e-letter-confusion-request-1`
+
+- habitant : Tunel
+- bloc : `maths-6e-calculation`
+- combien : 4
+- petite construction : le puits
+- demande : Il me faut {objet} pour mon puits. Joue une mission de la Plaine des nombres.
+- prête : Tu as les {blocs} ! Livre-les à Tunel.
+- posée : Puits posé chez Tunel !
+
+> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : l’anneau `ring()` de 3 × 3 au sol…
+```
+
+- **identifiant** : `<lieu>-request-<n>`, à partir de 1, qui ne change jamais ; la petite construction qu’elle pose s’appelle `<lieu>-fixture-<n>` (il ne s’écrit pas).
+- **habitant** : la créature de l’île (son nom dans l’en-tête), jamais un Gardien.
+- **bloc** : le bloc d’une autre île du même archipel, ou le bloc assemblé de l’archipel quand sa recette ne prend pas le bloc de l’île ; jamais l’or, le cristal, un bloc de finition ni le bloc d’une île de LV2. Dans un archipel, un bloc n’est demandé qu’une fois.
+- **combien** : de 2 à 4. La forme pose un cube du bloc livré pour chaque bloc demandé.
+- **petite construction** : son nom avec l’article (« le puits », « l’abri »), le même dans la liste, la demande et la réplique (« le puits de Tunel »).
+- **demande** : deux phrases, le besoin puis le lieu et le geste : « Joue une mission de la (du, de l’) <île qui donne le bloc>. », ou « Assemble-les {à}. » pour un bloc assemblé ; jamais une notion ni une note.
+- **prête** : « Tu as les {blocs} ! Livre-les à <créature>. »
+- **posée** : « <Petite construction> posé(e) chez <créature> ! »
+- **après le plan** (facultatif) : la commande n’arrive qu’une fois ce plan de l’île bâti (Grimoire, après « La lanterne du phare »).
+
+Le nombre et le nom du bloc ne s’écrivent pas : le jeu met à la place de `{objet}` le nombre de blocs avec les mots de Mes blocs (« 4 briques », « 3 blocs de terre »), à la place de `{blocs}` le même nom sans nombre (« briques »), et à la place de `{à}` le lieu où l’on assemble (« à la Fabrique », `assemblage.md`) : l’objet porte ainsi le même nom partout. La phrase de la première fois (« Une commande, c’est une créature qui te demande des blocs pour une petite construction. Rien ne presse. ») est commune à toutes les îles : elle va avec les textes de l’univers, pas ici.
+
+Les phrases sont celles de Blocland (une « commande », une « petite construction ») ; Archipéo, en pause, n’affiche pas les commandes et n’a pas de phrases ici (dans le JSON, elles sont rangées sous `blocland`, pour qu’un autre univers ait les siennes à côté). La forme de chaque petite construction est dessinée par le code ; la note « > Forme » la décrit pour l’artiste technique 3D, et le jeu ne la lit pas. `scripts/contenu/demandes.mjs` lit la section et vérifie ces règles (avec les apostrophes typographiques, sans « … », deux phrases courtes au plus) ; `demandes.test.mjs` les teste. Changer un bloc, un nombre ou une petite construction passe par le directeur artistique ; une phrase, par le consultant de Blocland et le référent dys.
 
 ## Les missions du portail
 

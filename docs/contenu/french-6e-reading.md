@@ -416,3 +416,18 @@ Pour tous les items :
 | `french-6e-reading-1` | Le phare de Grimoire | 60 | Hou hou ! Mon phare brille à nouveau. Les lecteurs perdus retrouveront le chemin du village. |
 | `french-6e-reading-2` | La lanterne du phare | 70 | Deux lanternes au sommet : mon phare se voit depuis la Forêt. Hou hou ! |
 | `french-6e-reading-3` | Le quai du phare | 80 | Le quai est prêt. Le village est reconstruit, et chaque page lue l’a rendu plus beau. |
+
+## Les demandes
+
+### `french-6e-reading-request-1`
+
+- habitant : Grimoire
+- bloc : `maths-6e-decimals`
+- combien : 3
+- petite construction : le poteau-lanterne
+- demande : Il me faut {objet} pour mon poteau-lanterne. Joue une mission du Volcan des décimaux.
+- prête : Tu as les {blocs} ! Livre-les à Grimoire.
+- posée : Poteau-lanterne posé chez Grimoire !
+- après le plan : `french-6e-reading-2`
+
+> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : la lanterne sur le poteau du bout (`yard()`) : un socle de 2 obsidiennes au sol, un poteau d’obsidienne sur celui de gauche, une lanterne dessus ; 4 cubes, 2 cases, 3 de haut. La commande n’arrive qu’une fois « La lanterne du phare » bâtie ; sa lanterne compte parmi les lanternes de l’île (à vérifier par l’artiste technique 3D).

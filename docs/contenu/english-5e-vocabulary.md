@@ -537,3 +537,17 @@ Pour tous les items :
 | `english-5e-vocabulary-1` | La boutique de Pudding | 40 | Ma boutique ! Thank you, bâtisseur. Come in, it’s open! |
 | `english-5e-vocabulary-2` | Le toit de la boutique | 50 | Un toit et une porte ! Mes fruits restent au sec, même quand il pleut. |
 | `english-5e-vocabulary-3` | La terrasse de la boutique | 60 | Une terrasse, une barrière, un escalier… Mon Comptoir est complet. Come again! |
+
+## Les demandes
+
+### `english-5e-vocabulary-request-1`
+
+- habitant : Pudding
+- bloc : `maths-5e-signed-numbers`
+- combien : 3
+- petite construction : la glacière
+- demande : Il me faut {objet} pour ma glacière. Joue une mission du Glacier des relatifs.
+- prête : Tu as les {blocs} ! Livre-les à Pudding.
+- posée : Glacière posée chez Pudding !
+
+> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : un coffre (le rang bas de la serre de `jardin()`, inversé) : 3 glaces au sol, 3 tuiles dessus en couvercle ; 6 cubes, 3 cases, 2 de haut.

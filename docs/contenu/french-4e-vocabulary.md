@@ -520,3 +520,17 @@ Pour tous les items :
 | `french-4e-vocabulary-1` | Le nid de Plume | 40 | Mon nid ! Merci, bâtisseur. Cent parchemins roulés, un mot par parchemin. |
 | `french-4e-vocabulary-2` | Le toit du nid | 50 | Un toit et une porte ! La lanterne éclaire les mots rares, la nuit. |
 | `french-4e-vocabulary-3` | Le perchoir du nid | 60 | Un perchoir, une barrière, un escalier… Mon nid est complet, au sens propre comme au figuré. |
+
+## Les demandes
+
+### `french-4e-vocabulary-request-1`
+
+- habitant : Plume
+- bloc : `english-4e-comprehension`
+- combien : 2
+- petite construction : la banquette
+- demande : Il me faut {objet} pour ma banquette. Joue une mission du Théâtre des voix.
+- prête : Tu as les {blocs} ! Livre-les à Plume.
+- posée : Banquette posée chez Plume !
+
+> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : le banc de la salle commune (`refuge()`) : une assise de 2 velours devant, un dossier de 2 × 2 parchemins derrière ; 6 cubes, 4 cases, 2 de haut.

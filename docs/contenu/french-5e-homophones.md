@@ -324,3 +324,17 @@ Pour tous les items :
 | `french-5e-homophones-1` | La cabane de Sema | 40 | Ma cabane ! Merci, bâtisseur. Ses panneaux, ces panneaux : c’est réussi, tu ne t’es pas trompé. |
 | `french-5e-homophones-2` | Le toit de la cabane | 50 | Un toit et une porte ! La lanterne éclaire le panneau « ici ». |
 | `french-5e-homophones-3` | Le rond-point de la cabane | 60 | Un rond-point, une barrière, un escalier… Ma cabane est complète, quel que soit le chemin. |
+
+## Les demandes
+
+### `french-5e-homophones-request-1`
+
+- habitant : Sema
+- bloc : `english-5e-grammar`
+- combien : 3
+- petite construction : le poteau indicateur
+- demande : Il me faut {objet} pour mon poteau indicateur. Joue une mission du Manoir du passé.
+- prête : Tu as les {blocs} ! Livre-les à Sema.
+- posée : Poteau indicateur posé chez Sema !
+
+> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : la colonne de la cheminée (`maison()`) et un linteau : un poteau de 3 lambris au milieu, 2 panneaux (la flèche du bloc) de part et d’autre de son sommet ; 5 cubes, 3 cases, 3 de haut.

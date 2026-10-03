@@ -46,3 +46,17 @@ créature : Nénu
 | `maths-6e-fractions-1` | La hutte de Nénu | 40 | Ma hutte ! Merci, bâtisseur. Une moitié pour dormir, l’autre pour chanter sous la pluie. |
 | `maths-6e-fractions-2` | Le toit de la hutte | 50 | Un toit et une porte ! La lanterne se reflète dans la mare : deux lanternes pour le prix d’une. |
 | `maths-6e-fractions-3` | Le ponton de la hutte | 60 | Un ponton, une barrière, un escalier vers l’eau… Ma hutte est entière, pas un quart ne manque. Coâ ! |
+
+## Les demandes
+
+### `maths-6e-fractions-request-1`
+
+- habitant : Nénu
+- bloc : `french-6e-letter-confusion`
+- combien : 4
+- petite construction : le lavoir
+- demande : Il me faut {objet} pour mon lavoir. Joue une mission de la Mine des lettres.
+- prête : Tu as les {blocs} ! Livre-les à Nénu.
+- posée : Lavoir posé chez Nénu !
+
+> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : l’appentis de l’écurie (`relais()`) : 2 poteaux de pierre de 2 cubes au fond, un bassin de 2 galets au sol entre eux et devant, un toit de 3 toits (`roof`) à z 2 ; 9 cubes, 6 cases, 3 de haut.

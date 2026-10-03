@@ -46,3 +46,17 @@ créature : Lavi
 | `maths-6e-decimals-1` | L’abri de Lavi | 40 | Mon abri ! Merci, bâtisseur. Noir, brillant, et chaud comme une coulée de 1,5 degré de trop. |
 | `maths-6e-decimals-2` | Le toit de l’abri | 50 | Un toit et une porte ! La lanterne, c’est mon petit cratère de nuit. |
 | `maths-6e-decimals-3` | La terrasse de l’abri | 60 | Une terrasse, une barrière, un escalier vers le cratère… Mon abri est complet, à 1,00 exactement. |
+
+## Les demandes
+
+### `maths-6e-decimals-request-1`
+
+- habitant : Lavi
+- bloc : `english-6e-vocabulary`
+- combien : 4
+- petite construction : l’abri
+- demande : Il me faut {objet} pour mon abri. Joue une mission de la Baie des mots.
+- prête : Tu as les {blocs} ! Livre-les à Lavi.
+- posée : Abri posé chez Lavi !
+
+> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : la croix du toit en pointe de `tour()` : un mât de 3 obsidiennes au milieu, 4 cabines en croix autour de son sommet (z 2) ; 7 cubes, 5 cases sur 3 × 3, 3 de haut.

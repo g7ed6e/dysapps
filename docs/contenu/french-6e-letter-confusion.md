@@ -223,3 +223,17 @@ Pour tous les items :
 | `french-6e-letter-confusion-1` | La forge de Tunel | 50 | Une vraie forge ! Avec la poutre en bois, elle tiendra cent ans. Tu as l’œil, bâtisseur. |
 | `french-6e-letter-confusion-2` | Le toit de la forge | 60 | Le toit est posé, la porte aussi. Dedans, il fait chaud comme au fond de la mine. |
 | `french-6e-letter-confusion-3` | La cour de la forge | 70 | Ma forge a sa cour. Les lettres qui se ressemblent n’ont qu’à bien se tenir. |
+
+## Les demandes
+
+### `french-6e-letter-confusion-request-1`
+
+- habitant : Tunel
+- bloc : `maths-6e-calculation`
+- combien : 4
+- petite construction : le puits
+- demande : Il me faut {objet} pour mon puits. Joue une mission de la Plaine des nombres.
+- prête : Tu as les {blocs} ! Livre-les à Tunel.
+- posée : Puits posé chez Tunel !
+
+> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : l’anneau `ring()` de 3 × 3 au sol, case du milieu vide : 4 briques au milieu des côtés, 4 pierres aux coins ; 2 barrières sur les briques de gauche et de droite (z 1) ; 10 cubes, 9 cases, 2 de haut.

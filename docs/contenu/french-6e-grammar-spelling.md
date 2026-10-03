@@ -375,3 +375,17 @@ Pour tous les items :
 | `french-6e-grammar-spelling-1` | L’étable de Bloquette | 50 | Meuh ! Une étable rien que pour moi. Les accords, c’est comme les murs : il faut que tout tienne ensemble. |
 | `french-6e-grammar-spelling-2` | Le toit de l’étable | 60 | Un toit sur l’étable ! Meuh, je n’ai plus la pluie sur les cornes. |
 | `french-6e-grammar-spelling-3` | L’enclos de l’étable | 70 | Mon enclos est fermé, tout s’accorde. Singulier, pluriel, chacun sa barrière ! |
+
+## Les demandes
+
+### `french-6e-grammar-spelling-request-1`
+
+- habitant : Bloquette
+- bloc : `maths-6e-fractions`
+- combien : 2
+- petite construction : l’abreuvoir
+- demande : Il me faut {objet} pour mon abreuvoir. Joue une mission de la Rivière des fractions.
+- prête : Tu as les {blocs} ! Livre-les à Bloquette.
+- posée : Abreuvoir posé chez Bloquette !
+
+> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : la mangeoire entre deux poteaux (`relais()`) : 2 poteaux de terre de 2 cubes aux bouts, 2 galets entre eux au sol ; 6 cubes, 4 cases en ligne, 2 de haut.

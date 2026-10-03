@@ -449,3 +449,17 @@ Pour tous les items :
 | `french-6e-word-spelling-1` | Le four de Rouxel | 50 | Mon four est reconstruit ! Le pain va sentir bon dans tout le village. |
 | `french-6e-word-spelling-2` | L’abri du four | 60 | Un abri sur mon four : plus de pluie sur le pain ! Merci. |
 | `french-6e-word-spelling-3` | La cour du four | 70 | Une cour pour le four. Les mots bien écrits viendront y chercher leur pain. |
+
+## Les demandes
+
+### `french-6e-word-spelling-request-1`
+
+- habitant : Rouxel
+- bloc : `compound-6e`
+- combien : 2
+- petite construction : la grue
+- demande : Il me faut {objet} pour ma grue. Assemble-les {à}.
+- prête : Tu as les {blocs} ! Livre-les à Rouxel.
+- posée : Grue posée chez Rouxel !
+
+> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : la colonne et le linteau de la tonnelle (`jardin()`) : un mât de 3 sable en (0, 0), la flèche de 2 poutres en (1, 0) et (2, 0) à z 2, une charge de sable sous le bout de la flèche, en (2, 0, 0) ; 6 cubes, 3 cases, 3 de haut.

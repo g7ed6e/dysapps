@@ -46,3 +46,17 @@ créature : Frimas
 | `maths-5e-signed-numbers-1` | L’igloo de Frimas | 40 | Mon igloo ! Merci, bâtisseur. Dedans, plus deux ; dehors, moins huit. La différence fait dix. |
 | `maths-5e-signed-numbers-2` | Le dôme de l’igloo | 50 | Un dôme et une porte ! La lanterne tient le froid à moins un mètre. |
 | `maths-5e-signed-numbers-3` | La patinoire de l’igloo | 60 | Une patinoire, une barrière, un escalier… Mon igloo est complet, zéro bloc manquant. |
+
+## Les demandes
+
+### `maths-5e-signed-numbers-request-1`
+
+- habitant : Frimas
+- bloc : `english-5e-vocabulary`
+- combien : 4
+- petite construction : la cabane de pêche
+- demande : Il me faut {objet} pour ma cabane de pêche. Joue une mission du Comptoir.
+- prête : Tu as les {blocs} ! Livre-les à Frimas.
+- posée : Cabane de pêche posée chez Frimas !
+
+> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : la hutte (`hutte()`) en petit : des murs de glace de 2 × 2 sur 2 rangs, avec une porte vide devant à gauche (7 cubes), et un toit plat de 4 tuiles (z 2) ; 11 cubes, 4 cases, 3 de haut.

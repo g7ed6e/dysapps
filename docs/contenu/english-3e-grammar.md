@@ -345,3 +345,17 @@ Pour tous les items :
 | `english-3e-grammar-1` | La tour de Knight | 40 | Ma tour ! Thank you, bâtisseur. If I were a king, I would live here. |
 | `english-3e-grammar-2` | Le toit de la tour | 50 | Un toit et une porte ! Même le Dragon ne passera pas. |
 | `english-3e-grammar-3` | Le rempart du château | 60 | Un rempart, une barrière, un escalier… Mon château est complet. It has been built by you! |
+
+## Les demandes
+
+### `english-3e-grammar-request-1`
+
+- habitant : Knight
+- bloc : `maths-3e-geometry`
+- combien : 2
+- petite construction : la fontaine
+- demande : Il me faut {objet} pour ma fontaine. Joue une mission du Belvédère de Thalès.
+- prête : Tu as les {blocs} ! Livre-les à Knight.
+- posée : Fontaine posée chez Knight !
+
+> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : la fontaine du relais (`relais()`) : un bassin en U de 5 pierres de taille au sol, une colonne de 2 marbres au milieu ; 7 cubes, 6 cases, 2 de haut.

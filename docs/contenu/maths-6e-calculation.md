@@ -46,3 +46,17 @@ créature : Coco
 | `maths-6e-calculation-1` | Le nid de Coco | 40 | Mon nid ! Merci, bâtisseur. Dix fenêtres, dix points : je m’y retrouve enfin. |
 | `maths-6e-calculation-2` | Le toit du nid | 50 | Un toit et une porte ! La nuit, la lanterne compte les étoiles avec moi. |
 | `maths-6e-calculation-3` | La cour du nid | 60 | Une cour, une barrière, un escalier… Cinq et cinq : mon nid est complet. Tu calcules comme un chef ! |
+
+## Les demandes
+
+### `maths-6e-calculation-request-1`
+
+- habitant : Coco
+- bloc : `french-6e-phonology`
+- combien : 3
+- petite construction : l’étal
+- demande : Il me faut {objet} pour mon étal. Joue une mission de la Forêt des sons.
+- prête : Tu as les {blocs} ! Livre-les à Coco.
+- posée : Étal posé chez Coco !
+
+> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : le comptoir et l’auvent rayé d’`echoppe()` : un comptoir de 3 bois devant, 2 poteaux de brique de 2 cubes derrière, un auvent de 3 cubes à z 2 (toit, brique, toit) ; 10 cubes, 6 cases, 3 de haut.
