@@ -27,8 +27,8 @@ import {
 } from '../world/scene';
 import { islandCenter } from '../world/terrain';
 import { drawIslandLabel, drawMapArrow, measureIslandLabel } from '../world/labelCanvas';
-import { placerAvecLaFlecheDOuvrage, placerEtiquettes, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
-import { casesDesTirets, TIRET_SUGGERE } from '../world/traceSuggere';
+import { boitesDuTrace, placerAvecLaFlecheDOuvrage, placerEtiquettes, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
+import { COUCHES_DU_TIRET } from '../world/traceSuggere';
 import { VEHICLE_DECK } from '../world/harbour';
 import { vehiclePath } from '../world/voyage';
 import { islandsOf } from '../world/archipelago';
@@ -820,10 +820,9 @@ export default function WorldCanvas2D({
       // Le tracé renforcé de l'ouvrage désigné (world/traceSuggere.ts) : sous la flèche et les étiquettes, des tirets
       // foncés cernés de clair, immobiles, plus épais qu'une case.
       if (mapArrowOuvrage) {
-        const { lisere, coeur } = TIRET_SUGGERE;
-        for (const c of casesDesTirets(mapArrowOuvrage.trace)) {
+        for (const c of mapArrowOuvrage.tirets) {
           const { sx, sy } = at(c.x + 0.5, c.y + 0.5, c.z + 1);
-          for (const { large, couleur } of [lisere, coeur]) {
+          for (const { large, couleur } of COUCHES_DU_TIRET) {
             const w = Math.max(2, large * TILE * cam.s);
             ctx.fillStyle = couleur;
             ctx.fillRect(Math.round(sx - w / 2), Math.round(sy - w / 2), Math.round(w), Math.round(w));
@@ -891,13 +890,28 @@ export default function WorldCanvas2D({
           // Sur la Carte : la prochaine destination d'abord, une île fermée en dernier ; la flèche et le fanion restent
           // visibles. Entière ou absente : celle qui ne trouve pas de place libre près de son île ne se dessine pas à moitié.
           // La destination : l'île de la flèche, ou celle d'où part l'ouvrage qu'elle désigne (GD-7).
+          // L'île d'arrivée de l'ouvrage pèse autant : son nom se pose au bout du tracé, pas dessus.
           const destination = mapArrowIsland ?? mapArrowOuvrage?.depuis;
-          const carte = p.map ? { weights: list.map((l) => (l.id === destination ? 2 : l.state?.id === 'fermee' ? 0.5 : 1)) } : null;
+          const arrivee = mapArrowOuvrage?.arrivee;
+          const indice = list.findIndex((l) => l.id === destination);
+          const carte = p.map
+            ? { weights: list.map((l) => (l.id === destination || l.id === arrivee ? 2 : l.state?.id === 'fermee' ? 0.5 : 1)), ...(indice >= 0 ? { destination: indice } : {}) }
+            : null;
           // La flèche d'un ouvrage : la première de ses places libres, et aucune étiquette ne se pose jamais sur elle
           // (`placerAvecLaFlecheDOuvrage`).
           const marques = p.map ? mapMarks(target, mapArrowOuvrage ? null : mapArrowAt) : null;
           const obstacles = marques ? [marques.arrow, marques.beacon].filter((b): b is LabelBox => b !== null) : [];
-          const vue = { zones, bulles, obstacles, bounds: cadre, gap: 6 * dpr };
+          // Le tracé de l'ouvrage, un obstacle souple : les étiquettes l'évitent si elles peuvent, sans se taire pour lui.
+          const souples = mapArrowOuvrage
+            ? boitesDuTrace(
+                mapArrowOuvrage.trace.map((c) => {
+                  const b = project(c.x + 0.5, c.y + 0.5, c.z + 1);
+                  const e = toScreen(target, scr, b.bx, b.by);
+                  return { x: e.sx, y: e.sy };
+                }),
+              )
+            : [];
+          const vue = { zones, bulles, obstacles, souples, bounds: cadre, gap: 6 * dpr };
           if (mapArrowOuvrage && carte) {
             const fleches = mapArrowOuvrage.places.map((c) => mapMarks(target, c).arrow).filter((b): b is LabelBox => b !== null);
             labelLayout = { key, ...placerAvecLaFlecheDOuvrage(fleches, boxes, iles, vue, carte) };

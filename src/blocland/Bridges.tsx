@@ -8,7 +8,7 @@ import { useBlocland } from './BloclandContext';
 import { Foldable } from './IslandFold';
 import { playDone, playNope } from './sound';
 import { CONDITION_OF, KIND_NAME, buildableBridges, conditionMet, conditionText, otherEnd, payableBlocks, type BridgeDef } from './world/archipelago';
-import { ouvragesParSuggestion } from './world/goals';
+import { ouvrageName, ouvragesParSuggestion } from './world/goals';
 
 interface Props {
   island: BiomeId;
@@ -86,15 +86,22 @@ export function Bridges({ island, onBuilt, highlight = null, fold, objectif }: P
     </h3>
   );
   const readyOnes = bridges.filter((b) => have >= b.cost && conditionMet(b, state.world.links, world));
-  const cheapest = bridges.length ? bridges.reduce((a, b) => (b.cost < a.cost ? b : a)) : null;
   // Un seul bouton principal : l'ouvrage du prochain objectif (même règle que `nextGoalInfo` sans objectif donné).
   const possibles = bridges.filter((b) => conditionMet(b, state.world.links, world));
   const principal = objectif !== undefined ? objectif : (ouvragesParSuggestion(state, possibles, island)[0]?.id ?? null);
+  // L'ouvrage que le pli replié nomme, avec les mots de la Carte : le principal ; sans lui (l'objectif est le navire), le
+  // premier dans l'ordre de la suggestion.
+  const enTete = bridges.find((b) => b.id === principal) ?? ouvragesParSuggestion(state, possibles.length ? possibles : bridges, island)[0];
+  const manque = enTete ? enTete.cost - have : 0;
   const status = readyOnes.length
     ? `${readyOnes.length} possible${readyOnes.length > 1 ? 's' : ''} · tu as ${have} bloc${have > 1 ? 's' : ''}`
-    : cheapest
-      ? `Encore ${cheapest.cost - have} bloc${cheapest.cost - have > 1 ? 's' : ''} pour le moins cher`
-      : '';
+    : enTete && manque > 0
+      ? `Encore ${manque} bloc${manque > 1 ? 's' : ''} pour ${ouvrageName(enTete.kind, getBiome(otherEnd(enTete, island))?.name ?? '')}`
+      : enTete
+        ? (conditionText(enTete, state.world.links) ?? '')
+        : '';
+  // L'ouvrage suggéré en tête de la liste ; les autres gardent l'ordre fixe des ouvrages.
+  const liste = enTete ? [enTete, ...bridges.filter((b) => b !== enTete)] : bridges;
   // Ouvert quand un ouvrage est constructible, vient d'être touché dans le monde, ou vient d'être construit.
   const defaultOpen = readyOnes.length > 0 || bridges.some((b) => b.id === highlight) || said !== null;
   return (
@@ -106,7 +113,7 @@ export function Bridges({ island, onBuilt, highlight = null, fold, objectif }: P
           </p>
         )}
         <ul ref={list} className="island-actions bridges-list" aria-label="Ouvrages à construire">
-          {bridges.map((b) => {
+          {liste.map((b) => {
             const other = getBiome(otherEnd(b, island))!;
             const enough = have >= b.cost;
             const met = conditionMet(b, state.world.links, world);

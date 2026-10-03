@@ -1,5 +1,7 @@
 // Le tracé renforcé de l'ouvrage désigné sur la Carte (GD-7) : des tirets de bout en bout, la rive d'arrivée comprise.
 import { casesDesTirets, formeDuTrace, TIRET_SUGGERE } from './traceSuggere';
+import { ARCHIPELAGOS, BRIDGES, archipelagoOf } from './archipelago';
+import { dispositionEnGrille } from './grille';
 
 const c = (x: number) => ({ x, y: 0, z: 2 });
 
@@ -22,4 +24,15 @@ it('un tiret plus épais qu’une case, au cœur plus foncé que les fantômes, 
   expect(Math.min(...hauteurs)).toBeGreaterThan(2 + 1);
   // Le cœur dépasse du liseré : il se voit par-dessus.
   expect(TIRET_SUGGERE.coeur.haut).toBeGreaterThan(TIRET_SUGGERE.lisere.haut);
+});
+
+it('le plus long tracé de tous les archipels tient dans 780 triangles (un appel de dessin, « Dans la scène »)', () => {
+  // Le compte du rendu : 12 triangles par case dessinée ; le long bac de la Plaine à la Carrière (96 cases) est le pire.
+  let pire = 0;
+  for (const a of ARCHIPELAGOS) {
+    const d = dispositionEnGrille(a.classe);
+    for (const b of BRIDGES.filter((o) => archipelagoOf(o.from).classe === a.classe)) pire = Math.max(pire, formeDuTrace(d.liaison(b.id)).triangles);
+  }
+  expect(pire).toBeGreaterThan(0);
+  expect(pire).toBeLessThanOrEqual(780);
 });

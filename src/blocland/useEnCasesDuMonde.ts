@@ -4,6 +4,8 @@
 import { useMemo } from 'react';
 import { dispositionEnGrille } from './world/grille';
 import { estUnOuvrage, type EnCasesDuMonde, type WorldViewProps } from './world/view';
+import { getBridge, otherEnd } from './world/archipelago';
+import { casesDesTirets } from './world/traceSuggere';
 
 export function useEnCasesDuMonde({
   archipelago,
@@ -22,12 +24,18 @@ export function useEnCasesDuMonde({
       return spot ? { ...f, spot: enMonde(spot) } : f;
     }, [focus, enMonde]),
     // Un ouvrage : sa place sur la liaison, côté île de départ, et celles où elle glisse ; le tracé de toute la liaison
-    // (sans case, pas de flèche).
+    // et ses tirets ; l'île d'en face (sans case, pas de flèche).
     marker: useMemo(() => {
       if (marker === null || typeof marker === 'string') return marker;
       if (!estUnOuvrage(marker)) return enMonde(marker);
       const places = disposition.placesDeLaFleche(marker.ouvrage, marker.depuis);
-      return places.length ? { ...marker, cell: places[0], places, trace: disposition.liaison(marker.ouvrage) } : null;
+      if (!places.length) return null;
+      const def = getBridge(marker.ouvrage);
+      // De l'île de départ à la rive d'arrivée (la dernière case, toujours dessinée).
+      const liaison = disposition.liaison(marker.ouvrage);
+      const trace = def && marker.depuis === def.to ? [...liaison].reverse() : liaison;
+      const arrivee = def ? otherEnd(def, marker.depuis ?? def.from) : undefined;
+      return { ...marker, cell: places[0], places, trace, tirets: casesDesTirets(trace), ...(arrivee ? { arrivee } : {}) };
     }, [marker, enMonde, disposition]),
     avatar: useMemo(() => avatar && { ...avatar, route: avatar.route.map(enMonde) }, [avatar, enMonde]),
     trail: useMemo(() => trail?.map(enMonde), [trail, enMonde]),

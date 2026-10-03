@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ecarterDesObstacles, placerAvecLaFlecheDOuvrage, entiere, layoutLabels, montrees, placerEtiquettes, separateMark, type LabelBox } from './labelLayout';
+import { boitesDuTrace, ecarterDesObstacles, PLACES_DE_LA_FLECHE_MAX, placerAvecLaFlecheDOuvrage, entiere, layoutLabels, montrees, placerEtiquettes, separateMark, type LabelBox } from './labelLayout';
 import { drawIslandLabel, measureIslandLabel } from './labelCanvas';
 
 const overlaps = (a: LabelBox, b: LabelBox) => Math.abs(a.x - b.x) < (a.w + b.w) / 2 && Math.abs(a.y - b.y) < (a.h + b.h) / 2;
@@ -373,6 +373,55 @@ describe('la flèche d’un ouvrage sur la Carte (GD-7)', () => {
     const barre = { ...vue, bounds: { w: 390, h: 300 }, zones: [{ x: 195, y: 285, w: 390, h: 30 }] };
     const pointe = (y: number): LabelBox => ({ x: 195, y: y - 24, w: 38, h: 48 });
     expect(prise([pointe(200), pointe(185), pointe(170)], [{ x: 195, y: 250, w: 170, h: 60 }], [{ x: 195, y: 255 }], barre)).toBe(2);
+  });
+
+  it('n’essaie que ses huit premières places : au-delà, la voulue, et c’est l’étiquette qui s’écarte', () => {
+    const vue = { zones: [] as LabelBox[], bulles: [], obstacles: [], bounds: { w: 600, h: 300 }, gap: 6 };
+    const etiquette: LabelBox = { x: 200, y: 150, w: 360, h: 50 };
+    // Dix places, toutes sous l'étiquette sauf la dernière, libre : elle n'est pas essayée.
+    const places = Array.from({ length: 10 }, (_, k) => fleche(k < 9 ? 40 + k * 30 : 500));
+    expect(PLACES_DE_LA_FLECHE_MAX).toBe(8);
+    expect(placerAvecLaFlecheDOuvrage(places, [etiquette], [{ x: 200, y: 170 }], vue, { weights: [1] }).fleche).toBe(0);
+    // Parmi les huit premières, la libre se prend.
+    const huit = [...places.slice(0, 7), fleche(500)];
+    expect(placerAvecLaFlecheDOuvrage(huit, [etiquette], [{ x: 200, y: 170 }], vue, { weights: [1] }).fleche).toBe(7);
+  });
+
+  it('le tracé suggéré est un obstacle souple : une étiquette s’en écarte si elle peut, ne se tait jamais pour lui, et il ne fait pas glisser la flèche', () => {
+    // Un tracé horizontal, de 60 à 340, à la hauteur de l'étiquette de l'île d'arrivée.
+    const points = Array.from({ length: 29 }, (_, k) => ({ x: 60 + k * 10, y: 150 }));
+    const souples = boitesDuTrace(points);
+    // Trois cases par boîte, une marge de trois quarts de case.
+    expect(souples).toHaveLength(10);
+    expect(souples[0]).toEqual({ x: 70, y: 150, w: 35, h: 15 });
+    const etiquette: LabelBox = { x: 200, y: 150, w: 120, h: 30 };
+    const ile = { x: 200, y: 165 };
+    const vue = { zones: [] as LabelBox[], bulles: [], obstacles: [], souples, bounds: cadre, gap: 6 };
+    const carte = { weights: [1] };
+    const libre = placerEtiquettes([etiquette], [ile], vue, carte);
+    const at = { ...etiquette, x: etiquette.x + libre.offsets[0].dx, y: etiquette.y + libre.offsets[0].dy };
+    expect(libre.visibles[0]).toBe(true);
+    expect(souples.some((v) => overlaps(at, v))).toBe(false);
+    // Un cadre si bas que rien n'évite le tracé : l'étiquette se montre quand même, dessus.
+    const bas = { ...vue, bounds: { w: 400, h: 44 } };
+    const serre = placerEtiquettes([{ ...etiquette, y: 22 }], [{ x: 200, y: 30 }], { ...bas, souples: boitesDuTrace(points.map((p) => ({ ...p, y: 22 }))) }, carte);
+    expect(serre.visibles[0]).toBe(true);
+    // La flèche, loin de l'étiquette : elle reste à sa place voulue, même si l'étiquette s'écarte du tracé.
+    expect(placerAvecLaFlecheDOuvrage([fleche(60), fleche(90)], [etiquette], [ile], vue, carte).fleche).toBe(0);
+  });
+
+  it('l’île d’arrivée pèse comme celle de départ : un nom plus léger lui laisse sa place ; la garde reste à la destination', () => {
+    const vue = { zones: [] as LabelBox[], bulles: [], obstacles: [], bounds: cadre, gap: 6 };
+    // L'arrivée (indice 1) et une île ouverte (indice 2) se chevauchent ; la destination (0) est loin.
+    const boxes: LabelBox[] = [
+      { x: 80, y: 60, w: 100, h: 30 },
+      { x: 250, y: 150, w: 120, h: 30 },
+      { x: 270, y: 155, w: 120, h: 30 },
+    ];
+    const iles = boxes.map((b) => ({ x: b.x, y: b.y + 15 }));
+    const r = placerEtiquettes(boxes, iles, vue, { weights: [2, 2, 1], destination: 0 });
+    expect(r.visibles[1]).toBe(true);
+    expect(r.offsets[1]).toEqual({ dx: 0, dy: 0 });
   });
 
   it('aucune étiquette ne se pose sur elle, même faute de place : elle se déplace ou se tait', () => {

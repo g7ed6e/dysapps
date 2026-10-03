@@ -4,7 +4,7 @@ import { useBlocland } from '../blocland/BloclandContext';
 import { questsToReview } from '../blocland/review';
 import { VillageStageLine } from '../blocland/VillageStageLine';
 import { archipelagoOf, reachedArchipelagos, ARCHIPELAGOS } from '../blocland/world/archipelago';
-import { nextDestination } from '../blocland/world/destination';
+import { lienDeLaDestination, nextDestination } from '../blocland/world/destination';
 import { Icon } from '../components/Icon';
 import { RoleBadge } from '../components/RoleBadge';
 import { SpeakButton } from '../components/SpeakButton';
@@ -79,7 +79,7 @@ export function HomePage() {
         </Link>
       ) : (
         <section className="panel home-resume" aria-label="Reprendre l’aventure">
-          <Link to={`/adventure/${destination.island}`} className="button primary home-resume-button">
+          <Link to={lienDeLaDestination(destination)} className="button primary home-resume-button">
             <Icon name="play" /> Reprendre l’aventure
           </Link>
           <p className="home-destination">

@@ -25,6 +25,7 @@ import { useBackOpensMenu } from './useBackOpensMenu';
 import { TrophySheet } from './TrophySheet';
 import { AssemblageSheet } from './Assemblage';
 import { ASSEMBLAGE_PATH } from './world/assemblage';
+import { lienDeLaDestination } from './world/destination';
 import { TROPHIES_PATH, trophies } from './trophies';
 import { WorldCanvas } from './three';
 import { Tutorial, hasSeenTutorial } from './Tutorial';
@@ -199,11 +200,12 @@ export function WorldPage() {
     if (island) retenirPanneauReplie(open ? null : island.id);
     setSheetOpen(open);
   };
-  // Aller sur une île (ou y revenir) : son panneau s'ouvre, même si c'est déjà l'île ouverte.
-  const openIsland = (id: BiomeId) => {
+  // Aller sur une île (ou y revenir) : son panneau s'ouvre, même si c'est déjà l'île ouverte. `ouvrage` : la prochaine
+  // destination est un ouvrage (GD-7) : le pli Ouvrages s'ouvre sur sa ligne, mise en avant (`worksite`).
+  const openIsland = (id: BiomeId, ouvrage?: string) => {
     retenirPanneauReplie(null);
     setSheetOpen(true);
-    navigate(`/adventure/${id}`);
+    navigate(lienDeLaDestination({ island: id, ouvrage }));
   };
   // Fermer un panneau du village (Blocs, École, Trophées, Monuments) : retour au monde libre, sur l'île du bonhomme,
   // son panneau replié. Il se rouvre à la demande (le bouton de l'île dans la barre, ou un toucher sur l'île).
@@ -986,7 +988,7 @@ export function WorldPage() {
                     </span>
                   </p>
                   <p className="world-map-actions">
-                    <button type="button" className="button primary" onClick={() => openIsland(destination.island)}>
+                    <button type="button" className="button primary" onClick={() => openIsland(destination.island, destination.ouvrage)}>
                       <Icon name="play" /> Y aller
                     </button>
                     <button type="button" className="button" onClick={() => navigate('/adventure/world')}>

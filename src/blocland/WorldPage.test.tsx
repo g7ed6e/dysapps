@@ -681,6 +681,26 @@ it('le panneau replié reste replié après la Carte ; « Y aller » le rouvre',
   expect(sheet()).toBeInTheDocument();
 });
 
+it('« Y aller » vers un ouvrage ouvre le pli Ouvrages de son île sur sa ligne, mise en avant (GD-7)', async () => {
+  const { getBiome, missionsJouables } = await import('./biomes');
+  const { exercisesOf } = await import('./exercises');
+  localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true }));
+  localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'baleine-6e-arrivee': true }));
+  // La Forêt, la Plaine, la Mine et la Rivière jouées, 3 blocs : il en manque un pour le pont vers l'Horloge des verbes.
+  const iles = ['french-6e-phonology', 'maths-6e-calculation', 'french-6e-letter-confusion', 'maths-6e-fractions'] as const;
+  const progress = Object.fromEntries(iles.flatMap((ile) => missionsJouables(getBiome(ile)!).map((m) => [exercisesOf(ile, m.id)[0].id, { stars: 2, attempts: 1, best: 0.8 }])));
+  const world = { place: 'french-6e-letter-confusion', links: ['french-6e-phonology-french-6e-letter-confusion', 'maths-6e-calculation-maths-6e-fractions'] };
+  localStorage.setItem('dysapps:game', JSON.stringify({ progress, stock: { 'french-6e-phonology': 3 }, world }));
+  const user = userEvent.setup();
+  renderAt('/adventure/map');
+  await user.click(screen.getByRole('button', { name: /Y aller/ }));
+  expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/french-6e-phonology');
+  const pli = document.querySelector<HTMLDetailsElement>('.island-fold-ouvrages');
+  expect(pli).toHaveAttribute('open');
+  expect(pli?.querySelector('[data-bridge]')).toHaveAttribute('data-bridge', 'french-6e-phonology-english-6e-grammar');
+  expect(pli?.querySelector('[data-bridge="french-6e-phonology-english-6e-grammar"]')).toHaveClass('bridge-highlight');
+});
+
 it('le panneau replié reste replié au retour d’un exercice (le monde se remonte) ; une autre île ouvre le sien', async () => {
   const user = userEvent.setup();
   const premier = renderAt('/adventure/french-6e-phonology');

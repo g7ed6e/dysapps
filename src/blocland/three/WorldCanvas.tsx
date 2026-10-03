@@ -8,7 +8,7 @@ import * as THREE from 'three';
 import { type BiomeId } from '../biomes';
 import { worldBounds } from '../world/terrain';
 import { ARROW_DIRS, cubeTags, enRoute, finishWalk, groundTap, islandInDirection, recentrerApres, toucheRetenue, walkPose, type Touche, type VoyageRun } from '../world/scene';
-import { rappelsDeLaVue, type Cell, type WorldViewProps } from '../world/view';
+import { rappelsDeLaVue, type WorldViewProps } from '../world/view';
 import { useEnCasesDuMonde } from '../useEnCasesDuMonde';
 import { createMeter } from './meter';
 import { habillageDe } from '../habillage';
@@ -181,7 +181,7 @@ export default function WorldCanvas({
     const brume = creerBrume(monde, lumiere, instant);
     const large = creerLarge(monde, camera, lumiere, derniers, passSeqRef);
     const bornes = creerBornes(monde, () => personnages.avatar, instant);
-    const etiquettes = creerEtiquettes(monde, el, camera, bornes.fleche, () => personnages.avatar, instant);
+    const etiquettes = creerEtiquettes(monde, el, camera, bornes.fleche, bornes.donneesDeLaFleche, () => personnages.avatar, instant);
     const personnages = creerPersonnages(monde, () => cubesDuMonde.champ(), instant, lumiere);
     const cubesDuMonde = creerCubes(monde, large, lumiere, instant);
     const navire = creerNavire(monde, personnages, cubesDuMonde, derniers, instant, vehicleRef, voyageRef);
@@ -191,7 +191,10 @@ export default function WorldCanvas({
     const lecture = {
       place: lecteurDePlaceLibre(el),
       // L'île de la flèche, ou la case où elle se pose sur un ouvrage (GD-7) : le cadrage garde la flèche dans la vue.
-      destination: () => (bornes.fleche.userData.ouvrage ? (bornes.fleche.userData.pointe as Cell) : ((bornes.fleche.userData.island as BiomeId | null | undefined) ?? null)),
+      destination: () => {
+        const { ouvrage, pointe, island } = bornes.donneesDeLaFleche();
+        return ouvrage ? pointe : island;
+      },
     };
     const cadrage = creerCamera(monde, camera, personnages.avatar, derniers, instant, lecture);
     world.current = { camera, cadrage, bornes, etiquettes, personnages, signes: signesDesCreatures, cubes: cubesDuMonde, navire, recentrer: () => recentrer() };

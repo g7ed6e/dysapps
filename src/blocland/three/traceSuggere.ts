@@ -2,17 +2,19 @@
 // un appel de dessin, des tirets immobiles (rien à couper avec « Réduire les animations »). Sans lumière (la nuit ne
 // l'éteint pas) ni brume (la Carte voit de loin) : il se lit comme la flèche qu'il accompagne.
 import * as THREE from 'three';
-import { formeDuTrace, TIRET_SUGGERE } from '../world/traceSuggere';
+import { formeDesTirets, TIRET_SUGGERE } from '../world/traceSuggere';
 import type { Cell } from '../world/paths';
 
 export interface TraceSuggere {
   mesh: THREE.Mesh;
-  /** Pose le tracé d'une liaison (ses cases, de bout en bout), ou l'enlève (`null`) ; refait seulement s'il change. */
-  poser(trace: readonly Cell[] | null): void;
+  /**
+   * Pose le tracé d'une liaison (ses tirets, `casesDesTirets`, calculés une fois par la vue), ou l'enlève (`null`) ;
+   * refait seulement s'il change. Ses triangles (780 au plus) se comptent dans les mesures du navigateur
+   * (`renderer.info`, « Dans la scène »), et leur plafond dans world/traceSuggere.test.ts.
+   */
+  poser(tirets: readonly Cell[] | null): void;
   /** Un tracé est posé. */
   pose(): boolean;
-  /** Triangles dessinés (pour les mesures). */
-  triangles(): number;
   dispose(): void;
 }
 
@@ -28,15 +30,15 @@ export function creerTraceSuggere(): TraceSuggere {
   let triangles = 0;
   return {
     mesh,
-    poser(trace) {
-      const k = trace?.length ? `${trace.length}:${trace[0].x},${trace[0].y}:${trace[trace.length - 1].x},${trace[trace.length - 1].y}` : '';
+    poser(tirets) {
+      const k = tirets?.length ? `${tirets.length}:${tirets[0].x},${tirets[0].y}:${tirets[tirets.length - 1].x},${tirets[tirets.length - 1].y}` : '';
       if (k === cle) return;
       cle = k;
       mesh.geometry.dispose();
       const geo = new THREE.BufferGeometry();
       triangles = 0;
-      if (trace?.length) {
-        const f = formeDuTrace(trace);
+      if (tirets?.length) {
+        const f = formeDesTirets(tirets);
         const color = new Float32Array(f.parties.length * 3);
         f.parties.forEach((p, i) => couleurs[p].toArray(color, i * 3));
         geo.setAttribute('position', new THREE.BufferAttribute(f.positions, 3));
@@ -47,7 +49,6 @@ export function creerTraceSuggere(): TraceSuggere {
       mesh.geometry = geo;
     },
     pose: () => triangles > 0,
-    triangles: () => triangles,
     dispose() {
       mesh.geometry.dispose();
       material.dispose();

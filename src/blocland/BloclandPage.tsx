@@ -31,7 +31,7 @@ import { playBell } from './sound';
 import { useSettings } from '../core/SettingsContext';
 import { useTextes } from '../univers';
 import { ArchipelagoMap } from './ArchipelagoMap';
-import { nextDestination } from './world/destination';
+import { lienDeLaDestination, nextDestination } from './world/destination';
 import { islandState } from './world/islandState';
 import { SpeakButton } from '../components/SpeakButton';
 import { useUnivers } from '../core/SettingsContext';
@@ -109,7 +109,7 @@ export function BloclandPage() {
 
       {/* La Carte en vue simple : la prochaine destination, puis les quatre archipels, ceux non atteints dans la brume. */}
       <section className="panel home-resume" aria-label="Prochaine destination">
-        <Link to={`/adventure/${destination.island}`} className="button primary home-resume-button">
+        <Link to={lienDeLaDestination(destination)} className="button primary home-resume-button">
           <Icon name="play" /> Y aller
         </Link>
         <p className="home-destination">

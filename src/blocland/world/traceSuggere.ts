@@ -25,6 +25,9 @@ export const TIRET_SUGGERE = {
   coeur: { large: 0.9, bas: 1.05, haut: 1.5, couleur: '#14335c' },
 } as const;
 
+/** Les deux couches d'un tiret, de dessous à dessus : le liseré clair, puis le cœur foncé (une constante : rien à allouer par image). */
+export const COUCHES_DU_TIRET = [TIRET_SUGGERE.lisere, TIRET_SUGGERE.coeur] as const;
+
 /** La géométrie du tracé : plaques et pavés sans dessous, en triangles (positions x, hauteur, y), et leur couleur (0 liseré, 1 cœur). */
 export interface FormeDuTrace {
   positions: Float32Array;
@@ -60,11 +63,16 @@ function pave(out: number[], nrm: number[], cx: number, cy: number, large: numbe
 
 /** La forme du tracé renforcé de la liaison `trace` (de bout en bout), dans le repère de la scène 3D (x, hauteur, y). */
 export function formeDuTrace(trace: readonly Cell[]): FormeDuTrace {
+  return formeDesTirets(casesDesTirets(trace));
+}
+
+/** La forme des tirets déjà choisis (`casesDesTirets`, que la vue calcule une fois par liaison). */
+export function formeDesTirets(tirets: readonly Cell[]): FormeDuTrace {
   const pos: number[] = [];
   const nrm: number[] = [];
   const parties: number[] = [];
-  for (const c of casesDesTirets(trace)) {
-    for (const [k, p] of [TIRET_SUGGERE.lisere, TIRET_SUGGERE.coeur].entries()) {
+  for (const c of tirets) {
+    for (const [k, p] of COUCHES_DU_TIRET.entries()) {
       const avant = pos.length;
       pave(pos, nrm, c.x + 0.5, c.y + 0.5, p.large, c.z + p.bas, c.z + p.haut);
       for (let i = avant; i < pos.length; i += 3) parties.push(k);

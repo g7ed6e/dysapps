@@ -2,7 +2,7 @@ import { BLOC, BLOCKS, blockCount, type BlockId } from '../biomes';
 import { EMPTY_STATE, sanitizeState } from '../engine';
 import { textesDe } from '../../univers';
 import { BRIDGES, NOMS_ARCHIPELS, getBridge, islandsOf, type BridgeDef } from './archipelago';
-import { getBiome, missionsJouables, type BiomeId } from '../biomes';
+import { BIOMES, getBiome, missionsJouables, type BiomeId } from '../biomes';
 import { exercisesOf } from '../exercises';
 import {
   lockedHint as lockedHintDe,
@@ -16,6 +16,7 @@ import { planCells, plansFor } from './plans';
 import { dockBox } from './harbour';
 import { overviewBounds, worldBounds } from './terrain';
 import { VEHICLE_STAGES } from './vehicle';
+import { nextDestination as nextDestinationDe } from './destination';
 
 // L'indice d'une île fermée et le prochain objectif disent les Gardiens avec les mots de l'univers (Blocland par défaut),
 // et les archipels avec les noms communs des données ; les noms d'un univers sont essayés dans src/univers/univers.test.ts.
@@ -33,10 +34,10 @@ it('le prochain objectif est unique : d’abord ce qu’on peut faire tout de su
   const fresh = sanitizeState({});
   // Le bâtiment de l'île se pose tout seul (GD-6) : l'objectif est le sentier.
   // L'ouvrage suggéré (GD-7) : rien de joué, le français passe d'abord (l'ordre de docs/contenu/archipel.md).
-  expect(nextGoal(fresh, 'french-6e-phonology')).toBe('Encore 4 blocs pour le sentier vers Mine des lettres : il ouvre une île de français.');
+  expect(nextGoal(fresh, 'french-6e-phonology')).toBe('Encore 4 blocs pour le sentier vers Mine des lettres. Il ouvre une île de français.');
   expect(nextGoalInfo(fresh, 'french-6e-phonology')).toMatchObject({ have: 0, need: 4 });
   const some = sanitizeState({ stock: { [BLOC.bois]: 5 } });
-  expect(nextGoal(some, 'french-6e-phonology')).toBe('Tu peux construire le sentier vers Mine des lettres : il ouvre une île de français.');
+  expect(nextGoal(some, 'french-6e-phonology')).toBe('Tu peux construire le sentier vers Mine des lettres. Il ouvre une île de français.');
   const rich = sanitizeState({ stock: { [BLOC.bois]: 40 } });
   expect(nextGoal(rich, 'french-6e-phonology')).not.toMatch(/cabane/);
   // Tous les ouvrages construits : plus rien à dire, que le bâtiment soit fini ou non.
@@ -48,7 +49,7 @@ it('le prochain objectif est unique : d’abord ce qu’on peut faire tout de su
 it('sur le port, le prochain objectif parle du Bloc-Navire : ses blocs, puis ses Gardiens, puis l’embarquement', () => {
   // Au début, sur la Plaine : l'ouvrage suggéré (4 blocs, GD-7) est plus proche que le navire ; rien de joué, le français.
   const fresh = sanitizeState({});
-  expect(nextGoal(fresh, 'maths-6e-calculation')).toBe('Encore 4 blocs pour le bac vers Tour du lecteur : il ouvre une île de français.');
+  expect(nextGoal(fresh, 'maths-6e-calculation')).toBe('Encore 4 blocs pour le bac vers Tour du lecteur. Il ouvre une île de français.');
   // Les ouvrages de la Plaine construits : le chantier du navire.
   const plans = Object.fromEntries(plansFor('maths-6e-calculation').map((p) => [p.id, planCells(p).map((c) => c.key)]));
   const built = ['maths-6e-calculation-maths-6e-fractions', 'maths-6e-calculation-maths-6e-decimals', 'maths-6e-calculation-french-6e-reading', 'maths-6e-calculation-french-6e-word-spelling'];
@@ -177,8 +178,10 @@ it('la matière la moins jouée se mesure par île : l’anglais, avec deux île
   const state = sanitizeState({ progress, stock: { [BLOC.bois]: 4 }, world: { links: ['french-6e-phonology-english-6e-grammar'] } });
   expect(ouvrageSuggere(state, '6e')).toMatchObject({
     ile: 'french-6e-phonology',
-    goal: { text: 'Tu peux construire le sentier vers Mine des lettres : il ouvre une île de français.', ouvrage: 'french-6e-phonology-french-6e-letter-confusion', ready: true },
+    goal: { text: 'Tu peux construire le sentier vers Mine des lettres. Il ouvre une île de français.', ouvrage: 'french-6e-phonology-french-6e-letter-confusion', ready: true },
   });
+  // Le compte ne lit que les exercices de la classe : chaque île porte sa classe dans son identifiant.
+  expect(BIOMES.filter((b) => !b.id.includes(`-${b.classe}-`))).toEqual([]);
   // Le défi du Gardien ne compte pas.
   expect(partJouee({ ...progress, 'french-6e-phonology-challenge': { attempts: 3 } }, '6e')).toEqual(partJouee(progress, '6e'));
 });
@@ -213,9 +216,33 @@ it('l’ouvrage qu’on peut payer passe devant, et l’île de LV2 reste en bou
 it('sans assez de blocs, la suggestion dit ce qu’il manque ; le panneau de l’île de départ met le même ouvrage en avant', () => {
   const state = sanitizeState({ progress: joue('french-6e-phonology', 3), stock: { [BLOC.bois]: 1 }, world: { place: 'french-6e-phonology', links: [] } });
   const s = ouvrageSuggere(state, '6e')!;
-  expect(s).toMatchObject({ ile: 'maths-6e-calculation', goal: { text: 'Encore 3 blocs pour le bac vers Rivière des fractions : il ouvre une île de maths.', have: 1, need: 4 } });
+  expect(s).toMatchObject({ ile: 'maths-6e-calculation', goal: { text: 'Encore 3 blocs pour le bac vers Rivière des fractions. Il ouvre une île de maths.', have: 1, need: 4 } });
   // Le seul « Construire » principal du pli Ouvrages de la Plaine : le même ouvrage.
   expect(nextGoalInfo(state, 'maths-6e-calculation')?.ouvrage).toBe(s.goal.ouvrage);
+});
+
+it('sur l’île d’où part l’ouvrage suggéré, son objectif est cet ouvrage, même si le Bloc-Navire est plus proche (une seule source)', () => {
+  // La Forêt jouée en entier, la Plaine (le port) une fois, l'anglais beaucoup : les maths sont les moins jouées, et
+  // l'ouvrage suggéré part de la Plaine, un bac de 4 blocs (1 en stock). Le Bloc-Navire n'attend plus qu'une case :
+  // 1 bloc, plus proche que les 3 du bac.
+  const progress = { ...joue('french-6e-phonology', 99), ...joue('maths-6e-calculation', 1), ...joue('english-6e-grammar', 99), ...joue('english-6e-vocabulary', 99) };
+  const presque = planCells(coque).map((c) => c.key).slice(1);
+  const state = sanitizeState({ progress, stock: { [BLOC.bois]: 1 }, world: { place: 'french-6e-phonology', links: [], parts: { [coque.id]: presque } } });
+  const s = ouvrageSuggere(state, '6e')!;
+  expect(s.ile).toBe('maths-6e-calculation');
+  const goal = nextGoalInfo(state, 'maths-6e-calculation');
+  expect(goal).toMatchObject({ have: 1, need: 4, ouvrage: s.goal.ouvrage });
+  expect(goal?.text).toMatch(/^Encore 3 blocs pour le bac vers .+\. Il ouvre une île de maths\.$/);
+  // La prochaine destination dit la même phrase, mot pour mot, avec la même jauge.
+  const d = nextDestinationDe(state, NOMS_ARCHIPELS, textesDe('blocland').libelles);
+  expect(d).toMatchObject({ island: 'maths-6e-calculation', text: goal!.text, have: goal!.have, need: goal!.need, ouvrage: goal!.ouvrage });
+  // Le Bloc-Navire prêt à partir reste premier, même sur l'île de départ de l'ouvrage suggéré.
+  const hull = planCells(coque).map((c) => c.key);
+  const pret = sanitizeState({
+    progress: { ...progress, ...guardians(['french-6e-phonology', 'maths-6e-calculation', 'french-6e-letter-confusion']) },
+    world: { place: 'french-6e-phonology', links: [], parts: { [coque.id]: hull } },
+  });
+  expect(nextGoal(pret, 'maths-6e-calculation')).toBe('Le Bloc-Navire est prêt : embarque vers les Îles Brumeuses !');
 });
 
 it('la suggestion ne dépend que de la sauvegarde, et deux élèves de la même classe n’ont pas le même archipel après trois séances', () => {

@@ -39,12 +39,15 @@ export interface MarqueDOuvrage {
 /**
  * La flèche sur un ouvrage, en cases du monde : `cell`, la case où elle se pose ; `places`, les cases où elle peut
  * glisser si une étiquette occupe déjà sa place (de `cell` vers l'arrivée) ; `trace`, toutes les cases de la liaison,
- * dont le tracé se renforce sur la Carte.
+ * dont le tracé se renforce sur la Carte, et `tirets`, celles qu'il dessine (`casesDesTirets`, calculées une fois) ;
+ * `arrivee`, l'île d'en face, dont le nom pèse sur la Carte autant que celui de l'île de départ.
  */
 export interface MarqueDOuvrageEnCases extends MarqueDOuvrage {
   cell: Cell;
   places: Cell[];
   trace: Cell[];
+  tirets: Cell[];
+  arrivee?: BiomeId;
 }
 
 /** La flèche est-elle posée sur un ouvrage ? */
