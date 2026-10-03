@@ -25,6 +25,8 @@ import { missionsTerminees, poserLesParties, type Partie } from './world/parties
 import { getMonument } from './world/monuments';
 import { assemblables, lireTirage, noterQuestion, recetteDe, tirageNeuf, type TirageAssemblage } from './world/assemblage';
 import { VEHICLE_STAGES, beatenGuardians, getStage, kitReady, stageFor, type VehicleStage } from './world/vehicle';
+import { casesDeLaPetiteConstruction, estPosee } from './world/petitesConstructions';
+import { MAX_COMMANDES_OUVERTES, archipelDeLaCommande, getCommande } from './world/commandes';
 
 export interface ExerciseProgress {
   stars: 0 | 1 | 2 | 3;
@@ -86,6 +88,12 @@ export interface World {
   links: string[];
   /** L'île où se tient le bonhomme (la dernière île ouverte visitée) ; la Forêt au début. */
   place?: BiomeId;
+  /**
+   * Les commandes des habitants arrivées et pas encore livrées (GD-7, PR 3 : world/commandes.ts), dans l'ordre
+   * d'arrivée, la plus ancienne en tête. Absent tant qu'aucune n'est arrivée, et dans une sauvegarde d'avant les
+   * commandes. Une commande livrée en sort : sa petite construction est alors dans `parts`.
+   */
+  requests?: string[];
 }
 
 export interface LogEntry {
@@ -207,6 +215,13 @@ export function sanitizeState(input: unknown): GameState {
   // dans l'inventaire.
   if (isRecord(world.parts)) {
     for (const [id, keys] of Object.entries(world.parts)) {
+      // La petite construction d'une commande livrée (GD-7) : posée tout entière, ou pas du tout.
+      const petite = casesDeLaPetiteConstruction(id);
+      if (petite) {
+        const saved = new Set(Array.isArray(keys) ? keys : []);
+        if (petite.every((c) => saved.has(c.key))) parts[id] = petite.map((c) => c.key);
+        continue;
+      }
       const plan = anyPlan(id);
       if (!plan || !Array.isArray(keys)) continue;
       const cells = planCells(plan);
@@ -266,6 +281,16 @@ export function sanitizeState(input: unknown): GameState {
       if (lu) assemblyDraw[bloc as BlockId] = lu;
     }
   }
+  // Les commandes arrivées (GD-7) : connues, sans doublon, pas encore livrées, dans l'ordre d'arrivée, trois au plus par
+  // archipel ; absentes d'une sauvegarde d'avant les commandes, qui ne perd rien.
+  const requests: string[] = [];
+  if (Array.isArray(world.requests))
+    for (const id of world.requests) {
+      const c = typeof id === 'string' ? getCommande(id) : undefined;
+      if (!c || requests.includes(c.id) || estPosee(parts, c.fixture)) continue;
+      if (requests.filter((r) => archipelDeLaCommande(getCommande(r)!) === archipelDeLaCommande(c)).length >= MAX_COMMANDES_OUVERTES) continue;
+      requests.push(c.id);
+    }
   return {
     version: GAME_VERSION,
     progress,
@@ -275,7 +300,7 @@ export function sanitizeState(input: unknown): GameState {
     types,
     chests: Math.max(0, Math.round(num(raw.chests))),
     fluency,
-    world: place ? { parts, log, links, place } : { parts, log, links },
+    world: { parts, log, links, ...(place ? { place } : {}), ...(requests.length ? { requests } : {}) },
     ...(Object.keys(assemblyDraw).length ? { assemblyDraw } : {}),
   };
 }

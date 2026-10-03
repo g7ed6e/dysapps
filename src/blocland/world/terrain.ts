@@ -45,6 +45,8 @@ import { ORIGINE_DES_MONUMENTS, decalageDesPlans, isPlanDone, zoneDesPlans, plan
 import { MONUMENT_ISLET, monumentsOf, type MonumentDef } from './monuments';
 import { EMPRISE_DE_LA_SALLE, SALLE_DE_DEPART, modeleDeLaSalle } from './salle';
 import { recetteDeLArchipel } from './assemblage';
+import { casesDeLaPetiteConstruction, estPosee } from './petitesConstructions';
+import { commandeDeLIle } from './commandes';
 import {
   BASALT,
   CRYSTAL,
@@ -1073,6 +1075,46 @@ export function creatureSpot(id: BiomeId): CreatureSpot {
   const cle = `${id}:${lv2Courante()}`;
   const known = creatureSpots.get(cle);
   if (known) return known;
+  const free = solLibre(id);
+  const cubes = creatureDuMonde(id);
+  const lieux = lieuxVus(id);
+  const vers = versLaCamera(id);
+  const coeur = bornesDuCoeur(islandDef(id));
+  // La créature se tient sur le sol de l'île (z = 1 au-dessus, comme les lieux, sur un sol plat : voir `solLibre`).
+  const libre = (x: number, y: number, [sx, sy]: [number, number]) => cubes.every((c) => free(x + sx + c.x, y + sy + c.y));
+  /** Un cube de la créature (au pas `st`) se tient-il entre la caméra et un lieu du village ? */
+  const cache = (x: number, y: number, [sx, sy]: [number, number]) => cubes.some((c) => cacheUnLieu(lieux, vers, x + sx + c.x, y + sy + c.y, c.z + 1));
+  const fits = (x: number, y: number, st: [number, number]) => libre(x, y, st) && !cache(x, y, st);
+  let best: CreatureSpot | null = null;
+  let bestScore = Infinity;
+  for (let x = coeur.x0 - 2; x < coeur.x1; x++) {
+    for (let y = coeur.y0; y < coeur.y1; y++) {
+      if (!fits(x, y, [0, 0])) continue;
+      const steps = CREATURE_STEPS.filter((st) => fits(x, y, st));
+      const score = Math.abs(x - 2) + Math.abs(y - 4) - 2 * (steps.length - 1);
+      if (score < bestScore) {
+        best = { x, y, steps };
+        bestScore = score;
+      }
+    }
+  }
+  const spot = best ?? { x: 2, y: 4, steps: [[0, 0]] };
+  creatureSpots.set(cle, spot);
+  return spot;
+}
+
+// Par île et par LV2 : le sol libre où la créature et la petite construction de sa commande peuvent se poser.
+const solsLibres = new Map<string, (x: number, y: number) => boolean>();
+
+/**
+ * Les cases du sol d'une île (relatives au cœur) où rien n'est posé : ni le décor, ni les bornes et leur pourtour, ni la
+ * zone des plans, ni la place du bonhomme, ni un lieu ou la case devant sa porte, ni un ouvrage et ses abords, ni une
+ * colline, ni l'eau. Hors du cœur, la terre plate et nue seulement.
+ */
+function solLibre(id: BiomeId): (x: number, y: number) => boolean {
+  const cle = `${id}:${lv2Courante()}`;
+  const known = solsLibres.get(cle);
+  if (known) return known;
   const index = BIOMES.findIndex((b) => b.id === id);
   const def = islandDef(id);
   const blocked = new Set<string>();
@@ -1108,30 +1150,46 @@ export function creatureSpot(id: BiomeId): CreatureSpot {
     const c = scenery.get(`${x},${y}`);
     return Boolean(c) && c!.h === 0 && !c!.decor && c!.ground !== 'eau' && c!.ground !== 'lave';
   };
-  const cubes = creatureDuMonde(id);
-  const lieux = lieuxVus(id);
-  const vers = versLaCamera(id);
-  // La créature se tient sur le sol de l'île (z = 1 au-dessus, comme les lieux, sur un sol plat : voir `free`).
-  const libre = (x: number, y: number, [sx, sy]: [number, number]) => cubes.every((c) => free(x + sx + c.x, y + sy + c.y));
-  /** Un cube de la créature (au pas `st`) se tient-il entre la caméra et un lieu du village ? */
-  const cache = (x: number, y: number, [sx, sy]: [number, number]) => cubes.some((c) => cacheUnLieu(lieux, vers, x + sx + c.x, y + sy + c.y, c.z + 1));
-  const fits = (x: number, y: number, st: [number, number]) => libre(x, y, st) && !cache(x, y, st);
-  let best: CreatureSpot | null = null;
+  solsLibres.set(cle, free);
+  return free;
+}
+
+// Par île, par LV2 et par petite construction : sa place, calculée une fois.
+const placesDesPetitesConstructions = new Map<string, { x: number; y: number } | null>();
+
+/**
+ * Où se pose la petite construction d'une commande livrée (GD-7, PR 3) : le coin (x, y) de sa forme, relatif au cœur de
+ * l'île, à côté de la créature. Sur le sol libre de l'île (`solLibre` : jamais devant une porte, jamais sur une borne,
+ * un lieu, la zone des plans ou un ouvrage), jamais sur la créature ni sur ses pas (avec une case d'écart, pour qu'elle
+ * s'y promène sans la toucher) ; la place la plus proche d'elle. `null` si rien ne la tient. Une place simple, que
+ * l'artiste technique 3D reprendra.
+ */
+export function placeDeLaPetiteConstruction(id: BiomeId, fixture: string): { x: number; y: number } | null {
+  const cle = `${id}:${lv2Courante()}:${fixture}`;
+  if (placesDesPetitesConstructions.has(cle)) return placesDesPetitesConstructions.get(cle)!;
+  const cases = casesDeLaPetiteConstruction(fixture) ?? [];
+  const pied = [...new Map(cases.map((c) => [`${c.x},${c.y}`, { x: c.x, y: c.y }])).values()];
+  const spot = creatureSpot(id);
+  const free = solLibre(id);
+  const creature = creatureDuMonde(id);
+  const aCote = new Set<string>();
+  const elle: { x: number; y: number }[] = creature.map((c) => ({ x: spot.x + c.x, y: spot.y + c.y }));
+  for (const [sx, sy] of [[0, 0], ...spot.steps])
+    for (const c of creature) for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) aCote.add(`${spot.x + sx + c.x + dx},${spot.y + sy + c.y + dy}`);
+  let best: { x: number; y: number } | null = null;
   let bestScore = Infinity;
-  for (let x = coeur.x0 - 2; x < coeur.x1; x++) {
-    for (let y = coeur.y0; y < coeur.y1; y++) {
-      if (!fits(x, y, [0, 0])) continue;
-      const steps = CREATURE_STEPS.filter((st) => fits(x, y, st));
-      const score = Math.abs(x - 2) + Math.abs(y - 4) - 2 * (steps.length - 1);
+  const R = 10;
+  for (let ox = spot.x - R; ox <= spot.x + R; ox++)
+    for (let oy = spot.y - R; oy <= spot.y + R; oy++) {
+      if (!pied.length || !pied.every((p) => free(ox + p.x, oy + p.y) && !aCote.has(`${ox + p.x},${oy + p.y}`))) continue;
+      const score = Math.min(...pied.flatMap((p) => elle.map((e) => Math.abs(ox + p.x - e.x) + Math.abs(oy + p.y - e.y))));
       if (score < bestScore) {
-        best = { x, y, steps };
+        best = { x: ox, y: oy };
         bestScore = score;
       }
     }
-  }
-  const spot = best ?? { x: 2, y: 4, steps: [[0, 0]] };
-  creatureSpots.set(cle, spot);
-  return spot;
+  placesDesPetitesConstructions.set(cle, best);
+  return best;
 }
 
 /** Les créatures des îles ouvertes : cubes relatifs et position de leur coin dans le monde (elles sont animées à part). */
@@ -2434,6 +2492,16 @@ function poserLIle(
         color: c.color,
         tag: biome.id,
       });
+  }
+  // La petite construction d'une commande livrée (GD-7, PR 3), à côté de la créature, en cubes posés.
+  const commande = unlocked ? commandeDeLIle(biome.id) : undefined;
+  if (commande && estPosee(village.parts, commande.fixture)) {
+    const place = placeDeLaPetiteConstruction(biome.id, commande.fixture);
+    if (place)
+      for (const c of casesDeLaPetiteConstruction(commande.fixture) ?? []) {
+        const bd = BLOCKS[c.block];
+        cubes.push({ x: ox + place.x + c.x, y: oy + place.y + c.y, z: oz + c.z + 1, color: bd.side, top: bd.top, texture: bd.texture, tag: biome.id });
+      }
   }
   // Les plans : cellules posées en dur ; fantômes seulement pour le plan en cours (le premier non terminé) d'une île ouverte.
   if (unlocked) {

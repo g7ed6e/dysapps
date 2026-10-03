@@ -10,6 +10,8 @@ import { questsToReview, type ReviewQuest } from './review';
 import { islandsOf, type ArchipelagoId } from './world/archipelago';
 import type { SigneDeCreature } from './world/view';
 import type { Lv2Choice } from '../core/settings';
+import { signeDeLaCreature } from './world/commandes';
+import type { GameState } from './engine';
 
 /** Le paramètre d'adresse d'une révision lancée par la créature : à la fin, on revient sur son île. */
 export const PARAM_REVISION = 'revision';
@@ -52,6 +54,25 @@ export function signesParmi(dues: readonly ReviewQuest[], archipel: ArchipelagoI
   return islandsOf(archipel)
     .filter((b) => !remises.has(b.id) && revisionsDeLIleParmi(dues, b.id, lv2).length > 0)
     .map((b) => ({ id: b.id, icone: b.icon }));
+}
+
+/**
+ * Un seul signe par créature (affordance-blocland.md §8 ; GD-7, PR 3) : parmi les créatures d'un archipel, celle dont la
+ * commande est prête et suggérée (`suggeree` : la commande de la prochaine destination) montre le bloc demandé ; les
+ * autres gardent leur signe des révisions (`revisions`, déjà calculé), ou rien.
+ */
+export function signesDesCreatures(
+  state: Pick<GameState, 'stock' | 'world'>,
+  archipel: ArchipelagoId,
+  revisions: readonly SigneDeCreature[],
+  suggeree: string | undefined,
+): SigneDeCreature[] {
+  return islandsOf(archipel).flatMap((b): SigneDeCreature[] => {
+    const revision = revisions.find((r) => r.id === b.id);
+    const signe = signeDeLaCreature(state, b.id, { revisions: Boolean(revision), suggeree });
+    if (!signe) return [];
+    return [signe.genre === 'commande' ? { id: b.id, icone: 'blocks', bloc: signe.bloc } : revision!];
+  });
 }
 
 // ---- « Plus tard », le temps de la visite

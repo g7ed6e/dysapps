@@ -7,6 +7,7 @@ import { frenchTypography } from '../components/math/RichText';
 import { useSettings } from '../core/SettingsContext';
 import { estIleLv2, guardianTitle, missionsJouables, type BiomeDef } from './biomes';
 import { Bridges } from './Bridges';
+import { Commandes } from './Commandes';
 import { isBiomeUnlocked } from './world/archipelago';
 import { PlanSection } from './PlanSection';
 import { ShipSection } from './ShipSection';
@@ -255,6 +256,9 @@ export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight =
       ) : (
         port && <VillageStageLine village={state.world} archipelago={biome.classe} className="island-village" />
       )}
+
+      {/* Les commandes des créatures de l'archipel (GD-7) : entre le prochain objectif et le bâtiment. */}
+      {unlocked && !sansLv2 && <Commandes island={biome.id} fold={fold} highlight={highlight} />}
 
       {unlocked && <PlanSection biome={biome} fold={fold} highlight={highlight === 'part'} vientDePoser={posees} enCoursDePose={enCoursDePose} />}
 

@@ -4208,6 +4208,32 @@ button.island-quest:active {
 .bridge-icon {
   background: var(--cyan);
 }
+/* Les commandes des créatures (GD-7, PR 3) : les lignes du pli Ouvrages, avec l'habitant en icône. La commande mise en
+   avant (la plus ancienne des prêtes) a un bord plus épais : la forme, pas seulement la couleur. */
+.commandes-list .commande-habitant {
+  background: var(--surface);
+}
+.commandes-list .commande-habitant .creature {
+  width: 2.4rem;
+  height: 2.4rem;
+}
+.commande-item .island-quest-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.commande-en-avant {
+  border-width: calc(var(--border-width) * 2);
+}
+.commandes-premiere-fois {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin: 0 0 0.6rem;
+}
+.menu-commandes {
+  margin: 0.6rem 0;
+}
 .bridges-said {
   margin: 0.6rem 0 0;
   padding: 0.5rem 0.8rem;

@@ -14,7 +14,8 @@ import { useBlocland } from './BloclandContext';
 import { ArchipelsSheet } from './ArchipelsSheet';
 import { InventorySheet } from './Inventory';
 import { IslandSheet } from './IslandSheet';
-import { creaturesQuiFontSigne, usePlusTard } from './rappels';
+import { creaturesQuiFontSigne, signesDesCreatures, usePlusTard } from './rappels';
+import { sansCommandes } from './world/commandes';
 import { SCHOOL_PATH, SCHOOL_TITLE, SchoolSheet } from './School';
 import { MonumentSheet, MonumentsSheet } from './Monuments';
 import { useMonumentBuilder } from './useMonumentBuilder';
@@ -149,12 +150,15 @@ export function WorldPage() {
   const sentinelles = textes.sentinelles !== null && habillage.defi === 'sentinelle';
   const rallumage = useRallumage(state.progress, a, sentinelles);
   const eteints = rallumage.enAttente.join();
+  // Les commandes des habitants (GD-7, PR 3) : seulement dans un univers qui les montre (Blocland) ; ailleurs, le monde
+  // se lit sans elles (ni petite construction, ni suggestion), la sauvegarde restant la même.
+  const vu = useMemo(() => (textes.commandes ? state : sansCommandes(state)), [state, textes.commandes]);
   const cubes = useMemo(
-    () => worldCubes(a, state.progress, state.world, false, trophyBlocks, sentinelles, habillage.atelier),
+    () => worldCubes(a, vu.progress, vu.world, false, trophyBlocks, sentinelles, habillage.atelier),
     // La LV2 choisit les bornes de l'île de la LV2 (world/terrain.ts, `questStations`) ; l'habillage (le lieu
     // d'assemblage) ne change pas tant que la page est montée (useState).
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [a, state.progress, state.world, trophyBlocks, sentinelles, settings.lv2, habillage.atelier],
+    [a, vu.progress, vu.world, trophyBlocks, sentinelles, settings.lv2, habillage.atelier],
   );
   const creatures = useMemo(
     () => [
@@ -165,7 +169,7 @@ export function WorldPage() {
   );
   // La créature qui se souvient (GD-4, étape 1) : celles dont l'île a des révisions dues font signe, sauf après « Plus tard ».
   const { remises } = usePlusTard();
-  const signes = useMemo(
+  const revisions = useMemo(
     () => creaturesQuiFontSigne(state.spaced, state.world.links, a, remises, settings.lv2),
     [state.spaced, state.world.links, a, remises, settings.lv2],
   );
@@ -205,6 +209,7 @@ export function WorldPage() {
   const openIsland = (id: BiomeId, ouvrage?: string) => {
     retenirPanneauReplie(null);
     setSheetOpen(true);
+    // Un ouvrage, ou une commande prête (GD-7, PR 3) : la même mise en avant (`worksite`), dans son pli.
     navigate(lienDeLaDestination({ island: id, ouvrage }));
   };
   // Fermer un panneau du village (Blocs, École, Trophées, Monuments) : retour au monde libre, sur l'île du bonhomme,
@@ -216,7 +221,7 @@ export function WorldPage() {
   // Les bornes de mission des îles de l'archipel, avec leur état : à faire, étoiles gagnées, ou fermée.
   // Le modèle du monde (world/modele.ts) : les îles, les bornes et leur état, en identifiants ; la grille dit où elles sont.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const modele = useMemo(() => modeleDuMonde(state, a, textes.archipels, textes.libelles), [a, state, settings.lv2, textes]);
+  const modele = useMemo(() => modeleDuMonde(vu, a, textes.archipels, textes.libelles), [a, vu, settings.lv2, textes]);
   const quests = useMemo<QuestMark[]>(
     () =>
       modele.bornes.map((b) => ({
@@ -230,6 +235,8 @@ export function WorldPage() {
   );
   // La prochaine destination (la même que « Reprendre l'aventure » au menu), dite et marquée sur la Carte.
   const destination = modele.destination;
+  // Un seul signe par créature : sa commande prête et suggérée (GD-7, PR 3), sinon ses révisions (GD-4, étape 1).
+  const signes = useMemo(() => signesDesCreatures(vu, a, revisions, destination.commande), [vu, a, revisions, destination.commande]);
   const destinationText = `Prochaine destination : ${destination.name}. ${destination.text}`;
   // Un ouvrage à construire (GD-7) : sur la Carte, la flèche se pose sur lui, avec l'icône d'un ouvrage, pas sur l'île
   // d'où il part (quatre ouvrages peuvent en partir) ; sur sa liaison, du côté de cette île.
@@ -988,7 +995,7 @@ export function WorldPage() {
                     </span>
                   </p>
                   <p className="world-map-actions">
-                    <button type="button" className="button primary" onClick={() => openIsland(destination.island, destination.ouvrage)}>
+                    <button type="button" className="button primary" onClick={() => openIsland(destination.island, destination.ouvrage ?? destination.commande)}>
                       <Icon name="play" /> Y aller
                     </button>
                     <button type="button" className="button" onClick={() => navigate('/adventure/world')}>

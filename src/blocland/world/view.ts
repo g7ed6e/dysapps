@@ -1,7 +1,7 @@
 // Le contrat commun des vues du monde de Blocland : la 3D (three/WorldCanvas.tsx) et la 2D (à venir).
 // WorldPage ne connaît que ce contrat : il choisit la vue, le reste (panneaux, voyages, chantier) ne change pas.
 import type { IslandStateId } from './islandState';
-import type { BiomeDef, BiomeId } from '../biomes';
+import type { BiomeDef, BiomeId, BlockId } from '../biomes';
 import type { PlaceId, VoxelCube } from './cube';
 import type { ArchipelagoId } from './archipelago';
 import type { VehiclePlacement } from './terrain';
@@ -118,10 +118,20 @@ export interface IslandLabel {
   state?: { id: IslandStateId; name: string };
 }
 
-/** Une créature qui fait signe (GD-4, étape 1) : celle de cette île, avec l'icône de la notion (celle de l'île). */
+/**
+ * Une créature qui fait signe (GD-4, étape 1) : celle de cette île, avec l'icône de la notion (celle de l'île). Un seul
+ * signe par créature (affordance-blocland.md §8) : sa commande prête et suggérée d'abord (GD-7, PR 3), sinon ses
+ * révisions (world/commandes.ts, `signeDeLaCreature`).
+ */
 export interface SigneDeCreature {
   id: BiomeId;
+  /** L'icône de la plaque : celle de la notion (révisions), celle des blocs (commande). */
   icone: BiomeDef['icon'];
+  /**
+   * Une commande (GD-7) : le bloc demandé, dont la plaque montrera l'image (celle de Mes blocs). Le dessin de cette image
+   * sur la plaque, en 3D et en vue simple, reste à faire par l'artiste technique 3D : la plaque montre l'icône des blocs.
+   */
+  bloc?: BlockId;
 }
 
 export interface WorldViewProps {

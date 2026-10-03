@@ -5,6 +5,7 @@ import { questsToReview } from '../blocland/review';
 import { VillageStageLine } from '../blocland/VillageStageLine';
 import { archipelagoOf, reachedArchipelagos, ARCHIPELAGOS } from '../blocland/world/archipelago';
 import { lienDeLaDestination, nextDestination } from '../blocland/world/destination';
+import { sansCommandes } from '../blocland/world/commandes';
 import { Icon } from '../components/Icon';
 import { RoleBadge } from '../components/RoleBadge';
 import { SpeakButton } from '../components/SpeakButton';
@@ -34,7 +35,8 @@ export function HomePage() {
   const resume = lastPlace();
   const reviews = questsToReview(state.spaced, state.world.links);
   const here = archipelagoOf(state.world.place ?? 'french-6e-phonology').classe;
-  const destination = nextDestination(state, textes.archipels, textes.libelles);
+  // Les commandes (GD-7) ne se suggèrent que dans un univers qui les montre (Blocland).
+  const destination = nextDestination(textes.commandes ? state : sansCommandes(state), textes.archipels, textes.libelles);
   const destinationText = `Prochaine destination : ${destination.name}. ${destination.text}`;
   const reached = reachedArchipelagos(state.world.links).length;
   const univers = UNIVERS[useUnivers()];

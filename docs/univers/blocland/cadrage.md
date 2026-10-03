@@ -28,6 +28,16 @@ Dans Blocland, « ouvrage » ne nomme que les liaisons : pont, bac, sentier de p
 - **Les bacs en contour** : un long bac longe l’archipel par des points de passage, sans toucher une autre île, un autre ouvrage, l’îlot d’un Gardien ou d’un monument ni la jetée, et sans élargir le cadre du monde (`via`, `src/blocland/world/archipelago.ts` ; tracé dans `bridgePath`, `world/terrain.ts`). Les baleines ne font pas surface sur leur trajet.
 - **Les longs bacs** (plus de 36 cases, `BAC_LONG`) : un radeau de trois planches et une corde de halage, comme les autres, mais un poteau de bois toutes les quatre cases au lieu de trois, ce qui les fait tenir dans le plafond (80 000 triangles, 240 appels), qui ne change pas ; la nuit, une lanterne à chaque bout, comme tous les ouvrages.
 - **Aucun Gardien** n’est la condition d’un ouvrage : le tunnel et le col ne demandent que des blocs ; l’escalier taillé garde sa mission réussie sur l’île de départ.
+- **Les petites constructions ne sont pas des ouvrages** (GD-7, PR 3) : une commande livrée pose une « petite construction » chez la créature, nommée par son objet (« le puits de Tunel ») ; elle n’ouvre aucune île. Leur liste est écrite avec le contenu des îles :
+
+| Archipel | Créature : petite construction (bloc demandé) |
+| --- | --- |
+| 6e | Mousso : le carré de semis (terre) · Tunel : le puits (briques) · Rouxel : la grue (poutres) · Bloquette : l’abreuvoir (galets) · Grimoire : le poteau-lanterne (obsidienne, après « La lanterne du phare ») · Coco : l’étal (bois) · Nénu : le lavoir (pierre) · Lavi : l’abri (cabines) · Robin : l’horloge du quai (cadrans) · Tick : la vitrine (verre) |
+| 5e | Frimas : la cabane de pêche (tuiles) · Bazar : le présentoir (panneaux) · Sema : le poteau indicateur (lambris) · Kroa : l’abri du gué (toile) · Pudding : la glacière (glace) · Moustache : la serre (vitraux) |
+| 4e | Braise : le wagonnet (rails) · Ixe : le treuil (engrenages) · Cléa : le perchoir (acier) · Plume : la banquette (velours) · Puck : le pupitre (parchemins) · Vapeur : la marquise (calques) |
+| 3e | Théo : l’équerre (prismes) · Stat : le mât de relevés (antennes) · Fi : le réflecteur (miroirs) · Astra : le banc (pierres de taille) · Écho : le haut-parleur (lentilles) · Knight : la fontaine (marbre) |
+
+Le nombre de blocs et les phrases sont dans `docs/contenu/<lieu>.md` (« Les demandes ») ; les formes dans `src/blocland/world/petitesConstructions.ts` ; la règle des commandes dans [le jeu](../../gameplay/index.md#les-habitants-les-commandes-et-les-gardiens).
 
 ## La vue 2D oblique
 

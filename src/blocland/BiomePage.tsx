@@ -8,6 +8,7 @@ import { SchoolLink } from './School';
 import { AssemblageLink } from './Assemblage';
 import { TROPHIES_TITLE } from './trophies';
 import { Bridges } from './Bridges';
+import { Commandes } from './Commandes';
 import { lockedHint, nextGoalInfo } from './world/goals';
 import { GoalLine } from './GoalLine';
 import { VillageStageLine } from './VillageStageLine';
@@ -101,6 +102,8 @@ export function BiomePage() {
       <PlusTardDit dit={remis} />
 
       {goal && <GoalLine goal={goal} className="panel" />}
+      {/* Les commandes des créatures de l'archipel (GD-7) : « Livrer » se touche ici pour celle de cette île. */}
+      {unlocked && !sansLv2 && <Commandes island={biome.id} highlight={chantier} niveau="h2" className="panel" />}
       {port && unlocked && <VillageStageLine village={state.world} archipelago={biome.classe} className="panel" />}
 
       {/* Un ouvrage construit ouvre l'île d'en face : on y va, sa créature accueille (comme en 3D). */}

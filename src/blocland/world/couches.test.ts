@@ -41,6 +41,9 @@ const REGLES = [
   // L'assemblage des blocs (GD-2) et ses recettes, produites depuis docs/contenu/assemblage.md par `npm run contenu`.
   'world/assemblage',
   'world/recettes',
+  // Les commandes des habitants (GD-7) et la forme de leurs petites constructions, en repère propre.
+  'world/commandes',
+  'world/petitesConstructions',
   'world/modele',
   // Le contrat entre le jeu et ses dispositions (types seulement) : le jeu dit ce dont il a besoin.
   'world/disposition',

@@ -31,6 +31,10 @@ import type { PlanDef } from './world/plans';
 import type { VehicleStage } from './world/vehicle';
 import type { BuildBridgeResult } from './world/archipelago';
 import type { ExerciseDef, ItemResult } from './exercises/types';
+import { useUniversChoisi } from '../core/SettingsContext';
+import { universAffiche } from '../core/univers';
+import { archipelagoOf, getBridge, type ArchipelagoId } from './world/archipelago';
+import { archipelDeLaCommande, faireArriverUneCommande, livrerLaCommande, type Livraison } from './world/commandes';
 
 /** Sessions courtes : on propose d'arrêter après ce nombre d'exercices ou cette durée. */
 export const SESSION_MAX_EXERCISES = 3;
@@ -62,6 +66,11 @@ interface BloclandContextValue {
   disassemble: (bloc: BlockId) => AssembleResult;
   /** Construit un pont vers une île voisine, payé avec les blocs de l'inventaire. */
   buildBridge: (id: string) => BuildBridgeResult;
+  /**
+   * Livre une commande prête (GD-7, PR 3) : ses blocs sortent de l'inventaire, sa petite construction se pose chez la
+   * créature. Puis une autre commande peut arriver.
+   */
+  deliver: (id: string) => Livraison<GameState>;
   /** Le bonhomme va sur une île ouverte. */
   moveTo: (id: BiomeId) => void;
   /** Largue les amarres du Bloc-Navire : le voyage est fait, le bonhomme arrive au port d'en face. */
@@ -94,20 +103,28 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
   const sessionStart = useRef(Date.now());
   const [batisseur, setBatisseur] = useState(false);
   const batisseurRef = useRef(false);
+  // Les commandes des habitants (GD-7, PR 3) n'arrivent que dans Blocland ; Archipéo, en pause, n'en montre aucune.
+  const univers = universAffiche(useUniversChoisi());
+  const avecCommandes = useRef(univers === 'blocland');
+  avecCommandes.current = univers === 'blocland';
+  /** À la fin d'une mission, d'un ouvrage construit ou d'une livraison dans l'archipel `a` : une commande au plus arrive. */
+  const commandeQuiArrive = useCallback((s: GameState, a: ArchipelagoId): GameState => (avecCommandes.current ? faireArriverUneCommande(s, a).state : s), []);
 
   useEffect(() => {
     saveJSON(STORAGE_KEY, state);
   }, [state]);
 
   const complete = useCallback((def: ExerciseDef, results: ItemResult[]) => {
-    const completion = completeExercise(stateRef.current, def, results, todayISO());
+    const terminee = completeExercise(stateRef.current, def, results, todayISO());
+    // La mission finie, jamais pendant sa consigne : une commande peut arriver dans l'archipel de son île.
+    const completion = { ...terminee, state: commandeQuiArrive(terminee.state, archipelagoOf(def.biome).classe) };
     stateRef.current = completion.state;
     setState(completion.state);
     setSessionCount((n) => n + 1);
     // Ce qu'un plan terminé donnait passe à la mission qui le finit (GD-6) : son XP et son compteur de succès.
     for (const plan of completion.pose?.plansFinis ?? []) completePlan(plan.reward.xp);
     return completion;
-  }, [completePlan]);
+  }, [completePlan, commandeQuiArrive]);
 
   const completePortal = useCallback((score: number, firstTime: boolean) => {
     const completion = completePortalQuest(stateRef.current, score, firstTime, todayISO());
@@ -153,11 +170,22 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
   const disassemble = useCallback((bloc: BlockId) => appliquer(disassembleBlock(stateRef.current, bloc)), [appliquer]);
   const buildBridge = useCallback((id: string) => {
     const r = buildBridgePure(stateRef.current, id);
-    const next = batisseurRef.current ? remplir(r.state) : r.state;
+    const bridge = getBridge(id);
+    const built = r.result.ok && bridge ? commandeQuiArrive(r.state, archipelagoOf(bridge.from).classe) : r.state;
+    const next = batisseurRef.current ? remplir(built) : built;
     stateRef.current = next;
     setState(next);
     return r.result;
-  }, []);
+  }, [commandeQuiArrive]);
+  const deliver = useCallback(
+    (id: string): Livraison<GameState> => {
+      const r = livrerLaCommande(stateRef.current, id);
+      if (!r.ok) return r;
+      const next = pousser(commandeQuiArrive(r.state, archipelDeLaCommande(r.commande)));
+      return { ...r, state: next };
+    },
+    [pousser, commandeQuiArrive],
+  );
   const moveTo = useCallback((id: BiomeId) => {
     const next = moveAvatar(stateRef.current, id);
     if (next === stateRef.current) return;
@@ -209,6 +237,7 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
       repondreAssemblage,
       disassemble,
       buildBridge,
+      deliver,
       moveTo,
       launch,
       reset,
@@ -228,6 +257,7 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
       repondreAssemblage,
       disassemble,
       buildBridge,
+      deliver,
       moveTo,
       launch,
       reset,
