@@ -146,9 +146,9 @@ const CAPTURES = [
   { nom: 'assemblage-etoiles', vue: 'île', famille: 'assemblage', ile: 'maths-3e-functions', lieu: 'landmark-3e-1', finesse: 2 },
   // La pose d'une partie en vague (GD-6, Blocland, famille `pose`) : la cabane de Mousso, première partie du bâtiment de
   // la Forêt des sons, après « Voir le bâtiment » (`pose` : les missions de l'île terminées, la pose retenue pour la
-  // visite) ; en cours (les pas d'après le monde construit), puis finie (`pasEnPlus`), la phrase dans le panneau.
+  // visite) ; en cours (les pas d'après le monde construit), puis finie (`pasEnPlus`, 5 s plus tard), la phrase seule dans le panneau, avant le bandeau de succès.
   { nom: 'pose-en-cours', vue: 'île', famille: 'pose', ile: 'french-6e-phonology', partie: 'un-plan', pose: 1 },
-  { nom: 'pose-finie', vue: 'île', famille: 'pose', ile: 'french-6e-phonology', partie: 'un-plan', pose: 1, pasEnPlus: 80 },
+  { nom: 'pose-finie', vue: 'île', famille: 'pose', ile: 'french-6e-phonology', partie: 'un-plan', pose: 1, pasEnPlus: 40 },
   // L'école et la salle des trophées des Premiers Rivages (lot 7b, les lieux du village) : la vue de la Forêt, sans
   // trophée et avec tous (`succes` : le nombre de succès gagnés, `tous` pour tous, un trophée chacun), de jour et de
   // nuit ; de près, recadrées (`finesse` 3 : le colombage net) ; de loin, la vue de l'archipel.
