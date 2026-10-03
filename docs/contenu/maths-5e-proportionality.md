@@ -34,8 +34,8 @@ créature : Bazar
 
 ## Les plans
 
-| plan | nom | XP | coffre | quand c’est bâti |
-| --- | --- | --- | --- | --- |
-| `maths-5e-proportionality-1` | L’échoppe de Bazar | 40 | maths-6e-fractions × 3 | Mon échoppe ! Merci, bâtisseur. Cent pour cent debout, prix d’ami. |
-| `maths-5e-proportionality-2` | L’auvent de l’échoppe | 50 |  | Un auvent et une porte ! La lanterne éclaire les comptes du soir. |
-| `maths-5e-proportionality-3` | L’étal de l’échoppe | 60 | trophy-gold × 2 · trophy-crystal × 2 | Un étal, une barrière, un escalier… Mon échoppe est complète : deux fois plus belle, pas deux fois plus chère. |
+| plan | nom | XP | quand c’est bâti |
+| --- | --- | --- | --- |
+| `maths-5e-proportionality-1` | L’échoppe de Bazar | 40 | Mon échoppe ! Merci, bâtisseur. Cent pour cent debout, prix d’ami. |
+| `maths-5e-proportionality-2` | L’auvent de l’échoppe | 50 | Un auvent et une porte ! La lanterne éclaire les comptes du soir. |
+| `maths-5e-proportionality-3` | L’étal de l’échoppe | 60 | Un étal, une barrière, un escalier… Mon échoppe est complète : deux fois plus belle, pas deux fois plus chère. |

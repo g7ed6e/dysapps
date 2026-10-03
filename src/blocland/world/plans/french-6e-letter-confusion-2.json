@@ -3,8 +3,7 @@
   "biome": "french-6e-letter-confusion",
   "name": "Le toit de la forge",
   "reward": {
-    "xp": 60,
-    "chest": {}
+    "xp": 60
   },
   "done": "Le toit est posé, la porte aussi. Dedans, il fait chaud comme au fond de la mine."
 }

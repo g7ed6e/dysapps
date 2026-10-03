@@ -543,8 +543,8 @@ Pour tous les items :
 
 ## Les plans
 
-| plan | nom | XP | coffre | quand c’est bâti |
-| --- | --- | --- | --- | --- |
-| `english-6e-vocabulary-1` | La cabine de Robin | 40 | english-6e-grammar × 3 | Ma cabine ! Thank you, bâtisseur. Quand le téléphone sonne, je réponds : hello? |
-| `english-6e-vocabulary-2` | Le toit de la cabine | 50 |  | Un toit et une porte ! Même sous la pluie anglaise, je reste au sec. |
-| `english-6e-vocabulary-3` | Le quai de la cabine | 60 | trophy-gold × 2 · trophy-crystal × 2 | Un quai, une barrière, un escalier… Ma baie est complète. See you soon! |
+| plan | nom | XP | quand c’est bâti |
+| --- | --- | --- | --- |
+| `english-6e-vocabulary-1` | La cabine de Robin | 40 | Ma cabine ! Thank you, bâtisseur. Quand le téléphone sonne, je réponds : hello? |
+| `english-6e-vocabulary-2` | Le toit de la cabine | 50 | Un toit et une porte ! Même sous la pluie anglaise, je reste au sec. |
+| `english-6e-vocabulary-3` | Le quai de la cabine | 60 | Un quai, une barrière, un escalier… Ma baie est complète. See you soon! |

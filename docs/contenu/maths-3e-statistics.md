@@ -34,8 +34,8 @@ créature : Stat
 
 ## Les plans
 
-| plan | nom | XP | coffre | quand c’est bâti |
-| --- | --- | --- | --- | --- |
-| `maths-3e-statistics-1` | Le dôme de Stat | 40 | french-4e-vocabulary × 3 | Mon dôme ! Merci, bâtisseur. Moyenne des blocs : parfaite. Médiane : idem. |
-| `maths-3e-statistics-2` | Le toit du dôme | 50 |  | Un toit et une porte ! La lanterne compte les étoiles avec moi, une par une. |
-| `maths-3e-statistics-3` | La terrasse du dôme | 60 | trophy-gold × 2 · trophy-crystal × 2 | Une terrasse, une barrière, un escalier… Mon dôme est complet : probabilité 1. |
+| plan | nom | XP | quand c’est bâti |
+| --- | --- | --- | --- |
+| `maths-3e-statistics-1` | Le dôme de Stat | 40 | Mon dôme ! Merci, bâtisseur. Moyenne des blocs : parfaite. Médiane : idem. |
+| `maths-3e-statistics-2` | Le toit du dôme | 50 | Un toit et une porte ! La lanterne compte les étoiles avec moi, une par une. |
+| `maths-3e-statistics-3` | La terrasse du dôme | 60 | Une terrasse, une barrière, un escalier… Mon dôme est complet : probabilité 1. |

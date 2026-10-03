@@ -1,7 +1,8 @@
-// Les plans du village : un bâtiment en ruine par île, à reconstruire bloc par bloc, en trois plans (les murs, le toit, la
-// cour). Chaque plan a sa fiche JSON (nom, phrase de fin, XP, coffre) ; son dessin vient de l'architecte (architect.ts).
+// Les plans du village : un bâtiment par île, en trois plans (les murs, le toit, la cour), que les missions de l'île posent
+// partie par partie (GD-6, parties.ts). Chaque plan a sa fiche JSON (nom, phrase de fin, XP) ; son dessin vient de
+// l'architecte (architect.ts).
 import { BIOMES, type BiomeId, type BlockId } from '../biomes';
-import { FINISH_BLOCKS, buildingStages, finishNeeds } from './architect';
+import { buildingStages } from './architect';
 import carriereAbri from './plans/french-6e-word-spelling-2.json';
 import carriereCour from './plans/french-6e-word-spelling-3.json';
 import carriereFour from './plans/french-6e-word-spelling-1.json';
@@ -110,6 +111,10 @@ export interface PlanDef {
   /** Coin du bâtiment dans la zone des plans de l'île. */
   origin: { x: number; y: number };
   cells: PlanCell[];
+  /**
+   * Ce que le plan donne quand il est terminé : son XP, et un coffre de blocs. Le coffre des plans d'île est vide (GD-6) :
+   * seules les étapes du Bloc-Navire en ont un.
+   */
   reward: { xp: number; chest: Partial<Record<BlockId, number>> };
   /** Ce que dit la créature quand le plan est terminé. */
   done: string;
@@ -166,7 +171,7 @@ export function decalageDesPlans(plan: Pick<PlanDef, 'biome' | 'zone'>): Readonl
   return PLANS_AU_FOND[plan.biome] ?? SANS_DECALAGE;
 }
 
-/** Les fiches des plans (nom, phrases, XP, coffre ; produites par `npm run contenu` depuis la section « Les plans » de docs/contenu/<île>.md, dans le même ordre) : sur chaque île, le plan suivant se débloque quand le précédent est terminé. */
+/** Les fiches des plans (nom, phrase de fin, XP ; produites par `npm run contenu` depuis la section « Les plans » de docs/contenu/<île>.md, dans le même ordre) : dans l'ordre du dessin. */
 const PLAN_FILES = [
   foretCabane,
   foretToit,
@@ -261,12 +266,12 @@ const PLAN_FILES = [
   refugePoste,
   refugeSalle,
   refugePigeonnier,
-] as Omit<PlanDef, 'cells' | 'origin'>[];
+] as (Omit<PlanDef, 'cells' | 'origin' | 'reward'> & { reward: { xp: number } })[];
 
 /**
  * Les plans des îles : la fiche de chaque plan, et son dessin par l'architecte (world/architect.ts) selon la forme du
- * bâtiment de l'île et son rang (les murs, le toit, la cour). Le coffre d'un plan garde ses blocs d'îles et ses blocs rares,
- * et donne exactement les blocs de finition de l'étape suivante.
+ * bâtiment de l'île et son rang (les murs, le toit, la cour). Un plan d'île n'a pas de coffre : ses blocs de finition se
+ * posent avec sa partie (GD-6).
  */
 export const PLANS: PlanDef[] = (() => {
   const out: PlanDef[] = [];
@@ -275,9 +280,7 @@ export const PLANS: PlanDef[] = (() => {
     const block = BIOMES.find((b) => b.id === island)!.block;
     const stages = buildingStages(island, block);
     files.forEach((file, i) => {
-      const keep = Object.fromEntries(Object.entries(file.reward.chest).filter(([b]) => !FINISH_BLOCKS.includes(b as BlockId)));
-      const chest = { ...keep, ...(i + 1 < stages.length ? finishNeeds(stages[i + 1]) : {}) };
-      out.push({ ...file, origin: { x: 0, y: 0 }, cells: stages[i] ?? [], reward: { ...file.reward, chest } });
+      out.push({ ...file, origin: { x: 0, y: 0 }, cells: stages[i] ?? [], reward: { xp: file.reward.xp, chest: {} } });
     });
   }
   // L'ordre des fichiers est gardé (îles dans l'ordre de la liste).
@@ -350,9 +353,4 @@ export function planOrigin(plan: PlanDef): { x: number; y: number; z: number } {
 /** Un plan est terminé quand toutes ses cellules sont posées. */
 export function isPlanDone(plan: PlanDef, done: Record<string, string[]>): boolean {
   return (done[plan.id]?.length ?? 0) >= plan.cells.length;
-}
-
-/** Le plan en cours d'une île : le premier qui n'est pas terminé, ou `null` si tout est construit. */
-export function activePlan(biome: BiomeId, done: Record<string, string[]>): PlanDef | null {
-  return plansFor(biome).find((p) => !isPlanDone(p, done)) ?? null;
 }

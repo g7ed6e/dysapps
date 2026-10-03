@@ -3,10 +3,7 @@
   "biome": "maths-3e-statistics",
   "name": "Le dôme de Stat",
   "reward": {
-    "xp": 40,
-    "chest": {
-      "french-4e-vocabulary": 3
-    }
+    "xp": 40
   },
   "done": "Mon dôme ! Merci, bâtisseur. Moyenne des blocs : parfaite. Médiane : idem."
 }

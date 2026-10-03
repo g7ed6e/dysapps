@@ -3,11 +3,7 @@
   "biome": "french-5e-conjugation",
   "name": "Le ponton de la hutte",
   "reward": {
-    "xp": 60,
-    "chest": {
-      "trophy-gold": 2,
-      "trophy-crystal": 2
-    }
+    "xp": 60
   },
   "done": "Un ponton, une barrière, un escalier… Ma hutte est complète. Demain, je m’y reposerai."
 }

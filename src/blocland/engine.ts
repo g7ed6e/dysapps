@@ -5,7 +5,7 @@ import { BIOMES, BLOCKS, getBiome } from './biomes';
 import { starsFor } from '../core/stars';
 import { GAME_VERSION, translateGame } from '../core/migration';
 import type { ExerciseDef, ItemResult } from './exercises/types';
-import { activePlan, cellKey, getPlan, planCells, plansFor as PLANS_OF, type PlanDef } from './world/plans';
+import { cellKey, getPlan, planCells, type PlanDef } from './world/plans';
 import {
   archipelagoOf,
   bridgesFromLegacyProgress,
@@ -21,6 +21,7 @@ import {
   type BuildBridgeResult,
 } from './world/archipelago';
 import { planV1 } from './world/plansV1';
+import { missionsTerminees, poserLesParties, type Partie } from './world/parties';
 import { getMonument } from './world/monuments';
 import { assemblables, lireTirage, noterQuestion, recetteDe, tirageNeuf, type TirageAssemblage } from './world/assemblage';
 import { VEHICLE_STAGES, beatenGuardians, getStage, kitReady, stageFor, type VehicleStage } from './world/vehicle';
@@ -392,19 +393,11 @@ export function disassembleBlock(state: GameState, bloc: BlockId): AssembleResul
   return { state: { ...state, stock: inventory }, ok: true };
 }
 
-/** La prochaine cellule du plan que l'on peut poser avec l'inventaire actuel (vue simple, bouton « Poser le bloc suivant »). */
+/** La prochaine cellule d'un plan que l'on peut poser avec l'inventaire actuel (le Bloc-Navire, bouton « Poser le bloc suivant »). */
 export function nextFillable(state: GameState, plan: PlanDef): { x: number; y: number; z: number } | null {
   const done = new Set(state.world.parts[plan.id] ?? []);
   const cell = planCells(plan).find((c) => !done.has(c.key) && (state.stock[c.block] ?? 0) > 0);
   return cell ? { x: cell.x, y: cell.y, z: cell.z } : null;
-}
-
-/** Le plan en cours d'une île (voir plans.ts), ou le dernier si tout est terminé. */
-export function currentPlan(state: GameState, island: BiomeId): { plan: PlanDef; allDone: boolean } | null {
-  const active = activePlan(island, state.world.parts);
-  if (active) return { plan: active, allDone: false };
-  const all = PLANS_OF(island);
-  return all.length ? { plan: all[all.length - 1], allDone: true } : null;
 }
 
 /** La cellule d'un plan à ces coordonnées, si elle existe (posée ou non). */
@@ -512,6 +505,40 @@ export interface Completion {
   perfect: boolean;
   streak: StreakUpdate;
   chestBlock?: BlockId;
+  /** La partie du bâtiment du lieu posée par cette mission, la première fois qu'elle est terminée (GD-6). */
+  pose?: PoseDUneMission;
+}
+
+/** Ce qu'une mission terminée a posé sur le bâtiment de son lieu : les parties et les plans qu'elles finissent. */
+export interface PoseDUneMission {
+  posees: Partie[];
+  plansFinis: PlanDef[];
+}
+
+/**
+ * Pose sur le bâtiment d'un lieu les parties dues à ses missions terminées (GD-6), sans rien prendre au stock : une
+ * ligne du journal par plan fini. Sans effet si le compte y est.
+ */
+export function poserLesPartiesDues(state: GameState, biome: BiomeId, today = todayISO()): { state: GameState; pose: PoseDUneMission | null } {
+  const r = poserLesParties(biome, state.world.parts, missionsTerminees(state.progress, biome));
+  if (!r.posees.length) return { state, pose: null };
+  const log = [...state.world.log, ...r.plansFinis.map((p) => ({ day: today, part: p.id }))].slice(-100);
+  return { state: { ...state, world: { ...state.world, parts: r.parts, log } }, pose: { posees: r.posees, plansFinis: r.plansFinis } };
+}
+
+/**
+ * Le rattrapage d'une sauvegarde d'avant GD-6 : chaque lieu reçoit les parties de ses missions déjà terminées, posées
+ * d'un coup. Les plans qu'elles finissent sont rendus pour leur XP.
+ */
+export function rattraperLesParties(state: GameState, today = todayISO()): { state: GameState; plansFinis: PlanDef[] } {
+  let next = state;
+  const plansFinis: PlanDef[] = [];
+  for (const b of BIOMES) {
+    const r = poserLesPartiesDues(next, b.id, today);
+    next = r.state;
+    if (r.pose) plansFinis.push(...r.pose.plansFinis);
+  }
+  return { state: next, plansFinis };
 }
 
 /** Blocs en plus : +1 à deux étoiles, +2 à trois ; +2 la première fois qu'une mission est jouée. Rien sans bonne réponse. */
@@ -547,8 +574,11 @@ export function completeExercise(state: GameState, def: ExerciseDef, results: It
 
   const types = { ...state.types, [def.type]: adapt(state.types[def.type], score, def.adaptive) };
 
+  // La première fois qu'une mission du lieu est terminée, une partie de son bâtiment se pose (GD-6).
+  const posee = poserLesPartiesDues({ ...state, progress, spaced, stock: inventory, streak: streak.streak, types, chests }, def.biome, today);
   return {
-    state: { ...state, progress, spaced, stock: inventory, streak: streak.streak, types, chests },
+    state: posee.state,
+    ...(posee.pose ? { pose: posee.pose } : {}),
     score,
     stars,
     newBest,
@@ -579,7 +609,8 @@ function playedToday(
   let chests = state.chests;
   if (streak.chest) {
     // Ni les blocs rares, ni les blocs assemblés (GD-2), qu'on ne gagne jamais tout faits.
-    const common = (Object.keys(BLOCKS) as BlockId[]).filter((b) => !BLOCKS[b].rare && !BLOCKS[b].assemble);
+    // Les blocs des îles seulement : ni or ni cristal, ni blocs de finition, qui ne paient plus rien (GD-6).
+    const common = [...new Set(BIOMES.map((b) => b.block))].filter((b) => !BLOCKS[b].rare && !BLOCKS[b].assemble);
     chestBlock = common[Math.floor(rng() * common.length)];
     inventory[chestBlock] = (inventory[chestBlock] ?? 0) + CHEST_BLOCKS;
     chests += 1;

@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { gelerSauvegarde, loadJSON, removeKey, saveJSON } from '../core/storage';
+import { gelerSauvegarde, loadJSON, removeKey, saveJSON, trySaveJSON } from '../core/storage';
+import { useProgress } from '../core/ProgressContext';
 import { bacASable, remplir } from './batisseur';
 import {
   EMPTY_STATE,
@@ -11,6 +12,7 @@ import {
   fillPlanCell as fillPlanCellPure,
   launchVehicle as launchVehiclePure,
   moveAvatar,
+  rattraperLesParties,
   recordFluence as recordFluencePure,
   repondreAssemblage as repondreAssemblagePure,
   sanitizeState,
@@ -75,8 +77,19 @@ const BloclandContext = createContext<BloclandContextValue | null>(null);
 const STORAGE_KEY = 'game';
 
 export function BloclandProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<GameState>(() => sanitizeState(loadJSON<unknown>(STORAGE_KEY, {})));
+  const { completePlan } = useProgress();
+  // Une sauvegarde d'avant GD-6 reçoit tout de suite les parties de ses missions déjà terminées ; l'XP des plans qu'elles
+  // finissent est donnée une fois, juste après (plus bas).
+  const [ouverture] = useState(() => rattraperLesParties(sanitizeState(loadJSON<unknown>(STORAGE_KEY, {}))));
+  const [state, setState] = useState<GameState>(ouverture.state);
   const stateRef = useRef(state);
+  const rattrapes = useRef(ouverture.plansFinis);
+  useEffect(() => {
+    // L'XP n'est donnée que si la sauvegarde rattrapée est bien écrite : sinon, le rattrapage refait à la prochaine
+    // ouverture la donnerait deux fois.
+    if (rattrapes.current.length && trySaveJSON(STORAGE_KEY, ouverture.state)) for (const plan of rattrapes.current) completePlan(plan.reward.xp);
+    rattrapes.current = [];
+  }, [completePlan, ouverture.state]);
   const [sessionCount, setSessionCount] = useState(0);
   const sessionStart = useRef(Date.now());
   const [batisseur, setBatisseur] = useState(false);
@@ -91,8 +104,10 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
     stateRef.current = completion.state;
     setState(completion.state);
     setSessionCount((n) => n + 1);
+    // Ce qu'un plan terminé donnait passe à la mission qui le finit (GD-6) : son XP et son compteur de succès.
+    for (const plan of completion.pose?.plansFinis ?? []) completePlan(plan.reward.xp);
     return completion;
-  }, []);
+  }, [completePlan]);
 
   const completePortal = useCallback((score: number, firstTime: boolean) => {
     const completion = completePortalQuest(stateRef.current, score, firstTime, todayISO());

@@ -3,10 +3,7 @@
   "biome": "french-6e-phonology",
   "name": "La cabane de Mousso",
   "reward": {
-    "xp": 40,
-    "chest": {
-      "french-6e-letter-confusion": 3
-    }
+    "xp": 40
   },
   "done": "Ma cabane ! Merci, bâtisseur. Je vais enfin dormir au sec, à l’abri des sons qui hurlent la nuit."
 }

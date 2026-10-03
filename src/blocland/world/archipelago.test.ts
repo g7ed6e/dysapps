@@ -2,6 +2,7 @@ import { textesDe } from '../../univers';
 import { BLOC, BIOMES } from '../biomes';
 import { sanitizeState } from '../engine';
 import { MAP } from './map';
+import { partiesDe } from './parties';
 import { planCells, plansFor } from './plans';
 import {
   ARCHIPELAGOS,
@@ -206,7 +207,7 @@ it('les anciennes sauvegardes gardent leurs îles ouvertes : voyages et chemin o
   expect(sanitizeState({ world: { links: ['french-6e-phonology-french-6e-letter-confusion', 'french-6e-letter-confusion-maths-6e-fractions'] } }).world.links).toEqual(['french-6e-phonology-french-6e-letter-confusion', 'french-6e-letter-confusion-maths-6e-fractions']);
 });
 
-it('un escalier veut un plan terminé, un tunnel ou un col un Gardien vaincu ; un pont ou un bac, des blocs seulement', () => {
+it('un escalier veut la première partie d’un bâtiment posée, un tunnel ou un col un Gardien vaincu ; un pont ou un bac, des blocs seulement', () => {
   const kinds = new Set(BRIDGES.map((b) => b.kind));
   expect([...kinds].sort()).toEqual(['bac', 'col', 'escalier', 'pont', 'sentier']);
   expect(CONDITION_OF.pont).toBe('aucune');
@@ -216,9 +217,13 @@ it('un escalier veut un plan terminé, un tunnel ou un col un Gardien vaincu ; u
   const stairs = BRIDGES.find((b) => b.id === 'french-4e-agreement-french-4e-vocabulary')!;
   expect(bridgeState(stairs, reached, empty)).toBe('blocked');
   expect(bridgeState(stairs, reached)).toBe('buildable');
-  expect(conditionText(stairs, reached, textesDe('blocland').libelles)).toContain('Termine d’abord le plan');
+  expect(conditionText(stairs, reached, textesDe('blocland').libelles)).toBe('Réussis d’abord une mission de Falaise des accords.');
   expect(buildBridge('french-4e-agreement-french-4e-vocabulary', reached, { [BLOC.bois]: 9 }, empty)).toEqual({ ok: false, reason: 'plan' });
-  // Le premier plan de la Falaise terminé : l'escalier se construit.
+  // La première partie de la Falaise posée (le bas de la bergerie : quatre missions) : l'escalier se construit.
+  const bas = partiesDe('french-4e-agreement')[0];
+  expect(bas.cases[0].keys.length).toBeLessThan(planCells(bas.cases[0].plan).length);
+  expect(conditionMet(stairs, reached, { progress: {}, plans: { [bas.cases[0].plan.id]: bas.cases[0].keys } })).toBe(true);
+  // Un premier plan entier, bâti à la main avant GD-6, compte aussi.
   const bergerie = plansFor('french-4e-agreement')[0];
   const withPlan = { progress: {}, plans: { [bergerie.id]: planCells(bergerie).map((c) => c.key) } };
   expect(conditionMet(stairs, reached, withPlan)).toBe(true);

@@ -8,6 +8,7 @@ import { BloclandProvider } from './BloclandContext';
 import { loadAllExercises } from './exercises';
 import { runItems, runSeed } from './exercises/run';
 import { frenchTypography } from '../components/math/RichText';
+import { plansFor } from './world/plans';
 
 const ALL = await loadAllExercises();
 const getExercise = (id: string) => ALL.find((e) => e.id === id);
@@ -79,12 +80,24 @@ it('joue un exercice : consigne, feedback, étoiles, blocs, XP, puis étoiles su
   expect(screen.getByText(/\+2 première fois, \+1 pour 2 étoiles/)).toBeInTheDocument();
   expect(screen.getByText('+10')).toBeInTheDocument();
   expect(screen.getByText(/1 jour d’affilée/)).toBeInTheDocument();
-  // À quoi servent les blocs : le plan de l'île, avec sa jauge, et « Voir le chantier » qui l'ouvre.
-  expect(document.querySelector('.reward-site')).toHaveTextContent(/La cabane de Mousso, sur Forêt des sons : 6 blocs sur les \d+ qui manquent\./);
-  expect(screen.getByRole('link', { name: /Voir le chantier/ })).toHaveAttribute('href', '/adventure/french-6e-phonology?worksite=part');
+  // La première réussite de la mission pose une partie du bâtiment de l'île (GD-6) : une ligne, avec une icône, la
+  // réplique de la créature et l'XP du plan fini.
+  const pose = document.querySelector('.reward-pose')!;
+  expect(pose).toHaveTextContent('Partie posée : la cabane de Mousso.');
+  expect(pose.querySelector('svg')).not.toBeNull();
+  const [cabane] = plansFor('french-6e-phonology');
+  expect(pose).toHaveTextContent(`+${cabane.reward.xp} XP`);
+  expect(pose.textContent).toContain(cabane.done.slice(0, 20));
+  // À quoi servent les blocs : jamais le bâtiment (il se pose tout seul), ici l'ouvrage qui part de l'île.
+  expect(document.querySelector('.reward-site')).toHaveTextContent('Le sentier vers Mine des lettres : tu peux le construire !');
+  // Une partie vient d'être posée : le bouton principal mène la voir, sur l'île de la mission.
+  expect(screen.getByRole('link', { name: /Voir le bâtiment/ })).toHaveAttribute('href', '/adventure/french-6e-phonology?worksite=part');
+  expect(screen.queryByRole('link', { name: /Voir le chantier/ })).not.toBeInTheDocument();
 
   const saved = JSON.parse(localStorage.getItem('dysapps:game')!);
+  // Les blocs gagnés restent dans la poche : la partie se pose sans rien y prendre.
   expect(saved.stock['french-6e-phonology']).toBe(6);
+  expect(saved.world.parts[cabane.id]).toHaveLength(cabane.cells.length);
   expect(saved.progress[DEF.id]).toMatchObject({ stars: 2, attempts: 1 });
   expect(saved.spaced).toHaveLength(1);
   expect(saved.spaced[0].itemId).toBe(`${DEF.id}:${items[1].key}`);
@@ -104,6 +117,8 @@ it('propose une pause après 3 exercices, et laisse continuer', async () => {
   for (let round = 1; round <= 3; round++) {
     // Une erreur par partie : on reste au niveau 1 (une partie quasi parfaite ferait monter au niveau 2, un autre exercice).
     await play(user, [0]);
+    // La partie ne se pose qu'à la première réussite de la mission : rien de plus quand on la rejoue.
+    expect(document.querySelectorAll('.reward-pose')).toHaveLength(round === 1 ? 1 : 0);
     if (round < 3) {
       expect(screen.queryByText(/Belle séance/)).not.toBeInTheDocument();
       partie.n = round;
@@ -116,7 +131,7 @@ it('propose une pause après 3 exercices, et laisse continuer', async () => {
   await user.click(screen.getByRole('button', { name: /Encore un peu/ }));
   expect(screen.getByRole('button', { name: /Rejouer/ })).toBeInTheDocument();
   // Le focus revient au bouton principal du bilan.
-  expect(screen.getByRole('link', { name: /Revenir sur|Voir le chantier/ })).toHaveFocus();
+  expect(screen.getByRole('link', { name: /Revenir sur|Voir le chantier|Voir le bâtiment/ })).toHaveFocus();
   expect(JSON.parse(localStorage.getItem('dysapps:game')!).progress[DEF.id].attempts).toBe(3);
 });
 
@@ -166,6 +181,19 @@ describe('lecture automatique', () => {
     await user.click(within(screen.getByRole('region', { name: 'Résultat' })).getByRole('button', { name: /Suivant/ }));
     return dit.slice(avant);
   }
+
+  it('la partie posée par la mission est lue à l’écran de fin : « Partie posée : la cabane de Mousso. », la réplique, l’XP', async () => {
+    const user = userEvent.setup();
+    renderAt('/adventure/french-6e-phonology/syllables');
+    await loaded();
+    await play(user);
+    const [cabane] = plansFor('french-6e-phonology');
+    // Après le « clac » et le carillon (les sons sont actifs par défaut) : une seule phrase, celle que l'écran montre.
+    await waitFor(() => expect(dit).toContain(frenchTypography(`Partie posée : la cabane de Mousso. ${cabane.done} +${cabane.reward.xp} XP.`)), { timeout: 2000 });
+    expect(document.querySelector('.reward-pose')).toHaveTextContent('Partie posée : la cabane de Mousso.');
+    // La phrase se réécoute : un bouton Écouter, sur la ligne de la pose.
+    expect(within(document.querySelector('.reward-pose') as HTMLElement).getAllByRole('button', { name: /Écouter/ })).toHaveLength(1);
+  }, 30_000);
 
   it('sans question : la consigne seule à l’ouverture, rien de plus à l’item suivant', async () => {
     const user = userEvent.setup();

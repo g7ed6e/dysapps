@@ -3,10 +3,7 @@
   "biome": "english-4e-grammar",
   "name": "L’abri de Vapeur",
   "reward": {
-    "xp": 40,
-    "chest": {
-      "english-4e-comprehension": 3
-    }
+    "xp": 40
   },
   "done": "Mon abri ! Thank you, bâtisseur. D’ici, je verrai arriver tous les trains."
 }

@@ -354,8 +354,8 @@ Pour tous les items :
 
 ## Les plans
 
-| plan | nom | XP | coffre | quand c’est bâti |
-| --- | --- | --- | --- | --- |
-| `english-5e-grammar-1` | Le salon de Moustache | 40 | english-5e-vocabulary × 3 | Mon salon ! Thank you, bâtisseur. Hier il était en ruine ; aujourd’hui, il brille. |
-| `english-5e-grammar-2` | Le toit du manoir | 50 |  | Un toit et une porte ! Le Spectre ne passera plus par le plafond. |
-| `english-5e-grammar-3` | Le jardin du manoir | 60 | trophy-gold × 2 · trophy-crystal × 2 | Un jardin, une grille, un escalier… Mon manoir est complet, et plus beau que jamais. |
+| plan | nom | XP | quand c’est bâti |
+| --- | --- | --- | --- |
+| `english-5e-grammar-1` | Le salon de Moustache | 40 | Mon salon ! Thank you, bâtisseur. Hier il était en ruine ; aujourd’hui, il brille. |
+| `english-5e-grammar-2` | Le toit du manoir | 50 | Un toit et une porte ! Le Spectre ne passera plus par le plafond. |
+| `english-5e-grammar-3` | Le jardin du manoir | 60 | Un jardin, une grille, un escalier… Mon manoir est complet, et plus beau que jamais. |

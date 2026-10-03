@@ -5,7 +5,6 @@ import { SettingsProvider } from '../core/SettingsContext';
 import { ProgressProvider } from '../core/ProgressContext';
 import { getBiome } from './biomes';
 import { BloclandProvider } from './BloclandContext';
-import { usePlanBuilder } from './usePlanBuilder';
 import { useVehicleBuilder } from './useVehicleBuilder';
 import { planCells, plansFor } from './world/plans';
 import { VEHICLE_STAGES } from './world/vehicle';
@@ -15,9 +14,8 @@ const onBoard = vi.fn();
 
 function Sheet({ biomeId, onClose, highlight, in3d }: { biomeId: string; onClose: () => void; highlight?: string; in3d?: boolean }) {
   const biome = getBiome(biomeId)!;
-  const builder = usePlanBuilder(biome.id);
   const ship = useVehicleBuilder(biome.id);
-  return <IslandSheet biome={biome} builder={builder} ship={ship} onBoard={onBoard} onClose={onClose} highlight={highlight} in3d={in3d} />;
+  return <IslandSheet biome={biome} ship={ship} onBoard={onBoard} onClose={onClose} highlight={highlight} in3d={in3d} />;
 }
 
 function renderSheet(biomeId: string, onClose = () => {}, highlight?: string, in3d = false) {
@@ -34,7 +32,7 @@ function renderSheet(biomeId: string, onClose = () => {}, highlight?: string, in
   );
 }
 
-it('le panneau d’une île ouverte liste ses missions, son Gardien verrouillé et son plan', () => {
+it('le panneau d’une île ouverte liste ses missions, son Gardien verrouillé et son bâtiment', () => {
   renderSheet('french-6e-phonology');
   expect(screen.getByRole('dialog', { name: /Forêt/ })).toBeInTheDocument();
   expect(document.body.textContent).toContain('Mousso');
@@ -43,44 +41,45 @@ it('le panneau d’une île ouverte liste ses missions, son Gardien verrouillé 
   expect(screen.getAllByText('Nouveau').length).toBeGreaterThanOrEqual(3);
   expect(screen.getByText('Le Grand Chêne')).toBeInTheDocument();
   expect(screen.queryByRole('link', { name: /Le Grand Chêne/ })).not.toBeInTheDocument();
-  expect(screen.getByText(/Plan 1 \/ 3 : La cabane de Mousso/)).toBeInTheDocument();
-  expect(screen.getByRole('button', { name: /Poser le bloc suivant/ })).toBeDisabled();
-  // L'inventaire est une page à part : le plan y renvoie.
+  expect(screen.getByRole('heading', { name: /Le bâtiment : la cabane de Mousso/ })).toBeInTheDocument();
+  // Le bâtiment se pose tout seul (GD-6) : aucun bouton pour poser ses blocs à la main.
+  expect(screen.queryByRole('button', { name: /Poser le bloc suivant/ })).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: /Poser tout ce que j’ai/ })).not.toBeInTheDocument();
+  // L'inventaire est une page à part : la section du bâtiment y renvoie.
   expect(screen.getByRole('link', { name: /Mes blocs \(0\)/ })).toHaveAttribute('href', '/adventure/stock');
 });
 
-it('le panneau 3D replie le plan et les ouvrages quand il n’y a rien à y faire, et les ouvre dès que c’est possible', async () => {
-  // Rien en poche : plan et ouvrages repliés, chacun avec sa ligne d'état ; les missions restent visibles.
+it('le panneau 3D replie le bâtiment et les ouvrages quand il n’y a rien à y faire, et ouvre les ouvrages dès que c’est possible', async () => {
+  // Rien en poche : bâtiment et ouvrages repliés, chacun avec sa ligne d'état ; les missions restent visibles.
   renderSheet('french-6e-phonology', () => {}, undefined, true);
   const plan = () => document.querySelector<HTMLDetailsElement>('.island-fold-plan')!;
   const ouvrages = () => document.querySelector<HTMLDetailsElement>('.island-fold-ouvrages')!;
   expect(plan()).not.toHaveAttribute('open');
-  const cabane = plansFor('french-6e-phonology')[0].cells.length;
-  expect(plan().textContent).toContain(`0 / ${cabane} posés · il manque ${cabane} blocs de bois`);
+  expect(plan().textContent).toContain('0 partie posée sur 3');
   expect(ouvrages()).not.toHaveAttribute('open');
   expect(ouvrages().textContent).toContain('Encore 3 blocs pour le moins cher');
   expect(screen.getByRole('list', { name: 'Missions de l’île' })).toBeInTheDocument();
   // L'élève ouvre le pli lui-même : son choix tient.
   await userEvent.click(plan().querySelector('summary')!);
   expect(plan()).toHaveAttribute('open');
-  // Des blocs en poche : le plan et les ouvrages s'ouvrent d'eux-mêmes.
+  // Des blocs en poche : les ouvrages s'ouvrent d'eux-mêmes ; le bâtiment reste replié (rien à y poser à la main).
   localStorage.setItem('dysapps:game', JSON.stringify({ stock: { 'french-6e-phonology': 4 } }));
   cleanup();
   renderSheet('french-6e-phonology', () => {}, undefined, true);
-  expect(plan()).toHaveAttribute('open');
+  expect(plan()).not.toHaveAttribute('open');
   expect(ouvrages()).toHaveAttribute('open');
   expect(screen.getAllByRole('button', { name: /Construire/ }).length).toBeGreaterThan(0);
 });
 
 it('les blocs qui manquent renvoient à l’île où les gagner, par un lien', () => {
   renderSheet('maths-6e-calculation', () => {}, undefined, true);
-  // La coque du navire demande du bois : lien vers la Forêt ; la brique du nid se gagne ici, sans lien.
+  // La coque du navire demande du bois : lien vers la Forêt (le bâtiment de l'île, lui, ne demande aucun bloc : GD-6).
   const navire = document.querySelector('.island-fold-navire')!;
   expect(navire).not.toHaveAttribute('open');
   expect(navire.textContent).toContain('0 / 45 posés · il manque');
   const links = screen.getAllByRole('link', { name: 'Forêt des sons' });
   expect(links[0]).toHaveAttribute('href', '/adventure/french-6e-phonology');
-  expect(document.body.textContent).toContain('briques · à gagner ici, dans les missions');
+  expect(document.body.textContent).not.toContain('briques · à gagner ici');
 });
 
 it('une île fermée montre ses missions verrouillées et renvoie à l’île précédente', async () => {
@@ -97,17 +96,30 @@ it('une île fermée montre ses missions verrouillées et renvoie à l’île pr
   expect(onClose).toHaveBeenCalled();
 });
 
-it('le panneau pose les blocs du plan avec le bouton et affiche l’avancement', async () => {
-  const [plan] = plansFor('french-6e-phonology');
-  const cells = planCells(plan);
-  localStorage.setItem('dysapps:game', JSON.stringify({ stock: { 'french-6e-phonology': cells.length } }));
+it('le bâtiment dit en mots ses parties posées, le nom de la prochaine et comment la poser, puis qu’il est fini', () => {
+  // Une partie posée (une mission réussie) sur trois.
+  const [cabane] = plansFor('french-6e-phonology');
+  localStorage.setItem('dysapps:game', JSON.stringify({ world: { parts: { [cabane.id]: planCells(cabane).map((c) => c.key) } } }));
   renderSheet('french-6e-phonology');
-  await userEvent.click(screen.getByRole('button', { name: /Poser le bloc suivant/ }));
-  const saved = JSON.parse(localStorage.getItem('dysapps:game')!);
-  expect(saved.world.parts[plan.id]).toHaveLength(1);
-  expect(saved.stock['french-6e-phonology']).toBe(cells.length - 1);
-  expect(screen.getByRole('progressbar', { name: /Avancement du plan/ })).toHaveAttribute('aria-valuenow', '1');
-  expect(screen.getByText(/Bloc posé : 1 sur/)).toBeInTheDocument();
+  const section = document.querySelector('.plan-section')!;
+  expect(section).toHaveTextContent('1 partie posée sur 3');
+  expect(section).toHaveTextContent('Prochaine partie : le toit de la cabane.');
+  expect(section).toHaveTextContent('Termine une autre mission de l’île pour la poser.');
+  expect(section.textContent).not.toMatch(/manqu/);
+  expect(screen.getByRole('progressbar', { name: /Le bâtiment La cabane de Mousso/ })).toHaveAttribute('aria-valuenow', '1');
+  // Toutes les parties posées : le bâtiment est fini, la créature le dit.
+  cleanup();
+  const parts = Object.fromEntries(plansFor('french-6e-phonology').map((p) => [p.id, planCells(p).map((c) => c.key)]));
+  localStorage.setItem('dysapps:game', JSON.stringify({ world: { parts } }));
+  renderSheet('french-6e-phonology');
+  expect(document.querySelector('.plan-done')).toHaveTextContent('Le bâtiment est fini !');
+  expect(document.querySelector('.plan-next')).toBeNull();
+  // Aucune partie : la première phrase ne dit pas « nouvelle ».
+  cleanup();
+  localStorage.removeItem('dysapps:game');
+  renderSheet('french-6e-phonology');
+  expect(document.querySelector('.plan-section')).toHaveTextContent('Prochaine partie : la cabane de Mousso.');
+  expect(document.querySelector('.plan-section')).toHaveTextContent('Termine une mission de l’île pour la poser.');
 });
 
 it('le port montre le chantier du Bloc-Navire : ses blocs, ses Gardiens, puis le bouton pour embarquer', async () => {
@@ -152,22 +164,6 @@ it('le navire touché dans le monde ouvre son pli', () => {
   renderSheet('maths-6e-calculation', () => {}, 'vehicle', true);
   expect(document.querySelector('.island-fold-navire')).toHaveAttribute('open');
   expect(document.querySelector('.ship-section')!.className).toContain('bridge-highlight');
-});
-
-it('« Poser tout ce que j’ai » pose d’un coup les blocs que l’inventaire permet, jusqu’au coffre si tout y est', async () => {
-  const user = userEvent.setup();
-  const cabane = plansFor('french-6e-phonology')[0];
-  localStorage.setItem('dysapps:game', JSON.stringify({ stock: { 'french-6e-phonology': 10 } }));
-  renderSheet('french-6e-phonology');
-  await user.click(screen.getByRole('button', { name: /Poser tout ce que j’ai/ }));
-  expect(screen.getByText(`10 blocs posés. Il en reste ${cabane.cells.length - 10} à poser : gagne les blocs qui manquent.`)).toBeInTheDocument();
-  expect(JSON.parse(localStorage.getItem('dysapps:game')!).world.parts[cabane.id]).toHaveLength(10);
-  cleanup();
-  localStorage.setItem('dysapps:game', JSON.stringify({ stock: { 'french-6e-phonology': cabane.cells.length } }));
-  renderSheet('french-6e-phonology');
-  await user.click(screen.getByRole('button', { name: /Poser tout ce que j’ai/ }));
-  expect(screen.getByText(/La cabane de Mousso : terminé !/)).toBeInTheDocument();
-  expect(screen.getByText(/Plan 2 \/ 3/)).toBeInTheDocument();
 });
 
 it('l’accueil de la créature : une ligne écrite visible, la suite dans un pli « La suite » ; Réécouter lit le tout', () => {

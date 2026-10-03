@@ -3,10 +3,7 @@
   "biome": "maths-3e-geometry",
   "name": "Le kiosque de Théo",
   "reward": {
-    "xp": 40,
-    "chest": {
-      "french-4e-agreement": 3
-    }
+    "xp": 40
   },
   "done": "Mon kiosque ! Merci, bâtisseur. Ses angles sont droits, ses colonnes proportionnelles."
 }

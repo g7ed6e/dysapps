@@ -34,8 +34,8 @@ créature : Fi
 
 ## Les plans
 
-| plan | nom | XP | coffre | quand c’est bâti |
-| --- | --- | --- | --- | --- |
-| `maths-3e-functions-1` | La lanterne de Fi | 40 | maths-3e-geometry × 3 | Ma lanterne ! Merci, bâtisseur. Entre x blocs, sort une lumière. |
-| `maths-3e-functions-2` | Le toit de la lanterne | 50 |  | Un toit et une porte ! f(nuit) = lumière, pour tous les bateaux. |
-| `maths-3e-functions-3` | La jetée de la lanterne | 60 | trophy-gold × 2 · trophy-crystal × 2 | Une jetée, une barrière, un escalier… Ma lanterne est complète : la droite est tracée. |
+| plan | nom | XP | quand c’est bâti |
+| --- | --- | --- | --- |
+| `maths-3e-functions-1` | La lanterne de Fi | 40 | Ma lanterne ! Merci, bâtisseur. Entre x blocs, sort une lumière. |
+| `maths-3e-functions-2` | Le toit de la lanterne | 50 | Un toit et une porte ! f(nuit) = lumière, pour tous les bateaux. |
+| `maths-3e-functions-3` | La jetée de la lanterne | 60 | Une jetée, une barrière, un escalier… Ma lanterne est complète : la droite est tracée. |

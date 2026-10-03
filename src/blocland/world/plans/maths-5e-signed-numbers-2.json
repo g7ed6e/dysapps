@@ -3,8 +3,7 @@
   "biome": "maths-5e-signed-numbers",
   "name": "Le dôme de l’igloo",
   "reward": {
-    "xp": 50,
-    "chest": {}
+    "xp": 50
   },
   "done": "Un dôme et une porte ! La lanterne tient le froid à moins un mètre."
 }

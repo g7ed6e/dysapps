@@ -3,11 +3,7 @@
   "biome": "french-4e-agreement",
   "name": "L’enclos de la bergerie",
   "reward": {
-    "xp": 60,
-    "chest": {
-      "trophy-gold": 2,
-      "trophy-crystal": 2
-    }
+    "xp": 60
   },
   "done": "Un enclos, une barrière, un escalier… Ma bergerie est complète. Les chèvres sont rentrées, accordées au pluriel."
 }

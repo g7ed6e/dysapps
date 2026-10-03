@@ -1,6 +1,6 @@
 import { BLOC, BIOMES, BLOCKS } from '../biomes';
 import { EMPTY_STATE, fillPlanCell, nextFillable, planStatus, sanitizeState, type GameState } from '../engine';
-import { ORIGINE_DES_MONUMENTS, ORIGINE_DU_QUAI, PLANS, PLAN_ZONE, activePlan, isPlanDone, planCells, plansFor } from './plans';
+import { ORIGINE_DES_MONUMENTS, ORIGINE_DU_QUAI, PLANS, PLAN_ZONE, isPlanDone, planCells, plansFor } from './plans';
 import { toutConstruit } from './budget';
 import { dockOrigin } from './harbour';
 import { MONUMENTS } from './monuments';
@@ -39,7 +39,7 @@ it('chaque île a un plan valide : dans la zone des plans, sur un sol plat et sa
   expect(PLANS.map((p) => p.id)).toEqual([...new Set(PLANS.map((p) => p.id))]);
 });
 
-it('pose les blocs du plan dans n’importe quel ordre, refuse sans bloc, et termine avec le coffre', () => {
+it('pose les blocs du plan dans n’importe quel ordre, refuse sans bloc, et termine sans coffre', () => {
   const plan = plansFor('french-6e-phonology')[0];
   const cells = planCells(plan);
   const last = cells[cells.length - 1];
@@ -70,7 +70,8 @@ it('pose les blocs du plan dans n’importe quel ordre, refuse sans bloc, et ter
   expect(completed).toBe(true);
   expect(planStatus(state, plan).complete).toBe(true);
   expect(planStatus(state, plan).missing).toEqual({});
-  expect(state.stock).toMatchObject({ [BLOC.bois]: 0, ...plan.reward.chest });
+  expect(plan.reward.chest).toEqual({});
+  expect(state.stock).toEqual({ [BLOC.bois]: 0 });
   expect(nextFillable(state, plan)).toBeNull();
 });
 
@@ -88,24 +89,16 @@ it('affiche les fantômes d’un plan seulement sur une île ouverte, et les rem
   expect(built?.texture).toBe(BLOCKS[first.block].texture);
 });
 
-it('chaque île enchaîne trois plans sans chevauchement, et les coffres fournissent les blocs de finition du plan suivant', () => {
+it('chaque île enchaîne trois plans sans chevauchement, sans coffre : leurs blocs de finition se posent avec leur partie (GD-6)', () => {
   for (const b of BIOMES) {
-    const plans = plansFor(b.id);
     const seen = new Set<string>();
-    const kit: Partial<Record<string, number>> = {};
-    plans.forEach((plan, i) => {
+    for (const plan of plansFor(b.id)) {
       for (const c of planCells(plan)) {
         expect(seen.has(c.key)).toBe(false);
         seen.add(c.key);
       }
-      if (i > 0) {
-        // Les blocs qui ne se gagnent dans aucun biome doivent venir des coffres des plans précédents de l'île.
-        const needed: Partial<Record<string, number>> = {};
-        for (const c of plan.cells) if (!BIOMES.some((x) => x.block === c.block)) needed[c.block] = (needed[c.block] ?? 0) + 1;
-        for (const [block, n] of Object.entries(needed)) expect(kit[block] ?? 0).toBeGreaterThanOrEqual(n ?? 0);
-      }
-      for (const [block, n] of Object.entries(plan.reward.chest)) kit[block] = (kit[block] ?? 0) + (n ?? 0);
-    });
+      expect(plan.reward.chest).toEqual({});
+    }
   }
 });
 
@@ -113,10 +106,8 @@ it('n’affiche les fantômes que du plan en cours, et enchaîne sur le suivant'
   const [first, second] = plansFor('french-6e-phonology');
   const none = worldCubes('6e', {}, { parts: {}, log: [], links: [] });
   expect(none.filter((c) => c.ghost && c.z > 0 && c.tag === 'french-6e-phonology').length).toBe(planCells(first).length);
-  expect(activePlan('french-6e-phonology', {})).toBe(first);
   const doneFirst = { [first.id]: planCells(first).map((c) => c.key) };
   expect(isPlanDone(first, doneFirst)).toBe(true);
-  expect(activePlan('french-6e-phonology', doneFirst)).toBe(second);
   const after = worldCubes('6e', {}, { parts: doneFirst, log: [], links: [] });
   expect(after.filter((c) => c.ghost && c.z > 0 && c.tag === 'french-6e-phonology').length).toBe(planCells(second).length);
   expect(after.filter((c) => !c.ghost && c.texture === 'planches' && c.tag === 'french-6e-phonology' && c.z >= 1).length).toBeGreaterThanOrEqual(planCells(first).length);

@@ -49,6 +49,7 @@ export async function generatePages() {
     const vehicleMod = await load('/src/blocland/world/vehicle.ts');
     const monumentsMod = await load('/src/blocland/world/monuments.ts');
     const recettesMod = await load('/src/blocland/world/recettes.ts');
+    const partiesMod = await load('/src/blocland/world/parties.ts');
     // Les textes d'univers (Gardiens, espèces) : ceux de l'univers par défaut, Blocland.
     const universMod = await load('/src/univers/index.ts');
     const universCore = await load('/src/core/univers.ts');
@@ -64,6 +65,7 @@ export async function generatePages() {
       blockCount: biomesMod.blockCount,
       EXERCISES: await exercisesMod.loadAllExercises(),
       PLANS: plansMod.PLANS,
+      partiesDe: partiesMod.partiesDe,
       BRIDGES: archMod.BRIDGES,
       KIND_NAME: archMod.KIND_NAME,
       CONDITION_OF: archMod.CONDITION_OF,
@@ -125,7 +127,7 @@ const SUBJECT_IDS = Object.keys(SUBJECT_NAME);
 const SUBJECT_DE = { french: 'de français', maths: 'de maths', english: 'd’anglais', lv2: 'de LV2' };
 const CONDITION_TEXT = {
   aucune: 'aucune condition',
-  plan: 'le premier plan de l’île de départ terminé',
+  plan: 'une mission de l’île de départ réussie (la première partie de son bâtiment posée)',
   gardien: 'le Gardien de l’île de départ vaincu',
 };
 const AID_NAME = {
@@ -352,7 +354,7 @@ function describeItem(item) {
 // ---------- Pages ----------
 
 function archipelPage(d) {
-  const { BIOMES, EXERCISES, PLANS, BRIDGES } = d;
+  const { BIOMES, EXERCISES, BRIDGES } = d;
   const items = EXERCISES.reduce((n, e) => n + e.items.length, 0);
   const quests = BIOMES.reduce((n, b) => n + b.exercises.length, 0);
   const lines = [
@@ -370,11 +372,11 @@ function archipelPage(d) {
     `| Missions | ${quests} |`,
     `| Exercices (variantes et niveaux) | ${EXERCISES.length}, dont ${EXERCISES.filter((e) => e.generate).length} générés |`,
     `| Items de référence | ${items} |`,
-    `| Plans à construire | ${PLANS.length} |`,
+    `| Parties de bâtiment (une par mission) | ${BIOMES.reduce((n, b) => n + d.partiesDe(b.id).length, 0)} |`,
     `| Ouvrages entre les îles | ${BRIDGES.length} |`,
     `| Compétences du programme officiel travaillées | ${d.programme.PROGRAMME.filter((e) => d.coverage.has(e.id)).length} sur ${d.programme.PROGRAMME.length} (voir [Programmes officiels](programmes.md)) |`,
     '',
-    'Chaque île est un thème du programme. Elle a sa créature qui donne les missions, son bloc de construction, ses trois plans et son Gardien. Les îles s’ouvrent en construisant des ouvrages avec les blocs gagnés, et l’on passe d’un archipel au suivant avec le Bloc-Navire : voir [Ouvrages et plans](ouvrages.md).',
+    'Chaque île est un thème du programme. Elle a sa créature qui donne les missions, son bloc de construction, son bâtiment et son Gardien. Chaque mission réussie pour la première fois pose une partie du bâtiment. Les îles s’ouvrent en construisant des ouvrages avec les blocs gagnés, et l’on passe d’un archipel au suivant avec le Bloc-Navire : voir [Ouvrages et plans](ouvrages.md).',
     '',
     '## Les quatre archipels',
     '',
@@ -507,21 +509,28 @@ function islandPage(b, d) {
       lines.push(...e.items.map((it) => `- ${describeItem(it)}`), '', '</details>', '');
     }
   }
-  lines.push('## Les plans', '');
-  if (plans.length) {
+  const parties = d.partiesDe(b.id);
+  lines.push('## Le bâtiment', '');
+  if (parties.length) {
     lines.push(
+      `Le bâtiment de l’île a ${plural(parties.length, 'partie')}, une par mission. La première fois que l’élève termine une mission de l’île, une partie se pose toute seule, sans prendre de blocs, quels que soient le niveau, les étoiles et les jokers. Les parties se posent dans cet ordre, quelle que soit la mission jouée.`,
+      '',
       table(
-        ['Plan', 'Blocs', 'XP', 'Coffre', 'La créature dit'],
+        ['Partie', 'Nom', 'Blocs posés'],
+        parties.map((p) => [String(p.rang), p.nom, String(p.cases.reduce((n, c) => n + c.keys.length, 0))]),
+      ),
+      '',
+      'Le dessin du bâtiment suit trois plans. Un plan fini rapporte son XP, et la créature le dit.',
+      '',
+      table(
+        ['Plan', 'Blocs', 'XP', 'La créature dit'],
         plans.map((p) => {
           const byBlock = {};
           for (const c of p.cells) byBlock[c.block] = (byBlock[c.block] ?? 0) + 1;
           const blocks = Object.entries(byBlock)
             .map(([k, n]) => (BLOCKS[k] ? d.blockCount(k, n) : `${n} ${k}`))
             .join(', ');
-          const chest = Object.entries(p.reward.chest)
-            .map(([k, n]) => (BLOCKS[k] ? d.blockCount(k, n) : `${n} ${k}`))
-            .join(', ');
-          return [p.name, `${p.cells.length} (${blocks})`, String(p.reward.xp), chest || '—', `« ${p.done} »`];
+          return [p.name, `${p.cells.length} (${blocks})`, String(p.reward.xp), `« ${p.done} »`];
         }),
       ),
       '',
@@ -827,7 +836,7 @@ function ouvragesPage(d) {
   const lines = [
     '# Ouvrages et plans',
     '',
-    `Les ${BRIDGES.length} ouvrages relient les îles d’un même archipel. Un ouvrage se construit depuis le panneau d’une île ouverte qu’il touche et coûte des blocs gagnés sur n’importe quelle île (jamais les kits de finition des plans). Certains demandent en plus une condition. Îles ouvertes au départ : ${d.START_ISLANDS.map(name).join(' et ')}. D’un archipel au suivant, on voyage avec le Bloc-Navire.`,
+    `Les ${BRIDGES.length} ouvrages relient les îles d’un même archipel. Un ouvrage se construit depuis le panneau d’une île ouverte qu’il touche et coûte des blocs gagnés sur n’importe quelle île. L’or et le cristal ne paient rien : ce sont des trophées. Les blocs de finition (toit, porte, lanterne…) ne paient pas non plus. Certains demandent en plus une condition. Îles ouvertes au départ : ${d.START_ISLANDS.map(name).join(' et ')}. D’un archipel au suivant, on voyage avec le Bloc-Navire.`,
     '',
     '## Le Bloc-Navire',
     '',
@@ -864,23 +873,24 @@ function ouvragesPage(d) {
         '',
       ];
     }),
-    '## Les plans',
+    '## Les bâtiments des îles',
     '',
-    `${PLANS.length} plans, trois par île, enchaînés : le bâtiment, puis son toit (porte et lanterne), puis sa cour (barrières et escalier). Les blocs de finition viennent des coffres, jamais des exercices.`,
+    'Chaque île a un bâtiment, avec une partie par mission (de 2 à 4). La première fois que l’élève termine une mission de l’île, une partie se pose toute seule, sans prendre de blocs, quels que soient le niveau, les étoiles et les jokers. Les parties se posent dans l’ordre du dessin. Les blocs gagnés vont dans le stock et servent aux ouvrages, aux monuments et au Bloc-Navire.',
+    '',
+    'Le dessin suit trois plans : le bâtiment, puis son toit, puis sa cour. Avec trois missions, chaque partie est un plan. Avec deux, la deuxième partie pose le toit et la cour ensemble. Avec quatre, le premier plan se pose en deux fois : le bas, puis le haut. Un plan fini rapporte son XP.',
     '',
     table(
-      ['Île', 'Plan', 'Blocs', 'XP', 'Coffre'],
-      PLANS.map((p) => {
-        const chest = Object.entries(p.reward.chest)
-          .map(([k, n]) => (BLOCKS[k] ? d.blockCount(k, n) : `${n} ${k}`))
-          .join(', ');
-        return [`[${name(p.biome)}](iles/${p.biome}.md)`, p.name, String(p.cells.length), String(p.reward.xp), chest || '—'];
-      }),
+      ['Île', 'Parties', 'Plans (XP)'],
+      d.BIOMES.filter((b) => d.partiesDe(b.id).length).map((b) => [
+        `[${name(b.id)}](iles/${b.id}.md)`,
+        d.partiesDe(b.id).map((p) => p.nom).join(' ; '),
+        PLANS.filter((p) => p.biome === b.id).map((p) => `${p.name} (${p.reward.xp})`).join(' ; '),
+      ]),
     ),
     '',
     '## Les monuments',
     '',
-    `${d.MONUMENTS.length} monuments, deux par archipel, chacun sur son îlot au large d’une île. Ils se construisent comme un plan, bloc par bloc, avec les blocs de plusieurs îles de leur archipel : de quoi employer les blocs qui restent une fois les bâtiments finis. Ils n’ouvrent rien et ne donnent pas de coffre ; un monument fini rapporte de l’XP, et le premier le succès Patrimoine.`,
+    `${d.MONUMENTS.length} monuments, deux par archipel, chacun sur son îlot au large d’une île. Ils se construisent à la main, bloc par bloc, avec les blocs de plusieurs îles de leur archipel : de quoi employer les blocs qui restent une fois les bâtiments finis. Ils n’ouvrent rien et ne donnent pas de coffre ; un monument fini rapporte de l’XP, et le premier le succès Patrimoine.`,
     '',    `Chaque monument demande aussi quelques **blocs assemblés** : un par archipel, qu’aucune île ne donne. On les assemble sur l’île de l’école, ${d.ASSEMBLAGE.lieu.blocland.a} dans Blocland (${d.ASSEMBLAGE.lieu.archipeo.a} dans Archipéo), avec des blocs de deux îles de l’archipel.`,
     '',
     table(

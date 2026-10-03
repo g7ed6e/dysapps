@@ -6,41 +6,38 @@ import { BLOCKS, blockName, getBiome } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { BlockIcon } from './Voxel';
 import { KIND_NAME } from './world/archipelago';
-import { inventoryUses, whereToEarn, type Use } from './world/uses';
+import { blocTrophee, inventoryUses, whereToEarn, type Use } from './world/uses';
 import { VEHICLE_NAME } from './world/vehicle';
 import { useUnivers } from '../core/SettingsContext';
 import { UNIVERS } from '../core/univers';
 
 const cap = (text: string) => `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
 
-const useIcon = (use: Use) => (use.kind === 'navire' ? 'ship' : use.kind === 'garder' ? 'flag' : use.kind === 'monument' ? 'castle' : 'hammer');
+const useIcon = (use: Use) => (use.kind === 'navire' ? 'ship' : 'castle');
 const useKey = (use: Use) => `${use.kind}-${use.to ?? use.island}`;
 
 /** « Tu peux construire » en montre trois ; « Tout voir » montre le reste. */
 export const READY_SHOWN = 3;
 
 /**
- * L'ordre des chantiers prêts : ceux de l'île du bonhomme d'abord, dans l'ordre de son prochain objectif (le plan,
- * l'ouvrage, le Bloc-Navire), puis les autres.
+ * L'ordre des chantiers prêts : ceux de l'île du bonhomme d'abord, dans l'ordre de son prochain objectif (l'ouvrage,
+ * le Bloc-Navire), puis les autres.
  */
 function readyRank(kind: Use['kind'] | 'ouvrage', here: boolean): number {
-  const order = ['plan', 'ouvrage', 'navire', 'monument'].indexOf(kind);
+  const order = ['ouvrage', 'navire', 'monument'].indexOf(kind);
   return (here ? 0 : 10) + (order < 0 ? 9 : order);
 }
 
-/** « Plan de Forêt des sons : encore 6 à gagner », « Bloc-Navire : tu as tout, pose-les », « À garder pour … ». */
+/** « Bloc-Navire : encore 6 à gagner », « Bloc-Navire : tu as tout, pose-les », « La tour : tu peux en poser 4 ». */
 function useLabel(use: Use, count: number): string {
-  const island = getBiome(use.island)?.name ?? use.island;
-  if (use.kind === 'garder') return `À garder pour les plans suivants de ${island}`;
   // Un monument prend ce qu'on a : on peut en poser dès le premier bloc.
   if (use.kind === 'monument') return `${use.name} : ${use.enough ? 'tu as tout, pose-les' : `tu peux en poser ${Math.min(count, use.need)}`}`;
-  const what = use.kind === 'navire' ? cap(VEHICLE_NAME) : `Plan de ${island}`;
-  return `${what} : ${use.enough ? 'tu as tout, pose-les' : `encore ${use.need - count} à gagner`}`;
+  return `${cap(VEHICLE_NAME)} : ${use.enough ? 'tu as tout, pose-les' : `encore ${use.need - count} à gagner`}`;
 }
 
 /**
  * L'inventaire commenté. D'abord ce qu'on peut construire tout de suite (un lien par chantier), puis chaque type de
- * bloc en poche et ce qu'il construit, les ouvrages, et les blocs à aller chercher sur les îles ouvertes (celles
+ * bloc en poche et ce qu'il construit (les blocs de finition, l'or et le cristal sont des trophées, GD-6), les ouvrages, et les blocs à aller chercher sur les îles ouvertes (celles
  * qu'on ne peut pas encore atteindre sont seulement comptées). Même contenu dans le panneau 3D et en vue simple ;
  * les liens changent d'île (en 3D, la caméra y vole et son panneau s'ouvre).
  */
@@ -48,10 +45,10 @@ export function InventoryBody() {
   const { state } = useBlocland();
   const at = state.world.place ?? 'french-6e-phonology';
   const { rows, payable, ouvrages, missing } = inventoryUses(state);
-  // Ce qu'on peut faire maintenant : les plans et le navire dont on a tous les blocs, les ouvrages qu'on peut payer.
+  // Ce qu'on peut faire maintenant : le navire dont on a tous les blocs, les monuments, les ouvrages qu'on peut payer.
   const seen = new Set<string>();
   const readyUses = rows
-    .flatMap((row) => row.uses.filter((u) => (u.enough || u.kind === 'monument') && u.kind !== 'garder'))
+    .flatMap((row) => row.uses.filter((u) => u.enough || u.kind === 'monument'))
     .filter((u) => (seen.has(useKey(u)) ? false : (seen.add(useKey(u)), true)));
   const readyOuvrages = ouvrages.filter((o) => o.enough);
   // Les trois premiers chantiers prêts, celui du prochain objectif de l'île du bonhomme en tête ; le reste sur demande.
@@ -101,7 +98,7 @@ export function InventoryBody() {
                   {r.genre === 'usage' ? (
                     <Link to={r.use.to ?? `/adventure/${r.use.island}`} className="tag tag-ok">
                       <Icon name={useIcon(r.use)} />{' '}
-                      {r.use.kind === 'navire' ? cap(VEHICLE_NAME) : r.use.kind === 'monument' ? r.use.name : `Plan de ${getBiome(r.use.island)?.name ?? r.use.island}`}
+                      {r.use.kind === 'navire' ? cap(VEHICLE_NAME) : r.use.name}
                     </Link>
                   ) : (
                     <Link to={`/adventure/${r.ouvrage.from}`} className="tag tag-ok">
@@ -138,7 +135,12 @@ export function InventoryBody() {
                   <strong>{row.count}</strong> {blockName(row.block, row.count)}
                 </span>
                 <span className="inventory-uses">
-                  {row.uses.length === 0 ? (
+                  {row.uses.length === 0 && blocTrophee(row.block) ? (
+                    // Les blocs de finition, l'or et le cristal ne paient plus rien (GD-6) : ils restent, en trophées.
+                    <span className="inventory-none inventory-trophy">
+                      <Icon name="trophy" /> {row.count > 1 ? 'Des trophées à garder' : 'Un trophée à garder'}
+                    </span>
+                  ) : row.uses.length === 0 ? (
                     <span className="inventory-none">Rien à construire pour l’instant</span>
                   ) : uses.length === 0 ? (
                     <span className="inventory-none">Pour un chantier plus haut</span>
@@ -183,7 +185,7 @@ export function InventoryBody() {
         {openMissing.length === 0 ? (
           closedMissing === 0 && (
             <p className="inventory-line">
-              <Syllabified text="Tu as tout ce qu’il faut pour les plans en cours." />
+              <Syllabified text="Tu as tout ce qu’il faut pour les chantiers en cours." />
             </p>
           )
         ) : (

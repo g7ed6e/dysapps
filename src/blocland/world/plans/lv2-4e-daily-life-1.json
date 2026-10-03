@@ -3,10 +3,7 @@
   "biome": "lv2-4e-daily-life",
   "name": "La cuisine de Muscade",
   "reward": {
-    "xp": 40,
-    "chest": {
-      "english-4e-comprehension": 3
-    }
+    "xp": 40
   },
   "done": "Les murs de ma cuisine ! Merci, bâtisseur. Bientôt, la soupe mijotera ici."
 }

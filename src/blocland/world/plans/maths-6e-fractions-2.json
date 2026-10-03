@@ -3,8 +3,7 @@
   "biome": "maths-6e-fractions",
   "name": "Le toit de la hutte",
   "reward": {
-    "xp": 50,
-    "chest": {}
+    "xp": 50
   },
   "done": "Un toit et une porte ! La lanterne se reflète dans la mare : deux lanternes pour le prix d’une."
 }

@@ -41,8 +41,8 @@ créature : Lavi
 
 ## Les plans
 
-| plan | nom | XP | coffre | quand c’est bâti |
-| --- | --- | --- | --- | --- |
-| `maths-6e-decimals-1` | L’abri de Lavi | 40 | french-6e-grammar-spelling × 3 | Mon abri ! Merci, bâtisseur. Noir, brillant, et chaud comme une coulée de 1,5 degré de trop. |
-| `maths-6e-decimals-2` | Le toit de l’abri | 50 |  | Un toit et une porte ! La lanterne, c’est mon petit cratère de nuit. |
-| `maths-6e-decimals-3` | La terrasse de l’abri | 60 | trophy-gold × 2 · trophy-crystal × 2 | Une terrasse, une barrière, un escalier vers le cratère… Mon abri est complet, à 1,00 exactement. |
+| plan | nom | XP | quand c’est bâti |
+| --- | --- | --- | --- |
+| `maths-6e-decimals-1` | L’abri de Lavi | 40 | Mon abri ! Merci, bâtisseur. Noir, brillant, et chaud comme une coulée de 1,5 degré de trop. |
+| `maths-6e-decimals-2` | Le toit de l’abri | 50 | Un toit et une porte ! La lanterne, c’est mon petit cratère de nuit. |
+| `maths-6e-decimals-3` | La terrasse de l’abri | 60 | Une terrasse, une barrière, un escalier vers le cratère… Mon abri est complet, à 1,00 exactement. |

@@ -15,7 +15,7 @@ export interface TextesCreature {
   greeting: string;
   /** Petites phrases quand on la touche dans le village. */
   lines: string[];
-  /** Quand sa maison (premier plan de l'île) est terminée. */
+  /** Quand le bâtiment de son île est fini (toutes ses parties posées, GD-6), une fois sur deux. */
   home: string;
 }
 

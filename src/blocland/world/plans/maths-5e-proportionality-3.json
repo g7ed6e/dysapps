@@ -3,11 +3,7 @@
   "biome": "maths-5e-proportionality",
   "name": "L’étal de l’échoppe",
   "reward": {
-    "xp": 60,
-    "chest": {
-      "trophy-gold": 2,
-      "trophy-crystal": 2
-    }
+    "xp": 60
   },
   "done": "Un étal, une barrière, un escalier… Mon échoppe est complète : deux fois plus belle, pas deux fois plus chère."
 }

@@ -10,7 +10,6 @@ import { Bridges } from './Bridges';
 import { isBiomeUnlocked } from './world/archipelago';
 import { PlanSection } from './PlanSection';
 import { ShipSection } from './ShipSection';
-import type { PlanBuilder } from './usePlanBuilder';
 import type { VehicleBuilder } from './useVehicleBuilder';
 import type { ArchipelagoId } from './world/archipelago';
 import { useBlocland } from './BloclandContext';
@@ -32,7 +31,6 @@ import { useTextes } from '../univers';
 
 interface Props {
   biome: BiomeDef;
-  builder: PlanBuilder;
   in3d?: boolean;
   onClose: () => void;
   /** Un ouvrage vient d'être construit depuis cette île : l'île d'en face s'ouvre. */
@@ -47,11 +45,11 @@ interface Props {
 
 /**
  * Le panneau d'une île, qui glisse depuis le bas du monde : la créature (une ligne, la suite dans un pli), ses missions,
- * le Gardien, le prochain objectif, puis le plan en cours, le Bloc-Navire (sur un port) et les ouvrages, repliés quand
+ * le Gardien, le prochain objectif, puis le bâtiment de l'île, le Bloc-Navire (sur un port) et les ouvrages, repliés quand
  * il n'y a rien à y faire ; au pied, la matière, la classe et l'archipel. Tout est en HTML (police dys), on ne quitte
  * pas le monde.
  */
-export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, highlight = null, ship, onBoard }: Props) {
+export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight = null, ship, onBoard }: Props) {
   const { state } = useBlocland();
   const { settings, speak } = useSettings();
   const sansLv2 = estIleLv2(biome) && settings.lv2 === 'none';
@@ -67,7 +65,7 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, hi
   // LV2 ») dit quoi faire : il reste entier.
   const says = unlocked && !sansLv2 ? firstSentences(greeting) : { first: greeting, rest: '' };
   const [bossSaid, setBossSaid] = useState<string | null>(null);
-  // En 3D, le plan, le navire et les ouvrages se replient quand il n'y a rien à y faire : le panneau reste court.
+  // En 3D, le bâtiment, le navire et les ouvrages se replient quand il n'y a rien à y faire : le panneau reste court.
   // Le choix de l'élève (ouvrir, fermer) est oublié quand l'île change ou qu'un ouvrage est mis en avant.
   const fold = in3d ? `${biome.id}:${highlight ?? ''}` : undefined;
   // Le Gardien n'accepte pas encore : on le dit (et on le lit), au lieu d'un bouton qui ne répond pas.
@@ -238,7 +236,7 @@ export function IslandSheet({ biome, builder, in3d = false, onClose, onBuilt, hi
         port && <VillageStageLine village={state.world} archipelago={biome.classe} className="island-village" />
       )}
 
-      {unlocked && <PlanSection biome={biome} builder={builder} in3d={in3d} fold={fold} highlight={highlight === 'part'} />}
+      {unlocked && <PlanSection biome={biome} fold={fold} highlight={highlight === 'part'} />}
 
       {unlocked && ship && onBoard && <ShipSection biome={biome} builder={ship} in3d={in3d} onBoard={onBoard} highlight={highlight === 'vehicle'} fold={fold} />}
 

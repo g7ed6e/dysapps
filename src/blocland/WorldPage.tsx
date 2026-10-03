@@ -61,7 +61,7 @@ import { dispositionEnGrille, type BoutsDuTrajet } from './world/grille';
 import type { Entite, Intention, Point } from './world/disposition';
 import { resteDuTrajet } from './world/arrivee';
 import type { Bonhomme } from './world/view';
-import { isPlanDone, plansFor } from './world/plans';
+import { partiesDe, prochainePartie } from './world/parties';
 import { Loading } from '../components/Loading';
 import {
   creaturePlacements,
@@ -78,7 +78,7 @@ import {
   type ArchipelagoId,
 } from './world/archipelago';
 import { stageTo } from './world/vehicle';
-import { usePlanBuilder, type Burst } from './usePlanBuilder';
+import type { Burst } from './poseCaseParCase';
 import { useVehicleBuilder } from './useVehicleBuilder';
 import { UNIVERS } from '../core/univers';
 import { useHoldCelebrations } from '../components/Celebrations';
@@ -288,20 +288,18 @@ export function WorldPage() {
     setReplay((n) => n + 1);
   };
   useAmbience(forceDay);
-  // La construction guidée de l'île ouverte : bouton du panneau ou case bleue touchée dans le monde ; et le chantier du
-  // Bloc-Navire sur le port.
-  const builder = usePlanBuilder(island?.id ?? archipelago.port, true);
+  // Le chantier du Bloc-Navire sur le port, et celui d'un monument : case par case (bouton du panneau ou case bleue
+  // touchée dans le monde). Le bâtiment de l'île, lui, se pose tout seul, une partie par mission réussie (GD-6).
   const ship = useVehicleBuilder(island?.id ?? archipelago.port);
   const monumentBuilder = useMonumentBuilder(monument ?? monumentsOf(a)[0]);
-  // Les éclats : ceux du plan, du navire ou du monument, le dernier qui a bougé.
-  const seqs = useRef({ plan: builder.burst.seq, ship: ship.burst.seq, monument: monumentBuilder.burst.seq, last: builder.burst as Burst });
-  const now = { plan: builder.burst.seq, ship: ship.burst.seq, monument: monumentBuilder.burst.seq };
+  // Les éclats : ceux du navire ou du monument, le dernier qui a bougé.
+  const seqs = useRef({ ship: ship.burst.seq, monument: monumentBuilder.burst.seq, last: ship.burst as Burst });
+  const now = { ship: ship.burst.seq, monument: monumentBuilder.burst.seq };
   if (ship.burst.seq !== seqs.current.ship) seqs.current = { ...now, last: ship.burst };
-  else if (builder.burst.seq !== seqs.current.plan) seqs.current = { ...now, last: builder.burst };
   else if (monumentBuilder.burst.seq !== seqs.current.monument) seqs.current = { ...now, last: monumentBuilder.burst };
   const burst = useMemo(
-    () => ({ ...seqs.current.last, seq: builder.burst.seq + ship.burst.seq + monumentBuilder.burst.seq }),
-    [builder.burst, ship.burst, monumentBuilder.burst],
+    () => ({ ...seqs.current.last, seq: ship.burst.seq + monumentBuilder.burst.seq }),
+    [ship.burst, monumentBuilder.burst],
   );
 
   // Le voyage en cours (le Bloc-Navire) : le premier voyage vers un archipel (bouton « Embarquer » du port). Les voyages
@@ -718,9 +716,9 @@ export function WorldPage() {
       case 'navire':
         return onPickVehicle(i.port);
       case 'face':
-        // En chantier : la case d'un plan de l'île, sinon du navire, sinon le sol touché (le bonhomme y va, comme pour
-        // une île touchée), sinon on ouvre l'île touchée.
-        if (island) builder.tryFill(i.ile, i.case) || ship.tryFill(i.ile, i.case) || onIsland(i.ile, i.sol && grille.versMonde(i.sol), i.enRoute && grille.versMonde(i.enRoute));
+        // En chantier : la case du navire, sinon le sol touché (le bonhomme y va, comme pour une île touchée), sinon on
+        // ouvre l'île touchée. Une case du bâtiment de l'île ne se pose plus à la main (GD-6) : on y marche, comme au sol.
+        if (island) ship.tryFill(i.ile, i.case) || onIsland(i.ile, i.sol && grille.versMonde(i.sol), i.enRoute && grille.versMonde(i.enRoute));
         return;
       case 'fin-du-voyage':
       case 'voyage-saute':
@@ -740,8 +738,8 @@ export function WorldPage() {
       setSaid(null);
       return openIsland(id);
     }
-    const first = plansFor(id)[0];
-    const home = first && isPlanDone(first, state.world.parts);
+    // Le bâtiment fini (toutes ses parties posées), la créature y habite : une fois sur deux, elle le dit.
+    const home = partiesDe(id).length > 0 && prochainePartie(id, state.world.parts) === null;
     const lines = home && Math.random() < 0.5 ? [textes.creatures[id].home] : textes.creatures[id].lines;
     const text = lines[Math.floor(Math.random() * lines.length)];
     setSaid({ id, text });
@@ -1034,7 +1032,6 @@ export function WorldPage() {
         sheetOpen && (
           <IslandSheet
             biome={island}
-            builder={builder}
             ship={ship}
             onBoard={onBoard}
             in3d

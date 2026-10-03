@@ -3,8 +3,7 @@
   "biome": "maths-6e-calculation",
   "name": "Le toit du nid",
   "reward": {
-    "xp": 50,
-    "chest": {}
+    "xp": 50
   },
   "done": "Un toit et une porte ! La nuit, la lanterne compte les étoiles avec moi."
 }

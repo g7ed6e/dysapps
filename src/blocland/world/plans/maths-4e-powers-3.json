@@ -3,11 +3,7 @@
   "biome": "maths-4e-powers",
   "name": "La cour de l’atelier",
   "reward": {
-    "xp": 60,
-    "chest": {
-      "trophy-gold": 2,
-      "trophy-crystal": 2
-    }
+    "xp": 60
   },
   "done": "Une cour, une barrière, un escalier… Mon atelier est complet : 2⁰ = 1 atelier entier."
 }

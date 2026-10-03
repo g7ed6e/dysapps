@@ -3,8 +3,7 @@
   "biome": "maths-3e-geometry",
   "name": "Le toit du kiosque",
   "reward": {
-    "xp": 50,
-    "chest": {}
+    "xp": 50
   },
   "done": "Un toit et une porte ! La lanterne pend au sommet, à la verticale exacte."
 }

@@ -8,7 +8,7 @@ import { playDone, playNope, sonDePose } from './sound';
 import { habillageDuMonde } from './habillage';
 import { voyageId } from './world/archipelago';
 import { VEHICLE_STAGES, kitReady, stageAt, type VehicleStage } from './world/vehicle';
-import { placeAll, type Burst } from './usePlanBuilder';
+import { placeAll, type Burst } from './poseCaseParCase';
 import { allerChercher } from './world/uses';
 import { useHaptics } from '../core/haptics';
 import { decalageDuQuai } from './world/terrain';

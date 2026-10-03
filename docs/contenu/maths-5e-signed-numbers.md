@@ -41,8 +41,8 @@ créature : Frimas
 
 ## Les plans
 
-| plan | nom | XP | coffre | quand c’est bâti |
-| --- | --- | --- | --- | --- |
-| `maths-5e-signed-numbers-1` | L’igloo de Frimas | 40 | maths-6e-calculation × 3 | Mon igloo ! Merci, bâtisseur. Dedans, plus deux ; dehors, moins huit. La différence fait dix. |
-| `maths-5e-signed-numbers-2` | Le dôme de l’igloo | 50 |  | Un dôme et une porte ! La lanterne tient le froid à moins un mètre. |
-| `maths-5e-signed-numbers-3` | La patinoire de l’igloo | 60 | trophy-gold × 2 · trophy-crystal × 2 | Une patinoire, une barrière, un escalier… Mon igloo est complet, zéro bloc manquant. |
+| plan | nom | XP | quand c’est bâti |
+| --- | --- | --- | --- |
+| `maths-5e-signed-numbers-1` | L’igloo de Frimas | 40 | Mon igloo ! Merci, bâtisseur. Dedans, plus deux ; dehors, moins huit. La différence fait dix. |
+| `maths-5e-signed-numbers-2` | Le dôme de l’igloo | 50 | Un dôme et une porte ! La lanterne tient le froid à moins un mètre. |
+| `maths-5e-signed-numbers-3` | La patinoire de l’igloo | 60 | Une patinoire, une barrière, un escalier… Mon igloo est complet, zéro bloc manquant. |

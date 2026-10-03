@@ -789,8 +789,8 @@ Pour tous les items :
 
 ## Les plans
 
-| plan | nom | XP | coffre | quand c’est bâti |
-| --- | --- | --- | --- | --- |
-| `french-3e-close-reading-1` | La lanterne d’Astra | 40 | maths-3e-statistics × 3 | Ma lanterne ! Merci, bâtisseur. Elle grossit les mots : on y lit même ce qui n’est pas écrit. |
-| `french-3e-close-reading-2` | Le toit de la lanterne | 50 |  | Un toit et une porte ! La nuit, je lis à ma propre lumière. |
-| `french-3e-close-reading-3` | La coupole de la lanterne | 60 | trophy-gold × 2 · trophy-crystal × 2 | Une coupole, une barrière, un escalier… Ma lanterne est complète : fin du chapitre, pas de l’histoire. |
+| plan | nom | XP | quand c’est bâti |
+| --- | --- | --- | --- |
+| `french-3e-close-reading-1` | La lanterne d’Astra | 40 | Ma lanterne ! Merci, bâtisseur. Elle grossit les mots : on y lit même ce qui n’est pas écrit. |
+| `french-3e-close-reading-2` | Le toit de la lanterne | 50 | Un toit et une porte ! La nuit, je lis à ma propre lumière. |
+| `french-3e-close-reading-3` | La coupole de la lanterne | 60 | Une coupole, une barrière, un escalier… Ma lanterne est complète : fin du chapitre, pas de l’histoire. |

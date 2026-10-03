@@ -41,8 +41,8 @@ créature : Coco
 
 ## Les plans
 
-| plan | nom | XP | coffre | quand c’est bâti |
-| --- | --- | --- | --- | --- |
-| `maths-6e-calculation-1` | Le nid de Coco | 40 | french-6e-phonology × 3 | Mon nid ! Merci, bâtisseur. Dix fenêtres, dix points : je m’y retrouve enfin. |
-| `maths-6e-calculation-2` | Le toit du nid | 50 |  | Un toit et une porte ! La nuit, la lanterne compte les étoiles avec moi. |
-| `maths-6e-calculation-3` | La cour du nid | 60 | trophy-gold × 2 · trophy-crystal × 2 | Une cour, une barrière, un escalier… Cinq et cinq : mon nid est complet. Tu calcules comme un chef ! |
+| plan | nom | XP | quand c’est bâti |
+| --- | --- | --- | --- |
+| `maths-6e-calculation-1` | Le nid de Coco | 40 | Mon nid ! Merci, bâtisseur. Dix fenêtres, dix points : je m’y retrouve enfin. |
+| `maths-6e-calculation-2` | Le toit du nid | 50 | Un toit et une porte ! La nuit, la lanterne compte les étoiles avec moi. |
+| `maths-6e-calculation-3` | La cour du nid | 60 | Une cour, une barrière, un escalier… Cinq et cinq : mon nid est complet. Tu calcules comme un chef ! |

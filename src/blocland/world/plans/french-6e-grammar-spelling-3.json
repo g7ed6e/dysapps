@@ -3,11 +3,7 @@
   "biome": "french-6e-grammar-spelling",
   "name": "L’enclos de l’étable",
   "reward": {
-    "xp": 70,
-    "chest": {
-      "trophy-gold": 2,
-      "trophy-crystal": 2
-    }
+    "xp": 70
   },
   "done": "Mon enclos est fermé, tout s’accorde. Singulier, pluriel, chacun sa barrière !"
 }

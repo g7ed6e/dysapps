@@ -33,6 +33,8 @@ const REGLES = [
   'world/voyage',
   'world/archipels',
   'world/plans',
+  // Les parties du bâtiment d'un lieu, une par mission (GD-6) : des cases des plans, posées par les missions terminées.
+  'world/parties',
   'world/plansV1',
   'world/architect',
   'world/monuments',

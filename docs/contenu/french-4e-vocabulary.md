@@ -515,8 +515,8 @@ Pour tous les items :
 
 ## Les plans
 
-| plan | nom | XP | coffre | quand c’est bâti |
-| --- | --- | --- | --- | --- |
-| `french-4e-vocabulary-1` | Le nid de Plume | 40 | maths-4e-algebra × 3 | Mon nid ! Merci, bâtisseur. Cent parchemins roulés, un mot par parchemin. |
-| `french-4e-vocabulary-2` | Le toit du nid | 50 |  | Un toit et une porte ! La lanterne éclaire les mots rares, la nuit. |
-| `french-4e-vocabulary-3` | Le perchoir du nid | 60 | trophy-gold × 2 · trophy-crystal × 2 | Un perchoir, une barrière, un escalier… Mon nid est complet, au sens propre comme au figuré. |
+| plan | nom | XP | quand c’est bâti |
+| --- | --- | --- | --- |
+| `french-4e-vocabulary-1` | Le nid de Plume | 40 | Mon nid ! Merci, bâtisseur. Cent parchemins roulés, un mot par parchemin. |
+| `french-4e-vocabulary-2` | Le toit du nid | 50 | Un toit et une porte ! La lanterne éclaire les mots rares, la nuit. |
+| `french-4e-vocabulary-3` | Le perchoir du nid | 60 | Un perchoir, une barrière, un escalier… Mon nid est complet, au sens propre comme au figuré. |

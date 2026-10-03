@@ -3,10 +3,7 @@
   "biome": "maths-5e-signed-numbers",
   "name": "L’igloo de Frimas",
   "reward": {
-    "xp": 40,
-    "chest": {
-      "maths-6e-calculation": 3
-    }
+    "xp": 40
   },
   "done": "Mon igloo ! Merci, bâtisseur. Dedans, plus deux ; dehors, moins huit. La différence fait dix."
 }

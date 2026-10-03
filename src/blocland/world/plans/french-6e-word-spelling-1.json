@@ -3,10 +3,7 @@
   "biome": "french-6e-word-spelling",
   "name": "Le four de Rouxel",
   "reward": {
-    "xp": 50,
-    "chest": {
-      "french-6e-grammar-spelling": 3
-    }
+    "xp": 50
   },
   "done": "Mon four est reconstruit ! Le pain va sentir bon dans tout le village."
 }

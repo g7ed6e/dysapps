@@ -1189,8 +1189,8 @@ Pour tous les items :
 
 ## Les plans
 
-| plan | nom | XP | coffre | quand c’est bâti |
-| --- | --- | --- | --- | --- |
-| `lv2-3e-travel-1` | La poste de Timbre | 40 | english-3e-grammar × 3 | Les murs de ma poste ! Merci, bâtisseur. Les lettres des voyageurs auront bientôt leur casier. |
-| `lv2-3e-travel-2` | La salle commune | 50 |  | Un toit, une porte et une salle commune ! Les voyageurs s’y assoient à la grande table pour raconter leur voyage. |
-| `lv2-3e-travel-3` | Le pigeonnier du refuge | 60 | trophy-gold × 2 · trophy-crystal × 2 | Un pigeonnier, une barrière, une marche… Mon refuge est complet. Les lettres peuvent partir, et revenir ! |
+| plan | nom | XP | quand c’est bâti |
+| --- | --- | --- | --- |
+| `lv2-3e-travel-1` | La poste de Timbre | 40 | Les murs de ma poste ! Merci, bâtisseur. Les lettres des voyageurs auront bientôt leur casier. |
+| `lv2-3e-travel-2` | La salle commune | 50 | Un toit, une porte et une salle commune ! Les voyageurs s’y assoient à la grande table pour raconter leur voyage. |
+| `lv2-3e-travel-3` | Le pigeonnier du refuge | 60 | Un pigeonnier, une barrière, une marche… Mon refuge est complet. Les lettres peuvent partir, et revenir ! |

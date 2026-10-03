@@ -9,7 +9,9 @@ import { BADGES } from '../core/progress';
 import { demanderMoinsDAnimations } from '../core/mouvement.testing';
 import { textesDe } from '../univers';
 
-// Pas de WebGL dans les tests : un monde factice, qui montre l'île cadrée et laisse toucher une île.
+// Pas de WebGL dans les tests : un monde factice, qui montre l'île cadrée et laisse toucher une île. Il connaît la
+// première case de la cabane de Mousso, dans le repère de l'île (un fantôme du bâtiment, posable à la main avant GD-6).
+const caseDeLaCabane = vi.hoisted(() => ({ x: 0, y: 0, z: 0 }));
 vi.mock('./three', () => ({
   hasWebGL: () => false,
   VoxelCanvas: () => null,
@@ -71,6 +73,12 @@ vi.mock('./three', () => ({
         onClick={() => onIntent({ genre: 'face', ile: 'french-6e-phonology', case: { x: 8, y: 4, z: -1 }, voisine: { x: 8, y: 4, z: 0 }, sol: { ile: 'french-6e-phonology', local: { x: 8, y: 4, z: 0 } } })}
       >
         Toucher le sol de la Forêt ouverte
+      </button>
+      <button
+        type="button"
+        onClick={() => onIntent({ genre: 'face', ile: 'french-6e-phonology', case: { ...caseDeLaCabane }, voisine: { ...caseDeLaCabane, z: caseDeLaCabane.z + 1 } })}
+      >
+        Toucher une case du bâtiment de la Forêt
       </button>
       <button type="button" onClick={() => onIntent({ genre: 'lieu', id: 'school', ile: 'french-6e-phonology' })}>
         Toucher l’école dans le monde
@@ -224,6 +232,23 @@ it('toucher le sol de l’île où l’on est : le bonhomme y marche, un rond su
   expect(sheet()).toBeInTheDocument();
   expect(bonhomme()).toMatch(/^marche +rond french-6e-phonology /);
   expect(bonhomme().split(' ').pop()).toBe(ou);
+});
+
+it('toucher un fantôme du bâtiment de l’île ne pose rien : le bâtiment se pose tout seul, une partie par mission (GD-6)', async () => {
+  const { decalageDesPlans, planCells, plansFor } = await import('./world/plans');
+  const [cabane] = plansFor('french-6e-phonology');
+  const [c] = planCells(cabane);
+  const d = decalageDesPlans(cabane);
+  Object.assign(caseDeLaCabane, { x: c.x + d.x, y: c.y + d.y, z: c.z + d.z });
+  localStorage.setItem('dysapps:game', JSON.stringify({ stock: { 'french-6e-phonology': 40 } }));
+  const user = userEvent.setup();
+  renderAt('/adventure/french-6e-phonology');
+  await user.click(screen.getByRole('button', { name: 'Toucher une case du bâtiment de la Forêt' }));
+  const saved = JSON.parse(localStorage.getItem('dysapps:game') ?? '{}');
+  expect(saved.stock?.['french-6e-phonology'] ?? 40).toBe(40);
+  expect(saved.world?.parts?.[cabane.id] ?? []).toEqual([]);
+  // Le panneau ne propose pas non plus de poser à la main.
+  expect(within(sheet()!).queryByRole('button', { name: /Poser le bloc suivant|Poser tout ce que j’ai/ })).not.toBeInTheDocument();
 });
 
 it('le Bloc-Navire est amarré au port de l’archipel ; le toucher ouvre le panneau du port sur sa section', async () => {
@@ -468,8 +493,8 @@ it('le bouton Blocs ouvre « Mes blocs » ; une puce mène à l’île (caméra 
   expect(sheet.textContent).toContain('6 blocs en poche');
   expect(sheet.textContent).toContain('4 blocs de bois');
   expect(screen.getByTestId('cadrage')).toHaveTextContent('aucune');
-  // Le bois sert au plan de la Forêt : la puce y mène, la caméra cadre la Forêt et son panneau s'ouvre.
-  await user.click(screen.getByRole('link', { name: /Plan de Forêt des sons : encore 22 à gagner/ }));
+  // Le bois paie le sentier qui part de la Forêt : la puce y mène, la caméra cadre la Forêt et son panneau s'ouvre.
+  await user.click(screen.getAllByRole('link', { name: /Sentier vers Mine des lettres/ })[0]);
   expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/french-6e-phonology');
   expect(screen.getByTestId('cadrage')).toHaveTextContent('french-6e-phonology');
   expect(screen.getByRole('dialog', { name: /^Forêt des sons/ })).toBeInTheDocument();
@@ -488,11 +513,11 @@ it('« À aller chercher » mène à l’île où gagner le bloc qui manque', as
   renderAt('/adventure/stock');
   const sheet = screen.getByRole('dialog', { name: 'Mes blocs' });
   expect(sheet.textContent).toContain('Aucun bloc pour l’instant');
-  const brique = within(sheet).getByRole('link', { name: 'Plaine des nombres' });
-  await user.click(brique);
-  expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/maths-6e-calculation');
-  expect(screen.getByTestId('cadrage')).toHaveTextContent('maths-6e-calculation');
-  expect(screen.getByRole('dialog', { name: /Plaine des nombres/ })).toBeInTheDocument();
+  // Le bois de la coque du Bloc-Navire se gagne sur la Forêt.
+  await user.click(within(sheet).getByRole('link', { name: 'Forêt des sons' }));
+  expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/french-6e-phonology');
+  expect(screen.getByTestId('cadrage')).toHaveTextContent('french-6e-phonology');
+  expect(screen.getByRole('dialog', { name: /^Forêt des sons/ })).toBeInTheDocument();
 });
 
 it('sans île ouverte, pas de panneau ni de bouton de panneau', () => {

@@ -34,8 +34,8 @@ créature : Ixe
 
 ## Les plans
 
-| plan | nom | XP | coffre | quand c’est bâti |
-| --- | --- | --- | --- | --- |
-| `maths-4e-algebra-1` | Le bureau d’Ixe | 40 | french-5e-homophones × 3 | Mon bureau ! Merci, bâtisseur. Bip : x blocs posés, x = tous. |
-| `maths-4e-algebra-2` | Le toit du bureau | 50 |  | Un toit et une porte ! La lanterne éclaire mes calques la nuit. |
-| `maths-4e-algebra-3` | La terrasse du bureau | 60 | trophy-gold × 2 · trophy-crystal × 2 | Une terrasse, une barrière, un escalier… Mon bureau est complet : équation résolue. |
+| plan | nom | XP | quand c’est bâti |
+| --- | --- | --- | --- |
+| `maths-4e-algebra-1` | Le bureau d’Ixe | 40 | Mon bureau ! Merci, bâtisseur. Bip : x blocs posés, x = tous. |
+| `maths-4e-algebra-2` | Le toit du bureau | 50 | Un toit et une porte ! La lanterne éclaire mes calques la nuit. |
+| `maths-4e-algebra-3` | La terrasse du bureau | 60 | Une terrasse, une barrière, un escalier… Mon bureau est complet : équation résolue. |

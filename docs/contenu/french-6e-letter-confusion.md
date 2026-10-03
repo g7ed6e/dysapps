@@ -218,8 +218,8 @@ Pour tous les items :
 
 ## Les plans
 
-| plan | nom | XP | coffre | quand c’est bâti |
-| --- | --- | --- | --- | --- |
-| `french-6e-letter-confusion-1` | La forge de Tunel | 50 | french-6e-word-spelling × 3 | Une vraie forge ! Avec la poutre en bois, elle tiendra cent ans. Tu as l’œil, bâtisseur. |
-| `french-6e-letter-confusion-2` | Le toit de la forge | 60 |  | Le toit est posé, la porte aussi. Dedans, il fait chaud comme au fond de la mine. |
-| `french-6e-letter-confusion-3` | La cour de la forge | 70 | trophy-gold × 2 · trophy-crystal × 2 | Ma forge a sa cour. Les lettres qui se ressemblent n’ont qu’à bien se tenir. |
+| plan | nom | XP | quand c’est bâti |
+| --- | --- | --- | --- |
+| `french-6e-letter-confusion-1` | La forge de Tunel | 50 | Une vraie forge ! Avec la poutre en bois, elle tiendra cent ans. Tu as l’œil, bâtisseur. |
+| `french-6e-letter-confusion-2` | Le toit de la forge | 60 | Le toit est posé, la porte aussi. Dedans, il fait chaud comme au fond de la mine. |
+| `french-6e-letter-confusion-3` | La cour de la forge | 70 | Ma forge a sa cour. Les lettres qui se ressemblent n’ont qu’à bien se tenir. |

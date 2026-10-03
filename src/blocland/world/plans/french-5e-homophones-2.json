@@ -3,8 +3,7 @@
   "biome": "french-5e-homophones",
   "name": "Le toit de la cabane",
   "reward": {
-    "xp": 50,
-    "chest": {}
+    "xp": 50
   },
   "done": "Un toit et une porte ! La lanterne éclaire le panneau « ici »."
 }

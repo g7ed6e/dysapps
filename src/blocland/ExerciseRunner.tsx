@@ -17,6 +17,7 @@ import { planStatus } from './engine';
 import { archipelagoOf } from './world/archipelago';
 import { stageAt } from './world/vehicle';
 import { worksiteFor } from './world/worksite';
+import { minuscule } from './world/parties';
 import { voyageId } from './world/archipelago';
 import { useBlocland } from './BloclandContext';
 import type { Completion } from './engine';
@@ -29,6 +30,8 @@ import { fillTemplate, type ExerciseDef, type ExerciseItem, type ItemResult } fr
 import { PauseSeance } from './PauseSeance';
 import { Stars } from './Stars';
 import { BlockIcon } from './Voxel';
+import { habillageDuMonde } from './habillage';
+import { playDone, sonDePose } from './sound';
 
 interface Props {
   biome: BiomeDef;
@@ -40,6 +43,17 @@ interface Props {
   onRound?: (round: { index: number; total: number; correct: boolean }) => void;
   /** La barre des écrans ne dit que où l'on en est, jamais une réussite (le défi d'une sentinelle, lot 6). */
   etapesNeutres?: boolean;
+}
+
+/** Le carillon de fin (`playDone`) : deux notes, la seconde à 160 ms, de 450 ms ; la voix vient après. */
+const CARILLON_MS = 610;
+
+/**
+ * La phrase de la pose, écrite et lue : « Partie posée : le toit de la cabane. », l'accord porté par « partie », quel que
+ * soit le nom ; puis la réplique et l'XP de chaque plan fini.
+ */
+function phraseDeLaPose(pose: NonNullable<Completion['pose']>): string {
+  return [...pose.posees.map((p) => `Partie posée : ${minuscule(p.nom)}.`), ...pose.plansFinis.map((p) => `${p.done} +${p.reward.xp} XP.`)].join(' ');
 }
 
 /** Découpe les items en écrans selon le type d'exercice. */
@@ -129,6 +143,28 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index]);
 
+  // Une partie du bâtiment posée par cette mission (GD-6) : le « clac » de pose de l'univers, le carillon, puis la phrase
+  // lue (les sons se taisent pendant la voix). Une fois, à l'apparition de l'écran de fin, jamais pendant une question.
+  useEffect(() => {
+    const pose = done?.pose;
+    if (!pose?.posees.length) return;
+    const timers: number[] = [];
+    const plusTard = (f: () => void, ms: number) => timers.push(window.setTimeout(f, ms));
+    const dire = () => settings.autoRead && speak(frenchTypography(phraseDeLaPose(pose)));
+    if (!settings.sounds) dire();
+    else if (habillageDuMonde().pose === 'geste') {
+      sonDePose('geste')();
+      plusTard(playDone, 120);
+      plusTard(dire, 120 + CARILLON_MS);
+    } else {
+      playDone();
+      dire();
+    }
+    return () => timers.forEach((t) => window.clearTimeout(t));
+    // Une fois par fin de mission.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [done]);
+
   // Le bandeau de résultat ne cache pas la réponse.
   useSheetClearance(sectionRef, Boolean(answered) && !done);
   // Les succès gagnés en route s'affichent sur l'écran de récompense, pas sur la question.
@@ -137,7 +173,7 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
   useAnswerKeys(sectionRef);
   // Mode concentration pendant la partie ; « Quitter » ramène au panneau de l'île.
   const navigate = useNavigate();
-  useFocusMode(!done, () => navigate(`/adventure/${biome.id}`), 'L’XP des réponses déjà données est gardée ; les blocs se gagnent en finissant la partie.');
+  useFocusMode(!done, () => navigate(`/adventure/${biome.id}`), 'L’XP des réponses déjà données est gardée ; les blocs se gagnent en finissant la mission.');
 
   if (!type) {
     return <p className="intro">Ce type d’exercice ({def.type}) n’est pas encore disponible.</p>;
@@ -196,6 +232,7 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
         : null;
     // À quoi servent les blocs gagnés : le chantier qu'ils font avancer, et « Voir le chantier » qui y mène.
     const site = worksiteFor(done.state, biome.id, done.block);
+    const pose = done.pose;
     return (
       <section className="quiz" ref={sectionRef} aria-labelledby="fin-titre">
         <div className="panel summary reward-panel">
@@ -218,6 +255,22 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
               <Icon name="zap" size="1.6rem" />
               <strong>+{done.xp}</strong> XP{done.perfect ? ' (bonus sans aide)' : ''}
             </li>
+            {pose?.posees.map((partie, i, posees) => (
+              <li key={`pose-${partie.rang}`} className="reward-pose">
+                <Icon name="home" size="1.6rem" />
+                <span>
+                  <strong>Partie posée : {minuscule(partie.nom)}.</strong>
+                  {i === posees.length - 1 &&
+                    pose.plansFinis.map((plan) => (
+                      <span key={plan.id} className="reward-pose-fin">
+                        {' '}
+                        <Syllabified text={plan.done} /> <strong>+{plan.reward.xp}</strong> XP
+                      </span>
+                    ))}
+                </span>
+                {i === posees.length - 1 && <SpeakButton text={frenchTypography(phraseDeLaPose(pose))} label="Écouter" compact />}
+              </li>
+            ))}
             {done.chestBlock && (
               <li className="reward-chest">
                 <BlockIcon top={BLOCKS[done.chestBlock].top} side={BLOCKS[done.chestBlock].side} size={44} />
@@ -264,7 +317,12 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
             />
           ) : (
             <div className="actions">
-              {site.kind === 'aucun' || site.kind === 'garder' ? (
+              {pose ? (
+                // Une partie vient d'être posée : on va la voir, sur l'île de la mission (GD-6).
+                <Link ref={suiteRef} to={`/adventure/${biome.id}?worksite=part`} className="button primary">
+                  <Icon name="home" /> Voir le bâtiment
+                </Link>
+              ) : site.kind === 'aucun' ? (
                 <Link ref={suiteRef} to={`/adventure/${biome.id}`} className="button primary">
                   <Icon name="map" /> Revenir sur {biome.name}
                 </Link>

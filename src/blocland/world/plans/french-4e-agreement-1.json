@@ -3,10 +3,7 @@
   "biome": "french-4e-agreement",
   "name": "La bergerie de Cléa",
   "reward": {
-    "xp": 40,
-    "chest": {
-      "maths-4e-powers": 3
-    }
+    "xp": 40
   },
   "done": "Ma bergerie ! Merci, bâtisseur. Les ardoises sont posées, la bergerie est finie : tout est accordé."
 }

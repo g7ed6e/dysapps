@@ -15,10 +15,9 @@ it('au début, la destination est l’île du bonhomme, à explorer', () => {
 
 it('une île où tout est prêt passe devant, puis une île pas encore explorée, puis l’objectif le plus proche', () => {
   const foretPlayed = { ...played('french-6e-phonology', 'rhymes') };
-  // Assez de bois pour la cabane : on va la poser.
-  const cabane = plansFor('french-6e-phonology')[0].cells.length;
-  const rich = sanitizeState({ progress: foretPlayed, stock: { 'french-6e-phonology': cabane }, world: { place: 'french-6e-phonology' } });
-  expect(nextDestination(rich, NOMS_ARCHIPELS, mots)).toMatchObject({ island: 'french-6e-phonology', text: 'Tu as tout pour finir La cabane de Mousso : pose tes blocs.' });
+  // Assez de bois pour un ouvrage qui part de la Forêt : on va le construire (le bâtiment, lui, se pose tout seul : GD-6).
+  const rich = sanitizeState({ progress: foretPlayed, stock: { 'french-6e-phonology': 5 }, world: { place: 'french-6e-phonology' } });
+  expect(nextDestination(rich, NOMS_ARCHIPELS, mots)).toMatchObject({ island: 'french-6e-phonology', text: expect.stringMatching(/^Tu peux construire /) });
   // Rien de prêt sur la Forêt jouée : une autre île ouverte, jamais jouée.
   const poor = sanitizeState({ progress: foretPlayed, world: { place: 'french-6e-phonology' } });
   expect(nextDestination(poor, NOMS_ARCHIPELS, mots).island).not.toBe('french-6e-phonology');

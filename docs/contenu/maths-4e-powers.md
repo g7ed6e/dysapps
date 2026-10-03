@@ -34,8 +34,8 @@ créature : Braise
 
 ## Les plans
 
-| plan | nom | XP | coffre | quand c’est bâti |
-| --- | --- | --- | --- | --- |
-| `maths-4e-powers-1` | L’atelier de Braise | 40 | french-5e-conjugation × 3 | Mon atelier ! Merci, bâtisseur. Chaque plaque d’acier vaut dix fois celle d’en dessous. |
-| `maths-4e-powers-2` | Le toit de l’atelier | 50 |  | Un toit et une porte ! La lanterne brûle à 10³ degrés, au moins. |
-| `maths-4e-powers-3` | La cour de l’atelier | 60 | trophy-gold × 2 · trophy-crystal × 2 | Une cour, une barrière, un escalier… Mon atelier est complet : 2⁰ = 1 atelier entier. |
+| plan | nom | XP | quand c’est bâti |
+| --- | --- | --- | --- |
+| `maths-4e-powers-1` | L’atelier de Braise | 40 | Mon atelier ! Merci, bâtisseur. Chaque plaque d’acier vaut dix fois celle d’en dessous. |
+| `maths-4e-powers-2` | Le toit de l’atelier | 50 | Un toit et une porte ! La lanterne brûle à 10³ degrés, au moins. |
+| `maths-4e-powers-3` | La cour de l’atelier | 60 | Une cour, une barrière, un escalier… Mon atelier est complet : 2⁰ = 1 atelier entier. |

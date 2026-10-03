@@ -3,10 +3,7 @@
   "biome": "english-3e-comprehension",
   "name": "La régie d’Écho",
   "reward": {
-    "xp": 40,
-    "chest": {
-      "english-3e-grammar": 3
-    }
+    "xp": 40
   },
   "done": "Ma régie ! Thank you, bâtisseur. On the air, dans trois, deux, un…"
 }

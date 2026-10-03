@@ -512,8 +512,8 @@ Pour tous les items :
 
 ## Les plans
 
-| plan | nom | XP | coffre | quand c’est bâti |
-| --- | --- | --- | --- | --- |
-| `english-4e-grammar-1` | L’abri de Vapeur | 40 | english-4e-comprehension × 3 | Mon abri ! Thank you, bâtisseur. D’ici, je verrai arriver tous les trains. |
-| `english-4e-grammar-2` | Le toit de l’abri | 50 |  | Un toit et une porte ! Les voyageurs attendront au sec. |
-| `english-4e-grammar-3` | Le quai de la gare | 60 | trophy-gold × 2 · trophy-crystal × 2 | Un quai, une barrière, un escalier… Ma gare est complète. All aboard! |
+| plan | nom | XP | quand c’est bâti |
+| --- | --- | --- | --- |
+| `english-4e-grammar-1` | L’abri de Vapeur | 40 | Mon abri ! Thank you, bâtisseur. D’ici, je verrai arriver tous les trains. |
+| `english-4e-grammar-2` | Le toit de l’abri | 50 | Un toit et une porte ! Les voyageurs attendront au sec. |
+| `english-4e-grammar-3` | Le quai de la gare | 60 | Un quai, une barrière, un escalier… Ma gare est complète. All aboard! |

@@ -370,8 +370,8 @@ Pour tous les items :
 
 ## Les plans
 
-| plan | nom | XP | coffre | quand c’est bâti |
-| --- | --- | --- | --- | --- |
-| `french-6e-grammar-spelling-1` | L’étable de Bloquette | 50 | french-6e-reading × 3 | Meuh ! Une étable rien que pour moi. Les accords, c’est comme les murs : il faut que tout tienne ensemble. |
-| `french-6e-grammar-spelling-2` | Le toit de l’étable | 60 |  | Un toit sur l’étable ! Meuh, je n’ai plus la pluie sur les cornes. |
-| `french-6e-grammar-spelling-3` | L’enclos de l’étable | 70 | trophy-gold × 2 · trophy-crystal × 2 | Mon enclos est fermé, tout s’accorde. Singulier, pluriel, chacun sa barrière ! |
+| plan | nom | XP | quand c’est bâti |
+| --- | --- | --- | --- |
+| `french-6e-grammar-spelling-1` | L’étable de Bloquette | 50 | Meuh ! Une étable rien que pour moi. Les accords, c’est comme les murs : il faut que tout tienne ensemble. |
+| `french-6e-grammar-spelling-2` | Le toit de l’étable | 60 | Un toit sur l’étable ! Meuh, je n’ai plus la pluie sur les cornes. |
+| `french-6e-grammar-spelling-3` | L’enclos de l’étable | 70 | Mon enclos est fermé, tout s’accorde. Singulier, pluriel, chacun sa barrière ! |

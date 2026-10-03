@@ -3,10 +3,7 @@
   "biome": "french-6e-letter-confusion",
   "name": "La forge de Tunel",
   "reward": {
-    "xp": 50,
-    "chest": {
-      "french-6e-word-spelling": 3
-    }
+    "xp": 50
   },
   "done": "Une vraie forge ! Avec la poutre en bois, elle tiendra cent ans. Tu as l’œil, bâtisseur."
 }
