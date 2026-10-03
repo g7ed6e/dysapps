@@ -34,7 +34,7 @@ Les couleurs des matières (brique, verre, cristal) et des syllabes ne changent 
 
 Quand les lettres sont nettement plus larges qu’avec les réglages par défaut (24 px et plus, ou l’espacement des lettres au plus large), la page porte l’attribut `data-texte="grand"` (`texteGrand` dans `src/core/settings.ts`) ; aux réglages par défaut, rien ne change. La mise en page des écrans en grand texte (téléphone, bandeau de correction, résultat dans la page, panneau de la Carte, étiquettes des îles, bulles du monde) est dans les [bonnes pratiques UX UI](../ux-ui/bonnes-pratiques.md#en-grand-texte) ; reste ici ce qui touche au rendu.
 
-- **Deux exceptions de taille**, jamais pour un texte à lire et jamais sous 18 px : les libellés de « Y aller » et « Les quatre archipels » de la Carte sont aux trois quarts du texte (24 px en 32 px), sur tablette pour tenir sur une rangée, sur téléphone pour que le panneau laisse la Carte montrer la destination (DA-31) ; sur téléphone, les titres de groupe des Réglages (« Espacements ») aussi, pour tenir entiers sur la ligne.
+- **Deux exceptions de taille**, jamais pour un texte à lire et jamais sous 18 px : le libellé de « Y aller » sur la Carte est aux trois quarts du texte (24 px en 32 px), sur tablette pour tenir sur sa rangée, sur téléphone pour que le panneau laisse la Carte montrer la destination (DA-31) ; sur téléphone, les titres de groupe des Réglages (« Espacements ») aussi, pour tenir entiers sur la ligne.
 
 ## Lisibilité du monde
 

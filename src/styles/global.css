@@ -3740,8 +3740,8 @@ figure.class-table {
   flex: none;
 }
 /* En grand texte, la phrase de la Carte se lit dans une fenêtre de trois lignes entières, qui défile s'il y a une
-   suite ; un chevron sous le bouton Écouter et un trait pointillé le disent. Les boutons « Y aller » et « Les quatre
-   archipels » restent sous elle, toujours visibles. */
+   suite ; un chevron sous le bouton Écouter et un trait pointillé le disent. Le bouton « Y aller » reste sous elle,
+   toujours visible. */
 :root[data-texte="grand"] .world-map-line {
   display: flex;
   flex-direction: column;
@@ -3772,8 +3772,8 @@ figure.class-table {
 :root[data-texte="grand"] .world-map-speak {
   align-self: stretch;
 }
-/* Sur tablette, « Y aller » et « Les quatre archipels » tiennent sur une rangée : libellés un peu plus petits
-   (trois quarts du texte, jamais sous 18 px), marges fixes. */
+/* Sur tablette, « Y aller » tient sur sa rangée : libellé un peu plus petit (trois quarts du texte, jamais sous
+   18 px), marges fixes. */
 @media (min-width: 641px) {
   :root[data-texte="grand"] .world-map-line {
     padding-left: 14px;

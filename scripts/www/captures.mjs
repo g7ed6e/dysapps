@@ -130,6 +130,8 @@ const SHOTS = [
   { name: 'renommage', state: MID, go: '/adventure', whale: { 'baleine-6e-arrivee': true }, renommage: true, wait: 9000 },
   { name: 'ouvrages', state: MID, go: '/adventure/french-6e-grammar-spelling', act: openFold('ouvrages') },
   { name: 'navire-chantier', state: MID, go: '/adventure/maths-6e-calculation', act: openFold('navire') },
+  // La fiche d'une borne (Toucher le monde, lot 2), ouverte comme d'un toucher : le panneau de l'île se replie.
+  { name: 'fiche-borne', state: EARLY, go: '/adventure/french-6e-phonology', act: ouvrirLaFiche({ genre: 'borne', id: 'french-6e-phonology:syllables' }) },
   { name: 'gardien', state: MID, go: '/adventure/french-6e-letter-confusion/challenge', wait: 2500 },
   { name: 'ecole', state: MID, go: '/adventure/school' },
   { name: 'trophees', state: MID, go: '/adventure/trophies' },
@@ -197,6 +199,14 @@ async function closeSheet(page) {
   if (!(await close.count())) return;
   await close.first().click();
   await page.waitForTimeout(2500);
+}
+/** La fiche d'un objet du monde, ouverte comme d'un toucher (`window.__dysappsFiche`, en développement), le temps que la caméra glisse. */
+function ouvrirLaFiche(objet) {
+  return async (page) => {
+    await page.waitForFunction(() => Boolean(window.__dysappsFiche));
+    await page.evaluate((o) => window.__dysappsFiche(o), objet);
+    await page.waitForTimeout(2500);
+  };
 }
 function openFold(name) {
   return async (page) => {

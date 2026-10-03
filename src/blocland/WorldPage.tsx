@@ -23,6 +23,7 @@ import { getMonument, monumentsOf } from './world/monuments';
 import { MenuSheet } from './MenuSheet';
 import { ArchipelSwitcher } from './ArchipelSwitcher';
 import { useBackOpensMenu } from './useBackOpensMenu';
+import { mesuresDemandees } from './rendu';
 import { TrophySheet } from './TrophySheet';
 import { AssemblageSheet } from './Assemblage';
 import { ASSEMBLAGE_PATH } from './world/assemblage';
@@ -98,6 +99,13 @@ import { useASuivre } from '../components/useASuivre';
 const LAISSER_LIRE_LA_POSE_MS = 4000;
 
 const samePoint = (p: { x: number; y: number } | undefined, q: { x: number; y: number }) => Boolean(p) && p!.x === q.x && p!.y === q.y;
+
+declare global {
+  interface Window {
+    /** Ouvrir la fiche d'un objet, pour les captures (en développement, ou avec `?mesures`). */
+    __dysappsFiche?: (objet: ObjetDeLaFiche) => void;
+  }
+}
 
 /**
  * Blocland en immersion : le monde en 3D occupe tout l'écran, un archipel à la fois (celui où se tient le bonhomme).
@@ -817,6 +825,19 @@ export function WorldPage() {
     return c && c.biome === id && signes.some((x) => x.id === id && x.bloc) ? c : undefined;
   }, [fiche, destination.commande, signes]);
   const vueDeLaFiche = useMemo(() => (ficheVue ? { objet: ficheVue.objet, seq: ficheVue.seq, saut: ficheVue.saut } : null), [ficheVue]);
+  // Pour les captures (scripts/rendu/mesures.mjs, option `fiche`), en développement ou avec `?mesures` : ouvrir la
+  // fiche d'un objet comme un toucher, le panneau de l'île replié, sans avoir à viser l'objet dans la scène.
+  useEffect(() => {
+    if (!(import.meta.env.DEV || mesuresDemandees())) return;
+    const ouvrir = (objet: ObjetDeLaFiche) => {
+      setSheetOpen(false);
+      setFiche({ objet, seq: ++ficheSeq.current, saut: true });
+    };
+    window.__dysappsFiche = ouvrir;
+    return () => {
+      if (window.__dysappsFiche === ouvrir) delete window.__dysappsFiche;
+    };
+  }, []);
 
   // Le bouton retour, dans le village sans panneau, ouvre le menu du village.
   useBackOpensMenu(!biomeId && !voyage, '/adventure/menu');
