@@ -193,7 +193,8 @@ export const BRIDGES: BridgeDef[] = [
   b('french-5e-conjugation', 'english-5e-grammar', 'pont', 6),
   b('english-5e-vocabulary', 'english-5e-grammar', 'pont', 5),
   // Le port en étoile (GD-7) : un bac vers le Carrefour, entre l'arrière du Glacier et le phare du large. Le Manoir n'en a
-  // pas : l'îlot du kiosque à musique, celui du Gardien du Manoir et une baleine ferment le passage (à décider).
+  // pas : l'îlot du kiosque à musique, celui du Gardien du Manoir et une baleine ferment le passage (décision du
+  // mainteneur, 3 octobre 2026).
   e('maths-5e-proportionality', 'french-5e-homophones', 'bac', VIA['maths-5e-proportionality-french-5e-homophones']),
   // La LV2, en bout de chemin : un pont depuis le Comptoir vers le Relais des voyageurs, à l'est ; rien n'en dépend.
   b('english-5e-vocabulary', 'lv2-5e-introductions', 'pont', 6),
@@ -205,7 +206,8 @@ export const BRIDGES: BridgeDef[] = [
   b('maths-4e-powers', 'english-4e-grammar', 'pont', 6),
   b('french-4e-vocabulary', 'english-4e-comprehension', 'pont', 6),
   // Le port en étoile (GD-7) : un bac droit vers la Gare, sous la Forge ; un bac vers le Cabinet, derrière la Falaise.
-  // Le Théâtre n'en a pas : l'îlot de l'amphithéâtre et la clairière d'une baleine ferment le passage (à décider).
+  // Le Théâtre n'en a pas : l'îlot de l'amphithéâtre et la clairière d'une baleine ferment le passage (décision du
+  // mainteneur, 3 octobre 2026).
   e('maths-4e-algebra', 'english-4e-grammar', 'bac', VIA['maths-4e-algebra-english-4e-grammar']),
   e('maths-4e-algebra', 'french-4e-vocabulary', 'bac', VIA['maths-4e-algebra-french-4e-vocabulary']),
   // La LV2, en bout de chemin : un pont depuis le Théâtre vers le Jardin des heures, à l'est ; rien n'en dépend.
@@ -217,9 +219,10 @@ export const BRIDGES: BridgeDef[] = [
   // Les îles d'anglais, aux deux bouts de l'arc : un pont depuis le Belvédère, un depuis l'Observatoire des données.
   b('maths-3e-geometry', 'english-3e-comprehension', 'pont', 7),
   b('maths-3e-statistics', 'english-3e-grammar', 'pont', 7),
-  // Le port en étoile (GD-7) : deux bacs vers les îles d'anglais, aux deux bouts de l'arc.
-  e('maths-3e-functions', 'english-3e-comprehension', 'bac', VIA['maths-3e-functions-english-3e-comprehension']),
-  e('maths-3e-functions', 'english-3e-grammar', 'bac', VIA['maths-3e-functions-english-3e-grammar']),
+  // Le port en étoile (GD-7) : deux ponts vers les îles d'anglais, aux deux bouts de l'arc. Des ponts et pas des bacs :
+  // au-dessus du plancher de nuages, un bac aurait ses poteaux dans le vide (décision du directeur artistique).
+  e('maths-3e-functions', 'english-3e-comprehension', 'pont', VIA['maths-3e-functions-english-3e-comprehension']),
+  e('maths-3e-functions', 'english-3e-grammar', 'pont', VIA['maths-3e-functions-english-3e-grammar']),
   // La LV2, en bout de chemin : un pont depuis le Château vers le Refuge des carnets, à l'est ; rien n'en dépend.
   b('english-3e-grammar', 'lv2-3e-travel', 'pont', 7),
 ];

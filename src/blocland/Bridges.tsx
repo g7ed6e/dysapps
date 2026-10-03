@@ -17,6 +17,12 @@ interface Props {
   highlight?: string | null;
   /** Dans le panneau 3D : la section se replie quand aucun ouvrage n'est constructible (la clé change avec l'île). */
   fold?: string;
+  /**
+   * L'ouvrage du prochain objectif de l'île (`nextGoalInfo`, `Goal.ouvrage`) : le seul dont « Construire » est le bouton
+   * principal ; `null` : l'objectif n'est pas un ouvrage (le Bloc-Navire), aucun ne l'est. Sans objectif (une île
+   * fermée), le moins cher de ceux qu'on peut faire, comme le choisirait l'objectif.
+   */
+  objectif?: string | null;
 }
 
 /** « le pont », « l'escalier taillé »… */
@@ -28,9 +34,11 @@ function withArticle(kind: BridgeDef['kind']): string {
 /**
  * Les ouvrages que l'on peut construire depuis (ou vers) une île : un pont, un bac, un escalier taillé, un tunnel,
  * un col. Chacun coûte quelques blocs, de n'importe quel type gagné sur une île ; l'escalier demande aussi un plan
- * terminé, le tunnel et le col un Gardien vaincu. Un seul bouton par ouvrage ; ce qui manque est dit clairement.
+ * terminé, et plus aucun ouvrage n'attend un Gardien vaincu (GD-7). Un seul bouton par ouvrage : « Construire » en
+ * bouton principal pour l'ouvrage du prochain objectif de l'île, en bouton secondaire pour les autres ; ce qui manque
+ * est dit clairement.
  */
-export function Bridges({ island, onBuilt, highlight = null, fold }: Props) {
+export function Bridges({ island, onBuilt, highlight = null, fold, objectif }: Props) {
   const { state, buildBridge } = useBlocland();
   const { settings, speak } = useSettings();
   const [said, setSaid] = useState<string | null>(null);
@@ -78,6 +86,9 @@ export function Bridges({ island, onBuilt, highlight = null, fold }: Props) {
   );
   const readyOnes = bridges.filter((b) => have >= b.cost && conditionMet(b, state.world.links, world));
   const cheapest = bridges.length ? bridges.reduce((a, b) => (b.cost < a.cost ? b : a)) : null;
+  // Un seul bouton principal : l'ouvrage du prochain objectif (même règle que `nextGoalInfo` sans objectif donné).
+  const possibles = bridges.filter((b) => conditionMet(b, state.world.links, world));
+  const principal = objectif !== undefined ? objectif : possibles.length ? possibles.reduce((a, b) => (b.cost < a.cost ? b : a)).id : null;
   const status = readyOnes.length
     ? `${readyOnes.length} possible${readyOnes.length > 1 ? 's' : ''} · tu as ${have} bloc${have > 1 ? 's' : ''}`
     : cheapest
@@ -132,7 +143,7 @@ export function Bridges({ island, onBuilt, highlight = null, fold }: Props) {
                   <span className="island-quest-title">{title}</span>
                   <span className="island-quest-desc">{b.cost} blocs</span>
                 </span>
-                <button type="button" className="button primary" onClick={() => build(b, other.name)}>
+                <button type="button" className={b.id === principal ? 'button primary' : 'button'} onClick={() => build(b, other.name)}>
                   <Icon name="hammer" /> Construire
                 </button>
               </li>

@@ -791,17 +791,22 @@ export function avatarRoute(
   if (from === to) return [end ?? avatarHome(from)];
   const depart = start ?? avatarHome(from);
   const arrivee = end ?? avatarHome(to);
-  // Le plus court chemin en cases (Dijkstra sur les îles) : sur une île, à vol d'oiseau du bout d'un ouvrage au début du
-  // suivant ; sur un ouvrage, sa longueur. Une île est atteinte au bout d'un ouvrage : c'est de là qu'on repart.
+  // À peu près le plus court chemin en cases (Dijkstra sur les îles) : sur une île, à vol d'oiseau du bout d'un ouvrage
+  // au début du suivant (la marche réelle contourne parfois une borne ou un arbre) ; sur un ouvrage, sa longueur. Une
+  // île est atteinte au bout d'un ouvrage : c'est de là qu'on repart.
   type Etape = { cout: number; at: { x: number; y: number; z: number }; via: BridgeDef | null; deck: { x: number; y: number; z: number }[] };
   const best = new Map<BiomeId, Etape>([[from, { cout: 0, at: depart, via: null, deck: [] }]]);
   const done = new Set<BiomeId>();
   for (;;) {
     let here: BiomeId | null = null;
-    for (const [id, e] of best) if (!done.has(id) && (here === null || e.cout < best.get(here)!.cout)) here = id;
-    if (here === null || here === to) break;
+    let e: Etape | null = null;
+    for (const [id, etape] of best)
+      if (!done.has(id) && (e === null || etape.cout < e.cout)) {
+        here = id;
+        e = etape;
+      }
+    if (here === null || e === null || here === to) break;
     done.add(here);
-    const e = best.get(here)!;
     for (const b of bridgesOf(here)) {
       if (bridgeState(b, bridges) !== 'built') continue;
       const there = otherEnd(b, here);
@@ -818,10 +823,9 @@ export function avatarRoute(
   }
   if (!best.has(to)) return null;
   const hops: { x: number; y: number; z: number }[][] = [];
-  for (let at = to; best.get(at)!.via; ) {
-    const e = best.get(at)!;
+  for (let at = to, e = best.get(at); e?.via; e = best.get(at)) {
     hops.unshift(e.deck);
-    at = otherEnd(e.via!, at);
+    at = otherEnd(e.via, at);
   }
   const route: { x: number; y: number; z: number }[] = [depart];
   // Sur une île : de là où il est jusqu'au point suivant, à pied (ou tout droit, sans grille).
@@ -854,12 +858,20 @@ function casesDesTraversees(a: ArchipelagoId): Map<string, string> {
   return m;
 }
 
+/** Un rectangle de la grille, en cases (bornes comprises). */
+export interface CadreDeCases {
+  minX: number;
+  maxX: number;
+  minY: number;
+  maxY: number;
+}
+
 /**
  * Le cadre de la caméra pendant un trajet qui prend une longue traversée (GD-7, plus de `BAC_LONG` cases sur un même
- * ouvrage) : tout le trajet, du départ à l'arrivée ; la caméra s'y pose et ne bouge plus, le bonhomme traverse. `null`
- * pour un trajet ordinaire : la caméra le suit.
+ * ouvrage) : tout le trajet, du départ à l'arrivée, et le cœur des deux îles du bout ; la caméra s'y pose et ne bouge
+ * plus, le bonhomme traverse. `null` pour un trajet ordinaire : la caméra le suit.
  */
-export function cadreDeTraversee(a: ArchipelagoId, route: readonly { x: number; y: number }[]): { minX: number; maxX: number; minY: number; maxY: number } | null {
+export function cadreDeTraversee(a: ArchipelagoId, route: readonly { x: number; y: number }[]): CadreDeCases | null {
   const cases = casesDesTraversees(a);
   const parOuvrage = new Map<string, number>();
   let longue = false;
@@ -875,11 +887,18 @@ export function cadreDeTraversee(a: ArchipelagoId, route: readonly { x: number; 
   let maxX = -Infinity;
   let minY = Infinity;
   let maxY = -Infinity;
-  for (const c of route) {
-    minX = Math.min(minX, c.x);
-    maxX = Math.max(maxX, c.x);
-    minY = Math.min(minY, c.y);
-    maxY = Math.max(maxY, c.y);
+  const ajouter = (x: number, y: number) => {
+    minX = Math.min(minX, x);
+    maxX = Math.max(maxX, x);
+    minY = Math.min(minY, y);
+    maxY = Math.max(maxY, y);
+  };
+  for (const c of route) ajouter(c.x, c.y);
+  // Les cœurs des deux îles du bout, entiers : l'île d'arrivée se reconnaît, pas seulement la case où il s'arrête.
+  for (const c of [route[0], route[route.length - 1]]) {
+    const k = coeurDe(islandDef(islandAt(a, c.x, c.y)));
+    ajouter(k.x0, k.y0);
+    ajouter(k.x1 - 1, k.y1 - 1);
   }
   return { minX, maxX, minY, maxY };
 }

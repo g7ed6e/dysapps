@@ -34,6 +34,8 @@ export interface Goal {
   need: number;
   /** Tout est là pour le faire tout de suite (la jauge, pleine, n'a plus rien à dire). */
   ready?: boolean;
+  /** L'objectif est un ouvrage : son identifiant (le pli Ouvrages en fait le seul bouton principal). */
+  ouvrage?: string;
 }
 
 /** Ce qu'il manque au Bloc-Navire, en blocs : « 16 blocs de bois », « 10 briques et 3 blocs de verre ». */
@@ -73,6 +75,7 @@ export function nextGoalInfo(state: GameState, island: BiomeId, noms: NomsArchip
       have,
       need: cheapest.cost,
       ready: left === 0,
+      ouvrage: cheapest.id,
     });
   }
   // Le chantier du Bloc-Navire (sur un port, tant que son voyage n'est pas fait).
@@ -99,7 +102,7 @@ export function nextGoalInfo(state: GameState, island: BiomeId, noms: NomsArchip
   }
   if (!candidates.length) return null;
   const pick = candidates.find((c) => c.ready) ?? candidates.reduce((a, b) => (b.need - b.have < a.need - a.have ? b : a));
-  return { text: `${cap(pick.text)}.`, have: pick.have, need: pick.need, ready: pick.ready };
+  return { text: `${cap(pick.text)}.`, have: pick.have, need: pick.need, ready: pick.ready, ...(pick.ouvrage ? { ouvrage: pick.ouvrage } : {}) };
 }
 
 /** La phrase du prochain objectif seule (voir `nextGoalInfo`). */

@@ -4,7 +4,7 @@
 import type { BiomeId } from '../biomes';
 import type { PlaceId, VoxelCube } from './cube';
 import { islandsOf, type ArchipelagoId } from './archipelago';
-import { BAC_LONG, CREATURE_STEPS, boardingRoute, cadreDeTraversee, routeAt, routeLengths } from './terrain';
+import { BAC_LONG, type CadreDeCases, CREATURE_STEPS, boardingRoute, cadreDeTraversee, routeAt, routeLengths } from './terrain';
 import { WALK_MAX_MS, WALK_SPEED, dureeDeMarche, grilleDe } from './grille';
 import { legTiming, type LegTiming, type VoyageLeg } from './voyage';
 import type { Bonhomme, Cell, CreaturePlacement } from './view';
@@ -32,7 +32,7 @@ export interface Walk {
    * Une longue traversée (GD-7, `cadreDeTraversee`) : le cadre fixe de la caméra, du départ à l'arrivée ; elle ne suit
    * pas le bonhomme.
    */
-  cadre?: { minX: number; maxX: number; minY: number; maxY: number };
+  cadre?: CadreDeCases;
 }
 
 export function startWalk(route: Cell[], start: number, duration: number): Walk {

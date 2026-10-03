@@ -8,7 +8,7 @@ import { RESERVE_DU_BAS, type PlaceLue, type Rect } from '../placeLibre';
 import type { ArchipelagoId } from '../world/archipelago';
 import { CADRAGE_DU_REPERE, repereDeLaVue } from '../world/cadrage';
 import { mapOf } from '../world/map';
-import { DISTANCE_DE_LA_VUE_DE_L_ILE, islandCenter, VISEE_AU_DESSUS_DU_SOL, VUE_DE_L_ILE, viewYaw, viewZone, worldBounds } from '../world/terrain';
+import { type CadreDeCases, DISTANCE_DE_LA_VUE_DE_L_ILE, islandCenter, VISEE_AU_DESSUS_DU_SOL, VUE_DE_L_ILE, viewYaw, viewZone, worldBounds } from '../world/terrain';
 import type { Derniers, Instant, Monde, PartieDeLaScene } from './partie';
 import { bornerLeDecalage, estDecale, type Decalage } from './glisse';
 
@@ -173,6 +173,99 @@ export function cadrageDeLaCarte(
   return { target: target.clone(), pos: cam.position.clone(), echelle: h / (2 * d * tan), auPlancher };
 }
 
+/** Entre le trajet d'une longue traversée et le bord de la place libre, en pixels CSS. */
+const MARGE_DE_LA_TRAVERSEE_PX = 16;
+
+/**
+ * Le cadre fixe d'une longue traversée (GD-7) dans la place libre `libre` d'une vue `w` × `h` (pixels CSS) : le trajet
+ * (`cadre`, en cases, élargi de `MARGE_DE_LA_TRAVERSEE`) tient dans la place, hors du haut de l'interface, de la barre du
+ * bas et de la colonne Pause, et s'y pose au centre. Même direction de vue qu'en suivant le bonhomme, sans pivot ; jamais
+ * plus près qu'en le suivant (`FOLLOW_DISTANCE`).
+ */
+export function cadrageDeLaTraversee(
+  cadre: CadreDeCases,
+  altitude: number,
+  w: number,
+  h: number,
+  libre: Rect,
+): { target: THREE.Vector3; pos: THREE.Vector3 } {
+  const u = new THREE.Vector3(VIEW.dx, VIEW.up, VIEW.dy).normalize();
+  const cam = new THREE.PerspectiveCamera(40, w / h, 0.5, 1e5);
+  const m = MARGE_DE_LA_TRAVERSEE / 2;
+  const sol = altitude + VISEE_AU_DESSUS_DU_SOL;
+  // Les coins du trajet, au sol, et au-dessus de la tête du bonhomme (deux blocs).
+  const coins = [cadre.minX - m, cadre.maxX + 1 + m].flatMap((x) =>
+    [cadre.minY - m, cadre.maxY + 1 + m].flatMap((y) => [new THREE.Vector3(x, altitude, y), new THREE.Vector3(x, altitude + 3, y)]),
+  );
+  const target = new THREE.Vector3((cadre.minX + cadre.maxX + 1) / 2, sol, (cadre.minY + cadre.maxY + 1) / 2);
+  const v = new THREE.Vector3();
+  const placer = (d: number) => {
+    cam.position.copy(target).addScaledVector(u, d);
+    cam.lookAt(target);
+    cam.updateMatrixWorld();
+  };
+  const ecran = () => {
+    const r = { x0: Infinity, y0: Infinity, x1: -Infinity, y1: -Infinity };
+    for (const p of coins) {
+      v.copy(p).project(cam);
+      const x = ((v.x + 1) / 2) * w;
+      const y = ((1 - v.y) / 2) * h;
+      r.x0 = Math.min(r.x0, x);
+      r.x1 = Math.max(r.x1, x);
+      r.y0 = Math.min(r.y0, y);
+      r.y1 = Math.max(r.y1, y);
+    }
+    return r;
+  };
+  const lw = libre.x1 - libre.x0 - 2 * MARGE_DE_LA_TRAVERSEE_PX;
+  const lh = libre.y1 - libre.y0 - 2 * MARGE_DE_LA_TRAVERSEE_PX;
+  const vise = { x: (libre.x0 + libre.x1) / 2, y: (libre.y0 + libre.y1) / 2 };
+  // Centrer le trajet dans la place à la distance `d` : la cible glisse sur le sol, par petits pas corrigés à l'écran.
+  const centrer = (d: number) => {
+    for (let i = 0; i < 4; i++) {
+      placer(d);
+      const r0 = ecran();
+      const m0 = { x: (r0.x0 + r0.x1) / 2, y: (r0.y0 + r0.y1) / 2 };
+      target.x += 1;
+      placer(d);
+      const rx = ecran();
+      target.x -= 1;
+      target.z += 1;
+      placer(d);
+      const rz = ecran();
+      target.z -= 1;
+      const a = (rx.x0 + rx.x1) / 2 - m0.x;
+      const b = (rz.x0 + rz.x1) / 2 - m0.x;
+      const c = (rx.y0 + rx.y1) / 2 - m0.y;
+      const dd = (rz.y0 + rz.y1) / 2 - m0.y;
+      const det = a * dd - b * c;
+      if (Math.abs(det) < 1e-9) break;
+      const ex = vise.x - m0.x;
+      const ey = vise.y - m0.y;
+      target.x += (dd * ex - b * ey) / det;
+      target.z += (a * ey - c * ex) / det;
+    }
+    placer(d);
+    const r = ecran();
+    return r.x0 >= libre.x0 + MARGE_DE_LA_TRAVERSEE_PX - 0.5 && r.x1 <= libre.x1 - MARGE_DE_LA_TRAVERSEE_PX + 0.5 && r.y0 >= libre.y0 + MARGE_DE_LA_TRAVERSEE_PX - 0.5 && r.y1 <= libre.y1 - MARGE_DE_LA_TRAVERSEE_PX + 0.5;
+  };
+  // Le plus près où tout tient (la taille à l'écran décroît avec la distance) : une dichotomie, centrée à chaque pas.
+  let d = FOLLOW_DISTANCE;
+  if (lw > 0 && lh > 0 && !centrer(d)) {
+    let lo = d;
+    let hi = d * 2;
+    for (let i = 0; i < 12 && !centrer(hi); i++) hi *= 2;
+    for (let i = 0; i < 20; i++) {
+      const mid = (lo + hi) / 2;
+      if (centrer(mid)) hi = mid;
+      else lo = mid;
+    }
+    d = hi;
+  }
+  centrer(d);
+  return { target: target.clone(), pos: cam.position.clone() };
+}
+
 declare global {
   interface Window {
     /** La caméra, pour les captures (en développement, ou avec `?mesures`) : voir `Camera.poser`. */
@@ -302,22 +395,24 @@ export function creerCamera(
   };
 
   /**
-   * Une longue traversée (GD-7) : la caméra se pose sur tout le trajet, du départ à l'arrivée, et ne bouge plus ; le
-   * bonhomme traverse le cadre. Même direction de vue qu'en le suivant, sans pivot, assez loin pour que tout tienne.
+   * Une longue traversée (GD-7) : la caméra se pose sur tout le trajet, du départ à l'arrivée, dans la place libre de la
+   * vue (comme la Carte, DA-31), et ne bouge plus ; le bonhomme traverse le cadre. Calculé une fois par traversée : rien
+   * n'est recalculé ni alloué tant que le cadre (le même objet), la place lue et l'aspect ne changent pas.
    */
   const altitude = mapOf(monde.archipel)[0]?.altitude ?? 0;
-  const cadreDeTraversee = { target: new THREE.Vector3(), pos: new THREE.Vector3() };
-  const traversee = (z: NonNullable<Instant['traversee']>, aspect: number) => {
-    const portrait = aspect < 1 ? 1 / Math.sqrt(Math.max(0.4, aspect)) : 1;
-    const c = { x: (z.minX + z.maxX) / 2 + 0.5, y: (z.minY + z.maxY) / 2 + 0.5 };
-    const ex = z.maxX - z.minX + MARGE_DE_LA_TRAVERSEE;
-    const ey = z.maxY - z.minY + MARGE_DE_LA_TRAVERSEE;
-    const need = (Math.max(ex / Math.max(0.6, aspect), ey * 1.1) * 0.5) / Math.tan((20 * Math.PI) / 180);
-    const d = Math.max(FOLLOW_DISTANCE, need) * portrait;
-    // Sans allocation : le cadre ne change pas de toute la traversée, la caméra le relit à chaque image.
-    cadreDeTraversee.target.set(c.x, altitude + VISEE_AU_DESSUS_DU_SOL, c.y);
-    cadreDeTraversee.pos.set(c.x + d * VIEW.dx, altitude + VISEE_AU_DESSUS_DU_SOL + d * VIEW.up, c.y + d * VIEW.dy);
-    return cadreDeTraversee;
+  let cadreFixe: { cadre: CadreDeCases; lue: PlaceLue | null; aspect: number; contexte: string; target: THREE.Vector3; pos: THREE.Vector3 } | null = null;
+  let traversees = 0;
+  const traversee = (z: CadreDeCases, aspect: number) => {
+    // Une nouvelle traversée : la place libre est relue (un autre contexte), une fois.
+    const contexte = cadreFixe?.cadre === z ? cadreFixe.contexte : `traversee|${++traversees}`;
+    const lue = carte?.place(contexte) ?? null;
+    if (!cadreFixe || cadreFixe.cadre !== z || cadreFixe.lue !== lue || cadreFixe.aspect !== aspect) {
+      const w = lue ? Math.max(1, lue.w) : HAUTEUR_DE_TABLETTE * aspect;
+      const h = lue ? Math.max(1, lue.h) : HAUTEUR_DE_TABLETTE;
+      const libre = lue?.libre ?? { x0: 0, y0: 0, x1: w, y1: h - RESERVE_DU_BAS };
+      cadreFixe = { cadre: z, lue, aspect, contexte, ...cadrageDeLaTraversee(z, altitude, w, h, libre) };
+    }
+    return cadreFixe;
   };
 
   const camTarget = new THREE.Vector3();

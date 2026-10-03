@@ -9,7 +9,7 @@ import { GRAND_PHARE_3E } from '../world/decor/3e';
 import { PHARE, PHARES } from '../world/decor/phare';
 import { islandDef, landBox, mapOf } from '../world/map';
 import { placeLibre, type Rect } from '../placeLibre';
-import { islandCenter, worldBounds } from '../world/terrain';
+import { avatarRoute, cadreDeTraversee, islandCenter, worldBounds } from '../world/terrain';
 import { AUTOUR_DE_LA_DESTINATION, cadrageDeLaCarte, creerCamera, PLANCHER_DE_LA_CARTE } from './camera';
 import type { Derniers, Instant, Monde } from './partie';
 
@@ -300,4 +300,57 @@ describe('Une longue traversée (GD-7)', () => {
     avatar.position.set(80, 0, 20);
     expect(poser().distanceTo(suivi)).toBeGreaterThan(1);
   });
+
+  it('le cadre fixe se pose dans la place libre, hors du panneau d’île ouvert et des barres : paysage et portrait 800 × 1280', () => {
+    // De la Plaine à la Carrière par le long bac du port (109 cases), panneau de la Carrière ouvert.
+    const route = avatarRoute('maths-6e-calculation', 'french-6e-word-spelling', ['maths-6e-calculation-french-6e-word-spelling'])!;
+    const cadre = cadreDeTraversee('6e', route)!;
+    expect(cadre).not.toBeNull();
+    const b = worldBounds('6e');
+    const monde: Monde = { scene: new THREE.Scene(), archipel: '6e', habillage: HABILLAGES.blocland, surface: null, etendue: b, centre: { x: 0, y: 0 }, largeur: 200 };
+    // La vue qui reste au monde, panneau ouvert (pixels CSS, sous la barre du haut) : en paysage 1024 × 768, le panneau
+    // de 26rem à droite ; en portrait 800 × 1280, le panneau en bas (55 % au plus). En haut, la ligne d'une parole ; en
+    // bas, la barre ; à droite, la colonne Pause et archipel.
+    const vues = [
+      { nom: 'paysage 1024 × 768', w: 1024 - 416, h: 688 },
+      { nom: 'portrait 800 × 1280', w: 800, h: Math.round(1200 * 0.45) },
+    ];
+    for (const t of vues) {
+      const libre = placeLibre(
+        t.w,
+        t.h,
+        [
+          { x: t.w / 2, y: 50, w: t.w - 120, h: 84 },
+          { x: t.w / 2, y: t.h - 34, w: t.w, h: 64 },
+        ],
+        [{ x: t.w - 30, y: 60, w: 52, h: 110 }],
+      );
+      const camera = new THREE.PerspectiveCamera(40, t.w / t.h, 0.5, 2000);
+      const derniers = { current: { carte: false, focus: { island: null, seq: 0 }, home: 'maths-6e-calculation', forceDay: true } as unknown as Derniers };
+      const instant: Instant = { now: 0, marche: true, traversee: cadre, navigue: null, carte: false, but: { target: new THREE.Vector3(), pos: new THREE.Vector3() } };
+      const lues: string[] = [];
+      const place = { libre, w: t.w, h: t.h, saut: false };
+      const cam = creerCamera(monde, camera, new THREE.Object3D(), derniers, instant, {
+        place: (contexte) => {
+          lues.push(contexte);
+          return place;
+        },
+        destination: () => null,
+      });
+      cam.animer!(0, 0.016, true);
+      camera.updateMatrixWorld();
+      // Les deux bouts du trajet (au sol, et la tête du bonhomme) sont dans la place libre, pas sous le panneau.
+      for (const c of [route[0], route[route.length - 1]])
+        for (const haut of [0, 2]) {
+          const p = ecran(camera, t, c.x + 0.5, c.z + haut, c.y + 0.5);
+          expect(p.x >= libre.x0 && p.x <= libre.x1 && p.y >= libre.y0 && p.y <= libre.y1, `${t.nom} ${c.x},${c.y} → ${p.x},${p.y}`).toBe(true);
+        }
+      // Le même cadre, la même place : la caméra ne bouge pas, et la place n'est lue que pour cette traversée.
+      const but = instant.but.target.clone();
+      cam.animer!(0.1, 0.016, true);
+      expect(instant.but.target.equals(but)).toBe(true);
+      expect(new Set(lues)).toEqual(new Set(['traversee|1']));
+    }
+  });
 });
+
