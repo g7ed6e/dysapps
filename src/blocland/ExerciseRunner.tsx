@@ -17,6 +17,7 @@ import { planStatus } from './engine';
 import { archipelagoOf } from './world/archipelago';
 import { stageAt } from './world/vehicle';
 import { worksiteFor } from './world/worksite';
+import { retenirLaPose } from './poseAMontrer';
 import { minuscule } from './world/parties';
 import { voyageId } from './world/archipelago';
 import { useBlocland } from './BloclandContext';
@@ -318,8 +319,8 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
           ) : (
             <div className="actions">
               {pose ? (
-                // Une partie vient d'être posée : on va la voir, sur l'île de la mission (GD-6).
-                <Link ref={suiteRef} to={`/adventure/${biome.id}?worksite=part`} className="button primary">
+                // Une partie vient d'être posée : on va la voir se poser, sur l'île de la mission (GD-6, la vague).
+                <Link ref={suiteRef} to={`/adventure/${biome.id}?worksite=part`} className="button primary" onClick={() => retenirLaPose(biome.id, pose.posees)}>
                   <Icon name="home" /> Voir le bâtiment
                 </Link>
               ) : site.kind === 'aucun' ? (

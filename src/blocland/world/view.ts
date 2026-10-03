@@ -140,6 +140,14 @@ export interface WorldViewProps {
   rallumage?: { id: BiomeId; seq: number; dureeMs: number } | null;
   burst?: Burst;
   /**
+   * La pose d'une partie du bâtiment en vague (GD-6, Blocland) : ces cubes, en cases du monde, absents de `cubes`,
+   * descendent couche par couche (./vague.ts), une fois par `seq`. La vue dit chaque couche posée et la fin (`onPose`),
+   * et garde la partie posée jusqu'à ce que `pose` revienne à `null` avec le monde qui la contient. Une vue sans vague
+   * (la 2D) dit la fin tout de suite.
+   */
+  pose?: { seq: number; cubes: VoxelCube[] } | null;
+  onPose?: (moment: 'couche' | 'finie') => void;
+  /**
    * Faire glisser le monde pour l'explorer (la 3D) : la vue dit quand elle a été déplacée (`true`) et quand elle est
    * revenue à son cadrage (`false`), pour le bouton « Recentrer ». Sans ce rappel, la vue ne glisse pas.
    */

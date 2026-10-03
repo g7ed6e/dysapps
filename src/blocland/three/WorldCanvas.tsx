@@ -70,6 +70,8 @@ export default function WorldCanvas({
   whalePass = null,
   rallumage = null,
   burst: burstEnAncrage,
+  pose = null,
+  onPose,
   onVueDeplacee,
   recentrage = 0,
   className,
@@ -517,9 +519,32 @@ export default function WorldCanvas({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [burst?.seq]);
 
+  // ---- La pose d'une partie en vague (GD-6, Blocland, world/vague.ts) : lancée une fois par `seq`, arrêtée quand la page
+  // la retire (finie ou touchée). Relancée si la scène est refaite (un autre archipel, « Réduire les animations ») : la
+  // partie ne reste jamais cachée, et le terrain est reposé dans le même effet (la scène neuve n'a pas encore les cubes),
+  // une seule fois, avec la vague. Sur la même scène, le terrain reçu suffit : la vague lancée ou arrêtée le refait.
+  const poseRef = useRef(onPose);
+  poseRef.current = onPose;
+  /** La scène qui a reçu le terrain : une scène refaite le reçoit de nouveau. */
+  const terrainDe = useRef<object | null>(null);
+  useEffect(() => {
+    const w = world.current;
+    if (!w) return;
+    if (pose) w.cubes.lancerLaVague(pose.cubes, (moment) => poseRef.current?.(moment));
+    else w.cubes.arreterLaVague();
+    if (terrainDe.current !== w.cubes) {
+      w.cubes.poser(cubes);
+      terrainDe.current = w.cubes;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pose?.seq, reduceMotion, archipelago]);
+
   // ---- Terrain : une géométrie par matériau, faces visibles seulement
   useEffect(() => {
-    world.current?.cubes.poser(cubes);
+    const w = world.current;
+    if (!w) return;
+    w.cubes.poser(cubes);
+    terrainDe.current = w.cubes;
   }, [cubes]);
 
   // ---- Créatures : un groupe chacune, positionné sur son île, animé dans la boucle

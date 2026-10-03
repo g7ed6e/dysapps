@@ -67,13 +67,21 @@ export function useRallumage(progress: Record<string, { stars: number }>, a: Arc
   return { enAttente, noterVu };
 }
 
+/** Les contrôles de la scène qui gardent leur effet pendant un moment : Pause, le sélecteur d'archipel, Recentrer, la barre. */
+export const CONTROLES_DE_LA_SCENE = '.world-menu-button, .world-archipel, .world-recentrer, .world-bar';
+
 /**
- * Le toucher qui saute le moment, n'importe où sur la scène (sauf sur « Passer », qui passe tous les moments). Il
- * s'arrête là : le même toucher n'ouvre pas une île et ne fait pas marcher le bonhomme sur le canvas.
+ * Le toucher qui saute un moment (le rallumage, la pose d'une partie en vague), n'importe où sur la scène, sauf sur
+ * « Passer », qui passe tous les moments. Ailleurs sur la scène, il s'arrête là : le même toucher n'ouvre pas une île et
+ * ne fait pas marcher le bonhomme sur le canvas. Sur un contrôle de la scène (Pause, l'archipel, Recentrer, la barre), le
+ * contrôle garde son effet et le moment finit en silence (`enSilence`) : ni carillon ni lecture, rien ne se rejoue au
+ * retour.
  */
-export function toucherQuiSaute(sauter: () => void) {
+export function toucherQuiSaute(sauter: () => void, enSilence: () => void) {
   return (e: PointerEvent) => {
-    if ((e.target as Element).closest?.('.rallumage-passer')) return;
+    const cible = e.target as Element;
+    if (cible.closest?.('.rallumage-passer')) return;
+    if (cible.closest?.(CONTROLES_DE_LA_SCENE)) return enSilence();
     e.stopPropagation();
     sauter();
   };

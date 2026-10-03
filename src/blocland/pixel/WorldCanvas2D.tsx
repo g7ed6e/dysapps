@@ -129,11 +129,19 @@ export default function WorldCanvas2D({
   quests: questsEnAncrages,
   islandLabels,
   burst: burstEnAncrage,
+  pose = null,
+  onPose,
   className,
   label,
   onIntent,
   chantier = false,
 }: WorldViewProps) {
+  // La 2D n'a pas de vague (GD-6) : la partie est posée tout de suite, la page la reçoit finie.
+  useEffect(() => {
+    if (pose) onPose?.('finie');
+    // Une fois par pose.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pose?.seq]);
   // Les positions reçues en ancrages (une île, un point dans son repère), dessinées en cases du monde.
   const { focus, marker, avatar, trail, quests, burst } = useEnCasesDuMonde({
     archipelago,

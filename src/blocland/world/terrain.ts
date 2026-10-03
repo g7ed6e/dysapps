@@ -2284,6 +2284,21 @@ function poserLIle(
   }
 }
 
+/**
+ * Les cases du monde où se posent des cases de plans d'île (une partie du bâtiment, GD-6), en clés « x,y,z » : là où
+ * `poserLIle` dessine chacune (le coin du cœur, le décalage des plans du fond, un cran au-dessus du sol).
+ */
+export function casesDesPlansDansLeMonde(cases: readonly { plan: PlanDef; keys: readonly string[] }[]): Set<string> {
+  const out = new Set<string>();
+  for (const { plan, keys } of cases) {
+    const { ox, oy, oz } = islandOrigin(BIOMES.findIndex((b) => b.id === plan.biome));
+    const d = decalageDesPlans(plan);
+    const voulues = new Set(keys);
+    for (const c of planCells(plan)) if (voulues.has(c.key)) out.add(`${ox + c.x + d.x},${oy + c.y + d.y},${oz + c.z + d.z + 1}`);
+  }
+  return out;
+}
+
 /** Ce qui est entre les îles, en cases du monde, ajouté à `cubes` : le port, les îlots des monuments, la mer, les ouvrages. */
 function entreLesIles(a: ArchipelagoId, village: World, cubes: VoxelCube[]): VoxelCube[] {
   // Le port : la jetée (le Bloc-Navire est un objet à part, voir vehiclePlacement).
