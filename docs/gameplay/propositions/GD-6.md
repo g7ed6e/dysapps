@@ -1,6 +1,6 @@
 # GD-6 : La boucle des blocs, de la première mission au dernier archipel
 
-**État** : Décidée le 2 octobre 2026 (les six choix, puis le découpage, la réussite qui pose une partie et l’île de l’école ; le reste est à cadrer dans le lot, voir « Le coût »)
+**État** : Décidée le 2 octobre 2026 (les six choix, puis le découpage, la réussite qui pose une partie et l’île de l’école) ; cadrage du premier lot décidé le 3 octobre 2026 (cinq précisions, voir « La décision ») ; première pull request fusionnée (#315)
 **Portée** : Commun (les noms, les voix et le dessin restent propres à chaque univers)
 
 ## Le constat
@@ -72,3 +72,11 @@ Un lot à part, après la fiche de l’étape 1 de GD-4. À cadrer dans le lot, 
 ## La décision
 
 2 octobre 2026, mainteneur : les six choix, un par un (« Une partie par mission », « L’île de l’école », « Plans = missions », « Rejouer et réviser », « Seul le bâtiment », « Suite puis projets »), puis, par écrit, « oui » à la boucle qui en sort. Le même jour, trois précisions choisies une par une (« Une par mission », « Première réussite », « Rien de plus »), puis « oui » par écrit.
+
+3 octobre 2026, mainteneur, par écrit (« Go » à la pull request #315, puis « Ok » aux cinq précisions qu’elle applique, recommandées par le directeur artistique au cadrage du lot) :
+
+1. **L’ordre des parties** : une mission terminée pour la première fois pose la prochaine partie du bâtiment, dans l’ordre du dessin, quelle que soit la mission (un toit ne se pose jamais avant les murs).
+2. **Le découpage** : une partie est faite des cases des trois plans du bâtiment, qui ne changent pas. Trois missions : un plan par partie ; deux missions : le premier plan, puis les deux autres ensemble ; quatre missions : le premier plan coupé en deux par la hauteur (« le bas », puis « le haut »), puis les deux autres. Le lieu de la LV2 compte les missions des deux langues, quatre parties au plus.
+3. **« Réussie » veut dire « terminée »** : quels que soient le niveau, les étoiles, les erreurs et les jokers.
+4. **Les blocs de finition**, comme l’or et le cristal, ne paient plus rien : ce sont des trophées.
+5. **La créature qui propose les révisions** (et le bloc d’une révision quel que soit le score, la phrase de reprise) vient avec l’étape 1 de [GD-4](GD-4.md), dans un lot à part.
