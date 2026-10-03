@@ -473,4 +473,4 @@ Pour tous les items :
 - prête : Tu as les {blocs} ! Livre-les à Tick.
 - posée : Vitrine posée chez Tick !
 
-> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : la serre de `jardin()` : un soubassement de 3 cadrans, 3 verres dessus, 3 toits par-dessus ; 9 cubes, 3 cases, 3 de haut.
+> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : la serre de `jardin()` : un soubassement de 3 portes (les cadrans se perdaient sur le sol de cadrans), 3 verres dessus, 3 toits par-dessus ; 9 cubes, 3 cases, 3 de haut (retouche du directeur artistique, 3 octobre 2026 : le bloc du sol, sans exception).

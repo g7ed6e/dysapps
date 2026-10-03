@@ -551,4 +551,4 @@ Pour tous les items :
 - prête : Tu as les {blocs} ! Livre-les à Écho.
 - posée : Haut-parleur posé chez Écho !
 
-> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : un rang bas et ce qu’on pose dessus (la serre, `jardin()`) : un socle de 2 antennes, 2 lentilles dessus (le cercle du bloc fait la membrane) ; 4 cubes, 2 cases, 2 de haut.
+> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : un rang bas et ce qu’on pose dessus (la serre, `jardin()`) : un caisson de 2 portes (les antennes se perdaient sur le sol d’antennes), 2 lentilles dessus (le cercle du bloc fait la membrane) ; 4 cubes, 2 cases, 2 de haut (retouche du directeur artistique, 3 octobre 2026 : le bloc du sol, sans exception).

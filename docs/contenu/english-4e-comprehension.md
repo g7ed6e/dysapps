@@ -503,4 +503,4 @@ Pour tous les items :
 - prête : Tu as les {blocs} ! Livre-les à Puck.
 - posée : Pupitre posé chez Puck !
 
-> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : la colonne de la cheminée (`maison()`) et un linteau : un pied de 2 velours au milieu, une tablette de 3 parchemins à z 2, le long des y, perpendiculaire à l’axe de la caméra de l’île ; 5 cubes, 3 cases, 3 de haut (retouche du directeur artistique, 3 octobre 2026).
+> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : la colonne de la cheminée (`maison()`) et un linteau : un pied au milieu, une barrière en bas (le velours se perdait sur le sol de velours, retouche du directeur artistique, 3 octobre 2026 : le bloc du sol, sans exception) et un velours dessus, une tablette de 3 parchemins à z 2, le long des y, perpendiculaire à l’axe de la caméra de l’île ; 5 cubes, 3 cases, 3 de haut (retouche du directeur artistique, 3 octobre 2026).

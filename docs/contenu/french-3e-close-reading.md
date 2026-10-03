@@ -807,4 +807,4 @@ Pour tous les items :
 - prête : Tu as les {blocs} ! Livre-les à Astra.
 - posée : Banc posé chez Astra !
 
-> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : le banc de pierre de taille de la salle commune (`refuge()`) : 2 pieds de lentille aux bouts, une assise de 3 pierres de taille dessus ; 5 cubes, 3 cases, 2 de haut.
+> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : le banc de pierre de taille de la salle commune (`refuge()`) : 2 pieds de barrière aux bouts (la lentille se perdait sur le sol de lentilles), une assise de 3 pierres de taille dessus ; 5 cubes, 3 cases, 2 de haut (retouche du directeur artistique, 3 octobre 2026 : le bloc du sol, sans exception).

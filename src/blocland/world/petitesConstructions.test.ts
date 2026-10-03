@@ -16,6 +16,7 @@ import {
   creatureDuMonde,
   creatureSpot,
   cubesDeLIle,
+  examenDeLaPetiteConstruction,
   lieuxVus,
   origineDe,
   placeDeLaPetiteConstruction,
@@ -163,6 +164,17 @@ describe.each(COMMANDES.map((c) => [c.fixture, c] as const))('%s, sa place dans 
         expect(sy).toBeGreaterThanOrEqual(cube);
         expect(sy).toBeLessThanOrEqual(V.hauteur - V.bas - cube);
       }
+  });
+
+  // Le bloc du sol, sans exception (directeur artistique, 3 octobre 2026) : quand aucune place ne garde les cubes de
+  // l'île hors de leur sol, ces cubes deviennent un bloc de finition ; les cubes livrés ne changent jamais.
+  it('aucun de ses cubes posés au sol ne se fond dans le sol de sa case, et chaque cube du bloc livré se voit au moins en partie', () => {
+    const examen = examenDeLaPetiteConstruction(c.biome, c.fixture)!.examiner(place.x, place.y);
+    expect(examen).not.toBeNull();
+    expect(examen!.cubes.filter((k) => k.commeLeSol).map((k) => `${k.x},${k.y},${k.z} ${k.block}`)).toEqual([]);
+    // Devant l'île tout construite, la créature et le bonhomme : un de ses neuf points au moins (milieu et coins).
+    const caches = examen!.cubes.filter((k) => k.block === c.block && !k.vus).map((k) => `${k.x},${k.y},${k.z}`);
+    expect(caches).toEqual([]);
   });
 
   it('jamais sur la rangée nue devant les bornes, ni sur le chemin du bonhomme vers le navire', () => {

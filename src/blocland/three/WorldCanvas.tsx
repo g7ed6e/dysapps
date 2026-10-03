@@ -548,6 +548,8 @@ export default function WorldCanvas({
     if (!w) return;
     if (pose) w.cubes.lancerLaVague(pose.cubes, (moment) => poseRef.current?.(moment));
     else w.cubes.arreterLaVague();
+    // Pendant la vague, une plaque nouvelle se montre, mais les étiquettes attendent sa fin pour se replacer.
+    w.signes.suivreLaVague(Boolean(pose));
     if (terrainDe.current !== w.cubes) {
       w.cubes.poser(cubes);
       terrainDe.current = w.cubes;

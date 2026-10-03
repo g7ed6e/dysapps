@@ -3,8 +3,9 @@
 // « > Forme ») avec les corrections du directeur artistique (3 octobre 2026) : le lavoir de Nénu sous trois toits,
 // le parasol de Lavi, la glacière de Pudding en coffre (trois glaces au sol, trois tuiles dessus) ; puis ses retouches sur
 // captures : les cubes livrés ne changent jamais, seuls ceux de l'île de la créature qui se perdaient sur son sol
-// deviennent un bloc de finition (le puits, la grue, la cabane, le perchoir, la banquette, l'équerre), et la grue, le
-// pupitre et les poteaux du puits se voient de travers.
+// deviennent un bloc de finition (le puits, la grue, la cabane, le perchoir, la banquette, l'équerre ; puis, sans
+// exception, le parasol, la pendule, la vitrine, la serre, le pupitre, l'auvent, le mât de relevés, le banc, le
+// haut-parleur et la fontaine), et la grue, le pupitre et les poteaux du puits se voient de travers.
 // Les noms (« la pendule », « le potager »…) sont ceux du contenu, choisis par le directeur artistique (3 octobre 2026) :
 // les identifiants, et donc la sauvegarde, n'en dépendent pas.
 //
@@ -57,10 +58,10 @@ const FORMES: Record<string, Cube[]> = {
     [1, 0, 1, 'door'],
     [1, 2, 1, 'door'],
   ],
-  // Rouxel, la grue : un mât de barrières (le sable se perdait sur le sol de la Carrière), la flèche de deux poutres,
-  // une charge de sable sous son bout. La flèche le long des y : la caméra de l'île regarde la Carrière le long des x,
+  // Rouxel, la grue : un mât de barrières, la flèche de deux poutres, une caisse de portes sous son bout (le sable se
+  // perdait sur le sol de la Carrière). La flèche le long des y : la caméra de l'île regarde la Carrière le long des x,
   // elle la voit de travers (retouche du directeur artistique).
-  'french-6e-word-spelling-fixture-1': [...colonne(0, 0, 0, 2, 'fence'), [0, 1, 2, BLOC.poutre], [0, 2, 2, BLOC.poutre], [0, 2, 0, BLOC.sable]],
+  'french-6e-word-spelling-fixture-1': [...colonne(0, 0, 0, 2, 'fence'), [0, 1, 2, BLOC.poutre], [0, 2, 2, BLOC.poutre], [0, 2, 0, 'door']],
   // Bloquette, le bac à eau : deux poteaux de terre, deux galets entre eux.
   'french-6e-grammar-spelling-fixture-1': [
     ...colonne(0, 0, 0, 1, BLOC.terre),
@@ -92,18 +93,21 @@ const FORMES: Record<string, Cube[]> = {
     [1, 0, 0, BLOC.galet],
     ...rangee(0, 2, 1, 2, 'roof'),
   ],
-  // Lavi, le parasol (correction du DA) : un mât d'obsidienne, quatre cabines en croix autour de son sommet.
+  // Lavi, le parasol (correction du DA) : un mât d'obsidienne au pied de barrière (l'obsidienne se perdait sur le sol
+  // d'obsidienne de la Lagune), quatre cabines en croix autour de son sommet.
   'maths-6e-decimals-fixture-1': [
-    ...colonne(1, 1, 0, 2, BLOC.obsidienne),
+    [1, 1, 0, 'fence'],
+    ...colonne(1, 1, 1, 2, BLOC.obsidienne),
     [0, 1, 2, BLOC.cabine],
     [2, 1, 2, BLOC.cabine],
     [1, 0, 2, BLOC.cabine],
     [1, 2, 2, BLOC.cabine],
   ],
-  // Robin, la pendule : deux piliers de cabine, deux cadrans dessus.
-  'english-6e-vocabulary-fixture-1': [...colonne(0, 0, 0, 1, BLOC.cabine), ...colonne(1, 0, 0, 1, BLOC.cabine), [0, 0, 2, BLOC.cadran], [1, 0, 2, BLOC.cadran]],
-  // Tick, la vitrine : un soubassement de cadrans, trois verres, trois toits.
-  'english-6e-grammar-fixture-1': [...rangee(0, 2, 0, 0, BLOC.cadran), ...rangee(0, 2, 0, 1, BLOC.verre), ...rangee(0, 2, 0, 2, 'roof')],
+  // Robin, la pendule : deux piliers de cabine sur un pied de deux portes (la cabine se perdait sur le sol de cabines),
+  // deux cadrans dessus.
+  'english-6e-vocabulary-fixture-1': [...rangee(0, 1, 0, 0, 'door'), ...rangee(0, 1, 0, 1, BLOC.cabine), [0, 0, 2, BLOC.cadran], [1, 0, 2, BLOC.cadran]],
+  // Tick, la vitrine : un soubassement de portes (les cadrans se perdaient sur le sol de cadrans), trois verres, trois toits.
+  'english-6e-grammar-fixture-1': [...rangee(0, 2, 0, 0, 'door'), ...rangee(0, 2, 0, 1, BLOC.verre), ...rangee(0, 2, 0, 2, 'roof')],
 
   // 5e : les Collines du Large.
   // Frimas, la cabane : des murs de portes sur deux rangs (la glace se perdait sur le sol de glace du Glacier,
@@ -136,8 +140,8 @@ const FORMES: Record<string, Cube[]> = {
   ],
   // Pudding, la glacière (correction du DA) : trois glaces au sol, trois tuiles dessus en couvercle.
   'english-5e-vocabulary-fixture-1': [...rangee(0, 2, 0, 0, BLOC.glace), ...rangee(0, 2, 0, 1, BLOC.tuile)],
-  // Moustache, la serre : deux lambris, deux vitraux, deux toits.
-  'english-5e-grammar-fixture-1': [...rangee(0, 1, 0, 0, BLOC.lambris), ...rangee(0, 1, 0, 1, BLOC.vitrail), ...rangee(0, 1, 0, 2, 'roof')],
+  // Moustache, la serre : deux portes (le lambris se perdait sur le sol de lambris), deux vitraux, deux toits.
+  'english-5e-grammar-fixture-1': [...rangee(0, 1, 0, 0, 'door'), ...rangee(0, 1, 0, 1, BLOC.vitrail), ...rangee(0, 1, 0, 2, 'roof')],
 
   // 4e : les Monts de Feu.
   // Braise, le wagonnet : une voie de trois rails, un wagonnet de deux aciers.
@@ -157,26 +161,31 @@ const FORMES: Record<string, Cube[]> = {
   // Plume, la banquette : une assise de deux velours devant, un dossier de 2 × 2 portes derrière (le parchemin se perdait
   // sur le sol de parchemin du Cabinet, retouche du directeur artistique).
   'french-4e-vocabulary-fixture-1': [...rangee(0, 1, 0, 0, BLOC.velours), ...rangee(0, 1, 1, 0, 'door'), ...rangee(0, 1, 1, 1, 'door')],
-  // Puck, le pupitre du souffleur : un pied de deux velours, une tablette de trois parchemins, le long des y : la caméra
-  // de l'île regarde le Théâtre le long des x, elle la voit de travers (retouche du directeur artistique).
-  'english-4e-comprehension-fixture-1': [...colonne(0, 1, 0, 1, BLOC.velours), [0, 0, 2, BLOC.parchemin], [0, 1, 2, BLOC.parchemin], [0, 2, 2, BLOC.parchemin]],
-  // Vapeur, l'auvent : deux poteaux de rail, un toit de trois calques.
-  'english-4e-grammar-fixture-1': [...colonne(0, 0, 0, 1, BLOC.rail), ...colonne(2, 0, 0, 1, BLOC.rail), ...rangee(0, 2, 0, 2, BLOC.calque)],
+  // Puck, le pupitre du souffleur : un pied d'une barrière (le velours se perdait sur le sol de velours du Théâtre) et
+  // d'un velours, une tablette de trois parchemins, le long des y : la caméra de l'île regarde le Théâtre le long des x,
+  // elle la voit de travers (retouche du directeur artistique).
+  'english-4e-comprehension-fixture-1': [[0, 1, 0, 'fence'], [0, 1, 1, BLOC.velours], [0, 0, 2, BLOC.parchemin], [0, 1, 2, BLOC.parchemin], [0, 2, 2, BLOC.parchemin]],
+  // Vapeur, l'auvent : deux poteaux de rail au pied de barrière (le rail se perdait sur le sol de rails de la Gare), un
+  // toit de trois calques.
+  'english-4e-grammar-fixture-1': [[0, 0, 0, 'fence'], [0, 0, 1, BLOC.rail], [2, 0, 0, 'fence'], [2, 0, 1, BLOC.rail], ...rangee(0, 2, 0, 2, BLOC.calque)],
 
   // 3e : les Îles du Ciel.
   // Théo, l'équerre : une branche debout de trois prismes, une branche couchée de deux portes (le marbre se perdait sur
   // le sol de marbre du Belvédère, retouche du directeur artistique).
   'maths-3e-geometry-fixture-1': [...colonne(0, 0, 0, 2, BLOC.prisme), [1, 0, 0, 'door'], [2, 0, 0, 'door']],
-  // Stat, le mât de relevés : un socle de deux quartz, un mât de deux antennes.
-  'maths-3e-statistics-fixture-1': [[0, 0, 0, BLOC.quartz], [1, 0, 0, BLOC.quartz], ...colonne(0, 0, 1, 2, BLOC.antenne)],
+  // Stat, le mât de relevés : un socle de deux marches d'escalier (le quartz se perdait sur le sol de quartz), un mât de
+  // deux antennes.
+  'maths-3e-statistics-fixture-1': [[0, 0, 0, 'stairs'], [1, 0, 0, 'stairs'], ...colonne(0, 0, 1, 2, BLOC.antenne)],
   // Fi, le réflecteur : un socle de deux prismes, deux miroirs, un cadre de deux prismes.
   'maths-3e-functions-fixture-1': [...rangee(0, 1, 0, 0, BLOC.prisme), ...rangee(0, 1, 0, 1, BLOC.miroir), ...rangee(0, 1, 0, 2, BLOC.prisme)],
-  // Astra, le banc : deux pieds de lentille, une assise de trois pierres de taille.
-  'french-3e-close-reading-fixture-1': [[0, 0, 0, BLOC.lentille], [2, 0, 0, BLOC.lentille], ...rangee(0, 2, 0, 1, BLOC.taille)],
-  // Écho, le haut-parleur : un socle de deux antennes, deux lentilles dessus.
-  'english-3e-comprehension-fixture-1': [...rangee(0, 1, 0, 0, BLOC.antenne), ...rangee(0, 1, 0, 1, BLOC.lentille)],
-  // Knight, la fontaine : un bassin en U de cinq pierres de taille, une colonne de deux marbres au milieu.
-  'english-3e-grammar-fixture-1': [[0, 0, 0, BLOC.taille], [2, 0, 0, BLOC.taille], ...rangee(0, 2, 1, 0, BLOC.taille), ...colonne(1, 0, 0, 1, BLOC.marbre)],
+  // Astra, le banc : deux pieds de barrière (la lentille se perdait sur le sol de lentilles), une assise de trois pierres
+  // de taille.
+  'french-3e-close-reading-fixture-1': [[0, 0, 0, 'fence'], [2, 0, 0, 'fence'], ...rangee(0, 2, 0, 1, BLOC.taille)],
+  // Écho, le haut-parleur : un caisson de deux portes (l'antenne se perdait sur le sol d'antennes), deux lentilles dessus.
+  'english-3e-comprehension-fixture-1': [...rangee(0, 1, 0, 0, 'door'), ...rangee(0, 1, 0, 1, BLOC.lentille)],
+  // Knight, la fontaine : un bassin en U de cinq marches d'escalier (la pierre de taille se perdait sur le sol de pierre
+  // de taille), une colonne de deux marbres au milieu.
+  'english-3e-grammar-fixture-1': [[0, 0, 0, 'stairs'], [2, 0, 0, 'stairs'], ...rangee(0, 2, 1, 0, 'stairs'), ...colonne(1, 0, 0, 1, BLOC.marbre)],
 };
 
 /**

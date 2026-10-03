@@ -2,7 +2,7 @@
 // plus large au relief varié, à son altitude), reliées par des ponts et des rampes de bois.
 // Générateur pur (sans Three.js) : testable, et partagé entre la 3D et la vue simple. Le décor (arbres, décor du cœur,
 // repères, cascades, habillage de la mer) est dessiné par ./decor.ts, et posé ici.
-import { BLOC, BIOMES, BLOCKS, missionsJouables, type BiomeDef, type BiomeId } from '../biomes';
+import { BLOC, BIOMES, BLOCKS, missionsJouables, type BiomeDef, type BiomeId, type BlockId } from '../biomes';
 import { lv2Courante } from '../../core/settings';
 import { ARCHIPELAGOS, BRIDGES, bridgeState, bridgesOf, getArchipelago, isBiomeUnlocked, islandsOf, otherEnd, reachableIslands, type BridgeDef } from './archipelago';
 import { walkPath, type Cell, type WalkGround } from './paths';
@@ -1319,6 +1319,58 @@ export function placeDeLaPetiteConstruction(_id: BiomeId, fixture: string): { x:
  * créature compte deux cases de plus par case d'avance. `null` si rien ne la tient.
  */
 export function calculerLaPlaceDeLaPetiteConstruction(id: BiomeId, fixture: string): { x: number; y: number } | null {
+  const examen = examenDeLaPetiteConstruction(id, fixture);
+  if (!examen) return null;
+  // Les préférences, de la plus forte à la plus faible : derrière la rangée des bornes, puis jamais sur une borne à
+  // l'écran, puis une case (à l'écran) entre elle et toute borne, puis sur un autre sol, puis entière (le moins de points
+  // cachés), puis dégagée ; à préférences égales, la plus proche (la première trouvée à score égal).
+  const rang = (p: ExamenDUnePlace) => [p.derriere ? 0 : 1, p.libre ? 0 : 1, p.ecartee ? 0 : 1, p.sol ? 0 : 1, p.caches, p.degagee ? 0 : 1, p.score];
+  const avant = (a: number[], b: number[]) => {
+    for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return a[i] < b[i];
+    return false;
+  };
+  let best: ExamenDUnePlace | null = null;
+  for (const [ox, oy] of examen.candidates()) {
+    const p = examen.examiner(ox, oy);
+    if (p && (!best || avant(rang(p), rang(best)))) best = p;
+  }
+  return best ? { x: best.x, y: best.y } : null;
+}
+
+/** Ce que vaut une place qui tient les règles (voir `calculerLaPlaceDeLaPetiteConstruction`). */
+export interface ExamenDUnePlace {
+  x: number;
+  y: number;
+  /** La distance à la créature, plus le prix d'être devant elle ou près d'une borne à l'écran. */
+  score: number;
+  /** Derrière la rangée des bornes. */
+  derriere: boolean;
+  /** Rien d'elle sur la silhouette d'une borne (son socle, son ardoise, le repère au-dessus), à l'écran. */
+  libre: boolean;
+  /** Une demi-case au moins, à l'écran, entre elle et toute borne. */
+  ecartee: boolean;
+  /** Ses cubes posés au sol ne sont pas du bloc du sol de leur case. */
+  sol: boolean;
+  /** Une case nue autour d'elle. */
+  degagee: boolean;
+  /** Le nombre de points cachés de ses cubes (milieu et huit coins de chacun). */
+  caches: number;
+  /**
+   * Chacun de ses cubes : son bloc, combien de ses neuf points (milieu et coins) se voient devant l'île tout construite, la
+   * créature et le bonhomme, et s'il se fond dans le sol de sa case.
+   */
+  cubes: { x: number; y: number; z: number; block: BlockId; vus: number; commeLeSol: boolean }[];
+}
+
+/**
+ * Le calcul des places d'une petite construction autour de la créature : les places à essayer (`candidates`), et ce que
+ * vaut chacune (`examiner`, `null` si elle ne tient pas les règles). Seuls le test et `calculerLaPlaceDeLaPetiteConstruction`
+ * s'en servent.
+ */
+export function examenDeLaPetiteConstruction(
+  id: BiomeId,
+  fixture: string,
+): { candidates: () => Iterable<[number, number]>; examiner: (ox: number, oy: number) => ExamenDUnePlace | null } | null {
   const cases = casesDeLaPetiteConstruction(fixture) ?? [];
   const pied = [...new Map(cases.map((c) => [`${c.x},${c.y}`, { x: c.x, y: c.y }])).values()];
   if (!pied.length) return null;
@@ -1426,51 +1478,49 @@ export function calculerLaPlaceDeLaPetiteConstruction(id: BiomeId, fixture: stri
       return true;
     });
   // Les cubes posés au sol ne sont pas du bloc du sol de leur case.
-  const auSol = cases.filter((c) => c.z === 0);
-  const surUnAutreSol = (ox: number, oy: number) => auSol.every((c) => sol.get(`${ox + c.x},${oy + c.y}`) !== (BLOCKS[c.block].texture ?? BLOCKS[c.block].side));
+  const commeLeSol = (b: BlockId, x: number, y: number) => sol.get(`${x},${y}`) === (BLOCKS[b].texture ?? BLOCKS[b].side);
   // Des points d'un cube : son milieu et, un peu en retrait, ses huit coins ; il se voit entier quand chacun se voit (un
   // poteau devant lui en cache une partie).
   const pointsVus: readonly (readonly [number, number, number])[] = [[0.5, 0.5, 0.5], ...[0.15, 0.85].flatMap((u) => [0.15, 0.85].flatMap((v) => [0.15, 0.85].map((w) => [u, v, w] as const)))];
   const R = PORTEE_DE_LA_PETITE_CONSTRUCTION;
-  // Les places qui tiennent les règles, avec leur distance à la créature (calculées une fois).
-  const places: { x: number; y: number; score: number; derriere: boolean; libre: boolean; ecartee: boolean; sol: boolean; degagee: boolean; caches: number }[] = [];
-  for (let ox = spot.x - R - largeur; ox <= spot.x + R; ox++)
-    for (let oy = spot.y - R - profondeur; oy <= spot.y + R; oy++) {
-      const distance = Math.min(...pied.flatMap((p) => elle.map((e) => Math.abs(ox + p.x + 0.5 - e.x) + Math.abs(oy + p.y + 0.5 - e.y))));
-      if (distance > R) continue;
-      if (!pied.every((p) => free(ox + p.x, oy + p.y) && !aCote.has(`${ox + p.x},${oy + p.y}`) && !interdites.has(`${ox + p.x},${oy + p.y}`))) continue;
-      if (cases.some((c) => cacheUneBorne(bornes, vers, ox + c.x, oy + c.y, c.z + 1) || cacheUnLieu(lieux, vers, ox + c.x, oy + c.y, c.z + 1))) continue;
-      const forme = new Set(cases.map((c) => `${ox + c.x},${oy + c.y},${c.z + 1}`));
-      if (elle.some((e) => rayonArrete(forme, camera, e.x, e.y, e.z, 4))) continue;
-      if (dessus.some((d) => rayonArrete(pleines, camera, ox + d.x + 0.5, oy + d.y + 0.5, d.z + 1.02, plafond))) continue;
-      if (cases.some((c) => rayonArrete(bonhomme, camera, ox + c.x + 0.5, oy + c.y + 0.5, c.z + 1.5, plafond))) continue;
-      if (!dansLaVue(cadreDeLaForme(ox, oy))) continue;
-      const ecart = ecartAuxBornes(ox, oy);
-      const avance = (ox + px - cx) * ux + (oy + py - cy) * uy;
-      places.push({
-        x: ox,
-        y: oy,
-        // Trop près d'une borne à l'écran : d'autant plus loin dans l'ordre qu'elle s'en approche.
-        score: distance + 2 * Math.max(0, avance - 1) + (4 * Math.max(0, cube / 2 - ecart)) / cube,
-        derriere: pied.every((p) => oy + p.y >= devant),
-        libre: ecart > 0,
-        ecartee: ecart >= cube / 2,
-        sol: surUnAutreSol(ox, oy),
-        degagee: degagee(ox, oy),
-        caches: cases.reduce((n, c) => n + pointsVus.filter(([u, v, w]) => rayonArrete(pleines, camera, ox + c.x + u, oy + c.y + v, c.z + 1 + w, plafond)).length, 0),
-      });
-    }
-  // Les préférences, de la plus forte à la plus faible : derrière la rangée des bornes, puis jamais sur une borne à
-  // l'écran, puis une case (à l'écran) entre elle et toute borne, puis sur un autre sol, puis entière (le moins de points
-  // cachés), puis dégagée ; à préférences égales, la plus proche (la première trouvée à score égal).
-  const rang = (p: (typeof places)[number]) => [p.derriere ? 0 : 1, p.libre ? 0 : 1, p.ecartee ? 0 : 1, p.sol ? 0 : 1, p.caches, p.degagee ? 0 : 1, p.score];
-  const avant = (a: number[], b: number[]) => {
-    for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return a[i] < b[i];
-    return false;
+  function* candidates(): Iterable<[number, number]> {
+    for (let ox = spot.x - R - largeur; ox <= spot.x + R; ox++) for (let oy = spot.y - R - profondeur; oy <= spot.y + R; oy++) yield [ox, oy];
+  }
+  const examiner = (ox: number, oy: number): ExamenDUnePlace | null => {
+    const distance = Math.min(...pied.flatMap((p) => elle.map((e) => Math.abs(ox + p.x + 0.5 - e.x) + Math.abs(oy + p.y + 0.5 - e.y))));
+    if (distance > R) return null;
+    if (!pied.every((p) => free(ox + p.x, oy + p.y) && !aCote.has(`${ox + p.x},${oy + p.y}`) && !interdites.has(`${ox + p.x},${oy + p.y}`))) return null;
+    if (cases.some((c) => cacheUneBorne(bornes, vers, ox + c.x, oy + c.y, c.z + 1) || cacheUnLieu(lieux, vers, ox + c.x, oy + c.y, c.z + 1))) return null;
+    const forme = new Set(cases.map((c) => `${ox + c.x},${oy + c.y},${c.z + 1}`));
+    if (elle.some((e) => rayonArrete(forme, camera, e.x, e.y, e.z, 4))) return null;
+    if (dessus.some((d) => rayonArrete(pleines, camera, ox + d.x + 0.5, oy + d.y + 0.5, d.z + 1.02, plafond))) return null;
+    if (cases.some((c) => rayonArrete(bonhomme, camera, ox + c.x + 0.5, oy + c.y + 0.5, c.z + 1.5, plafond))) return null;
+    if (!dansLaVue(cadreDeLaForme(ox, oy))) return null;
+    const ecart = ecartAuxBornes(ox, oy);
+    const avance = (ox + px - cx) * ux + (oy + py - cy) * uy;
+    const cubes = cases.map((c) => ({
+      x: c.x,
+      y: c.y,
+      z: c.z,
+      block: c.block,
+      vus: pointsVus.filter(([u, v, w]) => !rayonArrete(pleines, camera, ox + c.x + u, oy + c.y + v, c.z + 1 + w, plafond)).length,
+      commeLeSol: c.z === 0 && commeLeSol(c.block, ox + c.x, oy + c.y),
+    }));
+    return {
+      x: ox,
+      y: oy,
+      // Trop près d'une borne à l'écran : d'autant plus loin dans l'ordre qu'elle s'en approche.
+      score: distance + 2 * Math.max(0, avance - 1) + (4 * Math.max(0, cube / 2 - ecart)) / cube,
+      derriere: pied.every((p) => oy + p.y >= devant),
+      libre: ecart > 0,
+      ecartee: ecart >= cube / 2,
+      sol: cubes.every((c) => !c.commeLeSol),
+      degagee: degagee(ox, oy),
+      caches: cubes.reduce((n, c) => n + pointsVus.length - c.vus, 0),
+      cubes,
+    };
   };
-  let best: (typeof places)[number] | null = null;
-  for (const p of places) if (!best || avant(rang(p), rang(best))) best = p;
-  return best ? { x: best.x, y: best.y } : null;
+  return { candidates, examiner };
 }
 
 /** Les créatures des îles ouvertes : cubes relatifs et position de leur coin dans le monde (elles sont animées à part). */

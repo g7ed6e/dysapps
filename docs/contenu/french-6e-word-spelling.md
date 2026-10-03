@@ -462,4 +462,4 @@ Pour tous les items :
 - prête : Tu as les {blocs} ! Livre-les à Rouxel.
 - posée : Grue posée chez Rouxel !
 
-> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : la colonne et le linteau de la tonnelle (`jardin()`) : un mât de 3 barrières (`fence`) en (0, 0), la flèche de 2 poutres en (0, 1) et (0, 2) à z 2, une charge de sable sous le bout de la flèche, en (0, 2, 0) ; la flèche le long des y, perpendiculaire à l’axe de la caméra de l’île ; 6 cubes, 3 cases, 3 de haut (retouche du directeur artistique, 3 octobre 2026).
+> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : la colonne et le linteau de la tonnelle (`jardin()`) : un mât de 3 barrières (`fence`) en (0, 0), la flèche de 2 poutres en (0, 1) et (0, 2) à z 2, une caisse, une porte, sous le bout de la flèche, en (0, 2, 0) (le sable se perdait sur le sol de sable, retouche du directeur artistique, 3 octobre 2026 : le bloc du sol, sans exception) ; la flèche le long des y, perpendiculaire à l’axe de la caméra de l’île ; 6 cubes, 3 cases, 3 de haut (retouche du directeur artistique, 3 octobre 2026).

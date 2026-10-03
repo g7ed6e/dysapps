@@ -52,9 +52,14 @@ export interface Signes extends PartieDeLaScene {
   /**
    * Change quand une plaque de plus est posée, ou que la créature d'une plaque arrive dans la scène : les étiquettes se
    * replacent alors. Jamais quand une plaque s'en va (l'étiquette ne saute pas pendant la pose d'une petite
-   * construction : elle se replacera à la prochaine visée), ni pendant un vol de la caméra.
+   * construction : elle se replacera à la prochaine visée), ni pendant un vol de la caméra. Pendant la pose en vague
+   * (`suivreLaVague`), une plaque nouvelle (la commande suivante, suggérée juste après « Livrer ») ou une créature qui
+   * arrive se montre tout de suite, mais la version ne change qu'à la fin de la vague : les étiquettes ne se replacent
+   * qu'à la prochaine visée de la caméra (qui les replace de toute façon) ou à la fin de la vague (relecture dys).
    */
   readonly version: number;
+  /** La pose d'une partie en vague commence (`true`) ou finit, touchée ou quittée (`false`) : voir `version`. */
+  suivreLaVague(enCours: boolean): void;
 }
 
 /** Le contour d'une plaque carrée aux coins presque droits, en lignes et petits arcs (sans `roundRect`, absent des vieux Safari). */
@@ -212,6 +217,13 @@ export function creerSignes(monde: Monde, el: HTMLElement, camera: THREE.Perspec
   /** La case de texture écrite dans chaque place du maillage (-1 : aucune) : on ne la réécrit que si elle change. */
   const casesEcrites = new Array<number>(SIGNES_MAX).fill(-1);
   let version = 0;
+  /** Une vague est en cours ; une plaque ou une créature est arrivée pendant elle (la version changera à sa fin). */
+  let enVague = false;
+  let enAttente = false;
+  const plaqueDePlus = () => {
+    if (enVague) enAttente = true;
+    else version++;
+  };
   const aLEcran = new THREE.Vector3();
   const boite = new THREE.Box3();
   const coin = new THREE.Vector3();
@@ -260,8 +272,16 @@ export function creerSignes(monde: Monde, el: HTMLElement, camera: THREE.Perspec
     poser: (liste) => {
       const avant = new Map(signes.map((s) => [s.id, s]));
       signes = liste.slice(0, SIGNES_MAX).map((s) => ({ id: s.id, rang: caseDe(s.bloc ? { bloc: s.bloc } : { icone: s.icone }), y: avant.get(s.id)?.y ?? null, vue: avant.get(s.id)?.vue ?? false }));
-      // Une plaque de plus : les étiquettes se replacent. Une plaque qui s'en va ne les fait pas bouger.
-      if (signes.some((s) => !avant.has(s.id))) version++;
+      // Une plaque de plus : les étiquettes se replacent (à la fin de la vague, s'il y en a une). Une plaque qui s'en va ne
+      // les fait pas bouger.
+      if (signes.some((s) => !avant.has(s.id))) plaqueDePlus();
+    },
+    suivreLaVague: (enCours) => {
+      enVague = enCours;
+      if (!enCours && enAttente) {
+        enAttente = false;
+        version++;
+      }
     },
     animer: (_t, _dt, reduit) => {
       const { focus, carte } = derniers.current;
@@ -276,11 +296,12 @@ export function creerSignes(monde: Monde, el: HTMLElement, camera: THREE.Perspec
           personnages.faireSigne(ile, debut);
         }
       }
-      // La créature d'une plaque arrive dans la scène (posée après la plaque) : les étiquettes se replacent, une fois.
+      // La créature d'une plaque arrive dans la scène (posée après la plaque) : les étiquettes se replacent, une fois (à la
+      // fin de la vague, s'il y en a une).
       for (const s of signes)
         if (!s.vue && personnages.teteDe(s.id, tete)) {
           s.vue = true;
-          version++;
+          plaqueDePlus();
         }
       if (!signes.length || carte || instant.carte || instant.navigue) {
         maillage.visible = false;

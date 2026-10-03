@@ -561,4 +561,4 @@ Pour tous les items :
 - prête : Tu as les {blocs} ! Livre-les à Robin.
 - posée : Pendule posée chez Robin !
 
-> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : le haut de la tour à horloge (`tour()`, `top: 'horloge'`) en petit : 2 piliers de cabine de 2 cubes, 2 cadrans dessus ; 6 cubes, 2 cases, 3 de haut.
+> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : le haut de la tour à horloge (`tour()`, `top: 'horloge'`) en petit : 2 piliers de 2 cubes, une porte en bas et une cabine dessus (la cabine se perdait sur le sol de cabines), 2 cadrans dessus ; 6 cubes, 2 cases, 3 de haut (retouche du directeur artistique, 3 octobre 2026 : le bloc du sol, sans exception).

@@ -59,4 +59,4 @@ créature : Lavi
 - prête : Tu as les {blocs} ! Livre-les à Lavi.
 - posée : Parasol posé chez Lavi !
 
-> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : la croix du toit en pointe de `tour()` : un mât de 3 obsidiennes au milieu, 4 cabines en croix autour de son sommet (z 2) ; 7 cubes, 5 cases sur 3 × 3, 3 de haut.
+> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : la croix du toit en pointe de `tour()` : un mât au milieu, une barrière en bas et 2 obsidiennes dessus (l’obsidienne se perdait sur le sol d’obsidienne), 4 cabines en croix autour de son sommet (z 2) ; 7 cubes, 5 cases sur 3 × 3, 3 de haut (retouche du directeur artistique, 3 octobre 2026 : le bloc du sol, sans exception).

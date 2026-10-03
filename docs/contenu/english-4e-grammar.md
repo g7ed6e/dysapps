@@ -530,4 +530,4 @@ Pour tous les items :
 - prête : Tu as les {blocs} ! Livre-les à Vapeur.
 - posée : Auvent posé chez Vapeur !
 
-> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : le portique de la tonnelle (`jardin()`) : 2 poteaux de rail de 2 cubes, un toit de 3 calques (le verre dépoli de la serre du Jardin) ; 7 cubes, 3 cases, 3 de haut.
+> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : le portique de la tonnelle (`jardin()`) : 2 poteaux de 2 cubes, une barrière en bas et un rail dessus (le rail se perdait sur le sol de rails), un toit de 3 calques (le verre dépoli de la serre du Jardin) ; 7 cubes, 3 cases, 3 de haut (retouche du directeur artistique, 3 octobre 2026 : le bloc du sol, sans exception).

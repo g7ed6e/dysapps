@@ -372,4 +372,4 @@ Pour tous les items :
 - prête : Tu as les {blocs} ! Livre-les à Moustache.
 - posée : Serre posée chez Moustache !
 
-> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : la serre de `jardin()` : un soubassement de 2 lambris, 2 vitraux dessus, 2 toits par-dessus ; 6 cubes, 2 cases, 3 de haut.
+> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : la serre de `jardin()` : un soubassement de 2 portes (le lambris se perdait sur le sol de lambris), 2 vitraux dessus, 2 toits par-dessus ; 6 cubes, 2 cases, 3 de haut (retouche du directeur artistique, 3 octobre 2026 : le bloc du sol, sans exception).

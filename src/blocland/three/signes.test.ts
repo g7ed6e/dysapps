@@ -187,6 +187,52 @@ it('les plaques sont des obstacles pour les étiquettes ; leur version ne change
   expect(signes.boites(camera, 1024, 768)).toHaveLength(1);
 });
 
+it('pendant la vague, une plaque nouvelle se montre tout de suite, mais les étiquettes ne se replacent qu’à sa fin', () => {
+  const { signes, instant } = scene();
+  signes.poser([{ id: FORET, icone: 'tree' }]);
+  signes.animer!(0, 0, true);
+  const v = signes.version;
+  // « Livrer » : la vague commence, la commande livrée s'en va, la suivante (la Mine) est suggérée tout de suite.
+  signes.suivreLaVague(true);
+  signes.poser([{ id: MINE, icone: 'blocks', bloc: 'french-6e-phonology' }]);
+  instant.now = 500;
+  signes.animer!(0, 0, true);
+  expect(signes.maillage.visible).toBe(true);
+  expect(signes.maillage.geometry.drawRange.count).toBe(6);
+  expect(signes.version).toBe(v);
+  // La vague finie (ou touchée) : une fois.
+  signes.suivreLaVague(false);
+  expect(signes.version).toBe(v + 1);
+  signes.suivreLaVague(false);
+  expect(signes.version).toBe(v + 1);
+});
+
+it('pendant la vague, une créature qui arrive dans la scène attend aussi la fin de la vague', () => {
+  vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null);
+  const monde = { scene: new THREE.Scene(), habillage: HABILLAGES.blocland } as unknown as Monde;
+  const camera = new THREE.PerspectiveCamera(40, 4 / 3, 0.5, 1000);
+  let la = false;
+  const personnages = { faireSigne: vi.fn(), teteDe: (_id: BiomeId, out: THREE.Vector3) => (out.set(0, 3, 0), la) } as unknown as Personnages;
+  const derniers = { current: { carte: false, focus: { island: null, seq: 1 }, home: null, forceDay: false, whalePass: null, sons: false } as unknown as Derniers };
+  const instant = { now: 0, marche: false, traversee: null, navigue: null, carte: false, but: { target: new THREE.Vector3(), pos: new THREE.Vector3() } } as Instant;
+  const signes = creerSignes(monde, { clientHeight: 768 } as HTMLElement, camera, personnages, derniers, instant);
+  signes.suivreLaVague(true);
+  signes.poser([{ id: FORET, icone: 'tree' }]);
+  const v = signes.version;
+  la = true;
+  signes.animer!(0, 0, true);
+  expect(signes.maillage.visible).toBe(true);
+  expect(signes.version).toBe(v);
+  signes.suivreLaVague(false);
+  expect(signes.version).toBe(v + 1);
+  // Hors de la vague, une plaque de plus replace les étiquettes tout de suite (aucune ne reste sous une plaque).
+  signes.poser([
+    { id: FORET, icone: 'tree' },
+    { id: MINE, icone: 'pickaxe' },
+  ]);
+  expect(signes.version).toBe(v + 2);
+});
+
 it('la créature d’une plaque est aussi un obstacle : aucune étiquette ne se pose sur elle', () => {
   const { signes } = scene();
   const corps = new THREE.Mesh(new THREE.BoxGeometry(2, 3, 2));

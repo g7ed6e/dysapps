@@ -52,4 +52,4 @@ créature : Stat
 - prête : Tu as les {blocs} ! Livre-les à Stat.
 - posée : Mât de relevés posé chez Stat !
 
-> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : le poteau du bout (`yard()`), sans lanterne : un socle de 2 quartz, un mât de 2 antennes sur celui de gauche ; 4 cubes, 2 cases, 3 de haut.
+> Forme, pour l’artiste technique 3D (dessinée dans le code, comme les plans) : le poteau du bout (`yard()`), sans lanterne : un socle de 2 marches d’escalier (le quartz se perdait sur le sol de quartz), un mât de 2 antennes sur celle de gauche ; 4 cubes, 2 cases, 3 de haut (retouche du directeur artistique, 3 octobre 2026 : le bloc du sol, sans exception).
