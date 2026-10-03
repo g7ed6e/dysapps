@@ -6,7 +6,9 @@ import { BLOCKS, type BiomeDef, type BiomeId, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { InventoryLink } from './Inventory';
 import { Foldable } from './IslandFold';
-import { minuscule, partiesDe, partiesPosees, prochainePartie } from './world/parties';
+import { minuscule, partiesDe, partiesPosees, prochainePartie, type Partie } from './world/parties';
+import { SpeakButton } from '../components/SpeakButton';
+import { frenchTypography } from '../components/math/RichText';
 import { getPlan, plansFor } from './world/plans';
 import { earnIsland, whereToEarn } from './world/uses';
 import { ASSEMBLAGE_PATH } from './world/assemblage';
@@ -20,7 +22,12 @@ interface Props {
   highlight?: boolean;
   /** Sous un titre « Le bâtiment » (vue simple) : le seul nom du bâtiment. */
   titreCourt?: boolean;
+  /** Les parties qui viennent de se poser dans le monde (GD-6) : la phrase « Partie posée : … », écrite et lue, en tête. */
+  vientDePoser?: Partie[] | null;
 }
+
+/** La phrase de la pose dans le monde : « Partie posée : le toit de la cabane. », une par partie. */
+export const phraseDesPartiesPosees = (posees: readonly Partie[]) => posees.map((p) => `Partie posée : ${minuscule(p.nom)}.`).join(' ');
 
 
 /** « à gagner dans Forêt des sons » (un lien vers l'île), « ici, dans les missions », ou un coffre (`whereToEarn`). */
@@ -54,7 +61,7 @@ export function batimentSummary(posees: number, total: number): string {
  * parties sont posées, le nom de la prochaine et comment la poser, ou que le bâtiment est fini ; puis le lien vers
  * « Mes blocs » et le journal du village. Rien ne s'y pose à la main. Même contenu dans le panneau 3D et en vue simple.
  */
-export function PlanSection({ biome, fold, highlight = false, titreCourt = false }: Props) {
+export function PlanSection({ biome, fold, highlight = false, titreCourt = false, vientDePoser = null }: Props) {
   const { state } = useBlocland();
   const section = useRef<HTMLElement>(null);
   useEffect(() => {
@@ -74,6 +81,12 @@ export function PlanSection({ biome, fold, highlight = false, titreCourt = false
   return (
     <Foldable fold={fold} name="plan" heading={heading} status={batimentSummary(posees, total)} defaultOpen={highlight}>
       <section ref={section} className={`plan-section${highlight ? ' bridge-highlight' : ''}`} aria-labelledby={`plan-${biome.id}`}>
+        {vientDePoser && vientDePoser.length > 0 && (
+          <p className="plan-posee" role="status">
+            <Icon name="home" /> <strong>{phraseDesPartiesPosees(vientDePoser)}</strong>{' '}
+            <SpeakButton text={frenchTypography(phraseDesPartiesPosees(vientDePoser))} label="Écouter" compact />
+          </p>
+        )}
         {total > 0 && (
           <>
             <div

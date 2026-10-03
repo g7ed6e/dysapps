@@ -3030,6 +3030,15 @@ figure.class-table {
   flex-shrink: 0;
   margin-top: 0.3em;
 }
+/* La partie qui vient de se poser dans le monde (GD-6), dite après le dernier cube : sur le fond du panneau, sans animation. */
+.plan-posee {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 0 0 0.6rem;
+  max-width: none;
+}
 
 /* ===== Village : ce que dit une créature quand on la touche ===== */
 .creature-line {

@@ -144,6 +144,11 @@ const CAPTURES = [
   { nom: 'assemblage-viaduc', vue: 'île', famille: 'assemblage', ile: 'maths-4e-algebra', lieu: 'landmark-4e-1', finesse: 2 },
   { nom: 'assemblage-ile', vue: 'île', famille: 'assemblage', ile: 'maths-3e-functions', finesse: 2 },
   { nom: 'assemblage-etoiles', vue: 'île', famille: 'assemblage', ile: 'maths-3e-functions', lieu: 'landmark-3e-1', finesse: 2 },
+  // La pose d'une partie en vague (GD-6, Blocland, famille `pose`) : la cabane de Mousso, première partie du bâtiment de
+  // la Forêt des sons, après « Voir le bâtiment » (`pose` : les missions de l'île terminées, la pose retenue pour la
+  // visite) ; en cours (les pas d'après le monde construit), puis finie (`pasEnPlus`), la phrase dans le panneau.
+  { nom: 'pose-en-cours', vue: 'île', famille: 'pose', ile: 'french-6e-phonology', partie: 'un-plan', pose: 1 },
+  { nom: 'pose-finie', vue: 'île', famille: 'pose', ile: 'french-6e-phonology', partie: 'un-plan', pose: 1, pasEnPlus: 80 },
   // L'école et la salle des trophées des Premiers Rivages (lot 7b, les lieux du village) : la vue de la Forêt, sans
   // trophée et avec tous (`succes` : le nombre de succès gagnés, `tous` pour tous, un trophée chacun), de jour et de
   // nuit ; de près, recadrées (`finesse` 3 : le colombage net) ; de loin, la vue de l'archipel.
@@ -279,6 +284,7 @@ function sansLesIles(parCle, iles) {
  */
 function routeDe(c, parIle, routes) {
   if (parIle) return `/adventure/${parIle}/challenge`;
+  if (c.pose) return `/adventure/${c.ile}?worksite=part`;
   if (c.lieu) return `/adventure/${c.lieu}`;
   if (c.ile && c.vue === 'île') return `/adventure/${c.ile}`;
   if (c.ile && (c.vue === 'défi' || c.vue === 'bulle')) return `/adventure/${c.ile}/challenge`;
@@ -305,6 +311,15 @@ async function scenes() {
     load('/src/blocland/world/plans.ts'),
     load('/src/core/progress.ts'),
   ]);
+  /**
+   * Une partie où l'île `ile` n'a que ses `n` premières missions terminées (la pose d'une partie, `pose`) : ses autres
+   * exercices et son défi sont retirés, sans quoi l'ouverture poserait aussitôt les parties suivantes.
+   */
+  const premieresMissions = (parCle, ile, n) => {
+    if (!ile) return parCle;
+    const types = BIOMES.find((b) => b.id === ile).exercises.slice(0, n).map((x) => `${ile}-${x.id}-`);
+    return Object.fromEntries(Object.entries(parCle).filter(([k]) => !k.startsWith(`${ile}-`) || types.some((t) => k.startsWith(t))));
+  };
   /** Les succès gagnés d'une capture (`succes` : leur nombre, ou `tous`), un trophée chacun dans la salle des trophées. */
   const succesDe = (n) => Object.fromEntries(BADGES.slice(0, n === 'tous' ? BADGES.length : (n ?? 0)).map((b) => [b.id, '2026-09-28T10:00:00.000Z']));
   // La même partie tout construite que le test du budget (world/budget.test.ts).
@@ -388,20 +403,26 @@ async function scenes() {
               fige: c.fige,
               succes: c.succes,
               finesse: c.finesse,
+              pose: c.pose,
+              pasEnPlus: c.pasEnPlus,
               nom: parIle ? `${c.nom}-${parIle}` : c.nom,
             })),
           )
         : []),
     ];
-    for (const { vue, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages, succes, inventaire } of views) {
+    for (const { vue, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages, succes, inventaire, pose, pasEnPlus } of views) {
       const page = await browser.newPage({ viewport: taille ?? TABLET, deviceScaleFactor: finesse ?? (recadre ? 1.5 : 1), ...(fige ? { reducedMotion: 'reduce' } : {}) });
       await piloterLHorloge(page, time);
       await page.addInitScript(hasardFixe);
       await page.addInitScript(figeable);
       await page.goto(`${base}/icon.svg`);
       await page.evaluate(
-        ({ world, progress, view, univers, lv2, reglages, badges, inventaire }) => {
+        ({ world, progress, view, univers, lv2, reglages, badges, inventaire, pose }) => {
           localStorage.clear();
+          sessionStorage.removeItem('dysapps:poses-montrees');
+          // La pose à montrer (GD-6), comme la retient « Voir le bâtiment » (src/blocland/poseAMontrer.ts).
+          if (pose) sessionStorage.setItem('dysapps:pose', JSON.stringify(pose));
+          else sessionStorage.removeItem('dysapps:pose');
           sessionStorage.setItem('dysapps:title-seen', '1');
           localStorage.setItem('dysapps:settings', JSON.stringify({ worldView: view, ...(univers ? { univers } : {}), ...(lv2 ? { lv2 } : {}), ...(reglages ?? {}) }));
           localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true, 'archipel-5e': true, 'archipel-4e': true, 'archipel-3e': true }));
@@ -411,7 +432,8 @@ async function scenes() {
         },
         {
           world: { ...built, parts: sansLesIles(plans ?? built.parts, sansIles), ...(bridges ? { links: bridges } : {}), place: depuis ?? ile ?? at },
-          progress: sansEtoiles ? {} : sansLeGardien(sansLesIles(progress, sansIles), debout),
+          progress: sansEtoiles ? {} : premieresMissions(sansLeGardien(sansLesIles(progress, sansIles), debout), pose ? ile : null, pose),
+          pose: pose ? { biome: ile, rangs: Array.from({ length: pose }, (_, i) => i + 1) } : null,
           view,
           univers: UNIVERS_DES_TEXTES,
           lv2,
@@ -425,6 +447,11 @@ async function scenes() {
       if (!mesure) {
         // Les autres captures (nuit, personnages, chantier, ponts) : pas de mesure, seulement l'image.
         await preparerLaScene(page, VUES_SANS_MONDE.has(vue) ? 0 : WAIT);
+        // Plus loin dans le temps de la scène (la pose finie, par exemple), du même pas que la préparation.
+        for (let i = 0; i < (pasEnPlus ?? 0); i++) {
+          await page.clock.runFor(125);
+          await page.waitForTimeout(30);
+        }
         await capturer(page, { path: file, type: 'jpeg', quality: 85, timeout: 90000, ...(recadre ? { clip: recadre } : {}) });
         if (time === NIGHT && view === '3d') {
           // La part de lueur, sur la scène seule (le canvas, sans les panneaux ni les boutons autour) : les boutons posés

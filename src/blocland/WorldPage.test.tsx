@@ -1,4 +1,4 @@
-import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { SettingsProvider } from '../core/SettingsContext';
@@ -12,6 +12,12 @@ import { textesDe } from '../univers';
 // Pas de WebGL dans les tests : un monde factice, qui montre l'île cadrée et laisse toucher une île. Il connaît la
 // première case de la cabane de Mousso, dans le repère de l'île (un fantôme du bâtiment, posable à la main avant GD-6).
 const caseDeLaCabane = vi.hoisted(() => ({ x: 0, y: 0, z: 0 }));
+// Ce que le monde factice a reçu au dernier rendu : les cubes, la pose en vague (GD-6) et son rappel.
+const vu = vi.hoisted(() => ({
+  cubes: [] as { x: number; y: number; z: number; ghost?: boolean }[],
+  pose: null as { seq: number; cubes: { x: number; y: number; z: number }[] } | null,
+  onPose: undefined as ((moment: 'couche' | 'finie') => void) | undefined,
+}));
 vi.mock('./three', () => ({
   hasWebGL: () => false,
   VoxelCanvas: () => null,
@@ -26,9 +32,11 @@ vi.mock('./three', () => ({
     recentrage,
     forceDay,
     avatar,
+    pose = null,
+    onPose,
   }: {
     focus: { island: string | null; seq: number; spot?: { ile: string; local: { x: number; y: number } } };
-    cubes: { x: number; place?: string }[];
+    cubes: { x: number; y: number; z: number; ghost?: boolean; place?: string }[];
     onIntent: (i: { genre: string; [k: string]: unknown }) => void;
     vehicle: { port: string; cubes: { ghost?: boolean }[] } | null;
     archipelago: string;
@@ -37,8 +45,10 @@ vi.mock('./three', () => ({
     recentrage?: number;
     forceDay: boolean;
     avatar?: { route: { ile: string; local: { x: number; y: number } }[]; seq: number; flanerie?: boolean; vise?: boolean };
+    pose?: { seq: number; cubes: { x: number; y: number; z: number }[] } | null;
+    onPose?: (moment: 'couche' | 'finie') => void;
   }) => (
-    <div className="voxel-canvas" tabIndex={0}>
+    <div className="voxel-canvas" tabIndex={0} ref={() => void Object.assign(vu, { cubes, pose, onPose })}>
       <p data-testid="lumiere">{forceDay ? 'jour' : 'heure réelle'}</p>
       <p data-testid="cadrage">{focus.island ?? 'aucune'}</p>
       <p data-testid="demandes-de-cadrage">{focus.seq}</p>
@@ -732,4 +742,73 @@ it('le soleil et la lune ne sont plus dans la barre : le jour est forcé tant qu
   localStorage.setItem('dysapps:settings', JSON.stringify({ worldLight: 'day' }));
   renderAt('/adventure');
   expect(screen.getByTestId('lumiere')).toHaveTextContent('jour');
+});
+
+describe('la pose d’une partie en vague, après « Voir le bâtiment » (GD-6, Blocland)', () => {
+  /** Une mission de la Forêt terminée : la cabane de Mousso, sa première partie, est posée et enregistrée. */
+  const preparer = async () => {
+    const { partiesDe } = await import('./world/parties');
+    const { casesDesPlansDansLeMonde } = await import('./world/terrain');
+    const { retenirLaPose, oublierLesPoses } = await import('./poseAMontrer');
+    oublierLesPoses();
+    const [cabane] = partiesDe('french-6e-phonology');
+    const parts = Object.fromEntries(cabane.cases.map((c) => [c.plan.id, c.keys]));
+    localStorage.setItem('dysapps:game', JSON.stringify({ world: { parts, log: [], links: [], place: 'french-6e-phonology' } }));
+    retenirLaPose('french-6e-phonology', [cabane]);
+    const cases = casesDesPlansDansLeMonde(cabane.cases);
+    const dansLaPartie = () => vu.cubes.filter((c) => !c.ghost && cases.has(`${c.x},${c.y},${c.z}`)).length;
+    return { cases, dansLaPartie };
+  };
+  const phrase = () => screen.queryByText('Partie posée : la cabane de Mousso.');
+
+  it('cache la partie jusqu’à la vague, la donne à poser, puis dit la phrase après le dernier cube', async () => {
+    const { cases, dansLaPartie } = await preparer();
+    renderAt('/adventure/french-6e-phonology?worksite=part');
+    // Pendant la pose : le monde n'a pas les cases de la partie, la vague les a toutes ; pas encore de phrase.
+    await waitFor(() => expect(vu.pose?.cubes).toHaveLength(cases.size));
+    expect(dansLaPartie()).toBe(0);
+    expect(phrase()).not.toBeInTheDocument();
+    // Les bandeaux de récompense attendent la fin de la pose (DA-9).
+    expect(screen.getByTestId('retenus')).toHaveTextContent('oui');
+    // Une couche posée : rien de plus à lire.
+    act(() => vu.onPose?.('couche'));
+    expect(phrase()).not.toBeInTheDocument();
+    // Le dernier cube posé : la partie est dans le monde, la vague s'arrête, la phrase arrive dans le panneau.
+    act(() => vu.onPose?.('finie'));
+    expect(vu.pose).toBeNull();
+    expect(dansLaPartie()).toBe(cases.size);
+    expect(within(sheet()!).getByText('Partie posée : la cabane de Mousso.')).toBeInTheDocument();
+  });
+
+  it('un toucher sur le monde pendant la pose pose tout d’un coup', async () => {
+    const { cases, dansLaPartie } = await preparer();
+    renderAt('/adventure/french-6e-phonology?worksite=part');
+    await waitFor(() => expect(vu.pose).not.toBeNull());
+    fireEvent.pointerDown(document.querySelector('.voxel-canvas')!);
+    expect(vu.pose).toBeNull();
+    expect(dansLaPartie()).toBe(cases.size);
+    expect(phrase()).toBeInTheDocument();
+  });
+
+  it('quitter pendant la pose ne perd rien : au retour, la partie est posée, sans rejouer la pose', async () => {
+    const { cases, dansLaPartie } = await preparer();
+    const { unmount } = renderAt('/adventure/french-6e-phonology?worksite=part');
+    await waitFor(() => expect(vu.pose).not.toBeNull());
+    unmount();
+    renderAt('/adventure/french-6e-phonology?worksite=part');
+    await screen.findByTestId('cadrage');
+    expect(vu.pose).toBeNull();
+    expect(dansLaPartie()).toBe(cases.size);
+    expect(phrase()).not.toBeInTheDocument();
+    expect(JSON.parse(localStorage.getItem('dysapps:game')!).world.parts['french-6e-phonology-1']).toHaveLength(cases.size);
+  });
+
+  it('quand l’appareil demande moins d’animations, la partie est posée d’un coup et la phrase est là', async () => {
+    demanderMoinsDAnimations();
+    const { cases, dansLaPartie } = await preparer();
+    renderAt('/adventure/french-6e-phonology?worksite=part');
+    expect(await within(sheet()!).findByText('Partie posée : la cabane de Mousso.')).toBeInTheDocument();
+    expect(vu.pose).toBeNull();
+    expect(dansLaPartie()).toBe(cases.size);
+  });
 });

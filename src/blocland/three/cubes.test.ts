@@ -126,3 +126,77 @@ describe('Le geste de pose de Blocland (GD-1, point 4)', () => {
     c.dispose();
   });
 });
+
+describe('La pose d’une partie en vague (GD-6, Blocland)', () => {
+  const lumiere = { nuit: () => 0, suivre: () => {} } as unknown as Lumiere;
+  const sol = [0, 1, 2].map((x) => ({ x, y: 0, z: 0, texture: 'herbe' })) as VoxelCube[];
+  // Deux couches de trois cubes : la partie.
+  const partie = [0, 1, 2].flatMap((x) => [1, 2].map((z) => ({ x, y: 0, z, texture: 'planches' }))) as VoxelCube[];
+  const apres = [...sol, ...partie];
+  const maillages = (o: THREE.Object3D) => o.children.filter((x): x is THREE.Mesh => x instanceof THREE.Mesh);
+  /** Les triangles dessinés : ceux de la portée de dessin de chaque maillage. */
+  const dessines = (o: THREE.Object3D) =>
+    maillages(o).reduce((n, x) => n + Math.min(x.geometry.index!.count, x.geometry.drawRange.count) / 3, 0);
+  const scene = () => {
+    const m = monde(HABILLAGES.blocland);
+    const c = creerCubes(m, { rivage: () => {} } as unknown as Large, lumiere, { now: 0 } as Instant);
+    const moments: string[] = [];
+    c.lancerLaVague(partie, (x) => moments.push(x));
+    c.poser(sol);
+    return { m, c, terrain: m.scene.children[0], moments };
+  };
+
+  it('pose couche par couche dans les maillages du terrain : pas un objet de plus, un « clac » par couche, puis la fin', () => {
+    const { m, c, terrain, moments } = scene();
+    const objets = m.scene.children.length;
+    // Rien de la partie avant le premier cube ; pas plus de maillages que le monde tout posé.
+    expect(dessines(terrain)).toBe(buildMesh(sol).reduce((t, g) => t + g.indices.length / 3, 0));
+    expect(maillages(terrain).length).toBeLessThanOrEqual(buildMesh(apres).length + 1);
+    let hautMax = 0;
+    for (let i = 0; i < 400 && !moments.includes('finie'); i++) {
+      c.animer!(0, 0.03, false);
+      const y = maillages(terrain).flatMap((x) => Array.from(x.geometry.getAttribute('position').array as Float32Array).filter((_, j) => j % 3 === 1));
+      hautMax = Math.max(hautMax, ...y);
+    }
+    expect(m.scene.children.length).toBe(objets);
+    // Deux couches, deux « clacs », puis la fin, une fois.
+    expect(moments).toEqual(['couche', 'couche', 'finie']);
+    // Un cube du haut est parti d'une case et demie au-dessus de sa case (le haut de la partie est à 3).
+    expect(hautMax).toBeGreaterThan(3 + 1);
+    // Posés : tout est à sa place, et rien ne bouge plus.
+    c.animer!(0, 0.03, false);
+    expect(moments).toEqual(['couche', 'couche', 'finie']);
+    // La page donne le monde avec la partie : le terrain tout posé, sans la vague.
+    c.arreterLaVague();
+    c.poser(apres);
+    expect(dessines(terrain)).toBe(buildMesh(apres).reduce((t, g) => t + g.indices.length / 3, 0));
+    c.dispose();
+  });
+
+  it('suit le temps de la scène, d’un pas borné : une image longue ne saute pas la vague', () => {
+    const { c, moments } = scene();
+    c.animer!(0, 0.016, false);
+    for (let i = 0; i < 5; i++) c.animer!(0, 0.1, false);
+    // Cinq images d'un dixième de seconde n'avancent que de 300 ms : la vague n'a pas commencé sa première couche.
+    expect(moments).toEqual([]);
+    c.dispose();
+  });
+
+  it('arrêtée en cours (un toucher, ou l’élève quitte le monde) : le monde suivant se dessine sans elle', () => {
+    const { c, terrain, moments } = scene();
+    for (let i = 0; i < 25; i++) c.animer!(0, 0.03, false);
+    c.arreterLaVague();
+    c.poser(apres);
+    expect(dessines(terrain)).toBe(buildMesh(apres).reduce((t, g) => t + g.indices.length / 3, 0));
+    for (let i = 0; i < 200; i++) c.animer!(0, 0.03, false);
+    expect(moments).not.toContain('finie');
+    c.dispose();
+  });
+
+  it('avec « Réduire les animations » : posée d’un coup, sans « clac » de couche', () => {
+    const { c, moments } = scene();
+    c.animer!(0, 0.016, true);
+    expect(moments).toEqual(['finie']);
+    c.dispose();
+  });
+});

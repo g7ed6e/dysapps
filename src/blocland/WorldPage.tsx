@@ -35,7 +35,7 @@ import { WhaleWordPanel, useWhaleWord } from './WhaleWord';
 import { RenommagePanel, useRenommage } from './Renommage';
 import { useAmbience } from './useAmbience';
 import { VoyagePanel, voyageSentence } from './VoyagePanel';
-import { playArrival, playBell, playBurner, playHorn, playReactor, playSail } from './sound';
+import { playArrival, playBell, playBurner, playDone, playHorn, playReactor, playSail, sonDePose } from './sound';
 import { RallumagePanel, toucherQuiSaute, useRallumage } from './Rallumage';
 import { DEROULE } from './world/rallumage';
 import { habillageDuMonde } from './habillage';
@@ -61,9 +61,13 @@ import { dispositionEnGrille, type BoutsDuTrajet } from './world/grille';
 import type { Entite, Intention, Point } from './world/disposition';
 import { resteDuTrajet } from './world/arrivee';
 import type { Bonhomme } from './world/view';
-import { partiesDe, prochainePartie } from './world/parties';
+import { partiesDe, prochainePartie, type Partie } from './world/parties';
+import { prendreLaPose } from './poseAMontrer';
+import { VAGUE, cubesDeLaVague, sansLaPartie } from './world/vague';
+import { phraseDesPartiesPosees } from './PlanSection';
 import { Loading } from '../components/Loading';
 import {
+  casesDesPlansDansLeMonde,
   creaturePlacements,
   guardianPlacements,
   vehiclePlacement,
@@ -103,6 +107,10 @@ export function WorldPage() {
   const univers = useUnivers();
   const reduceMotion = useMoinsDAnimations();
   const { state, moveTo, launch } = useBlocland();
+  // La pose d'une partie en vague (GD-6, Blocland) : ses cases, absentes du monde jusqu'à ce que la vue les pose ; puis
+  // la phrase « Partie posée : … » du panneau, une fois le dernier cube posé (ou l'écran touché).
+  const [vague, setVague] = useState<{ seq: number; biome: BiomeId; parties: Partie[]; cases: Set<string> } | null>(null);
+  const [partiesDites, setPartiesDites] = useState<{ biome: BiomeId; parties: Partie[]; toc: boolean; seq: number } | null>(null);
   const { launchVoyage, progress } = useProgress();
   const mapOpen = biomeId === 'map';
   // Les quatre archipels : un panneau HTML à la place de celui d'une île, le monde derrière.
@@ -240,8 +248,8 @@ export function WorldPage() {
   const [tutoDone, setTutoDone] = useState(() => hasSeenTutorial('village-immersif'));
   // Le mot de la baleine attend la fin des rallumages (« Tous les Gardiens… » vient après).
   // Les nouveaux noms des archipels (GD-1), une fois par appareil : avant le mot des grandes étapes, un panneau à la fois.
-  const renommage = useRenommage(tutoDone && rallumage.enAttente.length === 0, 1200);
-  const whale = useWhaleWord(state, a, tutoDone && rallumage.enAttente.length === 0 && !renommage.ouvert);
+  const renommage = useRenommage(tutoDone && rallumage.enAttente.length === 0 && !vague, 1200);
+  const whale = useWhaleWord(state, a, tutoDone && rallumage.enAttente.length === 0 && !renommage.ouvert && !vague);
   const [whaleOpen, setWhaleOpen] = useState<string | null>(null);
   const [whaleSeq, setWhaleSeq] = useState(0);
   // Le village de l'archipel monte d'un état pendant la séance (un plan, un ouvrage, un monument) : une phrase, lue à
@@ -541,6 +549,56 @@ export function WorldPage() {
     if (island && chantier) setHighlight(chantier);
   }, [island?.id, chantier]);
 
+  // ---- La pose d'une partie en vague (GD-6, Blocland) : « Voir le bâtiment » arrive ici avec la pose à montrer, une
+  // fois (poseAMontrer.ts). La caméra ne bouge pas ; les cases de la partie restent vides jusqu'à ce que la vague les
+  // pose, couche par couche, un « clac » par couche ; puis la phrase du panneau, écrite et lue, et le carillon. Un toucher
+  // pose tout d'un coup ; « Réduire les animations » : posée d'un coup, un seul « clac » et le carillon. Rien n'est
+  // enregistré ici : la partie l'est déjà, à l'écran de fin.
+  const [sonDeLaPose] = useState(() => sonDePose(habillage.pose));
+  useEffect(() => {
+    if (!island || chantier !== 'part' || habillage.pose !== 'geste') return;
+    const parties = prendreLaPose(island.id);
+    if (!parties) return;
+    if (reduceMotion) direLaPose(island.id, parties, true);
+    else setVague((v) => ({ seq: (v?.seq ?? 0) + 1, biome: island.id, parties, cases: casesDesPlansDansLeMonde(parties.flatMap((p) => p.cases)) }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [island?.id, chantier]);
+  // Une autre île ouverte pendant la pose : la partie est posée tout de suite, sans rien dire.
+  useEffect(() => {
+    if (vague && vague.biome !== island?.id) setVague(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [island?.id]);
+  /** La pose finie (ou touchée) : la partie entière dans le monde, la phrase dans le panneau, puis le carillon. */
+  function direLaPose(biome: BiomeId, parties: Partie[], toc = false) {
+    setVague(null);
+    setPartiesDites((d) => ({ biome, parties, toc, seq: (d?.seq ?? 0) + 1 }));
+  }
+  useEffect(() => {
+    if (!partiesDites) return;
+    const dire = () => {
+      // Le carillon avant la voix : il se tait quand la synthèse vocale parle.
+      if (settings.sounds) playDone();
+      if (settings.autoRead) speak(frenchTypography(phraseDesPartiesPosees(partiesDites.parties)));
+    };
+    if (!partiesDites.toc) return dire();
+    // Moins d'animations : un seul « clac », puis le carillon, sans qu'ils se couvrent.
+    if (settings.sounds) sonDeLaPose();
+    const timer = window.setTimeout(dire, VAGUE.finApresMs);
+    return () => window.clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [partiesDites?.seq]);
+  const onPose = (moment: 'couche' | 'finie') => {
+    if (!vague) return;
+    if (moment === 'couche') {
+      if (settings.sounds) sonDeLaPose();
+    } else direLaPose(vague.biome, vague.parties);
+  };
+  const poserToutDUnCoup = () => {
+    if (vague) direLaPose(vague.biome, vague.parties);
+  };
+  const cubesVus = useMemo(() => (vague ? sansLaPartie(cubes, vague.cases) : cubes), [cubes, vague]);
+  const poseVue = useMemo(() => (vague ? { seq: vague.seq, cubes: cubesDeLaVague(cubes, vague.cases) } : null), [cubes, vague]);
+
   const whaleNext = voyage ? null : whale.word;
   useEffect(() => {
     if (!whaleNext) return setWhaleOpen(null);
@@ -574,7 +632,7 @@ export function WorldPage() {
   // Un bandeau de récompense attend que le panneau ouvert se ferme (le tutoriel, le mot de la baleine, un rallumage, un
   // voyage), et aussi pendant l'instant qui précède le mot ou le rallumage attendu : il ne tombe jamais sur la phrase que
   // l'élève lit, ni ne s'affiche pour être caché aussitôt (DA-9).
-  useHoldCelebrations(!tutoDone || !!voyage || !!whaleNext || !!aRallumer || !!moment || !!motRallume);
+  useHoldCelebrations(!tutoDone || !!voyage || !!whaleNext || !!aRallumer || !!moment || !!motRallume || !!vague);
   useEffect(() => {
     if (!aRallumer || moment) return;
     const timer = window.setTimeout(
@@ -764,11 +822,16 @@ export function WorldPage() {
     <div
       className={`world-page${(island && sheetOpen) || (panelOpen && !mapOpen) || voyage?.mode === 'panel' ? ' has-sheet' : ''}${whaleWord || motRallume || renommageOuvert ? ' bulle-ouverte' : ''}`}
     >
-      <div className="world-stage" data-scene ref={stageRef} onPointerDownCapture={moment ? toucherQuiSaute(sauterLeRallumage) : undefined}>
+      <div
+        className="world-stage"
+        data-scene
+        ref={stageRef}
+        onPointerDownCapture={moment ? toucherQuiSaute(sauterLeRallumage) : vague ? toucherQuiSaute(poserToutDUnCoup) : undefined}
+      >
         <Suspense fallback={<Loading className="world-loading" text="Chargement du village…" />}>
           <WorldCanvas
             archipelago={a}
-            cubes={cubes}
+            cubes={cubesVus}
             creatures={creatures}
             focus={focus}
             reduceMotion={reduceMotion}
@@ -786,6 +849,8 @@ export function WorldPage() {
             whalePass={whaleWord && !reduceMotion ? { island: whaleWord.island, seq: whaleSeq } : null}
             rallumage={moment?.phase === 'fondu' ? { id: moment.id, seq: moment.seq, dureeMs: DEROULE.fondu } : null}
             burst={burst}
+            pose={poseVue}
+            onPose={onPose}
             onIntent={onIntent}
             onVueDeplacee={setVueDeplacee}
             recentrage={recentrage}
@@ -1037,6 +1102,7 @@ export function WorldPage() {
             in3d
             onClose={() => montrerLePanneau(false)}
             highlight={highlight}
+            posees={partiesDites?.biome === island.id ? partiesDites.parties : null}
             onBuilt={(to) => {
               // La fête, c'est la transformation : la caméra vole jusqu'à l'île qui s'ouvre, et sa créature accueille.
               window.setTimeout(() => navigate(`/adventure/${to}`), 900);

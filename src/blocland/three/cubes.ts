@@ -1,7 +1,7 @@
 // Les cubes de la scène 3D : le monde en blocs (une géométrie par matériau, faces visibles seulement) ; dans Archipéo,
 // le sol et la roche en facettes (lot R2) et le décor en primitives (lot R4), le reste en cubes. Aussi la case visée en
 // chantier, les éclats (la poussière d'un bloc posé, l'écume du navire) et, dans Blocland, le geste de pose (le dernier
-// bloc d'un plan descend et s'enclenche, world/pose.ts).
+// bloc d'un plan descend et s'enclenche, world/pose.ts) et la pose d'une partie du bâtiment en vague (GD-6, world/vague.ts).
 import * as THREE from 'three';
 import type { VoxelCube } from '../Voxel';
 import { caseDuDecor, maillageDuDecor, rangerLeDecor, signatureDuDecor } from '../world/decorMesh';
@@ -10,6 +10,8 @@ import { cacheDeLaConstruction, caseDeLaConstruction, caseDeLaPiece, construireP
 import { modelerLeSol } from '../world/modeleDessine';
 import { buildMesh } from '../world/mesher';
 import { gesteFini, hauteurDuGeste } from '../world/pose';
+import { couchesPosees, cubesPartis, hauteurDansLaVague, planDeLaVague, type PlanDeLaVague } from '../world/vague';
+import { maillageAvecLaVague, type QueueDeLaVague } from '../world/maillageDeLaVague';
 import type { EnCasesDuMonde } from '../world/view';
 import { styleDuMonde } from '../rendu';
 import { creerPiliers } from './bornes';
@@ -44,6 +46,15 @@ export interface Cubes extends PartieDeLaScene {
    * l'arrêt, en un seul maillage (pas un de plus que sans le geste).
    */
   enclencher(cube: VoxelCube): void;
+  /**
+   * La pose d'une partie en vague (Blocland, GD-6) : ces cubes, absents des cubes reçus par `poser`, descendent couche
+   * par couche, un par un, dans les maillages du terrain (pas un appel de dessin de plus). `rappel` dit chaque couche
+   * posée, puis la fin ; les cubes restent posés jusqu'à `arreterLaVague`, que la page appelle en donnant le monde
+   * avec la partie. Le temps est celui de la scène (le `dt` de la boucle), d'un pas borné.
+   */
+  lancerLaVague(cubes: VoxelCube[], rappel: (moment: 'couche' | 'finie') => void): void;
+  /** La vague s'arrête (finie, touchée ou quittée) : le prochain terrain reçu se dessine sans elle. */
+  arreterLaVague(): void;
   /** Un éclat de plus (petit cube qui retombe et disparaît) ; `material` lui appartient. */
   eclat(mesh: THREE.Mesh, velocity: THREE.Vector3, born: number): void;
   /** La forme d'un éclat, partagée. */
@@ -87,6 +98,22 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
    * image qui le dessine (`null` avant), les cubes qui attendent.
    */
   let geste: { bloc: THREE.Group; ecoule: number | null; enAttente: VoxelCube[] | null } | null = null;
+  /**
+   * La vague en cours (GD-6) : ses cubes et son plan, son temps (`null` avant la première image), les couches déjà dites,
+   * et, dans chaque maillage du terrain qui la porte, sa part et la hauteur de repos de ses sommets.
+   */
+  let vague: {
+    cubes: VoxelCube[];
+    plan: PlanDeLaVague;
+    ecoule: number | null;
+    couches: number;
+    finie: boolean;
+    rappel: (moment: 'couche' | 'finie') => void;
+    queues: { mesh: THREE.Mesh; queue: QueueDeLaVague; repos: Float32Array }[];
+  } | null = null;
+  /** Les derniers cubes reçus, et s'il faut refaire le terrain avec eux à la prochaine image (la vague lancée ou arrêtée). */
+  let derniers: VoxelCube[] = [];
+  let aRefaire = false;
 
   const viderLeTerrain = () => {
     for (const child of [...terrain.children]) {
@@ -98,6 +125,24 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
   /** Le terrain : un maillage par matériau (Blocland), ou le sol à facettes, la construction et le décor (Archipéo). */
   const poserLeTerrain = (cubes: VoxelCube[]) => {
     viderLeTerrain();
+    derniers = cubes;
+    aRefaire = false;
+    if (!sol && vague) {
+      // La vague à la fin des maillages du terrain : ses sommets bougent, le terrain non.
+      vague.queues = [];
+      for (const { groupe, vague: queue } of maillageAvecLaVague(cubes, vague.cubes, vague.plan)) {
+        const mesh = meshOf(groupe, surface);
+        terrain.add(mesh);
+        if (!queue) continue;
+        const position = mesh.geometry.getAttribute('position') as THREE.BufferAttribute;
+        position.setUsage(THREE.DynamicDrawUsage);
+        const repos = new Float32Array(queue.rangDuSommet.length);
+        for (let i = 0; i < repos.length; i++) repos[i] = position.getY(queue.premierSommet + i);
+        vague.queues.push({ mesh, queue, repos });
+      }
+      placerLaVague(vague.ecoule ?? 0);
+      return;
+    }
     if (!sol) {
       for (const g of buildMesh(cubes)) terrain.add(meshOf(g, surface));
       return;
@@ -147,6 +192,41 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
     for (const child of bloc.children) (child as THREE.Mesh).geometry.dispose();
   };
 
+  /** Les cubes de la vague à `ms` : seuls ceux qui sont partis sont dessinés, chacun à la hauteur de son geste. */
+  const placerLaVague = (ms: number) => {
+    if (!vague) return;
+    const partis = cubesPartis(vague.plan, ms);
+    for (const { mesh, queue, repos } of vague.queues) {
+      mesh.geometry.setDrawRange(0, queue.premierIndice + (partis ? queue.indicesJusquA[partis - 1] : 0));
+      const position = mesh.geometry.getAttribute('position') as THREE.BufferAttribute;
+      for (let i = 0; i < repos.length; i++) {
+        const rang = queue.rangDuSommet[i];
+        if (rang >= partis) break;
+        position.setY(queue.premierSommet + i, repos[i] + hauteurDansLaVague(vague.plan, rang, ms));
+      }
+      position.clearUpdateRanges();
+      position.addUpdateRange(queue.premierSommet * 3, repos.length * 3);
+      position.needsUpdate = true;
+    }
+  };
+
+  /** La vague, image par image : son temps avance d'un pas borné ; chaque couche posée, puis la fin, sont dites une fois. */
+  const animerLaVague = (dt: number, reduit: boolean) => {
+    if (!vague || vague.finie) return;
+    vague.ecoule = vague.ecoule === null ? 0 : vague.ecoule + Math.min(dt * 1000, PAS_DU_GESTE_MS);
+    // Avec « Réduire les animations » (la page ne lance pas de vague alors, mais le réglage peut changer) : posée d'un coup.
+    if (reduit) vague.ecoule = vague.plan.finMs;
+    placerLaVague(vague.ecoule);
+    const posees = couchesPosees(vague.plan, vague.ecoule);
+    const { rappel } = vague;
+    if (!reduit) for (; vague.couches < posees; vague.couches += 1) rappel('couche');
+    vague.couches = posees;
+    if (vague.ecoule >= vague.plan.finMs) {
+      vague.finie = true;
+      rappel('finie');
+    }
+  };
+
   return {
     champ: () => sol?.champ ?? null,
     cibles: () =>
@@ -180,6 +260,21 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
       if (geste) geste.enAttente = cubes;
       else poserLeTerrain(cubes);
     },
+    lancerLaVague: (cubes, rappel) => {
+      vague = null;
+      // Le sol à facettes d'Archipéo n'a pas de vague : la partie y est posée d'un coup.
+      if (sol || !cubes.length) {
+        rappel('finie');
+        return;
+      }
+      vague = { cubes, plan: planDeLaVague(cubes), ecoule: null, couches: 0, finie: false, rappel, queues: [] };
+      aRefaire = true;
+    },
+    arreterLaVague: () => {
+      if (!vague) return;
+      vague = null;
+      aRefaire = true;
+    },
     enclencher: (cube) => {
       finirLeGeste();
       const bloc = new THREE.Group();
@@ -211,6 +306,9 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
     animer: (t, dt, reduit) => {
       // Les fumées bougent, ou prennent leur pose immobile avec « Réduire les animations » (R4b-6e).
       sol?.decor.animer(t, dt, reduit);
+      // La vague lancée ou arrêtée sans nouveau terrain dans le même rendu de la page : le terrain est refait ici, une fois.
+      if (aRefaire && !geste) poserLeTerrain(derniers);
+      animerLaVague(dt, reduit);
       // Le geste de pose : le bloc descend, en accélérant, puis s'arrête d'un coup dans sa case (world/pose.ts).
       // Son temps avance image par image, d'un pas borné : une image longue (la fin d'un plan refait le village) ne fait
       // pas sauter la descente, qui se voit toujours en entier.
@@ -235,6 +333,7 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
       }
     },
     dispose: () => {
+      vague = null;
       if (geste) geste.enAttente = null;
       finirLeGeste();
       hover.geometry.dispose();

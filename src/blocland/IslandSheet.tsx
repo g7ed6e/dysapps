@@ -28,6 +28,7 @@ import { AssemblageLink } from './Assemblage';
 import { TROPHIES_PATH, TROPHIES_TITLE } from './trophies';
 import { archipelagoOf } from './world/archipelago';
 import { useTextes } from '../univers';
+import type { Partie } from './world/parties';
 
 interface Props {
   biome: BiomeDef;
@@ -41,6 +42,8 @@ interface Props {
   ship?: VehicleBuilder;
   /** Embarquer sur le Bloc-Navire vers un archipel. */
   onBoard?: (to: ArchipelagoId, back: boolean) => void;
+  /** Les parties qui viennent de se poser dans le monde (GD-6), dites en tête du bâtiment une fois la pose finie. */
+  posees?: Partie[] | null;
 }
 
 /**
@@ -49,7 +52,7 @@ interface Props {
  * il n'y a rien à y faire ; au pied, la matière, la classe et l'archipel. Tout est en HTML (police dys), on ne quitte
  * pas le monde.
  */
-export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight = null, ship, onBoard }: Props) {
+export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight = null, ship, onBoard, posees = null }: Props) {
   const { state } = useBlocland();
   const { settings, speak } = useSettings();
   const sansLv2 = estIleLv2(biome) && settings.lv2 === 'none';
@@ -236,7 +239,7 @@ export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight =
         port && <VillageStageLine village={state.world} archipelago={biome.classe} className="island-village" />
       )}
 
-      {unlocked && <PlanSection biome={biome} fold={fold} highlight={highlight === 'part'} />}
+      {unlocked && <PlanSection biome={biome} fold={fold} highlight={highlight === 'part'} vientDePoser={posees} />}
 
       {unlocked && ship && onBoard && <ShipSection biome={biome} builder={ship} in3d={in3d} onBoard={onBoard} highlight={highlight === 'vehicle'} fold={fold} />}
 

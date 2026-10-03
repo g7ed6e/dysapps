@@ -70,6 +70,8 @@ export default function WorldCanvas({
   whalePass = null,
   rallumage = null,
   burst: burstEnAncrage,
+  pose = null,
+  onPose,
   onVueDeplacee,
   recentrage = 0,
   className,
@@ -516,6 +518,19 @@ export default function WorldCanvas({
     else w.cubes.eclater(burst);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [burst?.seq]);
+
+  // ---- La pose d'une partie en vague (GD-6, Blocland, world/vague.ts) : lancée une fois par `seq`, arrêtée quand la page
+  // la retire (finie ou touchée). Relancée si la scène est refaite (un autre archipel, « Réduire les animations ») : la
+  // partie ne reste jamais cachée.
+  const poseRef = useRef(onPose);
+  poseRef.current = onPose;
+  useEffect(() => {
+    const w = world.current;
+    if (!w) return;
+    if (pose) w.cubes.lancerLaVague(pose.cubes, (moment) => poseRef.current?.(moment));
+    else w.cubes.arreterLaVague();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pose?.seq, reduceMotion, archipelago]);
 
   // ---- Terrain : une géométrie par matériau, faces visibles seulement
   useEffect(() => {
