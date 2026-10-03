@@ -172,11 +172,12 @@ export function signesDesObjets({ cubes, quests = [], creatures = [], vehicle = 
     }
   }
   const out: SigneDObjet[] = [];
-  // Les bornes : à faire, l'or ; pas jouables (ou sans étoile), la pierre ; réussies, rien (leur pile d'étoiles).
+  // Les bornes : à faire (jamais jouée, ou jouée sans étoile : elle se rejoue), l'or ; pas jouable, la pierre ; réussies,
+  // rien (leur pile d'étoiles).
   for (const q of quests) {
     const l = bornes.get(q.id);
     if (!l || fermees.has(q.id) || (typeof q.state === 'number' && q.state > 0)) continue;
-    out.push(signeAuDessus({ genre: 'borne', id: q.id }, q.state === 'new' ? 'aFaire' : 'pasEncore', [q.id.split(':')[0] as BiomeId], boiteDe(l)));
+    out.push(signeAuDessus({ genre: 'borne', id: q.id }, q.state === 'locked' ? 'pasEncore' : 'aFaire', [q.id.split(':')[0] as BiomeId], boiteDe(l)));
   }
   // L'école, la salle des trophées, un monument bâti : le crème. Un monument à bâtir est un chantier : l'or si l'élève
   // peut y poser un bloc, sinon la pierre.

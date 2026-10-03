@@ -74,13 +74,13 @@ it('tout construit : rien sur les bornes réussies (leurs étoiles), les Gardien
   expect(lieux.every((s) => s.etat === 'lieu')).toBe(true);
 });
 
-it('une borne pas jouable (ou sans étoile) porte la pierre ; un Gardien prêt l’or, pas prêt la pierre ; un vaincu rien', () => {
+it('une borne pas jouable porte la pierre, une jouée sans étoile l’or ; un Gardien prêt l’or, pas prêt la pierre ; un vaincu rien', () => {
   const { cubes } = { cubes: worldCubes('6e', {}, EMPTY_STATE.world, false) };
   const id = [...sommetsDesBornes(cubes).keys()].find((q) => q.startsWith('french-6e-phonology:'))!;
   const etat = (state: 'new' | 'locked' | number) => signesDesObjets({ cubes, quests: [{ id, state }] })[0];
   expect(etat('new').etat).toBe('aFaire');
   expect(etat('locked').etat).toBe('pasEncore');
-  expect(etat(0).etat).toBe('pasEncore');
+  expect(etat(0).etat).toBe('aFaire');
   expect(signesDesObjets({ cubes, quests: [{ id, state: 2 }] }).filter((s) => s.objet.genre === 'borne')).toEqual([]);
   // Les Gardiens : au défi prêt, au défi pas prêt (la sentinelle d'Archipéo, qui attend), vaincu.
   const g = { id: 'french-6e-phonology' as const, kind: 'guardian' as const, cubes: [{ x: 0, y: 0, z: 0, color: '#fff' }], origin: { x: 10, y: 10, z: 3 } };
