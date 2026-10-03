@@ -1,0 +1,149 @@
+// La créature qui se souvient (GD-4, étape 1) : elle fait signe seulement quand une mission de son île a des questions
+// à revoir aujourd'hui ; à l'arrivée sur son île, elle propose « Reprendre » (les révisions de l'île, puis l'île) et
+// « Plus tard », qui la fait taire jusqu'à la visite suivante ; la vue simple montre l'icône sur la Carte.
+import { cleanup, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router-dom';
+import { SettingsProvider } from '../core/SettingsContext';
+import { ProgressProvider } from '../core/ProgressContext';
+import { getBiome, type BiomeId } from './biomes';
+import { BloclandProvider } from './BloclandContext';
+import { addDays, todayISO, type SpacedItem } from './engine';
+import { CATALOG } from './exercises';
+import { IslandSheet } from './IslandSheet';
+import { BloclandPage } from './BloclandPage';
+import { cheminDeRevision, creaturesQuiFontSigne, oublierLesRemises, remettreAPlusTard, remisesAPlusTard, revisionsDeLIle } from './rappels';
+import { BRIDGES } from './world/archipelago';
+
+const FORET: BiomeId = 'french-6e-phonology';
+const SYLLABES = CATALOG.find((e) => e.biome === FORET && e.type === 'syllables')!;
+const aujourdhui = todayISO();
+const due = (exerciseId: string, jour = aujourdhui): SpacedItem => ({ itemId: `${exerciseId}:cabane`, due: jour, stage: 0, streak: 0 });
+/** Tous les ouvrages : toutes les îles sont ouvertes. */
+const TOUT_OUVERT = BRIDGES.map((b) => b.id);
+
+beforeEach(() => oublierLesRemises());
+
+describe('qui fait signe', () => {
+  it('seulement la créature dont l’île a des questions à revoir aujourd’hui, avec l’icône de la notion de l’île', () => {
+    expect(creaturesQuiFontSigne([], TOUT_OUVERT, '6e', new Set())).toEqual([]);
+    // Dues demain : rien aujourd'hui.
+    expect(creaturesQuiFontSigne([due(SYLLABES.id, addDays(aujourdhui, 1))], TOUT_OUVERT, '6e', new Set())).toEqual([]);
+    // Dues aujourd'hui (ou en retard) : la créature de la Forêt, seule.
+    expect(creaturesQuiFontSigne([due(SYLLABES.id)], TOUT_OUVERT, '6e', new Set())).toEqual([{ id: FORET, icone: getBiome(FORET)!.icon }]);
+    expect(creaturesQuiFontSigne([due(SYLLABES.id, addDays(aujourdhui, -3))], TOUT_OUVERT, '6e', new Set())).toHaveLength(1);
+    // Une autre classe : pas dans cet archipel.
+    expect(creaturesQuiFontSigne([due(SYLLABES.id)], TOUT_OUVERT, '5e', new Set())).toEqual([]);
+    // Après « Plus tard » : plus de signe pendant la visite.
+    expect(creaturesQuiFontSigne([due(SYLLABES.id)], TOUT_OUVERT, '6e', new Set([FORET]))).toEqual([]);
+  });
+
+  it('les révisions de l’île : une par mission, sur l’île seule, avec l’adresse qui revient sur l’île', () => {
+    const autre = CATALOG.find((e) => e.biome !== FORET && e.biome.endsWith('6e-calculation'))!;
+    const dues = revisionsDeLIle([due(SYLLABES.id), due(autre.id)], TOUT_OUVERT, FORET);
+    expect(dues.map((q) => q.biome)).toEqual([FORET]);
+    expect(cheminDeRevision(dues[0])).toBe(`/adventure/${FORET}/syllables?revision=1`);
+  });
+});
+
+describe('« Plus tard »', () => {
+  it('est retenu pour la visite, sans toucher à la sauvegarde', () => {
+    expect(remisesAPlusTard().has(FORET)).toBe(false);
+    remettreAPlusTard(FORET);
+    expect(remisesAPlusTard().has(FORET)).toBe(true);
+    expect(JSON.parse(sessionStorage.getItem('dysapps:revisions-plus-tard')!)).toEqual([FORET]);
+    expect(localStorage.getItem('dysapps:game')).toBeNull();
+  });
+});
+
+function Providers({ children }: { children: React.ReactNode }) {
+  return (
+    <SettingsProvider>
+      <ProgressProvider>
+        <BloclandProvider>
+          <MemoryRouter>{children}</MemoryRouter>
+        </BloclandProvider>
+      </ProgressProvider>
+    </SettingsProvider>
+  );
+}
+
+const sauver = (spaced: SpacedItem[]) =>
+  localStorage.setItem('dysapps:game', JSON.stringify({ spaced, progress: { [SYLLABES.id]: { stars: 1, attempts: 1, best: 0.3 } } }));
+
+describe('le panneau de l’île', () => {
+  it('propose de reprendre, avec « Écouter », « Reprendre » vers les révisions de l’île et « Plus tard »', () => {
+    // La voix : la phrase est lue à l'arrivée, après l'accueil, et se réécoute.
+    const dit: string[] = [];
+    vi.stubGlobal('SpeechSynthesisUtterance', class {
+      lang = '';
+      rate = 1;
+      voice: unknown = null;
+      constructor(public text: string) {}
+    });
+    vi.stubGlobal('speechSynthesis', { cancel: () => {}, getVoices: () => [], speak: (u: { text: string }) => dit.push(u.text) });
+    localStorage.setItem('dysapps:settings', JSON.stringify({ autoRead: true }));
+    sauver([due(SYLLABES.id)]);
+    render(
+      <Providers>
+        <IslandSheet biome={getBiome(FORET)!} onClose={() => {}} in3d />
+      </Providers>,
+    );
+    const rappel = screen.getByRole('group', { name: /Mousso/ });
+    expect(rappel).toHaveTextContent('Abattage syllabique');
+    // Ni date, ni échec, ni blocs à gagner.
+    expect(rappel.textContent).not.toMatch(/hier|raté|bloc|jour/i);
+    expect(screen.getByRole('link', { name: /Reprendre/ })).toHaveAttribute('href', `/adventure/${FORET}/syllables?revision=1`);
+    expect(screen.getByRole('button', { name: /Écouter : J’ai gardé «\s?Abattage syllabique\s?» de côté/ })).toBeInTheDocument();
+    expect(dit.at(-1)).toMatch(/Mousso|forêt/i);
+    expect(dit.at(-1)).toMatch(/On s’y remet ensemble\s?\?$/);
+    expect(screen.getByRole('button', { name: 'Plus tard' })).toBeInTheDocument();
+  });
+
+  it('ne propose rien sans révision due', () => {
+    sauver([due(SYLLABES.id, addDays(aujourdhui, 2))]);
+    render(
+      <Providers>
+        <IslandSheet biome={getBiome(FORET)!} onClose={() => {}} in3d />
+      </Providers>,
+    );
+    expect(screen.queryByRole('link', { name: /Reprendre/ })).not.toBeInTheDocument();
+  });
+
+  it('après « Plus tard », ne repropose rien pendant la visite, même en revenant sur l’île', async () => {
+    sauver([due(SYLLABES.id)]);
+    const ouvrir = () =>
+      render(
+        <Providers>
+          <IslandSheet biome={getBiome(FORET)!} onClose={() => {}} in3d />
+        </Providers>,
+      );
+    ouvrir();
+    await userEvent.click(screen.getByRole('button', { name: 'Plus tard' }));
+    expect(screen.queryByRole('link', { name: /Reprendre/ })).not.toBeInTheDocument();
+    // Le panneau refermé puis rouvert (une autre île, un exercice, la Carte) : toujours rien.
+    cleanup();
+    ouvrir();
+    expect(screen.queryByRole('link', { name: /Reprendre/ })).not.toBeInTheDocument();
+    // La visite suivante (un nouvel onglet, une nouvelle séance) : elle propose de nouveau.
+    cleanup();
+    oublierLesRemises();
+    ouvrir();
+    expect(screen.getByRole('link', { name: /Reprendre/ })).toBeInTheDocument();
+  });
+});
+
+describe('la vue simple', () => {
+  it('montre l’icône de la notion sur l’île dans la Carte, et le toucher mène au même panneau', () => {
+    sauver([due(SYLLABES.id)]);
+    render(
+      <Providers>
+        <BloclandPage />
+      </Providers>,
+    );
+    const carte = document.querySelector(`a.biome-${FORET}`)!;
+    expect(carte.querySelector('.biome-rappel svg')).not.toBeNull();
+    expect(carte).toHaveAttribute('href', `/adventure/${FORET}`);
+    expect(document.querySelectorAll('.biome-rappel')).toHaveLength(1);
+  });
+});

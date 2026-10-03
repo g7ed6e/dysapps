@@ -28,6 +28,7 @@ import { RenommagePanel, useRenommage } from './Renommage';
 import { useTextes } from '../univers';
 import { useUnivers } from '../core/SettingsContext';
 import { UNIVERS } from '../core/univers';
+import { RappelDeLaCreature, useRappelDeLaCreature } from './RappelDeLaCreature';
 
 /** Un biome : sa créature donne la mission, puis la liste des exercices. */
 export function BiomePage() {
@@ -44,6 +45,8 @@ export function BiomePage() {
   const renommage = useRenommage(true, 1200);
   const whale = useWhaleWord(state, archipelagoOf(state.world.place ?? 'french-6e-phonology').classe, !renommage.ouvert);
   const ship = useVehicleBuilder(biome?.id ?? 'french-6e-phonology');
+  // La créature qui se souvient (GD-4, étape 1) : le même panneau que dans le monde.
+  const rappelDue = useRappelDeLaCreature(biome);
   if (!biome) return <NotFoundPage />;
   const block = BLOCKS[biome.block];
   const owned = state.stock[biome.block] ?? 0;
@@ -73,6 +76,8 @@ export function BiomePage() {
       )}
 
       <CreatureBubble biome={biome} text={sansLv2 ? SANS_LV2 : unlocked ? textes.creatures[biome.id].greeting : lockedHint(state, biome.id, textes.archipels, textes.libelles)} />
+
+      {unlocked && !sansLv2 && rappelDue && <RappelDeLaCreature biome={biome} rappel={rappelDue} />}
 
       {goal && <GoalLine goal={goal} className="panel" />}
       {port && unlocked && <VillageStageLine village={state.world} archipelago={biome.classe} className="panel" />}

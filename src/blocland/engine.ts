@@ -503,6 +503,8 @@ export interface Completion {
   xp: number;
   /** Terminé sans aide ni erreur. */
   perfect: boolean;
+  /** Une révision (GD-6, point 4) : ses blocs ne dépendent pas du score. */
+  revision: boolean;
   streak: StreakUpdate;
   chestBlock?: BlockId;
   /** La partie du bâtiment du lieu posée par cette mission, la première fois qu'elle est terminée (GD-6). */
@@ -548,6 +550,22 @@ export function blocksBonus(stars: number, firstTime: boolean, anyCorrect = true
   return { stars: stars >= 3 ? 2 : stars >= 2 ? 1 : 0, first: firstTime ? FIRST_TIME_BLOCKS : 0 };
 }
 
+/**
+ * Une partie est une révision quand l'exercice avait, au moment de la finir, des questions à revoir aujourd'hui
+ * (répétition espacée) : la partie les a mises en tête (`exercises/run.ts`).
+ */
+export function estUneRevision(spaced: SpacedItem[], exerciseId: string, today: string): boolean {
+  return dueItems(spaced, today).some((s) => s.itemId.startsWith(`${exerciseId}:`));
+}
+
+/**
+ * Les blocs d'une révision finie (GD-6, point 4) : autant qu'une mission sans faute (la base de la mission et le bonus
+ * de trois étoiles), quel que soit le score ; le joker et les erreurs n'en retirent rien.
+ */
+export function blocsDUneRevision(def: Pick<ExerciseDef, 'reward'>): number {
+  return def.reward.amount + blocksBonus(3, false).stars;
+}
+
 /** Enregistre un exercice terminé : progression, blocs, XP, répétition espacée, streak, adaptation. */
 export function completeExercise(state: GameState, def: ExerciseDef, results: ItemResult[], today: string, rng: () => number = Math.random): Completion {
   const score = scoreOf(results);
@@ -560,10 +578,12 @@ export function completeExercise(state: GameState, def: ExerciseDef, results: It
     [def.id]: { stars: Math.max(prev.stars, stars) as 1 | 2 | 3, attempts: prev.attempts + 1, best: Math.max(prev.best, score) },
   };
 
-  // Des blocs même avec des erreurs, jamais zéro si au moins une bonne réponse.
+  // Une révision (des questions de la mission étaient à revoir aujourd'hui) rapporte toujours autant, quel que soit le
+  // score (GD-6, point 4) ; sinon, des blocs même avec des erreurs, jamais zéro si au moins une bonne réponse.
+  const revision = estUneRevision(state.spaced, def.id, today);
   const anyCorrect = results.some((r) => r.correct);
-  const bonus = blocksBonus(stars, prev.attempts === 0, anyCorrect);
-  const blocks = anyCorrect ? Math.max(1, Math.round(def.reward.amount * score)) + bonus.stars + bonus.first : 0;
+  const bonus = revision ? { stars: 0, first: 0 } : blocksBonus(stars, prev.attempts === 0, anyCorrect);
+  const blocks = revision ? blocsDUneRevision(def) : anyCorrect ? Math.max(1, Math.round(def.reward.amount * score)) + bonus.stars + bonus.first : 0;
   // XP à chaque exercice terminé ; bonus si terminé sans aide.
   const xp = Math.round(def.reward.xp * (perfect ? 1.5 : 1));
 
@@ -587,6 +607,7 @@ export function completeExercise(state: GameState, def: ExerciseDef, results: It
     bonus,
     xp,
     perfect,
+    revision,
     streak,
     chestBlock,
   };

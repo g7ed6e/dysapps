@@ -327,6 +327,8 @@ export const BLOCLAND = {
     'landmark-4e-2': { done: 'L’amphithéâtre est prêt ! Tout le monde des Monts de Feu viendra au spectacle.' },
   },
   // Les blocs assemblés et leur lieu (GD-2) : écrits dans docs/contenu/assemblage.md.
+  // La créature qui se souvient (GD-4, étape 1) : sa proposition, au tutoiement complice de Blocland.
+  rappel: (mission) => `J’ai gardé « ${mission} » de côté. On s’y remet ensemble ?`,
   blocs: nomsAssembles('blocland'),
   assemblage: lieuDAssemblage('blocland'),
   // La créature de l'île-école de l'archipel parle : Mousso en 6e, Bazar en 5e, Ixe en 4e, Fi en 3e (GD-1, point 1).

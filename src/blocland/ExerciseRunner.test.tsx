@@ -5,10 +5,11 @@ import { SettingsProvider } from '../core/SettingsContext';
 import { ProgressProvider } from '../core/ProgressContext';
 import { AppRoutes } from '../App';
 import { BloclandProvider } from './BloclandContext';
-import { loadAllExercises } from './exercises';
+import { CATALOG, loadAllExercises } from './exercises';
 import { runItems, runSeed } from './exercises/run';
 import { frenchTypography } from '../components/math/RichText';
 import { plansFor } from './world/plans';
+import { todayISO } from './engine';
 
 const ALL = await loadAllExercises();
 const getExercise = (id: string) => ALL.find((e) => e.id === id);
@@ -43,9 +44,9 @@ const loaded = () => waitFor(() => expect(screen.queryByText('Chargement…')).n
 const DEF = getExercise('french-6e-phonology-syllables-warmup-001')!;
 
 /** Joue l'exercice en entier : `wrongAt` = index des items à rater volontairement. */
-async function play(user: ReturnType<typeof userEvent.setup>, wrongAt: number[] = []) {
-  // Les items de la partie en cours (même graine que l'écran).
-  const items = runItems(DEF, runSeed(DEF));
+async function play(user: ReturnType<typeof userEvent.setup>, wrongAt: number[] = [], review: string[] = []) {
+  // Les items de la partie en cours (même graine que l'écran ; les questions à revoir en tête).
+  const items = runItems(DEF, runSeed(DEF), review);
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
     const choices = item.choices as string[];
@@ -108,6 +109,46 @@ it('joue un exercice : consigne, feedback, étoiles, blocs, XP, puis étoiles su
   await user.click(screen.getAllByRole('link', { name: /Forêt des sons/ })[0]);
   expect(screen.getByRole('img', { name: /2 étoiles sur 3, meilleur score 83 %/ })).toBeInTheDocument();
   expect(screen.getByText(/Tu en as 6/)).toBeInTheDocument();
+});
+
+describe('« Reprendre » chez la créature (GD-4, étape 1)', () => {
+  const aujourdhui = todayISO();
+  const autre = CATALOG.find((e) => e.biome === 'french-6e-phonology' && e.type !== DEF.type)!;
+  /** Une partie déjà jouée, avec une question de DEF à revoir aujourd'hui (et, au besoin, une d'une autre mission). */
+  const sauver = (autreAussi: boolean) =>
+    localStorage.setItem(
+      'dysapps:game',
+      JSON.stringify({
+        progress: { [DEF.id]: { stars: 1, attempts: 1, best: 0.5 } },
+        spaced: [
+          { itemId: `${DEF.id}:${DEF.items[0].key}`, due: aujourdhui, stage: 0, streak: 0 },
+          ...(autreAussi ? [{ itemId: `${autre.id}:x`, due: aujourdhui, stage: 0, streak: 0 }] : []),
+        ],
+      }),
+    );
+
+  it('lance la révision de l’île, rapporte ses blocs malgré les erreurs, puis ramène sur l’île', async () => {
+    sauver(false);
+    const user = userEvent.setup();
+    renderAt(`/adventure/french-6e-phonology/${DEF.type}?revision=1`);
+    await loaded();
+    // La question à revoir passe en tête ; deux erreurs n'enlèvent rien à ce que la révision rapporte.
+    const items = await play(user, [0, 1], [DEF.items[0].key]);
+    expect(items[0].key).toBe(DEF.items[0].key);
+    expect(screen.getByText(`+${DEF.reward.amount + 2}`)).toBeInTheDocument();
+    expect(document.querySelector('.reward-bonus')).toBeNull();
+    // À la fin, on revient sur l'île de la créature.
+    expect(screen.getByRole('link', { name: /Revenir sur Forêt des sons/ })).toHaveAttribute('href', '/adventure/french-6e-phonology');
+  }, 30_000);
+
+  it('enchaîne la révision suivante de la même île s’il en reste', async () => {
+    sauver(true);
+    const user = userEvent.setup();
+    renderAt(`/adventure/french-6e-phonology/${DEF.type}?revision=1`);
+    await loaded();
+    await play(user, [], [DEF.items[0].key]);
+    expect(screen.getByRole('link', { name: /Révision suivante/ })).toHaveAttribute('href', `/adventure/french-6e-phonology/${autre.type}?revision=1`);
+  }, 30_000);
 });
 
 it('propose une pause après 3 exercices, et laisse continuer', async () => {

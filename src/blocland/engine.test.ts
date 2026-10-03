@@ -148,6 +148,26 @@ describe('completeExercise', () => {
     expect(none.xp).toBe(10);
   });
 
+  it('une révision finie rapporte toujours autant, quel que soit le score : ni le joker ni les erreurs n’en retirent (GD-6)', () => {
+    // La première partie rate « d » : elle revient le lendemain.
+    const hier = completeExercise(EMPTY_STATE, DEF, [ok('a'), ok('b'), ok('c'), ko('d')], '2026-09-24').state;
+    const jour = '2026-09-25';
+    // Toutes fausses, avec le joker et des erreurs, ou sans faute : la base de la mission et le bonus de trois étoiles.
+    const ratee = completeExercise(hier, DEF, DEF.items.map((i) => ({ ...ko(i.key), attempts: 2, usedHelp: true })), jour);
+    const parfaite = completeExercise(hier, DEF, DEF.items.map((i) => ok(i.key)), jour);
+    for (const c of [ratee, parfaite]) {
+      expect(c.revision).toBe(true);
+      expect(c.blocks).toBe(DEF.reward.amount + 2);
+      // Aucun compteur de bonus à montrer.
+      expect(c.bonus).toEqual({ stars: 0, first: 0 });
+      expect(c.state.stock['french-6e-phonology']).toBe((hier.stock['french-6e-phonology'] ?? 0) + DEF.reward.amount + 2);
+    }
+    // Rejouée sans question due : le barème habituel (rien sans bonne réponse).
+    const rejouee = completeExercise(parfaite.state, DEF, DEF.items.map((i) => ko(i.key)), jour);
+    expect(rejouee.revision).toBe(false);
+    expect(rejouee.blocks).toBe(0);
+  });
+
   it('ouvre un coffre au 3e jour d’affilée', () => {
     let state = EMPTY_STATE;
     for (const day of ['2026-09-24', '2026-09-25']) state = completeExercise(state, DEF, [ok('a')], day).state;

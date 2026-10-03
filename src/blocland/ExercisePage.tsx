@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { NotFoundPage } from '../pages/NotFoundPage';
 import { getBiome, missionsJouables } from './biomes';
@@ -12,6 +12,7 @@ import { useLoaded } from '../core/useLoaded';
 import { exercisesToReview } from './review';
 import { useRememberPlace } from '../core/lastPlace';
 import { Loading } from '../components/Loading';
+import { PARAM_REVISION } from './rappels';
 
 /** Lance l'exercice d'un type dans un biome, au niveau adapté à l'élève. */
 export function ExercisePage() {
@@ -19,6 +20,8 @@ export function ExercisePage() {
   const { state } = useBlocland();
   const { settings } = useSettings();
   const [run, setRun] = useState(0);
+  // Une révision lancée par la créature de l'île (GD-4, étape 1) : à la fin, la suivante de l'île, puis l'île.
+  const depuisLaCreature = useSearchParams()[0].get(PARAM_REVISION) === '1';
   const biome = getBiome(biomeId);
   // Une mission d'une autre LV2 que celle des Réglages ne se joue pas (adresse tapée, ancien lien).
   const type = biome && missionsJouables(biome, settings.lv2).find((e) => e.id === typeId);
@@ -44,7 +47,7 @@ export function ExercisePage() {
         <Icon name={biome.icon} /> {type.title}
       </h1>
       {loaded ? (
-        <ExerciseRunner key={`${loaded.id}-${run}`} biome={biome} def={loaded} onReplay={() => setRun((r) => r + 1)} />
+        <ExerciseRunner key={`${loaded.id}-${run}`} biome={biome} def={loaded} onReplay={() => setRun((r) => r + 1)} revisionDeLIle={depuisLaCreature} />
       ) : (
         <Loading />
       )}

@@ -149,6 +149,24 @@ const CAPTURES = [
   // visite) ; en cours (les pas d'après le monde construit), puis finie (`pasEnPlus`, 5 s plus tard), la phrase seule dans le panneau, avant le bandeau de succès.
   { nom: 'pose-en-cours', vue: 'île', famille: 'pose', ile: 'french-6e-phonology', partie: 'un-plan', pose: 1 },
   { nom: 'pose-finie', vue: 'île', famille: 'pose', ile: 'french-6e-phonology', partie: 'un-plan', pose: 1, pasEnPlus: 40 },
+  // La créature qui se souvient (GD-4, étape 1, famille `revisions`) : à la Ferme des accords, chaque mission a des
+  // questions à revoir (`revisions`) ; la créature a fait son geste à l'arrivée (`pasEnPlus` : 3 s de plus), l'icône de la
+  // notion est au-dessus d'elle et le panneau de l'île propose « Reprendre » ou « Plus tard », de jour et de nuit, puis
+  // en téléphone et en grand texte ; de loin, la vue de l'archipel ; en vue simple, l'icône sur l'île dans la Carte.
+  { nom: 'revisions-ile', vue: 'île', famille: 'revisions', ile: 'french-6e-grammar-spelling', revisions: true, pasEnPlus: 24 },
+  { nom: 'revisions-ile-nuit', vue: 'île', famille: 'revisions', ile: 'french-6e-grammar-spelling', revisions: true, pasEnPlus: 24, nuit: true },
+  {
+    nom: 'revisions-ile-390x844-od32',
+    vue: 'île',
+    famille: 'revisions',
+    ile: 'french-6e-grammar-spelling',
+    revisions: true,
+    pasEnPlus: 24,
+    reglages: { font: 'opendyslexic', fontSize: 32 },
+    taille: { width: 390, height: 844 },
+  },
+  { nom: 'revisions-archipel', vue: 'archipel', famille: 'revisions', ile: 'french-6e-grammar-spelling', revisions: true, pasEnPlus: 24 },
+  { nom: 'revisions-vue-simple', vue: 'archipel', famille: 'revisions', ile: 'french-6e-grammar-spelling', revisions: true, view: 'list' },
   // L'école et la salle des trophées des Premiers Rivages (lot 7b, les lieux du village) : la vue de la Forêt, sans
   // trophée et avec tous (`succes` : le nombre de succès gagnés, `tous` pour tous, un trophée chacun), de jour et de
   // nuit ; de près, recadrées (`finesse` 3 : le colombage net) ; de loin, la vue de l'archipel.
@@ -291,6 +309,16 @@ function routeDe(c, parIle, routes) {
   return routes[c.vue];
 }
 
+/**
+ * Les questions à revoir aujourd'hui (GD-4, étape 1) : une par exercice joué de l'île `ile`, dues depuis longtemps, quel
+ * que soit le jour de l'horloge pilotée. La clé de la question n'a pas à exister : la créature ne lit que l'exercice.
+ */
+function revisionsDues(progress, ile) {
+  return Object.keys(progress)
+    .filter((id) => id.startsWith(`${ile}-`) && !id.endsWith('-challenge'))
+    .map((id) => ({ itemId: `${id}:revision`, due: '2000-01-01', stage: 0, streak: 0 }));
+}
+
 /** Une partie où le Gardien de l'île `ile` n'est pas encore vaincu (sa clé « <lieu>-challenge » retirée) : il est debout. */
 function sansLeGardien(parCle, ile) {
   if (!ile) return parCle;
@@ -405,21 +433,23 @@ async function scenes() {
               finesse: c.finesse,
               pose: c.pose,
               pasEnPlus: c.pasEnPlus,
+              revisions: c.revisions,
               nom: parIle ? `${c.nom}-${parIle}` : c.nom,
             })),
           )
         : []),
     ];
-    for (const { vue, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages, succes, inventaire, pose, pasEnPlus } of views) {
+    for (const { vue, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages, succes, inventaire, pose, pasEnPlus, revisions } of views) {
       const page = await browser.newPage({ viewport: taille ?? TABLET, deviceScaleFactor: finesse ?? (recadre ? 1.5 : 1), ...(fige ? { reducedMotion: 'reduce' } : {}) });
       await piloterLHorloge(page, time);
       await page.addInitScript(hasardFixe);
       await page.addInitScript(figeable);
       await page.goto(`${base}/icon.svg`);
       await page.evaluate(
-        ({ world, progress, view, univers, lv2, reglages, badges, inventaire, pose }) => {
+        ({ world, progress, view, univers, lv2, reglages, badges, inventaire, pose, spaced }) => {
           localStorage.clear();
           sessionStorage.removeItem('dysapps:poses-montrees');
+          sessionStorage.removeItem('dysapps:revisions-plus-tard');
           // La pose à montrer (GD-6), comme la retient « Voir le bâtiment » (src/blocland/poseAMontrer.ts).
           if (pose) sessionStorage.setItem('dysapps:pose', JSON.stringify(pose));
           else sessionStorage.removeItem('dysapps:pose');
@@ -427,7 +457,7 @@ async function scenes() {
           localStorage.setItem('dysapps:settings', JSON.stringify({ worldView: view, ...(univers ? { univers } : {}), ...(lv2 ? { lv2 } : {}), ...(reglages ?? {}) }));
           localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true, 'archipel-5e': true, 'archipel-4e': true, 'archipel-3e': true }));
           localStorage.setItem('dysapps:region-names', JSON.stringify({ said: true }));
-          localStorage.setItem('dysapps:game', JSON.stringify({ version: 3, stock: inventaire ?? {}, progress, world }));
+          localStorage.setItem('dysapps:game', JSON.stringify({ version: 3, stock: inventaire ?? {}, progress, world, spaced }));
           localStorage.setItem('dysapps:progress', JSON.stringify({ xp: 20000, badges }));
         },
         {
@@ -440,13 +470,14 @@ async function scenes() {
           reglages,
           inventaire,
           badges: succesDe(succes),
+          spaced: revisions ? revisionsDues(progress, ile) : [],
         },
       );
       await page.goto(`${base}/${QUERY}#${go}`);
       const file = SHOTS && join(SHOTS, `${a}-${nom}.jpg`);
       if (!mesure) {
         // Les autres captures (nuit, personnages, chantier, ponts) : pas de mesure, seulement l'image.
-        await preparerLaScene(page, VUES_SANS_MONDE.has(vue) ? 0 : WAIT);
+        await preparerLaScene(page, VUES_SANS_MONDE.has(vue) || view === 'list' ? 0 : WAIT);
         // Plus loin dans le temps de la scène (la pose finie, par exemple), du même pas que la préparation.
         for (let i = 0; i < (pasEnPlus ?? 0); i++) {
           await page.clock.runFor(125);

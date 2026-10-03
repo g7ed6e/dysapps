@@ -36,6 +36,7 @@ import { islandState } from './world/islandState';
 import { SpeakButton } from '../components/SpeakButton';
 import { useUnivers } from '../core/SettingsContext';
 import { UNIVERS } from '../core/univers';
+import { creaturesQuiFontSigne, usePlusTard } from './rappels';
 
 /** Ce qu'il faut pour rejoindre un archipel fermé, en une phrase. */
 function lockedArchipelagoText(state: ReturnType<typeof useBlocland>['state'], classe: (typeof ARCHIPELAGOS)[number]['classe']): string {
@@ -68,6 +69,8 @@ export function BloclandPage() {
   const renommage = useRenommage(!rallume, 1200);
   const whale = useWhaleWord(state, here, !rallume && !renommage.ouvert);
   const destinationText = `Prochaine destination : ${destination.name}. ${destination.text}`;
+  // La créature qui se souvient (GD-4, étape 1) : l'icône de la notion sur son île, comme son signe dans le monde.
+  const { remises } = usePlusTard();
   return (
     <>
       <Link to={MENU_PATH} className="back-link">
@@ -116,6 +119,7 @@ export function BloclandPage() {
         const reached = isArchipelagoReached(a.classe, state.world.links);
         const stage = stageAt(a.port);
         const status = stage && reached ? planStatus(state, stage) : null;
+        const signes = new Set(creaturesQuiFontSigne(state.spaced, state.world.links, a.classe, remises, settings.lv2).map((x) => x.id));
         return (
           <section key={a.classe} className={`archipel${reached ? '' : ' archipel-locked'}`} aria-labelledby={`archipel-${a.classe}`}>
             <h2 id={`archipel-${a.classe}`} className="section-title">
@@ -139,6 +143,13 @@ export function BloclandPage() {
                   <li key={biome.id}>
                     <Link to={`/adventure/${biome.id}`} className={`panel biome-card biome-${biome.id}${unlocked ? '' : ' locked'}`}>
                       <Creature biome={biome.id} className="creature-small" />
+                      {signes.has(biome.id) && (
+                        // Le signe de la créature : l'icône de la notion, fixe ; le panneau de l'île propose de reprendre.
+                        <span className="biome-rappel">
+                          <Icon name={biome.icon} size="1.4rem" />
+                          <span className="visually-hidden">{biome.creature.name} te propose de reprendre.</span>
+                        </span>
+                      )}
                       <span className="biome-name">{biome.name}</span>
                       <span className="biome-module">
                         {biome.module} · Niveau {biome.classe}

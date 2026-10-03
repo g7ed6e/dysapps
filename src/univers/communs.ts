@@ -14,6 +14,12 @@ export const ETATS_D_ILE: Record<IslandStateId, string> = {
   restauree: 'Restaurée',
 };
 
+/**
+ * La phrase commune de la créature qui propose les révisions dues (GD-4, étape 1), quand l'univers n'a pas la sienne :
+ * une seule phrase, sans échec ni date, rien qui presse.
+ */
+export const RAPPEL = (mission: string) => `On reprend « ${mission} » ensemble ?`;
+
 /** Ce que disent les créatures, île par île. */
 export const REPLIQUES: Record<BiomeId, TextesCreature> = {
   'french-6e-phonology': {

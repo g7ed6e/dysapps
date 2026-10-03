@@ -174,6 +174,11 @@ export interface TextesUnivers {
   blocs: NomsDesBlocs;
   /** Le lieu du village où l'on assemble les blocs (GD-2), sur l'île de l'école, à côté de la salle des trophées. */
   assemblage: TextesAssemblage;
+  /**
+   * Ce que dit la créature qui propose les révisions dues de son île (GD-4, étape 1), avec le titre de la mission :
+   * deux phrases courtes au plus, au présent, sans échec ni date. Sans elle, la phrase commune (`RAPPEL`, communs.ts).
+   */
+  rappel?: (mission: string) => string;
 }
 
 /** Les noms qu'un univers donne à des blocs (GD-2 : les blocs assemblés). */

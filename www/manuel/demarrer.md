@@ -57,7 +57,7 @@ Une appli déjà installée ne prend pas toujours la nouvelle icône ni le nouve
 
 Ce premier toucher sert aussi à **débloquer la voix et les sons** : les navigateurs les gardent muets tant que l’élève n’a pas touché l’écran. Sans lui, la première consigne lue automatiquement pouvait rester silencieuse. L’écran titre ne revient qu’au lancement suivant ; ouverte sur une adresse précise (un lien, un favori), l’application ne propose pas de repartir ailleurs.
 
-Quand des items ratés reviennent (répétition espacée), le menu (en page et dans le village) montre aussi **À revoir aujourd’hui** et, si l’appli est installée, un point s’affiche sur son icône (désactivable dans les Réglages).
+Quand des items ratés reviennent (répétition espacée), la créature de leur île fait signe dans le monde et propose de reprendre ([La créature qui se souvient](blocland.md#la-creature-qui-se-souvient)) ; le menu (en page et dans le village) montre aussi **À revoir aujourd’hui** et, si l’appli est installée, un point s’affiche sur son icône (désactivable dans les Réglages).
 
 Dans le menu aussi, **Continuer** ramène à la dernière mission ouverte (du portail ou de l’aventure ; pas le Tutoriel). « Effacer ma progression » l’oublie.
 
