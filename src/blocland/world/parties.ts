@@ -35,6 +35,9 @@ export function nombreDeParties(biome: Pick<BiomeDef, 'id' | 'exercises'>): numb
 /** Un nom en milieu de phrase, après deux-points : sa minuscule (« Partie posée : le toit de la cabane »). */
 export const minuscule = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
 
+/** La phrase de la pose dans le monde (GD-6) : « Partie posée : le toit de la cabane. », une par partie. */
+export const phraseDesPartiesPosees = (posees: readonly Partie[]) => posees.map((p) => `Partie posée : ${minuscule(p.nom)}.`).join(' ');
+
 /** « Le four de Rouxel » → « du four de Rouxel » : le complément de « le bas », « le haut » (l'article contracté). */
 function complement(nom: string): string {
   const m = /^(Le|La|Les|L’|L')\s?(.*)$/.exec(nom);

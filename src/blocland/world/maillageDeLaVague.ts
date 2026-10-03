@@ -28,8 +28,9 @@ export interface GroupeAvecLaVague {
 
 /**
  * Le maillage du terrain pendant la vague : le terrain sans la partie (une géométrie par matériau, faces visibles
- * seulement), et les cubes de la vague ajoutés à la fin du groupe de leur matériau. Pas un appel de dessin de plus que
- * le terrain tout construit : la vague partage ses maillages. Chaque cube de la vague garde ses faces de côté et du
+ * seulement), et les cubes de la vague ajoutés à la fin du groupe de leur matériau. La vague partage les maillages du
+ * terrain : pas un appel de dessin de plus pour un matériau que le terrain a déjà ; un matériau que seule la partie
+ * porte (absent du terrain sans elle) ouvre un groupe de plus, donc un appel de dessin de plus pendant la vague. Chaque cube de la vague garde ses faces de côté et du
  * dessus, puisqu'il descend seul ; le dessous, que la caméra ne voit jamais (elle regarde d'en haut), n'est pas dessiné.
  * Les cubes partis sont les premiers de la vague dans chaque groupe : la 3D n'en dessine que le début (`indicesJusquA`).
  */
@@ -40,6 +41,7 @@ export function maillageAvecLaVague(terrain: readonly VoxelCube[], cubes: readon
     for (const g of buildMesh([cubes[c]])) {
       if (g.face === 'bottom') continue;
       let v = groupes.get(g.key);
+      // Un matériau absent du terrain : un groupe neuf, un appel de dessin de plus le temps de la vague.
       if (!v) {
         v = { groupe: { ...g, positions: [], normals: [], uvs: [], indices: [] }, vague: null };
         groupes.set(g.key, v);

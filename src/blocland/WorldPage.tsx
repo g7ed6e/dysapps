@@ -64,7 +64,6 @@ import type { Bonhomme } from './world/view';
 import { partiesDe, prochainePartie, type Partie } from './world/parties';
 import { prendreLaPose } from './poseAMontrer';
 import { VAGUE, cubesDeLaVague, sansLaPartie } from './world/vague';
-import { phraseDesPartiesPosees } from './PlanSection';
 import { Loading } from '../components/Loading';
 import {
   casesDesPlansDansLeMonde,
@@ -110,7 +109,7 @@ export function WorldPage() {
   // La pose d'une partie en vague (GD-6, Blocland) : ses cases, absentes du monde jusqu'à ce que la vue les pose ; puis
   // la phrase « Partie posée : … » du panneau, une fois le dernier cube posé (ou l'écran touché).
   const [vague, setVague] = useState<{ seq: number; biome: BiomeId; parties: Partie[]; cases: Set<string> } | null>(null);
-  const [partiesDites, setPartiesDites] = useState<{ biome: BiomeId; parties: Partie[]; toc: boolean; seq: number } | null>(null);
+  const [partiesDites, setPartiesDites] = useState<{ biome: BiomeId; parties: Partie[]; toc: boolean; muet: boolean; seq: number } | null>(null);
   const { launchVoyage, progress } = useProgress();
   const mapOpen = biomeId === 'map';
   // Les quatre archipels : un panneau HTML à la place de celui d'une île, le monde derrière.
@@ -551,9 +550,10 @@ export function WorldPage() {
 
   // ---- La pose d'une partie en vague (GD-6, Blocland) : « Voir le bâtiment » arrive ici avec la pose à montrer, une
   // fois (poseAMontrer.ts). La caméra ne bouge pas ; les cases de la partie restent vides jusqu'à ce que la vague les
-  // pose, couche par couche, un « clac » par couche ; puis la phrase du panneau, écrite et lue, et le carillon. Un toucher
-  // pose tout d'un coup ; « Réduire les animations » : posée d'un coup, un seul « clac » et le carillon. Rien n'est
-  // enregistré ici : la partie l'est déjà, à l'écran de fin.
+  // pose, couche par couche, un « clac » par couche ; puis le carillon et la phrase du panneau, écrite, avec « Écouter »
+  // (elle n'est pas lue d'office : l'écran de fin l'a déjà lue). Un toucher sur la scène pose tout d'un coup ; un appui
+  // sur Pause, l'archipel, Recentrer ou la barre garde son effet et pose la partie en silence. « Réduire les animations » :
+  // posée d'un coup, un seul « clac » et le carillon. Rien n'est enregistré ici : la partie l'est déjà, à l'écran de fin.
   const [sonDeLaPose] = useState(() => sonDePose(habillage.pose));
   useEffect(() => {
     if (!island || chantier !== 'part' || habillage.pose !== 'geste') return;
@@ -568,17 +568,18 @@ export function WorldPage() {
     if (vague && vague.biome !== island?.id) setVague(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [island?.id]);
-  /** La pose finie (ou touchée) : la partie entière dans le monde, la phrase dans le panneau, puis le carillon. */
-  function direLaPose(biome: BiomeId, parties: Partie[], toc = false) {
+  /**
+   * La pose finie (ou touchée) : la partie entière dans le monde, la phrase dans le panneau, puis le carillon. `muet` :
+   * l'élève a pris un contrôle de la scène (Pause…), la phrase est là sans un son.
+   */
+  function direLaPose(biome: BiomeId, parties: Partie[], toc = false, muet = false) {
     setVague(null);
-    setPartiesDites((d) => ({ biome, parties, toc, seq: (d?.seq ?? 0) + 1 }));
+    setPartiesDites((d) => ({ biome, parties, toc, muet, seq: (d?.seq ?? 0) + 1 }));
   }
   useEffect(() => {
-    if (!partiesDites) return;
+    if (!partiesDites || partiesDites.muet) return;
     const dire = () => {
-      // Le carillon avant la voix : il se tait quand la synthèse vocale parle.
       if (settings.sounds) playDone();
-      if (settings.autoRead) speak(frenchTypography(phraseDesPartiesPosees(partiesDites.parties)));
     };
     if (!partiesDites.toc) return dire();
     // Moins d'animations : un seul « clac », puis le carillon, sans qu'ils se couvrent.
@@ -595,6 +596,9 @@ export function WorldPage() {
   };
   const poserToutDUnCoup = () => {
     if (vague) direLaPose(vague.biome, vague.parties);
+  };
+  const poserEnSilence = () => {
+    if (vague) direLaPose(vague.biome, vague.parties, false, true);
   };
   const cubesVus = useMemo(() => (vague ? sansLaPartie(cubes, vague.cases) : cubes), [cubes, vague]);
   const poseVue = useMemo(() => (vague ? { seq: vague.seq, cubes: cubesDeLaVague(cubes, vague.cases) } : null), [cubes, vague]);
@@ -678,6 +682,10 @@ export function WorldPage() {
     if (!moment) return;
     if (moment.phase === 'camera') direLeRallumage(moment.id);
     finirLeRallumage(moment.id);
+  };
+  /** Pause, l'archipel, Recentrer ou la barre pendant le moment : la sentinelle allumée, sans cloche ni mot. */
+  const finirLeRallumageEnSilence = () => {
+    if (moment) finirLeRallumage(moment.id);
   };
   /** « Passer » (ou Échap, ou Entrée) : ce moment et ceux qui suivent, toutes les sentinelles allumées tout de suite. */
   const passerLesRallumages = () => {
@@ -826,7 +834,13 @@ export function WorldPage() {
         className="world-stage"
         data-scene
         ref={stageRef}
-        onPointerDownCapture={moment ? toucherQuiSaute(sauterLeRallumage) : vague ? toucherQuiSaute(poserToutDUnCoup) : undefined}
+        onPointerDownCapture={
+          moment
+            ? toucherQuiSaute(sauterLeRallumage, finirLeRallumageEnSilence)
+            : vague
+              ? toucherQuiSaute(poserToutDUnCoup, poserEnSilence)
+              : undefined
+        }
       >
         <Suspense fallback={<Loading className="world-loading" text="Chargement du village…" />}>
           <WorldCanvas
@@ -1103,6 +1117,7 @@ export function WorldPage() {
             onClose={() => montrerLePanneau(false)}
             highlight={highlight}
             posees={partiesDites?.biome === island.id ? partiesDites.parties : null}
+            enCoursDePose={vague?.biome === island.id ? vague.parties : null}
             onBuilt={(to) => {
               // La fête, c'est la transformation : la caméra vole jusqu'à l'île qui s'ouvre, et sa créature accueille.
               window.setTimeout(() => navigate(`/adventure/${to}`), 900);

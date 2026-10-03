@@ -18,13 +18,28 @@ interface PoseRetenue {
   rangs: number[];
 }
 
-function lire<T>(cle: string): T | null {
+function lire(cle: string): unknown {
   try {
     const brut = sessionStorage.getItem(cle);
-    return brut ? (JSON.parse(brut) as T) : null;
+    return brut ? (JSON.parse(brut) as unknown) : null;
   } catch {
     return null;
   }
+}
+
+/** Les poses déjà montrées, telles qu'écrites : une liste de chaînes, le reste ignoré (une valeur abîmée ne plante pas). */
+function lireLesMontrees(): string[] {
+  const brut = lire(CLE_MONTREES);
+  return Array.isArray(brut) ? brut.filter((c): c is string => typeof c === 'string') : [];
+}
+
+/** La pose retenue, telle qu'écrite : une île (chaîne) et des rangs entiers, ou rien. */
+function lireLaPose(): PoseRetenue | null {
+  const brut = lire(CLE);
+  if (!brut || typeof brut !== 'object') return null;
+  const { biome, rangs } = brut as { biome?: unknown; rangs?: unknown };
+  if (typeof biome !== 'string' || !Array.isArray(rangs)) return null;
+  return { biome: biome as BiomeId, rangs: rangs.filter((r): r is number => Number.isInteger(r)) };
 }
 
 function ecrire(cle: string, valeur: unknown): void {
@@ -42,16 +57,16 @@ const cleDeLaPose = (p: PoseRetenue) => `${p.biome}:${p.rangs.join(',')}`;
 export function retenirLaPose(biome: BiomeId, parties: readonly Partie[]): void {
   if (!parties.length) return;
   const pose = { biome, rangs: parties.map((p) => p.rang) };
-  if ((lire<string[]>(CLE_MONTREES) ?? []).includes(cleDeLaPose(pose))) return;
+  if (lireLesMontrees().includes(cleDeLaPose(pose))) return;
   ecrire(CLE, pose);
 }
 
 /** Prend la pose à montrer sur cette île, une fois : ensuite, plus rien à jouer. */
 export function prendreLaPose(biome: BiomeId): Partie[] | null {
-  const pose = lire<PoseRetenue>(CLE);
-  if (!pose || pose.biome !== biome || !Array.isArray(pose.rangs)) return null;
+  const pose = lireLaPose();
+  if (!pose || pose.biome !== biome) return null;
   ecrire(CLE, null);
-  ecrire(CLE_MONTREES, [...(lire<string[]>(CLE_MONTREES) ?? []), cleDeLaPose(pose)]);
+  ecrire(CLE_MONTREES, [...lireLesMontrees(), cleDeLaPose(pose)]);
   const parties = partiesDe(biome).filter((p) => pose.rangs.includes(p.rang));
   return parties.length ? parties : null;
 }

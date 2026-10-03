@@ -18,6 +18,9 @@ const vu = vi.hoisted(() => ({
   pose: null as { seq: number; cubes: { x: number; y: number; z: number }[] } | null,
   onPose: undefined as ((moment: 'couche' | 'finie') => void) | undefined,
 }));
+// Le carillon de la fin de pose (GD-6) : compté, sans son.
+const carillon = vi.hoisted(() => vi.fn());
+vi.mock('./sound', async (original) => ({ ...(await original<typeof import('./sound')>()), playDone: carillon }));
 vi.mock('./three', () => ({
   hasWebGL: () => false,
   VoxelCanvas: () => null,
@@ -780,14 +783,53 @@ describe('la pose d’une partie en vague, après « Voir le bâtiment » (GD-6,
     expect(within(sheet()!).getByText('Partie posée : la cabane de Mousso.')).toBeInTheDocument();
   });
 
-  it('un toucher sur le monde pendant la pose pose tout d’un coup', async () => {
+  it('pendant la pose, le compte du bâtiment reste à l’ancien ; la région de la phrase est là, vide', async () => {
+    await preparer();
+    renderAt('/adventure/french-6e-phonology?worksite=part');
+    await waitFor(() => expect(vu.pose).not.toBeNull());
+    const panneau = sheet()!;
+    // La région annoncée est montée avant la phrase, vide : la phrase y entre ensuite.
+    const region = panneau.querySelector('.plan-posee-region')!;
+    expect(region).toHaveAttribute('role', 'status');
+    expect(region).toBeEmptyDOMElement();
+    expect(within(panneau).getByRole('progressbar')).toHaveAttribute('aria-valuenow', '0');
+    expect(within(panneau).getByText(/Prochaine partie/)).toHaveTextContent('la cabane de Mousso');
+    act(() => vu.onPose?.('finie'));
+    expect(within(panneau).getByRole('progressbar')).toHaveAttribute('aria-valuenow', '1');
+    expect(panneau.querySelector('.plan-posee-region')).toBe(region);
+    expect(within(region as HTMLElement).getByText('Partie posée : la cabane de Mousso.')).toBeInTheDocument();
+  });
+
+  it('Pause pendant la pose ouvre le menu et pose la partie en silence ; au retour, la phrase est là, rien ne se rejoue', async () => {
+    const { cases, dansLaPartie } = await preparer();
+    carillon.mockClear();
+    renderAt('/adventure/french-6e-phonology?worksite=part');
+    await waitFor(() => expect(vu.pose).not.toBeNull());
+    const pause = screen.getByRole('button', { name: 'Menu' });
+    fireEvent.pointerDown(pause);
+    fireEvent.click(pause);
+    expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/menu');
+    expect(vu.pose).toBeNull();
+    expect(dansLaPartie()).toBe(cases.size);
+    // Retour sur l'île : la phrase est là, sans carillon, et la vague ne reprend pas.
+    fireEvent.click(screen.getByRole('button', { name: 'Toucher la Forêt dans le monde' }));
+    await waitFor(() => expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/french-6e-phonology'));
+    expect(await within(await waitFor(() => sheet()!)).findByText('Partie posée : la cabane de Mousso.')).toBeInTheDocument();
+    expect(vu.pose).toBeNull();
+    await new Promise((r) => setTimeout(r, 50));
+    expect(carillon).not.toHaveBeenCalled();
+  });
+
+  it('un toucher sur le monde pendant la pose pose tout d’un coup, avec le carillon', async () => {
     const { cases, dansLaPartie } = await preparer();
     renderAt('/adventure/french-6e-phonology?worksite=part');
     await waitFor(() => expect(vu.pose).not.toBeNull());
+    carillon.mockClear();
     fireEvent.pointerDown(document.querySelector('.voxel-canvas')!);
     expect(vu.pose).toBeNull();
     expect(dansLaPartie()).toBe(cases.size);
     expect(phrase()).toBeInTheDocument();
+    expect(carillon).toHaveBeenCalledTimes(1);
   });
 
   it('quitter pendant la pose ne perd rien : au retour, la partie est posée, sans rejouer la pose', async () => {

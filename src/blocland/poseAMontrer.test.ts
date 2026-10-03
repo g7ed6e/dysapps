@@ -20,3 +20,22 @@ it('rien à retenir sans partie posée', () => {
   retenirLaPose('french-6e-phonology', []);
   expect(prendreLaPose('french-6e-phonology')).toBeNull();
 });
+
+it('une valeur abîmée dans le stockage ne plante pas : elle est ignorée', () => {
+  const [cabane] = partiesDe('french-6e-phonology');
+  for (const brut of ['{', '42', 'null', '"texte"', '{"biome":3,"rangs":[1]}', '{"biome":"french-6e-phonology","rangs":"1"}']) {
+    sessionStorage.setItem('dysapps:pose', brut);
+    expect(() => prendreLaPose('french-6e-phonology')).not.toThrow();
+    expect(prendreLaPose('french-6e-phonology')).toBeNull();
+  }
+  // Des rangs mêlés : seuls les entiers comptent.
+  sessionStorage.setItem('dysapps:pose', JSON.stringify({ biome: 'french-6e-phonology', rangs: [1, '2', 1.5, null] }));
+  expect(prendreLaPose('french-6e-phonology')).toEqual([cabane]);
+  // Une liste des poses montrées abîmée : retenir et prendre marchent encore.
+  for (const brut of ['{"a":1}', '[1, null, {}]', '"x"']) {
+    oublierLesPoses();
+    sessionStorage.setItem('dysapps:poses-montrees', brut);
+    expect(() => retenirLaPose('french-6e-phonology', [cabane])).not.toThrow();
+    expect(prendreLaPose('french-6e-phonology')).toEqual([cabane]);
+  }
+});
