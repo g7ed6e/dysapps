@@ -420,6 +420,12 @@ export default function WorldCanvas2D({
         }
         return;
       }
+      // Pendant une marche, les mêmes touches le font arriver tout de suite, comme un toucher dans le vide.
+      if ((e.key === 'Enter' || e.key === ' ' || e.key === 'Escape') && finishWalk(hero.current.walk, performance.now())) {
+        e.preventDefault();
+        p.onArrive?.();
+        return;
+      }
       const dir = ARROW_DIRS[e.key];
       if (!dir || !p.onPickIsland) return;
       e.preventDefault();

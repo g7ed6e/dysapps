@@ -272,6 +272,12 @@ export default function WorldCanvas({
         }
         return;
       }
+      // Pendant une marche, les mêmes touches le font arriver tout de suite, comme un toucher dans le vide.
+      if ((e.key === 'Enter' || e.key === ' ' || e.key === 'Escape') && finishWalk(personnages.marche, performance.now())) {
+        e.preventDefault();
+        arriveRef.current?.();
+        return;
+      }
       const dir = ARROW_DIRS[e.key];
       if (!dir || !pickRef.current) return;
       e.preventDefault();

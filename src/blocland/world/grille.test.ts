@@ -143,7 +143,7 @@ describe('La disposition en grille', () => {
   it('la durée d’une marche : six cases par seconde, quelle que soit sa longueur', () => {
     const court = [{ x: 0, y: 0, z: 0 }, { x: 3, y: 4, z: 0 }];
     expect(dureeDeMarche(court)).toBe((routeLengths(court)[1] / WALK_SPEED) * 1000);
-    expect(dureeDeMarche([{ x: 0, y: 0, z: 0 }, { x: 600, y: 0, z: 0 }])).toBe(100_000);
+    expect(dureeDeMarche([{ x: 0, y: 0, z: 0 }, { x: 600, y: 0, z: 0 }])).toBe((600 / WALK_SPEED) * 1000);
     expect(dureeDeMarche([court[0]])).toBe(0);
   });
 

@@ -451,7 +451,7 @@ Les sons sont générés par le code, sans aucun fichier : à la pose, trois pou
 | Toucher le Gardien sur son îlot | Sa fiche : « Défier » quand il est prêt, sinon ce qui manque |
 | Croix de la fiche, Échap, toucher le sol | La fiche se ferme ; toucher une autre chose la remplace |
 | Toucher l’école, ou « École du village » dans le menu | Le bonhomme marche jusqu’à sa porte, le panneau de l’école s’ouvre |
-| Toucher pendant un trajet | Dans le vide ou sur l’eau : le bonhomme arrive tout de suite ; sur le sol : il change de but |
+| Toucher pendant un trajet, Entrée, Espace, Échap | Dans le vide ou sur l’eau, ou au clavier : le bonhomme arrive tout de suite ; sur le sol : il change de but |
 | Flèches du clavier | Île voisine dans cette direction |
 | Faire glisser le monde (un doigt ou la souris) | La vue se déplace, sans zoom ni rotation ; le bouton « Recentrer » apparaît |
 | Bouton « Recentrer » (en haut à droite) | La caméra revient sur l’île ou le bonhomme |

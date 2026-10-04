@@ -854,20 +854,20 @@ function abordsDansLesMarges(def: IslandDef): ReadonlySet<string> {
  * Le pied des ouvrages d'une île, partout sur l'île (pas seulement dans les marges) : le bout de chaque ouvrage et ses
  * huit voisines. Le décor haut de la côte (arbre, sapin, rocher…) n'y pose rien, feuillage compris : le bonhomme
  * descend toujours d'un ouvrage sur le sol libre (un sapin bouchait la sortie du pont de la Plaine des nombres, et le
- * bonhomme passait au travers, 04/10/2026). Mémorisé (les ouvrages ne bougent pas).
+ * bonhomme passait au travers, 04/10/2026). En clés numériques (`cleDeCube`), mémorisé (les ouvrages ne bougent pas).
  */
-const piedsCache = new Map<BiomeId, ReadonlySet<string>>();
+const piedsCache = new Map<BiomeId, ReadonlySet<number>>();
 
-function piedsDesOuvrages(def: IslandDef): ReadonlySet<string> {
+function piedsDesOuvrages(def: IslandDef): ReadonlySet<number> {
   const connus = piedsCache.get(def.id);
   if (connus) return connus;
-  const out = new Set<string>();
+  const out = new Set<number>();
   piedsCache.set(def.id, out);
   for (const b of bridgesOf(def.id)) {
     const path = bridgePath(b);
     if (!path.length) continue;
     const bout = b.from === def.id ? path[0] : path[path.length - 1];
-    for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) out.add(`${bout.x + dx},${bout.y + dy}`);
+    for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) out.add(cleDeCube(bout.x + dx, bout.y + dy));
   }
   return out;
 }
@@ -2804,7 +2804,7 @@ function poserLIle(
   const pieds = piedsDesOuvrages(def);
   // Un élément assez près du pied d'un ouvrage pour que son feuillage y arrive (deux cases) : posé seulement s'il le laisse libre.
   const presDUnPied = (x: number, y: number) => {
-    for (let dx = -2; dx <= 2; dx++) for (let dy = -2; dy <= 2; dy++) if (pieds.has(`${x + dx},${y + dy}`)) return true;
+    for (let dx = -2; dx <= 2; dx++) for (let dy = -2; dy <= 2; dy++) if (pieds.has(cleDeCube(x + dx, y + dy))) return true;
     return false;
   };
   const marges = margesDuCoeur(def);
@@ -2843,7 +2843,7 @@ function poserLIle(
     }
     const poses: [number, number, number, string, string | undefined][] = [];
     decorate((x, y, z, color, decor) => poses.push([x, y, z, color, decor]), c.decor, c.x, c.y, r);
-    if (poses.some(([x, y, z]) => devant.has(`${x},${y}`) || lieuxDuMonde.has(cleDeCube(x, y)) || (piedProche && pieds.has(`${x},${y}`)) || cacheUneBorne(bornes, vers, x, y, c.h + z))) continue;
+    if (poses.some(([x, y, z]) => devant.has(`${x},${y}`) || lieuxDuMonde.has(cleDeCube(x, y)) || (piedProche && pieds.has(cleDeCube(x, y))) || cacheUneBorne(bornes, vers, x, y, c.h + z))) continue;
     for (const [x, y, z, color, decor] of poses) poser(x, y, z, color, decor);
   }
   // Une île en altitude flotte : sa roche s'amincit dessous.
