@@ -6,7 +6,6 @@ import { BRIDGES, NOMS_ARCHIPELS, getArchipelago, isBiomeUnlocked, islandsOf } f
 import { ARCHIPELAGO_IDS } from './archipels';
 import { toutConstruit } from './budget';
 import {
-  borneTouchee,
   capVers,
   embarquer,
   etapeDuVoyage,
@@ -50,15 +49,6 @@ it('les îles du modèle : ouvertes ou non, et leur état', () => {
   expect(m.iles.map((i) => i.id)).toEqual(islandsOf('6e').map((b) => b.id));
   expect(m.iles.find((i) => i.id === 'french-6e-phonology')).toMatchObject({ ouverte: true, etat: { id: 'a-explorer' } });
   expect(m.iles.find((i) => i.id === 'french-6e-letter-confusion')).toMatchObject({ ouverte: false, etat: { id: 'fermee' } });
-});
-
-it('une borne touchée : jouer si elle est jouable, sinon ouvrir son île', () => {
-  const { bornes } = modeleDuMonde(vierge, '6e', NOMS_ARCHIPELS, mots);
-  const ouverte = bornes.find((b) => b.ile === 'french-6e-phonology')!;
-  const fermee = bornes.find((b) => b.ile === 'french-6e-letter-confusion')!;
-  expect(borneTouchee(bornes, 'french-6e-phonology', ouverte.mission)).toBe('jouer');
-  expect(borneTouchee(bornes, 'french-6e-letter-confusion', fermee.mission)).toBe('ile');
-  expect(borneTouchee(bornes, 'french-6e-phonology', 'inconnue')).toBe('ile');
 });
 
 it('un ouvrage touché ouvre l’île ouverte qu’il touche', () => {

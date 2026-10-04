@@ -1,5 +1,6 @@
 import { fractionWords } from '../../core/fractions';
 import type { Lang } from '../../core/speech';
+import { frenchTypography } from '../../core/typographie';
 
 /** Fraction « en colonne » : numérateur au-dessus, dénominateur en dessous. « … » = case à compléter. */
 export function Frac({ n, d }: { n: string; d: string }) {
@@ -14,15 +15,13 @@ export function Frac({ n, d }: { n: string; d: string }) {
 
 const TOKEN = /((?:\d+|…)\/(?:\d+|…)|…)/;
 
+// La typographie française vit dans core/typographie.ts (le code pur s'en sert aussi) ; on la garde ici pour les écrans.
+export { frenchTypography };
+
 /**
  * Texte enrichi pour les énoncés et les réponses :
  * « n/d » devient une fraction en colonne, « … » une case à compléter bien visible.
  */
-/** Typographie française : espace insécable avant ? ! : ; » et après «, pour qu'ils ne restent pas seuls en début de ligne. */
-export function frenchTypography(text: string): string {
-  return text.replace(/ ([?!:;»])/g, '\u00a0$1').replace(/« /g, '«\u00a0');
-}
-
 export function RichText({ text, lang = 'fr' }: { text: string; lang?: Lang }) {
   // L'anglais, l'allemand et l'espagnol n'ont pas d'espace avant « ? ! : ; » : on n'y touche pas.
   const parts = (lang === 'fr' ? frenchTypography(text) : text).split(TOKEN);

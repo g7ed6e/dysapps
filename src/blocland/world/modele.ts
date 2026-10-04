@@ -3,13 +3,27 @@
 // aujourd'hui, le réseau d'Archipéo demain) dit ensuite où dessiner chaque chose. Et les décisions que prend le jeu
 // quand l'élève touche le monde : jouer une borne, ouvrir l'île d'un ouvrage, aller vers une île, voyager.
 import { BIOMES, missionsJouables, type BiomeId } from '../biomes';
+import { guardianStatus } from '../boss';
 import type { GameState } from '../engine';
-import { levelFor } from '../engine';
+import { canLaunch, levelFor, nextFillable } from '../engine';
 import { pickExercise, questProgress } from '../exercises';
-import { archipelagoOf, getBridge, isBiomeUnlocked, islandsOf, launchedCount, type ArchipelagoId, type MotsDesGardiens, type NomsArchipels } from './archipelago';
+import {
+  BRIDGES,
+  archipelagoOf,
+  buildBridge,
+  getArchipelago,
+  getBridge,
+  isBiomeUnlocked,
+  islandsOf,
+  launchedCount,
+  type ArchipelagoId,
+  type MotsDesGardiens,
+  type NomsArchipels,
+} from './archipelago';
 import { nextDestination, type Destination } from './destination';
 import { islandState, type IslandStateDef } from './islandState';
-import { stageTo } from './vehicle';
+import { monumentsOf } from './monuments';
+import { stageBuildingAt, stageTo } from './vehicle';
 import type { VoyageLeg } from './voyage';
 
 /** Une île de l'archipel. */
@@ -72,13 +86,42 @@ export function modeleDuMonde(state: GameState, a: ArchipelagoId, noms: NomsArch
   };
 }
 
-// ---- Les décisions
-
-/** Une borne touchée : jouer sa mission si elle est jouable, sinon ouvrir son île (qui explique pourquoi). */
-export function borneTouchee(bornes: BorneDuModele[], ile: BiomeId, mission: string): 'jouer' | 'ile' {
-  const b = bornes.find((m) => m.ile === ile && m.mission === mission);
-  return b && b.etat !== 'locked' ? 'jouer' : 'ile';
+/**
+ * L'état des objets du monde qui portent un signe (affordance-blocland.md §8), au-delà des bornes : ce que la vue ne
+ * peut pas déduire des cubes. Un objet absent de ces listes porte le cube de pierre (« pas encore »).
+ */
+export interface EtatsDesObjets {
+  /** Les Gardiens dont le défi est prêt (le losange d'or) ; un Gardien pas encore vaincu, hors de cette liste : la pierre. */
+  gardiensPrets: BiomeId[];
+  /** Le Bloc-Navire attend l'élève : un bloc qu'il a en poche à poser sur l'étape en chantier, ou le départ possible. */
+  navirePret: boolean;
+  /**
+   * Les chantiers en fantôme dont l'élève a les blocs : les ouvrages qu'il peut construire tout de suite, et les
+   * monuments où il peut poser au moins un bloc (identifiants des ouvrages et des monuments).
+   */
+  chantiersPrets: string[];
 }
+
+/** L'état des objets du monde qui portent un signe, dans l'archipel `a` (lu de la sauvegarde, rien n'y est ajouté). */
+export function etatsDesObjets(state: GameState, a: ArchipelagoId): EtatsDesObjets {
+  const iles = islandsOf(a);
+  const ici = new Set(iles.map((b) => b.id));
+  const links = state.world.links;
+  const etape = stageBuildingAt(getArchipelago(a).port, links);
+  const monde = { progress: state.progress, plans: state.world.parts };
+  return {
+    gardiensPrets: iles.filter((b) => guardianStatus(b, state.progress, links) === 'ready').map((b) => b.id),
+    navirePret: Boolean(etape && (nextFillable(state, etape) || canLaunch(state, etape).ok)),
+    chantiersPrets: [
+      ...BRIDGES.filter((b) => ici.has(b.from) && buildBridge(b.id, links, state.stock, monde).ok).map((b) => b.id),
+      ...monumentsOf(a)
+        .filter((m) => nextFillable(state, m))
+        .map((m) => m.id),
+    ],
+  };
+}
+
+// ---- Les décisions
 
 /** Un ouvrage touché : l'île ouverte qu'il touche (celle de départ si aucune ne l'est), `null` s'il n'existe pas. */
 export function ileDeLOuvrage(id: string, bridges: string[]): BiomeId | null {

@@ -315,6 +315,35 @@ export interface Camera extends PartieDeLaScene {
    * elles le refont une fois le doigt levé.
    */
   glissant: boolean;
+  /**
+   * Où ce point du monde se pose à l'écran (pixels CSS d'une vue `W` × `H`), la caméra à sa place visée (pas celle où
+   * elle est en chemin) ; `null` avant la première image ou derrière la caméra.
+   */
+  auBut(point: THREE.Vector3, W: number, H: number): { x: number; y: number } | null;
+  /**
+   * La fiche d'un objet le cache (lot 2 de « Toucher le monde ») : le cadrage glisse à plat pour que ce point du monde se
+   * pose en `vers` (coordonnées normalisées de l'écran, −1 à 1), sans changer de distance ni de direction. Effacé quand
+   * l'application reprend la main (une île, la Carte, une marche, un voyage).
+   */
+  recadrer(point: THREE.Vector3, vers: { x: number; y: number }): void;
+}
+
+/** Le point visé de l'écran, réutilisé d'un appel à l'autre (le recadrage le demande à chaque image). */
+const VISEE = new THREE.Vector2();
+
+/**
+ * Le glissement à plat (`out`, sur le plan horizontal) qui pose le point `point` du monde en `vers` (coordonnées
+ * normalisées de l'écran) pour la caméra `cam` déjà placée : le point du plan de `point` vu en `vers` avant le glissement
+ * devient `point`. Zéro si ce plan n'est pas devant la caméra en `vers` (l'horizon).
+ */
+export function decalagePourViser(cam: THREE.PerspectiveCamera, point: THREE.Vector3, vers: { x: number; y: number }, out: THREE.Vector3, ray = new THREE.Raycaster()): THREE.Vector3 {
+  cam.updateMatrixWorld();
+  ray.setFromCamera(VISEE.set(vers.x, vers.y), cam);
+  const { origin: o, direction: d } = ray.ray;
+  if (Math.abs(d.y) < 1e-6) return out.set(0, 0, 0);
+  const t = (point.y - o.y) / d.y;
+  if (t <= 0) return out.set(0, 0, 0);
+  return out.set(point.x - (o.x + d.x * t), 0, point.z - (o.z + d.z * t));
 }
 
 /**
@@ -456,6 +485,24 @@ export function creerCamera(
   };
   /** Le cadrage a été calculé au moins une fois (`vise` et `place` le tiennent). */
   let vu = false;
+  /** Le recadrage d'une fiche (`recadrer`) : le point à poser, et où ; effacé quand l'application reprend la main. */
+  let recadre: { point: THREE.Vector3; vers: { x: number; y: number } } | null = null;
+  /** Une caméra et un rayon de travail, pour le recadrage d'une fiche (alloués une fois). */
+  const essai = new THREE.PerspectiveCamera();
+  const rayon = new THREE.Raycaster();
+  const glissement = new THREE.Vector3();
+  const projete = new THREE.Vector3();
+  /** Place la caméra de travail en `pos`, regardant `target`, comme la vraie. */
+  const placerLEssai = (target: THREE.Vector3, pos: THREE.Vector3) => {
+    essai.fov = camera.fov;
+    essai.aspect = camera.aspect;
+    essai.near = camera.near;
+    essai.far = camera.far;
+    essai.updateProjectionMatrix();
+    essai.position.copy(pos);
+    essai.lookAt(target);
+    essai.updateMatrixWorld();
+  };
 
   const self: Camera = {
     cible: camTarget,
@@ -486,6 +533,16 @@ export function creerCamera(
     },
     recentrer: zero,
     decale: () => estDecale(decalage),
+    auBut: (point, W, H) => {
+      if (!vu) return null;
+      placerLEssai(but.target, but.pos);
+      projete.copy(point).project(essai);
+      if (projete.z > 1) return null;
+      return { x: ((projete.x + 1) / 2) * W, y: ((1 - projete.y) / 2) * H };
+    },
+    recadrer: (point, vers) => {
+      recadre = { point: point.clone(), vers: { ...vers } };
+    },
     poser: () => {
       if (!vu) return Infinity;
       const ecart = camTarget.distanceTo(vise) + camPos.distanceTo(place);
@@ -502,7 +559,10 @@ export function creerCamera(
       const { focus, home, carte: carteDemandee } = derniers.current;
       // L'application reprend la main : une nouvelle demande de cadrage, la Carte ouverte ou fermée, une marche, un voyage.
       const ile = focus.island ?? null;
-      if (focus.seq !== demande.seq || ile !== demande.ile || carteDemandee !== demande.carte || sailing || walking) zero();
+      if (focus.seq !== demande.seq || ile !== demande.ile || carteDemandee !== demande.carte || sailing || walking) {
+        zero();
+        recadre = null;
+      }
       demande.seq = focus.seq;
       demande.ile = ile;
       demande.carte = carteDemandee;
@@ -529,6 +589,13 @@ export function creerCamera(
       // Le cadrage de la Carte est gardé d'une image à l'autre : le décalage s'ajoute à une copie.
       const target = vise.copy(frame.target);
       const pos = place.copy(frame.pos);
+      // Une fiche cachait son objet : le cadrage glisse à plat pour le poser dans la place libre.
+      if (recadre && !sailing && !fixe && !instant.carte) {
+        placerLEssai(target, pos);
+        decalagePourViser(essai, recadre.point, recadre.vers, glissement, rayon);
+        target.add(glissement);
+        pos.add(glissement);
+      }
       base.x = target.x;
       base.z = target.z;
       // La place visée a pu bouger (la vue a changé de taille) : le décalage reste dans l'archipel.

@@ -29,7 +29,7 @@ it('« Tu peux construire » montre trois chantiers, celui de l’île du bonhom
   const now = screen.getByRole('list', { name: /Tu peux construire/ });
   expect(within(now).getAllByRole('link')).toHaveLength(READY_SHOWN);
   // Le bonhomme est sur la Forêt : un ouvrage qui en part d'abord. Le bâtiment de l'île n'y est jamais (GD-6).
-  expect(within(now).getAllByRole('link')[0]).toHaveAttribute('href', '/adventure/french-6e-phonology');
+  expect(within(now).getAllByRole('link')[0]).toHaveAttribute('href', expect.stringMatching(/^\/adventure\/french-6e-phonology\?worksite=/));
   expect(sheet.textContent).not.toContain('Plan de');
   const all = screen.getByRole('button', { name: /^Tout voir \((\d+)\)$/ });
   const n = Number(/\((\d+)\)/.exec(all.textContent!)![1]);

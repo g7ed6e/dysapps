@@ -48,7 +48,7 @@ export function VoyagePanel({ to, back, onArrive }: Props) {
   }, [text]);
   const level = Math.max(launchedCount(state.world.links), ARCHIPELAGOS.findIndex((a) => a.classe === to));
   return (
-    <section className="panel voyage-panel" role="dialog" aria-labelledby="voyage-title" aria-modal="false">
+    <section className="panel voyage-panel" role="dialog" aria-labelledby="voyage-title" aria-modal="true">
       <h2 id="voyage-title" className="voyage-title">
         <Icon name="ship" /> Le voyage
       </h2>

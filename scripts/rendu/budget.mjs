@@ -3,7 +3,8 @@
 // world/budget.test.ts), son enveloppe et la marge qui reste. Sans navigateur ni Three.js : quelques secondes, pour
 // chiffrer un lot avant et après sans écrire de test jetable. Le poste « Dans la scène » (étiquettes, flèche, fanion,
 // balises) ne se compte que dans le navigateur : `npm run rendu:mesures` mesure la scène entière. En dessous, le monde en
-// blocs de Blocland (`sceneCost`), avec et sans les petites constructions des commandes, sous son plafond.
+// blocs de Blocland (`sceneCost`), avec et sans les petites constructions des commandes, et les signes des objets
+// touchables (`signesCost`, tout construit et au pire), sous son plafond.
 // `--archipel 6e,3e` : seulement ces archipels ; `--json` : les chiffres en JSON, pour un script.
 import { createServer } from 'vite';
 import { fileURLToPath } from 'node:url';
@@ -62,7 +63,13 @@ try {
       plafond: budget.RENDER_BUDGET,
       // Le monde en blocs de Blocland (`sceneCost`), tout construit, puis avec les petites constructions des commandes
       // posées (GD-7, PR 3), sous son plafond.
-      blocs: { mesure: budget.sceneCost(a), avecCommandes: budget.sceneCost(a, true), plafond: budget.PLAFOND_DU_MONDE_EN_BLOCS },
+      blocs: {
+        mesure: budget.sceneCost(a),
+        avecCommandes: budget.sceneCost(a, true),
+        signes: budget.signesCost(a),
+        signesAuPire: budget.signesCost(a, true),
+        plafond: budget.PLAFOND_DU_MONDE_EN_BLOCS,
+      },
     };
   });
 
@@ -87,6 +94,9 @@ try {
       console.log(`\nPlafond des tablettes : ${n(r.plafond.triangles)} triangles, ${r.plafond.drawCalls} appels (objectif du plan, jamais mesuré sur tablette), « Dans la scène » compris, que le total compté laisse de côté.`);
       const b = r.blocs;
       console.log(`\nBlocland, le monde en blocs (\`sceneCost\`) : ${n(b.mesure.triangles)} triangles, ${b.mesure.drawCalls} appels ; avec les petites constructions des commandes posées : ${n(b.avecCommandes.triangles)} triangles (+${n(b.avecCommandes.triangles - b.mesure.triangles)}), ${b.avecCommandes.drawCalls} appels (${b.avecCommandes.drawCalls === b.mesure.drawCalls ? 'aucun de plus' : `+${b.avecCommandes.drawCalls - b.mesure.drawCalls} ⚠`}) ; plafond ${n(b.plafond.triangles)} triangles, ${b.plafond.drawCalls} appels.`);
+      const total = { triangles: b.avecCommandes.triangles + b.signes.triangles, drawCalls: b.avecCommandes.drawCalls + b.signes.drawCalls };
+      const depasse = total.triangles > b.plafond.triangles || total.drawCalls > b.plafond.drawCalls ? ' ⚠' : '';
+      console.log(`Les signes des objets touchables (\`signesCost\`) : ${n(b.signes.triangles)} triangles, ${b.signes.drawCalls} appels tout construit (${n(b.signesAuPire.triangles)} triangles, ${b.signesAuPire.drawCalls} appels au pire) ; avec le monde en blocs et ses commandes : ${n(total.triangles)} triangles, ${total.drawCalls} appels${depasse}.`);
     }
   }
 } finally {

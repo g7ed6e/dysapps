@@ -245,7 +245,7 @@ svg {
    de l'interface, douce ; aucune en Clair. */
 .world-overlay-top .panel,
 .world-overlay-bottom .panel,
-.world-archipel-list,
+.world-fiche,
 .island-sheet {
   box-shadow: var(--shadow-float);
 }
@@ -3561,19 +3561,22 @@ figure.class-table {
   flex-direction: column;
 }
 .world-page {
+  position: relative;
   flex: 1 1 auto;
   min-height: 0;
   display: flex;
   flex-direction: column;
   background: var(--surface);
 }
+/* Le monde garde tout l'écran, toujours : rien ne le pousse ni ne le redimensionne (décision du mainteneur, 4 octobre
+   2026). Ce qui demande de la place (le panneau de l'île, l'École, Blocs, les Trophées, les Monuments, le menu) s'ouvre
+   en plein écran par-dessus lui. */
 .world-stage {
   position: relative;
   flex: 1 1 auto;
   min-height: 0;
   display: flex;
   flex-direction: column;
-  transition: flex-basis 0.3s ease;
 }
 .voxel-canvas-stage {
   flex: 1 1 auto;
@@ -3740,8 +3743,8 @@ figure.class-table {
   flex: none;
 }
 /* En grand texte, la phrase de la Carte se lit dans une fenêtre de trois lignes entières, qui défile s'il y a une
-   suite ; un chevron sous le bouton Écouter et un trait pointillé le disent. Les boutons « Y aller » et « Les quatre
-   archipels » restent sous elle, toujours visibles. */
+   suite ; un chevron sous le bouton Écouter et un trait pointillé le disent. Le bouton « Y aller » reste sous elle,
+   toujours visible. */
 :root[data-texte="grand"] .world-map-line {
   display: flex;
   flex-direction: column;
@@ -3772,8 +3775,8 @@ figure.class-table {
 :root[data-texte="grand"] .world-map-speak {
   align-self: stretch;
 }
-/* Sur tablette, « Y aller » et « Les quatre archipels » tiennent sur une rangée : libellés un peu plus petits
-   (trois quarts du texte, jamais sous 18 px), marges fixes. */
+/* Sur tablette, « Y aller » tient sur sa rangée : libellé un peu plus petit (trois quarts du texte, jamais sous
+   18 px), marges fixes. */
 @media (min-width: 641px) {
   :root[data-texte="grand"] .world-map-line {
     padding-left: 14px;
@@ -3874,9 +3877,6 @@ figure.class-table {
   min-height: 48px;
   padding: 0.2rem 0.8rem;
 }
-.has-sheet .world-overlay-top {
-  max-height: 45%;
-}
 .world-bar .button[aria-pressed="true"] {
   background: var(--sand);
   border-color: var(--on-sand);
@@ -3890,7 +3890,7 @@ figure.class-table {
   overscroll-behavior: contain;
   padding: 0.8rem 1rem 1.2rem;
   background: var(--surface);
-  /* Le liseré de l'île en haut du panneau (à gauche sur grand écran). */
+  /* Le liseré de l'île en haut du panneau. */
   border-top: 8px solid var(--biome-color, var(--ink));
   animation: sheet-in 0.3s ease;
 }
@@ -4162,27 +4162,26 @@ button.island-quest:active {
     font-size: 1.25rem;
   }
 }
-@media (min-width: 900px) {
-  /* Sur grand écran, le panneau glisse depuis la droite et le monde garde toute la hauteur. */
-  .world-page {
-    flex-direction: row;
-  }
-  .island-sheet {
-    flex: 0 0 26rem;
-    max-height: none;
-    border-top: none;
-    border-left: 8px solid var(--biome-color, var(--ink));
-    box-shadow: none;
-    animation-name: sheet-in-right;
-  }
-  @keyframes sheet-in-right {
-    from {
-      transform: translateX(100%);
-    }
-    to {
-      transform: translateX(0);
-    }
-  }
+/* Un panneau du monde : plein écran, par-dessus la scène, qui garde sa taille ; le texte reste dans une colonne de
+   lecture (40rem au plus) au milieu. */
+.world-page > .island-sheet {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  max-height: none;
+  padding-inline: max(1rem, env(safe-area-inset-left), env(safe-area-inset-right), calc((100% - 40rem) / 2));
+  padding-top: 0;
+  padding-bottom: max(1.2rem, env(safe-area-inset-bottom));
+  box-shadow: none;
+}
+/* Sa tête (titre et croix) reste en haut quand on fait défiler : la croix est la sortie, toujours visible. */
+.world-page > .island-sheet .island-sheet-head {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding-top: max(0.8rem, env(safe-area-inset-top));
+  padding-bottom: 0.4rem;
+  background: var(--surface);
 }
 
 /* ===== Archipel : les ponts à construire ===== */
@@ -5810,6 +5809,7 @@ button.app-card {
   :root[data-texte="grand"] .world-page .world-archipel {
     top: 0.6rem;
     right: calc(0.6rem + 52px + 0.5rem);
+    flex-direction: row;
   }
   :root[data-texte="grand"] .world-page .world-overlay-top {
     top: calc(0.6rem + 52px + 0.5rem);
@@ -5895,7 +5895,8 @@ button.island-quest {
   white-space: nowrap;
 }
 
-/* Le sélecteur d'archipel : sous le bouton Menu, et sa petite liste. */
+/* La rangée de classes (lot 2 de « Toucher le monde ») : sous le bouton Menu, une classe par archipel atteint. La
+   classe où l'on est se reconnaît à sa forme (bord épais, coche), pas seulement à sa couleur ; elle ne se touche pas. */
 .world-archipel {
   position: absolute;
   top: calc(0.6rem + 52px + 0.5rem);
@@ -5905,63 +5906,159 @@ button.island-quest {
   flex-direction: column;
   align-items: flex-end;
   gap: 0.4rem;
-}
-.world-archipel-button {
-  min-width: 52px;
-  min-height: 48px;
-  padding: 0.2rem 0.5rem;
-  justify-content: center;
-  gap: 0.25rem;
-}
-.world-archipel-button[aria-expanded="true"] {
-  background: var(--sand);
-  border-color: var(--on-sand);
-  color: var(--on-sand);
-}
-.world-archipel-list {
-  width: min(19rem, calc(100vw - 2rem));
-  padding: 0.5rem;
-}
-.world-archipel-list ul {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: grid;
-  gap: 0.3rem;
 }
-.world-archipel-item,
-.world-archipel-more {
-  display: flex;
+.world-archipel-classe {
+  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  width: 100%;
+  justify-content: center;
+  gap: 0.25rem;
+  min-width: 52px;
   min-height: 48px;
-  padding: 0.3rem 0.6rem;
+  padding: 0.2rem 0.5rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.world-archipel-classe.ici {
   font: inherit;
-  text-align: left;
-  color: var(--text);
+  font-weight: 700;
+  background: var(--sand);
+  color: var(--on-sand);
+  border: calc(var(--border-width) * 2) solid var(--on-sand);
+  border-radius: var(--radius-control);
+  box-shadow: var(--shadow-float);
+}
+
+/* La fiche d'un objet du monde (lot 2 de « Toucher le monde ») : toujours à la même place, en bas, toute la largeur,
+   juste au-dessus de la barre ; en paysage, une carte en bas à gauche. Au plus 45 % de la scène en portrait (70 % en
+   paysage) : au-delà, le texte défile dans la fiche, le titre et les boutons restent entiers, jamais de points de
+   suspension. */
+.world-fiche-place {
+  position: absolute;
+  left: 0.6rem;
+  right: 0.6rem;
+  bottom: calc(var(--barre-h, 4rem) + 0.6rem);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  max-height: 45%;
+  pointer-events: none;
+}
+@media (orientation: landscape) {
+  .world-fiche-place {
+    right: auto;
+    width: min(24rem, 50%);
+  }
+}
+/* En paysage, jusqu'à 70 % : le titre, deux lignes et les boutons tiennent en grand texte (la fiche reste à gauche, la
+   caméra recadre l'objet à droite). */
+@media (orientation: landscape) {
+  .world-fiche-place {
+    max-height: 70%;
+  }
+}
+.world-fiche {
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-height: 0;
+  max-height: 100%;
+  padding: 0.5rem 0.6rem 0.7rem 0.9rem;
   background: var(--surface);
   border: var(--border-width) solid var(--ink);
-  border-radius: var(--radius-control);
-  cursor: pointer;
+  border-radius: var(--radius);
+  /* Dernier recours (grand texte, deux boutons, titre long) : la fiche entière défile plutôt que de passer sur la barre. */
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
-.world-archipel-item:disabled {
-  cursor: default;
-  opacity: 0.65;
+.world-fiche-tete {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
 }
-.world-archipel-item.here {
-  opacity: 1;
-  background: var(--sand);
-  border-color: var(--on-sand);
-  color: var(--on-sand);
+.world-fiche-titre {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 1.15rem;
+  /* Un mot plus long que la fiche (grand texte sur téléphone) passe à la ligne : rien n'est coupé. */
+  overflow-wrap: break-word;
+  hyphens: auto;
 }
-.world-archipel-state {
-  margin-left: auto;
-  font-size: 0.85rem;
+.world-fiche-titre > span {
+  min-width: 0;
 }
-.world-archipel-more {
-  margin-top: 0.4rem;
-  border-style: dashed;
+.world-fiche-titre svg {
+  flex: none;
+}
+/* Un titre long dans une fiche étroite pour sa taille de texte (grand texte, tablette en paysage) : il passe sur sa
+   propre ligne, sous Écouter et la croix, plutôt que sur quatre lignes dans une colonne. */
+.world-fiche {
+  container: fiche / inline-size;
+}
+@container fiche (max-width: 17rem) {
+  .world-fiche-tete {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .world-fiche-titre {
+    order: 1;
+    flex-basis: 100%;
+    font-size: 1rem;
+  }
+}
+.world-fiche-texte {
+  flex: 1 1 auto;
+  /* Toujours au moins deux lignes de la phrase visibles ; s'il en reste, un trait pointillé le dit (.a-suivre). */
+  min-height: 3.2em;
+  min-height: 2lh;
+  overflow: auto;
+  overscroll-behavior: contain;
+  overflow-wrap: break-word;
+}
+.world-fiche.a-suivre {
+  border-bottom-style: dashed;
+}
+/* Deux boutons : une ligne de texte suffit (le trait pointillé dit la suite), pour que les boutons tiennent entiers. */
+.world-fiche:has(.world-fiche-actions > :nth-child(2)) .world-fiche-texte {
+  min-height: 1.6em;
+  min-height: 1lh;
+}
+.world-fiche-texte.a-suivre {
+  border-bottom: var(--border-width) dashed currentColor;
+}
+.world-fiche-phrase {
+  margin: 0.2rem 0;
+}
+.world-fiche-texte .stars {
+  display: inline-flex;
+  margin: 0.2rem 0;
+}
+.world-fiche-texte .build-status:empty {
+  display: none;
+}
+.world-fiche-actions {
+  flex: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.world-fiche-actions .button {
+  min-height: 48px;
+  max-width: 100%;
+  white-space: normal;
+}
+/* La fiche ouverte : le haut garde un peu moins de place (une chose à la fois en bas). */
+.fiche-ouverte .world-overlay-top {
+  max-height: 40%;
 }
 .hop-line {
   display: flex;

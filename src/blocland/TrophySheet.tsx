@@ -25,7 +25,7 @@ export function TrophySheet({ onClose }: { onClose: () => void }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
-    <section id="panneau-trophees" className="island-sheet trophy-sheet" role="dialog" aria-labelledby="trophees-titre" aria-modal="false">
+    <section id="panneau-trophees" className="island-sheet trophy-sheet" role="dialog" aria-labelledby="trophees-titre" aria-modal="true">
       <div className="island-sheet-head">
         <div className="island-sheet-titles">
           <h2 id="trophees-titre" className="island-sheet-title">

@@ -29,7 +29,7 @@ export function ArchipelsSheet({ onClose, onGo }: Props) {
   const open = reachableIslands(bridges);
   const level = launchedCount(bridges);
   return (
-    <section id="panneau-monde" className="island-sheet archipels-sheet" role="dialog" aria-labelledby="monde-titre" aria-modal="false">
+    <section id="panneau-monde" className="island-sheet archipels-sheet" role="dialog" aria-labelledby="monde-titre" aria-modal="true">
       <div className="island-sheet-head">
         <div className="island-sheet-titles">
           <h2 id="monde-titre" className="island-sheet-title">

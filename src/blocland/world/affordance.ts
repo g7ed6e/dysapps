@@ -1,0 +1,467 @@
+// Les signes des objets qu'on touche dans le monde de Blocland (affordance-blocland.md §8 et §9, tranché par le
+// directeur artistique le 3 octobre 2026) : un cube flotte 1,2 bloc au-dessus du sommet de chaque objet touchable, en
+// trois états, chacun avec sa pose, sa taille et son mouvement, jamais la couleur seule :
+// - « à faire » : le losange d'or des bornes (un cube de 0,7 posé sur sa pointe), qui flotte en douceur et tourne, seul
+//   cube qui bouge, et seulement sur l'île du bonhomme, tous en phase ; ses arêtes brun sombre, sans lueur (les
+//   lanternes et les blocs d'or du décor gardent la lumière) ;
+// - « pas encore » : un cube de pierre gris mat de 0,5, posé à plat, immobile, aux arêtes crème ;
+// - « lieu » : un cube crème de 0,8, posé à plat, immobile, aux arêtes brun sombre.
+// Qui porte quoi : une borne à faire (or) ou pas jouable (pierre), un Gardien pas encore vaincu, le Bloc-Navire, chaque
+// chantier en fantôme (un ouvrage, un monument à bâtir : un cube par chantier) ; l'école, la salle des trophées et un
+// monument bâti (crème). Rien sur une borne réussie (sa pile d'étoiles reste, three/bornes.ts), un Gardien vaincu, un
+// ouvrage construit, une créature (sa plaque, three/signes.ts) ; rien sur la Carte. Une chose ne porte jamais deux signes.
+// Au toucher, c'est toujours le signe qui fait un petit saut (`sautDuSigne`), jamais l'objet. Et la zone de toucher :
+// au moins 48 pixels à l'écran autour de chaque signe (`zoneDuToucher`), qui ne remplace jamais un toucher direct ni une
+// face en chantier. Code pur, sans Three.js :
+// three/affordance.ts le dessine, world/budget.ts le compte (`signesCost`).
+import { estUnBiome, type BiomeId } from '../biomes';
+import { getBridge } from './archipelago';
+import type { PlaceId, VoxelCube } from './cube';
+import type { EtatsDesObjets } from './modele';
+import type { ObjetDeLaFiche } from './disposition';
+
+export type { ObjetDeLaFiche };
+import type { Cell, CreaturePlacement } from './paths';
+import type { VehiclePlacement } from './terrain';
+
+/** L'état d'un signe : à faire (l'or), pas encore (la pierre), un lieu (le crème). */
+export type EtatDuSigne = 'aFaire' | 'pasEncore' | 'lieu';
+
+/** Le côté du cube de chaque état, en blocs. */
+export const COTE_DU_SIGNE: Readonly<Record<EtatDuSigne, number>> = { aFaire: 0.7, pasEncore: 0.5, lieu: 0.8 };
+
+/** Les couleurs des signes (sRGB) : la face et ses arêtes. L'or est celui de la flèche « Commence ici ». */
+export const COULEURS_DU_SIGNE: Readonly<Record<EtatDuSigne, { face: string; arete: string }>> = {
+  // Les arêtes brun sombre, comme le crème : l'or du signe ne se confond pas avec l'or du décor (lanternes, casques).
+  aFaire: { face: '#ffc83c', arete: '#2b2118' },
+  // Plus clair que la roche (#7d7d7d, #9c9c9c) : on ne le prend pas pour un bloc du décor.
+  pasEncore: { face: '#b3b3ab', arete: '#fff6e0' },
+  // Le crème et le brun de la plaque des créatures (three/signes.ts) : la même famille de signes.
+  lieu: { face: '#fff6e0', arete: '#2b2118' },
+};
+
+/** Le mouvement et la taille des signes, et la zone de toucher. */
+export const SIGNE = {
+  /**
+   * Le centre du cube, au-dessus du sommet de l'objet, en blocs (à sa taille de près ; grossi de loin, il monte d'autant :
+   * son bas garde sa place, jamais sur l'objet).
+   */
+  auDessus: 1.2,
+  /** Le losange d'or flotte en douceur : un sinus de ± 0,15 bloc, en 3 s, sans rebond. */
+  flotte: { amplitude: 0.15, periodeS: 3 },
+  /** Et fait un tour en 6 s. */
+  tourS: 6,
+  /** La taille minimale d'un cube à l'écran, en pixels CSS : il grossit quand la caméra s'éloigne. */
+  minPx: 14,
+  /** Le saut au toucher : une bosse de 0,2 bloc en 180 ms (70 ms de montée, 110 de descente), sans rebond. */
+  saut: { hauteur: 0.2, monteeMs: 70, descenteMs: 110 },
+  /** La zone de toucher d'un signe (et d'une borne ou d'un Gardien, petits), au moins ce carré à l'écran, en pixels CSS. */
+  zonePx: 48,
+  /** Le sol touché garde la zone d'un objet seulement à moins de tant de cases de sa boîte (une case voisine). */
+  presDuSol: 1,
+  /** Une zone est masquée quand le sol touché est plus proche que l'objet d'au moins tant de blocs. */
+  masque: 2,
+  /** La largeur des arêtes, en part du côté du cube (environ 2 pixels à la taille minimale). */
+  arete: 0.14,
+} as const;
+
+/** L'objet qui porte un signe, tel que la vue le rend à la page quand on le touche. */
+export type ObjetTouche =
+  | { genre: 'borne'; id: string }
+  | { genre: 'gardien'; id: BiomeId }
+  | { genre: 'navire'; port: BiomeId }
+  | { genre: 'ouvrage'; id: string }
+  | { genre: 'lieu'; id: PlaceId; ile: BiomeId };
+
+/** L'île et la mission d'une borne, lues de son identifiant « île:mission » ; `null` si l'île n'en est pas une. */
+export function borneDe(id: string): { ile: BiomeId; mission: string } | null {
+  const i = id.indexOf(':');
+  const ile = id.slice(0, i);
+  return i > 0 && estUnBiome(ile) ? { ile, mission: id.slice(i + 1) } : null;
+}
+
+/** La clé d'un objet : un signe par objet. */
+export function cleDeLObjet(o: ObjetTouche): string {
+  if (o.genre === 'navire') return 'navire';
+  return `${o.genre}:${o.id}`;
+}
+
+/** Une boîte en cases du monde (le max compris : un cube en z occupe z à z + 1). */
+export interface Boite {
+  min: Cell;
+  max: Cell;
+}
+
+/** Le signe d'un objet, en cases du monde. */
+export interface SigneDObjet {
+  cle: string;
+  objet: ObjetTouche;
+  etat: EtatDuSigne;
+  /** Le centre du cube : `x`, `y` sur la grille, `z` la hauteur (sa place au repos). */
+  x: number;
+  y: number;
+  z: number;
+  /** Les îles où il est : le losange d'or ne flotte que sur l'île du bonhomme (un ouvrage en touche deux). */
+  iles: BiomeId[];
+  /** La boîte de l'objet : la zone de toucher la projette à l'écran, avec le signe. */
+  boite: Boite;
+}
+
+/** Le sommet d'un objet : le plus haut z de ses cubes, + 1 (le dessus du cube), décalé de `dz`. */
+export function sommetDe(cubes: readonly { z: number }[], dz = 0): number {
+  let haut = -Infinity;
+  for (const c of cubes) if (c.z > haut) haut = c.z;
+  return haut + 1 + dz;
+}
+
+/** La hauteur du centre du signe d'un objet : 1,2 bloc au-dessus de son sommet. */
+export function hauteurDuSigneDeLObjet(cubes: readonly { z: number }[], dz = 0): number {
+  return sommetDe(cubes, dz) + SIGNE.auDessus;
+}
+
+/** La boîte de cubes, décalés de `o`. */
+function boiteDe(cubes: readonly Cell[], o: Cell = { x: 0, y: 0, z: 0 }): Boite {
+  const min = { x: Infinity, y: Infinity, z: Infinity };
+  const max = { x: -Infinity, y: -Infinity, z: -Infinity };
+  for (const c of cubes) {
+    min.x = Math.min(min.x, c.x + o.x);
+    min.y = Math.min(min.y, c.y + o.y);
+    min.z = Math.min(min.z, c.z + o.z);
+    max.x = Math.max(max.x, c.x + o.x + 1);
+    max.y = Math.max(max.y, c.y + o.y + 1);
+    max.z = Math.max(max.z, c.z + o.z + 1);
+  }
+  return { min, max };
+}
+
+/** Le signe d'un objet, au-dessus du milieu de sa boîte. */
+function signeAuDessus(objet: ObjetTouche, etat: EtatDuSigne, iles: BiomeId[], boite: Boite): SigneDObjet {
+  return { cle: cleDeLObjet(objet), objet, etat, x: (boite.min.x + boite.max.x) / 2, y: (boite.min.y + boite.max.y) / 2, z: boite.max.z + SIGNE.auDessus, iles, boite };
+}
+
+/**
+ * Le sommet de chaque borne de mission (le dessus de son ardoise), par « île:mission » : la pile d'étoiles d'une borne
+ * réussie s'y pose (three/bornes.ts).
+ */
+export function sommetsDesBornes(cubes: readonly VoxelCube[]): Map<string, number> {
+  const out = new Map<string, number>();
+  for (const c of cubes) if (c.quest) out.set(c.quest, Math.max(out.get(c.quest) ?? -Infinity, c.z + 1));
+  return out;
+}
+
+/** Ce qu'il faut pour poser les signes : le monde en cubes, l'état des bornes, les personnages, le navire, le reste. */
+export interface EntreeDesSignes {
+  cubes: readonly VoxelCube[];
+  /** L'état de chaque borne (« île:mission ») : une borne sans état connu n'a pas de signe. */
+  quests?: readonly { id: string; state: 'new' | 'locked' | number }[];
+  creatures?: readonly CreaturePlacement[];
+  vehicle?: VehiclePlacement | null;
+  /** Ce que les cubes ne disent pas (world/modele.ts) ; sans lui, tout ce qui n'est pas une borne à faire est « pas encore ». */
+  etats?: EtatsDesObjets;
+}
+
+/**
+ * Les signes des objets touchables d'un archipel, en cases du monde : un par objet, dans cet ordre (bornes, lieux et
+ * monuments, ouvrages, Gardiens, navire). Une borne d'une île fermée n'en a pas (l'île entière se lit fermée).
+ */
+export function signesDesObjets({ cubes, quests = [], creatures = [], vehicle = null, etats }: EntreeDesSignes): SigneDObjet[] {
+  const prets = new Set(etats?.chantiersPrets ?? []);
+  // Les cubes des bornes, des lieux (sans leur îlot) et des ouvrages en fantôme, en un passage.
+  const bornes = new Map<string, VoxelCube[]>();
+  const fermees = new Set<string>();
+  const lieux = new Map<PlaceId, { cubes: VoxelCube[]; ile: BiomeId; fantome: boolean }>();
+  const ouvrages = new Map<string, VoxelCube[]>();
+  for (const c of cubes) {
+    if (c.quest) {
+      const l = bornes.get(c.quest);
+      if (l) l.push(c);
+      else bornes.set(c.quest, [c]);
+      if (c.muted) fermees.add(c.quest);
+    } else if (c.place && !c.sol && c.place !== 'assembly') {
+      const l = lieux.get(c.place);
+      if (l) {
+        l.cubes.push(c);
+        l.fantome ||= Boolean(c.ghost);
+      } else if (estUnBiome(c.tag)) lieux.set(c.place, { cubes: [c], ile: c.tag, fantome: Boolean(c.ghost) });
+    } else if (c.bridge && c.ghost) {
+      const l = ouvrages.get(c.bridge);
+      if (l) l.push(c);
+      else ouvrages.set(c.bridge, [c]);
+    }
+  }
+  const out: SigneDObjet[] = [];
+  // Les bornes : à faire (jamais jouée, ou jouée sans étoile : elle se rejoue), l'or ; pas jouable, la pierre ; réussies,
+  // rien (leur pile d'étoiles).
+  for (const q of quests) {
+    const l = bornes.get(q.id);
+    const borne = borneDe(q.id);
+    if (!l || !borne || fermees.has(q.id) || (typeof q.state === 'number' && q.state > 0)) continue;
+    out.push(signeAuDessus({ genre: 'borne', id: q.id }, q.state === 'locked' ? 'pasEncore' : 'aFaire', [borne.ile], boiteDe(l)));
+  }
+  // L'école, la salle des trophées, un monument bâti : le crème. Un monument à bâtir est un chantier : l'or si l'élève
+  // peut y poser un bloc, sinon la pierre.
+  for (const [id, l] of lieux) {
+    const monument = id.startsWith('monument:') ? id.slice('monument:'.length) : null;
+    const etat: EtatDuSigne = monument && l.fantome ? (prets.has(monument) ? 'aFaire' : 'pasEncore') : 'lieu';
+    out.push(signeAuDessus({ genre: 'lieu', id, ile: l.ile }, etat, [l.ile], boiteDe(l.cubes)));
+  }
+  // Un ouvrage en fantôme : un cube au-dessus de sa case du milieu (la colonne de ses cubes), pas au-dessus de sa boîte
+  // entière (une liaison qui monte le mettrait haut dans le ciel).
+  for (const [id, l] of ouvrages) {
+    const milieu = l[Math.floor(l.length / 2)];
+    const colonne = l.filter((c) => c.x === milieu.x && c.y === milieu.y);
+    const def = getBridge(id);
+    const iles = def ? [def.from, def.to] : estUnBiome(milieu.tag) ? [milieu.tag] : [];
+    out.push({ ...signeAuDessus({ genre: 'ouvrage', id }, prets.has(id) ? 'aFaire' : 'pasEncore', iles, boiteDe(l)), x: milieu.x + 0.5, y: milieu.y + 0.5, z: hauteurDuSigneDeLObjet(colonne) });
+  }
+  // Un Gardien pas encore vaincu : l'or si son défi est prêt, sinon la pierre. Les créatures n'ont jamais de cube.
+  for (const g of creatures) {
+    if (g.kind !== 'guardian' || g.beaten || !g.cubes.length) continue;
+    const pret = etats ? etats.gardiensPrets.includes(g.id) : true;
+    out.push(signeAuDessus({ genre: 'gardien', id: g.id }, pret ? 'aFaire' : 'pasEncore', [g.id], boiteDe(g.cubes, g.origin)));
+  }
+  // Le Bloc-Navire : l'or s'il a un bloc à poser ou s'il peut partir, sinon la pierre.
+  if (vehicle?.cubes.length)
+    out.push(signeAuDessus({ genre: 'navire', port: vehicle.port }, etats?.navirePret ? 'aFaire' : 'pasEncore', [vehicle.port], boiteDe(vehicle.cubes, vehicle.origin)));
+  return out;
+}
+
+/**
+ * Le centre de l'objet d'une fiche, en cases du monde (`x`, `y` au sol, `z` en hauteur), lu dans ses cubes : une borne,
+ * un lieu, un ouvrage, un Gardien ou une créature (à sa place de départ), le navire ; une île, son cœur (`ile`, donné
+ * par l'appelant). `null` si l'objet n'est pas dans le monde.
+ */
+export function centreDeLObjet(
+  objet: ObjetDeLaFiche | ObjetTouche,
+  { cubes, creatures = [], vehicle = null, ile }: Pick<EntreeDesSignes, 'cubes' | 'creatures' | 'vehicle'> & { ile?: (id: BiomeId) => Cell },
+): Cell | null {
+  const centre = (b: Boite): Cell => ({ x: (b.min.x + b.max.x) / 2, y: (b.min.y + b.max.y) / 2, z: (b.min.z + b.max.z) / 2 });
+  const deCubes = (garder: (c: VoxelCube) => boolean) => {
+    const l = cubes.filter(garder);
+    return l.length ? centre(boiteDe(l)) : null;
+  };
+  switch (objet.genre) {
+    case 'borne':
+      return deCubes((c) => c.quest === objet.id);
+    case 'ouvrage':
+      return deCubes((c) => c.bridge === objet.id);
+    case 'lieu':
+      return deCubes((c) => c.place === objet.id && !c.sol);
+    case 'navire':
+      return vehicle?.cubes.length ? centre(boiteDe(vehicle.cubes, vehicle.origin)) : null;
+    case 'gardien':
+    case 'creature': {
+      const gardien = objet.genre === 'gardien';
+      const p = creatures.find((c) => c.id === objet.id && (c.kind === 'guardian') === gardien);
+      return p?.cubes.length ? centre(boiteDe(p.cubes, p.origin)) : null;
+    }
+    case 'ile':
+      return ile ? ile(objet.id) : null;
+  }
+}
+
+// ---- Le mouvement
+
+/** Le flottement du losange d'or, en blocs, au temps `t` de la scène (en secondes) : le même pour tous (en phase). */
+export function flottementDuSigne(t: number): number {
+  return SIGNE.flotte.amplitude * Math.sin((2 * Math.PI * t) / SIGNE.flotte.periodeS);
+}
+
+/** Le tour du losange d'or, en radians, au temps `t` de la scène : un tour en 6 s. */
+export function tourDuSigne(t: number): number {
+  return ((2 * Math.PI * t) / SIGNE.tourS) % (2 * Math.PI);
+}
+
+/**
+ * Le saut du signe au toucher, en blocs, `ms` millisecondes après le doigt levé : 0 avant et après ; une seule bosse,
+ * vive (un quart de sinus pour monter, un quart de cosinus pour redescendre), sans rebond. Rien à voir avec le saut lent
+ * des révisions (world/signe.ts), qui dit « j'ai quelque chose pour toi » : celui-ci dit « je t'ai entendu ».
+ */
+export function sautDuSigne(ms: number): number {
+  const { hauteur, monteeMs, descenteMs } = SIGNE.saut;
+  if (!(ms > 0) || ms >= monteeMs + descenteMs) return 0;
+  if (ms < monteeMs) return hauteur * Math.sin((Math.PI / 2) * (ms / monteeMs));
+  return hauteur * Math.cos((Math.PI / 2) * ((ms - monteeMs) / descenteMs));
+}
+
+/**
+ * L'échelle d'un cube de côté `cote` vu à `profondeur` (en blocs, devant la caméra), quand un bloc à une unité de
+ * distance fait `pxParUnite` pixels : 1 de près, plus loin assez pour garder `SIGNE.minPx` pixels à l'écran.
+ */
+export function echelleDuSigne(cote: number, profondeur: number, pxParUnite: number): number {
+  const px = (cote * pxParUnite) / Math.max(0.5, profondeur);
+  return px >= SIGNE.minPx ? 1 : SIGNE.minPx / Math.max(1e-6, px);
+}
+
+// ---- La forme
+
+/** La forme d'un signe, en triangles sans indices : positions et normales (x, y, z, l'axe y vers le haut, comme Three.js), et les sommets des arêtes. */
+export interface FormeDuSigne {
+  positions: Float32Array;
+  normals: Float32Array;
+  /** 1 pour un sommet d'une arête, 0 pour la face (une couleur par sommet, dans la même géométrie). */
+  aretes: Uint8Array;
+}
+
+type V3 = [number, number, number];
+/** Les faces d'un cube : la normale, puis deux axes dont le produit vectoriel est la normale (sens trigonométrique vu de dehors). */
+const FACES: [V3, V3, V3][] = [
+  [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
+  [[-1, 0, 0], [0, 0, 1], [0, 1, 0]],
+  [[0, 1, 0], [0, 0, 1], [1, 0, 0]],
+  [[0, -1, 0], [1, 0, 0], [0, 0, 1]],
+  [[0, 0, 1], [1, 0, 0], [0, 1, 0]],
+  [[0, 0, -1], [0, 1, 0], [1, 0, 0]],
+];
+
+/**
+ * La forme d'un signe, centrée : chaque face est un cadre (ses quatre arêtes) autour d'un carré. Le losange d'or est
+ * posé sur sa pointe (`surSaPointe`), ses six faces dessinées (60 triangles) ; la pierre et le crème, posés à plat, sans
+ * le dessous, qu'aucune caméra ne voit (50 triangles).
+ */
+export function formeDuSigne(etat: EtatDuSigne): FormeDuSigne {
+  const h = COTE_DU_SIGNE[etat] / 2;
+  const pos: number[] = [];
+  const nrm: number[] = [];
+  const are: number[] = [];
+  const quad = (pts: V3[], n: V3, arete: number) => {
+    for (const k of [0, 1, 2, 0, 2, 3]) {
+      pos.push(...pts[k]);
+      nrm.push(...n);
+      are.push(arete);
+    }
+  };
+  const pointe = etat === 'aFaire';
+  for (const [n, u, v] of FACES) {
+    if (!pointe && n[1] < 0) continue;
+    const p = (a: number, b: number): V3 => [0, 1, 2].map((i) => n[i] * h + u[i] * a + v[i] * b) as V3;
+    const i = h - SIGNE.arete * 2 * h;
+    quad([p(-h, -h), p(h, -h), p(i, -i), p(-i, -i)], n, 1);
+    quad([p(h, -h), p(h, h), p(i, i), p(i, -i)], n, 1);
+    quad([p(h, h), p(-h, h), p(-i, i), p(i, i)], n, 1);
+    quad([p(-h, h), p(-h, -h), p(-i, -i), p(-i, i)], n, 1);
+    quad([p(-i, -i), p(i, -i), p(i, i), p(-i, i)], n, 0);
+  }
+  const positions = Float32Array.from(pos);
+  const normals = Float32Array.from(nrm);
+  if (pointe) for (const t of [positions, normals]) surSaPointe(t);
+  return { positions, normals, aretes: Uint8Array.from(are) };
+}
+
+/**
+ * Pose un cube sur sa pointe, en place (x, y, z à la suite) : sa grande diagonale (1, 1, 1) devient la verticale, un
+ * sommet en bas et un en haut, sur l'axe du cube. Le tour du losange (autour de la verticale du monde, appliqué après)
+ * le garde donc sur sa pointe à tout moment, et figé il y reste. Au repos, vu de face (le long de z), ses deux arêtes
+ * des côtés sont verticales : la base (a, d, b) a pour axe y la diagonale d, pour axe z la direction au sol de l'arête
+ * (h, h, −h)–(h, −h, −h).
+ */
+export function surSaPointe(t: Float32Array): void {
+  const [r2, r3, r6] = [Math.SQRT2, Math.sqrt(3), Math.sqrt(6)];
+  for (let k = 0; k < t.length; k += 3) {
+    const [x, y, z] = [t[k], t[k + 1], t[k + 2]];
+    t[k] = (x - z) / r2;
+    t[k + 1] = (x + y + z) / r3;
+    t[k + 2] = (x - 2 * y + z) / r6;
+  }
+}
+
+/** Le bas d'un signe, sous son centre, en blocs (à l'échelle 1) : sa pointe pour le losange, sa demi-arête à plat. */
+export function basDuSigne(etat: EtatDuSigne): number {
+  const h = COTE_DU_SIGNE[etat] / 2;
+  return etat === 'aFaire' ? h * Math.sqrt(3) : h;
+}
+
+/**
+ * La hauteur du centre d'un signe grossi d'`echelle` (`echelleDuSigne`), posé en `z` à sa taille de près : il monte
+ * d'autant qu'il grossit, son bas ne descend jamais vers l'objet.
+ */
+export function centreDuSigneGrossi(etat: EtatDuSigne, z: number, echelle: number): number {
+  return z + (echelle - 1) * basDuSigne(etat);
+}
+
+/** Les triangles d'un signe de chaque état. */
+export const TRIANGLES_DU_SIGNE: Readonly<Record<EtatDuSigne, number>> = {
+  aFaire: formeDuSigne('aFaire').positions.length / 9,
+  pasEncore: formeDuSigne('pasEncore').positions.length / 9,
+  lieu: formeDuSigne('lieu').positions.length / 9,
+};
+
+/** Triangles et appels de dessin des signes : un maillage instancié par état présent. */
+export function coutDesSignes(signes: readonly Pick<SigneDObjet, 'etat'>[]): { triangles: number; drawCalls: number } {
+  const etats = new Set(signes.map((s) => s.etat));
+  return { triangles: signes.reduce((n, s) => n + TRIANGLES_DU_SIGNE[s.etat], 0), drawCalls: etats.size };
+}
+
+// ---- La zone de toucher
+
+/** La zone de toucher d'un signe à l'écran : son centre et sa taille en pixels CSS, et la distance de son objet à la caméra (en blocs). */
+export interface ZoneDeToucher {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  /** La distance de la caméra au point le plus proche de l'objet. */
+  distance: number;
+}
+
+/** La zone de toucher d'un objet, et sa boîte en cases du monde (le sol touché tout près d'elle garde la zone). */
+export interface ZoneDObjet extends ZoneDeToucher {
+  boite: Boite;
+}
+
+/** La zone de toucher d'un rectangle à l'écran (le signe projeté) : élargie à `SIGNE.zonePx` au moins, autour de son centre. */
+export function zoneDeToucher(x0: number, y0: number, x1: number, y1: number, distance: number): ZoneDeToucher {
+  return { x: (x0 + x1) / 2, y: (y0 + y1) / 2, w: Math.max(SIGNE.zonePx, x1 - x0), h: Math.max(SIGNE.zonePx, y1 - y0), distance };
+}
+
+/**
+ * La zone retenue sous le doigt levé, parmi les zones qui le contiennent : celle dont le centre est le plus proche du
+ * doigt (en pixels), puis l'objet le plus proche de la caméra. Une zone est écartée quand le sol touché (`sol`, sa
+ * distance le long du rayon, ou `null`) est plus proche que l'objet de `SIGNE.masque` blocs : l'objet est caché derrière
+ * une colline, une maison ; et quand `garde` la refuse (appelée seulement pour une zone qui contient le doigt). L'indice
+ * dans `zones`, ou −1.
+ */
+export function zoneRetenue(zones: readonly ZoneDeToucher[], doigt: { x: number; y: number }, sol: number | null, garde?: (i: number) => boolean): number {
+  let best = -1;
+  let bestPx = Infinity;
+  zones.forEach((z, i) => {
+    if (Math.abs(doigt.x - z.x) > z.w / 2 || Math.abs(doigt.y - z.y) > z.h / 2) return;
+    if (sol !== null && sol < z.distance - SIGNE.masque) return;
+    const px = Math.hypot(doigt.x - z.x, doigt.y - z.y);
+    if (px > bestPx || (px === bestPx && z.distance >= zones[best].distance)) return;
+    if (garde && !garde(i)) return;
+    best = i;
+    bestPx = px;
+  });
+  return best;
+}
+
+/** Le nombre de cases vides entre une case du sol et la boîte d'un objet, sur la grille (0 : la case la touche ou est dessous). */
+export function ecartALaBoite(c: { x: number; y: number }, boite: Boite): number {
+  const gx = Math.max(0, boite.min.x - (c.x + 1), c.x - boite.max.x);
+  const gy = Math.max(0, boite.min.y - (c.y + 1), c.y - boite.max.y);
+  return Math.max(gx, gy);
+}
+
+/**
+ * Ce que le doigt a touché directement, le long du rayon (world/scene.ts, `toucheRetenue`) : un objet (une borne, un
+ * lieu, un ouvrage, une créature, le navire), une face en chantier, le sol d'une île (sa case et sa distance), ou rien
+ * (le vide, le ciel : `null`).
+ */
+export type ToucherDirect = { genre: 'objet' } | { genre: 'face' } | { genre: 'sol'; case: { x: number; y: number }; distance: number } | null;
+
+/**
+ * La priorité d'un toucher (affordance-blocland.md §9) : l'indice de la zone qui le prend, ou −1 quand le toucher
+ * direct garde la main.
+ * - Un objet touché directement passe toujours : −1.
+ * - Une face en chantier n'est jamais remplacée (le toucher y pose le bloc) : −1.
+ * - Le sol d'une île : seulement une zone dont l'objet est à moins d'une case (`SIGNE.presDuSol`) de la case touchée,
+ *   et qui n'est pas cachée derrière ce sol ; sinon le bonhomme y va.
+ * - Le vide ou le ciel : la zone la plus proche du doigt, sauf un objet dont le centre est caché (`estCache`, un rayon
+ *   lancé vers lui ; appelé seulement pour une zone qui contient le doigt).
+ */
+export function zoneDuToucher(direct: ToucherDirect, zones: readonly ZoneDObjet[], doigt: { x: number; y: number }, estCache?: (i: number) => boolean): number {
+  if (direct === null) return zoneRetenue(zones, doigt, null, estCache && ((i) => !estCache(i)));
+  if (direct.genre !== 'sol') return -1;
+  return zoneRetenue(zones, doigt, direct.distance, (i) => ecartALaBoite(direct.case, zones[i].boite) < SIGNE.presDuSol);
+}

@@ -48,7 +48,7 @@ export function MenuSheet({ onClose, onAller }: Props) {
   const resume = lastPlace();
   const reviews = questsToReview(state.spaced, state.world.links);
   return (
-    <section id="panneau-menu" className="island-sheet menu-sheet" role="dialog" aria-labelledby="menu-titre" aria-modal="false">
+    <section id="panneau-menu" className="island-sheet menu-sheet" role="dialog" aria-labelledby="menu-titre" aria-modal="true">
       <div className="island-sheet-head">
         <div className="island-sheet-titles">
           <h2 id="menu-titre" className="island-sheet-title">

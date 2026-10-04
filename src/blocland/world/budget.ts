@@ -25,6 +25,7 @@ import { MAST_TOP, VEHICLE_STAGES } from './vehicle';
 import { COMMANDES } from './commandes';
 import { casesDeLaPetiteConstruction } from './petitesConstructions';
 import { fusionDesCreatures, fusionDesGardiens, fusionDuBonhomme, trianglesDeLaFusion } from './personnages/fusions';
+import { coutDesSignes, signesDesObjets, sommetsDesBornes } from './affordance';
 
 export const RENDER_BUDGET = {
   /** Triangles de la scène 3D d'un archipel, tout construit. */
@@ -173,6 +174,22 @@ export function sceneCost(a: ArchipelagoId, commandes = false): { triangles: num
     triangles: models.reduce((n, m) => n + faceCount(m.groups) * 2, 0),
     drawCalls: models.reduce((n, m) => n + m.groups.length, 0),
   };
+}
+
+/**
+ * Les signes des objets touchables de Blocland (world/affordance.ts), un maillage instancié par état : tout construit
+ * (chaque borne a ses trois étoiles, sans cube ; restent l'école, la salle des trophées, les monuments et le navire), ou
+ * `auPire` : toutes les îles ouvertes et rien de joué, où chaque borne porte son losange et chaque monument son chantier.
+ * Hors de `sceneCost`, qui ne compte que les modèles en blocs ; à ajouter au monde en blocs sous son plafond.
+ */
+export function signesCost(a: ArchipelagoId, auPire = false): { triangles: number; drawCalls: number } {
+  const tout = toutConstruit();
+  const progress = auPire ? {} : tout.progress;
+  const village = auPire ? { parts: {}, log: [], links: tout.world.links } : tout.world;
+  const cubes = worldCubes(a, progress, village, false);
+  const quests = [...sommetsDesBornes(cubes).keys()].map((id) => ({ id, state: auPire ? ('new' as const) : 3 }));
+  const creatures = [...creaturePlacements(a, village.links), ...guardianPlacements(a, progress, village.links)];
+  return coutDesSignes(signesDesObjets({ cubes, quests, creatures, vehicle: vehiclePlacement(a, progress, village) }));
 }
 
 /**

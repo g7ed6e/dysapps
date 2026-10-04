@@ -3,12 +3,13 @@
 // promènent. Chargé à la demande (voir ./index.ts).
 // La scène est faite de parties (cubes, navire, bornes, personnages, lumière, brume, étiquettes, le large, la caméra) :
 // ce composant les crée, leur passe les props, écoute le toucher et le clavier, et sa boucle ne fait qu'itérer sur elles.
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
-import { type BiomeId } from '../biomes';
-import { worldBounds } from '../world/terrain';
+import { estUnBiome, type BiomeId } from '../biomes';
+import { islandCenter, worldBounds } from '../world/terrain';
 import { ARROW_DIRS, cubeTags, enRoute, finishWalk, groundTap, islandInDirection, recentrerApres, toucheRetenue, walkPose, type Touche, type VoyageRun } from '../world/scene';
 import { rappelsDeLaVue, type WorldViewProps } from '../world/view';
+import { borneDe, centreDeLObjet, cleDeLObjet, SIGNE, signesDesObjets, sommetsDesBornes, zoneDuToucher, type ObjetDeLaFiche, type ObjetTouche, type ToucherDirect } from '../world/affordance';
 import { useEnCasesDuMonde } from '../useEnCasesDuMonde';
 import { createMeter } from './meter';
 import { habillageDe } from '../habillage';
@@ -20,6 +21,7 @@ import { creerLumiere } from './lumiere';
 import { creerBrume } from './brume';
 import { creerLarge } from './large';
 import { creerBornes, type Bornes } from './bornes';
+import { creerAffordance, type Affordance } from './affordance';
 import { creerEtiquettes, type Etiquettes } from './etiquettes';
 import { creerPersonnages, type Personnages } from './personnages';
 import { creerSignes, type Signes } from './signes';
@@ -28,7 +30,7 @@ import { creerNavire, type Amarre, type Navire } from './navire';
 import { creerCamera, type Camera } from './camera';
 import { creerRond } from './rond';
 import { glisseCommence, pointDuPlan, SEUIL_DU_GLISSE } from './glisse';
-import { lecteurDePlaceLibre } from '../placeLibre';
+import { lecteurDePlaceLibre, lirePlaceLibre, sousLaFiche } from '../placeLibre';
 
 /** Le doigt posé sur le monde : son pointeur, où, et le point du sol saisi une fois le seuil passé (sinon `null`). */
 interface Appui {
@@ -43,6 +45,8 @@ interface Scene3D {
   camera: THREE.PerspectiveCamera;
   cadrage: Camera;
   bornes: Bornes;
+  /** Les signes des objets touchables (Blocland). */
+  affordance: Affordance;
   etiquettes: Etiquettes;
   personnages: Personnages;
   signes: Signes;
@@ -50,14 +54,21 @@ interface Scene3D {
   navire: Navire;
   /** Efface le décalage de l'élève et le dit à la page. */
   recentrer(): void;
+  /** Le signe de l'objet d'une fiche fait son petit saut (s'il en porte un). */
+  sauter(objet: ObjetDeLaFiche): void;
+  /** La fiche posée dans la page cache son objet : le cadrage glisse pour le poser dans la place libre. */
+  garderHorsDeLaFiche(objet: ObjetDeLaFiche): void;
 }
+
+/** Pas de créatures : une seule liste vide, pour que les signes des objets ne se recalculent pas à chaque rendu. */
+const SANS_CREATURES: NonNullable<WorldViewProps['creatures']> = [];
 
 export default function WorldCanvas({
   archipelago,
   cubes,
   focus: focusEnAncrages,
   reduceMotion = false,
-  creatures = [],
+  creatures = SANS_CREATURES,
   signes = [],
   forceDay = false,
   bridges = [],
@@ -69,6 +80,7 @@ export default function WorldCanvas({
   home,
   trail: trailEnAncrages,
   quests: questsEnAncrages,
+  etatsDesObjets,
   islandLabels,
   whalePass = null,
   rallumage = null,
@@ -77,6 +89,7 @@ export default function WorldCanvas({
   onPose,
   onVueDeplacee,
   recentrage = 0,
+  fiche = null,
   className,
   label,
   onIntent,
@@ -123,8 +136,14 @@ export default function WorldCanvas({
   // Les cubes des bornes de mission et des ouvrages, par case : pour savoir ce qu'on touche.
   const tags = useRef(cubeTags([]));
   useEffect(() => {
-    tags.current = cubeTags(cubes);
-  }, [cubes]);
+    // Un ouvrage construit se touche comme le sol (lot 2 de « Toucher le monde ») : seuls ceux en fantôme sont des cibles.
+    const t = cubeTags(cubes);
+    for (const [cle, id] of t.bridges) if (bridges.includes(id)) t.bridges.delete(cle);
+    tags.current = t;
+  }, [cubes, bridges]);
+  // Ce qu'il faut pour trouver l'objet d'une fiche dans le monde (lu au moment du recadrage, pas à chaque image).
+  const objetsRef = useRef({ cubes, creatures, vehicle });
+  objetsRef.current = { cubes, creatures, vehicle };
   const buildRef = useRef(build);
   buildRef.current = build;
   const creatureRef = useRef(onPickCreature);
@@ -189,6 +208,7 @@ export default function WorldCanvas({
     const navire = creerNavire(monde, personnages, cubesDuMonde, derniers, instant, vehicleRef, voyageRef);
     const rond = creerRond(monde, personnages, () => cubesDuMonde.champ(), lumiere, instant);
     const signesDesCreatures = creerSignes(monde, el, camera, personnages, derniers, instant);
+    const affordance = creerAffordance(monde, el, camera, derniers, instant);
     // La Carte se cadre dans la place que l'interface laisse libre, autour de la flèche de la destination (DA-31).
     const lecture = {
       place: lecteurDePlaceLibre(el),
@@ -199,7 +219,22 @@ export default function WorldCanvas({
       },
     };
     const cadrage = creerCamera(monde, camera, personnages.avatar, derniers, instant, lecture);
-    world.current = { camera, cadrage, bornes, etiquettes, personnages, signes: signesDesCreatures, cubes: cubesDuMonde, navire, recentrer: () => recentrer() };
+    world.current = {
+      camera,
+      cadrage,
+      bornes,
+      affordance,
+      etiquettes,
+      personnages,
+      signes: signesDesCreatures,
+      cubes: cubesDuMonde,
+      navire,
+      recentrer: () => recentrer(),
+      sauter: (objet) => {
+        if (objet.genre !== 'creature' && objet.genre !== 'ile') sauterLeSigne(objet);
+      },
+      garderHorsDeLaFiche: (objet) => garderHorsDeLaFiche(objet),
+    };
     // Les captures (scripts/prise-de-vue.mjs) posent la caméra à son cadrage sans attendre son pas : lisible par les
     // scripts, comme le compteur de mesures.
     const pourLesCaptures = { poser: () => cadrage.poser() };
@@ -219,7 +254,7 @@ export default function WorldCanvas({
     /** Ce qui bouge dans le monde, avant la caméra : le bonhomme, puis le navire (qui le fait embarquer et débarquer). */
     const deplacements: PartieDeLaScene[] = [personnages, navire];
     /** Le reste de l'image, dans cet ordre : la caméra suit ce qui a bougé ; les étiquettes se placent pour elle, en dernier. */
-    const parties: PartieDeLaScene[] = [personnages, cadrage, bornes, brume, lumiere, large, navire, cubesDuMonde, rond, signesDesCreatures, etiquettes];
+    const parties: PartieDeLaScene[] = [personnages, cadrage, bornes, affordance, brume, lumiere, large, navire, cubesDuMonde, rond, signesDesCreatures, etiquettes];
 
     // Clavier (le canvas prend le focus) : les flèches vont à l'île voisine dans cette direction.
     el.tabIndex = 0;
@@ -272,8 +307,8 @@ export default function WorldCanvas({
       let cur: THREE.Object3D | null = o;
       while (cur) {
         if (typeof cur.userData.quest === 'string') {
-          const [biome, typeId] = (cur.userData.quest as string).split(':');
-          return { biome: biome as BiomeId, typeId };
+          const borne = borneDe(cur.userData.quest);
+          return borne && { biome: borne.ile, typeId: borne.mission };
         }
         cur = cur.parent;
       }
@@ -282,8 +317,8 @@ export default function WorldCanvas({
     const creatureIdOf = (o: THREE.Object3D): { id: BiomeId; kind: 'creature' | 'guardian' } | null => {
       let cur: THREE.Object3D | null = o;
       while (cur) {
-        if (typeof cur.userData.creature === 'string')
-          return { id: cur.userData.creature as BiomeId, kind: cur.userData.kind === 'guardian' ? 'guardian' : 'creature' };
+        const id: unknown = cur.userData.creature;
+        if (typeof id === 'string') return estUnBiome(id) ? { id, kind: cur.userData.kind === 'guardian' ? 'guardian' : 'creature' } : null;
         cur = cur.parent;
       }
       return null;
@@ -362,6 +397,85 @@ export default function WorldCanvas({
       );
     /** Un cube touché qui est une cible : borne, lieu, ouvrage, ou face à construire en chantier. */
     const estUneCible = (h: THREE.Intersection): boolean => tapSur(h).kind !== 'island';
+    /** Le signe d'un objet touché fait son petit saut : la pile d'étoiles d'une borne réussie, sinon son cube. */
+    const sauterLeSigne = (objet: ObjetTouche) => {
+      if (reduceMotion) return;
+      if (objet.genre === 'borne' && bornes.sauterLaPile(objet.id)) return;
+      affordance.sauter(cleDeLObjet(objet));
+    };
+    const centre = new THREE.Vector3();
+    const versLeCentre = new THREE.Vector3();
+    /**
+     * Le doigt hors de tout objet : l'objet dont la zone de toucher (48 pixels au moins autour de son signe) le prend,
+     * selon ce qu'il a touché directement (`direct` ; world/affordance.ts, `zoneDuToucher` : jamais une face en chantier,
+     * le sol seulement tout près de l'objet). Dans le ciel, un objet dont le centre est caché par le relief est écarté.
+     */
+    const objetDansLaZone = (x: number, y: number, direct: ToucherDirect): ObjetTouche | null => {
+      if (direct?.genre === 'objet' || direct?.genre === 'face') return null;
+      const rect = renderer.domElement.getBoundingClientRect();
+      const zones = affordance.zones(camera, rect.width, rect.height);
+      if (!zones.length) return null;
+      const estCache = (i: number) => {
+        const { min, max } = zones[i].zone.boite;
+        centre.set((min.x + max.x) / 2, (min.z + max.z) / 2, (min.y + max.y) / 2);
+        const loin = versLeCentre.subVectors(centre, camera.position).length();
+        ray.set(camera.position, versLeCentre.normalize());
+        const h = ray.intersectObjects(cubesDuMonde.cibles(), false)[0];
+        if (!h || h.distance >= loin - SIGNE.masque) return false;
+        // Le premier cube traversé est celui de l'objet (une borne, un lieu) : il n'est pas caché.
+        const c = cubesDuMonde.casesTouchees(h).cell;
+        return !(c.x >= min.x && c.x < max.x && c.y >= min.y && c.y < max.y && c.z >= min.z && c.z < max.z);
+      };
+      const i = zoneDuToucher(
+        direct,
+        zones.map((z) => z.zone),
+        { x: x - rect.left, y: y - rect.top },
+        estCache,
+      );
+      return i < 0 ? null : zones[i].objet;
+    };
+    /** Un objet retenu par sa zone : comme s'il avait été touché (la vue revient à son cadrage, son signe saute). */
+    const toucherLObjet = (objet: ObjetTouche) => {
+      recentrer();
+      sauterLeSigne(objet);
+      if (objet.genre === 'borne') {
+        const borne = borneDe(objet.id);
+        return borne ? pickQuestRef.current?.(borne.ile, borne.mission) : undefined;
+      }
+      if (objet.genre === 'gardien') return creatureRef.current?.(objet.id, 'guardian');
+      if (objet.genre === 'navire') return pickVehicleRef.current?.(objet.port);
+      if (objet.genre === 'ouvrage') return pickBridgeRef.current?.(objet.id);
+      return pickPlaceRef.current?.(objet.id, objet.ile);
+    };
+    /** Le point du monde de l'objet d'une fiche : une créature là où elle se promène, sinon le centre de ses cubes. */
+    const pointDeLObjet = (objet: ObjetDeLaFiche): THREE.Vector3 | null => {
+      if (objet.genre === 'creature') {
+        const o = personnages.creatures.children.find((c) => c.userData.creature === objet.id && c.userData.kind !== 'guardian');
+        if (o) return o.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0, 1, 0));
+      }
+      const c = centreDeLObjet(objet, { ...objetsRef.current, ile: islandCenter });
+      return c ? new THREE.Vector3(c.x, c.z, c.y) : null;
+    };
+    /**
+     * La fiche (`.world-fiche`, dans la scène de la page) cache-t-elle l'objet, la caméra à sa place visée, ou est-il
+     * hors de la vue ? Alors le cadrage glisse pour le poser au centre de la place libre (la fiche y compte) ; sinon la
+     * caméra ne bouge pas.
+     */
+    const garderHorsDeLaFiche = (objet: ObjetDeLaFiche) => {
+      const feuille = el.closest('[data-scene]')?.querySelector('.world-fiche');
+      const point = pointDeLObjet(objet);
+      if (!feuille || !point) return;
+      const vue = el.getBoundingClientRect();
+      const ecran = cadrage.auBut(point, vue.width, vue.height);
+      const f = feuille.getBoundingClientRect();
+      // Hors de la vue (« Voir le premier ouvrage », « Y aller »), il est aussi caché.
+      const horsDeLaVue = !ecran || ecran.x < 0 || ecran.y < 0 || ecran.x > vue.width || ecran.y > vue.height;
+      if (!horsDeLaVue && !sousLaFiche(ecran, { x0: f.left - vue.left, y0: f.top - vue.top, x1: f.right - vue.left, y1: f.bottom - vue.top })) return;
+      const { libre } = lirePlaceLibre(el);
+      const w = Math.max(1, el.clientWidth);
+      const h = Math.max(1, el.clientHeight);
+      cadrage.recadrer(point, { x: ((libre.x0 + libre.x1) / w) - 1, y: 1 - (libre.y0 + libre.y1) / h });
+    };
     const onUp = (e: PointerEvent) => {
       if (!down || e.pointerId !== down.id) return;
       const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y);
@@ -372,6 +486,20 @@ export default function WorldCanvas({
       // Pendant le voyage, un tap n'importe où fait arriver le navire tout de suite.
       if (voyageRef.current) return voyageSkipRef.current?.();
       const { creature, hit } = aim(e);
+      // Un toucher direct sur un objet passe d'abord, une face en chantier aussi (le bloc s'y pose) ; sinon, dans le vide
+      // ou sur le sol tout près d'un objet qui porte un signe, la zone de son signe le retient (world/affordance.ts,
+      // `zoneDuToucher`).
+      const touche = hit ? tapSur(hit).kind : null;
+      const direct: ToucherDirect =
+        creature || (touche && touche !== 'face' && touche !== 'island')
+          ? { genre: 'objet' }
+          : touche === 'face'
+            ? { genre: 'face' }
+            : hit
+              ? { genre: 'sol', case: cubesDuMonde.casesTouchees(hit).cell, distance: hit.distance }
+              : null;
+      const objet = objetDansLaZone(e.clientX, e.clientY, direct);
+      if (objet) return toucherLObjet(objet);
       // Pendant un trajet, un tap dans le vide le fait arriver tout de suite ; sur le sol, il change son but (la page
       // décide, depuis là où il en est : `enRoute`) ; une cible garde sa priorité.
       const now = performance.now();
@@ -385,6 +513,7 @@ export default function WorldCanvas({
         const n = creature.face?.normal ?? new THREE.Vector3(0, 1, 0);
         const local = navire.groupe.worldToLocal(creature.point.clone().addScaledVector(n, -0.5));
         const cell = { x: v.origin.x + Math.floor(local.x), y: v.origin.y + Math.floor(local.z), z: v.origin.z + Math.floor(local.y) };
+        sauterLeSigne({ genre: 'navire', port: v.port });
         if (v.ghosts.has(`${Math.floor(local.x)},${Math.floor(local.z)},${Math.floor(local.y)}`) && buildRef.current) return buildRef.current.onPickFace(cell, cell, { ile: v.port });
         return pickVehicleRef.current?.(v.port);
       }
@@ -395,12 +524,17 @@ export default function WorldCanvas({
       if (recentrerApres(tap, Boolean(creature))) recentrer();
       if (creature) {
         const quest = questIdOf(creature.object);
+        if (quest) sauterLeSigne({ genre: 'borne', id: `${quest.biome}:${quest.typeId}` });
         if (quest && pickQuestRef.current) return pickQuestRef.current(quest.biome, quest.typeId);
         const found = creatureIdOf(creature.object);
+        if (found?.kind === 'guardian') sauterLeSigne({ genre: 'gardien', id: found.id });
         if (found && creatureRef.current) return creatureRef.current(found.id, found.kind);
         if (found && !buildRef.current) return pickRef.current?.(found.id);
       }
       if (!tap) return;
+      if (tap.kind === 'quest') sauterLeSigne({ genre: 'borne', id: `${tap.biome}:${tap.typeId}` });
+      else if (tap.kind === 'place') sauterLeSigne({ genre: 'lieu', id: tap.place, ile: tap.island });
+      else if (tap.kind === 'bridge') sauterLeSigne({ genre: 'ouvrage', id: tap.id });
       if (tap.kind === 'quest') pickQuestRef.current?.(tap.biome, tap.typeId);
       else if (tap.kind === 'place') pickPlaceRef.current?.(tap.place, tap.island);
       else if (tap.kind === 'bridge') pickBridgeRef.current?.(tap.id);
@@ -435,6 +569,7 @@ export default function WorldCanvas({
       camera.updateProjectionMatrix();
       renderer.setSize(w, h, false);
       signesDesCreatures.redimensionner(h);
+      affordance.redimensionner(h);
     };
     const observer = new ResizeObserver(resize);
     observer.observe(el);
@@ -636,16 +771,44 @@ export default function WorldCanvas({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [avatar?.seq]);
 
-  // ---- Les repères des bornes de mission : un losange jaune qui flotte (à faire), ou les étoiles gagnées en petits
-  // cubes d'or empilés. Rien sur une île fermée.
+  // ---- Les repères des bornes de mission : les étoiles gagnées en petits cubes d'or empilés (dans Archipéo, aussi le
+  // losange jaune qui rebondit, à faire). Rien sur une île fermée.
+  const sommets = useMemo(() => sommetsDesBornes(cubes), [cubes]);
   useEffect(() => {
-    world.current?.bornes.poserLesMissions(quests);
-  }, [quests]);
+    world.current?.bornes.poserLesMissions(quests, sommets);
+    // Refaits aussi quand la scène l'est (un autre archipel, la préférence de mouvement).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [quests, sommets, reduceMotion, archipelago]);
+
+  // ---- Les signes des objets touchables (Blocland, world/affordance.ts) : un cube au-dessus de chacun, l'or, la pierre
+  // ou le crème.
+  const signesDuMonde = useMemo(
+    () => signesDesObjets({ cubes, quests, creatures, vehicle, etats: etatsDesObjets }),
+    [cubes, quests, creatures, vehicle, etatsDesObjets],
+  );
+  useEffect(() => {
+    world.current?.affordance.poser(signesDuMonde);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [signesDuMonde, reduceMotion, archipelago]);
 
   // ---- Le chemin à construire (sur la Carte) : une balise toutes les trois cases, au-dessus du sol.
   useEffect(() => {
     world.current?.bornes.poserLeChemin(trail);
   }, [trail]);
+
+  // ---- La fiche ouverte (lot 2 de « Toucher le monde ») : son signe saute s'il n'a pas été touché ; une fois la fiche
+  // posée (deux images), l'objet qu'elle cacherait est recadré dans la place libre.
+  useEffect(() => {
+    const w = world.current;
+    if (!w || !fiche) return;
+    if (fiche.saut) w.sauter(fiche.objet);
+    let image = requestAnimationFrame(() => {
+      image = requestAnimationFrame(() => world.current?.garderHorsDeLaFiche(fiche.objet));
+    });
+    return () => cancelAnimationFrame(image);
+    // Une fois par fiche ouverte.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fiche?.seq]);
 
   // ---- Caméra : l'île demandée (ou le bonhomme) est rejointe en douceur par la boucle ; au premier cadrage, d'un coup.
   useEffect(() => {

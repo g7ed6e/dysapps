@@ -104,7 +104,7 @@ export function SchoolBody() {
 export function SchoolSheet({ onClose }: { onClose: () => void }) {
   const island = useSchoolIsland();
   return (
-    <section id="panneau-ecole" className={`island-sheet school-sheet biome-${island.id}`} role="dialog" aria-labelledby="ecole-titre" aria-modal="false">
+    <section id="panneau-ecole" className={`island-sheet school-sheet biome-${island.id}`} role="dialog" aria-labelledby="ecole-titre" aria-modal="true">
       <div className="island-sheet-head">
         <div className="island-sheet-titles">
           <h2 id="ecole-titre" className="island-sheet-title">
