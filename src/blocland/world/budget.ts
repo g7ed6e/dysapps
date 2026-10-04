@@ -25,7 +25,7 @@ import { MAST_TOP, VEHICLE_STAGES } from './vehicle';
 import { COMMANDES } from './commandes';
 import { casesDeLaPetiteConstruction } from './petitesConstructions';
 import { fusionDesCreatures, fusionDesGardiens, fusionDuBonhomme, trianglesDeLaFusion } from './personnages/fusions';
-import { coutDesSignes, signesDesObjets, sommetsDesBornes } from './affordance';
+import { COUT_DES_BULLES } from './affordance';
 
 export const RENDER_BUDGET = {
   /** Triangles de la scène 3D d'un archipel, tout construit. */
@@ -177,19 +177,12 @@ export function sceneCost(a: ArchipelagoId, commandes = false): { triangles: num
 }
 
 /**
- * Les signes des objets touchables de Blocland (world/affordance.ts), un maillage instancié par état : tout construit
- * (chaque borne a ses trois étoiles, sans cube ; restent l'école, la salle des trophées, les monuments et le navire), ou
- * `auPire` : toutes les îles ouvertes et rien de joué, où chaque borne porte son losange et chaque monument son chantier.
+ * Les bulles de Blocland (world/affordance.ts) : trois au plus à la fois, sur l'île où l'on est, des quadrilatères dans
+ * le maillage des plaques des créatures (un appel de dessin), le même coût quels que soient l'archipel et l'état du jeu.
  * Hors de `sceneCost`, qui ne compte que les modèles en blocs ; à ajouter au monde en blocs sous son plafond.
  */
-export function signesCost(a: ArchipelagoId, auPire = false): { triangles: number; drawCalls: number } {
-  const tout = toutConstruit();
-  const progress = auPire ? {} : tout.progress;
-  const village = auPire ? { parts: {}, log: [], links: tout.world.links } : tout.world;
-  const cubes = worldCubes(a, progress, village, false);
-  const quests = [...sommetsDesBornes(cubes).keys()].map((id) => ({ id, state: auPire ? ('new' as const) : 3 }));
-  const creatures = [...creaturePlacements(a, village.links), ...guardianPlacements(a, progress, village.links)];
-  return coutDesSignes(signesDesObjets({ cubes, quests, creatures, vehicle: vehiclePlacement(a, progress, village) }));
+export function signesCost(): { triangles: number; drawCalls: number } {
+  return { ...COUT_DES_BULLES };
 }
 
 /**

@@ -31,6 +31,8 @@ export interface Derniers {
   forceDay: boolean;
   whalePass: WorldViewProps['whalePass'];
   sons: boolean;
+  /** Une fiche, un panneau ou un mot est ouvert par-dessus le monde : on lit, rien ne bouge pour attirer l'œil. */
+  calme: boolean;
   onVoyageLegEnd?: () => void;
 }
 

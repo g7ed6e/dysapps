@@ -1,24 +1,22 @@
 import { BIOMES, BLOCKS, type BlockId } from '../biomes';
 import { EMPTY_STATE, type GameState } from '../engine';
 import {
-  basDuSigne,
-  centreDuSigneGrossi,
+  BULLE,
+  bullesMontrees,
+  bullesPossibles,
   centreDeLObjet,
+  cleDeLaCreature,
   cleDeLObjet,
-  COULEURS_DU_SIGNE,
-  COTE_DU_SIGNE,
-  coutDesSignes,
-  echelleDuSigne,
-  flottementDuSigne,
-  formeDuSigne,
+  COUT_DES_BULLES,
+  flottementDeLaBulle,
   hauteurDuSigneDeLObjet,
+  iconeDeLObjet,
+  rebondDeLaBulle,
   sautDuSigne,
   SIGNE,
   signesDesObjets,
   sommetDe,
   sommetsDesBornes,
-  tourDuSigne,
-  TRIANGLES_DU_SIGNE,
   zoneDeToucher,
   zoneDuToucher,
   zoneRetenue,
@@ -30,7 +28,7 @@ import {
 import { isBiomeUnlocked } from './archipelago';
 import { toutConstruit } from './budget';
 import { etatsDesObjets, modeleDuMonde } from './modele';
-import { creaturePlacements, gardienDuMonde, guardianPlacements, vehiclePlacement, worldCubes } from './terrain';
+import { creaturePlacements, gardienDuMonde, guardianPlacements, islandCenter, vehiclePlacement, worldCubes } from './terrain';
 import { textesDe } from '../../univers';
 import { GESTE_DU_SIGNE, hauteurDuSigne } from './signe';
 import type { ArchipelagoId } from './map';
@@ -47,7 +45,7 @@ function signesDe(state: GameState, a: ArchipelagoId): SigneDObjet[] {
 
 const fini = (): GameState => ({ ...EMPTY_STATE, ...toutConstruit() }) as GameState;
 
-it('au début du jeu : un losange d’or sur chaque borne à faire de l’île ouverte, rien sur les îles fermées, le crème sur l’école et la salle des trophées', () => {
+it('au début du jeu : chaque borne à faire de l’île ouverte, rien sur les îles fermées, l’école et la salle des trophées en lieux', () => {
   const signes = signesDe(EMPTY_STATE, '6e');
   const bornes = signes.filter((s) => s.objet.genre === 'borne');
   expect(bornes.length).toBeGreaterThan(0);
@@ -61,12 +59,12 @@ it('au début du jeu : un losange d’or sur chaque borne à faire de l’île o
   expect(lieux.every((s) => s.etat === 'lieu')).toBe(true);
   // Le lieu où l'on assemble ne porte rien (l'école et la salle des trophées seulement, §8).
   expect(signes.some((s) => s.objet.genre === 'lieu' && s.objet.id === 'assembly')).toBe(false);
-  // Le navire, sans bloc à poser ni départ possible : la pierre ; aucun Gardien n'attend.
+  // Le navire, sans bloc à poser ni départ possible : pas encore ; aucun Gardien n'attend.
   expect(signes.find((s) => s.objet.genre === 'navire')?.etat).toBe('pasEncore');
   expect(signes.some((s) => s.objet.genre === 'gardien')).toBe(false);
 });
 
-it('une chose ne porte jamais deux signes', () => {
+it('une chose n’est jamais comptée deux fois', () => {
   for (const state of [EMPTY_STATE, fini()])
     for (const a of ['6e', '5e', '4e', '3e'] as const) {
       const cles = signesDe(state, a).map((s) => s.cle);
@@ -74,7 +72,7 @@ it('une chose ne porte jamais deux signes', () => {
     }
 });
 
-it('tout construit : rien sur les bornes réussies (leurs étoiles), les Gardiens vaincus, les ouvrages construits ; le crème sur l’école, la salle des trophées et les monuments bâtis', () => {
+it('tout construit : rien sur les bornes réussies (leurs étoiles), les Gardiens vaincus, les ouvrages construits ; l’école, la salle des trophées et les monuments bâtis en lieux', () => {
   const signes = signesDe(fini(), '6e');
   expect(signes.filter((s) => ['borne', 'gardien', 'ouvrage'].includes(s.objet.genre))).toEqual([]);
   const lieux = signes.filter((s) => s.objet.genre === 'lieu');
@@ -82,7 +80,7 @@ it('tout construit : rien sur les bornes réussies (leurs étoiles), les Gardien
   expect(lieux.every((s) => s.etat === 'lieu')).toBe(true);
 });
 
-it('une borne pas jouable porte la pierre, une jouée sans étoile l’or ; un Gardien prêt l’or, pas prêt la pierre ; un vaincu rien', () => {
+it('une borne pas jouable est « pas encore », une jouée sans étoile « à faire » ; un Gardien prêt à faire, pas prêt pas encore ; un vaincu rien', () => {
   const { cubes } = { cubes: worldCubes('6e', {}, EMPTY_STATE.world, false) };
   const id = [...sommetsDesBornes(cubes).keys()].find((q) => q.startsWith('french-6e-phonology:'))!;
   const etat = (state: 'new' | 'locked' | number) => signesDesObjets({ cubes, quests: [{ id, state }] })[0];
@@ -100,11 +98,11 @@ it('une borne pas jouable porte la pierre, une jouée sans étoile l’or ; un G
   expect(signesDesObjets({ cubes: [], creatures: [{ ...g, kind: 'creature' }], etats })).toEqual([]);
 });
 
-it('la hauteur : 1,2 bloc au-dessus du sommet de l’objet (le plus haut z de ses cubes, + 1)', () => {
+it('la hauteur : la pointe de la bulle 0,4 bloc au-dessus du sommet de l’objet (le plus haut z de ses cubes, + 1)', () => {
   expect(sommetDe([{ z: 2 }, { z: 5 }, { z: 3 }])).toBe(6);
-  expect(hauteurDuSigneDeLObjet([{ z: 2 }, { z: 5 }])).toBeCloseTo(7.2, 9);
-  expect(hauteurDuSigneDeLObjet([{ z: 0 }], 3)).toBeCloseTo(5.2, 9);
-  // Une borne : son socle et son ardoise sur le sol de sa case ; le signe 1,2 au-dessus de l'ardoise.
+  expect(hauteurDuSigneDeLObjet([{ z: 2 }, { z: 5 }])).toBeCloseTo(6.4, 9);
+  expect(hauteurDuSigneDeLObjet([{ z: 0 }], 3)).toBeCloseTo(4.4, 9);
+  // Une borne : son socle et son ardoise sur le sol de sa case ; la bulle 0,4 au-dessus de l'ardoise.
   const cubes = worldCubes('6e', {}, EMPTY_STATE.world, false);
   const [id, sommet] = [...sommetsDesBornes(cubes)][0];
   const ardoise = cubes.filter((c) => c.quest === id);
@@ -122,7 +120,7 @@ it('la hauteur : 1,2 bloc au-dessus du sommet de l’objet (le plus haut z de se
   expect(ns.z).toBeCloseTo(navire.origin.z + sommetDe(navire.cubes) + SIGNE.auDessus, 9);
 });
 
-it('un chantier en fantôme : un seul cube par ouvrage ou par monument, l’or si l’élève a les blocs, sinon la pierre', () => {
+it('un chantier en fantôme : un seul objet par ouvrage ou par monument, à faire si l’élève a les blocs, sinon pas encore', () => {
   // Toutes les îles ouvertes, rien de bâti : chaque monument est un chantier.
   const links = toutConstruit().world.links;
   const vide: GameState = { ...EMPTY_STATE, world: { ...EMPTY_STATE.world, links } };
@@ -142,6 +140,11 @@ it('un chantier en fantôme : un seul cube par ouvrage ou par monument, l’or s
   const pret = signesDesObjets({ cubes, etats: { gardiensPrets: [], navirePret: false, chantiersPrets: [id] } }).find((s) => s.cle === `ouvrage:${id}`);
   expect(pret?.etat).toBe('aFaire');
   expect(pret?.iles.length).toBe(2);
+  // Vue de chacune de ses îles, sa bulle va à son bout de ce côté : plus près du cœur de cette île que de l'autre.
+  const [de, vers] = pret!.iles;
+  const pres = (p: { x: number; y: number }, ile: typeof de) => Math.hypot(p.x - islandCenter(ile).x, p.y - islandCenter(ile).y);
+  expect(pres(pret!.parIle![de]!, de)).toBeLessThan(pres(pret!.parIle![vers]!, de));
+  expect(pres(pret!.parIle![vers]!, vers)).toBeLessThan(pres(pret!.parIle![de]!, vers));
 });
 
 it('l’état des objets, lu de la sauvegarde : rien au début, rien tout construit ; les Gardiens prêts, le navire et les chantiers quand l’élève a les blocs', () => {
@@ -159,13 +162,32 @@ it('l’état des objets, lu de la sauvegarde : rien au début, rien tout constr
   expect(riche.chantiersPrets.length).toBeGreaterThan(0);
 });
 
-it('le mouvement : le losange flotte de ± 0,15 bloc en 3 s et fait un tour en 6 s, le même pour tous', () => {
-  expect(flottementDuSigne(0)).toBeCloseTo(0, 9);
-  expect(flottementDuSigne(0.75)).toBeCloseTo(0.15, 9);
-  expect(flottementDuSigne(2.25)).toBeCloseTo(-0.15, 9);
-  expect(flottementDuSigne(3.75)).toBeCloseTo(flottementDuSigne(0.75), 9);
-  expect(tourDuSigne(3)).toBeCloseTo(Math.PI, 9);
-  expect(tourDuSigne(6)).toBeCloseTo(0, 9);
+it('la bulle mise en avant monte et descend de ± 2 pixels en 2,4 s ; touchée, une bulle s’écrase puis rebondit, une seule fois', () => {
+  expect(flottementDeLaBulle(0)).toBeCloseTo(0, 9);
+  expect(flottementDeLaBulle(0.6)).toBeCloseTo(BULLE.flotte.amplitudePx, 9);
+  expect(flottementDeLaBulle(1.8)).toBeCloseTo(-BULLE.flotte.amplitudePx, 9);
+  expect(flottementDeLaBulle(3)).toBeCloseTo(flottementDeLaBulle(0.6), 9);
+  // Le rebond : 1 avant et après ; 90 % à 80 ms ; jamais plus de 105 % ; reposée à 260 ms.
+  expect(rebondDeLaBulle(0)).toBe(1);
+  expect(rebondDeLaBulle(-5)).toBe(1);
+  expect(rebondDeLaBulle(80)).toBeCloseTo(0.9, 9);
+  expect(rebondDeLaBulle(170)).toBeCloseTo(1.05, 9);
+  expect(rebondDeLaBulle(260)).toBe(1);
+  let plusPetite = 1;
+  let plusGrande = 1;
+  let avant = 1;
+  let changements = 0;
+  for (let ms = 1; ms < 260; ms++) {
+    const e = rebondDeLaBulle(ms);
+    plusPetite = Math.min(plusPetite, e);
+    plusGrande = Math.max(plusGrande, e);
+    // Elle descend, remonte, redescend : deux changements de sens, pas d'oscillation.
+    if (ms > 1 && Math.sign(e - avant) !== 0 && Math.sign(e - avant) !== Math.sign(avant - rebondDeLaBulle(ms - 2))) changements++;
+    avant = e;
+  }
+  expect(plusPetite).toBeCloseTo(BULLE.rebond.ecrase, 3);
+  expect(plusGrande).toBeLessThanOrEqual(BULLE.rebond.deborde + 1e-9);
+  expect(changements).toBeLessThanOrEqual(2);
 });
 
 it('le saut au toucher : une bosse de 0,2 bloc en 180 ms, sans rebond, plus courte et plus basse que celle des révisions', () => {
@@ -188,76 +210,75 @@ it('le saut au toucher : une bosse de 0,2 bloc en 180 ms, sans rebond, plus cour
   expect(hauteurDuSigne(700)).toBeCloseTo(GESTE_DU_SIGNE.hauteur, 9);
 });
 
-it('la taille : 14 pixels au moins à l’écran, le cube grossit quand la caméra s’éloigne', () => {
-  // 1 000 pixels par bloc à un bloc de distance : le crème (0,8) fait 800 pixels à 1 bloc, 14 à environ 57 blocs.
-  expect(echelleDuSigne(COTE_DU_SIGNE.lieu, 10, 1000)).toBe(1);
-  const loin = 200;
-  const e = echelleDuSigne(COTE_DU_SIGNE.pasEncore, loin, 1000);
-  expect(e).toBeGreaterThan(1);
-  expect((COTE_DU_SIGNE.pasEncore * e * 1000) / loin).toBeCloseTo(SIGNE.minPx, 6);
+describe('les bulles (proposition « à la Supercell », 4 octobre 2026)', () => {
+  const FORET = 'french-6e-phonology' as const;
+  const MINE = 'french-6e-letter-confusion' as const;
+  const objet = (o: SigneDObjet['objet'], etat: SigneDObjet['etat'], ile: typeof FORET | typeof MINE): SigneDObjet => ({
+    cle: cleDeLObjet(o),
+    objet: o,
+    etat,
+    x: 0,
+    y: 0,
+    z: 1,
+    iles: [ile],
+    boite: { min: { x: 0, y: 0, z: 0 }, max: { x: 1, y: 1, z: 1 } },
+  });
+  const OBJETS = [
+    objet({ genre: 'borne', id: `${FORET}:a` }, 'aFaire', FORET),
+    objet({ genre: 'borne', id: `${FORET}:b` }, 'aFaire', FORET),
+    objet({ genre: 'borne', id: `${FORET}:c` }, 'pasEncore', FORET),
+    objet({ genre: 'lieu', id: 'school', ile: FORET }, 'lieu', FORET),
+    objet({ genre: 'ouvrage', id: 'pont' }, 'aFaire', FORET),
+    objet({ genre: 'gardien', id: FORET }, 'aFaire', FORET),
+    objet({ genre: 'borne', id: `${MINE}:a` }, 'aFaire', MINE),
+  ];
+
+  it('seul ce qu’on peut faire maintenant en porte une, avec l’icône de ce qu’on y fait ; une créature, son bloc ou sa notion', () => {
+    const possibles = bullesPossibles(OBJETS, [
+      { id: FORET, icone: 'blocks', bloc: 'grass' as BlockId },
+      { id: MINE, icone: 'pickaxe' },
+    ]);
+    // Ni « pas encore », ni un lieu.
+    expect(possibles.map((b) => b.cle)).toEqual([`borne:${FORET}:a`, `borne:${FORET}:b`, 'ouvrage:pont', `gardien:${FORET}`, `borne:${MINE}:a`, cleDeLaCreature(FORET), cleDeLaCreature(MINE)]);
+    expect(possibles[0].image).toEqual({ icone: 'star' });
+    expect(possibles[2].image).toEqual({ icone: 'hammer' });
+    expect(possibles[3].image).toEqual({ icone: 'shield' });
+    expect(possibles[5]).toMatchObject({ cible: { genre: 'creature', id: FORET }, image: { bloc: 'grass' } });
+    expect(possibles[6].image).toEqual({ icone: 'pickaxe' });
+    expect(iconeDeLObjet({ genre: 'navire', port: FORET })).toBe('ship');
+    expect(iconeDeLObjet({ genre: 'lieu', id: 'monument:x', ile: FORET })).toBe('hammer');
+  });
+
+  it('trois au plus, sur l’île où l’on est seulement : une commande d’abord, puis les bornes ; sans prochaine ici, aucune mise en avant', () => {
+    const possibles = bullesPossibles(OBJETS, [{ id: FORET, icone: 'blocks', bloc: 'grass' as BlockId }]);
+    const ici = bullesMontrees(possibles, FORET, null);
+    expect(ici.map((b) => b.bulle.cle)).toEqual([cleDeLaCreature(FORET), `borne:${FORET}:a`, `borne:${FORET}:b`]);
+    expect(ici.map((b) => b.enAvant)).toEqual([false, false, false]);
+    // La commande est la prochaine destination : elle est mise en avant.
+    expect(bullesMontrees(possibles, FORET, cleDeLaCreature(FORET)).map((b) => b.enAvant)).toEqual([true, false, false]);
+    expect(BULLE.max).toBe(3);
+    // Sur la Mine : sa seule borne à faire. Sans île (le bonhomme nulle part) : rien.
+    expect(bullesMontrees(possibles, MINE, null).map((b) => b.bulle.cle)).toEqual([`borne:${MINE}:a`]);
+    expect(bullesMontrees(possibles, null, null)).toEqual([]);
+  });
+
+  it('la prochaine chose à faire passe devant et est mise en avant, quand elle est sur l’île ; ailleurs, aucune bulle d’or', () => {
+    const possibles = bullesPossibles(OBJETS, []);
+    const ici = bullesMontrees(possibles, FORET, 'ouvrage:pont');
+    expect(ici[0]).toMatchObject({ bulle: { cle: 'ouvrage:pont' }, enAvant: true });
+    expect(ici).toHaveLength(3);
+    const ailleurs = bullesMontrees(possibles, FORET, `borne:${MINE}:a`);
+    expect(ailleurs.map((b) => b.bulle.cle)).toEqual(bullesMontrees(possibles, FORET, null).map((b) => b.bulle.cle));
+    expect(ailleurs.some((b) => b.enAvant)).toBe(false);
+  });
+
+  it('leur taille : 56 pixels, 64 pour la mise en avant ; trois quadrilatères au plus, en un appel de dessin', () => {
+    expect([BULLE.px, BULLE.prochainePx]).toEqual([56, 64]);
+    expect(COUT_DES_BULLES).toEqual({ triangles: 6, drawCalls: 1 });
+  });
 });
 
-it('la forme : le losange d’or sur sa pointe, la pierre et le crème à plat, tous aux arêtes dans la même géométrie, sans dessous à plat', () => {
-  expect(TRIANGLES_DU_SIGNE).toEqual({ aFaire: 60, pasEncore: 50, lieu: 50 });
-  for (const etat of ['aFaire', 'pasEncore', 'lieu'] as const) {
-    const f = formeDuSigne(etat);
-    expect(f.normals.length).toBe(f.positions.length);
-    expect(f.aretes.length * 3).toBe(f.positions.length);
-    expect(f.aretes.some((a) => a === 1)).toBe(true);
-    // Centré, et à sa taille : le crème à plat touche ± 0,4 ; le losange sur sa pointe, ± la demi-diagonale.
-    const ys = [...f.positions].filter((_, i) => i % 3 === 1);
-    if (etat === 'aFaire') {
-      expect(Math.max(...ys)).toBeCloseTo(basDuSigne('aFaire'), 6);
-      expect(Math.min(...ys)).toBeCloseTo(-basDuSigne('aFaire'), 6);
-    } else {
-      expect(Math.max(...ys)).toBeCloseTo(COTE_DU_SIGNE[etat] / 2, 6);
-      // Aucune normale vers le bas : le dessous n'est pas dessiné.
-      expect([...f.normals].filter((_, i) => i % 3 === 1).every((n) => n >= 0)).toBe(true);
-    }
-  }
-  // Les arêtes du losange d'or, brun sombre comme celles du crème : il ne se confond pas avec l'or du décor.
-  expect(COULEURS_DU_SIGNE.aFaire.arete).toBe('#2b2118');
-  expect(coutDesSignes([{ etat: 'aFaire' }, { etat: 'aFaire' }, { etat: 'lieu' }])).toEqual({ triangles: 170, drawCalls: 2 });
-});
-
-it('le losange d’or reste sur sa pointe, à tout moment de son tour : un sommet en bas et un en haut, sur l’axe vertical', () => {
-  const f = formeDuSigne('aFaire');
-  const bas = basDuSigne('aFaire');
-  // Les huit coins du cube : les sommets de sa forme à une demi-diagonale du centre.
-  const coins: [number, number, number][] = [];
-  for (let k = 0; k < f.positions.length; k += 3) {
-    const p: [number, number, number] = [f.positions[k], f.positions[k + 1], f.positions[k + 2]];
-    if (Math.abs(Math.hypot(...p) - bas) < 1e-4 && !coins.some((c) => Math.hypot(c[0] - p[0], c[1] - p[1], c[2] - p[2]) < 1e-4)) coins.push(p);
-  }
-  expect(coins).toHaveLength(8);
-  // Le tour, autour de la verticale du monde, après la pose : le sommet du bas reste en bas, sur l'axe.
-  for (const angle of [0, 0.3, Math.PI / 4, 1, 2, Math.PI, 4.5]) {
-    const tournes = coins.map(([x, y, z]) => [x * Math.cos(angle) + z * Math.sin(angle), y, -x * Math.sin(angle) + z * Math.cos(angle)]);
-    const plusBas = tournes.reduce((a, b) => (b[1] < a[1] ? b : a));
-    expect(plusBas[1], `angle ${angle}`).toBeCloseTo(-bas, 6);
-    expect(Math.hypot(plusBas[0], plusBas[2]), `angle ${angle}`).toBeLessThan(1e-6);
-    // Un seul sommet en bas, les trois suivants nettement plus haut.
-    expect(tournes.filter((c) => c[1] < -bas / 2)).toHaveLength(1);
-  }
-  // Figé (au repos), vu de face (la caméra est du côté des z négatifs) : une arête verticale au milieu, qui monte du
-  // sommet du bas, sur le devant (ses deux bouts au même x, au milieu), et les deux arêtes des côtés verticales aussi.
-  const verticales = coins.flatMap((a, i) =>
-    coins
-      .slice(i + 1)
-      .filter((b) => Math.abs(Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]) - COTE_DU_SIGNE.aFaire) < 1e-4 && Math.abs(a[0] - b[0]) < 1e-6)
-      .map((b) => [a, b]),
-  );
-  const devant = verticales.filter(([a, b]) => Math.abs(a[0]) < 1e-6 && Math.min(a[1], b[1]) < -bas + 1e-6);
-  expect(devant).toHaveLength(1);
-  expect(Math.min(devant[0][0][2], devant[0][1][2])).toBeLessThan(0);
-  expect(verticales.filter(([a]) => Math.abs(a[0]) > 1e-3)).toHaveLength(2);
-  // Grossi de loin, il monte d'autant : son bas ne descend jamais.
-  expect(centreDuSigneGrossi('aFaire', 10, 1)).toBe(10);
-  expect(centreDuSigneGrossi('aFaire', 10, 3) - 3 * bas).toBeCloseTo(10 - bas, 9);
-  expect(centreDuSigneGrossi('lieu', 10, 2) - 2 * basDuSigne('lieu')).toBeCloseTo(10 - COTE_DU_SIGNE.lieu / 2, 9);
-});
-
-it('le Golem de roche (Gardien de l’île des lettres) : son losange à 1,2 bloc au-dessus de son cube le plus haut, dans le monde', () => {
+it('le Golem de roche (Gardien de l’île des lettres) : sa bulle au-dessus de son cube le plus haut, dans le monde', () => {
   const ile = 'french-6e-letter-confusion' as const;
   // Son île ouverte (le sentier depuis la Forêt) : il attend sur son îlot.
   const golem = guardianPlacements('6e', {}, ['french-6e-phonology-french-6e-letter-confusion'], true).find((g) => g.id === ile)!;
@@ -268,8 +289,8 @@ it('le Golem de roche (Gardien de l’île des lettres) : son losange à 1,2 blo
   const [s] = signesDesObjets({ cubes: [], creatures: [{ ...golem, beaten: false }] });
   expect(s.objet).toEqual({ genre: 'gardien', id: ile });
   expect(s.z).toBeCloseTo(golem.origin.z + haut + 1 + SIGNE.auDessus, 9);
-  // Sa pointe, même en bas de son flottement, reste au-dessus de sa tête.
-  expect(s.z - basDuSigne('aFaire') - SIGNE.flotte.amplitude).toBeGreaterThan(golem.origin.z + haut + 1 + 0.3);
+  // La pointe de sa bulle reste au-dessus de sa tête.
+  expect(s.z).toBeGreaterThan(golem.origin.z + haut + 1 + 0.3);
 });
 
 it('la clé d’un objet : une par objet', () => {

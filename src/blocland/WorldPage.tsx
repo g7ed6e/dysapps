@@ -29,6 +29,7 @@ import { AssemblageSheet } from './Assemblage';
 import { ASSEMBLAGE_PATH } from './world/assemblage';
 import { laDestinationEstLeNavire, lienDeLaDestination } from './world/destination';
 import { nextGoalInfo } from './world/goals';
+import { cleDeLaCreature, cleDeLObjet } from './world/affordance';
 import { getCommande } from './world/commandes';
 import { FicheDuMonde, type FicheOuverte } from './FicheDuMonde';
 import { TROPHIES_PATH, trophies } from './trophies';
@@ -249,6 +250,21 @@ export function WorldPage() {
   // Un seul signe par créature : sa commande prête et suggérée (GD-7, PR 3), sinon ses révisions (GD-4, étape 1).
   const signes = useMemo(() => signesDesCreatures(vu, a, revisions, destination.commande), [vu, a, revisions, destination.commande]);
   const destinationText = `Prochaine destination : ${destination.name}. ${destination.text}`;
+  // La prochaine chose à faire, quand c'est un objet : sa bulle est mise en avant sur l'île où l'on est (proposition
+  // P2, world/affordance.ts) ; sinon aucune (la bulle d'or ne dit jamais autre chose que la prochaine destination).
+  const navirePret = useMemo(
+    () => laDestinationEstLeNavire(destination, nextGoalInfo(state, archipelago.port, textes.archipels, textes.libelles)),
+    [destination, state, archipelago.port, textes],
+  );
+  const prochaine = destination.commande
+    ? cleDeLaCreature(destination.island)
+    : destination.ouvrage
+      ? cleDeLObjet({ genre: 'ouvrage', id: destination.ouvrage })
+      : navirePret
+        ? cleDeLObjet({ genre: 'navire', port: archipelago.port })
+        : destination.mission
+          ? cleDeLObjet({ genre: 'borne', id: `${destination.island}:${destination.mission}` })
+          : null;
   // Un ouvrage à construire (GD-7) : sur la Carte, la flèche se pose sur lui, avec l'icône d'un ouvrage, pas sur l'île
   // d'où il part (quatre ouvrages peuvent en partir) ; sur sa liaison, du côté de cette île.
   const flecheDeLOuvrage = useMemo(
@@ -973,7 +989,7 @@ export function WorldPage() {
    */
   const allerALaDestination = () => {
     if (destination.ouvrage) return allerALaFiche(destination.island, { genre: 'ouvrage', id: destination.ouvrage });
-    if (laDestinationEstLeNavire(destination, nextGoalInfo(state, archipelago.port, textes.archipels, textes.libelles)))
+    if (navirePret)
       return allerALaFiche(archipelago.port, { genre: 'navire', port: archipelago.port });
     openIsland(destination.island, destination.commande);
   };
@@ -1036,6 +1052,8 @@ export function WorldPage() {
             cubes={cubesVus}
             creatures={creatures}
             signes={voyage ? undefined : signes}
+            prochaine={prochaine}
+            calme={Boolean(ficheVue) || panelOpen || panneauDeLIle || Boolean(whaleWord) || Boolean(motRallume)}
             focus={focus}
             reduceMotion={reduceMotion}
             forceDay={forceDay}

@@ -9,7 +9,7 @@ import { estUnBiome, type BiomeId } from '../biomes';
 import { islandCenter, worldBounds } from '../world/terrain';
 import { ARROW_DIRS, cubeTags, enRoute, finishWalk, groundTap, islandInDirection, recentrerApres, toucheRetenue, walkPose, type Touche, type VoyageRun } from '../world/scene';
 import { rappelsDeLaVue, type WorldViewProps } from '../world/view';
-import { borneDe, centreDeLObjet, cleDeLObjet, SIGNE, signesDesObjets, sommetsDesBornes, zoneDuToucher, type ObjetDeLaFiche, type ObjetTouche, type ToucherDirect } from '../world/affordance';
+import { borneDe, centreDeLObjet, cleDeLaCreature, cleDeLObjet, SIGNE, signesDesObjets, sommetsDesBornes, zoneDuToucher, type ObjetDeLaFiche, type ObjetTouche, type ToucherDirect } from '../world/affordance';
 import { useEnCasesDuMonde } from '../useEnCasesDuMonde';
 import { createMeter } from './meter';
 import { habillageDe } from '../habillage';
@@ -70,6 +70,8 @@ export default function WorldCanvas({
   reduceMotion = false,
   creatures = SANS_CREATURES,
   signes = [],
+  prochaine = null,
+  calme = false,
   forceDay = false,
   bridges = [],
   marker: markerEnAncrage = null,
@@ -156,8 +158,8 @@ export default function WorldCanvas({
   vueDeplaceeRef.current = onVueDeplacee;
   const { settings } = useSettings();
   // Les props que la scène lit à chaque image (elle n'est pas refaite quand elles changent).
-  const derniers = useRef<Derniers>({ carte: map, focus, home: home ?? null, forceDay, whalePass, sons: settings.sounds, onVoyageLegEnd });
-  derniers.current = { carte: map, focus, home: home ?? null, forceDay, whalePass, sons: settings.sounds, onVoyageLegEnd };
+  const derniers = useRef<Derniers>({ carte: map, focus, home: home ?? null, forceDay, whalePass, sons: settings.sounds, calme, onVoyageLegEnd });
+  derniers.current = { carte: map, focus, home: home ?? null, forceDay, whalePass, sons: settings.sounds, calme, onVoyageLegEnd };
   // Le passage de la baleine : demandé par `whalePass`, joué une fois par `seq` (même si la scène est refaite).
   const passSeqRef = useRef<number | null>(null);
 
@@ -207,8 +209,9 @@ export default function WorldCanvas({
     const cubesDuMonde = creerCubes(monde, large, lumiere, instant);
     const navire = creerNavire(monde, personnages, cubesDuMonde, derniers, instant, vehicleRef, voyageRef);
     const rond = creerRond(monde, personnages, () => cubesDuMonde.champ(), lumiere, instant);
-    const signesDesCreatures = creerSignes(monde, el, camera, personnages, derniers, instant);
-    const affordance = creerAffordance(monde, el, camera, derniers, instant);
+    // Les bulles se tiennent dans la place libre : leur propre lecteur, pour ne pas changer la clé de celui de la caméra.
+    const signesDesCreatures = creerSignes(monde, el, camera, personnages, derniers, instant, lecteurDePlaceLibre(el));
+    const affordance = creerAffordance(monde, derniers, instant);
     // La Carte se cadre dans la place que l'interface laisse libre, autour de la flèche de la destination (DA-31).
     const lecture = {
       place: lecteurDePlaceLibre(el),
@@ -231,7 +234,9 @@ export default function WorldCanvas({
       navire,
       recentrer: () => recentrer(),
       sauter: (objet) => {
-        if (objet.genre !== 'creature' && objet.genre !== 'ile') sauterLeSigne(objet);
+        if (objet.genre === 'creature') {
+          if (!reduceMotion) signesDesCreatures.rebondir(cleDeLaCreature(objet.id));
+        } else if (objet.genre !== 'ile') sauterLeSigne(objet);
       },
       garderHorsDeLaFiche: (objet) => garderHorsDeLaFiche(objet),
     };
@@ -397,16 +402,17 @@ export default function WorldCanvas({
       );
     /** Un cube touché qui est une cible : borne, lieu, ouvrage, ou face à construire en chantier. */
     const estUneCible = (h: THREE.Intersection): boolean => tapSur(h).kind !== 'island';
-    /** Le signe d'un objet touché fait son petit saut : la pile d'étoiles d'une borne réussie, sinon son cube. */
+    /** Un objet touché répond : la pile d'étoiles d'une borne réussie saute, sinon sa bulle rebondit, s'il en a une. */
     const sauterLeSigne = (objet: ObjetTouche) => {
       if (reduceMotion) return;
       if (objet.genre === 'borne' && bornes.sauterLaPile(objet.id)) return;
-      affordance.sauter(cleDeLObjet(objet));
+      signesDesCreatures.rebondir(cleDeLObjet(objet));
     };
     const centre = new THREE.Vector3();
     const versLeCentre = new THREE.Vector3();
     /**
-     * Le doigt hors de tout objet : l'objet dont la zone de toucher (48 pixels au moins autour de son signe) le prend,
+     * Le doigt hors de tout objet : l'objet dont la zone de toucher (48 pixels au moins autour d'une borne ou d'un
+     * Gardien petits à l'écran, three/affordance.ts) le prend,
      * selon ce qu'il a touché directement (`direct` ; world/affordance.ts, `zoneDuToucher` : jamais une face en chantier,
      * le sol seulement tout près de l'objet). Dans le ciel, un objet dont le centre est caché par le relief est écarté.
      */
@@ -485,9 +491,19 @@ export default function WorldCanvas({
       if (glisse || moved >= SEUIL_DU_GLISSE) return;
       // Pendant le voyage, un tap n'importe où fait arriver le navire tout de suite.
       if (voyageRef.current) return voyageSkipRef.current?.();
+      // Une bulle sous le doigt (sa plaque, pas les marges de sa case) passe d'abord : elle est dessinée par-dessus tout
+      // (Blocland, world/affordance.ts).
+      const vue = renderer.domElement.getBoundingClientRect();
+      const bulle = signesDesCreatures.sous(e.clientX - vue.left, e.clientY - vue.top, vue.width, vue.height);
+      if (bulle?.genre === 'creature') {
+        recentrer();
+        if (!reduceMotion) signesDesCreatures.rebondir(cleDeLaCreature(bulle.id));
+        return creatureRef.current?.(bulle.id, 'creature');
+      }
+      if (bulle) return toucherLObjet(bulle);
       const { creature, hit } = aim(e);
       // Un toucher direct sur un objet passe d'abord, une face en chantier aussi (le bloc s'y pose) ; sinon, dans le vide
-      // ou sur le sol tout près d'un objet qui porte un signe, la zone de son signe le retient (world/affordance.ts,
+      // ou sur le sol tout près d'une borne ou d'un Gardien petits, leur zone les retient (world/affordance.ts,
       // `zoneDuToucher`).
       const touche = hit ? tapSur(hit).kind : null;
       const direct: ToucherDirect =
@@ -528,6 +544,7 @@ export default function WorldCanvas({
         if (quest && pickQuestRef.current) return pickQuestRef.current(quest.biome, quest.typeId);
         const found = creatureIdOf(creature.object);
         if (found?.kind === 'guardian') sauterLeSigne({ genre: 'gardien', id: found.id });
+        if (found?.kind === 'creature' && !reduceMotion) signesDesCreatures.rebondir(cleDeLaCreature(found.id));
         if (found && creatureRef.current) return creatureRef.current(found.id, found.kind);
         if (found && !buildRef.current) return pickRef.current?.(found.id);
       }
@@ -569,7 +586,6 @@ export default function WorldCanvas({
       camera.updateProjectionMatrix();
       renderer.setSize(w, h, false);
       signesDesCreatures.redimensionner(h);
-      affordance.redimensionner(h);
     };
     const observer = new ResizeObserver(resize);
     observer.observe(el);
@@ -780,16 +796,17 @@ export default function WorldCanvas({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [quests, sommets, reduceMotion, archipelago]);
 
-  // ---- Les signes des objets touchables (Blocland, world/affordance.ts) : un cube au-dessus de chacun, l'or, la pierre
-  // ou le crème.
+  // ---- Les objets touchables (Blocland, world/affordance.ts) : leurs zones de toucher, et une bulle au-dessus de ceux
+  // qui sont à faire (trois au plus sur l'île où l'on est, la prochaine chose à faire mise en avant).
   const signesDuMonde = useMemo(
     () => signesDesObjets({ cubes, quests, creatures, vehicle, etats: etatsDesObjets }),
     [cubes, quests, creatures, vehicle, etatsDesObjets],
   );
   useEffect(() => {
     world.current?.affordance.poser(signesDuMonde);
+    world.current?.signes.poserLesObjets(signesDuMonde, prochaine);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [signesDuMonde, reduceMotion, archipelago]);
+  }, [signesDuMonde, prochaine, reduceMotion, archipelago]);
 
   // ---- Le chemin à construire (sur la Carte) : une balise toutes les trois cases, au-dessus du sol.
   useEffect(() => {

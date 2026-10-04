@@ -32,6 +32,11 @@ export interface Destination {
    * ouvre l'île de la créature sur sa ligne, dans le pli Commandes.
    */
   commande?: string;
+  /**
+   * La mission jamais jouée que la phrase propose (une île où il reste des missions) : la première de l'île. Sa borne
+   * porte la bulle mise en avant (proposition P2, world/affordance.ts).
+   */
+  mission?: string;
 }
 
 /**
@@ -99,15 +104,18 @@ export function nextDestination(state: GameState, noms: NomsArchipels, mots: Mot
   if (open.has(at)) {
     const goal = nextGoalInfo(state, at, noms, mots, lv2);
     if (goal?.ready) return make(at, goal.text, goal.have, goal.need, goal.ouvrage);
-    if (resteAJouer(state, at)) return make(at, isUnexplored(state, at) ? A_EXPLORER : 'Tu y es : d’autres missions t’attendent.');
+    const mission = missionAJouer(state, at);
+    if (mission) return { ...make(at, isUnexplored(state, at) ? A_EXPLORER : 'Tu y es : d’autres missions t’attendent.'), mission };
   }
   // 3. La plus ancienne commande prête à livrer de l'archipel : chez sa créature (GD-7, PR 3).
   const prete = commandeMiseEnAvant(state, archipelago.classe);
   if (prete && open.has(prete.biome))
     return make(prete.biome, texteDeLaCommande(prete, 'ready', lieuDAssemblage('blocland').a), prete.count, prete.count, undefined, prete.id);
   // 4. Une île ouverte pas encore explorée.
-  const fresh = islands.find((island) => island !== at && isUnexplored(state, island) && resteAJouer(state, island));
-  if (fresh) return make(fresh, A_EXPLORER);
+  for (const island of islands) {
+    const mission = island !== at && isUnexplored(state, island) ? missionAJouer(state, island) : null;
+    if (mission) return { ...make(island, A_EXPLORER), mission };
+  }
   // 5. L'ouvrage suggéré.
   const ouvrage = ouvrageSuggere(state, archipelago.classe, lv2);
   if (ouvrage) {
@@ -129,8 +137,11 @@ export function nextDestination(state: GameState, noms: NomsArchipels, mots: Mot
 
 const A_EXPLORER = 'Une île à explorer : ses missions t’attendent.';
 
-/** Il reste sur l'île une mission jouable jamais jouée (avec « Pas de LV2 », l'île de la LV2 n'en a aucune). */
-function resteAJouer(state: GameState, island: BiomeId): boolean {
+/**
+ * La première mission jouable jamais jouée de l'île, ou `null` s'il n'en reste pas (avec « Pas de LV2 », l'île de la
+ * LV2 n'en a aucune).
+ */
+function missionAJouer(state: GameState, island: BiomeId): string | null {
   const biome = getBiome(island);
-  return Boolean(biome && missionsJouables(biome).some((m) => !questProgress(island, m.id, state.progress)));
+  return (biome && missionsJouables(biome).find((m) => !questProgress(island, m.id, state.progress))?.id) ?? null;
 }
