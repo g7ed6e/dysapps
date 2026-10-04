@@ -48,7 +48,7 @@ Quelques séances plus tard, **Mes blocs** fait le point : ce qu'on peut constru
 
 ![Mes blocs : « Tu peux construire », avec le Bloc-Navire, deux monuments et les ouvrages.](/captures/mes-blocs.jpg)
 
-La **Carte** montre tout l'archipel vu d'en haut : le médaillon à son visage marque l'élève, la bulle bordée d'or la prochaine chose à faire, les îles pâles sont encore fermées.
+La **Carte** montre tout l'archipel vu d'en haut : le médaillon à son visage marque l'élève, la bulle bordée d'or la prochaine destination, les îles pâles sont encore fermées.
 
 ![La Carte des Basses Terres : chaque île avec son nom et son état (En chantier, À explorer, Fermée), la bulle bordée d'or de la prochaine destination et le médaillon de l'élève.](/captures/carte.jpg)
 
