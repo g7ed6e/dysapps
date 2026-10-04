@@ -23,8 +23,8 @@ it('convertit les anciens thèmes et polices', () => {
 });
 
 it('lit les réglages d’avant les mots neutres sous leurs nouvelles valeurs', () => {
-  const s = sanitizeSettings({ startIn: 'village', theme: 'clair', worldView: 'liste', worldLight: 'jour', lv2: 'aucune' } as never);
-  expect(s).toMatchObject({ startIn: 'world', theme: 'light', worldView: 'list', worldLight: 'day', lv2: 'none' });
+  const s = sanitizeSettings({ theme: 'clair', worldView: 'liste', worldLight: 'jour', lv2: 'aucune' } as never);
+  expect(s).toMatchObject({ theme: 'light', worldView: 'list', worldLight: 'day', lv2: 'none' });
   expect(sanitizeSettings({ theme: 'creme', worldLight: 'reelle' } as never)).toMatchObject({ theme: 'cream', worldLight: 'real' });
   expect(sanitizeSettings({ theme: 'nuit' } as never).theme).toBe('night');
 });
@@ -113,10 +113,8 @@ it('dit les espacements et la vitesse de la voix en mots, pas en nombres', () =>
   expect(speedWord(1.3)).toBe('Rapide');
 });
 
-it('s’ouvre sur le village par défaut, et lit le choix « Au démarrage »', () => {
-  expect(sanitizeSettings({}).startIn).toBe('world');
-  expect(sanitizeSettings({ startIn: 'menu' }).startIn).toBe('menu');
-  expect(sanitizeSettings({ startIn: 'plage' as never }).startIn).toBe('world');
+it('oublie l’ancien réglage « Au démarrage » : l’appli s’ouvre toujours sur le village', () => {
+  expect(sanitizeSettings({ startIn: 'menu' } as never)).not.toHaveProperty('startIn');
 });
 
 it('distingue un univers absent (avant le lot 6) d’un univers inconnu, qui vaut l’univers par défaut', () => {

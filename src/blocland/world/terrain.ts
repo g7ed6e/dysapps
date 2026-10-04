@@ -1840,6 +1840,11 @@ function stoneOf(color: string): string {
   return `#${((g << 16) | (g << 8) | g).toString(16).padStart(6, '0')}`;
 }
 
+/** Un Gardien vaincu, en statue de pierre : chaque cube en gris de même luminosité, sans dessus d'une autre couleur. */
+export function statueDe<C extends { color: string; top?: string }>(cubes: readonly C[]): C[] {
+  return cubes.map((c) => ({ ...c, color: stoneOf(c.color), top: undefined }));
+}
+
 /**
  * Les Gardiens visibles : en couleurs s'ils attendent le défi, en statue de pierre s'ils sont vaincus. Avec
  * `sentinelles` (Archipéo, lot 6), ceux des îles ouvertes sont là avant que leur défi soit prêt.
@@ -1858,7 +1863,7 @@ export function guardianPlacements(
     const { x, y, z } = bossIsletOrigin(index);
     const off = guardianOffset(b.id);
     const beaten = status === 'beaten';
-    const cubes = beaten ? gardienDuMonde(b.id).map((c) => ({ ...c, color: stoneOf(c.color), top: undefined })) : gardienDuMonde(b.id);
+    const cubes = beaten ? statueDe(gardienDuMonde(b.id)) : gardienDuMonde(b.id);
     out.push({ id: b.id, kind: 'guardian', still: true, beaten, cubes, origin: { x: x + off.x, y: y + off.y, z: z + 1 } });
   });
   return out;

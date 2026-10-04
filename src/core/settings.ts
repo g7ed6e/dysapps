@@ -10,8 +10,6 @@ export type ThemeChoice = 'cream' | 'night' | 'light';
 export type WorldViewChoice = '3d' | 'list';
 /** La lumière du monde : celle de l'heure réelle (la nuit tombe le soir), ou toujours le jour. */
 export type WorldLightChoice = 'real' | 'day';
-/** Où l'appli s'ouvre : le village de Blocland (si l'appareil sait le dessiner), ou le menu. */
-export type StartChoice = 'world' | 'menu';
 export type { UniversChoice } from './univers';
 /**
  * La deuxième langue vivante, à partir de la 5e : une seule, comme au collège. Par défaut l'espagnol (décision de G du
@@ -46,8 +44,6 @@ export interface Settings {
   haptics: boolean;
   /** Une pastille sur l'icône de l'appli installée quand des révisions attendent. */
   appBadge: boolean;
-  /** Au démarrage (et à l'adresse d'accueil) : le village, ou le menu. */
-  startIn: StartChoice;
   /** La LV2 de l'élève : ses missions, sa voix. La langue non choisie n'apparaît nulle part. */
   lv2: Lv2Choice;
   /**
@@ -77,7 +73,6 @@ export const DEFAULT_SETTINGS: Settings = {
   ambience: false,
   haptics: true,
   appBadge: true,
-  startIn: 'world',
   lv2: 'es',
 };
 
@@ -96,11 +91,6 @@ export const WORLD_VIEW_LABELS: Record<WorldViewChoice, string> = {
 export const WORLD_LIGHT_LABELS: Record<WorldLightChoice, string> = {
   real: 'L’heure réelle',
   day: 'Toujours le jour',
-};
-
-export const START_LABELS: Record<StartChoice, string> = {
-  world: 'Le village',
-  menu: 'Le menu',
 };
 
 export const LV2_LABELS: Record<Lv2Choice, string> = {
@@ -160,7 +150,6 @@ export function sanitizeSettings(raw: Partial<Settings> & { view3d?: unknown }):
     ambience: s.ambience === undefined ? DEFAULT_SETTINGS.ambience : Boolean(s.ambience),
     haptics: s.haptics === undefined ? DEFAULT_SETTINGS.haptics : Boolean(s.haptics),
     appBadge: s.appBadge === undefined ? DEFAULT_SETTINGS.appBadge : Boolean(s.appBadge),
-    startIn: s.startIn in START_LABELS ? s.startIn : DEFAULT_SETTINGS.startIn,
     lv2: Object.hasOwn(LV2_LABELS, s.lv2) ? s.lv2 : DEFAULT_SETTINGS.lv2,
     // Absent reste absent (le premier choix dépend de la progression) ; un univers inconnu vaut l'univers par défaut.
     ...(s.univers === undefined ? {} : { univers: Object.hasOwn(UNIVERS, s.univers) ? s.univers : UNIVERS_PAR_DEFAUT }),

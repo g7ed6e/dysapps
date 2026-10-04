@@ -4,9 +4,9 @@
 
 L’application est en ligne à l’adresse <https://dysapps.guillaume-delahaye.workers.dev/>. Elle fonctionne dans un navigateur récent (Chrome, Edge, Firefox, Safari) sur tablette, téléphone ou ordinateur, sans compte et sans installation obligatoire.
 
-L’application se parcourt comme un jeu. Elle **s’ouvre sur le village**, sur l’île où se tient le bonhomme (réglage « Au démarrage », voir [Réglages](reglages.md)). Dans le village, le bouton **Menu** (⏸, en haut à droite du monde) ouvre le menu du village : voir [L’aventure](blocland.md#le-menu-du-village). Quatre grands endroits restent toujours au même endroit, avec les mêmes mots :
+L’application se parcourt comme un jeu. Elle **s’ouvre sur le village**, sur l’île où se tient le bonhomme, après l’écran titre. Dans le village, le bouton **Menu** (⏸, en haut à droite du monde) ouvre le menu du village : voir [L’aventure](blocland.md#le-menu-du-village). Quatre grands endroits restent toujours au même endroit, avec les mêmes mots :
 
-- **Menu** (adresse `#/menu`) : le menu principal, en page. C’est l’accueil quand le réglage « Au démarrage » choisit le menu, ou quand l’appareil ne sait pas dessiner le monde (vue simple). De haut en bas :
+- **Menu** (adresse `#/menu`) : dans le village, cette adresse ouvre le menu du village. Le menu en page n’existe plus qu’en vue simple (réglage « La liste des îles », ou appareil qui ne sait pas dessiner le monde), où il est l’accueil. De haut en bas :
   - **Blocland** et « Chaque bloc construit ton monde. » ;
   - **Ton village** : l’état du village de l’archipel où se tient le bonhomme, en cinq crans (voir [Le village en cinq états](blocland.md#le-village-en-cinq-etats)) ;
   - **Reprendre l’aventure**, le gros bouton, qui mène à la **prochaine destination**, dite en une phrase et lue avec Écouter (« Prochaine destination : Plaine des nombres. Tu peux construire le bac vers Rivière des fractions. Il ouvre une île de maths. » ; l’ordre de la suggestion est dans [L’aventure](blocland.md)) ; en dessous, **Continuer** (la dernière mission ouverte) et **À revoir aujourd’hui** quand il y en a ;
@@ -21,9 +21,9 @@ L’application se parcourt comme un jeu. Elle **s’ouvre sur le village**, sur
 
 Sur tablette et ordinateur, ces endroits et les **Réglages** sont des boutons dans la barre du haut, à côté de la jauge d’XP. Quand la place manque (tablette en portrait, grande taille de texte), les boutons ne gardent que leur icône, et leur nom reste lu par le lecteur d’écran ; l’endroit où l’on est garde son fond doré et un trait sous l’icône. La jauge ne coupe jamais un mot : le niveau (déjà dans l’insigne), puis le rôle laissent leur place, et, avec un texte encore plus grand sur téléphone, le logo aussi (le bouton Menu mène au même endroit). Rien ne sort de l’écran, jusqu’à 32 px en OpenDyslexic. Sur téléphone, il n’y a pas d’onglets : la barre du haut garde le logo (qui ramène au village), un bouton **Menu** (la maison) et les **Réglages** (la roue dentée). Le village en 3D n’a pas de barre du haut : le monde prend tout l’écran, et le bouton ⏸ (ou le bouton retour) ouvre le menu du village, qui donne le rôle, la jauge d’XP, les Missions, les Succès, les Réglages et l’Accueil. Dans une page, le **bouton retour** (flèche et nom de la page d’avant, en forme de pastille) est toujours en haut à gauche. Chaque nouvel écran glisse doucement en place, sauf quand l’appareil demande de réduire les animations. Pendant un chargement, le « D » de DysApps sautille au-dessus de « Chargement… ».
 
-![Le menu en page sur tablette : Blocland, le village des Basses Terres en Réactivation, le bouton Reprendre l'aventure avec la prochaine destination, le rôle, puis les trois Expéditions.](/captures/menu.jpg)
+![Le menu en page, en vue simple, sur tablette : Blocland, le village des Basses Terres en Réactivation, le bouton Reprendre l'aventure avec la prochaine destination, le rôle, puis les trois Expéditions.](/captures/menu.jpg)
 
-![Le menu sur téléphone : le bouton Reprendre l'aventure se voit sans faire défiler.](/captures/telephone-menu.jpg)
+![Le menu en page, en vue simple, sur téléphone : le bouton Reprendre l'aventure se voit sans faire défiler.](/captures/telephone-menu.jpg)
 
 ![Sur téléphone : le village sans barre du haut, le bouton ⏸ en haut à droite, le monde sur tout l'écran et la barre du bas.](/captures/telephone-village.jpg)
 
@@ -51,7 +51,7 @@ Une appli déjà installée ne prend pas toujours la nouvelle icône ni le nouve
 
 ## L’écran titre
 
-À chaque lancement, l’écran titre montre le logo de Blocland (une île en blocs avec un grand chêne), qui se construit en moins d’une seconde (le pied de l’île, son dessus, le tronc puis le feuillage se posent l’un après l’autre, sans rebond ; immobile quand l’appareil demande de réduire les animations), « Blocland » et un gros bouton **Jouer**, qu’on peut toucher tout de suite, qui mène au village (déjà chargé derrière l’écran titre), ou au menu selon le réglage « Au démarrage ». S’il y a une mission en cours, il propose d’abord **Continuer : Abattage syllabique · Forêt des sons** (la dernière mission ouverte), puis **Jouer**. Il n’y a rien à attendre : il reste jusqu’au toucher, sans compte à rebours.
+À chaque lancement, l’écran titre montre le logo de Blocland (une île en blocs avec un grand chêne), qui se construit en moins d’une seconde (le pied de l’île, son dessus, le tronc puis le feuillage se posent l’un après l’autre, sans rebond ; immobile quand l’appareil demande de réduire les animations), « Blocland » et un gros bouton **Jouer**, qu’on peut toucher tout de suite, qui mène au village (déjà chargé derrière l’écran titre) (au menu en page en vue simple). S’il y a une mission en cours, il propose d’abord **Continuer : Abattage syllabique · Forêt des sons** (la dernière mission ouverte), puis **Jouer**. Il n’y a rien à attendre : il reste jusqu’au toucher, sans compte à rebours.
 
 ![L'écran titre : l'île en blocs de Blocland, « Blocland » et le bouton Jouer.](/captures/titre.jpg)
 
