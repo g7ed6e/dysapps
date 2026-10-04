@@ -2,7 +2,7 @@
 // par l'élève. Sert aux deux vues du monde (la 2D le dessine directement, la 3D en fait une texture). Sur la Carte, une
 // seconde ligne donne l'état de l'île : une petite icône dessinée ici (aucune police d'emoji, rien d'importé) et le mot,
 // jamais la couleur seule (DP-08). Une île Fermée a une étiquette plus discrète, mais son texte garde un fort contraste.
-// Dans Blocland, avant le nom, le bloc que l'île rapporte (`bloc`), dessiné comme dans Mes blocs : un signe plutôt
+// Avant le nom, le bloc que l'île rapporte (`bloc`), dessiné comme dans Mes blocs : un signe plutôt
 // qu'une phrase.
 import type { IslandStateId } from './islandState';
 import { BLOCKS, type BlockId } from '../biomes';
@@ -194,7 +194,7 @@ export function drawStateIcon(ctx: CanvasRenderingContext2D, id: IslandStateId, 
 
 /**
  * Dessine l'étiquette centrée sur (cx, cy) ; `px` : taille du nom en pixels du canvas. Avec `state` (la Carte), une
- * seconde ligne : l'icône et le mot de l'état. Avec `bloc` (Blocland), le bloc que l'île rapporte, avant le nom.
+ * seconde ligne : l'icône et le mot de l'état. Avec `bloc`, le bloc que l'île rapporte, avant le nom.
  * Renvoie sa largeur, bord compris.
  */
 export function drawIslandLabel(ctx: CanvasRenderingContext2D, text: string, cx: number, cy: number, px: number, state?: IslandLabelState, bloc?: BlockId): number {

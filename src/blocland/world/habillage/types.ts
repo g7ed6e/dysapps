@@ -61,7 +61,8 @@ export interface Habillage {
   signesDesObjets: 'bulles' | 'losanges';
   /**
    * L'étiquette d'une île, dans le monde et sur la Carte : le bloc qu'elle rapporte, avant son nom (demande du
-   * mainteneur, 4 octobre 2026 ; world/labelCanvas.ts), ou le nom seul (Archipéo, en pause).
+   * mainteneur, 4 octobre 2026 ; world/labelCanvas.ts, dans les deux univers depuis qu'Archipéo reprend le jeu de
+   * Blocland, même jour), ou le nom seul.
    */
   blocDesIles: 'avant-le-nom' | 'sans';
 }

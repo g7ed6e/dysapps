@@ -46,7 +46,7 @@ describe('L’habillage du monde', () => {
       pose: 'eclats',
       signe: 'disque',
       signesDesObjets: 'losanges',
-      blocDesIles: 'sans',
+      blocDesIles: 'avant-le-nom',
     });
   });
 });

@@ -297,7 +297,7 @@ export function WorldPage() {
   );
   // En grand texte, la phrase défile dans le panneau de la Carte : un repère dit qu'il y a une suite.
   // Le nom de chaque île ouverte de l'archipel, écrit au-dessus d'elle dans le monde ; sur la Carte, toutes les îles,
-  // avec leur état en icône et en mot. Dans Blocland, le bloc que l'île rapporte, avant son nom.
+  // avec leur état en icône et en mot. Le bloc que l'île rapporte, avant son nom (ligne `blocDesIles` de l'habillage).
   const blocDesIles = habillage.blocDesIles === 'avant-le-nom';
   const islandLabels = useMemo(
     () =>
