@@ -9,7 +9,7 @@ L’application se parcourt comme un jeu. Elle **s’ouvre sur le village**, sur
 - **Menu** (adresse `#/menu`) : dans le village, cette adresse ouvre le menu du village. Le menu en page n’existe plus qu’en vue simple (réglage « La liste des îles », ou appareil qui ne sait pas dessiner le monde), où il est l’accueil. De haut en bas :
   - **Blocland** et « Chaque bloc construit ton monde. » ;
   - **Ton village** : l’état du village de l’archipel où se tient le bonhomme, en cinq crans (voir [Le village en cinq états](blocland.md#le-village-en-cinq-etats)) ;
-  - **Reprendre l’aventure**, le gros bouton, qui mène à la **prochaine destination**, dite en une phrase et lue avec Écouter (« Prochaine destination : Plaine des nombres. Tu peux construire le bac vers Rivière des fractions. Il ouvre une île de maths. » ; l’ordre de la suggestion est dans [L’aventure](blocland.md)) ; en dessous, **Continuer** (la dernière mission ouverte) et **À revoir aujourd’hui** quand il y en a ;
+  - **Reprendre l’aventure**, le gros bouton, qui mène à la **prochaine destination**, dite en une phrase et lue avec Écouter (« Prochaine destination : Plaine des nombres. Tu peux construire le bac vers Rivière des fractions. Il ouvre une île de maths. » ; l’ordre de la suggestion est dans [L’aventure](blocland.md)) ; en dessous, **Ma dernière mission** (la dernière mission ouverte) et **Mes révisions du jour** quand il y en a, les mêmes mots que dans le menu du village ;
   - la **progression** : le rôle et le niveau, le nombre d’archipels atteints sur quatre, et le lien **Succès** ;
   - les trois **Expéditions** : Maths, Français et Anglais, chacune avec le nom de son expédition, qui mènent aux missions de la matière ;
   - en bas, les liens **Toutes les missions**, **Réglages** et **Revoir le tutoriel**.
@@ -59,7 +59,7 @@ Ce premier toucher sert aussi à **débloquer la voix et les sons** : les naviga
 
 Quand des items ratés reviennent (répétition espacée), la créature de leur île fait signe dans le monde et propose de reprendre ([La créature qui se souvient](blocland.md#la-creature-qui-se-souvient)) ; le menu (en page et dans le village) montre aussi **À revoir aujourd’hui** et, si l’appli est installée, un point s’affiche sur son icône (désactivable dans les Réglages).
 
-Dans le menu aussi, **Continuer** ramène à la dernière mission ouverte (du portail ou de l’aventure ; pas le Tutoriel). « Effacer ma progression » l’oublie.
+À l’écran titre, **Continuer**, et dans le menu, **Ma dernière mission**, ramènent à la dernière mission ouverte (du portail ou de l’aventure ; pas le Tutoriel). « Effacer ma progression » l’oublie.
 
 ## La première séance
 

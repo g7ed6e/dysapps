@@ -56,15 +56,15 @@ it('les révisions du jour ont leur carte sur l’accueil, vers la mission', () 
   localStorage.setItem('dysapps:progress', JSON.stringify({ totalAnswers: 3 }));
   localStorage.setItem('dysapps:game', JSON.stringify({ spaced: [{ itemId: 'french-6e-phonology-syllables-warmup-001:cabane', due: '2000-01-01', stage: 0, streak: 0 }] }));
   renderAt('/');
-  expect(screen.getByRole('link', { name: /À revoir aujourd’hui.*Abattage syllabique · Forêt des sons/ })).toHaveAttribute('href', '/adventure/french-6e-phonology/syllables');
+  expect(screen.getByRole('link', { name: /Mes révisions du jour.*Abattage syllabique · Forêt des sons/ })).toHaveAttribute('href', '/adventure/french-6e-phonology/syllables');
 });
 
-it('une mission ouverte devient « Continuer » sur l’accueil', () => {
+it('une mission ouverte devient « Ma dernière mission » sur l’accueil', () => {
   localStorage.setItem('dysapps:progress', JSON.stringify({ totalAnswers: 3 }));
   renderAt('/app/tables');
   document.body.innerHTML = '';
   renderAt('/');
-  expect(screen.getByRole('link', { name: /Continuer.*Tables & calcul mental/ })).toHaveAttribute('href', '/app/tables');
+  expect(screen.getByRole('link', { name: /Ma dernière mission.*Tables & calcul mental/ })).toHaveAttribute('href', '/app/tables');
 });
 
 it('le Tutoriel est sur l’accueil, pas dans Français, et son retour mène à l’accueil', () => {

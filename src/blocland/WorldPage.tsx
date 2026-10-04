@@ -155,7 +155,8 @@ export function WorldPage() {
   const blocsOpen = biomeId === 'stock';
   // L'école du village : ses trois portes, un panneau à la place de celui d'une île.
   const schoolOpen = biomeId === 'school';
-  // Le menu du village (menu pause) : Reprendre, Continuer, les révisions, l'école, Missions, Succès, Réglages, Aide.
+  // Le menu du village (menu pause), en plein écran : la dernière mission, les révisions, les commandes, l'école, Missions,
+  // Succès, le Tutoriel, puis Réglages tout en bas ; la croix ou Échap le referment.
   const menuOpen = biomeId === 'menu';
   // La salle des trophées : un trophée par succès gagné dans le monde, le profil dans son panneau.
   const trophiesOpen = biomeId === 'trophies';
