@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { boitesDuTrace, ecarterDesObstacles, PLACES_DE_LA_FLECHE_MAX, placerAvecLaFlecheDOuvrage, entiere, layoutLabels, montrees, placerEtiquettes, separateMark, type LabelBox } from './labelLayout';
+import { boitesDuTrace, ecarterDesObstacles, PLACES_DE_LA_FLECHE_MAX, placerAvecLaFlecheDOuvrage, entiere, layoutLabels, montrees, placerEtiquettes, replierLesSignes, separateMark, type LabelBox } from './labelLayout';
 import { drawIslandLabel, measureIslandLabel } from './labelCanvas';
 
 const overlaps = (a: LabelBox, b: LabelBox) => Math.abs(a.x - b.x) < (a.w + b.w) / 2 && Math.abs(a.y - b.y) < (a.h + b.h) / 2;
@@ -453,5 +453,29 @@ describe('la flèche d’un ouvrage sur la Carte (GD-7)', () => {
       const at = { ...b, x: b.x + offsets[i].dx, y: b.y + offsets[i].dy };
       expect(Math.abs(at.x - dure.x) < (at.w + dure.w) / 2 && Math.abs(at.y - dure.y) < (at.h + dure.h) / 2, `étiquette ${i}`).toBe(false);
     });
+  });
+});
+
+describe('replierLesSignes', () => {
+  // Un placement factice : une étiquette se montre si elle tient dans 100 px.
+  const placer = (boxes: LabelBox[]) => ({ visibles: boxes.map((b) => b.w <= 100) });
+  const box = (w: number): LabelBox => ({ x: 0, y: 0, w, h: 20 });
+
+  it('garde le bloc quand tous les noms se montrent', () => {
+    const r = replierLesSignes([box(90), box(80)], [70, 60], placer);
+    expect(r.visibles).toEqual([true, true]);
+    expect(r.sansSigne).toEqual([false, false]);
+  });
+
+  it('retire le bloc d’un nom qui se tait faute de place, si sans lui il se montre', () => {
+    const r = replierLesSignes([box(90), box(120), box(130)], [70, 95, undefined], placer);
+    expect(r.visibles).toEqual([true, true, false]);
+    expect(r.sansSigne).toEqual([false, true, false]);
+  });
+
+  it('garde le bloc si le retirer ne montre aucun nom de plus', () => {
+    const r = replierLesSignes([box(150)], [130], placer);
+    expect(r.visibles).toEqual([false]);
+    expect(r.sansSigne).toEqual([false]);
   });
 });

@@ -11,10 +11,10 @@ import { VISAGE_DU_BONHOMME } from '../Avatar';
 import { CASE, PLAQUE, caseALEcran, dessinerLaCase } from './signes';
 import { tenirDansLaPlace, type PlaceLue } from '../placeLibre';
 import { reperesDe } from '../world/cadrage';
-import { boitesDuTrace, placerAvecLaFlecheDOuvrage, placerEtiquettes, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
+import { boitesDuTrace, placerAvecLaFlecheDOuvrage, placerEtiquettes, replierLesSignes, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
 import { islandCenter } from '../world/terrain';
 import { lecteurDeZones } from '../zonesCouvertes';
-import type { WorldViewProps } from '../world/view';
+import type { IslandLabel, WorldViewProps } from '../world/view';
 import type { Instant, Monde, PartieDeLaScene } from './partie';
 import type { DonneesDeLaFleche, Pointe } from './bornes';
 
@@ -31,6 +31,32 @@ const MEDAILLON_CSS = 44;
 const MEDAILLON_CANVAS = 96;
 /** L'étiquette flotte à 12 cases au-dessus du sol de son île. */
 const ETIQUETTE_AU_DESSUS = 12;
+
+/** Une forme d'étiquette : sa texture et sa taille à l'écran (pixels CSS). */
+interface FormeDeLEtiquette {
+  map: THREE.CanvasTexture;
+  w: number;
+  h: number;
+}
+/** Les formes d'une étiquette : avec le bloc de son île, et sans lui (seulement si elle en a un). */
+interface FormesDeLEtiquette {
+  avec: FormeDeLEtiquette;
+  sans?: FormeDeLEtiquette;
+}
+
+/** L'étiquette dessinée dans sa texture (le nom à `LABEL_PX`), ou rien sans contexte 2D. */
+function formeDeLEtiquette(text: string, state?: IslandLabel['state'], bloc?: IslandLabel['bloc']): FormeDeLEtiquette | null {
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return null;
+  const size = measureIslandLabel(ctx, text, LABEL_PX, state, bloc);
+  canvas.width = Math.ceil(size.w + 4);
+  canvas.height = Math.ceil(size.h + 4);
+  drawIslandLabel(ctx, text, canvas.width / 2, canvas.height / 2, LABEL_PX, state, bloc);
+  const map = new THREE.CanvasTexture(canvas);
+  map.colorSpace = THREE.SRGBColorSpace;
+  return { map, w: canvas.width * LABEL_CSS, h: canvas.height * LABEL_CSS };
+}
 
 export interface Etiquettes extends PartieDeLaScene {
   /** Le nom des îles (une texture par étiquette, refaite quand la liste change). */
@@ -392,10 +418,13 @@ export function creerEtiquettes(
     goalCamera.position.copy(camGoal.pos);
     goalCamera.lookAt(camGoal.target);
     goalCamera.updateMatrixWorld();
-    const boxes = sprites.map((s) => {
+    // La largeur avec le bloc de l'île : sans lui (`sans`), plus étroite, seulement si le nom se tait faute de place.
+    const formes = sprites.map((s) => s.userData.formes as FormesDeLEtiquette);
+    const boxes = sprites.map((s, i) => {
       labelAt.copy(s.position).project(goalCamera);
-      return { x: ((labelAt.x + 1) / 2) * W, y: ((1 - labelAt.y) / 2) * H, w: s.userData.px.w, h: s.userData.px.h };
+      return { x: ((labelAt.x + 1) / 2) * W, y: ((1 - labelAt.y) / 2) * H, w: formes[i].avec.w, h: formes[i].avec.h };
     });
+    const etroites = formes.map((f) => f.sans?.w);
     // L'île elle-même, sous son étiquette : si l'interface la couvre, son nom ne désigne rien à l'écran.
     // Une île derrière la caméra retomberait en miroir dans le cadre : elle compte comme hors du cadre.
     const iles = sprites.map((s) => {
@@ -423,15 +452,24 @@ export function creerEtiquettes(
     const vue = { zones, bulles, obstacles, souples, bounds: cadre, gap: 6 };
     let offsets: LabelOffset[];
     let visibles: boolean[];
+    let sansSigne: boolean[];
     if (ouvrage && carte) {
       const fleches = pointes.map((p) => marksOnScreen(goalCamera, W, H, p).arrow).filter((b): b is LabelBox => b !== null);
-      const r = placerAvecLaFlecheDOuvrage(fleches, boxes, iles, vue, carte);
+      const r = replierLesSignes(boxes, etroites, (b) => placerAvecLaFlecheDOuvrage(fleches, b, iles, vue, carte));
       placeDeLOuvrage = { ouvrage, i: r.fleche };
-      ({ offsets, visibles } = r);
-    } else ({ offsets, visibles } = placerEtiquettes(boxes, iles, vue, carte, tenues));
+      ({ offsets, visibles, sansSigne } = r);
+    } else ({ offsets, visibles, sansSigne } = replierLesSignes(boxes, etroites, (b) => placerEtiquettes(b, iles, vue, carte, tenues)));
     labelLayout = { key, offsets };
     offsets.forEach((o, i) => {
       const s = sprites[i];
+      // La forme retenue : avec le bloc, ou sans lui si c'est la seule façon de montrer le nom.
+      const forme = sansSigne[i] && formes[i].sans ? formes[i].sans : formes[i].avec;
+      if (s.material.map !== forme.map) {
+        s.material.map = forme.map;
+        s.material.needsUpdate = true;
+        s.userData.px = { w: forme.w, h: forme.h };
+        s.scale.set(forme.w * perPx, forme.h * perPx, 1);
+      }
       s.center.set(0.5 - o.dx / s.userData.px.w, 0.5 + o.dy / s.userData.px.h);
       s.visible = visibles[i];
     });
@@ -439,7 +477,9 @@ export function creerEtiquettes(
 
   const vider = () => {
     for (const s of [...labelsGroup.children] as THREE.Sprite[]) {
-      s.material.map?.dispose();
+      const formes = s.userData.formes as FormesDeLEtiquette | undefined;
+      formes?.avec.map.dispose();
+      formes?.sans?.map.dispose();
       s.material.dispose();
       labelsGroup.remove(s);
     }
@@ -449,20 +489,16 @@ export function creerEtiquettes(
     poser: (labels) => {
       vider();
       for (const l of labels ?? []) {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        if (!ctx) continue;
-        const size = measureIslandLabel(ctx, l.text, LABEL_PX, l.state);
-        canvas.width = Math.ceil(size.w + 4);
-        canvas.height = Math.ceil(size.h + 4);
-        drawIslandLabel(ctx, l.text, canvas.width / 2, canvas.height / 2, LABEL_PX, l.state);
-        const texture = new THREE.CanvasTexture(canvas);
-        texture.colorSpace = THREE.SRGBColorSpace;
+        const avec = formeDeLEtiquette(l.text, l.state, l.bloc);
+        if (!avec) continue;
+        // Sans le bloc : une seconde texture, montrée seulement si le nom ne trouve pas sa place avec lui.
+        const sans = l.bloc ? formeDeLEtiquette(l.text, l.state) : null;
         // Archipéo : la brume de profondeur ne voile jamais un nom d'île (DA-02).
-        const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture, depthTest: false, transparent: true, sizeAttenuation: false, fog: monde.habillage.etiquettes === 'voilees' }));
+        const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: avec.map, depthTest: false, transparent: true, sizeAttenuation: false, fog: monde.habillage.etiquettes === 'voilees' }));
         // Taille fixe à l'écran (le nom à 18 px, l'état à 16 px), quel que soit le zoom : l'échelle suit la hauteur du
         // canvas, à chaque image.
-        sprite.userData.px = { w: canvas.width * LABEL_CSS, h: canvas.height * LABEL_CSS };
+        sprite.userData.px = { w: avec.w, h: avec.h };
+        sprite.userData.formes = { avec, ...(sans ? { sans } : {}) } satisfies FormesDeLEtiquette;
         sprite.userData.fermee = l.state?.id === 'fermee';
         sprite.userData.id = l.id;
         sprite.renderOrder = l.state?.id === 'fermee' ? 10 : 11;
