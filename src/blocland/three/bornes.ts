@@ -1,6 +1,7 @@
 // Les repères de la scène 3D : la flèche « Commence ici », le fanion du bonhomme sur la Carte (« tu es ici »), les
-// balises du chemin à construire et les repères des bornes de mission : les étoiles gagnées et, dans Archipéo, le
-// losange à faire (dans Blocland, le losange est l'un des signes des objets touchables : ./affordance.ts).
+// balises du chemin à construire et les repères des bornes de mission : les étoiles gagnées et, avec les losanges
+// (`signesDesObjets` de l'habillage ; plus aucun univers ne les prend depuis le 4 octobre 2026), le losange à faire
+// (avec les bulles, le losange est l'un des signes des objets touchables : ./affordance.ts).
 import * as THREE from 'three';
 import { formeDuPilier, type Pilier } from '../world/construction';
 import { DELAVE } from '../world/decor/pinceau';
@@ -90,7 +91,7 @@ export function pileDEtoiles(n: number): THREE.BufferGeometry {
  */
 export function creerBornes(monde: Monde, bonhomme: () => THREE.Object3D, instant: Instant): Bornes {
   const { scene } = monde;
-  // Dans Blocland, le losange à faire est dessiné avec les autres signes (./affordance.ts) : ici, les étoiles seules.
+  // Avec les bulles, le losange à faire est dessiné avec les autres signes (./affordance.ts) : ici, les étoiles seules.
   const losanges = monde.habillage.signesDesObjets === 'losanges';
   // La flèche « Commence ici » : un chevron jaune qui flotte et pointe vers le bas.
   const markerMat = new THREE.MeshLambertMaterial({ color: 0xffc83c, emissive: 0x7a5a00, emissiveIntensity: 0.4 });
@@ -175,9 +176,9 @@ export function creerBornes(monde: Monde, bonhomme: () => THREE.Object3D, instan
       markerGroup.position.set(c.x, base + 0.5, c.y);
       markerGroup.visible = true;
     },
-    // Les repères des bornes de mission : les étoiles gagnées en petits cubes d'or empilés, immobiles dans Blocland (le
-    // losange d'or est seul à bouger, affordance-blocland.md §8), qui tournent lentement dans Archipéo, où un losange
-    // jaune rebondit aussi (à faire). Rien sur une île fermée.
+    // Les repères des bornes de mission : les étoiles gagnées en petits cubes d'or empilés, immobiles avec les bulles (la
+    // bulle de la prochaine chose à faire est seule à bouger, affordance-blocland.md §8), qui tournent lentement avec les
+    // losanges, où un losange jaune rebondit aussi (à faire). Rien sur une île fermée.
     poserLesMissions: (quests, sommets) => {
       vider(questMarksGroup);
       if (!quests?.length) return;
@@ -222,7 +223,7 @@ export function creerBornes(monde: Monde, bonhomme: () => THREE.Object3D, instan
     },
     animer: (t, _dt, reduit) => {
       const avatar = bonhomme();
-      // Blocland : le médaillon « toi » remplace le fanion (three/etiquettes.ts) ; Archipéo garde le fanion.
+      // Avec les bulles, le médaillon « toi » remplace le fanion (three/etiquettes.ts) ; les losanges gardent le fanion.
       beaconGroup.visible = instant.carte && avatar.visible && losanges;
       // Le tracé de l'ouvrage désigné : sur la Carte seulement, avec la flèche ; immobile.
       leTrace.mesh.visible = instant.carte && leTrace.pose();
@@ -239,7 +240,7 @@ export function creerBornes(monde: Monde, bonhomme: () => THREE.Object3D, instan
           mk.rotation.y = reduit ? 0 : t * 1.2;
         } else {
           // Une pile d'étoiles touchée fait le petit saut du toucher (world/affordance.ts), puis reprend sa place. Dans
-          // Blocland, elle ne tourne pas : un seul mouvement à l'écran, celui du losange d'or.
+          // Blocland et Archipéo, elle ne tourne pas : un seul mouvement à l'écran, celui de la bulle mise en avant.
           const debut = mk.userData.saut as number | undefined;
           const ms = debut === undefined ? 0 : instant.now - debut;
           if (debut !== undefined && (reduit || ms >= SIGNE.saut.monteeMs + SIGNE.saut.descenteMs)) delete mk.userData.saut;

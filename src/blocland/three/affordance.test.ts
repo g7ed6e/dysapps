@@ -72,8 +72,8 @@ it('aucune zone sur la Carte ni pendant le voyage', () => {
   expect(affordance.zones(camera, 1024, 768)).toEqual([]);
 });
 
-it('Archipéo garde ses losanges (./bornes.ts) : aucune zone ici', () => {
-  const { affordance, camera } = scene(HABILLAGES.archipeo);
+it('avec les losanges (./bornes.ts ; plus aucun univers ne les prend) : aucune zone ici', () => {
+  const { affordance, camera } = scene({ ...HABILLAGES.archipeo, signesDesObjets: 'losanges' });
   affordance.poser(OBJETS);
   affordance.animer?.(1, 0.016, false);
   expect(affordance.zones(camera, 1024, 768)).toEqual([]);

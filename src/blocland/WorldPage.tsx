@@ -21,6 +21,7 @@ import { MonumentSheet, MonumentsSheet } from './Monuments';
 import { useMonumentBuilder } from './useMonumentBuilder';
 import { getMonument, monumentsOf } from './world/monuments';
 import { VisageDuBonhomme } from './VisageDuBonhomme';
+import { visageDuJoueur } from './world/personnages/visage';
 import { MenuSheet } from './MenuSheet';
 import { ArchipelSwitcher } from './ArchipelSwitcher';
 import { useBackOpensMenu } from './useBackOpensMenu';
@@ -1191,16 +1192,11 @@ export function WorldPage() {
         {/* Après un glissé : sous la colonne de droite (Menu, l'archipel), sans animation. Jamais sur une bulle du haut :
             le temps qu'elle est ouverte, il attend (la vue reste déplacée), et aucun bouton Fermer n'est couvert. */}
         {vueDeplacee && !voyage && !bulleEnHaut && (
-          // Blocland : un rond avec la tête du bonhomme, sans mot (mot du mainteneur, 4 octobre 2026) ; Archipéo garde le sien.
-          univers === 'blocland' ? (
-            <button type="button" className="button world-recentrer world-recentrer-tete" onClick={recentrer} aria-label="Recentrer">
-              <VisageDuBonhomme />
-            </button>
-          ) : (
-            <button type="button" className="button world-recentrer" onClick={recentrer}>
-              <Icon name="recentrer" /> Recentrer
-            </button>
-          )
+          // Un rond avec le visage du joueur, sans mot (mot du mainteneur, 4 octobre 2026, pour Blocland ; choix « 1a » du
+          // même jour pour Archipéo) ; ses couleurs suivent l'univers (styles/global.css, `world-recentrer-tete`).
+          <button type="button" className="button world-recentrer world-recentrer-tete" onClick={recentrer} aria-label="Recentrer">
+            <VisageDuBonhomme visage={visageDuJoueur(habillage)} />
+          </button>
         )}
         <div className="world-overlay-top" data-couvre="scene">
           {ligneDuVoyage && (

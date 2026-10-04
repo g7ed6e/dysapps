@@ -48,15 +48,19 @@ export interface Habillage {
    */
   pose: 'geste' | 'eclats';
   /**
-   * Le signe de la créature qui se souvient (GD-4, étape 1), au-dessus d'elle dans le monde : une plaque carrée aux
-   * coins presque droits (un bloc vu de face, décision du directeur artistique du 3 octobre 2026), ou un disque.
+   * La forme des bulles du monde : celle de la créature qui se souvient (GD-4, étape 1), la plaque d'une commande, les
+   * bulles des objets à faire et, sur la Carte, la bulle de la prochaine étape et le médaillon « toi » (leurs couleurs :
+   * `COULEURS_DES_SIGNES`, world/labelCanvas.ts). Une plaque carrée aux coins presque droits, claire au bord brun (un
+   * bloc vu de face, décision du directeur artistique du 3 octobre 2026), ou un hexagone à coins adoucis, pointe vers
+   * la chose, Brume au bord Nuit océan, la prochaine bordée de lumière (Archipéo, choix « 1a » du mainteneur, 4 octobre
+   * 2026).
    */
-  signe: 'plaque' | 'disque';
+  formeDesSignes: 'plaque' | 'hexagone';
   /**
    * Ce qui montre les objets qu'on touche dans le monde : une à trois bulles sur l'île où l'on est, seulement sur ce
-   * qu'on peut faire maintenant, avec les plaques des créatures (proposition P2, choisie par le
-   * mainteneur le 4 octobre 2026 ; world/affordance.ts), ou le seul losange qui rebondit au-dessus d'une borne à faire
-   * (Archipéo, en pause, garde son dessin).
+   * qu'on peut faire maintenant, avec les plaques des créatures (proposition P2, choisie par le mainteneur le 4 octobre
+   * 2026 ; world/affordance.ts ; Archipéo aussi depuis le même jour, choix « 1a »), ou le seul losange qui rebondit
+   * au-dessus d'une borne à faire (le dessin d'Archipéo avant le 4 octobre 2026 ; plus aucun univers ne le prend).
    */
   signesDesObjets: 'bulles' | 'losanges';
   /**

@@ -1,12 +1,14 @@
 // Les bulles du monde, dans la scène 3D : celle de la créature qui se souvient (GD-4, étape 1 ; le geste et ses temps :
-// world/signe.ts) ou qui attend une commande (GD-7, PR 3), et dans Blocland celles des objets à faire (proposition P2
-// P2, choisie par le mainteneur le 4 octobre 2026 ; les règles : world/affordance.ts).
+// world/signe.ts) ou qui attend une commande (GD-7, PR 3), et celles des objets à faire (proposition P2, choisie par le
+// mainteneur le 4 octobre 2026 pour Blocland, puis pour Archipéo le même jour ; les règles : world/affordance.ts).
 // À l'arrivée de la caméra sur l'île d'une créature qui fait signe, la créature fait un saut lent, une fois ; puis sa
 // bulle se pose au-dessus d'elle. Dans Blocland, une bulle est une plaque carrée claire au bord sombre épais, à l'ombre
 // nette et à la pointe vers l'objet (un bloc vu de face) ; on n'en montre que trois au plus, sur l'île où l'on est, et la
 // première (la prochaine chose à faire) est plus grande, bordée d'or, et monte et descend lentement ; touchée, une bulle
 // s'écrase et rebondit ; elle reste entière dans la place que l'interface laisse libre (tenue au bord, sans pointe), et
-// la mise en avant ne bouge plus tant qu'une fiche ou un panneau est ouvert. Dans Archipéo, un disque clair cerclé de sombre, au-dessus de chaque créature qui fait signe.
+// la mise en avant ne bouge plus tant qu'une fiche ou un panneau est ouvert. Dans Archipéo, les mêmes bulles, en
+// hexagone à coins adoucis, pointe vers la chose : Brume au bord Nuit océan, la prochaine bordée de lumière (choix « 1a »
+// du mainteneur, 4 octobre 2026 ; la forme : `formeDesSignes` de l'habillage).
 // L'icône au trait, ou le bloc demandé en cube vu de trois quarts, avec les couleurs de Mes blocs (`BlockIcon`). Toujours
 // face à l'écran, de taille fixe, sans brume ni lumière (lisible de jour comme de nuit), sans clignoter. Toutes les
 // bulles tiennent en un seul appel de dessin : un maillage de quadrilatères, une texture (une case par image), refait
@@ -14,7 +16,7 @@
 // rien ne bouge.
 import * as THREE from 'three';
 import type { BiomeId } from '../biomes';
-import { drawBlock } from '../world/labelCanvas';
+import { COULEURS_DES_SIGNES, drawBlock } from '../world/labelCanvas';
 import { tracesDeLIcone } from '../../components/iconeTracee';
 import { GESTE_DU_SIGNE, ICONE_DU_SIGNE, iconeDuSigneVisible } from '../world/signe';
 import {
@@ -43,11 +45,6 @@ export const SIGNES_MAX = COTE * COTE;
 /** Les quatre coins d'un quadrilatère, en demi-tailles : bas gauche, bas droite, haut droite, haut gauche. */
 const COINS = [-1, -1, 1, -1, 1, 1, -1, 1] as const;
 
-/** Le fond et le trait (générés ici, rien d'emprunté) : clair et chaud, cerclé et tracé d'un brun presque noir. */
-const FOND = '#fff6e0';
-const ENCRE = '#2b2118';
-/** La marge autour du disque dans sa case, en pixels de la case. */
-const MARGE = 6;
 
 export interface Signes extends PartieDeLaScene {
   /** Les créatures qui font signe (refait quand la liste change). */
@@ -99,6 +96,24 @@ function contourDeLaPlaque(ctx: CanvasRenderingContext2D, x: number, y: number, 
   ctx.closePath();
 }
 
+/**
+ * Le contour d'un hexagone pointe en haut et en bas, de rayon `r` (centre-sommet) centré en (`cx`, `cy`), aux coins
+ * adoucis d'un arc de rayon `coin`.
+ */
+function contourDeLHexagone(ctx: CanvasRenderingContext2D, cx: number, cy: number, r: number, coin: number): void {
+  const sommet = (i: number): [number, number] => [cx + r * Math.sin((i * Math.PI) / 3), cy - r * Math.cos((i * Math.PI) / 3)];
+  // Du milieu du côté entre le sommet du haut et le suivant, puis chaque coin arrondi par `arcTo`.
+  const [ax, ay] = sommet(0);
+  const [bx, by] = sommet(1);
+  ctx.moveTo((ax + bx) / 2, (ay + by) / 2);
+  for (let i = 1; i <= 6; i++) {
+    const [x, y] = sommet(i % 6);
+    const [nx, ny] = sommet((i + 1) % 6);
+    ctx.arcTo(x, y, (x + nx) / 2, (y + ny) / 2, coin);
+  }
+  ctx.closePath();
+}
+
 /** Ce que montre une plaque : une icône (une notion, ce qu'on fait sur un objet), ou le bloc demandé (commande). */
 export type ImageDuSigne = ImageDeLaBulle;
 
@@ -114,21 +129,26 @@ const cleDeLImage = (image: ImageDuSigne, enAvant = false, sansPointe = false): 
  * l'objet), son côté, son bord sombre et, mise en avant, son bord d'or ; le centre de l'image.
  */
 export const PLAQUE = { x: 16, y: 4, cote: 96, coin: 8, ombre: 6, bord: 5, or: 6, pointe: { demi: 12, bas: 122 } } as const;
-/** L'or de la bulle mise en avant : celui de l'interface de Blocland (`--sand`). */
-const OR = '#e0b73f';
-/** La taille à l'écran d'une case de Blocland : la plaque fait `BULLE.px` (ou `prochainePx`), la case l'entoure. */
+/**
+ * L'hexagone d'Archipéo, dans la même place que la plaque (même hauteur, même pointe, même ombre, même bord) : pointe en
+ * bas, de rayon la moitié du côté de la plaque (sa largeur : √3/2 de sa hauteur), aux coins adoucis.
+ */
+export const HEXAGONE = { r: PLAQUE.cote / 2, coin: 9 } as const;
+/** Un hexagone rentré de `d` (perpendiculairement à ses côtés) perd `d / cos 30°` de rayon. */
+const RENTRE = 2 / Math.sqrt(3);
+/** La taille à l'écran d'une case : la plaque (ou l'hexagone, aussi haut) fait `BULLE.px` (ou `prochainePx`), la case l'entoure. */
 export const caseALEcran = (enAvant: boolean): number => ((enAvant ? BULLE.prochainePx : BULLE.px) * CASE) / PLAQUE.cote;
 
 /** L'image au milieu de la plaque (`cx`, `cy`), sur `taille` pixels : l'icône au trait rond, comme `Icon` (trait de 2,5 sur 24), ou le bloc. */
-function dessinerLImage(ctx: CanvasRenderingContext2D, cx: number, cy: number, taille: number, image: ImageDuSigne): void {
-  // Le cube d'un bloc a pour demi-hauteur à peu près la moitié de la place (comme sur le disque d'avant : 0,3 de la case).
-  if ('bloc' in image) return drawBlock(ctx, cx, cy, image.bloc, taille * 0.53, ENCRE, { contour: 5, aretes: 3 });
+function dessinerLImage(ctx: CanvasRenderingContext2D, cx: number, cy: number, taille: number, image: ImageDuSigne, encre: string): void {
+  // Le cube d'un bloc a pour demi-hauteur à peu près la moitié de la place.
+  if ('bloc' in image) return drawBlock(ctx, cx, cy, image.bloc, taille * 0.53, encre, { contour: 5, aretes: 3 });
   if (typeof Path2D === 'undefined') return;
   ctx.save();
   const echelle = taille / 24;
   ctx.translate(cx - taille / 2, cy - taille / 2);
   ctx.scale(echelle, echelle);
-  ctx.strokeStyle = ENCRE;
+  ctx.strokeStyle = encre;
   ctx.lineWidth = 2.5;
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
@@ -137,51 +157,49 @@ function dessinerLImage(ctx: CanvasRenderingContext2D, cx: number, cy: number, t
 }
 
 /**
- * Dessine une case : dans Blocland, la bulle (son ombre nette, sa pointe sauf tenue au bord, son bord sombre, l'or si
- * elle est mise en avant, le fond clair) ; dans Archipéo, le disque ; puis l'image.
+ * Dessine une case : la bulle (son ombre nette, sa pointe vers la chose sauf tenue au bord, son bord sombre, le bord de
+ * lumière si elle est mise en avant, le fond clair), plaque carrée (Blocland) ou hexagone (Archipéo), puis l'image.
  */
-export function dessinerLaCase(ctx: CanvasRenderingContext2D, rang: number, image: ImageDuSigne, forme: Habillage['signe'], enAvant = false, sansPointe = false): void {
+export function dessinerLaCase(ctx: CanvasRenderingContext2D, rang: number, image: ImageDuSigne, forme: Habillage['formeDesSignes'], enAvant = false, sansPointe = false): void {
   const x0 = (rang % COTE) * CASE;
   const y0 = Math.floor(rang / COTE) * CASE;
+  const { fond, encre, avant } = COULEURS_DES_SIGNES[forme];
+  const { x, y, cote, coin, ombre, bord, or, pointe } = PLAQUE;
+  const cx = x0 + CASE / 2;
+  const cy = y0 + y + cote / 2;
+  /** La bulle rentrée de `d` pixels, son coin réduit de `moinsCoin`, décalée de `dy`, peinte de `couleur`. */
+  const bulle = (d: number, moinsCoin: number, dy: number, couleur: string) => {
+    ctx.beginPath();
+    if (forme === 'plaque') contourDeLaPlaque(ctx, x0 + x + d, y0 + y + d + dy, cote - 2 * d, Math.max(2, coin - moinsCoin));
+    else contourDeLHexagone(ctx, cx, cy + dy, HEXAGONE.r - d * RENTRE, Math.max(2, HEXAGONE.coin - moinsCoin));
+    ctx.fillStyle = couleur;
+    ctx.fill();
+  };
   ctx.save();
   ctx.clearRect(x0, y0, CASE, CASE);
-  if (forme === 'plaque') {
-    const { x, y, cote, coin, ombre, bord, or, pointe } = PLAQUE;
-    const plaque = (dx: number, dy: number, c: number, r: number, fond: string) => {
-      ctx.beginPath();
-      contourDeLaPlaque(ctx, x0 + x + dx, y0 + y + dy, c, r);
-      ctx.fillStyle = fond;
-      ctx.fill();
-    };
-    // L'ombre nette, puis la pointe, sous la plaque (tenue au bord, elle ne vise plus rien : pas de pointe).
-    plaque(0, ombre, cote, coin, ENCRE);
-    if (!sansPointe) {
-      ctx.beginPath();
-      ctx.moveTo(x0 + CASE / 2 - pointe.demi, y0 + y + cote);
-      ctx.lineTo(x0 + CASE / 2 + pointe.demi, y0 + y + cote);
-      ctx.lineTo(x0 + CASE / 2, y0 + pointe.bas);
-      ctx.closePath();
-      ctx.fillStyle = ENCRE;
-      ctx.fill();
-    }
-    plaque(0, 0, cote, coin, ENCRE);
-    let dedans = bord;
-    if (enAvant) {
-      plaque(dedans, dedans, cote - 2 * dedans, coin - 2, OR);
-      dedans += or;
-    }
-    plaque(dedans, dedans, cote - 2 * dedans, Math.max(2, coin - 4), FOND);
-    dessinerLImage(ctx, x0 + CASE / 2, y0 + y + cote / 2, (cote - 2 * dedans) * 0.62, image);
-  } else {
+  // L'ombre nette, puis la pointe, sous la bulle (tenue au bord, elle ne vise plus rien : pas de pointe).
+  bulle(0, 0, ombre, encre);
+  if (!sansPointe) {
+    // Sous l'hexagone, la base de la pointe remonte dans ses deux côtés du bas (pente de 30°) : rien ne dépasse.
+    const base = forme === 'plaque' ? y0 + y + cote : y0 + y + cote - pointe.demi * Math.tan(Math.PI / 6);
     ctx.beginPath();
-    ctx.arc(x0 + CASE / 2, y0 + CASE / 2, CASE / 2 - MARGE, 0, Math.PI * 2);
-    ctx.fillStyle = FOND;
+    ctx.moveTo(cx - pointe.demi, base);
+    ctx.lineTo(cx + pointe.demi, base);
+    ctx.lineTo(cx, y0 + pointe.bas);
+    ctx.closePath();
+    ctx.fillStyle = encre;
     ctx.fill();
-    ctx.lineWidth = 6;
-    ctx.strokeStyle = ENCRE;
-    ctx.stroke();
-    dessinerLImage(ctx, x0 + CASE / 2, y0 + CASE / 2, CASE * 0.56, image);
   }
+  bulle(0, 0, 0, encre);
+  let dedans: number = bord;
+  if (enAvant) {
+    bulle(dedans, 2, 0, avant);
+    dedans += or;
+  }
+  bulle(dedans, 4, 0, fond);
+  // L'image : dans la plaque, 62 % de son dedans ; dans l'hexagone, 62 % du diamètre de son cercle inscrit.
+  const place = forme === 'plaque' ? cote - 2 * dedans : (HEXAGONE.r - dedans * RENTRE) * Math.sqrt(3);
+  dessinerLImage(ctx, cx, cy, place * 0.62, image, encre);
   ctx.restore();
 }
 
@@ -232,8 +250,8 @@ export function creerSignes(
   ileVisee?: () => BiomeId | null,
 ): Signes {
   const { scene } = monde;
-  const forme = monde.habillage.signe;
-  /** Blocland : trois bulles au plus, sur l'île où l'on est, objets compris ; Archipéo : une plaque par créature qui fait signe. */
+  const forme = monde.habillage.formeDesSignes;
+  /** Les bulles : trois au plus, sur l'île où l'on est, objets compris ; sans elles (les losanges) : une plaque par créature qui fait signe. */
   const bulles = monde.habillage.signesDesObjets === 'bulles';
   /** La hauteur de la vue : lue une fois ici, puis donnée par le redimensionnement de la scène. */
   let hauteurDeLaVue = el.clientHeight;
@@ -337,7 +355,7 @@ export function creerSignes(
     const p = (ile && o.parIle?.[ile]) || o;
     return new THREE.Vector3(p.x, p.z, p.y);
   };
-  /** Les bulles à montrer : dans Blocland, trois au plus sur l'île où l'on est ; dans Archipéo, chaque créature qui fait signe. */
+  /** Les bulles à montrer : trois au plus sur l'île où l'on est ; sans les bulles (les losanges), chaque créature qui fait signe. */
   const montrees = (): Montree[] => {
     const ile = bulles ? ileOuLOnEst() : null;
     if (enCache && enCache.ile === ile) return enCache.liste;
@@ -351,7 +369,7 @@ export function creerSignes(
     possibles = bulles ? bullesPossibles(objets, signes.map((s) => s.signe)) : [];
     enCache = null;
   };
-  /** La taille à l'écran d'une bulle, en pixels CSS : sa case (la plaque et sa pointe) dans Blocland, le disque dans Archipéo. */
+  /** La taille à l'écran d'une bulle, en pixels CSS : sa case (la bulle et sa pointe) ; sans les bulles (les losanges), celle du signe. */
   const tailleALEcran = (m: Montree): number => (bulles ? caseALEcran(m.enAvant) : ICONE_DU_SIGNE.css);
 
   const tete = new THREE.Vector3();
@@ -481,7 +499,7 @@ export function creerSignes(
       if ([...parCle.keys()].some((k) => !avant.has(k))) plaqueDePlus();
     },
     rebondir: (cle) => {
-      // Archipéo garde son disque tel quel : il ne se touche pas et ne rebondit pas.
+      // Sans les bulles (les losanges), le signe ne se touche pas et ne rebondit pas.
       if (!bulles || !montrees().some((m) => m.cle === cle)) return false;
       rebonds.set(cle, instant.now);
       return true;

@@ -6635,3 +6635,14 @@ fieldset {
   font-size: 1rem;
   white-space: normal;
 }
+
+/* Archipéo : Recentrer, le rond « toi » aux couleurs de ses bulles (choix « 1a » du mainteneur, 4 octobre 2026) : Brume,
+   bord Nuit océan épais, ombre nette ; jamais la lumière de la prochaine chose à faire. */
+:root[data-univers="archipeo"] .world-recentrer-tete {
+  --button-bg: #e5ebe3;
+  border-color: #142b38;
+  box-shadow: 0 4px 0 #142b38;
+}
+:root[data-univers="archipeo"] .world-recentrer-tete:active:not(:disabled) {
+  box-shadow: 0 1px 0 #142b38;
+}
