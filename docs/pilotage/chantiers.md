@@ -122,7 +122,7 @@ Décidé par le mainteneur le 2 octobre 2026 ([GD-4](../gameplay/propositions/GD
 
 ### Les Gardiens sur les îles, rallumés (GD-8)
 
-Décidé par le mainteneur le 4 octobre 2026 ([GD-8](../gameplay/propositions/GD-8.md), piste A+, le mot « rallumer ») : dans les deux univers, chaque Gardien se tient sur son îlot dès que son île est ouverte, éteint (dans Blocland, une statue de cubes grise), et son défi le rallume ; chaque épreuve réussie lui rend une part de ses couleurs, et au retour au village il se rallume en fondu, avec un mot. Plus de « vaincre », de « revanche » ni d’« arène » ; l’icône des Gardiens devient la flamme. **En pull request** : le monde, la fiche, l’écran du défi, le rallumage dans Blocland, les libellés et les succès, le manuel. Attend le mainteneur : relire les captures et essayer sur tablette le moment du rallumage dans Blocland. La sauvegarde ne change pas.
+Décidé par le mainteneur le 4 octobre 2026 ([GD-8](../gameplay/propositions/archives/GD-8.md), piste A+, le mot « rallumer ») : dans les deux univers, chaque Gardien se tient sur son îlot dès que son île est ouverte, éteint (dans Blocland, une statue de cubes grise), et son défi le rallume ; chaque épreuve réussie lui rend une part de ses couleurs, et au retour au village il se rallume en fondu, avec un mot. Plus de « vaincre », de « revanche » ni d’« arène » ; l’icône des Gardiens devient la flamme. **En pull request** : le monde, la fiche, l’écran du défi, le rallumage dans Blocland, les libellés et les succès, le manuel. Attend le mainteneur : relire les captures et essayer sur tablette le moment du rallumage dans Blocland. La sauvegarde ne change pas.
 
 ### Le jeu themable
 

@@ -40,7 +40,7 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 |  | Blocland | Archipéo |
 | --- | --- | --- |
 | Au défi | Le Grand Chêne craque : « Me voilà tout gris. Tu as bien écouté ma forêt : à toi de me rendre mes couleurs. » | Le Grand Chêne murmure : « Ma couronne est éteinte. Tu as bien écouté ma forêt, je t’écoute à mon tour. » |
-| À la fin | Je me rallume, vert du pied à la cime ! La forêt est à toi, et à Mousso. | Ma couronne se rallume. La forêt est à toi, et à Mousso. |
+| À la fin | Je me rallume, vert des pieds à la tête ! La forêt est à toi, et à Mousso. | Ma couronne se rallume. La forêt est à toi, et à Mousso. |
 | Mousso à l’arrivée | Salut, bâtisseur ! Dans ma forêt, on écoute les mots. Chaque son trouvé, c’est du bois pour le village. | Salut, bâtisseur ! Dans ma forêt, on écoute les mots. Chaque son trouvé, c’est du bois pour le village. |
 
 ### Le Golem de roche, Mine des lettres
@@ -232,7 +232,7 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 |  | Blocland | Archipéo |
 | --- | --- | --- |
 | Au défi | Le Masque descend des cintres : « Mes rubans sont tout gris. Tu connais toutes mes répliques : donne la bonne. » | Le Masque souffle depuis sa stèle : « Ma rampe est éteinte. Tu connais toutes mes répliques, cherche la bonne. » |
-| À la fin | Je me rallume, blanc, or et pourpre. Le théâtre est à toi, et à Puck. | Ma rampe se rallume. Le théâtre est à toi, et à Puck. |
+| À la fin | Je me rallume, blanc, or et violet. Le théâtre est à toi, et à Puck. | Ma rampe se rallume. Le théâtre est à toi, et à Puck. |
 | Puck à l’arrivée | Hello, bâtisseur ! Au théâtre, chaque question appelle une réplique : where, when, why… Écoute bien le premier mot. Chaque bonne réplique, c’est un velours pour le village. | Hello, bâtisseur ! Au théâtre, chaque question appelle une réplique : where, when, why… Écoute bien le premier mot. Chaque bonne réplique, c’est un velours pour le village. |
 
 ### La Locomotive de fer, Gare du futur
@@ -240,7 +240,7 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 |  | Blocland | Archipéo |
 | --- | --- | --- |
 | Au défi | La Locomotive de fer entre en gare : « Mes roues sont toutes grises. Tu as pris tous mes trains : montre-moi où tu vas. » | La Locomotive de fer attend sur son rail et dit doucement : « Ma lampe est éteinte. Tu as pris tous mes trains, dis-moi où tu vas. » |
-| À la fin | Tchou ! Je me rallume, jusqu’au panache. Les voies sont à toi, et à Vapeur. | Ma lampe se rallume. Les voies sont à toi, et à Vapeur. |
+| À la fin | Tchou ! Je me rallume, jusqu’à la fumée. Les voies sont à toi, et à Vapeur. | Ma lampe se rallume. Les voies sont à toi, et à Vapeur. |
 | Vapeur à l’arrivée | Hello, bâtisseur ! À la gare, on parle de demain (will, going to), de ce qu’on doit faire (must, have to) et de ce qu’on a déjà fait (have been). Chaque bonne réponse, c’est un rail pour le village. | Hello, bâtisseur ! À la gare, on parle de demain (will, going to), de ce qu’on doit faire (must, have to) et de ce qu’on a déjà fait (have been). Chaque bonne réponse, c’est un rail pour le village. |
 
 ### Le Soleil de cuivre, Jardin des heures
@@ -308,7 +308,7 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 |  | Blocland | Archipéo |
 | --- | --- | --- |
 | Au défi | Le Dragon gallois se pose sur le donjon : « Me voilà tout gris. Tu as franchi tous mes remparts : lis les phrases les plus longues à ton rythme. » | Le Dragon gallois dit à voix basse : « Mon bouclier est éteint. Tu as franchi tous mes remparts, lis les phrases les plus longues à ton rythme. » |
-| À la fin | Grrr ! Je me rallume, rouge et or, ailes pourpres. Le château est à toi, et à Knight. | Mon bouclier se rallume. Le château est à toi, et à Knight. |
+| À la fin | Grrr ! Je me rallume, rouge et or, ailes violettes. Le château est à toi, et à Knight. | Mon bouclier se rallume. Le château est à toi, et à Knight. |
 | Knight à l’arrivée | Hello, bâtisseur ! Au château, les phrases sont longues : depuis quand (for, since), et si (if), et par qui (by). Pas de panique, la règle est affichée. Chaque bonne réponse, c’est une pierre de taille pour le village. | Hello, bâtisseur ! Au château, les phrases sont longues : depuis quand (for, since), et si (if), et par qui (by). Pas de panique, la règle est affichée. Chaque bonne réponse, c’est une pierre de taille pour le village. |
 
 ### Le Papillon de cuivre, Refuge des carnets

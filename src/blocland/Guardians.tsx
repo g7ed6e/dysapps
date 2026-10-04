@@ -40,7 +40,7 @@ export function Guardian3D({ biome, label, mood = 'idle', seq = 0, allumage: don
   const part = donne === undefined ? 1 : typeof donne === 'number' ? donne : Math.max(donne.pierre, donne.lueurs);
   const cubes = useMemo(() => gardienEnPartieRallume(GUARDIAN_CUBES[biome], part), [biome, part]);
   // Les figures de l'habillage (habillage.ts) : le Gardien en sentinelle de pierre, éteinte, que le défi rallume
-  // (lot 6) ou, sans allumage donné, rallumée d'un coup une fois vaincue ; sinon en cubes, inchangé.
+  // (lot 6) ou, sans allumage donné, rallumée d'un coup une fois son défi réussi ; sinon en cubes, rallumés des pieds vers la tête (GD-8).
   const [dessine] = useState(() => habillageDuMonde().figures === 'modeles');
   const allumage = donne ?? (mood === 'beaten' ? 1 : 0);
   const enCubes = <VoxelScene cubes={cubes} s={12} pad={6} className="creature guardian-svg" label={label} />;

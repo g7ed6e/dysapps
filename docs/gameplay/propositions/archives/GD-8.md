@@ -1,6 +1,6 @@
 # GD-8 : Le gardien attend sur son lieu, et son défi le rallume
 
-**État** : Décidée le 4 octobre 2026 (piste A+, le mot « rallumer »)
+**État** : Décidée le 4 octobre 2026 (piste A+, le mot « rallumer ») ; construite le 4 octobre 2026 ; consolidée dans [le jeu](../../index.md), archivée le 4 octobre 2026
 **Portée** : Commun (le dessin et les mots du gardien restent propres à chaque univers)
 
 ## Le constat

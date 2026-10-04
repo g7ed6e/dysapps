@@ -43,8 +43,8 @@ it('sans les étoiles, le Gardien refuse et renvoie aux missions', async () => {
   renderAt('/adventure/french-6e-phonology/challenge');
   await loaded();
   expect(screen.getByRole('heading', { name: /Grand Chêne/ })).toBeInTheDocument();
-  // Ce qu'il attend, jamais ce qui manque (GD-8).
-  expect(document.body.textContent).toMatch(/Le Grand Chêne attend son défi : 2 étoiles dans/);
+  // Une seule phrase : ce qu'il y a à faire, jamais ce qui manque (GD-8).
+  expect(document.body.textContent).toMatch(/Pour ouvrir son défi, gagne 2 étoiles dans Abattage syllabique, Chasse au son et Rimes-échelle\./);
   expect(document.body.textContent).not.toMatch(/manque/);
   expect(screen.getByRole('link', { name: /Voir les missions/ })).toBeInTheDocument();
 });
@@ -53,7 +53,7 @@ it('avec les étoiles, le défi démarre : première épreuve avec l’écran de
   localStorage.setItem('dysapps:game', JSON.stringify({ progress: ready('french-6e-phonology') }));
   renderAt('/adventure/french-6e-phonology');
   expect(screen.getByRole('link', { name: /Le Grand Chêne/ })).toBeInTheDocument();
-  expect(screen.getByText(/Prêt à rallumer/)).toBeInTheDocument();
+  expect(screen.getByText(/Défi prêt/)).toBeInTheDocument();
   localStorage.setItem('dysapps:game', JSON.stringify({ progress: ready('french-6e-phonology') }));
   renderAt('/adventure/french-6e-phonology/challenge');
   await loaded();
@@ -107,7 +107,7 @@ it('un Gardien déjà rallumé reste ouvert à un nouveau défi, même si une mi
   localStorage.setItem('dysapps:game', JSON.stringify({ progress }));
   renderAt('/adventure/french-6e-phonology/challenge');
   await loaded();
-  expect(document.body.textContent).not.toMatch(/attend son défi/);
+  expect(document.body.textContent).not.toMatch(/Pour ouvrir son défi/);
   expect(screen.getAllByText(/Épreuve : /).length).toBeGreaterThan(0);
 }, 30_000);
 

@@ -228,14 +228,22 @@ function FicheDuGardien({ ile, onClose }: Props & { ile: BiomeId }) {
   return (
     <Fiche
       titre={titre}
-      icone="flame"
+      icone={pret ? 'flame' : 'lock'}
       portrait={portraitsEnMedaillon() ? <VoxelScene cubes={vaincu ? GUARDIAN_CUBES[ile] : statueDe(GUARDIAN_CUBES[ile])} s={12} pad={2} className="creature guardian-svg" /> : undefined}
       lecture={`${titre}. ${phrase}`}
       onClose={onClose}
       actions={
         pret && (
           <Link to={`/adventure/${ile}/challenge`} className="button primary">
-            <Icon name="flame" /> Rallumer
+            {vaincu ? (
+              <>
+                <Icon name="replay" /> Rejouer
+              </>
+            ) : (
+              <>
+                <Icon name="flame" /> Rallumer
+              </>
+            )}
           </Link>
         )
       }

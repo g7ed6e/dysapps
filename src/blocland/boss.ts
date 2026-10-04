@@ -1,5 +1,5 @@
 // Le Gardien d'un biome : un défi qui enchaîne des manches de chaque mission du biome, au niveau de l'élève.
-// Logique pure : déblocage, construction du défi, état « vaincu ».
+// Logique pure : déblocage, construction du défi, état « rallumé » (`beaten`).
 import { BIOMES, guardianTitle, missionsJouables, type BiomeDef, type BiomeId } from './biomes';
 import { levelFor, type GameState } from './engine';
 import { SCREEN_TYPES } from './exercises/registry';
@@ -43,7 +43,7 @@ export function isBossUnlocked(biome: BiomeDef, progress: Record<string, { stars
 }
 
 /**
- * Le défi se joue : débloqué (deux étoiles dans chaque mission), ou déjà gagné (une revanche), même si une mission
+ * Le défi se joue : débloqué (deux étoiles dans chaque mission), ou déjà gagné (on le rejoue), même si une mission
  * est arrivée depuis sur l'île sans étoile. Sans mission à jouer (l'île de la LV2 avec « Pas de LV2 »), pas de défi.
  */
 export function isBossOpen(biome: BiomeDef, progress: Record<string, { stars: number }>): boolean {
@@ -52,7 +52,7 @@ export function isBossOpen(biome: BiomeDef, progress: Record<string, { stars: nu
 
 /**
  * Où en est le Gardien d'une île : caché, en attente de son défi (une sentinelle éteinte, visible dès l'ouverture de
- * l'île, lot 6), prêt à le relever, ou vaincu.
+ * l'île, lot 6), prêt à le relever, ou rallumé.
  */
 export type GuardianStatus = 'hidden' | 'waiting' | 'ready' | 'beaten';
 

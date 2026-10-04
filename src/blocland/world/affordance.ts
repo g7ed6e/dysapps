@@ -2,11 +2,11 @@
 // par le mainteneur le 4 octobre 2026 ; maquettes et benchmark dans la Bibliothèque, ux/navigation/). Une à trois bulles
 // à la fois, seulement sur l'île où l'on est et seulement sur ce qu'on peut faire maintenant : une plaque carrée claire,
 // cerclée de sombre, toujours face à l'écran et de taille fixe, avec l'icône de ce qu'on y fait (l'étoile d'une borne,
-// le bouclier d'un Gardien, le marteau d'un chantier, le navire) ou le bloc qu'une créature attend. La prochaine chose à
+// la flamme d'un Gardien, le marteau d'un chantier, le navire) ou le bloc qu'une créature attend. La prochaine chose à
 // faire a la plus grande, bordée d'or, et c'est la seule qui bouge (une montée et descente lente) ; touchée, une bulle
 // s'écrase et rebondit. Ce qui n'est pas encore possible et les lieux n'ont pas de bulle : ils répondent au toucher.
 // Qui est touchable (`signesDesObjets`) : une borne à faire (jamais jouée, ou jouée sans étoile) ou pas jouable, un
-// Gardien pas encore vaincu, le Bloc-Navire, chaque chantier en fantôme (un ouvrage, un monument à bâtir), l'école, la
+// Gardien pas encore rallumé, le Bloc-Navire, chaque chantier en fantôme (un ouvrage, un monument à bâtir), l'école, la
 // salle des trophées et un monument bâti ; leur état dit qui porte une bulle (« à faire »). Et la zone de toucher : au
 // moins 48 pixels à l'écran autour d'une borne ou d'un Gardien petits (`zoneDuToucher`), qui ne remplace jamais un
 // toucher direct ni une face en chantier. Code pur, sans Three.js : three/signes.ts dessine les bulles (avec les plaques
@@ -200,7 +200,7 @@ export function signesDesObjets({ cubes, quests = [], creatures = [], vehicle = 
     }
     out.push({ ...signeAuDessus({ genre: 'ouvrage', id }, prets.has(id) ? 'aFaire' : 'pasEncore', iles, boiteDe(l)), x: milieu.x + 0.5, y: milieu.y + 0.5, z: hauteurDuSigneDeLObjet(colonne), parIle });
   }
-  // Un Gardien pas encore vaincu : à faire si son défi est prêt, sinon pas encore. Les créatures ont leur propre bulle.
+  // Un Gardien pas encore rallumé : à faire si son défi est prêt, sinon pas encore. Les créatures ont leur propre bulle.
   for (const g of creatures) {
     if (g.kind !== 'guardian' || g.beaten || !g.cubes.length) continue;
     const pret = etats ? etats.gardiensPrets.includes(g.id) : true;

@@ -24,7 +24,7 @@ function tousLesTextes(t: TextesUnivers): string[] {
     out.push(l.navireGardiensManquants(n, t.archipels['6e']), l.navireAttend(n, 'la voile'));
   }
   out.push(l.dejaFaitArene('Le Grand Chêne'), t.baleine.gardiens(t.archipels['6e']), t.baleine.port('Plaine des nombres'), t.baleine.ouvrage('Mine des lettres'));
-  out.push(l.defiPret, l.defiPretCourt, l.defiFerme('Le Grand Chêne', 2), l.arene('le Grand Chêne'));
+  out.push(l.defiPret, l.defiPretCourt, l.arene('le Grand Chêne'));
   out.push(l.decouverteOuvrages, l.decouverteNavire);
   out.push(...Object.values(t.archipels), ...Object.values(t.roles));
   for (const s of Object.values(t.succes)) if (s) out.push(s.title, s.description);
@@ -60,7 +60,7 @@ describe('les textes d’univers', () => {
         return [b.id, { challenge: g.challenge, ...g.guardianSays, species: t.especes[b.id] }];
       }),
     );
-    expect(createHash('sha256').update(JSON.stringify(textes)).digest('hex')).toBe('161bf447a8aa876ba32a45346407109a4031352d1e12e23ecc2d2ef2da533023');
+    expect(createHash('sha256').update(JSON.stringify(textes)).digest('hex')).toBe('3aec13017720eff807ba96049b824ac116dcf8afdde08ec6090d63cd690eaf43');
     const l = t.libelles;
     expect([l.dejaFait, l.etoiles, l.etoilesSur3(2), l.resistance(2, 6), l.dejaFaitArene('Le Grand Chêne')]).toEqual([
       'Déjà rallumé. On rejoue ?',
@@ -132,19 +132,19 @@ describe('les textes d’univers', () => {
     }
   });
 
-  it('Blocland : le défi rend ses couleurs au Gardien, compte les réussites, et une épreuve ratée ne remet rien en gris (GD-8)', () => {
+  it('Blocland : le défi rend ses couleurs au Gardien, compte les réussites, et une épreuve ratée lui laisse ses couleurs (GD-8)', () => {
     const t = textesDe('blocland');
     const d = t.sentinelles!;
-    expect([t.libelles.defiPret, t.libelles.defiPretCourt, t.libelles.defiFerme('Le Grand Chêne', 2), t.libelles.arene('le Grand Chêne')]).toEqual([
+    expect([t.libelles.defiPret, t.libelles.defiPretCourt, t.libelles.arene('le Grand Chêne')]).toEqual([
       'Le Gardien est prêt : à toi de le rallumer !',
-      'Prêt à rallumer',
-      'Le Grand Chêne attend ses couleurs. Obtiens 2 étoiles dans chaque mission de l’île, puis reviens relever son défi.',
+      'Défi prêt',
       'Rallumer le Grand Chêne',
     ]);
+    expect(d.regle).toBe('Une épreuve ratée lui laisse ses couleurs.');
     expect([d.compte(2, 7), d.seuil(5, false), d.seuil(5, true)]).toEqual(['2 sur 7', 'Il faut 5 épreuves réussies pour lui rendre ses couleurs.', 'C’est assez pour lui rendre ses couleurs.']);
     expect(d.rallume('Le Grand Chêne')).toBe('Le Grand Chêne se rallume en couleurs !');
     for (const g of Object.values(t.gardiens)) {
-      expect(g.guardianSays.miss).toMatch(/^Rien ne redevient gris\. /);
+      expect(g.guardianSays.miss).toMatch(/^Mes couleurs restent\. /);
       expect(g.guardianSays.beaten).toMatch(/Je me rallume/);
     }
   });
@@ -159,7 +159,7 @@ describe('les textes d’univers', () => {
     expect([d.jaugeLue(1, 7, 5), d.jaugeLue(2, 7, 5)]).toEqual(['1 épreuve réussie sur 7, il en faut 5', '2 épreuves réussies sur 7, il en faut 5']);
     expect(d.rallume('Le Grand Chêne')).toBe('Le Grand Chêne brille à nouveau.');
     expect(tousLesTextes(t).join('\n')).not.toMatch(/bâtisseur|affront|arène/);
-    const neufs = [t.libelles.defiPret, t.libelles.defiPretCourt, t.libelles.defiFerme('Le Grand Chêne', 2), d.consigne, d.seuil(5, true)];
+    const neufs = [t.libelles.defiPret, t.libelles.defiPretCourt, d.consigne, d.seuil(5, true)];
     expect(neufs.join('\n')).not.toMatch(/!/);
     // « brille à nouveau » : au village et à la baleine seulement.
     for (const g of Object.values(t.gardiens)) expect(Object.values(g.guardianSays).join()).not.toMatch(/à nouveau/);

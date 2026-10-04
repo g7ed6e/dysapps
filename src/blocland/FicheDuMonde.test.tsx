@@ -129,13 +129,13 @@ it('le Bloc-Navire : « Poser le bloc suivant » et « Poser tout ce que j’ai 
   expect(onBoard).toHaveBeenCalledWith('5e', false);
 });
 
-it('le Gardien rallumé : « Rallumer » de nouveau, avec ses étoiles (GD-8)', () => {
+it('le Gardien rallumé : « Rejouer », avec ses étoiles (GD-8)', () => {
   sauver({ progress: { ...joue(FORET), [`${FORET}-challenge`]: { stars: 3, attempts: 1, best: 1 } } });
   ouvrir({ objet: { genre: 'gardien', id: FORET }, seq: 1, saut: false });
   const f = screen.getByRole('dialog', { name: 'Le Grand Chêne' });
   expect(f).toHaveTextContent('Déjà rallumé. On rejoue ?');
   expect(within(f).getByRole('img', { name: 'Gardien rallumé' }).querySelectorAll('.star.lit')).toHaveLength(3);
-  expect(within(f).getByRole('link', { name: 'Rallumer' })).toHaveAttribute('href', `/adventure/${FORET}/challenge`);
+  expect(within(f).getByRole('link', { name: 'Rejouer' })).toHaveAttribute('href', `/adventure/${FORET}/challenge`);
 });
 
 it('le Bloc-Navire dont le voyage de ce port est fait : le titre sans étape, la prochaine étape, « Y aller »', async () => {
