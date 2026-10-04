@@ -6062,6 +6062,11 @@ button.island-quest {
   :root[data-texte="grand"] .avec-medaillon .world-fiche-titre {
     margin-left: 0;
   }
+  /* Une ligne de la phrase au moins (elle défile, le pointillé le dit) : le bouton principal reste à l'écran. */
+  :root[data-texte="grand"] .world-fiche-texte {
+    min-height: 1.6em;
+    min-height: 1lh;
+  }
 }
 @media (max-width: 640px) {
   .world-fiche-cadre.avec-medaillon {
