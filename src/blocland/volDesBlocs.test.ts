@@ -84,10 +84,14 @@ describe('le dessin, dans blocland.css', () => {
     expect(css).toMatch(/:root\[data-univers="blocland"\] button\.island-quest:active:not\(:disabled\) \{[^}]*transition: none/);
   });
 
-  it('les mots de la barre ne reviennent jamais, grand texte compris : le nom reste lu', () => {
-    const r = regle(':root[data-univers="blocland"] .world-bar .world-bar-text');
-    expect(r).toMatch(/clip-path: inset\(50%\)/);
-    expect(css).not.toMatch(/data-texte="grand"\][^{]*\.world-bar-text/);
+  it('les icônes seules, le nom lu ; en grand texte, le mot sous l’icône (« ok 2a », 4 octobre 2026)', () => {
+    expect(regle(':root[data-univers="blocland"] .world-bar .world-bar-text')).toMatch(/clip-path: inset\(50%\)/);
+    const mot = regle(':root[data-univers="blocland"][data-texte="grand"] .world-bar .world-bar-text');
+    expect(mot).toMatch(/clip-path: none/);
+    expect(mot).toMatch(/position: static/);
+    expect(regle(':root[data-univers="blocland"][data-texte="grand"] .world-bar .button')).toMatch(/flex-direction: column/);
+    // Le mot de « ? » n'existe que là : Archipéo garde son icône seule.
+    expect(regle('.world-bar-text-aide')).toMatch(/display: none/);
   });
 
   it('le bouton de l’île en herbe, l’action principale de la barre ; le bouton ouvert en or et enfoncé', () => {

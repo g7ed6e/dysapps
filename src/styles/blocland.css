@@ -231,10 +231,10 @@
   transition: none;
 }
 
-/* ===== La barre du bas du monde : des icônes seules (P2, PR 2) ===== */
+/* ===== La barre du bas du monde : des icônes seules (P2, PR 2), le mot dessous en grand texte ===== */
 /* Quatre boutons carrés de 56 px (la face en plus), icône de 32 px, 8 px d'écart : 248 px, ils tiennent sur 320 px.
-   Les mots ne reviennent jamais, grand texte compris (décision du mainteneur, 4 octobre 2026) : chaque bouton garde
-   son nom pour les lecteurs d'écran, et l'écran ouvert dit le sien en titre. */
+   Chaque bouton garde son nom pour les lecteurs d'écran, et l'écran ouvert dit le sien en titre. En grand texte, le mot
+   revient sous l'icône (décision du mainteneur, 4 octobre 2026, « ok 2a ») : plus bas. */
 :root[data-univers="blocland"] .world-bar {
   gap: 8px;
 }
@@ -258,6 +258,32 @@
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
+}
+/* Le mot de « ? » : seulement en grand texte, dans Blocland (Archipéo garde son icône seule). */
+.world-bar-text-aide {
+  display: none;
+}
+/* En grand texte, le réglage de l'élève qui lit difficilement : le mot sous l'icône, dans la taille du texte choisie
+   (décision du mainteneur, 4 octobre 2026, « ok 2a »). Les boutons s'élargissent à leur mot, un nom d'île long passe
+   à la ligne dans son bouton, et la barre passe sur deux rangées plutôt que de sortir de l'écran. */
+:root[data-univers="blocland"][data-texte="grand"] .world-bar .button {
+  flex-direction: column;
+  gap: 2px;
+  width: auto;
+  max-width: min(12em, calc(50% - 4px));
+  height: auto;
+  padding: 4px 10px 6px;
+}
+:root[data-univers="blocland"][data-texte="grand"] .world-bar .world-bar-text {
+  display: block;
+  position: static;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  clip-path: none;
+  white-space: normal;
+  text-align: center;
+  line-height: 1.15;
 }
 /* Le bouton de l'île : l'action principale de la barre, en herbe ; les autres en bois (décision du mainteneur, 4
    octobre 2026, comme sur la maquette). */

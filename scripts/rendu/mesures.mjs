@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, bulles, fiches, bulle-bord ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, bulles, fiches, barre-mots ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 20` le plus long temps réel laissé au monde pour se construire (en secondes, 10 par défaut). L'horloge de la
 // page est pilotée (`preparerLaScene`, scripts/prise-de-vue.mjs) : deux prises du même état donnent la même image, les
@@ -425,14 +425,15 @@ const CAPTURES = [
     inventaire: { 'french-6e-phonology': 4 },
     ...autres,
   })),
-  // La bulle d'or tenue au bord de la place libre (famille `bulle-bord`), à retirer une fois le lot fusionné : la Carte
-  // zoomée au plus près (`zoomer` : combien de fois la touche +, ×1,25 chacune), la destination hors de la vue, en
-  // tablette, en tablette en portrait et en téléphone au plus grand texte.
+  // Le mot sous les icônes de la barre du bas en grand texte (famille `barre-mots`, décision « 2a » du 4 octobre 2026),
+  // à retirer une fois le lot fusionné : l'île en OpenDyslexic 32 px, en tablette, en tablette en portrait, en
+  // téléphone et en téléphone en paysage.
   ...[
     { suffixe: '' },
-    { suffixe: '-800x1280-od32', taille: { width: 800, height: 1280 }, reglages: { font: 'opendyslexic', fontSize: 32 } },
-    { suffixe: '-390x844-od32', taille: { width: 390, height: 844 }, reglages: { font: 'opendyslexic', fontSize: 32 } },
-  ].map(({ suffixe, ...autres }) => ({ nom: `bulle-bord${suffixe}`, vue: 'carte', famille: 'bulle-bord', ile: 'french-6e-phonology', zoomer: 12, ...autres })),
+    { suffixe: '-800x1280', taille: { width: 800, height: 1280 } },
+    { suffixe: '-390x844', taille: { width: 390, height: 844 } },
+    { suffixe: '-844x390', taille: { width: 844, height: 390 } },
+  ].map(({ suffixe, ...autres }) => ({ nom: `barre-mots${suffixe}`, vue: 'île', famille: 'barre-mots', ile: 'french-6e-phonology', reglages: { font: 'opendyslexic', fontSize: 32 }, ...autres })),
   { nom: 'etoile-phare-ponts', vue: 'archipel', famille: 'etoile', ile: 'maths-3e-functions', finesse: 2 },
   { nom: 'etoile-phare-ponts-nuit', vue: 'archipel', famille: 'etoile', ile: 'maths-3e-functions', finesse: 2, nuit: true },
   // Les commandes des habitants (GD-7, PR 3, famille `commandes`, lot en cours) : à la Mine des lettres, la commande de
