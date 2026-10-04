@@ -3,7 +3,8 @@
 import * as THREE from 'three';
 import { HABILLAGES } from '../habillage';
 import { toutConstruit } from '../world/budget';
-import { guardianPlacements } from '../world/terrain';
+import { buildMesh } from '../world/mesher';
+import { gardienDuMonde, guardianPlacements } from '../world/terrain';
 import type { Instant, Monde } from './partie';
 import { creerPersonnages } from './personnages';
 
@@ -67,6 +68,8 @@ describe('Le rallumage d’un Gardien en cubes', () => {
     maintenant = 2000;
     p.animer?.(1, 0.016, false);
     expect(couleursVisibles(p, id).some(estPierre)).toBe(false);
+    // Le fondu fini, plus de couches : un seul maillage, autant d'appels qu'un Gardien posé.
+    expect(couleursVisibles(p, id)).toHaveLength(buildMesh(gardienDuMonde(id)).length);
     p.dispose();
   });
 

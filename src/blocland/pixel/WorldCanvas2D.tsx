@@ -248,13 +248,20 @@ export default function WorldCanvas2D({
       const xs = c.cubes.map((k) => k.x);
       const ys = c.cubes.map((k) => k.y);
       const mid = { x: (Math.min(...xs) + Math.max(...xs) + 1) / 2, y: (Math.min(...ys) + Math.max(...ys) + 1) / 2 };
-      // Un Gardien éteint (en pierre) et rallumé (en couleurs) n'ont pas le même sprite (GD-8). Sans fondu en pixels, celui
-      // qui se rallume prend ses couleurs dès que son mot s'affiche, pour que l'image ne contredise pas le mot.
-      const seRallume = c.kind === 'guardian' && c.id === rallumageId;
-      const allumage = seRallume ? 1 : allumageDuGardien(c);
-      const enPixels = () => voxelSprite(`${c.kind ?? 'creature'}:${c.id}${allumage ? ':rallume' : ''}`, seRallume ? gardienDuMonde(c.id) : c.cubes);
-      return { stroll: strolls[i], sprite: painted ? null : enPixels(), mid, allumage, enPixels };
+      // Un Gardien éteint (en pierre) et rallumé (en couleurs) n'ont pas le même sprite (GD-8).
+      const enPixels = () => voxelSprite(`${c.kind ?? 'creature'}:${c.id}${allumageDuGardien(c) ? ':rallume' : ''}`, c.cubes);
+      return { stroll: strolls[i], sprite: painted ? null : enPixels(), mid, allumage: allumageDuGardien(c), enPixels };
     });
+  }, [creatures]);
+  // Sans fondu en pixels, le Gardien qui se rallume prend ses couleurs dès que son mot s'affiche, pour que l'image ne
+  // contredise pas le mot ; seul son sprite change, les promenades continuent.
+  useEffect(() => {
+    if (!rallumageId) return;
+    const i = creatures.findIndex((c) => c.kind === 'guardian' && c.id === rallumageId);
+    const w = walkers.current[i];
+    if (!w) return;
+    const enPixels = () => voxelSprite(`guardian:${rallumageId}:rallume`, gardienDuMonde(rallumageId));
+    walkers.current[i] = { ...w, allumage: 1, enPixels, sprite: w.sprite ? enPixels() : null };
   }, [creatures, rallumageId]);
 
   // ---- Le bonhomme : chaque itinéraire (le premier placement est immédiat)

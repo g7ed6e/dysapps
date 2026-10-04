@@ -95,7 +95,7 @@ function habitsEnCubes(monde: Monde, champ: () => ChampDuSol | null, instant: In
   const signes = new Map<BiomeId, number>();
   // Le rallumage en cours (GD-8) : le Gardien, le début et la durée de son fondu, et ses couches de cubes, des pieds vers
   // la tête, chacune en pierre puis en couleurs. Chaque couche passe d'un coup, comme pendant le défi (pas de teinte
-  // entre les deux) ; les couches ne vivent que le temps du moment, les placements suivants le reposent d'un bloc.
+  // entre les deux) ; les couches ne vivent que le temps du fondu (1,8 s), puis il est rebâti d'un seul maillage.
   let fondu: { id: BiomeId; t0: number; dureeMs: number; fini: boolean } | null = null;
   let couches: { pierre: THREE.Group; couleurs: THREE.Group }[] = [];
 
@@ -109,19 +109,37 @@ function habitsEnCubes(monde: Monde, champ: () => ChampDuSol | null, instant: In
       c.couleurs.visible = i < allumees;
     });
     fondu.fini = u >= 1;
+    // Rallumé : d'un seul maillage de nouveau, pour ne pas garder les appels des couches au-delà du moment.
+    if (fondu.fini) habillerEnCouleurs(fondu.id);
+  };
+  /** Le Gardien rebâti d'un seul maillage, dans ses couleurs (la fin du fondu). */
+  const habillerEnCouleurs = (id: BiomeId) => {
+    couches = [];
+    const group = viderLeGardien(id);
+    if (group) for (const g of buildMesh(gardienDuMonde(id))) group.add(meshOf(g, surface));
+  };
+  /** Les maillages du Gardien retirés et libérés ; son groupe, ou rien s'il n'est pas posé. */
+  const viderLeGardien = (id: BiomeId) => {
+    const group = creaturesGroup.children.find((c) => c.userData.creature === id && c.userData.kind === 'guardian');
+    if (!group) return null;
+    for (const child of [...group.children]) {
+      group.remove(child);
+      child.traverse((o) => {
+        if (o instanceof THREE.Mesh) o.geometry.dispose();
+      });
+    }
+    return group;
   };
   /** Le Gardien qui se rallume, rebâti couche par couche, chacune en pierre et en couleurs. */
   const habillerLeFondu = () => {
     couches = [];
     if (!fondu) return;
     const id = fondu.id;
-    const group = creaturesGroup.children.find((c) => c.userData.creature === id && c.userData.kind === 'guardian');
+    const group = viderLeGardien(id);
     if (!group) return;
-    for (const child of [...group.children]) {
-      group.remove(child);
-      child.traverse((o) => {
-        if (o instanceof THREE.Mesh) o.geometry.dispose();
-      });
+    if (fondu.fini) {
+      for (const g of buildMesh(gardienDuMonde(id))) group.add(meshOf(g, surface));
+      return;
     }
     const cubes = gardienDuMonde(id);
     for (const z of [...new Set(cubes.map((c) => c.z))].sort((a, b) => a - b)) {
