@@ -843,13 +843,13 @@ describe('la pose d’une partie en vague, après « Voir le bâtiment » (GD-6,
     const dansLaPartie = () => vu.cubes.filter((c) => !c.ghost && cases.has(`${c.x},${c.y},${c.z}`)).length;
     return { cases, dansLaPartie };
   };
-  // La phrase s'écrit en haut, syllabe par syllabe (des espaces insécables devant les deux-points).
+  // Plus de phrase en haut, par-dessus le monde, après la pose (mot du mainteneur, 4 octobre 2026).
   const phrase = () =>
     screen.queryAllByRole('status').find((el) => el.textContent?.replace(/[\u00a0\u202f]/g, ' ').includes('Partie posée : la cabane de Mousso.')) ?? null;
 
-  it('cache la partie jusqu’à la vague, la donne à poser, puis dit la phrase après le dernier cube', async () => {
+  it('cache la partie jusqu’à la vague, la donne à poser, puis la montre posée, sans phrase par-dessus le monde', async () => {
     const { cases, dansLaPartie } = await preparer();
-    // Ni tutoriel ni mot de la baleine : seuls la pose et le temps de lire la phrase retiennent les bandeaux.
+    // Ni tutoriel ni mot de la baleine : seule la pose retient les bandeaux.
     localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true, 'archipel-6e': true }));
     localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'baleine-6e-arrivee': true }));
     renderAt('/adventure/french-6e-phonology?worksite=part');
@@ -862,17 +862,15 @@ describe('la pose d’une partie en vague, après « Voir le bâtiment » (GD-6,
     // Une couche posée : rien de plus à lire.
     act(() => vu.onPose?.('couche'));
     expect(phrase()).not.toBeInTheDocument();
-    // Le dernier cube posé : la partie est dans le monde, la vague s'arrête, la phrase s'écrit en haut, par-dessus le
-    // monde (aucun panneau ne s'ouvre tout seul).
+    // Le dernier cube posé : la partie est dans le monde, la vague s'arrête ; aucune phrase par-dessus le monde, aucun
+    // panneau ne s'ouvre tout seul, et les bandeaux ne sont plus retenus.
     act(() => vu.onPose?.('finie'));
     expect(vu.pose).toBeNull();
     expect(dansLaPartie()).toBe(cases.size);
-    expect(phrase()).toBeInTheDocument();
+    expect(phrase()).not.toBeInTheDocument();
     expect(sheet()).not.toBeInTheDocument();
-    // Le temps de lire la phrase, les bandeaux attendent encore : un message à la fois (DA-9).
-    expect(screen.getByTestId('retenus')).toHaveTextContent('oui');
-    await waitFor(() => expect(screen.getByTestId('retenus')).toHaveTextContent('non'), { timeout: 6000 });
-  }, 10000);
+    expect(screen.getByTestId('retenus')).toHaveTextContent('non');
+  });
 
   it('pendant la pose, le compte du bâtiment reste à l’ancien ; la région de la phrase est là, vide', async () => {
     await preparer();
@@ -893,7 +891,7 @@ describe('la pose d’une partie en vague, après « Voir le bâtiment » (GD-6,
     expect(within(region as HTMLElement).getByText('Partie posée : la cabane de Mousso.')).toBeInTheDocument();
   });
 
-  it('Menu pendant la pose ouvre le menu et pose la partie en silence ; au retour, la phrase est là, rien ne se rejoue', async () => {
+  it('Menu pendant la pose ouvre le menu et pose la partie en silence ; au retour, rien ne se rejoue', async () => {
     const { cases, dansLaPartie } = await preparer();
     carillon.mockClear();
     renderAt('/adventure/french-6e-phonology?worksite=part');
@@ -904,10 +902,10 @@ describe('la pose d’une partie en vague, après « Voir le bâtiment » (GD-6,
     expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/menu');
     expect(vu.pose).toBeNull();
     expect(dansLaPartie()).toBe(cases.size);
-    // Retour sur l'île : la phrase est là, sans carillon, et la vague ne reprend pas.
+    // Retour sur l'île : ni phrase ni carillon, et la vague ne reprend pas.
     fireEvent.click(screen.getByRole('button', { name: 'Toucher la Forêt dans le monde' }));
     await waitFor(() => expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/french-6e-phonology'));
-    await waitFor(() => expect(phrase()).toBeInTheDocument());
+    expect(phrase()).not.toBeInTheDocument();
     expect(vu.pose).toBeNull();
     await new Promise((r) => setTimeout(r, 50));
     expect(carillon).not.toHaveBeenCalled();
@@ -921,7 +919,7 @@ describe('la pose d’une partie en vague, après « Voir le bâtiment » (GD-6,
     fireEvent.pointerDown(document.querySelector('.voxel-canvas')!);
     expect(vu.pose).toBeNull();
     expect(dansLaPartie()).toBe(cases.size);
-    expect(phrase()).toBeInTheDocument();
+    expect(phrase()).not.toBeInTheDocument();
     expect(carillon).toHaveBeenCalledTimes(1);
   });
 
@@ -938,13 +936,13 @@ describe('la pose d’une partie en vague, après « Voir le bâtiment » (GD-6,
     expect(JSON.parse(localStorage.getItem('dysapps:game')!).world.parts['french-6e-phonology-1']).toHaveLength(cases.size);
   });
 
-  it('quand l’appareil demande moins d’animations, la partie est posée d’un coup et la phrase est là', async () => {
+  it('quand l’appareil demande moins d’animations, la partie est posée d’un coup, sans phrase', async () => {
     demanderMoinsDAnimations();
     const { cases, dansLaPartie } = await preparer();
     renderAt('/adventure/french-6e-phonology?worksite=part');
-    await waitFor(() => expect(phrase()).toBeInTheDocument());
+    await waitFor(() => expect(dansLaPartie()).toBe(cases.size));
     expect(vu.pose).toBeNull();
-    expect(dansLaPartie()).toBe(cases.size);
+    expect(phrase()).not.toBeInTheDocument();
   });
 });
 

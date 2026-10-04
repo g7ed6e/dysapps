@@ -32,6 +32,8 @@ On bâtit du neuf : la partie se pose couche par couche, chaque cube descend et 
 
 3 octobre 2026, mainteneur : la **piste B**, la pose en vague. Après « Voir le bâtiment », la caméra reste fixe ; les cubes de la partie descendent couche par couche, du bas vers le haut, à 40 ms d’écart, six secondes au plus, un « clac » par couche ; puis le carillon et la phrase « Partie posée : … » écrite dans le panneau de l’île, avec « Écouter » (elle a déjà été lue à l’écran de fin). Un toucher sur le monde pose tout d’un coup ; Pause et la barre gardent leur effet et posent la partie en silence ; « Réduire les animations » la pose d’un coup ; en 2D, pas de vague.
 
+4 octobre 2026, mainteneur : la notification après la pose est retirée (« Il faudrait shooter la notification qui apparaît après la construction en vague d’une partie du bâtiment d’une île »). La vague finit sur le carillon, sans phrase par-dessus le monde ; la phrase reste dans le panneau de l’île, et un succès gagné avec la partie n’attend plus que la fin de la vague.
+
 ### Dans Archipéo
 
 On restaure : la partie passe de ruine à restaurée, dans la lumière (DA-05), en un fondu court (proposition du consultant, à valider par le directeur artistique). On ne dit « restaurer » que si l’état d’avant se voit en ruine. La partie se pose sur les cases des plans, qui ne changent pas ; les pièces modulaires du lot 7 se choisissent ensuite d’après les cases voisines. Le phare de Grimoire, dessiné pièce par pièce, dit quelle mission pose quelle pièce. La pose se voit aussi sur la maquette de l’île dans le monde en réseau (lots 8 et 8b). L’or et le cristal déjà gagnés vont dans la salle des trophées de l’île-école.
