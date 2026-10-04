@@ -426,10 +426,12 @@ const CAPTURES = [
     ...autres,
   })),
   // La première visite sans flèche jaune dans le monde (famille `sans-fleche`, mot du mainteneur du 4 octobre 2026), à
-  // retirer une fois le lot fusionné : la Forêt des sons au départ, en tablette et en téléphone.
+  // retirer une fois le lot fusionné : la Forêt des sons au départ, en tablette, en portrait et en téléphone (aussi en grand texte).
   ...[
     { suffixe: '' },
     { suffixe: '-390x844', taille: { width: 390, height: 844 } },
+    { suffixe: '-800x1280', taille: { width: 800, height: 1280 } },
+    { suffixe: '-390x844-od32', taille: { width: 390, height: 844 }, reglages: { font: 'opendyslexic', fontSize: 32 } },
   ].map(({ suffixe, ...autres }) => ({ nom: `sans-fleche-depart${suffixe}`, vue: 'île', famille: 'sans-fleche', ile: 'french-6e-phonology', depart: true, ...autres })),
   { nom: 'etoile-phare-ponts', vue: 'archipel', famille: 'etoile', ile: 'maths-3e-functions', finesse: 2 },
   { nom: 'etoile-phare-ponts-nuit', vue: 'archipel', famille: 'etoile', ile: 'maths-3e-functions', finesse: 2, nuit: true },
