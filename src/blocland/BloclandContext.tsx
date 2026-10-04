@@ -105,7 +105,9 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
   // Les commandes des habitants (GD-7, PR 3) n'arrivent que dans un univers qui en a les textes (`commandes`).
   const avecLesTextes = Boolean(useTextes().commandes);
   const avecCommandes = useRef(avecLesTextes);
-  avecCommandes.current = avecLesTextes;
+  useEffect(() => {
+    avecCommandes.current = avecLesTextes;
+  }, [avecLesTextes]);
   /** À la fin d'une mission, d'un ouvrage construit ou d'une livraison dans l'archipel `a` : une commande au plus arrive. */
   const commandeQuiArrive = useCallback((s: GameState, a: ArchipelagoId): GameState => (avecCommandes.current ? faireArriverUneCommande(s, a).state : s), []);
 
