@@ -313,6 +313,8 @@ export interface Camera extends PartieDeLaScene {
   recentrer(): void;
   /** La vue a été déplacée (un décalage non nul) ou zoomée. */
   decale(): boolean;
+  /** Le décalage de la vue glissée, en cases sur le plan horizontal (zéro : la vue à son cadrage). */
+  decalage(): Readonly<{ x: number; z: number }>;
   /**
    * Sur la Carte seulement : rapproche (`facteur` > 1) ou éloigne la vue, borné entre le cadrage d'ouverture et une île
    * en gros plan (`ZOOM_DE_LA_CARTE`). Le point du sol vu en `vers` (coordonnées normalisées de l'écran, −1 à 1) reste
@@ -574,6 +576,7 @@ export function creerCamera(
     },
     recentrer: zero,
     decale: () => estDecale(decalage) || zoom > 1 + 1e-6,
+    decalage: () => decalage,
     zoomer: (facteur, vers) => {
       if (!instant.carte || !cadrageCarte || !(facteur > 0)) return false;
       const voulu = Math.min(cadrageCarte.zoomMax, Math.max(1, zoom * facteur));

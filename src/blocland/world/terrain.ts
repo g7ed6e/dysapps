@@ -326,6 +326,15 @@ export function islandAt(a: ArchipelagoId, x: number, y: number): BiomeId {
 }
 
 /**
+ * L'île que montre la vue glissée de (`d.x`, `d.z`) cases depuis l'île `ici` : la plus proche de son cœur déplacé
+ * d'autant. Un petit glissé reste sur `ici` (les bulles la suivent, three/signes.ts).
+ */
+export function ileDeLaVueGlissee(a: ArchipelagoId, ici: BiomeId, d: { x: number; z: number }): BiomeId {
+  const c = islandCenter(ici);
+  return islandAt(a, c.x + d.x, c.y + d.z);
+}
+
+/**
  * Relief léger : un plateau d'un bloc de haut sur la moitié arrière de l'île (loin de la créature),
  * aux coins arrondis, différent selon l'île. Hauteur du sol (0 ou 1) pour une case de l'île.
  */

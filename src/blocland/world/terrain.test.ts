@@ -1,3 +1,4 @@
+import { islandsOf } from './archipelago';
 import { BLOC, BIOMES, missionsJouables } from '../biomes';
 import { ARCHIPELAGO_IDS, CORE, MAP, bornesDuCoeur, isLand, islandDef, landBox, landCells, mapOf } from './map';
 import { BADGES } from '../../core/progress';
@@ -66,6 +67,7 @@ import {
   whaleSpots,
   worldBounds,
   worldCubes,
+  ileDeLaVueGlissee,
 } from './terrain';
 
 const village = (bridges: string[]) => ({ parts: {}, log: [], links: bridges });
@@ -955,6 +957,22 @@ describe('les bornes dans la vue de l’île', () => {
       expect(cacheUneBorne(bornes, vers, 0, 1, 2)).toBe(true);
       expect(cacheUneBorne(bornes, vers, 1, 0, 0)).toBe(false);
       expect(cacheUneBorne(bornes, vers, PORTEE_DEVANT_LA_BORNE + 1, 0, 3)).toBe(false);
+    }
+  });
+});
+
+describe('les bulles suivent la vue glissée (4 octobre 2026)', () => {
+  it('un petit glissé reste sur l’île où l’on est ; un glissé jusqu’au cœur d’une voisine passe sur elle', () => {
+    for (const a of ARCHIPELAGO_IDS) {
+      const iles = islandsOf(a);
+      for (const ile of iles) {
+        for (const d of [{ x: 2, z: 0 }, { x: -2, z: 0 }, { x: 0, z: 2 }, { x: 0, z: -2 }]) expect(ileDeLaVueGlissee(a, ile.id, d)).toBe(ile.id);
+      }
+      const [x, y] = iles;
+      if (!y) continue;
+      const cx = islandCenter(x.id);
+      const cy = islandCenter(y.id);
+      expect(ileDeLaVueGlissee(a, x.id, { x: cy.x - cx.x, z: cy.y - cx.y })).toBe(y.id);
     }
   });
 });
