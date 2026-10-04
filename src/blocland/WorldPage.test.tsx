@@ -749,6 +749,33 @@ it('le tutoriel du village tient en trois bulles : l’île, les bornes, le bout
   expect(screen.queryByRole('dialog', { name: /bouton Menu/ })).not.toBeInTheDocument();
 });
 
+it('sur la Carte, le bouton « ? » dit seulement le pincement ; la Carte s’ouvre sans phrase', async () => {
+  localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true }));
+  const user = userEvent.setup();
+  renderAt('/adventure/map');
+  const aide = () => screen.queryByRole('dialog', { name: /Pince la Carte/ });
+  expect(aide()).not.toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: 'Revoir l’aide' }));
+  expect(aide()).toHaveTextContent('Pince la Carte à deux doigts pour la rapprocher.');
+  expect(screen.queryByRole('dialog', { name: /Bienvenue/ })).not.toBeInTheDocument();
+  // Une seule bulle : pas de compteur « 1/1 ».
+  expect(aide()).not.toHaveTextContent('1/1');
+  await user.click(screen.getByRole('button', { name: /J’ai compris/ }));
+  expect(aide()).not.toBeInTheDocument();
+  // Quitter la Carte pendant que la ligne est ouverte, puis revenir : elle ne revient pas toute seule.
+  const carte = () => within(screen.getByRole('navigation', { name: 'Village' })).getByRole('button', { name: /Carte/ });
+  await user.click(screen.getByRole('button', { name: 'Revoir l’aide' }));
+  expect(aide()).toBeInTheDocument();
+  await user.click(carte());
+  expect(aide()).not.toBeInTheDocument();
+  await user.click(carte());
+  expect(aide()).not.toBeInTheDocument();
+  // Hors de la Carte, « ? » rejoue le tutoriel du village.
+  await user.click(carte());
+  await user.click(screen.getByRole('button', { name: 'Revoir l’aide' }));
+  expect(screen.getByRole('dialog', { name: /Bienvenue/ })).toBeInTheDocument();
+});
+
 it('au premier toucher d’une île pâle, sa créature dit ce que sont les ouvrages, une seule fois par appareil', async () => {
   localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true }));
   localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'baleine-6e-arrivee': true }));

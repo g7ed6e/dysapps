@@ -346,7 +346,15 @@ export function WorldPage() {
   const [replay, setReplay] = useState(0);
   const stageRef = useRef<HTMLDivElement>(null);
   // Revoir l'aide rouvre le tutoriel : comme la première fois, le reste attend qu'il soit fermé (DA-9).
+  // Sur la Carte de Blocland, l'aide dit seulement le pincement, le seul geste qu'aucun bouton ne montre (mot du
+  // mainteneur, 4 octobre 2026) ; la Carte s'ouvre sans phrase, l'aide ne vient qu'au bouton « ? ».
+  const [aideDeLaCarte, setAideDeLaCarte] = useState(0);
+  useEffect(() => {
+    if (!mapOpen) setAideDeLaCarte(0);
+  }, [mapOpen]);
   const revoirAide = () => {
+    // Tant que le tutoriel du village est ouvert, « ? » le laisse seul : deux bulles ne s'empilent pas en bas.
+    if (mapOpen && univers === 'blocland' && tutoDone) return setAideDeLaCarte((n) => n + 1);
     setTutoDone(false);
     setReplay((n) => n + 1);
   };
@@ -1270,6 +1278,9 @@ export function WorldPage() {
               'Le bouton Menu (⏸), en haut à droite, ouvre le menu : missions, succès, réglages, accueil.',
             ]}
           />
+          {mapOpen && aideDeLaCarte > 0 && (
+            <Tutorial id="carte-pincer" replay={aideDeLaCarte} onClose={() => setAideDeLaCarte(0)} steps={['Pince la Carte à deux doigts pour la rapprocher.']} />
+          )}
           </div>
         {/* La fiche de l'objet touché : en bas, au-dessus de la barre (en paysage, à gauche), comptée sur la scène. */}
         {ficheVue && (
