@@ -27,7 +27,7 @@ import {
 } from '../world/scene';
 import { islandCenter } from '../world/terrain';
 import { drawIslandLabel, drawMapArrow, measureIslandLabel } from '../world/labelCanvas';
-import { PLACES_DE_LA_FLECHE_MAX, boitesDuTrace, placerAvecLaFlecheDOuvrage, placerEtiquettes, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
+import { PLACES_DE_LA_FLECHE_MAX, boitesDuTrace, placerAvecLaFlecheDOuvrage, placerEtiquettes, replierLesSignes, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
 import { COUCHES_DU_TIRET } from '../world/traceSuggere';
 import { VEHICLE_DECK } from '../world/harbour';
 import { vehiclePath } from '../world/voyage';
@@ -453,7 +453,7 @@ export default function WorldCanvas2D({
     let last = t0;
     // L'écart des étiquettes, calculé pour un cadrage (sa clé) et gardé tant qu'il ne change pas.
     // `fleche` : sur la Carte, la place prise par la flèche d'un ouvrage parmi les siennes (GD-7), refaite avec l'écart.
-    let labelLayout: { key: string; offsets: LabelOffset[]; visibles: boolean[]; fleche: number } | null = null;
+    let labelLayout: { key: string; offsets: LabelOffset[]; visibles: boolean[]; sansSigne: boolean[]; fleche: number } | null = null;
     // Sans page autour (un aperçu), la bande des boutons du bas (72 px) reste réservée.
     const lireZones = lecteurDeZones(
       el,
@@ -890,6 +890,8 @@ export default function WorldCanvas2D({
         const key = `${list.map((l) => `${l.id}:${l.text}:${l.state?.id ?? ''}:${l.bloc ?? ''}`).join('|')}@${target.cx.toFixed(1)},${target.cy.toFixed(1)},${target.s.toFixed(3)},${scr.w}x${scr.h}@${marks}@${zonesCle}`;
         if (labelLayout?.key !== key) {
           const boxes = list.map((l) => ({ ...anchor(l, target), ...measureIslandLabel(ctx, l.text, px, l.state, l.bloc) }));
+          // Sans le bloc de l'île, plus étroite : seulement si son nom se tait faute de place (`replierLesSignes`).
+          const etroites = list.map((l) => (l.bloc ? measureIslandLabel(ctx, l.text, px, l.state).w : undefined));
           // L'île elle-même (son étiquette se pose dessus, 14 px plus bas) : si l'interface la couvre, son nom ne désigne rien.
           const iles = boxes.map((b) => ({ x: b.x, y: b.y - 14 * dpr }));
           const cadre = { w: scr.w, h: scr.h };
@@ -924,14 +926,14 @@ export default function WorldCanvas2D({
           const vue = { zones, bulles, obstacles, souples, bounds: cadre, gap: 6 * dpr };
           if (mapArrowOuvrage && carte) {
             const fleches = mapArrowOuvrage.places.slice(0, PLACES_DE_LA_FLECHE_MAX).map((c) => mapMarks(target, c).arrow).filter((b): b is LabelBox => b !== null);
-            labelLayout = { key, ...placerAvecLaFlecheDOuvrage(fleches, boxes, iles, vue, carte) };
-          } else labelLayout = { key, fleche: 0, ...placerEtiquettes(boxes, iles, vue, carte) };
+            labelLayout = { key, ...replierLesSignes(boxes, etroites, (b) => placerAvecLaFlecheDOuvrage(fleches, b, iles, vue, carte)) };
+          } else labelLayout = { key, fleche: 0, ...replierLesSignes(boxes, etroites, (b) => placerEtiquettes(b, iles, vue, carte)) };
         }
-        const { offsets, visibles } = labelLayout;
+        const { offsets, visibles, sansSigne } = labelLayout;
         list.forEach((l, i) => {
           if (!visibles[i]) return;
           const a = anchor(l, cam);
-          drawIslandLabel(ctx, l.text, a.x + offsets[i].dx, a.y + offsets[i].dy, px, l.state, l.bloc);
+          drawIslandLabel(ctx, l.text, a.x + offsets[i].dx, a.y + offsets[i].dy, px, l.state, sansSigne[i] ? undefined : l.bloc);
         });
       }
       if (mapArrowAt) {

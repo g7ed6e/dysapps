@@ -202,6 +202,25 @@ export function montrees(boxes: LabelBox[], offsets: LabelOffset[], zones: Label
 }
 
 /**
+ * Le nom passe avant le signe : `placer` pose les étiquettes (`boxes`, avec le bloc de leur île) ; si des noms se taisent
+ * faute de place, ceux qui ont une forme plus étroite (`etroites[i]`, la largeur sans le bloc) la reprennent et le
+ * placement se refait. Ce second placement l'emporte s'il montre au moins un nom de plus. `sansSigne[i]` : l'étiquette
+ * `i` se montre sans son bloc.
+ */
+export function replierLesSignes<R extends { visibles: boolean[] }>(
+  boxes: LabelBox[],
+  etroites: readonly (number | undefined)[],
+  placer: (boxes: LabelBox[]) => R,
+): R & { sansSigne: boolean[] } {
+  const large = placer(boxes);
+  const aReplier = boxes.map((_, i) => !large.visibles[i] && etroites[i] !== undefined);
+  if (!aReplier.some(Boolean)) return { ...large, sansSigne: boxes.map(() => false) };
+  const repliees = placer(boxes.map((b, i) => (aReplier[i] ? { ...b, w: etroites[i]! } : b)));
+  const vues = (r: R) => r.visibles.filter(Boolean).length;
+  return vues(repliees) > vues(large) ? { ...repliees, sansSigne: aReplier } : { ...large, sansSigne: boxes.map(() => false) };
+}
+
+/**
  * Le placement des étiquettes d'une vue (3D ou 2D, DA-10) : celles dont l'île est sous l'interface ou hors du cadre ne
  * se montreront pas, et sont retirées avant l'écart pour ne pas pousser les autres ; les autres s'écartent de
  * l'interface (`zones`) et des `obstacles` (la flèche et le fanion de la Carte, les grands repères d'Archipéo) : avec
