@@ -419,7 +419,7 @@ Le mot s’ouvre dans un panneau en bas du monde, un instant après l’étape (
 
 ![Le mot de Mousso en bas du monde : « Ton ouvrage tient bon ! Nouvelle île ouverte : Mine des lettres. », avec son portrait et les boutons Écouter et J'ai compris.](/captures/baleine.jpg)
 
-Quand plusieurs étapes arrivent en même temps, seule la plus grande est dite, dans l’ordre du tableau. Un mot n’est jamais répété : ce qui a été dit est noté sur l’appareil, comme les tutoriels, pas dans la partie. Après la mise à jour, les étapes déjà passées sont notées comme dites, sans parler. Le changement d’état du village (« Le village passe à l’état… ») attend que le panneau ou la fiche ouverts soient fermés. Les créatures restent aussi les voix de leur île : accueil, répliques, indice d’île fermée.
+Quand plusieurs étapes arrivent en même temps, seule la plus grande est dite, dans l’ordre du tableau. Un mot n’est jamais répété : ce qui a été dit est noté sur l’appareil, comme les tutoriels, pas dans la partie. Après la mise à jour, les étapes déjà passées sont notées comme dites, sans parler. Les créatures restent aussi les voix de leur île : accueil, répliques, indice d’île fermée.
 
 ## Les nouveaux noms des archipels
 
