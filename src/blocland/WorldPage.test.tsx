@@ -367,8 +367,11 @@ it('« Aller au port » d’un archipel déjà atteint : un fondu court, sans ci
   await user.click(screen.getByRole('button', { name: /Aller au port : Marché des proportions/ }));
   // Pas de voyage joué : le voile, puis l'arrivée au port d'en face, le monde en plein écran.
   expect(screen.getByTestId('voyage')).toHaveTextContent('aucun');
-  expect(document.body.textContent).not.toContain('Collines du Large');
+  expect(document.querySelector('.world-line')).toBeNull();
   await waitFor(() => expect(screen.getByTestId('archipel')).toHaveTextContent('5e'), { timeout: 2000 });
+  // Rien d'écrit à l'écran ; seul un lecteur d'écran entend où l'on arrive.
+  expect(document.querySelector('.world-line')).toBeNull();
+  expect(screen.getByTestId('arrivee-lue')).toHaveTextContent('Archipel de 5e : les Collines du Large');
   expect(screen.getByTestId('voyage')).toHaveTextContent('aucun');
   await waitFor(() => expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/maths-5e-proportionality'));
   expect(screen.queryByRole('dialog', { name: /Marché des proportions/ })).not.toBeInTheDocument();
@@ -379,8 +382,10 @@ it('une île ouverte d’un autre archipel (lien, retour d’exercice) : on y ar
   localStorage.setItem('dysapps:game', JSON.stringify({ world: { links: ['passage-5e'], place: 'maths-5e-proportionality' } }));
   renderAt('/adventure/french-6e-phonology');
   expect(screen.getByTestId('voyage')).toHaveTextContent('aucun');
-  expect(document.body.textContent).not.toContain('Basses Terres');
+  expect(document.querySelector('.world-line')).toBeNull();
   await waitFor(() => expect(screen.getByTestId('archipel')).toHaveTextContent('6e'), { timeout: 5000 });
+  expect(document.querySelector('.world-line')).toBeNull();
+  expect(screen.getByTestId('arrivee-lue')).toHaveTextContent('Archipel de 6e : les Basses Terres');
   expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/french-6e-phonology');
   expect(screen.getByTestId('cadrage')).toHaveTextContent('french-6e-phonology');
   expect(sheet()).not.toBeInTheDocument();

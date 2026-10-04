@@ -378,10 +378,14 @@ export function WorldPage() {
   };
   useEffect(() => clearTimers, []);
   // Un voyage déjà fait (retour, ou un archipel déjà atteint) : pas de cinématique, un fondu court vers l'île demandée,
-  // sans rien dire. La cinématique et le mot d'arrivée (une seule fois, voir useWhaleWord) restent pour le premier voyage.
+  // sans rien écrire. La cinématique et le mot d'arrivée (une seule fois, voir useWhaleWord) restent pour le premier voyage.
+  // Seul un lecteur d'écran entend où l'on arrive (WCAG 4.1.3) ; à l'écran, la coche de la rangée de classes le dit.
+  const [arriveeLue, setArriveeLue] = useState('');
   const hop = (dest: BiomeId) => {
     clearTimers();
     const land = () => {
+      const classe = archipelagoOf(dest).classe;
+      setArriveeLue(`Archipel de ${classe} : les ${textes.archipels[classe]}`);
       moveTo(dest);
       setWalk((w) => ({ route: [seTenir(dest)], seq: w.seq + 1 }));
       setFocus((f) => ({ island: dest, seq: f.seq + 1 }));
@@ -1099,6 +1103,9 @@ export function WorldPage() {
     <div
       className={`world-page${ficheVue ? ' fiche-ouverte' : ''}${whaleWord || motRallume || renommageOuvert ? ' bulle-ouverte' : ''}`}
     >
+      <p className="visually-hidden" role="status" data-testid="arrivee-lue">
+        {arriveeLue}
+      </p>
       <div
         className="world-stage"
         // Un panneau en plein écran le couvre : le monde ne se touche ni ne se lit au clavier dessous.
