@@ -48,7 +48,8 @@ export function MenuSheet({ onClose, onAller }: Props) {
   const { progress } = useProgress();
   const resume = lastPlace();
   const reviews = questsToReview(state.spaced, state.world.links);
-  // Échap referme le menu, comme la croix ; la touche est prise (un mot ouvert dessous ne se ferme pas avec lui).
+  // Échap referme le menu, comme la croix ; la touche est prise à la capture, avant les écouteurs des mots ouverts
+  // dessous (baleine, rallumage), qui ne se ferment pas avec lui.
   const toucheEchap = useEffectEvent((e: KeyboardEvent) => {
     if (e.key !== 'Escape' || e.defaultPrevented) return;
     e.preventDefault();
@@ -56,8 +57,8 @@ export function MenuSheet({ onClose, onAller }: Props) {
   });
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => toucheEchap(e);
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    window.addEventListener('keydown', onKey, true);
+    return () => window.removeEventListener('keydown', onKey, true);
   }, []);
   return (
     <section id="panneau-menu" className="island-sheet menu-sheet" role="dialog" aria-labelledby="menu-titre" aria-modal="true">

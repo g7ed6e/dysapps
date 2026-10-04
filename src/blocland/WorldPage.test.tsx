@@ -658,9 +658,15 @@ it('le menu du village : le bouton Menu l’ouvre en plein écran, Réglages en 
   expect(screen.getByTestId('adresse')).toHaveTextContent(/^\/adventure$/);
   // Le focus revient au bouton Menu.
   expect(screen.getByRole('button', { name: 'Menu' })).toHaveFocus();
+  // Un mot ouvert dessous, dont l'écouteur est posé avant le menu, voit la touche déjà prise : il ne se ferme pas avec lui.
+  let priseAvant: boolean | undefined;
+  const dessous = (e: KeyboardEvent) => (priseAvant = e.defaultPrevented);
+  window.addEventListener('keydown', dessous);
   await user.click(screen.getByRole('button', { name: 'Menu' }));
   menu = await screen.findByRole('dialog', { name: 'Menu' });
   await user.keyboard('{Escape}');
+  window.removeEventListener('keydown', dessous);
+  expect(priseAvant).toBe(true);
   expect(screen.queryByRole('dialog', { name: 'Menu' })).not.toBeInTheDocument();
 });
 

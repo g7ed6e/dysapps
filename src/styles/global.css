@@ -6370,6 +6370,10 @@ fieldset {
     order: 1;
     flex-basis: 100%;
   }
+  /* La croix reste en haut à droite, même seule sur sa ligne (le menu, un lieu sans créature) : toujours au même endroit. */
+  :root[data-texte="grand"] .island-sheet-close {
+    margin-left: auto;
+  }
   :root[data-texte="grand"] .island-quest {
     flex-wrap: wrap;
   }
