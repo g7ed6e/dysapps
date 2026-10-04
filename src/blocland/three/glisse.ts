@@ -1,6 +1,6 @@
-// Faire glisser le monde d'un doigt ou à la souris : la vue se déplace à plat, sans zoom ni rotation. Ce qui se calcule
-// sans Three.js : le seuil entre un toucher et un glissé, le point du sol sous le doigt, le décalage borné à l'archipel.
-// La caméra (./camera.ts) ajoute ce décalage à son cadrage ; WorldCanvas.tsx traduit le pointeur.
+// Faire glisser le monde d'un doigt ou à la souris : la vue se déplace à plat, sans rotation. Ce qui se calcule sans
+// Three.js : le seuil entre un toucher et un glissé, le point du sol sous le doigt, le décalage borné à l'archipel.
+// La caméra (./camera.ts) ajoute ce décalage à son cadrage, et sur la Carte son zoom ; WorldCanvas.tsx traduit le pointeur.
 
 /**
  * En pixels CSS : en dessous, le doigt qui bouge un peu reste un toucher ; au-delà, c'est un glissé, et lever le doigt

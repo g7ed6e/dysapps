@@ -38,6 +38,8 @@ interface Appui {
   x: number;
   y: number;
   ancre: THREE.Vector3 | null;
+  /** Un second doigt s'est posé (la Carte se pince) : lever les doigts n'ouvre rien. */
+  pince?: boolean;
 }
 
 /** La scène en cours : le moteur de rendu, la caméra, et les parties que les props mettent à jour. */
@@ -279,6 +281,16 @@ export default function WorldCanvas({
         arriveRef.current?.();
         return;
       }
+      // Sur la Carte, + et − zooment autour du centre de la place libre.
+      const zoomClavier = e.key === '+' || e.key === '=' ? 1.25 : e.key === '-' || e.key === '_' ? 0.8 : 0;
+      if (zoomClavier && zoomPermis()) {
+        e.preventDefault();
+        const { libre } = lirePlaceLibre(el);
+        const w = Math.max(1, el.clientWidth);
+        const h = Math.max(1, el.clientHeight);
+        if (cadrage.zoomer(zoomClavier, { x: (libre.x0 + libre.x1) / w - 1, y: 1 - (libre.y0 + libre.y1) / h })) signaler();
+        return;
+      }
       const dir = ARROW_DIRS[e.key];
       if (!dir || !pickRef.current) return;
       e.preventDefault();
@@ -288,7 +300,8 @@ export default function WorldCanvas({
     el.addEventListener('keydown', onKey);
 
     // Toucher une île (son sol : le bonhomme y va), une face ou une créature : un tap, pas un glissé. Un glissé d'un
-    // doigt (ou à la souris) fait glisser la vue à plat (./glisse.ts) ; un second doigt est ignoré (pas de pincer).
+    // doigt (ou à la souris) fait glisser la vue à plat (./glisse.ts). Sur la Carte, deux doigts qui se pincent la
+    // zooment (la molette et les touches + et − aussi) ; ailleurs, un second doigt est ignoré.
     const ray = new THREE.Raycaster();
     const pointer = new THREE.Vector2();
     /**
@@ -344,6 +357,8 @@ export default function WorldCanvas({
       return false;
     };
     const onDown = (e: PointerEvent) => {
+      // Sur la Carte, un second doigt posé pendant que le premier touche ou glisse : on pince.
+      if (down && !pince && e.pointerType === 'touch' && e.pointerId !== down.id && zoomPermis()) return pincer(e, down);
       // Un seul doigt : le second, posé pendant que le premier touche ou glisse, ne fait rien.
       if (down || !e.isPrimary || (e.pointerType === 'mouse' && e.button !== 0)) return;
       down = { id: e.pointerId, x: e.clientX, y: e.clientY, ancre: null };
@@ -356,10 +371,65 @@ export default function WorldCanvas({
     };
     /**
      * Le glissé est permis : la page montre « Recentrer », ni marche suivie par la caméra ni voyage en cours (le toucher
-     * y change le but ou fait arriver ; une flânerie sur son île, que la caméra ne suit pas, n'empêche rien). Pas
-     * sur la Carte : elle montre déjà l'archipel entier (DA-31), et son panneau tient la place de « Recentrer ».
+     * y change le but ou fait arriver ; une flânerie sur son île, que la caméra ne suit pas, n'empêche rien). La Carte
+     * aussi se fait glisser, une fois zoomée ou à son plancher, pour l'explorer.
      */
-    const glissePermis = () => Boolean(vueDeplaceeRef.current) && !voyageRef.current && !instant.marche && !instant.navigue && !derniers.current.carte;
+    const glissePermis = () => Boolean(vueDeplaceeRef.current) && !voyageRef.current && !instant.marche && !instant.navigue;
+    /** Le zoom est permis : sur la Carte seulement, quand le glissé l'est. */
+    const zoomPermis = () => glissePermis() && derniers.current.carte && instant.carte;
+    /** Un point de l'écran (pixels du client) en coordonnées normalisées de la vue (−1 à 1), pour la caméra. */
+    const versDe = (x: number, y: number) => {
+      const rect = renderer.domElement.getBoundingClientRect();
+      return { x: ((x - rect.left) / Math.max(1, rect.width)) * 2 - 1, y: -((y - rect.top) / Math.max(1, rect.height)) * 2 + 1 };
+    };
+    /**
+     * Les deux doigts qui pincent la Carte : leurs identifiants, où ils sont, et leur écart et leur milieu au dernier
+     * mouvement. Le milieu entraîne aussi la vue (deux doigts qui glissent ensemble la font glisser).
+     */
+    let pince: { ids: [number, number]; points: Map<number, { x: number; y: number }>; ecart: number; mx: number; my: number } | null = null;
+    const pincer = (e: PointerEvent, premier: Appui) => {
+      const points = new Map([
+        [premier.id, { x: premier.x, y: premier.y }],
+        [e.pointerId, { x: e.clientX, y: e.clientY }],
+      ]);
+      const a = points.get(premier.id)!;
+      pince = { ids: [premier.id, e.pointerId], points, ecart: Math.max(1, Math.hypot(e.clientX - a.x, e.clientY - a.y)), mx: (a.x + e.clientX) / 2, my: (a.y + e.clientY) / 2 };
+      premier.pince = true;
+      cadrage.glissant = true;
+      cubesDuMonde.viser(null);
+      try {
+        renderer.domElement.setPointerCapture(e.pointerId);
+      } catch {
+        // Un pointeur déjà relâché : rien à capturer.
+      }
+    };
+    /** Un des deux doigts bouge : la Carte zoome autour de leur milieu, et glisse avec lui. */
+    const pincement = (e: PointerEvent) => {
+      if (!pince) return;
+      pince.points.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      const a = pince.points.get(pince.ids[0])!;
+      const b = pince.points.get(pince.ids[1])!;
+      const ecart = Math.max(1, Math.hypot(b.x - a.x, b.y - a.y));
+      const mx = (a.x + b.x) / 2;
+      const my = (a.y + b.y) / 2;
+      cadrage.zoomer(ecart / pince.ecart, versDe(mx, my));
+      const avant = solSous(pince.mx, pince.my, cadrage.cible.y);
+      const apres = solSous(mx, my, cadrage.cible.y);
+      if (avant && apres) cadrage.glisser(avant.x - apres.x, avant.z - apres.z);
+      pince.ecart = ecart;
+      pince.mx = mx;
+      pince.my = my;
+      signaler();
+    };
+    /** La molette (ou le pavé tactile qui pince) sur la Carte : elle zoome autour du pointeur. */
+    const onWheel = (e: WheelEvent) => {
+      if (!zoomPermis()) return;
+      e.preventDefault();
+      const pixels = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? 400 : 1;
+      // Un pavé tactile qui pince envoie la molette avec Ctrl, par petits pas : plus sensible.
+      const facteur = Math.exp(-e.deltaY * pixels * (e.ctrlKey ? 0.01 : 0.002));
+      if (cadrage.zoomer(facteur, versDe(e.clientX, e.clientY))) signaler();
+    };
     /** Le point du sol sous le doigt, sur le plan horizontal de l'ancre (au ras de l'horizon : rien). */
     const loinMax = monde.largeur * 3;
     const solSous = (x: number, y: number, hauteur: number) => {
@@ -393,11 +463,12 @@ export default function WorldCanvas({
     const lacher = (e: PointerEvent) => {
       if (renderer.domElement.hasPointerCapture?.(e.pointerId)) renderer.domElement.releasePointerCapture(e.pointerId);
       down = null;
+      pince = null;
       cadrage.glissant = false;
       if (renderer.domElement.style.cursor === 'grabbing') renderer.domElement.style.cursor = 'grab';
     };
     const onCancel = (e: PointerEvent) => {
-      if (down && e.pointerId === down.id) lacher(e);
+      if ((down && e.pointerId === down.id) || pince?.ids.includes(e.pointerId)) lacher(e);
     };
     /** Ce que dit un tap sur un cube : borne, lieu, ouvrage, face à construire en chantier, ou l'île. */
     const tapSur = (h: THREE.Intersection) =>
@@ -491,9 +562,11 @@ export default function WorldCanvas({
       cadrage.recadrer(point, { x: ((libre.x0 + libre.x1) / w) - 1, y: 1 - (libre.y0 + libre.y1) / h });
     };
     const onUp = (e: PointerEvent) => {
+      // Un des deux doigts qui pinçaient se lève : le geste est fini, l'autre doigt n'ouvre rien en se levant.
+      if (pince?.ids.includes(e.pointerId)) return lacher(e);
       if (!down || e.pointerId !== down.id) return;
       const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y);
-      const glisse = down.ancre !== null;
+      const glisse = down.ancre !== null || Boolean(down.pince);
       lacher(e);
       // Après un glissé (ou un doigt qui a bougé pendant une marche ou un voyage), lever le doigt n'ouvre rien.
       if (glisse || moved >= SEUIL_DU_GLISSE) return;
@@ -569,6 +642,11 @@ export default function WorldCanvas({
       else pickRef.current?.(tap.id, tap.cell, enRouteIci);
     };
     const onHover = (e: PointerEvent) => {
+      // Deux doigts posés sur la Carte : on pince.
+      if (pince) {
+        if (pince.ids.includes(e.pointerId)) pincement(e);
+        return;
+      }
       // Un doigt posé : c'est un geste (toucher ou glissé), pas un survol.
       if (down) {
         if (e.pointerId === down.id) glisser(e, down);
@@ -585,6 +663,7 @@ export default function WorldCanvas({
     renderer.domElement.addEventListener('pointermove', onHover);
     renderer.domElement.addEventListener('pointerleave', onLeave);
     renderer.domElement.addEventListener('pointercancel', onCancel);
+    renderer.domElement.addEventListener('wheel', onWheel, { passive: false });
 
     const resize = () => {
       const w = el.clientWidth;
@@ -671,6 +750,7 @@ export default function WorldCanvas({
       renderer.domElement.removeEventListener('pointermove', onHover);
       renderer.domElement.removeEventListener('pointerleave', onLeave);
       renderer.domElement.removeEventListener('pointercancel', onCancel);
+      renderer.domElement.removeEventListener('wheel', onWheel);
       for (const p of parties) p.dispose();
       meter?.dispose();
       if (window.__dysappsCamera === pourLesCaptures) delete window.__dysappsCamera;
@@ -855,6 +935,6 @@ export default function WorldCanvas({
   }, [focus.island, focus.seq]);
 
   return (
-    <div ref={host} className={`voxel-canvas ${className ?? ''}`.trim()} data-rendu={rendu} role="img" aria-label={`${label}. ${onVueDeplacee ? 'Faire glisser pour explorer. ' : ''}Au clavier : les flèches vont à l'île voisine.`} />
+    <div ref={host} className={`voxel-canvas ${className ?? ''}`.trim()} data-rendu={rendu} role="img" aria-label={`${label}. ${onVueDeplacee ? 'Faire glisser pour explorer. ' : ''}Au clavier : les flèches vont à l'île voisine${map ? ', + et − zooment' : ''}.`} />
   );
 }

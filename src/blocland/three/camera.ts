@@ -1,7 +1,9 @@
-// La caméra de la scène 3D : gérée par l'application (pas de zoom ni de rotation ; on touche une île pour y aller).
+// La caméra de la scène 3D : gérée par l'application (pas de rotation ; on touche une île pour y aller).
 // Elle rejoint en douceur sa place : le navire en route, le bonhomme qui marche, l'île ouverte, sinon le bonhomme.
 // L'élève peut faire glisser la vue à plat pour explorer (./glisse.ts) : un décalage s'ajoute à ce cadrage, borné à
 // l'archipel, et s'efface dès que l'application reprend la main (une île touchée, la Carte, une marche, un voyage).
+// Sur la Carte seulement, l'élève peut aussi zoomer (pincer, molette, touches + et −) : de l'archipel entier, son
+// cadrage d'ouverture, jusqu'à une île en gros plan (`zoomer`).
 import * as THREE from 'three';
 import type { BiomeId } from '../biomes';
 import { RESERVE_DU_BAS, type PlaceLue, type Rect } from '../placeLibre';
@@ -37,6 +39,13 @@ export const PLANCHER_DE_LA_CARTE = 3.4;
  * tablette, ce cadre déborde de la place libre : il s'aligne sur son haut, et le nom du dessus tient toujours (DA-31).
  */
 export const AUTOUR_DE_LA_DESTINATION = { haut: 124, bas: 64, cote: 110 };
+/**
+ * Le zoom de la Carte, au plus près : une île (`LARGEUR_D_UNE_ILE` cases) y remplit les deux tiers du petit côté de la
+ * place libre. Au plus loin, le cadrage d'ouverture (jamais sous le plancher).
+ */
+export const ZOOM_DE_LA_CARTE = { ile: 2 / 3 };
+/** La largeur d'une île, en cases (environ, world/terrain.ts) : la mesure du zoom le plus proche. */
+const LARGEUR_D_UNE_ILE = 22;
 /** Entre l'archipel entier et le bord de la place libre. */
 const MARGE_DE_LA_CARTE = 12;
 /** Sans page autour (un aperçu, un test) : une vue de tablette, moins la bande des boutons du bas. */
@@ -302,8 +311,15 @@ export interface Camera extends PartieDeLaScene {
   glisser(dx: number, dz: number): void;
   /** Remet le décalage à zéro : la caméra revient en douceur à son cadrage (d'un coup, avec moins d'animations). */
   recentrer(): void;
-  /** La vue a été déplacée (un décalage non nul). */
+  /** La vue a été déplacée (un décalage non nul) ou zoomée. */
   decale(): boolean;
+  /**
+   * Sur la Carte seulement : rapproche (`facteur` > 1) ou éloigne la vue, borné entre le cadrage d'ouverture et une île
+   * en gros plan (`ZOOM_DE_LA_CARTE`). Le point du sol vu en `vers` (coordonnées normalisées de l'écran, −1 à 1) reste
+   * sous le doigt ; la caméra y est tout de suite. Ni le nord, ni la direction de vue ne changent. Rend vrai si la vue a
+   * changé.
+   */
+  zoomer(facteur: number, vers: { x: number; y: number }): boolean;
   /**
    * Pour les captures : met la caméra d'un coup à son cadrage de la dernière image, sans attendre son pas, et rend
    * l'écart qu'il restait (infini avant la première image). Deux appels de suite qui rendent presque zéro : le cadrage
@@ -363,7 +379,7 @@ export function creerCamera(
   let ouvertures = 0;
   let surLaCarte = false;
   let contexte = { ouvertures: -1, destination: '', cle: '' };
-  let cadrageCarte: { lue: PlaceLue | null; destination: string; aspect: number; target: THREE.Vector3; pos: THREE.Vector3 } | null = null;
+  let cadrageCarte: { lue: PlaceLue | null; destination: string; aspect: number; target: THREE.Vector3; pos: THREE.Vector3; echelle: number; zoomMax: number } | null = null;
   /**
    * Le cadrage de la Carte, recalculé seulement quand la place libre lue (le même objet tant qu'elle ne change pas) ou
    * la destination changent (pas image par image). `saut` : sans mouvement.
@@ -380,14 +396,18 @@ export function creerCamera(
       const w = lue ? Math.max(1, lue.w) : HAUTEUR_DE_TABLETTE * aspect;
       const h = lue ? Math.max(1, lue.h) : HAUTEUR_DE_TABLETTE;
       const libre = lue?.libre ?? { x0: 0, y0: 0, x1: w, y1: h - RESERVE_DU_BAS };
-      cadrageCarte = { lue, destination: cle, aspect, ...cadrageDeLaCarte(monde.archipel, destination, w, h, libre) };
+      const c = cadrageDeLaCarte(monde.archipel, destination, w, h, libre);
+      // Au plus près, une île remplit les deux tiers du petit côté de la place libre (jamais moins près qu'à l'ouverture).
+      const cote = Math.max(1, Math.min(libre.x1 - libre.x0, libre.y1 - libre.y0));
+      const zoomMax = Math.max(1, (ZOOM_DE_LA_CARTE.ile * cote) / (LARGEUR_D_UNE_ILE * c.echelle));
+      cadrageCarte = { lue, destination: cle, aspect, ...c, zoomMax };
     }
     return { target: cadrageCarte.target, pos: cadrageCarte.pos, saut: lue?.saut ?? false };
   };
   /**
    * Où la caméra veut être : sur l'île ouverte (vue rapprochée), sinon autour du bonhomme. La caméra est gérée par
-   * l'application : pas de zoom ni de rotation ; on touche une île pour y aller, ou on fait glisser la vue (le décalage
-   * s'ajoute après, dans `animer`). En portrait, un peu plus loin pour que tout tienne dans la largeur.
+   * l'application : pas de rotation ; on touche une île pour y aller, ou on fait glisser la vue (le décalage, et sur la
+   * Carte le zoom, s'ajoutent après, dans `animer`). En portrait, un peu plus loin pour que tout tienne dans la largeur.
    */
   const framing = (
     island: BiomeId | null,
@@ -479,9 +499,30 @@ export function creerCamera(
   const demande = { seq: -1, ile: null as BiomeId | null, carte: false };
   /** Le décalage voulu par un glissé, avant bornage (gardé d'un appel à l'autre : pas d'allocation). */
   const voulu: Decalage = { x: 0, z: 0 };
+  /**
+   * Le zoom de la Carte : 1 au cadrage d'ouverture, plus grand en se rapprochant (la distance à la cible est divisée
+   * d'autant) ; et celui que voient les étiquettes (gelé pendant un geste, comme le décalage).
+   */
+  let zoom = 1;
+  let zoomDuBut = 1;
   const zero = () => {
     decalage.x = 0;
     decalage.z = 0;
+    zoom = 1;
+  };
+  /** Les points du sol sous le doigt, avant et après un zoom (alloués une fois). */
+  const avantLeZoom = new THREE.Vector3();
+  const apresLeZoom = new THREE.Vector3();
+  /** Le point du plan horizontal de la cible vu en `vers` par la caméra, dans `out` ; faux à l'horizon. */
+  const solVu = (vers: { x: number; y: number }, out: THREE.Vector3): boolean => {
+    camera.updateMatrixWorld();
+    rayon.setFromCamera(VISEE.set(vers.x, vers.y), camera);
+    const { origin: o, direction: d } = rayon.ray;
+    if (Math.abs(d.y) < 1e-6) return false;
+    const t = (camTarget.y - o.y) / d.y;
+    if (t <= 0) return false;
+    out.set(o.x + d.x * t, camTarget.y, o.z + d.z * t);
+    return true;
   };
   /** Le cadrage a été calculé au moins une fois (`vise` et `place` le tiennent). */
   let vu = false;
@@ -532,7 +573,23 @@ export function creerCamera(
       camera.updateMatrixWorld();
     },
     recentrer: zero,
-    decale: () => estDecale(decalage),
+    decale: () => estDecale(decalage) || zoom > 1 + 1e-6,
+    zoomer: (facteur, vers) => {
+      if (!instant.carte || !cadrageCarte || !(facteur > 0)) return false;
+      const voulu = Math.min(cadrageCarte.zoomMax, Math.max(1, zoom * facteur));
+      if (Math.abs(voulu - zoom) < 1e-9) return false;
+      const saisi = solVu(vers, avantLeZoom);
+      // La caméra avance (ou recule) vers sa cible tout de suite, sans attendre son pas : la vue suit les doigts.
+      const k = zoom / voulu;
+      camPos.sub(camTarget).multiplyScalar(k).add(camTarget);
+      zoom = voulu;
+      camera.position.copy(camPos);
+      camera.lookAt(camTarget);
+      // Le point saisi revient sous le doigt : la vue glisse à plat d'autant.
+      if (saisi && solVu(vers, apresLeZoom)) self.glisser(avantLeZoom.x - apresLeZoom.x, avantLeZoom.z - apresLeZoom.z);
+      else camera.updateMatrixWorld();
+      return true;
+    },
     auBut: (point, W, H) => {
       if (!vu) return null;
       placerLEssai(but.target, but.pos);
@@ -596,6 +653,12 @@ export function creerCamera(
         target.add(glissement);
         pos.add(glissement);
       }
+      // Sur la Carte, le zoom rapproche la caméra de sa cible (la vue de l'élève, et celle que voient les étiquettes).
+      const surLaCarteIci = instant.carte && !sailing && !fixe;
+      if (!surLaCarteIci) zoom = 1;
+      if (!self.glissant) zoomDuBut = zoom;
+      const kDuBut = 1 / zoomDuBut;
+      const kVu = 1 / zoom;
       base.x = target.x;
       base.z = target.z;
       // La place visée a pu bouger (la vue a changé de taille) : le décalage reste dans l'archipel.
@@ -605,7 +668,8 @@ export function creerCamera(
         decalageDuBut.z = decalage.z;
       }
       but.target.set(target.x + decalageDuBut.x, target.y, target.z + decalageDuBut.z);
-      but.pos.set(pos.x + decalageDuBut.x, pos.y, pos.z + decalageDuBut.z);
+      but.pos.set(target.x + (pos.x - target.x) * kDuBut + decalageDuBut.x, target.y + (pos.y - target.y) * kDuBut, target.z + (pos.z - target.z) * kDuBut + decalageDuBut.z);
+      pos.sub(target).multiplyScalar(kVu).add(target);
       target.x += decalage.x;
       target.z += decalage.z;
       pos.x += decalage.x;
