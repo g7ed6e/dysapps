@@ -8,7 +8,8 @@ import * as THREE from 'three';
 import { drawIslandLabel, drawMapArrow, drawMedaillon, measureIslandLabel } from '../world/labelCanvas';
 import { BULLE, flottementDeLaBulle, type ImageDeLaBulle } from '../world/affordance';
 import { VISAGE_DU_BONHOMME } from '../Avatar';
-import { CASE, PLAQUE, caseALEcran, dessinerLaCase } from './signes';
+import { CASE, PLAQUE, caseALEcran, dansLaBande, dessinerLaCase } from './signes';
+import type { PlaceLue, Rect } from '../placeLibre';
 import { reperesDe } from '../world/cadrage';
 import { boitesDuTrace, placerAvecLaFlecheDOuvrage, placerEtiquettes, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
 import { islandCenter } from '../world/terrain';
@@ -36,6 +37,11 @@ export interface Etiquettes extends PartieDeLaScene {
   poser(labels: WorldViewProps['islandLabels']): void;
   /** Blocland : l'image de la bulle d'or de la Carte (`imageDeLaCarte`) ; sans elle, l'étoile. */
   poserLImageDeLaCarte(image: ImageDeLaBulle | null): void;
+  /**
+   * Blocland, sur la Carte : la bulle d'or est tenue au bord de la place libre (sa cible hors du cadre, la Carte glissée
+   * ou zoomée) et le point (`x`, `y`, pixels CSS de la vue) est sur elle. La toucher ramène la vue d'ensemble.
+   */
+  bulleAuBordSous(x: number, y: number): boolean;
   vider(): void;
 }
 
@@ -54,6 +60,11 @@ export function creerEtiquettes(
   instant: Instant,
   /** Les plaques des créatures (three/signes.ts) : hors de la Carte, aucune étiquette ne se pose dessus. */
   plaques: { boites(cam: THREE.Camera, W: number, H: number): LabelBox[]; readonly version: number } | null = null,
+  /**
+   * La place que l'interface laisse libre dans la vue (../placeLibre.ts, `lecteurDePlaceLibre`) : la bulle d'or de la
+   * Carte y reste entière ; sans elle (les tests), toute la vue.
+   */
+  lirePlace: ((contexte: string) => PlaceLue) | null = null,
 ): Etiquettes {
   const { scene } = monde;
   // Blocland (piste B, choisie par le mainteneur le 4 octobre 2026) : sur la Carte, la prochaine destination est la
@@ -145,9 +156,37 @@ export function creerEtiquettes(
     if (ouvrage && pointes?.length) return pointes[placeDeLOuvrage.ouvrage === ouvrage ? Math.min(placeDeLOuvrage.i, pointes.length - 1) : 0];
     return pointe;
   };
+  /** La place libre, en pixels CSS de la vue lue (`null` : toute la vue), relue quatre fois par seconde au plus. */
+  let libre: Rect | null = null;
+  let largeurLue = 0;
+  let hauteurLue = 0;
+  let placeLue = -Infinity;
+  const relireLaPlace = () => {
+    if (!lirePlace || instant.now - placeLue < 250) return;
+    placeLue = instant.now;
+    const lue = lirePlace('carte:bulle');
+    libre = lue.libre;
+    largeurLue = lue.w;
+    hauteurLue = lue.h;
+  };
   /**
-   * Le fanion et la flèche, en pixels d'écran vus par `cam` (la flèche déjà écartée du fanion) : ce que les étiquettes
-   * évitent. `pointe` : la pointe de la flèche, si ce n'est pas celle d'aujourd'hui (une autre place d'un ouvrage).
+   * Blocland : le centre de la bulle (`x`, `y`, sa taille `w` × `h`, pixels CSS d'une vue `W` × `H`) ramené dans la place
+   * libre, à `BULLE.bordPx` de ses bords (la règle des bulles de l'île, world/affordance.ts) : jamais sous la barre, la
+   * colonne de Pause et des classes, ni une fiche. Écrit dans `tenue`.
+   */
+  const tenue = { x: 0, y: 0 };
+  const tenirLaBulle = (x: number, y: number, w: number, h: number, W: number, H: number) => {
+    const sx = libre && largeurLue ? W / largeurLue : 1;
+    const sy = libre && hauteurLue ? H / hauteurLue : 1;
+    tenue.x = dansLaBande(x, libre ? libre.x0 * sx : 0, libre ? libre.x1 * sx : W, w / 2 + BULLE.bordPx);
+    tenue.y = dansLaBande(y, libre ? libre.y0 * sy : 0, libre ? libre.y1 * sy : H, h / 2 + BULLE.bordPx);
+    return tenue;
+  };
+  /** La bulle d'or à l'écran, telle que posée à la dernière image (pixels CSS), et si elle est tenue au bord. */
+  const bulleALEcran = { x: 0, y: 0, w: 0, h: 0, visible: false };
+  /**
+   * Le fanion et la flèche, en pixels d'écran vus par `cam` (la flèche déjà écartée du fanion ; la bulle de Blocland
+   * tenue dans la place libre) : ce que les étiquettes évitent. `pointe` : la pointe de la flèche, si ce n'est pas celle d'aujourd'hui (une autre place d'un ouvrage).
    */
   const marksOnScreen = (cam: THREE.Camera, W: number, H: number, pointe: Pointe | null = laPointe()) => {
     const out: { arrow: LabelBox | null; arrowShift: LabelOffset; beacon: LabelBox | null } = { arrow: null, arrowShift: { dx: 0, dy: 0 }, beacon: null };
@@ -169,6 +208,11 @@ export function creerEtiquettes(
       if (out.beacon) out.arrowShift = separateMark(tip, { x: out.beacon.x, y: out.beacon.y + out.beacon.h / 2 }, ARROW_GAP);
       const { w: aw, h: ah } = mapArrow.userData.px;
       out.arrow = { x: tip.x + out.arrowShift.dx, y: tip.y + out.arrowShift.dy - ah / 2, w: aw, h: ah };
+      if (bulles) {
+        const c = tenirLaBulle(out.arrow.x, out.arrow.y, aw, ah, W, H);
+        out.arrow.x = c.x;
+        out.arrow.y = c.y;
+      }
     }
     return out;
   };
@@ -190,7 +234,9 @@ export function creerEtiquettes(
     }
     const d = donnees();
     if (d.posee) fleche.visible = d.on && !show;
+    bulleALEcran.visible = false;
     if (!show || !pointe) return;
+    if (bulles) relireLaPlace();
     const ouvrage = Boolean(d.ouvrage);
     if (ouvrage !== flecheDOuvrage) {
       dessinerLaFleche(ouvrage);
@@ -199,27 +245,34 @@ export function creerEtiquettes(
     mapArrow.position.set(pointe.x, pointe.z, pointe.y);
     const { w: aw, h: ah, tip } = mapArrow.userData.px;
     mapArrow.scale.set(aw * perPx, ah * perPx, 1);
-    const { arrow, arrowShift } = marksOnScreen(camera, W, H);
+    const tipAt = toScreen(pointeAt.set(pointe.x, pointe.z, pointe.y), camera, W, H);
+    const { arrow, arrowShift } = marksOnScreen(camera, W, H, pointe);
     if (!bulles || !arrow) {
       const bob = reduit ? 0 : Math.abs(Math.sin(t * 2.2)) * 6;
       mapArrow.center.set(0.5 - arrowShift.dx / aw, 1 - tip + (arrowShift.dy - bob) / ah);
       return;
     }
     // Blocland : la bulle monte et descend lentement (± 2 px, comme sur l'île ; rien avec le mouvement réduit). Sa
-    // cible hors du cadre (la Carte qu'on fait glisser), elle reste entière au bord de l'écran, sans pointe, du côté
-    // de sa cible (la règle des bulles de l'île, world/affordance.ts, `BULLE.bordPx`).
+    // cible hors du cadre (la Carte glissée ou zoomée), elle reste entière au bord de la place libre, sans pointe, du
+    // côté de sa cible (`marksOnScreen` l'y a déjà tenue).
     const flotte = reduit ? 0 : flottementDeLaBulle(t);
-    const m = BULLE.bordPx;
-    const cx = Math.min(Math.max(arrow.x, m + aw / 2), W - m - aw / 2);
-    const cy = Math.min(Math.max(arrow.y, m + ah / 2), H - m - ah / 2);
-    const auBord = cx !== arrow.x || cy !== arrow.y;
+    const cx = arrow.x;
+    const cy = arrow.y;
+    const libreX = tipAt.x + arrowShift.dx;
+    const libreY = tipAt.y + arrowShift.dy - ah / 2;
+    const auBord = Math.abs(cx - libreX) > 0.5 || Math.abs(cy - libreY) > 0.5;
+    bulleALEcran.x = cx;
+    bulleALEcran.y = cy;
+    bulleALEcran.w = aw;
+    bulleALEcran.h = ah;
+    bulleALEcran.visible = auBord;
     if (auBord !== bulleAuBord) {
       bulleAuBord = auBord;
       dessinerLaFleche(flecheDOuvrage);
       arrowTex.needsUpdate = true;
     }
-    const dx = arrowShift.dx + cx - arrow.x;
-    const dy = arrowShift.dy + cy - arrow.y;
+    const dx = arrowShift.dx + cx - libreX;
+    const dy = arrowShift.dy + cy - libreY;
     mapArrow.center.set(0.5 - dx / aw, 1 - tip + (dy - flotte) / ah);
   };
   // Archipéo : les grands repères de l'archipel (world/cadrage.ts), qu'aucune étiquette ne couvre, hors de la Carte
@@ -421,6 +474,7 @@ export function creerEtiquettes(
       dessinerLaFleche(flecheDOuvrage);
       arrowTex.needsUpdate = true;
     },
+    bulleAuBordSous: (x, y) => bulleALEcran.visible && Math.abs(x - bulleALEcran.x) <= bulleALEcran.w / 2 && Math.abs(y - bulleALEcran.y) <= bulleALEcran.h / 2,
     animer: (t, _dt, reduit) => {
       placeMarks(instant.carte, t, reduit);
       placeLabels(instant.carte);

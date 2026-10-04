@@ -211,7 +211,7 @@ export default function WorldCanvas({
     const bornes = creerBornes(monde, () => personnages.avatar, instant);
     // Les plaques des créatures (créées plus bas, lues seulement à l'animation) : les étiquettes s'en écartent.
     const plaques = { boites: (cam: THREE.Camera, W: number, H: number) => signesDesCreatures.boites(cam, W, H), get version() { return signesDesCreatures.version; } };
-    const etiquettes = creerEtiquettes(monde, el, camera, bornes.fleche, bornes.donneesDeLaFleche, () => personnages.avatar, instant, plaques);
+    const etiquettes = creerEtiquettes(monde, el, camera, bornes.fleche, bornes.donneesDeLaFleche, () => personnages.avatar, instant, plaques, lecteurDePlaceLibre(el));
     const personnages = creerPersonnages(monde, () => cubesDuMonde.champ(), instant, lumiere);
     const cubesDuMonde = creerCubes(monde, large, lumiere, instant);
     const navire = creerNavire(monde, personnages, cubesDuMonde, derniers, instant, vehicleRef, voyageRef);
@@ -595,6 +595,8 @@ export default function WorldCanvas({
       // Une bulle sous le doigt (sa plaque, pas les marges de sa case) passe d'abord : elle est dessinée par-dessus tout
       // (Blocland, world/affordance.ts).
       const vue = renderer.domElement.getBoundingClientRect();
+      // Sur la Carte glissée ou zoomée, la bulle d'or tenue au bord ramène la vue d'ensemble, où sa cible se voit.
+      if (derniers.current.carte && etiquettes.bulleAuBordSous(e.clientX - vue.left, e.clientY - vue.top)) return recentrer();
       const bulle = signesDesCreatures.sous(e.clientX - vue.left, e.clientY - vue.top, vue.width, vue.height);
       if (bulle?.genre === 'creature') {
         recentrer();

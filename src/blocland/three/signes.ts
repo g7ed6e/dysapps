@@ -245,7 +245,7 @@ interface Touchable {
 }
 
 /** `v` ramené entre `a + m` et `b - m` (au milieu si la bande est trop étroite). */
-const dansLaBande = (v: number, a: number, b: number, m: number): number => (b - a < 2 * m ? (a + b) / 2 : Math.min(Math.max(v, a + m), b - m));
+export const dansLaBande = (v: number, a: number, b: number, m: number): number => (b - a < 2 * m ? (a + b) / 2 : Math.min(Math.max(v, a + m), b - m));
 
 /** Une place libre relue quatre fois par seconde au plus (la fiche qui s'ouvre change la clé, `calme`). */
 const RELIRE_LA_PLACE_MS = 250;
