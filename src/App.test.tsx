@@ -46,12 +46,10 @@ it('l’accueil est le menu de Blocland : le village, les Expéditions (la LV2 �
   expect(screen.getByRole('link', { name: /Français/ })).toHaveAttribute('href', '/matiere/french');
   expect(screen.getByRole('link', { name: /Maths/ })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /Anglais/ })).toHaveAttribute('href', '/matiere/english');
-  // Pas d'onglets : la barre du haut garde les grands endroits (Menu et Réglages sur téléphone).
+  // Blocland : plus de barre du haut (4 octobre 2026), seulement le bouton Menu en haut à droite.
   expect(screen.queryByRole('navigation', { name: 'Onglets' })).not.toBeInTheDocument();
-  const bar = screen.getByRole('navigation', { name: 'Navigation principale' });
-  expect(within(bar).getByRole('link', { name: 'Missions' })).toHaveAttribute('aria-current', 'page');
-  expect(within(bar).getByRole('link', { name: 'Menu' })).toHaveAttribute('href', '/menu');
-  expect(within(bar).getByRole('link', { name: 'Réglages' })).toHaveAttribute('href', '/reglages');
+  expect(screen.queryByRole('navigation', { name: 'Navigation principale' })).not.toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Menu' })).toHaveAttribute('href', '/menu');
 });
 
 it('les révisions du jour ont leur carte sur l’accueil, vers la mission', () => {
@@ -285,10 +283,10 @@ it('surligne les syllabes en couleurs alternées quand le réglage est actif', (
 it('pendant une mission, mode concentration : plus de barre du haut, un bouton Pause qui permet de quitter', async () => {
   const user = userEvent.setup();
   renderAt('/app/fractions');
-  expect(screen.getByRole('navigation', { name: 'Navigation principale' })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Menu' })).toBeInTheDocument();
   await user.click((await screen.findAllByRole('button', { name: /Lire une fraction/ }))[0]);
-  // La partie commence : plus de barre du haut, seulement Pause.
-  expect(screen.queryByRole('navigation', { name: 'Navigation principale' })).not.toBeInTheDocument();
+  // La partie commence : plus de bouton Menu, seulement Pause.
+  expect(screen.queryByRole('link', { name: 'Menu' })).not.toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: 'Pause' }));
   const pause = screen.getByRole('dialog', { name: 'Pause' });
   expect(within(pause).getByText(/L’XP des réponses déjà données est gardée/)).toBeInTheDocument();
@@ -302,7 +300,7 @@ it('pendant une mission, mode concentration : plus de barre du haut, un bouton P
   await user.click(screen.getByRole('button', { name: 'Pause' }));
   await user.click(screen.getByRole('button', { name: /Quitter la partie/ }));
   expect(await screen.findByRole('heading', { name: 'Missions' })).toBeInTheDocument();
-  expect(screen.getByRole('navigation', { name: 'Navigation principale' })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Menu' })).toBeInTheDocument();
 });
 
 it('l’école du village : trois portes, les missions de la matière, et le retour à la porte', async () => {

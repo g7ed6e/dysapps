@@ -742,7 +742,7 @@ it('le tutoriel du village tient en trois bulles : l’île, les bornes, le bout
   await user.click(screen.getByRole('button', { name: /Suivant/ }));
   expect(tuto()).toHaveTextContent(/touche une borne, puis Jouer\. La bulle bordée d’or montre la prochaine chose à faire\. Chaque mission te donne des blocs pour construire l’île/);
   await user.click(screen.getByRole('button', { name: /Suivant/ }));
-  expect(tuto()).toHaveTextContent('Le bouton Menu (⏸), en haut à droite, ouvre le menu : missions, succès, réglages, accueil.');
+  expect(tuto()).toHaveTextContent('Le bouton Menu, en haut à droite, ouvre le menu : missions, succès, réglages, accueil.');
   // La bulle montre le bouton Menu.
   expect(document.querySelector('[data-tuto="menu"]')!.classList.contains('tuto-target')).toBe(true);
   await user.click(screen.getByRole('button', { name: /J’ai compris/ }));

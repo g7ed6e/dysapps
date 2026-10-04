@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, bulles, fiches, sans-fleche ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, bulles, fiches, menu-tete ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 20` le plus long temps réel laissé au monde pour se construire (en secondes, 10 par défaut). L'horloge de la
 // page est pilotée (`preparerLaScene`, scripts/prise-de-vue.mjs) : deux prises du même état donnent la même image, les
@@ -47,7 +47,7 @@ const ONLY = option('--archipel');
 const REFERENCES = option('--comparer');
 const WAIT = Number(option('--attente') ?? 10) * 1000;
 /** Les vues sans monde 3D (le défi, la bulle d'une créature) : rien à attendre avant la prise. */
-const VUES_SANS_MONDE = new Set(['défi', 'bulle']);
+const VUES_SANS_MONDE = new Set(['défi', 'bulle', 'page']);
 /** Une heure de jour et une de nuit, pour que le ciel et la lumière soient les mêmes à chaque fois. */
 const DAY = new Date('2026-09-28T10:30:00');
 const NIGHT = new Date('2026-09-28T22:30:00');
@@ -427,14 +427,20 @@ const CAPTURES = [
     inventaire: { 'french-6e-phonology': 4 },
     ...autres,
   })),
-  // La première visite sans flèche jaune dans le monde (famille `sans-fleche`, mot du mainteneur du 4 octobre 2026), à
-  // retirer une fois le lot fusionné : la Forêt des sons au départ, en tablette, en portrait et en téléphone (aussi en grand texte).
+  // Plus de barre du haut, le menu en trois traits, Recentrer à la tête du bonhomme (famille `menu-tete`, mot du
+  // mainteneur du 4 octobre 2026), à retirer une fois le lot fusionné : une page hors du monde (`page` : son adresse
+  // `chemin`), les Réglages et les Missions, sur téléphone (aussi en grand texte) et en tablette ; le monde au départ,
+  // son bouton Menu ; la Carte zoomée, Recentrer en rond à visage.
   ...[
-    { suffixe: '' },
-    { suffixe: '-390x844', taille: { width: 390, height: 844 } },
-    { suffixe: '-800x1280', taille: { width: 800, height: 1280 } },
-    { suffixe: '-390x844-od32', taille: { width: 390, height: 844 }, reglages: { font: 'opendyslexic', fontSize: 32 } },
-  ].map(({ suffixe, ...autres }) => ({ nom: `sans-fleche-depart${suffixe}`, vue: 'île', famille: 'sans-fleche', ile: 'french-6e-phonology', depart: true, ...autres })),
+    { suffixe: '', taille: { width: 390, height: 844 } },
+    { suffixe: '-grand-texte', taille: { width: 390, height: 844 }, reglages: { font: 'opendyslexic', fontSize: 32 } },
+    { suffixe: '-tablette' },
+  ].flatMap(({ suffixe, ...autres }) => [
+    { nom: `menu-tete-reglages${suffixe}`, vue: 'page', chemin: '/reglages', famille: 'menu-tete', ...autres },
+    { nom: `menu-tete-missions${suffixe}`, vue: 'page', chemin: '/quetes', famille: 'menu-tete', ...autres },
+    { nom: `menu-tete-ile${suffixe}`, vue: 'île', famille: 'menu-tete', ile: 'french-6e-phonology', depart: true, ...autres },
+    { nom: `menu-tete-carte-zoomee${suffixe}`, vue: 'carte', famille: 'menu-tete', zoomer: 2, ...autres },
+  ]),
   { nom: 'etoile-phare-ponts', vue: 'archipel', famille: 'etoile', ile: 'maths-3e-functions', finesse: 2 },
   { nom: 'etoile-phare-ponts-nuit', vue: 'archipel', famille: 'etoile', ile: 'maths-3e-functions', finesse: 2, nuit: true },
   // Les commandes des habitants (GD-7, PR 3, famille `commandes`, lot en cours) : à la Mine des lettres, la commande de
@@ -583,6 +589,7 @@ async function ouvrirLePanneauPour(page, selecteur) {
  */
 function routeDe(c, parIle, routes) {
   if (parIle) return `/adventure/${parIle}/challenge`;
+  if (c.vue === 'page') return c.chemin;
   if (c.pose) return `/adventure/${c.ile}?worksite=part`;
   if (c.lieu) return `/adventure/${c.lieu}`;
   if (c.ile && c.vue === 'île') return `/adventure/${c.ile}`;

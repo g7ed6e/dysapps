@@ -24,13 +24,20 @@ function renderAt(path: string) {
   );
 }
 
-it('sur l’écran du monde, pas de barre du haut : le menu Pause la remplace ; elle revient hors du monde', () => {
+it('Blocland : pas de barre du haut, ni dans le monde ni hors du monde ; hors du monde, le bouton Menu seul', () => {
   const monde = renderAt('/adventure/french-6e-phonology');
   expect(screen.getByText('Le monde')).toBeInTheDocument();
   expect(screen.queryByRole('navigation', { name: 'Navigation principale' })).not.toBeInTheDocument();
   expect(screen.queryByRole('link', { name: 'Voir mon rôle et mes succès' })).not.toBeInTheDocument();
   expect(document.querySelector('.app-shell')!.classList.contains('immersive')).toBe(true);
   monde.unmount();
+  renderAt('/reglages');
+  expect(screen.queryByRole('navigation', { name: 'Navigation principale' })).not.toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Menu' })).toHaveAttribute('href', '/menu');
+});
+
+it('Archipéo, en pause, garde sa barre du haut hors du monde', () => {
+  localStorage.setItem('dysapps:settings', JSON.stringify({ univers: 'archipeo' }));
   renderAt('/reglages');
   expect(screen.getByRole('navigation', { name: 'Navigation principale' })).toBeInTheDocument();
 });

@@ -51,7 +51,7 @@ export function MenuSheet({ onClose, onAller }: Props) {
       <div className="island-sheet-head">
         <div className="island-sheet-titles">
           <h2 id="menu-titre" className="island-sheet-title">
-            <Icon name="pause" /> Menu
+            <Icon name="menu" /> Menu
           </h2>
         </div>
         <button type="button" className="icon-button island-sheet-close" aria-label="Fermer le menu" onClick={onClose}>

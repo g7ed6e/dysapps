@@ -1,5 +1,6 @@
 import {
   Anchor,
+  Menu,
   ArrowLeft,
   Blocks,
   BookOpen,
@@ -114,6 +115,8 @@ export const ICONS = {
   volumeOff: VolumeX,
   zap: Zap,
   pause: Pause,
+  // Le menu (trois traits) : partout où l'on ouvre le menu ; ⏸ reste la pause d'une partie (mode concentration).
+  menu: Menu,
   ancre: Anchor,
   cube: Box,
   recentrer: Undo2,
