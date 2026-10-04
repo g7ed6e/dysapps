@@ -8,8 +8,8 @@ import * as THREE from 'three';
 import { drawIslandLabel, drawMapArrow, drawMedaillon, measureIslandLabel } from '../world/labelCanvas';
 import { BULLE, flottementDeLaBulle, type ImageDeLaBulle } from '../world/affordance';
 import { VISAGE_DU_BONHOMME } from '../Avatar';
-import { CASE, PLAQUE, caseALEcran, dansLaBande, dessinerLaCase } from './signes';
-import type { PlaceLue, Rect } from '../placeLibre';
+import { CASE, PLAQUE, caseALEcran, dessinerLaCase } from './signes';
+import { tenirDansLaPlace, type PlaceLue } from '../placeLibre';
 import { reperesDe } from '../world/cadrage';
 import { boitesDuTrace, placerAvecLaFlecheDOuvrage, placerEtiquettes, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
 import { islandCenter } from '../world/terrain';
@@ -79,7 +79,7 @@ export function creerEtiquettes(
   const arrowCtx = arrowCanvas.getContext('2d');
   /** La flèche dessinée : d'une île (`false`) ou d'un ouvrage (`true`, avec son icône, GD-7) ; redessinée quand cela change. */
   let flecheDOuvrage = false;
-  /** Blocland : l'image de la bulle, et si elle est tenue au bord de l'écran (sans pointe, sa cible hors du cadre). */
+  /** Blocland : l'image de la bulle, et si elle est tenue au bord de la place libre (sans pointe, sa cible hors du cadre). */
   let imageDeLaBulle: ImageDeLaBulle = { icone: 'star' };
   let bulleAuBord = false;
   const dessinerLaFleche = (ouvrage: boolean) => {
@@ -156,32 +156,28 @@ export function creerEtiquettes(
     if (ouvrage && pointes?.length) return pointes[placeDeLOuvrage.ouvrage === ouvrage ? Math.min(placeDeLOuvrage.i, pointes.length - 1) : 0];
     return pointe;
   };
-  /** La place libre, en pixels CSS de la vue lue (`null` : toute la vue), relue quatre fois par seconde au plus. */
-  let libre: Rect | null = null;
-  let largeurLue = 0;
-  let hauteurLue = 0;
+  /**
+   * La place libre (`null` : toute la vue), relue quatre fois par seconde au plus, et tout de suite à chaque ouverture de
+   * la Carte (la clé change ; le lecteur relit aussi quand une fiche s'ouvre, WorldCanvas.tsx).
+   */
+  let place: PlaceLue | null = null;
+  let ouvertures = 0;
+  let ouverte = false;
+  let placeCle = '';
   let placeLue = -Infinity;
   const relireLaPlace = () => {
-    if (!lirePlace || instant.now - placeLue < 250) return;
+    const cle = `carte:bulle|${ouvertures}`;
+    if (!lirePlace || (cle === placeCle && instant.now - placeLue < 250)) return;
+    placeCle = cle;
     placeLue = instant.now;
-    const lue = lirePlace('carte:bulle');
-    libre = lue.libre;
-    largeurLue = lue.w;
-    hauteurLue = lue.h;
+    place = lirePlace(cle);
   };
   /**
    * Blocland : le centre de la bulle (`x`, `y`, sa taille `w` × `h`, pixels CSS d'une vue `W` × `H`) ramené dans la place
    * libre, à `BULLE.bordPx` de ses bords (la règle des bulles de l'île, world/affordance.ts) : jamais sous la barre, la
-   * colonne de Pause et des classes, ni une fiche. Écrit dans `tenue`.
+   * colonne de Pause et des classes, « Recentrer », ni une fiche.
    */
-  const tenue = { x: 0, y: 0 };
-  const tenirLaBulle = (x: number, y: number, w: number, h: number, W: number, H: number) => {
-    const sx = libre && largeurLue ? W / largeurLue : 1;
-    const sy = libre && hauteurLue ? H / hauteurLue : 1;
-    tenue.x = dansLaBande(x, libre ? libre.x0 * sx : 0, libre ? libre.x1 * sx : W, w / 2 + BULLE.bordPx);
-    tenue.y = dansLaBande(y, libre ? libre.y0 * sy : 0, libre ? libre.y1 * sy : H, h / 2 + BULLE.bordPx);
-    return tenue;
-  };
+  const tenirLaBulle = (x: number, y: number, w: number, h: number, W: number, H: number) => tenirDansLaPlace(x, y, w, h, W, H, place, BULLE.bordPx);
   /** La bulle d'or à l'écran, telle que posée à la dernière image (pixels CSS), et si elle est tenue au bord. */
   const bulleALEcran = { x: 0, y: 0, w: 0, h: 0, visible: false };
   /**
@@ -235,6 +231,10 @@ export function creerEtiquettes(
     const d = donnees();
     if (d.posee) fleche.visible = d.on && !show;
     bulleALEcran.visible = false;
+    if (show !== ouverte) {
+      ouverte = show;
+      if (show) ouvertures++;
+    }
     if (!show || !pointe) return;
     if (bulles) relireLaPlace();
     const ouvrage = Boolean(d.ouvrage);

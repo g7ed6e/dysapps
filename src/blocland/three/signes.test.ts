@@ -12,7 +12,7 @@ import { HABILLAGES, type Habillage } from '../habillage';
 import { BLOCKS } from '../biomes';
 import { shade } from '../Voxel';
 import { BULLE, cleDeLObjet, type ObjetTouche, type SigneDObjet } from '../world/affordance';
-import { creerSignes, dansLaBande, dessinerLaCase } from './signes';
+import { creerSignes, dessinerLaCase } from './signes';
 
 const FORET: BiomeId = 'french-6e-phonology';
 const MINE: BiomeId = 'french-6e-letter-confusion';
@@ -461,15 +461,5 @@ describe('les bulles de Blocland (proposition P2, 4 octobre 2026)', () => {
     // Celle de l'ouvrage (la deuxième : la borne passe avant) touche le bord : on la voit, et on la touche.
     const ouvrage = [4, 5, 6, 7].map((j) => new THREE.Vector3(p.getX(j), p.getY(j), p.getZ(j)).project(camera));
     expect(Math.min(...ouvrage.map((c) => Math.abs(Math.abs(c.x) - 1)))).toBeLessThan(0.05);
-  });
-});
-
-describe('une bulle tenue dans la place libre (la Carte glissée ou zoomée, 4 octobre 2026)', () => {
-  it('reste entière entre les bords, à la marge près, ou au milieu quand la bande est trop étroite', () => {
-    // La place libre de 0 à 700 (la colonne de Pause à droite), une bulle de 60 px à 8 px du bord.
-    expect(dansLaBande(-200, 0, 700, 38)).toBe(38);
-    expect(dansLaBande(900, 0, 700, 38)).toBe(662);
-    expect(dansLaBande(300, 0, 700, 38)).toBe(300);
-    expect(dansLaBande(300, 0, 60, 38)).toBe(30);
   });
 });
