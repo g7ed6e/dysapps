@@ -2,7 +2,11 @@
 // par l'élève. Sert aux deux vues du monde (la 2D le dessine directement, la 3D en fait une texture). Sur la Carte, une
 // seconde ligne donne l'état de l'île : une petite icône dessinée ici (aucune police d'emoji, rien d'importé) et le mot,
 // jamais la couleur seule (DP-08). Une île Fermée a une étiquette plus discrète, mais son texte garde un fort contraste.
+// Avant le nom, le bloc que l'île rapporte (`bloc`), dessiné comme dans Mes blocs : un signe plutôt
+// qu'une phrase.
 import type { IslandStateId } from './islandState';
+import { BLOCKS, type BlockId } from '../biomes';
+import { project, shade } from '../Voxel';
 import { TRAITS_DE_L_OUVRAGE } from '../../components/iconeOuvrage';
 
 export interface IslandLabelState {
@@ -18,6 +22,66 @@ export function labelFont(px: number): string {
 
 /** La ligne d'état est un peu plus petite que le nom (16 px à l'écran quand le nom en fait 18). */
 const STATE_RATIO = 0.9;
+/** Le bloc avant le nom : sa demi-hauteur (le cube fait un peu plus que la hauteur des lettres), et l'écart au nom. */
+const BLOC_DEMI = 0.52;
+const BLOC_ECART = 0.3;
+/** La largeur du bloc et de son écart avant le nom (un cube vu de trois quarts est large de √3 fois sa demi-hauteur). */
+const blocW = (px: number) => Math.sqrt(3) * BLOC_DEMI * px + BLOC_ECART * px;
+/** L'encre des étiquettes de Blocland, celle de ses bulles (three/signes.ts). */
+const ENCRE_DU_BLOC = '#2b2118';
+
+/**
+ * Un bloc vu de trois quarts, centré sur (`cx`, `cy`), de demi-hauteur `demi` : le cube de `BlockIcon` (Voxel.tsx : le
+ * dessus, la face gauche, la face droite plus sombre, mêmes couleurs, même projection), puis son contour et ses deux
+ * arêtes intérieures au trait `encre`. Sert aux bulles des commandes (three/signes.ts) et aux étiquettes des îles.
+ * `traits` : l'épaisseur du contour et des arêtes, en pixels du canvas (par défaut, à l'échelle du bloc). `delave` :
+ * les faces à demi transparentes sur le fond (une île fermée), le contour net.
+ */
+export function drawBlock(
+  ctx: CanvasRenderingContext2D,
+  cx: number,
+  cy: number,
+  bloc: BlockId,
+  demi: number,
+  encre = ENCRE_DU_BLOC,
+  traits = { contour: demi * 0.13, aretes: demi * 0.08 },
+  delave = false,
+): void {
+  const b = BLOCKS[bloc];
+  const p = (x: number, y: number, z: number): [number, number] => {
+    const [px, py] = project(x, y, z, demi);
+    return [cx + px, cy + py];
+  };
+  const face = (points: [number, number][], fond: string) => {
+    ctx.beginPath();
+    points.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)));
+    ctx.closePath();
+    ctx.fillStyle = fond;
+    ctx.fill();
+  };
+  ctx.save();
+  if (delave) ctx.globalAlpha = 0.45;
+  face([p(0, 0, 1), p(1, 0, 1), p(1, 1, 1), p(0, 1, 1)], b.top ?? shade(b.side, 0.16));
+  face([p(0, 1, 1), p(1, 1, 1), p(1, 1, 0), p(0, 1, 0)], b.side);
+  face([p(1, 0, 1), p(1, 1, 1), p(1, 1, 0), p(1, 0, 0)], shade(b.side, -0.18));
+  ctx.globalAlpha = 1;
+  ctx.lineJoin = 'round';
+  ctx.strokeStyle = encre;
+  ctx.lineWidth = traits.contour;
+  ctx.beginPath();
+  [p(0, 0, 1), p(1, 0, 1), p(1, 0, 0), p(1, 1, 0), p(0, 1, 0), p(0, 1, 1)].forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)));
+  ctx.closePath();
+  ctx.stroke();
+  ctx.lineWidth = traits.aretes;
+  ctx.beginPath();
+  for (const [x, y] of [p(0, 1, 1), p(1, 0, 1), p(1, 1, 0)]) {
+    const [mx, my] = p(1, 1, 1);
+    ctx.moveTo(mx, my);
+    ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+  ctx.restore();
+}
 
 /** Les couleurs de l'étiquette : fond, bord, texte. Fermée : fond grisé et bord adouci, texte toujours ≥ 7:1. */
 const PALETTE = {
@@ -42,10 +106,11 @@ interface LabelMetrics {
   stateW: number;
 }
 
-function metrics(ctx: CanvasRenderingContext2D, text: string, px: number, state?: IslandLabelState): LabelMetrics {
+function metrics(ctx: CanvasRenderingContext2D, text: string, px: number, state?: IslandLabelState, bloc?: BlockId): LabelMetrics {
   ctx.save();
   ctx.font = labelFont(px);
-  const nameW = ctx.measureText(text).width;
+  // La ligne du nom : le bloc de l'île, s'il y en a un, puis le nom.
+  const nameW = ctx.measureText(text).width + (bloc ? blocW(px) : 0);
   let stateW = 0;
   if (state) {
     const sp = px * STATE_RATIO;
@@ -60,8 +125,8 @@ function metrics(ctx: CanvasRenderingContext2D, text: string, px: number, state?
 }
 
 /** La taille de l'étiquette (bord compris), en pixels du canvas : pour dimensionner une texture ou écarter les voisines. */
-export function measureIslandLabel(ctx: CanvasRenderingContext2D, text: string, px: number, state?: IslandLabelState): { w: number; h: number } {
-  const m = metrics(ctx, text, px, state);
+export function measureIslandLabel(ctx: CanvasRenderingContext2D, text: string, px: number, state?: IslandLabelState, bloc?: BlockId): { w: number; h: number } {
+  const m = metrics(ctx, text, px, state, bloc);
   return { w: m.w, h: m.h };
 }
 
@@ -133,10 +198,11 @@ export function drawStateIcon(ctx: CanvasRenderingContext2D, id: IslandStateId, 
 
 /**
  * Dessine l'étiquette centrée sur (cx, cy) ; `px` : taille du nom en pixels du canvas. Avec `state` (la Carte), une
- * seconde ligne : l'icône et le mot de l'état. Renvoie sa largeur, bord compris.
+ * seconde ligne : l'icône et le mot de l'état. Avec `bloc`, le bloc que l'île rapporte, avant le nom.
+ * Renvoie sa largeur, bord compris.
  */
-export function drawIslandLabel(ctx: CanvasRenderingContext2D, text: string, cx: number, cy: number, px: number, state?: IslandLabelState): number {
-  const m = metrics(ctx, text, px, state);
+export function drawIslandLabel(ctx: CanvasRenderingContext2D, text: string, cx: number, cy: number, px: number, state?: IslandLabelState, bloc?: BlockId): number {
+  const m = metrics(ctx, text, px, state, bloc);
   const colors = state?.id === 'fermee' ? PALETTE.closed : PALETTE.open;
   const w = m.w - m.border * 2;
   const h = m.h - m.border * 2;
@@ -147,16 +213,18 @@ export function drawIslandLabel(ctx: CanvasRenderingContext2D, text: string, cx:
   ctx.fillRect(x - m.border, y - m.border, w + m.border * 2, h + m.border * 2);
   ctx.fillStyle = colors.bg;
   ctx.fillRect(x, y, w, h);
+  // La ligne du nom, centrée : le bloc (s'il y en a un), puis le nom. Une île fermée a son bloc délavé comme son
+  // étiquette (une couleur vive ne doit pas y attirer l'œil), le contour net.
+  const nameY = state ? y + px * 0.95 : cy;
+  const lineLeft = cx - m.nameW / 2;
+  if (bloc) drawBlock(ctx, lineLeft + (Math.sqrt(3) * BLOC_DEMI * px) / 2, nameY, bloc, BLOC_DEMI * px, colors.border, undefined, state?.id === 'fermee');
   ctx.font = labelFont(px);
   ctx.textBaseline = 'middle';
   ctx.fillStyle = colors.text;
-  if (!state) {
+  ctx.textAlign = 'left';
+  ctx.fillText(text, lineLeft + (bloc ? blocW(px) : 0), nameY + px * 0.05);
+  if (state) {
     ctx.textAlign = 'center';
-    ctx.fillText(text, cx, cy + px * 0.05);
-  } else {
-    ctx.textAlign = 'center';
-    const nameY = y + px * 0.95;
-    ctx.fillText(text, cx, nameY + px * 0.05);
     // Un filet fin entre le nom et l'état.
     ctx.fillStyle = colors.border;
     ctx.globalAlpha = 0.35;

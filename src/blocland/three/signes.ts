@@ -13,8 +13,8 @@
 // image par image face à la caméra. Rien sur la Carte ni pendant le voyage ; avec le mouvement réduit de l'appareil,
 // rien ne bouge.
 import * as THREE from 'three';
-import { BLOCKS, type BiomeId, type BlockId } from '../biomes';
-import { project, shade } from '../Voxel';
+import type { BiomeId } from '../biomes';
+import { drawBlock } from '../world/labelCanvas';
 import { tracesDeLIcone } from '../../components/iconeTracee';
 import { GESTE_DU_SIGNE, ICONE_DU_SIGNE, iconeDuSigneVisible } from '../world/signe';
 import {
@@ -119,47 +119,10 @@ const OR = '#e0b73f';
 /** La taille à l'écran d'une case de Blocland : la plaque fait `BULLE.px` (ou `prochainePx`), la case l'entoure. */
 export const caseALEcran = (enAvant: boolean): number => ((enAvant ? BULLE.prochainePx : BULLE.px) * CASE) / PLAQUE.cote;
 
-/**
- * Le bloc demandé, au milieu de la case : le cube de `BlockIcon` (Voxel.tsx : le dessus, la face gauche, la face droite
- * plus sombre, mêmes couleurs, même projection), centré, puis son contour et ses deux arêtes intérieures au trait sombre.
- */
-function dessinerLeBloc(ctx: CanvasRenderingContext2D, cx: number, cy: number, bloc: BlockId, demi: number): void {
-  const b = BLOCKS[bloc];
-  const p = (x: number, y: number, z: number): [number, number] => {
-    const [px, py] = project(x, y, z, demi);
-    return [cx + px, cy + py];
-  };
-  const face = (points: [number, number][], fond: string) => {
-    ctx.beginPath();
-    points.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)));
-    ctx.closePath();
-    ctx.fillStyle = fond;
-    ctx.fill();
-  };
-  face([p(0, 0, 1), p(1, 0, 1), p(1, 1, 1), p(0, 1, 1)], b.top ?? shade(b.side, 0.16));
-  face([p(0, 1, 1), p(1, 1, 1), p(1, 1, 0), p(0, 1, 0)], b.side);
-  face([p(1, 0, 1), p(1, 1, 1), p(1, 1, 0), p(1, 0, 0)], shade(b.side, -0.18));
-  ctx.lineJoin = 'round';
-  ctx.strokeStyle = ENCRE;
-  ctx.lineWidth = 5;
-  ctx.beginPath();
-  [p(0, 0, 1), p(1, 0, 1), p(1, 0, 0), p(1, 1, 0), p(0, 1, 0), p(0, 1, 1)].forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)));
-  ctx.closePath();
-  ctx.stroke();
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  for (const [x, y] of [p(0, 1, 1), p(1, 0, 1), p(1, 1, 0)]) {
-    const [mx, my] = p(1, 1, 1);
-    ctx.moveTo(mx, my);
-    ctx.lineTo(x, y);
-  }
-  ctx.stroke();
-}
-
 /** L'image au milieu de la plaque (`cx`, `cy`), sur `taille` pixels : l'icône au trait rond, comme `Icon` (trait de 2,5 sur 24), ou le bloc. */
 function dessinerLImage(ctx: CanvasRenderingContext2D, cx: number, cy: number, taille: number, image: ImageDuSigne): void {
   // Le cube d'un bloc a pour demi-hauteur à peu près la moitié de la place (comme sur le disque d'avant : 0,3 de la case).
-  if ('bloc' in image) return dessinerLeBloc(ctx, cx, cy, image.bloc, taille * 0.53);
+  if ('bloc' in image) return drawBlock(ctx, cx, cy, image.bloc, taille * 0.53, ENCRE, { contour: 5, aretes: 3 });
   if (typeof Path2D === 'undefined') return;
   ctx.save();
   const echelle = taille / 24;
