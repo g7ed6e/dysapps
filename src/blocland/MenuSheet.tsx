@@ -1,7 +1,9 @@
-// Le menu du village (le menu pause de Blocland) : un panneau à la place de celui d'une île, le monde reste derrière.
-// En tête, le rôle et la jauge d'XP (la barre du haut de l'appli n'est pas sur l'écran du monde). Reprendre, puis les
-// Réglages (visibles d'emblée, même sur un téléphone ; plus d'Accueil depuis le 4 octobre 2026), puis la dernière
-// mission, les révisions du jour, l'école, les grands endroits de l'appli et le Tutoriel. L'aide du village se revoit avec le « ? » de la barre du bas.
+// Le menu du village (le menu pause de Blocland) : en plein écran par-dessus le monde, qui reste derrière. En tête, le
+// rôle et la jauge d'XP (Blocland n'a pas de barre du haut). Puis la dernière mission, les révisions du jour, les
+// commandes, l'école, les grands endroits de l'appli et le Tutoriel ; les Réglages tout en bas, à part (mot du
+// mainteneur, 4 octobre 2026, qui reprend le brief de l'ancienne #282). La croix ou Échap le referment : plus de
+// « Reprendre ». L'aide du village se revoit avec le « ? » de la barre du bas.
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon, type AnyIconName } from '../components/Icon';
 import { XpBar } from '../components/XpBar';
@@ -18,7 +20,7 @@ import { Commandes } from './Commandes';
 import type { BiomeId } from './biomes';
 
 interface Props {
-  /** Reprendre : le panneau se ferme, on est dans le village. */
+  /** La croix ou Échap : le menu se ferme, on est dans le village. */
   onClose: () => void;
   /** « Y aller » d'une commande : ouvre le panneau de l'île visée, comme un toucher sur l'île (le monde 3D). */
   onAller?: (island: BiomeId, commande?: string) => void;
@@ -46,6 +48,16 @@ export function MenuSheet({ onClose, onAller }: Props) {
   const { progress } = useProgress();
   const resume = lastPlace();
   const reviews = questsToReview(state.spaced, state.world.links);
+  // Échap referme le menu, comme la croix.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape' || e.defaultPrevented) return;
+      e.preventDefault();
+      onClose();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose]);
   return (
     <section id="panneau-menu" className="island-sheet menu-sheet" role="dialog" aria-labelledby="menu-titre" aria-modal="true">
       <div className="island-sheet-head">
@@ -54,27 +66,21 @@ export function MenuSheet({ onClose, onAller }: Props) {
             <Icon name="menu" /> Menu
           </h2>
         </div>
-        <button type="button" className="icon-button island-sheet-close" aria-label="Fermer le menu" onClick={onClose}>
+        <button type="button" className="icon-button island-sheet-close" aria-label="Fermer le menu" onClick={onClose} autoFocus>
           <Icon name="close" />
         </button>
       </div>
       <div className="menu-role">
         <XpBar xp={progress.xp} />
       </div>
-      <button type="button" className="button primary menu-resume" onClick={onClose} autoFocus>
-        <Icon name="play" /> Reprendre
-      </button>
-      <ul className="island-quests menu-quick" aria-label="Réglages">
-        <Row to="/reglages" icon="settings" title="Réglages" />
-      </ul>
       {(resume || reviews.length > 0) && (
         <ul className="island-quests menu-list" aria-label="Menu">
-          {resume && <Row to={resume.path} icon="play" title="Continuer" desc={resume.label} />}
+          {resume && <Row to={resume.path} icon="play" title="Ma dernière mission" desc={resume.label} />}
           {reviews.length > 0 && (
             <Row
               to={reviews[0].path}
               icon="history"
-              title="À revoir aujourd’hui"
+              title="Mes révisions du jour"
               desc={`${reviews[0].label}${reviews.length > 1 ? `, et ${reviews.length - 1} autre${reviews.length > 2 ? 's' : ''} ensuite` : ''}`}
             />
           )}
@@ -90,6 +96,10 @@ export function MenuSheet({ onClose, onAller }: Props) {
         <Row to="/quetes" icon="dumbbell" title="Missions" desc="Toutes, par matière" />
         <Row to={TROPHIES_PATH} icon="trophy" title="Succès" desc="Ton rôle, tes trophées" />
         <Row to="/app/demo" icon="compass" title="Tutoriel" desc="Prendre les commandes en main" />
+      </ul>
+      {/* Les Réglages tout en bas, à part, sous un trait. */}
+      <ul className="island-quests menu-end" aria-label="Réglages">
+        <Row to="/reglages" icon="settings" title="Réglages" />
       </ul>
     </section>
   );

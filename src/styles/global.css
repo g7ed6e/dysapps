@@ -5815,15 +5815,23 @@ button.app-card {
     padding-right: 12px;
   }
 }
-.menu-resume {
-  width: 100%;
-  justify-content: center;
-  margin: 0.4rem 0 0.6rem;
+/* Le menu du village, en plein écran par-dessus le monde (comme les autres panneaux) : des lignes serrées, des cibles
+   d'au moins 48 px ; les Réglages tout en bas de l'écran, à part, sous un trait (après les lignes quand elles
+   défilent). */
+.world-page > .menu-sheet {
+  display: flex;
+  flex-direction: column;
 }
-/* Le menu du village tient sans défiler sur un écran d'ordinateur (1280 × 800) : des lignes plus serrées, des cibles
-   d'au moins 48 px. */
-.menu-sheet {
-  padding-bottom: 0.8rem;
+.world-page > .menu-sheet > * {
+  flex-shrink: 0;
+}
+.menu-end {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: var(--border-width) solid var(--ink);
+}
+.menu-sheet .menu-list {
+  margin-bottom: 1rem;
 }
 .menu-sheet .island-quests {
   gap: 0.35rem;
@@ -5832,11 +5840,6 @@ button.app-card {
   min-height: 48px;
   padding-top: 0.2rem;
   padding-bottom: 0.2rem;
-}
-/* Réglages et Accueil côte à côte, juste sous Reprendre : visibles d'emblée, même sur un téléphone. */
-.menu-quick {
-  grid-template-columns: repeat(auto-fit, minmax(min(9rem, 100%), 1fr));
-  margin-bottom: 0.6rem;
 }
 button.island-quest {
   width: 100%;

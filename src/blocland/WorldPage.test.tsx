@@ -629,30 +629,37 @@ it('un monument : on le touche dans le monde, la caméra va sur son îlot, son p
   expect(within(await screen.findByRole('dialog', { name: 'Menu' })).getByRole('link', { name: /Monuments/ })).toHaveAttribute('href', '/adventure/landmarks');
 });
 
-it('le menu du village : le bouton Menu l’ouvre en panneau, « Reprendre » le referme', async () => {
+it('le menu du village : le bouton Menu l’ouvre en plein écran, Réglages en bas ; la croix ou Échap le referment', async () => {
   const user = userEvent.setup();
   renderAt('/adventure');
   await user.click(await screen.findByRole('button', { name: 'Menu' }));
-  const menu = await screen.findByRole('dialog', { name: 'Menu' });
+  let menu = await screen.findByRole('dialog', { name: 'Menu' });
   expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/menu');
   expect(within(menu).getByRole('link', { name: /École du village/ })).toHaveAttribute('href', '/adventure/school');
   expect(within(menu).getByRole('link', { name: /Missions/ })).toHaveAttribute('href', '/quetes');
   expect(within(menu).getByRole('link', { name: /Succès/ })).toHaveAttribute('href', '/adventure/trophies');
-  expect(within(menu).getByRole('link', { name: /Réglages/ })).toHaveAttribute('href', '/reglages');
-  // En tête, le rôle et la jauge d'XP ; sous Reprendre, Réglages, avant le reste. Plus d'Accueil (la page Accueil n'existe
-  // plus en 3D, 4 octobre 2026) : le Tutoriel, qu'elle portait, ferme la liste. Ni « Revoir l’aide du village » : le « ? »
-  // de la barre du bas la rouvre.
+  // En tête, le rôle et la jauge d'XP. Plus de « Reprendre » : la croix (qui a le focus) ou Échap referment le menu.
+  // Ni Accueil, ni « Revoir l’aide du village » (le « ? » de la barre du bas la rouvre). Réglages tout en bas, après le
+  // Tutoriel (mot du mainteneur, 4 octobre 2026).
   expect(within(menu).getByRole('progressbar', { name: /Niveau 1/ })).toBeInTheDocument();
+  expect(within(menu).queryByRole('button', { name: /Reprendre/ })).not.toBeInTheDocument();
+  expect(within(menu).getByRole('button', { name: 'Fermer le menu' })).toHaveFocus();
   expect(within(menu).queryByRole('link', { name: /Accueil|Le menu en page/ })).not.toBeInTheDocument();
-  expect(within(menu).getByRole('link', { name: /Tutoriel/ })).toHaveAttribute('href', '/app/demo');
   expect(within(menu).queryByRole('button', { name: /Revoir l’aide/ })).not.toBeInTheDocument();
-  const ordre = [within(menu).getByRole('button', { name: /Reprendre/ }), ...within(menu).getAllByRole('link')].map((el) => el.textContent!.trim());
-  expect(ordre.slice(0, 3)).toEqual(['Reprendre', 'Réglages', expect.stringMatching(/^(Continuer|À revoir|École du village)/)]);
-  expect(ordre.at(-1)).toMatch(/^Tutoriel/);
+  const ordre = within(menu)
+    .getAllByRole('link')
+    .map((el) => el.textContent!.trim());
+  expect(ordre.at(-2)).toMatch(/^Tutoriel/);
+  expect(ordre.at(-1)).toBe('Réglages');
+  expect(within(menu).getByRole('link', { name: /Réglages/ })).toHaveAttribute('href', '/reglages');
   expect(within(menu).getByRole('link', { name: /Monuments/ })).toHaveTextContent('Bâtis avec tes blocs');
-  await user.click(within(menu).getByRole('button', { name: /Reprendre/ }));
+  await user.click(within(menu).getByRole('button', { name: 'Fermer le menu' }));
   expect(screen.queryByRole('dialog', { name: 'Menu' })).not.toBeInTheDocument();
   expect(screen.getByTestId('adresse')).toHaveTextContent(/^\/adventure$/);
+  await user.click(screen.getByRole('button', { name: 'Menu' }));
+  menu = await screen.findByRole('dialog', { name: 'Menu' });
+  await user.keyboard('{Escape}');
+  expect(screen.queryByRole('dialog', { name: 'Menu' })).not.toBeInTheDocument();
 });
 
 it('la salle des trophées : on la touche dans le monde, son panneau montre les succès', async () => {

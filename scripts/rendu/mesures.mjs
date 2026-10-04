@@ -429,7 +429,7 @@ const CAPTURES = [
   })),
   // Plus de barre du haut, le menu en trois traits, Recentrer à la tête du bonhomme (famille `menu-tete`, mot du
   // mainteneur du 4 octobre 2026), à retirer une fois le lot fusionné : une page hors du monde (`page` : son adresse
-  // `chemin`), les Réglages, les Missions, le français (un lien retour) et Succès, sur téléphone (aussi en grand texte) et en tablette ; le monde au départ,
+  // `chemin`), les Réglages, les Missions, le français (un lien retour), Succès et le menu du village (plein écran, Réglages en bas), sur téléphone (aussi en grand texte) et en tablette ; le monde au départ,
   // son bouton Menu ; la Carte zoomée, Recentrer en rond à visage.
   ...[
     { suffixe: '', taille: { width: 390, height: 844 } },
@@ -440,6 +440,7 @@ const CAPTURES = [
     { nom: `menu-tete-missions${suffixe}`, vue: 'page', chemin: '/quetes', famille: 'menu-tete', ...autres },
     { nom: `menu-tete-matiere${suffixe}`, vue: 'page', chemin: '/matiere/french', famille: 'menu-tete', ...autres },
     { nom: `menu-tete-succes${suffixe}`, vue: 'page', chemin: '/succes', famille: 'menu-tete', ...autres },
+    { nom: `menu-tete-menu${suffixe}`, vue: 'page', chemin: '/adventure/menu', famille: 'menu-tete', ...autres },
     { nom: `menu-tete-ile${suffixe}`, vue: 'île', famille: 'menu-tete', ile: 'french-6e-phonology', depart: true, ...autres },
     { nom: `menu-tete-carte-zoomee${suffixe}`, vue: 'carte', famille: 'menu-tete', zoomer: 2, ...autres },
   ]),

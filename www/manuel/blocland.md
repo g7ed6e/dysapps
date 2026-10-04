@@ -80,14 +80,13 @@ Aucun texte à lire n’est dessiné dans la 3D : tout ce qui se lit est dans de
 
 Le bouton **Menu** (trois traits), toujours en haut à droite du monde, ouvre le **menu du village** en plein écran, par-dessus le monde. C’est le menu pause du jeu, et il remplace la barre du haut de l’appli, absente du monde :
 
-![Le menu du village, en plein écran par-dessus le monde : Reprendre, Réglages, puis École du village, Monuments, Missions, Succès, Tutoriel.](/captures/menu-village.jpg)
+![Le menu du village, en plein écran par-dessus le monde : le rôle, puis École du village, Monuments, Missions, Succès, Tutoriel, et Réglages tout en bas.](/captures/menu-village.jpg)
 
-- en tête, une ligne avec l’insigne du **rôle**, le niveau et la **jauge d’XP** ;
-- **Reprendre** (le gros bouton bleu, ou la croix) : on revient au village ;
-- juste dessous, **Réglages** (la roue dentée). Sur téléphone, Reprendre et Réglages se voient dès l’ouverture du menu ;
-- **Continuer** : la dernière mission ouverte ; **À revoir aujourd’hui**, s’il y a des révisions (un raccourci : la créature de l’île les propose aussi, voir [La créature qui se souvient](#la-creature-qui-se-souvient)) ;
+- en tête, le titre **Menu** et la **croix**, qui referme le menu et ramène au village (la touche Échap aussi) ; puis une ligne avec l’insigne du **rôle**, le niveau et la **jauge d’XP** ;
+- **Ma dernière mission** : la dernière mission ouverte ; **Mes révisions du jour**, s’il y a des révisions (un raccourci : la créature de l’île les propose aussi, voir [La créature qui se souvient](#la-creature-qui-se-souvient)) ;
 - **Commandes**, s’il y en a dans l’archipel : une section repliée, dont le titre dit combien de commandes sont prêtes (« Commandes · 1 prête » ; sans aucune prête, « Commandes · 2 en attente ») ; elle s’ouvre d’elle-même quand une commande est prête, et un toucher sur le titre l’ouvre ou la referme. Dedans, la même liste que dans le panneau d’une île, avec **Y aller** sur chaque ligne, qui emmène sur l’île et ouvre la fiche de la créature qui commande (voir [Les commandes](#les-commandes)) ;
 - **École du village** (« Français, maths, anglais »), **Monuments** (« Bâtis avec tes blocs »), **La Fabrique** (« Assemble tes blocs » ; la Halle aux matériaux dans Archipéo), **Missions** (« Toutes, par matière »), **Succès** (la salle des trophées, dans le village : « Ton rôle, tes trophées »), puis **Tutoriel** (« Prendre les commandes en main »).
+- tout en bas de l’écran, à part, sous un trait : **Réglages** (la roue dentée).
 
 Il n’y a plus de page Accueil : l’ancienne adresse `#/menu` ouvre ce menu.
 
@@ -460,7 +459,7 @@ Les sons sont générés par le code, sans aucun fichier : à la pose, trois pou
 | Faire glisser le monde (un doigt ou la souris) | La vue se déplace, sans rotation ; le bouton « Recentrer » apparaît |
 | Pincer la Carte à deux doigts (molette, touches + et −) | La Carte se zoome, de tout l’archipel à une île en gros plan ; le bouton « Recentrer » apparaît |
 | Bouton « Recentrer » (en haut à droite ; dans Blocland, le rond à la tête du bonhomme) | La caméra revient sur l’île ou le bonhomme |
-| Bouton Menu (trois traits, en haut à droite) | Le menu du village ; « Reprendre » le referme |
+| Bouton Menu (trois traits, en haut à droite) | Le menu du village, en plein écran ; la croix ou Échap le referment |
 | Toucher la salle des trophées (ou un trophée) | Le bonhomme y marche, le panneau de la salle (le profil et les succès) s’ouvre |
 | Bouton Carte | L’archipel vu du ciel, l’état de chaque île, la prochaine destination sous la bulle bordée d’or, toi dans le médaillon |
 | Bouton Blocs | L’inventaire « Mes blocs » : ce que chaque bloc construit, où aller chercher ceux qui manquent |
