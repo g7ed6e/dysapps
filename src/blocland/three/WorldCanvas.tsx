@@ -776,8 +776,9 @@ export default function WorldCanvas({
   const cleDeLImageDeLaCarte = imageDeLaCarte ? JSON.stringify(imageDeLaCarte) : '';
   useEffect(() => {
     world.current?.etiquettes.poserLImageDeLaCarte(imageDeLaCarte);
+    // La scène refaite (mouvement réduit, archipel) repart sur l'étoile : l'image s'y repose.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cleDeLImageDeLaCarte]);
+  }, [cleDeLImageDeLaCarte, reduceMotion, archipelago]);
 
   // ---- Le nom des îles ouvertes (une texture par étiquette, refaite quand la liste change) ; sur la Carte, leur état
   const labelsKey = (islandLabels ?? []).map((l) => `${l.id}:${l.text}:${l.state?.id ?? ''}`).join('|');

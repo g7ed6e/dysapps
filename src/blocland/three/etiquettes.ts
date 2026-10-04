@@ -177,11 +177,13 @@ export function creerEtiquettes(
     const pointe = laPointe();
     const show = onMap && Boolean(pointe);
     mapArrow.visible = show;
+    const H = Math.max(1, el.clientHeight);
+    const W = Math.max(1, el.clientWidth);
+    const perPx = 2 / (camera.projectionMatrix.elements[5] * H);
     if (medaillon) {
       const avatar = bonhomme();
       medaillon.visible = onMap && avatar.visible;
       if (medaillon.visible) {
-        const perPx = 2 / (camera.projectionMatrix.elements[5] * Math.max(1, el.clientHeight));
         medaillon.position.set(avatar.position.x, avatar.position.y + 4.5, avatar.position.z);
         medaillon.scale.set(MEDAILLON_CSS * perPx, MEDAILLON_CSS * perPx, 1);
       }
@@ -195,9 +197,6 @@ export function creerEtiquettes(
       arrowTex.needsUpdate = true;
     }
     mapArrow.position.set(pointe.x, pointe.z, pointe.y);
-    const H = Math.max(1, el.clientHeight);
-    const W = Math.max(1, el.clientWidth);
-    const perPx = 2 / (camera.projectionMatrix.elements[5] * H);
     const { w: aw, h: ah, tip } = mapArrow.userData.px;
     mapArrow.scale.set(aw * perPx, ah * perPx, 1);
     const { arrow, arrowShift } = marksOnScreen(camera, W, H);
@@ -416,10 +415,9 @@ export function creerEtiquettes(
       }
     },
     vider,
+    // Appelée seulement quand l'image change, ou que la scène est refaite (WorldCanvas.tsx).
     poserLImageDeLaCarte: (image) => {
-      const suivante = image ?? { icone: 'star' };
-      if (JSON.stringify(suivante) === JSON.stringify(imageDeLaBulle)) return;
-      imageDeLaBulle = suivante;
+      imageDeLaBulle = image ?? { icone: 'star' };
       dessinerLaFleche(flecheDOuvrage);
       arrowTex.needsUpdate = true;
     },
