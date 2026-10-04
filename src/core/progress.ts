@@ -233,14 +233,14 @@ export const BADGES: BadgeDef[] = [
   { id: 'capitaine', icon: 'ship', title: 'Capitaine', description: 'Larguer les amarres : premier voyage du Bloc-Navire.', earned: (p) => p.passages >= 1 },
   { id: 'aeronaute', icon: 'ship', title: 'Aéronaute', description: 'Gonfler le ballon du Bloc-Navire et rejoindre les Anciens Ateliers.', earned: (p) => p.passages >= 2 },
   { id: 'pilote-du-ciel', icon: 'ship', title: 'Pilote du ciel', description: 'Allumer le réacteur et monter jusqu’aux Îles du Ciel.', earned: (p) => p.passages >= 3 },
-  { id: 'gardien', icon: 'shield', title: 'Face au Gardien', description: 'Vaincre le Gardien d’un biome.', earned: (p) => p.challengesWon >= 1 },
-  { id: 'cinq-iles', icon: 'shield', title: 'Maître des cinq îles', description: 'Vaincre cinq Gardiens.', earned: (p) => p.challengesWon >= 5 },
-  { id: 'dix-gardiens', icon: 'medal', title: 'Collégien', description: 'Vaincre dix Gardiens.', earned: (p) => p.challengesWon >= 10 },
+  { id: 'gardien', icon: 'flame', title: 'Premier Gardien', description: 'Rallumer le Gardien d’une île.', earned: (p) => p.challengesWon >= 1 },
+  { id: 'cinq-iles', icon: 'flame', title: 'Maître des cinq îles', description: 'Rallumer cinq Gardiens.', earned: (p) => p.challengesWon >= 5 },
+  { id: 'dix-gardiens', icon: 'medal', title: 'Collégien', description: 'Rallumer dix Gardiens.', earned: (p) => p.challengesWon >= 10 },
   {
     id: 'archipel',
     icon: 'crown',
     title: 'Maître de l’archipel',
-    description: `Vaincre les ${BIOMES.length} Gardiens des quatre archipels.`,
+    description: `Rallumer les ${BIOMES.length} Gardiens des quatre archipels.`,
     earned: (p) => p.challengesWon >= BIOMES.length,
   },
 ];

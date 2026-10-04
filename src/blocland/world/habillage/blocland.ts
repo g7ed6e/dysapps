@@ -1,4 +1,4 @@
-// L'habillage de Blocland : le monde en blocs, la 2D en pixels, les figures en cubes, le défi dans l'arène.
+// L'habillage de Blocland : le monde en blocs, la 2D en pixels, les figures en cubes.
 import type { Habillage } from './types';
 
 export const HABILLAGE_BLOCLAND = {
@@ -11,7 +11,6 @@ export const HABILLAGE_BLOCLAND = {
   etiquettes: 'voilees',
   dessin2D: 'pixels',
   figures: 'cubes',
-  defi: 'arene',
   reperes: 'libres',
   atelier: 'fabrique',
   pose: 'geste',

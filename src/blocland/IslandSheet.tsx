@@ -31,13 +31,16 @@ import type { Partie } from './world/parties';
 import { PlusTardDit, RappelDeLaCreature, useRappelDeLaCreature } from './RappelDeLaCreature';
 
 /**
- * Ce que dit le Gardien qui n'accepte pas encore le défi : les étoiles qu'il veut et les missions où elles manquent
- * (`missingForBoss`), ou qu'il faut d'abord un chemin jusqu'à son île. Le panneau de l'île et la fiche du Gardien.
+ * Comment ouvrir le défi d'un Gardien : les étoiles à gagner et les missions où les gagner (`missingForBoss`), ou qu'il
+ * faut d'abord un chemin jusqu'à son île. Une seule phrase, la même sur le panneau de l'île, la fiche du Gardien et la
+ * page du défi fermé.
  */
 export function explicationDuGardien(biome: BiomeDef, progress: Record<string, { stars: number }>, unlocked: boolean): string {
-  if (!unlocked) return 'Pas tout de suite ! Il faut d’abord un chemin jusqu’à cette île.';
+  if (!unlocked) return 'Il faut d’abord un chemin jusqu’à cette île.';
   const missing = missingForBoss(biome, progress);
-  return `Pas tout de suite ! ${biome.guardian} veut ${STARS_TO_UNLOCK} étoiles dans ${missing.length ? missing.join(', ') : 'chaque mission'}. Fais ces missions, puis reviens le défier.`;
+  // Ce qu'il y a à faire, jamais ce qui a raté (GD-8) ; les missions liées par « et », pas seulement par des virgules.
+  const liste = missing.length > 1 ? `${missing.slice(0, -1).join(', ')} et ${missing[missing.length - 1]}` : (missing[0] ?? 'chaque mission');
+  return `Pour ouvrir son défi, gagne ${STARS_TO_UNLOCK} étoiles dans ${liste}.`;
 }
 
 interface Props {
@@ -211,7 +214,7 @@ export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight =
             {bossReady ? (
               <Link to={`/adventure/${biome.id}/challenge`} className="island-quest island-boss">
                 <span className="island-quest-icon boss-icon">
-                  <Icon name="shield" />
+                  <Icon name="flame" />
                 </span>
                 <span className="island-quest-text">
                   <span className="island-quest-title">{guardianTitle(biome)}</span>

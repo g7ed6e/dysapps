@@ -24,7 +24,7 @@ function tousLesTextes(t: TextesUnivers): string[] {
     out.push(l.navireGardiensManquants(n, t.archipels['6e']), l.navireAttend(n, 'la voile'));
   }
   out.push(l.dejaFaitArene('Le Grand Chêne'), t.baleine.gardiens(t.archipels['6e']), t.baleine.port('Plaine des nombres'), t.baleine.ouvrage('Mine des lettres'));
-  out.push(l.defiPret, l.defiPretCourt, l.defiFerme('Le Grand Chêne', 2), l.arene('le Grand Chêne'));
+  out.push(l.defiPret, l.defiPretCourt, l.arene('le Grand Chêne'));
   out.push(l.decouverteOuvrages, l.decouverteNavire);
   out.push(...Object.values(t.archipels), ...Object.values(t.roles));
   for (const s of Object.values(t.succes)) if (s) out.push(s.title, s.description);
@@ -48,45 +48,38 @@ describe('les textes d’univers', () => {
     }
   });
 
-  it('Blocland garde les textes d’avant le lot 6, sans un mot changé', () => {
-    // L'empreinte des textes des Gardiens et des espèces tels qu'ils étaient dans biomes.ts avant le lot 6 : un mot
-    // changé dans Blocland la change. Les libellés sont écrits en entier ci-dessous ; le mot des grandes étapes, les noms
-    // des archipels et des rôles, que GD-1 a changés, ont leurs propres cas plus bas. Trois
-    // exceptions voulues : la réplique d'échec du Dragon de lumière (« relis la formule ou le graphique »), changée avec
-    // les Faisceaux, dont les manches de graphique ne se calculent pas (décision du directeur artistique), et celle du
-    // Brochet d'argent (« regarde les parts ou l'opération posée »), changée avec « Galets en colonnes », dont les manches
-    // d'opérations posées n'ont pas de parts coloriées (décision du directeur artistique), enfin celle du Dragon de cendre
-    // (« regarde le tableau ou la droite, rang par rang »), changée avec « Nombres géants » (C-2), dont les manches de
-    // grands nombres n'ont pas de virgule (décision du directeur artistique).
+  it('Blocland rallume ses Gardiens (GD-8) : leurs textes, dont l’empreinte change avec chaque mot', () => {
+    // L'empreinte des textes des Gardiens et des espèces de Blocland, réécrits par son consultant pour GD-8 (décision du
+    // mainteneur, 4 octobre 2026 : « rallumer » plutôt que « vaincre ») : un mot changé la change. Les libellés sont écrits
+    // en entier ci-dessous ; le mot des grandes étapes, les noms des archipels et des rôles, que GD-1 a changés, ont
+    // leurs propres cas plus bas.
     const t = textesDe('blocland');
-    // Les îles venues après le lot 6 (le Relais des voyageurs, LV2) n'ont pas de texte « d'avant » : hors de l'empreinte.
-    const APRES_LE_LOT_6 = new Set(['lv2-5e-introductions', 'lv2-4e-daily-life', 'lv2-3e-travel']);
-    const avant = Object.fromEntries(
-      BIOMES.filter((b) => !APRES_LE_LOT_6.has(b.id)).map((b) => {
+    const textes = Object.fromEntries(
+      BIOMES.map((b) => {
         const g = t.gardiens[b.id];
-        return [ANCIEN_LIEU[b.id], { challenge: g.challenge, ...g.guardianSays, species: t.especes[b.id] }];
+        return [b.id, { challenge: g.challenge, ...g.guardianSays, species: t.especes[b.id] }];
       }),
     );
-    expect(createHash('sha256').update(JSON.stringify(avant)).digest('hex')).toBe('b3577afc0728587b76c52dfc290d094076cf0c659bca850af786367175759431');
+    expect(createHash('sha256').update(JSON.stringify(textes)).digest('hex')).toBe('3aec13017720eff807ba96049b824ac116dcf8afdde08ec6090d63cd690eaf43');
     const l = t.libelles;
     expect([l.dejaFait, l.etoiles, l.etoilesSur3(2), l.resistance(2, 6), l.dejaFaitArene('Le Grand Chêne')]).toEqual([
-      'Déjà vaincu. Une revanche ?',
-      'Gardien vaincu',
-      'Gardien vaincu : 2 étoiles sur 3',
-      '2 épreuves sur 6 avant de le vaincre',
-      'Le Grand Chêne est déjà vaincu, mais il aime les revanches.',
+      'Déjà rallumé. On rejoue ?',
+      'Gardien rallumé',
+      'Gardien rallumé : 2 étoiles sur 3',
+      'Encore 2 épreuves sur 6 pour lui rendre ses couleurs',
+      'Le Grand Chêne a déjà ses couleurs. Tu peux rejouer son défi quand tu veux.',
     ]);
     expect([l.encoreAFaire(1), l.encoreAFaire(2), l.navireAttend(1), l.navireAttend(2)]).toEqual([
-      'encore 1 Gardien à vaincre',
-      'encore 2 Gardiens à vaincre',
-      'Le Bloc-Navire a tous ses blocs ! Il attend encore 1 Gardien vaincu.',
-      'Le Bloc-Navire a tous ses blocs ! Il attend encore 2 Gardiens vaincus.',
+      'encore 1 Gardien à rallumer',
+      'encore 2 Gardiens à rallumer',
+      'Le Bloc-Navire a tous ses blocs ! Il attend encore 1 Gardien rallumé.',
+      'Le Bloc-Navire a tous ses blocs ! Il attend encore 2 Gardiens rallumés.',
     ]);
-    expect([l.navireGardiens(1, 3, 'Premiers Rivages', 'la voile'), l.navireGardiens(3, 3, 'Premiers Rivages', 'la voile')]).toEqual([
-      'Gardiens : encore 2 à vaincre dans les Premiers Rivages pour la voile.',
+    expect([l.navireGardiens(1, 3, 'Basses Terres', 'la voile'), l.navireGardiens(3, 3, 'Basses Terres', 'la voile')]).toEqual([
+      'Gardiens : encore 2 à rallumer dans les Basses Terres pour la voile.',
       'Gardiens : c’est fait ! 3 sur 3, la voile est là.',
     ]);
-    expect([l.faitsSur(1, 10), l.faitsSur(2, 10), l.progres(3, 28)]).toEqual(['1 Gardien vaincu sur 10', '2 Gardiens vaincus sur 10', '3 / 28 Gardiens vaincus']);
+    expect([l.faitsSur(1, 10), l.faitsSur(2, 10), l.progres(3, 28)]).toEqual(['1 Gardien rallumé sur 10', '2 Gardiens rallumés sur 10', '3 / 28 Gardiens rallumés']);
   });
 
   it('l’univers choisi s’affiche, Blocland par défaut', () => {
@@ -95,8 +88,10 @@ describe('les textes d’univers', () => {
     expect(universAffiche('archipeo')).toBe('archipeo');
   });
 
-  it('Blocland ne rallume jamais ; Archipéo ne fait jamais tomber un Gardien', () => {
-    expect(tousLesTextes(textesDe('blocland')).join('\n')).not.toMatch(/rallum/i);
+  it('aucun univers ne fait tomber un Gardien : les deux le rallument (GD-8)', () => {
+    const blocland = tousLesTextes(textesDe('blocland')).join('\n');
+    expect(blocland).not.toMatch(/vainc|vainq|revanche|\bbat(s|tre|tu)\b|écroul|affront|arène/i);
+    expect(blocland).toMatch(/rallum/);
     const archipeo = tousLesTextes(textesDe('archipeo')).join('\n');
     expect(archipeo).not.toMatch(/vainc|vainq|revanche|\bbat(s|tre|tu)\b|écroul/i);
     expect(archipeo).toMatch(/rallum/);
@@ -128,7 +123,7 @@ describe('les textes d’univers', () => {
     const moments = reachedWhaleMoments(sanitizeState({ progress: guardians }), '6e');
     const gardiens = moments.find((m) => m.kind === 'gardiens');
     if (!gardiens) throw new Error('étape « gardiens » non atteinte');
-    expect(pagesBaleine(gardiens, textesDe('blocland'))).toEqual(['Tous les Gardiens des Basses Terres sont vaincus ! Leurs statues gardent maintenant ton chantier.']);
+    expect(pagesBaleine(gardiens, textesDe('blocland'))).toEqual(['Tous les Gardiens des Basses Terres ont retrouvé leurs couleurs ! Ils veillent sur ton chantier.']);
     expect(pagesBaleine(gardiens, textesDe('archipeo'))).toEqual(['Tous les Gardiens des Premiers Rivages brillent à nouveau. J’ai vu leur lumière depuis le large.']);
     // La bulle pratique sur le navire suit la phrase d'arrivée, dans les deux univers (rien en 6e, où l'on commence).
     for (const a of ARCHIPELAGOS) {
@@ -137,15 +132,21 @@ describe('les textes d’univers', () => {
     }
   });
 
-  it('Blocland garde son arène : pas de sentinelles, et ses mots du défi d’avant le lot 6', () => {
+  it('Blocland : le défi rend ses couleurs au Gardien, compte les réussites, et une épreuve ratée lui laisse ses couleurs (GD-8)', () => {
     const t = textesDe('blocland');
-    expect(t.sentinelles).toBeNull();
-    expect([t.libelles.defiPret, t.libelles.defiPretCourt, t.libelles.defiFerme('Le Grand Chêne', 2), t.libelles.arene('le Grand Chêne')]).toEqual([
-      'Le Gardien accepte ton défi !',
-      'Prêt à t’affronter',
-      'Le Grand Chêne n’accepte que les bâtisseurs entraînés. Obtiens 2 étoiles dans chaque mission, puis reviens.',
-      'L’arène du Gardien',
+    const d = t.sentinelles!;
+    expect([t.libelles.defiPret, t.libelles.defiPretCourt, t.libelles.arene('le Grand Chêne')]).toEqual([
+      'Le Gardien est prêt : à toi de le rallumer !',
+      'Défi prêt',
+      'Rallumer le Grand Chêne',
     ]);
+    expect(d.regle).toBe('Une épreuve ratée lui laisse ses couleurs.');
+    expect([d.compte(2, 7), d.seuil(5, false), d.seuil(5, true)]).toEqual(['2 sur 7', 'Il faut 5 épreuves réussies pour lui rendre ses couleurs.', 'C’est assez pour lui rendre ses couleurs.']);
+    expect(d.rallume('Le Grand Chêne')).toBe('Le Grand Chêne se rallume en couleurs !');
+    for (const g of Object.values(t.gardiens)) {
+      expect(g.guardianSays.miss).toMatch(/^Mes couleurs restent\. /);
+      expect(g.guardianSays.beaten).toMatch(/Je me rallume/);
+    }
   });
 
   it('Archipéo : le défi d’une sentinelle compte les réussites, écrit le seuil, et ne combat jamais', () => {
@@ -158,7 +159,7 @@ describe('les textes d’univers', () => {
     expect([d.jaugeLue(1, 7, 5), d.jaugeLue(2, 7, 5)]).toEqual(['1 épreuve réussie sur 7, il en faut 5', '2 épreuves réussies sur 7, il en faut 5']);
     expect(d.rallume('Le Grand Chêne')).toBe('Le Grand Chêne brille à nouveau.');
     expect(tousLesTextes(t).join('\n')).not.toMatch(/bâtisseur|affront|arène/);
-    const neufs = [t.libelles.defiPret, t.libelles.defiPretCourt, t.libelles.defiFerme('Le Grand Chêne', 2), d.consigne, d.seuil(5, true)];
+    const neufs = [t.libelles.defiPret, t.libelles.defiPretCourt, d.consigne, d.seuil(5, true)];
     expect(neufs.join('\n')).not.toMatch(/!/);
     // « brille à nouveau » : au village et à la baleine seulement.
     for (const g of Object.values(t.gardiens)) expect(Object.values(g.guardianSays).join()).not.toMatch(/à nouveau/);
@@ -218,7 +219,7 @@ describe('GD-1 : le chantier du bâtisseur, dans Blocland seulement', () => {
   it('Blocland : les noms d’origine des archipels', () => {
     const t = textesDe('blocland');
     expect(t.archipels).toEqual({ '6e': 'Basses Terres', '5e': 'Collines du Large', '4e': 'Monts de Feu', '3e': 'Îles du Ciel' });
-    expect(t.libelles.navireGardiens(1, 3, t.archipels['6e'], 'la voile')).toBe('Gardiens : encore 2 à vaincre dans les Basses Terres pour la voile.');
+    expect(t.libelles.navireGardiens(1, 3, t.archipels['6e'], 'la voile')).toBe('Gardiens : encore 2 à rallumer dans les Basses Terres pour la voile.');
     // Les monuments qui nommaient un archipel prennent le nom de Blocland, et gardent leur description.
     const moulin = { id: 'landmark-6e-2', description: 'Un grand moulin.', done: 'Le grand moulin tourne ! Il moud le grain de toutes les îles des Premiers Rivages.' };
     expect(texteDuMonument(t, moulin)).toEqual({ description: 'Un grand moulin.', done: 'Le grand moulin tourne ! Il moud le grain de toutes les îles des Basses Terres.' });

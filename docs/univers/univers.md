@@ -50,7 +50,7 @@ Basculer de vue ne change donc jamais d’univers. Seul le réglage « Univers �
 
 Le mainteneur garde Blocland et son univers. Le plan d’Archipéo change sur trois points.
 
-- **Le lot 6.** Il ne retire plus le monde en blocs ni ses textures. Blocland reste l’univers par défaut, et Archipéo s’ouvre à tous dans les Réglages (§7, décisions 5 et 7). Le drapeau `?rendu=archipeo` devient le réglage « Univers » (fait à la bascule avancée : le drapeau ne reste qu’au serveur de développement). « Gardien vaincu » et la statue restent vrais dans Blocland ; les sentinelles qu’on rallume sont celles d’Archipéo.
+- **Le lot 6.** Il ne retire plus le monde en blocs ni ses textures. Blocland reste l’univers par défaut, et Archipéo s’ouvre à tous dans les Réglages (§7, décisions 5 et 7). Le drapeau `?rendu=archipeo` devient le réglage « Univers » (fait à la bascule avancée : le drapeau ne reste qu’au serveur de développement). « Gardien vaincu » et la statue restaient alors vrais dans Blocland, et les sentinelles qu’on rallume étaient celles d’Archipéo ; depuis [GD-8](../gameplay/propositions/archives/GD-8.md) (4 octobre 2026), le Gardien éteint dès l’ouverture de son île, que son défi rallume, vaut pour les deux univers : la sentinelle d’Archipéo, la statue de cubes grise de Blocland qui reprend ses couleurs.
 - **L’interface.** Elle suit l’univers (décision 7). Dans Blocland, les panneaux, les boutons et les titres prennent un style propre à Blocland, dans l’esprit de ses cubes, sans rien copier d’un autre jeu. Dans Archipéo, l’interface reste celle des lots 1 et 2. Les mots, la place des éléments, la taille des cibles et les règles dys ne changent jamais d’un univers à l’autre (§4). Ce style d’interface n’est pas un lot R : « figé dans son dessin » vaut pour le monde en blocs, pas pour ses panneaux.
 - **Le budget.** Le monde en blocs ne tient pas celui d’Archipéo sur tablette : 66 672 triangles et 220 appels de dessin aux Premiers Rivages, mesurés après R4, pour 60 000 et 40. Blocland garde son propre plafond de non-régression (80 000 et 240, `budget.test.ts`). Sur un appareil lent, il a « Réduire les animations » et la liste des îles. Le budget d’Archipéo ne change pas.
 - **La maintenance.** L’artiste technique 3D le chiffre : garder deux familles de rendu, c’est tester chaque partie de la scène dans les deux univers.
@@ -75,7 +75,7 @@ Le mainteneur garde Blocland et son univers. Le plan d’Archipéo change sur tr
 | Domaine | Ce qui change | Qui décide |
 | --- | --- | --- |
 | **Les noms** | Les noms des lieux (régions, îles, lieux du village), des Gardiens et des constructions (ouvrages, monuments, véhicule), décision du mainteneur | Le consultant de l’univers, validé par le directeur artistique |
-| **Le récit** | Le récit d’ensemble, la figure qui guide (la baleine d’Archipéo, les créatures de Blocland), les créatures et leurs répliques, ce que devient un Gardien (rallumé ou vaincu) | Le consultant de l’univers, validé par le directeur artistique |
+| **Le récit** | Le récit d’ensemble, la figure qui guide (la baleine d’Archipéo, les créatures de Blocland), les créatures et leurs répliques, l’allure d’un Gardien éteint puis rallumé (sentinelle ou statue de cubes) | Le consultant de l’univers, validé par le directeur artistique |
 | **Le monde** | Le rendu (§2), la palette et l’ambiance, les silhouettes, le décor, les personnages. Jamais le relief qui porte la marche, jamais les cases d’un plan. | Le consultant (quoi), l’artiste technique 3D (comment), le directeur artistique valide |
 
 **Les consultants d’univers** (décision du mainteneur). Chaque univers a son agent, `consultant-<univers>`, sous l’autorité du directeur artistique. Il connaît son univers en profondeur (récit, ton, noms, silhouettes) et le défend. Il sait aussi prendre du recul et s’adapter à ce que les autres univers et le jeu commun imposent. Il propose et relit, sans modifier de fichier.
@@ -83,7 +83,7 @@ Le mainteneur garde Blocland et son univers. Le plan d’Archipéo change sur tr
 Le directeur artistique :
 
 - garde la vision d’ensemble et les règles communes à tous les univers : les règles dys, DA-01 (tout se montre à un élève de 3e), DA-02 et DP-06 (le décor ne gêne jamais la lecture), DP-08 (jamais la couleur seule), DP-09 (les récompenses servent le monde), DP-12 (pas de pression inutile) ;
-- dit, avec chaque consultant, quelles autres règles valent pour son univers seul : DP-01 et DP-02 (restaurer, jamais combattre) sont celles d’Archipéo, et Blocland garde son Gardien vaincu en statue ;
+- dit, avec chaque consultant, quelles autres règles valent pour son univers seul ; DP-01 et DP-02 (restaurer, jamais combattre), d’abord propres à Archipéo, valent pour les deux univers depuis GD-8 (4 octobre 2026) : dans les deux, le Gardien éteint se rallume ;
 - tranche entre deux consultants ;
 - valide ce qu’un consultant propose.
 

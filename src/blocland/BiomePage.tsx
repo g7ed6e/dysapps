@@ -202,7 +202,7 @@ export function BiomePage() {
 
       {!sansLv2 && (
         <h2 className="section-title">
-          <Icon name="shield" /> Le Gardien
+          <Icon name="flame" /> Le Gardien
         </h2>
       )}
       {!sansLv2 && (() => {
@@ -212,7 +212,7 @@ export function BiomePage() {
         const content = (
           <>
             <span className="app-icon boss-icon">
-              <Icon name={ready ? 'shield' : 'lock'} size="1.8rem" />
+              <Icon name={ready ? 'flame' : 'lock'} size="1.8rem" />
             </span>
             <span className="app-title">{guardianTitle(biome)}</span>
             <span className="app-desc">Une épreuve de chaque mission, à ton niveau. Sans chrono. Récompense : des blocs d’or.</span>

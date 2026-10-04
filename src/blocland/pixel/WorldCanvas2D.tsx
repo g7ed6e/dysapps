@@ -25,7 +25,7 @@ import {
   type VoyageRun,
   type Walk,
 } from '../world/scene';
-import { islandCenter } from '../world/terrain';
+import { gardienDuMonde, islandCenter } from '../world/terrain';
 import { drawIslandLabel, drawMapArrow, measureIslandLabel } from '../world/labelCanvas';
 import { PLACES_DE_LA_FLECHE_MAX, boitesDuTrace, placerAvecLaFlecheDOuvrage, placerEtiquettes, replierLesSignes, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
 import { COUCHES_DU_TIRET } from '../world/traceSuggere';
@@ -95,7 +95,7 @@ interface Walker {
   stroll: Stroll;
   sprite: Sprite | null;
   mid: { x: number; y: number };
-  /** En 2D peinte, un Gardien vaincu est rallumé (1), les autres restent éteints (0). */
+  /** En 2D peinte, un Gardien rallumé l'est (1), les autres restent éteints (0). */
   allumage: 0 | 1;
   /** Son sprite en pixels (tiré de ses cubes, gardé en cache), si les personnages peints ne se chargent pas. */
   enPixels: () => Sprite | null;
@@ -136,6 +136,7 @@ export default function WorldCanvas2D({
   label,
   onIntent,
   chantier = false,
+  rallumage = null,
 }: WorldViewProps) {
   // La 2D n'a pas de vague (GD-6) : la partie est posée tout de suite, la page la reçoit finie.
   useEffect(() => {
@@ -239,6 +240,7 @@ export default function WorldCanvas2D({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cubes, archipelago]);
 
+  const rallumageId = rallumage?.id ?? null;
   // ---- Les créatures et les Gardiens : leur promenade (world/scene.ts) et leur sprite, tiré de leurs cubes
   useEffect(() => {
     const strolls = startStrolls(creatures, performance.now());
@@ -246,10 +248,21 @@ export default function WorldCanvas2D({
       const xs = c.cubes.map((k) => k.x);
       const ys = c.cubes.map((k) => k.y);
       const mid = { x: (Math.min(...xs) + Math.max(...xs) + 1) / 2, y: (Math.min(...ys) + Math.max(...ys) + 1) / 2 };
-      const enPixels = () => voxelSprite(`${c.kind ?? 'creature'}:${c.id}`, c.cubes);
+      // Un Gardien éteint (en pierre) et rallumé (en couleurs) n'ont pas le même sprite (GD-8).
+      const enPixels = () => voxelSprite(`${c.kind ?? 'creature'}:${c.id}${allumageDuGardien(c) ? ':rallume' : ''}`, c.cubes);
       return { stroll: strolls[i], sprite: painted ? null : enPixels(), mid, allumage: allumageDuGardien(c), enPixels };
     });
   }, [creatures]);
+  // Sans fondu en pixels, le Gardien qui se rallume prend ses couleurs dès que son mot s'affiche, pour que l'image ne
+  // contredise pas le mot ; seul son sprite change, les promenades continuent.
+  useEffect(() => {
+    if (!rallumageId) return;
+    const i = creatures.findIndex((c) => c.kind === 'guardian' && c.id === rallumageId);
+    const w = walkers.current[i];
+    if (!w) return;
+    const enPixels = () => voxelSprite(`guardian:${rallumageId}:rallume`, gardienDuMonde(rallumageId));
+    walkers.current[i] = { ...w, allumage: 1, enPixels, sprite: w.sprite ? enPixels() : null };
+  }, [creatures, rallumageId]);
 
   // ---- Le bonhomme : chaque itinéraire (le premier placement est immédiat)
   useEffect(() => {
@@ -696,7 +709,7 @@ export default function WorldCanvas2D({
         const x = o.x + dx + wk.mid.x;
         const y = o.y + dy + wk.mid.y;
         if (!visibleAt(x, y, o.z)) continue;
-        // En 2D peinte, le modèle d'Archipéo : la créature, ou la sentinelle, rallumée si le Gardien est vaincu (celles
+        // En 2D peinte, le modèle d'Archipéo : la créature, ou la sentinelle, rallumée si son défi est réussi (celles
         // hors de l'écran ne se rastérisent pas).
         const sprite = !paint
           ? wk.sprite
