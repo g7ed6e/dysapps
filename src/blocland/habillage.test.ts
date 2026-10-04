@@ -24,7 +24,7 @@ describe('L’habillage du monde', () => {
       atelier: 'fabrique',
       pose: 'geste',
       signe: 'plaque',
-      signesDesObjets: 'cubes',
+      signesDesObjets: 'bulles',
     });
   });
 

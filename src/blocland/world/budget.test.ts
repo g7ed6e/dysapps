@@ -32,17 +32,13 @@ it('les petites constructions des commandes (GD-7, PR 3) se fondent dans le terr
   }
 });
 
-it('les signes des objets touchables (affordance-blocland.md §9) : trois appels au plus, et le monde en blocs reste sous son plafond', () => {
+it('les bulles des objets touchables (proposition « à la Supercell ») : trois quadrilatères en un appel, et le monde en blocs reste sous son plafond', () => {
   for (const a of ARCHIPELAGO_IDS) {
     const signes = signesCost(a);
     const pire = signesCost(a, true);
-    // Un maillage instancié par état (l'or, la pierre, le crème), quel que soit le nombre de signes.
-    expect(signes.drawCalls, a).toBeLessThanOrEqual(3);
-    expect(pire.drawCalls, a).toBeLessThanOrEqual(3);
-    // Tout construit : l'école, la salle des trophées, les monuments et le navire (plus aucune borne à faire).
-    expect(signes.triangles, a).toBeGreaterThan(0);
-    // Au pire (chaque borne à faire, chaque monument à bâtir), quelques milliers de triangles.
-    expect(pire.triangles, a).toBeLessThan(3_000);
+    // Trois bulles au plus à la fois, dans le maillage des plaques des créatures, quel que soit l'état du jeu.
+    expect(signes, a).toEqual({ triangles: 6, drawCalls: 1 });
+    expect(pire, a).toEqual(signes);
     // Avec les petites constructions des commandes, sous le plafond.
     const blocs = sceneCost(a, true);
     expect(blocs.triangles + signes.triangles, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.triangles);

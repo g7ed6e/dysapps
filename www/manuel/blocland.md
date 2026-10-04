@@ -10,23 +10,26 @@ L’appli s’ouvre sur le village (réglage « Au démarrage ») ; depuis le me
 
 Pour se promener sur une île, on **touche le sol** : le bonhomme y marche en contournant arbres, bornes et maisons. Un rond clair cerné de foncé marque où il va, et s’efface à l’arrivée. Si la case touchée est dans l’eau ou derrière un obstacle, il va à la case de l’île la plus proche où il peut aller. Sur l’île où il est déjà, la caméra ne bouge pas ; sur une autre île, il s’arrête là où l’on a touché. Un autre toucher sur le sol pendant la marche change son but ; une borne, un lieu ou une créature gardent toujours la priorité sur le sol. Au clavier, les flèches l’emmènent à la place habituelle de l’île voisine.
 
-**Ce qui se touche se voit.** Un petit cube flotte un peu au-dessus de chaque chose qu’on peut toucher dans le monde. Il y en a trois, qu’on reconnaît à leur forme et à leur taille, pas seulement à leur couleur :
+**Ce qui se fait maintenant se voit.** Sur l’île où l’on est, une à trois bulles carrées se posent au-dessus de ce qu’on peut faire tout de suite. Chacune est une plaque claire bordée de sombre, avec une petite ombre et une pointe vers la chose. Son image dit ce qu’on y fait :
 
-- **Le losange d’or** : à faire maintenant. Un cube d’or bordé de brun, posé sur sa pointe, au-dessus d’une mission à faire, d’un Gardien qui attend son défi, du Bloc-Navire quand il a un bloc à poser ou qu’il peut partir, d’un ouvrage qu’on peut construire tout de suite, d’un monument où l’on peut poser un bloc. Sur l’île où se tient le bonhomme, les losanges flottent doucement et tournent lentement, tous ensemble ; sur les autres îles, ils restent immobiles.
-- **Le cube de pierre** : pas encore. Un petit cube gris, posé à plat, bordé de crème, immobile : une mission pas encore jouable, un Gardien dont le défi n’est pas prêt, le Bloc-Navire ou un chantier (un ouvrage, un monument) qui attend des blocs. Il se voit aussi la nuit.
-- **Le cube crème** : un lieu où entrer. Un cube clair, posé à plat, bordé de brun, immobile, au-dessus de l’école, de la salle des trophées et de chaque monument bâti.
+- **une étoile** : une mission à jouer ;
+- **un bouclier** : un Gardien qui attend son défi ;
+- **un marteau** : un chantier, un ouvrage qu’on peut construire ou un monument où l’on peut poser un bloc ;
+- **un navire** : le Bloc-Navire, qui a un bloc à poser ou qui peut partir ;
+- **le bloc demandé**, ou l’icône de la notion de l’île : une créature qui a une commande prête ou des révisions (voir [La créature qui se souvient](#la-creature-qui-se-souvient)).
 
-Ce qu’il faut savoir des cubes :
+Ce qu’il faut savoir des bulles :
 
-- **Un cube par chose.** Une chose ne porte jamais deux cubes.
-- **Sans cube.** Une mission réussie garde sa pile de cubes d’or (ses étoiles), immobile. Un Gardien vaincu, un ouvrage construit et les créatures n’ont pas de cube ; une créature qui a des révisions ou une commande porte sa plaque (voir [La créature qui se souvient](#la-creature-qui-se-souvient)).
-- **Sur la Carte.** Aucun cube sur la Carte ni pendant un voyage. La flèche « Commence ici » reste la même.
-- **De loin.** Un cube ne devient jamais minuscule.
-- **Le saut.** On touche une chose qui porte un cube : son cube fait un petit saut, vif et court, quand le doigt se lève. L’appli a entendu. Pour une mission réussie, c’est sa pile d’étoiles qui saute.
-- **Toucher tout près.** Pas besoin de viser juste. Un toucher tout près du cube (à environ un doigt de large), ou sur le sol juste à côté de la chose, la touche aussi. Une chose cachée derrière une colline ou une maison ne se touche pas ainsi. Si deux sont proches, c’est celle dont le cube est le plus près du doigt.
-- **Sur un chantier.** Toucher un fantôme pose le bloc attendu, même tout près d’une chose qui porte un cube. Pour l’ouvrir, on la touche elle-même.
-- **Moins d’animations.** Quand le téléphone ou la tablette demande de [réduire les animations](reglages.md#animations-et-vue-du-monde), aucun cube ne bouge ni ne saute. Ils restent là, immobiles, et se lisent encore.
-- **Dans Archipéo**, il n’y a pas de cubes : seul un losange jaune rebondit au-dessus d’une mission à faire, et les piles d’étoiles tournent lentement.
+- **La prochaine chose à faire** a la plus grande bulle, bordée d’or. C’est la seule qui bouge : elle monte et descend doucement. Les autres restent immobiles.
+- **Trois au plus.** Une chose ne porte jamais deux bulles. Les autres îles n’en montrent pas : on les voit en y allant.
+- **Rien pour plus tard.** Une mission pas encore jouable, un chantier qui attend des blocs, l’école, la salle des trophées ou la Fabrique n’ont pas de bulle. Une mission réussie garde sa pile de cubes d’or (ses étoiles), immobile.
+- **Toujours à l’écran.** Quand la chose sort de l’écran, comme le milieu d’un long pont, sa bulle reste au bord, entière, au-dessus de la barre du bas.
+- **Sur la Carte.** Aucune bulle sur la Carte ni pendant un voyage. La flèche « Commence ici » reste la même.
+- **Toucher une bulle**, c’est toucher la chose : sa fiche s’ouvre. La bulle s’écrase un peu puis rebondit : l’appli a entendu. Toucher une mission réussie fait sauter sa pile d’étoiles.
+- **Toucher tout près.** Une borne ou un Gardien qui paraissent petits à l’écran se touchent aussi un peu à côté, à environ un doigt de large.
+- **Sur un chantier.** Toucher un fantôme pose le bloc attendu. Pour ouvrir sa fiche, on touche sa bulle.
+- **Moins d’animations.** Quand le téléphone ou la tablette demande de [réduire les animations](reglages.md#animations-et-vue-du-monde), aucune bulle ne bouge ni ne rebondit. Elles restent là, immobiles, et se lisent encore.
+- **Dans Archipéo**, il n’y a pas de bulles : seul un losange jaune rebondit au-dessus d’une mission à faire, et les piles d’étoiles tournent lentement.
 
 Pour explorer, on peut **faire glisser le monde** d’un doigt (ou à la souris) : la vue suit le doigt, sans zoom ni rotation, et s’arrête au bord de l’archipel. Un petit mouvement compte encore comme un toucher ; un vrai glissé n’ouvre rien quand on lève le doigt.
 
@@ -96,7 +99,7 @@ Le panneau de l’île s’ouvre seulement par le bouton au nom de l’île, dan
 ![Le panneau de la Forêt des sons : Mousso accueille en une ligne, puis les missions.](/captures/panneau-ile.jpg)
 
 1. **La créature** et la première ligne de son accueil. Le bouton **Réécouter** est sur la ligne du nom de la créature, la phrase dessous. Tout l’accueil est lu à voix haute à l’ouverture, et **Réécouter** le relit en entier ; la suite est écrite dans le pli **La suite**, fermé au départ. Quand une mission de l’île a des questions à revoir aujourd’hui, la créature **propose de reprendre**, juste dessous : voir [La créature qui se souvient](#la-creature-qui-se-souvient).
-2. **Les missions**, avec les étoiles gagnées. Dans le monde, un losange d’or flotte au-dessus d’une mission à faire, un cube de pierre au-dessus d’une mission pas encore jouable ; une pile de cubes d’or compte les étoiles d’une mission réussie (voir [Ce qui se touche se voit](#le-monde)).
+2. **Les missions**, avec les étoiles gagnées. Dans le monde, une bulle à l’étoile se pose au-dessus d’une mission à faire ; une pile de cubes d’or compte les étoiles d’une mission réussie (voir [Ce qui se fait maintenant se voit](#le-monde)).
 3. **Le Gardien** : verrouillé tant qu’il manque des étoiles ; le toucher dit lesquelles. L’école, la salle des trophées et la Fabrique n’y sont pas : ce sont des lieux du monde, qu’on touche pour y entrer.
 4. **Le prochain objectif** : **un seul**, d’abord ce qu’on peut faire tout de suite (construire un ouvrage, poser les blocs du Bloc-Navire), sinon le plus proche, celui qui demande le moins de blocs (l’ouvrage en cas d’égalité). Sur un port, le Bloc-Navire prêt à partir passe avant tout. Une jauge (« 0 / 3 ») compte les blocs tant qu’il en manque ; quand tout est là (« Tu peux construire le sentier vers Mine des lettres »), la phrase suffit et la jauge s’efface. Sur l’île-port, le prochain objectif et l’état du village (« Le village : Reconstruction, 3 sur 5 ») forment un seul pli : l’objectif et sa jauge en sont le titre, lisible pli fermé ; l’état du village est dedans.
 5. **Les commandes** des créatures de l’archipel, s’il y en a (voir [Les commandes](#les-commandes)) : le pli s’ouvre de lui-même sur l’île d’une commande prête à livrer.
@@ -133,7 +136,7 @@ Les items ratés reviennent à **J+1, J+3, J+7, J+15** (répétition espacée) e
 
 Quand une mission d’une île a des questions à revoir aujourd’hui, **la créature de l’île fait signe** :
 
-- **dans le monde**, quand la caméra arrive sur son île, elle fait un petit saut lent, une seule fois ; puis l’**icône de la notion** de l’île (celle de son panneau) se pose au-dessus d’elle, sur une plaque carrée claire, et y reste, fixe, sans clignoter et sans texte, de jour comme de nuit. Chaque créature qui a des révisions fait signe sur son île. Avec la préférence de l’appareil qui réduit les animations, il n’y a pas de saut : l’icône est là tout de suite. Rien ne s’affiche sur la Carte ni pendant un voyage ;
+- **dans le monde**, quand la caméra arrive sur son île, elle fait un petit saut lent, une seule fois ; puis l’**icône de la notion** de l’île (celle de son panneau) se pose au-dessus d’elle, sur une plaque carrée claire, et y reste, fixe, sans clignoter et sans texte, de jour comme de nuit. Chaque créature qui a des révisions fait signe sur son île ; sa plaque ne se voit que sur l’île où l’on est, avec les autres bulles (trois au plus). Avec la préférence de l’appareil qui réduit les animations, il n’y a pas de saut : l’icône est là tout de suite. Rien ne s’affiche sur la Carte ni pendant un voyage ;
 - **dans le panneau de l’île**, sous son accueil, elle propose de reprendre, avec l’icône de la notion et une phrase courte, lue à voix haute juste après l’accueil, à réécouter avec **Réécouter** (dans Blocland : « J’ai gardé « Abattage syllabique » de côté. On s’y remet ensemble ? »). Le titre d’une mission d’anglais ou de langue vivante 2 s’écrit sans syllabes colorées, et la voix dit « cette mission » à sa place. Elle ne parle ni de date ni d’erreur, et ne dit pas combien de blocs gagner ;
 - **Reprendre** lance la révision de cette île : la mission concernée, ses questions à revoir en tête. À la fin, le bouton principal devient **Révision suivante** s’il en reste une autre sur l’île, puis **Revenir sur** l’île de la créature. Quand la révision pose une partie du bâtiment, **Voir le bâtiment** passe avant **Révision suivante**, et le panneau de l’île, si on l’ouvre, repropose les révisions au retour ;
 - **Plus tard** ne coûte rien : la créature se tait et ne fait plus signe jusqu’à la visite suivante (la prochaine fois que l’on ouvre l’appli). Une courte ligne dit « D’accord, plus tard. » et le clavier revient au nom de l’île. Les révisions restent dans le menu, à la ligne **À revoir aujourd’hui** ;

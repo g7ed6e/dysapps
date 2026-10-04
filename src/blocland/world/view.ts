@@ -164,6 +164,11 @@ export interface WorldViewProps {
    * la vue simple montre l'icône sur la Carte.
    */
   signes?: SigneDeCreature[];
+  /**
+   * La clé de la prochaine chose à faire (world/affordance.ts : `cleDeLObjet`, ou `creature:<île>` pour une commande à
+   * livrer) : dans Blocland, sa bulle est mise en avant quand elle est sur l'île où l'on est.
+   */
+  prochaine?: string | null;
   /** Ignorer l'heure réelle : toujours en plein jour. */
   forceDay?: boolean;
   /** Les ouvrages construits : la vue d'ensemble cadre les îles ouvertes et leurs voisines. */

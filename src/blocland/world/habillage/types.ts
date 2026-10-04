@@ -53,9 +53,10 @@ export interface Habillage {
    */
   signe: 'plaque' | 'disque';
   /**
-   * Ce qui montre les objets qu'on touche dans le monde (affordance-blocland.md §8) : un cube au-dessus de chacun, en
-   * trois états (le losange d'or à faire, la pierre pas encore, le crème d'un lieu ; world/affordance.ts), ou le seul
-   * losange qui rebondit au-dessus d'une borne à faire (Archipéo, en pause, garde son dessin).
+   * Ce qui montre les objets qu'on touche dans le monde : une à trois bulles sur l'île où l'on est, seulement sur ce
+   * qu'on peut faire maintenant, avec les plaques des créatures (proposition « à la Supercell », choisie par le
+   * mainteneur le 4 octobre 2026 ; world/affordance.ts), ou le seul losange qui rebondit au-dessus d'une borne à faire
+   * (Archipéo, en pause, garde son dessin).
    */
-  signesDesObjets: 'cubes' | 'losanges';
+  signesDesObjets: 'bulles' | 'losanges';
 }
