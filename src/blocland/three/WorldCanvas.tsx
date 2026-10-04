@@ -30,7 +30,7 @@ import { creerNavire, type Amarre, type Navire } from './navire';
 import { creerCamera, type Camera } from './camera';
 import { creerRond } from './rond';
 import { glisseCommence, pointDuPlan, SEUIL_DU_GLISSE } from './glisse';
-import { lecteurDePlaceLibre, lirePlaceLibre, sousLaFiche } from '../placeLibre';
+import { contourner, lecteurDePlaceLibre, lirePlaceLibre, sousLaFiche, type PlaceLue } from '../placeLibre';
 
 /** Le doigt posé sur le monde : son pointeur, où, et le point du sol saisi une fois le seuil passé (sinon `null`). */
 interface Appui {
@@ -211,7 +211,20 @@ export default function WorldCanvas({
     const bornes = creerBornes(monde, () => personnages.avatar, instant);
     // Les plaques des créatures (créées plus bas, lues seulement à l'animation) : les étiquettes s'en écartent.
     const plaques = { boites: (cam: THREE.Camera, W: number, H: number) => signesDesCreatures.boites(cam, W, H), get version() { return signesDesCreatures.version; } };
-    const etiquettes = creerEtiquettes(monde, el, camera, bornes.fleche, bornes.donneesDeLaFleche, () => personnages.avatar, instant, plaques);
+    // La place de la bulle d'or : relue tout de suite quand une fiche s'ouvre ou se ferme sur la Carte (comme les bulles
+    // de l'île, signes.ts : la clé change avec elle), et sans « Recentrer », qui paraît avec la vue déplacée, donc avec la
+    // bulle tenue au bord. Le cadrage de la caméra, lui, ne le compte pas : la Carte s'ouvrirait autrement.
+    const lirePlaceDeLaBulle = lecteurDePlaceLibre(el);
+    const lecteurDeLaPlaceDeLaBulle = (contexte: string): PlaceLue => {
+      const lue = lirePlaceDeLaBulle(derniers.current.calme ? `${contexte}:calme` : contexte);
+      const bouton = el.closest('[data-scene]')?.querySelector('.world-recentrer');
+      if (!bouton) return lue;
+      const vue = el.getBoundingClientRect();
+      const b = bouton.getBoundingClientRect();
+      const libre = contourner(lue.libre, { x: b.left - vue.left + b.width / 2, y: b.top - vue.top + b.height / 2, w: b.width, h: b.height });
+      return libre === lue.libre ? lue : { ...lue, libre };
+    };
+    const etiquettes = creerEtiquettes(monde, el, camera, bornes.fleche, bornes.donneesDeLaFleche, () => personnages.avatar, instant, plaques, lecteurDeLaPlaceDeLaBulle);
     const personnages = creerPersonnages(monde, () => cubesDuMonde.champ(), instant, lumiere);
     const cubesDuMonde = creerCubes(monde, large, lumiere, instant);
     const navire = creerNavire(monde, personnages, cubesDuMonde, derniers, instant, vehicleRef, voyageRef);
@@ -595,6 +608,9 @@ export default function WorldCanvas({
       // Une bulle sous le doigt (sa plaque, pas les marges de sa case) passe d'abord : elle est dessinée par-dessus tout
       // (Blocland, world/affordance.ts).
       const vue = renderer.domElement.getBoundingClientRect();
+      // Sur la Carte glissée ou zoomée, la bulle d'or tenue au bord ramène la vue d'ensemble, où sa cible se voit ; dans
+      // la vue d'ensemble, le toucher va à ce qui est dessous.
+      if (derniers.current.carte && cadrage.decale() && etiquettes.bulleAuBordSous(e.clientX - vue.left, e.clientY - vue.top)) return recentrer();
       const bulle = signesDesCreatures.sous(e.clientX - vue.left, e.clientY - vue.top, vue.width, vue.height);
       if (bulle?.genre === 'creature') {
         recentrer();

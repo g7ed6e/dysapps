@@ -37,16 +37,39 @@ export function placeLibre(w: number, h: number, panneaux: LabelBox[], boutons: 
     if ((p.y0 + p.y1) / 2 < h / 2) r.y0 = Math.max(r.y0, p.y1);
     else r.y1 = Math.min(r.y1, p.y0);
   }
-  for (const b of boutons.map(bords)) {
-    if (b.y1 <= r.y0 || b.y0 >= r.y1 || b.x1 <= r.x0 || b.x0 >= r.x1) continue;
-    const aDroite = (b.x0 + b.x1) / 2 > (r.x0 + r.x1) / 2;
-    const cote = aDroite ? { ...r, x1: b.x0 } : { ...r, x0: b.x1 };
-    const dessous = { ...r, y0: b.y1 };
-    const aire = (q: Rect) => Math.max(0, q.x1 - q.x0) * Math.max(0, q.y1 - q.y0);
-    Object.assign(r, aire(cote) >= aire(dessous) ? cote : dessous);
-  }
+  for (const b of boutons) Object.assign(r, contourner(r, b));
   if (r.x1 - r.x0 < PLACE_MIN.w || r.y1 - r.y0 < PLACE_MIN.h) return { x0: 0, y0: 0, x1: w, y1: h };
   return r;
+}
+
+/**
+ * La place `r` sans le bouton `b` (pixels CSS) : on le contourne par le côté, ou on passe sous lui, selon ce qui laisse le
+ * plus de place ; `r` tel quel s'il ne le touche pas. Pur.
+ */
+export function contourner(r: Rect, b: LabelBox): Rect {
+  const c = bords(b);
+  if (c.y1 <= r.y0 || c.y0 >= r.y1 || c.x1 <= r.x0 || c.x0 >= r.x1) return r;
+  const aDroite = (c.x0 + c.x1) / 2 > (r.x0 + r.x1) / 2;
+  const cote = aDroite ? { ...r, x1: c.x0 } : { ...r, x0: c.x1 };
+  const dessous = { ...r, y0: c.y1 };
+  const aire = (q: Rect) => Math.max(0, q.x1 - q.x0) * Math.max(0, q.y1 - q.y0);
+  return aire(cote) >= aire(dessous) ? cote : dessous;
+}
+
+/**
+ * Le centre (`x`, `y`) d'une marque `w` × `h` ramené dans la place libre `lue` (lue pour une vue de `lue.w` × `lue.h`,
+ * ramenée à `W` × `H`, pixels CSS ; `null` : toute la vue), à `bord` de ses bords ; au milieu de la bande si elle est trop
+ * étroite. Pur.
+ */
+export function tenirDansLaPlace(x: number, y: number, w: number, h: number, W: number, H: number, lue: PlaceLue | null, bord: number): { x: number; y: number } {
+  const r = lue?.libre;
+  const sx = r && lue.w ? W / lue.w : 1;
+  const sy = r && lue.h ? H / lue.h : 1;
+  const bande = (v: number, a: number, b: number, m: number) => (b - a < 2 * m ? (a + b) / 2 : Math.min(Math.max(v, a + m), b - m));
+  return {
+    x: bande(x, r ? r.x0 * sx : 0, r ? r.x1 * sx : W, w / 2 + bord),
+    y: bande(y, r ? r.y0 * sy : 0, r ? r.y1 * sy : H, h / 2 + bord),
+  };
 }
 
 /** Autour du point d'un objet, en pixels CSS : la fiche le cache quand ce carré la touche. */

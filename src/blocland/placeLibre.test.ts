@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { lecteurDePlaceLibre, lirePlaceLibre, sousLaFiche } from './placeLibre';
+import { contourner, lecteurDePlaceLibre, lirePlaceLibre, sousLaFiche, tenirDansLaPlace } from './placeLibre';
 
 const rect = (left: number, top: number, width: number, height: number) => () => ({ left, top, width, height, right: left + width, bottom: top + height, x: left, y: top, toJSON: () => ({}) }) as DOMRect;
 
@@ -89,5 +89,36 @@ describe('la fiche d’un objet (lot 2 de « Toucher le monde »)', () => {
     expect(sousLaFiche({ x: 500, y: 380 }, fiche)).toBe(true);
     expect(sousLaFiche({ x: 500, y: 370 }, fiche)).toBe(false);
     expect(sousLaFiche({ x: 1040, y: 500 }, fiche)).toBe(false);
+  });
+});
+
+describe('la bulle d’or tenue dans la place libre de la Carte (4 octobre 2026)', () => {
+  // La tablette, la place libre sous la colonne de Pause contournée par la gauche : de 0 à 900, de 0 à 700.
+  const lue = { libre: { x0: 0, y0: 0, x1: 900, y1: 700 }, w: 1024, h: 768, saut: false };
+
+  it('reste entière dans la place libre, à 8 px de ses bords, du côté de sa cible', () => {
+    expect(tenirDansLaPlace(1200, 300, 64, 64, 1024, 768, lue, 8)).toEqual({ x: 860, y: 300 });
+    expect(tenirDansLaPlace(-50, 900, 64, 64, 1024, 768, lue, 8)).toEqual({ x: 40, y: 660 });
+    expect(tenirDansLaPlace(400, 300, 64, 64, 1024, 768, lue, 8)).toEqual({ x: 400, y: 300 });
+  });
+
+  it('suit la vue quand sa taille a changé depuis la lecture, et prend toute la vue sans place lue', () => {
+    expect(tenirDansLaPlace(2000, 300, 64, 64, 512, 384, lue, 8).x).toBe(410);
+    expect(tenirDansLaPlace(2000, 300, 64, 64, 1024, 768, null, 8).x).toBe(984);
+  });
+
+  it('se met au milieu d’une bande trop étroite pour elle', () => {
+    const etroite = { ...lue, libre: { x0: 0, y0: 100, x1: 900, y1: 150 } };
+    expect(tenirDansLaPlace(300, 900, 64, 64, 1024, 768, etroite, 8).y).toBe(125);
+  });
+
+  it('contourne « Recentrer » par le côté ou par-dessous, selon ce qui laisse le plus de place', () => {
+    // Un bouton large en haut à droite : on passe dessous.
+    expect(contourner(lue.libre, { x: 700, y: 140, w: 400, h: 48 })).toEqual({ x0: 0, y0: 164, x1: 900, y1: 700 });
+    // Un bouton haut et étroit à droite : on le contourne par la gauche.
+    expect(contourner(lue.libre, { x: 880, y: 350, w: 40, h: 600 })).toEqual({ x0: 0, y0: 0, x1: 860, y1: 700 });
+    // Un bouton hors de la place : rien ne change.
+    const r = lue.libre;
+    expect(contourner(r, { x: 980, y: 140, w: 60, h: 48 })).toBe(r);
   });
 });
