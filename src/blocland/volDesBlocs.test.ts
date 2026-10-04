@@ -90,8 +90,12 @@ describe('le dessin, dans blocland.css', () => {
     expect(mot).toMatch(/clip-path: none/);
     expect(mot).toMatch(/position: static/);
     expect(regle(':root[data-univers="blocland"][data-texte="grand"] .world-bar .button')).toMatch(/flex-direction: column/);
-    // Le mot de « ? » n'existe que là : Archipéo garde son icône seule.
-    expect(regle('.world-bar-text-aide')).toMatch(/display: none/);
+    // Le mot de « ? » n'existe que là : Archipéo garde son icône seule (global.css le cache, et n'affiche jamais un mot
+    // de la barre par `display`).
+    const global = readFileSync(join(process.cwd(), 'src/styles/global.css'), 'utf8');
+    expect(global).toMatch(/\n\.world-bar-text-aide \{\s*display: none;/);
+    expect(global).not.toMatch(/\.world-bar-text[^{,]*\{[^}]*display:(?! none)/);
+    expect(regle(':root[data-univers="blocland"][data-texte="grand"] .world-bar')).toMatch(/align-items: flex-end/);
   });
 
   it('le bouton de l’île en herbe, l’action principale de la barre ; le bouton ouvert en or et enfoncé', () => {

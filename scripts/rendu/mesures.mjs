@@ -434,6 +434,8 @@ const CAPTURES = [
     { suffixe: '-390x844', taille: { width: 390, height: 844 } },
     { suffixe: '-844x390', taille: { width: 844, height: 390 } },
   ].map(({ suffixe, ...autres }) => ({ nom: `barre-mots${suffixe}`, vue: 'île', famille: 'barre-mots', ile: 'french-6e-phonology', reglages: { font: 'opendyslexic', fontSize: 32 }, ...autres })),
+  // Un nom d'île à mot long (« Observatoire »), en téléphone, lettres espacées au plus large.
+  { nom: 'barre-mots-long-390x844', vue: 'île', famille: 'barre-mots', ile: 'maths-3e-statistics', taille: { width: 390, height: 844 }, reglages: { font: 'opendyslexic', fontSize: 32, letterSpacing: 0.2 } },
   { nom: 'etoile-phare-ponts', vue: 'archipel', famille: 'etoile', ile: 'maths-3e-functions', finesse: 2 },
   { nom: 'etoile-phare-ponts-nuit', vue: 'archipel', famille: 'etoile', ile: 'maths-3e-functions', finesse: 2, nuit: true },
   // Les commandes des habitants (GD-7, PR 3, famille `commandes`, lot en cours) : à la Mine des lettres, la commande de

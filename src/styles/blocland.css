@@ -259,18 +259,18 @@
   clip-path: inset(50%);
   white-space: nowrap;
 }
-/* Le mot de « ? » : seulement en grand texte, dans Blocland (Archipéo garde son icône seule). */
-.world-bar-text-aide {
-  display: none;
-}
 /* En grand texte, le réglage de l'élève qui lit difficilement : le mot sous l'icône, dans la taille du texte choisie
    (décision du mainteneur, 4 octobre 2026, « ok 2a »). Les boutons s'élargissent à leur mot, un nom d'île long passe
-   à la ligne dans son bouton, et la barre passe sur deux rangées plutôt que de sortir de l'écran. */
+   à la ligne entre ses mots (jamais au milieu d'un mot) et peut prendre toute la rangée ; la barre passe sur deux
+   rangées plutôt que de sortir de l'écran, les boutons alignés en bas, sans s'étirer. */
+:root[data-univers="blocland"][data-texte="grand"] .world-bar {
+  align-items: flex-end;
+}
 :root[data-univers="blocland"][data-texte="grand"] .world-bar .button {
   flex-direction: column;
   gap: 2px;
   width: auto;
-  max-width: min(12em, calc(50% - 4px));
+  max-width: min(12em, 100%);
   height: auto;
   padding: 4px 10px 6px;
 }
@@ -283,7 +283,7 @@
   clip-path: none;
   white-space: normal;
   text-align: center;
-  line-height: 1.15;
+  line-height: 1.3;
 }
 /* Le bouton de l'île : l'action principale de la barre, en herbe ; les autres en bois (décision du mainteneur, 4
    octobre 2026, comme sur la maquette). */
