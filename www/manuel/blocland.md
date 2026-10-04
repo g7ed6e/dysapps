@@ -360,7 +360,7 @@ L’adresse de l’école est `#/adventure/school` (en vue simple, c’est une p
 
 ![Le panneau de la salle des trophées : 9 trophées sur 24, le rôle et l'échelle des rôles.](/captures/trophees.jpg)
 
-On y entre en touchant le pavillon ou un trophée, avec la ligne « Salle des trophées » du panneau de l’île, ou avec **Succès** dans le menu du village. Le bonhomme marche jusqu’à la salle, et son panneau s’ouvre en plein écran, par-dessus le monde : le nombre de trophées sous le titre, lu à voix haute (« Salle des trophées : 3 trophées sur 24. »), une phrase écrite dans le pli **En savoir plus** (fermé au départ, avec le bouton **Écouter**, qui la lit), puis tout le contenu de la page Succès (rôle, chiffres, étoiles par matière, à retravailler, succès). La page Succès reste accessible hors du village (par le menu, lien en bas du panneau).
+On y entre en touchant le pavillon ou un trophée, avec la ligne « Salle des trophées » du panneau de l’île, ou avec **Succès** dans le menu du village. Le bonhomme marche jusqu’à la salle, et son panneau s’ouvre en plein écran, par-dessus le monde : le nombre de trophées sous le titre, lu à voix haute (« Salle des trophées : 3 trophées sur 24. »), une phrase écrite dans le pli **En savoir plus** (fermé au départ, avec le bouton **Écouter**, qui la lit), puis tout le contenu de la page Succès (rôle, chiffres, étoiles par matière, à retravailler, succès). La page Succès reste accessible hors du village (par le menu, ou par le lien en bas du panneau).
 
 L’adresse de la salle est `#/adventure/trophies` ; en vue simple, elle mène à la page Succès.
 
