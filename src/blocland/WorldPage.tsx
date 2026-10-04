@@ -1323,7 +1323,8 @@ export function WorldPage() {
             </button>
           )}
           <button type="button" className="button" onClick={revoirAide} aria-label="Revoir l’aide">
-            <Icon name="help" />
+            {/* Le mot, écrit seulement dans Blocland en grand texte (blocland.css) ; Archipéo garde l'icône seule. */}
+            <Icon name="help" /> <span className="world-bar-text world-bar-text-aide">Aide</span>
           </button>
         </nav>
         {vol?.phase === 'vol' && vol.depart && vol.arrivee && (
