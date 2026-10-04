@@ -210,7 +210,7 @@ it('le saut au toucher : une bosse de 0,2 bloc en 180 ms, sans rebond, plus cour
   expect(hauteurDuSigne(700)).toBeCloseTo(GESTE_DU_SIGNE.hauteur, 9);
 });
 
-describe('les bulles (proposition « à la Supercell », 4 octobre 2026)', () => {
+describe('les bulles (proposition P2, 4 octobre 2026)', () => {
   const FORET = 'french-6e-phonology' as const;
   const MINE = 'french-6e-letter-confusion' as const;
   const objet = (o: SigneDObjet['objet'], etat: SigneDObjet['etat'], ile: typeof FORET | typeof MINE): SigneDObjet => ({

@@ -1,7 +1,7 @@
 import type { BiomeId, BlockId } from './biomes';
 
 /**
- * Les blocs qui volent jusqu'au compteur (proposition P2 « à la Supercell », PR 2, Blocland) : l'écran de fin d'une
+ * Les blocs qui volent jusqu'au compteur (proposition P2, PR 2, Blocland) : l'écran de fin d'une
  * mission qui a donné des blocs retient le gain ; le monde le prend en arrivant sur l'île, une fois, et fait voler trois
  * petits blocs au plus de la borne de la mission jusqu'à la pastille du bouton Blocs, qui change de chiffre une fois, à
  * l'arrivée du dernier. Les blocs sont déjà dans l'inventaire (à l'écran de fin) : ce mot, gardé le temps de la visite
