@@ -780,7 +780,7 @@ async function scenes() {
           else sessionStorage.removeItem('dysapps:pose');
           sessionStorage.setItem('dysapps:title-seen', '1');
           localStorage.setItem('dysapps:settings', JSON.stringify({ worldView: view, ...(univers ? { univers } : {}), ...(lv2 ? { lv2 } : {}), ...(reglages ?? {}) }));
-          localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true, 'archipel-5e': true, 'archipel-4e': true, 'archipel-3e': true }));
+          localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true, 'carte-pincer': true, 'archipel-5e': true, 'archipel-4e': true, 'archipel-3e': true }));
           localStorage.setItem('dysapps:region-names', JSON.stringify({ said: true }));
           // Au départ, le mot d'arrivée de la créature est déjà dit : il couvrirait la vue. Avec des missions jouées
           // (`jouees`), rien n'est posé : le jeu tient alors pour dits tous les mots déjà mérités (« Chantier fini »…).

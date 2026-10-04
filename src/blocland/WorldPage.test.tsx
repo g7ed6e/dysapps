@@ -204,7 +204,7 @@ it('le panneau d’une île ne s’ouvre que par son bouton, en plein écran par
 });
 
 const vuSansAide = () => {
-  localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true }));
+  localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true, 'carte-pincer': true }));
   localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'baleine-6e-arrivee': true }));
 };
 
@@ -531,7 +531,8 @@ it('les bandeaux de récompense attendent la fin du tutoriel, et de nouveau quan
   localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'baleine-6e-arrivee': true }));
   renderAt('/adventure/french-6e-phonology');
   await waitFor(() => expect(screen.getByTestId('retenus')).toHaveTextContent('non'));
-  await user.click(screen.getByRole('button', { name: 'Revoir l’aide' }));
+  await user.click(screen.getByRole('button', { name: 'Menu' }));
+  await user.click(within(await screen.findByRole('dialog', { name: 'Menu' })).getByRole('button', { name: /Aide du village/ }));
   expect(screen.getByTestId('retenus')).toHaveTextContent('oui');
 });
 
@@ -591,9 +592,9 @@ it('sans île ouverte, pas de panneau ni de bouton de panneau', () => {
 it('l’école du village : on la touche dans le monde (plus de bouton École dans la barre), son panneau montre les trois portes', async () => {
   const user = userEvent.setup();
   renderAt('/adventure');
-  // La barre du bas : Carte, Blocs et l'aide (l'île quand une île est ouverte), plus d'École.
+  // La barre du bas : Carte et Blocs (l'île quand une île est ouverte), plus d'École ni de « ? » (4 octobre 2026).
   const bar = screen.getByRole('navigation', { name: 'Village' });
-  expect(within(bar).getAllByRole('button').map((b) => b.getAttribute('aria-label') ?? b.textContent?.trim())).toEqual(['Carte', 'Mes blocs, 0', 'Revoir l’aide']);
+  expect(within(bar).getAllByRole('button').map((b) => b.getAttribute('aria-label') ?? b.textContent?.trim())).toEqual(['Carte', 'Mes blocs, 0']);
   expect(within(bar).queryByRole('button', { name: /École/ })).not.toBeInTheDocument();
   await user.click(await screen.findByRole('button', { name: 'Toucher l’école dans le monde' }));
   const sheet = await screen.findByRole('dialog', { name: /École du village/ });
@@ -604,11 +605,11 @@ it('l’école du village : on la touche dans le monde (plus de bouton École da
   expect(within(sheet).getByRole('link', { name: /Homophones/ })).toHaveAttribute('href', '/app/homophones');
   await user.click(within(sheet).getByRole('button', { name: 'Fermer le panneau' }));
   expect(screen.queryByRole('dialog', { name: /École du village/ })).not.toBeInTheDocument();
-  // Sur une île ouverte, la barre a le bouton de l'île en tête, puis Carte, Blocs et l'aide.
+  // Sur une île ouverte, la barre a le bouton de l'île en tête, puis Carte et Blocs.
   cleanup();
   renderAt('/adventure/french-6e-phonology');
   const barre = screen.getByRole('navigation', { name: 'Village' });
-  expect(within(barre).getAllByRole('button')).toHaveLength(4);
+  expect(within(barre).getAllByRole('button')).toHaveLength(3);
 });
 
 it('un monument : on le touche dans le monde, la caméra va sur son îlot, son panneau le construit ; le menu les liste', async () => {
@@ -639,13 +640,13 @@ it('le menu du village : le bouton Menu l’ouvre en plein écran, Réglages en 
   expect(within(menu).getByRole('link', { name: /Missions/ })).toHaveAttribute('href', '/quetes');
   expect(within(menu).getByRole('link', { name: /Succès/ })).toHaveAttribute('href', '/adventure/trophies');
   // En tête, le rôle et la jauge d'XP. Plus de « Reprendre » : la croix (qui a le focus) ou Échap referment le menu.
-  // Ni Accueil, ni « Revoir l’aide du village » (le « ? » de la barre du bas la rouvre). Réglages tout en bas, après le
-  // Tutoriel (mot du mainteneur, 4 octobre 2026).
+  // Ni Accueil ; « Aide du village » rejoue les trois bulles (plus de « ? » dans la barre). Réglages tout en bas, après
+  // le Tutoriel et l'aide (mot du mainteneur, 4 octobre 2026).
   expect(within(menu).getByRole('progressbar', { name: /Niveau 1/ })).toBeInTheDocument();
   expect(within(menu).queryByRole('button', { name: /Reprendre/ })).not.toBeInTheDocument();
   expect(within(menu).getByRole('button', { name: 'Fermer le menu' })).toHaveFocus();
   expect(within(menu).queryByRole('link', { name: /Accueil|Le menu en page/ })).not.toBeInTheDocument();
-  expect(within(menu).queryByRole('button', { name: /Revoir l’aide/ })).not.toBeInTheDocument();
+  expect(within(menu).getByRole('button', { name: /Aide du village/ })).toBeInTheDocument();
   const ordre = within(menu)
     .getAllByRole('link')
     .map((el) => el.textContent!.trim());
@@ -757,38 +758,28 @@ it('le tutoriel du village tient en trois bulles : l’île, les bornes, le bout
   await user.click(screen.getByRole('button', { name: /Suivant/ }));
   expect(tuto()).toHaveTextContent(/touche une borne, puis Jouer\. La bulle bordée d’or montre la prochaine chose à faire\. Chaque mission te donne des blocs pour construire l’île/);
   await user.click(screen.getByRole('button', { name: /Suivant/ }));
-  expect(tuto()).toHaveTextContent('Le bouton Menu, en haut à droite, ouvre le menu : missions, succès, réglages, accueil.');
+  expect(tuto()).toHaveTextContent('Le bouton Menu, en haut à droite, ouvre le menu : missions, succès, aide, réglages.');
   // La bulle montre le bouton Menu.
   expect(document.querySelector('[data-tuto="menu"]')!.classList.contains('tuto-target')).toBe(true);
   await user.click(screen.getByRole('button', { name: /J’ai compris/ }));
   expect(screen.queryByRole('dialog', { name: /bouton Menu/ })).not.toBeInTheDocument();
 });
 
-it('sur la Carte, le bouton « ? » dit seulement le pincement ; la Carte s’ouvre sans phrase', async () => {
+it('sur la Carte, la première fois, une bulle dit le pincement, une seule fois ; plus de « ? » dans la barre', async () => {
   localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true }));
   const user = userEvent.setup();
-  renderAt('/adventure/map');
+  const premier = renderAt('/adventure/map');
   const aide = () => screen.queryByRole('dialog', { name: /Pince la Carte/ });
-  expect(aide()).not.toBeInTheDocument();
-  await user.click(screen.getByRole('button', { name: 'Revoir l’aide' }));
   expect(aide()).toHaveTextContent('Pince la Carte à deux doigts pour la rapprocher.');
   expect(screen.queryByRole('dialog', { name: /Bienvenue/ })).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: 'Revoir l’aide' })).not.toBeInTheDocument();
   // Une seule bulle : pas de compteur « 1/1 ».
   expect(aide()).not.toHaveTextContent('1/1');
   await user.click(screen.getByRole('button', { name: /J’ai compris/ }));
   expect(aide()).not.toBeInTheDocument();
-  // Quitter la Carte pendant que la ligne est ouverte, puis revenir : elle ne revient pas toute seule.
-  const carte = () => within(screen.getByRole('navigation', { name: 'Village' })).getByRole('button', { name: /Carte/ });
-  await user.click(screen.getByRole('button', { name: 'Revoir l’aide' }));
-  expect(aide()).toBeInTheDocument();
-  await user.click(carte());
+  premier.unmount();
+  renderAt('/adventure/map');
   expect(aide()).not.toBeInTheDocument();
-  await user.click(carte());
-  expect(aide()).not.toBeInTheDocument();
-  // Hors de la Carte, « ? » rejoue le tutoriel du village.
-  await user.click(carte());
-  await user.click(screen.getByRole('button', { name: 'Revoir l’aide' }));
-  expect(screen.getByRole('dialog', { name: /Bienvenue/ })).toBeInTheDocument();
 });
 
 it('au premier toucher d’une île pâle, sa créature dit ce que sont les ouvrages, une seule fois par appareil', async () => {

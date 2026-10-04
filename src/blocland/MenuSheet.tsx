@@ -24,6 +24,8 @@ interface Props {
   onClose: () => void;
   /** « Y aller » d'une commande : ouvre le panneau de l'île visée, comme un toucher sur l'île (le monde 3D). */
   onAller?: (island: BiomeId, commande?: string) => void;
+  /** « Aide du village » : le menu se ferme et les trois bulles du début reviennent (plus de « ? » dans la barre). */
+  onAide?: () => void;
 }
 
 function Row({ to, icon, title, desc }: { to: string; icon: AnyIconName; title: string; desc?: string }) {
@@ -42,7 +44,7 @@ function Row({ to, icon, title, desc }: { to: string; icon: AnyIconName; title: 
   );
 }
 
-export function MenuSheet({ onClose, onAller }: Props) {
+export function MenuSheet({ onClose, onAller, onAide }: Props) {
   const { state } = useBlocland();
   const { assemblage } = useTextes();
   const { progress } = useProgress();
@@ -98,6 +100,19 @@ export function MenuSheet({ onClose, onAller }: Props) {
         <Row to="/quetes" icon="dumbbell" title="Missions" desc="Toutes, par matière" />
         <Row to={TROPHIES_PATH} icon="trophy" title="Succès" desc="Ton rôle, tes trophées" />
         <Row to="/app/demo" icon="compass" title="Tutoriel" desc="Prendre les commandes en main" />
+        {onAide && (
+          <li>
+            <button type="button" className="island-quest" onClick={onAide}>
+              <span className="island-quest-icon">
+                <Icon name="help" />
+              </span>
+              <span className="island-quest-text">
+                <span className="island-quest-title">Aide du village</span>
+                <span className="island-quest-desc">Les trois bulles du début</span>
+              </span>
+            </button>
+          </li>
+        )}
       </ul>
       {/* Les Réglages tout en bas, à part, sous un trait. */}
       <ul className="island-quests menu-end" aria-label="Réglages">

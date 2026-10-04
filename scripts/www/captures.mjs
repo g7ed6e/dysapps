@@ -312,7 +312,7 @@ async function take(shot) {
         if (!title) sessionStorage.setItem('dysapps:title-seen', '1');
         // Les réglages par défaut (la page Réglages les montre tels quels), sauf la vue du monde et les réglages extrêmes.
         localStorage.setItem('dysapps:settings', JSON.stringify({ ...settings, worldView: view }));
-        if (!tutorial) localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true, 'archipel-5e': true, 'archipel-4e': true, 'archipel-3e': true }));
+        if (!tutorial) localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true, 'carte-pincer': true, 'archipel-5e': true, 'archipel-4e': true, 'archipel-3e': true }));
         if (state?.game) localStorage.setItem('dysapps:game', JSON.stringify({ version: 3, ...state.game }));
         if (state?.progress) localStorage.setItem('dysapps:progress', JSON.stringify(state.progress));
         // Ce que la baleine a déjà dit : sans cette clé, les étapes déjà passées sont notées dites, sans parler.
