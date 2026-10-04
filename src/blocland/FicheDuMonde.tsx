@@ -103,11 +103,13 @@ interface CadreProps {
   onClose: () => void;
   /** Le bouton principal (et un secondaire), toujours entiers sous le texte. */
   actions?: ReactNode;
+  /** Sans phrase (les étoiles d'une borne) : le texte et les boutons sur une même rangée, la fiche aussi petite que possible. */
+  ligne?: boolean;
   children?: ReactNode;
 }
 
 /** Le cadre commun : le titre (qui prend le focus), Écouter à côté, la croix ; le texte qui défile ; les boutons. */
-function Fiche({ titre, icone, portrait, lecture, onClose, actions, children }: CadreProps) {
+function Fiche({ titre, icone, portrait, lecture, onClose, actions, ligne, children }: CadreProps) {
   const { settings, speak } = useSettings();
   const titreRef = useRef<HTMLHeadingElement>(null);
   // Le texte continue plus bas (grand texte, une découverte) : un trait pointillé le dit, comme sur la Carte.
@@ -120,6 +122,16 @@ function Fiche({ titre, icone, portrait, lecture, onClose, actions, children }: 
     // Une fois, à l'ouverture (la page remonte la fiche à chaque ouverture).
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  const corps = (
+    <>
+      {children && (
+        <div ref={texteRef} className={`world-fiche-texte${suite ? ' a-suivre' : ''}`}>
+          {children}
+        </div>
+      )}
+      {actions && <div className="world-fiche-actions">{actions}</div>}
+    </>
+  );
   // Le médaillon est hors de la fiche qui défile : il reste entier, et sa hauteur compte dans la place de la fiche.
   return (
     <div className={`world-fiche-cadre${portrait ? ' avec-medaillon' : ''}`}>
@@ -138,12 +150,13 @@ function Fiche({ titre, icone, portrait, lecture, onClose, actions, children }: 
             <Icon name="close" />
           </button>
         </div>
-        {children && (
-          <div ref={texteRef} className={`world-fiche-texte${suite ? ' a-suivre' : ''}`}>
-            {children}
+        {ligne ? (
+          <div className="world-fiche-ligne">
+            {corps}
           </div>
+        ) : (
+          corps
         )}
-        {actions && <div className="world-fiche-actions">{actions}</div>}
       </section>
     </div>
   );
@@ -185,6 +198,7 @@ function FicheDeLaBorne({ id, onClose }: Props & { id: string }) {
       icone={jouable ? 'play' : 'lock'}
       lecture={lecture}
       onClose={onClose}
+      ligne={jouable}
       actions={
         jouable && (
           <Link to={`/adventure/${ile}/${mission}`} className="button primary">

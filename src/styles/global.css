@@ -5872,14 +5872,17 @@ button.island-quest {
   box-shadow: var(--shadow-float);
 }
 
-/* La fiche d'un objet du monde (lot 2 de « Toucher le monde ») : toujours à la même place, en bas, toute la largeur,
-   juste au-dessus de la barre ; en paysage, une carte en bas à gauche. Au plus 45 % de la scène en portrait (70 % en
-   paysage) : au-delà, le texte défile dans la fiche, le titre et les boutons restent entiers, jamais de points de
-   suspension. */
+/* La fiche d'un objet du monde (lot 2 de « Toucher le monde ») : toujours à la même place, en bas à gauche, juste
+   au-dessus de la barre, de la taille de ce qu'elle dit (piste A du mainteneur, 4 octobre 2026 : plus de fiche grande et
+   vide), entre 18rem et toute la largeur ; en paysage, au plus 24rem ou la moitié de l'écran. Au plus 45 % de la scène
+   en portrait (70 % en paysage) : au-delà, le texte défile dans la fiche, le titre et les boutons restent entiers, jamais
+   de points de suspension. */
 .world-fiche-place {
   position: absolute;
   left: 0.6rem;
-  right: 0.6rem;
+  right: auto;
+  min-width: min(18rem, calc(100% - 1.2rem));
+  max-width: calc(100% - 1.2rem);
   bottom: calc(var(--barre-h, 4rem) + 0.6rem);
   z-index: 2;
   display: flex;
@@ -5890,8 +5893,7 @@ button.island-quest {
 }
 @media (orientation: landscape) {
   .world-fiche-place {
-    right: auto;
-    width: min(24rem, 50%);
+    max-width: min(24rem, 50%);
   }
 }
 /* En paysage, jusqu'à 70 % : le titre, deux lignes et les boutons tiennent en grand texte (la fiche reste à gauche, la
@@ -5950,7 +5952,7 @@ button.island-quest {
 .world-fiche {
   container: fiche / inline-size;
 }
-@container fiche (max-width: 17rem) {
+@container fiche (max-width: 14rem) {
   .world-fiche-tete {
     flex-wrap: wrap;
     justify-content: flex-end;
@@ -5972,6 +5974,22 @@ button.island-quest {
 }
 .world-fiche.a-suivre {
   border-bottom-style: dashed;
+}
+/* Sans phrase (une borne : ses étoiles, puis Jouer), rien n'est réservé : les étoiles et le bouton sur la même rangée,
+   l'un sous l'autre si la place manque (grand texte). */
+.world-fiche-texte:not(:has(.world-fiche-phrase)) {
+  min-height: 0;
+}
+.world-fiche-ligne {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+}
+.world-fiche-ligne > .world-fiche-texte {
+  flex: 0 1 auto;
+  overflow: visible;
 }
 /* Deux boutons : une ligne de texte suffit (le trait pointillé dit la suite), pour que les boutons tiennent entiers. */
 .world-fiche:has(.world-fiche-actions > :nth-child(2)) .world-fiche-texte {
@@ -6046,7 +6064,7 @@ button.island-quest {
 }
 /* Le titre sur sa propre ligne, sous Écouter et la croix (fiche étroite pour sa taille de texte) : il passe sous le
    médaillon, toute la largeur. */
-@container fiche (max-width: 17rem) {
+@container fiche (max-width: 14rem) {
   .avec-medaillon .world-fiche-titre {
     margin-left: 0;
   }

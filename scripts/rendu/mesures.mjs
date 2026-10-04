@@ -155,6 +155,8 @@ const CAPTURES = [
   ...[
     { nom: 'creature', ile: 'french-6e-letter-confusion', commandes: ['french-6e-letter-confusion-request-1'], inventaire: { 'maths-6e-calculation': 4 }, fiche: { genre: 'creature', id: 'french-6e-letter-confusion' } },
     { nom: 'gardien', ile: 'french-6e-letter-confusion', debout: 'french-6e-letter-confusion', fiche: { genre: 'gardien', id: 'french-6e-letter-confusion' } },
+    // La fiche d'une borne à la taille de ce qu'elle dit (piste A, 4 octobre 2026) : aussi sur téléphone en grand texte.
+    { nom: 'borne', ile: 'french-6e-phonology', fiche: { genre: 'borne', id: 'french-6e-phonology:syllables' } },
   ].flatMap(({ nom, ...c }) =>
     [
       { suffixe: '-telephone-grand-texte', taille: { width: 390, height: 844 }, reglages: { font: 'opendyslexic', fontSize: 32 } },
