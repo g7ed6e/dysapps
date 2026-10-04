@@ -83,7 +83,7 @@ const CAPTURES = [
   { nom: 'gris-muscade', vue: 'île', famille: 'lisibilite', ile: 'lv2-4e-daily-life' },
   { nom: 'gris-hanneton', vue: 'défi', famille: 'lisibilite', ile: 'maths-6e-calculation' },
   { nom: 'gris-moustache', vue: 'île', famille: 'lisibilite', ile: 'english-5e-grammar' },
-  // Les bulles de ce qu'on peut faire (proposition « à la Supercell », famille `bulles`), à retirer une fois le lot
+  // Les bulles de ce qu'on peut faire (proposition P2, famille `bulles`), à retirer une fois le lot
   // fusionné :
   // - une partie neuve (`depart`) sur l'île de l'école : les bornes à faire, trois bulles, la première bordée d'or ; sur
   //   téléphone en portrait, en paysage, de nuit, figée (`fige` : le mouvement réduit de l'appareil), et en tablette ;

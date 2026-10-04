@@ -1,4 +1,4 @@
-// Ce qu'on touche dans le monde de Blocland, et les bulles qui le montrent (proposition P2 « à la Supercell », choisie
+// Ce qu'on touche dans le monde de Blocland, et les bulles qui le montrent (proposition P2, choisie
 // par le mainteneur le 4 octobre 2026 ; maquettes et benchmark dans la Bibliothèque, ux/navigation/). Une à trois bulles
 // à la fois, seulement sur l'île où l'on est et seulement sur ce qu'on peut faire maintenant : une plaque carrée claire,
 // cerclée de sombre, toujours face à l'écran et de taille fixe, avec l'icône de ce qu'on y fait (l'étoile d'une borne,
@@ -262,7 +262,7 @@ export function sautDuSigne(ms: number): number {
 
 // ---- Les bulles
 
-/** Les bulles : combien, leur taille à l'écran, leur mouvement (P2 « à la Supercell », 4 octobre 2026). */
+/** Les bulles : combien, leur taille à l'écran, leur mouvement (P2, 4 octobre 2026). */
 export const BULLE = {
   /** Trois au plus à la fois, sur l'île où l'on est. */
   max: 3,

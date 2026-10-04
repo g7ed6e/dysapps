@@ -54,7 +54,7 @@ export interface Habillage {
   signe: 'plaque' | 'disque';
   /**
    * Ce qui montre les objets qu'on touche dans le monde : une à trois bulles sur l'île où l'on est, seulement sur ce
-   * qu'on peut faire maintenant, avec les plaques des créatures (proposition « à la Supercell », choisie par le
+   * qu'on peut faire maintenant, avec les plaques des créatures (proposition P2, choisie par le
    * mainteneur le 4 octobre 2026 ; world/affordance.ts), ou le seul losange qui rebondit au-dessus d'une borne à faire
    * (Archipéo, en pause, garde son dessin).
    */

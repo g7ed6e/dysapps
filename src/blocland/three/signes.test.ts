@@ -1,5 +1,5 @@
 // Les bulles dans la scène 3D, sans WebGL : celle de la créature (GD-4, étape 1 ; GD-7) et, dans Blocland, celles des
-// objets à faire (proposition « à la Supercell », 4 octobre 2026) : le geste une fois à l'arrivée de la caméra sur
+// objets à faire (proposition P2, 4 octobre 2026) : le geste une fois à l'arrivée de la caméra sur
 // l'île, la bulle ensuite, un seul appel de dessin pour toutes, trois au plus sur l'île du bonhomme, la première mise en
 // avant (plus grande, bordée d'or, seule à bouger), le rebond au toucher, rien sur la Carte, et rien qui bouge avec
 // « Réduire les animations ».
@@ -309,7 +309,7 @@ it('la hauteur de la vue ne se lit pas dans le DOM image par image : le redimens
   expect(taille()).toBeCloseTo(avant / 2, 5);
 });
 
-describe('les bulles de Blocland (proposition « à la Supercell », 4 octobre 2026)', () => {
+describe('les bulles de Blocland (proposition P2, 4 octobre 2026)', () => {
   const OBJETS = [
     objet({ genre: 'borne', id: `${FORET}:a` }, -4),
     objet({ genre: 'borne', id: `${FORET}:b` }, -2),

@@ -1,6 +1,6 @@
 // Les bulles du monde, dans la scène 3D : celle de la créature qui se souvient (GD-4, étape 1 ; le geste et ses temps :
 // world/signe.ts) ou qui attend une commande (GD-7, PR 3), et dans Blocland celles des objets à faire (proposition P2
-// « à la Supercell », choisie par le mainteneur le 4 octobre 2026 ; les règles : world/affordance.ts).
+// P2, choisie par le mainteneur le 4 octobre 2026 ; les règles : world/affordance.ts).
 // À l'arrivée de la caméra sur l'île d'une créature qui fait signe, la créature fait un saut lent, une fois ; puis sa
 // bulle se pose au-dessus d'elle. Dans Blocland, une bulle est une plaque carrée claire au bord sombre épais, à l'ombre
 // nette et à la pointe vers l'objet (un bloc vu de face) ; on n'en montre que trois au plus, sur l'île où l'on est, et la
