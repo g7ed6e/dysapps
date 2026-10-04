@@ -510,7 +510,7 @@ it('les nouveaux noms des archipels, une fois, avant le mot des grandes étapes 
   expect(screen.queryByRole('dialog', { name: /De nouveaux noms/ })).not.toBeInTheDocument();
 });
 
-it('marque pour la vue ce qu’elle pose sur la scène : le haut, la barre du bas, Pause, les bulles (DA-10)', () => {
+it('marque pour la vue ce qu’elle pose sur la scène : le haut, la barre du bas, Menu, les bulles (DA-10)', () => {
   localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true }));
   localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'baleine-6e-arrivee': true }));
   renderAt('/adventure');
@@ -629,7 +629,7 @@ it('un monument : on le touche dans le monde, la caméra va sur son îlot, son p
   expect(within(await screen.findByRole('dialog', { name: 'Menu' })).getByRole('link', { name: /Monuments/ })).toHaveAttribute('href', '/adventure/landmarks');
 });
 
-it('le menu du village : le bouton Pause l’ouvre en panneau, « Reprendre » le referme', async () => {
+it('le menu du village : le bouton Menu l’ouvre en panneau, « Reprendre » le referme', async () => {
   const user = userEvent.setup();
   renderAt('/adventure');
   await user.click(await screen.findByRole('button', { name: 'Menu' }));
@@ -878,7 +878,7 @@ describe('la pose d’une partie en vague, après « Voir le bâtiment » (GD-6,
     expect(within(region as HTMLElement).getByText('Partie posée : la cabane de Mousso.')).toBeInTheDocument();
   });
 
-  it('Pause pendant la pose ouvre le menu et pose la partie en silence ; au retour, la phrase est là, rien ne se rejoue', async () => {
+  it('Menu pendant la pose ouvre le menu et pose la partie en silence ; au retour, la phrase est là, rien ne se rejoue', async () => {
     const { cases, dansLaPartie } = await preparer();
     carillon.mockClear();
     renderAt('/adventure/french-6e-phonology?worksite=part');

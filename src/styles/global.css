@@ -5493,6 +5493,9 @@ details.island-fold-objectif {
   padding: 0;
   justify-content: center;
 }
+.app-shell:has(> .page-menu) .content .back-link {
+  max-width: calc(100% - 52px - 1.2rem);
+}
 .app-shell:has(> .page-menu) .update-banner {
   padding-right: calc(52px + 1.2rem + env(safe-area-inset-right));
 }

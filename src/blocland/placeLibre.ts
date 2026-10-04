@@ -1,6 +1,6 @@
 // La place libre de la Carte (DA-31) : la part de la vue que l'interface ne couvre pas, sous le panneau « Prochaine
 // destination » (son pli « Les îles et leur état » compté fermé), au-dessus de la barre du bas, sans la colonne (ou la
-// rangée) Pause et archipel. La caméra de la Carte y cadre l'archipel et la destination (three/camera.ts).
+// rangée) Menu et archipel. La caméra de la Carte y cadre l'archipel et la destination (three/camera.ts).
 // Lue dans la page par les zones que marque `data-couvre` (./zonesCouvertes.ts), pas image par image.
 import type { LabelBox } from './world/labelLayout';
 import { zonesCouvertes } from './zonesCouvertes';
@@ -27,7 +27,7 @@ const bords = (b: LabelBox): Rect => ({ x0: b.x - b.w / 2, y0: b.y - b.h / 2, x1
 
 /**
  * La place libre d'une vue `w` × `h`, en pixels CSS : sous ce que l'interface pose en haut (`panneaux` du haut) et
- * au-dessus de ce qu'elle pose en bas (`panneaux` du bas, la barre), sans les `boutons` (Pause, choix de l'archipel)
+ * au-dessus de ce qu'elle pose en bas (`panneaux` du bas, la barre), sans les `boutons` (Menu, choix de l'archipel)
  * qui descendent plus bas que le panneau : on les contourne par le côté, ou on passe sous eux, selon ce qui laisse le
  * plus de place. Pur, sans page.
  */
@@ -110,7 +110,7 @@ function plisFermes(stage: Element, vue: DOMRect, zones: LabelBox[]): LabelBox[]
     const left = Math.max(b.left, cadre.left) - vue.left;
     const right = Math.min(b.right, cadre.right) - vue.left;
     // La zone du porteur : même place en largeur (le défilement ne la change pas).
-    // Et même hauteur : deux boutons de même largeur, l'un sous l'autre (Pause et l'archipel), ne se confondent pas.
+    // Et même hauteur : deux boutons de même largeur, l'un sous l'autre (Menu et l'archipel), ne se confondent pas.
     const dessus = Math.max(b.top, cadre.top) - vue.top;
     const dessous = Math.min(b.bottom, cadre.bottom) - vue.top;
     const i = out.findIndex((z) => Math.abs(z.x - (left + right) / 2) < 1 && Math.abs(z.w - (right - left)) < 1 && z.y >= dessus - 1 && z.y <= dessous + 1);
