@@ -164,3 +164,46 @@ it('la ponctuation des fiches : une espace insécable avant « ! »', () => {
   ouvrir({ objet: { genre: 'gardien', id: FORET }, seq: 1, saut: false });
   expect(screen.getByRole('dialog', { name: 'Le Grand Chêne' }).querySelector('.world-fiche-phrase')!.textContent).toContain('défi\u00a0!');
 });
+
+describe('le portrait en médaillon (P2, PR 2, Blocland)', () => {
+  const medaillon = () => document.querySelector('.world-fiche-medaillon');
+
+  it('la créature et le Gardien : leur portrait en cubes, décoratif, à la place de l’icône du titre', () => {
+    sauver({ progress: {}, stock: {}, world: { parts: {}, log: [], links: [], place: FORET } });
+    const creature = ouvrir({ objet: { genre: 'creature', id: FORET }, seq: 1, saut: false, phrase: 'Bonjour !' });
+    expect(medaillon()).toHaveAttribute('aria-hidden', 'true');
+    expect(medaillon()!.querySelector('svg.creature')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Mousso' }).querySelector('svg')).toBeNull();
+    // Hors de la fiche qui défile : il reste entier.
+    expect(medaillon()!.closest('.world-fiche')).toBeNull();
+    expect(document.querySelector('.world-fiche-cadre')).toHaveClass('avec-medaillon');
+    creature.unmount();
+    ouvrir({ objet: { genre: 'gardien', id: FORET }, seq: 2, saut: false });
+    expect(medaillon()!.querySelector('svg.guardian-svg')).toBeInTheDocument();
+  });
+
+  it('la borne, le navire, l’ouvrage et l’île pâle gardent l’icône du titre, sans médaillon', () => {
+    sauver({ progress: {}, stock: {}, world: { parts: {}, log: [], links: [], place: FORET } });
+    const fiches: FicheOuverte['objet'][] = [
+      { genre: 'borne', id: `${FORET}:syllables` },
+      { genre: 'navire', port: FORET },
+      { genre: 'ouvrage', id: 'french-6e-phonology-french-6e-letter-confusion' },
+      { genre: 'ile', id: 'french-6e-letter-confusion' },
+    ];
+    for (const objet of fiches) {
+      const vue = ouvrir({ objet, seq: 1, saut: false });
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+      expect(medaillon()).toBeNull();
+      expect(document.querySelector('.world-fiche-titre svg')).toBeInTheDocument();
+      vue.unmount();
+    }
+  });
+
+  it('Archipéo, en pause, ne change pas : pas de médaillon', () => {
+    sauver({ progress: {}, stock: {}, world: { parts: {}, log: [], links: [], place: FORET } });
+    localStorage.setItem('dysapps:settings', JSON.stringify({ univers: 'archipeo', autoRead: false, sounds: false }));
+    ouvrir({ objet: { genre: 'creature', id: FORET }, seq: 1, saut: false, phrase: 'Bonjour !' });
+    expect(screen.getByRole('dialog', { name: 'Mousso' })).toBeInTheDocument();
+    expect(medaillon()).toBeNull();
+  });
+});

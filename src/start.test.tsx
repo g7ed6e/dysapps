@@ -33,20 +33,20 @@ function renderAt(path: string, title = false) {
 
 beforeEach(() => sessionStorage.clear());
 
-it('l’appli s’ouvre sur le village ; le menu reste à son adresse', () => {
+it('l’appli s’ouvre sur le village ; l’ancienne adresse de l’Accueil ouvre le menu du village', () => {
   renderAt('/');
   expect(screen.getByText('Le village')).toBeInTheDocument();
   expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure');
   document.body.innerHTML = '';
   renderAt('/menu');
-  expect(screen.getByRole('navigation', { name: 'Menu principal' })).toBeInTheDocument();
+  expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/menu');
+  expect(screen.queryByRole('navigation', { name: 'Menu principal' })).not.toBeInTheDocument();
 });
 
-it('avec le réglage « Au démarrage : le menu », l’accueil est le menu', () => {
+it('l’ancien réglage « Au démarrage : le menu » n’ouvre plus l’Accueil : le village', () => {
   localStorage.setItem('dysapps:settings', JSON.stringify({ startIn: 'menu' }));
   renderAt('/');
-  expect(screen.getByRole('navigation', { name: 'Menu principal' })).toBeInTheDocument();
-  expect(screen.getByTestId('adresse')).toHaveTextContent(/^\/$/);
+  expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure');
 });
 
 it('l’écran titre garde « Continuer » alors que l’accueil a déjà mené au village', () => {

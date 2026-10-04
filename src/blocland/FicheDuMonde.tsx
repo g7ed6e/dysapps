@@ -5,6 +5,8 @@
 // actions qui existent déjà (Jouer, Défier, Poser le bloc suivant, Embarquer, Construire, Livrer, Reprendre, Plus tard)
 // sans rien inventer. Un dialogue non modal : le focus va au titre à l'ouverture, Écouter relit tout, la croix et Échap
 // la ferment (la page s'en charge, avec le toucher sur le sol).
+// Dans Blocland (proposition P2, PR 2 : les figures en cubes de l'habillage), la fiche de la créature et celle du Gardien
+// portent leur portrait en médaillon, qui déborde au-dessus de la fiche ; les autres gardent l'icône du titre.
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon, type AnyIconName } from '../components/Icon';
@@ -27,6 +29,11 @@ import { EarnLink } from './PlanSection';
 import { BoutonsDuRappel, PlusTardDit, TexteDuRappel, useRappelDeLaCreature } from './RappelDeLaCreature';
 import { shipSummary } from './ShipSection';
 import { Stars } from './Stars';
+import { Creature } from './Creatures';
+import { habillageDuMonde } from './habillage';
+import { VoxelScene } from './Voxel';
+import { GUARDIAN_CUBES } from './world/personnages/gardiens';
+import { statueDe } from './world/terrain';
 import type { VehicleBuilder } from './useVehicleBuilder';
 import { borneDe } from './world/affordance';
 import type { ObjetDeLaFiche } from './world/disposition';
@@ -89,6 +96,8 @@ export function FicheDuMonde(props: Props) {
 interface CadreProps {
   titre: string;
   icone?: AnyIconName;
+  /** Le portrait en médaillon (la créature, le Gardien, dans Blocland) : il remplace l'icône du titre. Décoratif. */
+  portrait?: ReactNode;
   /** Ce qu'Écouter lit, et la lecture automatique à l'ouverture : tout ce que la fiche dit. */
   lecture: string;
   onClose: () => void;
@@ -98,7 +107,7 @@ interface CadreProps {
 }
 
 /** Le cadre commun : le titre (qui prend le focus), Écouter à côté, la croix ; le texte qui défile ; les boutons. */
-function Fiche({ titre, icone, lecture, onClose, actions, children }: CadreProps) {
+function Fiche({ titre, icone, portrait, lecture, onClose, actions, children }: CadreProps) {
   const { settings, speak } = useSettings();
   const titreRef = useRef<HTMLHeadingElement>(null);
   // Le texte continue plus bas (grand texte, une découverte) : un trait pointillé le dit, comme sur la Carte.
@@ -111,26 +120,37 @@ function Fiche({ titre, icone, lecture, onClose, actions, children }: CadreProps
     // Une fois, à l'ouverture (la page remonte la fiche à chaque ouverture).
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  // Le médaillon est hors de la fiche qui défile : il reste entier, et sa hauteur compte dans la place de la fiche.
   return (
-    <section ref={ficheRef} className={`world-fiche${ficheSuite ? ' a-suivre' : ''}`} role="dialog" aria-modal="false" aria-labelledby="fiche-titre">
-      <div className="world-fiche-tete">
-        <h2 id="fiche-titre" ref={titreRef} tabIndex={-1} className="world-fiche-titre">
-          {icone && <Icon name={icone} />} <span>{frenchTypography(titre)}</span>
-        </h2>
-        <SpeakButton text={lecture} compact />
-        <button type="button" className="icon-button world-fiche-fermer" aria-label="Fermer la fiche" onClick={onClose}>
-          <Icon name="close" />
-        </button>
-      </div>
-      {children && (
-        <div ref={texteRef} className={`world-fiche-texte${suite ? ' a-suivre' : ''}`}>
-          {children}
-        </div>
+    <div className={`world-fiche-cadre${portrait ? ' avec-medaillon' : ''}`}>
+      {portrait && (
+        <span className="world-fiche-medaillon" aria-hidden="true">
+          {portrait}
+        </span>
       )}
-      {actions && <div className="world-fiche-actions">{actions}</div>}
-    </section>
+      <section ref={ficheRef} className={`world-fiche${ficheSuite ? ' a-suivre' : ''}`} role="dialog" aria-modal="false" aria-labelledby="fiche-titre">
+        <div className="world-fiche-tete">
+          <h2 id="fiche-titre" ref={titreRef} tabIndex={-1} className="world-fiche-titre">
+            {icone && !portrait && <Icon name={icone} />} <span>{frenchTypography(titre)}</span>
+          </h2>
+          <SpeakButton text={lecture} compact />
+          <button type="button" className="icon-button world-fiche-fermer" aria-label="Fermer la fiche" onClick={onClose}>
+            <Icon name="close" />
+          </button>
+        </div>
+        {children && (
+          <div ref={texteRef} className={`world-fiche-texte${suite ? ' a-suivre' : ''}`}>
+            {children}
+          </div>
+        )}
+        {actions && <div className="world-fiche-actions">{actions}</div>}
+      </section>
+    </div>
   );
 }
+
+/** Les portraits en médaillon : seulement avec les figures en cubes (Blocland), un dessin fixe, sans 3D. */
+const portraitsEnMedaillon = () => habillageDuMonde().figures === 'cubes';
 
 /** Une phrase de la fiche, en syllabes si le réglage le demande. */
 function Phrase({ text, role }: { text: string; role?: 'status' }) {
@@ -195,6 +215,7 @@ function FicheDuGardien({ ile, onClose }: Props & { ile: BiomeId }) {
     <Fiche
       titre={titre}
       icone="shield"
+      portrait={portraitsEnMedaillon() ? <VoxelScene cubes={vaincu ? statueDe(GUARDIAN_CUBES[ile]) : GUARDIAN_CUBES[ile]} s={12} pad={2} className="creature guardian-svg" /> : undefined}
       lecture={`${titre}. ${phrase}`}
       onClose={onClose}
       actions={
@@ -408,6 +429,7 @@ function FicheDeLaCreature({ ile, fiche, commande, onLivree, commandeEnCoursDePo
     <Fiche
       titre={nom}
       icone={biome.icon}
+      portrait={portraitsEnMedaillon() ? <Creature biome={ile} /> : undefined}
       lecture={lecture}
       onClose={onClose}
       actions={

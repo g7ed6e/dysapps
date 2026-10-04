@@ -56,14 +56,11 @@ Au menu, la LV2 prend le nom de la langue choisie, à côté de l’anglais. Ses
 
 ## Au démarrage
 
-- **Le village** (par défaut) : après l’écran titre, l’appli s’ouvre sur le village, sur l’île où se tient le bonhomme. Le menu est dans le village (bouton ⏸) et à l’adresse `#/menu`.
-- **Le menu** : l’appli s’ouvre sur le menu principal, comme avant le village au démarrage.
-
-Avec « La liste des îles », ou sur un appareil qui ne sait pas dessiner le monde, l’appli s’ouvre toujours sur le menu.
+Après l’écran titre, l’appli s’ouvre toujours sur le village, sur l’île où se tient le bonhomme ; le menu est dans le village (bouton ⏸). Ce n’est plus un réglage. Avec « La liste des îles », ou sur un appareil qui ne sait pas dessiner le monde, l’appli s’ouvre sur le menu en page.
 
 ## Animations et vue du monde
 
-- **Moins d’animations** : le réglage « Réduire les animations » n’est plus dans les Réglages ; il reviendra dans un lot ultérieur. D’ici là, l’appli suit la préférence de l’appareil : quand les réglages d’accessibilité de la tablette, du téléphone ou de l’ordinateur demandent de réduire les animations, l’appli fige le ciel, les créatures, les baleines, les particules, les transitions, les animations du Gardien, les repères de mission, les cubes au-dessus de ce qui se touche (sans leur petit saut) et les balises du chemin ; dans le Filon, le bloc attend au lieu de défiler. Où trouver cette préférence : sur iPad et iPhone, Réglages, Accessibilité, Mouvement, « Réduire les animations » ; sur Android, Accessibilité, « Supprimer les animations » ; sur Windows, Accessibilité, « Effets d’animation ».
+- **Moins d’animations** : le réglage « Réduire les animations » n’est plus dans les Réglages ; il reviendra dans un lot ultérieur. D’ici là, l’appli suit la préférence de l’appareil : quand les réglages d’accessibilité de la tablette, du téléphone ou de l’ordinateur demandent de réduire les animations, l’appli fige le ciel, les créatures, les baleines, les particules, les transitions, les animations du Gardien, les repères de mission, les cubes au-dessus de ce qui se touche (sans leur petit saut) et les balises du chemin ; dans Blocland, les boutons ne rebondissent plus quand on les relâche et les blocs gagnés ne volent plus jusqu’au compteur ; dans le Filon, le bloc attend au lieu de défiler. Où trouver cette préférence : sur iPad et iPhone, Réglages, Accessibilité, Mouvement, « Réduire les animations » ; sur Android, Accessibilité, « Supprimer les animations » ; sur Windows, Accessibilité, « Effets d’animation ».
 - **Vue du monde** : deux choix.
   - **Le monde en 3D** (par défaut).
   - **La liste des îles** : la **vue simple** (listes et pages), qui offre exactement les mêmes actions.

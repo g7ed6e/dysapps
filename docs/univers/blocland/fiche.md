@@ -110,7 +110,6 @@ Avant le lot 1, l’application s’appelait **DysApps** et son aventure **Blocl
 | Nom de l’aventure | Blocland (carte du menu, titre de la Carte) | Archipéo | `src/pages/HomePage.tsx`, `src/blocland/BloclandPage.tsx` |
 | Retour vers la Carte | « Carte de Blocland » | « Carte d’Archipéo » | `src/blocland/BiomePage.tsx`, `Inventory.tsx`, `VoyagePage.tsx` |
 | Accueil du tutoriel | « Bienvenue à Blocland ! Le village est en ruine… » | « Bienvenue dans Archipéo ! Le village est en ruine… » | `src/blocland/WorldPage.tsx` |
-| Réglage « Au démarrage » | « Le village de Blocland » | « Le village », dans les deux univers (`START_LABELS`) | `src/core/settings.ts` |
 | Réglage de la vue | « Vue de Blocland » | « Vue du monde » | `src/pages/SettingsPage.tsx` |
 | Archipel de 6e | les Basses Terres | **Blocland : les Basses Terres**, revenues avec GD-1 ; Archipéo : les Premiers Rivages | `archipels` de `src/univers/<univers>/index.ts` ; le nom commun des données reste dans `src/blocland/world/archipelago.ts` |
 | Archipel de 5e | les Collines du Large | **Blocland : les Collines du Large** (GD-1) ; Archipéo : les Îles Brumeuses | idem |

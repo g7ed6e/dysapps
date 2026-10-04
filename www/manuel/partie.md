@@ -50,7 +50,7 @@ Quelques séances plus tard, **Mes blocs** fait le point : ce qu'on peut constru
 
 La **Carte** montre tout l'archipel vu d'en haut : le fanion jaune marque l'élève, les îles pâles sont encore fermées.
 
-![La Carte des Basses Terres : chaque île avec son nom et son état (En chantier, À explorer, Fermée), la flèche jaune sur la Forêt des sons, et en haut la prochaine destination avec Y aller.](/captures/carte.jpg)
+![La Carte des Basses Terres : chaque île avec son nom et son état (En chantier, À explorer, Fermée), et la flèche jaune sur la Forêt des sons.](/captures/carte.jpg)
 
 ## Le Gardien, le navire, l'école
 
