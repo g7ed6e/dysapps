@@ -297,14 +297,18 @@ export function WorldPage() {
   );
   // En grand texte, la phrase défile dans le panneau de la Carte : un repère dit qu'il y a une suite.
   // Le nom de chaque île ouverte de l'archipel, écrit au-dessus d'elle dans le monde ; sur la Carte, toutes les îles,
-  // avec leur état en icône et en mot.
+  // avec leur état en icône et en mot. Dans Blocland, le bloc que l'île rapporte, avant son nom.
+  const blocDesIles = habillage.blocDesIles === 'avant-le-nom';
   const islandLabels = useMemo(
     () =>
       ilesDuModele(state, a)
         .filter((i) => mapOpen || i.ouverte)
-        .map((i) => ({ id: i.id, text: i.nom, ...(mapOpen ? { state: { id: i.etat.id, name: textes.etatsDIle[i.etat.id] } } : {}) })),
+        .map((i) => {
+          const bloc = blocDesIles ? getBiome(i.id)?.block : undefined;
+          return { id: i.id, text: i.nom, ...(bloc ? { bloc } : {}), ...(mapOpen ? { state: { id: i.etat.id, name: textes.etatsDIle[i.etat.id] } } : {}) };
+        }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [a, mapOpen, state.world.links, state.world.parts, state.progress, textes],
+    [a, mapOpen, state.world.links, state.world.parts, state.progress, textes, blocDesIles],
   );
   const [focus, setFocus] = useState<{ island: BiomeId | null; seq: number }>({ island: island?.id ?? null, seq: 0 });
   // Tant que le tutoriel n'est pas vu, c'est le jour : une première minute lisible, même à 20 h. Ensuite, le réglage

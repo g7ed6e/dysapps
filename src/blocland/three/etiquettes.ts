@@ -452,10 +452,10 @@ export function creerEtiquettes(
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
         if (!ctx) continue;
-        const size = measureIslandLabel(ctx, l.text, LABEL_PX, l.state);
+        const size = measureIslandLabel(ctx, l.text, LABEL_PX, l.state, l.bloc);
         canvas.width = Math.ceil(size.w + 4);
         canvas.height = Math.ceil(size.h + 4);
-        drawIslandLabel(ctx, l.text, canvas.width / 2, canvas.height / 2, LABEL_PX, l.state);
+        drawIslandLabel(ctx, l.text, canvas.width / 2, canvas.height / 2, LABEL_PX, l.state, l.bloc);
         const texture = new THREE.CanvasTexture(canvas);
         texture.colorSpace = THREE.SRGBColorSpace;
         // Archipéo : la brume de profondeur ne voile jamais un nom d'île (DA-02).

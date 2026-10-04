@@ -887,9 +887,9 @@ export default function WorldCanvas2D({
         // posées sur l'interface ou coupées par le bord bougent, comme en 3D.
         const { zones, bulles, cle: zonesCle } = lireZones();
         const marks = p.map ? `${mapArrowOuvrage?.ouvrage ?? mapArrowIsland ?? ''}:${h.at && p.avatar ? `${h.at.x},${h.at.y},${h.at.z}` : ''}` : 'monde';
-        const key = `${list.map((l) => `${l.id}:${l.text}:${l.state?.id ?? ''}`).join('|')}@${target.cx.toFixed(1)},${target.cy.toFixed(1)},${target.s.toFixed(3)},${scr.w}x${scr.h}@${marks}@${zonesCle}`;
+        const key = `${list.map((l) => `${l.id}:${l.text}:${l.state?.id ?? ''}:${l.bloc ?? ''}`).join('|')}@${target.cx.toFixed(1)},${target.cy.toFixed(1)},${target.s.toFixed(3)},${scr.w}x${scr.h}@${marks}@${zonesCle}`;
         if (labelLayout?.key !== key) {
-          const boxes = list.map((l) => ({ ...anchor(l, target), ...measureIslandLabel(ctx, l.text, px, l.state) }));
+          const boxes = list.map((l) => ({ ...anchor(l, target), ...measureIslandLabel(ctx, l.text, px, l.state, l.bloc) }));
           // L'île elle-même (son étiquette se pose dessus, 14 px plus bas) : si l'interface la couvre, son nom ne désigne rien.
           const iles = boxes.map((b) => ({ x: b.x, y: b.y - 14 * dpr }));
           const cadre = { w: scr.w, h: scr.h };
@@ -931,7 +931,7 @@ export default function WorldCanvas2D({
         list.forEach((l, i) => {
           if (!visibles[i]) return;
           const a = anchor(l, cam);
-          drawIslandLabel(ctx, l.text, a.x + offsets[i].dx, a.y + offsets[i].dy, px, l.state);
+          drawIslandLabel(ctx, l.text, a.x + offsets[i].dx, a.y + offsets[i].dy, px, l.state, l.bloc);
         });
       }
       if (mapArrowAt) {

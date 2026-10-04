@@ -25,6 +25,7 @@ describe('L’habillage du monde', () => {
       pose: 'geste',
       signe: 'plaque',
       signesDesObjets: 'bulles',
+      blocDesIles: 'avant-le-nom',
     });
   });
 
@@ -45,6 +46,7 @@ describe('L’habillage du monde', () => {
       pose: 'eclats',
       signe: 'disque',
       signesDesObjets: 'losanges',
+      blocDesIles: 'sans',
     });
   });
 });

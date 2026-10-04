@@ -59,4 +59,9 @@ export interface Habillage {
    * (Archipéo, en pause, garde son dessin).
    */
   signesDesObjets: 'bulles' | 'losanges';
+  /**
+   * L'étiquette d'une île, dans le monde et sur la Carte : le bloc qu'elle rapporte, avant son nom (demande du
+   * mainteneur, 4 octobre 2026 ; world/labelCanvas.ts), ou le nom seul (Archipéo, en pause).
+   */
+  blocDesIles: 'avant-le-nom' | 'sans';
 }
