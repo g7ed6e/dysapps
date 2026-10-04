@@ -204,7 +204,7 @@ it('le panneau d’une île ne s’ouvre que par son bouton, en plein écran par
 });
 
 const vuSansAide = () => {
-  localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true, 'carte-pincer': true }));
+  localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true }));
   localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'baleine-6e-arrivee': true }));
 };
 
@@ -538,14 +538,6 @@ it('les bandeaux de récompense attendent la fin du tutoriel, et de nouveau quan
   await waitFor(() => expect(screen.getByRole('button', { name: /Suivant/ })).toHaveFocus());
 });
 
-it('« Aide du village » rend aussi la bulle du pincement, à la prochaine ouverture de la Carte', async () => {
-  vuSansAide();
-  const user = userEvent.setup();
-  renderAt('/adventure/french-6e-phonology');
-  await user.click(screen.getByRole('button', { name: 'Menu' }));
-  await user.click(within(await screen.findByRole('dialog', { name: 'Menu' })).getByRole('button', { name: /Aide du village/ }));
-  expect(JSON.parse(localStorage.getItem('dysapps:tutorials')!)['carte-pincer']).toBe(false);
-});
 
 it('le bouton Blocs ouvre « Mes blocs » ; une puce mène à l’île (caméra et fiche) ; la croix rend le monde, sur l’île du bonhomme', async () => {
   vuSansAide();
@@ -776,21 +768,11 @@ it('le tutoriel du village tient en trois bulles : l’île, les bornes, le bout
   expect(screen.queryByRole('dialog', { name: /bouton Menu/ })).not.toBeInTheDocument();
 });
 
-it('sur la Carte, la première fois, une bulle dit le pincement, une seule fois ; plus de « ? » dans la barre', async () => {
+it('sur la Carte, aucune bulle ne dit le pincement ; plus de « ? » dans la barre', () => {
   localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true }));
-  const user = userEvent.setup();
-  const premier = renderAt('/adventure/map');
-  const aide = () => screen.queryByRole('dialog', { name: /Pince la Carte/ });
-  expect(aide()).toHaveTextContent('Pince la Carte à deux doigts pour la rapprocher.');
-  expect(screen.queryByRole('dialog', { name: /Bienvenue/ })).not.toBeInTheDocument();
-  expect(screen.queryByRole('button', { name: 'Revoir l’aide' })).not.toBeInTheDocument();
-  // Une seule bulle : pas de compteur « 1/1 ».
-  expect(aide()).not.toHaveTextContent('1/1');
-  await user.click(screen.getByRole('button', { name: /J’ai compris/ }));
-  expect(aide()).not.toBeInTheDocument();
-  premier.unmount();
   renderAt('/adventure/map');
-  expect(aide()).not.toBeInTheDocument();
+  expect(screen.queryByRole('dialog', { name: /Pince/ })).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: 'Revoir l’aide' })).not.toBeInTheDocument();
 });
 
 it('au premier toucher d’une île pâle, sa créature dit ce que sont les ouvrages, une seule fois par appareil', async () => {

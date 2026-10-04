@@ -35,7 +35,7 @@ import { getCommande } from './world/commandes';
 import { FicheDuMonde, type FicheOuverte } from './FicheDuMonde';
 import { TROPHIES_PATH, trophies } from './trophies';
 import { WorldCanvas } from './three';
-import { Tutorial, hasSeenTutorial, markTutorialSeen } from './Tutorial';
+import { Tutorial, hasSeenTutorial } from './Tutorial';
 import { decouverteDeLIle } from './decouvertes';
 import { usePanneauDeLaCarte } from './usePanneauDeLaCarte';
 import { usePlaceDesBulles } from './usePlaceDesBulles';
@@ -355,9 +355,7 @@ export function WorldPage() {
   const stageRef = useRef<HTMLDivElement>(null);
   // Revoir l'aide (le « ? » d'Archipéo, la ligne « Aide du village » du menu de Blocland) rouvre le tutoriel : comme la
   // première fois, le reste attend qu'il soit fermé (DA-9).
-  // Dans Blocland, la bulle du pincement revient aussi, à la prochaine ouverture de la Carte.
   const revoirAide = () => {
-    if (univers === 'blocland') markTutorialSeen('carte-pincer', false);
     setTutoDone(false);
     setReplay((n) => n + 1);
   };
@@ -1280,11 +1278,6 @@ export function WorldPage() {
               'Le bouton Menu, en haut à droite, ouvre le menu : missions, succès, aide, réglages.',
             ]}
           />
-          {/* Blocland : la première fois que la Carte s'ouvre, une bulle dit le pincement (une fois par appareil) ; jamais
-              par-dessus une autre bulle ni pendant un voyage. */}
-          {mapOpen && univers === 'blocland' && tutoDone && !voyage && !renommageOuvert && !motRallume && !whaleWord && (
-            <Tutorial id="carte-pincer" steps={['Pince la Carte à deux doigts pour la rapprocher.']} />
-          )}
           </div>
         {/* La fiche de l'objet touché : en bas, au-dessus de la barre (en paysage, à gauche), comptée sur la scène. */}
         {ficheVue && (
