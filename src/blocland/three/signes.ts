@@ -244,6 +244,9 @@ interface Touchable {
   y1: number;
 }
 
+/** `v` ramené entre `a + m` et `b - m` (au milieu si la bande est trop étroite). */
+const dansLaBande = (v: number, a: number, b: number, m: number): number => (b - a < 2 * m ? (a + b) / 2 : Math.min(Math.max(v, a + m), b - m));
+
 /** Une place libre relue quatre fois par seconde au plus (la fiche qui s'ouvre change la clé, `calme`). */
 const RELIRE_LA_PLACE_MS = 250;
 
@@ -448,12 +451,16 @@ export function creerSignes(
   const tenirDansLaPlace = (x: number, y: number, demi: number, W: number, H: number): boolean => {
     const sx = libre && largeurLue ? W / largeurLue : 1;
     const sy = libre && hauteurLue ? H / hauteurLue : 1;
-    const [x0, y0, x1, y1] = libre ? [libre.x0 * sx, libre.y0 * sy, libre.x1 * sx, libre.y1 * sy] : [0, 0, W, H];
     const m = demi + BULLE.bordPx;
-    const dans = (v: number, a: number, b: number) => (b - a < 2 * m ? (a + b) / 2 : Math.min(Math.max(v, a + m), b - m));
-    ecart.x = dans(x, x0, x1) - x;
-    ecart.y = dans(y, y0, y1) - y;
+    ecart.x = dansLaBande(x, libre ? libre.x0 * sx : 0, libre ? libre.x1 * sx : W, m) - x;
+    ecart.y = dansLaBande(y, libre ? libre.y0 * sy : 0, libre ? libre.y1 * sy : H, m) - y;
     return Math.abs(ecart.x) > 0.5 || Math.abs(ecart.y) > 0.5;
+  };
+  /** Le point de la chose (`x`, `y`, pixels CSS d'une vue `W` × `H`) est dans la place libre : la bulle tenue garde sa pointe. */
+  const dansLaPlace = (x: number, y: number, W: number, H: number): boolean => {
+    const sx = libre && largeurLue ? W / largeurLue : 1;
+    const sy = libre && hauteurLue ? H / hauteurLue : 1;
+    return x >= (libre ? libre.x0 * sx : 0) && x <= (libre ? libre.x1 * sx : W) && y >= (libre ? libre.y0 * sy : 0) && y <= (libre ? libre.y1 * sy : H);
   };
 
   return {
@@ -472,8 +479,8 @@ export function creerSignes(
         const cote = tailleALEcran(m);
         const x = ((aLEcran.x + 1) / 2) * W;
         const y = ((1 - aLEcran.y) / 2) * H - cote / 2;
-        tenirDansLaPlace(x, y, cote / 2, W, H);
-        out.push({ x: x + ecart.x, y: y + ecart.y, w: cote + 8, h: cote + 8 });
+        const tenue = bulles && tenirDansLaPlace(x, y, cote / 2, W, H);
+        out.push({ x: x + (tenue ? ecart.x : 0), y: y + (tenue ? ecart.y : 0), w: cote + 8, h: cote + 8 });
         const creature = m.creature ? creatureALEcran(m.creature, cam, W, H) : null;
         if (creature) out.push(creature);
       }
@@ -512,7 +519,8 @@ export function creerSignes(
       if (!bulles) return null;
       const nx = (x / Math.max(1, W)) * 2 - 1;
       const ny = 1 - (y / Math.max(1, H)) * 2;
-      for (let i = 0; i < nRectangles; i++) {
+      // De la dernière dessinée à la première : celle qui est vue par-dessus passe d'abord.
+      for (let i = nRectangles - 1; i >= 0; i--) {
         const r = rectangles[i];
         if (nx >= r.x0 && nx <= r.x1 && ny >= r.y0 && ny <= r.y1) return r.cible;
       }
@@ -582,8 +590,9 @@ export function creerSignes(
         // tranquille tant qu'une fiche ou un panneau est ouvert (on lit).
         const leve = m.enAvant && !reduit && !derniers.current.calme ? (BULLE.flotte.amplitudePx + flottementDeLaBulle(t)) * parPx : 0;
         centre.copy(tete).addScaledVector(haut, demi + leve);
-        // Blocland : une bulle dont la chose sort de la place libre (le bout d'un ouvrage, un Gardien au fond) y reste,
-        // entière, sans pointe (elle ne vise plus rien).
+        // Blocland : une bulle qui sort de la place libre y reste, entière ; si sa chose aussi en est sortie (un Gardien au
+        // fond), elle perd sa pointe (elle ne vise plus rien).
+        let tenue = false;
         let auBord = false;
         aLEcran.copy(centre).project(camera);
         const W = hauteurDeLaVue * camera.aspect;
@@ -591,8 +600,10 @@ export function creerSignes(
         const cx = ((aLEcran.x + 1) / 2) * W;
         const cy = ((1 - aLEcran.y) / 2) * H;
         if (bulles && aLEcran.z <= 1 && tenirDansLaPlace(cx, cy, cotePx / 2, W, H)) {
-          auBord = true;
+          tenue = true;
           centre.addScaledVector(droite, ecart.x * parPx).addScaledVector(haut, -ecart.y * parPx);
+          coin.copy(tete).project(camera);
+          auBord = !dansLaPlace(((coin.x + 1) / 2) * W, ((1 - coin.y) / 2) * H, W, H);
         }
         for (let j = 0; j < 4; j++) {
           const sx = COINS[2 * j] * demi;
@@ -604,8 +615,8 @@ export function creerSignes(
         }
         // Son rectangle à l'écran, pour le toucher : la plaque et sa pointe seulement, pas les marges de sa case.
         if (bulles && aLEcran.z <= 1) {
-          const px = cx + ecart.x * Number(auBord);
-          const py = cy + ecart.y * Number(auBord);
+          const px = cx + ecart.x * Number(tenue);
+          const py = cy + ecart.y * Number(tenue);
           const u = cotePx / CASE;
           const r = rectangles[nRectangles++];
           r.cible = m.cible;
