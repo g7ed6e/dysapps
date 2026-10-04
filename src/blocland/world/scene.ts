@@ -5,7 +5,7 @@ import type { BiomeId } from '../biomes';
 import type { PlaceId, VoxelCube } from './cube';
 import { islandsOf, type ArchipelagoId } from './archipelago';
 import { BAC_LONG, type CadreDeCases, CREATURE_STEPS, boardingRoute, cadreDeTraversee, routeAt, routeLengths } from './terrain';
-import { WALK_MAX_MS, WALK_SPEED, dureeDeMarche, grilleDe } from './grille';
+import { WALK_SPEED, dureeDeMarche, grilleDe } from './grille';
 import { legTiming, type LegTiming, type VoyageLeg } from './voyage';
 import type { Bonhomme, Cell, CreaturePlacement } from './view';
 
@@ -15,7 +15,7 @@ export const ease = (t: number) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 
 // ---- Le bonhomme
 
 // La vitesse du bonhomme et la durée d'un trajet viennent de la disposition en grille (./grille.ts).
-export { WALK_MAX_MS, WALK_SPEED };
+export { WALK_SPEED };
 
 
 /** Un trajet du bonhomme : l'itinéraire, ses distances cumulées (calculées une fois), son départ et sa durée. */
@@ -41,7 +41,7 @@ export function startWalk(route: Cell[], start: number, duration: number): Walk 
 
 /**
  * Le trajet demandé par la vue (`avatar`) : un seul point, il se tient là ; plusieurs, il marche. Six cases par
- * seconde, jamais plus de six secondes ; le premier placement (`seq` 0) est immédiat. Dans l'archipel `archipel`, un
+ * seconde, quelle que soit la longueur ; le premier placement (`seq` 0) est immédiat. Dans l'archipel `archipel`, un
  * trajet qui prend une longue traversée reçoit le cadre fixe de la caméra (`cadre`).
  */
 export function avatarWalk(avatar: Bonhomme<Cell>, now: number, archipel?: ArchipelagoId): Walk | null {
@@ -66,7 +66,7 @@ export function enRoute(walk: Walk | null, now: number): walk is Walk {
   return walk !== null && now - walk.start < walk.duration;
 }
 
-/** Le temps d'un trajet du bonhomme : six cases par seconde, jamais plus de six secondes. */
+/** Le temps d'un trajet du bonhomme : six cases par seconde, quelle que soit sa longueur. */
 export function walkDuration(route: Cell[]): number {
   return dureeDeMarche(route);
 }

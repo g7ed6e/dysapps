@@ -5,7 +5,7 @@
 import { BLOC, BIOMES, BLOCKS, missionsJouables, type BiomeDef, type BiomeId, type BlockId } from '../biomes';
 import { lv2Courante } from '../../core/settings';
 import { ARCHIPELAGOS, BRIDGES, bridgeState, bridgesOf, getArchipelago, isBiomeUnlocked, islandsOf, otherEnd, reachableIslands, type BridgeDef } from './archipelago';
-import { walkPath, type Cell, type WalkGround } from './paths';
+import { LOW, walkPath, type Cell, type WalkGround } from './paths';
 import {
   CORE,
   COTE_DU_COEUR,
@@ -850,6 +850,28 @@ function abordsDansLesMarges(def: IslandDef): ReadonlySet<string> {
   return out;
 }
 
+/**
+ * Le pied des ouvrages d'une île, partout sur l'île (pas seulement dans les marges) : le bout de chaque ouvrage et ses
+ * huit voisines. Le décor haut de la côte (arbre, sapin, rocher…) n'y pose rien, feuillage compris : le bonhomme
+ * descend toujours d'un ouvrage sur le sol libre (un sapin bouchait la sortie du pont de la Plaine des nombres, et le
+ * bonhomme passait au travers, 04/10/2026). Mémorisé (les ouvrages ne bougent pas).
+ */
+const piedsCache = new Map<BiomeId, ReadonlySet<string>>();
+
+function piedsDesOuvrages(def: IslandDef): ReadonlySet<string> {
+  const connus = piedsCache.get(def.id);
+  if (connus) return connus;
+  const out = new Set<string>();
+  piedsCache.set(def.id, out);
+  for (const b of bridgesOf(def.id)) {
+    const path = bridgePath(b);
+    if (!path.length) continue;
+    const bout = b.from === def.id ? path[0] : path[path.length - 1];
+    for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) out.add(`${bout.x + dx},${bout.y + dy}`);
+  }
+  return out;
+}
+
 /** Où le bonhomme se tient sur une île, en coordonnées relatives au cœur (à côté de la créature, loin des plans). */
 export const AVATAR_HOME = { x: 1, y: 1 };
 
@@ -862,8 +884,8 @@ export function avatarHome(id: BiomeId): { x: number; y: number; z: number } {
   return { x: def.core.x + AVATAR_HOME.x, y: def.core.y + AVATAR_HOME.y, z };
 }
 
-/** Les cases où marche le bonhomme sur un ouvrage, dans le sens de `from` à l'autre bout. */
-function tablier(def: BridgeDef, from: BiomeId): { x: number; y: number; z: number }[] {
+/** Les cases où marche le bonhomme sur un ouvrage, dans le sens de `from` à l'autre bout (exportée pour les tests). */
+export function tablier(def: BridgeDef, from: BiomeId): { x: number; y: number; z: number }[] {
   // Sur un ouvrage on marche sur le tablier (z + 1) ; sur un sentier, de pierre de gué en pierre de gué (la pierre est
   // posée sur le sol en z + 1, on marche dessus : z + 2).
   const deck =
@@ -2779,6 +2801,12 @@ function poserLIle(
   const devant = rangeeDevantLesBornes(biome.id);
   // Le décor de la côte, puis celui des marges d'un cœur agrandi (au même rythme), hors des abords de ses ouvrages.
   const abords = abordsDansLesMarges(def);
+  const pieds = piedsDesOuvrages(def);
+  // Un élément assez près du pied d'un ouvrage pour que son feuillage y arrive (deux cases) : posé seulement s'il le laisse libre.
+  const presDUnPied = (x: number, y: number) => {
+    for (let dx = -2; dx <= 2; dx++) for (let dy = -2; dy <= 2; dy++) if (pieds.has(`${x + dx},${y + dy}`)) return true;
+    return false;
+  };
   const marges = margesDuCoeur(def);
   // Les lieux du village en cases du monde : un élément de la côte ou des marges qui toucherait l'un d'eux (la Halle au
   // bord droit du cœur agrandi, 02/10/2026) n'est pas posé, plutôt que coupé.
@@ -2808,13 +2836,14 @@ function poserLIle(
     // Loin des bornes, rien ne peut en cacher une : posé directement. Près d'elles (une case de plus pour le feuillage),
     // un élément qui cacherait le pied d'une borne n'est pas posé (voir `cacheUneBorne`), ni un élément qui toucherait
     // la rangée de côte devant les bornes d'une île-école.
-    if (!presDUneBorne(bornes, c.x, c.y, 1) && !presDUnLieu(c.x, c.y)) {
+    const piedProche = pieds.size > 0 && !LOW.has(c.decor) && presDUnPied(c.x, c.y);
+    if (!presDUneBorne(bornes, c.x, c.y, 1) && !presDUnLieu(c.x, c.y) && !piedProche) {
       decorate(poser, c.decor, c.x, c.y, r);
       continue;
     }
     const poses: [number, number, number, string, string | undefined][] = [];
     decorate((x, y, z, color, decor) => poses.push([x, y, z, color, decor]), c.decor, c.x, c.y, r);
-    if (poses.some(([x, y, z]) => devant.has(`${x},${y}`) || lieuxDuMonde.has(cleDeCube(x, y)) || cacheUneBorne(bornes, vers, x, y, c.h + z))) continue;
+    if (poses.some(([x, y, z]) => devant.has(`${x},${y}`) || lieuxDuMonde.has(cleDeCube(x, y)) || (piedProche && pieds.has(`${x},${y}`)) || cacheUneBorne(bornes, vers, x, y, c.h + z))) continue;
     for (const [x, y, z, color, decor] of poses) poser(x, y, z, color, decor);
   }
   // Une île en altitude flotte : sa roche s'amincit dessous.

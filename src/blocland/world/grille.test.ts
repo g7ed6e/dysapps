@@ -4,7 +4,7 @@ import type { VillagePlaceId } from './cube';
 import { BRIDGES, getArchipelago, islandsOf } from './archipelago';
 import { ARCHIPELAGO_IDS } from './archipels';
 import { toutConstruit } from './budget';
-import { dispositionEnGrille, dureeDeMarche, WALK_MAX_MS, WALK_SPEED } from './grille';
+import { dispositionEnGrille, dureeDeMarche, WALK_SPEED } from './grille';
 import { MONUMENTS } from './monuments';
 import { walkGround, walkPath } from './paths';
 import { walkDuration } from './scene';
@@ -140,10 +140,10 @@ describe('La disposition en grille', () => {
     }
   });
 
-  it('la durée d’une marche : six cases par seconde, six secondes au plus', () => {
+  it('la durée d’une marche : six cases par seconde, quelle que soit sa longueur', () => {
     const court = [{ x: 0, y: 0, z: 0 }, { x: 3, y: 4, z: 0 }];
     expect(dureeDeMarche(court)).toBe((routeLengths(court)[1] / WALK_SPEED) * 1000);
-    expect(dureeDeMarche([{ x: 0, y: 0, z: 0 }, { x: 600, y: 0, z: 0 }])).toBe(WALK_MAX_MS);
+    expect(dureeDeMarche([{ x: 0, y: 0, z: 0 }, { x: 600, y: 0, z: 0 }])).toBe(100_000);
     expect(dureeDeMarche([court[0]])).toBe(0);
   });
 
