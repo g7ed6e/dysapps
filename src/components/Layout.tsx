@@ -99,7 +99,7 @@ function Shell() {
                 key={p.to}
                 to={p.to}
                 end={p.end}
-                // Le menu est aussi l'accueil quand l'appli s'ouvre sur lui (réglage « Au démarrage », vue simple).
+                // Le menu est aussi l'accueil quand l'appli s'ouvre sur lui (vue simple).
                 className={({ isActive }) =>
                   `nav-button${p.phone ? '' : ' nav-desktop'}${p.desktop ? '' : ' nav-phone'}${isActive || (p.to === MENU_PATH && pathname === '/') ? ' active' : ''}`
                 }

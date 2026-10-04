@@ -41,16 +41,23 @@ it('le nom lu dit le nombre : « Mes blocs, 12 »', () => {
 });
 
 it('le gain retenu se prend une fois, sur son île ; ailleurs il est oublié ; sans gain, rien n’est retenu', () => {
-  retenirLesBlocs({ biome: 'french-6e-phonology', mission: 'syllables', bloc: 'french-6e-phonology', nombre: 5 });
-  expect(prendreLesBlocs('french-6e-phonology')).toEqual({ biome: 'french-6e-phonology', mission: 'syllables', bloc: 'french-6e-phonology', nombre: 5 });
+  retenirLesBlocs({ biome: 'french-6e-phonology', mission: 'syllables', bloc: 'french-6e-phonology', nombre: 5, quand: 1000 });
+  expect(prendreLesBlocs('french-6e-phonology', 2000)).toEqual({ biome: 'french-6e-phonology', mission: 'syllables', bloc: 'french-6e-phonology', nombre: 5, quand: 1000 });
   expect(prendreLesBlocs('french-6e-phonology')).toBeNull();
-  retenirLesBlocs({ biome: 'french-6e-phonology', mission: 'syllables', bloc: 'french-6e-phonology', nombre: 5 });
+  retenirLesBlocs({ biome: 'french-6e-phonology', mission: 'syllables', bloc: 'french-6e-phonology', nombre: 5, quand: Date.now() });
   expect(prendreLesBlocs('maths-6e-calculation')).toBeNull();
   expect(prendreLesBlocs('french-6e-phonology')).toBeNull();
-  retenirLesBlocs({ biome: 'french-6e-phonology', mission: 'syllables', bloc: 'french-6e-phonology', nombre: 0 });
+  retenirLesBlocs({ biome: 'french-6e-phonology', mission: 'syllables', bloc: 'french-6e-phonology', nombre: 0, quand: Date.now() });
   expect(prendreLesBlocs('french-6e-phonology')).toBeNull();
   sessionStorage.setItem('dysapps:blocs-gagnes', '{abîmé');
   expect(prendreLesBlocs('french-6e-phonology')).toBeNull();
+});
+
+it('un gain retenu il y a plus d’une minute ne se montre plus (retour tardif sur l’île)', () => {
+  retenirLesBlocs({ biome: 'french-6e-phonology', mission: 'syllables', bloc: 'french-6e-phonology', nombre: 5, quand: 1000 });
+  expect(prendreLesBlocs('french-6e-phonology', 1000 + VOL.gardeMs + 1)).toBeNull();
+  retenirLesBlocs({ biome: 'french-6e-phonology', mission: 'syllables', bloc: 'french-6e-phonology', nombre: 5, quand: 1000 });
+  expect(prendreLesBlocs('french-6e-phonology', 1000 + VOL.gardeMs)).not.toBeNull();
 });
 
 describe('le dessin, dans blocland.css', () => {

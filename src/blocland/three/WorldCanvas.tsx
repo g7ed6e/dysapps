@@ -644,7 +644,9 @@ export default function WorldCanvas({
     };
     start();
     // Où se tient un objet à l'écran, la caméra posée (le vol des blocs part de la borne de la mission).
+    // Rien sur la Carte ni pendant un voyage : la caméra n'est pas sur l'île, le vol part alors du centre de la scène.
     const ouEst = (objet: ObjetDeLaFiche) => {
+      if (derniers.current.carte || voyageRef.current || instant.navigue) return null;
       const point = pointDeLObjet(objet);
       const vue = el.getBoundingClientRect();
       const ecran = point ? cadrage.auBut(point, vue.width, vue.height) : null;

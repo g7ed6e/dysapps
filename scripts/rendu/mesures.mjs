@@ -150,6 +150,18 @@ const CAPTURES = [
       { suffixe: '-grand-texte-800x1280', taille: { width: 800, height: 1280 }, reglages: { font: 'opendyslexic', fontSize: 32 } },
     ].map(({ suffixe, ...format }) => ({ nom: `fiches-${nom}${suffixe}`, vue: 'île', famille: 'fiches', ...c, ...format })),
   ),
+  // Le médaillon (P2, PR 2) : la fiche de Tunel et celle du Gardien de la Mine sur téléphone en grand texte (le médaillon
+  // s'efface, la barre et sa pastille restent), en paysage en grand texte, et en OpenDyslexic aux espacements les plus larges.
+  ...[
+    { nom: 'creature', ile: 'french-6e-letter-confusion', commandes: ['french-6e-letter-confusion-request-1'], inventaire: { 'maths-6e-calculation': 4 }, fiche: { genre: 'creature', id: 'french-6e-letter-confusion' } },
+    { nom: 'gardien', ile: 'french-6e-letter-confusion', debout: 'french-6e-letter-confusion', fiche: { genre: 'gardien', id: 'french-6e-letter-confusion' } },
+  ].flatMap(({ nom, ...c }) =>
+    [
+      { suffixe: '-telephone-grand-texte', taille: { width: 390, height: 844 }, reglages: { font: 'opendyslexic', fontSize: 32 } },
+      { suffixe: '-paysage-grand-texte', taille: { width: 844, height: 390 }, reglages: { font: 'opendyslexic', fontSize: 32 } },
+      { suffixe: '-espacements', taille: { width: 1024, height: 768 }, reglages: { font: 'opendyslexic', fontSize: 24, lineHeight: 2.4, letterSpacing: 0.2, wordSpacing: 0.5 } },
+    ].map(({ suffixe, ...format }) => ({ nom: `fiches-${nom}${suffixe}`, vue: 'île', famille: 'fiches', ...c, ...format })),
+  ),
   // Le Bloc-Navire en chantier (une partie neuve, 4 blocs de bois en poche : « Poser le bloc suivant ») ; prêt, c'est
   // `fiches-navire` (« Embarquer »). Sur téléphone et en tablette en OpenDyslexic 32 px (le titre sur sa ligne).
   ...[

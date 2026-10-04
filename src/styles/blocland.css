@@ -55,13 +55,14 @@
   --face-primary: #27501a;
   --face-secondary: #9c7a48;
   /* Le volume (P2, PR 2) : le bord sombre, et la bande claire du dessus, une teinte plus claire que lui : l'herbe de
-     la barre du haut sur l'action principale, un crème plus clair sur le bois et les cartes, l'or plus clair. */
+     la barre du haut sur l'action principale, un crème plus clair sur le bois, l'or plus clair. Les cartes et le lien
+     de retour gardent leur bord et leur face, sans bande. */
   --bord: 3px;
   --bord-couleur: #2b2118;
   --bande-h: 4px;
   --bande-herbe: #6cb33f;
-  --bande-bois: #f7eedb;
-  --bande-carte: #ffffff;
+  --bande-bois: #fdf7ea;
+  --bande-carte: transparent;
   --bande-or: #f0d47a;
   --face-or: #9c7a1f;
 }
@@ -88,12 +89,12 @@
   --face-primary: #4e7a2e;
   /* Plus claire que le fond, pour se voir (3,2:1 sur le fond) : sans elle, une carte ressemble à un panneau. */
   --face-secondary: #7a6450;
-  /* Un bord presque noir ne se voit pas sur le fond : la face plus claire détache le bouton (au consultant de Blocland
-     de dire s'il garde ce bord). */
+  /* Un bord presque noir ne se voit pas sur le fond : la face plus claire détache le bouton (gardé : c'est la terre de
+     nuit de la barre du haut). */
   --bord-couleur: #0e0b08;
   --bande-herbe: #b4dc8e;
   --bande-bois: #574838;
-  --bande-carte: #3a3127;
+  --bande-carte: transparent;
 }
 
 /* ===== Thème Clair : plat, des faces plus sobres ===== */
@@ -305,6 +306,9 @@
   pointer-events: none;
 }
 :root[data-univers="blocland"][data-texte="grand"] .world-bar-count {
+  /* Plus grande, elle déborde un peu plus vers le haut et la droite : l'icône du bouton reste visible. */
+  top: -12px;
+  right: -12px;
   font-size: max(18px, 1rem);
 }
 :root[data-univers="blocland"] .world-bar-count::before,

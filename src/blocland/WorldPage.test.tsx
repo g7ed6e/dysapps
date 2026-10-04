@@ -8,6 +8,7 @@ import { WorldPage } from './WorldPage';
 import { BADGES } from '../core/progress';
 import { demanderMoinsDAnimations } from '../core/mouvement.testing';
 import { textesDe } from '../univers';
+import { VOL, dureeDuVol } from './volDesBlocs';
 
 // Pas de WebGL dans les tests : un monde factice, qui montre l'île cadrée et laisse toucher une île. Il connaît la
 // première case de la cabane de Mousso, dans le repère de l'île (un fantôme du bâtiment, posable à la main avant GD-6).
@@ -477,15 +478,12 @@ it('les bandeaux de récompense attendent que le mot de l’arrivée soit fermé
   expect(screen.getByTestId('retenus')).toHaveTextContent('non');
 });
 
-it('sur la Carte, le panneau de la prochaine destination attend que le mot des grandes étapes soit fermé (DA-25)', async () => {
-  localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true }));
-  const user = userEvent.setup();
+it('la Carte s’ouvre sans encart : ni la prochaine destination, ni « Y aller », ni la liste des îles', async () => {
+  vuSansAide();
   renderAt('/adventure/map');
-  const word = await screen.findByRole('dialog', { name: 'Le mot de Mousso' }, { timeout: 3000 });
   expect(document.body.textContent).not.toMatch(/Prochaine destination/);
-  while (within(word).queryByRole('button', { name: 'Suivant' })) await user.click(within(word).getByRole('button', { name: 'Suivant' }));
-  await user.click(within(word).getByRole('button', { name: 'J’ai compris' }));
-  expect(document.body.textContent).toMatch(/Prochaine destination/);
+  expect(screen.queryByRole('button', { name: /Y aller/ })).not.toBeInTheDocument();
+  expect(screen.queryByText('Les îles et leur état')).not.toBeInTheDocument();
 });
 
 it('les nouveaux noms des archipels, une fois, avant le mot des grandes étapes : un seul panneau à la fois (GD-1)', async () => {
@@ -636,14 +634,16 @@ it('le menu du village : le bouton Pause l’ouvre en panneau, « Reprendre » l
   expect(within(menu).getByRole('link', { name: /Missions/ })).toHaveAttribute('href', '/quetes');
   expect(within(menu).getByRole('link', { name: /Succès/ })).toHaveAttribute('href', '/adventure/trophies');
   expect(within(menu).getByRole('link', { name: /Réglages/ })).toHaveAttribute('href', '/reglages');
-  // En tête, le rôle et la jauge d'XP ; sous Reprendre, Réglages et Accueil, avant le reste (plus de « Tutoriel », de
-  // « Le menu en page » ni de « Revoir l’aide du village » : le « ? » de la barre du bas la rouvre).
+  // En tête, le rôle et la jauge d'XP ; sous Reprendre, Réglages, avant le reste. Plus d'Accueil (la page Accueil n'existe
+  // plus en 3D, 4 octobre 2026) : le Tutoriel, qu'elle portait, ferme la liste. Ni « Revoir l’aide du village » : le « ? »
+  // de la barre du bas la rouvre.
   expect(within(menu).getByRole('progressbar', { name: /Niveau 1/ })).toBeInTheDocument();
-  expect(within(menu).getByRole('link', { name: /Accueil/ })).toHaveAttribute('href', '/menu');
-  expect(within(menu).queryByRole('link', { name: /Tutoriel|Le menu en page/ })).not.toBeInTheDocument();
+  expect(within(menu).queryByRole('link', { name: /Accueil|Le menu en page/ })).not.toBeInTheDocument();
+  expect(within(menu).getByRole('link', { name: /Tutoriel/ })).toHaveAttribute('href', '/app/demo');
   expect(within(menu).queryByRole('button', { name: /Revoir l’aide/ })).not.toBeInTheDocument();
   const ordre = [within(menu).getByRole('button', { name: /Reprendre/ }), ...within(menu).getAllByRole('link')].map((el) => el.textContent!.trim());
-  expect(ordre.slice(0, 4)).toEqual(['Reprendre', 'Réglages', 'Accueil', expect.stringMatching(/^(Continuer|À revoir|École du village)/)]);
+  expect(ordre.slice(0, 3)).toEqual(['Reprendre', 'Réglages', expect.stringMatching(/^(Continuer|À revoir|École du village)/)]);
+  expect(ordre.at(-1)).toMatch(/^Tutoriel/);
   expect(within(menu).getByRole('link', { name: /Monuments/ })).toHaveTextContent('Bâtis avec tes blocs');
   await user.click(within(menu).getByRole('button', { name: /Reprendre/ }));
   expect(screen.queryByRole('dialog', { name: 'Menu' })).not.toBeInTheDocument();
@@ -706,7 +706,7 @@ it('« Recentrer » apparaît quand la vue a glissé, la ramène d’un appui, e
   expect(screen.queryByRole('button', { name: 'Recentrer' })).not.toBeInTheDocument();
 });
 
-it('la Carte fermée rend le monde sur l’île où l’on est, sans panneau ; « Y aller » n’ouvre pas de panneau', async () => {
+it('la Carte fermée rend le monde sur l’île où l’on est, sans panneau', async () => {
   localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true }));
   localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'baleine-6e-arrivee': true }));
   const user = userEvent.setup();
@@ -718,33 +718,6 @@ it('la Carte fermée rend le monde sur l’île où l’on est, sans panneau ; �
   await user.click(carte());
   expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/french-6e-phonology');
   expect(sheet()).not.toBeInTheDocument();
-  // « Y aller », sur la Carte, mène à la destination, toujours sans panneau.
-  await user.click(carte());
-  await user.click(screen.getByRole('button', { name: /Y aller/ }));
-  expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/french-6e-phonology');
-  expect(sheet()).not.toBeInTheDocument();
-});
-
-it('« Y aller » vers un ouvrage ouvre la fiche de l’ouvrage sur son île, le panneau replié, son signe qui saute (GD-7)', async () => {
-  const { getBiome, missionsJouables } = await import('./biomes');
-  const { exercisesOf } = await import('./exercises');
-  vuSansAide();
-  // La Forêt, la Plaine, la Mine et la Rivière jouées, 3 blocs : il en manque un pour le pont vers l'Horloge des verbes.
-  const iles = ['french-6e-phonology', 'maths-6e-calculation', 'french-6e-letter-confusion', 'maths-6e-fractions'] as const;
-  const progress = Object.fromEntries(iles.flatMap((ile) => missionsJouables(getBiome(ile)!).map((m) => [exercisesOf(ile, m.id)[0].id, { stars: 2, attempts: 1, best: 0.8 }])));
-  const world = { place: 'french-6e-letter-confusion', links: ['french-6e-phonology-french-6e-letter-confusion', 'maths-6e-calculation-maths-6e-fractions'] };
-  localStorage.setItem('dysapps:game', JSON.stringify({ progress, stock: { 'french-6e-phonology': 3 }, world }));
-  const user = userEvent.setup();
-  renderAt('/adventure/map');
-  // Le panneau de la Carte n'a plus « Les quatre archipels ».
-  expect(screen.queryByRole('button', { name: /Les quatre archipels/ })).not.toBeInTheDocument();
-  await user.click(screen.getByRole('button', { name: /Y aller/ }));
-  expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/french-6e-phonology');
-  expect(sheet()).not.toBeInTheDocument();
-  const f = screen.getByRole('dialog', { name: /entre Forêt des sons et Horloge des verbes/ });
-  expect(f).toHaveTextContent('4 blocs. Il t’en manque 1.');
-  expect(within(f).queryByRole('button', { name: /Construire/ })).not.toBeInTheDocument();
-  expect(vu.fiche).toMatchObject({ objet: { genre: 'ouvrage', id: 'french-6e-phonology-english-6e-grammar' }, saut: true });
 });
 
 it('au retour d’un exercice (le monde se remonte), aucun panneau ne s’ouvre tout seul', () => {
@@ -1069,8 +1042,14 @@ describe('les blocs gagnés volent jusqu’au compteur, au retour d’une missio
     oublierLesBlocs();
     vuSansAide();
     localStorage.setItem('dysapps:game', JSON.stringify({ stock: { 'french-6e-phonology': 9 }, world: { parts: {}, log: [], links: [], place: 'french-6e-phonology' } }));
-    retenirLesBlocs({ biome: 'french-6e-phonology', mission: 'syllables', bloc: 'french-6e-phonology', nombre: 5 });
+    retenirLesBlocs({ biome: 'french-6e-phonology', mission: 'syllables', bloc: 'french-6e-phonology', nombre: 5, quand: Date.now() });
   };
+  // L'horloge des tests : on avance l'attente puis le vol, sans attendre pour de vrai.
+  beforeEach(() => vi.useFakeTimers({ shouldAdvanceTime: true }));
+  afterEach(() => vi.useRealTimers());
+  const avancer = (ms: number) => act(() => vi.advanceTimersByTime(ms));
+  const jusquAuVol = () => avancer(VOL.attenteMs + 50);
+  const jusquALArrivee = () => avancer(dureeDuVol(5) + 50);
   const pastille = () => document.querySelector('.world-bar-count');
   const blocsQuiVolent = () => document.querySelectorAll('.vol-bloc').length;
 
@@ -1082,43 +1061,57 @@ describe('les blocs gagnés volent jusqu’au compteur, au retour d’une missio
     expect(screen.getByRole('button', { name: 'Mes blocs, 4' })).toBeInTheDocument();
     expect(screen.getByTestId('retenus')).toHaveTextContent('oui');
     expect(blocsQuiVolent()).toBe(0);
-    await waitFor(() => expect(blocsQuiVolent()).toBe(3), { timeout: 3000 });
+    jusquAuVol();
+    expect(blocsQuiVolent()).toBe(3);
     expect(pastille()).toHaveTextContent(/^4$/);
     // Le dernier arrivé : le nouveau chiffre, une fois, et la pastille rebondit.
-    await waitFor(() => expect(pastille()).toHaveTextContent(/^9$/), { timeout: 3000 });
+    jusquALArrivee();
+    expect(pastille()).toHaveTextContent(/^9$/);
     expect(blocsQuiVolent()).toBe(0);
     expect(pastille()).toHaveClass('rebondit');
     expect(screen.getByRole('button', { name: 'Mes blocs, 9' })).toBeInTheDocument();
-  }, 10000);
+  });
 
   it('une fois seulement : revenir sur l’île ne rejoue pas le vol', async () => {
     await preparer();
     const premier = renderAt('/adventure/french-6e-phonology');
-    await waitFor(() => expect(pastille()).toHaveTextContent(/^9$/), { timeout: 4000 });
+    jusquAuVol();
+    jusquALArrivee();
+    expect(pastille()).toHaveTextContent(/^9$/);
     premier.unmount();
     renderAt('/adventure/french-6e-phonology');
     expect(pastille()).toHaveTextContent(/^9$/);
-  }, 10000);
+  });
+
+  it('un gain retenu il y a plus d’une minute (mission lancée d’ailleurs) ne vole plus : le chiffre a déjà changé', async () => {
+    await preparer();
+    const { retenirLesBlocs } = await import('./volDesBlocs');
+    retenirLesBlocs({ biome: 'french-6e-phonology', mission: 'syllables', bloc: 'french-6e-phonology', nombre: 5, quand: Date.now() - VOL.gardeMs - 1 });
+    renderAt('/adventure/french-6e-phonology');
+    expect(pastille()).toHaveTextContent(/^9$/);
+    jusquAuVol();
+    expect(blocsQuiVolent()).toBe(0);
+  });
 
   it('avec « Réduire les animations » : pas de vol, pas de rebond, le chiffre a déjà changé', async () => {
     await preparer();
     demanderMoinsDAnimations();
     renderAt('/adventure/french-6e-phonology');
     expect(pastille()).toHaveTextContent(/^9$/);
-    await new Promise((r) => window.setTimeout(r, 1300));
+    jusquAuVol();
     expect(blocsQuiVolent()).toBe(0);
     expect(pastille()).not.toHaveClass('rebondit');
   });
 
   it('jamais par-dessus une fiche : une fiche ouverte avant le départ, le vol n’a pas lieu et le chiffre change', async () => {
     await preparer();
-    const user = userEvent.setup();
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
     renderAt('/adventure/french-6e-phonology');
     expect(pastille()).toHaveTextContent(/^4$/);
     await user.click(screen.getByRole('button', { name: 'Toucher une borne de la Forêt' }));
     expect(document.querySelector('.world-fiche')).toBeInTheDocument();
     expect(pastille()).toHaveTextContent(/^9$/);
-    await new Promise((r) => window.setTimeout(r, 1300));
+    jusquAuVol();
     expect(blocsQuiVolent()).toBe(0);
   });
 
@@ -1140,10 +1133,12 @@ describe('les blocs gagnés volent jusqu’au compteur, au retour d’une missio
     retenirLaPose('french-6e-phonology', [cabane]);
     renderAt('/adventure/french-6e-phonology?worksite=part');
     expect(vu.pose).toBeNull();
-    await waitFor(() => expect(blocsQuiVolent()).toBe(3), { timeout: 3000 });
+    jusquAuVol();
+    expect(blocsQuiVolent()).toBe(3);
     expect(vu.pose).toBeNull();
-    await waitFor(() => expect(vu.pose).not.toBeNull(), { timeout: 3000 });
+    jusquALArrivee();
+    expect(vu.pose).not.toBeNull();
     expect(pastille()).toHaveTextContent(/^9$/);
     expect(blocsQuiVolent()).toBe(0);
-  }, 10000);
+  });
 });

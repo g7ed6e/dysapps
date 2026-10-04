@@ -3713,7 +3713,7 @@ figure.class-table {
   max-width: 26rem;
 }
 /* Barre du bas, par-dessus le monde : Carte, Chantier, jour/nuit, aide. */
-/* La Carte : la ligne d'aide en haut, et le chemin d'ouvrages vers l'île fermée touchée. */
+/* La Carte : le chemin d'ouvrages vers l'île pâle touchée, en haut (rien à l'ouverture de la Carte). */
 .world-map-line {
   display: block;
   /* Jamais plus large que la place au-dessus du monde (grand texte sur téléphone, DA-16). */
@@ -3721,125 +3721,8 @@ figure.class-table {
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
 }
-.world-map-actions .button {
-  min-height: 48px;
-}
 .world-map-line p {
   margin: 0;
-}
-.world-map-line p + p,
-.world-map-islands {
-  margin-top: 0.5rem;
-}
-.world-map-destination {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.6rem;
-}
-.world-map-speak {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: none;
-}
-/* En grand texte, la phrase de la Carte se lit dans une fenêtre de trois lignes entières, qui défile s'il y a une
-   suite ; un chevron sous le bouton Écouter et un trait pointillé le disent. Le bouton « Y aller » reste sous elle,
-   toujours visible. */
-:root[data-texte="grand"] .world-map-line {
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  align-items: stretch;
-  gap: 0;
-}
-:root[data-texte="grand"] .world-map-line > * {
-  flex: none;
-}
-:root[data-texte="grand"] .world-map-line > button {
-  align-self: flex-start;
-}
-.world-map-texte {
-  display: block;
-  min-width: 0;
-}
-:root[data-texte="grand"] .world-map-texte {
-  /* Un peu d'air entre les lettres et le trait pointillé ; il reste dans la marge de la ligne suivante. */
-  max-height: calc(3lh + 0.2em + var(--border-width));
-  padding-bottom: 0.2em;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-}
-:root[data-texte="grand"] .world-map-destination.a-suivre .world-map-texte {
-  border-bottom: var(--border-width) dashed currentColor;
-}
-:root[data-texte="grand"] .world-map-speak {
-  align-self: stretch;
-}
-/* Sur tablette, « Y aller » tient sur sa rangée : libellé un peu plus petit (trois quarts du texte, jamais sous
-   18 px), marges fixes. */
-@media (min-width: 641px) {
-  :root[data-texte="grand"] .world-map-line {
-    padding-left: 14px;
-    padding-right: 14px;
-  }
-  :root[data-texte="grand"] .world-map-actions {
-    gap: 8px;
-  }
-  :root[data-texte="grand"] .world-map-actions .button {
-    font-size: 0.75em;
-    padding-left: 10px;
-    padding-right: 10px;
-  }
-}
-.world-map-suite {
-  position: sticky;
-  bottom: 0;
-  margin-top: auto;
-  width: 1.4em;
-  height: 1.4em;
-}
-.world-map-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-.world-map-islands summary {
-  min-height: 48px;
-  display: flex;
-  align-items: center;
-  font-weight: 700;
-  cursor: pointer;
-}
-/* Sous la liste des îles, une ligne : ce qui ouvre une île pâle. */
-.world-map-islands-note {
-  margin: 0 0 0.4rem;
-}
-.world-map-islands ul {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(15rem, 100%), 1fr));
-  gap: 0.3rem 1rem;
-  margin: 0 0 0.4rem;
-  padding: 0;
-  list-style: none;
-}
-.world-map-island {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.6rem;
-  width: 100%;
-  min-height: 48px;
-  padding: 0.2rem 0.6rem;
-  border: var(--border-width) solid var(--ink);
-  border-radius: var(--radius-control);
-  background: var(--surface);
-  color: var(--text);
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
-}
-.world-map-island:hover {
-  border-color: var(--primary-bg);
 }
 /* L'état d'une île : une icône et un mot, la couleur ne fait que doubler (DP-08). */
 .island-state {
@@ -5863,13 +5746,17 @@ button.app-card {
     top: 0.6rem;
     right: calc(0.6rem + 52px + 0.5rem);
     flex-direction: row;
+    /* Quatre classes ne tiennent pas sur une ligne à 390 px : elles passent sur deux, sans sortir de l'écran. */
+    left: 0.6rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
   }
   :root[data-texte="grand"] .world-page .world-overlay-top {
     top: calc(0.6rem + 52px + 0.5rem);
     right: 0.6rem;
-    /* Pli fermé, le panneau de la Carte s'arrête sous « Y aller », entier ; la suite vient en le faisant défiler
-       (usePanneauDeLaCarte.ts). Des traits pointillés disent qu'il continue, en bas comme en haut. */
-    max-height: var(--carte-panneau-max, 60%);
+    /* Le chemin d'ouvrages de la Carte défile au-delà ; des traits pointillés disent qu'il continue, en bas comme en
+       haut (usePanneauDeLaCarte.ts). */
+    max-height: 60%;
   }
   /* Le trait est posé sur une bande du fond du panneau, collée au bord : il ne passe jamais sur une ligne coupée,
      qu'il sépare du bord par un peu d'air. */
@@ -5900,10 +5787,6 @@ button.app-card {
   :root[data-texte="grand"] .world-page .world-map-line {
     padding-left: 12px;
     padding-right: 12px;
-  }
-  :root[data-texte="grand"] .world-page .world-map-island {
-    padding-left: 10px;
-    padding-right: 10px;
   }
 }
 .menu-resume {
@@ -6011,6 +5894,11 @@ button.island-quest {
 @media (orientation: landscape) {
   .world-fiche-place {
     max-height: 70%;
+  }
+  /* En grand texte, jusqu'en haut de la scène (sous la marge du haut) : le titre et le bouton principal restent entiers
+     (le Bloc-Navire, « Embarquer vers … » sur quatre lignes en OpenDyslexic 32 px). */
+  :root[data-texte="grand"] .world-fiche-place {
+    max-height: calc(100% - var(--barre-h, 4rem) - 1.8rem);
   }
 }
 .world-fiche {
@@ -6499,28 +6387,6 @@ fieldset {
   :root[data-texte="grand"] .slider-label {
     flex-wrap: wrap;
     gap: 0 1rem;
-  }
-  /* La Carte : le bouton Écouter au-dessus de la phrase, qui a toute la largeur ; l'état d'une île sous son nom. */
-  :root[data-texte="grand"] .world-map-destination {
-    flex-direction: column;
-  }
-  /* Le trait pointillé seul dit la suite : au-dessus de la phrase, le chevron la montrerait à l'envers. */
-  :root[data-texte="grand"] .world-map-suite {
-    display: none;
-  }
-  /* Deux lignes entières de la phrase, puis « Y aller » et « Les quatre archipels » chacun sur une ligne, aux trois
-     quarts du texte (jamais sous 18 px) comme sur tablette : le panneau tient sans défiler, pli fermé, et laisse à la
-     Carte la place de la destination et de ses voisines (DA-31). */
-  :root[data-texte="grand"] .world-map-texte {
-    max-height: calc(2lh + 0.2em + var(--border-width));
-  }
-  :root[data-texte="grand"] .world-map-actions .button {
-    font-size: max(18px, 0.75em);
-    padding-left: 10px;
-    padding-right: 10px;
-  }
-  :root[data-texte="grand"] .world-map-island {
-    flex-wrap: wrap;
   }
   :root[data-texte="grand"] .question-head .question-count {
     white-space: normal;

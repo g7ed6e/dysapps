@@ -17,6 +17,8 @@ export interface GainRetenu {
   bloc: BlockId;
   /** Tous les blocs gagnés (la mission, le coffre de régularité, le coffre d'un plan fini). */
   nombre: number;
+  /** Quand l'écran de fin l'a retenu (ms) : au-delà de `VOL.gardeMs`, il ne se montre plus (retour tardif). */
+  quand: number;
 }
 
 /** Les temps et le nombre du vol (spécification du consultant UX UI). */
@@ -31,6 +33,8 @@ export const VOL = {
   attenteMs: 1000,
   /** Le rebond de la pastille quand son chiffre change. */
   rebondMs: 150,
+  /** Un gain retenu plus vieux ne vole plus : l'élève est revenu sur l'île bien plus tard (mission lancée d'ailleurs). */
+  gardeMs: 60_000,
 } as const;
 
 /** Combien de blocs volent pour un gain : un par bloc gagné, trois au plus ; aucun sans gain. */
@@ -90,9 +94,10 @@ function ecrire(valeur: GainRetenu | null): void {
 function lireLeGain(): GainRetenu | null {
   const brut = lire();
   if (!brut || typeof brut !== 'object') return null;
-  const { biome, mission, bloc, nombre } = brut as Record<string, unknown>;
+  const { biome, mission, bloc, nombre, quand } = brut as Record<string, unknown>;
   if (typeof biome !== 'string' || typeof mission !== 'string' || typeof bloc !== 'string' || !Number.isInteger(nombre) || (nombre as number) <= 0) return null;
-  return { biome: biome as BiomeId, mission, bloc: bloc as BlockId, nombre: nombre as number };
+  if (typeof quand !== 'number' || !Number.isFinite(quand)) return null;
+  return { biome: biome as BiomeId, mission, bloc: bloc as BlockId, nombre: nombre as number, quand };
 }
 
 /** Retient les blocs que la mission vient de donner (rien sans gain), à montrer au retour sur son île. */
@@ -101,10 +106,11 @@ export function retenirLesBlocs(gain: GainRetenu): void {
 }
 
 /** Prend le gain à montrer sur cette île, une fois ; un gain d'une autre île est oublié (on n'y est pas revenu). */
-export function prendreLesBlocs(biome: BiomeId): GainRetenu | null {
+export function prendreLesBlocs(biome: BiomeId, maintenant = Date.now()): GainRetenu | null {
   const gain = lireLeGain();
   ecrire(null);
-  return gain && gain.biome === biome ? gain : null;
+  if (!gain || maintenant - gain.quand > VOL.gardeMs || maintenant < gain.quand) return null;
+  return gain.biome === biome ? gain : null;
 }
 
 /** Pour les tests : rien en attente. */

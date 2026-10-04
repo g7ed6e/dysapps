@@ -111,8 +111,9 @@ const FOREST_QUEST = BIOMES.find((b) => b.id === 'french-6e-phonology').exercise
  */
 const SHOTS = [
   { name: 'titre', state: EARLY, title: true, go: '/' },
-  { name: 'menu', state: MID, go: '/menu' },
-  { name: 'telephone-menu', state: MID, go: '/menu', size: PHONE },
+  // Le menu en page n'existe plus qu'en vue simple : dans le village, `/menu` ouvre le menu du village.
+  { name: 'menu', state: MID, view: 'list', go: '/menu' },
+  { name: 'telephone-menu', state: MID, view: 'list', go: '/menu', size: PHONE },
   { name: 'menu-village', state: MID, go: '/adventure/menu' },
   { name: 'village-premiere-visite', go: '/adventure', tutorial: true },
   { name: 'panneau-ile', state: EARLY, go: '/adventure/french-6e-phonology', act: openSheet },

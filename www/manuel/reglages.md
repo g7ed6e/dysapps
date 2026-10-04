@@ -56,10 +56,7 @@ Au menu, la LV2 prend le nom de la langue choisie, à côté de l’anglais. Ses
 
 ## Au démarrage
 
-- **Le village** (par défaut) : après l’écran titre, l’appli s’ouvre sur le village, sur l’île où se tient le bonhomme. Le menu est dans le village (bouton ⏸) et à l’adresse `#/menu`.
-- **Le menu** : l’appli s’ouvre sur le menu principal, comme avant le village au démarrage.
-
-Avec « La liste des îles », ou sur un appareil qui ne sait pas dessiner le monde, l’appli s’ouvre toujours sur le menu.
+Après l’écran titre, l’appli s’ouvre toujours sur le village, sur l’île où se tient le bonhomme ; le menu est dans le village (bouton ⏸). Ce n’est plus un réglage. Avec « La liste des îles », ou sur un appareil qui ne sait pas dessiner le monde, l’appli s’ouvre sur le menu en page.
 
 ## Animations et vue du monde
 

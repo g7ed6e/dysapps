@@ -77,6 +77,7 @@ Ces points ne sont pas des défauts constatés : ce sont les endroits où le jeu
 - **L’appui qui enfonce un bloc** (Blocland : 3 px, instantané, sans décaler la page) : un retour d’appui, pas une animation ; il reste avec « Réduire les animations ». À vérifier sur appareil : faire défiler une liste de cartes ne doit pas donner l’impression d’appuyer.
 - **Les gestes dans le monde** : poser un bloc, se déplacer, glisser un sujet vers un verbe ; chacun a une façon de faire par simple toucher.
 - **Les nouveaux mots de l’univers** (Expéditions, rôles, états d’île) : peu nombreux, stables, lus à voix haute, expliqués la première fois.
+- **La barre du bas en icônes seules** (Blocland, P2, PR 2, choix du mainteneur le 4 octobre 2026, même en grand texte) : W3C COGA ([Making Content Usable](https://www.w3.org/TR/coga-usable/), objectif 3) recommande d’accompagner une icône d’un texte ; le grand texte est le réglage de l’élève qui lit difficilement. Ce qui atténue : la place fixe des quatre boutons, leur nom lu, le titre de l’écran qui s’ouvre, le bouton ouvert en or et enfoncé. Le bouton de l’île change d’icône d’une île à l’autre : c’est le moins sûr. Test en classe : « va à Mes blocs, puis à la Carte, puis ouvre le panneau de ton île », sans aide. Voir aussi les [bonnes pratiques UX UI](../ux-ui/bonnes-pratiques.md#à-surveiller).
 - **Le RGAA 5 et l’application installée** : quand il paraîtra, relire ses nouveaux critères, surtout ceux des applications mobiles.
 
 ## Sources

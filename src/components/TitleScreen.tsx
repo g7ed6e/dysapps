@@ -219,7 +219,7 @@ export function TitleScreen() {
               <Icon name="play" /> Continuer : {resume.label}
             </button>
           )}
-          {/* « Jouer » : l'accueil, c'est-à-dire le village (ou le menu, selon le réglage « Au démarrage »). */}
+          {/* « Jouer » : l'accueil, c'est-à-dire le village (le menu en page en vue simple). */}
           <button type="button" className={`button title-button${resume ? '' : ' primary'}`} onClick={() => start()} autoFocus={!resume}>
             <Icon name={resume ? 'map' : 'play'} /> Jouer
           </button>

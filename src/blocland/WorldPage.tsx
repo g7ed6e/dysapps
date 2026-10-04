@@ -261,7 +261,6 @@ export function WorldPage() {
   const destination = modele.destination;
   // Un seul signe par créature : sa commande prête et suggérée (GD-7, PR 3), sinon ses révisions (GD-4, étape 1).
   const signes = useMemo(() => signesDesCreatures(vu, a, revisions, destination.commande), [vu, a, revisions, destination.commande]);
-  const destinationText = `Prochaine destination : ${destination.name}. ${destination.text}`;
   // La prochaine chose à faire, quand c'est un objet : sa bulle est mise en avant sur l'île où l'on est (proposition
   // P2, world/affordance.ts) ; sinon aucune (la bulle d'or ne dit jamais autre chose que la prochaine destination).
   const navirePret = useMemo(
@@ -336,10 +335,6 @@ export function WorldPage() {
   // Sur la Carte, l'île fermée touchée : on montre le chemin d'ouvrages qui y mène (balises dans le monde, liste ici).
   const [mapTarget, setMapTarget] = useState<BiomeId | null>(null);
   const remaining = useMemo(() => (mapTarget ? remainingPath(mapTarget, state.world.links) : []), [mapTarget, state.world.links]);
-  const [destinationRef, destinationSuite] = useASuivre<HTMLSpanElement>(
-    // La phrase n'existe que sans chemin à construire : la clé change quand elle apparaît.
-    mapOpen && !(mapTarget && remaining.length) ? destinationText : null,
-  );
   const trail = useMemo(() => (remaining.length ? remaining.flatMap((b) => grille.liaison(b.id).map((p) => grille.versIle(p))) : undefined), [remaining, grille]);
   const [replay, setReplay] = useState(0);
   const stageRef = useRef<HTMLDivElement>(null);
@@ -596,8 +591,9 @@ export function WorldPage() {
   // Le retour d'une mission qui a donné des blocs : le gain, pris une fois en arrivant sur l'île (avant la fiche du
   // chantier et la pose de la partie, qui l'attendent). « Réduire les animations », un autre univers, le tutoriel ou un
   // voyage : pas de vol, le chiffre a déjà changé.
+  // Tenu à jour par cet effet et par `finirLeVol` (jamais pendant le rendu). Cet effet est déclaré AVANT ceux du chantier
+  // et de la pose : React les lance dans cet ordre, si bien qu'ils trouvent le vol déjà retenu et l'attendent.
   const volEnCours = useRef(false);
-  volEnCours.current = Boolean(vol);
   const volDeLIle = useRef<BiomeId | null>(null);
   useEffect(() => {
     if (!island) return;
@@ -767,7 +763,7 @@ export function WorldPage() {
   const renommageOuvert = renommage.ouvert && !voyage;
   const [bullesRef, bullesSuite] = useASuivre<HTMLDivElement>(renommageOuvert ? 'renommage' : (whaleWord?.id ?? motRallume));
   usePlaceDesBulles(stageRef, !!voyage);
-  usePanneauDeLaCarte(stageRef, mapOpen && !whaleWord && !motRallume && !renommageOuvert, `${destinationText}|${mapTarget ?? ''}|${remaining.length}`);
+  usePanneauDeLaCarte(stageRef, mapOpen && Boolean(mapTarget && remaining.length) && !whaleWord && !motRallume && !renommageOuvert, `${mapTarget ?? ''}|${remaining.length}`);
   const clocheDuRetour = useRef(false);
   const aRallumer = !voyage && tutoDone && !panelOpen ? (rallumage.enAttente[0] ?? null) : null;
   // Un bandeau de récompense attend que le panneau ouvert se ferme (le tutoriel, le mot de la baleine, un rallumage, un
@@ -879,7 +875,7 @@ export function WorldPage() {
   // Le vol, la caméra posée : de la borne de la mission (hors de l'écran : du centre de la scène) jusqu'à la pastille.
   // Jamais par-dessus une fiche, le tutoriel, un mot qui attend, un voyage ou un panneau : le chiffre change, sans vol.
   const empecheLeVol =
-    Boolean(ficheVue) || !tutoDone || Boolean(whaleWord || motRallume || renommageOuvert || moment || voyage) || Boolean(island && sheetOpen) || (panelOpen && !mapOpen);
+    Boolean(ficheVue) || !tutoDone || Boolean(whaleWord || motRallume || renommageOuvert || moment || voyage) || Boolean(island && sheetOpen) || panelOpen || mapOpen || phraseALire;
   /** Le vol fini (`arrive` : le dernier bloc est arrivé, la pastille rebondit) ou arrêté ; ce qui l'attendait suit. */
   const finirLeVol = (arrive: boolean) => {
     volEnCours.current = false;
@@ -1065,20 +1061,12 @@ export function WorldPage() {
     const lines = home && Math.random() < 0.5 ? [textes.creatures[id].home] : textes.creatures[id].lines;
     ouvrirFiche({ genre: 'creature', id }, { phrase: lines[Math.floor(Math.random() * lines.length)] });
   };
-  /**
-   * « Y aller » de la Carte : la fiche de la destination quand c'est un objet (un ouvrage, le Bloc-Navire), sur son île,
-   * le panneau replié ; sinon le panneau de son île (une commande prête : sur sa ligne).
-   */
-  const allerALaDestination = () => {
-    if (destination.ouvrage) return allerALaFiche(destination.island, { genre: 'ouvrage', id: destination.ouvrage });
-    if (navirePret)
-      return allerALaFiche(archipelago.port, { genre: 'navire', port: archipelago.port });
-    openIsland(destination.island, destination.commande);
-  };
   // Les bulles du haut (la Carte, les phrases du voyage, du village, d'une créature), une condition chacune.
   const ligneDuVoyage = voyage?.mode === 'cinema';
-  // Une chose à la fois : le panneau de la Carte attend que le mot de la baleine ou du rallumage soit fermé (DA-25).
-  const panneauDeLaCarte = mapOpen && !whaleWord && !motRallume && !renommageOuvert;
+  // La Carte s'ouvre sans encart (mot du mainteneur, 4 octobre 2026 : « supprime l'encart qui dit prochaine destination ») :
+  // la flèche jaune montre la suggestion. Seule une île pâle touchée dit le chemin d'ouvrages qui y mène. Une chose à la
+  // fois : il attend que le mot de la baleine ou du rallumage soit fermé (DA-25).
+  const panneauDeLaCarte = mapOpen && Boolean(mapTarget && remaining.length) && !whaleWord && !motRallume && !renommageOuvert;
   // Une chose à la fois : la phrase du village et celle d'une créature attendent que la fiche ouverte soit fermée.
   const phraseDuVillage = villageSaid && !whaleWord && !renommageOuvert && !ficheVue;
   const phraseDeCreature = said && !ficheVue ? said : null;
@@ -1200,62 +1188,19 @@ export function WorldPage() {
               </button>
             </div>
           )}
-          {panneauDeLaCarte && (
+          {panneauDeLaCarte && mapTarget && (
             <div className="creature-line world-line world-map-line" role="status" aria-live="polite">
-              {mapTarget && remaining.length ? (
-                <>
-                  <p>
-                    <strong>Pour aller à {getBiome(mapTarget)?.name} :</strong> encore {remaining.length} ouvrage{remaining.length > 1 ? 's' : ''} à construire.
-                  </p>
-                  <ol className="world-map-path">
-                    {remaining.map((b) => (
-                      <li key={b.id}>{ouvrageLabel(b)}</li>
-                    ))}
-                  </ol>
-                  <button type="button" className="button" onClick={() => voirOuvrage(remaining[0].id)}>
-                    <Icon name="hammer" /> Voir le premier ouvrage
-                  </button>
-                </>
-              ) : (
-                <>
-                  {/* Écouter hors de la fenêtre qui défile : en grand texte, elle ne montre que des lignes entières (DA-31). */}
-                  <p className={`world-map-destination${destinationSuite ? ' a-suivre' : ''}`}>
-                    <span className="world-map-speak">
-                      <SpeakButton text={destinationText} compact />
-                      {destinationSuite && <Icon name="chevronDown" className="world-map-suite" />}
-                    </span>
-                    <span className="world-map-texte" ref={destinationRef}>
-                      <Syllabified text={destinationText} />
-                    </span>
-                  </p>
-                  <p className="world-map-actions">
-                    <button type="button" className="button primary" onClick={allerALaDestination}>
-                      <Icon name="play" /> Y aller
-                    </button>
-                  </p>
-                  {/* Les îles et leur état, en mots : ce que la Carte dessine sur chaque île, lisible sans la voir. */}
-                  {/* À l'ouverture, le titre du pli vient en haut du panneau, entier (DA-31). */}
-                  <details className="world-map-islands" onToggle={(e) => e.currentTarget.open && titreDuPliEnHaut(e.currentTarget)}>
-                    <summary>Les îles et leur état</summary>
-                    <ul>
-                      {modele.iles.map((b) => {
-                        const st = b.etat;
-                        return (
-                          <li key={b.id}>
-                            <button type="button" className="world-map-island" onClick={() => onIsland(b.id)}>
-                              <span className="world-map-island-name">{b.nom}</span>
-                              <span className={`island-state island-state-${st.id}`}>
-                                <Icon name={st.icon} /> {textes.etatsDIle[st.id]}
-                              </span>
-                            </button>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                    <p className="world-map-islands-note">Une île pâle s’ouvre par un ouvrage.</p>
-                  </details>
-                </>
-              )}
+              <p>
+                <strong>Pour aller à {getBiome(mapTarget)?.name} :</strong> encore {remaining.length} ouvrage{remaining.length > 1 ? 's' : ''} à construire.
+              </p>
+              <ol className="world-map-path">
+                {remaining.map((b) => (
+                  <li key={b.id}>{ouvrageLabel(b)}</li>
+                ))}
+              </ol>
+              <button type="button" className="button" onClick={() => voirOuvrage(remaining[0].id)}>
+                <Icon name="hammer" /> Voir le premier ouvrage
+              </button>
             </div>
           )}
           {hopTo && (
@@ -1421,10 +1366,4 @@ export function WorldPage() {
       )}
     </div>
   );
-}
-
-/** Le pli ouvert : son titre en haut du panneau qui le porte, sans faire défiler la page (DA-31). */
-function titreDuPliEnHaut(pli: HTMLElement) {
-  const panneau = pli.closest<HTMLElement>('.world-overlay-top');
-  if (panneau) panneau.scrollTop += pli.getBoundingClientRect().top - panneau.getBoundingClientRect().top;
 }

@@ -2,7 +2,7 @@ import { HashRouter, Navigate, Route, Routes, useLocation, useParams } from 'rea
 import { Layout } from './components/Layout';
 import { TitleScreen } from './components/TitleScreen';
 import { AppBadge } from './components/AppBadge';
-import { SettingsProvider, useSettings } from './core/SettingsContext';
+import { SettingsProvider } from './core/SettingsContext';
 import { ProgressProvider } from './core/ProgressContext';
 import { HomePage } from './pages/HomePage';
 import { SubjectPage } from './pages/SubjectPage';
@@ -51,7 +51,7 @@ export function AppRoutes() {
     <Routes>
       <Route element={<Layout />}>
         <Route index element={<StartEntry />} />
-        <Route path="menu" element={<HomePage />} />
+        <Route path="menu" element={<MenuEntry />} />
         <Route path="quetes" element={<QuestsPage />} />
         <Route path="matiere/:subject" element={<SubjectPage />} />
         <Route path="app/:appId" element={<AppPage />} />
@@ -79,12 +79,13 @@ function LegacyAdventure() {
   return <Navigate to={translatePath(pathname + search)} replace />;
 }
 
-// L'accueil : le village (en 3D ou en 2D), sur l'île où se tient le bonhomme ; le menu si le réglage « Au démarrage »
-// le demande, ou si l'appareil ne sait pas dessiner le monde (la vue simple commence par le menu).
+// L'appli s'ouvre sur le village. La page Accueil (le menu en page) n'existe plus dans le monde en 3D (mot du mainteneur,
+// 4 octobre 2026) : son adresse ouvre le menu du village. Elle ne reste que pour la vue simple, sans monde.
 function StartEntry() {
-  const { settings } = useSettings();
-  const immersive = useImmersive();
-  return settings.startIn === 'world' && immersive ? <Navigate to="/adventure" replace /> : <HomePage />;
+  return useImmersive() ? <Navigate to="/adventure" replace /> : <HomePage />;
+}
+function MenuEntry() {
+  return useImmersive() ? <Navigate to="/adventure/menu" replace /> : <HomePage />;
 }
 
 // En 3D, la carte et les îles sont le monde en plein écran ; sinon, les pages simples (listes accessibles).

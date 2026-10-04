@@ -1811,7 +1811,7 @@ function bossIslet(biome: BiomeDef, beaten: boolean, cubes: VoxelCube[], pas = t
 }
 
 /** Gris de pierre de même luminosité qu'une couleur (pour la statue). */
-function stoneOf(color: string): string {
+export function stoneOf(color: string): string {
   const n = parseInt(color.slice(1), 16);
   const lum = ((n >> 16) & 255) * 0.3 + ((n >> 8) & 255) * 0.59 + (n & 255) * 0.11;
   const g = Math.round(90 + (lum / 255) * 90);

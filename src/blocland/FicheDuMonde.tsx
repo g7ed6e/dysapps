@@ -33,6 +33,7 @@ import { Creature } from './Creatures';
 import { habillageDuMonde } from './habillage';
 import { VoxelScene } from './Voxel';
 import { GUARDIAN_CUBES } from './world/personnages/gardiens';
+import { stoneOf } from './world/terrain';
 import type { VehicleBuilder } from './useVehicleBuilder';
 import { borneDe } from './world/affordance';
 import type { ObjetDeLaFiche } from './world/disposition';
@@ -214,7 +215,7 @@ function FicheDuGardien({ ile, onClose }: Props & { ile: BiomeId }) {
     <Fiche
       titre={titre}
       icone="shield"
-      portrait={portraitsEnMedaillon() ? <VoxelScene cubes={GUARDIAN_CUBES[ile]} s={12} pad={6} className="creature guardian-svg" /> : undefined}
+      portrait={portraitsEnMedaillon() ? <VoxelScene cubes={vaincu ? GUARDIAN_CUBES[ile].map((c) => ({ ...c, color: stoneOf(c.color), top: undefined })) : GUARDIAN_CUBES[ile]} s={12} pad={2} className="creature guardian-svg" /> : undefined}
       lecture={`${titre}. ${phrase}`}
       onClose={onClose}
       actions={
