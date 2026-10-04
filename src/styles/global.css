@@ -5874,7 +5874,7 @@ button.island-quest {
 
 /* La fiche d'un objet du monde (lot 2 de « Toucher le monde ») : toujours à la même place, en bas à gauche, juste
    au-dessus de la barre ; sa hauteur suit ce qu'elle dit (piste A du mainteneur, 4 octobre 2026 : plus de fiche grande
-   et vide). Sa largeur est fixe, 24rem au plus (toute la largeur d'un téléphone, la moitié d'une tablette en portrait) :
+   et vide). Sa largeur est fixe, 24rem au plus, jamais plus que la scène (la moitié de l'écran en paysage) :
    la requête de conteneur de la fiche (`container: fiche`) lui interdit de se régler sur son contenu. Au plus 45 % de la
    scène en portrait (70 % en paysage) : au-delà, le texte défile dans la fiche, le titre et les boutons restent
    entiers, jamais de points de suspension. */
