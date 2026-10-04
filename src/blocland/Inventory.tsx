@@ -101,7 +101,7 @@ export function InventoryBody() {
                       {r.use.kind === 'navire' ? cap(VEHICLE_NAME) : r.use.name}
                     </Link>
                   ) : (
-                    <Link to={`/adventure/${r.ouvrage.from}`} className="tag tag-ok">
+                    <Link to={`/adventure/${r.ouvrage.from}?worksite=${encodeURIComponent(r.ouvrage.bridge.id)}`} className="tag tag-ok">
                       <Icon name="ouvrage" /> {KIND_NAME[r.ouvrage.bridge.kind]} vers {getBiome(r.ouvrage.to)?.name}
                     </Link>
                   )}
@@ -169,7 +169,7 @@ export function InventoryBody() {
           <ul className="inventory-uses inventory-ouvrages" aria-label="Ouvrages possibles">
             {laterOuvrages.map((o) => (
               <li key={o.bridge.id}>
-                <Link to={`/adventure/${o.from}`} className={`tag${o.enough ? ' tag-ok' : ''}`}>
+                <Link to={`/adventure/${o.from}?worksite=${encodeURIComponent(o.bridge.id)}`} className={`tag${o.enough ? ' tag-ok' : ''}`}>
                   <Icon name="hammer" /> {KIND_NAME[o.bridge.kind]} vers {getBiome(o.to)?.name} : {o.bridge.cost} blocs
                 </Link>
               </li>

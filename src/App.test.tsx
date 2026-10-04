@@ -206,7 +206,7 @@ it('en vue simple, « Mes blocs » est une page : ce que chaque bloc construit, 
   expect(screen.getByRole('link', { name: 'Forêt des sons' })).toHaveAttribute('href', '/adventure/french-6e-phonology');
   // D'abord ce qu'on peut faire tout de suite : 4 blocs paient un ouvrage à 3 blocs.
   const now = screen.getByRole('list', { name: /Tu peux construire/ });
-  expect(within(now).getByRole('link', { name: /Sentier vers Mine des lettres/ })).toHaveAttribute('href', '/adventure/french-6e-phonology');
+  expect(within(now).getByRole('link', { name: /Sentier vers Mine des lettres/ })).toHaveAttribute('href', '/adventure/french-6e-phonology?worksite=french-6e-phonology-french-6e-letter-confusion');
   // Les îles fermées ne sont pas listées une par une, seulement comptées.
   expect(screen.queryByText(/île fermée/)).not.toBeInTheDocument();
   expect(screen.getByLabelText(/sur des îles que tu ouvriras plus tard/)).toBeInTheDocument();

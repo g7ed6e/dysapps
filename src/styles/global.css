@@ -3561,19 +3561,22 @@ figure.class-table {
   flex-direction: column;
 }
 .world-page {
+  position: relative;
   flex: 1 1 auto;
   min-height: 0;
   display: flex;
   flex-direction: column;
   background: var(--surface);
 }
+/* Le monde garde tout l'écran, toujours : rien ne le pousse ni ne le redimensionne (décision du mainteneur, 4 octobre
+   2026). Ce qui demande de la place (le panneau de l'île, l'École, Blocs, les Trophées, les Monuments, le menu) s'ouvre
+   en plein écran par-dessus lui. */
 .world-stage {
   position: relative;
   flex: 1 1 auto;
   min-height: 0;
   display: flex;
   flex-direction: column;
-  transition: flex-basis 0.3s ease;
 }
 .voxel-canvas-stage {
   flex: 1 1 auto;
@@ -4162,27 +4165,15 @@ button.island-quest:active {
     font-size: 1.25rem;
   }
 }
-@media (min-width: 900px) {
-  /* Sur grand écran, le panneau glisse depuis la droite et le monde garde toute la hauteur. */
-  .world-page {
-    flex-direction: row;
-  }
-  .island-sheet {
-    flex: 0 0 26rem;
-    max-height: none;
-    border-top: none;
-    border-left: 8px solid var(--biome-color, var(--ink));
-    box-shadow: none;
-    animation-name: sheet-in-right;
-  }
-  @keyframes sheet-in-right {
-    from {
-      transform: translateX(100%);
-    }
-    to {
-      transform: translateX(0);
-    }
-  }
+/* Un panneau du monde : plein écran, par-dessus la scène, qui garde sa taille ; le texte reste dans une colonne de
+   lecture (40rem au plus) au milieu. */
+.world-page > .island-sheet {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  max-height: none;
+  padding-inline: max(1rem, calc((100% - 40rem) / 2));
+  box-shadow: none;
 }
 
 /* ===== Archipel : les ponts à construire ===== */

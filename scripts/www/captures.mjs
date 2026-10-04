@@ -115,8 +115,8 @@ const SHOTS = [
   { name: 'telephone-menu', state: MID, go: '/menu', size: PHONE },
   { name: 'menu-village', state: MID, go: '/adventure/menu' },
   { name: 'village-premiere-visite', go: '/adventure', tutorial: true },
-  { name: 'panneau-ile', state: EARLY, go: '/adventure/french-6e-phonology' },
-  { name: 'plan-en-cours', state: EARLY, go: '/adventure/french-6e-phonology', act: closeSheet },
+  { name: 'panneau-ile', state: EARLY, go: '/adventure/french-6e-phonology', act: openSheet },
+  { name: 'plan-en-cours', state: EARLY, go: '/adventure/french-6e-phonology' },
   { name: 'quete-ile', state: EARLY, go: `/adventure/french-6e-phonology/${FOREST_QUEST}`, wait: 2500 },
   // Le bandeau de correction monte du bas de l'écran : il faut l'attendre en entier.
   { name: 'quete-correction', go: '/app/demo', act: wrongAnswer, wait: 1500, after: 1500 },
@@ -130,14 +130,14 @@ const SHOTS = [
   { name: 'renommage', state: MID, go: '/adventure', whale: { 'baleine-6e-arrivee': true }, renommage: true, wait: 9000 },
   { name: 'ouvrages', state: MID, go: '/adventure/french-6e-grammar-spelling', act: openFold('ouvrages') },
   { name: 'navire-chantier', state: MID, go: '/adventure/maths-6e-calculation', act: openFold('navire') },
-  // La fiche d'une borne (Toucher le monde, lot 2), ouverte comme d'un toucher : le panneau de l'île se replie.
+  // La fiche d'une borne (Toucher le monde, lot 2), ouverte comme d'un toucher.
   { name: 'fiche-borne', state: EARLY, go: '/adventure/french-6e-phonology', act: ouvrirLaFiche({ genre: 'borne', id: 'french-6e-phonology:syllables' }) },
   { name: 'gardien', state: MID, go: '/adventure/french-6e-letter-confusion/challenge', wait: 2500 },
   { name: 'ecole', state: MID, go: '/adventure/school' },
   { name: 'trophees', state: MID, go: '/adventure/trophies' },
   { name: 'monument', state: MID, go: '/adventure/landmark-6e-1' },
   { name: 'village-reconstruit', state: DONE6, go: '/adventure' },
-  { name: 'collines-du-large', state: COLLINES, go: '/adventure/maths-5e-proportionality', act: closeSheet },
+  { name: 'collines-du-large', state: COLLINES, go: '/adventure/maths-5e-proportionality' },
   { name: 'vue-simple', state: MID, view: 'list', go: '/adventure' },
   { name: 'telephone-village', state: MID, go: '/adventure/french-6e-phonology', size: PHONE },
   { name: 'telephone-quete', state: EARLY, go: `/adventure/french-6e-phonology/${FOREST_QUEST}`, size: PHONE, wait: 2500 },
@@ -194,11 +194,10 @@ async function showUnivers(page) {
   await page.waitForTimeout(300);
 }
 
-async function closeSheet(page) {
-  const close = page.getByRole('button', { name: 'Fermer le panneau' });
-  if (!(await close.count())) return;
-  await close.first().click();
-  await page.waitForTimeout(2500);
+/** Le panneau de l'île, en plein écran : il ne s'ouvre que par son bouton, dans la barre du bas. */
+async function openSheet(page) {
+  await page.getByRole('button', { name: /^Ouvrir le panneau de / }).first().click();
+  await page.waitForTimeout(800);
 }
 /** La fiche d'un objet du monde, ouverte comme d'un toucher (`window.__dysappsFiche`, en développement), le temps que la caméra glisse. */
 function ouvrirLaFiche(objet) {
@@ -210,6 +209,7 @@ function ouvrirLaFiche(objet) {
 }
 function openFold(name) {
   return async (page) => {
+    await openSheet(page);
     const fold = page.locator(`.island-fold-${name}`);
     if (!(await fold.evaluate((el) => el.open))) await fold.locator('summary').click();
     await fold.evaluate((el) => el.scrollIntoView({ block: 'start' }));

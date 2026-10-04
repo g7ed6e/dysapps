@@ -815,6 +815,15 @@ async function scenes() {
             await page.clock.runFor(125);
             await page.waitForTimeout(30);
           }
+        // Un élément du panneau de l'île (`voir`) : le panneau ne s'ouvre que par son bouton, dans la barre du bas.
+        if (voir && !(await page.locator(voir).count())) {
+          const bouton = page.getByRole('button', { name: /^Ouvrir le panneau de / });
+          if (await bouton.count()) {
+            await bouton.first().click();
+            await page.clock.runFor(125);
+            await page.waitForTimeout(100);
+          }
+        }
         // Un élément à montrer plus bas (dans la page ou dans un panneau qui défile) : on y fait défiler, sans animation.
         if (voir) await page.locator(voir).first().evaluate((el) => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
         await capturer(page, { path: file, type: 'jpeg', quality: 85, timeout: 90000, ...(recadre ? { clip: recadre } : {}) });
