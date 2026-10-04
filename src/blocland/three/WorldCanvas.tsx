@@ -92,6 +92,7 @@ export default function WorldCanvas({
   onVueDeplacee,
   recentrage = 0,
   fiche = null,
+  situer,
   className,
   label,
   onIntent,
@@ -468,7 +469,8 @@ export default function WorldCanvas({
      * caméra ne bouge pas.
      */
     const garderHorsDeLaFiche = (objet: ObjetDeLaFiche) => {
-      const feuille = el.closest('[data-scene]')?.querySelector('.world-fiche');
+      // Son cadre, médaillon compris (Blocland : le portrait déborde au-dessus d'elle).
+      const feuille = el.closest('[data-scene]')?.querySelector('.world-fiche-cadre, .world-fiche');
       const point = pointDeLObjet(objet);
       if (!feuille || !point) return;
       const vue = el.getBoundingClientRect();
@@ -641,6 +643,14 @@ export default function WorldCanvas({
       loop();
     };
     start();
+    // Où se tient un objet à l'écran, la caméra posée (le vol des blocs part de la borne de la mission).
+    const ouEst = (objet: ObjetDeLaFiche) => {
+      const point = pointDeLObjet(objet);
+      const vue = el.getBoundingClientRect();
+      const ecran = point ? cadrage.auBut(point, vue.width, vue.height) : null;
+      return ecran ? { x: vue.left + ecran.x, y: vue.top + ecran.y } : null;
+    };
+    if (situer) situer.current = ouEst;
 
     return () => {
       cancelAnimationFrame(frame);
@@ -659,6 +669,7 @@ export default function WorldCanvas({
       renderer.dispose();
       renderer.domElement.remove();
       world.current = null;
+      if (situer?.current === ouEst) situer.current = null;
       // La scène refaite (un autre archipel) part de son cadrage : « Recentrer » n'a plus lieu d'être.
       if (deplacee) vueDeplaceeRef.current?.(false);
     };

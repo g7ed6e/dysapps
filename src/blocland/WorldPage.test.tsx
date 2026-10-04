@@ -537,12 +537,13 @@ it('le bouton Blocs ouvre « Mes blocs » ; une puce mène à l’île (caméra 
   localStorage.setItem('dysapps:game', JSON.stringify({ stock: { 'french-6e-phonology': 4, 'maths-6e-calculation': 2 } }));
   const user = userEvent.setup();
   renderAt('/adventure/maths-6e-calculation');
-  const blocs = screen.getByRole('button', { name: 'Mes blocs' });
-  expect(blocs).toHaveTextContent('Blocs (6)');
+  // Le nombre est lu avec le nom (« Mes blocs, 6 »), et écrit dans la pastille.
+  const blocs = screen.getByRole('button', { name: 'Mes blocs, 6' });
+  expect(blocs.querySelector('.world-bar-count')).toHaveTextContent(/^6$/);
   expect(blocs).toHaveAttribute('aria-pressed', 'false');
   await user.click(blocs);
   expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/stock');
-  expect(screen.getByRole('button', { name: 'Mes blocs' })).toHaveAttribute('aria-pressed', 'true');
+  expect(screen.getByRole('button', { name: 'Mes blocs, 6' })).toHaveAttribute('aria-pressed', 'true');
   const sheet = screen.getByRole('dialog', { name: 'Mes blocs' });
   expect(sheet.textContent).toContain('6 blocs en poche');
   expect(sheet.textContent).toContain('4 blocs de bois');
@@ -556,7 +557,7 @@ it('le bouton Blocs ouvre « Mes blocs » ; une puce mène à l’île (caméra 
   expect(screen.queryByRole('dialog', { name: /^Forêt des sons/ })).not.toBeInTheDocument();
   expect(document.querySelector('.world-fiche')).toHaveTextContent(/Sentier/);
   // Depuis l'inventaire, la croix rend le monde : on reste sur l'île du bonhomme, sans rouvrir son panneau.
-  await user.click(screen.getByRole('button', { name: 'Mes blocs' }));
+  await user.click(screen.getByRole('button', { name: 'Mes blocs, 6' }));
   await user.click(screen.getByRole('button', { name: 'Fermer le panneau' }));
   expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/french-6e-phonology');
   expect(screen.queryByRole('dialog', { name: /^(Forêt des sons|Mes blocs)/ })).not.toBeInTheDocument();
@@ -589,7 +590,7 @@ it('l’école du village : on la touche dans le monde (plus de bouton École da
   renderAt('/adventure');
   // La barre du bas : Carte, Blocs et l'aide (l'île quand une île est ouverte), plus d'École.
   const bar = screen.getByRole('navigation', { name: 'Village' });
-  expect(within(bar).getAllByRole('button').map((b) => b.getAttribute('aria-label') ?? b.textContent?.trim())).toEqual(['Carte', 'Mes blocs', 'Revoir l’aide']);
+  expect(within(bar).getAllByRole('button').map((b) => b.getAttribute('aria-label') ?? b.textContent?.trim())).toEqual(['Carte', 'Mes blocs, 0', 'Revoir l’aide']);
   expect(within(bar).queryByRole('button', { name: /École/ })).not.toBeInTheDocument();
   await user.click(await screen.findByRole('button', { name: 'Toucher l’école dans le monde' }));
   const sheet = await screen.findByRole('dialog', { name: /École du village/ });
@@ -1011,7 +1012,7 @@ describe('les fiches du monde (lot 2 de « Toucher le monde »)', () => {
     expect(ficheOuverte()).toBeNull();
     await user.click(within(barre()).getByRole('button', { name: /Carte/ }));
     await user.click(screen.getByRole('button', { name: 'Toucher une borne de la Forêt' }));
-    await user.click(screen.getByRole('button', { name: 'Mes blocs' }));
+    await user.click(screen.getByRole('button', { name: /^Mes blocs, \d+$/ }));
     expect(ficheOuverte()).toBeNull();
     await user.click(screen.getByRole('button', { name: 'Fermer le panneau' }));
     await user.click(screen.getByRole('button', { name: 'Toucher une borne de la Forêt' }));
@@ -1059,4 +1060,90 @@ describe('les fiches du monde (lot 2 de « Toucher le monde »)', () => {
     await user.click(screen.getByRole('button', { name: 'Toucher le sentier vers la Mine' }));
     expect(ficheOuverte()).toBeNull();
   });
+});
+
+describe('les blocs gagnés volent jusqu’au compteur, au retour d’une mission (P2, PR 2, Blocland)', () => {
+  /** Une mission de la Forêt vient de donner 5 blocs de bois : 9 en tout, 4 avant elle. */
+  const preparer = async () => {
+    const { retenirLesBlocs, oublierLesBlocs } = await import('./volDesBlocs');
+    oublierLesBlocs();
+    vuSansAide();
+    localStorage.setItem('dysapps:game', JSON.stringify({ stock: { 'french-6e-phonology': 9 }, world: { parts: {}, log: [], links: [], place: 'french-6e-phonology' } }));
+    retenirLesBlocs({ biome: 'french-6e-phonology', mission: 'syllables', bloc: 'french-6e-phonology', nombre: 5 });
+  };
+  const pastille = () => document.querySelector('.world-bar-count');
+  const blocsQuiVolent = () => document.querySelectorAll('.vol-bloc').length;
+
+  it('trois blocs au plus volent, la caméra posée ; la pastille garde l’ancien chiffre, puis change une fois, avec un rebond', async () => {
+    await preparer();
+    renderAt('/adventure/french-6e-phonology');
+    // Avant l'arrivée : l'ancien chiffre, écrit et lu ; les bandeaux de récompense attendent.
+    expect(pastille()).toHaveTextContent(/^4$/);
+    expect(screen.getByRole('button', { name: 'Mes blocs, 4' })).toBeInTheDocument();
+    expect(screen.getByTestId('retenus')).toHaveTextContent('oui');
+    expect(blocsQuiVolent()).toBe(0);
+    await waitFor(() => expect(blocsQuiVolent()).toBe(3), { timeout: 3000 });
+    expect(pastille()).toHaveTextContent(/^4$/);
+    // Le dernier arrivé : le nouveau chiffre, une fois, et la pastille rebondit.
+    await waitFor(() => expect(pastille()).toHaveTextContent(/^9$/), { timeout: 3000 });
+    expect(blocsQuiVolent()).toBe(0);
+    expect(pastille()).toHaveClass('rebondit');
+    expect(screen.getByRole('button', { name: 'Mes blocs, 9' })).toBeInTheDocument();
+  }, 10000);
+
+  it('une fois seulement : revenir sur l’île ne rejoue pas le vol', async () => {
+    await preparer();
+    const premier = renderAt('/adventure/french-6e-phonology');
+    await waitFor(() => expect(pastille()).toHaveTextContent(/^9$/), { timeout: 4000 });
+    premier.unmount();
+    renderAt('/adventure/french-6e-phonology');
+    expect(pastille()).toHaveTextContent(/^9$/);
+  }, 10000);
+
+  it('avec « Réduire les animations » : pas de vol, pas de rebond, le chiffre a déjà changé', async () => {
+    await preparer();
+    demanderMoinsDAnimations();
+    renderAt('/adventure/french-6e-phonology');
+    expect(pastille()).toHaveTextContent(/^9$/);
+    await new Promise((r) => window.setTimeout(r, 1300));
+    expect(blocsQuiVolent()).toBe(0);
+    expect(pastille()).not.toHaveClass('rebondit');
+  });
+
+  it('jamais par-dessus une fiche : une fiche ouverte avant le départ, le vol n’a pas lieu et le chiffre change', async () => {
+    await preparer();
+    const user = userEvent.setup();
+    renderAt('/adventure/french-6e-phonology');
+    expect(pastille()).toHaveTextContent(/^4$/);
+    await user.click(screen.getByRole('button', { name: 'Toucher une borne de la Forêt' }));
+    expect(document.querySelector('.world-fiche')).toBeInTheDocument();
+    expect(pastille()).toHaveTextContent(/^9$/);
+    await new Promise((r) => window.setTimeout(r, 1300));
+    expect(blocsQuiVolent()).toBe(0);
+  });
+
+  it('pendant le tutoriel : pas de vol, le chiffre a déjà changé', async () => {
+    await preparer();
+    localStorage.removeItem('dysapps:tutorials');
+    renderAt('/adventure/french-6e-phonology');
+    expect(pastille()).toHaveTextContent(/^9$/);
+  });
+
+  it('avant la pose de la partie : la vague attend la fin du vol', async () => {
+    const { partiesDe } = await import('./world/parties');
+    const { retenirLaPose, oublierLesPoses } = await import('./poseAMontrer');
+    await preparer();
+    oublierLesPoses();
+    const [cabane] = partiesDe('french-6e-phonology');
+    const parts = Object.fromEntries(cabane.cases.map((c) => [c.plan.id, c.keys]));
+    localStorage.setItem('dysapps:game', JSON.stringify({ stock: { 'french-6e-phonology': 9 }, world: { parts, log: [], links: [], place: 'french-6e-phonology' } }));
+    retenirLaPose('french-6e-phonology', [cabane]);
+    renderAt('/adventure/french-6e-phonology?worksite=part');
+    expect(vu.pose).toBeNull();
+    await waitFor(() => expect(blocsQuiVolent()).toBe(3), { timeout: 3000 });
+    expect(vu.pose).toBeNull();
+    await waitFor(() => expect(vu.pose).not.toBeNull(), { timeout: 3000 });
+    expect(pastille()).toHaveTextContent(/^9$/);
+    expect(blocsQuiVolent()).toBe(0);
+  }, 10000);
 });

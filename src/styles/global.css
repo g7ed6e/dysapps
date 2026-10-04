@@ -3882,6 +3882,59 @@ figure.class-table {
   border-color: var(--on-sand);
   color: var(--on-sand);
 }
+/* Le compte des blocs, entre parenthèses après le mot (Blocland en fait une pastille d'or, blocland.css). */
+.world-bar-count::before {
+  content: "(";
+}
+.world-bar-count::after {
+  content: ")";
+}
+/* Les blocs gagnés qui volent jusqu'au compteur (Blocland, BlocsQuiVolent.tsx) : posés sur la pastille, ils partent de la
+   borne (`--vol-dx`, `--vol-dy`) en arc simple, l'un après l'autre ; ni éclat ni traînée, rien qui se touche. Sans
+   animation quand l'appareil en demande moins (le vol n'a alors pas lieu). */
+.vol-des-blocs {
+  position: fixed;
+  z-index: 30;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+.vol-bloc {
+  position: absolute;
+  left: -16px;
+  top: -16px;
+  width: 32px;
+  height: 32px;
+  animation: vol-x var(--vol-ms, 600ms) linear both;
+}
+/* L'arc : le bloc monte un peu avant de descendre sur la pastille (la courbe dépasse d'abord vers le haut). */
+.vol-bloc-arc {
+  display: block;
+  width: 100%;
+  height: 100%;
+  animation: vol-y var(--vol-ms, 600ms) cubic-bezier(0.3, -0.6, 0.7, 1) both;
+}
+.vol-bloc .block-icon {
+  display: block;
+  width: 32px;
+  height: 32px;
+}
+@keyframes vol-x {
+  from {
+    transform: translateX(var(--vol-dx, 0));
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes vol-y {
+  from {
+    transform: translateY(var(--vol-dy, 0));
+  }
+  to {
+    transform: none;
+  }
+}
 /* Le panneau d'une île glisse depuis le bas ; le monde garde le haut de l'écran, l'île reste visible. */
 .island-sheet {
   flex: 0 0 auto;
@@ -6055,6 +6108,78 @@ button.island-quest {
   min-height: 48px;
   max-width: 100%;
   white-space: normal;
+}
+/* Le cadre de la fiche : la fiche, et dans Blocland le portrait en médaillon de la créature ou du Gardien (FicheDuMonde.tsx,
+   les figures en cubes de l'habillage), posé en haut à gauche, qui dépasse de 24 px au-dessus d'elle (16 px sur
+   téléphone). Hors de la fiche qui défile : il reste entier, et sa hauteur compte dans la place de la fiche. Décoratif :
+   il ne se touche pas. */
+.world-fiche-cadre {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  max-height: 100%;
+}
+.world-fiche-cadre.avec-medaillon {
+  --medaillon: 72px;
+  --medaillon-depasse: 24px;
+  padding-top: var(--medaillon-depasse);
+}
+.world-fiche-medaillon {
+  position: absolute;
+  top: 0;
+  left: 0.6rem;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: var(--medaillon);
+  height: var(--medaillon);
+  padding: 4px;
+  background: #fffbf2;
+  border: 3px solid #2b2118;
+  border-radius: 4px;
+  pointer-events: none;
+}
+.world-fiche-medaillon svg {
+  width: 100%;
+  height: 100%;
+}
+/* Le titre part à droite du médaillon ; la phrase dessous, puis un seul bouton principal sur toute la largeur. */
+.avec-medaillon .world-fiche-tete {
+  min-height: calc(var(--medaillon) - var(--medaillon-depasse) - 0.5rem);
+}
+.avec-medaillon .world-fiche-titre {
+  margin-left: calc(var(--medaillon) + 0.6rem + 0.4rem - 0.9rem);
+}
+/* Le titre sur sa propre ligne, sous Écouter et la croix (fiche étroite pour sa taille de texte) : il passe sous le
+   médaillon, toute la largeur. */
+@container fiche (max-width: 17rem) {
+  .avec-medaillon .world-fiche-titre {
+    margin-left: 0;
+  }
+}
+.avec-medaillon .world-fiche-actions .button.primary {
+  flex: 1 1 100%;
+}
+@media (max-width: 640px) {
+  .world-fiche-cadre.avec-medaillon {
+    --medaillon: 56px;
+    --medaillon-depasse: 16px;
+  }
+  /* Sur téléphone en grand texte, le médaillon s'efface, comme le portrait du mot de la créature : le titre et le
+     bouton restent entiers. */
+  :root[data-texte="grand"] .world-fiche-cadre.avec-medaillon {
+    padding-top: 0;
+  }
+  :root[data-texte="grand"] .world-fiche-medaillon {
+    display: none;
+  }
+  :root[data-texte="grand"] .avec-medaillon .world-fiche-tete {
+    min-height: 0;
+  }
+  :root[data-texte="grand"] .avec-medaillon .world-fiche-titre {
+    margin-left: 0;
+  }
 }
 /* La fiche ouverte : le haut garde un peu moins de place (une chose à la fois en bas). */
 .fiche-ouverte .world-overlay-top {

@@ -29,7 +29,7 @@ import { AssemblageSheet } from './Assemblage';
 import { ASSEMBLAGE_PATH } from './world/assemblage';
 import { laDestinationEstLeNavire, lienDeLaDestination } from './world/destination';
 import { nextGoalInfo } from './world/goals';
-import { cleDeLaCreature, cleDeLObjet } from './world/affordance';
+import { borneDe, cleDeLaCreature, cleDeLObjet } from './world/affordance';
 import { getCommande } from './world/commandes';
 import { FicheDuMonde, type FicheOuverte } from './FicheDuMonde';
 import { TROPHIES_PATH, trophies } from './trophies';
@@ -95,6 +95,8 @@ import { useVehicleBuilder } from './useVehicleBuilder';
 import { UNIVERS } from '../core/univers';
 import { useHoldCelebrations } from '../components/Celebrations';
 import { useASuivre } from '../components/useASuivre';
+import { chiffreDeLaPastille, nomDuBoutonBlocs, prendreLesBlocs, volALieu, VOL, type GainRetenu } from './volDesBlocs';
+import { BlocsQuiVolent } from './BlocsQuiVolent';
 
 /** Le temps laissé à la phrase « Partie posée » avant qu’un bandeau de récompense ne tombe (DA-9). */
 const LAISSER_LIRE_LA_POSE_MS = 4000;
@@ -134,6 +136,16 @@ export function WorldPage() {
   // La fiche de l'objet touché (lot 2 de « Toucher le monde ») : une seule à la fois, toujours à la même place.
   const [fiche, setFiche] = useState<FicheOuverte | null>(null);
   const ficheSeq = useRef(0);
+  // Les blocs gagnés qui volent jusqu'au compteur, au retour d'une mission (proposition P2, PR 2, volDesBlocs.ts) :
+  // `attente` le temps que la caméra se pose, puis `vol`. Ce qui vient après (la pose de la partie, la fiche d'un
+  // chantier) attend dans `apresLeVol` : un seul mouvement à la fois.
+  const [vol, setVol] = useState<{ seq: number; gain: GainRetenu; phase: 'attente' | 'vol'; depart?: { x: number; y: number }; arrivee?: { x: number; y: number } } | null>(null);
+  const apresLeVol = useRef<(() => void)[]>([]);
+  /** Où se tient un objet à l'écran (la 3D y range sa fonction) ; la pastille du bouton Blocs. */
+  const situer = useRef<((objet: ObjetDeLaFiche) => { x: number; y: number } | null) | null>(null);
+  const pastilleRef = useRef<HTMLSpanElement>(null);
+  // La pastille rebondit quand son chiffre change à l'arrivée du dernier bloc (`seq`, pour rejouer l'animation).
+  const [rebond, setRebond] = useState(0);
   const mapOpen = biomeId === 'map';
   // Les quatre archipels (`/adventure/world`) : un panneau HTML à la place de celui d'une île, le monde derrière. Plus
   // aucun lien du monde n'y mène (lot 2 de « Toucher le monde ») ; l'adresse reste.
@@ -294,8 +306,8 @@ export function WorldPage() {
   const [tutoDone, setTutoDone] = useState(() => hasSeenTutorial('village-immersif'));
   // Le mot de la baleine attend la fin des rallumages (« Tous les Gardiens… » vient après).
   // Les nouveaux noms des archipels (GD-1), une fois par appareil : avant le mot des grandes étapes, un panneau à la fois.
-  const renommage = useRenommage(tutoDone && rallumage.enAttente.length === 0 && !vague, 1200);
-  const whale = useWhaleWord(state, a, tutoDone && rallumage.enAttente.length === 0 && !renommage.ouvert && !vague);
+  const renommage = useRenommage(tutoDone && rallumage.enAttente.length === 0 && !vague && !vol, 1200);
+  const whale = useWhaleWord(state, a, tutoDone && rallumage.enAttente.length === 0 && !renommage.ouvert && !vague && !vol);
   const [whaleOpen, setWhaleOpen] = useState<string | null>(null);
   const [whaleSeq, setWhaleSeq] = useState(0);
   // Le village de l'archipel monte d'un état pendant la séance (un plan, un ouvrage, un monument) : une phrase, lue à
@@ -581,6 +593,37 @@ export function WorldPage() {
     return true;
   }
 
+  // Le retour d'une mission qui a donné des blocs : le gain, pris une fois en arrivant sur l'île (avant la fiche du
+  // chantier et la pose de la partie, qui l'attendent). « Réduire les animations », un autre univers, le tutoriel ou un
+  // voyage : pas de vol, le chiffre a déjà changé.
+  const volEnCours = useRef(false);
+  volEnCours.current = Boolean(vol);
+  const volDeLIle = useRef<BiomeId | null>(null);
+  useEffect(() => {
+    if (!island) return;
+    // Une autre île pendant le vol : il s'arrête, et ce qui l'attendait avec lui (la partie est posée, sans vague).
+    if (volDeLIle.current && volDeLIle.current !== island.id) {
+      volDeLIle.current = null;
+      apresLeVol.current = [];
+      volEnCours.current = false;
+      setVol(null);
+    }
+    const gain = prendreLesBlocs(island.id);
+    const empeche = { moinsDAnimations: reduceMotion, autreUnivers: habillage.univers !== 'blocland', ficheOuverte: false, tutoriel: !tutoDone, motQuiAttend: false, voyage: Boolean(voyage), pleinEcran: false };
+    if (!gain || !volALieu(gain, empeche)) return;
+    setVol((v) => ({ seq: (v?.seq ?? 0) + 1, gain, phase: 'attente' }));
+    apresLeVol.current = [];
+    // Tout de suite : la fiche du chantier et la pose, plus bas dans le même passage, attendent déjà.
+    volEnCours.current = true;
+    volDeLIle.current = island.id;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [island?.id]);
+  /** Ce qui attend la fin du vol (s'il y en a un en attente ou en cours), sinon tout de suite. */
+  const apresLeVolSIlYEnA = (f: () => void) => {
+    if (volEnCours.current) apresLeVol.current.push(f);
+    else f();
+  };
+
   // Un lien vers un chantier (« Voir le chantier », une puce de Blocs, « Y aller ») : le panneau ne s'ouvre plus tout
   // seul, c'est la fiche de l'objet qui répond, par-dessus le monde (le Bloc-Navire, un ouvrage, la créature qui
   // commande) ; le chantier reste mis en avant si l'élève ouvre le panneau. Une partie (`part`) : la vague, plus bas.
@@ -596,7 +639,7 @@ export function WorldPage() {
           : commande
             ? { genre: 'creature', id: commande.biome }
             : null;
-    if (objet) setFiche({ objet, seq: ++ficheSeq.current, saut: true });
+    if (objet) apresLeVolSIlYEnA(() => setFiche({ objet, seq: ++ficheSeq.current, saut: true }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [island?.id, chantier]);
 
@@ -611,8 +654,12 @@ export function WorldPage() {
     if (!island || chantier !== 'part' || habillage.pose !== 'geste') return;
     const parties = prendreLaPose(island.id);
     if (!parties) return;
-    if (reduceMotion) direLaPose(island.id, parties, true);
-    else setVague((v) => ({ seq: (v?.seq ?? 0) + 1, biome: island.id, parties, cases: casesDesPlansDansLeMonde(parties.flatMap((p) => p.cases)) }));
+    const id = island.id;
+    // Après le vol des blocs gagnés, s'il y en a un : un seul mouvement à la fois.
+    apresLeVolSIlYEnA(() => {
+      if (reduceMotion) direLaPose(id, parties, true);
+      else setVague((v) => ({ seq: (v?.seq ?? 0) + 1, biome: id, parties, cases: casesDesPlansDansLeMonde(parties.flatMap((p) => p.cases)) }));
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [island?.id, chantier]);
   // Une autre île ouverte pendant la pose : la partie est posée tout de suite, sans rien dire.
@@ -726,7 +773,7 @@ export function WorldPage() {
   // Un bandeau de récompense attend que le panneau ouvert se ferme (le tutoriel, le mot de la baleine, un rallumage, un
   // voyage), et aussi pendant l'instant qui précède le mot ou le rallumage attendu : il ne tombe jamais sur la phrase que
   // l'élève lit, ni ne s'affiche pour être caché aussitôt (DA-9).
-  useHoldCelebrations(!tutoDone || !!voyage || !!whaleNext || !!aRallumer || !!moment || !!motRallume || !!vague || phraseALire);
+  useHoldCelebrations(!tutoDone || !!voyage || !!whaleNext || !!aRallumer || !!moment || !!motRallume || !!vague || !!vol || phraseALire);
   useEffect(() => {
     if (!aRallumer || moment) return;
     const timer = window.setTimeout(
@@ -829,6 +876,39 @@ export function WorldPage() {
     const c = getCommande(destination.commande);
     return c && c.biome === id && signes.some((x) => x.id === id && x.bloc) ? c : undefined;
   }, [fiche, destination.commande, signes]);
+  // Le vol, la caméra posée : de la borne de la mission (hors de l'écran : du centre de la scène) jusqu'à la pastille.
+  // Jamais par-dessus une fiche, le tutoriel, un mot qui attend, un voyage ou un panneau : le chiffre change, sans vol.
+  const empecheLeVol =
+    Boolean(ficheVue) || !tutoDone || Boolean(whaleWord || motRallume || renommageOuvert || moment || voyage) || Boolean(island && sheetOpen) || (panelOpen && !mapOpen);
+  /** Le vol fini (`arrive` : le dernier bloc est arrivé, la pastille rebondit) ou arrêté ; ce qui l'attendait suit. */
+  const finirLeVol = (arrive: boolean) => {
+    volEnCours.current = false;
+    volDeLIle.current = null;
+    setVol(null);
+    if (arrive) setRebond((n) => n + 1);
+    const suite = apresLeVol.current;
+    apresLeVol.current = [];
+    for (const f of suite) f();
+  };
+  useEffect(() => {
+    if (!vol) return;
+    if (empecheLeVol) return finirLeVol(false);
+    if (vol.phase !== 'attente') return;
+    const timer = window.setTimeout(() => {
+      const pastille = pastilleRef.current?.getBoundingClientRect();
+      const scene = stageRef.current?.getBoundingClientRect();
+      if (!pastille || !scene) return finirLeVol(false);
+      const arrivee = { x: pastille.left + pastille.width / 2, y: pastille.top + pastille.height / 2 };
+      const { biome, mission } = vol.gain;
+      const objet: ObjetDeLaFiche = borneDe(`${biome}:${mission}`) ? { genre: 'borne', id: `${biome}:${mission}` } : { genre: 'gardien', id: biome };
+      const vu = situer.current?.(objet);
+      const dansLaScene = vu && vu.x >= scene.left && vu.x <= scene.right && vu.y >= scene.top && vu.y <= scene.bottom;
+      const depart = dansLaScene ? vu : { x: scene.left + scene.width / 2, y: scene.top + scene.height / 2 };
+      setVol((v) => (v && v.seq === vol.seq ? { ...v, phase: 'vol', depart, arrivee } : v));
+    }, VOL.attenteMs);
+    return () => window.clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vol?.seq, vol?.phase, empecheLeVol]);
   const vueDeLaFiche = useMemo(() => (ficheVue ? { objet: ficheVue.objet, seq: ficheVue.seq, saut: ficheVue.saut } : null), [ficheVue]);
   // Pour les captures (scripts/rendu/mesures.mjs, option `fiche`), en développement ou avec `?mesures` : ouvrir la
   // fiche d'un objet comme un toucher, le panneau de l'île replié, sans avoir à viser l'objet dans la scène.
@@ -851,6 +931,8 @@ export function WorldPage() {
 
   if (biomeId && !panelOpen && !island) return <NotFoundPage />;
   const blocksTotal = Object.values(state.stock).reduce((n, v) => n + (v ?? 0), 0);
+  // Pendant le vol, la pastille garde le chiffre d'avant : il change une fois, à l'arrivée du dernier bloc.
+  const pastille = chiffreDeLaPastille(blocksTotal, vol ? vol.gain.nombre : null);
   // La flèche « Commence ici » flotte sur la Forêt tant qu'aucune mission n'a été jouée ; sur le chantier du navire quand
   // le panneau du port est ouvert et qu'il reste des cases à poser.
   const shipyard = island && island.id === archipelago.port && ship.stage && ship.status && !ship.status.complete;
@@ -1077,6 +1159,7 @@ export function WorldPage() {
             onVueDeplacee={setVueDeplacee}
             recentrage={recentrage}
             fiche={vueDeLaFiche}
+            situer={situer}
             chantier={Boolean(island)}
             className="voxel-canvas-stage"
             label={`${UNIVERS[univers].nom} en 3D : les ${textes.archipels[a]}, l’archipel de ${a}, ses îles reliées par des ouvrages à construire, et le Bloc-Navire au port`}
@@ -1252,7 +1335,7 @@ export function WorldPage() {
           {island && !voyage && (
             <button
               type="button"
-              className="button"
+              className="button world-bar-ile"
               aria-pressed={sheetOpen}
               aria-controls={sheetOpen ? `panneau-${island.id}` : undefined}
               onClick={() => setSheetOpen(!sheetOpen)}
@@ -1273,21 +1356,27 @@ export function WorldPage() {
           {!voyage && (
             <button
               type="button"
-              className="button"
+              className="button world-bar-blocs"
               aria-pressed={blocsOpen}
-              aria-label="Mes blocs"
+              aria-label={nomDuBoutonBlocs(pastille)}
               data-tuto="blocs"
               aria-controls={blocsOpen ? 'panneau-blocs' : undefined}
               onClick={() => (blocsOpen ? fermerLePanneau() : navigate('/adventure/stock'))}
             >
               <Icon name="blocks" /> <span className="world-bar-text">Blocs </span>
-              <span className="world-bar-count">({blocksTotal})</span>
+              {/* Le compte : entre parenthèses dans Archipéo, une pastille d'or chiffrée dans Blocland (« 0 » compris). */}
+              <span key={rebond} ref={pastilleRef} className={`world-bar-count${rebond ? ' rebondit' : ''}`}>
+                {pastille}
+              </span>
             </button>
           )}
           <button type="button" className="button" onClick={revoirAide} aria-label="Revoir l’aide">
             <Icon name="help" />
           </button>
         </nav>
+        {vol?.phase === 'vol' && vol.depart && vol.arrivee && (
+          <BlocsQuiVolent key={vol.seq} bloc={vol.gain.bloc} nombre={vol.gain.nombre} depart={vol.depart} arrivee={vol.arrivee} onArrive={() => finirLeVol(true)} />
+        )}
       </div>
       {voyage?.mode === 'panel' ? (
         <div className="island-sheet voyage-sheet">

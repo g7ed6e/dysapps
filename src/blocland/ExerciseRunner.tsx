@@ -18,6 +18,7 @@ import { archipelagoOf } from './world/archipelago';
 import { stageAt } from './world/vehicle';
 import { worksiteFor } from './world/worksite';
 import { retenirLaPose } from './poseAMontrer';
+import { retenirLesBlocs } from './volDesBlocs';
 import { minuscule } from './world/parties';
 import { voyageId } from './world/archipelago';
 import { useBlocland } from './BloclandContext';
@@ -218,6 +219,9 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
       return;
     }
     const completion = complete(def, all);
+    // Les blocs gagnés (la mission et ses coffres) : au retour sur l'île, ils volent jusqu'au compteur (volDesBlocs.ts).
+    const total = (stock: typeof state.stock) => Object.values(stock).reduce((n, v) => n + (v ?? 0), 0);
+    retenirLesBlocs({ biome: biome.id, mission: def.type, bloc: completion.block, nombre: total(completion.state.stock) - total(state.stock) });
     completeSession(`blocland:${def.id}`, Math.round(completion.score * 100));
     setDone(completion);
     onComplete?.(completion);

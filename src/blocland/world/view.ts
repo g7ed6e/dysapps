@@ -231,6 +231,12 @@ export interface WorldViewProps {
    * pas ouverte d'un toucher sur l'objet (`saut`), fait sauter son signe. Une fois par `seq`. La 2D n'en fait rien.
    */
   fiche?: { objet: ObjetDeLaFiche; seq: number; saut: boolean } | null;
+  /**
+   * Où se tient un objet à l'écran, la caméra posée à son cadrage (en pixels de la fenêtre), ou `null` s'il est derrière
+   * elle : la vue y range sa fonction tant que la scène existe (le vol des blocs part de la borne de la mission). La 2D
+   * n'en donne pas.
+   */
+  situer?: { current: ((objet: ObjetDeLaFiche) => { x: number; y: number } | null) | null };
   className?: string;
   label: string;
 }

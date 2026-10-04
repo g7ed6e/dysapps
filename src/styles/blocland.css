@@ -1,9 +1,13 @@
 /* =====================================================================
    Blocland — l'habillage de l'interface (univers.md, décision 7)
    Chaque élément est un bloc vu de face : un dessus et une face de côté, en aplats chauds (herbe, bois, terre,
-   or), coins presque droits, aucune texture ni biseau, rien derrière le texte. Seul ce qui se touche a une face
-   de côté et s'enfonce quand on appuie ; un panneau n'en a pas. Direction du consultant de Blocland, validée par
-   le directeur artistique le 28 septembre 2026. Rien n'est copié d'un autre jeu.
+   or), coins presque droits, aucune texture, rien derrière le texte. Seul ce qui se touche a une face de côté et
+   s'enfonce quand on appuie ; un panneau n'en a pas. Direction du consultant de Blocland, validée par le
+   directeur artistique le 28 septembre 2026. Rien n'est copié d'un autre jeu.
+   Proposition P2 « à la Supercell », PR 2 (4 octobre 2026) : ce qui se touche prend du volume, un bord sombre de
+   3 px et une bande claire plate de 4 px en haut, à l'intérieur du bord (pas de bande en thème Clair, plat), et
+   remonte avec un petit rebond au relâcher (sauf les réponses d'un exercice, et sans animation quand l'appareil
+   en demande moins).
    Ne change que l'habillage : la place des éléments, leurs mots, la taille des cibles et les règles dys sont
    ceux de global.css. Actif quand l'univers affiché est Blocland (`data-univers`, posé par applySettings),
    c'est-à-dire par défaut ; Archipéo, choisi dans les Réglages, garde les couleurs de global.css.
@@ -50,6 +54,16 @@
   --press: 3px;
   --face-primary: #27501a;
   --face-secondary: #9c7a48;
+  /* Le volume (P2, PR 2) : le bord sombre, et la bande claire du dessus, une teinte plus claire que lui : l'herbe de
+     la barre du haut sur l'action principale, un crème plus clair sur le bois et les cartes, l'or plus clair. */
+  --bord: 3px;
+  --bord-couleur: #2b2118;
+  --bande-h: 4px;
+  --bande-herbe: #6cb33f;
+  --bande-bois: #f7eedb;
+  --bande-carte: #ffffff;
+  --bande-or: #f0d47a;
+  --face-or: #9c7a1f;
 }
 
 /* ===== Thème Nuit ===== */
@@ -74,6 +88,12 @@
   --face-primary: #4e7a2e;
   /* Plus claire que le fond, pour se voir (3,2:1 sur le fond) : sans elle, une carte ressemble à un panneau. */
   --face-secondary: #7a6450;
+  /* Un bord presque noir ne se voit pas sur le fond : la face plus claire détache le bouton (au consultant de Blocland
+     de dire s'il garde ce bord). */
+  --bord-couleur: #0e0b08;
+  --bande-herbe: #b4dc8e;
+  --bande-bois: #574838;
+  --bande-carte: #3a3127;
 }
 
 /* ===== Thème Clair : plat, des faces plus sobres ===== */
@@ -84,6 +104,8 @@
   --topbar-text: #2b2118;
   --topbar-edge: #d8ccb0;
   --face: 3px;
+  /* Entièrement plat : le bord, pas de bande. */
+  --bande-h: 0px;
   /* Les faces du Crème, visibles sur le blanc (3,6:1 et plus). */
   --face-primary: #27501a;
   --face-secondary: #9c7a48;
@@ -104,14 +126,25 @@
   text-underline-offset: 4px;
 }
 
-/* ===== Ce qui se touche : une face de côté, qui s'enfonce ===== */
+/* ===== Ce qui se touche : un bord, une bande claire, une face de côté, qui s'enfonce ===== */
+/* Le bord sombre de 3 px (sans toucher aux bordures qui disent quelque chose : la case choisie, le danger, le liseré
+   d'une île, le survol). */
+:root[data-univers="blocland"] :where(.button:not(.danger), .nav-button, .back-link, .option:not(.selected), a.app-card, button.app-card, a.subject-card, .adventure-card, .level-card, a.island-quest, button.island-quest) {
+  border-width: var(--bord);
+  border-color: var(--bord-couleur);
+}
+:root[data-univers="blocland"] :where(.biome-card) {
+  border-inline-width: var(--bord);
+  border-bottom-width: var(--bord);
+}
+/* La bande claire du dessus, une teinte plus claire que lui. */
 :root[data-univers="blocland"] .button,
 :root[data-univers="blocland"] .nav-button {
-  box-shadow: 0 var(--face) 0 var(--face-secondary);
-  transition: none;
+  --bande: var(--bande-bois);
 }
-:root[data-univers="blocland"] .button.primary {
-  box-shadow: 0 var(--face) 0 var(--face-primary);
+:root[data-univers="blocland"] .button.primary,
+:root[data-univers="blocland"] .option.selected {
+  --bande: var(--bande-herbe);
 }
 :root[data-univers="blocland"] .back-link,
 :root[data-univers="blocland"] .option,
@@ -123,10 +156,46 @@
 :root[data-univers="blocland"] .level-card,
 :root[data-univers="blocland"] a.island-quest,
 :root[data-univers="blocland"] button.island-quest {
-  box-shadow: 0 var(--face) 0 var(--face-secondary);
+  --bande: var(--bande-carte);
+}
+/* Une bande aplat (ombre intérieure pleine, sans flou) et la face de côté (ombre pleine, sans flou). Le rebond au
+   relâcher : le bloc remonte en 0,15 s en dépassant d'un pixel vers le haut, puis se pose (l'action part au toucher,
+   sans l'attendre). Le fond change sans transition. */
+:root[data-univers="blocland"] .button,
+:root[data-univers="blocland"] .nav-button,
+:root[data-univers="blocland"] .back-link,
+:root[data-univers="blocland"] a.app-card,
+:root[data-univers="blocland"] button.app-card,
+:root[data-univers="blocland"] a.subject-card,
+:root[data-univers="blocland"] .adventure-card,
+:root[data-univers="blocland"] .biome-card,
+:root[data-univers="blocland"] .level-card,
+:root[data-univers="blocland"] a.island-quest,
+:root[data-univers="blocland"] button.island-quest {
+  box-shadow:
+    inset 0 var(--bande-h) 0 var(--bande),
+    0 var(--face) 0 var(--face-secondary);
+  /* Le dépassement : 1 px sur les 3 px de l'enfoncement (un tiers), au 60e centième de la durée. */
+  transition:
+    transform 0.15s cubic-bezier(0.3, 2.2, 0.6, 1),
+    box-shadow 0.15s cubic-bezier(0.3, 2.2, 0.6, 1);
+  transition:
+    transform 0.15s linear(0, 1.333 60%, 1),
+    box-shadow 0.15s linear(0, 1.333 60%, 1);
+}
+:root[data-univers="blocland"] .button.primary {
+  box-shadow:
+    inset 0 var(--bande-h) 0 var(--bande),
+    0 var(--face) 0 var(--face-primary);
+}
+/* Les réponses d'un exercice : le bord et la bande, pas le rebond (une réponse ne bouge pas après le toucher). */
+:root[data-univers="blocland"] .option {
+  box-shadow:
+    inset 0 var(--bande-h) 0 var(--bande),
+    0 var(--face) 0 var(--face-secondary);
   transition: none;
 }
-/* L'appui : le bloc descend de 3 px et sa face se réduit d'autant ; l'encombrement ne change pas. */
+/* L'appui : le bloc descend de 3 px et sa face se réduit d'autant, tout de suite ; l'encombrement ne change pas. */
 :root[data-univers="blocland"] .button:active:not(:disabled):not([aria-disabled="true"]),
 :root[data-univers="blocland"] .nav-button:active,
 :root[data-univers="blocland"] .back-link:active,
@@ -140,12 +209,17 @@
 :root[data-univers="blocland"] a.island-quest:active,
 :root[data-univers="blocland"] button.island-quest:active:not(:disabled) {
   transform: translateY(var(--press));
-  box-shadow: 0 var(--face-pressed) 0 var(--face-secondary);
+  box-shadow:
+    inset 0 var(--bande-h) 0 var(--bande),
+    0 var(--face-pressed) 0 var(--face-secondary);
+  transition: none;
 }
 :root[data-univers="blocland"] .button.primary:active:not(:disabled) {
-  box-shadow: 0 var(--face-pressed) 0 var(--face-primary);
+  box-shadow:
+    inset 0 var(--bande-h) 0 var(--bande),
+    0 var(--face-pressed) 0 var(--face-primary);
 }
-/* Fermé : pas de face, il ne s'enfonce pas (son libellé ou son cadenas dit pourquoi). */
+/* Fermé : pas de face ni de bande, il ne s'enfonce pas ni ne rebondit (son libellé ou son cadenas dit pourquoi). */
 :root[data-univers="blocland"] .button:disabled,
 :root[data-univers="blocland"] .button[aria-disabled="true"],
 :root[data-univers="blocland"] .app-card.locked,
@@ -153,6 +227,98 @@
 :root[data-univers="blocland"] button.island-quest:disabled {
   box-shadow: none;
   transform: none;
+  transition: none;
+}
+
+/* ===== La barre du bas du monde : des icônes seules (P2, PR 2) ===== */
+/* Quatre boutons carrés de 56 px (la face en plus), icône de 32 px, 8 px d'écart : 248 px, ils tiennent sur 320 px.
+   Les mots ne reviennent jamais, grand texte compris (décision du mainteneur, 4 octobre 2026) : chaque bouton garde
+   son nom pour les lecteurs d'écran, et l'écran ouvert dit le sien en titre. */
+:root[data-univers="blocland"] .world-bar {
+  gap: 8px;
+}
+:root[data-univers="blocland"] .world-bar .button {
+  position: relative;
+  flex: 0 0 auto;
+  width: 56px;
+  min-width: 56px;
+  height: 56px;
+  min-height: 56px;
+  padding: 0;
+}
+:root[data-univers="blocland"] .world-bar .button svg {
+  width: 32px;
+  height: 32px;
+}
+:root[data-univers="blocland"] .world-bar .world-bar-text {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+/* Le bouton de l'île : l'action principale de la barre, en herbe ; les autres en bois (décision du mainteneur, 4
+   octobre 2026, comme sur la maquette). */
+:root[data-univers="blocland"] .world-bar .world-bar-ile {
+  --button-bg: var(--primary-bg);
+  --bande: var(--bande-herbe);
+  color: var(--primary-text);
+  box-shadow:
+    inset 0 var(--bande-h) 0 var(--bande),
+    0 var(--face) 0 var(--face-primary);
+}
+:root[data-univers="blocland"] .world-bar .world-bar-ile:active:not([aria-pressed="true"]) {
+  box-shadow:
+    inset 0 var(--bande-h) 0 var(--bande),
+    0 var(--face-pressed) 0 var(--face-primary);
+}
+/* Le bouton ouvert : l'or, et enfoncé tant que son écran est ouvert (l'état ne passe pas par la couleur seule). */
+:root[data-univers="blocland"] .world-bar .button[aria-pressed="true"] {
+  --bande: var(--bande-or);
+  color: var(--on-sand);
+  transform: translateY(var(--press));
+  box-shadow:
+    inset 0 var(--bande-h) 0 var(--bande),
+    0 var(--face-pressed) 0 var(--face-or);
+}
+/* Le compte des blocs : une pastille d'or chiffrée au coin haut droit du bouton, qui déborde de 8 px sans réduire la
+   cible ; un carré aux coins de 4 px (un bloc, pas une pilule), jamais rouge (le rouge dirait « à faire »). « 0 »
+   s'affiche : la pastille ne disparaît jamais. La largeur suit le nombre. */
+:root[data-univers="blocland"] .world-bar-count {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  display: inline-grid;
+  place-items: center;
+  min-width: 26px;
+  min-height: 26px;
+  padding: 0 4px;
+  background: #e0b73f;
+  color: #2b2118;
+  border: 2px solid #2b2118;
+  border-radius: 4px;
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 1;
+  pointer-events: none;
+}
+:root[data-univers="blocland"][data-texte="grand"] .world-bar-count {
+  font-size: max(18px, 1rem);
+}
+:root[data-univers="blocland"] .world-bar-count::before,
+:root[data-univers="blocland"] .world-bar-count::after {
+  content: none;
+}
+/* Son chiffre change une fois, à l'arrivée du dernier bloc qui vole : un rebond de 0,15 s. */
+:root[data-univers="blocland"] .world-bar-count.rebondit {
+  animation: pastille-rebond 0.15s ease-out;
+}
+@keyframes pastille-rebond {
+  50% {
+    transform: translateY(-3px);
+  }
 }
 
 /* ===== Les pastilles des thèmes (Réglages) : les couleurs de chaque thème dans Blocland ===== */
