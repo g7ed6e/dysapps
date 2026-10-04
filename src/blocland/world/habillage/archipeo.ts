@@ -16,6 +16,5 @@ export const HABILLAGE_ARCHIPEO = {
   atelier: 'halle',
   pose: 'fondu',
   formeDesSignes: 'hexagone',
-  signesDesObjets: 'bulles',
   blocDesIles: 'avant-le-nom',
 } as const satisfies Readonly<Habillage> & { univers: 'archipeo' };

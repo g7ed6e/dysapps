@@ -1,9 +1,8 @@
 // Les zones de toucher des objets dans la scène 3D de Blocland, sans WebGL : une borne ou un Gardien petits à l'écran
 // se touchent dans un carré de 48 pixels autour d'eux, les autres objets directement ; rien sur la Carte ni pendant le
-// voyage ; rien dans Archipéo. Les bulles sont dessinées par ./signes.ts (signes.test.ts).
+// voyage. Les bulles sont dessinées par ./signes.ts (signes.test.ts).
 import * as THREE from 'three';
 import type { BiomeId } from '../biomes';
-import { HABILLAGES, type Habillage } from '../habillage';
 import { cleDeLObjet, SIGNE, signesDesObjets, type EtatDuSigne, type ObjetTouche, type SigneDObjet } from '../world/affordance';
 import { guardianPlacements } from '../world/terrain';
 import { creerAffordance } from './affordance';
@@ -11,14 +10,14 @@ import type { Derniers, Instant, Monde } from './partie';
 
 const FORET: BiomeId = 'french-6e-phonology';
 
-function scene(habillage: Habillage = HABILLAGES.blocland) {
-  const monde = { scene: new THREE.Scene(), habillage } as unknown as Monde;
+function scene() {
+  const monde = { scene: new THREE.Scene() } as unknown as Monde;
   const camera = new THREE.PerspectiveCamera(40, 4 / 3, 0.5, 1000);
   camera.position.set(0, 20, -30);
   camera.lookAt(0, 0, 0);
   const derniers = { current: { carte: false, focus: { island: FORET, seq: 1 }, home: FORET, forceDay: false, whalePass: null, sons: false } as Derniers };
   const instant = { now: 0, marche: false, traversee: null, navigue: null, carte: false, but: { target: new THREE.Vector3(), pos: new THREE.Vector3() } } as Instant;
-  const affordance = creerAffordance(monde, derniers, instant);
+  const affordance = creerAffordance(derniers, instant);
   return { monde, camera, affordance, derniers, instant };
 }
 
@@ -69,13 +68,6 @@ it('aucune zone sur la Carte ni pendant le voyage', () => {
   derniers.current.carte = false;
   instant.navigue = { at: new THREE.Vector3(), k: 0.5, stage: 1 };
   affordance.animer!(1, 0.016, false);
-  expect(affordance.zones(camera, 1024, 768)).toEqual([]);
-});
-
-it('avec les losanges (./bornes.ts ; plus aucun univers ne les prend) : aucune zone ici', () => {
-  const { affordance, camera } = scene({ ...HABILLAGES.archipeo, signesDesObjets: 'losanges' });
-  affordance.poser(OBJETS);
-  affordance.animer?.(1, 0.016, false);
   expect(affordance.zones(camera, 1024, 768)).toEqual([]);
 });
 

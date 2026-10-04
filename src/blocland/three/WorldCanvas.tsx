@@ -203,12 +203,12 @@ export default function WorldCanvas({
 
     // Les parties, créées dans l'ordre d'avant la découpe, à quelques objets près (les nappes de brume avant l'eau, la
     // flèche de la Carte après les balises, les créatures avant le terrain, la case visée avant le navire) : sans effet
-    // sur l'image, le rendu trie les objets par matériau et profondeur. `bornes`, `etiquettes` et `personnages` lisent le
+    // sur l'image, le rendu trie les objets par matériau et profondeur. `etiquettes` et `personnages` lisent le
     // bonhomme et le sol par des fonctions, appelées seulement une fois toutes les parties créées.
     const lumiere = creerLumiere(monde, camera, derniers);
     const brume = creerBrume(monde, lumiere, instant);
     const large = creerLarge(monde, camera, lumiere, derniers, passSeqRef);
-    const bornes = creerBornes(monde, () => personnages.avatar, instant);
+    const bornes = creerBornes(monde, instant);
     // Les plaques des créatures (créées plus bas, lues seulement à l'animation) : les étiquettes s'en écartent.
     const plaques = { boites: (cam: THREE.Camera, W: number, H: number) => signesDesCreatures.boites(cam, W, H), get version() { return signesDesCreatures.version; } };
     // La place de la bulle d'or : relue tout de suite quand une fiche s'ouvre ou se ferme sur la Carte (comme les bulles
@@ -224,7 +224,7 @@ export default function WorldCanvas({
       const libre = contourner(lue.libre, { x: b.left - vue.left + b.width / 2, y: b.top - vue.top + b.height / 2, w: b.width, h: b.height });
       return libre === lue.libre ? lue : { ...lue, libre };
     };
-    const etiquettes = creerEtiquettes(monde, el, camera, bornes.fleche, bornes.donneesDeLaFleche, () => personnages.avatar, instant, plaques, lecteurDeLaPlaceDeLaBulle);
+    const etiquettes = creerEtiquettes(monde, el, camera, bornes.donneesDeLaFleche, () => personnages.avatar, instant, plaques, lecteurDeLaPlaceDeLaBulle);
     const personnages = creerPersonnages(monde, () => cubesDuMonde.champ(), instant, lumiere);
     const cubesDuMonde = creerCubes(monde, large, lumiere, instant);
     const navire = creerNavire(monde, personnages, cubesDuMonde, derniers, instant, vehicleRef, voyageRef);
@@ -247,7 +247,7 @@ export default function WorldCanvas({
       return vise.ile;
     };
     const signesDesCreatures = creerSignes(monde, el, camera, personnages, derniers, instant, lecteurDePlaceLibre(el), ileVisee);
-    const affordance = creerAffordance(monde, derniers, instant);
+    const affordance = creerAffordance(derniers, instant);
     // La Carte se cadre dans la place que l'interface laisse libre, autour de la flèche de la destination (DA-31).
     const lecture = {
       place: lecteurDePlaceLibre(el),
@@ -904,7 +904,8 @@ export default function WorldCanvas({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [voyage?.seq, voyage?.leg]);
 
-  // ---- La flèche « Commence ici » (sur une île, ou sur une case du monde : le chantier du navire)
+  // ---- Ce que montre la flèche de la destination (une île, un ouvrage, ou une case du monde : le chantier du navire) ;
+  // la 3D la dessine en bulle sur la Carte (three/etiquettes.ts)
   useEffect(() => {
     world.current?.bornes.poserLaFleche(marker);
   }, [marker]);
@@ -952,8 +953,8 @@ export default function WorldCanvas({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [avatar?.seq]);
 
-  // ---- Les repères des bornes de mission : les étoiles gagnées en petits cubes d'or empilés (dans Archipéo, aussi le
-  // losange jaune qui rebondit, à faire). Rien sur une île fermée.
+  // ---- Les repères des bornes de mission : les étoiles gagnées en petits cubes d'or empilés (une borne à faire porte sa
+  // bulle, plus bas). Rien sur une île fermée.
   const sommets = useMemo(() => sommetsDesBornes(cubes), [cubes]);
   useEffect(() => {
     world.current?.bornes.poserLesMissions(quests, sommets);
@@ -961,7 +962,7 @@ export default function WorldCanvas({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [quests, sommets, reduceMotion, archipelago]);
 
-  // ---- Les objets touchables (Blocland, world/affordance.ts) : leurs zones de toucher, et une bulle au-dessus de ceux
+  // ---- Les objets touchables (world/affordance.ts) : leurs zones de toucher, et une bulle au-dessus de ceux
   // qui sont à faire (trois au plus sur l'île où l'on est, la prochaine chose à faire mise en avant).
   const signesDuMonde = useMemo(
     () => signesDesObjets({ cubes, quests, creatures, vehicle, etats: etatsDesObjets }),

@@ -23,7 +23,6 @@ import {
   BULLE,
   bullesMontrees,
   bullesPossibles,
-  cleDeLaCreature,
   flottementDeLaBulle,
   rebondDeLaBulle,
   type CibleDeLaBulle,
@@ -251,8 +250,6 @@ export function creerSignes(
 ): Signes {
   const { scene } = monde;
   const forme = monde.habillage.formeDesSignes;
-  /** Les bulles : trois au plus, sur l'île où l'on est, objets compris ; sans elles (les losanges) : une plaque par créature qui fait signe. */
-  const bulles = monde.habillage.signesDesObjets === 'bulles';
   /** La hauteur de la vue : lue une fois ici, puis donnée par le redimensionnement de la scène. */
   let hauteurDeLaVue = el.clientHeight;
   const toile = document.createElement('canvas');
@@ -332,7 +329,6 @@ export function creerSignes(
     if (m.rangs[i] < 0 || clesDesRangs[m.rangs[i]] !== m.cases[i]) m.rangs[i] = caseDe(m.image, m.enAvant, auBord, m.cases[i]);
     return m.rangs[i];
   };
-  const imageDe = (s: SigneDeCreature): ImageDuSigne => (s.bloc ? { bloc: s.bloc } : { icone: s.icone });
   /**
    * L'île où l'on est : celle que montre la vue glissée ; sinon celle que regarde la caméra (le bonhomme y va), sinon
    * celle du bonhomme.
@@ -355,22 +351,22 @@ export function creerSignes(
     const p = (ile && o.parIle?.[ile]) || o;
     return new THREE.Vector3(p.x, p.z, p.y);
   };
-  /** Les bulles à montrer : trois au plus sur l'île où l'on est ; sans les bulles (les losanges), chaque créature qui fait signe. */
+  /** Les bulles à montrer : trois au plus sur l'île où l'on est. */
   const montrees = (): Montree[] => {
-    const ile = bulles ? ileOuLOnEst() : null;
+    const ile = ileOuLOnEst();
     if (enCache && enCache.ile === ile) return enCache.liste;
-    const liste: Montree[] = bulles
-      ? bullesMontrees(possibles, ile, prochaine).map(({ bulle, enAvant }) => montree(bulle.cle, bulle.cible, bulle.image, enAvant, bulle.cible.genre === 'creature' ? bulle.cible.id : null, pointDe(bulle.cle, ile)))
-      : signes.map(({ signe }) => montree(cleDeLaCreature(signe.id), { genre: 'creature', id: signe.id }, imageDe(signe), false, signe.id, null));
+    const liste: Montree[] = bullesMontrees(possibles, ile, prochaine).map(({ bulle, enAvant }) =>
+      montree(bulle.cle, bulle.cible, bulle.image, enAvant, bulle.cible.genre === 'creature' ? bulle.cible.id : null, pointDe(bulle.cle, ile)),
+    );
     enCache = { ile, liste };
     return liste;
   };
   const refaire = () => {
-    possibles = bulles ? bullesPossibles(objets, signes.map((s) => s.signe)) : [];
+    possibles = bullesPossibles(objets, signes.map((s) => s.signe));
     enCache = null;
   };
-  /** La taille à l'écran d'une bulle, en pixels CSS : sa case (la bulle et sa pointe) ; sans les bulles (les losanges), celle du signe. */
-  const tailleALEcran = (m: Montree): number => (bulles ? caseALEcran(m.enAvant) : ICONE_DU_SIGNE.css);
+  /** La taille à l'écran d'une bulle, en pixels CSS : sa case (la bulle et sa pointe). */
+  const tailleALEcran = (m: Montree): number => caseALEcran(m.enAvant);
 
   const tete = new THREE.Vector3();
   const centre = new THREE.Vector3();
@@ -468,7 +464,7 @@ export function creerSignes(
         const cote = tailleALEcran(m);
         const x = ((aLEcran.x + 1) / 2) * W;
         const y = ((1 - aLEcran.y) / 2) * H - cote / 2;
-        const tenue = bulles && tenirDansLaPlace(x, y, cote / 2, W, H);
+        const tenue = tenirDansLaPlace(x, y, cote / 2, W, H);
         out.push({ x: x + (tenue ? ecart.x : 0), y: y + (tenue ? ecart.y : 0), w: cote + 8, h: cote + 8 });
         const creature = m.creature ? creatureALEcran(m.creature, cam, W, H) : null;
         if (creature) out.push(creature);
@@ -489,7 +485,6 @@ export function creerSignes(
       if (signes.some((s) => !avant.has(s.signe.id))) plaqueDePlus();
     },
     poserLesObjets: (liste, cle) => {
-      if (!bulles) return;
       const avant = new Set(parCle.keys());
       objets = liste;
       prochaine = cle;
@@ -499,13 +494,11 @@ export function creerSignes(
       if ([...parCle.keys()].some((k) => !avant.has(k))) plaqueDePlus();
     },
     rebondir: (cle) => {
-      // Sans les bulles (les losanges), le signe ne se touche pas et ne rebondit pas.
-      if (!bulles || !montrees().some((m) => m.cle === cle)) return false;
+      if (!montrees().some((m) => m.cle === cle)) return false;
       rebonds.set(cle, instant.now);
       return true;
     },
     sous: (x, y, W, H) => {
-      if (!bulles) return null;
       const nx = (x / Math.max(1, W)) * 2 - 1;
       const ny = 1 - (y / Math.max(1, H)) * 2;
       // De la dernière dessinée à la première : celle qui est vue par-dessus passe d'abord.
@@ -530,7 +523,7 @@ export function creerSignes(
         dernierSeq = focus.seq;
         const ile = focus.island;
         // Dans Blocland, seulement si sa bulle est montrée (trois au plus) : jamais un signe sans bulle.
-        if (ile && !carte && !reduit && !gestes.has(ile) && (bulles ? montrees().some((m) => m.creature === ile) : parCreature.has(ile))) {
+        if (ile && !carte && !reduit && !gestes.has(ile) && montrees().some((m) => m.creature === ile)) {
           const debut = instant.now + GESTE_DU_SIGNE.attenteMs;
           gestes.set(ile, debut);
           personnages.faireSigne(ile, debut);
@@ -544,7 +537,7 @@ export function creerSignes(
           plaqueDePlus();
         }
       nRectangles = 0;
-      if (bulles) relireLaPlace();
+      relireLaPlace();
       const liste = montrees();
       if (!liste.length || carte || instant.carte || instant.navigue) {
         maillage.visible = false;
@@ -588,7 +581,7 @@ export function creerSignes(
         const H = hauteurDeLaVue;
         const cx = ((aLEcran.x + 1) / 2) * W;
         const cy = ((1 - aLEcran.y) / 2) * H;
-        if (bulles && aLEcran.z <= 1 && tenirDansLaPlace(cx, cy, cotePx / 2, W, H)) {
+        if (aLEcran.z <= 1 && tenirDansLaPlace(cx, cy, cotePx / 2, W, H)) {
           tenue = true;
           centre.addScaledVector(droite, ecart.x * parPx).addScaledVector(haut, -ecart.y * parPx);
           coin.copy(tete).project(camera);
@@ -603,7 +596,7 @@ export function creerSignes(
           positions[k + 2] = centre.z + droite.z * sx + haut.z * sy;
         }
         // Son rectangle à l'écran, pour le toucher : la plaque et sa pointe seulement, pas les marges de sa case.
-        if (bulles && aLEcran.z <= 1) {
+        if (aLEcran.z <= 1) {
           const px = cx + ecart.x * Number(tenue);
           const py = cy + ecart.y * Number(tenue);
           const u = cotePx / CASE;
@@ -614,7 +607,7 @@ export function creerSignes(
           r.y1 = 1 - ((py - cotePx / 2 + PLAQUE.y * u) / H) * 2;
           r.y0 = 1 - ((py - cotePx / 2 + (auBord ? PLAQUE.y + PLAQUE.cote + PLAQUE.ombre : PLAQUE.pointe.bas) * u) / H) * 2;
         }
-        const rang = bulles ? rangDe(m, auBord) : rangDe(m, false);
+        const rang = rangDe(m, auBord);
         if (casesEcrites[n] !== rang) {
           casesEcrites[n] = rang;
           const u = (rang % COTE) / COTE;

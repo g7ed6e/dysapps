@@ -1260,13 +1260,9 @@ export function WorldPage() {
             targets={[undefined, undefined, '[data-tuto="menu"]']}
             steps={[
               // Les bulles (les deux univers depuis le 4 octobre 2026) : plus de flèche jaune dans le monde, la bulle bordée
-              // d'or montre ce qu'on peut faire ; un habillage à losanges garderait la flèche et le losange jaune.
-              habillage.signesDesObjets === 'bulles'
-                ? `${UNIVERS[univers].bienvenue} Touche la Forêt des sons pour commencer.`
-                : `${UNIVERS[univers].bienvenue} Touche la Forêt des sons, sous la flèche jaune.`,
-              habillage.signesDesObjets === 'bulles'
-                ? 'Sur chaque île, les bornes à panneau sont les missions : touche une borne, puis Jouer. La bulle bordée d’or montre la prochaine chose à faire. Chaque mission te donne des blocs pour construire l’île, et des cubes d’or pour tes étoiles.'
-                : 'Sur chaque île, les bornes à panneau sont les missions : touche une borne, puis Jouer. Un losange jaune flotte au-dessus d’une mission à faire, des cubes d’or comptent tes étoiles. Chaque mission te donne des blocs pour construire l’île.',
+              // d'or montre ce qu'on peut faire.
+              `${UNIVERS[univers].bienvenue} Touche la Forêt des sons pour commencer.`,
+              'Sur chaque île, les bornes à panneau sont les missions : touche une borne, puis Jouer. La bulle bordée d’or montre la prochaine chose à faire. Chaque mission te donne des blocs pour construire l’île, et des cubes d’or pour tes étoiles.',
               'Le bouton Menu, en haut à droite, ouvre le menu : missions, succès, aide, réglages.',
             ]}
           />

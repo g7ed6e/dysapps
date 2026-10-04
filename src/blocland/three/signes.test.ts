@@ -362,16 +362,6 @@ describe('les bulles de Blocland (proposition P2, 4 octobre 2026)', () => {
     archipeo.poserLesObjets(OBJETS, null);
     archipeo.animer!(0, 0, true);
     expect(archipeo.maillage.geometry.drawRange.count).toBe(18);
-    // Avec les losanges (plus aucun univers ne les prend) : une plaque par créature qui fait signe, sur toutes les îles,
-    // et aucune bulle d'objet.
-    const losanges = scene({ ...HABILLAGES.archipeo, signesDesObjets: 'losanges' }).signes;
-    losanges.poser([
-      { id: FORET, icone: 'tree' },
-      { id: MINE, icone: 'pickaxe' },
-    ]);
-    losanges.poserLesObjets(OBJETS, null);
-    losanges.animer!(0, 0, true);
-    expect(losanges.maillage.geometry.drawRange.count).toBe(12);
   });
 
   it('la vue glissée sur une autre île : les bulles la suivent ; la vue revenue, elles reviennent (4 octobre 2026)', () => {
@@ -413,16 +403,6 @@ describe('les bulles de Blocland (proposition P2, 4 octobre 2026)', () => {
     derniers.current.calme = true;
     const [calme0] = hauteurs(BULLE.flotte.periodeS / 4, false);
     expect(calme0).toBeCloseTo(4, 6);
-  });
-
-  it('avec les losanges, le signe de la créature ne se touche pas et ne rebondit pas', () => {
-    const { signes, derniers, camera } = scene({ ...HABILLAGES.archipeo, signesDesObjets: 'losanges' });
-    derniers.current.home = FORET;
-    signes.poser([{ id: FORET, icone: 'tree' }]);
-    signes.animer!(0, 0, true);
-    const v = new THREE.Vector3(0, 3 + ICONE_DU_SIGNE.auDessus, 0).project(camera);
-    expect(signes.sous(((v.x + 1) / 2) * 1024, ((1 - v.y) / 2) * 768 - 20, 1024, 768)).toBeNull();
-    expect(signes.rebondir(`creature:${FORET}`)).toBe(false);
   });
 
   it('une créature qui a des révisions ne fait signe que si sa bulle est montrée (trois au plus)', () => {
