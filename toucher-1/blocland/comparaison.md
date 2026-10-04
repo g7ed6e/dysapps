@@ -1,15 +1,15 @@
 # Comparaison avec main
 
-Références : main au commit 9bfe50b811e918d25657b8139e7de9e6313530af (après : 272fd0e43e806cfe0e21f0e67b72cf855940cfb4). Une vue est changée au-delà de 0,3 % de pixels différents.
+Références : main au commit 9bfe50b811e918d25657b8139e7de9e6313530af (après : 7d02a445b5f5eb4e532455508edd8ed1bb615f98). Une vue est changée au-delà de 0,3 % de pixels différents.
 
 ## Changées (6) : planches dans `planches/`
 
-- 6e-archipel-nuit.jpg : 4,8 %
+- 6e-archipel-nuit.jpg : 5,0 %
 - 6e-archipel.jpg : 5,2 %
 - 6e-carte-nuit.jpg : 34,6 %
 - 6e-carte.jpg : 36,8 %
-- 6e-ile-nuit.jpg : 3,1 %
-- 6e-ile.jpg : 3,2 %
+- 6e-ile-nuit.jpg : 90,7 %
+- 6e-ile.jpg : 93,5 %
 
 ## Inchangées (0) : non publiées
 
