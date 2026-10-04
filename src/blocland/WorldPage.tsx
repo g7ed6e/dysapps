@@ -63,7 +63,7 @@ import {
   voyageAJouer,
   type Voyage,
 } from './world/modele';
-import { VILLAGE_STAGES, villageStage } from './world/villageStage';
+import { villageStage } from './world/villageStage';
 import { VEIL_MS, legTiming } from './world/voyage';
 import { walkDuration } from './world/scene';
 import { dispositionEnGrille, type BoutsDuTrajet } from './world/grille';
@@ -331,22 +331,19 @@ export function WorldPage() {
   const whale = useWhaleWord(state, a, tutoDone && rallumage.enAttente.length === 0 && !renommage.ouvert && !vague && !vol);
   const [whaleOpen, setWhaleOpen] = useState<string | null>(null);
   const [whaleSeq, setWhaleSeq] = useState(0);
-  // Le village de l'archipel monte d'un état pendant la séance (un plan, un ouvrage, un monument) : une phrase, lue à
-  // voix haute, et une cloche. Rien n'est enregistré : l'état se déduit de la progression.
+  // Le village de l'archipel monte d'un état pendant la séance (un plan, un ouvrage, un monument) : une cloche, sans
+  // phrase par-dessus le monde (mot du mainteneur, 4 octobre 2026) ; le village change sous les yeux et son état se lit
+  // dans le panneau de l'île-port. Rien n'est enregistré : l'état se déduit de la progression.
   const stageHere = archipelagoOf(state.world.place ?? 'french-6e-phonology').classe;
   const stageRank = villageStage(state.world, stageHere).rank;
   const lastStage = useRef({ a: stageHere, rank: stageRank });
-  const [villageSaid, setVillageSaid] = useState<string | null>(null);
   useEffect(() => {
     const before = lastStage.current;
     lastStage.current = { a: stageHere, rank: stageRank };
     if (before.a !== stageHere || stageRank <= before.rank) return;
-    const text = `Le village passe à l’état ${VILLAGE_STAGES[stageRank - 1].name} (${stageRank} sur 5). ${VILLAGE_STAGES[stageRank - 1].sight}`;
-    // Après la phrase du plan ou de l'ouvrage qui vient de le faire monter.
+    // Après le carillon du plan ou de l'ouvrage qui vient de le faire monter.
     const timer = window.setTimeout(() => {
-      setVillageSaid(text);
       if (settings.sounds) playBell();
-      if (settings.autoRead) speak(frenchTypography(text));
     }, 2500);
     return () => window.clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1084,10 +1081,9 @@ export function WorldPage() {
   // la flèche jaune montre la suggestion. Seule une île pâle touchée dit le chemin d'ouvrages qui y mène. Une chose à la
   // fois : il attend que le mot de la baleine ou du rallumage soit fermé (DA-25).
   const panneauDeLaCarte = mapOpen && Boolean(mapTarget && remaining.length) && !whaleWord && !motRallume && !renommageOuvert;
-  // Une chose à la fois : la phrase du village et celle d'une créature attendent que la fiche ouverte soit fermée.
-  const phraseDuVillage = villageSaid && !whaleWord && !renommageOuvert && !ficheVue;
+  // Une chose à la fois : la phrase d'une créature attend que la fiche ouverte soit fermée.
   const phraseDeCreature = said && !ficheVue ? said : null;
-  const bulleEnHaut = Boolean(ligneDuVoyage || panneauDeLaCarte || phraseDuVillage || phraseDeCreature);
+  const bulleEnHaut = Boolean(ligneDuVoyage || panneauDeLaCarte || phraseDeCreature);
   // Un panneau en plein écran par-dessus le monde (l'île, un lieu, Blocs, le menu, le voyage sans animation).
   const pleinEcran = Boolean((island && sheetOpen) || (panelOpen && !mapOpen) || voyage?.mode === 'panel');
   // Le focus suit le plein écran : sur la croix du panneau qui s'ouvre (la barre du bas, dessous, devient inerte), puis
@@ -1224,15 +1220,6 @@ export function WorldPage() {
               </ol>
               <button type="button" className="button" onClick={() => voirOuvrage(remaining[0].id)}>
                 <Icon name="hammer" /> Voir le premier ouvrage
-              </button>
-            </div>
-          )}
-          {phraseDuVillage && (
-            <div className="creature-line world-line" role="status" aria-live="polite">
-              <Icon name="flag" /> <Syllabified text={villageSaid} />
-              <SpeakButton text={villageSaid} compact />
-              <button type="button" className="icon-button" aria-label="Fermer" onClick={() => setVillageSaid(null)}>
-                <Icon name="close" />
               </button>
             </div>
           )}

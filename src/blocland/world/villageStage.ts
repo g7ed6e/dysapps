@@ -14,16 +14,14 @@ export interface VillageStageDef {
   /** Le rang, de 1 à 5. */
   rank: 1 | 2 | 3 | 4 | 5;
   name: string;
-  /** Ce qui se voit au port, en une phrase (l'avis quand l'état monte). */
-  sight: string;
 }
 
 export const VILLAGE_STAGES: VillageStageDef[] = [
-  { id: 'abandonne', rank: 1, name: 'Abandonné', sight: 'Les lanternes du port sont éteintes, une barque grise est retournée sur la rive.' },
-  { id: 'reactivation', rank: 2, name: 'Réactivation', sight: 'Le village se réveille : les lanternes du port s’allument.' },
-  { id: 'reconstruction', rank: 3, name: 'Reconstruction', sight: 'Le port revit : une barque est amarrée à la jetée, un foyer fume.' },
-  { id: 'developpement', rank: 4, name: 'Développement', sight: 'Le village grandit : une seconde barque, des caisses et des fanions sur le quai.' },
-  { id: 'port', rank: 5, name: 'Port', sight: 'Le port est complet : une lanterne sur chaque poteau et un feu au bout de la jetée.' },
+  { id: 'abandonne', rank: 1, name: 'Abandonné' },
+  { id: 'reactivation', rank: 2, name: 'Réactivation' },
+  { id: 'reconstruction', rank: 3, name: 'Reconstruction' },
+  { id: 'developpement', rank: 4, name: 'Développement' },
+  { id: 'port', rank: 5, name: 'Port' },
 ];
 
 export interface VillageStage extends VillageStageDef {
