@@ -251,6 +251,58 @@ describe('La Carte dans la place libre (DA-31)', () => {
     }
   });
 
+  it('la Carte se zoome : de son cadrage d’ouverture jusqu’à une île en gros plan, le point visé reste sous le doigt ; la Carte refermée l’efface', () => {
+    const b = worldBounds('6e');
+    const monde: Monde = { scene: new THREE.Scene(), archipel: '6e', habillage: HABILLAGES.blocland, surface: null, etendue: b, centre: { x: 0, y: 0 }, largeur: 200 };
+    const camera = new THREE.PerspectiveCamera(40, T.w / T.h, 0.5, 2000);
+    const derniers = { current: { carte: true, focus: { island: null, seq: 1 }, home: 'french-6e-phonology', forceDay: true, sons: false } as unknown as Derniers };
+    const instant: Instant = { now: 0, marche: false, traversee: null, navigue: null, carte: true, but: { target: new THREE.Vector3(), pos: new THREE.Vector3() } };
+    const libre = { x0: 0, y0: 80, x1: T.w, y1: T.h - 80 };
+    const cam = creerCamera(monde, camera, new THREE.Object3D(), derniers, instant, { place: () => ({ libre, w: T.w, h: T.h, saut: false }), destination: () => null });
+    cam.animer!(0, 0.016, true);
+    const d0 = camera.position.distanceTo(cam.cible);
+    const q0 = camera.quaternion.clone();
+    // Plus loin que l'ouverture : rien ne bouge.
+    expect(cam.zoomer(0.5, { x: 0, y: 0 })).toBe(false);
+    expect(cam.decale()).toBe(false);
+    // Rapprocher autour d'un point hors du centre : la caméra y est tout de suite, même direction de vue, et le point du
+    // sol vu là avant le zoom y est encore après.
+    const vers = { x: 0.4, y: -0.3 };
+    const sol = (): THREE.Vector3 => {
+      const r = new THREE.Raycaster();
+      camera.updateMatrixWorld();
+      r.setFromCamera(new THREE.Vector2(vers.x, vers.y), camera);
+      const t = (cam.cible.y - r.ray.origin.y) / r.ray.direction.y;
+      return r.ray.origin.clone().addScaledVector(r.ray.direction, t);
+    };
+    const avant = sol();
+    expect(cam.zoomer(2, vers)).toBe(true);
+    expect(cam.decale()).toBe(true);
+    expect(camera.position.distanceTo(cam.cible)).toBeCloseTo(d0 / 2, 3);
+    expect(camera.quaternion.angleTo(q0)).toBeCloseTo(0);
+    expect(sol().distanceTo(avant)).toBeLessThan(0.05);
+    // L'image suivante garde le zoom.
+    cam.animer!(0.1, 0.016, true);
+    expect(camera.position.distanceTo(cam.cible)).toBeCloseTo(d0 / 2, 3);
+    // Au plus près, une île (22 cases) remplit les deux tiers du petit côté de la place libre, pas plus.
+    cam.zoomer(1000, { x: 0, y: 0 });
+    cam.animer!(0.2, 0.016, true);
+    const echelle = T.h / (2 * camera.position.distanceTo(cam.cible) * Math.tan((40 * Math.PI) / 360));
+    expect(22 * echelle).toBeCloseTo((2 / 3) * (libre.y1 - libre.y0), 0);
+    // « Recentrer » revient au cadrage d'ouverture.
+    cam.recentrer();
+    cam.animer!(0.3, 0.016, true);
+    expect(cam.decale()).toBe(false);
+    expect(camera.position.distanceTo(cam.cible)).toBeCloseTo(d0, 3);
+    // Hors de la Carte, pas de zoom ; la Carte refermée efface celui qu'on avait.
+    cam.zoomer(2, { x: 0, y: 0 });
+    derniers.current = { ...derniers.current, carte: false };
+    instant.carte = false;
+    cam.animer!(0.4, 0.016, true);
+    expect(cam.decale()).toBe(false);
+    expect(cam.zoomer(2, { x: 0, y: 0 })).toBe(false);
+  });
+
   it('poser met la caméra d’un coup à son cadrage et rend l’écart qu’il restait (les captures)', () => {
     const b = worldBounds('6e');
     const monde: Monde = { scene: new THREE.Scene(), archipel: '6e', habillage: HABILLAGES.blocland, surface: null, etendue: b, centre: { x: 0, y: 0 }, largeur: 200 };
