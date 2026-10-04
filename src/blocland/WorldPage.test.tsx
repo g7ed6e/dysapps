@@ -736,9 +736,11 @@ it('le tutoriel du village tient en trois bulles : l’île, les bornes, le bout
   renderAt('/adventure');
   const tuto = () => screen.getByRole('dialog', { name: /Bienvenue|bornes|bouton Menu/ });
   expect(tuto()).toHaveTextContent('1/3');
-  expect(tuto()).toHaveTextContent(/Bienvenue à Blocland !.*Touche la Forêt des sons, sous la flèche jaune\./);
+  // Blocland : plus de flèche jaune dans le monde (4 octobre 2026), la bulle bordée d'or la remplace.
+  expect(tuto()).toHaveTextContent(/Bienvenue à Blocland !.*Touche la Forêt des sons\./);
+  expect(tuto()).not.toHaveTextContent(/flèche jaune/);
   await user.click(screen.getByRole('button', { name: /Suivant/ }));
-  expect(tuto()).toHaveTextContent(/touche une borne, puis Jouer\..*Chaque mission te donne des blocs pour construire l’île\./);
+  expect(tuto()).toHaveTextContent(/touche une borne, puis Jouer\. Une bulle bordée d’or montre la prochaine chose à faire.*Chaque mission te donne des blocs pour construire l’île\./);
   await user.click(screen.getByRole('button', { name: /Suivant/ }));
   expect(tuto()).toHaveTextContent('Le bouton Menu (⏸), en haut à droite, ouvre le menu : missions, succès, réglages, accueil.');
   // La bulle montre le bouton Menu.

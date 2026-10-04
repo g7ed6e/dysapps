@@ -21,11 +21,11 @@ Pour se promener sur une île, on **touche le sol** : le bonhomme y marche en co
 Ce qu’il faut savoir des bulles :
 
 - **La prochaine chose à faire** a la plus grande bulle, bordée d’or : c’est la prochaine destination, celle de « Reprendre l’aventure » et de la Carte. C’est la seule qui bouge : elle monte et descend doucement, et se tient tranquille quand une fiche ou un panneau est ouvert. Les autres restent immobiles. Quand la prochaine destination est sur une autre île, aucune bulle n’est bordée d’or.
-- **Trois au plus.** Une chose ne porte jamais deux bulles. Les autres îles n’en montrent pas : on les voit en y allant.
+- **Trois au plus.** Une chose ne porte jamais deux bulles. Les autres îles n’en montrent pas : on les voit en y allant, ou en faisant glisser la vue jusqu’à elles : les bulles suivent l’île au centre de l’écran, et reviennent sur l’île où l’on est avec **Recentrer**.
 - **Rien pour plus tard, rien pour un lieu.** Une mission pas encore jouable ou un chantier qui attend des blocs n’ont pas de bulle, pas plus que l’école, la salle des trophées ou la Fabrique. Une mission réussie garde sa pile de cubes d’or (ses étoiles), immobile.
 - **Un pont** porte sa bulle à son bout, du côté de l’île où l’on est.
 - **Toujours visible.** Quand la chose sort de l’écran, sa bulle reste au bord, entière, sans pointe, hors des boutons, de la barre du bas et d’une fiche ouverte.
-- **Sur la Carte.** Une seule bulle, bordée d’or : celle de la prochaine destination (voir « La Carte » plus bas). Aucune pendant un voyage. La flèche « Commence ici » reste la même.
+- **Sur la Carte.** Une seule bulle, bordée d’or : celle de la prochaine destination (voir « La Carte » plus bas). Aucune pendant un voyage. Il n’y a pas de flèche jaune dans le monde : la bulle bordée d’or montre la prochaine chose à faire.
 - **Toucher une bulle**, c’est toucher la chose : sa fiche s’ouvre. La bulle s’écrase un peu puis rebondit : l’appli a entendu. Une chose sans bulle se touche elle-même : sa fiche s’ouvre aussi (un lieu, son panneau). Toucher une mission réussie fait sauter sa pile d’étoiles.
 - **Toucher tout près.** Une borne ou un Gardien qui paraissent petits à l’écran se touchent aussi un peu à côté, à environ un doigt de large.
 - **Sur un chantier en cours.** Toucher une case en fantôme d’un monument ou du Bloc-Navire y pose le bloc attendu. Pour ouvrir sa fiche, on touche sa bulle.

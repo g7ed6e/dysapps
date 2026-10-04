@@ -1260,8 +1260,13 @@ export function WorldPage() {
             onClose={() => setTutoDone(true)}
             targets={[undefined, undefined, '[data-tuto="menu"]']}
             steps={[
-              `${UNIVERS[univers].bienvenue} Touche la Forêt des sons, sous la flèche jaune.`,
-              'Sur chaque île, les bornes à panneau sont les missions : touche une borne, puis Jouer. Un losange jaune flotte au-dessus d’une mission à faire, des cubes d’or comptent tes étoiles. Chaque mission te donne des blocs pour construire l’île.',
+              // Blocland : plus de flèche jaune dans le monde, la bulle bordée d'or montre ce qu'on peut faire (4 octobre 2026).
+              univers === 'blocland'
+                ? `${UNIVERS[univers].bienvenue} Touche la Forêt des sons.`
+                : `${UNIVERS[univers].bienvenue} Touche la Forêt des sons, sous la flèche jaune.`,
+              univers === 'blocland'
+                ? 'Sur chaque île, les bornes à panneau sont les missions : touche une borne, puis Jouer. Une bulle bordée d’or montre la prochaine chose à faire, des cubes d’or comptent tes étoiles. Chaque mission te donne des blocs pour construire l’île.'
+                : 'Sur chaque île, les bornes à panneau sont les missions : touche une borne, puis Jouer. Un losange jaune flotte au-dessus d’une mission à faire, des cubes d’or comptent tes étoiles. Chaque mission te donne des blocs pour construire l’île.',
               'Le bouton Menu (⏸), en haut à droite, ouvre le menu : missions, succès, réglages, accueil.',
             ]}
           />

@@ -39,7 +39,7 @@ const cote = (signes: { maillage: THREE.Mesh }, n: number) => {
   return Math.hypot(p.getX(4 * n + 1) - p.getX(4 * n), p.getY(4 * n + 1) - p.getY(4 * n), p.getZ(4 * n + 1) - p.getZ(4 * n));
 };
 
-function scene(habillage: Habillage = HABILLAGES.blocland) {
+function scene(habillage: Habillage = HABILLAGES.blocland, ileVisee?: () => BiomeId | null) {
   // jsdom ne dessine pas dans un canvas : la texture reste vide, le reste se vérifie.
   vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null);
   const monde = { scene: new THREE.Scene(), habillage } as unknown as Monde;
@@ -54,7 +54,7 @@ function scene(habillage: Habillage = HABILLAGES.blocland) {
   } as unknown as Personnages;
   const derniers = { current: { carte: false, focus: { island: FORET, seq: 1 }, home: null, forceDay: false, whalePass: null, sons: false } as Derniers };
   const instant = { now: 0, marche: false, traversee: null, navigue: null, carte: false, but: { target: new THREE.Vector3(), pos: new THREE.Vector3() } } as Instant;
-  const signes = creerSignes(monde, el, camera, personnages, derniers, instant);
+  const signes = creerSignes(monde, el, camera, personnages, derniers, instant, undefined, ileVisee);
   return { monde, signes, faireSigne, derniers, instant, camera };
 }
 
@@ -339,6 +339,24 @@ describe('les bulles de Blocland (proposition P2, 4 octobre 2026)', () => {
     archipeo.poserLesObjets(OBJETS, null);
     archipeo.animer!(0, 0, true);
     expect(archipeo.maillage.geometry.drawRange.count).toBe(12);
+  });
+
+  it('la vue glissée sur une autre île : les bulles la suivent ; la vue revenue, elles reviennent (4 octobre 2026)', () => {
+    let visee: BiomeId | null = null;
+    const { signes } = scene(HABILLAGES.blocland, () => visee);
+    signes.poser([]);
+    signes.poserLesObjets(OBJETS, null);
+    signes.animer!(0, 0, true);
+    // Sur la Forêt (l'île regardée) : ses deux bornes et l'ouvrage.
+    expect(signes.maillage.geometry.drawRange.count).toBe(18);
+    // La vue glissée sur la Mine : sa seule borne.
+    visee = MINE;
+    signes.animer!(0, 0, true);
+    expect(signes.maillage.geometry.drawRange.count).toBe(6);
+    // Recentrée : de nouveau la Forêt.
+    visee = null;
+    signes.animer!(0, 0, true);
+    expect(signes.maillage.geometry.drawRange.count).toBe(18);
   });
 
   it('seule la bulle mise en avant monte et descend, de 4 pixels au plus au-dessus de sa place ; rien avec le mouvement réduit ni une fiche ouverte', () => {

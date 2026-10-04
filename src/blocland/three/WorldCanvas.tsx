@@ -6,7 +6,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import { estUnBiome, type BiomeId } from '../biomes';
-import { islandCenter, worldBounds } from '../world/terrain';
+import { islandAt, islandCenter, worldBounds } from '../world/terrain';
 import { ARROW_DIRS, cubeTags, enRoute, finishWalk, groundTap, islandInDirection, recentrerApres, toucheRetenue, walkPose, type Touche, type VoyageRun } from '../world/scene';
 import { rappelsDeLaVue, type WorldViewProps } from '../world/view';
 import { borneDe, centreDeLObjet, cleDeLaCreature, cleDeLObjet, SIGNE, signesDesObjets, sommetsDesBornes, zoneDuToucher, type ObjetDeLaFiche, type ObjetTouche, type ToucherDirect } from '../world/affordance';
@@ -230,7 +230,9 @@ export default function WorldCanvas({
     const navire = creerNavire(monde, personnages, cubesDuMonde, derniers, instant, vehicleRef, voyageRef);
     const rond = creerRond(monde, personnages, () => cubesDuMonde.champ(), lumiere, instant);
     // Les bulles se tiennent dans la place libre : leur propre lecteur, pour ne pas changer la clé de celui de la caméra.
-    const signesDesCreatures = creerSignes(monde, el, camera, personnages, derniers, instant, lecteurDePlaceLibre(el));
+    // Les bulles suivent l'île que montre la vue glissée (hors de la Carte) : celle sous le centre de la vue.
+    const ileVisee = () => (!derniers.current.carte && cadrage.decale() ? islandAt(archRef.current, cadrage.cible.x, cadrage.cible.z) : null);
+    const signesDesCreatures = creerSignes(monde, el, camera, personnages, derniers, instant, lecteurDePlaceLibre(el), ileVisee);
     const affordance = creerAffordance(monde, derniers, instant);
     // La Carte se cadre dans la place que l'interface laisse libre, autour de la flèche de la destination (DA-31).
     const lecture = {
