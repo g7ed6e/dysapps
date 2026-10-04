@@ -105,7 +105,7 @@ export const ENVELOPPES: Record<Poste, { lot: 'R4b' | 'R5' | 'R6' | 'GD-7' | 'so
   // décor, la somme inchangée. Mesuré toutes commandes livrées (`commandesCost`) : 430 aux Premiers Rivages, 178 aux
   // Îles Brumeuses, 186 aux Anciens Ateliers, 152 aux Îles du Ciel, aucun appel de plus. Aux Premiers Rivages, les 450
   // passent du décor (12 500 → 12 050 ; 11 746 mesurés). Ailleurs, le décor des Îles Brumeuses (9 103 mesurés) n'a que
-  // 247 de marge : proposition de l'artiste technique 3D, à valider par le mainteneur, 200 seulement (9 350 → 9 150).
+  // 247 de marge : proposition de l'artiste technique 3D, validée par le mainteneur le 4 octobre 2026, 200 seulement (9 350 → 9 150).
   decor: { lot: 'R4b', nom: 'Décor et repères signatures', premiersRivages: { triangles: 12_050, drawCalls: 3 }, autres: { triangles: 9_150, drawCalls: 3 } },
   construction: {
     lot: 'R5',
