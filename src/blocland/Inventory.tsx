@@ -226,7 +226,7 @@ export function InventorySheet({ onClose }: SheetProps) {
   const { state } = useBlocland();
   const total = inventoryUses(state).total;
   return (
-    <section id="panneau-blocs" className="island-sheet inventory-sheet" role="dialog" aria-labelledby="blocs-titre" aria-modal="false">
+    <section id="panneau-blocs" className="island-sheet inventory-sheet" role="dialog" aria-labelledby="blocs-titre" aria-modal="true">
       <div className="island-sheet-head">
         <div className="island-sheet-titles">
           <h2 id="blocs-titre" className="island-sheet-title">

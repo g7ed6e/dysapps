@@ -216,10 +216,6 @@ export function WorldPage() {
   // Le panneau de l'île ouverte, en plein écran par-dessus le monde : il ne s'ouvre que par son bouton dans la barre,
   // jamais tout seul (ni à l'arrivée sur une île, ni au retour d'un exercice ou de la Carte).
   const [sheetOpen, setSheetOpen] = useState(false);
-  /** Ouvrir ou replier le panneau de l'île ouverte. */
-  const montrerLePanneau = (open: boolean) => {
-    setSheetOpen(open);
-  };
   // Aller sur une île (ou y revenir) : le monde reste en plein écran, son panneau ne s'ouvre que par son bouton (décision
   // du mainteneur, 4 octobre 2026). `ouvrage` : la prochaine destination est un ouvrage (GD-7), mise en avant
   // (`worksite`) quand le panneau s'ouvre.
@@ -299,7 +295,8 @@ export function WorldPage() {
     const text = `Le village passe à l’état ${VILLAGE_STAGES[stageRank - 1].name} (${stageRank} sur 5). ${VILLAGE_STAGES[stageRank - 1].sight}`;
     // Après la phrase du plan ou de l'ouvrage qui vient de le faire monter.
     const timer = window.setTimeout(() => {
-      setVillageSaid(text);
+      // À la suite de la phrase de la pose, s'il y en a une : jamais à sa place.
+      setVillageSaid((avant) => (avant ? `${avant} ${text}` : text));
       if (settings.sounds) playBell();
       if (settings.autoRead) speak(frenchTypography(text));
     }, 2500);
@@ -488,8 +485,6 @@ export function WorldPage() {
   // à part, qui ne dépend que de l'archipel : `grille` change avec les cubes, et le bonhomme repartirait à chaque bloc posé.
   const repere = useMemo(() => dispositionEnGrille(a), [a]);
   const avatar = useMemo(() => ({ ...walk, route: walk.route.map((p) => repere.versIle(p)) }), [walk, repere]);
-  /** Le panneau de l'île ouverte (son bouton dans la barre). */
-  const panneauOuvert = sheetOpen;
 
   // L'île de l'URL est cadrée (vol) à chaque changement ; le bonhomme s'y rend si un chemin d'ouvrages y mène.
   // Une île ouverte d'un autre archipel (« Aller au port », lien, retour d'exercice) : le Bloc-Navire y mène (voyage).
@@ -576,13 +571,14 @@ export function WorldPage() {
   useEffect(() => {
     if (!island || !chantier) return;
     setHighlight(chantier);
+    const commande = getCommande(chantier);
     const objet: ObjetDeLaFiche | null =
       chantier === 'vehicle'
         ? { genre: 'navire', port: island.id }
         : getBridge(chantier)
           ? { genre: 'ouvrage', id: chantier }
-          : getCommande(chantier)
-            ? { genre: 'creature', id: getCommande(chantier)!.biome }
+          : commande
+            ? { genre: 'creature', id: commande.biome }
             : null;
     if (objet) setFiche({ objet, seq: ++ficheSeq.current, saut: true });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -615,6 +611,7 @@ export function WorldPage() {
   function direLaPose(biome: BiomeId, parties: Partie[], toc = false, muet = false) {
     setVague(null);
     // Le panneau de l'île ne s'ouvre plus tout seul : la phrase s'écrit en haut, par-dessus le monde, avec « Écouter ».
+    // Écrite, avec « Écouter », pas relue d'office : l'écran de fin l'a déjà lue.
     setVillageSaid(phraseDesPartiesPosees(parties));
     setPartiesDites((d) => ({ biome, parties, toc, muet, seq: (d?.seq ?? 0) + 1 }));
     setPhraseALire(true);
@@ -791,7 +788,7 @@ export function WorldPage() {
     stageRef.current?.querySelector<HTMLElement>('.voxel-canvas')?.focus();
   };
   // La fiche se ferme quand s'ouvre la Carte, le menu, Blocs, un lieu ou le panneau de l'île.
-  const panneauDeLIle = Boolean(island) && panneauOuvert;
+  const panneauDeLIle = Boolean(island) && sheetOpen;
   useEffect(() => {
     if (panelOpen || panneauDeLIle) setFiche(null);
   }, [panelOpen, panneauDeLIle]);
@@ -915,7 +912,7 @@ export function WorldPage() {
       return flaner(id, sol, enRoute);
     }
     if (!mapOpen && !voyage && !ouverte) return ouvrirLIlePale(id);
-    if (island?.id === id && !panneauOuvert) return onCreature(id, 'creature');
+    if (island?.id === id && !sheetOpen) return onCreature(id, 'creature');
     setFiche(null);
     // Une autre île ouverte : l'effet du changement d'île l'y emmène, jusqu'à la case touchée.
     if (sol && island?.id !== id && ouverte) arriveeDemandee.current = { ile: id, sol, ...(enRoute ? { enRoute } : {}) };
@@ -989,7 +986,23 @@ export function WorldPage() {
   const phraseDeCreature = said && !ficheVue ? said : null;
   const bulleEnHaut = Boolean(ligneDuVoyage || panneauDeLaCarte || hopTo || phraseDuVillage || phraseDeCreature);
   // Un panneau en plein écran par-dessus le monde (l'île, un lieu, Blocs, le menu, le voyage sans animation).
-  const pleinEcran = Boolean((island && panneauOuvert) || (panelOpen && !mapOpen) || voyage?.mode === 'panel');
+  const pleinEcran = Boolean((island && sheetOpen) || (panelOpen && !mapOpen) || voyage?.mode === 'panel');
+  // Le focus suit le plein écran : sur la croix du panneau qui s'ouvre (la barre du bas, dessous, devient inerte), puis
+  // sur le premier bouton de la barre (le bouton de l'île) quand il se ferme, s'il n'est pas déjà ailleurs.
+  const pleinEcranAvant = useRef(pleinEcran);
+  useEffect(() => {
+    const avant = pleinEcranAvant.current;
+    pleinEcranAvant.current = pleinEcran;
+    const page = stageRef.current?.parentElement;
+    if (!page || avant === pleinEcran) return;
+    const ici = document.activeElement;
+    if (pleinEcran) {
+      const panneau = page.querySelector<HTMLElement>(':scope > .island-sheet');
+      if (panneau && !panneau.contains(ici)) panneau.querySelector<HTMLElement>('.island-sheet-close')?.focus({ preventScroll: true });
+    } else if (!ici || ici === document.body) {
+      (page.querySelector<HTMLElement>('.world-bar button') ?? page.querySelector<HTMLElement>('.voxel-canvas'))?.focus({ preventScroll: true });
+    }
+  }, [pleinEcran]);
   /**
    * « Recentrer » : le focus passe d'abord au monde (le bouton va disparaître, le focus ne tombe pas sur la page), puis
    * la vue revient à son cadrage.
@@ -1001,7 +1014,7 @@ export function WorldPage() {
 
   return (
     <div
-      className={`world-page${ficheVue ? ' fiche-ouverte' : ''}${pleinEcran ? ' has-sheet' : ''}${whaleWord || motRallume || renommageOuvert ? ' bulle-ouverte' : ''}`}
+      className={`world-page${ficheVue ? ' fiche-ouverte' : ''}${whaleWord || motRallume || renommageOuvert ? ' bulle-ouverte' : ''}`}
     >
       <div
         className="world-stage"
@@ -1222,10 +1235,10 @@ export function WorldPage() {
             <button
               type="button"
               className="button"
-              aria-pressed={panneauOuvert}
-              aria-controls={panneauOuvert ? `panneau-${island.id}` : undefined}
-              onClick={() => montrerLePanneau(!panneauOuvert)}
-              aria-label={panneauOuvert ? `Replier le panneau de ${island.name}` : `Ouvrir le panneau de ${island.name}`}
+              aria-pressed={sheetOpen}
+              aria-controls={sheetOpen ? `panneau-${island.id}` : undefined}
+              onClick={() => setSheetOpen(!sheetOpen)}
+              aria-label={sheetOpen ? `Replier le panneau de ${island.name}` : `Ouvrir le panneau de ${island.name}`}
             >
               <Icon name={island.icon} /> <span className="world-bar-text">{island.name}</span>
             </button>
@@ -1280,13 +1293,13 @@ export function WorldPage() {
         <MenuSheet onClose={() => navigate('/adventure')} onAller={openIsland} />
       ) : (
         island &&
-        panneauOuvert && (
+        sheetOpen && (
           <IslandSheet
             biome={island}
             ship={ship}
             onBoard={onBoard}
             in3d
-            onClose={() => montrerLePanneau(false)}
+            onClose={() => setSheetOpen(false)}
             highlight={highlight}
             posees={partiesDites?.biome === island.id ? partiesDites.parties : null}
             enCoursDePose={vague?.biome === island.id && vague.commande === undefined ? vague.parties : null}

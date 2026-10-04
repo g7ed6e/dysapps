@@ -189,12 +189,15 @@ it('le panneau d’une île ne s’ouvre que par son bouton, en plein écran par
   expect(toggle).toHaveAttribute('aria-pressed', 'false');
   await user.click(toggle);
   expect(sheet()).toBeInTheDocument();
-  // Par-dessus le monde, qui ne se touche plus dessous (ni au clavier).
+  // Par-dessus le monde, qui ne se touche plus dessous (ni au clavier) : le focus passe sur sa croix.
   expect(document.querySelector('.world-stage')).toHaveAttribute('inert');
-  // La croix le referme : on reste sur l'île, la caméra aussi.
+  expect(sheet()).toHaveAttribute('aria-modal', 'true');
+  expect(screen.getByRole('button', { name: 'Fermer le panneau' })).toHaveFocus();
+  // La croix le referme : on reste sur l'île, la caméra aussi ; le focus revient au bouton de l'île.
   await user.click(screen.getByRole('button', { name: 'Fermer le panneau' }));
   expect(sheet()).not.toBeInTheDocument();
   expect(document.querySelector('.world-stage')).not.toHaveAttribute('inert');
+  expect(screen.getByRole('button', { name: 'Ouvrir le panneau de Forêt des sons' })).toHaveFocus();
   expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/french-6e-phonology');
   expect(screen.getByTestId('cadrage')).toHaveTextContent('french-6e-phonology');
 });

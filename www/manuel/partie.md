@@ -12,7 +12,7 @@ Derrière, le **village** est déjà chargé. À la première visite, un tutorie
 
 ![Première visite du village en 3D : la Forêt des sons en couleurs au centre, les autres îles en ruine, et la première bulle du tutoriel « Bienvenue à Blocland ! ».](/captures/village-premiere-visite.jpg)
 
-Toucher l'île ouvre son **panneau** : Mousso se présente (tout son accueil est lu ; la première ligne est écrite, la suite dans le pli « La suite »), puis la liste des missions de l'île, et plus bas le **prochain objectif**.
+Le bouton au nom de l'île, dans la barre du bas, ouvre son **panneau**, en plein écran par-dessus le monde : Mousso se présente (tout son accueil est lu ; la première ligne est écrite, la suite dans le pli « La suite »), puis la liste des missions de l'île, et plus bas le **prochain objectif**.
 
 ![Le panneau de la Forêt des sons : Mousso accueille en une ligne, puis les missions.](/captures/panneau-ile.jpg)
 
@@ -82,9 +82,9 @@ Quand les bâtiments sont finis, les blocs restants servent aux **monuments**, s
 
 ## Sur téléphone, en liste
 
-Le même jeu tient sur un téléphone en portrait : le monde en haut, le panneau de l'île en dessous.
+Le même jeu tient sur un téléphone en portrait : le monde sur tout l'écran, la barre du bas en dessous ; le panneau de l'île s'ouvre par-dessus, en plein écran.
 
-![Sur téléphone : le monde en haut, les boutons en icônes, le panneau de la Forêt des sons en bas.](/captures/telephone-village.jpg)
+![Sur téléphone : le monde sur tout l'écran, les boutons en icônes dans la barre du bas.](/captures/telephone-village.jpg)
 
 La **vue simple** remplace le monde par des listes accessibles (voir [Réglages](reglages.md#animations-et-vue-du-monde)).
 
