@@ -399,7 +399,7 @@ export function creerEtiquettes(
     });
     const cadre = { w: W, h: H };
     // Sur la Carte : une île fermée pèse moins (c'est son étiquette qui s'écarte d'abord), la prochaine destination plus ;
-    // la flèche de la destination et le fanion du bonhomme restent visibles, aucune étiquette ne se pose dessus. Hors de
+    // la bulle de la destination et le médaillon du bonhomme restent visibles, aucune étiquette ne se pose dessus. Hors de
     // la Carte : les étiquettes restent au-dessus de leur île ; seules celles posées sur l'interface ou sur un grand
     // repère (Archipéo) s'en écartent, et celles que coupe le bord du cadre y rentrent. Entière ou absente : celle qui ne
     // trouve pas de place libre près de son île ne se montre pas à moitié.

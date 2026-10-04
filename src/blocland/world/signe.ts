@@ -14,8 +14,8 @@ export const GESTE_DU_SIGNE = {
   hauteur: 0.45,
 } as const;
 
-/** L'icône au-dessus de la créature : sa taille à l'écran, en pixels CSS, et sa hauteur au-dessus de la tête, en blocs. */
-export const ICONE_DU_SIGNE = { css: 40, auDessus: 1.1 } as const;
+/** L'icône au-dessus de la créature : sa hauteur au-dessus de la tête, en blocs. */
+export const ICONE_DU_SIGNE = { auDessus: 1.1 } as const;
 
 /**
  * La hauteur du saut, en blocs, `ms` millisecondes après le début du geste : 0 avant et après ; une seule bosse douce
