@@ -69,7 +69,7 @@ import { dispositionEnGrille, type BoutsDuTrajet } from './world/grille';
 import type { Entite, Intention, ObjetDeLaFiche, Point } from './world/disposition';
 import { resteDuTrajet } from './world/arrivee';
 import type { Bonhomme } from './world/view';
-import { partiesDe, phraseDesPartiesPosees, prochainePartie, type Partie } from './world/parties';
+import { partiesDe, prochainePartie, type Partie } from './world/parties';
 import { prendreLaPose } from './poseAMontrer';
 import { VAGUE, cubesDeLaVague, sansLaPartie } from './world/vague';
 import { Loading } from '../components/Loading';
@@ -98,9 +98,6 @@ import { useHoldCelebrations } from '../components/Celebrations';
 import { useASuivre } from '../components/useASuivre';
 import { chiffreDeLaPastille, nomDuBoutonBlocs, prendreLesBlocs, volALieu, VOL, type GainRetenu } from './volDesBlocs';
 import { BlocsQuiVolent } from './BlocsQuiVolent';
-
-/** Le temps laissé à la phrase « Partie posée » avant qu’un bandeau de récompense ne tombe (DA-9). */
-const LAISSER_LIRE_LA_POSE_MS = 4000;
 
 const samePoint = (p: { x: number; y: number } | undefined, q: { x: number; y: number }) => Boolean(p) && p!.x === q.x && p!.y === q.y;
 
@@ -338,8 +335,7 @@ export function WorldPage() {
     const text = `Le village passe à l’état ${VILLAGE_STAGES[stageRank - 1].name} (${stageRank} sur 5). ${VILLAGE_STAGES[stageRank - 1].sight}`;
     // Après la phrase du plan ou de l'ouvrage qui vient de le faire monter.
     const timer = window.setTimeout(() => {
-      // À la suite de la phrase de la pose, s'il y en a une : jamais à sa place.
-      setVillageSaid((avant) => (avant ? `${avant} ${text}` : text));
+      setVillageSaid(text);
       if (settings.sounds) playBell();
       if (settings.autoRead) speak(frenchTypography(text));
     }, 2500);
@@ -666,10 +662,10 @@ export function WorldPage() {
 
   // ---- La pose d'une partie en vague (GD-6, Blocland) : « Voir le bâtiment » arrive ici avec la pose à montrer, une
   // fois (poseAMontrer.ts). La caméra ne bouge pas ; les cases de la partie restent vides jusqu'à ce que la vague les
-  // pose, couche par couche, un « clac » par couche ; puis le carillon et la phrase du panneau, écrite, avec « Écouter »
-  // (elle n'est pas lue d'office : l'écran de fin l'a déjà lue). Un toucher sur la scène pose tout d'un coup ; un appui
-  // sur Menu, l'archipel, Recentrer ou la barre garde son effet et pose la partie en silence. « Réduire les animations » :
-  // posée d'un coup, un seul « clac » et le carillon. Rien n'est enregistré ici : la partie l'est déjà, à l'écran de fin.
+  // pose, couche par couche, un « clac » par couche ; puis le carillon, sans phrase par-dessus le monde (la phrase est
+  // dans le panneau de l'île, avec « Écouter », pas lue d'office : l'écran de fin l'a déjà lue). Un toucher sur la
+  // scène pose tout d'un coup ; un appui sur Menu, l'archipel, Recentrer ou la barre garde son effet et pose la partie
+  // en silence. « Réduire les animations » : posée d'un coup, un seul « clac » et le carillon. Rien n'est enregistré ici : la partie l'est déjà, à l'écran de fin.
   const [sonDeLaPose] = useState(() => sonDePose(habillage.pose));
   useEffect(() => {
     if (!island || chantier !== 'part' || habillage.pose !== 'geste') return;
@@ -689,24 +685,15 @@ export function WorldPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [island?.id]);
   /**
-   * La pose finie (ou touchée) : la partie entière dans le monde, la phrase en haut (et dans le panneau), puis le carillon. `muet` :
-   * l'élève a pris un contrôle de la scène (Menu…), la phrase est là sans un son.
+   * La pose finie (ou touchée) : la partie entière dans le monde, puis le carillon. Aucune phrase par-dessus le monde
+   * (mot du mainteneur, 4 octobre 2026 : la notification après la pose est retirée) : la partie posée se voit ; la
+   * phrase reste dans le panneau de l'île, avec « Écouter ». `muet` : l'élève a pris un contrôle de la scène (Menu…),
+   * la partie est posée sans un son.
    */
   function direLaPose(biome: BiomeId, parties: Partie[], toc = false, muet = false) {
     setVague(null);
-    // Le panneau de l'île ne s'ouvre plus tout seul : la phrase s'écrit en haut, par-dessus le monde, avec « Écouter ».
-    // Écrite, avec « Écouter », pas relue d'office : l'écran de fin l'a déjà lue.
-    setVillageSaid(phraseDesPartiesPosees(parties));
     setPartiesDites((d) => ({ biome, parties, toc, muet, seq: (d?.seq ?? 0) + 1 }));
-    setPhraseALire(true);
   }
-  // Le temps de lire la phrase : un bandeau de récompense attend encore (un message à la fois, DA-9).
-  const [phraseALire, setPhraseALire] = useState(false);
-  useEffect(() => {
-    if (!phraseALire) return;
-    const timer = window.setTimeout(() => setPhraseALire(false), LAISSER_LIRE_LA_POSE_MS);
-    return () => window.clearTimeout(timer);
-  }, [phraseALire, partiesDites?.seq]);
   useEffect(() => {
     if (!partiesDites || partiesDites.muet) return;
     const dire = () => {
@@ -794,7 +781,7 @@ export function WorldPage() {
   // Un bandeau de récompense attend que le panneau ouvert se ferme (le tutoriel, le mot de la baleine, un rallumage, un
   // voyage), et aussi pendant l'instant qui précède le mot ou le rallumage attendu : il ne tombe jamais sur la phrase que
   // l'élève lit, ni ne s'affiche pour être caché aussitôt (DA-9).
-  useHoldCelebrations(!tutoDone || !!voyage || !!whaleNext || !!aRallumer || !!moment || !!motRallume || !!vague || !!vol || phraseALire);
+  useHoldCelebrations(!tutoDone || !!voyage || !!whaleNext || !!aRallumer || !!moment || !!motRallume || !!vague || !!vol);
   useEffect(() => {
     if (!aRallumer || moment) return;
     const timer = window.setTimeout(
@@ -900,7 +887,7 @@ export function WorldPage() {
   // Le vol, la caméra posée : de la borne de la mission (hors de l'écran : du centre de la scène) jusqu'à la pastille.
   // Jamais par-dessus une fiche, le tutoriel, un mot qui attend, un voyage ou un panneau : le chiffre change, sans vol.
   const empecheLeVol =
-    Boolean(ficheVue) || !tutoDone || Boolean(whaleWord || motRallume || renommageOuvert || moment || voyage) || Boolean(island && sheetOpen) || panelOpen || mapOpen || phraseALire;
+    Boolean(ficheVue) || !tutoDone || Boolean(whaleWord || motRallume || renommageOuvert || moment || voyage) || Boolean(island && sheetOpen) || panelOpen || mapOpen;
   /** Le vol fini (`arrive` : le dernier bloc est arrivé, la pastille rebondit) ou arrêté ; ce qui l'attendait suit. */
   const finirLeVol = (arrive: boolean) => {
     volEnCours.current = false;
