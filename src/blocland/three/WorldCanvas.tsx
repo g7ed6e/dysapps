@@ -854,7 +854,7 @@ export default function WorldCanvas({
       w.cubes.lancerLaVague(pose.cubes, (moment) => poseRef.current?.(moment));
       // Les captures d'un lot tiennent la pose à un moment choisi (la ruine, le mi-fondu) ou la mènent à sa fin.
       const tenue = window.__dysappsPoseA;
-      if (tenue !== undefined && (import.meta.env.DEV || mesuresDemandees())) w.cubes.tenirLaVague(tenue);
+      if (typeof tenue === 'number' && Number.isFinite(tenue) && (import.meta.env.DEV || mesuresDemandees())) w.cubes.tenirLaVague(tenue);
     } else w.cubes.arreterLaVague();
     // Pendant la vague, une plaque nouvelle se montre, mais les étiquettes attendent sa fin pour se replacer.
     w.signes.suivreLaVague(Boolean(pose));

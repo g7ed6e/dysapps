@@ -3679,6 +3679,19 @@ figure.class-table {
   border-color: var(--on-sand);
   color: var(--on-sand);
 }
+/* Archipéo en thème Clair, plat et sans ombre (manuel, Réglages) : ni ombre ni relief ; le bouton ouvert se marque par
+   le fond sable et un contour de 2 px Nuit océan (le directeur artistique, 4 octobre 2026). */
+:root[data-univers="archipeo"][data-theme="light"] .world-bar .button,
+:root[data-univers="archipeo"][data-theme="light"] .world-bar .button:active {
+  transform: none;
+  box-shadow: none;
+}
+:root[data-univers="archipeo"][data-theme="light"] .world-bar .button[aria-pressed="true"] {
+  transform: none;
+  box-shadow: none;
+  outline: 2px solid #142b38;
+  outline-offset: -2px;
+}
 /* Le compte des blocs : une pastille chiffrée au coin haut droit du bouton, qui déborde de 8 px sans réduire la cible,
    jamais rouge (le rouge dirait « à faire ») ; « 0 » s'affiche : la pastille ne disparaît jamais. La largeur suit le
    nombre. Dans Archipéo, une pastille ronde de sable ; Blocland en fait un bloc d'or (blocland.css). */
