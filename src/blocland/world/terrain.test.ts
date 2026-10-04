@@ -34,6 +34,8 @@ import {
   DEPTH,
   fade,
   groundHeight,
+  gardienDuMonde,
+  gardienEnPartieRallume,
   guardianPlacements,
   ISLAND,
   islandAt,
@@ -216,7 +218,7 @@ it("retrouve l'île sous un point, y compris depuis un pont", () => {
   expect(islandAt('6e', o.ox + ISLAND + 1, o.oy + ISLAND / 2)).toBe(BIOMES[1].id);
 });
 
-it('le Gardien apparaît sur un îlot devant son île quand il accepte le défi, puis en statue de pierre une fois vaincu', async () => {
+it('sans les Gardiens éteints, le Gardien apparaît sur un îlot devant son île quand il accepte le défi, en pierre, puis en couleurs une fois rallumé (GD-8)', async () => {
   const { typesWithContent } = await import('../boss');
   const { exercisesOf } = await import('../exercises');
   const { getBiome } = await import('../biomes');
@@ -229,6 +231,8 @@ it('le Gardien apparaît sur un îlot devant son île quand il accepte le défi,
   expect(worldCubes('6e', {}).some((c) => c.tag === 'french-6e-phonology' && c.y < landBox(islandDef('french-6e-phonology')).y0)).toBe(false);
   const [g] = guardianPlacements('6e', ready, []);
   expect(g).toMatchObject({ id: 'french-6e-phonology', kind: 'guardian', still: true, beaten: false });
+  // Prêt, il est encore éteint : en pierre grise (GD-8).
+  expect(g.cubes.every((c) => /^#([0-9a-f]{2})\1\1$/.test(c.color))).toBe(true);
   const islet = worldCubes('6e', ready).filter((c) => c.tag === 'french-6e-phonology' && c.y < front + ISLET_H);
   const cells = bossIsletCells('french-6e-phonology');
   const land = new Set(cells.map((c) => `${c.x},${c.y}`));
@@ -257,11 +261,11 @@ it('le Gardien apparaît sur un îlot devant son île quand il accepte le défi,
   for (const s of steps) expect(isLand(def, s.x, s.y) || land.has(`${s.x},${s.y}`)).toBe(false);
   const world = worldCubes('6e', ready);
   for (const s of steps) expect(world.some((c) => c.x === s.x && c.y === s.y && c.z === s.z && c.texture === 'galet')).toBe(true);
-  // Vaincu : statue grise et bloc d'or sur un socle de pierre, sur l'îlot, hors de l'emprise du Gardien.
+  // Rallumé : en couleurs (GD-8), et bloc d'or sur un socle de pierre, sur l'îlot, hors de l'emprise du Gardien.
   const beaten = { ...ready, 'french-6e-phonology-challenge': { stars: 2 } };
   const [s] = guardianPlacements('6e', beaten, []);
   expect(s.beaten).toBe(true);
-  expect(s.cubes.every((c) => /^#([0-9a-f]{2})\1\1$/.test(c.color))).toBe(true);
+  expect(s.cubes).toEqual(gardienDuMonde('french-6e-phonology').map((c) => expect.objectContaining({ color: c.color })));
   const gold = worldCubes('6e', beaten).find((c) => c.tag === 'french-6e-phonology' && c.y < front + ISLET_H && c.texture === 'or')!;
   expect(gold.z).toBe(2);
   expect(land.has(`${gold.x},${gold.y}`)).toBe(true);
@@ -975,4 +979,17 @@ describe('les bulles suivent la vue glissée (4 octobre 2026)', () => {
       expect(ileDeLaVueGlissee(a, x.id, { x: cy.x - cx.x, z: cy.y - cx.y })).toBe(y.id);
     }
   });
+});
+
+it('un Gardien qui se rallume au défi reprend ses couleurs des pieds vers la tête (GD-8)', () => {
+  const g = gardienDuMonde('french-6e-phonology');
+  const gris = (c: { color: string }) => /^#([0-9a-f]{2})\1\1$/.test(c.color);
+  expect(gardienEnPartieRallume(g, 0).every(gris)).toBe(true);
+  expect(gardienEnPartieRallume(g, 1)).toEqual(g);
+  const moitie = gardienEnPartieRallume(g, 0.5);
+  const bas = Math.min(...g.map((c) => c.z));
+  const haut = Math.max(...g.map((c) => c.z));
+  // Les pieds en couleurs, la tête encore en pierre.
+  expect(moitie.filter((c) => c.z === bas)).toEqual(g.filter((c) => c.z === bas));
+  expect(moitie.filter((c) => c.z === haut).every(gris)).toBe(true);
 });

@@ -246,7 +246,8 @@ export default function WorldCanvas2D({
       const xs = c.cubes.map((k) => k.x);
       const ys = c.cubes.map((k) => k.y);
       const mid = { x: (Math.min(...xs) + Math.max(...xs) + 1) / 2, y: (Math.min(...ys) + Math.max(...ys) + 1) / 2 };
-      const enPixels = () => voxelSprite(`${c.kind ?? 'creature'}:${c.id}`, c.cubes);
+      // Un Gardien éteint (en pierre) et rallumé (en couleurs) n'ont pas le même sprite (GD-8).
+      const enPixels = () => voxelSprite(`${c.kind ?? 'creature'}:${c.id}${allumageDuGardien(c) ? ':rallume' : ''}`, c.cubes);
       return { stroll: strolls[i], sprite: painted ? null : enPixels(), mid, allumage: allumageDuGardien(c), enPixels };
     });
   }, [creatures]);

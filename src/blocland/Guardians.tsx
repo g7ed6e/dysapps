@@ -1,5 +1,5 @@
 // Les Gardiens de biome : de grandes créatures originales en cubes, qui réagissent pendant le défi.
-import { lazy, Suspense, useState } from 'react';
+import { lazy, Suspense, useMemo, useState } from 'react';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { useSettings } from '../core/SettingsContext';
 import { useMoinsDAnimations } from '../core/mouvement';
@@ -8,6 +8,7 @@ import { habillageDuMonde } from './habillage';
 import { PersonnageCanvas, VoxelCanvas, hasWebGL } from './three';
 import { VoxelScene } from './Voxel';
 import { GUARDIAN_CUBES } from './world/personnages/gardiens';
+import { gardienEnPartieRallume } from './world/terrain';
 import type { Allumage } from './world/personnages/sentinelle';
 
 /** Le Gardien d'Archipéo en SVG (lot R6, avec l'habillage d'Archipéo, voir habillage.ts), chargé à la demande. */
@@ -22,8 +23,9 @@ interface Props {
   /** Change à chaque réaction, pour rejouer l'animation. */
   seq?: number;
   /**
-   * La sentinelle d'Archipéo : son allumage, donné par le défi (lot 6), et la durée de son fondu en secondes ; sans lui,
-   * elle s'allume d'un coup quand l'humeur devient « beaten ».
+   * Le Gardien éteint : son allumage, donné par le défi (lot 6, GD-8), et la durée de son fondu en secondes (la
+   * sentinelle d'Archipéo) ; en cubes, ses couleurs reviennent des pieds vers la tête. Sans lui, il s'allume d'un coup
+   * quand l'humeur devient « beaten ».
    */
   allumage?: Allumage;
   fondu?: number;
@@ -33,7 +35,10 @@ interface Props {
 export function Guardian3D({ biome, label, mood = 'idle', seq = 0, allumage: donne, fondu = 0 }: Props) {
   const { settings } = useSettings();
   const reduceMotion = useMoinsDAnimations();
-  const cubes = GUARDIAN_CUBES[biome];
+  // En cubes, la part rallumée suit l'allumage donné (la pierre à la victoire, sinon les lueurs) ; sans allumage, en
+  // couleurs.
+  const part = donne === undefined ? 1 : typeof donne === 'number' ? donne : Math.max(donne.pierre, donne.lueurs);
+  const cubes = useMemo(() => gardienEnPartieRallume(GUARDIAN_CUBES[biome], part), [biome, part]);
   // Les figures de l'habillage (habillage.ts) : le Gardien en sentinelle de pierre, éteinte, que le défi rallume
   // (lot 6) ou, sans allumage donné, rallumée d'un coup une fois vaincue ; sinon en cubes, inchangé.
   const [dessine] = useState(() => habillageDuMonde().figures === 'modeles');

@@ -35,9 +35,10 @@ import { PlusTardDit, RappelDeLaCreature, useRappelDeLaCreature } from './Rappel
  * (`missingForBoss`), ou qu'il faut d'abord un chemin jusqu'à son île. Le panneau de l'île et la fiche du Gardien.
  */
 export function explicationDuGardien(biome: BiomeDef, progress: Record<string, { stars: number }>, unlocked: boolean): string {
-  if (!unlocked) return 'Pas tout de suite ! Il faut d’abord un chemin jusqu’à cette île.';
+  if (!unlocked) return 'Il faut d’abord un chemin jusqu’à cette île.';
   const missing = missingForBoss(biome, progress);
-  return `Pas tout de suite ! ${biome.guardian} veut ${STARS_TO_UNLOCK} étoiles dans ${missing.length ? missing.join(', ') : 'chaque mission'}. Fais ces missions, puis reviens le défier.`;
+  // Ce qu'il attend, jamais ce qui manque ni ce qui a raté (GD-8).
+  return `${guardianTitle(biome)} attend son défi : ${STARS_TO_UNLOCK} étoiles dans ${missing.length ? missing.join(', ') : 'chaque mission'}.`;
 }
 
 interface Props {
@@ -211,7 +212,7 @@ export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight =
             {bossReady ? (
               <Link to={`/adventure/${biome.id}/challenge`} className="island-quest island-boss">
                 <span className="island-quest-icon boss-icon">
-                  <Icon name="shield" />
+                  <Icon name="flame" />
                 </span>
                 <span className="island-quest-text">
                   <span className="island-quest-title">{guardianTitle(biome)}</span>

@@ -7,6 +7,7 @@ import type { BiomeId } from '../biomes';
 import { AVATAR_PARTS, AVATAR_SCALE } from '../Avatar';
 import { piedsSur, type ChampDuSol } from '../world/landMesh';
 import { buildMesh } from '../world/mesher';
+import { gardienDuMonde, stoneOf } from '../world/terrain';
 import { avatarWalk, startStrolls, strollAt, walkPose, type Stroll, type Walk } from '../world/scene';
 import { hauteurDuSigne } from '../world/signe';
 import type { EnCasesDuMonde, WorldViewProps } from '../world/view';
@@ -48,8 +49,8 @@ export interface Habits {
   /** Les créatures bougent (rien avec « Réduire les animations »). */
   animer(t: number, reduit: boolean): void;
   /**
-   * Rallume la sentinelle d'un Gardien en fondu (lot 6), en `dureeMs` millisecondes (0 : d'un coup), quel que soit son
-   * placement ; `null` rend à chaque Gardien le degré de son placement. Les personnages en cubes n'en font rien.
+   * Rallume la sentinelle d'un Gardien en fondu (lot 6, GD-8), en `dureeMs` millisecondes (0 : d'un coup), quel que
+   * soit son placement ; `null` rend à chaque Gardien le degré de son placement.
    */
   rallumer?(id: BiomeId | null, dureeMs: number): void;
   /** Le geste du signe (GD-4, étape 1) ; les personnages d'Archipéo n'en font rien (ils ont déjà leur geste du bras). */
@@ -92,8 +93,49 @@ function habitsEnCubes(monde: Monde, champ: () => ChampDuSol | null, instant: In
   let walkers: Walker[] = [];
   /** Le début du geste de chaque créature qui fait signe, gardé quand les créatures sont reposées. */
   const signes = new Map<BiomeId, number>();
+  // Le rallumage en cours (GD-8) : le Gardien, le début et la durée de son fondu, et ses matériaux à lui (copiés de
+  // ceux du monde, partagés en cache), chacun du gris de sa pierre vers sa couleur.
+  let fondu: { id: BiomeId; t0: number; dureeMs: number; fini: boolean } | null = null;
+  let teintes: { materiau: THREE.MeshLambertMaterial; de: THREE.Color; vers: THREE.Color }[] = [];
+
+  const oublierLesTeintes = () => {
+    for (const t of teintes) t.materiau.dispose();
+    teintes = [];
+  };
+  /** Les teintes du fondu au temps présent (lissées), jusqu'à son terme. */
+  const teindre = () => {
+    if (!fondu) return;
+    const u = fondu.dureeMs > 0 ? Math.min(1, (performance.now() - fondu.t0) / fondu.dureeMs) : 1;
+    const k = u * u * (3 - 2 * u);
+    for (const t of teintes) t.materiau.color.copy(t.de).lerp(t.vers, k);
+    fondu.fini = u >= 1;
+  };
+  /** Le Gardien qui se rallume, habillé de ses couleurs sur des matériaux à lui, teints au degré du fondu. */
+  const habillerLeFondu = () => {
+    oublierLesTeintes();
+    if (!fondu) return;
+    const id = fondu.id;
+    const group = creaturesGroup.children.find((c) => c.userData.creature === id && c.userData.kind === 'guardian');
+    if (!group) return;
+    for (const child of [...group.children]) {
+      group.remove(child);
+      if (child instanceof THREE.Mesh) child.geometry.dispose();
+    }
+    for (const g of buildMesh(gardienDuMonde(id))) {
+      const mesh = meshOf(g, surface);
+      const source = mesh.material;
+      if (g.color && source instanceof THREE.MeshLambertMaterial) {
+        const materiau = source.clone();
+        teintes.push({ materiau, de: new THREE.Color(stoneOf(g.color)), vers: source.color.clone() });
+        mesh.material = materiau;
+      }
+      group.add(mesh);
+    }
+    teindre();
+  };
 
   const viderLesCreatures = () => {
+    oublierLesTeintes();
     for (const child of [...creaturesGroup.children]) {
       creaturesGroup.remove(child);
       child.traverse((o) => {
@@ -120,8 +162,12 @@ function habitsEnCubes(monde: Monde, champ: () => ChampDuSol | null, instant: In
         creaturesGroup.add(group);
         return { group, stroll: strolls[i], centre };
       });
+      // Reposés pendant un rallumage : le Gardien qui se rallume reprend son fondu là où il en est.
+      if (fondu) habillerLeFondu();
     },
     animer: (t, reduit) => {
+      // Le fondu du rallumage, jusqu'à son terme (d'un coup quand l'appareil demande moins d'animations : durée nulle).
+      if (fondu && !fondu.fini) teindre();
       if (reduit) return;
       // Créatures : petit balancement, et un pas de temps en temps.
       for (const { group, stroll, centre } of walkers) {
@@ -136,6 +182,12 @@ function habitsEnCubes(monde: Monde, champ: () => ChampDuSol | null, instant: In
     },
     faireSigne: (id, debut) => {
       signes.set(id, debut);
+    },
+    rallumer: (id, dureeMs) => {
+      if (id === (fondu?.id ?? null)) return;
+      fondu = id ? { id, t0: performance.now(), dureeMs, fini: false } : null;
+      // Plus de moment : le Gardien garde ses couleurs jusqu'à ce que les placements le reposent, rallumé.
+      if (fondu) habillerLeFondu();
     },
     dispose: () => {
       viderLesCreatures();

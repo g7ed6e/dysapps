@@ -213,7 +213,7 @@ function FicheDeLaBorne({ id, onClose }: Props & { id: string }) {
   );
 }
 
-/** Le Gardien : ce qui manque (une phrase), ou « Défier » quand il est prêt, déjà vaincu avec ses étoiles. */
+/** Le Gardien : ce qu'il attend (une phrase), ou « Rallumer » quand il est prêt, déjà rallumé avec ses étoiles (GD-8). */
 function FicheDuGardien({ ile, onClose }: Props & { ile: BiomeId }) {
   const { state } = useBlocland();
   const textes = useTextes();
@@ -228,14 +228,14 @@ function FicheDuGardien({ ile, onClose }: Props & { ile: BiomeId }) {
   return (
     <Fiche
       titre={titre}
-      icone="shield"
-      portrait={portraitsEnMedaillon() ? <VoxelScene cubes={vaincu ? statueDe(GUARDIAN_CUBES[ile]) : GUARDIAN_CUBES[ile]} s={12} pad={2} className="creature guardian-svg" /> : undefined}
+      icone="flame"
+      portrait={portraitsEnMedaillon() ? <VoxelScene cubes={vaincu ? GUARDIAN_CUBES[ile] : statueDe(GUARDIAN_CUBES[ile])} s={12} pad={2} className="creature guardian-svg" /> : undefined}
       lecture={`${titre}. ${phrase}`}
       onClose={onClose}
       actions={
         pret && (
           <Link to={`/adventure/${ile}/challenge`} className="button primary">
-            <Icon name="shield" /> Défier
+            <Icon name="flame" /> Rallumer
           </Link>
         )
       }

@@ -299,7 +299,7 @@ export interface Candidate {
 /** L'icône de ce qu'on fait sur un objet : celle du bouton de sa fiche (Jouer gagne des étoiles). */
 export function iconeDeLObjet(o: ObjetTouche): AnyIconName {
   if (o.genre === 'borne') return 'star';
-  if (o.genre === 'gardien') return 'shield';
+  if (o.genre === 'gardien') return 'flame';
   if (o.genre === 'navire') return 'ship';
   return 'hammer';
 }

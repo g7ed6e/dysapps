@@ -13,7 +13,8 @@ import { archipelagoOf, getArchipelago, isBiomeUnlocked } from './world/archipel
 import { beatenGuardians, stageTo, type VehicleStage } from './world/vehicle';
 import { nextArchipelago } from './world/archipelago';
 import { useBlocland } from './BloclandContext';
-import { STARS_TO_BEAT, bossDef, bossId, isBossBeaten, isBossOpen, missingForBoss } from './boss';
+import { STARS_TO_BEAT, bossDef, bossId, isBossBeaten, isBossOpen } from './boss';
+import { explicationDuGardien } from './IslandSheet';
 import { CreatureBubble } from './CreatureBubble';
 import { firstSentences } from './firstSentences';
 import { ExerciseRunner } from './ExerciseRunner';
@@ -145,7 +146,7 @@ export function BossPage() {
             text={textes.libelles.defiFerme(guardianTitle(biome), STARS_TO_BEAT)}
           />
           <p className="intro">
-            <Syllabified text={`Il te manque encore des étoiles dans : ${missingForBoss(biome, state.progress).join(', ')}.`} />
+            <Syllabified text={explicationDuGardien(biome, state.progress, true)} />
           </p>
           <Link to={`/adventure/${biome.id}`} className="button primary">
             <Icon name="back" /> Voir les missions

@@ -57,8 +57,8 @@ export function isBossOpen(biome: BiomeDef, progress: Record<string, { stars: nu
 export type GuardianStatus = 'hidden' | 'waiting' | 'ready' | 'beaten';
 
 /**
- * Le Gardien n'apparaît que lorsqu'il accepte le défi (son île ouverte) ; vaincu, il devient une statue. Avec
- * `sentinelles` (Archipéo, lot 6), il est là dès l'ouverture de l'île, en attente. Un Gardien vaincu le reste : une
+ * Sans `sentinelles`, le Gardien n'apparaît que lorsqu'il accepte le défi (son île ouverte). Avec (les deux univers
+ * depuis GD-8), il est là dès l'ouverture de l'île, éteint, en attente. Un Gardien rallumé le reste : une
  * mission ajoutée plus tard à son île, encore sans étoile, ne le cache ni ne l'éteint.
  */
 export function guardianStatus(biome: BiomeDef, progress: Record<string, { stars: number }>, bridges: string[], sentinelles = false): GuardianStatus {

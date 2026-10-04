@@ -978,14 +978,14 @@ describe('les fiches du monde (lot 2 de « Toucher le monde »)', () => {
     expect(within(f).getAllByRole('button').map((b) => b.getAttribute('aria-label'))).toEqual(['Fermer la fiche']);
   });
 
-  it('le Gardien : ce qui manque en une phrase, sans « Défier » tant qu’il n’est pas prêt ; « Défier » quand il l’est', async () => {
+  it('le Gardien : ce qu’il attend en une phrase, sans « Rallumer » tant qu’il n’est pas prêt ; « Rallumer » quand il l’est (GD-8)', async () => {
     vuSansAide();
     const user = userEvent.setup();
     renderAt('/adventure');
     await user.click(screen.getByRole('button', { name: 'Toucher le Gardien de la Forêt' }));
     const f = screen.getByRole('dialog', { name: 'Le Grand Chêne' });
-    expect(f).toHaveTextContent('Pas tout de suite ! le Grand Chêne veut 2 étoiles dans Abattage syllabique, Chasse au son, Rimes-échelle.');
-    expect(within(f).queryByRole('link', { name: /Défier/ })).not.toBeInTheDocument();
+    expect(f).toHaveTextContent('Le Grand Chêne attend son défi : 2 étoiles dans Abattage syllabique, Chasse au son, Rimes-échelle.');
+    expect(within(f).queryByRole('link', { name: /Rallumer/ })).not.toBeInTheDocument();
     cleanup();
     const { getBiome, missionsJouables } = await import('./biomes');
     const { exercisesOf } = await import('./exercises');
@@ -993,7 +993,7 @@ describe('les fiches du monde (lot 2 de « Toucher le monde »)', () => {
     localStorage.setItem('dysapps:game', JSON.stringify({ progress }));
     renderAt('/adventure');
     await user.click(screen.getByRole('button', { name: 'Toucher le Gardien de la Forêt' }));
-    await user.click(within(screen.getByRole('dialog', { name: 'Le Grand Chêne' })).getByRole('link', { name: 'Défier' }));
+    await user.click(within(screen.getByRole('dialog', { name: 'Le Grand Chêne' })).getByRole('link', { name: 'Rallumer' }));
     expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/french-6e-phonology/challenge');
   });
 
