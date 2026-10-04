@@ -1,11 +1,11 @@
-import { islandsOf } from './archipelago';
+import { bridgesOf, islandsOf } from './archipelago';
 import { ARCHIPELAGO_IDS } from './archipels';
 import { caseDArrivee, margeDeRecherche, resteDuTrajet, toucheLEau } from './arrivee';
 import { toutConstruit } from './budget';
 import { dispositionEnGrille } from './grille';
 import { isLand, islandDef, landBox, landCells } from './map';
 import { walkGround, walkPath } from './paths';
-import { avatarHome, casesDesLieux, creaturePlacements, guardianPlacements, worldCubes } from './terrain';
+import { avatarHome, casesDesLieux, creaturePlacements, guardianPlacements, tablier, worldCubes } from './terrain';
 
 const { progress, world: village } = toutConstruit();
 const monde = (a: (typeof ARCHIPELAGO_IDS)[number]) => {
@@ -115,5 +115,26 @@ describe('Changer de but en chemin', () => {
     expect(resteDuTrajet(route, { x: 2, y: 0, z: 1 })).toEqual([{ x: 2, y: 0, z: 1 }, route[1], route[2], route[3]]);
     expect(resteDuTrajet(route, { x: 4, y: 3, z: 1 })).toEqual([{ x: 4, y: 3, z: 1 }, route[2], route[3]]);
     expect(resteDuTrajet([route[0]], { x: 0, y: 0, z: 1 })).toEqual([{ x: 0, y: 0, z: 1 }, route[0]]);
+  });
+});
+
+describe('Au pied des ouvrages', () => {
+  it('le bonhomme va à pied de sa place au bout de chaque ouvrage de son île : aucun arbre ne bouche la sortie', () => {
+    for (const a of ARCHIPELAGO_IDS) {
+      const { ground } = monde(a);
+      for (const ile of islandsOf(a)) {
+        const home = avatarHome(ile.id);
+        const bouts = bridgesOf(ile.id)
+          .filter((b) => village.links.includes(b.id))
+          .map((b) => tablier(b, ile.id))
+          .filter((deck) => deck.length)
+          .map((deck) => deck[0]);
+        for (const bout of bouts) {
+          expect(walkPath(ground, home, bout), `${ile.id} : sa place → ${bout.x},${bout.y}`).not.toBeNull();
+          // D'un ouvrage à l'autre aussi (une île traversée).
+          for (const autre of bouts) if (autre !== bout) expect(walkPath(ground, bout, autre), `${ile.id} : ${bout.x},${bout.y} → ${autre.x},${autre.y}`).not.toBeNull();
+        }
+      }
+    }
   });
 });

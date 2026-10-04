@@ -199,7 +199,7 @@ export function creerPersonnages(monde: Monde, champ: () => ChampDuSol | null, i
       avatarGroup.visible = visible;
     },
     marcher: (avatar) => {
-      // Six cases par seconde, mais jamais plus de six secondes de marche (un tap dans le vide fait arriver tout de suite).
+      // Six cases par seconde, toujours (un toucher dans le vide fait arriver tout de suite).
       p.marche = p.trajet = avatarWalk(avatar, performance.now(), monde.archipel);
     },
     poserLesCreatures: (creatures) => {

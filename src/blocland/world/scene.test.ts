@@ -2,7 +2,7 @@ import { islandsOf } from './archipelago';
 import { boardingRoute, islandAt, islandCenter } from './terrain';
 import {
   ARROW_DIRS,
-  WALK_MAX_MS,
+  WALK_SPEED,
   avatarWalk,
   boardingWalk,
   cubeTags,
@@ -24,10 +24,11 @@ const A = { x: 0, y: 0, z: 1 };
 const B = { x: 12, y: 0, z: 1 };
 
 describe('la marche du bonhomme', () => {
-  it('le premier placement est immédiat ; un trajet dure six cases par seconde, six secondes au plus', () => {
+  it('le premier placement est immédiat ; un trajet dure six cases par seconde, quelle que soit sa longueur', () => {
     expect(avatarWalk({ route: [A, B], seq: 0 }, 0)!.duration).toBe(1);
     expect(avatarWalk({ route: [A, B], seq: 1 }, 0)!.duration).toBe(2000);
-    expect(avatarWalk({ route: [A, { x: 600, y: 0, z: 1 }], seq: 1 }, 0)!.duration).toBe(WALK_MAX_MS);
+    // Un long trajet ne file pas : même pas que sur une île.
+    expect(avatarWalk({ route: [A, { x: 600, y: 0, z: 1 }], seq: 1 }, 0)!.duration).toBe((600 / WALK_SPEED) * 1000);
     expect(avatarWalk({ route: [], seq: 1 }, 0)).toBeNull();
     // Un seul point : il se tient là.
     const still = walkPose(avatarWalk({ route: [B], seq: 1 }, 0)!, 10);

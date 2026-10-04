@@ -15,14 +15,16 @@ import { getMonument } from './monuments';
 import { walkGround, walkPath, type Cell, type CreaturePlacement, type WalkGround } from './paths';
 import { avatarHome, avatarRoute, bossIsletCenter, bridgePath, casesDeLOuvrage, casesDesLieux, islandAt, islandCenter, monumentCenter, origineDe, placeDoor, placesDeLaFleche, questStations, routeLengths, viewZone, worldBounds } from './terrain';
 
-/** Le bonhomme marche à six cases par seconde ; au-delà de six secondes, il accélère. */
+/**
+ * Le bonhomme marche à six cases par seconde, toujours : sur son île comme d'une île à l'autre, sans plafond qui le ferait
+ * filer sur un long trajet (04/10/2026). Toucher le vide pendant la marche le fait arriver tout de suite.
+ */
 export const WALK_SPEED = 6;
-export const WALK_MAX_MS = 6000;
 
-/** Le temps d'un trajet du bonhomme : six cases par seconde, jamais plus de six secondes. */
+/** Le temps d'un trajet du bonhomme : six cases par seconde, quelle que soit sa longueur. */
 export function dureeDeMarche(route: Point[]): number {
   if (route.length < 2) return 0;
-  return Math.min(WALK_MAX_MS, (routeLengths(route)[route.length - 1] / WALK_SPEED) * 1000);
+  return (routeLengths(route)[route.length - 1] / WALK_SPEED) * 1000;
 }
 
 /** Les bouts d'un trajet, quand ce ne sont pas les places habituelles : là où il s'arrête, là d'où il part. */

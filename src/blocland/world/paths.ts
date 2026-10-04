@@ -28,7 +28,7 @@ export interface CreaturePlacement {
 }
 
 /** Le décor qu'on enjambe (bas, au ras du sol) ; le reste barre le passage. */
-const LOW: ReadonlySet<string> = new Set(['fleur', 'champignon', 'roseau']);
+export const LOW: ReadonlySet<string> = new Set(['fleur', 'champignon', 'roseau']);
 
 /** Le genre d'un élément de décor d'après son nom (« foret/cœur:arbre@8,2 » : un arbre). */
 function decorKind(decor: string): string {
