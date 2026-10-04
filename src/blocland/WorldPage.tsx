@@ -357,8 +357,8 @@ export function WorldPage() {
   const trail = useMemo(() => (remaining.length ? remaining.flatMap((b) => grille.liaison(b.id).map((p) => grille.versIle(p))) : undefined), [remaining, grille]);
   const [replay, setReplay] = useState(0);
   const stageRef = useRef<HTMLDivElement>(null);
-  // Revoir l'aide (le « ? » d'Archipéo, la ligne « Aide du village » du menu de Blocland) rouvre le tutoriel : comme la
-  // première fois, le reste attend qu'il soit fermé (DA-9).
+  // Revoir l'aide (la ligne « Aide du village » du menu, dans les deux univers depuis le 4 octobre 2026) rouvre le
+  // tutoriel : comme la première fois, le reste attend qu'il soit fermé (DA-9).
   const revoirAide = () => {
     setTutoDone(false);
     setReplay((n) => n + 1);
@@ -1340,13 +1340,6 @@ export function WorldPage() {
               </span>
             </button>
           )}
-          {/* Blocland : plus de « ? » dans la barre (mot du mainteneur, 4 octobre 2026) ; l'aide du village se revoit
-              depuis le menu, celle de la Carte vient seule la première fois. Archipéo garde son « ? ». */}
-          {univers !== 'blocland' && (
-            <button type="button" className="button" onClick={revoirAide} aria-label="Revoir l’aide">
-              <Icon name="help" />
-            </button>
-          )}
         </nav>
         {vol?.phase === 'vol' && vol.depart && vol.arrivee && (
           <BlocsQuiVolent key={vol.seq} bloc={vol.gain.bloc} nombre={vol.gain.nombre} depart={vol.depart} arrivee={vol.arrivee} onArrive={() => finirLeVol(true)} />
@@ -1374,15 +1367,11 @@ export function WorldPage() {
         <MenuSheet
           onClose={() => navigate('/adventure')}
           onAller={openIsland}
-          onAide={
-            univers === 'blocland'
-              ? () => {
-                  aideDepuisLeMenu.current = true;
-                  navigate('/adventure');
-                  revoirAide();
-                }
-              : undefined
-          }
+          onAide={() => {
+            aideDepuisLeMenu.current = true;
+            navigate('/adventure');
+            revoirAide();
+          }}
         />
       ) : (
         island &&
