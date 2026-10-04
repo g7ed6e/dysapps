@@ -359,7 +359,7 @@ it('quand l’appareil demande moins d’animations, le voyage est un écran fix
   expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/maths-5e-proportionality');
 });
 
-it('« Aller au port » d’un archipel déjà atteint : un fondu court, sans cinématique, et une ligne qui dit où l’on arrive', async () => {
+it('« Aller au port » d’un archipel déjà atteint : un fondu court, sans cinématique, et sans rien dire : le mot d’arrivée ne se répète pas', async () => {
   localStorage.setItem('dysapps:game', JSON.stringify({ world: { links: ['maths-6e-calculation-maths-6e-fractions', 'passage-5e'], place: 'maths-6e-fractions' } }));
   const user = userEvent.setup();
   renderAt('/adventure/world');
@@ -367,7 +367,7 @@ it('« Aller au port » d’un archipel déjà atteint : un fondu court, sans ci
   await user.click(screen.getByRole('button', { name: /Aller au port : Marché des proportions/ }));
   // Pas de voyage joué : le voile, puis l'arrivée au port d'en face, le monde en plein écran.
   expect(screen.getByTestId('voyage')).toHaveTextContent('aucun');
-  expect(document.body.textContent).toContain('Archipel de 5e : les Collines du Large');
+  expect(document.body.textContent).not.toContain('Collines du Large');
   await waitFor(() => expect(screen.getByTestId('archipel')).toHaveTextContent('5e'), { timeout: 2000 });
   expect(screen.getByTestId('voyage')).toHaveTextContent('aucun');
   await waitFor(() => expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/maths-5e-proportionality'));
@@ -379,7 +379,7 @@ it('une île ouverte d’un autre archipel (lien, retour d’exercice) : on y ar
   localStorage.setItem('dysapps:game', JSON.stringify({ world: { links: ['passage-5e'], place: 'maths-5e-proportionality' } }));
   renderAt('/adventure/french-6e-phonology');
   expect(screen.getByTestId('voyage')).toHaveTextContent('aucun');
-  expect(document.body.textContent).toContain('Archipel de 6e : les Basses Terres');
+  expect(document.body.textContent).not.toContain('Basses Terres');
   await waitFor(() => expect(screen.getByTestId('archipel')).toHaveTextContent('6e'), { timeout: 5000 });
   expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/french-6e-phonology');
   expect(screen.getByTestId('cadrage')).toHaveTextContent('french-6e-phonology');

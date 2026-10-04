@@ -378,9 +378,8 @@ export function WorldPage() {
   };
   useEffect(() => clearTimers, []);
   // Un voyage déjà fait (retour, ou un archipel déjà atteint) : pas de cinématique, un fondu court vers l'île demandée,
-  // et une ligne qui dit où l'on arrive. La cinématique reste pour le premier voyage vers un archipel.
-  const [hopTo, setHopTo] = useState<ArchipelagoId | null>(null);
-  const hop = (to: ArchipelagoId, dest: BiomeId) => {
+  // sans rien dire. La cinématique et le mot d'arrivée (une seule fois, voir useWhaleWord) restent pour le premier voyage.
+  const hop = (dest: BiomeId) => {
     clearTimers();
     const land = () => {
       moveTo(dest);
@@ -388,8 +387,6 @@ export function WorldPage() {
       setFocus((f) => ({ island: dest, seq: f.seq + 1 }));
       if (biomeId !== dest) navigate(`/adventure/${dest}`);
     };
-    setHopTo(to);
-    later(() => setHopTo(null), 3500);
     if (reduceMotion) return land();
     setVeil(true);
     later(() => {
@@ -398,7 +395,7 @@ export function WorldPage() {
     }, VEIL_MS / 2);
   };
   const onBoard = (to: ArchipelagoId, back: boolean, dest: BiomeId = getArchipelago(to).port) => {
-    if (back) return hop(to, dest);
+    if (back) return hop(dest);
     clearTimers();
     const trip = { to, from: a, back, dest, bridges: state.world.links, reduceMotion };
     if (reduceMotion) return setVoyage((v) => nouveauVoyage({ ...trip, approach: false }, v));
@@ -1070,7 +1067,7 @@ export function WorldPage() {
   // Une chose à la fois : la phrase du village et celle d'une créature attendent que la fiche ouverte soit fermée.
   const phraseDuVillage = villageSaid && !whaleWord && !renommageOuvert && !ficheVue;
   const phraseDeCreature = said && !ficheVue ? said : null;
-  const bulleEnHaut = Boolean(ligneDuVoyage || panneauDeLaCarte || hopTo || phraseDuVillage || phraseDeCreature);
+  const bulleEnHaut = Boolean(ligneDuVoyage || panneauDeLaCarte || phraseDuVillage || phraseDeCreature);
   // Un panneau en plein écran par-dessus le monde (l'île, un lieu, Blocs, le menu, le voyage sans animation).
   const pleinEcran = Boolean((island && sheetOpen) || (panelOpen && !mapOpen) || voyage?.mode === 'panel');
   // Le focus suit le plein écran : sur la croix du panneau qui s'ouvre (la barre du bas, dessous, devient inerte), puis
@@ -1155,7 +1152,7 @@ export function WorldPage() {
         </Suspense>
         <div className={`world-veil${veil ? ' on' : ''}`} aria-hidden="true" />
         {/* Sous le bouton Menu : une classe par archipel atteint, la sienne marquée ; un toucher change de classe. */}
-        {!voyage && <ArchipelSwitcher current={a} bridges={state.world.links} onGo={(to) => hop(to, getArchipelago(to).port)} />}
+        {!voyage && <ArchipelSwitcher current={a} bridges={state.world.links} onGo={(to) => hop(getArchipelago(to).port)} />}
         {/* Le menu du village, toujours en haut à droite, comme la pause d'un jeu. */}
         {!voyage && (
           <button
@@ -1201,11 +1198,6 @@ export function WorldPage() {
               <button type="button" className="button" onClick={() => voirOuvrage(remaining[0].id)}>
                 <Icon name="hammer" /> Voir le premier ouvrage
               </button>
-            </div>
-          )}
-          {hopTo && (
-            <div className="creature-line world-line hop-line" role="status" aria-live="polite">
-              <Icon name="ship" /> Archipel de {hopTo} : les {textes.archipels[hopTo]}
             </div>
           )}
           {phraseDuVillage && (
