@@ -1841,15 +1841,19 @@ function bossIslet(biome: BiomeDef, beaten: boolean, cubes: VoxelCube[], pas = t
   }
 }
 
-/** Gris de pierre de même luminosité qu'une couleur (pour la statue). */
+/**
+ * La pierre éteinte d'une couleur (pour la statue d'un Gardien qui attend d'être rallumé) : un gris froid, un peu bleu,
+ * plus sombre que la couleur, qui suit sa luminosité. Froid et sombre pour que les Gardiens déjà gris (le Golem, le Lion
+ * de pierre, le Titan…) se voient éteints, puis rallumés dès la première épreuve (GD-8, consultant de Blocland).
+ */
 export function stoneOf(color: string): string {
   const n = parseInt(color.slice(1), 16);
   const lum = ((n >> 16) & 255) * 0.3 + ((n >> 8) & 255) * 0.59 + (n & 255) * 0.11;
-  const g = Math.round(90 + (lum / 255) * 90);
-  return `#${((g << 16) | (g << 8) | g).toString(16).padStart(6, '0')}`;
+  const g = Math.round(64 + (lum / 255) * 76);
+  return `#${(((g - 8) << 16) | (g << 8) | (g + 16)).toString(16).padStart(6, '0')}`;
 }
 
-/** Un Gardien éteint, en statue de pierre : chaque cube, et son dessus, en gris de même luminosité (le fondu du rallumage part de ces gris). */
+/** Un Gardien éteint, en statue de pierre : chaque cube, et son dessus, en pierre éteinte (`stoneOf` ; le fondu du rallumage part de ces gris). */
 export function statueDe<C extends { color: string; top?: string }>(cubes: readonly C[]): C[] {
   return cubes.map((c) => ({ ...c, color: stoneOf(c.color), top: c.top === undefined ? undefined : stoneOf(c.top) }));
 }

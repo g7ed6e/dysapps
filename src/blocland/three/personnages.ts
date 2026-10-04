@@ -7,7 +7,7 @@ import type { BiomeId } from '../biomes';
 import { AVATAR_PARTS, AVATAR_SCALE } from '../Avatar';
 import { piedsSur, type ChampDuSol } from '../world/landMesh';
 import { buildMesh } from '../world/mesher';
-import { gardienDuMonde, stoneOf } from '../world/terrain';
+import { gardienDuMonde, statueDe } from '../world/terrain';
 import { avatarWalk, startStrolls, strollAt, walkPose, type Stroll, type Walk } from '../world/scene';
 import { hauteurDuSigne } from '../world/signe';
 import type { EnCasesDuMonde, WorldViewProps } from '../world/view';
@@ -93,49 +93,51 @@ function habitsEnCubes(monde: Monde, champ: () => ChampDuSol | null, instant: In
   let walkers: Walker[] = [];
   /** Le début du geste de chaque créature qui fait signe, gardé quand les créatures sont reposées. */
   const signes = new Map<BiomeId, number>();
-  // Le rallumage en cours (GD-8) : le Gardien, le début et la durée de son fondu, et ses matériaux à lui (copiés de
-  // ceux du monde, partagés en cache), chacun du gris de sa pierre vers sa couleur.
+  // Le rallumage en cours (GD-8) : le Gardien, le début et la durée de son fondu, et ses couches de cubes, des pieds vers
+  // la tête, chacune en pierre puis en couleurs. Chaque couche passe d'un coup, comme pendant le défi (pas de teinte
+  // entre les deux) ; les couches ne vivent que le temps du moment, les placements suivants le reposent d'un bloc.
   let fondu: { id: BiomeId; t0: number; dureeMs: number; fini: boolean } | null = null;
-  let teintes: { materiau: THREE.MeshLambertMaterial; de: THREE.Color; vers: THREE.Color }[] = [];
+  let couches: { pierre: THREE.Group; couleurs: THREE.Group }[] = [];
 
-  const oublierLesTeintes = () => {
-    for (const t of teintes) t.materiau.dispose();
-    teintes = [];
-  };
-  /** Les teintes du fondu au temps présent (lissées), jusqu'à son terme. */
+  /** Les couches rallumées au temps présent, jusqu'au terme du fondu. */
   const teindre = () => {
     if (!fondu) return;
     const u = fondu.dureeMs > 0 ? Math.min(1, (performance.now() - fondu.t0) / fondu.dureeMs) : 1;
-    const k = u * u * (3 - 2 * u);
-    for (const t of teintes) t.materiau.color.copy(t.de).lerp(t.vers, k);
+    const allumees = Math.ceil(u * couches.length);
+    couches.forEach((c, i) => {
+      c.pierre.visible = i >= allumees;
+      c.couleurs.visible = i < allumees;
+    });
     fondu.fini = u >= 1;
   };
-  /** Le Gardien qui se rallume, habillé de ses couleurs sur des matériaux à lui, teints au degré du fondu. */
+  /** Le Gardien qui se rallume, rebâti couche par couche, chacune en pierre et en couleurs. */
   const habillerLeFondu = () => {
-    oublierLesTeintes();
+    couches = [];
     if (!fondu) return;
     const id = fondu.id;
     const group = creaturesGroup.children.find((c) => c.userData.creature === id && c.userData.kind === 'guardian');
     if (!group) return;
     for (const child of [...group.children]) {
       group.remove(child);
-      if (child instanceof THREE.Mesh) child.geometry.dispose();
+      child.traverse((o) => {
+        if (o instanceof THREE.Mesh) o.geometry.dispose();
+      });
     }
-    for (const g of buildMesh(gardienDuMonde(id))) {
-      const mesh = meshOf(g, surface);
-      const source = mesh.material;
-      if (g.color && source instanceof THREE.MeshLambertMaterial) {
-        const materiau = source.clone();
-        teintes.push({ materiau, de: new THREE.Color(stoneOf(g.color)), vers: source.color.clone() });
-        mesh.material = materiau;
-      }
-      group.add(mesh);
+    const cubes = gardienDuMonde(id);
+    for (const z of [...new Set(cubes.map((c) => c.z))].sort((a, b) => a - b)) {
+      const couche = cubes.filter((c) => c.z === z);
+      const pierre = new THREE.Group();
+      const couleurs = new THREE.Group();
+      for (const g of buildMesh(statueDe(couche))) pierre.add(meshOf(g, surface));
+      for (const g of buildMesh(couche)) couleurs.add(meshOf(g, surface));
+      group.add(pierre, couleurs);
+      couches.push({ pierre, couleurs });
     }
     teindre();
   };
 
   const viderLesCreatures = () => {
-    oublierLesTeintes();
+    couches = [];
     for (const child of [...creaturesGroup.children]) {
       creaturesGroup.remove(child);
       child.traverse((o) => {

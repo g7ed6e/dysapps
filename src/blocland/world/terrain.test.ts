@@ -72,6 +72,13 @@ import {
   ileDeLaVueGlissee,
 } from './terrain';
 
+/** La pierre éteinte d'une statue (`stoneOf`) : un gris froid, bleu de 24 de plus que le rouge. */
+const estPierre = (hex: string) => {
+  const n = parseInt(hex.slice(1), 16);
+  const [r, v, b] = [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  return v - r === 8 && b - v === 16;
+};
+
 const village = (bridges: string[]) => ({ parts: {}, log: [], links: bridges });
 /** Tous les archipels d'un coup, pour les tests qui parcourent toutes les îles. */
 const allCubes = (progress: Record<string, { stars: number }>, v = village([]), withCreatures = true) =>
@@ -232,7 +239,7 @@ it('sans les Gardiens éteints, le Gardien apparaît sur un îlot devant son îl
   const [g] = guardianPlacements('6e', ready, []);
   expect(g).toMatchObject({ id: 'french-6e-phonology', kind: 'guardian', still: true, beaten: false });
   // Prêt, il est encore éteint : en pierre grise (GD-8).
-  expect(g.cubes.every((c) => /^#([0-9a-f]{2})\1\1$/.test(c.color))).toBe(true);
+  expect(g.cubes.every((c) => estPierre(c.color))).toBe(true);
   const islet = worldCubes('6e', ready).filter((c) => c.tag === 'french-6e-phonology' && c.y < front + ISLET_H);
   const cells = bossIsletCells('french-6e-phonology');
   const land = new Set(cells.map((c) => `${c.x},${c.y}`));
@@ -983,7 +990,7 @@ describe('les bulles suivent la vue glissée (4 octobre 2026)', () => {
 
 it('un Gardien qui se rallume au défi reprend ses couleurs des pieds vers la tête (GD-8)', () => {
   const g = gardienDuMonde('french-6e-phonology');
-  const gris = (c: { color: string }) => /^#([0-9a-f]{2})\1\1$/.test(c.color);
+  const gris = (c: { color: string }) => estPierre(c.color);
   expect(gardienEnPartieRallume(g, 0).every(gris)).toBe(true);
   expect(gardienEnPartieRallume(g, 1)).toEqual(g);
   const moitie = gardienEnPartieRallume(g, 0.5);

@@ -1,9 +1,9 @@
-// Le rallumage d'un Gardien en cubes (GD-8) : sans WebGL (jsdom), on vérifie les teintes du fondu, les placements
-// reposés pendant le fondu et la libération des matériaux copiés.
+// Le rallumage d'un Gardien en cubes (GD-8) : sans WebGL (jsdom), on vérifie ses couches, de la pierre aux couleurs,
+// les placements reposés pendant le fondu et la libération des géométries.
 import * as THREE from 'three';
 import { HABILLAGES } from '../habillage';
 import { toutConstruit } from '../world/budget';
-import { guardianPlacements, stoneOf } from '../world/terrain';
+import { guardianPlacements } from '../world/terrain';
 import type { Instant, Monde } from './partie';
 import { creerPersonnages } from './personnages';
 
@@ -27,16 +27,22 @@ const instant = (): Instant => ({
   but: { target: new THREE.Vector3(), pos: new THREE.Vector3() },
 });
 
-/** Les matériaux des maillages d'un Gardien posé. */
-function materiaux(p: ReturnType<typeof creerPersonnages>, id: string): THREE.MeshLambertMaterial[] {
+/** Les couleurs des maillages visibles d'un Gardien posé. */
+function couleursVisibles(p: ReturnType<typeof creerPersonnages>, id: string): string[] {
   const group = p.creatures.children.find((c) => c.userData.creature === id && c.userData.kind === 'guardian');
-  const out: THREE.MeshLambertMaterial[] = [];
-  group?.traverse((o) => {
-    if (o instanceof THREE.Mesh && o.material instanceof THREE.MeshLambertMaterial) out.push(o.material);
+  const out: string[] = [];
+  group?.traverseVisible((o) => {
+    if (o instanceof THREE.Mesh && o.material instanceof THREE.MeshLambertMaterial) out.push(`#${o.material.color.getHexString()}`);
   });
   return out;
 }
-const hex = (c: THREE.Color) => `#${c.getHexString()}`;
+
+/** La pierre éteinte d'une statue (`stoneOf`) : un gris froid, bleu de 24 de plus que le rouge. */
+const estPierre = (hex: string) => {
+  const n = parseInt(hex.slice(1), 16);
+  const [r, v, b] = [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  return v - r === 8 && b - v === 16;
+};
 
 describe('Le rallumage d’un Gardien en cubes', () => {
   const gardiens = guardianPlacements('6e', progress, village.links);
@@ -44,24 +50,23 @@ describe('Le rallumage d’un Gardien en cubes', () => {
 
   afterEach(() => vi.restoreAllMocks());
 
-  it('part du gris de sa pierre et finit dans ses couleurs, sur des matériaux à lui', () => {
+  it('part tout en pierre, se rallume couche par couche des pieds vers la tête, et finit dans ses couleurs', () => {
     let maintenant = 1000;
     vi.spyOn(performance, 'now').mockImplementation(() => maintenant);
     const p = creerPersonnages(monde(), () => null, instant(), null);
     p.poserLesCreatures(gardiens);
-    const partages = new Set(materiaux(p, id));
     p.rallumer(id, 1000);
-    const debut = materiaux(p, id);
+    const debut = couleursVisibles(p, id);
     expect(debut.length).toBeGreaterThan(0);
-    // Des copies : le cache du monde, partagé, n'est jamais teint.
-    expect(debut.some((m) => partages.has(m))).toBe(false);
-    const gris = debut.map((m) => hex(m.color));
-    expect(gris.every((g) => /^#([0-9a-f]{2})\1\1$/.test(g))).toBe(true);
+    expect(debut.every(estPierre)).toBe(true);
+    maintenant = 1500;
+    p.animer?.(1, 0.016, false);
+    const milieu = couleursVisibles(p, id);
+    expect(milieu.some(estPierre)).toBe(true);
+    expect(milieu.some((c) => !estPierre(c))).toBe(true);
     maintenant = 2000;
     p.animer?.(1, 0.016, false);
-    const fin = materiaux(p, id).map((m) => hex(m.color));
-    expect(fin).not.toEqual(gris);
-    fin.forEach((c, i) => expect(stoneOf(c)).toBe(gris[i]));
+    expect(couleursVisibles(p, id).some(estPierre)).toBe(false);
     p.dispose();
   });
 
@@ -70,24 +75,20 @@ describe('Le rallumage d’un Gardien en cubes', () => {
     p.poserLesCreatures(gardiens);
     p.rallumer(id, 0);
     p.animer?.(0, 0.016, true);
-    const couleurs = materiaux(p, id).map((m) => hex(m.color));
-    expect(couleurs.some((c) => !/^#([0-9a-f]{2})\1\1$/.test(c))).toBe(true);
+    expect(couleursVisibles(p, id).some(estPierre)).toBe(false);
     p.dispose();
   });
 
-  it('reposé pendant le fondu, il le reprend sans garder les anciennes copies', () => {
-    const dispose = vi.spyOn(THREE.Material.prototype, 'dispose');
+  it('reposé pendant le fondu, il le reprend et libère les couches d’avant', () => {
+    const dispose = vi.spyOn(THREE.BufferGeometry.prototype, 'dispose');
     const p = creerPersonnages(monde(), () => null, instant(), null);
     p.poserLesCreatures(gardiens);
     p.rallumer(id, 1000);
-    const copies = materiaux(p, id);
+    const avant = dispose.mock.calls.length;
     p.poserLesCreatures(gardiens);
-    expect(materiaux(p, id)).toHaveLength(copies.length);
-    expect(materiaux(p, id).some((m) => copies.includes(m))).toBe(false);
-    expect(dispose.mock.contexts.filter((m) => copies.includes(m as THREE.MeshLambertMaterial))).toHaveLength(copies.length);
-    // À la fin, les copies du fondu en cours sont libérées aussi.
-    const dernieres = materiaux(p, id);
+    expect(dispose.mock.calls.length).toBeGreaterThan(avant);
+    // Rebâti couche par couche : la tête encore en pierre, le fondu reprend là où il en est.
+    expect(couleursVisibles(p, id).some(estPierre)).toBe(true);
     p.dispose();
-    expect(dispose.mock.contexts.filter((m) => dernieres.includes(m as THREE.MeshLambertMaterial))).toHaveLength(dernieres.length);
   });
 });
