@@ -80,6 +80,7 @@ export default function WorldCanvas({
   forceDay = false,
   bridges = [],
   marker: markerEnAncrage = null,
+  imageDeLaCarte = null,
   vehicle = null,
   voyage = null,
   avatar: avatarEnAncrages,
@@ -870,6 +871,14 @@ export default function WorldCanvas({
   useEffect(() => {
     world.current?.bornes.poserLaFleche(marker);
   }, [marker]);
+
+  // ---- Blocland, sur la Carte : l'image de la bulle d'or de la prochaine destination
+  const cleDeLImageDeLaCarte = imageDeLaCarte ? JSON.stringify(imageDeLaCarte) : '';
+  useEffect(() => {
+    world.current?.etiquettes.poserLImageDeLaCarte(imageDeLaCarte);
+    // La scène refaite (mouvement réduit, archipel) repart sur l'étoile : l'image s'y repose.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cleDeLImageDeLaCarte, reduceMotion, archipelago]);
 
   // ---- Le nom des îles ouvertes (une texture par étiquette, refaite quand la liste change) ; sur la Carte, leur état
   const labelsKey = (islandLabels ?? []).map((l) => `${l.id}:${l.text}:${l.state?.id ?? ''}`).join('|');

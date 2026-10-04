@@ -36,7 +36,7 @@ import type { LabelBox } from '../world/labelLayout';
 import type { PlaceLue, Rect } from '../placeLibre';
 
 /** Une case de la texture, en pixels (la plaque et son icône, assez grandes pour un écran à deux pixels par point). */
-const CASE = 128;
+export const CASE = 128;
 /** Quatre cases par côté : seize icônes, plus que d'îles dans un archipel. */
 const COTE = 4;
 export const SIGNES_MAX = COTE * COTE;
@@ -113,11 +113,11 @@ const cleDeLImage = (image: ImageDuSigne, enAvant = false, sansPointe = false): 
  * La bulle de Blocland dans sa case, en pixels de la case : la plaque (son ombre nette en dessous, sa pointe vers
  * l'objet), son côté, son bord sombre et, mise en avant, son bord d'or ; le centre de l'image.
  */
-const PLAQUE = { x: 16, y: 4, cote: 96, coin: 8, ombre: 6, bord: 5, or: 6, pointe: { demi: 12, bas: 122 } } as const;
+export const PLAQUE = { x: 16, y: 4, cote: 96, coin: 8, ombre: 6, bord: 5, or: 6, pointe: { demi: 12, bas: 122 } } as const;
 /** L'or de la bulle mise en avant : celui de l'interface de Blocland (`--sand`). */
 const OR = '#e0b73f';
 /** La taille à l'écran d'une case de Blocland : la plaque fait `BULLE.px` (ou `prochainePx`), la case l'entoure. */
-const caseALEcran = (enAvant: boolean): number => ((enAvant ? BULLE.prochainePx : BULLE.px) * CASE) / PLAQUE.cote;
+export const caseALEcran = (enAvant: boolean): number => ((enAvant ? BULLE.prochainePx : BULLE.px) * CASE) / PLAQUE.cote;
 
 /**
  * Le bloc demandé, au milieu de la case : le cube de `BlockIcon` (Voxel.tsx : le dessus, la face gauche, la face droite

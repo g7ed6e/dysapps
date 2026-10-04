@@ -181,6 +181,12 @@ export interface WorldViewProps {
    * départ (`placesDeLaFleche`), avec l'icône d'un ouvrage.
    */
   marker?: BiomeId | Ancrage | MarqueDOuvrage | null;
+  /**
+   * Blocland, sur la Carte : l'image de la bulle d'or qui remplace la flèche de la prochaine destination (le bloc d'une
+   * commande, ou l'icône de ce qu'on y fait : world/affordance.ts, `imageDeLaDestination`). Sans elle, la flèche.
+   */
+  // Le type de `ImageDeLaBulle` (world/affordance.ts), recopié : le contrat commun n'importe pas le dessin (couches.test.ts).
+  imageDeLaCarte?: { icone: BiomeDef['icon'] } | { bloc: BlockId } | null;
   /** Le bonhomme : son itinéraire (un seul point : il se tient là ; plusieurs : il marche). `seq` change à chaque trajet. */
   avatar?: Bonhomme<Ancrage>;
   /** La Carte : tout le continent vu du ciel, un fanion au-dessus du bonhomme. */

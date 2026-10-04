@@ -1,10 +1,14 @@
 // Les étiquettes de la scène 3D : le nom des îles ouvertes (et leur état sur la Carte), toujours face à l'écran, de
-// taille fixe, par-dessus le relief ; et sur la Carte, la flèche de la prochaine destination. Sur la Carte, les
-// étiquettes s'écartent les unes des autres, de la flèche et du fanion du bonhomme, pour que rien n'en cache rien.
+// taille fixe, par-dessus le relief ; et sur la Carte, la flèche de la prochaine destination (dans Blocland, la bulle
+// d'or de la prochaine chose à faire, et le médaillon « toi » au-dessus du bonhomme). Sur la Carte, les étiquettes
+// s'écartent les unes des autres, de la flèche et du fanion du bonhomme, pour que rien n'en cache rien.
 // Dans Archipéo, hors de la Carte, elles s'écartent aussi des grands repères (world/cadrage.ts). Partout, elles
 // s'écartent de l'interface posée sur la scène, et se montrent entières ou pas du tout (DA-10).
 import * as THREE from 'three';
-import { drawIslandLabel, drawMapArrow, measureIslandLabel } from '../world/labelCanvas';
+import { drawIslandLabel, drawMapArrow, drawMedaillon, measureIslandLabel } from '../world/labelCanvas';
+import { BULLE, flottementDeLaBulle, type ImageDeLaBulle } from '../world/affordance';
+import { VISAGE_DU_BONHOMME } from '../Avatar';
+import { CASE, PLAQUE, caseALEcran, dessinerLaCase } from './signes';
 import { reperesDe } from '../world/cadrage';
 import { boitesDuTrace, placerAvecLaFlecheDOuvrage, placerEtiquettes, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
 import { islandCenter } from '../world/terrain';
@@ -21,12 +25,17 @@ const LABEL_RESERVE = 72;
 /** Sur la Carte, la flèche de la prochaine destination : 48 px de haut à l'écran, à 56 px au moins du fanion. */
 const ARROW_CSS = 48;
 const ARROW_GAP = 56;
+/** Blocland, sur la Carte : le médaillon « toi », 44 px de diamètre à l'écran (son canvas : 96 px, le disque 80). */
+const MEDAILLON_CSS = 44;
+const MEDAILLON_CANVAS = 96;
 /** L'étiquette flotte à 12 cases au-dessus du sol de son île. */
 const ETIQUETTE_AU_DESSUS = 12;
 
 export interface Etiquettes extends PartieDeLaScene {
   /** Le nom des îles (une texture par étiquette, refaite quand la liste change). */
   poser(labels: WorldViewProps['islandLabels']): void;
+  /** Blocland : l'image de la bulle d'or de la Carte (`imageDeLaCarte`) ; sans elle, l'étoile. */
+  poserLImageDeLaCarte(image: ImageDeLaBulle | null): void;
   vider(): void;
 }
 
@@ -47,29 +56,60 @@ export function creerEtiquettes(
   plaques: { boites(cam: THREE.Camera, W: number, H: number): LabelBox[]; readonly version: number } | null = null,
 ): Etiquettes {
   const { scene } = monde;
+  // Blocland (piste B, choisie par le mainteneur le 4 octobre 2026) : sur la Carte, la prochaine destination est la
+  // bulle d'or de l'île (three/signes.ts), avec l'image de ce qu'on y fait, et le bonhomme porte le médaillon « toi ».
+  // Archipéo garde la flèche et le fanion.
+  const bulles = monde.habillage.signesDesObjets === 'bulles';
   // Sur la Carte, la flèche de la prochaine destination : une image toujours tournée vers l'écran (vue du ciel, un
   // cône ne se voit pas), de taille fixe, par-dessus les étiquettes ; sa pointe se pose sur l'île.
   const arrowCanvas = document.createElement('canvas');
-  arrowCanvas.width = 96;
-  arrowCanvas.height = 124;
+  arrowCanvas.width = bulles ? CASE : 96;
+  arrowCanvas.height = bulles ? CASE : 124;
   const arrowCtx = arrowCanvas.getContext('2d');
   /** La flèche dessinée : d'une île (`false`) ou d'un ouvrage (`true`, avec son icône, GD-7) ; redessinée quand cela change. */
   let flecheDOuvrage = false;
+  /** Blocland : l'image de la bulle, et si elle est tenue au bord de l'écran (sans pointe, sa cible hors du cadre). */
+  let imageDeLaBulle: ImageDeLaBulle = { icone: 'star' };
+  let bulleAuBord = false;
   const dessinerLaFleche = (ouvrage: boolean) => {
     flecheDOuvrage = ouvrage;
     if (!arrowCtx) return;
     arrowCtx.clearRect(0, 0, arrowCanvas.width, arrowCanvas.height);
-    drawMapArrow(arrowCtx, 48, 114, 104, ouvrage ? 'ouvrage' : undefined);
+    if (bulles) dessinerLaCase(arrowCtx, 0, imageDeLaBulle, 'plaque', true, bulleAuBord);
+    else drawMapArrow(arrowCtx, 48, 114, 104, ouvrage ? 'ouvrage' : undefined);
   };
   dessinerLaFleche(false);
   const arrowTex = new THREE.CanvasTexture(arrowCanvas);
   arrowTex.colorSpace = THREE.SRGBColorSpace;
   const mapArrow = new THREE.Sprite(new THREE.SpriteMaterial({ map: arrowTex, depthTest: false, transparent: true, sizeAttenuation: false, fog: false }));
-  mapArrow.userData.px = { w: (ARROW_CSS * arrowCanvas.width) / arrowCanvas.height, h: ARROW_CSS, tip: 114 / arrowCanvas.height };
+  // La bulle : la taille de la bulle mise en avant sur l'île (`BULLE.prochainePx` pour la plaque), sa pointe en bas.
+  mapArrow.userData.px = bulles
+    ? { w: caseALEcran(true), h: caseALEcran(true), tip: PLAQUE.pointe.bas / CASE }
+    : { w: (ARROW_CSS * arrowCanvas.width) / arrowCanvas.height, h: ARROW_CSS, tip: 114 / arrowCanvas.height };
   mapArrow.renderOrder = 12;
   mapArrow.raycast = () => {};
   mapArrow.visible = false;
   scene.add(mapArrow);
+  // Blocland : le médaillon « toi », au-dessus du bonhomme sur la Carte, à la place du fanion jaune (three/bornes.ts).
+  // Immobile : sur la Carte, seule la bulle de la destination bouge.
+  const medaillon = bulles ? new THREE.Sprite() : null;
+  if (medaillon) {
+    const canvas = document.createElement('canvas');
+    canvas.width = MEDAILLON_CANVAS;
+    canvas.height = MEDAILLON_CANVAS;
+    const ctx = canvas.getContext('2d');
+    if (ctx) drawMedaillon(ctx, MEDAILLON_CANVAS / 2, MEDAILLON_CANVAS / 2 - 4, 40, VISAGE_DU_BONHOMME);
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    medaillon.material = new THREE.SpriteMaterial({ map: texture, depthTest: false, transparent: true, sizeAttenuation: false, fog: false });
+    medaillon.userData.px = { w: MEDAILLON_CSS, h: MEDAILLON_CSS };
+    // Posé sur sa base : le bas du disque juste au-dessus de la tête du bonhomme.
+    medaillon.center.set(0.5, 0);
+    medaillon.renderOrder = 12;
+    medaillon.raycast = () => {};
+    medaillon.visible = false;
+    scene.add(medaillon);
+  }
   // Le nom des îles ouvertes : des étiquettes toujours face à l'écran, de taille fixe, par-dessus le relief.
   const labelsGroup = new THREE.Group();
   scene.add(labelsGroup);
@@ -112,7 +152,11 @@ export function creerEtiquettes(
   const marksOnScreen = (cam: THREE.Camera, W: number, H: number, pointe: Pointe | null = laPointe()) => {
     const out: { arrow: LabelBox | null; arrowShift: LabelOffset; beacon: LabelBox | null } = { arrow: null, arrowShift: { dx: 0, dy: 0 }, beacon: null };
     const avatar = bonhomme();
-    if (avatar.visible) {
+    if (avatar.visible && medaillon) {
+      // Blocland : le médaillon, posé au-dessus de la tête du bonhomme, de taille fixe.
+      const a = toScreen(beaconBase.set(avatar.position.x, avatar.position.y + 4.5, avatar.position.z), cam, W, H);
+      out.beacon = { x: a.x, y: a.y - MEDAILLON_CSS / 2, w: MEDAILLON_CSS, h: MEDAILLON_CSS };
+    } else if (avatar.visible) {
       beaconBase.set(avatar.position.x, avatar.position.y + 4.5, avatar.position.z);
       beaconTop.set(avatar.position.x, avatar.position.y + 17, avatar.position.z);
       const a = toScreen(beaconBase, cam, W, H);
@@ -133,6 +177,17 @@ export function creerEtiquettes(
     const pointe = laPointe();
     const show = onMap && Boolean(pointe);
     mapArrow.visible = show;
+    const H = Math.max(1, el.clientHeight);
+    const W = Math.max(1, el.clientWidth);
+    const perPx = 2 / (camera.projectionMatrix.elements[5] * H);
+    if (medaillon) {
+      const avatar = bonhomme();
+      medaillon.visible = onMap && avatar.visible;
+      if (medaillon.visible) {
+        medaillon.position.set(avatar.position.x, avatar.position.y + 4.5, avatar.position.z);
+        medaillon.scale.set(MEDAILLON_CSS * perPx, MEDAILLON_CSS * perPx, 1);
+      }
+    }
     const d = donnees();
     if (d.posee) fleche.visible = d.on && !show;
     if (!show || !pointe) return;
@@ -142,14 +197,30 @@ export function creerEtiquettes(
       arrowTex.needsUpdate = true;
     }
     mapArrow.position.set(pointe.x, pointe.z, pointe.y);
-    const H = Math.max(1, el.clientHeight);
-    const W = Math.max(1, el.clientWidth);
-    const perPx = 2 / (camera.projectionMatrix.elements[5] * H);
     const { w: aw, h: ah, tip } = mapArrow.userData.px;
     mapArrow.scale.set(aw * perPx, ah * perPx, 1);
-    const { arrowShift } = marksOnScreen(camera, W, H);
-    const bob = reduit ? 0 : Math.abs(Math.sin(t * 2.2)) * 6;
-    mapArrow.center.set(0.5 - arrowShift.dx / aw, 1 - tip + (arrowShift.dy - bob) / ah);
+    const { arrow, arrowShift } = marksOnScreen(camera, W, H);
+    if (!bulles || !arrow) {
+      const bob = reduit ? 0 : Math.abs(Math.sin(t * 2.2)) * 6;
+      mapArrow.center.set(0.5 - arrowShift.dx / aw, 1 - tip + (arrowShift.dy - bob) / ah);
+      return;
+    }
+    // Blocland : la bulle monte et descend lentement (± 2 px, comme sur l'île ; rien avec le mouvement réduit). Sa
+    // cible hors du cadre (la Carte qu'on fait glisser), elle reste entière au bord de l'écran, sans pointe, du côté
+    // de sa cible (la règle des bulles de l'île, world/affordance.ts, `BULLE.bordPx`).
+    const flotte = reduit ? 0 : flottementDeLaBulle(t);
+    const m = BULLE.bordPx;
+    const cx = Math.min(Math.max(arrow.x, m + aw / 2), W - m - aw / 2);
+    const cy = Math.min(Math.max(arrow.y, m + ah / 2), H - m - ah / 2);
+    const auBord = cx !== arrow.x || cy !== arrow.y;
+    if (auBord !== bulleAuBord) {
+      bulleAuBord = auBord;
+      dessinerLaFleche(flecheDOuvrage);
+      arrowTex.needsUpdate = true;
+    }
+    const dx = arrowShift.dx + cx - arrow.x;
+    const dy = arrowShift.dy + cy - arrow.y;
+    mapArrow.center.set(0.5 - dx / aw, 1 - tip + (dy - flotte) / ah);
   };
   // Archipéo : les grands repères de l'archipel (world/cadrage.ts), qu'aucune étiquette ne couvre, hors de la Carte
   // aussi (DA-17). Blocland n'en a pas : ses étiquettes ne s'écartent que de l'interface
@@ -344,6 +415,12 @@ export function creerEtiquettes(
       }
     },
     vider,
+    // Appelée seulement quand l'image change, ou que la scène est refaite (WorldCanvas.tsx).
+    poserLImageDeLaCarte: (image) => {
+      imageDeLaBulle = image ?? { icone: 'star' };
+      dessinerLaFleche(flecheDOuvrage);
+      arrowTex.needsUpdate = true;
+    },
     animer: (t, _dt, reduit) => {
       placeMarks(instant.carte, t, reduit);
       placeLabels(instant.carte);
@@ -351,6 +428,10 @@ export function creerEtiquettes(
     dispose: () => {
       arrowTex.dispose();
       mapArrow.material.dispose();
+      if (medaillon) {
+        medaillon.material.map?.dispose();
+        medaillon.material.dispose();
+      }
     },
   };
 }

@@ -29,7 +29,7 @@ import { AssemblageSheet } from './Assemblage';
 import { ASSEMBLAGE_PATH } from './world/assemblage';
 import { laDestinationEstLeNavire, lienDeLaDestination } from './world/destination';
 import { nextGoalInfo } from './world/goals';
-import { borneDe, cleDeLaCreature, cleDeLObjet } from './world/affordance';
+import { borneDe, cleDeLaCreature, cleDeLObjet, imageDeLaDestination } from './world/affordance';
 import { getCommande } from './world/commandes';
 import { FicheDuMonde, type FicheOuverte } from './FicheDuMonde';
 import { TROPHIES_PATH, trophies } from './trophies';
@@ -281,6 +281,13 @@ export function WorldPage() {
   const flecheDeLOuvrage = useMemo(
     () => (destination.ouvrage ? { ouvrage: destination.ouvrage, depuis: destination.island } : null),
     [destination.ouvrage, destination.island],
+  );
+  // Blocland, sur la Carte : la bulle d'or de la prochaine destination porte l'image de ce qu'on y fait (piste B,
+  // choisie par le mainteneur le 4 octobre 2026) : le bloc d'une commande, l'icône des ouvrages, le navire ou l'étoile.
+  const blocDeLaCommande = destination.commande ? signes.find((s) => s.id === destination.island)?.bloc : undefined;
+  const imageDeLaCarte = useMemo(
+    () => imageDeLaDestination(destination, { navire: navirePret, bloc: blocDeLaCommande }),
+    [destination, navirePret, blocDeLaCommande],
   );
   // En grand texte, la phrase défile dans le panneau de la Carte : un repère dit qu'il y a une suite.
   // Le nom de chaque île ouverte de l'archipel, écrit au-dessus d'elle dans le monde ; sur la Carte, toutes les îles,
@@ -1133,6 +1140,7 @@ export function WorldPage() {
             forceDay={forceDay}
             bridges={state.world.links}
             marker={marker}
+            imageDeLaCarte={imageDeLaCarte}
             vehicle={vehicle}
             voyage={voyageAJouer(voyage)}
             avatar={avatar}

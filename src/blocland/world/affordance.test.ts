@@ -10,6 +10,7 @@ import {
   COUT_DES_BULLES,
   flottementDeLaBulle,
   hauteurDuSigneDeLObjet,
+  imageDeLaDestination,
   iconeDeLObjet,
   rebondDeLaBulle,
   sautDuSigne,
@@ -392,4 +393,13 @@ it('le centre de l’objet d’une fiche (lot 2 de « Toucher le monde ») : dan
   expect(centreDeLObjet({ genre: 'navire', port: vehicle.port }, entree)).not.toBeNull();
   expect(centreDeLObjet({ genre: 'ile', id: 'french-6e-letter-confusion' }, { ...entree, ile: () => ({ x: 1, y: 2, z: 3 }) })).toEqual({ x: 1, y: 2, z: 3 });
   expect(centreDeLObjet({ genre: 'ouvrage', id: 'inconnu' }, entree)).toBeNull();
+});
+
+it('sur la Carte, la bulle d\'or de la destination porte l\'image de ce qu\'on y fait (piste B)', () => {
+  expect(imageDeLaDestination({ commande: 'c', ouvrage: 'o' }, { navire: false, bloc: 'wood' as BlockId })).toEqual({ bloc: 'wood' });
+  expect(imageDeLaDestination({ ouvrage: 'o' }, { navire: false })).toEqual({ icone: 'ouvrage' });
+  expect(imageDeLaDestination({}, { navire: true })).toEqual({ icone: 'ship' });
+  expect(imageDeLaDestination({}, { navire: false })).toEqual({ icone: 'star' });
+  // Une commande dont le bloc n'est pas connu : l'image de ce qu'on fait sinon.
+  expect(imageDeLaDestination({ commande: 'c' }, { navire: false })).toEqual({ icone: 'star' });
 });
