@@ -353,7 +353,8 @@ export function WorldPage() {
     if (!mapOpen) setAideDeLaCarte(0);
   }, [mapOpen]);
   const revoirAide = () => {
-    if (mapOpen && univers === 'blocland') return setAideDeLaCarte((n) => n + 1);
+    // Tant que le tutoriel du village est ouvert, « ? » le laisse seul : deux bulles ne s'empilent pas en bas.
+    if (mapOpen && univers === 'blocland' && tutoDone) return setAideDeLaCarte((n) => n + 1);
     setTutoDone(false);
     setReplay((n) => n + 1);
   };

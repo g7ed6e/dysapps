@@ -72,9 +72,12 @@ export function Tutorial({ id, steps, replay = 0, targets, onClose }: Props) {
   return (
     <section className="panel tutorial" role="dialog" aria-labelledby={`tuto-${id}`} aria-live="polite">
       <p id={`tuto-${id}`} className="tutorial-step">
-        <span className="tutorial-count" aria-hidden="true">
-          {step + 1}/{steps.length}
-        </span>
+        {/* Une seule bulle : pas de compteur, un signe à lire qui n'apprendrait rien. */}
+        {steps.length > 1 && (
+          <span className="tutorial-count" aria-hidden="true">
+            {step + 1}/{steps.length}
+          </span>
+        )}
         <Syllabified text={text} />
       </p>
       <div className="tutorial-actions">
