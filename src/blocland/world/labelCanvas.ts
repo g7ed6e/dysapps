@@ -34,7 +34,8 @@ const ENCRE_DU_BLOC = '#2b2118';
  * Un bloc vu de trois quarts, centré sur (`cx`, `cy`), de demi-hauteur `demi` : le cube de `BlockIcon` (Voxel.tsx : le
  * dessus, la face gauche, la face droite plus sombre, mêmes couleurs, même projection), puis son contour et ses deux
  * arêtes intérieures au trait `encre`. Sert aux bulles des commandes (three/signes.ts) et aux étiquettes des îles.
- * `traits` : l'épaisseur du contour et des arêtes, en pixels du canvas (par défaut, à l'échelle du bloc).
+ * `traits` : l'épaisseur du contour et des arêtes, en pixels du canvas (par défaut, à l'échelle du bloc). `delave` :
+ * les faces à demi transparentes sur le fond (une île fermée), le contour net.
  */
 export function drawBlock(
   ctx: CanvasRenderingContext2D,
@@ -44,6 +45,7 @@ export function drawBlock(
   demi: number,
   encre = ENCRE_DU_BLOC,
   traits = { contour: demi * 0.13, aretes: demi * 0.08 },
+  delave = false,
 ): void {
   const b = BLOCKS[bloc];
   const p = (x: number, y: number, z: number): [number, number] => {
@@ -58,9 +60,11 @@ export function drawBlock(
     ctx.fill();
   };
   ctx.save();
+  if (delave) ctx.globalAlpha = 0.45;
   face([p(0, 0, 1), p(1, 0, 1), p(1, 1, 1), p(0, 1, 1)], b.top ?? shade(b.side, 0.16));
   face([p(0, 1, 1), p(1, 1, 1), p(1, 1, 0), p(0, 1, 0)], b.side);
   face([p(1, 0, 1), p(1, 1, 1), p(1, 1, 0), p(1, 0, 0)], shade(b.side, -0.18));
+  ctx.globalAlpha = 1;
   ctx.lineJoin = 'round';
   ctx.strokeStyle = encre;
   ctx.lineWidth = traits.contour;
@@ -209,10 +213,11 @@ export function drawIslandLabel(ctx: CanvasRenderingContext2D, text: string, cx:
   ctx.fillRect(x - m.border, y - m.border, w + m.border * 2, h + m.border * 2);
   ctx.fillStyle = colors.bg;
   ctx.fillRect(x, y, w, h);
-  // La ligne du nom, centrée : le bloc (s'il y en a un), puis le nom ; une île fermée garde son bloc net, comme son texte.
+  // La ligne du nom, centrée : le bloc (s'il y en a un), puis le nom. Une île fermée a son bloc délavé comme son
+  // étiquette (une couleur vive ne doit pas y attirer l'œil), le contour net.
   const nameY = state ? y + px * 0.95 : cy;
   const lineLeft = cx - m.nameW / 2;
-  if (bloc) drawBlock(ctx, lineLeft + (Math.sqrt(3) * BLOC_DEMI * px) / 2, nameY, bloc, BLOC_DEMI * px, colors.border);
+  if (bloc) drawBlock(ctx, lineLeft + (Math.sqrt(3) * BLOC_DEMI * px) / 2, nameY, bloc, BLOC_DEMI * px, colors.border, undefined, state?.id === 'fermee');
   ctx.font = labelFont(px);
   ctx.textBaseline = 'middle';
   ctx.fillStyle = colors.text;
