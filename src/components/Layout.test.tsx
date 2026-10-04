@@ -16,6 +16,7 @@ function renderAt(path: string) {
             <Route element={<Layout />}>
               <Route path="adventure/:biomeId?" element={<p>Le monde</p>} />
               <Route path="reglages" element={<p>Les réglages</p>} />
+              <Route path="menu" element={<p>Le menu</p>} />
             </Route>
           </Routes>
         </MemoryRouter>
@@ -40,4 +41,10 @@ it('Archipéo, en pause, garde sa barre du haut hors du monde', () => {
   localStorage.setItem('dysapps:settings', JSON.stringify({ univers: 'archipeo' }));
   renderAt('/reglages');
   expect(screen.getByRole('navigation', { name: 'Navigation principale' })).toBeInTheDocument();
+});
+
+it('Blocland : pas de bouton Menu sur la page qui est elle-même le menu (vue simple)', () => {
+  renderAt('/menu');
+  expect(screen.getByText('Le menu')).toBeInTheDocument();
+  expect(screen.queryByRole('link', { name: 'Menu' })).not.toBeInTheDocument();
 });

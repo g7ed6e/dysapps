@@ -87,14 +87,10 @@ function Shell() {
       {!focus && !immersive && universId !== 'blocland' && (
         <header className="topbar">
           <Link to="/" className="brand" aria-label={`Accueil ${univers.nom}`}>
-            {/* Archipéo garde son initiale sur le sable ; Blocland a son logo, l'île en blocs. */}
-            {universId === 'archipeo' ? (
-              <span className="brand-mark" aria-hidden="true">
-                A
-              </span>
-            ) : (
-              <img className="brand-logo" src={`${import.meta.env.BASE_URL}${univers.logo}`} alt="" width={37} height={37} />
-            )}
+            {/* Archipéo, seul à garder la barre du haut : son initiale sur le sable. */}
+            <span className="brand-mark" aria-hidden="true">
+              A
+            </span>
             <span className="brand-name">{univers.nom}</span>
           </Link>
           <Link to="/succes" className="topbar-xp" aria-label="Voir mon rôle et mes succès">

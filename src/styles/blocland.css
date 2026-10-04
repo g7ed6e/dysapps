@@ -220,6 +220,13 @@
     inset 0 var(--bande-h) 0 var(--bande),
     0 var(--face-pressed) 0 var(--face-primary);
 }
+/* Recentrer, le rond « toi » : son ombre sombre et nette, sans bande de bois, qui s'enfonce comme un bloc. */
+:root[data-univers="blocland"] .button.world-recentrer-tete {
+  box-shadow: 0 4px 0 #2b2118;
+}
+:root[data-univers="blocland"] .button.world-recentrer-tete:active:not(:disabled):not([aria-disabled="true"]) {
+  box-shadow: 0 1px 0 #2b2118;
+}
 /* Fermé : pas de face ni de bande, il ne s'enfonce pas ni ne rebondit (son libellé ou son cadenas dit pourquoi). */
 :root[data-univers="blocland"] .button:disabled,
 :root[data-univers="blocland"] .button[aria-disabled="true"],

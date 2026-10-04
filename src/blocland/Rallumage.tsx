@@ -67,13 +67,13 @@ export function useRallumage(progress: Record<string, { stars: number }>, a: Arc
   return { enAttente, noterVu };
 }
 
-/** Les contrôles de la scène qui gardent leur effet pendant un moment : Pause, la rangée de classes, Recentrer, la barre, la fiche. */
+/** Les contrôles de la scène qui gardent leur effet pendant un moment : Menu, la rangée de classes, Recentrer, la barre, la fiche. */
 export const CONTROLES_DE_LA_SCENE = '.world-menu-button, .world-archipel, .world-recentrer, .world-bar, .world-fiche-place';
 
 /**
  * Le toucher qui saute un moment (le rallumage, la pose d'une partie en vague), n'importe où sur la scène, sauf sur
  * « Passer », qui passe tous les moments. Ailleurs sur la scène, il s'arrête là : le même toucher n'ouvre pas une île et
- * ne fait pas marcher le bonhomme sur le canvas. Sur un contrôle de la scène (Pause, l'archipel, Recentrer, la barre), le
+ * ne fait pas marcher le bonhomme sur le canvas. Sur un contrôle de la scène (Menu, l'archipel, Recentrer, la barre), le
  * contrôle garde son effet et le moment finit en silence (`enSilence`) : ni carillon ni lecture, rien ne se rejoue au
  * retour.
  */

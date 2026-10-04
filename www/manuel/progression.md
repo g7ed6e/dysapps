@@ -1,6 +1,6 @@
 # Progression et récompenses
 
-L’appli motive comme un jeu vidéo, sans mettre la pression : **rien ne se perd**, une erreur rapporte quand même un point, et il n’y a ni chronomètre ni classement. La page **Succès** (bouton Succès de la barre du haut sur grand écran, menu, ou la jauge d’XP de la barre du haut) rassemble tout ; dans le village, c’est le panneau de la [salle des trophées](blocland.md#la-salle-des-trophees), où chaque succès gagné pose un trophée. Les chiffres exacts sont dans [Barème et succès](../pedagogie/bareme.md).
+L’appli motive comme un jeu vidéo, sans mettre la pression : **rien ne se perd**, une erreur rapporte quand même un point, et il n’y a ni chronomètre ni classement. La page **Succès** (par le menu ; dans Archipéo, aussi le bouton Succès de la barre du haut sur grand écran ou la jauge d’XP de la barre du haut) rassemble tout ; dans le village, c’est le panneau de la [salle des trophées](blocland.md#la-salle-des-trophees), où chaque succès gagné pose un trophée. Les chiffres exacts sont dans [Barème et succès](../pedagogie/bareme.md).
 
 ## XP, niveaux et rôles
 
