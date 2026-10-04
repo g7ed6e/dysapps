@@ -1849,9 +1849,9 @@ export function stoneOf(color: string): string {
   return `#${((g << 16) | (g << 8) | g).toString(16).padStart(6, '0')}`;
 }
 
-/** Un Gardien éteint, en statue de pierre : chaque cube en gris de même luminosité, sans dessus d'une autre couleur. */
+/** Un Gardien éteint, en statue de pierre : chaque cube, et son dessus, en gris de même luminosité (le fondu du rallumage part de ces gris). */
 export function statueDe<C extends { color: string; top?: string }>(cubes: readonly C[]): C[] {
-  return cubes.map((c) => ({ ...c, color: stoneOf(c.color), top: undefined }));
+  return cubes.map((c) => ({ ...c, color: stoneOf(c.color), top: c.top === undefined ? undefined : stoneOf(c.top) }));
 }
 
 /**
@@ -1864,7 +1864,7 @@ export function gardienEnPartieRallume<C extends { z: number; color: string; top
   const zs = cubes.map((c) => c.z);
   const bas = Math.min(...zs);
   const seuil = bas + part * (Math.max(...zs) - bas + 1);
-  return cubes.map((c) => (c.z < seuil ? c : { ...c, color: stoneOf(c.color), top: undefined }));
+  return cubes.map((c) => (c.z < seuil ? c : { ...c, color: stoneOf(c.color), top: c.top === undefined ? undefined : stoneOf(c.top) }));
 }
 
 /**
