@@ -269,7 +269,7 @@ Le village de chaque archipel passe par **cinq états**, déduits de ce que l’
 4. **Développement** : en plus, un monument de l’archipel est terminé. Une seconde barque, des caisses et des fanions sur le quai.
 5. **Port** : le Bloc-Navire est parti vers l’archipel suivant. Une lanterne sur chaque poteau et un feu au bout de la jetée. Dans les Îles du Ciel, qui n’ont pas encore de voyage suivant, le village s’arrête à Développement, et le port n’a pas de barques.
 
-L’état se lit aussi en mots, jamais par la couleur seule : « Le village : Reconstruction, 3 sur 5 », avec cinq crans et « Pour la suite : … », dans le panneau de l’île-port, dans la liste des archipels et sur la page de l’archipel en vue simple. Quand il monte pendant une partie, une phrase le dit (« Le village passe à l’état Réactivation (2 sur 5). Le village se réveille : les lanternes du port s’allument. »), lue à voix haute si la lecture automatique est active, avec une cloche.
+L’état se lit aussi en mots, jamais par la couleur seule : « Le village : Reconstruction, 3 sur 5 », avec cinq crans et « Pour la suite : … », dans le panneau de l’île-port, dans la liste des archipels et sur la page de l’archipel en vue simple. Quand il monte pendant une partie, une cloche sonne et le port change sous tes yeux ; rien ne s’écrit par-dessus le monde.
 
 ## Les monuments
 
@@ -433,7 +433,7 @@ Le mot s’ouvre dans un panneau en bas du monde, un instant après l’étape (
 
 ![Le mot de Mousso en bas du monde : « Ton ouvrage tient bon ! Nouvelle île ouverte : Mine des lettres. », avec son portrait et les boutons Écouter et J'ai compris.](/captures/baleine.jpg)
 
-Quand plusieurs étapes arrivent en même temps, seule la plus grande est dite, dans l’ordre du tableau. Un mot n’est jamais répété : ce qui a été dit est noté sur l’appareil, comme les tutoriels, pas dans la partie. Après la mise à jour, les étapes déjà passées sont notées comme dites, sans parler. Le changement d’état du village (« Le village passe à l’état… ») attend que le panneau ou la fiche ouverts soient fermés. Les créatures restent aussi les voix de leur île : accueil, répliques, indice d’île fermée.
+Quand plusieurs étapes arrivent en même temps, seule la plus grande est dite, dans l’ordre du tableau. Un mot n’est jamais répété : ce qui a été dit est noté sur l’appareil, comme les tutoriels, pas dans la partie. Après la mise à jour, les étapes déjà passées sont notées comme dites, sans parler. Les créatures restent aussi les voix de leur île : accueil, répliques, indice d’île fermée.
 
 ## Les nouveaux noms des archipels
 
