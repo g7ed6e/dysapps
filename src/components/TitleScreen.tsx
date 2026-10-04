@@ -52,7 +52,7 @@ const MESSAGE_LU = `${MESSAGE_UNIVERS.titre}. ${MESSAGE_UNIVERS.texte}`;
 
 /**
  * L'écran titre, une fois par lancement : le nom de l'univers et sa phrase sous le logo de l'univers, « Jouer » (le
- * village, derrière, est déjà là), et « Continuer » vers la dernière mission. Il a
+ * village, derrière, est déjà là), et « Ma dernière mission » (le mot du menu, 4 octobre 2026) vers la dernière mission. Il a
  * aussi une raison technique : les navigateurs gardent la voix et les sons muets tant que l'élève n'a pas touché
  * l'écran ; ce premier toucher les débloque pour toute la séance. Rien n'y défile tout seul et rien n'y est chronométré :
  * il attend l'élève.
@@ -138,7 +138,7 @@ export function TitleScreen() {
       if (depart.current?.id === e.pointerId) depart.current = null;
     },
   };
-  // « Continuer » seulement quand l'appli s'ouvre sur l'accueil (un lien direct vers une page y mène déjà).
+  // « Ma dernière mission » seulement quand l'appli s'ouvre sur l'accueil (un lien direct vers une page y mène déjà).
   const resume = launchedAt === '/' ? lastPlace() : null;
 
   const close = (to?: string, section?: string) => {
@@ -216,7 +216,7 @@ export function TitleScreen() {
         <div className="title-actions">
           {resume && (
             <button type="button" className="button primary title-button" onClick={() => start(resume.path)} autoFocus>
-              <Icon name="play" /> Continuer : {resume.label}
+              <Icon name="play" /> Ma dernière mission : {resume.label}
             </button>
           )}
           {/* « Jouer » : l'accueil, c'est-à-dire le village (le menu en page en vue simple). */}

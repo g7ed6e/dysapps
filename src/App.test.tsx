@@ -46,27 +46,25 @@ it('l’accueil est le menu de Blocland : le village, les Expéditions (la LV2 �
   expect(screen.getByRole('link', { name: /Français/ })).toHaveAttribute('href', '/matiere/french');
   expect(screen.getByRole('link', { name: /Maths/ })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /Anglais/ })).toHaveAttribute('href', '/matiere/english');
-  // Pas d'onglets : la barre du haut garde les grands endroits (Menu et Réglages sur téléphone).
+  // Blocland : plus de barre du haut (4 octobre 2026), seulement le bouton Menu en haut à droite.
   expect(screen.queryByRole('navigation', { name: 'Onglets' })).not.toBeInTheDocument();
-  const bar = screen.getByRole('navigation', { name: 'Navigation principale' });
-  expect(within(bar).getByRole('link', { name: 'Missions' })).toHaveAttribute('aria-current', 'page');
-  expect(within(bar).getByRole('link', { name: 'Menu' })).toHaveAttribute('href', '/menu');
-  expect(within(bar).getByRole('link', { name: 'Réglages' })).toHaveAttribute('href', '/reglages');
+  expect(screen.queryByRole('navigation', { name: 'Navigation principale' })).not.toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Menu' })).toHaveAttribute('href', '/menu');
 });
 
 it('les révisions du jour ont leur carte sur l’accueil, vers la mission', () => {
   localStorage.setItem('dysapps:progress', JSON.stringify({ totalAnswers: 3 }));
   localStorage.setItem('dysapps:game', JSON.stringify({ spaced: [{ itemId: 'french-6e-phonology-syllables-warmup-001:cabane', due: '2000-01-01', stage: 0, streak: 0 }] }));
   renderAt('/');
-  expect(screen.getByRole('link', { name: /À revoir aujourd’hui.*Abattage syllabique · Forêt des sons/ })).toHaveAttribute('href', '/adventure/french-6e-phonology/syllables');
+  expect(screen.getByRole('link', { name: /Mes révisions du jour.*Abattage syllabique · Forêt des sons/ })).toHaveAttribute('href', '/adventure/french-6e-phonology/syllables');
 });
 
-it('une mission ouverte devient « Continuer » sur l’accueil', () => {
+it('une mission ouverte devient « Ma dernière mission » sur l’accueil', () => {
   localStorage.setItem('dysapps:progress', JSON.stringify({ totalAnswers: 3 }));
   renderAt('/app/tables');
   document.body.innerHTML = '';
   renderAt('/');
-  expect(screen.getByRole('link', { name: /Continuer.*Tables & calcul mental/ })).toHaveAttribute('href', '/app/tables');
+  expect(screen.getByRole('link', { name: /Ma dernière mission.*Tables & calcul mental/ })).toHaveAttribute('href', '/app/tables');
 });
 
 it('le Tutoriel est sur l’accueil, pas dans Français, et son retour mène à l’accueil', () => {
@@ -157,7 +155,7 @@ it('effacer la progression demande d’écrire « effacer » : un toucher de tro
   await user.type(screen.getByRole('textbox'), 'cer');
   await user.click(erase);
   expect(JSON.parse(localStorage.getItem('dysapps:progress')!).xp).toBe(0);
-  // « Continuer » est oublié aussi.
+  // « Ma dernière mission » est oubliée aussi.
   expect(localStorage.getItem('dysapps:resume')).toBeNull();
 });
 
@@ -285,10 +283,10 @@ it('surligne les syllabes en couleurs alternées quand le réglage est actif', (
 it('pendant une mission, mode concentration : plus de barre du haut, un bouton Pause qui permet de quitter', async () => {
   const user = userEvent.setup();
   renderAt('/app/fractions');
-  expect(screen.getByRole('navigation', { name: 'Navigation principale' })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Menu' })).toBeInTheDocument();
   await user.click((await screen.findAllByRole('button', { name: /Lire une fraction/ }))[0]);
-  // La partie commence : plus de barre du haut, seulement Pause.
-  expect(screen.queryByRole('navigation', { name: 'Navigation principale' })).not.toBeInTheDocument();
+  // La partie commence : plus de bouton Menu, seulement Pause.
+  expect(screen.queryByRole('link', { name: 'Menu' })).not.toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: 'Pause' }));
   const pause = screen.getByRole('dialog', { name: 'Pause' });
   expect(within(pause).getByText(/L’XP des réponses déjà données est gardée/)).toBeInTheDocument();
@@ -302,7 +300,7 @@ it('pendant une mission, mode concentration : plus de barre du haut, un bouton P
   await user.click(screen.getByRole('button', { name: 'Pause' }));
   await user.click(screen.getByRole('button', { name: /Quitter la partie/ }));
   expect(await screen.findByRole('heading', { name: 'Missions' })).toBeInTheDocument();
-  expect(screen.getByRole('navigation', { name: 'Navigation principale' })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Menu' })).toBeInTheDocument();
 });
 
 it('l’école du village : trois portes, les missions de la matière, et le retour à la porte', async () => {

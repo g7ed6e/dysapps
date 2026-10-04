@@ -1,6 +1,6 @@
 # Réglages et accessibilité
 
-La page **Réglages** (barre du haut, roue dentée sur téléphone ; dans le village, menu ⏸) s’applique à toute l’application, y compris aux panneaux du village, et montre un aperçu en direct. Les réglages sont enregistrés sur l’appareil. Dans chaque liste de choix, l’option choisie a sa case colorée et, dans son rond, un point plein ; les autres ronds sont vides. Les valeurs par défaut et leurs bornes exactes sont dans [Barème et succès](../pedagogie/bareme.md#reglages-par-defaut).
+La page **Réglages** (dans le menu, bouton Menu à trois traits ; dans Archipéo, aussi dans la barre du haut) s’applique à toute l’application, y compris aux panneaux du village, et montre un aperçu en direct. Les réglages sont enregistrés sur l’appareil. Dans chaque liste de choix, l’option choisie a sa case colorée et, dans son rond, un point plein ; les autres ronds sont vides. Les valeurs par défaut et leurs bornes exactes sont dans [Barème et succès](../pedagogie/bareme.md#reglages-par-defaut).
 
 ![La page Réglages : l'aperçu en haut, le choix de la police d'écriture (Luciole, OpenDyslexic, Atkinson Hyperlegible, Arial), la lecture.](/captures/reglages.jpg)
 
@@ -56,7 +56,7 @@ Au menu, la LV2 prend le nom de la langue choisie, à côté de l’anglais. Ses
 
 ## Au démarrage
 
-Après l’écran titre, l’appli s’ouvre toujours sur le village, sur l’île où se tient le bonhomme ; le menu est dans le village (bouton ⏸). Ce n’est plus un réglage. Avec « La liste des îles », ou sur un appareil qui ne sait pas dessiner le monde, l’appli s’ouvre sur le menu en page.
+Après l’écran titre, l’appli s’ouvre toujours sur le village, sur l’île où se tient le bonhomme ; le menu est dans le village (bouton Menu, trois traits). Ce n’est plus un réglage. Avec « La liste des îles », ou sur un appareil qui ne sait pas dessiner le monde, l’appli s’ouvre sur le menu en page.
 
 ## Animations et vue du monde
 

@@ -20,6 +20,7 @@ import { SCHOOL_PATH, SchoolSheet } from './School';
 import { MonumentSheet, MonumentsSheet } from './Monuments';
 import { useMonumentBuilder } from './useMonumentBuilder';
 import { getMonument, monumentsOf } from './world/monuments';
+import { VisageDuBonhomme } from './VisageDuBonhomme';
 import { MenuSheet } from './MenuSheet';
 import { ArchipelSwitcher } from './ArchipelSwitcher';
 import { useBackOpensMenu } from './useBackOpensMenu';
@@ -154,8 +155,16 @@ export function WorldPage() {
   const blocsOpen = biomeId === 'stock';
   // L'école du village : ses trois portes, un panneau à la place de celui d'une île.
   const schoolOpen = biomeId === 'school';
-  // Le menu du village (menu pause) : Reprendre, Continuer, les révisions, l'école, Missions, Succès, Réglages, Aide.
+  // Le menu du village (menu pause), en plein écran : la dernière mission, les révisions, les commandes, l'école, Missions,
+  // Succès, le Tutoriel, puis Réglages tout en bas ; la croix ou Échap le referment.
   const menuOpen = biomeId === 'menu';
+  // Le menu refermé (la croix, Échap) : le focus revient au bouton Menu, d'où il était parti.
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const menuEtaitOuvert = useRef(menuOpen);
+  useEffect(() => {
+    if (menuEtaitOuvert.current && !menuOpen) menuButtonRef.current?.focus();
+    menuEtaitOuvert.current = menuOpen;
+  }, [menuOpen]);
   // La salle des trophées : un trophée par succès gagné dans le monde, le profil dans son panneau.
   const trophiesOpen = biomeId === 'trophies';
   // Le lieu où l'on assemble les blocs (GD-2), à côté de l'école.
@@ -659,7 +668,7 @@ export function WorldPage() {
   // fois (poseAMontrer.ts). La caméra ne bouge pas ; les cases de la partie restent vides jusqu'à ce que la vague les
   // pose, couche par couche, un « clac » par couche ; puis le carillon et la phrase du panneau, écrite, avec « Écouter »
   // (elle n'est pas lue d'office : l'écran de fin l'a déjà lue). Un toucher sur la scène pose tout d'un coup ; un appui
-  // sur Pause, l'archipel, Recentrer ou la barre garde son effet et pose la partie en silence. « Réduire les animations » :
+  // sur Menu, l'archipel, Recentrer ou la barre garde son effet et pose la partie en silence. « Réduire les animations » :
   // posée d'un coup, un seul « clac » et le carillon. Rien n'est enregistré ici : la partie l'est déjà, à l'écran de fin.
   const [sonDeLaPose] = useState(() => sonDePose(habillage.pose));
   useEffect(() => {
@@ -681,7 +690,7 @@ export function WorldPage() {
   }, [island?.id]);
   /**
    * La pose finie (ou touchée) : la partie entière dans le monde, la phrase en haut (et dans le panneau), puis le carillon. `muet` :
-   * l'élève a pris un contrôle de la scène (Pause…), la phrase est là sans un son.
+   * l'élève a pris un contrôle de la scène (Menu…), la phrase est là sans un son.
    */
   function direLaPose(biome: BiomeId, parties: Partie[], toc = false, muet = false) {
     setVague(null);
@@ -832,7 +841,7 @@ export function WorldPage() {
     if (moment.phase === 'camera') direLeRallumage(moment.id);
     finirLeRallumage(moment.id);
   };
-  /** Pause, l'archipel, Recentrer ou la barre pendant le moment : la sentinelle allumée, sans cloche ni mot. */
+  /** Menu, l'archipel, Recentrer ou la barre pendant le moment : la sentinelle allumée, sans cloche ni mot. */
   const finirLeRallumageEnSilence = () => {
     if (moment) finirLeRallumage(moment.id);
   };
@@ -1180,6 +1189,7 @@ export function WorldPage() {
         {!voyage && (
           <button
             type="button"
+            ref={menuButtonRef}
             className="button world-menu-button"
             data-tuto="menu"
             data-couvre="bouton"
@@ -1188,15 +1198,22 @@ export function WorldPage() {
             aria-controls={menuOpen ? 'panneau-menu' : undefined}
             onClick={() => navigate(menuOpen ? '/adventure' : '/adventure/menu')}
           >
-            <Icon name="pause" />
+            <Icon name="menu" />
           </button>
         )}
-        {/* Après un glissé : sous la colonne de droite (Pause, l'archipel), sans animation. Jamais sur une bulle du haut :
+        {/* Après un glissé : sous la colonne de droite (Menu, l'archipel), sans animation. Jamais sur une bulle du haut :
             le temps qu'elle est ouverte, il attend (la vue reste déplacée), et aucun bouton Fermer n'est couvert. */}
         {vueDeplacee && !voyage && !bulleEnHaut && (
-          <button type="button" className="button world-recentrer" onClick={recentrer}>
-            <Icon name="recentrer" /> Recentrer
-          </button>
+          // Blocland : un rond avec la tête du bonhomme, sans mot (mot du mainteneur, 4 octobre 2026) ; Archipéo garde le sien.
+          univers === 'blocland' ? (
+            <button type="button" className="button world-recentrer world-recentrer-tete" onClick={recentrer} aria-label="Recentrer">
+              <VisageDuBonhomme />
+            </button>
+          ) : (
+            <button type="button" className="button world-recentrer" onClick={recentrer}>
+              <Icon name="recentrer" /> Recentrer
+            </button>
+          )
         )}
         <div className="world-overlay-top" data-couvre="scene">
           {ligneDuVoyage && (
@@ -1275,7 +1292,7 @@ export function WorldPage() {
               univers === 'blocland'
                 ? 'Sur chaque île, les bornes à panneau sont les missions : touche une borne, puis Jouer. La bulle bordée d’or montre la prochaine chose à faire. Chaque mission te donne des blocs pour construire l’île, et des cubes d’or pour tes étoiles.'
                 : 'Sur chaque île, les bornes à panneau sont les missions : touche une borne, puis Jouer. Un losange jaune flotte au-dessus d’une mission à faire, des cubes d’or comptent tes étoiles. Chaque mission te donne des blocs pour construire l’île.',
-              'Le bouton Menu (⏸), en haut à droite, ouvre le menu : missions, succès, réglages, accueil.',
+              'Le bouton Menu, en haut à droite, ouvre le menu : missions, succès, réglages, accueil.',
             ]}
           />
           {mapOpen && aideDeLaCarte > 0 && (

@@ -510,7 +510,7 @@ it('les nouveaux noms des archipels, une fois, avant le mot des grandes étapes 
   expect(screen.queryByRole('dialog', { name: /De nouveaux noms/ })).not.toBeInTheDocument();
 });
 
-it('marque pour la vue ce qu’elle pose sur la scène : le haut, la barre du bas, Pause, les bulles (DA-10)', () => {
+it('marque pour la vue ce qu’elle pose sur la scène : le haut, la barre du bas, Menu, les bulles (DA-10)', () => {
   localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true }));
   localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'baleine-6e-arrivee': true }));
   renderAt('/adventure');
@@ -629,30 +629,45 @@ it('un monument : on le touche dans le monde, la caméra va sur son îlot, son p
   expect(within(await screen.findByRole('dialog', { name: 'Menu' })).getByRole('link', { name: /Monuments/ })).toHaveAttribute('href', '/adventure/landmarks');
 });
 
-it('le menu du village : le bouton Pause l’ouvre en panneau, « Reprendre » le referme', async () => {
+it('le menu du village : le bouton Menu l’ouvre en plein écran, Réglages en bas ; la croix ou Échap le referment', async () => {
   const user = userEvent.setup();
   renderAt('/adventure');
   await user.click(await screen.findByRole('button', { name: 'Menu' }));
-  const menu = await screen.findByRole('dialog', { name: 'Menu' });
+  let menu = await screen.findByRole('dialog', { name: 'Menu' });
   expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/menu');
   expect(within(menu).getByRole('link', { name: /École du village/ })).toHaveAttribute('href', '/adventure/school');
   expect(within(menu).getByRole('link', { name: /Missions/ })).toHaveAttribute('href', '/quetes');
   expect(within(menu).getByRole('link', { name: /Succès/ })).toHaveAttribute('href', '/adventure/trophies');
-  expect(within(menu).getByRole('link', { name: /Réglages/ })).toHaveAttribute('href', '/reglages');
-  // En tête, le rôle et la jauge d'XP ; sous Reprendre, Réglages, avant le reste. Plus d'Accueil (la page Accueil n'existe
-  // plus en 3D, 4 octobre 2026) : le Tutoriel, qu'elle portait, ferme la liste. Ni « Revoir l’aide du village » : le « ? »
-  // de la barre du bas la rouvre.
+  // En tête, le rôle et la jauge d'XP. Plus de « Reprendre » : la croix (qui a le focus) ou Échap referment le menu.
+  // Ni Accueil, ni « Revoir l’aide du village » (le « ? » de la barre du bas la rouvre). Réglages tout en bas, après le
+  // Tutoriel (mot du mainteneur, 4 octobre 2026).
   expect(within(menu).getByRole('progressbar', { name: /Niveau 1/ })).toBeInTheDocument();
+  expect(within(menu).queryByRole('button', { name: /Reprendre/ })).not.toBeInTheDocument();
+  expect(within(menu).getByRole('button', { name: 'Fermer le menu' })).toHaveFocus();
   expect(within(menu).queryByRole('link', { name: /Accueil|Le menu en page/ })).not.toBeInTheDocument();
-  expect(within(menu).getByRole('link', { name: /Tutoriel/ })).toHaveAttribute('href', '/app/demo');
   expect(within(menu).queryByRole('button', { name: /Revoir l’aide/ })).not.toBeInTheDocument();
-  const ordre = [within(menu).getByRole('button', { name: /Reprendre/ }), ...within(menu).getAllByRole('link')].map((el) => el.textContent!.trim());
-  expect(ordre.slice(0, 3)).toEqual(['Reprendre', 'Réglages', expect.stringMatching(/^(Continuer|À revoir|École du village)/)]);
-  expect(ordre.at(-1)).toMatch(/^Tutoriel/);
+  const ordre = within(menu)
+    .getAllByRole('link')
+    .map((el) => el.textContent!.trim());
+  expect(ordre.at(-2)).toMatch(/^Tutoriel/);
+  expect(ordre.at(-1)).toBe('Réglages');
+  expect(within(menu).getByRole('link', { name: /Réglages/ })).toHaveAttribute('href', '/reglages');
   expect(within(menu).getByRole('link', { name: /Monuments/ })).toHaveTextContent('Bâtis avec tes blocs');
-  await user.click(within(menu).getByRole('button', { name: /Reprendre/ }));
+  await user.click(within(menu).getByRole('button', { name: 'Fermer le menu' }));
   expect(screen.queryByRole('dialog', { name: 'Menu' })).not.toBeInTheDocument();
   expect(screen.getByTestId('adresse')).toHaveTextContent(/^\/adventure$/);
+  // Le focus revient au bouton Menu.
+  expect(screen.getByRole('button', { name: 'Menu' })).toHaveFocus();
+  // Un mot ouvert dessous, dont l'écouteur est posé avant le menu, voit la touche déjà prise : il ne se ferme pas avec lui.
+  let priseAvant: boolean | undefined;
+  const dessous = (e: KeyboardEvent) => (priseAvant = e.defaultPrevented);
+  window.addEventListener('keydown', dessous);
+  await user.click(screen.getByRole('button', { name: 'Menu' }));
+  menu = await screen.findByRole('dialog', { name: 'Menu' });
+  await user.keyboard('{Escape}');
+  window.removeEventListener('keydown', dessous);
+  expect(priseAvant).toBe(true);
+  expect(screen.queryByRole('dialog', { name: 'Menu' })).not.toBeInTheDocument();
 });
 
 it('la salle des trophées : on la touche dans le monde, son panneau montre les succès', async () => {
@@ -742,7 +757,7 @@ it('le tutoriel du village tient en trois bulles : l’île, les bornes, le bout
   await user.click(screen.getByRole('button', { name: /Suivant/ }));
   expect(tuto()).toHaveTextContent(/touche une borne, puis Jouer\. La bulle bordée d’or montre la prochaine chose à faire\. Chaque mission te donne des blocs pour construire l’île/);
   await user.click(screen.getByRole('button', { name: /Suivant/ }));
-  expect(tuto()).toHaveTextContent('Le bouton Menu (⏸), en haut à droite, ouvre le menu : missions, succès, réglages, accueil.');
+  expect(tuto()).toHaveTextContent('Le bouton Menu, en haut à droite, ouvre le menu : missions, succès, réglages, accueil.');
   // La bulle montre le bouton Menu.
   expect(document.querySelector('[data-tuto="menu"]')!.classList.contains('tuto-target')).toBe(true);
   await user.click(screen.getByRole('button', { name: /J’ai compris/ }));
@@ -878,7 +893,7 @@ describe('la pose d’une partie en vague, après « Voir le bâtiment » (GD-6,
     expect(within(region as HTMLElement).getByText('Partie posée : la cabane de Mousso.')).toBeInTheDocument();
   });
 
-  it('Pause pendant la pose ouvre le menu et pose la partie en silence ; au retour, la phrase est là, rien ne se rejoue', async () => {
+  it('Menu pendant la pose ouvre le menu et pose la partie en silence ; au retour, la phrase est là, rien ne se rejoue', async () => {
     const { cases, dansLaPartie } = await preparer();
     carillon.mockClear();
     renderAt('/adventure/french-6e-phonology?worksite=part');

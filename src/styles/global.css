@@ -5481,6 +5481,27 @@ details.island-fold-objectif {
   padding: 0;
   justify-content: center;
 }
+/* Blocland, hors du monde (Réglages, Succès, Missions…) : le bouton Menu seul, à la place de la barre du haut. */
+.page-menu {
+  position: fixed;
+  top: calc(0.6rem + env(safe-area-inset-top));
+  right: calc(0.6rem + env(safe-area-inset-right));
+  z-index: 14;
+  width: 52px;
+  height: 52px;
+  min-height: 52px;
+  padding: 0;
+  justify-content: center;
+}
+.app-shell:has(> .page-menu) .content .back-link {
+  max-width: calc(100% - 52px - 1.2rem);
+}
+.app-shell:has(> .page-menu) .update-banner {
+  padding-right: calc(52px + 1.2rem + env(safe-area-inset-right));
+}
+.app-shell:has(> .page-menu) .content {
+  padding-top: calc(1rem + env(safe-area-inset-top));
+}
 .pause-screen {
   position: fixed;
   inset: 0;
@@ -5721,7 +5742,7 @@ button.app-card {
   margin: 1rem 0 0;
 }
 
-/* Le menu du village : un bouton Pause en haut à droite du monde, et son panneau. */
+/* Le menu du village : un bouton Menu (trois traits) en haut à droite du monde, et son panneau. */
 .world-menu-button {
   position: absolute;
   top: 0.6rem;
@@ -5738,12 +5759,12 @@ button.app-card {
   border-color: var(--on-sand);
   color: var(--on-sand);
 }
-/* Le panneau du haut s'arrête avant la colonne de droite (Pause, choix de l'archipel), mesurée : en grand texte, le
-   bouton « 3e » est plus large que Pause, et aucun bouton ne se pose sur le texte du panneau (DA-31). */
+/* Le panneau du haut s'arrête avant la colonne de droite (Menu, choix de l'archipel), mesurée : en grand texte, le
+   bouton « 3e » est plus large que Menu, et aucun bouton ne se pose sur le texte du panneau (DA-31). */
 .world-page .world-overlay-top {
   right: calc(0.6rem + max(52px, var(--colonne-w, 52px)) + 0.5rem);
 }
-/* Sur téléphone en grand texte, la place manque : Pause et le choix de l'archipel passent en ligne en haut (Pause
+/* Sur téléphone en grand texte, la place manque : Menu et le choix de l'archipel passent en ligne en haut (Menu
    reste dans le coin, l'archipel à sa gauche), et le panneau prend toute la largeur dessous (DA-31). */
 @media (max-width: 640px) {
   :root[data-texte="grand"] .world-page .world-archipel {
@@ -5794,15 +5815,23 @@ button.app-card {
     padding-right: 12px;
   }
 }
-.menu-resume {
-  width: 100%;
-  justify-content: center;
-  margin: 0.4rem 0 0.6rem;
+/* Le menu du village, en plein écran par-dessus le monde (comme les autres panneaux) : des lignes serrées, des cibles
+   d'au moins 48 px ; les Réglages tout en bas de l'écran, à part, sous un trait (après les lignes quand elles
+   défilent). */
+.world-page > .menu-sheet {
+  display: flex;
+  flex-direction: column;
 }
-/* Le menu du village tient sans défiler sur un écran d'ordinateur (1280 × 800) : des lignes plus serrées, des cibles
-   d'au moins 48 px. */
-.menu-sheet {
-  padding-bottom: 0.8rem;
+.world-page > .menu-sheet > * {
+  flex-shrink: 0;
+}
+.menu-end {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: var(--border-width) solid var(--ink);
+}
+.menu-sheet .menu-list {
+  margin-bottom: 1rem;
 }
 .menu-sheet .island-quests {
   gap: 0.35rem;
@@ -5812,11 +5841,6 @@ button.app-card {
   padding-top: 0.2rem;
   padding-bottom: 0.2rem;
 }
-/* Réglages et Accueil côte à côte, juste sous Reprendre : visibles d'emblée, même sur un téléphone. */
-.menu-quick {
-  grid-template-columns: repeat(auto-fit, minmax(min(9rem, 100%), 1fr));
-  margin-bottom: 0.6rem;
-}
 button.island-quest {
   width: 100%;
   font: inherit;
@@ -5824,7 +5848,7 @@ button.island-quest {
   cursor: pointer;
 }
 
-/* « Recentrer », après un glissé du monde : sous la colonne de droite (Pause, l'archipel), mesurée (`--colonne-bas`).
+/* « Recentrer », après un glissé du monde : sous la colonne de droite (Menu, l'archipel), mesurée (`--colonne-bas`).
    Il apparaît d'un coup, sans pousser personne ; la liste des archipels, ouverte, passe par-dessus. */
 .world-recentrer {
   position: absolute;
@@ -5834,6 +5858,20 @@ button.island-quest {
   padding: 0.4rem 0.9rem;
   gap: 0.4rem;
   white-space: nowrap;
+}
+/* Blocland : le rond « toi » de la Carte (clair, bord sombre épais, ombre nette ; jamais d'or), avec la tête du
+   bonhomme ; 52 px, comme le bouton Menu au-dessus. */
+.world-recentrer-tete {
+  width: 52px;
+  height: 52px;
+  min-height: 52px;
+  padding: 0;
+  justify-content: center;
+  border-radius: 50%;
+  /* Par la variable du fond : le survol et l'appui le foncent un peu, sans le repeindre en bois. */
+  --button-bg: #fff6e0;
+  border: 4px solid #2b2118;
+  box-shadow: 0 4px 0 #2b2118;
 }
 
 /* La rangée de classes (lot 2 de « Toucher le monde ») : sous le bouton Menu, une classe par archipel atteint. La
@@ -6306,9 +6344,9 @@ fieldset {
   :root[data-texte="grand"] .consigne > .speak-button {
     align-self: flex-start;
   }
-  /* En partie, la première ligne du titre laisse la place du bouton Pause, fixé en haut à droite ; les suivantes ont
-     toute la largeur. */
-  :root[data-texte="grand"] .app-shell.focus .page-title::before {
+  /* En partie, la première ligne du titre laisse la place du bouton Pause, fixé en haut à droite (hors du monde dans
+     Blocland, celle du bouton Menu) ; les suivantes ont toute la largeur. */
+  :root[data-texte="grand"] :is(.app-shell.focus, .app-shell:has(> .page-menu)) .page-title::before {
     content: "";
     float: right;
     width: calc(56px + 0.6rem);
@@ -6331,6 +6369,10 @@ fieldset {
   :root[data-texte="grand"] .island-sheet-titles {
     order: 1;
     flex-basis: 100%;
+  }
+  /* La croix reste en haut à droite, même seule sur sa ligne (le menu, un lieu sans créature) : toujours au même endroit. */
+  :root[data-texte="grand"] .island-sheet-close {
+    margin-left: auto;
   }
   :root[data-texte="grand"] .island-quest {
     flex-wrap: wrap;

@@ -96,7 +96,7 @@ export function HomePage() {
               {resume && (
                 <li>
                   <Link to={resume.path}>
-                    <Icon name="play" /> Continuer : {resume.label}
+                    <Icon name="play" /> Ma dernière mission : {resume.label}
                   </Link>
                 </li>
               )}
@@ -104,7 +104,7 @@ export function HomePage() {
               {reviews.length > 0 && (
                 <li>
                   <Link to={reviews[0].path}>
-                    <Icon name="history" /> À revoir aujourd’hui : {reviews[0].label}
+                    <Icon name="history" /> Mes révisions du jour : {reviews[0].label}
                     {reviews.length > 1 && ` (et ${reviews.length - 1} autre${reviews.length > 2 ? 's' : ''})`}
                   </Link>
                 </li>

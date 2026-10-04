@@ -16,6 +16,7 @@ function renderAt(path: string) {
             <Route element={<Layout />}>
               <Route path="adventure/:biomeId?" element={<p>Le monde</p>} />
               <Route path="reglages" element={<p>Les réglages</p>} />
+              <Route path="menu" element={<p>Le menu</p>} />
             </Route>
           </Routes>
         </MemoryRouter>
@@ -24,7 +25,7 @@ function renderAt(path: string) {
   );
 }
 
-it('sur l’écran du monde, pas de barre du haut : le menu Pause la remplace ; elle revient hors du monde', () => {
+it('Blocland : pas de barre du haut, ni dans le monde ni hors du monde ; hors du monde, le bouton Menu seul', () => {
   const monde = renderAt('/adventure/french-6e-phonology');
   expect(screen.getByText('Le monde')).toBeInTheDocument();
   expect(screen.queryByRole('navigation', { name: 'Navigation principale' })).not.toBeInTheDocument();
@@ -32,5 +33,18 @@ it('sur l’écran du monde, pas de barre du haut : le menu Pause la remplace ; 
   expect(document.querySelector('.app-shell')!.classList.contains('immersive')).toBe(true);
   monde.unmount();
   renderAt('/reglages');
+  expect(screen.queryByRole('navigation', { name: 'Navigation principale' })).not.toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Menu' })).toHaveAttribute('href', '/menu');
+});
+
+it('Archipéo, en pause, garde sa barre du haut hors du monde', () => {
+  localStorage.setItem('dysapps:settings', JSON.stringify({ univers: 'archipeo' }));
+  renderAt('/reglages');
   expect(screen.getByRole('navigation', { name: 'Navigation principale' })).toBeInTheDocument();
+});
+
+it('Blocland : pas de bouton Menu sur la page qui est elle-même le menu (vue simple)', () => {
+  renderAt('/menu');
+  expect(screen.getByText('Le menu')).toBeInTheDocument();
+  expect(screen.queryByRole('link', { name: 'Menu' })).not.toBeInTheDocument();
 });
