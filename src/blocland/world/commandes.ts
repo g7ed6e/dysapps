@@ -54,7 +54,7 @@ export interface Commande {
   fixture: string;
   /** La commande n'arrive qu'une fois ce plan de l'île bâti (Grimoire, après « La lanterne du phare »). */
   afterPlan?: string;
-  /** Les phrases de Blocland ; Archipéo, en pause, n'affiche pas les commandes. */
+  /** Les phrases de la commande, les mêmes dans Blocland et dans Archipéo. */
   blocland: PhrasesDeCommande;
 }
 
@@ -222,8 +222,8 @@ export function signeDeLaCreature(
 }
 
 /**
- * Le jeu sans les commandes : pour un univers qui ne les montre pas (Archipéo, en pause), ni liste, ni suggestion, ni
- * petite construction dessinée. La sauvegarde, elle, ne change pas.
+ * Le jeu sans les commandes : pour un univers qui ne les montre pas (sans `commandes` dans ses textes), ni liste, ni
+ * suggestion, ni petite construction dessinée. La sauvegarde, elle, ne change pas.
  */
 export function sansCommandes<S extends Pick<GameState, 'world'>>(state: S): S {
   const fixtures = new Set(COMMANDES.map((c) => c.fixture));

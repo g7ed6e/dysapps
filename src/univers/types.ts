@@ -177,7 +177,7 @@ export interface TextesUnivers {
   rappel?: (mission: string) => string;
   /**
    * Les commandes des habitants (GD-7, PR 3 ; mot neutre : les demandes) : les mots de la section et la phrase de la
-   * première fois. Sans eux, l'univers ne montre pas les commandes (Archipéo, en pause).
+   * première fois. Sans eux, l'univers ne montre pas les commandes (ni arrivée, ni liste, ni petite construction).
    */
   commandes?: TextesCommandes;
 }

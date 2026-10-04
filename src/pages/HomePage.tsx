@@ -35,7 +35,7 @@ export function HomePage() {
   const resume = lastPlace();
   const reviews = questsToReview(state.spaced, state.world.links);
   const here = archipelagoOf(state.world.place ?? 'french-6e-phonology').classe;
-  // Les commandes (GD-7) ne se suggèrent que dans un univers qui les montre (Blocland).
+  // Les commandes (GD-7) ne se suggèrent que dans un univers qui les montre (`commandes` dans ses textes).
   const destination = nextDestination(textes.commandes ? state : sansCommandes(state), textes.archipels, textes.libelles);
   const destinationText = `Prochaine destination : ${destination.name}. ${destination.text}`;
   const reached = reachedArchipelagos(state.world.links).length;

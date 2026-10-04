@@ -31,8 +31,7 @@ import type { PlanDef } from './world/plans';
 import type { VehicleStage } from './world/vehicle';
 import type { BuildBridgeResult } from './world/archipelago';
 import type { ExerciseDef, ItemResult } from './exercises/types';
-import { useUniversChoisi } from '../core/SettingsContext';
-import { universAffiche } from '../core/univers';
+import { useTextes } from '../univers';
 import { archipelagoOf, getBridge, type ArchipelagoId } from './world/archipelago';
 import { archipelDeLaCommande, faireArriverUneCommande, livrerLaCommande, type Livraison } from './world/commandes';
 
@@ -103,10 +102,10 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
   const sessionStart = useRef(Date.now());
   const [batisseur, setBatisseur] = useState(false);
   const batisseurRef = useRef(false);
-  // Les commandes des habitants (GD-7, PR 3) n'arrivent que dans Blocland ; Archipéo, en pause, n'en montre aucune.
-  const univers = universAffiche(useUniversChoisi());
-  const avecCommandes = useRef(univers === 'blocland');
-  avecCommandes.current = univers === 'blocland';
+  // Les commandes des habitants (GD-7, PR 3) n'arrivent que dans un univers qui en a les textes (`commandes`).
+  const avecLesTextes = Boolean(useTextes().commandes);
+  const avecCommandes = useRef(avecLesTextes);
+  avecCommandes.current = avecLesTextes;
   /** À la fin d'une mission, d'un ouvrage construit ou d'une livraison dans l'archipel `a` : une commande au plus arrive. */
   const commandeQuiArrive = useCallback((s: GameState, a: ArchipelagoId): GameState => (avecCommandes.current ? faireArriverUneCommande(s, a).state : s), []);
 

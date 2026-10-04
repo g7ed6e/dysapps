@@ -186,8 +186,8 @@ export function WorldPage() {
   const sentinelles = textes.sentinelles !== null && habillage.defi === 'sentinelle';
   const rallumage = useRallumage(state.progress, a, sentinelles);
   const eteints = rallumage.enAttente.join();
-  // Les commandes des habitants (GD-7, PR 3) : seulement dans un univers qui les montre (Blocland) ; ailleurs, le monde
-  // se lit sans elles (ni petite construction, ni suggestion), la sauvegarde restant la même.
+  // Les commandes des habitants (GD-7, PR 3) : seulement dans un univers qui les montre (Blocland, Archipéo) ;
+  // ailleurs, le monde se lit sans elles (ni petite construction, ni suggestion), la sauvegarde restant la même.
   const vu = useMemo(() => (textes.commandes ? state : sansCommandes(state)), [state, textes.commandes]);
   const cubes = useMemo(
     () => worldCubes(a, vu.progress, vu.world, false, trophyBlocks, sentinelles, habillage.atelier),
@@ -610,8 +610,8 @@ export function WorldPage() {
   }
 
   // Le retour d'une mission qui a donné des blocs : le gain, pris une fois en arrivant sur l'île (avant la fiche du
-  // chantier et la pose de la partie, qui l'attendent). « Réduire les animations », un autre univers, le tutoriel ou un
-  // voyage : pas de vol, le chiffre a déjà changé.
+  // chantier et la pose de la partie, qui l'attendent). « Réduire les animations », le tutoriel ou un voyage : pas de
+  // vol, le chiffre a déjà changé.
   // Tenu à jour par cet effet et par `finirLeVol` (jamais pendant le rendu). Cet effet est déclaré AVANT ceux du chantier
   // et de la pose : React les lance dans cet ordre, si bien qu'ils trouvent le vol déjà retenu et l'attendent.
   const volEnCours = useRef(false);
@@ -626,7 +626,7 @@ export function WorldPage() {
       setVol(null);
     }
     const gain = prendreLesBlocs(island.id);
-    const empeche = { moinsDAnimations: reduceMotion, autreUnivers: habillage.univers !== 'blocland', ficheOuverte: false, tutoriel: !tutoDone, motQuiAttend: false, voyage: Boolean(voyage), pleinEcran: false };
+    const empeche = { moinsDAnimations: reduceMotion, ficheOuverte: false, tutoriel: !tutoDone, motQuiAttend: false, voyage: Boolean(voyage), pleinEcran: false };
     if (!gain || !volALieu(gain, empeche)) return;
     setVol((v) => ({ seq: (v?.seq ?? 0) + 1, gain, phase: 'attente' }));
     apresLeVol.current = [];
@@ -1272,11 +1272,12 @@ export function WorldPage() {
             onClose={() => setTutoDone(true)}
             targets={[undefined, undefined, '[data-tuto="menu"]']}
             steps={[
-              // Blocland : plus de flèche jaune dans le monde, la bulle bordée d'or montre ce qu'on peut faire (4 octobre 2026).
-              univers === 'blocland'
+              // Les bulles (Blocland) : plus de flèche jaune dans le monde, la bulle bordée d'or montre ce qu'on peut faire
+              // (4 octobre 2026) ; les losanges (Archipéo) gardent la flèche et le losange jaune.
+              habillage.signesDesObjets === 'bulles'
                 ? `${UNIVERS[univers].bienvenue} Touche la Forêt des sons pour commencer.`
                 : `${UNIVERS[univers].bienvenue} Touche la Forêt des sons, sous la flèche jaune.`,
-              univers === 'blocland'
+              habillage.signesDesObjets === 'bulles'
                 ? 'Sur chaque île, les bornes à panneau sont les missions : touche une borne, puis Jouer. La bulle bordée d’or montre la prochaine chose à faire. Chaque mission te donne des blocs pour construire l’île, et des cubes d’or pour tes étoiles.'
                 : 'Sur chaque île, les bornes à panneau sont les missions : touche une borne, puis Jouer. Un losange jaune flotte au-dessus d’une mission à faire, des cubes d’or comptent tes étoiles. Chaque mission te donne des blocs pour construire l’île.',
               'Le bouton Menu, en haut à droite, ouvre le menu : missions, succès, réglages, accueil.',

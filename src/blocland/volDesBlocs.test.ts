@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { VOL, blocsDuVol, chiffreDeLaPastille, dureeDuVol, nomDuBoutonBlocs, oublierLesBlocs, prendreLesBlocs, retenirLesBlocs, volALieu, type CeQuiEmpeche } from './volDesBlocs';
 
-const RIEN: CeQuiEmpeche = { moinsDAnimations: false, autreUnivers: false, ficheOuverte: false, tutoriel: false, motQuiAttend: false, voyage: false, pleinEcran: false };
+const RIEN: CeQuiEmpeche = { moinsDAnimations: false, ficheOuverte: false, tutoriel: false, motQuiAttend: false, voyage: false, pleinEcran: false };
 
 beforeEach(() => oublierLesBlocs());
 

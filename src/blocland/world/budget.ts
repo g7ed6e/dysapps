@@ -42,7 +42,7 @@ export const RENDER_BUDGET = {
 export const PLAFOND_DU_MONDE_EN_BLOCS = { triangles: 80_000, drawCalls: 240 } as const;
 
 /** Un poste du budget d'Archipéo : une part de la scène, et le lot qui la dessine. */
-export type Poste = 'sol' | 'mer' | 'faune' | 'decor' | 'construction' | 'bornes' | 'navire' | 'bonhomme' | 'creatures' | 'gardiens' | 'scene';
+export type Poste = 'sol' | 'mer' | 'faune' | 'decor' | 'construction' | 'commandes' | 'bornes' | 'navire' | 'bonhomme' | 'creatures' | 'gardiens' | 'scene';
 
 /** Une enveloppe : les triangles et les appels de dessin qu'un poste peut prendre dans un archipel tout construit. */
 export interface Enveloppe {
@@ -56,7 +56,7 @@ export interface Enveloppe {
  * Rivages ont leur colonne (leur phare, leur volcan) ; les trois autres archipels partagent la leur. Chaque lot n'écrit
  * que sa ligne ; le socle les a toutes posées.
  */
-export const ENVELOPPES: Record<Poste, { lot: 'R4b' | 'R5' | 'R6' | 'socle'; nom: string; premiersRivages: Enveloppe; autres: Enveloppe }> = {
+export const ENVELOPPES: Record<Poste, { lot: 'R4b' | 'R5' | 'R6' | 'GD-7' | 'socle'; nom: string; premiersRivages: Enveloppe; autres: Enveloppe }> = {
   // Proposition de l'artiste technique 3D pour le Jardin des heures (LV2, 4e), à valider par le mainteneur : au bout de
   // la crête, à six blocs d'altitude, l'île ajoute 2 775 triangles au sol des Anciens Ateliers (21 268 → 24 043). Les
   // enveloppes « autres » en passent 1 100 au sol, pris sur la mer, la faune, le décor, la construction, le navire et
@@ -100,12 +100,24 @@ export const ENVELOPPES: Record<Poste, { lot: 'R4b' | 'R5' | 'R6' | 'socle'; nom
   // (1 132 mesurés, comme au 5e) : 1 250 pour les bornes (44 bornes, huit de plus pour l'île des Grandeurs), 1 250 pour
   // la faune ; la somme ne change pas (57 800). Le navire garde ses 1 000, promis en partie à la construction (cadrage Archipéo, lot 7b).
   faune: { lot: 'R4b', nom: 'Faune', premiersRivages: { triangles: 1_250, drawCalls: 3 }, autres: { triangles: 1_280, drawCalls: 3 } },
-  decor: { lot: 'R4b', nom: 'Décor et repères signatures', premiersRivages: { triangles: 12_500, drawCalls: 3 }, autres: { triangles: 9_350, drawCalls: 3 } },
+  // Les commandes des habitants dans Archipéo (GD-7, décision du mainteneur du 4 octobre 2026 : le gameplay de Blocland
+  // appliqué à Archipéo) : le directeur artistique propose un poste de 450 triangles par archipel, pris sur la marge du
+  // décor, la somme inchangée. Mesuré toutes commandes livrées (`commandesCost`) : 430 aux Premiers Rivages, 178 aux
+  // Îles Brumeuses, 186 aux Anciens Ateliers, 152 aux Îles du Ciel, aucun appel de plus. Aux Premiers Rivages, les 450
+  // passent du décor (12 500 → 12 050 ; 11 746 mesurés). Ailleurs, le décor des Îles Brumeuses (9 103 mesurés) n'a que
+  // 247 de marge : proposition de l'artiste technique 3D, à valider par le mainteneur, 200 seulement (9 350 → 9 150).
+  decor: { lot: 'R4b', nom: 'Décor et repères signatures', premiersRivages: { triangles: 12_050, drawCalls: 3 }, autres: { triangles: 9_150, drawCalls: 3 } },
   construction: {
     lot: 'R5',
     nom: 'Construction (bâtiments, ouvrages, monuments, quai, cœur des îles ; fantômes et fenêtres compris)',
     premiersRivages: { triangles: 7_200, drawCalls: 3 },
     autres: { triangles: 7_500, drawCalls: 3 },
+  },
+  commandes: {
+    lot: 'GD-7',
+    nom: 'Commandes (les petites constructions livrées, dans le sol et la construction, sans appel de plus)',
+    premiersRivages: { triangles: 450, drawCalls: 0 },
+    autres: { triangles: 200, drawCalls: 0 },
   },
   bornes: { lot: 'R5', nom: 'Bornes (instanciées)', premiersRivages: { triangles: 1_250, drawCalls: 1 }, autres: { triangles: 715, drawCalls: 1 } },
   navire: { lot: 'R5', nom: 'Navire', premiersRivages: { triangles: 1_000, drawCalls: 3 }, autres: { triangles: 420, drawCalls: 3 } },
@@ -142,8 +154,8 @@ export function toutConstruit() {
 
 /**
  * La même partie, avec en plus toutes les commandes livrées (GD-7, PR 3) : la petite construction de chaque créature
- * posée chez elle, pour compter le monde en blocs de Blocland au pire. Archipéo, en pause, ne les montre pas : ses postes
- * se comptent sur `toutConstruit`.
+ * posée chez elle, pour compter le monde au pire. Dans Archipéo, les postes se comptent sur `toutConstruit`, et les
+ * petites constructions à part, dans le poste « commandes » (`commandesCost`).
  */
 export function toutConstruitAvecLesCommandes() {
   const partie = toutConstruit();
@@ -153,7 +165,7 @@ export function toutConstruitAvecLesCommandes() {
 
 /**
  * Les modèles en blocs de la scène d'un archipel tout construit, chacun en groupes de `buildMesh`. `commandes` : avec
- * les petites constructions des commandes posées (Blocland).
+ * les petites constructions des commandes posées.
  */
 export function sceneModels(a: ArchipelagoId, commandes = false): { name: string; groups: MeshGroup[] }[] {
   const { progress, world: village } = commandes ? toutConstruitAvecLesCommandes() : toutConstruit();
@@ -189,8 +201,8 @@ export function signesCost(): { triangles: number; drawCalls: number } {
  * Un archipel tout construit comme le rendu Archipéo le range : le sol (en facettes), le décor en primitives (lot R4),
  * qui ne fige plus sa case, et le reste (en cubes).
  */
-function archipelArchipeo(a: ArchipelagoId, trophees: readonly BlockId[] = []) {
-  const { progress, world: village } = toutConstruit();
+function archipelArchipeo(a: ArchipelagoId, trophees: readonly BlockId[] = [], commandes = false) {
+  const { progress, world: village } = commandes ? toutConstruitAvecLesCommandes() : toutConstruit();
   const cubes = worldCubes(a, progress, village, false, [...trophees], false, 'halle');
   const { elements, reste } = rangerLeDecor(cubes.filter((c) => !c.sol));
   // Le sol tel qu'Archipéo le dessine : le relief de marche, puis le modelé dessiné (U2).
@@ -202,8 +214,8 @@ function archipelArchipeo(a: ArchipelagoId, trophees: readonly BlockId[] = []) {
  * Le sol et la roche d'un archipel tout construit dans le rendu Archipéo (lot R2) : le maillage à facettes de
  * ./landMesh.ts, un appel de dessin (deux s'il y a de la lave).
  */
-export function solCost(a: ArchipelagoId): { triangles: number; drawCalls: number } {
-  const m = landMesh(archipelArchipeo(a).champ);
+export function solCost(a: ArchipelagoId, commandes = false): { triangles: number; drawCalls: number } {
+  const m = landMesh(archipelArchipeo(a, [], commandes).champ);
   return { triangles: trianglesDuSol(m), drawCalls: appelsDuSol(m) };
 }
 
@@ -263,10 +275,23 @@ export function personnagesCost(a: ArchipelagoId): Record<'bonhomme' | 'creature
  * La construction taillée d'Archipéo (lot R5) : bâtiments, ouvrages, monuments, quai et cœur des îles, fantômes et
  * fenêtres compris (./construction.ts), sans les bornes : trois appels de dessin au plus.
  */
-export function constructionCost(a: ArchipelagoId, trophees: readonly BlockId[] = []): { triangles: number; drawCalls: number } {
-  const { ground, reste, champ } = archipelArchipeo(a, trophees);
+export function constructionCost(a: ArchipelagoId, trophees: readonly BlockId[] = [], commandes = false): { triangles: number; drawCalls: number } {
+  const { ground, reste, champ } = archipelArchipeo(a, trophees, commandes);
   const { triangles, drawCalls } = coutDeLaConstruction(maillageDeLaConstruction(a, poseDuDecor(champ, sansToursDuCoeur(reste)), ground));
   return { triangles, drawCalls };
+}
+
+/**
+ * Les petites constructions des commandes dans Archipéo (GD-7), toutes livrées : ce qu'elles ajoutent à la construction
+ * taillée (leurs blocs, dans le même maillage) et au sol (les cases qu'elles figent à plat), sans appel de dessin de plus.
+ */
+export function commandesCost(a: ArchipelagoId): { triangles: number; drawCalls: number } {
+  const [sans, avec] = [false, true].map((commandes) => {
+    const sol = solCost(a, commandes);
+    const construction = constructionCost(a, [], commandes);
+    return { triangles: sol.triangles + construction.triangles, drawCalls: sol.drawCalls + construction.drawCalls };
+  });
+  return { triangles: avec.triangles - sans.triangles, drawCalls: avec.drawCalls - sans.drawCalls };
 }
 
 /** Les bornes de mission d'Archipéo (lot R5) : un pilier taillé, instancié une fois par borne, en un appel. */
@@ -336,7 +361,8 @@ export const COUTS_DES_POSTES = {
   mer: merCost,
   faune: fauneCost,
   decor: decorCost,
-  construction: constructionCost,
+  construction: (a: ArchipelagoId) => constructionCost(a),
+  commandes: commandesCost,
   bornes: bornesCost,
   navire: navireCost,
   bonhomme: (a: ArchipelagoId) => personnagesCost(a).bonhomme,

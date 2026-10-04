@@ -350,6 +350,17 @@ export const ARCHIPEO = {
       done: 'Le phare du large s’allume ! Plus aucun navire ne se perd dans la brume.',
     },
   },
+  // Les commandes des habitants (GD-7), depuis la décision du 4 octobre 2026 (le gameplay de Blocland appliqué à
+  // Archipéo) : l'habitant demande des blocs « pour bâtir chez lui ». Textes validés par le consultant d'Archipéo.
+  commandes: {
+    titre: 'Commandes',
+    premiereFois: 'Un habitant te demande des blocs pour bâtir chez lui. Tu les livres quand tu veux.',
+    livrer: 'Livrer',
+    liste: 'Les commandes des habitants',
+    compte: (n, pretes) => (pretes ? `${pretes} prête${s(pretes)}` : `${n} en attente`),
+    tuEnAs: (have, count) => `Tu en as ${have} sur ${count}.`,
+    tuYEs: 'Tu y es : joue une mission ici.',
+  },
   // Les blocs assemblés et leur lieu (GD-2) : écrits dans docs/contenu/assemblage.md.
   blocs: nomsAssembles('archipeo'),
   assemblage: lieuDAssemblage('archipeo'),
