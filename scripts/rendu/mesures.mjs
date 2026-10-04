@@ -563,6 +563,16 @@ function sansLesIles(parCle, iles) {
   return Object.fromEntries(Object.entries(parCle).filter(([k]) => !iles.some((i) => k.startsWith(`${i}-`))));
 }
 
+/** Le panneau de l'île ouvert par son bouton (il ne s'ouvre jamais tout seul), quand `selecteur` n'est pas déjà à l'écran. */
+async function ouvrirLePanneauPour(page, selecteur) {
+  if (await page.locator(selecteur).count()) return;
+  const bouton = page.getByRole('button', { name: /^Ouvrir le panneau de / });
+  if (!(await bouton.count())) return;
+  await bouton.first().click();
+  await page.clock.runFor(125);
+  await page.waitForTimeout(100);
+}
+
 /**
  * L'adresse d'une capture déclarée : le défi de chaque île (`parIle`), la vue d'un monument (`lieu`), une île ou le défi
  * de son Gardien (`ile`), sinon la route de la vue, le bonhomme là où la partie le pose (`routes`).
@@ -796,8 +806,12 @@ async function scenes() {
         await preparerLaScene(page, VUES_SANS_MONDE.has(vue) || view === 'list' ? 0 : WAIT);
         // Une île touchée une fois la scène prête (`allerA`) : le bonhomme part, la caméra prend le trajet.
         if (allerA) await page.evaluate((id) => (location.hash = `#/adventure/${id}`), allerA);
-        // Un bouton touché une fois la scène prête (`cliquer` : « Livrer », GD-7), qui lance une vague de pose.
-        if (cliquer) await page.locator(cliquer).first().click();
+        // Un bouton touché une fois la scène prête (`cliquer` : « Livrer », GD-7), qui lance une vague de pose ; dans le
+        // panneau de l'île, qui ne s'ouvre que par son bouton.
+        if (cliquer) {
+          await ouvrirLePanneauPour(page, cliquer);
+          await page.locator(cliquer).first().click();
+        }
         // La fiche d'un objet ouverte une fois la scène prête (`fiche`, Toucher le monde, lot 2), comme d'un toucher :
         // le temps que la caméra glisse pour la laisser voir (16 pas, deux secondes de la scène).
         if (fiche) await page.evaluate((objet) => window.__dysappsFiche?.(objet), fiche);
@@ -816,14 +830,7 @@ async function scenes() {
             await page.waitForTimeout(30);
           }
         // Un élément du panneau de l'île (`voir`) : le panneau ne s'ouvre que par son bouton, dans la barre du bas.
-        if (voir && !(await page.locator(voir).count())) {
-          const bouton = page.getByRole('button', { name: /^Ouvrir le panneau de / });
-          if (await bouton.count()) {
-            await bouton.first().click();
-            await page.clock.runFor(125);
-            await page.waitForTimeout(100);
-          }
-        }
+        if (voir) await ouvrirLePanneauPour(page, voir);
         // Un élément à montrer plus bas (dans la page ou dans un panneau qui défile) : on y fait défiler, sans animation.
         if (voir) await page.locator(voir).first().evaluate((el) => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
         await capturer(page, { path: file, type: 'jpeg', quality: 85, timeout: 90000, ...(recadre ? { clip: recadre } : {}) });
