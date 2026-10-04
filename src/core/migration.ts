@@ -151,7 +151,7 @@ export function translateGame(input: unknown): unknown {
 /** Les Gardiens déjà vus rallumés, par lieu. */
 export const translateGuardiansSeen = (v: unknown): unknown => mapKeys(v, translatePlaceId);
 
-/** « Continuer » : l'adresse de la dernière page ouverte. */
+/** « Ma dernière mission » : l'adresse de la dernière page ouverte. */
 export function translateResume(v: unknown): unknown {
   return isRecord(v) && typeof v.path === 'string' ? { ...v, path: translatePath(v.path) } : v;
 }

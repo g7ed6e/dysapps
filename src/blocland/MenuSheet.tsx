@@ -3,7 +3,7 @@
 // commandes, l'école, les grands endroits de l'appli et le Tutoriel ; les Réglages tout en bas, à part (mot du
 // mainteneur, 4 octobre 2026, qui reprend le brief de l'ancienne #282). La croix ou Échap le referment : plus de
 // « Reprendre ». L'aide du village se revoit avec le « ? » de la barre du bas.
-import { useEffect } from 'react';
+import { useEffect, useEffectEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon, type AnyIconName } from '../components/Icon';
 import { XpBar } from '../components/XpBar';
@@ -48,16 +48,17 @@ export function MenuSheet({ onClose, onAller }: Props) {
   const { progress } = useProgress();
   const resume = lastPlace();
   const reviews = questsToReview(state.spaced, state.world.links);
-  // Échap referme le menu, comme la croix.
+  // Échap referme le menu, comme la croix ; la touche est prise (un mot ouvert dessous ne se ferme pas avec lui).
+  const toucheEchap = useEffectEvent((e: KeyboardEvent) => {
+    if (e.key !== 'Escape' || e.defaultPrevented) return;
+    e.preventDefault();
+    onClose();
+  });
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key !== 'Escape' || e.defaultPrevented) return;
-      e.preventDefault();
-      onClose();
-    };
+    const onKey = (e: KeyboardEvent) => toucheEchap(e);
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [onClose]);
+  }, []);
   return (
     <section id="panneau-menu" className="island-sheet menu-sheet" role="dialog" aria-labelledby="menu-titre" aria-modal="true">
       <div className="island-sheet-head">

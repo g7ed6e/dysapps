@@ -443,7 +443,7 @@ const PAGES: Readonly<Record<string, string>> = {
 };
 
 /**
- * Une adresse d'avant (`/aventure/foret/chasse-son`, un favori, un lien d'enseignant, « Continuer ») → la neuve
+ * Une adresse d'avant (`/aventure/foret/chasse-son`, un favori, un lien d'enseignant, « Ma dernière mission ») → la neuve
  * (`/adventure/french-6e-phonology/sound-hunt`) ; `/matiere/francais` → `/matiere/french`. Une autre adresse passe
  * telle quelle.
  */

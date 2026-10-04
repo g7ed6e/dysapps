@@ -158,6 +158,13 @@ export function WorldPage() {
   // Le menu du village (menu pause), en plein écran : la dernière mission, les révisions, les commandes, l'école, Missions,
   // Succès, le Tutoriel, puis Réglages tout en bas ; la croix ou Échap le referment.
   const menuOpen = biomeId === 'menu';
+  // Le menu refermé (la croix, Échap) : le focus revient au bouton Menu, d'où il était parti.
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const menuEtaitOuvert = useRef(menuOpen);
+  useEffect(() => {
+    if (menuEtaitOuvert.current && !menuOpen) menuButtonRef.current?.focus();
+    menuEtaitOuvert.current = menuOpen;
+  }, [menuOpen]);
   // La salle des trophées : un trophée par succès gagné dans le monde, le profil dans son panneau.
   const trophiesOpen = biomeId === 'trophies';
   // Le lieu où l'on assemble les blocs (GD-2), à côté de l'école.
@@ -1182,6 +1189,7 @@ export function WorldPage() {
         {!voyage && (
           <button
             type="button"
+            ref={menuButtonRef}
             className="button world-menu-button"
             data-tuto="menu"
             data-couvre="bouton"

@@ -106,7 +106,8 @@ export function RallumagePanel({ id, onClose, aSuivre = false }: PanelProps) {
   }, [id]);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      // Une touche déjà prise (le menu ouvert par-dessus l'a refermé) ne ferme pas le mot sans qu'on l'ait lu.
+      if (e.key === 'Escape' && !e.defaultPrevented) onClose();
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);

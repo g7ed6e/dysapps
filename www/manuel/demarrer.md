@@ -51,7 +51,7 @@ Une appli déjà installée ne prend pas toujours la nouvelle icône ni le nouve
 
 ## L’écran titre
 
-À chaque lancement, l’écran titre montre le logo de Blocland (une île en blocs avec un grand chêne), qui se construit en moins d’une seconde (le pied de l’île, son dessus, le tronc puis le feuillage se posent l’un après l’autre, sans rebond ; immobile quand l’appareil demande de réduire les animations), « Blocland » et un gros bouton **Jouer**, qu’on peut toucher tout de suite, qui mène au village (déjà chargé derrière l’écran titre) (au menu en page en vue simple). S’il y a une mission en cours, il propose d’abord **Continuer : Abattage syllabique · Forêt des sons** (la dernière mission ouverte), puis **Jouer**. Il n’y a rien à attendre : il reste jusqu’au toucher, sans compte à rebours.
+À chaque lancement, l’écran titre montre le logo de Blocland (une île en blocs avec un grand chêne), qui se construit en moins d’une seconde (le pied de l’île, son dessus, le tronc puis le feuillage se posent l’un après l’autre, sans rebond ; immobile quand l’appareil demande de réduire les animations), « Blocland » et un gros bouton **Jouer**, qu’on peut toucher tout de suite, qui mène au village (déjà chargé derrière l’écran titre) (au menu en page en vue simple). S’il y a une mission en cours, il propose d’abord **Ma dernière mission : Abattage syllabique · Forêt des sons** (la dernière mission ouverte), puis **Jouer**. Il n’y a rien à attendre : il reste jusqu’au toucher, sans compte à rebours.
 
 ![L'écran titre : l'île en blocs de Blocland, « Blocland » et le bouton Jouer.](/captures/titre.jpg)
 
@@ -59,7 +59,7 @@ Ce premier toucher sert aussi à **débloquer la voix et les sons** : les naviga
 
 Quand des items ratés reviennent (répétition espacée), la créature de leur île fait signe dans le monde et propose de reprendre ([La créature qui se souvient](blocland.md#la-creature-qui-se-souvient)) ; le menu (en page et dans le village) montre aussi **À revoir aujourd’hui** et, si l’appli est installée, un point s’affiche sur son icône (désactivable dans les Réglages).
 
-À l’écran titre, **Continuer**, et dans le menu, **Ma dernière mission**, ramènent à la dernière mission ouverte (du portail ou de l’aventure ; pas le Tutoriel). « Effacer ma progression » l’oublie.
+À l’écran titre comme dans le menu, **Ma dernière mission** ramène à la dernière mission ouverte (du portail ou de l’aventure ; pas le Tutoriel). « Effacer ma progression » l’oublie.
 
 ## La première séance
 

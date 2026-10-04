@@ -656,6 +656,8 @@ it('le menu du village : le bouton Menu l’ouvre en plein écran, Réglages en 
   await user.click(within(menu).getByRole('button', { name: 'Fermer le menu' }));
   expect(screen.queryByRole('dialog', { name: 'Menu' })).not.toBeInTheDocument();
   expect(screen.getByTestId('adresse')).toHaveTextContent(/^\/adventure$/);
+  // Le focus revient au bouton Menu.
+  expect(screen.getByRole('button', { name: 'Menu' })).toHaveFocus();
   await user.click(screen.getByRole('button', { name: 'Menu' }));
   menu = await screen.findByRole('dialog', { name: 'Menu' });
   await user.keyboard('{Escape}');

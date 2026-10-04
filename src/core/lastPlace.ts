@@ -1,4 +1,4 @@
-// La dernière mission ouverte, pour le bouton « Continuer » (écran titre et menus) : son adresse et son nom.
+// La dernière mission ouverte, pour « Ma dernière mission » (écran titre et menus) : son adresse et son nom.
 import { useEffect } from 'react';
 import { loadJSON, removeKey, saveJSON } from './storage';
 

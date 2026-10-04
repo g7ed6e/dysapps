@@ -155,7 +155,7 @@ it('effacer la progression demande d’écrire « effacer » : un toucher de tro
   await user.type(screen.getByRole('textbox'), 'cer');
   await user.click(erase);
   expect(JSON.parse(localStorage.getItem('dysapps:progress')!).xp).toBe(0);
-  // « Continuer » est oublié aussi.
+  // « Ma dernière mission » est oubliée aussi.
   expect(localStorage.getItem('dysapps:resume')).toBeNull();
 });
 

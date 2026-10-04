@@ -49,10 +49,10 @@ it('l’ancien réglage « Au démarrage : le menu » n’ouvre plus l’Accueil
   expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure');
 });
 
-it('l’écran titre garde « Continuer » alors que l’accueil a déjà mené au village', () => {
+it('l’écran titre garde « Ma dernière mission » alors que l’accueil a déjà mené au village', () => {
   rememberPlace({ path: '/app/tables', label: 'Tables & calcul mental' });
   renderAt('/', true);
   expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure');
-  expect(screen.getByRole('button', { name: 'Continuer : Tables & calcul mental' })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Ma dernière mission : Tables & calcul mental' })).toBeInTheDocument();
   expect(screen.getByRole('button', { name: /Jouer/ })).toBeInTheDocument();
 });
