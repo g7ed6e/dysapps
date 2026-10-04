@@ -38,6 +38,9 @@ interface Appui {
   x: number;
   y: number;
   ancre: THREE.Vector3 | null;
+  /** Où il est maintenant (un second doigt peut se poser après qu'il a glissé). */
+  cx: number;
+  cy: number;
   /** Un second doigt s'est posé (la Carte se pince) : lever les doigts n'ouvre rien. */
   pince?: boolean;
 }
@@ -281,8 +284,10 @@ export default function WorldCanvas({
         arriveRef.current?.();
         return;
       }
-      // Sur la Carte, + et − zooment autour du centre de la place libre.
-      const zoomClavier = e.key === '+' || e.key === '=' ? 1.25 : e.key === '-' || e.key === '_' ? 0.8 : 0;
+      // Sur la Carte, + et − zooment autour du centre de la place libre ; avec Ctrl ou Cmd, ils restent au navigateur
+      // (agrandir la page).
+      const modifie = e.ctrlKey || e.metaKey || e.altKey;
+      const zoomClavier = modifie ? 0 : e.key === '+' || e.key === '=' ? 1.25 : e.key === '-' || e.key === '_' ? 0.8 : 0;
       if (zoomClavier && zoomPermis()) {
         e.preventDefault();
         const { libre } = lirePlaceLibre(el);
@@ -361,7 +366,7 @@ export default function WorldCanvas({
       if (down && !pince && e.pointerType === 'touch' && e.pointerId !== down.id && zoomPermis()) return pincer(e, down);
       // Un seul doigt : le second, posé pendant que le premier touche ou glisse, ne fait rien.
       if (down || !e.isPrimary || (e.pointerType === 'mouse' && e.button !== 0)) return;
-      down = { id: e.pointerId, x: e.clientX, y: e.clientY, ancre: null };
+      down = { id: e.pointerId, x: e.clientX, y: e.clientY, cx: e.clientX, cy: e.clientY, ancre: null };
       // Le glissé continue même si le doigt sort du canvas (sur un bouton, un panneau).
       try {
         renderer.domElement.setPointerCapture(e.pointerId);
@@ -383,17 +388,14 @@ export default function WorldCanvas({
       return { x: ((x - rect.left) / Math.max(1, rect.width)) * 2 - 1, y: -((y - rect.top) / Math.max(1, rect.height)) * 2 + 1 };
     };
     /**
-     * Les deux doigts qui pincent la Carte : leurs identifiants, où ils sont, et leur écart et leur milieu au dernier
+     * Les deux doigts qui pincent la Carte : leurs identifiants et où ils sont, et leur écart et leur milieu au dernier
      * mouvement. Le milieu entraîne aussi la vue (deux doigts qui glissent ensemble la font glisser).
      */
-    let pince: { ids: [number, number]; points: Map<number, { x: number; y: number }>; ecart: number; mx: number; my: number } | null = null;
+    let pince: { a: { id: number; x: number; y: number }; b: { id: number; x: number; y: number }; ecart: number; mx: number; my: number } | null = null;
     const pincer = (e: PointerEvent, premier: Appui) => {
-      const points = new Map([
-        [premier.id, { x: premier.x, y: premier.y }],
-        [e.pointerId, { x: e.clientX, y: e.clientY }],
-      ]);
-      const a = points.get(premier.id)!;
-      pince = { ids: [premier.id, e.pointerId], points, ecart: Math.max(1, Math.hypot(e.clientX - a.x, e.clientY - a.y)), mx: (a.x + e.clientX) / 2, my: (a.y + e.clientY) / 2 };
+      const a = { id: premier.id, x: premier.cx, y: premier.cy };
+      const b = { id: e.pointerId, x: e.clientX, y: e.clientY };
+      pince = { a, b, ecart: Math.max(1, Math.hypot(b.x - a.x, b.y - a.y)), mx: (a.x + b.x) / 2, my: (a.y + b.y) / 2 };
       premier.pince = true;
       cadrage.glissant = true;
       cubesDuMonde.viser(null);
@@ -406,9 +408,10 @@ export default function WorldCanvas({
     /** Un des deux doigts bouge : la Carte zoome autour de leur milieu, et glisse avec lui. */
     const pincement = (e: PointerEvent) => {
       if (!pince) return;
-      pince.points.set(e.pointerId, { x: e.clientX, y: e.clientY });
-      const a = pince.points.get(pince.ids[0])!;
-      const b = pince.points.get(pince.ids[1])!;
+      const { a, b } = pince;
+      const doigt = e.pointerId === a.id ? a : b;
+      doigt.x = e.clientX;
+      doigt.y = e.clientY;
       const ecart = Math.max(1, Math.hypot(b.x - a.x, b.y - a.y));
       const mx = (a.x + b.x) / 2;
       const my = (a.y + b.y) / 2;
@@ -446,6 +449,8 @@ export default function WorldCanvas({
     };
     /** Le doigt posé bouge : passé le seuil (et si c'est permis), la vue glisse avec lui. */
     const glisser = (e: PointerEvent, appui: Appui) => {
+      appui.cx = e.clientX;
+      appui.cy = e.clientY;
       let ancre = appui.ancre;
       if (!ancre) {
         if (!glisseCommence(e.clientX - appui.x, e.clientY - appui.y) || !glissePermis()) return;
@@ -467,8 +472,23 @@ export default function WorldCanvas({
       cadrage.glissant = false;
       if (renderer.domElement.style.cursor === 'grabbing') renderer.domElement.style.cursor = 'grab';
     };
+    /** Un doigt pincé ? */
+    const pinceAvec = (id: number) => pince !== null && (pince.a.id === id || pince.b.id === id);
+    /**
+     * Un des deux doigts qui pinçaient se lève : le pincement est fini, l'autre doigt reprend le glissé (sans rien ouvrir
+     * en se levant) ; un second doigt reposé pince à nouveau.
+     */
+    const finDuPincement = (e: PointerEvent) => {
+      if (!pince) return;
+      if (renderer.domElement.hasPointerCapture?.(e.pointerId)) renderer.domElement.releasePointerCapture(e.pointerId);
+      const reste = pince.a.id === e.pointerId ? pince.b : pince.a;
+      pince = null;
+      cadrage.glissant = false;
+      down = { id: reste.id, x: reste.x, y: reste.y, cx: reste.x, cy: reste.y, ancre: null, pince: true };
+    };
     const onCancel = (e: PointerEvent) => {
-      if ((down && e.pointerId === down.id) || pince?.ids.includes(e.pointerId)) lacher(e);
+      if (pinceAvec(e.pointerId)) finDuPincement(e);
+      else if (down && e.pointerId === down.id) lacher(e);
     };
     /** Ce que dit un tap sur un cube : borne, lieu, ouvrage, face à construire en chantier, ou l'île. */
     const tapSur = (h: THREE.Intersection) =>
@@ -562,8 +582,7 @@ export default function WorldCanvas({
       cadrage.recadrer(point, { x: ((libre.x0 + libre.x1) / w) - 1, y: 1 - (libre.y0 + libre.y1) / h });
     };
     const onUp = (e: PointerEvent) => {
-      // Un des deux doigts qui pinçaient se lève : le geste est fini, l'autre doigt n'ouvre rien en se levant.
-      if (pince?.ids.includes(e.pointerId)) return lacher(e);
+      if (pinceAvec(e.pointerId)) return finDuPincement(e);
       if (!down || e.pointerId !== down.id) return;
       const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y);
       const glisse = down.ancre !== null || Boolean(down.pince);
@@ -618,7 +637,8 @@ export default function WorldCanvas({
       // `recentrerApres`) : en chantier on pose bloc après bloc là où l'on regarde, et le bonhomme qui y va ne déplace
       // pas la vue.
       const tap = !creature && hit ? tapSur(hit) : null;
-      if (recentrerApres(tap, Boolean(creature))) recentrer();
+      // Sur la Carte, tout toucher qui fait quelque chose ramène la vue d'ensemble (le chemin d'une île pâle y est entier).
+      if (recentrerApres(tap, Boolean(creature)) || (derniers.current.carte && (tap || creature))) recentrer();
       if (creature) {
         const quest = questIdOf(creature.object);
         if (quest) sauterLeSigne({ genre: 'borne', id: `${quest.biome}:${quest.typeId}` });
@@ -644,7 +664,7 @@ export default function WorldCanvas({
     const onHover = (e: PointerEvent) => {
       // Deux doigts posés sur la Carte : on pince.
       if (pince) {
-        if (pince.ids.includes(e.pointerId)) pincement(e);
+        if (pinceAvec(e.pointerId)) pincement(e);
         return;
       }
       // Un doigt posé : c'est un geste (toucher ou glissé), pas un survol.
@@ -935,6 +955,6 @@ export default function WorldCanvas({
   }, [focus.island, focus.seq]);
 
   return (
-    <div ref={host} className={`voxel-canvas ${className ?? ''}`.trim()} data-rendu={rendu} role="img" aria-label={`${label}. ${onVueDeplacee ? 'Faire glisser pour explorer. ' : ''}Au clavier : les flèches vont à l'île voisine${map ? ', + et − zooment' : ''}.`} />
+    <div ref={host} className={`voxel-canvas ${className ?? ''}`.trim()} data-rendu={rendu} role="img" aria-label={`${label}. ${onVueDeplacee ? 'Faire glisser pour explorer. ' : ''}Au clavier : les flèches vont à l'île voisine${map ? ' ; les touches plus et moins rapprochent ou éloignent la Carte' : ''}.`} />
   );
 }

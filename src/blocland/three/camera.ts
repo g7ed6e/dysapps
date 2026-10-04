@@ -655,7 +655,9 @@ export function creerCamera(
       }
       // Sur la Carte, le zoom rapproche la caméra de sa cible (la vue de l'élève, et celle que voient les étiquettes).
       const surLaCarteIci = instant.carte && !sailing && !fixe;
+      // Hors de la Carte, pas de zoom ; sur la Carte, la borne de près suit la place libre (la taille du texte a changé).
       if (!surLaCarteIci) zoom = 1;
+      else if (cadrageCarte && zoom > cadrageCarte.zoomMax) zoom = cadrageCarte.zoomMax;
       if (!self.glissant) zoomDuBut = zoom;
       const kDuBut = 1 / zoomDuBut;
       const kVu = 1 / zoom;
