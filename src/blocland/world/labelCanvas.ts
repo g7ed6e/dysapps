@@ -9,6 +9,7 @@ import { BLOCKS, type BlockId } from '../biomes';
 import { project, shade } from '../Voxel';
 import { TRAITS_DE_L_OUVRAGE } from '../../components/iconeOuvrage';
 import { COTE_DU_VISAGE, type Visage } from './personnages/visage';
+import type { Habillage } from './habillage/types';
 
 export interface IslandLabelState {
   id: IslandStateId;
@@ -335,7 +336,7 @@ export function formeDeLaFlecheDOuvrage(cx: number, tipY: number, h: number): { 
 export const COULEURS_DES_SIGNES = {
   plaque: { fond: '#fff6e0', encre: '#2b2118', avant: '#e0b73f' },
   hexagone: { fond: '#e5ebe3', encre: '#142b38', avant: '#ffd866' },
-} as const satisfies Record<string, { fond: string; encre: string; avant: string }>;
+} as const satisfies Record<Habillage['formeDesSignes'], { fond: string; encre: string; avant: string }>;
 
 /**
  * Le médaillon « toi » de la Carte (Blocland, piste B choisie par le mainteneur le 4 octobre 2026 ; Archipéo, choix
