@@ -1,13 +1,24 @@
 # Comparaison avec main
 
-Références : main au commit 9bfe50b811e918d25657b8139e7de9e6313530af (après : 7d02a445b5f5eb4e532455508edd8ed1bb615f98). Une vue est changée au-delà de 0,3 % de pixels différents.
+Références : main au commit 9bfe50b811e918d25657b8139e7de9e6313530af (après : 89483e0b28ae452a20fd54943312ca5f8fd081fe). Une vue est changée au-delà de 0,3 % de pixels différents.
 
-## Changées (6) : planches dans `planches/`
+## Changées (17) : planches dans `planches/`
 
 - 6e-archipel-nuit.jpg : 5,0 %
-- 6e-archipel.jpg : 5,2 %
+- 6e-archipel.jpg : 5,0 %
 - 6e-carte-nuit.jpg : 34,6 %
 - 6e-carte.jpg : 36,8 %
+- 6e-commandes-archipel.jpg : 4,2 %
+- 6e-commandes-menu.jpg : 60,3 %
+- 6e-commandes-panneau-390x844-od32.jpg : 59,4 %
+- 6e-commandes-panneau.jpg : 61,3 %
+- 6e-commandes-plaque-nuit.jpg : 86,7 %
+- 6e-commandes-plaque.jpg : 89,1 %
+- 6e-commandes-pose-en-cours.jpg : 66,4 %
+- 6e-commandes-puits-nuit.jpg : 86,9 %
+- 6e-commandes-puits.jpg : 89,5 %
+- 6e-commandes-tour-nuit.jpg : 86,8 %
+- 6e-commandes-toutes-6e.jpg : 4,0 %
 - 6e-ile-nuit.jpg : 90,7 %
 - 6e-ile.jpg : 93,5 %
 
