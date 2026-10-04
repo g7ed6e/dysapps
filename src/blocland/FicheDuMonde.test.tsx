@@ -199,6 +199,18 @@ describe('le portrait en médaillon (P2, PR 2, Blocland)', () => {
     }
   });
 
+  it('une borne jouable met ses étoiles et Jouer sur une même rangée ; fermée, sa phrase reste dessous', () => {
+    sauver({ progress: {}, stock: {}, world: { parts: {}, log: [], links: [], place: FORET } });
+    const ouverte = ouvrir({ objet: { genre: 'borne', id: `${FORET}:syllables` }, seq: 1, saut: false });
+    const ligne = document.querySelector('.world-fiche-ligne');
+    expect(ligne).not.toBeNull();
+    expect(within(ligne as HTMLElement).getByRole('link', { name: /Jouer/ })).toBeInTheDocument();
+    ouverte.unmount();
+    ouvrir({ objet: { genre: 'borne', id: 'french-6e-letter-confusion:letter-pairs' }, seq: 2, saut: false });
+    expect(document.querySelector('.world-fiche-ligne')).toBeNull();
+    expect(document.querySelector('.world-fiche-phrase')).not.toBeNull();
+  });
+
   it('Archipéo, en pause, ne change pas : pas de médaillon', () => {
     sauver({ progress: {}, stock: {}, world: { parts: {}, log: [], links: [], place: FORET } });
     localStorage.setItem('dysapps:settings', JSON.stringify({ univers: 'archipeo', autoRead: false, sounds: false }));

@@ -5873,16 +5873,15 @@ button.island-quest {
 }
 
 /* La fiche d'un objet du monde (lot 2 de « Toucher le monde ») : toujours à la même place, en bas à gauche, juste
-   au-dessus de la barre, de la taille de ce qu'elle dit (piste A du mainteneur, 4 octobre 2026 : plus de fiche grande et
-   vide), entre 18rem et toute la largeur ; en paysage, au plus 24rem ou la moitié de l'écran. Au plus 45 % de la scène
-   en portrait (70 % en paysage) : au-delà, le texte défile dans la fiche, le titre et les boutons restent entiers, jamais
-   de points de suspension. */
+   au-dessus de la barre ; sa hauteur suit ce qu'elle dit (piste A du mainteneur, 4 octobre 2026 : plus de fiche grande
+   et vide). Sa largeur est fixe, 24rem au plus (toute la largeur d'un téléphone, la moitié d'une tablette en portrait) :
+   la requête de conteneur de la fiche (`container: fiche`) lui interdit de se régler sur son contenu. Au plus 45 % de la
+   scène en portrait (70 % en paysage) : au-delà, le texte défile dans la fiche, le titre et les boutons restent
+   entiers, jamais de points de suspension. */
 .world-fiche-place {
   position: absolute;
   left: 0.6rem;
-  right: auto;
-  min-width: min(18rem, calc(100% - 1.2rem));
-  max-width: calc(100% - 1.2rem);
+  width: min(24rem, calc(100% - 1.2rem));
   bottom: calc(var(--barre-h, 4rem) + 0.6rem);
   z-index: 2;
   display: flex;
@@ -5893,7 +5892,7 @@ button.island-quest {
 }
 @media (orientation: landscape) {
   .world-fiche-place {
-    max-width: min(24rem, 50%);
+    width: min(24rem, 50%);
   }
 }
 /* En paysage, jusqu'à 70 % : le titre, deux lignes et les boutons tiennent en grand texte (la fiche reste à gauche, la
