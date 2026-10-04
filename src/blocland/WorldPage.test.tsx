@@ -538,7 +538,6 @@ it('les bandeaux de récompense attendent la fin du tutoriel, et de nouveau quan
   await waitFor(() => expect(screen.getByRole('button', { name: /Suivant/ })).toHaveFocus());
 });
 
-
 it('le bouton Blocs ouvre « Mes blocs » ; une puce mène à l’île (caméra et fiche) ; la croix rend le monde, sur l’île du bonhomme', async () => {
   vuSansAide();
   localStorage.setItem('dysapps:game', JSON.stringify({ stock: { 'french-6e-phonology': 4, 'maths-6e-calculation': 2 } }));
