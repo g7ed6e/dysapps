@@ -1,8 +1,8 @@
-// Les objets qu'on touche, dans la scène 3D de Blocland (les règles : world/affordance.ts) : leurs zones de toucher.
+// Les objets qu'on touche, dans la scène 3D (les règles : world/affordance.ts) : leurs zones de toucher.
 // Une borne ou un Gardien plus petits que 48 pixels à l'écran se touchent aussi tout autour, dans un carré de 48 pixels ;
 // les autres objets se touchent directement. Les bulles qui montrent ce qu'on peut faire sont dessinées avec les plaques
-// des créatures (./signes.ts). Rien sur la Carte ni pendant le voyage. Archipéo (l'habillage, `signesDesObjets`) n'en
-// a pas : il garde ses losanges (./bornes.ts).
+// des créatures (./signes.ts). Rien sur la Carte ni pendant le voyage. Les losanges (l'habillage, `signesDesObjets` ;
+// plus aucun univers ne les prend depuis le 4 octobre 2026) n'en ont pas (./bornes.ts).
 import * as THREE from 'three';
 import { zoneDeToucher, SIGNE, type ObjetTouche, type SigneDObjet, type ZoneDObjet } from '../world/affordance';
 import type { Derniers, Instant, Monde, PartieDeLaScene } from './partie';

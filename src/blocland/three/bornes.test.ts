@@ -6,15 +6,18 @@ import type { Instant, Monde } from './partie';
 import { HABILLAGES } from '../habillage';
 import { SIGNE } from '../world/affordance';
 
+/** Les losanges : le dessin d'Archipéo jusqu'au 4 octobre 2026 (plus aucun univers ne le prend, il reste possible). */
+const LOSANGES = { ...HABILLAGES.archipeo, signesDesObjets: 'losanges' } as const;
+
 /**
- * Les repères d'une île, dans Archipéo : un à faire (qui rebondit), un gagné (qui tourne), un chemin, et le fanion sur
+ * Les repères d'une île, avec les losanges : un à faire (qui rebondit), un gagné (qui tourne), un chemin, et le fanion sur
  * la Carte. Blocland dessine le losange à faire avec les autres signes (./affordance.ts) : plus bas.
  */
 function bornes() {
   const scene = new THREE.Scene();
   const bonhomme = new THREE.Object3D();
   bonhomme.position.set(4, 2, 6);
-  const b = creerBornes({ scene, habillage: HABILLAGES.archipeo } as unknown as Monde, () => bonhomme, { carte: true } as Instant);
+  const b = creerBornes({ scene, habillage: LOSANGES } as unknown as Monde, () => bonhomme, { carte: true } as Instant);
   type Mission = NonNullable<EnCasesDuMonde['quests']>[number];
   const mission = (id: string, x: number, state: Mission['state']) => ({ id, biome: 'maths-6e-decimals', typeId: 't', cell: { x, y: 0, z: 1 }, state }) as Mission;
   b.poserLesMissions([mission('volcan:a', 0, 'new'), mission('volcan:b', 3, 2)]);
@@ -55,7 +58,7 @@ it('sans la préférence, ils bougent', () => {
 
 it('les étoiles gagnées d’une borne : une pile en un seul maillage (un appel de dessin), autant de cubes que d’étoiles', () => {
   const scene = new THREE.Scene();
-  const b = creerBornes({ scene, habillage: HABILLAGES.archipeo } as unknown as Monde, () => new THREE.Object3D(), { carte: false } as Instant);
+  const b = creerBornes({ scene, habillage: LOSANGES } as unknown as Monde, () => new THREE.Object3D(), { carte: false } as Instant);
   type Mission = NonNullable<EnCasesDuMonde['quests']>[number];
   const mission = (id: string, x: number, state: Mission['state']) => ({ id, biome: 'maths-6e-decimals', typeId: 't', cell: { x, y: 0, z: 1 }, state }) as Mission;
   b.poserLesMissions([mission('volcan:a', 0, 3), mission('volcan:b', 3, 1)]);
@@ -104,7 +107,7 @@ it('sur un ouvrage (GD-7), la flèche dit lequel, pose sa pointe au-dessus de sa
 it('sur la Carte, le tracé de l’ouvrage désigné (GD-7) : un seul maillage, avec la flèche seulement, immobile', () => {
   const scene = new THREE.Scene();
   const instant = { carte: true } as Instant;
-  const b = creerBornes({ scene, habillage: HABILLAGES.archipeo } as unknown as Monde, () => new THREE.Object3D(), instant);
+  const b = creerBornes({ scene, habillage: LOSANGES } as unknown as Monde, () => new THREE.Object3D(), instant);
   const trace = () => scene.getObjectByName('trace-suggere') as THREE.Mesh;
   const c = (x: number) => ({ x, y: 20, z: 3 });
   const liaison = [0, 1, 2, 3, 4, 5, 6].map(c);

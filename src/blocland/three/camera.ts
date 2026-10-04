@@ -296,6 +296,11 @@ declare global {
   interface Window {
     /** La caméra, pour les captures (en développement, ou avec `?mesures`) : voir `Camera.poser`. */
     __dysappsCamera?: { poser(): number };
+    /**
+     * Pour les captures d'un lot (scripts/rendu/mesures.mjs, `poseA`, avec `?mesures`) : la pose d'une partie tenue à
+     * cette part de sa durée dès son lancement (three/cubes.ts, `tenirLaVague`).
+     */
+    __dysappsPoseA?: number;
   }
 }
 

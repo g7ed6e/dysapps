@@ -5,7 +5,10 @@ import { BIOMES, BLOCKS, type BlockId } from '../biomes';
 import { BRIDGES, VOYAGES } from './archipelago';
 import { COMMANDES } from './commandes';
 import { PETITES_CONSTRUCTIONS, casesDeLaPetiteConstruction, eauDeLaPetiteConstruction, estPosee } from './petitesConstructions';
-import { toutConstruit } from './budget';
+import { toutConstruit, toutConstruitAvecLesCommandes } from './budget';
+import { rangerLeDecor } from './decorMesh';
+import { champDuSol, colonneEn } from './landMesh';
+import { modelerLeSol } from './modeleDessine';
 import { ARCHIPELAGO_IDS, islandDef } from './map';
 import {
   boardingRoute,
@@ -240,6 +243,34 @@ describe.each(ARCHIPELAGO_IDS.map((a) => [a]))('%s, toutes les petites construct
       expect(cubesDeLaVague(apres, vague)).toHaveLength(vague.size);
       // Le dessous d'une petite construction n'est jamais dessiné (aucun groupe de faces de plus : world/budget.test.ts).
       expect(cubesDeLaVague(apres, vague).every((k) => k.sansDessous && k.petiteConstruction)).toBe(true);
+    }
+  });
+});
+
+// Archipéo (décision du mainteneur du 4 octobre 2026) : mêmes formes, mêmes places, dessinées par sa construction
+// taillée. Sur son relief à facettes (le modelé dessiné, puis le sol en facettes), chaque cube posé au sol l'est sur une
+// case plate, à la hauteur du monde en blocs, et toute la forme sur un seul niveau : jamais sur une pente.
+describe.each(ARCHIPELAGO_IDS.map((a) => [a]))('%s, Archipéo : les petites constructions sur le relief à facettes', (a) => {
+  it('chaque cube posé au sol est sur une case plate, à la hauteur du monde en blocs, toute la forme sur un seul niveau', () => {
+    const { progress, world } = toutConstruitAvecLesCommandes();
+    const cubes = worldCubes(a, progress, world, false, [], false, 'halle');
+    const { reste } = rangerLeDecor(cubes.filter((c) => !c.sol));
+    const champ = champDuSol(a, modelerLeSol(a, cubes.filter((c) => c.sol), reste), reste);
+    const solEnBlocs = new Map<string, number>();
+    for (const c of cubes) if (c.sol) solEnBlocs.set(`${c.x},${c.y}`, Math.max(solEnBlocs.get(`${c.x},${c.y}`) ?? -Infinity, c.z));
+    for (const c of COMMANDES.filter((k) => BIOMES.find((b) => b.id === k.biome)!.classe === a)) {
+      const forme = reste.filter((k) => k.petiteConstruction && k.tag === c.biome);
+      expect(forme.length, c.fixture).toBeGreaterThan(0);
+      const niveaux = new Set<number>();
+      for (const k of forme) {
+        const col = colonneEn(champ, k.x, k.y);
+        if (!col || k.z !== col.haut + 1) continue;
+        const ou = `${c.fixture} ${k.x},${k.y}`;
+        niveaux.add(k.z);
+        expect(col.haut, ou).toBe(solEnBlocs.get(`${k.x},${k.y}`));
+        expect(col.coins, ou).toEqual([k.z, k.z, k.z, k.z]);
+      }
+      expect(niveaux.size, c.fixture).toBe(1);
     }
   });
 });

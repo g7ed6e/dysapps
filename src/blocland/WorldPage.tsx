@@ -21,6 +21,7 @@ import { MonumentSheet, MonumentsSheet } from './Monuments';
 import { useMonumentBuilder } from './useMonumentBuilder';
 import { getMonument, monumentsOf } from './world/monuments';
 import { VisageDuBonhomme } from './VisageDuBonhomme';
+import { visageDuJoueur } from './world/personnages/visage';
 import { MenuSheet } from './MenuSheet';
 import { ArchipelSwitcher } from './ArchipelSwitcher';
 import { useBackOpensMenu } from './useBackOpensMenu';
@@ -190,8 +191,8 @@ export function WorldPage() {
   const sentinelles = textes.sentinelles !== null;
   const rallumage = useRallumage(state.progress, a, sentinelles);
   const eteints = rallumage.enAttente.join();
-  // Les commandes des habitants (GD-7, PR 3) : seulement dans un univers qui les montre (Blocland) ; ailleurs, le monde
-  // se lit sans elles (ni petite construction, ni suggestion), la sauvegarde restant la même.
+  // Les commandes des habitants (GD-7, PR 3) : seulement dans un univers qui les montre (Blocland, Archipéo) ;
+  // ailleurs, le monde se lit sans elles (ni petite construction, ni suggestion), la sauvegarde restant la même.
   const vu = useMemo(() => (textes.commandes ? state : sansCommandes(state)), [state, textes.commandes]);
   const cubes = useMemo(
     () => worldCubes(a, vu.progress, vu.world, false, trophyBlocks, sentinelles, habillage.atelier),
@@ -355,8 +356,8 @@ export function WorldPage() {
   const trail = useMemo(() => (remaining.length ? remaining.flatMap((b) => grille.liaison(b.id).map((p) => grille.versIle(p))) : undefined), [remaining, grille]);
   const [replay, setReplay] = useState(0);
   const stageRef = useRef<HTMLDivElement>(null);
-  // Revoir l'aide (le « ? » d'Archipéo, la ligne « Aide du village » du menu de Blocland) rouvre le tutoriel : comme la
-  // première fois, le reste attend qu'il soit fermé (DA-9).
+  // Revoir l'aide (la ligne « Aide du village » du menu, dans les deux univers depuis le 4 octobre 2026) rouvre le
+  // tutoriel : comme la première fois, le reste attend qu'il soit fermé (DA-9).
   const revoirAide = () => {
     setTutoDone(false);
     setReplay((n) => n + 1);
@@ -608,8 +609,8 @@ export function WorldPage() {
   }
 
   // Le retour d'une mission qui a donné des blocs : le gain, pris une fois en arrivant sur l'île (avant la fiche du
-  // chantier et la pose de la partie, qui l'attendent). « Réduire les animations », un autre univers, le tutoriel ou un
-  // voyage : pas de vol, le chiffre a déjà changé.
+  // chantier et la pose de la partie, qui l'attendent). « Réduire les animations », le tutoriel ou un voyage : pas de
+  // vol, le chiffre a déjà changé.
   // Tenu à jour par cet effet et par `finirLeVol` (jamais pendant le rendu). Cet effet est déclaré AVANT ceux du chantier
   // et de la pose : React les lance dans cet ordre, si bien qu'ils trouvent le vol déjà retenu et l'attendent.
   const volEnCours = useRef(false);
@@ -624,7 +625,7 @@ export function WorldPage() {
       setVol(null);
     }
     const gain = prendreLesBlocs(island.id);
-    const empeche = { moinsDAnimations: reduceMotion, autreUnivers: habillage.univers !== 'blocland', ficheOuverte: false, tutoriel: !tutoDone, motQuiAttend: false, voyage: Boolean(voyage), pleinEcran: false };
+    const empeche = { moinsDAnimations: reduceMotion, ficheOuverte: false, tutoriel: !tutoDone, motQuiAttend: false, voyage: Boolean(voyage), pleinEcran: false };
     if (!gain || !volALieu(gain, empeche)) return;
     setVol((v) => ({ seq: (v?.seq ?? 0) + 1, gain, phase: 'attente' }));
     apresLeVol.current = [];
@@ -658,15 +659,18 @@ export function WorldPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [island?.id, chantier]);
 
-  // ---- La pose d'une partie en vague (GD-6, Blocland) : « Voir le bâtiment » arrive ici avec la pose à montrer, une
-  // fois (poseAMontrer.ts). La caméra ne bouge pas ; les cases de la partie restent vides jusqu'à ce que la vague les
-  // pose, couche par couche, un « clac » par couche ; puis le carillon, sans phrase par-dessus le monde (la phrase est
-  // dans le panneau de l'île, avec « Écouter », pas lue d'office : l'écran de fin l'a déjà lue). Un toucher sur la
-  // scène pose tout d'un coup ; un appui sur Menu, l'archipel, Recentrer ou la barre garde son effet et pose la partie
-  // en silence. « Réduire les animations » : posée d'un coup, un seul « clac » et le carillon. Rien n'est enregistré ici : la partie l'est déjà, à l'écran de fin.
+  // ---- La pose d'une partie en vague (GD-6) : « Voir le bâtiment » arrive ici avec la pose à montrer, une fois
+  // (poseAMontrer.ts). La caméra ne bouge pas. Blocland : les cases de la partie restent vides jusqu'à ce que la vague
+  // les pose, couche par couche, un « clac » par couche. Archipéo : elles sont en pierre des ruines dès la première image
+  // et passent à la couleur du plan au même rythme (le fondu, choix « 2c » du mainteneur, 4 octobre 2026), un « toc »
+  // par couche. Puis le carillon, sans phrase par-dessus le monde (la phrase est dans le panneau de l'île, avec
+  // « Écouter », pas lue d'office : l'écran de fin l'a déjà lue). Un toucher sur la scène pose tout d'un coup ; un appui
+  // sur Menu, l'archipel, Recentrer ou la barre garde son effet et pose la partie en silence. « Réduire les animations » :
+  // posée d'un coup, un seul « clac » (ou « toc ») et le carillon. Rien n'est enregistré ici : la partie l'est déjà, à
+  // l'écran de fin.
   const [sonDeLaPose] = useState(() => sonDePose(habillage.pose));
   useEffect(() => {
-    if (!island || chantier !== 'part' || habillage.pose !== 'geste') return;
+    if (!island || chantier !== 'part') return;
     const parties = prendreLaPose(island.id);
     if (!parties) return;
     const id = island.id;
@@ -698,7 +702,7 @@ export function WorldPage() {
       if (settings.sounds) playDone();
     };
     if (!partiesDites.toc) return dire();
-    // Moins d'animations : un seul « clac », puis le carillon, sans qu'ils se couvrent.
+    // Moins d'animations : un seul « clac » (ou « toc »), puis le carillon, sans qu'ils se couvrent.
     if (settings.sounds) sonDeLaPose();
     const timer = window.setTimeout(dire, VAGUE.finApresMs);
     return () => window.clearTimeout(timer);
@@ -1188,16 +1192,11 @@ export function WorldPage() {
         {/* Après un glissé : sous la colonne de droite (Menu, l'archipel), sans animation. Jamais sur une bulle du haut :
             le temps qu'elle est ouverte, il attend (la vue reste déplacée), et aucun bouton Fermer n'est couvert. */}
         {vueDeplacee && !voyage && !bulleEnHaut && (
-          // Blocland : un rond avec la tête du bonhomme, sans mot (mot du mainteneur, 4 octobre 2026) ; Archipéo garde le sien.
-          univers === 'blocland' ? (
-            <button type="button" className="button world-recentrer world-recentrer-tete" onClick={recentrer} aria-label="Recentrer">
-              <VisageDuBonhomme />
-            </button>
-          ) : (
-            <button type="button" className="button world-recentrer" onClick={recentrer}>
-              <Icon name="recentrer" /> Recentrer
-            </button>
-          )
+          // Un rond avec le visage du joueur, sans mot (mot du mainteneur, 4 octobre 2026, pour Blocland ; choix « 1a » du
+          // même jour pour Archipéo) ; ses couleurs suivent l'univers (styles/global.css, `world-recentrer-tete`).
+          <button type="button" className="button world-recentrer world-recentrer-tete" onClick={recentrer} aria-label="Recentrer">
+            <VisageDuBonhomme visage={visageDuJoueur(habillage)} />
+          </button>
         )}
         <div className="world-overlay-top" data-couvre="scene">
           {ligneDuVoyage && (
@@ -1260,11 +1259,12 @@ export function WorldPage() {
             onClose={() => setTutoDone(true)}
             targets={[undefined, undefined, '[data-tuto="menu"]']}
             steps={[
-              // Blocland : plus de flèche jaune dans le monde, la bulle bordée d'or montre ce qu'on peut faire (4 octobre 2026).
-              univers === 'blocland'
+              // Les bulles (les deux univers depuis le 4 octobre 2026) : plus de flèche jaune dans le monde, la bulle bordée
+              // d'or montre ce qu'on peut faire ; un habillage à losanges garderait la flèche et le losange jaune.
+              habillage.signesDesObjets === 'bulles'
                 ? `${UNIVERS[univers].bienvenue} Touche la Forêt des sons pour commencer.`
                 : `${UNIVERS[univers].bienvenue} Touche la Forêt des sons, sous la flèche jaune.`,
-              univers === 'blocland'
+              habillage.signesDesObjets === 'bulles'
                 ? 'Sur chaque île, les bornes à panneau sont les missions : touche une borne, puis Jouer. La bulle bordée d’or montre la prochaine chose à faire. Chaque mission te donne des blocs pour construire l’île, et des cubes d’or pour tes étoiles.'
                 : 'Sur chaque île, les bornes à panneau sont les missions : touche une borne, puis Jouer. Un losange jaune flotte au-dessus d’une mission à faire, des cubes d’or comptent tes étoiles. Chaque mission te donne des blocs pour construire l’île.',
               'Le bouton Menu, en haut à droite, ouvre le menu : missions, succès, aide, réglages.',
@@ -1321,17 +1321,10 @@ export function WorldPage() {
               onClick={() => (blocsOpen ? fermerLePanneau() : navigate('/adventure/stock'))}
             >
               <Icon name="blocks" /> <span className="world-bar-text">Blocs </span>
-              {/* Le compte : entre parenthèses dans Archipéo, une pastille d'or chiffrée dans Blocland (« 0 » compris). */}
+              {/* Le compte : une pastille chiffrée (« 0 » compris), d'or dans Blocland, de sable dans Archipéo. */}
               <span key={rebond} ref={pastilleRef} className={`world-bar-count${rebond ? ' rebondit' : ''}`}>
                 {pastille}
               </span>
-            </button>
-          )}
-          {/* Blocland : plus de « ? » dans la barre (mot du mainteneur, 4 octobre 2026) ; l'aide du village se revoit
-              depuis le menu, celle de la Carte vient seule la première fois. Archipéo garde son « ? ». */}
-          {univers !== 'blocland' && (
-            <button type="button" className="button" onClick={revoirAide} aria-label="Revoir l’aide">
-              <Icon name="help" />
             </button>
           )}
         </nav>
@@ -1361,15 +1354,11 @@ export function WorldPage() {
         <MenuSheet
           onClose={() => navigate('/adventure')}
           onAller={openIsland}
-          onAide={
-            univers === 'blocland'
-              ? () => {
-                  aideDepuisLeMenu.current = true;
-                  navigate('/adventure');
-                  revoirAide();
-                }
-              : undefined
-          }
+          onAide={() => {
+            aideDepuisLeMenu.current = true;
+            navigate('/adventure');
+            revoirAide();
+          }}
         />
       ) : (
         island &&

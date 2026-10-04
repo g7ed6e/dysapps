@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { VOL, blocsDuVol, chiffreDeLaPastille, dureeDuVol, nomDuBoutonBlocs, oublierLesBlocs, prendreLesBlocs, retenirLesBlocs, volALieu, type CeQuiEmpeche } from './volDesBlocs';
 
-const RIEN: CeQuiEmpeche = { moinsDAnimations: false, autreUnivers: false, ficheOuverte: false, tutoriel: false, motQuiAttend: false, voyage: false, pleinEcran: false };
+const RIEN: CeQuiEmpeche = { moinsDAnimations: false, ficheOuverte: false, tutoriel: false, motQuiAttend: false, voyage: false, pleinEcran: false };
 
 beforeEach(() => oublierLesBlocs());
 
@@ -64,13 +64,22 @@ describe('le dessin, dans blocland.css', () => {
   const css = readFileSync(join(process.cwd(), 'src/styles/blocland.css'), 'utf8');
   const regle = (selecteur: string) => css.match(new RegExp(`${selecteur.replace(/[.[\]()*+?^$|"]/g, '\\$&')} \\{[^}]*\\}`))?.[0] ?? '';
 
-  it('la pastille : l’or, un carré aux coins de 4 px, 18 px au moins, jamais rouge', () => {
+  const global = readFileSync(join(process.cwd(), 'src/styles/global.css'), 'utf8');
+  // Toutes les règles de global.css à ce sélecteur exact, mises bout à bout (la structure, puis l'habillage d'Archipéo).
+  const regleCommune = (selecteur: string) =>
+    [...global.matchAll(new RegExp(`(?:^|\\n)${selecteur.replace(/[.[\]()*+?^$|"]/g, '\\$&')} \\{[^}]*\\}`, 'g'))].map((m) => m[0]).join('');
+
+  it('la pastille : sa place commune (global.css), l’or, un carré aux coins de 4 px, 18 px au moins, jamais rouge', () => {
+    const commune = regleCommune('.world-bar-count');
+    expect(commune).toMatch(/position: absolute/);
+    expect(commune).toMatch(/font-size: 18px/);
+    expect(commune).toMatch(/min-height: 26px/);
     const p = regle(':root[data-univers="blocland"] .world-bar-count');
     expect(p).toMatch(/background: #e0b73f/);
     expect(p).toMatch(/border-radius: 4px/);
-    expect(p).toMatch(/font-size: 18px/);
-    expect(p).toMatch(/min-height: 26px/);
-    expect(p).not.toMatch(/red|#f00|#c00|var\(--error\)/i);
+    expect(`${commune}${p}`).not.toMatch(/red|#f00|#c00|var\(--error\)/i);
+    // Plus de parenthèses autour du nombre (l'ancien compte d'Archipéo) : une pastille dans les deux univers.
+    expect(global).not.toMatch(/\.world-bar-count::(before|after)/);
   });
 
   it('bord de 3 px, bande claire de 4 px, sauf en thème Clair, entièrement plat', () => {
@@ -84,16 +93,30 @@ describe('le dessin, dans blocland.css', () => {
     expect(css).toMatch(/:root\[data-univers="blocland"\] button\.island-quest:active:not\(:disabled\) \{[^}]*transition: none/);
   });
 
-  it('les icônes seules, le nom lu ; en grand texte, le mot sous l’icône (« ok 2a », 4 octobre 2026)', () => {
-    expect(regle(':root[data-univers="blocland"] .world-bar .world-bar-text')).toMatch(/clip-path: inset\(50%\)/);
-    const mot = regle(':root[data-univers="blocland"][data-texte="grand"] .world-bar .world-bar-text');
+  it('les icônes seules, le nom lu ; en grand texte, le mot sous l’icône, dans les deux univers (« 2a », « 4a »)', () => {
+    const bouton = regleCommune('.world-bar .button');
+    expect(bouton).toMatch(/width: 56px/);
+    expect(bouton).toMatch(/height: 56px/);
+    expect(regleCommune('.world-bar .button svg')).toMatch(/width: 32px/);
+    expect(regleCommune('.world-bar')).toMatch(/gap: 8px/);
+    expect(regleCommune('.world-bar .world-bar-text')).toMatch(/clip-path: inset\(50%\)/);
+    const mot = regleCommune(':root[data-texte="grand"] .world-bar .world-bar-text');
     expect(mot).toMatch(/clip-path: none/);
     expect(mot).toMatch(/position: static/);
-    expect(regle(':root[data-univers="blocland"][data-texte="grand"] .world-bar .button')).toMatch(/flex-direction: column/);
-    // Archipéo garde ses icônes seules : global.css n'affiche jamais un mot de la barre par `display`.
-    const global = readFileSync(join(process.cwd(), 'src/styles/global.css'), 'utf8');
-    expect(global).not.toMatch(/\.world-bar-text[^{,]*\{[^}]*display:(?! none)/);
-    expect(regle(':root[data-univers="blocland"][data-texte="grand"] .world-bar')).toMatch(/align-items: flex-end/);
+    expect(mot).toMatch(/font-size: min\(1rem, 24px\)/);
+    expect(regleCommune(':root[data-texte="grand"] .world-bar .button')).toMatch(/flex-direction: column/);
+    expect(regleCommune(':root[data-texte="grand"] .world-bar')).toMatch(/align-items: flex-end/);
+    // La structure n'est plus réservée à Blocland : blocland.css n'y garde que sa matière.
+    expect(css).not.toMatch(/\.world-bar-text/);
+    expect(css).not.toMatch(/\.world-bar \.button svg/);
+  });
+
+  it('Archipéo : le bouton ouvert descend et son ombre se réduit (pas la couleur seule) ; l’île dans la couleur d’action', () => {
+    expect(regleCommune('.world-bar .button')).toMatch(/box-shadow: 0 3px 0/);
+    const ouvert = global.match(/\n\.world-bar \.button:active,\n\.world-bar \.button\[aria-pressed="true"\] \{[^}]*\}/)?.[0] ?? '';
+    expect(ouvert).toMatch(/transform: translateY\(2px\)/);
+    expect(ouvert).toMatch(/box-shadow: 0 1px 0/);
+    expect(regleCommune('.world-bar .world-bar-ile')).toMatch(/--button-bg: var\(--primary-bg\)/);
   });
 
   it('le bouton de l’île en herbe, l’action principale de la barre ; le bouton ouvert en or et enfoncé', () => {

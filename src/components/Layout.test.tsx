@@ -37,13 +37,16 @@ it('Blocland : pas de barre du haut, ni dans le monde ni hors du monde ; hors du
   expect(screen.getByRole('link', { name: 'Menu' })).toHaveAttribute('href', '/menu');
 });
 
-it('Archipéo, en pause, garde sa barre du haut hors du monde', () => {
+it('Archipéo : plus de barre du haut non plus (« 3a ») ; hors du monde, le bouton Menu seul, comme Blocland', () => {
   localStorage.setItem('dysapps:settings', JSON.stringify({ univers: 'archipeo' }));
   renderAt('/reglages');
-  expect(screen.getByRole('navigation', { name: 'Navigation principale' })).toBeInTheDocument();
+  expect(screen.queryByRole('navigation', { name: 'Navigation principale' })).not.toBeInTheDocument();
+  expect(screen.queryByRole('link', { name: 'Voir mon rôle et mes succès' })).not.toBeInTheDocument();
+  expect(document.querySelector('.topbar')).toBeNull();
+  expect(screen.getByRole('link', { name: 'Menu' })).toHaveAttribute('href', '/menu');
 });
 
-it('Blocland : pas de bouton Menu sur la page qui est elle-même le menu (vue simple)', () => {
+it('Pas de bouton Menu sur la page qui est elle-même le menu (vue simple)', () => {
   renderAt('/menu');
   expect(screen.getByText('Le menu')).toBeInTheDocument();
   expect(screen.queryByRole('link', { name: 'Menu' })).not.toBeInTheDocument();

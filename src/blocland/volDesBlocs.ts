@@ -47,8 +47,6 @@ export const dureeDuVol = (nombre: number): number => (blocsDuVol(nombre) ? VOL.
 export interface CeQuiEmpeche {
   /** L'appareil demande moins d'animations : pas de vol, le chiffre change. */
   moinsDAnimations: boolean;
-  /** Un autre univers que Blocland. */
-  autreUnivers: boolean;
   /** Une fiche ouverte, le tutoriel, un mot qui attend « J'ai compris », un voyage, un panneau en plein écran. */
   ficheOuverte: boolean;
   tutoriel: boolean;
@@ -60,7 +58,7 @@ export interface CeQuiEmpeche {
 /** Le vol a-t-il lieu ? Seulement avec des blocs gagnés, et rien à l'écran qu'il couvrirait. */
 export function volALieu(gain: Pick<GainRetenu, 'nombre'> | null, e: CeQuiEmpeche): boolean {
   if (!gain || blocsDuVol(gain.nombre) === 0) return false;
-  return !(e.moinsDAnimations || e.autreUnivers || e.ficheOuverte || e.tutoriel || e.motQuiAttend || e.voyage || e.pleinEcran);
+  return !(e.moinsDAnimations || e.ficheOuverte || e.tutoriel || e.motQuiAttend || e.voyage || e.pleinEcran);
 }
 
 /**

@@ -8,6 +8,8 @@ import type { IslandStateId } from './islandState';
 import { BLOCKS, type BlockId } from '../biomes';
 import { project, shade } from '../Voxel';
 import { TRAITS_DE_L_OUVRAGE } from '../../components/iconeOuvrage';
+import { COTE_DU_VISAGE, type Visage } from './personnages/visage';
+import type { Habillage } from './habillage/types';
 
 export interface IslandLabelState {
   id: IslandStateId;
@@ -325,30 +327,62 @@ export function formeDeLaFlecheDOuvrage(cx: number, tipY: number, h: number): { 
   return { plaque, pointe: [{ x: cx - demiTete, y: tipY - tete }, { x: cx + demiTete, y: tipY - tete }, { x: cx, y: tipY }], pont };
 }
 
-/** Le médaillon « toi » de la Carte : un fond clair et un bord sombre, ceux des bulles de Blocland (three/signes.ts). */
-const MEDAILLON = { fond: '#fff6e0', encre: '#2b2118' };
+/**
+ * Les couleurs des bulles du monde, selon leur forme (`formeDesSignes` de l'habillage) : le fond, le bord et l'ombre
+ * (`encre`, qui trace aussi les icônes), le bord de la prochaine chose à faire (`avant`). Blocland : clair et chaud, un
+ * brun presque noir, l'or de son interface (`--sand`). Archipéo : Brume, Nuit océan, la lumière (DA, choix « 1a » du
+ * mainteneur, 4 octobre 2026). Générées ici, rien d'emprunté.
+ */
+export const COULEURS_DES_SIGNES = {
+  plaque: { fond: '#fff6e0', encre: '#2b2118', avant: '#e0b73f' },
+  hexagone: { fond: '#e5ebe3', encre: '#142b38', avant: '#ffd866' },
+} as const satisfies Record<Habillage['formeDesSignes'], { fond: string; encre: string; avant: string }>;
 
 /**
- * Le médaillon « toi » de la Carte (Blocland, piste B choisie par le mainteneur le 4 octobre 2026) : un disque clair au
- * bord sombre épais, à l'ombre nette, de rayon `r` centré en (`cx`, `cy`), qui porte le visage du bonhomme en pixels
- * (`visage` : des lignes de couleurs, de haut en bas). Jamais d'or : l'or dit la prochaine chose à faire. Il se
- * distingue de la bulle de la destination par sa forme (un rond, pas une plaque à pointe) et son image (un visage).
+ * Le médaillon « toi » de la Carte (Blocland, piste B choisie par le mainteneur le 4 octobre 2026 ; Archipéo, choix
+ * « 1a », même jour) : un disque clair au bord sombre épais, à l'ombre nette, de rayon `r` centré en (`cx`, `cy`), aux
+ * couleurs des bulles de l'univers (`couleurs`), qui porte le visage du joueur (`visage` : en pixels, ou en facettes ;
+ * world/personnages/visage.ts). Jamais la couleur de la prochaine chose à faire. Il se distingue de la bulle de la
+ * destination par sa forme (un rond, pas une plaque ni un hexagone à pointe) et son image (un visage).
  */
-export function drawMedaillon(ctx: CanvasRenderingContext2D, cx: number, cy: number, r: number, visage: readonly (readonly string[])[]): void {
+export function drawMedaillon(
+  ctx: CanvasRenderingContext2D,
+  cx: number,
+  cy: number,
+  r: number,
+  visage: Visage,
+  couleurs: { fond: string; encre: string } = COULEURS_DES_SIGNES.plaque,
+): void {
   const bord = Math.max(3, r * 0.14);
   const ombre = Math.max(2, r * 0.1);
   ctx.save();
-  ctx.fillStyle = MEDAILLON.encre;
+  ctx.fillStyle = couleurs.encre;
   ctx.beginPath();
   ctx.arc(cx, cy + ombre, r, 0, Math.PI * 2);
   ctx.fill();
   ctx.beginPath();
   ctx.arc(cx, cy, r, 0, Math.PI * 2);
   ctx.fill();
-  ctx.fillStyle = MEDAILLON.fond;
+  ctx.fillStyle = couleurs.fond;
   ctx.beginPath();
   ctx.arc(cx, cy, r - bord, 0, Math.PI * 2);
   ctx.fill();
+  if ('facettes' in visage) {
+    // Le visage peint : ses facettes dans le carré inscrit du disque clair, un peu plus grand (la tête le remplit).
+    const cote = (r - bord) * 1.6;
+    const u = cote / COTE_DU_VISAGE;
+    const x0 = cx - cote / 2;
+    const y0 = cy - cote / 2;
+    for (const { couleur, points } of visage.facettes) {
+      ctx.fillStyle = couleur;
+      ctx.beginPath();
+      points.forEach(([x, y], i) => (i ? ctx.lineTo(x0 + x * u, y0 + y * u) : ctx.moveTo(x0 + x * u, y0 + y * u)));
+      ctx.closePath();
+      ctx.fill();
+    }
+    ctx.restore();
+    return;
+  }
   // Le visage, carré, dans le disque clair : chaque pixel de la tête, arrondi au pixel du canvas (pas de flou entre eux).
   const n = visage.length;
   const p = Math.floor(((r - bord) * 1.25) / n);

@@ -36,11 +36,6 @@
   --on-sand: #2b2118;
   --on-accent: #2b2118;
   --star-off: #c9bba2;
-  /* La barre du haut : la terre, l'herbe au bord supérieur, sa face de côté en bas. */
-  --topbar-bg: #5a3e26;
-  --topbar-text: #f7f0e2;
-  --topbar-grass: #6cb33f;
-  --topbar-edge: #3e2a18;
 
   /* Formes : des blocs. */
   --radius: 4px;
@@ -83,9 +78,6 @@
   --on-sand: #2b2118;
   --star-off: #6e5d48;
   --focus: #ffd54a;
-  --topbar-bg: #0e0b08;
-  --topbar-text: #f2ecdf;
-  --topbar-edge: #000000;
   --face-primary: #4e7a2e;
   /* Plus claire que le fond, pour se voir (3,2:1 sur le fond) : sans elle, une carte ressemble à un panneau. */
   --face-secondary: #7a6450;
@@ -101,9 +93,6 @@
 :root[data-univers="blocland"][data-theme="light"] {
   --bg: #f6f5f1;
   --surface: #ffffff;
-  --topbar-bg: #ffffff;
-  --topbar-text: #2b2118;
-  --topbar-edge: #d8ccb0;
   --face: 3px;
   /* Entièrement plat : le bord, pas de bande. */
   --bande-h: 0px;
@@ -112,25 +101,10 @@
   --face-secondary: #9c7a48;
 }
 
-/* ===== La barre du haut ===== */
-/* L'herbe se pose sous la zone sûre du téléphone (l'encoche), pas derrière elle. */
-:root[data-univers="blocland"] .topbar {
-  background:
-    linear-gradient(var(--topbar-grass), var(--topbar-grass)) 0 env(safe-area-inset-top) / 100% 4px no-repeat,
-    var(--topbar-bg);
-  border-bottom-color: var(--topbar-edge);
-}
-/* L'endroit où l'on est : l'or, et souligné, pour ne pas reposer sur la couleur seule. */
-:root[data-univers="blocland"] .nav-button.active {
-  text-decoration: underline;
-  text-decoration-thickness: 2px;
-  text-underline-offset: 4px;
-}
-
 /* ===== Ce qui se touche : un bord, une bande claire, une face de côté, qui s'enfonce ===== */
 /* Le bord sombre de 3 px (sans toucher aux bordures qui disent quelque chose : la case choisie, le danger, le liseré
    d'une île, le survol). */
-:root[data-univers="blocland"] :where(.button:not(.danger), .nav-button, .back-link, .option:not(.selected), a.app-card, button.app-card, a.subject-card, .adventure-card, .level-card, a.island-quest, button.island-quest) {
+:root[data-univers="blocland"] :where(.button:not(.danger), .back-link, .option:not(.selected), a.app-card, button.app-card, a.subject-card, .adventure-card, .level-card, a.island-quest, button.island-quest) {
   border-width: var(--bord);
   border-color: var(--bord-couleur);
 }
@@ -139,8 +113,7 @@
   border-bottom-width: var(--bord);
 }
 /* La bande claire du dessus, une teinte plus claire que lui. */
-:root[data-univers="blocland"] .button,
-:root[data-univers="blocland"] .nav-button {
+:root[data-univers="blocland"] .button {
   --bande: var(--bande-bois);
 }
 :root[data-univers="blocland"] .button.primary,
@@ -163,7 +136,6 @@
    relâcher : le bloc remonte en 0,15 s en dépassant d'un pixel vers le haut, puis se pose (l'action part au toucher,
    sans l'attendre). Le fond change sans transition. */
 :root[data-univers="blocland"] .button,
-:root[data-univers="blocland"] .nav-button,
 :root[data-univers="blocland"] .back-link,
 :root[data-univers="blocland"] a.app-card,
 :root[data-univers="blocland"] button.app-card,
@@ -198,7 +170,6 @@
 }
 /* L'appui : le bloc descend de 3 px et sa face se réduit d'autant, tout de suite ; l'encombrement ne change pas. */
 :root[data-univers="blocland"] .button:active:not(:disabled):not([aria-disabled="true"]),
-:root[data-univers="blocland"] .nav-button:active,
 :root[data-univers="blocland"] .back-link:active,
 :root[data-univers="blocland"] .option:active,
 :root[data-univers="blocland"] a.app-card:not(.locked):active,
@@ -238,68 +209,7 @@
   transition: none;
 }
 
-/* ===== La barre du bas du monde : des icônes seules (P2, PR 2), le mot dessous en grand texte ===== */
-/* Quatre boutons carrés de 56 px (la face en plus), icône de 32 px, 8 px d'écart : 248 px, ils tiennent sur 320 px.
-   Chaque bouton garde son nom pour les lecteurs d'écran, et l'écran ouvert dit le sien en titre. En grand texte, le mot
-   revient sous l'icône (décision du mainteneur, 4 octobre 2026, « ok 2a ») : plus bas. */
-:root[data-univers="blocland"] .world-bar {
-  gap: 8px;
-}
-:root[data-univers="blocland"] .world-bar .button {
-  position: relative;
-  flex: 0 0 auto;
-  width: 56px;
-  min-width: 56px;
-  height: 56px;
-  min-height: 56px;
-  padding: 0;
-}
-:root[data-univers="blocland"] .world-bar .button svg {
-  width: 32px;
-  height: 32px;
-}
-:root[data-univers="blocland"] .world-bar .world-bar-text {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-/* En grand texte, le réglage de l'élève qui lit difficilement : le mot sous l'icône, dans la taille du texte choisie
-   plafonnée à 24 px (décision du mainteneur, 4 octobre 2026, « ok 2a »). Les boutons s'élargissent à leur mot, un nom d'île long passe
-   à la ligne entre ses mots (jamais au milieu d'un mot) ; la barre passe sur deux
-   rangées plutôt que de sortir de l'écran, les boutons alignés en bas, sans s'étirer. */
-:root[data-univers="blocland"][data-texte="grand"] .world-bar {
-  align-items: flex-end;
-}
-:root[data-univers="blocland"][data-texte="grand"] .world-bar .button {
-  flex-direction: column;
-  gap: 2px;
-  width: auto;
-  /* 200 px au plus (« Forêt des sons » sur deux lignes, la barre tient sur une rangée en paysage) ; un
-     mot plus long que cela élargit le bouton (min-width l'emporte sur max-width), sans jamais être coupé. */
-  max-width: min(200px, 100%);
-  min-width: min-content;
-  height: auto;
-  padding: 4px 10px 6px;
-}
-:root[data-univers="blocland"][data-texte="grand"] .world-bar .world-bar-text {
-  display: block;
-  position: static;
-  width: auto;
-  height: auto;
-  overflow: visible;
-  clip-path: none;
-  white-space: normal;
-  overflow-wrap: normal;
-  word-break: keep-all;
-  text-align: center;
-  line-height: 1.3;
-  /* Plus grand que le texte par défaut (20 px), plafonné à 24 px : à 32 px, les quatre mots prenaient la moitié d'un
-     téléphone, et « Observatoire » se coupait. */
-  font-size: min(1rem, 24px);
-}
+/* ===== La barre du bas du monde : sa matière (la structure est commune, global.css) ===== */
 /* Le bouton de l'île : l'action principale de la barre, en herbe ; les autres en bois (décision du mainteneur, 4
    octobre 2026, comme sur la maquette). */
 :root[data-univers="blocland"] .world-bar .world-bar-ile {
@@ -328,33 +238,12 @@
    cible ; un carré aux coins de 4 px (un bloc, pas une pilule), jamais rouge (le rouge dirait « à faire »). « 0 »
    s'affiche : la pastille ne disparaît jamais. La largeur suit le nombre. */
 :root[data-univers="blocland"] .world-bar-count {
-  position: absolute;
-  top: -8px;
-  right: -8px;
-  display: inline-grid;
-  place-items: center;
-  min-width: 26px;
-  min-height: 26px;
+  /* Un carré aux coins de 4 px (un bloc, pas une pilule), d'or. */
   padding: 0 4px;
   background: #e0b73f;
   color: #2b2118;
-  border: 2px solid #2b2118;
+  border-color: #2b2118;
   border-radius: 4px;
-  font-family: var(--font-family);
-  font-weight: 700;
-  font-size: 18px;
-  line-height: 1;
-  pointer-events: none;
-}
-:root[data-univers="blocland"][data-texte="grand"] .world-bar-count {
-  /* Plus grande, elle déborde un peu plus vers le haut et la droite : l'icône du bouton reste visible. */
-  top: -12px;
-  right: -12px;
-  font-size: max(18px, 1rem);
-}
-:root[data-univers="blocland"] .world-bar-count::before,
-:root[data-univers="blocland"] .world-bar-count::after {
-  content: none;
 }
 /* Son chiffre change une fois, à l'arrivée du dernier bloc qui vole : un rebond de 0,15 s. */
 :root[data-univers="blocland"] .world-bar-count.rebondit {
@@ -364,6 +253,13 @@
   50% {
     transform: translateY(-3px);
   }
+}
+
+/* ===== Le médaillon de la fiche du monde : un bloc crème au bord sombre ===== */
+:root[data-univers="blocland"] .world-fiche-medaillon {
+  background: #fffbf2;
+  border: 3px solid #2b2118;
+  border-radius: 4px;
 }
 
 /* ===== Les pastilles des thèmes (Réglages) : les couleurs de chaque thème dans Blocland ===== */
@@ -394,9 +290,6 @@
 }
 :root[data-univers="blocland"] .role-badge {
   --role-edge: var(--text);
-}
-:root[data-univers="blocland"] .topbar .role-badge {
-  --role-edge: var(--topbar-text);
 }
 :root[data-univers="blocland"] .role-explorateur {
   --role-bg: #8b5e34;

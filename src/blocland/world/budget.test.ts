@@ -1,6 +1,6 @@
 import { BADGES } from '../../core/progress';
 import { trophyBlock } from '../trophies';
-import { APPEL_DU_PASSAGE, bornesCost, constructionCost, decorCost, ENVELOPPES, enveloppeDe, fauneCost, merCost, navireCost, personnagesCost, PLAFOND_DU_MONDE_EN_BLOCS, RENDER_BUDGET, sceneCost, sceneCostArchipeo, signesCost, solCost, toutConstruit, type Poste } from './budget';
+import { APPEL_DU_PASSAGE, bornesCost, commandesCost, constructionCost, decorCost, ENVELOPPES, enveloppeDe, fauneCost, merCost, navireCost, personnagesCost, PLAFOND_DU_MONDE_EN_BLOCS, RENDER_BUDGET, sceneCost, sceneCostArchipeo, signesCost, solCost, toutConstruit, type Poste } from './budget';
 import { ARCHIPELAGO_IDS, type ArchipelagoId } from './map';
 
 it('prépare une partie vraiment tout construite (Gardiens vaincus, navire, ouvrages)', () => {
@@ -124,8 +124,18 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
   // R4b-6e : les quatre postes de R4b aux Premiers Rivages ; les autres archipels suivent avec leur sous-lot.
   const COUTS: Partial<Record<Poste, (a: ArchipelagoId) => { triangles: number; drawCalls: number }>> = { sol: solCost, mer: merCost, faune: fauneCost, decor: decorCost };
   const PERSONNAGES = ['bonhomme', 'creatures', 'gardiens'] as const;
+  // GD-7 dans Archipéo (4 octobre 2026) : les petites constructions de toutes les commandes livrées, dans le sol et la
+  // construction taillée, tiennent leur poste, sans appel de dessin de plus.
+  it('GD-7 : le poste « Commandes » tient dans son enveloppe, sans appel de plus, dans chaque archipel', () => {
+    for (const a of ARCHIPELAGO_IDS) {
+      const m = commandesCost(a);
+      expect(m.triangles, a).toBeGreaterThan(0);
+      expect(m.triangles, a).toBeLessThanOrEqual(enveloppeDe('commandes', a).triangles);
+      expect(m.drawCalls, a).toBe(0);
+    }
+  }, 60_000);
   for (const p of postes) {
-    if ((PERSONNAGES as readonly Poste[]).includes(p)) continue;
+    if ((PERSONNAGES as readonly Poste[]).includes(p) || p === 'commandes') continue;
     const cout = COUTS[p];
     const r5 = R5[p];
     if (r5) {

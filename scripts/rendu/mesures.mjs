@@ -269,6 +269,29 @@ const CAPTURES = [
   // visite) ; en cours (les pas d'après le monde construit), puis finie (`pasEnPlus`, 5 s plus tard), la phrase seule dans le panneau, avant le bandeau de succès.
   { nom: 'pose-en-cours', vue: 'île', famille: 'pose', ile: 'french-6e-phonology', partie: 'un-plan', pose: 1 },
   { nom: 'pose-finie', vue: 'île', famille: 'pose', ile: 'french-6e-phonology', partie: 'un-plan', pose: 1, pasEnPlus: 40 },
+  // La même pose tenue à un moment (`poseA` : une part de sa durée, `window.__dysappsPoseA`, lu au lancement de la pose) : avant le premier
+  // cube (0, dans Archipéo la ruine, la partie en pierre #7D8A86), à mi-chemin (0,5), puis menée à sa fin (1 : restaurée,
+  // la construction dessinée telle qu'elle est), de jour et de nuit ; sur la Forêt des sons, la roche du 5e (l'échoppe de
+  // Bazar) et le marbre des Îles du Ciel (la lanterne de Fi), pour juger la pierre sur chacune (fondu de la pose, choix
+  // « 2c » du mainteneur, 4 octobre 2026).
+  ...['french-6e-phonology', 'maths-5e-proportionality', 'maths-3e-functions'].flatMap((ile) =>
+    [
+      ['ruine', 0],
+      ['mi', 0.5],
+      ['restauree', 1],
+    ].flatMap(([moment, poseA]) =>
+      [{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].map(({ suffixe, ...autres }) => ({
+        nom: `pose-${moment}-${ile}${suffixe}`,
+        vue: 'île',
+        famille: 'pose',
+        ile,
+        partie: 'un-plan',
+        pose: 1,
+        poseA,
+        ...autres,
+      })),
+    ),
+  ),
   // La créature qui se souvient (GD-4, étape 1, famille `revisions`) : à la Ferme des accords, chaque mission a des
   // questions à revoir (`revisions`) ; la créature a fait son geste à l'arrivée (`pasEnPlus` : 3 s de plus), l'icône de la
   // notion est au-dessus d'elle et le panneau de l'île propose « Reprendre » ou « Plus tard », de jour et de nuit, puis
@@ -747,6 +770,7 @@ async function scenes() {
               pose: c.pose,
               missions: c.missions,
               pasEnPlus: c.pasEnPlus,
+              poseA: c.poseA,
               revisions: c.revisions,
               voir: c.voir,
               allerA: c.allerA,
@@ -764,10 +788,12 @@ async function scenes() {
           )
         : []),
     ];
-    for (const { vue, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages, succes, inventaire, pose, missions, pasEnPlus, revisions, voir, allerA, depart, jouees, liens, xp, commandes, posees, cliquer, fiche, zoomer } of views) {
+    for (const { vue, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages, succes, inventaire, pose, poseA, missions, pasEnPlus, revisions, voir, allerA, depart, jouees, liens, xp, commandes, posees, cliquer, fiche, zoomer } of views) {
       const page = await browser.newPage({ viewport: taille ?? TABLET, deviceScaleFactor: finesse ?? (recadre ? 1.5 : 1), ...(fige ? { reducedMotion: 'reduce' } : {}) });
       await piloterLHorloge(page, time);
       await page.addInitScript(hasardFixe);
+      // La pose d'une partie tenue à un moment (`poseA`), lue par la scène au lancement de la pose (three/WorldCanvas.tsx).
+      if (poseA !== undefined) await page.addInitScript((part) => (window.__dysappsPoseA = part), poseA);
       await page.addInitScript(figeable);
       await page.goto(`${base}/icon.svg`);
       await page.evaluate(

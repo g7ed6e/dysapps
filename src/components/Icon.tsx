@@ -48,7 +48,6 @@ import {
   Target,
   TreePine,
   Trophy,
-  Undo2,
   Volume2,
   VolumeX,
   Wheat,
@@ -119,7 +118,6 @@ export const ICONS = {
   menu: Menu,
   ancre: Anchor,
   cube: Box,
-  recentrer: Undo2,
   ouvrage: Ouvrage,
 } satisfies Record<string, LucideIcon>;
 

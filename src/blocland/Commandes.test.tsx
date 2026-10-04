@@ -1,5 +1,5 @@
 // La section « Commandes » (GD-7, PR 3) dans le panneau d'île et la page de l'île, et l'arrivée des commandes dans le
-// contexte du jeu : Blocland seulement, Archipéo inchangé.
+// contexte du jeu, dans Blocland et dans Archipéo (décision du mainteneur du 4 octobre 2026).
 import { useState } from 'react';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -245,12 +245,13 @@ it('un ouvrage construit fait arriver une commande dans Blocland', async () => {
   expect(screen.getByRole('heading', { name: /Commandes/ })).toBeInTheDocument();
 });
 
-it('Archipéo, en pause : aucune commande n’arrive ni ne s’affiche', async () => {
+it('Archipéo (décision du 4 octobre 2026) : les commandes arrivent et s’affichent, avec ses mots', async () => {
   sauver({ progress: joue(FORET, PLAINE), stock: { [BLOC.bois]: 9 }, world: { parts: {}, log: [], links: [], place: FORET, requests: [COCO] } }, 'archipeo');
   ouvrir(FORET);
-  expect(screen.queryByRole('heading', { name: /Commandes/ })).toBeNull();
+  expect(screen.getByRole('heading', { name: /Commandes/ })).toBeInTheDocument();
+  expect(screen.getByRole('list', { name: 'Les commandes des habitants' })).toBeInTheDocument();
+  expect(document.body.textContent).toContain('Un habitant te demande des blocs pour bâtir chez lui. Tu les livres quand tu veux.');
   await userEvent.click(screen.getByRole('button', { name: 'Construire le pont' }));
-  // La sauvegarde garde ce qu'elle avait, rien n'arrive en plus.
-  expect(screen.getByTestId('etat').textContent).toContain(`commandes ${COCO} ·`);
-  expect(screen.queryByRole('heading', { name: /Commandes/ })).toBeNull();
+  // Un ouvrage construit fait arriver la commande de Mousso, comme dans Blocland.
+  expect(screen.getByTestId('etat').textContent).toContain(`commandes ${COCO},${MOUSSO} ·`);
 });

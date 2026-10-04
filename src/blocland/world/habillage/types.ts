@@ -40,21 +40,29 @@ export interface Habillage {
    */
   atelier: Atelier;
   /**
-   * La pose d'un bloc (GD-1, point 4) : le geste de Blocland, où le dernier bloc d'un plan descend et s'enclenche
-   * (world/pose.ts, sans poussière), et le « clac » de cliquet à chaque pose ; les autres poses gardent
-   * leurs poussières claires. Archipéo : poussières et « toc » commun.
+   * La pose d'un bloc et d'une partie du bâtiment. `geste` (Blocland) : le dernier bloc d'un plan descend et s'enclenche
+   * (GD-1, point 4 ; world/pose.ts, sans poussière), une partie posée par une mission descend en vague, cube par cube et
+   * couche par couche (GD-6, world/vague.ts), et le « clac » de cliquet sonne à chaque pose et à chaque couche ; les
+   * autres poses gardent leurs poussières claires. `fondu` (Archipéo, choix « 2c » du mainteneur, 4 octobre 2026) : un
+   * bloc posé à la main, ses trois poussières claires et le « toc » commun ; une partie posée par une mission est là dès
+   * la première image, en pierre des ruines, et passe à la couleur du plan au même rythme que la vague, sans bouger
+   * (world/maillageDuFondu.ts), un « toc » par couche. Le carillon à la fin, dans les deux.
    */
-  pose: 'geste' | 'eclats';
+  pose: 'geste' | 'fondu';
   /**
-   * Le signe de la créature qui se souvient (GD-4, étape 1), au-dessus d'elle dans le monde : une plaque carrée aux
-   * coins presque droits (un bloc vu de face, décision du directeur artistique du 3 octobre 2026), ou un disque.
+   * La forme des bulles du monde : celle de la créature qui se souvient (GD-4, étape 1), la plaque d'une commande, les
+   * bulles des objets à faire et, sur la Carte, la bulle de la prochaine étape et le médaillon « toi » (leurs couleurs :
+   * `COULEURS_DES_SIGNES`, world/labelCanvas.ts). Une plaque carrée aux coins presque droits, claire au bord brun (un
+   * bloc vu de face, décision du directeur artistique du 3 octobre 2026), ou un hexagone à coins adoucis, pointe vers
+   * la chose, Brume au bord Nuit océan, la prochaine bordée de lumière (Archipéo, choix « 1a » du mainteneur, 4 octobre
+   * 2026).
    */
-  signe: 'plaque' | 'disque';
+  formeDesSignes: 'plaque' | 'hexagone';
   /**
    * Ce qui montre les objets qu'on touche dans le monde : une à trois bulles sur l'île où l'on est, seulement sur ce
-   * qu'on peut faire maintenant, avec les plaques des créatures (proposition P2, choisie par le
-   * mainteneur le 4 octobre 2026 ; world/affordance.ts), ou le seul losange qui rebondit au-dessus d'une borne à faire
-   * (Archipéo, en pause, garde son dessin).
+   * qu'on peut faire maintenant, avec les plaques des créatures (proposition P2, choisie par le mainteneur le 4 octobre
+   * 2026 ; world/affordance.ts ; Archipéo aussi depuis le même jour, choix « 1a »), ou le seul losange qui rebondit
+   * au-dessus d'une borne à faire (le dessin d'Archipéo avant le 4 octobre 2026 ; plus aucun univers ne le prend).
    */
   signesDesObjets: 'bulles' | 'losanges';
   /**

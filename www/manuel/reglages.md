@@ -1,6 +1,6 @@
 # Réglages et accessibilité
 
-La page **Réglages** (dans le menu, bouton Menu à trois traits ; dans Archipéo, aussi dans la barre du haut) s’applique à toute l’application, y compris aux panneaux du village, et montre un aperçu en direct. Les réglages sont enregistrés sur l’appareil. Dans chaque liste de choix, l’option choisie a sa case colorée et, dans son rond, un point plein ; les autres ronds sont vides. Les valeurs par défaut et leurs bornes exactes sont dans [Barème et succès](../pedagogie/bareme.md#reglages-par-defaut).
+La page **Réglages** (dans le menu, bouton Menu à trois traits) s’applique à toute l’application, y compris aux panneaux du village, et montre un aperçu en direct. Les réglages sont enregistrés sur l’appareil. Dans chaque liste de choix, l’option choisie a sa case colorée et, dans son rond, un point plein ; les autres ronds sont vides. Les valeurs par défaut et leurs bornes exactes sont dans [Barème et succès](../pedagogie/bareme.md#reglages-par-defaut).
 
 ![La page Réglages : l'aperçu en haut, le choix de la police d'écriture (Luciole, OpenDyslexic, Atkinson Hyperlegible, Arial), la lecture.](/captures/reglages.jpg)
 
@@ -26,9 +26,9 @@ Le texte à lire reste toujours dans la police choisie. La police des titres de 
 
 | Thème | Rendu |
 | --- | --- |
-| **Crème** (par défaut) | Fond crème peu contrasté, texte bleu nuit, barre du haut bleu nuit ; boutons principaux bleu pétrole. Le texte reste toujours sur un fond uni. |
+| **Crème** (par défaut) | Fond crème peu contrasté, texte bleu nuit ; boutons principaux bleu pétrole. Le texte reste toujours sur un fond uni. |
 | **Nuit** | Fond bleu nuit et texte crème ; boutons principaux couleur sable. |
-| **Clair** | Fond blanc, plat, sans ombre ; barre du haut blanche. |
+| **Clair** | Fond blanc, plat, sans ombre. |
 
 Le thème **Contraste élevé** n’est plus au choix : il reviendra dans un lot ultérieur. Un appareil qui l’avait choisi s’ouvre en Nuit, le thème sombre le plus proche.
 
@@ -82,7 +82,7 @@ L’univers change le dessin du monde et l’histoire ; la progression reste la 
 - **Blocland** (par défaut) : un monde en cubes, où l’élève reconstruit le village bloc par bloc.
 - **Archipéo** : une aventure en mer, où son savoir reconstruit l’archipel.
 
-Chaque univers a une icône, son nom et une phrase, avec un bouton pour l’écouter. Changer d’univers demande une confirmation, qui dit ce qui change (le dessin du monde, le titre et l’histoire ; les îles gardent leur nom) et ce qui reste (les étoiles, les blocs, les plans et les missions). **Changer d’univers** confirme, **Annuler** garde l’univers d’avant. Le changement se voit au retour au village. L’univers choisit aussi le titre de l’écran titre, la barre du haut et l’habillage de l’interface.
+Chaque univers a une icône, son nom et une phrase, avec un bouton pour l’écouter. Changer d’univers demande une confirmation, qui dit ce qui change (le dessin du monde, le titre et l’histoire ; les îles gardent leur nom) et ce qui reste (les étoiles, les blocs, les plans et les missions). **Changer d’univers** confirme, **Annuler** garde l’univers d’avant. Le changement se voit au retour au village. L’univers choisit aussi le titre de l’écran titre et l’habillage de l’interface (ses couleurs, ses polices de titre, la forme de ses boutons) ; la place des boutons et des écrans est la même dans les deux.
 
 Tous les appareils s’ouvrent dans Blocland, même ceux qui ont déjà une progression. Archipéo ne se choisit qu’ici : aucun écran ne le propose, et aucune adresse ne fait passer un appareil à Archipéo. **Affichage par défaut** ne change pas l’univers.
 

@@ -44,8 +44,6 @@
   --error: #8a4a10;
   --error-bg: #f8e8d2;
   --focus: #1e6fd9;
-  --topbar-bg: #13283d;
-  --topbar-text: #f3eee3;
   /* Couleurs des matières et des biomes (hors palette : elles ne bougent pas avec l'interface). */
   --yellow: var(--sand);
   --pink: #d9772e; /* brique */
@@ -65,7 +63,7 @@
   --radius: 12px; /* panneaux et cartes */
   --radius-control: 8px; /* boutons, champs, réponses */
   --radius-pill: 999px; /* étiquettes courtes */
-  --radius-signe: 50%; /* le signe de la créature qui se souvient (GD-4) : un disque ; Blocland en fait une plaque */
+  --radius-signe: 0; /* le signe de la créature qui se souvient (GD-4) : un hexagone dans Archipéo (masque, plus bas) ; Blocland en fait une plaque */
   /* Une seule ombre, douce, pour un panneau posé sur le monde. */
   --shadow-float: 0 2px 8px rgba(19, 40, 61, 0.18);
 }
@@ -86,8 +84,6 @@
   --error: #f2b27a;
   --error-bg: #3d2a18;
   --focus: #ffd54a;
-  --topbar-bg: #0a1824;
-  --topbar-text: #f3eee3;
   --star-off: #4d6a80;
   --syl-0: #f3ede2;
   --syl-1: #9cc9ff;
@@ -98,8 +94,6 @@
 :root[data-theme="light"] {
   --bg: #f4f6f7;
   --surface: #ffffff;
-  --topbar-bg: #ffffff;
-  --topbar-text: #13283d;
   --shadow-float: none;
 }
 
@@ -152,10 +146,8 @@ html {
    lui, reste sélectionnable. */
 button,
 .button,
-.nav-button,
 a.panel,
-summary,
-.brand {
+summary {
   -webkit-user-select: none;
   user-select: none;
   -webkit-touch-callout: none;
@@ -259,167 +251,16 @@ svg {
   margin: 0;
 }
 
-/* ===== Barre du haut ===== */
+/* ===== La coque de l'appli : plus de barre du haut (le bouton Menu seul, plus bas) ===== */
 .app-shell {
   min-height: 100vh;
-}
-.topbar {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  /* Les bords de l'écran (encoche, coins arrondis) : l'appli installée s'étend dessous (viewport-fit=cover). */
-  padding: calc(0.8rem + env(safe-area-inset-top)) calc(1rem + env(safe-area-inset-right)) 0.5rem calc(1rem + env(safe-area-inset-left));
-  /* Un aplat bleu nuit (blanc en Clair). */
-  background: var(--topbar-bg);
-  color: var(--topbar-text);
-  border-bottom: var(--border-width) solid var(--ink);
-  position: sticky;
-  top: 0;
-  z-index: 5;
-}
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  text-decoration: none;
-  color: inherit;
-}
-/* Le logotype : l'initiale en Montserrat grasse, bleu nuit sur une pastille de sable. */
-.brand-mark {
-  display: grid;
-  place-items: center;
-  width: 2.3rem;
-  height: 2.3rem;
-  background: var(--sand);
-  color: var(--on-sand);
-  border: var(--border-width) solid var(--sand);
-  border-radius: var(--radius-control);
-  font-family: var(--display-font);
-  font-weight: var(--display-weight);
-  font-size: 1.3rem;
-  line-height: 1;
-}
-.brand-logo {
-  display: block;
-  width: 2.3rem;
-  height: 2.3rem;
-}
-.brand-name {
-  /* Le nom de l'application, dans la police des titres. */
-  font-family: var(--display-font);
-  font-weight: var(--display-weight);
-  font-size: 1rem;
-  letter-spacing: 0.02em;
-}
-.topbar-xp {
-  flex: 1;
-  /* Jamais plus étroite que son écusson : sinon les boutons passent dessus. */
-  min-width: 2.6rem;
-  max-width: 22rem;
-  text-decoration: none;
-  color: inherit;
-}
-.topbar-nav {
-  display: flex;
-  gap: 0.5rem;
-  margin-left: auto;
-}
-/* Les boutons de la barre du haut : secondaires ; l'endroit où l'on est, sur un aplat de sable. */
-.nav-button {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  min-height: 48px;
-  padding: 0.25rem 0.8rem;
-  border: var(--border-width) solid var(--ink);
-  border-radius: var(--radius-control);
-  background: var(--secondary-bg);
-  color: var(--secondary-text);
-  text-decoration: none;
-  font-weight: 700;
-}
-.nav-button:active {
-  background: color-mix(in srgb, var(--secondary-bg) 85%, #000);
-}
-/* Le trait sous l'icône du bouton actif, quand le bouton n'a plus son mot (voir la barre plus bas). */
-.nav-button.active::after {
-  position: absolute;
-  left: 25%;
-  right: 25%;
-  bottom: 5px;
-  height: 3px;
-  border-radius: 2px;
-  background: currentColor;
-}
-.nav-button.active {
-  background: var(--sand);
-  border-color: var(--sand);
-  color: var(--on-sand);
 }
 .content {
   max-width: 60rem;
   margin: 0 auto;
   padding: 1.4rem calc(1rem + env(safe-area-inset-right)) calc(3rem + env(safe-area-inset-bottom)) calc(1rem + env(safe-area-inset-left));
 }
-/*
- * La barre suit la place qu'elle a en rem, donc la taille du texte choisie dans les Réglages (jusqu'à 32 px en
- * OpenDyslexic) : le nom de l'univers, puis les mots des boutons (qui gardent leur icône et leur nom lu), puis le
- * logo (le bouton Menu y mène aussi) laissent leur place, pour que rien ne sorte de l'écran ni ne passe sur l'écusson.
- */
-.topbar {
-  container: barre / inline-size;
-}
-@container barre (max-width: 60rem) {
-  .brand-name {
-    display: none;
-  }
-}
-/* Dans la barre, le titre de la jauge passe à la ligne plutôt que de couper un mot (« Architecte de l'archipel »). */
-.topbar .xp-title {
-  white-space: normal;
-  overflow: visible;
-  line-height: 1.2;
-}
-/* Jamais de mot coupé dans la jauge : sous 56rem, tout son titre part (niveau et rôle) ; l'insigne et la jauge
-   restent, et tout est sur la page Succès. */
-@container barre (max-width: 48rem) {
-  .nav-label {
-    display: none;
-  }
-  /* Sans son mot, l'endroit où l'on est garde un trait sous l'icône : pas la couleur seule. */
-  .nav-button.active::after {
-    content: '';
-  }
-}
-@container barre (max-width: 56rem) {
-  .topbar .xp-title {
-    display: none;
-  }
-}
-@container barre (max-width: 16rem) {
-  .topbar .xp-info {
-    display: none;
-  }
-}
-@container barre (max-width: 13rem) {
-  .brand {
-    display: none;
-  }
-}
-/* Les mots des boutons et le nom de l'univers suivent la place de la barre (plus haut) ; ici, ce qui tient à l'écran. */
 @media (max-width: 640px) {
-  .topbar {
-    gap: 0.6rem;
-  }
-  /* Le numéro de niveau est déjà dans l'écusson. */
-  .topbar .xp-lvl,
-  .topbar .xp-sep {
-    display: none;
-  }
-  .nav-button.active::after {
-    content: '';
-  }
   .celebration {
     padding: 0.4rem 0.4rem 0.4rem 0.7rem;
   }
@@ -3746,6 +3587,10 @@ figure.class-table {
 .world-map-path li + li {
   margin-top: 0.2rem;
 }
+/* ===== La barre du bas du monde : des icônes seules, le mot dessous en grand texte (commune aux deux univers) ===== */
+/* Quatre boutons carrés de 56 px, icône de 32 px, 8 px d'écart : 248 px, ils tiennent sur 320 px. Chaque bouton garde
+   son nom pour les lecteurs d'écran, et l'écran ouvert dit le sien en titre (décision du mainteneur, 4 octobre 2026,
+   « 2a » pour Blocland, « 4a » pour Archipéo). Chaque univers n'y met que sa matière (blocland.css pour Blocland). */
 .world-bar {
   position: absolute;
   left: 0.6rem;
@@ -3754,23 +3599,126 @@ figure.class-table {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 8px;
 }
 .world-bar .button {
-  min-height: 48px;
-  padding: 0.2rem 0.8rem;
+  position: relative;
+  flex: 0 0 auto;
+  width: 56px;
+  min-width: 56px;
+  height: 56px;
+  min-height: 56px;
+  padding: 0;
+}
+.world-bar .button svg {
+  width: 32px;
+  height: 32px;
+}
+.world-bar .world-bar-text {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+/* En grand texte, le réglage de l'élève qui lit difficilement : le mot sous l'icône, dans la taille du texte choisie
+   plafonnée à 24 px. Les boutons s'élargissent à leur mot, un nom d'île long passe à la ligne entre ses mots (jamais
+   au milieu d'un mot) ; la barre passe sur deux rangées plutôt que de sortir de l'écran, les boutons alignés en bas,
+   sans s'étirer. */
+:root[data-texte="grand"] .world-bar {
+  align-items: flex-end;
+}
+:root[data-texte="grand"] .world-bar .button {
+  flex-direction: column;
+  gap: 2px;
+  width: auto;
+  /* 200 px au plus (« Forêt des sons » sur deux lignes, la barre tient sur une rangée en paysage) ; un mot plus long
+     que cela élargit le bouton (min-width l'emporte sur max-width), sans jamais être coupé. */
+  max-width: min(200px, 100%);
+  min-width: min-content;
+  height: auto;
+  padding: 4px 10px 6px;
+}
+:root[data-texte="grand"] .world-bar .world-bar-text {
+  display: block;
+  position: static;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  clip-path: none;
+  white-space: normal;
+  overflow-wrap: normal;
+  word-break: keep-all;
+  text-align: center;
+  line-height: 1.3;
+  /* Plus grand que le texte par défaut (20 px), plafonné à 24 px : à 32 px, les quatre mots prenaient la moitié d'un
+     téléphone, et « Observatoire » se coupait. */
+  font-size: min(1rem, 24px);
+}
+/* Archipéo (Blocland a sa matière, blocland.css) : des boutons plats, posés sur une ombre nette de 3 px. */
+.world-bar .button {
+  box-shadow: 0 3px 0 var(--ink);
+}
+/* Le bouton de l'île : l'action principale de la barre, dans la couleur d'action principale. */
+.world-bar .world-bar-ile {
+  --button-bg: var(--primary-bg);
+  border-color: var(--primary-bg);
+  color: var(--primary-text);
+}
+/* L'appui, et le bouton ouvert tant que son écran est ouvert : descendu de 2 px, l'ombre réduite d'autant (l'état ne
+   passe pas par la couleur seule) ; ouvert, il prend le sable. */
+.world-bar .button:active,
+.world-bar .button[aria-pressed="true"] {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--ink);
 }
 .world-bar .button[aria-pressed="true"] {
+  --button-bg: var(--sand);
   background: var(--sand);
   border-color: var(--on-sand);
   color: var(--on-sand);
 }
-/* Le compte des blocs, entre parenthèses après le mot (Blocland en fait une pastille d'or, blocland.css). */
-.world-bar-count::before {
-  content: "(";
+/* Archipéo en thème Clair, plat et sans ombre (manuel, Réglages) : ni ombre ni relief ; le bouton ouvert se marque par
+   le fond sable et un contour de 2 px Nuit océan (le directeur artistique, 4 octobre 2026). */
+:root[data-univers="archipeo"][data-theme="light"] .world-bar .button,
+:root[data-univers="archipeo"][data-theme="light"] .world-bar .button:active {
+  transform: none;
+  box-shadow: none;
 }
-.world-bar-count::after {
-  content: ")";
+:root[data-univers="archipeo"][data-theme="light"] .world-bar .button[aria-pressed="true"] {
+  transform: none;
+  box-shadow: none;
+  outline: 2px solid #142b38;
+  outline-offset: -2px;
+}
+/* Le compte des blocs : une pastille chiffrée au coin haut droit du bouton, qui déborde de 8 px sans réduire la cible,
+   jamais rouge (le rouge dirait « à faire ») ; « 0 » s'affiche : la pastille ne disparaît jamais. La largeur suit le
+   nombre. Dans Archipéo, une pastille ronde de sable ; Blocland en fait un bloc d'or (blocland.css). */
+.world-bar-count {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  display: inline-grid;
+  place-items: center;
+  min-width: 26px;
+  min-height: 26px;
+  padding: 0 5px;
+  background: var(--sand);
+  color: var(--on-sand);
+  border: 2px solid var(--on-sand);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 1;
+  pointer-events: none;
+}
+:root[data-texte="grand"] .world-bar-count {
+  /* Plus grande, elle déborde un peu plus vers le haut et la droite : l'icône du bouton reste visible. */
+  top: -12px;
+  right: -12px;
+  font-size: max(18px, 1rem);
 }
 /* Les blocs gagnés qui volent jusqu'au compteur (Blocland, BlocsQuiVolent.tsx) : posés sur la pastille, ils partent de la
    borne (`--vol-dx`, `--vol-dy`) en arc simple, l'un après l'autre ; ni éclat ni traînée, rien qui se touche. Sans
@@ -3947,8 +3895,8 @@ figure.class-table {
 .creature-rappel-remis:empty {
   margin: 0;
 }
-/* Sur la Carte en vue simple, l'icône de la notion sur l'île dont la créature fait signe : fixe, cerclée (la forme suit
-   l'habillage, `--radius-signe`). */
+/* Sur la Carte en vue simple, l'icône de la notion sur l'île dont la créature fait signe : fixe, entourée (la forme suit
+   l'habillage : une plaque dans Blocland, `--radius-signe` ; un hexagone dans Archipéo, plus bas). */
 .biome-rappel {
   position: absolute;
   top: 0.6rem;
@@ -3961,6 +3909,30 @@ figure.class-table {
   border: var(--border-width) solid var(--ink);
   border-radius: var(--radius-signe);
   background: var(--secondary-bg);
+}
+/* Archipéo : le signe en hexagone à coins doux, comme ses bulles dans le monde (choix du mainteneur, 4 octobre 2026) :
+   Brume au bord Nuit océan, des couleurs fixes, comme les bulles. Le masque (un hexagone au trait arrondi) découpe le
+   bord ; la Brume, posée dessous l'icône, le même hexagone 3 px plus petit. */
+:root[data-univers="archipeo"] :is(.creature-rappel-icone, .biome-rappel) {
+  --hexagone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpolygon points='50,5 89,27.5 89,72.5 50,95 11,72.5 11,27.5' fill='black' stroke='black' stroke-width='10' stroke-linejoin='round'/%3E%3C/svg%3E");
+  isolation: isolate;
+  border-color: transparent;
+  background: #142b38;
+  color: #142b38;
+  -webkit-mask: var(--hexagone) center / 100% 100% no-repeat;
+  mask: var(--hexagone) center / 100% 100% no-repeat;
+}
+:root[data-univers="archipeo"] .creature-rappel-icone {
+  position: relative;
+}
+:root[data-univers="archipeo"] :is(.creature-rappel-icone, .biome-rappel)::before {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  z-index: -1;
+  background: #e5ebe3;
+  -webkit-mask: var(--hexagone) center / 100% 100% no-repeat;
+  mask: var(--hexagone) center / 100% 100% no-repeat;
 }
 /* L'accueil d'une île : le nom de la créature et « Réécouter » sur une ligne, sa phrase dessous. */
 .island-sheet-says-texte {
@@ -4052,41 +4024,6 @@ button.island-quest:active {
   font-size: 0.9rem;
 }
 @media (max-width: 640px) {
-  /*
-   * Sur téléphone, les boutons passent à la ligne quand ils ne tiennent pas sur une seule (grand texte) : aucun ne sort
-   * de l'écran, et aucun ne se cache derrière un défilement qu'on ne voit pas (DA-24).
-   */
-  .world-bar {
-    gap: 0.3rem;
-  }
-  .world-bar .button {
-    flex: 0 0 auto;
-    min-width: 48px;
-    white-space: nowrap;
-    padding: 0.2rem 0.4rem;
-  }
-  /* Les icônes seules gardent leur taille de bouton : le grand texte grossit le compte des blocs, pas les dessins. */
-  .world-bar .button svg {
-    width: min(1.2em, 28px);
-    height: min(1.2em, 28px);
-  }
-  /* Les icônes seules (le nom reste lu par les lecteurs d'écran) : les cinq boutons tiennent sur la largeur. */
-  .world-bar-text {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
-  /* En grand texte, les libellés restent écrits : les boutons passent à la ligne plutôt que de n'être que des icônes. */
-  :root[data-texte="grand"] .world-bar-text {
-    position: static;
-    width: auto;
-    height: auto;
-    overflow: visible;
-    clip-path: none;
-  }
   .island-sheet {
     max-height: 58%;
   }
@@ -5448,20 +5385,6 @@ details.island-fold-objectif {
   border-color: var(--cyan);
 }
 
-/* ===== Navigation d'appli ===== */
-/* Pas d'onglets : sur téléphone, la barre du haut garde le Menu et les Réglages ; sur grand écran, les grands endroits. */
-.nav-phone {
-  display: none;
-}
-@media (max-width: 640px) {
-  .topbar-nav .nav-desktop {
-    display: none;
-  }
-  .topbar-nav .nav-phone {
-    display: inline-flex;
-  }
-}
-
 /* Mode concentration : pendant une partie, seul le bouton Pause reste, en haut à droite. */
 .app-shell.focus .content {
   padding-top: calc(1rem + env(safe-area-inset-top));
@@ -5477,7 +5400,7 @@ details.island-fold-objectif {
   padding: 0;
   justify-content: center;
 }
-/* Blocland, hors du monde (Réglages, Succès, Missions…) : le bouton Menu seul, à la place de la barre du haut. */
+/* Hors du monde (Réglages, Succès, Missions…), dans les deux univers : le bouton Menu seul, plus de barre du haut. */
 .page-menu {
   position: fixed;
   top: calc(0.6rem + env(safe-area-inset-top));
@@ -5703,12 +5626,6 @@ details.island-fold-objectif {
 .hero-compact .hero-title {
   margin: 0;
 }
-/* Tablette : le nom « Archipéo » laisse sa place à la jauge d'XP et aux quatre boutons. */
-@media (max-width: 1100px) {
-  .brand-name {
-    display: none;
-  }
-}
 
 /* L'école du village : ses trois portes (des cartes-boutons), puis les missions de la porte choisie. */
 button.app-card {
@@ -5855,8 +5772,8 @@ button.island-quest {
   gap: 0.4rem;
   white-space: nowrap;
 }
-/* Blocland : le rond « toi » de la Carte (clair, bord sombre épais, ombre nette ; jamais d'or), avec la tête du
-   bonhomme ; 52 px, comme le bouton Menu au-dessus. */
+/* Recentrer, dans les deux univers : le rond « toi » de la Carte (clair, bord sombre épais, ombre nette ; jamais d'or),
+   avec le visage du joueur ; 52 px, comme le bouton Menu au-dessus. */
 .world-recentrer-tete {
   width: 52px;
   height: 52px;
@@ -6056,8 +5973,8 @@ button.island-quest {
   max-width: 100%;
   white-space: normal;
 }
-/* Le cadre de la fiche : la fiche, et dans Blocland le portrait en médaillon de la créature ou du Gardien (FicheDuMonde.tsx,
-   les figures en cubes de l'habillage), posé en haut à gauche, qui dépasse de 24 px au-dessus d'elle (16 px sur
+/* Le cadre de la fiche : la fiche, et le portrait en médaillon de la créature ou du Gardien (FicheDuMonde.tsx : en cubes
+   dans Blocland, le modèle en SVG dans Archipéo), posé en haut à gauche, qui dépasse de 24 px au-dessus d'elle (16 px sur
    téléphone). Hors de la fiche qui défile : il reste entier, et sa hauteur compte dans la place de la fiche. Décoratif :
    il ne se touche pas. */
 .world-fiche-cadre {
@@ -6082,9 +5999,11 @@ button.island-quest {
   width: var(--medaillon);
   height: var(--medaillon);
   padding: 4px;
-  background: #fffbf2;
-  border: 3px solid #2b2118;
-  border-radius: 4px;
+  /* Archipéo : un cadre arrondi, sur la surface, au trait de l'encre (Blocland en fait un bloc, blocland.css). */
+  background: var(--surface);
+  color: var(--text);
+  border: var(--border-width) solid var(--ink);
+  border-radius: var(--radius);
   pointer-events: none;
 }
 .world-fiche-medaillon svg {
@@ -6634,4 +6553,15 @@ fieldset {
 .menu-role .xp-title {
   font-size: 1rem;
   white-space: normal;
+}
+
+/* Archipéo : Recentrer, le rond « toi » aux couleurs de ses bulles (choix « 1a » du mainteneur, 4 octobre 2026) : Brume,
+   bord Nuit océan épais, ombre nette ; jamais la lumière de la prochaine chose à faire. */
+:root[data-univers="archipeo"] .world-recentrer-tete {
+  --button-bg: #e5ebe3;
+  border-color: #142b38;
+  box-shadow: 0 4px 0 #142b38;
+}
+:root[data-univers="archipeo"] .world-recentrer-tete:active:not(:disabled) {
+  box-shadow: 0 1px 0 #142b38;
 }

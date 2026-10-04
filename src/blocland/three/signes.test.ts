@@ -1,5 +1,5 @@
-// Les bulles dans la scène 3D, sans WebGL : celle de la créature (GD-4, étape 1 ; GD-7) et, dans Blocland, celles des
-// objets à faire (proposition P2, 4 octobre 2026) : le geste une fois à l'arrivée de la caméra sur
+// Les bulles dans la scène 3D, sans WebGL : celle de la créature (GD-4, étape 1 ; GD-7) et celles des objets à faire
+// (proposition P2, 4 octobre 2026 ; dans Archipéo aussi, en hexagone, choix « 1a ») : le geste une fois à l'arrivée de la caméra sur
 // l'île, la bulle ensuite, un seul appel de dessin pour toutes, trois au plus sur l'île du bonhomme, la première mise en
 // avant (plus grande, bordée d'or, seule à bouger), le rebond au toucher, rien sur la Carte, et rien qui bouge avec
 // « Réduire les animations ».
@@ -116,7 +116,7 @@ it('sans révision due, rien n’est dessiné, et tout se libère', () => {
   expect(monde.scene.children).toHaveLength(0);
 });
 
-it('dans Blocland, une bulle carrée aux coins presque droits, avec son ombre et sa pointe ; dans Archipéo, le disque', () => {
+it('dans Blocland, une bulle carrée aux coins presque droits ; dans Archipéo, un hexagone aux coins adoucis ; chacune avec son ombre et sa pointe', () => {
   const traceur = () => {
     const appels: string[] = [];
     const ctx = new Proxy({} as Record<string, unknown>, {
@@ -125,8 +125,8 @@ it('dans Blocland, une bulle carrée aux coins presque droits, avec son ombre et
     }) as unknown as CanvasRenderingContext2D;
     return { ctx, appels };
   };
-  expect(HABILLAGES.blocland.signe).toBe('plaque');
-  expect(HABILLAGES.archipeo.signe).toBe('disque');
+  expect(HABILLAGES.blocland.formeDesSignes).toBe('plaque');
+  expect(HABILLAGES.archipeo.formeDesSignes).toBe('hexagone');
   const plaque = traceur();
   dessinerLaCase(plaque.ctx, 0, { icone: 'tree' }, 'plaque');
   // L'ombre, le bord sombre et le fond : trois carrés aux petits coins (rayon de 8 au plus sur une case de 128), aucun
@@ -136,10 +136,36 @@ it('dans Blocland, une bulle carrée aux coins presque droits, avec son ombre et
   expect(coins.every((a) => Number(a.split(',').at(-1)) <= 8)).toBe(true);
   expect(plaque.appels.some((a) => a.startsWith('arc:'))).toBe(false);
   expect(plaque.appels).toContain('lineTo:64,122');
-  const disque = traceur();
-  dessinerLaCase(disque.ctx, 0, { icone: 'tree' }, 'disque');
-  expect(disque.appels.some((a) => a.startsWith('arc:'))).toBe(true);
-  expect(disque.appels.some((a) => a.startsWith('arcTo'))).toBe(false);
+  // L'hexagone (choix « 1a », 4 octobre 2026) : l'ombre, le bord sombre et le fond, six coins adoucis chacun, aucun
+  // cercle ; la même pointe, au même endroit (la chose qu'il montre ne bouge pas d'un univers à l'autre).
+  const hexagone = traceur();
+  dessinerLaCase(hexagone.ctx, 0, { icone: 'tree' }, 'hexagone');
+  const coinsH = hexagone.appels.filter((a) => a.startsWith('arcTo'));
+  expect(coinsH).toHaveLength(18);
+  expect(coinsH.every((a) => Number(a.split(',').at(-1)) <= 9)).toBe(true);
+  expect(hexagone.appels.some((a) => a.startsWith('arc:'))).toBe(false);
+  expect(hexagone.appels).toContain('lineTo:64,122');
+  // Pointe en bas : le coin du bas de l'hexagone, au milieu de la case, au bas de la place de la plaque (4 + 96).
+  expect(coinsH.some((a) => a.startsWith('arcTo:64,100,'))).toBe(true);
+  // Tenu au bord de la place libre, il perd sa pointe, comme la plaque.
+  const auBord = traceur();
+  dessinerLaCase(auBord.ctx, 0, { icone: 'tree' }, 'hexagone', false, true);
+  expect(auBord.appels).not.toContain('lineTo:64,122');
+});
+
+it('Archipéo : Brume au bord Nuit océan, la prochaine bordée de lumière, la commande avec son bloc', () => {
+  const remplis: string[] = [];
+  const ctx = new Proxy({} as Record<string, unknown>, {
+    get: (cible, nom: string) => (nom === 'fill' ? () => remplis.push(String(cible.fillStyle)) : (cible[nom] ?? (() => {}))),
+    set: (cible, nom: string, valeur) => ((cible[nom] = valeur), true),
+  }) as unknown as CanvasRenderingContext2D;
+  dessinerLaCase(ctx, 0, { bloc: 'maths-6e-calculation' }, 'hexagone');
+  // L'ombre, la pointe, le bord, le fond, puis les trois faces du cube.
+  expect(remplis.slice(0, 4)).toEqual(['#142b38', '#142b38', '#142b38', '#e5ebe3']);
+  expect(remplis).toHaveLength(7);
+  remplis.length = 0;
+  dessinerLaCase(ctx, 1, { icone: 'tree' }, 'hexagone', true);
+  expect(remplis).toEqual(['#142b38', '#142b38', '#142b38', '#ffd866', '#e5ebe3']);
 });
 
 it('une commande (GD-7) : la même plaque, avec le cube du bloc demandé aux couleurs de Mes blocs, cerné de sombre', () => {
@@ -330,15 +356,22 @@ describe('les bulles de Blocland (proposition P2, 4 octobre 2026)', () => {
     derniers.current.focus = { island: MINE, seq: 2 };
     signes.animer!(0, 0, true);
     expect(signes.maillage.geometry.drawRange.count).toBe(6);
-    // Archipéo : une plaque par créature qui fait signe, sur toutes les îles, et aucune bulle d'objet.
+    // Archipéo (choix « 1a », 4 octobre 2026) : les mêmes bulles, sur l'île où l'on est.
     const archipeo = scene(HABILLAGES.archipeo).signes;
-    archipeo.poser([
+    archipeo.poser([]);
+    archipeo.poserLesObjets(OBJETS, null);
+    archipeo.animer!(0, 0, true);
+    expect(archipeo.maillage.geometry.drawRange.count).toBe(18);
+    // Avec les losanges (plus aucun univers ne les prend) : une plaque par créature qui fait signe, sur toutes les îles,
+    // et aucune bulle d'objet.
+    const losanges = scene({ ...HABILLAGES.archipeo, signesDesObjets: 'losanges' }).signes;
+    losanges.poser([
       { id: FORET, icone: 'tree' },
       { id: MINE, icone: 'pickaxe' },
     ]);
-    archipeo.poserLesObjets(OBJETS, null);
-    archipeo.animer!(0, 0, true);
-    expect(archipeo.maillage.geometry.drawRange.count).toBe(12);
+    losanges.poserLesObjets(OBJETS, null);
+    losanges.animer!(0, 0, true);
+    expect(losanges.maillage.geometry.drawRange.count).toBe(12);
   });
 
   it('la vue glissée sur une autre île : les bulles la suivent ; la vue revenue, elles reviennent (4 octobre 2026)', () => {
@@ -382,8 +415,8 @@ describe('les bulles de Blocland (proposition P2, 4 octobre 2026)', () => {
     expect(calme0).toBeCloseTo(4, 6);
   });
 
-  it('Archipéo garde son disque tel quel : il ne se touche pas et ne rebondit pas', () => {
-    const { signes, derniers, camera } = scene(HABILLAGES.archipeo);
+  it('avec les losanges, le signe de la créature ne se touche pas et ne rebondit pas', () => {
+    const { signes, derniers, camera } = scene({ ...HABILLAGES.archipeo, signesDesObjets: 'losanges' });
     derniers.current.home = FORET;
     signes.poser([{ id: FORET, icone: 'tree' }]);
     signes.animer!(0, 0, true);

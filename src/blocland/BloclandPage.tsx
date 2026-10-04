@@ -59,7 +59,7 @@ export function BloclandPage() {
   const at = state.world.place ?? 'french-6e-phonology';
   const here = archipelagoOf(at).classe;
   const textes = useTextes();
-  // Les commandes (GD-7) ne se suggèrent que dans un univers qui les montre (Blocland).
+  // Les commandes (GD-7) ne se suggèrent que dans un univers qui les montre (`commandes` dans ses textes).
   const destination = nextDestination(textes.commandes ? state : sansCommandes(state), textes.archipels, textes.libelles);
   // La vue simple n'a pas de monde : pas de moment du rallumage, mais son mot et sa cloche, une fois (lot 6).
   const { settings } = useSettings();

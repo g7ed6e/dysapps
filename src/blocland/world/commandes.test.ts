@@ -277,10 +277,16 @@ describe('la sauvegarde', () => {
   });
 });
 
-describe('Archipéo, en pause', () => {
-  it('n’a pas de commandes : ni mots, ni liste, ni suggestion, ni petite construction ; la sauvegarde ne change pas', () => {
-    expect(textesDe('archipeo').commandes).toBeUndefined();
+describe('Les commandes dans chaque univers', () => {
+  it('Blocland et Archipéo (décision du 4 octobre 2026) en ont les mots', () => {
     expect(textesDe('blocland').commandes?.titre).toBe('Commandes');
+    expect(textesDe('archipeo').commandes?.titre).toBe('Commandes');
+    expect(textesDe('archipeo').commandes?.compte(2, 0)).toBe('2 en attente');
+    expect(textesDe('archipeo').commandes?.compte(2, 1)).toBe('1 prête');
+    expect(textesDe('archipeo').commandes?.compte(3, 2)).toBe('2 prêtes');
+  });
+
+  it('un univers sans ces mots n’a pas de commandes : ni liste, ni suggestion, ni petite construction ; la sauvegarde ne change pas', () => {
     const mousso = getCommande(MOUSSO)!;
     const cles = casesDeLaPetiteConstruction(mousso.fixture)!.map((c) => c.key);
     const s = etat({ progress: joue(FORET, PLAINE, FERME), stock: { [BLOC.bois]: 3 }, world: { links: [PONT_FERME], place: PLAINE, parts: { [mousso.fixture]: cles }, requests: [COCO] } });

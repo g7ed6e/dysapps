@@ -1,17 +1,19 @@
 // Les cubes de la scène 3D : le monde en blocs (une géométrie par matériau, faces visibles seulement) ; dans Archipéo,
 // le sol et la roche en facettes (lot R2) et le décor en primitives (lot R4), le reste en cubes. Aussi la case visée en
 // chantier, les éclats (la poussière d'un bloc posé, l'écume du navire) et, dans Blocland, le geste de pose (le dernier
-// bloc d'un plan descend et s'enclenche, world/pose.ts) et la pose d'une partie du bâtiment en vague (GD-6, world/vague.ts).
+// bloc d'un plan descend et s'enclenche, world/pose.ts) et la pose d'une partie du bâtiment en vague (GD-6, world/vague.ts) ;
+// dans Archipéo, la même pose en fondu, de la pierre des ruines à la couleur du plan (world/maillageDuFondu.ts).
 import * as THREE from 'three';
 import type { VoxelCube } from '../Voxel';
 import { caseDuDecor, maillageDuDecor, rangerLeDecor, signatureDuDecor } from '../world/decorMesh';
 import { champDuSol, landMesh, pickCell, poseDuDecor, signatureDuChamp, type ChampDuSol } from '../world/landMesh';
-import { cacheDeLaConstruction, caseDeLaConstruction, caseDeLaPiece, construireParIle, couleursDesRoles, piliersDe, type MaillageDeLaConstruction, sansToursDuCoeur } from '../world/construction';
+import { cacheDeLaConstruction, caseDeLaConstruction, caseDeLaPiece, construireParIle, couleursDesRoles, miseBoutABout, piliersDe, type MaillageDeLaConstruction, sansToursDuCoeur } from '../world/construction';
 import { modelerLeSol } from '../world/modeleDessine';
 import { buildMesh } from '../world/mesher';
 import { gesteFini, hauteurDuGeste } from '../world/pose';
-import { couchesPosees, cubesPartis, hauteurDansLaVague, planDeLaVague, type PlanDeLaVague } from '../world/vague';
+import { avanceeDuFondu, couchesPosees, cubesPartis, hauteurDansLaVague, planDeLaVague, type PlanDeLaVague } from '../world/vague';
 import { maillageAvecLaVague, type QueueDeLaVague } from '../world/maillageDeLaVague';
+import { couleurDuFondu, maillageDuFondu, type FonduDeLaPose } from '../world/maillageDuFondu';
 import type { EnCasesDuMonde } from '../world/view';
 import { styleDuMonde } from '../rendu';
 import { creerPiliers } from './bornes';
@@ -47,14 +49,21 @@ export interface Cubes extends PartieDeLaScene {
    */
   enclencher(cube: VoxelCube): void;
   /**
-   * La pose d'une partie en vague (Blocland, GD-6) : ces cubes, absents des cubes reçus par `poser`, descendent couche
-   * par couche, un par un, dans les maillages du terrain (pas un appel de dessin de plus). `rappel` dit chaque couche
-   * posée, puis la fin ; les cubes restent posés jusqu'à `arreterLaVague`, que la page appelle en donnant le monde
-   * avec la partie. Le temps est celui de la scène (le `dt` de la boucle), d'un pas borné.
+   * La pose d'une partie en vague (GD-6) : ces cubes, absents des cubes reçus par `poser`, descendent couche par couche,
+   * un par un, dans les maillages du terrain (Blocland) ; ou, dans Archipéo, sont là dès la première image, en pierre des
+   * ruines, au bout du groupe opaque de la construction, et passent un par un, au même rythme, à la couleur du plan
+   * (le fondu). Pas un appel de dessin de plus. `rappel` dit chaque couche posée, puis la fin ; les cubes restent posés
+   * jusqu'à `arreterLaVague`, que la page appelle en donnant le monde avec la partie. Le temps est celui de la scène
+   * (le `dt` de la boucle), d'un pas borné.
    */
   lancerLaVague(cubes: VoxelCube[], rappel: (moment: 'couche' | 'finie') => void): void;
   /** La vague s'arrête (finie, touchée ou quittée) : le prochain terrain reçu se dessine sans elle. */
   arreterLaVague(): void;
+  /**
+   * Pour les captures d'un lot (scripts/rendu/mesures.mjs, `poseA`) : la vague en cours tenue à cette part de sa durée
+   * (0 : avant le premier cube, la ruine dans Archipéo ; 0,5 : à mi-chemin), sans rien dire ; à 1, elle va à sa fin.
+   */
+  tenirLaVague(part: number): void;
   /** Un éclat de plus (petit cube qui retombe et disparaît) ; `material` lui appartient. */
   eclat(mesh: THREE.Mesh, velocity: THREE.Vector3, born: number): void;
   /** La forme d'un éclat, partagée. */
@@ -84,7 +93,14 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
   const materiaux = facettes ? creerMateriaux(lumiere, couleursDesRoles(archipel)) : null;
   // Un maillage par île, gardé : poser un bloc ne refait que son île.
   const taille = materiaux
-    ? { construction: creerConstruction(materiaux), piliers: creerPiliers(archipel), cache: cacheDeLaConstruction(), maillage: null as MaillageDeLaConstruction | null }
+    ? {
+        construction: creerConstruction(materiaux),
+        piliers: creerPiliers(archipel),
+        cache: cacheDeLaConstruction(),
+        maillage: null as MaillageDeLaConstruction | null,
+        /** Le fondu peint au bout de la construction, s'il y en a un. */
+        fondu: null as FonduDeLaPose | null,
+      }
     : null;
   if (taille) scene.add(taille.construction.group, taille.piliers.group);
   // Le contour de la case visée (mode chantier).
@@ -100,7 +116,8 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
   let geste: { bloc: THREE.Group; ecoule: number | null; enAttente: VoxelCube[] | null } | null = null;
   /**
    * La vague en cours (GD-6) : ses cubes et son plan, son temps (`null` avant la première image), les couches déjà dites,
-   * et, dans chaque maillage du terrain qui la porte, sa part et la hauteur de repos de ses sommets.
+   * et, dans chaque maillage du terrain qui la porte, sa part et la hauteur de repos de ses sommets (Blocland) ; ou son
+   * fondu, les couleurs du groupe opaque qui le portent et son premier sommet (Archipéo).
    */
   let vague: {
     cubes: VoxelCube[];
@@ -110,6 +127,9 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
     finie: boolean;
     rappel: (moment: 'couche' | 'finie') => void;
     queues: { mesh: THREE.Mesh; queue: QueueDeLaVague; repos: Float32Array }[];
+    fondu: { maillage: FonduDeLaPose; couleurs: THREE.BufferAttribute | null; sommet: number } | null;
+    /** Le temps où les captures la tiennent (`tenirLaVague`), ou rien. */
+    tenue?: number;
   } | null = null;
   /** Les derniers cubes reçus, et s'il faut refaire le terrain avec eux à la prochaine image (la vague lancée ou arrêtée). */
   let derniers: VoxelCube[] = [];
@@ -163,10 +183,20 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
     const construction = poseDuDecor(champ, reste);
     if (taille) {
       const { maillage, change } = construireParIle(archipel, construction, auSol, taille.cache);
-      if (change || !taille.maillage) {
-        taille.construction.peindre(maillage);
+      // Le fondu de la pose, au bout du groupe opaque : les tranches des pièces et des phares ne bougent pas.
+      const fondu = vague?.fondu ?? null;
+      if (change || !taille.maillage || (fondu?.maillage ?? null) !== taille.fondu) {
+        taille.construction.peindre(fondu ? miseBoutABout([maillage, fondu.maillage.maillage]) : maillage);
         taille.piliers.poser(piliersDe(construction));
         taille.maillage = maillage;
+        taille.fondu = fondu?.maillage ?? null;
+        if (fondu) {
+          const couleurs = (taille.construction.opaque()?.geometry.getAttribute('color') as THREE.BufferAttribute | undefined) ?? null;
+          couleurs?.setUsage(THREE.DynamicDrawUsage);
+          fondu.couleurs = couleurs;
+          fondu.sommet = maillage.opaque.positions.length / 3;
+          placerLeFondu(vague?.ecoule ?? 0);
+        }
       }
     }
     const signature = signatureDuChamp(champ);
@@ -210,13 +240,33 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
     }
   };
 
+  /** Le fondu à `ms` (Archipéo) : chaque cube passe de la pierre à la couleur du plan, à son départ ; rien ne bouge. */
+  const placerLeFondu = (ms: number) => {
+    const fondu = vague?.fondu;
+    if (!vague || !fondu?.couleurs) return;
+    const { maillage, couleurs, sommet } = fondu;
+    const tableau = couleurs.array as Float32Array;
+    const n = maillage.rangDuSommet.length;
+    for (let i = 0; i < n; i++) couleurDuFondu(maillage, i, avanceeDuFondu(vague.plan, maillage.rangDuSommet[i], ms), tableau, 3 * (sommet + i));
+    couleurs.clearUpdateRanges();
+    couleurs.addUpdateRange(sommet * 3, n * 3);
+    couleurs.needsUpdate = true;
+  };
+
   /** La vague, image par image : son temps avance d'un pas borné ; chaque couche posée, puis la fin, sont dites une fois. */
   const animerLaVague = (dt: number, reduit: boolean) => {
     if (!vague || vague.finie) return;
     vague.ecoule = vague.ecoule === null ? 0 : vague.ecoule + Math.min(dt * 1000, PAS_DU_GESTE_MS);
+    if (vague.tenue !== undefined && !reduit) {
+      vague.ecoule = vague.tenue;
+      if (vague.fondu) placerLeFondu(vague.ecoule);
+      else placerLaVague(vague.ecoule);
+      return;
+    }
     // Avec « Réduire les animations » (la page ne lance pas de vague alors, mais le réglage peut changer) : posée d'un coup.
     if (reduit) vague.ecoule = vague.plan.finMs;
-    placerLaVague(vague.ecoule);
+    if (vague.fondu) placerLeFondu(vague.ecoule);
+    else placerLaVague(vague.ecoule);
     const posees = couchesPosees(vague.plan, vague.ecoule);
     const { rappel } = vague;
     if (!reduit) for (; vague.couches < posees; vague.couches += 1) rappel('couche');
@@ -262,18 +312,28 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
     },
     lancerLaVague: (cubes, rappel) => {
       vague = null;
-      // Le sol à facettes d'Archipéo n'a pas de vague : la partie y est posée d'un coup.
-      if (sol || !cubes.length) {
+      // Sans la construction taillée (le sol à facettes sans elle : jamais dans le jeu), la partie est posée d'un coup.
+      if ((sol && !taille) || !cubes.length) {
         rappel('finie');
         return;
       }
-      vague = { cubes, plan: planDeLaVague(cubes), ecoule: null, couches: 0, finie: false, rappel, queues: [] };
+      const plan = planDeLaVague(cubes);
+      // Archipéo : le fondu, au bout de la construction ; Blocland : la vague, au bout des maillages du terrain.
+      const fondu = taille ? { maillage: maillageDuFondu(archipel, cubes, plan), couleurs: null, sommet: 0 } : null;
+      vague = { cubes, plan, ecoule: null, couches: 0, finie: false, rappel, queues: [], fondu };
       aRefaire = true;
     },
     arreterLaVague: () => {
       if (!vague) return;
       vague = null;
       aRefaire = true;
+    },
+    tenirLaVague: (part) => {
+      if (!vague) return;
+      if (part >= 1) {
+        vague.tenue = undefined;
+        vague.ecoule = vague.plan.finMs;
+      } else vague.tenue = Math.max(0, part) * vague.plan.finMs;
     },
     enclencher: (cube) => {
       finirLeGeste();
