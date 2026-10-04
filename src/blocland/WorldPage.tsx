@@ -1262,7 +1262,7 @@ export function WorldPage() {
             steps={[
               // Blocland : plus de flèche jaune dans le monde, la bulle bordée d'or montre ce qu'on peut faire (4 octobre 2026).
               univers === 'blocland'
-                ? `${UNIVERS[univers].bienvenue} Touche la Forêt des sons : la bulle bordée d’or est dessus.`
+                ? `${UNIVERS[univers].bienvenue} Touche la Forêt des sons pour commencer.`
                 : `${UNIVERS[univers].bienvenue} Touche la Forêt des sons, sous la flèche jaune.`,
               univers === 'blocland'
                 ? 'Sur chaque île, les bornes à panneau sont les missions : touche une borne, puis Jouer. La bulle bordée d’or montre la prochaine chose à faire. Chaque mission te donne des blocs pour construire l’île, et des cubes d’or pour tes étoiles.'
