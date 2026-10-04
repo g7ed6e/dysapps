@@ -1,7 +1,7 @@
 // Le moment du rallumage (lot 6, fil B2) : un Gardien rallumé au défi reste éteint dans le monde jusqu'au retour au
 // village ; la caméra glisse alors vers sa sentinelle, qui se rallume en fondu, avec une cloche et un mot. Une fois par
-// Gardien et par appareil (comme le mot de la baleine), jamais dans la sauvegarde. Dans un univers sans sentinelles
-// (Blocland), rien ne se montre : les Gardiens vaincus sont notés vus, pour qu'un passage à Archipéo n'en rejoue aucun.
+// Gardien et par appareil (comme le mot de la baleine), jamais dans la sauvegarde. Depuis GD-8, les deux univers ont
+// leurs Gardiens éteints ; dans un univers qui n'en aurait pas, rien ne se montre : les Gardiens rallumés sont notés vus.
 import { useEffect, useMemo, useState, type PointerEvent } from 'react';
 import { Icon } from '../components/Icon';
 import { SpeakButton } from '../components/SpeakButton';

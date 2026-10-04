@@ -78,6 +78,7 @@ import {
   casesDeLaPetiteConstructionDansLeMonde,
   creaturePlacements,
   guardianPlacements,
+  statueDe,
   vehiclePlacement,
   worldCubes,
 } from './world/terrain';
@@ -181,12 +182,12 @@ export function WorldPage() {
   const archipelago = archipelagoOf(at);
   const a: ArchipelagoId = archipelago.classe;
   const trophyBlocks = useMemo(() => trophies(progress.badges), [progress.badges]);
-  // Les sentinelles (lot 6) : dans un univers qui en a, et quand le monde les dessine (le rendu Archipéo), chaque
-  // Gardien est là dès l'ouverture de son île, et celui qu'on vient de rallumer au défi attend le retour au village,
-  // éteint, pour se rallumer sous les yeux de l'élève.
+  // Les Gardiens éteints (lot 6, GD-8) : dans un univers qui a leurs textes (les deux), chaque Gardien est là dès
+  // l'ouverture de son île, et celui qu'on vient de rallumer au défi attend le retour au village, éteint, pour se
+  // rallumer sous les yeux de l'élève.
   const textes = useTextes();
   const [habillage] = useState(habillageDuMonde);
-  const sentinelles = textes.sentinelles !== null && habillage.defi === 'sentinelle';
+  const sentinelles = textes.sentinelles !== null;
   const rallumage = useRallumage(state.progress, a, sentinelles);
   const eteints = rallumage.enAttente.join();
   // Les commandes des habitants (GD-7, PR 3) : seulement dans un univers qui les montre (Blocland) ; ailleurs, le monde
@@ -202,7 +203,7 @@ export function WorldPage() {
   const creatures = useMemo(
     () => [
       ...creaturePlacements(a, state.world.links),
-      ...guardianPlacements(a, state.progress, state.world.links, sentinelles).map((c) => (eteints.split(',').includes(c.id) ? { ...c, beaten: false } : c)),
+      ...guardianPlacements(a, state.progress, state.world.links, sentinelles).map((c) => (eteints.split(',').includes(c.id) ? { ...c, beaten: false, cubes: statueDe(c.cubes) } : c)),
     ],
     [a, state.progress, state.world.links, sentinelles, eteints],
   );

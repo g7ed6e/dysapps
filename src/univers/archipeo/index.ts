@@ -313,7 +313,6 @@ export const ARCHIPEO = {
     // Le défi se relève, il ne se livre pas : ni exclamation ni « bâtisseur », rien à accorder selon le Gardien.
     defiPret: 'Le défi du Gardien est prêt.',
     defiPretCourt: 'Défi prêt',
-    defiFerme: (gardien, etoiles) => `${gardien} attend encore. Obtiens ${etoiles} étoiles dans chaque mission de l’île, puis reviens relever son défi.`,
     arene: (gardien) => `Le défi ${du(gardien)}`,
     decouverteOuvrages:
       'Les îles pâles sont fermées. Pour y aller, construis un ouvrage. Chaque ouvrage se paie en blocs. Un escalier demande aussi une mission réussie.',

@@ -27,7 +27,7 @@ export interface TextesGardien {
   guardianSays: { hit: string; miss: string; beaten: string };
 }
 
-/** Les libellés qui disent où en sont les Gardiens (vaincus dans Blocland, rallumés dans Archipéo). */
+/** Les libellés qui disent où en sont les Gardiens (rallumés, dans les deux univers depuis GD-8). */
 export interface LibellesGardiens {
   /** Sous le nom du Gardien, dans le panneau d'une île, quand son défi est déjà réussi. */
   dejaFait: string;
@@ -56,11 +56,6 @@ export interface LibellesGardiens {
   defiPret: string;
   /** L'étiquette du Gardien dont le défi est prêt, sur la page de l'île. */
   defiPretCourt: string;
-  /**
-   * Ce que dit la créature de l'île quand le défi n'est pas encore prêt (`gardien` : son nom, avec sa majuscule ;
-   * `etoiles` : les étoiles qu'il faut dans chaque mission).
-   */
-  defiFerme: (gardien: string, etoiles: number) => string;
   /** Le nom de l'écran du défi, pour un lecteur d'écran (`gardien` : son nom avec son article, « le Grand Chêne »). */
   arene: (gardien: string) => string;
   /**
