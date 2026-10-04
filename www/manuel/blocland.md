@@ -30,11 +30,11 @@ Ce qu’il faut savoir des bulles :
 - **Toucher tout près.** Une borne ou un Gardien qui paraissent petits à l’écran se touchent aussi un peu à côté, à environ un doigt de large.
 - **Sur un chantier en cours.** Toucher une case en fantôme d’un monument ou du Bloc-Navire y pose le bloc attendu. Pour ouvrir sa fiche, on touche sa bulle.
 - **Moins d’animations.** Quand le téléphone ou la tablette demande de [réduire les animations](reglages.md#animations-et-vue-du-monde), aucune bulle ne bouge ni ne rebondit. Elles restent là, immobiles, et se lisent encore.
-- **Dans Archipéo**, les bulles sont les mêmes, en hexagone : gris-vert clair au bord bleu nuit, pointe vers la chose ; la prochaine est plus grande et bordée de jaune clair.
+- **Dans Archipéo**, les bulles sont les mêmes, en hexagone : gris-vert clair au bord bleu nuit, pointe vers la chose ; la prochaine est plus grande et bordée d’or.
 
 Pour explorer, on peut **faire glisser le monde** d’un doigt (ou à la souris) : la vue suit le doigt, sans rotation, et s’arrête au bord de l’archipel. Un petit mouvement compte encore comme un toucher ; un vrai glissé n’ouvre rien quand on lève le doigt.
 
-Dès que la vue a bougé, le bouton **Recentrer** apparaît en haut à droite, sous le bouton Menu : un rond clair qui porte la tête du bonhomme, le même que le médaillon « toi » de la Carte, dans les deux univers. Il ramène la caméra en douceur. Il s’efface tant qu’une bulle est ouverte en haut de l’écran, pour ne jamais cacher son bouton Fermer. Toucher une autre île, ouvrir la Carte ou envoyer le bonhomme sur une autre île recentre aussi la vue ; le promener sur son île ne la recentre pas. Le glissé n’est pas possible pendant un trajet d’une île à l’autre ou un voyage. Tout reste faisable sans glisser ni zoomer, par un simple toucher.
+Dès que la vue a bougé, le bouton **Recentrer** apparaît en haut à droite, sous le bouton Menu : un rond clair qui porte ton visage (la tête du bonhomme dans Blocland, son visage peint dans Archipéo), le même que le médaillon « toi » de la Carte. Il ramène la caméra en douceur. Il s’efface tant qu’une bulle est ouverte en haut de l’écran, pour ne jamais cacher son bouton Fermer. Toucher une autre île, ouvrir la Carte ou envoyer le bonhomme sur une autre île recentre aussi la vue ; le promener sur son île ne la recentre pas. Le glissé n’est pas possible pendant un trajet d’une île à l’autre ou un voyage. Tout reste faisable sans glisser ni zoomer, par un simple toucher.
 
 ### Les fiches
 
@@ -158,7 +158,7 @@ L’**or**, le **cristal** et les blocs de **finition** (toit, porte, lanterne, 
 
 ### Mes blocs
 
-Le bouton **Blocs**, dans la barre du bas (ou le lien « Mes blocs » sur la carte et la page d’une île en vue simple), ouvre l’inventaire en plein écran, par-dessus le monde. Dans Blocland, sa pastille d’or dit combien de blocs on a en poche, tous types confondus ; les lecteurs d’écran le lisent avec le nom du bouton (« Mes blocs, 12 »). Au retour d’une mission qui a donné des blocs, la caméra posée sur l’île, trois petits blocs au plus partent de la borne de la mission (du milieu de l’écran si elle n’y est pas) et volent jusqu’à la pastille, en moins d’une seconde ; son nombre change une fois, à l’arrivée du dernier, avec un petit rebond. Ils ne volent jamais par-dessus une fiche, le tutoriel ou un mot qui attend « J’ai compris » : le nombre change alors sans vol. La pose d’une partie du bâtiment et la fiche du chantier attendent la fin du vol : une seule chose bouge à la fois. Quand l’appareil demande de réduire les animations, rien ne vole : le nombre est déjà le bon. L’inventaire ne se contente pas de compter :
+Le bouton **Blocs**, dans la barre du bas (ou le lien « Mes blocs » sur la carte et la page d’une île en vue simple), ouvre l’inventaire en plein écran, par-dessus le monde. Sa pastille (d’or dans Blocland, de sable dans Archipéo) dit combien de blocs on a en poche, tous types confondus ; les lecteurs d’écran le lisent avec le nom du bouton (« Mes blocs, 12 »). Au retour d’une mission qui a donné des blocs, la caméra posée sur l’île, trois petits blocs au plus partent de la borne de la mission (du milieu de l’écran si elle n’y est pas) et volent jusqu’à la pastille, en moins d’une seconde ; son nombre change une fois, à l’arrivée du dernier, avec un petit rebond. Ils ne volent jamais par-dessus une fiche, le tutoriel ou un mot qui attend « J’ai compris » : le nombre change alors sans vol. La pose d’une partie du bâtiment et la fiche du chantier attendent la fin du vol : une seule chose bouge à la fois. Quand l’appareil demande de réduire les animations, rien ne vole : le nombre est déjà le bon. L’inventaire ne se contente pas de compter :
 
 ![Mes blocs : « Tu peux construire », un lien par chantier (Bloc-Navire, monuments, ouvrages).](/captures/mes-blocs.jpg)
 
@@ -220,7 +220,7 @@ Une **commande**, c’est une créature qui demande quelques blocs d’une autre
 - **La suggestion** : la plus ancienne commande prête devient la prochaine destination (après le Bloc-Navire prêt à partir et l’île où se tient le bonhomme). Sa créature fait alors le signe de la créature qui se souvient, avec une plaque à l’image du bloc demandé ; en vue simple, la carte de son île montre l’image du bloc demandé.
 - **Rien ne presse** : une commande n’a ni délai ni échéance, ne disparaît pas et ne se rate pas. La laisser de côté ne coûte rien. Une petite construction ne donne ni coffre ni XP.
 
-Les commandes sont propres à Blocland : dans Archipéo, elles n’apparaissent pas.
+Dans Archipéo, ce sont les habitants qui commandent, pour bâtir chez eux ; la première fois, la phrase dit : « Un habitant te demande des blocs pour bâtir chez lui. Tu les livres quand tu veux. » La petite construction est taillée comme le reste du village.
 
 ## Le bâtiment de chaque île
 
@@ -456,7 +456,7 @@ Les sons sont générés par le code, sans aucun fichier : à la pose, trois pou
 | Flèches du clavier | Île voisine dans cette direction |
 | Faire glisser le monde (un doigt ou la souris) | La vue se déplace, sans rotation ; le bouton « Recentrer » apparaît |
 | Pincer la Carte à deux doigts (molette, touches + et −) | La Carte se zoome, de tout l’archipel à une île en gros plan ; le bouton « Recentrer » apparaît |
-| Bouton « Recentrer » (en haut à droite ; dans Blocland, le rond à la tête du bonhomme) | La caméra revient sur l’île ou le bonhomme |
+| Bouton « Recentrer » (en haut à droite ; le rond à ton visage) | La caméra revient sur l’île ou le bonhomme |
 | Bouton Menu (trois traits, en haut à droite) | Le menu du village, en plein écran ; la croix ou Échap le referment |
 | Toucher la salle des trophées (ou un trophée) | Le bonhomme y marche, le panneau de la salle (le profil et les succès) s’ouvre |
 | Bouton Carte | L’archipel vu du ciel, l’état de chaque île, la prochaine destination sous la bulle bordée d’or, toi dans le médaillon |

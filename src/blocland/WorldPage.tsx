@@ -1271,8 +1271,8 @@ export function WorldPage() {
             onClose={() => setTutoDone(true)}
             targets={[undefined, undefined, '[data-tuto="menu"]']}
             steps={[
-              // Les bulles (Blocland) : plus de flèche jaune dans le monde, la bulle bordée d'or montre ce qu'on peut faire
-              // (4 octobre 2026) ; les losanges (Archipéo) gardent la flèche et le losange jaune.
+              // Les bulles (les deux univers depuis le 4 octobre 2026) : plus de flèche jaune dans le monde, la bulle bordée
+              // d'or montre ce qu'on peut faire ; un habillage à losanges garderait la flèche et le losange jaune.
               habillage.signesDesObjets === 'bulles'
                 ? `${UNIVERS[univers].bienvenue} Touche la Forêt des sons pour commencer.`
                 : `${UNIVERS[univers].bienvenue} Touche la Forêt des sons, sous la flèche jaune.`,
@@ -1333,7 +1333,7 @@ export function WorldPage() {
               onClick={() => (blocsOpen ? fermerLePanneau() : navigate('/adventure/stock'))}
             >
               <Icon name="blocks" /> <span className="world-bar-text">Blocs </span>
-              {/* Le compte : entre parenthèses dans Archipéo, une pastille d'or chiffrée dans Blocland (« 0 » compris). */}
+              {/* Le compte : une pastille chiffrée (« 0 » compris), d'or dans Blocland, de sable dans Archipéo. */}
               <span key={rebond} ref={pastilleRef} className={`world-bar-count${rebond ? ' rebondit' : ''}`}>
                 {pastille}
               </span>

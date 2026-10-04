@@ -5759,8 +5759,8 @@ button.island-quest {
   gap: 0.4rem;
   white-space: nowrap;
 }
-/* Blocland : le rond « toi » de la Carte (clair, bord sombre épais, ombre nette ; jamais d'or), avec la tête du
-   bonhomme ; 52 px, comme le bouton Menu au-dessus. */
+/* Recentrer, dans les deux univers : le rond « toi » de la Carte (clair, bord sombre épais, ombre nette ; jamais d'or),
+   avec le visage du joueur ; 52 px, comme le bouton Menu au-dessus. */
 .world-recentrer-tete {
   width: 52px;
   height: 52px;
