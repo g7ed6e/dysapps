@@ -5752,7 +5752,8 @@ button.app-card {
     justify-content: flex-end;
   }
   :root[data-texte="grand"] .world-page .world-overlay-top {
-    top: calc(0.6rem + 52px + 0.5rem);
+    /* Sous la rangée de classes, mesurée (`--colonne-bas`) : sur une ou deux lignes, elle ne couvre jamais le panneau. */
+    top: calc(var(--colonne-bas, calc(0.6rem + 52px)) + 0.5rem);
     right: 0.6rem;
     /* Le chemin d'ouvrages de la Carte défile au-delà ; des traits pointillés disent qu'il continue, en bas comme en
        haut (usePanneauDeLaCarte.ts). */
@@ -6048,6 +6049,19 @@ button.island-quest {
 }
 .avec-medaillon .world-fiche-actions .button.primary {
   flex: 1 1 100%;
+}
+/* Sur une scène basse (téléphone en paysage) en grand texte, le médaillon s'efface aussi : le titre, la phrase et le
+   bouton principal gardent la hauteur. */
+@media (max-height: 500px) {
+  :root[data-texte="grand"] .world-fiche-cadre.avec-medaillon {
+    padding-top: 0;
+  }
+  :root[data-texte="grand"] .world-fiche-medaillon {
+    display: none;
+  }
+  :root[data-texte="grand"] .avec-medaillon .world-fiche-titre {
+    margin-left: 0;
+  }
 }
 @media (max-width: 640px) {
   .world-fiche-cadre.avec-medaillon {

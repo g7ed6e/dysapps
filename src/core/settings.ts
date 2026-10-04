@@ -10,7 +10,6 @@ export type ThemeChoice = 'cream' | 'night' | 'light';
 export type WorldViewChoice = '3d' | 'list';
 /** La lumière du monde : celle de l'heure réelle (la nuit tombe le soir), ou toujours le jour. */
 export type WorldLightChoice = 'real' | 'day';
-/** Où l'appli s'ouvre : le village de Blocland (si l'appareil sait le dessiner), ou le menu. */
 export type { UniversChoice } from './univers';
 /**
  * La deuxième langue vivante, à partir de la 5e : une seule, comme au collège. Par défaut l'espagnol (décision de G du

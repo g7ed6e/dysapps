@@ -1811,11 +1811,16 @@ function bossIslet(biome: BiomeDef, beaten: boolean, cubes: VoxelCube[], pas = t
 }
 
 /** Gris de pierre de même luminosité qu'une couleur (pour la statue). */
-export function stoneOf(color: string): string {
+function stoneOf(color: string): string {
   const n = parseInt(color.slice(1), 16);
   const lum = ((n >> 16) & 255) * 0.3 + ((n >> 8) & 255) * 0.59 + (n & 255) * 0.11;
   const g = Math.round(90 + (lum / 255) * 90);
   return `#${((g << 16) | (g << 8) | g).toString(16).padStart(6, '0')}`;
+}
+
+/** Un Gardien vaincu, en statue de pierre : chaque cube en gris de même luminosité, sans dessus d'une autre couleur. */
+export function statueDe<C extends { color: string; top?: string }>(cubes: readonly C[]): C[] {
+  return cubes.map((c) => ({ ...c, color: stoneOf(c.color), top: undefined }));
 }
 
 /**
@@ -1836,7 +1841,7 @@ export function guardianPlacements(
     const { x, y, z } = bossIsletOrigin(index);
     const off = guardianOffset(b.id);
     const beaten = status === 'beaten';
-    const cubes = beaten ? gardienDuMonde(b.id).map((c) => ({ ...c, color: stoneOf(c.color), top: undefined })) : gardienDuMonde(b.id);
+    const cubes = beaten ? statueDe(gardienDuMonde(b.id)) : gardienDuMonde(b.id);
     out.push({ id: b.id, kind: 'guardian', still: true, beaten, cubes, origin: { x: x + off.x, y: y + off.y, z: z + 1 } });
   });
   return out;
