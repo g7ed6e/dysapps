@@ -4,7 +4,7 @@ import { BIOMES } from '../biomes';
 import { ARCHIPELAGOS, BRIDGES, PRIX_DU_PORT, archipelagoOf, bridgesOf, getArchipelago } from './archipelago';
 import { dockBox } from './harbour';
 import { islandDef, isLand, landBox, mapOf } from './map';
-import { avatarWalk, estUneLongueTraversee } from './scene';
+import { avatarWalk } from './scene';
 import { BAC_LONG, avatarRoute, bridgePath, cadreDeTraversee, overviewBounds, routeLengths, viewZone, whaleSpots, worldBounds, worldCubes } from './terrain';
 import { MONUMENT_ISLET, monumentsOf } from './monuments';
 import { toutConstruit } from './budget';
@@ -167,19 +167,6 @@ describe('la caméra et le bonhomme', () => {
     expect(cadreDeTraversee('6e', court)).toBeNull();
     expect(avatarWalk({ route: court, seq: 1 }, 0, '6e')!.cadre).toBeUndefined();
     expect(avatarWalk({ route: long, seq: 1, flanerie: true }, 0, '6e')!.cadre).toBeUndefined();
-  });
-
-  it('le panneau de l’île d’arrivée attend la fin d’une longue traversée, pas celle d’un trajet ordinaire', () => {
-    const long = avatarRoute('maths-6e-calculation', 'french-6e-word-spelling', ['maths-6e-calculation-french-6e-word-spelling'])!;
-    expect(estUneLongueTraversee({ route: long, seq: 1 }, '6e')).toBe(true);
-    // Le premier placement, une flânerie, un trajet ordinaire : non.
-    expect(estUneLongueTraversee({ route: long, seq: 0 }, '6e')).toBe(false);
-    expect(estUneLongueTraversee({ route: long, seq: 1, flanerie: true }, '6e')).toBe(false);
-    const court = avatarRoute('maths-6e-calculation', 'french-6e-phonology', [])!;
-    expect(estUneLongueTraversee({ route: court, seq: 1 }, '6e')).toBe(false);
-    // Le pont du Phare au Château des hypothèses (3e) : une longue traversée (la capture `etoile-traversee-3e`).
-    const phare = avatarRoute('maths-3e-functions', 'english-3e-grammar', ['maths-3e-functions-english-3e-grammar'])!;
-    expect(estUneLongueTraversee({ route: phare, seq: 1 }, '3e')).toBe(true);
   });
 
   it('la vue de l’île ignore les liaisons du port ; la vue d’ensemble les cadre dès le départ', () => {

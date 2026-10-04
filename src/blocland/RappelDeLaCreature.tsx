@@ -72,42 +72,56 @@ interface Props {
   onRemis?: () => void;
 }
 
-export function RappelDeLaCreature({ biome, rappel, onRemis }: Props) {
-  const { remettre } = usePlusTard();
+/** La phrase du rappel : un titre dans une autre langue écrit à part, sans syllabes colorées. */
+export function TexteDuRappel({ rappel }: { rappel: Rappel }) {
   const { etranger } = rappel;
+  return etranger ? (
+    <>
+      <Syllabified text={etranger.avant} />
+      <span lang={etranger.langue}>{etranger.titre}</span>
+      <Syllabified text={etranger.apres} />
+    </>
+  ) : (
+    <Syllabified text={rappel.texte} />
+  );
+}
+
+/** « Reprendre » (le bouton principal) et « Plus tard ». */
+export function BoutonsDuRappel({ biome, rappel, onRemis }: Props) {
+  const { remettre } = usePlusTard();
+  return (
+    <>
+      <Link to={rappel.chemin} className="button primary">
+        <Icon name="replay" /> Reprendre
+      </Link>
+      <button
+        type="button"
+        className="button"
+        onClick={() => {
+          remettre(biome.id);
+          onRemis?.();
+        }}
+      >
+        Plus tard
+      </button>
+    </>
+  );
+}
+
+export function RappelDeLaCreature({ biome, rappel, onRemis }: Props) {
   return (
     <div className="creature-rappel" role="group" aria-labelledby={`rappel-${biome.id}`}>
       <span className="creature-rappel-icone" aria-hidden="true">
         <Icon name={biome.icon} size="1.8rem" />
       </span>
       <p id={`rappel-${biome.id}`} className="creature-rappel-texte">
-        <strong>{biome.creature.name} :</strong>{' '}
-        {etranger ? (
-          <>
-            <Syllabified text={etranger.avant} />
-            <span lang={etranger.langue}>{etranger.titre}</span>
-            <Syllabified text={etranger.apres} />
-          </>
-        ) : (
-          <Syllabified text={rappel.texte} />
-        )}
+        <strong>{biome.creature.name} : </strong>
+        <TexteDuRappel rappel={rappel} />
       </p>
       <div className="creature-rappel-actions">
         {/* Le même mot que pour l'accueil, juste au-dessus : « Réécouter ». */}
         <SpeakButton text={rappel.lu} label="Réécouter" compact />
-        <Link to={rappel.chemin} className="button primary">
-          <Icon name="replay" /> Reprendre
-        </Link>
-        <button
-          type="button"
-          className="button"
-          onClick={() => {
-            remettre(biome.id);
-            onRemis?.();
-          }}
-        >
-          Plus tard
-        </button>
+        <BoutonsDuRappel biome={biome} rappel={rappel} onRemis={onRemis} />
       </div>
     </div>
   );

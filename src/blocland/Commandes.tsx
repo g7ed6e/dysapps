@@ -85,6 +85,21 @@ export function TuYEs({ dit }: { dit: boolean }) {
   );
 }
 
+/**
+ * « Livrer » une commande prête : les blocs donnés, la petite construction posée par la scène (`onLivree`, qui rend
+ * `true` si elle prend le son), sinon le carillon tout de suite. Rend la phrase « … posée chez … ! », ou `null` si la
+ * livraison n'a pas pu se faire. La section Commandes et la fiche d'une créature (lot 2 de « Toucher le monde »).
+ */
+export function livrerLaCommande(
+  c: Commande,
+  { deliver, onLivree, sons, lieu }: { deliver: (id: string) => { ok: boolean }; onLivree?: (c: Commande) => boolean; sons: boolean; lieu: string },
+): string | null {
+  if (!deliver(c.id).ok) return null;
+  const sonPris = onLivree?.(c) ?? false;
+  if (sons && !sonPris) playDone();
+  return texteDeLaCommande(c, 'done', lieu);
+}
+
 /** Où mène « Y aller » pour une commande pas encore prête : l'île qui donne le bloc, ou le lieu où l'on assemble (`null`). */
 function ileDuBloc(c: Commande, links: string[]): BiomeId | null {
   if (recetteDe(c.block)) return null;
@@ -142,11 +157,8 @@ export function Commandes({ island, fold, highlight = null, niveau = 'h3', class
 
   const livrer = (c: Commande) => {
     const index = ouvertes.indexOf(c);
-    const r = deliver(c.id);
-    if (!r.ok) return;
-    setSaid({ id: c.id, index, text: texteDeLaCommande(c, 'done', lieu) });
-    const sonPris = onLivree?.(c) ?? false;
-    if (settings.sounds && !sonPris) playDone();
+    const text = livrerLaCommande(c, { deliver, onLivree, sons: settings.sounds, lieu });
+    if (text) setSaid({ id: c.id, index, text });
   };
   // Déjà sur l'île qui donne le bloc : « Y aller » mène aux missions de l'île, et la ligne le dit.
   const allerAuxMissions = (c: Commande) => {

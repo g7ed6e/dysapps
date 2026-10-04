@@ -3,13 +3,18 @@ import { casesDesTirets } from '../world/traceSuggere';
 import type { EnCasesDuMonde } from '../world/view';
 import { creerBornes, pileDEtoiles } from './bornes';
 import type { Instant, Monde } from './partie';
+import { HABILLAGES } from '../habillage';
+import { SIGNE } from '../world/affordance';
 
-/** Les repères d'une île : un à faire (qui rebondit), un gagné (qui tourne), un chemin, et le fanion sur la Carte. */
+/**
+ * Les repères d'une île, dans Archipéo : un à faire (qui rebondit), un gagné (qui tourne), un chemin, et le fanion sur
+ * la Carte. Blocland dessine le losange à faire avec les autres signes (./affordance.ts) : plus bas.
+ */
 function bornes() {
   const scene = new THREE.Scene();
   const bonhomme = new THREE.Object3D();
   bonhomme.position.set(4, 2, 6);
-  const b = creerBornes({ scene } as Monde, () => bonhomme, { carte: true } as Instant);
+  const b = creerBornes({ scene, habillage: HABILLAGES.archipeo } as unknown as Monde, () => bonhomme, { carte: true } as Instant);
   type Mission = NonNullable<EnCasesDuMonde['quests']>[number];
   const mission = (id: string, x: number, state: Mission['state']) => ({ id, biome: 'maths-6e-decimals', typeId: 't', cell: { x, y: 0, z: 1 }, state }) as Mission;
   b.poserLesMissions([mission('volcan:a', 0, 'new'), mission('volcan:b', 3, 2)]);
@@ -23,7 +28,7 @@ function bornes() {
   return { b, pose };
 }
 
-it('avec « Réduire les animations », le fanion, la flèche, les repères de mission et les balises du chemin ne bougent pas', () => {
+it('avec le mouvement réduit de l’appareil, le fanion, la flèche, les repères de mission et les balises du chemin ne bougent pas', () => {
   const { b, pose } = bornes();
   b.animer!(1.3, 0.016, true);
   const avant = JSON.stringify(pose());
@@ -40,7 +45,7 @@ it('avec « Réduire les animations », le fanion, la flèche, les repères de m
   expect(JSON.stringify(nouveau.pose())).toBe(avant);
 });
 
-it('sans le réglage, ils bougent', () => {
+it('sans la préférence, ils bougent', () => {
   const { b, pose } = bornes();
   b.animer!(1.3, 0.016, false);
   const avant = JSON.stringify(pose());
@@ -50,7 +55,7 @@ it('sans le réglage, ils bougent', () => {
 
 it('les étoiles gagnées d’une borne : une pile en un seul maillage (un appel de dessin), autant de cubes que d’étoiles', () => {
   const scene = new THREE.Scene();
-  const b = creerBornes({ scene } as Monde, () => new THREE.Object3D(), { carte: false } as Instant);
+  const b = creerBornes({ scene, habillage: HABILLAGES.archipeo } as unknown as Monde, () => new THREE.Object3D(), { carte: false } as Instant);
   type Mission = NonNullable<EnCasesDuMonde['quests']>[number];
   const mission = (id: string, x: number, state: Mission['state']) => ({ id, biome: 'maths-6e-decimals', typeId: 't', cell: { x, y: 0, z: 1 }, state }) as Mission;
   b.poserLesMissions([mission('volcan:a', 0, 3), mission('volcan:b', 3, 1)]);
@@ -99,7 +104,7 @@ it('sur un ouvrage (GD-7), la flèche dit lequel, pose sa pointe au-dessus de sa
 it('sur la Carte, le tracé de l’ouvrage désigné (GD-7) : un seul maillage, avec la flèche seulement, immobile', () => {
   const scene = new THREE.Scene();
   const instant = { carte: true } as Instant;
-  const b = creerBornes({ scene } as Monde, () => new THREE.Object3D(), instant);
+  const b = creerBornes({ scene, habillage: HABILLAGES.archipeo } as unknown as Monde, () => new THREE.Object3D(), instant);
   const trace = () => scene.getObjectByName('trace-suggere') as THREE.Mesh;
   const c = (x: number) => ({ x, y: 20, z: 3 });
   const liaison = [0, 1, 2, 3, 4, 5, 6].map(c);
@@ -121,4 +126,54 @@ it('sur la Carte, le tracé de l’ouvrage désigné (GD-7) : un seul maillage, 
   expect(trace().visible).toBe(false);
   b.dispose();
   expect(scene.getObjectByName('trace-suggere')).toBeUndefined();
+});
+
+describe('Dans Blocland (l’habillage, `signesDesObjets`)', () => {
+  type Mission = NonNullable<EnCasesDuMonde['quests']>[number];
+  const mission = (id: string, x: number, state: Mission['state']) => ({ id, biome: 'maths-6e-decimals', typeId: 't', cell: { x, y: 0, z: 1 }, state }) as Mission;
+  const blocland = (instant = { carte: false, now: 0 } as Instant) => {
+    const scene = new THREE.Scene();
+    return { b: creerBornes({ scene, habillage: HABILLAGES.blocland } as unknown as Monde, () => new THREE.Object3D(), instant), instant };
+  };
+
+  it('pas de losange ici (il est l’un des signes des objets), les étoiles gagnées seulement, au-dessus de l’ardoise de la borne', () => {
+    const { b } = blocland();
+    b.poserLesMissions([mission('volcan:a', 0, 'new'), mission('volcan:b', 3, 2), mission('volcan:c', 6, 'locked')], new Map([['volcan:b', 4]]));
+    expect(b.missions.children).toHaveLength(1);
+    const [pile] = b.missions.children;
+    expect(pile.userData.quest).toBe('volcan:b');
+    // Le sommet donné (le dessus de l'ardoise), + 0,4, comme avant ; sans sommet, trois cubes au-dessus de sa case.
+    expect(pile.position.y).toBeCloseTo(4.4, 9);
+    b.poserLesMissions([mission('volcan:b', 3, 2)]);
+    expect(b.missions.children[0].position.y).toBeCloseTo(1 + 3.4, 9);
+  });
+
+  it('touchée, la pile d’étoiles fait le petit saut, puis reprend sa place ; rien avec le mouvement réduit', () => {
+    const { b, instant } = blocland();
+    b.poserLesMissions([mission('volcan:b', 3, 2)]);
+    const pile = b.missions.children[0];
+    const base = pile.userData.base as number;
+    expect(b.sauterLaPile('volcan:a')).toBe(false);
+    expect(b.sauterLaPile('volcan:b')).toBe(true);
+    instant.now = SIGNE.saut.monteeMs;
+    b.animer!(1, 0.016, false);
+    expect(pile.position.y).toBeCloseTo(base + SIGNE.saut.hauteur, 9);
+    instant.now = SIGNE.saut.monteeMs + SIGNE.saut.descenteMs + 1;
+    b.animer!(1.2, 0.016, false);
+    expect(pile.position.y).toBe(base);
+    b.sauterLaPile('volcan:b');
+    instant.now += SIGNE.saut.monteeMs;
+    b.animer!(1.4, 0.016, true);
+    expect(pile.position.y).toBe(base);
+    expect(pile.rotation.y).toBe(0);
+  });
+  it('la pile d’étoiles ne tourne pas : le losange d’or est seul à bouger', () => {
+    const { b } = blocland();
+    b.poserLesMissions([mission('volcan:b', 3, 2)]);
+    const pile = b.missions.children[0];
+    for (const t of [0.5, 2, 7.3]) {
+      b.animer!(t, 0.016, false);
+      expect(pile.rotation.y, `t=${t}`).toBe(0);
+    }
+  });
 });

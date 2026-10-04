@@ -69,6 +69,18 @@ export interface Disposition {
 }
 
 /** Ce qu'une vue renvoie : un geste traduit en intention ; le jeu décide. */
+/**
+ * Ce dont parle une fiche (lot 2 de « Toucher le monde ») : une borne (« île:mission »), un Gardien, le Bloc-Navire, un
+ * ouvrage, une créature, une île pâle. La vue fait sauter son signe à l'ouverture et garde l'objet hors de la fiche.
+ */
+export type ObjetDeLaFiche =
+  | { genre: 'borne'; id: string }
+  | { genre: 'gardien'; id: BiomeId }
+  | { genre: 'navire'; port: BiomeId }
+  | { genre: 'ouvrage'; id: string }
+  | { genre: 'creature'; id: BiomeId }
+  | { genre: 'ile'; id: BiomeId };
+
 export type Intention =
   /**
    * Une île touchée (ou choisie au clavier). Touchée sur le sol : `sol`, la case touchée (le bonhomme y va) ; s'il était

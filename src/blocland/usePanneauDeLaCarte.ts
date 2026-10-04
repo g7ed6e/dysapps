@@ -2,7 +2,7 @@ import { useLayoutEffect, type RefObject } from 'react';
 
 /**
  * Le panneau de la Carte sur téléphone en grand texte (DA-31) : pli fermé, il s'arrête sous « Y aller », entier, et la
- * suite (« Les quatre archipels », le pli) vient en le faisant défiler ; la Carte garde ainsi sa place sous lui. On
+ * suite (le pli « Les îles et leur état ») vient en le faisant défiler ; la Carte garde ainsi sa place sous lui. On
  * mesure le bas de « Y aller » dans le panneau (`--carte-panneau-max` sur la scène) et on marque le panneau
  * (`data-suite` : « bas », « haut », « haut bas ») pour que des traits pointillés disent qu'il continue. Ailleurs, et
  * pli ouvert, rien n'est posé : le panneau garde sa hauteur de toujours. `contenu` change avec ce que montre le panneau

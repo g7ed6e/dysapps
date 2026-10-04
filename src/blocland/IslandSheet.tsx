@@ -25,13 +25,20 @@ import { accueilDeLIle } from './decouvertes';
 import { GoalFold, GoalLine } from './GoalLine';
 import { firstSentences } from './firstSentences';
 import { VillageStageLine } from './VillageStageLine';
-import { SchoolLink } from './School';
-import { AssemblageLink } from './Assemblage';
-import { TROPHIES_PATH, TROPHIES_TITLE } from './trophies';
 import { archipelagoOf } from './world/archipelago';
 import { useTextes } from '../univers';
 import type { Partie } from './world/parties';
 import { PlusTardDit, RappelDeLaCreature, useRappelDeLaCreature } from './RappelDeLaCreature';
+
+/**
+ * Ce que dit le Gardien qui n'accepte pas encore le défi : les étoiles qu'il veut et les missions où elles manquent
+ * (`missingForBoss`), ou qu'il faut d'abord un chemin jusqu'à son île. Le panneau de l'île et la fiche du Gardien.
+ */
+export function explicationDuGardien(biome: BiomeDef, progress: Record<string, { stars: number }>, unlocked: boolean): string {
+  if (!unlocked) return 'Pas tout de suite ! Il faut d’abord un chemin jusqu’à cette île.';
+  const missing = missingForBoss(biome, progress);
+  return `Pas tout de suite ! ${biome.guardian} veut ${STARS_TO_UNLOCK} étoiles dans ${missing.length ? missing.join(', ') : 'chaque mission'}. Fais ces missions, puis reviens le défier.`;
+}
 
 interface Props {
   biome: BiomeDef;
@@ -57,7 +64,8 @@ interface Props {
 
 /**
  * Le panneau d'une île, qui glisse depuis le bas du monde : la créature (une ligne, la suite dans un pli), ses missions,
- * le Gardien, le prochain objectif, puis le bâtiment de l'île, le Bloc-Navire (sur un port) et les ouvrages, repliés quand
+ * le Gardien (l'école, la salle des trophées et le lieu où l'on assemble n'y sont plus : ce sont des lieux du monde, lot 2
+ * de « Toucher le monde »), le prochain objectif, puis le bâtiment de l'île, le Bloc-Navire (sur un port) et les ouvrages, repliés quand
  * il n'y a rien à y faire ; au pied, la matière, la classe et l'archipel. Tout est en HTML (police dys), on ne quitte
  * pas le monde.
  */
@@ -94,10 +102,7 @@ export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight =
   const fold = in3d ? `${biome.id}:${highlight ?? ''}` : undefined;
   // Le Gardien n'accepte pas encore : on le dit (et on le lit), au lieu d'un bouton qui ne répond pas.
   const explainBoss = () => {
-    const missing = missingForBoss(biome, state.progress);
-    const text = unlocked
-      ? `Pas tout de suite ! ${biome.guardian} veut ${STARS_TO_UNLOCK} étoiles dans ${missing.length ? missing.join(', ') : 'chaque mission'}. Fais ces missions, puis reviens le défier.`
-      : `Pas tout de suite ! Il faut d’abord un chemin jusqu’à cette île.`;
+    const text = explicationDuGardien(biome, state.progress, unlocked);
     setBossSaid(text);
     if (settings.autoRead) speak(frenchTypography(text));
   };
@@ -113,7 +118,7 @@ export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight =
   }, [biome.id]);
 
   return (
-    <section id={`panneau-${biome.id}`} className={`island-sheet biome-${biome.id}`} role="dialog" aria-labelledby={`ile-${biome.id}`} aria-modal="false">
+    <section id={`panneau-${biome.id}`} className={`island-sheet biome-${biome.id}`} role="dialog" aria-labelledby={`ile-${biome.id}`} aria-modal="true">
       <div className="island-sheet-head">
         <Creature biome={biome.id} className="creature-small" />
         <div className="island-sheet-titles">
@@ -201,27 +206,6 @@ export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight =
       </ul>
 
       <ul className="island-actions" aria-label="Sur cette île">
-        {unlocked && archipelagoOf(biome.id).school === biome.id && (
-          <>
-            <li>
-              <SchoolLink />
-            </li>
-            <li>
-              <AssemblageLink />
-            </li>
-            <li>
-              <Link to={TROPHIES_PATH} className="island-quest">
-                <span className="island-quest-icon">
-                  <Icon name="trophy" />
-                </span>
-                <span className="island-quest-text">
-                  <span className="island-quest-title">{TROPHIES_TITLE}</span>
-                  <span className="island-quest-desc">Un trophée par succès gagné.</span>
-                </span>
-              </Link>
-            </li>
-          </>
-        )}
         {!sansLv2 && (
           <li>
             {bossReady ? (

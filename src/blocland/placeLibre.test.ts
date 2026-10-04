@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { lecteurDePlaceLibre, lirePlaceLibre } from './placeLibre';
+import { lecteurDePlaceLibre, lirePlaceLibre, sousLaFiche } from './placeLibre';
 
 const rect = (left: number, top: number, width: number, height: number) => () => ({ left, top, width, height, right: left + width, bottom: top + height, x: left, y: top, toJSON: () => ({}) }) as DOMRect;
 
@@ -79,5 +79,15 @@ describe('la place libre de la Carte (DA-31)', () => {
     document.querySelector<HTMLElement>('#panneau')!.getBoundingClientRect = rect(20, 147, 833, 370);
     expect(lire('2|forge')).toMatchObject({ libre: { y0: 390 }, saut: true });
     expect(lire('2|forge').saut).toBe(false);
+  });
+});
+
+describe('la fiche d’un objet (lot 2 de « Toucher le monde »)', () => {
+  const fiche = { x0: 10, y0: 400, x1: 1014, y1: 600 };
+  it('cache l’objet quand le carré de 24 px autour de son point la touche', () => {
+    expect(sousLaFiche({ x: 500, y: 500 }, fiche)).toBe(true);
+    expect(sousLaFiche({ x: 500, y: 380 }, fiche)).toBe(true);
+    expect(sousLaFiche({ x: 500, y: 370 }, fiche)).toBe(false);
+    expect(sousLaFiche({ x: 1040, y: 500 }, fiche)).toBe(false);
   });
 });

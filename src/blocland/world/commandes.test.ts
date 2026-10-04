@@ -143,8 +143,8 @@ describe('prête, livrée', () => {
   it('les phrases : le nombre et le nom de Mes blocs, le lieu où l’on assemble', () => {
     const mousso = getCommande(MOUSSO)!;
     expect(texteDeLaCommande(mousso, 'ask', FABRIQUE)).toBe('Il me faut 3 blocs de terre pour mon potager. Joue une mission de la Ferme des accords.');
-    expect(texteDeLaCommande(mousso, 'ready', FABRIQUE)).toBe('Tu as les blocs de terre ! Livre-les à Mousso.');
-    expect(texteDeLaCommande(getCommande('french-6e-letter-confusion-request-1')!, 'ready', FABRIQUE)).toBe('Tu as les briques ! Livre-les à Tunel.');
+    expect(texteDeLaCommande(mousso, 'ready', FABRIQUE)).toBe('Tu as les blocs de terre\u00a0! Livre-les à Mousso.');
+    expect(texteDeLaCommande(getCommande('french-6e-letter-confusion-request-1')!, 'ready', FABRIQUE)).toBe('Tu as les briques\u00a0! Livre-les à Tunel.');
     expect(texteDeLaCommande(getCommande('french-6e-word-spelling-request-1')!, 'ask', FABRIQUE)).toBe('Il me faut 2 poutres pour ma grue. Assemble-les à la Fabrique.');
     // Aucun jeton ne reste, dans aucune phrase.
     for (const c of COMMANDES) for (const p of ['ask', 'ready', 'done'] as const) expect(texteDeLaCommande(c, p, FABRIQUE)).not.toMatch(/[{}]/);
@@ -173,7 +173,7 @@ describe('prête, livrée', () => {
     // Rien d'autre ne change : ni les plans, ni le journal, ni les coffres.
     expect(r.state.world.log).toEqual(avant.world.log);
     expect(r.state.chests).toBe(avant.chests);
-    expect(texteDeLaCommande(r.commande, 'done', FABRIQUE)).toBe('Potager posé chez Mousso !');
+    expect(texteDeLaCommande(r.commande, 'done', FABRIQUE)).toBe('Potager posé chez Mousso\u00a0!');
     // Livrée, elle ne revient jamais.
     expect(peutCommander(r.state, mousso)).toBe(false);
     // La dernière livrée : le champ disparaît.
@@ -198,7 +198,7 @@ describe('la suggestion et le signe', () => {
 
   it('étape 3 : la plus ancienne commande prête de l’archipel, chez sa créature, avec sa phrase', () => {
     const d = nextDestination(prete);
-    expect(d).toMatchObject({ island: FORET, text: 'Tu as les blocs de terre ! Livre-les à Mousso.', have: 3, need: 3, commande: MOUSSO });
+    expect(d).toMatchObject({ island: FORET, text: 'Tu as les blocs de terre\u00a0! Livre-les à Mousso.', have: 3, need: 3, commande: MOUSSO });
     expect(d.ouvrage).toBeUndefined();
     // « Y aller » ouvre l'île de la créature sur sa ligne, comme un ouvrage.
     expect(lienDeLaDestination(d)).toBe(`/adventure/${FORET}?worksite=${MOUSSO}`);

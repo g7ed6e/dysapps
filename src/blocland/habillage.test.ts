@@ -24,6 +24,7 @@ describe('L’habillage du monde', () => {
       atelier: 'fabrique',
       pose: 'geste',
       signe: 'plaque',
+      signesDesObjets: 'cubes',
     });
   });
 
@@ -43,6 +44,7 @@ describe('L’habillage du monde', () => {
       atelier: 'halle',
       pose: 'eclats',
       signe: 'disque',
+      signesDesObjets: 'losanges',
     });
   });
 });

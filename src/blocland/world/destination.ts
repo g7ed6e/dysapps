@@ -9,6 +9,7 @@ import { nextGoalInfo, ouvrageSuggere } from './goals';
 import { isUnexplored } from './islandState';
 import { villageStage } from './villageStage';
 import { stageAt } from './vehicle';
+import type { Goal } from './goals';
 import { commandeMiseEnAvant, texteDeLaCommande } from './commandes';
 import { lieuDAssemblage } from './assemblage';
 
@@ -40,6 +41,17 @@ export interface Destination {
 export function lienDeLaDestination(d: Pick<Destination, 'island' | 'ouvrage' | 'commande'>): string {
   const mise = d.ouvrage ?? d.commande;
   return `/adventure/${d.island}${mise ? `?worksite=${encodeURIComponent(mise)}` : ''}`;
+}
+
+/**
+ * La destination est-elle le Bloc-Navire (son chantier, ou son départ) ? Le port de son archipel, sans ouvrage ni
+ * commande, et sa phrase est l'objectif du navire : le prochain objectif du port (`objectifDuPort`, `nextGoalInfo`),
+ * quand ce n'est pas un ouvrage. « Y aller » ouvre alors la fiche du navire (lot 2 de « Toucher le monde »).
+ */
+export function laDestinationEstLeNavire(d: Destination, objectifDuPort: Goal | null): boolean {
+  const port = archipelagoOf(d.island).port;
+  if (d.island !== port || d.ouvrage || d.commande || !stageAt(port)) return false;
+  return Boolean(objectifDuPort && !objectifDuPort.ouvrage && objectifDuPort.text === d.text);
 }
 
 /**

@@ -44,6 +44,13 @@ export const BIOME_IDS = [
   'lv2-3e-travel',
 ] as const;
 export type BiomeId = (typeof BIOME_IDS)[number];
+
+const LES_BIOMES: ReadonlySet<string> = new Set(BIOME_IDS);
+
+/** Une chaîne lue des données (l'étiquette d'un cube, l'île d'une borne « île:mission ») est-elle une île du jeu ? */
+export function estUnBiome(id: string | undefined | null): id is BiomeId {
+  return typeof id === 'string' && LES_BIOMES.has(id);
+}
 export type BlockId =
   | 'french-6e-phonology'
   | 'french-6e-letter-confusion'

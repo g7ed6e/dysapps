@@ -220,7 +220,7 @@ export function AssemblageSheet({ onClose }: { onClose: () => void }) {
       className={`island-sheet assemblage-sheet biome-${island.id}`}
       role="dialog"
       aria-labelledby="assemblage-titre"
-      aria-modal="false"
+      aria-modal="true"
     >
       <div className="island-sheet-head">
         <div className="island-sheet-titles">

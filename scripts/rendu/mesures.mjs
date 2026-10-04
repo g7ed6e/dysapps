@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, signes, fiches ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 20` le plus long temps réel laissé au monde pour se construire (en secondes, 10 par défaut). L'horloge de la
 // page est pilotée (`preparerLaScene`, scripts/prise-de-vue.mjs) : deux prises du même état donnent la même image, les
@@ -83,6 +83,130 @@ const CAPTURES = [
   { nom: 'gris-muscade', vue: 'île', famille: 'lisibilite', ile: 'lv2-4e-daily-life' },
   { nom: 'gris-hanneton', vue: 'défi', famille: 'lisibilite', ile: 'maths-6e-calculation' },
   { nom: 'gris-moustache', vue: 'île', famille: 'lisibilite', ile: 'english-5e-grammar' },
+  // Les signes de ce qui se touche (Toucher le monde, lot 1, famille `signes`), à retirer une fois le lot fusionné :
+  // - l'île de l'école et une île à Gardien sur téléphone, en portrait et en paysage, de jour et de nuit (la nuit est
+  //   l'heure pilotée, `nuit` : la même que `ile-nuit` du socle ; la nuit de Blocland reste claire, elle se lit surtout à
+  //   l'eau, aux fenêtres et à la lueur du cube de pierre, d'où aussi le chantier de nuit) ;
+  // - avec le mouvement réduit de l'appareil (`fige` : `prefers-reduced-motion: reduce`), chaque cube figé ;
+  // - un chantier en fantôme : une partie neuve (`depart`) où la Forêt et la Plaine sont jouées, avec 4 blocs de bois
+  //   (`inventaire`) qui paient le pont vers l'Horloge des verbes (le cube d'or), les autres ouvrages en pierre ; de nuit ;
+  // - la salle des trophées de près (le cube crème) ; le Gardien de la Mine debout (`debout`), sa borne voisine, de près ;
+  // - l'archipel de loin sur téléphone (le cube garde 14 px), en portrait et en paysage (le zoom le plus éloigné) ;
+  // - l'archipel en tablette, net (`finesse` 2), depuis la Forêt : aucun cube sur Mousso (une créature n'en porte jamais) ;
+  // - de près, une partie où la Mine n'a que sa première mission faite (`missions` : 1) : le losange d'or au-dessus de la
+  //   borne à faire, à côté des lanternes, de jour, de nuit et figé ; et le Gardien de la Mine prêt (sa fiche ouverte
+  //   recadre la caméra sur lui), le losange d'or au-dessus. Le village tout construit des autres vues n'a plus rien à
+  //   faire : aucun losange d'or.
+  { nom: 'signes-ecole', vue: 'île', famille: 'signes', ile: 'french-6e-phonology', taille: { width: 390, height: 844 } },
+  { nom: 'signes-ecole-nuit', vue: 'île', famille: 'signes', ile: 'french-6e-phonology', nuit: true, taille: { width: 390, height: 844 } },
+  { nom: 'signes-ecole-paysage', vue: 'île', famille: 'signes', ile: 'french-6e-phonology', taille: { width: 844, height: 390 } },
+  { nom: 'signes-ecole-fige', vue: 'île', famille: 'signes', ile: 'french-6e-phonology', fige: true, taille: { width: 390, height: 844 } },
+  { nom: 'signes-ile', vue: 'île', famille: 'signes', ile: 'french-6e-letter-confusion', taille: { width: 390, height: 844 } },
+  { nom: 'signes-ile-nuit', vue: 'île', famille: 'signes', ile: 'french-6e-letter-confusion', nuit: true, taille: { width: 390, height: 844 } },
+  ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].map(({ suffixe, ...autres }) => ({
+    nom: `signes-chantier${suffixe}`,
+    vue: 'île',
+    famille: 'signes',
+    ile: 'french-6e-phonology',
+    depart: true,
+    jouees: ['french-6e-phonology', 'maths-6e-calculation'],
+    inventaire: { 'french-6e-phonology': 4 },
+    taille: { width: 390, height: 844 },
+    ...autres,
+  })),
+  { nom: 'signes-trophees-pres', vue: 'île', famille: 'signes', ile: 'french-6e-phonology', recadre: { x: 140, y: 170, width: 320, height: 250 }, finesse: 2 },
+  { nom: 'signes-gardien-pres', vue: 'île', famille: 'signes', ile: 'french-6e-letter-confusion', debout: 'french-6e-letter-confusion', finesse: 2 },
+  ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }, { suffixe: '-fige', fige: true }].map(({ suffixe, ...autres }) => ({
+    nom: `signes-losange-pres${suffixe}`,
+    vue: 'île',
+    famille: 'signes',
+    ile: 'french-6e-letter-confusion',
+    missions: 1,
+    recadre: { x: 130, y: 240, width: 340, height: 220 },
+    finesse: 2,
+    ...autres,
+  })),
+  {
+    nom: 'signes-gardien-pret-pres',
+    vue: 'île',
+    famille: 'signes',
+    ile: 'french-6e-letter-confusion',
+    debout: 'french-6e-letter-confusion',
+    fiche: { genre: 'gardien', id: 'french-6e-letter-confusion' },
+  },
+  { nom: 'signes-archipel', vue: 'archipel', famille: 'signes', ile: 'french-6e-phonology', taille: { width: 390, height: 844 } },
+  { nom: 'signes-archipel-paysage', vue: 'archipel', famille: 'signes', ile: 'french-6e-phonology', taille: { width: 844, height: 390 } },
+  { nom: 'signes-creature-pres', vue: 'archipel', famille: 'signes', ile: 'french-6e-phonology', finesse: 2 },
+  // Les fiches du monde (Toucher le monde, lot 2, famille `fiches`), à retirer une fois le lot fusionné : la fiche ouverte
+  // comme d'un toucher (`fiche` : l'objet, voir `window.__dysappsFiche`), la caméra recadrée hors d'elle. La borne des
+  // syllabes de la Forêt, le Gardien de la Mine debout, le Bloc-Navire prêt (sans les voyages ni les autres classes,
+  // `sansIles` : « autres-classes »), Tunel avec sa commande prête ; chacune sur téléphone en portrait et en paysage, puis
+  // en tablette (1024 × 768) et en 800 × 1280 en OpenDyslexic 32 px. Puis la rangée de classes avec deux classes atteintes (sans les voyages vers la 4e et la 3e).
+  ...[
+    { nom: 'borne', ile: 'french-6e-phonology', fiche: { genre: 'borne', id: 'french-6e-phonology:syllables' } },
+    { nom: 'gardien', ile: 'french-6e-letter-confusion', debout: 'french-6e-letter-confusion', fiche: { genre: 'gardien', id: 'french-6e-letter-confusion' } },
+    {
+      nom: 'navire',
+      ile: 'maths-6e-calculation',
+      // Sans les îles des autres classes (leurs missions jouées ouvriraient les voyages) : le navire prêt à partir.
+      sansIles: 'autres-classes',
+      sansPonts: ['passage-5e', 'passage-4e', 'passage-3e'],
+      fiche: { genre: 'navire', port: 'maths-6e-calculation' },
+    },
+    {
+      nom: 'creature',
+      ile: 'french-6e-letter-confusion',
+      commandes: ['french-6e-letter-confusion-request-1'],
+      inventaire: { 'maths-6e-calculation': 4 },
+      fiche: { genre: 'creature', id: 'french-6e-letter-confusion' },
+    },
+  ].flatMap(({ nom, ...c }) =>
+    [
+      { suffixe: '', taille: { width: 390, height: 844 } },
+      { suffixe: '-paysage', taille: { width: 844, height: 390 } },
+      { suffixe: '-grand-texte', taille: { width: 1024, height: 768 }, reglages: { font: 'opendyslexic', fontSize: 32 } },
+      { suffixe: '-grand-texte-800x1280', taille: { width: 800, height: 1280 }, reglages: { font: 'opendyslexic', fontSize: 32 } },
+    ].map(({ suffixe, ...format }) => ({ nom: `fiches-${nom}${suffixe}`, vue: 'île', famille: 'fiches', ...c, ...format })),
+  ),
+  // Le Bloc-Navire en chantier (une partie neuve, 4 blocs de bois en poche : « Poser le bloc suivant ») ; prêt, c'est
+  // `fiches-navire` (« Embarquer »). Sur téléphone et en tablette en OpenDyslexic 32 px (le titre sur sa ligne).
+  ...[
+    { suffixe: '', taille: { width: 390, height: 844 } },
+    { suffixe: '-grand-texte', taille: { width: 1024, height: 768 }, reglages: { font: 'opendyslexic', fontSize: 32 } },
+  ].map(({ suffixe, ...format }) => ({
+    nom: `fiches-navire-chantier${suffixe}`,
+    vue: 'île',
+    famille: 'fiches',
+    ile: 'french-6e-phonology',
+    depart: true,
+    jouees: ['french-6e-phonology'],
+    inventaire: { 'french-6e-phonology': 4 },
+    fiche: { genre: 'navire', port: 'maths-6e-calculation' },
+    ...format,
+  })),
+  // Une île pâle touchée la première fois : l'indice et la découverte des ouvrages dans la fiche, rien en haut.
+  {
+    nom: 'fiches-ile-pale',
+    vue: 'île',
+    famille: 'fiches',
+    ile: 'french-6e-phonology',
+    depart: true,
+    fiche: { genre: 'ile', id: 'french-6e-letter-confusion' },
+    taille: { width: 390, height: 844 },
+  },
+  ...[
+    { suffixe: '', taille: { width: 390, height: 844 } },
+    { suffixe: '-paysage', taille: { width: 844, height: 390 } },
+    { suffixe: '-grand-texte', taille: { width: 390, height: 844 }, reglages: { font: 'opendyslexic', fontSize: 32 } },
+    { suffixe: '-tablette' },
+  ].map(({ suffixe, ...format }) => ({
+    nom: `fiches-classes${suffixe}`,
+    vue: 'archipel',
+    famille: 'fiches',
+    ile: 'maths-5e-proportionality',
+    sansPonts: ['passage-4e', 'passage-3e'],
+    ...format,
+  })),
   // Les personnages hors du monde (lot R6) : chaque Gardien au défi, éteint, en 3D (`parIle` : un fichier par île,
   // `<archipel>-defi-<île>.jpg`) et en SVG (la vue « liste », sans la 3D) ; la bulle d'une créature (le défi pas encore ouvert : la partie
   // sans étoiles), en 3D et en SVG.
@@ -439,6 +563,16 @@ function sansLesIles(parCle, iles) {
   return Object.fromEntries(Object.entries(parCle).filter(([k]) => !iles.some((i) => k.startsWith(`${i}-`))));
 }
 
+/** Le panneau de l'île ouvert par son bouton (il ne s'ouvre jamais tout seul), quand `selecteur` n'est pas déjà à l'écran. */
+async function ouvrirLePanneauPour(page, selecteur) {
+  if (await page.locator(selecteur).count()) return;
+  const bouton = page.getByRole('button', { name: /^Ouvrir le panneau de / });
+  if (!(await bouton.count())) return;
+  await bouton.first().click();
+  await page.clock.runFor(125);
+  await page.waitForTimeout(100);
+}
+
 /**
  * L'adresse d'une capture déclarée : le défi de chaque île (`parIle`), la vue d'un monument (`lieu`), une île ou le défi
  * de son Gardien (`ile`), sinon la route de la vue, le bonhomme là où la partie le pose (`routes`).
@@ -490,8 +624,9 @@ async function scenes() {
       iles.flatMap((ile) => missionsJouables(BIOMES.find((b) => b.id === ile)).map((m) => [exercisesOf(ile, m.id)[0].id, { stars: 2, attempts: 1, best: 0.8 }])),
     );
   /**
-   * Une partie où l'île `ile` n'a que ses `n` premières missions terminées (la pose d'une partie, `pose`) : ses autres
-   * exercices et son défi sont retirés, sans quoi l'ouverture poserait aussitôt les parties suivantes.
+   * Une partie où l'île `ile` n'a que ses `n` premières missions terminées (la pose d'une partie, `pose` ; des bornes
+   * encore à faire, `missions`) : ses autres exercices et son défi sont retirés, sans quoi l'ouverture poserait aussitôt
+   * les parties suivantes.
    */
   const premieresMissions = (parCle, ile, n) => {
     if (!ile) return parCle;
@@ -587,7 +722,7 @@ async function scenes() {
               lv2: c.lv2,
               taille: c.taille,
               recadre: c.recadre,
-              sansIles: c.sansIles,
+              sansIles: c.sansIles === 'autres-classes' ? BIOMES.filter((b) => b.classe !== classe(c.ile)).map((b) => b.id) : c.sansIles,
               debout: c.debout,
               reglages: c.reglages,
               inventaire: c.inventaire,
@@ -596,6 +731,7 @@ async function scenes() {
               succes: c.succes,
               finesse: c.finesse,
               pose: c.pose,
+              missions: c.missions,
               pasEnPlus: c.pasEnPlus,
               revisions: c.revisions,
               voir: c.voir,
@@ -607,12 +743,13 @@ async function scenes() {
               commandes: c.commandes,
               posees: c.posees,
               cliquer: c.cliquer,
+              fiche: c.fiche,
               nom: parIle ? `${c.nom}-${parIle}` : c.nom,
             })),
           )
         : []),
     ];
-    for (const { vue, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages, succes, inventaire, pose, pasEnPlus, revisions, voir, allerA, depart, jouees, liens, xp, commandes, posees, cliquer } of views) {
+    for (const { vue, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages, succes, inventaire, pose, missions, pasEnPlus, revisions, voir, allerA, depart, jouees, liens, xp, commandes, posees, cliquer, fiche } of views) {
       const page = await browser.newPage({ viewport: taille ?? TABLET, deviceScaleFactor: finesse ?? (recadre ? 1.5 : 1), ...(fige ? { reducedMotion: 'reduce' } : {}) });
       await piloterLHorloge(page, time);
       await page.addInitScript(hasardFixe);
@@ -648,7 +785,7 @@ async function scenes() {
                 ...(commandes ? { requests: commandes } : {}),
                 place: depuis ?? ile ?? at,
               },
-          progress: jouees ? missionsJouees(jouees) : sansEtoiles || depart ? {} : premieresMissions(sansLeGardien(sansLesIles(progress, sansIles), debout), pose ? ile : null, pose),
+          progress: jouees ? missionsJouees(jouees) : sansEtoiles || depart ? {} : premieresMissions(sansLeGardien(sansLesIles(progress, sansIles), debout), pose || missions !== undefined ? ile : null, pose ?? missions),
           pose: pose ? { biome: ile, rangs: Array.from({ length: pose }, (_, i) => i + 1) } : null,
           view,
           univers: UNIVERS_DES_TEXTES,
@@ -669,21 +806,31 @@ async function scenes() {
         await preparerLaScene(page, VUES_SANS_MONDE.has(vue) || view === 'list' ? 0 : WAIT);
         // Une île touchée une fois la scène prête (`allerA`) : le bonhomme part, la caméra prend le trajet.
         if (allerA) await page.evaluate((id) => (location.hash = `#/adventure/${id}`), allerA);
-        // Un bouton touché une fois la scène prête (`cliquer` : « Livrer », GD-7), qui lance une vague de pose.
-        if (cliquer) await page.locator(cliquer).first().click();
+        // Un bouton touché une fois la scène prête (`cliquer` : « Livrer », GD-7), qui lance une vague de pose ; dans le
+        // panneau de l'île, qui ne s'ouvre que par son bouton.
+        if (cliquer) {
+          await ouvrirLePanneauPour(page, cliquer);
+          await page.locator(cliquer).first().click();
+        }
+        // La fiche d'un objet ouverte une fois la scène prête (`fiche`, Toucher le monde, lot 2), comme d'un toucher :
+        // le temps que la caméra glisse pour la laisser voir (16 pas, deux secondes de la scène).
+        if (fiche) await page.evaluate((objet) => window.__dysappsFiche?.(objet), fiche);
         // Plus loin dans le temps de la scène (la pose finie, par exemple), du même pas que la préparation.
-        for (let i = 0; i < (pasEnPlus ?? 0); i++) {
+        for (let i = 0; i < (pasEnPlus ?? (fiche ? 16 : 0)); i++) {
           await page.clock.runFor(125);
           await page.waitForTimeout(30);
         }
-        // Après un trajet lancé (`allerA`) : la caméra posée d'un coup à son cadrage, comme à la préparation (un pas de
-        // plus entre les deux, pour que les étiquettes suivent).
-        if (allerA)
+        // Après un trajet lancé (`allerA`) ou une fiche ouverte (`fiche`, la caméra recadrée hors d'elle) : la caméra posée
+        // d'un coup à son cadrage, comme à la préparation (un pas de plus entre les deux, pour que les étiquettes suivent,
+        // calculées pour ce cadrage : sans quoi une étiquette passe encore sous la fiche pendant le glissement).
+        if (allerA || fiche)
           for (let i = 0; i < 2; i++) {
             await page.evaluate(() => window.__dysappsCamera?.poser());
             await page.clock.runFor(125);
             await page.waitForTimeout(30);
           }
+        // Un élément du panneau de l'île (`voir`) : le panneau ne s'ouvre que par son bouton, dans la barre du bas.
+        if (voir) await ouvrirLePanneauPour(page, voir);
         // Un élément à montrer plus bas (dans la page ou dans un panneau qui défile) : on y fait défiler, sans animation.
         if (voir) await page.locator(voir).first().evaluate((el) => el.scrollIntoView({ block: 'center', behavior: 'instant' }));
         await capturer(page, { path: file, type: 'jpeg', quality: 85, timeout: 90000, ...(recadre ? { clip: recadre } : {}) });

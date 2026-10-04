@@ -13,7 +13,7 @@ import { archipelagoOfIsland } from '../world/archipels';
 import { grilleDe } from '../world/grille';
 import { placeLibre, type Rect } from '../placeLibre';
 import { avatarRoute, cadreDeTraversee, islandCenter, worldBounds } from '../world/terrain';
-import { AUTOUR_DE_LA_DESTINATION, cadrageDeLaCarte, cadrageDeLaTraversee, creerCamera, ECHELLE_MIN_DE_LA_TRAVERSEE, PLANCHER_DE_LA_CARTE } from './camera';
+import { AUTOUR_DE_LA_DESTINATION, cadrageDeLaCarte, cadrageDeLaTraversee, creerCamera, decalagePourViser, ECHELLE_MIN_DE_LA_TRAVERSEE, PLANCHER_DE_LA_CARTE } from './camera';
 import type { Derniers, Instant, Monde } from './partie';
 
 /** La scène de la tablette de référence (1024 × 768, moins la barre du haut) ; la vue d'une île, à gauche du panneau. */
@@ -412,4 +412,25 @@ describe('Une longue traversée (GD-7)', () => {
       }
     }
   });
+});
+
+it('le recadrage d’une fiche (lot 2 de « Toucher le monde ») : un glissement à plat pose le point de l’objet où on le veut, sans changer la vue', () => {
+  const cam = new THREE.PerspectiveCamera(40, 390 / 760, 0.5, 1e4);
+  cam.position.set(30, 40, -10);
+  cam.lookAt(20, 2, 30);
+  const objet = new THREE.Vector3(22, 4, 34);
+  const vers = { x: 0, y: 0.45 };
+  const g = decalagePourViser(cam, objet, vers, new THREE.Vector3());
+  expect(g.y).toBe(0);
+  const avant = cam.quaternion.clone();
+  cam.position.add(g);
+  cam.updateMatrixWorld();
+  const p = objet.clone().project(cam);
+  expect(p.x).toBeCloseTo(vers.x, 5);
+  expect(p.y).toBeCloseTo(vers.y, 5);
+  // La direction de vue ne change pas : seule la place glisse.
+  expect(cam.quaternion.angleTo(avant)).toBeCloseTo(0, 6);
+  // Visé au-dessus de l'horizon (le ciel) : rien ne bouge.
+  cam.lookAt(20, 40, 30);
+  expect(decalagePourViser(cam, objet, { x: 0, y: 0.5 }, new THREE.Vector3()).length()).toBe(0);
 });

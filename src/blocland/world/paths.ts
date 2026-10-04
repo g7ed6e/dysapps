@@ -23,6 +23,8 @@ export interface CreaturePlacement {
   still?: boolean;
   /** Les pas possibles depuis sa place (sinon ceux par défaut). */
   steps?: [number, number][];
+  /** Un Gardien vaincu (en statue de pierre, ou sa sentinelle rallumée) : il ne porte plus de signe (world/affordance.ts). */
+  beaten?: boolean;
 }
 
 /** Le décor qu'on enjambe (bas, au ras du sol) ; le reste barre le passage. */

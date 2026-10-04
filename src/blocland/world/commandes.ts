@@ -19,6 +19,7 @@
 // d'arrivée ne se déduit pas du reste : une commande ne doit jamais disparaître parce qu'une autre île devient
 // éligible). Une commande livrée sort de la liste ; ce qui la dit livrée, ce sont les cases de sa petite construction
 // dans `world.parts`, sans champ nouveau.
+import { frenchTypography } from '../../core/typographie';
 import { BIOMES, blockCount, blockName, type BiomeId, type BlockId } from '../biomes';
 import type { GameState, World } from '../engine';
 import { archipelagoOf, getBridge, isBiomeUnlocked, type ArchipelagoId } from './archipelago';
@@ -192,10 +193,10 @@ export function livrerLaCommande<S extends Pick<GameState, 'stock' | 'world'>>(s
 /**
  * Une phrase d'une commande, ses jetons remplacés : `{objet}` par le nombre et le nom du bloc de Mes blocs (« 4
  * briques »), `{blocs}` par le même nom sans nombre (« briques »), `{à}` par le lieu où l'on assemble (`lieu`, « à la
- * Fabrique »). L'objet porte ainsi le même nom partout.
+ * Fabrique »). L'objet porte ainsi le même nom partout. Une espace insécable avant « ! ? : ; ».
  */
 export function texteDeLaCommande(c: Commande, phrase: 'ask' | 'ready' | 'done', lieu: string): string {
-  return c.blocland[phrase].replaceAll('{objet}', blockCount(c.block, c.count)).replaceAll('{blocs}', blockName(c.block, c.count)).replaceAll('{à}', lieu);
+  return frenchTypography(c.blocland[phrase].replaceAll('{objet}', blockCount(c.block, c.count)).replaceAll('{blocs}', blockName(c.block, c.count)).replaceAll('{à}', lieu));
 }
 
 /** Le nom de la petite construction en début de phrase (« Le puits »). */

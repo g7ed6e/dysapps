@@ -170,7 +170,7 @@ export function MonumentSheet({ builder, onClose }: { builder: MonumentBuilder; 
   const m = builder.monument;
   const textes = useTextes();
   return (
-    <section id="panneau-monument" className={`island-sheet monument-sheet biome-${m.biome}`} role="dialog" aria-labelledby="monument-titre" aria-modal="false">
+    <section id="panneau-monument" className={`island-sheet monument-sheet biome-${m.biome}`} role="dialog" aria-labelledby="monument-titre" aria-modal="true">
       <div className="island-sheet-head">
         <div className="island-sheet-titles">
           <h2 id="monument-titre" className="island-sheet-title">
@@ -252,7 +252,7 @@ export function MonumentsList() {
 
 export function MonumentsSheet({ onClose }: { onClose: () => void }) {
   return (
-    <section id="panneau-monuments" className="island-sheet monuments-sheet" role="dialog" aria-labelledby="monuments-titre" aria-modal="false">
+    <section id="panneau-monuments" className="island-sheet monuments-sheet" role="dialog" aria-labelledby="monuments-titre" aria-modal="true">
       <div className="island-sheet-head">
         <div className="island-sheet-titles">
           <h2 id="monuments-titre" className="island-sheet-title">
