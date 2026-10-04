@@ -28,7 +28,7 @@ import {
 import { isBiomeUnlocked } from './archipelago';
 import { toutConstruit } from './budget';
 import { etatsDesObjets, modeleDuMonde } from './modele';
-import { creaturePlacements, gardienDuMonde, guardianPlacements, vehiclePlacement, worldCubes } from './terrain';
+import { creaturePlacements, gardienDuMonde, guardianPlacements, islandCenter, vehiclePlacement, worldCubes } from './terrain';
 import { textesDe } from '../../univers';
 import { GESTE_DU_SIGNE, hauteurDuSigne } from './signe';
 import type { ArchipelagoId } from './map';
@@ -140,6 +140,11 @@ it('un chantier en fantôme : un seul objet par ouvrage ou par monument, à fair
   const pret = signesDesObjets({ cubes, etats: { gardiensPrets: [], navirePret: false, chantiersPrets: [id] } }).find((s) => s.cle === `ouvrage:${id}`);
   expect(pret?.etat).toBe('aFaire');
   expect(pret?.iles.length).toBe(2);
+  // Vue de chacune de ses îles, sa bulle va à son bout de ce côté : plus près du cœur de cette île que de l'autre.
+  const [de, vers] = pret!.iles;
+  const pres = (p: { x: number; y: number }, ile: typeof de) => Math.hypot(p.x - islandCenter(ile).x, p.y - islandCenter(ile).y);
+  expect(pres(pret!.parIle![de]!, de)).toBeLessThan(pres(pret!.parIle![vers]!, de));
+  expect(pres(pret!.parIle![vers]!, vers)).toBeLessThan(pres(pret!.parIle![de]!, vers));
 });
 
 it('l’état des objets, lu de la sauvegarde : rien au début, rien tout construit ; les Gardiens prêts, le navire et les chantiers quand l’élève a les blocs', () => {
@@ -244,23 +249,27 @@ describe('les bulles (proposition « à la Supercell », 4 octobre 2026)', () =>
     expect(iconeDeLObjet({ genre: 'lieu', id: 'monument:x', ile: FORET })).toBe('hammer');
   });
 
-  it('trois au plus, sur l’île du bonhomme seulement : une commande d’abord, puis les bornes ; la première mise en avant', () => {
+  it('trois au plus, sur l’île où l’on est seulement : une commande d’abord, puis les bornes ; sans prochaine ici, aucune mise en avant', () => {
     const possibles = bullesPossibles(OBJETS, [{ id: FORET, icone: 'blocks', bloc: 'grass' as BlockId }]);
     const ici = bullesMontrees(possibles, FORET, null);
     expect(ici.map((b) => b.bulle.cle)).toEqual([cleDeLaCreature(FORET), `borne:${FORET}:a`, `borne:${FORET}:b`]);
-    expect(ici.map((b) => b.enAvant)).toEqual([true, false, false]);
+    expect(ici.map((b) => b.enAvant)).toEqual([false, false, false]);
+    // La commande est la prochaine destination : elle est mise en avant.
+    expect(bullesMontrees(possibles, FORET, cleDeLaCreature(FORET)).map((b) => b.enAvant)).toEqual([true, false, false]);
     expect(BULLE.max).toBe(3);
     // Sur la Mine : sa seule borne à faire. Sans île (le bonhomme nulle part) : rien.
     expect(bullesMontrees(possibles, MINE, null).map((b) => b.bulle.cle)).toEqual([`borne:${MINE}:a`]);
     expect(bullesMontrees(possibles, null, null)).toEqual([]);
   });
 
-  it('la prochaine chose à faire passe devant et est mise en avant, quand elle est sur l’île ; ailleurs, rien ne change', () => {
+  it('la prochaine chose à faire passe devant et est mise en avant, quand elle est sur l’île ; ailleurs, aucune bulle d’or', () => {
     const possibles = bullesPossibles(OBJETS, []);
     const ici = bullesMontrees(possibles, FORET, 'ouvrage:pont');
     expect(ici[0]).toMatchObject({ bulle: { cle: 'ouvrage:pont' }, enAvant: true });
     expect(ici).toHaveLength(3);
-    expect(bullesMontrees(possibles, FORET, `borne:${MINE}:a`).map((b) => b.bulle.cle)).toEqual(bullesMontrees(possibles, FORET, null).map((b) => b.bulle.cle));
+    const ailleurs = bullesMontrees(possibles, FORET, `borne:${MINE}:a`);
+    expect(ailleurs.map((b) => b.bulle.cle)).toEqual(bullesMontrees(possibles, FORET, null).map((b) => b.bulle.cle));
+    expect(ailleurs.some((b) => b.enAvant)).toBe(false);
   });
 
   it('leur taille : 56 pixels, 64 pour la mise en avant ; trois quadrilatères au plus, en un appel de dessin', () => {

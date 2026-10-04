@@ -251,15 +251,20 @@ export function WorldPage() {
   const signes = useMemo(() => signesDesCreatures(vu, a, revisions, destination.commande), [vu, a, revisions, destination.commande]);
   const destinationText = `Prochaine destination : ${destination.name}. ${destination.text}`;
   // La prochaine chose à faire, quand c'est un objet : sa bulle est mise en avant sur l'île où l'on est (proposition
-  // « à la Supercell », world/affordance.ts) ; sinon, la première bulle de l'île l'est.
-  const navirePret = laDestinationEstLeNavire(destination, nextGoalInfo(state, archipelago.port, textes.archipels, textes.libelles));
+  // P2, world/affordance.ts) ; sinon aucune (la bulle d'or ne dit jamais autre chose que la prochaine destination).
+  const navirePret = useMemo(
+    () => laDestinationEstLeNavire(destination, nextGoalInfo(state, archipelago.port, textes.archipels, textes.libelles)),
+    [destination, state, archipelago.port, textes],
+  );
   const prochaine = destination.commande
     ? cleDeLaCreature(destination.island)
     : destination.ouvrage
       ? cleDeLObjet({ genre: 'ouvrage', id: destination.ouvrage })
       : navirePret
         ? cleDeLObjet({ genre: 'navire', port: archipelago.port })
-        : null;
+        : destination.mission
+          ? cleDeLObjet({ genre: 'borne', id: `${destination.island}:${destination.mission}` })
+          : null;
   // Un ouvrage à construire (GD-7) : sur la Carte, la flèche se pose sur lui, avec l'icône d'un ouvrage, pas sur l'île
   // d'où il part (quatre ouvrages peuvent en partir) ; sur sa liaison, du côté de cette île.
   const flecheDeLOuvrage = useMemo(
@@ -1048,6 +1053,7 @@ export function WorldPage() {
             creatures={creatures}
             signes={voyage ? undefined : signes}
             prochaine={prochaine}
+            calme={Boolean(ficheVue) || panelOpen || panneauDeLIle || Boolean(whaleWord) || Boolean(motRallume)}
             focus={focus}
             reduceMotion={reduceMotion}
             forceDay={forceDay}

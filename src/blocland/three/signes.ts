@@ -5,7 +5,8 @@
 // bulle se pose au-dessus d'elle. Dans Blocland, une bulle est une plaque carrée claire au bord sombre épais, à l'ombre
 // nette et à la pointe vers l'objet (un bloc vu de face) ; on n'en montre que trois au plus, sur l'île où l'on est, et la
 // première (la prochaine chose à faire) est plus grande, bordée d'or, et monte et descend lentement ; touchée, une bulle
-// s'écrase et rebondit. Dans Archipéo, un disque clair cerclé de sombre, au-dessus de chaque créature qui fait signe.
+// s'écrase et rebondit ; elle reste entière dans la place que l'interface laisse libre (tenue au bord, sans pointe), et
+// la mise en avant ne bouge plus tant qu'une fiche ou un panneau est ouvert. Dans Archipéo, un disque clair cerclé de sombre, au-dessus de chaque créature qui fait signe.
 // L'icône au trait, ou le bloc demandé en cube vu de trois quarts, avec les couleurs de Mes blocs (`BlockIcon`). Toujours
 // face à l'écran, de taille fixe, sans brume ni lumière (lisible de jour comme de nuit), sans clignoter. Toutes les
 // bulles tiennent en un seul appel de dessin : un maillage de quadrilatères, une texture (une case par image), refait
@@ -32,6 +33,7 @@ import type { Habillage } from '../habillage';
 import type { Derniers, Instant, Monde, PartieDeLaScene } from './partie';
 import type { Personnages } from './personnages';
 import type { LabelBox } from '../world/labelLayout';
+import type { PlaceLue, Rect } from '../placeLibre';
 
 /** Une case de la texture, en pixels (la plaque et son icône, assez grandes pour un écran à deux pixels par point). */
 const CASE = 128;
@@ -100,8 +102,12 @@ function contourDeLaPlaque(ctx: CanvasRenderingContext2D, x: number, y: number, 
 /** Ce que montre une plaque : une icône (une notion, ce qu'on fait sur un objet), ou le bloc demandé (commande). */
 export type ImageDuSigne = ImageDeLaBulle;
 
-/** La clé d'une image dans la texture : une case par icône ou par bloc, et une de plus pour la bulle mise en avant. */
-const cleDeLImage = (image: ImageDuSigne, enAvant = false): string => `${'bloc' in image ? `bloc:${image.bloc}` : `icone:${image.icone}`}${enAvant ? ':avant' : ''}`;
+/**
+ * La clé d'une image dans la texture : une case par icône ou par bloc, une de plus pour la bulle mise en avant, et une
+ * de plus pour la bulle tenue au bord de la place libre (sans pointe).
+ */
+const cleDeLImage = (image: ImageDuSigne, enAvant = false, sansPointe = false): string =>
+  `${'bloc' in image ? `bloc:${image.bloc}` : `icone:${image.icone}`}${enAvant ? ':avant' : ''}${sansPointe ? ':bord' : ''}`;
 
 /**
  * La bulle de Blocland dans sa case, en pixels de la case : la plaque (son ombre nette en dessous, sa pointe vers
@@ -112,8 +118,6 @@ const PLAQUE = { x: 16, y: 4, cote: 96, coin: 8, ombre: 6, bord: 5, or: 6, point
 const OR = '#e0b73f';
 /** La taille à l'écran d'une case de Blocland : la plaque fait `BULLE.px` (ou `prochainePx`), la case l'entoure. */
 const caseALEcran = (enAvant: boolean): number => ((enAvant ? BULLE.prochainePx : BULLE.px) * CASE) / PLAQUE.cote;
-
-
 
 /**
  * Le bloc demandé, au milieu de la case : le cube de `BlockIcon` (Voxel.tsx : le dessus, la face gauche, la face droite
@@ -170,10 +174,10 @@ function dessinerLImage(ctx: CanvasRenderingContext2D, cx: number, cy: number, t
 }
 
 /**
- * Dessine une case : dans Blocland, la bulle (son ombre nette, sa pointe, son bord sombre, l'or si elle est mise en
- * avant, le fond clair) ; dans Archipéo, le disque ; puis l'image.
+ * Dessine une case : dans Blocland, la bulle (son ombre nette, sa pointe sauf tenue au bord, son bord sombre, l'or si
+ * elle est mise en avant, le fond clair) ; dans Archipéo, le disque ; puis l'image.
  */
-export function dessinerLaCase(ctx: CanvasRenderingContext2D, rang: number, image: ImageDuSigne, forme: Habillage['signe'], enAvant = false): void {
+export function dessinerLaCase(ctx: CanvasRenderingContext2D, rang: number, image: ImageDuSigne, forme: Habillage['signe'], enAvant = false, sansPointe = false): void {
   const x0 = (rang % COTE) * CASE;
   const y0 = Math.floor(rang / COTE) * CASE;
   ctx.save();
@@ -186,15 +190,17 @@ export function dessinerLaCase(ctx: CanvasRenderingContext2D, rang: number, imag
       ctx.fillStyle = fond;
       ctx.fill();
     };
-    // L'ombre nette, puis la pointe, sous la plaque.
+    // L'ombre nette, puis la pointe, sous la plaque (tenue au bord, elle ne vise plus rien : pas de pointe).
     plaque(0, ombre, cote, coin, ENCRE);
-    ctx.beginPath();
-    ctx.moveTo(x0 + CASE / 2 - pointe.demi, y0 + y + cote);
-    ctx.lineTo(x0 + CASE / 2 + pointe.demi, y0 + y + cote);
-    ctx.lineTo(x0 + CASE / 2, y0 + pointe.bas);
-    ctx.closePath();
-    ctx.fillStyle = ENCRE;
-    ctx.fill();
+    if (!sansPointe) {
+      ctx.beginPath();
+      ctx.moveTo(x0 + CASE / 2 - pointe.demi, y0 + y + cote);
+      ctx.lineTo(x0 + CASE / 2 + pointe.demi, y0 + y + cote);
+      ctx.lineTo(x0 + CASE / 2, y0 + pointe.bas);
+      ctx.closePath();
+      ctx.fillStyle = ENCRE;
+      ctx.fill();
+    }
     plaque(0, 0, cote, coin, ENCRE);
     let dedans = bord;
     if (enAvant) {
@@ -224,9 +230,36 @@ interface Montree {
   enAvant: boolean;
   creature: BiomeId | null;
   point: THREE.Vector3 | null;
+  /** Les clés de ses deux cases (avec sa pointe, tenue au bord) et leur rang dans la texture, -1 avant la première image. */
+  cases: [string, string];
+  rangs: [number, number];
 }
 
-export function creerSignes(monde: Monde, el: HTMLElement, camera: THREE.PerspectiveCamera, personnages: Personnages, derniers: { current: Derniers }, instant: Instant): Signes {
+/** Ce qu'une bulle dessinée touche, à la dernière image : son rectangle (la plaque et sa pointe) en coordonnées normalisées de l'écran. */
+interface Touchable {
+  cible: CibleDeLaBulle | null;
+  x0: number;
+  y0: number;
+  x1: number;
+  y1: number;
+}
+
+/** Une place libre relue quatre fois par seconde au plus (la fiche qui s'ouvre change la clé, `calme`). */
+const RELIRE_LA_PLACE_MS = 250;
+
+/**
+ * `lirePlace` : la place que l'interface laisse libre dans la vue (../placeLibre.ts, `lecteurDePlaceLibre`), pour y
+ * tenir les bulles ; sans elle (les tests), toute la vue.
+ */
+export function creerSignes(
+  monde: Monde,
+  el: HTMLElement,
+  camera: THREE.PerspectiveCamera,
+  personnages: Personnages,
+  derniers: { current: Derniers },
+  instant: Instant,
+  lirePlace?: (contexte: string) => PlaceLue,
+): Signes {
   const { scene } = monde;
   const forme = monde.habillage.signe;
   /** Blocland : trois bulles au plus, sur l'île où l'on est, objets compris ; Archipéo : une plaque par créature qui fait signe. */
@@ -268,50 +301,75 @@ export function creerSignes(monde: Monde, el: HTMLElement, camera: THREE.Perspec
   const parCreature = new Map<BiomeId, (typeof signes)[number]>();
   /** Blocland : les objets touchables, le point (la pointe) de la bulle de chacun de ceux qui sont à faire, et la prochaine chose à faire. */
   let objets: readonly SigneDObjet[] = [];
-  const points = new Map<string, THREE.Vector3>();
+  const parCle = new Map<string, SigneDObjet>();
   let prochaine: string | null = null;
   let possibles = bullesPossibles([], []);
   /** Les bulles montrées, gardées tant que ni la liste ni l'île où l'on est ne changent. */
   let enCache: { ile: BiomeId | null; liste: Montree[] } | null = null;
   /** Le début du rebond de chaque bulle touchée. */
   const rebonds = new Map<string, number>();
-  /** Le rectangle de chaque bulle dessinée à la dernière image, en coordonnées normalisées de l'écran. */
-  let rectangles: { cible: CibleDeLaBulle; x0: number; y0: number; x1: number; y1: number }[] = [];
+  /** Le rectangle de chaque bulle dessinée à la dernière image (les `nRectangles` premiers), préalloués. */
+  const rectangles: Touchable[] = Array.from({ length: SIGNES_MAX }, () => ({ cible: null, x0: 0, y0: 0, x1: 0, y1: 0 }));
+  let nRectangles = 0;
+  /** La place libre, en pixels CSS de la vue (`null` : toute la vue), relue de temps en temps. */
+  let libre: Rect | null = null;
+  let largeurLue = 0;
+  let hauteurLue = 0;
+  let placeLue = -Infinity;
+  let placeCle = '';
+  /** La clé de la case écrite dans chaque rang de la texture : une bulle garde son rang tant qu'elle y est. */
+  const clesDesRangs = new Array<string>(SIGNES_MAX).fill('');
   /** Le début du geste de chaque île arrivée (une fois par île pour la vie de la scène). */
   const gestes = new Map<BiomeId, number>();
   /** La dernière demande de cadrage vue (l'île et son numéro) : une nouvelle arrivée sur une île déclenche son geste. */
   let derniereIle: BiomeId | null | undefined;
   let dernierSeq = -1;
 
-  const caseDe = (image: ImageDuSigne, enAvant: boolean): number => {
-    const cle = cleDeLImage(image, enAvant);
+  const caseDe = (image: ImageDuSigne, enAvant: boolean, sansPointe = false, cle = cleDeLImage(image, enAvant, sansPointe)): number => {
     const deja = cases.get(cle);
     if (deja !== undefined) return deja;
     const rang = dessinees++ % SIGNES_MAX;
     // Plus de seize images dans la vie de la scène (jamais vu : une scène par archipel) : la case la plus ancienne sert.
     for (const [autre, r] of cases) if (r === rang) cases.delete(autre);
-    if (ctx) dessinerLaCase(ctx, rang, image, forme, enAvant);
+    if (ctx) dessinerLaCase(ctx, rang, image, forme, enAvant, sansPointe);
     texture.needsUpdate = true;
     cases.set(cle, rang);
+    clesDesRangs[rang] = cle;
     return rang;
+  };
+  /** Le rang de la case d'une bulle montrée (tenue au bord ou non), gardé dans la bulle tant que la texture l'a encore. */
+  const rangDe = (m: Montree, auBord: boolean): number => {
+    const i = auBord ? 1 : 0;
+    if (m.rangs[i] < 0 || clesDesRangs[m.rangs[i]] !== m.cases[i]) m.rangs[i] = caseDe(m.image, m.enAvant, auBord, m.cases[i]);
+    return m.rangs[i];
   };
   const imageDe = (s: SigneDeCreature): ImageDuSigne => (s.bloc ? { bloc: s.bloc } : { icone: s.icone });
   /** L'île où l'on est : celle que regarde la caméra (le bonhomme y va), sinon celle du bonhomme. */
   const ileOuLOnEst = (): BiomeId | null => derniers.current.focus.island ?? derniers.current.home ?? null;
+  const montree = (cle: string, cible: CibleDeLaBulle, image: ImageDuSigne, enAvant: boolean, creature: BiomeId | null, point: THREE.Vector3 | null): Montree => ({
+    cle,
+    cible,
+    image,
+    enAvant,
+    creature,
+    point,
+    cases: [cleDeLImage(image, enAvant), cleDeLImage(image, enAvant, true)],
+    rangs: [-1, -1],
+  });
+  /** Le point d'un objet vu de l'île `ile` : un ouvrage, son bout de ce côté ; sinon le sien. */
+  const pointDe = (cle: string, ile: BiomeId | null): THREE.Vector3 | null => {
+    const o = parCle.get(cle);
+    if (!o) return null;
+    const p = (ile && o.parIle?.[ile]) || o;
+    return new THREE.Vector3(p.x, p.z, p.y);
+  };
   /** Les bulles à montrer : dans Blocland, trois au plus sur l'île où l'on est ; dans Archipéo, chaque créature qui fait signe. */
   const montrees = (): Montree[] => {
     const ile = bulles ? ileOuLOnEst() : null;
     if (enCache && enCache.ile === ile) return enCache.liste;
     const liste: Montree[] = bulles
-      ? bullesMontrees(possibles, ile, prochaine).map(({ bulle, enAvant }) => ({
-          cle: bulle.cle,
-          cible: bulle.cible,
-          image: bulle.image,
-          enAvant,
-          creature: bulle.cible.genre === 'creature' ? bulle.cible.id : null,
-          point: points.get(bulle.cle) ?? null,
-        }))
-      : signes.map(({ signe }) => ({ cle: cleDeLaCreature(signe.id), cible: { genre: 'creature', id: signe.id }, image: imageDe(signe), enAvant: false, creature: signe.id, point: null }));
+      ? bullesMontrees(possibles, ile, prochaine).map(({ bulle, enAvant }) => montree(bulle.cle, bulle.cible, bulle.image, enAvant, bulle.cible.genre === 'creature' ? bulle.cible.id : null, pointDe(bulle.cle, ile)))
+      : signes.map(({ signe }) => montree(cleDeLaCreature(signe.id), { genre: 'creature', id: signe.id }, imageDe(signe), false, signe.id, null));
     enCache = { ile, liste };
     return liste;
   };
@@ -370,6 +428,34 @@ export function creerSignes(monde: Monde, el: HTMLElement, camera: THREE.Perspec
     return { x: (x0 + x1) / 2, y: (y0 + y1) / 2, w: x1 - x0, h: y1 - y0 };
   };
 
+  /** La place libre relue (quatre fois par seconde au plus, tout de suite quand une fiche s'ouvre ou se ferme). */
+  const relireLaPlace = () => {
+    if (!lirePlace) return;
+    const cle = derniers.current.calme ? 'bulles:calme' : 'bulles';
+    if (cle === placeCle && instant.now - placeLue < RELIRE_LA_PLACE_MS) return;
+    placeCle = cle;
+    placeLue = instant.now;
+    const lue = lirePlace(cle);
+    libre = lue.libre;
+    largeurLue = lue.w;
+    hauteurLue = lue.h;
+  };
+  const ecart = { x: 0, y: 0 };
+  /**
+   * L'écart, en pixels CSS (`ecart`), qui tient entière dans la place libre (à `BULLE.bordPx` de ses bords) une bulle
+   * de demi-côté `demi` centrée en (`x`, `y`) dans une vue de `W` × `H` ; `true` si elle a dû bouger (tenue au bord).
+   */
+  const tenirDansLaPlace = (x: number, y: number, demi: number, W: number, H: number): boolean => {
+    const sx = libre && largeurLue ? W / largeurLue : 1;
+    const sy = libre && hauteurLue ? H / hauteurLue : 1;
+    const [x0, y0, x1, y1] = libre ? [libre.x0 * sx, libre.y0 * sy, libre.x1 * sx, libre.y1 * sy] : [0, 0, W, H];
+    const m = demi + BULLE.bordPx;
+    const dans = (v: number, a: number, b: number) => (b - a < 2 * m ? (a + b) / 2 : Math.min(Math.max(v, a + m), b - m));
+    ecart.x = dans(x, x0, x1) - x;
+    ecart.y = dans(y, y0, y1) - y;
+    return Math.abs(ecart.x) > 0.5 || Math.abs(ecart.y) > 0.5;
+  };
+
   return {
     maillage,
     get version() {
@@ -382,9 +468,12 @@ export function creerSignes(monde: Monde, el: HTMLElement, camera: THREE.Perspec
         if (!ancreDe(m, tete)) continue;
         aLEcran.copy(tete).project(cam);
         if (aLEcran.z > 1) continue;
-        // La bulle se pose sur sa pointe : son bas à l'écran est là.
+        // La bulle se pose sur sa pointe : son bas à l'écran est là ; tenue au bord, là où elle est dessinée.
         const cote = tailleALEcran(m);
-        out.push({ x: ((aLEcran.x + 1) / 2) * W, y: ((1 - aLEcran.y) / 2) * H - cote / 2, w: cote + 8, h: cote + 8 });
+        const x = ((aLEcran.x + 1) / 2) * W;
+        const y = ((1 - aLEcran.y) / 2) * H - cote / 2;
+        tenirDansLaPlace(x, y, cote / 2, W, H);
+        out.push({ x: x + ecart.x, y: y + ecart.y, w: cote + 8, h: cote + 8 });
         const creature = m.creature ? creatureALEcran(m.creature, cam, W, H) : null;
         if (creature) out.push(creature);
       }
@@ -405,23 +494,29 @@ export function creerSignes(monde: Monde, el: HTMLElement, camera: THREE.Perspec
     },
     poserLesObjets: (liste, cle) => {
       if (!bulles) return;
-      const avant = new Set(points.keys());
+      const avant = new Set(parCle.keys());
       objets = liste;
       prochaine = cle;
-      points.clear();
-      for (const s of liste) if (s.etat === 'aFaire') points.set(s.cle, new THREE.Vector3(s.x, s.z, s.y));
+      parCle.clear();
+      for (const s of liste) if (s.etat === 'aFaire') parCle.set(s.cle, s);
       refaire();
-      if ([...points.keys()].some((k) => !avant.has(k))) plaqueDePlus();
+      if ([...parCle.keys()].some((k) => !avant.has(k))) plaqueDePlus();
     },
     rebondir: (cle) => {
-      if (!montrees().some((m) => m.cle === cle)) return false;
+      // Archipéo garde son disque tel quel : il ne se touche pas et ne rebondit pas.
+      if (!bulles || !montrees().some((m) => m.cle === cle)) return false;
       rebonds.set(cle, instant.now);
       return true;
     },
     sous: (x, y, W, H) => {
+      if (!bulles) return null;
       const nx = (x / Math.max(1, W)) * 2 - 1;
       const ny = 1 - (y / Math.max(1, H)) * 2;
-      return rectangles.find((r) => nx >= r.x0 && nx <= r.x1 && ny >= r.y0 && ny <= r.y1)?.cible ?? null;
+      for (let i = 0; i < nRectangles; i++) {
+        const r = rectangles[i];
+        if (nx >= r.x0 && nx <= r.x1 && ny >= r.y0 && ny <= r.y1) return r.cible;
+      }
+      return null;
     },
     suivreLaVague: (enCours) => {
       enVague = enCours;
@@ -437,7 +532,8 @@ export function creerSignes(monde: Monde, el: HTMLElement, camera: THREE.Perspec
         derniereIle = focus.island;
         dernierSeq = focus.seq;
         const ile = focus.island;
-        if (ile && !carte && !reduit && !gestes.has(ile) && parCreature.has(ile)) {
+        // Dans Blocland, seulement si sa bulle est montrée (trois au plus) : jamais un signe sans bulle.
+        if (ile && !carte && !reduit && !gestes.has(ile) && (bulles ? montrees().some((m) => m.creature === ile) : parCreature.has(ile))) {
           const debut = instant.now + GESTE_DU_SIGNE.attenteMs;
           gestes.set(ile, debut);
           personnages.faireSigne(ile, debut);
@@ -450,7 +546,8 @@ export function creerSignes(monde: Monde, el: HTMLElement, camera: THREE.Perspec
           s.vue = true;
           plaqueDePlus();
         }
-      rectangles = [];
+      nRectangles = 0;
+      if (bulles) relireLaPlace();
       const liste = montrees();
       if (!liste.length || carte || instant.carte || instant.navigue) {
         maillage.visible = false;
@@ -479,19 +576,23 @@ export function creerSignes(monde: Monde, el: HTMLElement, camera: THREE.Perspec
           if (reduit || instant.now - debut >= ecraseMs + reviensMs) rebonds.delete(m.cle);
           else echelle = rebondDeLaBulle(instant.now - debut);
         }
-        const demi = (tailleALEcran(m) * echelle * parPx) / 2;
-        // La bulle mise en avant monte et descend de 4 pixels au-dessus de sa place, jamais plus bas.
-        const leve = m.enAvant && !reduit ? (BULLE.flotte.amplitudePx + flottementDeLaBulle(t)) * parPx : 0;
+        const cotePx = tailleALEcran(m) * echelle;
+        const demi = (cotePx * parPx) / 2;
+        // La bulle mise en avant monte et descend de 4 pixels au-dessus de sa place, jamais plus bas ; elle se tient
+        // tranquille tant qu'une fiche ou un panneau est ouvert (on lit).
+        const leve = m.enAvant && !reduit && !derniers.current.calme ? (BULLE.flotte.amplitudePx + flottementDeLaBulle(t)) * parPx : 0;
         centre.copy(tete).addScaledVector(haut, demi + leve);
-        // Une bulle dont la chose sort de l'écran (le milieu d'un long ouvrage) reste au bord, entière (BULLE.bordPx), et
-        // au-dessus de la barre du bas (BULLE.basPx).
+        // Blocland : une bulle dont la chose sort de la place libre (le bout d'un ouvrage, un Gardien au fond) y reste,
+        // entière, sans pointe (elle ne vise plus rien).
+        let auBord = false;
         aLEcran.copy(centre).project(camera);
-        if (aLEcran.z <= 1) {
-          const largeur = hauteurDeLaVue * camera.aspect;
-          const demiPx = demi / parPx + BULLE.bordPx;
-          const versX = Math.min(Math.max(aLEcran.x, -1 + (2 * demiPx) / largeur), 1 - (2 * demiPx) / largeur) - aLEcran.x;
-          const versY = Math.min(Math.max(aLEcran.y, -1 + (2 * (demiPx - BULLE.bordPx + BULLE.basPx)) / hauteurDeLaVue), 1 - (2 * demiPx) / hauteurDeLaVue) - aLEcran.y;
-          centre.addScaledVector(droite, ((versX * largeur) / 2) * parPx).addScaledVector(haut, ((versY * hauteurDeLaVue) / 2) * parPx);
+        const W = hauteurDeLaVue * camera.aspect;
+        const H = hauteurDeLaVue;
+        const cx = ((aLEcran.x + 1) / 2) * W;
+        const cy = ((1 - aLEcran.y) / 2) * H;
+        if (bulles && aLEcran.z <= 1 && tenirDansLaPlace(cx, cy, cotePx / 2, W, H)) {
+          auBord = true;
+          centre.addScaledVector(droite, ecart.x * parPx).addScaledVector(haut, -ecart.y * parPx);
         }
         for (let j = 0; j < 4; j++) {
           const sx = COINS[2 * j] * demi;
@@ -501,11 +602,19 @@ export function creerSignes(monde: Monde, el: HTMLElement, camera: THREE.Perspec
           positions[k + 1] = centre.y + droite.y * sx + haut.y * sy;
           positions[k + 2] = centre.z + droite.z * sx + haut.z * sy;
         }
-        // Son rectangle à l'écran (bas gauche, haut droite), pour le toucher.
-        aLEcran.set(positions[n * 12], positions[n * 12 + 1], positions[n * 12 + 2]).project(camera);
-        coin.set(positions[n * 12 + 6], positions[n * 12 + 7], positions[n * 12 + 8]).project(camera);
-        if (aLEcran.z <= 1 && coin.z <= 1) rectangles.push({ cible: m.cible, x0: Math.min(aLEcran.x, coin.x), y0: Math.min(aLEcran.y, coin.y), x1: Math.max(aLEcran.x, coin.x), y1: Math.max(aLEcran.y, coin.y) });
-        const rang = caseDe(m.image, m.enAvant);
+        // Son rectangle à l'écran, pour le toucher : la plaque et sa pointe seulement, pas les marges de sa case.
+        if (bulles && aLEcran.z <= 1) {
+          const px = cx + ecart.x * Number(auBord);
+          const py = cy + ecart.y * Number(auBord);
+          const u = cotePx / CASE;
+          const r = rectangles[nRectangles++];
+          r.cible = m.cible;
+          r.x0 = ((px - cotePx / 2 + PLAQUE.x * u) / W) * 2 - 1;
+          r.x1 = ((px - cotePx / 2 + (PLAQUE.x + PLAQUE.cote) * u) / W) * 2 - 1;
+          r.y1 = 1 - ((py - cotePx / 2 + PLAQUE.y * u) / H) * 2;
+          r.y0 = 1 - ((py - cotePx / 2 + (auBord ? PLAQUE.y + PLAQUE.cote + PLAQUE.ombre : PLAQUE.pointe.bas) * u) / H) * 2;
+        }
+        const rang = bulles ? rangDe(m, auBord) : rangDe(m, false);
         if (casesEcrites[n] !== rang) {
           casesEcrites[n] = rang;
           const u = (rang % COTE) / COTE;

@@ -20,14 +20,15 @@ Pour se promener sur une île, on **touche le sol** : le bonhomme y marche en co
 
 Ce qu’il faut savoir des bulles :
 
-- **La prochaine chose à faire** a la plus grande bulle, bordée d’or. C’est la seule qui bouge : elle monte et descend doucement. Les autres restent immobiles.
+- **La prochaine chose à faire** a la plus grande bulle, bordée d’or : c’est la prochaine destination, celle de « Reprendre l’aventure » et de la Carte. C’est la seule qui bouge : elle monte et descend doucement, et se tient tranquille quand une fiche ou un panneau est ouvert. Les autres restent immobiles. Quand la prochaine destination est sur une autre île, aucune bulle n’est bordée d’or.
 - **Trois au plus.** Une chose ne porte jamais deux bulles. Les autres îles n’en montrent pas : on les voit en y allant.
-- **Rien pour plus tard.** Une mission pas encore jouable, un chantier qui attend des blocs, l’école, la salle des trophées ou la Fabrique n’ont pas de bulle. Une mission réussie garde sa pile de cubes d’or (ses étoiles), immobile.
-- **Toujours à l’écran.** Quand la chose sort de l’écran, comme le milieu d’un long pont, sa bulle reste au bord, entière, au-dessus de la barre du bas.
+- **Rien pour plus tard, rien pour un lieu.** Une mission pas encore jouable ou un chantier qui attend des blocs n’ont pas de bulle, pas plus que l’école, la salle des trophées ou la Fabrique. Une mission réussie garde sa pile de cubes d’or (ses étoiles), immobile.
+- **Un pont** porte sa bulle à son bout, du côté de l’île où l’on est.
+- **Toujours visible.** Quand la chose sort de l’écran, sa bulle reste au bord, entière, sans pointe, hors des boutons, de la barre du bas et d’une fiche ouverte.
 - **Sur la Carte.** Aucune bulle sur la Carte ni pendant un voyage. La flèche « Commence ici » reste la même.
-- **Toucher une bulle**, c’est toucher la chose : sa fiche s’ouvre. La bulle s’écrase un peu puis rebondit : l’appli a entendu. Toucher une mission réussie fait sauter sa pile d’étoiles.
+- **Toucher une bulle**, c’est toucher la chose : sa fiche s’ouvre. La bulle s’écrase un peu puis rebondit : l’appli a entendu. Une chose sans bulle se touche elle-même : sa fiche s’ouvre aussi (un lieu, son panneau). Toucher une mission réussie fait sauter sa pile d’étoiles.
 - **Toucher tout près.** Une borne ou un Gardien qui paraissent petits à l’écran se touchent aussi un peu à côté, à environ un doigt de large.
-- **Sur un chantier.** Toucher un fantôme pose le bloc attendu. Pour ouvrir sa fiche, on touche sa bulle.
+- **Sur un chantier en cours.** Toucher une case en fantôme d’un monument ou du Bloc-Navire y pose le bloc attendu. Pour ouvrir sa fiche, on touche sa bulle.
 - **Moins d’animations.** Quand le téléphone ou la tablette demande de [réduire les animations](reglages.md#animations-et-vue-du-monde), aucune bulle ne bouge ni ne rebondit. Elles restent là, immobiles, et se lisent encore.
 - **Dans Archipéo**, il n’y a pas de bulles : seul un losange jaune rebondit au-dessus d’une mission à faire, et les piles d’étoiles tournent lentement.
 
@@ -37,7 +38,7 @@ Dès que la vue a bougé, le bouton **Recentrer** apparaît en haut à droite, s
 
 ### Les fiches
 
-Toucher une chose du monde ouvre sa **fiche** : un petit panneau toujours à la même place, en bas de l’écran, juste au-dessus de la barre du bas, sur toute la largeur ; en paysage, une carte en bas à gauche. La fiche dit le nom de la chose, une phrase au plus, et propose un seul bouton principal. Le cube de la chose saute à l’ouverture : c’est elle dont parle la fiche. Si la fiche cache la chose, la caméra glisse pour la montrer dans la place qui reste (d’un coup quand l’appareil demande de réduire les animations) ; sinon la vue ne bouge pas. Le bouton haut-parleur, à côté du titre, relit la fiche ; elle est lue à voix haute à l’ouverture si la lecture automatique est réglée. Quand le texte est grand, il défile dans la fiche : le titre et le bouton restent entiers ; un titre long passe sur sa propre ligne, sous le haut-parleur et la croix.
+Toucher une chose du monde ouvre sa **fiche** : un petit panneau toujours à la même place, en bas de l’écran, juste au-dessus de la barre du bas, sur toute la largeur ; en paysage, une carte en bas à gauche. La fiche dit le nom de la chose, une phrase au plus, et propose un seul bouton principal. Sa bulle rebondit à l’ouverture, si elle en a une : c’est elle dont parle la fiche. Si la fiche cache la chose, la caméra glisse pour la montrer dans la place qui reste (d’un coup quand l’appareil demande de réduire les animations) ; sinon la vue ne bouge pas. Le bouton haut-parleur, à côté du titre, relit la fiche ; elle est lue à voix haute à l’ouverture si la lecture automatique est réglée. Quand le texte est grand, il défile dans la fiche : le titre et le bouton restent entiers ; un titre long passe sur sa propre ligne, sous le haut-parleur et la croix.
 
 ![La fiche d’une borne de la Forêt des sons, en bas de l’écran : le titre de la mission, ses étoiles et le bouton Jouer.](/captures/fiche-borne.jpg)
 
@@ -136,7 +137,7 @@ Les items ratés reviennent à **J+1, J+3, J+7, J+15** (répétition espacée) e
 
 Quand une mission d’une île a des questions à revoir aujourd’hui, **la créature de l’île fait signe** :
 
-- **dans le monde**, quand la caméra arrive sur son île, elle fait un petit saut lent, une seule fois ; puis l’**icône de la notion** de l’île (celle de son panneau) se pose au-dessus d’elle, sur une plaque carrée claire, et y reste, fixe, sans clignoter et sans texte, de jour comme de nuit. Chaque créature qui a des révisions fait signe sur son île ; sa plaque ne se voit que sur l’île où l’on est, avec les autres bulles (trois au plus). Avec la préférence de l’appareil qui réduit les animations, il n’y a pas de saut : l’icône est là tout de suite. Rien ne s’affiche sur la Carte ni pendant un voyage ;
+- **dans le monde**, quand la caméra arrive sur son île, elle fait un petit saut lent, une seule fois ; puis l’**icône de la notion** de l’île (celle de son panneau) se pose au-dessus d’elle, sur une plaque carrée claire, et y reste, fixe, sans clignoter et sans texte, de jour comme de nuit. Chaque créature qui a des révisions fait signe sur son île quand sa plaque y est montrée : sa plaque ne se voit que sur l’île où l’on est, avec les autres bulles (trois au plus), après ce qui se fait tout de suite. Avec la préférence de l’appareil qui réduit les animations, il n’y a pas de saut : l’icône est là tout de suite. Rien ne s’affiche sur la Carte ni pendant un voyage ;
 - **dans le panneau de l’île**, sous son accueil, elle propose de reprendre, avec l’icône de la notion et une phrase courte, lue à voix haute juste après l’accueil, à réécouter avec **Réécouter** (dans Blocland : « J’ai gardé « Abattage syllabique » de côté. On s’y remet ensemble ? »). Le titre d’une mission d’anglais ou de langue vivante 2 s’écrit sans syllabes colorées, et la voix dit « cette mission » à sa place. Elle ne parle ni de date ni d’erreur, et ne dit pas combien de blocs gagner ;
 - **Reprendre** lance la révision de cette île : la mission concernée, ses questions à revoir en tête. À la fin, le bouton principal devient **Révision suivante** s’il en reste une autre sur l’île, puis **Revenir sur** l’île de la créature. Quand la révision pose une partie du bâtiment, **Voir le bâtiment** passe avant **Révision suivante**, et le panneau de l’île, si on l’ouvre, repropose les révisions au retour ;
 - **Plus tard** ne coûte rien : la créature se tait et ne fait plus signe jusqu’à la visite suivante (la prochaine fois que l’on ouvre l’appli). Une courte ligne dit « D’accord, plus tard. » et le clavier revient au nom de l’île. Les révisions restent dans le menu, à la ligne **À revoir aujourd’hui** ;

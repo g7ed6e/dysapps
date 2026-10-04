@@ -177,12 +177,11 @@ export function sceneCost(a: ArchipelagoId, commandes = false): { triangles: num
 }
 
 /**
- * Les bulles des objets touchables de Blocland (world/affordance.ts) : trois au plus à la fois, sur l'île du bonhomme,
- * des quadrilatères dans le maillage des plaques des créatures (un appel de dessin), quel que soit l'archipel, tout
- * construit ou au pire. Hors de `sceneCost`, qui ne compte que les modèles en blocs ; à ajouter au monde en blocs sous
- * son plafond.
+ * Les bulles de Blocland (world/affordance.ts) : trois au plus à la fois, sur l'île où l'on est, des quadrilatères dans
+ * le maillage des plaques des créatures (un appel de dessin), le même coût quels que soient l'archipel et l'état du jeu.
+ * Hors de `sceneCost`, qui ne compte que les modèles en blocs ; à ajouter au monde en blocs sous son plafond.
  */
-export function signesCost(_a: ArchipelagoId, _auPire = false): { triangles: number; drawCalls: number } {
+export function signesCost(): { triangles: number; drawCalls: number } {
   return { ...COUT_DES_BULLES };
 }
 

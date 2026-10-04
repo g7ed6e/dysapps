@@ -169,6 +169,8 @@ export interface WorldViewProps {
    * livrer) : dans Blocland, sa bulle est mise en avant quand elle est sur l'île où l'on est.
    */
   prochaine?: string | null;
+  /** Une fiche, un panneau ou un mot est ouvert par-dessus le monde : la bulle mise en avant se tient tranquille. */
+  calme?: boolean;
   /** Ignorer l'heure réelle : toujours en plein jour. */
   forceDay?: boolean;
   /** Les ouvrages construits : la vue d'ensemble cadre les îles ouvertes et leurs voisines. */

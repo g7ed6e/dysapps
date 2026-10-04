@@ -190,8 +190,8 @@ it('les plaques sont des obstacles pour les étiquettes ; leur version ne change
   camera.lookAt(0, 0, 0);
   camera.updateMatrixWorld();
   const [b] = signes.boites(camera, 1024, 768);
-  // Seule sur l'île, elle est mise en avant : sa case, et une marge de 4 pixels autour.
-  expect(b.w).toBeCloseTo(CASE_EN_AVANT_CSS + 8, 6);
+  // Sa case (elle n'est pas la prochaine destination : pas mise en avant), et une marge de 4 pixels autour.
+  expect(b.w).toBeCloseTo(CASE_CSS + 8, 6);
   expect(b.x).toBeCloseTo(512, 0);
   // La plaque se pose sur la tête : son bas à l'écran est au-dessus de la tête.
   const tete = new THREE.Vector3(0, 3, 0).project(camera);
@@ -284,7 +284,7 @@ it('la créature d’une plaque est aussi un obstacle : aucune étiquette ne se 
   camera.lookAt(0, 0, 0);
   camera.updateMatrixWorld();
   const [plaque, corpsALEcran] = avecCorps.boites(camera, 1024, 768);
-  expect(plaque.w).toBeCloseTo(CASE_EN_AVANT_CSS + 8, 6);
+  expect(plaque.w).toBeCloseTo(CASE_CSS + 8, 6);
   expect(corpsALEcran.x).toBeCloseTo(512, 0);
   // Sous la plaque, et plus haut qu'une case.
   expect(corpsALEcran.y).toBeGreaterThan(plaque.y);
@@ -341,10 +341,10 @@ describe('les bulles de Blocland (proposition « à la Supercell », 4 octobre 2
     expect(archipeo.maillage.geometry.drawRange.count).toBe(12);
   });
 
-  it('seule la bulle mise en avant monte et descend, de 4 pixels au plus au-dessus de sa place ; rien avec le mouvement réduit', () => {
+  it('seule la bulle mise en avant monte et descend, de 4 pixels au plus au-dessus de sa place ; rien avec le mouvement réduit ni une fiche ouverte', () => {
     const { signes, derniers } = scene();
     derniers.current.home = FORET;
-    signes.poserLesObjets(OBJETS, null);
+    signes.poserLesObjets(OBJETS, `borne:${FORET}:a`);
     const hauteurs = (t: number, reduit: boolean) => {
       signes.animer!(t, 0, reduit);
       const p = signes.maillage.geometry.getAttribute('position');
@@ -358,6 +358,45 @@ describe('les bulles de Blocland (proposition « à la Supercell », 4 octobre 2
     const [reduit0] = hauteurs(BULLE.flotte.periodeS / 4, true);
     expect(reduit0).toBeCloseTo(4, 6);
     expect(repos0).toBeGreaterThan(4);
+    // Une fiche ouverte : on lit, elle se tient tranquille sur sa pointe.
+    derniers.current.calme = true;
+    const [calme0] = hauteurs(BULLE.flotte.periodeS / 4, false);
+    expect(calme0).toBeCloseTo(4, 6);
+  });
+
+  it('Archipéo garde son disque tel quel : il ne se touche pas et ne rebondit pas', () => {
+    const { signes, derniers, camera } = scene(HABILLAGES.archipeo);
+    derniers.current.home = FORET;
+    signes.poser([{ id: FORET, icone: 'tree' }]);
+    signes.animer!(0, 0, true);
+    const v = new THREE.Vector3(0, 3 + ICONE_DU_SIGNE.auDessus, 0).project(camera);
+    expect(signes.sous(((v.x + 1) / 2) * 1024, ((1 - v.y) / 2) * 768 - 20, 1024, 768)).toBeNull();
+    expect(signes.rebondir(`creature:${FORET}`)).toBe(false);
+  });
+
+  it('une créature qui a des révisions ne fait signe que si sa bulle est montrée (trois au plus)', () => {
+    const { signes, derniers, faireSigne } = scene();
+    signes.poser([{ id: FORET, icone: 'tree' }]);
+    // Trois choses à faire passent avant ses révisions : pas de bulle, pas de geste.
+    signes.poserLesObjets(OBJETS, null);
+    signes.animer!(0, 0, false);
+    expect(faireSigne).not.toHaveBeenCalled();
+    // Une seule chose à faire : sa bulle est montrée, elle fait signe à l'arrivée suivante.
+    signes.poserLesObjets(OBJETS.slice(0, 1), null);
+    derniers.current.focus = { island: FORET, seq: 2 };
+    signes.animer!(0, 0, false);
+    expect(faireSigne).toHaveBeenCalledTimes(1);
+  });
+
+  it('un ouvrage : sa bulle au-dessus de son bout du côté de l’île où l’on est', () => {
+    const { signes, derniers } = scene();
+    derniers.current.home = FORET;
+    signes.poserLesObjets([{ ...objet({ genre: 'ouvrage', id: 'pont' }, 0), parIle: { [FORET]: { x: -3, y: 0, z: 2 }, [MINE]: { x: 3, y: 0, z: 2 } } }], 'ouvrage:pont');
+    signes.animer!(0, 0, true);
+    const p = signes.maillage.geometry.getAttribute('position');
+    // Le milieu de son bas (sa pointe) au-dessus de x = -3, à 2 blocs.
+    expect((p.getX(0) + p.getX(1)) / 2).toBeCloseTo(-3, 6);
+    expect((p.getY(0) + p.getY(1)) / 2).toBeCloseTo(2, 6);
   });
 
   it('touchée, une bulle s’écrase puis rebondit et se pose ; une bulle cachée, ou avec le mouvement réduit, ne bouge pas', () => {
@@ -398,6 +437,8 @@ describe('les bulles de Blocland (proposition « à la Supercell », 4 octobre 2
     expect(signes.sous(cx, cy - 20, 1024, 768)).toEqual({ genre: 'creature', id: FORET });
     const [bx, by] = aLEcran(-4, 4, 0);
     expect(signes.sous(bx, by - 20, 1024, 768)).toEqual({ genre: 'borne', id: `${FORET}:a` });
+    // Les marges transparentes de sa case ne prennent pas le toucher : seulement la plaque et sa pointe.
+    expect(signes.sous(bx - CASE_CSS / 2 + 3, by - 20, 1024, 768)).toBeNull();
     expect(signes.sous(5, 5, 1024, 768)).toBeNull();
     derniers.current.carte = true;
     signes.animer!(0, 0, true);
@@ -414,7 +455,7 @@ describe('les bulles de Blocland (proposition « à la Supercell », 4 octobre 2
       const coins = [0, 1, 2, 3].map((j) => new THREE.Vector3(p.getX(4 * n + j), p.getY(4 * n + j), p.getZ(4 * n + j)).project(camera));
       expect(Math.min(...coins.map((c) => c.x))).toBeGreaterThanOrEqual(-1);
       expect(Math.max(...coins.map((c) => c.x))).toBeLessThanOrEqual(1);
-      expect(Math.min(...coins.map((c) => c.y))).toBeGreaterThanOrEqual(-1 + (2 * BULLE.basPx) / 768 - 1e-9);
+      expect(Math.min(...coins.map((c) => c.y))).toBeGreaterThanOrEqual(-1 + (2 * BULLE.bordPx) / 768 - 1e-9);
       expect(Math.max(...coins.map((c) => c.y))).toBeLessThanOrEqual(1);
     }
     // Celle de l'ouvrage (la deuxième : la borne passe avant) touche le bord : on la voit, et on la touche.

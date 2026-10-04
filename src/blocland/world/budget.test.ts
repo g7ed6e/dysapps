@@ -32,13 +32,11 @@ it('les petites constructions des commandes (GD-7, PR 3) se fondent dans le terr
   }
 });
 
-it('les bulles des objets touchables (proposition « à la Supercell ») : trois quadrilatères en un appel, et le monde en blocs reste sous son plafond', () => {
+it('les bulles des objets touchables (proposition P2) : trois quadrilatères en un appel, et le monde en blocs reste sous son plafond', () => {
   for (const a of ARCHIPELAGO_IDS) {
-    const signes = signesCost(a);
-    const pire = signesCost(a, true);
+    const signes = signesCost();
     // Trois bulles au plus à la fois, dans le maillage des plaques des créatures, quel que soit l'état du jeu.
     expect(signes, a).toEqual({ triangles: 6, drawCalls: 1 });
-    expect(pire, a).toEqual(signes);
     // Avec les petites constructions des commandes, sous le plafond.
     const blocs = sceneCost(a, true);
     expect(blocs.triangles + signes.triangles, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.triangles);

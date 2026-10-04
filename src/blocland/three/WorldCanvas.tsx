@@ -71,6 +71,7 @@ export default function WorldCanvas({
   creatures = SANS_CREATURES,
   signes = [],
   prochaine = null,
+  calme = false,
   forceDay = false,
   bridges = [],
   marker: markerEnAncrage = null,
@@ -157,8 +158,8 @@ export default function WorldCanvas({
   vueDeplaceeRef.current = onVueDeplacee;
   const { settings } = useSettings();
   // Les props que la scène lit à chaque image (elle n'est pas refaite quand elles changent).
-  const derniers = useRef<Derniers>({ carte: map, focus, home: home ?? null, forceDay, whalePass, sons: settings.sounds, onVoyageLegEnd });
-  derniers.current = { carte: map, focus, home: home ?? null, forceDay, whalePass, sons: settings.sounds, onVoyageLegEnd };
+  const derniers = useRef<Derniers>({ carte: map, focus, home: home ?? null, forceDay, whalePass, sons: settings.sounds, calme, onVoyageLegEnd });
+  derniers.current = { carte: map, focus, home: home ?? null, forceDay, whalePass, sons: settings.sounds, calme, onVoyageLegEnd };
   // Le passage de la baleine : demandé par `whalePass`, joué une fois par `seq` (même si la scène est refaite).
   const passSeqRef = useRef<number | null>(null);
 
@@ -208,7 +209,8 @@ export default function WorldCanvas({
     const cubesDuMonde = creerCubes(monde, large, lumiere, instant);
     const navire = creerNavire(monde, personnages, cubesDuMonde, derniers, instant, vehicleRef, voyageRef);
     const rond = creerRond(monde, personnages, () => cubesDuMonde.champ(), lumiere, instant);
-    const signesDesCreatures = creerSignes(monde, el, camera, personnages, derniers, instant);
+    // Les bulles se tiennent dans la place libre : leur propre lecteur, pour ne pas changer la clé de celui de la caméra.
+    const signesDesCreatures = creerSignes(monde, el, camera, personnages, derniers, instant, lecteurDePlaceLibre(el));
     const affordance = creerAffordance(monde, derniers, instant);
     // La Carte se cadre dans la place que l'interface laisse libre, autour de la flèche de la destination (DA-31).
     const lecture = {
@@ -409,7 +411,8 @@ export default function WorldCanvas({
     const centre = new THREE.Vector3();
     const versLeCentre = new THREE.Vector3();
     /**
-     * Le doigt hors de tout objet : l'objet dont la zone de toucher (48 pixels au moins autour de son signe) le prend,
+     * Le doigt hors de tout objet : l'objet dont la zone de toucher (48 pixels au moins autour d'une borne ou d'un
+     * Gardien petits à l'écran, three/affordance.ts) le prend,
      * selon ce qu'il a touché directement (`direct` ; world/affordance.ts, `zoneDuToucher` : jamais une face en chantier,
      * le sol seulement tout près de l'objet). Dans le ciel, un objet dont le centre est caché par le relief est écarté.
      */
@@ -488,7 +491,8 @@ export default function WorldCanvas({
       if (glisse || moved >= SEUIL_DU_GLISSE) return;
       // Pendant le voyage, un tap n'importe où fait arriver le navire tout de suite.
       if (voyageRef.current) return voyageSkipRef.current?.();
-      // Une bulle sous le doigt passe d'abord : elle est dessinée par-dessus tout (Blocland, world/affordance.ts).
+      // Une bulle sous le doigt (sa plaque, pas les marges de sa case) passe d'abord : elle est dessinée par-dessus tout
+      // (Blocland, world/affordance.ts).
       const vue = renderer.domElement.getBoundingClientRect();
       const bulle = signesDesCreatures.sous(e.clientX - vue.left, e.clientY - vue.top, vue.width, vue.height);
       if (bulle?.genre === 'creature') {
@@ -499,7 +503,7 @@ export default function WorldCanvas({
       if (bulle) return toucherLObjet(bulle);
       const { creature, hit } = aim(e);
       // Un toucher direct sur un objet passe d'abord, une face en chantier aussi (le bloc s'y pose) ; sinon, dans le vide
-      // ou sur le sol tout près d'un objet qui porte un signe, la zone de son signe le retient (world/affordance.ts,
+      // ou sur le sol tout près d'une borne ou d'un Gardien petits, leur zone les retient (world/affordance.ts,
       // `zoneDuToucher`).
       const touche = hit ? tapSur(hit).kind : null;
       const direct: ToucherDirect =

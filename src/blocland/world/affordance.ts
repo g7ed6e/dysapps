@@ -20,7 +20,7 @@ import type { ObjetDeLaFiche } from './disposition';
 
 export type { ObjetDeLaFiche };
 import type { Cell, CreaturePlacement } from './paths';
-import type { VehiclePlacement } from './terrain';
+import { islandCenter, type VehiclePlacement } from './terrain';
 
 /** L'état d'un objet touchable : à faire (il porte une bulle), pas encore, un lieu (ils n'en portent pas). */
 export type EtatDuSigne = 'aFaire' | 'pasEncore' | 'lieu';
@@ -79,6 +79,11 @@ export interface SigneDObjet {
   iles: BiomeId[];
   /** La boîte de l'objet : la zone de toucher la projette à l'écran. */
   boite: Boite;
+  /**
+   * Un ouvrage : le bas de sa bulle vu de chacune de ses îles, au-dessus de son bout de ce côté (sa colonne la plus
+   * proche du cœur de l'île), pour que la bulle reste près de l'île où l'on est et vise l'ouvrage, pas le large.
+   */
+  parIle?: Partial<Record<BiomeId, { x: number; y: number; z: number }>>;
 }
 
 /** Le sommet d'un objet : le plus haut z de ses cubes, + 1 (le dessus du cube), décalé de `dz`. */
@@ -186,7 +191,14 @@ export function signesDesObjets({ cubes, quests = [], creatures = [], vehicle = 
     const colonne = l.filter((c) => c.x === milieu.x && c.y === milieu.y);
     const def = getBridge(id);
     const iles = def ? [def.from, def.to] : estUnBiome(milieu.tag) ? [milieu.tag] : [];
-    out.push({ ...signeAuDessus({ genre: 'ouvrage', id }, prets.has(id) ? 'aFaire' : 'pasEncore', iles, boiteDe(l)), x: milieu.x + 0.5, y: milieu.y + 0.5, z: hauteurDuSigneDeLObjet(colonne) });
+    const parIle: SigneDObjet['parIle'] = {};
+    for (const ile of def ? iles : []) {
+      const c = islandCenter(ile);
+      let bout = milieu;
+      for (const cube of l) if (Math.hypot(cube.x + 0.5 - c.x, cube.y + 0.5 - c.y) < Math.hypot(bout.x + 0.5 - c.x, bout.y + 0.5 - c.y)) bout = cube;
+      parIle[ile] = { x: bout.x + 0.5, y: bout.y + 0.5, z: hauteurDuSigneDeLObjet(l.filter((cube) => cube.x === bout.x && cube.y === bout.y)) };
+    }
+    out.push({ ...signeAuDessus({ genre: 'ouvrage', id }, prets.has(id) ? 'aFaire' : 'pasEncore', iles, boiteDe(l)), x: milieu.x + 0.5, y: milieu.y + 0.5, z: hauteurDuSigneDeLObjet(colonne), parIle });
   }
   // Un Gardien pas encore vaincu : à faire si son défi est prêt, sinon pas encore. Les créatures ont leur propre bulle.
   for (const g of creatures) {
@@ -261,9 +273,11 @@ export const BULLE = {
   flotte: { amplitudePx: 2, periodeS: 2.4 },
   /** Touchée, la bulle s'écrase (90 %) en 80 ms, puis revient en débordant un peu (105 %) et se pose, en 180 ms. */
   rebond: { ecrase: 0.9, deborde: 1.05, ecraseMs: 80, reviensMs: 180 },
-  /** Une bulle reste entière à l'écran : à 8 pixels des bords, à 72 du bas (au-dessus de la barre du bas). */
+  /**
+   * Une bulle reste entière dans la place que l'interface laisse libre (hors de la barre du bas, du bouton Pause, de la
+   * rangée des classes, d'une fiche), à 8 pixels de ses bords ; tenue au bord, elle perd sa pointe.
+   */
   bordPx: 8,
-  basPx: 72,
 } as const;
 
 /** Ce que montre une bulle : une icône, ou le bloc demandé (une commande). */
@@ -309,15 +323,16 @@ export function bullesPossibles(objets: readonly SigneDObjet[], creatures: reado
 }
 
 /**
- * Les bulles montrées : celles de l'île `ile` (celle du bonhomme), trois au plus, la prochaine chose à faire
- * (`prochaine`, une clé) d'abord, puis par rang, puis dans l'ordre donné. La première est mise en avant (la prochaine,
- * si elle est là). Aucune sans île.
+ * Les bulles montrées : celles de l'île `ile` (celle où l'on est), trois au plus, la prochaine chose à faire
+ * (`prochaine`, une clé : la prochaine destination) d'abord, puis par rang, puis dans l'ordre donné. Seule la prochaine
+ * est mise en avant, et seulement si elle est sur cette île : sinon aucune (la bulle d'or dit la même chose que la
+ * prochaine destination, jamais autre chose). Aucune sans île.
  */
 export function bullesMontrees<T extends Pick<Candidate, 'cle' | 'iles' | 'rang'>>(liste: readonly T[], ile: BiomeId | null, prochaine: string | null): { bulle: T; enAvant: boolean }[] {
   if (!ile) return [];
   const ici = liste.map((b, i) => ({ b, i })).filter(({ b }) => b.iles.includes(ile));
   ici.sort((x, y) => Number(y.b.cle === prochaine) - Number(x.b.cle === prochaine) || x.b.rang - y.b.rang || x.i - y.i);
-  return ici.slice(0, BULLE.max).map(({ b }, i) => ({ bulle: b, enAvant: i === 0 }));
+  return ici.slice(0, BULLE.max).map(({ b }, i) => ({ bulle: b, enAvant: i === 0 && b.cle === prochaine }));
 }
 
 /** La montée et descente de la bulle mise en avant, en pixels CSS, au temps `t` de la scène (en secondes). */
