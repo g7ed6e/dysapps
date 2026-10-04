@@ -98,6 +98,9 @@ export function creerEtiquettes(
     ? { w: caseALEcran(true), h: caseALEcran(true), tip: PLAQUE.pointe.bas / CASE }
     : { w: (ARROW_CSS * arrowCanvas.width) / arrowCanvas.height, h: ARROW_CSS, tip: 114 / arrowCanvas.height };
   mapArrow.renderOrder = 12;
+  // Tenue au bord, la bulle se dessine loin de sa cible, qui est hors du cadre : sans cela, Three.js l'écarterait de
+  // l'image avec elle.
+  mapArrow.frustumCulled = false;
   mapArrow.raycast = () => {};
   mapArrow.visible = false;
   scene.add(mapArrow);
