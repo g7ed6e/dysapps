@@ -21,7 +21,7 @@ Une suite de bonnes réponses du premier coup forme un **combo** (« 5 d’affil
 Sur la page Succès, la section **Par matière** montre un panneau par matière (Français, Maths, Anglais) :
 
 - une **jauge d’étoiles** : les étoiles gagnées sur toutes les missions des îles de la matière, de la 6e à la 3e (« 7 / 81 étoiles dans Blocland », ou dans Archipéo pour qui l’a choisi) ;
-- le nombre d’**îles ouvertes** et de **Gardiens vaincus** de la matière, et le **record** des missions du portail déjà jouées ;
+- le nombre d’**îles ouvertes** et de **Gardiens rallumés** de la matière, et le **record** des missions du portail déjà jouées ;
 - la liste **À retravailler** : les missions à reprendre, la plus faible en premier. Toucher une ligne relance directement la mission.
   - Pour l’aventure : les missions déjà jouées qui n’ont pas encore trois étoiles, sur une île ouverte. La ligne donne l’île et les étoiles.
   - Pour le portail : les missions dont le record est sous 70 %. La ligne donne le record, en étoiles.
@@ -45,7 +45,7 @@ Une vingtaine de succès jalonnent la progression : les premiers pas (première 
 - **Répétition espacée** : un item raté revient le lendemain, puis trois, sept et quinze jours plus tard, jusqu’à trois réussites d’affilée. C’est ainsi que les mots-outils du Coffre à mots ou les homophones se fixent. Dans l’aventure, la créature de l’île fait signe et propose de reprendre, d’une phrase lue à voix haute, en vue simple aussi ([La créature qui se souvient](blocland.md#la-creature-qui-se-souvient)) ; une révision finie rapporte toujours autant de blocs, quel que soit le score. Quand une révision pose une partie du bâtiment, **Voir le bâtiment** passe avant **Révision suivante**, et le panneau de l’île repropose les révisions au retour.
 - **Niveau adapté** par mission : monte après deux bonnes parties (ou une seule quasi parfaite), redescend après deux parties difficiles, toujours présenté positivement.
 - **Le Bloc-Navire** : chaque étape terminée et chaque voyage rapportent de l’XP ; le voyage fait reste fait, on revient quand on veut.
-- **Journal du village** : chaque bâtiment terminé est daté ; le profil compte les bâtiments et les Gardiens vaincus.
+- **Journal du village** : chaque bâtiment terminé est daté ; le profil compte les bâtiments et les Gardiens rallumés.
 
 ## Suivre la progression d’un élève
 
@@ -53,6 +53,6 @@ Pour un parent, un enseignant ou un orthophoniste, trois endroits résument la s
 
 1. **La page Succès** : niveau, précision globale, meilleur combo, nombre de missions, bâtiments, succès obtenus avec leur date ; et, matière par matière, les étoiles gagnées et les missions à retravailler.
 2. **Les cartes de mission** du portail : meilleur score par mission et par niveau.
-3. **Les panneaux d’île** de l’aventure : étoiles par mission, parties du bâtiment posées, Gardien vaincu ou non. La page de chaque île indique aussi le **prochain objectif**.
+3. **Les panneaux d’île** de l’aventure : étoiles par mission, parties du bâtiment posées, Gardien rallumé ou non. La page de chaque île indique aussi le **prochain objectif**.
 
 Tout reste sur l’appareil : il n’y a pas d’export ni de tableau de bord en ligne. Regarder ensemble la page Succès à la fin d’une séance est la manière la plus simple de faire le point.

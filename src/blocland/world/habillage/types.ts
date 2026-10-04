@@ -28,8 +28,6 @@ export interface Habillage {
   dessin2D: 'peint' | 'pixels';
   /** La créature d'une bulle et le Gardien d'un défi, hors de la scène : les modèles dessinés (en SVG sans la 3D), ou en cubes. */
   figures: 'modeles' | 'cubes';
-  /** Le défi d'un Gardien : une sentinelle à rallumer (si l'univers en a les textes), ou l'arène. */
-  defi: 'sentinelle' | 'arene';
   /**
    * Les grands repères (world/cadrage.ts : le grand phare des Îles du Ciel) : la caméra les garde dans le cadre et les
    * étiquettes s'en écartent ; ou le cadrage de la zone seul.

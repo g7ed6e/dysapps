@@ -109,7 +109,7 @@ export function ShipSection({ biome, builder, in3d = false, onBoard, highlight =
               </ul>
             )}
             <p className="ship-guardians">
-              <Icon name="shield" /> <Syllabified text={textes.libelles.navireGardiens(beatenGuardians(stage.from, state.progress), stage.guardians, textes.archipels[stage.from], stage.short)} />
+              <Icon name="flame" /> <Syllabified text={textes.libelles.navireGardiens(beatenGuardians(stage.from, state.progress), stage.guardians, textes.archipels[stage.from], stage.short)} />
             </p>
             {!status.complete && (
               <>

@@ -243,7 +243,7 @@ describe('les bulles (proposition P2, 4 octobre 2026)', () => {
     expect(possibles.map((b) => b.cle)).toEqual([`borne:${FORET}:a`, `borne:${FORET}:b`, 'ouvrage:pont', `gardien:${FORET}`, `borne:${MINE}:a`, cleDeLaCreature(FORET), cleDeLaCreature(MINE)]);
     expect(possibles[0].image).toEqual({ icone: 'star' });
     expect(possibles[2].image).toEqual({ icone: 'hammer' });
-    expect(possibles[3].image).toEqual({ icone: 'shield' });
+    expect(possibles[3].image).toEqual({ icone: 'flame' });
     expect(possibles[5]).toMatchObject({ cible: { genre: 'creature', id: FORET }, image: { bloc: 'grass' } });
     expect(possibles[6].image).toEqual({ icone: 'pickaxe' });
     expect(iconeDeLObjet({ genre: 'navire', port: FORET })).toBe('ship');

@@ -38,10 +38,11 @@ function ready(biomeId: string) {
   return progress;
 }
 
-it('sans les étoiles, la créature dit que le Gardien attend encore, sans « bâtisseur »', async () => {
+it('sans les étoiles, une seule phrase dit comment ouvrir le défi, sans « bâtisseur »', async () => {
   renderAt('/adventure/french-6e-phonology/challenge');
   await loaded();
-  expect(document.body.textContent).toMatch(/Le Grand Chêne attend encore\. Obtiens 2 étoiles dans chaque mission de l’île/);
+  expect(document.body.textContent).toMatch(/Pour ouvrir son défi, gagne 2 étoiles dans /);
+  expect(document.body.textContent).not.toMatch(/attend encore/);
   expect(document.body.textContent).not.toMatch(/bâtisseur/);
 });
 

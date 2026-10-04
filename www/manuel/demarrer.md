@@ -65,7 +65,7 @@ Quand des items ratés reviennent (répétition espacée), la créature de leur 
 
 1. **Réglages d’abord, si besoin** : la police, la taille du texte, le thème et la lecture à voix haute se règlent dans Réglages et s’appliquent partout, avec un aperçu. Les valeurs par défaut conviennent à la plupart des élèves dys (Luciole, 20 px, interlignage 1,7, lecture automatique des consignes, syllabes en couleurs). Voir [Réglages et accessibilité](reglages.md).
 2. **Le Tutoriel** (dans le menu en page, carte « Commencer ici » tant qu’on n’a rien joué, puis lien « Revoir le tutoriel » en bas ; depuis le village, ligne « Tutoriel » du menu du village) est une mission d’entraînement de quelques questions pour prendre les commandes en main : lire ou écouter la consigne, toucher une réponse, utiliser le joker, lire la correction.
-3. **Choisir** : une mission du portail (voir [Les missions](quetes.md)) ou l’aventure (voir [L’aventure](blocland.md)). Dans l’aventure, un tutoriel en trois étapes, lues à voix haute, s’affiche en bas de l’écran à la première entrée ; une bulle bordée d’or (une flèche jaune dans Archipéo) indique où commencer, et la dernière étape entoure de jaune le bouton Menu.
+3. **Choisir** : une mission du portail (voir [Les missions](quetes.md)) ou l’aventure (voir [L’aventure](blocland.md)). Dans l’aventure, un tutoriel en trois étapes, lues à voix haute, s’affiche en bas de l’écran à la première entrée ; une bulle bordée d’or indique où commencer, et la dernière étape entoure de jaune le bouton Menu.
 
 Les séances sont pensées **courtes** : une mission du portail dure une dizaine de questions ; dans l’aventure, après trois exercices ou dix minutes, l’application propose d’arrêter. Rien n’oblige à continuer, rien ne se perd en s’arrêtant.
 

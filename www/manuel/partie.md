@@ -8,7 +8,7 @@ L'application s'ouvre sur l'**écran titre**. Un seul bouton, **Jouer** : ce pre
 
 ![L'écran titre : l'île en blocs de Blocland, « Blocland » et le gros bouton vert Jouer.](/captures/titre.jpg)
 
-Derrière, le **village** est déjà chargé. À la première visite, un tutoriel en trois étapes, lues à voix haute, montre l’essentiel : toucher la Forêt des sons, toucher une borne puis Jouer, le bouton Menu. Le reste (les ouvrages, le Bloc-Navire) est dit par les créatures, la première fois qu’on le rencontre. Dans Blocland, une bulle bordée d’or montre la prochaine chose à faire ; dans Archipéo, une flèche jaune montre la Forêt des sons, où tout commence. Mousso, la créature verte, attend sur son île ; les bornes étoilées sont les missions.
+Derrière, le **village** est déjà chargé. À la première visite, un tutoriel en trois étapes, lues à voix haute, montre l’essentiel : toucher la Forêt des sons, toucher une borne puis Jouer, le bouton Menu. Le reste (les ouvrages, le Bloc-Navire) est dit par les créatures, la première fois qu’on le rencontre. Une bulle bordée d’or montre la prochaine chose à faire. Mousso, la créature verte, attend sur son île ; les bornes étoilées sont les missions.
 
 ![Première visite du village en 3D : la Forêt des sons en couleurs au centre, les autres îles en ruine, et la première bulle du tutoriel « Bienvenue à Blocland ! ».](/captures/village-premiere-visite.jpg)
 
@@ -54,13 +54,13 @@ La **Carte** montre tout l'archipel vu d'en haut : le médaillon à son visage m
 
 ## Le Gardien, le navire, l'école
 
-Chaque île a son **Gardien**. Pour le vaincre, on réussit ses épreuves : ici le Golem de roche de la Mine demande de piocher seulement les blocs qui portent la lettre d.
+Chaque île a son **Gardien**, éteint sur son îlot, en pierre grise. Pour le rallumer, on réussit ses épreuves : chacune lui rend une partie de ses couleurs. Ici, le Golem de roche de la Mine demande de piocher seulement les blocs qui portent la lettre d.
 
-![Le défi du Golem de roche : sa résistance 4 sur 4, sa phrase, et l'épreuve Filon « Pioche seulement les blocs avec la lettre d ».](/captures/gardien.jpg)
+![Le défi « Rallumer le Golem de roche » : le Golem en pierre grise, les pastilles des épreuves réussies (0 sur 4, il en faut 3), sa phrase, et l'épreuve Filon « Pioche seulement les blocs avec la lettre d ».](/captures/gardien.jpg)
 
-Au port, sur la Plaine des nombres, se construit le **Bloc-Navire** : ses blocs, et les Gardiens à vaincre pour la voile.
+Au port, sur la Plaine des nombres, se construit le **Bloc-Navire** : ses blocs, et les Gardiens à rallumer pour la voile.
 
-![Le chantier du Bloc-Navire : 24 sur 45 blocs posés, les bois, galets et pierre qui manquent avec l'île où les gagner, et « encore 1 Gardien à vaincre ».](/captures/navire-chantier.jpg)
+![Le chantier du Bloc-Navire : 24 sur 45 blocs posés, les bois, galets et pierre qui manquent avec l'île où les gagner, et « encore 1 Gardien à rallumer ».](/captures/navire-chantier.jpg)
 
 L'**école du village** ouvre les missions du portail (français, maths, anglais). Elles rapportent les blocs de l'île de l'école.
 
@@ -74,9 +74,9 @@ Quand les bâtiments sont finis, les blocs restants servent aux **monuments**, s
 
 ## Les Basses Terres reconstruites
 
-À la fin de la 6e, toutes les îles sont ouvertes et bâties : maisons, tours, huttes, et les Gardiens vaincus devenus statues. Le Bloc-Navire emmène alors l'élève dans les **Collines du Large**, l'archipel de 5e.
+À la fin de la 6e, toutes les îles sont ouvertes et bâties : maisons, tours, huttes, et les Gardiens rallumés, en couleurs sur leurs îlots. Le Bloc-Navire emmène alors l'élève dans les **Collines du Large**, l'archipel de 5e.
 
-![Les Basses Terres reconstruites : les îles reliées par des ponts, les maisons aux toits rouges, les statues des Gardiens.](/captures/village-reconstruit.jpg)
+![Les Basses Terres reconstruites : les îles reliées par des ponts, les maisons aux toits rouges, les Gardiens rallumés en couleurs.](/captures/village-reconstruit.jpg)
 
 ![Le Marché des proportions, port des Collines du Large : l'échoppe à l'auvent rayé et la maison de la créature.](/captures/collines-du-large.jpg)
 

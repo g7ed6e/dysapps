@@ -12,7 +12,6 @@ export const HABILLAGE_ARCHIPEO = {
   etiquettes: 'nettes',
   dessin2D: 'peint',
   figures: 'modeles',
-  defi: 'sentinelle',
   reperes: 'cadres',
   atelier: 'halle',
   pose: 'fondu',

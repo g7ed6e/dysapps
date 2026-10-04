@@ -13,8 +13,8 @@ import { archipelagoOf, getArchipelago, isBiomeUnlocked } from './world/archipel
 import { beatenGuardians, stageTo, type VehicleStage } from './world/vehicle';
 import { nextArchipelago } from './world/archipelago';
 import { useBlocland } from './BloclandContext';
-import { STARS_TO_BEAT, bossDef, bossId, isBossBeaten, isBossOpen, missingForBoss } from './boss';
-import { CreatureBubble } from './CreatureBubble';
+import { STARS_TO_BEAT, bossDef, bossId, isBossBeaten, isBossOpen } from './boss';
+import { explicationDuGardien } from './IslandSheet';
 import { firstSentences } from './firstSentences';
 import { ExerciseRunner } from './ExerciseRunner';
 import { Guardian3D, type GuardianMood } from './Guardians';
@@ -23,7 +23,7 @@ import { playDrum, playGrowl, playVictory } from './sound';
 import { Loading } from '../components/Loading';
 import { useTextes } from '../univers';
 
-/** Le Gardien d'un biome : le défi de fin de biome, une manche de chaque mission, dans son arène. */
+/** Le Gardien d'une île : le défi de fin d'île, une manche de chaque mission, qui le rallume (GD-8). */
 export function BossPage() {
   const { biomeId } = useParams();
   const { state } = useBlocland();
@@ -43,7 +43,8 @@ export function BossPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [biome?.id, unlocked, run],
   );
-  // Archipéo (lot 6) : le défi d'une sentinelle, dont la consigne dit la règle ; Blocland garde l'arène d'avant.
+  // Le défi d'un Gardien éteint, dont la consigne dit la règle (lot 6, commun aux deux univers depuis GD-8) ; l'arène
+  // d'avant (humeur, résistance) ne sert plus qu'à un univers sans textes de sentinelles.
   const sent = textes.sentinelles;
   const total = loaded?.items.length ?? 0;
   // Les épreuves réussies qu'il faut : les mêmes 70 % que la victoire.
@@ -65,7 +66,7 @@ export function BossPage() {
   const [deborde, setDeborde] = useState(false);
   const ligneRef = useRef<HTMLParagraphElement>(null);
   const ligneId = useId();
-  // Ce Gardien vaincu fait arriver le kit du Bloc-Navire (la voile, le ballon, les feux) : on le dit, avec le chemin du port.
+  // Ce Gardien rallumé fait arriver le kit du Bloc-Navire (la voile, le ballon, les feux) : on le dit, avec le chemin du port.
   const [shipHint, setShipHint] = useState<VehicleStage | null>(null);
   const sound = (f: () => void) => settings.sounds && f();
 
@@ -78,7 +79,7 @@ export function BossPage() {
     // Pas de tambour pour une sentinelle : rien ne se combat. Sa règle est lue au lancement, comme une consigne.
     if (def && !sent) sound(playDrum);
     if (def && sent && settings.autoRead) speak(frenchTypography(def.instruction));
-    // Au lancement et à chaque revanche.
+    // Au lancement et à chaque partie rejouée.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [def]);
 
@@ -140,12 +141,8 @@ export function BossPage() {
         <Loading />
       ) : !unlocked || !def ? (
         <>
-          <CreatureBubble
-            biome={biome}
-            text={textes.libelles.defiFerme(guardianTitle(biome), STARS_TO_BEAT)}
-          />
           <p className="intro">
-            <Syllabified text={`Il te manque encore des étoiles dans : ${missingForBoss(biome, state.progress).join(', ')}.`} />
+            <Syllabified text={explicationDuGardien(biome, state.progress, true)} />
           </p>
           <Link to={`/adventure/${biome.id}`} className="button primary">
             <Icon name="back" /> Voir les missions
@@ -161,11 +158,11 @@ export function BossPage() {
             <div className="arena-vitrine">
               {sent ? (
                 // La sentinelle ne bouge pas : seules ses lueurs montent, une épreuve réussie après l'autre (jamais
-                // éteintes par un échec), et la pierre s'éclaircit à la victoire.
+                // éteintes par un échec), et la pierre s'éclaircit à la victoire ; déjà rallumé, il le reste quand on rejoue (GD-8).
                 <Guardian3D
                   biome={biome.id}
                   label={`${guardianTitle(biome)}, le Gardien de l’île`}
-                  allumage={{ pierre: beatenNow ? 1 : 0, lueurs: beatenNow ? 1 : lueursDuDefi(won, needed) }}
+                  allumage={{ pierre: beatenNow || alreadyBeaten ? 1 : 0, lueurs: beatenNow || alreadyBeaten ? 1 : lueursDuDefi(won, needed) }}
                   fondu={beatenNow ? FONDU.victoire : FONDU.reussite}
                 />
               ) : (

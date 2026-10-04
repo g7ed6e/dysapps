@@ -1834,29 +1834,48 @@ function bossIslet(biome: BiomeDef, beaten: boolean, cubes: VoxelCube[], pas = t
       block(s.x, s.y, s.z, BLOCKS[BLOC.galet].side);
       if (s.z === 0) block(s.x, s.y, -1, BLOCKS[BLOC.galet].side);
     }
-  // Vaincu : un bloc d'or sur un socle de pierre, devant la statue.
+  // Rallumé : un bloc d'or sur un socle de pierre, devant lui.
   if (trophy) {
     block(trophy.x, trophy.y, gz + 1, BLOCKS[BLOC.pierre].side);
     block(trophy.x, trophy.y, gz + 2, BLOCKS[BLOC.or].side, BLOCKS[BLOC.or].top);
   }
 }
 
-/** Gris de pierre de même luminosité qu'une couleur (pour la statue). */
-function stoneOf(color: string): string {
+/**
+ * La pierre éteinte d'une couleur (pour la statue d'un Gardien qui attend d'être rallumé) : un gris froid, un peu bleu,
+ * plus sombre que la couleur, qui suit sa luminosité. Froid et sombre pour que les Gardiens déjà gris (le Golem, le Lion
+ * de pierre, le Titan…) se voient éteints, puis rallumés dès la première épreuve (GD-8, consultant de Blocland). Les
+ * tests reconnaissent cette pierre à sa teinte (vert = rouge + 8, bleu = vert + 16) : la changer, c'est changer `estPierre`.
+ */
+export function stoneOf(color: string): string {
   const n = parseInt(color.slice(1), 16);
   const lum = ((n >> 16) & 255) * 0.3 + ((n >> 8) & 255) * 0.59 + (n & 255) * 0.11;
-  const g = Math.round(90 + (lum / 255) * 90);
-  return `#${((g << 16) | (g << 8) | g).toString(16).padStart(6, '0')}`;
+  const g = Math.round(64 + (lum / 255) * 76);
+  return `#${(((g - 8) << 16) | (g << 8) | (g + 16)).toString(16).padStart(6, '0')}`;
 }
 
-/** Un Gardien vaincu, en statue de pierre : chaque cube en gris de même luminosité, sans dessus d'une autre couleur. */
+/** Un Gardien éteint, en statue de pierre : chaque cube, et son dessus, en pierre éteinte (`stoneOf` ; le fondu du rallumage part de ces gris). */
 export function statueDe<C extends { color: string; top?: string }>(cubes: readonly C[]): C[] {
-  return cubes.map((c) => ({ ...c, color: stoneOf(c.color), top: undefined }));
+  return cubes.map((c) => ({ ...c, color: stoneOf(c.color), top: c.top === undefined ? undefined : stoneOf(c.top) }));
 }
 
 /**
- * Les Gardiens visibles : en couleurs s'ils attendent le défi, en statue de pierre s'ils sont vaincus. Avec
- * `sentinelles` (Archipéo, lot 6), ceux des îles ouvertes sont là avant que leur défi soit prêt.
+ * Un Gardien qui se rallume au défi (GD-8) : ses couleurs reviennent des pieds vers la tête, `part` de sa hauteur
+ * (entre 0, tout en pierre, et 1, tout en couleurs) ; le reste en pierre.
+ */
+export function gardienEnPartieRallume<C extends { z: number; color: string; top?: string }>(cubes: readonly C[], part: number): C[] {
+  if (part <= 0) return statueDe(cubes);
+  if (part >= 1) return [...cubes];
+  const zs = cubes.map((c) => c.z);
+  const bas = Math.min(...zs);
+  const seuil = bas + part * (Math.max(...zs) - bas + 1);
+  return cubes.map((c) => (c.z < seuil ? c : { ...c, color: stoneOf(c.color), top: c.top === undefined ? undefined : stoneOf(c.top) }));
+}
+
+/**
+ * Les Gardiens visibles : éteints, en statue de pierre, tant que leur défi n'est pas réussi ; rallumés, en couleurs,
+ * ensuite (GD-8). Avec `sentinelles` (les deux univers depuis GD-8), ceux des îles ouvertes sont là avant que leur
+ * défi soit prêt.
  */
 export function guardianPlacements(
   a: ArchipelagoId,
@@ -1872,7 +1891,7 @@ export function guardianPlacements(
     const { x, y, z } = bossIsletOrigin(index);
     const off = guardianOffset(b.id);
     const beaten = status === 'beaten';
-    const cubes = beaten ? statueDe(gardienDuMonde(b.id)) : gardienDuMonde(b.id);
+    const cubes = beaten ? gardienDuMonde(b.id) : statueDe(gardienDuMonde(b.id));
     out.push({ id: b.id, kind: 'guardian', still: true, beaten, cubes, origin: { x: x + off.x, y: y + off.y, z: z + 1 } });
   });
   return out;

@@ -42,8 +42,10 @@ it('la page du biome montre le Gardien verrouillé, puis prêt quand chaque miss
 it('sans les étoiles, le Gardien refuse et renvoie aux missions', async () => {
   renderAt('/adventure/french-6e-phonology/challenge');
   await loaded();
-  expect(screen.getByRole('heading', { name: /Le Grand Chêne/ })).toBeInTheDocument();
-  expect(document.body.textContent).toMatch(/Il te manque encore des étoiles/);
+  expect(screen.getByRole('heading', { name: /Grand Chêne/ })).toBeInTheDocument();
+  // Une seule phrase : ce qu'il y a à faire, jamais ce qui manque (GD-8).
+  expect(document.body.textContent).toMatch(/Pour ouvrir son défi, gagne 2 étoiles dans Abattage syllabique, Chasse au son et Rimes-échelle\./);
+  expect(document.body.textContent).not.toMatch(/manque/);
   expect(screen.getByRole('link', { name: /Voir les missions/ })).toBeInTheDocument();
 });
 
@@ -51,26 +53,26 @@ it('avec les étoiles, le défi démarre : première épreuve avec l’écran de
   localStorage.setItem('dysapps:game', JSON.stringify({ progress: ready('french-6e-phonology') }));
   renderAt('/adventure/french-6e-phonology');
   expect(screen.getByRole('link', { name: /Le Grand Chêne/ })).toBeInTheDocument();
-  expect(screen.getByText(/Prêt à t’affronter/)).toBeInTheDocument();
+  expect(screen.getByText(/Défi prêt/)).toBeInTheDocument();
   localStorage.setItem('dysapps:game', JSON.stringify({ progress: ready('french-6e-phonology') }));
   renderAt('/adventure/french-6e-phonology/challenge');
   await loaded();
   expect(screen.getAllByText(/Épreuve : Abattage syllabique/).length).toBeGreaterThan(0);
-  // L'arène : le Gardien et sa jauge de résistance, pleine au départ.
-  expect(screen.getByRole('region', { name: /L’arène du Gardien/ })).toBeInTheDocument();
+  // Le défi (GD-8) : le Gardien, éteint, et la jauge des épreuves réussies, vide au départ.
+  expect(screen.getByRole('region', { name: /Rallumer le Grand Chêne/ })).toBeInTheDocument();
   expect(screen.getByRole('img', { name: /Le Grand Chêne, le Gardien/ })).toBeInTheDocument();
-  const gauge = screen.getByRole('progressbar', { name: /Résistance du Gardien/ });
-  expect(gauge).toHaveAttribute('aria-valuenow', gauge.getAttribute('aria-valuemax'));
+  const gauge = screen.getByRole('progressbar', { name: /Épreuves réussies/ });
+  expect(gauge).toHaveAttribute('aria-valuenow', '0');
   // L'écran de la manche est celui de la mission : un QCM de syllabes.
   expect(screen.getByRole('group', { name: 'Réponses possibles' })).toBeInTheDocument();
 });
 
-it('devant « Épreuve », un bouclier dans Blocland, la flamme de la sentinelle dans Archipéo (DA-8)', async () => {
+it('devant « Épreuve », la flamme du Gardien à rallumer, dans les deux univers (DA-8, GD-8)', async () => {
   const icone = () => screen.getAllByText(/Épreuve : /)[0].querySelector('svg')?.getAttribute('class') ?? '';
   localStorage.setItem('dysapps:game', JSON.stringify({ progress: ready('french-6e-phonology') }));
   const blocland = renderAt('/adventure/french-6e-phonology/challenge');
   await loaded();
-  expect(icone()).toMatch(/shield/);
+  expect(icone()).toMatch(/flame/);
   blocland.unmount();
   localStorage.setItem('dysapps:settings', JSON.stringify({ univers: 'archipeo' }));
   renderAt('/adventure/french-6e-phonology/challenge');
@@ -79,24 +81,23 @@ it('devant « Épreuve », un bouclier dans Blocland, la flamme de la sentinelle
   expect(icone()).not.toMatch(/shield/);
 });
 
-it('à chaque épreuve, la résistance du Gardien baisse et il réagit', async () => {
+it('à chaque épreuve réussie, la jauge monte et le Gardien reprend une part de ses couleurs (GD-8)', async () => {
   localStorage.setItem('dysapps:game', JSON.stringify({ progress: ready('french-6e-phonology') }));
   const user = (await import('@testing-library/user-event')).default.setup();
   renderAt('/adventure/french-6e-phonology/challenge');
   await loaded();
-  const gauge = () => screen.getByRole('progressbar', { name: /Résistance du Gardien/ });
-  const max = Number(gauge().getAttribute('aria-valuemax'));
+  const gauge = () => screen.getByRole('progressbar', { name: /Épreuves réussies/ });
   // Première épreuve : un QCM de syllabes, on répond juste (la bonne réponse est dans les données de l'exercice).
   const { loadExercise } = await import('./exercises');
   const def = (await loadExercise('french-6e-phonology-syllables-warmup-001'))!;
   const prompt = screen.getByRole('group', { name: 'Réponses possibles' }).parentElement!.textContent ?? '';
   const item = def.items.find((i) => prompt.includes(String(i.word)))!;
   await user.click(screen.getByRole('button', { name: String(item.answer) }));
-  expect(gauge()).toHaveAttribute('aria-valuenow', String(max - 1));
-  expect(document.body.textContent).toMatch(/Mes branches tremblent/);
+  expect(gauge()).toHaveAttribute('aria-valuenow', '1');
+  expect(document.body.textContent).toMatch(/Un bloc de mon écorce reprend sa couleur/);
 });
 
-it('un Gardien déjà vaincu reste ouvert à la revanche, même si une mission de son île n’a pas encore d’étoile', async () => {
+it('un Gardien déjà rallumé reste ouvert à un nouveau défi, même si une mission de son île n’a pas encore d’étoile', async () => {
   // La victoire, puis une mission sans étoile (comme une mission arrivée après coup sur l'île).
   const progress = { ...ready('french-6e-phonology'), 'french-6e-phonology-challenge': { stars: 2, attempts: 1, best: 0.9 } } as Record<string, unknown>;
   delete progress[exercisesOf('french-6e-phonology', 'rhymes')[0].id];
@@ -106,7 +107,7 @@ it('un Gardien déjà vaincu reste ouvert à la revanche, même si une mission d
   localStorage.setItem('dysapps:game', JSON.stringify({ progress }));
   renderAt('/adventure/french-6e-phonology/challenge');
   await loaded();
-  expect(document.body.textContent).not.toMatch(/Il te manque encore des étoiles/);
+  expect(document.body.textContent).not.toMatch(/Pour ouvrir son défi/);
   expect(screen.getAllByText(/Épreuve : /).length).toBeGreaterThan(0);
 }, 30_000);
 
@@ -115,9 +116,9 @@ it('le nom du Gardien une seule fois, et sa réplique entière au lancement puis
   const user = (await import('@testing-library/user-event')).default.setup();
   renderAt('/adventure/french-6e-phonology/challenge');
   await loaded();
-  const arene = screen.getByRole('region', { name: /L’arène du Gardien/ });
+  const arene = screen.getByRole('region', { name: /Rallumer le Grand Chêne/ });
   // Le nom dans le titre de l'écran, pas répété dans l'arène.
-  expect(screen.getByRole('heading', { level: 1, name: /Le Grand Chêne/ })).toBeInTheDocument();
+  expect(screen.getByRole('heading', { level: 1, name: /Rallumer le Grand Chêne/ })).toBeInTheDocument();
   expect(arene.querySelector('.arena-name')).toBeNull();
   expect(Array.from(arene.querySelectorAll('p')).some((p) => p.textContent === 'Le Grand Chêne')).toBe(false);
   // Au lancement : la réplique entière, sans pli.
@@ -125,16 +126,16 @@ it('le nom du Gardien une seule fois, et sa réplique entière au lancement puis
   expect(ligne().textContent).toMatch(/Le Grand Chêne/);
   expect(arene.querySelector('.arena-replique')).not.toHaveClass('repliee');
   expect(screen.queryByRole('button', { name: 'Toute la réplique' })).not.toBeInTheDocument();
-  // Une épreuve jouée : la nouvelle réplique, repliée en une ligne. Courte (« Mes branches tremblent. Tu as l’oreille
-  // fine. »), elle tient : rien n'est coupé, donc pas de chevron (jsdom ne mesure pas de débordement).
+  // Une épreuve jouée : la nouvelle réplique, repliée en une ligne. Elle a plus d'une phrase (« Crac ! … ») : la suite
+  // est coupée, donc le chevron l'ouvre (jsdom ne mesure pas de débordement).
   const { loadExercise } = await import('./exercises');
   const def = (await loadExercise('french-6e-phonology-syllables-warmup-001'))!;
   const prompt = screen.getByRole('group', { name: 'Réponses possibles' }).parentElement!.textContent ?? '';
   const item = def.items.find((i) => prompt.includes(String(i.word)))!;
   await user.click(screen.getByRole('button', { name: String(item.answer) }));
-  expect(ligne().textContent).toBe('Mes branches tremblent. Tu as l’oreille fine.');
+  expect(ligne().textContent).toBe('Crac ! Un bloc de mon écorce reprend sa couleur. Tu as l’oreille fine.');
   expect(arene.querySelector('.arena-replique')).toHaveClass('repliee');
-  expect(screen.queryByRole('button', { name: 'Toute la réplique' })).not.toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Toute la réplique' })).toBeInTheDocument();
 });
 
 it('la réplique repliée montre sa première phrase, le reste pour le lecteur d’écran, et le chevron l’ouvre (DA-34)', async () => {
@@ -148,7 +149,7 @@ it('la réplique repliée montre sa première phrase, le reste pour le lecteur d
     const user = (await import('@testing-library/user-event')).default.setup();
     renderAt('/adventure/french-6e-phonology/challenge');
     await loaded();
-    const arene = screen.getByRole('region', { name: /L’arène du Gardien/ });
+    const arene = screen.getByRole('region', { name: /Rallumer le Grand Chêne/ });
     const ligne = () => arene.querySelector('.arena-line')!;
     const { loadExercise } = await import('./exercises');
     const def = (await loadExercise('french-6e-phonology-syllables-warmup-001'))!;

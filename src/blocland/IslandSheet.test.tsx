@@ -129,7 +129,7 @@ it('le port montre le chantier du Bloc-Navire : ses blocs, ses Gardiens, puis le
   renderSheet('maths-6e-calculation');
   expect(screen.getByText(/Le Bloc-Navire — Étape 1 \/ 3 : La coque et la voile/)).toBeInTheDocument();
   expect(screen.getByRole('progressbar', { name: 'Avancement du Bloc-Navire' })).toHaveAttribute('aria-valuenow', '0');
-  expect(document.body.textContent).toContain('Gardiens : encore 3 à vaincre dans les Basses Terres pour la voile.');
+  expect(document.body.textContent).toContain('Gardiens : encore 3 à rallumer dans les Basses Terres pour la voile.');
   expect(screen.queryByRole('button', { name: /Embarquer/ })).not.toBeInTheDocument();
   // Pas de section navire sur une île qui n'est pas un port.
   expect(screen.queryByText(/Le Bloc-Navire —/, { selector: 'h3' })).toBeInTheDocument();
