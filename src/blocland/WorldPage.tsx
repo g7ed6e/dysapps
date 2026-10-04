@@ -156,11 +156,14 @@ export function WorldPage() {
   // Le menu du village (menu pause), en plein écran : la dernière mission, les révisions, les commandes, l'école, Missions,
   // Succès, le Tutoriel, puis Réglages tout en bas ; la croix ou Échap le referment.
   const menuOpen = biomeId === 'menu';
-  // Le menu refermé (la croix, Échap) : le focus revient au bouton Menu, d'où il était parti.
+  // Le menu refermé (la croix, Échap) : le focus revient au bouton Menu, d'où il était parti ; refermé par « Aide du
+  // village », il va à la bulle qui s'ouvre (le tutoriel le prend).
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const menuEtaitOuvert = useRef(menuOpen);
+  const aideDepuisLeMenu = useRef(false);
   useEffect(() => {
-    if (menuEtaitOuvert.current && !menuOpen) menuButtonRef.current?.focus();
+    if (menuEtaitOuvert.current && !menuOpen && !aideDepuisLeMenu.current) menuButtonRef.current?.focus();
+    aideDepuisLeMenu.current = false;
     menuEtaitOuvert.current = menuOpen;
   }, [menuOpen]);
   // La salle des trophées : un trophée par succès gagné dans le monde, le profil dans son panneau.
@@ -355,16 +358,9 @@ export function WorldPage() {
   const trail = useMemo(() => (remaining.length ? remaining.flatMap((b) => grille.liaison(b.id).map((p) => grille.versIle(p))) : undefined), [remaining, grille]);
   const [replay, setReplay] = useState(0);
   const stageRef = useRef<HTMLDivElement>(null);
-  // Revoir l'aide rouvre le tutoriel : comme la première fois, le reste attend qu'il soit fermé (DA-9).
-  // Sur la Carte de Blocland, l'aide dit seulement le pincement, le seul geste qu'aucun bouton ne montre (mot du
-  // mainteneur, 4 octobre 2026) ; la Carte s'ouvre sans phrase, l'aide ne vient qu'au bouton « ? ».
-  const [aideDeLaCarte, setAideDeLaCarte] = useState(0);
-  useEffect(() => {
-    if (!mapOpen) setAideDeLaCarte(0);
-  }, [mapOpen]);
+  // Revoir l'aide (le « ? » d'Archipéo, la ligne « Aide du village » du menu de Blocland) rouvre le tutoriel : comme la
+  // première fois, le reste attend qu'il soit fermé (DA-9).
   const revoirAide = () => {
-    // Tant que le tutoriel du village est ouvert, « ? » le laisse seul : deux bulles ne s'empilent pas en bas.
-    if (mapOpen && univers === 'blocland' && tutoDone) return setAideDeLaCarte((n) => n + 1);
     setTutoDone(false);
     setReplay((n) => n + 1);
   };
@@ -1284,12 +1280,9 @@ export function WorldPage() {
               univers === 'blocland'
                 ? 'Sur chaque île, les bornes à panneau sont les missions : touche une borne, puis Jouer. La bulle bordée d’or montre la prochaine chose à faire. Chaque mission te donne des blocs pour construire l’île, et des cubes d’or pour tes étoiles.'
                 : 'Sur chaque île, les bornes à panneau sont les missions : touche une borne, puis Jouer. Un losange jaune flotte au-dessus d’une mission à faire, des cubes d’or comptent tes étoiles. Chaque mission te donne des blocs pour construire l’île.',
-              'Le bouton Menu, en haut à droite, ouvre le menu : missions, succès, réglages, accueil.',
+              'Le bouton Menu, en haut à droite, ouvre le menu : missions, succès, aide, réglages.',
             ]}
           />
-          {mapOpen && aideDeLaCarte > 0 && (
-            <Tutorial id="carte-pincer" replay={aideDeLaCarte} onClose={() => setAideDeLaCarte(0)} steps={['Pince la Carte à deux doigts pour la rapprocher.']} />
-          )}
           </div>
         {/* La fiche de l'objet touché : en bas, au-dessus de la barre (en paysage, à gauche), comptée sur la scène. */}
         {ficheVue && (
@@ -1347,10 +1340,13 @@ export function WorldPage() {
               </span>
             </button>
           )}
-          <button type="button" className="button" onClick={revoirAide} aria-label="Revoir l’aide">
-            {/* Le mot, écrit seulement dans Blocland en grand texte (blocland.css) ; Archipéo garde l'icône seule. */}
-            <Icon name="help" /> <span className="world-bar-text world-bar-text-aide">Aide</span>
-          </button>
+          {/* Blocland : plus de « ? » dans la barre (mot du mainteneur, 4 octobre 2026) ; l'aide du village se revoit
+              depuis le menu, celle de la Carte vient seule la première fois. Archipéo garde son « ? ». */}
+          {univers !== 'blocland' && (
+            <button type="button" className="button" onClick={revoirAide} aria-label="Revoir l’aide">
+              <Icon name="help" />
+            </button>
+          )}
         </nav>
         {vol?.phase === 'vol' && vol.depart && vol.arrivee && (
           <BlocsQuiVolent key={vol.seq} bloc={vol.gain.bloc} nombre={vol.gain.nombre} depart={vol.depart} arrivee={vol.arrivee} onArrive={() => finirLeVol(true)} />
@@ -1375,7 +1371,19 @@ export function WorldPage() {
       ) : monument ? (
         <MonumentSheet builder={monumentBuilder} onClose={fermerLePanneau} />
       ) : menuOpen ? (
-        <MenuSheet onClose={() => navigate('/adventure')} onAller={openIsland} />
+        <MenuSheet
+          onClose={() => navigate('/adventure')}
+          onAller={openIsland}
+          onAide={
+            univers === 'blocland'
+              ? () => {
+                  aideDepuisLeMenu.current = true;
+                  navigate('/adventure');
+                  revoirAide();
+                }
+              : undefined
+          }
+        />
       ) : (
         island &&
         sheetOpen && (
