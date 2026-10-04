@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, bulles, fiches, menu-tete ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, bulles, fiches, menu-tete, bloc-des-iles ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 20` le plus long temps réel laissé au monde pour se construire (en secondes, 10 par défaut). L'horloge de la
 // page est pilotée (`preparerLaScene`, scripts/prise-de-vue.mjs) : deux prises du même état donnent la même image, les
@@ -83,6 +83,10 @@ const CAPTURES = [
   { nom: 'gris-muscade', vue: 'île', famille: 'lisibilite', ile: 'lv2-4e-daily-life' },
   { nom: 'gris-hanneton', vue: 'défi', famille: 'lisibilite', ile: 'maths-6e-calculation' },
   { nom: 'gris-moustache', vue: 'île', famille: 'lisibilite', ile: 'english-5e-grammar' },
+  // Le bloc de l'île sur son étiquette (famille `bloc-des-iles`), à retirer une fois le lot fusionné : la Carte en grand
+  // texte, au téléphone et sur tablette en portrait, où les étiquettes élargies risquent de taire des noms.
+  { nom: 'bloc-carte-grand-texte-390x844', vue: 'carte', famille: 'bloc-des-iles', reglages: { font: 'opendyslexic', fontSize: 32 }, taille: { width: 390, height: 844 } },
+  { nom: 'bloc-carte-grand-texte-800x1280', vue: 'carte', famille: 'bloc-des-iles', reglages: { font: 'opendyslexic', fontSize: 32 }, taille: { width: 800, height: 1280 } },
   // Les bulles de ce qu'on peut faire (proposition P2, famille `bulles`), à retirer une fois le lot
   // fusionné :
   // - une partie neuve (`depart`) sur l'île de l'école : les bornes à faire, trois bulles, la première bordée d'or ; sur
