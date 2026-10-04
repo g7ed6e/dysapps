@@ -304,6 +304,19 @@ export function iconeDeLObjet(o: ObjetTouche): AnyIconName {
   return 'hammer';
 }
 
+/**
+ * Sur la Carte (Blocland), l'image de la bulle d'or de la prochaine destination : celle de ce qu'on y fait, pour
+ * que le même signe dise la même chose partout (piste B, choisie par le mainteneur le 4 octobre 2026). Une commande :
+ * le bloc demandé ; un ouvrage : l'icône des ouvrages (GD-7 : celle du pli Ouvrages et de Mes blocs, celle de la
+ * maquette choisie) ; le Bloc-Navire : le navire ; sinon (une mission, une île à reprendre) : l'étoile de « Jouer ».
+ */
+export function imageDeLaDestination(d: { ouvrage?: string; commande?: string }, o: { navire: boolean; bloc?: BlockId }): ImageDeLaBulle {
+  if (d.commande && o.bloc) return { bloc: o.bloc };
+  if (d.ouvrage) return { icone: 'ouvrage' };
+  if (o.navire) return { icone: 'ship' };
+  return { icone: 'star' };
+}
+
 /** L'ordre des bulles : une commande prête d'abord, puis les bornes, les Gardiens, les chantiers, le navire, les révisions. */
 const RANGS = { commande: 0, borne: 1, gardien: 2, ouvrage: 3, lieu: 3, navire: 4, revisions: 5 } as const;
 

@@ -104,7 +104,8 @@ export function creerBornes(monde: Monde, bonhomme: () => THREE.Object3D, instan
   markerGroup.add(shaft);
   markerGroup.visible = false;
   scene.add(markerGroup);
-  // Sur la Carte : un grand fanion au-dessus du bonhomme (« tu es ici »), et des balises le long d'un chemin à construire.
+  // Sur la Carte : un grand fanion au-dessus du bonhomme (« tu es ici », Archipéo ; Blocland a son médaillon), et des
+  // balises le long d'un chemin à construire.
   const beaconGroup = new THREE.Group();
   const beaconTip = new THREE.Mesh(new THREE.ConeGeometry(4, 7, 4), markerMat);
   beaconTip.rotation.x = Math.PI;
@@ -221,7 +222,8 @@ export function creerBornes(monde: Monde, bonhomme: () => THREE.Object3D, instan
     },
     animer: (t, _dt, reduit) => {
       const avatar = bonhomme();
-      beaconGroup.visible = instant.carte && avatar.visible;
+      // Blocland : le médaillon « toi » remplace le fanion (three/etiquettes.ts) ; Archipéo garde le fanion.
+      beaconGroup.visible = instant.carte && avatar.visible && losanges;
       // Le tracé de l'ouvrage désigné : sur la Carte seulement, avec la flèche ; immobile.
       leTrace.mesh.visible = instant.carte && leTrace.pose();
       // Le mouvement réduit, une préférence du téléphone ou de la tablette (core/mouvement.ts) : le fanion, les repères de

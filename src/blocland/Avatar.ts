@@ -75,3 +75,11 @@ export const AVATAR_PARTS: AvatarPart[] = [
 
 /** Tous les cubes, pour la vue simple et les tests. 16 de large, 8 de profond, 32 de haut. */
 export const AVATAR_CUBES: VoxelCube[] = AVATAR_PARTS.flatMap((p) => p.cubes);
+
+/**
+ * Le visage du bonhomme, vu de face : les 8 × 8 couleurs de la face avant de sa tête, de haut en bas et de gauche à
+ * droite (le médaillon « toi » de la Carte le dessine en pixels : la même tête que dans le monde).
+ */
+export const VISAGE_DU_BONHOMME: readonly (readonly string[])[] = Array.from({ length: 8 }, (_, ligne) =>
+  Array.from({ length: 8 }, (_, colonne) => head.find((c) => c.y === 0 && c.x === 4 + colonne && c.z === 31 - ligne)?.color ?? SKIN),
+);
