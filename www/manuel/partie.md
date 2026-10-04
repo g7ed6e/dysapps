@@ -8,7 +8,7 @@ L'application s'ouvre sur l'**écran titre**. Un seul bouton, **Jouer** : ce pre
 
 ![L'écran titre : l'île en blocs de Blocland, « Blocland » et le gros bouton vert Jouer.](/captures/titre.jpg)
 
-Derrière, le **village** est déjà chargé. À la première visite, un tutoriel de trois bulles, lues à voix haute, montre l’essentiel : toucher la Forêt des sons, toucher une borne puis Jouer, le bouton Menu. Le reste (les ouvrages, le Bloc-Navire) est dit par les créatures, la première fois qu’on le rencontre. Une flèche jaune montre la Forêt des sons, où tout commence. Mousso, la créature verte, attend sur son île ; les bornes étoilées sont les missions.
+Derrière, le **village** est déjà chargé. À la première visite, un tutoriel en trois étapes, lues à voix haute, montre l’essentiel : toucher la Forêt des sons, toucher une borne puis Jouer, le bouton Menu. Le reste (les ouvrages, le Bloc-Navire) est dit par les créatures, la première fois qu’on le rencontre. Dans Blocland, une bulle bordée d’or montre la prochaine chose à faire ; dans Archipéo, une flèche jaune montre la Forêt des sons, où tout commence. Mousso, la créature verte, attend sur son île ; les bornes étoilées sont les missions.
 
 ![Première visite du village en 3D : la Forêt des sons en couleurs au centre, les autres îles en ruine, et la première bulle du tutoriel « Bienvenue à Blocland ! ».](/captures/village-premiere-visite.jpg)
 

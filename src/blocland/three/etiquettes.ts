@@ -232,7 +232,9 @@ export function creerEtiquettes(
       }
     }
     const d = donnees();
-    if (d.posee) fleche.visible = d.on && !show;
+    // Blocland : la flèche « Commence ici » n'est plus dans le monde, la bulle bordée d'or y montre la prochaine chose à
+    // faire (mot du mainteneur, 4 octobre 2026) ; Archipéo la garde.
+    if (d.posee) fleche.visible = !bulles && d.on && !show;
     bulleALEcran.visible = false;
     if (show !== ouverte) {
       ouverte = show;

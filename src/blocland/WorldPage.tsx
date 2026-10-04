@@ -1239,7 +1239,7 @@ export function WorldPage() {
             </div>
           )}
         </div>
-        {/* Les bulles d'aide en bas, au-dessus de la barre : elles ne cachent pas l'île et la flèche dont elles parlent. */}
+        {/* Les bulles d'aide en bas, au-dessus de la barre : elles ne cachent pas l'île et la bulle dont elles parlent. */}
         <div className="world-overlay-bottom" data-couvre="bulle" ref={bullesRef}>
           {/* « Passer » tant que le mot n'est pas là : ensuite, « J’ai compris » ferme le moment. */}
           {moment && !motRallume && (
@@ -1260,8 +1260,13 @@ export function WorldPage() {
             onClose={() => setTutoDone(true)}
             targets={[undefined, undefined, '[data-tuto="menu"]']}
             steps={[
-              `${UNIVERS[univers].bienvenue} Touche la Forêt des sons, sous la flèche jaune.`,
-              'Sur chaque île, les bornes à panneau sont les missions : touche une borne, puis Jouer. Un losange jaune flotte au-dessus d’une mission à faire, des cubes d’or comptent tes étoiles. Chaque mission te donne des blocs pour construire l’île.',
+              // Blocland : plus de flèche jaune dans le monde, la bulle bordée d'or montre ce qu'on peut faire (4 octobre 2026).
+              univers === 'blocland'
+                ? `${UNIVERS[univers].bienvenue} Touche la Forêt des sons pour commencer.`
+                : `${UNIVERS[univers].bienvenue} Touche la Forêt des sons, sous la flèche jaune.`,
+              univers === 'blocland'
+                ? 'Sur chaque île, les bornes à panneau sont les missions : touche une borne, puis Jouer. La bulle bordée d’or montre la prochaine chose à faire. Chaque mission te donne des blocs pour construire l’île, et des cubes d’or pour tes étoiles.'
+                : 'Sur chaque île, les bornes à panneau sont les missions : touche une borne, puis Jouer. Un losange jaune flotte au-dessus d’une mission à faire, des cubes d’or comptent tes étoiles. Chaque mission te donne des blocs pour construire l’île.',
               'Le bouton Menu (⏸), en haut à droite, ouvre le menu : missions, succès, réglages, accueil.',
             ]}
           />

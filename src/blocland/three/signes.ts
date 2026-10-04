@@ -262,6 +262,11 @@ export function creerSignes(
   derniers: { current: Derniers },
   instant: Instant,
   lirePlace?: (contexte: string) => PlaceLue,
+  /**
+   * Blocland : l'île que montre la vue glissée (celle sous le centre de la vue), ou `null` quand la vue n'a pas bougé :
+   * les bulles la suivent (mot du mainteneur, 4 octobre 2026).
+   */
+  ileVisee?: () => BiomeId | null,
 ): Signes {
   const { scene } = monde;
   const forme = monde.habillage.signe;
@@ -347,8 +352,11 @@ export function creerSignes(
     return m.rangs[i];
   };
   const imageDe = (s: SigneDeCreature): ImageDuSigne => (s.bloc ? { bloc: s.bloc } : { icone: s.icone });
-  /** L'île où l'on est : celle que regarde la caméra (le bonhomme y va), sinon celle du bonhomme. */
-  const ileOuLOnEst = (): BiomeId | null => derniers.current.focus.island ?? derniers.current.home ?? null;
+  /**
+   * L'île où l'on est : celle que montre la vue glissée ; sinon celle que regarde la caméra (le bonhomme y va), sinon
+   * celle du bonhomme.
+   */
+  const ileOuLOnEst = (): BiomeId | null => ileVisee?.() ?? derniers.current.focus.island ?? derniers.current.home ?? null;
   const montree = (cle: string, cible: CibleDeLaBulle, image: ImageDuSigne, enAvant: boolean, creature: BiomeId | null, point: THREE.Vector3 | null): Montree => ({
     cle,
     cible,
