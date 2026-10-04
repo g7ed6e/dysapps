@@ -5980,6 +5980,9 @@ button.island-quest {
   min-height: 0;
 }
 .world-fiche-ligne {
+  /* Comme les boutons seuls : la rangée ne rétrécit jamais, Jouer reste entier ; si la place manque, la fiche entière
+     défile (son dernier recours). */
+  flex: none;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
