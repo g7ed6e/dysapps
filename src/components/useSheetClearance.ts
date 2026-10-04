@@ -26,9 +26,9 @@ export function useSheetClearance(sectionRef: RefObject<HTMLElement | null>, ope
       if (!rects.length) return null;
       return { top: Math.min(...rects.map((r) => r.top)), bottom: Math.max(...rects.map((r) => r.bottom)) };
     };
-    // Le haut utile de l'écran : sous la barre du haut, ou sous le bouton Pause du mode concentration.
+    // Le haut utile de l'écran : sous le bouton Pause du mode concentration (plus de barre du haut).
     const topOf = () =>
-      Math.max(0, ...[...document.querySelectorAll('.topbar, .focus-pause')].map((e) => e.getBoundingClientRect().bottom));
+      Math.max(0, ...[...document.querySelectorAll('.focus-pause')].map((e) => e.getBoundingClientRect().bottom));
 
     /** Choisit le bandeau fixe ou dans la page, et réserve sous la question la place de ce qui reste en bas. */
     const place = () => {

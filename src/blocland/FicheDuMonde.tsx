@@ -5,9 +5,11 @@
 // actions qui existent déjà (Jouer, Défier, Poser le bloc suivant, Embarquer, Construire, Livrer, Reprendre, Plus tard)
 // sans rien inventer. Un dialogue non modal : le focus va au titre à l'ouverture, Écouter relit tout, la croix et Échap
 // la ferment (la page s'en charge, avec le toucher sur le sol).
-// Dans Blocland (proposition P2, PR 2 : les figures en cubes de l'habillage), la fiche de la créature et celle du Gardien
-// portent leur portrait en médaillon, qui déborde au-dessus de la fiche ; les autres gardent l'icône du titre.
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+// Dans les deux univers (proposition P2, PR 2, pour Blocland ; « 4a », 4 octobre 2026, pour Archipéo), la fiche de la
+// créature et celle du Gardien portent leur portrait en médaillon, qui déborde au-dessus de la fiche ; les autres gardent
+// l'icône du titre. Blocland le dessine en cubes, Archipéo avec son modèle en SVG (l'icône en attendant, ou en repli).
+import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react';
+import { ErrorBoundary } from '../components/ErrorBoundary';
 import { Link } from 'react-router-dom';
 import { Icon, type AnyIconName } from '../components/Icon';
 import { SpeakButton } from '../components/SpeakButton';
@@ -96,7 +98,7 @@ export function FicheDuMonde(props: Props) {
 interface CadreProps {
   titre: string;
   icone?: AnyIconName;
-  /** Le portrait en médaillon (la créature, le Gardien, dans Blocland) : il remplace l'icône du titre. Décoratif. */
+  /** Le portrait en médaillon (la créature, le Gardien) : il remplace l'icône du titre. Décoratif. */
   portrait?: ReactNode;
   /** Ce qu'Écouter lit, et la lecture automatique à l'ouverture : tout ce que la fiche dit. */
   lecture: string;
@@ -162,8 +164,24 @@ function Fiche({ titre, icone, portrait, lecture, onClose, actions, ligne, child
   );
 }
 
-/** Les portraits en médaillon : seulement avec les figures en cubes (Blocland), un dessin fixe, sans 3D. */
-const portraitsEnMedaillon = () => habillageDuMonde().figures === 'cubes';
+/** Le personnage d'Archipéo en SVG, chargé à la demande (les modèles ne pèsent pas sur le monde en blocs). */
+const PersonnageSvg = lazy(() => import('./PersonnageSvg'));
+
+/**
+ * Le portrait en médaillon, un dessin fixe, sans 3D : en cubes avec les figures en cubes (Blocland), le modèle en SVG
+ * avec les figures en modèles (Archipéo) ; l'icône du titre le temps qu'il arrive, ou s'il ne peut pas se charger.
+ */
+function portraitEnMedaillon(kind: 'creature' | 'guardian', ile: BiomeId, icone: AnyIconName, enCubes: () => ReactNode, allumage?: number): ReactNode {
+  if (habillageDuMonde().figures === 'cubes') return enCubes();
+  const repli = <Icon name={icone} />;
+  return (
+    <ErrorBoundary fallback={repli}>
+      <Suspense fallback={repli}>
+        <PersonnageSvg kind={kind} id={ile} allumage={allumage} />
+      </Suspense>
+    </ErrorBoundary>
+  );
+}
 
 /** Une phrase de la fiche, en syllabes si le réglage le demande. */
 function Phrase({ text, role }: { text: string; role?: 'status' }) {
@@ -229,7 +247,8 @@ function FicheDuGardien({ ile, onClose }: Props & { ile: BiomeId }) {
     <Fiche
       titre={titre}
       icone="shield"
-      portrait={portraitsEnMedaillon() ? <VoxelScene cubes={vaincu ? statueDe(GUARDIAN_CUBES[ile]) : GUARDIAN_CUBES[ile]} s={12} pad={2} className="creature guardian-svg" /> : undefined}
+      // La sentinelle d'Archipéo rallumée une fois vaincue ; le Gardien de Blocland en statue.
+      portrait={portraitEnMedaillon('guardian', ile, 'shield', () => <VoxelScene cubes={vaincu ? statueDe(GUARDIAN_CUBES[ile]) : GUARDIAN_CUBES[ile]} s={12} pad={2} className="creature guardian-svg" />, vaincu ? 1 : 0)}
       lecture={`${titre}. ${phrase}`}
       onClose={onClose}
       actions={
@@ -443,7 +462,7 @@ function FicheDeLaCreature({ ile, fiche, commande, onLivree, commandeEnCoursDePo
     <Fiche
       titre={nom}
       icone={biome.icon}
-      portrait={portraitsEnMedaillon() ? <Creature biome={ile} /> : undefined}
+      portrait={portraitEnMedaillon('creature', ile, biome.icon, () => <Creature biome={ile} />)}
       lecture={lecture}
       onClose={onClose}
       actions={

@@ -241,9 +241,14 @@ describe('la vue simple', () => {
     expect(document.querySelector('.creature-rappel-remis')).toHaveTextContent(PLUS_TARD_DIT);
   });
 
-  it('le signe suit l’habillage : une plaque dans Blocland, le cercle dans Archipéo', () => {
+  it('le signe suit l’habillage : une plaque dans Blocland, un hexagone Brume au bord Nuit océan dans Archipéo', () => {
     const css = (f: string) => readFileSync(join(process.cwd(), 'src/styles', f), 'utf8');
-    expect(css('global.css')).toMatch(/--radius-signe:\s*50%/);
+    expect(css('global.css')).not.toMatch(/--radius-signe:\s*50%/);
+    const hexagone = css('global.css').match(/:root\[data-univers="archipeo"\] :is\(\.creature-rappel-icone, \.biome-rappel\) \{[^}]*\}/)![0];
+    expect(hexagone).toMatch(/mask: var\(--hexagone\)/);
+    expect(hexagone).toMatch(/stroke-linejoin='round'/);
+    expect(hexagone).toMatch(/background: #142b38/);
+    expect(css('global.css')).toMatch(/:root\[data-univers="archipeo"\] :is\(\.creature-rappel-icone, \.biome-rappel\)::before \{[^}]*background: #e5ebe3/);
     expect(css('blocland.css')).toMatch(/--radius-signe:\s*4px/);
     for (const classe of ['creature-rappel-icone', 'biome-rappel']) {
       const regle = css('global.css').match(new RegExp(`\\.${classe} \\{[^}]*\\}`))![0];

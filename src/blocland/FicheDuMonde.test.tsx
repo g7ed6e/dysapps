@@ -211,11 +211,15 @@ describe('le portrait en médaillon (P2, PR 2, Blocland)', () => {
     expect(document.querySelector('.world-fiche-phrase')).not.toBeNull();
   });
 
-  it('Archipéo, en pause, ne change pas : pas de médaillon', () => {
+  it('Archipéo (« 4a », 4 octobre 2026) : le médaillon aussi, avec le portrait du modèle en SVG, l’icône en attendant', async () => {
     sauver({ progress: {}, stock: {}, world: { parts: {}, log: [], links: [], place: FORET } });
     localStorage.setItem('dysapps:settings', JSON.stringify({ univers: 'archipeo', autoRead: false, sounds: false }));
     ouvrir({ objet: { genre: 'creature', id: FORET }, seq: 1, saut: false, phrase: 'Bonjour !' });
     expect(screen.getByRole('dialog', { name: 'Mousso' })).toBeInTheDocument();
-    expect(medaillon()).toBeNull();
+    expect(medaillon()).not.toBeNull();
+    expect(medaillon()!.querySelector('svg')).not.toBeNull();
+    await vi.waitFor(() => expect(medaillon()!.querySelector('.personnage-svg')).not.toBeNull());
+    expect(medaillon()!.querySelector('.voxel-scene, .creature-cubes')).toBeNull();
+    expect(medaillon()).toHaveAttribute('aria-hidden', 'true');
   });
 });
