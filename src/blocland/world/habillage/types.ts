@@ -42,11 +42,15 @@ export interface Habillage {
    */
   atelier: Atelier;
   /**
-   * La pose d'un bloc (GD-1, point 4) : le geste de Blocland, où le dernier bloc d'un plan descend et s'enclenche
-   * (world/pose.ts, sans poussière), et le « clac » de cliquet à chaque pose ; les autres poses gardent
-   * leurs poussières claires. Archipéo : poussières et « toc » commun.
+   * La pose d'un bloc et d'une partie du bâtiment. `geste` (Blocland) : le dernier bloc d'un plan descend et s'enclenche
+   * (GD-1, point 4 ; world/pose.ts, sans poussière), une partie posée par une mission descend en vague, cube par cube et
+   * couche par couche (GD-6, world/vague.ts), et le « clac » de cliquet sonne à chaque pose et à chaque couche ; les
+   * autres poses gardent leurs poussières claires. `fondu` (Archipéo, choix « 2c » du mainteneur, 4 octobre 2026) : un
+   * bloc posé à la main, ses trois poussières claires et le « toc » commun ; une partie posée par une mission est là dès
+   * la première image, en pierre des ruines, et passe à la couleur du plan au même rythme que la vague, sans bouger
+   * (world/maillageDuFondu.ts), un « toc » par couche. Le carillon à la fin, dans les deux.
    */
-  pose: 'geste' | 'eclats';
+  pose: 'geste' | 'fondu';
   /**
    * La forme des bulles du monde : celle de la créature qui se souvient (GD-4, étape 1), la plaque d'une commande, les
    * bulles des objets à faire et, sur la Carte, la bulle de la prochaine étape et le médaillon « toi » (leurs couleurs :

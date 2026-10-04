@@ -43,7 +43,7 @@ describe('L’habillage du monde', () => {
       defi: 'sentinelle',
       reperes: 'cadres',
       atelier: 'halle',
-      pose: 'eclats',
+      pose: 'fondu',
       formeDesSignes: 'hexagone',
       signesDesObjets: 'bulles',
       blocDesIles: 'avant-le-nom',

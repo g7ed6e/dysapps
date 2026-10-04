@@ -850,8 +850,12 @@ export default function WorldCanvas({
   useEffect(() => {
     const w = world.current;
     if (!w) return;
-    if (pose) w.cubes.lancerLaVague(pose.cubes, (moment) => poseRef.current?.(moment));
-    else w.cubes.arreterLaVague();
+    if (pose) {
+      w.cubes.lancerLaVague(pose.cubes, (moment) => poseRef.current?.(moment));
+      // Les captures d'un lot tiennent la pose à un moment choisi (la ruine, le mi-fondu) ou la mènent à sa fin.
+      const tenue = window.__dysappsPoseA;
+      if (tenue !== undefined && (import.meta.env.DEV || mesuresDemandees())) w.cubes.tenirLaVague(tenue);
+    } else w.cubes.arreterLaVague();
     // Pendant la vague, une plaque nouvelle se montre, mais les étiquettes attendent sa fin pour se replacer.
     w.signes.suivreLaVague(Boolean(pose));
     if (terrainDe.current !== w.cubes) {

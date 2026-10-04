@@ -16,6 +16,10 @@ import type { VoxelCube } from '../Voxel';
 import { GESTE_DE_POSE } from '../world/pose';
 import { BADGES } from '../../core/progress';
 import { trophyBlock } from '../trophies';
+import { partiesDe } from '../world/parties';
+import { casesDesPlansDansLeMonde } from '../world/terrain';
+import { cubesDeLaVague, planDeLaVague, sansLaPartie } from '../world/vague';
+import { maillageDuFondu } from '../world/maillageDuFondu';
 
 function monde(habillage: Habillage): Monde {
   return { scene: new THREE.Scene(), archipel: '6e', habillage, surface: null, etendue: { minX: 0, maxX: 10, minY: 0, maxY: 10 }, centre: { x: 5, y: 5 }, largeur: 10 };
@@ -198,5 +202,137 @@ describe('La pose d’une partie en vague (GD-6, Blocland)', () => {
     c.animer!(0, 0.016, true);
     expect(moments).toEqual(['finie']);
     c.dispose();
+  });
+});
+
+describe('La pose d’une partie en fondu (GD-6, Archipéo, choix « 2c » du mainteneur)', () => {
+  const lumiere = { nuit: () => 0, suivre: () => {} } as unknown as Lumiere;
+  const { progress, world: village } = toutConstruit();
+  const tout = worldCubes('6e', progress, village, false);
+  const [cabane] = partiesDe('french-6e-phonology');
+  const cases = casesDesPlansDansLeMonde(cabane.cases);
+  const partie = cubesDeLaVague(tout, cases);
+  const sans = sansLaPartie(tout, cases);
+  const plan = planDeLaVague(partie);
+  const fondu = maillageDuFondu('6e', partie, plan);
+  const scene = () => {
+    const m = monde(HABILLAGES.archipeo);
+    const c = creerCubes(m, { rivage: () => {} } as unknown as Large, lumiere, { now: 0 } as Instant);
+    const moments: string[] = [];
+    c.lancerLaVague(partie, (x) => moments.push(x));
+    c.poser(sans);
+    return { m, c, moments };
+  };
+  /** Les maillages de la scène qui dessinent quelque chose : autant d'appels de dessin. */
+  const appels = (m: Monde) => {
+    let n = 0;
+    m.scene.traverse((o) => {
+      if (o instanceof THREE.Mesh && o.visible && (o.geometry.index?.count ?? o.geometry.getAttribute('position').count) > 0) n++;
+    });
+    return n;
+  };
+  /** Les couleurs du fondu, telles que la 3D les dessine : au bout du groupe opaque de la construction. */
+  const couleursDuFondu = (m: Monde) => {
+    let opaque: THREE.Mesh | null = null;
+    m.scene.traverse((o) => {
+      if (o instanceof THREE.Mesh && o.userData.construction && o.userData.groupe === 'opaque') opaque = o;
+    });
+    const couleurs = (opaque as THREE.Mesh | null)!.geometry.getAttribute('color').array as Float32Array;
+    return couleurs.subarray(couleurs.length - fondu.depart.length);
+  };
+  const avancer = (c: ReturnType<typeof creerCubes>, jusqua: number) => {
+    // Des images de 30 ms (le pas borné de la scène est de 60 ms) : la première image pose le temps à 0.
+    for (let ms = 0; ms <= jusqua; ms += 30) c.animer!(0, ms === 0 ? 0.016 : 0.03, false);
+  };
+
+  it('dès la première image, chaque case de la partie est un cube de pierre des ruines, sans un appel de dessin de plus', () => {
+    const { m, c } = scene();
+    c.animer!(0, 0.016, false);
+    const pendant = appels(m);
+    expect(Array.from(couleursDuFondu(m))).toEqual(Array.from(fondu.depart));
+    // Le monde tout posé, sans fondu : autant d'appels.
+    const apres = monde(HABILLAGES.archipeo);
+    const d = creerCubes(apres, { rivage: () => {} } as unknown as Large, lumiere, { now: 0 } as Instant);
+    d.poser(tout);
+    expect(pendant).toBeLessThanOrEqual(appels(apres));
+    c.dispose();
+    d.dispose();
+  });
+
+  it('à mi-chemin, les premiers cubes sont passés, les derniers encore en pierre ; à la fin, la couleur du plan, et un « toc » par couche', () => {
+    const { m, c, moments } = scene();
+    const milieu = (plan.departs[0] + plan.couches[plan.couches.length - 1]) / 2;
+    avancer(c, milieu);
+    const mi = couleursDuFondu(m);
+    const premier = fondu.rangDuSommet.indexOf(0);
+    const dernier = fondu.rangDuSommet.lastIndexOf(plan.ordre.length - 1);
+    expect(mi[3 * premier]).toBeCloseTo(fondu.arrivee[3 * premier], 5);
+    expect(mi[3 * dernier]).toBeCloseTo(fondu.depart[3 * dernier], 5);
+    expect(moments.length).toBeGreaterThan(0);
+    expect(moments.length).toBeLessThan(plan.couches.length);
+    avancer(c, plan.finMs);
+    const fin = couleursDuFondu(m);
+    for (let i = 0; i < fin.length; i++) expect(fin[i]).toBeCloseTo(fondu.arrivee[i], 5);
+    expect(moments).toEqual([...plan.couches.map(() => 'couche'), 'finie']);
+    c.dispose();
+  });
+
+  it('avec « Réduire les animations » : restaurée d’un coup, sans « toc » de couche', () => {
+    const { m, c, moments } = scene();
+    c.animer!(0, 0.016, true);
+    const fin = couleursDuFondu(m);
+    for (let i = 0; i < fin.length; i++) expect(fin[i]).toBeCloseTo(fondu.arrivee[i], 5);
+    expect(moments).toEqual(['finie']);
+    c.dispose();
+  });
+
+  it('un cube de pierre se touche comme un bloc : sa case, et la case devant sa face', () => {
+    const { c } = scene();
+    c.animer!(0, 0.016, false);
+    const k = plan.ordre[plan.ordre.length - 1];
+    const cube = partie[k];
+    const ray = new THREE.Raycaster(new THREE.Vector3(cube.x + 0.5, cube.z + 20, cube.y + 0.5), new THREE.Vector3(0, -1, 0));
+    // Le premier triangle du fondu touché (au-dessus, d'autres blocs de l'île peuvent couvrir la colonne).
+    const hit = ray.intersectObjects(c.cibles()).find((h) => {
+      const index = (h.object as THREE.Mesh).geometry.index!;
+      return h.object.userData.groupe === 'opaque' && h.faceIndex! >= (index.count - fondu.maillage.opaque.indices.length) / 3;
+    })!;
+    expect(hit).toBeDefined();
+    expect(c.casesTouchees(hit)).toEqual({ cell: { x: cube.x, y: cube.y, z: cube.z }, next: { x: cube.x, y: cube.y, z: cube.z + 1 } });
+    c.dispose();
+  });
+
+  it('tenue par les captures (la ruine, le mi-fondu), elle ne bouge plus ; menée à sa fin, elle le dit', () => {
+    const { m, c, moments } = scene();
+    c.tenirLaVague(0);
+    avancer(c, plan.finMs);
+    expect(Array.from(couleursDuFondu(m))).toEqual(Array.from(fondu.depart));
+    expect(moments).toEqual([]);
+    c.tenirLaVague(1);
+    c.animer!(0, 0.016, false);
+    expect(moments.at(-1)).toBe('finie');
+    c.dispose();
+  });
+
+  it('arrêtée (finie, touchée ou quittée) : la construction se dessine sans le fondu, la partie à sa place', () => {
+    const { m, c } = scene();
+    avancer(c, 600);
+    c.arreterLaVague();
+    c.poser(tout);
+    c.animer!(0, 0.016, false);
+    let opaque: THREE.Mesh | null = null;
+    m.scene.traverse((o) => {
+      if (o instanceof THREE.Mesh && o.userData.construction && o.userData.groupe === 'opaque') opaque = o;
+    });
+    const sansFondu = monde(HABILLAGES.archipeo);
+    const d = creerCubes(sansFondu, { rivage: () => {} } as unknown as Large, lumiere, { now: 0 } as Instant);
+    d.poser(tout);
+    let reference: THREE.Mesh | null = null;
+    sansFondu.scene.traverse((o) => {
+      if (o instanceof THREE.Mesh && o.userData.construction && o.userData.groupe === 'opaque') reference = o;
+    });
+    expect((opaque as THREE.Mesh | null)!.geometry.getAttribute('position').count).toBe((reference as THREE.Mesh | null)!.geometry.getAttribute('position').count);
+    c.dispose();
+    d.dispose();
   });
 });

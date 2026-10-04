@@ -54,5 +54,5 @@ it('le « toc » commun, lui, descend : les deux sons se distinguent', () => {
 
 it('Blocland pose avec le « clac », Archipéo avec le « toc »', () => {
   expect(sonDePose('geste')).toBe(playClac);
-  expect(sonDePose('eclats')).toBe(playPlace);
+  expect(sonDePose('fondu')).toBe(playPlace);
 });

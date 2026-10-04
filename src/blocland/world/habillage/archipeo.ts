@@ -15,7 +15,7 @@ export const HABILLAGE_ARCHIPEO = {
   defi: 'sentinelle',
   reperes: 'cadres',
   atelier: 'halle',
-  pose: 'eclats',
+  pose: 'fondu',
   formeDesSignes: 'hexagone',
   signesDesObjets: 'bulles',
   blocDesIles: 'avant-le-nom',

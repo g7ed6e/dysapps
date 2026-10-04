@@ -123,8 +123,8 @@ export function playClac(): void {
 /** Les valeurs du « clac » : durée du bruit et du corps (secondes), filtre et corps (Hz), volume. */
 export const CLAC = { bruit: 0.03, duree: 0.07, filtreHz: 1500, corpsHz: 150, volume: 0.2 } as const;
 
-/** Le son de pose de l'univers : le « clac » de Blocland (geste `geste`), le « toc » commun d'Archipéo. */
-export const sonDePose = (pose: 'geste' | 'eclats'): (() => void) => (pose === 'geste' ? playClac : playPlace);
+/** Le son de pose de l'univers : le « clac » de Blocland (geste `geste`), le « toc » commun d'Archipéo (`fondu`). */
+export const sonDePose = (pose: 'geste' | 'fondu'): (() => void) => (pose === 'geste' ? playClac : playPlace);
 
 /** « Pop » clair : un bloc se retire. */
 export function playRemove(): void {

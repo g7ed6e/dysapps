@@ -811,7 +811,7 @@ it('le soleil et la lune ne sont plus dans la barre : le jour est forcé tant qu
   expect(screen.getByTestId('lumiere')).toHaveTextContent('jour');
 });
 
-describe('la pose d’une partie en vague, après « Voir le bâtiment » (GD-6, Blocland)', () => {
+describe('la pose d’une partie en vague, après « Voir le bâtiment » (GD-6 ; en fondu dans Archipéo)', () => {
   /** Une mission de la Forêt terminée : la cabane de Mousso, sa première partie, est posée et enregistrée. */
   const preparer = async () => {
     const { partiesDe } = await import('./world/parties');
@@ -917,6 +917,23 @@ describe('la pose d’une partie en vague, après « Voir le bâtiment » (GD-6,
     expect(dansLaPartie()).toBe(cases.size);
     expect(phrase()).not.toBeInTheDocument();
     expect(JSON.parse(localStorage.getItem('dysapps:game')!).world.parts['french-6e-phonology-1']).toHaveLength(cases.size);
+  });
+
+  it('dans Archipéo, la même pose, en fondu : la vue reçoit la partie à faire passer de la ruine au plan, puis le carillon', async () => {
+    localStorage.setItem('dysapps:settings', JSON.stringify({ univers: 'archipeo' }));
+    const { cases, dansLaPartie } = await preparer();
+    renderAt('/adventure/french-6e-phonology?worksite=part');
+    // La vue dessine la partie en pierre (three/cubes.ts) : le monde ne l'a pas encore, la pose l'a toute.
+    await waitFor(() => expect(vu.pose?.cubes).toHaveLength(cases.size));
+    expect(dansLaPartie()).toBe(0);
+    carillon.mockClear();
+    act(() => vu.onPose?.('couche'));
+    expect(carillon).not.toHaveBeenCalled();
+    act(() => vu.onPose?.('finie'));
+    expect(vu.pose).toBeNull();
+    expect(dansLaPartie()).toBe(cases.size);
+    expect(phrase()).not.toBeInTheDocument();
+    expect(carillon).toHaveBeenCalledTimes(1);
   });
 
   it('quand l’appareil demande moins d’animations, la partie est posée d’un coup, sans phrase', async () => {

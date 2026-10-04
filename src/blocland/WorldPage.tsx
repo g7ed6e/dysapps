@@ -661,15 +661,18 @@ export function WorldPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [island?.id, chantier]);
 
-  // ---- La pose d'une partie en vague (GD-6, Blocland) : « Voir le bâtiment » arrive ici avec la pose à montrer, une
-  // fois (poseAMontrer.ts). La caméra ne bouge pas ; les cases de la partie restent vides jusqu'à ce que la vague les
-  // pose, couche par couche, un « clac » par couche ; puis le carillon, sans phrase par-dessus le monde (la phrase est
-  // dans le panneau de l'île, avec « Écouter », pas lue d'office : l'écran de fin l'a déjà lue). Un toucher sur la
-  // scène pose tout d'un coup ; un appui sur Menu, l'archipel, Recentrer ou la barre garde son effet et pose la partie
-  // en silence. « Réduire les animations » : posée d'un coup, un seul « clac » et le carillon. Rien n'est enregistré ici : la partie l'est déjà, à l'écran de fin.
+  // ---- La pose d'une partie en vague (GD-6) : « Voir le bâtiment » arrive ici avec la pose à montrer, une fois
+  // (poseAMontrer.ts). La caméra ne bouge pas. Blocland : les cases de la partie restent vides jusqu'à ce que la vague
+  // les pose, couche par couche, un « clac » par couche. Archipéo : elles sont en pierre des ruines dès la première image
+  // et passent à la couleur du plan au même rythme (le fondu, choix « 2c » du mainteneur, 4 octobre 2026), un « toc »
+  // par couche. Puis le carillon, sans phrase par-dessus le monde (la phrase est dans le panneau de l'île, avec
+  // « Écouter », pas lue d'office : l'écran de fin l'a déjà lue). Un toucher sur la scène pose tout d'un coup ; un appui
+  // sur Menu, l'archipel, Recentrer ou la barre garde son effet et pose la partie en silence. « Réduire les animations » :
+  // posée d'un coup, un seul « clac » (ou « toc ») et le carillon. Rien n'est enregistré ici : la partie l'est déjà, à
+  // l'écran de fin.
   const [sonDeLaPose] = useState(() => sonDePose(habillage.pose));
   useEffect(() => {
-    if (!island || chantier !== 'part' || habillage.pose !== 'geste') return;
+    if (!island || chantier !== 'part') return;
     const parties = prendreLaPose(island.id);
     if (!parties) return;
     const id = island.id;
@@ -701,7 +704,7 @@ export function WorldPage() {
       if (settings.sounds) playDone();
     };
     if (!partiesDites.toc) return dire();
-    // Moins d'animations : un seul « clac », puis le carillon, sans qu'ils se couvrent.
+    // Moins d'animations : un seul « clac » (ou « toc »), puis le carillon, sans qu'ils se couvrent.
     if (settings.sounds) sonDeLaPose();
     const timer = window.setTimeout(dire, VAGUE.finApresMs);
     return () => window.clearTimeout(timer);

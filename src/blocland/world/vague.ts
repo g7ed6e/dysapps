@@ -3,6 +3,9 @@
 // pose (./pose.ts : 1,5 case, 360 ms, arrêt net, sans rebond). Un « clac » par couche, pas un par cube ; la phrase et le
 // carillon viennent après le dernier cube. Le tout tient en six secondes au plus : l'écart entre deux cubes se resserre
 // pour une grande partie.
+// Dans Archipéo (choix « 2c » du mainteneur, 4 octobre 2026), le même rythme fait un fondu : les cubes de la partie sont
+// là dès la première image, en pierre des ruines (`FONDU.pierre`), et chacun passe à la couleur du plan, sans bouger,
+// à son départ (`avanceeDuFondu`) ; un « toc » par couche. Le maillage du fondu est dans ./maillageDuFondu.ts.
 // Calcul pur, sans Three.js : l'ordre, les départs, les couches ; le maillage est dans ./maillageDeLaVague.ts, que seule
 // la 3D charge (three/cubes.ts ne fait que lire le temps et déplacer ses sommets). La page du monde ne lit ici que les
 // cases de la partie, sans le mailleur : il reste dans le paquet de la 3D, chargé à la demande.
@@ -60,6 +63,21 @@ export function planDeLaVague(cases: readonly Case[]): PlanDeLaVague {
     if (i === departs.length - 1 || couche[i + 1] !== couche[i]) couches.push(d + GESTE_DE_POSE.dureeMs);
   });
   return { ordre, departs, couches, finMs: couches[couches.length - 1] + VAGUE.finApresMs, ecartMs };
+}
+
+/**
+ * Le fondu de la pose (Archipéo, intention du directeur artistique du 4 octobre 2026) : la pierre des ruines, opaque,
+ * d'où part chaque cube, et la durée de son passage à la couleur du plan, celle du geste de Blocland (le même rythme).
+ */
+export const FONDU = { pierre: 0x7d8a86, dureeMs: GESTE_DE_POSE.dureeMs } as const;
+
+/**
+ * L'avancée du fondu du cube de rang `rang` (dans l'ordre) à `ms` : 0 avant son départ (la pierre), 1 une fois passé
+ * (la couleur du plan) ; entre les deux, une sortie douce (cubique), qui ne dépasse jamais 1.
+ */
+export function avanceeDuFondu(plan: PlanDeLaVague, rang: number, ms: number): number {
+  const x = Math.min(1, Math.max(0, (ms - plan.departs[rang]) / FONDU.dureeMs));
+  return 1 - (1 - x) ** 3;
 }
 
 /** Combien de couches sont posées à `ms` (de 0 à toutes). */

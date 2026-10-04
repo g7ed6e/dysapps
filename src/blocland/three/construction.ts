@@ -193,6 +193,8 @@ export interface ConstructionEn3D {
   peindre(m: MaillageDeLaConstruction): void;
   /** Triangles dessinés (pour les mesures). */
   triangles(): number;
+  /** Le maillage des blocs (le groupe opaque), s'il y en a un : le fondu de la pose y change ses couleurs (three/cubes.ts). */
+  opaque(): THREE.Mesh | null;
   /** Libère les géométries (les matériaux sont à qui les a faits). */
   dispose(): void;
 }
@@ -200,7 +202,9 @@ export interface ConstructionEn3D {
 export function creerConstruction(materiaux: MateriauxDeConstruction): ConstructionEn3D {
   const group = new THREE.Group();
   let triangles = 0;
+  let opaque: THREE.Mesh | null = null;
   const vider = () => {
+    opaque = null;
     for (const child of [...group.children]) {
       group.remove(child);
       (child as THREE.Mesh).geometry.dispose();
@@ -229,12 +233,13 @@ export function creerConstruction(materiaux: MateriauxDeConstruction): Construct
     peindre(m) {
       vider();
       // `motif` : le motif peint d'un mur ou d'une pièce d'architecture (lot 7), ou d'un bloc assemblé (GD-2), par face.
-      ajouter(m.opaque, materiaux.opaque, { biseaux: [m.opaque.biseaux, 4], teinte: [m.opaque.teintes, 1], arete: [m.opaque.aretes, 1], motif: [m.opaque.motifs, 1] }, 'opaque');
+      opaque = ajouter(m.opaque, materiaux.opaque, { biseaux: [m.opaque.biseaux, 4], teinte: [m.opaque.teintes, 1], arete: [m.opaque.aretes, 1], motif: [m.opaque.motifs, 1] }, 'opaque') ?? null;
       ajouter(m.fenetres, materiaux.fenetres, { decalage: [m.fenetres.decalages, 1] }, 'fenetres');
       const f = ajouter(m.fantomes, materiaux.fantomes, { caseUv: [m.fantomes.uvs, 2] }, 'fantomes');
       if (f) f.renderOrder = 1;
     },
     triangles: () => triangles,
+    opaque: () => opaque,
     dispose: vider,
   };
 }
