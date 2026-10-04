@@ -1,7 +1,6 @@
-// Les repères de la scène 3D : la flèche « Commence ici », le fanion du bonhomme sur la Carte (« tu es ici »), les
-// balises du chemin à construire et les repères des bornes de mission : les étoiles gagnées et, avec les losanges
-// (`signesDesObjets` de l'habillage ; plus aucun univers ne les prend depuis le 4 octobre 2026), le losange à faire
-// (avec les bulles, le losange est l'un des signes des objets touchables : ./affordance.ts).
+// Les repères de la scène 3D : ce que montre la flèche de la destination (dessinée en bulle sur la Carte :
+// ./etiquettes.ts), le tracé de l'ouvrage qu'elle désigne, les balises du chemin à construire et les étoiles gagnées des
+// bornes de mission (une borne à faire porte sa bulle, avec les autres signes des objets touchables : ./affordance.ts).
 import * as THREE from 'three';
 import { formeDuPilier, type Pilier } from '../world/construction';
 import { DELAVE } from '../world/decor/pinceau';
@@ -21,15 +20,14 @@ export interface Pointe {
 }
 
 /**
- * Ce que montre la flèche « Commence ici » (la Carte la remplace par sa flèche), lu par les étiquettes et le cadrage de
- * la Carte : `posee`, elle a été posée au moins une fois ; `on`, elle montre quelque chose ; `island`, l'île ;
+ * Ce que montre la flèche de la destination (la bulle de la Carte), lu par les étiquettes et le cadrage de
+ * la Carte : `on`, elle montre quelque chose ; `island`, l'île ;
  * `ouvrage`, l'ouvrage (GD-7), `depuis`, son île de départ et `arrivee`, l'île d'en face ; `pointe`, le point du monde
  * où la flèche de la Carte pose sa pointe ; `pointes`, sur un ouvrage, ses places le long de la liaison (la première
  * est `pointe`), où elle glisse si une étiquette occupe sa place ; `trace`, les cases de sa liaison, de bout en bout,
  * que les étiquettes évitent si elles peuvent (three/etiquettes.ts).
  */
 export interface DonneesDeLaFleche {
-  posee: boolean;
   on: boolean;
   island: BiomeId | null;
   ouvrage: string | null;
@@ -41,8 +39,6 @@ export interface DonneesDeLaFleche {
 }
 
 export interface Bornes extends PartieDeLaScene {
-  /** La flèche « Commence ici » : sa place ; ce qu'elle montre : `donneesDeLaFleche`. */
-  fleche: THREE.Group;
   /** Ce que montre la flèche (à lire, pas à modifier : `poserLaFleche` le tient). */
   donneesDeLaFleche(): Readonly<DonneesDeLaFleche>;
   /** Les repères des bornes de mission (on les touche). */
@@ -85,38 +81,12 @@ export function pileDEtoiles(n: number): THREE.BufferGeometry {
   return pile;
 }
 
-/**
- * Les repères ; `bonhomme` rend le bonhomme, que le fanion surmonte (il est créé après les repères ; la fonction n'est
- * appelée qu'à l'animation).
- */
-export function creerBornes(monde: Monde, bonhomme: () => THREE.Object3D, instant: Instant): Bornes {
+/** Les repères ; la borne à faire porte sa bulle (./affordance.ts) : ici, les étoiles gagnées seules. */
+export function creerBornes(monde: Monde, instant: Instant): Bornes {
   const { scene } = monde;
-  // Avec les bulles, le losange à faire est dessiné avec les autres signes (./affordance.ts) : ici, les étoiles seules.
-  const losanges = monde.habillage.signesDesObjets === 'losanges';
-  // La flèche « Commence ici » : un chevron jaune qui flotte et pointe vers le bas.
+  // L'or des étoiles gagnées et des balises du chemin.
   const markerMat = new THREE.MeshLambertMaterial({ color: 0xffc83c, emissive: 0x7a5a00, emissiveIntensity: 0.4 });
-  const markerGroup = new THREE.Group();
-  const tip = new THREE.Mesh(new THREE.ConeGeometry(0.9, 1.6, 4), markerMat);
-  tip.rotation.x = Math.PI;
-  tip.rotation.y = Math.PI / 4;
-  markerGroup.add(tip);
-  const shaft = new THREE.Mesh(new THREE.BoxGeometry(0.6, 1.4, 0.6), markerMat);
-  shaft.position.y = 1.4;
-  markerGroup.add(shaft);
-  markerGroup.visible = false;
-  scene.add(markerGroup);
-  // Sur la Carte : un grand fanion au-dessus du bonhomme (« tu es ici », Archipéo ; Blocland a son médaillon), et des
-  // balises le long d'un chemin à construire.
-  const beaconGroup = new THREE.Group();
-  const beaconTip = new THREE.Mesh(new THREE.ConeGeometry(4, 7, 4), markerMat);
-  beaconTip.rotation.x = Math.PI;
-  beaconTip.rotation.y = Math.PI / 4;
-  beaconGroup.add(beaconTip);
-  const beaconShaft = new THREE.Mesh(new THREE.BoxGeometry(2.2, 6, 2.2), markerMat);
-  beaconShaft.position.y = 6.2;
-  beaconGroup.add(beaconShaft);
-  beaconGroup.visible = false;
-  scene.add(beaconGroup);
+  // Sur la Carte : des balises le long d'un chemin à construire (le bonhomme porte son médaillon : three/etiquettes.ts).
   const trailGroup = new THREE.Group();
   scene.add(trailGroup);
   const questMarksGroup = new THREE.Group();
@@ -124,9 +94,7 @@ export function creerBornes(monde: Monde, bonhomme: () => THREE.Object3D, instan
   // Sur la Carte, le tracé renforcé de l'ouvrage que désigne la flèche (GD-7) : un seul maillage, refait quand il change.
   const leTrace = creerTraceSuggere();
   scene.add(leTrace.mesh);
-  const donnees: DonneesDeLaFleche = { posee: false, on: false, island: null, ouvrage: null, depuis: null, arrivee: null, pointe: null, pointes: null, trace: null };
-  /** La hauteur de base de la flèche « Commence ici », d'où elle rebondit. */
-  let baseDeLaFleche = 0;
+  const donnees: DonneesDeLaFleche = { on: false, island: null, ouvrage: null, depuis: null, arrivee: null, pointe: null, pointes: null, trace: null };
   let traceSource: readonly { x: number; y: number; z: number }[] | null = null;
 
   const vider = (g: THREE.Group) => {
@@ -139,14 +107,12 @@ export function creerBornes(monde: Monde, bonhomme: () => THREE.Object3D, instan
   };
 
   return {
-    fleche: markerGroup,
     donneesDeLaFleche: () => donnees,
     missions: questMarksGroup,
-    // La flèche « Commence ici » (sur une île, ou sur une case du monde : le chantier du navire), ou sur la Carte celle
-    // d'un ouvrage (sur sa liaison, côté île de départ) et le tracé renforcé de cette liaison.
+    // Ce que montre la flèche de la destination (une île, un ouvrage sur sa liaison, côté île de départ, ou une case du
+    // monde : le chantier du navire, que la Carte ne montre pas) et le tracé renforcé de la liaison d'un ouvrage.
     poserLaFleche: (marker) => {
       const ouvrage = estUnOuvrage(marker) ? marker : null;
-      donnees.posee = true;
       donnees.island = typeof marker === 'string' ? marker : null;
       donnees.ouvrage = ouvrage?.ouvrage ?? null;
       // L'île d'où il part : la prochaine destination, dont le nom pèse sur la Carte comme celui d'une île désignée ; et
@@ -163,7 +129,6 @@ export function creerBornes(monde: Monde, bonhomme: () => THREE.Object3D, instan
       if (!marker) {
         donnees.pointe = null;
         donnees.pointes = null;
-        markerGroup.visible = false;
         return;
       }
       const ile = typeof marker === 'string';
@@ -172,39 +137,28 @@ export function creerBornes(monde: Monde, bonhomme: () => THREE.Object3D, instan
       // La pointe de la flèche de la Carte : au-dessus du cœur d'une île, juste au-dessus du tablier d'un ouvrage.
       donnees.pointe = ile || ouvrage ? { x: c.x + 0.5, y: c.y + 0.5, z: base } : null;
       donnees.pointes = ouvrage ? ouvrage.places.map((p) => ({ x: p.x + 0.5, y: p.y + 0.5, z: p.z + 2 })) : null;
-      baseDeLaFleche = base;
-      markerGroup.position.set(c.x, base + 0.5, c.y);
-      markerGroup.visible = true;
     },
-    // Les repères des bornes de mission : les étoiles gagnées en petits cubes d'or empilés, immobiles avec les bulles (la
-    // bulle de la prochaine chose à faire est seule à bouger, affordance-blocland.md §8), qui tournent lentement avec les
-    // losanges, où un losange jaune rebondit aussi (à faire). Rien sur une île fermée.
+    // Les repères des bornes de mission : les étoiles gagnées en petits cubes d'or empilés, immobiles (la bulle de la
+    // prochaine chose à faire est seule à bouger, affordance-blocland.md §8). Rien sur une île fermée.
     poserLesMissions: (quests, sommets) => {
       vider(questMarksGroup);
       if (!quests?.length) return;
       const gold = markerMat;
-      quests.forEach((q, i) => {
-        if (q.state === 'locked' || q.state === 0 || (q.state === 'new' && !losanges)) return;
+      quests.forEach((q) => {
+        if (q.state === 'locked' || q.state === 'new' || q.state === 0) return;
         const g = new THREE.Group();
-        g.userData = { quest: q.id, phase: i * 0.7 };
+        g.userData = { quest: q.id };
         // Juste au-dessus de l'ardoise de la borne (le socle et l'ardoise : deux cubes sur le sol de sa case).
         const base = (sommets?.get(q.id) ?? q.cell.z + 3) + 0.4;
         g.userData.base = base;
-        if (q.state === 'new') {
-          const m = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.7, 0.7), gold);
-          m.rotation.x = Math.PI / 4;
-          m.rotation.z = Math.PI / 4;
-          g.add(m);
-          g.userData.bob = true;
-        } else g.add(new THREE.Mesh(pileDEtoiles(q.state), gold));
+        g.add(new THREE.Mesh(pileDEtoiles(q.state), gold));
         g.position.set(q.cell.x + 0.5, base, q.cell.y + 0.5);
         questMarksGroup.add(g);
       });
     },
-    // Le saut au toucher est celui des signes de Blocland : Archipéo, en pause, garde son dessin.
+    // Le saut au toucher est celui des signes des objets (world/affordance.ts).
     sauterLaPile: (id) => {
-      if (losanges) return false;
-      const pile = questMarksGroup.children.find((g) => g.userData.quest === id && !g.userData.bob);
+      const pile = questMarksGroup.children.find((g) => g.userData.quest === id);
       if (!pile) return false;
       pile.userData.saut = instant.now;
       return true;
@@ -222,46 +176,27 @@ export function creerBornes(monde: Monde, bonhomme: () => THREE.Object3D, instan
       });
     },
     animer: (t, _dt, reduit) => {
-      const avatar = bonhomme();
-      // Avec les bulles, le médaillon « toi » remplace le fanion (three/etiquettes.ts) ; les losanges gardent le fanion.
-      beaconGroup.visible = instant.carte && avatar.visible && losanges;
       // Le tracé de l'ouvrage désigné : sur la Carte seulement, avec la flèche ; immobile.
       leTrace.mesh.visible = instant.carte && leTrace.pose();
-      // Le mouvement réduit, une préférence du téléphone ou de la tablette (core/mouvement.ts) : le fanion, les repères de
-      // mission et les balises du chemin restent dans leur pose de base, sans rotation, rebond, pulsation ni saut, comme
-      // la flèche « Commence ici ».
-      if (beaconGroup.visible) {
-        beaconGroup.position.set(avatar.position.x, avatar.position.y + 8 + (reduit ? 0 : Math.abs(Math.sin(t * 2.2)) * 1.5), avatar.position.z);
-        beaconGroup.rotation.y = reduit ? 0 : t * 0.8;
-      }
+      // Le mouvement réduit, une préférence du téléphone ou de la tablette (core/mouvement.ts) : les repères de mission et
+      // les balises du chemin restent dans leur pose de base, sans saut ni pulsation.
       for (const mk of questMarksGroup.children) {
-        if (mk.userData.bob) {
-          mk.position.y = mk.userData.base + (reduit ? 0 : Math.abs(Math.sin(t * 2.4 + mk.userData.phase)) * 0.5);
-          mk.rotation.y = reduit ? 0 : t * 1.2;
-        } else {
-          // Une pile d'étoiles touchée fait le petit saut du toucher (world/affordance.ts), puis reprend sa place. Dans
-          // Blocland et Archipéo, elle ne tourne pas : un seul mouvement à l'écran, celui de la bulle mise en avant.
-          const debut = mk.userData.saut as number | undefined;
-          const ms = debut === undefined ? 0 : instant.now - debut;
-          if (debut !== undefined && (reduit || ms >= SIGNE.saut.monteeMs + SIGNE.saut.descenteMs)) delete mk.userData.saut;
-          mk.position.y = mk.userData.base + (reduit ? 0 : sautDuSigne(ms));
-          mk.rotation.y = reduit || !losanges ? 0 : t * 0.4;
-        }
+        // Une pile d'étoiles touchée fait le petit saut du toucher (world/affordance.ts), puis reprend sa place. Elle ne
+        // tourne pas : un seul mouvement à l'écran, celui de la bulle mise en avant.
+        const debut = mk.userData.saut as number | undefined;
+        const ms = debut === undefined ? 0 : instant.now - debut;
+        if (debut !== undefined && (reduit || ms >= SIGNE.saut.monteeMs + SIGNE.saut.descenteMs)) delete mk.userData.saut;
+        mk.position.y = mk.userData.base + (reduit ? 0 : sautDuSigne(ms));
       }
       if (trailGroup.children.length) {
         const pulse = reduit ? 1 : 0.85 + Math.sin(t * 3) * 0.15;
         trailGroup.scale.setScalar(1);
         for (const m of trailGroup.children) m.scale.setScalar(pulse);
       }
-      if (markerGroup.visible) {
-        markerGroup.position.y = baseDeLaFleche + 0.5 + (reduit ? 0 : Math.abs(Math.sin(t * 2.2)) * 0.8);
-        markerGroup.rotation.y = reduit ? 0 : t * 0.8;
-      }
     },
     dispose: () => {
       vider(questMarksGroup);
       vider(trailGroup);
-      for (const g of [markerGroup, beaconGroup]) vider(g);
       markerMat.dispose();
       scene.remove(leTrace.mesh);
       leTrace.dispose();

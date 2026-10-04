@@ -59,13 +59,6 @@ export interface Habillage {
    */
   formeDesSignes: 'plaque' | 'hexagone';
   /**
-   * Ce qui montre les objets qu'on touche dans le monde : une à trois bulles sur l'île où l'on est, seulement sur ce
-   * qu'on peut faire maintenant, avec les plaques des créatures (proposition P2, choisie par le mainteneur le 4 octobre
-   * 2026 ; world/affordance.ts ; Archipéo aussi depuis le même jour, choix « 1a »), ou le seul losange qui rebondit
-   * au-dessus d'une borne à faire (le dessin d'Archipéo avant le 4 octobre 2026 ; plus aucun univers ne le prend).
-   */
-  signesDesObjets: 'bulles' | 'losanges';
-  /**
    * L'étiquette d'une île, dans le monde et sur la Carte : le bloc qu'elle rapporte, avant son nom (demande du
    * mainteneur, 4 octobre 2026 ; world/labelCanvas.ts, dans les deux univers depuis qu'Archipéo reprend le jeu de
    * Blocland, même jour), ou le nom seul.

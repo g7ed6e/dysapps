@@ -1,12 +1,11 @@
 // Les étiquettes de la scène 3D : le nom des îles ouvertes (et leur état sur la Carte), toujours face à l'écran, de
 // taille fixe, par-dessus le relief ; et sur la Carte, la bulle de la prochaine chose à faire (plaque bordée d'or dans
-// Blocland, hexagone bordé de lumière dans Archipéo) et le médaillon « toi » au-dessus du bonhomme (avec les losanges,
-// la flèche de la prochaine destination et le fanion). Sur la Carte, les étiquettes
-// s'écartent les unes des autres, de la flèche et du fanion du bonhomme, pour que rien n'en cache rien.
+// Blocland, hexagone bordé de lumière dans Archipéo) et le médaillon « toi » au-dessus du bonhomme. Sur la Carte, les
+// étiquettes s'écartent les unes des autres, de la bulle et du médaillon, pour que rien n'en cache rien.
 // Dans Archipéo, hors de la Carte, elles s'écartent aussi des grands repères (world/cadrage.ts). Partout, elles
 // s'écartent de l'interface posée sur la scène, et se montrent entières ou pas du tout (DA-10).
 import * as THREE from 'three';
-import { COULEURS_DES_SIGNES, drawIslandLabel, drawMapArrow, drawMedaillon, measureIslandLabel } from '../world/labelCanvas';
+import { COULEURS_DES_SIGNES, drawIslandLabel, drawMedaillon, measureIslandLabel } from '../world/labelCanvas';
 import { BULLE, flottementDeLaBulle, type ImageDeLaBulle } from '../world/affordance';
 import { visageDuJoueur } from '../world/personnages/visage';
 import { CASE, PLAQUE, caseALEcran, dessinerLaCase } from './signes';
@@ -24,8 +23,7 @@ const LABEL_PX = 40;
 const LABEL_CSS = 18 / LABEL_PX;
 /** Sans page autour (un aperçu), la bande du bas de l'écran où flotteraient les boutons : pas d'étiquette dessous. */
 const LABEL_RESERVE = 72;
-/** Sur la Carte, la flèche de la prochaine destination : 48 px de haut à l'écran, à 56 px au moins du fanion. */
-const ARROW_CSS = 48;
+/** Sur la Carte, la bulle de la prochaine destination : à 56 px au moins du médaillon. */
 const ARROW_GAP = 56;
 /** Sur la Carte : le médaillon « toi », 44 px de diamètre à l'écran (son canvas : 96 px, le disque 80). */
 const MEDAILLON_CSS = 44;
@@ -62,10 +60,10 @@ function formeDeLEtiquette(text: string, state?: IslandLabel['state'], bloc?: Is
 export interface Etiquettes extends PartieDeLaScene {
   /** Le nom des îles (une texture par étiquette, refaite quand la liste change). */
   poser(labels: WorldViewProps['islandLabels']): void;
-  /** Avec les bulles : l'image de la bulle mise en avant de la Carte (`imageDeLaCarte`) ; sans elle, l'étoile. */
+  /** L'image de la bulle mise en avant de la Carte (`imageDeLaCarte`) ; sans elle, l'étoile. */
   poserLImageDeLaCarte(image: ImageDeLaBulle | null): void;
   /**
-   * Avec les bulles, sur la Carte : la bulle mise en avant est tenue au bord de la place libre (sa cible hors du cadre, la Carte glissée
+   * Sur la Carte : la bulle mise en avant est tenue au bord de la place libre (sa cible hors du cadre, la Carte glissée
    * ou zoomée) et le point (`x`, `y`, pixels CSS de la vue) est sur elle. La toucher ramène la vue d'ensemble.
    */
   bulleAuBordSous(x: number, y: number): boolean;
@@ -73,15 +71,13 @@ export interface Etiquettes extends PartieDeLaScene {
 }
 
 /**
- * Les étiquettes, dans l'élément `el` (sa taille en pixels CSS) ; `fleche` : la flèche « Commence ici » (sur la Carte,
- * la flèche de la destination la remplace), et `donnees` ce qu'elle montre (three/bornes.ts) ; `bonhomme` rend le
- * bonhomme, que surmonte son fanion.
+ * Les étiquettes, dans l'élément `el` (sa taille en pixels CSS) ; `donnees` : ce que montre la flèche de la destination
+ * (three/bornes.ts), que la bulle de la Carte dessine ; `bonhomme` rend le bonhomme, que surmonte son médaillon.
  */
 export function creerEtiquettes(
   monde: Monde,
   el: HTMLElement,
   camera: THREE.PerspectiveCamera,
-  fleche: THREE.Object3D,
   donnees: () => Readonly<DonneesDeLaFleche>,
   bonhomme: () => THREE.Object3D,
   instant: Instant,
@@ -96,36 +92,28 @@ export function creerEtiquettes(
   const { scene } = monde;
   // Blocland (piste B, choisie par le mainteneur le 4 octobre 2026), puis Archipéo (choix « 1a », même jour) : sur la
   // Carte, la prochaine destination est la bulle mise en avant de l'île (three/signes.ts), dans la forme de l'univers
-  // (`formeDesSignes`), avec l'image de ce qu'on y fait, et le bonhomme porte le médaillon « toi ». Les losanges gardent
-  // la flèche et le fanion.
-  const bulles = monde.habillage.signesDesObjets === 'bulles';
+  // (`formeDesSignes`), avec l'image de ce qu'on y fait, et le bonhomme porte le médaillon « toi ».
   const forme = monde.habillage.formeDesSignes;
-  // Sur la Carte, la flèche de la prochaine destination : une image toujours tournée vers l'écran (vue du ciel, un
-  // cône ne se voit pas), de taille fixe, par-dessus les étiquettes ; sa pointe se pose sur l'île.
+  // Sur la Carte, la bulle de la prochaine destination : une image toujours tournée vers l'écran, de taille fixe,
+  // par-dessus les étiquettes ; sa pointe se pose sur l'île ou l'ouvrage.
   const arrowCanvas = document.createElement('canvas');
-  arrowCanvas.width = bulles ? CASE : 96;
-  arrowCanvas.height = bulles ? CASE : 124;
+  arrowCanvas.width = CASE;
+  arrowCanvas.height = CASE;
   const arrowCtx = arrowCanvas.getContext('2d');
-  /** La flèche dessinée : d'une île (`false`) ou d'un ouvrage (`true`, avec son icône, GD-7) ; redessinée quand cela change. */
-  let flecheDOuvrage = false;
-  /** Avec les bulles : l'image de la bulle, et si elle est tenue au bord de la place libre (sans pointe, sa cible hors du cadre). */
+  /** L'image de la bulle, et si elle est tenue au bord de la place libre (sans pointe, sa cible hors du cadre). */
   let imageDeLaBulle: ImageDeLaBulle = { icone: 'star' };
   let bulleAuBord = false;
-  const dessinerLaFleche = (ouvrage: boolean) => {
-    flecheDOuvrage = ouvrage;
+  const dessinerLaFleche = () => {
     if (!arrowCtx) return;
     arrowCtx.clearRect(0, 0, arrowCanvas.width, arrowCanvas.height);
-    if (bulles) dessinerLaCase(arrowCtx, 0, imageDeLaBulle, forme, true, bulleAuBord);
-    else drawMapArrow(arrowCtx, 48, 114, 104, ouvrage ? 'ouvrage' : undefined);
+    dessinerLaCase(arrowCtx, 0, imageDeLaBulle, forme, true, bulleAuBord);
   };
-  dessinerLaFleche(false);
+  dessinerLaFleche();
   const arrowTex = new THREE.CanvasTexture(arrowCanvas);
   arrowTex.colorSpace = THREE.SRGBColorSpace;
   const mapArrow = new THREE.Sprite(new THREE.SpriteMaterial({ map: arrowTex, depthTest: false, transparent: true, sizeAttenuation: false, fog: false }));
   // La bulle : la taille de la bulle mise en avant sur l'île (`BULLE.prochainePx` pour la plaque), sa pointe en bas.
-  mapArrow.userData.px = bulles
-    ? { w: caseALEcran(true), h: caseALEcran(true), tip: PLAQUE.pointe.bas / CASE }
-    : { w: (ARROW_CSS * arrowCanvas.width) / arrowCanvas.height, h: ARROW_CSS, tip: 114 / arrowCanvas.height };
+  mapArrow.userData.px = { w: caseALEcran(true), h: caseALEcran(true), tip: PLAQUE.pointe.bas / CASE };
   mapArrow.renderOrder = 12;
   // Tenue au bord, la bulle se dessine loin de sa cible, qui est hors du cadre : sans cela, Three.js l'écarterait de
   // l'image avec elle.
@@ -133,11 +121,10 @@ export function creerEtiquettes(
   mapArrow.raycast = () => {};
   mapArrow.visible = false;
   scene.add(mapArrow);
-  // Le médaillon « toi », au-dessus du bonhomme sur la Carte, à la place du fanion jaune (three/bornes.ts), avec le
-  // visage du joueur (world/personnages/visage.ts) et les couleurs des bulles de l'univers.
-  // Immobile : sur la Carte, seule la bulle de la destination bouge.
-  const medaillon = bulles ? new THREE.Sprite() : null;
-  if (medaillon) {
+  // Le médaillon « toi », au-dessus du bonhomme sur la Carte, avec le visage du joueur (world/personnages/visage.ts) et
+  // les couleurs des bulles de l'univers. Immobile : sur la Carte, seule la bulle de la destination bouge.
+  const medaillon = new THREE.Sprite();
+  {
     const canvas = document.createElement('canvas');
     canvas.width = MEDAILLON_CANVAS;
     canvas.height = MEDAILLON_CANVAS;
@@ -168,15 +155,14 @@ export function creerEtiquettes(
   const camGoal = instant.but;
   const goalCamera = new THREE.PerspectiveCamera();
   let labelLayout: { key: string; offsets: LabelOffset[] } | null = null;
-  // Sur la Carte, la flèche de la destination (à la place du petit chevron « Commence ici », invisible de si haut) ; si
-  // le bonhomme est sur la même île, elle s'écarte de son fanion pour que les deux restent distincts.
+  // Sur la Carte, la bulle de la destination ; si le bonhomme est sur la même île, elle s'écarte de son médaillon pour
+  // que les deux restent distincts.
   const toScreen = (v: THREE.Vector3, cam: THREE.Camera, W: number, H: number) => {
     labelAt.copy(v).project(cam);
     // `z` : la profondeur (au-delà de 1, le point est derrière la caméra).
     return { x: ((labelAt.x + 1) / 2) * W, y: ((1 - labelAt.y) / 2) * H, z: labelAt.z };
   };
   const beaconBase = new THREE.Vector3();
-  const beaconTop = new THREE.Vector3();
   const pointeAt = new THREE.Vector3();
   /**
    * La flèche d'un ouvrage (GD-7) glisse le long de sa liaison si une étiquette occupe sa place (`placerAvecLaFlecheDOuvrage`) :
@@ -206,7 +192,7 @@ export function creerEtiquettes(
     place = lirePlace(cle);
   };
   /**
-   * Avec les bulles : le centre de la bulle (`x`, `y`, sa taille `w` × `h`, pixels CSS d'une vue `W` × `H`) ramené dans la place
+   * Le centre de la bulle (`x`, `y`, sa taille `w` × `h`, pixels CSS d'une vue `W` × `H`) ramené dans la place
    * libre, à `BULLE.bordPx` de ses bords (la règle des bulles de l'île, world/affordance.ts) : jamais sous la barre, la
    * colonne de Pause et des classes, « Recentrer », ni une fiche.
    */
@@ -214,34 +200,25 @@ export function creerEtiquettes(
   /** La bulle d'or à l'écran, telle que posée à la dernière image (pixels CSS), et si elle est tenue au bord. */
   const bulleALEcran = { x: 0, y: 0, w: 0, h: 0, visible: false };
   /**
-   * Le fanion et la flèche, en pixels d'écran vus par `cam` (la flèche déjà écartée du fanion ; la bulle
-   * tenue dans la place libre) : ce que les étiquettes évitent. `pointe` : la pointe de la flèche, si ce n'est pas celle d'aujourd'hui (une autre place d'un ouvrage).
+   * Le médaillon et la bulle, en pixels d'écran vus par `cam` (la bulle déjà écartée du médaillon et tenue dans la
+   * place libre) : ce que les étiquettes évitent. `pointe` : la pointe de la flèche, si ce n'est pas celle d'aujourd'hui (une autre place d'un ouvrage).
    */
   const marksOnScreen = (cam: THREE.Camera, W: number, H: number, pointe: Pointe | null = laPointe()) => {
     const out: { arrow: LabelBox | null; arrowShift: LabelOffset; beacon: LabelBox | null } = { arrow: null, arrowShift: { dx: 0, dy: 0 }, beacon: null };
     const avatar = bonhomme();
-    if (avatar.visible && medaillon) {
-      // Avec les bulles : le médaillon, posé au-dessus de la tête du bonhomme, de taille fixe.
+    if (avatar.visible) {
+      // Le médaillon, posé au-dessus de la tête du bonhomme, de taille fixe.
       const a = toScreen(beaconBase.set(avatar.position.x, avatar.position.y + 4.5, avatar.position.z), cam, W, H);
       out.beacon = { x: a.x, y: a.y - MEDAILLON_CSS / 2, w: MEDAILLON_CSS, h: MEDAILLON_CSS };
-    } else if (avatar.visible) {
-      beaconBase.set(avatar.position.x, avatar.position.y + 4.5, avatar.position.z);
-      beaconTop.set(avatar.position.x, avatar.position.y + 17, avatar.position.z);
-      const a = toScreen(beaconBase, cam, W, H);
-      const b = toScreen(beaconTop, cam, W, H);
-      const h = Math.max(24, Math.abs(a.y - b.y));
-      out.beacon = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, w: Math.max(24, h * 0.9), h };
     }
     if (pointe) {
       const tip = toScreen(pointeAt.set(pointe.x, pointe.z, pointe.y), cam, W, H);
       if (out.beacon) out.arrowShift = separateMark(tip, { x: out.beacon.x, y: out.beacon.y + out.beacon.h / 2 }, ARROW_GAP);
       const { w: aw, h: ah } = mapArrow.userData.px;
       out.arrow = { x: tip.x + out.arrowShift.dx, y: tip.y + out.arrowShift.dy - ah / 2, w: aw, h: ah };
-      if (bulles) {
-        const c = tenirLaBulle(out.arrow.x, out.arrow.y, aw, ah, W, H);
-        out.arrow.x = c.x;
-        out.arrow.y = c.y;
-      }
+      const c = tenirLaBulle(out.arrow.x, out.arrow.y, aw, ah, W, H);
+      out.arrow.x = c.x;
+      out.arrow.y = c.y;
     }
     return out;
   };
@@ -253,41 +230,26 @@ export function creerEtiquettes(
     const H = Math.max(1, el.clientHeight);
     const W = Math.max(1, el.clientWidth);
     const perPx = 2 / (camera.projectionMatrix.elements[5] * H);
-    if (medaillon) {
-      const avatar = bonhomme();
-      medaillon.visible = onMap && avatar.visible;
-      if (medaillon.visible) {
-        medaillon.position.set(avatar.position.x, avatar.position.y + 4.5, avatar.position.z);
-        medaillon.scale.set(MEDAILLON_CSS * perPx, MEDAILLON_CSS * perPx, 1);
-      }
+    const avatar = bonhomme();
+    medaillon.visible = onMap && avatar.visible;
+    if (medaillon.visible) {
+      medaillon.position.set(avatar.position.x, avatar.position.y + 4.5, avatar.position.z);
+      medaillon.scale.set(MEDAILLON_CSS * perPx, MEDAILLON_CSS * perPx, 1);
     }
-    const d = donnees();
-    // Avec les bulles : la flèche « Commence ici » n'est plus dans le monde, la bulle mise en avant y montre la prochaine
-    // chose à faire (mot du mainteneur, 4 octobre 2026) ; les losanges la gardent.
-    if (d.posee) fleche.visible = !bulles && d.on && !show;
     bulleALEcran.visible = false;
     if (show !== ouverte) {
       ouverte = show;
       if (show) ouvertures++;
     }
     if (!show || !pointe) return;
-    if (bulles) relireLaPlace();
-    const ouvrage = Boolean(d.ouvrage);
-    if (ouvrage !== flecheDOuvrage) {
-      dessinerLaFleche(ouvrage);
-      arrowTex.needsUpdate = true;
-    }
+    relireLaPlace();
     mapArrow.position.set(pointe.x, pointe.z, pointe.y);
     const { w: aw, h: ah, tip } = mapArrow.userData.px;
     mapArrow.scale.set(aw * perPx, ah * perPx, 1);
     const tipAt = toScreen(pointeAt.set(pointe.x, pointe.z, pointe.y), camera, W, H);
     const { arrow, arrowShift } = marksOnScreen(camera, W, H, pointe);
-    if (!bulles || !arrow) {
-      const bob = reduit ? 0 : Math.abs(Math.sin(t * 2.2)) * 6;
-      mapArrow.center.set(0.5 - arrowShift.dx / aw, 1 - tip + (arrowShift.dy - bob) / ah);
-      return;
-    }
-    // Avec les bulles : la bulle monte et descend lentement (± 2 px, comme sur l'île ; rien avec le mouvement réduit). Sa
+    if (!arrow) return;
+    // La bulle monte et descend lentement (± 2 px, comme sur l'île ; rien avec le mouvement réduit). Sa
     // cible hors du cadre (la Carte glissée ou zoomée), elle reste entière au bord de la place libre, sans pointe, du
     // côté de sa cible (`marksOnScreen` l'y a déjà tenue).
     const flotte = reduit ? 0 : flottementDeLaBulle(t);
@@ -303,7 +265,7 @@ export function creerEtiquettes(
     bulleALEcran.visible = auBord;
     if (auBord !== bulleAuBord) {
       bulleAuBord = auBord;
-      dessinerLaFleche(flecheDOuvrage);
+      dessinerLaFleche();
       arrowTex.needsUpdate = true;
     }
     const dx = arrowShift.dx + cx - libreX;
@@ -437,7 +399,7 @@ export function creerEtiquettes(
     });
     const cadre = { w: W, h: H };
     // Sur la Carte : une île fermée pèse moins (c'est son étiquette qui s'écarte d'abord), la prochaine destination plus ;
-    // la flèche de la destination et le fanion du bonhomme restent visibles, aucune étiquette ne se pose dessus. Hors de
+    // la bulle de la destination et le médaillon du bonhomme restent visibles, aucune étiquette ne se pose dessus. Hors de
     // la Carte : les étiquettes restent au-dessus de leur île ; seules celles posées sur l'interface ou sur un grand
     // repère (Archipéo) s'en écartent, et celles que coupe le bord du cadre y rentrent. Entière ou absente : celle qui ne
     // trouve pas de place libre près de son île ne se montre pas à moitié.
@@ -516,7 +478,7 @@ export function creerEtiquettes(
     // Appelée seulement quand l'image change, ou que la scène est refaite (WorldCanvas.tsx).
     poserLImageDeLaCarte: (image) => {
       imageDeLaBulle = image ?? { icone: 'star' };
-      dessinerLaFleche(flecheDOuvrage);
+      dessinerLaFleche();
       arrowTex.needsUpdate = true;
     },
     bulleAuBordSous: (x, y) => bulleALEcran.visible && Math.abs(x - bulleALEcran.x) <= bulleALEcran.w / 2 && Math.abs(y - bulleALEcran.y) <= bulleALEcran.h / 2,
@@ -527,10 +489,8 @@ export function creerEtiquettes(
     dispose: () => {
       arrowTex.dispose();
       mapArrow.material.dispose();
-      if (medaillon) {
-        medaillon.material.map?.dispose();
-        medaillon.material.dispose();
-      }
+      medaillon.material.map?.dispose();
+      medaillon.material.dispose();
     },
   };
 }

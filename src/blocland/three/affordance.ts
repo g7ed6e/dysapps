@@ -1,11 +1,10 @@
 // Les objets qu'on touche, dans la scène 3D (les règles : world/affordance.ts) : leurs zones de toucher.
 // Une borne ou un Gardien plus petits que 48 pixels à l'écran se touchent aussi tout autour, dans un carré de 48 pixels ;
 // les autres objets se touchent directement. Les bulles qui montrent ce qu'on peut faire sont dessinées avec les plaques
-// des créatures (./signes.ts). Rien sur la Carte ni pendant le voyage. Les losanges (l'habillage, `signesDesObjets` ;
-// plus aucun univers ne les prend depuis le 4 octobre 2026) n'en ont pas (./bornes.ts).
+// des créatures (./signes.ts). Rien sur la Carte ni pendant le voyage.
 import * as THREE from 'three';
 import { zoneDeToucher, SIGNE, type ObjetTouche, type SigneDObjet, type ZoneDObjet } from '../world/affordance';
-import type { Derniers, Instant, Monde, PartieDeLaScene } from './partie';
+import type { Derniers, Instant, PartieDeLaScene } from './partie';
 
 export interface Affordance extends PartieDeLaScene {
   /** Les objets touchables (refaits quand le monde change). */
@@ -17,13 +16,7 @@ export interface Affordance extends PartieDeLaScene {
   zones(cam: THREE.PerspectiveCamera, W: number, H: number): { objet: ObjetTouche; zone: ZoneDObjet }[];
 }
 
-/** Une partie sans zones (Archipéo). */
-function sansZones(): Affordance {
-  return { poser: () => {}, zones: () => [], dispose: () => {} };
-}
-
-export function creerAffordance(monde: Monde, derniers: { current: Derniers }, instant: Instant): Affordance {
-  if (monde.habillage.signesDesObjets !== 'bulles') return sansZones();
+export function creerAffordance(derniers: { current: Derniers }, instant: Instant): Affordance {
   let objets: readonly SigneDObjet[] = [];
   /** Ni Carte ni voyage : sinon, aucune zone de toucher. */
   let montres = false;
