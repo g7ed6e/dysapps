@@ -35,7 +35,7 @@ import { getCommande } from './world/commandes';
 import { FicheDuMonde, type FicheOuverte } from './FicheDuMonde';
 import { TROPHIES_PATH, trophies } from './trophies';
 import { WorldCanvas } from './three';
-import { Tutorial, hasSeenTutorial } from './Tutorial';
+import { Tutorial, hasSeenTutorial, markTutorialSeen } from './Tutorial';
 import { decouverteDeLIle } from './decouvertes';
 import { usePanneauDeLaCarte } from './usePanneauDeLaCarte';
 import { usePlaceDesBulles } from './usePlaceDesBulles';
@@ -155,11 +155,14 @@ export function WorldPage() {
   // Le menu du village (menu pause), en plein écran : la dernière mission, les révisions, les commandes, l'école, Missions,
   // Succès, le Tutoriel, puis Réglages tout en bas ; la croix ou Échap le referment.
   const menuOpen = biomeId === 'menu';
-  // Le menu refermé (la croix, Échap) : le focus revient au bouton Menu, d'où il était parti.
+  // Le menu refermé (la croix, Échap) : le focus revient au bouton Menu, d'où il était parti ; refermé par « Aide du
+  // village », il va à la bulle qui s'ouvre (le tutoriel le prend).
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const menuEtaitOuvert = useRef(menuOpen);
+  const aideDepuisLeMenu = useRef(false);
   useEffect(() => {
-    if (menuEtaitOuvert.current && !menuOpen) menuButtonRef.current?.focus();
+    if (menuEtaitOuvert.current && !menuOpen && !aideDepuisLeMenu.current) menuButtonRef.current?.focus();
+    aideDepuisLeMenu.current = false;
     menuEtaitOuvert.current = menuOpen;
   }, [menuOpen]);
   // La salle des trophées : un trophée par succès gagné dans le monde, le profil dans son panneau.
@@ -352,7 +355,9 @@ export function WorldPage() {
   const stageRef = useRef<HTMLDivElement>(null);
   // Revoir l'aide (le « ? » d'Archipéo, la ligne « Aide du village » du menu de Blocland) rouvre le tutoriel : comme la
   // première fois, le reste attend qu'il soit fermé (DA-9).
+  // Dans Blocland, la bulle du pincement revient aussi, à la prochaine ouverture de la Carte.
   const revoirAide = () => {
+    if (univers === 'blocland') markTutorialSeen('carte-pincer', false);
     setTutoDone(false);
     setReplay((n) => n + 1);
   };
@@ -1275,8 +1280,9 @@ export function WorldPage() {
               'Le bouton Menu, en haut à droite, ouvre le menu : missions, succès, aide, réglages.',
             ]}
           />
-          {/* Blocland : la première fois que la Carte s'ouvre, une bulle dit le pincement (une fois par appareil). */}
-          {mapOpen && univers === 'blocland' && tutoDone && (
+          {/* Blocland : la première fois que la Carte s'ouvre, une bulle dit le pincement (une fois par appareil) ; jamais
+              par-dessus une autre bulle ni pendant un voyage. */}
+          {mapOpen && univers === 'blocland' && tutoDone && !voyage && !renommageOuvert && !motRallume && !whaleWord && (
             <Tutorial id="carte-pincer" steps={['Pince la Carte à deux doigts pour la rapprocher.']} />
           )}
           </div>
@@ -1370,10 +1376,15 @@ export function WorldPage() {
         <MenuSheet
           onClose={() => navigate('/adventure')}
           onAller={openIsland}
-          onAide={() => {
-            navigate('/adventure');
-            revoirAide();
-          }}
+          onAide={
+            univers === 'blocland'
+              ? () => {
+                  aideDepuisLeMenu.current = true;
+                  navigate('/adventure');
+                  revoirAide();
+                }
+              : undefined
+          }
         />
       ) : (
         island &&

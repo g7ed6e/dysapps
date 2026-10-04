@@ -534,6 +534,17 @@ it('les bandeaux de récompense attendent la fin du tutoriel, et de nouveau quan
   await user.click(screen.getByRole('button', { name: 'Menu' }));
   await user.click(within(await screen.findByRole('dialog', { name: 'Menu' })).getByRole('button', { name: /Aide du village/ }));
   expect(screen.getByTestId('retenus')).toHaveTextContent('oui');
+  // Le focus va à la bulle qui s'ouvre, pas au bouton Menu.
+  await waitFor(() => expect(screen.getByRole('button', { name: /Suivant/ })).toHaveFocus());
+});
+
+it('« Aide du village » rend aussi la bulle du pincement, à la prochaine ouverture de la Carte', async () => {
+  vuSansAide();
+  const user = userEvent.setup();
+  renderAt('/adventure/french-6e-phonology');
+  await user.click(screen.getByRole('button', { name: 'Menu' }));
+  await user.click(within(await screen.findByRole('dialog', { name: 'Menu' })).getByRole('button', { name: /Aide du village/ }));
+  expect(JSON.parse(localStorage.getItem('dysapps:tutorials')!)['carte-pincer']).toBe(false);
 });
 
 it('le bouton Blocs ouvre « Mes blocs » ; une puce mène à l’île (caméra et fiche) ; la croix rend le monde, sur l’île du bonhomme', async () => {

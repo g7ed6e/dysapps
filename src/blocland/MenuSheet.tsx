@@ -108,7 +108,7 @@ export function MenuSheet({ onClose, onAller, onAide }: Props) {
               </span>
               <span className="island-quest-text">
                 <span className="island-quest-title">Aide du village</span>
-                <span className="island-quest-desc">Les trois bulles du début</span>
+                <span className="island-quest-desc">Revois les conseils du début</span>
               </span>
             </button>
           </li>

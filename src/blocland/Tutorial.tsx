@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Icon } from '../components/Icon';
 import { SpeakButton } from '../components/SpeakButton';
 import { Syllabified } from '../components/Syllabified';
@@ -38,13 +38,22 @@ export function Tutorial({ id, steps, replay = 0, targets, onClose }: Props) {
   const { settings, speak } = useSettings();
   const [open, setOpen] = useState(() => !hasSeenTutorial(id));
   const [step, setStep] = useState(0);
+  // Rouverte à la demande (« Revoir l'aide », « Aide du village ») : le focus va sur sa première action.
+  const actionRef = useRef<HTMLButtonElement>(null);
+  const focusALOuverture = useRef(false);
 
   useEffect(() => {
     if (replay > 0) {
       setStep(0);
       setOpen(true);
+      focusALOuverture.current = true;
     }
   }, [replay]);
+  useEffect(() => {
+    if (!open || !focusALOuverture.current) return;
+    focusALOuverture.current = false;
+    actionRef.current?.focus();
+  }, [open, replay]);
 
   const text = steps[step];
   useEffect(() => {
@@ -83,11 +92,11 @@ export function Tutorial({ id, steps, replay = 0, targets, onClose }: Props) {
       <div className="tutorial-actions">
         <SpeakButton text={text} />
         {last ? (
-          <button type="button" className="button primary" onClick={close}>
+          <button ref={actionRef} type="button" className="button primary" onClick={close}>
             <Icon name="check" /> J’ai compris
           </button>
         ) : (
-          <button type="button" className="button primary" onClick={() => setStep((s) => s + 1)}>
+          <button ref={actionRef} type="button" className="button primary" onClick={() => setStep((s) => s + 1)}>
             Suivant <Icon name="play" />
           </button>
         )}
