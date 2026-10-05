@@ -161,6 +161,8 @@ export default function WorldCanvas({
   bridgesRef.current = bridges;
   const archRef = useRef(archipelago);
   archRef.current = archipelago;
+  const avatarRef = useRef(avatar);
+  avatarRef.current = avatar;
   const vueDeplaceeRef = useRef(onVueDeplacee);
   vueDeplaceeRef.current = onVueDeplacee;
   const { settings } = useSettings();
@@ -276,6 +278,11 @@ export default function WorldCanvas({
       },
       garderHorsDeLaFiche: (objet) => garderHorsDeLaFiche(objet),
     };
+    // La scène refaite (un autre archipel, la préférence de mouvement) : le bonhomme reparaît là où il se tient. Ses
+    // effets, plus bas, ne repassent qu'à un nouvel itinéraire.
+    const ici = avatarRef.current;
+    personnages.montrerLeBonhomme(Boolean(ici));
+    if (ici?.route.length) personnages.marcher({ route: [ici.route[ici.route.length - 1]], seq: 0 });
     // Les captures (scripts/prise-de-vue.mjs) posent la caméra à son cadrage sans attendre son pas : lisible par les
     // scripts, comme le compteur de mesures.
     const pourLesCaptures = { poser: () => cadrage.poser() };
