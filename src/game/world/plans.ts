@@ -355,5 +355,10 @@ export function planOrigin(plan: PlanDef): { x: number; y: number; z: number } {
 
 /** Un plan est terminé quand toutes ses cellules sont posées. */
 export function isPlanDone(plan: PlanDef, done: Record<string, string[]>): boolean {
-  return (done[plan.id]?.length ?? 0) >= plan.cells.length;
+  const posees = done[plan.id];
+  if (!posees || posees.length < plan.cells.length) return false;
+  // Terminé quand toutes les cases DU plan sont posées (une réunion garde des clés dans le repère de sa paire, qu'une
+  // autre forme ne contient pas : on compte les cases, pas la longueur de la liste).
+  const cles = new Set(posees);
+  return planCells(plan).every((c) => cles.has(c.key));
 }

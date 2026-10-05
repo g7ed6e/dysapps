@@ -706,7 +706,7 @@ it('le menu : « Carte de départ » remet la région à sa carte de départ, ap
   expect(JSON.parse(localStorage.getItem('dysapps:game')!).world.layout).toBeTruthy();
   await user.click(within(menu).getByRole('button', { name: /Carte de départ/ }));
   await user.click(within(menu).getByRole('button', { name: /Revenir à la carte de départ/ }));
-  expect(within(menu).getByRole('status')).toHaveTextContent('toutes tes liaisons sont là');
+  expect(within(menu).getByRole('status')).toHaveTextContent('Rien n’est perdu');
   await waitFor(() => expect(JSON.parse(localStorage.getItem('dysapps:game')!).world.layout?.['6e']).toBeUndefined());
   const monde = JSON.parse(localStorage.getItem('dysapps:game')!).world;
   expect(monde.links).toEqual(depart.links);

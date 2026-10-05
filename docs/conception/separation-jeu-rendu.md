@@ -113,6 +113,8 @@ Une étape à la fois : chacune attend la fusion de la précédente.
 - **Les sauvegardes** : la séparation n’en migre aucune. Elle ne change aucun identifiant (îles, ouvrages, plans), et les clés des plans restent en cases du plan, avec des origines figées.
 - **Les captures de la documentation** : J0 à J5 et D n’en changent aucune ; J6 en ajoute sous son drapeau.
 - **Les performances** : `versMonde` se calcule une fois par île (une matrice), pas à chaque image pour chaque objet.
+- **La disposition de la partie, un état de module** (GD-9) : `applyLayout` (`world/appliedLayout.ts`) pose la disposition sauvegardée sur le monde, et `BloclandContext.tsx` l’appelle dans un `useMemo`, donc pendant le rendu, en modifiant un état de module que lisent `map.ts`, `join.ts` et les vues. C’est sûr aujourd’hui parce que l’appel est idempotent (la même disposition ne refait rien) et qu’une seule partie est ouverte à la fois. À revoir si des transitions React arrivent (`startTransition`, `useDeferredValue`, rendu concurrent abandonné) : un rendu jeté laisserait la disposition d’une partie que l’écran ne montre pas ; il faudrait alors la passer en contexte, ou la poser dans un effet avant les vues.
+- **Les identifiants des réunions** : `translatePartId` (`core/legacyIds.ts`) traduit les anciens identifiants des parties, pas les lieux écrits dans `join.<a>.<b>`. Aucune sauvegarde d’avant les identifiants anglais n’a de réunion, donc rien n’est à traduire ; si un identifiant de lieu change un jour, la migration devra traduire aussi les deux lieux de ces clés.
 
 ## 5. Les décisions
 

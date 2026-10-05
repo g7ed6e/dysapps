@@ -3,7 +3,7 @@
 // commandes, l'école, les grands endroits de l'appli et le Tutoriel ; les Réglages tout en bas, à part (mot du
 // mainteneur, 4 octobre 2026, qui reprend le brief de l'ancienne #282). La croix ou Échap le referment : plus de
 // « Reprendre ». L'aide du village se revoit avec le « ? » de la barre du bas.
-import { useEffect, useEffectEvent, useState } from 'react';
+import { useEffect, useEffectEvent, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon, type AnyIconName } from '../components/Icon';
 import { XpBar } from '../components/XpBar';
@@ -20,7 +20,7 @@ import { Requests } from './Requests';
 import type { BiomeId } from './biomes';
 import { Sheet } from './Sheet';
 import { archipelagoOf } from './world/archipelago';
-import { backToStartingMap } from './world/arrange';
+import { backToStartingMap, startingMapState } from './world/arrange';
 
 interface Props {
   /** La croix ou Échap : le menu se ferme, on est dans le village. */
@@ -52,15 +52,16 @@ export function MenuSheet({ onClose, onAller, onAide }: Props) {
   // « Carte de départ » (GD-9) : la région du bonhomme revient à sa carte de départ, après confirmation ; aucune liaison
   // n'est perdue (celles à reposer redeviennent posées).
   const [confirmer, setConfirmer] = useState(false);
-  const [revenue, setRevenue] = useState<'ok' | 'reunis' | null>(null);
+  const [revenue, setRevenue] = useState(false);
   const region = archipelagoOf(state.world.place ?? 'french-6e-phonology').classe;
-  const amenagee = Boolean(state.world.layout?.[region]);
+  // Ce que donnerait le retour, avant de le proposer : le bouton n'est actif que s'il change vraiment la carte ; si des
+  // lieux réunis l'empêchent (GD-9, ils ne se séparent plus), on le dit tout de suite, sans proposer le bouton.
+  const retour = useMemo(() => startingMapState(state.world, region), [state.world, region]);
   const revenirALaCarteDeDepart = () => {
-    // Deux lieux réunis restent où ils sont (GD-9) : si la carte ne tient plus avec eux, rien ne change, et on le dit.
     const apres = backToStartingMap(state.world, region);
     if (apres) arrange(apres);
     setConfirmer(false);
-    setRevenue(apres ? 'ok' : 'reunis');
+    setRevenue(Boolean(apres));
   };
   const { assemblage } = useTextes();
   const { progress } = useProgress();
@@ -122,25 +123,33 @@ export function MenuSheet({ onClose, onAller, onAide }: Props) {
       </ul>
       <ul className="island-quests menu-list" aria-label="Carte">
         <li>
-          <button type="button" className="island-quest" aria-expanded={confirmer} onClick={() => setConfirmer(!confirmer)} disabled={!amenagee}>
-            <span className="island-quest-icon">
-              <Icon name="map" />
-            </span>
-            <span className="island-quest-text">
-              <span className="island-quest-title">Carte de départ</span>
-              <span className="island-quest-desc">
-                {amenagee ? 'Remettre les lieux de cette région à leur place de départ' : 'Les lieux sont à leur place de départ.'}
+          {retour === 'bloquee' ? (
+            <div className="island-quest" role="note">
+              <span className="island-quest-icon">
+                <Icon name="map" />
               </span>
-            </span>
-          </button>
+              <span className="island-quest-text">
+                <span className="island-quest-title">Carte de départ</span>
+                <span className="island-quest-desc">Pas de retour possible pour l’instant : des lieux réunis prennent la place d’autres lieux. Déplace-les d’abord avec « Aménager ».</span>
+              </span>
+            </div>
+          ) : (
+            <button type="button" className="island-quest" aria-expanded={confirmer} onClick={() => setConfirmer(!confirmer)} disabled={retour === 'pareille'}>
+              <span className="island-quest-icon">
+                <Icon name="map" />
+              </span>
+              <span className="island-quest-text">
+                <span className="island-quest-title">Carte de départ</span>
+                <span className="island-quest-desc">{retour === 'possible' ? 'Remettre les lieux de cette région à leur place de départ' : 'Les lieux sont à leur place de départ.'}</span>
+              </span>
+            </button>
+          )}
           {revenue && (
             <p className="menu-confirmer" role="status">
-              {revenue === 'ok'
-                ? 'C’est fait : les lieux sont revenus à leur place de départ, et toutes tes liaisons sont là.'
-                : 'Rien n’a bougé : des lieux réunis prennent la place d’autres lieux. Déplace-les d’abord avec « Aménager ».'}
+              C’est fait : les lieux sont revenus à leur place de départ. Rien n’est perdu.
             </p>
           )}
-          {confirmer && amenagee && (
+          {confirmer && retour === 'possible' && (
             <div className="menu-confirmer" role="group" aria-label="Revenir à la carte de départ ?">
               <p>Tous les lieux de cette région reviennent à leur place de départ. Tes liaisons restent toutes construites : rien n’est perdu.</p>
               <div className="menu-confirmer-boutons">

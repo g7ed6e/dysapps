@@ -4,13 +4,16 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import type { BiomeId } from '../biomes';
 import type { World } from '../engine/state';
-import { backToStartingMap, freeSpots, isFixedPlace, groupAt, joinCandidates, joinedWith, joinIslands, joinsIn, moveIsland, routesIn, spotOf, turnIsland } from './arrange';
+import { backToStartingMap, startingMapState, startingSpot, freeSpots, isFixedPlace, groupAt, joinCandidates, joinedWith, joinIslands, joinsIn, moveIsland, routesIn, spotOf, turnIsland } from './arrange';
 import { toutConstruit } from './budget';
 import { GAP_BETWEEN_PLACES, posesOfLayout } from './footprint';
 import { joinPlan, JOIN_MAX_STEPS, joinShape } from './join';
 import { joinId, pairOfJoinId, sanitizeLayout } from './savedLayout';
 import { isLandInWorld } from './map';
-import { planCells } from './plans';
+import { isPlanDone, planCells } from './plans';
+import { fillPlanCell } from '../engine';
+import { sanitizeState } from '../engine/sanitize';
+import { EMPTY_STATE } from '../engine/state';
 import { applyLayout } from './appliedLayout';
 import { joinTriangles } from './budget';
 import { appliedJoins, getJoin } from './join';
@@ -137,6 +140,41 @@ describe('Réunir deux lieux', () => {
     // Le bonhomme passe d'un lieu à l'autre par la construction.
     const route = avatarRoute(VOLCAN, autre, w2.links.filter((id) => !(w2.layout?.['6e']?.relink ?? []).includes(id)));
     expect(route).not.toBeNull();
+  });
+
+  it('une réunion n’est terminée que quand toutes les cases de SON plan sont posées, même avec des clés étrangères ; les clés lues sont plafonnées', () => {
+    const { w, autre } = voisins();
+    const plan = cles(apres(joinIslands(w, VOLCAN, autre)), VOLCAN);
+    const toutes = planCells(plan).map((c) => c.key);
+    // Autant de clés que de cases, mais une étrangère (une autre forme, un ancien repère) à la place de la dernière.
+    const etrangere = '999,999,999';
+    const presque = [...toutes.slice(0, -1), etrangere];
+    expect(isPlanDone(plan, { [plan.id]: presque })).toBe(false);
+    expect(isPlanDone(plan, { [plan.id]: toutes })).toBe(true);
+    // Poser une case quand la liste a déjà la bonne longueur avec une clé étrangère : pas terminé tant qu'il en manque.
+    const derniere = planCells(plan).at(-1)!;
+    const avantDerniere = planCells(plan).at(-2)!;
+    const base = { ...EMPTY_STATE, stock: { [avantDerniere.block]: 5, [derniere.block]: 5 } };
+    const etat = { ...base, world: { ...base.world, parts: { [plan.id]: [...toutes.slice(0, -2), etrangere] } } };
+    const r1 = fillPlanCell(etat, plan, avantDerniere.x, avantDerniere.y, avantDerniere.z);
+    expect(r1.ok && r1.completed).toBe(false);
+    const r2 = r1.ok ? fillPlanCell(r1.state, plan, derniere.x, derniere.y, derniere.z) : r1;
+    expect(r2.ok && r2.completed).toBe(true);
+    // À la lecture : les clés sont gardées (rien ne se perd), mais pas plus de 512, ni ce qui n'est pas une case.
+    const lu = sanitizeState({ world: { parts: { [plan.id]: [...Array.from({ length: 2000 }, (_, i) => `${i},0,0`), 'pas une case', 12] } } });
+    expect(lu.world.parts[plan.id].length).toBe(512);
+    expect(lu.world.parts[plan.id].every((k) => /^-?\d+,-?\d+,-?\d+$/.test(k))).toBe(true);
+    const garde = sanitizeState({ world: { parts: { [plan.id]: presque } } });
+    expect(garde.world.parts[plan.id]).toEqual(presque);
+  });
+
+  it('« Carte de départ » : proposée seulement si la carte change vraiment', () => {
+    const w = toutConstruit().world;
+    expect(startingMapState(w, '6e')).toBe('pareille');
+    // Un lieu remis à sa place de départ, écrite dans la disposition : rien ne changerait.
+    const remis = apres(moveIsland(apres(moveIsland(w, VOLCAN, freeSpots(w, VOLCAN)[0])), VOLCAN, startingSpot(VOLCAN)));
+    expect(startingMapState(remis, '6e')).toBe('pareille');
+    expect(startingMapState(apres(moveIsland(w, VOLCAN, freeSpots(w, VOLCAN)[0])), '6e')).toBe('possible');
   });
 
   it('l’identifiant de la construction dit ses deux lieux, d’une même région', () => {

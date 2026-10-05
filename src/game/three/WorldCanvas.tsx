@@ -429,6 +429,8 @@ export default function WorldCanvas({
       for (const p of parties) p.dispose();
       meter?.dispose();
       if (window.__dysappsCamera === pourLesCaptures) delete window.__dysappsCamera;
+      // Le contexte WebGL est rendu tout de suite (une scène refaite à chaque pose en ouvrirait sinon plusieurs à la fois).
+      renderer.forceContextLoss();
       renderer.dispose();
       renderer.domElement.remove();
       world.current = null;
@@ -441,7 +443,13 @@ export default function WorldCanvas({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reduceMotion, archipelago]);
 
-  // ---- Le mode « Aménager » (GD-9) : le dessin du choix, et la vue qui suit le fantôme s'il sort de l'écran
+  // ---- Le mode « Aménager » (GD-9) : l'ajout aux matériaux des blocs, seulement le temps que le mode est ouvert
+  useEffect(() => {
+    world.current?.amenagement.ouvrir(dansLeMode);
+    // Reposé aussi quand la scène est refaite (un lieu posé, la préférence de mouvement).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dansLeMode, reduceMotion, archipelago]);
+  // ---- Le dessin du choix, et la vue qui suit le fantôme s'il sort de l'écran
   const vueDuMode = amenager?.vue ?? null;
   useEffect(() => {
     const w = world.current;

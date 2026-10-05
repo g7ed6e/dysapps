@@ -2,7 +2,8 @@
 // retracées et barrées, en carrés plats bordés d'un contour sombre (deux triangles chacun : `arrangeViewCost`), dans un
 // seul maillage instancié (un appel de dessin pendant un choix, rien hors du mode) ; dans Blocland, le lieu
 // choisi soulevé d'un cran et le geste de la pose (démonté couche par couche, remonté à sa nouvelle place) par un petit
-// ajout aux matériaux des blocs (`avecLAmenagement`), sans maillage de plus ; dans Archipéo, le voile de brume du geste.
+// ajout aux matériaux des blocs (`avecLAmenagement`), posé seulement le temps que le mode est ouvert, sans maillage de
+// plus ; dans Archipéo, le voile de brume du geste.
 // Moins d'animations : le lieu se soulève d'un coup, et la page pose sans geste.
 import * as THREE from 'three';
 import { gestureCut, veilOpacity } from '../world/arrangeGesture';
@@ -31,28 +32,64 @@ const neutre = () => {
 
 const DANS_LA_ZONE = 'p.x > uAmZone.x && p.x < uAmZone.z && p.z > uAmZone.y && p.z < uAmZone.w';
 
+/** Les matériaux des blocs vus depuis l'ouverture de la scène : le mode « Aménager » les modifie le temps qu'il est ouvert. */
+const materiauxDesBlocs = new Set<THREE.Material>();
+
+/** Le mode « Aménager » est ouvert dans la scène : les matériaux des blocs portent l'ajout du mode. */
+let modeOuvert = false;
+
+/** L'ajout du mode, posé sur un matériau des blocs : le même programme pour tous (une compilation par sorte de matériau). */
+function injecter(shader: THREE.WebGLProgramParametersWithUniforms): void {
+  Object.assign(shader.uniforms, zoneDuMode);
+  shader.vertexShader = shader.vertexShader
+    .replace('#include <common>', '#include <common>\nuniform vec4 uAmZone;\nuniform float uAmLift;\nvarying vec3 vAmWp;')
+    .replace(
+      '#include <begin_vertex>',
+      `#include <begin_vertex>\nvec4 p = modelMatrix * vec4(transformed, 1.0);\nif (${DANS_LA_ZONE}) { transformed.y += uAmLift; p.y += uAmLift; }\nvAmWp = p.xyz;`,
+    );
+  shader.fragmentShader = shader.fragmentShader
+    .replace('#include <common>', '#include <common>\nuniform vec4 uAmZone;\nuniform float uAmCut;\nvarying vec3 vAmWp;')
+    .replace('void main() {', `void main() {\n{ vec3 p = vAmWp; if (${DANS_LA_ZONE} && p.y > uAmCut) discard; }`);
+}
+
+const CLE_DU_MODE = () => 'amenager';
+
+/** Pose ou retire l'ajout du mode sur un matériau ; il se recompile (le programme reste en cache dans le moteur). */
+function reglerLeMateriau(m: THREE.Material, oui: boolean): void {
+  const pose = m.onBeforeCompile === injecter;
+  if (pose === oui) return;
+  if (oui) {
+    m.onBeforeCompile = injecter;
+    m.customProgramCacheKey = CLE_DU_MODE;
+  } else {
+    // Le matériau redevient celui d'avant : ses méthodes reviennent à celles de Three.js.
+    delete (m as Partial<THREE.Material>).onBeforeCompile;
+    delete (m as Partial<THREE.Material>).customProgramCacheKey;
+  }
+  m.needsUpdate = true;
+}
+
 /**
- * Un matériau des blocs (Blocland) qui sait soulever le lieu choisi et le couper au-dessus d'une hauteur, dans la zone
- * du mode « Aménager » : quelques opérations par sommet et par pixel, le même programme pour tous (une seule
- * compilation par sorte de matériau). Hors du mode, la zone est vide : rien ne change à l'image.
+ * Un matériau des blocs (Blocland) qui saura soulever le lieu choisi et le couper au-dessus d'une hauteur, dans la zone
+ * du mode « Aménager ». Hors du mode, le matériau reste tel quel (son programme est celui d'avant, sans `discard`) ;
+ * l'ajout n'est posé que le temps que le mode est ouvert (`ouvrirLeModeDansLesMateriaux`).
  */
 export function avecLAmenagement<M extends THREE.Material>(m: M): M {
-  if (m.userData.amenager) return m;
-  m.userData.amenager = true;
-  m.onBeforeCompile = (shader) => {
-    Object.assign(shader.uniforms, zoneDuMode);
-    shader.vertexShader = shader.vertexShader
-      .replace('#include <common>', '#include <common>\nuniform vec4 uAmZone;\nuniform float uAmLift;\nvarying vec3 vAmWp;')
-      .replace(
-        '#include <begin_vertex>',
-        `#include <begin_vertex>\nvec4 p = modelMatrix * vec4(transformed, 1.0);\nif (${DANS_LA_ZONE}) { transformed.y += uAmLift; p.y += uAmLift; }\nvAmWp = p.xyz;`,
-      );
-    shader.fragmentShader = shader.fragmentShader
-      .replace('#include <common>', '#include <common>\nuniform vec4 uAmZone;\nuniform float uAmCut;\nvarying vec3 vAmWp;')
-      .replace('void main() {', `void main() {\n{ vec3 p = vAmWp; if (${DANS_LA_ZONE} && p.y > uAmCut) discard; }`);
-  };
-  m.customProgramCacheKey = () => 'amenager';
+  materiauxDesBlocs.add(m);
+  reglerLeMateriau(m, modeOuvert);
   return m;
+}
+
+/** Ouvre ou ferme le mode dans les matériaux des blocs (une seule scène du monde à la fois). */
+export function ouvrirLeModeDansLesMateriaux(oui: boolean): void {
+  modeOuvert = oui;
+  for (const m of materiauxDesBlocs) reglerLeMateriau(m, oui);
+}
+
+/** La scène se défait : le mode se ferme dans les matériaux, et la liste se vide (ils restent au cache de ./textures.ts). */
+function oublierLesMateriaux(): void {
+  ouvrirLeModeDansLesMateriaux(false);
+  materiauxDesBlocs.clear();
 }
 
 /**
@@ -101,6 +138,8 @@ export interface Amenagement extends PartieDeLaScene {
   poser(vue: ArrangeView | null): void;
   /** Le geste de la pose en cours, ou rien. */
   geste(g: ArrangeGesture | null): void;
+  /** Le mode est ouvert : les matériaux des blocs portent son ajout ; fermé, ils redeviennent ceux d'avant. */
+  ouvrir(oui: boolean): void;
 }
 
 export function creerAmenagement(monde: Monde, reduit: boolean): Amenagement {
@@ -185,12 +224,16 @@ export function creerAmenagement(monde: Monde, reduit: boolean): Amenagement {
       enCours = g;
       regler(performance.now());
     },
+    ouvrir(oui) {
+      ouvrirLeModeDansLesMateriaux(oui);
+    },
     animer() {
       regler(performance.now());
     },
     dispose() {
       vider();
       neutre();
+      oublierLesMateriaux();
       forme.dispose();
       bordure.dispose();
       matiere.dispose();

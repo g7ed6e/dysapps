@@ -9,6 +9,7 @@ import { buildMesh } from '../world/mesher';
 import { worldCubes } from '../world/terrain';
 import { KITS } from '../world/architecture';
 import { creerCubes } from './cubes';
+import { ouvrirLeModeDansLesMateriaux } from './arrange';
 import type { Large } from './offshore';
 import type { Lumiere } from './light';
 import type { Instant, Monde } from './scenePart';
@@ -52,17 +53,27 @@ describe('Le rendu de Blocland ne montre aucune pièce d’architecture', () => 
       if (o instanceof THREE.Mesh && o.geometry.getAttribute('position').count > 0) maillages.push(o);
     });
     // Aucun attribut de motif, aucun shader peint : la construction d'Archipéo (three/construction.ts) peint ses murs
-    // dans `onBeforeCompile` ; les matériaux de Blocland n'y ajoutent que la zone du mode « Aménager » (GD-9,
-    // three/arrange.ts : le lieu choisi soulevé, le geste de la pose), le même programme pour tous.
+    // dans `onBeforeCompile` ; les matériaux de Blocland n'y ajoutent la zone du mode « Aménager » (GD-9,
+    // three/arrange.ts : le lieu choisi soulevé, le geste de la pose) que le temps que le mode est ouvert : hors du
+    // mode, le programme est celui d'avant.
     expect(maillages.length).toBeGreaterThan(0);
     for (const o of maillages) {
       expect(o.geometry.getAttribute('motif')).toBeUndefined();
       const mats = ([] as THREE.Material[]).concat(o.material);
       for (const x of mats) {
         expect(x).not.toBeInstanceOf(THREE.ShaderMaterial);
-        expect(x.userData.amenager).toBe(true);
-        expect(x.customProgramCacheKey()).toBe('amenager');
+        expect(Object.hasOwn(x, 'onBeforeCompile'), 'hors du mode').toBe(false);
+        expect(x.customProgramCacheKey()).not.toBe('amenager');
       }
+    }
+    const mats = maillages.flatMap((o) => ([] as THREE.Material[]).concat(o.material));
+    // Le mode ouvert : l'ajout est posé sur chaque matériau des blocs ; refermé, il part.
+    ouvrirLeModeDansLesMateriaux(true);
+    for (const x of mats) expect(x.customProgramCacheKey()).toBe('amenager');
+    ouvrirLeModeDansLesMateriaux(false);
+    for (const x of mats) {
+      expect(Object.hasOwn(x, 'onBeforeCompile')).toBe(false);
+      expect(x.customProgramCacheKey()).not.toBe('amenager');
     }
     // Exactement les triangles du monde en blocs (world/mesher.ts), cube pour cube.
     const tri = (g: THREE.BufferGeometry) => (g.index ? g.index.count : g.getAttribute('position').count) / 3;

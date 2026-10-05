@@ -722,6 +722,37 @@ export function currentLandings(world: World, linkId: string): { from: LayoutLan
 // ---------- La carte de départ ----------
 
 /**
+ * Ce qui, dans la disposition d'une région, s'écarte vraiment de la carte de départ : un lieu, un Gardien ou une borne
+ * remis à sa place de départ n'y compte plus, ni une liste vide. Deux dispositions sont pareilles quand ceci l'est.
+ */
+function ecartsDeLaCarteDeDepart(world: World, a: ArchipelagoId): string {
+  const r = regionOf(world, a);
+  const islands = Object.entries(r.islands ?? {}).filter(([id, s]) => {
+    const d = startingSpot(id as BiomeId);
+    return s && (s.x !== d.x || s.y !== d.y || s.turn !== d.turn);
+  });
+  const guardians = Object.entries(r.guardians ?? {}).filter(([, g]) => g && (g.side !== 'front' || g.step !== 0 || g.turn !== 0));
+  const stations = Object.entries(r.stations ?? {}).filter(([key, p]) => {
+    const [id, mission] = key.split(':') as [BiomeId, string];
+    const d = startingStations(id).find((st) => st.typeId === mission);
+    return !d || d.x !== p.x || d.y !== p.y;
+  });
+  const listes = { landings: Object.entries(r.landings ?? {}), joined: r.joined ?? [], shortcuts: r.shortcuts ?? [], relink: r.relink ?? [] };
+  return JSON.stringify({ islands: islands.sort(), guardians: guardians.sort(), stations: stations.sort(), ...listes });
+}
+
+/**
+ * « Carte de départ », au menu : ce que donnerait le retour, avant de le proposer. `pareille` : rien ne changerait (la
+ * région est déjà à sa carte de départ) ; `bloquee` : des lieux réunis empêchent le retour (rien ne changerait non
+ * plus, et on le dit avant de demander) ; `possible` : le retour change la carte.
+ */
+export function startingMapState(world: World, a: ArchipelagoId): 'pareille' | 'bloquee' | 'possible' {
+  const apres = backToStartingMap(world, a);
+  if (!apres) return 'bloquee';
+  return ecartsDeLaCarteDeDepart(apres, a) === ecartsDeLaCarteDeDepart(world, a) ? 'pareille' : 'possible';
+}
+
+/**
  * Revient à la carte de départ dans une région (le menu, « Carte de départ ») : sa disposition est vidée, et les liaisons
  * à reposer redeviennent des liaisons posées. Aucune n'est perdue : les liaisons de la partie ne changent pas. Deux lieux
  * réunis ne se séparent plus (GD-9, point 10) : ils restent où ils sont, avec leurs Gardiens, et un lieu dont la place

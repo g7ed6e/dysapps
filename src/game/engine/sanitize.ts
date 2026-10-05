@@ -18,6 +18,12 @@ function isRecord(v: unknown): v is Record<string, unknown> {
   return typeof v === 'object' && v !== null && !Array.isArray(v);
 }
 
+/**
+ * Le plus de clés lues pour une construction qui réunit (GD-9) : sa plus grande forme tient en moins de 300 cases (un
+ * côté de lieu de large, quelques cases de long) ; au-delà, la sauvegarde est abîmée et le reste est ignoré.
+ */
+const MAX_JOIN_KEYS = 512;
+
 const num = (v: unknown, fallback = 0) => (Number.isFinite(Number(v)) ? Number(v) : fallback);
 
 export function sanitizeState(input: unknown): GameState {
@@ -101,8 +107,10 @@ export function sanitizeState(input: unknown): GameState {
       }
       // La construction qui réunit deux lieux (GD-9) : sa forme dépend de la place de la paire, lue plus tard ; ses clés
       // (dans le repère de la paire) se gardent telles qu'elles sont écrites : rien de posé ne se perd.
+      // Les clés lues sont plafonnées (`MAX_JOIN_KEYS`) : une sauvegarde abîmée ne gonfle pas la partie.
       if (pairOfJoinId(id)) {
-        const posees = Array.isArray(keys) ? [...new Set(keys.filter((k): k is string => typeof k === 'string' && /^-?\d+,-?\d+,-?\d+$/.test(k)))] : [];
+        const lues = Array.isArray(keys) ? keys.slice(0, MAX_JOIN_KEYS) : [];
+        const posees = [...new Set(lues.filter((k): k is string => typeof k === 'string' && k.length <= 24 && /^-?\d{1,4},-?\d{1,4},-?\d{1,4}$/.test(k)))];
         if (posees.length) parts[id] = posees;
         continue;
       }
