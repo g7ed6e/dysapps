@@ -262,7 +262,7 @@ svg {
 }
 @media (max-width: 640px) {
   .celebration {
-    padding: 0.4rem 0.4rem 0.4rem 0.7rem;
+    padding: 0.4rem calc(48px + 0.6rem) 0.4rem 0.7rem;
   }
   .celebration-icon {
     width: 2.4rem;
@@ -887,8 +887,13 @@ button.app-card:active {
   display: flex;
   align-items: center;
   gap: 0.8rem;
-  width: min(30rem, calc(100% - 2rem));
-  padding: 0.7rem 0.6rem 0.7rem 0.9rem;
+  /* Dans la zone sûre de l'écran, et jamais plus haut que l'écran (il défile alors). */
+  width: min(30rem, calc(100% - 1rem - env(safe-area-inset-left) - env(safe-area-inset-right)));
+  max-height: calc(100dvh - 6.2rem - env(safe-area-inset-bottom));
+  overflow-y: auto;
+  flex-wrap: wrap;
+  /* La place de Fermer, posé dans le coin haut droit du bandeau : il reste toujours dans la zone sûre. */
+  padding: 0.7rem calc(48px + 0.9rem) 0.7rem 0.9rem;
   background: var(--sand);
   color: var(--on-sand);
   border: var(--border-width) solid var(--ink);
@@ -900,8 +905,19 @@ button.app-card:active {
   background: var(--cyan);
 }
 .celebration-text {
-  flex: 1;
+  /* Une largeur minimale : quand la place manque, le texte passe sous l'icône plutôt que de se casser une lettre par
+     ligne ; il revient à la ligne entre les mots, sans les couper. */
+  flex: 1 1 9em;
+  min-width: 0;
   line-height: 1.35;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: manual;
+}
+.celebration > .icon-button {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.4rem;
 }
 .celebration-kicker {
   font-weight: 700;
