@@ -4,11 +4,13 @@
 // « Réunir » est proposé sur la ligne d'un lieu qui a un voisin ouvert à la bonne distance (GD-9, point 10). L'ordre de
 // la liste est celui des lieux de la région, jamais celui de la disposition : une carte aménagée ne déplace pas les
 // lignes. Pas de geste ici (rien ne se dessine) : la pose est immédiate, avec son son.
-import { useState } from 'react';
+import { thePlace, toPlace } from './world/placeArticle';
+import { useEffect, useRef, useState } from 'react';
 import { frenchTypography } from '../components/math/RichText';
 import { Icon } from '../components/Icon';
 import { useSettings } from '../core/SettingsContext';
-import { ArrangeBar, ArrangeButton, ArrangeJoinQuestion, ArrangeSentence, useAmenagement } from './Arranging';
+import { useAmenagement } from './Arranging';
+import { ArrangeBar, ArrangeButton, ArrangeJoinQuestion, ArrangeSentence } from './ArrangeBar';
 import { getBiome, type BiomeId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { habillageDuMonde } from './skin';
@@ -43,7 +45,7 @@ function sesElements(world: World, id: BiomeId, a: ArchipelagoId, mot: LinkPhras
     if (!l) continue;
     const end = b.from === id ? 'from' : 'to';
     const autre = end === 'from' ? b.to : b.from;
-    out.push({ cle: `arrivee-${link}`, nom: `L’arrivée de ${mot.le} vers ${nomDuLieu(autre)}`, choix: { genre: 'arrivee', link, end, landing: l[end] } });
+    out.push({ cle: `arrivee-${link}`, nom: `L’arrivée de ${mot.le} vers ${thePlace(nomDuLieu(autre))}`, choix: { genre: 'arrivee', link, end, landing: l[end] } });
   }
   return out;
 }
@@ -56,8 +58,11 @@ function memeElement(p: ArrangeChoice | null, q: ArrangeChoice): boolean {
   return false;
 }
 
-/** Aménager la région `a` en liste. */
-export function ArrangeList({ a }: { a: ArchipelagoId }) {
+/**
+ * Aménager la région `a` en liste. `enPanneau` : dans le panneau « Aménager la carte » du monde (au téléphone en grand
+ * texte) ; le mode s'y ouvre tout de suite, sans titre (le panneau a le sien), et ✓ Terminé appelle `onFin`.
+ */
+export function ArrangeList({ a, enPanneau = false, onFin }: { a: ArchipelagoId; enPanneau?: boolean; onFin?: () => void }) {
   const { state, arrange } = useBlocland();
   const { settings, speak } = useSettings();
   const textes = useTextes();
@@ -79,14 +84,28 @@ export function ArrangeList({ a }: { a: ArchipelagoId }) {
     liaisons: textes.liaisons,
   });
   const { choix } = amenagement;
+  // Dans le panneau : le mode ouvert dès l'arrivée (la liste des ouvrages à reposer d'abord, s'il y en a).
+  const ouvert = useRef(false);
+  useEffect(() => {
+    if (!enPanneau) return;
+    if (amenagement.ouvert) ouvert.current = true;
+    else if (!ouvert.current) {
+      ouvert.current = true;
+      if (amenagement.aReposer.length) amenagement.ouvrirLaListe();
+      else amenagement.ouvrir();
+    } else onFin?.();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [enPanneau, amenagement.ouvert]);
   const choisi = (genre: 'lieu' | 'gardien', id: BiomeId) => choix?.genre === genre && choix.id === id;
   return (
-    <section className="panel arrange-list" aria-labelledby={`amenager-${a}`}>
-      <h2 id={`amenager-${a}`} className="section-title">
-        <Icon name="amenager" /> Aménager la carte
-      </h2>
+    <section className={enPanneau ? 'arrange-list arrange-list-panneau' : 'panel arrange-list'} aria-labelledby={enPanneau ? undefined : `amenager-${a}`}>
+      {!enPanneau && (
+        <h2 id={`amenager-${a}`} className="section-title">
+          <Icon name="amenager" /> Aménager la carte
+        </h2>
+      )}
       <p className="section-intro">Chacun range sa carte à sa façon : « Déplacer », puis les flèches et « Poser ici ». Rien n’est perdu.</p>
-      <ArrangeButton amenagement={amenagement} />
+      {!enPanneau && <ArrangeButton amenagement={amenagement} />}
       <ArrangeSentence amenagement={amenagement} nom={nomDuLieu} questionAilleurs />
       {amenagement.ouvert && (
         <>
@@ -101,7 +120,7 @@ export function ArrangeList({ a }: { a: ArchipelagoId }) {
                   <p>
                     <strong>{b.name}</strong>
                     {choisi('lieu', b.id) && <span className="arrange-list-mark"> (choisi)</span>} : {fixe ? 'le point de départ de la région, il ne bouge pas.' : `${placeSentence(state.world, b.id, undefined, nomDuLieu)}.`}
-                    {reuni && ` Réuni à ${nomDuLieu(reuni)} : ils bougent ensemble.`}
+                    {reuni && ` Réuni ${toPlace(nomDuLieu(reuni))} : ils bougent ensemble.`}
                   </p>
                   {!fixe && (
                     <button type="button" className="button" aria-pressed={choisi('lieu', b.id)} aria-label={`Déplacer ${b.name}`} onClick={() => amenagement.intention({ genre: 'ile', id: b.id })}>
@@ -150,7 +169,7 @@ export function ArrangeList({ a }: { a: ArchipelagoId }) {
               ];
             })}
           </ul>
-          <ArrangeBar amenagement={amenagement} className="arrange-bar-inline" />
+          <ArrangeBar amenagement={amenagement} className="arrange-bar-inline" pli={false} />
         </>
       )}
     </section>

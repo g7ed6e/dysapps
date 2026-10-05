@@ -20,7 +20,7 @@ export { AUTOUR_DE_LA_DESTINATION, cadrageDeLaCarte, cadrageDeLaTraversee, decal
 declare global {
   interface Window {
     /** La caméra, pour les captures (en développement, ou avec `?mesures`) : voir `Camera.poser`. */
-    __dysappsCamera?: { poser(): number };
+    __dysappsCamera?: { poser(): number; ecran(p: { x: number; y: number; z: number }): { x: number; y: number } | null };
     /**
      * Pour les captures d'un lot (scripts/rendu/mesures.mjs, `poseA`, avec `?mesures`) : la pose d'une partie tenue à
      * cette part de sa durée dès son lancement (three/cubes.ts, `tenirLaVague`).

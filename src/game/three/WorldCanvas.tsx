@@ -33,7 +33,7 @@ import { creerRond } from './groundRing';
 import { ecouterLeClavier, ecouterLesGestes } from './gestures';
 import { lancerLaBoucle } from './loop';
 import { creerAmenagement, type Amenagement } from './arrange';
-import { contourner, lecteurDePlaceLibre, lirePlaceLibre, sousLaFiche, type PlaceLue } from '../freeSpace';
+import { contourner, lecteurDePlaceLibre, lirePlaceLibre, lirePlaceReelle, sousLaFiche, type PlaceLue } from '../freeSpace';
 
 
 /** La scène en cours : le moteur de rendu, la caméra, et les parties que les props mettent à jour. */
@@ -252,13 +252,15 @@ export default function WorldCanvas({
       },
     };
     const cadrage = creerCamera(monde, camera, personnages.avatar, derniers, instant, lecture);
-    const amenagement = creerAmenagement(monde, reduceMotion, camera, el);
+    const amenagement = creerAmenagement(monde, reduceMotion, camera, el, lumiere);
     world.current = {
       amenagement,
       garderEnVue: ({ rect: r, z }) => {
         const point = new THREE.Vector3((r.x0 + r.x1) / 2, z, (r.y0 + r.y1) / 2);
         const vue = el.getBoundingClientRect();
-        const { libre } = lirePlaceLibre(el);
+        // La hauteur réelle de la barre du mode et de sa phrase (un pli ouvert compris) : le fantôme se cadre dans la
+        // bande libre entre les deux.
+        const libre = lirePlaceReelle(el);
         const marge = 24;
         // Les quatre coins dans la place libre : rien à faire.
         const dedans = [r.x0, r.x1].every((x) =>
@@ -296,7 +298,15 @@ export default function WorldCanvas({
     if (ici?.route.length) personnages.marcher({ route: [ici.route[ici.route.length - 1]], seq: 0 });
     // Les captures (scripts/prise-de-vue.mjs) posent la caméra à son cadrage sans attendre son pas : lisible par les
     // scripts, comme le compteur de mesures.
-    const pourLesCaptures = { poser: () => cadrage.poser() };
+    // `ecran` : où un point du monde (en cases) se pose dans la page, pour viser une construction à la molette.
+    const pourLesCaptures = {
+      poser: () => cadrage.poser(),
+      ecran: (p: { x: number; y: number; z: number }) => {
+        const e = cadrage.auBut(new THREE.Vector3(p.x, p.z, p.y), el.clientWidth, el.clientHeight);
+        const r = el.getBoundingClientRect();
+        return e ? { x: e.x + r.left, y: e.y + r.top } : null;
+      },
+    };
     if (import.meta.env.DEV || mesuresDemandees()) window.__dysappsCamera = pourLesCaptures;
     /** La vue déplacée, telle que la page la connaît : on ne la prévient que quand cela change. */
     let deplacee = false;

@@ -443,7 +443,7 @@ it('la page des quatre archipels : où l’on est, ce qui est ouvert, ce qu’il
   expect(sheet.textContent).toContain('Archipel de 6e — Les Basses Terres');
   expect(sheet.textContent).toContain('Tu es ici');
   expect(sheet.textContent).toContain('Archipel de 5e — Les Collines du Large');
-  expect(sheet.textContent).toContain('Le Bloc-Navire se construit sur Plaine des nombres : 0 blocs posés sur');
+  expect(sheet.textContent).toContain('Le Bloc-Navire se construit sur la Plaine des nombres : 0 blocs posés sur');
   expect(sheet.textContent).toContain('Il faut d’abord le Bloc-Navire avec la voile, puis le ballon.');
   // « Voir le chantier » mène au port ; « Aller au port » aussi, pour l'archipel où l'on est.
   await user.click(screen.getAllByRole('button', { name: 'Voir le chantier' })[0]);
@@ -572,11 +572,11 @@ it('le bouton Blocs ouvre « Mes blocs » ; une puce mène à l’île (caméra 
   // Le bois paie le sentier qui part de la Forêt (après les quatre liaisons de la Plaine, GD-7 : « Tout voir ») : la puce
   // y mène, la caméra cadre la Forêt et la fiche du sentier s'ouvre (le panneau de l'île, non).
   await user.click(screen.getByRole('button', { name: /Tout voir/ }));
-  await user.click(screen.getAllByRole('link', { name: /Pont vers Mine des lettres/ })[0]);
+  await user.click(screen.getAllByRole('link', { name: /Pont vers la Mine des lettres/ })[0]);
   expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/french-6e-phonology');
   expect(screen.getByTestId('cadrage')).toHaveTextContent('french-6e-phonology');
   expect(screen.queryByRole('dialog', { name: /^Forêt des sons/ })).not.toBeInTheDocument();
-  expect(document.querySelector('.world-fiche')).toHaveTextContent(/Relier Mine des lettres.*Le pont part de Forêt des sons\./);
+  expect(document.querySelector('.world-fiche')).toHaveTextContent(/Relier la Mine des lettres.*Le pont part de la Forêt des sons\./);
   // Depuis l'inventaire, la croix rend le monde : on reste sur l'île du bonhomme, sans rouvrir son panneau.
   await user.click(screen.getByRole('button', { name: 'Mes blocs, 6' }));
   await user.click(screen.getByRole('button', { name: 'Fermer le panneau' }));
@@ -1104,8 +1104,8 @@ describe('les fiches du monde (lot 2 de « Toucher le monde »)', () => {
     expect(f).toHaveTextContent(/^Mine des lettres.*Tunel :/);
     await user.click(within(f).getByRole('button', { name: 'Relier' }));
     // Le titre ne change pas avec le départ ; la phrase dit d'où part l'ouvrage, et lequel des départs c'est.
-    const o = screen.getByRole('dialog', { name: /^Relier Mine des lettres/ });
-    expect(o).toHaveTextContent(/Le pont part de Forêt des sons\. (Départ 1 sur \d+\. )?\d+ blocs\. Il t’en manque \d+\./);
+    const o = screen.getByRole('dialog', { name: /^Relier la Mine des lettres/ });
+    expect(o).toHaveTextContent(/Le pont part de la Forêt des sons\. (Départ 1 sur \d+\. )?\d+ blocs\. Il t’en manque \d+\./);
     expect(document.querySelectorAll('.world-fiche')).toHaveLength(1);
     expect(vu.fiche).toMatchObject({ objet: { genre: 'ouvrage', id: 'french-6e-phonology-french-6e-letter-confusion' }, saut: true });
   });
@@ -1120,11 +1120,11 @@ describe('les fiches du monde (lot 2 de « Toucher le monde »)', () => {
     await user.click(screen.getByRole('button', { name: 'Toucher la Rivière pâle' }));
     await user.click(within(screen.getByRole('dialog', { name: 'Rivière des fractions' })).getByRole('button', { name: 'Relier' }));
     // D'abord le départ le plus proche, le même que le fantôme du monde : la caméra ne bouge pas.
-    expect(screen.getByRole('dialog', { name: /^Relier Rivière des fractions/ })).toHaveTextContent(/Le pont part de Plaine des nombres\. Départ 1 sur 2\./);
+    expect(screen.getByRole('dialog', { name: /^Relier la Rivière des fractions/ })).toHaveTextContent(/Le pont part de la Plaine des nombres\. Départ 1 sur 2\./);
     expect(vu.liaisonCadree).toBeNull();
-    await user.click(within(screen.getByRole('dialog', { name: /^Relier Rivière des fractions/ })).getByRole('button', { name: 'Partir d’une autre île' }));
-    const o = screen.getByRole('dialog', { name: /^Relier Rivière des fractions/ });
-    expect(o).toHaveTextContent(/part de Mine des lettres\. Départ 2 sur 2\./);
+    await user.click(within(screen.getByRole('dialog', { name: /^Relier la Rivière des fractions/ })).getByRole('button', { name: 'Partir d’une autre île' }));
+    const o = screen.getByRole('dialog', { name: /^Relier la Rivière des fractions/ });
+    expect(o).toHaveTextContent(/part de la Mine des lettres\. Départ 2 sur 2\./);
     expect(vu.fiche).toMatchObject({ objet: { genre: 'ouvrage', id: 'french-6e-letter-confusion-maths-6e-fractions' } });
     expect(vu.liaisonCadree).toBe('french-6e-letter-confusion-maths-6e-fractions');
     // Le monde dessine le fantôme du départ choisi, à la place de celui du plus proche.
@@ -1139,9 +1139,9 @@ describe('les fiches du monde (lot 2 de « Toucher le monde »)', () => {
     const user = userEvent.setup();
     renderAt('/adventure');
     await user.click(screen.getByRole('button', { name: 'Toucher le pont vers la Mine' }));
-    const f = screen.getByRole('dialog', { name: /^Relier Mine des lettres/ });
+    const f = screen.getByRole('dialog', { name: /^Relier la Mine des lettres/ });
     await user.click(within(f).getByRole('button', { name: /Poser/ }));
-    expect(f).toHaveTextContent(/vers Mine des lettres est posé/);
+    expect(f).toHaveTextContent(/vers la Mine des lettres est posé/);
     expect(JSON.parse(localStorage.getItem('dysapps:game')!).world.links).toContain('french-6e-phonology-french-6e-letter-confusion');
     await user.click(within(f).getByRole('button', { name: 'Fermer la fiche' }));
     await user.click(screen.getByRole('button', { name: 'Toucher le pont vers la Mine' }));
@@ -1255,4 +1255,30 @@ describe('les blocs gagnés volent jusqu’au compteur, au retour d’une missio
     expect(pastille()).toHaveTextContent(/^9$/);
     expect(blocsQuiVolent()).toBe(0);
   });
+});
+
+it('au téléphone en grand texte, « Aménager » propose d’abord la liste (écrite), et garde le choix de rester sur la Carte', async () => {
+  const user = userEvent.setup();
+  const avant = window.matchMedia;
+  window.matchMedia = ((q: string) => ({ matches: q.includes('max-width'), media: q, addEventListener: () => {}, removeEventListener: () => {} })) as unknown as typeof window.matchMedia;
+  try {
+    localStorage.setItem('dysapps:settings', JSON.stringify({ fontSize: 32 }));
+    localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true, 'archipel-6e': true }));
+    renderAt('/adventure/map');
+    await user.click(screen.getByRole('button', { name: /^Aménager/ }));
+    const offre = screen.getByRole('group', { name: 'Aménager' });
+    expect(offre).toHaveTextContent(/s’aménage plus facilement en liste/);
+    expect(within(offre).getByRole('button', { name: /Aménager en liste/ }).className).toMatch(/primary/);
+    await user.click(within(offre).getByRole('button', { name: /Aménager en liste/ }));
+    const panneau = screen.getByRole('dialog', { name: /Aménager la carte/ });
+    expect(within(panneau).getAllByRole('button', { name: /^Déplacer / }).length).toBeGreaterThan(0);
+    await user.click(within(panneau).getByRole('button', { name: /Terminé/ }));
+    expect(screen.queryByRole('dialog', { name: /Aménager la carte/ })).toBeNull();
+    // Rester sur la Carte : le mode s'ouvre dans le monde.
+    await user.click(screen.getByRole('button', { name: /^Aménager/ }));
+    await user.click(screen.getByRole('button', { name: /Rester sur la Carte/ }));
+    expect(document.querySelector('.arrange-bar')).not.toBeNull();
+  } finally {
+    window.matchMedia = avant;
+  }
 });

@@ -2,12 +2,14 @@
 // jusqu'à « Plus de place par là », « Poser ici » (avec son geste, qu'un toucher termine ; d'un coup avec moins
 // d'animations), ↶ et « Remettre comme avant » ; la barre ne met en avant qu'un bouton ; la pastille des liaisons à
 // reposer, et le mot expliqué la première fois.
+import { thePlace, toPlace } from './world/placeArticle';
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { useState } from 'react';
 import { SettingsProvider } from '../core/SettingsContext';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { World } from './engine/state';
-import { ArrangeBar, ArrangeButton, ArrangeSentence, type Amenagement, useAmenagement } from './Arranging';
+import { type Amenagement, useAmenagement } from './Arranging';
+import { ArrangeBar, ArrangeButton, ArrangeSentence } from './ArrangeBar';
 import { HABILLAGES } from './world/skin';
 import { toutConstruit } from './world/budget';
 import { joinedWith, linksToRelink, NO_MORE_ROOM, spotOf } from './world/arrange';
@@ -177,33 +179,69 @@ describe('le mode « Aménager »', () => {
     act(() => void dernier.intention({ genre: 'ile', id: TOUR }));
     expect(reunir()).toBeEnabled();
     expect(reunir().className).not.toMatch(/primary/);
-    expect(screen.getByRole('status').textContent).toMatch(new RegExp(`Il peut se réunir à ${FERME}`));
-    // « Réunir » pose la question (un bouton par voisin, « Non ») : rien ne se fait avant la réponse.
+    expect(screen.getByRole('status').textContent).toMatch(new RegExp(`Il peut se réunir ${toPlace(FERME)}`));
+    // « Réunir » pose la question (un bouton par voisin, « Ne pas réunir ») : rien ne se fait avant la réponse.
     fireEvent.click(reunir());
     expect(joinedWith(monde, TOUR)).toBeNull();
-    const question = screen.getByRole('group', { name: `Réunir ${TOUR} ?` });
-    expect(question.textContent).toMatch(new RegExp(`Réunir ${TOUR} et ${FERME}\u00a0\\? Ils ne se sépareront plus\\.`));
+    const question = screen.getByRole('group', { name: `Réunir ${thePlace(TOUR)} ?` });
+    expect(question.textContent).toMatch(new RegExp(`Réunir ${thePlace(TOUR)} et ${thePlace(FERME)}\u00a0\\? Ils ne se sépareront plus\\.`));
     // Pendant la question, rien n'est mis en avant dans la barre, et « Poser ici » attend.
     expect(screen.getByRole('button', { name: /Poser ici/ })).toBeDisabled();
     expect(document.querySelectorAll('.arrange-bar .primary')).toHaveLength(0);
-    expect(question.textContent).toMatch(/Réunir, c’est attacher pour toujours deux lieux voisins/);
-    fireEvent.click(screen.getByRole('button', { name: /^Non/ }));
+    // La première fois, une phrase sur la construction de l'univers, sans redire qu'ils ne se sépareront plus.
+    expect(question.querySelector('.arrange-explication')!.textContent).toBe('On la bâtit bloc par bloc, comme une grande construction.');
+    expect(question.textContent!.match(/ne se sépar/g)).toHaveLength(1);
+    fireEvent.click(screen.getByRole('button', { name: /^Ne pas réunir/ }));
     expect(joinedWith(monde, TOUR)).toBeNull();
     expect(screen.getByRole('status').textContent).toBe('Rien n’est réuni.');
     act(() => void dernier.intention({ genre: 'ile', id: TOUR }));
     fireEvent.click(reunir());
     // La deuxième fois, le mot n'est plus expliqué.
-    expect(screen.getByRole('group', { name: `Réunir ${TOUR} ?` }).textContent).not.toMatch(/Réunir, c’est attacher/);
-    fireEvent.click(screen.getByRole('button', { name: `Réunir à ${FERME}` }));
+    expect(screen.getByRole('group', { name: `Réunir ${thePlace(TOUR)} ?` }).querySelector('.arrange-explication')).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: `Réunir avec ${thePlace(FERME)}` }));
     expect(joinedWith(monde, TOUR)).toBe(FERME);
     const apres = screen.getByRole('status').textContent!;
-    expect(apres).toMatch(/sont réunis : ils bougent ensemble, et .+ se construit depuis le panneau du lieu\./);
-    // Deux phrases au plus, sans symbole.
-    expect(apres.split(/[.?!](\s|$)/).filter((x) => x.trim().length > 1).length).toBeLessThanOrEqual(2);
+    // Des phrases courtes, une idée chacune, sans symbole.
+    expect(apres).toMatch(/^.+ et .+ sont réunis\. Ils bougent ensemble\. (Un ouvrage est à reposer\. |Une liaison est à reposer\. )?La construction qui les réunit se construit depuis le panneau de l’île\. Défaire annule la réunion\.$/);
     expect(apres).not.toMatch(/[↶✓]/);
     // « Défaire » : l'icône et le mot, toujours écrits.
     expect(screen.getByRole('button', { name: 'Défaire la dernière pose' })).toHaveTextContent('Défaire');
     fireEvent.click(screen.getByRole('button', { name: 'Défaire la dernière pose' }));
     expect(joinedWith(monde, TOUR)).toBeNull();
+  });
+
+  it('au téléphone : la rangée fixe « Poser ici » et Terminé, la croix d’icônes nommées, « Plus » pour le reste, la phrase en une ligne qui s’ouvre', () => {
+    const avant = window.matchMedia;
+    window.matchMedia = ((q: string) => ({ matches: q.includes('max-width'), media: q, addEventListener: () => {}, removeEventListener: () => {} })) as unknown as typeof window.matchMedia;
+    try {
+      render(<SettingsProvider><Banc reduit depart={depart()} /></SettingsProvider>);
+      fireEvent.click(screen.getByRole('button', { name: 'Aménager' }));
+      const barre = document.querySelector('.arrange-bar')!;
+      // La rangée fixe, hors de la partie qui défile.
+      const fin = barre.querySelector('.arrange-bar-fin')!;
+      expect(fin.textContent).toMatch(/Poser ici/);
+      expect(fin.textContent).toMatch(/Terminé/);
+      expect(barre.querySelector('.arrange-bar-outils .arrange-pose')).toBeNull();
+      // Les flèches : des icônes nommées pour l'accessibilité, sans mot écrit au téléphone.
+      const nord = screen.getByRole('button', { name: 'Nord' });
+      expect(nord.textContent).toBe('');
+      // « Tourner », « Réunir », « Défaire », « Remettre comme avant » dans le pli « Plus ».
+      expect(screen.queryByRole('button', { name: /Tourner/ })).toBeNull();
+      const plus = screen.getByRole('button', { name: /Plus/ });
+      expect(plus).toHaveAttribute('aria-expanded', 'false');
+      fireEvent.click(plus);
+      expect(plus).toHaveAttribute('aria-expanded', 'true');
+      for (const n of [/Tourner/, /^Réunir$/, /Défaire/, /Remettre comme avant/]) expect(screen.getByRole('button', { name: n })).toBeInTheDocument();
+      // La phrase : le nom et la direction sur une ligne ; la phrase entière au toucher.
+      act(() => void dernier.intention({ genre: 'ile', id: VOLCAN }));
+      const ligne = document.querySelector('.arrange-line-texte') as HTMLButtonElement;
+      expect(ligne.textContent).toMatch(new RegExp(`^${VOLCAN} : (au|à l’) [a-z-]+ (de la|du|de l’) [^,]+$`));
+      fireEvent.click(ligne);
+      expect(ligne).toHaveAttribute('aria-expanded', 'true');
+      expect(ligne.textContent).toBe(dernier.phrase);
+      expect(ligne.textContent).toMatch(/, à \d+ cases?\./);
+    } finally {
+      window.matchMedia = avant;
+    }
   });
 });

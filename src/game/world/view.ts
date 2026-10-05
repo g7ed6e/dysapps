@@ -177,8 +177,12 @@ export interface Burst {
 export interface IslandLabel {
   id: BiomeId;
   text: string;
-  /** Sur la Carte : l'état de l'île (Fermée, À explorer, En chantier, Restaurée ou Bâtie selon l'univers : textes.etatsDIle), dessiné en icône et en mot sous le nom. */
-  state?: { id: IslandStateId; name: string };
+  /**
+   * Sur la Carte : l'état de l'île (Fermée, À explorer, En chantier, Restaurée ou Bâtie selon l'univers :
+   * textes.etatsDIle), dessiné en icône et en mot sous le nom ; « choisi » dans le mode « Aménager » (GD-9), avec
+   * l'icône d'Aménager.
+   */
+  state?: { id: IslandStateId | 'choisi'; name: string };
   /** Le bloc que l'île rapporte (sa ressource), dessiné avant le nom, comme dans Mes blocs. */
   bloc?: BlockId;
 }

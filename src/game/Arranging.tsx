@@ -1,30 +1,28 @@
-// Le mode « Aménager » à l'écran (GD-9, point 1), sur la Carte : le bouton en icône (quatre flèches) et sa pastille des
-// ouvrages à reposer (le mot de l'univers), la barre du mode à place fixe (les flèches nommées en mots, « Tourner », « Poser ici », « Défaire »,
-// « Remettre comme avant », ✓ Terminé), la phrase écrite et lue à chaque calage et après chaque pose, la liste des
-// liaisons à reposer, et le geste de la pose (1,5 s au plus, un toucher le termine ; posé d'un coup avec moins
-// d'animations). Les règles sont dans world/arrange.ts et world/arrangeMode.ts ; la 3D dessine le choix
-// (three/arrange.ts). Les mots sont communs aux deux univers ; chaque univers habille le geste et son son.
+// Le mode « Aménager » (GD-9, point 1), sur la Carte : l'état du mode (`useAmenagement`) : le choix, la phrase écrite et
+// lue à chaque calage et après chaque pose (et sa ligne courte, pour le téléphone), la liste des ouvrages à reposer (le
+// mot de l'univers), la question de « Réunir », et le geste de la pose (1,5 s au plus, un toucher le termine ; posé
+// d'un coup avec moins d'animations). Ce qui s'affiche est dans ArrangeBar.tsx ; les règles dans world/arrange.ts et
+// world/arrangeMode.ts ; la 3D dessine le choix (three/arrange.ts). Les mots sont communs aux deux univers ; chaque
+// univers habille le geste et son son.
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Icon, type AnyIconName } from '../components/Icon';
-import { SpeakButton } from '../components/SpeakButton';
+import type { AnyIconName } from '../components/Icon';
 import { loadJSON, saveJSON } from '../core/storage';
 import type { BiomeId } from './biomes';
 import type { World } from './engine/state';
 import { sonDePose } from './sound';
 import { mesuresDemandees } from './rendering';
 import type { Habillage } from './skin';
-import { getBridge } from './world/archipelago';
 import { type ArchipelagoId, archipelagoOfIsland } from './world/archipelagos';
 import { type Direction, guardianOf, joinCandidates, joinedWith, joinIslands, joinsIn, linksToRelink, NO_MORE_ROOM, placeIn, spotOf } from './world/arrange';
 import {
   type ArrangeChoice,
-  canTurn,
   chooseGuardian,
   chooseIsland,
   chooseLanding,
   chooseRelink,
   chooseStation,
   choiceSentence,
+  choiceSummary,
   poseChoice,
   poseSentence,
   snapChoice,
@@ -40,6 +38,7 @@ import { footprintOf } from './world/footprint';
 import type { Intention, Point } from './world/layout';
 import type { Rectangle } from './world/placement';
 import type { PlaceName } from './world/placeSentence';
+import { thePlace, toPlace } from './world/placeArticle';
 import { LIAISON, type LinkPhrases, type LinkWord, linkPhrases } from './world/linkWord';
 
 /** La clé de l'appareil qui retient que le mot « ouvrage à reposer » (le mot de l'univers) a été expliqué (une fois). */
@@ -53,12 +52,15 @@ function explicationDeLaLiaison(m: LinkPhrases): string {
   return `${m.Un} à reposer, c’est ${m.un} que tu as déjà ${m.accord('construit')} : en déplaçant un lieu, ${m.accord('il', 'elle')} s’est ${m.accord('séparé')}. Rien n’est perdu : tu ${m.accord('le', 'la')} reposes gratuitement entre deux lieux voisins, quand tu veux.`;
 }
 
-/** Ce que dit le mot « réunir », la première fois : avec le nom et la description de la construction de l'univers. */
+/**
+ * Ce que dit « Réunir » la première fois, après la question (qui dit déjà qu'ils ne se sépareront plus) : une phrase sur
+ * la construction de l'univers (la digue dans Blocland, la jetée dans Archipéo).
+ */
 function explicationDeLaReunion(reunion: TextesDeLaReunion): string {
-  return `Réunir, c’est attacher pour toujours deux lieux voisins par ${minuscule(reunion.nom)} : ensuite, ils bougent ensemble et ne se séparent plus. ${reunion.description}`;
+  return reunion.description;
 }
 
-const minuscule = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
+const majuscule = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 /** Ce que dit le jeu quand une pose ne se fait pas. */
 function refus(reason: string, m: LinkPhrases): string {
@@ -82,7 +84,7 @@ interface TextesDeLaReunion {
 const REUNION_COMMUNE: TextesDeLaReunion = { nom: 'La construction qui les réunit', description: 'On la bâtit bloc par bloc, comme une grande construction.' };
 
 /** Les flèches de la barre, dans leur ordre, nommées en mots. */
-const FLECHES: readonly { dir: Direction; icone: AnyIconName; nom: string; touche: string }[] = [
+export const FLECHES: readonly { dir: Direction; icone: AnyIconName; nom: string; touche: string }[] = [
   { dir: 'ouest', icone: 'ouest', nom: 'Ouest', touche: 'ArrowLeft' },
   { dir: 'nord', icone: 'nord', nom: 'Nord', touche: 'ArrowUp' },
   { dir: 'sud', icone: 'sud', nom: 'Sud', touche: 'ArrowDown' },
@@ -124,6 +126,7 @@ interface QuestionDeReunion {
 interface GesteEnCours {
   apres: World;
   phrase: string;
+  resume: string;
   timers: number[];
   remonte: boolean;
 }
@@ -135,6 +138,8 @@ export interface Amenagement {
   choix: ArrangeChoice | null;
   vue: ArrangeView | null;
   phrase: string;
+  /** La ligne courte de la phrase, au téléphone : le nom et la direction, ou sa première phrase. */
+  resume: string;
   /** La liste des liaisons à reposer est ouverte. */
   liste: boolean;
   ouvrirLaListe(): void;
@@ -203,6 +208,8 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
   const [session, setSession] = useState<ArrangeSession | null>(null);
   const [choix, setChoix] = useState<ArrangeChoice | null>(null);
   const [phrase, setPhrase] = useState('');
+  // La ligne courte de la phrase, au téléphone (le nom et la direction) ; sans elle, la première phrase.
+  const [resume, setResume] = useState('');
   const [liste, setListe] = useState(false);
   const [explication, setExplication] = useState(false);
   const [question, setQuestion] = useState<QuestionDeReunion | null>(null);
@@ -217,8 +224,9 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
   const ouvert = session !== null;
   const aReposer = linksToRelink(world, a);
 
-  const annoncer = (texte: string) => {
+  const annoncer = (texte: string, court = premierePhrase(texte)) => {
     setPhrase(texte);
+    setResume(court);
     if (texte) dire(texte);
   };
   /** Le lieu avec lequel un lieu se réunirait, à sa place dans un monde (le premier voisin ouvert), ou rien. */
@@ -226,15 +234,16 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
   /** « Il peut se réunir à … » : dit quand un lieu choisi ou posé a un voisin ouvert à réunir. */
   const peutSeReunir = (w: World, id: BiomeId) => {
     const v = voisinAReunir(w, id);
-    return v ? ` Il peut se réunir à ${nom(v)}. Touche à nouveau ${nom(id)}, puis « Réunir ».` : '';
+    return v ? ` Il peut se réunir ${toPlace(nom(v))}. Touche à nouveau ${thePlace(nom(id))}, puis « Réunir ».` : '';
   };
   const choisir = (c: ArrangeChoice | null, texte?: string) => {
     setChoix(c);
     setQuestion(null);
     setCadre(null);
     const w = worldRef.current;
-    const aReunir = c?.genre === 'lieu' && sameSpot(c.spot, spotOf(w, c.id)) && voisinAReunir(w, c.id) ? ` Il peut se réunir à ${nom(voisinAReunir(w, c.id)!)} : « Réunir ».` : '';
-    annoncer(texte ?? (c ? choiceSentence(w, c, nom, mot) + aReunir : ''));
+    const aReunir = c?.genre === 'lieu' && sameSpot(c.spot, spotOf(w, c.id)) && voisinAReunir(w, c.id) ? ` Il peut se réunir ${toPlace(nom(voisinAReunir(w, c.id)!))} : « Réunir ».` : '';
+    if (texte !== undefined || !c) annoncer(texte ?? '');
+    else annoncer(choiceSentence(w, c, nom, mot) + aReunir, choiceSummary(w, c, nom, mot));
   };
 
   /** Le geste fini (ou touché) : le monde posé, le son, la phrase. */
@@ -246,7 +255,7 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     if (!g.remonte) arrange(g.apres);
     setGeste(null);
     if (sons) sonDeLaPose();
-    annoncer(g.phrase);
+    annoncer(g.phrase, g.resume);
   };
   useEffect(
     () => () => {
@@ -262,6 +271,7 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     if (!r.ok) return annoncer(refus(r.reason, mot));
     setSession(recordPose(session, w, r.world));
     setCadre(null);
+    const court = `C’est posé. ${choiceSummary(r.world, choix.genre === 'lieu' ? { ...choix, spot: spotOf(r.world, choix.id) } : choix, nom, mot)}`;
     const texte =
       poseSentence(r.world, choix, nom, mot) +
       (r.relink.length ? ` ${mot.aReposer(r.relink.length)}` : '') +
@@ -271,7 +281,7 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     if (choix.genre !== 'lieu' || reduceMotion) {
       arrange(r.world);
       if (sons) sonDeLaPose();
-      return annoncer(texte);
+      return annoncer(texte, court);
     }
     const id = choix.id;
     const alt = placeIn(w, id).altitude;
@@ -279,7 +289,7 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     const autre = joinedWith(w, id);
     const sommets = [id, ...(autre ? [autre] : [])].map((l) => hautDuLieu?.(l)).filter((h): h is number => h !== undefined);
     const base = { bas: alt - 5, haut: sommets.length ? Math.max(...sommets) + 1 : alt + 24, dureeMs: GESTE_DU_LIEU.demonteMs };
-    const g: GesteEnCours = { apres: r.world, phrase: texte, timers: [], remonte: false };
+    const g: GesteEnCours = { apres: r.world, phrase: texte, resume: court, timers: [], remonte: false };
     enCours.current = g;
     const ancienne = gestureZone(emprise(w, id));
     const nouvelle = gestureZone(emprise(r.world, id));
@@ -310,6 +320,7 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     setListe(false);
     setExplication(false);
     setPhrase('');
+    setResume('');
   };
 
   const fleche = (dir: Direction) => {
@@ -363,8 +374,9 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     const q: QuestionDeReunion = { id, voisins, explication: premiere ? explicationDeLaReunion(reunion) : null };
     setQuestion(q);
     // L'espace insécable avant « ? » : le point d'interrogation ne part jamais seul à la ligne.
-    const texte = `Réunir ${nom(id)} et ${voisins.length === 1 ? nom(voisins[0]) : 'quel lieu'}\u00a0? Ils ne se sépareront plus.`;
+    const texte = `Réunir ${thePlace(nom(id))} et ${voisins.length === 1 ? thePlace(nom(voisins[0])) : 'quel lieu'}\u00a0? Ils ne se sépareront plus.`;
     setPhrase(texte);
+    setResume(premierePhrase(texte));
     dire(q.explication ? `${texte} ${q.explication}` : texte);
   };
   const annulerReunion = () => {
@@ -383,9 +395,12 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     setChoix(null);
     setCadre({ rect: emprise(r.world, id), z: placeIn(r.world, id).altitude, seq: ++seq.current });
     if (sons) sonDeLaPose();
-    // Deux phrases au plus, sans symbole.
-    const ensuite = r.relink.length ? `${mot.aReposer(r.relink.length).slice(0, -1)}, et « Défaire » annule la réunion tant que le mode est ouvert.` : '« Défaire » annule la réunion tant que le mode est ouvert.';
-    annoncer(`${nom(id)} et ${nom(autre)} sont réunis : ils bougent ensemble, et ${minuscule(reunion.nom)} se construit depuis le panneau du lieu. ${ensuite}`);
+    // Des phrases courtes, une idée chacune, sans symbole.
+    const reunis = `${majuscule(thePlace(nom(id)))} et ${thePlace(nom(autre))} sont réunis.`;
+    annoncer(
+      [reunis, 'Ils bougent ensemble.', r.relink.length ? mot.aReposer(r.relink.length) : '', `${reunion.nom} se construit depuis le panneau de l’île.`, 'Défaire annule la réunion.'].filter(Boolean).join(' '),
+      reunis,
+    );
   };
 
   const ouvrirLaListe = () => {
@@ -488,6 +503,7 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     choix,
     vue,
     phrase,
+    resume,
     liste,
     ouvrirLaListe,
     fermerLaListe,
@@ -517,147 +533,13 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
   };
 }
 
+/** La première phrase d'un texte (jusqu'au premier point, point d'interrogation ou d'exclamation suivi d'une espace). */
+function premierePhrase(texte: string): string {
+  const m = /^.*?[.?!](?=\s|$)/.exec(texte);
+  return m ? m[0] : texte;
+}
+
 /** Deux places de la grille sont-elles la même (orientation comprise) ? */
 function sameSpot(p: { x: number; y: number; turn: number }, q: { x: number; y: number; turn: number }): boolean {
   return p.x === q.x && p.y === q.y && p.turn === q.turn;
-}
-
-/** Le bouton « Aménager » de la barre de la Carte : quatre flèches, et la pastille des liaisons à reposer (icône et nombre). */
-export function ArrangeButton({ amenagement }: { amenagement: Amenagement }) {
-  const n = amenagement.aReposer.length;
-  return (
-    <button
-      type="button"
-      className="button world-bar-amenager"
-      aria-pressed={amenagement.ouvert}
-      aria-label={n ? `Aménager (${n} ${n > 1 ? amenagement.mot.pluriel : amenagement.mot.nom} à reposer)` : 'Aménager'}
-      onClick={() => (amenagement.ouvert ? amenagement.terminer() : n ? amenagement.ouvrirLaListe() : amenagement.ouvrir())}
-    >
-      <Icon name="amenager" /> <span className="world-bar-text">Aménager</span>
-      {n > 0 && (
-        <span className="world-bar-count arrange-count" aria-hidden="true">
-          <Icon name="aReposer" size={14} />
-          {n}
-        </span>
-      )}
-    </button>
-  );
-}
-
-/** La phrase du mode, en haut, sur un fond uni : écrite, et lisible à voix haute. */
-export function ArrangeSentence({ amenagement, nom, questionAilleurs = false }: { amenagement: Amenagement; nom: PlaceName; questionAilleurs?: boolean }) {
-  const { liste, explication, aReposer, phrase, mot, question } = amenagement;
-  const titreDeLaListe = `${mot.pluriel.charAt(0).toUpperCase()}${mot.pluriel.slice(1)} à reposer`;
-  if (liste)
-    return (
-      <div className="creature-line world-line arrange-relink" role="dialog" aria-label={titreDeLaListe}>
-        {explication && (
-          <p className="arrange-explication">
-            {amenagement.texteDeLExplication} <SpeakButton text={amenagement.texteDeLExplication} compact />
-          </p>
-        )}
-        <p>
-          <strong>
-            <Icon name="aReposer" /> {titreDeLaListe} : {aReposer.length}
-          </strong>
-        </p>
-        <ul className="arrange-relink-list">
-          {aReposer.map((id) => {
-            const b = getBridge(id);
-            return (
-              <li key={id}>
-                <button type="button" className="button" onClick={() => amenagement.choisirUneLiaison(id)}>
-                  {b ? `Entre ${nom(b.from)} et ${nom(b.to)}` : id}
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-        <button type="button" className="icon-button" aria-label="Fermer" onClick={amenagement.fermerLaListe}>
-          <Icon name="close" />
-        </button>
-      </div>
-    );
-  // En vue simple, la question se pose sous la ligne du lieu (`questionAilleurs`).
-  if (question && questionAilleurs) return null;
-  if (question) return <ArrangeJoinQuestion amenagement={amenagement} nom={nom} className="creature-line world-line arrange-line" />;
-  if (!phrase) return null;
-  return (
-    <div className="creature-line world-line arrange-line" role="status" aria-live="polite">
-      <p>{phrase}</p>
-      <SpeakButton text={phrase} compact />
-    </div>
-  );
-}
-
-/**
- * La question de « Réunir » (GD-9, point 10), dans la zone de la phrase (ou sous la ligne du lieu, en vue simple) :
- * « Réunir … et … ? Ils ne se sépareront plus. », l'explication la première fois, un bouton « Réunir à … » par voisin
- * possible, et « Non ». Rien n'y est mis en avant : c'est à l'élève de choisir.
- */
-export function ArrangeJoinQuestion({ amenagement, nom, className }: { amenagement: Amenagement; nom: PlaceName; className?: string }) {
-  const { question, phrase } = amenagement;
-  if (!question) return null;
-  return (
-    <div className={`arrange-question${className ? ` ${className}` : ''}`} role="group" aria-label={`Réunir ${nom(question.id)} ?`}>
-      <p>
-        {phrase} <SpeakButton text={question.explication ? `${phrase} ${question.explication}` : phrase} compact />
-      </p>
-      {question.explication && <p className="arrange-explication">{question.explication}</p>}
-      <div className="arrange-question-buttons">
-        {question.voisins.map((v) => (
-          <button key={v} type="button" className="button" onClick={() => amenagement.reunir(question.id, v)}>
-            <Icon name="reunir" /> Réunir à {nom(v)}
-          </button>
-        ))}
-        <button type="button" className="button" onClick={amenagement.annulerReunion}>
-          <Icon name="close" /> Non
-        </button>
-      </div>
-    </div>
-  );
-}
-
-/**
- * La barre du mode, à place fixe : les quatre flèches nommées, « Tourner », « Poser ici », ↶, « Remettre comme avant »
- * et ✓ Terminé. Un seul bouton mis en avant : « Poser ici » pendant un choix, ✓ Terminé quand rien n'est en cours. Les
- * boutons sans effet restent à leur place, éteints.
- */
-export function ArrangeBar({ amenagement, className }: { amenagement: Amenagement; className?: string }) {
-  const { choix, geste, question } = amenagement;
-  // Pendant la question de « Réunir », c'est elle qui attend la réponse : rien n'est mis en avant dans la barre.
-  const occupe = Boolean(geste);
-  const enQuestion = Boolean(question);
-  return (
-    <nav className={`arrange-bar${className ? ` ${className}` : ''}`} data-couvre="scene" aria-label="Aménager">
-      <div className="arrange-bar-row">
-        {FLECHES.map((f) => (
-          <button key={f.dir} type="button" className="button arrange-arrow" disabled={!choix || occupe} onClick={() => amenagement.fleche(f.dir)}>
-            <Icon name={f.icone} /> <span>{f.nom}</span>
-          </button>
-        ))}
-        <button type="button" className="button" disabled={!canTurn(choix) || occupe} onClick={amenagement.tourner}>
-          <Icon name="tourner" /> <span>Tourner</span>
-        </button>
-        <button type="button" className="button" aria-pressed={Boolean(amenagement.question)} disabled={!amenagement.reunirAvec || occupe} onClick={() => amenagement.demanderReunion()}>
-          <Icon name="reunir" /> <span>Réunir</span>
-        </button>
-        <button type="button" className={`button arrange-pose${choix && !enQuestion ? ' primary' : ''}`} disabled={!choix || occupe || enQuestion} onClick={amenagement.poserIci}>
-          <Icon name="poser" /> <span>Poser ici</span>
-        </button>
-      </div>
-      <div className="arrange-bar-row">
-        <button type="button" className="button" disabled={!amenagement.peutDefaire || occupe} onClick={amenagement.defaire} aria-label="Défaire la dernière pose">
-          <Icon name="defaire" /> <span>Défaire</span>
-        </button>
-        {/* Sans icône : la seule flèche de la rangée reste celle de « Défaire », qui ne se confond plus avec une autre. */}
-        <button type="button" className="button" disabled={!amenagement.peutRemettre || occupe} onClick={amenagement.remettre}>
-          <span>Remettre comme avant</span>
-        </button>
-        <button type="button" className={`button arrange-fin${choix ? '' : ' primary'}`} onClick={amenagement.terminer}>
-          <Icon name="check" /> <span>Terminé</span>
-        </button>
-      </div>
-    </nav>
-  );
 }

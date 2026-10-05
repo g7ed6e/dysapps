@@ -121,15 +121,16 @@ describe('Aménager en vue simple', () => {
     // Sur la carte de départ, la Tour et la Ferme (leur isthme d'avant) sont déjà au plus près.
     expect(reunir.length).toBeGreaterThan(0);
     fireEvent.click(reunir[0]);
-    // La question d'abord, sous la ligne du lieu : un bouton par voisin, et « Non » ; le mot expliqué la première fois.
+    // La question d'abord, sous la ligne du lieu : un bouton par voisin, et « Ne pas réunir » ; la digue expliquée la première fois.
     const question = screen.getByRole('group', { name: /^Réunir .* \?$/ });
     expect(question).toHaveTextContent(/Ils ne se sépareront plus\./);
-    expect(question).toHaveTextContent(/Réunir, c’est attacher pour toujours/);
+    expect(question).toHaveTextContent(/Une digue de cubes d’herbe sur la pierre/);
+    expect(within(question).getByRole('button', { name: /Ne pas réunir/ })).toBeInTheDocument();
     expect(localStorage.getItem('dysapps:game')).not.toMatch(/joined/);
-    fireEvent.click(within(question).getAllByRole('button', { name: /^Réunir à / })[0]);
-    expect(screen.getByRole('status')).toHaveTextContent(/sont réunis : ils bougent ensemble/);
+    fireEvent.click(within(question).getAllByRole('button', { name: /^Réunir avec (la |le |l’)/ })[0]);
+    expect(screen.getByRole('status')).toHaveTextContent(/^(La |Le |L’).+ et (la |le |l’).+ sont réunis\. Ils bougent ensemble\./);
     const layout = JSON.parse(localStorage.getItem('dysapps:game')!).world.layout as Record<string, { joined?: string }>;
     expect(Object.values(layout).some((l) => l.joined)).toBe(true);
-    expect(screen.getAllByText(/Réuni à .* : ils bougent ensemble\./).length).toBe(2);
+    expect(screen.getAllByText(/Réuni (à la|au|à l’) .* : ils bougent ensemble\./).length).toBe(2);
   });
 });

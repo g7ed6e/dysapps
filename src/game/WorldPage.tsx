@@ -1,4 +1,5 @@
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import { thePlace, toPlace } from './world/placeArticle';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { SpeakButton } from '../components/SpeakButton';
@@ -94,7 +95,11 @@ import { useHoldCelebrations } from '../components/Celebrations';
 import { useASuivre } from '../components/useNextUp';
 import { chiffreDeLaPastille, nomDuBoutonBlocs, prendreLesBlocs, volALieu, VOL, type GainRetenu } from './blockFlight';
 import { FlyingBlocks } from './FlyingBlocks';
-import { ArrangeBar, ArrangeButton, ArrangeSentence, useAmenagement } from './Arranging';
+import { useAmenagement } from './Arranging';
+import { ArrangeBar, ArrangeButton, ArrangeListOffer, ArrangeSentence, PROPOSITION_DE_LA_LISTE, useTelephone } from './ArrangeBar';
+import { ArrangeList } from './ArrangeList';
+import { Sheet } from './Sheet';
+import { texteGrand } from '../core/settings';
 
 const samePoint = (p: { x: number; y: number } | undefined, q: { x: number; y: number }) => Boolean(p) && p!.x === q.x && p!.y === q.y;
 
@@ -260,8 +265,24 @@ export function WorldPage() {
     },
   });
   const enAmenageant = mapOpen && amenagement.ouvert;
+  // Au téléphone en grand texte, « Aménager » propose d'abord la liste (`offreDeLaListe`), qui s'ouvre dans un panneau
+  // (`listeDAmenagement`) ; l'élève peut rester sur la Carte.
+  const telephone = useTelephone();
+  const [offreDeLaListe, setOffreDeLaListe] = useState(false);
+  const [listeDAmenagement, setListeDAmenagement] = useState(false);
+  const proposerLaListe =
+    telephone && texteGrand(settings)
+      ? () => {
+          setOffreDeLaListe(true);
+          if (settings.autoRead) speak(frenchTypography(PROPOSITION_DE_LA_LISTE));
+        }
+      : undefined;
   useEffect(() => {
     if (!mapOpen && amenagement.ouvert) amenagement.terminer();
+    if (!mapOpen) {
+      setOffreDeLaListe(false);
+      setListeDAmenagement(false);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mapOpen]);
   // Le Bloc-Navire amarré au port de l'archipel : un objet à part, qui tangue.
@@ -340,9 +361,10 @@ export function WorldPage() {
         .filter((i) => mapOpen || i.ouverte)
         .map((i) => {
           const bloc = blocDesIles ? getBiome(i.id)?.block : undefined;
-          // Dans « Aménager », le lieu choisi porte le mot « Choisi » sous son nom (son fantôme porte son nom).
-          const etat = i.id === lieuChoisi ? 'Choisi' : textes.etatsDIle[i.etat.id];
-          return { id: i.id, text: i.nom, ...(bloc ? { bloc } : {}), ...(mapOpen ? { state: { id: i.etat.id, name: etat } } : {}) };
+          // Dans « Aménager », le lieu choisi porte « Choisi » et l'icône d'Aménager sous son nom (son fantôme porte son
+          // nom) ; son état revient à la pose.
+          const etat = i.id === lieuChoisi ? { id: 'choisi' as const, name: 'Choisi' } : { id: i.etat.id, name: textes.etatsDIle[i.etat.id] };
+          return { id: i.id, text: i.nom, ...(bloc ? { bloc } : {}), ...(mapOpen ? { state: etat } : {}) };
         }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [a, mapOpen, state.world.links, state.world.parts, state.progress, textes, blocDesIles, lieuChoisi],
@@ -936,7 +958,7 @@ export function WorldPage() {
   };
   intentionRef.current = onIntent;
   const ouvrageLabel = (b: BridgeDef) =>
-    `${KIND_NAME[linkKind(b, state.world.links)]} entre ${getBiome(b.from)?.name ?? b.from} et ${getBiome(b.to)?.name ?? b.to} (${b.cost} blocs)`;
+    `${KIND_NAME[linkKind(b, state.world.links)]} entre ${thePlace(getBiome(b.from)?.name ?? b.from)} et ${thePlace(getBiome(b.to)?.name ?? b.to)} (${b.cost} blocs)`;
 
   /** Une créature ou un Gardien touchés : leur fiche ; la créature y dit une phrase (plus de bulle en haut). */
   const onCreature = (id: BiomeId, kind: 'creature' | 'guardian') => {
@@ -958,7 +980,7 @@ export function WorldPage() {
   const phraseDeCreature = said && !ficheVue ? said : null;
   const bulleEnHaut = Boolean(ligneDuVoyage || panneauDeLaCarte || phraseDeCreature);
   // Un panneau en plein écran par-dessus le monde (l'île, un lieu, Blocs, le menu, le voyage sans animation).
-  const pleinEcran = Boolean((island && sheetOpen) || (panelOpen && !mapOpen) || voyage?.mode === 'panel');
+  const pleinEcran = Boolean((island && sheetOpen) || (panelOpen && !mapOpen) || voyage?.mode === 'panel' || (mapOpen && listeDAmenagement));
   // Le focus suit le plein écran : sur la croix du panneau qui s'ouvre (la barre du bas, dessous, devient inerte), puis
   // sur le premier bouton de la barre (le bouton de l'île) quand il se ferme, s'il n'est pas déjà ailleurs.
   const pleinEcranAvant = useRef(pleinEcran);
@@ -1093,10 +1115,24 @@ export function WorldPage() {
             </div>
           )}
           {enAmenageant && <ArrangeSentence amenagement={amenagement} nom={nomDuLieu} />}
+          {mapOpen && offreDeLaListe && !enAmenageant && !listeDAmenagement && (
+            <ArrangeListOffer
+              onListe={() => {
+                setOffreDeLaListe(false);
+                setListeDAmenagement(true);
+              }}
+              onCarte={() => {
+                setOffreDeLaListe(false);
+                if (amenagement.aReposer.length) amenagement.ouvrirLaListe();
+                else amenagement.ouvrir();
+              }}
+              onFermer={() => setOffreDeLaListe(false)}
+            />
+          )}
           {panneauDeLaCarte && !enAmenageant && mapTarget && (
             <div className="creature-line world-line world-map-line" role="status" aria-live="polite">
               <p>
-                <strong>Pour aller à {getBiome(mapTarget)?.name} :</strong> encore {remaining.length} ouvrage{remaining.length > 1 ? 's' : ''}.
+                <strong>Pour aller {toPlace(getBiome(mapTarget)?.name ?? mapTarget)} :</strong> encore {remaining.length} ouvrage{remaining.length > 1 ? 's' : ''}.
               </p>
               <ol className="world-map-path">
                 {remaining.map((b) => (
@@ -1195,7 +1231,7 @@ export function WorldPage() {
             <Icon name="map" /> <span className="world-bar-text">Carte</span>
           </button>
           {/* Sur la Carte, hors voyage : « Aménager », à sa place fixe, après la Carte. */}
-          {mapOpen && !voyage && <ArrangeButton amenagement={amenagement} />}
+          {mapOpen && !voyage && <ArrangeButton amenagement={amenagement} proposer={proposerLaListe} />}
           {!voyage && (
             <button
               type="button"
@@ -1223,7 +1259,11 @@ export function WorldPage() {
         <div className="island-sheet voyage-sheet">
           <VoyagePanel to={voyage.to} back={voyage.back} onArrive={arrive} />
         </div>
-      ) : voyage ? null : mondeOpen ? (
+      ) : voyage ? null : mapOpen && listeDAmenagement ? (
+        <Sheet id="panneau-amenager" className="arrange-sheet" titleId="amenager-titre" icon="amenager" title="Aménager la carte" onClose={() => setListeDAmenagement(false)}>
+          <ArrangeList a={a} enPanneau onFin={() => setListeDAmenagement(false)} />
+        </Sheet>
+      ) : mondeOpen ? (
         <ArchipelagosSheet onClose={() => navigate('/adventure')} onGo={openIsland} />
       ) : blocsOpen ? (
         <InventorySheet onClose={fermerLePanneau} />

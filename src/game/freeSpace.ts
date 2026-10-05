@@ -137,6 +137,17 @@ export function lirePlaceLibre(el: HTMLElement): { libre: Rect; panneau: boolean
   return { libre: placeLibre(w, h, panneaux, boutons), panneau: panneaux.some((p) => p.y < h / 2) };
 }
 
+/**
+ * La place libre de la vue `el` avec la hauteur réelle de ce qui la couvre (les plis ouverts comptés tels quels) : la
+ * bande entre la phrase du mode « Aménager » et sa barre, où le fantôme se cadre (GD-9).
+ */
+export function lirePlaceReelle(el: HTMLElement): Rect {
+  const w = el.clientWidth;
+  const h = el.clientHeight;
+  if (!el.closest('[data-scene]')) return { x0: 0, y0: 0, x1: w, y1: Math.max(h / 2, h - RESERVE_DU_BAS) };
+  return placeLibre(w, h, zonesCouvertes(el, 1, '[data-couvre="scene"] > *'), zonesCouvertes(el, 1, '[data-couvre="bouton"]'));
+}
+
 export interface PlaceLue {
   libre: Rect;
   /** La taille de la vue, en pixels CSS. */

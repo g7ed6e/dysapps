@@ -3755,16 +3755,14 @@ figure.class-table {
   position: absolute;
   left: 0.6rem;
   right: 0.6rem;
-  bottom: 0.6rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-.arrange-bar-row {
-  display: flex;
-  flex-wrap: wrap;
+  bottom: calc(0.6rem + env(safe-area-inset-bottom));
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-template-areas:
+    'croix outils'
+    'croix fin';
   justify-content: center;
+  align-items: center;
   gap: 8px;
 }
 .arrange-bar .button {
@@ -3772,6 +3770,41 @@ figure.class-table {
   min-height: 48px;
   padding: 0 12px;
   gap: 6px;
+}
+/* La croix des flèches : le nord en haut, l'ouest à gauche, l'est à droite, le sud en bas. */
+.arrange-cross {
+  grid-area: croix;
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  grid-template-areas:
+    '. nord .'
+    'ouest . est'
+    '. sud .';
+  gap: 4px;
+  justify-content: center;
+}
+.arrange-cross .arrange-arrow-nord { grid-area: nord; }
+.arrange-cross .arrange-arrow-sud { grid-area: sud; }
+.arrange-cross .arrange-arrow-ouest { grid-area: ouest; }
+.arrange-cross .arrange-arrow-est { grid-area: est; }
+.arrange-bar .arrange-cross .button {
+  padding: 0 8px;
+}
+.arrange-bar-outils,
+.arrange-bar-pli,
+.arrange-bar-fin {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+.arrange-bar-outils {
+  grid-area: outils;
+}
+/* La rangée fixe, en bas : « Poser ici » et ✓ Terminé, jamais dans la partie qui défile. */
+.arrange-bar-fin {
+  grid-area: fin;
 }
 .arrange-bar .arrange-pose {
   min-height: 56px;
@@ -3788,45 +3821,77 @@ figure.class-table {
   box-shadow: none;
   cursor: default;
 }
-/* En grand texte et au téléphone, les deux rangées n'en font plus qu'une, qui passe à la ligne (moins de rangées : la
-   phrase en haut et le fantôme restent visibles) ; en grand texte, le mot plafonné à 24 px, comme la barre du monde. */
-:root[data-texte="grand"] .arrange-bar {
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 6px;
-}
-:root[data-texte="grand"] .arrange-bar-row {
-  display: contents;
-}
+/* En grand texte, le mot plafonné à 24 px, comme la barre du monde. */
 :root[data-texte="grand"] .arrange-bar .button {
   font-size: min(1em, 24px);
   padding: 4px 8px;
 }
-@media (max-width: 600px) {
-  .arrange-bar {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 6px;
-  }
-  .arrange-bar-row {
-    display: contents;
-  }
-  .arrange-bar .button {
-    padding: 0 8px;
-  }
+/* Au téléphone : la croix d'icônes à gauche, « Plus » à droite (son pli défile s'il déborde), puis la rangée fixe
+   « Poser ici » et ✓ Terminé sur toute la largeur. La barre ne monte jamais plus haut que la moitié de l'écran. */
+.arrange-bar.arrange-bar-telephone {
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas:
+    'croix outils'
+    'fin fin';
+  gap: 6px;
+  max-height: 50vh;
+  grid-template-rows: minmax(0, 1fr) auto;
 }
-/* Au téléphone en grand texte, la barre et la phrase ne tiennent pas ensemble à l'écran : chacune garde sa part (la
-   phrase en haut, au plus un tiers de la hauteur ; la barre en bas, au plus la moitié), et défile si elle déborde,
-   plutôt que de se recouvrir. */
+.arrange-bar-telephone .arrange-bar-outils {
+  flex-direction: column;
+  align-items: stretch;
+  align-self: stretch;
+  justify-content: flex-start;
+  min-height: 0;
+  max-height: 100%;
+  overflow-y: auto;
+}
+.arrange-bar-telephone .arrange-bar-pli {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+}
+.arrange-bar-telephone .arrange-bar-fin {
+  flex-wrap: nowrap;
+}
+.arrange-bar-telephone .arrange-bar-fin .button {
+  flex: 1 1 0;
+  min-width: 0;
+  justify-content: center;
+}
+.arrange-bar-telephone .arrange-cross .button {
+  padding: 0;
+}
+/* Au téléphone, la phrase du mode tient en une ligne (le nom et la direction) ; le toucher l'ouvre en entier. */
+.arrange-line-courte {
+  align-items: center;
+}
+.arrange-line-texte {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 48px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.arrange-line-courte.ouverte .arrange-line-texte {
+  white-space: normal;
+  max-height: 33vh;
+  overflow-y: auto;
+}
+/* Au téléphone en grand texte, la question de « Réunir » et la proposition de la liste gardent un tiers de la hauteur
+   au plus, et défilent si elles débordent, plutôt que de couvrir la barre. */
 @media (max-width: 600px) {
-  :root[data-texte="grand"] .arrange-bar:not(.arrange-bar-inline) {
-    max-height: 50vh;
-    overflow-y: auto;
-  }
-  :root[data-texte="grand"] .arrange-line,
-  :root[data-texte="grand"] .arrange-question {
+  :root[data-texte="grand"] .arrange-question.world-line,
+  :root[data-texte="grand"] .arrange-offre {
     max-height: 33vh;
     overflow-y: auto;
   }

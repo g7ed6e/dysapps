@@ -3,6 +3,7 @@
 // sur la place libre la plus proche), les flèches (la place libre suivante, ou « Plus de place par là »), « Tourner »,
 // « Poser ici ». La phrase écrite et lue dit toujours où. Les actions elles-mêmes sont dans ./arrange.ts ; ici, le choix
 // en cours et son fantôme ; un lieu réuni emmène son voisin et leur réunion. Code pur, sans Three.js.
+import { thePlace } from './placeArticle';
 import { type BiomeId, getBiome } from '../biomes';
 import type { World } from '../engine/state';
 import { getBridge } from './archipelago';
@@ -40,7 +41,7 @@ import { archipelagoOfIsland, toWorld } from './map';
 import { poseOfSpot } from './footprint';
 import { turnedSide, type Quarts, type Side } from './placement';
 import { type LinkPhrases, linkPhrases } from './linkWord';
-import { guardianSentence, ofPlace, placeSentence, type PlaceName } from './placeSentence';
+import { guardianSentence, ofPlace, placeDirection, placeSentence, type PlaceName } from './placeSentence';
 import { anchorInWorld, possibleLandings } from './routing';
 import type { LayoutGuardian, LayoutLanding, LayoutSpot, LayoutTurn } from './savedLayout';
 
@@ -252,13 +253,8 @@ export function choiceSentence(world: World, c: ArrangeChoice, nom: PlaceName = 
       return `Le Gardien ${ofPlace(nom(c.id))} : ${guardianSentence(world, c.id, c.place)}.`;
     case 'borne': {
       const id = c.key.split(':')[0] as BiomeId;
-      // Le rang se compte comme on voit la rangée sur la Carte : de la gauche de l'écran (les x du monde qui descendent
-      // vers la droite), ou du haut quand le lieu tourné la met debout.
-      const places = freeStationSpots(world, c.key).map((p) => ({ p, m: stationInWorld(world, c.key, p) }));
-      const debout = places.length > 1 && places.every((q) => q.m.x === places[0].m.x);
-      places.sort((u, v) => (debout ? v.m.y - u.m.y : v.m.x - u.m.x));
-      const rang = places.findIndex((q) => q.p.x === c.place.x && q.p.y === c.place.y) + 1;
-      return `La borne, ${rang > 0 ? `à la place ${rang} sur ${places.length}` : 'à sa place'} de la rangée des bornes ${ofPlace(nom(id))}, en partant ${debout ? 'du haut' : 'de la gauche'}.`;
+      const { rang, n, debout } = rangDeLaBorne(world, c);
+      return `La borne, ${rang > 0 ? `à la place ${rang} sur ${n}` : 'à sa place'} de la rangée des bornes ${ofPlace(nom(id))}, en partant ${debout ? 'du haut' : 'de la gauche'}.`;
     }
     case 'arrivee': {
       const id = placeOfChoice(c);
@@ -267,8 +263,42 @@ export function choiceSentence(world: World, c: ArrangeChoice, nom: PlaceName = 
     }
     case 'liaison': {
       const b = c.to ? getBridge(c.to) : undefined;
-      return b ? `${mot.Le} à reposer, entre ${nom(b.from)} et ${nom(b.to)}.` : `${mot.Ce} ne se repose nulle part pour l’instant : rapproche deux lieux.`;
+      return b ? `${mot.Le} à reposer, entre ${thePlace(nom(b.from))} et ${thePlace(nom(b.to))}.` : `${mot.Ce} ne se repose nulle part pour l’instant : rapproche deux lieux.`;
     }
+  }
+}
+
+/**
+ * Le rang d'une borne dans la rangée de son lieu, compté comme on la voit sur la Carte : de la gauche de l'écran (les x
+ * du monde qui descendent vers la droite), ou du haut quand le lieu tourné la met debout ; 0 hors de la rangée.
+ */
+function rangDeLaBorne(world: World, c: Extract<ArrangeChoice, { genre: 'borne' }>): { rang: number; n: number; debout: boolean } {
+  const places = freeStationSpots(world, c.key).map((p) => ({ p, m: stationInWorld(world, c.key, p) }));
+  const debout = places.length > 1 && places.every((q) => q.m.x === places[0].m.x);
+  places.sort((u, v) => (debout ? v.m.y - u.m.y : v.m.x - u.m.x));
+  return { rang: places.findIndex((q) => q.p.x === c.place.x && q.p.y === c.place.y) + 1, n: places.length, debout };
+}
+
+/**
+ * La ligne courte du choix, au téléphone (la phrase entière s'ouvre au toucher) : le nom et la direction, sans l'écart
+ * (« Rivière des fractions : au nord de la Forêt des sons »).
+ */
+export function choiceSummary(world: World, c: ArrangeChoice, nom: PlaceName = NOM_DU_JEU, mot: LinkPhrases = linkPhrases()): string {
+  switch (c.genre) {
+    case 'lieu':
+      return `${nom(c.id)} : ${placeDirection(world, c.id, c.spot, nom)}`;
+    case 'gardien':
+      return `Le Gardien : ${guardianSentence(world, c.id, c.place)}`;
+    case 'borne': {
+      const { rang, n } = rangDeLaBorne(world, c);
+      return rang > 0 ? `La borne : place ${rang} sur ${n}` : 'La borne : à sa place';
+    }
+    case 'arrivee': {
+      const cote = turnedSide(SIDE_OF[c.landing.side], placeIn(world, placeOfChoice(c)).quarts as Quarts);
+      return `L’arrivée : côte ${POINT_CARDINAL[cote]}`;
+    }
+    case 'liaison':
+      return `${mot.Le} à reposer`;
   }
 }
 
@@ -285,7 +315,7 @@ export function poseSentence(after: World, c: ArrangeChoice, nom: PlaceName = NO
       return `C’est posé. ${choiceSentence(after, c, nom, mot)} ${mot.Le} repart de là.`;
     case 'liaison': {
       const b = c.to ? getBridge(c.to) : undefined;
-      return b ? `${mot.Le} est ${mot.accord('reposé')} entre ${nom(b.from)} et ${nom(b.to)}.` : '';
+      return b ? `${mot.Le} est ${mot.accord('reposé')} entre ${thePlace(nom(b.from))} et ${thePlace(nom(b.to))}.` : '';
     }
   }
 }
