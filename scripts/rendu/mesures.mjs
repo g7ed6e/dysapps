@@ -561,18 +561,20 @@ const CAPTURES = [
     'maths-3e-functions', 'french-3e-close-reading', 'english-3e-comprehension', 'english-3e-grammar',
   ].map((ile) => ({ nom: `commandes-ile-${ile}`, vue: 'île', famille: 'commandes-iles', ile, posees: 'toutes' })),
   // Le Lion de pierre tiré de son modèle (Baie des mots, 6e, famille `lion`) : au défi, rallumé (tout construit) et éteint
-  // (`debout` : son défi pas encore gagné), le modèle de 1 500 triangles ; dans le monde, le modèle de 700, vu de l'archipel
-  // et de la Carte, rallumé et éteint, de jour et de nuit.
+  // (`debout` : son défi pas encore gagné), le modèle de 1 500 triangles, en entier et de près (le panneau du défi
+  // éteint est plus haut : il porte la règle et la réplique) ; dans le monde, le modèle de 700, vu de l'archipel et de la
+  // Carte, en entier et de près, rallumé et éteint, de jour et de nuit.
   { nom: 'lion-defi', vue: 'défi', famille: 'lion', ile: 'english-6e-vocabulary' },
   { nom: 'lion-defi-eteint', vue: 'défi', famille: 'lion', ile: 'english-6e-vocabulary', debout: 'english-6e-vocabulary' },
   { nom: 'lion-defi-pres', vue: 'défi', famille: 'lion', ile: 'english-6e-vocabulary', recadre: { x: 20, y: 85, width: 165, height: 225 }, finesse: 3 },
-  { nom: 'lion-defi-pres-eteint', vue: 'défi', famille: 'lion', ile: 'english-6e-vocabulary', debout: 'english-6e-vocabulary', recadre: { x: 20, y: 85, width: 165, height: 225 }, finesse: 3 },
+  { nom: 'lion-defi-pres-eteint', vue: 'défi', famille: 'lion', ile: 'english-6e-vocabulary', debout: 'english-6e-vocabulary', recadre: { x: 20, y: 85, width: 165, height: 365 }, finesse: 3 },
   ...[false, true].flatMap((nuit) =>
     [null, 'english-6e-vocabulary'].flatMap((debout) =>
       [
         { vue: 'archipel', nom: 'archipel' },
         { vue: 'archipel', nom: 'pres', recadre: { x: 430, y: 370, width: 240, height: 180 }, finesse: 2 },
         { vue: 'carte', nom: 'carte' },
+        { vue: 'carte', nom: 'carte-pres', recadre: { x: 545, y: 145, width: 100, height: 75 }, finesse: 4 },
       ].map(({ nom, ...v }) => ({
         nom: `lion-${nom}${debout ? '-eteint' : ''}${nuit ? '-nuit' : ''}`,
         ...v,
