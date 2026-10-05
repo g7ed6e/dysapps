@@ -2927,12 +2927,13 @@ figure.class-table {
 .tutorial-tete {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 0.4rem;
   margin-bottom: 0.5rem;
 }
-/* Écouter et la croix toujours à droite, avec ou sans compteur. */
-.tutorial-tete .speak-button {
-  margin-left: auto;
+/* Écouter et la croix toujours à droite, avec ou sans compteur, avec ou sans voix sur l'appareil. */
+.tutorial-tete .tutorial-count {
+  margin-right: auto;
 }
 .tutorial-step {
   margin: 0 0 0.8rem;
