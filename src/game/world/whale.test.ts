@@ -26,7 +26,7 @@ it('les grandes étapes, de la plus grande à la plus petite', () => {
   expect(m.map((x) => x.kind)).toEqual(['arrivee', 'gardiens', 'port', 'ouvrage']);
   expect(pages(m[1])[0]).toBe('Tous les Gardiens des Premiers Rivages brillent à nouveau. J’ai vu leur lumière depuis le large.');
   expect(pages(m[2])[0]).toMatch(/^Plaine des nombres est bâtie\./);
-  // Le sentier de la Forêt ouvre la Mine ; le pont gratuit vers la Plaine ne compte pas.
+  // Le pont de la Forêt ouvre la Mine ; le pont gratuit vers la Plaine ne compte pas.
   expect(m[3]).toMatchObject({ island: 'french-6e-letter-confusion' });
   expect(pages(m[3])).toEqual(['Un chemin s’ouvre vers Mine des lettres. L’archipel s’agrandit.']);
 });

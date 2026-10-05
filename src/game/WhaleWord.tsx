@@ -46,13 +46,14 @@ function markSaid(moments: WhaleMoment[]): void {
 
 /**
  * Une seule fois par appareil : ce qui était déjà atteint avant la baleine est noté dit sans parler (sauf sa
- * présentation en 6e à un élève qui n'a encore rien joué).
+ * présentation en 6e à un élève qui n'a encore rien joué). L'annonce du changement de forme de la carte aussi : un
+ * appareil où la baleine n'a jamais parlé n'a pas connu la carte d'avant.
  */
 function initWhaleMemory(state: Pick<GameState, 'progress' | 'world'>): void {
   if (loadJSON<Said | null>(STORAGE_KEY, null) !== null) return;
   const fresh = Object.keys(state.progress).length === 0;
   const all = (['6e', '5e', '4e', '3e'] as ArchipelagoId[]).flatMap((x) => reachedWhaleMoments(state, x));
-  saveJSON(STORAGE_KEY, {});
+  saveJSON(STORAGE_KEY, { [MAP_RESHAPED]: true });
   markSaid(all.filter((m) => !m.id.startsWith('archipel-') && !(fresh && m.id === 'baleine-6e-arrivee')));
 }
 

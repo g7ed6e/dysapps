@@ -400,16 +400,16 @@ it('le bonhomme marche d’île en île sur les ouvrages construits, jamais sur 
   const route = avatarRoute('french-6e-phonology', 'french-6e-letter-confusion', ['french-6e-phonology-french-6e-letter-confusion'])!;
   expect(route[0]).toEqual(avatarHome('french-6e-phonology'));
   expect(route[route.length - 1]).toEqual(avatarHome('french-6e-letter-confusion'));
-  // Un sentier se marche de pierre de gué en pierre de gué (sur la pierre, pas dedans : ses pieds sont sur son dessus).
+  // Le pont de la Forêt à la Mine (GD-9, elles ne sont plus réunies) se marche sur son tablier (z = 1), sur ses cubes.
   expect(route.length).toBeGreaterThan(5);
   for (const p of route) expect(p.z).toBeGreaterThanOrEqual(0);
-  const stones = new Set(
+  const deck = new Set(
     worldCubes('6e', {}, village(['french-6e-phonology-french-6e-letter-confusion']))
-      .filter((c) => c.bridge === 'french-6e-phonology-french-6e-letter-confusion' && c.texture === 'galet')
+      .filter((c) => c.bridge === 'french-6e-phonology-french-6e-letter-confusion')
       .map((c) => `${c.x},${c.y},${c.z}`),
   );
-  for (const p of route.slice(1, -1)) expect(stones.has(`${p.x},${p.y},${p.z - 1}`)).toBe(true);
-  // Deux ouvrages : Forêt → Ferme (pont) → Tour (sentier) ; le pont se marche sur le tablier (z = 1).
+  expect(route.some((p) => p.z === 1 && deck.has(`${p.x},${p.y},${p.z - 1}`))).toBe(true);
+  // Deux ouvrages : Forêt → Ferme (pont) → Tour (pont) ; le pont se marche sur le tablier (z = 1).
   const far = avatarRoute('french-6e-phonology', 'french-6e-reading', ['french-6e-phonology-french-6e-grammar-spelling', 'french-6e-grammar-spelling-french-6e-reading'])!;
   expect(far[far.length - 1]).toEqual(avatarHome('french-6e-reading'));
   expect(far.some((p) => p.z === 1)).toBe(true);

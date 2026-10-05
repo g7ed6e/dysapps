@@ -263,15 +263,12 @@ export function mapOf(a: ArchipelagoId): readonly IslandDef[] {
 }
 
 /**
- * Les isthmes : deux îles voisines de même niveau, côte à côte, partagent une bande de terre. Le monde n'est plus
- * un semis d'îles : trois paires forment de petits continents. L'ouvrage entre elles est un sentier. La Ferme et la
- * Tour, la Baie et l'Horloge ne sont plus réunies (GD-9) : une liaison les relie, comme deux lieux voisins.
+ * Les isthmes : deux îles voisines de même niveau, côte à côte, partagent une bande de terre ; l'ouvrage entre elles
+ * est un sentier. Aucune paire de la carte de départ n'est plus réunie (GD-9, mainteneur, 5 octobre 2026 : au moins
+ * 4 cases d'eau entre deux lieux) : une liaison relie chaque paire d'hier, au même identifiant. Le mécanisme reste
+ * pour la réunion que l'élève construira (GD-9, point 10).
  */
-export const ISTHMUSES: [BiomeId, BiomeId][] = [
-  ['french-6e-phonology', 'french-6e-letter-confusion'],
-  ['maths-5e-signed-numbers', 'maths-5e-proportionality'],
-  ['french-5e-homophones', 'french-5e-conjugation'],
-];
+export const ISTHMUSES: [BiomeId, BiomeId][] = [];
 
 /** L'île avec laquelle une île partage un isthme, s'il y en a un. */
 export function isthmusOf(id: BiomeId): BiomeId | null {

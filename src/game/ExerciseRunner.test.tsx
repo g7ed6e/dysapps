@@ -90,7 +90,7 @@ it('joue un exercice : consigne, feedback, étoiles, blocs, XP, puis étoiles su
   expect(pose).toHaveTextContent(`+${cabane.reward.xp} XP`);
   expect(pose.textContent).toContain(cabane.done.slice(0, 20));
   // À quoi servent les blocs : jamais le bâtiment (il se pose tout seul), ici l'ouvrage qui part de l'île.
-  expect(document.querySelector('.reward-site')).toHaveTextContent('Le sentier vers Mine des lettres : tu peux le construire !');
+  expect(document.querySelector('.reward-site')).toHaveTextContent('Le pont vers Mine des lettres : tu peux le construire !');
   // Une partie vient d'être posée : le bouton principal mène la voir, sur l'île de la mission.
   expect(screen.getByRole('link', { name: /Voir le bâtiment/ })).toHaveAttribute('href', '/adventure/french-6e-phonology?worksite=part');
   expect(screen.queryByRole('link', { name: /Voir le chantier/ })).not.toBeInTheDocument();

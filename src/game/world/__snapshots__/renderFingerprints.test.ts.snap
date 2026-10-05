@@ -26,20 +26,20 @@ exports[`Empreintes du rendu Archipéo, par archipel (filet du socle) > 5e 1`] =
 {
   "ambiance": "a65ee8f8",
   "décor (lueurs)": "13fe3a3b",
-  "décor (primitives)": "b080d06c",
-  "décor (style a)": "46272b3f",
-  "modelé dessiné": "818af636",
-  "relief": "dbe0e58a",
+  "décor (primitives)": "a81ff74a",
+  "décor (style a)": "db5fe3b5",
+  "modelé dessiné": "86820286",
+  "relief": "095785f4",
 }
 `;
 
 exports[`Empreintes du rendu Archipéo, par archipel (filet du socle) > 6e 1`] = `
 {
   "ambiance": "c5e32c31",
-  "décor (lueurs)": "58d05073",
-  "décor (primitives)": "2e25dcbc",
-  "décor (style a)": "f1de53a4",
-  "modelé dessiné": "206e8d0a",
-  "relief": "878ef459",
+  "décor (lueurs)": "099e10cb",
+  "décor (primitives)": "5b8c2024",
+  "décor (style a)": "3e15f6ca",
+  "modelé dessiné": "0ecc9a0e",
+  "relief": "1988e71b",
 }
 `;

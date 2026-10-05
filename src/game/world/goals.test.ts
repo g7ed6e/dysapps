@@ -33,18 +33,18 @@ const guardians = (ids: string[]) => Object.fromEntries(ids.map((id) => [`${id}-
 
 it('le prochain objectif est unique : d’abord ce qu’on peut faire tout de suite, sinon le plus proche', () => {
   const fresh = sanitizeState({});
-  // Le bâtiment de l'île se pose tout seul (GD-6) : l'objectif est le sentier.
+  // Le bâtiment de l'île se pose tout seul (GD-6) : l'objectif est le pont.
   // L'ouvrage suggéré (GD-7) : rien de joué, le français passe d'abord (l'ordre de docs/contenu/archipel.md).
-  expect(nextGoal(fresh, 'french-6e-phonology')).toBe('Encore 4 blocs pour le sentier vers Mine des lettres. Il ouvre une île de français.');
+  expect(nextGoal(fresh, 'french-6e-phonology')).toBe('Encore 4 blocs pour le pont vers Mine des lettres. Il ouvre une île de français.');
   expect(nextGoalInfo(fresh, 'french-6e-phonology')).toMatchObject({ have: 0, need: 4 });
   const some = sanitizeState({ stock: { [BLOC.bois]: 5 } });
-  expect(nextGoal(some, 'french-6e-phonology')).toBe('Tu peux poser le sentier vers Mine des lettres. Il ouvre une île de français.');
+  expect(nextGoal(some, 'french-6e-phonology')).toBe('Tu peux poser le pont vers Mine des lettres. Il ouvre une île de français.');
   const rich = sanitizeState({ stock: { [BLOC.bois]: 40 } });
   expect(nextGoal(rich, 'french-6e-phonology')).not.toMatch(/cabane/);
   // Tous les ouvrages construits : plus rien à dire, que le bâtiment soit fini ou non.
   const done = sanitizeState({ world: { links: ['french-6e-phonology-french-6e-letter-confusion', 'french-6e-phonology-french-6e-grammar-spelling', 'french-6e-phonology-english-6e-grammar', 'french-6e-phonology-english-6e-vocabulary'] } });
   expect(nextGoal(done, 'french-6e-phonology')).toBeNull();
-  expect(nextGoal(EMPTY_STATE, 'french-6e-letter-confusion')).toBe('Encore 4 blocs pour le sentier vers Forêt des sons.');
+  expect(nextGoal(EMPTY_STATE, 'french-6e-letter-confusion')).toBe('Encore 4 blocs pour le pont vers Forêt des sons.');
 });
 
 it('sur le port, le prochain objectif parle du Bloc-Navire : ses blocs, puis ses Gardiens, puis l’embarquement', () => {
@@ -106,7 +106,7 @@ it('la vue d’ensemble cadre les îles ouvertes et leurs voisines, puis s’él
 
 it('une île fermée dit l’ouvrage précis qui y mène, ou l’île à ouvrir d’abord', () => {
   const fresh = sanitizeState({});
-  expect(lockedHint(fresh, 'french-6e-letter-confusion')).toBe('Pas si vite ! Pour venir ici, pose le sentier depuis Forêt des sons : 4 blocs.');
+  expect(lockedHint(fresh, 'french-6e-letter-confusion')).toBe('Pas si vite ! Pour venir ici, pose le pont depuis Forêt des sons : 4 blocs.');
   // La Carrière : aucune liaison directe ne tient encore jusqu'à elle (GD-9) ; on y vient en reliant d'abord la Mine.
   expect(lockedHint(fresh, 'french-6e-word-spelling')).toBe('Relie d’abord Mine des lettres. De là, un ouvrage mène ici.');
   // Sans aucun chemin, la phrase le dit simplement.
@@ -170,7 +170,7 @@ it('la matière la moins jouée se mesure par île : l’anglais, avec deux île
   const state = sanitizeState({ progress, stock: { [BLOC.bois]: 4 }, world: { links: ['french-6e-phonology-english-6e-grammar'] } });
   expect(ouvrageSuggere(state, '6e')).toMatchObject({
     ile: 'french-6e-phonology',
-    goal: { text: 'Tu peux poser le sentier vers Mine des lettres. Il ouvre une île de français.', ouvrage: 'french-6e-phonology-french-6e-letter-confusion', ready: true },
+    goal: { text: 'Tu peux poser le pont vers Mine des lettres. Il ouvre une île de français.', ouvrage: 'french-6e-phonology-french-6e-letter-confusion', ready: true },
   });
   // Le compte ne lit que les exercices de la classe : chaque île porte sa classe dans son identifiant.
   expect(BIOMES.filter((b) => !b.id.includes(`-${b.classe}-`))).toEqual([]);
@@ -253,7 +253,7 @@ it('la suggestion ne dépend que de la sauvegarde, et deux élèves de la même 
   };
   const lea = seances('french-6e-phonology');
   const sami = seances('maths-6e-calculation');
-  expect(lea).toEqual(['maths-6e-calculation-maths-6e-decimals', 'maths-6e-calculation-maths-6e-fractions', 'french-6e-phonology-english-6e-grammar']);
+  expect(lea).toEqual(['maths-6e-calculation-maths-6e-decimals', 'maths-6e-calculation-maths-6e-fractions', 'french-6e-phonology-english-6e-vocabulary']);
   expect(sami).toEqual(['french-6e-phonology-french-6e-letter-confusion', 'french-6e-letter-confusion-french-6e-word-spelling', 'french-6e-phonology-french-6e-grammar-spelling']);
   expect(lea.filter((id) => sami.includes(id))).toEqual([]);
 });

@@ -92,7 +92,6 @@ it('la Forêt et la Plaine sont ouvertes au début (pont déjà là) ; de l’un
       .map((b) => b.id)
       .sort(),
   ).toEqual([
-    'french-6e-phonology-english-6e-grammar',
     'french-6e-phonology-english-6e-vocabulary',
     'french-6e-phonology-french-6e-grammar-spelling',
     'french-6e-phonology-french-6e-letter-confusion',
@@ -140,7 +139,6 @@ it('un voyage ouvre le port de l’archipel suivant, et rien de plus ; il faut l
       .map((b) => b.id)
       .sort(),
   ).toEqual([
-    'french-6e-phonology-english-6e-grammar',
     'french-6e-phonology-english-6e-vocabulary',
     'french-6e-phonology-french-6e-grammar-spelling',
     'french-6e-phonology-french-6e-letter-confusion',
@@ -221,9 +219,10 @@ it('les anciennes sauvegardes gardent leurs îles ouvertes : voyages et chemin o
 });
 
 it('GD-9 : une seule sorte de liaison, des blocs seulement, ni plan ni Gardien à attendre', () => {
-  // Un sentier entre deux lieux réunis, un pont, un bac : plus d'escalier taillé, de tunnel ni de col.
+  // Un pont, un bac : plus d'escalier taillé, de tunnel ni de col ; plus de lieux réunis sur la carte de départ (le
+  // sentier reviendra avec la réunion que l'élève construit).
   const kinds = new Set(BRIDGES.map((b) => linkKind(b, [])));
-  expect([...kinds].sort()).toEqual(['bac', 'pont', 'sentier']);
+  expect([...kinds].sort()).toEqual(['bac', 'pont']);
   expect(CONDITION_OF.pont).toBe('aucune');
   expect(CONDITION_OF.bac).toBe('aucune');
   expect(CONDITION_OF.sentier).toBe('aucune');

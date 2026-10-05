@@ -382,9 +382,11 @@ describe('Une longue traversée (GD-7)', () => {
   });
 
   it('« Partir d’une autre île » (GD-9) : la caméra tient le départ et l’arrivée du fantôme au-dessus de la fiche, d’un coup en mouvement réduit', () => {
-    const def = getBridge('french-6e-phonology-maths-6e-fractions')!;
-    const cases = bridgePath(def, []);
-    const cadre = cadreDeLaLiaison(def, [])!;
+    // La Mine reliée : le bac de la Mine à la Rivière, l'autre départ de la Rivière (GD-9).
+    const posees = ['french-6e-phonology-french-6e-letter-confusion'];
+    const def = getBridge('french-6e-letter-confusion-maths-6e-fractions')!;
+    const cases = bridgePath(def, posees);
+    const cadre = cadreDeLaLiaison(def, posees)!;
     expect(cadre).not.toBeNull();
     const b = worldBounds('6e');
     const monde: Monde = { scene: new THREE.Scene(), archipel: '6e', habillage: HABILLAGES.blocland, surface: null, etendue: b, centre: { x: 0, y: 0 }, largeur: 200, liaisons: () => [] };

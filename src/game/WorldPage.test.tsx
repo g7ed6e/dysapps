@@ -137,7 +137,7 @@ vi.mock('./three', () => ({
         Toucher la Rivière pâle
       </button>
       <button type="button" onClick={() => onIntent({ genre: 'ouvrage', id: 'french-6e-phonology-french-6e-letter-confusion' })}>
-        Toucher le sentier vers la Mine
+        Toucher le pont vers la Mine
       </button>
     </div>
   ),
@@ -569,11 +569,11 @@ it('le bouton Blocs ouvre « Mes blocs » ; une puce mène à l’île (caméra 
   // Le bois paie le sentier qui part de la Forêt (après les quatre liaisons de la Plaine, GD-7 : « Tout voir ») : la puce
   // y mène, la caméra cadre la Forêt et la fiche du sentier s'ouvre (le panneau de l'île, non).
   await user.click(screen.getByRole('button', { name: /Tout voir/ }));
-  await user.click(screen.getAllByRole('link', { name: /Sentier vers Mine des lettres/ })[0]);
+  await user.click(screen.getAllByRole('link', { name: /Pont vers Mine des lettres/ })[0]);
   expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/french-6e-phonology');
   expect(screen.getByTestId('cadrage')).toHaveTextContent('french-6e-phonology');
   expect(screen.queryByRole('dialog', { name: /^Forêt des sons/ })).not.toBeInTheDocument();
-  expect(document.querySelector('.world-fiche')).toHaveTextContent(/Relier Mine des lettres.*Le sentier part de Forêt des sons\./);
+  expect(document.querySelector('.world-fiche')).toHaveTextContent(/Relier Mine des lettres.*Le pont part de Forêt des sons\./);
   // Depuis l'inventaire, la croix rend le monde : on reste sur l'île du bonhomme, sans rouvrir son panneau.
   await user.click(screen.getByRole('button', { name: 'Mes blocs, 6' }));
   await user.click(screen.getByRole('button', { name: 'Fermer le panneau' }));
@@ -1074,7 +1074,7 @@ describe('les fiches du monde (lot 2 de « Toucher le monde »)', () => {
     await user.click(within(f).getByRole('button', { name: 'Relier' }));
     // Le titre ne change pas avec le départ ; la phrase dit d'où part l'ouvrage, et lequel des départs c'est.
     const o = screen.getByRole('dialog', { name: /^Relier Mine des lettres/ });
-    expect(o).toHaveTextContent(/Le sentier part de Forêt des sons\. (Départ 1 sur \d+\. )?\d+ blocs\. Il t’en manque \d+\./);
+    expect(o).toHaveTextContent(/Le pont part de Forêt des sons\. (Départ 1 sur \d+\. )?\d+ blocs\. Il t’en manque \d+\./);
     expect(document.querySelectorAll('.world-fiche')).toHaveLength(1);
     expect(vu.fiche).toMatchObject({ objet: { genre: 'ouvrage', id: 'french-6e-phonology-french-6e-letter-confusion' }, saut: true });
   });
@@ -1082,6 +1082,8 @@ describe('les fiches du monde (lot 2 de « Toucher le monde »)', () => {
   it('« Partir d’une autre île » : le même titre, le départ suivant, et la caméra cadre sa liaison', async () => {
     vuSansAide();
     localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true, 'decouverte-ouvrages': true }));
+    // La Mine reliée : la Rivière a deux départs, la Plaine (un pont) et la Mine (un bac).
+    localStorage.setItem('dysapps:game', JSON.stringify({ world: { links: ['french-6e-phonology-french-6e-letter-confusion'] } }));
     const user = userEvent.setup();
     renderAt('/adventure');
     await user.click(screen.getByRole('button', { name: 'Toucher la Rivière pâle' }));
@@ -1091,12 +1093,12 @@ describe('les fiches du monde (lot 2 de « Toucher le monde »)', () => {
     expect(vu.liaisonCadree).toBeNull();
     await user.click(within(screen.getByRole('dialog', { name: /^Relier Rivière des fractions/ })).getByRole('button', { name: 'Partir d’une autre île' }));
     const o = screen.getByRole('dialog', { name: /^Relier Rivière des fractions/ });
-    expect(o).toHaveTextContent(/part de Forêt des sons\. Départ 2 sur 2\./);
-    expect(vu.fiche).toMatchObject({ objet: { genre: 'ouvrage', id: 'french-6e-phonology-maths-6e-fractions' } });
-    expect(vu.liaisonCadree).toBe('french-6e-phonology-maths-6e-fractions');
+    expect(o).toHaveTextContent(/part de Mine des lettres\. Départ 2 sur 2\./);
+    expect(vu.fiche).toMatchObject({ objet: { genre: 'ouvrage', id: 'french-6e-letter-confusion-maths-6e-fractions' } });
+    expect(vu.liaisonCadree).toBe('french-6e-letter-confusion-maths-6e-fractions');
     // Le monde dessine le fantôme du départ choisi, à la place de celui du plus proche.
     const fantomes = new Set(vu.cubes.filter((c) => c.ghost).map((c) => (c as { bridge?: string }).bridge));
-    expect(fantomes.has('french-6e-phonology-maths-6e-fractions')).toBe(true);
+    expect(fantomes.has('french-6e-letter-confusion-maths-6e-fractions')).toBe(true);
     expect(fantomes.has('maths-6e-calculation-maths-6e-fractions')).toBe(false);
   });
 
@@ -1105,13 +1107,13 @@ describe('les fiches du monde (lot 2 de « Toucher le monde »)', () => {
     localStorage.setItem('dysapps:game', JSON.stringify({ stock: { 'french-6e-phonology': 20 } }));
     const user = userEvent.setup();
     renderAt('/adventure');
-    await user.click(screen.getByRole('button', { name: 'Toucher le sentier vers la Mine' }));
+    await user.click(screen.getByRole('button', { name: 'Toucher le pont vers la Mine' }));
     const f = screen.getByRole('dialog', { name: /^Relier Mine des lettres/ });
     await user.click(within(f).getByRole('button', { name: /Poser/ }));
-    expect(f).toHaveTextContent(/vers Mine des lettres est tracé/);
+    expect(f).toHaveTextContent(/vers Mine des lettres est posé/);
     expect(JSON.parse(localStorage.getItem('dysapps:game')!).world.links).toContain('french-6e-phonology-french-6e-letter-confusion');
     await user.click(within(f).getByRole('button', { name: 'Fermer la fiche' }));
-    await user.click(screen.getByRole('button', { name: 'Toucher le sentier vers la Mine' }));
+    await user.click(screen.getByRole('button', { name: 'Toucher le pont vers la Mine' }));
     expect(ficheOuverte()).toBeNull();
   });
 });

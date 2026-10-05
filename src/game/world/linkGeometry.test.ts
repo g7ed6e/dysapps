@@ -114,8 +114,9 @@ describe('le prix et la nature d’une liaison', () => {
     expect(bridgePath(b, []).length).toBeGreaterThan(0);
   });
 
-  it('un sentier entre deux lieux réunis ; la Ferme et la Tour ne le sont plus', () => {
-    expect(linkKind(getBridge('french-6e-phonology-french-6e-letter-confusion')!, [])).toBe('sentier');
+  it('plus aucun lieu réuni sur la carte de départ : la Forêt et la Mine, la Ferme et la Tour sont reliées par un pont', () => {
+    expect(isthmusOf('french-6e-phonology')).toBeNull();
+    expect(linkKind(getBridge('french-6e-phonology-french-6e-letter-confusion')!, [])).toBe('pont');
     expect(isthmusOf('french-6e-grammar-spelling')).toBeNull();
     expect(linkKind(getBridge('french-6e-grammar-spelling-french-6e-reading')!, [])).not.toBe('sentier');
   });
@@ -153,12 +154,18 @@ describe('relier un lieu fermé', () => {
   });
 
   it('au-delà de 36 cases sur une liaison, la caméra cadre la traversée du départ à l’arrivée', () => {
-    const open = reachableIslands([]);
-    const long = BRIDGES.find((b) => archipelagoOfIsland(b.from) === '6e' && opensAnIsland(b, open) && bridgeState(b, []) === 'buildable' && bridgePath(b, []).length > BAC_LONG)!;
-    expect(long).toBeDefined();
+    // La première liaison longue qu'on peut poser, région après région, à l'arrivée.
+    const cas = ARCHIPELAGOS.map((a) => {
+      const arrivee = VOYAGES.slice(0, ARCHIPELAGOS.indexOf(a)).map((v) => v.id);
+      const open = reachableIslands(arrivee);
+      const long = BRIDGES.find((b) => archipelagoOfIsland(b.from) === a.classe && opensAnIsland(b, open) && bridgeState(b, arrivee) === 'buildable' && bridgePath(b, arrivee).length > BAC_LONG);
+      return long ? { a: a.classe, arrivee, open, long } : null;
+    }).find((c) => c !== null);
+    expect(cas).toBeDefined();
+    const { a, arrivee, open, long } = cas!;
     const depart = open.has(long.from) ? long.from : long.to;
-    const route = avatarRoute(depart, depart === long.from ? long.to : long.from, [long.id])!;
-    expect(cadreDeTraversee('6e', [long.id], route)).not.toBeNull();
+    const route = avatarRoute(depart, depart === long.from ? long.to : long.from, [...arrivee, long.id])!;
+    expect(cadreDeTraversee(a, [...arrivee, long.id], route)).not.toBeNull();
   });
 });
 

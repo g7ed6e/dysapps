@@ -59,6 +59,8 @@ const EARLY = {
   },
   progress: { xp: 180, totalAnswers: 40, correctAnswers: 31, sessionsCompleted: 4, badges: badges(3) },
 };
+/** Le début, la Mine reliée : la Rivière a deux départs (« Partir d'une autre île », GD-9). */
+const EARLY_MINE = { ...EARLY, game: { ...EARLY.game, world: { ...EARLY.game.world, links: [...EARLY.game.world.links, 'french-6e-phonology-french-6e-letter-confusion'] } } };
 /** Au milieu des Premiers Rivages : des îles ouvertes, des bâtiments finis, la coque du navire commencée. */
 const six = islandsOf('6e');
 const MID = {
@@ -134,7 +136,7 @@ const SHOTS = [
   // La fiche d'une borne (Toucher le monde, lot 2), ouverte comme d'un toucher.
   { name: 'fiche-borne', state: EARLY, go: '/adventure/french-6e-phonology', act: ouvrirLaFiche({ genre: 'borne', id: 'french-6e-phonology:syllables' }) },
   // Relier une île pâle (GD-9) : la fiche de l'ouvrage proposé, puis le départ suivant.
-  { name: 'fiche-relier', state: EARLY, go: '/adventure/french-6e-phonology', act: relierDepuisUneAutreIle('maths-6e-fractions') },
+  { name: 'fiche-relier', state: EARLY_MINE, go: '/adventure/french-6e-phonology', act: relierDepuisUneAutreIle('maths-6e-fractions') },
   { name: 'gardien', state: MID, go: '/adventure/french-6e-letter-confusion/challenge', wait: 2500 },
   { name: 'ecole', state: MID, go: '/adventure/school' },
   { name: 'trophees', state: MID, go: '/adventure/trophies' },

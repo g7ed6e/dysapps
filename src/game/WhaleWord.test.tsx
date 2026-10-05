@@ -40,6 +40,10 @@ describe('l’annonce du changement de forme de la carte (GD-9) : une fois par a
     const neuve = sanitizeState({});
     renderHook(() => useWhaleWord(neuve, '6e'));
     expect(lu()![MAP_RESHAPED]).toBe(true);
+    // Un appareil où la baleine n'a jamais parlé, même avec une partie d'avant, ne l'entend pas non plus.
+    localStorage.clear();
+    renderHook(() => useWhaleWord(sanitizeState({ world: { links: ['french-6e-phonology-french-6e-letter-confusion'] } }), '6e'));
+    expect(lu()![MAP_RESHAPED]).toBe(true);
     const plusTard = sanitizeState({ world: { links: ['french-6e-phonology-french-6e-letter-confusion'] } });
     const { result } = renderHook(() => useWhaleWord(plusTard, '6e'));
     expect(result.current.word?.id).not.toBe(MAP_RESHAPED);

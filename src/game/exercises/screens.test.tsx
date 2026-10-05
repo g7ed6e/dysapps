@@ -60,12 +60,10 @@ describe('déblocage des biomes', () => {
   it('verrouille la Mine tant que le pont n’est pas construit', async () => {
     const user = userEvent.setup();
     renderAt('/adventure');
-    // Le port en étoile (GD-7) : de la Plaine ou de la Forêt, une liaison vers chaque île, 4 blocs chacune.
-    expect(screen.getAllByText(/Pont à construire : 4 blocs/).length).toBe(4);
-    expect(screen.getAllByText(/Sentier à construire : 4 blocs/).length).toBe(1);
-    expect(screen.getAllByText(/Bac à construire : 4 blocs/).length).toBe(1);
-    // Deux îles qu'aucune liaison n'atteint encore depuis un lieu relié (GD-9) : elles s'ouvriront de proche en proche.
-    expect(screen.queryAllByText(/Île lointaine/).length).toBe(2);
+    // GD-9 : de la Plaine ou de la Forêt, une liaison vers chaque île qu'on peut relier, 4 blocs chacune.
+    expect(screen.getAllByText(/Pont à construire : 4 blocs/).length).toBe(5);
+    // Trois îles qu'aucune liaison n'atteint encore depuis un lieu relié (GD-9) : elles s'ouvriront de proche en proche.
+    expect(screen.queryAllByText(/Île lointaine/).length).toBe(3);
     expect(screen.getAllByText(/Archipel à rejoindre/).length).toBe(21);
     await user.click(screen.getByRole('link', { name: /^Mine des lettres/ }));
     // Le message est découpé en syllabes (plusieurs éléments) : on lit le texte complet.
@@ -81,7 +79,7 @@ describe('déblocage des biomes', () => {
     renderAt('/adventure/french-6e-letter-confusion');
     expect(screen.queryByRole('link', { name: /Filon/ })).not.toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: /Poser/ }));
-    expect(document.body.textContent).toMatch(/Le sentier vers Mine des lettres est tracé/);
+    expect(document.body.textContent).toMatch(/Le pont vers Mine des lettres est posé/);
     expect(screen.getByRole('link', { name: /Filon/ })).toBeInTheDocument();
     expect(JSON.parse(localStorage.getItem('dysapps:game')!).world.links).toEqual(['french-6e-phonology-french-6e-letter-confusion']);
     expect(JSON.parse(localStorage.getItem('dysapps:game')!).stock).toEqual({ 'french-6e-phonology': 1 });

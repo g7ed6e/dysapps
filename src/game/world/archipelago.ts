@@ -165,7 +165,8 @@ const VIA: Record<string, readonly Point[]> = {
  */
 export const LINKS_BEFORE_GD9: readonly LinkBeforeGd9[] = [
   // Premiers Rivages (6e) : des ponts, et deux bacs sur les bras de mer les plus larges.
-  p('french-6e-phonology', 'french-6e-letter-confusion', 'sentier'),
+  // La Forêt et la Mine ne sont plus réunies par un isthme (GD-9, mainteneur, 5 octobre 2026) : un pont, au même identifiant.
+  p('french-6e-phonology', 'french-6e-letter-confusion', 'pont'),
   p('french-6e-phonology', 'french-6e-grammar-spelling', 'pont'),
   b('french-6e-letter-confusion', 'french-6e-word-spelling', 'pont', 5),
   // La Ferme et la Tour ne sont plus réunies par un isthme (GD-9) : un pont, au même identifiant.
@@ -187,10 +188,11 @@ export const LINKS_BEFORE_GD9: readonly LinkBeforeGd9[] = [
   e('maths-6e-calculation', 'french-6e-reading', 'bac', VIA['maths-6e-calculation-french-6e-reading']),
   e('maths-6e-calculation', 'french-6e-word-spelling', 'bac', VIA['maths-6e-calculation-french-6e-word-spelling']),
   e('french-6e-phonology', 'english-6e-vocabulary', 'pont', VIA['french-6e-phonology-english-6e-vocabulary']),
-  // Îles Brumeuses (5e) : le Marché est le port ; deux isthmes et un pont entre les deux paires.
-  p('maths-5e-signed-numbers', 'maths-5e-proportionality', 'sentier'),
+  // Îles Brumeuses (5e) : le Marché est le port. Le Glacier et le Marché, le Carrefour et le Marais ne sont plus réunis
+  // par un isthme (GD-9, mainteneur, 5 octobre 2026) : des ponts, aux mêmes identifiants.
+  p('maths-5e-signed-numbers', 'maths-5e-proportionality', 'pont'),
   p('maths-5e-proportionality', 'french-5e-conjugation', 'pont'),
-  b('french-5e-homophones', 'french-5e-conjugation', 'sentier', 6),
+  b('french-5e-homophones', 'french-5e-conjugation', 'pont', 6),
   // Les îles d'anglais, à droite : un pont depuis le Marché (le port), un depuis le Marais, un entre les deux.
   p('maths-5e-proportionality', 'english-5e-vocabulary', 'pont'),
   b('french-5e-conjugation', 'english-5e-grammar', 'pont', 6),

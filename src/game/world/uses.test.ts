@@ -94,7 +94,6 @@ it('l’inventaire commenté : les lignes rangées par utilité, les ouvrages un
   expect(inv.ouvrages.map((o) => o.bridge.id).sort()).toEqual(
     [
       'french-6e-phonology-french-6e-grammar-spelling',
-      'french-6e-phonology-english-6e-grammar',
       'french-6e-phonology-english-6e-vocabulary',
       'french-6e-phonology-french-6e-letter-confusion',
       'maths-6e-calculation-maths-6e-fractions',
