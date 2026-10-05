@@ -1,7 +1,7 @@
 import { BLOC, BIOMES } from '../biomes';
 import { sanitizeState } from '../engine';
 import { MAP } from './map';
-import { partiesDe } from './parties';
+import { partiesDe } from './parts';
 import { planCells, plansFor } from './plans';
 import {
   ARCHIPELAGOS,

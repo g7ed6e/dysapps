@@ -1,7 +1,7 @@
 import { act, render } from '@testing-library/react';
 import { lireReglages, SettingsProvider, useSettings } from './SettingsContext';
 import { loadJSON, saveJSON } from './storage';
-import { MESSAGE_UNIVERS_KEY } from './univers';
+import { MESSAGE_UNIVERS_KEY } from './universe';
 
 beforeEach(() => localStorage.clear());
 

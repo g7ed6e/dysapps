@@ -9,17 +9,17 @@ L’accomplissement : on voit loin. En arrivant, l’élève voit au centre de l
 ## 2. Les repères signatures
 
 - **Le grand phare** (R4b, île du Phare), le seul élément partagé, avec le 6e.
-  - Le modèle de `world/decor/phare.ts`, entrée `PHARES['3e']` : H = 11, r = 1,2. Le fût est vérifié contre les valeurs mesurées au 6e (environ `#DDCCAE` au soleil, `#B0AA9A` à l’ombre).
+  - Le modèle de `world/decor/lighthouse.ts`, entrée `PHARES['3e']` : H = 11, r = 1,2. Le fût est vérifié contre les valeurs mesurées au 6e (environ `#DDCCAE` au soleil, `#B0AA9A` à l’ombre).
   - **Le site actuel est gardé** : le coin arrière droit de l’île, au centre de l’arc. « Au sommet de l’île en gradins » n’est pas possible sans changer la grille. C’est un écart à la règle 1 de la fiche de famille, pris par le directeur artistique ; la revue d’ensemble le confirme.
 - **Le socle de salles**, en pierre de taille `#DBDADD`, ombres `#5A7BA5`. Autre écart à la règle 1 : **3 × 3 cases au lieu de 4 × 4**, parce qu’un socle de 4 × 4 couvrirait une case du cœur.
   - Deux étages en gradins : des salles de 3 × 3 cases sur 2 de haut, puis une salle de 2 × 2 sur 1 de haut, soit 3 cases de haut. Des baies cintrées sombres, de la neige sur les terrasses.
   - Il couvre les deux cases bloquées aujourd’hui, et sinon seulement des cases où l’on ne marche pas. Jamais une case du cœur : un test le vérifie.
-- **Le massif enneigé continu** (R4b, par `lointain.ts`, de 800 à 1 500 triangles).
+- **Le massif enneigé continu** (R4b, par `distant.ts`, de 800 à 1 500 triangles).
   - Une crête irrégulière, au moins 1,2 fois plus large que l’arc des îles, de 80 à 150 cases derrière, de 14 à 30 blocs de haut. Construit : deux rangs, 14 blocs à 80 cases et 18 blocs à 110 cases, cols hauts (0,55 à 0,75 de la hauteur) pour que la neige fasse une bande continue.
   - Roche `#7E8AA8`, ombres `#47598C`, neige `#E5EBE3` au-dessus de 55 % de la hauteur.
   - Dans la vue de l’archipel, la lanterne se détache sur la bande claire de l’horizon (plancher et ciel), jamais sur la roche du massif. Toute la crête tient dans le cadre, sous la barre du haut, avec du ciel au-dessus. En hauteur du monde, la lanterne est le point le plus haut des îles ; le massif est un fond. (Décision du directeur artistique du 28 septembre 2026, à la relecture de R4b-3e : « sa crête reste sous la galerie » n’est pas tenable avec la caméra du jeu, qui regarde vers le bas : tout objet lointain se projette au-dessus de la lanterne.)
 - **Le plancher de nuages** `#DDE3E8` (aujourd’hui `#E0E6F2`), un blanc bleuté, jamais sable.
-- **L’oiseau planeur** (R4b, dans `world/faune.ts`, un appel de dessin, 150 triangles au plus).
+- **L’oiseau planeur** (R4b, dans `world/fauna.ts`, un appel de dessin, 150 triangles au plus).
   - Un seul oiseau, de 3 cases d’envergure, ailes fixes, aux couleurs des oiseaux communs, qui tourne au-dessus du massif, derrière l’arc des îles, à hauteur de la galerie du phare, plus haut que tous les autres oiseaux, en 24 s au moins par tour, à vitesse constante, sans à-coups ni battement d’ailes.
   - Sa ronde reste tout entière au-dessus du massif : jamais devant la lanterne, jamais sur une île. Il vole seul.
   - Il ne tourne pas au-dessus d’une île : le lot 9 prévoit des oiseaux qui signalent la zone active, et un oiseau qui tourne toujours au-dessus de la même île serait pris pour ce signal.

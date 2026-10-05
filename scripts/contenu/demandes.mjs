@@ -2,7 +2,7 @@
 // « ## Les plans », sous « ## Les demandes » : un « ### `<lieu>-request-<n>` » par commande, puis ses champs. Elles
 // redonnent src/game/world/requests.json (toutes les îles, dans l'ordre de docs/contenu/archipel.md). La forme de la
 // petite construction que pose une commande livrée, et sa place, restent dans le code
-// (src/game/world/petitesConstructions.ts) ; le Markdown la décrit dans une note (« > Forme : … »), pour l'artiste
+// (src/game/world/fixtures.ts) ; le Markdown la décrit dans une note (« > Forme : … »), pour l'artiste
 // technique 3D, que le jeu ne lit pas.
 //
 //   ## Les demandes

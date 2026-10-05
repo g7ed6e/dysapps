@@ -4,7 +4,7 @@ import { ARCHIPELAGO_IDS } from '../map';
 import { worldCubes } from '../terrain';
 import { batimentsDe } from '../construction';
 import { architectureDe, FORMES, KITS, kitVide, MOTIF, pieceDe, voisinageDe, indexDuPlan, type IdDePiece, type Kit } from '.';
-import { boiteDansLaCase, FACES, facettesPosees, tournerCouvre, trianglesDe, TOUTES_LES_FACES, type DessinDePiece } from './pieces';
+import { boiteDansLaCase, FACES, facettesPosees, tournerCouvre, trianglesDe, TOUTES_LES_FACES, type DessinDePiece } from './rooms';
 import { KIT_6E } from './kits/6e';
 
 const cle = (c: { x: number; y: number; z: number }) => `${c.x},${c.y},${c.z}`;
@@ -130,7 +130,7 @@ describe('Le kit des Premiers Rivages (lot 7b)', () => {
       expect(batiments.has(cle(p.cube))).toBe(true);
     }
     expect([...archi.peints.values()].some((p) => p.cube.texture === 'barriere' || p.cube.texture === 'escalier')).toBe(false);
-    // Le haut d'un versant (un versant qui ne monte pas : ./choix.ts) ne sert qu'aux lieux du village, au toit de quatre
+    // Le haut d'un versant (un versant qui ne monte pas : ./choices.ts) ne sert qu'aux lieux du village, au toit de quatre
     // rangées de l'école : aucun versant d'un plan ne le prend.
     const index = indexDuPlan(
       [...batiments].map(([k, texture]) => {

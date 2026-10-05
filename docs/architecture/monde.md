@@ -6,37 +6,37 @@ Le monde est la partie la plus lourde du code (`src/game/world/` et `src/game/th
 
 ```mermaid
 flowchart LR
-  etat[GameState<br/>la partie] --> modele[world/modele.ts<br/>modeleDuMonde : îles, bornes, ouvrages, états]
+  etat[GameState<br/>la partie] --> modele[world/model.ts<br/>modeleDuMonde : îles, bornes, ouvrages, états]
   modele --> page[WorldPage.tsx<br/>panneaux, fiches, voyage, vague]
-  grille[world/grille.ts, map.ts, terrain.ts<br/>la place de chaque chose en cases] --> vue
+  grille[world/grid.ts, map.ts, terrain.ts<br/>la place de chaque chose en cases] --> vue
   page -- props du contrat world/view.ts --> vue[three/WorldCanvas.tsx<br/>la scène 3D]
-  habillage[habillage.ts + world/habillage/<br/>ce que l’univers change au dessin] --> vue
+  habillage[skin.ts + world/skin/<br/>ce que l’univers change au dessin] --> vue
   vue -- Intention : île, borne, lieu, ouvrage, créature, navire… --> page
   page -- actions --> ctx[BloclandContext]
   ctx --> etat
 ```
 
-- `world/modele.ts` lit la partie et rend le modèle d’un archipel en identifiants, sans une seule case : les îles, leurs bornes et leur état, les ouvrages, le voyage en cours. Il décide aussi ce que fait un toucher (jouer une borne, ouvrir l’île d’un ouvrage, aller vers une île, voyager).
-- La grille (`world/map.ts` la forme des îles, `world/terrain.ts` le monde en cubes, un métier par fichier dans `world/terrain/`, `world/paths.ts` la marche, `world/harbour.ts` le quai) place tout en cases du monde ; `world/grille.ts` en est l’entrée (`grilleDe`).
-- `world/view.ts` est le contrat entre `WorldPage` et une vue : les props qu’une vue reçoit, les intentions qu’elle renvoie (`world/disposition.ts`). `WorldPage` ne connaît que ce contrat.
+- `world/model.ts` lit la partie et rend le modèle d’un archipel en identifiants, sans une seule case : les îles, leurs bornes et leur état, les ouvrages, le voyage en cours. Il décide aussi ce que fait un toucher (jouer une borne, ouvrir l’île d’un ouvrage, aller vers une île, voyager).
+- La grille (`world/map.ts` la forme des îles, `world/terrain.ts` le monde en cubes, un métier par fichier dans `world/terrain/`, `world/paths.ts` la marche, `world/harbour.ts` le quai) place tout en cases du monde ; `world/grid.ts` en est l’entrée (`grilleDe`).
+- `world/view.ts` est le contrat entre `WorldPage` et une vue : les props qu’une vue reçoit, les intentions qu’elle renvoie (`world/layout.ts`). `WorldPage` ne connaît que ce contrat.
 - La vue ne décide rien : elle dessine ce qu’on lui passe et dit ce que l’élève a touché, par une `Intention` que `WorldPage` traite dans un seul `switch`.
 
 ## La scène 3D
 
-`three/WorldCanvas.tsx` crée une scène par archipel, refaite quand l’archipel ou « Réduire les animations » change. La scène est faite de **parties**, chacune dans son fichier, qui suivent le même contrat (`three/partie.ts`) : se construire à partir du `Monde`, s’animer à chaque image, se libérer.
+`three/WorldCanvas.tsx` crée une scène par archipel, refaite quand l’archipel ou « Réduire les animations » change. La scène est faite de **parties**, chacune dans son fichier, qui suivent le même contrat (`three/scenePart.ts`) : se construire à partir du `Monde`, s’animer à chaque image, se libérer.
 
 ```mermaid
 flowchart TD
   wc[WorldCanvas.tsx] --> monde[Monde<br/>scène, archipel, habillage, étendue]
-  monde --> lumiere[lumiere.ts]
-  monde --> brume[brume.ts]
-  monde --> large[large.ts<br/>la mer au loin, le ciel]
+  monde --> lumiere[light.ts]
+  monde --> brume[mist.ts]
+  monde --> large[offshore.ts<br/>la mer au loin, le ciel]
   monde --> cubes[cubes.ts<br/>le monde en blocs, le sol, le décor]
-  monde --> bornes[bornes.ts]
-  monde --> personnages[personnages.ts<br/>bonhomme, créatures, Gardiens]
-  monde --> navire[navire.ts]
-  monde --> etiquettes[etiquettes.ts<br/>les noms des îles]
-  monde --> signes[signes.ts<br/>les bulles de ce qu’on peut faire]
+  monde --> bornes[markers.ts]
+  monde --> personnages[characters.ts<br/>bonhomme, créatures, Gardiens]
+  monde --> navire[ship.ts]
+  monde --> etiquettes[labels.ts<br/>les noms des îles]
+  monde --> signes[signs.ts<br/>les bulles de ce qu’on peut faire]
   monde --> camera[camera.ts<br/>cadrages, glisser, pincer]
 ```
 
@@ -55,12 +55,12 @@ sequenceDiagram
 ```
 
 - Les parties partagent un `Instant` (où en sont la marche et le voyage à cette image) et les `Derniers` props de la vue : la scène n’est pas refaite quand les props changent, les parties les relisent.
-- Le calcul des formes est pur et testé dans `world/` (`landMesh.ts` le sol en facettes, `construction.ts` les bâtiments, chacun avec ses réglages, ses couleurs et son éclairage rangés à côté, dans `landMesh/` et `construction/`, `decorMesh.ts` le décor, `mer.ts`, `faune.ts`, `personnages/`) ; `three/` ne fait que les donner à Three.js.
+- Le calcul des formes est pur et testé dans `world/` (`landMesh.ts` le sol en facettes, `construction.ts` les bâtiments, chacun avec ses réglages, ses couleurs et son éclairage rangés à côté, dans `landMesh/` et `construction/`, `decorMesh.ts` le décor, `sea.ts`, `fauna.ts`, `characters/`) ; `three/` ne fait que les donner à Three.js.
 - Chaque géométrie, matériau et texture est libéré quand la scène est refaite (`dispose`).
 
 ## Les univers
 
-Les deux univers jouent le même jeu. Ce qui change au dessin passe par un objet `Habillage` (`game/habillage.ts`, une donnée par univers dans `world/habillage/`) : le ciel, la brume, le sol, les personnages, les étiquettes, les bulles. Ce qui change aux mots passe par `src/univers/` (`useTextes()`). Le code ne teste presque jamais le nom de l’univers : il lit une ligne de l’habillage ou un texte.
+Les deux univers jouent le même jeu. Ce qui change au dessin passe par un objet `Habillage` (`game/skin.ts`, une donnée par univers dans `world/skin/`) : le ciel, la brume, le sol, les personnages, les étiquettes, les bulles. Ce qui change aux mots passe par `src/universes/` (`useTextes()`). Le code ne teste presque jamais le nom de l’univers : il lit une ligne de l’habillage ou un texte.
 
 ## Le budget de dessin
 

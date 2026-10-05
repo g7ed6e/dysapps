@@ -2,11 +2,11 @@
 import { LV2_LABELS, type Lv2Choice } from '../../core/settings';
 import { useSettings } from '../../core/SettingsContext';
 import { isSpeechAvailable } from '../../core/speech';
-import { useVoixDisponible } from '../../core/useVoix';
+import { useVoixDisponible } from '../../core/useVoice';
 import { Icon } from '../../components/Icon';
 import { SpeakButton } from '../../components/SpeakButton';
 import { Syllabified } from '../../components/Syllabified';
-import { OptionRow } from './controles';
+import { OptionRow } from './controls';
 
 const LV2_TEXTE = 'À partir de la 5e. Tu peux en changer quand tu veux : ce que tu as construit reste, et chaque langue garde ses étoiles.';
 const sansVoixLv2 = (voix: string) =>

@@ -2,24 +2,24 @@
 // Blocland. Sans WebGL (jsdom), on vérifie l'arbre de la scène : aucun matériau de la construction taillée, aucun motif
 // peint, aucune pièce ; exactement les cubes du monde en blocs.
 import * as THREE from 'three';
-import { HABILLAGES, type Habillage } from '../habillage';
+import { HABILLAGES, type Habillage } from '../skin';
 import { toutConstruit } from '../world/budget';
 import { maillageDeLaConstruction } from '../world/construction';
 import { buildMesh } from '../world/mesher';
 import { worldCubes } from '../world/terrain';
 import { KITS } from '../world/architecture';
 import { creerCubes } from './cubes';
-import type { Large } from './large';
-import type { Lumiere } from './lumiere';
-import type { Instant, Monde } from './partie';
+import type { Large } from './offshore';
+import type { Lumiere } from './light';
+import type { Instant, Monde } from './scenePart';
 import type { VoxelCube } from '../Voxel';
 import { GESTE_DE_POSE } from '../world/pose';
 import { BADGES } from '../../core/progress';
 import { trophyBlock } from '../trophies';
-import { partiesDe } from '../world/parties';
+import { partiesDe } from '../world/parts';
 import { casesDesPlansDansLeMonde } from '../world/terrain';
-import { cubesDeLaVague, planDeLaVague, sansLaPartie } from '../world/vague';
-import { maillageDuFondu } from '../world/maillageDuFondu';
+import { cubesDeLaVague, planDeLaVague, sansLaPartie } from '../world/wave';
+import { maillageDuFondu } from '../world/fadeMesh';
 
 function monde(habillage: Habillage): Monde {
   return { scene: new THREE.Scene(), archipel: '6e', habillage, surface: null, etendue: { minX: 0, maxX: 10, minY: 0, maxY: 10 }, centre: { x: 5, y: 5 }, largeur: 10 };

@@ -5,13 +5,13 @@ import { useSettings, useUnivers } from '../core/SettingsContext';
 import { Icon } from '../components/Icon';
 import { SubjectApps } from '../components/SubjectApps';
 import { NotFoundPage } from './NotFoundPage';
-import { UNIVERS } from '../core/univers';
+import { UNIVERS } from '../core/universe';
 import { biomesOf, missionsJouables, type Classe } from '../game/biomes';
 import { useBlocland } from '../game/BloclandContext';
 import { Creature } from '../game/Creatures';
 import { questProgress } from '../game/exercises';
 import { ARCHIPELAGOS, archipelagoTitle, isArchipelagoReached, isBiomeUnlocked } from '../game/world/archipelago';
-import { useTextes } from '../univers';
+import { useTextes } from '../universes';
 
 export function SubjectPage() {
   const { subject } = useParams();

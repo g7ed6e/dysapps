@@ -3,7 +3,7 @@
 // de quoi employer ceux qui s'accumulent une fois les bâtiments finis. Ils ne ferment rien et n'ouvrent rien ; un
 // monument terminé rapporte de l'XP et un succès, et reste dans le monde.
 import type { BiomeId, BlockId } from '../biomes';
-import type { ArchipelagoId } from './archipels';
+import type { ArchipelagoId } from './archipelagos';
 import type { PlanCell, PlanDef } from './plans';
 import { BLOC } from '../biomes';
 

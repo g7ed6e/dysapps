@@ -8,7 +8,7 @@ import { useBlocland } from './BloclandContext';
 import { VoxelScene } from './Voxel';
 import { ARCHIPELAGOS, archipelagoOf, launchedCount, type ArchipelagoId, type NomsArchipels } from './world/archipelago';
 import { VEHICLE_NAME, vehicleModel } from './world/vehicle';
-import { useTextes } from '../univers';
+import { useTextes } from '../universes';
 
 interface Props {
   /** L'archipel de destination. */

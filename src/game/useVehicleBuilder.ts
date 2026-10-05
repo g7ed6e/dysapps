@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useSettings } from '../core/SettingsContext';
-import { useTextes } from '../univers';
+import { useTextes } from '../universes';
 import { BLOCKS, blockCount, type BiomeId, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { canLaunch, nextFillable, planCellAt, planStatus, type LaunchResult, type PlanStatus } from './engine';
 import { playDone, playNope, sonDePose } from './sound';
-import { habillageDuMonde } from './habillage';
+import { habillageDuMonde } from './skin';
 import { voyageId } from './world/archipelago';
 import { VEHICLE_STAGES, kitReady, stageAt, type VehicleStage } from './world/vehicle';
-import { placeAll, type Burst } from './poseCaseParCase';
+import { placeAll, type Burst } from './cellByCellPose';
 import { allerChercher } from './world/uses';
 import { useHaptics } from '../core/haptics';
 import { decalageDuQuai } from './world/terrain';

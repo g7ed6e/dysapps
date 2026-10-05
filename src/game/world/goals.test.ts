@@ -1,6 +1,6 @@
 import { BLOC, BLOCKS, blockCount, type BlockId } from '../biomes';
 import { EMPTY_STATE, sanitizeState } from '../engine';
-import { textesDe } from '../../univers';
+import { textesDe } from '../../universes';
 import { BRIDGES, NOMS_ARCHIPELS, getBridge, islandsOf, type BridgeDef } from './archipelago';
 import { BIOMES, getBiome, missionsJouables, type BiomeId } from '../biomes';
 import { exercisesOf } from '../exercises';
@@ -19,7 +19,7 @@ import { VEHICLE_STAGES } from './vehicle';
 import { nextDestination as nextDestinationDe } from './destination';
 
 // L'indice d'une île fermée et le prochain objectif disent les Gardiens avec les mots de l'univers (Blocland par défaut),
-// et les archipels avec les noms communs des données ; les noms d'un univers sont essayés dans src/univers/univers.test.ts.
+// et les archipels avec les noms communs des données ; les noms d'un univers sont essayés dans src/universes/universes.test.ts.
 type Etat = Parameters<typeof lockedHintDe>[0];
 type Ile = Parameters<typeof lockedHintDe>[1];
 type Univers = 'blocland' | 'archipeo';

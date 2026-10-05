@@ -14,9 +14,9 @@ import { questsToReview } from './review';
 import { SCHOOL_PATH, SCHOOL_TITLE } from './School';
 import { MONUMENTS_PATH, MONUMENTS_TITLE } from './Monuments';
 import { TROPHIES_PATH } from './trophies';
-import { ASSEMBLAGE_PATH } from './world/assemblage';
-import { useTextes } from '../univers';
-import { Commandes } from './Commandes';
+import { ASSEMBLAGE_PATH } from './world/assembly';
+import { useTextes } from '../universes';
+import { Commandes } from './Requests';
 import type { BiomeId } from './biomes';
 import { Sheet } from './Sheet';
 

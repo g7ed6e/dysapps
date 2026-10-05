@@ -8,8 +8,8 @@ import { CORE, MAP } from '../map';
 import { PLAN_ZONE } from '../plans';
 import { worldBounds, worldCubes } from '../terrain';
 import { CONTREFORT, COULEURS_4E, cratereDuVolcan, ECUEIL_BAS, FOURNEAU, GRUE, LOINTAIN_4E, VOLCAN_DU_FOND } from './4e';
-import { BORNES_DU_LOINTAIN } from './lointain';
-import { hex } from './pinceau';
+import { BORNES_DU_LOINTAIN } from './distant';
+import { hex } from './brush';
 
 function ranger(muted = false) {
   const { progress, world: village } = toutConstruit();

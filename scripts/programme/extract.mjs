@@ -1,7 +1,7 @@
 // Extrait le texte d'un programme officiel (PDF publié sur data.gouv.fr) pour écrire ou vérifier le référentiel
-// src/programme/. Outil de contribution : rien de ce script n'entre dans l'application.
+// src/curriculum/. Outil de contribution : rien de ce script n'entre dans l'application.
 //
-// Usage : npm run programme:extract -- c3        (une source de src/programme/sources.ts : c3, c4)
+// Usage : npm run programme:extract -- c3        (une source de src/curriculum/sources.ts : c3, c4)
 //         npm run programme:extract -- <url.pdf>  (un autre PDF, par exemple une future matière ou un autre cycle)
 //
 // Écrit .programme/<id>.txt (le texte, une marque « ===== PAGE n ===== » par page) et .programme/<id>.toc.txt
@@ -29,7 +29,7 @@ async function loadSources() {
   const { createServer } = await import('vite');
   const server = await createServer({ configFile: false, root: process.cwd(), logLevel: 'error', appType: 'custom', server: { middlewareMode: true, hmr: false, watch: null }, optimizeDeps: { noDiscovery: true, include: [] } });
   try {
-    const mod = await server.ssrLoadModule('/src/programme/sources.ts');
+    const mod = await server.ssrLoadModule('/src/curriculum/sources.ts');
     return mod.SOURCES;
   } finally {
     await server.close();

@@ -1,5 +1,5 @@
 // Le relief de marche des Îles du Ciel (3e), île par île, en repère d'île (./types.ts). Il est commun à Blocland : le
-// changer change ses îles et ses empreintes. Un gradin propre à Archipéo s'écrit dans ../modeleDessine/3e.ts (U2).
+// changer change ses îles et ses empreintes. Un gradin propre à Archipéo s'écrit dans ../drawnModel/3e.ts (U2).
 import type { BiomeId } from '../../biomes';
 import type { Silhouette } from './types';
 

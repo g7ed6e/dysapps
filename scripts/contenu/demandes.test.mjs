@@ -18,9 +18,9 @@ const tunel = [
 const lire = (...l) => () => lireIle([...debut, ...l, ''].join('\n'), 'french-6e-letter-confusion.md');
 const remplacer = (avant, apres) => tunel.map((l) => (l.startsWith(avant) ? apres : l));
 
-/** Les îles du jeu (src/game/iles.ts), dans l'ordre de docs/contenu/archipel.md. */
+/** Les îles du jeu (src/game/islands.ts), dans l'ordre de docs/contenu/archipel.md. */
 function ilesDuJeu() {
-  const texte = readFileSync('src/game/iles.ts', 'utf8');
+  const texte = readFileSync('src/game/islands.ts', 'utf8');
   return JSON.parse(texte.slice(texte.indexOf('= [') + 2, texte.lastIndexOf(' satisfies')));
 }
 

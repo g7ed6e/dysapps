@@ -2,24 +2,24 @@
 // avec leurs aides visuelles en données (droite des relatifs, tableau de proportionnalité, rappel de règle). Les
 // générateurs sont rangés par notion dans ./college/, que ce fichier réexporte ; il garde les missions elles-mêmes.
 import type { ExerciseDef } from './types';
-import { defineData } from './college/commun';
-import { addRelatifs, compareRelatifs, divRelatifs, mulRelatifs, readRelatif, subRelatifs } from './college/relatifs';
+import { defineData } from './college/common';
+import { addRelatifs, compareRelatifs, divRelatifs, mulRelatifs, readRelatif, subRelatifs } from './college/signedNumbers';
 import { addSubFractions, compareFractionsC4, mulDivFractions } from './college/fractions';
 import { fourthCoef, fourthInt, mapScale, percentChange, percentOf, speed } from './college/proportions';
-import { powerOfNumber, powerOfTen, powerOfTenReverse, primeDecomposition, primeOrDivisor, productOfPowers, scientific, squareRoot } from './college/puissances';
-import { developDouble, developSimple, equationOneStep, equationTwoSteps, factorNumber, factorX, productEquation, reduceMixed, reduceSimple, testEquality } from './college/litteral';
-import { pythagoreHyp, pythagoreSide, reciprocalPythagore, reciprocalThales, thales, trigo } from './college/geometrie';
-import { frequencyFraction, frequencyPercent, mean, medianRange, probability, readChart } from './college/donnees';
-import { antecedent, graphAntecedent, graphImage, graphLine, imageOf, linearOrAffine } from './college/fonctions';
+import { powerOfNumber, powerOfTen, powerOfTenReverse, primeDecomposition, primeOrDivisor, productOfPowers, scientific, squareRoot } from './college/powers';
+import { developDouble, developSimple, equationOneStep, equationTwoSteps, factorNumber, factorX, productEquation, reduceMixed, reduceSimple, testEquality } from './college/algebra';
+import { pythagoreHyp, pythagoreSide, reciprocalPythagore, reciprocalThales, thales, trigo } from './college/geometry';
+import { frequencyFraction, frequencyPercent, mean, medianRange, probability, readChart } from './college/statistics';
+import { antecedent, graphAntecedent, graphImage, graphLine, imageOf, linearOrAffine } from './college/functions';
 
-export { buildDataItems, choices, defineData, fmt, type ItemGenerator, seededItems } from './college/commun';
-export { addRelatifs, compareRelatifs, mulRelatifs } from './college/relatifs';
+export { buildDataItems, choices, defineData, fmt, type ItemGenerator, seededItems } from './college/common';
+export { addRelatifs, compareRelatifs, mulRelatifs } from './college/signedNumbers';
 export { percentChange } from './college/proportions';
-export { pow, primeDecomposition, primeFactors, scientific, TO_FACTOR } from './college/puissances';
-export { developDouble, equationTwoSteps, factorNumber, factorX, productEquation, testEquality } from './college/litteral';
-export { NOT_RIGHT, pythagoreHyp, pythagoreSide, reciprocalPythagore, reciprocalThales, RECIPROQUE_PYTHAGORE_CHOICES, thales, THALES_CASES } from './college/geometrie';
-export { mean, SURVEYS } from './college/donnees';
-export { GRAPH_FRAME, graphAntecedent, graphImage, graphLine, READ_ANTECEDENT_RULES, READ_IMAGE_RULES, READ_LINE_RULES } from './college/fonctions';
+export { pow, primeDecomposition, primeFactors, scientific, TO_FACTOR } from './college/powers';
+export { developDouble, equationTwoSteps, factorNumber, factorX, productEquation, testEquality } from './college/algebra';
+export { NOT_RIGHT, pythagoreHyp, pythagoreSide, reciprocalPythagore, reciprocalThales, RECIPROQUE_PYTHAGORE_CHOICES, thales, THALES_CASES } from './college/geometry';
+export { mean, SURVEYS } from './college/statistics';
+export { GRAPH_FRAME, graphAntecedent, graphImage, graphLine, READ_ANTECEDENT_RULES, READ_IMAGE_RULES, READ_LINE_RULES } from './college/functions';
 
 // ---------- Les exercices ----------
 

@@ -10,15 +10,15 @@ import { useBlocland } from './BloclandContext';
 import { planStatus } from './engine';
 import { InventoryLink } from './Inventory';
 import { EarnLink } from './PlanSection';
-import { ASSEMBLAGE_PATH } from './world/assemblage';
+import { ASSEMBLAGE_PATH } from './world/assembly';
 import { firstSentences } from './firstSentences';
 import type { MonumentBuilder } from './useMonumentBuilder';
 import { BlockIcon } from './Voxel';
 import { ARCHIPELAGOS, archipelagoTitle, isArchipelagoReached, type NomsArchipels } from './world/archipelago';
 import { MONUMENTS, monumentsOf, type MonumentDef } from './world/monuments';
 import { useUnivers } from '../core/SettingsContext';
-import { UNIVERS } from '../core/univers';
-import { texteDuMonument, useTextes } from '../univers';
+import { UNIVERS } from '../core/universe';
+import { texteDuMonument, useTextes } from '../universes';
 import { Sheet } from './Sheet';
 
 export const MONUMENTS_TITLE = 'Monuments';

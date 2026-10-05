@@ -2,7 +2,7 @@ import { Syllabified } from '../components/Syllabified';
 import type { World } from './engine';
 import type { ArchipelagoId } from './world/archipelago';
 import { villageStage } from './world/villageStage';
-import { useTextes } from '../univers';
+import { useTextes } from '../universes';
 
 /**
  * L'état du village d'un archipel, en HTML : son nom et son rang (« Le village : Reconstruction, 3 sur 5 »), une jauge

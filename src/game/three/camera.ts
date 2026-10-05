@@ -1,21 +1,21 @@
 // La caméra de la scène 3D : gérée par l'application (pas de rotation ; on touche une île pour y aller).
 // Elle rejoint en douceur sa place : le navire en route, le bonhomme qui marche, l'île ouverte, sinon le bonhomme.
-// L'élève peut faire glisser la vue à plat pour explorer (./glisse.ts) : un décalage s'ajoute à ce cadrage, borné à
+// L'élève peut faire glisser la vue à plat pour explorer (./drag.ts) : un décalage s'ajoute à ce cadrage, borné à
 // l'archipel, et s'efface dès que l'application reprend la main (une île touchée, la Carte, une marche, un voyage).
 // Sur la Carte seulement, l'élève peut aussi zoomer (pincer, molette, touches + et −) : de l'archipel entier, son
 // cadrage d'ouverture, jusqu'à une île en gros plan (`zoomer`).
-// Les cadrages (les vues, la Carte, la traversée) sont dans ./camera/cadrages.ts ; ce fichier garde la caméra qui les
+// Les cadrages (les vues, la Carte, la traversée) sont dans ./camera/framings.ts ; ce fichier garde la caméra qui les
 // suit, et en réexporte les noms publics.
 import * as THREE from 'three';
-import type { Derniers, Instant, Monde, PartieDeLaScene } from './partie';
+import type { Derniers, Instant, Monde, PartieDeLaScene } from './scenePart';
 import type { BiomeId } from '../biomes';
-import { type PlaceLue, RESERVE_DU_BAS } from '../placeLibre';
+import { type PlaceLue, RESERVE_DU_BAS } from '../freeSpace';
 import { type CadreDeCases, islandCenter, viewYaw, viewZone, VISEE_AU_DESSUS_DU_SOL, worldBounds } from '../world/terrain';
-import { CADRAGE_DU_REPERE, repereDeLaVue } from '../world/cadrage';
+import { CADRAGE_DU_REPERE, repereDeLaVue } from '../world/framing';
 import { mapOf } from '../world/map';
-import { bornerLeDecalage, type Decalage, estDecale } from './glisse';
-import { cadrageDeLaCarte, cadrageDeLaTraversee, cleDeLaDestination, decalagePourViser, ECHELLE_MIN_DE_LA_TRAVERSEE, FOLLOW_DISTANCE, FOLLOW_MAX, HAUTEUR_DE_TABLETTE, ISLAND_DISTANCE, ISLAND_VIEW, LARGEUR_D_UNE_ILE, type LectureDeLaCarte, PAS, VIEW, VISEE, VOYAGE_VIEW, ZOOM_DE_LA_CARTE } from './camera/cadrages';
-export { AUTOUR_DE_LA_DESTINATION, cadrageDeLaCarte, cadrageDeLaTraversee, decalagePourViser, ECHELLE_MIN_DE_LA_TRAVERSEE, ISLAND_VIEW, type LectureDeLaCarte, PLANCHER_DE_LA_CARTE } from './camera/cadrages';
+import { bornerLeDecalage, type Decalage, estDecale } from './drag';
+import { cadrageDeLaCarte, cadrageDeLaTraversee, cleDeLaDestination, decalagePourViser, ECHELLE_MIN_DE_LA_TRAVERSEE, FOLLOW_DISTANCE, FOLLOW_MAX, HAUTEUR_DE_TABLETTE, ISLAND_DISTANCE, ISLAND_VIEW, LARGEUR_D_UNE_ILE, type LectureDeLaCarte, PAS, VIEW, VISEE, VOYAGE_VIEW, ZOOM_DE_LA_CARTE } from './camera/framings';
+export { AUTOUR_DE_LA_DESTINATION, cadrageDeLaCarte, cadrageDeLaTraversee, decalagePourViser, ECHELLE_MIN_DE_LA_TRAVERSEE, ISLAND_VIEW, type LectureDeLaCarte, PLANCHER_DE_LA_CARTE } from './camera/framings';
 
 declare global {
   interface Window {
@@ -151,11 +151,11 @@ export function creerCamera(
       d = Math.min(FOLLOW_MAX, Math.max(FOLLOW_DISTANCE, need * 0.8)) * portrait;
     }
     // Archipéo : un grand repère de la vue (le grand phare des Îles du Ciel) reste dans le cadre : la cible glisse vers
-    // lui et la caméra recule un peu (world/cadrage.ts). Pas sur une place précise de l'île (`spot`).
+    // lui et la caméra recule un peu (world/framing.ts). Pas sur une place précise de l'île (`spot`).
     const repere = reperes && !spot && (island || zone) ? repereDeLaVue(island, island ? null : zone) : null;
     let pivot = 0;
     if (repere) {
-      // Depuis l'île même du repère, ou une île d'où la vue pivote pour lui (world/cadrage.ts), la cible ne glisse pas :
+      // Depuis l'île même du repère, ou une île d'où la vue pivote pour lui (world/framing.ts), la cible ne glisse pas :
       // le pivot suffit, et l'île de la vue reste au premier plan.
       const pivote = zone !== null && (zone === repere.ile || repere.pivot?.[zone] !== undefined);
       const k = island ? CADRAGE_DU_REPERE.ile : pivote ? null : CADRAGE_DU_REPERE.zone;

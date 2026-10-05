@@ -1,13 +1,13 @@
 // Les lieux du village sur l'île de l'école : l'école, la salle des trophées et le lieu où l'on assemble, leur place,
 // leur porte et leur modèle en cubes.
-import { EMPRISE_DE_LA_SALLE, modeleDeLaSalle, SALLE_DE_DEPART } from '../salle';
+import { EMPRISE_DE_LA_SALLE, modeleDeLaSalle, SALLE_DE_DEPART } from '../trophyHall';
 import type { PlaceId, VillagePlaceId, VoxelCube } from '../cube';
 import { type BiomeId, BIOMES, BLOC, BLOCKS } from '../../biomes';
 import { type ArchipelagoId, islandDef } from '../map';
 import { getArchipelago } from '../archipelago';
-import { recetteDeLArchipel } from '../assemblage';
-import { fade, groundHeight, isSchoolIsland } from './socle';
-import { type BorneVue, cacheUneBorne } from './bornes';
+import { recetteDeLArchipel } from '../assembly';
+import { fade, groundHeight, isSchoolIsland } from './base';
+import { type BorneVue, cacheUneBorne } from './markers';
 
 /** Encombrement de l'école : 5 cases de large (x), 4 de profondeur (y), la façade et sa porte côté caméra (y bas). */
 const SCHOOL_SIZE = { w: 5, d: 4 };
@@ -20,7 +20,7 @@ const SCHOOL_SIZE = { w: 5, d: 4 };
 const SCHOOL_AT = { x: 12, y: 3 };
 
 /**
- * La salle des trophées : son emprise de 8 × 3 cases, réservée dès le départ (GD-3, ./salle.ts), au milieu du cœur
+ * La salle des trophées : son emprise de 8 × 3 cases, réservée dès le départ (GD-3, ./trophyHall.ts), au milieu du cœur
  * (derrière les bornes, devant la zone des plans). La salle de départ (4 × 3, ouverte devant) en tient la droite, de
  * x = 4 à 7 ; ses travées s'ajoutent à gauche. Sa porte (x = 6) ne bouge pas.
  */
@@ -167,12 +167,12 @@ export function schoolModel(): ModelCube[] {
 
 // Les places des trophées dans l'emprise de la salle, dans l'ordre où elles se remplissent : sous le toit, jamais dessus
 // (GD-3). Une place par succès.
-export { TROPHY_SLOTS } from '../salle';
+export { TROPHY_SLOTS } from '../trophyHall';
 
 /**
  * La salle des trophées (coordonnées relatives au coin de son emprise) : un pavillon ouvert devant, des piliers de
  * marbre, un fond de velours rouge, des socles de marbre, un toit de pierre de taille au faîte d'or, et une travée de
- * plus tous les six succès après les douze premiers (./salle.ts). `trophies` : le bloc de chaque succès gagné, posé à
+ * plus tous les six succès après les douze premiers (./trophyHall.ts). `trophies` : le bloc de chaque succès gagné, posé à
  * sa place (voir TROPHY_SLOTS).
  */
 export function trophyModel(trophies: (keyof typeof BLOCKS)[] = []): ModelCube[] {

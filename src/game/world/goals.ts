@@ -24,7 +24,7 @@ import {
   type MotsDesGardiens,
   type NomsArchipels,
 } from './archipelago';
-import { missionsTerminees } from './parties';
+import { missionsTerminees } from './parts';
 import { VEHICLE_NAME, beatenGuardians, stageAt, stageTo } from './vehicle';
 
 type Matiere = BiomeDef['subject'];

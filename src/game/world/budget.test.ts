@@ -175,7 +175,7 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
       }, 30_000);
   }
 
-  // Lot R6 : mesuré sur les modèles purs que la vue 3D dessinera (world/personnages/fusions.ts), placés sur la grille
+  // Lot R6 : mesuré sur les modèles purs que la vue 3D dessinera (world/characters/merges.ts), placés sur la grille
   // de l'archipel tout construit : toutes ses créatures en un maillage, tous ses Gardiens en sentinelles en un autre.
   for (const p of PERSONNAGES)
     it(`${ENVELOPPES[p].lot} : le poste « ${ENVELOPPES[p].nom} » tient dans son enveloppe, dans chaque archipel`, () => {

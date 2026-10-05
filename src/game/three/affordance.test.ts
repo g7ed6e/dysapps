@@ -1,12 +1,12 @@
 // Les zones de toucher des objets dans la scène 3D de Blocland, sans WebGL : une borne ou un Gardien petits à l'écran
 // se touchent dans un carré de 48 pixels autour d'eux, les autres objets directement ; rien sur la Carte ni pendant le
-// voyage. Les bulles sont dessinées par ./signes.ts (signes.test.ts).
+// voyage. Les bulles sont dessinées par ./signs.ts (signs.test.ts).
 import * as THREE from 'three';
 import type { BiomeId } from '../biomes';
 import { cleDeLObjet, SIGNE, signesDesObjets, type EtatDuSigne, type ObjetTouche, type SigneDObjet } from '../world/affordance';
 import { guardianPlacements } from '../world/terrain';
 import { creerAffordance } from './affordance';
-import type { Derniers, Instant, Monde } from './partie';
+import type { Derniers, Instant, Monde } from './scenePart';
 
 const FORET: BiomeId = 'french-6e-phonology';
 
@@ -55,7 +55,7 @@ it('une borne ou un Gardien petits à l’écran ont leur zone de 48 pixels, à 
   camera.position.set(-4, 3, -3);
   camera.lookAt(-4, 2, 0);
   expect(affordance.zones(camera, 1024, 768).some((z) => cleDeLObjet(z.objet) === `borne:${FORET}:a`)).toBe(false);
-  // Rien n'est dessiné ici : les bulles sont dans ./signes.ts.
+  // Rien n'est dessiné ici : les bulles sont dans ./signs.ts.
   expect(scene().monde.scene.children).toHaveLength(0);
 });
 

@@ -1,4 +1,4 @@
-// Un personnage d'Archipéo seul, en 3D (lot R6), dans l’univers Archipéo (voir rendu.ts) : la créature de la bulle, le Gardien du
+// Un personnage d'Archipéo seul, en 3D (lot R6), dans l’univers Archipéo (voir rendering.ts) : la créature de la bulle, le Gardien du
 // défi en sentinelle. Un maillage, un appel de dessin, sur fond transparent. La créature respire (et peut tourner
 // lentement) ; la sentinelle ne bouge jamais, seul son allumage change, en fondu (lot 6). Quand l'appareil demande moins
 // d'animations, rien ne bouge et l'allumage change d'un coup. VoxelCanvas.tsx reste celui du monde en blocs.
@@ -6,12 +6,12 @@ import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import type { BiomeId } from '../biomes';
 import { lineaire } from '../world/landMesh';
-import { rgb } from '../world/decor/pinceau';
-import { LUEUR } from '../world/personnages/couleurs';
-import { modeleDuPortrait } from '../world/personnages/portrait';
-import { couleursAllumees, degresDAllumage, type Allumage } from '../world/personnages/sentinelle';
-import { cadrageSerre } from './cadrageSerre';
-import { materiauALueur } from './personnagesPeints';
+import { rgb } from '../world/decor/brush';
+import { LUEUR } from '../world/characters/colors';
+import { modeleDuPortrait } from '../world/characters/portrait';
+import { couleursAllumees, degresDAllumage, type Allumage } from '../world/characters/sentinel';
+import { cadrageSerre } from './tightFraming';
+import { materiauALueur } from './paintedCharacters';
 
 export interface PersonnageCanvasProps {
   kind: 'creature' | 'guardian';

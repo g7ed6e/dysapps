@@ -1,5 +1,5 @@
 // Les trois options de style de surface du lot R1 (docs/univers/archipeo/cadrage.md, point « Style en code »),
-// pour les comparer en captures sur les cubes d'aujourd'hui, derrière `?rendu=archipeo&style=a|b|c` (voir ../rendu.ts).
+// pour les comparer en captures sur les cubes d'aujourd'hui, derrière `?rendu=archipeo&style=a|b|c` (voir ../rendering.ts).
 // Code pur, sans Three.js : la vue 3D n'en tire que des couleurs et des normales de sommets. Aucune ne change la forme :
 // les facettes tirées de la grille de hauteurs viennent au lot R2, les biseaux ne viendraient qu'avec un autre maillage.
 //

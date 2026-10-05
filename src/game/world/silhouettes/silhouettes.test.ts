@@ -1,4 +1,4 @@
-import { archipelagoOfIsland, ARCHIPELAGO_IDS } from '../archipels';
+import { archipelagoOfIsland, ARCHIPELAGO_IDS } from '../archipelagos';
 import { CORE, MAP } from '../map';
 import { SILHOUETTES } from '.';
 

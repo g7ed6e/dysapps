@@ -2,9 +2,9 @@
 // des fantômes, le biseau peint, les motifs des blocs assemblés (GD-2) ; chaque calcul en TypeScript, pour les tests et
 // la vue sans Three.js, et en GLSL, le même calcul.
 import { type Couleur, DETAILS_ASSEMBLES } from '../palette';
-import { rgb } from '../decor/pinceau';
+import { rgb } from '../decor/brush';
 import { MOTIF } from '../architecture';
-import { ALLUMAGE, DECALAGE_MAX, ECART_SOMBRE, ECLAT_DU_BISEAU, PLEINE_NUIT, SOMBRE, TEINTE } from './reglages';
+import { ALLUMAGE, DECALAGE_MAX, ECART_SOMBRE, ECLAT_DU_BISEAU, PLEINE_NUIT, SOMBRE, TEINTE } from './settings';
 
 const f32 = Math.fround;
 
@@ -122,7 +122,7 @@ vec3 biseauPeint(vec3 c, float k, float force) {
 // ---------- Les motifs des blocs assemblés (GD-2) ----------
 
 /**
- * Le premier motif des blocs assemblés : le bit au-dessus de tous ceux d'un mur peint (./architecture/peinture.ts,
+ * Le premier motif des blocs assemblés : le bit au-dessus de tous ceux d'un mur peint (./architecture/paint.ts,
  * `MOTIF`), si bien qu'aucun mur peint, quels que soient ses drapeaux, ne peut se lire comme un bloc assemblé, ni
  * l'inverse. Il suit `MOTIF` s'il gagne un drapeau.
  */

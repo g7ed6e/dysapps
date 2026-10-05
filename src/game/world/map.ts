@@ -4,10 +4,10 @@
 // les Premiers Rivages (6e) au niveau de la mer, les Îles Brumeuses (5e), les Anciens Ateliers (4e) et les Îles du Ciel (3e),
 // chacun à son altitude, qui est une ambiance : les Îles du Ciel flottent au-dessus des nuages.
 import type { BiomeId } from '../biomes';
-import { archipelagoOfIsland, type ArchipelagoId } from './archipels';
+import { archipelagoOfIsland, type ArchipelagoId } from './archipelagos';
 import { silhouetteDe } from './silhouettes';
 
-export { ARCHIPELAGO_IDS, archipelagoOfIsland, type ArchipelagoId } from './archipels';
+export { ARCHIPELAGO_IDS, archipelagoOfIsland, type ArchipelagoId } from './archipelagos';
 
 export type RegionId = 'basses-terres' | 'marais' | 'feu' | 'montagne' | 'hauteurs';
 export type Relief = 'plat' | 'collines' | 'montagne' | 'volcan';

@@ -1,10 +1,10 @@
 import { useEffect, useRef } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { AppUpdateBanner } from '../core/AppUpdateBanner';
-import { BandeauBatisseur } from './BandeauBatisseur';
+import { BandeauBatisseur } from './BuilderBanner';
 import { startAppUpdates } from '../core/appUpdate';
 import { stopSpeaking } from '../core/speech';
-import { moinsDAnimations } from '../core/mouvement';
+import { moinsDAnimations } from '../core/motion';
 import { Celebrations } from './Celebrations';
 import { Icon } from './Icon';
 import { ErrorBoundary } from './ErrorBoundary';

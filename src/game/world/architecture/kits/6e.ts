@@ -4,17 +4,17 @@
 //   pignons (et, en attente, sur les bâtiments de bois du quai : `bardes`) ; des pilotis (#6E4C30) là où il touche
 //   l'eau et où le sol manque dessous.
 // - La pierre : un mur plein, de sa matière ; le soubassement et le chaperon en pierre #8A8F84.
-// - Les toits : les pentes de ./toits.ts, dans la couverture de leur île (world/toits.ts : ardoise, ou terre cuite à la
+// - Les toits : les pentes de ./roofs.ts, dans la couverture de leur île (world/roofs.ts : ardoise, ou terre cuite à la
 //   Ferme et à la Mine).
 // - L'école, la salle des trophées et la Halle aux matériaux (décision du directeur artistique, 30 septembre 2026 : des
 //   lieux du village, au milieu des maisons) : leurs murs en colombage, leurs toits en pentes (`LIEUX_6E`).
 // Le verre et les lanternes ne deviennent jamais des pièces ; les monuments gardent leurs blocs taillés.
-import { boiteDansLaCase, type DessinDePiece, type Facette } from '../pieces';
-import { MOTIF } from '../peinture';
-import { piecesDeToit } from '../toits';
-import type { IdDeMur, Forme, Tete } from '../choix';
+import { boiteDansLaCase, type DessinDePiece, type Facette } from '../rooms';
+import { MOTIF } from '../paint';
+import { piecesDeToit } from '../roofs';
+import type { IdDeMur, Forme, Tete } from '../choices';
 import type { VillagePlaceId } from '../../cube';
-import { estUnPilier } from '../../salle';
+import { estUnPilier } from '../../trophyHall';
 import { HALLE } from '../../terrain';
 import type { CaseDuLieu, Kit, LieuDuKit } from './types';
 

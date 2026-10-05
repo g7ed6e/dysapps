@@ -4,12 +4,12 @@
 // phare restent ceux de Blocland, seule sa forme dans Archipéo change.
 import { mixColor } from '../daylight';
 import { coeurDe, islandDef } from '../map';
-import { compense, exposition, PLANCHER_DE_NUAGES } from '../mer';
+import { compense, exposition, PLANCHER_DE_NUAGES } from '../sea';
 import { eauxDe, type Couleur, type Faces } from '../palette';
-import type { Lointain, Massif } from './lointain';
-import { enRepere, type Forme } from './outils';
-import { dessinerPhare, PHARES, PIECES_DU_PHARE } from './phare';
-import { boite, DELAVE, peintre, type Peindre, type Pinceau, type V3 } from './pinceau';
+import type { Lointain, Massif } from './distant';
+import { enRepere, type Forme } from './tools';
+import { dessinerPhare, PHARES, PIECES_DU_PHARE } from './lighthouse';
+import { boite, DELAVE, peintre, type Peindre, type Pinceau, type V3 } from './brush';
 
 /** Les couleurs de la fiche : la pierre de taille du socle et son ombre, la neige des terrasses, le sombre des baies. */
 const COULEURS_3E = { pierre: 0xdbdadd, ombre: 0x5a7ba5, neige: 0xe5ebe3, baie: 0x2e3a52 } as const;
@@ -26,7 +26,7 @@ export const SOCLE_3E = { cote: 3, bas: 2, haut: 1, salle: 2 } as const;
 const RETRAIT_3E = { bandeau: 0.16, joint: 0.12, ombre: 0.75, decolle: 0.03 } as const;
 
 /**
- * Le grand phare, tel que la caméra et les étiquettes d'Archipéo le gardent en vue (world/cadrage.ts, DA-17, DA-18) :
+ * Le grand phare, tel que la caméra et les étiquettes d'Archipéo le gardent en vue (world/framing.ts, DA-17, DA-18) :
  * le centre de son socle en cases du monde (`x`, `y`), le bas de son socle et le haut de son toit, le rayon de son toit
  * (en cases). Le test `3e.test.ts` le tient égal au phare dessiné. `pivot` : dans la vue de l'archipel depuis l'île du
  * Phare (l'arrivée), la caméra passe plein sud au lieu du sud-sud-est, pour que la lanterne se découpe sur le ciel et
@@ -89,7 +89,7 @@ function salle(P: Pinceau, x0: number, z0: number, x1: number, z1: number, y0: n
 }
 
 /**
- * Le grand phare de l'île du Phare : le phare de référence (./phare.ts, `PHARES['3e']`) sur son socle de salles en
+ * Le grand phare de l'île du Phare : le phare de référence (./lighthouse.ts, `PHARES['3e']`) sur son socle de salles en
  * pierre de taille (deux étages en gradins, des baies cintrées sombres, de la neige sur les terrasses), à la place de la
  * tour de pierre à bandes de neige et au toit de prisme de Blocland. Il garde le site du phare de Blocland, dont il
  * couvre les cases (règle 1 du directeur artistique).

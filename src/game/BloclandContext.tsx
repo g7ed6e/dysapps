@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { gelerSauvegarde, loadJSON, removeKey, saveJSON, trySaveJSON } from '../core/storage';
 import { useProgress } from '../core/ProgressContext';
-import { bacASable, remplir } from './batisseur';
+import { bacASable, remplir } from './builder';
 import {
   EMPTY_STATE,
   disassembleBlock,
@@ -31,9 +31,9 @@ import type { PlanDef } from './world/plans';
 import type { VehicleStage } from './world/vehicle';
 import type { BuildBridgeResult } from './world/archipelago';
 import type { ExerciseDef, ItemResult } from './exercises/types';
-import { useTextes } from '../univers';
+import { useTextes } from '../universes';
 import { archipelagoOf, getBridge, type ArchipelagoId } from './world/archipelago';
-import { archipelDeLaCommande, faireArriverUneCommande, livrerLaCommande, type Livraison } from './world/commandes';
+import { archipelDeLaCommande, faireArriverUneCommande, livrerLaCommande, type Livraison } from './world/requests';
 
 /** Sessions courtes : on propose d'arrêter après ce nombre d'exercices ou cette durée. */
 const SESSION_MAX_EXERCISES = 3;

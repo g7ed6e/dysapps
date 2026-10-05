@@ -23,8 +23,8 @@
 // - Le toucher (`pickCell`) et la marche (`hauteurDuSol`, `piedsSur`) lisent le même champ : un point touché redevient
 //   une case, et le bonhomme reste posé sur la surface qu'on voit.
 //
-// Ce fichier garde le maillage ; à côté, dans ./landMesh/ : les réglages (`reglages.ts`), le champ, le toucher et la
-// marche (`champ.ts`), la couleur et l'éclairage (`eclairage.ts`), la découpe des polygones (`polygones.ts`). Il en
+// Ce fichier garde le maillage ; à côté, dans ./landMesh/ : les réglages (`settings.ts`), le champ, le toucher et la
+// marche (`field.ts`), la couleur et l'éclairage (`lighting.ts`), la découpe des polygones (`polygons.ts`). Il en
 // réexporte les noms publics.
 import { ALTITUDE } from './map';
 import { cielDe, type Couleur, couleurDeMatiere, couleurDuSol, laveQuiBrille, MATIERES } from './palette';
@@ -33,13 +33,13 @@ import type { TextureKind } from './pixels';
 import { FROID, FROID_SOUS } from './style';
 import { clamp } from '../../core/math';
 import { cellHash } from '../../core/random';
-import { aireAuSol, clip, coinDe, couper, DESSOUS_CACHE, penteVersLeBas, type RGB, type Sommet, type V3 } from './landMesh/polygones';
-import { type ChampDuSol, cle, type Colonne, colonneEn, COTES4, solNomme, trianglesDeLaCase } from './landMesh/champ';
-import { COINS, CONTRASTE, DELAVE, FONDU, FRANGE, PAROI_HAUTE, RIVAGE, STRATES, STRATES_HAUTES } from './landMesh/reglages';
-import { ecartDeCouleur, epaisseurDesStrates, lineaire, normaleOmbree, nuanceDuSol, rgb, strate } from './landMesh/eclairage';
-export { CONTRASTE, EBOULIS, FONDU, FRANGE, NIVEAU_EAU, NUANCE_SOL, PENTE_OMBRE, RIVAGE, SOCLE_MAX, STRATES, STRATES_HAUTES } from './landMesh/reglages';
-export { champDuSol, type ChampDuSol, type Colonne, colonneEn, hauteurDuSol, pickCell, piedsSur, poseDuDecor, signatureDuChamp } from './landMesh/champ';
-export { ecartDeCouleur, eclairement, epaisseurDesStrates, lineaire, normaleOmbree, nuanceDuSol, strate } from './landMesh/eclairage';
+import { aireAuSol, clip, coinDe, couper, DESSOUS_CACHE, penteVersLeBas, type RGB, type Sommet, type V3 } from './landMesh/polygons';
+import { type ChampDuSol, cle, type Colonne, colonneEn, COTES4, solNomme, trianglesDeLaCase } from './landMesh/field';
+import { COINS, CONTRASTE, DELAVE, FONDU, FRANGE, PAROI_HAUTE, RIVAGE, STRATES, STRATES_HAUTES } from './landMesh/settings';
+import { ecartDeCouleur, epaisseurDesStrates, lineaire, normaleOmbree, nuanceDuSol, rgb, strate } from './landMesh/lighting';
+export { CONTRASTE, EBOULIS, FONDU, FRANGE, NIVEAU_EAU, NUANCE_SOL, PENTE_OMBRE, RIVAGE, SOCLE_MAX, STRATES, STRATES_HAUTES } from './landMesh/settings';
+export { champDuSol, type ChampDuSol, type Colonne, colonneEn, hauteurDuSol, pickCell, piedsSur, poseDuDecor, signatureDuChamp } from './landMesh/field';
+export { ecartDeCouleur, eclairement, epaisseurDesStrates, lineaire, normaleOmbree, nuanceDuSol, strate } from './landMesh/lighting';
 
 // ---------- Le maillage ----------
 

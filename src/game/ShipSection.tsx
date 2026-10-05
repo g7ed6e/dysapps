@@ -9,7 +9,7 @@ import type { VehicleBuilder } from './useVehicleBuilder';
 import { BlockIcon } from './Voxel';
 import { ARCHIPELAGOS, archipelagoOf, getArchipelago, reachedArchipelagos, type ArchipelagoId } from './world/archipelago';
 import { VEHICLE_NAME, VEHICLE_STAGES, beatenGuardians, stageAt } from './world/vehicle';
-import { useTextes, type TextesUnivers } from '../univers';
+import { useTextes, type TextesUnivers } from '../universes';
 
 interface Props {
   biome: BiomeDef;

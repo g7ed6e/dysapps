@@ -1,5 +1,5 @@
 // La palette d'Archipéo (lot R1 de la piste Rendu, docs/univers/archipeo/cadrage.md) : les couleurs du monde peint,
-// par archipel, de jour et de nuit. Code pur, sans Three.js : la 3D la lit dans l’univers Archipéo (voir rendu.ts) ; le
+// par archipel, de jour et de nuit. Code pur, sans Three.js : la 3D la lit dans l’univers Archipéo (voir rendering.ts) ; le
 // monde en blocs garde `AMBIENCE` et `palette()` de ./daylight, inchangés.
 //
 // - Le ciel : un dôme dégradé du zénith à l'horizon, avec une lueur juste au-dessus de la ligne d'horizon. La brume
@@ -246,7 +246,7 @@ export const BRUME = 0xe5ebe3;
 
 /**
  * Les eaux d'un archipel, de jour, telles qu'on doit les voir sur une eau plate (la vue 3D compense la lumière, voir
- * world/mer.ts) : le lagon sur les hauts-fonds, la mer de l'archipel un peu plus loin, le large vers la Nuit océan, et
+ * world/sea.ts) : le lagon sur les hauts-fonds, la mer de l'archipel un peu plus loin, le large vers la Nuit océan, et
  * l'écume du rivage. Aux Îles du Ciel, le plancher de nuages : plus sombre sous les îles (`lagon`), clair au loin.
  */
 export interface Eaux {
@@ -275,7 +275,7 @@ export function eauxDe(a: ArchipelagoId): Eaux {
 
 // ---------- Le rond au sol ----------
 
-/** Le rond au sol (./rondAuSol.ts), là où va le bonhomme : un plein ivoire, cerné d'encre brune. */
+/** Le rond au sol (./groundRing.ts), là où va le bonhomme : un plein ivoire, cerné d'encre brune. */
 export const IVOIRE = 0xfff3d6;
 export const ENCRE = 0x3b2a20;
 /**

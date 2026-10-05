@@ -1,5 +1,5 @@
 // Les kits d'architecture, un par archipel (./types.ts). Blocland n'en a pas : son rendu garde ses blocs posés.
-import type { ArchipelagoId } from '../../archipels';
+import type { ArchipelagoId } from '../../archipelagos';
 import { KIT_3E } from './3e';
 import { KIT_4E } from './4e';
 import { KIT_5E } from './5e';

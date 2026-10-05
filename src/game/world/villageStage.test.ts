@@ -1,4 +1,4 @@
-import { partiesDe } from './parties';
+import { partiesDe } from './parts';
 import { planCells, plansFor } from './plans';
 import { monumentsOf } from './monuments';
 import { villageStage } from './villageStage';

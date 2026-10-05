@@ -6,10 +6,10 @@ import { ProgressProvider } from '../../core/ProgressContext';
 import { AppRoutes } from '../../App';
 import { BloclandProvider } from '../BloclandContext';
 import { loadAllExercises } from './index';
-import { EnclosScreen } from './EnclosScreen';
-import { QcmItem } from './QcmItem';
-import { FamillesScreen } from './FamillesScreen';
-import { demanderMoinsDAnimations } from '../../core/mouvement.testing';
+import { EnclosScreen } from './EnclosureScreen';
+import { QcmItem } from './ChoiceItem';
+import { FamillesScreen } from './FamiliesScreen';
+import { demanderMoinsDAnimations } from '../../core/motion.testing';
 
 const ALL = await loadAllExercises();
 const getExercise = (id: string) => ALL.find((e) => e.id === id);
@@ -289,7 +289,7 @@ it('mot troué en deux mots : « parce que » garde un écart visible entre les 
   const def = getExercise('french-6e-word-spelling-missing-letters-2')!;
   const item = def.items.find((it) => it.key === 'parce')!;
   expect(item.word).toBe('parce que');
-  const { MotTroueScreen } = await import('./MotTroueScreen');
+  const { MotTroueScreen } = await import('./GapWordScreen');
   const { container } = render(
     <SettingsProvider>
       <MotTroueScreen items={[item]} answered={null} onAnswer={() => {}} onHelp={() => {}} level={2} exerciseId={def.id} />

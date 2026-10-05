@@ -1,5 +1,5 @@
 import { ARCHIPELAGOS, isArchipelagoReached, type ArchipelagoId } from './world/archipelago';
-import { useTextes } from '../univers';
+import { useTextes } from '../universes';
 
 interface Props {
   bridges: string[];

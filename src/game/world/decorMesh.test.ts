@@ -6,10 +6,10 @@ import { couleurDuSol } from './palette';
 import { champDuSol, colonneEn, hauteurDuSol, pickCell, piedsSur, type ChampDuSol } from './landMesh';
 import { ARCHIPELAGO_IDS, type ArchipelagoId } from './map';
 import { buildMesh, faceCount } from './mesher';
-import { ECLAT_DU_FUT, OMBRE_DU_FUT } from './decor/phare';
+import { ECLAT_DU_FUT, OMBRE_DU_FUT } from './decor/lighthouse';
 import { COULEURS_4E } from './decor/4e';
 import { empriseDuSocle, SOCLE_3E } from './decor/3e';
-import { eclaircir, hex } from './decor/pinceau';
+import { eclaircir, hex } from './decor/brush';
 import { kindOf, PROP_KINDS } from './props';
 import { worldCubes } from './terrain';
 

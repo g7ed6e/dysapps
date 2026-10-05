@@ -7,9 +7,9 @@ import type { ArchipelagoId } from './archipelago';
 import type { VehiclePlacement } from './terrain';
 import type { VoyageLeg } from './voyage';
 import type { Cell, CreaturePlacement } from './paths';
-import type { Ancrage, Intention, ObjetDeLaFiche } from './disposition';
-import type { EtatsDesObjets } from './modele';
-import { grilleDe } from './grille';
+import type { Ancrage, Intention, ObjetDeLaFiche } from './layout';
+import type { EtatsDesObjets } from './model';
+import { grilleDe } from './grid';
 
 // Une case du monde et la place d'une créature : définies avec la grille de marche (./paths.ts), qui les lit.
 export type { Cell, CreaturePlacement } from './paths';
@@ -127,14 +127,14 @@ export interface IslandLabel {
 /**
  * Une créature qui fait signe (GD-4, étape 1) : celle de cette île, avec l'icône de la notion (celle de l'île). Un seul
  * signe par créature (affordance-blocland.md §8) : sa commande prête et suggérée d'abord (GD-7, PR 3), sinon ses
- * révisions (world/commandes.ts, `signeDeLaCreature`).
+ * révisions (world/requests.ts, `signeDeLaCreature`).
  */
 export interface SigneDeCreature {
   id: BiomeId;
   /** L'icône de la plaque : celle de la notion (révisions), celle des blocs (commande). */
   icone: BiomeDef['icon'];
   /**
-   * Une commande (GD-7) : le bloc demandé, dont la plaque montre l'image, celle de Mes blocs (en 3D, three/signes.ts ; en
+   * Une commande (GD-7) : le bloc demandé, dont la plaque montre l'image, celle de Mes blocs (en 3D, three/signs.ts ; en
    * vue simple, `BlockIcon` sur la Carte), à la place de l'icône.
    */
   bloc?: BlockId;
@@ -149,7 +149,7 @@ export interface WorldViewProps {
   /** Le Bloc-Navire amarré au port : ses cubes locaux (fantômes pour les cases à poser), animé à part. */
   vehicle?: VehiclePlacement | null;
   /**
-   * Les gestes, traduits en intentions (world/disposition.ts) : une île, une borne, un lieu, un ouvrage, une créature, le
+   * Les gestes, traduits en intentions (world/layout.ts) : une île, une borne, un lieu, un ouvrage, une créature, le
    * navire, une face en chantier, la fin d'un temps du voyage ou le voyage sauté.
    * La vue ne décide rien : la page reçoit l'intention et décide. Sans `onIntent`, la vue se regarde sans se toucher.
    */
@@ -162,7 +162,7 @@ export interface WorldViewProps {
   creatures?: CreaturePlacement[];
   /**
    * Les créatures qui font signe (GD-4, étape 1 : des révisions dues sur leur île) : un geste lent et court à l'arrivée
-   * de la caméra sur leur île, puis l'icône de la notion au-dessus d'elles, fixe (./signe.ts). La vue simple
+   * de la caméra sur leur île, puis l'icône de la notion au-dessus d'elles, fixe (./sign.ts). La vue simple
    * montre l'icône sur la Carte.
    */
   signes?: SigneDeCreature[];
@@ -187,7 +187,7 @@ export interface WorldViewProps {
    * Blocland, sur la Carte : l'image de la bulle d'or qui remplace la flèche de la prochaine destination (le bloc d'une
    * commande, ou l'icône de ce qu'on y fait : world/affordance.ts, `imageDeLaDestination`). Sans elle, la flèche.
    */
-  // Le type de `ImageDeLaBulle` (world/affordance.ts), recopié : le contrat commun n'importe pas le dessin (couches.test.ts).
+  // Le type de `ImageDeLaBulle` (world/affordance.ts), recopié : le contrat commun n'importe pas le dessin (layers.test.ts).
   imageDeLaCarte?: { icone: BiomeDef['icon'] } | { bloc: BlockId } | null;
   /** Le bonhomme : son itinéraire (un seul point : il se tient là ; plusieurs : il marche). `seq` change à chaque trajet. */
   avatar?: Bonhomme<Ancrage>;
@@ -200,7 +200,7 @@ export interface WorldViewProps {
   /** Les bornes de mission : leur case et leur état (à faire, étoiles gagnées, fermée), pour le repère au-dessus. */
   quests?: QuestMark[];
   /**
-   * L'état des autres objets qui portent un signe (Gardiens, Bloc-Navire, chantiers en fantôme ; world/modele.ts,
+   * L'état des autres objets qui portent un signe (Gardiens, Bloc-Navire, chantiers en fantôme ; world/model.ts,
    * `etatsDesObjets`) : le cube au-dessus d'eux, l'or ou la pierre (world/affordance.ts).
    */
   etatsDesObjets?: EtatsDesObjets;
@@ -219,7 +219,7 @@ export interface WorldViewProps {
   burst?: Burst;
   /**
    * La pose d'une partie du bâtiment en vague (GD-6, Blocland) : ces cubes, en cases du monde, absents de `cubes`,
-   * descendent couche par couche (./vague.ts), une fois par `seq`. La vue dit chaque couche posée et la fin (`onPose`),
+   * descendent couche par couche (./wave.ts), une fois par `seq`. La vue dit chaque couche posée et la fin (`onPose`),
    * et garde la partie posée jusqu'à ce que `pose` revienne à `null` avec le monde qui la contient. Une vue sans vague
    * dit la fin tout de suite.
    */

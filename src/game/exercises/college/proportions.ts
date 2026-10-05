@@ -1,7 +1,7 @@
 // Marché des proportions : quatrième proportionnelle, pourcentages, vitesse et échelle.
 import { randomInt } from '../../../core/random';
 import { drawChoices } from '../../../core/choices';
-import { choices, fmt, type ItemGenerator } from './commun';
+import { choices, fmt, type ItemGenerator } from './common';
 
 // ---------- Marché des proportions ----------
 

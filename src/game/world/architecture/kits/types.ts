@@ -5,9 +5,9 @@
 import type { VillagePlaceId } from '../../cube';
 import type { Couleur } from '../../palette';
 import type { TextureKind } from '../../pixels';
-import type { IdDePiece } from '../choix';
-import type { ManiereDuMur } from '../peinture';
-import type { DessinDePiece, Role } from '../pieces';
+import type { IdDePiece } from '../choices';
+import type { ManiereDuMur } from '../paint';
+import type { DessinDePiece, Role } from '../rooms';
 
 /**
  * La famille d'une matière : le bois (colombages, bardages, pilotis), la pierre (soubassement, mur plein), le toit.
@@ -30,7 +30,7 @@ export interface CaseDuLieu {
 
 /**
  * Ce que le kit fait d'un bloc d'un lieu du village : sa famille (un mur de bois ou de pierre, un toit ; sans famille, il
- * reste un bloc taillé), s'il prend la couverture de son île (world/toits.ts) ou la couleur d'une autre matière
+ * reste un bloc taillé), s'il prend la couverture de son île (world/roofs.ts) ou la couleur d'une autre matière
  * (`matiere`) au lieu de la sienne, et si son colombage se passe de décharge (`sansDecharge`, un pilier isolé) ;
  * `undefined` : il reste le bloc qu'il est.
  */
@@ -47,11 +47,11 @@ export interface Kit {
   matieres: Partial<Record<TextureKind, Famille>>;
   /** Les couleurs de l'archipel par rôle, de jour, avant le voile de l'archipel. */
   couleurs: Partial<Record<Role, Couleur>>;
-  /** Comment peindre les murs de chaque famille (./peinture.ts) : un colombage, un mur plein ; absente, pas peinte. */
+  /** Comment peindre les murs de chaque famille (./paint.ts) : un colombage, un mur plein ; absente, pas peinte. */
   murs: Partial<Record<Famille, ManiereDuMur>>;
   /** Les îles dont les bâtiments de bois sont bardés au lieu du colombage : les bâtiments du quai (au 6e, en attente). */
   bardes: readonly string[];
-  /** Les pièces dessinées, par famille et par nom de pièce (./choix.ts). */
+  /** Les pièces dessinées, par famille et par nom de pièce (./choices.ts). */
   pieces: Partial<Record<Famille, Partial<Record<IdDePiece, DessinDePiece>>>>;
   /**
    * Les lieux du village qui prennent le kit (l'école, la salle des trophées, le lieu où l'on assemble) : la famille de chacun de leurs blocs, lue

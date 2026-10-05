@@ -39,7 +39,7 @@ Dans Blocland, « ouvrage » ne nomme que les liaisons : pont, bac, sentier de p
 | 4e | Braise : le wagonnet (rails) · Ixe : la machine (engrenages) · Cléa : le perchoir (acier) · Plume : la banquette (velours) · Puck : le pupitre (parchemins) · Vapeur : l’auvent (calques) |
 | 3e | Théo : l’équerre (prismes) · Stat : le mât de relevés (antennes) · Fi : le réflecteur (miroirs) · Astra : le banc (pierres de taille) · Écho : le haut-parleur (lentilles) · Knight : la fontaine (marbre) |
 
-Le nombre de blocs et les phrases sont dans `docs/contenu/<lieu>.md` (« Les demandes ») ; les formes dans `src/game/world/petitesConstructions.ts` ; la règle des commandes dans [le jeu](../../gameplay/index.md#les-habitants-les-commandes-et-les-gardiens).
+Le nombre de blocs et les phrases sont dans `docs/contenu/<lieu>.md` (« Les demandes ») ; les formes dans `src/game/world/fixtures.ts` ; la règle des commandes dans [le jeu](../../gameplay/index.md#les-habitants-les-commandes-et-les-gardiens).
 
 Les noms des petites constructions sont des mots courants, choisis par le directeur artistique le 3 octobre 2026 sur la proposition du consultant et l’avis du référent dys (« la pendule » de Robin, pour ne pas se confondre avec l’île de l’Horloge des verbes ; « l’abri », « l’auvent », « le potager » au lieu de mots peu courants) ; « posé » s’accorde au nom (« Pendule posée chez Robin ! », « Abri posé chez Kroa ! »). Les identifiants ne changent pas.
 

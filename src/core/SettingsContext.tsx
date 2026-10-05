@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import { applySettings, DEFAULT_SETTINGS, retenirReglages, sanitizeSettings, SETTINGS_KEY, type Settings } from './settings';
 import { loadJSON, saveJSON } from './storage';
 import { speak as speakRaw, stopSpeaking, type Lang } from './speech';
-import { aUneProgression, MESSAGE_UNIVERS_KEY, premierUnivers, RENOMMAGE_KEY, renommageANoter, universAffiche, type UniversChoice } from './univers';
+import { aUneProgression, MESSAGE_UNIVERS_KEY, premierUnivers, RENOMMAGE_KEY, renommageANoter, universAffiche, type UniversChoice } from './universe';
 
 interface SettingsContextValue {
   settings: Settings;
@@ -90,7 +90,7 @@ export function useUnivers(): UniversChoice {
 
 /**
  * L'univers choisi dans les réglages, sans exiger de fournisseur (un composant rendu seul dans un test lit alors
- * l'univers par défaut). Pour les textes d'univers (`useTextes` de src/univers).
+ * l'univers par défaut). Pour les textes d'univers (`useTextes` de src/universes).
  */
 export function useUniversChoisi(): UniversChoice | undefined {
   return useContext(SettingsContext)?.settings.univers;

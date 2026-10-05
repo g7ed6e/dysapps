@@ -3,7 +3,7 @@ import { frenchTypography } from '../../components/math/RichText';
 import { SpeakButton } from '../../components/SpeakButton';
 import { Syllabified } from '../../components/Syllabified';
 import { langueVivante } from '../../core/speech';
-import { useTextes } from '../../univers';
+import { useTextes } from '../../universes';
 import { BIOMES } from '../biomes';
 import { SCREEN_TYPES, type ScreenAnswer, type ScreenProps } from './registry';
 import { fillTemplate, type ExerciseItem } from './types';

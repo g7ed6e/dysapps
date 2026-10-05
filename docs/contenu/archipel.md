@@ -1,6 +1,6 @@
 # L’archipel
 
-Les îles, dans l’ordre du jeu : `npm run contenu` en produit `src/game/iles.ts` dans cet ordre, chacune depuis `<lieu>.md`. Une île nouvelle s’ajoute ici et dans `BIOME_IDS` (`src/game/biomes.ts`).
+Les îles, dans l’ordre du jeu : `npm run contenu` en produit `src/game/islands.ts` dans cet ordre, chacune depuis `<lieu>.md`. Une île nouvelle s’ajoute ici et dans `BIOME_IDS` (`src/game/biomes.ts`).
 
 1. `french-6e-phonology`
 2. `french-6e-letter-confusion`

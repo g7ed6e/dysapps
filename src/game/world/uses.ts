@@ -6,7 +6,7 @@ import { BIOMES, BLOCKS, type BiomeDef, type BiomeId, type BlockId } from '../bi
 import { canLaunch, currentStage, planStatus, type GameState } from '../engine';
 import { archipelagoOf, buildableBridges, conditionMet, islandsOf, otherEnd, payableBlocks, reachableIslands, type BridgeDef } from './archipelago';
 import { monumentsOf } from './monuments';
-import { lieuDAssemblage } from './assemblage';
+import { lieuDAssemblage } from './assembly';
 import { universCourant } from '../../core/settings';
 import type { VehicleStage } from './vehicle';
 

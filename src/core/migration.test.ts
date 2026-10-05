@@ -3,7 +3,7 @@
 import { sanitizeState } from '../game/engine';
 import { planCells, getPlan } from '../game/world/plans';
 import { planV1 } from '../game/world/plansV1';
-import { tirageNeuf } from '../game/world/assemblage';
+import { tirageNeuf } from '../game/world/assembly';
 import { GAME_VERSION, KEY_MOVES, migrateStorage, translateGame, translateProgress, translateSettings } from './migration';
 import { sanitizeProgress } from './progress';
 import { sanitizeSettings } from './settings';

@@ -4,9 +4,9 @@ import { champDuSol, colonneEn, NIVEAU_EAU } from '../landMesh';
 import { ALTITUDE, inCore, islandDef } from '../map';
 import { ambianceDe, luminance } from '../palette';
 import { worldCubes } from '../terrain';
-import { bancsDeBrume, COUCHES_5E, placeDeLaBrume } from './brume';
+import { bancsDeBrume, COUCHES_5E, placeDeLaBrume } from './mist';
 import { COULEURS_5E } from './5e';
-import { MOUVEMENT_DE_LA_BRUME, respirationDeLaBrume } from './fumee';
+import { MOUVEMENT_DE_LA_BRUME, respirationDeLaBrume } from './smoke';
 
 const { progress, world: village } = toutConstruit();
 const cubes = worldCubes('5e', progress, village, false);

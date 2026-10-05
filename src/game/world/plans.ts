@@ -1,5 +1,5 @@
 // Les plans du village : un bâtiment par île, en trois plans (les murs, le toit, la cour), que les missions de l'île posent
-// partie par partie (GD-6, parties.ts). Chaque plan a sa fiche JSON (nom, phrase de fin, XP) ; son dessin vient de
+// partie par partie (GD-6, parts.ts). Chaque plan a sa fiche JSON (nom, phrase de fin, XP) ; son dessin vient de
 // l'architecte (architect.ts).
 import { BIOMES, type BiomeId, type BlockId } from '../biomes';
 import { buildingStages } from './architect';

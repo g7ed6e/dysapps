@@ -3732,7 +3732,7 @@ figure.class-table {
   right: -12px;
   font-size: max(18px, 1rem);
 }
-/* Les blocs gagnés qui volent jusqu'au compteur (Blocland, BlocsQuiVolent.tsx) : posés sur la pastille, ils partent de la
+/* Les blocs gagnés qui volent jusqu'au compteur (Blocland, FlyingBlocks.tsx) : posés sur la pastille, ils partent de la
    borne (`--vol-dx`, `--vol-dy`) en arc simple, l'un après l'autre ; ni éclat ni traînée, rien qui se touche. Sans
    animation quand l'appareil en demande moins (le vol n'a alors pas lieu). */
 .vol-des-blocs {
@@ -5353,7 +5353,7 @@ details.island-fold-objectif {
   font-size: 1.2rem;
   justify-content: center;
 }
-/* Blocland : le logo se construit (src/game/LogoQuiSeConstruit.tsx) ; ses quatre cubes descendent en accélérant et
+/* Blocland : le logo se construit (src/game/BuildingLogo.tsx) ; ses quatre cubes descendent en accélérant et
    s’arrêtent d’un coup, sans rebond ; le logo entier ne bouge pas. Coupé quand l’appareil demande moins d’animations. */
 .title-logo-construit {
   animation: none;
@@ -5706,7 +5706,7 @@ button.app-card {
     top: calc(var(--colonne-bas, calc(0.6rem + 52px)) + 0.5rem);
     right: 0.6rem;
     /* Le chemin d'ouvrages de la Carte défile au-delà ; des traits pointillés disent qu'il continue, en bas comme en
-       haut (usePanneauDeLaCarte.ts). */
+       haut (useMapPanel.ts). */
     max-height: 60%;
   }
   /* Le trait est posé sur une bande du fond du panneau, collée au bord : il ne passe jamais sur une ligne coupée,
@@ -5985,7 +5985,7 @@ button.island-quest {
   max-width: 100%;
   white-space: normal;
 }
-/* Le cadre de la fiche : la fiche, et le portrait en médaillon de la créature ou du Gardien (FicheDuMonde.tsx : en cubes
+/* Le cadre de la fiche : la fiche, et le portrait en médaillon de la créature ou du Gardien (WorldCard.tsx : en cubes
    dans Blocland, le modèle en SVG dans Archipéo), posé en haut à gauche, qui dépasse de 24 px au-dessus d'elle (16 px sur
    téléphone). Hors de la fiche qui défile : il reste entier, et sa hauteur compte dans la place de la fiche. Décoratif :
    il ne se touche pas. */

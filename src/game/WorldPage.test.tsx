@@ -6,9 +6,9 @@ import { ProgressProvider, useProgress } from '../core/ProgressContext';
 import { BloclandProvider } from './BloclandContext';
 import { WorldPage } from './WorldPage';
 import { BADGES } from '../core/progress';
-import { demanderMoinsDAnimations } from '../core/mouvement.testing';
-import { textesDe } from '../univers';
-import { VOL, dureeDuVol } from './volDesBlocs';
+import { demanderMoinsDAnimations } from '../core/motion.testing';
+import { textesDe } from '../universes';
+import { VOL, dureeDuVol } from './blockFlight';
 
 // Pas de WebGL dans les tests : un monde factice, qui montre l'île cadrée et laisse toucher une île. Il connaît la
 // première case de la cabane de Mousso, dans le repère de l'île (un fantôme du bâtiment, posable à la main avant GD-6).
@@ -814,9 +814,9 @@ it('le soleil et la lune ne sont plus dans la barre : le jour est forcé tant qu
 describe('la pose d’une partie en vague, après « Voir le bâtiment » (GD-6 ; en fondu dans Archipéo)', () => {
   /** Une mission de la Forêt terminée : la cabane de Mousso, sa première partie, est posée et enregistrée. */
   const preparer = async () => {
-    const { partiesDe } = await import('./world/parties');
+    const { partiesDe } = await import('./world/parts');
     const { casesDesPlansDansLeMonde } = await import('./world/terrain');
-    const { retenirLaPose, oublierLesPoses } = await import('./poseAMontrer');
+    const { retenirLaPose, oublierLesPoses } = await import('./poseToShow');
     oublierLesPoses();
     const [cabane] = partiesDe('french-6e-phonology');
     const parts = Object.fromEntries(cabane.cases.map((c) => [c.plan.id, c.keys]));
@@ -1085,7 +1085,7 @@ describe('les fiches du monde (lot 2 de « Toucher le monde »)', () => {
 describe('les blocs gagnés volent jusqu’au compteur, au retour d’une mission (P2, PR 2, Blocland)', () => {
   /** Une mission de la Forêt vient de donner 5 blocs de bois : 9 en tout, 4 avant elle. */
   const preparer = async () => {
-    const { retenirLesBlocs, oublierLesBlocs } = await import('./volDesBlocs');
+    const { retenirLesBlocs, oublierLesBlocs } = await import('./blockFlight');
     oublierLesBlocs();
     vuSansAide();
     localStorage.setItem('dysapps:game', JSON.stringify({ stock: { 'french-6e-phonology': 9 }, world: { parts: {}, log: [], links: [], place: 'french-6e-phonology' } }));
@@ -1132,7 +1132,7 @@ describe('les blocs gagnés volent jusqu’au compteur, au retour d’une missio
 
   it('un gain retenu il y a plus d’une minute (mission lancée d’ailleurs) ne vole plus : le chiffre a déjà changé', async () => {
     await preparer();
-    const { retenirLesBlocs } = await import('./volDesBlocs');
+    const { retenirLesBlocs } = await import('./blockFlight');
     retenirLesBlocs({ biome: 'french-6e-phonology', mission: 'syllables', bloc: 'french-6e-phonology', nombre: 5, quand: Date.now() - VOL.gardeMs - 1 });
     renderAt('/adventure/french-6e-phonology');
     expect(pastille()).toHaveTextContent(/^9$/);
@@ -1170,8 +1170,8 @@ describe('les blocs gagnés volent jusqu’au compteur, au retour d’une missio
   });
 
   it('avant la pose de la partie : la vague attend la fin du vol', async () => {
-    const { partiesDe } = await import('./world/parties');
-    const { retenirLaPose, oublierLesPoses } = await import('./poseAMontrer');
+    const { partiesDe } = await import('./world/parts');
+    const { retenirLaPose, oublierLesPoses } = await import('./poseToShow');
     await preparer();
     oublierLesPoses();
     const [cabane] = partiesDe('french-6e-phonology');

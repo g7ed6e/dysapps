@@ -1,7 +1,7 @@
 // Les plans des bâtiments d'une île, écrits à la fin de son Markdown (docs/contenu/<île>.md) sous « ## Les plans » : un
 // tableau, une rangée par plan dans l'ordre du dessin. Chaque rangée redonne src/game/world/plans/<id>.json (nom, XP,
 // réplique de fin) ; la forme du bâtiment reste dans le code (src/game/world/architect.ts). Les missions de l'île posent
-// ces plans, partie par partie (GD-6, src/game/world/parties.ts) : un plan n'a pas de coffre.
+// ces plans, partie par partie (GD-6, src/game/world/parts.ts) : un plan n'a pas de coffre.
 import { ecrireTexte, lireTexte } from './texte.mjs';
 
 export const TITRE_PLANS = '## Les plans';

@@ -3,18 +3,18 @@
 // sur le ciel à l'arrivée ; Blocland garde son cadrage. Sans WebGL : on projette des points avec la caméra placée.
 import * as THREE from 'three';
 import type { BiomeId } from '../biomes';
-import { HABILLAGES, type Habillage } from '../habillage';
-import { repereDeLaVue } from '../world/cadrage';
+import { HABILLAGES, type Habillage } from '../skin';
+import { repereDeLaVue } from '../world/framing';
 import { GRAND_PHARE_3E } from '../world/decor/3e';
-import { PHARE, PHARES } from '../world/decor/phare';
+import { PHARE, PHARES } from '../world/decor/lighthouse';
 import { islandDef, landBox, mapOf } from '../world/map';
 import { BRIDGES } from '../world/archipelago';
-import { archipelagoOfIsland } from '../world/archipels';
-import { grilleDe } from '../world/grille';
-import { placeLibre, type Rect } from '../placeLibre';
+import { archipelagoOfIsland } from '../world/archipelagos';
+import { grilleDe } from '../world/grid';
+import { placeLibre, type Rect } from '../freeSpace';
 import { avatarRoute, cadreDeTraversee, islandCenter, worldBounds } from '../world/terrain';
 import { AUTOUR_DE_LA_DESTINATION, cadrageDeLaCarte, cadrageDeLaTraversee, creerCamera, decalagePourViser, ECHELLE_MIN_DE_LA_TRAVERSEE, PLANCHER_DE_LA_CARTE } from './camera';
-import type { Derniers, Instant, Monde } from './partie';
+import type { Derniers, Instant, Monde } from './scenePart';
 
 /** La scène de la tablette de référence (1024 × 768, moins la barre du haut) ; la vue d'une île, à gauche du panneau. */
 const ARCHIPEL = { w: 1024, h: 688 };
@@ -137,7 +137,7 @@ describe('La Carte dans la place libre (DA-31)', () => {
     for (const def of BRIDGES) {
       const a = archipelagoOfIsland(def.from);
       const m = grilleDe(a).placesDeLaFleche(def.id)[0];
-      // La pointe, comme three/bornes.ts la pose (`poserLaFleche`) : juste au-dessus du tablier.
+      // La pointe, comme three/markers.ts la pose (`poserLaFleche`) : juste au-dessus du tablier.
       const pointe = { x: m.x + 0.5, y: m.y + 0.5, z: m.z + 2 };
       for (const libre of [
         { x0: 0, y0: 0, x1: T.w, y1: T.h - 64 },

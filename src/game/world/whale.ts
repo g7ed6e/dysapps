@@ -1,7 +1,7 @@
 // Le mot de la baleine (Archipéo, lot 5) : la voix de l'univers, rare, aux grandes étapes d'un archipel seulement.
 // Code pur : quelles étapes sont atteintes, déduites de la sauvegarde à chaque rendu. Ce qui a déjà été dit se note
 // par appareil (voir useWhaleWord), jamais dans la sauvegarde. Les créatures restent les voix de leur île. Ce que dit
-// la baleine est un texte d'univers : src/univers/baleine.ts.
+// la baleine est un texte d'univers : src/universes/whale.ts.
 import type { BiomeId } from '../biomes';
 import type { GameState } from '../engine';
 import { BRIDGES, getArchipelago, islandsOf, isArchipelagoReached, reachableIslands, type ArchipelagoId } from './archipelago';

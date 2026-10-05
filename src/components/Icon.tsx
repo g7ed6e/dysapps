@@ -56,9 +56,9 @@ import {
   createLucideIcon,
   type LucideIcon,
 } from 'lucide-react';
-import { CHEMIN_DE_L_OUVRAGE } from './iconeOuvrage';
+import { CHEMIN_DE_L_OUVRAGE } from './linkIcon';
 
-/** Un ouvrage (GD-7) : la même image que la plaque de la flèche de la Carte (./iconeOuvrage.ts). */
+/** Un ouvrage (GD-7) : la même image que la plaque de la flèche de la Carte (./linkIcon.ts). */
 const Ouvrage = createLucideIcon('ouvrage', [['path', { d: CHEMIN_DE_L_OUVRAGE, key: 'ouvrage' }]]);
 
 export const ICONS = {

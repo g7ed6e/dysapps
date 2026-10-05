@@ -1,7 +1,7 @@
 // Icebergs des fractions (cycle 4) : comparer, additionner, soustraire, multiplier et diviser des fractions.
 import { fractionWords } from '../../../core/fractions';
 import { randomInt, shuffle } from '../../../core/random';
-import { gcd, type ItemGenerator, MAX_TRIES, pick, type Rng } from './commun';
+import { gcd, type ItemGenerator, MAX_TRIES, pick, type Rng } from './common';
 
 // ---------- Glacier : Icebergs des fractions (cycle 4) ----------
 

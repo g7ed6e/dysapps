@@ -5,7 +5,7 @@ import { frenchTypography } from '../components/math/RichText';
 import { useSettings } from '../core/SettingsContext';
 import { Creature3D } from './Creature3D';
 import type { BiomeDef } from './biomes';
-import { useTextes } from '../univers';
+import { useTextes } from '../universes';
 
 interface Props {
   biome: BiomeDef;

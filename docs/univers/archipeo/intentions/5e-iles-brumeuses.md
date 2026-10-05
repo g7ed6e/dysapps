@@ -14,7 +14,7 @@ Aucun n’est partagé avec un autre archipel.
   - Trois couches étagées, de `#E5EBE3` en haut à `#C5D9EB` en bas, dans un maillage translucide d’un appel de dessin : opacité 0,54, 0,45 et 0,4 du bas vers le haut (0,6 au plus, respiration comprise), couverture 0,7, 0,45 et 0,25.
   - Jamais sur un ouvrage, le quai, un îlot, la route du navire ou les places de la baleine. Construit : toujours sous le sol des îles, qui les cache, elles entrent dans les chenaux et lèchent le pied des falaises (dans la seule mer libre de `seaDecor`, elles restaient au large, hors du cadre).
   - Hors de la brume de profondeur, qui les effaçait (elle a la couleur de l’horizon). Sur la Carte, à la moitié de leur opacité.
-- **Les masses lointaines** (R4b, `lointain.ts`, hors de la grille).
+- **Les masses lointaines** (R4b, `distant.ts`, hors de la grille).
   - Quatre masses en gradins, dans la mer, de 60 à 86 cases derrière l’archipel, de 10 à 17 blocs de haut (construit : plus basses que prévu, pour se lire sous le bandeau ; la masse centrale fait 10 blocs pour que sa tour se lise).
   - Largeurs très différentes ; la plus proche est allongée, plus large que haute, et la plus pâle. Pans irréguliers, en gradins de 2 à 3 blocs, avec un sommet plat et moussu. Jamais de pointe en obus.
   - Roche lointaine `#6895AD`, puis une chaîne de cimes très pâles, `#A9C4D4`, aux sommets `#E6EEF2`.

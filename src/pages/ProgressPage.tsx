@@ -11,8 +11,8 @@ import { RecordTag } from '../components/RecordTag';
 import { RankLadder } from '../components/RankLadder';
 import { XpBar } from '../components/XpBar';
 import { useUnivers } from '../core/SettingsContext';
-import { UNIVERS } from '../core/univers';
-import { texteDuSucces, useTextes } from '../univers';
+import { UNIVERS } from '../core/universe';
+import { texteDuSucces, useTextes } from '../universes';
 
 const plural = (n: number, word: string) => `${n} ${word}${n > 1 ? 's' : ''}`;
 

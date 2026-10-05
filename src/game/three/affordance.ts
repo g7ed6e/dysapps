@@ -1,10 +1,10 @@
 // Les objets qu'on touche, dans la scène 3D (les règles : world/affordance.ts) : leurs zones de toucher.
 // Une borne ou un Gardien plus petits que 48 pixels à l'écran se touchent aussi tout autour, dans un carré de 48 pixels ;
 // les autres objets se touchent directement. Les bulles qui montrent ce qu'on peut faire sont dessinées avec les plaques
-// des créatures (./signes.ts). Rien sur la Carte ni pendant le voyage.
+// des créatures (./signs.ts). Rien sur la Carte ni pendant le voyage.
 import * as THREE from 'three';
 import { zoneDeToucher, SIGNE, type ObjetTouche, type SigneDObjet, type ZoneDObjet } from '../world/affordance';
-import type { Derniers, Instant, PartieDeLaScene } from './partie';
+import type { Derniers, Instant, PartieDeLaScene } from './scenePart';
 
 export interface Affordance extends PartieDeLaScene {
   /** Les objets touchables (refaits quand le monde change). */

@@ -144,7 +144,7 @@ describe('le format Markdown du contenu', () => {
   });
 
   it('écrit puis relit chaque île du jeu, ses missions et son en-tête', () => {
-    const texte = readFileSync('src/game/iles.ts', 'utf8');
+    const texte = readFileSync('src/game/islands.ts', 'utf8');
     const iles = JSON.parse(texte.slice(texte.indexOf('= [') + 2, texte.lastIndexOf(' satisfies')));
     const exercices = parIle();
     for (const ile of iles) {

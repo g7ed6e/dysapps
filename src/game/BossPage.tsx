@@ -18,10 +18,10 @@ import { explicationDuGardien } from './IslandSheet';
 import { firstSentences } from './firstSentences';
 import { ExerciseRunner } from './ExerciseRunner';
 import { Guardian3D, type GuardianMood } from './Guardians';
-import { FONDU, lueursDuDefi } from './world/personnages/allumage';
+import { FONDU, lueursDuDefi } from './world/characters/glow';
 import { playDrum, playGrowl, playVictory } from './sound';
 import { Loading } from '../components/Loading';
-import { useTextes } from '../univers';
+import { useTextes } from '../universes';
 
 /** Le Gardien d'une île : le défi de fin d'île, une manche de chaque mission, qui le rallume (GD-8). */
 export function BossPage() {

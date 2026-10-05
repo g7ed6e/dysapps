@@ -1,10 +1,10 @@
 // Univers Blocland : biomes, blocs et créatures (noms et créatures originaux).
 import type { Subject } from '../apps/registry';
-import type { ProgrammeId } from '../programme';
+import type { ProgrammeId } from '../curriculum';
 import type { AnyIconName } from '../components/Icon';
 import { lv2Courante, universCourant, type Lv2Choice } from '../core/settings';
-import { nomAssemble } from './world/assemblage';
-import { ILES } from './iles';
+import { nomAssemble } from './world/assembly';
+import { ILES } from './islands';
 
 /** Une deuxième langue vivante (pas « Pas de LV2 »). */
 export type Lv2 = Exclude<Lv2Choice, 'none'>;
@@ -246,7 +246,7 @@ export const BLOCKS: Record<BlockId, BlockDef> = {
   // Le bloc du Refuge des carnets (LV2, 3e) : des bardeaux de bois en écailles décalées, au bas arrondi, distincts de la
   // tuile, de la brique et de la dalle par le motif ; un bois brun chaud, jamais gris comme la pierre.
   'lv2-3e-travel': { id: 'lv2-3e-travel', name: 'Bardeau', top: '#96724e', side: '#7c5c3e', texture: 'bardeau' },
-  // Blocs assemblés (GD-2) : aucune île ne les donne, on les assemble sur l'île de l'école (world/assemblage.ts). Leur nom
+  // Blocs assemblés (GD-2) : aucune île ne les donne, on les assemble sur l'île de l'école (world/assembly.ts). Leur nom
   // ici est celui de Blocland ; chaque univers donne le sien, écrit dans docs/contenu/assemblage.md.
   'compound-6e': { id: 'compound-6e', name: 'Poutre', top: '#dcba86', side: '#c49a64', texture: 'poutre', assemble: true },
   'compound-5e': { id: 'compound-5e', name: 'Vitrail', top: '#5f9fd8', side: '#d0594f', texture: 'vitrail', assemble: true },
@@ -305,7 +305,7 @@ export interface ExerciseTypeDef {
   id: string;
   title: string;
   description: string;
-  /** Compétences du programme officiel que la mission travaille (identifiants de src/programme/). Au moins une. */
+  /** Compétences du programme officiel que la mission travaille (identifiants de src/curriculum/). Au moins une. */
   programme: readonly ProgrammeId[];
   /**
    * Une mission de LV2 (lieux `lv2-5e-introductions`, `lv2-4e-daily-life`, `lv2-3e-travel`) : la langue qu'elle travaille. Seules les missions de la LV2 choisie dans les
@@ -315,7 +315,7 @@ export interface ExerciseTypeDef {
 }
 
 export interface CreatureDef {
-  /** Son nom ; ce qu'elle dit est un texte d'univers, dans `src/univers/` (U4). */
+  /** Son nom ; ce qu'elle dit est un texte d'univers, dans `src/universes/` (U4). */
   name: string;
 }
 
@@ -333,7 +333,7 @@ export interface BiomeDef {
   icon: AnyIconName;
   /**
    * Le nom du Gardien du biome (boss de fin de biome). Ce qu'il dit pendant le défi et l'espèce de la créature sont des
-   * textes d'univers, dans `src/univers/` (lot 6).
+   * textes d'univers, dans `src/universes/` (lot 6).
    */
   guardian: string;
   creature: CreatureDef;
@@ -343,7 +343,7 @@ export interface BiomeDef {
 /**
  * Les îles du français (Forêt au centre de l'archipel), puis celles des maths (rangée de devant). Elles s'écrivent dans
  * docs/contenu/<île>.md (en-tête et missions), dans l'ordre de docs/contenu/archipel.md ; `npm run contenu` en produit
- * iles.ts, que le compilateur vérifie (`satisfies BiomeDef[]`), avec les tests (biomes.test.ts).
+ * islands.ts, que le compilateur vérifie (`satisfies BiomeDef[]`), avec les tests (biomes.test.ts).
  */
 export const BIOMES: BiomeDef[] = ILES;
 

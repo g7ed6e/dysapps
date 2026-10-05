@@ -1,5 +1,5 @@
 import { useLayoutEffect, type RefObject } from 'react';
-import { moinsDAnimations } from '../core/mouvement';
+import { moinsDAnimations } from '../core/motion';
 
 /**
  * Le bandeau de résultat est fixé en bas de l'écran : il ne doit cacher ni la question, ni la réponse touchée,

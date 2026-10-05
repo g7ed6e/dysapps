@@ -2,12 +2,12 @@ import { exercisesOf } from '../exercises';
 import { sanitizeState } from '../engine';
 import { islandsOf } from './archipelago';
 import { planCells, plansFor } from './plans';
-import { pagesBaleine } from '../../univers/baleine';
-import { textesDe } from '../../univers';
+import { pagesBaleine } from '../../universes/whale';
+import { textesDe } from '../../universes';
 import { reachedWhaleMoments } from './whale';
 
 // Les mots de la baleine, ceux d'Archipéo ; ceux de Blocland (la créature de l'île-école, GD-1) sont vérifiés dans
-// src/univers/.
+// src/universes/.
 const pages = (m: Parameters<typeof pagesBaleine>[0]) => pagesBaleine(m, textesDe('archipeo'));
 
 it('au début, la baleine n’a qu’un mot en 6e : elle se présente', () => {

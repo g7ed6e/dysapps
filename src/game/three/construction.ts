@@ -1,4 +1,4 @@
-// La construction taillée d'Archipéo en 3D (lot R5, dans l’univers Archipéo (voir rendu.ts)) : les trois groupes de
+// La construction taillée d'Archipéo en 3D (lot R5, dans l’univers Archipéo (voir rendering.ts)) : les trois groupes de
 // world/construction.ts, trois appels de dessin. Les couleurs sont portées par les sommets ; trois matériaux, faits une
 // fois par scène et libérés avec elle, les complètent dans le shader (`onBeforeCompile`) :
 //
@@ -6,7 +6,7 @@
 //   arêtes saillantes sur une bande de `BISEAU` case, un pixel et demi au moins (elle éclaircit, jamais n'assombrit :
 //   +22 %, et +14 niveaux au moins sur une teinte sombre, `eclatDuBiseau` ; de loin, quand une case tient en moins de
 //   16 pixels, elle s'efface, pour ne pas scintiller) ; le verre hors d'un mur, cerné d'une arête fine par case ;
-//   les murs de l'architecture modulaire (lot 7), peints d'après leur motif (world/architecture/peinture.ts,
+//   les murs de l'architecture modulaire (lot 7), peints d'après leur motif (world/architecture/paint.ts,
 //   `MOTIF_GLSL`) : le colombage, le bardage, le soubassement et le chaperon, aux couleurs du kit de l'archipel (l'uniforme
 //   `uRoles`) ; de loin, les traits fins s'effacent jusqu'au mur uni ; la nuit, rien ne s'allume ;
 //   les blocs assemblés (GD-2, world/construction.ts, `MOTIF_ASSEMBLE_GLSL`) : la forme de chacun, peinte sur son fond,
@@ -39,7 +39,7 @@ import {
   type MaillageDeLaConstruction,
 } from '../world/construction';
 import { MOTIF_GLSL, ROLES_PEINTS } from '../world/architecture';
-import type { Lumiere } from './lumiere';
+import type { Lumiere } from './light';
 
 /** Les trois matériaux de la construction, partagés par ses maillages (le monde, le navire). */
 export interface MateriauxDeConstruction {

@@ -40,7 +40,7 @@ import { champDuSol, poseDuDecor } from './landMesh';
 import { ARCHIPELAGO_IDS, type ArchipelagoId } from './map';
 import { buildMesh, faceCount } from './mesher';
 import { getPlan, planCells, plansFor } from './plans';
-import { PHARE, PHARES } from './decor/phare';
+import { PHARE, PHARES } from './decor/lighthouse';
 import { lineaire } from './landMesh';
 import { ambianceDe } from './palette';
 import { mixColor } from './daylight';
@@ -48,11 +48,11 @@ import { placeSpot, TROPHY_SLOTS, worldCubes } from './terrain';
 import { BADGES } from '../../core/progress';
 import { trophyBlock } from '../trophies';
 import { islandDef } from './map';
-import { ARDOISES, couleursDuToit, TERRE_CUITE_SUR, toitDe } from './toits';
+import { ARDOISES, couleursDuToit, TERRE_CUITE_SUR, toitDe } from './roofs';
 import { sansToursDuCoeur } from './construction';
 import { ARCHIPELAGOS, BRIDGES } from './archipelago';
-import { pontsDePierreEtDeBois } from './ponts';
-import { phareDuLarge } from './phareDuLarge';
+import { pontsDePierreEtDeBois } from './bridges';
+import { phareDuLarge } from './offshoreLighthouse';
 import { kitVide } from './architecture';
 import { batimentsDe, ETAPES_DU_BATIMENT } from './construction';
 
@@ -202,7 +202,7 @@ describe('La construction taillée (lot R5)', () => {
       const sous = new Set(sol.map((c) => cle(c.x, c.y, c.z)));
       for (const mode of ['aucun', 'peint'] as const) {
         // Les blocs seuls, sans le kit d'architecture (lot 7b) : ses pièces et ses murs peints ont leurs propres tests
-        // (./architecture/toucher.test.ts).
+        // (./architecture/touch.test.ts).
         const m = maillageDeLaConstruction(a, cubes, sol, { biseau: mode, kit: kitVide() });
         let aire = 0;
         for (const [nom, g] of [['opaque', m.opaque], ['fenetres', m.fenetres]] as const) {
