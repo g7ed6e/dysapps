@@ -10,6 +10,7 @@ import { blocTrophee, inventoryUses, whereToEarn, type Use } from './world/uses'
 import { VEHICLE_NAME } from './world/vehicle';
 import { useUnivers } from '../core/SettingsContext';
 import { UNIVERS } from '../core/univers';
+import { Sheet } from './Sheet';
 
 const cap = (text: string) => `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
 
@@ -226,22 +227,9 @@ export function InventorySheet({ onClose }: SheetProps) {
   const { state } = useBlocland();
   const total = inventoryUses(state).total;
   return (
-    <section id="panneau-blocs" className="island-sheet inventory-sheet" role="dialog" aria-labelledby="blocs-titre" aria-modal="true">
-      <div className="island-sheet-head">
-        <div className="island-sheet-titles">
-          <h2 id="blocs-titre" className="island-sheet-title">
-            <Icon name="blocks" /> Mes blocs
-          </h2>
-          <p className="island-sheet-module">
-            {total} bloc{total > 1 ? 's' : ''} en poche.
-          </p>
-        </div>
-        <button type="button" className="icon-button island-sheet-close" aria-label="Fermer le panneau" onClick={onClose}>
-          <Icon name="close" />
-        </button>
-      </div>
+    <Sheet id="panneau-blocs" className="inventory-sheet" titleId="blocs-titre" icon="blocks" title="Mes blocs" subtitle={<>{total} bloc{total > 1 ? 's' : ''} en poche.</>} onClose={onClose}>
       <InventoryBody />
-    </section>
+    </Sheet>
   );
 }
 

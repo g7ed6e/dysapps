@@ -4,7 +4,7 @@ import { QuizSession } from '../../components/QuizSession';
 import { useProgress } from '../../core/ProgressContext';
 import { TEXTS, questionsFor, segmentsOf, type ReadingText } from './data';
 import { Reader } from './Reader';
-import { RecordTag } from '../../components/RecordTag';
+import { LevelCard } from '../../components/LevelCard';
 
 type Step = { text: ReadingText; phase: 'lecture' | 'questions' };
 
@@ -67,22 +67,12 @@ export default function LectureApp() {
         {TEXTS.map((text, i) => {
           const record = progress.apps[key(text.id)]?.bestScore;
           return (
-            <li key={text.id}>
-              <button type="button" className={`panel level-card level-${(i % 3) + 1}`} onClick={() => setStep({ text, phase: 'lecture' })}>
-                <span className="level-number" aria-hidden="true">
-                  {i + 1}
-                </span>
-                <span className="level-title">{text.title}</span>
-                <span className="level-grade">{text.author}</span>
-                <span className="level-sets">
-                  <span>{text.kind === 'vers' ? 'Fable en vers' : 'Récit adapté'}</span>
-                  <span>
-                    {segmentsOf(text).length} {text.kind === 'vers' ? 'vers' : 'phrases'}
-                  </span>
-                </span>
-                {record !== undefined ? <RecordTag record={record} /> : <span className="tag tag-new">Lire</span>}
-              </button>
-            </li>
+            <LevelCard key={text.id} tone={(i % 3) + 1} number={i + 1} title={text.title} grade={text.author} record={record} playLabel="Lire" onPlay={() => setStep({ text, phase: 'lecture' })}>
+              <span>{text.kind === 'vers' ? 'Fable en vers' : 'Récit adapté'}</span>
+              <span>
+                {segmentsOf(text).length} {text.kind === 'vers' ? 'vers' : 'phrases'}
+              </span>
+            </LevelCard>
           );
         })}
       </ul>

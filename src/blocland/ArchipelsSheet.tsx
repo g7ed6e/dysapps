@@ -10,6 +10,7 @@ import { VoxelScene } from './Voxel';
 import { ARCHIPELAGOS, archipelagoOf, archipelagoTitle, isArchipelagoReached, islandsOf, launchedCount, reachableIslands, remainingVoyages } from './world/archipelago';
 import { VEHICLE_NAME, beatenGuardians, stageTo, vehicleModel } from './world/vehicle';
 import { useTextes } from '../univers';
+import { Sheet } from './Sheet';
 
 interface Props {
   onClose: () => void;
@@ -29,18 +30,7 @@ export function ArchipelsSheet({ onClose, onGo }: Props) {
   const open = reachableIslands(bridges);
   const level = launchedCount(bridges);
   return (
-    <section id="panneau-monde" className="island-sheet archipels-sheet" role="dialog" aria-labelledby="monde-titre" aria-modal="true">
-      <div className="island-sheet-head">
-        <div className="island-sheet-titles">
-          <h2 id="monde-titre" className="island-sheet-title">
-            <Icon name="map" /> Les quatre archipels
-          </h2>
-          <p className="island-sheet-module">Un archipel par classe, reliés par {VEHICLE_NAME}.</p>
-        </div>
-        <button type="button" className="icon-button island-sheet-close" aria-label="Fermer le panneau" onClick={onClose}>
-          <Icon name="close" />
-        </button>
-      </div>
+    <Sheet id="panneau-monde" className="archipels-sheet" titleId="monde-titre" icon="map" title="Les quatre archipels" subtitle={<>Un archipel par classe, reliés par {VEHICLE_NAME}.</>} onClose={onClose}>
       <ArchipelagoMap bridges={bridges} here={here} />
       <ol className="archipels-list">
         {ARCHIPELAGOS.map((a) => {
@@ -93,6 +83,6 @@ export function ArchipelsSheet({ onClose, onGo }: Props) {
           );
         })}
       </ol>
-    </section>
+    </Sheet>
   );
 }

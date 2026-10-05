@@ -22,6 +22,7 @@ import { ASSEMBLAGE_PATH, assemblables, manquePour, RECETTES, type Recette } fro
 import { archipelagoOf, getArchipelago, reachableIslands } from './world/archipelago';
 import { archipelagoOfIsland, type ArchipelagoId } from './world/archipels';
 import { monumentsOf, type MonumentDef } from './world/monuments';
+import { Sheet } from './Sheet';
 
 /**
  * Les recettes des archipels où l'élève a une île ouverte : d'abord celle du bloc demandé (`?bloc=`, depuis un
@@ -213,26 +214,9 @@ export function AssemblageSheet({ onClose }: { onClose: () => void }) {
   const island = useSchoolIsland();
   const { assemblage } = useTextes();
   return (
-    <section
-      id="panneau-assemblage"
-      className={`island-sheet assemblage-sheet biome-${island.id}`}
-      role="dialog"
-      aria-labelledby="assemblage-titre"
-      aria-modal="true"
-    >
-      <div className="island-sheet-head">
-        <div className="island-sheet-titles">
-          <h2 id="assemblage-titre" className="island-sheet-title">
-            <Icon name="hammer" /> {assemblage.titre}
-          </h2>
-          <p className="island-sheet-module">Sur {island.name}</p>
-        </div>
-        <button type="button" className="icon-button island-sheet-close" aria-label="Fermer le panneau" onClick={onClose}>
-          <Icon name="close" />
-        </button>
-      </div>
+    <Sheet id="panneau-assemblage" className={`assemblage-sheet biome-${island.id}`} titleId="assemblage-titre" icon="hammer" title={assemblage.titre} subtitle={<>Sur {island.name}</>} onClose={onClose}>
       <AssemblageBody />
-    </section>
+    </Sheet>
   );
 }
 

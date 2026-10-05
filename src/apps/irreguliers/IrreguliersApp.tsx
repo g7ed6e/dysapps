@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { QuizSession } from '../../components/QuizSession';
 import { useProgress } from '../../core/ProgressContext';
 import { LEVELS, QUESTIONS_PER_QUEST, questionsForLevel, verbsForLevel, type Level } from './data';
-import { RecordTag } from '../../components/RecordTag';
+import { LevelCard } from '../../components/LevelCard';
 
 const APP_ID = 'irreguliers';
 
@@ -35,23 +35,12 @@ export default function IrreguliersApp() {
           const record = progress.apps[statsKey(l)]?.bestScore;
           const verbs = verbsForLevel(l);
           return (
-            <li key={l}>
-              <button type="button" className={`panel level-card level-${l}`} onClick={() => setLevel(l)}>
-                <span className="level-number" aria-hidden="true">
-                  {l}
-                </span>
-                <span className="level-title">
-                  Niveau {l} · {title}
-                </span>
-                <span className="level-sets" lang="en">
-                  {verbs.slice(0, 6).map((v) => (
-                    <span key={v.base}>{v.base}</span>
-                  ))}
-                  <span>…</span>
-                </span>
-                {record !== undefined ? <RecordTag record={record} /> : <span className="tag tag-new">Jouer</span>}
-              </button>
-            </li>
+            <LevelCard key={l} tone={l} number={l} title={<>Niveau {l} · {title}</>} lang="en" record={record} onPlay={() => setLevel(l)}>
+              {verbs.slice(0, 6).map((v) => (
+                <span key={v.base}>{v.base}</span>
+              ))}
+              <span>…</span>
+            </LevelCard>
           );
         })}
       </ul>

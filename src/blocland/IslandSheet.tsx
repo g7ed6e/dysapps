@@ -29,6 +29,7 @@ import { archipelagoOf } from './world/archipelago';
 import { useTextes } from '../univers';
 import type { Partie } from './world/parties';
 import { PlusTardDit, RappelDeLaCreature, useRappelDeLaCreature } from './RappelDeLaCreature';
+import { Sheet } from './Sheet';
 
 /**
  * Comment ouvrir le défi d'un Gardien : les étoiles à gagner et les missions où les gagner (`missingForBoss`), ou qu'il
@@ -121,18 +122,7 @@ export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight =
   }, [biome.id]);
 
   return (
-    <section id={`panneau-${biome.id}`} className={`island-sheet biome-${biome.id}`} role="dialog" aria-labelledby={`ile-${biome.id}`} aria-modal="true">
-      <div className="island-sheet-head">
-        <Creature biome={biome.id} className="creature-small" />
-        <div className="island-sheet-titles">
-          <h2 id={`ile-${biome.id}`} ref={titreRef} tabIndex={-1} className="island-sheet-title">
-            <Icon name={biome.icon} /> {biome.name}
-          </h2>
-        </div>
-        <button type="button" className="icon-button island-sheet-close" aria-label="Fermer le panneau" onClick={onClose}>
-          <Icon name="close" />
-        </button>
-      </div>
+    <Sheet id={`panneau-${biome.id}`} className={`biome-${biome.id}`} titleId={`ile-${biome.id}`} icon={biome.icon} title={biome.name} before={<Creature biome={biome.id} className="creature-small" />} titleRef={titreRef} onClose={onClose}>
       {/* « Réécouter » sur la ligne du nom de la créature ; sa phrase dessous, sur toute la largeur. */}
       <p className="island-sheet-says island-sheet-says-nom" role="status" aria-live="polite">
         <strong>{biome.creature.name} :</strong>
@@ -266,6 +256,6 @@ export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight =
       <p className="island-sheet-module island-sheet-foot">
         {biome.module} · Niveau {biome.classe} · Les {textes.archipels[biome.classe]}
       </p>
-    </section>
+    </Sheet>
   );
 }
