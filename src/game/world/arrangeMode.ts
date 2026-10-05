@@ -230,8 +230,12 @@ export function turnGuardianNow(world: World, id: BiomeId): { result: ArrangeRes
 
 // ---------- Les phrases ----------
 
-/** Le côté du monde (le nord au fond de la Carte) d'un côté d'un lieu tourné de `q`. */
-const POINT_CARDINAL: Readonly<Record<Side, string>> = { devant: 'sud', droite: 'est', derriere: 'nord', gauche: 'ouest' };
+/**
+ * Le point cardinal, tel qu'on le voit sur la Carte (le nord en haut, l'est à droite), d'un côté du repère d'un lieu une
+ * fois tourné : la « droite » du repère (x qui monte) est à gauche de l'écran, donc à l'ouest (world/arrange.ts,
+ * `DIRECTION_STEP`).
+ */
+const POINT_CARDINAL: Readonly<Record<Side, string>> = { devant: 'sud', droite: 'ouest', derriere: 'nord', gauche: 'est' };
 
 /**
  * La phrase écrite et lue du choix : où se tient son fantôme (« au nord de la Forêt des sons, à 2 cases »). Les noms des
@@ -247,9 +251,13 @@ export function choiceSentence(world: World, c: ArrangeChoice, nom: PlaceName = 
       return `Le gardien ${ofPlace(nom(c.id))} : ${guardianSentence(world, c.id, c.place)}.`;
     case 'borne': {
       const id = c.key.split(':')[0] as BiomeId;
-      const places = [...freeStationSpots(world, c.key)].map((p) => p.x).sort((x, y) => x - y);
-      const rang = places.indexOf(c.place.x) + 1;
-      return `La borne, ${rang > 0 ? `à la place ${rang} sur ${places.length}` : 'à sa place'} de la rangée des bornes ${ofPlace(nom(id))}, en partant de la gauche.`;
+      // Le rang se compte comme on voit la rangée sur la Carte : de la gauche de l'écran (les x du monde qui descendent
+      // vers la droite), ou du haut quand le lieu tourné la met debout.
+      const places = freeStationSpots(world, c.key).map((p) => ({ p, m: stationInWorld(world, c.key, p) }));
+      const debout = places.length > 1 && places.every((q) => q.m.x === places[0].m.x);
+      places.sort((u, v) => (debout ? v.m.y - u.m.y : v.m.x - u.m.x));
+      const rang = places.findIndex((q) => q.p.x === c.place.x && q.p.y === c.place.y) + 1;
+      return `La borne, ${rang > 0 ? `à la place ${rang} sur ${places.length}` : 'à sa place'} de la rangée des bornes ${ofPlace(nom(id))}, en partant ${debout ? 'du haut' : 'de la gauche'}.`;
     }
     case 'arrivee': {
       const id = placeOfChoice(c);

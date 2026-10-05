@@ -1,5 +1,5 @@
 // La phrase écrite et lue qui dit où est une place (GD-9, « Aménager sa région ») : « au nord de la Forêt des sons, à
-// 2 cases ». La direction en mots (huit, le nord au fond de la Carte), le voisin le plus proche, et l'écart en cases de
+// 2 cases ». La direction en mots (huit, le nord en haut de la Carte, l’est à sa droite), le voisin le plus proche, et l'écart en cases de
 // la grille des places (le mot « cases » choisi par le mainteneur, 5 octobre 2026). Les noms des lieux viennent de
 // l'appelant (les textes de l'univers) ; sans eux, ceux du jeu. Code pur, sans Three.js.
 import { type BiomeId, getBiome } from '../biomes';
@@ -16,7 +16,7 @@ export type PlaceName = (id: BiomeId) => string;
 
 const NOM_DU_JEU: PlaceName = (id) => getBiome(id)?.name ?? id;
 
-/** Les huit directions, dans le sens inverse des aiguilles d'une montre depuis l'est, avec leur préposition. */
+/** Les huit directions, dans le sens inverse des aiguilles d'une montre depuis l'est (à l'écran), avec leur préposition. */
 const DIRECTIONS = ['à l’est', 'au nord-est', 'au nord', 'au nord-ouest', 'à l’ouest', 'au sud-ouest', 'au sud', 'au sud-est'] as const;
 
 /** Les premiers mots des noms de lieux au féminin (« de la Forêt des sons ») ; les autres sont au masculin (« du Volcan »). */
@@ -32,9 +32,13 @@ export function ofPlace(nom: string): string {
   return FEMININS.has(premier) ? `de la ${nom}` : `du ${nom}`;
 }
 
-/** La direction en mots de `vers` vu depuis `depuis` (« au nord »). */
+/**
+ * La direction en mots de `vers` vu depuis `depuis` (« au nord »), telle qu'on la voit sur la Carte : le nord en haut
+ * (y qui monte), l'est à droite, du côté des x du monde qui descendent (la caméra de la Carte regarde depuis les y bas ;
+ * world/arrange.ts, `DIRECTION_STEP`).
+ */
 export function directionWords(depuis: { x: number; y: number }, vers: { x: number; y: number }): string {
-  const angle = Math.atan2(vers.y - depuis.y, vers.x - depuis.x);
+  const angle = Math.atan2(vers.y - depuis.y, depuis.x - vers.x);
   const secteur = (((Math.round(angle / (Math.PI / 4)) % 8) + 8) % 8) as 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
   return DIRECTIONS[secteur];
 }

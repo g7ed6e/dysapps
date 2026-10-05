@@ -9,14 +9,16 @@ import { distanceWords, directionWords, guardianSentence, ofPlace, placeSentence
 const VIDE: World = { parts: {}, log: [], links: [] };
 
 describe('où est une place, en mots', () => {
-  it('les directions : le nord au fond de la Carte (y haut), l’est à droite, huit en tout', () => {
+  it('les directions comme on les voit sur la Carte : le nord en haut (y qui monte), l’est à droite (x qui descend), huit en tout', () => {
+    // La caméra de la Carte regarde depuis les y bas : les x du monde qui montent vont à gauche de l'écran
+    // (three/arrangeDirections.test.ts le vérifie sur sa projection).
     const o = { x: 0, y: 0 };
     expect(directionWords(o, { x: 0, y: 10 })).toBe('au nord');
     expect(directionWords(o, { x: 0, y: -10 })).toBe('au sud');
-    expect(directionWords(o, { x: 10, y: 0 })).toBe('à l’est');
-    expect(directionWords(o, { x: -10, y: 0 })).toBe('à l’ouest');
-    expect(directionWords(o, { x: 10, y: 10 })).toBe('au nord-est');
-    expect(directionWords(o, { x: -10, y: -9 })).toBe('au sud-ouest');
+    expect(directionWords(o, { x: -10, y: 0 })).toBe('à l’est');
+    expect(directionWords(o, { x: 10, y: 0 })).toBe('à l’ouest');
+    expect(directionWords(o, { x: -10, y: 10 })).toBe('au nord-est');
+    expect(directionWords(o, { x: 10, y: -9 })).toBe('au sud-ouest');
   });
 
   it('« à 2 cases » : l’écart d’eau en cases de la grille des places, une au moins', () => {
@@ -37,8 +39,8 @@ describe('où est une place, en mots', () => {
 
   it('dit le voisin le plus proche, sa direction et l’écart, avec les noms de l’univers', () => {
     const id: BiomeId = 'english-6e-vocabulary';
-    // Derrière la Forêt des sons, à côté de l'Horloge des verbes, à l'est.
-    expect(placeSentence(VIDE, id)).toMatch(/^à l’ouest de l’Horloge des verbes, à \d+ cases?$/);
+    // Derrière la Forêt des sons, à côté de l'Horloge des verbes, à sa droite sur la Carte.
+    expect(placeSentence(VIDE, id)).toMatch(/^à l’est de l’Horloge des verbes, à \d+ cases?$/);
     expect(placeSentence(VIDE, id, startingSpot(id), (x) => `Lieu ${x}`)).toMatch(/du Lieu /);
     // Une autre place, une autre phrase (le fantôme la dit à chaque calage).
     const ailleurs = freeSpots(VIDE, id).find((s) => Math.abs(s.x - startingSpot(id).x) + Math.abs(s.y - startingSpot(id).y) > 2);
@@ -52,7 +54,7 @@ describe('où est une place, en mots', () => {
     expect(r.ok).toBe(true);
     if (r.ok) {
       expect(guardianOf(r.world, id).side).toBe('right');
-      expect(guardianSentence(r.world, id)).toMatch(/est de son île$/);
+      expect(guardianSentence(r.world, id)).toMatch(/ouest de son île$/);
     }
   });
 });

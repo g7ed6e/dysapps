@@ -26,17 +26,22 @@ import { QUEST_ROW, startingStations } from './terrain/markers';
 
 // ---------- Les mots communs ----------
 
-/** Une direction des flèches du mode « Aménager », en mots : le nord est au fond de la Carte (y haut), l'est à droite. */
+/**
+ * Une direction des flèches du mode « Aménager », en mots, telle que l'élève la voit sur la Carte : le nord en haut de
+ * l'écran (y du monde qui monte), l'est à droite. La caméra de la Carte regarde depuis le côté des y bas : les x du monde
+ * qui montent vont vers la GAUCHE de l'écran ; l'est est donc du côté des x qui descendent (three/arrangeDirections.test.ts
+ * le vérifie sur la projection de la caméra).
+ */
 export type Direction = 'nord' | 'sud' | 'est' | 'ouest';
 
 export const DIRECTIONS: readonly Direction[] = ['nord', 'est', 'sud', 'ouest'];
 
-/** Le pas d'une direction dans le monde. */
+/** Le pas d'une direction dans le monde (l'est vers les x qui descendent, à droite de l'écran de la Carte). */
 export const DIRECTION_STEP: Readonly<Record<Direction, { dx: number; dy: number }>> = {
   nord: { dx: 0, dy: 1 },
-  est: { dx: 1, dy: 0 },
+  est: { dx: -1, dy: 0 },
   sud: { dx: 0, dy: -1 },
-  ouest: { dx: -1, dy: 0 },
+  ouest: { dx: 1, dy: 0 },
 };
 
 /** Ce que dit le jeu quand une flèche ne trouve plus de place libre dans sa direction. */

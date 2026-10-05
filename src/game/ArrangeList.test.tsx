@@ -79,12 +79,19 @@ describe('Aménager en vue simple', () => {
     const avant = li.querySelector('p')!.textContent;
     expect(avant).toMatch(/de son île\.$/);
     fireEvent.click(within(li).getByRole('button', { name: `Déplacer le Gardien de ${b.name}` }));
-    for (const nom of ['Est', 'Ouest', 'Nord', 'Sud']) {
-      fireEvent.click(screen.getByRole('button', { name: new RegExp(nom) }));
-      if (!screen.getByRole('status').textContent?.includes('Plus de place')) break;
+    // Les flèches le mènent jusqu'à un autre côté de son île (quelques pas le long du même côté d'abord).
+    const cote = (t: string | null | undefined) => /: (.*) de son île/.exec(t ?? '')?.[1];
+    const depart = cote(avant);
+    tour: for (const nom of ['Est', 'Ouest', 'Nord']) {
+      for (let i = 0; i < 8; i++) {
+        fireEvent.click(screen.getByRole('button', { name: new RegExp(nom) }));
+        const t = screen.getByRole('status').textContent;
+        if (t?.includes('Plus de place')) break;
+        if (cote(t) && cote(t) !== depart) break tour;
+      }
     }
     fireEvent.click(screen.getByRole('button', { name: /Poser ici/ }));
-    expect(screen.getByText(`Le Gardien de ${b.name}`, { selector: 'strong' }).closest('p')!.textContent).not.toBe(avant);
+    expect(cote(screen.getByText(`Le Gardien de ${b.name}`, { selector: 'strong' }).closest('p')!.textContent)).not.toBe(depart);
   });
   it('les bornes et les arrivées d’un lieu, dans son pli, se déplacent de même', () => {
     monter();
