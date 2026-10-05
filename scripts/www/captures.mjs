@@ -133,6 +133,8 @@ const SHOTS = [
   { name: 'navire-chantier', state: MID, go: '/adventure/maths-6e-calculation', act: openFold('navire') },
   // La fiche d'une borne (Toucher le monde, lot 2), ouverte comme d'un toucher.
   { name: 'fiche-borne', state: EARLY, go: '/adventure/french-6e-phonology', act: ouvrirLaFiche({ genre: 'borne', id: 'french-6e-phonology:syllables' }) },
+  // Relier une île pâle (GD-9) : la fiche de l'ouvrage proposé, puis le départ suivant.
+  { name: 'fiche-relier', state: EARLY, go: '/adventure/french-6e-phonology', act: relierDepuisUneAutreIle('maths-6e-fractions') },
   { name: 'gardien', state: MID, go: '/adventure/french-6e-letter-confusion/challenge', wait: 2500 },
   { name: 'ecole', state: MID, go: '/adventure/school' },
   { name: 'trophees', state: MID, go: '/adventure/trophies' },
@@ -215,6 +217,17 @@ function ouvrirLaFiche(objet) {
   return async (page) => {
     await page.waitForFunction(() => Boolean(window.__dysappsFiche));
     await page.evaluate((o) => window.__dysappsFiche(o), objet);
+    await page.waitForTimeout(2500);
+  };
+}
+/** Ouvre la fiche d'une île pâle, touche « Relier », puis « Partir d'une autre île » s'il y a un autre départ. */
+function relierDepuisUneAutreIle(ile) {
+  return async (page) => {
+    await ouvrirLaFiche({ genre: 'ile', id: ile })(page);
+    await page.getByRole('button', { name: 'Relier' }).click();
+    await page.waitForTimeout(1500);
+    const autre = page.getByRole('button', { name: /Partir d.une autre île/ });
+    if (await autre.count()) await autre.click();
     await page.waitForTimeout(2500);
   };
 }
