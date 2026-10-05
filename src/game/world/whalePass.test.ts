@@ -14,7 +14,7 @@ it("chaque île avec la mer a un passage de baleine sur l’eau libre, au large 
   for (const b of BIOMES) {
     const a = archipelagoOfIsland(b.id);
     for (const narrow of [false, true]) {
-      const route = whalePassRoute(b.id, { x: 0.67, y: -0.73 }, narrow);
+      const route = whalePassRoute(b.id, [], { x: 0.67, y: -0.73 }, narrow);
       if (a === "3e") {
         // Les Îles du Ciel n'ont pas de mer : pas de passage.
         expect(route, b.id).toBeNull();
@@ -28,7 +28,7 @@ it("chaque île avec la mer a un passage de baleine sur l’eau libre, au large 
       expect(
         Math.hypot(r.to.x - r.from.x, r.to.y - r.from.y),
       ).toBeLessThanOrEqual(PASS_LENGTH + 0.01);
-      expect(routeIsClear(a, r, 2), b.id).toBe(true);
+      expect(routeIsClear(a, [], r, 2), b.id).toBe(true);
       // Au large de cette île : près d'elle (les îles du bord ont la mer devant elles, celles du milieu un bras de mer).
       const mid = { x: (r.from.x + r.to.x) / 2, y: (r.from.y + r.to.y) / 2 };
       const c = islandCenter(b.id);
@@ -48,13 +48,13 @@ it("chaque île avec la mer a un passage de baleine sur l’eau libre, au large 
         expect(near, b.id).toBeUndefined();
       }
       // Une des baleines de l'archipel fait le passage.
-      expect(passingWhale(whaleSpots(a), r)).toBeGreaterThanOrEqual(0);
+      expect(passingWhale(whaleSpots(a, []), r)).toBeGreaterThanOrEqual(0);
     }
   }
 });
 
 it("le passage se voit depuis la caméra : derrière l’île, en haut de l’écran", () => {
-  const south = whalePassRoute("maths-6e-calculation")!;
+  const south = whalePassRoute("maths-6e-calculation", [])!;
   // Caméra au sud : la baleine passe derrière l'île (au nord), en haut de l'écran, loin des panneaux, en travers ;
   // sur le côté, pas derrière le nom de l'île, en s'éloignant de l'axe de vue.
   const c = islandCenter("maths-6e-calculation");
@@ -69,14 +69,14 @@ it("le passage se voit depuis la caméra : derrière l’île, en haut de l’é
     Math.abs(south.from.x - c.x),
   );
   // Vue étroite (téléphone) : plus loin derrière, au-dessus du nom de l'île.
-  const narrow = whalePassRoute("maths-6e-calculation", { x: 0, y: -1 }, true)!;
+  const narrow = whalePassRoute("maths-6e-calculation", [], { x: 0, y: -1 }, true)!;
   const nmid = {
     x: (narrow.from.x + narrow.to.x) / 2,
     y: (narrow.from.y + narrow.to.y) / 2,
   };
   // Au moins aussi loin derrière : selon la carte, l'eau libre derrière l'île peut manquer pour aller plus loin.
   expect(nmid.y).toBeGreaterThanOrEqual(mid.y);
-  const north = whalePassRoute("maths-6e-calculation", { x: 0, y: 1 });
+  const north = whalePassRoute("maths-6e-calculation", [], { x: 0, y: 1 });
   const midY = (r: typeof south) => (r.from.y + r.to.y) / 2;
   if (north) expect(midY(north)).toBeLessThan(midY(south));
 });

@@ -2,31 +2,31 @@
 // un quai, une traversée, une carte, une cargaison, un mât, une route, une ombre, dessinés à plat à partir de données. Chaque schéma porte au plus un « ? », la grandeur cherchée, en couleur.
 
 /** Une cote : un nombre connu, ou « ? » pour la grandeur cherchée. */
-export type Cote = number | '?';
+export type Side = number | '?';
 
 export type SceneProps =
   /** Un pont d'une falaise à l'autre, en travées : une cote sous chaque travée, l'écart total au-dessus. */
-  | { scene: 'pont'; unit: 'm'; parts: Cote[]; total: Cote }
+  | { scene: 'pont'; unit: 'm'; parts: Side[]; total: Side }
   /** Un quai rectangulaire vu du dessus, à clôturer ; l'entrée, s'il y en a une, reste sans clôture. */
-  | { scene: 'quai'; unit: 'm'; longueur: Cote; largeur: Cote; entree?: number; perimetre?: Cote; ask: 'perimetre' }
+  | { scene: 'quai'; unit: 'm'; longueur: Side; largeur: Side; entree?: number; perimetre?: Side; ask: 'perimetre' }
   /** Une traversée en bateau d'une île à l'autre : heures en minutes depuis minuit, durée en minutes. */
-  | { scene: 'traversee'; depart: Cote; arrivee: Cote; duree: Cote }
+  | { scene: 'traversee'; depart: Side; arrivee: Side; duree: Side }
   /** Une carte à l'échelle : deux îles, la distance mesurée sur la carte (en cm), l'échelle, et la distance en vrai. */
-  | { scene: 'carte'; echelle: { reel: number; unit: 'm' | 'km' } | { fraction: number }; carte: Cote; reel: Cote; unitReel: 'm' | 'km' }
+  | { scene: 'carte'; echelle: { reel: number; unit: 'm' | 'km' } | { fraction: number }; carte: Side; reel: Side; unitReel: 'm' | 'km' }
   /**
    * Une cargaison partagée entre navires selon un ratio : une rangée de cases égales par navire, le total sous l'accolade.
    * `null` : une quantité ni donnée ni cherchée, pas écrite (sinon on trouverait la réponse par une simple soustraction).
    */
-  | { scene: 'cargaison'; unit: 'caisses' | 'kg'; ratio: number[]; total: Cote | null; parts: (Cote | null)[] }
+  | { scene: 'cargaison'; unit: 'caisses' | 'kg'; ratio: number[]; total: Side | null; parts: (Side | null)[] }
   /** Un mât vertical tenu par un câble jusqu'au sol : un triangle rectangle, l'angle droit codé au pied du mât. */
-  | { scene: 'mat'; unit: 'm'; hauteur: Cote; pied: Cote; cable: Cote }
+  | { scene: 'mat'; unit: 'm'; hauteur: Side; pied: Side; cable: Side }
   /** Une traversée à vitesse constante d'une île à l'autre : la distance (km), la durée (minutes), la vitesse (km/h). */
-  | { scene: 'route'; distance: Cote; duree: Cote; vitesse: Cote }
+  | { scene: 'route'; distance: Side; duree: Side; vitesse: Side }
   /**
    * Un bâton et un mât verticaux, et leurs ombres au sol qui finissent au même point (Thalès) : les hauts du bâton et du
    * mât sont sur le même rayon de soleil.
    */
-  | { scene: 'ombre'; unit: 'm'; baton: Cote; ombreBaton: Cote; hauteur: Cote; ombre: Cote };
+  | { scene: 'ombre'; unit: 'm'; baton: Side; ombreBaton: Side; hauteur: Side; ombre: Side };
 
 /** 2250 → « 2 250 », 50000 → « 50 000 », 1.5 → « 1,5 » (écriture française, espace insécable entre les classes). */
 export function formatNombre(n: number): string {
@@ -58,17 +58,17 @@ export function sayDuree(min: number): string {
 }
 
 const UNIT_SPOKEN: Record<string, string> = { m: 'mètres', km: 'kilomètres', cm: 'centimètres', kg: 'kilos' };
-const cote = (c: Cote, unit: string) => (c === '?' ? '?' : `${formatNombre(c)} ${unit}`);
+const cote = (c: Side, unit: string) => (c === '?' ? '?' : `${formatNombre(c)} ${unit}`);
 /**
  * Au-dessous de 2, l’unité reste au singulier : « 1 mètre », « 1,5 kilo ». Pour une unité d’un seul mot : « kilomètres
  * par heure » ne passe pas par ici.
  */
 export const singulier = (n: number, unit: string): string => (Math.abs(n) < 2 ? unit.replace(/s$/, '') : unit);
-const spoken = (c: Cote, unit: string) => (c === '?' ? 'inconnu' : `${formatNombre(c)} ${singulier(c, UNIT_SPOKEN[unit] ?? unit)}`);
-const cls = (c: Cote) => (c === '?' ? 'len ask' : 'len');
+const spoken = (c: Side, unit: string) => (c === '?' ? 'inconnu' : `${formatNombre(c)} ${singulier(c, UNIT_SPOKEN[unit] ?? unit)}`);
+const cls = (c: Side) => (c === '?' ? 'len ask' : 'len');
 
 /** Une cote tracée : un trait fléché aux deux bouts et son texte. */
-function Dim({ x1, x2, y, label, c, above = false }: { x1: number; x2: number; y: number; label: string; c: Cote; above?: boolean }) {
+function Dim({ x1, x2, y, label, c, above = false }: { x1: number; x2: number; y: number; label: string; c: Side; above?: boolean }) {
   return (
     <g>
       <line x1={x1} y1={y} x2={x2} y2={y} className="dim" markerStart="url(#scene-arrow)" markerEnd="url(#scene-arrow)" />
@@ -91,7 +91,7 @@ function Arrow() {
   );
 }
 
-function Pont({ unit, parts, total }: { unit: string; parts: Cote[]; total: Cote }) {
+function Pont({ unit, parts, total }: { unit: string; parts: Side[]; total: Side }) {
   // Largeur de chaque travée : la cote connue, ou ce qu'il reste du total ; sans total connu, toutes égales.
   const known = parts.reduce<number>((s, p) => s + (p === '?' ? 0 : p), 0);
   const missing = typeof total === 'number' ? Math.max(total - known, 1) : 0;
@@ -129,7 +129,7 @@ function Pont({ unit, parts, total }: { unit: string; parts: Cote[]; total: Cote
   );
 }
 
-function Quai({ unit, longueur, largeur, entree, perimetre }: { unit: string; longueur: Cote; largeur: Cote; entree?: number; perimetre?: Cote }) {
+function Quai({ unit, longueur, largeur, entree, perimetre }: { unit: string; longueur: Side; largeur: Side; entree?: number; perimetre?: Side }) {
   // Les proportions suivent les cotes connues, sans aller jusqu'au quai trop fin pour y écrire.
   const ratio = typeof longueur === 'number' && typeof largeur === 'number' ? Math.min(Math.max(largeur / longueur, 0.35), 0.8) : 0.5;
   const w = 240;
@@ -175,8 +175,8 @@ function Quai({ unit, longueur, largeur, entree, perimetre }: { unit: string; lo
   );
 }
 
-function Traversee({ depart, arrivee, duree }: { depart: Cote; arrivee: Cote; duree: Cote }) {
-  const h = (c: Cote) => (c === '?' ? '?' : formatHeure(c));
+function Traversee({ depart, arrivee, duree }: { depart: Side; arrivee: Side; duree: Side }) {
+  const h = (c: Side) => (c === '?' ? '?' : formatHeure(c));
   const d = duree === '?' ? '?' : formatDuree(duree);
   const label = `Une traversée en bateau d’une île à l’autre. Départ : ${depart === '?' ? 'inconnu' : formatHeure(depart)}. Durée : ${duree === '?' ? 'inconnue' : formatDuree(duree)}. Arrivée : ${arrivee === '?' ? 'inconnue' : formatHeure(arrivee)}.`;
   return (
@@ -207,7 +207,7 @@ function Traversee({ depart, arrivee, duree }: { depart: Cote; arrivee: Cote; du
   );
 }
 
-function Carte({ echelle, carte, reel, unitReel }: { echelle: { reel: number; unit: 'm' | 'km' } | { fraction: number }; carte: Cote; reel: Cote; unitReel: 'm' | 'km' }) {
+function Carte({ echelle, carte, reel, unitReel }: { echelle: { reel: number; unit: 'm' | 'km' } | { fraction: number }; carte: Side; reel: Side; unitReel: 'm' | 'km' }) {
   const scale = 'fraction' in echelle ? `1/${formatNombre(echelle.fraction)}` : `1 cm pour ${formatNombre(echelle.reel)} ${echelle.unit}`;
   const scaleSpoken = 'fraction' in echelle ? `1 sur ${formatNombre(echelle.fraction)}` : `1 centimètre pour ${spoken(echelle.reel, echelle.unit)}`;
   const label = `Une carte avec deux îles. Échelle : ${scaleSpoken}. Sur la carte, entre les deux îles : ${spoken(carte, 'cm')}. En vrai : ${spoken(reel, unitReel)}.`;
@@ -233,7 +233,7 @@ function Carte({ echelle, carte, reel, unitReel }: { echelle: { reel: number; un
 
 const SHIPS = ['A', 'B', 'C'];
 
-function Cargaison({ unit, ratio, total, parts }: { unit: string; ratio: number[]; total: Cote | null; parts: (Cote | null)[] }) {
+function Cargaison({ unit, ratio, total, parts }: { unit: string; ratio: number[]; total: Side | null; parts: (Side | null)[] }) {
   // Toutes les cases ont la même taille : c'est ce qui fait voir le partage en parts égales.
   const box = Math.min(36, 120 / Math.max(...ratio));
   const rowH = 44;
@@ -279,7 +279,7 @@ function Cargaison({ unit, ratio, total, parts }: { unit: string; ratio: number[
   );
 }
 
-function Mat({ unit, hauteur, pied, cable }: { unit: string; hauteur: Cote; pied: Cote; cable: Cote }) {
+function Mat({ unit, hauteur, pied, cable }: { unit: string; hauteur: Side; pied: Side; cable: Side }) {
   const label = `Un mât vertical tenu par un câble tendu jusqu’au sol, un triangle rectangle au pied du mât. Hauteur du mât : ${spoken(hauteur, unit)}. Du pied du mât au câble, au sol : ${spoken(pied, unit)}. Longueur du câble : ${spoken(cable, unit)}.`;
   return (
     <svg viewBox="0 0 380 220" role="img" aria-label={label}>
@@ -300,7 +300,7 @@ function Mat({ unit, hauteur, pied, cable }: { unit: string; hauteur: Cote; pied
   );
 }
 
-function Route({ distance, duree, vitesse }: { distance: Cote; duree: Cote; vitesse: Cote }) {
+function Route({ distance, duree, vitesse }: { distance: Side; duree: Side; vitesse: Side }) {
   const label = `Une traversée en bateau d’une île à l’autre, à vitesse constante. Distance : ${spoken(distance, 'km')}. Durée : ${duree === '?' ? 'inconnue' : sayDuree(duree)}. Vitesse : ${vitesse === '?' ? 'inconnue' : `${formatNombre(vitesse)} kilomètres par heure`}.`;
   return (
     <svg viewBox="0 0 380 236" role="img" aria-label={label}>
@@ -325,7 +325,7 @@ function Route({ distance, duree, vitesse }: { distance: Cote; duree: Cote; vite
   );
 }
 
-function Ombre({ unit, baton, ombreBaton, hauteur, ombre }: { unit: string; baton: Cote; ombreBaton: Cote; hauteur: Cote; ombre: Cote }) {
+function Ombre({ unit, baton, ombreBaton, hauteur, ombre }: { unit: string; baton: Side; ombreBaton: Side; hauteur: Side; ombre: Side }) {
   // Le coefficient entre les deux triangles, depuis la paire connue ; le dessin garde le mât et son ombre fixes.
   const k =
     typeof hauteur === 'number' && typeof baton === 'number' ? hauteur / baton : typeof ombre === 'number' && typeof ombreBaton === 'number' ? ombre / ombreBaton : 2;

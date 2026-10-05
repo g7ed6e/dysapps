@@ -4,7 +4,7 @@
 import { DEFAULT_SETTINGS, retenirReglages, type Lv2Choice } from '../../core/settings';
 import { BLOC, BIOMES, BLOCKS, type BiomeId } from '../biomes';
 import { grantAccess } from './archipelago';
-import { voisinsDe } from './linkGeometry';
+import { neighboursOf } from './linkGeometry';
 import { buildingStages } from './architect';
 import { DEPTH_DU_SOL, GRASS } from './decor';
 import { luminance } from './palette';
@@ -36,10 +36,10 @@ it('les îles de la LV2 : le Relais au 5e, le Jardin des heures au 4e, le Refuge
 it('l’île de la LV2 n’élargit jamais le cadrage de sa voisine (cadrage d’avant) ; depuis elle, la voisine compte', () => {
   for (const lv2 of LV2) {
     const box = landBox(islandDef(lv2));
-    for (const voisine of voisinsDe(lv2)) {
+    for (const voisine of neighboursOf(lv2)) {
       const z = viewZone(voisine);
       // Sans l'île de la LV2 : la zone de la voisine et de ses autres voisines seulement.
-      const ids = [voisine, ...voisinsDe(voisine).filter((id) => id !== lv2)];
+      const ids = [voisine, ...neighboursOf(voisine).filter((id) => id !== lv2)];
       const boxes = ids.map((id) => landBox(islandDef(id)));
       expect(z).toEqual({
         minX: Math.min(...boxes.map((x) => x.x0)),

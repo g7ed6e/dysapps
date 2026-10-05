@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { BRIDGES } from './archipelago';
+import { BRIDGES, linkKind } from './archipelago';
 import { archipelagoOfIsland } from './archipelagos';
 import { toutConstruit } from './budget';
 import { Pinceau } from './decor/brush';
@@ -14,9 +14,9 @@ describe('Les ponts de pierre et de bois du 5e (lot R5, Archipéo seulement)', (
   it('sont cinq ponts du 5e (le Relais des voyageurs compris), de vrais ponts', () => {
     const ponts = BRIDGES.filter((b) => PONTS_DE_PIERRE_ET_DE_BOIS.has(b.id));
     expect(ponts.map((b) => b.id).sort()).toEqual([...PONTS_DE_PIERRE_ET_DE_BOIS].sort());
-    for (const b of ponts) expect(b.kind).toBe('pont');
+    for (const b of ponts) expect(linkKind(b, village.links)).toBe('pont');
     // Depuis GD-9, chaque paire de lieux a sa liaison : ces cinq-là sont des ponts du 5e parmi d'autres.
-    expect(BRIDGES.filter((b) => b.kind === 'pont' && archipelagoOfIsland(b.from) === '5e').map((b) => b.id)).toEqual(expect.arrayContaining([...PONTS_DE_PIERRE_ET_DE_BOIS]));
+    expect(BRIDGES.filter((b) => linkKind(b, village.links) === 'pont' && archipelagoOfIsland(b.from) === '5e').map((b) => b.id)).toEqual(expect.arrayContaining([...PONTS_DE_PIERRE_ET_DE_BOIS]));
     expect(poses.length).toBeGreaterThan(0);
   });
 
@@ -28,7 +28,7 @@ describe('Les ponts de pierre et de bois du 5e (lot R5, Archipéo seulement)', (
       const def = BRIDGES.find((b) => b.id === p.id);
       if (!def) throw new Error(`ouvrage inconnu : ${p.id}`);
       expect(p.construit).toBe(true);
-      expect(p.cases).toHaveLength(bridgePath(def).length);
+      expect(p.cases).toHaveLength(bridgePath(def, village.links).length);
       // D'une case à la suivante, un pas d'une case.
       for (let i = 1; i < p.cases.length; i++) expect(Math.abs(p.cases[i].x - p.cases[i - 1].x) + Math.abs(p.cases[i].y - p.cases[i - 1].y)).toBe(1);
     }

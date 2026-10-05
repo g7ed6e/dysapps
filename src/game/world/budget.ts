@@ -8,7 +8,7 @@
 import { AVATAR_PARTS } from '../Avatar';
 import { BIOMES, type BlockId } from '../biomes';
 import { CATALOG } from '../exercises';
-import { ARCHIPELAGOS, grantAccess, relierLaRegion, VOYAGES } from './archipelago';
+import { ARCHIPELAGOS, grantAccess, linkWholeRegion, VOYAGES } from './archipelago';
 import { ALTITUDE, type ArchipelagoId, DANS_LE_CIEL, mapOf } from './map';
 import { appelsDuSol, champDuSol, landMesh, poseDuDecor, trianglesDuSol } from './landMesh';
 import { modelerLeSol } from './drawnModel';
@@ -23,7 +23,7 @@ import { coutDeLaConstruction, coutDesPiliers, maillageDeLaConstruction, piliers
 import { formeDeBaleine, formeDeNuage, formeDOiseau, nuagesDe, oiseauxDe, planeurDe, trianglesDe } from './fauna';
 import { MAST_TOP, VEHICLE_STAGES } from './vehicle';
 import { bridge, type CaseDOuvrage } from './terrain/links';
-import { LONGUEUR_COURTE, LONGUEUR_LONGUE } from './routing';
+import { SHORT_LENGTH, LONG_LENGTH } from './routing';
 import type { BridgeKind } from './archipelago';
 import type { VoxelCube } from './cube';
 import { COMMANDES } from './requests';
@@ -42,7 +42,7 @@ export const RENDER_BUDGET = {
  * Le plafond du monde en blocs (Blocland), tout construit : mesuré au lot R0 (77 216 triangles et 234 appels aux
  * Premiers Rivages), il l'empêche seulement de grossir ; les liaisons du port (GD-7) et les petites constructions des
  * commandes y tiennent (`sceneCost`). Relevé de 80 000 à 88 000 triangles pour GD-9 (mainteneur, 5 octobre 2026) : les
- * liaisons tracées par le jeu, au pire toutes au plus long, et les réunions y tiennent (`pireCasDeLaRegion`) ; aucun
+ * liaisons tracées par le jeu, au pire toutes au plus long, et les réunions y tiennent (`worstCaseOfRegion`) ; aucun
  * matériau nouveau, les appels ne bougent pas.
  */
 export const PLAFOND_DU_MONDE_EN_BLOCS = { triangles: 88_000, drawCalls: 240 } as const;
@@ -165,8 +165,8 @@ export function toutConstruit() {
   ]);
   const plans = Object.fromEntries([...PLANS, ...VEHICLE_STAGES, ...MONUMENTS].map((p) => [p.id, planCells(p).map((c) => c.key)]));
   // Chaque région toute reliée (GD-9), la liaison la plus courte vers chaque lieu ; un lieu qu'aucune liaison n'atteint
-  // (une disposition à l'étroit) s'ouvre quand même (`grantAccess`). Le pire cas des liaisons se compte à part (`pireCasDeLaRegion`).
-  const relie = ARCHIPELAGOS.reduce<string[]>((links, a) => relierLaRegion(a.classe, links), VOYAGES.map((v) => v.id));
+  // (une disposition à l'étroit) s'ouvre quand même (`grantAccess`). Le pire cas des liaisons se compte à part (`worstCaseOfRegion`).
+  const relie = ARCHIPELAGOS.reduce<string[]>((links, a) => linkWholeRegion(a.classe, links), VOYAGES.map((v) => v.id));
   const bridges = grantAccess(relie, BIOMES.map((b) => b.id));
   return { progress, world: { parts: plans, log: [], links: bridges } };
 }
@@ -235,21 +235,21 @@ function archipelArchipeo(a: ArchipelagoId, trophees: readonly BlockId[] = [], c
  * Les liaisons d'une région de `n` lieux, au plus (GD-9) : deux liaisons ne se croisent jamais et ne coupent aucun lieu,
  * si bien que les lieux et leurs liaisons forment un graphe planaire, qui a au plus 3n − 6 arêtes (n ≥ 3).
  */
-export function liaisonsAuPlus(n: number): number {
+export function maxLinks(n: number): number {
   return Math.max(n - 1, 3 * n - 6);
 }
 
 /** Ce que coûte au plus une réunion de deux lieux (la bande de terre qui les joint), en triangles (GD-9). */
-export const TRIANGLES_D_UNE_REUNION = 150;
+export const TRIANGLES_OF_A_JOIN = 150;
 
 /** Le coin d'une liaison en L : dans Blocland, un cube plein de plus (12 triangles au plus). */
-export const TRIANGLES_DU_COIN = 12;
+export const TRIANGLES_OF_A_BEND = 12;
 
 /**
  * Une liaison en L de `longueur` cases, à son coude au milieu, à l'altitude de sa région : les cubes que le terrain y
  * pose (`bridge`, ./terrain/links.ts), seuls (sans le terrain pour cacher une face : le pire).
  */
-export function cubesDUneLiaison(a: ArchipelagoId, kind: BridgeKind, longueur: number): VoxelCube[] {
+export function linkCubes(a: ArchipelagoId, kind: BridgeKind, longueur: number): VoxelCube[] {
   const z = ALTITUDE[a];
   const moitie = Math.floor(longueur / 2);
   const path: CaseDOuvrage[] = [];
@@ -257,22 +257,22 @@ export function cubesDUneLiaison(a: ArchipelagoId, kind: BridgeKind, longueur: n
     path.push(i < moitie ? { x: 1000 + i, y: 1000, z, climbing: false, dx: 1, dy: 0 } : { x: 1000 + moitie - 1, y: 1000 + i - moitie + 1, z, climbing: false, dx: 0, dy: 1 });
   const ids = mapOf(a);
   const cubes: VoxelCube[] = [];
-  bridge({ id: 'pire', from: ids[0].id, to: ids[1].id, kind, cost: 0 }, cubes, false, new Set(), path);
+  bridge({ id: 'pire', from: ids[0].id, to: ids[1].id, cost: 0 }, kind, path, cubes, false, new Set());
   return cubes;
 }
 
-/** Les triangles d'une liaison au plus long (`cubesDUneLiaison`), son coin compris. */
-export function trianglesDUneLiaison(a: ArchipelagoId, kind: BridgeKind, longueur: number): number {
-  return faceCount(buildMesh(cubesDUneLiaison(a, kind, longueur))) * 2 + TRIANGLES_DU_COIN;
+/** Les triangles d'une liaison au plus long (`linkCubes`), son coin compris. */
+export function linkTriangles(a: ArchipelagoId, kind: BridgeKind, longueur: number): number {
+  return faceCount(buildMesh(linkCubes(a, kind, longueur))) * 2 + TRIANGLES_OF_A_BEND;
 }
 
 /**
  * Le pire cas d'une région aménagée (GD-9), tout construit, commandes posées et bulles comprises : le monde d'aujourd'hui
- * sans ses liaisons (`base`), puis autant de liaisons que l'élève peut en poser (`liaisonsAuPlus`), toutes au plus long —
+ * sans ses liaisons (`base`), puis autant de liaisons que l'élève peut en poser (`maxLinks`), toutes au plus long —
  * celles qui ouvrent un lieu (lieux − 1, longues : des bacs de 96 cases sur la mer, des ponts dans le ciel), les autres
  * des raccourcis entre lieux ouverts (36 cases au plus, `SHORT_LINK`) — et les réunions (lieux − 1).
  */
-export function pireCasDeLaRegion(a: ArchipelagoId): { base: number; liaisons: number; reunions: number; triangles: number; drawCalls: number } {
+export function worstCaseOfRegion(a: ArchipelagoId): { base: number; liaisons: number; reunions: number; triangles: number; drawCalls: number } {
   const { progress, world } = toutConstruitAvecLesCommandes();
   const terrain = worldCubes(a, progress, world, false);
   const scene = sceneCost(a, true);
@@ -280,10 +280,10 @@ export function pireCasDeLaRegion(a: ArchipelagoId): { base: number; liaisons: n
   const liaisonsDAujourdhui = (faceCount(buildMesh(terrain)) - faceCount(buildMesh(terrain.filter((c) => !c.bridge)))) * 2;
   const base = scene.triangles + signes.triangles - liaisonsDAujourdhui;
   const lieux = mapOf(a).length;
-  const longue = trianglesDUneLiaison(a, DANS_LE_CIEL[a] ? 'pont' : 'bac', LONGUEUR_LONGUE);
-  const raccourci = trianglesDUneLiaison(a, 'pont', LONGUEUR_COURTE);
-  const liaisons = (lieux - 1) * longue + (liaisonsAuPlus(lieux) - (lieux - 1)) * raccourci;
-  const reunions = (lieux - 1) * TRIANGLES_D_UNE_REUNION;
+  const longue = linkTriangles(a, DANS_LE_CIEL[a] ? 'pont' : 'bac', LONG_LENGTH);
+  const raccourci = linkTriangles(a, 'pont', SHORT_LENGTH);
+  const liaisons = (lieux - 1) * longue + (maxLinks(lieux) - (lieux - 1)) * raccourci;
+  const reunions = (lieux - 1) * TRIANGLES_OF_A_JOIN;
   return { base, liaisons, reunions, triangles: base + liaisons + reunions, drawCalls: scene.drawCalls + signes.drawCalls };
 }
 
@@ -304,7 +304,7 @@ export function decorCost(a: ArchipelagoId): { triangles: number; drawCalls: num
   const { champ, elements } = archipelArchipeo(a);
   const decor = coutDuDecor(maillageDuDecor(a, champ, elements));
   // Les bancs de brume (R4b-5e) : dans l'enveloppe du décor, un appel de dessin.
-  const brume = trianglesDeLaBrume(a);
+  const brume = trianglesDeLaBrume(a, toutConstruit().world.links);
   return { triangles: decor.triangles + brume, drawCalls: decor.drawCalls + (brume ? 1 : 0) };
 }
 
@@ -321,7 +321,7 @@ export function merCost(a: ArchipelagoId): { triangles: number; drawCalls: numbe
  */
 export function fauneCost(a: ArchipelagoId): { triangles: number; drawCalls: number } {
   const familles = [
-    { n: whaleSpots(a).length, t: trianglesDe(formeDeBaleine()) },
+    { n: whaleSpots(a, toutConstruit().world.links).length, t: trianglesDe(formeDeBaleine()) },
     // Les oiseaux, et le planeur des Îles du Ciel (une instance de plus).
     { n: oiseauxDe(a).nombre + (planeurDe(a, worldBounds(a)) ? 1 : 0), t: trianglesDe(formeDOiseau()) },
     { n: nuagesDe(a).length, t: trianglesDe(formeDeNuage()) },

@@ -178,6 +178,12 @@ export interface WorldViewProps {
   /** Les ouvrages construits : la vue d'ensemble cadre les îles ouvertes et leurs voisines. */
   bridges?: string[];
   /**
+   * Une liaison montrée en fantôme depuis un autre départ (GD-9, « Partir d'une autre île ») : la caméra tient son
+   * départ et son arrivée dans la place libre au-dessus de la fiche (`cadreDeLaLiaison`), comme une longue traversée ;
+   * d'un coup quand l'appareil demande moins d'animations. La vue simple l'ignore.
+   */
+  liaisonCadree?: string | null;
+  /**
    * Une flèche jaune qui flotte au-dessus d'une île (« Commence ici »), d'un point (le chantier du navire) ou, sur la
    * Carte, d'un ouvrage (la prochaine destination est un ouvrage à construire, GD-7) : posée sur sa liaison, côté île de
    * départ (`placesDeLaFleche`), avec l'icône d'un ouvrage.

@@ -4,30 +4,30 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import type { BiomeId } from '../biomes';
 import { toutConstruit } from './budget';
-import { coeurDe, graineDuDessin, islandDef, isLand, isLandDuMonde, landBox, landscape, lieuDeDepart } from './map';
+import { coeurDe, graineDuDessin, islandDef, isLand, isLandInWorld, landBox, landscape, startingIsland } from './map';
 import {
-  coteTourne,
-  COTES,
-  detournerLaCase,
+  turnedSide,
+  SIDES,
+  unturnCell,
   ORIENTATIONS,
-  poserLesLieux,
+  placeIslands,
   type Quarts,
-  tournerLaCase,
-  tournerLaDirection,
-  tournerLeModele,
-  tournerLePoint,
-  tournerLeRectangle,
+  turnCell,
+  turnDirection,
+  turnModel,
+  turnPoint,
+  turnRectangle,
 } from './placement';
 import { grilleDe } from './grid';
 import { avatarHome, bossIsletCenter, creaturePlacements, cubesDeLIle, guardianPlacements, placeDoor, questStations, versLaCamera, viewYaw, worldCubes } from './terrain';
 import type { VoxelCube } from './cube';
 
-afterEach(() => poserLesLieux(null));
+afterEach(() => placeIslands(null));
 
 /** Pose un lieu à `dx`, `dy` cases de sa place de départ, tourné de `q` quarts de tour. */
 function poser(id: BiomeId, dx: number, dy: number, q: Quarts): void {
-  const d = lieuDeDepart(id);
-  poserLesLieux(new Map([[id, { x: d.core.x + dx, y: d.core.y + dy, quarts: q }]]));
+  const d = startingIsland(id);
+  placeIslands(new Map([[id, { x: d.core.x + dx, y: d.core.y + dy, quarts: q }]]));
 }
 
 /** Un cube, son nom de décor (qui porte sa case du monde) ramené dans le repère du lieu (`graineDuDessin`, la disposition du moment). */
@@ -51,29 +51,29 @@ describe('un quart de tour', () => {
       for (let x = debut; x < fin; x++)
         for (let y = debut; y < fin; y++)
           for (const q of ORIENTATIONS) {
-            const t = tournerLaCase(x, y, q);
+            const t = turnCell(x, y, q);
             expect(t.x >= debut && t.x < fin && t.y >= debut && t.y < fin).toBe(true);
-            expect(detournerLaCase(t.x, t.y, q)).toEqual({ x, y });
+            expect(unturnCell(t.x, t.y, q)).toEqual({ x, y });
             let p = { x, y };
-            for (let i = 0; i < 4; i++) p = tournerLaCase(p.x, p.y, 1);
+            for (let i = 0; i < 4; i++) p = turnCell(p.x, p.y, 1);
             expect(p).toEqual({ x, y });
           }
   });
 
   it('le devant passe à gauche, une case et son milieu tournent de même', () => {
-    expect(coteTourne('devant', 1)).toBe('gauche');
-    expect(COTES.map((c) => coteTourne(c, 2))).toEqual(['derriere', 'gauche', 'devant', 'droite']);
-    expect(tournerLaDirection(0, -1, 1)).toEqual({ dx: -1, dy: 0 });
+    expect(turnedSide('devant', 1)).toBe('gauche');
+    expect(SIDES.map((c) => turnedSide(c, 2))).toEqual(['derriere', 'gauche', 'devant', 'droite']);
+    expect(turnDirection(0, -1, 1)).toEqual({ dx: -1, dy: 0 });
     for (const q of ORIENTATIONS) {
-      const c = tournerLaCase(3, 5, q);
-      expect(tournerLePoint(3.5, 5.5, q)).toEqual({ x: c.x + 0.5, y: c.y + 0.5 });
+      const c = turnCell(3, 5, q);
+      expect(turnPoint(3.5, 5.5, q)).toEqual({ x: c.x + 0.5, y: c.y + 0.5 });
     }
   });
 
   it('un rectangle échange sa largeur et sa profondeur à chaque quart', () => {
     const r = { x0: -4, y0: -3, x1: 22, y1: 19 };
     for (const q of ORIENTATIONS) {
-      const t = tournerLeRectangle(r, q);
+      const t = turnRectangle(r, q);
       const [w, d] = q % 2 ? [r.y1 - r.y0, r.x1 - r.x0] : [r.x1 - r.x0, r.y1 - r.y0];
       expect([t.x1 - t.x0, t.y1 - t.y0]).toEqual([w, d]);
     }
@@ -85,12 +85,12 @@ describe('un quart de tour', () => {
       { x: 2, y: 0 },
       { x: 2, y: 1 },
     ];
-    expect(tournerLeModele(m, 1)).toEqual([
+    expect(turnModel(m, 1)).toEqual([
       { x: 0, y: 2 },
       { x: 0, y: 0 },
       { x: 1, y: 0 },
     ]);
-    expect(tournerLeModele(tournerLeModele(m, 2), 2)).toEqual(m);
+    expect(turnModel(turnModel(m, 2), 2)).toEqual(m);
   });
 });
 
@@ -141,13 +141,13 @@ describe('un lieu tourné (GD-9, L1), dans les quatre orientations', () => {
         const cellsOf = (p: { origin: { x: number; y: number; z: number }; cubes: { x: number; y: number; z: number }[] }) =>
           p.cubes.map((c) => `${p.origin.x + c.x},${p.origin.y + c.y},${p.origin.z + c.z}`).sort();
         const tourne = (x: number, y: number) => {
-          const t = tournerLaCase(x - def0.core.x, y - def0.core.y, q);
+          const t = turnCell(x - def0.core.x, y - def0.core.y, q);
           return { x: def0.core.x + t.x, y: def0.core.y + t.y };
         };
 
         // Les cubes attendus : les mêmes, tournés d'un bloc autour du milieu du cœur (bornes, bâtiments, îlot du Gardien
         // compris), leur nom de décor dans le repère du lieu.
-        const attendus = cubes0.map((c) => JSON.stringify({ ...sansNomBrut(c), ...tournerLaCase(c.x, c.y, q) })).sort();
+        const attendus = cubes0.map((c) => JSON.stringify({ ...sansNomBrut(c), ...turnCell(c.x, c.y, q) })).sort();
 
         poser(id, 0, 0, q);
         const def = islandDef(id);
@@ -158,7 +158,7 @@ describe('un lieu tourné (GD-9, L1), dans les quatre orientations', () => {
         const box = landBox(def);
         expect([box.x1 - box.x0, box.y1 - box.y0]).toEqual(q % 2 ? [box0.y1 - box0.y0, box0.x1 - box0.x0] : [box0.x1 - box0.x0, box0.y1 - box0.y0]);
         // La terre se lit tournée dans le monde.
-        expect(isLandDuMonde(def, tourne(def0.core.x + 8, def0.core.y - 1).x, tourne(def0.core.x + 8, def0.core.y - 1).y)).toBe(isLand(def0, def0.core.x + 8, def0.core.y - 1));
+        expect(isLandInWorld(def, tourne(def0.core.x + 8, def0.core.y - 1).x, tourne(def0.core.x + 8, def0.core.y - 1).y)).toBe(isLand(def0, def0.core.x + 8, def0.core.y - 1));
         // La place du bonhomme, les portes, l'îlot, le Gardien, la créature.
         expect(avatarHome(id)).toEqual({ ...tourne(home0.x, home0.y), z: home0.z });
         (['school', 'trophies', 'assembly'] as const).forEach((p, i) => {
@@ -188,7 +188,7 @@ describe('un lieu tourné (GD-9, L1), dans les quatre orientations', () => {
         }
         // La vue du lieu tourne avec lui.
         expect(viewYaw(id)).toBeCloseTo(yaw0 + (q * Math.PI) / 2, 9);
-        const d = tournerLaDirection(vers0[0], vers0[1], q);
+        const d = turnDirection(vers0[0], vers0[1], q);
         const vers = versLaCamera(id);
         expect(vers[0]).toBeCloseTo(d.dx, 9);
         expect(vers[1]).toBeCloseTo(d.dy, 9);

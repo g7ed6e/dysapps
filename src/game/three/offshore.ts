@@ -133,7 +133,7 @@ export function creerLarge(
   const bellyMat = new THREE.MeshLambertMaterial({ color: 0xc9d6e2 });
   const spoutMat = new THREE.MeshLambertMaterial({ color: 0xf4f8fb, transparent: true, opacity: 0.85 });
   const whales: ({ group: THREE.Group; fluke: THREE.Mesh; spout: THREE.Group; skin: THREE.Mesh[] } & Ronde)[] = [];
-  whaleSpots(archipel).forEach((spot, i) => {
+  whaleSpots(archipel, monde.liaisons()).forEach((spot, i) => {
     const group = new THREE.Group();
     const body = new THREE.Mesh(new THREE.BoxGeometry(3.4, 1.3, 1.5), whaleMat);
     const head = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.1, 1.3), whaleMat);
@@ -277,7 +277,7 @@ export function creerLarge(
           // Vers la caméra de la vue de l'île (le même pivot que le cadrage) : le passage se voit depuis cette vue.
           const yaw = -viewYaw(wp.island);
           const toCamera = { x: ISLAND_VIEW.dx * Math.cos(yaw) - ISLAND_VIEW.dy * Math.sin(yaw), y: ISLAND_VIEW.dx * Math.sin(yaw) + ISLAND_VIEW.dy * Math.cos(yaw) };
-          const route = whales.length > 0 ? whalePassRoute(wp.island, toCamera, camera.aspect < 0.9) : null;
+          const route = whales.length > 0 ? whalePassRoute(wp.island, monde.liaisons(), toCamera, camera.aspect < 0.9) : null;
           const i = route ? passingWhale(whales.map((wh) => ({ x: wh.cx, y: wh.cy })), route) : -1;
           if (route && i >= 0) {
             pass = { whale: i, route, heading: Math.atan2(-(route.to.y - route.from.y), route.to.x - route.from.x), start: t, blown: false };

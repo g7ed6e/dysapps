@@ -10,13 +10,13 @@ import { DECOR, decorate } from '../decor';
 import { zoneDesPlans } from '../plans';
 import { isBiomeUnlocked, islandsOf } from '../archipelago';
 import type { VoxelCube } from '../cube';
-import { tournerLaDirection, tournerLeModelePose } from '../placement';
+import { turnDirection, turnPlacedModel } from '../placement';
 import { cacheUnLieu, lieuxVus, placeCells, portesDesLieux } from './village';
 import { versLaCameraDuDessin } from './view';
 import { AVATAR_HOME, groundHeight, islandOrigin, LAYOUT_PAD } from './base';
 import { questStations } from './markers';
 import { amorcesDuDessin } from './links';
-import { cacheDeLaDisposition } from '../placement';
+import { layoutCache } from '../placement';
 
 /** Les pas d'une créature qui se promène : une case à gauche ou en arrière (jamais vers les plans). */
 export const CREATURE_STEPS: [number, number][] = [
@@ -69,7 +69,7 @@ export const creatureDuMonde = (id: BiomeId): CubeDeModele[] => tourne('creature
 export const gardienDuMonde = (id: BiomeId): CubeDeModele[] => tourne('gardien', id, GUARDIAN_CUBES[id]);
 
 // Par île et par LV2 : la place de la créature évite les bornes, dont le nombre suit la LV2 sur l'île de la LV2.
-const creatureSpots = cacheDeLaDisposition<string, CreatureSpot>();
+const creatureSpots = layoutCache<string, CreatureSpot>();
 
 export interface CreatureSpot {
   x: number;
@@ -119,7 +119,7 @@ export function creatureSpot(id: BiomeId): CreatureSpot {
 }
 
 // Par île et par LV2 : le sol libre où la créature et la petite construction de sa commande peuvent se poser.
-const solsLibres = cacheDeLaDisposition<string, (x: number, y: number) => boolean>();
+const solsLibres = layoutCache<string, (x: number, y: number) => boolean>();
 
 /**
  * Les cases du sol d'une île (relatives au cœur) où rien n'est posé : ni le décor, ni les bornes et leur pourtour, ni la
@@ -180,9 +180,9 @@ export function creaturePlacements(
       const spot = creatureSpot(b.id);
       // Sur le lieu tourné (GD-9), la créature et ses pas tournent avec lui.
       const def = islandDef(b.id);
-      const pose = tournerLeModelePose(def.core, { x: ox + spot.x, y: oy + spot.y, z: oz + 1 }, creatureDuMonde(b.id), def.quarts);
+      const pose = turnPlacedModel(def.core, { x: ox + spot.x, y: oy + spot.y, z: oz + 1 }, creatureDuMonde(b.id), def.quarts);
       const steps = spot.steps.map(([dx, dy]): [number, number] => {
-        const t = tournerLaDirection(dx, dy, def.quarts);
+        const t = turnDirection(dx, dy, def.quarts);
         return [t.dx, t.dy];
       });
       return { id: b.id, cubes: pose.cubes as VoxelCube[], origin: pose.origine, steps };

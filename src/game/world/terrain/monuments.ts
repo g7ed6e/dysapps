@@ -2,7 +2,7 @@
 import { type ArchipelagoId, DANS_LE_CIEL, landCells, mapOf } from '../map';
 import { BIOMES, BLOC, BLOCKS } from '../../biomes';
 import { getArchipelago } from '../archipelago';
-import { liaisonsPoseesDe } from '../linkGeometry';
+import { placedLinksOf } from '../linkGeometry';
 import { dockBox, dockOrigin } from '../harbor';
 import { MONUMENT_ISLET, type MonumentDef, monumentsOf } from '../monuments';
 import { ORIGINE_DES_MONUMENTS, planCells, type PlanDef, planOrigin } from '../plans';
@@ -18,7 +18,7 @@ import { DEPTH, origineDe, taperLayers, TEXTURES } from './base';
  * Où un îlot de monument ne va pas : la terre des îles et leur abord (trois cases), les îlots des Gardiens, le port et sa
  * jetée, les ouvrages et leur abord, la place des baleines. Sert à placer les monuments (une fois) et à le vérifier.
  */
-export function monumentBlocked(a: ArchipelagoId): (x: number, y: number) => boolean {
+export function monumentBlocked(a: ArchipelagoId, links: readonly string[]): (x: number, y: number) => boolean {
   const solid = new Set<string>();
   const near = (x: number, y: number, r: number) => {
     for (let dx = -r; dx <= r; dx++) for (let dy = -r; dy <= r; dy++) solid.add(`${x + dx},${y + dy}`);
@@ -28,15 +28,15 @@ export function monumentBlocked(a: ArchipelagoId): (x: number, y: number) => boo
     const o = bossIsletOrigin(BIOMES.findIndex((b) => b.id === def.id));
     for (let x = 0; x < ISLET_W; x++) for (let y = 0; y < ISLET_H; y++) near(o.x + x, o.y + y, 2);
   }
-  for (const def of liaisonsPoseesDe(a)) for (const c of bridgePath(def)) near(c.x, c.y, 3);
+  for (const def of placedLinksOf(a, links)) for (const c of bridgePath(def, links)) near(c.x, c.y, 3);
   const dock = dockBox(getArchipelago(a).port);
   for (let x = dock.x0; x <= dock.x1; x++) for (let y = dock.y0; y <= dock.y1; y++) near(x, y, 3);
-  const whales = whaleSpots(a);
+  const whales = whaleSpots(a, links);
   return (x, y) => solid.has(`${x},${y}`) || whales.some((w) => Math.hypot(w.x - x, w.y - y) < w.r + 2);
 }
 
 /** L'îlot d'un monument est-il libre (toutes ses cases) ? */
-export function monumentIsletFree(a: ArchipelagoId, x0: number, y0: number, blocked = monumentBlocked(a)): boolean {
+export function monumentIsletFree(a: ArchipelagoId, links: readonly string[], x0: number, y0: number, blocked = monumentBlocked(a, links)): boolean {
   for (let x = x0; x < x0 + MONUMENT_ISLET; x++) for (let y = y0; y < y0 + MONUMENT_ISLET; y++) if (blocked(x, y)) return false;
   return true;
 }

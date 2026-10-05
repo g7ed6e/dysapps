@@ -107,8 +107,10 @@ it('la vue d’ensemble cadre les îles ouvertes et leurs voisines, puis s’él
 it('une île fermée dit l’ouvrage précis qui y mène, ou l’île à ouvrir d’abord', () => {
   const fresh = sanitizeState({});
   expect(lockedHint(fresh, 'french-6e-letter-confusion')).toBe('Pas si vite ! Pour venir ici, pose le sentier depuis Forêt des sons : 4 blocs.');
-  // La Carrière : aucune liaison ne tient encore jusqu'à elle (GD-9).
-  expect(lockedHint(fresh, 'french-6e-word-spelling')).toBe(AUCUNE_LIAISON);
+  // La Carrière : aucune liaison directe ne tient encore jusqu'à elle (GD-9) ; on y vient en reliant d'abord la Mine.
+  expect(lockedHint(fresh, 'french-6e-word-spelling')).toBe('Relie d’abord Mine des lettres. De là, un ouvrage mène ici.');
+  // Sans aucun chemin, la phrase le dit simplement.
+  expect(AUCUNE_LIAISON).toBe('Pas de passage jusqu’ici pour l’instant.');
   // Dans les Anciens Ateliers, depuis l'Atelier : la liaison part du lieu relié le plus proche.
   const ateliers = sanitizeState({ world: { links: ['passage-5e', 'passage-4e'] } });
   expect(lockedHint(ateliers, 'english-4e-comprehension')).toBe('Pas si vite ! Pour venir ici, pose le pont depuis Atelier du calcul littéral : 5 blocs.');

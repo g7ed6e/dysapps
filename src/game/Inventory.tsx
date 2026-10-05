@@ -5,7 +5,7 @@ import { Syllabified } from '../components/Syllabified';
 import { BLOCKS, blockName, getBiome } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { BlockIcon } from './Voxel';
-import { KIND_NAME } from './world/archipelago';
+import { KIND_NAME, linkKind } from './world/archipelago';
 import { blocTrophee, inventoryUses, whereToEarn, type Use } from './world/uses';
 import { VEHICLE_NAME } from './world/vehicle';
 import { useUnivers } from '../core/SettingsContext';
@@ -103,7 +103,7 @@ function InventoryBody() {
                     </Link>
                   ) : (
                     <Link to={`/adventure/${r.ouvrage.from}?worksite=${encodeURIComponent(r.ouvrage.bridge.id)}`} className="tag tag-ok">
-                      <Icon name="ouvrage" /> {KIND_NAME[r.ouvrage.bridge.kind]} vers {getBiome(r.ouvrage.to)?.name}
+                      <Icon name="ouvrage" /> {KIND_NAME[linkKind(r.ouvrage.bridge, state.world.links)]} vers {getBiome(r.ouvrage.to)?.name}
                     </Link>
                   )}
                 </li>
@@ -171,7 +171,7 @@ function InventoryBody() {
             {laterOuvrages.map((o) => (
               <li key={o.bridge.id}>
                 <Link to={`/adventure/${o.from}?worksite=${encodeURIComponent(o.bridge.id)}`} className={`tag${o.enough ? ' tag-ok' : ''}`}>
-                  <Icon name="hammer" /> {KIND_NAME[o.bridge.kind]} vers {getBiome(o.to)?.name} : {o.bridge.cost} blocs
+                  <Icon name="hammer" /> {KIND_NAME[linkKind(o.bridge, state.world.links)]} vers {getBiome(o.to)?.name} : {o.bridge.cost} blocs
                 </Link>
               </li>
             ))}

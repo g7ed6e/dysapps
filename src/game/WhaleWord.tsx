@@ -10,7 +10,7 @@ import { loadJSON, saveJSON } from '../core/storage';
 import type { GameState } from './engine';
 import { hasSeenTutorial, markTutorialSeen } from './Tutorial';
 import type { ArchipelagoId } from './world/archipelago';
-import { reachedWhaleMoments, type WhaleMoment } from './world/whale';
+import { MAP_RESHAPED, mapReshapedMoment, playedBeforeReshape, reachedWhaleMoments, type WhaleMoment } from './world/whale';
 import { useHoldCelebrations } from '../components/Celebrations';
 import { Creature } from './Creatures';
 
@@ -19,6 +19,17 @@ import { Creature } from './Creatures';
 const STORAGE_KEY = 'guide-messages';
 
 type Said = Record<string, boolean>;
+
+/**
+ * L'annonce du changement de forme de la carte (GD-9) : à la première lecture de cette version, notée à dire pour une
+ * partie d'avant (`playedBeforeReshape`), déjà dite pour une partie neuve. Ensuite, la clé décide seule.
+ */
+export function initMapReshaped(state: Pick<GameState, 'world'>): void {
+  const said = loadJSON<Said>(STORAGE_KEY, {});
+  if (MAP_RESHAPED in said) return;
+  said[MAP_RESHAPED] = !playedBeforeReshape(state);
+  saveJSON(STORAGE_KEY, said);
+}
 
 function isSaid(m: WhaleMoment, said: Said): boolean {
   return m.id.startsWith('archipel-') ? hasSeenTutorial(m.id) : Boolean(said[m.id]);
@@ -52,13 +63,16 @@ function initWhaleMemory(state: Pick<GameState, 'progress' | 'world'>): void {
 export function useWhaleWord(state: Pick<GameState, 'progress' | 'world'>, a: ArchipelagoId, ready = true) {
   const [tick, setTick] = useState(() => {
     initWhaleMemory(state);
+    initMapReshaped(state);
     return 0;
   });
-  const moments = useMemo(() => reachedWhaleMoments(state, a), [state, a]);
+  // L'annonce du changement de forme de la carte passe d'abord, une fois, dans l'archipel où l'on revient.
+  const moments = useMemo(() => [mapReshapedMoment(a), ...reachedWhaleMoments(state, a)], [state, a]);
   const said = useMemo(() => loadJSON<Said>(STORAGE_KEY, {}), [tick, moments]);
   const word = ready ? (moments.find((m) => !isSaid(m, said)) ?? null) : null;
   const close = () => {
-    markSaid(moments.filter((m) => !isSaid(m, said)));
+    // L'annonce ne se dit que pour elle : les étapes atteintes en même temps parlent ensuite.
+    markSaid(word?.kind === 'carte' ? [word] : moments.filter((m) => !isSaid(m, said)));
     setTick((t) => t + 1);
   };
   return { word, close };

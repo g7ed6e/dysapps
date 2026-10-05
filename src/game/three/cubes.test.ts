@@ -22,7 +22,7 @@ import { cubesDeLaVague, planDeLaVague, sansLaPartie } from '../world/wave';
 import { maillageDuFondu } from '../world/fadeMesh';
 
 function monde(habillage: Habillage): Monde {
-  return { scene: new THREE.Scene(), archipel: '6e', habillage, surface: null, etendue: { minX: 0, maxX: 10, minY: 0, maxY: 10 }, centre: { x: 5, y: 5 }, largeur: 10 };
+  return { scene: new THREE.Scene(), archipel: '6e', habillage, surface: null, etendue: { minX: 0, maxX: 10, minY: 0, maxY: 10 }, centre: { x: 5, y: 5 }, largeur: 10, liaisons: () => [] };
 }
 
 describe('Le rendu de Blocland ne montre aucune pièce d’architecture', () => {

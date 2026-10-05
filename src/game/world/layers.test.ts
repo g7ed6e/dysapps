@@ -53,7 +53,7 @@ const REGLES = [
   // Le contrat entre le jeu et ses dispositions (types seulement) : le jeu dit ce dont il a besoin.
   'world/layout',
   // La disposition des régions dans la sauvegarde (GD-9) : sa forme seulement ; qu'elle tienne se vérifie dans la grille.
-  'world/regionLayout',
+  'world/savedLayout',
 ];
 
 /** La disposition en grille : la place des îles, des chemins, du quai, en cases du monde. */

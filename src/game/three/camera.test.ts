@@ -8,13 +8,14 @@ import { repereDeLaVue } from '../world/framing';
 import { GRAND_PHARE_3E } from '../world/decor/3e';
 import { PHARE, PHARES } from '../world/decor/lighthouse';
 import { islandDef, landBox, mapOf } from '../world/map';
-import { BRIDGES, relierLaRegion, VOYAGES } from '../world/archipelago';
+import { BRIDGES, linkWholeRegion, VOYAGES } from '../world/archipelago';
 import { ARCHIPELAGO_IDS } from '../world/archipelagos';
-import { poserLesLiaisons, voisinsDe } from '../world/linkGeometry';
+import { neighboursOf } from '../world/linkGeometry';
 import { archipelagoOfIsland } from '../world/archipelagos';
-import { grilleDe } from '../world/grid';
+import { dispositionEnGrille } from '../world/grid';
 import { placeLibre, type Rect } from '../freeSpace';
-import { avatarRoute, cadreDeTraversee, islandCenter, worldBounds } from '../world/terrain';
+import { avatarRoute, bridgePath, cadreDeLaLiaison, cadreDeTraversee, islandCenter, worldBounds } from '../world/terrain';
+import { getBridge } from '../world/archipelago';
 import { AUTOUR_DE_LA_DESTINATION, cadrageDeLaCarte, cadrageDeLaTraversee, creerCamera, decalagePourViser, ECHELLE_MIN_DE_LA_TRAVERSEE, PLANCHER_DE_LA_CARTE } from './camera';
 import type { Derniers, Instant, Monde } from './scenePart';
 
@@ -31,7 +32,7 @@ function placer(habillage: Habillage, taille: { w: number; h: number }, focus: {
     surface: null,
     etendue: b,
     centre: { x: (b.minX + b.maxX) / 2, y: (b.minY + b.maxY) / 2 },
-    largeur: Math.max(b.maxX - b.minX, b.maxY - b.minY),
+    largeur: Math.max(b.maxX - b.minX, b.maxY - b.minY), liaisons: () => [],
   };
   const camera = new THREE.PerspectiveCamera(40, taille.w / taille.h, 0.5, 2000);
   const derniers = { current: { carte: false, focus, home, forceDay: true, whalePass: undefined, sons: false } as unknown as Derniers };
@@ -137,11 +138,10 @@ describe('La Carte dans la place libre (DA-31)', () => {
 
   it('la flèche posée sur un ouvrage (GD-7) : sa pointe reste dans la place libre, au large comme serré', () => {
     // Les liaisons posées de la partie : depuis GD-9, une liaison qui ne tient pas n'a ni tracé ni flèche.
-    const posees = [...new Set([...ARCHIPELAGO_IDS.flatMap((a) => relierLaRegion(a, VOYAGES.map((v) => v.id))), ...VOYAGES.map((v) => v.id)])];
-    poserLesLiaisons(posees);
+    const posees = [...new Set([...ARCHIPELAGO_IDS.flatMap((a) => linkWholeRegion(a, VOYAGES.map((v) => v.id))), ...VOYAGES.map((v) => v.id)])];
     for (const def of BRIDGES.filter((b) => posees.includes(b.id))) {
       const a = archipelagoOfIsland(def.from);
-      const m = grilleDe(a).placesDeLaFleche(def.id)[0];
+      const m = dispositionEnGrille(a, posees).placesDeLaFleche(def.id)[0];
       // La pointe, comme three/markers.ts la pose (`poserLaFleche`) : juste au-dessus du tablier.
       const pointe = { x: m.x + 0.5, y: m.y + 0.5, z: m.z + 2 };
       for (const libre of [
@@ -170,9 +170,9 @@ describe('La Carte dans la place libre (DA-31)', () => {
       // Les îles voisines (à moins de 45 cases) sont à l'écran, sous le panneau ; celles du sud au moins par leur
       // moitié haute (une île fait une trentaine de pixels de haut au plancher).
       const d0 = islandDef(dest);
-      // Les voisines : celles qu'un pont relie (GD-9, `voisinsDe`), à moins de 45 cases. Elles restent à l'écran ; aux
+      // Les voisines : celles qu'un pont relie (GD-9, `neighboursOf`), à moins de 45 cases. Elles restent à l'écran ; aux
       // Anciens Ateliers, dessinés en deux rangs (GD-9), une voisine du rang d'en face sort de la place libre.
-      for (const def of mapOf('4e').filter((d) => voisinsDe(dest).includes(d.id) && Math.hypot(d.core.x - d0.core.x, d.core.y - d0.core.y) < 45)) {
+      for (const def of mapOf('4e').filter((d) => neighboursOf(dest).includes(d.id) && Math.hypot(d.core.x - d0.core.x, d.core.y - d0.core.y) < 45)) {
         const q = centre(def.id, c, T);
         // Les Anciens Ateliers sont dessinés en deux rangs (GD-9) : une voisine du rang d'en face déborde la place
         // libre d'une demi-île (une trentaine de pixels au plancher), en haut comme en bas.
@@ -183,7 +183,7 @@ describe('La Carte dans la place libre (DA-31)', () => {
 
   it('la caméra ne suit pas le panneau : le cadrage ne dépend que de la place libre lue, et se recadre d’un coup quand le texte change', () => {
     const b = worldBounds('4e');
-    const monde: Monde = { scene: new THREE.Scene(), archipel: '4e', habillage: HABILLAGES.blocland, surface: null, etendue: b, centre: { x: 0, y: 0 }, largeur: 220 };
+    const monde: Monde = { scene: new THREE.Scene(), archipel: '4e', habillage: HABILLAGES.blocland, surface: null, etendue: b, centre: { x: 0, y: 0 }, largeur: 220, liaisons: () => [] };
     const camera = new THREE.PerspectiveCamera(40, T.w / T.h, 0.5, 2000);
     const derniers = { current: { carte: true, focus: { island: null }, home: 'maths-4e-powers', forceDay: true, sons: false } as unknown as Derniers };
     const instant: Instant = { now: 0, marche: false, traversee: null, navigue: null, carte: true, but: { target: new THREE.Vector3(), pos: new THREE.Vector3() } };
@@ -215,7 +215,7 @@ describe('La Carte dans la place libre (DA-31)', () => {
 
   it('glisser déplace la vue à plat, borné à l’archipel ; une nouvelle île ou la Carte l’efface, « Recentrer » aussi', () => {
     const b = worldBounds('6e');
-    const monde: Monde = { scene: new THREE.Scene(), archipel: '6e', habillage: HABILLAGES.blocland, surface: null, etendue: b, centre: { x: 0, y: 0 }, largeur: 200 };
+    const monde: Monde = { scene: new THREE.Scene(), archipel: '6e', habillage: HABILLAGES.blocland, surface: null, etendue: b, centre: { x: 0, y: 0 }, largeur: 200, liaisons: () => [] };
     const camera = new THREE.PerspectiveCamera(40, 1024 / 688, 0.5, 2000);
     const derniers = { current: { carte: false, focus: { island: 'french-6e-phonology', seq: 1 }, home: 'french-6e-phonology', forceDay: true, sons: false } as unknown as Derniers };
     const instant: Instant = { now: 0, marche: false, traversee: null, navigue: null, carte: false, but: { target: new THREE.Vector3(), pos: new THREE.Vector3() } };
@@ -262,7 +262,7 @@ describe('La Carte dans la place libre (DA-31)', () => {
 
   it('la Carte se zoome : de son cadrage d’ouverture jusqu’à une île en gros plan, le point visé reste sous le doigt ; la Carte refermée l’efface', () => {
     const b = worldBounds('6e');
-    const monde: Monde = { scene: new THREE.Scene(), archipel: '6e', habillage: HABILLAGES.blocland, surface: null, etendue: b, centre: { x: 0, y: 0 }, largeur: 200 };
+    const monde: Monde = { scene: new THREE.Scene(), archipel: '6e', habillage: HABILLAGES.blocland, surface: null, etendue: b, centre: { x: 0, y: 0 }, largeur: 200, liaisons: () => [] };
     const camera = new THREE.PerspectiveCamera(40, T.w / T.h, 0.5, 2000);
     const derniers = { current: { carte: true, focus: { island: null, seq: 1 }, home: 'french-6e-phonology', forceDay: true, sons: false } as unknown as Derniers };
     const instant: Instant = { now: 0, marche: false, traversee: null, navigue: null, carte: true, but: { target: new THREE.Vector3(), pos: new THREE.Vector3() } };
@@ -314,7 +314,7 @@ describe('La Carte dans la place libre (DA-31)', () => {
 
   it('poser met la caméra d’un coup à son cadrage et rend l’écart qu’il restait (les captures)', () => {
     const b = worldBounds('6e');
-    const monde: Monde = { scene: new THREE.Scene(), archipel: '6e', habillage: HABILLAGES.blocland, surface: null, etendue: b, centre: { x: 0, y: 0 }, largeur: 200 };
+    const monde: Monde = { scene: new THREE.Scene(), archipel: '6e', habillage: HABILLAGES.blocland, surface: null, etendue: b, centre: { x: 0, y: 0 }, largeur: 200, liaisons: () => [] };
     const camera = new THREE.PerspectiveCamera(40, 1024 / 688, 0.5, 2000);
     const derniers = { current: { carte: false, focus: { island: 'french-6e-phonology', seq: 1 }, home: 'french-6e-phonology', forceDay: true, sons: false } as unknown as Derniers };
     const instant: Instant = { now: 0, marche: false, traversee: null, navigue: null, carte: false, but: { target: new THREE.Vector3(), pos: new THREE.Vector3() } };
@@ -348,7 +348,7 @@ describe('Une longue traversée (GD-7)', () => {
       surface: null,
       etendue: b,
       centre: { x: (b.minX + b.maxX) / 2, y: (b.minY + b.maxY) / 2 },
-      largeur: Math.max(b.maxX - b.minX, b.maxY - b.minY),
+      largeur: Math.max(b.maxX - b.minX, b.maxY - b.minY), liaisons: () => [],
     };
     const camera = new THREE.PerspectiveCamera(40, ARCHIPEL.w / ARCHIPEL.h, 0.5, 2000);
     const derniers = { current: { carte: false, focus: { island: null, seq: 0 }, home: 'maths-6e-calculation', forceDay: true } as unknown as Derniers };
@@ -381,15 +381,44 @@ describe('Une longue traversée (GD-7)', () => {
     expect(poser().distanceTo(suivi)).toBeGreaterThan(1);
   });
 
+  it('« Partir d’une autre île » (GD-9) : la caméra tient le départ et l’arrivée du fantôme au-dessus de la fiche, d’un coup en mouvement réduit', () => {
+    const def = getBridge('french-6e-phonology-maths-6e-fractions')!;
+    const cases = bridgePath(def, []);
+    const cadre = cadreDeLaLiaison(def, [])!;
+    expect(cadre).not.toBeNull();
+    const b = worldBounds('6e');
+    const monde: Monde = { scene: new THREE.Scene(), archipel: '6e', habillage: HABILLAGES.blocland, surface: null, etendue: b, centre: { x: 0, y: 0 }, largeur: 200, liaisons: () => [] };
+    // Une tablette en paysage, la fiche en bas (un tiers de la vue) et la barre du haut.
+    const t = { w: 1024, h: 688 };
+    const libre = placeLibre(t.w, t.h, [{ x: t.w / 2, y: t.h - 130, w: t.w, h: 260 }], [{ x: t.w - 30, y: 60, w: 52, h: 110 }]);
+    const camera = new THREE.PerspectiveCamera(40, t.w / t.h, 0.5, 2000);
+    const derniers = { current: { carte: false, focus: { island: 'maths-6e-calculation', seq: 1 }, home: 'maths-6e-calculation', forceDay: true, cadreDeLaLiaison: cadre } as unknown as Derniers };
+    const instant: Instant = { now: 0, marche: false, traversee: null, navigue: null, carte: false, but: { target: new THREE.Vector3(), pos: new THREE.Vector3() } };
+    const cam = creerCamera(monde, camera, new THREE.Object3D(), derniers, instant, { place: () => ({ libre, w: t.w, h: t.h, saut: false }), destination: () => null });
+    // Mouvement réduit : coupé net, à la première image.
+    cam.animer!(0, 0.016, true);
+    camera.updateMatrixWorld();
+    for (const c of [cases[0], cases[cases.length - 1]]) {
+      const p = ecran(camera, t, c.x + 0.5, c.z, c.y + 0.5);
+      expect(p.x >= libre.x0 && p.x <= libre.x1 && p.y >= libre.y0 && p.y <= libre.y1, `${c.x},${c.y} → ${p.x},${p.y}`).toBe(true);
+    }
+    const but = camera.position.clone();
+    cam.animer!(0.1, 0.016, true);
+    expect(camera.position.distanceTo(but)).toBeLessThan(1e-6);
+    // La fiche fermée (plus de liaison cadrée) : la caméra revient à son cadrage d'île.
+    (derniers.current as { cadreDeLaLiaison: unknown }).cadreDeLaLiaison = null;
+    cam.animer!(0.2, 0.016, true);
+    expect(camera.position.distanceTo(but)).toBeGreaterThan(1);
+  });
+
   it('le cadre fixe se pose dans la place libre, hors du panneau d’île ouvert et des barres : paysage et portrait 800 × 1280', () => {
     // De la Plaine à la Carrière par le long bac du port (109 cases), panneau de la Carrière ouvert.
     const liens = ['maths-6e-calculation-french-6e-word-spelling'];
-    poserLesLiaisons(liens);
     const route = avatarRoute('maths-6e-calculation', 'french-6e-word-spelling', liens)!;
-    const cadre = cadreDeTraversee('6e', route)!;
+    const cadre = cadreDeTraversee('6e', liens, route)!;
     expect(cadre).not.toBeNull();
     const b = worldBounds('6e');
-    const monde: Monde = { scene: new THREE.Scene(), archipel: '6e', habillage: HABILLAGES.blocland, surface: null, etendue: b, centre: { x: 0, y: 0 }, largeur: 200 };
+    const monde: Monde = { scene: new THREE.Scene(), archipel: '6e', habillage: HABILLAGES.blocland, surface: null, etendue: b, centre: { x: 0, y: 0 }, largeur: 200, liaisons: () => [] };
     // La vue qui reste au monde, panneau ouvert (pixels CSS, sous la barre du haut) : en paysage 1024 × 768, le panneau
     // de 26rem à droite ; en portrait 800 × 1280, le panneau en bas (55 % au plus). En haut, la ligne d'une parole ; en
     // bas, la barre ; à droite, la colonne Pause et archipel.
@@ -437,7 +466,6 @@ describe('Une longue traversée (GD-7)', () => {
 
   it('le cadre fixe seulement à une taille lisible : gardé en 1024 × 768 et 800 × 1280 (et au Phare, 3e), la caméra suit le bonhomme en 390 × 844', () => {
     const liens = ['maths-6e-calculation-french-6e-word-spelling', 'maths-3e-functions-english-3e-grammar'];
-    poserLesLiaisons(liens);
     const port = avatarRoute('maths-6e-calculation', 'french-6e-word-spelling', liens)!;
     const phare = avatarRoute('maths-3e-functions', 'english-3e-grammar', liens)!;
     // La vue entière, panneau fermé (il attend l'arrivée), sous la barre du haut (80 px).
@@ -448,13 +476,13 @@ describe('Une longue traversée (GD-7)', () => {
       { nom: '6e, 390 × 844', archipel: '6e' as const, route: port, w: 390, h: 764, fixe: false },
     ];
     for (const t of cas) {
-      const cadre = cadreDeTraversee(t.archipel, t.route)!;
+      const cadre = cadreDeTraversee(t.archipel, liens, t.route)!;
       const libre = placeLibre(t.w, t.h, [{ x: t.w / 2, y: t.h - 34, w: t.w, h: 64 }], [{ x: t.w - 30, y: 60, w: 52, h: 110 }]);
       const altitude = mapOf(t.archipel)[0]?.altitude ?? 0;
       const { echelle } = cadrageDeLaTraversee(cadre, altitude, t.w, t.h, libre, 40);
       expect(echelle >= ECHELLE_MIN_DE_LA_TRAVERSEE, `${t.nom} : ${echelle.toFixed(1)} px la case`).toBe(t.fixe);
       const b = worldBounds(t.archipel);
-      const monde: Monde = { scene: new THREE.Scene(), archipel: t.archipel, habillage: HABILLAGES.blocland, surface: null, etendue: b, centre: { x: 0, y: 0 }, largeur: 200 };
+      const monde: Monde = { scene: new THREE.Scene(), archipel: t.archipel, habillage: HABILLAGES.blocland, surface: null, etendue: b, centre: { x: 0, y: 0 }, largeur: 200, liaisons: () => [] };
       const camera = new THREE.PerspectiveCamera(40, t.w / t.h, 0.5, 2000);
       const derniers = { current: { carte: false, focus: { island: null, seq: 0 }, home: null, forceDay: true } as unknown as Derniers };
       const instant: Instant = { now: 0, marche: true, traversee: cadre, navigue: null, carte: false, but: { target: new THREE.Vector3(), pos: new THREE.Vector3() } };

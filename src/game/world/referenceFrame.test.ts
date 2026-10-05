@@ -1,8 +1,8 @@
 // Chaque île dans son repère (docs/conception/separation-jeu-rendu.md, étape J5) : une île naît en cases depuis le coin
 // de son cœur, à son altitude, et la grille la pose dans le monde. Rien ne change dans le monde (les empreintes de J0 le
 // gardent) : ces tests disent ce que vaut le repère d'une île.
-import { BRIDGES, islandsOf, relierLaRegion, VOYAGES } from './archipelago';
-import { liaisonsPoseesDuLieu, poserLesLiaisons } from './linkGeometry';
+import { BRIDGES, islandsOf, linkWholeRegion, VOYAGES } from './archipelago';
+import { placedLinksOfPlace } from './linkGeometry';
 import { ARCHIPELAGO_IDS } from './archipelagos';
 import { toutConstruit } from './budget';
 import { dispositionEnGrille } from './grid';
@@ -57,19 +57,18 @@ describe('Chaque île dans son repère', () => {
 
   it('les ports d’attache : la case où chaque liaison posée touche l’île, dans son repère', () => {
     // Depuis GD-9, un lieu n'a de port d'attache que pour les liaisons posées de la partie.
-    const posees = [...new Set([...ARCHIPELAGO_IDS.flatMap((a) => relierLaRegion(a, VOYAGES.map((v) => v.id))), ...VOYAGES.map((v) => v.id)])];
-    poserLesLiaisons(posees);
+    const posees = [...new Set([...ARCHIPELAGO_IDS.flatMap((a) => linkWholeRegion(a, VOYAGES.map((v) => v.id))), ...VOYAGES.map((v) => v.id)])];
     for (const def of BRIDGES.filter((b) => posees.includes(b.id))) {
-      const path = bridgePath(def);
+      const path = bridgePath(def, posees);
       for (const [id, bout] of [
         [def.from, path[0]],
         [def.to, path[path.length - 1]],
       ] as const) {
-        const port = portsDAttache(id).find((p) => p.ouvrage === def.id)!;
+        const port = portsDAttache(id, posees).find((p) => p.ouvrage === def.id)!;
         const o = origineDe(id);
         expect({ x: port.local.x + o.x, y: port.local.y + o.y, z: port.local.z + o.z }).toEqual({ x: bout.x, y: bout.y, z: bout.z });
       }
     }
-    for (const a of ARCHIPELAGO_IDS) for (const b of islandsOf(a)) expect(portsDAttache(b.id).length).toBe(liaisonsPoseesDuLieu(b.id).length);
+    for (const a of ARCHIPELAGO_IDS) for (const b of islandsOf(a)) expect(portsDAttache(b.id, posees).length).toBe(placedLinksOfPlace(b.id, posees).length);
   });
 });

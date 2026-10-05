@@ -19,6 +19,7 @@ const vu = vi.hoisted(() => ({
   pose: null as { seq: number; cubes: { x: number; y: number; z: number }[] } | null,
   onPose: undefined as ((moment: 'couche' | 'finie') => void) | undefined,
   fiche: null as { objet: { genre: string }; seq: number; saut: boolean } | null,
+  liaisonCadree: null as string | null,
 }));
 // Le carillon de la fin de pose (GD-6) : compté, sans son.
 const carillon = vi.hoisted(() => vi.fn());
@@ -40,6 +41,7 @@ vi.mock('./three', () => ({
     pose = null,
     onPose,
     fiche = null,
+    liaisonCadree = null,
   }: {
     focus: { island: string | null; seq: number; spot?: { ile: string; local: { x: number; y: number } } };
     cubes: { x: number; y: number; z: number; ghost?: boolean; place?: string }[];
@@ -54,8 +56,9 @@ vi.mock('./three', () => ({
     pose?: { seq: number; cubes: { x: number; y: number; z: number }[] } | null;
     onPose?: (moment: 'couche' | 'finie') => void;
     fiche?: { objet: { genre: string }; seq: number; saut: boolean } | null;
+    liaisonCadree?: string | null;
   }) => (
-    <div className="voxel-canvas" tabIndex={0} ref={() => void Object.assign(vu, { cubes, pose, onPose, fiche })}>
+    <div className="voxel-canvas" tabIndex={0} ref={() => void Object.assign(vu, { cubes, pose, onPose, fiche, liaisonCadree })}>
       <p data-testid="lumiere">{forceDay ? 'jour' : 'heure réelle'}</p>
       <p data-testid="cadrage">{focus.island ?? 'aucune'}</p>
       <p data-testid="demandes-de-cadrage">{focus.seq}</p>
@@ -129,6 +132,9 @@ vi.mock('./three', () => ({
       </button>
       <button type="button" onClick={() => onIntent({ genre: 'ile', id: 'french-6e-letter-confusion', sol: { ile: 'french-6e-letter-confusion', local: { x: 6, y: 6, z: 0 } } })}>
         Toucher la Mine pâle
+      </button>
+      <button type="button" onClick={() => onIntent({ genre: 'ile', id: 'maths-6e-fractions' })}>
+        Toucher la Rivière pâle
       </button>
       <button type="button" onClick={() => onIntent({ genre: 'ouvrage', id: 'french-6e-phonology-french-6e-letter-confusion' })}>
         Toucher le sentier vers la Mine
@@ -205,7 +211,7 @@ it('le panneau d’une île ne s’ouvre que par son bouton, en plein écran par
 
 const vuSansAide = () => {
   localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true }));
-  localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'baleine-6e-arrivee': true }));
+  localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'baleine-6e-arrivee': true, 'map-reshaped': true }));
 };
 
 it('la créature touchée parle dans sa fiche, qu’on peut fermer ; la bulle du haut n’est plus pour elle', async () => {
@@ -445,6 +451,8 @@ it('la page des quatre archipels : où l’on est, ce qui est ouvert, ce qu’il
 it('à la première arrivée dans un archipel, le mot de la créature de l’île-école, en deux pages, une seule fois', async () => {
   localStorage.setItem('dysapps:game', JSON.stringify({ world: { links: ['passage-5e'], place: 'maths-5e-proportionality' } }));
   localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true }));
+  // L'annonce du changement de forme de la carte (GD-9), déjà vue : c'est le mot de l'arrivée qu'on regarde ici.
+  localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'map-reshaped': true }));
   const user = userEvent.setup();
   renderAt('/adventure');
   expect(screen.getByTestId('archipel')).toHaveTextContent('5e');
@@ -464,6 +472,8 @@ it('à la première arrivée dans un archipel, le mot de la créature de l’îl
 it('le mot de l’arrivée en deux pages se ferme dès la première avec « Passer »', async () => {
   localStorage.setItem('dysapps:game', JSON.stringify({ world: { links: ['passage-5e'], place: 'maths-5e-proportionality' } }));
   localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true }));
+  // L'annonce du changement de forme de la carte (GD-9), déjà vue : c'est le mot de l'arrivée qu'on regarde ici.
+  localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'map-reshaped': true }));
   const user = userEvent.setup();
   renderAt('/adventure');
   const word = await screen.findByRole('dialog', { name: 'Le mot de Bazar' }, { timeout: 3000 });
@@ -474,6 +484,8 @@ it('le mot de l’arrivée en deux pages se ferme dès la première avec « Pass
 it('les bandeaux de récompense attendent que le mot de l’arrivée soit fermé (DA-9)', async () => {
   localStorage.setItem('dysapps:game', JSON.stringify({ world: { links: ['passage-5e'], place: 'maths-5e-proportionality' } }));
   localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true }));
+  // L'annonce du changement de forme de la carte (GD-9), déjà vue : c'est le mot de l'arrivée qu'on regarde ici.
+  localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'map-reshaped': true }));
   const user = userEvent.setup();
   renderAt('/adventure');
   const word = await screen.findByRole('dialog', { name: 'Le mot de Bazar' }, { timeout: 3000 });
@@ -512,7 +524,7 @@ it('les nouveaux noms des archipels, une fois, avant le mot des grandes étapes 
 
 it('marque pour la vue ce qu’elle pose sur la scène : le haut, la barre du bas, Menu, les bulles (DA-10)', () => {
   localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true }));
-  localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'baleine-6e-arrivee': true }));
+  localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'baleine-6e-arrivee': true, 'map-reshaped': true }));
   renderAt('/adventure');
   const scene = document.querySelector('[data-scene]')!;
   expect(scene.querySelector('[data-couvre="bouton"][data-tuto="menu"]')).not.toBeNull();
@@ -528,7 +540,7 @@ it('les bandeaux de récompense attendent la fin du tutoriel, et de nouveau quan
   premier.unmount();
   // Tutoriel vu, mot d'arrivée de la baleine déjà dit : plus rien n'est ouvert.
   localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true }));
-  localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'baleine-6e-arrivee': true }));
+  localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'baleine-6e-arrivee': true, 'map-reshaped': true }));
   renderAt('/adventure/french-6e-phonology');
   await waitFor(() => expect(screen.getByTestId('retenus')).toHaveTextContent('non'));
   await user.click(screen.getByRole('button', { name: 'Menu' }));
@@ -561,7 +573,7 @@ it('le bouton Blocs ouvre « Mes blocs » ; une puce mène à l’île (caméra 
   expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/french-6e-phonology');
   expect(screen.getByTestId('cadrage')).toHaveTextContent('french-6e-phonology');
   expect(screen.queryByRole('dialog', { name: /^Forêt des sons/ })).not.toBeInTheDocument();
-  expect(document.querySelector('.world-fiche')).toHaveTextContent(/Sentier/);
+  expect(document.querySelector('.world-fiche')).toHaveTextContent(/Relier Mine des lettres.*Le sentier part de Forêt des sons\./);
   // Depuis l'inventaire, la croix rend le monde : on reste sur l'île du bonhomme, sans rouvrir son panneau.
   await user.click(screen.getByRole('button', { name: 'Mes blocs, 6' }));
   await user.click(screen.getByRole('button', { name: 'Fermer le panneau' }));
@@ -731,7 +743,7 @@ it('« Recentrer » apparaît quand la vue a glissé, la ramène d’un appui, e
 
 it('la Carte fermée rend le monde sur l’île où l’on est, sans panneau', async () => {
   localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true }));
-  localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'baleine-6e-arrivee': true }));
+  localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'baleine-6e-arrivee': true, 'map-reshaped': true }));
   const user = userEvent.setup();
   renderAt('/adventure/french-6e-phonology');
   const carte = () => within(screen.getByRole('navigation', { name: 'Village' })).getByRole('button', { name: /Carte/ });
@@ -776,7 +788,7 @@ it('sur la Carte, aucune bulle ne dit le pincement ; plus de « ? » dans la bar
 
 it('au premier toucher d’une île pâle, sa créature dit ce que sont les ouvrages, une seule fois par appareil', async () => {
   localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true }));
-  localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'baleine-6e-arrivee': true }));
+  localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'baleine-6e-arrivee': true, 'map-reshaped': true }));
   const ligne = () => screen.queryAllByRole('status').find((el) => el.classList.contains('world-line') && el.textContent?.includes('Les îles pâles sont fermées'));
   const premier = renderAt('/adventure/french-6e-letter-confusion');
   expect(ligne()).toBeDefined();
@@ -788,7 +800,7 @@ it('au premier toucher d’une île pâle, sa créature dit ce que sont les ouvr
 
 it('à la première arrivée au port, sa créature parle du Bloc-Navire, une seule fois par appareil', async () => {
   localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true }));
-  localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'baleine-6e-arrivee': true }));
+  localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'baleine-6e-arrivee': true, 'map-reshaped': true }));
   const ligne = () => screen.queryAllByRole('status').find((el) => el.classList.contains('world-line') && el.textContent?.includes('le Bloc-Navire attend ses blocs'));
   const premier = renderAt('/adventure/maths-6e-calculation');
   expect(ligne()).toBeDefined();
@@ -834,7 +846,7 @@ describe('la pose d’une partie en vague, après « Voir le bâtiment » (GD-6 
     const { cases, dansLaPartie } = await preparer();
     // Ni tutoriel ni mot de la baleine : seule la pose retient les bandeaux.
     localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true, 'archipel-6e': true }));
-    localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'baleine-6e-arrivee': true }));
+    localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'baleine-6e-arrivee': true, 'map-reshaped': true }));
     renderAt('/adventure/french-6e-phonology?worksite=part');
     // Pendant la pose : le monde n'a pas les cases de la partie, la vague les a toutes ; pas encore de phrase.
     await waitFor(() => expect(vu.pose?.cubes).toHaveLength(cases.size));
@@ -1060,10 +1072,32 @@ describe('les fiches du monde (lot 2 de « Toucher le monde »)', () => {
     const f = screen.getByRole('dialog', { name: 'Mine des lettres' });
     expect(f).toHaveTextContent(/^Mine des lettres.*Tunel :/);
     await user.click(within(f).getByRole('button', { name: 'Relier' }));
-    const o = screen.getByRole('dialog', { name: /entre Forêt des sons et Mine des lettres/ });
-    expect(o).toHaveTextContent(/\d+ blocs\. Il t’en manque \d+\./);
+    // Le titre ne change pas avec le départ ; la phrase dit d'où part l'ouvrage, et lequel des départs c'est.
+    const o = screen.getByRole('dialog', { name: /^Relier Mine des lettres/ });
+    expect(o).toHaveTextContent(/Le sentier part de Forêt des sons\. (Départ 1 sur \d+\. )?\d+ blocs\. Il t’en manque \d+\./);
     expect(document.querySelectorAll('.world-fiche')).toHaveLength(1);
     expect(vu.fiche).toMatchObject({ objet: { genre: 'ouvrage', id: 'french-6e-phonology-french-6e-letter-confusion' }, saut: true });
+  });
+
+  it('« Partir d’une autre île » : le même titre, le départ suivant, et la caméra cadre sa liaison', async () => {
+    vuSansAide();
+    localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true, 'decouverte-ouvrages': true }));
+    const user = userEvent.setup();
+    renderAt('/adventure');
+    await user.click(screen.getByRole('button', { name: 'Toucher la Rivière pâle' }));
+    await user.click(within(screen.getByRole('dialog', { name: 'Rivière des fractions' })).getByRole('button', { name: 'Relier' }));
+    // D'abord le départ le plus proche, le même que le fantôme du monde : la caméra ne bouge pas.
+    expect(screen.getByRole('dialog', { name: /^Relier Rivière des fractions/ })).toHaveTextContent(/Le pont part de Plaine des nombres\. Départ 1 sur 2\./);
+    expect(vu.liaisonCadree).toBeNull();
+    await user.click(within(screen.getByRole('dialog', { name: /^Relier Rivière des fractions/ })).getByRole('button', { name: 'Partir d’une autre île' }));
+    const o = screen.getByRole('dialog', { name: /^Relier Rivière des fractions/ });
+    expect(o).toHaveTextContent(/part de Forêt des sons\. Départ 2 sur 2\./);
+    expect(vu.fiche).toMatchObject({ objet: { genre: 'ouvrage', id: 'french-6e-phonology-maths-6e-fractions' } });
+    expect(vu.liaisonCadree).toBe('french-6e-phonology-maths-6e-fractions');
+    // Le monde dessine le fantôme du départ choisi, à la place de celui du plus proche.
+    const fantomes = new Set(vu.cubes.filter((c) => c.ghost).map((c) => (c as { bridge?: string }).bridge));
+    expect(fantomes.has('french-6e-phonology-maths-6e-fractions')).toBe(true);
+    expect(fantomes.has('maths-6e-calculation-maths-6e-fractions')).toBe(false);
   });
 
   it('un ouvrage en fantôme : « Poser » quand on a les blocs ; construit, il ne s’ouvre plus (il se touche comme le sol)', async () => {
@@ -1072,7 +1106,7 @@ describe('les fiches du monde (lot 2 de « Toucher le monde »)', () => {
     const user = userEvent.setup();
     renderAt('/adventure');
     await user.click(screen.getByRole('button', { name: 'Toucher le sentier vers la Mine' }));
-    const f = screen.getByRole('dialog', { name: /entre Forêt des sons et Mine des lettres/ });
+    const f = screen.getByRole('dialog', { name: /^Relier Mine des lettres/ });
     await user.click(within(f).getByRole('button', { name: /Poser/ }));
     expect(f).toHaveTextContent(/vers Mine des lettres est tracé/);
     expect(JSON.parse(localStorage.getItem('dysapps:game')!).world.links).toContain('french-6e-phonology-french-6e-letter-confusion');

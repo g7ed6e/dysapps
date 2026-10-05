@@ -34,7 +34,7 @@ it('les crêtes montent au fond du Glacier, du Carrefour, du Comptoir, du Manoir
 });
 
 it('ni le cœur, ni la première rangée du fond, ni les abords d’un ouvrage, ni ce qui est posé ne bougent ; rien ne descend', () => {
-  const chemins = BRIDGES.filter((b) => archipelagoOfIsland(b.from) === '5e').flatMap((b) => bridgePath(b));
+  const chemins = BRIDGES.filter((b) => archipelagoOfIsland(b.from) === '5e').flatMap((b) => bridgePath(b, []));
   const posees = new Set(reste.map((c) => `${c.x},${c.y}`));
   for (const c of avant.colonnes) {
     const d = montee(c.x, c.y);

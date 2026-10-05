@@ -2,7 +2,7 @@
 import { GAME_VERSION } from '../../core/migration';
 import type { BiomeId, BlockId } from '../biomes';
 import type { TirageAssemblage } from '../world/assembly';
-import type { Layout } from '../world/regionLayout';
+import type { Layout } from '../world/savedLayout';
 
 export interface ExerciseProgress {
   stars: 0 | 1 | 2 | 3;
@@ -71,7 +71,7 @@ export interface World {
    */
   requests?: string[];
   /**
-   * La disposition des régions aménagées (GD-9, world/regionLayout.ts) : la place et l'orientation des lieux, des
+   * La disposition des régions aménagées (GD-9, world/savedLayout.ts) : la place et l'orientation des lieux, des
    * Gardiens, des bornes, les arrivées des liaisons, les lieux réunis, les raccourcis, les liaisons à reposer. Absent
    * dans une sauvegarde d'avant GD-9 et tant qu'aucune région n'est aménagée : la carte de départ.
    */

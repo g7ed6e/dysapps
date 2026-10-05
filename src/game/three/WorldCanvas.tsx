@@ -6,7 +6,8 @@
 import { useEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import type { BiomeId } from '../biomes';
-import { ileDeLaVueGlissee, islandCenter, worldBounds } from '../world/terrain';
+import { cadreDeLaLiaison, ileDeLaVueGlissee, islandCenter, worldBounds } from '../world/terrain';
+import { getBridge } from '../world/archipelago';
 import { cubeTags, type VoyageRun } from '../world/scene';
 import { rappelsDeLaVue, type WorldViewProps } from '../world/view';
 import { centreDeLObjet, cleDeLaCreature, cleDeLObjet, signesDesObjets, sommetsDesBornes, type ObjetDeLaFiche, type ObjetTouche } from '../world/affordance';
@@ -68,6 +69,7 @@ export default function WorldCanvas({
   calme = false,
   forceDay = false,
   bridges = [],
+  liaisonCadree = null,
   marker: markerEnAncrage = null,
   imageDeLaCarte = null,
   vehicle = null,
@@ -102,6 +104,7 @@ export default function WorldCanvas({
     trail: trailEnAncrages,
     quests: questsEnAncrages,
     burst: burstEnAncrage,
+    bridges,
   });
   // Les gestes deviennent des intentions (world/view.ts) : la vue garde ses rappels, tirés d'elles, lus au moment du geste.
   const rappelsDuRendu = rappelsDeLaVue(onIntent, archipelago, chantier);
@@ -135,10 +138,19 @@ export default function WorldCanvas({
   vueDeplaceeRef.current = onVueDeplacee;
   const { settings } = useSettings();
   // Les props que la scène lit à chaque image (elle n'est pas refaite quand elles changent).
-  const derniers = useRef<Derniers>({ carte: map, focus, home: home ?? null, forceDay, whalePass, sons: settings.sounds, calme, onVoyageLegEnd });
-  derniers.current = { carte: map, focus, home: home ?? null, forceDay, whalePass, sons: settings.sounds, calme, onVoyageLegEnd };
+  // Une liaison montrée depuis un autre départ (GD-9) : son cadre, le même objet tant qu'elle ne change pas.
+  const cadreChoisi = useMemo(() => {
+    const def = liaisonCadree ? getBridge(liaisonCadree) : undefined;
+    return def ? cadreDeLaLiaison(def, bridges) : null;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [liaisonCadree, bridges.join(',')]);
+  const derniers = useRef<Derniers>({ carte: map, focus, home: home ?? null, forceDay, whalePass, sons: settings.sounds, calme, cadreDeLaLiaison: cadreChoisi, onVoyageLegEnd });
+  derniers.current = { carte: map, focus, home: home ?? null, forceDay, whalePass, sons: settings.sounds, calme, cadreDeLaLiaison: cadreChoisi, onVoyageLegEnd };
   // Le passage de la baleine : demandé par `whalePass`, joué une fois par `seq` (même si la scène est refaite).
   const passSeqRef = useRef<number | null>(null);
+  // Les liaisons posées (GD-9), lues par la scène quand elle se construit et à chaque trajet : elle n'est pas refaite pour elles.
+  const liaisonsRef = useRef<readonly string[]>(bridges);
+  liaisonsRef.current = bridges;
 
   // ---- Création de la scène (une fois par archipel)
   useEffect(() => {
@@ -167,6 +179,7 @@ export default function WorldCanvas({
       etendue: bounds,
       centre: { x: (bounds.minX + bounds.maxX) / 2, y: (bounds.minY + bounds.maxY) / 2 },
       largeur: Math.max(bounds.maxX - bounds.minX, bounds.maxY - bounds.minY),
+      liaisons: () => liaisonsRef.current,
     };
     const camera = new THREE.PerspectiveCamera(40, el.clientWidth / Math.max(1, el.clientHeight), 0.5, monde.largeur * 10);
     const instant: Instant = { now: 0, marche: false, traversee: null, navigue: null, carte: false, but: { target: new THREE.Vector3(), pos: new THREE.Vector3() } };
@@ -300,7 +313,7 @@ export default function WorldCanvas({
       const vue = el.getBoundingClientRect();
       const ecran = cadrage.auBut(point, vue.width, vue.height);
       const f = feuille.getBoundingClientRect();
-      // Hors de la vue (« Voir le premier ouvrage », « Y aller »), il est aussi caché.
+      // Hors de la vue (« Relier », « Y aller »), il est aussi caché.
       const horsDeLaVue = !ecran || ecran.x < 0 || ecran.y < 0 || ecran.x > vue.width || ecran.y > vue.height;
       if (!horsDeLaVue && !sousLaFiche(ecran, { x0: f.left - vue.left, y0: f.top - vue.top, x1: f.right - vue.left, y1: f.bottom - vue.top })) return;
       const { libre } = lirePlaceLibre(el);

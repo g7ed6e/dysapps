@@ -316,7 +316,7 @@ export const BLOCLAND = {
     defiPretCourt: 'Défi prêt',
     arene: (gardien) => `Rallumer ${gardien}`,
     decouverteOuvrages:
-      'Les îles pâles sont fermées. Pour y venir, construis un ouvrage. Chaque ouvrage se paie en blocs, depuis le lieu de ton choix.',
+      'Les îles pâles sont fermées. Pour y venir, pose un ouvrage. Il part de l’île de ton choix. Chaque ouvrage coûte le même nombre de blocs.',
     navireGardiensManquants: (n, archipel) => `rallume encore ${n} Gardien${s(n)} des ${archipel}`,
     decouverteNavire: 'Ici, au port, le Bloc-Navire attend ses blocs. Quand il est prêt, embarque : un autre archipel t’attend, et tu peux toujours revenir.',
   },

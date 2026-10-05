@@ -339,7 +339,10 @@ export function creerCamera(
       demande.ile = ile;
       demande.carte = carteDemandee;
       // Une longue traversée : le cadre fixe, s'il tient à une taille lisible ; sinon la caméra suit le bonhomme.
-      const fixe = !sailing && walking && instant.traversee ? traversee(instant.traversee, camera.aspect) : null;
+      // Une liaison montrée depuis un autre départ (GD-9, « Partir d'une autre île ») : le même cadre fixe, au-dessus de
+      // la fiche ; d'un coup quand l'appareil demande moins d'animations (`reduit`).
+      const choisie = !sailing && !walking && !instant.carte ? derniers.current.cadreDeLaLiaison : null;
+      const fixe = !sailing && walking && instant.traversee ? traversee(instant.traversee, camera.aspect) : choisie ? traversee(choisie, camera.aspect) : null;
       // En mer (ou dans les airs) : vue de côté sur le navire, la caméra s'écarte à mesure qu'il s'éloigne.
       const frame = sailing
         ? (() => {

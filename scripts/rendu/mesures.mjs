@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, bulles, fiches, menu-tete ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, bulles, fiches, menu-tete, debut ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 20` le plus long temps réel laissé au monde pour se construire (en secondes, 10 par défaut). L'horloge de la
 // page est pilotée (`preparerLaScene`, scripts/prise-de-vue.mjs) : deux prises du même état donnent la même image, les
@@ -488,6 +488,11 @@ const CAPTURES = [
     { nom: `menu-tete-ile${suffixe}`, vue: 'île', famille: 'menu-tete', ile: 'french-6e-phonology', depart: true, ...autres },
     { nom: `menu-tete-carte-zoomee${suffixe}`, vue: 'carte', famille: 'menu-tete', zoomer: 2, ...autres },
   ]),
+  // Les liaisons posées par l'élève (GD-9, famille `debut`, lot en cours) : la Carte du 6e en début de partie (`depart`),
+  // plusieurs îles fermées, leurs fantômes et celui de la destination, en pointillés plus épais et plus foncés ; puis de
+  // plus près (`zoomer`), pour juger l'épaisseur des pointillés.
+  { nom: 'debut-carte', vue: 'carte', famille: 'debut', ile: 'maths-6e-calculation', depart: true },
+  { nom: 'debut-carte-zoomee', vue: 'carte', famille: 'debut', ile: 'maths-6e-calculation', depart: true, zoomer: 2, finesse: 2 },
   { nom: 'etoile-phare-ponts', vue: 'archipel', famille: 'etoile', ile: 'maths-3e-functions', finesse: 2 },
   { nom: 'etoile-phare-ponts-nuit', vue: 'archipel', famille: 'etoile', ile: 'maths-3e-functions', finesse: 2, nuit: true },
   // Les commandes des habitants (GD-7, PR 3, famille `commandes`, lot en cours) : à la Mine des lettres, la commande de

@@ -7,6 +7,7 @@ import { BLOCKS, getBiome, ofBlock } from './biomes';
 import {
   ARCHIPELAGOS,
   KIND_NAME,
+  linkKind,
   archipelagoOf,
   archipelagoTitle,
   buildableBridges,
@@ -193,7 +194,7 @@ export function BloclandPage() {
                       {!unlocked && (
                         <span className="tag">
                           <Icon name="lock" />{' '}
-                          {!reached ? 'Archipel à rejoindre' : bridge ? `${KIND_NAME[bridge.kind]} à construire : ${bridge.cost} blocs` : 'Île lointaine'}
+                          {!reached ? 'Archipel à rejoindre' : bridge ? `${KIND_NAME[linkKind(bridge, state.world.links)]} à construire : ${bridge.cost} blocs` : 'Île lointaine'}
                         </span>
                       )}
                     </Link>

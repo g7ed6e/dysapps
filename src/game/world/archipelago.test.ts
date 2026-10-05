@@ -2,6 +2,7 @@ import { BLOC, BIOMES } from '../biomes';
 import { sanitizeState } from '../engine';
 import { MAP } from './map';
 import {
+  linkKind,
   ARCHIPELAGOS,
   BRIDGES,
   CONDITION_OF,
@@ -73,7 +74,7 @@ it('quatre archipels, un par classe, chacun avec son port, connexe depuis ses î
     const open = reachableIslands([...own.map((b) => b.id), ...voyages]);
     for (const id of islands) expect(open.has(id), `${id} depuis ${a.port}`).toBe(true);
     // Au moins deux ouvrages sans condition partent du port : l'arrivée n'est jamais bloquée.
-    expect(bridgesOf(a.port).filter((b) => CONDITION_OF[b.kind] === 'aucune').length, a.port).toBeGreaterThanOrEqual(2);
+    expect(bridgesOf(a.port).filter((b) => CONDITION_OF[linkKind(b, [])] === 'aucune').length, a.port).toBeGreaterThanOrEqual(2);
   }
   // Les voyages vont de port en port, dans l'ordre des archipels.
   VOYAGES.forEach((v, i) => {
@@ -221,7 +222,7 @@ it('les anciennes sauvegardes gardent leurs îles ouvertes : voyages et chemin o
 
 it('GD-9 : une seule sorte de liaison, des blocs seulement, ni plan ni Gardien à attendre', () => {
   // Un sentier entre deux lieux réunis, un pont, un bac : plus d'escalier taillé, de tunnel ni de col.
-  const kinds = new Set(BRIDGES.map((b) => b.kind));
+  const kinds = new Set(BRIDGES.map((b) => linkKind(b, [])));
   expect([...kinds].sort()).toEqual(['bac', 'pont', 'sentier']);
   expect(CONDITION_OF.pont).toBe('aucune');
   expect(CONDITION_OF.bac).toBe('aucune');
@@ -243,4 +244,20 @@ it('GD-9 : une seule sorte de liaison, des blocs seulement, ni plan ni Gardien �
   expect(buildableBridges(sky, 'maths-3e-functions', empty).map((b) => b.id)).toContain('maths-3e-functions-french-3e-close-reading');
   expect(buildableBridges(sky, 'french-3e-close-reading', empty).map((b) => b.id)).toEqual(['maths-3e-functions-french-3e-close-reading']);
   expect(buildableBridges([], 'french-3e-close-reading', empty)).toEqual([]);
+});
+
+it('sans la géométrie des liaisons (world/linkGeometry.ts pas chargé), les règles refusent de mesurer, hors des tests', async () => {
+  vi.resetModules();
+  const regles = await import('./archipelago');
+  const b = regles.BRIDGES[0];
+  // Dans les tests des règles seules : toute liaison en pont, de longueur nulle.
+  expect(regles.linkLength(b, [])).toBe(0);
+  vi.stubEnv('MODE', 'production');
+  try {
+    expect(() => regles.linkLength(b, [])).toThrow(/géométrie des liaisons/);
+    expect(() => regles.linkKind(b, [])).toThrow(/géométrie des liaisons/);
+  } finally {
+    vi.unstubAllEnvs();
+    vi.resetModules();
+  }
 });

@@ -1,18 +1,18 @@
 // Le cadrage de la vue : l'étendue de l'archipel, la zone et l'angle de la vue d'une île, l'île sous la vue, la caméra
 // d'une île et sa projection, le cadre d'une traversée.
-import { type ArchipelagoId, archipelagoOfIsland, coeurDe, islandDef, type IslandDef, landBox, lieuDeDepart, MAP } from '../map';
+import { type ArchipelagoId, archipelagoOfIsland, coeurDe, islandDef, type IslandDef, landBox, startingIsland, MAP } from '../map';
 import { dockBox } from '../harbor';
-import { getArchipelago, islandsOf } from '../archipelago';
+import { type BridgeDef, getArchipelago, islandsOf } from '../archipelago';
 import { type BiomeId, BIOMES } from '../../biomes';
 import { ISLET_GAP, ISLET_H } from './islets';
 import { BAC_LONG, bridgePath } from './links';
 import { islandCenter } from './base';
-import { cacheDeLaDisposition } from '../placement';
-import { cadreDe } from '../footprint';
-import { liaisonsPoseesDe, voisinsDe } from '../linkGeometry';
+import { layoutCache } from '../placement';
+import { frameOf } from '../footprint';
+import { placedLinksOf, neighboursOf } from '../linkGeometry';
 
 /**
- * Étendue d'un archipel (coordonnées de grille) : le cadre fixe de sa région (GD-9, `CADRES`), où tout lieu se pose.
+ * Étendue d'un archipel (coordonnées de grille) : le cadre fixe de sa région (GD-9, `REGION_FRAMES`), où tout lieu se pose.
  * `maxX` et `maxY` exclus, comme le cadre.
  */
 export function worldBounds(a: ArchipelagoId): {
@@ -21,7 +21,7 @@ export function worldBounds(a: ArchipelagoId): {
   minY: number;
   maxY: number;
 } {
-  const c = cadreDe(a);
+  const c = frameOf(a);
   return { minX: c.x0, maxX: c.x1, minY: c.y0, maxY: c.y1 };
 }
 
@@ -30,7 +30,7 @@ export function worldBounds(a: ArchipelagoId): {
  * semée une fois pour toutes (`seaDecor`), serrée autour des lieux plutôt qu'au bord du cadre.
  */
 export function bornesDeDepart(a: ArchipelagoId): { minX: number; maxX: number; minY: number; maxY: number } {
-  return bornesDesIles(a, MAP.filter((d) => archipelagoOfIsland(d.id) === a).map((d) => lieuDeDepart(d.id)));
+  return bornesDesIles(a, MAP.filter((d) => archipelagoOfIsland(d.id) === a).map((d) => startingIsland(d.id)));
 }
 
 /** Les bornes de quelques îles d'un archipel, et de son port (la colonne centrale, `colonneCentrale`). */
@@ -76,12 +76,12 @@ export const VIEW_YAW_MAX = (40 * Math.PI) / 180;
  * l'île du bonhomme rapetisse, ce qui n'est pas le cas (au bout de la crête, l'étiquette sort de l'écran à gauche, de
  * 65 à 340 px ; au 5e, celle du Relais aussi) : cadrage d'avant, sans entre-deux. Depuis l'île de la LV2, la voisine compte.
  *
- * Les voisines sont les lieux qu'un pont relierait (GD-9 : une liaison de 36 cases au plus, `voisinsDe`) : l'île au
+ * Les voisines sont les lieux qu'un pont relierait (GD-9 : une liaison de 36 cases au plus, `neighboursOf`) : l'île au
  * bout d'un long bac n'est pas une voisine.
  */
 export function viewZone(home: BiomeId): { minX: number; maxX: number; minY: number; maxY: number } {
   const ids = new Set<BiomeId>([home]);
-  for (const other of voisinsDe(home)) {
+  for (const other of neighboursOf(home)) {
     if (BIOMES.find((x) => x.id === other)?.subject === 'lv2') continue;
     ids.add(other);
   }
@@ -113,7 +113,7 @@ export function viewYaw(home: BiomeId): number {
  * qui pourrait cacher une borne est tiré pour cette vue.
  */
 function yawDuLieu(home: BiomeId): number {
-  const def = lieuDeDepart(home);
+  const def = startingIsland(home);
   const c = coeurDe(def);
   // Seul l'écart est-ouest compte : la caméra regarde toujours vers le nord, on la tourne vers la colonne centrale.
   const dx = colonneCentrale(archipelagoOfIsland(home)) - (c.x0 + c.x1) / 2;
@@ -264,16 +264,16 @@ export function projectionDeLaVueDeLIle(id: BiomeId): { projeter: ProjectionDeLa
 }
 
 /** Les cases des longues traversées (plus de `BAC_LONG` cases) d'un archipel, et l'ouvrage de chacune : les liaisons posées. */
-const traverseesCache = cacheDeLaDisposition<string, Map<string, string>>();
+const traverseesCache = layoutCache<string, Map<string, string>>();
 
-function casesDesTraversees(a: ArchipelagoId): Map<string, string> {
-  const posees = liaisonsPoseesDe(a);
+function casesDesTraversees(a: ArchipelagoId, links: readonly string[]): Map<string, string> {
+  const posees = placedLinksOf(a, links);
   const cle = `${a}|${posees.map((b) => b.id).join(',')}`;
   let m = traverseesCache.get(cle);
   if (!m) {
     m = new Map();
     for (const b of posees) {
-      const path = bridgePath(b);
+      const path = bridgePath(b, links);
       if (path.length > BAC_LONG) for (const c of path) m.set(`${c.x},${c.y}`, b.id);
     }
     traverseesCache.set(cle, m);
@@ -294,8 +294,8 @@ export interface CadreDeCases {
  * ouvrage) : tout le trajet, du départ à l'arrivée, et le cœur des deux îles du bout ; la caméra s'y pose et ne bouge
  * plus, le bonhomme traverse. `null` pour un trajet ordinaire : la caméra le suit.
  */
-export function cadreDeTraversee(a: ArchipelagoId, route: readonly { x: number; y: number }[]): CadreDeCases | null {
-  const cases = casesDesTraversees(a);
+export function cadreDeTraversee(a: ArchipelagoId, links: readonly string[], route: readonly { x: number; y: number }[]): CadreDeCases | null {
+  const cases = casesDesTraversees(a, links);
   const parOuvrage = new Map<string, number>();
   let longue = false;
   for (const c of route) {
@@ -306,6 +306,12 @@ export function cadreDeTraversee(a: ArchipelagoId, route: readonly { x: number; 
     if (n > BAC_LONG) longue = true;
   }
   if (!longue) return null;
+  const bouts = [route[0], route[route.length - 1]].map((c) => islandAt(a, c.x, c.y));
+  return cadreDesCases(route, bouts);
+}
+
+/** Le rectangle de cases qui tient `cases` et le cœur entier des îles `iles` (l'île d'arrivée se reconnaît). */
+function cadreDesCases(cases: readonly { x: number; y: number }[], iles: readonly BiomeId[]): CadreDeCases {
   let minX = Infinity;
   let maxX = -Infinity;
   let minY = Infinity;
@@ -316,12 +322,21 @@ export function cadreDeTraversee(a: ArchipelagoId, route: readonly { x: number; 
     minY = Math.min(minY, y);
     maxY = Math.max(maxY, y);
   };
-  for (const c of route) ajouter(c.x, c.y);
-  // Les cœurs des deux îles du bout, entiers : l'île d'arrivée se reconnaît, pas seulement la case où il s'arrête.
-  for (const c of [route[0], route[route.length - 1]]) {
-    const k = coeurDe(islandDef(islandAt(a, c.x, c.y)));
+  for (const c of cases) ajouter(c.x, c.y);
+  for (const id of iles) {
+    const k = coeurDe(islandDef(id));
     ajouter(k.x0, k.y0);
     ajouter(k.x1 - 1, k.y1 - 1);
   }
   return { minX, maxX, minY, maxY };
+}
+
+/**
+ * Le cadre d'une liaison montrée en fantôme depuis un autre départ (GD-9, « Partir d'une autre île ») : tout son tracé
+ * et le cœur de ses deux îles, que la caméra pose dans la place libre au-dessus de la fiche, comme une longue traversée.
+ * `null` si elle n'a pas de tracé.
+ */
+export function cadreDeLaLiaison(def: BridgeDef, links: readonly string[]): CadreDeCases | null {
+  const cases = bridgePath(def, links);
+  return cases.length ? cadreDesCases(cases, [def.from, def.to]) : null;
 }

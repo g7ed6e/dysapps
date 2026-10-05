@@ -94,11 +94,6 @@ export interface BridgeDef {
   id: string;
   from: BiomeId;
   to: BiomeId;
-  /**
-   * Sa nature, selon son tracé dans la disposition (`linkKind`) : un sentier entre deux lieux réunis, sinon un pont
-   * jusqu'à 36 cases, un bac au-delà (un pont dans le ciel).
-   */
-  readonly kind: BridgeKind;
   /** Nombre de blocs (de n'importe quel type gagné sur une île) pour le construire ; 0 = pont déjà construit. */
   cost: number;
   /**
@@ -127,21 +122,23 @@ export const KIND_NAME: Record<BridgeKind, string> = {
   sentier: 'Sentier',
 };
 
-const b = (from: BiomeId, to: BiomeId, kind: BridgeKind, cost: number): BridgeDef => ({ id: `${from}-${to}`, from, to, kind, cost });
+/** Une liaison d'avant GD-9, tracée à la main : sa nature est écrite avec elle. */
+export type LegacyLink = BridgeDef & { kind: BridgeKind };
+
+const b = (from: BiomeId, to: BiomeId, kind: BridgeKind, cost: number): LegacyLink => ({ id: `${from}-${to}`, from, to, kind, cost });
 /**
  * Le prix d'une liaison (GD-9) : 4 blocs aux Premiers Rivages, 5 ailleurs, qu'elle ouvre un lieu ou relie deux lieux
  * ouverts ; le pont déjà construit au départ reste gratuit.
  */
 export const LINK_PRICE: Record<ArchipelagoId, number> = { '6e': 4, '5e': 5, '4e': 5, '3e': 5 };
-const PRIX_DU_PORT = LINK_PRICE;
 
 type Point = { x: number; y: number };
 
 /** Une liaison du port qui existait avant GD-7 (même identifiant), au prix du port. */
-const p = (from: BiomeId, to: BiomeId, kind: BridgeKind): BridgeDef => b(from, to, kind, PRIX_DU_PORT[archipelagoOfIsland(from)]);
+const p = (from: BiomeId, to: BiomeId, kind: BridgeKind): LegacyLink => b(from, to, kind, LINK_PRICE[archipelagoOfIsland(from)]);
 
 /** Une liaison d'avant GD-9, et si elle était une liaison du port en étoile (GD-7). */
-export type LinkBeforeGd9 = BridgeDef & { etoile?: true };
+export type LinkBeforeGd9 = LegacyLink & { etoile?: true };
 
 /** Une liaison du port en étoile d'avant GD-9, avec ses points de passage s'il en fallait. */
 const e = (from: BiomeId, to: BiomeId, kind: BridgeKind, via?: readonly Point[]): LinkBeforeGd9 => ({ ...p(from, to, kind), etoile: true, ...(via ? { via } : {}) });
@@ -178,10 +175,12 @@ export const LINKS_BEFORE_GD9: readonly LinkBeforeGd9[] = [
   b('french-6e-letter-confusion', 'maths-6e-fractions', 'pont', 4),
   p('maths-6e-calculation', 'maths-6e-decimals', 'pont'),
   b('french-6e-grammar-spelling', 'maths-6e-decimals', 'bac', 4),
-  // Les îles d'anglais, derrière : un pont depuis la Ferme, un depuis la Forêt, un sentier entre les deux.
+  // Les îles d'anglais, derrière : un pont depuis la Ferme, un depuis la Forêt, un entre les deux. La Baie et l'Horloge ne
+  // sont plus réunies par un isthme (GD-9, 5 octobre 2026) : au même identifiant, leur liaison est posée d'office et
+  // gratuite, comme l'était le passage à pied de l'une à l'autre.
   b('french-6e-grammar-spelling', 'english-6e-vocabulary', 'pont', 5),
   p('french-6e-phonology', 'english-6e-grammar', 'pont'),
-  b('english-6e-vocabulary', 'english-6e-grammar', 'sentier', 4),
+  b('english-6e-vocabulary', 'english-6e-grammar', 'pont', 0),
   // Le port en étoile (GD-7) : de la Plaine ou de la Forêt, une liaison vers chaque île qu'elles ne touchaient pas. Deux
   // bacs longent l'archipel par le devant, entre les îlots des Gardiens et les côtes (la Carrière par l'est de la Plaine,
   // à l'écart de la jetée ; la Tour par l'est de son îlot) ; un pont de la Forêt à la Baie, à l'écart de l'Horloge.
@@ -240,7 +239,7 @@ export const LINKS_BEFORE_GD9: readonly LinkBeforeGd9[] = [
  * test des règles seules), toute liaison se trace, en pont, de longueur nulle.
  */
 export interface LinkGeometry {
-  kind(b: BridgeDef): BridgeKind | null;
+  kind(b: BridgeDef, built: readonly string[]): BridgeKind | null;
   length(b: BridgeDef, built: readonly string[]): number | null;
 }
 
@@ -252,24 +251,42 @@ export function provideLinkGeometry(g: LinkGeometry): void {
   geometry = g;
 }
 
+/**
+ * La géométrie des liaisons. Sans grille, seuls les tests des règles seules continuent (toute liaison en pont, de
+ * longueur nulle) : ailleurs, c'est une erreur de chargement (`world/linkGeometry.ts` n'a pas été importé).
+ */
+function linkGeometry(): LinkGeometry {
+  if (geometry === NO_GEOMETRY && import.meta.env?.MODE !== 'test')
+    throw new Error('La géométrie des liaisons manque : importer world/linkGeometry.ts au démarrage.');
+  return geometry;
+}
+
 /** La longueur d'une liaison posée après `built`, en cases, ou `null` si elle ne tiendrait pas (`LinkGeometry`). */
 export function linkLength(b: BridgeDef, built: readonly string[]): number | null {
-  return geometry.length(b, built);
+  return linkGeometry().length(b, built);
+}
+
+/**
+ * La nature d'une liaison, les liaisons `built` posées : celle écrite avec elle pour une liaison d'avant GD-9
+ * (`LegacyLink` : les anciennes liaisons entre classes, les tracés d'origine) ; sinon selon son tracé dans la disposition (`LinkGeometry`) : un
+ * sentier entre deux lieux réunis, un pont jusqu'à `SHORT_LINK` cases, un bac au-delà (un pont dans le ciel).
+ */
+export function linkKind(b: BridgeDef, built: readonly string[]): BridgeKind {
+  if ('kind' in b) return (b as LegacyLink).kind;
+  return linkGeometry().kind(b, built) ?? 'pont';
 }
 
 /** La longueur d'un pont au plus (GD-9) : au-delà, la liaison est un bac, et un raccourci n'est proposé qu'entre voisins. */
 export const SHORT_LINK = 36;
 
-function liaison(from: BiomeId, to: BiomeId, cost: number, via?: BridgeDef['via']): BridgeDef {
-  const def = { id: `${from}-${to}`, from, to, cost, ...(via ? { via } : {}) } as BridgeDef;
-  Object.defineProperty(def, 'kind', { enumerable: true, get: () => geometry.kind(def) ?? 'pont' });
-  return def;
+function link(from: BiomeId, to: BiomeId, cost: number, via?: BridgeDef['via']): BridgeDef {
+  return { id: `${from}-${to}`, from, to, cost, ...(via ? { via } : {}) };
 }
 
 /**
  * Toutes les liaisons possibles (GD-9) : une entre chaque paire de lieux d'une même région, une seule sorte de liaison.
  * Celles d'avant gardent leur identifiant, leur sens et leur tracé d'origine ; toutes coûtent le même prix
- * (`LINK_PRICE`), sauf le pont déjà construit au départ, gratuit. Leur nature suit leur tracé (`kind`) : un sentier
+ * (`LINK_PRICE`), sauf le pont déjà construit au départ, gratuit. Leur nature suit leur tracé (`linkKind`) : un sentier
  * entre deux lieux réunis, un pont jusqu'à 36 cases, un bac au-delà ; l'escalier taillé et le col d'avant sont des
  * ponts ou des bacs comme les autres.
  */
@@ -280,7 +297,7 @@ export const BRIDGES: BridgeDef[] = ARCHIPELAGO_IDS.flatMap((a) => {
     for (let j = i + 1; j < ids.length; j++) {
       const avant = LINKS_BEFORE_GD9.find((l) => (l.from === ids[i] && l.to === ids[j]) || (l.from === ids[j] && l.to === ids[i]));
       const [from, to] = avant ? [avant.from, avant.to] : [ids[i], ids[j]];
-      out.push(liaison(from, to, avant?.cost === 0 ? 0 : LINK_PRICE[a], avant?.via));
+      out.push(link(from, to, avant?.cost === 0 ? 0 : LINK_PRICE[a], avant?.via));
     }
   return out;
 });
@@ -289,7 +306,7 @@ export const BRIDGES: BridgeDef[] = ARCHIPELAGO_IDS.flatMap((a) => {
  * Les anciennes liaisons entre classes (escaliers, tunnels, col du continent d'avant les archipels) : plus construites,
  * mais gardées pour lire les anciennes sauvegardes, où elles ouvraient les îles du collège.
  */
-export const LEGACY_BRIDGES: BridgeDef[] = [
+export const LEGACY_BRIDGES: LegacyLink[] = [
   b('maths-6e-calculation', 'maths-5e-signed-numbers', 'escalier', 5),
   b('maths-6e-fractions', 'maths-5e-proportionality', 'escalier', 5),
   b('french-6e-phonology', 'french-5e-homophones', 'escalier', 5),
@@ -451,7 +468,7 @@ export type BridgeState = 'built' | 'buildable' | 'blocked' | 'far';
  * l'appelant les a déjà (`reachableIslands(bridges)`), pour ne pas les refaire à chaque ouvrage.
  */
 export function conditionMet(bridge: BridgeDef, bridges: string[], world: WorldProgress, open = reachableIslands(bridges)): boolean {
-  const condition = CONDITION_OF[bridge.kind];
+  const condition = CONDITION_OF[linkKind(bridge, bridges)];
   if (condition === 'aucune') return true;
   return [bridge.from, bridge.to]
     .filter((island) => open.has(island))
@@ -469,7 +486,7 @@ export interface MotsDesGardiens {
 
 /** Ce qu'il reste à faire pour la condition d'un ouvrage, depuis une île ouverte (pour l'expliquer à l'élève). */
 export function conditionText(bridge: BridgeDef, bridges: string[]): string | null {
-  const condition = CONDITION_OF[bridge.kind];
+  const condition = CONDITION_OF[linkKind(bridge, bridges)];
   if (condition === 'aucune') return null;
   const open = reachableIslands(bridges);
   const island = [bridge.from, bridge.to].find((i) => open.has(i)) ?? bridge.from;
@@ -515,6 +532,15 @@ export function linksToIsland(island: BiomeId, bridges: string[], open = reachab
 }
 
 /**
+ * Le départ d'une liaison vers un lieu fermé (GD-9, « Relier ») : celle qui part du lieu relié le plus proche, la
+ * première de `linksToIsland`, ou `null` si aucune ne tient. La seule règle du choix : la phrase de l'île pâle
+ * (`lockedHint`), son bouton « Relier » et le fantôme du monde (`buildableBridges`) la lisent tous.
+ */
+export function nearestDeparture(island: BiomeId, bridges: string[], open = reachableIslands(bridges)): BridgeDef | null {
+  return linksToIsland(island, bridges, open)[0] ?? null;
+}
+
+/**
  * Les liaisons proposées maintenant (constructibles ou bloquées par une condition), qui touchent une île donnée (ou
  * toutes), GD-9 : vers un lieu fermé, celle qui part du lieu relié le plus proche (sur le lieu fermé lui-même, tous ses
  * départs possibles, `linksToIsland`) ; entre deux lieux ouverts, un raccourci entre voisins (`SHORT_LINK` cases au
@@ -531,8 +557,11 @@ export function buildableBridges(bridges: string[], island?: BiomeId, world?: Wo
   }
   const fermees = new Set(BRIDGES.filter((b) => opensAnIsland(b, open)).map((b) => (open.has(b.from) ? b.to : b.from)));
   for (const f of fermees) {
-    const vers = linksToIsland(f, bridges, open);
-    for (const b of island === f ? vers : vers.slice(0, 1)) proposees.add(b.id);
+    if (island === f) for (const b of linksToIsland(f, bridges, open)) proposees.add(b.id);
+    else {
+      const b = nearestDeparture(f, bridges, open);
+      if (b) proposees.add(b.id);
+    }
   }
   return (island ? bridgesOf(island) : BRIDGES).filter((b) => {
     if (!proposees.has(b.id)) return false;
@@ -611,13 +640,16 @@ export function pathTo(island: BiomeId): BridgeDef[] {
 export function remainingPath(island: BiomeId, bridges: string[]): BridgeDef[] {
   const open = reachableIslands(bridges);
   if (open.has(island)) return [];
+  // Une liaison directe : le même départ que « Relier » et le fantôme (`nearestDeparture`).
+  const direct = nearestDeparture(island, bridges, open);
+  if (direct) return [direct];
   const depart = [...open].filter((id) => archipelagoOfIsland(id) === archipelagoOfIsland(island));
   const vus = new Map<BiomeId, BridgeDef | null>((depart.length ? depart : archipelagoOf(island).starts).map((id) => [id, null]));
   // Rang par rang : au même nombre de liaisons, chaque lieu est atteint par la plus courte d'entre elles.
   for (let rang = [...vus.keys()]; rang.length && !vus.has(island); ) {
     const suivant = new Map<BiomeId, { b: BridgeDef; n: number }>();
     for (const ici of rang)
-      for (const b of linksToIsland2(ici, bridges, vus)) {
+      for (const b of unseenLinksFrom(ici, bridges, vus)) {
         const la = otherEnd(b, ici);
         const n = linkLength(b, bridges) ?? 0;
         const mieux = suivant.get(la);
@@ -636,7 +668,7 @@ export function remainingPath(island: BiomeId, bridges: string[]): BridgeDef[] {
 }
 
 /** Les liaisons qui tiennent depuis un lieu vers un lieu pas encore vu, de la plus courte à la plus longue. */
-function linksToIsland2(from: BiomeId, bridges: string[], vus: Map<BiomeId, BridgeDef | null>): BridgeDef[] {
+function unseenLinksFrom(from: BiomeId, bridges: string[], vus: Map<BiomeId, BridgeDef | null>): BridgeDef[] {
   return bridgesOf(from)
     .filter((b) => !vus.has(otherEnd(b, from)))
     .map((b, i) => ({ b, i, n: linkLength(b, bridges) }))
@@ -646,7 +678,7 @@ function linksToIsland2(from: BiomeId, bridges: string[], vus: Map<BiomeId, Brid
 }
 
 /** Les lieux ouverts d'une région par ses seules liaisons posées (`links`), depuis ses lieux de départ. */
-function ouvertsDansLaRegion(a: ArchipelagoId, links: readonly string[]): Set<BiomeId> {
+function openInRegion(a: ArchipelagoId, links: readonly string[]): Set<BiomeId> {
   const open = new Set<BiomeId>(getArchipelago(a).starts);
   const posees = BRIDGES.filter((b) => archipelagoOfIsland(b.from) === a && (b.cost === 0 || links.includes(b.id)));
   for (let grew = true; grew; ) {
@@ -666,10 +698,10 @@ function ouvertsDansLaRegion(a: ArchipelagoId, links: readonly string[]): Set<Bi
  * fermé le plus proche : les liaisons de `links`, puis celles-là, jusqu'à ce que tous les lieux soient ouverts ou
  * qu'aucune ne tienne plus. Le mode bâtisseur et le monde « tout construit » (le budget) la lisent.
  */
-export function relierLaRegion(a: ArchipelagoId, links: readonly string[]): string[] {
+export function linkWholeRegion(a: ArchipelagoId, links: readonly string[]): string[] {
   const out = [...links];
   for (;;) {
-    const open = ouvertsDansLaRegion(a, out);
+    const open = openInRegion(a, out);
     let best: { b: BridgeDef; n: number } | null = null;
     for (const f of islandsOf(a)) {
       if (open.has(f.id)) continue;
@@ -687,13 +719,13 @@ export function relierLaRegion(a: ArchipelagoId, links: readonly string[]): stri
  * depuis un autre départ que le lieu relié le plus proche (le monde dessine alors son fantôme à la place de celui du
  * plus proche), sinon `null`.
  */
-export function departChoisi(id: string | null, bridges: string[]): string | null {
+export function chosenDeparture(id: string | null, bridges: string[]): string | null {
   const b = id ? getBridge(id) : undefined;
   if (!b) return null;
   const open = reachableIslands(bridges);
   if (!opensAnIsland(b, open) || bridgeState(b, bridges, undefined, open) !== 'buildable') return null;
   const ferme = open.has(b.from) ? b.to : b.from;
-  return linksToIsland(ferme, bridges, open)[0]?.id === b.id ? null : b.id;
+  return nearestDeparture(ferme, bridges, open)?.id === b.id ? null : b.id;
 }
 
 /**

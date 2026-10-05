@@ -14,7 +14,10 @@ import {
   conditionMet,
   isArchipelagoReached,
   otherEnd,
+  linkKind,
   linkLength,
+  nearestDeparture,
+  remainingPath,
   payableBlocks,
   previousArchipelago,
   reachableIslands,
@@ -140,7 +143,7 @@ function deLaMatiere(matiere: Matiere, lv2: Lv2Choice): string {
  */
 function objectifDOuvrage(state: GameState, b: BridgeDef, depuis: BiomeId, lv2: Lv2Choice, open = ouvertes(state)): Goal & { ready: boolean; ouvrage: string } {
   const arrivee = getBiome(otherEnd(b, depuis));
-  const what = ouvrageName(b.kind, arrivee?.name ?? b.to);
+  const what = ouvrageName(linkKind(b, state.world.links), arrivee?.name ?? b.to);
   const raison = arrivee && !open.has(arrivee.id) ? `. Il ouvre une île ${deLaMatiere(arrivee.subject, lv2)}` : '';
   const have = Math.min(b.cost, payableBlocks(state.stock));
   const left = b.cost - have;
@@ -303,24 +306,39 @@ export function lockedHint(state: GameState, island: BiomeId, noms: NomsArchipel
     const n = status.total - status.done;
     return `${head}, de l’autre côté ${travel}. Finis ${VEHICLE_NAME} sur ${port} : encore ${n} bloc${n > 1 ? 's' : ''}.`;
   }
-  // La liaison depuis le lieu relié le plus proche (GD-9) : la première des départs possibles.
-  const b = buildableBridges(bridges, island, world)[0];
+  // La liaison depuis le lieu relié le plus proche (GD-9) : le même départ que « Relier » et le fantôme du monde.
+  const b = nearestDeparture(island, bridges);
   if (b) {
     const from = getBiome(otherEnd(b, island))?.name ?? '';
-    const cond = conditionMet(b, bridges, world) ? '' : ` ${conditionTextShort(b, from)}`;
-    return `Pas si vite ! Pour venir ici, pose ${ouvrageName(b.kind, '')}depuis ${from} : ${b.cost} blocs.${cond}`;
+    const kind = linkKind(b, bridges);
+    const cond = conditionMet(b, bridges, world) ? '' : ` ${conditionTextShort(kind, from)}`;
+    return `Pas si vite ! Pour venir ici, pose ${ouvrageName(kind, '')}depuis ${from} : ${b.cost} blocs.${cond}`;
   }
-  // Aucune liaison ne tient (elle couperait un lieu ou une autre liaison, ou serait trop longue) : la fiche le dit.
-  return AUCUNE_LIAISON;
+  return noDirectLinkHint(island, bridges);
 }
 
-/** Ce que dit la fiche d'un lieu fermé quand aucune liaison ne tient jusqu'à lui (GD-9). */
-export const AUCUNE_LIAISON = 'Aucune liaison ne tient jusqu’ici pour l’instant : elle couperait un lieu ou une autre liaison.';
+/**
+ * Ce que dit un lieu fermé qu'aucune liaison directe n'atteint (GD-9) : l'île à relier d'abord, sur le plus court
+ * chemin (« Relie d'abord X. De là, un ouvrage mène ici. »), sinon qu'aucun passage n'y mène pour l'instant. La fiche
+ * de l'île pâle (`lockedHint`) et son panneau (le pli « Relier ») disent la même phrase.
+ */
+export function noDirectLinkHint(island: BiomeId, bridges: string[]): string {
+  const premiere = remainingPath(island, bridges)[0];
+  const open = reachableIslands(bridges);
+  const avant = premiere ? (open.has(premiere.from) ? premiere.to : premiere.from) : null;
+  return avant && avant !== island ? relieDAbord(getBiome(avant)?.name ?? avant) : AUCUNE_LIAISON;
+}
+
+/** Ce que dit la fiche d'un lieu fermé quand aucun chemin d'ouvrages ne tient jusqu'à lui (GD-9). */
+export const AUCUNE_LIAISON = 'Pas de passage jusqu’ici pour l’instant.';
+
+/** Ce que dit la fiche d'un lieu fermé qu'on atteint en reliant d'abord une autre île (GD-9). */
+export const relieDAbord = (ile: string) => `Relie d’abord ${ile}. De là, un ouvrage mène ici.`;
 
 const cap = (text: string) => `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
 
 // L'escalier demande une mission réussie sur l'île de départ, qui y pose la première partie de son bâtiment (GD-6) ;
 // aucun ouvrage ne demande un Gardien (GD-7).
-function conditionTextShort(b: { kind: keyof typeof KIND_NAME }, from: string): string {
-  return b.kind === 'escalier' ? `Réussis aussi une mission sur ${from}.` : '';
+function conditionTextShort(kind: keyof typeof KIND_NAME, from: string): string {
+  return kind === 'escalier' ? `Réussis aussi une mission sur ${from}.` : '';
 }

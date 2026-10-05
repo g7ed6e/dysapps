@@ -2,9 +2,9 @@
 // le Marché, l'Atelier et le Phare : un cœur de 20 × 20 avec sa côte d'avant tout autour, la terre gagne deux cases de chaque côté, ses
 // voisines s'écartent d'autant dans MAP. Les clés de sauvegarde restent relatives à l'origine `core`, qui ne bouge pas.
 import type { BiomeId } from '../biomes';
-import { relierLaRegion, VOYAGES } from './archipelago';
+import { linkWholeRegion, VOYAGES } from './archipelago';
 import { ARCHIPELAGO_IDS } from './archipelagos';
-import { liaisonsPoseesDuLieu, poserLesLiaisons } from './linkGeometry';
+import { placedLinksOfPlace } from './linkGeometry';
 import { dockBox, dockOrigin, shoreY } from './harbor';
 import {
   bornesDuCoeur,
@@ -181,13 +181,12 @@ it('dans le cœur d’une île-école, les bornes, la créature, les lieux et la
 });
 
 it('les liaisons posées abordent la côte d’une île-école, jamais son cœur de 20', () => {
-  const links = ARCHIPELAGO_IDS.reduce<string[]>((l, a) => relierLaRegion(a, l), VOYAGES.map((v) => v.id));
-  poserLesLiaisons(links);
+  const links = ARCHIPELAGO_IDS.reduce<string[]>((l, a) => linkWholeRegion(a, l), VOYAGES.map((v) => v.id));
   for (const id of IDS) {
     const def = islandDef(id);
     const c = coeurDe(def);
-    for (const b of liaisonsPoseesDuLieu(id)) {
-      const cases = bridgePath(b);
+    for (const b of placedLinksOfPlace(id, links)) {
+      const cases = bridgePath(b, links);
       expect(cases.length, b.id).toBeGreaterThan(0);
       for (const bout of [cases[0], cases.at(-1)!]) {
         if (!isLand(def, bout.x, bout.y) && !inCore(def, bout.x, bout.y)) continue;
@@ -196,7 +195,6 @@ it('les liaisons posées abordent la côte d’une île-école, jamais son cœur
       }
     }
   }
-  poserLesLiaisons([]);
 });
 
 it('l’îlot du Gardien d’une île-école glisse sur le côté : de l’eau franche avec sa terre, hors de l’axe du cœur, pas plus près de la caméra', () => {

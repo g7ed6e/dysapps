@@ -1,11 +1,12 @@
 // La disposition de chaque région dans la sauvegarde (GD-9, L3, la donnée seulement) : le champ facultatif
 // `world.layout`. Il garde la place et l'orientation de chaque lieu, le côté, la place et l'orientation de chaque
 // Gardien, la place des bornes, les arrivées des liaisons, les lieux réunis, les raccourcis posés et les liaisons à
-// reposer. Absent ou invalide, c'est la carte de départ ; une région invalide est oubliée seule, les autres restent.
+// reposer. Absent ou invalide, c'est la carte de départ ; une région dont les lieux sont invalides est oubliée seule,
+// les autres restent ; une borne, une arrivée, un raccourci ou une liaison à reposer invalide n'oublie qu'elle-même.
 // Ici, la forme de la donnée (des règles, sans le monde) ; qu'une disposition tienne sur la grille (dans son cadre, ses
-// lieux assez écartés) se vérifie quand on la pose (`posesDeLaDisposition`, ./footprint.ts). Aucun écran ne l'écrit
+// lieux assez écartés) se vérifie quand on la pose (`posesOfLayout`, ./footprint.ts). Aucun écran ne l'écrit
 // encore (le geste « Aménager » vient avec la PR 2). Code pur, sans Three.js.
-import { BIOMES, type BiomeId } from '../biomes';
+import { BIOMES, getBiome, type BiomeId } from '../biomes';
 import { getBridge } from './archipelago';
 import { type ArchipelagoId, ARCHIPELAGO_IDS, archipelagoOfIsland } from './archipelagos';
 
@@ -17,7 +18,7 @@ export type LayoutSide = 'front' | 'right' | 'back' | 'left';
 
 export const LAYOUT_SIDES: readonly LayoutSide[] = ['front', 'right', 'back', 'left'];
 
-/** Une place sur la grille d'une région : en pas (`PAS`) depuis le coin de son cadre (`CADRES`), et une orientation. */
+/** Une place sur la grille d'une région : en pas (`STEP`) depuis le coin de son cadre (`REGION_FRAMES`), et une orientation. */
 export interface LayoutSpot {
   x: number;
   y: number;
@@ -60,82 +61,100 @@ export interface RegionLayout {
 export type Layout = Partial<Record<ArchipelagoId, RegionLayout>>;
 
 const isRecord = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
-const entier = (v: unknown): v is number => typeof v === 'number' && Number.isInteger(v);
-const quart = (v: unknown): v is LayoutTurn => v === 0 || v === 1 || v === 2 || v === 3;
-const cote = (v: unknown): v is LayoutSide => typeof v === 'string' && (LAYOUT_SIDES as readonly string[]).includes(v);
+const isInt = (v: unknown): v is number => typeof v === 'number' && Number.isInteger(v);
+const isTurn = (v: unknown): v is LayoutTurn => v === 0 || v === 1 || v === 2 || v === 3;
+const isSide = (v: unknown): v is LayoutSide => typeof v === 'string' && (LAYOUT_SIDES as readonly string[]).includes(v);
 const IDS = new Set<string>(BIOMES.map((b) => b.id));
-const lieuDe = (a: ArchipelagoId, v: string): v is BiomeId => IDS.has(v) && archipelagoOfIsland(v as BiomeId) === a;
+const isIslandOf = (a: ArchipelagoId, v: string): v is BiomeId => IDS.has(v) && archipelagoOfIsland(v as BiomeId) === a;
 
 /** Une arrivée lue, ou `null`. Sa place le long du côté reste dans un lieu (au plus 8 pas de chaque côté du cœur). */
-function lireArrivee(v: unknown): LayoutLanding | null {
-  if (!isRecord(v) || !cote(v.side) || !entier(v.step) || Math.abs(v.step) > 8) return null;
+function readLanding(v: unknown): LayoutLanding | null {
+  if (!isRecord(v) || !isSide(v.side) || !isInt(v.step) || Math.abs(v.step) > 8) return null;
   return { side: v.side, step: v.step };
 }
 
-/** La disposition d'une région, lue et vérifiée, ou `null` si elle est invalide (la carte de départ). */
-function lireLaRegion(a: ArchipelagoId, raw: unknown): RegionLayout | null {
+/**
+ * La dernière place de la grille de chaque région, en pas depuis le coin de son cadre, sur chaque axe : le cadre
+ * (./footprint.ts) divisé par le pas (./placement.ts), recopié ici pour que la sauvegarde se lise sans la grille
+ * (savedLayout.test.ts vérifie qu'ils s'accordent).
+ */
+export const LAYOUT_LAST_SPOT: Readonly<Record<ArchipelagoId, Readonly<{ x: number; y: number }>>> = {
+  '6e': { x: 48, y: 36 },
+  '5e': { x: 36, y: 28 },
+  '4e': { x: 42, y: 28 },
+  '3e': { x: 52, y: 28 },
+};
+
+/** Une mission du lieu : la clé d'une borne est « lieu:mission », la mission parmi celles du lieu (toutes LV2 comprises). */
+function isStationKey(a: ArchipelagoId, key: string): boolean {
+  const [id, mission, ...rest] = key.split(':');
+  if (rest.length || !isIslandOf(a, id)) return false;
+  return getBiome(id)?.exercises.some((e) => e.id === mission) ?? false;
+}
+
+/**
+ * La disposition d'une région, lue et vérifiée, ou `null` si rien n'en reste (la carte de départ). Les lieux et les
+ * lieux réunis vont ensemble : une entrée invalide de `islands`, `joined` ou `guardians` fait oublier toute la région. Une
+ * entrée invalide de `stations`, `landings`, `shortcuts` ou `relink` n'oublie qu'elle-même.
+ */
+function readRegion(a: ArchipelagoId, raw: unknown): RegionLayout | null {
   if (!isRecord(raw)) return null;
   const out: RegionLayout = {};
   if (raw.islands !== undefined) {
     if (!isRecord(raw.islands)) return null;
+    const max = LAYOUT_LAST_SPOT[a];
     const islands: Partial<Record<BiomeId, LayoutSpot>> = {};
     for (const [id, s] of Object.entries(raw.islands)) {
-      if (!lieuDe(a, id) || !isRecord(s) || !entier(s.x) || !entier(s.y) || !quart(s.turn) || s.x < 0 || s.y < 0) return null;
+      // Dans le cadre dès la lecture : une place hors de la grille de la région n'est pas une place.
+      if (!isIslandOf(a, id) || !isRecord(s) || !isInt(s.x) || !isInt(s.y) || !isTurn(s.turn) || s.x < 0 || s.y < 0 || s.x > max.x || s.y > max.y) return null;
       islands[id] = { x: s.x, y: s.y, turn: s.turn };
     }
     if (Object.keys(islands).length) out.islands = islands;
+  }
+  if (raw.joined !== undefined) {
+    if (!Array.isArray(raw.joined)) return null;
+    const joined: [BiomeId, BiomeId][] = [];
+    const taken = new Set<string>();
+    for (const p of raw.joined) {
+      // Un lieu se réunit à un seul autre.
+      if (!Array.isArray(p) || p.length !== 2 || !isIslandOf(a, p[0]) || !isIslandOf(a, p[1]) || p[0] === p[1] || taken.has(p[0]) || taken.has(p[1])) return null;
+      taken.add(p[0]);
+      taken.add(p[1]);
+      joined.push([p[0], p[1]]);
+    }
+    if (joined.length) out.joined = joined;
   }
   if (raw.guardians !== undefined) {
     if (!isRecord(raw.guardians)) return null;
     const guardians: Partial<Record<BiomeId, LayoutGuardian>> = {};
     for (const [id, g] of Object.entries(raw.guardians)) {
-      if (!lieuDe(a, id) || !isRecord(g) || !cote(g.side) || !entier(g.step) || Math.abs(g.step) > 8 || !quart(g.turn)) return null;
+      if (!isIslandOf(a, id) || !isRecord(g) || !isSide(g.side) || !isInt(g.step) || Math.abs(g.step) > 8 || !isTurn(g.turn)) return null;
       guardians[id] = { side: g.side, step: g.step, turn: g.turn };
     }
     if (Object.keys(guardians).length) out.guardians = guardians;
   }
-  if (raw.stations !== undefined) {
-    if (!isRecord(raw.stations)) return null;
+  if (isRecord(raw.stations)) {
     const stations: Record<string, { x: number; y: number }> = {};
-    for (const [cle, p] of Object.entries(raw.stations)) {
-      const id = cle.split(':')[0];
-      // Une borne reste dans le cœur de son lieu (au plus 20 × 20, de −2 à 18).
-      if (!lieuDe(a, id) || !isRecord(p) || !entier(p.x) || !entier(p.y) || p.x < -2 || p.x > 17 || p.y < -2 || p.y > 17) return null;
-      stations[cle] = { x: p.x, y: p.y };
-    }
+    // Une borne reste dans le cœur de son lieu (au plus 20 × 20, de −2 à 18).
+    for (const [key, p] of Object.entries(raw.stations))
+      if (isStationKey(a, key) && isRecord(p) && isInt(p.x) && isInt(p.y) && p.x >= -2 && p.x <= 17 && p.y >= -2 && p.y <= 17) stations[key] = { x: p.x, y: p.y };
     if (Object.keys(stations).length) out.stations = stations;
   }
-  const liaisonDe = (id: unknown): id is string => typeof id === 'string' && getBridge(id) !== undefined && archipelagoOfIsland(getBridge(id)!.from) === a;
-  if (raw.landings !== undefined) {
-    if (!isRecord(raw.landings)) return null;
+  const isLinkOf = (id: unknown): id is string => typeof id === 'string' && getBridge(id) !== undefined && archipelagoOfIsland(getBridge(id)!.from) === a;
+  if (isRecord(raw.landings)) {
     const landings: Record<string, { from: LayoutLanding; to: LayoutLanding }> = {};
     for (const [id, l] of Object.entries(raw.landings)) {
-      const from = isRecord(l) ? lireArrivee(l.from) : null;
-      const to = isRecord(l) ? lireArrivee(l.to) : null;
-      if (!liaisonDe(id) || !from || !to) return null;
-      landings[id] = { from, to };
+      const from = isRecord(l) ? readLanding(l.from) : null;
+      const to = isRecord(l) ? readLanding(l.to) : null;
+      if (isLinkOf(id) && from && to) landings[id] = { from, to };
     }
     if (Object.keys(landings).length) out.landings = landings;
   }
-  if (raw.joined !== undefined) {
-    if (!Array.isArray(raw.joined)) return null;
-    const joined: [BiomeId, BiomeId][] = [];
-    const pris = new Set<string>();
-    for (const p of raw.joined) {
-      // Un lieu se réunit à un seul autre.
-      if (!Array.isArray(p) || p.length !== 2 || !lieuDe(a, p[0]) || !lieuDe(a, p[1]) || p[0] === p[1] || pris.has(p[0]) || pris.has(p[1])) return null;
-      pris.add(p[0]);
-      pris.add(p[1]);
-      joined.push([p[0], p[1]]);
-    }
-    if (joined.length) out.joined = joined;
-  }
-  for (const champ of ['shortcuts', 'relink'] as const) {
-    const v = raw[champ];
-    if (v === undefined) continue;
-    if (!Array.isArray(v) || !v.every(liaisonDe)) return null;
-    const ids = [...new Set(v)];
-    if (ids.length) out[champ] = ids;
+  for (const field of ['shortcuts', 'relink'] as const) {
+    const v = raw[field];
+    if (!Array.isArray(v)) continue;
+    const ids = [...new Set(v.filter(isLinkOf))];
+    if (ids.length) out[field] = ids;
   }
   return Object.keys(out).length ? out : null;
 }
@@ -148,7 +167,7 @@ export function sanitizeLayout(raw: unknown): Layout | undefined {
   if (!isRecord(raw)) return undefined;
   const out: Layout = {};
   for (const a of ARCHIPELAGO_IDS) {
-    const r = lireLaRegion(a, raw[a]);
+    const r = readRegion(a, raw[a]);
     if (r) out[a] = r;
   }
   return Object.keys(out).length ? out : undefined;

@@ -2,13 +2,13 @@
 import { type BiomeDef, type BiomeId, BIOMES, BLOC, BLOCKS } from '../../biomes';
 import { type ArchipelagoId, type Decor, type Ground, isLand, islandDef, type IslandDef, landscape, noise, smoothNoise, tirage } from '../map';
 import type { VoxelCube } from '../cube';
-import { tournerLeModelePose } from '../placement';
+import { turnPlacedModel } from '../placement';
 import { decorate } from '../decor';
 import { guardianStatus } from '../../boss';
 import { gardienDuMonde } from './creatures';
 import { ARENA, bossIsletOrigin, glisseDeLIlot, ISLET_CENTER, ISLET_GAP, ISLET_H, ISLET_W, reculDeLIlot, RETOUCHES_DE_L_ILOT } from './islets';
 import { DEPTH, GROUND_COLOR, taperLayers, TEXTURES } from './base';
-import { cacheDeLaDisposition } from '../placement';
+import { layoutCache } from '../placement';
 
 /** Coin local où poser un Gardien pour qu'il soit centré sur l'îlot. */
 function guardianOffset(id: BiomeId): { x: number; y: number } {
@@ -29,7 +29,7 @@ export interface IsletCell {
   shore: boolean;
 }
 
-const isletCache = cacheDeLaDisposition<BiomeId, IsletCell[]>();
+const isletCache = layoutCache<BiomeId, IsletCell[]>();
 
 /**
  * La terre de l'îlot : une ellipse à la côte irrégulière (bruit lissé, comme les îles), qui porte toujours
@@ -241,7 +241,7 @@ export function guardianPlacements(
     const modele = beaten ? gardienDuMonde(b.id) : statueDe(gardienDuMonde(b.id));
     // Sur le lieu tourné (GD-9), le Gardien tourne avec son îlot.
     const def = islandDef(b.id);
-    const pose = tournerLeModelePose(def.core, { x: x + off.x, y: y + off.y, z: z + 1 }, modele, def.quarts);
+    const pose = turnPlacedModel(def.core, { x: x + off.x, y: y + off.y, z: z + 1 }, modele, def.quarts);
     out.push({ id: b.id, kind: 'guardian', still: true, beaten, cubes: pose.cubes, origin: pose.origine });
   });
   return out;

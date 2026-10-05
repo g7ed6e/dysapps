@@ -272,7 +272,7 @@ export function creerPersonnages(monde: Monde, champ: () => ChampDuSol | null, i
     },
     marcher: (avatar) => {
       // Six cases par seconde, toujours (un toucher dans le vide fait arriver tout de suite).
-      p.marche = p.trajet = avatarWalk(avatar, performance.now(), monde.archipel);
+      p.marche = p.trajet = avatarWalk(avatar, performance.now(), { archipel: monde.archipel, links: monde.liaisons() });
     },
     poserLesCreatures: (creatures) => {
       places = creatures;

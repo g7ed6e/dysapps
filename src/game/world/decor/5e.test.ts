@@ -104,8 +104,8 @@ it('la tour en ruine, la calotte, le ponton et la girouette du Relais sont hors 
 });
 
 it('les bancs de brume : jamais sur un ouvrage, le quai ni la route du navire ; toujours sous le sol des îles, qui les cache', () => {
-  const b = bancsDeBrume('5e')!;
-  const place = placeDeLaBrume('5e');
+  const b = bancsDeBrume('5e', [])!;
+  const place = placeDeLaBrume('5e', []);
   for (let v = 0; v < b.positions.length / 3; v++) {
     const [x, y, z] = [b.positions[v * 3], b.positions[v * 3 + 1], b.positions[v * 3 + 2]];
     expect(y).toBeLessThan(ALTITUDE['5e']);
@@ -124,7 +124,7 @@ it('les bancs de brume : jamais sur un ouvrage, le quai ni la route du navire ; 
 });
 
 it('seules les Îles Brumeuses ont des bancs de brume ; ils respirent, et « Réduire les animations » les fige d’un coup', () => {
-  expect(bancsDeBrume('6e')).toBeNull();
+  expect(bancsDeBrume('6e', [])).toBeNull();
   expect(respirationDeLaBrume(0, 3, false)).not.toEqual(respirationDeLaBrume(0, 7, false));
   expect(respirationDeLaBrume(0, 3, true)).toEqual(respirationDeLaBrume(0, 7, true));
 });

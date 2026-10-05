@@ -23,7 +23,7 @@ function cameraDuPort(a: ArchipelagoId): THREE.PerspectiveCamera {
     surface: null,
     etendue: b,
     centre: { x: (b.minX + b.maxX) / 2, y: (b.minY + b.maxY) / 2 },
-    largeur: Math.max(b.maxX - b.minX, b.maxY - b.minY),
+    largeur: Math.max(b.maxX - b.minX, b.maxY - b.minY), liaisons: () => [],
   };
   const home = getArchipelago(a).port;
   const camera = new THREE.PerspectiveCamera(40, VUE.w / VUE.h, 0.5, 2000);
@@ -36,7 +36,7 @@ function cameraDuPort(a: ArchipelagoId): THREE.PerspectiveCamera {
 }
 
 describe('Les baleines dans la vue de l’archipel depuis le port', () => {
-  for (const a of ARCHIPELAGO_IDS.filter((x) => whaleSpots(x).length > 0))
+  for (const a of ARCHIPELAGO_IDS.filter((x) => whaleSpots(x, []).length > 0))
     it(`${a} : une baleine dans le cadre n'y est cachée par aucune terre, sur tout son rond`, () => {
       const camera = cameraDuPort(a);
       const tout = toutConstruit();
@@ -63,9 +63,9 @@ describe('Les baleines dans la vue de l’archipel depuis le port', () => {
           }
           return false;
         });
-      const vues = whaleSpots(a).filter((w) => dansLeCadre(w.x, w.y));
-      // Le milieu de la clairière, et les trois quarts de son rond : depuis GD-9, les clairières bougent avec les
-      // lieux, et le bord d'un rond peut passer derrière une côte ; la baleine, elle, reste en vue.
+      const vues = whaleSpots(a, tout.world.links).filter((w) => dansLeCadre(w.x, w.y));
+      // Le milieu de la clairière, et tout son rond (DA, 5 octobre 2026 : un rond en partie caché par une côte se voit).
+      // Les clairières suivent les liaisons posées : celles du village tout construit, comme le dessine le monde.
       for (const w of vues) {
         expect(cache(w.x, w.y), `${a} : baleine de ${w.x}, ${w.y} cachée`).toBe(false);
         let caches = 0;
@@ -74,7 +74,7 @@ describe('Les baleines dans la vue de l’archipel depuis le port', () => {
           const y = Math.round(w.y + w.r * Math.sin((k * Math.PI) / 8));
           if (cache(x, y)) caches++;
         }
-        expect(caches, `${a} : baleine de ${w.x}, ${w.y}, ${caches} points du rond cachés`).toBeLessThanOrEqual(4);
+        expect(caches, `${a} : baleine de ${w.x}, ${w.y}, ${caches} points du rond cachés`).toBe(0);
       }
       // Une baleine replacée à la main l'a été pour se voir : elle est dans le cadre.
       for (const { vers } of BALEINES_REPLACEES[a] ?? []) expect(vues.some((w) => w.x === vers.x && w.y === vers.y), `${a} : ${vers.x}, ${vers.y}`).toBe(true);

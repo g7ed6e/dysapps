@@ -10,12 +10,12 @@ import type { VillagePlaceId, VoxelCube } from './cube';
 import { getBridge, type ArchipelagoId } from './archipelago';
 import type { Ancrage, Disposition, Entite, Etendue, Point, Trajet } from './layout';
 import { caseDArrivee, toucheLEau, type Arrivee } from './arrival';
-import { isLandDuMonde, islandDef, mapOf } from './map';
-import { detournerLaCase, tournerLaCase } from './placement';
+import { isLandInWorld, islandDef, mapOf } from './map';
+import { unturnCell, turnCell } from './placement';
 import { getMonument } from './monuments';
 import { walkGround, walkPath, type Cell, type CreaturePlacement, type WalkGround } from './paths';
 import { avatarHome, avatarRoute, bossIsletCenter, bridgePath, casesDeLOuvrage, casesDesLieux, islandAt, islandCenter, monumentCenter, origineDe, placeDoor, placesDeLaFleche, questStations, routeLengths, viewZone, worldBounds } from './terrain';
-import { cacheDeLaDisposition } from './placement';
+import { layoutCache } from './placement';
 
 /**
  * Le bonhomme marche à six cases par seconde, toujours : sur son île comme d'une île à l'autre, sans plafond qui le ferait
@@ -66,11 +66,11 @@ export interface DispositionEnGrille extends Disposition {
 
 /**
  * Un point du monde, ancré à l'île `ile` : dans son repère, avant sa rotation (GD-9). Une case et un point entre deux
- * cases tournent de même (`tournerLaCase`, affine) : un ancrage revient toujours au même point du monde (`versMonde`).
+ * cases tournent de même (`turnCell`, affine) : un ancrage revient toujours au même point du monde (`versMonde`).
  */
 function ancre(ile: BiomeId, p: Point): Ancrage {
   const o = origineDe(ile);
-  const l = detournerLaCase(p.x - o.x, p.y - o.y, islandDef(ile).quarts);
+  const l = unturnCell(p.x - o.x, p.y - o.y, islandDef(ile).quarts);
   return { ile, local: { x: l.x, y: l.y, z: p.z - o.z } };
 }
 
@@ -78,7 +78,7 @@ function ancre(ile: BiomeId, p: Point): Ancrage {
  * La disposition en grille d'un archipel, sans cubes ni ouvrages (ce qu'elle dit ne dépend alors que de l'archipel : où
  * sont les îles, le repère de chacune), faite une fois et partagée : le clavier, le toucher, les intentions des vues.
  */
-const grilles = cacheDeLaDisposition<ArchipelagoId, DispositionEnGrille>();
+const grilles = layoutCache<ArchipelagoId, DispositionEnGrille>();
 export function grilleDe(a: ArchipelagoId): DispositionEnGrille {
   let g = grilles.get(a);
   if (!g) grilles.set(a, (g = dispositionEnGrille(a)));
@@ -99,7 +99,7 @@ export function dispositionEnGrille(
   const seTenir = (ile: BiomeId) => ancre(ile, avatarHome(ile));
   const versMonde = (x: Ancrage): Point => {
     const o = origineDe(x.ile);
-    const t = tournerLaCase(x.local.x, x.local.y, islandDef(x.ile).quarts);
+    const t = turnCell(x.local.x, x.local.y, islandDef(x.ile).quarts);
     return { x: t.x + o.x, y: t.y + o.y, z: x.local.z + o.z };
   };
   const ileEn = (p: Point) => islandAt(a, Math.floor(p.x), Math.floor(p.y));
@@ -126,7 +126,7 @@ export function dispositionEnGrille(
       case 'ouvrage': {
         const def = getBridge(e.id);
         if (!def) return null;
-        const path = bridgePath(def);
+        const path = bridgePath(def, bridges);
         // Une liaison qui ne tient pas dans la disposition n'a pas de tracé, donc pas de place (GD-9).
         return path.length ? ancre(def.from, path[Math.floor(path.length / 2)]) : null;
       }
@@ -171,7 +171,7 @@ export function dispositionEnGrille(
     raccord,
     liaison: (id) => {
       const def = getBridge(id);
-      return def ? bridgePath(def).map((c): Cell => ({ x: c.x, y: c.y, z: c.z })) : [];
+      return def ? bridgePath(def, bridges).map((c): Cell => ({ x: c.x, y: c.y, z: c.z })) : [];
     },
     cadrage: (ile): Etendue => viewZone(ile),
     etendue: (): Etendue => worldBounds(a),
@@ -188,10 +188,10 @@ export function dispositionEnGrille(
     placesDeLaFleche: (id, depuis) => {
       const def = getBridge(id);
       if (!def) return [];
-      const cases = casesDeLOuvrage(def);
+      const cases = casesDeLOuvrage(def, bridges);
       // Toutes les îles de l'archipel : une liaison en contour ne pose jamais la flèche sur une terre qu'elle longe.
       const iles = mapOf(a);
-      return placesDeLaFleche(depuis === def.to ? [...cases].reverse() : cases, (x, y) => iles.some((d) => isLandDuMonde(d, x, y)));
+      return placesDeLaFleche(depuis === def.to ? [...cases].reverse() : cases, (x, y) => iles.some((d) => isLandInWorld(d, x, y)));
     },
   };
 }

@@ -1,20 +1,17 @@
 // La flèche de la Carte posée sur un ouvrage (GD-7) : sur sa liaison, côté île de départ, qui ne désigne que lui.
 // Sur une région toute reliée (GD-9 : une liaison ne se dessine que posée).
 import { ARCHIPELAGO_IDS } from './archipelagos';
-import { relierLaRegion, VOYAGES } from './archipelago';
-import { liaisonsPoseesDe, poserLesLiaisons } from './linkGeometry';
+import { linkWholeRegion, VOYAGES } from './archipelago';
+import { placedLinksOf } from './linkGeometry';
 import { archipelagoOfIsland } from './archipelagos';
-import { grilleDe } from './grid';
+import { dispositionEnGrille } from './grid';
 import { isLand, mapOf } from './map';
 import { casesDeLOuvrage, placesDeLaFleche, premierCoude } from './terrain';
 import { estUnOuvrage } from './view';
 
 /** Les liaisons posées de chaque région, une région toute reliée (GD-9). */
-const POSEES = (() => {
-  const links = ARCHIPELAGO_IDS.reduce<string[]>((l, a) => relierLaRegion(a, l), VOYAGES.map((v) => v.id));
-  poserLesLiaisons(links);
-  return ARCHIPELAGO_IDS.flatMap((a) => liaisonsPoseesDe(a));
-})();
+const LIENS = ARCHIPELAGO_IDS.reduce<string[]>((l, a) => linkWholeRegion(a, l), VOYAGES.map((v) => v.id));
+const POSEES = ARCHIPELAGO_IDS.flatMap((a) => placedLinksOf(a, LIENS));
 
 it('la place de la flèche : la première case d’eau, puis trois cases vers l’arrivée', () => {
   const c = (x: number, troncon = 0) => ({ x, y: 0, z: 0, troncon });
@@ -55,10 +52,10 @@ describe('la flèche de chaque liaison posée, depuis chacun de ses deux lieux',
     const a = archipelagoOfIsland(def.from);
     for (const depuis of [def.from, def.to]) {
       it(`${def.id} depuis ${depuis}`, () => {
-        const g = grilleDe(a);
+        const g = dispositionEnGrille(a, LIENS);
         const places = g.placesDeLaFleche(def.id, depuis);
         expect(places.length).toBeGreaterThan(0);
-        const chemin = casesDeLOuvrage(def);
+        const chemin = casesDeLOuvrage(def, LIENS);
         const sens = depuis === def.to ? [...chemin].reverse() : chemin;
         const indice = (p: { x: number; y: number }) => sens.findIndex((c) => c.x === p.x && c.y === p.y);
         const eau = sens.some((c) => !mapOf(a).some((d) => isLand(d, c.x, c.y)));
@@ -81,7 +78,7 @@ describe('la flèche de chaque liaison posée, depuis chacun de ses deux lieux',
 
 it('la flèche d’un ouvrage n’est sur aucun autre : elle désigne un seul ouvrage parmi ceux d’une île', () => {
   for (const def of POSEES) {
-    const g = grilleDe(archipelagoOfIsland(def.from));
+    const g = dispositionEnGrille(archipelagoOfIsland(def.from), LIENS);
     for (const depuis of [def.from, def.to])
       for (const p of g.placesDeLaFleche(def.id, depuis))
         for (const autre of POSEES) {

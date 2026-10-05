@@ -1,7 +1,6 @@
 import { BIOMES } from '../biomes';
 import { ALTITUDE, ARCHIPELAGO_IDS, CORE, LACS, isLand, islandDef, landBox, landCells, landscape, MAP, reliefHeight } from './map';
-import { BRIDGES, LINKS_BEFORE_GD9, relierLaRegion, VOYAGES } from './archipelago';
-import { poserLesLiaisons } from './linkGeometry';
+import { BRIDGES, LINKS_BEFORE_GD9, linkWholeRegion, VOYAGES } from './archipelago';
 import { ISLET_H, ISLET_W, bossIsletOrigin, worldCubes } from './terrain';
 
 it('chaque île a une place, une altitude selon sa classe, et son cœur fait partie de sa terre', () => {
@@ -106,11 +105,10 @@ it('aucun pont ne traverse l’îlot d’un Gardien ni la terre d’une autre î
   for (const def of MAP) for (const c of landCells(def)) land.set(`${c.x},${c.y}`, def.id);
   // Les liaisons qu'une partie peut avoir (GD-9) : toute une région reliée, et la sauvegarde d'avant, avec ses tracés d'origine.
   const all = [
-    ...ARCHIPELAGO_IDS.flatMap((a) => relierLaRegion(a, VOYAGES.map((v) => v.id))),
+    ...ARCHIPELAGO_IDS.flatMap((a) => linkWholeRegion(a, VOYAGES.map((v) => v.id))),
     ...LINKS_BEFORE_GD9.filter((b) => b.cost > 0).map((b) => b.id),
     ...VOYAGES.map((v) => v.id),
   ];
-  poserLesLiaisons(all);
   const bridges = ARCHIPELAGO_IDS.flatMap((a) => worldCubes(a, {}, { parts: {}, log: [], links: all }, false)).filter((c) => c.bridge);
   for (const c of bridges) {
     const key = `${c.x},${c.y}`;

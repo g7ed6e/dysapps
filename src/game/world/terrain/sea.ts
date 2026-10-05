@@ -1,18 +1,18 @@
 // Le large : les baleines, le décor de la mer et les nappes de brume.
-import { type ArchipelagoId, archipelagoOfIsland, DANS_LE_CIEL, landBox, landCells, lieuDeDepart, mapOf } from '../map';
+import { type ArchipelagoId, archipelagoOfIsland, DANS_LE_CIEL, landBox, landCells, startingIsland, mapOf } from '../map';
 import { BIOMES } from '../../biomes';
 import { dockBox } from '../harbor';
 import { BRIDGES, getArchipelago } from '../archipelago';
-import { ilotDuMonument } from '../footprint';
-import { liaisonEntreReunis, LONGUEUR_LONGUE, TraceurDeRegion } from '../routing';
+import { monumentIslet } from '../footprint';
+import { linkBetweenJoined, LONG_LENGTH, RegionRouter } from '../routing';
 import { MONUMENT_ISLET, monumentsOf } from '../monuments';
 import type { VoxelCube } from '../cube';
 import { semerLaMer } from '../decor';
 import { bossIsletOrigin, ISLET_H, ISLET_W, rectangleDeLIlot } from './islets';
 import { bridgePath } from './links';
-import { liaisonsPoseesDe } from '../linkGeometry';
+import { placedLinksOf } from '../linkGeometry';
 import { bornesDeDepart, worldBounds } from './view';
-import { cacheDeLaDisposition } from '../placement';
+import { layoutCache } from '../placement';
 
 /**
  * Les baleines replacées à la main, quand la clairière choisie par `whaleSpots` se cache derrière une île dans la vue
@@ -20,19 +20,22 @@ import { cacheDeLaDisposition } from '../placement';
  * se voyait). `de` : la clairière choisie ; `vers` : la nouvelle, en eau libre ; le rond y garde trois cases de toute
  * terre, îlot ou ponton (`r` = éloignement − 3, comme ailleurs). Vérifié par terrain.test.ts et three/whales.test.ts.
  *
- * Depuis GD-9, les lieux se déplacent et les clairières suivent : plus aucune baleine n'est replacée à la main (celle
- * du 5e, calée sur la clairière de 91, 345, ne l'était plus après le calage de la carte de départ sur la grille).
+ * Depuis GD-9, les lieux se déplacent et les clairières suivent : celle du 5e, calée sur la clairière de 91, 345, ne
+ * l'est plus. Au 6e, la clairière de 3, 109 passe d'un pas vers l'ouest (DA, 5 octobre 2026 : depuis la vue du port,
+ * une côte cachait le bord de son rond) ; elle ne l'est que tant que la clairière choisie est celle-là.
  */
-export const BALEINES_REPLACEES: Readonly<Partial<Record<ArchipelagoId, readonly { de: { x: number; y: number }; vers: { x: number; y: number } }[]>>> = {};
+export const BALEINES_REPLACEES: Readonly<Partial<Record<ArchipelagoId, readonly { de: { x: number; y: number }; vers: { x: number; y: number } }[]>>> = {
+  '6e': [{ de: { x: 3, y: 109 }, vers: { x: -1, y: 109 } }],
+};
 
-const whaleCache = cacheDeLaDisposition<string, { x: number; y: number; r: number }[]>();
+const whaleCache = layoutCache<string, { x: number; y: number; r: number }[]>();
 
 /**
  * Les clairières des baleines : au large des lieux à leur place, des îlots, du quai, des écueils et des liaisons posées
  * (GD-9 : elles changent quand on pose une liaison ou qu'on déplace un lieu).
  */
-export function whaleSpots(a: ArchipelagoId): { x: number; y: number; r: number }[] {
-  const posees = liaisonsPoseesDe(a);
+export function whaleSpots(a: ArchipelagoId, links: readonly string[]): { x: number; y: number; r: number }[] {
+  const posees = placedLinksOf(a, links);
   const cleDesBaleines = `${a}|${posees.map((br) => br.id).join(',')}`;
   const known = whaleCache.get(cleDesBaleines);
   if (known) return known;
@@ -50,7 +53,7 @@ export function whaleSpots(a: ArchipelagoId): { x: number; y: number; r: number 
   const dock = dockBox(getArchipelago(a).port);
   for (let x = dock.x0; x <= dock.x1; x++) for (let y = dock.y0; y <= dock.y1; y++) land.push({ x, y });
   // Une baleine ne fait surface ni sur une liaison posée, ni sur un écueil.
-  for (const br of posees) land.push(...bridgePath(br));
+  for (const br of posees) land.push(...bridgePath(br, links));
   for (const c of seaDecor(a)) land.push(c);
   const b = worldBounds(a);
   const clearance = (x: number, y: number) => {
@@ -115,7 +118,7 @@ export function seaDecor(a: ArchipelagoId): VoxelCube[] {
   }
   const solid = new Set<string>();
   for (const id of mapOf(a).map((d) => d.id)) {
-    const def = lieuDeDepart(id);
+    const def = startingIsland(id);
     for (const c of landCells(def)) solid.add(`${c.x},${c.y}`);
     const r = rectangleDeLIlot(def);
     for (let x = r.x0; x < r.x1; x++) for (let y = r.y0; y < r.y1; y++) solid.add(`${x},${y}`);
@@ -124,15 +127,15 @@ export function seaDecor(a: ArchipelagoId): VoxelCube[] {
   for (let x = dock.x0 - 1; x <= dock.x1 + 1; x++) for (let y = dock.y0 - 1; y <= dock.y1 + 1; y++) solid.add(`${x},${y}`);
   // Les îlots des monuments.
   for (const m of monumentsOf(a)) {
-    const o = ilotDuMonument(m, lieuDeDepart(m.biome));
+    const o = monumentIslet(m, startingIsland(m.biome));
     for (let x = 0; x < MONUMENT_ISLET; x++) for (let y = 0; y < MONUMENT_ISLET; y++) solid.add(`${o.x + x},${o.y + y}`);
   }
   // Les couloirs des liaisons (GD-9) : le tracé de chaque liaison seule sur la carte de départ. Aucun écueil n'y
   // affleure, à deux cases près : la mer ne barre jamais d'avance une liaison que l'élève voudrait poser.
   const couloirs = new Set<string>();
-  const traceur = new TraceurDeRegion(a, { lieux: mapOf(a).map((d) => lieuDeDepart(d.id)) });
+  const traceur = new RegionRouter(a, { lieux: mapOf(a).map((d) => startingIsland(d.id)) });
   for (const l of BRIDGES)
-    if (archipelagoOfIsland(l.from) === a && !liaisonEntreReunis(l)) for (const c of traceur.essayer(l, LONGUEUR_LONGUE)?.cases ?? []) couloirs.add(`${c.x},${c.y}`);
+    if (archipelagoOfIsland(l.from) === a && !linkBetweenJoined(l)) for (const c of traceur.essayer(l, LONG_LENGTH)?.cases ?? []) couloirs.add(`${c.x},${c.y}`);
   const b = bornesDeDepart(a);
   const free = (x: number, y: number) => {
     for (let dx = -5; dx <= 5; dx++) for (let dy = -5; dy <= 5; dy++) if (solid.has(`${x + dx},${y + dy}`)) return false;

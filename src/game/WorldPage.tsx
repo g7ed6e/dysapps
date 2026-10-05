@@ -76,7 +76,9 @@ import {
 import {
   KIND_NAME,
   archipelagoOf,
-  departChoisi,
+  chosenDeparture,
+  linkKind,
+  type BridgeDef,
   getArchipelago,
   getBridge,
   isBiomeUnlocked,
@@ -184,7 +186,7 @@ export function WorldPage() {
   const vu = useMemo(() => (textes.commandes ? state : sansCommandes(state)), [state, textes.commandes]);
   // Un autre départ choisi pour une liaison vers un lieu fermé (GD-9, « Relier ») : le monde montre son fantôme.
   const ouvrageVu = fiche?.objet.genre === 'ouvrage' ? fiche.objet.id : null;
-  const liaisonChoisie = useMemo(() => departChoisi(ouvrageVu, vu.world.links), [ouvrageVu, vu.world.links]);
+  const liaisonChoisie = useMemo(() => chosenDeparture(ouvrageVu, vu.world.links), [ouvrageVu, vu.world.links]);
   const cubes = useMemo(
     () => worldCubes(a, vu.progress, vu.world, false, trophyBlocks, sentinelles, habillage.atelier, liaisonChoisie),
     // La LV2 choisit les bornes de l'île de la LV2 (world/terrain.ts, `questStations`) ; l'habillage (le lieu
@@ -783,20 +785,23 @@ export function WorldPage() {
   const ouvrirFiche = (objet: ObjetDeLaFiche, options: Omit<FicheOuverte, 'objet' | 'seq' | 'saut'> & { saut?: boolean } = {}) => {
     if (voyage || mapOpen) return;
     if (island && sheetOpen) setSheetOpen(false);
-    setFiche({ objet, seq: ++ficheSeq.current, saut: options.saut ?? false, ...(options.phrase ? { phrase: options.phrase } : {}), ...(options.decouverte ? { decouverte: options.decouverte } : {}) });
+    setFiche({ objet, seq: ++ficheSeq.current, saut: options.saut ?? false, ...(options.phrase ? { phrase: options.phrase } : {}), ...(options.decouverte ? { decouverte: options.decouverte } : {}), ...(options.cadrer ? { cadrer: true } : {}) });
   };
-  /** Aller sur une île sans ouvrir son panneau, et y ouvrir la fiche d'un objet (« Y aller », « Voir le premier ouvrage »). */
+  /** Aller sur une île sans ouvrir son panneau, et y ouvrir la fiche d'un objet (« Y aller », « Relier »). */
   const allerALaFiche = (ile: BiomeId, objet: ObjetDeLaFiche) => {
     setSheetOpen(false);
     setFiche({ objet, seq: ++ficheSeq.current, saut: true });
     navigate(`/adventure/${ile}`);
   };
-  /** « Voir le premier ouvrage » (une île pâle, la Carte) : la fiche de cet ouvrage, depuis l'île ouverte qu'il touche. */
-  const voirOuvrage = (id: string) => {
+  /**
+   * « Relier » (une île pâle, la Carte) : la fiche de cet ouvrage, depuis l'île ouverte qu'il touche ; `autreDepart` :
+   * « Partir d'une autre île » (GD-9), la caméra tient la liaison au-dessus de la fiche.
+   */
+  const voirOuvrage = (id: string, autreDepart = false) => {
     const from = ileDeLOuvrage(id, state.world.links);
     if (!from) return;
     if (mapOpen) allerALaFiche(from, { genre: 'ouvrage', id });
-    else ouvrirFiche({ genre: 'ouvrage', id }, { saut: true });
+    else ouvrirFiche({ genre: 'ouvrage', id }, { saut: true, ...(autreDepart ? { cadrer: true } : {}) });
   };
   /** Une île pâle touchée : sa fiche, et une fois par appareil, la découverte des ouvrages dans la fiche, après l'indice. */
   const ouvrirLIlePale = (id: BiomeId) => {
@@ -859,8 +864,8 @@ export function WorldPage() {
         return;
     }
   };
-  const ouvrageLabel = (b: { kind: keyof typeof KIND_NAME; from: BiomeId; to: BiomeId; cost: number }) =>
-    `${KIND_NAME[b.kind]} entre ${getBiome(b.from)?.name ?? b.from} et ${getBiome(b.to)?.name ?? b.to} (${b.cost} blocs)`;
+  const ouvrageLabel = (b: BridgeDef) =>
+    `${KIND_NAME[linkKind(b, state.world.links)]} entre ${getBiome(b.from)?.name ?? b.from} et ${getBiome(b.to)?.name ?? b.to} (${b.cost} blocs)`;
 
   /** Une créature ou un Gardien touchés : leur fiche ; la créature y dit une phrase (plus de bulle en haut). */
   const onCreature = (id: BiomeId, kind: 'creature' | 'guardian') => {
@@ -943,6 +948,7 @@ export function WorldPage() {
             reduceMotion={reduceMotion}
             forceDay={forceDay}
             bridges={state.world.links}
+            liaisonCadree={fiche?.cadrer && fiche.objet.genre === 'ouvrage' ? fiche.objet.id : null}
             marker={marker}
             imageDeLaCarte={imageDeLaCarte}
             vehicle={vehicle}
@@ -1010,7 +1016,7 @@ export function WorldPage() {
           {panneauDeLaCarte && mapTarget && (
             <div className="creature-line world-line world-map-line" role="status" aria-live="polite">
               <p>
-                <strong>Pour aller à {getBiome(mapTarget)?.name} :</strong> encore {remaining.length} ouvrage{remaining.length > 1 ? 's' : ''} à construire.
+                <strong>Pour aller à {getBiome(mapTarget)?.name} :</strong> encore {remaining.length} ouvrage{remaining.length > 1 ? 's' : ''}.
               </p>
               <ol className="world-map-path">
                 {remaining.map((b) => (
@@ -1018,7 +1024,7 @@ export function WorldPage() {
                 ))}
               </ol>
               <button type="button" className="button" onClick={() => voirOuvrage(remaining[0].id)}>
-                <Icon name="hammer" /> Voir le premier ouvrage
+                <Icon name="hammer" /> Relier
               </button>
             </div>
           )}

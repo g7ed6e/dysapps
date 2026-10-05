@@ -127,7 +127,7 @@ describe('Empreintes de la grille (filet de la séparation du jeu et du rendu)',
 
     it(`${a}, les ouvrages, l’embarquement et les voyages`, () => {
       // Un ouvrage est à l'archipel de son île de départ ; un voyage à celui de son arrivée.
-      const ouvrages = BRIDGES.filter((b) => archipelagoOfIsland(b.from) === a).map((b) => [b.id, bridgePath(b)]);
+      const ouvrages = BRIDGES.filter((b) => archipelagoOfIsland(b.from) === a).map((b) => [b.id, bridgePath(b, [])]);
       const embarquement = boardingRoute(getArchipelago(a).port);
       const voyages = VOYAGES.filter((v) => v.toClasse === a);
       expect({ ouvrages: empreinte(ouvrages), embarquement: empreinte(embarquement), voyages: empreinte(voyages) }).toMatchSnapshot();

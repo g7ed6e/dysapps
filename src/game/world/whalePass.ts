@@ -3,7 +3,7 @@
 // déroulé dans le temps (plonger, refaire surface, souffler, replonger, revenir). La 3D ne fait que le dessiner.
 import { BIOMES, type BiomeId } from "../biomes";
 import { getArchipelago } from "./archipelago";
-import { liaisonsPoseesDe } from "./linkGeometry";
+import { placedLinksOf } from "./linkGeometry";
 import { dockBox } from "./harbor";
 import {
   archipelagoOfIsland,
@@ -24,7 +24,7 @@ import {
   worldBounds,
 } from "./terrain";
 import { smoothstep } from "../../core/math";
-import { cacheDeLaDisposition } from './placement';
+import { layoutCache } from './placement';
 
 /** Un passage : un segment droit sur l'eau, de `from` à `to` (coordonnées de grille, continues). */
 export interface WhaleRoute {
@@ -51,11 +51,11 @@ interface Grid {
   cells: Uint8Array;
 }
 
-const gridCache = cacheDeLaDisposition<string, Grid>();
+const gridCache = layoutCache<string, Grid>();
 
 /** Ce que la baleine évite, case par case : terres, îlots des Gardiens et des monuments, ouvrages, port, rochers. */
-function obstacles(a: ArchipelagoId): Grid {
-  const cle = `${a}|${liaisonsPoseesDe(a).map((d) => d.id).join(',')}`;
+function obstacles(a: ArchipelagoId, links: readonly string[]): Grid {
+  const cle = `${a}|${placedLinksOf(a, links).map((d) => d.id).join(',')}`;
   const known = gridCache.get(cle);
   if (known) return known;
   const b = worldBounds(a);
@@ -76,7 +76,7 @@ function obstacles(a: ArchipelagoId): Grid {
     for (let x = 0; x < ISLET_W; x++)
       for (let y = 0; y < ISLET_H; y++) mark(o.x + x, o.y + y);
   }
-  for (const def of liaisonsPoseesDe(a)) for (const c of bridgePath(def)) mark(c.x, c.y);
+  for (const def of placedLinksOf(a, links)) for (const c of bridgePath(def, links)) mark(c.x, c.y);
   const dock = dockBox(getArchipelago(a).port);
   for (let x = dock.x0; x <= dock.x1; x++)
     for (let y = dock.y0; y <= dock.y1; y++) mark(x, y);
@@ -112,11 +112,12 @@ function clearAt(g: Grid, px: number, py: number, clear: number): boolean {
 /** Le segment entier est-il sur l'eau libre ? (un point toutes les demi-cases) */
 export function routeIsClear(
   a: ArchipelagoId,
+  links: readonly string[],
   route: WhaleRoute,
   clear = PASS_CLEARANCE,
 ): boolean {
   if (DANS_LE_CIEL[a]) return false;
-  const g = obstacles(a);
+  const g = obstacles(a, links);
   const len = Math.hypot(route.to.x - route.from.x, route.to.y - route.from.y);
   const n = Math.max(1, Math.ceil(len * 2));
   for (let k = 0; k <= n; k++) {
@@ -159,6 +160,7 @@ const PASS_AIM = {
  */
 export function whalePassRoute(
   island: BiomeId,
+  links: readonly string[],
   toCamera: { x: number; y: number } = { x: 0, y: -1 },
   narrow = false,
 ): WhaleRoute | null {
@@ -182,7 +184,7 @@ export function whalePassRoute(
   // son y le long du z de la scène, la caméra regarde le long de `back`).
   const back = { x: -toCamera.x / n, y: -toCamera.y / n };
   const right = { x: -back.y, y: back.x };
-  const whales = whaleSpots(a);
+  const whales = whaleSpots(a, links);
   for (const tier of tiers) {
     let best: { route: WhaleRoute; score: number } | null = null;
     for (let depth = tier.depth[0]; depth <= tier.depth[1]; depth += 1)
@@ -210,7 +212,7 @@ export function whalePassRoute(
             )
           )
             continue;
-          if (!routeIsClear(a, route, tier.clear)) continue;
+          if (!routeIsClear(a, links, route, tier.clear)) continue;
           best = { route, score };
         }
     if (best) return best.route;

@@ -8,7 +8,7 @@ import { planCells, zoneDesPlans } from '../plans';
 import { commandeDeLIle } from '../requests';
 import { casesDeLaPetiteConstruction } from '../fixtures';
 import { getArchipelago } from '../archipelago';
-import { liaisonsPoseesDuLieu } from '../linkGeometry';
+import { placedLinksOfPlace } from '../linkGeometry';
 import type { World } from '../../engine';
 import { villageStage } from '../villageStage';
 import { kitReady, launchedStages, stageBuildingAt } from '../vehicle';
@@ -61,7 +61,7 @@ interface QuaySpot {
  * chemin du bonhomme vers le navire, ni sur la zone des plans, une borne, un lieu, la créature ou sa place à lui ;
  * les objets ne se touchent pas. Les places ne dépendent pas de l'état du village : un objet ne change pas de place.
  */
-function quaySpots(port: BiomeId, cubes: VoxelCube[]): { boat: QuaySpot | null; flags: (QuaySpot | null)[]; crates: QuaySpot | null; hearth: QuaySpot | null } {
+function quaySpots(port: BiomeId, links: readonly string[], cubes: VoxelCube[]): { boat: QuaySpot | null; flags: (QuaySpot | null)[]; crates: QuaySpot | null; hearth: QuaySpot | null } {
   const def = islandDef(port);
   const X = def.core.x + DOCK_DX;
   const S = shoreY(port);
@@ -118,8 +118,8 @@ function quaySpots(port: BiomeId, cubes: VoxelCube[]): { boat: QuaySpot | null; 
   // La cale, sur la côte devant la barque amarrée (à l'ouest de la jetée) : rien ne s'y pose, la barque reste lisible.
   for (let x = X - 4; x < X; x++) for (let y = S; y <= S + 1; y++) ban(x, y);
   // Les ouvrages qui partent de l'île-port, et une case autour.
-  for (const b of liaisonsPoseesDuLieu(port))
-    for (const c of bridgePath(b)) for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) ban(c.x + dx, c.y + dy);
+  for (const b of placedLinksOfPlace(port, links))
+    for (const c of bridgePath(b, links)) for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) ban(c.x + dx, c.y + dy);
   // Le niveau du sol de chaque case : le cœur (et son plateau), ou la terre autour.
   const land = new Map(landscape(def).map((c) => [`${c.x},${c.y}`, c]));
   const ground = (x: number, y: number): number | null => {
@@ -185,7 +185,7 @@ export function harbor(a: ArchipelagoId, village: Pick<World, 'parts' | 'links'>
   const rest = vehicleRestZ(a);
   const X = def.core.x + DOCK_DX;
   const S = shoreY(port);
-  const spots = quaySpots(port, cubes);
+  const spots = quaySpots(port, village.links, cubes);
   const lantern = (x: number, y: number, z: number) =>
     cubes.push({ x, y, z, color: BLOCKS[BLOC.lanterne].side, top: BLOCKS[BLOC.lanterne].top, texture: 'lanterne', tag: port });
   const cells = dockCells(port);

@@ -1,10 +1,10 @@
 import { BADGES } from '../../core/progress';
 import { trophyBlock } from '../trophies';
-import { APPEL_DU_PASSAGE, bornesCost, cubesDUneLiaison, pireCasDeLaRegion, commandesCost, constructionCost, decorCost, ENVELOPPES, enveloppeDe, fauneCost, merCost, navireCost, personnagesCost, PLAFOND_DU_MONDE_EN_BLOCS, RENDER_BUDGET, sceneCost, sceneCostArchipeo, signesCost, solCost, toutConstruit, type Poste } from './budget';
+import { APPEL_DU_PASSAGE, bornesCost, linkCubes, worstCaseOfRegion, commandesCost, constructionCost, decorCost, ENVELOPPES, enveloppeDe, fauneCost, merCost, navireCost, personnagesCost, PLAFOND_DU_MONDE_EN_BLOCS, RENDER_BUDGET, sceneCost, sceneCostArchipeo, signesCost, solCost, toutConstruit, type Poste } from './budget';
 import { ARCHIPELAGO_IDS, type ArchipelagoId } from './map';
 import { buildMesh } from './mesher';
 import { worldCubes } from './terrain';
-import { LONGUEUR_COURTE, LONGUEUR_LONGUE } from './routing';
+import { SHORT_LENGTH, LONG_LENGTH } from './routing';
 
 it('prépare une partie vraiment tout construite (Gardiens vaincus, navire, ouvrages)', () => {
   const { progress, world: village } = toutConstruit();
@@ -198,7 +198,7 @@ it('GD-9 : le plafond du monde en blocs passe à 88 000 triangles, les appels re
 
 it('GD-9 : au pire (autant de liaisons qu’un graphe planaire en a, au plus long, et toutes les réunions), chaque région tient sous le plafond', () => {
   for (const a of ARCHIPELAGO_IDS) {
-    const pire = pireCasDeLaRegion(a);
+    const pire = worstCaseOfRegion(a);
     expect(pire.triangles, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.triangles);
     expect(pire.drawCalls, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.drawCalls);
     // Le pire cas compte plus que le monde d'aujourd'hui.
@@ -211,7 +211,7 @@ it('GD-9 : une liaison au plus long, de chaque sorte, ne prend aucun matériau n
   for (const a of ARCHIPELAGO_IDS) {
     const terrain = worldCubes(a, progress, world, false);
     const avant = buildMesh(terrain).length;
-    for (const [kind, n] of [['bac', LONGUEUR_LONGUE], ['pont', LONGUEUR_LONGUE], ['pont', LONGUEUR_COURTE], ['sentier', LONGUEUR_COURTE]] as const)
-      expect(buildMesh([...terrain, ...cubesDUneLiaison(a, kind, n)]).length, `${a} ${kind}`).toBe(avant);
+    for (const [kind, n] of [['bac', LONG_LENGTH], ['pont', LONG_LENGTH], ['pont', SHORT_LENGTH], ['sentier', SHORT_LENGTH]] as const)
+      expect(buildMesh([...terrain, ...linkCubes(a, kind, n)]).length, `${a} ${kind}`).toBe(avant);
   }
 });

@@ -5,7 +5,7 @@
 import { getBiome, ofBlock, type BiomeId, type BlockId } from '../biomes';
 import { planStatus, type GameState } from '../engine';
 import type { PlanDef } from './plans';
-import { BRIDGE_BLOCKS, KIND_NAME, archipelagoOf, buildableBridges, conditionMet, otherEnd, payableBlocks } from './archipelago';
+import { BRIDGE_BLOCKS, KIND_NAME, archipelagoOf, linkKind, buildableBridges, conditionMet, otherEnd, payableBlocks } from './archipelago';
 import { monumentsOf } from './monuments';
 import { blockUses, type Use } from './uses';
 import { VEHICLE_NAME, stageAt } from './vehicle';
@@ -69,7 +69,7 @@ function ouvrage(state: GameState, island: BiomeId, block: BlockId): Worksite | 
   if (!bridges.length) return null;
   const cheapest = bridges.reduce((a, b) => (b.cost < a.cost ? b : a));
   const to = getBiome(otherEnd(cheapest, island))?.name ?? cheapest.to;
-  const kind = KIND_NAME[cheapest.kind].toLowerCase();
+  const kind = KIND_NAME[linkKind(cheapest, state.world.links)].toLowerCase();
   const name = `${/^[aeiouy]/.test(kind) ? 'L’' : 'Le '}${kind} vers ${to}`;
   const have = Math.min(cheapest.cost, payableBlocks(state.stock));
   const ready = have >= cheapest.cost;

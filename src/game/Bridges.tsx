@@ -7,8 +7,8 @@ import { BLOCKS, blockCount, getBiome, type BiomeId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { Foldable } from './IslandFold';
 import { playDone, playNope } from './sound';
-import { CONDITION_OF, KIND_NAME, buildableBridges, conditionMet, conditionText, isBiomeUnlocked, otherEnd, payableBlocks, type BridgeDef } from './world/archipelago';
-import { AUCUNE_LIAISON, ouvrageName, ouvragesParSuggestion } from './world/goals';
+import { CONDITION_OF, KIND_NAME, buildableBridges, conditionMet, conditionText, isBiomeUnlocked, linkKind, opensAnIsland, otherEnd, payableBlocks, reachableIslands, type BridgeDef, type BridgeKind } from './world/archipelago';
+import { noDirectLinkHint, ouvrageName, ouvragesParSuggestion } from './world/goals';
 
 interface Props {
   island: BiomeId;
@@ -27,7 +27,7 @@ interface Props {
 }
 
 /** « le pont », « le bac », « le sentier ». */
-function withArticle(kind: BridgeDef['kind']): string {
+export function withArticle(kind: BridgeKind): string {
   const name = KIND_NAME[kind].toLowerCase();
   return /^[aeiouy]/.test(name) ? `l’${name}` : `le ${name}`;
 }
@@ -43,19 +43,28 @@ export function useConstruireUnOuvrage(island: BiomeId, onBuilt?: (to: BiomeId) 
   const [said, setSaid] = useState<string | null>(null);
   // Le message d'un ouvrage construit ne suit pas sur une autre île.
   useEffect(() => setSaid(null), [island]);
-  const build = (b: BridgeDef, name: string) => {
+  /**
+   * Poser une liaison. La phrase nomme l'île d'arrivée : celle qu'elle ouvre, ou, pour un raccourci, l'autre île que
+   * celle du panneau ; jamais l'île de départ.
+   */
+  const build = (b: BridgeDef) => {
+    const links = state.world.links;
+    const kind = linkKind(b, links);
+    const open = reachableIslands(links);
+    const ouvre = opensAnIsland(b, open);
+    const arrivee = ouvre ? (open.has(b.from) ? b.to : b.from) : otherEnd(b, island);
+    const name = getBiome(arrivee)?.name ?? arrivee;
     const r = buildBridge(b.id);
     let text: string;
-    const what = withArticle(b.kind);
+    const what = withArticle(kind);
     if (r.ok) {
       const used = Object.entries(r.used)
         .map(([id, n]) => blockCount(id as keyof typeof BLOCKS, n))
         .join(', ');
-      const built = b.kind === 'pont' || b.kind === 'bac' ? 'posé' : b.kind === 'tunnel' ? 'percé' : b.kind === 'sentier' ? 'tracé' : 'taillé';
-      const ouvre = !isBiomeUnlocked(b.from, state.world.links) || !isBiomeUnlocked(b.to, state.world.links);
+      const built = kind === 'pont' || kind === 'bac' ? 'posé' : kind === 'tunnel' ? 'percé' : kind === 'sentier' ? 'tracé' : 'taillé';
       text = `${what.charAt(0).toUpperCase()}${what.slice(1)} vers ${name} est ${built} ! Il t’a coûté ${used}.${ouvre ? ' L’île est ouverte.' : ''}`;
       if (settings.sounds) playDone();
-      onBuilt?.(otherEnd(b, island));
+      onBuilt?.(arrivee);
     } else if (r.reason === 'blocs') {
       text = `Il manque encore ${r.missing} bloc${(r.missing ?? 0) > 1 ? 's' : ''}. Fais une mission pour en gagner.`;
       if (settings.sounds) playNope();
@@ -98,7 +107,7 @@ export function Bridges({ island, onBuilt, highlight = null, fold, objectif }: P
     return (
       <section className="bridges" aria-label="Relier">
         <p className="bridges-have">
-          <Syllabified text={AUCUNE_LIAISON} />
+          <Syllabified text={noDirectLinkHint(island, state.world.links)} />
         </p>
       </section>
     );
@@ -121,7 +130,7 @@ export function Bridges({ island, onBuilt, highlight = null, fold, objectif }: P
   const status = readyOnes.length
     ? `${readyOnes.length} possible${readyOnes.length > 1 ? 's' : ''} · tu as ${have} bloc${have > 1 ? 's' : ''}`
     : enTete && manque > 0
-      ? `Encore ${manque} bloc${manque > 1 ? 's' : ''} pour ${ouvrageName(enTete.kind, getBiome(otherEnd(enTete, island))?.name ?? '')}`
+      ? `Encore ${manque} bloc${manque > 1 ? 's' : ''} pour ${ouvrageName(linkKind(enTete, state.world.links), getBiome(otherEnd(enTete, island))?.name ?? '')}`
       : enTete
         ? (conditionText(enTete, state.world.links) ?? '')
         : '';
@@ -134,25 +143,25 @@ export function Bridges({ island, onBuilt, highlight = null, fold, objectif }: P
       <section className="bridges" aria-labelledby={`ponts-${island}`}>
         {bridges.length > 0 && (
           <p className="bridges-have">
-            Tu as <strong>{have}</strong> bloc{have > 1 ? 's' : ''}.{' '}
-            {ferme ? 'Choisis d’où part la liaison : le lieu relié le plus proche est en premier.' : 'Une liaison relie deux lieux.'}
+            Tu as <strong>{have}</strong> bloc{have > 1 ? 's' : ''}.{ferme ? ' Choisis l’île de départ. La plus proche est en premier.' : ''}
           </p>
         )}
-        <ul ref={list} className="island-actions bridges-list" aria-label={ferme ? 'Départs de la liaison' : 'Ouvrages à construire'}>
+        <ul ref={list} className="island-actions bridges-list" aria-label={ferme ? 'Départs de l’ouvrage' : 'Ouvrages à poser'}>
           {liste.map((b) => {
             const other = getBiome(otherEnd(b, island))!;
             const enough = have >= b.cost;
             const met = conditionMet(b, state.world.links, world);
             const ready = enough && met;
-            const condition = CONDITION_OF[b.kind];
-            const title = `${KIND_NAME[b.kind]} ${ferme ? 'depuis' : 'vers'} ${other.name}`;
+            const kind = linkKind(b, state.world.links);
+            const condition = CONDITION_OF[kind];
+            const title = `${KIND_NAME[kind]} ${ferme ? 'depuis' : 'vers'} ${other.name}`;
             // Pas encore possible : une ligne compacte qui dit ce qu'il manque, sans bouton grisé.
             if (!ready)
               return (
                 <li
                   key={b.id}
                   data-bridge={b.id}
-                  className={`island-quest locked bridge-item bridge-compact bridge-${b.kind}${highlight === b.id ? ' bridge-highlight' : ''}`}
+                  className={`island-quest locked bridge-item bridge-compact bridge-${kind}${highlight === b.id ? ' bridge-highlight' : ''}`}
                   aria-disabled="true"
                 >
                   <span className="island-quest-icon bridge-icon">
@@ -169,7 +178,7 @@ export function Bridges({ island, onBuilt, highlight = null, fold, objectif }: P
                 </li>
               );
             return (
-              <li key={b.id} data-bridge={b.id} className={`island-quest bridge-item bridge-${b.kind}${highlight === b.id ? ' bridge-highlight' : ''}`}>
+              <li key={b.id} data-bridge={b.id} className={`island-quest bridge-item bridge-${kind}${highlight === b.id ? ' bridge-highlight' : ''}`}>
                 <span className="island-quest-icon bridge-icon">
                   <Icon name={condition === 'plan' ? 'hammer' : 'blocks'} />
                 </span>
@@ -177,7 +186,7 @@ export function Bridges({ island, onBuilt, highlight = null, fold, objectif }: P
                   <span className="island-quest-title">{title}</span>
                   <span className="island-quest-desc">{b.cost} blocs</span>
                 </span>
-                <button type="button" className={b.id === principal ? 'button primary' : 'button'} onClick={() => build(b, other.name)}>
+                <button type="button" className={b.id === principal ? 'button primary' : 'button'} onClick={() => build(b)}>
                   <Icon name="hammer" /> Poser
                 </button>
               </li>

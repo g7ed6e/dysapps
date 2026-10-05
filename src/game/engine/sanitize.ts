@@ -10,7 +10,7 @@ import { planV1 } from '../world/plansV1';
 import { bridgesFromLegacyProgress, getBridge, getVoyage, grantAccess, isBiomeUnlocked, legacyReachable } from '../world/archipelago';
 import { lireTirage, recetteDe, type TirageAssemblage } from '../world/assembly';
 import { archipelDeLaCommande, getCommande, MAX_COMMANDES_OUVERTES } from '../world/requests';
-import { sanitizeLayout } from '../world/regionLayout';
+import { sanitizeLayout } from '../world/savedLayout';
 import type { ExerciseProgress, GameState, LogEntry, SpacedItem, TypeStats } from './state';
 import { INTERVALS } from './learning';
 

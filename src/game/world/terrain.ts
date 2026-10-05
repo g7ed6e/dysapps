@@ -7,10 +7,10 @@
 import { type BiomeId, BIOMES, BLOC, BLOCKS } from '../biomes';
 import type { World } from '../engine';
 import type { VoxelCube } from './cube';
-import { type ArchipelagoId, archipelagoOfIsland, inCoeurDOrigine, inCore, islandDef, type IslandDef, landCells, landscape, margesDuCoeur, noise, tirage, tournerDansLeMonde } from './map';
-import { tournerLaCase } from './placement';
-import { buildableBridges, bridgeState, getBridge, isBiomeUnlocked, opensAnIsland, reachableIslands } from './archipelago';
-import { liaisonsPoseesDe, poserLesLiaisons } from './linkGeometry';
+import { type ArchipelagoId, archipelagoOfIsland, inCoeurDOrigine, inCore, islandDef, type IslandDef, landCells, landscape, margesDuCoeur, noise, tirage, turnInWorld } from './map';
+import { turnCell } from './placement';
+import { type BridgeDef, buildableBridges, bridgeState, getBridge, isBiomeUnlocked, linkKind, opensAnIsland, reachableIslands } from './archipelago';
+import { placedLinksOf } from './linkGeometry';
 import { cascades, DECOR, decorate, GRASS, landmark, pontonEtBarque, type Put, WATER } from './decor';
 import { LOW } from './paths';
 import { guardianStatus } from '../boss';
@@ -22,7 +22,7 @@ import { type Atelier, atelierModel, casesDuVillage, PLACE_IDS, placeCells, plac
 import { cleDeCube, DEPTH, fade, GROUND_COLOR, groundHeight, islandOrigin, LAYOUT_PAD, origineDe, taperLayers, TEXTURES, underground } from './terrain/base';
 import { cacheUneBorne, presDUneBorne, questStations, rangeeDevantLesBornes } from './terrain/markers';
 import { versLaCameraDuDessin } from './terrain/view';
-import { abordsDansLesMarges, bridge, nearSentier, piedsDesOuvrages } from './terrain/links';
+import { abordsDansLesMarges, bridge, bridgePath, nearSentier, piedsDesOuvrages } from './terrain/links';
 import { bossIslet } from './terrain/guardians';
 import { creatureDuMonde, creatureSpot } from './terrain/creatures';
 import { placeDeLaPetiteConstruction } from './terrain/fixture';
@@ -31,7 +31,7 @@ import { monumentIslets } from './terrain/monuments';
 import { seaDecor } from './terrain/sea';
 
 export { avatarHome, DEPTH, fade, FIN_DU_PLATEAU_DES_ECOLES, groundHeight, ISLAND, islandCenter, islandOrigin, LAYOUT_PAD, origineDe } from './terrain/base';
-export { type CadreDeCases, cadreDeTraversee, cameraDeLIle, DISTANCE_DE_LA_VUE_DE_L_ILE, HORS_DE_LA_COLONNE, ileDeLaVueGlissee, islandAt, overviewBounds, projectionDeLaVueDeLIle, versLaCamera, VIEW_YAW_MAX, viewYaw, viewZone, VISEE_AU_DESSUS_DU_SOL, VUE_DE_L_ILE, VUE_DE_L_ILE_PANNEAU_OUVERT, worldBounds } from './terrain/view';
+export { type CadreDeCases, cadreDeLaLiaison, cadreDeTraversee, cameraDeLIle, DISTANCE_DE_LA_VUE_DE_L_ILE, HORS_DE_LA_COLONNE, ileDeLaVueGlissee, islandAt, overviewBounds, projectionDeLaVueDeLIle, versLaCamera, VIEW_YAW_MAX, viewYaw, viewZone, VISEE_AU_DESSUS_DU_SOL, VUE_DE_L_ILE, VUE_DE_L_ILE_PANNEAU_OUVERT, worldBounds } from './terrain/view';
 export { type BorneVue, cacheUneBorne, PLACES_DES_BORNES_DES_ECOLES, placesDesBornes, PORTEE_DEVANT_LA_BORNE, questStations, rangeeDevantLesBornes } from './terrain/markers';
 export { avatarRoute, BAC_LONG, boardingRoute, bridgePath, casesDeLOuvrage, placesDeLaFleche, portsDAttache, premierCoude, routeAt, routeLengths, tablier } from './terrain/links';
 export { ASSEMBLAGE_SIZE, type Atelier, atelierModel, cacheUnLieu, casesDesLieux, HALLE, lieuxVus, placeDoor, placeSpot, schoolModel, TROPHY_AT, TROPHY_SIZE, TROPHY_SLOTS, trophyModel, VILLAGE_PLACES } from './terrain/village';
@@ -84,7 +84,7 @@ export function cubesDeLIle(
 function tournerLesCubes(def: IslandDef, cubes: VoxelCube[]): void {
   if (!def.quarts) return;
   for (const c of cubes) {
-    const t = tournerLaCase(c.x, c.y, def.quarts);
+    const t = turnCell(c.x, c.y, def.quarts);
     c.x = t.x;
     c.y = t.y;
     if (c.decor) c.decor = nomTourne(def, c.decor);
@@ -97,7 +97,7 @@ function nomTourne(def: IslandDef, nom: string): string {
   if (at < 0 || nom.includes('/cœur:')) return nom;
   const [x, y] = nom.slice(at + 1).split(',').map(Number);
   if (!Number.isInteger(x) || !Number.isInteger(y)) return nom;
-  const p = tournerDansLeMonde(def, x, y);
+  const p = turnInWorld(def, x, y);
   return `${nom.slice(0, at + 1)}${p.x},${p.y}`;
 }
 
@@ -116,11 +116,9 @@ export function worldCubes(
   sentinelles = false,
   /** La silhouette du lieu où l'on assemble (GD-2), selon l'univers (l'habillage) : la Fabrique ou la Halle. */
   atelier: Atelier = 'fabrique',
-  /** Le départ choisi d'une liaison vers un lieu fermé (GD-9, « Relier », `departChoisi`) : son fantôme à la place du plus proche. */
+  /** Le départ choisi d'une liaison vers un lieu fermé (GD-9, « Relier », `chosenDeparture`) : son fantôme à la place du plus proche. */
   choisie: string | null = null,
 ): VoxelCube[] {
-  // Les liaisons posées de cette partie : leur tracé (`bridgePath`) et ce qui s'en écarte (mer, baleines) les lisent.
-  poserLesLiaisons(village.links);
   const cubes: VoxelCube[] = [];
   // Tout ce qui est déjà posé dans la scène : une cascade ne tombe jamais sur la terre de l'île voisine.
   const placed = new Set<number>();
@@ -403,7 +401,9 @@ function entreLesIles(a: ArchipelagoId, village: World, cubes: VoxelCube[], choi
   // dans le monde (la fiche « Relier » les propose). Avec « Pas de LV2 », pas de fantôme vers l'île de la LV2 : elle
   // n'est pas proposée, rien ne l'annonce (DA, 28/09, LV2-4). Une liaison posée reste : la sauvegarde ne perd rien.
   const occupied = new Set(cubes.map((c) => `${c.x},${c.y},${c.z}`));
-  for (const def of liaisonsPoseesDe(a)) bridge(def, cubes, false, occupied);
+  const links = village.links;
+  const poser = (def: BridgeDef, ghost: boolean) => bridge(def, linkKind(def, links), bridgePath(def, links), cubes, ghost, occupied);
+  for (const def of placedLinksOf(a, links)) poser(def, false);
   // Un autre départ choisi dans la fiche (« Relier ») : son fantôme remplace celui du lieu relié le plus proche.
   const open = reachableIslands(village.links);
   const autre = choisie ? getBridge(choisie) : undefined;
@@ -412,6 +412,6 @@ function entreLesIles(a: ArchipelagoId, village: World, cubes: VoxelCube[], choi
     (def) => archipelagoOfIsland(def.from) === a && opensAnIsland(def, open) && def.from !== fermeeChoisie && def.to !== fermeeChoisie,
   );
   if (autre && fermeeChoisie && archipelagoOfIsland(autre.from) === a) fantomes.unshift(autre);
-  for (const def of fantomes) if (bridgeState(def, village.links, undefined, open) === 'buildable') bridge(def, cubes, true, occupied);
+  for (const def of fantomes) if (bridgeState(def, village.links, undefined, open) === 'buildable') poser(def, true);
   return cubes;
 }

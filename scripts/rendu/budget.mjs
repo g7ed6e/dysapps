@@ -69,7 +69,7 @@ try {
         signes: budget.signesCost(),
         plafond: budget.PLAFOND_DU_MONDE_EN_BLOCS,
         // Le pire cas d'une région aménagée (GD-9) : toutes les liaisons au plus long, les raccourcis, les réunions.
-        pire: budget.pireCasDeLaRegion(a),
+        pire: budget.worstCaseOfRegion(a),
       },
     };
   });
@@ -100,7 +100,7 @@ try {
       console.log(`Les bulles (\`signesCost\`) : ${n(b.signes.triangles)} triangles, ${b.signes.drawCalls} appel ; avec le monde en blocs et ses commandes : ${n(total.triangles)} triangles, ${total.drawCalls} appels${depasse}.`);
       const p = b.pire;
       const pireDepasse = p.triangles > b.plafond.triangles || p.drawCalls > b.plafond.drawCalls ? ' ⚠' : '';
-      console.log(`Au pire, la région aménagée (GD-9, \`pireCasDeLaRegion\`) : ${n(p.triangles)} triangles (${n(p.base)} sans liaisons, ${n(p.liaisons)} de liaisons au plus long, ${n(p.reunions)} de réunions), ${p.drawCalls} appels${pireDepasse}.`);
+      console.log(`Au pire, la région aménagée (GD-9, \`worstCaseOfRegion\`) : ${n(p.triangles)} triangles (${n(p.base)} sans liaisons, ${n(p.liaisons)} de liaisons au plus long, ${n(p.reunions)} de réunions), ${p.drawCalls} appels${pireDepasse}.`);
     }
   }
 } finally {

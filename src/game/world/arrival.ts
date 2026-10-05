@@ -3,7 +3,7 @@
 // trace ensuite le chemin (grid.ts, `raccord` ou `trajet`). Aucune taille en dur : l'étendue de l'île vient de la
 // carte (map.ts, `landBox`, `isLand`), et la recherche reste dans cette étendue et autour du bonhomme.
 import type { Point } from './layout';
-import { isLandDuMonde, landBox, type IslandDef } from './map';
+import { isLandInWorld, landBox, type IslandDef } from './map';
 import type { WalkGround } from './paths';
 
 /**
@@ -53,7 +53,7 @@ export function caseDArrivee(ground: WalkGround, ile: IslandDef, depuis: Point, 
   const sx = Math.round(depuis.x);
   const sy = Math.round(depuis.y);
   // Le bonhomme est déjà sur la case touchée : il y reste.
-  if (sx === tx && sy === ty && isLandDuMonde(ile, sx, sy)) return { case: { x: sx, y: sy, z: depuis.z }, touchee: true };
+  if (sx === tx && sy === ty && isLandInWorld(ile, sx, sy)) return { case: { x: sx, y: sy, z: depuis.z }, touchee: true };
   const marge = margeDeRecherche(ile);
   const minX = Math.min(box.x0, sx) - marge;
   const maxX = Math.max(box.x1, sx) + marge;
@@ -72,7 +72,7 @@ export function caseDArrivee(ground: WalkGround, ile: IslandDef, depuis: Point, 
     const [cx, cy] = file[i];
     const cz = feetAt(cx, cy)!;
     const depart = cx === sx && cy === sy;
-    if (!depart && isLandDuMonde(ile, cx, cy) && !ground.bridge.has(key(cx, cy))) {
+    if (!depart && isLandInWorld(ile, cx, cy) && !ground.bridge.has(key(cx, cy))) {
       const d = (cx - tx) ** 2 + (cy - ty) ** 2;
       if (!best || d < best.d) best = { x: cx, y: cy, d };
       if (d === 0) break;

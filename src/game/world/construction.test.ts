@@ -1,6 +1,6 @@
 import type { VoxelCube } from '../Voxel';
 import { BLOC, BIOMES, BLOCKS } from '../biomes';
-import { voisinsDe } from './linkGeometry';
+import { neighboursOf } from './linkGeometry';
 import { buildingStages } from './architect';
 import { enveloppeDe, toutConstruit } from './budget';
 import {
@@ -476,9 +476,9 @@ describe('La construction taillée (lot R5)', () => {
 
 describe('Les toits de terre cuite (lot R5)', () => {
   it('deux îles voisines ne sont jamais toutes deux en terre cuite', () => {
-    // Voisines : celles qu'un pont relie dans la disposition (`voisinsDe`) ; depuis GD-9, toutes les paires d'une
+    // Voisines : celles qu'un pont relie dans la disposition (`neighboursOf`) ; depuis GD-9, toutes les paires d'une
     // région ont leur liaison, mais seules les proches se voient ensemble.
-    const voisines = BIOMES.flatMap((b) => voisinsDe(b.id).filter((id) => toitDe(b.id) === 'terre-cuite' && toitDe(id) === 'terre-cuite').map((id) => `${b.id}-${id}`));
+    const voisines = BIOMES.flatMap((b) => neighboursOf(b.id).filter((id) => toitDe(b.id) === 'terre-cuite' && toitDe(id) === 'terre-cuite').map((id) => `${b.id}-${id}`));
     expect(voisines).toEqual([]);
   });
 

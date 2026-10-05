@@ -3,7 +3,7 @@
 import { EMPRISE_DE_LA_SALLE, modeleDeLaSalle, SALLE_DE_DEPART } from '../trophyHall';
 import type { PlaceId, VillagePlaceId, VoxelCube } from '../cube';
 import { type BiomeId, BIOMES, BLOC, BLOCKS } from '../../biomes';
-import { type ArchipelagoId, islandDef, tournerDansLeMonde } from '../map';
+import { type ArchipelagoId, islandDef, turnInWorld } from '../map';
 import { getArchipelago } from '../archipelago';
 import { recetteDeLArchipel } from '../assembly';
 import { fade, groundHeight, isSchoolIsland } from './base';
@@ -133,7 +133,7 @@ export function placeDoor(place: VillagePlaceId, id: BiomeId): { x: number; y: n
   const index = BIOMES.findIndex((b) => b.id === id);
   const def = islandDef(id);
   // Sur le lieu tourné (GD-9) : la porte tourne avec lui.
-  return { ...tournerDansLeMonde(def, s.x + door, s.y - 1), z: def.altitude + groundHeight(index, at.x + door, at.y - 1) + 1 };
+  return { ...turnInWorld(def, s.x + door, s.y - 1), z: def.altitude + groundHeight(index, at.x + door, at.y - 1) + 1 };
 }
 
 export function placeCube(place: PlaceId, x: number, y: number, z: number, block: keyof typeof BLOCKS, island: BiomeId, unlocked: boolean): VoxelCube {
