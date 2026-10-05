@@ -6,7 +6,7 @@ import { groundLevelAt } from '../ground';
 import { type Cell, type WalkGround, walkPath } from '../paths';
 import type { VoxelCube } from '../cube';
 import { TRUNK } from '../decor';
-import { DOCK_DX, dockCells, dockOrigin, VEHICLE_DECK } from '../harbour';
+import { DOCK_DX, dockCells, dockOrigin, VEHICLE_DECK } from '../harbor';
 import { avatarHome, cleDeCube, origineDe } from './base';
 
 const STEP = '#8f8f8f';

@@ -290,17 +290,17 @@ function frequencyChoices(answer: Fr, traps: Fr[], rng: Rng): string[] {
     kept.filter((t) => value(t) > value(answer)),
     rng,
   ).sort((a, b) => Number(a[1] === total) - Number(b[1] === total));
-  const neighbours = (side: number): Fr[] =>
+  const neighbors = (side: number): Fr[] =>
     [1, 2, 3].map((d): Fr => [n + side * d, total]).filter(([m]) => m >= 1 && m < total);
   const wanted = randomInt(0, 3, rng);
   const take = (list: Fr[], count: number) => {
     const end = picked.length + count;
     for (const t of list) if (picked.length < end && free(t)) picked.push(t);
   };
-  take([...below, ...neighbours(-1)], wanted);
-  take([...above, ...neighbours(1)], 3 - wanted);
+  take([...below, ...neighbors(-1)], wanted);
+  take([...above, ...neighbors(1)], 3 - wanted);
   // S'il manque encore des choix (un seul élève sous la réponse), de l'autre côté.
-  take([...below, ...above, ...neighbours(-1), ...neighbours(1)], 3 - picked.length);
+  take([...below, ...above, ...neighbors(-1), ...neighbors(1)], 3 - picked.length);
   return [answer, ...picked].sort((a, b) => value(a) - value(b)).map(fr);
 }
 
@@ -372,7 +372,7 @@ export const frequencyPercent: ItemGenerator = (rng) => {
       100 - p,
     ],
     rng,
-    { step: 100 / total, neighbourOk: (v) => v > 0 && v < 100 },
+    { step: 100 / total, neighborOk: (v) => v > 0 && v < 100 },
   );
   return {
     key: `relpct-${survey.id}-${rows.map((row) => `${row.label}${row.n}`).join('-')}-${i}`,

@@ -24,7 +24,7 @@ import { abordsDansLesMarges, bridge, nearSentier, piedsDesOuvrages } from './te
 import { bossIslet } from './terrain/guardians';
 import { creatureDuMonde, creatureSpot } from './terrain/creatures';
 import { placeDeLaPetiteConstruction } from './terrain/fixture';
-import { harbour } from './terrain/port';
+import { harbor } from './terrain/port';
 import { monumentIslets } from './terrain/monuments';
 import { seaDecor } from './terrain/sea';
 
@@ -361,7 +361,7 @@ export function casesDesPlansDansLeMonde(cases: readonly { plan: PlanDef; keys: 
 /** Ce qui est entre les îles, en cases du monde, ajouté à `cubes` : le port, les îlots des monuments, la mer, les ouvrages. */
 function entreLesIles(a: ArchipelagoId, village: World, cubes: VoxelCube[]): VoxelCube[] {
   // Le port : la jetée (le Bloc-Navire est un objet à part, voir vehiclePlacement).
-  harbour(a, village, cubes);
+  harbor(a, village, cubes);
   // Les monuments, chacun sur son îlot au large : bâtis, ou en fantômes à construire.
   monumentIslets(a, village, cubes);
   // La mer habillée : rochers et bancs de sable, loin de tout (jamais sous un ouvrage, ni sur l'îlot d'un monument).

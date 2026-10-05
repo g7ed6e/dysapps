@@ -90,7 +90,7 @@ async function enregistrer(
 }
 
 /** Deux sections des Réglages : la sauvegarde dans un fichier, et comment réinstaller l'appli sans rien perdre. */
-export function SauvegardePanel() {
+export function SaveFilePanel() {
   const choix = useRef<HTMLInputElement>(null);
   const [note, setNote] = useState<string | null>(null);
   const [aRestaurer, setARestaurer] = useState<Sauvegarde | null>(null);

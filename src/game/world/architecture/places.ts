@@ -7,7 +7,7 @@
 import type { PlaceId, VoxelCube, VillagePlaceId } from '../cube';
 import type { TextureKind } from '../pixels';
 import type { CaseDuLieu, Famille, Kit } from './kits';
-import { classeDe, type Classe, type IndexDuPlan } from './neighbourhood';
+import { classeDe, type Classe, type IndexDuPlan } from './neighborhood';
 
 /** Le lieu d'un cube est-il un lieu du village (l'école, la salle des trophées, le lieu où l'on assemble), et non un monument ? */
 export const estUnLieuDuVillage = (place: PlaceId | undefined): place is VillagePlaceId => place === 'school' || place === 'trophies' || place === 'assembly';

@@ -10,7 +10,7 @@ import { BLOC, getBiome, missionsJouables, type BiomeId } from './biomes';
 import { BloclandProvider } from './BloclandContext';
 import { todayISO } from './engine';
 import { CATALOG, exercisesOf } from './exercises';
-import { FicheDuMonde, type FicheOuverte } from './WorldCard';
+import { WorldCard, type FicheOuverte } from './WorldCard';
 import { oublierLesRemises } from './reminders';
 import type { VehicleBuilder } from './useVehicleBuilder';
 import { getCommande, type Commande } from './world/requests';
@@ -51,7 +51,7 @@ function ouvrir(fiche: FicheOuverte, extra: { ship?: VehicleBuilder; commande?: 
       <ProgressProvider>
         <BloclandProvider>
           <MemoryRouter>
-            <FicheDuMonde
+            <WorldCard
               fiche={fiche}
               onClose={() => {}}
               ship={extra.ship ?? chantier({})}

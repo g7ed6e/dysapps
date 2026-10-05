@@ -179,7 +179,7 @@ export const primeOrDivisor: ItemGenerator = (rng) => {
       prompt: 'Lequel est un nombre premier ?',
       spoken: 'Lequel de ces nombres est un nombre premier ?',
       // Un voisin ajouté n'est jamais premier : une seule bonne réponse.
-      choices: drawChoices(p, traps, rng, { neighbourOk: (t) => t > 1 && !isPrime(t) }).map(fmt),
+      choices: drawChoices(p, traps, rng, { neighborOk: (t) => t > 1 && !isPrime(t) }).map(fmt),
       answer: fmt(p),
       hint: 'Un nombre premier a exactement deux diviseurs : 1 et lui-même. Élimine les pairs (sauf 2) et les multiples de 3 et de 5.',
       explanation: `${p} n’est divisible que par 1 et par ${p} : c’est un nombre premier.`,

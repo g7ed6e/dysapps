@@ -17,7 +17,7 @@ import type { ScreenProps } from './registry';
  * l'ouverture : on ne demande jamais d'écouter ce qu'on ne peut pas entendre.
  * Champs de l'item : question, prompt (l'histoire, une phrase par « \n »), spoken, choices, answer, hint, explanation, aid.
  */
-export function RecitScreen({ items, answered, onAnswer, ruledOut, onHelp, lang = 'en' }: ScreenProps) {
+export function StoryScreen({ items, answered, onAnswer, ruledOut, onHelp, lang = 'en' }: ScreenProps) {
   const item = items[0];
   const question = String(item.question ?? '');
   const story = String(item.prompt ?? '');

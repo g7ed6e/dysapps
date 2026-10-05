@@ -26,8 +26,8 @@ export const say = (n: number): string => (n < 0 ? `moins ${-n}` : String(n));
  * réponse est tirée d'abord (1re, 2e, 3e ou 4e) : on prend ensuite les pièges plus petits et plus grands qu'il faut,
  * et des voisins proches s'il en manque d'un côté (positifs si la réponse l'est). Voir `drawChoices`.
  */
-export function choices(answer: number, traps: number[], rng: Rng, format: (n: number) => string = fmt, neighbours = true): string[] {
-  return drawChoices(answer, traps, rng, { neighbourOk: (t) => t > 0 || answer <= 0, neighbours }).map(format);
+export function choices(answer: number, traps: number[], rng: Rng, format: (n: number) => string = fmt, neighbors = true): string[] {
+  return drawChoices(answer, traps, rng, { neighborOk: (t) => t > 0 || answer <= 0, neighbors }).map(format);
 }
 
 /** `count` items différents (par clé), en alternant les générateurs, tirés de façon reproductible. */

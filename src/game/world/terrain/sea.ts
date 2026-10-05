@@ -1,7 +1,7 @@
 // Le large : les baleines, le décor de la mer et les nappes de brume.
 import { type ArchipelagoId, archipelagoOfIsland, DANS_LE_CIEL, landBox, landCells, mapOf } from '../map';
 import { BIOMES } from '../../biomes';
-import { dockBox } from '../harbour';
+import { dockBox } from '../harbor';
 import { BRIDGES, getArchipelago } from '../archipelago';
 import { MONUMENT_ISLET, monumentsOf } from '../monuments';
 import type { VoxelCube } from '../cube';

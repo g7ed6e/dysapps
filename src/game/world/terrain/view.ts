@@ -1,7 +1,7 @@
 // Le cadrage de la vue : l'étendue de l'archipel, la zone et l'angle de la vue d'une île, l'île sous la vue, la caméra
 // d'une île et sa projection, le cadre d'une traversée.
 import { type ArchipelagoId, archipelagoOfIsland, coeurDe, islandDef, type IslandDef, landBox, mapOf } from '../map';
-import { dockBox } from '../harbour';
+import { dockBox } from '../harbor';
 import { BRIDGES, bridgesOf, bridgeState, getArchipelago, islandsOf, otherEnd, reachableIslands } from '../archipelago';
 import { type BiomeId, BIOMES } from '../../biomes';
 import { ISLET_GAP, ISLET_H } from './islets';

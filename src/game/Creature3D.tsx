@@ -9,7 +9,7 @@ import { CREATURE_CUBES } from './world/characters/creatures';
 import { PersonnageCanvas, VoxelCanvas, hasWebGL } from './three';
 
 /** La créature d'Archipéo en SVG (lot R6, avec l'habillage d'Archipéo, voir skin.ts), chargée à la demande. */
-const PersonnageSvg = lazy(() => import('./CharacterSvg'));
+const CharacterSvg = lazy(() => import('./CharacterSvg'));
 
 interface Props {
   biome: BiomeId;
@@ -28,7 +28,7 @@ export function Creature3D({ biome, label, className }: Props) {
   const place = <span className={`creature ${className ?? ''}`.trim()} role="img" aria-label={label} />;
   const flat = modeles ? (
     <Suspense fallback={place}>
-      <PersonnageSvg kind="creature" id={biome} label={label} className={className} />
+      <CharacterSvg kind="creature" id={biome} label={label} className={className} />
     </Suspense>
   ) : (
     cubes

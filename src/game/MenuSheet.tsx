@@ -16,7 +16,7 @@ import { MONUMENTS_PATH, MONUMENTS_TITLE } from './Monuments';
 import { TROPHIES_PATH } from './trophies';
 import { ASSEMBLAGE_PATH } from './world/assembly';
 import { useTextes } from '../universes';
-import { Commandes } from './Requests';
+import { Requests } from './Requests';
 import type { BiomeId } from './biomes';
 import { Sheet } from './Sheet';
 
@@ -83,7 +83,7 @@ export function MenuSheet({ onClose, onAller, onAide }: Props) {
       )}
       {/* Les commandes des créatures de l'archipel du bonhomme (GD-7), sous les révisions du jour : « Y aller » seulement,
           dans un pli qui s'ouvre de lui-même quand une commande est prête (directeur artistique). */}
-      <Commandes className="menu-commandes" fold="menu" onAller={onAller} />
+      <Requests className="menu-commandes" fold="menu" onAller={onAller} />
       <ul className="island-quests menu-list" aria-label="Lieux du village">
         <Row to={SCHOOL_PATH} icon="school" title={SCHOOL_TITLE} desc="Français, maths, anglais" />
         <Row to={MONUMENTS_PATH} icon="castle" title={MONUMENTS_TITLE} desc="Bâtis avec tes blocs" />

@@ -11,7 +11,7 @@ import type { ScreenProps } from './registry';
  * Champs de l'item : subject, singular (forme du verbe), plural, answer ('singulier' | 'pluriel'), why (la marque du nombre),
  * aid (la carte de règle du niveau, la même pour tous ses items : celle du premier item de l'écran s'affiche au-dessus des sujets).
  */
-export function EnclosScreen({ items, answered, onAnswer }: ScreenProps) {
+export function EnclosureScreen({ items, answered, onAnswer }: ScreenProps) {
   const [choice, setChoice] = useState<Record<string, 'singulier' | 'pluriel'>>({});
   const complete = items.every((it) => choice[it.key]);
   const aid = items[0]?.aid as AidData | undefined;

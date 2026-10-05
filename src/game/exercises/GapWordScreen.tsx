@@ -5,7 +5,7 @@ import type { ScreenProps } from './registry';
  * Mot troué : le mot a un trou, on tape le bloc de lettres qui le comble (3 blocs, dont 1 piège plausible).
  * Champs de l'item : word, before, after, answer, choices.
  */
-export function MotTroueScreen({ items, answered, onAnswer, ruledOut }: ScreenProps) {
+export function GapWordScreen({ items, answered, onAnswer, ruledOut }: ScreenProps) {
   const item = items[0];
   const word = String(item.word);
   const before = String(item.before ?? '');

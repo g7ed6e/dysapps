@@ -10,7 +10,7 @@ import { CARD_CLASS, cardState, sortSummary } from './sortCards';
  * Champs de l'item : word, correct, image, ending (la fin entendue, pour la correction).
  * Le mot repère est le `target` de l'exercice.
  */
-export function RimesScreen({ items, answered, onAnswer, target }: ScreenProps) {
+export function RhymesScreen({ items, answered, onAnswer, target }: ScreenProps) {
   const [picked, setPicked] = useState<Set<string>>(new Set());
   const model = target ?? '';
 

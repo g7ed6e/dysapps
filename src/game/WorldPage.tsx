@@ -11,7 +11,7 @@ import { NotFoundPage } from '../pages/NotFoundPage';
 import { getBiome, type BiomeId } from './biomes';
 import type { QuestMark } from './world/view';
 import { useBlocland } from './BloclandContext';
-import { ArchipelsSheet } from './ArchipelagosSheet';
+import { ArchipelagosSheet } from './ArchipelagosSheet';
 import { InventorySheet } from './Inventory';
 import { IslandSheet } from './IslandSheet';
 import { creaturesQuiFontSigne, signesDesCreatures, usePlusTard } from './reminders';
@@ -20,20 +20,20 @@ import { SCHOOL_PATH, SchoolSheet } from './School';
 import { MonumentSheet, MonumentsSheet } from './Monuments';
 import { useMonumentBuilder } from './useMonumentBuilder';
 import { getMonument, monumentsOf } from './world/monuments';
-import { VisageDuBonhomme } from './AvatarFace';
+import { AvatarFace } from './AvatarFace';
 import { visageDuJoueur } from './world/characters/face';
 import { MenuSheet } from './MenuSheet';
-import { ArchipelSwitcher } from './ArchipelagoSwitcher';
+import { ArchipelagoSwitcher } from './ArchipelagoSwitcher';
 import { useBackOpensMenu } from './useBackOpensMenu';
 import { mesuresDemandees } from './rendering';
 import { TrophySheet } from './TrophySheet';
-import { AssemblageSheet } from './Assembly';
+import { AssemblySheet } from './Assembly';
 import { ASSEMBLAGE_PATH } from './world/assembly';
 import { laDestinationEstLeNavire, lienDeLaDestination } from './world/destination';
 import { nextGoalInfo } from './world/goals';
 import { borneDe, cleDeLaCreature, cleDeLObjet, imageDeLaDestination } from './world/affordance';
 import { getCommande } from './world/requests';
-import { FicheDuMonde, type FicheOuverte } from './WorldCard';
+import { WorldCard, type FicheOuverte } from './WorldCard';
 import { TROPHIES_PATH, trophies } from './trophies';
 import { WorldCanvas } from './three';
 import { Tutorial, hasSeenTutorial } from './Tutorial';
@@ -41,13 +41,13 @@ import { decouverteDeLIle } from './discoveries';
 import { usePanneauDeLaCarte } from './useMapPanel';
 import { usePlaceDesBulles } from './useBubblePlacement';
 import { WhaleWordPanel, useWhaleWord } from './WhaleWord';
-import { RenommagePanel, useRenommage } from './Renaming';
+import { RenamingPanel, useRenaming } from './Renaming';
 import { useAmbience } from './useAmbience';
 import { VoyagePanel, voyageSentence } from './VoyagePanel';
 import { useTraversee } from './useCrossing';
 import { usePoseEnVague, type Vague } from './useWavePose';
 import { playBell } from './sound';
-import { RallumagePanel, toucherQuiSaute, useRallumage } from './Rekindling';
+import { RekindlingPanel, toucherQuiSaute, useRekindling } from './Rekindling';
 import { DEROULE } from './world/rekindling';
 import { habillageDuMonde } from './skin';
 import { useTextes } from '../universes';
@@ -88,7 +88,7 @@ import { UNIVERS } from '../core/universe';
 import { useHoldCelebrations } from '../components/Celebrations';
 import { useASuivre } from '../components/useNextUp';
 import { chiffreDeLaPastille, nomDuBoutonBlocs, prendreLesBlocs, volALieu, VOL, type GainRetenu } from './blockFlight';
-import { BlocsQuiVolent } from './FlyingBlocks';
+import { FlyingBlocks } from './FlyingBlocks';
 
 const samePoint = (p: { x: number; y: number } | undefined, q: { x: number; y: number }) => Boolean(p) && p!.x === q.x && p!.y === q.y;
 
@@ -176,7 +176,7 @@ export function WorldPage() {
   const textes = useTextes();
   const [habillage] = useState(habillageDuMonde);
   const sentinelles = textes.sentinelles !== null;
-  const rallumage = useRallumage(state.progress, a, sentinelles);
+  const rallumage = useRekindling(state.progress, a, sentinelles);
   const eteints = rallumage.enAttente.join();
   // Les commandes des habitants (GD-7, PR 3) : seulement dans un univers qui les montre (Blocland, Archipéo) ;
   // ailleurs, le monde se lit sans elles (ni petite construction, ni suggestion), la sauvegarde restant la même.
@@ -314,7 +314,7 @@ export function WorldPage() {
   const [tutoDone, setTutoDone] = useState(() => hasSeenTutorial('village-immersif'));
   // Le mot de la baleine attend la fin des rallumages (« Tous les Gardiens… » vient après).
   // Les nouveaux noms des archipels (GD-1), une fois par appareil : avant le mot des grandes étapes, un panneau à la fois.
-  const renommage = useRenommage(tutoDone && rallumage.enAttente.length === 0 && !vague && !vol, 1200);
+  const renommage = useRenaming(tutoDone && rallumage.enAttente.length === 0 && !vague && !vol, 1200);
   const whale = useWhaleWord(state, a, tutoDone && rallumage.enAttente.length === 0 && !renommage.ouvert && !vague && !vol);
   const [whaleOpen, setWhaleOpen] = useState<string | null>(null);
   const [whaleSeq, setWhaleSeq] = useState(0);
@@ -967,7 +967,7 @@ export function WorldPage() {
         </Suspense>
         <div className={`world-veil${veil ? ' on' : ''}`} aria-hidden="true" />
         {/* Sous le bouton Menu : une classe par archipel atteint, la sienne marquée ; un toucher change de classe. */}
-        {!voyage && <ArchipelSwitcher current={a} bridges={state.world.links} onGo={(to) => hop(getArchipelago(to).port)} />}
+        {!voyage && <ArchipelagoSwitcher current={a} bridges={state.world.links} onGo={(to) => hop(getArchipelago(to).port)} />}
         {/* Le menu du village, toujours en haut à droite, comme la pause d'un jeu. */}
         {!voyage && (
           <button
@@ -990,7 +990,7 @@ export function WorldPage() {
           // Un rond avec le visage du joueur, sans mot (mot du mainteneur, 4 octobre 2026, pour Blocland ; choix « 1a » du
           // même jour pour Archipéo) ; ses couleurs suivent l'univers (styles/global.css, `world-recentrer-tete`).
           <button type="button" className="button world-recentrer world-recentrer-tete" onClick={recentrer} aria-label="Recentrer">
-            <VisageDuBonhomme visage={visageDuJoueur(habillage)} />
+            <AvatarFace visage={visageDuJoueur(habillage)} />
           </button>
         )}
         <div className="world-overlay-top" data-couvre="scene">
@@ -1042,9 +1042,9 @@ export function WorldPage() {
             </button>
           )}
           {renommageOuvert ? (
-            <RenommagePanel onClose={renommage.fermer} aSuivre={bullesSuite} />
+            <RenamingPanel onClose={renommage.fermer} aSuivre={bullesSuite} />
           ) : motRallume ? (
-            <RallumagePanel id={motRallume} onClose={() => setMotRallume(null)} aSuivre={bullesSuite} />
+            <RekindlingPanel id={motRallume} onClose={() => setMotRallume(null)} aSuivre={bullesSuite} />
           ) : (
             whaleWord && <WhaleWordPanel word={whaleWord} onClose={closeWhale} aSuivre={bullesSuite} />
           )}
@@ -1065,7 +1065,7 @@ export function WorldPage() {
         {/* La fiche de l'objet touché : en bas, au-dessus de la barre (en paysage, à gauche), comptée sur la scène. */}
         {ficheVue && (
           <div className="world-fiche-place" data-couvre="scene">
-            <FicheDuMonde
+            <WorldCard
               key={ficheVue.seq}
               fiche={ficheVue}
               onClose={fermerLaFiche}
@@ -1120,7 +1120,7 @@ export function WorldPage() {
           )}
         </nav>
         {vol?.phase === 'vol' && vol.depart && vol.arrivee && (
-          <BlocsQuiVolent key={vol.seq} bloc={vol.gain.bloc} nombre={vol.gain.nombre} depart={vol.depart} arrivee={vol.arrivee} onArrive={() => finirLeVol(true)} />
+          <FlyingBlocks key={vol.seq} bloc={vol.gain.bloc} nombre={vol.gain.nombre} depart={vol.depart} arrivee={vol.arrivee} onArrive={() => finirLeVol(true)} />
         )}
       </div>
       {voyage?.mode === 'panel' ? (
@@ -1128,7 +1128,7 @@ export function WorldPage() {
           <VoyagePanel to={voyage.to} back={voyage.back} onArrive={arrive} />
         </div>
       ) : voyage ? null : mondeOpen ? (
-        <ArchipelsSheet onClose={() => navigate('/adventure')} onGo={openIsland} />
+        <ArchipelagosSheet onClose={() => navigate('/adventure')} onGo={openIsland} />
       ) : blocsOpen ? (
         <InventorySheet onClose={fermerLePanneau} />
       ) : schoolOpen ? (
@@ -1136,7 +1136,7 @@ export function WorldPage() {
       ) : trophiesOpen ? (
         <TrophySheet onClose={fermerLePanneau} />
       ) : assemblageOpen ? (
-        <AssemblageSheet onClose={fermerLePanneau} />
+        <AssemblySheet onClose={fermerLePanneau} />
       ) : monumentsOpen ? (
         <MonumentsSheet onClose={fermerLePanneau} />
       ) : monument ? (

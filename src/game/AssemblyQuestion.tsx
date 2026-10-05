@@ -1,6 +1,6 @@
 // La question d'un bloc assemblé (GD-2, décision du mainteneur du 1er octobre 2026) : « Assembler 1 poutre » ouvre, en
 // plein écran comme une mission, une question sur les deux matières de la recette (docs/contenu/assemblage.md). L'écran
-// est celui des documents à lire (CalculScreen) : énoncé, question, trois choix, Écouter, rappel toujours affiché,
+// est celui des documents à lire (CalculationScreen) : énoncé, question, trois choix, Écouter, rappel toujours affiché,
 // indice. Juste du premier coup ou au second essai : le bloc est assemblé. Deux erreurs : rien n'est perdu,
 // l'explication s'affiche, la question reviendra, et une autre question est proposée. Ni XP, ni étoiles, ni niveau.
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -21,7 +21,7 @@ import { NotFoundPage } from '../pages/NotFoundPage';
 import { useTextes } from '../universes';
 import { blockName, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
-import { PauseSeance } from './SessionPause';
+import { SessionPause } from './SessionPause';
 import { tirageDe, type ReponseDonnee } from './engine';
 import { loadAssemblage } from './exercises';
 import { autoReadText } from './exercises/reading';
@@ -48,7 +48,7 @@ function graineAuHasard(): string {
 }
 
 /** La page de la question : le lien de retour au lieu, le titre, puis la question (une autre à la demande). */
-export function AssemblageQuestionPage() {
+export function AssemblyQuestionPage() {
   const { bloc } = useParams();
   const recette = bloc ? recetteDe(bloc as BlockId) : undefined;
   const { assemblage } = useTextes();
@@ -226,7 +226,7 @@ function QuestionDAssemblage({
             autoSpeak={false}
           />
           {pause ? (
-            <PauseSeance
+            <SessionPause
               suite={`Tu pourras revenir ${lieu.a} plus tard.`}
               onContinuer={() => {
                 continueSession();

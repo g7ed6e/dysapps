@@ -8,7 +8,7 @@ import { SpeakButton } from '../../components/SpeakButton';
 import { Syllabified } from '../../components/Syllabified';
 import { CONFIRMATION_UNIVERS, UNIVERS, UNIVERS_IDS, type UniversChoice } from '../../core/universe';
 
-export function UniversSection() {
+export function UniverseSection() {
   const { settings, update } = useSettings();
   // Le changement d'univers attend sa confirmation : ce qui change, ce qui reste.
   const [universDemande, setUniversDemande] = useState<UniversChoice | null>(null);

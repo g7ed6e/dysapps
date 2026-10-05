@@ -2,7 +2,7 @@
 import { toutConstruit } from '../budget';
 import { caseDuDecor, maillageDuDecor, rangerLeDecor, type MaillageDuDecor } from '../decorMesh';
 import { getArchipelago } from '../archipelago';
-import { dockBox } from '../harbour';
+import { dockBox } from '../harbor';
 import { champDuSol, colonneEn, NIVEAU_EAU } from '../landMesh';
 import { CORE, MAP } from '../map';
 import { PLAN_ZONE } from '../plans';

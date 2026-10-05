@@ -1,5 +1,5 @@
 // Le logo de Blocland qui se construit à l'écran titre (GD-1, point 4, comme l'ancien écran titre où le bloc d'herbe
-// tombait et se posait) : le dessin de public/blocland.svg, sans un trait changé (BuildingLogo.test.tsx le
+// tombait et se posait) : le dessin de public/blocland.svg, sans un trait changé (AssemblingLogo.test.tsx le
 // compare au fichier), rangé en quatre cubes qui se posent l'un après l'autre sur la mer : le pied de l'île, son dessus
 // d'herbe et de terre, le tronc, le feuillage. Chaque cube descend en accélérant et s'arrête d'un coup, sans rebond ni
 // flash ; le dernier est posé avant une seconde (LOGO_QUI_SE_CONSTRUIT). Le toucher n'attend pas : rien ne couvre « Jouer », et
@@ -64,7 +64,7 @@ interface Props {
 
 const dessiner = (rects: readonly Rect[]) => rects.map(([x, y, width, height, fill]) => <rect key={`${x},${y},${width},${height},${fill}`} x={x} y={y} width={width} height={height} fill={fill} />);
 
-export function LogoQuiSeConstruit({ ref, className, ...gestes }: Props) {
+export function AssemblingLogo({ ref, className, ...gestes }: Props) {
   const { ecartMs, chuteMs } = LOGO_QUI_SE_CONSTRUIT;
   return (
     <svg ref={ref} className={className} viewBox="0 0 512 512" width={160} height={160} shapeRendering="crispEdges" aria-hidden="true" focusable="false" {...gestes}>

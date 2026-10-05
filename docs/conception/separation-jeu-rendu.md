@@ -27,7 +27,7 @@ Quand ce plan a été écrit (28 septembre 2026), les vues 3D et 2D partageaient
                           ▼        ▲ intentions (île touchée, case d’un plan…)
           ┌──────────────────────────────────────────────┐
           │ La disposition : où sont les choses           │
-          │  grille  : terrain, map, harbour, paths       │
+          │  grille  : terrain, map, harbor, paths       │
           │  réseau  : îles en lieux, liaisons (Archipéo) │
           └───────────────┬──────────────────────────────┘
                           ▼
@@ -55,7 +55,7 @@ Une interface, deux réalisations. Elle dit **où** sont les entités du modèle
 - `liaison(ouvrage)` : la forme d’un ouvrage entre deux îles ;
 - `cadrage(île)`, `étendue()`, `îleEn(point)` : la caméra, la Carte, le toucher.
 
-La **disposition en grille** enveloppe les fonctions de `terrain.ts`, `map.ts`, `harbour.ts` et `paths.ts` : c’est le monde d’aujourd’hui, à l’identique, pour la 3D et la 2D.
+La **disposition en grille** enveloppe les fonctions de `terrain.ts`, `map.ts`, `harbor.ts` et `paths.ts` : c’est le monde d’aujourd’hui, à l’identique, pour la 3D et la 2D.
 
 La **disposition en réseau** (Archipéo, distances abstraites) s’applique **au monde entier** (décision du 28 septembre 2026) :
 
@@ -80,7 +80,7 @@ Les couches se tiennent par un **test des dépendances** (`world/layers.test.ts`
 ```
 src/game/
   jeu/          règles, état, modèle du monde, machine du voyage (sans coordonnées)
-  disposition/  grille/ (terrain, decor, map, harbour, paths, ground) et reseau/
+  disposition/  grille/ (terrain, decor, map, harbor, paths, ground) et reseau/
   world/        ce que les rendus partagent : palette, style, landMesh, décor, étiquettes, budget
   three/        la 3D
 ```

@@ -7,7 +7,7 @@ import { frenchTypography } from '../components/math/RichText';
 import { useSettings } from '../core/SettingsContext';
 import { estIleLv2, guardianTitle, missionsJouables, type BiomeDef } from './biomes';
 import { Bridges } from './Bridges';
-import { Commandes, TuYEs } from './Requests';
+import { Requests, YouAreHere } from './Requests';
 import type { Commande } from './world/requests';
 import { isBiomeUnlocked } from './world/archipelago';
 import { PlanSection } from './PlanSection';
@@ -28,7 +28,7 @@ import { VillageStageLine } from './VillageStageLine';
 import { archipelagoOf } from './world/archipelago';
 import { useTextes } from '../universes';
 import type { Partie } from './world/parts';
-import { PlusTardDit, RappelDeLaCreature, useRappelDeLaCreature } from './ResidentReminder';
+import { LaterSaid, ResidentReminder, useResidentReminder } from './ResidentReminder';
 import { Sheet } from './Sheet';
 
 /**
@@ -89,7 +89,7 @@ export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight =
   // LV2 ») dit quoi faire : il reste entier.
   const says = unlocked && !sansLv2 ? firstSentences(greeting) : { first: greeting, rest: '' };
   // La créature qui se souvient (GD-4, étape 1) : des révisions dues sur l'île, elle propose de reprendre.
-  const rappelDue = useRappelDeLaCreature(biome);
+  const rappelDue = useResidentReminder(biome);
   const rappel = unlocked && !sansLv2 ? rappelDue : null;
   // Après « Plus tard » : le focus revient au titre de l'île, et une courte ligne le dit.
   const titreRef = useRef<HTMLHeadingElement>(null);
@@ -141,8 +141,8 @@ export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight =
         </details>
       )}
 
-      {rappel && <RappelDeLaCreature biome={biome} rappel={rappel} onRemis={remettre} />}
-      <PlusTardDit dit={remis} />
+      {rappel && <ResidentReminder biome={biome} rappel={rappel} onRemis={remettre} />}
+      <LaterSaid dit={remis} />
 
       {sansLv2 ? (
         // « Pas de LV2 » : rien à construire, rien à jouer ; le chemin vers le réglage (décision du directeur artistique).
@@ -160,7 +160,7 @@ export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight =
           <Icon name="hammer" /> Missions
         </h3>
       )}
-      {!sansLv2 && <TuYEs dit={ici} />}
+      {!sansLv2 && <YouAreHere dit={ici} />}
       <ul className="island-quests" aria-label="Missions de l’île">
         {missionsJouables(biome, settings.lv2).map((exercise) => {
           const def = pickExercise(biome.id, exercise.id, levelFor(state, exercise.id), state.progress);
@@ -244,7 +244,7 @@ export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight =
       )}
 
       {/* Les commandes des créatures de l'archipel (GD-7) : entre le prochain objectif et le bâtiment. */}
-      {unlocked && !sansLv2 && <Commandes island={biome.id} fold={fold} highlight={highlight} onLivree={onLivree} poseEnCours={commandeEnCoursDePose} onAuxMissions={() => setIci(true)} />}
+      {unlocked && !sansLv2 && <Requests island={biome.id} fold={fold} highlight={highlight} onLivree={onLivree} poseEnCours={commandeEnCoursDePose} onAuxMissions={() => setIci(true)} />}
 
       {unlocked && <PlanSection biome={biome} fold={fold} highlight={highlight === 'part'} vientDePoser={posees} enCoursDePose={enCoursDePose} />}
 

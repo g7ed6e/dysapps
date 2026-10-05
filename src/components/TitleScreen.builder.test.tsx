@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { TitleScreen } from './TitleScreen';
-import { BandeauBatisseur } from './BuilderBanner';
+import { BuilderBanner } from './BuilderBanner';
 import { BloclandProvider, useBlocland } from '../game/BloclandContext';
 import { BLOCS_DU_BATISSEUR } from '../game/builder';
 import { SettingsProvider } from '../core/SettingsContext';
@@ -20,7 +20,7 @@ function renderTitle() {
       <ProgressProvider>
         <BloclandProvider>
           <MemoryRouter>
-            <BandeauBatisseur />
+            <BuilderBanner />
             <TitleScreen />
             <Inventaire />
           </MemoryRouter>

@@ -2,11 +2,11 @@ import type { ComponentType } from 'react';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SettingsProvider } from '../../core/SettingsContext';
-import { CalculScreen } from './CalculationScreen';
+import { CalculationScreen } from './CalculationScreen';
 import { autoReadText, dicteeAutoText } from './reading';
-import { RecitScreen } from './StoryScreen';
-import { DicteeItem } from './DictationItem';
-import { QcmItem } from './ChoiceItem';
+import { StoryScreen } from './StoryScreen';
+import { DictationItem } from './DictationItem';
+import { ChoiceItem } from './ChoiceItem';
 import type { ScreenProps } from './registry';
 
 // Les écrans en anglais : le contenu marqué `lang="en"` et lu en voix anglaise, la consigne et l'aide en français.
@@ -40,7 +40,7 @@ function renderScreen(Screen: ComponentType<ScreenProps>, item: Record<string, u
 
 it('QCM : le mot anglais n’est pas découpé en syllabes, il est marqué et lu en anglais', async () => {
   const user = userEvent.setup();
-  renderScreen(QcmItem, { prompt: 'Wednesday', choices: ['mercredi', 'jeudi'], answer: 'mercredi', choicesLang: 'fr' }, 'en');
+  renderScreen(ChoiceItem, { prompt: 'Wednesday', choices: ['mercredi', 'jeudi'], answer: 'mercredi', choicesLang: 'fr' }, 'en');
   const prompt = screen.getByText('Wednesday');
   expect(prompt.closest('[lang="en"]')).not.toBeNull();
   expect(document.querySelector('.syllables')).toBeNull();
@@ -52,7 +52,7 @@ it('QCM : le mot anglais n’est pas découpé en syllabes, il est marqué et lu
 
 it('calcul : énoncé et réponses en anglais, indice lu en français', async () => {
   const user = userEvent.setup();
-  renderScreen(CalculScreen, { prompt: 'She … a cat.', spoken: 'She (mot manquant) a cat.', choices: ['has got', 'have got'], answer: 'has got', hint: 'Avec she : has got.' }, 'en');
+  renderScreen(CalculationScreen, { prompt: 'She … a cat.', spoken: 'She (mot manquant) a cat.', choices: ['has got', 'have got'], answer: 'has got', hint: 'Avec she : has got.' }, 'en');
   expect(screen.getByRole('button', { name: 'has got' }).querySelector('[lang="en"]')).not.toBeNull();
   await user.click(screen.getByRole('button', { name: /^Écouter/ }));
   expect(utterances.at(-1)).toEqual({ text: 'She (mot manquant) a cat.', lang: 'en-GB' });
@@ -64,7 +64,7 @@ it('calcul : énoncé et réponses en anglais, indice lu en français', async ()
 it('document : la question en français d’abord, le document en anglais, une ligne par information', async () => {
   const user = userEvent.setup();
   renderScreen(
-    CalculScreen,
+    CalculationScreen,
     {
       question: 'Quel jour la piscine est-elle fermée ?',
       prompt: 'Swimming pool\nClosed on Mondays',
@@ -95,7 +95,7 @@ it('document : la question en français d’abord, le document en anglais, une l
 
 it('document avec une image (Signs) : l’emoji vient devant le document, caché aux lecteurs d’écran', () => {
   renderScreen(
-    CalculScreen,
+    CalculationScreen,
     { question: 'De quelle couleur est le chat ?', prompt: 'Lost cat\nHe is black.', image: '🐈', choices: ['Noir', 'Blanc'], answer: 'Noir', choicesLang: 'fr' },
     'en',
   );
@@ -115,13 +115,13 @@ it('lecture automatique : la question d’un document suit la consigne au premie
 });
 
 it('dictée : le mot anglais est lu en voix anglaise dès l’affichage', () => {
-  renderScreen(DicteeItem, { word: 'teacher', choices: ['teacher', 'ticher'], answer: 'teacher' }, 'en');
+  renderScreen(DictationItem, { word: 'teacher', choices: ['teacher', 'ticher'], answer: 'teacher' }, 'en');
   expect(utterances.at(-1)).toEqual({ text: 'teacher', lang: 'en-GB' });
   expect(screen.getByRole('button', { name: 'teacher' })).toHaveAttribute('lang', 'en');
 });
 
 it('sans langue : rien ne change (français)', () => {
-  renderScreen(QcmItem, { prompt: 'chat', choices: ['a', 'b'], answer: 'a' }, undefined);
+  renderScreen(ChoiceItem, { prompt: 'chat', choices: ['a', 'b'], answer: 'a' }, undefined);
   expect(document.querySelector('[lang="en"]')).toBeNull();
   // Le mot français, lui, est bien découpé en syllabes.
   expect(document.querySelector('.syllables')).not.toBeNull();
@@ -129,7 +129,7 @@ it('sans langue : rien ne change (français)', () => {
 
 it('document en français (Observatoire des textes) : le document est le texte à lire, découpé en syllabes', () => {
   renderScreen(
-    CalculScreen,
+    CalculationScreen,
     {
       question: 'Quel jour le club se réunit-il ?',
       prompt: 'Club lecture du CDI\nLe mardi à midi',
@@ -158,7 +158,7 @@ it('histoire à écouter : la question d’abord, l’histoire cachée jusqu’�
   };
   const { rerender } = render(
     <SettingsProvider>
-      <RecitScreen items={[item]} answered={null} onAnswer={() => {}} onHelp={() => {}} level={1} exerciseId="x" lang="en" />
+      <StoryScreen items={[item]} answered={null} onAnswer={() => {}} onHelp={() => {}} level={1} exerciseId="x" lang="en" />
     </SettingsProvider>,
   );
   expect(screen.queryByText(/kitchen/)).toBeNull();
@@ -167,7 +167,7 @@ it('histoire à écouter : la question d’abord, l’histoire cachée jusqu’�
   expect(utterances.at(-1)).toEqual({ text: 'Sam is hungry. He goes to the kitchen.', lang: 'en-GB' });
   rerender(
     <SettingsProvider>
-      <RecitScreen
+      <StoryScreen
         items={[item]}
         answered={{ results: [{ key: 'k', correct: true }], detail: { chosen: 'À la cuisine' } }}
         onAnswer={() => {}}
@@ -192,7 +192,7 @@ it('lecture automatique d’une histoire : la question, puis l’histoire en ang
 
 it('histoire à écouter, sans synthèse vocale : l’histoire s’affiche tout de suite', () => {
   vi.unstubAllGlobals();
-  renderScreen(RecitScreen, { question: 'Où va Sam ?', prompt: 'He goes to the kitchen.', choices: ['À la cuisine', 'À la piscine'], answer: 'À la cuisine' }, 'en');
+  renderScreen(StoryScreen, { question: 'Où va Sam ?', prompt: 'He goes to the kitchen.', choices: ['À la cuisine', 'À la piscine'], answer: 'À la cuisine' }, 'en');
   expect(screen.getAllByRole('listitem').map((l) => l.textContent)).toEqual(['He goes to the kitchen.']);
   expect(screen.queryByText(/Écoute l’histoire/)).toBeNull();
 });
@@ -200,7 +200,7 @@ it('histoire à écouter, sans synthèse vocale : l’histoire s’affiche tout 
 it('lexique : une ligne « mot = sens » porte un bouton qui lit ses mots anglais en voix anglaise ; une ligne de méthode non', async () => {
   const user = userEvent.setup();
   const aid = { kind: 'rule-card', props: { title: 'Lire un panneau', lines: ['Lis d’abord la question.', 'push = pousser, pull = tirer'] } };
-  renderScreen(CalculScreen, { question: 'Que faut-il faire ?', prompt: 'PUSH', choices: ['Pousser', 'Tirer'], answer: 'Pousser', aid }, 'en');
+  renderScreen(CalculationScreen, { question: 'Que faut-il faire ?', prompt: 'PUSH', choices: ['Pousser', 'Tirer'], answer: 'Pousser', aid }, 'en');
   const [methode, lexique] = within(screen.getByRole('figure')).getAllByRole('listitem');
   expect(within(methode).queryByRole('button')).toBeNull();
   await user.click(screen.getByRole('button', { name: 'Écouter : push, pull' }));
@@ -210,6 +210,6 @@ it('lexique : une ligne « mot = sens » porte un bouton qui lit ses mots anglai
 
 it('lexique en français : pas de bouton par ligne', () => {
   const aid = { kind: 'rule-card', props: { lines: ['nombre = quantité'] } };
-  renderScreen(CalculScreen, { prompt: '2 + 2', choices: ['4', '5'], answer: '4', aid }, 'fr');
+  renderScreen(CalculationScreen, { prompt: '2 + 2', choices: ['4', '5'], answer: '4', aid }, 'fr');
   expect(within(screen.getByRole('figure')).queryByRole('button')).toBeNull();
 });

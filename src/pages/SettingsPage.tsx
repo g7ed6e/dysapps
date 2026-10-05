@@ -3,13 +3,13 @@ import { DEFAULT_SETTINGS, FONT_LABELS, MIN_FONT_SIZE, MIN_LINE_HEIGHT, THEME_LA
 import { useSettings } from '../core/SettingsContext';
 import { isSpeechAvailable } from '../core/speech';
 import { Icon } from '../components/Icon';
-import { SauvegardePanel } from '../components/SaveFilePanel';
+import { SaveFilePanel } from '../components/SaveFilePanel';
 import { Syllabified } from '../components/Syllabified';
 import { OptionRow, Slider } from './settings/controls';
 import { Lv2Section } from './settings/Lv2Section';
-import { UniversSection } from './settings/UniverseSection';
+import { UniverseSection } from './settings/UniverseSection';
 import { ApplicationSection } from './settings/ApplicationSection';
-import { EffacerSection } from './settings/EraseSection';
+import { EraseSection } from './settings/EraseSection';
 
 const SAMPLE = 'Le bâtisseur range ses blocs de bois dans la cabane. Il en a 3, il en pose 2 : il en reste 1.';
 const SAMPLE_EN = 'Hello! My name is Robin. I have got three blue blocks.';
@@ -158,11 +158,11 @@ export function SettingsPage() {
           </label>
         </fieldset>
 
-        <UniversSection />
+        <UniverseSection />
 
         <ApplicationSection />
 
-        <SauvegardePanel />
+        <SaveFilePanel />
 
         <div className="actions">
           <button type="button" className="button" onClick={reset}>
@@ -170,7 +170,7 @@ export function SettingsPage() {
           </button>
         </div>
 
-        <EffacerSection />
+        <EraseSection />
       </form>
     </>
   );

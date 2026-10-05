@@ -590,7 +590,7 @@ it('Relevés : la réponse se lit ou se calcule depuis le diagramme ou le tablea
 it('Faisceaux : la réponse se lit sur le graphique, aux intersections du quadrillage, une seule juste, et les pièges des élèves', () => {
   const byId = (id: string) => COLLEGE_EXERCISES.find((d) => d.id === id)!;
   const num = (c: string) => Number(c.replace('−', '-'));
-  const seen = { swapped: 0, start: 0, neighbour: 0, graduation: 0, otherAxis: 0, arrival: 0, intercept: 0 };
+  const seen = { swapped: 0, start: 0, neighbor: 0, graduation: 0, otherAxis: 0, arrival: 0, intercept: 0 };
   for (let s = 0; s < 200; s++) {
     for (const level of [1, 2, 3]) {
       const def = byId(`maths-3e-functions-graphs-${level}`);
@@ -632,7 +632,7 @@ it('Faisceaux : la réponse se lit sur le graphique, aux intersections du quadri
           expect(inFrame(x, answer)).toBe(true);
           if (list.includes(fmt((x - b) / a))) seen.swapped++;
           if (list.includes(fmt(x))) seen.start++;
-          if (list.includes(fmt(f(x + 1))) || list.includes(fmt(f(x - 1)))) seen.neighbour++;
+          if (list.includes(fmt(f(x + 1))) || list.includes(fmt(f(x - 1)))) seen.neighbor++;
           if (list.includes(fmt(answer + 1)) || list.includes(fmt(answer - 1))) seen.graduation++;
         } else if (level === 2) {
           // Une seule écriture, un seul signe égal sur la ligne.

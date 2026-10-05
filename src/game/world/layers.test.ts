@@ -57,7 +57,7 @@ const REGLES = [
 /** La disposition en grille : la place des îles, des chemins, du quai, en cases du monde. */
 const GRILLE = [
   'world/map',
-  'world/harbour',
+  'world/harbor',
   'world/ground',
   'world/paths',
   'world/terrain',

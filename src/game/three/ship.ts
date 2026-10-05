@@ -4,7 +4,7 @@
 import * as THREE from 'three';
 import type { BiomeId } from '../biomes';
 import { maillageDeLaConstruction } from '../world/construction';
-import { VEHICLE_DECK } from '../world/harbour';
+import { VEHICLE_DECK } from '../world/harbor';
 import { MAST_TOP, TUYERES } from '../world/vehicle';
 import { buildMesh } from '../world/mesher';
 import { boardingWalk, startVoyage, voyageFrame, type VoyageRun } from '../world/scene';

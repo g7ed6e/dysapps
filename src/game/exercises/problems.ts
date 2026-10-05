@@ -42,7 +42,7 @@ const five = (min: number, max: number, rng: Rng): number => 5 * randomInt(Math.
 function options(answer: number, traps: number[], shown: number[], rng: Rng, format: (n: number) => string, step: number | null = 10): string[] {
   const ok = (t: number) => Number.isFinite(t) && t > 0 && !shown.includes(t);
   // `step` nul : pas de voisin (une erreur de conversion n’a pas de « voisin » plausible).
-  return drawChoices(answer, traps.map(round), rng, { step: step ?? 1, ok, neighbourOk: step === null ? () => false : ok }).map(format);
+  return drawChoices(answer, traps.map(round), rng, { step: step ?? 1, ok, neighborOk: step === null ? () => false : ok }).map(format);
 }
 
 const scene = (props: SceneProps) => ({ kind: 'scene', props });

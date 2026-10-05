@@ -26,12 +26,12 @@ export interface DrawOptions {
   /** Un piège acceptable (positif, pas une cote déjà affichée…). */
   ok?: (t: number) => boolean;
   /** Un voisin acceptable ; par défaut, comme un piège. */
-  neighbourOk?: (t: number) => boolean;
+  neighborOk?: (t: number) => boolean;
   /**
    * `false` : aucun voisin (10⁵ n'a pas de « voisin » plausible, 100 001 n'est pas une erreur d'élève). La place de la
    * réponse est alors tirée parmi celles que les pièges permettent.
    */
-  neighbours?: boolean;
+  neighbors?: boolean;
 }
 
 /**
@@ -45,7 +45,7 @@ export function drawChoices(
   answer: number,
   traps: readonly number[],
   rng: Rng,
-  { step = 1, ok = () => true, neighbourOk = ok, neighbours = true }: DrawOptions = {},
+  { step = 1, ok = () => true, neighborOk = ok, neighbors = true }: DrawOptions = {},
 ): number[] {
   // Arrondi qui efface les erreurs de virgule flottante (0,1 × 3).
   const clean = (v: number) => Number(v.toFixed(6));
@@ -59,11 +59,11 @@ export function drawChoices(
     rng,
   );
   // Sans voisins, une place que les pièges permettent d'atteindre.
-  const lo = neighbours ? 0 : Math.max(0, 3 - above.length);
-  const hi = neighbours ? 3 : Math.max(lo, Math.min(3, below.length));
+  const lo = neighbors ? 0 : Math.max(0, 3 - above.length);
+  const hi = neighbors ? 3 : Math.max(lo, Math.min(3, below.length));
   const wanted = lo + Math.floor(rng() * (hi - lo + 1));
   const picked = [...below.slice(0, wanted), ...above.slice(0, 3 - wanted)];
-  const accepted = neighbours ? neighbourOk : () => false;
+  const accepted = neighbors ? neighborOk : () => false;
   const add = (t: number, accept: (t: number) => boolean) => {
     if (picked.length < 3 && Number.isFinite(t) && t !== answer && !picked.includes(t) && accept(t)) picked.push(t);
   };

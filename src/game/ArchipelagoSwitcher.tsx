@@ -14,7 +14,7 @@ interface Props {
   onGo: (to: ArchipelagoId) => void;
 }
 
-export function ArchipelSwitcher({ current, bridges, onGo }: Props) {
+export function ArchipelagoSwitcher({ current, bridges, onGo }: Props) {
   const textes = useTextes();
   const reached = ARCHIPELAGOS.filter((a) => isArchipelagoReached(a.classe, bridges));
   // Une seule classe atteinte : rien à choisir.

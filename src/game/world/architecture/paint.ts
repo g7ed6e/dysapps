@@ -18,7 +18,7 @@
 // - bardage aux pignons (sur les bâtiments de bois du quai, la règle attend qu'on en pose : option (c) du directeur
 //   artistique, 30/09, voir kits/6e.ts) ; la nuit, rien ne s'allume : la lumière de la scène assombrit tout.
 // Code pur, sans Three.js : le GLSL est une chaîne, que three/construction.ts insère dans le shader des blocs.
-import type { Voisinage } from './neighbourhood';
+import type { Voisinage } from './neighborhood';
 
 /**
  * Le motif d'une face, en bits (un entier exact dans l'attribut `motif`, un flottant) : le genre (bits 0 et 1), puis

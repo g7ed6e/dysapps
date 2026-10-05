@@ -3,7 +3,7 @@ import { islandDef } from './map';
 import { EMPTY_STATE, canLaunch, currentStage, fillPlanCell, launchVehicle, planStatus, sanitizeState, type GameState } from '../engine';
 import { BADGES, EMPTY_PROGRESS, recordVoyage, sanitizeProgress } from '../../core/progress';
 import { ARCHIPELAGOS, islandsOf, voyageId } from './archipelago';
-import { VEHICLE_SIZE, dockOrigin } from './harbour';
+import { VEHICLE_SIZE, dockOrigin } from './harbor';
 import { PLANS, planCells } from './plans';
 import { planV1 } from './plansV1';
 import { VEHICLE_STAGES, beatenGuardians, getStage, kitReady, stageAt, stageFor, stageTo, vehicleAt, vehicleModel } from './vehicle';

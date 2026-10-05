@@ -2,7 +2,7 @@ import { BLOC, BIOMES, BLOCKS } from '../biomes';
 import { EMPTY_STATE, fillPlanCell, nextFillable, planStatus, sanitizeState, type GameState } from '../engine';
 import { ORIGINE_DES_MONUMENTS, ORIGINE_DU_QUAI, PLANS, PLAN_ZONE, isPlanDone, planCells, plansFor } from './plans';
 import { toutConstruit } from './budget';
-import { dockOrigin } from './harbour';
+import { dockOrigin } from './harbor';
 import { MONUMENTS } from './monuments';
 import { VEHICLE_STAGES } from './vehicle';
 import { ancreDuQuai, decalageDuQuai, groundHeight, islandOrigin, monumentAnchor, worldCubes } from './terrain';

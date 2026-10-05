@@ -175,7 +175,7 @@ Les cases des monuments qui demandent ces blocs restent dans le code (`src/game/
 
 ### Les questions
 
-**« ## Les questions »**, à la fin du fichier, donne la question posée à chaque bloc assemblé (décision du mainteneur du 1er octobre 2026) : un **« ### Nom · `bloc` »** par bloc du tableau, écrit comme une mission d’île à un seul niveau (mêmes champs, même lecteur, `scripts/contenu/format.mjs`), sur l’écran des documents à lire (type `assembly`, qui reprend `CalculScreen`) :
+**« ## Les questions »**, à la fin du fichier, donne la question posée à chaque bloc assemblé (décision du mainteneur du 1er octobre 2026) : un **« ### Nom · `bloc` »** par bloc du tableau, écrit comme une mission d’île à un seul niveau (mêmes champs, même lecteur, `scripts/contenu/format.mjs`), sur l’écran des documents à lire (type `assembly`, qui reprend `CalculationScreen`) :
 
 ```md
 ### La poutre · `compound-6e`

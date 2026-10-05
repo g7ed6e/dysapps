@@ -131,7 +131,7 @@ function graphChoices(answer: number, traps: number[], rng: Rng, coefficient = f
   for (const t of traps) if (readable(t) && t !== answer && t !== -answer && !pool.includes(t)) pool.push(t);
   // Les voisins aussi : lisibles sur un axe, jamais l'opposé de la réponse.
   const ok = (t: number) => readable(t) && t !== -answer;
-  return drawChoices(answer, pool, rng, { ok, neighbourOk: ok }).map(fmt);
+  return drawChoices(answer, pool, rng, { ok, neighborOk: ok }).map(fmt);
 }
 
 const graphFigure = (a: number, b: number) => ({ kind: 'graph', props: { a, b, ...GRAPH_FRAME } });

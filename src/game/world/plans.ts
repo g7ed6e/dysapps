@@ -315,7 +315,7 @@ export function planCells(plan: PlanDef, cells: PlanCell[] = plan.cells): (PlanC
  * L'origine figée des chantiers hors de la zone des plans, relative au cœur de leur île (z relatif au sol). Les clés
  * des cases posées sont enregistrées dans les sauvegardes : elles ne dépendent donc ni de la place du quai ni de celle
  * de l'îlot, que la disposition du monde peut changer. Ce sont les valeurs calculées jusqu'ici depuis le quai
- * (world/harbour.ts) et l'îlot de chaque monument (world/monuments.ts) ; plans.test.ts vérifie qu'elles y sont égales.
+ * (world/harbor.ts) et l'îlot de chaque monument (world/monuments.ts) ; plans.test.ts vérifie qu'elles y sont égales.
  */
 export const ORIGINE_DU_QUAI: Partial<Record<BiomeId, { x: number; y: number; z: number }>> = {
   'maths-6e-calculation': { x: 15, y: -14, z: -1 },

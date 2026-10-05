@@ -7,7 +7,7 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { TitleScreen } from '../components/TitleScreen';
 import { SettingsProvider } from '../core/SettingsContext';
-import { CUBES_DU_LOGO, finDuLogo, LOGO_QUI_SE_CONSTRUIT, LogoQuiSeConstruit, MER_DU_LOGO } from './BuildingLogo';
+import { CUBES_DU_LOGO, finDuLogo, LOGO_QUI_SE_CONSTRUIT, AssemblingLogo, MER_DU_LOGO } from './AssemblingLogo';
 
 const rectsDe = (svg: string) =>
   [...svg.matchAll(/<rect\b([^>]*)\/>/g)]
@@ -25,7 +25,7 @@ function rectsDuFichier(svg: string): string[] {
 
 it('dessine exactement le logo de public/blocland.svg, sans un trait changé', () => {
   const fichier = readFileSync(join(process.cwd(), 'public/blocland.svg'), 'utf8');
-  const { container } = render(<LogoQuiSeConstruit />);
+  const { container } = render(<AssemblingLogo />);
   const dessines = [...container.querySelectorAll('rect')]
     .map((r) => ['x', 'y', 'width', 'height', 'fill', 'rx'].map((n) => r.getAttribute(n) ?? (n === 'x' || n === 'y' ? '0' : '')).join(' '))
     .sort();
@@ -37,7 +37,7 @@ it('pose quatre cubes sur la mer, le dernier avant une seconde', () => {
   expect(LOGO_QUI_SE_CONSTRUIT.cubes).toBeGreaterThanOrEqual(3);
   expect(finDuLogo()).toBeLessThan(1000);
   expect(MER_DU_LOGO.length).toBeGreaterThan(0);
-  const { container } = render(<LogoQuiSeConstruit />);
+  const { container } = render(<AssemblingLogo />);
   const cubes = [...container.querySelectorAll<SVGGElement>('.logo-cube')];
   expect(cubes.map((g) => g.style.animationDelay)).toEqual(['0ms', '170ms', '340ms', '510ms']);
   // Le logo est une illustration : le lecteur d'écran lit le titre, pas le dessin.

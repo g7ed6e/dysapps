@@ -25,8 +25,8 @@ import { BlockIcon } from './Voxel';
 import { VEHICLE_NAME, stageAt, stageTo } from './world/vehicle';
 import { VillageStageLine } from './VillageStageLine';
 import { WhaleWordPanel, useWhaleWord } from './WhaleWord';
-import { RenommagePanel, useRenommage } from './Renaming';
-import { RallumagePanel, useRallumage } from './Rekindling';
+import { RenamingPanel, useRenaming } from './Renaming';
+import { RekindlingPanel, useRekindling } from './Rekindling';
 import { playBell } from './sound';
 import { useSettings } from '../core/SettingsContext';
 import { useTextes } from '../universes';
@@ -39,7 +39,7 @@ import { useUnivers } from '../core/SettingsContext';
 import { UNIVERS } from '../core/universe';
 import { signesDesCreatures, signesParmi, usePlusTard } from './reminders';
 import { questsToReview } from './review';
-import { Commandes } from './Requests';
+import { Requests } from './Requests';
 
 /** Ce qu'il faut pour rejoindre un archipel fermé, en une phrase. */
 function lockedArchipelagoText(state: ReturnType<typeof useBlocland>['state'], classe: (typeof ARCHIPELAGOS)[number]['classe']): string {
@@ -63,14 +63,14 @@ export function BloclandPage() {
   const destination = nextDestination(textes.commandes ? state : sansCommandes(state), textes.archipels, textes.libelles);
   // La vue simple n'a pas de monde : pas de moment du rallumage, mais son mot et sa cloche, une fois (lot 6).
   const { settings } = useSettings();
-  const rallumage = useRallumage(state.progress, here, textes.sentinelles !== null);
+  const rallumage = useRekindling(state.progress, here, textes.sentinelles !== null);
   const rallume = rallumage.enAttente[0] ?? null;
   useEffect(() => {
     if (rallume && settings.sounds) playBell();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rallume]);
   // Les nouveaux noms des archipels (GD-1), une fois par appareil : avant le mot des grandes étapes, un panneau à la fois.
-  const renommage = useRenommage(!rallume, 1200);
+  const renommage = useRenaming(!rallume, 1200);
   const whale = useWhaleWord(state, here, !rallume && !renommage.ouvert);
   const destinationText = `Prochaine destination : ${destination.name}. ${destination.text}`;
   // La créature qui se souvient (GD-4, étape 1) : l'icône de la notion sur son île, comme son signe dans le monde.
@@ -108,9 +108,9 @@ export function BloclandPage() {
       </section>
 
       {renommage.ouvert ? (
-        <RenommagePanel onClose={renommage.fermer} />
+        <RenamingPanel onClose={renommage.fermer} />
       ) : rallume ? (
-        <RallumagePanel id={rallume} onClose={() => rallumage.enAttente.forEach(rallumage.noterVu)} />
+        <RekindlingPanel id={rallume} onClose={() => rallumage.enAttente.forEach(rallumage.noterVu)} />
       ) : (
         whale.word && <WhaleWordPanel word={whale.word} onClose={whale.close} />
       )}
@@ -128,7 +128,7 @@ export function BloclandPage() {
         </p>
       </section>
       {/* Les commandes des créatures de l'archipel du bonhomme (GD-7), sous la prochaine destination. */}
-      <Commandes niveau="h2" className="panel" />
+      <Requests niveau="h2" className="panel" />
       <ArchipelagoMap bridges={state.world.links} here={here} />
 
       {ARCHIPELAGOS.map((a) => {
