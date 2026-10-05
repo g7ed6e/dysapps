@@ -16,7 +16,7 @@
 // voir docs/rendu/style.md, « Les petites constructions »). Les clés de ces cases (`cellKey`) vont dans la sauvegarde : une commande livrée pose
 // toutes les cases de sa forme dans `world.parts`, sous l'identifiant de sa petite construction (`<lieu>-fixture-<n>`),
 // sans champ nouveau. C'est l'identifiant qui prouve la livraison, pas les clés : une forme redessinée se relit posée,
-// avec son dessin d'aujourd'hui (`sanitizeState`, engine.ts).
+// avec son dessin d'aujourd'hui (`sanitizeState`, engine/lecture.ts).
 //
 // Les règles (testées) : de 4 à 12 cubes, 9 cases au plus (3 × 3), 3 de haut au plus, rien de penché ; un cube en
 // porte-à-faux est tenu par le côté, à 2 cubes au plus d'un appui ; un cube du bloc livré par bloc demandé ; les autres

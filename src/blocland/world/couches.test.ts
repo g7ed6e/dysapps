@@ -13,6 +13,11 @@ const BLOCLAND = join(SRC, 'blocland');
 /** Les règles du jeu : sans coordonnées du monde, sans React ni Three.js. */
 const REGLES = [
   'engine',
+  // Le moteur, un métier par fichier (qualité du code, lot 5) : engine.ts les réexporte.
+  'engine/etat',
+  'engine/dates',
+  'engine/lecture',
+  'engine/apprentissage',
   'boss',
   'bossCore',
   'trophies',
