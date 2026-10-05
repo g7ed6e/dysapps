@@ -107,7 +107,7 @@ function stage(
   return { id, biome: from.port, name, short, origin: { x: 0, y: 0 }, zone: 'port', stage: n, from: from.classe, to: to.classe, guardians, cells: parts.cells, kit: parts.kit, reward, done: fin(to.name), fin };
 }
 
-/** Les tuyères du réacteur (sous la coque, en z = −2) : les flammes en sortent, vers le bas, en vol (vues 3D et 2D). */
+/** Les tuyères du réacteur (sous la coque, en z = −2) : les flammes en sortent, vers le bas, en vol. */
 export const TUYERES: readonly PlanCell[] = reacteur().cells.filter((c) => c.block === BLOC.ardoise);
 
 /** Les trois étapes, dans l'ordre. Chaque étape mène à l'archipel suivant. */

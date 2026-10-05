@@ -1,5 +1,5 @@
 // Textures pixel 16 × 16 générées par le code (aucune image empruntée) : herbe, terre, pierre, planches…
-// Du dessin pur sur un canvas 2D, sans moteur 3D : les deux vues du monde (3D et 2D) peignent les mêmes pixels.
+// Du dessin pur sur un canvas 2D, sans moteur 3D : la vue 3D en fait les textures des blocs.
 import { fadeRgb, hexToRgb } from '../../core/color';
 import { mulberry32 } from '../../core/random';
 
@@ -102,7 +102,7 @@ function dalle(fond: string, clair: [number, number, number]): Painter {
 type TonsDOsier = { clair: string; brin: string; ombre: string; joint: string };
 
 /**
- * De l'osier tressé, calé sur la vue peinte (pixel/painted.ts, motif `tresse`) : des rangs de quatre pixels, un brin de
+ * De l'osier tressé, calé sur l'ancienne vue peinte en 2D (motif `tresse`) : des rangs de quatre pixels, un brin de
  * deux (le haut clair) et un joint sombre de deux, et un montant de deux pixels tous les huit, en quinconce d'un rang à
  * l'autre (décalé de quatre), dans l'ombre : le brin s'y enfonce derrière lui (dessus-dessous). Une seule teinte, le relief seul fait
  * le motif ; le joint est environ deux fois plus sombre que le brin (contraste de 2:1, il se lit aussi en gris), pas plus :

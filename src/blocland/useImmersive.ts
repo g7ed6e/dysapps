@@ -3,8 +3,8 @@ import type { WorldViewChoice } from '../core/settings';
 import { hasWebGL } from './three';
 
 /**
- * Le monde en 3D si le réglage le demande et que l'appareil sait le dessiner ; sinon la liste des îles. La vue 2D
- * n'est pas un repli de la 3D (décision du mainteneur, 29 septembre 2026) : sans WebGL, l'élève a la vue simple.
+ * Le monde en 3D si le réglage le demande et que l'appareil sait le dessiner ; sinon la liste des îles. Sans WebGL,
+ * l'élève a la vue simple (décision du mainteneur, 29 septembre 2026).
  */
 export function montreLeMonde(choice: WorldViewChoice, webgl: boolean): boolean {
   return choice === '3d' && webgl;

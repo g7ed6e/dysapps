@@ -96,7 +96,7 @@ flowchart BT
   grille[grille<br/>world/map, world/terrain, world/paths…]
   commun[contrat commun des vues<br/>world/view, world/scene]
   univers[univers<br/>habillage, palette, modeleDessine, univers/]
-  dessin[dessin<br/>three/, pixel/, composants React]
+  dessin[dessin<br/>three/, composants React]
   regle --> neutre
   grille --> regle
   commun --> grille

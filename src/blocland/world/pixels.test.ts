@@ -23,7 +23,7 @@ it('chaque texture peint des couleurs valides, dessus et côté, et sa version d
   }
 });
 
-it('le monde (world/) ne dépend pas de Three.js : une vue 2D peut s’en passer', () => {
+it('le monde (world/) ne dépend pas de Three.js ', () => {
   const dir = join(process.cwd(), 'src/blocland/world');
   for (const f of readdirSync(dir).filter((n) => n.endsWith('.ts') && !n.endsWith('.test.ts'))) {
     expect(readFileSync(join(dir, f), 'utf8'), f).not.toMatch(/from 'three'/);

@@ -42,7 +42,7 @@ Le réglage « Vue du monde » garde une sortie de secours, commune à tous les 
 
 - **La liste des îles** (la vue simple). C’est la preuve que tout se joue sans dessin, et le refuge d’un appareil qui ne sait pas dessiner.
 
-**Ni Archipéo ni Blocland ne sont en 2D** (décision du mainteneur, 28 septembre 2026). Le choix « Le monde en 2D » a quitté le réglage, et les captures ne font plus de 2D : un appareil qui l’avait choisi retrouve le monde en 3D. **La vue 2D n’est pas un repli de la 3D** (décision du mainteneur, 29 septembre 2026) : un appareil sans WebGL montre la liste des îles, qui offre les mêmes actions. Le code de la vue 2D (`src/blocland/pixel/`, la 2D peinte de R7 comprise) reste en place, sans écran qui l’affiche : il servira de base à un univers dessiné en 2D, s’il en vient un (étape U6). Les captures en 2D reviendront avec cet univers.
+**Ni Archipéo ni Blocland ne sont en 2D** (décision du mainteneur, 28 septembre 2026). Le choix « Le monde en 2D » a quitté le réglage, et les captures ne font plus de 2D : un appareil qui l’avait choisi retrouve le monde en 3D. **La vue 2D n’est pas un repli de la 3D** (décision du mainteneur, 29 septembre 2026) : un appareil sans WebGL montre la liste des îles, qui offre les mêmes actions. Le code de la vue 2D (`src/blocland/pixel/`, la 2D peinte de R7 comprise) est retiré le 5 octobre 2026 (mot du mainteneur : « Oui on retire la 2d ») : un univers dessiné en 2D, s’il en vient un (étape U6), repartirait de l’historique git.
 
 Basculer de vue ne change donc jamais d’univers. Seul le réglage « Univers » le fait.
 

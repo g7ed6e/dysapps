@@ -1,4 +1,4 @@
-// Le contrat commun des vues du monde de Blocland : la 3D (three/WorldCanvas.tsx) et la 2D (à venir).
+// Le contrat commun des vues du monde de Blocland : la 3D (three/WorldCanvas.tsx), et toute vue à venir.
 // WorldPage ne connaît que ce contrat : il choisit la vue, le reste (panneaux, voyages, chantier) ne change pas.
 import type { IslandStateId } from './islandState';
 import type { BiomeDef, BiomeId, BlockId } from '../biomes';
@@ -111,7 +111,7 @@ export interface Burst {
 }
 
 /**
- * Ce que reçoit une vue du monde (la 3D de three/, la 2D à venir) et ce qu'elle renvoie. Les vues ne font que
+ * Ce que reçoit une vue du monde (la 3D de three/) et ce qu'elle renvoie. Les vues ne font que
  * dessiner et traduire les gestes : les règles du monde sont dans world/, la simulation dans world/scene.ts.
  */
 /** Le nom d'une île, écrit au-dessus d'elle dans le monde. */
@@ -162,8 +162,8 @@ export interface WorldViewProps {
   creatures?: CreaturePlacement[];
   /**
    * Les créatures qui font signe (GD-4, étape 1 : des révisions dues sur leur île) : un geste lent et court à l'arrivée
-   * de la caméra sur leur île, puis l'icône de la notion au-dessus d'elles, fixe (./signe.ts). La 2D n'en dessine rien :
-   * la vue simple montre l'icône sur la Carte.
+   * de la caméra sur leur île, puis l'icône de la notion au-dessus d'elles, fixe (./signe.ts). La vue simple
+   * montre l'icône sur la Carte.
    */
   signes?: SigneDeCreature[];
   /**
@@ -201,20 +201,19 @@ export interface WorldViewProps {
   quests?: QuestMark[];
   /**
    * L'état des autres objets qui portent un signe (Gardiens, Bloc-Navire, chantiers en fantôme ; world/modele.ts,
-   * `etatsDesObjets`) : le cube au-dessus d'eux, l'or ou la pierre (world/affordance.ts). La 2D n'en dessine rien.
+   * `etatsDesObjets`) : le cube au-dessus d'eux, l'or ou la pierre (world/affordance.ts).
    */
   etatsDesObjets?: EtatsDesObjets;
   /** Les noms des îles ouvertes, écrits au-dessus de chacune dans la police de lecture (sans nom, on ne sait pas où aller). */
   islandLabels?: IslandLabel[];
   /**
    * Le mot de la baleine est ouvert : une baleine quitte sa ronde et passe au large de cette île (une fois par `seq`).
-   * Jamais quand l'appareil demande moins d'animations (WorldPage ne le passe pas) ; la 2D n'a pas de baleine.
+   * Jamais quand l'appareil demande moins d'animations (WorldPage ne le passe pas).
    */
   whalePass?: { island: BiomeId; seq: number } | null;
   /**
    * Le moment du rallumage (lot 6) : la sentinelle de ce Gardien, encore éteinte dans son placement, se rallume en
-   * fondu, en `dureeMs` millisecondes, et reste allumée tant que le moment dure. La 2D n'a pas de fondu : elle montre la
-   * sentinelle allumée quand son placement l'est.
+   * fondu, en `dureeMs` millisecondes, et reste allumée tant que le moment dure.
    */
   rallumage?: { id: BiomeId; seq: number; dureeMs: number } | null;
   burst?: Burst;
@@ -222,7 +221,7 @@ export interface WorldViewProps {
    * La pose d'une partie du bâtiment en vague (GD-6, Blocland) : ces cubes, en cases du monde, absents de `cubes`,
    * descendent couche par couche (./vague.ts), une fois par `seq`. La vue dit chaque couche posée et la fin (`onPose`),
    * et garde la partie posée jusqu'à ce que `pose` revienne à `null` avec le monde qui la contient. Une vue sans vague
-   * (la 2D) dit la fin tout de suite.
+   * dit la fin tout de suite.
    */
   pose?: { seq: number; cubes: VoxelCube[] } | null;
   onPose?: (moment: 'couche' | 'finie') => void;
@@ -236,13 +235,12 @@ export interface WorldViewProps {
   /**
    * La fiche ouverte (lot 2 de « Toucher le monde »), une fois posée dans la page : la vue garde son objet hors d'elle
    * (si elle le cache, le cadrage glisse pour le poser dans la place libre ; sinon rien ne bouge) et, quand elle ne s'est
-   * pas ouverte d'un toucher sur l'objet (`saut`), fait sauter son signe. Une fois par `seq`. La 2D n'en fait rien.
+   * pas ouverte d'un toucher sur l'objet (`saut`), fait sauter son signe. Une fois par `seq`.
    */
   fiche?: { objet: ObjetDeLaFiche; seq: number; saut: boolean } | null;
   /**
    * Où se tient un objet à l'écran, la caméra posée à son cadrage (en pixels de la fenêtre), ou `null` s'il est derrière
-   * elle : la vue y range sa fonction tant que la scène existe (le vol des blocs part de la borne de la mission). La 2D
-   * n'en donne pas.
+   * elle : la vue y range sa fonction tant que la scène existe (le vol des blocs part de la borne de la mission).
    */
   situer?: { current: ((objet: ObjetDeLaFiche) => { x: number; y: number } | null) | null };
   className?: string;
@@ -250,7 +248,7 @@ export interface WorldViewProps {
 }
 
 /**
- * Les positions du contrat, en cases du monde (étape J5) : la 3D et la 2D dessinent le monde en cases, la grille y pose
+ * Les positions du contrat, en cases du monde (étape J5) : la 3D dessine le monde en cases, la grille y pose
  * chaque ancrage (`versMonde`). Les positions d'une vue en réseau resteront des ancrages. Les créatures et le navire
  * sont encore en cases du monde (R6 et R5 les passent en ancrages).
  */

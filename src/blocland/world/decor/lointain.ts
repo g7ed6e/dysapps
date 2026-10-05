@@ -7,7 +7,7 @@
 //   rapport à l'étendue de l'archipel : `u` le long de sa largeur (0 à l'ouest, 1 à l'est), `recul` en cases au-delà
 //   de son bord nord, là où regarde la caméra.
 // - Tout est hors de la grille : rien n'y marche, rien ne s'y touche (les triangles n'ont pas d'élément, `SANS_ELEMENT`),
-//   et la vue 3D les cache sur la Carte. La 2D ne le montre pas.
+//   et la vue 3D les cache sur la Carte.
 // - Tout va dans le pinceau du décor, après ses éléments : aucun appel de dessin de plus.
 import { SOLEIL_DIRECTION, type Couleur } from '../palette';
 import { eclairement, lineaire, NIVEAU_EAU } from '../landMesh';

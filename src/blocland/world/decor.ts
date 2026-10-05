@@ -456,8 +456,8 @@ export const LANDMARK_OF: Partial<Record<BiomeId, Repere>> = {
 
 /**
  * Le décor bâti : nommé comme le reste du décor (ses cubes se rangent ensemble), mais le sol le porte comme une
- * construction : la marche ne l'enjambe pas et le compte dans la hauteur du sol, la pente ne l'abaisse pas, la 2D le
- * dessine en cubes. Les repères, les cascades, l'habillage de la mer (écueils et bancs) et le ponton du Jardin des heures.
+ * construction : la marche ne l'enjambe pas et le compte dans la hauteur du sol, la pente ne l'abaisse pas. Les repères,
+ * les cascades, l'habillage de la mer (écueils et bancs) et le ponton du Jardin des heures.
  */
 export const DECOR_BATI: ReadonlySet<string> = new Set<string>([...REPERES, 'cascade', 'ecueil', 'banc', 'ponton']);
 

@@ -1,4 +1,4 @@
-// Le degré d'allumage d'un Gardien posé dans le monde (lot R6), sans ses modèles : les vues 3D et 2D le lisent sur le
+// Le degré d'allumage d'un Gardien posé dans le monde (lot R6), sans ses modèles : la vue 3D le lit sur le
 // placement que leur donne la grille, sans charger les sentinelles.
 
 /**

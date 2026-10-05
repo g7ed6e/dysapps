@@ -1,5 +1,5 @@
 // La disposition en grille (docs/conception/separation-jeu-rendu.md, étape J3) : le monde en cases d'aujourd'hui, pour
-// la 3D et la 2D. Elle enveloppe terrain.ts, paths.ts et monuments.ts sans rien changer à ce qu'ils calculent : la page du
+// la 3D. Elle enveloppe terrain.ts, paths.ts et monuments.ts sans rien changer à ce qu'ils calculent : la page du
 // monde et la simulation demandent où sont les choses à la disposition, plus aux fonctions de la grille.
 //
 // Depuis l'étape J5, chaque île naît dans son repère (terrain.ts, `cubesDeLIle`) : son origine est le coin de son cœur, à

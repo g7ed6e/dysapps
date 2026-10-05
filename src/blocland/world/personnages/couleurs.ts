@@ -17,7 +17,7 @@ export const LUEUR: Couleur = 0xffd866;
 
 /**
  * La nuit, le liseré des vivants (le bonhomme et les créatures, jamais les sentinelles) du côté éclairé : clair et froid
- * (DA, 28/09). En 2D, un pixel du contour, en haut à gauche ; en 3D, les facettes du bord de la silhouette, vers le haut.
+ * (DA, 28/09) : les facettes du bord de la silhouette, vers le haut.
  */
 export const LISERE_DE_NUIT: Couleur = 0xb8cce0;
 

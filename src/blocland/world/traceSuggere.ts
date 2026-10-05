@@ -2,7 +2,7 @@
 // liaison suggérée reste un fantôme, en pointillé, mais ses tirets sont plus épais et plus foncés que ceux des autres
 // fantômes, pour qu'elle se lise de bout en bout jusqu'à la rive d'arrivée, sur l'eau bleue. C'est le même élément mis
 // en avant que la flèche, pas un second : il n'existe qu'avec elle, sur la Carte. Calcul pur (sans Three.js), lu par la
-// 3D (three/traceSuggere.ts) et la 2D (pixel/WorldCanvas2D.tsx).
+// 3D (three/traceSuggere.ts).
 import type { Cell } from './paths';
 
 /** Un tiret sur deux cases, puis une case vide ; la dernière case (la rive d'arrivée) est toujours dessinée. */
@@ -26,7 +26,7 @@ export const TIRET_SUGGERE = {
 } as const;
 
 /** Les deux couches d'un tiret, de dessous à dessus : le liseré clair, puis le cœur foncé (une constante : rien à allouer par image). */
-export const COUCHES_DU_TIRET = [TIRET_SUGGERE.lisere, TIRET_SUGGERE.coeur] as const;
+const COUCHES_DU_TIRET = [TIRET_SUGGERE.lisere, TIRET_SUGGERE.coeur] as const;
 
 /** La géométrie du tracé : plaques et pavés sans dessous, en triangles (positions x, hauteur, y), et leur couleur (0 liseré, 1 cœur). */
 export interface FormeDuTrace {

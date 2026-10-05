@@ -8,7 +8,7 @@ describe('L’habillage du monde', () => {
     expect(habillageDe('archipeo')).toBe(HABILLAGES.archipeo);
   });
 
-  it('Blocland garde son dessin : le monde en blocs, la 2D en pixels, les figures en cubes, l’arène', () => {
+  it('Blocland garde son dessin : le monde en blocs, les figures en cubes, l’arène', () => {
     expect(HABILLAGES.blocland).toEqual({
       univers: 'blocland',
       ciel: 'palette',
@@ -17,7 +17,6 @@ describe('L’habillage du monde', () => {
       sol: 'cubes',
       personnages: 'cubes',
       etiquettes: 'voilees',
-      dessin2D: 'pixels',
       figures: 'cubes',
       reperes: 'libres',
       atelier: 'fabrique',
@@ -36,7 +35,6 @@ describe('L’habillage du monde', () => {
       sol: 'facettes',
       personnages: 'modeles',
       etiquettes: 'nettes',
-      dessin2D: 'peint',
       figures: 'modeles',
       reperes: 'cadres',
       atelier: 'halle',

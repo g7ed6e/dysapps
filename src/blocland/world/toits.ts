@@ -1,7 +1,7 @@
 // Les toits d'Archipéo (lot R5 de la piste Rendu, docs/univers/archipeo/cadrage.md) : décision du directeur
 // artistique du 28 septembre 2026. Le bloc `toit` ne garde plus son rouge unique : chaque île couvre son bâtiment
 // d'ardoise, dans la teinte de son archipel, ou de terre cuite pour quelques îles choisies (une sur quatre ou cinq).
-// Code pur, sans Three.js : la construction (./construction.ts) le lit, la 2D peinte le lira au lot R7.
+// Code pur, sans Three.js : la construction (./construction.ts) le lit.
 import { mixColor } from './daylight';
 import { DELAVE } from './decor/pinceau';
 import type { ArchipelagoId } from './map';

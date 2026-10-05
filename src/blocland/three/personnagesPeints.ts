@@ -50,7 +50,7 @@ export interface MateriauALueur {
 /**
  * Le liseré de nuit en 3D (référent dys, 28/09 : de nuit, une créature doit se lire au moins aussi bien que de jour).
  * Le liseré seul n'y suffit pas (quelques pixels) : il s'ajoute à un voile de nuit plus léger (`ECLAIRCIE`).
- * Comme en 2D (pixel/personnages.ts), la silhouette prend du côté éclairé une teinte claire et froide : ici, les facettes
+ * Comme dans l’ancienne 2D peinte, la silhouette prend du côté éclairé une teinte claire et froide : ici, les facettes
  * du bord (vues de biais : leur normale s'écarte de la direction de la caméra au-delà de `bord`), d'autant plus qu'elles
  * regardent vers le haut, mêlées à `LISERE_DE_NUIT` jusqu'à `poids` au cœur de la nuit. Fixe : rien ne clignote.
  */

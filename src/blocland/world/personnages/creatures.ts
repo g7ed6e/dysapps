@@ -1,4 +1,4 @@
-// Créatures originales de Blocland, dessinées en cubes. Module pur : les vues (SVG, 3D, 2D, monde) les lisent.
+// Créatures originales de Blocland, dessinées en cubes. Module pur : les vues (SVG, 3D, monde) les lisent.
 import type { BiomeId } from '../../biomes';
 import { fromLayers, type CubeDeModele } from './ascii';
 

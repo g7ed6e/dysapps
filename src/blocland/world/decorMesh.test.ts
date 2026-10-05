@@ -229,7 +229,7 @@ it('on marche sur le sol libéré : les pieds suivent la pente sous une fleur, j
 });
 
 it('sans le drapeau, rien ne change : le monde en cubes garde tout son décor', () => {
-  // La vue 3D en blocs et la 2D lisent les cubes de worldCubes, que le rangement ne touche pas.
+  // La vue 3D en blocs lit les cubes de worldCubes, que le rangement ne touche pas.
   const { cubes } = monde('6e');
   const copie: VoxelCube[] = cubes.map((c) => ({ ...c }));
   rangerLeDecor(cubes.filter((c) => !c.sol));

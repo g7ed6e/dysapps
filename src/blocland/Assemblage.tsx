@@ -2,7 +2,7 @@
 // l'île de l'école de chaque archipel. Une recette par archipel atteint, toujours affichée (vignettes, nombres, noms,
 // lue à voix haute) ; un toucher sur « Assembler » ouvre une question sur les deux matières de la recette, et la bonne
 // réponse assemble le bloc (AssemblageQuestion.tsx). Pas de grille, rien à deviner, rien ne se perd (référent dys). Un
-// panneau dans le monde (3D, 2D), une page en vue simple : le même contenu.
+// panneau dans le monde en 3D, une page en vue simple : le même contenu.
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { Icon } from '../components/Icon';

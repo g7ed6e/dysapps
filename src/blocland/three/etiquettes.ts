@@ -18,7 +18,7 @@ import type { IslandLabel, WorldViewProps } from '../world/view';
 import type { Instant, Monde, PartieDeLaScene } from './partie';
 import type { DonneesDeLaFleche, Pointe } from './bornes';
 
-/** Les étiquettes des îles : le nom dessiné à 40 px dans sa texture, affiché à 18 px CSS à l'écran (comme en 2D). */
+/** Les étiquettes des îles : le nom dessiné à 40 px dans sa texture, affiché à 18 px CSS à l'écran. */
 const LABEL_PX = 40;
 const LABEL_CSS = 18 / LABEL_PX;
 /** Sans page autour (un aperçu), la bande du bas de l'écran où flotteraient les boutons : pas d'étiquette dessous. */

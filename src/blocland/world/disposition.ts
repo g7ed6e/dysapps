@@ -1,6 +1,6 @@
 // Les types de la séparation du jeu et du rendu (docs/conception/separation-jeu-rendu.md, étape J0). La disposition en
 // grille (./grille.ts, étape J3) les réalise. Le jeu parle d'entités (une île, une borne, un ouvrage…) ; une disposition dit où elles sont : en grille
-// (le monde en cases d'aujourd'hui, pour la 3D et la 2D) ou en réseau (Archipéo : les îles sont des lieux, reliés par
+// (le monde en cases d'aujourd'hui, pour la 3D) ou en réseau (Archipéo : les îles sont des lieux, reliés par
 // des liaisons). Une vue reçoit des entités et une disposition, et renvoie des intentions.
 import type { BiomeId } from '../biomes';
 

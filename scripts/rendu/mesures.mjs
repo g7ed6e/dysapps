@@ -57,8 +57,7 @@ const NIGHT = new Date('2026-09-28T22:30:00');
  * archipel tout construit, tout ce que montrent les lots de rendu et la revue d'ensemble du directeur artistique, de près
  * et de loin (une île, l'archipel, la Carte), de jour et de nuit. Ni Contraste élevé ni « Réduire les animations » : ces
  * deux réglages sont retirés et inscrits au plan pour un lot ultérieur (décision du mainteneur, 28/09/2026).
- * Pas de capture en 2D : ni Archipéo ni Blocland n'ont de vue en 2D au choix (décision du mainteneur, 28/09/2026) ; elles
- * reviendront avec un univers dessiné en 2D. Le fichier : `<archipel>-<nom>.jpg`. Les captures de jour sont aussi celles
+ * Pas de capture en 2D : la vue 2D est retirée du code (5 octobre 2026), l'historique git la garde. Le fichier : `<archipel>-<nom>.jpg`. Les captures de jour sont aussi celles
  * des mesures.
  * Le socle (familles `jour` et `nuit`) est refait par la CI à chaque publication sur main, pour servir de référence
  * (`--comparer`). Un lot y ajoute sa famille s'il lui en faut une, et la retire une fois fusionné (décision du

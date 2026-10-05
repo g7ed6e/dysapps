@@ -10,7 +10,6 @@ export const HABILLAGE_ARCHIPEO = {
   sol: 'facettes',
   personnages: 'modeles',
   etiquettes: 'nettes',
-  dessin2D: 'peint',
   figures: 'modeles',
   reperes: 'cadres',
   atelier: 'halle',

@@ -13,7 +13,7 @@
 // - un fantôme reste un cube Brume : seul un bloc posé devient pièce ;
 // - la matière reste lisible par famille : la table « bloc vers matière » du kit de l'archipel (./kits/) ;
 // - un bloc que le kit ne peint ni ne dessine reste un bloc taillé : un kit vide ne remplace rien ;
-// - le verre et les lanternes restent ce qu'ils sont (la vue 2D les allume de même) ; les monuments gardent leurs
+// - le verre et les lanternes restent ce qu'ils sont (./construction.ts les allume) ; les monuments gardent leurs
 //   blocs taillés (des repères au large, seuls sur leur îlot) ; la cour d'une île (barrières, jardinières, quai) aussi :
 //   seuls les murs et le toit d'un bâtiment prennent le kit (world/construction.ts, `batimentsDe`) ; Blocland n'a pas
 //   de kit ;
@@ -82,7 +82,7 @@ export interface Architecture {
 }
 
 const cle = (x: number, y: number, z: number) => `${x},${y},${z}`;
-/** Ce qui s'allume ou éclaire : jamais remplacé (la 2D les allume de même). */
+/** Ce qui s'allume ou éclaire : jamais remplacé . */
 const LUMIERES = new Set(['lanterne', 'verre']);
 
 export interface OptionsDeLArchitecture {

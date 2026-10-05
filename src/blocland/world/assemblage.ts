@@ -9,7 +9,7 @@ import type { BlockId } from '../biomes';
 import type { ArchipelagoId } from './archipels';
 import { ASSEMBLAGE } from './recettes';
 
-/** L'adresse du lieu (dans le monde en 3D ou en 2D : son panneau ; en vue simple : sa page). */
+/** L'adresse du lieu (dans le monde en 3D : son panneau ; en vue simple : sa page). */
 export const ASSEMBLAGE_PATH = '/adventure/assembly';
 
 /**
