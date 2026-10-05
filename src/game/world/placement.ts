@@ -182,6 +182,21 @@ export function placeFixtures(g: ReadonlyMap<BiomeId, GuardianPose>, b: Readonly
   layoutChanged();
 }
 
+/** Les lieux réunis (GD-9, point 10), par paires, toutes régions confondues. */
+let reunions: readonly (readonly [BiomeId, BiomeId])[] = [];
+
+/** Les lieux réunis de la disposition de la partie. */
+export function chosenJoins(): readonly (readonly [BiomeId, BiomeId])[] {
+  return reunions;
+}
+
+/** Pose les lieux réunis (la disposition d'une sauvegarde, ./appliedLayout.ts). Ne change rien si ce sont les mêmes. */
+export function placeJoins(paires: readonly (readonly [BiomeId, BiomeId])[]): void {
+  if (paires.length === reunions.length && paires.every((p, i) => p[0] === reunions[i][0] && p[1] === reunions[i][1])) return;
+  reunions = paires.map((p) => [p[0], p[1]] as const);
+  layoutChanged();
+}
+
 /**
  * La disposition a changé (les poses, ou ce que les liaisons en lisent : leurs arrivées, celles à reposer,
  * ./appliedLayout.ts) : le numéro change et les caches qui lisent les places du monde se vident.

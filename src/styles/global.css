@@ -3831,6 +3831,18 @@ figure.class-table {
   border-color: currentColor;
   font-weight: 700;
 }
+/* Le pli d'un lieu (ses bornes et ses arrivées) prend toute la largeur de sa ligne ; ses lignes sont en retrait. */
+.arrange-list-items .arrange-list-more {
+  flex: 1 1 100%;
+}
+.arrange-list-sub {
+  list-style: none;
+  margin: 0.4rem 0 0;
+  padding: 0 0 0 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
 /* Les blocs gagnés qui volent jusqu'au compteur (Blocland, FlyingBlocks.tsx) : posés sur la pastille, ils partent de la
    borne (`--vol-dx`, `--vol-dy`) en arc simple, l'un après l'autre ; ni éclat ni traînée, rien qui se touche. Sans
    animation quand l'appareil en demande moins (le vol n'a alors pas lieu). */

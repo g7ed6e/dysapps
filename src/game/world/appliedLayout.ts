@@ -6,9 +6,9 @@
 // Code pur, sans Three.js.
 import { getBridge } from './archipelago';
 import { ARCHIPELAGO_IDS } from './archipelagos';
-import { posesOfLayout } from './footprint';
+import { fittingPlaces, posesOfLayout } from './footprint';
 import { setLinkLayout } from './linkGeometry';
-import { type GuardianPose, layoutVersion, placeFixtures, placeIslands, type Side } from './placement';
+import { type GuardianPose, layoutVersion, placeFixtures, placeIslands, placeJoins, type Side } from './placement';
 import type { BiomeId } from '../biomes';
 import type { LinkLandings } from './routing';
 import type { Layout, LayoutSide } from './savedLayout';
@@ -46,6 +46,16 @@ function fixturesOf(layout: Layout | undefined): [Map<BiomeId, GuardianPose>, Ma
   return [gardiens, bornes];
 }
 
+/** Les lieux réunis d'une disposition, dans les régions dont la disposition tient sur la grille (`fittingPlaces`). */
+function joinsOf(layout: Layout | undefined): (readonly [BiomeId, BiomeId])[] {
+  const out: (readonly [BiomeId, BiomeId])[] = [];
+  for (const a of ARCHIPELAGO_IDS) {
+    const r = layout?.[a];
+    if (r?.joined?.length && fittingPlaces(a, r.islands ?? {}, r.guardians ?? {})) out.push(...r.joined);
+  }
+  return out;
+}
+
 /** La dernière disposition appliquée, et le numéro qu'elle a donné : le même objet ne se réapplique pas. */
 let applied: { layout: Layout | undefined; version: number } | null = null;
 
@@ -58,6 +68,7 @@ export function applyLayout(layout: Layout | undefined): number {
   if (applied && applied.layout === layout && applied.version === layoutVersion()) return applied.version;
   placeIslands(posesOfLayout(layout));
   placeFixtures(...fixturesOf(layout));
+  placeJoins(joinsOf(layout));
   const { relink, landings } = linkLayoutOf(layout);
   setLinkLayout(relink, landings);
   applied = { layout, version: layoutVersion() };

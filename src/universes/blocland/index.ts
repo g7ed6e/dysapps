@@ -350,6 +350,11 @@ export const BLOCLAND = {
     tuYEs: 'Tu y es : joue une mission ici.',
   },
   blocs: nomsAssembles('blocland'),
+  reunion: {
+    nom: 'La digue',
+    description: 'Une digue de cubes d’herbe sur la pierre, d’un lieu à l’autre, avec des marches si l’un est plus haut : on passe à pied.',
+    fini: 'La digue tient bon ! On passe à pied d’un lieu à l’autre.',
+  },
   assemblage: lieuDAssemblage('blocland'),
   // La créature de l'île-école de l'archipel parle : Mousso en 6e, Bazar en 5e, Ixe en 4e, Fi en 3e (GD-1, point 1).
   baleine: {

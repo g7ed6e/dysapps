@@ -18,7 +18,9 @@ import { creaturesQuiFontSigne, signesDesCreatures, usePlusTard } from './remind
 import { sansCommandes } from './world/requests';
 import { SCHOOL_PATH, SchoolSheet } from './School';
 import { MonumentSheet, MonumentsSheet } from './Monuments';
-import { useMonumentBuilder } from './useMonumentBuilder';
+import { useJoinBuilder, useMonumentBuilder } from './useMonumentBuilder';
+import { JoinSheet } from './Joins';
+import { getJoin, SANS_REUNION } from './world/join';
 import { getMonument, monumentsOf } from './world/monuments';
 import { AvatarFace } from './AvatarFace';
 import { visageDuJoueur } from './world/characters/face';
@@ -169,7 +171,9 @@ export function WorldPage() {
   // Les monuments : leur liste, ou un monument (son îlot au large, où la caméra va).
   const monumentsOpen = biomeId === 'landmarks';
   const monument = biomeId ? getMonument(biomeId) : undefined;
-  const panelOpen = mapOpen || mondeOpen || blocsOpen || schoolOpen || menuOpen || trophiesOpen || assemblageOpen || monumentsOpen || Boolean(monument);
+  // La construction qui réunit deux lieux (GD-9) : son panneau, la caméra sur elle.
+  const reunion = biomeId ? getJoin(biomeId) : undefined;
+  const panelOpen = mapOpen || mondeOpen || blocsOpen || schoolOpen || menuOpen || trophiesOpen || assemblageOpen || monumentsOpen || Boolean(monument) || Boolean(reunion);
   const island = biomeId && !panelOpen ? getBiome(biomeId) : undefined;
   // Le bonhomme : où il se tient ; l'archipel affiché est le sien.
   const at = state.world.place ?? 'french-6e-phonology';
@@ -247,6 +251,7 @@ export function WorldPage() {
       if (settings.autoRead) speak(frenchTypography(texte));
     },
     versMonde: (p) => grille.versMonde(p),
+    nomDeLaReunion: textes.reunion?.nom,
   });
   const enAmenageant = mapOpen && amenagement.ouvert;
   useEffect(() => {
@@ -386,14 +391,16 @@ export function WorldPage() {
   // La fiche du Bloc-Navire a le chantier du port, d'où qu'on la touche.
   const ship = useVehicleBuilder(fiche?.objet.genre === 'navire' ? archipelago.port : (island?.id ?? archipelago.port));
   const monumentBuilder = useMonumentBuilder(monument ?? monumentsOf(a)[0]);
-  // Les éclats : ceux du navire ou du monument, le dernier qui a bougé.
-  const seqs = useRef({ ship: ship.burst.seq, monument: monumentBuilder.burst.seq, last: ship.burst as Burst });
-  const now = { ship: ship.burst.seq, monument: monumentBuilder.burst.seq };
+  const reunionBuilder = useJoinBuilder(reunion?.plan ?? SANS_REUNION, reunion?.shape ?? null);
+  // Les éclats : ceux du navire, du monument ou de la réunion, le dernier qui a bougé.
+  const seqs = useRef({ ship: ship.burst.seq, monument: monumentBuilder.burst.seq, reunion: reunionBuilder.burst.seq, last: ship.burst as Burst });
+  const now = { ship: ship.burst.seq, monument: monumentBuilder.burst.seq, reunion: reunionBuilder.burst.seq };
   if (ship.burst.seq !== seqs.current.ship) seqs.current = { ...now, last: ship.burst };
   else if (monumentBuilder.burst.seq !== seqs.current.monument) seqs.current = { ...now, last: monumentBuilder.burst };
+  else if (reunionBuilder.burst.seq !== seqs.current.reunion) seqs.current = { ...now, last: reunionBuilder.burst };
   const burst = useMemo(
-    () => ({ ...seqs.current.last, seq: ship.burst.seq + monumentBuilder.burst.seq }),
-    [ship.burst, monumentBuilder.burst],
+    () => ({ ...seqs.current.last, seq: ship.burst.seq + monumentBuilder.burst.seq + reunionBuilder.burst.seq }),
+    [ship.burst, monumentBuilder.burst, reunionBuilder.burst],
   );
 
   // Le bonhomme : où il se tient, et son itinéraire quand on ouvre une autre île ouverte (il y marche).
@@ -477,6 +484,11 @@ export function WorldPage() {
       else setFocus((f) => ({ island: null, seq: f.seq + 1 }));
       return;
     }
+    // La construction qui réunit deux lieux : la caméra sur le premier des deux, qui la cadre avec l'autre.
+    if (reunion) {
+      setFocus((f) => ({ island: reunion.plan.archipelago === a ? reunion.pair[0] : null, seq: f.seq + 1 }));
+      return;
+    }
     // L'école ou la salle des trophées : le bonhomme marche jusqu'à sa porte, sur l'île de l'école de l'archipel.
     if (placeOpen) {
       const school = archipelago.school;
@@ -509,7 +521,7 @@ export function WorldPage() {
       moveTo(island.id);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [island?.id, mapOpen, placeOpen, monument?.id]);
+  }, [island?.id, mapOpen, placeOpen, monument?.id, reunion?.plan.id]);
 
   // Ce que le tutoriel ne dit plus, dit au moment où on le rencontre, une fois par appareil, par la créature de l'île :
   // les ouvrages au premier toucher d'une île pâle, le Bloc-Navire à la première arrivée au port (discoveries.ts).
@@ -1216,6 +1228,8 @@ export function WorldPage() {
         <MonumentsSheet onClose={fermerLePanneau} />
       ) : monument ? (
         <MonumentSheet builder={monumentBuilder} onClose={fermerLePanneau} />
+      ) : reunion ? (
+        <JoinSheet builder={reunionBuilder} onClose={fermerLePanneau} />
       ) : menuOpen ? (
         <MenuSheet
           onClose={() => navigate('/adventure')}

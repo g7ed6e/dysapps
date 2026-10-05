@@ -362,6 +362,11 @@ export const ARCHIPEO = {
   },
   // Les blocs assemblés et leur lieu (GD-2) : écrits dans docs/contenu/assemblage.md.
   blocs: nomsAssembles('archipeo'),
+  reunion: {
+    nom: 'La jetée',
+    description: 'Une jetée de pierre, simple, d’une île à l’autre : on passe à pied.',
+    fini: 'La jetée est posée ! On passe à pied d’une île à l’autre.',
+  },
   assemblage: lieuDAssemblage('archipeo'),
   // Les noms d'avant GD-1, ceux des données (world/archipelago.ts).
   archipels: { '6e': 'Premiers Rivages', '5e': 'Îles Brumeuses', '4e': 'Anciens Ateliers', '3e': 'Îles du Ciel' },

@@ -23,7 +23,9 @@ import { SchoolPage } from './game/School';
 import { AssemblyPage } from './game/Assembly';
 import { AssemblyQuestionPage } from './game/AssemblyQuestion';
 import { MonumentPage, MonumentsPage } from './game/Monuments';
-import { useMonumentBuilder } from './game/useMonumentBuilder';
+import { useJoinBuilder, useMonumentBuilder } from './game/useMonumentBuilder';
+import { JoinPage } from './game/Joins';
+import { type AppliedJoin, getJoin } from './game/world/join';
 import { getMonument, type MonumentDef } from './game/world/monuments';
 import { MENU_PATH } from './core/paths';
 import { translatePath } from './core/legacyIds';
@@ -110,11 +112,17 @@ function IslandEntry() {
   if (biomeId === 'landmarks') return <MonumentsPage />;
   const monument = biomeId ? getMonument(biomeId) : undefined;
   if (monument) return <MonumentEntry monument={monument} />;
+  // La construction qui réunit deux lieux (GD-9) : une page en vue simple.
+  const join = biomeId ? getJoin(biomeId) : undefined;
+  if (join) return <JoinEntry join={join} />;
   // « Mes blocs » : une page en vue simple, un panneau dans le monde en 3D.
   return biomeId === 'stock' ? <InventoryPage /> : <BiomePage />;
 }
 function MonumentEntry({ monument }: { monument: MonumentDef }) {
   return <MonumentPage builder={useMonumentBuilder(monument)} />;
+}
+function JoinEntry({ join }: { join: AppliedJoin }) {
+  return <JoinPage builder={useJoinBuilder(join.plan, join.shape)} />;
 }
 // Le voyage en Bloc-Navire : un écran HTML en vue simple ; en 3D, le monde le joue depuis le panneau du port.
 function VoyageEntry() {

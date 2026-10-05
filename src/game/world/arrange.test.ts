@@ -194,13 +194,13 @@ describe('les liaisons à reposer', () => {
     const w = partie();
     const { s } = placeQuiDefait(w);
     const w2 = apres(moveIsland(w, VOLCAN, s));
-    const w3 = backToStartingMap(w2, '6e');
+    const w3 = backToStartingMap(w2, '6e')!;
     expect(w3.layout).toBeUndefined();
     expect(w3.links).toEqual(w.links);
     expect([...routesIn(w3, '6e').values()].filter((t) => !t).length).toBe([...routesIn(w, '6e').values()].filter((t) => !t).length);
     // Les autres régions gardent leur disposition.
     const autre = apres(turnIsland(w2, 'english-5e-grammar'));
-    expect(backToStartingMap(autre, '6e').layout).toEqual({ '5e': autre.layout!['5e'] });
+    expect(backToStartingMap(autre, '6e')!.layout).toEqual({ '5e': autre.layout!['5e'] });
   });
 });
 

@@ -57,6 +57,23 @@ export interface RegionLayout {
   relink?: string[];
 }
 
+/** Le début de l'identifiant de la construction qui réunit deux lieux (GD-9, ./join.ts), dans `world.parts`. */
+const JOIN_PREFIX = 'join.';
+
+/** L'identifiant de la construction qui réunit deux lieux (dans la sauvegarde, `world.parts`) : « join.<a>.<b> ». */
+export function joinId(a: BiomeId, b: BiomeId): string {
+  return `${JOIN_PREFIX}${a}.${b}`;
+}
+
+/** Les deux lieux, d'une même région, d'un identifiant de construction qui réunit, ou `null`. */
+export function pairOfJoinId(id: string): [BiomeId, BiomeId] | null {
+  if (!id.startsWith(JOIN_PREFIX)) return null;
+  const [a, b, ...reste] = id.slice(JOIN_PREFIX.length).split('.');
+  if (reste.length || !getBiome(a) || !getBiome(b) || a === b) return null;
+  if (archipelagoOfIsland(a as BiomeId) !== archipelagoOfIsland(b as BiomeId)) return null;
+  return [a as BiomeId, b as BiomeId];
+}
+
 /** Le champ `world.layout` : la disposition de chaque région aménagée. */
 export type Layout = Partial<Record<ArchipelagoId, RegionLayout>>;
 

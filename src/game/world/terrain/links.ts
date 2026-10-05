@@ -11,6 +11,7 @@ import { avatarHome, cleDeCube, origineDe } from './base';
 import { layoutCache } from '../placement';
 import { placedLinksOfPlace, linkRoute, soleRoute } from '../linkGeometry';
 import { linkBetweenJoined } from '../routing';
+import { joinOf } from '../join';
 import { archipelagoOfIsland } from '../map';
 
 const STEP = '#8f8f8f';
@@ -436,6 +437,20 @@ export function avatarRoute(
       const cout = e.cout + Math.hypot(deck[0].x - e.at.x, deck[0].y - e.at.y) + routeLengths(deck)[deck.length - 1] + fin;
       const connu = best.get(there);
       if (!connu || cout < connu.cout) best.set(there, { cout, at: deck[deck.length - 1], via: b, deck });
+    }
+    // Deux lieux réunis (GD-9, point 10) : on passe sur la construction qui les réunit, par son milieu.
+    const j = joinOf(here);
+    if (j) {
+      const there = j.pair[0] === here ? j.pair[1] : j.pair[0];
+      if (!done.has(there) && j.shape.deck.length) {
+        const deck = j.pair[0] === here ? [...j.shape.deck] : [...j.shape.deck].reverse();
+        const bout = deck[deck.length - 1];
+        const fin = there === to ? Math.hypot(arrivee.x - bout.x, arrivee.y - bout.y) : 0;
+        const cout = e.cout + Math.hypot(deck[0].x - e.at.x, deck[0].y - e.at.y) + routeLengths(deck)[deck.length - 1] + fin;
+        const connu = best.get(there);
+        const via: BridgeDef = { id: `${j.plan.id}`, from: j.pair[0], to: j.pair[1], cost: 0 };
+        if (!connu || cout < connu.cout) best.set(there, { cout, at: bout, via, deck });
+      }
     }
   }
   if (!best.has(to)) return null;

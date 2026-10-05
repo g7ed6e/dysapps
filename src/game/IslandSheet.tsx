@@ -30,6 +30,7 @@ import { useTextes } from '../universes';
 import type { Partie } from './world/parts';
 import { LaterSaid, ResidentReminder, useResidentReminder } from './ResidentReminder';
 import { Sheet } from './Sheet';
+import { JoinLine } from './Joins';
 
 /**
  * Comment ouvrir le défi d'un Gardien : les étoiles à gagner et les missions où les gagner (`missingForBoss`), ou qu'il
@@ -251,6 +252,9 @@ export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight =
       {unlocked && ship && onBoard && <ShipSection biome={biome} builder={ship} in3d={in3d} onBoard={onBoard} highlight={highlight === 'vehicle'} fold={fold} />}
 
       {unlocked && <Bridges island={biome.id} onBuilt={onBuilt} highlight={highlight} fold={fold} objectif={goal?.ouvrage ?? null} />}
+
+      {/* Réuni à un autre lieu (GD-9) : la construction qui les réunit se pose d'ici, comme une grande construction. */}
+      {unlocked && <JoinLine island={biome.id} />}
 
       {/* La matière, la classe (cadrage-contenu) et l'archipel : une ligne au pied du panneau. */}
       <p className="island-sheet-module island-sheet-foot">

@@ -11,6 +11,7 @@ import { applyLayout } from './world/appliedLayout';
 import { islandsOf } from './world/archipelago';
 import { isFixedPlace, spotOf } from './world/arrange';
 import { EMPTY_STATE } from './engine/state';
+import { toutConstruit } from './world/budget';
 
 function monter() {
   return render(
@@ -26,9 +27,10 @@ function monter() {
   );
 }
 
+/** Les lignes de premier niveau (un lieu, un Gardien), sans celles des plis. */
 const lignes = () =>
-  within(screen.getByRole('list'))
-    .getAllByRole('listitem')
+  Array.from(screen.getAllByRole('list')[0].children)
+    .filter((li) => li.tagName === 'LI')
     .map((li) => li.querySelector('strong')!.textContent);
 
 afterEach(() => {
@@ -83,5 +85,37 @@ describe('Aménager en vue simple', () => {
     }
     fireEvent.click(screen.getByRole('button', { name: /Poser ici/ }));
     expect(screen.getByText(`Le Gardien de ${b.name}`, { selector: 'strong' }).closest('p')!.textContent).not.toBe(avant);
+  });
+  it('les bornes et les arrivées d’un lieu, dans son pli, se déplacent de même', () => {
+    monter();
+    fireEvent.click(screen.getByRole('button', { name: 'Aménager' }));
+    const boutons = screen.getAllByRole('button', { name: /^Déplacer (la borne|l’arrivée)/ });
+    expect(boutons.length).toBeGreaterThan(0);
+    const borne = screen.getAllByRole('button', { name: /^Déplacer la borne/ })[0];
+    const li = borne.closest('li')!;
+    const avant = li.querySelector('p')!.textContent;
+    fireEvent.click(borne);
+    expect(borne).toHaveAttribute('aria-pressed', 'true');
+    for (const nom of ['Est', 'Ouest', 'Nord', 'Sud']) {
+      fireEvent.click(screen.getByRole('button', { name: new RegExp(nom) }));
+      if (!/Plus de place|ne peut/.test(screen.getByRole('status').textContent ?? '')) break;
+    }
+    fireEvent.click(screen.getByRole('button', { name: /Poser ici/ }));
+    expect(screen.getByRole('status')).toHaveTextContent(/^C’est posé\./);
+    expect(li.querySelector('p')!.textContent).not.toBe(avant);
+  });
+
+  it('« Réunir » sur la ligne d’un lieu qui a un voisin ouvert au plus près : la paire est réunie et sauvegardée', () => {
+    localStorage.setItem('dysapps:game', JSON.stringify({ world: { links: toutConstruit().world.links } }));
+    monter();
+    fireEvent.click(screen.getByRole('button', { name: 'Aménager' }));
+    const reunir = screen.queryAllByRole('button', { name: /^Réunir / });
+    // Sur la carte de départ, la Tour et la Ferme (leur isthme d'avant) sont déjà au plus près.
+    expect(reunir.length).toBeGreaterThan(0);
+    fireEvent.click(reunir[0]);
+    expect(screen.getByRole('status')).toHaveTextContent(/sont réunis : ils bougent maintenant ensemble\./);
+    const layout = JSON.parse(localStorage.getItem('dysapps:game')!).world.layout as Record<string, { joined?: string }>;
+    expect(Object.values(layout).some((l) => l.joined)).toBe(true);
+    expect(screen.getAllByText(/Réuni à .* : ils bougent ensemble\./).length).toBe(2);
   });
 });

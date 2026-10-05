@@ -9,6 +9,7 @@ import {
   RotateCw,
   Undo2,
   Unlink,
+  Merge,
   Blocks,
   BookOpen,
   Box,
@@ -135,6 +136,8 @@ export const ICONS = {
   tourner: RotateCw,
   defaire: Undo2,
   aReposer: Unlink,
+  // Réunir deux lieux (GD-9, point 10) : deux chemins qui se rejoignent.
+  reunir: Merge,
 } satisfies Record<string, LucideIcon>;
 
 export type AnyIconName = keyof typeof ICONS;

@@ -2,7 +2,7 @@
 // reposer), où se tient son fantôme, et ce que font les gestes de la barre du mode : toucher la mer (le fantôme se cale
 // sur la place libre la plus proche), les flèches (la place libre suivante, ou « Plus de place par là »), « Tourner »,
 // « Poser ici ». La phrase écrite et lue dit toujours où. Les actions elles-mêmes sont dans ./arrange.ts ; ici, le choix
-// en cours et son fantôme. Code pur, sans Three.js.
+// en cours et son fantôme ; un lieu réuni emmène son voisin et leur réunion. Code pur, sans Three.js.
 import { type BiomeId, getBiome } from '../biomes';
 import type { World } from '../engine/state';
 import { getBridge } from './archipelago';

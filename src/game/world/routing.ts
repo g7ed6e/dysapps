@@ -11,7 +11,7 @@ import { decorate, LANDMARK_OF, landmark } from './decor';
 import { frameOf, LINK_GAP, tooSmallGaps, footprintOf } from './footprint';
 import { type ArchipelagoId, bornesDuCoeur, CORE, isLand, isLandInWorld, isthmusOf, type IslandDef, landCells, landscape, margesDuCoeur, noise, reliefHeight, tirage, toWorld } from './map';
 import { LOW } from './paths';
-import { type Side, SIDES, STEP, type Quarts, turnDirection, TOWARDS_SEA } from './placement';
+import { type Rectangle, type Side, SIDES, STEP, type Quarts, turnDirection, TOWARDS_SEA } from './placement';
 
 /** La longueur d'une liaison courte (un pont, un sentier entre deux voisins), en cases sur l'eau. */
 export const SHORT_LENGTH = 36;
@@ -303,6 +303,11 @@ export interface RegionPlans {
    * que de celles-là ; un bout sans arrivée choisie laisse le traceur choisir.
    */
   arriveesDeLaLiaison?: (id: string) => LinkLandings | undefined;
+  /**
+   * Les lieux réunis (GD-9, ./join.ts) et la zone de la construction qui les réunit : aucune liaison n'y passe, et aucune
+   * ne relie deux lieux réunis (elle les relierait deux fois).
+   */
+  reunions?: readonly { pair: readonly [BiomeId, BiomeId]; zone: Rectangle }[];
 }
 
 /** Une arrivée choisie : un côté du lieu (dans son repère) et sa place le long de ce côté, en pas. */
@@ -332,9 +337,11 @@ export class RegionRouter {
   private readonly prises = new Set<string>();
   private readonly cotesPris = new Set<string>();
   private readonly choisies: RegionPlans['arriveesDeLaLiaison'];
+  private readonly reunis = new Set<string>();
 
   constructor(a: ArchipelagoId, plans: RegionPlans) {
     this.choisies = plans.arriveesDeLaLiaison;
+    for (const r of plans.reunions ?? []) this.reunis.add(`${r.pair[0]}|${r.pair[1]}`).add(`${r.pair[1]}|${r.pair[0]}`);
     const lieux = plans.lieux;
     // Un bit par lieu dans `Grid.pres` (un entier de 32 bits, signé par `1 << rang`) : 31 lieux au plus par région.
     if (lieux.length > MAX_ISLANDS_PER_REGION) throw new Error(`Le traceur tient ${MAX_ISLANDS_PER_REGION} lieux par région au plus (${a} en a ${lieux.length}).`);
@@ -366,6 +373,8 @@ export class RegionRouter {
       const [x, y] = k.split(',').map(Number);
       g.rectangle({ x0: x, y0: y, x1: x + 1, y1: y + 1 }, 1, (i) => (g.dur[i] = 1));
     }
+    // La construction qui réunit deux lieux, et son abord.
+    for (const r of plans.reunions ?? []) g.rectangle(r.zone, LINK_GAP - 1, (i) => (g.dur[i] = 1));
     this.depart = new Set(startingPlaces(a));
     for (const d of lieux) {
       const choisies = plans.arrivees?.get(d.id);
@@ -386,7 +395,7 @@ export class RegionRouter {
   essayer(b: BridgeDef, max: number): LinkRoute | null {
     const ra = this.rang.get(b.from);
     const rb = this.rang.get(b.to);
-    if (ra === undefined || rb === undefined) return null;
+    if (ra === undefined || rb === undefined || this.reunis.has(`${b.from}|${b.to}`)) return null;
     const bitA = 1 << ra;
     const bitB = 1 << rb;
     const choix = this.choisies?.(b.id);

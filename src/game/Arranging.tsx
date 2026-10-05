@@ -13,8 +13,8 @@ import type { World } from './engine/state';
 import { sonDePose } from './sound';
 import type { Habillage } from './skin';
 import { getBridge } from './world/archipelago';
-import type { ArchipelagoId } from './world/archipelagos';
-import { type Direction, guardianOf, linksToRelink, NO_MORE_ROOM, placeIn } from './world/arrange';
+import { type ArchipelagoId, archipelagoOfIsland } from './world/archipelagos';
+import { type Direction, guardianOf, joinCandidates, joinedWith, joinIslands, joinsIn, linksToRelink, NO_MORE_ROOM, placeIn, spotOf } from './world/arrange';
 import {
   type ArrangeChoice,
   canTurn,
@@ -51,7 +51,7 @@ const EXPLICATION_DE_LA_LIAISON =
 const REFUS: Readonly<Record<string, string>> = {
   fixe: 'Ce lieu ne bouge pas : c’est le point de départ de la région.',
   occupee: 'Cette place n’est pas libre.',
-  reunis: 'Ces deux lieux sont réunis : ils bougeront ensemble.',
+  reunis: 'Ce lieu ne peut pas se réunir à un autre ici.',
   liaison: 'Cette liaison ne se pose pas là.',
   inconnu: 'Ce n’est pas possible ici.',
 };
@@ -76,6 +76,8 @@ interface Options {
   dire: (texte: string) => void;
   /** Une case d'une île (un ancrage) dans le monde. */
   versMonde: (p: NonNullable<Extract<Intention, { genre: 'ile' }>['sol']>) => Point;
+  /** Le nom de la construction qui réunit deux lieux dans l'univers (« La digue »), avec l'article. */
+  nomDeLaReunion?: string;
 }
 
 /** Le geste de pose en cours : ce qu'il posera, et ses minuteries. */
@@ -113,11 +115,29 @@ export interface Amenagement {
   peutDefaire: boolean;
   peutRemettre: boolean;
   choisirUneLiaison(id: string): void;
+  /**
+   * « Réunir » (GD-9, point 10) : le lieu choisi (ou `id`, depuis la vue simple), à sa place, avec son premier voisin
+   * ouvert à la bonne distance.
+   */
+  reunir(id?: BiomeId): void;
+  /** Le premier voisin ouvert avec lequel un lieu se réunirait, à sa place, ou rien (la vue simple le propose). */
+  voisinAReunir(id: BiomeId): BiomeId | null;
+  /** Choisir directement (la vue simple : une borne, une arrivée), avec sa phrase. */
+  choisirDirect(c: ArrangeChoice): void;
+  /** Le lieu avec lequel le lieu choisi se réunirait (« Réunir » allumé), ou rien. */
+  reunirAvec: BiomeId | null;
 }
 
-/** L'emprise d'un lieu (sa terre et l'îlot de son Gardien) dans un monde, en un rectangle. */
+/**
+ * L'emprise d'un lieu (sa terre et l'îlot de son Gardien) dans un monde, en un rectangle ; avec le lieu auquel il est
+ * réuni et leur réunion, qui bougent avec lui.
+ */
 function emprise(world: World, id: BiomeId): Rectangle {
-  const parts = footprintOf(id, placeIn(world, id), guardianOf(world, id)).filter((p) => p.genre === 'terre' || p.genre === 'ilot');
+  const autre = joinedWith(world, id);
+  const lieux = autre ? [id, autre] : [id];
+  const parts: Rectangle[] = lieux.flatMap((l) => footprintOf(l, placeIn(world, l), guardianOf(world, l)).filter((p) => p.genre === 'terre' || p.genre === 'ilot'));
+  const zone = autre ? joinsIn(world, archipelagoOfIsland(id)).find((j) => j.pair.includes(id))?.shape.zone : undefined;
+  if (zone) parts.push(zone);
   return {
     x0: Math.min(...parts.map((p) => p.x0)),
     y0: Math.min(...parts.map((p) => p.y0)),
@@ -126,7 +146,7 @@ function emprise(world: World, id: BiomeId): Rectangle {
   };
 }
 
-export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage, sons, dire, versMonde }: Options): Amenagement {
+export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage, sons, dire, versMonde, nomDeLaReunion = 'La construction qui les réunit' }: Options): Amenagement {
   const [session, setSession] = useState<ArrangeSession | null>(null);
   const [choix, setChoix] = useState<ArrangeChoice | null>(null);
   const [phrase, setPhrase] = useState('');
@@ -145,9 +165,18 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     setPhrase(texte);
     if (texte) dire(texte);
   };
+  /** Le lieu avec lequel un lieu se réunirait, à sa place dans un monde (le premier voisin ouvert), ou rien. */
+  const voisinAReunir = (w: World, id: BiomeId) => joinCandidates(w, id)[0] ?? null;
+  /** « Il peut se réunir à … » : dit quand un lieu choisi ou posé a un voisin ouvert à réunir. */
+  const peutSeReunir = (w: World, id: BiomeId) => {
+    const v = voisinAReunir(w, id);
+    return v ? ` Il peut se réunir à ${nom(v)} : touche-le, puis « Réunir ».` : '';
+  };
   const choisir = (c: ArrangeChoice | null, texte?: string) => {
     setChoix(c);
-    annoncer(texte ?? (c ? choiceSentence(worldRef.current, c, nom) : ''));
+    const w = worldRef.current;
+    const reunion = c?.genre === 'lieu' && sameSpot(c.spot, spotOf(w, c.id)) && voisinAReunir(w, c.id) ? ` Il peut se réunir à ${nom(voisinAReunir(w, c.id)!)} : « Réunir ».` : '';
+    annoncer(texte ?? (c ? choiceSentence(w, c, nom) + reunion : ''));
   };
 
   /** Le geste fini (ou touché) : le monde posé, le son, la phrase. */
@@ -174,7 +203,10 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     const r = poseChoice(w, choix);
     if (!r.ok) return annoncer(REFUS[r.reason] ?? REFUS.inconnu);
     setSession(recordPose(session, w, r.world));
-    const texte = poseSentence(r.world, choix, nom) + (r.relink.length ? ` ${r.relink.length === 1 ? 'Une liaison est' : `${r.relink.length} liaisons sont`} à reposer.` : '');
+    const texte =
+      poseSentence(r.world, choix, nom) +
+      (r.relink.length ? ` ${r.relink.length === 1 ? 'Une liaison est' : `${r.relink.length} liaisons sont`} à reposer.` : '') +
+      (choix.genre === 'lieu' ? peutSeReunir(r.world, choix.id) : '');
     setChoix(null);
     // Le geste (un lieu seulement) : démonté à sa place d'avant, remonté à la nouvelle ; d'un coup avec moins d'animations.
     if (choix.genre !== 'lieu' || reduceMotion) {
@@ -248,6 +280,22 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     setSession(r.session);
     arrange(r.world);
     choisir(null, 'Tout est remis comme avant.');
+  };
+
+  const reunir = (direct?: BiomeId) => {
+    const w = worldRef.current;
+    if (!session || enCours.current) return;
+    const id = direct ?? (choix?.genre === 'lieu' && sameSpot(choix.spot, spotOf(w, choix.id)) ? choix.id : null);
+    const autre = id ? voisinAReunir(w, id) : null;
+    if (!id || !autre) return annoncer(REFUS.reunis);
+    const r = joinIslands(w, id, autre);
+    if (!r.ok) return annoncer(REFUS[r.reason] ?? REFUS.inconnu);
+    setSession(recordPose(session, w, r.world));
+    arrange(r.world);
+    setChoix(null);
+    if (sons) sonDeLaPose();
+    const liaisons = r.relink.length ? ` ${r.relink.length === 1 ? 'Une liaison est' : `${r.relink.length} liaisons sont`} à reposer.` : '';
+    annoncer(`${nom(id)} et ${nom(autre)} sont réunis : ils bougent maintenant ensemble.${liaisons} ${nomDeLaReunion} se construit depuis le panneau du lieu. ↶ défait la réunion tant que le mode est ouvert.`);
   };
 
   const ouvrirLaListe = () => {
@@ -340,6 +388,7 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
   });
 
   const vue = useMemo(() => (choix ? arrangeView(world, choix) : null), [world, choix]);
+  const reunirAvec = choix?.genre === 'lieu' && sameSpot(choix.spot, spotOf(world, choix.id)) ? voisinAReunir(world, choix.id) : null;
   return {
     ouvert,
     ouvrir,
@@ -363,7 +412,16 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     peutDefaire: Boolean(session && canUndo(session)),
     peutRemettre: Boolean(session && hasChanged(session, world)),
     choisirUneLiaison,
+    reunir,
+    reunirAvec,
+    voisinAReunir: (id) => voisinAReunir(world, id),
+    choisirDirect: (c) => choisir(c),
   };
+}
+
+/** Deux places de la grille sont-elles la même (orientation comprise) ? */
+function sameSpot(p: { x: number; y: number; turn: number }, q: { x: number; y: number; turn: number }): boolean {
+  return p.x === q.x && p.y === q.y && p.turn === q.turn;
 }
 
 /** Le bouton « Aménager » de la barre de la Carte : quatre flèches, et la pastille des liaisons à reposer (icône et nombre). */
@@ -448,6 +506,9 @@ export function ArrangeBar({ amenagement, className }: { amenagement: Amenagemen
         ))}
         <button type="button" className="button" disabled={!canTurn(choix) || occupe} onClick={amenagement.tourner}>
           <Icon name="tourner" /> <span>Tourner</span>
+        </button>
+        <button type="button" className="button" disabled={!amenagement.reunirAvec || occupe} onClick={() => amenagement.reunir()}>
+          <Icon name="reunir" /> <span>Réunir</span>
         </button>
         <button type="button" className={`button arrange-pose${choix ? ' primary' : ''}`} disabled={!choix || occupe} onClick={amenagement.poserIci}>
           <Icon name="check" /> <span>Poser ici</span>

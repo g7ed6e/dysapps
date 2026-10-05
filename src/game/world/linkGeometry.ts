@@ -9,6 +9,7 @@ import { type ArchipelagoId, archipelagoOfIsland, DANS_LE_CIEL, mapOf } from './
 import { layoutCache, layoutChanged } from './placement';
 import { linkBetweenJoined, type LinkLandings, LONG_LENGTH, type LinkRoute, RegionRouter } from './routing';
 import { visibleReefs } from './terrain/sea';
+import { appliedJoins, joinOf } from './join';
 
 // ---------- Ce que la disposition dit des liaisons ----------
 
@@ -38,9 +39,10 @@ function chosenLandings(id: string): LinkLandings | undefined {
 /** Le tracé d'une liaison seule dans la disposition (sans les autres liaisons) : ce qui fait sa nature. */
 const soleRoutes = layoutCache<string, LinkRoute | null>();
 
-/** Le traceur d'une région, sans aucune liaison : la terre, les îlots, les quais et les écueils. */
+/** Le traceur d'une région, sans aucune liaison : la terre, les îlots, les quais, les écueils et les lieux réunis. */
 function emptyRouter(a: ArchipelagoId): RegionRouter {
-  return new RegionRouter(a, { lieux: mapOf(a), ecueils: visibleReefs(a), arriveesDeLaLiaison: chosenLandings });
+  const reunions = appliedJoins(a).map((j) => ({ pair: j.pair, zone: j.shape.zone }));
+  return new RegionRouter(a, { lieux: mapOf(a), ecueils: visibleReefs(a), arriveesDeLaLiaison: chosenLandings, reunions });
 }
 
 const emptyRouters = layoutCache<ArchipelagoId, RegionRouter>();
@@ -81,13 +83,16 @@ function kindFromRoute(b: BridgeDef, built: readonly string[]): BridgeKind | nul
  * cases), et celui avec qui il est réuni. La vue d'un lieu les cadre avec lui (`viewZone`).
  */
 export function neighboursOf(id: BiomeId): BiomeId[] {
-  return bridgesOf(id)
+  const out = bridgesOf(id)
     .filter((b) => {
       if (linkBetweenJoined(b)) return true;
       const t = soleRoute(b);
       return t !== null && t.cases.length <= SHORT_LINK;
     })
     .map((b) => otherEnd(b, id));
+  // Le lieu avec lequel il est réuni (GD-9, point 10).
+  const reuni = joinOf(id)?.pair.find((x) => x !== id);
+  return reuni && !out.includes(reuni) ? [...out, reuni] : out;
 }
 
 /**

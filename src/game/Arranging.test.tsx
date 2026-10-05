@@ -10,13 +10,15 @@ import type { World } from './engine/state';
 import { ArrangeBar, ArrangeButton, ArrangeSentence, type Amenagement, useAmenagement } from './Arranging';
 import { HABILLAGES } from './world/skin';
 import { toutConstruit } from './world/budget';
-import { linksToRelink, NO_MORE_ROOM, spotOf } from './world/arrange';
+import { joinedWith, linksToRelink, NO_MORE_ROOM, spotOf } from './world/arrange';
 import { GESTE_DU_LIEU } from './world/arrangeGesture';
 import { applyLayout } from './world/appliedLayout';
 
 vi.mock('./sound', async (original) => ({ ...(await original<typeof import('./sound')>()), playClac: vi.fn(), playPlace: vi.fn() }));
 
 const VOLCAN = 'maths-6e-decimals' as const;
+const TOUR = 'french-6e-reading' as const;
+const FERME = 'french-6e-grammar-spelling' as const;
 const nom = (id: string) => id;
 
 let dernier: Amenagement;
@@ -145,5 +147,22 @@ describe('le mode « Aménager »', () => {
       fireEvent.click(screen.getByRole('button', { name: /Aménager \(/ }));
       expect(screen.getByRole('dialog').textContent).not.toMatch(/Une liaison à reposer, c’est/);
     }
+  });
+  it('« Réunir » : éteint sans voisin, allumé pour la Tour à sa place ; la paire réunie, ↶ la défait', () => {
+    render(<SettingsProvider><Banc reduit depart={depart()} /></SettingsProvider>);
+    fireEvent.click(screen.getByRole('button', { name: 'Aménager' }));
+    const reunir = () => screen.getByRole('button', { name: 'Réunir' });
+    expect(reunir()).toBeDisabled();
+    act(() => void dernier.intention({ genre: 'ile', id: VOLCAN }));
+    expect(reunir()).toBeDisabled();
+    act(() => void dernier.intention({ genre: 'ile', id: TOUR }));
+    expect(reunir()).toBeEnabled();
+    expect(reunir().className).not.toMatch(/primary/);
+    expect(screen.getByRole('status').textContent).toMatch(new RegExp(`Il peut se réunir à ${FERME}`));
+    fireEvent.click(reunir());
+    expect(joinedWith(monde, TOUR)).toBe(FERME);
+    expect(screen.getByRole('status').textContent).toMatch(/sont réunis : ils bougent maintenant ensemble\./);
+    fireEvent.click(screen.getByRole('button', { name: 'Défaire la dernière pose' }));
+    expect(joinedWith(monde, TOUR)).toBeNull();
   });
 });

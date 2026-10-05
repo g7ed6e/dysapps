@@ -10,7 +10,7 @@ import { planV1 } from '../world/plansV1';
 import { bridgesFromLegacyProgress, getBridge, getVoyage, grantAccess, isBiomeUnlocked, legacyReachable } from '../world/archipelago';
 import { lireTirage, recetteDe, type TirageAssemblage } from '../world/assembly';
 import { archipelDeLaCommande, getCommande, MAX_COMMANDES_OUVERTES } from '../world/requests';
-import { sanitizeLayout } from '../world/savedLayout';
+import { pairOfJoinId, sanitizeLayout } from '../world/savedLayout';
 import type { ExerciseProgress, GameState, LogEntry, SpacedItem, TypeStats } from './state';
 import { INTERVALS } from './learning';
 
@@ -99,6 +99,13 @@ export function sanitizeState(input: unknown): GameState {
         if (Array.isArray(keys) && keys.some((k) => typeof k === 'string')) parts[id] = petite.map((c) => c.key);
         continue;
       }
+      // La construction qui réunit deux lieux (GD-9) : sa forme dépend de la place de la paire, lue plus tard ; ses clés
+      // (dans le repère de la paire) se gardent telles qu'elles sont écrites : rien de posé ne se perd.
+      if (pairOfJoinId(id)) {
+        const posees = Array.isArray(keys) ? [...new Set(keys.filter((k): k is string => typeof k === 'string' && /^-?\d+,-?\d+,-?\d+$/.test(k)))] : [];
+        if (posees.length) parts[id] = posees;
+        continue;
+      }
       const plan = anyPlan(id);
       if (!plan || !Array.isArray(keys)) continue;
       const cells = planCells(plan);
@@ -124,7 +131,7 @@ export function sanitizeState(input: unknown): GameState {
   }
   const log: LogEntry[] = Array.isArray(world.log)
     ? world.log
-        .filter((e): e is Record<string, unknown> => isRecord(e) && typeof e.day === 'string' && typeof e.part === 'string' && Boolean(anyPlan(e.part as string)))
+        .filter((e): e is Record<string, unknown> => isRecord(e) && typeof e.day === 'string' && typeof e.part === 'string' && Boolean(anyPlan(e.part as string) ?? pairOfJoinId(e.part as string)))
         .map((e) => ({ day: e.day as string, part: e.part as string }))
         .slice(-100)
     : [];

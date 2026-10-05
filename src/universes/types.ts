@@ -175,6 +175,21 @@ export interface TextesUnivers {
    * première fois. Sans eux, l'univers ne montre pas les commandes (ni arrivée, ni liste, ni petite construction).
    */
   commandes?: TextesCommandes;
+  /**
+   * La construction qui réunit deux lieux (GD-9, point 10 ; mot neutre `join`) : son nom, ce qu'elle est, ce que dit sa
+   * fin. Sans elle, les mots communs (« La réunion »).
+   */
+  reunion?: TextesReunion;
+}
+
+/** Les mots de la construction qui réunit deux lieux dans un univers (GD-9). */
+interface TextesReunion {
+  /** Son nom, avec l'article (« La digue »). */
+  nom: string;
+  /** Ce qu'elle est, en une phrase. */
+  description: string;
+  /** Ce que dit sa fin. */
+  fini: string;
 }
 
 /** Les mots des commandes des habitants dans un univers (GD-7). */

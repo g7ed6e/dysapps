@@ -103,6 +103,9 @@ const GRILLE = [
   'world/footprint',
   'world/routing',
   'world/linkGeometry',
+  // Réunir deux lieux (GD-9, point 10) : la forme de la construction entre leurs côtes, et ses cubes.
+  'world/join',
+  'world/terrain/joins',
 ];
 
 /**

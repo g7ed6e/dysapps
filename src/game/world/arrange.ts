@@ -4,13 +4,15 @@
 // (`World` : ses liaisons posées et sa disposition, `world.layout`) et en rend un autre, sans rien toucher d'autre :
 // ni la disposition appliquée au monde (./appliedLayout.ts), ni les caches. Après chaque action, une liaison posée qui
 // ne se trace plus devient une liaison à reposer (`relink`) ; rien ne se perd : elle reste construite, ses lieux restent
-// ouverts, et on la repose gratuitement entre deux voisins au choix (`relinkBetween`). Code pur, sans Three.js.
+// ouverts, et on la repose gratuitement entre deux voisins au choix (`relinkBetween`). Deux lieux ouverts au plus près
+// se réunissent (`joinIslands`, GD-9, point 10) : la paire entre dans la disposition (`joined`), bouge et tourne d'un
+// bloc autour du premier, ne se sépare plus ; la forme de leur construction est dans ./join.ts. Code pur, sans Three.js.
 import { type BiomeId, getBiome } from '../biomes';
 import type { World } from '../engine/state';
-import { BRIDGES, type BridgeDef, getBridge, reachableIslands } from './archipelago';
+import { BRIDGES, type BridgeDef, getBridge, isBiomeUnlocked, reachableIslands } from './archipelago';
 import { type ArchipelagoId, archipelagoOfIsland, bornesDuCoeur, type IslandDef, startingIsland } from './map';
 import { SIDE_OF, LAYOUT_SIDE_OF } from './appliedLayout';
-import { footprintOf, frameOf, GAP_BETWEEN_PLACES, gapBetween, LINK_GAP, placedIsland, poseOfSpot, spotInSteps } from './footprint';
+import { fittingPlaces, footprintOf, frameOf, GAP_BETWEEN_PLACES, gapBetween, LINK_GAP, placedIsland, poseOfSpot, spotInSteps } from './footprint';
 import { STEP, type Quarts, type Rectangle, SIDES, turnDirection, turnedSide } from './placement';
 import { LONG_LENGTH, possibleLandings, RegionRouter, type LinkLandings, type LinkRoute, startingPlaces, placesOf } from './routing';
 import { LAYOUT_LAST_SPOT, type LayoutGuardian, type LayoutLanding, type LayoutSide, type LayoutSpot, type LayoutTurn, type RegionLayout } from './savedLayout';
@@ -19,6 +21,7 @@ import { zoneDesPlans } from './plans';
 import { AVATAR_HOME } from './terrain/base';
 import { portesDesLieux } from './terrain/village';
 import { creatureDuMonde, creatureSpot } from './terrain/creatures';
+import { joinShape, type JoinShape } from './join';
 import { QUEST_ROW, startingStations } from './terrain/markers';
 
 // ---------- Les mots communs ----------
@@ -47,7 +50,7 @@ type ArrangeRefusal =
   | 'occupee'
   /** Un lieu, une borne, une liaison inconnus. */
   | 'inconnu'
-  /** Deux lieux réunis bougent ensemble : le geste viendra avec la construction qui réunit. */
+  /** Ces deux lieux ne se réunissent pas (déjà réunis, pas voisins, pas ouverts). */
   | 'reunis'
   /** Pas une liaison à reposer, ou une liaison qui ne se poserait pas là. */
   | 'liaison';
@@ -107,9 +110,19 @@ export function guardianOf(world: World, id: BiomeId): LayoutGuardian {
 }
 
 /** Le lieu avec lequel un lieu est réuni dans un monde, s'il l'est. */
-function joinedWith(world: World, id: BiomeId): BiomeId | null {
+export function joinedWith(world: World, id: BiomeId): BiomeId | null {
   const p = regionOf(world, archipelagoOfIsland(id)).joined?.find(([x, y]) => x === id || y === id);
   return p ? (p[0] === id ? p[1] : p[0]) : null;
+}
+
+/** Les lieux réunis d'une région dans un monde, et la forme de la construction qui les réunit (là où ils sont). */
+export function joinsIn(world: World, a: ArchipelagoId): { pair: [BiomeId, BiomeId]; shape: JoinShape }[] {
+  const out: { pair: [BiomeId, BiomeId]; shape: JoinShape }[] = [];
+  for (const pair of regionOf(world, a).joined ?? []) {
+    const shape = joinShape(placeIn(world, pair[0]), placeIn(world, pair[1]));
+    if (shape) out.push({ pair, shape });
+  }
+  return out;
 }
 
 /** Les rectangles de l'emprise d'un lieu dans un monde (son Gardien à sa place). */
@@ -123,11 +136,20 @@ function inFrame(a: ArchipelagoId, rs: readonly Rectangle[]): boolean {
   return rs.every((r) => r.x0 >= c.x0 && r.y0 >= c.y0 && r.x1 <= c.x1 && r.y1 <= c.y1);
 }
 
-/** Les emprises des autres lieux d'une région, dans un monde. */
-function othersFootprints(world: World, a: ArchipelagoId, sauf: BiomeId): Rectangle[] {
-  return placesOf(a)
-    .filter((id) => id !== sauf)
-    .flatMap((id) => footprintIn(world, id));
+/**
+ * Les emprises des autres lieux d'une région, dans un monde, et les constructions qui réunissent deux autres lieux
+ * (`sauf` : un lieu, ou les deux lieux réunis qui bougent ensemble).
+ */
+function othersFootprints(world: World, a: ArchipelagoId, sauf: BiomeId | readonly BiomeId[]): Rectangle[] {
+  const hors = typeof sauf === 'string' ? [sauf] : sauf;
+  return [
+    ...placesOf(a)
+      .filter((id) => !hors.includes(id))
+      .flatMap((id) => footprintIn(world, id)),
+    ...joinsIn(world, a)
+      .filter((j) => !j.pair.some((id) => hors.includes(id)))
+      .map((j) => j.shape.zone),
+  ];
 }
 
 /** Des rectangles laissent-ils au moins `GAP_BETWEEN_PLACES` cases d'eau à ceux des autres ? */
@@ -162,7 +184,8 @@ function routerOf(world: World, a: ArchipelagoId): RegionRouter {
   const lieux = placesOf(a).map((id) => placeIn(world, id));
   // Les écueils qu'un lieu posé dessus cache ne barrent rien (GD-9, « Cacher »).
   const ecueils = reefsOutside(a, placesOf(a).flatMap((id) => footprintIn(world, id)));
-  return new RegionRouter(a, { lieux, ecueils, arriveesDeLaLiaison: landingsOf(r) });
+  const reunions = joinsIn(world, a).map((j) => ({ pair: j.pair, zone: j.shape.zone }));
+  return new RegionRouter(a, { lieux, ecueils, arriveesDeLaLiaison: landingsOf(r), reunions });
 }
 
 /** Les tracés des liaisons posées d'une région dans un monde, dans leur ordre (`null` : elle ne se trace pas). */
@@ -245,31 +268,68 @@ export function relinkChoices(world: World, from: string): string[] {
 
 // ---------- Les lieux ----------
 
+/**
+ * Un lieu posé à une place, et le lieu avec lequel il est réuni, s'il l'est : la paire bouge d'un bloc. Le second suit
+ * le premier du même pas ; tourné, il tourne autour du milieu du premier, du même nombre de quarts de tour.
+ */
+function companions(world: World, id: BiomeId, spot: LayoutSpot): { id: BiomeId; spot: LayoutSpot }[] {
+  const p = joinedWith(world, id);
+  if (!p) return [{ id, spot }];
+  const s0 = spotOf(world, id);
+  const q0 = spotOf(world, p);
+  const q = (((spot.turn - s0.turn) % 4) + 4) % 4;
+  let dx = q0.x - s0.x;
+  let dy = q0.y - s0.y;
+  // Un quart de tour (le sens de `turnPoint`, ./placement.ts) : (dx, dy) devient (dy, −dx).
+  for (let i = 0; i < q; i++) [dx, dy] = [dy, -dx];
+  return [
+    { id, spot },
+    { id: p, spot: { x: spot.x + dx, y: spot.y + dy, turn: ((q0.turn + q) % 4) as LayoutTurn } },
+  ];
+}
+
+/** Un lieu (et celui avec lequel il est réuni) tiennent-ils à une place, loin des emprises `autres` ? */
+function fitsAt(world: World, id: BiomeId, spot: LayoutSpot, autres: readonly Rectangle[]): boolean {
+  const a = archipelagoOfIsland(id);
+  const max = LAYOUT_LAST_SPOT[a];
+  const groupe = companions(world, id, spot);
+  const defs: IslandDef[] = [];
+  for (const g of groupe) {
+    if (g.spot.x < 0 || g.spot.y < 0 || g.spot.x > max.x || g.spot.y > max.y) return false;
+    const def = placedIsland(g.id, poseOfSpot(a, g.spot));
+    const rs = footprintOf(g.id, def, guardianOf(world, g.id));
+    if (!inFrame(a, rs) || !farEnough(rs, autres)) return false;
+    defs.push(def);
+  }
+  if (defs.length < 2) return true;
+  // La construction qui les réunit suit la paire : dans le cadre, loin des autres.
+  const forme = joinShape(defs[0], defs[1]);
+  return forme !== null && inFrame(a, [forme.zone]) && farEnough([forme.zone], autres);
+}
+
+/** Les lieux qui bougent avec un lieu : lui, et celui avec lequel il est réuni. */
+function groupOf(world: World, id: BiomeId): BiomeId[] {
+  const p = joinedWith(world, id);
+  return p ? [id, p] : [id];
+}
+
 /** Les places libres d'un lieu dans un monde (à son orientation `turn`, la sienne par défaut), dans l'ordre de la grille. */
 export function freeSpots(world: World, id: BiomeId, turn: LayoutTurn = spotOf(world, id).turn): LayoutSpot[] {
   const a = archipelagoOfIsland(id);
-  const autres = othersFootprints(world, a, id);
-  const gardien = guardianOf(world, id);
+  const autres = othersFootprints(world, a, groupOf(world, id));
   const max = LAYOUT_LAST_SPOT[a];
   const out: LayoutSpot[] = [];
   for (let y = 0; y <= max.y; y++)
     for (let x = 0; x <= max.x; x++) {
       const spot: LayoutSpot = { x, y, turn };
-      const def = placedIsland(id, poseOfSpot(a, spot));
-      const rs = footprintOf(id, def, gardien);
-      if (inFrame(a, rs) && farEnough(rs, autres)) out.push(spot);
+      if (fitsAt(world, id, spot, autres)) out.push(spot);
     }
   return out;
 }
 
-/** Une place est-elle libre pour un lieu ? */
+/** Une place est-elle libre pour un lieu (et celui avec lequel il est réuni) ? */
 export function isFreeSpot(world: World, id: BiomeId, spot: LayoutSpot): boolean {
-  const a = archipelagoOfIsland(id);
-  const max = LAYOUT_LAST_SPOT[a];
-  if (spot.x < 0 || spot.y < 0 || spot.x > max.x || spot.y > max.y) return false;
-  const def = placedIsland(id, poseOfSpot(a, spot));
-  const rs = footprintOf(id, def, guardianOf(world, id));
-  return inFrame(a, rs) && farEnough(rs, othersFootprints(world, a, id));
+  return fitsAt(world, id, spot, othersFootprints(world, archipelagoOfIsland(id), groupOf(world, id)));
 }
 
 /** Le milieu du cœur d'un lieu posé à une place, en cases du monde. */
@@ -329,20 +389,58 @@ export function nextFreeSpot(world: World, id: BiomeId, from: LayoutSpot, dir: D
   return nextIn(freeSpots(world, id, from.turn), (s) => s, from, dir);
 }
 
-/** Déplace (et oriente) un lieu à une place libre. Le lieu de départ ne bouge pas. */
+/**
+ * Déplace (et oriente) un lieu à une place libre ; deux lieux réunis bougent ensemble (le second suit le premier).
+ * Le lieu de départ ne bouge pas, ni le lieu qui lui est réuni.
+ */
 export function moveIsland(world: World, id: BiomeId, spot: LayoutSpot): ArrangeResult {
   if (!getBiome(id)) return { ok: false, reason: 'inconnu' };
-  if (isFixedPlace(id)) return { ok: false, reason: 'fixe' };
-  if (joinedWith(world, id)) return { ok: false, reason: 'reunis' };
+  if (groupOf(world, id).some(isFixedPlace)) return { ok: false, reason: 'fixe' };
   if (!isFreeSpot(world, id, spot)) return { ok: false, reason: 'occupee' };
   const a = archipelagoOfIsland(id);
   const r = regionOf(world, a);
   const islands = { ...r.islands };
-  const depart = startingSpot(id);
-  // À sa place de départ, sans rotation : le lieu n'est plus dans la disposition.
-  if (spot.x === depart.x && spot.y === depart.y && spot.turn === 0) delete islands[id];
-  else islands[id] = { x: spot.x, y: spot.y, turn: spot.turn };
+  for (const g of companions(world, id, spot)) {
+    const depart = startingSpot(g.id);
+    // À sa place de départ, sans rotation : le lieu n'est plus dans la disposition.
+    if (g.spot.x === depart.x && g.spot.y === depart.y && g.spot.turn === 0) delete islands[g.id];
+    else islands[g.id] = { x: g.spot.x, y: g.spot.y, turn: g.spot.turn };
+  }
   return settle(world, withRegion(world, a, { ...r, islands }), a);
+}
+
+/** Les lieux d'une région où le lieu `id` est (avec celui avec lequel il est réuni) quand il est posé à `spot`. */
+export function groupAt(world: World, id: BiomeId, spot: LayoutSpot): { id: BiomeId; def: IslandDef }[] {
+  const a = archipelagoOfIsland(id);
+  return companions(world, id, spot).map((g) => ({ id: g.id, def: placedIsland(g.id, poseOfSpot(a, g.spot)) }));
+}
+
+// ---------- Réunir deux lieux (GD-9, point 10) ----------
+
+/**
+ * Les lieux avec lesquels un lieu peut se réunir dans un monde : ouverts tous deux, aucun déjà réuni, voisins au plus
+ * près de la grille sur un côté commun (`joinShape`), et la construction loin des autres lieux.
+ */
+export function joinCandidates(world: World, id: BiomeId): BiomeId[] {
+  if (!getBiome(id) || joinedWith(world, id) || !isBiomeUnlocked(id, world.links)) return [];
+  const a = archipelagoOfIsland(id);
+  return placesOf(a).filter((b) => {
+    if (b === id || joinedWith(world, b) || !isBiomeUnlocked(b, world.links)) return false;
+    const forme = joinShape(placeIn(world, id), placeIn(world, b));
+    return forme !== null && farEnough([forme.zone], othersFootprints(world, a, [id, b]));
+  });
+}
+
+/**
+ * Réunit deux lieux : la paire entre dans la disposition (`joined`) et sa construction se pose ensuite élément par
+ * élément, depuis le panneau du lieu. Leur liaison, et toute liaison qui passait là, deviennent des liaisons à reposer.
+ */
+export function joinIslands(world: World, id: BiomeId, other: BiomeId): ArrangeResult {
+  if (!getBiome(id) || !getBiome(other)) return { ok: false, reason: 'inconnu' };
+  if (!joinCandidates(world, id).includes(other)) return { ok: false, reason: 'reunis' };
+  const a = archipelagoOfIsland(id);
+  const r = regionOf(world, a);
+  return settle(world, withRegion(world, a, { ...r, joined: [...(r.joined ?? []), [id, other]] }), a);
 }
 
 /**
@@ -353,7 +451,7 @@ export function turnIsland(world: World, id: BiomeId): ArrangeResult {
   const s = spotOf(world, id);
   const turn = ((s.turn + 1) % 4) as LayoutTurn;
   const ici = { ...s, turn };
-  if (isFixedPlace(id)) return { ok: false, reason: 'fixe' };
+  if (groupOf(world, id).some(isFixedPlace)) return { ok: false, reason: 'fixe' };
   if (isFreeSpot(world, id, ici)) return moveIsland(world, id, ici);
   const a = archipelagoOfIsland(id);
   const proche = nearestFreeSpot(world, id, middleOf(a, s), turn);
@@ -620,8 +718,35 @@ export function currentLandings(world: World, linkId: string): { from: LayoutLan
 
 /**
  * Revient à la carte de départ dans une région (le menu, « Carte de départ ») : sa disposition est vidée, et les liaisons
- * à reposer redeviennent des liaisons posées. Aucune n'est perdue : les liaisons de la partie ne changent pas.
+ * à reposer redeviennent des liaisons posées. Aucune n'est perdue : les liaisons de la partie ne changent pas. Deux lieux
+ * réunis ne se séparent plus (GD-9, point 10) : ils restent où ils sont, avec leurs Gardiens, et un lieu dont la place
+ * de départ toucherait leur réunion reste aussi où il est ; `null` si la carte ainsi faite ne tient pas.
  */
-export function backToStartingMap(world: World, a: ArchipelagoId): World {
-  return withRegion(world, a, {});
+export function backToStartingMap(world: World, a: ArchipelagoId): World | null {
+  const r = regionOf(world, a);
+  const joined = r.joined ?? [];
+  if (!joined.length) return withRegion(world, a, {});
+  const reunis = new Set<BiomeId>(joined.flat());
+  const islands: NonNullable<RegionLayout['islands']> = {};
+  const guardians: NonNullable<RegionLayout['guardians']> = {};
+  for (const id of reunis) {
+    if (r.islands?.[id]) islands[id] = r.islands[id];
+    if (r.guardians?.[id]) guardians[id] = r.guardians[id];
+  }
+  const sansLesAutres = withRegion(world, a, { islands, guardians, joined });
+  const occupe = othersFootprints(sansLesAutres, a, placesOf(a).filter((id) => !reunis.has(id)));
+  // Un lieu dont la place de départ touche une réunion reste où il est.
+  for (const id of placesOf(a)) {
+    if (reunis.has(id) || !r.islands?.[id]) continue;
+    if (!farEnough(footprintOf(id, startingIsland(id)), occupe)) islands[id] = r.islands[id];
+  }
+  const apres = withRegion(world, a, { islands, guardians, joined });
+  const tenus = fittingPlaces(a, islands, guardians);
+  const zones = joinsIn(apres, a);
+  if (!tenus || zones.length !== joined.length) return null;
+  for (const j of zones) if (!farEnough([j.shape.zone], othersFootprints(apres, a, j.pair))) return null;
+  // Les liaisons qu'une réunion empêche restent à reposer ; les autres redeviennent posées.
+  const traces = routesIn(apres, a);
+  const relink = (r.relink ?? []).filter((id) => traces.get(id) === null);
+  return relink.length ? withRegion(apres, a, { ...regionOf(apres, a), relink }) : apres;
 }

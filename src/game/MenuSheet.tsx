@@ -52,13 +52,15 @@ export function MenuSheet({ onClose, onAller, onAide }: Props) {
   // « Carte de départ » (GD-9) : la région du bonhomme revient à sa carte de départ, après confirmation ; aucune liaison
   // n'est perdue (celles à reposer redeviennent posées).
   const [confirmer, setConfirmer] = useState(false);
-  const [revenue, setRevenue] = useState(false);
+  const [revenue, setRevenue] = useState<'ok' | 'reunis' | null>(null);
   const region = archipelagoOf(state.world.place ?? 'french-6e-phonology').classe;
   const amenagee = Boolean(state.world.layout?.[region]);
   const revenirALaCarteDeDepart = () => {
-    arrange(backToStartingMap(state.world, region));
+    // Deux lieux réunis restent où ils sont (GD-9) : si la carte ne tient plus avec eux, rien ne change, et on le dit.
+    const apres = backToStartingMap(state.world, region);
+    if (apres) arrange(apres);
     setConfirmer(false);
-    setRevenue(true);
+    setRevenue(apres ? 'ok' : 'reunis');
   };
   const { assemblage } = useTextes();
   const { progress } = useProgress();
@@ -133,7 +135,9 @@ export function MenuSheet({ onClose, onAller, onAide }: Props) {
           </button>
           {revenue && (
             <p className="menu-confirmer" role="status">
-              C’est fait : les lieux sont revenus à leur place de départ, et toutes tes liaisons sont là.
+              {revenue === 'ok'
+                ? 'C’est fait : les lieux sont revenus à leur place de départ, et toutes tes liaisons sont là.'
+                : 'Rien n’a bougé : des lieux réunis prennent la place d’autres lieux. Déplace-les d’abord avec « Aménager ».'}
             </p>
           )}
           {confirmer && amenagee && (

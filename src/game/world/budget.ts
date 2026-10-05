@@ -23,6 +23,10 @@ import { coutDeLaConstruction, coutDesPiliers, maillageDeLaConstruction, piliers
 import { formeDeBaleine, formeDeNuage, formeDOiseau, nuagesDe, oiseauxDe, planeurDe, trianglesDe } from './fauna';
 import { MAST_TOP, VEHICLE_STAGES } from './vehicle';
 import { bridge, type CaseDOuvrage } from './terrain/links';
+import { DEPTH } from './terrain/base';
+import { GAP_BETWEEN_PLACES, landRectangle } from './footprint';
+import { STEP } from './placement';
+import { JOIN_FILL, JOIN_MAX_STEPS } from './join';
 import { SHORT_LENGTH, LONG_LENGTH } from './routing';
 import type { BridgeKind } from './archipelago';
 import type { VoxelCube } from './cube';
@@ -239,8 +243,59 @@ export function maxLinks(n: number): number {
   return Math.max(n - 1, 3 * n - 6);
 }
 
-/** Ce que coûte au plus une réunion de deux lieux (la bande de terre qui les joint), en triangles (GD-9). */
-export const TRIANGLES_OF_A_JOIN = 150;
+/**
+ * La construction qui réunit deux lieux au plus large et au plus long qu'elle puisse être dans une région (GD-9,
+ * ./join.ts), toute posée : sur la largeur du côté commun le plus large (le second plus grand côté de terre des lieux de
+ * la région), de l'écart le plus grand au plus près de la grille, plus deux creux de baie, avec ses trois marches,
+ * pleine jusqu'au pied de la terre. Chaque colonne s'arrête sur une case de terre de chaque lieu (pleine elle aussi
+ * jusqu'au pied, `terre`) : au pire, la côte est d'un cran plus basse que la construction à ses deux bouts.
+ */
+export function joinCubes(a: ArchipelagoId): { cubes: VoxelCube[]; terre: VoxelCube[] } {
+  const cotes = mapOf(a)
+    .map((d) => {
+      const r = landRectangle(d);
+      return Math.max(r.x1 - r.x0, r.y1 - r.y0);
+    })
+    .sort((p, q) => q - p);
+  const largeur = cotes[1] ?? cotes[0];
+  const longueur = GAP_BETWEEN_PLACES + STEP - 1 + 2 * JOIN_FILL;
+  const alt = ALTITUDE[a];
+  const k = (u: number) => Math.min(JOIN_MAX_STEPS, Math.floor((u * (JOIN_MAX_STEPS + 1)) / longueur));
+  const cubes: VoxelCube[] = [];
+  const terre: VoxelCube[] = [];
+  const colonne = (out: VoxelCube[], u: number, j: number, haut: number, texture: string) => {
+    for (let z = alt - DEPTH; z <= haut; z++) out.push({ x: 2000 + u, y: 2000 + j, z, color: '#000', texture: z === haut ? texture : 'pierre', sansDessous: z === alt - DEPTH ? true : undefined });
+  };
+  for (let j = 0; j < largeur; j++) {
+    for (let u = 0; u < longueur; u++) colonne(cubes, u, j, alt + k(u), 'herbe');
+    colonne(terre, -1, j, alt + k(0) - 1, 'herbe');
+    colonne(terre, longueur, j, alt + k(longueur - 1) - 1, 'herbe');
+  }
+  return { cubes, terre };
+}
+
+/**
+ * Ce que coûte au plus une réunion de deux lieux dans une région (`joinCubes`), en triangles (GD-9) : les faces de ses
+ * cubes que ni elle ni la terre des deux lieux ne cachent (le dessous de son pied, sous la mer, n'est pas dessiné).
+ */
+export function joinTriangles(a: ArchipelagoId): number {
+  const { cubes, terre } = joinCubes(a);
+  const plein = new Set([...cubes, ...terre].map((c) => `${c.x},${c.y},${c.z}`));
+  let faces = 0;
+  for (const c of cubes)
+    for (const [dx, dy, dz] of [
+      [1, 0, 0],
+      [-1, 0, 0],
+      [0, 1, 0],
+      [0, -1, 0],
+      [0, 0, 1],
+      [0, 0, -1],
+    ]) {
+      if (dz === -1 && c.sansDessous) continue;
+      if (!plein.has(`${c.x + dx},${c.y + dy},${c.z + dz}`)) faces++;
+    }
+  return faces * 2;
+}
 
 /** Le coin d'une liaison en L : dans Blocland, un cube plein de plus (12 triangles au plus). */
 export const TRIANGLES_OF_A_BEND = 12;
@@ -270,7 +325,10 @@ export function linkTriangles(a: ArchipelagoId, kind: BridgeKind, longueur: numb
  * Le pire cas d'une région aménagée (GD-9), tout construit, commandes posées et bulles comprises : le monde d'aujourd'hui
  * sans ses liaisons (`base`), puis autant de liaisons que l'élève peut en poser (`maxLinks`), toutes au plus long —
  * celles qui ouvrent un lieu (lieux − 1, longues : des bacs de 96 cases sur la mer, des ponts dans le ciel), les autres
- * des raccourcis entre lieux ouverts (36 cases au plus, `SHORT_LINK`) — et les réunions (lieux − 1).
+ * des raccourcis entre lieux ouverts (36 cases au plus, `SHORT_LINK`) — et les réunions : un lieu ne se réunit qu'à un
+ * seul autre (lieux ÷ 2 au plus), chacune au plus large (`joinTriangles`). Une réunion est un côté du même graphe
+ * planaire que les liaisons (elle ne croise aucune liaison, et aucune liaison ne relie deux lieux réunis) : chacune
+ * prend la place d'un raccourci.
  */
 export function worstCaseOfRegion(a: ArchipelagoId): { base: number; liaisons: number; reunions: number; triangles: number; drawCalls: number } {
   const { progress, world } = toutConstruitAvecLesCommandes();
@@ -282,8 +340,9 @@ export function worstCaseOfRegion(a: ArchipelagoId): { base: number; liaisons: n
   const lieux = mapOf(a).length;
   const longue = linkTriangles(a, DANS_LE_CIEL[a] ? 'pont' : 'bac', LONG_LENGTH);
   const raccourci = linkTriangles(a, 'pont', SHORT_LENGTH);
-  const liaisons = (lieux - 1) * longue + (maxLinks(lieux) - (lieux - 1)) * raccourci;
-  const reunions = (lieux - 1) * TRIANGLES_OF_A_JOIN;
+  const nReunions = Math.floor(lieux / 2);
+  const liaisons = (lieux - 1) * longue + (maxLinks(lieux) - (lieux - 1) - nReunions) * raccourci;
+  const reunions = nReunions * joinTriangles(a);
   return { base, liaisons, reunions, triangles: base + liaisons + reunions, drawCalls: scene.drawCalls + signes.drawCalls };
 }
 

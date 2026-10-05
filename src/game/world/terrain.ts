@@ -28,6 +28,7 @@ import { creatureDuMonde, creatureSpot } from './terrain/creatures';
 import { placeDeLaPetiteConstruction } from './terrain/fixture';
 import { harbor } from './terrain/port';
 import { monumentIslets } from './terrain/monuments';
+import { joinsBetween } from './terrain/joins';
 import { seaDecorShown } from './terrain/sea';
 
 export { avatarHome, DEPTH, fade, FIN_DU_PLATEAU_DES_ECOLES, groundHeight, ISLAND, islandCenter, islandOrigin, LAYOUT_PAD, origineDe } from './terrain/base';
@@ -132,7 +133,7 @@ export function worldCubes(
       cubes.push(c);
     }
   }
-  return entreLesIles(a, village, cubes, choisie);
+  return entreLesIles(a, village, cubes, choisie, atelier);
 }
 
 /** Une île posée en cases du monde, ajoutée à `cubes` ; `placed` : ce que la scène occupe déjà (l'île y ajoute les siens). */
@@ -389,11 +390,14 @@ export function casesDesPlansDansLeMonde(cases: readonly { plan: PlanDef; keys: 
 }
 
 /** Ce qui est entre les îles, en cases du monde, ajouté à `cubes` : le port, les îlots des monuments, la mer, les ouvrages. */
-function entreLesIles(a: ArchipelagoId, village: World, cubes: VoxelCube[], choisie: string | null): VoxelCube[] {
+function entreLesIles(a: ArchipelagoId, village: World, cubes: VoxelCube[], choisie: string | null, atelier: Atelier): VoxelCube[] {
   // Le port : la jetée (le Bloc-Navire est un objet à part, voir vehiclePlacement).
   harbor(a, village, cubes);
   // Les monuments, chacun sur son îlot au large : bâtis, ou en fantômes à construire.
   monumentIslets(a, village, cubes);
+  // Les constructions qui réunissent deux lieux (GD-9) : une digue d'herbe et de pierre, une jetée de pierre dans
+  // Archipéo (son habillage, la Halle).
+  joinsBetween(a, village, cubes, atelier === 'halle');
   // La mer habillée : rochers et bancs de sable, loin de tout (jamais sous un ouvrage, ni sur l'îlot d'un monument).
   // Sans les écueils qu'un lieu posé dessus cache (GD-9, « Cacher »).
   for (const c of seaDecorShown(a)) cubes.push(c);

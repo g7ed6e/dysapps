@@ -12,7 +12,9 @@ import {
   freeLandings,
   freeSpots,
   freeStationSpots,
+  groupAt,
   guardianOf,
+  joinsIn,
   moveIsland,
   moveLanding,
   placeIn,
@@ -20,7 +22,8 @@ import {
   routesIn,
 } from './arrange';
 import { type ArrangeChoice, landingInWorld, placeOfChoice, stationInWorld } from './arrangeMode';
-import { footprintOf, guardianIsletRectangle, landRectangle, placedIsland, poseOfSpot } from './footprint';
+import { footprintOf, guardianIsletRectangle, landRectangle, poseOfSpot } from './footprint';
+import { joinShape } from './join';
 import { archipelagoOfIsland, type IslandDef, isLandInWorld } from './map';
 import type { Rectangle } from './placement';
 import type { ArrangeCell, ArrangeView } from './view';
@@ -76,12 +79,12 @@ function croix(p: { x: number; y: number }, z: number, out: ArrangeCell[]): void
 }
 
 /** Les liaisons d'un lieu retracées dans le monde d'après (en pointillés), et celles qui ne tiendraient plus (barrées). */
-function liaisons(avant: World, apres: World | null, relink: readonly string[], lieu: BiomeId, z: number, seules: readonly string[] | null, out: ArrangeCell[]): void {
-  const a = archipelagoOfIsland(lieu);
+function liaisons(avant: World, apres: World | null, relink: readonly string[], lieux: readonly BiomeId[], z: number, seules: readonly string[] | null, out: ArrangeCell[]): void {
+  const a = archipelagoOfIsland(lieux[0]);
   if (apres)
     for (const [id, t] of routesIn(apres, a)) {
       const b = getBridge(id);
-      if (!t || !b || (seules ? !seules.includes(id) : b.from !== lieu && b.to !== lieu)) continue;
+      if (!t || !b || (seules ? !seules.includes(id) : !lieux.includes(b.from) && !lieux.includes(b.to))) continue;
       t.cases.forEach((c, i) => i % 2 === 0 && out.push({ x: c.x, y: c.y, z, genre: 'liaison' }));
     }
   const traces = routesIn(avant, a);
@@ -96,6 +99,11 @@ function liaisons(avant: World, apres: World | null, relink: readonly string[], 
 /** Le dessus du sol d'une case du repère d'un lieu (où se tient une borne), en cases du monde. */
 function solDeLaBorne(def: IslandDef, p: { x: number; y: number }): number {
   return def.altitude + groundHeight(BIOMES.findIndex((b) => b.id === def.id), p.x, p.y) + 1;
+}
+
+/** Le rectangle qui couvre des rectangles. */
+function union(rs: readonly Rectangle[]): Rectangle {
+  return { x0: Math.min(...rs.map((r) => r.x0)), y0: Math.min(...rs.map((r) => r.y0)), x1: Math.max(...rs.map((r) => r.x1)), y1: Math.max(...rs.map((r) => r.y1)) };
 }
 
 /** Le milieu d'une liste de cases, à une hauteur. */
@@ -115,10 +123,14 @@ export function arrangeView(world: World, c: ArrangeChoice): ArrangeView {
   switch (c.genre) {
     case 'lieu': {
       const a = archipelagoOfIsland(c.id);
-      const def = placedIsland(c.id, poseOfSpot(a, c.spot));
-      contourDeLaTerre(def, eau, out);
-      const g = guardianOf(world, c.id);
-      contourDuRectangle(guardianIsletRectangle(def, g), eau, out);
+      // Deux lieux réunis bougent ensemble (GD-9, point 10) : les deux fantômes, et leur réunion entre eux.
+      const groupe = groupAt(world, c.id, c.spot);
+      for (const g of groupe) {
+        contourDeLaTerre(g.def, eau, out);
+        contourDuRectangle(guardianIsletRectangle(g.def, guardianOf(world, g.id)), eau, out);
+      }
+      const forme = groupe.length === 2 ? joinShape(groupe[0].def, groupe[1].def) : null;
+      if (forme) contourDuRectangle(forme.zone, eau, out);
       const debut = out.length;
       for (const s of freeSpots(world, c.id, c.spot.turn)) {
         if (Math.max(Math.abs(s.x - c.spot.x), Math.abs(s.y - c.spot.y)) > PAS_AUTOUR || (s.x === c.spot.x && s.y === c.spot.y)) continue;
@@ -127,8 +139,12 @@ export function arrangeView(world: World, c: ArrangeChoice): ArrangeView {
       }
       const r = moveIsland(world, c.id, c.spot);
       const relink = r.ok ? r.relink : [];
-      liaisons(world, r.ok ? r.world : null, relink, c.id, ici.altitude, null, out);
-      return { cases: out, souleve: landRectangle(ici), suivre: milieu(out.slice(0, debut), eau), barrees: relink };
+      const lieux = groupe.map((g) => g.id);
+      liaisons(world, r.ok ? r.world : null, relink, lieux, ici.altitude, null, out);
+      // Soulevés : les deux lieux réunis, et leur réunion.
+      const ici2 = lieux.map((id) => landRectangle(placeIn(world, id)));
+      const zone = joinsIn(world, a).find((j) => j.pair.includes(c.id))?.shape.zone;
+      return { cases: out, souleve: union(zone ? [...ici2, zone] : ici2), suivre: milieu(out.slice(0, debut), eau), barrees: relink };
     }
     case 'gardien': {
       const r = guardianIsletRectangle(ici, c.place);
@@ -166,7 +182,7 @@ export function arrangeView(world: World, c: ArrangeChoice): ArrangeView {
       }
       const r = moveLanding(world, c.link, c.end, c.landing);
       const relink = r.ok ? r.relink : [];
-      liaisons(world, r.ok ? r.world : null, relink, lieu, ici.altitude, [c.link], out);
+      liaisons(world, r.ok ? r.world : null, relink, [lieu], ici.altitude, [c.link], out);
       return { cases: out, souleve: null, suivre: { x: p.x, y: p.y, z: ici.altitude }, barrees: relink };
     }
     case 'liaison': {
