@@ -13,28 +13,28 @@ créature : Lavi
 
 ## Cratère des rangs · `ordering`
 
-> Ses exercices sont produits par le code (`src/blocland/exercises/`), pas écrits ici.
+> Ses exercices sont produits par le code (`src/game/exercises/`), pas écrits ici.
 
 - description : Quel est le chiffre des dixièmes ? Puis la fraction décimale.
 - compétences : c3.ma.nombres.decimaux-ecritures · c3.ma.nombres.calcul-mental
 
 ## Coulée de lave · `operations`
 
-> Ses exercices sont produits par le code (`src/blocland/exercises/`), pas écrits ici.
+> Ses exercices sont produits par le code (`src/game/exercises/`), pas écrits ici.
 
 - description : Compare deux décimaux, puis range-les et trouve un nombre entre deux, tableau sous les yeux.
 - compétences : c3.ma.nombres.decimaux-comparer
 
 ## Pente graduée · `scale`
 
-> Ses exercices sont produits par le code (`src/blocland/exercises/`), pas écrits ici.
+> Ses exercices sont produits par le code (`src/game/exercises/`), pas écrits ici.
 
 - description : Repère un décimal sur la droite, complète jusqu’à 1, puis encadre une fraction entre deux entiers.
 - compétences : c3.ma.nombres.decimaux-comparer · c3.ma.nombres.calcul-mental · c3.ma.nombres.fractions-comparer
 
 ## Nombres géants · `large-numbers`
 
-> Ses exercices sont produits par le code (`src/blocland/exercises/`), pas écrits ici.
+> Ses exercices sont produits par le code (`src/game/exercises/`), pas écrits ici.
 
 - description : Lis et écris les grands nombres, classe par classe, jusqu’aux milliards.
 - compétences : c3.ma.nombres.grands-entiers

@@ -7,7 +7,7 @@ DysApps est une application web statique : React 19, TypeScript, Vite, Three.js 
 ```
 src/
   apps/          missions du portail (un dossier par mission) + registry.ts (catalogue)
-  blocland/      l'aventure : biomes, moteur, exercices, monde 3D, plans, Gardiens
+  game/          l'aventure : biomes, moteur, exercices, monde 3D, plans, Gardiens
   components/    Layout (barre du haut d’Archipéo, bouton Menu seul hors du monde dans Blocland, transitions ; pas d’onglets), FocusMode (mode concentration, menu pause), Loading, TitleScreen, QuizSession, QuestMenu, SpeakButton, Syllabified, XpBar, RecordTag, LevelCard (la carte d’une mission dans la grille du portail), useSheetClearance, useAnswerKeys…
   core/          réglages, synthèse vocale, progression et gamification, stockage, syllabes
   pages/         accueil, matière, mission, réglages (ses sections et contrôles dans settings/), succès
@@ -62,7 +62,7 @@ public/          icônes, police Luciole
 - `appUpdate.ts` : la mise à jour de la PWA (bande « Mettre à jour », bouton dans les réglages).
 - `useLoaded.ts` : attend un contenu chargé à la demande (un exercice, un défi de Gardien) ; un échec remonte à la limite d’erreur de la page (`components/ErrorBoundary.tsx`, message et bouton « Recharger »).
 
-## Blocland (`src/blocland/`)
+## Le jeu (`src/game/`)
 
 Blocland est le nom du module ; à l’écran, le jeu s’appelle Archipéo.
 
@@ -92,7 +92,7 @@ Les textes qui changent d’un univers à l’autre, sur le même jeu (lot 6, un
 
 ## Tests
 
-`npm test` lance Vitest (environnement jsdom). Les tests couvrent la logique pure (moteur, progression, réglages, syllabes, générateurs, carte, ouvrages, plans), les données (chaque JSON d’exercice, les phrases d’homophones, les textes de lecture) et les écrans principaux. Les tests de données sont ce qui garantit qu’un item ajouté respecte le format et les règles (un seul trou, réponse présente dans les choix, mot lu à voix haute…). Les tests du programme (`src/programme/programme.test.ts`, `src/blocland/programme.test.ts`) vérifient le référentiel lui-même, puis que chaque mission cite des compétences existantes de sa matière et de son cycle, et que chaque compétence est travaillée par une mission ou exclue avec un motif, jamais les deux : la couverture du programme ne régresse pas sans qu’on le dise. Le Coffre à mots ne dicte que des mots de la liste officielle des mots-outils.
+`npm test` lance Vitest (environnement jsdom). Les tests couvrent la logique pure (moteur, progression, réglages, syllabes, générateurs, carte, ouvrages, plans), les données (chaque JSON d’exercice, les phrases d’homophones, les textes de lecture) et les écrans principaux. Les tests de données sont ce qui garantit qu’un item ajouté respecte le format et les règles (un seul trou, réponse présente dans les choix, mot lu à voix haute…). Les tests du programme (`src/programme/programme.test.ts`, `src/game/programme.test.ts`) vérifient le référentiel lui-même, puis que chaque mission cite des compétences existantes de sa matière et de son cycle, et que chaque compétence est travaillée par une mission ou exclue avec un motif, jamais les deux : la couverture du programme ne régresse pas sans qu’on le dise. Le Coffre à mots ne dicte que des mots de la liste officielle des mots-outils.
 
 ## Documentation
 

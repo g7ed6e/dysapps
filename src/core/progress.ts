@@ -1,6 +1,6 @@
 // Gamification : XP, niveaux et badges. Logique pure, facile à tester.
-import { BIOMES } from '../blocland/biomes';
-import { PLANS } from '../blocland/world/plans';
+import { BIOMES } from '../game/biomes';
+import { PLANS } from '../game/world/plans';
 import { translateProgress } from './migration';
 
 export interface AppStats {

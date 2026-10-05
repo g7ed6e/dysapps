@@ -14,7 +14,7 @@ Les versions de `package-lock.json` au 28 septembre 2026 :
 | React | 19.3, avec React Router 7 | `src/main.tsx` (`StrictMode`), `src/App.tsx` |
 | Vite | 8 (un seul bundler, Rolldown, depuis mars 2026) | `vite.config.ts` |
 | Vitest | 5, avec jsdom et Testing Library | `vite.config.ts` (`test`), `src/setupTests.ts` |
-| Three.js | r186, rendu WebGL | `src/blocland/three/` |
+| Three.js | r186, rendu WebGL | `src/game/three/` |
 | Application installable | vite-plugin-pwa (Workbox), mise à jour proposée | `vite.config.ts` (`VitePWA`) |
 | Règles des hooks de React | oxlint 1.86 (`rules-of-hooks`, `exhaustive-deps`) ; ESLint ne lit pas encore TypeScript 7 | `package.json` (script `lint`) |
 | Code mort | knip 6.39 | `package.json` (clé `knip`, script `code-mort`) |
@@ -64,11 +64,11 @@ Ce que l’élève doit vivre est dans les [Bonnes pratiques dys](bonnes-pratiqu
 | Installs sûres | `ignore-scripts=true`, `npm ci --ignore-scripts`, `npm audit signatures` en CI | `.npmrc`, `.github/workflows/deploy.yml` |
 | Dépendances suivies | Dependabot chaque semaine, npm et actions | `.github/dependabot.yml` |
 | TypeScript strict | `strict`, variables et paramètres inutilisés refusés, aucun `any` hors tests ; typage vérifié à chaque build | `tsconfig.json`, `npm run build` |
-| Chargement à la demande | 3D et missions en `lazy` ; exercices lus seulement au lancement d’une partie | `src/blocland/three/index.ts`, `src/apps/registry.ts` |
-| Ressources 3D libérées | `dispose` des géométries, matériaux et textures ; boucle arrêtée quand l’onglet est caché | `src/blocland/three/` (chaque partie de la scène a son `dispose`) |
-| Budget du rendu | Mesures d’appels de dessin et de triangles par archipel | `npm run rendu:mesures`, `npm run rendu:budget` (par poste, sans navigateur), `src/blocland/world/budget.ts` |
+| Chargement à la demande | 3D et missions en `lazy` ; exercices lus seulement au lancement d’une partie | `src/game/three/index.ts`, `src/apps/registry.ts` |
+| Ressources 3D libérées | `dispose` des géométries, matériaux et textures ; boucle arrêtée quand l’onglet est caché | `src/game/three/` (chaque partie de la scène a son `dispose`) |
+| Budget du rendu | Mesures d’appels de dessin et de triangles par archipel | `npm run rendu:mesures`, `npm run rendu:budget` (par poste, sans navigateur), `src/game/world/budget.ts` |
 | Règles de React et code mort | `rules-of-hooks` refusé, `exhaustive-deps` signalé (dix avertissements au plus, le seuil descend à chaque correction) ; aucun fichier, export ni dépendance que rien n’utilise | `npm run lint`, `npm run code-mort`, `.github/workflows/deploy.yml` |
-| Logique pure et testée | Monde calculé en fonctions pures, empreintes du monde | `src/blocland/world/`, `separation-jeu-rendu.md` |
+| Logique pure et testée | Monde calculé en fonctions pures, empreintes du monde | `src/game/world/`, `separation-jeu-rendu.md` |
 | Bornes d’erreur | Une page ou une scène qui ne charge pas propose de recharger | `src/components/ErrorBoundary.tsx` |
 | Hors ligne | Tout précaché, mise à jour proposée, jamais imposée | `vite.config.ts` (`VitePWA`) |
 

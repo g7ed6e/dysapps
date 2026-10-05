@@ -1,7 +1,7 @@
 import { cleanup, render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { BloclandProvider } from '../blocland/BloclandContext';
-import { exercisesOf } from '../blocland/exercises';
+import { BloclandProvider } from '../game/BloclandContext';
+import { exercisesOf } from '../game/exercises';
 import { ProgressProvider } from '../core/ProgressContext';
 import { SettingsProvider } from '../core/SettingsContext';
 import { ProgressPage } from './ProgressPage';

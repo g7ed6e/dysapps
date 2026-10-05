@@ -3,13 +3,13 @@ import { MemoryRouter, useLocation } from 'react-router-dom';
 import { AppRoutes } from './App';
 import { SettingsProvider } from './core/SettingsContext';
 import { ProgressProvider } from './core/ProgressContext';
-import { BloclandProvider } from './blocland/BloclandContext';
+import { BloclandProvider } from './game/BloclandContext';
 import { TitleScreen } from './components/TitleScreen';
 import { rememberPlace } from './core/lastPlace';
 
 // Un appareil qui sait dessiner le monde, et un monde factice (le vrai est testé à part).
-vi.mock('./blocland/useImmersive', () => ({ useImmersive: () => true }));
-vi.mock('./blocland/WorldPage', () => ({ WorldPage: () => <p>Le village</p> }));
+vi.mock('./game/useImmersive', () => ({ useImmersive: () => true }));
+vi.mock('./game/WorldPage', () => ({ WorldPage: () => <p>Le village</p> }));
 
 function Where() {
   return <p data-testid="adresse">{useLocation().pathname}</p>;

@@ -1,8 +1,8 @@
 // Les commandes des habitants (GD-7, points 4 et 5), écrites à la fin du Markdown d'une île (docs/contenu/<île>.md), après
 // « ## Les plans », sous « ## Les demandes » : un « ### `<lieu>-request-<n>` » par commande, puis ses champs. Elles
-// redonnent src/blocland/world/requests.json (toutes les îles, dans l'ordre de docs/contenu/archipel.md). La forme de la
+// redonnent src/game/world/requests.json (toutes les îles, dans l'ordre de docs/contenu/archipel.md). La forme de la
 // petite construction que pose une commande livrée, et sa place, restent dans le code
-// (src/blocland/world/petitesConstructions.ts) ; le Markdown la décrit dans une note (« > Forme : … »), pour l'artiste
+// (src/game/world/petitesConstructions.ts) ; le Markdown la décrit dans une note (« > Forme : … »), pour l'artiste
 // technique 3D, que le jeu ne lit pas.
 //
 //   ## Les demandes
@@ -18,7 +18,7 @@
 //   - posée : Puits posé chez Tunel !
 //   - après le plan : `french-6e-reading-2`                     ← facultatif : la commande n'arrive qu'une fois ce plan bâti
 //
-// Jetons, remplacés par le jeu avec les mots de Mes blocs (blockCount, blockName de src/blocland/biomes.ts) pour que
+// Jetons, remplacés par le jeu avec les mots de Mes blocs (blockCount, blockName de src/game/biomes.ts) pour que
 // l'objet porte le même nom partout : {objet} « 4 briques », {blocs} « briques », {à} « à la Fabrique » (le lieu
 // d'assemblage de l'univers, docs/contenu/assemblage.md).
 import { lireTexte } from './texte.mjs';
@@ -44,7 +44,7 @@ const ID = /^`([a-z0-9-]+)`$/;
 export const COMBIEN_MIN = 2;
 export const COMBIEN_MAX = 4;
 
-/** Ce qu'une commande produit dans src/blocland/world/requests.json. */
+/** Ce qu'une commande produit dans src/game/world/requests.json. */
 function versJson(ile, n, c) {
   return {
     id: `${ile}-request-${n}`,
@@ -59,7 +59,7 @@ function versJson(ile, n, c) {
 
 /**
  * Lit la section « ## Les demandes » : `lignes` commence à son titre, `debut` est le rang de ce titre dans le fichier (pour
- * les numéros de ligne). Rend les commandes au format de src/blocland/world/requests.json, avec `resident` (le nom écrit,
+ * les numéros de ligne). Rend les commandes au format de src/game/world/requests.json, avec `resident` (le nom écrit,
  * que `verifierDemandes` compare à la créature de l'île, et qui ne passe pas dans le JSON).
  */
 export function lireDemandes(lignes, debut, fichier, ile) {
@@ -133,7 +133,7 @@ export function ecrireDemandes(ile, demandes) {
 const jetons = (s) => s.match(/\{[^}]*\}/g) ?? [];
 
 /**
- * Vérifie les commandes de toutes les îles et les rend sans `resident`, pour src/blocland/world/requests.json.
+ * Vérifie les commandes de toutes les îles et les rend sans `resident`, pour src/game/world/requests.json.
  * `iles` : les îles dans l'ordre de docs/contenu/archipel.md ({ id, name, subject, classe, creature }) ; `demandesParIle` :
  * Map île → commandes lues ; `recettes` : les blocs assemblés (docs/contenu/assemblage.md) ; `plans` : Map île → ids de ses
  * plans. Les règles : GD-7 (points 4 et 5) et l'arbitrage du directeur artistique du 3 octobre 2026.

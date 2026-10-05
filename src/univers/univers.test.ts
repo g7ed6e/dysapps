@@ -1,8 +1,8 @@
 import { createHash } from 'node:crypto';
-import { BIOMES } from '../blocland/biomes';
-import { sanitizeState } from '../blocland/engine';
-import { ARCHIPELAGOS, NOMS_ARCHIPELS } from '../blocland/world/archipelago';
-import { reachedWhaleMoments, type WhaleMoment } from '../blocland/world/whale';
+import { BIOMES } from '../game/biomes';
+import { sanitizeState } from '../game/engine';
+import { ARCHIPELAGOS, NOMS_ARCHIPELS } from '../game/world/archipelago';
+import { reachedWhaleMoments, type WhaleMoment } from '../game/world/whale';
 import { LEGACY_PLACES } from '../core/legacyIds';
 import { BADGES, ROLES } from '../core/progress';
 import { pagesBaleine, quiParle, titreDuMot } from './baleine';

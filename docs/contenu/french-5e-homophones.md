@@ -13,7 +13,7 @@ créature : Sema
 
 ## Panneaux · `pairs`
 
-> Ses exercices sont produits par le code (`src/blocland/exercises/`), pas écrits ici.
+> Ses exercices sont produits par le code (`src/game/exercises/`), pas écrits ici.
 
 - description : Ses / ces, ou / où, la / là / l’a, leur / leurs, quand, peu, c’est / s’est.
 - compétences : c4.fr.langue.orthographe-lexicale · c3.fr.langue.homophonie

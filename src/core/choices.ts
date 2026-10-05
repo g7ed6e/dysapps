@@ -39,7 +39,7 @@ export interface DrawOptions {
  * 4e) : on prend dans le vivier des vrais pièges autant de pièges plus petits que la place le demande, et les autres
  * plus grands. S'il en manque d'un côté, on y met des voisins proches (un, deux ou trois crans de `step`), puis, s'il
  * le faut, les pièges restants de l'autre côté. Aucun piège n'est inventé loin de la réponse.
- * Pour les exercices générés, qui gardent ces choix tels quels pendant la partie (voir `blocland/exercises/shuffle.ts`).
+ * Pour les exercices générés, qui gardent ces choix tels quels pendant la partie (voir `game/exercises/shuffle.ts`).
  */
 export function drawChoices(
   answer: number,

@@ -2,7 +2,7 @@
 // archipel par archipel, de ce que le rendu calcule sans Three.js et que la grille (./empreintes.test.ts) ne voit pas :
 // le relief de chaque île, le décor en primitives et l'ambiance (ciel, lumière, surfaces, eaux). Chaque sous-lot de R4b
 // ne change que les empreintes de son archipel ; il les régénère avec
-// `npx vitest run -u src/blocland/world/empreintesDuRendu.test.ts` et le dit dans sa pull request. Un lot sans changement
+// `npx vitest run -u src/game/world/empreintesDuRendu.test.ts` et le dit dans sa pull request. Un lot sans changement
 // d'image (le socle, la découpe de la scène) les laisse telles quelles.
 import { ARCHIPELAGO_IDS, landscape, mapOf, type ArchipelagoId, type Ground } from './map';
 import { toutConstruit } from './budget';

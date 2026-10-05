@@ -1,11 +1,11 @@
 import { Link } from 'react-router-dom';
 import { SUBJECTS, subjectInfo, visibleSubjects, type Subject } from '../apps/registry';
-import { useBlocland } from '../blocland/BloclandContext';
-import { questsToReview } from '../blocland/review';
-import { VillageStageLine } from '../blocland/VillageStageLine';
-import { archipelagoOf, reachedArchipelagos, ARCHIPELAGOS } from '../blocland/world/archipelago';
-import { lienDeLaDestination, nextDestination } from '../blocland/world/destination';
-import { sansCommandes } from '../blocland/world/commandes';
+import { useBlocland } from '../game/BloclandContext';
+import { questsToReview } from '../game/review';
+import { VillageStageLine } from '../game/VillageStageLine';
+import { archipelagoOf, reachedArchipelagos, ARCHIPELAGOS } from '../game/world/archipelago';
+import { lienDeLaDestination, nextDestination } from '../game/world/destination';
+import { sansCommandes } from '../game/world/commandes';
 import { Icon } from '../components/Icon';
 import { RoleBadge } from '../components/RoleBadge';
 import { SpeakButton } from '../components/SpeakButton';

@@ -22,13 +22,13 @@ await server.listen();
 const base = server.resolvedUrls.local[0].replace(/\/$/, '');
 const load = (p) => server.ssrLoadModule(p);
 const [{ BIOMES }, { plansFor, planCells }, { VEHICLE_STAGES }, { MONUMENTS }, { BADGES }, { BRIDGES }, { CATALOG }] = await Promise.all([
-  load('/src/blocland/biomes.ts'),
-  load('/src/blocland/world/plans.ts'),
-  load('/src/blocland/world/vehicle.ts'),
-  load('/src/blocland/world/monuments.ts'),
+  load('/src/game/biomes.ts'),
+  load('/src/game/world/plans.ts'),
+  load('/src/game/world/vehicle.ts'),
+  load('/src/game/world/monuments.ts'),
   load('/src/core/progress.ts'),
-  load('/src/blocland/world/archipelago.ts'),
-  load('/src/blocland/exercises/index.ts'),
+  load('/src/game/world/archipelago.ts'),
+  load('/src/game/exercises/index.ts'),
 ]);
 
 // ---------- Des parties préparées ----------

@@ -5,7 +5,7 @@
 
 ## Le constat
 
-Aujourd’hui, la salle des trophées (4 × 3 cases, sur l’île de l’école de chaque archipel) a une place par succès, 24 en tout (`TROPHY_SLOTS`, `src/blocland/world/terrain.ts`). Elles se remplissent dans cet ordre : 6 sur les socles, 4 sur le faîte, 6 en second rang sur les socles, 8 au bord du toit. La moitié des trophées finit donc sur le toit.
+Aujourd’hui, la salle des trophées (4 × 3 cases, sur l’île de l’école de chaque archipel) a une place par succès, 24 en tout (`TROPHY_SLOTS`, `src/game/world/terrain.ts`). Elles se remplissent dans cet ordre : 6 sur les socles, 4 sur le faîte, 6 en second rang sur les socles, 8 au bord du toit. La moitié des trophées finit donc sur le toit.
 
 - **Dans Blocland**, le toit est en blocs : un trophée sur le faîte se voit de loin, et le consultant de Blocland y tient comme à un repère.
 - **Dans Archipéo** (6e, #279), le toit est en versants. Un trophée sur le toit garde sous lui un bloc de toit plat. De 8 à 18 succès, le faîte devient une colonne d’or et le toit est mi-pente, mi-blocs. Avec les 24, la salle redevient une pile de blocs. Le lieu perd sa silhouette (DA-03), et plus l’élève gagne, plus sa salle s’abîme : c’est l’inverse de DP-09.
@@ -45,7 +45,7 @@ Pourquoi B : elle règle le toit et fait de la récompense un agrandissement du 
 
 - **La taille** : une petite pull request commune (environ 60 lignes dans `terrain.ts`, une ligne du kit du 6e, la créature du Marché), à faire avant 7c.
 - **Les fichiers** :
-  - le code : `src/blocland/world/terrain.ts` (`TROPHY_SLOTS`, `trophyModel`, l’emprise de la salle, la place de la créature du Marché) ; `world/architecture/lieux.ts` et `kits/6e.ts` (les piliers lus par colonne) ;
+  - le code : `src/game/world/terrain.ts` (`TROPHY_SLOTS`, `trophyModel`, l’emprise de la salle, la place de la créature du Marché) ; `world/architecture/lieux.ts` et `kits/6e.ts` (les piliers lus par colonne) ;
   - les tests : `terrain.test.ts`, `lieux.test.ts`, `three/cubes.test.ts` (Blocland), `world/budget.test.ts`, et les empreintes à régénérer (l’emprise est réservée dès le départ) ;
   - les captures : `scripts/rendu/mesures.mjs` (familles `lieux-salle` et `lieux-pres`, dont le cadre s’élargit) ;
   - la documentation : le manuel `www/manuel/blocland.md` (« La salle des trophées »), `style.md`, `docs/univers/blocland/cadrage.md`, `docs/univers/archipeo/cadrage.md`, `docs/univers/blocland/fiche.md`, `decisions.md`.

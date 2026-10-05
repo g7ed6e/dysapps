@@ -144,7 +144,7 @@ Pour tous les items :
 
 ## Tri des graines · `sorting`
 
-> Ses exercices sont produits par le code (`src/blocland/exercises/`), pas écrits ici.
+> Ses exercices sont produits par le code (`src/game/exercises/`), pas écrits ici.
 
 - description : Phrases à trous : a/à, et/est, on/ont, son/sont, ce/se.
 - compétences : c3.fr.langue.homophonie

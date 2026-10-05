@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import { clesDeplacees, clesRemplacees } from './chemins.mjs';
 import { ecrireIle, lireIle } from './format.mjs';
 
-const DATA = 'src/blocland/exercises/data';
+const DATA = 'src/game/exercises/data';
 
 /** Les exercices du jeu, rangés par île. */
 function parIle() {
@@ -144,7 +144,7 @@ describe('le format Markdown du contenu', () => {
   });
 
   it('écrit puis relit chaque île du jeu, ses missions et son en-tête', () => {
-    const texte = readFileSync('src/blocland/iles.ts', 'utf8');
+    const texte = readFileSync('src/game/iles.ts', 'utf8');
     const iles = JSON.parse(texte.slice(texte.indexOf('= [') + 2, texte.lastIndexOf(' satisfies')));
     const exercices = parIle();
     for (const ile of iles) {

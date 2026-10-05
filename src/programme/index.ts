@@ -2,7 +2,7 @@
 // espagnol en LV2, cycle 4 seulement) que les missions citent (champ `programme` de biomes.ts et de apps/registry.ts).
 // Provenance : data.gouv.fr, Licence Ouverte.
 // Ce module n'entre pas dans le bundle de l'application : les missions n'en importent que des types.
-import type { Classe } from '../blocland/biomes';
+import type { Classe } from '../game/biomes';
 import { DOMAINES_C3, ENTRIES_C3 } from './cycle3';
 import { DOMAINES_C4, ENTRIES_C4 } from './cycle4';
 import type { Cycle, Discipline, ProgrammeDomaine, ProgrammeEntry } from './types';

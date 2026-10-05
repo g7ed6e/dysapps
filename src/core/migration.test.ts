@@ -1,9 +1,9 @@
 // La sauvegarde aux mots neutres : une sauvegarde ancienne complète devient la même sous les nouveaux noms, sans un
 // chiffre de moins, et rien ne se perd quand l'appareil refuse d'écrire ou quand la sauvegarde est gelée.
-import { sanitizeState } from '../blocland/engine';
-import { planCells, getPlan } from '../blocland/world/plans';
-import { planV1 } from '../blocland/world/plansV1';
-import { tirageNeuf } from '../blocland/world/assemblage';
+import { sanitizeState } from '../game/engine';
+import { planCells, getPlan } from '../game/world/plans';
+import { planV1 } from '../game/world/plansV1';
+import { tirageNeuf } from '../game/world/assemblage';
 import { GAME_VERSION, KEY_MOVES, migrateStorage, translateGame, translateProgress, translateSettings } from './migration';
 import { sanitizeProgress } from './progress';
 import { sanitizeSettings } from './settings';

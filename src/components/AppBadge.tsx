@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
-import { useBlocland } from '../blocland/BloclandContext';
-import { questsToReview } from '../blocland/review';
+import { useBlocland } from '../game/BloclandContext';
+import { questsToReview } from '../game/review';
 import { useSettings } from '../core/SettingsContext';
 
 type BadgeNavigator = Navigator & { setAppBadge?: (n?: number) => Promise<void>; clearAppBadge?: () => Promise<void> };

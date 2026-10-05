@@ -1,9 +1,9 @@
 // Les textes communs aux deux univers d'aujourd'hui (étape J8 de U4, docs/univers/univers.md §5), déplacés sans un
-// mot changé : les répliques des créatures (de src/blocland/biomes.ts) et le mot de chaque état d'île (de
-// src/blocland/world/islandState.ts). Chaque univers les reprend dans ses textes ; il peut les remplacer (Blocland
+// mot changé : les répliques des créatures (de src/game/biomes.ts) et le mot de chaque état d'île (de
+// src/game/world/islandState.ts). Chaque univers les reprend dans ses textes ; il peut les remplacer (Blocland
 // remplace « Restaurée » par « Bâtie »).
-import type { BiomeId } from '../blocland/biomes';
-import type { IslandStateId } from '../blocland/world/islandState';
+import type { BiomeId } from '../game/biomes';
+import type { IslandStateId } from '../game/world/islandState';
 import type { TextesCreature } from './types';
 
 /** Le mot de chaque état d'île, sur la Carte et dans le panneau d'une île, toujours avec son icône. */

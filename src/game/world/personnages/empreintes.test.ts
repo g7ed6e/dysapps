@@ -1,6 +1,6 @@
 // Le filet des personnages en facettes (lot R6) : une empreinte du bonhomme, de chaque créature et de chaque sentinelle (sommets, normales,
 // couleurs, pièces et teintes, table des pièces). Un changement de modèle voulu les régénère avec
-// `npx vitest run -u src/blocland/world/personnages/empreintes.test.ts` et le dit dans sa pull request ; ailleurs,
+// `npx vitest run -u src/game/world/personnages/empreintes.test.ts` et le dit dans sa pull request ; ailleurs,
 // elles ne doivent pas bouger.
 import { BIOMES } from '../../biomes';
 import { toutConstruit } from '../budget';

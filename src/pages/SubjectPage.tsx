@@ -6,11 +6,11 @@ import { Icon } from '../components/Icon';
 import { SubjectApps } from '../components/SubjectApps';
 import { NotFoundPage } from './NotFoundPage';
 import { UNIVERS } from '../core/univers';
-import { biomesOf, missionsJouables, type Classe } from '../blocland/biomes';
-import { useBlocland } from '../blocland/BloclandContext';
-import { Creature } from '../blocland/Creatures';
-import { questProgress } from '../blocland/exercises';
-import { ARCHIPELAGOS, archipelagoTitle, isArchipelagoReached, isBiomeUnlocked } from '../blocland/world/archipelago';
+import { biomesOf, missionsJouables, type Classe } from '../game/biomes';
+import { useBlocland } from '../game/BloclandContext';
+import { Creature } from '../game/Creatures';
+import { questProgress } from '../game/exercises';
+import { ARCHIPELAGOS, archipelagoTitle, isArchipelagoReached, isBiomeUnlocked } from '../game/world/archipelago';
 import { useTextes } from '../univers';
 
 export function SubjectPage() {

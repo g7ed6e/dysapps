@@ -1,12 +1,12 @@
 import { readFileSync } from 'node:fs';
 import { ecrireIle, lireIle } from './format.mjs';
 
-/** Les plans dans l'ordre où le jeu les débloque (PLAN_FILES de src/blocland/world/plans.ts). */
+/** Les plans dans l'ordre où le jeu les débloque (PLAN_FILES de src/game/world/plans.ts). */
 function plansDuJeu() {
-  const ts = readFileSync('src/blocland/world/plans.ts', 'utf8');
+  const ts = readFileSync('src/game/world/plans.ts', 'utf8');
   const imports = new Map([...ts.matchAll(/^import (\w+) from '\.\/plans\/([a-z0-9-]+)\.json';$/gm)].map((m) => [m[1], m[2]]));
   const noms = /const PLAN_FILES = \[([\s\S]*?)\] as/.exec(ts)[1].split(',').map((x) => x.trim()).filter(Boolean);
-  return noms.map((n) => JSON.parse(readFileSync(`src/blocland/world/plans/${imports.get(n)}.json`, 'utf8')));
+  return noms.map((n) => JSON.parse(readFileSync(`src/game/world/plans/${imports.get(n)}.json`, 'utf8')));
 }
 
 const debut = ['---', 'lieu : french-6e-letter-confusion', '---', '', '# Mine', '', '## Les plans', ''];

@@ -1,5 +1,5 @@
 // Le tracé des icônes, pour la texture du signe des créatures (three/signes.ts) : chaque icône d'île a ses chemins.
-import { BIOMES } from '../blocland/biomes';
+import { BIOMES } from '../game/biomes';
 import { tracesDeLIcone } from './iconeTracee';
 
 it('chaque icône d’île se trace en chemins SVG', () => {

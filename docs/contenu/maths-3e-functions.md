@@ -13,21 +13,21 @@ créature : Fi
 
 ## Images · `images`
 
-> Ses exercices sont produits par le code (`src/blocland/exercises/`), pas écrits ici.
+> Ses exercices sont produits par le code (`src/game/exercises/`), pas écrits ici.
 
 - description : L’image d’un nombre, puis son antécédent.
 - compétences : c4.ma.b.image-antecedent
 
 ## Droites · `linear`
 
-> Ses exercices sont produits par le code (`src/blocland/exercises/`), pas écrits ici.
+> Ses exercices sont produits par le code (`src/game/exercises/`), pas écrits ici.
 
 - description : Coefficient directeur, fonction linéaire ou affine.
 - compétences : c4.ma.b.lineaire-affine
 
 ## Faisceaux · `graphs`
 
-> Ses exercices sont produits par le code (`src/blocland/exercises/`), pas écrits ici.
+> Ses exercices sont produits par le code (`src/game/exercises/`), pas écrits ici.
 
 - description : Sur le graphique : une image, un antécédent, puis la droite.
 - compétences : c4.ma.b.image-antecedent · c4.ma.b.lineaire-affine

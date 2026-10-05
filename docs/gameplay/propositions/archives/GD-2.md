@@ -36,7 +36,7 @@ Les recettes, les noms des blocs et du lieu s’écrivent dans `docs/contenu/ass
 ## Le coût
 
 - Code : `world/assemblage.ts` (règles), `engine.ts` (`assembleBlock`), quatre blocs dans `biomes.ts`, les cases des monuments (`world/monuments.ts`), le lieu (`world/terrain.ts`, `cube.ts`), son panneau et sa page (`Assemblage.tsx`), les textures des deux univers.
-- Contenu : `docs/contenu/assemblage.md` → `src/blocland/world/recettes.ts` (`npm run contenu`) ; ses 48 questions, 12 par bloc (« Les questions ») → `src/blocland/exercises/data/assemblage-<bloc>.json`.
+- Contenu : `docs/contenu/assemblage.md` → `src/game/world/recettes.ts` (`npm run contenu`) ; ses 48 questions, 12 par bloc (« Les questions ») → `src/game/exercises/data/assemblage-<bloc>.json`.
 - Rythme (directeur du contenu) : chaque case assemblée coûte deux blocs de plus, soit 8 à 16 blocs par monument, deux ou trois missions, une séance au plus, payée par le stock accumulé.
 - Sauvegarde : l’inventaire, et le tirage des questions de chaque bloc (`assemblageTirage`, optionnel : une sauvegarde sans lui reste valable).
 - Rendu : le lieu coûte de 108 à 118 triangles de construction par archipel. Avec les îles-écoles en 20 × 20, la construction mesure 7 217 au 5e : l’enveloppe « autres » de la construction passe de 7 100 à 7 240 triangles, 60 sont pris au bonhomme, à la faune, au navire et aux bornes, et la somme des « autres » passe de 52 960 à 53 040 (`world/budget.ts`). Avec les trophées comptés (7 249 au 5e sur le toit, environ 7 241 au pire de GD-3), l’enveloppe commune avec GD-3 passe à 7 260 et la somme à 53 060.

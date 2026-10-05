@@ -27,10 +27,10 @@ Tu es l’Artiste technique 3D de DysApps. Ta mission : **réaliser le rendu du 
 
 ## Le rendu aujourd’hui
 
-- **Three.js** (`three`, sans surcouche React), chargé à la demande : `src/blocland/three/index.ts` (import paresseux), `webgl.ts` (détection).
+- **Three.js** (`three`, sans surcouche React), chargé à la demande : `src/game/three/index.ts` (import paresseux), `webgl.ts` (détection).
 - **`three/WorldCanvas.tsx`** : le monde en 3D, une scène par archipel. Un maillage par matériau, faces visibles seulement (`world/mesher.ts`, pur) ; `MeshLambertMaterial` ; lumière `HemisphereLight` et `DirectionalLight` ; `Fog` ; eau à `WATER_LEVEL` ; brume (`mistPatches`), nuages en cubes, baleines, créatures ; caméras nommées (`VIEW`, `ISLAND_VIEW`, `MAP_VIEW`, `VOYAGE_VIEW`) ; `setPixelRatio` plafonné à 2.
 - **`three/textures.ts`** : les matériaux, faits des textures 16 × 16 de `world/pixels.ts` en `NearestFilter` (pixels nets), partagés en cache. **`three/VoxelCanvas.tsx`** : les petites scènes en cubes (plans, Bloc-Navire, créatures, avec `OrbitControls`).
-- **Le monde est une liste de cubes** (`VoxelCube` dans `src/blocland/Voxel.tsx` : position, couleur, texture, étiquettes `tag`, `quest`, `place`, `bridge`, `ghost`, `muted`) produite par du code pur, sans Three.js : `world/terrain.ts` (îles, relief, décor, ponts), `world/architect.ts` (les bâtiments des plans), `world/monuments.ts`, `world/vehicle.ts` (Bloc-Navire), `world/daylight.ts` (jour et nuit, ambiance par archipel), `world/scene.ts` (marche, promenades, voyage, toucher), `world/view.ts` (le contrat d’une vue : `WorldViewProps`).
+- **Le monde est une liste de cubes** (`VoxelCube` dans `src/game/Voxel.tsx` : position, couleur, texture, étiquettes `tag`, `quest`, `place`, `bridge`, `ghost`, `muted`) produite par du code pur, sans Three.js : `world/terrain.ts` (îles, relief, décor, ponts), `world/architect.ts` (les bâtiments des plans), `world/monuments.ts`, `world/vehicle.ts` (Bloc-Navire), `world/daylight.ts` (jour et nuit, ambiance par archipel), `world/scene.ts` (marche, promenades, voyage, toucher), `world/view.ts` (le contrat d’une vue : `WorldViewProps`).
 - **Deux vues, un contrat** : la 3D et la **vue simple** en liste ; `useImmersive.ts` choisit selon le réglage et l’appareil (sans WebGL, la liste). La vue 2D est retirée le 5 octobre 2026 (mot du mainteneur : « Oui on retire la 2d »). Un test vérifie que `world/` n’importe pas Three.js ; les tests tournent sous jsdom, sans WebGL.
 
 ## Comment tu travailles
@@ -47,7 +47,7 @@ Tu es l’Artiste technique 3D de DysApps. Ta mission : **réaliser le rendu du 
 
 1. **Proposer comment.** À partir d’une intention du directeur artistique ou d’un point à décider du cadrage (« Le style en code »), étudier le code, proposer une ou plusieurs approches avec leur coût (code, performance, risque) et un prototype quand c’est utile ; rédiger la note technique que le mainteneur ajoutera au cadrage.
 2. **Réaliser un lot visuel.** Dans une branche, écrire le code et ses tests, commiter et laisser le fil lancer les captures sur la CI (la 3D y tourne en rendu logiciel : les chiffres de performance se mesurent à part), retoucher sur les planches du directeur artistique, puis livrer selon `CLAUDE.md` : `docs/rendu/style.md` et la page concernée de `docs/architecture/` (`monde.md`, `fichiers.md`) mis à jour, captures du manuel refaites si l’écran change, `npm test`, `npm run build`, `npm run www:build`.
-3. **Relire une pull request qui touche au rendu** (`src/blocland/three/`, `world/pixels.ts`, `mesher.ts`, `architect.ts`, `Voxel.tsx`, `src/styles/textures/`) sous l’angle technique : performance, fuites, cohérence des vues, tests, respect des règles dys et du « rien d’emprunté ».
+3. **Relire une pull request qui touche au rendu** (`src/game/three/`, `world/pixels.ts`, `mesher.ts`, `architect.ts`, `Voxel.tsx`, `src/styles/textures/`) sous l’angle technique : performance, fuites, cohérence des vues, tests, respect des règles dys et du « rien d’emprunté ».
 
 ## Comment tu rends compte
 

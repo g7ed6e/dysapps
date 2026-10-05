@@ -39,23 +39,23 @@ Le contenu pédagogique s’écrit en Markdown dans `docs/contenu/` ; `npm run c
 flowchart TD
   main[main.tsx<br/>migrateStorage puis App] --> App[App.tsx<br/>fournisseurs et routes]
   App --> pages[pages/<br/>accueil, matière, réglages, succès]
-  App --> blocland[blocland/<br/>l’aventure]
+  App --> game[game/<br/>l’aventure]
   App --> apps[apps/<br/>missions du portail]
   pages --> components[components/<br/>écrans et briques partagés]
   apps --> components
-  blocland --> components
-  blocland --> univers[univers/<br/>les mots de chaque univers]
+  game --> components
+  game --> univers[univers/<br/>les mots de chaque univers]
   components --> core[core/<br/>réglages, stockage, progression, outils]
-  blocland --> core
+  game --> core
   apps --> core
-  core -. progression commune .-> blocland
+  core -. progression commune .-> game
   core -. progression par matière .-> apps
   core -. icônes .-> components
   core -. mots des succès .-> univers
-  components -. étoiles, partie, sons .-> blocland
+  components -. étoiles, partie, sons .-> game
   components -. catalogue .-> apps
   apps -. types ProgrammeId .-> programme[programme/<br/>référentiel officiel]
-  blocland -. types ProgrammeId .-> programme
+  game -. types ProgrammeId .-> programme
   main --> styles[styles/<br/>thèmes et CSS]
 ```
 
@@ -64,8 +64,8 @@ Une flèche se lit « importe ». Les flèches pleines sont le sens attendu ; le
 - `core/` : les réglages, le stockage, la sauvegarde aux mots neutres (`migration.ts`), la progression commune, la synthèse vocale, et les petits outils que tout le code partage (`random.ts`, `math.ts`, `color.ts`), qui n’importent rien. Quelques fichiers de `core/` lisent pourtant le jeu : `progress.ts` (les îles et les plans, pour les succès), `subjectProgress.ts` (l’avancée d’une matière, portail et aventure), `univers.ts` et `AppUpdateBanner.tsx` (les icônes de `components/`), `ProgressContext.tsx` (les mots de `univers/`).
 - `components/` tient ce que les écrans partagent : la mise en page, l’écran titre, la session de quiz, les boutons de lecture. Plusieurs lisent le jeu : `Layout.tsx` (`useImmersive`), `QuizSession.tsx` et `RecordTag.tsx` (les étoiles, la partie), `TitleScreen.tsx` (la partie, le logo, les sons), `AppBadge.tsx` et `BandeauBatisseur.tsx` (la partie), `SubjectApps.tsx` (le catalogue des missions du portail).
 - `apps/` : une mission du portail par dossier, toutes sur `QuizSession` ou `QuestMenu`, déclarées dans `apps/registry.ts`.
-- `blocland/` : l’aventure, la plus grosse partie (voir [La partie](partie.md) et [Le monde](monde.md)). Le nom du dossier est historique : il porte le jeu commun aux deux univers.
-- `univers/` : les textes propres à chaque univers ; l’habillage du dessin est dans `blocland/world/habillage/`.
+- `game/` : l’aventure, la plus grosse partie (voir [La partie](partie.md) et [Le monde](monde.md)) : le jeu commun aux deux univers (`src/blocland/` jusqu’au 5 octobre 2026).
+- `univers/` : les textes propres à chaque univers ; l’habillage du dessin est dans `game/world/habillage/`.
 - `programme/` : le référentiel des programmes officiels, lu par les tests et le site ; l’application n’en importe que le type des identifiants.
 
 ## Les fournisseurs et les routes
@@ -87,7 +87,7 @@ Trois contextes, du plus général au plus particulier : les réglages (police, 
 
 ## Les couches du jeu
 
-Le dossier `blocland/` est rangé en couches ; `blocland/world/couches.test.ts` vérifie qu’aucun fichier n’importe une couche qu’il n’a pas le droit de lire.
+Le dossier `game/` est rangé en couches ; `game/world/couches.test.ts` vérifie qu’aucun fichier n’importe une couche qu’il n’a pas le droit de lire.
 
 ```mermaid
 flowchart BT

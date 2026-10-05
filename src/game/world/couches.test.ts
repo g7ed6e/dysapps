@@ -8,7 +8,7 @@ import { dirname, join, relative } from 'node:path';
 type Couche = 'regle' | 'grille' | 'commun' | 'univers' | 'dessin' | 'neutre';
 
 const SRC = join(__dirname, '..', '..');
-const BLOCLAND = join(SRC, 'blocland');
+const BLOCLAND = join(SRC, 'game');
 
 /** Les règles du jeu : sans coordonnées du monde, sans React ni Three.js. */
 const REGLES = [

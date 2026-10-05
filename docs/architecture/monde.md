@@ -1,6 +1,6 @@
 # Le monde
 
-Le monde est la partie la plus lourde du code (`src/blocland/world/` et `src/blocland/three/`). Il est rangé pour qu’une même logique serve plusieurs dessins et plusieurs univers : le jeu dit **ce qui existe**, la grille dit **où**, la vue dit **comment le dessiner**. L’histoire de ce rangement est dans [Séparer le jeu du rendu](../conception/separation-jeu-rendu.md) ; le style attendu dans [le rendu](../rendu/style.md).
+Le monde est la partie la plus lourde du code (`src/game/world/` et `src/game/three/`). Il est rangé pour qu’une même logique serve plusieurs dessins et plusieurs univers : le jeu dit **ce qui existe**, la grille dit **où**, la vue dit **comment le dessiner**. L’histoire de ce rangement est dans [Séparer le jeu du rendu](../conception/separation-jeu-rendu.md) ; le style attendu dans [le rendu](../rendu/style.md).
 
 ## Du jeu au dessin
 
@@ -60,7 +60,7 @@ sequenceDiagram
 
 ## Les univers
 
-Les deux univers jouent le même jeu. Ce qui change au dessin passe par un objet `Habillage` (`blocland/habillage.ts`, une donnée par univers dans `world/habillage/`) : le ciel, la brume, le sol, les personnages, les étiquettes, les bulles. Ce qui change aux mots passe par `src/univers/` (`useTextes()`). Le code ne teste presque jamais le nom de l’univers : il lit une ligne de l’habillage ou un texte.
+Les deux univers jouent le même jeu. Ce qui change au dessin passe par un objet `Habillage` (`game/habillage.ts`, une donnée par univers dans `world/habillage/`) : le ciel, la brume, le sol, les personnages, les étiquettes, les bulles. Ce qui change aux mots passe par `src/univers/` (`useTextes()`). Le code ne teste presque jamais le nom de l’univers : il lit une ligne de l’habillage ou un texte.
 
 ## Le budget de dessin
 

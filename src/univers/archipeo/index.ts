@@ -6,7 +6,7 @@
 import { BLOCLAND } from '../blocland';
 import { ETATS_D_ILE, REPLIQUES } from '../communs';
 import type { TextesUnivers } from '../types';
-import { lieuDAssemblage, nomsAssembles } from '../../blocland/world/assemblage';
+import { lieuDAssemblage, nomsAssembles } from '../../game/world/assemblage';
 
 const s = (n: number) => (n > 1 ? 's' : '');
 /** « de » devant un nom avec son article : « du Grand Chêne », « de la Dune vivante », « de l’Hydre des marais ». */
