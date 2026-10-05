@@ -1,5 +1,6 @@
 // Le mode « Aménager » dans la scène 3D (GD-9) : le fantôme du choix, les places libres autour de lui, les liaisons
-// retracées et barrées, en un seul maillage instancié (un appel de dessin, rien hors du mode) ; dans Blocland, le lieu
+// retracées et barrées, en carrés plats bordés d'un contour sombre (deux triangles chacun : `arrangeViewCost`), dans un
+// seul maillage instancié (un appel de dessin pendant un choix, rien hors du mode) ; dans Blocland, le lieu
 // choisi soulevé d'un cran et le geste de la pose (démonté couche par couche, remonté à sa nouvelle place) par un petit
 // ajout aux matériaux des blocs (`avecLAmenagement`), sans maillage de plus ; dans Archipéo, le voile de brume du geste.
 // Moins d'animations : le lieu se soulève d'un coup, et la page pose sans geste.
@@ -54,14 +55,43 @@ export function avecLAmenagement<M extends THREE.Material>(m: M): M {
   return m;
 }
 
-/** L'allure de chaque sorte de case : sa taille (largeur, hauteur) et sa couleur (la croix dit « barrée » avec la couleur). */
-const ALLURE: Readonly<Record<ArrangeCellKind, { l: number; h: number; couleur: number }>> = {
-  fantome: { l: 0.9, h: 0.9, couleur: 0xeaf6ff },
-  place: { l: 0.7, h: 1.2, couleur: 0xffd866 },
-  liaison: { l: 0.7, h: 0.35, couleur: 0xffffff },
-  barree: { l: 0.7, h: 0.35, couleur: 0xc0392b },
-  croix: { l: 0.85, h: 0.85, couleur: 0xc0392b },
+/**
+ * L'allure de chaque sorte de case : la part de la case que prend son carré, et sa couleur. Un matériau sans lumière :
+ * la couleur reste celle-ci, de jour comme de nuit (le jaune des places libres sortait presque blanc sous le soleil).
+ * Le contour sombre de la texture dit la forme ; la croix dit « barrée » avec la couleur.
+ */
+const ALLURE: Readonly<Record<ArrangeCellKind, { l: number; couleur: number }>> = {
+  fantome: { l: 0.9, couleur: 0xd6ecff },
+  place: { l: 0.9, couleur: 0xffc21a },
+  liaison: { l: 0.7, couleur: 0xffffff },
+  barree: { l: 0.7, couleur: 0xd8432f },
+  croix: { l: 0.85, couleur: 0xd8432f },
 };
+
+/** Au-dessus du dessus de la case : le carré ne se mêle jamais au sol ni à l'eau. */
+const AU_DESSUS = 0.04;
+
+/** La texture des carrés : blanche, bordée d'un contour sombre de deux pixels sur seize (générée ici, rien d'importé). */
+function textureBordee(): THREE.DataTexture {
+  const n = 16;
+  const data = new Uint8Array(n * n * 4);
+  for (let y = 0; y < n; y++)
+    for (let x = 0; x < n; x++) {
+      const bord = x < 2 || y < 2 || x >= n - 2 || y >= n - 2;
+      const i = (y * n + x) * 4;
+      const v = bord ? 40 : 255;
+      data[i] = v;
+      data[i + 1] = bord ? 32 : 255;
+      data[i + 2] = bord ? 16 : 255;
+      data[i + 3] = 255;
+    }
+  const t = new THREE.DataTexture(data, n, n);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.magFilter = THREE.NearestFilter;
+  t.minFilter = THREE.NearestFilter;
+  t.needsUpdate = true;
+  return t;
+}
 
 /** La hauteur du soulèvement du lieu choisi (en cases), et le temps qu'il met à monter (ms). */
 const SOULEVEMENT = { hauteur: 1, dureeMs: 220 };
@@ -75,8 +105,10 @@ export interface Amenagement extends PartieDeLaScene {
 
 export function creerAmenagement(monde: Monde, reduit: boolean): Amenagement {
   const blocs = monde.habillage.pose === 'geste';
-  const forme = new THREE.BoxGeometry(1, 1, 1);
-  const matiere = new THREE.MeshLambertMaterial({ transparent: true, opacity: 0.88, depthWrite: false });
+  // Un carré plat, couché : deux triangles par case.
+  const forme = new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2);
+  const bordure = textureBordee();
+  const matiere = new THREE.MeshBasicMaterial({ map: bordure, transparent: true, opacity: 0.92, depthWrite: false });
   let cases: THREE.InstancedMesh | null = null;
   const m = new THREE.Matrix4();
   const couleur = new THREE.Color();
@@ -142,7 +174,8 @@ export function creerAmenagement(monde: Monde, reduit: boolean): Amenagement {
       cases.renderOrder = 2;
       vue.cases.forEach((c, i) => {
         const a = ALLURE[c.genre];
-        m.makeScale(a.l, a.h, a.l).setPosition(c.x + 0.5, c.z + a.h / 2, c.y + 0.5);
+        const l = a.l * (c.l ?? 1);
+        m.makeScale(l, 1, l).setPosition(c.x + 0.5, c.z + 1 + AU_DESSUS, c.y + 0.5);
         cases!.setMatrixAt(i, m);
         cases!.setColorAt(i, couleur.setHex(a.couleur));
       });
@@ -159,6 +192,7 @@ export function creerAmenagement(monde: Monde, reduit: boolean): Amenagement {
       vider();
       neutre();
       forme.dispose();
+      bordure.dispose();
       matiere.dispose();
       if (voile) {
         monde.scene.remove(voile);

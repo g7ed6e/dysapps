@@ -15,12 +15,17 @@ import type { Rectangle } from './placement';
 /** Ce qu'est une case du dessin du mode « Aménager » (GD-9 ; calculé par ./arrangeView.ts). */
 export type ArrangeCellKind = 'fantome' | 'place' | 'liaison' | 'barree' | 'croix';
 
-/** Une case du dessin du mode, en cases du monde. */
+/**
+ * Une case du dessin du mode, en cases du monde : un carré plat posé sur le dessus de la case (z + 1), bordé d'un
+ * contour sombre (la couleur n'est jamais seule), de `l` cases de côté (1 par défaut).
+ */
 export interface ArrangeCell {
   x: number;
   y: number;
   z: number;
   genre: ArrangeCellKind;
+  /** Le côté du carré, en cases (une place libre d'un lieu : 3 ; d'un îlot de Gardien : 2). */
+  l?: number;
 }
 
 /** Le dessin du mode pendant un choix (./arrangeView.ts). */

@@ -457,8 +457,9 @@ export function ArrangeBar({ amenagement, className }: { amenagement: Amenagemen
         <button type="button" className="button" disabled={!amenagement.peutDefaire || occupe} onClick={amenagement.defaire} aria-label="Défaire la dernière pose">
           <Icon name="defaire" />
         </button>
+        {/* Sans icône : la seule flèche de la rangée reste celle de ↶, qui ne se confond plus avec une autre. */}
         <button type="button" className="button" disabled={!amenagement.peutRemettre || occupe} onClick={amenagement.remettre}>
-          <Icon name="replay" /> <span>Remettre comme avant</span>
+          <span>Remettre comme avant</span>
         </button>
         <button type="button" className={`button arrange-fin${choix ? '' : ' primary'}`} onClick={amenagement.terminer}>
           <Icon name="check" /> <span>Terminé</span>

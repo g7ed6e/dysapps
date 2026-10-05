@@ -1,7 +1,9 @@
 import { BADGES } from '../../core/progress';
 import { trophyBlock } from '../trophies';
 import { APPEL_DU_PASSAGE, bornesCost, linkCubes, worstCaseOfRegion, commandesCost, constructionCost, decorCost, ENVELOPPES, enveloppeDe, fauneCost, merCost, navireCost, personnagesCost, PLAFOND_DU_MONDE_EN_BLOCS, RENDER_BUDGET, sceneCost, sceneCostArchipeo, signesCost, solCost, toutConstruit, type Poste } from './budget';
-import { ARCHIPELAGO_IDS, type ArchipelagoId } from './map';
+import { ARCHIPELAGO_IDS, type ArchipelagoId, mapOf } from './map';
+import { chooseGuardian, chooseIsland } from './arrangeMode';
+import { arrangeView, arrangeViewCost } from './arrangeView';
 import { buildMesh } from './mesher';
 import { worldCubes } from './terrain';
 import { SHORT_LENGTH, LONG_LENGTH } from './routing';
@@ -203,6 +205,27 @@ it('GD-9 : au pire (autant de liaisons qu’un graphe planaire en a, au plus lon
     expect(pire.drawCalls, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.drawCalls);
     // Le pire cas compte plus que le monde d'aujourd'hui.
     expect(pire.triangles, a).toBeGreaterThan(sceneCost(a, true).triangles);
+  }
+});
+
+it('GD-9 : au pire de chaque région, le dessin d’un choix du mode « Aménager » (au plus grand nombre de places) tient aussi sous le plafond', () => {
+  const { world } = toutConstruit();
+  for (const a of ARCHIPELAGO_IDS) {
+    const pire = worstCaseOfRegion(a);
+    let plus = { triangles: 0, drawCalls: 0, places: 0 };
+    for (const id of mapOf(a).map((d) => d.id)) {
+      const choix = [chooseIsland(world, id), chooseGuardian(world, id)].filter((c) => c !== null);
+      for (const c of choix) {
+        const v = arrangeView(world, c);
+        const cout = arrangeViewCost(v);
+        if (cout.triangles > plus.triangles) plus = { ...cout, places: v.cases.filter((k) => k.genre === 'place').length };
+      }
+    }
+    // Les places libres autour du fantôme : sept sur sept au plus, la sienne non comprise.
+    expect(plus.places, a).toBeLessThanOrEqual(48);
+    expect(pire.triangles + plus.triangles, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.triangles);
+    // Un appel de plus, pendant un choix seulement (mainteneur, 5 octobre 2026 : quelques appels passagers acceptés).
+    expect(plus.drawCalls, a).toBeLessThanOrEqual(1);
   }
 });
 

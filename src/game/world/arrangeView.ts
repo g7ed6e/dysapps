@@ -48,15 +48,19 @@ function contourDeLaTerre(def: IslandDef, z: number, out: ArrangeCell[]): void {
     }
 }
 
-/** Une place libre : quatre plots en losange autour d'une case, bien visibles sur l'eau. */
-function place(p: { x: number; y: number }, z: number, out: ArrangeCell[]): void {
-  for (const [dx, dy] of [
-    [1, 0],
-    [-1, 0],
-    [0, 1],
-    [0, -1],
-  ])
-    out.push({ x: p.x + dx, y: p.y + dy, z, genre: 'place' });
+/** Une place libre : un seul carré plat de `l` cases de côté, centré sur une case, à fleur d'eau (deux triangles). */
+function place(p: { x: number; y: number }, z: number, l: number, out: ArrangeCell[]): void {
+  out.push({ x: p.x, y: p.y, z, genre: 'place', l });
+}
+
+/**
+ * Ce que coûte le dessin d'un choix (three/arrange.ts) : chaque case est un carré plat de deux triangles, toutes dans
+ * un seul maillage instancié (un appel de dessin, seulement pendant un choix). Vérifié avec le pire cas de chaque
+ * région sous le plafond du monde en blocs (budget.test.ts).
+ */
+export function arrangeViewCost(v: ArrangeView | null): { triangles: number; drawCalls: number } {
+  const n = v?.cases.length ?? 0;
+  return { triangles: 2 * n, drawCalls: n ? 1 : 0 };
 }
 
 /** Une croix de cinq cubes, au-dessus d'une case : l'icône d'une liaison qui ne tiendrait plus. */
@@ -119,7 +123,7 @@ export function arrangeView(world: World, c: ArrangeChoice): ArrangeView {
       for (const s of freeSpots(world, c.id, c.spot.turn)) {
         if (Math.max(Math.abs(s.x - c.spot.x), Math.abs(s.y - c.spot.y)) > PAS_AUTOUR || (s.x === c.spot.x && s.y === c.spot.y)) continue;
         const p = poseOfSpot(a, s);
-        place({ x: p.x + 8, y: p.y + 8 }, eau, out);
+        place({ x: p.x + 8, y: p.y + 8 }, eau, 3, out);
       }
       const r = moveIsland(world, c.id, c.spot);
       const relink = r.ok ? r.relink : [];
@@ -132,7 +136,7 @@ export function arrangeView(world: World, c: ArrangeChoice): ArrangeView {
       for (const g of freeGuardianSpots(world, c.id)) {
         if (g.side === c.place.side && g.step === c.place.step) continue;
         const q = guardianIsletRectangle(ici, g);
-        place({ x: Math.floor((q.x0 + q.x1) / 2), y: Math.floor((q.y0 + q.y1) / 2) }, eau, out);
+        place({ x: Math.floor((q.x0 + q.x1) / 2), y: Math.floor((q.y0 + q.y1) / 2) }, eau, 2, out);
       }
       const avant = footprintOf(c.id, ici, guardianOf(world, c.id)).find((p) => p.genre === 'ilot')!;
       return { cases: out, souleve: avant, suivre: { x: (r.x0 + r.x1) / 2, y: (r.y0 + r.y1) / 2, z: eau }, barrees: [] };
@@ -140,7 +144,7 @@ export function arrangeView(world: World, c: ArrangeChoice): ArrangeView {
     case 'borne': {
       const p = stationInWorld(world, c.key, c.place);
       const z = solDeLaBorne(ici, c.place) + 2;
-      for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) if ((dx + dy) % 2 === 0 && (dx || dy)) out.push({ x: p.x + dx, y: p.y + dy, z: z - 2, genre: 'fantome' });
+      for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) if ((dx + dy) % 2 === 0 && (dx || dy)) out.push({ x: p.x + dx, y: p.y + dy, z: z - 3, genre: 'fantome' });
       out.push({ x: p.x, y: p.y, z: z + 1, genre: 'fantome' });
       for (const q of freeStationSpots(world, c.key)) {
         if (q.x === c.place.x && q.y === c.place.y) continue;
