@@ -29,7 +29,7 @@ interface Props {
   replay?: number;
   /** Pour chaque bulle, l'élément dont elle parle (sélecteur CSS), mis en évidence tant qu'elle est ouverte. */
   targets?: (string | undefined)[];
-  /** À la fermeture (« J'ai compris » ou « Passer »). */
+  /** À la fermeture (« J'ai compris » ou la croix, « Passer »). */
   onClose?: () => void;
 }
 
@@ -80,17 +80,23 @@ export function Tutorial({ id, steps, replay = 0, targets, onClose }: Props) {
   };
   return (
     <section className="panel tutorial" role="dialog" aria-labelledby={`tuto-${id}`} aria-live="polite">
-      <p id={`tuto-${id}`} className="tutorial-step">
+      {/* Sa tête, comme une fiche du monde : le compteur, Écouter et la croix sur une ligne, le texte sur toute la largeur dessous. */}
+      <div className="tutorial-tete">
         {/* Une seule bulle : pas de compteur, un signe à lire qui n'apprendrait rien. */}
         {steps.length > 1 && (
           <span className="tutorial-count" aria-hidden="true">
             {step + 1}/{steps.length}
           </span>
         )}
+        <SpeakButton text={text} compact />
+        <button type="button" className="icon-button tutorial-fermer" aria-label="Passer" onClick={close}>
+          <Icon name="close" />
+        </button>
+      </div>
+      <p id={`tuto-${id}`} className="tutorial-step">
         <Syllabified text={text} />
       </p>
       <div className="tutorial-actions">
-        <SpeakButton text={text} />
         {last ? (
           <button ref={actionRef} type="button" className="button primary" onClick={close}>
             <Icon name="check" /> J’ai compris
@@ -98,11 +104,6 @@ export function Tutorial({ id, steps, replay = 0, targets, onClose }: Props) {
         ) : (
           <button ref={actionRef} type="button" className="button primary" onClick={() => setStep((s) => s + 1)}>
             Suivant <Icon name="play" />
-          </button>
-        )}
-        {!last && (
-          <button type="button" className="button" onClick={close}>
-            Passer
           </button>
         )}
       </div>
