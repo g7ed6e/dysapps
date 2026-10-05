@@ -177,11 +177,10 @@ export const LINKS_BEFORE_GD9: readonly LinkBeforeGd9[] = [
   p('maths-6e-calculation', 'maths-6e-decimals', 'pont'),
   b('french-6e-grammar-spelling', 'maths-6e-decimals', 'bac', 4),
   // Les îles d'anglais, derrière : un pont depuis la Ferme, un depuis la Forêt, un entre les deux. La Baie et l'Horloge ne
-  // sont plus réunies par un isthme (GD-9, 5 octobre 2026) : au même identifiant, leur liaison est posée d'office et
-  // gratuite, comme l'était le passage à pied de l'une à l'autre.
+  // sont plus réunies par un isthme (GD-9, 5 octobre 2026) : un pont, au même identifiant et au même prix que le sentier.
   b('french-6e-grammar-spelling', 'english-6e-vocabulary', 'pont', 5),
   p('french-6e-phonology', 'english-6e-grammar', 'pont'),
-  b('english-6e-vocabulary', 'english-6e-grammar', 'pont', 0),
+  p('english-6e-vocabulary', 'english-6e-grammar', 'pont'),
   // Le port en étoile (GD-7) : de la Plaine ou de la Forêt, une liaison vers chaque île qu'elles ne touchaient pas. Deux
   // bacs longent l'archipel par le devant, entre les îlots des Gardiens et les côtes (la Carrière par l'est de la Plaine,
   // à l'écart de la jetée ; la Tour par l'est de son îlot) ; un pont de la Forêt à la Baie, à l'écart de l'Horloge.
@@ -268,13 +267,15 @@ export function linkLength(b: BridgeDef, built: readonly string[]): number | nul
   return linkGeometry().length(b, built);
 }
 
+const isLegacy = (b: BridgeDef): b is LegacyLink => 'kind' in b;
+
 /**
  * La nature d'une liaison, les liaisons `built` posées : celle écrite avec elle pour une liaison d'avant GD-9
  * (`LegacyLink` : les anciennes liaisons entre classes, les tracés d'origine) ; sinon selon son tracé dans la disposition (`LinkGeometry`) : un
  * sentier entre deux lieux réunis, un pont jusqu'à `SHORT_LINK` cases, un bac au-delà (un pont dans le ciel).
  */
 export function linkKind(b: BridgeDef, built: readonly string[]): BridgeKind {
-  if ('kind' in b) return (b as LegacyLink).kind;
+  if (isLegacy(b)) return b.kind;
   return linkGeometry().kind(b, built) ?? 'pont';
 }
 

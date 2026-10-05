@@ -222,14 +222,17 @@ function ouvrirLaFiche(objet) {
     await page.waitForTimeout(2500);
   };
 }
-/** Ouvre la fiche d'une île pâle, touche « Relier », puis « Partir d'une autre île » s'il y a un autre départ. */
+/** Ouvre la fiche d'une île pâle, touche « Relier », puis « Partir d'une autre île » (l'état préparé a deux départs). */
 function relierDepuisUneAutreIle(ile) {
   return async (page) => {
     await ouvrirLaFiche({ genre: 'ile', id: ile })(page);
     await page.getByRole('button', { name: 'Relier' }).click();
     await page.waitForTimeout(1500);
     const autre = page.getByRole('button', { name: /Partir d.une autre île/ });
-    if (await autre.count()) await autre.click();
+    await autre.click();
+    // Le bandeau d'un succès gagné par l'état préparé cacherait le cadrage de la liaison.
+    const bandeau = page.locator('.celebration button[aria-label="Fermer"]');
+    while (await bandeau.count()) await bandeau.first().click();
     await page.waitForTimeout(2500);
   };
 }

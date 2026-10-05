@@ -97,14 +97,14 @@ describe('relier toute une région', () => {
 });
 
 describe('le prix et la nature d’une liaison', () => {
-  it('une liaison entre chaque paire de lieux d’une région, au même prix : 4 blocs en 6e, 5 ailleurs ; le pont du départ et celui de la Baie à l’Horloge gratuits', () => {
+  it('une liaison entre chaque paire de lieux d’une région, au même prix : 4 blocs en 6e, 5 ailleurs ; seul le pont du départ est gratuit', () => {
     for (const a of ARCHIPELAGO_IDS) {
       const n = islandsOf(a).length;
       const ici = BRIDGES.filter((b) => archipelagoOfIsland(b.from) === a);
       expect(ici.length, a).toBe((n * (n - 1)) / 2);
       for (const b of ici) expect(b.cost === 0 || b.cost === LINK_PRICE[a], b.id).toBe(true);
     }
-    expect(BRIDGES.filter((b) => b.cost === 0).map((b) => b.id)).toEqual(['french-6e-phonology-maths-6e-calculation', 'english-6e-vocabulary-english-6e-grammar']);
+    expect(BRIDGES.filter((b) => b.cost === 0).map((b) => b.id)).toEqual(['french-6e-phonology-maths-6e-calculation']);
     expect(LINK_PRICE).toEqual({ '6e': 4, '5e': 5, '4e': 5, '3e': 5 });
   });
 
@@ -121,13 +121,13 @@ describe('le prix et la nature d’une liaison', () => {
     expect(linkKind(getBridge('french-6e-grammar-spelling-french-6e-reading')!, [])).not.toBe('sentier');
   });
 
-  it('la Baie et l’Horloge ne sont plus réunies : quatre cases d’eau au moins, leur liaison posée d’office et gratuite', () => {
+  it('la Baie et l’Horloge ne sont plus réunies : quatre cases d’eau au moins, un pont au prix de la classe', () => {
     expect(isthmusOf('english-6e-vocabulary')).toBeNull();
     const lieux = mapOf('6e').filter((d) => d.id === 'english-6e-vocabulary' || d.id === 'english-6e-grammar');
     expect(tooSmallGaps('6e', lieux)).toEqual([]);
     const b = getBridge('english-6e-vocabulary-english-6e-grammar')!;
-    expect(b.cost).toBe(0);
-    expect(bridgeState(b, [])).toBe('built');
+    expect(b.cost).toBe(LINK_PRICE['6e']);
+    expect(bridgeState(b, [])).not.toBe('built');
     expect(linkKind(b, [])).toBe('pont');
     expect(bridgePath(b, []).length).toBeGreaterThan(0);
   });

@@ -55,7 +55,7 @@ export function villageStage(village: Pick<World, 'parts' | 'links'>, a: Archipe
   if (portDone && linked && monument) return at(4, to ? `Fais partir le Bloc-Navire vers les ${noms[to]}.` : null);
   if (portDone && linked) return at(3, 'Termine un monument de l’archipel.');
   if (anyPart) {
-    const left = [!portDone && `réussis les missions de ${portName}`, !linked && `construis un ouvrage qui part de ${portName}`].filter(Boolean).join(' et ');
+    const left = [!portDone && `réussis les missions de ${portName}`, !linked && `pose un ouvrage qui part de ${portName}`].filter(Boolean).join(' et ');
     return at(2, `${left.charAt(0).toUpperCase()}${left.slice(1)}.`);
   }
   return at(1, 'Réussis une première mission sur une île.');

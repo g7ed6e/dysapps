@@ -92,6 +92,7 @@ it('la Forêt et la Plaine sont ouvertes au début (pont déjà là) ; de l’un
       .map((b) => b.id)
       .sort(),
   ).toEqual([
+    'french-6e-phonology-english-6e-grammar',
     'french-6e-phonology-english-6e-vocabulary',
     'french-6e-phonology-french-6e-grammar-spelling',
     'french-6e-phonology-french-6e-letter-confusion',
@@ -139,6 +140,7 @@ it('un voyage ouvre le port de l’archipel suivant, et rien de plus ; il faut l
       .map((b) => b.id)
       .sort(),
   ).toEqual([
+    'french-6e-phonology-english-6e-grammar',
     'french-6e-phonology-english-6e-vocabulary',
     'french-6e-phonology-french-6e-grammar-spelling',
     'french-6e-phonology-french-6e-letter-confusion',

@@ -42,17 +42,17 @@ it('l’île où l’élève est allé passe devant tant qu’il y reste une mis
 });
 
 it('ensuite, l’ouvrage qui ouvre une île de la matière la moins jouée, depuis l’île d’où il part, avec sa raison', () => {
-  // La Forêt, la Plaine, la Mine et la Rivière jouées en entier ; le bonhomme sur la Mine. Français : 5 missions sur
+  // La Forêt, la Plaine, la Mine et la Rivière jouées en entier ; le bonhomme sur la Forêt. Français : 5 missions sur
   // 5 îles ; maths : 8 sur 3 ; anglais : aucune ; toutes les liaisons coûtent 4 blocs (GD-9).
   const iles: BiomeId[] = ['french-6e-phonology', 'maths-6e-calculation', 'french-6e-letter-confusion', 'maths-6e-fractions'];
   const progress = Object.assign({}, ...iles.map((id) => joue(id)));
-  const world = { place: 'french-6e-letter-confusion', links: ['french-6e-phonology-french-6e-letter-confusion', 'maths-6e-calculation-maths-6e-fractions'] };
+  const world = { place: 'french-6e-phonology', links: ['french-6e-phonology-french-6e-letter-confusion', 'maths-6e-calculation-maths-6e-fractions'] };
   const paye = sanitizeState({ progress, stock: { [BLOC.bois]: 4 }, world });
-  expect(nextDestination(paye)).toMatchObject({ island: 'french-6e-letter-confusion', text: 'Tu peux poser le pont vers Horloge des verbes. Il ouvre une île d’anglais.', have: 4, need: 4 });
+  expect(nextDestination(paye)).toMatchObject({ island: 'french-6e-phonology', text: 'Tu peux poser le pont vers Baie des mots. Il ouvre une île d’anglais.', have: 4, need: 4 });
   // La destination dit quelle liaison : la flèche de la Carte se pose sur elle, pas sur l'île.
-  expect(nextDestination(paye).ouvrage).toBe('french-6e-letter-confusion-english-6e-grammar');
-  // Le panneau de la Mine met la même liaison en avant (son seul « Poser » principal).
-  expect(nextGoalInfo(paye, 'french-6e-letter-confusion', NOMS_ARCHIPELS, mots)?.ouvrage).toBe('french-6e-letter-confusion-english-6e-grammar');
+  expect(nextDestination(paye).ouvrage).toBe('french-6e-phonology-english-6e-vocabulary');
+  // Le panneau de la Forêt met la même liaison en avant (son seul « Poser » principal).
+  expect(nextGoalInfo(paye, 'french-6e-phonology', NOMS_ARCHIPELS, mots)?.ouvrage).toBe('french-6e-phonology-english-6e-vocabulary');
   const pauvre = sanitizeState({ progress, stock: { [BLOC.bois]: 1 }, world });
   // Sans blocs, aucune liaison ne se paie : la suggestion reprend l'ordre des matières (l'anglais, jamais joué).
   expect(nextDestination(pauvre)).toMatchObject({ island: 'french-6e-phonology', text: 'Encore 3 blocs pour le pont vers Baie des mots. Il ouvre une île d’anglais.', have: 1, need: 4, ouvrage: 'french-6e-phonology-english-6e-vocabulary' });

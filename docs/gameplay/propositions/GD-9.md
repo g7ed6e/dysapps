@@ -38,6 +38,8 @@ Choisi : le lieu se démonte couche par couche, du haut vers le bas, puis se rem
 
 Choisi : un voile de brume couvre l'île, passe sur la place choisie et se lève, avec un seul « toc » ; jamais le fondu de la ruine. Propositions du consultant, à la reprise d'Archipéo : places libres en hauts-fonds lagon cerclés d'écume en pointillés ; ce sont les brumes qui recomposent la carte ; une jetée de pierre qui réunit, une arche au 3e. Plafond et budget à revoir à la reprise.
 
+Les enveloppes d'Archipéo sont relevées pour la mer plus large et le décor des places libres (mainteneur, 5 octobre 2026) : en 6e, la mer passe de 5 000 à 6 300 triangles et le total de 58 500 à 59 500 ; dans les autres classes, la mer passe de 4 550 à 5 600, le décor de 9 150 à 10 500 et le total de 53 320 à 55 790.
+
 ## Le coût
 
 Sept lots, par l'artiste technique 3D, sur le jeu commun (jamais un lot de rendu), réunis dans le moins de pull requests possible (mainteneur, 5 octobre 2026) : L0 est une mesure sans code ; une première pull request porte L1 à L3 (le monde sur la grille, sans geste nouveau pour l'élève) ; une seconde porte L4 et L5 (le mode « Aménager »).
@@ -64,3 +66,5 @@ GD-7 s'amende : l'étoile du point de départ et ses prix disparaissent ; l'él�
 ## La décision
 
 5 octobre 2026, mainteneur : la piste « déplacer les lieux sur une grille », avec « 1b, 2b, 3a, 4a, 5a, 6a, 7b », une grille bien plus fine, puis « 1 oui ok, 2 oui, 3 oui » (le point de départ fixe, les appels passagers acceptés, la construction qui réunit de 4 cases), puis « permettre de déplacer les gardiens autour de leur île », « et choisir son orientation », puis la rotation des lieux (« oui tant qu'à faire autant le faire tout de suite »), le déplacement de leurs bornes et de leurs « portes », puis « oui partout » aux six précisions (le lieu de LV2 en bout de chemin et les deux lieux de départ de la 6e fixes ; la réunion comptée comme une grande construction ; la carte de départ ; « à 2 cases » ; les portes, arrivées des liaisons ; la bande de devant réservée aux bornes) et « on va essayer de faire ça en un minimum de PRs ». Puis, sa proposition de remplacer l'étoile par des liaisons que l'élève pose lui-même, « go passerelles ».
+
+5 octobre 2026, mainteneur, sur deux cartes : « Séparer » (plus aucun lieu collé sur la carte de départ, les paires réunies deviennent des lieux reliés par un pont) et « Payants » (ces ponts gardent le prix de l'ancien sentier).

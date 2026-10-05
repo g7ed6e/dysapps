@@ -140,7 +140,10 @@ function readRegion(a: ArchipelagoId, raw: unknown): RegionLayout | null {
       if (isStationKey(a, key) && isRecord(p) && isInt(p.x) && isInt(p.y) && p.x >= -2 && p.x <= 17 && p.y >= -2 && p.y <= 17) stations[key] = { x: p.x, y: p.y };
     if (Object.keys(stations).length) out.stations = stations;
   }
-  const isLinkOf = (id: unknown): id is string => typeof id === 'string' && getBridge(id) !== undefined && archipelagoOfIsland(getBridge(id)!.from) === a;
+  const isLinkOf = (id: unknown): id is string => {
+    const d = typeof id === 'string' ? getBridge(id) : undefined;
+    return !!d && archipelagoOfIsland(d.from) === a;
+  };
   if (isRecord(raw.landings)) {
     const landings: Record<string, { from: LayoutLanding; to: LayoutLanding }> = {};
     for (const [id, l] of Object.entries(raw.landings)) {
