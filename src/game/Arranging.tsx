@@ -1,5 +1,5 @@
 // Le mode « Aménager » à l'écran (GD-9, point 1), sur la Carte : le bouton en icône (quatre flèches) et sa pastille des
-// liaisons à reposer, la barre du mode à place fixe (les flèches nommées en mots, « Tourner », « Poser ici », ↶,
+// ouvrages à reposer (le mot de l'univers), la barre du mode à place fixe (les flèches nommées en mots, « Tourner », « Poser ici », « Défaire »,
 // « Remettre comme avant », ✓ Terminé), la phrase écrite et lue à chaque calage et après chaque pose, la liste des
 // liaisons à reposer, et le geste de la pose (1,5 s au plus, un toucher le termine ; posé d'un coup avec moins
 // d'animations). Les règles sont dans world/arrange.ts et world/arrangeMode.ts ; la 3D dessine le choix
@@ -39,22 +39,46 @@ import { footprintOf } from './world/footprint';
 import type { Intention, Point } from './world/layout';
 import type { Rectangle } from './world/placement';
 import type { PlaceName } from './world/placeSentence';
+import { LIAISON, type LinkPhrases, type LinkWord, linkPhrases } from './world/linkWord';
 
-/** La clé de l'appareil qui retient que le mot « liaison à reposer » a été expliqué (une fois). */
+/** La clé de l'appareil qui retient que le mot « ouvrage à reposer » (le mot de l'univers) a été expliqué (une fois). */
 const CLE_DE_L_EXPLICATION = 'amenager-liaison-expliquee';
 
-/** Ce que dit le mot « liaison à reposer », la première fois. */
-const EXPLICATION_DE_LA_LIAISON =
-  'Une liaison à reposer, c’est une liaison que tu as déjà construite : en déplaçant un lieu, elle s’est séparée. Rien n’est perdu : tu la reposes gratuitement entre deux lieux voisins, quand tu veux.';
+/** La clé de l'appareil qui retient que le mot « réunir » a été expliqué (une fois). */
+const CLE_DE_LA_REUNION = 'amenager-reunir-explique';
+
+/** Ce que dit le mot « ouvrage à reposer » (le mot de l'univers), la première fois. */
+function explicationDeLaLiaison(m: LinkPhrases): string {
+  return `${m.Un} à reposer, c’est ${m.un} que tu as déjà ${m.accord('construit')} : en déplaçant un lieu, ${m.accord('il', 'elle')} s’est ${m.accord('séparé')}. Rien n’est perdu : tu ${m.accord('le', 'la')} reposes gratuitement entre deux lieux voisins, quand tu veux.`;
+}
+
+/** Ce que dit le mot « réunir », la première fois : avec le nom et la description de la construction de l'univers. */
+function explicationDeLaReunion(reunion: TextesDeLaReunion): string {
+  return `Réunir, c’est attacher pour toujours deux lieux voisins par ${minuscule(reunion.nom)} : ensuite, ils bougent ensemble et ne se séparent plus. ${reunion.description}`;
+}
+
+const minuscule = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
 
 /** Ce que dit le jeu quand une pose ne se fait pas. */
-const REFUS: Readonly<Record<string, string>> = {
-  fixe: 'Ce lieu ne bouge pas : c’est le point de départ de la région.',
-  occupee: 'Cette place n’est pas libre.',
-  reunis: 'Ce lieu ne peut pas se réunir à un autre ici.',
-  liaison: 'Cette liaison ne se pose pas là.',
-  inconnu: 'Ce n’est pas possible ici.',
-};
+function refus(reason: string, m: LinkPhrases): string {
+  const textes: Readonly<Record<string, string>> = {
+    fixe: 'Ce lieu ne bouge pas : c’est le point de départ de la région.',
+    occupee: 'Cette place n’est pas libre.',
+    reunis: 'Ce lieu ne peut pas se réunir à un autre ici.',
+    liaison: `${m.Ce} ne se pose pas là.`,
+    inconnu: 'Ce n’est pas possible ici.',
+  };
+  return textes[reason] ?? textes.inconnu;
+}
+
+/** Le nom et la description de la construction qui réunit deux lieux, dans l'univers (`textes.reunion`). */
+interface TextesDeLaReunion {
+  nom: string;
+  description: string;
+}
+
+/** Sans univers : les mots communs. */
+const REUNION_COMMUNE: TextesDeLaReunion = { nom: 'La construction qui les réunit', description: 'On la bâtit bloc par bloc, comme une grande construction.' };
 
 /** Les flèches de la barre, dans leur ordre, nommées en mots. */
 const FLECHES: readonly { dir: Direction; icone: AnyIconName; nom: string; touche: string }[] = [
@@ -76,8 +100,18 @@ interface Options {
   dire: (texte: string) => void;
   /** Une case d'une île (un ancrage) dans le monde. */
   versMonde: (p: NonNullable<Extract<Intention, { genre: 'ile' }>['sol']>) => Point;
-  /** Le nom de la construction qui réunit deux lieux dans l'univers (« La digue »), avec l'article. */
-  nomDeLaReunion?: string;
+  /** La construction qui réunit deux lieux dans l'univers (« La digue », avec l'article, et ce qu'elle est). */
+  reunion?: TextesDeLaReunion;
+  /** Le mot qui nomme une liaison dans l'univers (« ouvrage »). */
+  liaisons?: LinkWord;
+}
+
+/** « Réunir » touché : la question, avec un bouton par voisin possible (GD-9, point 10). */
+interface QuestionDeReunion {
+  id: BiomeId;
+  voisins: BiomeId[];
+  /** Le mot « réunir » est expliqué (la première fois). */
+  explication: string | null;
 }
 
 /** Le geste de pose en cours : ce qu'il posera, et ses minuteries. */
@@ -99,8 +133,12 @@ export interface Amenagement {
   liste: boolean;
   ouvrirLaListe(): void;
   fermerLaListe(): void;
-  /** Le mot « liaison à reposer » à expliquer (la première fois), ou rien. */
+  /** Le mot « ouvrage à reposer » à expliquer (la première fois), ou rien. */
   explication: boolean;
+  /** Ce que dit le mot « ouvrage à reposer » (le mot de l'univers). */
+  texteDeLExplication: string;
+  /** Le mot des liaisons dans l'univers, accordé. */
+  mot: LinkPhrases;
   aReposer: string[];
   geste: ArrangeGesture | null;
   /** Une intention de la vue dans le mode : `true` si le mode l'a prise. */
@@ -116,10 +154,16 @@ export interface Amenagement {
   peutRemettre: boolean;
   choisirUneLiaison(id: string): void;
   /**
-   * « Réunir » (GD-9, point 10) : le lieu choisi (ou `id`, depuis la vue simple), à sa place, avec son premier voisin
-   * ouvert à la bonne distance.
+   * « Réunir » (GD-9, point 10) : la question, pour le lieu choisi (ou `id`, depuis la vue simple), à sa place, avec un
+   * bouton par voisin ouvert à la bonne distance ; rien ne se fait avant la réponse.
    */
-  reunir(id?: BiomeId): void;
+  demanderReunion(id?: BiomeId): void;
+  /** La question de « Réunir » en cours, ou rien. */
+  question: QuestionDeReunion | null;
+  /** La réponse : réunir `id` et `autre`. */
+  reunir(id: BiomeId, autre: BiomeId): void;
+  /** « Non » : rien n'est réuni. */
+  annulerReunion(): void;
   /** Le premier voisin ouvert avec lequel un lieu se réunirait, à sa place, ou rien (la vue simple le propose). */
   voisinAReunir(id: BiomeId): BiomeId | null;
   /** Choisir directement (la vue simple : une borne, une arrivée), avec sa phrase. */
@@ -146,12 +190,14 @@ function emprise(world: World, id: BiomeId): Rectangle {
   };
 }
 
-export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage, sons, dire, versMonde, nomDeLaReunion = 'La construction qui les réunit' }: Options): Amenagement {
+export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage, sons, dire, versMonde, reunion = REUNION_COMMUNE, liaisons = LIAISON }: Options): Amenagement {
+  const mot = useMemo(() => linkPhrases(liaisons), [liaisons]);
   const [session, setSession] = useState<ArrangeSession | null>(null);
   const [choix, setChoix] = useState<ArrangeChoice | null>(null);
   const [phrase, setPhrase] = useState('');
   const [liste, setListe] = useState(false);
   const [explication, setExplication] = useState(false);
+  const [question, setQuestion] = useState<QuestionDeReunion | null>(null);
   const [geste, setGeste] = useState<ArrangeGesture | null>(null);
   const enCours = useRef<GesteEnCours | null>(null);
   const seq = useRef(0);
@@ -170,13 +216,14 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
   /** « Il peut se réunir à … » : dit quand un lieu choisi ou posé a un voisin ouvert à réunir. */
   const peutSeReunir = (w: World, id: BiomeId) => {
     const v = voisinAReunir(w, id);
-    return v ? ` Il peut se réunir à ${nom(v)} : touche-le, puis « Réunir ».` : '';
+    return v ? ` Il peut se réunir à ${nom(v)}. Touche à nouveau ${nom(id)}, puis « Réunir ».` : '';
   };
   const choisir = (c: ArrangeChoice | null, texte?: string) => {
     setChoix(c);
+    setQuestion(null);
     const w = worldRef.current;
-    const reunion = c?.genre === 'lieu' && sameSpot(c.spot, spotOf(w, c.id)) && voisinAReunir(w, c.id) ? ` Il peut se réunir à ${nom(voisinAReunir(w, c.id)!)} : « Réunir ».` : '';
-    annoncer(texte ?? (c ? choiceSentence(w, c, nom) + reunion : ''));
+    const aReunir = c?.genre === 'lieu' && sameSpot(c.spot, spotOf(w, c.id)) && voisinAReunir(w, c.id) ? ` Il peut se réunir à ${nom(voisinAReunir(w, c.id)!)} : « Réunir ».` : '';
+    annoncer(texte ?? (c ? choiceSentence(w, c, nom, mot) + aReunir : ''));
   };
 
   /** Le geste fini (ou touché) : le monde posé, le son, la phrase. */
@@ -201,11 +248,11 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     const w = worldRef.current;
     if (!choix || !session || enCours.current) return;
     const r = poseChoice(w, choix);
-    if (!r.ok) return annoncer(REFUS[r.reason] ?? REFUS.inconnu);
+    if (!r.ok) return annoncer(refus(r.reason, mot));
     setSession(recordPose(session, w, r.world));
     const texte =
-      poseSentence(r.world, choix, nom) +
-      (r.relink.length ? ` ${r.relink.length === 1 ? 'Une liaison est' : `${r.relink.length} liaisons sont`} à reposer.` : '') +
+      poseSentence(r.world, choix, nom, mot) +
+      (r.relink.length ? ` ${mot.aReposer(r.relink.length)}` : '') +
       (choix.genre === 'lieu' ? peutSeReunir(r.world, choix.id) : '');
     setChoix(null);
     // Le geste (un lieu seulement) : démonté à sa place d'avant, remonté à la nouvelle ; d'un coup avec moins d'animations.
@@ -233,12 +280,13 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
   const ouvrir = () => {
     if (ouvert) return;
     setSession(startArranging(worldRef.current));
-    choisir(null, 'Touche un lieu, un gardien, une borne ou une liaison pour le déplacer.');
+    choisir(null, `Touche un lieu, un Gardien, une borne ou ${mot.un} pour le déplacer.`);
   };
   const terminer = () => {
     finirLeGeste();
     setSession(null);
     setChoix(null);
+    setQuestion(null);
     setListe(false);
     setExplication(false);
     setPhrase('');
@@ -255,15 +303,16 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     if (choix.genre === 'gardien') {
       const w = worldRef.current;
       const { result, sentence } = turnGuardianNow(w, choix.id);
-      if (!result.ok) return annoncer(REFUS[result.reason]);
+      if (!result.ok) return annoncer(refus(result.reason, mot));
       setSession(recordPose(session, w, result.world));
       arrange(result.world);
       if (sons) sonDeLaPose();
-      return annoncer(sentence);
+      // Tourner un Gardien le pose tout de suite : la phrase le dit.
+      return annoncer(`C’est posé. ${sentence}`);
     }
     if (choix.genre !== 'lieu') return;
     const t = turnChoice(worldRef.current, choix);
-    if (!t) return annoncer(REFUS.occupee);
+    if (!t) return annoncer(refus('occupee', mot));
     choisir(t);
   };
   const defaire = () => {
@@ -282,20 +331,39 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     choisir(null, 'Tout est remis comme avant.');
   };
 
-  const reunir = (direct?: BiomeId) => {
+  const demanderReunion = (direct?: BiomeId) => {
     const w = worldRef.current;
     if (!session || enCours.current) return;
     const id = direct ?? (choix?.genre === 'lieu' && sameSpot(choix.spot, spotOf(w, choix.id)) ? choix.id : null);
-    const autre = id ? voisinAReunir(w, id) : null;
-    if (!id || !autre) return annoncer(REFUS.reunis);
+    const voisins = id ? joinCandidates(w, id) : [];
+    if (!id || !voisins.length) return annoncer(refus('reunis', mot));
+    // Le mot « réunir » et la construction de l'univers, expliqués la première fois.
+    const premiere = !loadJSON<{ vu: boolean }>(CLE_DE_LA_REUNION, { vu: false }).vu;
+    if (premiere) saveJSON(CLE_DE_LA_REUNION, { vu: true });
+    const q: QuestionDeReunion = { id, voisins, explication: premiere ? explicationDeLaReunion(reunion) : null };
+    setQuestion(q);
+    const texte = `Réunir ${nom(id)} et ${voisins.length === 1 ? nom(voisins[0]) : 'quel lieu'} ? Ils ne se sépareront plus.`;
+    setPhrase(texte);
+    dire(q.explication ? `${texte} ${q.explication}` : texte);
+  };
+  const annulerReunion = () => {
+    setQuestion(null);
+    annoncer('Rien n’est réuni.');
+  };
+
+  const reunir = (id: BiomeId, autre: BiomeId) => {
+    const w = worldRef.current;
+    setQuestion(null);
+    if (!session || enCours.current) return;
     const r = joinIslands(w, id, autre);
-    if (!r.ok) return annoncer(REFUS[r.reason] ?? REFUS.inconnu);
+    if (!r.ok) return annoncer(refus(r.reason, mot));
     setSession(recordPose(session, w, r.world));
     arrange(r.world);
     setChoix(null);
     if (sons) sonDeLaPose();
-    const liaisons = r.relink.length ? ` ${r.relink.length === 1 ? 'Une liaison est' : `${r.relink.length} liaisons sont`} à reposer.` : '';
-    annoncer(`${nom(id)} et ${nom(autre)} sont réunis : ils bougent maintenant ensemble.${liaisons} ${nomDeLaReunion} se construit depuis le panneau du lieu. ↶ défait la réunion tant que le mode est ouvert.`);
+    // Deux phrases au plus, sans symbole.
+    const ensuite = r.relink.length ? `${mot.aReposer(r.relink.length).slice(0, -1)}, et « Défaire » annule la réunion tant que le mode est ouvert.` : '« Défaire » annule la réunion tant que le mode est ouvert.';
+    annoncer(`${nom(id)} et ${nom(autre)} sont réunis : ils bougent ensemble, et ${minuscule(reunion.nom)} se construit depuis le panneau du lieu. ${ensuite}`);
   };
 
   const ouvrirLaListe = () => {
@@ -305,7 +373,7 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     if (!loadJSON<{ vu: boolean }>(CLE_DE_L_EXPLICATION, { vu: false }).vu) {
       setExplication(true);
       saveJSON(CLE_DE_L_EXPLICATION, { vu: true });
-      dire(EXPLICATION_DE_LA_LIAISON);
+      dire(explicationDeLaLiaison(mot));
     }
   };
   const fermerLaListe = () => {
@@ -347,7 +415,7 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
           return true;
         }
         const c = chooseIsland(w, i.id);
-        if (!c) annoncer(REFUS.fixe);
+        if (!c) annoncer(refus('fixe', mot));
         else choisir(c);
         return true;
       }
@@ -356,7 +424,7 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
         else {
           const c = chooseIsland(w, i.id);
           if (c) choisir(c);
-          else annoncer(REFUS.fixe);
+          else annoncer(refus('fixe', mot));
         }
         return true;
       case 'borne': {
@@ -387,7 +455,9 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     return () => window.removeEventListener('keydown', onKey);
   });
 
-  const vue = useMemo(() => (choix ? arrangeView(world, choix) : null), [world, choix]);
+  // Le nom du lieu choisi se pose sur son fantôme (la 3D l'écrit au-dessus).
+  const nomChoisi = choix?.genre === 'lieu' ? nom(choix.id) : undefined;
+  const vue = useMemo(() => (choix ? { ...arrangeView(world, choix), ...(nomChoisi ? { nom: nomChoisi } : {}) } : null), [world, choix, nomChoisi]);
   const reunirAvec = choix?.genre === 'lieu' && sameSpot(choix.spot, spotOf(world, choix.id)) ? voisinAReunir(world, choix.id) : null;
   return {
     ouvert,
@@ -400,6 +470,8 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     ouvrirLaListe,
     fermerLaListe,
     explication,
+    texteDeLExplication: explicationDeLaLiaison(mot),
+    mot,
     aReposer,
     geste,
     intention,
@@ -412,7 +484,10 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     peutDefaire: Boolean(session && canUndo(session)),
     peutRemettre: Boolean(session && hasChanged(session, world)),
     choisirUneLiaison,
+    demanderReunion,
+    question,
     reunir,
+    annulerReunion,
     reunirAvec,
     voisinAReunir: (id) => voisinAReunir(world, id),
     choisirDirect: (c) => choisir(c),
@@ -432,7 +507,7 @@ export function ArrangeButton({ amenagement }: { amenagement: Amenagement }) {
       type="button"
       className="button world-bar-amenager"
       aria-pressed={amenagement.ouvert}
-      aria-label={n ? `Aménager (${n} liaison${n > 1 ? 's' : ''} à reposer)` : 'Aménager'}
+      aria-label={n ? `Aménager (${n} ${n > 1 ? amenagement.mot.pluriel : amenagement.mot.nom} à reposer)` : 'Aménager'}
       onClick={() => (amenagement.ouvert ? amenagement.terminer() : n ? amenagement.ouvrirLaListe() : amenagement.ouvrir())}
     >
       <Icon name="amenager" /> <span className="world-bar-text">Aménager</span>
@@ -447,19 +522,20 @@ export function ArrangeButton({ amenagement }: { amenagement: Amenagement }) {
 }
 
 /** La phrase du mode, en haut, sur un fond uni : écrite, et lisible à voix haute. */
-export function ArrangeSentence({ amenagement, nom }: { amenagement: Amenagement; nom: PlaceName }) {
-  const { liste, explication, aReposer, phrase } = amenagement;
+export function ArrangeSentence({ amenagement, nom, questionAilleurs = false }: { amenagement: Amenagement; nom: PlaceName; questionAilleurs?: boolean }) {
+  const { liste, explication, aReposer, phrase, mot, question } = amenagement;
+  const titreDeLaListe = `${mot.pluriel.charAt(0).toUpperCase()}${mot.pluriel.slice(1)} à reposer`;
   if (liste)
     return (
-      <div className="creature-line world-line arrange-relink" role="dialog" aria-label="Liaisons à reposer">
+      <div className="creature-line world-line arrange-relink" role="dialog" aria-label={titreDeLaListe}>
         {explication && (
           <p className="arrange-explication">
-            {EXPLICATION_DE_LA_LIAISON} <SpeakButton text={EXPLICATION_DE_LA_LIAISON} compact />
+            {amenagement.texteDeLExplication} <SpeakButton text={amenagement.texteDeLExplication} compact />
           </p>
         )}
         <p>
           <strong>
-            <Icon name="aReposer" /> Liaisons à reposer : {aReposer.length}
+            <Icon name="aReposer" /> {titreDeLaListe} : {aReposer.length}
           </strong>
         </p>
         <ul className="arrange-relink-list">
@@ -479,11 +555,42 @@ export function ArrangeSentence({ amenagement, nom }: { amenagement: Amenagement
         </button>
       </div>
     );
+  // En vue simple, la question se pose sous la ligne du lieu (`questionAilleurs`).
+  if (question && questionAilleurs) return null;
+  if (question) return <ArrangeJoinQuestion amenagement={amenagement} nom={nom} className="creature-line world-line arrange-line" />;
   if (!phrase) return null;
   return (
     <div className="creature-line world-line arrange-line" role="status" aria-live="polite">
       <p>{phrase}</p>
       <SpeakButton text={phrase} compact />
+    </div>
+  );
+}
+
+/**
+ * La question de « Réunir » (GD-9, point 10), dans la zone de la phrase (ou sous la ligne du lieu, en vue simple) :
+ * « Réunir … et … ? Ils ne se sépareront plus. », l'explication la première fois, un bouton « Réunir à … » par voisin
+ * possible, et « Non ». Rien n'y est mis en avant : c'est à l'élève de choisir.
+ */
+export function ArrangeJoinQuestion({ amenagement, nom, className }: { amenagement: Amenagement; nom: PlaceName; className?: string }) {
+  const { question, phrase } = amenagement;
+  if (!question) return null;
+  return (
+    <div className={`arrange-question${className ? ` ${className}` : ''}`} role="group" aria-label={`Réunir ${nom(question.id)} ?`}>
+      <p>
+        {phrase} <SpeakButton text={question.explication ? `${phrase} ${question.explication}` : phrase} compact />
+      </p>
+      {question.explication && <p className="arrange-explication">{question.explication}</p>}
+      <div className="arrange-question-buttons">
+        {question.voisins.map((v) => (
+          <button key={v} type="button" className="button" onClick={() => amenagement.reunir(question.id, v)}>
+            <Icon name="reunir" /> Réunir à {nom(v)}
+          </button>
+        ))}
+        <button type="button" className="button" onClick={amenagement.annulerReunion}>
+          <Icon name="close" /> Non
+        </button>
+      </div>
     </div>
   );
 }
@@ -507,18 +614,18 @@ export function ArrangeBar({ amenagement, className }: { amenagement: Amenagemen
         <button type="button" className="button" disabled={!canTurn(choix) || occupe} onClick={amenagement.tourner}>
           <Icon name="tourner" /> <span>Tourner</span>
         </button>
-        <button type="button" className="button" disabled={!amenagement.reunirAvec || occupe} onClick={() => amenagement.reunir()}>
+        <button type="button" className="button" aria-pressed={Boolean(amenagement.question)} disabled={!amenagement.reunirAvec || occupe} onClick={() => amenagement.demanderReunion()}>
           <Icon name="reunir" /> <span>Réunir</span>
         </button>
         <button type="button" className={`button arrange-pose${choix ? ' primary' : ''}`} disabled={!choix || occupe} onClick={amenagement.poserIci}>
-          <Icon name="check" /> <span>Poser ici</span>
+          <Icon name="poser" /> <span>Poser ici</span>
         </button>
       </div>
       <div className="arrange-bar-row">
         <button type="button" className="button" disabled={!amenagement.peutDefaire || occupe} onClick={amenagement.defaire} aria-label="Défaire la dernière pose">
-          <Icon name="defaire" />
+          <Icon name="defaire" /> <span>Défaire</span>
         </button>
-        {/* Sans icône : la seule flèche de la rangée reste celle de ↶, qui ne se confond plus avec une autre. */}
+        {/* Sans icône : la seule flèche de la rangée reste celle de « Défaire », qui ne se confond plus avec une autre. */}
         <button type="button" className="button" disabled={!amenagement.peutRemettre || occupe} onClick={amenagement.remettre}>
           <span>Remettre comme avant</span>
         </button>

@@ -251,7 +251,7 @@ export default function WorldCanvas({
       },
     };
     const cadrage = creerCamera(monde, camera, personnages.avatar, derniers, instant, lecture);
-    const amenagement = creerAmenagement(monde, reduceMotion);
+    const amenagement = creerAmenagement(monde, reduceMotion, camera, el);
     world.current = {
       amenagement,
       garderEnVue: (p) => {

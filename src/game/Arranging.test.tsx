@@ -61,6 +61,15 @@ afterEach(() => {
 const depart = () => toutConstruit().world;
 
 describe('le mode « Aménager »', () => {
+  it('« Tourner » un Gardien le pose tout de suite, et la phrase le dit', () => {
+    render(<SettingsProvider><Banc reduit depart={depart()} /></SettingsProvider>);
+    fireEvent.click(screen.getByRole('button', { name: 'Aménager' }));
+    act(() => void dernier.intention({ genre: 'creature', id: VOLCAN, gardien: true }));
+    expect(screen.getByRole('status').textContent).toMatch(/^Le Gardien du /);
+    fireEvent.click(screen.getByRole('button', { name: /Tourner/ }));
+    expect(screen.getByRole('status').textContent).toMatch(/^C’est posé\. /);
+  });
+
   it('choisir, caler, décaler, poser d’un coup (moins d’animations), défaire et remettre comme avant', () => {
     render(<SettingsProvider><Banc reduit depart={depart()} /></SettingsProvider>);
     fireEvent.click(screen.getByRole('button', { name: 'Aménager' }));
@@ -73,6 +82,11 @@ describe('le mode « Aménager »', () => {
     expect(screen.getByRole('button', { name: /Poser ici/ }).className).toMatch(/primary/);
     expect(screen.getByRole('button', { name: /Terminé/ }).className).not.toMatch(/primary/);
     expect(dernier.vue?.cases.length).toBeGreaterThan(0);
+    // Le nom du lieu choisi se pose sur son fantôme.
+    expect(dernier.vue?.nom).toBe(VOLCAN);
+    // « Poser ici » et « Terminé » n'ont pas la même icône (la coche reste à « Terminé »).
+    const icone = (n: RegExp) => screen.getByRole('button', { name: n }).querySelector('svg')?.getAttribute('class');
+    expect(icone(/Poser ici/)).not.toBe(icone(/Terminé/));
     // La mer touchée : le fantôme se cale, la phrase dit où.
     act(() => void dernier.intention({ genre: 'mer', point: { x: 0, y: 0 } }));
     expect(screen.getByRole('status').textContent).toMatch(new RegExp(`^${VOLCAN} : .+, à \\d+ cases?\\.`));
@@ -159,9 +173,28 @@ describe('le mode « Aménager »', () => {
     expect(reunir()).toBeEnabled();
     expect(reunir().className).not.toMatch(/primary/);
     expect(screen.getByRole('status').textContent).toMatch(new RegExp(`Il peut se réunir à ${FERME}`));
+    // « Réunir » pose la question (un bouton par voisin, « Non ») : rien ne se fait avant la réponse.
     fireEvent.click(reunir());
+    expect(joinedWith(monde, TOUR)).toBeNull();
+    const question = screen.getByRole('group', { name: `Réunir ${TOUR} ?` });
+    expect(question.textContent).toMatch(new RegExp(`Réunir ${TOUR} et ${FERME} \\? Ils ne se sépareront plus\\.`));
+    expect(question.textContent).toMatch(/Réunir, c’est attacher pour toujours deux lieux voisins/);
+    fireEvent.click(screen.getByRole('button', { name: /^Non/ }));
+    expect(joinedWith(monde, TOUR)).toBeNull();
+    expect(screen.getByRole('status').textContent).toBe('Rien n’est réuni.');
+    act(() => void dernier.intention({ genre: 'ile', id: TOUR }));
+    fireEvent.click(reunir());
+    // La deuxième fois, le mot n'est plus expliqué.
+    expect(screen.getByRole('group', { name: `Réunir ${TOUR} ?` }).textContent).not.toMatch(/Réunir, c’est attacher/);
+    fireEvent.click(screen.getByRole('button', { name: `Réunir à ${FERME}` }));
     expect(joinedWith(monde, TOUR)).toBe(FERME);
-    expect(screen.getByRole('status').textContent).toMatch(/sont réunis : ils bougent maintenant ensemble\./);
+    const apres = screen.getByRole('status').textContent!;
+    expect(apres).toMatch(/sont réunis : ils bougent ensemble, et .+ se construit depuis le panneau du lieu\./);
+    // Deux phrases au plus, sans symbole.
+    expect(apres.split(/[.?!](\s|$)/).filter((x) => x.trim().length > 1).length).toBeLessThanOrEqual(2);
+    expect(apres).not.toMatch(/[↶✓]/);
+    // « Défaire » : l'icône et le mot, toujours écrits.
+    expect(screen.getByRole('button', { name: 'Défaire la dernière pose' })).toHaveTextContent('Défaire');
     fireEvent.click(screen.getByRole('button', { name: 'Défaire la dernière pose' }));
     expect(joinedWith(monde, TOUR)).toBeNull();
   });

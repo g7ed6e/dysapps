@@ -3761,13 +3761,34 @@ figure.class-table {
   min-height: 56px;
   padding: 0 18px;
 }
-/* Éteint : grisé et sans relief, sa place gardée ; le texte reste lisible (jamais sous 4,5:1 sur son fond). */
+/* Éteint : sans relief, au bord en tirets (la forme, pas la couleur seule), sa place gardée. Des couleurs pleines, pas
+   d'opacité (la mer passait au travers) : le texte `--muted` sur `--secondary-bg` reste au-dessus de 4,5:1 partout
+   (mesuré : Blocland 6,1:1 le jour, 7,2:1 la nuit ; Archipéo 6,3:1 et 5,5:1). */
 .arrange-bar .button:disabled {
-  opacity: 0.6;
+  --button-bg: var(--secondary-bg);
+  background: var(--secondary-bg);
+  color: var(--muted);
+  border-style: dashed;
   box-shadow: none;
   cursor: default;
 }
-/* La pastille des liaisons à reposer : l'icône (une liaison séparée) et le nombre, jamais la couleur seule. */
+/* La question de « Réunir » (un bouton par voisin, et « Non »), dans la zone de la phrase ou sous la ligne du lieu. */
+.arrange-question p {
+  margin: 0;
+}
+.arrange-question-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 0.4rem;
+}
+.arrange-question-buttons .button {
+  min-height: 48px;
+}
+.arrange-list-items .arrange-question {
+  flex: 1 1 100%;
+}
+/* La pastille des ouvrages à reposer : l'icône (un ouvrage séparé) et le nombre, jamais la couleur seule. */
 .world-bar .arrange-count {
   display: inline-flex;
   align-items: center;

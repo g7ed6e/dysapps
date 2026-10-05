@@ -362,6 +362,8 @@ export const ARCHIPEO = {
   },
   // Les blocs assemblés et leur lieu (GD-2) : écrits dans docs/contenu/assemblage.md.
   blocs: nomsAssembles('archipeo'),
+  // Une liaison s'appelle « ouvrage » à l'écran, partout (GD-9 : le mode « Aménager » et le menu aussi).
+  liaisons: { nom: 'ouvrage', pluriel: 'ouvrages', feminin: false },
   reunion: {
     nom: 'La jetée',
     description: 'Une jetée de pierre, simple, d’une île à l’autre : on passe à pied.',

@@ -21,6 +21,7 @@ import type { BiomeId } from './biomes';
 import { Sheet } from './Sheet';
 import { archipelagoOf } from './world/archipelago';
 import { backToStartingMap, startingMapState } from './world/arrange';
+import { linkPhrases } from './world/linkWord';
 
 interface Props {
   /** La croix ou Échap : le menu se ferme, on est dans le village. */
@@ -49,8 +50,8 @@ function Row({ to, icon, title, desc }: { to: string; icon: AnyIconName; title: 
 
 export function MenuSheet({ onClose, onAller, onAide }: Props) {
   const { state, arrange } = useBlocland();
-  // « Carte de départ » (GD-9) : la région du bonhomme revient à sa carte de départ, après confirmation ; aucune liaison
-  // n'est perdue (celles à reposer redeviennent posées).
+  // « Carte de départ » (GD-9) : la région du bonhomme revient à sa carte de départ, après confirmation ; aucun ouvrage
+  // (le mot de l'univers pour une liaison) n'est perdu : ceux à reposer redeviennent posés.
   const [confirmer, setConfirmer] = useState(false);
   const [revenue, setRevenue] = useState(false);
   const region = archipelagoOf(state.world.place ?? 'french-6e-phonology').classe;
@@ -63,7 +64,8 @@ export function MenuSheet({ onClose, onAller, onAide }: Props) {
     setConfirmer(false);
     setRevenue(Boolean(apres));
   };
-  const { assemblage } = useTextes();
+  const { assemblage, liaisons } = useTextes();
+  const mot = linkPhrases(liaisons);
   const { progress } = useProgress();
   const resume = lastPlace();
   const reviews = questsToReview(state.spaced, state.world.links);
@@ -151,7 +153,7 @@ export function MenuSheet({ onClose, onAller, onAide }: Props) {
           )}
           {confirmer && retour === 'possible' && (
             <div className="menu-confirmer" role="group" aria-label="Revenir à la carte de départ ?">
-              <p>Tous les lieux de cette région reviennent à leur place de départ. Tes liaisons restent toutes construites : rien n’est perdu.</p>
+              <p>Tous les lieux de cette région reviennent à leur place de départ. {`${mot.accord('Tous', 'Toutes')} tes ${mot.pluriel} restent ${mot.accord('construits', 'construites')}`} : rien n’est perdu.</p>
               <div className="menu-confirmer-boutons">
                 <button type="button" className="button primary" onClick={revenirALaCarteDeDepart}>
                   <Icon name="check" /> Revenir à la carte de départ

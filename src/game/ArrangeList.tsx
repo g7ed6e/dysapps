@@ -8,7 +8,7 @@ import { useState } from 'react';
 import { frenchTypography } from '../components/math/RichText';
 import { Icon } from '../components/Icon';
 import { useSettings } from '../core/SettingsContext';
-import { ArrangeBar, ArrangeButton, ArrangeSentence, useAmenagement } from './Arranging';
+import { ArrangeBar, ArrangeButton, ArrangeJoinQuestion, ArrangeSentence, useAmenagement } from './Arranging';
 import { getBiome, type BiomeId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { habillageDuMonde } from './skin';
@@ -16,7 +16,8 @@ import { getBridge, islandsOf } from './world/archipelago';
 import type { ArchipelagoId } from './world/archipelagos';
 import { currentLandings, isFixedPlace, joinedWith, routesIn } from './world/arrange';
 import { type ArrangeChoice, chooseStation, choiceSentence } from './world/arrangeMode';
-import { guardianSentence, placeSentence } from './world/placeSentence';
+import { guardianSentence, ofPlace, placeSentence } from './world/placeSentence';
+import type { LinkPhrases } from './world/linkWord';
 import { startingStations } from './world/terrain/markers';
 import type { World } from './engine/state';
 import { useTextes } from '../universes';
@@ -27,7 +28,7 @@ const nomDuLieu = (id: BiomeId) => getBiome(id)?.name ?? id;
 const sansMonde = () => ({ x: 0, y: 0, z: 0 });
 
 /** Les bornes et les arrivées d'un lieu, chacune son choix et son nom, dans l'ordre de ses missions puis de ses liaisons. */
-function sesElements(world: World, id: BiomeId, a: ArchipelagoId): { cle: string; nom: string; choix: ArrangeChoice }[] {
+function sesElements(world: World, id: BiomeId, a: ArchipelagoId, mot: LinkPhrases): { cle: string; nom: string; choix: ArrangeChoice }[] {
   const out: { cle: string; nom: string; choix: ArrangeChoice }[] = [];
   const biome = getBiome(id);
   for (const st of startingStations(id)) {
@@ -42,7 +43,7 @@ function sesElements(world: World, id: BiomeId, a: ArchipelagoId): { cle: string
     if (!l) continue;
     const end = b.from === id ? 'from' : 'to';
     const autre = end === 'from' ? b.to : b.from;
-    out.push({ cle: `arrivee-${link}`, nom: `L’arrivée de la liaison vers ${nomDuLieu(autre)}`, choix: { genre: 'arrivee', link, end, landing: l[end] } });
+    out.push({ cle: `arrivee-${link}`, nom: `L’arrivée de ${mot.le} vers ${nomDuLieu(autre)}`, choix: { genre: 'arrivee', link, end, landing: l[end] } });
   }
   return out;
 }
@@ -74,7 +75,8 @@ export function ArrangeList({ a }: { a: ArchipelagoId }) {
       if (settings.autoRead) speak(frenchTypography(texte));
     },
     versMonde: sansMonde,
-    nomDeLaReunion: textes.reunion?.nom,
+    reunion: textes.reunion,
+    liaisons: textes.liaisons,
   });
   const { choix } = amenagement;
   const choisi = (genre: 'lieu' | 'gardien', id: BiomeId) => choix?.genre === genre && choix.id === id;
@@ -85,7 +87,7 @@ export function ArrangeList({ a }: { a: ArchipelagoId }) {
       </h2>
       <p className="section-intro">Chacun range sa carte à sa façon : « Déplacer », puis les flèches et « Poser ici ». Rien n’est perdu.</p>
       <ArrangeButton amenagement={amenagement} />
-      <ArrangeSentence amenagement={amenagement} nom={nomDuLieu} />
+      <ArrangeSentence amenagement={amenagement} nom={nomDuLieu} questionAilleurs />
       {amenagement.ouvert && (
         <>
           <ul className="arrange-list-items">
@@ -93,11 +95,12 @@ export function ArrangeList({ a }: { a: ArchipelagoId }) {
               const fixe = isFixedPlace(b.id);
               const reuni = joinedWith(state.world, b.id);
               const voisin = amenagement.voisinAReunir(b.id);
-              const elements = sesElements(state.world, b.id, a);
+              const elements = sesElements(state.world, b.id, a, amenagement.mot);
               return [
                 <li key={b.id} className={choisi('lieu', b.id) ? 'arrange-list-chosen' : undefined}>
                   <p>
-                    <strong>{b.name}</strong> : {fixe ? 'le point de départ de la région, il ne bouge pas.' : `${placeSentence(state.world, b.id, undefined, nomDuLieu)}.`}
+                    <strong>{b.name}</strong>
+                    {choisi('lieu', b.id) && <span className="arrange-list-mark"> (choisi)</span>} : {fixe ? 'le point de départ de la région, il ne bouge pas.' : `${placeSentence(state.world, b.id, undefined, nomDuLieu)}.`}
                     {reuni && ` Réuni à ${nomDuLieu(reuni)} : ils bougent ensemble.`}
                   </p>
                   {!fixe && (
@@ -106,10 +109,11 @@ export function ArrangeList({ a }: { a: ArchipelagoId }) {
                     </button>
                   )}
                   {voisin && (
-                    <button type="button" className="button" aria-label={`Réunir ${b.name} et ${nomDuLieu(voisin)}`} onClick={() => amenagement.reunir(b.id)}>
-                      <Icon name="reunir" /> Réunir à {nomDuLieu(voisin)}
+                    <button type="button" className="button" aria-pressed={amenagement.question?.id === b.id} aria-label={`Réunir ${b.name}…`} onClick={() => amenagement.demanderReunion(b.id)}>
+                      <Icon name="reunir" /> Réunir
                     </button>
                   )}
+                  {amenagement.question?.id === b.id && <ArrangeJoinQuestion amenagement={amenagement} nom={nomDuLieu} />}
                   {elements.length > 0 && (
                     <details className="sheet-more arrange-list-more">
                       <summary>Ses bornes et ses arrivées</summary>
@@ -117,7 +121,7 @@ export function ArrangeList({ a }: { a: ArchipelagoId }) {
                         {elements.map((e) => (
                           <li key={e.cle} className={memeElement(choix, e.choix) ? 'arrange-list-chosen' : undefined}>
                             <p>
-                              <strong>{e.nom}</strong> : {choiceSentence(state.world, e.choix, nomDuLieu)}
+                              <strong>{e.nom}</strong> : {choiceSentence(state.world, e.choix, nomDuLieu, amenagement.mot)}
                             </p>
                             <button type="button" className="button" aria-pressed={memeElement(choix, e.choix)} aria-label={`Déplacer ${e.nom.charAt(0).toLowerCase()}${e.nom.slice(1)}`} onClick={() => amenagement.choisirDirect(e.choix)}>
                               <Icon name="amenager" /> Déplacer
@@ -130,13 +134,14 @@ export function ArrangeList({ a }: { a: ArchipelagoId }) {
                 </li>,
                 <li key={`${b.id}-gardien`} className={choisi('gardien', b.id) ? 'arrange-list-chosen' : undefined}>
                   <p>
-                    <strong>Le Gardien de {b.name}</strong> : {guardianSentence(state.world, b.id)}.
+                    <strong>Le Gardien {ofPlace(b.name)}</strong>
+                    {choisi('gardien', b.id) && <span className="arrange-list-mark"> (choisi)</span>} : {guardianSentence(state.world, b.id)}.
                   </p>
                   <button
                     type="button"
                     className="button"
                     aria-pressed={choisi('gardien', b.id)}
-                    aria-label={`Déplacer le Gardien de ${b.name}`}
+                    aria-label={`Déplacer le Gardien ${ofPlace(b.name)}`}
                     onClick={() => amenagement.intention({ genre: 'creature', id: b.id, gardien: true })}
                   >
                     <Icon name="amenager" /> Déplacer

@@ -350,6 +350,8 @@ export const BLOCLAND = {
     tuYEs: 'Tu y es : joue une mission ici.',
   },
   blocs: nomsAssembles('blocland'),
+  // Une liaison s'appelle « ouvrage » à l'écran, partout (GD-9 : le mode « Aménager » et le menu aussi).
+  liaisons: { nom: 'ouvrage', pluriel: 'ouvrages', feminin: false },
   reunion: {
     nom: 'La digue',
     description: 'Une digue de cubes d’herbe sur la pierre, d’un lieu à l’autre, avec des marches si l’un est plus haut : on passe à pied.',

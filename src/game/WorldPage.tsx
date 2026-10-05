@@ -251,7 +251,8 @@ export function WorldPage() {
       if (settings.autoRead) speak(frenchTypography(texte));
     },
     versMonde: (p) => grille.versMonde(p),
-    nomDeLaReunion: textes.reunion?.nom,
+    reunion: textes.reunion,
+    liaisons: textes.liaisons,
   });
   const enAmenageant = mapOpen && amenagement.ouvert;
   useEffect(() => {
@@ -327,16 +328,19 @@ export function WorldPage() {
   // Le nom de chaque île ouverte de l'archipel, écrit au-dessus d'elle dans le monde ; sur la Carte, toutes les îles,
   // avec leur état en icône et en mot. Le bloc que l'île rapporte, avant son nom (ligne `blocDesIles` de l'habillage).
   const blocDesIles = habillage.blocDesIles === 'avant-le-nom';
+  const lieuChoisi = enAmenageant && amenagement.choix?.genre === 'lieu' ? amenagement.choix.id : null;
   const islandLabels = useMemo(
     () =>
       ilesDuModele(state, a)
         .filter((i) => mapOpen || i.ouverte)
         .map((i) => {
           const bloc = blocDesIles ? getBiome(i.id)?.block : undefined;
-          return { id: i.id, text: i.nom, ...(bloc ? { bloc } : {}), ...(mapOpen ? { state: { id: i.etat.id, name: textes.etatsDIle[i.etat.id] } } : {}) };
+          // Dans « Aménager », le lieu choisi porte le mot « Choisi » sous son nom (son fantôme porte son nom).
+          const etat = i.id === lieuChoisi ? 'Choisi' : textes.etatsDIle[i.etat.id];
+          return { id: i.id, text: i.nom, ...(bloc ? { bloc } : {}), ...(mapOpen ? { state: { id: i.etat.id, name: etat } } : {}) };
         }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [a, mapOpen, state.world.links, state.world.parts, state.progress, textes, blocDesIles],
+    [a, mapOpen, state.world.links, state.world.parts, state.progress, textes, blocDesIles, lieuChoisi],
   );
   const [focus, setFocus] = useState<{ island: BiomeId | null; seq: number }>({ island: island?.id ?? null, seq: 0 });
   // Tant que le tutoriel n'est pas vu, c'est le jour : une première minute lisible, même à 20 h. Ensuite, le réglage

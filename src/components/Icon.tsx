@@ -3,6 +3,7 @@ import {
   Menu,
   ArrowLeft,
   ArrowDown,
+  ArrowDownToLine,
   ArrowRight,
   ArrowUp,
   Move,
@@ -135,6 +136,8 @@ export const ICONS = {
   ouest: ArrowLeft,
   tourner: RotateCw,
   defaire: Undo2,
+  // « Poser ici » : une flèche vers le bas, sur un trait (la coche reste à « Terminé »).
+  poser: ArrowDownToLine,
   aReposer: Unlink,
   // Réunir deux lieux (GD-9, point 10) : deux chemins qui se rejoignent.
   reunir: Merge,

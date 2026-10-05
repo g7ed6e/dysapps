@@ -8,6 +8,7 @@
 import * as THREE from 'three';
 import { gestureCut, veilOpacity } from '../world/arrangeGesture';
 import type { ArrangeCellKind, ArrangeGesture, ArrangeView } from '../world/view';
+import { drawIslandLabel, measureIslandLabel } from '../world/labelCanvas';
 import { mistTexture } from './meshes';
 import type { Monde, PartieDeLaScene } from './scenePart';
 
@@ -142,7 +143,27 @@ export interface Amenagement extends PartieDeLaScene {
   ouvrir(oui: boolean): void;
 }
 
-export function creerAmenagement(monde: Monde, reduit: boolean): Amenagement {
+/** Le nom posé sur le fantôme : dessiné à 40 px, affiché à 18 px CSS, comme les étiquettes des îles (./labels.ts). */
+const NOM_PX = 40;
+const NOM_CSS = 18 / NOM_PX;
+/** Au-dessus du fantôme, en cases. */
+const NOM_AU_DESSUS = 6;
+
+/** Le nom du lieu choisi, dans une texture (rien sans contexte 2D). */
+function textureDuNom(texte: string): { map: THREE.CanvasTexture; w: number; h: number } | null {
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return null;
+  const size = measureIslandLabel(ctx, texte, NOM_PX);
+  canvas.width = Math.ceil(size.w + 4);
+  canvas.height = Math.ceil(size.h + 4);
+  drawIslandLabel(ctx, texte, canvas.width / 2, canvas.height / 2, NOM_PX);
+  const map = new THREE.CanvasTexture(canvas);
+  map.colorSpace = THREE.SRGBColorSpace;
+  return { map, w: canvas.width * NOM_CSS, h: canvas.height * NOM_CSS };
+}
+
+export function creerAmenagement(monde: Monde, reduit: boolean, camera: THREE.PerspectiveCamera, el: HTMLElement): Amenagement {
   const blocs = monde.habillage.pose === 'geste';
   // Un carré plat, couché : deux triangles par case.
   const forme = new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2);
@@ -160,6 +181,36 @@ export function creerAmenagement(monde: Monde, reduit: boolean): Amenagement {
     voile.raycast = () => {};
     monde.scene.add(voile);
   }
+  // Le nom du lieu choisi, posé sur son fantôme : une étiquette de taille fixe à l'écran, un appel de dessin pendant le choix.
+  const nomMat = new THREE.SpriteMaterial({ depthTest: false, transparent: true, sizeAttenuation: false, fog: false });
+  const nomSprite = new THREE.Sprite(nomMat);
+  nomSprite.visible = false;
+  nomSprite.renderOrder = 3;
+  nomSprite.raycast = () => {};
+  monde.scene.add(nomSprite);
+  let nomEcrit = '';
+  let nomTaille = { w: 0, h: 0 };
+  const poserLeNom = (vue: ArrangeView | null) => {
+    const texte = vue?.nom ?? '';
+    if (texte !== nomEcrit) {
+      nomMat.map?.dispose();
+      nomMat.map = null;
+      nomEcrit = texte;
+      const t = texte ? textureDuNom(texte) : null;
+      if (t) {
+        nomMat.map = t.map;
+        nomTaille = { w: t.w, h: t.h };
+      }
+      nomMat.needsUpdate = true;
+    }
+    nomSprite.visible = Boolean(vue && nomMat.map);
+    if (vue && nomSprite.visible) nomSprite.position.set(vue.suivre.x, vue.suivre.z + NOM_AU_DESSUS, vue.suivre.y);
+  };
+  const tailleDuNom = () => {
+    if (!nomSprite.visible) return;
+    const perPx = 2 / (camera.projectionMatrix.elements[5] * Math.max(1, el.clientHeight));
+    nomSprite.scale.set(nomTaille.w * perPx, nomTaille.h * perPx, 1);
+  };
   let souleve: ArrangeView['souleve'] = null;
   let souleveDepuis = 0;
   let enCours: ArrangeGesture | null = null;
@@ -205,6 +256,8 @@ export function creerAmenagement(monde: Monde, reduit: boolean): Amenagement {
       if (!meme) souleveDepuis = performance.now();
       souleve = vue?.souleve ?? null;
       regler(performance.now());
+      poserLeNom(vue);
+      tailleDuNom();
       if (!vue || !vue.cases.length) return;
       cases = new THREE.InstancedMesh(forme, matiere, vue.cases.length);
       cases.frustumCulled = false;
@@ -229,11 +282,15 @@ export function creerAmenagement(monde: Monde, reduit: boolean): Amenagement {
     },
     animer() {
       regler(performance.now());
+      tailleDuNom();
     },
     dispose() {
       vider();
       neutre();
       oublierLesMateriaux();
+      monde.scene.remove(nomSprite);
+      nomMat.map?.dispose();
+      nomMat.dispose();
       forme.dispose();
       bordure.dispose();
       matiere.dispose();

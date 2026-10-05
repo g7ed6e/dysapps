@@ -1,5 +1,6 @@
 // Le mode « Aménager » en vue simple (GD-9, point 4) : une ligne par lieu et par Gardien, sa place en mots ;
 // « Déplacer », les flèches et « Poser ici » ; l'ordre des lignes ne dépend pas de la disposition.
+import { ofPlace } from './world/placeSentence';
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -47,7 +48,7 @@ describe('Aménager en vue simple', () => {
     const avant = lignes();
     expect(avant).toHaveLength(lieux.length * 2);
     expect(avant[0]).toBe(lieux[0].name);
-    expect(avant[1]).toBe(`Le Gardien de ${lieux[0].name}`);
+    expect(avant[1]).toBe(`Le Gardien ${ofPlace(lieux[0].name)}`);
     // La place dite en mots : une direction et une distance, ou le point de départ qui ne bouge pas.
     for (const b of lieux) {
       const p = screen.getByText(b.name, { selector: 'strong' }).closest('p')!;
@@ -75,10 +76,10 @@ describe('Aménager en vue simple', () => {
     monter();
     fireEvent.click(screen.getByRole('button', { name: 'Aménager' }));
     const b = islandsOf('6e')[0];
-    const li = screen.getByText(`Le Gardien de ${b.name}`, { selector: 'strong' }).closest('li')!;
+    const li = screen.getByText(`Le Gardien ${ofPlace(b.name)}`, { selector: 'strong' }).closest('li')!;
     const avant = li.querySelector('p')!.textContent;
     expect(avant).toMatch(/de son île\.$/);
-    fireEvent.click(within(li).getByRole('button', { name: `Déplacer le Gardien de ${b.name}` }));
+    fireEvent.click(within(li).getByRole('button', { name: `Déplacer le Gardien ${ofPlace(b.name)}` }));
     // Les flèches le mènent jusqu'à un autre côté de son île (quelques pas le long du même côté d'abord).
     const cote = (t: string | null | undefined) => /: (.*) de son île/.exec(t ?? '')?.[1];
     const depart = cote(avant);
@@ -91,7 +92,7 @@ describe('Aménager en vue simple', () => {
       }
     }
     fireEvent.click(screen.getByRole('button', { name: /Poser ici/ }));
-    expect(cote(screen.getByText(`Le Gardien de ${b.name}`, { selector: 'strong' }).closest('p')!.textContent)).not.toBe(depart);
+    expect(cote(screen.getByText(`Le Gardien ${ofPlace(b.name)}`, { selector: 'strong' }).closest('p')!.textContent)).not.toBe(depart);
   });
   it('les bornes et les arrivées d’un lieu, dans son pli, se déplacent de même', () => {
     monter();
@@ -120,7 +121,13 @@ describe('Aménager en vue simple', () => {
     // Sur la carte de départ, la Tour et la Ferme (leur isthme d'avant) sont déjà au plus près.
     expect(reunir.length).toBeGreaterThan(0);
     fireEvent.click(reunir[0]);
-    expect(screen.getByRole('status')).toHaveTextContent(/sont réunis : ils bougent maintenant ensemble\./);
+    // La question d'abord, sous la ligne du lieu : un bouton par voisin, et « Non » ; le mot expliqué la première fois.
+    const question = screen.getByRole('group', { name: /^Réunir .* \?$/ });
+    expect(question).toHaveTextContent(/Ils ne se sépareront plus\./);
+    expect(question).toHaveTextContent(/Réunir, c’est attacher pour toujours/);
+    expect(localStorage.getItem('dysapps:game')).not.toMatch(/joined/);
+    fireEvent.click(within(question).getAllByRole('button', { name: /^Réunir à / })[0]);
+    expect(screen.getByRole('status')).toHaveTextContent(/sont réunis : ils bougent ensemble/);
     const layout = JSON.parse(localStorage.getItem('dysapps:game')!).world.layout as Record<string, { joined?: string }>;
     expect(Object.values(layout).some((l) => l.joined)).toBe(true);
     expect(screen.getAllByText(/Réuni à .* : ils bougent ensemble\./).length).toBe(2);

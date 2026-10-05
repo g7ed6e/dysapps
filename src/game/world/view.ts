@@ -37,6 +37,8 @@ export interface ArrangeView {
   suivre: { x: number; y: number; z: number };
   /** Les liaisons qui ne tiendraient plus après la pose (leur nombre se dit dans la barre). */
   barrees: string[];
+  /** Le nom du lieu choisi, écrit sur son fantôme (le nom de l'univers, donné par la page). */
+  nom?: string;
 }
 
 /**

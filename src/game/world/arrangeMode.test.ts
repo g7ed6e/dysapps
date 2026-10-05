@@ -110,7 +110,7 @@ describe('un Gardien, une borne, une arrivée, une liaison à reposer', () => {
     const c = snapChoice(w, chooseGuardian(w, VOLCAN), { x: 0, y: 1000 });
     if (c.genre !== 'gardien') throw new Error('gardien');
     expect(c.place.side).not.toBe('front');
-    expect(choiceSentence(w, c)).toMatch(/^Le gardien du Volcan des décimaux : .+ de son île\.$/);
+    expect(choiceSentence(w, c)).toMatch(/^Le Gardien du Volcan des décimaux : .+ de son île\.$/);
     const r = poseChoice(w, c);
     if (!r.ok) throw new Error(r.reason);
     expect(guardianOf(r.world, VOLCAN).side).toBe(c.place.side);

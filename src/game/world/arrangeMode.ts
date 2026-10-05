@@ -39,6 +39,7 @@ import {
 import { archipelagoOfIsland, toWorld } from './map';
 import { poseOfSpot } from './footprint';
 import { turnedSide, type Quarts, type Side } from './placement';
+import { type LinkPhrases, linkPhrases } from './linkWord';
 import { guardianSentence, ofPlace, placeSentence, type PlaceName } from './placeSentence';
 import { anchorInWorld, possibleLandings } from './routing';
 import type { LayoutGuardian, LayoutLanding, LayoutSpot, LayoutTurn } from './savedLayout';
@@ -241,14 +242,14 @@ const POINT_CARDINAL: Readonly<Record<Side, string>> = { devant: 'sud', droite: 
  * La phrase écrite et lue du choix : où se tient son fantôme (« au nord de la Forêt des sons, à 2 cases »). Les noms des
  * lieux viennent de l'univers (`nom`).
  */
-export function choiceSentence(world: World, c: ArrangeChoice, nom: PlaceName = NOM_DU_JEU): string {
+export function choiceSentence(world: World, c: ArrangeChoice, nom: PlaceName = NOM_DU_JEU, mot: LinkPhrases = linkPhrases()): string {
   switch (c.genre) {
     case 'lieu': {
       const ou = placeSentence(world, c.id, c.spot, nom);
       return `${nom(c.id)} : ${ou}.`;
     }
     case 'gardien':
-      return `Le gardien ${ofPlace(nom(c.id))} : ${guardianSentence(world, c.id, c.place)}.`;
+      return `Le Gardien ${ofPlace(nom(c.id))} : ${guardianSentence(world, c.id, c.place)}.`;
     case 'borne': {
       const id = c.key.split(':')[0] as BiomeId;
       // Le rang se compte comme on voit la rangée sur la Carte : de la gauche de l'écran (les x du monde qui descendent
@@ -266,25 +267,25 @@ export function choiceSentence(world: World, c: ArrangeChoice, nom: PlaceName = 
     }
     case 'liaison': {
       const b = c.to ? getBridge(c.to) : undefined;
-      return b ? `La liaison à reposer, entre ${nom(b.from)} et ${nom(b.to)}.` : 'Cette liaison ne se repose nulle part pour l’instant : rapproche deux lieux.';
+      return b ? `${mot.Le} à reposer, entre ${nom(b.from)} et ${nom(b.to)}.` : `${mot.Ce} ne se repose nulle part pour l’instant : rapproche deux lieux.`;
     }
   }
 }
 
 /** La phrase après une pose : où est maintenant ce qu'on a posé, dans le monde d'après. */
-export function poseSentence(after: World, c: ArrangeChoice, nom: PlaceName = NOM_DU_JEU): string {
+export function poseSentence(after: World, c: ArrangeChoice, nom: PlaceName = NOM_DU_JEU, mot: LinkPhrases = linkPhrases()): string {
   switch (c.genre) {
     case 'lieu':
       return `C’est posé. ${nom(c.id)} : ${placeSentence(after, c.id, spotOf(after, c.id), nom)}.`;
     case 'gardien':
-      return `C’est posé. Le gardien ${ofPlace(nom(c.id))} : ${guardianSentence(after, c.id)}.`;
+      return `C’est posé. Le Gardien ${ofPlace(nom(c.id))} : ${guardianSentence(after, c.id)}.`;
     case 'borne':
-      return `C’est posé. ${choiceSentence(after, c, nom)}`;
+      return `C’est posé. ${choiceSentence(after, c, nom, mot)}`;
     case 'arrivee':
-      return `C’est posé. ${choiceSentence(after, c, nom)} La liaison repart de là.`;
+      return `C’est posé. ${choiceSentence(after, c, nom, mot)} ${mot.Le} repart de là.`;
     case 'liaison': {
       const b = c.to ? getBridge(c.to) : undefined;
-      return b ? `La liaison est reposée entre ${nom(b.from)} et ${nom(b.to)}.` : '';
+      return b ? `${mot.Le} est ${mot.accord('reposé')} entre ${nom(b.from)} et ${nom(b.to)}.` : '';
     }
   }
 }
