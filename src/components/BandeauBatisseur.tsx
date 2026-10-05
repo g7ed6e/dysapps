@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useOptionalBlocland } from '../blocland/BloclandContext';
+import { useOptionalBlocland } from '../game/BloclandContext';
 import { Icon } from './Icon';
 import { SpeakButton } from './SpeakButton';
 

@@ -13,28 +13,28 @@ créature : Nénu
 
 ## Nénuphars · `number-line`
 
-> Ses exercices sont produits par le code (`src/blocland/exercises/`), pas écrits ici.
+> Ses exercices sont produits par le code (`src/game/exercises/`), pas écrits ici.
 
 - description : Quelle fraction de la figure est coloriée ? Puis sur la droite.
 - compétences : c3.ma.nombres.fractions-designations
 
 ## Deux rives · `equivalence`
 
-> Ses exercices sont produits par le code (`src/blocland/exercises/`), pas écrits ici.
+> Ses exercices sont produits par le code (`src/game/exercises/`), pas écrits ici.
 
 - description : Compare deux fractions avec les barres sous les yeux.
 - compétences : c3.ma.nombres.fractions-comparer
 
 ## Partage du gâteau · `sharing`
 
-> Ses exercices sont produits par le code (`src/blocland/exercises/`), pas écrits ici.
+> Ses exercices sont produits par le code (`src/game/exercises/`), pas écrits ici.
 
 - description : Une fraction d’une quantité, puis des fractions égales.
 - compétences : c3.ma.nombres.fractions-designations · c3.ma.nombres.fractions-comparer
 
 ## Galets en colonnes · `place-value`
 
-> Ses exercices sont produits par le code (`src/blocland/exercises/`), pas écrits ici.
+> Ses exercices sont produits par le code (`src/game/exercises/`), pas écrits ici.
 
 - description : Pose l’opération, puis la division : partage en parts égales et trouve ce qui reste.
 - compétences : c3.ma.nombres.calcul-pose

@@ -1,9 +1,9 @@
 // Les pages du mot des grandes étapes, dans les mots d'un univers : world/whale.ts dit quelles étapes sont atteintes,
 // ceci dit ce qui en est dit, et qui le dit (la baleine dans Archipéo, la créature de l'île-école dans Blocland, GD-1).
-import { pagesDArrivee } from '../blocland/arrivals';
-import { getBiome, type BiomeDef, type BiomeId } from '../blocland/biomes';
-import { getArchipelago } from '../blocland/world/archipelago';
-import type { WhaleMoment } from '../blocland/world/whale';
+import { pagesDArrivee } from '../game/arrivals';
+import { getBiome, type BiomeDef, type BiomeId } from '../game/biomes';
+import { getArchipelago } from '../game/world/archipelago';
+import type { WhaleMoment } from '../game/world/whale';
 import type { TextesUnivers } from './types';
 
 const nameOf = (island: BiomeId) => getBiome(island)?.name ?? island;

@@ -34,7 +34,7 @@ function renderFabrique(at = '/adventure/assembly') {
   );
 }
 
-const POUTRE = JSON.parse(readFileSync('src/blocland/exercises/data/assembly-compound-6e.json', 'utf8')) as AssemblageDef;
+const POUTRE = JSON.parse(readFileSync('src/game/exercises/data/assembly-compound-6e.json', 'utf8')) as AssemblageDef;
 const CLES = POUTRE.items.map((it) => it.key);
 const sauvegarde = () => JSON.parse(localStorage.getItem('dysapps:game')!);
 

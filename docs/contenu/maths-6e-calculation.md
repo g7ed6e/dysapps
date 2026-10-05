@@ -13,28 +13,28 @@ créature : Coco
 
 ## Champ des tables · `times-tables`
 
-> Ses exercices sont produits par le code (`src/blocland/exercises/`), pas écrits ici.
+> Ses exercices sont produits par le code (`src/game/exercises/`), pas écrits ici.
 
 - description : Une multiplication, et la grille de points pour la voir.
 - compétences : c3.ma.nombres.faits-numeriques
 
 ## Pont de dix · `make-ten`
 
-> Ses exercices sont produits par le code (`src/blocland/exercises/`), pas écrits ici.
+> Ses exercices sont produits par le code (`src/game/exercises/`), pas écrits ici.
 
 - description : Trouve ce qui manque pour arriver à 10 ou à 100.
 - compétences : c3.ma.nombres.calcul-mental
 
 ## Doubles et moitiés · `doubles-halves`
 
-> Ses exercices sont produits par le code (`src/blocland/exercises/`), pas écrits ici.
+> Ses exercices sont produits par le code (`src/game/exercises/`), pas écrits ici.
 
 - description : Le double ou la moitié d’un nombre, en deux étapes.
 - compétences : c3.ma.nombres.calcul-mental
 
 ## Carnet du passeur · `word-problems`
 
-> Ses exercices sont produits par le code (`src/blocland/exercises/`), pas écrits ici.
+> Ses exercices sont produits par le code (`src/game/exercises/`), pas écrits ici.
 
 - description : Un pont, un quai, une traversée : lis le schéma, puis calcule la longueur, le tour ou l’heure.
 - compétences : c3.ma.nombres.problemes · c3.ma.grandeurs.perimetre · c3.ma.grandeurs.durees

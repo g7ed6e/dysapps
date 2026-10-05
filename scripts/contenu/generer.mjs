@@ -1,7 +1,7 @@
-// npm run contenu : produit src/blocland/iles.ts, les JSON des exercices (src/blocland/exercises/data/<id>.json) et des
-// plans des bâtiments (src/blocland/world/plans/<id>.json), des commandes des habitants (src/blocland/world/requests.json) depuis
+// npm run contenu : produit src/game/iles.ts, les JSON des exercices (src/game/exercises/data/<id>.json) et des
+// plans des bâtiments (src/game/world/plans/<id>.json), des commandes des habitants (src/game/world/requests.json) depuis
 // les îles écrites en Markdown (docs/contenu/<île>.md, format : scripts/contenu/format.mjs), des questions des blocs
-// assemblés (docs/contenu/assemblage.md, src/blocland/exercises/data/assemblage-<bloc>.json), et les JSON des missions du
+// assemblés (docs/contenu/assemblage.md, src/game/exercises/data/assemblage-<bloc>.json), et les JSON des missions du
 // portail (src/apps/<mission>/) depuis docs/contenu/portail/ (format : scripts/contenu/portail.mjs). Ils sont commités ;
 // ne pas les éditer à la main.
 // --check : échoue si un JSON ne suit plus son Markdown, sans rien écrire (CI).

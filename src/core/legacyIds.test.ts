@@ -1,5 +1,5 @@
 // Les anciennes adresses et les anciens identifiants mènent aux neufs ; ce qui n'est pas d'avant passe tel quel.
-import { GRAINES_DU_DESSIN } from '../blocland/world/map';
+import { GRAINES_DU_DESSIN } from '../game/world/map';
 import { LEGACY_PLACES, translateExerciseId, translateItemId, translateLinkId, translatePath } from './legacyIds';
 
 it('une ancienne adresse de l’aventure mène à la même page sous les mots neutres', () => {

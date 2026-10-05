@@ -1,8 +1,8 @@
 import { render } from '@testing-library/react';
 import { SettingsProvider } from '../core/SettingsContext';
 import { ProgressProvider } from '../core/ProgressContext';
-import { BloclandProvider } from '../blocland/BloclandContext';
-import { todayISO } from '../blocland/engine';
+import { BloclandProvider } from '../game/BloclandContext';
+import { todayISO } from '../game/engine';
 import { AppBadge } from './AppBadge';
 
 function renderBadge() {

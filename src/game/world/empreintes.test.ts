@@ -2,7 +2,7 @@
 // tout ce que la grille calcule aujourd'hui, pour chaque archipel et trois parties (vierge, à mi-parcours, tout
 // construit). Les étapes suivantes déplacent ce code sans rien changer à l'image : ces empreintes ne doivent pas bouger.
 // Si une empreinte change, c'est que le monde a changé ; un lot qui le veut (un lot de rendu, par exemple) met à jour
-// l'instantané avec `npx vitest run -u src/blocland/world/empreintes.test.ts` et le dit dans sa pull request.
+// l'instantané avec `npx vitest run -u src/game/world/empreintes.test.ts` et le dit dans sa pull request.
 // Les identifiants y sont remis dans leurs mots d'avant (./idsDAvant.testing.ts) : un identifiant qui change ne change
 // pas l'image, ni donc les empreintes.
 import { BIOMES, type BiomeId } from '../biomes';

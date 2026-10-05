@@ -8,7 +8,7 @@
 // consultant de Blocland. Leur empreinte est vérifiée par src/univers/univers.test.ts.
 import { ETATS_D_ILE, REPLIQUES } from '../communs';
 import type { TextesUnivers } from '../types';
-import { lieuDAssemblage, nomsAssembles } from '../../blocland/world/assemblage';
+import { lieuDAssemblage, nomsAssembles } from '../../game/world/assemblage';
 
 const s = (n: number) => (n > 1 ? 's' : '');
 
@@ -376,7 +376,7 @@ export const BLOCLAND = {
     'rang-legende': { title: 'Architecte', description: 'Devenir Architecte : tu dessines les plans du village.' },
     aeronaute: { title: 'Aéronaute', description: 'Gonfler le ballon du Bloc-Navire et rejoindre les Monts de Feu.' },
   },
-  // Dit une fois par appareil, à un élève qui jouait déjà avant les nouveaux noms (src/blocland/Renommage.tsx).
+  // Dit une fois par appareil, à un élève qui jouait déjà avant les nouveaux noms (src/game/Renommage.tsx).
   renommage: {
     titre: 'De nouveaux noms',
     intro: 'Dans Blocland, trois archipels reprennent leur nom d’origine. Tes blocs, tes étoiles et tes bâtiments ne changent pas.',

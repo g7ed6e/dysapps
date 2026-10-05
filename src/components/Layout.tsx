@@ -9,7 +9,7 @@ import { Celebrations } from './Celebrations';
 import { Icon } from './Icon';
 import { ErrorBoundary } from './ErrorBoundary';
 import { FocusProvider, useFocusActive } from './FocusMode';
-import { useImmersive } from '../blocland/useImmersive';
+import { useImmersive } from '../game/useImmersive';
 import { MENU_PATH } from '../core/paths';
 
 export function Layout() {

@@ -1,6 +1,6 @@
-import { biomesOf, type BiomeId } from '../blocland/biomes';
-import { EMPTY_STATE, type GameState } from '../blocland/engine';
-import { exercisesOf } from '../blocland/exercises';
+import { biomesOf, type BiomeId } from '../game/biomes';
+import { EMPTY_STATE, type GameState } from '../game/engine';
+import { exercisesOf } from '../game/exercises';
 import { REWORK_SHOWN, subjectProgress } from './subjectProgress';
 
 /** Une mission jouée : sa première variante, avec ses étoiles et son meilleur score. */

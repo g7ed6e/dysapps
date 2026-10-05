@@ -1,7 +1,7 @@
 // Les plans des bâtiments d'une île, écrits à la fin de son Markdown (docs/contenu/<île>.md) sous « ## Les plans » : un
-// tableau, une rangée par plan dans l'ordre du dessin. Chaque rangée redonne src/blocland/world/plans/<id>.json (nom, XP,
-// réplique de fin) ; la forme du bâtiment reste dans le code (src/blocland/world/architect.ts). Les missions de l'île posent
-// ces plans, partie par partie (GD-6, src/blocland/world/parties.ts) : un plan n'a pas de coffre.
+// tableau, une rangée par plan dans l'ordre du dessin. Chaque rangée redonne src/game/world/plans/<id>.json (nom, XP,
+// réplique de fin) ; la forme du bâtiment reste dans le code (src/game/world/architect.ts). Les missions de l'île posent
+// ces plans, partie par partie (GD-6, src/game/world/parties.ts) : un plan n'a pas de coffre.
 import { ecrireTexte, lireTexte } from './texte.mjs';
 
 export const TITRE_PLANS = '## Les plans';
@@ -30,7 +30,7 @@ export function ecrirePlans(ile, plans) {
 
 /**
  * Lit la section « ## Les plans » : `lignes` commence à son titre, `debut` est le rang de ce titre dans le fichier (pour
- * les numéros de ligne). Rend les plans au format de src/blocland/world/plans/<id>.json.
+ * les numéros de ligne). Rend les plans au format de src/game/world/plans/<id>.json.
  */
 export function lirePlans(lignes, debut, fichier, ile) {
   let i = 1;

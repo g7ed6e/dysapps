@@ -1,8 +1,8 @@
 import { useEffect, useEffectEvent, useLayoutEffect, useRef, useState, useSyncExternalStore, type PointerEvent } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useOptionalBlocland } from '../blocland/BloclandContext';
-import { LogoQuiSeConstruit } from '../blocland/LogoQuiSeConstruit';
-import { unlockSounds } from '../blocland/sound';
+import { useOptionalBlocland } from '../game/BloclandContext';
+import { LogoQuiSeConstruit } from '../game/LogoQuiSeConstruit';
+import { unlockSounds } from '../game/sound';
 import { lastPlace } from '../core/lastPlace';
 import { useSettings, useUnivers } from '../core/SettingsContext';
 import { unlockSpeech } from '../core/speech';

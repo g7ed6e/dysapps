@@ -4,7 +4,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { AppRoutes } from './App';
 import { SettingsProvider } from './core/SettingsContext';
 import { ProgressProvider, useProgress } from './core/ProgressContext';
-import { BloclandProvider } from './blocland/BloclandContext';
+import { BloclandProvider } from './game/BloclandContext';
 
 /** Dit si les bandeaux de récompense sont retenus (DA-9). */
 function Retenus() {
@@ -102,8 +102,8 @@ it('liste les activités d’une matière', () => {
 });
 
 it('en vue simple, le voyage en Bloc-Navire est un écran avec une phrase et un bouton « Arriver », puis le port d’en face', async () => {
-  const { VEHICLE_STAGES } = await import('./blocland/world/vehicle');
-  const { planCells } = await import('./blocland/world/plans');
+  const { VEHICLE_STAGES } = await import('./game/world/vehicle');
+  const { planCells } = await import('./game/world/plans');
   const [coque] = VEHICLE_STAGES;
   const progress = Object.fromEntries(['french-6e-phonology', 'maths-6e-calculation', 'french-6e-letter-confusion'].map((id) => [`${id}-challenge`, { stars: 2, attempts: 1, best: 1 }]));
   localStorage.setItem('dysapps:game', JSON.stringify({ progress, world: { parts: { [coque.id]: planCells(coque).map((c) => c.key) }, links: ['french-6e-phonology-french-6e-letter-confusion'] } }));
@@ -239,8 +239,8 @@ it('en vue simple, la Carte et la page des quatre archipels renvoient à la list
 });
 
 it('l’accueil annonce le Bloc-Navire quand il est prêt à partir', async () => {
-  const { VEHICLE_STAGES } = await import('./blocland/world/vehicle');
-  const { planCells } = await import('./blocland/world/plans');
+  const { VEHICLE_STAGES } = await import('./game/world/vehicle');
+  const { planCells } = await import('./game/world/plans');
   const [coque] = VEHICLE_STAGES;
   const progress = Object.fromEntries(['french-6e-phonology', 'maths-6e-calculation', 'french-6e-letter-confusion'].map((id) => [`${id}-challenge`, { stars: 2, attempts: 1, best: 1 }]));
   localStorage.setItem('dysapps:game', JSON.stringify({ progress, world: { parts: { [coque.id]: planCells(coque).map((c) => c.key) }, links: ['french-6e-phonology-french-6e-letter-confusion'] } }));
@@ -251,8 +251,8 @@ it('l’accueil annonce le Bloc-Navire quand il est prêt à partir', async () =
 });
 
 it('quand la prochaine destination est un ouvrage, « Reprendre l’aventure » et « Y aller » ouvrent son île sur lui, mis en avant', async () => {
-  const { getBiome, missionsJouables } = await import('./blocland/biomes');
-  const { exercisesOf } = await import('./blocland/exercises');
+  const { getBiome, missionsJouables } = await import('./game/biomes');
+  const { exercisesOf } = await import('./game/exercises');
   // La Forêt, la Plaine, la Mine et la Rivière jouées, 4 blocs : le pont de la Forêt vers l'Horloge des verbes.
   const iles = ['french-6e-phonology', 'maths-6e-calculation', 'french-6e-letter-confusion', 'maths-6e-fractions'] as const;
   const progress = Object.fromEntries(iles.flatMap((ile) => missionsJouables(getBiome(ile)!).map((m) => [exercisesOf(ile, m.id)[0].id, { stars: 2, attempts: 1, best: 0.8 }])));

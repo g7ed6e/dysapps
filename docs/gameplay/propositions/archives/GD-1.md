@@ -8,7 +8,7 @@
 Le mainteneur veut donner plus de caractère à Blocland, l’univers par défaut. Le dessin en a déjà : cubes texturés de 16 × 16, interface en blocs vus de face, 31 créatures qui tutoient le « bâtisseur », Gardiens qui deviennent statues et « aiment les revanches ». Ce qui lui manque, c’est sa voix et ses noms, parce qu’il parle encore avec les mots d’Archipéo :
 
 - la première voix qu’entend un élève neuf est la baleine (« Je suis la baleine… », `src/univers/blocland/index.ts`), figure d’Archipéo ([Plusieurs univers](../../../univers/univers.md), §4.1) ;
-- les archipels de 5e et de 4e s’appellent « Îles Brumeuses » et « Anciens Ateliers » (`src/blocland/world/archipelago.ts`), la brume et les ruines étant le vocabulaire d’Archipéo (le réglage « Au démarrage », lui, dit « Le village » dans les deux univers) ;
+- les archipels de 5e et de 4e s’appellent « Îles Brumeuses » et « Anciens Ateliers » (`src/game/world/archipelago.ts`), la brume et les ruines étant le vocabulaire d’Archipéo (le réglage « Au démarrage », lui, dit « Le village » dans les deux univers) ;
 - trois des cinq rôles ont un lexique d’explorateur marin (Explorateur, Cartographe, Navigateur, Architecte de l’archipel) ;
 - aucun geste ni aucun son n’est propre à Blocland.
 
@@ -31,7 +31,7 @@ Un pilier : **le chantier du bâtisseur**. Dans Blocland, tout se nomme, se dit 
 
 ## Le coût
 
-- Changements 1 à 3 : textes seulement, dans `src/univers/blocland/`, `src/blocland/world/archipelago.ts` (le nom passe par les textes de l’univers), les rôles affichés par univers, l’écran de renommage d’U4. Taille M. Fichiers partagés avec les fils de contenu (`communs.ts`, empreinte de `src/univers/univers.test.ts`) : chaque pull request se remet sur `main` avant fusion.
+- Changements 1 à 3 : textes seulement, dans `src/univers/blocland/`, `src/game/world/archipelago.ts` (le nom passe par les textes de l’univers), les rôles affichés par univers, l’écran de renommage d’U4. Taille M. Fichiers partagés avec les fils de contenu (`communs.ts`, empreinte de `src/univers/univers.test.ts`) : chaque pull request se remet sur `main` avant fusion.
 - Changement 4 : un **dégel ciblé** du dessin de Blocland, figé depuis l’étiquette `blocland-reference` : un lot distinct des lots R, qui ajoute sans rien redessiner, sans toucher aux empreintes ni aux cases d’un plan, validé sur captures avant et après (jour et nuit). Code écrit par l’artiste technique 3D. Taille S à M.
 - Pages à tenir : le manuel (rôles, noms des archipels, bulles des étapes), [Personnages et Gardiens](../../personnages.md) (régénérée), la [fiche de Blocland](../../../univers/blocland/fiche.md), le [cadrage de Blocland](../../../univers/blocland/cadrage.md).
 
@@ -44,4 +44,4 @@ Un pilier : **le chantier du bâtisseur**. Dans Blocland, tout se nomme, se dit 
 
 ## La décision
 
-30 septembre 2026, mainteneur, dans le fil « Donner du caractère à Blocland » : le pilier « chantier du bâtisseur » (« 1 ») ; la créature de l’île-école parle aux grandes étapes (« 1 ») ; retour des noms d’origine des archipels (« 1 ») ; des métiers du chantier pour les rôles (« 1 ») ; le geste de pose (« 2 ») et un son de pose propre à Blocland (« Et 3 »). Puis l’identité de Blocland : « Blocland c’est l’univers de la construction par bloc, des mécanismes, de l’ingénierie. Le bloc c’est l’unité de base pour construire. » La géographie : « On conserve les îles pour l’instant » (le mainteneur avait trouvé l’île et le pont propres à Archipéo ; ils sont d’origine dans Blocland, `git show 07bb03a^:src/blocland/world/archipelago.ts`) ; les noms des archipels peuvent donc se construire. Les rôles : Apprenti, Maçon, Mécanicien, Ingénieur, Architecte (« 1 »).
+30 septembre 2026, mainteneur, dans le fil « Donner du caractère à Blocland » : le pilier « chantier du bâtisseur » (« 1 ») ; la créature de l’île-école parle aux grandes étapes (« 1 ») ; retour des noms d’origine des archipels (« 1 ») ; des métiers du chantier pour les rôles (« 1 ») ; le geste de pose (« 2 ») et un son de pose propre à Blocland (« Et 3 »). Puis l’identité de Blocland : « Blocland c’est l’univers de la construction par bloc, des mécanismes, de l’ingénierie. Le bloc c’est l’unité de base pour construire. » La géographie : « On conserve les îles pour l’instant » (le mainteneur avait trouvé l’île et le pont propres à Archipéo ; ils sont d’origine dans Blocland, `git show 07bb03a^:src/game/world/archipelago.ts`) ; les noms des archipels peuvent donc se construire. Les rôles : Apprenti, Maçon, Mécanicien, Ingénieur, Architecte (« 1 »).

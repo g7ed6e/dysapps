@@ -1,8 +1,8 @@
 // L'assemblage des blocs (fiche GD-2), écrit en Markdown dans docs/contenu/assemblage.md : le nom du lieu où l'on assemble
 // dans chaque univers, et les blocs assemblés (leur archipel, leur recette, leur nom dans chaque univers). Il redonne
-// src/blocland/world/recettes.ts ; le dessin des blocs (couleurs, textures) et du lieu reste dans le code.
+// src/game/world/recettes.ts ; le dessin des blocs (couleurs, textures) et du lieu reste dans le code.
 // Sa section « ## Les questions » donne la question posée à chaque bloc assemblé : un « ### » par bloc, écrit comme une
-// mission d'île (mêmes champs, même lecteur, format.mjs), qui redonne src/blocland/exercises/data/assemblage-<bloc>.json.
+// mission d'île (mêmes champs, même lecteur, format.mjs), qui redonne src/game/exercises/data/assemblage-<bloc>.json.
 import { lireIle } from './format.mjs';
 import { lireTexte } from './texte.mjs';
 
@@ -97,7 +97,7 @@ export function lireAssemblage(md, fichier) {
 }
 
 export const TITRE_QUESTIONS = '## Les questions';
-/** Le type des questions d'assemblage (src/blocland/exercises/registry.ts) et le début de l'identifiant de leurs fichiers. */
+/** Le type des questions d'assemblage (src/game/exercises/registry.ts) et le début de l'identifiant de leurs fichiers. */
 export const TYPE_ASSEMBLAGE = 'assembly';
 /** L'ordre des champs d'une question d'assemblage dans son JSON. */
 const ORDRE_QUESTIONS = ['id', 'bloc', 'type', 'level', 'title', 'lang', 'instruction', 'programme', 'items', 'feedback'];
@@ -116,7 +116,7 @@ const DEBUT_DES_ITEMS = /^(Pour tous les items :$|\d+\. |\|)/;
 /**
  * Lit la section « ## Les questions » de docs/contenu/assemblage.md : un « ### Nom · `bloc` » par bloc assemblé, ses
  * champs (compétences, consigne, bravo, erreur, langue), puis ses questions, au format des items d'une île. Rend une
- * question d'assemblage par bloc (le JSON de src/blocland/exercises/data/assemblage-<bloc>.json), ou rien si la section
+ * question d'assemblage par bloc (le JSON de src/game/exercises/data/assemblage-<bloc>.json), ou rien si la section
  * manque. `blocs` : les blocs assemblés connus (le tableau « ## Les blocs assemblés »).
  */
 export function lireQuestions(md, fichier, blocs) {
@@ -198,7 +198,7 @@ function lireUnBloc(titre, bloc, corps, n0, fichier) {
   return Object.fromEntries(ORDRE_QUESTIONS.filter((k) => sortie[k] !== undefined).map((k) => [k, sortie[k]]));
 }
 
-/** Le module TypeScript produit (src/blocland/world/recettes.ts). */
+/** Le module TypeScript produit (src/game/world/recettes.ts). */
 export function ecrireRecettes(assemblage) {
   return (
     "// Produit par `npm run contenu` depuis docs/contenu/assemblage.md : ne pas éditer.\n" +

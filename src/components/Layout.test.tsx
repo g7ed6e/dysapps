@@ -5,7 +5,7 @@ import { ProgressProvider } from '../core/ProgressContext';
 import { Layout } from './Layout';
 
 // Le monde en 3D (pas de WebGL dans les tests) : l'écran du monde est en plein écran.
-vi.mock('../blocland/useImmersive', () => ({ useImmersive: () => true }));
+vi.mock('../game/useImmersive', () => ({ useImmersive: () => true }));
 
 function renderAt(path: string) {
   return render(

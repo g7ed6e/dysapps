@@ -1,11 +1,11 @@
 // Les textes d'un univers (lot 6, une tranche de J8 avancée) : ce que disent les Gardiens, l'espèce des créatures, les
 // libellés qui disent où en sont les Gardiens, le mot des grandes étapes, les noms des archipels et des rôles (GD-1). Du texte brut, affiché par React ; les clés
 // viennent des identifiants stables du jeu, qu'un univers habille sans jamais les remplacer.
-import type { BiomeId, BlockId } from '../blocland/biomes';
-import type { ArchipelagoId, NomsArchipels } from '../blocland/world/archipelago';
+import type { BiomeId, BlockId } from '../game/biomes';
+import type { ArchipelagoId, NomsArchipels } from '../game/world/archipelago';
 import type { Tier } from '../core/progress';
-import type { IslandStateId } from '../blocland/world/islandState';
-import type { LieuDAssemblage, NomDeBloc } from '../blocland/world/assemblage';
+import type { IslandStateId } from '../game/world/islandState';
+import type { LieuDAssemblage, NomDeBloc } from '../game/world/assemblage';
 
 export type { UniversChoice as UniversId } from '../core/univers';
 

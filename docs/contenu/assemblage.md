@@ -1,6 +1,6 @@
 # L’assemblage des blocs
 
-> Décidé par le mainteneur le 30 septembre 2026 (fiche [GD-2](../gameplay/propositions/archives/GD-2.md)). Un bloc assemblé par archipel, qu’aucune île ne donne : il s’assemble dans un lieu de l’île de l’école, et seuls les monuments de son archipel en demandent. `npm run contenu` produit `src/blocland/world/recettes.ts` depuis ce fichier : ne jamais l’éditer. Le dessin des blocs et du lieu, et les cases des monuments qui les demandent, restent dans le code (`biomes.ts`, `pixels.ts`, `palette.ts`, `monuments.ts`).
+> Décidé par le mainteneur le 30 septembre 2026 (fiche [GD-2](../gameplay/propositions/archives/GD-2.md)). Un bloc assemblé par archipel, qu’aucune île ne donne : il s’assemble dans un lieu de l’île de l’école, et seuls les monuments de son archipel en demandent. `npm run contenu` produit `src/game/world/recettes.ts` depuis ce fichier : ne jamais l’éditer. Le dessin des blocs et du lieu, et les cases des monuments qui les demandent, restent dans le code (`biomes.ts`, `pixels.ts`, `palette.ts`, `monuments.ts`).
 
 ## Le lieu
 
@@ -27,7 +27,7 @@
 > Une question à chaque bloc assemblé. Elle mobilise les deux matières scolaires des îles de sa recette ; ses compétences
 > sont celles de l’archipel (6e : cycle 3 seul ; 5e à 3e : au moins une du cycle 4). Douze questions par bloc
 > (au moins 8). Trois choix : la réponse, un piège de chaque matière. `lu` ne lit que le document : la question
-> a son propre bouton. `npm run contenu` les écrit dans `src/blocland/exercises/data/assembly-<bloc>.json`.
+> a son propre bouton. `npm run contenu` les écrit dans `src/game/exercises/data/assembly-<bloc>.json`.
 
 ### La poutre · `compound-6e`
 

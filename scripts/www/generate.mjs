@@ -27,11 +27,11 @@ export async function generatePages() {
     const load = (p) => server.ssrLoadModule(p);
     const [biomesMod, exercisesMod, plansMod, archMod, engineMod, progressMod, settingsMod, homophonesMod, tablesMod, fractionsMod, decimauxMod, registryMod, subjectMod, vocabulaireMod, irreguliersMod, programmeMod, exclusionsMod, motsOutilsMod] =
       await Promise.all([
-        load('/src/blocland/biomes.ts'),
-        load('/src/blocland/exercises/index.ts'),
-        load('/src/blocland/world/plans.ts'),
-        load('/src/blocland/world/archipelago.ts'),
-        load('/src/blocland/engine.ts'),
+        load('/src/game/biomes.ts'),
+        load('/src/game/exercises/index.ts'),
+        load('/src/game/world/plans.ts'),
+        load('/src/game/world/archipelago.ts'),
+        load('/src/game/engine.ts'),
         load('/src/core/progress.ts'),
         load('/src/core/settings.ts'),
         load('/src/apps/homophones/data.ts'),
@@ -46,12 +46,12 @@ export async function generatePages() {
         load('/src/programme/exclusions.ts'),
         load('/src/programme/motsOutils.ts'),
       ]);
-    const vehicleMod = await load('/src/blocland/world/vehicle.ts');
-    const monumentsMod = await load('/src/blocland/world/monuments.ts');
-    const recettesMod = await load('/src/blocland/world/recettes.ts');
-    const partiesMod = await load('/src/blocland/world/parties.ts');
+    const vehicleMod = await load('/src/game/world/vehicle.ts');
+    const monumentsMod = await load('/src/game/world/monuments.ts');
+    const recettesMod = await load('/src/game/world/recettes.ts');
+    const partiesMod = await load('/src/game/world/parties.ts');
     // Les commandes des créatures (GD-7) : qui demande quoi, contre quoi.
-    const commandesMod = await load('/src/blocland/world/commandes.ts');
+    const commandesMod = await load('/src/game/world/commandes.ts');
     // Les textes d'univers (Gardiens, espèces) : ceux de l'univers par défaut, Blocland.
     const universMod = await load('/src/univers/index.ts');
     const universCore = await load('/src/core/univers.ts');
@@ -130,7 +130,7 @@ const SUBJECT_NAME = { french: 'Français', maths: 'Maths', english: 'Anglais', 
 const SUBJECT_IDS = Object.keys(SUBJECT_NAME);
 /** « 3 d’anglais », « 1 de LV2 » : le complément de chaque matière dans le décompte des îles. */
 const SUBJECT_DE = { french: 'de français', maths: 'de maths', english: 'd’anglais', lv2: 'de LV2' };
-// Quand arrive la première commande d'un archipel, selon `SEUIL_DE_LA_PREMIERE_COMMANDE` (src/blocland/world/commandes.ts).
+// Quand arrive la première commande d'un archipel, selon `SEUIL_DE_LA_PREMIERE_COMMANDE` (src/game/world/commandes.ts).
 const QUAND_LA_PREMIERE_COMMANDE = {
   'premier-ouvrage': 'après le premier ouvrage construit dans l’archipel',
   'premiere-mission': 'après la première mission réussie dans l’archipel',
@@ -616,8 +616,8 @@ export async function generatePersonnages() {
   try {
     const load = (p) => server.ssrLoadModule(p);
     const [biomesMod, archMod, universMod, universCore] = await Promise.all([
-      load('/src/blocland/biomes.ts'),
-      load('/src/blocland/world/archipelago.ts'),
+      load('/src/game/biomes.ts'),
+      load('/src/game/world/archipelago.ts'),
       load('/src/univers/index.ts'),
       load('/src/core/univers.ts'),
     ]);
@@ -996,7 +996,7 @@ function baremePage(d) {
   const lines = [
     '# Barème, succès et valeurs par défaut',
     '',
-    'Les nombres de cette page viennent du code (`src/core/progress.ts`, `src/blocland/engine.ts`, `src/core/subjectProgress.ts`, `src/core/settings.ts`).',
+    'Les nombres de cette page viennent du code (`src/core/progress.ts`, `src/game/engine.ts`, `src/core/subjectProgress.ts`, `src/core/settings.ts`).',
     '',
     '## Points d’expérience (missions du portail)',
     '',

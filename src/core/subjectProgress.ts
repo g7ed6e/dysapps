@@ -1,11 +1,11 @@
 // La progression d'une matière, tous jeux confondus : les étoiles des îles de Blocland (de la 6e à la 3e), les
 // records des applis, et une courte liste de missions à retravailler (les plus faibles d'abord). Code pur.
 import { appsBySubject, bestScore, type Subject } from '../apps/registry';
-import { biomesOf, missionsJouables } from '../blocland/biomes';
-import { isBossBeaten } from '../blocland/bossCore';
-import { levelFor, type GameState } from '../blocland/engine';
-import { pickExercise, questProgress } from '../blocland/exercises';
-import { isBiomeUnlocked } from '../blocland/world/archipelago';
+import { biomesOf, missionsJouables } from '../game/biomes';
+import { isBossBeaten } from '../game/bossCore';
+import { levelFor, type GameState } from '../game/engine';
+import { pickExercise, questProgress } from '../game/exercises';
+import { isBiomeUnlocked } from '../game/world/archipelago';
 import type { AppStats } from './progress';
 
 /** Sous ce record, une appli est à retravailler (comme les 2 étoiles d'une mission : 70 %). */

@@ -668,14 +668,14 @@ async function scenes() {
   const base = server.resolvedUrls.local[0].replace(/\/$/, '');
   const load = (p) => server.ssrLoadModule(p);
   const [{ BIOMES, missionsJouables }, { ARCHIPELAGO_IDS }, { toutConstruit }, { plansFor, planCells }, { BADGES, sanitizeProgress }, { exercisesOf }] = await Promise.all([
-    load('/src/blocland/biomes.ts'),
-    load('/src/blocland/world/map.ts'),
-    load('/src/blocland/world/budget.ts'),
-    load('/src/blocland/world/plans.ts'),
+    load('/src/game/biomes.ts'),
+    load('/src/game/world/map.ts'),
+    load('/src/game/world/budget.ts'),
+    load('/src/game/world/plans.ts'),
     load('/src/core/progress.ts'),
-    load('/src/blocland/exercises/index.ts'),
+    load('/src/game/exercises/index.ts'),
   ]);
-  const { PETITES_CONSTRUCTIONS, casesDeLaPetiteConstruction } = await load('/src/blocland/world/petitesConstructions.ts');
+  const { PETITES_CONSTRUCTIONS, casesDeLaPetiteConstruction } = await load('/src/game/world/petitesConstructions.ts');
   /** Une partie où les îles `iles` ont chacune toutes leurs missions jouées une fois (`jouees`), le premier exercice de chacune. */
   const missionsJouees = (iles) =>
     Object.fromEntries(
@@ -830,7 +830,7 @@ async function scenes() {
           localStorage.clear();
           sessionStorage.removeItem('dysapps:poses-montrees');
           sessionStorage.removeItem('dysapps:revisions-plus-tard');
-          // La pose à montrer (GD-6), comme la retient « Voir le bâtiment » (src/blocland/poseAMontrer.ts).
+          // La pose à montrer (GD-6), comme la retient « Voir le bâtiment » (src/game/poseAMontrer.ts).
           if (pose) sessionStorage.setItem('dysapps:pose', JSON.stringify(pose));
           else sessionStorage.removeItem('dysapps:pose');
           sessionStorage.setItem('dysapps:title-seen', '1');

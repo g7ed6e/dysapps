@@ -11,23 +11,23 @@ import { AppPage } from './pages/AppPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { ProgressPage } from './pages/ProgressPage';
 import { NotFoundPage } from './pages/NotFoundPage';
-import { BloclandPage } from './blocland/BloclandPage';
-import { BiomePage } from './blocland/BiomePage';
-import { InventoryPage } from './blocland/Inventory';
-import { VoyagePage } from './blocland/VoyagePage';
-import { BossPage } from './blocland/BossPage';
-import { ExercisePage } from './blocland/ExercisePage';
-import { BloclandProvider } from './blocland/BloclandContext';
-import { WorldPage } from './blocland/WorldPage';
-import { SchoolPage } from './blocland/School';
-import { AssemblagePage } from './blocland/Assemblage';
-import { AssemblageQuestionPage } from './blocland/AssemblageQuestion';
-import { MonumentPage, MonumentsPage } from './blocland/Monuments';
-import { useMonumentBuilder } from './blocland/useMonumentBuilder';
-import { getMonument, type MonumentDef } from './blocland/world/monuments';
+import { BloclandPage } from './game/BloclandPage';
+import { BiomePage } from './game/BiomePage';
+import { InventoryPage } from './game/Inventory';
+import { VoyagePage } from './game/VoyagePage';
+import { BossPage } from './game/BossPage';
+import { ExercisePage } from './game/ExercisePage';
+import { BloclandProvider } from './game/BloclandContext';
+import { WorldPage } from './game/WorldPage';
+import { SchoolPage } from './game/School';
+import { AssemblagePage } from './game/Assemblage';
+import { AssemblageQuestionPage } from './game/AssemblageQuestion';
+import { MonumentPage, MonumentsPage } from './game/Monuments';
+import { useMonumentBuilder } from './game/useMonumentBuilder';
+import { getMonument, type MonumentDef } from './game/world/monuments';
 import { MENU_PATH } from './core/paths';
 import { translatePath } from './core/legacyIds';
-import { useImmersive } from './blocland/useImmersive';
+import { useImmersive } from './game/useImmersive';
 
 // HashRouter : les URL en « #/… » fonctionnent sur GitHub Pages sans configuration serveur.
 export function App() {

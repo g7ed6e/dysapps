@@ -56,7 +56,7 @@ export function figeable() {
 
 /**
  * Attend que la scène 3D soit prête et pose la caméra à son cadrage (`window.__dysappsCamera.poser`, voir
- * src/blocland/three/camera.ts) : bridée, la caméra mettrait plus de 20 s à finir son approche en douceur. Prête quand le
+ * src/game/three/camera.ts) : bridée, la caméra mettrait plus de 20 s à finir son approche en douceur. Prête quand le
  * cadrage ne bouge plus pendant une seconde (quatre relevés de suite), au plus `max` millisecondes ; sans scène 3D (un
  * écran sans monde), attend `max`. L'horloge de la page est figée : pas de `waitForFunction`, des relevés espacés.
  */

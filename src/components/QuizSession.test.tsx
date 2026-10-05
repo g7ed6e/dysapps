@@ -5,7 +5,7 @@ import { SettingsProvider } from '../core/SettingsContext';
 import { ProgressProvider } from '../core/ProgressContext';
 import { QuizSession, type Question } from './QuizSession';
 import { Celebrations } from './Celebrations';
-import { BloclandProvider } from '../blocland/BloclandContext';
+import { BloclandProvider } from '../game/BloclandContext';
 
 const questions: Question[] = [
   { id: 'q1', prompt: 'Combien font 2 + 2 ?', choices: ['3', '4', '5'], answer: '4', hint: 'Compte sur tes doigts.' },

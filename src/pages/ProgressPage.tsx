@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
 import { subjectInfo, visibleSubjects } from '../apps/registry';
 import { useSettings } from '../core/SettingsContext';
-import { useBlocland } from '../blocland/BloclandContext';
-import { Stars } from '../blocland/Stars';
+import { useBlocland } from '../game/BloclandContext';
+import { Stars } from '../game/Stars';
 import { BADGES, levelFromXp } from '../core/progress';
 import { useProgress } from '../core/ProgressContext';
 import { subjectProgress, type SubjectProgress } from '../core/subjectProgress';

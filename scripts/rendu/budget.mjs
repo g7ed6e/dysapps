@@ -1,5 +1,5 @@
 // Le budget de rendu d'Archipéo, poste par poste : `npm run rendu:budget` donne, pour chaque archipel tout construit,
-// les triangles et les appels de dessin que compte chaque poste (src/blocland/world/budget.ts, les mêmes fonctions que
+// les triangles et les appels de dessin que compte chaque poste (src/game/world/budget.ts, les mêmes fonctions que
 // world/budget.test.ts), son enveloppe et la marge qui reste. Sans navigateur ni Three.js : quelques secondes, pour
 // chiffrer un lot avant et après sans écrire de test jetable. Le poste « Dans la scène » (étiquettes, flèche, fanion,
 // balises) ne se compte que dans le navigateur : `npm run rendu:mesures` mesure la scène entière. En dessous, le monde en
@@ -38,7 +38,7 @@ const server = await createServer({
 });
 try {
   const load = (p) => server.ssrLoadModule(p);
-  const [budget, { ARCHIPELAGO_IDS }] = await Promise.all([load('/src/blocland/world/budget.ts'), load('/src/blocland/world/map.ts')]);
+  const [budget, { ARCHIPELAGO_IDS }] = await Promise.all([load('/src/game/world/budget.ts'), load('/src/game/world/map.ts')]);
   const demandes = option('--archipel')?.split(',');
   const inconnus = demandes?.filter((a) => !ARCHIPELAGO_IDS.includes(a)) ?? [];
   if (inconnus.length) throw new Error(`Archipel inconnu : ${inconnus.join(', ')} (${ARCHIPELAGO_IDS.join(', ')})`);
