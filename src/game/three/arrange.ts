@@ -5,6 +5,8 @@
 // ajout aux matériaux des blocs (`avecLAmenagement`), posé seulement le temps que le mode est ouvert, sans maillage de
 // plus ; dans Archipéo, le voile de brume du geste.
 // Moins d'animations : le lieu se soulève d'un coup, et la page pose sans geste.
+import type { Lumiere } from './light';
+import { mixColor } from '../world/daylight';
 import * as THREE from 'three';
 import { gestureCut, veilOpacity, veilZone } from '../world/arrangeGesture';
 import type { ArrangeCellKind, ArrangeGesture, ArrangeView } from '../world/view';
@@ -132,22 +134,24 @@ function textureBordee(): THREE.DataTexture {
 }
 
 /**
- * La texture du voile de brume d'Archipéo : un rectangle plein au milieu, aux bords adoucis (un quart de chaque côté),
- * pour couvrir le lieu entier sans bord net (générée ici, rien d'importé).
+ * La texture du voile de brume d'Archipéo : couleur Brume (#E5EBE3), pleine au milieu, aux bords fondus en arrondi (un
+ * adoucissement radial, en super-ellipse pour couvrir le lieu jusque près de ses coins sans bord net ni coin carré),
+ * générée ici, rien d'importé.
  */
 function textureDuVoile(): THREE.DataTexture {
   const n = 32;
   const data = new Uint8Array(n * n * 4);
-  const bord = n / 4;
   const doux = (t: number) => t * t * (3 - 2 * t);
   for (let y = 0; y < n; y++)
     for (let x = 0; x < n; x++) {
-      const d = Math.min(x + 0.5, y + 0.5, n - x - 0.5, n - y - 0.5);
+      const u = ((x + 0.5) / n) * 2 - 1;
+      const v = ((y + 0.5) / n) * 2 - 1;
+      const d = Math.pow(u ** 4 + v ** 4, 1 / 4);
       const i = (y * n + x) * 4;
-      data[i] = 246;
-      data[i + 1] = 249;
-      data[i + 2] = 252;
-      data[i + 3] = Math.round(255 * doux(Math.min(1, d / bord)));
+      data[i] = 0xe5;
+      data[i + 1] = 0xeb;
+      data[i + 2] = 0xe3;
+      data[i + 3] = Math.round(255 * doux(Math.min(1, Math.max(0, (1 - d) / VOILE_FONDU))));
     }
   const t = new THREE.DataTexture(data, n, n);
   t.colorSpace = THREE.SRGBColorSpace;
@@ -157,8 +161,14 @@ function textureDuVoile(): THREE.DataTexture {
   return t;
 }
 
-/** Autour du voile, en cases : ses bords adoucis débordent du lieu. */
-const VOILE_DEBORDE = 8;
+/** La part du voile, depuis son bord, où il se fond (en fraction de sa demi-largeur). */
+const VOILE_FONDU = 0.4;
+/** Autour du voile, en cases : à peine plus large que l'emprise du lieu, le fondu commençant sur le lieu. */
+const VOILE_DEBORDE = 2;
+/** Au plus fort du geste, le voile laisse un peu voir le lieu dessous (un peu transparent, jamais un flash blanc). */
+const VOILE_OPACITE = 0.78;
+/** La nuit, le voile prend ce bleu sombre (celui des bancs de brume de nuit) : jamais une tache claire sur la mer de nuit. */
+const VOILE_DE_NUIT = 0x5d7196;
 
 /** La hauteur du soulèvement du lieu choisi (en cases), et le temps qu'il met à monter (ms). */
 const SOULEVEMENT = { hauteur: 1, dureeMs: 220 };
@@ -192,7 +202,7 @@ function textureDuNom(texte: string): { map: THREE.CanvasTexture; w: number; h: 
   return { map, w: canvas.width * NOM_CSS, h: canvas.height * NOM_CSS };
 }
 
-export function creerAmenagement(monde: Monde, reduit: boolean, camera: THREE.PerspectiveCamera, el: HTMLElement): Amenagement {
+export function creerAmenagement(monde: Monde, reduit: boolean, camera: THREE.PerspectiveCamera, el: HTMLElement, lumiere?: Lumiere): Amenagement {
   const blocs = monde.habillage.pose === 'geste';
   // Un carré plat, couché : deux triangles par case.
   const forme = new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2);
@@ -210,6 +220,8 @@ export function creerAmenagement(monde: Monde, reduit: boolean, camera: THREE.Pe
     voile.visible = false;
     voile.raycast = () => {};
     monde.scene.add(voile);
+    // La nuit, le voile s'assombrit avec la lumière (sans lumière propre, il resterait clair).
+    lumiere?.suivre((jour) => voileMat?.color.setHex(mixColor(VOILE_DE_NUIT, 0xffffff, Math.min(1, Math.max(0, jour)))));
   }
   // Le nom du lieu choisi, posé sur son fantôme : une étiquette de taille fixe à l'écran, un appel de dessin pendant le choix.
   const nomMat = new THREE.SpriteMaterial({ depthTest: false, transparent: true, sizeAttenuation: false, fog: false });
@@ -269,7 +281,7 @@ export function creerAmenagement(monde: Monde, reduit: boolean, camera: THREE.Pe
         voile.visible = true;
         voile.position.set((r.x0 + r.x1) / 2, enCours.haut, (r.y0 + r.y1) / 2);
         voile.scale.set(r.x1 - r.x0 + VOILE_DEBORDE * 2, r.y1 - r.y0 + VOILE_DEBORDE * 2, 1);
-        voileMat.opacity = 0.95 * veilOpacity(enCours, now);
+        voileMat.opacity = VOILE_OPACITE * veilOpacity(enCours, now);
       }
       return;
     }
