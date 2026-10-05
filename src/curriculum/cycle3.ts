@@ -18,6 +18,14 @@ export const DOMAINES_C3: readonly ProgrammeDomaine[] = [
   { id: 'c3-en-dialoguer', cycle: 3, discipline: 'english', title: 'Langues vivantes : réagir et dialoguer', page: 37 },
   { id: 'c3-en-culture', cycle: 3, discipline: 'english', title: 'Langues vivantes : connaissances culturelles', page: 38 },
   { id: 'c3-en-langue', cycle: 3, discipline: 'english', title: 'Langues vivantes : grammaire et phonologie', page: 39 },
+  // Histoire et géographie : les pages n'ont pas pu être vérifiées dans le PDF (téléchargement refusé depuis
+  // l'environnement de travail, 5 octobre 2026) ; à relire avant la première île. Seule la classe de 6e est
+  // résumée : le CM1 et le CM2 ne sont pas dans l'application.
+  { id: 'c3-hg-temps', cycle: 3, discipline: 'history-geography', title: 'Histoire et géographie : se repérer dans le temps', page: 73 },
+  { id: 'c3-hg-espace', cycle: 3, discipline: 'history-geography', title: 'Histoire et géographie : se repérer dans l’espace', page: 73 },
+  { id: 'c3-hg-demarches', cycle: 3, discipline: 'history-geography', title: 'Histoire et géographie : raisonner, comprendre un document, pratiquer différents langages', page: 73 },
+  { id: 'c3-hg-histoire', cycle: 3, discipline: 'history-geography', title: 'Histoire, classe de sixième', page: 78 },
+  { id: 'c3-hg-geographie', cycle: 3, discipline: 'history-geography', title: 'Géographie, classe de sixième', page: 80 },
 ];
 
 // Attendus de fin de cycle, cités (raccourcis) une fois pour ne pas les répéter à chaque entrée.
@@ -45,6 +53,19 @@ const EN_DIALOGUER = 'A1 : communiquer de façon simple si l’interlocuteur ré
 const EN_CULTURE = 'Identifier quelques grands repères culturels de l’environnement quotidien des élèves du même âge dans les pays ou régions étudiés';
 const EN_GRAMMAIRE = 'Avoir un contrôle limité de quelques structures et formes grammaticales simples appartenant à un répertoire mémorisé';
 const EN_PHONO = 'Reconnaître et reproduire de manière intelligible les sons, l’accentuation, les rythmes et les courbes intonatives propres à la langue';
+
+const HG_TEMPS = 'Se repérer dans le temps : construire des repères historiques';
+const HG_ESPACE = 'Se repérer dans l’espace : construire des repères géographiques';
+const HG_DOC = 'Comprendre un document';
+const HG_LANGAGES = 'Pratiquer différents langages en histoire et en géographie';
+const HG_RAISONNER = 'Raisonner, justifier une démarche et les choix effectués';
+const HG_H1 = 'Thème 1 : la longue histoire de l’humanité et des migrations';
+const HG_H2 = 'Thème 2 : récits fondateurs, croyances et citoyenneté dans la Méditerranée antique au Ier millénaire avant J.-C.';
+const HG_H3 = 'Thème 3 : l’empire romain dans le monde antique';
+const HG_G1 = 'Thème 1 : habiter une métropole';
+const HG_G2 = 'Thème 2 : habiter un espace de faible densité';
+const HG_G3 = 'Thème 3 : habiter les littoraux';
+const HG_G4 = 'Thème 4 : le monde habité';
 
 export const ENTRIES_C3 = [
   // ---------- Français ----------
@@ -124,4 +145,33 @@ export const ENTRIES_C3 = [
   { id: 'c3.en.langue.phrase', cycle: 3, discipline: 'english', domaine: 'c3-en-langue', attendu: EN_GRAMMAIRE, competence: 'Types et formes de phrase (déclarative, interrogative, exclamative, impérative, négative) ; ordre des mots ; mots de liaison ; quelques subordonnants', page: 39 },
   { id: 'c3.en.langue.phonologie', cycle: 3, discipline: 'english', domaine: 'c3-en-langue', attendu: EN_PHONO, competence: 'Percevoir et reproduire les phonèmes spécifiques, l’accent tonique, le rythme et les schémas intonatifs', page: 40 },
   { id: 'c3.en.langue.phonie-graphie', cycle: 3, discipline: 'english', domaine: 'c3-en-langue', attendu: EN_PHONO, competence: 'Lien phonie-graphie : percevoir la relation entre graphèmes et phonèmes spécifiques à la langue ; l’alphabet', page: 40 },
+  // ---------- Histoire et géographie (6e ; pages à vérifier) ----------
+  { id: 'c3.hg.temps.periodes', cycle: 3, discipline: 'history-geography', domaine: 'c3-hg-temps', attendu: HG_TEMPS, competence: 'Situer chronologiquement les grandes périodes historiques ; mémoriser les repères historiques du programme', page: 73 },
+  { id: 'c3.hg.temps.ordonner', cycle: 3, discipline: 'history-geography', domaine: 'c3-hg-temps', attendu: HG_TEMPS, competence: 'Ordonner des faits les uns par rapport aux autres et les situer dans une époque ou une période donnée', page: 73 },
+  { id: 'c3.hg.temps.frise', cycle: 3, discipline: 'history-geography', domaine: 'c3-hg-temps', attendu: HG_TEMPS, competence: 'Utiliser des documents qui représentent le temps, dont les frises chronologiques, et le lexique du découpage du temps (siècle, millénaire, avant et après J.-C.)', page: 73 },
+  { id: 'c3.hg.espace.localiser', cycle: 3, discipline: 'history-geography', domaine: 'c3-hg-espace', attendu: HG_ESPACE, competence: 'Nommer et localiser les grands repères géographiques ; mémoriser les repères géographiques du programme', page: 73 },
+  { id: 'c3.hg.espace.situer', cycle: 3, discipline: 'history-geography', domaine: 'c3-hg-espace', attendu: HG_ESPACE, competence: 'Nommer, localiser et caractériser un lieu ; situer des lieux et des espaces les uns par rapport aux autres ; la notion d’échelle', page: 73 },
+  { id: 'c3.hg.demarches.document', cycle: 3, discipline: 'history-geography', domaine: 'c3-hg-demarches', attendu: HG_DOC, competence: 'Comprendre le sens général d’un document ; l’identifier (nature, auteur, date) ; extraire des informations pertinentes pour répondre à une question', page: 74 },
+  { id: 'c3.hg.demarches.point-de-vue', cycle: 3, discipline: 'history-geography', domaine: 'c3-hg-demarches', attendu: HG_DOC, competence: 'Savoir que le document exprime un point de vue ; identifier et questionner son sens implicite', page: 74 },
+  { id: 'c3.hg.demarches.lexique', cycle: 3, discipline: 'history-geography', domaine: 'c3-hg-demarches', attendu: HG_LANGAGES, competence: 'S’approprier et utiliser un lexique historique et géographique approprié', page: 74 },
+  { id: 'c3.hg.demarches.cartes', cycle: 3, discipline: 'history-geography', domaine: 'c3-hg-demarches', attendu: HG_LANGAGES, competence: 'Utiliser des cartes à différentes échelles, des photographies de paysages ou de lieux ; réaliser ou compléter des productions graphiques', page: 74 },
+  { id: 'c3.hg.demarches.ecrire-dire', cycle: 3, discipline: 'history-geography', domaine: 'c3-hg-demarches', attendu: HG_LANGAGES, competence: 'Écrire pour structurer sa pensée et son savoir ; reconnaître un récit historique ; s’exprimer à l’oral pour raconter, décrire, expliquer', page: 74 },
+  { id: 'c3.hg.demarches.raisonner', cycle: 3, discipline: 'history-geography', domaine: 'c3-hg-demarches', attendu: HG_RAISONNER, competence: 'Poser et se poser des questions ; formuler des hypothèses ; vérifier ; justifier ; s’informer dans le monde du numérique ; coopérer et mutualiser', page: 73 },
+  { id: 'c3.hg.histoire.debuts-humanite', cycle: 3, discipline: 'history-geography', domaine: 'c3-hg-histoire', attendu: HG_H1, competence: 'Les débuts de l’humanité : premiers humains, peuplement de la Terre, grandes migrations', page: 78 },
+  { id: 'c3.hg.histoire.neolithique', cycle: 3, discipline: 'history-geography', domaine: 'c3-hg-histoire', attendu: HG_H1, competence: 'La « révolution » néolithique : agriculture, élevage, sédentarisation', page: 78 },
+  { id: 'c3.hg.histoire.premiers-etats', cycle: 3, discipline: 'history-geography', domaine: 'c3-hg-histoire', attendu: HG_H1, competence: 'Premiers États, premières écritures', page: 78 },
+  { id: 'c3.hg.histoire.cites-grecques', cycle: 3, discipline: 'history-geography', domaine: 'c3-hg-histoire', attendu: HG_H2, competence: 'Le monde des cités grecques : cités, mythes, panthéon, Jeux ; la citoyenneté à Athènes', page: 78 },
+  { id: 'c3.hg.histoire.rome-mythe', cycle: 3, discipline: 'history-geography', domaine: 'c3-hg-histoire', attendu: HG_H2, competence: 'Rome du mythe à l’histoire : la fondation légendaire, la République, la citoyenneté romaine', page: 79 },
+  { id: 'c3.hg.histoire.monotheisme-juif', cycle: 3, discipline: 'history-geography', domaine: 'c3-hg-histoire', attendu: HG_H2, competence: 'La naissance du monothéisme juif dans un monde polythéiste', page: 79 },
+  { id: 'c3.hg.histoire.empire-romain', cycle: 3, discipline: 'history-geography', domaine: 'c3-hg-histoire', attendu: HG_H3, competence: 'Conquêtes, paix romaine et romanisation', page: 79 },
+  { id: 'c3.hg.histoire.chretiens', cycle: 3, discipline: 'history-geography', domaine: 'c3-hg-histoire', attendu: HG_H3, competence: 'Des chrétiens dans l’empire', page: 79 },
+  { id: 'c3.hg.histoire.route-de-la-soie', cycle: 3, discipline: 'history-geography', domaine: 'c3-hg-histoire', attendu: HG_H3, competence: 'Les relations de l’empire romain avec les autres mondes anciens : l’ancienne route de la soie et la Chine des Han', page: 79 },
+  { id: 'c3.hg.geographie.metropoles', cycle: 3, discipline: 'history-geography', domaine: 'c3-hg-geographie', attendu: HG_G1, competence: 'Les métropoles et leurs habitants', page: 80 },
+  { id: 'c3.hg.geographie.ville-de-demain', cycle: 3, discipline: 'history-geography', domaine: 'c3-hg-geographie', attendu: HG_G1, competence: 'La ville de demain', page: 80 },
+  { id: 'c3.hg.geographie.contraintes', cycle: 3, discipline: 'history-geography', domaine: 'c3-hg-geographie', attendu: HG_G2, competence: 'Habiter un espace à fortes contraintes naturelles ou de grande biodiversité', page: 80 },
+  { id: 'c3.hg.geographie.agricole', cycle: 3, discipline: 'history-geography', domaine: 'c3-hg-geographie', attendu: HG_G2, competence: 'Habiter un espace de faible densité à vocation agricole', page: 80 },
+  { id: 'c3.hg.geographie.littoral-portuaire', cycle: 3, discipline: 'history-geography', domaine: 'c3-hg-geographie', attendu: HG_G3, competence: 'Un littoral industrialo-portuaire', page: 81 },
+  { id: 'c3.hg.geographie.littoral-touristique', cycle: 3, discipline: 'history-geography', domaine: 'c3-hg-geographie', attendu: HG_G3, competence: 'Un littoral touristique', page: 81 },
+  { id: 'c3.hg.geographie.population-mondiale', cycle: 3, discipline: 'history-geography', domaine: 'c3-hg-geographie', attendu: HG_G4, competence: 'La répartition de la population mondiale et ses dynamiques', page: 81 },
+  { id: 'c3.hg.geographie.occupation', cycle: 3, discipline: 'history-geography', domaine: 'c3-hg-geographie', attendu: HG_G4, competence: 'La variété des formes d’occupation spatiale dans le monde', page: 81 },
 ] as const satisfies readonly ProgrammeEntry[];

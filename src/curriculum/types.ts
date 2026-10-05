@@ -8,8 +8,9 @@ export type Cycle = 3 | 4;
 /**
  * Les disciplines du référentiel : les matières de l'application, et les deux LV2 (allemand, espagnol, de la 5e à la 3e,
  * cycle 4 seulement). Les LV2 deviennent des matières de l'application avec leur première île (LV2-2 du cadrage du contenu).
+ * L'histoire et la géographie (6e seulement pour l'instant) le deviendront de même, avec leur première île.
  */
-export type Discipline = Exclude<Subject, 'lv2'> | 'german' | 'spanish';
+export type Discipline = Exclude<Subject, 'lv2'> | 'german' | 'spanish' | 'history-geography';
 
 export type SourceId = 'c3' | 'c4';
 
@@ -32,7 +33,7 @@ export interface ProgrammeSource {
 
 /** Un domaine du programme (« Étude de la langue », « Thème A – Nombres et calculs », « Écouter et comprendre »). */
 export interface ProgrammeDomaine {
-  /** Ancre stable, ex. « c3-fr-langue », « c4-es-lire » (c<cycle>-<fr|ma|en|de|es>-<domaine>). */
+  /** Ancre stable, ex. « c3-fr-langue », « c4-es-lire » (c<cycle>-<fr|ma|en|de|es|hg>-<domaine>). */
   id: string;
   cycle: Cycle;
   discipline: Discipline;
@@ -44,7 +45,7 @@ export interface ProgrammeDomaine {
 
 /** Une compétence du programme, au grain d'une mission : ce qu'une mission peut travailler. */
 export interface ProgrammeEntry {
-  /** Identifiant stable : c<cycle>.<fr|ma|en|de|es>.<domaine>.<compétence>. */
+  /** Identifiant stable : c<cycle>.<fr|ma|en|de|es|hg>.<domaine>.<compétence>. */
   id: string;
   cycle: Cycle;
   discipline: Discipline;

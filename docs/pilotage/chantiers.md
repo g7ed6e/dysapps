@@ -16,6 +16,7 @@ Chaque chantier a son préfixe ; on ne les mélange jamais (dans les fils, les p
 | **J0** à **J8**, **D** | Séparer le jeu du rendu | [Séparer le jeu du rendu](../conception/separation-jeu-rendu.md), §3 |
 | **U0** à **U6** | Les univers | [Plusieurs univers](../univers/univers.md), §6 |
 | **LV2-1** à **LV2-5** | La deuxième langue vivante | [Cadrage du contenu](../conception/cadrage-contenu.md), la LV2 |
+| **HG-1** à **HG-2** | L’histoire et la géographie | [Cadrage du contenu](../conception/cadrage-contenu.md), l’histoire et la géographie |
 | **C-1** à **C-15** | Le contenu pédagogique à couvrir | [Cadrage du contenu](../conception/cadrage-contenu.md), le plan |
 | **M1** à **M5** | Le contenu écrit en Markdown, source du jeu et du site | [Contenu en Markdown](../contenu/README.md) et ci-dessous |
 | **GD-n** | Les propositions de game design | [Game design](../gameplay/propositions/modele.md) |
@@ -85,6 +86,10 @@ Les suites relevées par les relectures ne sont pas commencées : chacune attend
 - Les portraits du panneau d’île montrent le dos de toutes les créatures (Timbre y est une colonne brune) : les retourner tous d’un coup, dans une pull request à part, relue par les deux consultants et le référent dys.
 - Le phare du 3e est hors du tiers central en 800 × 1280 (défaut d’avant le Refuge) : un lot de cadrage portrait.
 - `engine.ts` : `Object.hasOwn(BLOCKS, id)` au lieu de `id in BLOCKS`, pour une sauvegarde abîmée.
+
+### L’histoire et la géographie (HG)
+
+HG-1 en cours (choix C du mainteneur, 5 octobre 2026 : deux îles de 6e, histoire et géographie, sur le programme en vigueur) : le référentiel de 6e (`c3.hg.*`, toutes « à couvrir » ou hors périmètre) et le contenu des deux îles, écrit avant le monde sur la grille. Les pages du PDF sont à vérifier (téléchargement refusé). HG-2, l’entrée au jeu, attend la première pull request de GD-9. Le nouveau programme du cycle 3 s’applique en 6e à la rentrée 2027.
 
 ### Le contenu en Markdown (M)
 
