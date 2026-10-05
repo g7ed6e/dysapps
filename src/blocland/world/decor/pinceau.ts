@@ -3,6 +3,7 @@
 // octaèdres, boîtes). Code pur, sans Three.js ; les formes (./formes.ts) le partagent, ../decorMesh.ts le lit.
 import { lineaire } from '../landMesh';
 import type { Couleur, Faces } from '../palette';
+import { clamp } from '../../../core/math';
 
 // ---------- Le pinceau : des facettes et leurs couleurs ----------
 
@@ -92,7 +93,6 @@ export function hasardDe(id: string): () => number {
   };
 }
 
-export const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 export const rgb = (c: Couleur): RGB => [(c >> 16) & 255, (c >> 8) & 255, c & 255];
 export const hex = (s: string): Couleur => parseInt(s.slice(1), 16);
 /** Une île fermée : les couleurs délavées vers le gris clair, comme le sol (./landMesh.ts). */

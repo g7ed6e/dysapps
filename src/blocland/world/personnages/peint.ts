@@ -8,7 +8,8 @@
 // tenue, outil, yeux ou lueur). Le pinceau du décor (../decor/pinceau.ts) oriente et colore les facettes.
 import { lineaire } from '../landMesh';
 import type { Couleur } from '../palette';
-import { clamp, Pinceau, rgb, type Peindre, type RGB, type V3 } from '../decor/pinceau';
+import { clamp } from '../../../core/math';
+import { Pinceau, rgb, type Peindre, type RGB, type V3 } from '../decor/pinceau';
 
 export type { V3, Peindre } from '../decor/pinceau';
 

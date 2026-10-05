@@ -4,7 +4,7 @@
 // bloc qui ne sert à rien maintenant est dit tel quel ; les blocs de finition, l'or et le cristal sont des trophées.
 import { BIOMES, BLOCKS, type BiomeDef, type BiomeId, type BlockId } from '../biomes';
 import { canLaunch, currentStage, planStatus, type GameState } from '../engine';
-import { BRIDGE_BLOCKS, archipelagoOf, buildableBridges, conditionMet, islandsOf, otherEnd, payableBlocks, reachableIslands, type BridgeDef } from './archipelago';
+import { archipelagoOf, buildableBridges, conditionMet, islandsOf, otherEnd, payableBlocks, reachableIslands, type BridgeDef } from './archipelago';
 import { monumentsOf } from './monuments';
 import { lieuDAssemblage } from './assemblage';
 import { universCourant } from '../../core/settings';
@@ -184,9 +184,4 @@ export function inventoryUses(state: GameState): Inventory {
       };
     });
   return { rows, total, payable, ouvrages, missing: missingNow(state) };
-}
-
-/** Un bloc paie les ouvrages (les blocs de finition, non). */
-export function paysOuvrages(block: BlockId): boolean {
-  return BRIDGE_BLOCKS.includes(block);
 }

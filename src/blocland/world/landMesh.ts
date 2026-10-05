@@ -30,6 +30,8 @@ import type { TextureKind } from './pixels';
 import { decorPose } from './decor';
 import { bruit, FROID, FROID_SOUS } from './style';
 import type { Cell } from './view';
+import { clamp, smooth } from '../../core/math';
+import { cellHash } from '../../core/random';
 
 /** Le niveau de l'eau dans la vue 3D (`WATER_LEVEL` de three/WorldCanvas.tsx). */
 export const NIVEAU_EAU = -0.45;
@@ -135,8 +137,6 @@ export interface ChampDuSol {
 
 /** La clé d'une case (les coordonnées tiennent largement dans ± 16 000). */
 const cle = (x: number, y: number) => (x + 16384) * 32768 + (y + 16384);
-const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
-const smooth = (t: number) => t * t * (3 - 2 * t);
 
 /** La colonne d'une case, ou `undefined` dans l'eau. */
 export function colonneEn(champ: ChampDuSol, x: number, y: number): Colonne | undefined {
@@ -333,9 +333,9 @@ export function champDuSol(a: ArchipelagoId, sol: VoxelCube[], autres: VoxelCube
         const px = x + ox;
         const py = y + oy;
         const contre = [colonneEn(champ, px - 1, py - 1), colonneEn(champ, px, py - 1), colonneEn(champ, px - 1, py), colonneEn(champ, px, py)].some(Boolean);
-        return contre ? RIVAGE + EBOULIS * (0.35 + 0.65 * hasard(px * 3 + 1, py * 5 + 2)) : NIVEAU_EAU - 0.35;
+        return contre ? RIVAGE + EBOULIS * (0.35 + 0.65 * cellHash(px * 3 + 1, py * 5 + 2)) : NIVEAU_EAU - 0.35;
       }) as Pied['coins'];
-      const milieu = (coins[0] + coins[1] + coins[2] + coins[3]) / 4 + 0.18 * (hasard(x * 7 + 3, y * 11 + 5) - 0.35);
+      const milieu = (coins[0] + coins[1] + coins[2] + coins[3]) / 4 + 0.18 * (cellHash(x * 7 + 3, y * 11 + 5) - 0.35);
       champ.indexPieds.set(k, champ.pieds.length);
       champ.pieds.push({ x, y, colonne: i, coins, milieu });
     }
@@ -394,19 +394,12 @@ export function signatureDuChamp(champ: ChampDuSol): string {
 
 // ---------- La surface : hauteur en un point ----------
 
-/** Un hasard reproductible par case, de 0 à 1. */
-function hasard(x: number, y: number): number {
-  let h = Math.imul(x, 374761393) ^ Math.imul(y, 668265263);
-  h = Math.imul(h ^ (h >>> 13), 1274126177);
-  return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
-}
-
 /** La diagonale qui coupe une case : la plus plate (le pli le plus doux), au hasard si les deux se valent. */
 function diagonaleDe(h: number[], x: number, y: number): 0 | 1 {
   const d02 = Math.abs(h[0] - h[2]);
   const d13 = Math.abs(h[1] - h[3]);
   if (Math.abs(d02 - d13) > 1e-6) return d02 < d13 ? 0 : 1;
-  return hasard(x, y) < 0.5 ? 0 : 1;
+  return cellHash(x, y) < 0.5 ? 0 : 1;
 }
 
 /** Les deux triangles d'une case, en indices de coins, selon sa diagonale. */
@@ -940,7 +933,7 @@ export function landMesh(champ: ChampDuSol, options: OptionsDuSol = {}): Maillag
     for (let k = 0; k < 4; k++) {
       const pts: V3[] = [m, q[k], q[(k + 1) % 4]];
       // Chaque caillou un peu plus clair ou plus sombre que son voisin.
-      const f = 1 + 0.06 * (hasard(pied.x * 4 + k, pied.y * 9 + 1) * 2 - 1);
+      const f = 1 + 0.06 * (cellHash(pied.x * 4 + k, pied.y * 9 + 1) * 2 - 1);
       const cs = pts.map((pt) => peintRGB(cote, pt, true, f));
       sol.triangle(pts[0], pts[1], pts[2], cs[0], cs[1], cs[2], HAUT, pied.colonne, ombree);
     }

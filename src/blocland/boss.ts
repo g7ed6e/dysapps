@@ -7,6 +7,7 @@ import { exercisesOf, loadExercise, pickExercise } from './exercises';
 import { runItems } from './exercises/run';
 import { isBiomeUnlocked } from './world/archipelago';
 import type { ExerciseDef, ExerciseItem } from './exercises/types';
+import { shuffle } from '../core/random';
 import type { Lang } from '../core/speech';
 
 import { STARS_TO_BEAT, STARS_TO_UNLOCK, bossId, isBossBeaten } from './bossCore';
@@ -105,13 +106,9 @@ export async function bossDef(biome: BiomeDef, state: GameState, rng: () => numb
       return;
     }
     // Les écrans de l'exercice, dans un ordre mélangé, sans en reprendre deux fois le même.
-    const screens: ExerciseItem[][] = [];
-    for (let i = 0; i + batch <= items.length; i += batch) screens.push(items.slice(i, i + batch));
-    for (let i = screens.length - 1; i > 0; i--) {
-      const j = Math.floor(rng() * (i + 1));
-      [screens[i], screens[j]] = [screens[j], screens[i]];
-    }
-    screens.slice(0, ROUNDS_PER_TYPE).forEach((items, i) => {
+    const ecrans: ExerciseItem[][] = [];
+    for (let i = 0; i + batch <= items.length; i += batch) ecrans.push(items.slice(i, i + batch));
+    shuffle(ecrans, rng).slice(0, ROUNDS_PER_TYPE).forEach((items, i) => {
       rounds.push({ key: `${type}-${i}`, screenType: type, exerciseId: def.id, instruction: def.instruction, target: def.target, lang: def.lang, items, wrong: def.feedback.wrong });
     });
   });

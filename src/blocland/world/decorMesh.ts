@@ -22,7 +22,7 @@ import { formeDe, LOINTAINS } from './decor/formes';
 import { decorHorsGrille, formeHorsGrille } from './decor/horsGrille';
 import { dessinerLointain } from './decor/lointain';
 import { Fumees, type FumeeDuDecor } from './decor/fumee';
-import { clamp, DELAVE, FAMILLES, hasardDe, hex, Pinceau, rgb, valeur, type FacettesDuDecor, type RGB } from './decor/pinceau';
+import { DELAVE, FAMILLES, hasardDe, hex, Pinceau, rgb, valeur, type FacettesDuDecor, type RGB } from './decor/pinceau';
 import { colonneEn, hauteurDuSol, type ChampDuSol } from './landMesh';
 import { graineDuDessin, type ArchipelagoId } from './map';
 import { cielDe, couleurDeMatiere, couleurDuSol, MATIERES, type Faces } from './palette';
@@ -30,6 +30,7 @@ import type { TextureKind } from './pixels';
 import { kindOf, PROP_KINDS } from './props';
 import { worldBounds } from './terrain';
 import type { Cell } from './view';
+import { clamp } from '../../core/math';
 
 export { ELAN, FAMILLES, FEUILLAGE, PIED, TAILLES, valeur, type FacettesDuDecor } from './decor/pinceau';
 export { ENFONCE } from './decor/communes';

@@ -10,7 +10,8 @@ import type { BiomeId } from '../../biomes';
 import { BRIDGES } from '../archipelago';
 import { archipelagoOfIsland } from '../archipels';
 import { bornesDuCoeur, islandDef, landCells } from '../map';
-import { hash } from '../style';
+import { smooth } from '../../../core/math';
+import { cellHash } from '../../../core/random';
 import { bridgePath, origineDe } from '../terrain';
 import type { Modele } from './types';
 
@@ -46,8 +47,6 @@ export const CRETES_5E: Partial<Record<BiomeId, Sommet[]>> = {
   'english-5e-vocabulary': [{ x: 5, h: 7, l: 7 }],
   'lv2-5e-introductions': [{ x: 13, h: 6, l: 7 }],
 };
-
-const smooth = (t: number) => t * t * (3 - 2 * t);
 
 /** Les paliers d'une masse cassée : des marches de 2 et 3 blocs en alternance (2, 5, 7, 10…), jusqu'à `h`. */
 function paliers(h: number): number[] {
@@ -95,8 +94,8 @@ function crete(id: BiomeId, sommets: Sommet[]): Modele {
             voulue = Math.max(voulue, Math.round(v));
             continue;
           }
-          // Un hasard entier par rangée et par colonne (../style.ts `hash`) : le même bord sur tout appareil.
-          const j = s.pans ? 1.4 * (hash(y, s.x) - 0.5) + 1.2 * (hash(s.h, x) - 0.5) : 0;
+          // Un hasard entier par rangée et par colonne (`cellHash`) : le même bord sur tout appareil.
+          const j = s.pans ? 1.4 * (cellHash(y, s.x) - 0.5) + 1.2 * (cellHash(s.h, x) - 0.5) : 0;
           let palier = 0;
           for (const q of paliersDe.get(s) ?? []) if (q <= v + j && q < s.h) palier = q;
           voulue = Math.max(voulue, palier);

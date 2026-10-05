@@ -1,5 +1,8 @@
 // Textures pixel 16 × 16 générées par le code (aucune image empruntée) : herbe, terre, pierre, planches…
 // Du dessin pur sur un canvas 2D, sans moteur 3D : les deux vues du monde (3D et 2D) peignent les mêmes pixels.
+import { fadeRgb, hexToRgb } from '../../core/color';
+import { mulberry32 } from '../../core/random';
+
 export type TextureKind =
   | 'herbe'
   | 'terre'
@@ -58,22 +61,6 @@ export type TextureKind =
 /** Côté d'une texture, en pixels. */
 export const SIZE = 16;
 
-/** Générateur pseudo-aléatoire reproductible : la même texture à chaque chargement. */
-function rng(seed: number): () => number {
-  let s = seed >>> 0;
-  return () => {
-    s = (s + 0x6d2b79f5) | 0;
-    let t = Math.imul(s ^ (s >>> 15), 1 | s);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-function hex(h: string): [number, number, number] {
-  const n = parseInt(h.slice(1), 16);
-  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
-}
-
 export type Painter = (x: number, y: number, r: () => number) => [number, number, number];
 
 /** Une étoile de 10 × 10 pixels, dessinée à la main. */
@@ -84,8 +71,8 @@ export const grain =
   (a: string, b: string): Painter =>
   (_x, _y, r) => {
     const t = r();
-    const [ar, ag, ab] = hex(a);
-    const [br, bg, bb] = hex(b);
+    const [ar, ag, ab] = hexToRgb(a);
+    const [br, bg, bb] = hexToRgb(b);
     return [ar + (br - ar) * t, ag + (bg - ag) * t, ab + (bb - ab) * t];
   };
 
@@ -98,7 +85,7 @@ const JOINT_DE_DALLE: [number, number, number] = [122, 106, 78];
  * chaque face, quelle que soit la graine).
  */
 function dalle(fond: string, clair: [number, number, number]): Painter {
-  const base = hex(fond);
+  const base = hexToRgb(fond);
   return (x, y) => {
     const rangee = Math.floor(y / 8);
     const u = x + (rangee % 2) * 4;
@@ -124,7 +111,7 @@ type TonsDOsier = { clair: string; brin: string; ombre: string; joint: string };
  * Sans hasard : la même texture sur chaque face.
  */
 function osier(t: TonsDOsier, bord = false): Painter {
-  const [clair, brin, ombre, joint] = [hex(t.clair), hex(t.brin), hex(t.ombre), hex(t.joint)];
+  const [clair, brin, ombre, joint] = [hexToRgb(t.clair), hexToRgb(t.brin), hexToRgb(t.ombre), hexToRgb(t.joint)];
   return (x, y) => {
     if (bord && y < 4) {
       // Le bord : un brin tordu, en diagonales de quatre pixels, souligné d'un joint.
@@ -153,7 +140,7 @@ type TonsDuBardeau = { bois: string; joint: string };
  * droits). La dernière ligne est un joint : d'un bloc à l'autre, les rangées continuent. Sans hasard.
  */
 function bardeau(t: TonsDuBardeau): Painter {
-  const [bois, joint] = [hex(t.bois), hex(t.joint)];
+  const [bois, joint] = [hexToRgb(t.bois), hexToRgb(t.joint)];
   return (x, y) => {
     const v = y % 4;
     if (v === 3) return joint;
@@ -180,7 +167,7 @@ const vers = (a: [number, number, number], b: [number, number, number], t: numbe
  * bout : des cernes carrés autour du cœur. Sans hasard : la même texture sur chaque face.
  */
 function poutre(face: 'top' | 'side'): Painter {
-  const [clair, fil, arete, cheville, bout] = [hex('#dcba86'), hex('#c49c66'), hex('#a47a46'), hex('#3e2814'), hex('#8a6038')];
+  const [clair, fil, arete, cheville, bout] = [hexToRgb('#dcba86'), hexToRgb('#c49c66'), hexToRgb('#a47a46'), hexToRgb('#3e2814'), hexToRgb('#8a6038')];
   if (face === 'top')
     return (x, y) => {
       const d = Math.max(Math.abs(x - 7.5), Math.abs(y - 7.5));
@@ -212,8 +199,8 @@ function poutre(face: 'top' | 'side'): Painter {
  * d'un bloc à l'autre, les sertis se suivent.
  */
 function vitrail(): Painter {
-  const plomb = hex('#3a3f47');
-  const carreaux = ['#5f9fd8', '#d0594f', '#f0c64a', '#6cb870'].map(hex);
+  const plomb = hexToRgb('#3a3f47');
+  const carreaux = ['#5f9fd8', '#d0594f', '#f0c64a', '#6cb870'].map((c) => hexToRgb(c));
   const blanc: [number, number, number] = [255, 255, 255];
   return (x, y) => {
     if (x % 5 === 0 || y % 5 === 0) return plomb;
@@ -227,7 +214,7 @@ function vitrail(): Painter {
  * sombre au milieu. Le fond garde le grain de l'ardoise.
  */
 function engrenage(): Painter {
-  const [roue, cercle, moyeu] = [hex('#d2d8de'), hex('#9aa3ac'), hex('#2f353c')];
+  const [roue, cercle, moyeu] = [hexToRgb('#d2d8de'), hexToRgb('#9aa3ac'), hexToRgb('#2f353c')];
   const fond = grain('#4a525c', '#56606b');
   return (x, y, r) => {
     const dx = x - 7.5;
@@ -247,7 +234,7 @@ function engrenage(): Painter {
  * diagonale sur le disque, son bas à droite un peu ombré.
  */
 function miroir(): Painter {
-  const [fond, anneau, disque, ombre, reflet] = [hex('#5a4f72'), hex('#c4b2e4'), hex('#e6f0f7'), hex('#cbd9e4'), hex('#ffffff')];
+  const [fond, anneau, disque, ombre, reflet] = [hexToRgb('#5a4f72'), hexToRgb('#c4b2e4'), hexToRgb('#e6f0f7'), hexToRgb('#cbd9e4'), hexToRgb('#ffffff')];
   return (x, y) => {
     const d = Math.hypot(x - 7.5, y - 7.5);
     if (d > 7.2) return fond;
@@ -529,9 +516,7 @@ export const faded =
   (p: Painter): Painter =>
   (x, y, r) => {
     const [cr, cg, cb] = p(x, y, r);
-    const lum = cr * 0.3 + cg * 0.59 + cb * 0.11;
-    const mix = (c: number) => (c * 0.4 + lum * 0.6) * 0.55 + 205 * 0.45;
-    return [mix(cr), mix(cg), mix(cb)];
+    return fadeRgb(cr, cg, cb);
   };
 
 export function canvasFor(painter: Painter, seed: number): HTMLCanvasElement | null {
@@ -541,7 +526,7 @@ export function canvasFor(painter: Painter, seed: number): HTMLCanvasElement | n
   const ctx = canvas.getContext('2d');
   if (!ctx) return null;
   const image = ctx.createImageData(SIZE, SIZE);
-  const r = rng(seed);
+  const r = mulberry32(seed);
   for (let y = 0; y < SIZE; y++) {
     for (let x = 0; x < SIZE; x++) {
       const [cr, cg, cb] = painter(x, y, r);

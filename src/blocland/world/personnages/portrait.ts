@@ -3,7 +3,7 @@
 // l'élève, projetée de trois quarts en plongée légère, peinte de sa couleur de jour et d'une lumière fixe, rangée du
 // fond vers l'avant (l'algorithme du peintre).
 import type { BiomeId } from '../../biomes';
-import { clamp } from '../decor/pinceau';
+import { clamp } from '../../../core/math';
 import { creaturePeinte } from './creaturesPeintes';
 import type { FacettesDePersonnage } from './peint';
 import { couleursAllumees, type Allumage } from './sentinelle';

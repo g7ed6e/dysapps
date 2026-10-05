@@ -2,6 +2,7 @@
 // Code pur : renvoie un facteur de lumière (1 = plein jour, 0 = nuit) et une phase nommée.
 // Chaque archipel a son ambiance : ciel, mer, brouillard et sol changent de teinte d'un archipel à l'autre.
 import { DANS_LE_CIEL, type ArchipelagoId } from './map';
+import { smooth } from '../../core/math';
 
 export type DayPhase = 'jour' | 'nuit' | 'aube' | 'crepuscule';
 
@@ -14,8 +15,6 @@ export interface Daylight {
 export const DAWN = 7;
 export const DUSK = 20;
 const TRANSITION = 1;
-
-const smooth = (t: number) => t * t * (3 - 2 * t);
 
 /** Lumière du jour à une heure décimale (7,5 = 7 h 30). */
 export function daylightAt(hour: number): Daylight {

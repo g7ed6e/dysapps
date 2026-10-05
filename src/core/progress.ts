@@ -245,10 +245,6 @@ export const BADGES: BadgeDef[] = [
   },
 ];
 
-export function getBadge(id: string): BadgeDef | undefined {
-  return BADGES.find((b) => b.id === id);
-}
-
 function awardBadges(p: Progress, now: string): { progress: Progress; newBadges: BadgeDef[] } {
   const newBadges = BADGES.filter((b) => !p.badges[b.id] && b.earned(p));
   if (newBadges.length === 0) return { progress: p, newBadges };

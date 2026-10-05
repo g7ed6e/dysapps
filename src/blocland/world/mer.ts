@@ -14,6 +14,8 @@ import { AMBIENCE, mixColor } from './daylight';
 import { eclairement, NIVEAU_EAU, type ChampDuSol } from './landMesh';
 import type { ArchipelagoId } from './map';
 import { eauxDe, type Couleur } from './palette';
+import { cellHash } from '../../core/random';
+import { smoothstep } from '../../core/math';
 
 /** Les points de la carte de la mer par case (sur chaque axe). */
 export const PAR_CASE = 2;
@@ -52,17 +54,12 @@ export function houleDe(a: ArchipelagoId): Houle {
   return AMBIENCE[a].sky ? { large: 0.4, rivage: 0.4, vitesse: 0.35, echelle: 0.55 } : { large: 0.14, rivage: 0.03, vitesse: 1, echelle: 1 };
 }
 
-const smooth = (e0: number, e1: number, x: number) => {
-  const t = Math.min(1, Math.max(0, (x - e0) / (e1 - e0)));
-  return t * t * (3 - 2 * t);
-};
-
 /**
  * La hauteur de la houle en un point (x, z du repère Three), au temps `t` (secondes), à `distance` cases de la terre :
  * la même formule que le dessin (three/mer.ts). Entre −amplitude et +amplitude ; calme près des côtes.
  */
 export function houle(h: Houle, x: number, z: number, t: number, distance: number): number {
-  const amp = h.rivage + (h.large - h.rivage) * smooth(0.5, 4, distance);
+  const amp = h.rivage + (h.large - h.rivage) * smoothstep(0.5, 4, distance);
   const s = h.echelle;
   const tt = t * h.vitesse;
   return amp * (0.55 * Math.sin(s * (0.42 * x + 0.23 * z) + 0.9 * tt) + 0.45 * Math.sin(s * (-0.19 * x + 0.37 * z) + 0.7 * tt + 1.3));
@@ -172,8 +169,8 @@ export function cadreDeLaMer(e: Etendue): { x0: number; y0: number; largeur: num
 /** La couleur de la mer (à voir) à `d` cases de la terre. */
 export function couleurDeLaMer(a: ArchipelagoId, d: number): Couleur {
   const e = eauxDe(a);
-  const versMer = mixColor(e.lagon, e.mer, smooth(PALIERS.lagon, PALIERS.mer, d));
-  return mixColor(versMer, e.large, smooth(PALIERS.mer, PALIERS.large, d));
+  const versMer = mixColor(e.lagon, e.mer, smoothstep(PALIERS.lagon, PALIERS.mer, d));
+  return mixColor(versMer, e.large, smoothstep(PALIERS.mer, PALIERS.large, d));
 }
 
 /**
@@ -308,7 +305,7 @@ export function carteDeLaMer(a: ArchipelagoId, terres: Terre[], etendue: Etendue
         if (best < Infinity) dist = best;
       }
       // Sur le bord du cadre, tout rejoint le large (couleur et distance) : la carte s'étire au-delà sans rien y traîner.
-      const bord = smooth(1, BORD, Math.min(px - x0, py - y0, x0 + largeur - px, y0 + hauteur - py));
+      const bord = smoothstep(1, BORD, Math.min(px - x0, py - y0, x0 + largeur - px, y0 + hauteur - py));
       // La couleur suit la profondeur lissée (loin des îles, pas des écueils), sans jamais être plus profonde que la
       // distance exacte près des côtes.
       const pres = dIles[k] === 0 ? 0 : dIles[k] === d[k] ? dist : Math.max(0, (dIles[k] - 0.5) / PAR_CASE);
@@ -353,13 +350,6 @@ export interface GrilleDeLaMer {
   indices: Uint32Array;
 }
 
-/** Un hasard reproductible, de 0 à 1. */
-function hasard(x: number, y: number): number {
-  let h = Math.imul(x | 0, 374761393) ^ Math.imul(y | 0, 668265263);
-  h = Math.imul(h ^ (h >>> 13), 1274126177);
-  return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
-}
-
 /**
  * La grille de la mer : le cadre de la carte en triangles de `PAS` cases, sommets intérieurs déplacés au hasard (pas
  * de motif régulier), et une couronne jusqu'à `loin` cases au-delà du cadre, pour l'horizon.
@@ -384,8 +374,8 @@ export function grilleDeLaMer(e: Etendue, loin: number): GrilleDeLaMer {
       // Les sommets intérieurs bougent (d'un cinquième de pas au plus : aucun triangle ne se retourne) ; le bord du cadre
       // et la couronne restent droits.
       const interieur = i > 1 && i < nx - 2 && j > 1 && j < nz - 2;
-      const jx = interieur ? (hasard(i * 7 + 1, j * 13 + 5) - 0.5) * 0.4 * PAS : 0;
-      const jz = interieur ? (hasard(i * 11 + 3, j * 5 + 7) - 0.5) * 0.4 * PAS : 0;
+      const jx = interieur ? (cellHash(i * 7 + 1, j * 13 + 5) - 0.5) * 0.4 * PAS : 0;
+      const jz = interieur ? (cellHash(i * 11 + 3, j * 5 + 7) - 0.5) * 0.4 * PAS : 0;
       const x = xs[i] + jx;
       const z = zs[j] + jz;
       const k = j * nx + i;
@@ -404,7 +394,7 @@ export function grilleDeLaMer(e: Etendue, loin: number): GrilleDeLaMer {
       const c = a + nx + 1;
       const d = a + nx;
       // Vus d'en haut, dans le sens inverse des aiguilles d'une montre (face vers +Y) ; la diagonale au hasard.
-      if (hasard(i * 3 + 11, j * 17 + 2) < 0.5) indices.set([a, d, c, a, c, b], n);
+      if (cellHash(i * 3 + 11, j * 17 + 2) < 0.5) indices.set([a, d, c, a, c, b], n);
       else indices.set([a, d, b, b, d, c], n);
       n += 6;
     }

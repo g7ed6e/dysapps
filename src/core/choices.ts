@@ -9,21 +9,14 @@
 //   de son rang, toujours la même d'une partie à l'autre : la place visée ne s'applique pas.
 // - Une date ou un nombre qui ne commence pas la chaîne (« le 20 juin ») est un mot : on n'invente pas de « 38 juin ».
 
+import { shuffle } from './random';
+
 type Rng = () => number;
 type Choice = string | number;
 
 interface WithChoices {
   choices?: unknown;
   answer?: unknown;
-}
-
-export function shuffled<T>(list: readonly T[], rng: Rng): T[] {
-  const out = [...list];
-  for (let i = out.length - 1; i > 0; i--) {
-    const j = Math.floor(rng() * (i + 1));
-    [out[i], out[j]] = [out[j], out[i]];
-  }
-  return out;
 }
 
 /** Les règles d'un tirage de réponses chiffrées (voir `drawChoices`). */
@@ -57,11 +50,11 @@ export function drawChoices(
   // Arrondi qui efface les erreurs de virgule flottante (0,1 × 3).
   const clean = (v: number) => Number(v.toFixed(6));
   const pool = [...new Set(traps.map(clean))].filter((t) => Number.isFinite(t) && t !== answer && ok(t));
-  const below = shuffled(
+  const below = shuffle(
     pool.filter((t) => t < answer),
     rng,
   );
-  const above = shuffled(
+  const above = shuffle(
     pool.filter((t) => t > answer),
     rng,
   );
@@ -149,7 +142,7 @@ function placeNumber(choices: Choice[], parsed: Parsed[], at: number, target: nu
     const below = next.filter((v) => v < answer).length;
     if (below === target) break;
     // Trop de pièges sous la réponse : on en fait passer un au-dessus (et inversement).
-    const candidate = shuffled(
+    const candidate = shuffle(
       next.filter((v) => (below > target ? v < answer : v > answer)),
       rng,
     ).find((v) => mirror(v) !== undefined);
@@ -187,8 +180,8 @@ export function placeAnswer(choices: Choice[], answer: unknown, target: number, 
     // Une liste de nombres que l'auteur n'a pas rangée reste telle quelle.
     return at >= 0 && sorted(parsed.map((p) => p.value)) ? placeNumber(choices, parsed, at, target, rng, pieges) : choices;
   }
-  if (at < 0) return shuffled(choices, rng);
-  const others = shuffled(
+  if (at < 0) return shuffle(choices, rng);
+  const others = shuffle(
     choices.filter((_, i) => i !== at),
     rng,
   );
@@ -205,8 +198,8 @@ export function placeChoices<T extends object>(list: readonly T[], rng: Rng, pie
     if (n === 0) continue;
     const count = sizes.filter((s) => s === n).length;
     const places: number[] = [];
-    while (places.length < count) places.push(...shuffled([...Array(n).keys()], rng));
-    targets.set(n, shuffled(places.slice(0, count), rng));
+    while (places.length < count) places.push(...shuffle([...Array(n).keys()], rng));
+    targets.set(n, shuffle(places.slice(0, count), rng));
   }
   return items.map((item, i) => {
     const n = sizes[i];

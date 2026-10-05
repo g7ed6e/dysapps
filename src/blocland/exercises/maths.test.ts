@@ -1,6 +1,7 @@
 import { DotArray, TenFrame } from '../../apps/tables/aids';
 import { multiplication } from '../../apps/tables/generators';
-import { MATHS_EXERCISES, aidToData, buildItems, seeded, toItem } from './maths';
+import { seeded } from '../../core/random';
+import { MATHS_EXERCISES, aidToData, buildItems, toItem } from './maths';
 
 it('convertit une aide React en données, et une question en item lisible', () => {
   const q = multiplication(5, 3, false, () => 0.5);

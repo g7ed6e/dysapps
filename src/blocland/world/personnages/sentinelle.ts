@@ -9,7 +9,8 @@
 // `lueur: 'allumage'`. Code pur, sans Three.js : la vue fond l'allumage sur les couleurs (`couleursAllumees`).
 import { lineaire } from '../landMesh';
 import type { Couleur } from '../palette';
-import { clamp, rgb } from '../decor/pinceau';
+import { clamp } from '../../../core/math';
+import { rgb } from '../decor/pinceau';
 import { LUEUR, SENTINELLE } from './couleurs';
 import { anneauA, avant, devant, facette, fuseau, NUANCE, parFace, peindrePersonnage, pose, repere, yeux, type Anneau, type FacettesDePersonnage, type Peindre, type Piece, type Pot, type Trace, type V3 } from './peint';
 

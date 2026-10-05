@@ -70,6 +70,7 @@ import {
   semerLaMer,
   type Put,
 } from './decor';
+import { fadeRgb, hexToRgb } from '../../core/color';
 
 /** Côté du cœur d'origine d'une île (en blocs) : le repère des clés ; l'étendue du cœur d'une île est `coeurDe` (./map). */
 export const ISLAND = CORE;
@@ -78,16 +79,10 @@ export const DEPTH = 2;
 /** Couches de roche qui s'amincissent sous une île en altitude (elle flotte). */
 export const TAPER = 3;
 
-
 /** Couleur délavée d'une île verrouillée (même calcul que la texture délavée en 3D). */
 export function fade(color: string): string {
-  const n = parseInt(color.slice(1), 16);
-  const r = (n >> 16) & 255;
-  const g = (n >> 8) & 255;
-  const b = n & 255;
-  const lum = r * 0.3 + g * 0.59 + b * 0.11;
-  const mix = (c: number) => Math.round((c * 0.4 + lum * 0.6) * 0.55 + 205 * 0.45);
-  return `#${((mix(r) << 16) | (mix(g) << 8) | mix(b)).toString(16).padStart(6, '0')}`;
+  const [r, g, b] = fadeRgb(...hexToRgb(color)).map(Math.round);
+  return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`;
 }
 
 /** Textures 3D par couleur de décor (les couleurs servent aussi à la vue simple et aux îles verrouillées). */
@@ -1895,13 +1890,6 @@ export function guardianPlacements(
     out.push({ id: b.id, kind: 'guardian', still: true, beaten, cubes, origin: { x: x + off.x, y: y + off.y, z: z + 1 } });
   });
   return out;
-}
-
-/** Zone des plans d'une île en coordonnées du monde (bornes hautes exclues). */
-export function planZoneOf(id: BiomeId): { x0: number; y0: number; x1: number; y1: number } {
-  const { ox, oy } = islandOrigin(BIOMES.findIndex((b) => b.id === id));
-  const zone = zoneDesPlans(id);
-  return { x0: ox + zone.x, y0: oy + zone.y, x1: ox + zone.x + zone.w, y1: oy + zone.y + zone.h };
 }
 
 /** Roche sous le sol d'une case de paysage, selon la région et la hauteur. */

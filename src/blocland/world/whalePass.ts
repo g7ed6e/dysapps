@@ -22,6 +22,7 @@ import {
   whaleSpots,
   worldBounds,
 } from "./terrain";
+import { smoothstep } from "../../core/math";
 
 /** Un passage : un segment droit sur l'eau, de `from` à `to` (coordonnées de grille, continues). */
 export interface WhaleRoute {
@@ -249,27 +250,22 @@ export type PassPhase =
   | { phase: "rise"; sink: number }
   | { phase: "done" };
 
-const smooth = (e0: number, e1: number, x: number) => {
-  const k = Math.max(0, Math.min(1, (x - e0) / (e1 - e0)));
-  return k * k * (3 - 2 * k);
-};
-
 /** Le souffle : entre ces deux instants du trajet (fraction), une fois. */
 export const SPOUT_AT = { from: 0.38, to: 0.58 };
 
 export function passPhase(s: number): PassPhase {
   const { sink, swim, rise } = PASS_TIMING;
   if (s < 0) return { phase: "done" };
-  if (s < sink) return { phase: "sink", sink: smooth(0, 1, s / sink) };
+  if (s < sink) return { phase: "sink", sink: smoothstep(0, 1, s / sink) };
   if (s < sink + swim) {
     const u = (s - sink) / swim;
     // Elle monte du fond (premier quart), reste en surface, puis plonge (dernier quart).
-    const up = smooth(0, 0.22, u);
-    const down = smooth(0.74, 1, u);
+    const up = smoothstep(0, 0.22, u);
+    const down = smoothstep(0.74, 1, u);
     const depth = 1 - up + down;
     const pitch =
-      (u < 0.3 ? 1 - smooth(0.12, 0.3, u) : 0) * 0.18 -
-      smooth(0.7, 0.9, u) * 0.3;
+      (u < 0.3 ? 1 - smoothstep(0.12, 0.3, u) : 0) * 0.18 -
+      smoothstep(0.7, 0.9, u) * 0.3;
     const spout =
       u >= SPOUT_AT.from && u <= SPOUT_AT.to
         ? Math.sin(
@@ -279,6 +275,6 @@ export function passPhase(s: number): PassPhase {
     return { phase: "swim", u, depth, pitch, spout };
   }
   if (s < sink + swim + rise)
-    return { phase: "rise", sink: 1 - smooth(0, 1, (s - sink - swim) / rise) };
+    return { phase: "rise", sink: 1 - smoothstep(0, 1, (s - sink - swim) / rise) };
   return { phase: "done" };
 }

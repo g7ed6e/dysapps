@@ -34,7 +34,7 @@ npm run splash     # refait les écrans de lancement d'iPhone et d'iPad (public/
 npm run programme:extract -- c3 # extrait le texte d'un programme officiel (c3, c4 ou une URL de PDF) dans .programme/
 ```
 
-React 19, TypeScript, Vite, Three.js, Vitest. Arborescence, moteurs d’exercice, format des données et déploiement : voir [Architecture](docs/conception/architecture.md), [Format des exercices](docs/conception/exercices.md) et [Déploiement et sécurité](docs/conception/deploiement.md).
+React 19, TypeScript, Vite, Three.js, Vitest. Arborescence, moteurs d’exercice, format des données et déploiement : voir [Architecture](docs/architecture/index.md), [Format des exercices](docs/conception/exercices.md) et [Déploiement et sécurité](docs/conception/deploiement.md).
 
 ## Contribuer
 

@@ -20,6 +20,7 @@ import { MONUMENT_ISLET, monumentsOf } from '../monuments';
 import type { Couleur } from '../palette';
 import { rgb } from './pinceau';
 import { bossIsletOrigin, bridgePath, ISLET_W, ISLET_H, mistPatches, whaleSpots, worldBounds } from '../terrain';
+import { smooth } from '../../../core/math';
 
 /** Une couche de brume : sa hauteur au-dessus de l'eau, sa couleur, son opacité la plus forte et la part de la mer qu'elle couvre. */
 export interface CoucheDeBrume {
@@ -55,8 +56,6 @@ export interface BancsDeBrume {
   colors: Float32Array;
   indices: Uint32Array;
 }
-
-const smooth = (t: number) => t * t * (3 - 2 * t);
 
 /** Au cœur d'une île, à plus de tant de cases de la mer, la brume ne se verrait pas : elle n'y est pas tracée. */
 const BORD_DES_ILES = 4;

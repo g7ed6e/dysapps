@@ -3,7 +3,7 @@
 // écrits (français) mélangent leur lot et n'en jouent qu'une partie quand il est large. Les réponses de chaque item
 // changent de place. Pour une même graine, tout est reproductible (tests).
 import { SCREEN_TYPES } from './registry';
-import { seeded } from './maths';
+import { seeded, shuffle } from '../../core/random';
 import { shuffleRunChoices } from './shuffle';
 import type { ExerciseDef, ExerciseItem } from './types';
 
@@ -19,15 +19,6 @@ export function runSeed(def: ExerciseDef): string {
   return `${def.id}#${randomPart()}`;
 }
 
-function shuffled<T>(list: T[], rng: () => number): T[] {
-  const out = [...list];
-  for (let i = out.length - 1; i > 0; i--) {
-    const j = Math.floor(rng() * (i + 1));
-    [out[i], out[j]] = [out[j], out[i]];
-  }
-  return out;
-}
-
 /**
  * Les items d'une partie. `review` : les clés des items à revoir aujourd'hui (répétition espacée), placés en tête de la
  * partie, donc toujours joués même quand on n'en joue qu'une partie. Seulement pour les écrans d'un item à la fois : un
@@ -40,7 +31,7 @@ export function runItems(def: ExerciseDef, seed: string, review: string[] = []):
   else {
     const rng = seeded(seed);
     for (let k = 0; k < 4; k++) rng();
-    items = shuffled(def.items, rng);
+    items = shuffle(def.items, rng);
     if (review.length && SCREEN_TYPES[def.type]?.batch === 1) {
       const due = new Set(review);
       items = [...items.filter((it) => due.has(it.key)), ...items.filter((it) => !due.has(it.key))];

@@ -5,7 +5,8 @@ import { PAINTERS, SIZE, faceCanvas, type TextureKind } from '../world/pixels';
 import { CHUNK, TILE, type Face, type FaceKind, type Tile, type TileMap } from './oblique';
 import type { STYLE } from './style';
 import { PRIORITY, columnAt, materialOf, type Surface } from './surface';
-import { designedTile, fringeColors, hash, isGrainy, pavedTile } from './tiles';
+import { cellHash } from '../../core/random';
+import { designedTile, fringeColors, isGrainy, pavedTile } from './tiles';
 import type { Peinture } from './painted';
 import type { FenetresDuMonde } from '../world/construction';
 import { drawPaintedChunk, drawPaintedTileMap } from './paintedDraw';
@@ -79,13 +80,13 @@ function tileImage(face: Face, env: DrawEnv): HTMLCanvasElement | null {
   const { cube, kind } = face;
   const m = materialOf(cube);
   if (env.style.designed && m !== 'autre') {
-    const variant = Math.floor(hash(cube.x, cube.y, cube.z) * 4);
+    const variant = Math.floor(cellHash(cube.x, cube.y, cube.z) * 4);
     const top = columnAt(env.surface, cube.x, cube.y);
     const lip = kind === 'front' && (m === 'herbe' || m === 'neige' || m === 'mousse') && top?.z === cube.z;
     return designedTile(m, kind, variant, Boolean(cube.muted), lip);
   }
   // Le sol en grain du cœur d'une île (obsidienne, marbre, ardoise…) : un dallage à ses couleurs.
-  if (env.style.designed && kind === 'top' && isGrainy(cube.texture)) return pavedTile(cube.texture, Math.floor(hash(cube.x, cube.y, 3) * 4), Boolean(cube.muted));
+  if (env.style.designed && kind === 'top' && isGrainy(cube.texture)) return pavedTile(cube.texture, Math.floor(cellHash(cube.x, cube.y, 3) * 4), Boolean(cube.muted));
   return faceImage(cube, kind);
 }
 
@@ -95,7 +96,7 @@ const STEP: Record<Dir, [number, number]> = { n: [0, 1], s: [0, -1], e: [1, 0], 
 /** Une frange irrégulière d'un sol voisin, le long d'un bord de la case (dessinée chez le sol le moins prioritaire). */
 function fringe(ctx: CanvasRenderingContext2D, x: number, y: number, dir: Dir, colors: { base: string; dark: string }, seed: number) {
   for (let i = 0; i < TILE; i++) {
-    const d = 1 + Math.floor(hash(i >> 1, seed, 13) * 3);
+    const d = 1 + Math.floor(cellHash(i >> 1, seed, 13) * 3);
     for (let k = 0; k < d; k++) {
       ctx.fillStyle = k === d - 1 ? colors.dark : colors.base;
       const [px, py] = dir === 'n' ? [i, k] : dir === 's' ? [i, TILE - 1 - k] : dir === 'w' ? [k, i] : [TILE - 1 - k, i];
@@ -187,7 +188,7 @@ function decorateFace(ctx: CanvasRenderingContext2D, face: Face, x: number, y: n
   if (env.style.edges && env.sea && !south && cube.z <= -1) {
     // L'écume au pied d'une rive, sur la mer.
     for (let i = 0; i < TILE; i++) {
-      const h = 1 + Math.floor(hash(cube.x, i, 21) * 2);
+      const h = 1 + Math.floor(cellHash(cube.x, i, 21) * 2);
       ctx.fillStyle = '#f4fbff';
       ctx.fillRect(x + i, y + TILE - h, 1, h);
     }
