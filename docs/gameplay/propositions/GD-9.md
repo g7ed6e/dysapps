@@ -44,7 +44,7 @@ Sept lots, par l'artiste technique 3D, sur le jeu commun (jamais un lot de rendu
 
 - L0 : mesure sur l'iPad de 2020 (images par seconde à 88 000 triangles, temps de reconstruction) ;
 - L1 : le dessin lié au lieu, sans changement à l'écran, et sa rotation (cubes, emprise, bornes, attaches), testée sur les quatre orientations ;
-- L2 : la grille, le cadre, les tracés droits ou en L, les points d'attache, le test de pire cas, la vue du lieu et ses étiquettes cadrées pour les quatre orientations (le risque principal : quatre fois plus de vues à relire) ; la carte de départ est celle d'aujourd'hui calée sur le pas, la 4e, aujourd'hui en ligne, redessinée dans un cadre de 160 × 112, et l'isthme d'aujourd'hui (Ferme–Tour) devenu une liaison ; empreintes, planches du directeur artistique et captures du manuel refaites ;
+- L2 : la grille, le cadre, les tracés droits ou en L, les points d'attache, le test de pire cas, la vue du lieu et ses étiquettes cadrées pour les quatre orientations (le risque principal : quatre fois plus de vues à relire) ; la carte de départ est celle d'aujourd'hui calée sur le pas, la 4e, aujourd'hui en ligne, redessinée dans un cadre de 160 × 112 (168 × 112 à la construction, pour que toutes ses côtes y tiennent), et l'isthme d'aujourd'hui (Ferme–Tour) devenu une liaison ; empreintes, planches du directeur artistique et captures du manuel refaites ;
 - L2 bis : la construction qui réunit ;
 - L3 : la sauvegarde, sa validation, « Remettre comme avant », la vue simple ;
 - L4 : le maillage par lieu (le geste de démontage en a besoin) ;
