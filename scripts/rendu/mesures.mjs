@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, bulles, fiches, menu-tete ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, bulles, fiches, menu-tete ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 20` le plus long temps réel laissé au monde pour se construire (en secondes, 10 par défaut). L'horloge de la
 // page est pilotée (`preparerLaScene`, scripts/prise-de-vue.mjs) : deux prises du même état donnent la même image, les
@@ -203,6 +203,28 @@ const CAPTURES = [
     sansPonts: ['passage-4e', 'passage-3e'],
     ...format,
   })),
+  // Les réacteurs du Bloc-Navire sous la coque (famille `fusee`, à retirer une fois le lot fusionné) : le navire tout
+  // construit à quai dans les Îles du Ciel, de jour et de nuit, puis aux Anciens Ateliers, où il plane au-dessus de l'eau
+  // le temps de poser ses réacteurs (sans le voyage vers le 3e ni les îles du 3e : le navire y reste) ; sa fiche ouverte
+  // le cadre ; et la vue de l'archipel du 4e.
+  { nom: 'fusee', vue: 'île', famille: 'fusee', ile: 'maths-3e-functions', fiche: { genre: 'navire', port: 'maths-3e-functions' } },
+  { nom: 'fusee-nuit', vue: 'île', famille: 'fusee', ile: 'maths-3e-functions', nuit: true, fiche: { genre: 'navire', port: 'maths-3e-functions' } },
+  {
+    nom: 'fusee-chantier',
+    vue: 'île',
+    famille: 'fusee',
+    ile: 'maths-4e-algebra',
+    sansIles: { classe: '3e' },
+    sansPonts: ['passage-3e'],
+    fiche: { genre: 'navire', port: 'maths-4e-algebra' },
+  },
+  { nom: 'fusee-archipel', vue: 'archipel', famille: 'fusee', ile: 'maths-4e-algebra', sansIles: { classe: '3e' }, sansPonts: ['passage-3e'] },
+  // Le chantier du réacteur, rien de posé puis à moitié (les cases à poser en fantôme), depuis la fiche du navire et
+  // depuis la caméra de l'île.
+  ...['reacteur-vide', 'reacteur-mi'].flatMap((partie) => [
+    { nom: `fusee-${partie}`, vue: 'île', famille: 'fusee', ile: 'maths-4e-algebra', partie, sansIles: { classe: '3e' }, sansPonts: ['passage-3e'], fiche: { genre: 'navire', port: 'maths-4e-algebra' } },
+    { nom: `fusee-${partie}-ile`, vue: 'île', famille: 'fusee', ile: 'maths-4e-algebra', partie, sansIles: { classe: '3e' }, sansPonts: ['passage-3e'] },
+  ]),
   // Les personnages hors du monde (lot R6) : chaque Gardien au défi, éteint, en 3D (`parIle` : un fichier par île,
   // `<archipel>-defi-<île>.jpg`) et en SVG (la vue « liste », sans la 3D) ; la bulle d'une créature (le défi pas encore ouvert : la partie
   // sans étoiles), en 3D et en SVG.
@@ -698,6 +720,9 @@ async function scenes() {
         const l = plansFor(b.id);
         if (l.length) delete plans[l[l.length - 1].id];
       }
+    // Le réacteur du Bloc-Navire (famille `fusee`) : rien de posé, ou sa première moitié.
+    if (partie === 'reacteur-vide') delete plans['navire-reacteur'];
+    if (partie === 'reacteur-mi') plans['navire-reacteur'] = plans['navire-reacteur'].slice(0, Math.ceil(plans['navire-reacteur'].length / 2));
     // Sur chaque île : le premier plan posé, rien après.
     if (partie === 'un-plan')
       for (const b of BIOMES) plansFor(b.id).forEach((p, i) => i > 0 && delete plans[p.id]);
@@ -759,7 +784,12 @@ async function scenes() {
               lv2: c.lv2,
               taille: c.taille,
               recadre: c.recadre,
-              sansIles: c.sansIles === 'autres-classes' ? BIOMES.filter((b) => b.classe !== classe(c.ile)).map((b) => b.id) : c.sansIles,
+              sansIles:
+                c.sansIles === 'autres-classes'
+                  ? BIOMES.filter((b) => b.classe !== classe(c.ile)).map((b) => b.id)
+                  : c.sansIles?.classe
+                    ? BIOMES.filter((b) => b.classe === c.sansIles.classe).map((b) => b.id)
+                    : c.sansIles,
               debout: c.debout,
               reglages: c.reglages,
               inventaire: c.inventaire,

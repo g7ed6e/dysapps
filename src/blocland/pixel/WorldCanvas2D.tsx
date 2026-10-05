@@ -30,6 +30,7 @@ import { drawIslandLabel, drawMapArrow, measureIslandLabel } from '../world/labe
 import { PLACES_DE_LA_FLECHE_MAX, boitesDuTrace, placerAvecLaFlecheDOuvrage, placerEtiquettes, replierLesSignes, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
 import { COUCHES_DU_TIRET } from '../world/traceSuggere';
 import { VEHICLE_DECK } from '../world/harbour';
+import { TUYERES } from '../world/vehicle';
 import { vehiclePath } from '../world/voyage';
 import { islandsOf } from '../world/archipelago';
 import { estUnOuvrage, rappelsDeLaVue, type Cell, type WorldViewProps } from '../world/view';
@@ -753,14 +754,16 @@ export default function WorldCanvas2D({
             const brS = toScreen(cam, scr, o.bx + (img.col0 + img.canvas.width / TILE) * TILE, o.by + (img.row0 + img.canvas.height / TILE) * TILE);
             const r = { x: Math.round(tlS.sx), y: Math.round(tlS.sy), w: Math.round(brS.sx) - Math.round(tlS.sx), h: Math.round(brS.sy) - Math.round(tlS.sy) };
             ctx.drawImage(img.canvas, r.x, r.y, r.w, r.h);
-            // La flamme du réacteur, qui vacille, en vol.
+            // Les flammes des réacteurs, qui vacillent, en vol : une sous chaque tuyère, vers le bas.
             if (sailing?.stage === 3) {
-              const fl = at(pos.x + 2.5, pos.y + 11.6, pos.z + 1.5);
               const hgt = (5 + 3 * Math.abs(Math.sin(t * 37)) + 2 * Math.random()) * cam.s;
-              ctx.fillStyle = '#ff7a1a';
-              ctx.fillRect(Math.round(fl.sx - 5 * cam.s), Math.round(fl.sy), Math.round(10 * cam.s), Math.round(hgt));
-              ctx.fillStyle = '#ffd24a';
-              ctx.fillRect(Math.round(fl.sx - 2 * cam.s), Math.round(fl.sy), Math.round(4 * cam.s), Math.round(hgt * 0.6));
+              for (const c of TUYERES) {
+                const fl = at(pos.x + c.x + 0.5, pos.y + c.y + 0.5, pos.z + c.z);
+                ctx.fillStyle = '#ff7a1a';
+                ctx.fillRect(Math.round(fl.sx - 3 * cam.s), Math.round(fl.sy), Math.round(6 * cam.s), Math.round(hgt));
+                ctx.fillStyle = '#ffd24a';
+                ctx.fillRect(Math.round(fl.sx - 1 * cam.s), Math.round(fl.sy), Math.round(2 * cam.s), Math.round(hgt * 0.6));
+              }
             }
             // Le bonhomme sur le pont, pendant le voyage.
             if (aboard && p.avatar) {

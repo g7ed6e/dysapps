@@ -8,15 +8,25 @@ export const DOCK_DX = 14;
 /** Cases de jetée à plat au moins, une fois au niveau de repos du navire. */
 export const DOCK_FLAT = 3;
 
-/** Encombrement du Bloc-Navire (coordonnées locales) : 5 de large (x), 11 de long (y, proue en y = 0), 11 de haut. */
-export const VEHICLE_SIZE = { w: 5, d: 11, h: 11 };
+/**
+ * Encombrement du Bloc-Navire (coordonnées locales) : 5 de large (x), 11 de long (y, proue en y = 0), 11 de haut au-dessus
+ * du plancher (z = 0), et 2 dessous, pour les réacteurs.
+ */
+export const VEHICLE_SIZE = { w: 5, d: 11, h: 11, below: 2 };
 /** La case du pont où le bonhomme se tient (sur le plancher, z local 0). */
 export const VEHICLE_DECK = { x: 2, y: 3 };
 
-/** Niveau du monde où repose le plancher du navire : sur l'eau (0), ou à hauteur de quai dans les Îles du Ciel. */
+/**
+ * Niveau du monde où repose le plancher du navire : sur l'eau (0), à hauteur de quai dans les Îles du Ciel. Aux Anciens
+ * Ateliers, où il arrive par les airs et où l'on pose ses réacteurs sous la coque, il plane juste au-dessus de l'eau.
+ */
 export function vehicleRestZ(a: ArchipelagoId): number {
-  return a === '3e' ? ALTITUDE['3e'] : 0;
+  if (a === '3e') return ALTITUDE['3e'];
+  return a === '4e' ? VEHICLE_SIZE.below : 0;
 }
+
+/** Le navire flotte sur l'eau (il tangue) ; sinon il plane, au-dessus de l'eau ou des nuages. */
+export const vehicleAfloat = (a: ArchipelagoId): boolean => vehicleRestZ(a) === 0;
 
 /** La dernière case de terre d'une colonne, côté mer (devant l'île) : la côte. Le cœur s'il n'y a pas de terre. */
 function shoreYAt(def: IslandDef, x: number): number {

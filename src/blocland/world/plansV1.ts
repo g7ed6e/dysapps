@@ -1,7 +1,7 @@
 // Les plans d’avant le nouveau dessin des bâtiments (version 1 des sauvegardes) : leurs cases (clé « x,y,z » relative à
 // l’île : bloc) et leur coffre. La migration des sauvegardes s’en sert (engine.ts, sanitizeState) : un plan terminé avec
 // l’ancien dessin reste terminé et son coffre est complété ; les blocs posés hors du nouveau dessin reviennent dans
-// l’inventaire. Ne pas modifier.
+// l’inventaire. Ne pas modifier un dessin écrit ; un plan redessiné y ajoute l’ancien.
 import type { BlockId } from '../biomes';
 import { BLOC } from '../biomes';
 
@@ -343,6 +343,12 @@ const V1: Record<string, { cells: string; chest: Partial<Record<BlockId, number>
     cells: '10,11,0:porte 9,11,2:obsidienne 9,12,2:obsidienne 9,13,2:obsidienne 10,11,2:obsidienne 10,12,2:obsidienne 10,13,2:obsidienne 11,11,2:obsidienne 11,12,2:obsidienne 11,13,2:obsidienne 10,11,3:obsidienne 9,12,3:obsidienne 10,12,3:obsidienne 11,12,3:obsidienne 10,13,3:obsidienne 10,12,4:obsidienne 8,12,0:lanterne 12,12,0:lanterne',
     chest: { [BLOC.barriere]: 4, [BLOC.escalier]: 1, [BLOC.lanterne]: 2 },
   },
+  // Le réacteur du Bloc-Navire d’avant le 5 octobre 2026, derrière la poupe (il est passé sous la coque) : clés du quai
+  // des Anciens Ateliers (`ORIGINE_DU_QUAI`), coffre inchangé.
+  'navire-reacteur': {
+    cells: '16,-6,-7:acier 16,-6,-6:acier 16,-6,-5:acier 16,-5,-7:acier 16,-5,-6:acier 16,-5,-5:acier 17,-6,-7:acier 17,-6,-6:acier 17,-6,-5:acier 17,-5,-7:acier 17,-5,-6:acier 17,-5,-5:acier 18,-6,-7:acier 18,-6,-6:acier 18,-6,-5:acier 18,-5,-7:acier 18,-5,-6:acier 18,-5,-5:acier 15,-6,-6:calque 19,-6,-6:calque 15,-5,-5:calque 19,-5,-5:calque 16,-4,-6:ardoise 17,-4,-6:ardoise 18,-4,-6:ardoise',
+    chest: { [BLOC.lanterne]: 3 },
+  },
 };
 
 export interface PlanV1 {
@@ -352,7 +358,7 @@ export interface PlanV1 {
 }
 
 const cache = new Map<string, PlanV1>();
-/** L’ancien dessin d’un plan des îles, ou `undefined` (plans du Bloc-Navire, plans inconnus). */
+/** L’ancien dessin d’un plan des îles ou du réacteur du Bloc-Navire, ou `undefined` (autres étapes, plans inconnus). */
 export function planV1(id: string): PlanV1 | undefined {
   const raw = V1[id];
   if (!raw) return undefined;

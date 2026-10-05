@@ -1,7 +1,7 @@
 // Le Bloc-Navire : un seul véhicule qui grandit en trois étapes, chacune un plan à construire sur le quai de l'île-port
 // d'un archipel. La coque et la voile mènent aux Îles Brumeuses (par la mer), le ballon aux Anciens Ateliers (par les
-// airs), le réacteur aux Îles du Ciel. Les cases « kit » (voile, haut du ballon, feux) ne se gagnent pas : elles
-// arrivent d'elles-mêmes quand assez de Gardiens de l'archipel sont vaincus. Le reste se pose bloc par bloc.
+// airs), le réacteur, sous la coque, aux Îles du Ciel. Les cases « kit » (voile, haut du ballon, feux) ne se gagnent
+// pas : elles arrivent d'elles-mêmes quand assez de Gardiens de l'archipel sont vaincus. Le reste se pose bloc par bloc.
 import { BLOC, BLOCKS, type BiomeId, type BlockId } from '../biomes';
 import { isBossBeaten } from '../bossCore';
 import { ARCHIPELAGOS, islandsOf, reachedArchipelagos, voyageId, type ArchipelagoId } from './archipelago';
@@ -81,13 +81,14 @@ function ballon(): { cells: PlanCell[]; kit: PlanCell[] } {
 
 function reacteur(): { cells: PlanCell[]; kit: PlanCell[] } {
   const cells: PlanCell[] = [];
-  // Le bloc du réacteur en acier (Forge), derrière la poupe.
-  fill(cells, 1, 8, 0, 3, 2, 3, BLOC.acier);
-  // Les ailerons en calque (Atelier), la tuyère en ardoise (Falaise).
-  cells.push({ x: 0, y: 8, z: 1, block: BLOC.calque }, { x: 4, y: 8, z: 1, block: BLOC.calque }, { x: 0, y: 9, z: 2, block: BLOC.calque }, { x: 4, y: 9, z: 2, block: BLOC.calque });
-  fill(cells, 1, 10, 1, 3, 1, 1, BLOC.ardoise);
-  // Le kit : les feux de position.
-  const kit: PlanCell[] = [{ x: 1, y: 9, z: 3, block: BLOC.lanterne }, { x: 3, y: 9, z: 3, block: BLOC.lanterne }];
+  // Sous la coque, pour monter droit vers le ciel. Dans l'ordre de la pose, ce qui se voit d'abord : les ailerons en
+  // calque (Atelier) sur les flancs, à mi-longueur ; les trois tuyères en ardoise (Falaise), séparées, tournées vers le
+  // bas (deux sous le mât, une vers la poupe) ; puis le ventre du réacteur en acier (Forge), sous tout le pont.
+  cells.push({ x: 0, y: 3, z: -1, block: BLOC.calque }, { x: 4, y: 3, z: -1, block: BLOC.calque }, { x: 0, y: 4, z: -1, block: BLOC.calque }, { x: 4, y: 4, z: -1, block: BLOC.calque });
+  cells.push({ x: 1, y: 3, z: -2, block: BLOC.ardoise }, { x: 3, y: 3, z: -2, block: BLOC.ardoise }, { x: 2, y: 5, z: -2, block: BLOC.ardoise });
+  fill(cells, 1, 1, -1, 3, 6, 1, BLOC.acier);
+  // Le kit : les feux de position, de part et d'autre de la poupe.
+  const kit: PlanCell[] = [{ x: 1, y: 7, z: 0, block: BLOC.lanterne }, { x: 3, y: 7, z: 0, block: BLOC.lanterne }];
   return { cells, kit };
 }
 
@@ -105,6 +106,9 @@ function stage(
   const to = ARCHIPELAGOS[n];
   return { id, biome: from.port, name, short, origin: { x: 0, y: 0 }, zone: 'port', stage: n, from: from.classe, to: to.classe, guardians, cells: parts.cells, kit: parts.kit, reward, done: fin(to.name), fin };
 }
+
+/** Les tuyères du réacteur (sous la coque, en z = −2) : les flammes en sortent, vers le bas, en vol (vues 3D et 2D). */
+export const TUYERES: readonly PlanCell[] = reacteur().cells.filter((c) => c.block === BLOC.ardoise);
 
 /** Les trois étapes, dans l'ordre. Chaque étape mène à l'archipel suivant. */
 export const VEHICLE_STAGES: VehicleStage[] = [

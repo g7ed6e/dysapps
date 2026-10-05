@@ -5,6 +5,7 @@ import { BADGES, EMPTY_PROGRESS, recordVoyage, sanitizeProgress } from '../../co
 import { ARCHIPELAGOS, islandsOf, voyageId } from './archipelago';
 import { VEHICLE_SIZE, dockOrigin } from './harbour';
 import { PLANS, planCells } from './plans';
+import { planV1 } from './plansV1';
 import { VEHICLE_STAGES, beatenGuardians, getStage, kitReady, stageAt, stageFor, stageTo, vehicleAt, vehicleModel } from './vehicle';
 
 const guardians = (ids: string[]) => Object.fromEntries(ids.map((id) => [`${id}-challenge`, { stars: 2 as const, attempts: 1, best: 1 }]));
@@ -24,7 +25,7 @@ it('trois étapes, de port en port, faites de blocs gagnables dans leur archipel
       expect(c.x).toBeLessThan(VEHICLE_SIZE.w);
       expect(c.y).toBeGreaterThanOrEqual(0);
       expect(c.y).toBeLessThan(VEHICLE_SIZE.d);
-      expect(c.z).toBeGreaterThanOrEqual(0);
+      expect(c.z).toBeGreaterThanOrEqual(-VEHICLE_SIZE.below);
       expect(c.z).toBeLessThan(VEHICLE_SIZE.h);
       expect(BLOCKS[c.block].rare).toBeFalsy();
     }
@@ -119,4 +120,21 @@ it('un voyage compte pour les succès : Capitaine, Aéronaute, Pilote du ciel', 
   const third = recordVoyage(second.progress, 200);
   expect(third.newBadges.map((b) => b.id)).toContain('pilote-du-ciel');
   expect(BADGES.find((b) => b.id === 'archipel')?.description).toContain('quatre archipels');
+});
+
+it('le réacteur passé sous la coque : un réacteur fini derrière la poupe le reste, des blocs posés à moitié reviennent', () => {
+  const reacteur = VEHICLE_STAGES[2];
+  const avant = [...planV1(reacteur.id)!.blocks.keys()];
+  expect(avant).toHaveLength(25);
+  // Aucune ancienne case ne retombe sur une nouvelle.
+  const apres = new Set(planCells(reacteur).map((c) => c.key));
+  expect(avant.some((k) => apres.has(k))).toBe(false);
+  // Fini avant : fini, sans bloc rendu.
+  const fini = sanitizeState({ world: { parts: { [reacteur.id]: avant } } });
+  expect(fini.world.parts[reacteur.id]).toEqual([...apres]);
+  expect(fini.stock).toEqual({});
+  // Commencé (le ventre en acier et deux ailerons) : rien n'est posé, les blocs reviennent dans l'inventaire.
+  const commence = sanitizeState({ world: { parts: { [reacteur.id]: avant.slice(0, 20) } } });
+  expect(commence.world.parts[reacteur.id]).toBeUndefined();
+  expect(commence.stock).toEqual({ [BLOC.acier]: 18, [BLOC.calque]: 2 });
 });
