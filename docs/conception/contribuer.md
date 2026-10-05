@@ -26,7 +26,7 @@ npm run splash     # refait les écrans de lancement d'iPhone et d'iPad (public/
 2. **La version** : rien à faire. Elle se calcule depuis git à la fusion (voir [Déploiement](deploiement.md#version)) : la pull request monte la version mineure, ou un autre cran si son message contient `+semver: major`, `+semver: patch` ou `+semver: none`.
 3. **La documentation**, dans la même pull request :
    - le **manuel** (`www/manuel/`) mis à jour si un écran, un geste, un réglage ou une règle du jeu change, ses **captures** relues si l’écran montré change (la CI les refait sur `main` ; `npm run www:captures` les montre en local) ;
-   - les **principes** et la **conception** (`www/pedagogie/principes.md`, `docs/conception/`) mis à jour si une règle dys, l’architecture, le format des exercices ou le déploiement change ;
+   - les **principes** et la **conception** (`www/pedagogie/principes.md`, `docs/architecture/`, `docs/conception/`) mis à jour si une règle dys, l’architecture, le format des exercices ou le déploiement change ;
    - le **README** cohérent avec le reste.
 4. **Le contenu pédagogique** (programmes officiels, archipel, pages des îles, homophones, lecture, maths et anglais du portail, ouvrages, barème) n’a rien à faire à la main : ces pages sont générées au build à partir des données du jeu. Ajouter un exercice, une mission ou une île suffit pour qu’elles apparaissent. Si un nouveau champ de données mérite d’être documenté (une nouvelle aide visuelle, une nouvelle forme d’item), compléter `scripts/www/generate.mjs`.
 5. **Le programme officiel** : une mission cite dans `programme` les compétences qu’elle travaille (`src/programme/`) ; une compétence nouvellement couverte quitte `src/programme/exclusions.ts`, une compétence qui perd sa mission y entre avec un motif. Le test de couverture le rappelle. Voir [Le référentiel des programmes](programmes.md).
@@ -52,7 +52,7 @@ Le dépôt fournit huit agents partagés pour Claude Code, dans `.claude/agents/
 
 **Archipéo est en pause** (décision du mainteneur, 2 octobre 2026) : le nouveau gameplay se met en place dans Blocland seul. Le dossier `docs/univers/archipeo/` reste tel quel ; aucun lot ne l’enrichit tant que le mainteneur ne reprend pas Archipéo, et son consultant ne relit que ce qui touche ce dossier ou ce que l’élève voit dans Archipéo.
 
-Les autres choix techniques (code hors rendu, données, tests, CI, déploiement) reviennent à ceux qui écrivent le code, après l’avis de l’Expert frontend, et sont décrits par [Architecture](architecture.md) et [Déploiement](deploiement.md).
+Les autres choix techniques (code hors rendu, données, tests, CI, déploiement) reviennent à ceux qui écrivent le code, après l’avis de l’Expert frontend, et sont décrits par [Architecture](../architecture/index.md) et [Déploiement](deploiement.md).
 
 ### Qui tient quel document
 
@@ -67,7 +67,7 @@ Les autres choix techniques (code hors rendu, données, tests, CI, déploiement)
 | [Cadrage « De Blocland à Archipéo »](../univers/archipeo/cadrage.md), `docs/univers/archipeo/source/` | Consultant d’Archipéo, sous l’autorité du directeur artistique | L’univers Archipéo, en pause depuis le 2 octobre 2026 : la cible de la migration, gelée telle quelle. Les fichiers importés de `docs/univers/archipeo/source/` restent figés (`PROVENANCE.md`) : un écart s’écrit dans le cadrage |
 | [Cadrage du game design de Blocland](../univers/blocland/cadrage.md), `docs/univers/blocland/fiche.md` | Consultant de Blocland, sous l’autorité du directeur artistique | L’univers Blocland : ses décisions de game design, ses noms, son récit et ce qu’il reprend des lots d’Archipéo |
 | [Style](../rendu/style.md) | Directeur artistique (quoi), artiste technique 3D (comment) | Le style dessiné aujourd’hui ; l’artiste technique 3D le met à jour quand un lot visuel est construit |
-| [Architecture](architecture.md), partie rendu (`world/`, `three/`, `pixel/`) | Artiste technique 3D | Comment le monde est dessiné, en 3D et en 2D |
+| [Architecture](../architecture/index.md), [Le monde](../architecture/monde.md) et la partie rendu de [Les fichiers](../architecture/fichiers.md) (`world/`, `three/`, `pixel/`) | Artiste technique 3D | Comment le monde est dessiné, en 3D et en 2D |
 | [Séparer le jeu du rendu](separation-jeu-rendu.md) | Ceux qui écrivent le code ; l’artiste technique 3D pour la partie rendu | Le plan qui isole la logique du jeu de ses rendus, étape par étape |
 | [Le game design](../gameplay/index.md), les fiches GD-n et [les décisions](../gameplay/decisions.md) | Directeur artistique | Les règles du jeu communes aux univers, leurs propositions et leurs décisions |
 | [Plusieurs univers](../univers/univers.md) | Directeur artistique pour le récit, le monde et les règles communes, Contenu pour les énoncés, ceux qui écrivent le code pour l’architecture | La feuille de route des univers au choix de l’élève |

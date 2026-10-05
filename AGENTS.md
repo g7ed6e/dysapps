@@ -22,9 +22,10 @@ Le tableau « Où va quoi » de [CLAUDE.md](CLAUDE.md) fait foi, et `scripts/str
 4. **Est-ce propre à un univers (noms, récit, cadrage, fiche, intentions, esquisses, game design propre) ?** Alors `docs/univers/archipeo/` ou `docs/univers/blocland/` ; ce qui vaut pour tous les univers va dans `docs/univers/univers.md`. `docs/univers/archipeo/source/` est le dossier fourni par le mainteneur : on n’y écrit jamais. Archipéo est en pause (décision du mainteneur, 2 octobre 2026) : `docs/univers/archipeo/` est gelé tel quel, on n’y ajoute rien tant qu’il n’est pas repris.
 5. **Est-ce l’ergonomie des écrans, commune aux univers ?** Alors `docs/ux-ui/`.
 6. **Est-ce le style ou le rendu commun ?** Alors `docs/rendu/` ; le budget de dessin reste dans le code.
-7. **Est-ce transverse (architecture, code, règles dys, cadrage du contenu, exercices, programmes, contribuer, déploiement) ?** Alors `docs/conception/`.
-8. **Est-ce l’état d’un chantier ?** Alors une ligne dans `docs/pilotage/chantiers.md`, et rien d’autre dans `docs/pilotage/`.
-9. **Est-ce un livrable de travail (pistes, captures, maquettes, notes de fil, comparaisons) ?** Alors hors du dépôt : la Bibliothèque du projet, ou la branche `captures`.
+7. **Est-ce la description du code (vue d’ensemble, schémas, fichiers) ?** Alors `docs/architecture/`.
+8. **Est-ce transverse (code, règles dys, cadrage du contenu, exercices, programmes, contribuer, déploiement) ?** Alors `docs/conception/`.
+9. **Est-ce l’état d’un chantier ?** Alors une ligne dans `docs/pilotage/chantiers.md`, et rien d’autre dans `docs/pilotage/`.
+10. **Est-ce un livrable de travail (pistes, captures, maquettes, notes de fil, comparaisons) ?** Alors hors du dépôt : la Bibliothèque du projet, ou la branche `captures`.
 
 Les règles qui empêchent la dérive :
 
@@ -32,4 +33,4 @@ Les règles qui empêchent la dérive :
 - **Un sujet, un seul endroit.** On ne recopie pas une règle d’un dossier à l’autre : on met un lien. Un document mixte (qui parle de deux métiers) se découpe dans sa propre pull request, sans rien changer d’autre.
 - **Aucun dossier ni aucune place nouvelle sans décision.** Si aucune réponse ne convient, on ne range pas « au plus proche » : on propose la place au mainteneur, l’`expert-frontend` en juge, puis elle s’écrit dans le tableau de CLAUDE.md et dans `scripts/structure.test.mjs`, dans la même pull request.
 - **Un déplacement se fait avec `git mv`, sans toucher au contenu,** et corrige tous les liens dans la même pull request (aucun ancien chemin ne doit rester, sauf dans `docs/univers/archipeo/source/`).
-- **Chaque dossier a son gardien**, qui signale un document mal rangé en relecture : `docs/gameplay/` le directeur artistique, `docs/univers/<univers>/` le consultant de l’univers, `docs/ux-ui/` le consultant UX UI, `docs/rendu/` l’artiste technique 3D (le directeur artistique décide ce que dit le style, l’artiste comment il se fait), `docs/contenu/` le directeur du contenu pédagogique, `docs/conception/` l’expert frontend et le référent dys (règles dys), sauf `cadrage-contenu.md`, `exercices.md` et `programmes.md`, que tient le directeur du contenu pédagogique.
+- **Chaque dossier a son gardien**, qui signale un document mal rangé en relecture : `docs/gameplay/` le directeur artistique, `docs/univers/<univers>/` le consultant de l’univers, `docs/ux-ui/` le consultant UX UI, `docs/rendu/` l’artiste technique 3D (le directeur artistique décide ce que dit le style, l’artiste comment il se fait), `docs/contenu/` le directeur du contenu pédagogique, `docs/architecture/` l’expert frontend (l’artiste technique 3D pour le rendu), `docs/conception/` l’expert frontend et le référent dys (règles dys), sauf `cadrage-contenu.md`, `exercices.md` et `programmes.md`, que tient le directeur du contenu pédagogique.
