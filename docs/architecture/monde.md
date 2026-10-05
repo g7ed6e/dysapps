@@ -17,7 +17,7 @@ flowchart LR
 ```
 
 - `world/modele.ts` lit la partie et rend le modèle d’un archipel en identifiants, sans une seule case : les îles, leurs bornes et leur état, les ouvrages, le voyage en cours. Il décide aussi ce que fait un toucher (jouer une borne, ouvrir l’île d’un ouvrage, aller vers une île, voyager).
-- La grille (`world/map.ts` la forme des îles, `world/terrain.ts` le monde en cubes, `world/paths.ts` la marche, `world/harbour.ts` le quai) place tout en cases du monde ; `world/grille.ts` en est l’entrée (`grilleDe`).
+- La grille (`world/map.ts` la forme des îles, `world/terrain.ts` le monde en cubes, un métier par fichier dans `world/terrain/`, `world/paths.ts` la marche, `world/harbour.ts` le quai) place tout en cases du monde ; `world/grille.ts` en est l’entrée (`grilleDe`).
 - `world/view.ts` est le contrat entre `WorldPage` et une vue : les props qu’une vue reçoit, les intentions qu’elle renvoie (`world/disposition.ts`). `WorldPage` ne connaît que ce contrat.
 - La vue ne décide rien : elle dessine ce qu’on lui passe et dit ce que l’élève a touché, par une `Intention` que `WorldPage` traite dans un seul `switch`.
 

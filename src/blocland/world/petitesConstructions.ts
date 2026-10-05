@@ -12,8 +12,8 @@
 // Des données seulement, sans coordonnées du monde : chaque cube est en repère propre (x vers la droite, y vers le fond,
 // z vers le haut, z = 0 sur le sol, comme dans architect.ts). La place de la forme sur l'île, à côté de la créature,
 // est écrite ici (`PLACES`), calculée par la grille et vérifiée par le test (`calculerLaPlaceDeLaPetiteConstruction`,
-// world/terrain.ts : lisible dans la vue de l'île panneau ouvert, sans rien cacher ; voir docs/rendu/style.md, « Les
-// petites constructions »). Les clés de ces cases (`cellKey`) vont dans la sauvegarde : une commande livrée pose
+// world/terrain/examenDeLaPetiteConstruction.ts : lisible dans la vue de l'île panneau ouvert, sans rien cacher ;
+// voir docs/rendu/style.md, « Les petites constructions »). Les clés de ces cases (`cellKey`) vont dans la sauvegarde : une commande livrée pose
 // toutes les cases de sa forme dans `world.parts`, sous l'identifiant de sa petite construction (`<lieu>-fixture-<n>`),
 // sans champ nouveau. C'est l'identifiant qui prouve la livraison, pas les clés : une forme redessinée se relit posée,
 // avec son dessin d'aujourd'hui (`sanitizeState`, engine.ts).
@@ -228,8 +228,8 @@ export function estPosee(parts: Record<string, string[]>, id: string): boolean {
 
 /**
  * La place de chaque petite construction sur son île : le coin (x, y) de sa forme, relatif au cœur de l'île. Des données
- * fixes, pour que « Livrer » ne calcule rien : `calculerLaPlaceDeLaPetiteConstruction` (world/terrain.ts) les refait et
- * le test les compare, pour chaque LV2 (petitesConstructions.test.ts) ; une île ou une forme qui change les fait changer.
+ * fixes, pour que « Livrer » ne calcule rien : `calculerLaPlaceDeLaPetiteConstruction`
+ * (world/terrain/examenDeLaPetiteConstruction.ts) les refait et le test les compare, pour chaque LV2 (petitesConstructions.test.ts) ; une île ou une forme qui change les fait changer.
  */
 const PLACES: Record<string, readonly [number, number]> = {
   'french-6e-phonology-fixture-1': [-1, 5],

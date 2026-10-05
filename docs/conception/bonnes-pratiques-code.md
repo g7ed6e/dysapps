@@ -75,7 +75,7 @@ Ces points ne sont pas des défauts constatés : ce sont les endroits où le cod
 
 - **Pas de linter** : aucune règle ne vérifie automatiquement les règles de React. Ajouter ESLint avec `eslint-plugin-react-hooks` (préréglage `recommended`) les ferait respecter à chaque pull request.
 - **Le React Compiler n’est pas activé** : il mémoïserait sans `useMemo` ni `useCallback` à la main. À décider après le linter, qui dit d’abord quels composants il ne pourrait pas compiler.
-- **Les gros fichiers** : `world/terrain.ts`, `world/landMesh.ts`, `biomes.ts`. Chaque lot qui les touche ne les fait pas grossir sans raison.
+- **Les gros fichiers** : `world/landMesh.ts`, `biomes.ts` (`world/terrain.ts` est rangé par métier dans `world/terrain/` depuis le 5 octobre 2026). Chaque lot qui les touche ne les fait pas grossir sans raison.
 - **La mesure réelle** : l’INP et les images par seconde se mesurent sur la tablette de référence (`/?mesures`), pas seulement en local.
 - **`min-release-age`** : la CI tourne sur Node 22, dont le npm ne connaît pas ce réglage. Passer à Node 24 (LTS) permettrait de l’ajouter à `.npmrc`.
 - **WebGPU** : le rendu reste en WebGL ; un passage éventuel au `WebGPURenderer` est une décision de l’artiste technique 3D, avec la réécriture des matériaux en TSL.
