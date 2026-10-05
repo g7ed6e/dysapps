@@ -57,7 +57,6 @@ export interface BancsDeBrume {
   indices: Uint32Array;
 }
 
-
 /** Au cœur d'une île, à plus de tant de cases de la mer, la brume ne se verrait pas : elle n'y est pas tracée. */
 const BORD_DES_ILES = 4;
 

@@ -48,7 +48,6 @@ export const CRETES_5E: Partial<Record<BiomeId, Sommet[]>> = {
   'lv2-5e-introductions': [{ x: 13, h: 6, l: 7 }],
 };
 
-
 /** Les paliers d'une masse cassée : des marches de 2 et 3 blocs en alternance (2, 5, 7, 10…), jusqu'à `h`. */
 function paliers(h: number): number[] {
   const out = [0];

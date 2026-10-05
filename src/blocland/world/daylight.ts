@@ -16,7 +16,6 @@ export const DAWN = 7;
 export const DUSK = 20;
 const TRANSITION = 1;
 
-
 /** Lumière du jour à une heure décimale (7,5 = 7 h 30). */
 export function daylightAt(hour: number): Daylight {
   const h = ((hour % 24) + 24) % 24;

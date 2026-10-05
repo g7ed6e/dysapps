@@ -193,7 +193,6 @@ export function teinteSur(cible: Couleur, moyenne: Couleur): Couleur {
 /** Hauteur (sinus de l'élévation) de la lueur au-dessus de l'horizon. */
 export const LUEUR = 0.06;
 
-
 /**
  * La couleur du dôme à une élévation (sinus de l'angle au-dessus de l'horizon, de −1 à 1) : l'horizon sous la ligne
  * (ce que la mer transparente laisse voir), une lueur fine juste au-dessus, puis un dégradé doux vers le zénith.
@@ -380,7 +379,6 @@ export const DETAILS_ASSEMBLES = {
 
 /** Ce qui brille d'elle-même garde sa couleur, de jour comme de nuit (lanternes, lave). */
 const LUMINEUSES = new Set<TextureKind>(['lanterne', 'lave']);
-
 
 /** Multiplie deux couleurs (une surface sous une lumière colorée). */
 export function multiplie(a: Couleur, b: Couleur): Couleur {

@@ -184,7 +184,6 @@ export function spriteBox(kind: SpriteKind): { w: number; h: number; ax: number;
 
 const cache = new Map<string, HTMLCanvasElement | null>();
 
-
 function spriteCanvas(kind: SpriteKind, muted: boolean): HTMLCanvasElement | null {
   const k = `${kind}:${muted ? 1 : 0}`;
   if (cache.has(k)) return cache.get(k)!;

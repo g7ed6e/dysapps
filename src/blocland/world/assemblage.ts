@@ -4,7 +4,7 @@
 // La recette est fixe et toujours affichée ; un toucher assemble un bloc, sans grille ni recette à deviner. Code pur,
 // commun aux univers. Les recettes et les noms (du lieu et des blocs, propres à chaque univers) s'écrivent dans
 // docs/contenu/assemblage.md, que `npm run contenu` recopie dans recettes.ts ; les textes d'univers les reprennent.
-import { seeded } from '../../core/random';
+import { seeded, shuffle } from '../../core/random';
 import type { BlockId } from '../biomes';
 import type { ArchipelagoId } from './archipels';
 import { ASSEMBLAGE } from './recettes';
@@ -128,12 +128,7 @@ export function tirageNeuf(graine: string): TirageAssemblage {
 export function ordreDuTour(cles: readonly string[], t: Pick<TirageAssemblage, 'graine' | 'tour'>): string[] {
   const rng = seeded(`${t.graine}:${t.tour}`);
   for (let k = 0; k < 4; k++) rng();
-  const out = [...cles];
-  for (let i = out.length - 1; i > 0; i--) {
-    const j = Math.floor(rng() * (i + 1));
-    [out[i], out[j]] = [out[j], out[i]];
-  }
-  return out;
+  return shuffle(cles, rng);
 }
 
 /** Combien de dernières questions ne reviennent pas : 6, ou moins pour un bloc de 6 questions ou moins. */

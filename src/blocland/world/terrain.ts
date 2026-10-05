@@ -79,7 +79,6 @@ export const DEPTH = 2;
 /** Couches de roche qui s'amincissent sous une île en altitude (elle flotte). */
 export const TAPER = 3;
 
-
 /** Couleur délavée d'une île verrouillée (même calcul que la texture délavée en 3D). */
 export function fade(color: string): string {
   const [r, g, b] = fadeRgb(...hexToRgb(color)).map(Math.round);
