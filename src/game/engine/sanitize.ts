@@ -10,6 +10,7 @@ import { planV1 } from '../world/plansV1';
 import { bridgesFromLegacyProgress, getBridge, getVoyage, grantAccess, isBiomeUnlocked, legacyReachable } from '../world/archipelago';
 import { lireTirage, recetteDe, type TirageAssemblage } from '../world/assembly';
 import { archipelDeLaCommande, getCommande, MAX_COMMANDES_OUVERTES } from '../world/requests';
+import { sanitizeLayout } from '../world/regionLayout';
 import type { ExerciseProgress, GameState, LogEntry, SpacedItem, TypeStats } from './state';
 import { INTERVALS } from './learning';
 
@@ -157,6 +158,8 @@ export function sanitizeState(input: unknown): GameState {
       if (lu) assemblyDraw[bloc as BlockId] = lu;
     }
   }
+  // La disposition des régions (GD-9) : sa forme seulement ; invalide, la région revient à la carte de départ.
+  const layout = sanitizeLayout(world.layout);
   // Les commandes arrivées (GD-7) : connues, sans doublon, pas encore livrées, dans l'ordre d'arrivée, trois au plus par
   // archipel ; absentes d'une sauvegarde d'avant les commandes, qui ne perd rien.
   const requests: string[] = [];
@@ -176,7 +179,7 @@ export function sanitizeState(input: unknown): GameState {
     types,
     chests: Math.max(0, Math.round(num(raw.chests))),
     fluency,
-    world: { parts, log, links, ...(place ? { place } : {}), ...(requests.length ? { requests } : {}) },
+    world: { parts, log, links, ...(place ? { place } : {}), ...(requests.length ? { requests } : {}), ...(layout ? { layout } : {}) },
     ...(Object.keys(assemblyDraw).length ? { assemblyDraw } : {}),
   };
 }

@@ -52,6 +52,8 @@ const REGLES = [
   'world/model',
   // Le contrat entre le jeu et ses dispositions (types seulement) : le jeu dit ce dont il a besoin.
   'world/layout',
+  // La disposition des régions dans la sauvegarde (GD-9) : sa forme seulement ; qu'elle tienne se vérifie dans la grille.
+  'world/regionLayout',
 ];
 
 /** La disposition en grille : la place des îles, des chemins, du quai, en cases du monde. */
@@ -95,8 +97,9 @@ const GRILLE = [
   'world/characters/ascii',
   'world/characters/creatures',
   'world/characters/guardians',
-  // La place des lieux dans leur région (GD-9) : la pose et le quart de tour.
+  // La place des lieux dans leur région (GD-9) : la pose et le quart de tour, l'emprise et le cadre de chaque région.
   'world/placement',
+  'world/footprint',
 ];
 
 /**
