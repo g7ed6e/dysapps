@@ -1,7 +1,10 @@
 import { BADGES } from '../../core/progress';
 import { trophyBlock } from '../trophies';
-import { APPEL_DU_PASSAGE, bornesCost, commandesCost, constructionCost, decorCost, ENVELOPPES, enveloppeDe, fauneCost, merCost, navireCost, personnagesCost, PLAFOND_DU_MONDE_EN_BLOCS, RENDER_BUDGET, sceneCost, sceneCostArchipeo, signesCost, solCost, toutConstruit, type Poste } from './budget';
+import { APPEL_DU_PASSAGE, bornesCost, cubesDUneLiaison, pireCasDeLaRegion, commandesCost, constructionCost, decorCost, ENVELOPPES, enveloppeDe, fauneCost, merCost, navireCost, personnagesCost, PLAFOND_DU_MONDE_EN_BLOCS, RENDER_BUDGET, sceneCost, sceneCostArchipeo, signesCost, solCost, toutConstruit, type Poste } from './budget';
 import { ARCHIPELAGO_IDS, type ArchipelagoId } from './map';
+import { buildMesh } from './mesher';
+import { worldCubes } from './terrain';
+import { LONGUEUR_COURTE, LONGUEUR_LONGUE } from './routing';
 
 it('prépare une partie vraiment tout construite (Gardiens vaincus, navire, ouvrages)', () => {
   const { progress, world: village } = toutConstruit();
@@ -186,4 +189,28 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
         expect(cout.drawCalls, a).toBeLessThanOrEqual(enveloppeDe(p, a).drawCalls);
       }
     });
+});
+
+it('GD-9 : le plafond du monde en blocs passe à 88 000 triangles, les appels restent à 240', () => {
+  expect(PLAFOND_DU_MONDE_EN_BLOCS).toEqual({ triangles: 88_000, drawCalls: 240 });
+});
+
+it('GD-9 : au pire (toutes les liaisons au plus long, tous les raccourcis, toutes les réunions), chaque région tient sous le plafond', () => {
+  for (const a of ARCHIPELAGO_IDS) {
+    const pire = pireCasDeLaRegion(a);
+    expect(pire.triangles, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.triangles);
+    expect(pire.drawCalls, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.drawCalls);
+    // Le pire cas compte plus que le monde d'aujourd'hui.
+    expect(pire.triangles, a).toBeGreaterThan(sceneCost(a, true).triangles);
+  }
+});
+
+it('GD-9 : une liaison au plus long, de chaque sorte, ne prend aucun matériau nouveau (aucun appel de plus)', () => {
+  const { progress, world } = toutConstruit();
+  for (const a of ARCHIPELAGO_IDS) {
+    const terrain = worldCubes(a, progress, world, false);
+    const avant = buildMesh(terrain).length;
+    for (const [kind, n] of [['bac', LONGUEUR_LONGUE], ['pont', LONGUEUR_LONGUE], ['pont', LONGUEUR_COURTE], ['sentier', LONGUEUR_COURTE]] as const)
+      expect(buildMesh([...terrain, ...cubesDUneLiaison(a, kind, n)]).length, `${a} ${kind}`).toBe(avant);
+  }
 });

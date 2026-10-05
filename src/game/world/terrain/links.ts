@@ -25,13 +25,23 @@ export function portsDAttache(id: BiomeId): { ouvrage: string; local: { x: numbe
   });
 }
 
+/** Une case d'un ouvrage : sa place, son altitude, si elle monte, et son sens. */
+export interface CaseDOuvrage {
+  x: number;
+  y: number;
+  z: number;
+  climbing: boolean;
+  dx: number;
+  dy: number;
+}
+
 /**
  * Le tracé d'un ouvrage entre deux îles : de bord de terre à bord de terre, sur la ligne qui joint les deux cœurs.
  * Deux îles l'une devant l'autre : l'ouvrage part du côté droit du cœur (l'îlot du Gardien est devant, à gauche),
  * descend jusqu'au bord de l'île de devant, fait un coude, puis y entre. Une liaison du port en contour (`via`, GD-7)
  * passe par ses points de passage. Chaque case a son altitude (interpolée).
  */
-export function bridgePath(def: BridgeDef): { x: number; y: number; z: number; climbing: boolean; dx: number; dy: number }[] {
+export function bridgePath(def: BridgeDef): CaseDOuvrage[] {
   return casesDeLOuvrage(def).map((c) => ({ x: c.x, y: c.y, z: c.z, climbing: c.climbing, dx: c.dx, dy: c.dy }));
 }
 
@@ -187,8 +197,7 @@ export const BAC_LONG = 36;
  * au fil de l'eau), escalier taillé dans la pierre, tunnel (galerie voûtée, lanternes), col (escalier à garde-fou).
  * Fantôme tant qu'il n'est pas construit.
  */
-export function bridge(def: BridgeDef, cubes: VoxelCube[], ghost: boolean, occupied: Set<string>): void {
-  const path = bridgePath(def);
+export function bridge(def: BridgeDef, cubes: VoxelCube[], ghost: boolean, occupied: Set<string>, path: readonly CaseDOuvrage[] = bridgePath(def)): void {
   const onPath = new Set(path.map((c) => `${c.x},${c.y}`));
   // Un cube d'ouvrage ne remplace jamais un cube du terrain (un buisson sur l'isthme, par exemple).
   const add = (x: number, y: number, z: number, color: string, texture: string, top?: string) => {
