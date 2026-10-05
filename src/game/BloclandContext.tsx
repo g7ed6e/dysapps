@@ -35,6 +35,7 @@ import { useTextes } from '../universes';
 import { archipelagoOf, getBridge, type ArchipelagoId } from './world/archipelago';
 import { archipelDeLaCommande, faireArriverUneCommande, livrerLaCommande, type Livraison } from './world/requests';
 import { applyLayout } from './world/appliedLayout';
+import type { World } from './engine/state';
 
 /** Sessions courtes : on propose d'arrêter après ce nombre d'exercices ou cette durée. */
 const SESSION_MAX_EXERCISES = 3;
@@ -78,6 +79,11 @@ interface BloclandContextValue {
   deliver: (id: string) => Livraison<GameState>;
   /** Le bonhomme va sur une île ouverte. */
   moveTo: (id: BiomeId) => void;
+  /**
+   * Le mode « Aménager » (GD-9) : la disposition et les liaisons d'un monde aménagé (world/arrange.ts) remplacent celles
+   * de la partie ; rien d'autre ne change (ni l'inventaire, ni la progression).
+   */
+  arrange: (next: Pick<World, 'links' | 'layout'>) => void;
   /** Largue les amarres du Bloc-Navire : le voyage est fait, le bonhomme arrive au port d'en face. */
   launch: (stage: VehicleStage) => LaunchResult;
   reset: () => void;
@@ -203,6 +209,13 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
     stateRef.current = next;
     setState(next);
   }, []);
+  const arrange = useCallback((next: Pick<World, 'links' | 'layout'>) => {
+    const { layout: _avant, ...reste } = stateRef.current.world;
+    const world: World = { ...reste, links: next.links, ...(next.layout ? { layout: next.layout } : {}) };
+    const etat = { ...stateRef.current, world };
+    stateRef.current = etat;
+    setState(etat);
+  }, []);
   const launch = useCallback((stage: VehicleStage) => {
     const r = launchVehiclePure(stateRef.current, stage);
     if (r.result.ok) {
@@ -251,6 +264,7 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
       buildBridge,
       deliver,
       moveTo,
+      arrange,
       launch,
       reset,
       batisseur,
@@ -272,6 +286,7 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
       buildBridge,
       deliver,
       moveTo,
+      arrange,
       launch,
       reset,
       batisseur,

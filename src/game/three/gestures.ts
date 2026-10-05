@@ -228,10 +228,29 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
     const plan = pointDuPlan(ray.ray.origin, ray.ray.direction, cadrage.cible.y, loinMax);
     return plan ? new THREE.Vector3(plan.x, cadrage.cible.y, plan.z) : null;
   };
+  /** Le dernier pas de la grille où le doigt qui glisse a calé le fantôme (mode « Aménager ») : un calage par pas. */
+  let dernierCalage = '';
+  /** Le point de la mer sous le doigt (au niveau de l'eau), en cases du monde, ou rien (l'horizon). */
+  const merSous = (x: number, y: number) => {
+    const p = solSous(x, y, 0);
+    return p ? { x: p.x, y: p.z } : null;
+  };
   /** Le doigt posé bouge : passé le seuil (et si c'est permis), la vue glisse avec lui. */
   const glisser = (e: PointerEvent, appui: Appui) => {
     appui.cx = e.clientX;
     appui.cy = e.clientY;
+    // Le mode « Aménager », un choix en cours (GD-9) : glisser est un raccourci, le fantôme se cale sous le doigt.
+    if (derniers.current.amenager === 'choix' && rappels.current.onPickSea) {
+      if (!appui.ancre && !glisseCommence(e.clientX - appui.x, e.clientY - appui.y)) return;
+      appui.ancre ??= new THREE.Vector3();
+      const p = merSous(e.clientX, e.clientY);
+      const cle = p ? `${Math.floor(p.x / 4)},${Math.floor(p.y / 4)}` : '';
+      if (p && cle !== dernierCalage) {
+        dernierCalage = cle;
+        rappels.current.onPickSea(p);
+      }
+      return;
+    }
     let ancre = appui.ancre;
     if (!ancre) {
       if (!glisseCommence(e.clientX - appui.x, e.clientY - appui.y) || !glissePermis()) return;
@@ -330,6 +349,7 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
     if (glisse || moved >= SEUIL_DU_GLISSE) return;
     // Pendant le voyage, un tap n'importe où fait arriver le navire tout de suite.
     if (voyageRef.current) return rappels.current.onVoyageSkip?.();
+    if (derniers.current.amenager !== 'non') return toucherEnAmenageant(e);
     // Une bulle sous le doigt (sa plaque, pas les marges de sa case) passe d'abord : elle est dessinée par-dessus tout
     // (Blocland, world/affordance.ts).
     const vue = canvas.getBoundingClientRect();
@@ -403,6 +423,30 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
     // Le sol d'une île : la colonne touchée (celle où pousse un élément du décor touché), le bonhomme y va.
     else if (tap.kind === 'island') rappels.current.onPickIsland?.(tap.id, tap.cell, enRouteIci);
   };
+  /**
+   * Un toucher dans le mode « Aménager » (GD-9) : un Gardien, une borne, une liaison posée (son arrivée la plus proche),
+   * un lieu (son sol, ou sa créature) ; sinon la mer, où le fantôme se cale. Aucune fiche ne s'ouvre, rien ne saute.
+   */
+  const toucherEnAmenageant = (e: PointerEvent) => {
+    const r = rappels.current;
+    const { creature, hit } = aim(e);
+    if (creature) {
+      const quest = questIdOf(creature.object);
+      if (quest) return r.onPickQuest?.(quest.biome, quest.typeId);
+      const found = creatureIdOf(creature.object);
+      if (found?.kind === 'guardian') return r.onPickCreature?.(found.id, 'guardian');
+      if (found) return r.onPickIsland?.(found.id);
+    }
+    if (hit) {
+      const tap = tapSur(hit);
+      if (tap.kind === 'quest') return r.onPickQuest?.(tap.biome, tap.typeId);
+      if (tap.kind === 'bridge') return r.onPickBridge?.(tap.id, { x: hit.point.x, y: hit.point.z });
+      if (tap.kind === 'island') return r.onPickIsland?.(tap.id, tap.cell);
+      if (tap.kind === 'place') return r.onPickIsland?.(tap.island);
+    }
+    const p = merSous(e.clientX, e.clientY);
+    if (p) r.onPickSea?.(p);
+  };
   const onHover = (e: PointerEvent) => {
     // Deux doigts posés sur la Carte : on pince.
     if (pince) {
@@ -438,7 +482,7 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
 }
 
 /** Ce que le clavier lit de la scène. */
-type ScenePourLeClavier = Pick<ScenePourLesGestes, 'personnages' | 'cadrage' | 'rappels' | 'voyage' | 'archipel' | 'zoomPermis' | 'signaler'>;
+type ScenePourLeClavier = Pick<ScenePourLesGestes, 'personnages' | 'cadrage' | 'rappels' | 'voyage' | 'archipel' | 'zoomPermis' | 'signaler' | 'derniers'>;
 
 /** Écoute le clavier sur la vue (elle prend le focus) ; rend de quoi arrêter d'écouter. */
 export function ecouterLeClavier(el: HTMLElement, scene: ScenePourLeClavier): () => void {
@@ -473,7 +517,8 @@ export function ecouterLeClavier(el: HTMLElement, scene: ScenePourLeClavier): ()
       return;
     }
     const dir = ARROW_DIRS[e.key];
-    if (!dir || !rappels.current.onPickIsland) return;
+    // Dans le mode « Aménager » (GD-9), les flèches sont celles de la barre du mode : la page les écoute.
+    if (!dir || !rappels.current.onPickIsland || scene.derniers.current.amenager !== 'non') return;
     e.preventDefault();
     const next = islandInDirection(archRef.current, { x: cadrage.cible.x, y: cadrage.cible.z }, dir);
     if (next) rappels.current.onPickIsland(next);

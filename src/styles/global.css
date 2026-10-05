@@ -3732,6 +3732,65 @@ figure.class-table {
   right: -12px;
   font-size: max(18px, 1rem);
 }
+/* ===== Le mode « Aménager » (GD-9), sur la Carte : la barre du mode à place fixe, en bas, à la place de la barre du
+   monde ; les boutons gardent leur place, éteints quand ils ne font rien ; 48 px au moins (« Poser ici » : 56 px). Un
+   seul bouton mis en avant (`primary`) : « Poser ici » pendant un choix, ✓ Terminé sinon. ===== */
+.arrange-bar {
+  position: absolute;
+  left: 0.6rem;
+  right: 0.6rem;
+  bottom: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.arrange-bar-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+.arrange-bar .button {
+  min-width: 48px;
+  min-height: 48px;
+  padding: 0 12px;
+  gap: 6px;
+}
+.arrange-bar .arrange-pose {
+  min-height: 56px;
+  padding: 0 18px;
+}
+/* Éteint : grisé et sans relief, sa place gardée ; le texte reste lisible (jamais sous 4,5:1 sur son fond). */
+.arrange-bar .button:disabled {
+  opacity: 0.6;
+  box-shadow: none;
+  cursor: default;
+}
+/* La pastille des liaisons à reposer : l'icône (une liaison séparée) et le nombre, jamais la couleur seule. */
+.world-bar .arrange-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+.arrange-line p,
+.arrange-relink p {
+  margin: 0;
+}
+.arrange-relink-list {
+  list-style: none;
+  margin: 0.4rem 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.arrange-relink-list .button {
+  min-height: 48px;
+}
+.arrange-explication {
+  margin-bottom: 0.4rem;
+}
 /* Les blocs gagnés qui volent jusqu'au compteur (Blocland, FlyingBlocks.tsx) : posés sur la pastille, ils partent de la
    borne (`--vol-dx`, `--vol-dy`) en arc simple, l'un après l'autre ; ni éclat ni traînée, rien qui se touche. Sans
    animation quand l'appareil en demande moins (le vol n'a alors pas lieu). */

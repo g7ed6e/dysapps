@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import type { FaceSide, MeshGroup } from '../world/mesher';
 import { blockMaterial, tintedMaterial, type TextureKind } from './textures';
 import type { Surface } from './surface';
+import { avecLAmenagement } from './arrange';
 
 /** Une nappe de brume : blanc au centre, qui s'efface vers les bords (dégradé radial peint une fois). */
 export function mistTexture(): THREE.Texture | null {
@@ -69,7 +70,8 @@ export function meshOf(g: MeshGroup, surface: Surface | null = null): THREE.Mesh
   geo.setAttribute('uv', new THREE.Float32BufferAttribute(g.uvs, 2));
   geo.setIndex(g.indices);
   surface?.geometry(g, geo);
-  const mesh = new THREE.Mesh(geo, surface?.material(g) ?? materialFor(g.texture, g.face, g.color, g.ghost, g.muted));
+  // Les blocs savent le mode « Aménager » (le lieu choisi soulevé, le geste de la pose : ./arrange.ts).
+  const mesh = new THREE.Mesh(geo, surface?.material(g) ?? avecLAmenagement(materialFor(g.texture, g.face, g.color, g.ghost, g.muted)));
   if (g.ghost) mesh.renderOrder = 1;
   // Les faces cachées ne sont plus là : on peut renoncer au tri par la taille de la scène.
   mesh.frustumCulled = false;

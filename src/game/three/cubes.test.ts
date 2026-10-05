@@ -51,15 +51,17 @@ describe('Le rendu de Blocland ne montre aucune pièce d’architecture', () => 
     m.scene.traverse((o) => {
       if (o instanceof THREE.Mesh && o.geometry.getAttribute('position').count > 0) maillages.push(o);
     });
-    // Aucun attribut de motif, aucun shader complété : la construction d'Archipéo (three/construction.ts) peint ses
-    // murs dans `onBeforeCompile` ; les matériaux de Blocland gardent celui de Three.js, qui ne fait rien.
+    // Aucun attribut de motif, aucun shader peint : la construction d'Archipéo (three/construction.ts) peint ses murs
+    // dans `onBeforeCompile` ; les matériaux de Blocland n'y ajoutent que la zone du mode « Aménager » (GD-9,
+    // three/arrange.ts : le lieu choisi soulevé, le geste de la pose), le même programme pour tous.
     expect(maillages.length).toBeGreaterThan(0);
     for (const o of maillages) {
       expect(o.geometry.getAttribute('motif')).toBeUndefined();
       const mats = ([] as THREE.Material[]).concat(o.material);
       for (const x of mats) {
         expect(x).not.toBeInstanceOf(THREE.ShaderMaterial);
-        expect(x.onBeforeCompile).toBe(THREE.Material.prototype.onBeforeCompile);
+        expect(x.userData.amenager).toBe(true);
+        expect(x.customProgramCacheKey()).toBe('amenager');
       }
     }
     // Exactement les triangles du monde en blocs (world/mesher.ts), cube pour cube.

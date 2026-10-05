@@ -36,6 +36,9 @@ export const DIRECTION_STEP: Readonly<Record<Direction, { dx: number; dy: number
   ouest: { dx: -1, dy: 0 },
 };
 
+/** Ce que dit le jeu quand une flèche ne trouve plus de place libre dans sa direction. */
+export const NO_MORE_ROOM = 'Plus de place par là.';
+
 /** Pourquoi une action ne se fait pas. */
 type ArrangeRefusal =
   /** Le lieu de départ (en 6e, les deux lieux ouverts au départ) ne bouge pas. */
@@ -285,7 +288,7 @@ export function nearestFreeSpot(world: World, id: BiomeId, point: { x: number; y
 }
 
 /** L'élément de `items` dont la place est la plus proche d'un point (le premier à égalité). */
-function closest<T>(items: readonly T[], at: (t: T) => { x: number; y: number }, point: { x: number; y: number }): T | null {
+export function closest<T>(items: readonly T[], at: (t: T) => { x: number; y: number }, point: { x: number; y: number }): T | null {
   let best: T | null = null;
   let d = Infinity;
   for (const t of items) {
@@ -304,7 +307,7 @@ function closest<T>(items: readonly T[], at: (t: T) => { x: number; y: number },
  * dans le quart de plan qu'elle regarde (pas plus de côté que d'avance), la moins de côté à avance égale ; `null` : plus
  * de place par là (`NO_MORE_ROOM`).
  */
-function nextIn<T>(items: readonly T[], at: (t: T) => { x: number; y: number }, from: { x: number; y: number }, dir: Direction): T | null {
+export function nextIn<T>(items: readonly T[], at: (t: T) => { x: number; y: number }, from: { x: number; y: number }, dir: Direction): T | null {
   const { dx, dy } = DIRECTION_STEP[dir];
   let best: T | null = null;
   let score: [number, number] = [Infinity, Infinity];
@@ -373,6 +376,13 @@ export function guardianFacing(g: LayoutGuardian): GuardianFacing {
   const oppose = LAYOUT_SIDE_OF[turnedSide(SIDE_OF[g.side], 2)];
   return f === oppose ? 'ile' : 'cote';
 }
+
+/** La phrase écrite et lue quand on tourne un Gardien. */
+export const GUARDIAN_FACING_TEXT: Readonly<Record<GuardianFacing, string>> = {
+  mer: 'Il regarde vers la mer.',
+  ile: 'Il regarde vers son île.',
+  cote: 'Il regarde le long de la côte.',
+};
 
 /** Les places le long d'un côté, en pas (`LayoutGuardian.step`, au plus 8 de chaque côté). */
 const GUARDIAN_STEPS = Array.from({ length: 17 }, (_, i) => i - 8);

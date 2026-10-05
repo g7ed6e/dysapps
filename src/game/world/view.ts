@@ -10,6 +10,8 @@ import type { Cell, CreaturePlacement } from './paths';
 import type { Ancrage, Intention, ObjetDeLaFiche } from './layout';
 import type { EtatsDesObjets } from './model';
 import { grilleDe } from './grid';
+import type { ArrangeView } from './arrangeView';
+import type { ArrangeGesture } from './arrangeGesture';
 
 // Une case du monde et la place d'une créature : définies avec la grille de marche (./paths.ts), qui les lit.
 export type { Cell, CreaturePlacement } from './paths';
@@ -236,6 +238,15 @@ export interface WorldViewProps {
    * revenue à son cadrage (`false`), pour le bouton « Recentrer ». Sans ce rappel, la vue ne glisse pas.
    */
   onVueDeplacee?: (deplacee: boolean) => void;
+  /**
+   * Le mode « Aménager » (GD-9), sur la Carte : `vue`, le dessin du choix en cours (fantôme, places autour, liaisons
+   * retracées et barrées, lieu soulevé ; ./arrangeView.ts), ou rien. Dans le mode, toucher la mer donne une intention
+   * `mer` ; avec un choix, glisser le doigt cale le fantôme sous lui (un raccourci) au lieu de faire glisser la vue ; et
+   * si le fantôme sort de l'écran, la vue le suit. La vue simple l'ignore.
+   */
+  amenager?: { vue: ArrangeView | null } | null;
+  /** Le geste de la pose en cours dans le mode « Aménager » (./arrangeGesture.ts), ou rien. */
+  geste?: ArrangeGesture | null;
   /** Change à chaque appui sur « Recentrer » : la vue efface son décalage et revient en douceur à son cadrage. */
   recentrage?: number;
   /**
@@ -274,7 +285,9 @@ export interface EnCasesDuMonde {
 export interface RappelsDeLaVue {
   /** Une île : touchée sur le sol en `sol` (le bonhomme en route en `enRoute`), ou choisie au clavier. En cases du monde. */
   onPickIsland?: (id: BiomeId, sol?: Cell, enRoute?: Cell) => void;
-  onPickBridge?: (id: string) => void;
+  onPickBridge?: (id: string, point?: { x: number; y: number }) => void;
+  /** Le mode « Aménager » : la mer touchée (ou le doigt qui glisse, avec un choix), en cases du monde. */
+  onPickSea?: (point: { x: number; y: number }) => void;
   onPickQuest?: (biome: BiomeId, typeId: string) => void;
   onPickPlace?: (place: PlaceId, island: BiomeId) => void;
   onPickCreature?: (id: BiomeId, kind: 'creature' | 'guardian') => void;
@@ -304,7 +317,8 @@ export function rappelsDeLaVue(onIntent: ((i: Intention) => void) | undefined, a
       const g = grilleDe(archipel);
       onIntent({ genre: 'ile', id, sol: g.versIle(sol, id), ...(enRoute ? { enRoute: g.versIle(enRoute) } : {}) });
     },
-    onPickBridge: (id) => onIntent({ genre: 'ouvrage', id }),
+    onPickBridge: (id, point) => onIntent({ genre: 'ouvrage', id, ...(point ? { point } : {}) }),
+    onPickSea: (point) => onIntent({ genre: 'mer', point }),
     onPickQuest: (ile, mission) => onIntent({ genre: 'borne', ile, mission }),
     onPickPlace: (id, ile) => onIntent({ genre: 'lieu', id, ile }),
     onPickCreature: (id, kind) => onIntent({ genre: 'creature', id, gardien: kind === 'guardian' }),

@@ -32,6 +32,7 @@ import { creerCamera, type Camera } from './camera';
 import { creerRond } from './groundRing';
 import { ecouterLeClavier, ecouterLesGestes } from './gestures';
 import { lancerLaBoucle } from './loop';
+import { creerAmenagement, type Amenagement } from './arrange';
 import { contourner, lecteurDePlaceLibre, lirePlaceLibre, sousLaFiche, type PlaceLue } from '../freeSpace';
 
 
@@ -47,6 +48,10 @@ interface Scene3D {
   signes: Signes;
   cubes: Cubes;
   navire: Navire;
+  /** Le mode « Aménager » (GD-9). */
+  amenagement: Amenagement;
+  /** Le fantôme du mode est hors de la vue : le cadrage glisse pour le poser au centre de la place libre. */
+  garderEnVue(point: { x: number; y: number; z: number }): void;
   /** Efface le décalage de l'élève et le dit à la page. */
   recentrer(): void;
   /** Le signe de l'objet d'une fiche fait son petit saut (s'il en porte un). */
@@ -94,6 +99,8 @@ export default function WorldCanvas({
   label,
   onIntent,
   chantier = false,
+  amenager = null,
+  geste: gesteDuMode = null,
 }: WorldViewProps) {
   // Les positions reçues en ancrages (une île, un point dans son repère), dessinées en cases du monde.
   const { focus, marker, avatar, trail, quests, burst } = useEnCasesDuMonde({
@@ -121,12 +128,14 @@ export default function WorldCanvas({
   const vehicleRef = useRef<Amarre | null>(null);
   // Les cubes des bornes de mission et des ouvrages, par case : pour savoir ce qu'on touche.
   const tags = useRef(cubeTags([]));
+  const dansLeMode = Boolean(amenager);
   useEffect(() => {
     // Un ouvrage construit se touche comme le sol (lot 2 de « Toucher le monde ») : seuls ceux en fantôme sont des cibles.
     const t = cubeTags(cubes);
-    for (const [cle, id] of t.bridges) if (bridges.includes(id)) t.bridges.delete(cle);
+    // Dans le mode « Aménager » (GD-9), une liaison posée se touche : son arrivée la plus proche se choisit.
+    if (!dansLeMode) for (const [cle, id] of t.bridges) if (bridges.includes(id)) t.bridges.delete(cle);
     tags.current = t;
-  }, [cubes, bridges]);
+  }, [cubes, bridges, dansLeMode]);
   // Ce qu'il faut pour trouver l'objet d'une fiche dans le monde (lu au moment du recadrage, pas à chaque image).
   const objetsRef = useRef({ cubes, creatures, vehicle });
   objetsRef.current = { cubes, creatures, vehicle };
@@ -144,8 +153,9 @@ export default function WorldCanvas({
     return def ? cadreDeLaLiaison(def, bridges) : null;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [liaisonCadree, bridges.join(',')]);
-  const derniers = useRef<Derniers>({ carte: map, focus, home: home ?? null, forceDay, whalePass, sons: settings.sounds, calme, cadreDeLaLiaison: cadreChoisi, onVoyageLegEnd });
-  derniers.current = { carte: map, focus, home: home ?? null, forceDay, whalePass, sons: settings.sounds, calme, cadreDeLaLiaison: cadreChoisi, onVoyageLegEnd };
+  const modeDAmenager = amenager ? (amenager.vue ? 'choix' : 'mode') : 'non';
+  const derniers = useRef<Derniers>({ carte: map, focus, home: home ?? null, forceDay, whalePass, sons: settings.sounds, calme, cadreDeLaLiaison: cadreChoisi, onVoyageLegEnd, amenager: modeDAmenager });
+  derniers.current = { carte: map, focus, home: home ?? null, forceDay, whalePass, sons: settings.sounds, calme, cadreDeLaLiaison: cadreChoisi, onVoyageLegEnd, amenager: modeDAmenager };
   // Le passage de la baleine : demandé par `whalePass`, joué une fois par `seq` (même si la scène est refaite).
   const passSeqRef = useRef<number | null>(null);
   // Les liaisons posées (GD-9), lues par la scène quand elle se construit et à chaque trajet : elle n'est pas refaite pour elles.
@@ -241,7 +251,20 @@ export default function WorldCanvas({
       },
     };
     const cadrage = creerCamera(monde, camera, personnages.avatar, derniers, instant, lecture);
+    const amenagement = creerAmenagement(monde, reduceMotion);
     world.current = {
+      amenagement,
+      garderEnVue: (p) => {
+        const point = new THREE.Vector3(p.x + 0.5, p.z, p.y + 0.5);
+        const vue = el.getBoundingClientRect();
+        const { libre } = lirePlaceLibre(el);
+        const ecran = cadrage.auBut(point, vue.width, vue.height);
+        const marge = 24;
+        if (ecran && ecran.x >= libre.x0 + marge && ecran.x <= libre.x1 - marge && ecran.y >= libre.y0 + marge && ecran.y <= libre.y1 - marge) return;
+        const w = Math.max(1, el.clientWidth);
+        const h = Math.max(1, el.clientHeight);
+        cadrage.recadrer(point, { x: (libre.x0 + libre.x1) / w - 1, y: 1 - (libre.y0 + libre.y1) / h });
+      },
       camera,
       cadrage,
       bornes,
@@ -283,7 +306,7 @@ export default function WorldCanvas({
     /** Ce qui bouge dans le monde, avant la caméra : le bonhomme, puis le navire (qui le fait embarquer et débarquer). */
     const deplacements: PartieDeLaScene[] = [personnages, navire];
     /** Le reste de l'image, dans cet ordre : la caméra suit ce qui a bougé ; les étiquettes se placent pour elle, en dernier. */
-    const parties: PartieDeLaScene[] = [personnages, cadrage, bornes, affordance, brume, lumiere, large, navire, cubesDuMonde, rond, signesDesCreatures, etiquettes];
+    const parties: PartieDeLaScene[] = [personnages, cadrage, bornes, affordance, brume, lumiere, large, navire, cubesDuMonde, rond, amenagement, signesDesCreatures, etiquettes];
 
     /** Un objet touché répond : la pile d'étoiles d'une borne réussie saute, sinon sa bulle rebondit, s'il en a une. */
     const sauterLeSigne = (objet: ObjetTouche) => {
@@ -417,6 +440,22 @@ export default function WorldCanvas({
     // caméra sont mis à jour à part. Le changement d'archipel se fait derrière l'écran du voyage.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reduceMotion, archipelago]);
+
+  // ---- Le mode « Aménager » (GD-9) : le dessin du choix, et la vue qui suit le fantôme s'il sort de l'écran
+  const vueDuMode = amenager?.vue ?? null;
+  useEffect(() => {
+    const w = world.current;
+    if (!w) return;
+    w.amenagement.poser(vueDuMode);
+    if (vueDuMode) w.garderEnVue(vueDuMode.suivre);
+    // Reposé aussi quand la scène est refaite (un lieu posé, la préférence de mouvement).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vueDuMode, reduceMotion, archipelago]);
+  // ---- Le geste de la pose : il continue dans la scène refaite (le lieu à sa nouvelle place)
+  useEffect(() => {
+    world.current?.amenagement.geste(gesteDuMode);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gesteDuMode?.seq, gesteDuMode?.phase, reduceMotion, archipelago]);
 
   // ---- « Recentrer » : la vue efface son décalage, la caméra revient en douceur à son cadrage
   useEffect(() => {

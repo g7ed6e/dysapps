@@ -38,6 +38,8 @@ export interface Derniers {
   /** Le cadre d'une liaison montrée depuis un autre départ (GD-9, `liaisonCadree`), ou `null`. */
   cadreDeLaLiaison: CadreDeCases | null;
   onVoyageLegEnd?: () => void;
+  /** Le mode « Aménager » (GD-9) : pas ouvert, ouvert sans choix, ou avec un choix (le doigt qui glisse cale le fantôme). */
+  amenager: 'non' | 'mode' | 'choix';
 }
 
 /** L'instant d'une image : ce que les déplacements (le bonhomme, le navire) ont décidé, que les autres parties lisent. */

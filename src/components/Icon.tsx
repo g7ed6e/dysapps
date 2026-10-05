@@ -2,6 +2,13 @@ import {
   Anchor,
   Menu,
   ArrowLeft,
+  ArrowDown,
+  ArrowRight,
+  ArrowUp,
+  Move,
+  RotateCw,
+  Undo2,
+  Unlink,
   Blocks,
   BookOpen,
   Box,
@@ -119,6 +126,15 @@ export const ICONS = {
   ancre: Anchor,
   cube: Box,
   ouvrage: Ouvrage,
+  // Le mode « Aménager » (GD-9) : quatre flèches, les flèches de la barre, « Tourner », ↶, une liaison à reposer.
+  amenager: Move,
+  nord: ArrowUp,
+  sud: ArrowDown,
+  est: ArrowRight,
+  ouest: ArrowLeft,
+  tourner: RotateCw,
+  defaire: Undo2,
+  aReposer: Unlink,
 } satisfies Record<string, LucideIcon>;
 
 export type AnyIconName = keyof typeof ICONS;

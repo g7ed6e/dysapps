@@ -92,6 +92,7 @@ import { useHoldCelebrations } from '../components/Celebrations';
 import { useASuivre } from '../components/useNextUp';
 import { chiffreDeLaPastille, nomDuBoutonBlocs, prendreLesBlocs, volALieu, VOL, type GainRetenu } from './blockFlight';
 import { FlyingBlocks } from './FlyingBlocks';
+import { ArrangeBar, ArrangeButton, ArrangeSentence, useAmenagement } from './Arranging';
 
 const samePoint = (p: { x: number; y: number } | undefined, q: { x: number; y: number }) => Boolean(p) && p!.x === q.x && p!.y === q.y;
 
@@ -118,7 +119,7 @@ export function WorldPage() {
   const { settings, speak, stop } = useSettings();
   const univers = useUnivers();
   const reduceMotion = useMoinsDAnimations();
-  const { state, disposition, moveTo, launch } = useBlocland();
+  const { state, disposition, moveTo, launch, arrange } = useBlocland();
   // La pose d'une partie en vague (GD-6, Blocland) : ses cases, absentes du monde jusqu'à ce que la vue les pose (useWavePose.ts).
   // La petite construction d'une commande livrée (GD-7, PR 3) se pose de la même vague : `commande`, sans partie.
   const [vague, setVague] = useState<Vague | null>(null);
@@ -230,6 +231,26 @@ export function WorldPage() {
     const path = grille.raccord(here, route[0]);
     return path ? [...path, ...route.slice(1)] : [here, ...route];
   };
+  // Le mode « Aménager » (GD-9), sur la Carte seulement, hors mission : il se ferme quand on quitte la Carte.
+  const nomDuLieu = (id: BiomeId) => getBiome(id)?.name ?? id;
+  const amenagement = useAmenagement({
+    world: state.world,
+    a,
+    arrange,
+    nom: nomDuLieu,
+    reduceMotion,
+    habillage,
+    sons: settings.sounds,
+    dire: (texte) => {
+      if (settings.autoRead) speak(frenchTypography(texte));
+    },
+    versMonde: (p) => grille.versMonde(p),
+  });
+  const enAmenageant = mapOpen && amenagement.ouvert;
+  useEffect(() => {
+    if (!mapOpen && amenagement.ouvert) amenagement.terminer();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mapOpen]);
   // Le Bloc-Navire amarré au port de l'archipel : un objet à part, qui tangue.
   const vehicle = useMemo(() => vehiclePlacement(a, state.progress, state.world), [a, state.progress, state.world]);
   // Le panneau de l'île ouverte, en plein écran par-dessus le monde : il ne s'ouvre que par son bouton dans la barre,
@@ -844,6 +865,8 @@ export function WorldPage() {
   // Ce que l'élève fait dans le monde : la vue renvoie une intention, la page décide. Une borne, le Gardien, le navire,
   // un ouvrage en fantôme, une créature : leur fiche (lot 2 de « Toucher le monde ») ; un lieu : son panneau.
   const onIntent = (i: Intention) => {
+    // Le mode « Aménager » prend les touchers : choisir, caler le fantôme ; aucune fiche ne s'ouvre.
+    if (enAmenageant && amenagement.intention(i)) return;
     switch (i.genre) {
       case 'ile':
         return onIsland(i.id, i.sol && grille.versMonde(i.sol), i.enRoute && grille.versMonde(i.enRoute));
@@ -942,7 +965,9 @@ export function WorldPage() {
         data-scene
         ref={stageRef}
         onPointerDownCapture={
-          moment
+          amenagement.geste
+            ? () => amenagement.finirLeGeste()
+            : moment
             ? toucherQuiSaute(sauterLeRallumage, finirLeRallumageEnSilence)
             : vague
               ? toucherQuiSaute(poserToutDUnCoup, poserEnSilence)
@@ -957,22 +982,25 @@ export function WorldPage() {
             archipelago={a}
             cubes={cubesVus}
             creatures={creatures}
-            signes={voyage ? undefined : signes}
+            signes={voyage || enAmenageant ? undefined : signes}
             prochaine={prochaine}
-            calme={Boolean(ficheVue) || panelOpen || panneauDeLIle || Boolean(whaleWord) || Boolean(motRallume)}
+            calme={Boolean(ficheVue) || panelOpen || panneauDeLIle || Boolean(whaleWord) || Boolean(motRallume) || enAmenageant}
             focus={focus}
             reduceMotion={reduceMotion}
             forceDay={forceDay}
             bridges={state.world.links}
             liaisonCadree={fiche?.cadrer && fiche.objet.genre === 'ouvrage' ? fiche.objet.id : null}
-            marker={marker}
+            // Dans le mode « Aménager », « Poser ici » ou ✓ Terminé est le seul élément mis en avant.
+            marker={enAmenageant ? null : marker}
+            amenager={enAmenageant ? { vue: amenagement.vue } : null}
+            geste={amenagement.geste}
             imageDeLaCarte={imageDeLaCarte}
             vehicle={vehicle}
             voyage={voyageAJouer(voyage)}
             avatar={avatar}
             map={mapOpen}
             home={at}
-            trail={trail}
+            trail={enAmenageant ? undefined : trail}
             quests={quests}
             etatsDesObjets={etats}
             islandLabels={voyage ? undefined : islandLabels}
@@ -993,7 +1021,7 @@ export function WorldPage() {
         </Suspense>
         <div className={`world-veil${veil ? ' on' : ''}`} aria-hidden="true" />
         {/* Sous le bouton Menu : une classe par archipel atteint, la sienne marquée ; un toucher change de classe. */}
-        {!voyage && <ArchipelagoSwitcher current={a} bridges={state.world.links} onGo={(to) => hop(getArchipelago(to).port)} />}
+        {!voyage && !enAmenageant && <ArchipelagoSwitcher current={a} bridges={state.world.links} onGo={(to) => hop(getArchipelago(to).port)} />}
         {/* Le menu du village, toujours en haut à droite, comme la pause d'un jeu. */}
         {!voyage && (
           <button
@@ -1029,7 +1057,8 @@ export function WorldPage() {
               </button>
             </div>
           )}
-          {panneauDeLaCarte && mapTarget && (
+          {enAmenageant && <ArrangeSentence amenagement={amenagement} nom={nomDuLieu} />}
+          {panneauDeLaCarte && !enAmenageant && mapTarget && (
             <div className="creature-line world-line world-map-line" role="status" aria-live="polite">
               <p>
                 <strong>Pour aller à {getBiome(mapTarget)?.name} :</strong> encore {remaining.length} ouvrage{remaining.length > 1 ? 's' : ''}.
@@ -1105,6 +1134,9 @@ export function WorldPage() {
             />
           </div>
         )}
+        {enAmenageant ? (
+          <ArrangeBar amenagement={amenagement} />
+        ) : (
         <nav className="world-bar" data-couvre="scene" aria-label="Village">
           {island && !voyage && (
             <button
@@ -1127,6 +1159,8 @@ export function WorldPage() {
           >
             <Icon name="map" /> <span className="world-bar-text">Carte</span>
           </button>
+          {/* Sur la Carte, hors voyage : « Aménager », à sa place fixe, après la Carte. */}
+          {mapOpen && !voyage && <ArrangeButton amenagement={amenagement} />}
           {!voyage && (
             <button
               type="button"
@@ -1145,6 +1179,7 @@ export function WorldPage() {
             </button>
           )}
         </nav>
+        )}
         {vol?.phase === 'vol' && vol.depart && vol.arrivee && (
           <FlyingBlocks key={vol.seq} bloc={vol.gain.bloc} nombre={vol.gain.nombre} depart={vol.depart} arrivee={vol.arrivee} onArrive={() => finirLeVol(true)} />
         )}
