@@ -194,7 +194,7 @@ La relecture de tous les exercices du 28/09/2026 a corrigé les erreurs sans dé
 
 Décisions de format, pour tout le jeu :
 
-- **Ordre croissant des nombres.** Les heures sont rangées depuis LV2-4 (#232) ; restent les fractions, puissances, notations scientifiques et expressions littérales que `textChoices` (`src/blocland/exercises/college.ts`) mélange. Les ranger par valeur, et apprendre à `parseNumber` (`src/core/choices.ts`) l’écriture « n/d ».
+- **Ordre croissant des nombres.** Les heures sont rangées depuis LV2-4 (#232) ; restent les fractions, puissances, notations scientifiques et expressions littérales que `textChoices` (`src/blocland/exercises/college/commun.ts`) mélange. Les ranger par valeur, et apprendre à `parseNumber` (`src/core/choices.ts`) l’écriture « n/d ».
 - **Rappel de règle en maths de cycle 4.** Une carte de règle fixe pour `maths-5e-signed-numbers-adding-2` (soustraire des relatifs), `maths-3e-geometry-thales-1`, `maths-3e-statistics-mean-1` et `-2`, `maths-3e-functions-images-1` et `-2`, qui n’ont qu’un tableau, une droite ou des barres.
 - **Rappel de règle à l’écoute en anglais.** Une carte des mots interrogatifs pour les Listening et les Dialogues (`english-5e-vocabulary-listening-1` et `-2`, `english-4e-comprehension-dialogues-1` et `-2`) ; pour les Ears (`english-6e-vocabulary-first-listening-1` et `-2`), qui font entendre un mot seul, une exception écrite dans `principes.md`.
 - **Consigne du portail.** `QuizSession` (`src/components/QuizSession.tsx`) écrit une consigne par mission et lit la question à l’ouverture, pour les Homophones et le Vocabulaire.

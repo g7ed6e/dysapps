@@ -1,4 +1,4 @@
-// Le cadre des graphiques, sans React : le générateur (college.ts) et le dessin (Aids.tsx) le lisent ici.
+// Le cadre des graphiques, sans React : le générateur (college/fonctions.ts) et le dessin (Aids.tsx) le lisent ici.
 
 /** Le cadre d'un graphique : de xMin à xMax sur l'axe horizontal, de yMin à yMax sur l'axe vertical, entiers. */
 export interface GraphFrame {
