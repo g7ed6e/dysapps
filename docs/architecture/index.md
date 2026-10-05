@@ -73,7 +73,7 @@ Une flèche se lit « importe ». Les flèches pleines sont le sens attendu ; le
 ```mermaid
 flowchart TD
   Settings[SettingsProvider<br/>core/SettingsContext.tsx] --> Progress[ProgressProvider<br/>core/ProgressContext.tsx]
-  Progress --> Blocland[BloclandProvider<br/>blocland/BloclandContext.tsx]
+  Progress --> Blocland[BloclandProvider<br/>game/BloclandContext.tsx]
   Blocland --> Router[HashRouter]
   Router --> Layout[Layout]
   Layout --> R1["/ et /menu : entrée"]

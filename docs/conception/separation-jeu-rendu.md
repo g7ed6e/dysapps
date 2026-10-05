@@ -3,7 +3,7 @@
 Ce document est un **plan**, construit étape par étape ; l’état de chaque étape est dans l’[état des chantiers](../pilotage/chantiers.md#séparer-le-jeu-du-rendu-j). Ses trois décisions ont été prises par le mainteneur le 28 septembre 2026 (§5). Il décrit comment isoler complètement la logique du jeu de son dessin, pour qu’une même logique serve trois rendus :
 
 - le **monde par cases** (Blocland) en **3D** (`src/game/three/`) ;
-- le même monde par cases en **2D** (`src/game/pixel/`, retirée le 5 octobre 2026 (mot du mainteneur : « Oui on retire la 2d »)) ;
+- le même monde par cases en **2D** (`src/blocland/pixel/`, retirée le 5 octobre 2026 (mot du mainteneur : « Oui on retire la 2d »)) ;
 - un mode où **les distances sont abstraites** (Archipéo) : tout le monde devient un réseau ; chaque île est un lieu, une maquette posée sur la mer, reliée aux autres par des liaisons, et le bonhomme ne marche plus.
 
 La vue simple (les pages HTML de Blocland) en est un quatrième consommateur : elle joue déjà tout le jeu sans aucune géométrie, preuve que la logique n’a pas besoin de cases.
