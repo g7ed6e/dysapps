@@ -1,6 +1,6 @@
 # La partie et sa sauvegarde
 
-La partie de l’aventure est un seul objet, `GameState` (`src/blocland/engine.ts`), que des fonctions pures transforment et que `BloclandContext.tsx` tient en mémoire et enregistre. Les règles du jeu sont décrites dans [le jeu](../gameplay/index.md) ; cette page dit où elles vivent dans le code.
+La partie de l’aventure est un seul objet, `GameState` (`src/blocland/engine/etat.ts`, réexporté par `engine.ts`), que des fonctions pures transforment et que `BloclandContext.tsx` tient en mémoire et enregistre. Les règles du jeu sont décrites dans [le jeu](../gameplay/index.md) ; cette page dit où elles vivent dans le code.
 
 ## L’état
 

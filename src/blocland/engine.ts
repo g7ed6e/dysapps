@@ -1,310 +1,23 @@
 // Moteur Blocland : étoiles, récompenses, répétition espacée, streak et adaptation.
 // Logique pure (l'heure et le hasard sont passés en paramètres) pour être testée facilement.
-import type { BiomeId, BlockId } from './biomes';
-import { BIOMES, BLOCKS, getBiome } from './biomes';
-import { starsFor } from '../core/stars';
-import { GAME_VERSION, translateGame } from '../core/migration';
+// Ce fichier garde les plans, l'assemblage, la fin d'exercice, l'école du village et le Bloc-Navire ; à côté, dans
+// ./engine/ : l'état d'une partie (`etat.ts`), les dates (`dates.ts`), la lecture d'une sauvegarde (`lecture.ts`),
+// l'apprentissage (`apprentissage.ts`). Il en réexporte les noms publics.
+import { type BiomeId, BIOMES, type BlockId, BLOCKS, getBiome } from './biomes';
+import { cellKey, planCells, type PlanDef } from './world/plans';
+import { assemblables, noterQuestion, recetteDe, type TirageAssemblage, tirageNeuf } from './world/assemblage';
+import { missionsTerminees, type Partie, poserLesParties } from './world/parties';
 import type { ExerciseDef, ItemResult } from './exercises/types';
-import { cellKey, getPlan, planCells, type PlanDef } from './world/plans';
-import {
-  archipelagoOf,
-  bridgesFromLegacyProgress,
-  buildBridge as buildBridgePure,
-  getArchipelago,
-  getBridge,
-  getVoyage,
-  grantAccess,
-  isBiomeUnlocked,
-  legacyReachable,
-  reachableIslands,
-  voyageId,
-  type BuildBridgeResult,
-} from './world/archipelago';
-import { planV1 } from './world/plansV1';
-import { missionsTerminees, poserLesParties, type Partie } from './world/parties';
-import { getMonument } from './world/monuments';
-import { assemblables, lireTirage, noterQuestion, recetteDe, tirageNeuf, type TirageAssemblage } from './world/assemblage';
-import { VEHICLE_STAGES, beatenGuardians, getStage, kitReady, stageFor, type VehicleStage } from './world/vehicle';
-import { casesDeLaPetiteConstruction, estPosee } from './world/petitesConstructions';
-import { MAX_COMMANDES_OUVERTES, archipelDeLaCommande, getCommande } from './world/commandes';
-
-export interface ExerciseProgress {
-  stars: 0 | 1 | 2 | 3;
-  attempts: number;
-  /** Meilleur score, entre 0 et 1. */
-  best: number;
-}
-
-export interface SpacedItem {
-  itemId: string;
-  /** Date ISO (AAAA-MM-JJ) à partir de laquelle l'item est à revoir. */
-  due: string;
-  /** Étape dans les intervalles J+1, J+3, J+7, J+15. */
-  stage: number;
-  /** Réussites d'affilée depuis le dernier échec. */
-  streak: number;
-}
-
-export interface Streak {
-  current: number;
-  lastDay: string | null;
-  /** Un jour manqué fissure le streak ; on le répare en jouant le lendemain. */
-  cracked: boolean;
-}
-
-export interface TypeStats {
-  level: number;
-  /** Scores des dernières sessions à ce niveau. */
-  recent: number[];
-}
-
-export interface GameState {
-  /** Le format de la partie (src/core/migration.ts) : 2 depuis les mots neutres. */
-  version: typeof GAME_VERSION;
-  progress: Record<string, ExerciseProgress>;
-  spaced: SpacedItem[];
-  stock: Partial<Record<BlockId, number>>;
-  streak: Streak;
-  types: Record<string, TypeStats>;
-  /** Nombre de coffres de régularité gagnés. */
-  chests: number;
-  /** Temps de lecture (secondes) par texte d'Ascension, du plus ancien au plus récent. */
-  fluency: Record<string, number[]>;
-  /** Le monde : les parties posées, les liaisons construites, le lieu où se tient le personnage. */
-  world: World;
-  /**
-   * Le tirage des questions des blocs assemblés (GD-2), par bloc : l'ordre propre à l'élève, les dernières posées, les
-   * manquées. Absent tant qu'aucune question n'a reçu de réponse.
-   */
-  assemblyDraw?: Partial<Record<BlockId, TirageAssemblage>>;
-}
-
-export interface World {
-  /** Cellules déjà posées de chaque plan (clés « x,y,z » relatives à l'île). */
-  parts: Record<string, string[]>;
-  /** Journal de construction : un bâtiment terminé par ligne, du plus ancien au plus récent. */
-  log: LogEntry[];
-  /** Les ponts construits (identifiants de `world/archipelago.ts`) : ils ouvrent les îles. */
-  links: string[];
-  /** L'île où se tient le bonhomme (la dernière île ouverte visitée) ; la Forêt au début. */
-  place?: BiomeId;
-  /**
-   * Les commandes des habitants arrivées et pas encore livrées (GD-7, PR 3 : world/commandes.ts), dans l'ordre
-   * d'arrivée, la plus ancienne en tête. Absent tant qu'aucune n'est arrivée, et dans une sauvegarde d'avant les
-   * commandes. Une commande livrée en sort : sa petite construction est alors dans `parts`.
-   */
-  requests?: string[];
-}
-
-export interface LogEntry {
-  day: string;
-  part: string;
-}
-
-export const EMPTY_STATE: GameState = {
-  version: GAME_VERSION,
-  progress: {},
-  spaced: [],
-  stock: {},
-  streak: { current: 0, lastDay: null, cracked: false },
-  types: {},
-  chests: 0,
-  fluency: {},
-  world: { parts: {}, log: [], links: [] },
-};
-
-/** Intervalles de la répétition espacée, en jours. */
-export const INTERVALS = [1, 3, 7, 15];
-/** Réussites d'affilée pour sortir de la file. */
-export const GRADUATE_AT = 3;
-/** Jours d'affilée pour gagner un coffre. */
-export const CHEST_EVERY = 3;
-export const CHEST_BLOCKS = 6;
-
-// ---------- Dates ----------
-
-export function todayISO(now = new Date()): string {
-  return now.toISOString().slice(0, 10);
-}
-
-export function addDays(iso: string, days: number): string {
-  const d = new Date(`${iso}T00:00:00Z`);
-  d.setUTCDate(d.getUTCDate() + days);
-  return d.toISOString().slice(0, 10);
-}
-
-export function daysBetween(from: string, to: string): number {
-  return Math.round((Date.parse(`${to}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / 86_400_000);
-}
-
-// ---------- Validation ----------
-
-function isRecord(v: unknown): v is Record<string, unknown> {
-  return typeof v === 'object' && v !== null && !Array.isArray(v);
-}
-const num = (v: unknown, fallback = 0) => (Number.isFinite(Number(v)) ? Number(v) : fallback);
-
-export function sanitizeState(input: unknown): GameState {
-  // Une partie d'avant les mots neutres (2 octobre 2026) se lit traduite : la suite ne connaît que les nouveaux noms.
-  const translated = translateGame(input);
-  const raw = isRecord(translated) ? translated : {};
-  const progress: Record<string, ExerciseProgress> = {};
-  if (isRecord(raw.progress)) {
-    for (const [id, p] of Object.entries(raw.progress)) {
-      if (!isRecord(p)) continue;
-      progress[id] = {
-        stars: Math.max(0, Math.min(3, Math.round(num(p.stars)))) as 0 | 1 | 2 | 3,
-        attempts: Math.max(0, Math.round(num(p.attempts))),
-        best: Math.max(0, Math.min(1, num(p.best))),
-      };
-    }
-  }
-  const spaced: SpacedItem[] = Array.isArray(raw.spaced)
-    ? raw.spaced
-        .filter((s): s is Record<string, unknown> => isRecord(s) && typeof s.itemId === 'string' && typeof s.due === 'string')
-        .map((s) => ({
-          itemId: s.itemId as string,
-          due: s.due as string,
-          stage: Math.max(0, Math.min(INTERVALS.length - 1, Math.round(num(s.stage)))),
-          streak: Math.max(0, Math.round(num(s.streak))),
-        }))
-    : [];
-  const stock: Partial<Record<BlockId, number>> = {};
-  if (isRecord(raw.stock)) {
-    for (const [id, n] of Object.entries(raw.stock)) if (id in BLOCKS) stock[id as BlockId] = Math.max(0, Math.round(num(n)));
-  }
-  const st = isRecord(raw.streak) ? raw.streak : {};
-  const types: Record<string, TypeStats> = {};
-  if (isRecord(raw.types)) {
-    for (const [id, t] of Object.entries(raw.types)) {
-      if (!isRecord(t)) continue;
-      types[id] = { level: Math.max(1, Math.round(num(t.level, 1))), recent: Array.isArray(t.recent) ? t.recent.map((x) => num(x)).slice(-2) : [] };
-    }
-  }
-  const fluency: Record<string, number[]> = {};
-  if (isRecord(raw.fluency)) {
-    for (const [id, arr] of Object.entries(raw.fluency))
-      if (Array.isArray(arr))
-        fluency[id] = arr
-          .map((x) => num(x))
-          .filter((x) => x > 0)
-          .slice(-10);
-  }
-  // Ancien chantier (grille 8 × 8, avant le village) : les blocs reviennent dans l'inventaire.
-  if (Array.isArray(raw.build)) {
-    for (const c of raw.build) {
-      if (isRecord(c) && typeof c.block === 'string' && c.block in BLOCKS) stock[c.block as BlockId] = (stock[c.block as BlockId] ?? 0) + 1;
-    }
-  }
-  const world = isRecord(raw.world) ? raw.world : {};
-  // Ancienne zone libre (tapis jaune) : les blocs posés reviennent aussi dans l'inventaire.
-  if (isRecord(world.placed)) {
-    for (const cells of Object.values(world.placed)) {
-      if (!Array.isArray(cells)) continue;
-      for (const c of cells) {
-        if (isRecord(c) && typeof c.block === 'string' && c.block in BLOCKS) stock[c.block as BlockId] = (stock[c.block as BlockId] ?? 0) + 1;
-      }
-    }
-  }
-  // Les plans des îles et les étapes du Bloc-Navire se rangent au même endroit.
-  const anyPlan = (id: string) => getPlan(id) ?? getStage(id) ?? getMonument(id);
-  const parts: Record<string, string[]> = {};
-  // Les sauvegardes d'avant le nouveau dessin des bâtiments (plansV1.ts) : on les reconnaît à une case posée hors du
-  // nouveau dessin (aucun ancien plan n'y est tout entier). Un plan terminé avec l'ancien dessin reste terminé, et son
-  // coffre, déjà ouvert, donne ce que le nouveau donne en plus ; sinon, les blocs posés hors du nouveau dessin reviennent
-  // dans l'inventaire.
-  if (isRecord(world.parts)) {
-    for (const [id, keys] of Object.entries(world.parts)) {
-      // La petite construction d'une commande livrée (GD-7) : son identifiant prouve la livraison, pas le dessin de sa
-      // forme. Une liste de clés non vide se relit posée avec la forme d'aujourd'hui, même si la forme a changé depuis
-      // (retouches du directeur artistique) ; une liste vide ou illisible, pas posée.
-      const petite = casesDeLaPetiteConstruction(id);
-      if (petite) {
-        if (Array.isArray(keys) && keys.some((k) => typeof k === 'string')) parts[id] = petite.map((c) => c.key);
-        continue;
-      }
-      const plan = anyPlan(id);
-      if (!plan || !Array.isArray(keys)) continue;
-      const cells = planCells(plan);
-      const valid = new Set(cells.map((c) => c.key));
-      const saved = [...new Set(keys.filter((k): k is string => typeof k === 'string'))];
-      const old = saved.some((k) => !valid.has(k)) ? planV1(id) : undefined;
-      if (old && [...old.blocks.keys()].every((k) => saved.includes(k))) {
-        parts[id] = cells.map((c) => c.key);
-        for (const [b, n] of Object.entries(plan.reward.chest)) {
-          const more = (n ?? 0) - (old.chest[b as BlockId] ?? 0);
-          if (more > 0) stock[b as BlockId] = (stock[b as BlockId] ?? 0) + more;
-        }
-        continue;
-      }
-      if (old)
-        for (const k of saved) {
-          const b = old.blocks.get(k);
-          if (b && !valid.has(k)) stock[b] = (stock[b] ?? 0) + 1;
-        }
-      const list = saved.filter((k) => valid.has(k));
-      if (list.length) parts[id] = list;
-    }
-  }
-  const log: LogEntry[] = Array.isArray(world.log)
-    ? world.log
-        .filter((e): e is Record<string, unknown> => isRecord(e) && typeof e.day === 'string' && typeof e.part === 'string' && Boolean(anyPlan(e.part as string)))
-        .map((e) => ({ day: e.day as string, part: e.part as string }))
-        .slice(-100)
-    : [];
-  // Ouvrages et voyages : liste d'identifiants connus ; une sauvegarde d'avant les ponts reçoit ceux des îles déjà ouvertes.
-  // Une sauvegarde du continent d'avant les archipels (escaliers, tunnels entre classes) garde toutes ses îles ouvertes :
-  // les voyages et le chemin qui y mènent sont offerts.
-  const rawIds = Array.isArray(world.links) ? world.links.filter((id): id is string => typeof id === 'string') : null;
-  let links = rawIds ? [...new Set(rawIds.filter((id) => Boolean(getBridge(id) ?? getVoyage(id))))] : bridgesFromLegacyProgress(progress);
-  if (rawIds && rawIds.some((id) => !getBridge(id) && !getVoyage(id))) links = grantAccess(links, legacyReachable(rawIds));
-  // Une île où l'on a déjà joué ou vaincu le Gardien reste ouverte, quoi qu'il arrive aux ouvrages.
-  const played = new Set<BiomeId>();
-  for (const [id, p] of Object.entries(progress)) {
-    if (p.stars < 1) continue;
-    // L'exercice commence par l'identifiant de son lieu, qui contient lui-même des tirets (`french-6e-phonology-…`).
-    const biome = BIOMES.find((b) => id.startsWith(`${b.id}-`));
-    if (biome) played.add(biome.id);
-  }
-  links = grantAccess(links, played);
-  // Un voyage fait : son étape du Bloc-Navire est forcément complète (on la dessine entière).
-  for (const id of links) {
-    const stage = stageFor(id);
-    if (stage && (parts[stage.id]?.length ?? 0) < stage.cells.length) parts[stage.id] = planCells(stage).map((c) => c.key);
-  }
-  // Le bonhomme : sur une île ouverte, sinon on l'oublie (il repart de la Forêt).
-  const place = typeof world.place === 'string' && getBiome(world.place) && isBiomeUnlocked(world.place as BiomeId, links) ? (world.place as BiomeId) : undefined;
-  // Le tirage des questions d'assemblage : seulement pour un bloc qui a sa recette, et seulement s'il y en a un.
-  const assemblyDraw: Partial<Record<BlockId, TirageAssemblage>> = {};
-  if (isRecord(raw.assemblyDraw)) {
-    for (const [bloc, t] of Object.entries(raw.assemblyDraw)) {
-      const lu = Object.hasOwn(BLOCKS, bloc) && recetteDe(bloc as BlockId) ? lireTirage(t) : undefined;
-      if (lu) assemblyDraw[bloc as BlockId] = lu;
-    }
-  }
-  // Les commandes arrivées (GD-7) : connues, sans doublon, pas encore livrées, dans l'ordre d'arrivée, trois au plus par
-  // archipel ; absentes d'une sauvegarde d'avant les commandes, qui ne perd rien.
-  const requests: string[] = [];
-  if (Array.isArray(world.requests))
-    for (const id of world.requests) {
-      const c = typeof id === 'string' ? getCommande(id) : undefined;
-      if (!c || requests.includes(c.id) || estPosee(parts, c.fixture)) continue;
-      if (requests.filter((r) => archipelDeLaCommande(getCommande(r)!) === archipelDeLaCommande(c)).length >= MAX_COMMANDES_OUVERTES) continue;
-      requests.push(c.id);
-    }
-  return {
-    version: GAME_VERSION,
-    progress,
-    spaced,
-    stock,
-    streak: { current: Math.max(0, Math.round(num(st.current))), lastDay: typeof st.lastDay === 'string' ? st.lastDay : null, cracked: Boolean(st.cracked) },
-    types,
-    chests: Math.max(0, Math.round(num(raw.chests))),
-    fluency,
-    world: { parts, log, links, ...(place ? { place } : {}), ...(requests.length ? { requests } : {}) },
-    ...(Object.keys(assemblyDraw).length ? { assemblyDraw } : {}),
-  };
-}
+import { starsFor } from '../core/stars';
+import { archipelagoOf, buildBridge as buildBridgePure, type BuildBridgeResult, getArchipelago, isBiomeUnlocked, reachableIslands, voyageId } from './world/archipelago';
+import { beatenGuardians, kitReady, VEHICLE_STAGES, type VehicleStage } from './world/vehicle';
+import type { GameState, SpacedItem } from './engine/etat';
+import { todayISO } from './engine/dates';
+import { adapt, CHEST_BLOCKS, dueItems, recordSpaced, scoreOf, type StreakUpdate, updateStreak } from './engine/apprentissage';
+export { EMPTY_STATE, type ExerciseProgress, type GameState, type LogEntry, type SpacedItem, type Streak, type TypeStats, type World } from './engine/etat';
+export { addDays, daysBetween, todayISO } from './engine/dates';
+export { sanitizeState } from './engine/lecture';
+export { adapt, CHEST_BLOCKS, CHEST_EVERY, dueItems, GRADUATE_AT, INTERVALS, levelFor, PROMOTE_AT_ONCE, recordSpaced, scoreOf, starsFor, type StreakUpdate, updateStreak } from './engine/apprentissage';
 
 // ---------- Plans (construction guidée) ----------
 
@@ -326,6 +39,7 @@ export function planStatus(state: GameState, plan: PlanDef): PlanStatus {
 }
 
 export type FillReason = 'pas-dans-le-plan' | 'deja-pose' | 'plus-de-blocs';
+
 export type FillResult =
   | { state: GameState; ok: true; block: BlockId; completed: boolean }
   | { state: GameState; ok: false; reason: FillReason; block?: BlockId };
@@ -432,86 +146,11 @@ export function planCellAt(plan: PlanDef, x: number, y: number, z: number): { ke
   return c ? { key: cellKey(c.x, c.y, c.z), block: c.block } : null;
 }
 
-/** Démonte tout ce qui est posé sur une île : les blocs reviennent dans l'inventaire. */
+/** Note le temps de lecture d'un texte (les dix derniers) et rend le précédent. */
 export function recordFluence(state: GameState, textId: string, seconds: number): { state: GameState; previous: number | null } {
   const history = state.fluency[textId] ?? [];
   const previous = history.length ? history[history.length - 1] : null;
   return { state: { ...state, fluency: { ...state.fluency, [textId]: [...history, Math.round(seconds)].slice(-10) } }, previous };
-}
-
-// ---------- Score et étoiles ----------
-
-/** Score entre 0 et 1 : 1 point du premier coup, ½ point après une erreur ou avec de l'aide. */
-export function scoreOf(results: ItemResult[]): number {
-  if (results.length === 0) return 0;
-  const points = results.reduce((sum, r) => sum + (r.correct ? (r.attempts <= 1 && !r.usedHelp ? 1 : 0.5) : 0), 0);
-  return points / results.length;
-}
-
-/** 1 étoile = terminé, 2 = ≥ 70 %, 3 = ≥ 90 % (règle commune au portail, dans `core/stars.ts`). */
-export { starsFor };
-
-// ---------- Streak quotidien ----------
-
-export interface StreakUpdate {
-  streak: Streak;
-  /** Le streak vient d'être réparé ou prolongé aujourd'hui. */
-  extended: boolean;
-  chest: boolean;
-}
-
-export function updateStreak(streak: Streak, today: string): StreakUpdate {
-  if (streak.lastDay === today) return { streak, extended: false, chest: false };
-  const gap = streak.lastDay ? daysBetween(streak.lastDay, today) : Infinity;
-  let current: number;
-  let cracked = false;
-  if (gap === 1) current = streak.current + 1;
-  else if (gap === 2 && !streak.cracked) {
-    // Un jour manqué : fissure, mais on continue.
-    current = streak.current + 1;
-    cracked = true;
-  } else current = 1;
-  const next = { current, lastDay: today, cracked };
-  return { streak: next, extended: true, chest: current > 0 && current % CHEST_EVERY === 0 };
-}
-
-// ---------- Répétition espacée ----------
-
-export function recordSpaced(queue: SpacedItem[], itemId: string, correct: boolean, today: string): SpacedItem[] {
-  const rest = queue.filter((s) => s.itemId !== itemId);
-  const existing = queue.find((s) => s.itemId === itemId);
-  if (!correct) return [...rest, { itemId, due: addDays(today, INTERVALS[0]), stage: 0, streak: 0 }];
-  if (!existing) return queue; // réussi et pas en file : rien à faire
-  const streak = existing.streak + 1;
-  if (streak >= GRADUATE_AT) return rest; // sort de la file
-  const stage = Math.min(existing.stage + 1, INTERVALS.length - 1);
-  return [...rest, { itemId, due: addDays(today, INTERVALS[stage]), stage, streak }];
-}
-
-export function dueItems(queue: SpacedItem[], today: string): SpacedItem[] {
-  return queue.filter((s) => s.due <= today).sort((a, b) => a.due.localeCompare(b.due));
-}
-
-// ---------- Adaptation ----------
-
-/** Note à partir de laquelle une seule session suffit pour monter d'un niveau. */
-export const PROMOTE_AT_ONCE = 0.95;
-
-/**
- * Monte après 1 session quasi parfaite (≥ 95 %) ou 2 sessions ≥ promoteAt ; descend après 2 sessions ≤ demoteAt.
- * Jamais affiché comme « niveau baissé ».
- */
-export function adapt(stats: TypeStats | undefined, score: number, def: ExerciseDef['adaptive']): TypeStats {
-  const level = stats?.level ?? 1;
-  const recent = [...(stats?.recent ?? []), score].slice(-2);
-  if (score >= PROMOTE_AT_ONCE && def.promoteAt <= 1) return { level: level + 1, recent: [] };
-  if (recent.length === 2 && recent.every((s) => s >= def.promoteAt)) return { level: level + 1, recent: [] };
-  if (recent.length === 2 && recent.every((s) => s <= def.demoteAt)) return { level: Math.max(1, level - 1), recent: [] };
-  return { level, recent };
-}
-
-export function levelFor(state: GameState, type: string): number {
-  return state.types[type]?.level ?? 1;
 }
 
 // ---------- Fin d'exercice ----------
@@ -571,6 +210,7 @@ export function rattraperLesParties(state: GameState, today = todayISO()): { sta
 
 /** Blocs en plus : +1 à deux étoiles, +2 à trois ; +2 la première fois qu'une mission est jouée. Rien sans bonne réponse. */
 export const FIRST_TIME_BLOCKS = 2;
+
 export function blocksBonus(stars: number, firstTime: boolean, anyCorrect = true): { stars: number; first: number } {
   if (!anyCorrect) return { stars: 0, first: 0 };
   return { stars: stars >= 3 ? 2 : stars >= 2 ? 1 : 0, first: firstTime ? FIRST_TIME_BLOCKS : 0 };

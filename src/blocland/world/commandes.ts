@@ -21,7 +21,7 @@
 // dans `world.parts`, sans champ nouveau.
 import { frenchTypography } from '../../core/typographie';
 import { BIOMES, blockCount, blockName, type BiomeId, type BlockId } from '../biomes';
-import type { GameState, World } from '../engine';
+import type { GameState, World } from '../engine/etat';
 import { archipelagoOf, getBridge, isBiomeUnlocked, type ArchipelagoId } from './archipelago';
 import { recetteDe } from './assemblage';
 import { missionsTerminees } from './parties';
