@@ -434,11 +434,11 @@ export function ArrangeSentence({ amenagement, nom }: { amenagement: Amenagement
  * et ✓ Terminé. Un seul bouton mis en avant : « Poser ici » pendant un choix, ✓ Terminé quand rien n'est en cours. Les
  * boutons sans effet restent à leur place, éteints.
  */
-export function ArrangeBar({ amenagement }: { amenagement: Amenagement }) {
+export function ArrangeBar({ amenagement, className }: { amenagement: Amenagement; className?: string }) {
   const { choix, geste } = amenagement;
   const occupe = Boolean(geste);
   return (
-    <nav className="arrange-bar" data-couvre="scene" aria-label="Aménager">
+    <nav className={`arrange-bar${className ? ` ${className}` : ''}`} data-couvre="scene" aria-label="Aménager">
       <div className="arrange-bar-row">
         {FLECHES.map((f) => (
           <button key={f.dir} type="button" className="button arrange-arrow" disabled={!choix || occupe} onClick={() => amenagement.fleche(f.dir)}>

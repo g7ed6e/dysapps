@@ -41,6 +41,7 @@ import { UNIVERS } from '../core/universe';
 import { signesDesCreatures, signesParmi, usePlusTard } from './reminders';
 import { questsToReview } from './review';
 import { Requests } from './Requests';
+import { ArrangeList } from './ArrangeList';
 
 /** Ce qu'il faut pour rejoindre un archipel fermé, en une phrase. */
 function lockedArchipelagoText(state: ReturnType<typeof useBlocland>['state'], classe: (typeof ARCHIPELAGOS)[number]['classe']): string {
@@ -131,6 +132,8 @@ export function BloclandPage() {
       {/* Les commandes des créatures de l'archipel du bonhomme (GD-7), sous la prochaine destination. */}
       <Requests niveau="h2" className="panel" />
       <ArchipelagoMap bridges={state.world.links} here={here} />
+      {/* Aménager la région du bonhomme (GD-9) : en liste, la place de chaque lieu et de chaque Gardien dite en mots. */}
+      <ArrangeList a={here} />
 
       {ARCHIPELAGOS.map((a) => {
         const reached = isArchipelagoReached(a.classe, state.world.links);

@@ -3791,6 +3791,46 @@ figure.class-table {
 .arrange-explication {
   margin-bottom: 0.4rem;
 }
+/* Le mode en vue simple (ArrangeList.tsx) : la barre dans la page, sous la liste ; la ligne choisie, bordée et en gras
+   (jamais la couleur seule). */
+.arrange-bar.arrange-bar-inline {
+  position: static;
+  margin-top: 0.6rem;
+}
+.arrange-list .arrange-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+.arrange-list-items {
+  list-style: none;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.arrange-list-items li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 8px;
+  border: 2px solid transparent;
+  border-radius: 8px;
+}
+.arrange-list-items li p {
+  margin: 0;
+  flex: 1 1 16rem;
+}
+.arrange-list-items .button {
+  min-height: 48px;
+}
+.arrange-list-items .arrange-list-chosen {
+  border-color: currentColor;
+  font-weight: 700;
+}
 /* Les blocs gagnés qui volent jusqu'au compteur (Blocland, FlyingBlocks.tsx) : posés sur la pastille, ils partent de la
    borne (`--vol-dx`, `--vol-dy`) en arc simple, l'un après l'autre ; ni éclat ni traînée, rien qui se touche. Sans
    animation quand l'appareil en demande moins (le vol n'a alors pas lieu). */
