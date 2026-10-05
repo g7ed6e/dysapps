@@ -4,24 +4,10 @@
 // sonne à la fin. Archipéo : un voile de brume couvre le lieu, passe sur la place choisie et se lève, un seul « toc ».
 // Ici, le temps et la hauteur de coupe, sans Three.js ; la 3D (three/arrange.ts) ne fait que lire l'heure.
 import type { Rectangle } from './placement';
+import type { ArrangeGesture } from './view';
 
 /** Les deux temps du geste (ms) : ensemble, au plus 1,5 s (GD-9, « Ce qui ne bouge pas »). */
 export const GESTE_DU_LIEU = { demonteMs: 600, remonteMs: 600 } as const;
-
-/**
- * Le geste en cours : la zone du monde où il se joue (en cases du monde, x et y), le temps (`demonte` à la place
- * d'avant, `remonte` à la nouvelle), son début (horloge de la page, `performance.now`), sa durée, et les hauteurs du
- * lieu (`bas` sous l'eau, `haut` au-dessus de son plus haut cube).
- */
-export interface ArrangeGesture {
-  seq: number;
-  phase: 'demonte' | 'remonte';
-  zone: Rectangle;
-  debut: number;
-  dureeMs: number;
-  bas: number;
-  haut: number;
-}
 
 /** L'avancée du geste à l'heure `now`, de 0 à 1. */
 function gestureProgress(g: ArrangeGesture, now: number): number {

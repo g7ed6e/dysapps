@@ -23,28 +23,8 @@ import { type ArrangeChoice, landingInWorld, placeOfChoice, stationInWorld } fro
 import { footprintOf, guardianIsletRectangle, landRectangle, placedIsland, poseOfSpot } from './footprint';
 import { archipelagoOfIsland, type IslandDef, isLandInWorld } from './map';
 import type { Rectangle } from './placement';
+import type { ArrangeCell, ArrangeView } from './view';
 import { groundHeight } from './terrain/base';
-
-/** Ce qu'est une case du dessin du mode. */
-export type ArrangeCellKind = 'fantome' | 'place' | 'liaison' | 'barree' | 'croix';
-
-interface ArrangeCell {
-  x: number;
-  y: number;
-  z: number;
-  genre: ArrangeCellKind;
-}
-
-/** Le dessin du mode pendant un choix. */
-export interface ArrangeView {
-  cases: ArrangeCell[];
-  /** L'emprise du choix à sa place d'avant (le lieu, ou l'îlot du Gardien), soulevée tant qu'il est choisi ; ou rien. */
-  souleve: Rectangle | null;
-  /** Le milieu du fantôme : la vue le suit s'il sort de l'écran. */
-  suivre: { x: number; y: number; z: number };
-  /** Les liaisons qui ne tiendraient plus après la pose (leur nombre se dit dans la barre). */
-  barrees: string[];
-}
 
 /** Combien de pas autour du fantôme les places libres se montrent. */
 const PAS_AUTOUR = 3;

@@ -1,7 +1,8 @@
 // Le geste de la pose du mode « Aménager » (GD-9) : 1,5 s au plus ; la coupe descend puis monte d'une couche entière à
 // la fois ; le voile d'Archipéo couvre puis se lève.
 import { describe, expect, it } from 'vitest';
-import { type ArrangeGesture, GESTE_DU_LIEU, gestureCut, gestureZone, veilOpacity } from './arrangeGesture';
+import { GESTE_DU_LIEU, gestureCut, gestureZone, veilOpacity } from './arrangeGesture';
+import type { ArrangeGesture } from './view';
 
 const geste = (phase: ArrangeGesture['phase']): ArrangeGesture => ({ seq: 1, phase, zone: { x0: 0, y0: 0, x1: 10, y1: 10 }, debut: 1000, dureeMs: 600, bas: -5, haut: 24 });
 

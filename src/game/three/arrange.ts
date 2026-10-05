@@ -4,8 +4,8 @@
 // ajout aux matériaux des blocs (`avecLAmenagement`), sans maillage de plus ; dans Archipéo, le voile de brume du geste.
 // Moins d'animations : le lieu se soulève d'un coup, et la page pose sans geste.
 import * as THREE from 'three';
-import type { ArrangeView, ArrangeCellKind } from '../world/arrangeView';
-import { type ArrangeGesture, gestureCut, veilOpacity } from '../world/arrangeGesture';
+import { gestureCut, veilOpacity } from '../world/arrangeGesture';
+import type { ArrangeCellKind, ArrangeGesture, ArrangeView } from '../world/view';
 import { mistTexture } from './meshes';
 import type { Monde, PartieDeLaScene } from './scenePart';
 

@@ -10,8 +10,44 @@ import type { Cell, CreaturePlacement } from './paths';
 import type { Ancrage, Intention, ObjetDeLaFiche } from './layout';
 import type { EtatsDesObjets } from './model';
 import { grilleDe } from './grid';
-import type { ArrangeView } from './arrangeView';
-import type { ArrangeGesture } from './arrangeGesture';
+import type { Rectangle } from './placement';
+
+/** Ce qu'est une case du dessin du mode « Aménager » (GD-9 ; calculé par ./arrangeView.ts). */
+export type ArrangeCellKind = 'fantome' | 'place' | 'liaison' | 'barree' | 'croix';
+
+/** Une case du dessin du mode, en cases du monde. */
+export interface ArrangeCell {
+  x: number;
+  y: number;
+  z: number;
+  genre: ArrangeCellKind;
+}
+
+/** Le dessin du mode pendant un choix (./arrangeView.ts). */
+export interface ArrangeView {
+  cases: ArrangeCell[];
+  /** L'emprise du choix à sa place d'avant (le lieu, ou l'îlot du Gardien), soulevée tant qu'il est choisi ; ou rien. */
+  souleve: Rectangle | null;
+  /** Le milieu du fantôme : la vue le suit s'il sort de l'écran. */
+  suivre: { x: number; y: number; z: number };
+  /** Les liaisons qui ne tiendraient plus après la pose (leur nombre se dit dans la barre). */
+  barrees: string[];
+}
+
+/**
+ * Le geste de la pose en cours (./arrangeGesture.ts) : la zone du monde où il se joue (en cases du monde, x et y), le
+ * temps (`demonte` à la place d'avant, `remonte` à la nouvelle), son début (horloge de la page, `performance.now`), sa
+ * durée, et les hauteurs du lieu (`bas` sous l'eau, `haut` au-dessus de son plus haut cube).
+ */
+export interface ArrangeGesture {
+  seq: number;
+  phase: 'demonte' | 'remonte';
+  zone: Rectangle;
+  debut: number;
+  dureeMs: number;
+  bas: number;
+  haut: number;
+}
 
 // Une case du monde et la place d'une créature : définies avec la grille de marche (./paths.ts), qui les lit.
 export type { Cell, CreaturePlacement } from './paths';

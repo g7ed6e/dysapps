@@ -32,8 +32,9 @@ import {
   turnGuardianNow,
 } from './world/arrangeMode';
 import { type ArrangeSession, canUndo, hasChanged, recordPose, resetToEntry, startArranging, undoLast } from './world/arrangeSession';
-import { arrangeView, type ArrangeView } from './world/arrangeView';
-import { type ArrangeGesture, GESTE_DU_LIEU, gestureZone } from './world/arrangeGesture';
+import { arrangeView } from './world/arrangeView';
+import { GESTE_DU_LIEU, gestureZone } from './world/arrangeGesture';
+import type { ArrangeGesture, ArrangeView } from './world/view';
 import { footprintOf } from './world/footprint';
 import type { Intention, Point } from './world/layout';
 import type { Rectangle } from './world/placement';
