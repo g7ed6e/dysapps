@@ -15,7 +15,7 @@ import { ArchipelsSheet } from './ArchipelsSheet';
 import { InventorySheet } from './Inventory';
 import { IslandSheet } from './IslandSheet';
 import { creaturesQuiFontSigne, signesDesCreatures, usePlusTard } from './rappels';
-import { sansCommandes, type Commande } from './world/commandes';
+import { sansCommandes } from './world/commandes';
 import { SCHOOL_PATH, SchoolSheet } from './School';
 import { MonumentSheet, MonumentsSheet } from './Monuments';
 import { useMonumentBuilder } from './useMonumentBuilder';
@@ -44,39 +44,29 @@ import { WhaleWordPanel, useWhaleWord } from './WhaleWord';
 import { RenommagePanel, useRenommage } from './Renommage';
 import { useAmbience } from './useAmbience';
 import { VoyagePanel, voyageSentence } from './VoyagePanel';
-import { playArrival, playBell, playBurner, playDone, playHorn, playReactor, playSail, sonDePose } from './sound';
+import { useTraversee } from './useTraversee';
+import { usePoseEnVague, type Vague } from './usePoseEnVague';
+import { playBell } from './sound';
 import { RallumagePanel, toucherQuiSaute, useRallumage } from './Rallumage';
 import { DEROULE } from './world/rallumage';
 import { habillageDuMonde } from './habillage';
 import { useTextes } from '../univers';
 import {
   capVers,
-  embarquer,
-  etapeDuVoyage,
-  finDuTemps,
   ileDeLOuvrage,
   ilesDuModele,
   modeleDuMonde,
   etatsDesObjets,
-  nouveauVoyage,
-  versLArrivee,
   voyageAJouer,
-  type Voyage,
 } from './world/modele';
 import { villageStage } from './world/villageStage';
-import { VEIL_MS, legTiming } from './world/voyage';
-import { walkDuration } from './world/scene';
 import { dispositionEnGrille, type BoutsDuTrajet } from './world/grille';
 import type { Entite, Intention, ObjetDeLaFiche, Point } from './world/disposition';
 import { resteDuTrajet } from './world/arrivee';
 import type { Bonhomme } from './world/view';
-import { partiesDe, prochainePartie, type Partie } from './world/parties';
-import { prendreLaPose } from './poseAMontrer';
-import { VAGUE, cubesDeLaVague, sansLaPartie } from './world/vague';
+import { partiesDe, prochainePartie } from './world/parties';
 import { Loading } from '../components/Loading';
 import {
-  casesDesPlansDansLeMonde,
-  casesDeLaPetiteConstructionDansLeMonde,
   creaturePlacements,
   guardianPlacements,
   statueDe,
@@ -92,7 +82,6 @@ import {
   remainingPath,
   type ArchipelagoId,
 } from './world/archipelago';
-import { stageTo } from './world/vehicle';
 import type { Burst } from './poseCaseParCase';
 import { useVehicleBuilder } from './useVehicleBuilder';
 import { UNIVERS } from '../core/univers';
@@ -127,11 +116,9 @@ export function WorldPage() {
   const univers = useUnivers();
   const reduceMotion = useMoinsDAnimations();
   const { state, moveTo, launch } = useBlocland();
-  // La pose d'une partie en vague (GD-6, Blocland) : ses cases, absentes du monde jusqu'à ce que la vue les pose ; puis
-  // la phrase « Partie posée : … » du panneau, une fois le dernier cube posé (ou l'écran touché).
+  // La pose d'une partie en vague (GD-6, Blocland) : ses cases, absentes du monde jusqu'à ce que la vue les pose (usePoseEnVague.ts).
   // La petite construction d'une commande livrée (GD-7, PR 3) se pose de la même vague : `commande`, sans partie.
-  const [vague, setVague] = useState<{ seq: number; biome: BiomeId; parties: Partie[]; cases: Set<string>; commande?: string } | null>(null);
-  const [partiesDites, setPartiesDites] = useState<{ biome: BiomeId; parties: Partie[]; toc: boolean; muet: boolean; seq: number } | null>(null);
+  const [vague, setVague] = useState<Vague | null>(null);
   const { launchVoyage, progress } = useProgress();
   // La fiche de l'objet touché (lot 2 de « Toucher le monde ») : une seule à la fois, toujours à la même place.
   const [fiche, setFiche] = useState<FicheOuverte | null>(null);
@@ -378,145 +365,6 @@ export function WorldPage() {
     [ship.burst, monumentBuilder.burst],
   );
 
-  // Le voyage en cours (le Bloc-Navire) : le premier voyage vers un archipel (bouton « Embarquer » du port). Les voyages
-  // déjà faits (retours, « Aller au port », liens et retours d'exercice vers une île d'un autre archipel, sélecteur
-  // d'archipel) sont un fondu court (`hop`, plus bas). Une cinématique en deux temps : le départ dans cet archipel, puis, sous un voile, le changement
-  // d'archipel et l'arrivée dans le suivant. Si le bonhomme n'est pas au port, il y marche d'abord (`approach`).
-  // Arrivé au port d'en face, il marche jusqu'à l'île demandée (`dest`). Quand l'appareil demande moins d'animations : un écran
-  // HTML fixe (le navire dessiné, la phrase, le bouton « Arriver »), puis le changement d'archipel d'un coup.
-  const [voyage, setVoyage] = useState<Voyage | null>(null);
-  const [veil, setVeil] = useState(false);
-  // L'élève a fait glisser la vue (la 3D le dit) : « Recentrer » la ramène à son cadrage, d'un appui (`recentrage`).
-  const [vueDeplacee, setVueDeplacee] = useState(false);
-  const [recentrage, setRecentrage] = useState(0);
-  const timers = useRef<number[]>([]);
-  const later = (f: () => void, ms: number) => timers.current.push(window.setTimeout(f, ms));
-  const clearTimers = () => {
-    for (const id of timers.current) window.clearTimeout(id);
-    timers.current = [];
-  };
-  useEffect(() => clearTimers, []);
-  // Un voyage déjà fait (retour, ou un archipel déjà atteint) : pas de cinématique, un fondu court vers l'île demandée,
-  // sans rien écrire. La cinématique et le mot d'arrivée (une seule fois, voir useWhaleWord) restent pour le premier voyage.
-  // Seul un lecteur d'écran entend où l'on arrive (WCAG 4.1.3) ; à l'écran, la coche de la rangée de classes le dit.
-  const [arriveeLue, setArriveeLue] = useState('');
-  const hop = (dest: BiomeId) => {
-    clearTimers();
-    const land = () => {
-      const classe = archipelagoOf(dest).classe;
-      setArriveeLue(`Archipel de ${classe} : les ${textes.archipels[classe]}`);
-      moveTo(dest);
-      setWalk((w) => ({ route: [seTenir(dest)], seq: w.seq + 1 }));
-      setFocus((f) => ({ island: dest, seq: f.seq + 1 }));
-      if (biomeId !== dest) navigate(`/adventure/${dest}`);
-    };
-    if (reduceMotion) return land();
-    setVeil(true);
-    later(() => {
-      land();
-      later(() => setVeil(false), VEIL_MS / 3);
-    }, VEIL_MS / 2);
-  };
-  const onBoard = (to: ArchipelagoId, back: boolean, dest: BiomeId = getArchipelago(to).port) => {
-    if (back) return hop(dest);
-    clearTimers();
-    const trip = { to, from: a, back, dest, bridges: state.world.links, reduceMotion };
-    if (reduceMotion) return setVoyage((v) => nouveauVoyage({ ...trip, approach: false }, v));
-    const stage = etapeDuVoyage(to, back, state.world.links);
-    const text = voyageSentence(to, back, textes.archipels, a);
-    if (settings.autoRead) speak(frenchTypography(text));
-    // Le bonhomme n'est pas au port : il y marche d'abord, la caméra sur le port ; le départ suit.
-    const port = archipelago.port;
-    const route = at === port ? null : chemin(at, { genre: 'ile', id: port });
-    if (route) {
-      setWalk((w) => ({ route, seq: w.seq + 1 }));
-      moveTo(port);
-      setFocus((f) => ({ island: port, seq: f.seq + 1 }));
-      setVoyage((v) => nouveauVoyage({ ...trip, approach: true }, v));
-      later(() => sail(stage, back), walkDuration(route));
-      return;
-    }
-    if (at !== port) {
-      // Pas de chemin d'ouvrages jusqu'au port : il s'y trouve directement.
-      moveTo(port);
-      setWalk((w) => ({ route: [seTenir(port)], seq: w.seq + 1 }));
-    }
-    setVoyage((v) => nouveauVoyage({ ...trip, approach: false }, v));
-    horn(stage, back);
-  };
-  /** Le départ commence : le bonhomme est au port, il embarque. */
-  const sail = (stage: 1 | 2 | 3, back: boolean) => {
-    clearTimers();
-    setVoyage(embarquer);
-    horn(stage, back);
-  };
-  const horn = (stage: 1 | 2 | 3, back: boolean) => {
-    if (!settings.sounds) return;
-    playHorn();
-    later(() => (stage === 1 ? playSail : stage === 2 ? playBurner : playReactor)(), legTiming('depart', back).walk);
-  };
-  /** Le voyage est fait : l'état change (le voyage reste fait, le bonhomme est au port d'en face). */
-  const applyArrival = (v: { to: ArchipelagoId; back: boolean }): BiomeId => {
-    const port = getArchipelago(v.to).port;
-    if (v.back) moveTo(port);
-    else {
-      const stage = stageTo(v.to);
-      const r = stage ? launch(stage) : null;
-      if (stage && r?.ok) launchVoyage(stage.reward.xp);
-    }
-    return port;
-  };
-  /** Au port d'en face : le bonhomme débarque, puis marche jusqu'à l'île demandée, dont le panneau s'ouvre. */
-  const finish = (port: BiomeId, dest: BiomeId) => {
-    clearTimers();
-    setVoyage(null);
-    setVeil(false);
-    const route = dest === port ? null : chemin(port, { genre: 'ile', id: dest });
-    setWalk((w) => ({ route: route ?? [seTenir(dest)], seq: w.seq + 1 }));
-    if (dest !== port) moveTo(dest);
-    setFocus((f) => ({ island: dest, seq: f.seq + 1 }));
-    if (biomeId !== dest) navigate(`/adventure/${dest}`);
-    if (settings.sounds) playArrival();
-  };
-  // L'écran fixe : « Arriver ».
-  const arrive = () => {
-    if (!voyage) return;
-    finish(applyArrival(voyage), voyage.dest);
-  };
-  // La cinématique : la fin d'un temps (ou un toucher, une touche : on arrive tout de suite).
-  const onLegEnd = () => {
-    const next = finDuTemps(voyage);
-    if (!voyage || !next) return;
-    // Encore en route vers le port : un toucher le fait embarquer tout de suite.
-    if (next === 'embarquer') return sail(voyage.stage, voyage.back);
-    clearTimers();
-    if (next === 'changer-d-archipel') {
-      // Sous le voile : l'archipel change (la scène est reconstruite), puis l'arrivée se joue dans le nouveau.
-      setVeil(true);
-      later(() => {
-        const port = applyArrival(voyage);
-        // La caméra et le bonhomme passent au port d'en face : la scène nouvelle s'ouvre sur lui, pas sur la mer.
-        setFocus((f) => ({ island: port, seq: f.seq + 1 }));
-        setWalk((w) => ({ route: [seTenir(port)], seq: w.seq + 1 }));
-        setVoyage(versLArrivee);
-        later(() => setVeil(false), VEIL_MS / 3);
-      }, VEIL_MS / 2);
-    } else finish(getArchipelago(voyage.to).port, voyage.dest);
-  };
-  // Entrée, Espace ou Échap pendant le voyage : on arrive tout de suite (le canvas fait pareil quand il a le focus).
-  useEffect(() => {
-    if (!voyage || voyage.mode !== 'cinema') return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Enter' || e.key === ' ' || e.key === 'Escape') {
-        e.preventDefault();
-        onLegEnd();
-      }
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [voyage?.seq, voyage?.leg, voyage?.mode, voyage?.approach]);
-
   // Le bonhomme : où il se tient, et son itinéraire quand on ouvre une autre île ouverte (il y marche).
   // La position fine ne se sauvegarde pas : à la reprise, il est à sa place.
   const [walk, setWalk] = useState<Bonhomme<Point>>(() => ({ route: [seTenir(at)], seq: 0 }));
@@ -528,6 +376,29 @@ export function WorldPage() {
   // à part, qui ne dépend que de l'archipel : `grille` change avec les cubes, et le bonhomme repartirait à chaque bloc posé.
   const repere = useMemo(() => dispositionEnGrille(a), [a]);
   const avatar = useMemo(() => ({ ...walk, route: walk.route.map((p) => repere.versIle(p)) }), [walk, repere]);
+  // L'élève a fait glisser la vue (la 3D le dit) : « Recentrer » la ramène à son cadrage, d'un appui (`recentrage`).
+  const [vueDeplacee, setVueDeplacee] = useState(false);
+  const [recentrage, setRecentrage] = useState(0);
+  // Le voyage du Bloc-Navire : un fondu court pour un voyage déjà fait, la cinématique pour le premier (useTraversee.ts).
+  const { voyage, veil, arriveeLue, later, hop, onBoard, arrive, onLegEnd } = useTraversee({
+    a,
+    at,
+    archipelago,
+    biomeId,
+    liens: state.world.links,
+    reduceMotion,
+    textes,
+    settings,
+    speak,
+    navigate,
+    moveTo,
+    launch,
+    launchVoyage,
+    chemin,
+    seTenir,
+    setWalk,
+    setFocus,
+  });
 
   // L'île de l'URL est cadrée (vol) à chaque changement ; le bonhomme s'y rend si un chemin d'ouvrages y mène.
   // Une île ouverte d'un autre archipel (« Aller au port », lien, retour d'exercice) : le Bloc-Navire y mène (voyage).
@@ -659,96 +530,19 @@ export function WorldPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [island?.id, chantier]);
 
-  // ---- La pose d'une partie en vague (GD-6) : « Voir le bâtiment » arrive ici avec la pose à montrer, une fois
-  // (poseAMontrer.ts). La caméra ne bouge pas. Blocland : les cases de la partie restent vides jusqu'à ce que la vague
-  // les pose, couche par couche, un « clac » par couche. Archipéo : elles sont en pierre des ruines dès la première image
-  // et passent à la couleur du plan au même rythme (le fondu, choix « 2c » du mainteneur, 4 octobre 2026), un « toc »
-  // par couche. Puis le carillon, sans phrase par-dessus le monde (la phrase est dans le panneau de l'île, avec
-  // « Écouter », pas lue d'office : l'écran de fin l'a déjà lue). Un toucher sur la scène pose tout d'un coup ; un appui
-  // sur Menu, l'archipel, Recentrer ou la barre garde son effet et pose la partie en silence. « Réduire les animations » :
-  // posée d'un coup, un seul « clac » (ou « toc ») et le carillon. Rien n'est enregistré ici : la partie l'est déjà, à
-  // l'écran de fin.
-  const [sonDeLaPose] = useState(() => sonDePose(habillage.pose));
-  useEffect(() => {
-    if (!island || chantier !== 'part') return;
-    const parties = prendreLaPose(island.id);
-    if (!parties) return;
-    const id = island.id;
-    // Après le vol des blocs gagnés, s'il y en a un : un seul mouvement à la fois.
-    apresLeVolSIlYEnA(() => {
-      if (reduceMotion) direLaPose(id, parties, true);
-      else setVague((v) => ({ seq: (v?.seq ?? 0) + 1, biome: id, parties, cases: casesDesPlansDansLeMonde(parties.flatMap((p) => p.cases)) }));
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [island?.id, chantier]);
-  // Une autre île ouverte pendant la pose : la partie est posée tout de suite, sans rien dire.
-  useEffect(() => {
-    if (vague && vague.biome !== island?.id) setVague(null);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [island?.id]);
-  /**
-   * La pose finie (ou touchée) : la partie entière dans le monde, puis le carillon. Aucune phrase par-dessus le monde
-   * (mot du mainteneur, 4 octobre 2026 : la notification après la pose est retirée) : la partie posée se voit ; la
-   * phrase reste dans le panneau de l'île, avec « Écouter ». `muet` : l'élève a pris un contrôle de la scène (Menu…),
-   * la partie est posée sans un son.
-   */
-  function direLaPose(biome: BiomeId, parties: Partie[], toc = false, muet = false) {
-    setVague(null);
-    setPartiesDites((d) => ({ biome, parties, toc, muet, seq: (d?.seq ?? 0) + 1 }));
-  }
-  useEffect(() => {
-    if (!partiesDites || partiesDites.muet) return;
-    const dire = () => {
-      if (settings.sounds) playDone();
-    };
-    if (!partiesDites.toc) return dire();
-    // Moins d'animations : un seul « clac » (ou « toc »), puis le carillon, sans qu'ils se couvrent.
-    if (settings.sounds) sonDeLaPose();
-    const timer = window.setTimeout(dire, VAGUE.finApresMs);
-    return () => window.clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [partiesDites?.seq]);
-  /**
-   * La vague finie, touchée ou interrompue. Une partie : sa phrase dans le panneau (`direLaPose`). Une petite construction
-   * (GD-7, PR 3) : la section Commandes écrit sa phrase à la place de la ligne livrée, avec le carillon (sauf `muet`).
-   */
-  const finirLaVague = (muet = false) => {
-    if (!vague) return;
-    if (vague.commande === undefined) return direLaPose(vague.biome, vague.parties, false, muet);
-    setVague(null);
-    if (!muet && settings.sounds) playDone();
-  };
-  const onPose = (moment: 'couche' | 'finie') => {
-    if (!vague) return;
-    if (moment === 'couche') {
-      if (settings.sounds) sonDeLaPose();
-    } else finirLaVague();
-  };
-  const poserToutDUnCoup = () => finirLaVague();
-  const poserEnSilence = () => finirLaVague(true);
-  /**
-   * « Livrer » (GD-7, PR 3) : la petite construction se pose chez la créature avec le geste d'une partie (GD-6), la caméra
-   * immobile, cube par cube et couche par couche, un « clac » par couche, puis le carillon et, au même moment, la phrase
-   * « posée » dans le panneau, à la place de la ligne livrée (directeur artistique ; la fête ne passe jamais sur elle).
-   * « Réduire les animations », ou la vague sautée : posée d'un coup, la phrase tout de suite, un « clac » puis le
-   * carillon. Rend `true` : le son est pris ici, la section n'en joue pas.
-   */
-  const poserLaCommande = (c: Commande): boolean => {
-    if (habillage.pose !== 'geste') return false;
-    const cases = casesDeLaPetiteConstructionDansLeMonde(c.biome, c.fixture);
-    if (reduceMotion || !cases.size) {
-      if (settings.sounds) {
-        sonDeLaPose();
-        // Annulé si la page se démonte avant (`later`).
-        later(playDone, VAGUE.finApresMs);
-      }
-      return true;
-    }
-    setVague((v) => ({ seq: (v?.seq ?? 0) + 1, biome: c.biome, parties: [], cases, commande: c.id }));
-    return true;
-  };
-  const cubesVus = useMemo(() => (vague ? sansLaPartie(cubes, vague.cases) : cubes), [cubes, vague]);
-  const poseVue = useMemo(() => (vague ? { seq: vague.seq, cubes: cubesDeLaVague(cubes, vague.cases) } : null), [cubes, vague]);
+  // La pose d'une partie en vague (GD-6) et d'une petite construction livrée (GD-7), après le vol des blocs (usePoseEnVague.ts).
+  const { cubesVus, poseVue, partiesDites, onPose, poserToutDUnCoup, poserEnSilence, poserLaCommande } = usePoseEnVague({
+    island,
+    chantier,
+    reduceMotion,
+    settings,
+    habillage,
+    cubes,
+    later,
+    vague,
+    setVague,
+    apresLeVolSIlYEnA,
+  });
 
   const whaleNext = voyage ? null : whale.word;
   useEffect(() => {
