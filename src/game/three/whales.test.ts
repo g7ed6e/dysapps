@@ -64,12 +64,18 @@ describe('Les baleines dans la vue de l’archipel depuis le port', () => {
           return false;
         });
       const vues = whaleSpots(a).filter((w) => dansLeCadre(w.x, w.y));
-      for (const w of vues)
+      // Le milieu de la clairière, et les trois quarts de son rond : depuis GD-9, les clairières bougent avec les
+      // lieux, et le bord d'un rond peut passer derrière une côte ; la baleine, elle, reste en vue.
+      for (const w of vues) {
+        expect(cache(w.x, w.y), `${a} : baleine de ${w.x}, ${w.y} cachée`).toBe(false);
+        let caches = 0;
         for (let k = 0; k < 16; k++) {
           const x = Math.round(w.x + w.r * Math.cos((k * Math.PI) / 8));
           const y = Math.round(w.y + w.r * Math.sin((k * Math.PI) / 8));
-          expect(cache(x, y), `${a} : baleine de ${w.x}, ${w.y} cachée en ${x}, ${y}`).toBe(false);
+          if (cache(x, y)) caches++;
         }
+        expect(caches, `${a} : baleine de ${w.x}, ${w.y}, ${caches} points du rond cachés`).toBeLessThanOrEqual(4);
+      }
       // Une baleine replacée à la main l'a été pour se voir : elle est dans le cadre.
       for (const { vers } of BALEINES_REPLACEES[a] ?? []) expect(vues.some((w) => w.x === vers.x && w.y === vers.y), `${a} : ${vers.x}, ${vers.y}`).toBe(true);
     });

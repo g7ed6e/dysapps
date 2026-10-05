@@ -9,7 +9,7 @@ import { BIOMES, type BiomeId } from '../biomes';
 import { ARCHIPELAGOS, type BridgeDef } from './archipelago';
 import { decorate } from './decor';
 import { cadreDe, distanceAuRectangle, ECART_DES_LIAISONS, ECART_ENTRE_LES_LIEUX, ecartEntre, empriseDuLieu } from './footprint';
-import { type ArchipelagoId, bornesDuCoeur, isLand, isLandDuMonde, isthmusOf, type IslandDef, landCells, landscape, margesDuCoeur, noise, tirage, versLeMonde } from './map';
+import { type ArchipelagoId, bornesDuCoeur, CORE, isLand, isLandDuMonde, isthmusOf, type IslandDef, landCells, landscape, margesDuCoeur, noise, reliefHeight, tirage, versLeMonde } from './map';
 import { LOW } from './paths';
 import { type Cote, COTES, PAS, type Quarts, tournerLaDirection, VERS_LE_LARGE } from './placement';
 
@@ -74,6 +74,49 @@ function decorHaut(def: IslandDef): Set<string> {
 }
 
 /**
+ * Les cases d'un lieu où le bonhomme marche depuis son cœur, dans son repère : de proche en proche (diagonales
+ * comprises), une marche d'un bloc au plus, ni eau ni lave. Une liaison n'arrive que là : derrière une falaise ou un
+ * sommet, on ne redescendrait pas dans le lieu.
+ */
+function casesMarchables(def: IslandDef, haut: ReadonlySet<string>): Set<string> {
+  const sol = new Map<string, number>();
+  for (const c of landscape(def)) {
+    const k = `${c.x - def.core.x},${c.y - def.core.y}`;
+    if (c.ground !== 'eau' && c.ground !== 'lave' && !haut.has(k)) sol.set(k, reliefHeight(def, c.x, c.y));
+  }
+  for (const c of landCells(def)) {
+    const k = `${c.x - def.core.x},${c.y - def.core.y}`;
+    if (!sol.has(k) && !haut.has(k) && isLand(def, c.x, c.y)) sol.set(k, reliefHeight(def, c.x, c.y));
+  }
+  const vus = new Set<string>();
+  const file: { x: number; y: number }[] = [];
+  for (let x = 0; x < CORE; x++)
+    for (let y = 0; y < CORE; y++) {
+      const k = `${x},${y}`;
+      if (sol.has(k) && !vus.has(k)) {
+        vus.add(k);
+        file.push({ x, y });
+      }
+    }
+  for (let i = 0; i < file.length; i++) {
+    const { x, y } = file[i];
+    const h = sol.get(`${x},${y}`)!;
+    for (let dx = -1; dx <= 1; dx++)
+      for (let dy = -1; dy <= 1; dy++) {
+        if (!dx && !dy) continue;
+        const k = `${x + dx},${y + dy}`;
+        const n = sol.get(k);
+        if (n === undefined || vus.has(k) || Math.abs(n - h) > 1) continue;
+        vus.add(k);
+        file.push({ x: x + dx, y: y + dy });
+      }
+  }
+  return vus;
+}
+
+const marchables = new Map<string, Set<string>>();
+
+/**
  * Le décalage, dans le repère d'un lieu tourné de `q` quarts, des lignes de la grille du monde (au pas de `PAS` depuis
  * l'origine de son cœur) : un demi-tour envoie la case x du repère en 15 − x (`tournerLaCase`), si bien qu'une ligne
  * au pas du monde tombe, dans le repère, sur x ≡ 3 (mod 4) plutôt que sur x ≡ 0. `colonnes` : les lignes de x constant
@@ -112,9 +155,13 @@ export function arriveesPossibles(def: IslandDef): readonly ArriveeLocale[] {
   }
   // Libre : ni la case d'arrivée ni la suivante vers l'intérieur ne portent un décor haut (tronc ou feuillage) :
   // le bonhomme descend de la liaison et entre tout droit dans le lieu.
+  let marche = marchables.get(def.id);
+  if (!marche) marchables.set(def.id, (marche = casesMarchables(def, haut)));
+  const ouLonMarche = marche;
   const libre = (x: number, y: number, dx: number, dy: number) => {
     for (let k = 0; k <= 1; k++) if (haut.has(`${x - k * dx},${y - k * dy}`)) return false;
-    return true;
+    // Le bonhomme doit pouvoir gagner le cœur du lieu à pied depuis son arrivée.
+    return ouLonMarche.has(`${x},${y}`);
   };
   for (const cote of COTES) {
     const { dx, dy } = VERS_LE_LARGE[cote];

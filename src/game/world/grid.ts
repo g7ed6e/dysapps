@@ -127,7 +127,8 @@ export function dispositionEnGrille(
         const def = getBridge(e.id);
         if (!def) return null;
         const path = bridgePath(def);
-        return ancre(def.from, path[Math.floor(path.length / 2)]);
+        // Une liaison qui ne tient pas dans la disposition n'a pas de tracé, donc pas de place (GD-9).
+        return path.length ? ancre(def.from, path[Math.floor(path.length / 2)]) : null;
       }
       case 'gardien':
         return ancre(e.id, bossIsletCenter(e.id));

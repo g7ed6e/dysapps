@@ -1,6 +1,7 @@
 import { BIOMES } from '../biomes';
 import { ALTITUDE, ARCHIPELAGO_IDS, CORE, LACS, isLand, islandDef, landBox, landCells, landscape, MAP, reliefHeight } from './map';
-import { BRIDGES } from './archipelago';
+import { BRIDGES, LINKS_BEFORE_GD9, relierLaRegion, VOYAGES } from './archipelago';
+import { poserLesLiaisons } from './linkGeometry';
 import { ISLET_H, ISLET_W, bossIsletOrigin, worldCubes } from './terrain';
 
 it('chaque île a une place, une altitude selon sa classe, et son cœur fait partie de sa terre', () => {
@@ -36,13 +37,17 @@ it('aucune terre ne chevauche une autre, ni l’îlot d’un Gardien', () => {
   });
 });
 
-it('les ponts relient des îles proches (sauf les liaisons du port, GD-7), jamais séparées de plus d’un niveau', () => {
+it('chaque lieu a un voisin proche (GD-9 : une liaison entre chaque paire de la région), jamais séparé de plus d’un niveau', () => {
   for (const b of BRIDGES) {
     const a = islandDef(b.from);
     const c = islandDef(b.to);
-    const dist = Math.hypot(a.core.x - c.core.x, a.core.y - c.core.y);
-    if (!b.etoile) expect(dist, b.id).toBeLessThan(56);
     expect(Math.abs(a.altitude - c.altitude), b.id).toBeLessThanOrEqual(9);
+  }
+  // Toutes les paires d'une région ont leur liaison depuis GD-9 ; la carte garde à chaque lieu un voisin à portée.
+  for (const def of MAP) {
+    const proches = BRIDGES.filter((b) => b.from === def.id || b.to === def.id).map((b) => islandDef(b.from === def.id ? b.to : b.from));
+    const dist = Math.min(...proches.map((c) => Math.hypot(def.core.x - c.core.x, def.core.y - c.core.y)));
+    expect(dist, def.id).toBeLessThan(56);
   }
 });
 
@@ -99,7 +104,13 @@ it('aucun pont ne traverse l’îlot d’un Gardien ni la terre d’une autre î
   });
   const land = new Map<string, string>();
   for (const def of MAP) for (const c of landCells(def)) land.set(`${c.x},${c.y}`, def.id);
-  const all = BRIDGES.map((b) => b.id);
+  // Les liaisons qu'une partie peut avoir (GD-9) : toute une région reliée, et la sauvegarde d'avant, avec ses tracés d'origine.
+  const all = [
+    ...ARCHIPELAGO_IDS.flatMap((a) => relierLaRegion(a, VOYAGES.map((v) => v.id))),
+    ...LINKS_BEFORE_GD9.filter((b) => b.cost > 0).map((b) => b.id),
+    ...VOYAGES.map((v) => v.id),
+  ];
+  poserLesLiaisons(all);
   const bridges = ARCHIPELAGO_IDS.flatMap((a) => worldCubes(a, {}, { parts: {}, log: [], links: all }, false)).filter((c) => c.bridge);
   for (const c of bridges) {
     const key = `${c.x},${c.y}`;

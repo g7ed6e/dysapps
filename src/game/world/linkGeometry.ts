@@ -35,6 +35,15 @@ function traceSeule(b: BridgeDef): TraceDeLiaison | null {
 }
 
 /**
+ * Le tracé de repli d'une liaison posée que le traceur ne refait pas (une sauvegarde d'avant GD-9, posée quand les
+ * lieux n'étaient pas à la même place) : celui qu'elle prendrait seule, sur la disposition du moment. Il évite la terre,
+ * les îlots des Gardiens et les écueils ; faute de quoi la liaison garde son tracé d'origine (`traceDOrigine`).
+ */
+export function traceDeRepli(b: BridgeDef): TraceDeLiaison | null {
+  return traceSeule(b);
+}
+
+/**
  * La nature d'une liaison dans la disposition, les liaisons de la partie posées (`liaisonsPosees`) : un sentier entre
  * deux lieux réunis ; sinon, selon son tracé (le sien si elle est posée, celui qu'elle prendrait sinon, ou à défaut
  * celui qu'elle aurait seule), un pont jusqu'à `SHORT_LINK` cases, un bac jusqu'à 96 (un pont dans le ciel, où un bac

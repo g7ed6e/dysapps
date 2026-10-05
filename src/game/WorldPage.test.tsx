@@ -1049,7 +1049,7 @@ describe('les fiches du monde (lot 2 de « Toucher le monde »)', () => {
     expect(screen.getByRole('dialog', { name: 'Abattage syllabique' })).toBeInTheDocument();
   });
 
-  it('une île pâle : l’indice de sa créature, et « Voir le premier ouvrage » ouvre la fiche de cet ouvrage', async () => {
+  it('une île pâle : l’indice de sa créature, et « Relier » ouvre la fiche de la liaison proposée', async () => {
     vuSansAide();
     localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true, 'decouverte-ouvrages': true }));
     const user = userEvent.setup();
@@ -1059,21 +1059,21 @@ describe('les fiches du monde (lot 2 de « Toucher le monde »)', () => {
     expect(screen.getByTestId('adresse')).toHaveTextContent(/^\/adventure$/);
     const f = screen.getByRole('dialog', { name: 'Mine des lettres' });
     expect(f).toHaveTextContent(/^Mine des lettres.*Tunel :/);
-    await user.click(within(f).getByRole('button', { name: 'Voir le premier ouvrage' }));
+    await user.click(within(f).getByRole('button', { name: 'Relier' }));
     const o = screen.getByRole('dialog', { name: /entre Forêt des sons et Mine des lettres/ });
     expect(o).toHaveTextContent(/\d+ blocs\. Il t’en manque \d+\./);
     expect(document.querySelectorAll('.world-fiche')).toHaveLength(1);
     expect(vu.fiche).toMatchObject({ objet: { genre: 'ouvrage', id: 'french-6e-phonology-french-6e-letter-confusion' }, saut: true });
   });
 
-  it('un ouvrage en fantôme : « Construire » quand on a les blocs ; construit, il ne s’ouvre plus (il se touche comme le sol)', async () => {
+  it('un ouvrage en fantôme : « Poser » quand on a les blocs ; construit, il ne s’ouvre plus (il se touche comme le sol)', async () => {
     vuSansAide();
     localStorage.setItem('dysapps:game', JSON.stringify({ stock: { 'french-6e-phonology': 20 } }));
     const user = userEvent.setup();
     renderAt('/adventure');
     await user.click(screen.getByRole('button', { name: 'Toucher le sentier vers la Mine' }));
     const f = screen.getByRole('dialog', { name: /entre Forêt des sons et Mine des lettres/ });
-    await user.click(within(f).getByRole('button', { name: /Construire/ }));
+    await user.click(within(f).getByRole('button', { name: /Poser/ }));
     expect(f).toHaveTextContent(/vers Mine des lettres est tracé/);
     expect(JSON.parse(localStorage.getItem('dysapps:game')!).world.links).toContain('french-6e-phonology-french-6e-letter-confusion');
     await user.click(within(f).getByRole('button', { name: 'Fermer la fiche' }));

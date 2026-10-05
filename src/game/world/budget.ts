@@ -86,7 +86,17 @@ export const ENVELOPPES: Record<Poste, { lot: 'R4b' | 'R5' | 'R6' | 'GD-7' | 'so
   // mesurés tout construit, 7 157 au pire de la salle des trophées), celle des autres archipels de 7 260 à 7 500 (7 435
   // au pire, aux Îles Brumeuses), le sol des autres de 24 760 à 24 780 (24 774 aux Anciens Ateliers). Les sommes passent
   // à 58 500 aux Premiers Rivages et 53 320 ailleurs, toujours sous les 60 000 des tablettes.
-  sol: { lot: 'R4b', nom: 'Sol', premiersRivages: { triangles: 25_000, drawCalls: 2 }, autres: { triangles: 24_780, drawCalls: 1 } },
+  // La carte de départ calée sur la grille (GD-9, 5 octobre 2026) : chaque lieu se pose au pas de 4 depuis le coin du
+  // cadre de sa région, et les Anciens Ateliers sont redessinés en deux rangs, si bien que chaque région s'étend un peu
+  // plus. Proposition de l'artiste technique 3D, à valider par le mainteneur, mesurée tout construit
+  // (`npm run rendu:budget`) : la mer est tendue sur tout le cadre de la région (un lieu peut se poser partout), et les
+  // écueils sont semés sur une carte plus large. Aux Premiers Rivages, la mer passe de 5 000 à 6 300 (6 200 mesurés) et
+  // le décor de 12 050 à 12 100 (12 055) ; 350 sont pris au navire (408 mesurés ; 1 000 → 650), le reste sur la réserve
+  // sous les 60 000 des tablettes, et leur somme passe de 58 500 à 59 500. Ailleurs, la mer passe de 4 550 à 5 600
+  // (5 544 aux Îles du Ciel), le décor de 9 150 à 10 500 (10 417 aux Îles Brumeuses) et le sol de 24 780 à 24 850
+  // (24 818 aux Anciens Ateliers) ; aucun autre poste n'a de marge (la construction garde la sienne pour la salle des
+  // trophées : 7 435 au pire), et la somme des « autres » passe de 53 320 à 55 790.
+  sol: { lot: 'R4b', nom: 'Sol', premiersRivages: { triangles: 25_000, drawCalls: 2 }, autres: { triangles: 24_850, drawCalls: 1 } },
   // Proposition de l'artiste technique 3D pour le Relais des voyageurs (LV2, 5e), à valider par le mainteneur : une île
   // de plus aux Îles Brumeuses coûte environ 800 triangles de décor et 850 de construction. Les enveloppes « autres » en
   // passent 1 600 du navire, de la mer, des créatures et des bornes (qui ont de la marge dans les trois archipels) au
@@ -98,7 +108,7 @@ export const ENVELOPPES: Record<Poste, { lot: 'R4b' | 'R5' | 'R6' | 'GD-7' | 'so
   // pour le décor, 7 069 pour la construction, aux Îles Brumeuses) ; puis 20 du navire (420 partout) aux bornes, qui
   // n'avaient plus de marge (700 aux Îles Brumeuses) ; la somme ne change pas (52 300). Le refuge, retouché (île plus
   // profonde de deux rangs, pour un lac loin du bord), porte le sol du 3e à 22 505.
-  mer: { lot: 'R4b', nom: 'Mer', premiersRivages: { triangles: 5_000, drawCalls: 1 }, autres: { triangles: 4_550, drawCalls: 1 } },
+  mer: { lot: 'R4b', nom: 'Mer', premiersRivages: { triangles: 6_300, drawCalls: 1 }, autres: { triangles: 5_600, drawCalls: 1 } },
   // Un appel de plus pendant le passage de la baleine (son écume) : voir `APPEL_DU_PASSAGE`.
   // Proposition de l'artiste technique 3D pour les missions ajoutées en 6e (étapes de contenu C-1 à C-5), à valider par
   // le mainteneur : 36 bornes de 28 triangles portent le poste des Premiers Rivages à 1 008, au-dessus de ses 1 000.
@@ -112,7 +122,7 @@ export const ENVELOPPES: Record<Poste, { lot: 'R4b' | 'R5' | 'R6' | 'GD-7' | 'so
   // Îles Brumeuses, 186 aux Anciens Ateliers, 152 aux Îles du Ciel, aucun appel de plus. Aux Premiers Rivages, les 450
   // passent du décor (12 500 → 12 050 ; 11 746 mesurés). Ailleurs, le décor des Îles Brumeuses (9 103 mesurés) n'a que
   // 247 de marge : proposition de l'artiste technique 3D, validée par le mainteneur le 4 octobre 2026, 200 seulement (9 350 → 9 150).
-  decor: { lot: 'R4b', nom: 'Décor et repères signatures', premiersRivages: { triangles: 12_050, drawCalls: 3 }, autres: { triangles: 9_150, drawCalls: 3 } },
+  decor: { lot: 'R4b', nom: 'Décor et repères signatures', premiersRivages: { triangles: 12_100, drawCalls: 3 }, autres: { triangles: 10_500, drawCalls: 3 } },
   construction: {
     lot: 'R5',
     nom: 'Construction (bâtiments, ouvrages, monuments, quai, cœur des îles ; fantômes et fenêtres compris)',
@@ -126,7 +136,7 @@ export const ENVELOPPES: Record<Poste, { lot: 'R4b' | 'R5' | 'R6' | 'GD-7' | 'so
     autres: { triangles: 200, drawCalls: 0 },
   },
   bornes: { lot: 'R5', nom: 'Bornes (instanciées)', premiersRivages: { triangles: 1_250, drawCalls: 1 }, autres: { triangles: 715, drawCalls: 1 } },
-  navire: { lot: 'R5', nom: 'Navire', premiersRivages: { triangles: 1_000, drawCalls: 3 }, autres: { triangles: 420, drawCalls: 3 } },
+  navire: { lot: 'R5', nom: 'Navire', premiersRivages: { triangles: 650, drawCalls: 3 }, autres: { triangles: 420, drawCalls: 3 } },
   bonhomme: { lot: 'R6', nom: 'Bonhomme', premiersRivages: { triangles: 500, drawCalls: 2 }, autres: { triangles: 475, drawCalls: 2 } },
   creatures: { lot: 'R6', nom: 'Créatures', premiersRivages: { triangles: 2_500, drawCalls: 1 }, autres: { triangles: 1_950, drawCalls: 1 } },
   gardiens: { lot: 'R6', nom: 'Gardiens en sentinelles', premiersRivages: { triangles: 1_800, drawCalls: 1 }, autres: { triangles: 1_800, drawCalls: 1 } },

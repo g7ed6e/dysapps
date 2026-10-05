@@ -8,7 +8,9 @@ import { repereDeLaVue } from '../world/framing';
 import { GRAND_PHARE_3E } from '../world/decor/3e';
 import { PHARE, PHARES } from '../world/decor/lighthouse';
 import { islandDef, landBox, mapOf } from '../world/map';
-import { BRIDGES } from '../world/archipelago';
+import { BRIDGES, relierLaRegion, VOYAGES } from '../world/archipelago';
+import { ARCHIPELAGO_IDS } from '../world/archipelagos';
+import { poserLesLiaisons, voisinsDe } from '../world/linkGeometry';
 import { archipelagoOfIsland } from '../world/archipelagos';
 import { grilleDe } from '../world/grid';
 import { placeLibre, type Rect } from '../freeSpace';
@@ -134,7 +136,10 @@ describe('La Carte dans la place libre (DA-31)', () => {
   });
 
   it('la flèche posée sur un ouvrage (GD-7) : sa pointe reste dans la place libre, au large comme serré', () => {
-    for (const def of BRIDGES) {
+    // Les liaisons posées de la partie : depuis GD-9, une liaison qui ne tient pas n'a ni tracé ni flèche.
+    const posees = [...new Set([...ARCHIPELAGO_IDS.flatMap((a) => relierLaRegion(a, VOYAGES.map((v) => v.id))), ...VOYAGES.map((v) => v.id)])];
+    poserLesLiaisons(posees);
+    for (const def of BRIDGES.filter((b) => posees.includes(b.id))) {
       const a = archipelagoOfIsland(def.from);
       const m = grilleDe(a).placesDeLaFleche(def.id)[0];
       // La pointe, comme three/markers.ts la pose (`poserLaFleche`) : juste au-dessus du tablier.
@@ -165,9 +170,13 @@ describe('La Carte dans la place libre (DA-31)', () => {
       // Les îles voisines (à moins de 45 cases) sont à l'écran, sous le panneau ; celles du sud au moins par leur
       // moitié haute (une île fait une trentaine de pixels de haut au plancher).
       const d0 = islandDef(dest);
-      for (const def of mapOf('4e').filter((d) => d.id !== dest && Math.hypot(d.core.x - d0.core.x, d.core.y - d0.core.y) < 45)) {
+      // Les voisines : celles qu'un pont relie (GD-9, `voisinsDe`), à moins de 45 cases. Elles restent à l'écran ; aux
+      // Anciens Ateliers, dessinés en deux rangs (GD-9), une voisine du rang d'en face sort de la place libre.
+      for (const def of mapOf('4e').filter((d) => voisinsDe(dest).includes(d.id) && Math.hypot(d.core.x - d0.core.x, d.core.y - d0.core.y) < 45)) {
         const q = centre(def.id, c, T);
-        expect(q.x > 0 && q.x < T.w && q.y > libre.y0 && q.y < libre.y1 + 30, `${dest} → ${def.id}`).toBe(true);
+        // Les Anciens Ateliers sont dessinés en deux rangs (GD-9) : une voisine du rang d'en face déborde la place
+        // libre d'une demi-île (une trentaine de pixels au plancher), en haut comme en bas.
+        expect(q.x > 0 && q.x < T.w && q.y > 0 && q.y < T.h, `${dest} → ${def.id} (${Math.round(q.x)}, ${Math.round(q.y)})`).toBe(true);
       }
     }
   });
@@ -374,7 +383,9 @@ describe('Une longue traversée (GD-7)', () => {
 
   it('le cadre fixe se pose dans la place libre, hors du panneau d’île ouvert et des barres : paysage et portrait 800 × 1280', () => {
     // De la Plaine à la Carrière par le long bac du port (109 cases), panneau de la Carrière ouvert.
-    const route = avatarRoute('maths-6e-calculation', 'french-6e-word-spelling', ['maths-6e-calculation-french-6e-word-spelling'])!;
+    const liens = ['maths-6e-calculation-french-6e-word-spelling'];
+    poserLesLiaisons(liens);
+    const route = avatarRoute('maths-6e-calculation', 'french-6e-word-spelling', liens)!;
     const cadre = cadreDeTraversee('6e', route)!;
     expect(cadre).not.toBeNull();
     const b = worldBounds('6e');
@@ -425,8 +436,10 @@ describe('Une longue traversée (GD-7)', () => {
   });
 
   it('le cadre fixe seulement à une taille lisible : gardé en 1024 × 768 et 800 × 1280 (et au Phare, 3e), la caméra suit le bonhomme en 390 × 844', () => {
-    const port = avatarRoute('maths-6e-calculation', 'french-6e-word-spelling', ['maths-6e-calculation-french-6e-word-spelling'])!;
-    const phare = avatarRoute('maths-3e-functions', 'english-3e-grammar', ['maths-3e-functions-english-3e-grammar'])!;
+    const liens = ['maths-6e-calculation-french-6e-word-spelling', 'maths-3e-functions-english-3e-grammar'];
+    poserLesLiaisons(liens);
+    const port = avatarRoute('maths-6e-calculation', 'french-6e-word-spelling', liens)!;
+    const phare = avatarRoute('maths-3e-functions', 'english-3e-grammar', liens)!;
     // La vue entière, panneau fermé (il attend l'arrivée), sous la barre du haut (80 px).
     const cas = [
       { nom: '6e, 1024 × 768', archipel: '6e' as const, route: port, w: 1024, h: 688, fixe: true },

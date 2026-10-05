@@ -75,7 +75,8 @@ it('le rendu Archipéo : la mer en un appel de dessin, la faune et le ciel en tr
     const faune = fauneCost(a);
     expect(mer, a).toEqual(sceneCostArchipeo(a).mer);
     expect(mer.drawCalls, a).toBe(1);
-    expect(mer.triangles, a).toBeLessThanOrEqual(6000);
+    // 6 200 aux Premiers Rivages depuis que la mer couvre tout le cadre de la région (GD-9).
+    expect(mer.triangles, a).toBeLessThanOrEqual(6300);
     // Baleines, oiseaux, nuages : une instanciation par famille (pas de baleine aux Îles du Ciel).
     expect(faune.drawCalls, a).toBeLessThanOrEqual(3);
     expect(faune.triangles, a).toBeLessThanOrEqual(1500);
@@ -99,11 +100,11 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
 
   // Ailleurs, 52 300 jusqu'au cœur agrandi de l'Atelier (01/10/2026) : son sol en demande 660 de plus (world/budget.ts),
   // enveloppe validée par le mainteneur le 01/10/2026 ; 53 040 avec la Halle aux matériaux (GD-2, validé par le mainteneur le 01/10/2026, world/budget.ts), 53 060 avec la salle des trophées (GD-3, même jour).
-  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-7 : les liaisons du port) : 58 500 triangles et 25 appels aux Premiers Rivages, 53 320 et 24 ailleurs', () => {
+  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9 : la carte de départ calée sur la grille) : 59 500 triangles et 25 appels aux Premiers Rivages, 55 790 et 24 ailleurs', () => {
     const total = (a: '6e' | '5e') => postes.reduce((n, p) => n + enveloppeDe(p, a).triangles, 0);
     const appels = (a: '6e' | '5e') => postes.reduce((n, p) => n + enveloppeDe(p, a).drawCalls, 0);
-    expect([total('6e'), appels('6e')]).toEqual([58_500, 25]);
-    expect([total('5e'), appels('5e')]).toEqual([53_320, 24]);
+    expect([total('6e'), appels('6e')]).toEqual([59_500, 25]);
+    expect([total('5e'), appels('5e')]).toEqual([55_790, 24]);
   });
 
   // GD-3 : la salle des trophées change avec les succès (une travée au 13e et au 19e, les trophées sous le toit) ; la

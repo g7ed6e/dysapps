@@ -44,13 +44,18 @@ it('le socle de 3 × 3 couvre les cases du phare de Blocland, jamais une case du
   // Règle 1 du directeur artistique : toutes les cases bloquées sont sous le socle.
   for (const k of bloquees) expect(socle, k).toContain(k);
   const def = islandDef('maths-3e-functions');
-  const chemins = new Set(BRIDGES.filter((b) => archipelagoOfIsland(b.from) === '3e').flatMap((b) => bridgePath(b).map((c) => `${c.x},${c.y}`)));
+  // Les liaisons posées de la partie (GD-9 : l'élève choisit les siennes ; une liaison aborde là où la côte est libre).
+  // Les liaisons posées de la partie (GD-9 : l'élève choisit les siennes). Le pied d'une liaison, contre la côte, ne
+  // compte pas : le socle du phare borde la rive, et une liaison peut partir de dessous.
+  const traces = BRIDGES.filter((b) => archipelagoOfIsland(b.from) === '3e' && village.links.includes(b.id)).map((b) => bridgePath(b).map((c) => `${c.x},${c.y}`));
+  const chemins = new Set(traces.flatMap((t) => t.slice(1, -1)));
+  const pieds = new Set(traces.flatMap((t) => [t[0], t[t.length - 1]]));
   const posees = new Set(reste.filter((c) => !c.decor).map((c) => `${c.x},${c.y}`));
   for (const k of socle) {
     const [x, y] = k.split(',').map(Number);
     expect(inCore(def, x, y), k).toBe(false);
     expect(chemins.has(k), k).toBe(false);
-    if (!bloquees.has(k)) expect(posees.has(k), k).toBe(false);
+    if (!bloquees.has(k) && !pieds.has(k)) expect(posees.has(k), k).toBe(false);
   }
   // Le socle couvre bien ses 3 × 3 cases (au milieu de chacune, un triangle de pierre au-dessus).
   const tris = triangles(m.decor);

@@ -88,7 +88,8 @@ it('l’inventaire commenté : les lignes rangées par utilité, les ouvrages un
   expect(inv.rows[0].uses.map((u) => u.kind)).toEqual(['monument', 'monument']);
   expect(inv.rows[2].uses).toEqual([]);
   expect(inv.rows[3].uses).toEqual([]);
-  // Les ouvrages : payables par 5 blocs (ni le toit ni l'or ne comptent, GD-6), depuis une île ouverte, sans doublon.
+  // Les ouvrages : payables par 5 blocs (ni le toit ni l'or ne comptent, GD-6), une liaison proposée par lieu fermé
+  // qu'une liaison ouvre depuis un lieu relié (GD-9), sans doublon.
   expect(inv.payable).toBe(5);
   expect(inv.ouvrages.map((o) => o.bridge.id).sort()).toEqual(
     [
@@ -98,8 +99,6 @@ it('l’inventaire commenté : les lignes rangées par utilité, les ouvrages un
       'french-6e-phonology-french-6e-letter-confusion',
       'maths-6e-calculation-maths-6e-fractions',
       'maths-6e-calculation-maths-6e-decimals',
-      'maths-6e-calculation-french-6e-reading',
-      'maths-6e-calculation-french-6e-word-spelling',
     ].sort(),
   );
   expect(inv.ouvrages.every((o) => o.enough)).toBe(true);

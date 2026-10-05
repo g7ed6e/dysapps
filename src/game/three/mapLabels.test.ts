@@ -17,7 +17,8 @@ import { getArchipelago, islandsOf } from '../world/archipelago';
 import { ARCHIPELAGO_IDS, type ArchipelagoId } from '../world/archipelagos';
 import { placerAvecLaFlecheDOuvrage, placerEtiquettes, separateMark, type LabelBox } from '../world/labelLayout';
 import { avatarHome, islandCenter } from '../world/terrain';
-import { BRIDGES } from '../world/archipelago';
+import { BRIDGES, relierLaRegion, VOYAGES } from '../world/archipelago';
+import { poserLesLiaisons } from '../world/linkGeometry';
 import { archipelagoOfIsland } from '../world/archipelagos';
 import { grilleDe } from '../world/grid';
 import { placeLibre } from '../freeSpace';
@@ -132,8 +133,12 @@ describe('La Carte : chaque île a son nom (tablette 1024 × 768)', () => {
     for (const dest of islandsOf(a).map((b) => b.id)) expect(nomsTus(a, ETATS.blocland, 'atkinson-hyperlegible', 1, dest), `${a} → ${dest}`).toEqual([]);
   });
 
+  // Les liaisons posées d'une partie : depuis GD-9, une liaison qui ne tient pas n'a ni tracé ni flèche.
+  const posees = [...new Set([...ARCHIPELAGO_IDS.flatMap((a) => relierLaRegion(a, VOYAGES.map((v) => v.id))), ...VOYAGES.map((v) => v.id)])];
+  poserLesLiaisons(posees);
+
   it.each(ARCHIPELAGO_IDS)('%s : la flèche sur un ouvrage (GD-7), depuis chacune de ses îles, reste libre, aucune étiquette dessus', (a) => {
-    for (const def of BRIDGES.filter((b) => archipelagoOfIsland(b.from) === a))
+    for (const def of BRIDGES.filter((b) => archipelagoOfIsland(b.from) === a && posees.includes(b.id)))
       for (const depuis of [def.from, def.to]) {
         const carte = laCarte(a, ETATS.blocland, 'atkinson-hyperlegible', 1, { ouvrage: def.id, depuis });
         expect(carte.surLaFleche, `${def.id} depuis ${depuis}`).toEqual([]);
@@ -141,12 +146,12 @@ describe('La Carte : chaque île a son nom (tablette 1024 × 768)', () => {
   });
 
   it.each(ARCHIPELAGO_IDS)('%s : la flèche sur un ouvrage, l’île de départ (la destination) garde son nom', (a) => {
-    for (const def of BRIDGES.filter((b) => archipelagoOfIsland(b.from) === a))
+    for (const def of BRIDGES.filter((b) => archipelagoOfIsland(b.from) === a && posees.includes(b.id)))
       for (const depuis of [def.from, def.to]) expect(nomsTus(a, ETATS.blocland, 'atkinson-hyperlegible', 1, { ouvrage: def.id, depuis }), `${def.id} depuis ${depuis}`).not.toContain(depuis);
   });
 
   it.each(['5e', '4e', '3e'] as const)('%s : la flèche sur un ouvrage, chaque île qui se voit garde son nom', (a) => {
-    for (const def of BRIDGES.filter((b) => archipelagoOfIsland(b.from) === a))
+    for (const def of BRIDGES.filter((b) => archipelagoOfIsland(b.from) === a && posees.includes(b.id)))
       for (const depuis of [def.from, def.to]) {
         expect(nomsTus(a, ETATS.blocland, 'atkinson-hyperlegible', 1, { ouvrage: def.id, depuis }), `${def.id} depuis ${depuis}`).toEqual([]);
       }

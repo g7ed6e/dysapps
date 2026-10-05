@@ -12,8 +12,8 @@ import { cadreDe } from '../footprint';
 import { liaisonsPoseesDe, voisinsDe } from '../linkGeometry';
 
 /**
- * Étendue d'un archipel (coordonnées de grille) : le cadre fixe de sa région (GD-9, `CADRES`), où la mer est semée une
- * fois et où tout lieu se pose. `maxX` et `maxY` exclus, comme le cadre.
+ * Étendue d'un archipel (coordonnées de grille) : le cadre fixe de sa région (GD-9, `CADRES`), où tout lieu se pose.
+ * `maxX` et `maxY` exclus, comme le cadre.
  */
 export function worldBounds(a: ArchipelagoId): {
   minX: number;
@@ -23,6 +23,14 @@ export function worldBounds(a: ArchipelagoId): {
 } {
   const c = cadreDe(a);
   return { minX: c.x0, maxX: c.x1, minY: c.y0, maxY: c.y1 };
+}
+
+/**
+ * L'étendue de la carte de départ d'une région, qui ne bouge jamais, terres, îlots et port compris : la mer y est
+ * semée une fois pour toutes (`seaDecor`), serrée autour des lieux plutôt qu'au bord du cadre.
+ */
+export function bornesDeDepart(a: ArchipelagoId): { minX: number; maxX: number; minY: number; maxY: number } {
+  return bornesDesIles(a, MAP.filter((d) => archipelagoOfIsland(d.id) === a).map((d) => lieuDeDepart(d.id)));
 }
 
 /** Les bornes de quelques îles d'un archipel, et de son port (la colonne centrale, `colonneCentrale`). */
@@ -47,8 +55,8 @@ function bornesDesIles(a: ArchipelagoId, iles: readonly IslandDef[]): { minX: nu
 }
 
 /**
- * L'étendue à cadrer dans la vue d'ensemble (la Carte) : tout le cadre de la région, dès le début (GD-9) ; elle ne
- * bouge pas quand on pose une liaison. `bridges` : gardé pour l'appelant, le cadre n'en dépend plus.
+ * L'étendue à cadrer dans la vue d'ensemble (la Carte) : toute la région, dès le début (GD-9) ; elle ne bouge pas
+ * quand on pose une liaison ni quand on déplace un lieu. `bridges` : gardé pour l'appelant, le cadre n'en dépend plus.
  */
 export function overviewBounds(a: ArchipelagoId, bridges: string[]): { minX: number; maxX: number; minY: number; maxY: number } {
   void bridges;

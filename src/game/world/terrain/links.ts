@@ -9,7 +9,7 @@ import { TRUNK } from '../decor';
 import { DOCK_DX, dockCells, dockOrigin, VEHICLE_DECK } from '../harbor';
 import { avatarHome, cleDeCube, origineDe } from './base';
 import { cacheDeLaDisposition } from '../placement';
-import { liaisonsPosees, liaisonsPoseesDuLieu, traceDeLaLiaison } from '../linkGeometry';
+import { liaisonsPosees, liaisonsPoseesDuLieu, traceDeLaLiaison, traceDeRepli } from '../linkGeometry';
 import { liaisonEntreReunis } from '../routing';
 import { archipelagoOfIsland } from '../map';
 
@@ -113,9 +113,12 @@ export function casesDeLOuvrage(
   if (liaisonEntreReunis(def)) span = traceDOrigine(def, a, b);
   else {
     const posees = liaisonsPosees();
-    const trace = traceDeLaLiaison(def, posees);
+    const estPosee = def.cost === 0 || posees.includes(def.id);
+    // Une liaison posée que le traceur ne refait pas (une sauvegarde d'avant GD-9) : le tracé qu'elle prendrait seule
+    // sur la disposition du moment, et, à défaut, son tracé d'origine.
+    const trace = traceDeLaLiaison(def, posees) ?? (estPosee ? traceDeRepli(def) : null);
     if (trace) span = trace.cases.map((c, i) => ({ x: c.x, y: c.y, troncon: trace.coude >= 0 && i > trace.coude ? 1 : 0, ...(i === trace.coude ? { coude: true } : {}) }));
-    else if (def.cost === 0 || posees.includes(def.id)) span = traceDOrigine(def, a, b);
+    else if (estPosee) span = traceDOrigine(def, a, b);
     else return [];
   }
   let prevZ = a.altitude;

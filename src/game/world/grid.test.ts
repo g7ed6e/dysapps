@@ -72,7 +72,9 @@ describe('La disposition en grille', () => {
     for (const b of BRIDGES) {
       const path = bridgePath(b);
       expect(g.liaison(b.id)).toEqual(path.map((c) => ({ x: c.x, y: c.y, z: c.z })));
-      expect(g.placeDe({ genre: 'ouvrage', id: b.id })).toMatchObject({ ile: b.from });
+      // Une liaison qui ne tient pas dans la disposition n'a ni tracé ni place (GD-9).
+      if (path.length) expect(g.placeDe({ genre: 'ouvrage', id: b.id })).toMatchObject({ ile: b.from });
+      else expect(g.placeDe({ genre: 'ouvrage', id: b.id })).toBeNull();
     }
     expect(g.liaison('inconnu')).toEqual([]);
   });

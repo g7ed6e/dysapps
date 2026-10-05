@@ -611,15 +611,18 @@ export function remainingPath(island: BiomeId, bridges: string[]): BridgeDef[] {
   if (open.has(island)) return [];
   const depart = [...open].filter((id) => archipelagoOfIsland(id) === archipelagoOfIsland(island));
   const vus = new Map<BiomeId, BridgeDef | null>((depart.length ? depart : archipelagoOf(island).starts).map((id) => [id, null]));
-  const file = [...vus.keys()];
-  while (file.length) {
-    const ici = file.shift()!;
-    if (ici === island) break;
-    for (const b of linksToIsland2(ici, bridges, vus)) {
-      const la = otherEnd(b, ici);
-      vus.set(la, b);
-      file.push(la);
-    }
+  // Rang par rang : au même nombre de liaisons, chaque lieu est atteint par la plus courte d'entre elles.
+  for (let rang = [...vus.keys()]; rang.length && !vus.has(island); ) {
+    const suivant = new Map<BiomeId, { b: BridgeDef; n: number }>();
+    for (const ici of rang)
+      for (const b of linksToIsland2(ici, bridges, vus)) {
+        const la = otherEnd(b, ici);
+        const n = linkLength(b, bridges) ?? 0;
+        const mieux = suivant.get(la);
+        if (!mieux || n < mieux.n) suivant.set(la, { b, n });
+      }
+    for (const [la, { b }] of suivant) vus.set(la, b);
+    rang = [...suivant.keys()];
   }
   const chemin: BridgeDef[] = [];
   for (let at: BiomeId | undefined = island; at && vus.get(at); ) {

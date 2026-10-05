@@ -63,8 +63,9 @@ describe('déblocage des biomes', () => {
     // Le port en étoile (GD-7) : de la Plaine ou de la Forêt, une liaison vers chaque île, 4 blocs chacune.
     expect(screen.getAllByText(/Pont à construire : 4 blocs/).length).toBe(4);
     expect(screen.getAllByText(/Sentier à construire : 4 blocs/).length).toBe(1);
-    expect(screen.getAllByText(/Bac à construire : 4 blocs/).length).toBe(3);
-    expect(screen.queryAllByText(/Île lointaine/).length).toBe(0);
+    expect(screen.getAllByText(/Bac à construire : 4 blocs/).length).toBe(1);
+    // Deux îles qu'aucune liaison n'atteint encore depuis un lieu relié (GD-9) : elles s'ouvriront de proche en proche.
+    expect(screen.queryAllByText(/Île lointaine/).length).toBe(2);
     expect(screen.getAllByText(/Archipel à rejoindre/).length).toBe(21);
     await user.click(screen.getByRole('link', { name: /^Mine des lettres/ }));
     // Le message est découpé en syllabes (plusieurs éléments) : on lit le texte complet.
@@ -79,7 +80,7 @@ describe('déblocage des biomes', () => {
     const user = userEvent.setup();
     renderAt('/adventure/french-6e-letter-confusion');
     expect(screen.queryByRole('link', { name: /Filon/ })).not.toBeInTheDocument();
-    await user.click(screen.getByRole('button', { name: /Construire/ }));
+    await user.click(screen.getByRole('button', { name: /Poser/ }));
     expect(document.body.textContent).toMatch(/Le sentier vers Forêt des sons est tracé/);
     expect(screen.getByRole('link', { name: /Filon/ })).toBeInTheDocument();
     expect(JSON.parse(localStorage.getItem('dysapps:game')!).world.links).toEqual(['french-6e-phonology-french-6e-letter-confusion']);

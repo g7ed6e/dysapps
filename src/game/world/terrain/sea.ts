@@ -11,7 +11,7 @@ import { semerLaMer } from '../decor';
 import { bossIsletOrigin, ISLET_H, ISLET_W, rectangleDeLIlot } from './islets';
 import { bridgePath } from './links';
 import { liaisonsPoseesDe } from '../linkGeometry';
-import { worldBounds } from './view';
+import { bornesDeDepart, worldBounds } from './view';
 import { cacheDeLaDisposition } from '../placement';
 
 /**
@@ -19,10 +19,11 @@ import { cacheDeLaDisposition } from '../placement';
  * de l'archipel depuis le port (DA, 01/10/2026 : au 5e, celle de 91, 345 nageait derrière le Marché et seul son souffle
  * se voyait). `de` : la clairière choisie ; `vers` : la nouvelle, en eau libre ; le rond y garde trois cases de toute
  * terre, îlot ou ponton (`r` = éloignement − 3, comme ailleurs). Vérifié par terrain.test.ts et three/whales.test.ts.
+ *
+ * Depuis GD-9, les lieux se déplacent et les clairières suivent : plus aucune baleine n'est replacée à la main (celle
+ * du 5e, calée sur la clairière de 91, 345, ne l'était plus après le calage de la carte de départ sur la grille).
  */
-export const BALEINES_REPLACEES: Readonly<Partial<Record<ArchipelagoId, readonly { de: { x: number; y: number }; vers: { x: number; y: number } }[]>>> = {
-  '5e': [{ de: { x: 91, y: 345 }, vers: { x: 97, y: 344 } }],
-};
+export const BALEINES_REPLACEES: Readonly<Partial<Record<ArchipelagoId, readonly { de: { x: number; y: number }; vers: { x: number; y: number } }[]>>> = {};
 
 const whaleCache = cacheDeLaDisposition<string, { x: number; y: number; r: number }[]>();
 
@@ -100,7 +101,7 @@ const seaCache = new Map<ArchipelagoId, VoxelCube[]>();
 
 /**
  * L'habillage de la mer : des rochers qui affleurent (galet et pierre, un à quatre cubes) et des bancs de sable au
- * ras de l'eau, semés une fois pour toutes sur le cadre de la région (GD-9), au hasard (bruit fixe), dans l'eau libre de
+ * ras de l'eau, semés une fois pour toutes sur l'étendue de la carte de départ (GD-9), au hasard (bruit fixe), dans l'eau libre de
  * la carte de départ, à cinq cases au moins de toute terre, de tout îlot, du quai, et hors des couloirs des liaisons. Ce sont les écueils : ils ne bougent
  * pas quand un lieu bouge, et aucune liaison ne passe dessus (`ecueilsDe`). Plus denses au large.
  */
@@ -132,7 +133,7 @@ export function seaDecor(a: ArchipelagoId): VoxelCube[] {
   const traceur = new TraceurDeRegion(a, { lieux: mapOf(a).map((d) => lieuDeDepart(d.id)) });
   for (const l of BRIDGES)
     if (archipelagoOfIsland(l.from) === a && !liaisonEntreReunis(l)) for (const c of traceur.essayer(l, LONGUEUR_LONGUE)?.cases ?? []) couloirs.add(`${c.x},${c.y}`);
-  const b = worldBounds(a);
+  const b = bornesDeDepart(a);
   const free = (x: number, y: number) => {
     for (let dx = -5; dx <= 5; dx++) for (let dy = -5; dy <= 5; dy++) if (solid.has(`${x + dx},${y + dy}`)) return false;
     for (let dx = -2; dx <= 2; dx++) for (let dy = -2; dy <= 2; dy++) if (couloirs.has(`${x + dx},${y + dy}`)) return false;
