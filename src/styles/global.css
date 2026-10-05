@@ -2924,10 +2924,18 @@ figure.class-table {
   margin-bottom: 1.2rem;
   background: color-mix(in srgb, var(--secondary-bg) 60%, var(--surface));
 }
-.tutorial-step {
+.tutorial-tete {
   display: flex;
-  gap: 0.7rem;
-  align-items: flex-start;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+/* Écouter et la croix toujours à droite, avec ou sans compteur, avec ou sans voix sur l'appareil. */
+.tutorial-tete .tutorial-count {
+  margin-right: auto;
+}
+.tutorial-step {
   margin: 0 0 0.8rem;
   max-width: none;
 }
@@ -3481,6 +3489,10 @@ figure.class-table {
   position: sticky;
   bottom: 0;
   background: var(--surface);
+}
+/* Le fond de la bulle d'aide, pas une bande d'une autre couleur derrière ses boutons. */
+.world-overlay-bottom .tutorial-actions {
+  background: inherit;
 }
 /* Le texte continue sous les boutons : un trait pointillé au-dessus d'eux et un chevron le disent (comme sur la Carte). */
 .whale-word-actions.a-suivre {

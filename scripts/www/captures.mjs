@@ -175,6 +175,16 @@ SHOTS.push(
  */
 // Le nom écrit en entier : prepare.mjs lit les `name: '…'` pour savoir quelles captures le manuel peut citer.
 const archipeo = ({ base, name }) => ({ ...deBase(base), name, settings: { univers: 'archipeo' } });
+/**
+ * La première bulle du tutoriel au téléphone, dans les deux univers et en grand texte : sur demande seulement, pour
+ * relire sa place au-dessus de la barre du bas.
+ */
+const tutoTelephone = { go: '/adventure', tutorial: true, size: PHONE, surDemande: true };
+SHOTS.push(
+  { ...tutoTelephone, name: 'telephone-tutoriel' },
+  { ...tutoTelephone, name: 'telephone-tutoriel-archipeo', settings: { univers: 'archipeo' } },
+  { ...tutoTelephone, name: 'telephone-tutoriel-grand-texte', settings: { fontSize: 28 } },
+);
 SHOTS.push(
   archipeo({ base: 'gardien', name: 'archipeo-gardien' }),
   archipeo({ base: 'collines-du-large', name: 'archipeo-collines-du-large' }),
