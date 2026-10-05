@@ -40,6 +40,8 @@ function Banc({ reduit, depart }: { reduit: boolean; depart: World }) {
     sons: true,
     dire: () => {},
     versMonde: (p) => ({ x: p.local.x, y: p.local.y, z: p.local.z }),
+    // Le plus haut cube de chaque lieu : 7 cases au-dessus du sol.
+    hautDuLieu: () => 7,
   });
   dernier = a;
   return (
@@ -119,6 +121,9 @@ describe('le mode « Aménager »', () => {
     const avant = spotOf(monde, VOLCAN);
     fireEvent.click(screen.getByRole('button', { name: /Poser ici/ }));
     expect(dernier.geste?.phase).toBe('demonte');
+    // Le démontage part du plus haut cube du lieu, pas du vide au-dessus ; le voile d'Archipéo sait où il va.
+    expect(dernier.geste?.haut).toBe(8);
+    expect(dernier.geste?.autre).toBeDefined();
     expect(GESTE_DU_LIEU.demonteMs + GESTE_DU_LIEU.remonteMs).toBeLessThanOrEqual(1500);
     act(() => void vi.advanceTimersByTime(GESTE_DU_LIEU.demonteMs));
     expect(dernier.geste?.phase).toBe('remonte');
@@ -177,7 +182,10 @@ describe('le mode « Aménager »', () => {
     fireEvent.click(reunir());
     expect(joinedWith(monde, TOUR)).toBeNull();
     const question = screen.getByRole('group', { name: `Réunir ${TOUR} ?` });
-    expect(question.textContent).toMatch(new RegExp(`Réunir ${TOUR} et ${FERME} \\? Ils ne se sépareront plus\\.`));
+    expect(question.textContent).toMatch(new RegExp(`Réunir ${TOUR} et ${FERME}\u00a0\\? Ils ne se sépareront plus\\.`));
+    // Pendant la question, rien n'est mis en avant dans la barre, et « Poser ici » attend.
+    expect(screen.getByRole('button', { name: /Poser ici/ })).toBeDisabled();
+    expect(document.querySelectorAll('.arrange-bar .primary')).toHaveLength(0);
     expect(question.textContent).toMatch(/Réunir, c’est attacher pour toujours deux lieux voisins/);
     fireEvent.click(screen.getByRole('button', { name: /^Non/ }));
     expect(joinedWith(monde, TOUR)).toBeNull();

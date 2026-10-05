@@ -25,10 +25,39 @@ export function gestureCut(g: ArrangeGesture, now: number): number {
   return g.phase === 'demonte' ? g.bas + Math.ceil(n * (1 - k)) : g.bas + Math.floor(n * k);
 }
 
-/** Le voile de brume d'Archipéo, de 0 à 1 : il couvre pendant le premier temps, se lève pendant le second. */
+/**
+ * Le voile de brume d'Archipéo, de 0 à 1 : il couvre pendant la première moitié du démontage, reste plein pendant
+ * qu'il glisse, puis se lève pendant la seconde moitié du remontage.
+ */
 export function veilOpacity(g: ArrangeGesture, now: number): number {
   const k = gestureProgress(g, now);
-  return g.phase === 'demonte' ? k : 1 - k;
+  return g.phase === 'demonte' ? Math.min(1, k * 2) : Math.min(1, (1 - k) * 2);
+}
+
+/** Un mouvement doux, sans à-coup au départ ni à l'arrivée. */
+const doux = (t: number) => t * t * (3 - 2 * t);
+
+const entre = (a: Rectangle, b: Rectangle, t: number): Rectangle => ({
+  x0: a.x0 + (b.x0 - a.x0) * t,
+  y0: a.y0 + (b.y0 - a.y0) * t,
+  x1: a.x1 + (b.x1 - a.x1) * t,
+  y1: a.y1 + (b.y1 - a.y1) * t,
+});
+
+const ensemble = (a: Rectangle, b: Rectangle): Rectangle => ({ x0: Math.min(a.x0, b.x0), y0: Math.min(a.y0, b.y0), x1: Math.max(a.x1, b.x1), y1: Math.max(a.y1, b.y1) });
+
+/**
+ * Où se tient le voile de brume d'Archipéo : il ne disparaît jamais d'une place pour reparaître à l'autre, il GLISSE.
+ * Démontage : il couvre l'ancienne place, puis, plein, s'étire jusqu'à couvrir les deux ; au plus fort (le lieu change
+ * de place dessous), il couvre les deux. Remontage : il se resserre sur la nouvelle place, puis s'y lève. Sans `autre`,
+ * il reste sur sa zone.
+ */
+export function veilZone(g: ArrangeGesture, now: number): Rectangle {
+  if (!g.autre) return g.zone;
+  const k = gestureProgress(g, now);
+  const deux = ensemble(g.zone, g.autre);
+  if (g.phase === 'demonte') return entre(g.zone, deux, doux(Math.max(0, k * 2 - 1)));
+  return entre(deux, g.zone, doux(Math.min(1, k * 2)));
 }
 
 /** La zone d'un geste autour d'une emprise : une case de plus de chaque côté (une cascade, un ponton). */

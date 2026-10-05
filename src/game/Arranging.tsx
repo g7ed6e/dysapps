@@ -11,6 +11,7 @@ import { loadJSON, saveJSON } from '../core/storage';
 import type { BiomeId } from './biomes';
 import type { World } from './engine/state';
 import { sonDePose } from './sound';
+import { mesuresDemandees } from './rendering';
 import type { Habillage } from './skin';
 import { getBridge } from './world/archipelago';
 import { type ArchipelagoId, archipelagoOfIsland } from './world/archipelagos';
@@ -34,7 +35,7 @@ import {
 import { type ArrangeSession, canUndo, hasChanged, recordPose, resetToEntry, startArranging, undoLast } from './world/arrangeSession';
 import { arrangeView } from './world/arrangeView';
 import { GESTE_DU_LIEU, gestureZone } from './world/arrangeGesture';
-import type { ArrangeGesture, ArrangeView } from './world/view';
+import type { ArrangeGesture, ArrangeView, CadreDuMode } from './world/view';
 import { footprintOf } from './world/footprint';
 import type { Intention, Point } from './world/layout';
 import type { Rectangle } from './world/placement';
@@ -104,6 +105,11 @@ interface Options {
   reunion?: TextesDeLaReunion;
   /** Le mot qui nomme une liaison dans l'univers (« ouvrage »). */
   liaisons?: LinkWord;
+  /**
+   * La hauteur du plus haut cube d'un lieu dans le monde (la 3D), pour que le démontage commence à son sommet et non
+   * dans le vide ; sans elle, 24 cases au-dessus de son sol.
+   */
+  hautDuLieu?: (id: BiomeId) => number | undefined;
 }
 
 /** « Réunir » touché : la question, avec un bouton par voisin possible (GD-9, point 10). */
@@ -160,6 +166,8 @@ export interface Amenagement {
   demanderReunion(id?: BiomeId): void;
   /** La question de « Réunir » en cours, ou rien. */
   question: QuestionDeReunion | null;
+  /** Ce que la vue garde entier après une réunion (la paire et sa construction), ou rien. */
+  cadre: CadreDuMode | null;
   /** La réponse : réunir `id` et `autre`. */
   reunir(id: BiomeId, autre: BiomeId): void;
   /** « Non » : rien n'est réuni. */
@@ -190,7 +198,7 @@ function emprise(world: World, id: BiomeId): Rectangle {
   };
 }
 
-export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage, sons, dire, versMonde, reunion = REUNION_COMMUNE, liaisons = LIAISON }: Options): Amenagement {
+export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage, sons, dire, versMonde, reunion = REUNION_COMMUNE, liaisons = LIAISON, hautDuLieu }: Options): Amenagement {
   const mot = useMemo(() => linkPhrases(liaisons), [liaisons]);
   const [session, setSession] = useState<ArrangeSession | null>(null);
   const [choix, setChoix] = useState<ArrangeChoice | null>(null);
@@ -198,6 +206,8 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
   const [liste, setListe] = useState(false);
   const [explication, setExplication] = useState(false);
   const [question, setQuestion] = useState<QuestionDeReunion | null>(null);
+  // Ce que la vue garde entier après une réunion : la paire et sa construction.
+  const [cadre, setCadre] = useState<CadreDuMode | null>(null);
   const [geste, setGeste] = useState<ArrangeGesture | null>(null);
   const enCours = useRef<GesteEnCours | null>(null);
   const seq = useRef(0);
@@ -221,6 +231,7 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
   const choisir = (c: ArrangeChoice | null, texte?: string) => {
     setChoix(c);
     setQuestion(null);
+    setCadre(null);
     const w = worldRef.current;
     const aReunir = c?.genre === 'lieu' && sameSpot(c.spot, spotOf(w, c.id)) && voisinAReunir(w, c.id) ? ` Il peut se réunir à ${nom(voisinAReunir(w, c.id)!)} : « Réunir ».` : '';
     annoncer(texte ?? (c ? choiceSentence(w, c, nom, mot) + aReunir : ''));
@@ -250,6 +261,7 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     const r = poseChoice(w, choix);
     if (!r.ok) return annoncer(refus(r.reason, mot));
     setSession(recordPose(session, w, r.world));
+    setCadre(null);
     const texte =
       poseSentence(r.world, choix, nom, mot) +
       (r.relink.length ? ` ${mot.aReposer(r.relink.length)}` : '') +
@@ -263,15 +275,22 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     }
     const id = choix.id;
     const alt = placeIn(w, id).altitude;
-    const base = { bas: alt - 5, haut: alt + 24, dureeMs: GESTE_DU_LIEU.demonteMs };
+    // Le démontage part du plus haut cube du lieu (et de celui qui lui est réuni) : pas de temps mort au début du geste.
+    const autre = joinedWith(w, id);
+    const sommets = [id, ...(autre ? [autre] : [])].map((l) => hautDuLieu?.(l)).filter((h): h is number => h !== undefined);
+    const base = { bas: alt - 5, haut: sommets.length ? Math.max(...sommets) + 1 : alt + 24, dureeMs: GESTE_DU_LIEU.demonteMs };
     const g: GesteEnCours = { apres: r.world, phrase: texte, timers: [], remonte: false };
     enCours.current = g;
-    setGeste({ ...base, seq: ++seq.current, phase: 'demonte', zone: gestureZone(emprise(w, id)), debut: performance.now() });
+    const ancienne = gestureZone(emprise(w, id));
+    const nouvelle = gestureZone(emprise(r.world, id));
+    setGeste({ ...base, seq: ++seq.current, phase: 'demonte', zone: ancienne, autre: nouvelle, debut: performance.now() });
+    // Les captures tiennent le geste dans son démontage (`__dysappsGesteA`) : il ne passe pas au remontage.
+    if (typeof window.__dysappsGesteA === 'number' && (import.meta.env.DEV || mesuresDemandees())) return;
     g.timers.push(
       window.setTimeout(() => {
         g.remonte = true;
         arrange(r.world);
-        setGeste({ ...base, dureeMs: GESTE_DU_LIEU.remonteMs, seq: ++seq.current, phase: 'remonte', zone: gestureZone(emprise(r.world, id)), debut: performance.now() });
+        setGeste({ ...base, dureeMs: GESTE_DU_LIEU.remonteMs, seq: ++seq.current, phase: 'remonte', zone: nouvelle, autre: ancienne, debut: performance.now() });
         g.timers.push(window.setTimeout(finirLeGeste, GESTE_DU_LIEU.remonteMs));
       }, GESTE_DU_LIEU.demonteMs),
     );
@@ -287,6 +306,7 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     setSession(null);
     setChoix(null);
     setQuestion(null);
+    setCadre(null);
     setListe(false);
     setExplication(false);
     setPhrase('');
@@ -342,7 +362,8 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     if (premiere) saveJSON(CLE_DE_LA_REUNION, { vu: true });
     const q: QuestionDeReunion = { id, voisins, explication: premiere ? explicationDeLaReunion(reunion) : null };
     setQuestion(q);
-    const texte = `Réunir ${nom(id)} et ${voisins.length === 1 ? nom(voisins[0]) : 'quel lieu'} ? Ils ne se sépareront plus.`;
+    // L'espace insécable avant « ? » : le point d'interrogation ne part jamais seul à la ligne.
+    const texte = `Réunir ${nom(id)} et ${voisins.length === 1 ? nom(voisins[0]) : 'quel lieu'}\u00a0? Ils ne se sépareront plus.`;
     setPhrase(texte);
     dire(q.explication ? `${texte} ${q.explication}` : texte);
   };
@@ -360,6 +381,7 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     setSession(recordPose(session, w, r.world));
     arrange(r.world);
     setChoix(null);
+    setCadre({ rect: emprise(r.world, id), z: placeIn(r.world, id).altitude, seq: ++seq.current });
     if (sons) sonDeLaPose();
     // Deux phrases au plus, sans symbole.
     const ensuite = r.relink.length ? `${mot.aReposer(r.relink.length).slice(0, -1)}, et « Défaire » annule la réunion tant que le mode est ouvert.` : '« Défaire » annule la réunion tant que le mode est ouvert.';
@@ -486,6 +508,7 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     choisirUneLiaison,
     demanderReunion,
     question,
+    cadre,
     reunir,
     annulerReunion,
     reunirAvec,
@@ -601,8 +624,10 @@ export function ArrangeJoinQuestion({ amenagement, nom, className }: { amenageme
  * boutons sans effet restent à leur place, éteints.
  */
 export function ArrangeBar({ amenagement, className }: { amenagement: Amenagement; className?: string }) {
-  const { choix, geste } = amenagement;
+  const { choix, geste, question } = amenagement;
+  // Pendant la question de « Réunir », c'est elle qui attend la réponse : rien n'est mis en avant dans la barre.
   const occupe = Boolean(geste);
+  const enQuestion = Boolean(question);
   return (
     <nav className={`arrange-bar${className ? ` ${className}` : ''}`} data-couvre="scene" aria-label="Aménager">
       <div className="arrange-bar-row">
@@ -617,7 +642,7 @@ export function ArrangeBar({ amenagement, className }: { amenagement: Amenagemen
         <button type="button" className="button" aria-pressed={Boolean(amenagement.question)} disabled={!amenagement.reunirAvec || occupe} onClick={() => amenagement.demanderReunion()}>
           <Icon name="reunir" /> <span>Réunir</span>
         </button>
-        <button type="button" className={`button arrange-pose${choix ? ' primary' : ''}`} disabled={!choix || occupe} onClick={amenagement.poserIci}>
+        <button type="button" className={`button arrange-pose${choix && !enQuestion ? ' primary' : ''}`} disabled={!choix || occupe || enQuestion} onClick={amenagement.poserIci}>
           <Icon name="poser" /> <span>Poser ici</span>
         </button>
       </div>

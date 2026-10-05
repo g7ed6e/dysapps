@@ -26,6 +26,11 @@ declare global {
      * cette part de sa durée dès son lancement (three/cubes.ts, `tenirLaVague`).
      */
     __dysappsPoseA?: number;
+    /**
+     * Pour les captures (en développement, ou avec `?mesures`) : le geste de la pose du mode « Aménager » tenu à ce
+     * moment de son démontage, en ms (Arranging.tsx ne passe pas au remontage ; ./arrange.ts lit l'heure tenue).
+     */
+    __dysappsGesteA?: number;
   }
 }
 

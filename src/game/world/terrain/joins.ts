@@ -14,7 +14,9 @@ import { DEPTH, TEXTURES } from './base';
 /** Les cubes des constructions qui réunissent deux lieux d'un archipel. `pierre` : une jetée de pierre (Archipéo). */
 export function joinsBetween(a: ArchipelagoId, village: World, cubes: VoxelCube[], pierre: boolean): void {
   const roche = BLOCKS[BLOC.pierre].side;
-  const dessus = pierre ? roche : GRASS;
+  // Le dessus de la jetée d'Archipéo en dalles de pierre de taille, plus claires que sa colonne de roche : la pose se
+  // voit d'en haut (la construction peinte d'Archipéo n'en fait aucun appel de plus).
+  const dessus = pierre ? BLOCKS[BLOC.taille].side : GRASS;
   for (const j of appliedJoins(a)) {
     const place = `monument:${j.plan.id}` as const;
     const posees = new Set(village.parts[j.plan.id] ?? []);

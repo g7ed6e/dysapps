@@ -39,6 +39,15 @@ export interface ArrangeView {
   barrees: string[];
   /** Le nom du lieu choisi, écrit sur son fantôme (le nom de l'univers, donné par la page). */
   nom?: string;
+  /** Ce que la vue garde entier à l'écran : le fantôme (les deux lieux réunis et leur réunion), à hauteur de l'eau. */
+  cadre?: CadreDuMode;
+}
+
+/** Un rectangle du monde (en cases, x et y) à garder entier à l'écran, à une hauteur ; `seq` change à chaque demande. */
+export interface CadreDuMode {
+  rect: Rectangle;
+  z: number;
+  seq: number;
 }
 
 /**
@@ -50,6 +59,11 @@ export interface ArrangeGesture {
   seq: number;
   phase: 'demonte' | 'remonte';
   zone: Rectangle;
+  /**
+   * L'autre place du geste (la nouvelle pendant le démontage, l'ancienne pendant le remontage) : le voile de brume
+   * d'Archipéo glisse de l'une à l'autre.
+   */
+  autre?: Rectangle;
   debut: number;
   dureeMs: number;
   bas: number;
@@ -287,7 +301,7 @@ export interface WorldViewProps {
    * `mer` ; avec un choix, glisser le doigt cale le fantôme sous lui (un raccourci) au lieu de faire glisser la vue ; et
    * si le fantôme sort de l'écran, la vue le suit. La vue simple l'ignore.
    */
-  amenager?: { vue: ArrangeView | null } | null;
+  amenager?: { vue: ArrangeView | null; cadre?: CadreDuMode | null } | null;
   /** Le geste de la pose en cours dans le mode « Aménager » (./arrangeGesture.ts), ou rien. */
   geste?: ArrangeGesture | null;
   /** Change à chaque appui sur « Recentrer » : la vue efface son décalage et revient en douceur à son cadrage. */

@@ -3772,6 +3772,49 @@ figure.class-table {
   box-shadow: none;
   cursor: default;
 }
+/* En grand texte et au téléphone, les deux rangées n'en font plus qu'une, qui passe à la ligne (moins de rangées : la
+   phrase en haut et le fantôme restent visibles) ; en grand texte, le mot plafonné à 24 px, comme la barre du monde. */
+:root[data-texte="grand"] .arrange-bar {
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+:root[data-texte="grand"] .arrange-bar-row {
+  display: contents;
+}
+:root[data-texte="grand"] .arrange-bar .button {
+  font-size: min(1em, 24px);
+  padding: 4px 8px;
+}
+@media (max-width: 600px) {
+  .arrange-bar {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+  }
+  .arrange-bar-row {
+    display: contents;
+  }
+  .arrange-bar .button {
+    padding: 0 8px;
+  }
+}
+/* Au téléphone en grand texte, la barre et la phrase ne tiennent pas ensemble à l'écran : chacune garde sa part (la
+   phrase en haut, au plus un tiers de la hauteur ; la barre en bas, au plus la moitié), et défile si elle déborde,
+   plutôt que de se recouvrir. */
+@media (max-width: 600px) {
+  :root[data-texte="grand"] .arrange-bar:not(.arrange-bar-inline) {
+    max-height: 50vh;
+    overflow-y: auto;
+  }
+  :root[data-texte="grand"] .arrange-line,
+  :root[data-texte="grand"] .arrange-question {
+    max-height: 33vh;
+    overflow-y: auto;
+  }
+}
 /* La question de « Réunir » (un bouton par voisin, et « Non »), dans la zone de la phrase ou sous la ligne du lieu. */
 .arrange-question p {
   margin: 0;

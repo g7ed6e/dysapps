@@ -51,7 +51,8 @@ interface Scene3D {
   /** Le mode « Aménager » (GD-9). */
   amenagement: Amenagement;
   /** Le fantôme du mode est hors de la vue : le cadrage glisse pour le poser au centre de la place libre. */
-  garderEnVue(point: { x: number; y: number; z: number }): void;
+  /** Garde entier à l'écran un rectangle du monde (en cases, x et y) à une hauteur : la vue glisse s'il en sort. */
+  garderEnVue(cadre: { rect: { x0: number; y0: number; x1: number; y1: number }; z: number }): void;
   /** Efface le décalage de l'élève et le dit à la page. */
   recentrer(): void;
   /** Le signe de l'objet d'une fiche fait son petit saut (s'il en porte un). */
@@ -254,13 +255,19 @@ export default function WorldCanvas({
     const amenagement = creerAmenagement(monde, reduceMotion, camera, el);
     world.current = {
       amenagement,
-      garderEnVue: (p) => {
-        const point = new THREE.Vector3(p.x + 0.5, p.z, p.y + 0.5);
+      garderEnVue: ({ rect: r, z }) => {
+        const point = new THREE.Vector3((r.x0 + r.x1) / 2, z, (r.y0 + r.y1) / 2);
         const vue = el.getBoundingClientRect();
         const { libre } = lirePlaceLibre(el);
-        const ecran = cadrage.auBut(point, vue.width, vue.height);
         const marge = 24;
-        if (ecran && ecran.x >= libre.x0 + marge && ecran.x <= libre.x1 - marge && ecran.y >= libre.y0 + marge && ecran.y <= libre.y1 - marge) return;
+        // Les quatre coins dans la place libre : rien à faire.
+        const dedans = [r.x0, r.x1].every((x) =>
+          [r.y0, r.y1].every((y) => {
+            const ecran = cadrage.auBut(new THREE.Vector3(x, z, y), vue.width, vue.height);
+            return ecran !== null && ecran.x >= libre.x0 + marge && ecran.x <= libre.x1 - marge && ecran.y >= libre.y0 + marge && ecran.y <= libre.y1 - marge;
+          }),
+        );
+        if (dedans) return;
         const w = Math.max(1, el.clientWidth);
         const h = Math.max(1, el.clientHeight);
         cadrage.recadrer(point, { x: (libre.x0 + libre.x1) / w - 1, y: 1 - (libre.y0 + libre.y1) / h });
@@ -455,10 +462,16 @@ export default function WorldCanvas({
     const w = world.current;
     if (!w) return;
     w.amenagement.poser(vueDuMode);
-    if (vueDuMode) w.garderEnVue(vueDuMode.suivre);
+    if (vueDuMode) w.garderEnVue(vueDuMode.cadre ?? { rect: { x0: vueDuMode.suivre.x, y0: vueDuMode.suivre.y, x1: vueDuMode.suivre.x + 1, y1: vueDuMode.suivre.y + 1 }, z: vueDuMode.suivre.z });
     // Reposé aussi quand la scène est refaite (un lieu posé, la préférence de mouvement).
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vueDuMode, reduceMotion, archipelago]);
+  // ---- Après une réunion : la paire et sa construction entières à l'écran (la scène est refaite, la vue les cadre)
+  const cadreDuMode = amenager?.cadre ?? null;
+  useEffect(() => {
+    if (cadreDuMode) world.current?.garderEnVue(cadreDuMode);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cadreDuMode?.seq, reduceMotion, archipelago]);
   // ---- Le geste de la pose : il continue dans la scène refaite (le lieu à sa nouvelle place)
   useEffect(() => {
     world.current?.amenagement.geste(gesteDuMode);
@@ -567,7 +580,7 @@ export default function WorldCanvas({
   }, [cleDeLImageDeLaCarte, reduceMotion, archipelago]);
 
   // ---- Le nom des îles ouvertes (une texture par étiquette, refaite quand la liste change) ; sur la Carte, leur état
-  const labelsKey = (islandLabels ?? []).map((l) => `${l.id}:${l.text}:${l.state?.id ?? ''}:${l.bloc ?? ''}`).join('|');
+  const labelsKey = (islandLabels ?? []).map((l) => `${l.id}:${l.text}:${l.state?.id ?? ''}:${l.state?.name ?? ''}:${l.bloc ?? ''}`).join('|');
   useEffect(() => {
     const etiquettes = world.current?.etiquettes;
     if (!etiquettes) return;

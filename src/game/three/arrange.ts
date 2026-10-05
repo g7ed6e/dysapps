@@ -6,11 +6,11 @@
 // plus ; dans Archipéo, le voile de brume du geste.
 // Moins d'animations : le lieu se soulève d'un coup, et la page pose sans geste.
 import * as THREE from 'three';
-import { gestureCut, veilOpacity } from '../world/arrangeGesture';
+import { gestureCut, veilOpacity, veilZone } from '../world/arrangeGesture';
 import type { ArrangeCellKind, ArrangeGesture, ArrangeView } from '../world/view';
 import { drawIslandLabel, measureIslandLabel } from '../world/labelCanvas';
-import { mistTexture } from './meshes';
 import type { Monde, PartieDeLaScene } from './scenePart';
+import { mesuresDemandees } from '../rendering';
 
 /** Ce qui ne coupe ni ne soulève rien. */
 const LOIN = 1e6;
@@ -131,6 +131,35 @@ function textureBordee(): THREE.DataTexture {
   return t;
 }
 
+/**
+ * La texture du voile de brume d'Archipéo : un rectangle plein au milieu, aux bords adoucis (un quart de chaque côté),
+ * pour couvrir le lieu entier sans bord net (générée ici, rien d'importé).
+ */
+function textureDuVoile(): THREE.DataTexture {
+  const n = 32;
+  const data = new Uint8Array(n * n * 4);
+  const bord = n / 4;
+  const doux = (t: number) => t * t * (3 - 2 * t);
+  for (let y = 0; y < n; y++)
+    for (let x = 0; x < n; x++) {
+      const d = Math.min(x + 0.5, y + 0.5, n - x - 0.5, n - y - 0.5);
+      const i = (y * n + x) * 4;
+      data[i] = 246;
+      data[i + 1] = 249;
+      data[i + 2] = 252;
+      data[i + 3] = Math.round(255 * doux(Math.min(1, d / bord)));
+    }
+  const t = new THREE.DataTexture(data, n, n);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.magFilter = THREE.LinearFilter;
+  t.minFilter = THREE.LinearFilter;
+  t.needsUpdate = true;
+  return t;
+}
+
+/** Autour du voile, en cases : ses bords adoucis débordent du lieu. */
+const VOILE_DEBORDE = 8;
+
 /** La hauteur du soulèvement du lieu choisi (en cases), et le temps qu'il met à monter (ms). */
 const SOULEVEMENT = { hauteur: 1, dureeMs: 220 };
 
@@ -172,8 +201,9 @@ export function creerAmenagement(monde: Monde, reduit: boolean, camera: THREE.Pe
   let cases: THREE.InstancedMesh | null = null;
   const m = new THREE.Matrix4();
   const couleur = new THREE.Color();
-  // Le voile de brume d'Archipéo : un plan au-dessus du lieu, un appel de dessin le temps du geste.
-  const voileMat = blocs ? null : new THREE.MeshBasicMaterial({ map: mistTexture(), transparent: true, opacity: 0, depthWrite: false });
+  // Le voile de brume d'Archipéo : un plan au-dessus du lieu, qui glisse de l'ancienne place à la nouvelle, un appel de
+  // dessin le temps du geste.
+  const voileMat = blocs ? null : new THREE.MeshBasicMaterial({ map: textureDuVoile(), transparent: true, opacity: 0, depthWrite: false });
   const voile = voileMat ? new THREE.Mesh(new THREE.PlaneGeometry(1, 1), voileMat) : null;
   if (voile) {
     voile.rotation.x = -Math.PI / 2;
@@ -225,17 +255,20 @@ export function creerAmenagement(monde: Monde, reduit: boolean, camera: THREE.Pe
   const zone = (r: { x0: number; y0: number; x1: number; y1: number }) => zoneDuMode.uAmZone.value.set(r.x0, r.y0, r.x1, r.y1);
 
   /** Les valeurs des matériaux à l'heure `now` : le geste d'abord, sinon le lieu soulevé, sinon rien. */
-  const regler = (now: number) => {
+  const regler = (maintenant: number) => {
+    // Les captures tiennent le geste à un moment choisi (`__dysappsGesteA`).
+    const tenue = window.__dysappsGesteA;
+    const now = enCours && typeof tenue === 'number' && Number.isFinite(tenue) && (import.meta.env.DEV || mesuresDemandees()) ? enCours.debut + tenue : maintenant;
     if (enCours) {
       if (blocs) {
         zone(enCours.zone);
         zoneDuMode.uAmLift.value = 0;
         zoneDuMode.uAmCut.value = gestureCut(enCours, now);
       } else if (voile && voileMat) {
-        const r = enCours.zone;
+        const r = veilZone(enCours, now);
         voile.visible = true;
         voile.position.set((r.x0 + r.x1) / 2, enCours.haut, (r.y0 + r.y1) / 2);
-        voile.scale.set(r.x1 - r.x0 + 8, r.y1 - r.y0 + 8, 1);
+        voile.scale.set(r.x1 - r.x0 + VOILE_DEBORDE * 2, r.y1 - r.y0 + VOILE_DEBORDE * 2, 1);
         voileMat.opacity = 0.95 * veilOpacity(enCours, now);
       }
       return;

@@ -253,6 +253,11 @@ export function WorldPage() {
     versMonde: (p) => grille.versMonde(p),
     reunion: textes.reunion,
     liaisons: textes.liaisons,
+    hautDuLieu: (id) => {
+      let h = -Infinity;
+      for (const c of cubes) if (c.tag === id && c.z > h) h = c.z;
+      return Number.isFinite(h) ? h : undefined;
+    },
   });
   const enAmenageant = mapOpen && amenagement.ouvert;
   useEffect(() => {
@@ -1022,7 +1027,7 @@ export function WorldPage() {
             liaisonCadree={fiche?.cadrer && fiche.objet.genre === 'ouvrage' ? fiche.objet.id : null}
             // Dans le mode « Aménager », « Poser ici » ou ✓ Terminé est le seul élément mis en avant.
             marker={enAmenageant ? null : marker}
-            amenager={enAmenageant ? { vue: amenagement.vue } : null}
+            amenager={enAmenageant ? { vue: amenagement.vue, cadre: amenagement.cadre } : null}
             geste={amenagement.geste}
             imageDeLaCarte={imageDeLaCarte}
             vehicle={vehicle}

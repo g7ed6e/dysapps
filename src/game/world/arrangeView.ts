@@ -144,7 +144,10 @@ export function arrangeView(world: World, c: ArrangeChoice): ArrangeView {
       // Soulevés : les deux lieux réunis, et leur réunion.
       const ici2 = lieux.map((id) => landRectangle(placeIn(world, id)));
       const zone = joinsIn(world, a).find((j) => j.pair.includes(c.id))?.shape.zone;
-      return { cases: out, souleve: union(zone ? [...ici2, zone] : ici2), suivre: milieu(out.slice(0, debut), eau), barrees: relink };
+      // La vue garde entier le fantôme : les deux lieux réunis et leur réunion, pas seulement son milieu.
+      const fantome = out.slice(0, debut);
+      const cadre = fantome.length ? { rect: union(fantome.map((q) => ({ x0: q.x, y0: q.y, x1: q.x + 1, y1: q.y + 1 }))), z: eau, seq: 0 } : undefined;
+      return { cases: out, souleve: union(zone ? [...ici2, zone] : ici2), suivre: milieu(fantome, eau), barrees: relink, ...(cadre ? { cadre } : {}) };
     }
     case 'gardien': {
       const r = guardianIsletRectangle(ici, c.place);
