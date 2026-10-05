@@ -1,12 +1,10 @@
 import type { VoxelCube } from './cube';
-import { surfaceOf } from '../pixel/surface';
 import { getArchipelago } from './archipelago';
 import { toutConstruit } from './budget';
-import { DECOR_BATI, REPERES } from './decor';
+import { DECOR_BATI, REPERES, decorPose, kindOf } from './decor';
 import { champDuSol, landMesh, poseDuDecor, signatureDuChamp } from './landMesh';
 import { ARCHIPELAGO_IDS, type ArchipelagoId } from './map';
 import { walkGround } from './paths';
-import { decorPose, kindOf, propsOf } from './props';
 import { creaturePlacements, seaDecor, worldCubes } from './terrain';
 
 const parties = (a: ArchipelagoId) => {
@@ -33,7 +31,7 @@ it('les repères, les cascades et l’habillage de la mer ont un nom de décor, 
   expect(decorPose(undefined)).toBe(false);
 });
 
-it('nommer le décor bâti ne fait bouger aucun des quatre archipels : sol, pente, marche, 2D, décor rangé', () => {
+it('nommer le décor bâti ne fait bouger aucun des quatre archipels : sol, pente, marche, décor', () => {
   // Les mêmes mondes, avec et sans les noms du décor bâti : tout ce qui lit les noms de décor rend la même chose.
   const sansNom = (cubes: VoxelCube[]) => cubes.map((c) => (bati(c) ? { ...c, decor: undefined } : c));
   for (const a of ARCHIPELAGO_IDS)
@@ -52,12 +50,6 @@ it('nommer le décor bâti ne fait bouger aucun des quatre archipels : sol, pent
       // La marche du bonhomme et des créatures.
       const creatures = creaturePlacements(a, toutConstruit().world.links);
       expect([...walkGround(cubes, creatures).feet]).toEqual([...walkGround(avant, creatures).feet]);
-      // La vue 2D : son sol vu de dessus et ses sprites.
-      expect([...surfaceOf(cubes)]).toEqual([...surfaceOf(avant)]);
-      const [r, s] = [propsOf(cubes), propsOf(avant)];
-      expect(r.props).toEqual(s.props);
-      expect(r.stations).toEqual(s.stations);
-      expect(r.terrain.length).toBe(s.terrain.length);
     }
 }, 120_000);
 

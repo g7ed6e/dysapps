@@ -58,7 +58,7 @@ export interface ElementDeDecor {
   auLoin?: true;
 }
 
-/** Les genres dessinés en primitives : le décor rangé de la 2D (arbres, buissons, rochers…) et le décor bâti. */
+/** Les genres dessinés en primitives : le décor rangé (arbres, buissons, rochers…, ./props.ts) et le décor bâti. */
 const EN_PRIMITIVES: ReadonlySet<string> = new Set<string>([...PROP_KINDS, ...DECOR_BATI]);
 
 /** Les genres dont le nom porte la case du monde (« genre@x,y ») ; le décor du cœur porte une case du cœur. */
@@ -100,7 +100,7 @@ export function rangerLeDecor(cubes: VoxelCube[]): { elements: ElementDeDecor[];
       x = px;
       y = py;
     } else {
-      // Comme la 2D (./props.ts) : le pied du tronc s'il y en a un ; sinon la case que nomme le décor du paysage (un
+      // Le pied du tronc s'il y en a un ; sinon la case que nomme le décor du paysage (un
       // sapin dont le tronc tomberait sur le cœur n'y a que son feuillage) ; sinon le cube le plus bas.
       const tronc = list.filter((c) => c.texture === 'tronc');
       const pied = (tronc.length ? tronc : list).reduce((p, q) => (q.z < p.z || (q.z === p.z && (q.x < p.x || (q.x === p.x && q.y < p.y))) ? q : p));

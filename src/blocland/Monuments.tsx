@@ -1,5 +1,5 @@
 // Les monuments : de grands ouvrages classés, deux par archipel, chacun sur son îlot au large (l'observatoire des
-// baleines…). Ils emploient les blocs qui s'accumulent une fois les bâtiments finis. Dans le monde (3D, 2D) : un panneau
+// baleines…). Ils emploient les blocs qui s'accumulent une fois les bâtiments finis. Dans le monde en 3D : un panneau
 // par monument et un panneau de la liste ; en vue simple : des pages. Le même contenu.
 import { Link } from 'react-router-dom';
 import { Icon } from '../components/Icon';

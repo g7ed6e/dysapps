@@ -541,7 +541,7 @@ describe('Les toits de terre cuite (lot R5)', () => {
       expect(parCour.size, a).toBeGreaterThan(0);
       for (const n of parCour.values()) expect(n, a).toBeLessThanOrEqual(LANTERNES_ALLUMEES);
       for (const n of parBatiment.values()) expect(n, a).toBeLessThanOrEqual(FENETRES_ALLUMEES);
-      // La 2D (fenetresDe) et la 3D (le groupe des fenêtres) allument les mêmes : autant de décalages allumés.
+      // Le groupe des fenêtres allume celles que choisit `fenetresDe`, l'oracle : autant de décalages allumés.
       const m = maillageDeLaConstruction(a, cubes, sol);
       const allumes3D = new Set<string>();
       triangles(m.fenetres).forEach((t, i) => {
@@ -549,8 +549,8 @@ describe('Les toits de terre cuite (lot R5)', () => {
         const { cell } = caseDeLaConstruction(t.centre, t.n);
         allumes3D.add(cle(cell.x, cell.y, cell.z));
       });
-      const allumes2D = new Set([...f].filter(([, v]) => v.decalage >= 0).map(([c]) => cle(c.x, c.y, c.z)));
-      expect(allumes3D, a).toEqual(allumes2D);
+      const allumesOracle = new Set([...f].filter(([, v]) => v.decalage >= 0).map(([c]) => cle(c.x, c.y, c.z)));
+      expect(allumes3D, a).toEqual(allumesOracle);
       expect(m.opaque.aretes.length, a).toBe(m.opaque.positions.length / 3);
     }
     // Le verre hors d'un mur (au 6e : les jardinières de la Tour, les monuments) porte l'arête ; les autres blocs non.

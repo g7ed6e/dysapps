@@ -1,7 +1,7 @@
 // Le modelé dessiné d'une île (étape U2, docs/univers/univers.md §5) : la forme que le rendu d'un univers donne au
 // sol, par-dessus le relief de marche. Le relief de marche (../silhouettes/, lu par ../map.ts) porte la marche, les
 // plans, les trajets et les empreintes de la grille : il est commun aux univers, et Blocland le dessine tel quel. Le
-// modelé ne change que le sol à facettes d'Archipéo : ni la grille, ni les cubes de Blocland, ni la 2D.
+// modelé ne change que le sol à facettes d'Archipéo : ni la grille, ni les cubes de Blocland.
 
 /** Le modelé d'une île, en repère d'île (x et y en cases depuis le coin du cœur, comme ../silhouettes/types.ts). */
 export interface Modele {

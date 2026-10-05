@@ -65,7 +65,3 @@ Les deux univers jouent le même jeu. Ce qui change au dessin passe par un objet
 ## Le budget de dessin
 
 `world/budget.ts` fixe le budget d’un archipel tout construit et compte, sans Three.js, les triangles et les appels de dessin de chaque poste (sol, mer, décor, constructions, personnages…). Un test garde la somme sous le budget ; `npm run rendu:mesures` mesure la scène réelle dans Chromium, et `?mesures` l’affiche dans l’application. Un changement de code qui ne doit rien changer à l’image garde ces nombres à l’identique.
-
-## La vue 2D
-
-`blocland/pixel/` est une seconde vue, en Canvas 2D, sur le même contrat (`WorldCanvas2D.tsx`). Aucun écran ne l’affiche aujourd’hui : sans WebGL, l’élève a la liste des îles.

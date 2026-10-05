@@ -147,7 +147,7 @@ function fichier(n: string): string {
 }
 
 /**
- * Les couches pures du rendu : calculées sans Three.js, sans React ni une vue (three/, pixel/, les composants), testées
+ * Les couches pures du rendu : calculées sans Three.js, sans React ni une vue (three/, les composants), testées
  * sous jsdom. Elles ne lisent que le monde (world/), aucun paquet.
  */
 const PURES = [

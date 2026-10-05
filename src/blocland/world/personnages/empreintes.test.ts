@@ -3,9 +3,6 @@
 // `npx vitest run -u src/blocland/world/personnages/empreintes.test.ts` et le dit dans sa pull request ; ailleurs,
 // elles ne doivent pas bouger.
 import { BIOMES } from '../../biomes';
-import type { Facing } from '../../pixel/characters';
-import { ANGLE_DU_BONHOMME, GESTES_DU_PAS } from '../../pixel/personnagesPeints';
-import { rasterDuModele, type RasterDePersonnage } from '../../pixel/personnages';
 import { toutConstruit } from '../budget';
 import { ARCHIPELAGO_IDS } from '../map';
 import { creaturePlacements, guardianPlacements } from '../terrain';
@@ -69,15 +66,4 @@ describe('Empreintes des personnages en facettes', () => {
     expect({ ...toutes, bonhomme: `${empreinteDeFusion(b, b.os)} ${fnv(JSON.stringify(b.squelette))}` }).toMatchSnapshot();
   });
 
-  // Les sprites de la 2D peinte (pixel/personnages.ts), de jour et de nuit : leurs pixels et leur pied.
-  const sprite = (r: RasterDePersonnage) => `${r.largeur}×${r.hauteur} ${fnv(`${r.ax},${r.ay}|${Array.from(r.pixels).join(',')}`)}`;
-  it('les sprites de la 2D peinte, de jour et de nuit', () => {
-    const jourNuit = (f: FacettesDePersonnage, o: Omit<Parameters<typeof rasterDuModele>[1], 'light'>) => `${sprite(rasterDuModele(f, { ...o, light: 1 }))} ${sprite(rasterDuModele(f, { ...o, light: 0 }))}`;
-    const bonhomme = Object.fromEntries(
-      (['down', 'up', 'left', 'right'] as Facing[]).flatMap((d) => [0, 1].map((s) => [`${d}:${s}`, jourNuit(bonhommePeint(), { archipel: '6e', angle: ANGLE_DU_BONHOMME[d], gestes: s ? GESTES_DU_PAS : {} })])),
-    );
-    const creatures = Object.fromEntries(BIOMES.map((b) => [ile(b.id), jourNuit(creaturePeinte(b.id), { archipel: b.classe })]));
-    const sentinelles = Object.fromEntries(BIOMES.map((b) => [ile(b.id), jourNuit(sentinellePeinte(b.id), { archipel: b.classe, allumage: 0 })]));
-    expect({ bonhomme, creatures, sentinelles }).toMatchSnapshot();
-  });
 });

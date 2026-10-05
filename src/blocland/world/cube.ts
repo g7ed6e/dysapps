@@ -1,5 +1,5 @@
 // Le monde en cubes (la disposition en grille) : un cube, en cases du monde, et ce qu'on touche pour entrer quelque part.
-// Les vues le dessinent (Voxel.tsx en isométrique, three/ en 3D, pixel/ en 2D) ; la grille et la simulation le lisent.
+// Les vues le dessinent (Voxel.tsx en isométrique, three/ en 3D) ; la grille et la simulation le lisent.
 
 /**
  * Les lieux du village où l'on entre : l'école (ses trois portes, une par matière), la salle des trophées, et le lieu où
@@ -31,7 +31,7 @@ export interface VoxelCube {
   texture?: string;
   /** Île verrouillée : couleurs délavées (la texture est gardée, effacée vers le gris). */
   muted?: boolean;
-  /** Élément de décor dont le cube fait partie (« foret/arbre@12,4 ») : la vue 2D en fait un seul dessin. */
+  /** Élément de décor dont le cube fait partie (« foret/arbre@12,4 ») : le décor en fait un seul dessin. */
   decor?: string;
   /**
    * Cube du sol ou de la roche d'une île (lot R2) : le rendu Archipéo le dessine en facettes (world/landMesh.ts) au

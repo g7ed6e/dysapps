@@ -1,4 +1,4 @@
-// La simulation du monde, commune aux vues (3D, 2D) : la marche du bonhomme, la promenade des créatures, le temps du
+// La simulation du monde, commune aux vues : la marche du bonhomme, la promenade des créatures, le temps du
 // voyage, les touches du clavier et ce que fait un toucher sur le sol. Code pur : les vues ne font que dessiner ce que
 // ces fonctions calculent, à chaque image. Les temps sont en millisecondes (horloge de la page : `performance.now()`).
 import type { BiomeId } from '../biomes';

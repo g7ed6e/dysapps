@@ -5,8 +5,7 @@ import { clamp } from './math';
 export type FontChoice = 'luciole' | 'opendyslexic' | 'atkinson' | 'arial';
 export type ThemeChoice = 'cream' | 'night' | 'light';
 /**
- * La vue de Blocland : le monde en 3D, ou la liste des îles. Le monde en 2D (src/blocland/pixel/) n'est plus au choix :
- * il reste le repli d'un appareil sans WebGL, et la base d'un futur univers dessiné en 2D.
+ * La vue de Blocland : le monde en 3D, ou la liste des îles. Le monde en 2D n'existe plus (retiré le 5 octobre 2026).
  */
 export type WorldViewChoice = '3d' | 'list';
 /** La lumière du monde : celle de l'heure réelle (la nuit tombe le soir), ou toujours le jour. */

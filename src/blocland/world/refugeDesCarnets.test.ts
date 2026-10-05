@@ -16,7 +16,6 @@ import { sentinellePeinte, STATUES } from './personnages/sentinellesPeintes';
 import { sentinelleEnFacettes } from './personnages/sentinelle';
 import { ANGLE_DU_PAPILLON, PAPILLON_DE_CUIVRE } from './personnages/statues/3e';
 import { PAINTERS, SIZE } from './pixels';
-import { JOINT, nuanceDuMotif } from '../pixel/painted';
 import { planCells, plansFor } from './plans';
 import { HAUT_DES_NUAGES, NUAGES, nuagesDe, placeDesNuages } from './faune';
 import { bossIsletOrigin, HORS_DE_LA_COLONNE, ISLET_H, ISLET_W, viewYaw, worldBounds, worldCubes } from './terrain';
@@ -267,16 +266,6 @@ describe('les nuages des Îles du Ciel', () => {
       const w = Math.max(b.maxX - b.minX, b.maxY - b.minY);
       expect(placeDesNuages(a, b, w)).toEqual(nuagesDe(a).map(([fx, fy, len]) => ({ x: b.minX + fx * w, y: 12, z: b.minY + fy * (b.maxY - b.minY), len })));
     }
-  });
-});
-
-describe('le bardeau peint en 2D', () => {
-  it('ses joints sont ceux de la texture (world/pixels.ts), pixel pour pixel, sur un bloc de 16 × 16', () => {
-    const r = () => 0.5;
-    const joint = PAINTERS.bardeau.side(0, 3, r).join(',');
-    for (let y = 0; y < SIZE; y++)
-      for (let x = 0; x < SIZE; x++)
-        expect(nuanceDuMotif('ecailles', x, y) === JOINT, `${x},${y}`).toBe(PAINTERS.bardeau.side(x, y, r).join(',') === joint);
   });
 });
 

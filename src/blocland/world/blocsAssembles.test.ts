@@ -1,5 +1,5 @@
 // Le rendu des blocs assemblés (GD-2) dans les deux univers : chaque bloc a son motif (jamais la couleur seule), dans la
-// texture pixel de Blocland (3D et 2D) comme dans la construction taillée d'Archipéo (peint par le shader, sans un
+// texture pixel de Blocland comme dans la construction taillée d'Archipéo (peint par le shader, sans un
 // triangle de plus). Voir world/pixels.ts, world/palette.ts (`DETAILS_ASSEMBLES`) et world/construction.ts
 // (`MOTIF_ASSEMBLE`, `MOTIF_ASSEMBLE_GLSL`).
 import { BLOC, BLOCKS } from '../biomes';

@@ -614,8 +614,8 @@ export function sansToursDuCoeur(cubes: VoxelCube[]): VoxelCube[] {
 export type FenetresDuMonde = Map<VoxelCube, { genre: 'vitre' | 'lanterne'; decalage: number }>;
 
 /**
- * Les vitres et les lanternes d'un monde, avec leur décalage d'allumage (négatif : jamais allumée) : pour la 2D peinte,
- * qui les allume selon le même `eclatDeFenetre` que la 3D. Les bornes n'en ont pas, ni les cases que le phare de
+ * Les vitres et les lanternes d'un monde, avec leur décalage d'allumage (négatif : jamais allumée), selon le même
+ * `eclatDeFenetre` que la 3D : les tests de l'allumage le comparent au maillage. Les bornes n'en ont pas, ni les cases que le phare de
  * Grimoire remplace en 3D.
  */
 export function fenetresDe(cubes: VoxelCube[]): FenetresDuMonde {
@@ -884,7 +884,7 @@ export function maillageDeLaConstruction(
       });
   const avantLesPieces = cubes.filter((c) => (options.bornes || !c.quest) && !parUnModele(c));
   const dessines = archi?.remplacees.size ? avantLesPieces.filter((c) => !archi.remplacees.has(cle(c.x, c.y, c.z))) : avantLesPieces;
-  // Le genre des blocs se lit avant les pièces : une vitre prise entre deux pièces de mur reste une vitre (comme en 2D).
+  // Le genre des blocs se lit avant les pièces : une vitre prise entre deux pièces de mur reste une vitre.
   const genres = genresDesBlocs(avantLesPieces);
   const decalages = decalagesDe(genres);
   // Les trophées de la salle des trophées, quand le kit de l'archipel reprend la salle (au 6e, la halle en colombage ;

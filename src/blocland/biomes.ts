@@ -99,7 +99,7 @@ export type BlockId =
  * Les ressources sous leur mot de Blocland (« Les mots de Blocland », docs/univers/blocland/fiche.md). Les règles et la
  * sauvegarde ne connaissent que l'identifiant neutre : la ressource d'un lieu porte l'identifiant du lieu, la ressource
  * composée celui de sa région (`compound-6e`), les trophées `trophy-gold` et `trophy-crystal`, les blocs de finition
- * leur mot anglais. Le rendu de Blocland (world/, three/, pixel/) écrit ses blocs avec ses propres mots : `BLOC.pierre`.
+ * leur mot anglais. Le rendu de Blocland (world/, three/) écrit ses blocs avec ses propres mots : `BLOC.pierre`.
  */
 export const BLOC = {
   bois: 'french-6e-phonology',

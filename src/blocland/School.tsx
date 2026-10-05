@@ -1,6 +1,6 @@
 // L'école du village : sur l'île de l'école de chaque archipel, un bâtiment à trois portes (Français, Maths, Anglais).
 // Derrière chaque porte, les missions du portail de la matière ; chacune finie rapporte des blocs de l'île de l'école.
-// Un panneau dans le monde (3D, 2D), une page en vue simple : le même contenu.
+// Un panneau dans le monde en 3D, une page en vue simple : le même contenu.
 import { useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { SUBJECTS, type Subject } from '../apps/registry';
@@ -17,7 +17,7 @@ import { archipelagoOf } from './world/archipelago';
 import { UNIVERS } from '../core/univers';
 
 export const SCHOOL_TITLE = 'École du village';
-/** L'adresse de l'école (dans le monde en 3D ou en 2D : son panneau ; en vue simple : sa page). */
+/** L'adresse de l'école (dans le monde en 3D : son panneau ; en vue simple : sa page). */
 export const SCHOOL_PATH = '/adventure/school';
 const DOORS: Subject[] = ['french', 'maths', 'english'];
 

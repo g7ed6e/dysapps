@@ -1,7 +1,7 @@
 /* =====================================================================
    Archipéo — l'interface de l'explorateur
    Des panneaux sobres, opaques et géométriques, dans la palette de la planche : bleu nuit, bleu pétrole,
-   vert d'eau, sable et crème. Le monde (3D ou 2D, dessiné dans un canvas) garde son propre style.
+   vert d'eau, sable et crème. Le monde (en 3D, dessiné dans un canvas) garde son propre style.
    Règles dys conservées : texte courant en police lisible (≥ 18 px, interlignage ≥ 1,5), aligné à gauche,
    jamais en italique ni en capitales, toujours sur un fond uni. La police des titres (Montserrat grasse)
    ne sert qu'aux titres courts et au logotype ; tout texte à lire reste dans la police dys choisie.

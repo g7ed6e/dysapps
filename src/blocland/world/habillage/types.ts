@@ -24,8 +24,6 @@ export interface Habillage {
   personnages: 'modeles' | 'cubes';
   /** Les étiquettes des îles : voilées par la brume de profondeur, ou nettes. */
   etiquettes: 'voilees' | 'nettes';
-  /** Le monde en 2D : peint, ou en pixels. */
-  dessin2D: 'peint' | 'pixels';
   /** La créature d'une bulle et le Gardien d'un défi, hors de la scène : les modèles dessinés (en SVG sans la 3D), ou en cubes. */
   figures: 'modeles' | 'cubes';
   /**

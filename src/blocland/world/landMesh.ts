@@ -360,8 +360,7 @@ function autourDuCoin(champ: ChampDuSol, col: Colonne, k: number): (Colonne | un
 
 /**
  * Les cubes posés sur le sol, tels que la vue 3D les dessine sur le sol à facettes : le décor d'une case descendue au bas
- * de sa pente descend avec elle (voir `champDuSol`). Les autres cubes ne bougent pas. La 2D et la vue simple gardent
- * les cubes d'origine.
+ * de sa pente descend avec elle (voir `champDuSol`). Les autres cubes ne bougent pas.
  */
 export function poseDuDecor(champ: ChampDuSol, cubes: VoxelCube[]): VoxelCube[] {
   if (!champ.decorsAbaisses.size) return cubes;

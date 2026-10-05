@@ -166,8 +166,9 @@ it('la nuit, les surfaces bleuissent sans jamais devenir noires ; les lanternes 
   }
 });
 
-it('une seule nuit pour la 3D et la 2D : la formule d’avant, de la nuit au plein jour, sans rien changer', () => {
-  // La formule que la 2D peinte recopiait (pixel/painted.ts, jusqu'au lot R4), et celle des surfaces de la palette.
+it('une seule nuit : la formule d’avant, de la nuit au plein jour, sans rien changer', () => {
+  // La formule que la 2D peinte recopiait (pixel/painted.ts, retiré le 5 octobre 2026, dans l'historique git), et celle
+  // des surfaces de la palette.
   const avant2D = (a: (typeof ARCHIPELAGO_IDS)[number], c: number, light: number) => {
     const n = PALETTES[a].nuit;
     return mixColor(mixColor(multiplie(c, n.ambianceCiel), n.horizon, 0.3), c, Math.min(1, Math.max(0, light)));

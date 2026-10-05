@@ -3,7 +3,7 @@
 Ce document est un **plan**, construit étape par étape ; l’état de chaque étape est dans l’[état des chantiers](../pilotage/chantiers.md#séparer-le-jeu-du-rendu-j). Ses trois décisions ont été prises par le mainteneur le 28 septembre 2026 (§5). Il décrit comment isoler complètement la logique du jeu de son dessin, pour qu’une même logique serve trois rendus :
 
 - le **monde par cases** (Blocland) en **3D** (`src/blocland/three/`) ;
-- le même monde par cases en **2D** (`src/blocland/pixel/`) ;
+- le même monde par cases en **2D** (`src/blocland/pixel/`, retirée le 5 octobre 2026 (mot du mainteneur : « Oui on retire la 2d »)) ;
 - un mode où **les distances sont abstraites** (Archipéo) : tout le monde devient un réseau ; chaque île est un lieu, une maquette posée sur la mer, reliée aux autres par des liaisons, et le bonhomme ne marche plus.
 
 La vue simple (les pages HTML de Blocland) en est un quatrième consommateur : elle joue déjà tout le jeu sans aucune géométrie, preuve que la logique n’a pas besoin de cases.
@@ -83,7 +83,6 @@ src/blocland/
   disposition/  grille/ (terrain, decor, map, harbour, paths, ground) et reseau/
   world/        ce que les rendus partagent : palette, style, landMesh, décor, étiquettes, budget
   three/        la 3D
-  pixel/        la 2D
 ```
 
 ## 3. Les étapes
@@ -110,7 +109,7 @@ Une étape à la fois : chacune attend la fusion de la précédente.
 - **Le toucher** : il rend toujours une entité (une île, une borne, un ouvrage, une case d’un plan), jamais une case du monde. En réseau, toucher la mer ou une liaison rend l’ouvrage.
 - **La marche** : elle n’existe qu’en grille. En réseau, le bonhomme passe d’un lieu à l’autre par un trajet court le long de la liaison ; ni grille de marche ni marche libre. `world/scene.ts` sépare donc le trajet (commun) de la marche case à case (propre à la grille).
 - **Le voyage** : le départ et l’arrivée supposent un quai en coordonnées du monde ; ils passent en ancrages, et la durée d’une traversée ne dépend plus d’une distance en cases.
-- **La 2D peinte** : sa projection et son découpage en tuiles aiment une grille. Le réseau est d’abord un rendu 3D ; une 2D en réseau (chaque île peinte dans sa tuile, les liaisons en traits) serait une reprise notable de `WorldCanvas2D.tsx`, à cadrer avec le directeur artistique avec les lots 8 et 8b.
+- **La 2D peinte** : sa projection et son découpage en tuiles aiment une grille. Le réseau est d’abord un rendu 3D ; la vue 2D est retirée du code depuis le 5 octobre 2026 (l’historique git la garde).
 - **Les sauvegardes** : la séparation n’en migre aucune. Elle ne change aucun identifiant (îles, ouvrages, plans), et les clés des plans restent en cases du plan, avec des origines figées.
 - **Les captures de la documentation** : J0 à J5 et D n’en changent aucune ; J6 en ajoute sous son drapeau.
 - **Les performances** : `versMonde` se calcule une fois par île (une matrice), pas à chaque image pour chaque objet.

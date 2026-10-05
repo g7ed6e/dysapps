@@ -1,7 +1,7 @@
 // Les personnages d'Archipéo en facettes peintes (lot R6) : le bonhomme, les créatures et, plus tard, les sentinelles,
 // dessinés par le code en quelques primitives basse résolution, à côté de leurs modèles en cubes (./creatures.ts,
-// ./gardiens.ts, qui gardent l'emprise au sol). Code pur, sans Three.js : la vue 3D en fait un maillage, la 2D les
-// rastérise en sprites. Repère de Three.js, en blocs : X à droite, Y en haut (les pieds en 0), le visage vers −Z.
+// ./gardiens.ts, qui gardent l'emprise au sol). Code pur, sans Three.js : la vue 3D en fait un maillage. Repère de
+// Three.js, en blocs : X à droite, Y en haut (les pieds en 0), le visage vers −Z.
 //
 // Un personnage est une liste de pièces (tête, corps, bras…) : chacune pivote autour de son `pivot` et chaque triangle
 // sait à quelle pièce il appartient, et de quelle couleur de base il est peint (le rôle de cette couleur : dominante,
@@ -123,7 +123,7 @@ export function peindrePersonnage(pieces: Piece[]): FacettesDePersonnage {
  * Le rôle de chaque triangle : celui de sa couleur de base. Une couleur peinte sous deux rôles (la lueur et une
  * autre) n'est une lueur que dans une pièce qui brille.
  */
-export function rolesDesTriangles(f: FacettesDePersonnage): Role[] {
+function rolesDesTriangles(f: FacettesDePersonnage): Role[] {
   const roles = new Map<Couleur, Role[]>();
   for (const p of f.palette) roles.set(p.couleur, [...(roles.get(p.couleur) ?? []), p.role]);
   return Array.from(f.teintes, (c, t) => {

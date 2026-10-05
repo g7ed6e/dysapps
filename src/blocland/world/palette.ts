@@ -1,6 +1,6 @@
 // La palette d'Archipéo (lot R1 de la piste Rendu, docs/univers/archipeo/cadrage.md) : les couleurs du monde peint,
-// par archipel, de jour et de nuit. Code pur, sans Three.js : la 3D la lit dans l’univers Archipéo (voir rendu.ts), la 2D
-// peinte la lira au lot R7 ; le monde en blocs garde `AMBIENCE` et `palette()` de ./daylight, inchangés.
+// par archipel, de jour et de nuit. Code pur, sans Three.js : la 3D la lit dans l’univers Archipéo (voir rendu.ts) ; le
+// monde en blocs garde `AMBIENCE` et `palette()` de ./daylight, inchangés.
 //
 // - Le ciel : un dôme dégradé du zénith à l'horizon, avec une lueur juste au-dessus de la ligne d'horizon. La brume
 //   de profondeur prend la couleur de l'horizon : le lointain se fond dans le ciel au lieu de s'y découper.
@@ -8,7 +8,7 @@
 //   donne aux faces à l'ombre leur bleu.
 // - Les surfaces : une couleur de dessus et une de côté par sol (`Ground`) et par matière (`TextureKind`, les blocs et
 //   le décor), voilée d'une teinte propre à chaque archipel. La 3D les éclaire avec la couleur de jour ; la nuit
-//   (`light` = 0) sert aux vues sans lumière (la 2D) : un bleu de crépuscule, jamais un noir.
+//   (`light` = 0) : un bleu de crépuscule, jamais un noir.
 import { AMBIENCE, mixColor } from './daylight';
 import type { ArchipelagoId, Ground } from './map';
 import type { TextureKind } from './pixels';
@@ -389,8 +389,7 @@ export function multiplie(a: Couleur, b: Couleur): Couleur {
 
 /**
  * Une couleur à un moment du jour, entre la nuit (0) et le jour (1) : la nuit, sous la lune, puis relevée vers l'horizon
- * de nuit, pour rester un bleu, jamais un noir. La même pour la 3D (les surfaces de la palette) et la 2D peinte (les
- * couleurs sans matière, pixel/painted.ts).
+ * de nuit, pour rester un bleu, jamais un noir.
  */
 export function deNuit(a: ArchipelagoId, c: Couleur, light = 0): Couleur {
   const n = ambianceDe(a).nuit;

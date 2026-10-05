@@ -8,7 +8,7 @@ export function hexToRgb(hex: string): RGB {
 
 /**
  * La couleur délavée d'une île fermée : elle s'efface vers un gris clair, comme dans la brume. Le même calcul pour la
- * texture 3D, la vue simple et la 2D ; les composantes ne sont pas arrondies.
+ * texture 3D et la vue simple ; les composantes ne sont pas arrondies.
  */
 export function fadeRgb(r: number, g: number, b: number): RGB {
   const lum = r * 0.3 + g * 0.59 + b * 0.11;

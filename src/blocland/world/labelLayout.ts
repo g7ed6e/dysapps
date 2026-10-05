@@ -1,5 +1,5 @@
 // Écarter les étiquettes des îles pour qu'aucune n'en cache une autre (la Carte en montre une dizaine, sur deux lignes).
-// Calcul pur, en pixels d'écran, partagé par la vue 3D et la vue 2D : chaque étiquette essaie sa place, puis des places
+// Calcul pur, en pixels d'écran, pour la vue 3D : chaque étiquette essaie sa place, puis des places
 // voisines de plus en plus loin (dessous, dessus, de côté), et garde la première libre ; sinon la moins recouverte.
 
 export interface LabelBox {
@@ -221,7 +221,7 @@ export function replierLesSignes<R extends { visibles: boolean[] }>(
 }
 
 /**
- * Le placement des étiquettes d'une vue (3D ou 2D, DA-10) : celles dont l'île est sous l'interface ou hors du cadre ne
+ * Le placement des étiquettes d'une vue (DA-10) : celles dont l'île est sous l'interface ou hors du cadre ne
  * se montreront pas, et sont retirées avant l'écart pour ne pas pousser les autres ; les autres s'écartent de
  * l'interface (`zones`) et des `obstacles` (la flèche et le fanion de la Carte, les grands repères d'Archipéo) : avec
  * `carte`, les unes des autres aussi (voir `layoutLabels`) ; sans, seules celles posées dessus ou coupées par le bord

@@ -1,5 +1,5 @@
 // Les positions que reçoit une vue en grille (des ancrages : une île et un point dans son repère, étape J5), passées en
-// cases du monde, où la 3D et la 2D dessinent. Chaque champ garde son identité tant que le sien ne change pas : les
+// cases du monde, où la 3D dessine. Chaque champ garde son identité tant que le sien ne change pas : les
 // effets des vues en dépendent (poser les bornes, faire marcher le bonhomme, faire jaillir les éclats).
 import { useMemo } from 'react';
 import { dispositionEnGrille } from './world/grille';
