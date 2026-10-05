@@ -21,6 +21,11 @@ const LV2_LANGAGES = A_COUVRIR(
   'Médias, chansons et cinéma : rien ne s’emprunte ; il faudrait des documents inventés (programme de télévision, affiche de concert, message sur un réseau), comme ceux de c4.en.culture.langages en anglais (Studio des ondes, School and media).',
 );
 
+// Sciences et technologie : trois îles de 6e prévues (SVT, physique-chimie, technologie), choix C du mainteneur du
+// 5 octobre 2026 ; elles entrent au jeu après les îles sur la grille (GD-9). Le cycle 4 viendra ensuite.
+const SCIENCES_6E = A_COUVRIR('Prévu avec les trois îles de sciences de 6e (cadrage du contenu, « Les sciences et la technologie »).');
+const FABRIQUER = HORS('Fabriquer, mesurer pour de vrai, travailler en équipe : le travail de la classe, que l’application ne remplace pas.');
+
 export const EXCLUSIONS: Partial<Record<ProgrammeId, Exclusion>> = {
   // ---------- Cycle 3, français ----------
   'c3.fr.oral.comprendre-s-exprimer': HORS(ORAL),
@@ -76,4 +81,37 @@ export const EXCLUSIONS: Partial<Record<ProgrammeId, Exclusion>> = {
   'c3.hg.demarches.point-de-vue': A_COUVRIR('Questionner le point de vue d’un document : aucune question de la Fouille des siècles ni de la Pointe des paysages ne le fait encore ; prévu en niveau de plus.'),
   'c3.hg.demarches.ecrire-dire': HORS('Écrire et dire : l’application propose des réponses à choisir, sans rédaction ni micro.'),
   'c3.hg.demarches.raisonner': HORS('Enquêter, chercher en ligne, travailler en groupe : la démarche de classe, que l’application ne remplace pas.'),
+  // ---------- Cycle 3, sciences et technologie (SVT, physique-chimie, technologie) ----------
+  'c3.sv.demarches.observer': SCIENCES_6E,
+  'c3.sv.demarches.langages': SCIENCES_6E,
+  'c3.sv.demarches.responsable': SCIENCES_6E,
+  'c3.sv.vivant.classer': SCIENCES_6E,
+  'c3.sv.vivant.evolution': SCIENCES_6E,
+  'c3.sv.vivant.alimentation': SCIENCES_6E,
+  'c3.sv.vivant.developpement': SCIENCES_6E,
+  'c3.sv.vivant.matiere-organique': SCIENCES_6E,
+  'c3.sv.terre.systeme-solaire': SCIENCES_6E,
+  'c3.sv.terre.phenomenes': SCIENCES_6E,
+  'c3.sv.terre.peuplement': SCIENCES_6E,
+  'c3.sv.terre.environnement': SCIENCES_6E,
+  'c3.pc.demarches.experimenter': SCIENCES_6E,
+  'c3.pc.demarches.mesurer': SCIENCES_6E,
+  'c3.pc.demarches.langages': SCIENCES_6E,
+  'c3.pc.matiere.etats': SCIENCES_6E,
+  'c3.pc.matiere.grandeurs': SCIENCES_6E,
+  'c3.pc.matiere.melanges': SCIENCES_6E,
+  'c3.pc.matiere.mouvements': SCIENCES_6E,
+  'c3.pc.matiere.energie': SCIENCES_6E,
+  'c3.pc.matiere.circuit': SCIENCES_6E,
+  'c3.pc.matiere.signal': SCIENCES_6E,
+  'c3.te.demarches.concevoir': FABRIQUER,
+  'c3.te.demarches.representer': SCIENCES_6E,
+  'c3.te.demarches.numerique': SCIENCES_6E,
+  'c3.te.objets.evolution': SCIENCES_6E,
+  'c3.te.objets.fonction': SCIENCES_6E,
+  'c3.te.objets.fonctionnement': SCIENCES_6E,
+  'c3.te.objets.materiaux': SCIENCES_6E,
+  'c3.te.objets.recyclage': SCIENCES_6E,
+  'c3.te.objets.realiser': FABRIQUER,
+  'c3.te.objets.information': SCIENCES_6E,
 };

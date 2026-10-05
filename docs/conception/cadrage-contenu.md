@@ -95,6 +95,15 @@ Choix du mainteneur du 5 octobre 2026 (« C pour l’instant ») : commencer par
 - **Pas de carte à voir** tant qu’il n’y a pas d’écran pour elle : un document de géographie est un texte court, un petit tableau ou la description d’une photographie de paysage, quatre lignes au plus.
 - **Les étapes HG-n** : HG-1, le référentiel de 6e ; HG-2, les deux îles au jeu. À proposer ensuite : une frise à remettre dans l’ordre et une carte à toucher (écrans nouveaux), le point de vue d’un document, le cycle 4, et le nouveau programme de 6e à la rentrée 2027.
 
+### Les sciences et la technologie
+
+Choix du mainteneur du 5 octobre 2026 (« C ») : commencer par la 6e, avec trois îles, une de SVT, une de physique-chimie et une de technologie, avant le reste du collège.
+
+- **Le programme** : en 6e, une seule matière, « Sciences et technologie », dont le texte en vigueur est celui du BO n° 25 du 22 juin 2023 (le nouveau, du BO n° 24 du 11 juin 2026, s’applique en 6e à la rentrée 2027 : la bascule sera une étape à part). Le référentiel la découpe comme au collège : SVT (le vivant, la planète Terre), physique-chimie (matière, mouvement, énergie, signal), technologie (matériaux et objets techniques) ; chacune reprend les démarches communes qu’elle travaille. Fabriquer un objet en équipe est hors périmètre. Libellés et pages n’ont pas pu être vérifiés (téléchargement refusé depuis l’environnement de travail) : ils sont à relire avant la première île.
+- **Trois îles de 6e**, trois missions chacune, deux niveaux de huit items, sur les écrans existants : la question à trou et la question sur un document. Chaque mission mêle une notion, le lexique et un document court (un texte, un petit tableau de mesures, un schéma décrit en mots).
+- **Les mesures** se lisent sur un instrument décrit, jamais par un calcul (dyscalculie) ; aucun schéma à voir tant qu’il n’y a pas d’écran pour lui : il se légende par des mots à choisir.
+- **Les étapes SC-n** : SC-1, le référentiel de 6e et le contenu des trois îles, écrit en attendant le monde sur la grille ([GD-9](../gameplay/propositions/GD-9.md)) ; SC-2, l’entrée au jeu après la première pull request de GD-9, comme HG-2 ; puis, à proposer, un écran de schéma à légender, le cycle 4 (SVT, physique-chimie, technologie séparées) et le nouveau programme de 6e.
+
 ### Les problèmes situés dans l’archipel
 
 - **Un problème court, dans le monde de l’archipel** (pensé pour Archipéo, en pause depuis le 2 octobre 2026 ; les mêmes problèmes se jouent dans Blocland) : un pont entre deux falaises, un quai à clôturer, une traversée en bateau. La mission « Carnet du passeur » (Plaine des nombres, `maths-6e-calculation-word-problems-1` à `3`) les ouvre en 6e : une étape (longueur d’un pont, durée sans passer l’heure), puis le tour d’un quai et la durée qui passe l’heure pile, puis deux étapes (ce qui reste à poser, la largeur d’un quai à partir de son tour, l’heure d’arrivée).
