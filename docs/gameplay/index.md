@@ -1,0 +1,191 @@
+# Le jeu
+
+Ce document décrit le jeu de DysApps une seule fois, sans univers. Il dit les règles décidées par le mainteneur ; ce que l’application montre aujourd’hui, écran par écran, est dans le [manuel](../../www/manuel/blocland.md), et l’avancement de chaque lot dans [l’état des chantiers](../pilotage/chantiers.md).
+
+Le jeu est **themable** (décision du mainteneur, 2 octobre 2026) : il se décrit avec des mots neutres, et un univers n’apporte que son habillage, c’est-à-dire le mot qu’il affiche pour chaque mot neutre, son récit et son dessin. Blocland est l’univers par défaut et le seul où le jeu évolue, son dessin restant figé hors des lots communs ; ses mots sont dans sa [fiche](../univers/blocland/fiche.md). Archipéo est en pause depuis le 2 octobre 2026 ([son dossier](../univers/archipeo/game-design.md)). Un univers nouveau, dans l’espace ou sur la terre ferme, n’aurait qu’à remplir sa table : les règles ne bougent pas ([Plusieurs univers](../univers/univers.md), §4).
+
+Pour changer le jeu : une fiche `propositions/GD-<n>.md` (voir [Proposer un changement](propositions/modele.md)), relue par les agents, décidée par le mainteneur, inscrite dans [les décisions](decisions.md), puis versée dans ce document ; une fiche entièrement construite part dans `propositions/archives/`.
+
+## Le vocabulaire
+
+Le jeu en une phrase : l’élève avance de région en région, une par classe. Chaque région est faite de lieux, un par grand thème (une notion ou plusieurs), reliés par des liaisons qu’on construit. Dans chaque lieu, un habitant propose des missions ; chaque mission réussie pose une partie de la construction du lieu et rapporte la ressource du lieu. Un gardien propose le défi du lieu. Assez de défis réussis, et le passage vers la région suivante est prêt.
+
+| Mot neutre | En français dans ce document | Ce que c’est |
+| --- | --- | --- |
+| `region` | région | Le monde d’une classe (6e, 5e, 4e, 3e) |
+| `place` | lieu | L’endroit d’un grand thème (une notion ou plusieurs), avec ses missions, son habitant et son gardien |
+| `school` | école | Sur le lieu de départ, les missions de chaque matière, derrière une porte par matière |
+| `startPlace` | lieu de départ | Le premier lieu d’une région, avec l’école, la salle des succès et le lieu d’assemblage |
+| `hub` | point de départ des liaisons | Là d’où partent les liaisons et le passage |
+| `link` | liaison | Ce qu’on construit avec des ressources pour ouvrir un lieu |
+| `passage` | passage | Ce qui mène à la région suivante |
+| `resource` | ressource du lieu | Ce que fournit chaque lieu, une par lieu |
+| `compound` | ressource composée | Une ressource faite de deux ressources de lieux de la région, une par région |
+| `assembly` | lieu d’assemblage | Où l’on fait les ressources composées |
+| `stock` | stock | Les ressources de l’élève |
+| `structure` | construction du lieu | Ce que l’élève fait naître dans le lieu, partie par partie |
+| `part` | partie | Le morceau de la construction qu’une mission pose |
+| `trophyHall` | salle des succès | Où se posent les trophées des succès, sur le lieu de départ |
+| `landmark` | grande construction | Une construction de la région, hors des lieux, posée élément par élément |
+| `fixture` | aménagement | Ce qu’une commande livrée pose chez un habitant |
+| `request` | commande | Ce qu’un habitant demande d’apporter ; le mot « demande » de GD-7 est déjà celui de la mission (GD-5) |
+| `resident` | habitant | L’être du lieu, qui propose les missions et se souvient |
+| `guardian` | gardien | L’être qui propose le défi du lieu |
+| `challenge` | défi | La grande épreuve du lieu |
+| `placeState` | état d’un lieu | `closed` Fermé, `toExplore` À explorer, `inProgress` En chantier, `complete` Achevé |
+| `regionState` | état de la région | `abandoned` abandonnée, `reactivated` réactivée, `rebuilding` en reconstruction, `developing` en développement, `open` ouverte |
+| `avatar` | personnage de l’élève | Celui qui se tient dans le lieu où l’on est et se déplace le long des liaisons |
+| `role` | rôle | Le titre de l’élève selon son XP, cinq en tout |
+
+Les mots de l’école et de l’interface sont les mêmes dans tous les univers : expédition (une matière), mission, révision, étoiles, XP, rôle, succès, trophée, Menu, Réglages. Ce sont les repères de l’élève, de l’enseignant et du manuel.
+
+Le mot neutre est le mot anglais : c’est lui qu’emploient le code et la sauvegarde, sans mot d’univers (voir [La sauvegarde](#la-sauvegarde)). Ce document l’écrit en français pour se lire ; les textes affichés à l’élève sont en français et viennent de l’univers.
+
+## La promesse
+
+Un jeu d’entraînement pour les élèves dys du collège, de la 6e à la 3e, en français, maths, anglais et LV2, où **le savoir construit le monde** : chaque réussite fait naître quelque chose dans le monde, et le monde montre la progression. Le monde ouvert est au centre ([GD-4](propositions/GD-4.md)) : tout se passe dans le monde, et les chemins sont au choix. L’élève est un bâtisseur, pas un élève devant un manuel déguisé.
+
+## Ce qui ne se négocie jamais
+
+- **Rien à lire dans le monde** (3D ou 2D). Tout ce qui se lit est dans un panneau HTML, en police dys, lu à voix haute. Seule exception : les étiquettes des noms de lieux, dans la police de lecture, sur fond clair.
+- **Pas de chrono, pas de classement, pas de perte.** Rien ne se retire à l’élève : une ressource gagnée reste gagnée, un passage fait reste fait, un lieu où l’on a joué reste ouvert, un défi réussi le reste, même quand une mission arrive plus tard dans son lieu. Aucun lieu ne se ferme selon la maîtrise. Un manque se dit avec ce qu’il faut faire. Une sauvegarde ancienne est toujours migrée sans perte.
+- **Pas de réflexe.** Aucun geste ne demande de la vitesse ni de la précision ; toucher pour aller reste toujours possible.
+- **Des séances courtes.** On peut passer deux minutes dans le monde et repartir. Une pause est proposée après trois exercices ou dix minutes (« Belle séance ! »), sans rien bloquer.
+- **Le mouvement réduit** : quand le téléphone ou la tablette demande de réduire les animations (la préférence d’accessibilité de l’appareil, « Réduire les animations » ; ce n’est pas un réglage de l’appli), rien ne bouge plus : ciel figé, habitants immobiles, signes de ce qu’on peut faire immobiles et sans rebond, pas de particules, caméra sans trajet, passage en écran fixe, changement de région sans fondu.
+- **La vue simple est complète.** Tout ce qui se fait dans le monde se fait aussi en listes, sans WebGL ni Canvas : c’est aussi le chemin des lecteurs d’écran. Sans WebGL, l’appareil montre la liste des lieux.
+- **Pas de physique** : rien ne tombe, rien ne casse.
+- **Des cibles larges** (48 px au moins), et chaque geste du monde a un équivalent en bouton dans un panneau.
+- **Un seul élément mis en avant à la fois**, même quand plusieurs choix sont ouverts ; trois choix au plus en même temps.
+- **Un mot nouveau est expliqué la première fois**, et une même chose porte le même mot partout (panneaux, stock, manuel).
+- **Rien d’emprunté** : formes, textures, sons et noms sont les nôtres, dessinés ou générés par le code ([Style](../rendu/style.md)).
+- **Une tablette d’entrée de gamme suffit** : une région à la fois, et un test empêche le monde de grossir ; chaque univers a son plafond, dans sa fiche.
+
+Les principes dys complets : [Principes](../../www/pedagogie/principes.md).
+
+## Les régions et les lieux
+
+- **Quatre régions, une par classe**, une seule affichée à la fois : celle où se tient le personnage de l’élève. Chacune a son ambiance, sa Carte et son plafond de dessin.
+- **Un lieu par grand thème** (une notion ou plusieurs), de deux à quatre missions. Chaque lieu se distingue : un relief, un repère visible de loin, une forme. Les lieux de LV2 s’ajoutent dès la 5e, en bout de chemin : rien n’en dépend.
+- **Un lieu fermé** reste visible, délavé : on devine ce qui attend. Le toucher fait dire ce qu’il faut faire pour l’ouvrir.
+- **L’état d’un lieu** se déduit de la progression, jamais enregistré : Fermé, À explorer (ouvert, aucune mission réussie), En chantier, Achevé (toutes ses parties posées). Chacun a une icône et un mot, sur la Carte et en vue simple. Achevé récompense un lieu fini sans dépendre du défi.
+- **Une borne par mission**, devant le lieu, avec les étoiles gagnées ou un repère de mission pas encore réussie : la progression se voit dans le monde, et toucher la borne ouvre sa fiche, qui lance la mission.
+- **Ce qu’on peut faire maintenant se montre** (décision du mainteneur, 4 octobre 2026) : sur le lieu où l’on est, trois signes au plus, seulement sur ce qui se fait tout de suite (une mission, un défi de gardien, une grande construction ou une liaison payable, le passage, un habitant qui a une commande prête ou des révisions) ; l’image du signe dit le geste ; la prochaine chose à faire a le plus grand signe, le seul qui bouge ; rien pour ce qui n’est pas encore possible ni pour un lieu où entrer ; le signe se touche comme la chose. L’univers en apporte le dessin (dans Blocland, des bulles carrées).
+- **L’état de la région** se déduit aussi, en cinq degrés montrés au point de départ des liaisons : abandonnée (aucune partie posée), réactivée (une partie posée), en reconstruction (la construction du lieu de départ achevée et une liaison qui en part), en développement (en plus, une grande construction), ouverte (le passage vers la région suivante fait). En 3e, sans région suivante, l’état s’arrête à « en développement ». La montée d’un degré se dit une fois, avec un son.
+- **Deux vues au choix** (réglage « Vue du monde ») : le monde en 3D et la liste des lieux.
+- **Aménager sa région** ([GD-9](propositions/GD-9.md), décision du mainteneur, 5 octobre 2026) : sur la Carte, le mode « Aménager » déplace les lieux, fermés compris, sur une grille au pas de 4 cases, dans un cadre fixe par région, au moins 4 cases d’eau entre deux lieux ; il les tourne d’un quart de tour, déplace leurs bornes dans la bande de devant, leurs arrivées (`landing`, où arrivent les liaisons) sur la côte, et leur gardien autour d’eux, qu’il tourne aussi. Le lieu de départ reste fixe ; en 6e, les deux lieux ouverts au départ aussi. On touche ce qu’on déplace, puis la mer : un fantôme se cale sur la place libre la plus proche, des flèches le décalent, « Poser ici » le pose ; ↶, « Remettre comme avant » et, au menu, « Carte de départ » défont tout. Un lieu déplacé garde son dessin. La disposition est gardée avec la progression ; aucune n’est meilleure qu’une autre, rien n’en dépend.
+
+## La boucle
+
+La boucle ([GD-5](propositions/GD-5.md), modèle A ; [GD-6](propositions/GD-6.md)) :
+
+1. **Une mission est une demande de l’habitant.** Plusieurs missions sont ouvertes, mais un seul habitant fait signe à la fois : c’est la mission conseillée.
+2. **La première réussite d’une mission pose une partie** de la construction du lieu, d’un coup, sous les yeux de l’élève, quels que soient le niveau et les étoiles, jokers compris. La construction d’un lieu a une partie par mission (2 à 4) ; elles se posent dans l’ordre de la construction, quelle que soit la mission réussie, sans rien prendre au stock. La pose vient après l’écran de résultat, jamais par-dessus une réponse ni une consigne ; elle ne secoue pas, ne clignote pas, sans caméra brusque ; un toucher la passe ; quand l’appareil demande de réduire les animations, la partie apparaît posée d’un coup. L’écran de résultat dit quelle partie est posée, en une phrase courte écrite et lue à voix haute ; dans le monde, rien ne s’écrit par-dessus la pose (mainteneur, 4 octobre 2026) : la phrase revient seulement dans le panneau du lieu si on l’ouvre ; la vue simple le dit en mots.
+3. **Les ressources gagnées vont au stock**, selon le barème. Le lieu de départ fournit sa ressource dès la première séance : les missions de l’école la rapportent.
+4. **Un lieu achevé fournit sa ressource** aux missions rejouées et aux révisions dues que propose son habitant ; la révision rapporte sa ressource quand on la finit, quel que soit le score.
+5. **L’élève dépense son stock** pour les liaisons, les grandes constructions, le passage et les commandes. Seule la construction du lieu se pose seule : le reste est un geste de l’élève, qui choisit où dépenser.
+6. **Le défi du gardien** achève l’épreuve du lieu et compte pour le passage.
+
+Trois échelles : une mission (5 à 10 minutes, une partie posée) ; un lieu (quelques séances, le lieu achevé qui fournit sa ressource) ; une région (une année, la région transformée et le passage). Le savoir devient un outil petit à petit (modèle B : une notion maîtrisée ouvre un raccourci ou un embellissement, jamais un passage obligatoire), et les grands projets mêlent les matières en 4e et en 3e (modèle C), chacun par sa fiche.
+
+## Les missions, les révisions et les étoiles
+
+- **Une mission** donne 1 à 3 étoiles ; la meilleure est gardée. Elle a deux ou trois niveaux, et monte de niveau sur une partie quasi parfaite ([Exercices](../conception/exercices.md)).
+- **Les ressources** sont proportionnelles au score, avec un bonus aux étoiles et à la première fois ; une bonne réponse en rapporte au moins une. Une première mission rapporte cinq à sept ressources : de quoi payer une liaison. Le barème complet est une page générée ([Barème](https://g7ed6e.github.io/dysapps/pedagogie/bareme.html)).
+- **Les révisions** suivent la répétition espacée, question par question : une question manquée revient le lendemain, puis à J+3, J+7 et J+15 ; l’habitant du lieu les propose dans le monde. Ce sont les révisions dues, pas une mission maîtrisée rejouée à volonté. Le joker et les erreurs ne retirent rien de ce qu’elles rapportent (toujours autant qu’une mission sans faute), et aucun compteur de ressources à gagner ne s’affiche. L’habitant fait signe (un geste court, une fois, puis l’icône de la notion, fixe), puis propose à l’arrivée : « Reprendre » lance les révisions du lieu et ramène au lieu ; « Plus tard » ne coûte rien et le fait taire jusqu’à la visite suivante. Le menu garde le raccourci des révisions du jour.
+- **Au retour après une absence**, un seul habitant fait signe, avec une phrase courte, écrite et lue à voix haute, qui dit où en était le monde, sans durée ni baisse. L’habitant ne clignote pas, et la vue simple montre le même signe.
+
+## Les ressources
+
+- **Deux sortes seulement** : la ressource du lieu et la ressource composée. Aucune monnaie nouvelle, aucune jauge.
+- **Toute ressource de lieu paie toute liaison** : ce qu’on gagne n’importe où sert.
+- **Une ressource demandée** se montre par son icône et son nom, jamais par la seule couleur ; les nombres sont petits et dits en mots ; une seule phrase dit où la gagner ; on ne dit jamais « manquant ».
+- **La ressource composée**, une par région, n’est fournie par aucun lieu : elle se fait au lieu d’assemblage du lieu de départ, à partir de trois ressources de deux lieux de la région, une à la fois, sur une recette fixe et toujours affichée. Chacune demande de répondre à une question qui mêle les deux matières de la recette, sans XP ni étoiles ; rien ne se perd en cas d’erreur ou en quittant ([GD-2](propositions/archives/GD-2.md)). Les recettes, les questions et les noms propres à chaque univers sont dans `docs/contenu/assemblage.md`.
+- **Le stock dit, pour chaque ressource, ce qu’elle construit maintenant**, et chaque chantier est un lien qui y emmène. Quand une ressource ne sert à rien, il le dit honnêtement.
+- **Les ressources d’une région quittée servent encore** : la région suivante en demande un peu, en révision en spirale, puis les grands projets de 4e et de 3e. Ce qui est demandé ne bloque jamais, et une ressource qui manque se gagne par des missions rejouées ou des révisions dues.
+- **Les trophées des succès** ne sont pas des ressources : ils ne paient rien et restent dans la salle des succès. Les ressources d’avant [GD-6](propositions/GD-6.md) qui ne sont ni d’un lieu ni composées (les ressources rares, les finitions, les coffres déjà gagnés) restent dans la sauvegarde et se montrent en trophées : elles ne paient rien.
+
+## Les constructions
+
+- **La construction du lieu** a une partie par mission ; une partie se pose seule à la première réussite de chaque mission du lieu, dans l’ordre de la construction. Elle se dessine en trois étapes (le corps, le haut, les abords) : avec trois missions, une partie par étape ; avec deux, le corps, puis le haut et les abords ensemble ; avec quatre, le corps en deux (le bas, puis le haut), puis les deux autres. Les noms des parties viennent de ceux des étapes. Une partie posée donne le geste et le son de pose de l’univers et une phrase qui la nomme ; une étape achevée donne de l’XP, la réplique de l’habitant et une ligne datée au journal. Elle ne donne aucune ressource : sa finition est comprise dans la pose.
+- **Les grandes constructions**, deux par région, chacune à part, au large d’un lieu : 60 à 125 ressources de plusieurs lieux de la région, dont 4 à 8 ressources composées aux endroits qui comptent. Elles n’ouvrent rien et ne bloquent rien ; on les pose élément par élément, dans n’importe quel ordre, à son rythme. De l’XP, et un succès à la première.
+- **Les aménagements** se posent chez un habitant quand sa commande est livrée.
+- **La réunion** ([GD-9](propositions/GD-9.md)) : deux lieux ouverts voisins se réunissent par une construction de 4 cases de long, sur toute la largeur du côté commun, posée élément par élément comme une grande construction, payée en ressources des deux lieux, avec de l’XP, sans succès ; elle ne compte pas pour l’état « en développement ». Elle remplace leur liaison ; ensuite les deux lieux bougent ensemble et ne se séparent plus.
+- Un élément posé reste posé. Les éléments attendus se montrent en fantôme. Pour les grandes constructions et le passage, que l’élève pose lui-même, « Poser la suivante » ou « Poser tout ce que j’ai » évitent des dizaines de touchers.
+
+## Les liaisons
+
+Le point de départ des liaisons est **en étoile** ([GD-7](propositions/archives/GD-7.md)) :
+
+- **Depuis le point de départ, une liaison mène à chaque lieu de la classe**, sauf celui de la LV2, qui reste en bout de chemin, en plus des liaisons entre lieux voisins, qui restent en raccourcis. En 6e, deux lieux sont ouverts au départ, un de français et un de maths, déjà reliés : ensemble, ils font le point de départ. Quand la géographie ferme le passage (une grande construction, le gardien d’un autre lieu), un lieu reste à une liaison d’un lieu relié au point de départ : en 5e et en 4e, un lieu d’anglais (décision du mainteneur, 3 octobre 2026). Les liaisons du point de départ sont les mêmes dans tous les univers.
+- **Le prix du point de départ** : toute liaison qui part du point de départ coûte 4 ressources dans la première région, 5 dans les autres, pour qu’une séance en paie une, quelle que soit la direction : il y a toujours trois lieux au choix. Les raccourcis gardent leur prix (3 à 7), la liaison déjà construite au départ reste gratuite.
+- **Une liaison ne coûte que des ressources.** Seule celle qui monte d’un lieu demande aussi la première mission réussie de son lieu de départ, qui ne fait pas attendre. Aucun gardien ni aucun défi n’est la condition d’une liaison.
+- **Le jeu trace les liaisons** ([GD-9](propositions/GD-9.md)) : droites ou en L à un seul coude sur l’eau, jamais en biais, depuis une arrivée du lieu ; courtes jusqu’à 36 cases, longues jusqu’à 96. Le point de départ a des points d’attache à chaque pas sur ses quatre côtés. Aucune liaison n’en croise une autre : une place n’est proposée que si la liaison au point de départ y tient. Les raccourcis entre voisins (36 cases au plus) sont posés et payés par l’élève ; quand un déplacement en sépare un, il devient une liaison à reposer, gardée au stock, reposée gratuitement entre deux voisins, sans échéance. Le lieu de LV2 n’a pas de liaison directe au point de départ : il se relie par un raccourci.
+- **Les liaisons ne relient que des lieux d’une même région.** Une liaison possible se dessine en fantôme ; la toucher ouvre sa proposition sur le lieu ouvert qu’elle touche.
+- **Ouvrir un lieu se fête** par la transformation : la caméra va jusqu’au lieu qui s’ouvre, sans long trajet, et le trajet se passe toujours ; son habitant accueille.
+- **Une longue liaison ne donne pas de long trajet de caméra** : le personnage de l’élève prend le chemin le plus court en distance, pas en nombre de liaisons ; sur une liaison de plus de 36 cases, la caméra se pose sur un cadre qui tient le départ et l’arrivée et ne bouge plus, le personnage traverse ; aucun panneau n’attend l’arrivée, le monde reste en plein écran (décision du mainteneur, 4 octobre 2026) ; sur un petit écran, où ce cadre serait trop loin pour se lire, la caméra suit le personnage. Un toucher le fait arriver tout de suite ; quand l’appareil demande de réduire les animations, il apparaît à l’arrivée. La vue d’ensemble de la région cadre les liaisons du point de départ dès le début : elle ne bouge pas quand on les ouvre.
+- **Une seule suggestion, qui suit l’élève**, toujours au même endroit (le repère de la prochaine destination sur la Carte ; « Reprendre l’aventure » au menu en page, « Prochaine destination » et « Y aller » en vue simple), dite à voix haute avec sa raison, en phrases courtes, une idée par phrase (la liaison, puis le lieu qu’elle ouvre). L’ordre : le passage prêt à partir ; sinon le lieu où se tient le personnage de l’élève, où il est allé de lui-même, tant qu’il y reste une mission jamais jouée ou un objectif à faire tout de suite ; sinon une commande prête à livrer ; sinon un lieu ouvert pas commencé ; sinon la liaison suggérée, et la destination est le lieu d’où elle part. La liaison suggérée est, parmi celles qu’on peut construire et qui ouvrent un lieu de la région : celles vers un lieu de LV2 en dernier (il reste en bout de chemin) ; d’abord celles qu’on peut payer ; puis celle vers le lieu de la matière la moins jouée (les missions réussies au moins une fois de la matière dans la classe, divisées par son nombre de lieux dans la classe, pour qu’une matière n’ait pas l’air moins jouée parce qu’elle a moins de lieux ; jamais la moins réussie ; ni le défi, ni le portail, ni le mode bâtisseur ; la LV2 hors du calcul) ; à égalité, l’ordre des matières de `docs/contenu/archipel.md` (français, maths, anglais), puis la moins chère, puis un ordre fixe. La phrase dit la liaison et sa raison, la matière du lieu qu’elle ouvre, jamais une notion ni une note ; si aucune n’est payable, elle dit ce qu’il manque pour celle-là. Dans le panneau d’un lieu, le seul « Construire » principal est celui de la liaison que ce même ordre met en tête ; elle vient en tête de la liste, qui la nomme repliée. Sur le lieu d’où part la liaison suggérée, l’objectif du panneau est elle, même si le passage demande moins (sauf s’il est prêt à partir, ou si quelque chose se fait tout de suite) : la destination et le panneau disent la même phrase. « Y aller » et « Reprendre » mènent à ce lieu, la liaison mise en avant dans son panneau. Sans plus aucune liaison qui ouvre un lieu, la suggestion est l’objectif le plus proche (le passage), sinon ce qu’il faut pour le lieu de départ. Elle se déduit de la sauvegarde seule, sans hasard ni horloge : elle ne change pas tant que l’élève n’a rien fait, et deux élèves qui ne jouent pas les mêmes matières n’ouvrent pas les mêmes lieux. Les autres liaisons payables restent en fantôme, sans marque ; la liaison suggérée s’en distingue par une forme ou une icône, jamais par la seule couleur, et un fantôme de liaison se distingue d’un fantôme de partie.
+- **Sur la Carte**, les liaisons construites sont en trait plein, celles qu’on peut construire en fantôme, et l’état de chaque lieu se dit en mots. Quand la suggestion est une liaison, la Carte n’a qu’une marque de destination, la sienne : posée sur la liaison, côté lieu de départ, sur son premier tronçon, jamais au-delà de son milieu, la pointe vers la liaison, jamais vers une terre ; sa plaque porte l’icône des liaisons, la même que dans le panneau du lieu et le stock. Son tracé reste un fantôme, aux tirets plus épais et plus foncés que les autres, lisible de bout en bout : c’est le même élément mis en avant que la flèche. Aucune marque sur le lieu d’arrivée, aucun autre fantôme ne change, et les noms des lieux s’écartent de la flèche et du tracé sans se taire pour eux. Les commandes ne sont pas sur la Carte.
+
+## Les habitants, les commandes et les gardiens
+
+- **Un habitant par lieu** : il habite, propose les missions, se souvient, propose les révisions dues et parle à l’arrivée. Il se promène sans gêner les bornes ni les fantômes. Son signe est lent, sans clignoter, et la vue simple montre le même.
+- **Les commandes** ([GD-7](propositions/archives/GD-7.md), « Les précisions de la PR 3 ») : l’habitant d’un lieu de français, de maths ou d’anglais (jamais un gardien, jamais un lieu de LV2) demande 2 à 4 ressources d’un autre lieu de la région, ou la ressource composée de la région ; une commande par habitant, une seule fois, écrite avec le contenu du lieu (`docs/contenu/<lieu>.md`, « Les demandes »). Livrée, la commande pose un aménagement chez lui, un élément par ressource livrée, sans coffre ni XP ; elle n’ouvre ni ne ferme jamais un lieu.
+  - **Qui peut commander** : l’habitant d’un lieu ouvert où l’élève a réussi au moins une mission, quand le lieu qui donne la ressource est ouvert (pour la ressource composée, les deux lieux de sa recette) et que sa commande n’est pas encore livrée ; un habitant peut attendre en plus une étape de sa construction (le phare éclairé de la Tour du lecteur) : avant, sa commande n’arrive pas.
+  - **Quand** : la première commande d’une région n’arrive qu’après sa première liaison construite (décision du mainteneur, 3 octobre 2026) ; ensuite, on regarde à la fin d’une mission réussie, d’une liaison construite ou d’une livraison, jamais pendant une consigne, et une commande au plus arrive à chaque fois : la première, dans l’ordre de `docs/contenu/archipel.md`, parmi les habitants qui peuvent commander.
+  - **Combien** : trois ouvertes au plus par région ; à trois, une nouvelle n’arrive qu’après une livraison. Celles d’une région quittée restent, retrouvées en y revenant, et ne bloquent pas la suivante. Le panneau du lieu, le menu et la vue simple montrent celles de la région où se tient le personnage de l’élève, dans l’ordre d’arrivée, la plus ancienne en tête ; l’ordre ne change que quand une commande est livrée.
+  - **Une seule mise en avant** : la plus ancienne des prêtes (les ressources sont dans le stock). Elle devient à son tour la suggestion (après le passage prêt et le lieu où l’élève est allé de lui-même) ; sinon elle n’est mise en avant que dans la liste.
+  - **Livrer** : on livre chez l’habitant : « Y aller » mène sur son lieu, sa ligne mise en avant, puis « Livrer » se touche dans le panneau du lieu (et sa page en vue simple), au même endroit et de la même forme que « Construire ». Jamais de « Livrer » grisé : tant qu’il manque des ressources, la ligne dit ce qu’il faut faire et « Y aller » mène au lieu qui les donne (ou au lieu d’assemblage). La ressource sort du stock, l’aménagement se pose, une phrase le dit, écrite et lue.
+  - **Le signe** : l’habitant qui a une commande prête et suggérée fait le signe des révisions, avec l’image de la ressource demandée ; prête mais pas suggérée, pas de signe de commande ; un seul signe par habitant (la commande d’abord, sinon les révisions).
+  - **La sauvegarde** garde la liste ordonnée des commandes arrivées et pas encore livrées (un champ facultatif : une sauvegarde d’avant les commandes se lit sans rien perdre) ; une commande livrée se reconnaît à son aménagement posé, sans champ de plus.
+  - **La liste** est toujours au même endroit (panneau du lieu, menu, vue simple), avec l’habitant, l’objet en icône et en nom, et une phrase qui dit le lieu et le geste, jamais une notion ni une note. La phrase se relance, et l’objet porte le même nom partout (liste, stock, réplique). La liste tient en OpenDyslexic à la plus grande taille, sur tablette (800 × 1280) et sur téléphone, sans texte coupé, avec des cibles de 48 px au toucher comme au clavier. La fête d’un aménagement ne passe jamais sur une consigne ni sur une réplique. Une commande n’a ni délai ni échéance, ne disparaît pas, ne rend personne triste et ne se rate pas ; l’ignorer ne coûte rien. « Commande » est expliqué la première fois, par une phrase en tête de la liste, tant qu’aucune commande n’a été livrée. Ignorer une commande, c’est ne pas la livrer : ni bouton, ni relance, ni perte.
+- **Un gardien par lieu**, à côté du lieu, là dès que le lieu s’ouvre, éteint ([GD-8](propositions/archives/GD-8.md), décision du mainteneur, 4 octobre 2026). Son défi s’ouvre avec les étoiles des missions du lieu et le rallume : chaque épreuve réussie lui rend une part de son éclat, une épreuve ratée n’éteint rien ; réussi, il le reste. Au retour dans le monde, il se rallume sous les yeux de l’élève, une fois par appareil, trois au plus à la suite, d’un coup quand l’appareil demande moins d’animations. Le mot est « rallumer », jamais « vaincre ». Un gardien ne fait jamais de commande.
+- **Le mot des grandes étapes** : un habitant de la région le dit, une fois par appareil, aux grandes étapes seulement (l’arrivée dans la région, le dernier défi réussi, la construction du lieu de départ achevée, la première liaison payée). Les étapes se déduisent de la sauvegarde ; une seule parle à la fois, la plus grande.
+
+La liste des habitants et des gardiens, lieu par lieu, avec ce qui change d’un univers à l’autre : [Personnages et Gardiens](personnages.md).
+
+## Le passage
+
+- **Une seule construction qui grandit, trois passages** : elle reçoit un élément nouveau à chaque passage (6e vers 5e, 5e vers 4e, 4e vers 3e). Elle se construit au point de départ des liaisons, élément par élément, avec les ressources de la région ; aucune ressource rare.
+- **Les éléments clés arrivent avec les défis** : ils apparaissent quand assez de défis de la région sont réussis (3, puis 2, puis 2), même si des lieux ne sont pas achevés. L’élève pose tout le reste lui-même.
+- **Partir est un acte explicite** (un bouton), jamais l’effet du dernier élément. L’XP et le succès arrivent au départ.
+- **Le premier passage** vers une région se joue en entier (huit secondes au plus) ; un toucher, Entrée, Espace ou Échap le font arriver. Ensuite, changer de région est discret : un fondu d’une demi-seconde, et le choix d’une région atteinte d’un toucher. **On revient toujours** à une région précédente.
+- Un élève de 3e passe d’abord par les régions de 6e, 5e et 4e ; dans une région, rien n’est imposé.
+
+## Le lieu de départ
+
+Le lieu de départ de chaque région rassemble ce qui était un portail à part : **un seul jeu**, où chaque chose de l’application a sa place dans le monde.
+
+- **L’école**, là dès le début, qu’on ne construit pas : trois portes, une par matière, et derrière elles les missions du portail. Elles rapportent la ressource du lieu de départ de la région où se tient l’élève, au barème des missions, et ne comptent ni pour le défi ni pour les étoiles des lieux.
+- **La salle des succès** : un trophée par succès, à une place fixe, dans l’ordre de la liste. La salle garde douze places, puis s’agrandit d’une travée au 13e succès et au 19e, jusqu’à 8 × 3 cases ; rien n’est posé sur son toit ([GD-3](propositions/archives/GD-3.md)). Une travée apparaît entière, d’un coup, sans mouvement imposé ni son.
+- **Le lieu d’assemblage**, où se font les ressources composées.
+- **En trois bandes** : devant, les bornes seules ; au milieu, la salle des succès, une place libre, puis l’école ; au fond, la construction du lieu et le lieu d’assemblage. Rien ne se pose devant la porte d’un lieu ni une case autour. Les coordonnées sont dans le code (`world/terrain.ts`, `world/plans.ts`, `world/trophyHall.ts`).
+
+## La vie du monde
+
+- **Le jour et la nuit selon l’heure réelle** (aube 7 h, crépuscule 20 h), avec une nuit toujours claire ; le réglage « La lumière du monde » garde le jour, et c’est le jour tant que le premier tutoriel n’est pas vu.
+- **Les sons** sont générés par le code. Par défaut, seuls les sons d’action ; l’ambiance est un réglage. Jamais de son pendant la lecture à voix haute.
+- **Le personnage de l’élève** se tient dans le lieu où l’on est et se déplace de lieu en lieu le long des liaisons construites ; vers un lieu fermé, il reste où il est. La caméra le suit, sauf sur une longue liaison, où elle reste fixe ([Les liaisons](#les-liaisons)) ; quand l’appareil demande de réduire les animations, il apparaît à l’arrivée.
+- **Les célébrations sont sobres** : transformation du décor, lumière, son court, jamais de pluie de confettis, et jamais par-dessus un panneau qu’on lit.
+
+## L’XP, les rôles et les succès
+
+- **L’XP** monte à chaque mission, partie posée, liaison, grande construction et passage ; **cinq rôles** selon l’XP, sans divisions, nommés par chaque univers.
+- **Les succès** sont peu nombreux ; chacun pose un trophée dans la salle des succès.
+- Les récompenses servent d’abord le monde ; la maturité vient de l’autonomie et de la profondeur, jamais d’un ton plus sombre.
+
+## La sauvegarde
+
+La sauvegarde est commune aux univers : la progression passe de l’un à l’autre. Ses clés, ses champs et ses identifiants sont neutres et en anglais, sans mot d’univers (décision du mainteneur, 2 octobre 2026) : `game` (avec `stock` et `world`, qui range `parts`, `links`, `place` et, facultatif, `requests`, les commandes arrivées ; l’aménagement d’une commande livrée se range dans `parts` sous l’identifiant `<lieu>-fixture-<n>`), `progress`, `settings`, `resume`. Un lieu a pour identifiant sa matière, sa classe et son thème (`french-6e-phonology`, `french-5e-homophones`, `english-6e-grammar`, `lv2-3e-travel`), la langue de la LV2 restant sur l’exercice ; sa ressource a le même identifiant ; une partie, une liaison, une grande construction et un exercice se nomment à partir de leur lieu ou de leur région (`french-6e-phonology-1`, `landmark-6e-1`, `french-6e-phonology-syllables-warmup-001`), le défi d’un lieu `<lieu>-challenge`, le passage `passage-5e`, la ressource composée `compound-6e`, une mission par sa notion (`syllables`) ; les classes restent `6e` à `3e`. La disposition de [GD-9](propositions/GD-9.md) (place et orientation des lieux, des gardiens, des bornes et des arrivées, lieux réunis, liaisons posées et à reposer) est un champ facultatif, `layout` : absent ou invalide, c’est la carte de départ. Les adresses de l’application emploient les mêmes mots (`#/adventure/<lieu>/<mission>`).
+
+Rien ne se perd au changement de format : la partie porte un numéro de version, une sauvegarde ancienne est traduite au chargement avant que l’ancienne clé soit effacée, un fichier de sauvegarde ancien se restaure puis passe par la même traduction, et les anciennes adresses mènent aux nouvelles. Une sauvegarde gelée n’est pas réécrite.
+
+## Les univers
+
+Un univers change le récit, les noms, le dessin et l’habillage de l’interface ; jamais les règles, la progression ni la sauvegarde. Il fournit :
+
+- **sa table de mots**, un mot affiché pour chaque mot neutre de ce document ;
+- **son récit et son ton** ;
+- **son dessin**, dans son plafond, et son geste de pose ;
+- **ses textes** : noms des lieux, des habitants, des gardiens, des ressources et des rôles, répliques.
+
+Blocland : [sa fiche](../univers/blocland/fiche.md) et [son cadrage](../univers/blocland/cadrage.md). Archipéo, en pause : [son dossier](../univers/archipeo/game-design.md).

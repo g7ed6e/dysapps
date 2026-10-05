@@ -8,7 +8,7 @@ import { mkdirSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { createServer } from 'vite';
 import { chromium } from 'playwright-core';
-import { capturer, figeable } from '../prise-de-vue.mjs';
+import { attendreLaScene, capturer, figeable, hasardFixe } from '../prise-de-vue.mjs';
 
 const root = process.cwd();
 const OUT = join(root, 'www', '_captures');
@@ -22,13 +22,13 @@ await server.listen();
 const base = server.resolvedUrls.local[0].replace(/\/$/, '');
 const load = (p) => server.ssrLoadModule(p);
 const [{ BIOMES }, { plansFor, planCells }, { VEHICLE_STAGES }, { MONUMENTS }, { BADGES }, { BRIDGES }, { CATALOG }] = await Promise.all([
-  load('/src/blocland/biomes.ts'),
-  load('/src/blocland/world/plans.ts'),
-  load('/src/blocland/world/vehicle.ts'),
-  load('/src/blocland/world/monuments.ts'),
+  load('/src/game/biomes.ts'),
+  load('/src/game/world/plans.ts'),
+  load('/src/game/world/vehicle.ts'),
+  load('/src/game/world/monuments.ts'),
   load('/src/core/progress.ts'),
-  load('/src/blocland/world/archipelago.ts'),
-  load('/src/blocland/exercises/index.ts'),
+  load('/src/game/world/archipelago.ts'),
+  load('/src/game/exercises/index.ts'),
 ]);
 
 // ---------- Des parties préparées ----------
@@ -47,96 +47,101 @@ function stars(islands, n = 2) {
   }
   return out;
 }
-const guardians = (islands) => Object.fromEntries(islands.map((id) => [`${id}-gardien`, { stars: 2, attempts: 1, best: 0.8 }]));
+const guardians = (islands) => Object.fromEntries(islands.map((id) => [`${id}-challenge`, { stars: 2, attempts: 1, best: 0.8 }]));
 const badges = (n) => Object.fromEntries(BADGES.slice(0, n).map((b, i) => [b.id, new Date(2026, 8, 1 + i).toISOString()]));
 
 /** Le début : deux missions jouées dans la Forêt, la cabane commencée. */
 const EARLY = {
-  blocland: {
-    inventory: { bois: 9, brique: 4 },
-    progress: stars(['foret'], 2),
-    village: { plans: { [plansFor('foret')[0].id]: keys(plansFor('foret')[0], 12) }, bridges: ['foret-plaine'], at: 'foret' },
+  game: {
+    stock: { 'french-6e-phonology': 9, 'maths-6e-calculation': 4 },
+    progress: stars(['french-6e-phonology'], 2),
+    world: { parts: { [plansFor('french-6e-phonology')[0].id]: keys(plansFor('french-6e-phonology')[0], 12) }, links: ['french-6e-phonology-maths-6e-calculation'], place: 'french-6e-phonology' },
   },
   progress: { xp: 180, totalAnswers: 40, correctAnswers: 31, sessionsCompleted: 4, badges: badges(3) },
 };
-/** Assez de bois pour finir la cabane de Mousso. */
-const CABANE_READY = { ...EARLY, blocland: { ...EARLY.blocland, inventory: { bois: planCells(plansFor('foret')[0]).length } } };
 /** Au milieu des Premiers Rivages : des îles ouvertes, des bâtiments finis, la coque du navire commencée. */
 const six = islandsOf('6e');
 const MID = {
-  blocland: {
-    inventory: { bois: 14, brique: 22, pierre: 9, terre: 6, sable: 5, galet: 4, verre: 3, or: 2 },
-    progress: { ...stars(['foret', 'plaine', 'mine', 'ferme', 'riviere'], 2), ...stars(['foret'], 3), ...guardians(['foret', 'plaine']) },
-    village: {
-      plans: {
-        ...Object.fromEntries(['foret', 'plaine'].flatMap((id) => plansFor(id).slice(0, 2).map((p) => [p.id, keys(p)]))),
-        ...Object.fromEntries(['mine', 'ferme'].map((id) => [plansFor(id)[0].id, keys(plansFor(id)[0])])),
-        [plansFor('riviere')[0].id]: keys(plansFor('riviere')[0], 10),
+  game: {
+    stock: { 'french-6e-phonology': 14, 'maths-6e-calculation': 22, 'french-6e-letter-confusion': 9, 'french-6e-grammar-spelling': 6, 'french-6e-word-spelling': 5, 'maths-6e-fractions': 4, 'french-6e-reading': 3, 'trophy-gold': 2 },
+    progress: { ...stars(['french-6e-phonology', 'maths-6e-calculation', 'french-6e-letter-confusion', 'french-6e-grammar-spelling', 'maths-6e-fractions'], 2), ...stars(['french-6e-phonology'], 3), ...guardians(['french-6e-phonology', 'maths-6e-calculation']) },
+    world: {
+      parts: {
+        ...Object.fromEntries(['french-6e-phonology', 'maths-6e-calculation'].flatMap((id) => plansFor(id).slice(0, 2).map((p) => [p.id, keys(p)]))),
+        ...Object.fromEntries(['french-6e-letter-confusion', 'french-6e-grammar-spelling'].map((id) => [plansFor(id)[0].id, keys(plansFor(id)[0])])),
+        [plansFor('maths-6e-fractions')[0].id]: keys(plansFor('maths-6e-fractions')[0], 10),
         [VEHICLE_STAGES[0].id]: keys(VEHICLE_STAGES[0], 24),
         [MONUMENTS[0].id]: keys(MONUMENTS[0], 50),
       },
-      journal: [{ day: '2026-09-20', plan: plansFor('foret')[0].id }],
-      bridges: ['foret-plaine', 'foret-mine', 'foret-ferme', 'plaine-riviere', 'mine-carriere'],
-      at: 'foret',
+      log: [{ day: '2026-09-20', part: plansFor('french-6e-phonology')[0].id }],
+      links: ['french-6e-phonology-maths-6e-calculation', 'french-6e-phonology-french-6e-letter-confusion', 'french-6e-phonology-french-6e-grammar-spelling', 'maths-6e-calculation-maths-6e-fractions', 'french-6e-letter-confusion-french-6e-word-spelling'],
+      place: 'french-6e-phonology',
     },
   },
-  progress: { xp: 1450, totalAnswers: 310, correctAnswers: 250, sessionsCompleted: 28, plansCompleted: 6, bossesBeaten: 2, bestStreak: 9, badges: badges(9) },
+  progress: { xp: 1450, totalAnswers: 310, correctAnswers: 250, sessionsCompleted: 28, structuresCompleted: 6, challengesWon: 2, bestStreak: 9, badges: badges(9) },
 };
 /** Les Premiers Rivages reconstruits : tout est ouvert et bâti, le navire a pris la mer. */
 const DONE6 = {
-  blocland: {
-    inventory: { bois: 30, brique: 25, toile: 8 },
+  game: {
+    stock: { 'french-6e-phonology': 30, 'maths-6e-calculation': 25, 'maths-5e-proportionality': 8 },
     progress: { ...stars(six, 3), ...guardians(six) },
-    village: {
-      plans: {
+    world: {
+      parts: {
         ...Object.fromEntries(six.flatMap((id) => plansFor(id).map((p) => [p.id, keys(p)]))),
         [VEHICLE_STAGES[0].id]: keys(VEHICLE_STAGES[0]),
         ...Object.fromEntries(MONUMENTS.filter((m) => m.archipelago === '6e').map((m) => [m.id, keys(m)])),
       },
-      journal: [],
-      bridges: [...bridgesOf('6e'), 'voyage-5e'],
-      at: 'foret',
+      log: [],
+      links: [...bridgesOf('6e'), 'passage-5e'],
+      place: 'french-6e-phonology',
     },
   },
-  progress: { xp: 5200, totalAnswers: 1200, correctAnswers: 1010, sessionsCompleted: 90, plansCompleted: 33, bossesBeaten: 11, voyages: 1, monumentsCompleted: 2, badges: badges(17) },
+  progress: { xp: 5200, totalAnswers: 1200, correctAnswers: 1010, sessionsCompleted: 90, structuresCompleted: 33, challengesWon: 11, passages: 1, landmarksCompleted: 2, badges: badges(17) },
 };
 /** Arrivé dans les Îles Brumeuses. */
-const COLLINES = { ...DONE6, blocland: { ...DONE6.blocland, village: { ...DONE6.blocland.village, at: 'marche' } } };
+const COLLINES = { ...DONE6, game: { ...DONE6.game, world: { ...DONE6.game.world, place: 'maths-5e-proportionality' } } };
 
 // ---------- Les captures ----------
 
-const FOREST_QUEST = BIOMES.find((b) => b.id === 'foret').exercises[0].id;
+const FOREST_QUEST = BIOMES.find((b) => b.id === 'french-6e-phonology').exercises[0].id;
 
-/** name: fichier ; state: partie préparée ; view: vue du monde ; go: adresse ; act: gestes avant la capture ; whale: ce que la baleine a déjà dit. */
+/**
+ * name: fichier ; state: partie préparée ; view: vue du monde ; go: adresse ; act: gestes avant la capture ; whale: ce
+ * que la baleine a déjà dit ; renommage: l'écran des nouveaux noms des archipels reste à dire (noté dit sinon).
+ */
 const SHOTS = [
   { name: 'titre', state: EARLY, title: true, go: '/' },
-  { name: 'menu', state: MID, go: '/menu' },
-  { name: 'telephone-menu', state: MID, go: '/menu', size: PHONE },
-  { name: 'menu-village', state: MID, go: '/aventure/menu' },
-  { name: 'village-premiere-visite', go: '/aventure', tutorial: true },
-  { name: 'panneau-ile', state: EARLY, go: '/aventure/foret' },
-  { name: 'plan-en-cours', state: EARLY, go: '/aventure/foret', act: closeSheet },
-  { name: 'plan-termine', state: CABANE_READY, go: '/aventure/foret', act: placeAll },
-  { name: 'quete-ile', state: EARLY, go: `/aventure/foret/${FOREST_QUEST}`, wait: 2500 },
+  // Le menu en page n'existe plus qu'en vue simple : dans le village, `/menu` ouvre le menu du village.
+  { name: 'menu', state: MID, view: 'list', go: '/menu' },
+  { name: 'telephone-menu', state: MID, view: 'list', go: '/menu', size: PHONE },
+  { name: 'menu-village', state: MID, go: '/adventure/menu' },
+  { name: 'village-premiere-visite', go: '/adventure', tutorial: true },
+  { name: 'panneau-ile', state: EARLY, go: '/adventure/french-6e-phonology', act: openSheet },
+  { name: 'plan-en-cours', state: EARLY, go: '/adventure/french-6e-phonology' },
+  { name: 'quete-ile', state: EARLY, go: `/adventure/french-6e-phonology/${FOREST_QUEST}`, wait: 2500 },
   // Le bandeau de correction monte du bas de l'écran : il faut l'attendre en entier.
   { name: 'quete-correction', go: '/app/demo', act: wrongAnswer, wait: 1500, after: 1500 },
   { name: 'quete-fin', go: '/app/demo', act: playWell, wait: 1500 },
-  { name: 'mes-blocs', state: MID, go: '/aventure/blocs' },
-  { name: 'carte', state: MID, go: '/aventure/carte' },
-  { name: 'archipels', state: MID, go: '/aventure/monde' },
-  // Le mot de la baleine : sa présentation déjà dite, reste le premier ouvrage (le sentier vers la Mine).
-  { name: 'baleine', state: MID, go: '/aventure', whale: { 'baleine-6e-arrivee': true }, wait: 9000 },
-  { name: 'ouvrages', state: MID, go: '/aventure/ferme', act: openFold('ouvrages') },
-  { name: 'navire-chantier', state: MID, go: '/aventure/plaine', act: openFold('navire') },
-  { name: 'gardien', state: MID, go: '/aventure/mine/gardien', wait: 2500 },
-  { name: 'ecole', state: MID, go: '/aventure/ecole' },
-  { name: 'trophees', state: MID, go: '/aventure/trophees' },
-  { name: 'monument', state: MID, go: '/aventure/monument-observatoire' },
-  { name: 'village-reconstruit', state: DONE6, go: '/aventure' },
-  { name: 'collines-du-large', state: COLLINES, go: '/aventure/marche', act: closeSheet },
-  { name: 'vue-simple', state: MID, view: 'liste', go: '/aventure' },
-  { name: 'telephone-village', state: MID, go: '/aventure/foret', size: PHONE },
-  { name: 'telephone-quete', state: EARLY, go: `/aventure/foret/${FOREST_QUEST}`, size: PHONE, wait: 2500 },
+  { name: 'mes-blocs', state: MID, go: '/adventure/stock' },
+  { name: 'carte', state: MID, go: '/adventure/map' },
+  { name: 'archipels', state: MID, go: '/adventure/world' },
+  // Le mot des grandes étapes : sa présentation déjà dite, reste le premier ouvrage (le sentier vers la Mine).
+  { name: 'baleine', state: MID, go: '/adventure', whale: { 'baleine-6e-arrivee': true }, wait: 9000 },
+  // Les nouveaux noms des archipels (GD-1), dits une fois à un élève qui jouait déjà.
+  { name: 'renommage', state: MID, go: '/adventure', whale: { 'baleine-6e-arrivee': true }, renommage: true, wait: 9000 },
+  { name: 'ouvrages', state: MID, go: '/adventure/french-6e-grammar-spelling', act: openFold('ouvrages') },
+  { name: 'navire-chantier', state: MID, go: '/adventure/maths-6e-calculation', act: openFold('navire') },
+  // La fiche d'une borne (Toucher le monde, lot 2), ouverte comme d'un toucher.
+  { name: 'fiche-borne', state: EARLY, go: '/adventure/french-6e-phonology', act: ouvrirLaFiche({ genre: 'borne', id: 'french-6e-phonology:syllables' }) },
+  { name: 'gardien', state: MID, go: '/adventure/french-6e-letter-confusion/challenge', wait: 2500 },
+  { name: 'ecole', state: MID, go: '/adventure/school' },
+  { name: 'trophees', state: MID, go: '/adventure/trophies' },
+  { name: 'monument', state: MID, go: '/adventure/landmark-6e-1' },
+  { name: 'village-reconstruit', state: DONE6, go: '/adventure' },
+  { name: 'collines-du-large', state: COLLINES, go: '/adventure/maths-5e-proportionality' },
+  { name: 'vue-simple', state: MID, view: 'list', go: '/adventure' },
+  { name: 'telephone-village', state: MID, go: '/adventure/french-6e-phonology', size: PHONE },
+  { name: 'telephone-quete', state: EARLY, go: `/adventure/french-6e-phonology/${FOREST_QUEST}`, size: PHONE, wait: 2500 },
   { name: 'quetes', state: MID, go: '/quetes' },
   { name: 'succes', state: MID, go: '/succes' },
   { name: 'reglages', state: MID, go: '/reglages' },
@@ -151,7 +156,9 @@ const SHOTS = [
 // Les bornes de sanitizeSettings (src/core/settings.ts) : une valeur au-delà serait ramenée sans erreur.
 const EXTREMES = { font: 'opendyslexic', fontSize: 32, lineHeight: 2.4, letterSpacing: 0.2, wordSpacing: 0.5, autoRead: false };
 const deBase = (n) => SHOTS.find((s) => s.name === n) ?? (() => { throw new Error(`capture inconnue : ${n}`); })();
-const extreme = (name, theme) => ({ ...deBase(name), name: `extreme-${name}-${theme}`, settings: { ...EXTREMES, theme }, reduit: true, surDemande: true });
+// Le nom de la capture garde le mot affiché du thème ; le réglage, sa valeur neutre.
+const THEMES = { creme: 'cream', nuit: 'night', clair: 'light' };
+const extreme = (name, theme) => ({ ...deBase(name), name: `extreme-${name}-${theme}`, settings: { ...EXTREMES, theme: THEMES[theme] }, reduit: true, surDemande: true });
 SHOTS.push(
   extreme('quete-correction', 'creme'),
   extreme('telephone-quete', 'creme'),
@@ -168,12 +175,22 @@ SHOTS.push(
  */
 // Le nom écrit en entier : prepare.mjs lit les `name: '…'` pour savoir quelles captures le manuel peut citer.
 const archipeo = ({ base, name }) => ({ ...deBase(base), name, settings: { univers: 'archipeo' } });
+/**
+ * La première bulle du tutoriel au téléphone, dans les deux univers et en grand texte : sur demande seulement, pour
+ * relire sa place au-dessus de la barre du bas.
+ */
+const tutoTelephone = { go: '/adventure', tutorial: true, size: PHONE, surDemande: true };
+SHOTS.push(
+  { ...tutoTelephone, name: 'telephone-tutoriel' },
+  { ...tutoTelephone, name: 'telephone-tutoriel-archipeo', settings: { univers: 'archipeo' } },
+  { ...tutoTelephone, name: 'telephone-tutoriel-grand-texte', settings: { fontSize: 28 } },
+);
 SHOTS.push(
   archipeo({ base: 'gardien', name: 'archipeo-gardien' }),
   archipeo({ base: 'collines-du-large', name: 'archipeo-collines-du-large' }),
 );
 // Les réglages extrêmes dans Archipéo (rendez-vous 4 du lot 6, référent dys) : sur demande seulement, comme ceux de Blocland.
-const extremeArchipeo = (base, theme) => ({ ...extreme(base, theme), name: `extreme-archipeo-${base}-${theme}`, settings: { ...EXTREMES, theme, univers: 'archipeo' } });
+const extremeArchipeo = (base, theme) => ({ ...extreme(base, theme), name: `extreme-archipeo-${base}-${theme}`, settings: { ...EXTREMES, theme: THEMES[theme], univers: 'archipeo' } });
 SHOTS.push(
   extremeArchipeo('gardien', 'clair'),
   extremeArchipeo('carte', 'nuit'),
@@ -188,22 +205,22 @@ async function showUnivers(page) {
   await page.waitForTimeout(300);
 }
 
-/** « Poser tout ce que j'ai » dans le panneau de l'île. */
-async function placeAll(page) {
-  await page.getByRole('button', { name: /Poser tout ce que j’ai/ }).first().click();
-  await page.waitForTimeout(2500);
-  // La phrase de la créature, le coffre et l'XP : sous les boutons du panneau.
-  await page.locator('.build-status').first().evaluate((el) => el.scrollIntoView({ block: 'center' }));
-  await page.waitForTimeout(300);
+/** Le panneau de l'île, en plein écran : il ne s'ouvre que par son bouton, dans la barre du bas. */
+async function openSheet(page) {
+  await page.getByRole('button', { name: /^Ouvrir le panneau de / }).first().click();
+  await page.waitForTimeout(800);
 }
-async function closeSheet(page) {
-  const close = page.getByRole('button', { name: 'Fermer le panneau' });
-  if (!(await close.count())) return;
-  await close.first().click();
-  await page.waitForTimeout(2500);
+/** La fiche d'un objet du monde, ouverte comme d'un toucher (`window.__dysappsFiche`, en développement), le temps que la caméra glisse. */
+function ouvrirLaFiche(objet) {
+  return async (page) => {
+    await page.waitForFunction(() => Boolean(window.__dysappsFiche));
+    await page.evaluate((o) => window.__dysappsFiche(o), objet);
+    await page.waitForTimeout(2500);
+  };
 }
 function openFold(name) {
   return async (page) => {
+    await openSheet(page);
     const fold = page.locator(`.island-fold-${name}`);
     if (!(await fold.evaluate((el) => el.open))) await fold.locator('summary').click();
     await fold.evaluate((el) => el.scrollIntoView({ block: 'start' }));
@@ -292,40 +309,45 @@ async function take(shot) {
   const page = await browser.newPage({ viewport: shot.size ?? TABLET, deviceScaleFactor: 1, reducedMotion: shot.reduit ? 'reduce' : 'no-preference' });
   await page.clock.setFixedTime(DAY);
   // Un hasard à graine fixe : mêmes questions, mêmes phrases, à chaque capture (et d'un chargement à l'autre).
-  await page.addInitScript(() => {
-    let seed = 20260928;
-    Math.random = () => {
-      seed = (seed + 0x6d2b79f5) | 0;
-      let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
-      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-    };
-  });
+  await page.addInitScript(hasardFixe);
   await page.addInitScript(figeable);
   if (process.env.CAPTURES_DEBUG) page.on('pageerror', (e) => console.error(`  (page) ${e.message}`));
   try {
     // La partie s'écrit depuis une page statique du même site : l'appli, pas encore lancée, ne peut pas l'écraser.
     await page.goto(`${base}/icon.svg`);
     await page.evaluate(
-      ({ state, view, settings, title, tutorial, whale }) => {
+      ({ state, view, settings, title, tutorial, whale, renommage }) => {
         localStorage.clear();
         sessionStorage.clear();
-        if (!title) sessionStorage.setItem('dysapps:titre-vu', '1');
+        if (!title) sessionStorage.setItem('dysapps:title-seen', '1');
         // Les réglages par défaut (la page Réglages les montre tels quels), sauf la vue du monde et les réglages extrêmes.
         localStorage.setItem('dysapps:settings', JSON.stringify({ ...settings, worldView: view }));
-        if (!tutorial) localStorage.setItem('dysapps:tutos', JSON.stringify({ 'village-immersif': true, 'archipel-5e': true, 'archipel-4e': true, 'archipel-3e': true }));
-        if (state?.blocland) localStorage.setItem('dysapps:blocland', JSON.stringify(state.blocland));
+        if (!tutorial) localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true, 'archipel-5e': true, 'archipel-4e': true, 'archipel-3e': true }));
+        if (state?.game) localStorage.setItem('dysapps:game', JSON.stringify({ version: 3, ...state.game }));
         if (state?.progress) localStorage.setItem('dysapps:progress', JSON.stringify(state.progress));
         // Ce que la baleine a déjà dit : sans cette clé, les étapes déjà passées sont notées dites, sans parler.
-        if (whale) localStorage.setItem('dysapps:baleine', JSON.stringify(whale));
+        if (whale) localStorage.setItem('dysapps:guide-messages', JSON.stringify(whale));
+        // Les nouveaux noms des archipels : déjà dits, sauf sur leur capture (une partie préparée les ferait dire).
+        localStorage.setItem('dysapps:region-names', JSON.stringify({ said: !renommage }));
       },
-      { state: shot.state ?? null, view: shot.view ?? '3d', settings: shot.settings ?? {}, title: Boolean(shot.title), tutorial: Boolean(shot.tutorial), whale: shot.whale ?? null },
+      {
+        state: shot.state ?? null,
+        view: shot.view ?? '3d',
+        settings: shot.settings ?? {},
+        title: Boolean(shot.title),
+        tutorial: Boolean(shot.tutorial),
+        whale: shot.whale ?? null,
+        renommage: Boolean(shot.renommage),
+      },
     );
     await page.goto(`${base}/#${shot.go}`);
     // Le monde 3D met quelques secondes à se construire (rendu logiciel, sans carte graphique).
     await page.waitForTimeout(shot.wait ?? 6000);
     if (shot.act) await shot.act(page);
     if (shot.after) await page.waitForTimeout(shot.after);
+    // Un écran avec le monde 3D : la caméra, bridée, n'a pas forcément fini de rejoindre son cadrage (après un geste qui
+    // change d'île ou ouvre la Carte) ; elle s'y pose d'un coup.
+    if (await page.evaluate(() => Boolean(window.__dysappsCamera))) await attendreLaScene(page, 15_000);
     const file = join(OUT, `${shot.name}.jpg`);
     // Le rendu logiciel de la 3D peut prendre plus de 30 s par image sur la CI.
     await capturer(page, { path: file, type: 'jpeg', quality: 82, timeout: 120_000 });

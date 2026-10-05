@@ -1,0 +1,9 @@
+{
+  "id": "french-6e-letter-confusion-3",
+  "biome": "french-6e-letter-confusion",
+  "name": "La cour de la forge",
+  "reward": {
+    "xp": 70
+  },
+  "done": "Ma forge a sa cour. Les lettres qui se ressemblent n’ont qu’à bien se tenir."
+}

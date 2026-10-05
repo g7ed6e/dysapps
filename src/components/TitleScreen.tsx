@@ -1,20 +1,21 @@
-import { useEffect, useEffectEvent, useRef, useState, type PointerEvent } from 'react';
+import { useEffect, useEffectEvent, useLayoutEffect, useRef, useState, useSyncExternalStore, type PointerEvent } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useOptionalBlocland } from '../blocland/BloclandContext';
-import { unlockSounds } from '../blocland/sound';
+import { useOptionalBlocland } from '../game/BloclandContext';
+import { AssemblingLogo } from '../game/AssemblingLogo';
+import { unlockSounds } from '../game/sound';
 import { lastPlace } from '../core/lastPlace';
 import { useSettings, useUnivers } from '../core/SettingsContext';
 import { unlockSpeech } from '../core/speech';
 import { loadJSON, saveJSON } from '../core/storage';
-import { MESSAGE_UNIVERS, MESSAGE_UNIVERS_KEY, PRESENTER_ARCHIPEO, UNIVERS } from '../core/univers';
-import { BANDEAU_BATISSEUR } from './BandeauBatisseur';
-import { avancer, gesteDeGlissement, gesteDeTouche, gesteDeZone, LONGUEUR_SUITE, type Geste } from './codeSecret';
+import { MESSAGE_UNIVERS, MESSAGE_UNIVERS_KEY, PRESENTER_ARCHIPEO, UNIVERS } from '../core/universe';
+import { BUILDER_BANNER } from './BuilderBanner';
+import { avancer, gesteDeGlissement, gesteDeTouche, gesteDeZone, LONGUEUR_SUITE, type Geste } from './secretCode';
 import { Icon } from './Icon';
 import { frenchTypography } from './math/RichText';
 import { SpeakButton } from './SpeakButton';
 import { Syllabified } from './Syllabified';
 
-const SESSION_KEY = 'dysapps:titre-vu';
+const SESSION_KEY = 'dysapps:title-seen';
 
 function seenThisSession(): boolean {
   try {
@@ -24,16 +25,34 @@ function seenThisSession(): boolean {
   }
 }
 
+// L'écran titre ouvert : les panneaux qui se lisent à voix haute à l'arrivée (les nouveaux noms des archipels)
+// attendent qu'il soit fermé, pour ne pas parler dessous ni se fermer à son Échap.
+let titreOuvert = false;
+const abonnesDuTitre = new Set<() => void>();
+function noterTitre(ouvert: boolean) {
+  if (titreOuvert === ouvert) return;
+  titreOuvert = ouvert;
+  for (const f of abonnesDuTitre) f();
+}
+const abonnerAuTitre = (f: () => void) => {
+  abonnesDuTitre.add(f);
+  return () => abonnesDuTitre.delete(f);
+};
+/** L'écran titre est-il à l'écran ? */
+export function useTitreOuvert(): boolean {
+  return useSyncExternalStore(abonnerAuTitre, () => titreOuvert, () => false);
+}
+
 /** Le message unique qui présente Archipéo reste-t-il à dire sur cet appareil ? */
 function messageADire(): boolean {
-  return PRESENTER_ARCHIPEO && loadJSON<{ dit?: boolean }>(MESSAGE_UNIVERS_KEY, {}).dit === false;
+  return PRESENTER_ARCHIPEO && loadJSON<{ said?: boolean }>(MESSAGE_UNIVERS_KEY, {}).said === false;
 }
 
 const MESSAGE_LU = `${MESSAGE_UNIVERS.titre}. ${MESSAGE_UNIVERS.texte}`;
 
 /**
  * L'écran titre, une fois par lancement : le nom de l'univers et sa phrase sous le logo de l'univers, « Jouer » (le
- * village, derrière, est déjà là), et « Continuer » vers la dernière mission. Il a
+ * village, derrière, est déjà là), et « Ma dernière mission » (le mot du menu, 4 octobre 2026) vers la dernière mission. Il a
  * aussi une raison technique : les navigateurs gardent la voix et les sons muets tant que l'élève n'a pas touché
  * l'écran ; ce premier toucher les débloque pour toute la séance. Rien n'y défile tout seul et rien n'y est chronométré :
  * il attend l'élève.
@@ -44,9 +63,14 @@ const MESSAGE_LU = `${MESSAGE_UNIVERS.titre}. ${MESSAGE_UNIVERS.texte}`;
  */
 export function TitleScreen() {
   const [open, setOpen] = useState(() => !seenThisSession());
+  useLayoutEffect(() => {
+    noterTitre(open);
+    return () => noterTitre(false);
+  }, [open]);
   const navigate = useNavigate();
   const { settings, speak } = useSettings();
-  const univers = UNIVERS[useUnivers()];
+  const universId = useUnivers();
+  const univers = UNIVERS[universId];
   // L'adresse d'ouverture (l'accueil mène ensuite au village : on la garde telle qu'elle était au lancement).
   const [launchedAt] = useState(useLocation().pathname);
   // Le message unique, une fois montré : la page où l'élève allait (`to` absent : l'accueil).
@@ -55,20 +79,23 @@ export function TitleScreen() {
   const batisseur = blocland?.batisseur ?? false;
   const suite = useRef(0);
   const depart = useRef<{ id: number; x: number; y: number; zone: DOMRect } | null>(null);
-  const logo = useRef<HTMLImageElement>(null);
-  const geste = useEffectEvent((g: Geste) => {
+  // Le logo : une image (Archipéo) ou le dessin qui se construit (Blocland) ; les gestes et le toucher gardé sont les mêmes.
+  const logo = useRef<HTMLImageElement & SVGSVGElement>(null);
+  // Un geste du logo (gestionnaire d'évènement) ou une touche (lue dans un effet, par `gesteLu`).
+  const geste = (g: Geste) => {
     suite.current = avancer(suite.current, g);
     if (suite.current === LONGUEUR_SUITE) {
       suite.current = 0;
       blocland?.ouvrirBatisseur();
     }
-  });
+  };
+  const gesteLu = useEffectEvent(geste);
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.repeat || e.ctrlKey || e.metaKey || e.altKey) return;
       const g = gesteDeTouche(e.key);
-      if (g) geste(g);
+      if (g) gesteLu(g);
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -93,19 +120,27 @@ export function TitleScreen() {
   // Au doigt (ou à la souris), les gestes se font sur le logo : toucher son bord (ou glisser) pour les flèches, toucher
   // son centre pour B et A.
   // Le pointeur est capturé : un glissement à la souris qui sort du logo compte quand même ; un second doigt est ignoré.
-  const logoDown = (e: PointerEvent<HTMLImageElement>) => {
+  const logoDown = (e: PointerEvent<Element>) => {
     if (depart.current) return;
     depart.current = { id: e.pointerId, x: e.clientX, y: e.clientY, zone: e.currentTarget.getBoundingClientRect() };
     e.currentTarget.setPointerCapture?.(e.pointerId);
   };
-  const logoUp = (e: PointerEvent<HTMLImageElement>) => {
+  const logoUp = (e: PointerEvent<Element>) => {
     if (depart.current?.id !== e.pointerId) return;
     const { x, y, zone } = depart.current;
     depart.current = null;
     const g = gesteDeGlissement(e.clientX - x, e.clientY - y);
     geste(g === 'toucher' ? gesteDeZone(x - zone.left, y - zone.top, zone.width, zone.height) : g);
   };
-  // « Continuer » seulement quand l'appli s'ouvre sur l'accueil (un lien direct vers une page y mène déjà).
+  const gestesDuLogo = {
+    onPointerDown: logoDown,
+    onPointerUp: logoUp,
+    onPointerCancel: () => (depart.current = null),
+    onLostPointerCapture: (e: PointerEvent<Element>) => {
+      if (depart.current?.id === e.pointerId) depart.current = null;
+    },
+  };
+  // « Ma dernière mission » seulement quand l'appli s'ouvre sur l'accueil (un lien direct vers une page y mène déjà).
   const resume = launchedAt === '/' ? lastPlace() : null;
 
   const close = (to?: string, section?: string) => {
@@ -131,7 +166,7 @@ export function TitleScreen() {
 
   // Noté dit au toucher de l'un ou l'autre bouton : il ne revient plus, sur cet appareil.
   const answer = (to?: string, section?: string) => {
-    saveJSON(MESSAGE_UNIVERS_KEY, { dit: true });
+    saveJSON(MESSAGE_UNIVERS_KEY, { said: true });
     close(to, section);
   };
 
@@ -163,21 +198,12 @@ export function TitleScreen() {
   return (
     <div className="title-screen" role="dialog" aria-modal="true" aria-labelledby="titre-appli">
       <div className="title-card">
-        <img
-          ref={logo}
-          className="title-logo"
-          src={`${import.meta.env.BASE_URL}${univers.logo}`}
-          alt=""
-          width={160}
-          height={160}
-          draggable={false}
-          onPointerDown={logoDown}
-          onPointerUp={logoUp}
-          onPointerCancel={() => (depart.current = null)}
-          onLostPointerCapture={(e) => {
-            if (depart.current?.id === e.pointerId) depart.current = null;
-          }}
-        />
+        {universId === 'blocland' ? (
+          // Blocland : le logo se construit, quatre cubes posés en moins d'une seconde ; le toucher n'attend pas.
+          <AssemblingLogo ref={logo} className="title-logo title-logo-construit" {...gestesDuLogo} />
+        ) : (
+          <img ref={logo} className="title-logo" src={`${import.meta.env.BASE_URL}${univers.logo}`} alt="" width={160} height={160} draggable={false} {...gestesDuLogo} />
+        )}
         <h1 id="titre-appli" className="title-name">
           {univers.nom}
         </h1>
@@ -186,16 +212,16 @@ export function TitleScreen() {
         </p>
         {batisseur && (
           <p className="title-batisseur" role="status">
-            {BANDEAU_BATISSEUR}
+            {BUILDER_BANNER}
           </p>
         )}
         <div className="title-actions">
           {resume && (
             <button type="button" className="button primary title-button" onClick={() => start(resume.path)} autoFocus>
-              <Icon name="play" /> Continuer : {resume.label}
+              <Icon name="play" /> Ma dernière mission : {resume.label}
             </button>
           )}
-          {/* « Jouer » : l'accueil, c'est-à-dire le village (ou le menu, selon le réglage « Au démarrage »). */}
+          {/* « Jouer » : l'accueil, c'est-à-dire le village (le menu en page en vue simple). */}
           <button type="button" className={`button title-button${resume ? '' : ' primary'}`} onClick={() => start()} autoFocus={!resume}>
             <Icon name={resume ? 'map' : 'play'} /> Jouer
           </button>

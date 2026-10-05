@@ -1,0 +1,9 @@
+{
+  "id": "maths-3e-geometry-3",
+  "biome": "maths-3e-geometry",
+  "name": "La terrasse du kiosque",
+  "reward": {
+    "xp": 60
+  },
+  "done": "Une terrasse, une barrière, un escalier… Mon kiosque est complet : hypoténuse comprise."
+}

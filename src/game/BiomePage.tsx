@@ -1,0 +1,269 @@
+import { useEffect, useRef, useState } from 'react';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { Icon } from '../components/Icon';
+import { NotFoundPage } from '../pages/NotFoundPage';
+import { BLOCKS, SANS_LV2, estIleLv2, getBiome, guardianTitle, missionsJouables, ofBlock } from './biomes';
+import { useSettings } from '../core/SettingsContext';
+import { SchoolLink } from './School';
+import { AssemblyLink } from './Assembly';
+import { TROPHIES_TITLE } from './trophies';
+import { Bridges } from './Bridges';
+import { Requests, YouAreHere } from './Requests';
+import { lockedHint, nextGoalInfo } from './world/goals';
+import { GoalLine } from './GoalLine';
+import { VillageStageLine } from './VillageStageLine';
+import { archipelagoOf, archipelagoTitle, isBiomeUnlocked } from './world/archipelago';
+import { useBlocland } from './BloclandContext';
+import { levelFor } from './engine';
+import { CreatureBubble } from './CreatureBubble';
+import { InventoryLink } from './Inventory';
+import { pickExercise, questProgress } from './exercises';
+import { Stars } from './Stars';
+import { STARS_TO_UNLOCK, isBossBeaten, isBossOpen, missingForBoss } from './boss';
+import { BlockIcon } from './Voxel';
+import { PlanSection } from './PlanSection';
+import { ShipSection } from './ShipSection';
+import { useVehicleBuilder } from './useVehicleBuilder';
+import { stageAt } from './world/vehicle';
+import { WhaleWordPanel, useWhaleWord } from './WhaleWord';
+import { RenamingPanel, useRenaming } from './Renaming';
+import { useTextes } from '../universes';
+import { useUnivers } from '../core/SettingsContext';
+import { UNIVERS } from '../core/universe';
+import { LaterSaid, ResidentReminder, useResidentReminder } from './ResidentReminder';
+
+/** Un biome : sa créature donne la mission, puis la liste des exercices. */
+export function BiomePage() {
+  const { biomeId } = useParams();
+  // « Voir le chantier » (bilan d'une mission) : la section à mettre en avant, comme dans le panneau d'île.
+  const chantier = useSearchParams()[0].get('worksite');
+  const navigate = useNavigate();
+  const { state } = useBlocland();
+  const { settings } = useSettings();
+  const textes = useTextes();
+  const univers = useUnivers();
+  const biome = getBiome(biomeId);
+  // Les nouveaux noms des archipels passent avant le mot des grandes étapes, comme dans le monde et la vue simple.
+  const renommage = useRenaming(true, 1200);
+  const whale = useWhaleWord(state, archipelagoOf(state.world.place ?? 'french-6e-phonology').classe, !renommage.ouvert);
+  const ship = useVehicleBuilder(biome?.id ?? 'french-6e-phonology');
+  // La créature qui se souvient (GD-4, étape 1) : le même panneau que dans le monde.
+  const rappelDue = useResidentReminder(biome);
+  // Après « Plus tard » : le focus revient au titre de l'île, et une courte ligne le dit.
+  const titreRef = useRef<HTMLHeadingElement>(null);
+  const [remis, setRemis] = useState(false);
+  useEffect(() => setRemis(false), [biome?.id]);
+  // « Y aller » d'une commande dont le bloc se gagne ici : « Tu y es » sous le titre « Missions » (l'île où on l'a dit).
+  const [ici, setIci] = useState<string | null>(null);
+  if (!biome) return <NotFoundPage />;
+  const block = BLOCKS[biome.block];
+  const owned = state.stock[biome.block] ?? 0;
+  const unlocked = isBiomeUnlocked(biome.id, state.world.links);
+  const port = archipelagoOf(biome.id).port === biome.id;
+  const sansLv2 = estIleLv2(biome) && settings.lv2 === 'none';
+  const rappel = unlocked && !sansLv2 ? rappelDue : null;
+  const goal = unlocked && !sansLv2 ? nextGoalInfo(state, biome.id, textes.archipels, textes.libelles) : null;
+
+  return (
+    <>
+      <Link to="/adventure" className="back-link">
+        <Icon name="back" /> {UNIVERS[univers].carte}
+      </Link>
+      <h1 ref={titreRef} tabIndex={-1} className={`page-title biome-title biome-${biome.id}`}>
+        <Icon name={biome.icon} /> {biome.name}
+      </h1>
+      <p className="biome-archipel">
+        {archipelagoTitle(biome.classe, textes.archipels)}
+        {port && ' · Port'}
+      </p>
+
+      {/* Le mot de la baleine, aux grandes étapes de l'archipel où l'on se tient, en tête de la page. */}
+      {renommage.ouvert ? (
+        <RenamingPanel onClose={renommage.fermer} />
+      ) : (
+        whale.word && <WhaleWordPanel word={whale.word} onClose={whale.close} />
+      )}
+
+      {/* La proposition de la créature se lit après l'accueil, dans la même lecture (comme dans le panneau du monde). */}
+      <CreatureBubble
+        biome={biome}
+        text={sansLv2 ? SANS_LV2 : unlocked ? textes.creatures[biome.id].greeting : lockedHint(state, biome.id, textes.archipels, textes.libelles)}
+        ensuite={rappel?.lu}
+      />
+
+      {rappel && (
+        <ResidentReminder
+          biome={biome}
+          rappel={rappel}
+          onRemis={() => {
+            setRemis(true);
+            titreRef.current?.focus();
+          }}
+        />
+      )}
+      <LaterSaid dit={remis} />
+
+      {goal && <GoalLine goal={goal} className="panel" />}
+      {/* Les commandes des créatures de l'archipel (GD-7) : « Livrer » se touche ici pour celle de cette île. */}
+      {unlocked && !sansLv2 && <Requests island={biome.id} highlight={chantier} niveau="h2" className="panel" onAuxMissions={() => setIci(biome.id)} />}
+      {port && unlocked && <VillageStageLine village={state.world} archipelago={biome.classe} className="panel" />}
+
+      {/* Un ouvrage construit ouvre l'île d'en face : on y va, sa créature accueille (comme en 3D). */}
+      {sansLv2 ? (
+        <p>
+          <Link to="/reglages" className="button">
+            <Icon name="settings" /> Choisir une LV2
+          </Link>
+        </p>
+      ) : (
+        <Bridges
+          island={biome.id}
+          highlight={chantier}
+          objectif={unlocked ? (goal?.ouvrage ?? null) : undefined}
+          onBuilt={(to) => window.setTimeout(() => navigate(`/adventure/${to}`), 900)}
+        />
+      )}
+
+      {/* « Pas de LV2 » : ni missions ni Gardien sur l'île de la LV2. */}
+      {!sansLv2 && (
+        <>
+      <h2 id={`missions-${biome.id}`} tabIndex={-1} className="section-title">
+        <Icon name="hammer" /> Missions
+      </h2>
+      <YouAreHere dit={ici === biome.id} />
+      <ul className="grid apps">
+        {missionsJouables(biome, settings.lv2).map((exercise) => {
+          const def = pickExercise(biome.id, exercise.id, levelFor(state, exercise.id), state.progress);
+          const progress = def ? questProgress(biome.id, exercise.id, state.progress) : undefined;
+          const content = (
+            <>
+              <span className="app-icon">
+                <Icon name={def && unlocked ? 'play' : 'lock'} size="1.8rem" />
+              </span>
+              <span className="app-title">{exercise.title}</span>
+              <span className="app-desc">{exercise.description}</span>
+              {!def ? (
+                <span className="tag">Bientôt</span>
+              ) : !unlocked ? (
+                <span className="tag">Verrouillé</span>
+              ) : progress ? (
+                <Stars
+                  count={progress.stars}
+                  label={`${progress.stars} étoile${progress.stars > 1 ? 's' : ''} sur 3, meilleur score ${Math.round(progress.best * 100)} %`}
+                />
+              ) : (
+                <span className="tag tag-new">Nouveau</span>
+              )}
+            </>
+          );
+          return (
+            <li key={exercise.id}>
+              {def && unlocked ? (
+                <Link to={`/adventure/${biome.id}/${exercise.id}`} className={`panel app-card biome-${biome.id}`}>
+                  {content}
+                </Link>
+              ) : (
+                <div className="panel app-card locked" aria-disabled="true">
+                  {content}
+                </div>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+        </>
+      )}
+
+      {unlocked && archipelagoOf(biome.id).school === biome.id && (
+        <>
+          <h2 className="section-title">
+            <Icon name="school" /> Les lieux du village
+          </h2>
+          <ul className="grid apps">
+            <li>
+              <SchoolLink variant="card" />
+            </li>
+            <li>
+              <AssemblyLink variant="card" />
+            </li>
+            <li>
+              {/* En vue simple, la salle des trophées est la page Succès. */}
+              <Link to="/succes" className={`panel app-card biome-${biome.id}`}>
+                <span className="app-icon">
+                  <Icon name="trophy" size="1.8rem" />
+                </span>
+                <span className="app-title">{TROPHIES_TITLE}</span>
+                <span className="app-desc">Ton rôle, tes succès, ce qui est à retravailler.</span>
+              </Link>
+            </li>
+          </ul>
+        </>
+      )}
+
+      {!sansLv2 && (
+        <h2 className="section-title">
+          <Icon name="flame" /> Le Gardien
+        </h2>
+      )}
+      {!sansLv2 && (() => {
+        const ready = unlocked && isBossOpen(biome, state.progress);
+        const beaten = isBossBeaten(biome.id, state.progress);
+        const boss = state.progress[`${biome.id}-challenge`];
+        const content = (
+          <>
+            <span className="app-icon boss-icon">
+              <Icon name={ready ? 'flame' : 'lock'} size="1.8rem" />
+            </span>
+            <span className="app-title">{guardianTitle(biome)}</span>
+            <span className="app-desc">Une épreuve de chaque mission, à ton niveau. Sans chrono. Récompense : des blocs d’or.</span>
+            {beaten && boss ? (
+              <Stars count={boss.stars} label={textes.libelles.etoilesSur3(boss.stars)} />
+            ) : ready ? (
+              <span className="tag tag-new">{textes.libelles.defiPretCourt}</span>
+            ) : (
+              <span className="tag">
+                <Icon name="lock" /> {STARS_TO_UNLOCK} étoiles dans : {missingForBoss(biome, state.progress).join(', ') || 'chaque mission'}
+              </span>
+            )}
+          </>
+        );
+        return ready ? (
+          <Link to={`/adventure/${biome.id}/challenge`} className={`panel app-card boss-card biome-${biome.id}`}>
+            {content}
+          </Link>
+        ) : (
+          <div className="panel app-card boss-card locked" aria-disabled="true">
+            {content}
+          </div>
+        );
+      })()}
+
+      {unlocked && (
+        <>
+          <h2 className="section-title">
+            <Icon name="map" /> Le bâtiment
+          </h2>
+          <div className="panel plan-panel">
+            <PlanSection biome={biome} highlight={chantier === 'part'} titreCourt />
+          </div>
+        </>
+      )}
+
+      {unlocked && stageAt(biome.id) && (
+        <>
+          <h2 className="section-title">
+            <Icon name="ship" /> Le Bloc-Navire
+          </h2>
+          <div className="panel plan-panel">
+            <ShipSection biome={biome} builder={ship} highlight={chantier === 'vehicle'} onBoard={(to) => navigate(`/adventure/passage/${to}`)} />
+          </div>
+        </>
+      )}
+
+      <p className="biome-reward">
+        <BlockIcon top={block.top} side={block.side} size={32} />
+        Chaque mission réussie ici rapporte des blocs {ofBlock(biome.block)}. Tu en as {owned}. <InventoryLink />
+      </p>
+    </>
+  );
+}

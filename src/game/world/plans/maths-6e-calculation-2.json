@@ -1,0 +1,9 @@
+{
+  "id": "maths-6e-calculation-2",
+  "biome": "maths-6e-calculation",
+  "name": "Le toit du nid",
+  "reward": {
+    "xp": 50
+  },
+  "done": "Un toit et une porte ! La nuit, la lanterne compte les étoiles avec moi."
+}

@@ -9,21 +9,14 @@
 //   de son rang, toujours la même d'une partie à l'autre : la place visée ne s'applique pas.
 // - Une date ou un nombre qui ne commence pas la chaîne (« le 20 juin ») est un mot : on n'invente pas de « 38 juin ».
 
+import { shuffle } from './random';
+
 type Rng = () => number;
 type Choice = string | number;
 
 interface WithChoices {
   choices?: unknown;
   answer?: unknown;
-}
-
-export function shuffled<T>(list: readonly T[], rng: Rng): T[] {
-  const out = [...list];
-  for (let i = out.length - 1; i > 0; i--) {
-    const j = Math.floor(rng() * (i + 1));
-    [out[i], out[j]] = [out[j], out[i]];
-  }
-  return out;
 }
 
 /** Les règles d'un tirage de réponses chiffrées (voir `drawChoices`). */
@@ -33,12 +26,12 @@ export interface DrawOptions {
   /** Un piège acceptable (positif, pas une cote déjà affichée…). */
   ok?: (t: number) => boolean;
   /** Un voisin acceptable ; par défaut, comme un piège. */
-  neighbourOk?: (t: number) => boolean;
+  neighborOk?: (t: number) => boolean;
   /**
    * `false` : aucun voisin (10⁵ n'a pas de « voisin » plausible, 100 001 n'est pas une erreur d'élève). La place de la
    * réponse est alors tirée parmi celles que les pièges permettent.
    */
-  neighbours?: boolean;
+  neighbors?: boolean;
 }
 
 /**
@@ -46,31 +39,31 @@ export interface DrawOptions {
  * 4e) : on prend dans le vivier des vrais pièges autant de pièges plus petits que la place le demande, et les autres
  * plus grands. S'il en manque d'un côté, on y met des voisins proches (un, deux ou trois crans de `step`), puis, s'il
  * le faut, les pièges restants de l'autre côté. Aucun piège n'est inventé loin de la réponse.
- * Pour les exercices générés, qui gardent ces choix tels quels pendant la partie (voir `blocland/exercises/shuffle.ts`).
+ * Pour les exercices générés, qui gardent ces choix tels quels pendant la partie (voir `game/exercises/shuffle.ts`).
  */
 export function drawChoices(
   answer: number,
   traps: readonly number[],
   rng: Rng,
-  { step = 1, ok = () => true, neighbourOk = ok, neighbours = true }: DrawOptions = {},
+  { step = 1, ok = () => true, neighborOk = ok, neighbors = true }: DrawOptions = {},
 ): number[] {
   // Arrondi qui efface les erreurs de virgule flottante (0,1 × 3).
   const clean = (v: number) => Number(v.toFixed(6));
   const pool = [...new Set(traps.map(clean))].filter((t) => Number.isFinite(t) && t !== answer && ok(t));
-  const below = shuffled(
+  const below = shuffle(
     pool.filter((t) => t < answer),
     rng,
   );
-  const above = shuffled(
+  const above = shuffle(
     pool.filter((t) => t > answer),
     rng,
   );
   // Sans voisins, une place que les pièges permettent d'atteindre.
-  const lo = neighbours ? 0 : Math.max(0, 3 - above.length);
-  const hi = neighbours ? 3 : Math.max(lo, Math.min(3, below.length));
+  const lo = neighbors ? 0 : Math.max(0, 3 - above.length);
+  const hi = neighbors ? 3 : Math.max(lo, Math.min(3, below.length));
   const wanted = lo + Math.floor(rng() * (hi - lo + 1));
   const picked = [...below.slice(0, wanted), ...above.slice(0, 3 - wanted)];
-  const accepted = neighbours ? neighbourOk : () => false;
+  const accepted = neighbors ? neighborOk : () => false;
   const add = (t: number, accept: (t: number) => boolean) => {
     if (picked.length < 3 && Number.isFinite(t) && t !== answer && !picked.includes(t) && accept(t)) picked.push(t);
   };
@@ -149,7 +142,7 @@ function placeNumber(choices: Choice[], parsed: Parsed[], at: number, target: nu
     const below = next.filter((v) => v < answer).length;
     if (below === target) break;
     // Trop de pièges sous la réponse : on en fait passer un au-dessus (et inversement).
-    const candidate = shuffled(
+    const candidate = shuffle(
       next.filter((v) => (below > target ? v < answer : v > answer)),
       rng,
     ).find((v) => mirror(v) !== undefined);
@@ -187,8 +180,8 @@ export function placeAnswer(choices: Choice[], answer: unknown, target: number, 
     // Une liste de nombres que l'auteur n'a pas rangée reste telle quelle.
     return at >= 0 && sorted(parsed.map((p) => p.value)) ? placeNumber(choices, parsed, at, target, rng, pieges) : choices;
   }
-  if (at < 0) return shuffled(choices, rng);
-  const others = shuffled(
+  if (at < 0) return shuffle(choices, rng);
+  const others = shuffle(
     choices.filter((_, i) => i !== at),
     rng,
   );
@@ -205,8 +198,8 @@ export function placeChoices<T extends object>(list: readonly T[], rng: Rng, pie
     if (n === 0) continue;
     const count = sizes.filter((s) => s === n).length;
     const places: number[] = [];
-    while (places.length < count) places.push(...shuffled([...Array(n).keys()], rng));
-    targets.set(n, shuffled(places.slice(0, count), rng));
+    while (places.length < count) places.push(...shuffle([...Array(n).keys()], rng));
+    targets.set(n, shuffle(places.slice(0, count), rng));
   }
   return items.map((item, i) => {
     const n = sizes[i];

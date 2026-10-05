@@ -1,7 +1,7 @@
 import { act, render } from '@testing-library/react';
 import { lireReglages, SettingsProvider, useSettings } from './SettingsContext';
 import { loadJSON, saveJSON } from './storage';
-import { MESSAGE_UNIVERS_KEY } from './univers';
+import { MESSAGE_UNIVERS_KEY } from './universe';
 
 beforeEach(() => localStorage.clear());
 
@@ -10,7 +10,7 @@ it('fige le premier univers : Blocland pour un appareil neuf, sans message', () 
 });
 
 it('garde Blocland à un appareil qui a une progression, sans message : Archipéo n’est pas mis en avant', () => {
-  saveJSON('blocland', { progress: { 'foret:sons': { stars: 2 } } });
+  saveJSON('game', { progress: { 'foret:sons': { stars: 2 } } });
   expect(lireReglages()).toMatchObject({ settings: { univers: 'blocland' }, message: false });
   expect(loadJSON(MESSAGE_UNIVERS_KEY, null)).toBeNull();
 });

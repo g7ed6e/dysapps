@@ -15,13 +15,13 @@ La progression est celle du navigateur. Le plus simple est un profil de navigate
 Pas pour l’instant : il n’y a pas d’export. Chaque appareil a sa propre progression.
 
 **Par où commencer dans l’aventure ?**
-Par la Forêt des sons (français) ou la Plaine des nombres (maths), les deux îles ouvertes au départ. Une flèche jaune flotte au-dessus de la Forêt tant qu’aucune mission n’a été jouée. Le tutoriel de trois bulles se rejoue avec le bouton « Revoir l’aide ».
+Par la Forêt des sons (français) ou la Plaine des nombres (maths), les deux îles ouvertes au départ. Une bulle bordée d’or montre la prochaine chose à faire. Le tutoriel en trois étapes se rejoue avec la ligne « Aide du village » du menu.
 
 **Un élève de 4e ou de 3e doit-il refaire la 6e ?**
-Un peu : le Bloc-Navire qui mène en 5e se construit dans les Premiers Rivages (une cinquantaine de blocs et trois Gardiens vaincus), puis le ballon en 5e, puis le réacteur en 4e. À l’intérieur d’un archipel, rien n’est imposé : seuls les ouvrages ouvrent les îles, dans la direction que l’on veut. Les premières missions servent à gagner les blocs du navire et des premiers ouvrages.
+Un peu : le Bloc-Navire qui mène en 5e se construit dans les Basses Terres (une cinquantaine de blocs et trois Gardiens rallumés), puis le ballon en 5e, puis le réacteur en 4e. À l’intérieur d’un archipel, rien n’est imposé : seuls les ouvrages ouvrent les îles, dans la direction que l’on veut. Les premières missions servent à gagner les blocs du navire et des premiers ouvrages.
 
 **Comment passer en 5e (puis en 4e, en 3e) ?**
-Sur l’île-port de l’archipel (la Plaine des nombres en 6e, le Marché des proportions en 5e, l’Atelier du calcul littéral en 4e), le panneau a une section « Le Bloc-Navire » : poser ses blocs comme un plan, vaincre les Gardiens demandés (la voile, le ballon ou les feux apparaissent alors), puis toucher « Embarquer ». Le voyage se joue, un toucher le termine tout de suite, et la créature du port d’en face accueille.
+Sur l’île-port de l’archipel (la Plaine des nombres en 6e, le Marché des proportions en 5e, l’Atelier du calcul littéral en 4e), le panneau a une section « Le Bloc-Navire » : poser ses blocs un à un, rallumer les Gardiens demandés (la voile, le ballon ou les feux apparaissent alors), puis toucher « Embarquer ». Le voyage se joue, un toucher le termine tout de suite, et la créature du port d’en face accueille.
 
 **Peut-on revenir en 6e ?**
 Oui, toujours. Sur le port de l’archipel où l’on est, la section Bloc-Navire a un bouton « Revenir en 6e » (et « Repartir vers 5e » pour repartir). Rien ne se perd, le Bloc-Navire reste construit.
@@ -33,7 +33,7 @@ Chaque partie change (autres nombres en maths, autre tirage de mots en français
 Il faut au moins deux étoiles sur chaque mission de l’île. Toucher la ligne du Gardien dans le panneau dit quelles missions manquent.
 
 **Comment ouvrir une île fermée ?**
-Toucher l’île (ou l’ouvrir depuis la Carte) : sa créature dit l’ouvrage à construire, depuis quelle île, combien de blocs et la condition éventuelle (premier plan terminé pour un escalier, Gardien vaincu pour un tunnel ou un col). Si l’île est dans un autre archipel, elle dit ce qu’il manque au Bloc-Navire, ou l’archipel où aller d’abord.
+Toucher l’île (ou l’ouvrir depuis la Carte) : sa créature dit l’ouvrage à construire, depuis quelle île, combien de blocs et la condition éventuelle (une mission réussie sur l’île de départ, seulement pour un escalier ; aucun Gardien n’est une condition). Si l’île est dans un autre archipel, elle dit ce qu’il manque au Bloc-Navire, ou l’archipel où aller d’abord.
 
 ## Affichage et son
 
@@ -75,4 +75,4 @@ Dans [L’archipel](../pedagogie/archipel.md) puis la page de chaque île : cons
 Oui : fables de La Fontaine en texte intégral, Daudet et Jules Verne en textes adaptés, tous dans le domaine public. Les textes d’Ascension (Tour du lecteur) sont originaux.
 
 **Un mot, une règle, un item semble faux.**
-Ouvrir un ticket sur le [dépôt GitHub](https://github.com/g7ed6e/dysapps/issues) avec la page de la documentation concernée et l’identifiant de l’exercice (par exemple `ferme-enclos-2`).
+Ouvrir un ticket sur le [dépôt GitHub](https://github.com/g7ed6e/dysapps/issues) avec la page de la documentation concernée et l’exercice : le titre de la mission et son niveau suffisent, ou son identifiant, à copier depuis la page de l’île (par exemple `french-6e-grammar-spelling-word-classes-2`).

@@ -1,0 +1,223 @@
+{
+  "id": "english-5e-grammar-past-simple-2",
+  "biome": "english-5e-grammar",
+  "type": "past-simple",
+  "level": 2,
+  "lang": "en",
+  "instruction": "Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.",
+  "items": [
+    {
+      "key": "english-5e-grammar-past-simple-2-0",
+      "prompt": "I … my room yesterday.",
+      "spoken": "I blank my room yesterday.",
+      "choices": [
+        "tidied",
+        "tidyed",
+        "tidy"
+      ],
+      "answer": "tidied",
+      "hint": "Tidy finit par consonne + y.",
+      "explanation": "tidy → tidied : y après une consonne devient ied.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le prétérit : écrire et demander",
+          "lines": [
+            "y après une consonne → ied (study → studied, tidy → tidied).",
+            "Mot court en consonne + voyelle + consonne : on double (stop → stopped ; mais visit → visited).",
+            "e final : + d (bake → baked).",
+            "Négation et question : did + verbe sans -ed (I didn’t play. Did you play?)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-grammar-past-simple-2-1",
+      "prompt": "The bus … at the station five minutes ago.",
+      "spoken": "The bus blank at the station five minutes ago.",
+      "choices": [
+        "stopped",
+        "stoped",
+        "stops"
+      ],
+      "answer": "stopped",
+      "hint": "Stop : consonne + voyelle + consonne.",
+      "explanation": "stop → stopped : on double le p.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le prétérit : écrire et demander",
+          "lines": [
+            "y après une consonne → ied (study → studied, tidy → tidied).",
+            "Mot court en consonne + voyelle + consonne : on double (stop → stopped ; mais visit → visited).",
+            "e final : + d (bake → baked).",
+            "Négation et question : did + verbe sans -ed (I didn’t play. Did you play?)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-grammar-past-simple-2-2",
+      "prompt": "We … a cake last Sunday.",
+      "spoken": "We blank a cake last Sunday.",
+      "choices": [
+        "baked",
+        "bakeed",
+        "bakes"
+      ],
+      "answer": "baked",
+      "hint": "Bake finit déjà par e.",
+      "explanation": "bake → baked : on ajoute seulement d.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le prétérit : écrire et demander",
+          "lines": [
+            "y après une consonne → ied (study → studied, tidy → tidied).",
+            "Mot court en consonne + voyelle + consonne : on double (stop → stopped ; mais visit → visited).",
+            "e final : + d (bake → baked).",
+            "Négation et question : did + verbe sans -ed (I didn’t play. Did you play?)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-grammar-past-simple-2-3",
+      "prompt": "I … like the film yesterday.",
+      "spoken": "I blank like the film yesterday.",
+      "choices": [
+        "didn’t",
+        "don’t",
+        "wasn’t"
+      ],
+      "answer": "didn’t",
+      "hint": "Négation au passé, avec un verbe (like).",
+      "explanation": "yesterday + négation → I didn’t like.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le prétérit : écrire et demander",
+          "lines": [
+            "y après une consonne → ied (study → studied, tidy → tidied).",
+            "Mot court en consonne + voyelle + consonne : on double (stop → stopped ; mais visit → visited).",
+            "e final : + d (bake → baked).",
+            "Négation et question : did + verbe sans -ed (I didn’t play. Did you play?)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-grammar-past-simple-2-4",
+      "prompt": "… you watch the match last night?",
+      "spoken": "blank you watch the match last night?",
+      "choices": [
+        "Did",
+        "Do",
+        "Were"
+      ],
+      "answer": "Did",
+      "hint": "Question au passé, avec un verbe (watch).",
+      "explanation": "last night + question → Did you watch…?",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le prétérit : écrire et demander",
+          "lines": [
+            "y après une consonne → ied (study → studied, tidy → tidied).",
+            "Mot court en consonne + voyelle + consonne : on double (stop → stopped ; mais visit → visited).",
+            "e final : + d (bake → baked).",
+            "Négation et question : did + verbe sans -ed (I didn’t play. Did you play?)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-grammar-past-simple-2-5",
+      "prompt": "She didn’t … her homework.",
+      "spoken": "She didn’t blank her homework.",
+      "choices": [
+        "finish",
+        "finished",
+        "finishes"
+      ],
+      "answer": "finish",
+      "hint": "Après didn’t, le verbe reste à la base.",
+      "explanation": "didn’t + verbe sans -ed : she didn’t finish.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le prétérit : écrire et demander",
+          "lines": [
+            "y après une consonne → ied (study → studied, tidy → tidied).",
+            "Mot court en consonne + voyelle + consonne : on double (stop → stopped ; mais visit → visited).",
+            "e final : + d (bake → baked).",
+            "Négation et question : did + verbe sans -ed (I didn’t play. Did you play?)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-grammar-past-simple-2-6",
+      "prompt": "Did they … the museum? — Yes, they did.",
+      "spoken": "Did they blank the museum? — Yes, they did.",
+      "choices": [
+        "visit",
+        "visited",
+        "visits"
+      ],
+      "answer": "visit",
+      "hint": "Après did, le verbe reste à la base.",
+      "explanation": "Did + verbe sans -ed : Did they visit…?",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le prétérit : écrire et demander",
+          "lines": [
+            "y après une consonne → ied (study → studied, tidy → tidied).",
+            "Mot court en consonne + voyelle + consonne : on double (stop → stopped ; mais visit → visited).",
+            "e final : + d (bake → baked).",
+            "Négation et question : did + verbe sans -ed (I didn’t play. Did you play?)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-grammar-past-simple-2-7",
+      "prompt": "It … sunny yesterday, it was cloudy.",
+      "spoken": "It blank sunny yesterday, it was cloudy.",
+      "choices": [
+        "wasn’t",
+        "weren’t",
+        "didn’t"
+      ],
+      "answer": "wasn’t",
+      "hint": "Négation de be au passé, avec it.",
+      "explanation": "it + be au passé → it wasn’t.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le prétérit : écrire et demander",
+          "lines": [
+            "y après une consonne → ied (study → studied, tidy → tidied).",
+            "Mot court en consonne + voyelle + consonne : on double (stop → stopped ; mais visit → visited).",
+            "e final : + d (bake → baked).",
+            "Négation et question : did + verbe sans -ed (I didn’t play. Did you play?)"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien dit !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "english-5e-grammar",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

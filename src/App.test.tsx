@@ -4,7 +4,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { AppRoutes } from './App';
 import { SettingsProvider } from './core/SettingsContext';
 import { ProgressProvider, useProgress } from './core/ProgressContext';
-import { BloclandProvider } from './blocland/BloclandContext';
+import { BloclandProvider } from './game/BloclandContext';
 
 /** Dit si les bandeaux de récompense sont retenus (DA-9). */
 function Retenus() {
@@ -29,9 +29,9 @@ function renderAt(path: string) {
 it('l’accueil est le menu de Blocland : le village, les Expéditions (la LV2 à côté de l’anglais), puis Missions et Réglages', () => {
   renderAt('/');
   expect(screen.getByRole('heading', { name: 'Blocland', level: 1 })).toBeInTheDocument();
-  expect(screen.getByRole('heading', { name: /Ton village : les Premiers Rivages/ })).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: /Ton village : les Basses Terres/ })).toBeInTheDocument();
   const menu = screen.getByRole('navigation', { name: 'Menu principal' });
-  expect(within(menu).getAllByRole('link').map((a) => a.getAttribute('href'))).toEqual(['/matiere/maths', '/matiere/francais', '/matiere/anglais', '/matiere/lv2']);
+  expect(within(menu).getAllByRole('link').map((a) => a.getAttribute('href'))).toEqual(['/matiere/maths', '/matiere/french', '/matiere/english', '/matiere/lv2']);
   expect(within(menu).getByRole('link', { name: /Espagnol.*Expédition/ })).toHaveAttribute('href', '/matiere/lv2');
   expect(within(menu).getByRole('link', { name: /Français.*Expédition/ })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /Toutes les missions/ })).toHaveAttribute('href', '/quetes');
@@ -43,34 +43,32 @@ it('l’accueil est le menu de Blocland : le village, les Expéditions (la LV2 �
   expect(screen.getByRole('link', { name: /Commencer ici.*Tutoriel/ })).toHaveAttribute('href', '/app/demo');
   document.body.innerHTML = '';
   renderAt('/quetes');
-  expect(screen.getByRole('link', { name: /Français/ })).toHaveAttribute('href', '/matiere/francais');
+  expect(screen.getByRole('link', { name: /Français/ })).toHaveAttribute('href', '/matiere/french');
   expect(screen.getByRole('link', { name: /Maths/ })).toBeInTheDocument();
-  expect(screen.getByRole('link', { name: /Anglais/ })).toHaveAttribute('href', '/matiere/anglais');
-  // Pas d'onglets : la barre du haut garde les grands endroits (Menu et Réglages sur téléphone).
+  expect(screen.getByRole('link', { name: /Anglais/ })).toHaveAttribute('href', '/matiere/english');
+  // Blocland : plus de barre du haut (4 octobre 2026), seulement le bouton Menu en haut à droite.
   expect(screen.queryByRole('navigation', { name: 'Onglets' })).not.toBeInTheDocument();
-  const bar = screen.getByRole('navigation', { name: 'Navigation principale' });
-  expect(within(bar).getByRole('link', { name: 'Missions' })).toHaveAttribute('aria-current', 'page');
-  expect(within(bar).getByRole('link', { name: 'Menu' })).toHaveAttribute('href', '/menu');
-  expect(within(bar).getByRole('link', { name: 'Réglages' })).toHaveAttribute('href', '/reglages');
+  expect(screen.queryByRole('navigation', { name: 'Navigation principale' })).not.toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Menu' })).toHaveAttribute('href', '/menu');
 });
 
 it('les révisions du jour ont leur carte sur l’accueil, vers la mission', () => {
   localStorage.setItem('dysapps:progress', JSON.stringify({ totalAnswers: 3 }));
-  localStorage.setItem('dysapps:blocland', JSON.stringify({ spaced: [{ itemId: 'foret-echauffement-001:cabane', due: '2000-01-01', stage: 0, streak: 0 }] }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ spaced: [{ itemId: 'french-6e-phonology-syllables-warmup-001:cabane', due: '2000-01-01', stage: 0, streak: 0 }] }));
   renderAt('/');
-  expect(screen.getByRole('link', { name: /À revoir aujourd’hui.*Abattage syllabique · Forêt des sons/ })).toHaveAttribute('href', '/aventure/foret/abattage');
+  expect(screen.getByRole('link', { name: /Mes révisions du jour.*Abattage syllabique · Forêt des sons/ })).toHaveAttribute('href', '/adventure/french-6e-phonology/syllables');
 });
 
-it('une mission ouverte devient « Continuer » sur l’accueil', () => {
+it('une mission ouverte devient « Ma dernière mission » sur l’accueil', () => {
   localStorage.setItem('dysapps:progress', JSON.stringify({ totalAnswers: 3 }));
   renderAt('/app/tables');
   document.body.innerHTML = '';
   renderAt('/');
-  expect(screen.getByRole('link', { name: /Continuer.*Tables & calcul mental/ })).toHaveAttribute('href', '/app/tables');
+  expect(screen.getByRole('link', { name: /Ma dernière mission.*Tables & calcul mental/ })).toHaveAttribute('href', '/app/tables');
 });
 
 it('le Tutoriel est sur l’accueil, pas dans Français, et son retour mène à l’accueil', () => {
-  renderAt('/matiere/francais');
+  renderAt('/matiere/french');
   expect(screen.queryByRole('link', { name: /Tutoriel/ })).not.toBeInTheDocument();
   document.body.innerHTML = '';
   renderAt('/app/demo');
@@ -79,7 +77,7 @@ it('le Tutoriel est sur l’accueil, pas dans Français, et son retour mène à 
 });
 
 it('liste les missions d’anglais du portail', () => {
-  renderAt('/matiere/anglais');
+  renderAt('/matiere/english');
   expect(screen.getByRole('link', { name: /Vocabulaire/ })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /Verbes irréguliers/ })).toBeInTheDocument();
   // Les îles d'anglais de Blocland, avec leur classe : la Baie et l'Horloge, derrière la Ferme et la Forêt.
@@ -95,33 +93,33 @@ it('liste les activités d’une matière', () => {
   expect(screen.getByRole('link', { name: /Plaine des nombres.*Nouveau.*Niveau 6e/ })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /Rivière des fractions.*Ouvrage à construire/ })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /Glacier des relatifs.*Archipel à rejoindre.*Niveau 5e/ })).toBeInTheDocument();
-  expect(screen.getByRole('heading', { name: 'Archipel de 5e — Les Îles Brumeuses' })).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: 'Archipel de 5e — Les Collines du Large' })).toBeInTheDocument();
   expect(screen.queryByText(/Forêt des sons/)).not.toBeInTheDocument();
   // Les archipels pas encore atteints sont repliés sous « Plus tard ».
   const later = screen.getByText(/^Plus tard : 3 archipels à rejoindre/).closest('details')!;
   expect(later).not.toHaveAttribute('open');
-  expect(later).toContainElement(screen.getByRole('heading', { name: 'Archipel de 5e — Les Îles Brumeuses' }));
+  expect(later).toContainElement(screen.getByRole('heading', { name: 'Archipel de 5e — Les Collines du Large' }));
 });
 
 it('en vue simple, le voyage en Bloc-Navire est un écran avec une phrase et un bouton « Arriver », puis le port d’en face', async () => {
-  const { VEHICLE_STAGES } = await import('./blocland/world/vehicle');
-  const { planCells } = await import('./blocland/world/plans');
+  const { VEHICLE_STAGES } = await import('./game/world/vehicle');
+  const { planCells } = await import('./game/world/plans');
   const [coque] = VEHICLE_STAGES;
-  const progress = Object.fromEntries(['foret', 'plaine', 'mine'].map((id) => [`${id}-gardien`, { stars: 2, attempts: 1, best: 1 }]));
-  localStorage.setItem('dysapps:blocland', JSON.stringify({ progress, village: { plans: { [coque.id]: planCells(coque).map((c) => c.key) }, bridges: ['foret-mine'] } }));
+  const progress = Object.fromEntries(['french-6e-phonology', 'maths-6e-calculation', 'french-6e-letter-confusion'].map((id) => [`${id}-challenge`, { stars: 2, attempts: 1, best: 1 }]));
+  localStorage.setItem('dysapps:game', JSON.stringify({ progress, world: { parts: { [coque.id]: planCells(coque).map((c) => c.key) }, links: ['french-6e-phonology-french-6e-letter-confusion'] } }));
   const user = userEvent.setup();
-  renderAt('/aventure/voyage/5e');
+  renderAt('/adventure/passage/5e');
   expect(screen.getByRole('dialog', { name: /Le voyage/ })).toBeInTheDocument();
-  expect(document.body.textContent).toContain('Tu embarques sur le Bloc-Navire. Cap sur les Îles Brumeuses !');
+  expect(document.body.textContent).toContain('Tu embarques sur le Bloc-Navire. Cap sur les Collines du Large !');
   await user.click(screen.getByRole('button', { name: /Arriver/ }));
   expect(screen.getByRole('heading', { name: /Marché des proportions/ })).toBeInTheDocument();
-  const saved = JSON.parse(localStorage.getItem('dysapps:blocland')!);
-  expect(saved.village.bridges).toContain('voyage-5e');
-  expect(saved.village.at).toBe('marche');
+  const saved = JSON.parse(localStorage.getItem('dysapps:game')!);
+  expect(saved.world.links).toContain('passage-5e');
+  expect(saved.world.place).toBe('maths-5e-proportionality');
   // Un voyage impossible (rien de construit) : page introuvable.
   localStorage.clear();
   document.body.innerHTML = '';
-  renderAt('/aventure/voyage/5e');
+  renderAt('/adventure/passage/5e');
   expect(screen.getByText(/Zone introuvable/)).toBeInTheDocument();
 });
 
@@ -129,8 +127,8 @@ it('applique et sauvegarde les réglages', async () => {
   const user = userEvent.setup();
   renderAt('/reglages');
   await user.click(screen.getByLabelText('Nuit'));
-  expect(document.documentElement.dataset.theme).toBe('nuit');
-  expect(JSON.parse(localStorage.getItem('dysapps:settings')!).theme).toBe('nuit');
+  expect(document.documentElement.dataset.theme).toBe('night');
+  expect(JSON.parse(localStorage.getItem('dysapps:settings')!).theme).toBe('night');
 });
 
 it('les réglages mènent à la documentation et au code, dans un nouvel onglet', () => {
@@ -144,7 +142,7 @@ it('les réglages mènent à la documentation et au code, dans un nouvel onglet'
 
 it('effacer la progression demande d’écrire « effacer » : un toucher de trop n’efface rien', async () => {
   localStorage.setItem('dysapps:progress', JSON.stringify({ xp: 120 }));
-  localStorage.setItem('dysapps:reprise', JSON.stringify({ path: '/app/tables', label: 'Tables' }));
+  localStorage.setItem('dysapps:resume', JSON.stringify({ path: '/app/tables', label: 'Tables' }));
   const user = userEvent.setup();
   renderAt('/reglages');
   // Les espacements sont dits en mots.
@@ -157,8 +155,8 @@ it('effacer la progression demande d’écrire « effacer » : un toucher de tro
   await user.type(screen.getByRole('textbox'), 'cer');
   await user.click(erase);
   expect(JSON.parse(localStorage.getItem('dysapps:progress')!).xp).toBe(0);
-  // « Continuer » est oublié aussi.
-  expect(localStorage.getItem('dysapps:reprise')).toBeNull();
+  // « Ma dernière mission » est oubliée aussi.
+  expect(localStorage.getItem('dysapps:resume')).toBeNull();
 });
 
 it('redirige l’ancienne adresse de progression vers les succès', () => {
@@ -178,13 +176,13 @@ it('affiche le record d’une mission tous modes confondus', () => {
       apps: { 'homophones:niveau-1': { sessions: 1, bestScore: 70, lastPlayed: null }, 'homophones:serie-a': { sessions: 1, bestScore: 90, lastPlayed: null } },
     }),
   );
-  renderAt('/matiere/francais');
+  renderAt('/matiere/french');
   expect(screen.getByRole('img', { name: 'Record : 3 étoiles sur 3' })).toBeInTheDocument();
 });
 
 it('ouvre la carte de Blocland puis un biome, dont la créature donne la mission', async () => {
   const user = userEvent.setup();
-  renderAt('/aventure');
+  renderAt('/adventure');
   expect(screen.getByRole('heading', { name: 'Blocland' })).toBeInTheDocument();
   // Le nom commence par le nom du biome ; les cartes verrouillées citent aussi le biome précédent.
   await user.click(screen.getByRole('link', { name: /^Forêt des sons/ }));
@@ -195,16 +193,18 @@ it('ouvre la carte de Blocland puis un biome, dont la créature donne la mission
 });
 
 it('en vue simple, « Mes blocs » est une page : ce que chaque bloc construit, et où aller chercher ceux qui manquent', async () => {
-  localStorage.setItem('dysapps:blocland', JSON.stringify({ inventory: { bois: 4 } }));
+  localStorage.setItem('dysapps:game', JSON.stringify({ stock: { 'french-6e-phonology': 4 } }));
   const user = userEvent.setup();
-  renderAt('/aventure');
+  renderAt('/adventure');
   await user.click(screen.getByRole('link', { name: /Mes blocs \(4\)/ }));
   expect(screen.getByRole('heading', { level: 1, name: /Mes blocs/ })).toBeInTheDocument();
-  expect(screen.getByRole('link', { name: /Plan de Forêt des sons : encore 22 à gagner/ })).toHaveAttribute('href', '/aventure/foret');
-  expect(screen.getByRole('link', { name: 'Plaine des nombres' })).toHaveAttribute('href', '/aventure/plaine');
+  // Le bois sert au Bloc-Navire, jamais au bâtiment de l'île (il se pose tout seul, GD-6) ; le reste se gagne sur la Forêt.
+  expect(screen.getByRole('link', { name: /Bloc-Navire : encore 16 à gagner/ })).toHaveAttribute('href', '/adventure/maths-6e-calculation');
+  expect(screen.queryByText(/Plan de /)).not.toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Forêt des sons' })).toHaveAttribute('href', '/adventure/french-6e-phonology');
   // D'abord ce qu'on peut faire tout de suite : 4 blocs paient un ouvrage à 3 blocs.
   const now = screen.getByRole('list', { name: /Tu peux construire/ });
-  expect(within(now).getByRole('link', { name: /Sentier vers Mine des lettres/ })).toHaveAttribute('href', '/aventure/foret');
+  expect(within(now).getByRole('link', { name: /Sentier vers Mine des lettres/ })).toHaveAttribute('href', '/adventure/french-6e-phonology?worksite=french-6e-phonology-french-6e-letter-confusion');
   // Les îles fermées ne sont pas listées une par une, seulement comptées.
   expect(screen.queryByText(/île fermée/)).not.toBeInTheDocument();
   expect(screen.getByLabelText(/sur des îles que tu ouvriras plus tard/)).toBeInTheDocument();
@@ -212,10 +212,10 @@ it('en vue simple, « Mes blocs » est une page : ce que chaque bloc construit, 
   expect(screen.getByRole('heading', { name: 'Blocland' })).toBeInTheDocument();
 });
 
-it('en vue simple, les bandeaux de récompense attendent que le mot de la baleine soit fermé (DA-9)', async () => {
+it('en vue simple, les bandeaux de récompense attendent que le mot des grandes étapes soit fermé (DA-9)', async () => {
   const user = userEvent.setup();
-  renderAt('/aventure/carte');
-  const word = screen.getByRole('dialog', { name: 'Le mot de la baleine' });
+  renderAt('/adventure/map');
+  const word = screen.getByRole('dialog', { name: 'Le mot de Mousso' });
   expect(screen.getByTestId('retenus')).toHaveTextContent('oui');
   while (within(word).queryByRole('button', { name: 'Suivant' })) await user.click(within(word).getByRole('button', { name: 'Suivant' }));
   await user.click(within(word).getByRole('button', { name: 'J’ai compris' }));
@@ -223,36 +223,57 @@ it('en vue simple, les bandeaux de récompense attendent que le mot de la balein
 });
 
 it('en vue simple, la Carte et la page des quatre archipels renvoient à la liste des îles', () => {
-  renderAt('/aventure/carte');
+  renderAt('/adventure/map');
   expect(screen.getByRole('heading', { name: 'Blocland' })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /^Forêt des sons/ })).toBeInTheDocument();
   // Comme la Carte : la prochaine destination, l'état de chaque île en mot, les archipels non atteints dans la brume.
-  expect(screen.getByRole('link', { name: /Y aller/ })).toHaveAttribute('href', '/aventure/foret');
+  expect(screen.getByRole('link', { name: /Y aller/ })).toHaveAttribute('href', '/adventure/french-6e-phonology');
   expect(screen.getByRole('link', { name: /^Forêt des sons.*À explorer/ })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /^Carrière des mots.*Fermée/ })).toBeInTheDocument();
-  expect(screen.getByRole('img', { name: /Carte des quatre archipels.*5e, les Îles Brumeuses : dans la brume/ })).toBeInTheDocument();
-  // Un élève qui n'a rien joué : la baleine se présente, une fois.
-  expect(screen.getByRole('dialog', { name: 'Le mot de la baleine' })).toHaveTextContent('Je suis la baleine');
+  expect(screen.getByRole('img', { name: /Carte des quatre archipels.*5e, les Collines du Large : dans la brume/ })).toBeInTheDocument();
+  // Un élève qui n'a rien joué : Mousso, la créature de l'île de l'école, se présente, une fois.
+  expect(screen.getByRole('dialog', { name: 'Le mot de Mousso' })).toHaveTextContent('Moi, c’est Mousso');
   document.body.innerHTML = '';
-  renderAt('/aventure/monde');
+  renderAt('/adventure/world');
   expect(screen.getByRole('heading', { name: 'Blocland' })).toBeInTheDocument();
 });
 
 it('l’accueil annonce le Bloc-Navire quand il est prêt à partir', async () => {
-  const { VEHICLE_STAGES } = await import('./blocland/world/vehicle');
-  const { planCells } = await import('./blocland/world/plans');
+  const { VEHICLE_STAGES } = await import('./game/world/vehicle');
+  const { planCells } = await import('./game/world/plans');
   const [coque] = VEHICLE_STAGES;
-  const progress = Object.fromEntries(['foret', 'plaine', 'mine'].map((id) => [`${id}-gardien`, { stars: 2, attempts: 1, best: 1 }]));
-  localStorage.setItem('dysapps:blocland', JSON.stringify({ progress, village: { plans: { [coque.id]: planCells(coque).map((c) => c.key) }, bridges: ['foret-mine'] } }));
+  const progress = Object.fromEntries(['french-6e-phonology', 'maths-6e-calculation', 'french-6e-letter-confusion'].map((id) => [`${id}-challenge`, { stars: 2, attempts: 1, best: 1 }]));
+  localStorage.setItem('dysapps:game', JSON.stringify({ progress, world: { parts: { [coque.id]: planCells(coque).map((c) => c.key) }, links: ['french-6e-phonology-french-6e-letter-confusion'] } }));
   localStorage.setItem('dysapps:progress', JSON.stringify({ totalAnswers: 3 }));
   renderAt('/');
-  expect(screen.getByRole('link', { name: /Reprendre l’aventure/ })).toHaveAttribute('href', '/aventure/plaine');
+  expect(screen.getByRole('link', { name: /Reprendre l’aventure/ })).toHaveAttribute('href', '/adventure/maths-6e-calculation');
   expect(document.querySelector('.home-destination')).toHaveTextContent(/^Prochaine destination : Plaine.*Bloc-Navire/);
+});
+
+it('quand la prochaine destination est un ouvrage, « Reprendre l’aventure » et « Y aller » ouvrent son île sur lui, mis en avant', async () => {
+  const { getBiome, missionsJouables } = await import('./game/biomes');
+  const { exercisesOf } = await import('./game/exercises');
+  // La Forêt, la Plaine, la Mine et la Rivière jouées, 4 blocs : le pont de la Forêt vers l'Horloge des verbes.
+  const iles = ['french-6e-phonology', 'maths-6e-calculation', 'french-6e-letter-confusion', 'maths-6e-fractions'] as const;
+  const progress = Object.fromEntries(iles.flatMap((ile) => missionsJouables(getBiome(ile)!).map((m) => [exercisesOf(ile, m.id)[0].id, { stars: 2, attempts: 1, best: 0.8 }])));
+  const world = { place: 'french-6e-letter-confusion', links: ['french-6e-phonology-french-6e-letter-confusion', 'maths-6e-calculation-maths-6e-fractions'] };
+  localStorage.setItem('dysapps:game', JSON.stringify({ progress, stock: { 'french-6e-phonology': 4 }, world }));
+  localStorage.setItem('dysapps:progress', JSON.stringify({ totalAnswers: 3 }));
+  const lien = '/adventure/french-6e-phonology?worksite=french-6e-phonology-english-6e-grammar';
+  renderAt('/');
+  expect(screen.getByRole('link', { name: /Reprendre l’aventure/ })).toHaveAttribute('href', lien);
+  document.body.innerHTML = '';
+  // La vue simple : la Carte y mène aussi, et la page de l'île met la ligne de l'ouvrage en avant.
+  renderAt('/adventure/map');
+  expect(screen.getByRole('link', { name: /Y aller/ })).toHaveAttribute('href', lien);
+  document.body.innerHTML = '';
+  renderAt(lien);
+  expect(document.querySelector('[data-bridge="french-6e-phonology-english-6e-grammar"]')).toHaveClass('bridge-highlight');
 });
 
 it('surligne les syllabes en couleurs alternées quand le réglage est actif', () => {
   localStorage.setItem('dysapps:settings', JSON.stringify({ syllables: true }));
-  const { container } = renderAt('/aventure');
+  const { container } = renderAt('/adventure');
   const syllables = container.querySelectorAll('.syl');
   expect(syllables.length).toBeGreaterThan(10);
   expect(container.querySelectorAll('.syl-0').length).toBeGreaterThan(0);
@@ -262,10 +283,10 @@ it('surligne les syllabes en couleurs alternées quand le réglage est actif', (
 it('pendant une mission, mode concentration : plus de barre du haut, un bouton Pause qui permet de quitter', async () => {
   const user = userEvent.setup();
   renderAt('/app/fractions');
-  expect(screen.getByRole('navigation', { name: 'Navigation principale' })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Menu' })).toBeInTheDocument();
   await user.click((await screen.findAllByRole('button', { name: /Lire une fraction/ }))[0]);
-  // La partie commence : plus de barre du haut, seulement Pause.
-  expect(screen.queryByRole('navigation', { name: 'Navigation principale' })).not.toBeInTheDocument();
+  // La partie commence : plus de bouton Menu, seulement Pause.
+  expect(screen.queryByRole('link', { name: 'Menu' })).not.toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: 'Pause' }));
   const pause = screen.getByRole('dialog', { name: 'Pause' });
   expect(within(pause).getByText(/L’XP des réponses déjà données est gardée/)).toBeInTheDocument();
@@ -279,15 +300,15 @@ it('pendant une mission, mode concentration : plus de barre du haut, un bouton P
   await user.click(screen.getByRole('button', { name: 'Pause' }));
   await user.click(screen.getByRole('button', { name: /Quitter la partie/ }));
   expect(await screen.findByRole('heading', { name: 'Missions' })).toBeInTheDocument();
-  expect(screen.getByRole('navigation', { name: 'Navigation principale' })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Menu' })).toBeInTheDocument();
 });
 
 it('l’école du village : trois portes, les missions de la matière, et le retour à la porte', async () => {
   const user = userEvent.setup();
-  renderAt('/aventure');
-  expect(screen.getByRole('link', { name: /École du village/ })).toHaveAttribute('href', '/aventure/ecole');
+  renderAt('/adventure');
+  expect(screen.getByRole('link', { name: /École du village/ })).toHaveAttribute('href', '/adventure/school');
   document.body.innerHTML = '';
-  renderAt('/aventure/ecole');
+  renderAt('/adventure/school');
   expect(screen.getByRole('heading', { name: /École du village/, level: 1 })).toBeInTheDocument();
   const doors = screen.getByRole('list', { name: 'Les trois portes de l’école' });
   expect(within(doors).getAllByRole('button')).toHaveLength(3);
@@ -295,17 +316,29 @@ it('l’école du village : trois portes, les missions de la matière, et le ret
   const fractions = screen.getByRole('link', { name: /Fractions/ });
   expect(fractions).toHaveAttribute('href', '/app/fractions');
   await user.click(fractions);
-  expect(await screen.findByRole('link', { name: /École/ })).toHaveAttribute('href', '/aventure/ecole?porte=maths');
-  // La Forêt, île de l'école des Premiers Rivages, y mène aussi.
+  expect(await screen.findByRole('link', { name: /École/ })).toHaveAttribute('href', '/adventure/school?door=maths');
+  // La Forêt, île de l'école des Basses Terres, y mène aussi.
   document.body.innerHTML = '';
-  renderAt('/aventure/foret');
-  expect(screen.getByRole('link', { name: /École du village/ })).toHaveAttribute('href', '/aventure/ecole');
+  renderAt('/adventure/french-6e-phonology');
+  expect(screen.getByRole('link', { name: /École du village/ })).toHaveAttribute('href', '/adventure/school');
   // La salle des trophées, en vue simple : la page Succès.
   expect(screen.getByRole('link', { name: /Salle des trophées/ })).toHaveAttribute('href', '/succes');
   document.body.innerHTML = '';
-  renderAt('/aventure/trophees');
+  renderAt('/adventure/trophies');
   expect(screen.getByRole('heading', { name: 'Profil' })).toBeInTheDocument();
   document.body.innerHTML = '';
-  renderAt('/aventure/mine');
+  renderAt('/adventure/french-6e-letter-confusion');
   expect(screen.queryByRole('link', { name: /École du village/ })).not.toBeInTheDocument();
+});
+
+it('une ancienne adresse (favori, lien d’enseignant) ouvre la même page sous son adresse neutre', () => {
+  renderAt('/aventure/foret/chasse-son');
+  expect(screen.getByText(/Chasse au son/)).toBeInTheDocument();
+  document.body.innerHTML = '';
+  renderAt('/aventure/foret');
+  expect(screen.getByRole('heading', { name: /Forêt des sons/ })).toBeInTheDocument();
+  document.body.innerHTML = '';
+  renderAt('/matiere/francais');
+  expect(screen.queryByText(/Zone introuvable/)).not.toBeInTheDocument();
+  expect(screen.getByRole('link', { name: /Forêt des sons/ })).toHaveAttribute('href', '/adventure/french-6e-phonology');
 });

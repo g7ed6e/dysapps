@@ -1,0 +1,79 @@
+import { DotArray, TenFrame } from '../../apps/tables/aids';
+import { multiplication } from '../../apps/tables/generators';
+import { seeded } from '../../core/random';
+import { MATHS_EXERCISES, aidToData, buildItems, toItem } from './maths';
+
+it('convertit une aide React en données, et une question en item lisible', () => {
+  const q = multiplication(5, 3, false, () => 0.5);
+  const item = toItem(q);
+  expect(item.prompt).toBe('5 × 3 = …');
+  expect(item.spoken).toBe('5 fois 3, combien ?');
+  expect(item.answer).toBe('15');
+  expect(item.choices).toContain('15');
+  expect(item.aid).toEqual({ kind: 'dots', props: { rows: 3, cols: 5 } });
+  expect(aidToData(TenFrame({ filled: 4 }))).toBeUndefined();
+  expect(aidToData(DotArray({ rows: 1, cols: 1 }))).toBeUndefined();
+  // Sérialisable : rien de React dans l'item.
+  expect(JSON.parse(JSON.stringify(item))).toEqual(item);
+});
+
+it('tire des items reproductibles et tous différents', () => {
+  const rng = seeded('x');
+  expect(seeded('x')()).toBe(rng());
+  const a = buildItems('maths-6e-calculation-times-tables-1', [() => multiplication(2, Math.ceil(Math.random() * 9) + 1, false, Math.random)], 6);
+  expect(new Set(a.map((i) => i.key)).size).toBe(6);
+  expect(MATHS_EXERCISES.map((e) => e.items.map((i) => i.key))).toEqual(MATHS_EXERCISES.map((e) => e.items.map((i) => i.key)));
+});
+
+it('les missions du Volcan : tableau ou droite sur chaque item, décimaux à virgule', () => {
+  const volcan = MATHS_EXERCISES.filter((e) => e.biome === 'maths-6e-decimals');
+  expect(volcan.map((e) => e.id)).toEqual(['maths-6e-decimals-ordering-1', 'maths-6e-decimals-ordering-2', 'maths-6e-decimals-ordering-3', 'maths-6e-decimals-operations-1', 'maths-6e-decimals-scale-1', 'maths-6e-decimals-scale-2']);
+  for (const def of volcan) {
+    expect(def.items.length).toBe(8);
+    for (const it of def.items) {
+      expect(it.choices).toContain(it.answer);
+      expect(it.aid ?? it.figure).toBeDefined();
+      expect(String(it.explanation).length).toBeGreaterThan(3);
+    }
+  }
+  expect(volcan[3].items.every((it) => (it.aid as { kind: string }).kind === 'decimal-table')).toBe(true);
+});
+
+it('les missions de la Rivière : figure ou aide sur chaque item, fractions lisibles', () => {
+  const riviere = MATHS_EXERCISES.filter((e) => e.biome === 'maths-6e-fractions');
+  expect(riviere.map((e) => e.id)).toEqual(['maths-6e-fractions-number-line-1', 'maths-6e-fractions-number-line-2', 'maths-6e-fractions-equivalence-1', 'maths-6e-fractions-sharing-1', 'maths-6e-fractions-sharing-2']);
+  for (const def of riviere) {
+    expect(def.items.length).toBe(8);
+    for (const it of def.items) {
+      expect(it.choices).toContain(it.answer);
+      expect(String(it.explanation).length).toBeGreaterThan(3);
+      if (def.type === 'number-line') expect(it.figure).toBeDefined();
+      if (def.type === 'equivalence') expect(it.aid).toEqual({ kind: 'compare-bars', props: expect.anything() });
+    }
+  }
+});
+
+it('les missions de la Plaine : une aide visuelle et une explication sur chaque item, réponses dans l’ordre croissant', () => {
+  const plaine = MATHS_EXERCISES.filter((e) => e.biome === 'maths-6e-calculation');
+  expect(plaine.map((e) => e.id)).toEqual([
+    'maths-6e-calculation-times-tables-1',
+    'maths-6e-calculation-times-tables-2',
+    'maths-6e-calculation-times-tables-3',
+    'maths-6e-calculation-make-ten-1',
+    'maths-6e-calculation-make-ten-2',
+    'maths-6e-calculation-doubles-halves-1',
+  ]);
+  for (const def of plaine) {
+    expect(def.items.length).toBe(8);
+    for (const it of def.items) {
+      expect(String(it.explanation).length).toBeGreaterThan(3);
+      expect(String(it.spoken).length).toBeGreaterThan(3);
+      expect(it.choices).toContain(it.answer);
+      const nums = (it.choices as string[]).map((c) => Number(c.replace(/[\s  ]/g, '')));
+      expect([...nums].sort((a, b) => a - b)).toEqual(nums);
+      if (def.type !== 'doubles-halves') expect(it.aid).toBeDefined();
+    }
+  }
+  // Niveau 1 des tables : seulement 2, 5 et 10.
+  for (const it of plaine[0].items) expect(String(it.prompt)).toMatch(/^(2|5|10) × \d+|\d+ × (2|5|10) =/);
+});

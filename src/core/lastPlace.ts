@@ -1,11 +1,11 @@
-// La dernière mission ouverte, pour le bouton « Continuer » (écran titre et menus) : son adresse et son nom.
+// La dernière mission ouverte, pour « Ma dernière mission » (écran titre et menus) : son adresse et son nom.
 import { useEffect } from 'react';
 import { loadJSON, removeKey, saveJSON } from './storage';
 
-const STORAGE_KEY = 'reprise';
+const STORAGE_KEY = 'resume';
 
 export interface Place {
-  /** Adresse dans l'appli (« /aventure/foret/abattage », « /app/tables »). */
+  /** Adresse dans l'appli (« /adventure/french-6e-phonology/syllables », « /app/tables »). */
   path: string;
   /** Ce qu'on affiche : « Abattage syllabique · Forêt des sons ». */
   label: string;

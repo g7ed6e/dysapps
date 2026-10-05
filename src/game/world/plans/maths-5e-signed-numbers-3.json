@@ -1,0 +1,9 @@
+{
+  "id": "maths-5e-signed-numbers-3",
+  "biome": "maths-5e-signed-numbers",
+  "name": "La patinoire de l’igloo",
+  "reward": {
+    "xp": 60
+  },
+  "done": "Une patinoire, une barrière, un escalier… Mon igloo est complet, zéro bloc manquant."
+}

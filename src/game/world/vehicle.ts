@@ -1,0 +1,174 @@
+// Le Bloc-Navire : un seul véhicule qui grandit en trois étapes, chacune un plan à construire sur le quai de l'île-port
+// d'un archipel. La coque et la voile mènent aux Îles Brumeuses (par la mer), le ballon aux Anciens Ateliers (par les
+// airs), le réacteur, sous la coque, aux Îles du Ciel. Les cases « kit » (voile, haut du ballon, feux) ne se gagnent
+// pas : elles arrivent d'elles-mêmes quand assez de Gardiens de l'archipel sont vaincus. Le reste se pose bloc par bloc.
+import { BLOC, BLOCKS, type BiomeId, type BlockId } from '../biomes';
+import { isBossBeaten } from '../bossCore';
+import { ARCHIPELAGOS, islandsOf, reachedArchipelagos, voyageId, type ArchipelagoId } from './archipelago';
+import type { PlanCell, PlanDef } from './plans';
+
+export const VEHICLE_NAME = 'le Bloc-Navire';
+
+/** Le sommet du mât : ce qui est au-dessus (le ballon) se balance à part de la coque, dans la vue 3D. */
+export const MAST_TOP = 7;
+
+export interface VehicleStage extends PlanDef {
+  zone: 'port';
+  /** Numéro de l'étape (1 à 3). */
+  stage: 1 | 2 | 3;
+  /** L'archipel où l'étape se construit (sur son port) et celui où elle mène. */
+  from: ArchipelagoId;
+  to: ArchipelagoId;
+  /** Gardiens de `from` à vaincre pour que le kit arrive et que l'on puisse embarquer. */
+  guardians: number;
+  /** Les cases offertes avec les Gardiens (jamais à poser). */
+  kit: PlanCell[];
+  /** Le nom court de l'étape (« la voile »), pour les phrases. */
+  short: string;
+  /**
+   * Le message de fin, avec le nom de l'archipel où elle mène dans l'univers affiché (GD-1) ; `done` le donne avec le
+   * nom commun des données.
+   */
+  fin: (archipel: string) => string;
+}
+
+/** Remplit un volume de cases, du coin (x0, y0, z0), de w × d × h cases. */
+function fill(cells: PlanCell[], x0: number, y0: number, z0: number, w: number, d: number, h: number, block: BlockId): void {
+  for (let x = x0; x < x0 + w; x++) for (let y = y0; y < y0 + d; y++) for (let z = z0; z < z0 + h; z++) cells.push({ x, y, z, block });
+}
+
+function coque(): { cells: PlanCell[]; kit: PlanCell[] } {
+  const cells: PlanCell[] = [];
+  // Le pont en sable clair (Carrière), la proue et la poupe en bois.
+  fill(cells, 1, 1, 0, 3, 6, 1, BLOC.sable);
+  cells.push({ x: 2, y: 0, z: 0, block: BLOC.bois }, { x: 2, y: 7, z: 0, block: BLOC.bois });
+  // Les bastingages en bois (Forêt).
+  fill(cells, 0, 1, 1, 1, 6, 1, BLOC.bois);
+  fill(cells, 4, 1, 1, 1, 6, 1, BLOC.bois);
+  // La cabine de poupe en galet (Rivière), l'ancre en pierre (Mine).
+  fill(cells, 1, 6, 1, 3, 1, 2, BLOC.galet);
+  cells.push({ x: 0, y: 0, z: 1, block: BLOC.pierre });
+  // Le mât.
+  fill(cells, 2, 3, 1, 1, 1, 6, BLOC.bois);
+  // Le kit : la voile de toile de part et d'autre du mât, la lanterne de proue.
+  const kit: PlanCell[] = [];
+  for (const x of [0, 1, 3, 4]) fill(kit, x, 3, 3, 1, 1, 3, BLOC.toile);
+  kit.push({ x: 2, y: 0, z: 1, block: BLOC.lanterne });
+  return { cells, kit };
+}
+
+function ballon(): { cells: PlanCell[]; kit: PlanCell[] } {
+  const cells: PlanCell[] = [];
+  // Quatre sacs de lest en glace (Glacier) sous le ballon, autour du sommet du mât.
+  for (const [x, y] of [
+    [1, 2],
+    [3, 2],
+    [1, 4],
+    [3, 4],
+  ])
+    cells.push({ x, y, z: 7, block: BLOC.glace });
+  // La nacelle du ballon en panneaux peints (Carrefour), puis la grande couronne de toile (Marché).
+  fill(cells, 1, 2, 8, 3, 3, 1, BLOC.panneau);
+  fill(cells, 0, 1, 9, 5, 5, 1, BLOC.toile);
+  const corners = new Set(['0,1', '4,1', '0,5', '4,5']);
+  const trimmed = cells.filter((c) => !(c.z === 9 && corners.has(`${c.x},${c.y}`)));
+  // Le kit : le haut du ballon et la corde qui le retient au mât.
+  const kit: PlanCell[] = [];
+  fill(kit, 1, 2, 10, 3, 3, 1, BLOC.toile);
+  kit.push({ x: 2, y: 3, z: 7, block: BLOC.barriere });
+  return { cells: trimmed, kit };
+}
+
+function reacteur(): { cells: PlanCell[]; kit: PlanCell[] } {
+  const cells: PlanCell[] = [];
+  // Sous la coque, pour monter droit vers le ciel. Dans l'ordre de la pose, ce qui se voit d'abord : les ailerons en
+  // calque (Atelier) sur les flancs, à mi-longueur ; les trois tuyères en ardoise (Falaise), séparées, tournées vers le
+  // bas (deux sous le mât, une vers la poupe) ; puis le ventre du réacteur en acier (Forge), sous tout le pont.
+  cells.push({ x: 0, y: 3, z: -1, block: BLOC.calque }, { x: 4, y: 3, z: -1, block: BLOC.calque }, { x: 0, y: 4, z: -1, block: BLOC.calque }, { x: 4, y: 4, z: -1, block: BLOC.calque });
+  cells.push({ x: 1, y: 3, z: -2, block: BLOC.ardoise }, { x: 3, y: 3, z: -2, block: BLOC.ardoise }, { x: 2, y: 5, z: -2, block: BLOC.ardoise });
+  fill(cells, 1, 1, -1, 3, 6, 1, BLOC.acier);
+  // Le kit : les feux de position, de part et d'autre de la poupe.
+  const kit: PlanCell[] = [{ x: 1, y: 7, z: 0, block: BLOC.lanterne }, { x: 3, y: 7, z: 0, block: BLOC.lanterne }];
+  return { cells, kit };
+}
+
+function stage(
+  n: 1 | 2 | 3,
+  id: string,
+  name: string,
+  short: string,
+  parts: { cells: PlanCell[]; kit: PlanCell[] },
+  guardians: number,
+  reward: PlanDef['reward'],
+  fin: (archipel: string) => string,
+): VehicleStage {
+  const from = ARCHIPELAGOS[n - 1];
+  const to = ARCHIPELAGOS[n];
+  return { id, biome: from.port, name, short, origin: { x: 0, y: 0 }, zone: 'port', stage: n, from: from.classe, to: to.classe, guardians, cells: parts.cells, kit: parts.kit, reward, done: fin(to.name), fin };
+}
+
+/** Les tuyères du réacteur (sous la coque, en z = −2) : les flammes en sortent, vers le bas, en vol. */
+export const TUYERES: readonly PlanCell[] = reacteur().cells.filter((c) => c.block === BLOC.ardoise);
+
+/** Les trois étapes, dans l'ordre. Chaque étape mène à l'archipel suivant. */
+export const VEHICLE_STAGES: VehicleStage[] = [
+  stage(1, 'navire-coque', 'La coque et la voile', 'la voile', coque(), 3, { xp: 120, chest: { [BLOC.lanterne]: 2, [BLOC.barriere]: 4 } }, (archipel) => `La voile est hissée ! Pose les derniers blocs et embarque : les ${archipel} t’attendent.`),
+  stage(2, 'navire-ballon', 'Le ballon', 'le ballon', ballon(), 2, { xp: 160, chest: { [BLOC.lanterne]: 2, [BLOC.escalier]: 2 } }, (archipel) => `Le ballon est gonflé ! Le Bloc-Navire peut voler. Embarque quand tu veux : les ${archipel} t’attendent.`),
+  stage(3, 'navire-reacteur', 'Le réacteur', 'le réacteur', reacteur(), 2, { xp: 200, chest: { [BLOC.lanterne]: 3 } }, (archipel) => `Le réacteur ronronne ! Le Bloc-Navire peut monter jusqu’au ciel. Embarque quand tu veux : les ${archipel} t’attendent.`),
+];
+
+export function getStage(id: string): VehicleStage | undefined {
+  return VEHICLE_STAGES.find((s) => s.id === id);
+}
+
+/** L'étape qui mène à un archipel. */
+export function stageTo(a: ArchipelagoId): VehicleStage | undefined {
+  return VEHICLE_STAGES.find((s) => s.to === a);
+}
+
+/** L'étape dont le voyage porte cet identifiant. */
+export function stageFor(voyage: string): VehicleStage | undefined {
+  return VEHICLE_STAGES.find((s) => voyageId(s.to) === voyage);
+}
+
+/** Le chantier d'une île-port : l'étape qui s'y construit (rien sur les autres îles). */
+export function stageAt(island: BiomeId): VehicleStage | undefined {
+  return VEHICLE_STAGES.find((s) => s.biome === island);
+}
+
+/** Combien de Gardiens d'un archipel sont vaincus. */
+export function beatenGuardians(a: ArchipelagoId, progress: Record<string, { stars: number }>): number {
+  return islandsOf(a).filter((b) => isBossBeaten(b.id, progress)).length;
+}
+
+/** Le kit d'une étape (voile, haut du ballon, feux) est arrivé : assez de Gardiens vaincus. */
+export function kitReady(stage: VehicleStage, progress: Record<string, { stars: number }>): boolean {
+  return beatenGuardians(stage.from, progress) >= stage.guardians;
+}
+
+/** L'étape qui se construit sur le quai d'un port : pas encore partie, et l'étape d'avant déjà partie (ou la première). */
+export function stageBuildingAt(port: BiomeId, bridges: string[]): VehicleStage | undefined {
+  return VEHICLE_STAGES.find(
+    (st) => st.biome === port && !bridges.includes(voyageId(st.to)) && (st.stage === 1 || bridges.includes(voyageId(VEHICLE_STAGES[st.stage - 2].to))),
+  );
+}
+
+/** Les étapes déjà parties (leur voyage est fait) : elles sont dessinées complètes, kit compris. */
+export function launchedStages(bridges: string[]): VehicleStage[] {
+  return VEHICLE_STAGES.filter((s) => bridges.includes(voyageId(s.to)));
+}
+
+/** Le port où le Bloc-Navire est amarré : celui de l'archipel le plus lointain atteint (il suit le voyageur). */
+export function vehicleAt(bridges: string[]): BiomeId {
+  const reached = reachedArchipelagos(bridges);
+  return reached[reached.length - 1].port;
+}
+
+/** Le navire tel qu'il est aujourd'hui, en cubes locaux (pour le dessiner en SVG) : les étapes parties, kit compris. */
+export function vehicleModel(level: number): { x: number; y: number; z: number; color: string; top?: string }[] {
+  const cubes: { x: number; y: number; z: number; color: string; top?: string }[] = [];
+  for (const s of VEHICLE_STAGES.slice(0, Math.max(1, level))) {
+    for (const c of [...s.cells, ...s.kit]) cubes.push({ x: c.x, y: c.y, z: c.z, color: BLOCKS[c.block].side, top: BLOCKS[c.block].top });
+  }
+  return cubes;
+}

@@ -1,0 +1,231 @@
+{
+  "id": "english-5e-vocabulary-routine-1",
+  "biome": "english-5e-vocabulary",
+  "type": "routine",
+  "level": 1,
+  "lang": "en",
+  "instruction": "Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.",
+  "items": [
+    {
+      "key": "english-5e-vocabulary-routine-1-0",
+      "prompt": "I … up at seven o’clock.",
+      "spoken": "I blank up at seven o’clock.",
+      "choices": [
+        "get",
+        "go",
+        "have"
+      ],
+      "answer": "get",
+      "hint": "Relis la règle : get, have, go ou do ?",
+      "explanation": "get up = se lever.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ma journée",
+          "lines": [
+            "get up = se lever, get dressed = s’habiller",
+            "have breakfast = prendre le petit déjeuner, have a shower = prendre une douche",
+            "go to school = aller à l’école, go to bed = aller se coucher",
+            "do homework = faire ses devoirs, do the dishes = faire la vaisselle",
+            "he / she : + s (she gets up, he does, she has)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-vocabulary-routine-1-1",
+      "prompt": "She … a shower every morning.",
+      "spoken": "She blank a shower every morning.",
+      "choices": [
+        "has",
+        "does",
+        "makes"
+      ],
+      "answer": "has",
+      "hint": "Relis la règle : get, have, go ou do ?",
+      "explanation": "have a shower = prendre une douche : she has a shower.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ma journée",
+          "lines": [
+            "get up = se lever, get dressed = s’habiller",
+            "have breakfast = prendre le petit déjeuner, have a shower = prendre une douche",
+            "go to school = aller à l’école, go to bed = aller se coucher",
+            "do homework = faire ses devoirs, do the dishes = faire la vaisselle",
+            "he / she : + s (she gets up, he does, she has)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-vocabulary-routine-1-2",
+      "prompt": "We … to school at eight.",
+      "spoken": "We blank to school at eight.",
+      "choices": [
+        "go",
+        "get",
+        "do"
+      ],
+      "answer": "go",
+      "hint": "Relis la règle : get, have, go ou do ?",
+      "explanation": "go to school = aller à l’école.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ma journée",
+          "lines": [
+            "get up = se lever, get dressed = s’habiller",
+            "have breakfast = prendre le petit déjeuner, have a shower = prendre une douche",
+            "go to school = aller à l’école, go to bed = aller se coucher",
+            "do homework = faire ses devoirs, do the dishes = faire la vaisselle",
+            "he / she : + s (she gets up, he does, she has)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-vocabulary-routine-1-3",
+      "prompt": "He … his homework after dinner.",
+      "spoken": "He blank his homework after dinner.",
+      "choices": [
+        "does",
+        "makes",
+        "has"
+      ],
+      "answer": "does",
+      "hint": "Relis la règle : get, have, go ou do ?",
+      "explanation": "do homework = faire ses devoirs : he does his homework.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ma journée",
+          "lines": [
+            "get up = se lever, get dressed = s’habiller",
+            "have breakfast = prendre le petit déjeuner, have a shower = prendre une douche",
+            "go to school = aller à l’école, go to bed = aller se coucher",
+            "do homework = faire ses devoirs, do the dishes = faire la vaisselle",
+            "he / she : + s (she gets up, he does, she has)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-vocabulary-routine-1-4",
+      "prompt": "They … to bed at half past nine.",
+      "spoken": "They blank to bed at half past nine.",
+      "choices": [
+        "go",
+        "get",
+        "have"
+      ],
+      "answer": "go",
+      "hint": "Relis la règle : get, have, go ou do ?",
+      "explanation": "go to bed = aller se coucher.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ma journée",
+          "lines": [
+            "get up = se lever, get dressed = s’habiller",
+            "have breakfast = prendre le petit déjeuner, have a shower = prendre une douche",
+            "go to school = aller à l’école, go to bed = aller se coucher",
+            "do homework = faire ses devoirs, do the dishes = faire la vaisselle",
+            "he / she : + s (she gets up, he does, she has)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-vocabulary-routine-1-5",
+      "prompt": "I … breakfast in the kitchen.",
+      "spoken": "I blank breakfast in the kitchen.",
+      "choices": [
+        "have",
+        "do",
+        "go"
+      ],
+      "answer": "have",
+      "hint": "Relis la règle : get, have, go ou do ?",
+      "explanation": "have breakfast = prendre le petit déjeuner.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ma journée",
+          "lines": [
+            "get up = se lever, get dressed = s’habiller",
+            "have breakfast = prendre le petit déjeuner, have a shower = prendre une douche",
+            "go to school = aller à l’école, go to bed = aller se coucher",
+            "do homework = faire ses devoirs, do the dishes = faire la vaisselle",
+            "he / she : + s (she gets up, he does, she has)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-vocabulary-routine-1-6",
+      "prompt": "My dad … the dishes after lunch.",
+      "spoken": "My dad blank the dishes after lunch.",
+      "choices": [
+        "does",
+        "has",
+        "goes"
+      ],
+      "answer": "does",
+      "hint": "Relis la règle : get, have, go ou do ?",
+      "explanation": "do the dishes = faire la vaisselle : my dad does the dishes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ma journée",
+          "lines": [
+            "get up = se lever, get dressed = s’habiller",
+            "have breakfast = prendre le petit déjeuner, have a shower = prendre une douche",
+            "go to school = aller à l’école, go to bed = aller se coucher",
+            "do homework = faire ses devoirs, do the dishes = faire la vaisselle",
+            "he / she : + s (she gets up, he does, she has)"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-vocabulary-routine-1-7",
+      "prompt": "Lina … dressed very quickly.",
+      "spoken": "Lina blank dressed very quickly.",
+      "choices": [
+        "gets",
+        "goes",
+        "does"
+      ],
+      "answer": "gets",
+      "hint": "Relis la règle : get, have, go ou do ?",
+      "explanation": "get dressed = s’habiller : Lina gets dressed.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ma journée",
+          "lines": [
+            "get up = se lever, get dressed = s’habiller",
+            "have breakfast = prendre le petit déjeuner, have a shower = prendre une douche",
+            "go to school = aller à l’école, go to bed = aller se coucher",
+            "do homework = faire ses devoirs, do the dishes = faire la vaisselle",
+            "he / she : + s (she gets up, he does, she has)"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien dit !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "english-5e-vocabulary",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

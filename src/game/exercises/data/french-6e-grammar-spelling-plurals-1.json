@@ -1,0 +1,225 @@
+{
+  "id": "french-6e-grammar-spelling-plurals-1",
+  "biome": "french-6e-grammar-spelling",
+  "type": "plurals",
+  "level": 1,
+  "instruction": "Choisis le mot bien accordé : regarde les mots de son groupe. La règle est affichée.",
+  "programme": [
+    "c3.fr.langue.accord-gn"
+  ],
+  "items": [
+    {
+      "key": "french-6e-grammar-spelling-plurals-1-0",
+      "prompt": "Les vaches … broutent l’herbe du pré.",
+      "spoken": "Les vaches (mot manquant) broutent l’herbe du pré.",
+      "choices": [
+        "noir",
+        "noire",
+        "noires"
+      ],
+      "answer": "noires",
+      "hint": "Regarde le nom : « vaches », c’est féminin et pluriel.",
+      "explanation": "« Les vaches » est au féminin pluriel : l’adjectif prend -e puis -s, « noires ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’accord dans le groupe nominal",
+          "lines": [
+            "Le nom commande : déterminant et adjectif prennent son genre et son nombre.",
+            "Le déterminant change aussi : son, sa, ses ; ce, cette, ces.",
+            "Féminin : souvent un -e (grand, grande).",
+            "Pluriel : un -s, ou un -x (des bateaux, des journaux)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-6e-grammar-spelling-plurals-1-1",
+      "prompt": "Le fermier range … bottes de paille.",
+      "spoken": "Le fermier range (mot manquant) bottes de paille.",
+      "choices": [
+        "son",
+        "sa",
+        "ses"
+      ],
+      "answer": "ses",
+      "hint": "Combien de bottes ? Le déterminant doit le dire.",
+      "explanation": "« Bottes » est au pluriel (un s) : le déterminant aussi, « ses bottes ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’accord dans le groupe nominal",
+          "lines": [
+            "Le nom commande : déterminant et adjectif prennent son genre et son nombre.",
+            "Le déterminant change aussi : son, sa, ses ; ce, cette, ces.",
+            "Féminin : souvent un -e (grand, grande).",
+            "Pluriel : un -s, ou un -x (des bateaux, des journaux)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-6e-grammar-spelling-plurals-1-2",
+      "prompt": "Une … poule picore dans la cour.",
+      "spoken": "Une (mot manquant) poule picore dans la cour.",
+      "choices": [
+        "petit",
+        "petite",
+        "petits"
+      ],
+      "answer": "petite",
+      "hint": "« Une poule » : féminin ou masculin ? Un seul ou plusieurs ?",
+      "explanation": "« Une poule » est au féminin singulier : l’adjectif prend un -e, « petite ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’accord dans le groupe nominal",
+          "lines": [
+            "Le nom commande : déterminant et adjectif prennent son genre et son nombre.",
+            "Le déterminant change aussi : son, sa, ses ; ce, cette, ces.",
+            "Féminin : souvent un -e (grand, grande).",
+            "Pluriel : un -s, ou un -x (des bateaux, des journaux)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-6e-grammar-spelling-plurals-1-3",
+      "prompt": "Deux … galopent dans le champ.",
+      "spoken": "Deux (mot manquant) galopent dans le champ.",
+      "choices": [
+        "cheval",
+        "chevaux",
+        "chevals"
+      ],
+      "answer": "chevaux",
+      "hint": "Deux, c’est plusieurs. Relis la règle des noms en -al.",
+      "explanation": "Au pluriel, les noms en -al deviennent -aux : un cheval, deux chevaux.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’accord dans le groupe nominal",
+          "lines": [
+            "Le nom commande : déterminant et adjectif prennent son genre et son nombre.",
+            "Le déterminant change aussi : son, sa, ses ; ce, cette, ces.",
+            "Féminin : souvent un -e (grand, grande).",
+            "Pluriel : un -s, ou un -x (des bateaux, des journaux)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-6e-grammar-spelling-plurals-1-4",
+      "prompt": "Les agneaux … dorment contre leur mère.",
+      "spoken": "Les agneaux (mot manquant) dorment contre leur mère.",
+      "choices": [
+        "blanc",
+        "blancs",
+        "blanches"
+      ],
+      "answer": "blancs",
+      "hint": "« Agneaux » : masculin ou féminin ? Un seul ou plusieurs ?",
+      "explanation": "« Les agneaux » est au masculin pluriel : l’adjectif prend seulement un -s, « blancs ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’accord dans le groupe nominal",
+          "lines": [
+            "Le nom commande : déterminant et adjectif prennent son genre et son nombre.",
+            "Le déterminant change aussi : son, sa, ses ; ce, cette, ces.",
+            "Féminin : souvent un -e (grand, grande).",
+            "Pluriel : un -s, ou un -x (des bateaux, des journaux)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-6e-grammar-spelling-plurals-1-5",
+      "prompt": "Ma tante a une jument très … .",
+      "spoken": "Ma tante a une jument très (mot manquant) .",
+      "choices": [
+        "doux",
+        "douce",
+        "douces"
+      ],
+      "answer": "douce",
+      "hint": "« Une jument » : féminin, et une seule.",
+      "explanation": "« Une jument » est au féminin singulier : doux devient « douce » au féminin.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’accord dans le groupe nominal",
+          "lines": [
+            "Le nom commande : déterminant et adjectif prennent son genre et son nombre.",
+            "Le déterminant change aussi : son, sa, ses ; ce, cette, ces.",
+            "Féminin : souvent un -e (grand, grande).",
+            "Pluriel : un -s, ou un -x (des bateaux, des journaux)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-6e-grammar-spelling-plurals-1-6",
+      "prompt": "Dans l’étable, les … boivent du lait.",
+      "spoken": "Dans l’étable, les (mot manquant) boivent du lait.",
+      "choices": [
+        "veau",
+        "veaux",
+        "veaus"
+      ],
+      "answer": "veaux",
+      "hint": "« Les », c’est plusieurs. Relis la règle des noms en -eau.",
+      "explanation": "Les noms en -eau prennent un -x au pluriel : un veau, les veaux.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’accord dans le groupe nominal",
+          "lines": [
+            "Le nom commande : déterminant et adjectif prennent son genre et son nombre.",
+            "Le déterminant change aussi : son, sa, ses ; ce, cette, ces.",
+            "Féminin : souvent un -e (grand, grande).",
+            "Pluriel : un -s, ou un -x (des bateaux, des journaux)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-6e-grammar-spelling-plurals-1-7",
+      "prompt": "Regarde : … vache donne beaucoup de lait.",
+      "spoken": "Regarde : (mot manquant) vache donne beaucoup de lait.",
+      "choices": [
+        "ce",
+        "cette",
+        "ces"
+      ],
+      "answer": "cette",
+      "hint": "« Vache » : féminin ou masculin ? Une seule ou plusieurs ?",
+      "explanation": "« Vache » est au féminin singulier : le déterminant est « cette ». « Ce » va avec un nom masculin, « ces » avec un pluriel.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’accord dans le groupe nominal",
+          "lines": [
+            "Le nom commande : déterminant et adjectif prennent son genre et son nombre.",
+            "Le déterminant change aussi : son, sa, ses ; ce, cette, ces.",
+            "Féminin : souvent un -e (grand, grande).",
+            "Pluriel : un -s, ou un -x (des bateaux, des journaux)."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "wrong": "{explanation}",
+    "correct": "Tout le groupe va ensemble !"
+  },
+  "reward": {
+    "block": "french-6e-grammar-spelling",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

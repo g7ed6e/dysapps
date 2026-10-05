@@ -23,7 +23,7 @@ L’application n’est plus servie sur GitHub Pages : le site de documentation 
 
 ## Le build de la documentation
 
-La documentation est un site [VitePress](https://vitepress.dev/) : menu, sommaire et table des matières s’adaptent au téléphone, la recherche est locale, le thème clair ou sombre suit l’appareil. Le site porte l’habillage de Blocland, l’univers par défaut (`www/.vitepress/theme/`, décrit dans [Style](style.md)) : le thème clair reprend le thème Crème de Blocland, le sombre son thème Nuit, les titres courts sont en Archivo Black et le texte en Luciole. `npm run www:build` écrit `dist-www/` :
+La documentation est un site [VitePress](https://vitepress.dev/) : menu, sommaire et table des matières s’adaptent au téléphone, la recherche est locale, le thème clair ou sombre suit l’appareil. Le site porte l’habillage de Blocland, l’univers par défaut (`www/.vitepress/theme/`, décrit dans [Style](../rendu/style.md)) : le thème clair reprend le thème Crème de Blocland, le sombre son thème Nuit, les titres courts sont en Archivo Black et le texte en Luciole. `npm run www:build` écrit `dist-www/` :
 
 1. `www/.vitepress/config.mts` appelle `scripts/www/prepare.mjs`, qui copie `www/**/*.md` (sauf `www/_theme/` et `www/.vitepress/` ; le site s’adresse aux élèves et aux adultes qui les accompagnent, la documentation interne reste dans `docs/`) dans `.www-src/` et y ajoute les pages générées par `scripts/www/generate.mjs` : ce script charge les modules du jeu (biomes, exercices, plans, ouvrages, succès, missions du portail) avec Vite et produit les pages du contenu pédagogique en Markdown. Il copie aussi l’icône, le logo de Blocland, la police Luciole et `sw.js`.
 2. La configuration construit le sommaire depuis `www/_theme/nav.json` (le build échoue si une page du sommaire manque), date chaque page de son dernier commit (ou du jour du build pour une page générée) et pointe le lien « Voir la source » vers le fichier Markdown ou vers le générateur.
@@ -37,11 +37,17 @@ Le build échoue si une page du sommaire manque.
 
 `.github/workflows/deploy.yml` s’exécute à chaque push et à chaque pull request :
 
-1. **build** : installation sans scripts (`npm ci --ignore-scripts`), vérification des signatures npm, calcul de la version (`node scripts/version.mjs`), puis `npm test` et `npm run build` (l’application, comme Cloudflare la construit).
+1. **build** : installation sans scripts (`npm ci --ignore-scripts`), vérification des signatures npm, calcul de la version (`node scripts/version.mjs`), puis `npm run lint` (les règles des hooks de React), `npm run code-mort` (le code que rien n’utilise), `npm test` et `npm run build` (l’application, comme Cloudflare la construit).
 2. **captures**, en parallèle, sur `main` seulement : installe le Chromium de `playwright-core` (`npx playwright-core install --with-deps chromium`), rejoue le jeu avec `npm run www:captures` et téléverse les images en artefact `captures`. Les captures ne sont pas dans le dépôt (`www/_captures/` est ignoré par git) : elles sont refaites à chaque publication, donc toujours à jour. Une pull request ne les attend pas, pour rester rapide.
 3. **docs**, après **captures** : sur `main`, récupère l’artefact dans `www/_captures/` et lance `npm run www:build` avec `DOCS_CAPTURES=required` (une capture citée et absente fait échouer le build) ; sur une pull request, construit le site avec des images vides à la place des captures, ce qui vérifie quand même les pages et les noms de captures ; sur `main`, l’artefact `dist-www` est téléversé pour Pages.
 4. **tag** (sur `main` seulement) : pose l’étiquette `vX.Y.Z` de la version calculée sur le commit publié, par un appel à l’API GitHub. Ce job n’exécute aucun code du dépôt et il est le seul à pouvoir écrire dans le dépôt (`contents: write`).
 5. **deploy** (sur `main` seulement, après **build** et **docs**) : publie l’artefact sur GitHub Pages. Ce job n’exécute aucun code du dépôt et il est le seul à avoir les permissions Pages.
+
+Sur une pull request, une exécution nouvelle annule la précédente. Sur `main`, les exécutions ne s’attendent pas : seul le job **deploy** est rangé dans le groupe `pages`, où une publication plus récente remplace celle qui attend ou tourne encore. Une publication restée bloquée chez GitHub (du 30 septembre au 4 octobre 2026) ne peut donc plus retenir les suivantes, ni le site rester sur d’anciennes captures. Comme les exécutions de `main` tournent en même temps, le job **docs** vérifie à la fin que son commit est toujours la tête de `main` (`git ls-remote`) : une exécution dépassée ne publie pas, pour qu’un ancien site ne passe jamais par-dessus un plus récent.
+
+`.github/workflows/references.yml` s’exécute à chaque publication sur `main` : le job **captures** (lecture seule) refait le socle des captures de rendu (`npm run rendu:mesures -- --familles jour,nuit`, l’île, l’archipel et la Carte des quatre archipels, de jour et de nuit) dans les deux univers ; le job **publier** les range sur la branche `captures-main`, un dossier par commit, les cinq derniers, en une seule version de la branche (poussée forcée : son poids ne grandit pas). Ce job n’exécute aucun code du dépôt (git seulement) et il est le seul à pouvoir écrire. Les fils de rendu s’y comparent (`.claude/skills/captures/SKILL.md`).
+
+`.github/workflows/captures-lot.yml` se lance à la main sur la branche d’un lot de rendu (`workflow_dispatch` : le dossier du lot, les familles, les archipels, les univers). Le job **plan** vérifie ces entrées et trouve le commit de `main` dont la branche part ; le job **prendre** lance une machine par univers, archipel et côté (l’avant sur ce commit, l’après sur la branche), en parallèle, chacune avec `npm run rendu:mesures -- --archipel <a>` ; le job **comparer** compare l’après à l’avant (`node scripts/rendu/comparer.mjs <avant> <après>`) ; ces trois jobs sont en lecture seule, et une machine en erreur arrête tout le passage. Le job **publier** range les planches des vues changées et `comparaison.md` sur la branche `captures`, dans `<lot>/<univers>/` (remplacé à chaque passage) ; il n’exécute aucun code du dépôt (git seulement) et il est le seul à pouvoir écrire.
 
 Aucune permission par défaut, actions épinglées par SHA et mises à jour par Dependabot, `persist-credentials: false`, pas de cache partagé.
 
@@ -63,6 +69,10 @@ La version n’est écrite dans aucun fichier (`package.json` n’en a pas) : `s
 Deux pull requests menées en parallèle ne touchent donc aucun numéro commun et n’ont plus à se rebaser pour la version.
 
 La version est affichée dans les réglages de l’application et dans le pied de page de la documentation. Il n’y a pas de journal des versions : l’historique est celui de git et des pull requests.
+
+## Revenir en arrière
+
+Une version qui change le format de la partie (`GAME_VERSION`, `src/core/migration.ts`) ne se défait pas une fois en ligne : la partie traduite par un appareil n'est plus lisible par la version d'avant, qui jetterait ce qu'elle ne connaît pas (identifiants neutres du format 3 : stock, constructions, liaisons). En cas d'incident après une telle version, on corrige en avant, sans revert de `main`.
 
 ## Dépendances
 

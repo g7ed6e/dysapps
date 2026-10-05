@@ -51,23 +51,25 @@ Les règles de l’application sont dans [Principes dys](../../www/pedagogie/pri
 - Mouvements de caméra doux et désactivables, pas de secousse ni de flou de mouvement, pas de flash (risque de crise photosensible et de surcharge sensorielle) ; le texte n’est jamais dans la scène 3D.
 - Le confort est pour tous : un mode « moins d’animations » n’est pas présenté comme un mode « pour dys » (objectif 8 du W3C : adaptation et personnalisation).
 
-## Ce que fait Archipéo
+## Ce que fait l’application
+
+Le tableau vaut pour les deux univers : Blocland, l’univers construit et par défaut, et Archipéo, en pause depuis le 2 octobre 2026 (décision du mainteneur).
 
 | Pratique | Ce que fait le jeu | Où le voir |
 | --- | --- | --- |
 | Police, taille, interlignage, espacement | Luciole par défaut, OpenDyslexic, Atkinson Hyperlegible, Arial ; 18 px au moins, interlignage 1,5 au moins, espacement des lettres et des mots réglable, en mots | `src/core/settings.ts`, [Principes](../../www/pedagogie/principes.md#lire-moins-mieux-ou-autrement) |
-| Fond uni et doux | Thème Crème par défaut, panneaux opaques, thème Clair plat (Contraste élevé retiré le 28 septembre 2026, prévu au lot 11 du [cadrage Archipéo](cadrage-archipeo.md#_6-le-plan-en-lots)) | `src/styles/`, [Style](style.md) |
+| Fond uni et doux | Thème Crème par défaut, panneaux opaques, thème Clair plat (Contraste élevé retiré le 28 septembre 2026, à refaire pour tous les univers : [état des chantiers](../pilotage/chantiers.md#laccessibilité-dans-lappli)) | `src/styles/`, [Style](../rendu/style.md) |
 | Tout s’entend | Consigne lue dès qu’elle apparaît et relançable, symboles dits en mots, voix anglaise pour l’anglais | [Principes](../../www/pedagogie/principes.md) |
-| Une chose à la fois | Un item par écran, mode concentration, succès affichés à la fin | [Principes](../../www/pedagogie/principes.md#une-chose-a-la-fois) |
-| Ne rien retenir | Consigne toujours écrite, aide visuelle et rappel de règle toujours affichés | [Principes](../../www/pedagogie/principes.md#aider-sans-penaliser) |
+| Une chose à la fois | Un item par écran, mode concentration, succès affichés à la fin | [Principes](../../www/pedagogie/principes.md#une-chose-à-la-fois) |
+| Ne rien retenir | Consigne toujours écrite, aide visuelle et rappel de règle toujours affichés | [Principes](../../www/pedagogie/principes.md#aider-sans-pénaliser) |
 | Pas de temps limité, pas de perte | Pas de chronomètre, deuxième essai, joker jamais pénalisant, pas de classement | [Principes](../../www/pedagogie/principes.md#sans-stress) |
-| Gestes | Cibles de 48 px au moins, touches 1 à 9 et Entrée | [Principes](../../www/pedagogie/principes.md#une-chose-a-la-fois) |
-| Animations | La préférence de l’appareil « Réduire les animations » (`prefers-reduced-motion`) ; le réglage de l’appli du même nom, retiré le 28 septembre 2026, revient au lot 11 du [cadrage Archipéo](cadrage-archipeo.md#_6-le-plan-en-lots) | `src/core/mouvement.ts`, `src/styles/global.css` |
+| Gestes | Cibles de 48 px au moins, touches 1 à 9 et Entrée | [Principes](../../www/pedagogie/principes.md#une-chose-à-la-fois) |
+| Animations | La préférence de l’appareil « Réduire les animations » (`prefers-reduced-motion`) ; le réglage de l’appli du même nom, retiré le 28 septembre 2026, est à refaire pour tous les univers ([état des chantiers](../pilotage/chantiers.md#laccessibilité-dans-lappli)) | `src/core/motion.ts`, `src/styles/global.css` |
 | Pas de texte dans la 3D | Tout texte est dans un panneau HTML | [Principes](../../www/pedagogie/principes.md) |
 
 ### À surveiller
 
-Ces points ne sont pas des défauts constatés : ce sont les endroits où la migration vers Archipéo peut s’éloigner des bonnes pratiques, et que le référent dys regarde en priorité.
+Ces points ne sont pas des défauts constatés : ce sont les endroits où le jeu, dans Blocland comme dans Archipéo s’il reprend, peut s’éloigner des bonnes pratiques, et que le référent dys regarde en priorité.
 
 - **Le monde en 3D** : trajets de caméra (voyage entre îles, arrivée sur une île), célébrations, eau et lumière qui bougent. Ils respectent « Réduire les animations », sans flash ni secousse.
 - **La couleur seule** : nouvelles couleurs des matières et des archipels, états d’île ; chaque information passe aussi par un mot, une forme ou une icône.
@@ -75,6 +77,10 @@ Ces points ne sont pas des défauts constatés : ce sont les endroits où la mig
 - **L’appui qui enfonce un bloc** (Blocland : 3 px, instantané, sans décaler la page) : un retour d’appui, pas une animation ; il reste avec « Réduire les animations ». À vérifier sur appareil : faire défiler une liste de cartes ne doit pas donner l’impression d’appuyer.
 - **Les gestes dans le monde** : poser un bloc, se déplacer, glisser un sujet vers un verbe ; chacun a une façon de faire par simple toucher.
 - **Les nouveaux mots de l’univers** (Expéditions, rôles, états d’île) : peu nombreux, stables, lus à voix haute, expliqués la première fois.
+- **La barre du bas en icônes seules** (Blocland, P2, PR 2, choix du mainteneur le 4 octobre 2026 ; Archipéo aussi, choix « 4a » du même jour) ; **le mot revient sous l’icône en grand texte** (même jour, « ok 2a », à la réévaluation après la PR 2), plafonné à 24 px, sous la taille choisie quand elle est plus grande (à 32 px, la barre prenait la moitié d’un téléphone) ; test en classe : l’élève réglé en 32 px lit-il « Carte » et « Blocs » à bout de bras sur la tablette ? : W3C COGA ([Making Content Usable](https://www.w3.org/TR/coga-usable/), objectif 3) recommande d’accompagner une icône d’un texte ; le grand texte est le réglage de l’élève qui lit difficilement. Ce qui atténue : la place fixe des quatre boutons, leur nom lu, le titre de l’écran qui s’ouvre, le bouton ouvert enfoncé (en or dans Blocland, sur le sable dans Archipéo). Le bouton de l’île change d’icône d’une île à l’autre : c’est le moins sûr. Test en classe : « va à Mes blocs, puis à la Carte, puis ouvre le panneau de ton île », sans aide. Voir aussi les [bonnes pratiques UX UI](../ux-ui/bonnes-pratiques.md#à-surveiller).
+- **La Carte sans encart** (mot du mainteneur, 4 octobre 2026) : la prochaine destination n’y est plus dite en mots ni à voix haute, seulement montrée par la bulle bordée d’or (dans les deux univers depuis le 4 octobre 2026, en hexagone dans Archipéo, avec l’image de ce qu’on y fait, seule marque qui bouge ; l’élève est un médaillon immobile à son visage, distinct par la forme, piste B du 4 octobre 2026) ; la phrase reste au menu (« Reprendre l’aventure ») et dans le panneau de l’île. La liste « Les îles et leur état », la Carte en mots, n’y est plus (la vue simple la garde ; au clavier, les flèches mènent d’île en île). Si des élèves ne comprennent pas où aller, pistes : un mot ou une icône sur l’étiquette de l’île visée.
+- **Recentrer sans mot** (Blocland, mot du mainteneur du 4 octobre 2026 : « un bouton tête du personnage » ; Archipéo aussi, choix « 1a » du même jour) : un rond au visage du bonhomme (peint dans Archipéo), sans texte ; W3C COGA (objectif 3) recommande un texte avec l’icône. Ce qui atténue : il n’apparaît qu’après un glissé de l’élève, son nom est lu. Il ressemble au médaillon « toi » de la Carte, qu’on ne touche pas ; test en classe : « Rapproche la Carte, puis reviens à toi », sans aide. Le mainteneur a écarté le mot en grand texte (4 octobre 2026 : « 1 non ») ; si l’élève touche le médaillon ou ne trouve pas le bouton, piste : une petite flèche de retour sur le rond.
+- **Les Réglages tout en bas du menu** (mot du mainteneur, 4 octobre 2026) : en grand texte sur téléphone, le menu défile et les Réglages (taille du texte, police) arrivent après le Tutoriel, sous le pli ; avant, ils étaient visibles dès l’ouverture. Test en classe : « Agrandis le texte », sans aide. Piste s’il se perd : les garder visibles en bas de l’écran pendant que la liste défile (pas en grand texte, où ils couvriraient des lignes).
 - **Le RGAA 5 et l’application installée** : quand il paraîtra, relire ses nouveaux critères, surtout ceux des applications mobiles.
 
 ## Sources

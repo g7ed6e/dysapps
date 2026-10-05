@@ -1,22 +1,21 @@
-import { UNIVERS, UNIVERS_PAR_DEFAUT, universAffiche, type UniversChoice } from './univers';
+import { translateSettings } from './migration';
+import { UNIVERS, UNIVERS_PAR_DEFAUT, universAffiche, type UniversChoice } from './universe';
+import { clamp } from './math';
 
 export type FontChoice = 'luciole' | 'opendyslexic' | 'atkinson' | 'arial';
-export type ThemeChoice = 'creme' | 'nuit' | 'clair';
+export type ThemeChoice = 'cream' | 'night' | 'light';
 /**
- * La vue de Blocland : le monde en 3D, ou la liste des îles. Le monde en 2D (src/blocland/pixel/) n'est plus au choix :
- * il reste le repli d'un appareil sans WebGL, et la base d'un futur univers dessiné en 2D.
+ * La vue de Blocland : le monde en 3D, ou la liste des îles. Le monde en 2D n'existe plus (retiré le 5 octobre 2026).
  */
-export type WorldViewChoice = '3d' | 'liste';
+export type WorldViewChoice = '3d' | 'list';
 /** La lumière du monde : celle de l'heure réelle (la nuit tombe le soir), ou toujours le jour. */
-export type WorldLightChoice = 'reelle' | 'jour';
-/** Où l'appli s'ouvre : le village de Blocland (si l'appareil sait le dessiner), ou le menu. */
-export type StartChoice = 'village' | 'menu';
-export type { UniversChoice } from './univers';
+export type WorldLightChoice = 'real' | 'day';
+export type { UniversChoice } from './universe';
 /**
  * La deuxième langue vivante, à partir de la 5e : une seule, comme au collège. Par défaut l'espagnol (décision de G du
  * 28/09/2026), la LV2 de la grande majorité des collégiens ; « aucune » pour un élève qui en est dispensé.
  */
-export type Lv2Choice = 'es' | 'de' | 'aucune';
+export type Lv2Choice = 'es' | 'de' | 'none';
 
 /** La clé des réglages dans le stockage de l'appareil. */
 export const SETTINGS_KEY = 'settings';
@@ -45,12 +44,10 @@ export interface Settings {
   haptics: boolean;
   /** Une pastille sur l'icône de l'appli installée quand des révisions attendent. */
   appBadge: boolean;
-  /** Au démarrage (et à l'adresse d'accueil) : le village, ou le menu. */
-  startIn: StartChoice;
   /** La LV2 de l'élève : ses missions, sa voix. La langue non choisie n'apparaît nulle part. */
   lv2: Lv2Choice;
   /**
-   * L'univers de l'appareil (lot 6, src/core/univers.ts). Absent sur un appareil qui ne l'a jamais ouvert depuis la
+   * L'univers de l'appareil (lot 6, src/core/universe.ts). Absent sur un appareil qui ne l'a jamais ouvert depuis la
    * bascule : le premier choix se calcule alors au premier lancement, puis reste. Jamais dans les réglages par défaut.
    */
   univers?: UniversChoice;
@@ -66,17 +63,16 @@ export const DEFAULT_SETTINGS: Settings = {
   lineHeight: 1.7,
   letterSpacing: 0.03,
   wordSpacing: 0.12,
-  theme: 'creme',
+  theme: 'cream',
   speechRate: 0.9,
   autoRead: true,
   syllables: true,
   worldView: '3d',
-  worldLight: 'reelle',
+  worldLight: 'real',
   sounds: true,
   ambience: false,
   haptics: true,
   appBadge: true,
-  startIn: 'village',
   lv2: 'es',
 };
 
@@ -89,36 +85,31 @@ export const FONT_LABELS: Record<FontChoice, string> = {
 
 export const WORLD_VIEW_LABELS: Record<WorldViewChoice, string> = {
   '3d': 'Le monde en 3D',
-  liste: 'La liste des îles',
+  list: 'La liste des îles',
 };
 
 export const WORLD_LIGHT_LABELS: Record<WorldLightChoice, string> = {
-  reelle: 'L’heure réelle',
-  jour: 'Toujours le jour',
-};
-
-export const START_LABELS: Record<StartChoice, string> = {
-  village: 'Le village',
-  menu: 'Le menu',
+  real: 'L’heure réelle',
+  day: 'Toujours le jour',
 };
 
 export const LV2_LABELS: Record<Lv2Choice, string> = {
   es: 'Espagnol',
   de: 'Allemand',
-  aucune: 'Pas de LV2',
+  none: 'Pas de LV2',
 };
 
 export const THEME_LABELS: Record<ThemeChoice, string> = {
-  creme: 'Crème',
-  nuit: 'Nuit',
-  clair: 'Clair',
+  cream: 'Crème',
+  night: 'Nuit',
+  light: 'Clair',
 };
 
 /**
  * Anciens identifiants (versions précédentes) vers les nouveaux. Le Contraste élevé n'est plus au choix (28/09/2026) :
  * un appareil qui l'avait choisi retrouve le thème sombre le plus proche, la Nuit.
  */
-const LEGACY_THEMES: Record<string, ThemeChoice> = { bd: 'creme', sombre: 'nuit', contraste: 'nuit' };
+const LEGACY_THEMES: Record<string, ThemeChoice> = { bd: 'cream', sombre: 'night', contraste: 'night' };
 const LEGACY_FONTS: Record<string, FontChoice> = { systeme: 'arial' };
 
 const FONT_STACKS: Record<FontChoice, string> = {
@@ -128,15 +119,13 @@ const FONT_STACKS: Record<FontChoice, string> = {
   arial: 'Arial, Helvetica, sans-serif',
 };
 
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(max, Math.max(min, value));
-}
-
 /** Corrige des réglages lus depuis le stockage (valeurs manquantes ou hors bornes). */
-export function sanitizeSettings(input: Partial<Settings> & { view3d?: unknown }): Settings {
+export function sanitizeSettings(raw: Partial<Settings> & { view3d?: unknown }): Settings {
+  // Des réglages d'avant les mots neutres (2 octobre 2026) se lisent traduits : « liste » devient « list »…
+  const input = translateSettings(raw) as Partial<Settings> & { view3d?: unknown };
   const s = { ...DEFAULT_SETTINGS, ...input };
   // Avant les trois vues : un interrupteur « vues en 3D » (éteint : la liste des îles).
-  if (input.worldView === undefined && input.view3d !== undefined) s.worldView = input.view3d ? '3d' : 'liste';
+  if (input.worldView === undefined && input.view3d !== undefined) s.worldView = input.view3d ? '3d' : 'list';
   // Le monde en 2D n'est plus au choix (28/09/2026) : un appareil qui l'avait choisi retrouve le monde en 3D.
   if ((s.worldView as string) === '2d') s.worldView = '3d';
   if (typeof s.theme === 'string' && s.theme in LEGACY_THEMES) s.theme = LEGACY_THEMES[s.theme];
@@ -157,7 +146,6 @@ export function sanitizeSettings(input: Partial<Settings> & { view3d?: unknown }
     ambience: s.ambience === undefined ? DEFAULT_SETTINGS.ambience : Boolean(s.ambience),
     haptics: s.haptics === undefined ? DEFAULT_SETTINGS.haptics : Boolean(s.haptics),
     appBadge: s.appBadge === undefined ? DEFAULT_SETTINGS.appBadge : Boolean(s.appBadge),
-    startIn: s.startIn in START_LABELS ? s.startIn : DEFAULT_SETTINGS.startIn,
     lv2: Object.hasOwn(LV2_LABELS, s.lv2) ? s.lv2 : DEFAULT_SETTINGS.lv2,
     // Absent reste absent (le premier choix dépend de la progression) ; un univers inconnu vaut l'univers par défaut.
     ...(s.univers === undefined ? {} : { univers: Object.hasOwn(UNIVERS, s.univers) ? s.univers : UNIVERS_PAR_DEFAUT }),
@@ -182,6 +170,11 @@ export function reglagesCourants(): Settings | null {
 /** La LV2 des réglages en mémoire ; hors de l'application (un test, le générateur), celle par défaut. */
 export function lv2Courante(): Lv2Choice {
   return courants?.lv2 ?? DEFAULT_SETTINGS.lv2;
+}
+
+/** L'univers des réglages en mémoire ; hors de l'application (un test, le générateur), l'univers par défaut. */
+export function universCourant(): UniversChoice {
+  return universAffiche(courants?.univers);
 }
 
 /**

@@ -1,0 +1,237 @@
+{
+  "id": "lv2-3e-travel-es-past-1",
+  "biome": "lv2-3e-travel",
+  "type": "es-past",
+  "level": 1,
+  "lang": "es",
+  "instruction": "Lis la phrase en espagnol, ou appuie sur Écouter, puis choisis la bonne réponse. La règle est affichée.",
+  "items": [
+    {
+      "key": "lv2-3e-travel-es-past-1-0",
+      "prompt": "¿Adónde fuiste el verano pasado?",
+      "spoken": "Adónde fuiste el verano pasado?",
+      "choices": [
+        "Fui a Valencia.",
+        "Voy a Valencia.",
+        "Fuiste a Valencia."
+      ],
+      "answer": "Fui a Valencia.",
+      "hint": "fuiste = tu es allé. Tu réponds pour toi.",
+      "explanation": "On te demande où tu es allé : tu réponds pour toi, au passé. fui = je suis allé. voy = je vais ; fuiste = tu es allé.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "El pretérito indefinido",
+          "lines": [
+            "ir : fui (je), fuiste (tu), fue (il, elle)",
+            "viajar : viajé (je), viajaste (tu), viajó (il, elle)",
+            "comer : comí, comiste, comió ; ver : vi, viste, vio",
+            "hacer : hice, hiciste, hizo",
+            "ayer = hier ; el verano pasado = l’été dernier"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-es-past-1-1",
+      "prompt": "Pablo visitó un museo.",
+      "question": "Écoute la phrase, puis regarde la fin du verbe. Que dit la phrase ?",
+      "spoken": "Pablo visitó un museo.",
+      "choices": [
+        "Il a visité un musée.",
+        "Je visite un musée.",
+        "Il va visiter un musée."
+      ],
+      "choicesLang": "fr",
+      "answer": "Il a visité un musée.",
+      "hint": "Écoute où la voix appuie : sur -tó, à la fin. C’est déjà fait.",
+      "explanation": "visitó : la voix appuie sur -tó, à la fin, et l’accent l’écrit : c’est hier, il a visité. visito, la voix sur -si- = je visite ; va a visitar = il va visiter.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "El pretérito indefinido",
+          "lines": [
+            "ir : fui (je), fuiste (tu), fue (il, elle)",
+            "viajar : viajé (je), viajaste (tu), viajó (il, elle)",
+            "comer : comí, comiste, comió ; ver : vi, viste, vio",
+            "hacer : hice, hiciste, hizo",
+            "ayer = hier ; el verano pasado = l’été dernier"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-es-past-1-2",
+      "prompt": "¿Qué comiste en Toledo?",
+      "spoken": "Qué comiste en Toledo?",
+      "choices": [
+        "Comí una tortilla.",
+        "Comió una tortilla.",
+        "Comiste una tortilla."
+      ],
+      "answer": "Comí una tortilla.",
+      "hint": "comiste = tu as mangé. Tu réponds pour toi.",
+      "explanation": "On te demande ce que tu as mangé : tu réponds pour toi, comí = j’ai mangé. comió = il a mangé ; comiste = tu as mangé.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "El pretérito indefinido",
+          "lines": [
+            "ir : fui (je), fuiste (tu), fue (il, elle)",
+            "viajar : viajé (je), viajaste (tu), viajó (il, elle)",
+            "comer : comí, comiste, comió ; ver : vi, viste, vio",
+            "hacer : hice, hiciste, hizo",
+            "ayer = hier ; el verano pasado = l’été dernier"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-es-past-1-3",
+      "prompt": "Viajo a Madrid en tren.",
+      "question": "Écoute la phrase, puis regarde la fin du verbe. Que dit la phrase ?",
+      "spoken": "Viajo a Madrid en tren.",
+      "choices": [
+        "Je voyage en train.",
+        "Il a voyagé en train.",
+        "Tu as voyagé en train."
+      ],
+      "choicesLang": "fr",
+      "answer": "Je voyage en train.",
+      "hint": "Écoute où la voix appuie : sur via-, au début, ou sur -jó, à la fin ?",
+      "explanation": "viajo : la voix appuie sur via-, et le o n’a pas d’accent : c’est aujourd’hui, je voyage. viajó, la voix sur -jó = il a voyagé ; viajaste = tu as voyagé.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "El pretérito indefinido",
+          "lines": [
+            "ir : fui (je), fuiste (tu), fue (il, elle)",
+            "viajar : viajé (je), viajaste (tu), viajó (il, elle)",
+            "comer : comí, comiste, comió ; ver : vi, viste, vio",
+            "hacer : hice, hiciste, hizo",
+            "ayer = hier ; el verano pasado = l’été dernier"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-es-past-1-4",
+      "prompt": "¿Qué hiciste el sábado?",
+      "spoken": "Qué hiciste el sábado?",
+      "choices": [
+        "Hice una excursión.",
+        "Hizo una excursión.",
+        "Hiciste una excursión."
+      ],
+      "answer": "Hice una excursión.",
+      "hint": "hiciste = tu as fait. Tu réponds pour toi.",
+      "explanation": "On te demande ce que tu as fait : tu réponds pour toi, hice = j’ai fait. hizo = il a fait ; hiciste = tu as fait.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "El pretérito indefinido",
+          "lines": [
+            "ir : fui (je), fuiste (tu), fue (il, elle)",
+            "viajar : viajé (je), viajaste (tu), viajó (il, elle)",
+            "comer : comí, comiste, comió ; ver : vi, viste, vio",
+            "hacer : hice, hiciste, hizo",
+            "ayer = hier ; el verano pasado = l’été dernier"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-es-past-1-5",
+      "prompt": "Mi hermana viajó a Lima.",
+      "question": "Écoute la phrase, puis regarde la fin du verbe. Que dit la phrase ?",
+      "spoken": "Mi hermana viajó a Lima.",
+      "choices": [
+        "Ma sœur a voyagé à Lima.",
+        "Ma sœur voyage à Lima.",
+        "Ma sœur va voyager à Lima."
+      ],
+      "choicesLang": "fr",
+      "answer": "Ma sœur a voyagé à Lima.",
+      "hint": "Écoute où la voix appuie : sur -jó, à la fin.",
+      "explanation": "viajó : la voix appuie sur -jó, à la fin : c’est hier, elle a voyagé. Mi hermana viaja = ma sœur voyage ; va a viajar = elle va voyager.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "El pretérito indefinido",
+          "lines": [
+            "ir : fui (je), fuiste (tu), fue (il, elle)",
+            "viajar : viajé (je), viajaste (tu), viajó (il, elle)",
+            "comer : comí, comiste, comió ; ver : vi, viste, vio",
+            "hacer : hice, hiciste, hizo",
+            "ayer = hier ; el verano pasado = l’été dernier"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-es-past-1-6",
+      "prompt": "¿Viste el mar en Cádiz?",
+      "spoken": "Viste el mar en Cádiz?",
+      "choices": [
+        "Sí, vi el mar.",
+        "Sí, vio el mar.",
+        "Sí, viste el mar."
+      ],
+      "answer": "Sí, vi el mar.",
+      "hint": "viste = tu as vu. Tu réponds pour toi.",
+      "explanation": "On te demande si tu as vu la mer : tu réponds pour toi, vi = j’ai vu. vio = il a vu ; viste = tu as vu.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "El pretérito indefinido",
+          "lines": [
+            "ir : fui (je), fuiste (tu), fue (il, elle)",
+            "viajar : viajé (je), viajaste (tu), viajó (il, elle)",
+            "comer : comí, comiste, comió ; ver : vi, viste, vio",
+            "hacer : hice, hiciste, hizo",
+            "ayer = hier ; el verano pasado = l’été dernier"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-es-past-1-7",
+      "prompt": "¿Adónde fue tu padre?",
+      "spoken": "Adónde fue tu padre?",
+      "choices": [
+        "Fue a Bilbao en tren.",
+        "Fui a Bilbao en tren.",
+        "Fuiste a Bilbao en tren."
+      ],
+      "answer": "Fue a Bilbao en tren.",
+      "hint": "tu padre = ton père. Tu parles de lui : il.",
+      "explanation": "On te demande où est allé ton père : fue = il est allé. fui = je suis allé ; fuiste = tu es allé.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "El pretérito indefinido",
+          "lines": [
+            "ir : fui (je), fuiste (tu), fue (il, elle)",
+            "viajar : viajé (je), viajaste (tu), viajó (il, elle)",
+            "comer : comí, comiste, comió ; ver : vi, viste, vio",
+            "hacer : hice, hiciste, hizo",
+            "ayer = hier ; el verano pasado = l’été dernier"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien répondu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lv2-3e-travel",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

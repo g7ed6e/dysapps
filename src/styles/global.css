@@ -1,7 +1,7 @@
 /* =====================================================================
    Archipéo — l'interface de l'explorateur
    Des panneaux sobres, opaques et géométriques, dans la palette de la planche : bleu nuit, bleu pétrole,
-   vert d'eau, sable et crème. Le monde (3D ou 2D, dessiné dans un canvas) garde son propre style.
+   vert d'eau, sable et crème. Le monde (en 3D, dessiné dans un canvas) garde son propre style.
    Règles dys conservées : texte courant en police lisible (≥ 18 px, interlignage ≥ 1,5), aligné à gauche,
    jamais en italique ni en capitales, toujours sur un fond uni. La police des titres (Montserrat grasse)
    ne sert qu'aux titres courts et au logotype ; tout texte à lire reste dans la police dys choisie.
@@ -44,8 +44,6 @@
   --error: #8a4a10;
   --error-bg: #f8e8d2;
   --focus: #1e6fd9;
-  --topbar-bg: #13283d;
-  --topbar-text: #f3eee3;
   /* Couleurs des matières et des biomes (hors palette : elles ne bougent pas avec l'interface). */
   --yellow: var(--sand);
   --pink: #d9772e; /* brique */
@@ -65,10 +63,11 @@
   --radius: 12px; /* panneaux et cartes */
   --radius-control: 8px; /* boutons, champs, réponses */
   --radius-pill: 999px; /* étiquettes courtes */
+  --radius-signe: 0; /* le signe de la créature qui se souvient (GD-4) : un hexagone dans Archipéo (masque, plus bas) ; Blocland en fait une plaque */
   /* Une seule ombre, douce, pour un panneau posé sur le monde. */
   --shadow-float: 0 2px 8px rgba(19, 40, 61, 0.18);
 }
-:root[data-theme="nuit"] {
+:root[data-theme="night"] {
   --bg: #0e1f2e;
   --surface: #16304a;
   --text: #f3eee3;
@@ -85,8 +84,6 @@
   --error: #f2b27a;
   --error-bg: #3d2a18;
   --focus: #ffd54a;
-  --topbar-bg: #0a1824;
-  --topbar-text: #f3eee3;
   --star-off: #4d6a80;
   --syl-0: #f3ede2;
   --syl-1: #9cc9ff;
@@ -94,11 +91,9 @@
   color-scheme: dark;
 }
 /* Thème Clair : le Crème sans teinte, plat (aucune ombre). */
-:root[data-theme="clair"] {
+:root[data-theme="light"] {
   --bg: #f4f6f7;
   --surface: #ffffff;
-  --topbar-bg: #ffffff;
-  --topbar-text: #13283d;
   --shadow-float: none;
 }
 
@@ -151,10 +146,8 @@ html {
    lui, reste sélectionnable. */
 button,
 .button,
-.nav-button,
 a.panel,
-summary,
-.brand {
+summary {
   -webkit-user-select: none;
   user-select: none;
   -webkit-touch-callout: none;
@@ -244,7 +237,7 @@ svg {
    de l'interface, douce ; aucune en Clair. */
 .world-overlay-top .panel,
 .world-overlay-bottom .panel,
-.world-archipel-list,
+.world-fiche,
 .island-sheet {
   box-shadow: var(--shadow-float);
 }
@@ -258,167 +251,16 @@ svg {
   margin: 0;
 }
 
-/* ===== Barre du haut ===== */
+/* ===== La coque de l'appli : plus de barre du haut (le bouton Menu seul, plus bas) ===== */
 .app-shell {
   min-height: 100vh;
-}
-.topbar {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  /* Les bords de l'écran (encoche, coins arrondis) : l'appli installée s'étend dessous (viewport-fit=cover). */
-  padding: calc(0.8rem + env(safe-area-inset-top)) calc(1rem + env(safe-area-inset-right)) 0.5rem calc(1rem + env(safe-area-inset-left));
-  /* Un aplat bleu nuit (blanc en Clair). */
-  background: var(--topbar-bg);
-  color: var(--topbar-text);
-  border-bottom: var(--border-width) solid var(--ink);
-  position: sticky;
-  top: 0;
-  z-index: 5;
-}
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  text-decoration: none;
-  color: inherit;
-}
-/* Le logotype : l'initiale en Montserrat grasse, bleu nuit sur une pastille de sable. */
-.brand-mark {
-  display: grid;
-  place-items: center;
-  width: 2.3rem;
-  height: 2.3rem;
-  background: var(--sand);
-  color: var(--on-sand);
-  border: var(--border-width) solid var(--sand);
-  border-radius: var(--radius-control);
-  font-family: var(--display-font);
-  font-weight: var(--display-weight);
-  font-size: 1.3rem;
-  line-height: 1;
-}
-.brand-logo {
-  display: block;
-  width: 2.3rem;
-  height: 2.3rem;
-}
-.brand-name {
-  /* Le nom de l'application, dans la police des titres. */
-  font-family: var(--display-font);
-  font-weight: var(--display-weight);
-  font-size: 1rem;
-  letter-spacing: 0.02em;
-}
-.topbar-xp {
-  flex: 1;
-  /* Jamais plus étroite que son écusson : sinon les boutons passent dessus. */
-  min-width: 2.6rem;
-  max-width: 22rem;
-  text-decoration: none;
-  color: inherit;
-}
-.topbar-nav {
-  display: flex;
-  gap: 0.5rem;
-  margin-left: auto;
-}
-/* Les boutons de la barre du haut : secondaires ; l'endroit où l'on est, sur un aplat de sable. */
-.nav-button {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  min-height: 48px;
-  padding: 0.25rem 0.8rem;
-  border: var(--border-width) solid var(--ink);
-  border-radius: var(--radius-control);
-  background: var(--secondary-bg);
-  color: var(--secondary-text);
-  text-decoration: none;
-  font-weight: 700;
-}
-.nav-button:active {
-  background: color-mix(in srgb, var(--secondary-bg) 85%, #000);
-}
-/* Le trait sous l'icône du bouton actif, quand le bouton n'a plus son mot (voir la barre plus bas). */
-.nav-button.active::after {
-  position: absolute;
-  left: 25%;
-  right: 25%;
-  bottom: 5px;
-  height: 3px;
-  border-radius: 2px;
-  background: currentColor;
-}
-.nav-button.active {
-  background: var(--sand);
-  border-color: var(--sand);
-  color: var(--on-sand);
 }
 .content {
   max-width: 60rem;
   margin: 0 auto;
   padding: 1.4rem calc(1rem + env(safe-area-inset-right)) calc(3rem + env(safe-area-inset-bottom)) calc(1rem + env(safe-area-inset-left));
 }
-/*
- * La barre suit la place qu'elle a en rem, donc la taille du texte choisie dans les Réglages (jusqu'à 32 px en
- * OpenDyslexic) : le nom de l'univers, puis les mots des boutons (qui gardent leur icône et leur nom lu), puis le
- * logo (le bouton Menu y mène aussi) laissent leur place, pour que rien ne sorte de l'écran ni ne passe sur l'écusson.
- */
-.topbar {
-  container: barre / inline-size;
-}
-@container barre (max-width: 60rem) {
-  .brand-name {
-    display: none;
-  }
-}
-/* Dans la barre, le titre de la jauge passe à la ligne plutôt que de couper un mot (« Architecte de l'archipel »). */
-.topbar .xp-title {
-  white-space: normal;
-  overflow: visible;
-  line-height: 1.2;
-}
-/* Jamais de mot coupé dans la jauge : sous 56rem, tout son titre part (niveau et rôle) ; l'insigne et la jauge
-   restent, et tout est sur la page Succès. */
-@container barre (max-width: 48rem) {
-  .nav-label {
-    display: none;
-  }
-  /* Sans son mot, l'endroit où l'on est garde un trait sous l'icône : pas la couleur seule. */
-  .nav-button.active::after {
-    content: '';
-  }
-}
-@container barre (max-width: 56rem) {
-  .topbar .xp-title {
-    display: none;
-  }
-}
-@container barre (max-width: 16rem) {
-  .topbar .xp-info {
-    display: none;
-  }
-}
-@container barre (max-width: 13rem) {
-  .brand {
-    display: none;
-  }
-}
-/* Les mots des boutons et le nom de l'univers suivent la place de la barre (plus haut) ; ici, ce qui tient à l'écran. */
 @media (max-width: 640px) {
-  .topbar {
-    gap: 0.6rem;
-  }
-  /* Le numéro de niveau est déjà dans l'écusson. */
-  .topbar .xp-lvl,
-  .topbar .xp-sep {
-    display: none;
-  }
-  .nav-button.active::after {
-    content: '';
-  }
   .celebration {
     padding: 0.4rem 0.4rem 0.4rem 0.7rem;
   }
@@ -446,13 +288,13 @@ svg {
   font-size: 1.2rem;
   margin-top: 1.8rem;
 }
-.title-francais svg {
+.title-french svg {
   color: var(--pink);
 }
 .title-maths svg {
   color: var(--cyan);
 }
-.title-anglais svg {
+.title-english svg {
   color: var(--violet);
 }
 .title-lv2 svg {
@@ -529,19 +371,19 @@ button.app-card:active {
 /* Cartes d'une matière ou d'une île : un liseré de sa couleur en tête, jamais derrière le texte. */
 .subject-card,
 .subject-progress,
-.app-card.subject-francais,
+.app-card.subject-french,
 .app-card.subject-maths,
-.app-card.subject-anglais,
+.app-card.subject-english,
 .app-card.subject-lv2 {
   border-top-width: 8px;
 }
-.subject-francais {
+.subject-french {
   border-top-color: var(--pink);
 }
 .subject-maths {
   border-top-color: var(--cyan);
 }
-.subject-anglais {
+.subject-english {
   border-top-color: var(--violet);
 }
 .subject-lv2 {
@@ -563,27 +405,27 @@ button.app-card:active {
   color: var(--text);
 }
 /* Sur un aplat de couleur (matière, sable), l'icône est bleu nuit. */
-.subject-francais .subject-icon,
-.subject-francais .app-icon,
+.subject-french .subject-icon,
+.subject-french .app-icon,
 .subject-maths .subject-icon,
 .subject-maths .app-icon,
-.subject-anglais .subject-icon,
-.subject-anglais .app-icon,
+.subject-english .subject-icon,
+.subject-english .app-icon,
 .subject-lv2 .subject-icon,
 .subject-lv2 .app-icon,
 .app-card[class*="biome-"] .app-icon {
   color: var(--on-accent);
 }
-.subject-francais .subject-icon,
-.subject-francais .app-icon {
+.subject-french .subject-icon,
+.subject-french .app-icon {
   background: var(--pink);
 }
 .subject-maths .subject-icon,
 .subject-maths .app-icon {
   background: var(--cyan);
 }
-.subject-anglais .subject-icon,
-.subject-anglais .app-icon {
+.subject-english .subject-icon,
+.subject-english .app-icon {
   background: var(--violet);
 }
 .subject-lv2 .subject-icon,
@@ -1410,17 +1252,17 @@ button.app-card:active {
   font-family: Verdana, Arial, sans-serif;
 }
 /* Chaque pastille de thème montre les couleurs de son thème, quel que soit le thème en cours. */
-.theme-swatch.theme-creme {
+.theme-swatch.theme-cream {
   background: #f3eee3;
   color: #13283d;
   border-color: #566e7d;
 }
-.theme-swatch.theme-nuit {
+.theme-swatch.theme-night {
   background: #16304a;
   color: #f3eee3;
   border-color: #7f9bb0;
 }
-.theme-swatch.theme-clair {
+.theme-swatch.theme-light {
   background: #ffffff;
   color: #13283d;
   border-color: #566e7d;
@@ -1634,11 +1476,11 @@ button.app-card:active {
 .number-line .jump-label {
   fill: var(--violet);
 }
-:root[data-theme="nuit"] .number-line .jump-label,
-:root[data-theme="nuit"] .number-line path {
+:root[data-theme="night"] .number-line .jump-label,
+:root[data-theme="night"] .number-line path {
   fill: var(--yellow);
 }
-:root[data-theme="nuit"] .number-line path {
+:root[data-theme="night"] .number-line path {
   fill: none;
   stroke: var(--yellow);
 }
@@ -2436,91 +2278,91 @@ figure.class-table {
   border-top: var(--border-width) dashed var(--ink);
 }
 /* La couleur de chaque île, pour son liseré (cartes, panneau d'île) ; toujours doublée de son nom. */
-.biome-foret {
+.biome-french-6e-phonology {
   --biome-color: var(--green);
 }
-.biome-mine {
+.biome-french-6e-letter-confusion {
   --biome-color: #8c93a0;
 }
-.biome-carriere {
+.biome-french-6e-word-spelling {
   --biome-color: var(--yellow);
 }
-.biome-ferme {
+.biome-french-6e-grammar-spelling {
   --biome-color: #a2694a;
 }
-.biome-tour {
+.biome-french-6e-reading {
   --biome-color: var(--cyan);
 }
-.biome-plaine {
+.biome-maths-6e-calculation {
   --biome-color: var(--pink);
 }
-.biome-riviere {
+.biome-maths-6e-fractions {
   --biome-color: #7f96ad;
 }
-.biome-volcan {
+.biome-maths-6e-decimals {
   --biome-color: #4a3d5c;
 }
-.biome-glacier {
+.biome-maths-5e-signed-numbers {
   --biome-color: #b6e0ee;
 }
-.biome-marche {
+.biome-maths-5e-proportionality {
   --biome-color: #c9463f;
 }
-.biome-carrefour {
+.biome-french-5e-homophones {
   --biome-color: #e0b73f;
 }
-.biome-marais {
+.biome-french-5e-conjugation {
   --biome-color: #5a4a2a;
 }
-.biome-forge {
+.biome-maths-4e-powers {
   --biome-color: #8f9aa6;
 }
-.biome-atelier {
+.biome-maths-4e-algebra {
   --biome-color: #96b4dc;
 }
-.biome-falaise {
+.biome-french-4e-agreement {
   --biome-color: #5c6470;
 }
-.biome-cabinet {
+.biome-french-4e-vocabulary {
   --biome-color: #cdb97f;
 }
-.biome-belvedere {
+.biome-maths-3e-geometry {
   --biome-color: #d6d1c8;
 }
-.biome-donnees {
+.biome-maths-3e-statistics {
   --biome-color: #b9a8d6;
 }
-.biome-phare {
+.biome-maths-3e-functions {
   --biome-color: #f0c95a;
 }
-.biome-textes {
+.biome-french-3e-close-reading {
   --biome-color: #7fb2cc;
 }
-.biome-baie {
+.biome-english-6e-vocabulary {
   --biome-color: #b02a24;
 }
-.biome-horloge {
+.biome-english-6e-grammar {
   --biome-color: #c9a24a;
 }
-.biome-studio {
+.biome-english-3e-comprehension {
   --biome-color: #9aa4ae;
 }
-.biome-chateau {
+.biome-english-3e-grammar {
   --biome-color: #d8ccb0;
 }
-.biome-theatre {
+.biome-english-4e-comprehension {
   --biome-color: #7a1f3a;
 }
-.biome-gare {
+.biome-english-4e-grammar {
   --biome-color: #4a4a50;
 }
-.biome-comptoir {
+.biome-english-5e-vocabulary {
   --biome-color: #b85a30;
 }
-.biome-manoir {
+.biome-english-5e-grammar {
   --biome-color: #5a3a22;
 }
-.biome-relais {
+.biome-lv2-5e-introductions {
   --biome-color: #9a8462;
 }
 .biome-name {
@@ -3016,6 +2858,29 @@ figure.class-table {
   margin-top: 0.3em;
   color: var(--pink);
 }
+/* Le bâtiment de l'île (GD-6) : la prochaine partie, et la phrase qui dit comment la poser. */
+.plan-next {
+  margin: 0 0 0.4rem;
+}
+.plan-how {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  max-width: none;
+}
+.plan-how svg {
+  flex-shrink: 0;
+  margin-top: 0.3em;
+}
+/* La partie qui vient de se poser dans le monde (GD-6), dite après le dernier cube : sur le fond du panneau, sans animation. */
+.plan-posee {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 0 0 0.6rem;
+  max-width: none;
+}
 
 /* ===== Village : ce que dit une créature quand on la touche ===== */
 .creature-line {
@@ -3059,10 +2924,18 @@ figure.class-table {
   margin-bottom: 1.2rem;
   background: color-mix(in srgb, var(--secondary-bg) 60%, var(--surface));
 }
-.tutorial-step {
+.tutorial-tete {
   display: flex;
-  gap: 0.7rem;
-  align-items: flex-start;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+/* Écouter et la croix toujours à droite, avec ou sans compteur, avec ou sans voix sur l'appareil. */
+.tutorial-tete .tutorial-count {
+  margin-right: auto;
+}
+.tutorial-step {
   margin: 0 0 0.8rem;
   max-width: none;
 }
@@ -3181,6 +3054,10 @@ figure.class-table {
   display: grid;
   gap: 0.6rem;
 }
+/* Dans le défi, l'écart de la grille suffit sous la consigne (DA-34). */
+.boss-round .consigne {
+  margin-bottom: 0;
+}
 .boss-round-title {
   display: flex;
   align-items: center;
@@ -3194,13 +3071,14 @@ figure.class-table {
 
 /* ===== Le Gardien : arène ===== */
 /* Une vitrine et un panneau, d'un seul bloc (DA-26) : le décor de l'arène (son dégradé) derrière le Gardien seul, et
-   tout le texte sur le fond uni et clair des panneaux, en encre, où les syllabes se lisent. */
+   tout le texte sur le fond uni et clair des panneaux, en encre, où les syllabes se lisent. Sur une hauteur réduite
+   (DA-34), pour que la consigne et la première rangée de blocs tiennent dans l'écran sous l'arène. */
 .arena {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(9rem, 13rem) 1fr;
+  grid-template-columns: auto 1fr;
   align-items: stretch;
-  margin-bottom: 1.2rem;
+  margin-bottom: 0.6rem;
   border: var(--border-width) solid var(--ink);
   border-radius: var(--radius);
   overflow: hidden;
@@ -3210,7 +3088,7 @@ figure.class-table {
 .arena-vitrine {
   display: grid;
   place-items: center;
-  padding: 1rem;
+  padding: 0.5rem;
   border-right: var(--border-width) solid var(--ink);
   background: linear-gradient(180deg, #1a2340 0%, #2b3a5c 70%, #3b2d20 100%);
   /* La chute du Gardien vaincu reste dans sa vitrine, jamais sur le texte. */
@@ -3227,6 +3105,12 @@ figure.class-table {
 .guardian-3d {
   width: 11rem;
   height: 11rem;
+}
+/* Dans la vitrine, en paysage, le Gardien en entier sur une hauteur réduite, en pixels : il ne grandit pas avec le
+   texte (DA-34). */
+.arena-vitrine .guardian-3d {
+  width: 140px;
+  height: 140px;
 }
 .guardian-svg {
   width: 10rem;
@@ -3279,18 +3163,45 @@ figure.class-table {
     opacity: 0.85;
   }
 }
+/* Dans la vitrine basse de l'arène (DA-34), le Gardien tombe sans descendre : il reste dans son cadre. */
+.arena-vitrine .guardian-beaten {
+  animation-name: guardian-fall-vitrine;
+}
+@keyframes guardian-fall-vitrine {
+  0% {
+    transform: none;
+  }
+  100% {
+    transform: rotate(-70deg) scale(0.85);
+    opacity: 0.85;
+  }
+}
 .arena-info {
   display: grid;
-  gap: 0.5rem;
+  gap: 0.3rem;
   align-content: center;
   min-width: 0;
-  padding: 1rem 1.2rem;
+  padding: 0.5rem 1rem;
 }
-.arena-name {
-  margin: 0;
-  font-family: var(--display-font);
-  font-weight: var(--display-weight);
-  font-size: 1.4rem;
+/* La jauge sur une seule ligne, entre son libellé et son compte (DA-34) ; les pastilles passent à la ligne entre les
+   deux faute de place, le compte reste d'un seul tenant (DA-29). */
+.arena-jauge {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0 0.8rem;
+}
+.arena-jauge .arena-gauge-label {
+  display: contents;
+}
+.arena-jauge .arena-gauge-label > :last-child {
+  grid-column: 3;
+  grid-row: 1;
+}
+.arena-jauge > [role="progressbar"] {
+  grid-column: 2;
+  grid-row: 1;
+  min-width: 0;
 }
 .arena-gauge-label {
   display: flex;
@@ -3326,6 +3237,7 @@ figure.class-table {
 }
 .arena-pastille {
   display: grid;
+  flex-shrink: 0;
   place-items: center;
   width: 24px;
   height: 24px;
@@ -3345,9 +3257,49 @@ figure.class-table {
 }
 /* Le seuil et la phrase du Gardien se lisent comme une consigne : en syllabes colorées, si le réglage le veut (DA-27). */
 .arena-line {
+  flex: 1;
+  min-width: 0;
   margin: 0;
   font-weight: 700;
   max-width: none;
+}
+/* La réplique, le haut-parleur à sa droite (DA-34) : entière au lancement, puis repliée en une ligne, que le chevron
+   des plis des îles ouvre en entier. */
+.arena-replique {
+  display: flex;
+  /* Le haut-parleur (48 px) en face de la réplique, sur une ligne ou plusieurs. */
+  align-items: center;
+  gap: 0.4rem 0.8rem;
+}
+.arena-replique.repliee .arena-line {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  overflow: hidden;
+  cursor: pointer;
+}
+.arena-replique-pli {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-width: 48px;
+  min-height: 48px;
+  margin: 0 -0.6rem 0 -0.5rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+/* Sans bordure et collé à la réplique par ses marges négatives : son anneau de focus, décalé, passe devant elle. */
+.arena-replique-pli:focus-visible {
+  position: relative;
+  z-index: 1;
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: var(--radius);
 }
 /* Archipéo : la règle du rallumage, sa phrase courte toujours lue, la règle entière dans le pli, le haut-parleur à
    droite du titre, à la même place pli ouvert ou fermé (DA-28). Le chevron est celui des plis des îles. */
@@ -3382,7 +3334,7 @@ figure.class-table {
   height: 1lh;
 }
 .arena-regle p {
-  margin: 0.3rem 0 0;
+  margin: 0.2rem 0 0;
   max-width: none;
 }
 /* Une colonne sur téléphone et en grand texte : le Gardien au-dessus, dans une vitrine basse, le texte sur toute la
@@ -3392,29 +3344,47 @@ figure.class-table {
     grid-template-columns: 1fr;
   }
   .arena-vitrine {
-    padding: 0.5rem;
+    padding: 0;
     border-right: 0;
     border-bottom: var(--border-width) solid var(--ink);
   }
   .arena-vitrine .guardian-3d {
-    /* Entier, au moins 96 px, jamais plus d'un quart de l'écran en hauteur. */
-    width: clamp(96px, 8rem, calc(25vh - 1rem));
-    height: clamp(96px, 8rem, calc(25vh - 1rem));
+    /* Entier, à son minimum de 96 px (DA-34). */
+    width: 96px;
+    height: 96px;
+  }
+  .arena-info {
+    padding: 0.4rem 0.8rem;
+  }
+  /* Les pastilles d'une sentinelle ne tiennent pas entre le libellé et le compte : elles passent dessous. */
+  .arena-sentinelle .arena-jauge {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.3rem;
+  }
+  .arena-sentinelle .arena-jauge .arena-gauge-label {
+    display: flex;
+  }
+  .arena-sentinelle .arena-jauge > [role="progressbar"] {
+    grid-column: auto;
+    grid-row: auto;
   }
 }
-/* Le même passage en une colonne en grand texte : à tenir identique au bloc du téléphone ci-dessus. */
-:root[data-texte="grand"] .arena {
-  grid-template-columns: 1fr;
-}
-:root[data-texte="grand"] .arena-vitrine {
-  padding: 0.5rem;
-  border-right: 0;
-  border-bottom: var(--border-width) solid var(--ink);
-}
-:root[data-texte="grand"] .arena-vitrine .guardian-3d {
-  /* Entier, au moins 96 px, jamais plus d'un quart de l'écran en hauteur. */
-  width: clamp(96px, 8rem, calc(25vh - 1rem));
-  height: clamp(96px, 8rem, calc(25vh - 1rem));
+/* Le même passage en une colonne en grand texte, tant que l'écran n'est pas assez large pour garder la vitrine à côté
+   du panneau (DA-34) : à tenir identique au bloc du téléphone ci-dessus. */
+@media (max-width: 900px) {
+  :root[data-texte="grand"] .arena {
+    grid-template-columns: 1fr;
+  }
+  :root[data-texte="grand"] .arena-vitrine {
+    padding: 0;
+    border-right: 0;
+    border-bottom: var(--border-width) solid var(--ink);
+  }
+  :root[data-texte="grand"] .arena-vitrine .guardian-3d {
+    width: 96px;
+    height: 96px;
+  }
 }
 
 /* ===== Blocland en immersion : le monde en plein écran, panneaux glissants ===== */
@@ -3440,19 +3410,22 @@ figure.class-table {
   flex-direction: column;
 }
 .world-page {
+  position: relative;
   flex: 1 1 auto;
   min-height: 0;
   display: flex;
   flex-direction: column;
   background: var(--surface);
 }
+/* Le monde garde tout l'écran, toujours : rien ne le pousse ni ne le redimensionne (décision du mainteneur, 4 octobre
+   2026). Ce qui demande de la place (le panneau de l'île, l'École, Blocs, les Trophées, les Monuments, le menu) s'ouvre
+   en plein écran par-dessus lui. */
 .world-stage {
   position: relative;
   flex: 1 1 auto;
   min-height: 0;
   display: flex;
   flex-direction: column;
-  transition: flex-basis 0.3s ease;
 }
 .voxel-canvas-stage {
   flex: 1 1 auto;
@@ -3517,6 +3490,10 @@ figure.class-table {
   bottom: 0;
   background: var(--surface);
 }
+/* Le fond de la bulle d'aide, pas une bande d'une autre couleur derrière ses boutons. */
+.world-overlay-bottom .tutorial-actions {
+  background: inherit;
+}
 /* Le texte continue sous les boutons : un trait pointillé au-dessus d'eux et un chevron le disent (comme sur la Carte). */
 .whale-word-actions.a-suivre {
   border-top: var(--border-width) dashed currentColor;
@@ -3528,7 +3505,7 @@ figure.class-table {
   flex: none;
 }
 /*
- * Sur téléphone en grand texte, la bulle garde la place du texte : la baleine dessinée s'efface (décorative), Écouter
+ * Sur téléphone en grand texte, la bulle garde la place du texte : la baleine ou le portrait de la créature s'efface (décoratif, son nom reste écrit), Écouter
  * garde son icône seule (son nom reste lu par les lecteurs d'écran) : les boutons prennent moins de place.
  */
 @media (max-width: 640px) {
@@ -3536,7 +3513,7 @@ figure.class-table {
   :root[data-texte="grand"] .bulle-ouverte .world-bar {
     display: none;
   }
-  :root[data-texte="grand"] .world-overlay-bottom .whale-icon {
+  :root[data-texte="grand"] .world-overlay-bottom :is(.whale-icon, .whale-portrait) {
     display: none;
   }
   /* Le trait pointillé seul dit la suite, comme sur la Carte : un chevron à côté d'Écouter en icône se prendrait pour un bouton. */
@@ -3589,7 +3566,7 @@ figure.class-table {
   max-width: 26rem;
 }
 /* Barre du bas, par-dessus le monde : Carte, Chantier, jour/nuit, aide. */
-/* La Carte : la ligne d'aide en haut, et le chemin d'ouvrages vers l'île fermée touchée. */
+/* La Carte : le chemin d'ouvrages vers l'île pâle touchée, en haut (rien à l'ouverture de la Carte). */
 .world-map-line {
   display: block;
   /* Jamais plus large que la place au-dessus du monde (grand texte sur téléphone, DA-16). */
@@ -3597,125 +3574,8 @@ figure.class-table {
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
 }
-.world-map-actions .button {
-  min-height: 48px;
-}
 .world-map-line p {
   margin: 0;
-}
-.world-map-line p + p,
-.world-map-islands {
-  margin-top: 0.5rem;
-}
-.world-map-destination {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.6rem;
-}
-.world-map-speak {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: none;
-}
-/* En grand texte, la phrase de la Carte se lit dans une fenêtre de trois lignes entières, qui défile s'il y a une
-   suite ; un chevron sous le bouton Écouter et un trait pointillé le disent. Les boutons « Y aller » et « Les quatre
-   archipels » restent sous elle, toujours visibles. */
-:root[data-texte="grand"] .world-map-line {
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  align-items: stretch;
-  gap: 0;
-}
-:root[data-texte="grand"] .world-map-line > * {
-  flex: none;
-}
-:root[data-texte="grand"] .world-map-line > button {
-  align-self: flex-start;
-}
-.world-map-texte {
-  display: block;
-  min-width: 0;
-}
-:root[data-texte="grand"] .world-map-texte {
-  /* Un peu d'air entre les lettres et le trait pointillé ; il reste dans la marge de la ligne suivante. */
-  max-height: calc(3lh + 0.2em + var(--border-width));
-  padding-bottom: 0.2em;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-}
-:root[data-texte="grand"] .world-map-destination.a-suivre .world-map-texte {
-  border-bottom: var(--border-width) dashed currentColor;
-}
-:root[data-texte="grand"] .world-map-speak {
-  align-self: stretch;
-}
-/* Sur tablette, « Y aller » et « Les quatre archipels » tiennent sur une rangée : libellés un peu plus petits
-   (trois quarts du texte, jamais sous 18 px), marges fixes. */
-@media (min-width: 641px) {
-  :root[data-texte="grand"] .world-map-line {
-    padding-left: 14px;
-    padding-right: 14px;
-  }
-  :root[data-texte="grand"] .world-map-actions {
-    gap: 8px;
-  }
-  :root[data-texte="grand"] .world-map-actions .button {
-    font-size: 0.75em;
-    padding-left: 10px;
-    padding-right: 10px;
-  }
-}
-.world-map-suite {
-  position: sticky;
-  bottom: 0;
-  margin-top: auto;
-  width: 1.4em;
-  height: 1.4em;
-}
-.world-map-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-.world-map-islands summary {
-  min-height: 48px;
-  display: flex;
-  align-items: center;
-  font-weight: 700;
-  cursor: pointer;
-}
-/* Sous la liste des îles, une ligne : ce qui ouvre une île pâle. */
-.world-map-islands-note {
-  margin: 0 0 0.4rem;
-}
-.world-map-islands ul {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(15rem, 100%), 1fr));
-  gap: 0.3rem 1rem;
-  margin: 0 0 0.4rem;
-  padding: 0;
-  list-style: none;
-}
-.world-map-island {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.6rem;
-  width: 100%;
-  min-height: 48px;
-  padding: 0.2rem 0.6rem;
-  border: var(--border-width) solid var(--ink);
-  border-radius: var(--radius-control);
-  background: var(--surface);
-  color: var(--text);
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
-}
-.world-map-island:hover {
-  border-color: var(--primary-bg);
 }
 /* L'état d'une île : une icône et un mot, la couleur ne fait que doubler (DP-08). */
 .island-state {
@@ -3739,6 +3599,10 @@ figure.class-table {
 .world-map-path li + li {
   margin-top: 0.2rem;
 }
+/* ===== La barre du bas du monde : des icônes seules, le mot dessous en grand texte (commune aux deux univers) ===== */
+/* Quatre boutons carrés de 56 px, icône de 32 px, 8 px d'écart : 248 px, ils tiennent sur 320 px. Chaque bouton garde
+   son nom pour les lecteurs d'écran, et l'écran ouvert dit le sien en titre (décision du mainteneur, 4 octobre 2026,
+   « 2a » pour Blocland, « 4a » pour Archipéo). Chaque univers n'y met que sa matière (blocland.css pour Blocland). */
 .world-bar {
   position: absolute;
   left: 0.6rem;
@@ -3747,19 +3611,172 @@ figure.class-table {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 8px;
 }
 .world-bar .button {
-  min-height: 48px;
-  padding: 0.2rem 0.8rem;
+  position: relative;
+  flex: 0 0 auto;
+  width: 56px;
+  min-width: 56px;
+  height: 56px;
+  min-height: 56px;
+  padding: 0;
 }
-.has-sheet .world-overlay-top {
-  max-height: 45%;
+.world-bar .button svg {
+  width: 32px;
+  height: 32px;
+}
+.world-bar .world-bar-text {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+/* En grand texte, le réglage de l'élève qui lit difficilement : le mot sous l'icône, dans la taille du texte choisie
+   plafonnée à 24 px. Les boutons s'élargissent à leur mot, un nom d'île long passe à la ligne entre ses mots (jamais
+   au milieu d'un mot) ; la barre passe sur deux rangées plutôt que de sortir de l'écran, les boutons alignés en bas,
+   sans s'étirer. */
+:root[data-texte="grand"] .world-bar {
+  align-items: flex-end;
+}
+:root[data-texte="grand"] .world-bar .button {
+  flex-direction: column;
+  gap: 2px;
+  width: auto;
+  /* 200 px au plus (« Forêt des sons » sur deux lignes, la barre tient sur une rangée en paysage) ; un mot plus long
+     que cela élargit le bouton (min-width l'emporte sur max-width), sans jamais être coupé. */
+  max-width: min(200px, 100%);
+  min-width: min-content;
+  height: auto;
+  padding: 4px 10px 6px;
+}
+:root[data-texte="grand"] .world-bar .world-bar-text {
+  display: block;
+  position: static;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  clip-path: none;
+  white-space: normal;
+  overflow-wrap: normal;
+  word-break: keep-all;
+  text-align: center;
+  line-height: 1.3;
+  /* Plus grand que le texte par défaut (20 px), plafonné à 24 px : à 32 px, les quatre mots prenaient la moitié d'un
+     téléphone, et « Observatoire » se coupait. */
+  font-size: min(1rem, 24px);
+}
+/* Archipéo (Blocland a sa matière, blocland.css) : des boutons plats, posés sur une ombre nette de 3 px. */
+.world-bar .button {
+  box-shadow: 0 3px 0 var(--ink);
+}
+/* Le bouton de l'île : l'action principale de la barre, dans la couleur d'action principale. */
+.world-bar .world-bar-ile {
+  --button-bg: var(--primary-bg);
+  border-color: var(--primary-bg);
+  color: var(--primary-text);
+}
+/* L'appui, et le bouton ouvert tant que son écran est ouvert : descendu de 2 px, l'ombre réduite d'autant (l'état ne
+   passe pas par la couleur seule) ; ouvert, il prend le sable. */
+.world-bar .button:active,
+.world-bar .button[aria-pressed="true"] {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--ink);
 }
 .world-bar .button[aria-pressed="true"] {
+  --button-bg: var(--sand);
   background: var(--sand);
   border-color: var(--on-sand);
   color: var(--on-sand);
+}
+/* Archipéo en thème Clair, plat et sans ombre (manuel, Réglages) : ni ombre ni relief ; le bouton ouvert se marque par
+   le fond sable et un contour de 2 px Nuit océan (le directeur artistique, 4 octobre 2026). */
+:root[data-univers="archipeo"][data-theme="light"] .world-bar .button,
+:root[data-univers="archipeo"][data-theme="light"] .world-bar .button:active {
+  transform: none;
+  box-shadow: none;
+}
+:root[data-univers="archipeo"][data-theme="light"] .world-bar .button[aria-pressed="true"] {
+  transform: none;
+  box-shadow: none;
+  outline: 2px solid #142b38;
+  outline-offset: -2px;
+}
+/* Le compte des blocs : une pastille chiffrée au coin haut droit du bouton, qui déborde de 8 px sans réduire la cible,
+   jamais rouge (le rouge dirait « à faire ») ; « 0 » s'affiche : la pastille ne disparaît jamais. La largeur suit le
+   nombre. Dans Archipéo, une pastille ronde de sable ; Blocland en fait un bloc d'or (blocland.css). */
+.world-bar-count {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  display: inline-grid;
+  place-items: center;
+  min-width: 26px;
+  min-height: 26px;
+  padding: 0 5px;
+  background: var(--sand);
+  color: var(--on-sand);
+  border: 2px solid var(--on-sand);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 1;
+  pointer-events: none;
+}
+:root[data-texte="grand"] .world-bar-count {
+  /* Plus grande, elle déborde un peu plus vers le haut et la droite : l'icône du bouton reste visible. */
+  top: -12px;
+  right: -12px;
+  font-size: max(18px, 1rem);
+}
+/* Les blocs gagnés qui volent jusqu'au compteur (Blocland, FlyingBlocks.tsx) : posés sur la pastille, ils partent de la
+   borne (`--vol-dx`, `--vol-dy`) en arc simple, l'un après l'autre ; ni éclat ni traînée, rien qui se touche. Sans
+   animation quand l'appareil en demande moins (le vol n'a alors pas lieu). */
+.vol-des-blocs {
+  position: fixed;
+  z-index: 30;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+.vol-bloc {
+  position: absolute;
+  left: -16px;
+  top: -16px;
+  width: 32px;
+  height: 32px;
+  animation: vol-x var(--vol-ms, 600ms) linear both;
+}
+/* L'arc : le bloc monte un peu avant de descendre sur la pastille (la courbe dépasse d'abord vers le haut). */
+.vol-bloc-arc {
+  display: block;
+  width: 100%;
+  height: 100%;
+  animation: vol-y var(--vol-ms, 600ms) cubic-bezier(0.3, -0.6, 0.7, 1) both;
+}
+.vol-bloc .block-icon {
+  display: block;
+  width: 32px;
+  height: 32px;
+}
+@keyframes vol-x {
+  from {
+    transform: translateX(var(--vol-dx, 0));
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes vol-y {
+  from {
+    transform: translateY(var(--vol-dy, 0));
+  }
+  to {
+    transform: none;
+  }
 }
 /* Le panneau d'une île glisse depuis le bas ; le monde garde le haut de l'écran, l'île reste visible. */
 .island-sheet {
@@ -3769,7 +3786,7 @@ figure.class-table {
   overscroll-behavior: contain;
   padding: 0.8rem 1rem 1.2rem;
   background: var(--surface);
-  /* Le liseré de l'île en haut du panneau (à gauche sur grand écran). */
+  /* Le liseré de l'île en haut du panneau. */
   border-top: 8px solid var(--biome-color, var(--ink));
   animation: sheet-in 0.3s ease;
 }
@@ -3844,6 +3861,90 @@ figure.class-table {
   border: var(--border-width) solid var(--ink);
   border-radius: var(--radius-control);
   background: var(--secondary-bg);
+}
+/* La créature qui se souvient (GD-4, étape 1) : l'icône de la notion, sa phrase, puis « Écouter », « Reprendre » et
+   « Plus tard », sur fond uni, sans animation. */
+.creature-rappel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.8rem;
+  margin: 0 0 0.8rem;
+  padding: 0.6rem 0.8rem;
+  border: var(--border-width) solid var(--ink);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+}
+.creature-rappel-icone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border: var(--border-width) solid var(--ink);
+  border-radius: var(--radius-signe);
+  background: var(--secondary-bg);
+  flex: 0 0 auto;
+}
+.creature-rappel-texte {
+  flex: 1 1 12rem;
+  margin: 0;
+}
+.creature-rappel-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1 1 100%;
+}
+.creature-rappel-actions .button {
+  min-height: 48px;
+}
+/* Après « Plus tard » : une courte ligne ; vide (montée d'avance pour les lecteurs d'écran), elle ne prend pas de place. */
+.creature-rappel-remis {
+  margin: 0 0 0.8rem;
+}
+.creature-rappel-remis:empty {
+  margin: 0;
+}
+/* Sur la Carte en vue simple, l'icône de la notion sur l'île dont la créature fait signe : fixe, entourée (la forme suit
+   l'habillage : une plaque dans Blocland, `--radius-signe` ; un hexagone dans Archipéo, plus bas). */
+.biome-rappel {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border: var(--border-width) solid var(--ink);
+  border-radius: var(--radius-signe);
+  background: var(--secondary-bg);
+}
+/* Archipéo : le signe en hexagone à coins doux, comme ses bulles dans le monde (choix du mainteneur, 4 octobre 2026) :
+   Brume au bord Nuit océan, des couleurs fixes, comme les bulles. Le masque (un hexagone au trait arrondi) découpe le
+   bord ; la Brume, posée dessous l'icône, le même hexagone 3 px plus petit. */
+:root[data-univers="archipeo"] :is(.creature-rappel-icone, .biome-rappel) {
+  --hexagone: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpolygon points='50,5 89,27.5 89,72.5 50,95 11,72.5 11,27.5' fill='black' stroke='black' stroke-width='10' stroke-linejoin='round'/%3E%3C/svg%3E");
+  isolation: isolate;
+  border-color: transparent;
+  background: #142b38;
+  color: #142b38;
+  -webkit-mask: var(--hexagone) center / 100% 100% no-repeat;
+  mask: var(--hexagone) center / 100% 100% no-repeat;
+}
+:root[data-univers="archipeo"] .creature-rappel-icone {
+  position: relative;
+}
+:root[data-univers="archipeo"] :is(.creature-rappel-icone, .biome-rappel)::before {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  z-index: -1;
+  background: #e5ebe3;
+  -webkit-mask: var(--hexagone) center / 100% 100% no-repeat;
+  mask: var(--hexagone) center / 100% 100% no-repeat;
 }
 /* L'accueil d'une île : le nom de la créature et « Réécouter » sur une ligne, sa phrase dessous. */
 .island-sheet-says-texte {
@@ -3935,41 +4036,6 @@ button.island-quest:active {
   font-size: 0.9rem;
 }
 @media (max-width: 640px) {
-  /*
-   * Sur téléphone, les boutons passent à la ligne quand ils ne tiennent pas sur une seule (grand texte) : aucun ne sort
-   * de l'écran, et aucun ne se cache derrière un défilement qu'on ne voit pas (DA-24).
-   */
-  .world-bar {
-    gap: 0.3rem;
-  }
-  .world-bar .button {
-    flex: 0 0 auto;
-    min-width: 48px;
-    white-space: nowrap;
-    padding: 0.2rem 0.4rem;
-  }
-  /* Les icônes seules gardent leur taille de bouton : le grand texte grossit le compte des blocs, pas les dessins. */
-  .world-bar .button svg {
-    width: min(1.2em, 28px);
-    height: min(1.2em, 28px);
-  }
-  /* Les icônes seules (le nom reste lu par les lecteurs d'écran) : les cinq boutons tiennent sur la largeur. */
-  .world-bar-text {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
-  /* En grand texte, les libellés restent écrits : les boutons passent à la ligne plutôt que de n'être que des icônes. */
-  :root[data-texte="grand"] .world-bar-text {
-    position: static;
-    width: auto;
-    height: auto;
-    overflow: visible;
-    clip-path: none;
-  }
   .island-sheet {
     max-height: 58%;
   }
@@ -3981,27 +4047,26 @@ button.island-quest:active {
     font-size: 1.25rem;
   }
 }
-@media (min-width: 900px) {
-  /* Sur grand écran, le panneau glisse depuis la droite et le monde garde toute la hauteur. */
-  .world-page {
-    flex-direction: row;
-  }
-  .island-sheet {
-    flex: 0 0 26rem;
-    max-height: none;
-    border-top: none;
-    border-left: 8px solid var(--biome-color, var(--ink));
-    box-shadow: none;
-    animation-name: sheet-in-right;
-  }
-  @keyframes sheet-in-right {
-    from {
-      transform: translateX(100%);
-    }
-    to {
-      transform: translateX(0);
-    }
-  }
+/* Un panneau du monde : plein écran, par-dessus la scène, qui garde sa taille ; le texte reste dans une colonne de
+   lecture (40rem au plus) au milieu. */
+.world-page > .island-sheet {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  max-height: none;
+  padding-inline: max(1rem, env(safe-area-inset-left), env(safe-area-inset-right), calc((100% - 40rem) / 2));
+  padding-top: 0;
+  padding-bottom: max(1.2rem, env(safe-area-inset-bottom));
+  box-shadow: none;
+}
+/* Sa tête (titre et croix) reste en haut quand on fait défiler : la croix est la sortie, toujours visible. */
+.world-page > .island-sheet .island-sheet-head {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding-top: max(0.8rem, env(safe-area-inset-top));
+  padding-bottom: 0.4rem;
+  background: var(--surface);
 }
 
 /* ===== Archipel : les ponts à construire ===== */
@@ -4027,12 +4092,116 @@ button.island-quest:active {
 .bridge-icon {
   background: var(--cyan);
 }
+/* Les commandes des créatures (GD-7, PR 3) : les lignes du pli Ouvrages, avec l'habitant en icône. La commande mise en
+   avant (la plus ancienne des prêtes) a un bord plus épais : la forme, pas seulement la couleur. */
+.commandes-list .commande-habitant {
+  background: var(--surface);
+}
+.commandes-list .commande-habitant .creature {
+  width: 2.4rem;
+  height: 2.4rem;
+}
+/* Une grille fixe, la même à toutes les tailles de texte : l'habitant, la phrase, le bouton de lecture sur la première
+   rangée ; le bouton d'action dessous, aligné sur la phrase. Les boutons viennent toujours après le texte. */
+.commandes-list .commande-item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    'habitant texte lire'
+    '. action action';
+  align-items: center;
+  column-gap: 0.7rem;
+  row-gap: 0.4rem;
+}
+.commandes-list .commande-item > .commande-habitant {
+  grid-area: habitant;
+}
+.commandes-list .commande-item > .island-quest-text {
+  grid-area: texte;
+}
+.commandes-list .commande-item > .speak-button {
+  grid-area: lire;
+}
+.commandes-list .commande-item > .button {
+  grid-area: action;
+  justify-self: start;
+}
+.commande-item .island-quest-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+/* En grand texte, trois rangées, comme une mission : l'habitant et le haut-parleur, puis le titre et la phrase sur toute
+   la largeur, puis le bouton. Un mot ne se coupe jamais au milieu (un mot plus long que toute la ligne seulement, en
+   dernier recours, comme une consigne). */
+:root[data-texte="grand"] .commandes-list .commande-item {
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas:
+    'habitant lire'
+    'texte texte'
+    'action action';
+}
+:root[data-texte="grand"] .commandes-list .commande-item > .speak-button {
+  justify-self: start;
+}
+:root[data-texte="grand"] .commandes-list .commande-item :is(.island-quest-title, .island-quest-desc, .button) {
+  overflow-wrap: break-word;
+  word-break: normal;
+  hyphens: manual;
+}
+/* La commande livrée : le vert des réussites, avec une forme en plus de la couleur (la coche devant le bloc, un bord
+   deux fois plus épais) ; sa phrase à la taille du texte, pas en gris. */
+.commandes-list .commande-livree {
+  border-color: var(--success);
+  border-width: calc(var(--border-width) * 2);
+  background: var(--success-bg);
+}
+.commande-livree .commande-coche {
+  color: var(--success);
+}
+.commande-livree .commande-posee {
+  font-size: 1rem;
+  color: var(--text);
+}
+/* « Tu y es : joue une mission ici. », sous le titre « Missions » ; vide, la zone reste là pour le lecteur d'écran. */
+.commande-ici-missions {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin: 0 0 0.6rem;
+}
+.commande-ici-missions.vide {
+  margin: 0;
+}
+/* Le compte, à côté du titre (« Commandes · 1 prête »). */
+.commandes-compte {
+  font-weight: normal;
+  color: var(--muted);
+}
+.commande-en-avant {
+  border-width: calc(var(--border-width) * 2);
+}
+.commandes-premiere-fois {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin: 0 0 0.6rem;
+}
+.menu-commandes {
+  margin: 0.6rem 0;
+}
 .bridges-said {
   margin: 0.6rem 0 0;
   padding: 0.5rem 0.8rem;
   border: var(--border-width) solid var(--success);
   border-radius: var(--radius-control);
   background: var(--success-bg);
+}
+/* Vide (rien à dire encore ; la zone reste là pour le lecteur d'écran) : pas de cadre. */
+.bridges-said:empty {
+  margin: 0;
+  padding: 0;
+  border: none;
 }
 
 /* ===== Blocland : écran de calcul (Plaine des nombres) ===== */
@@ -4459,10 +4628,10 @@ button.island-quest:active {
   stroke: var(--ink);
   stroke-width: 1.5;
 }
-:root[data-theme="nuit"] .graph .graph-line {
+:root[data-theme="night"] .graph .graph-line {
   stroke: var(--yellow);
 }
-:root[data-theme="nuit"] .graph .graph-point {
+:root[data-theme="night"] .graph .graph-point {
   fill: var(--yellow);
 }
 .graph figcaption {
@@ -4978,7 +5147,8 @@ details.island-fold-objectif {
   gap: 0.5rem 0.8rem;
 }
 /* Le chantier que servent les blocs gagnés : sa phrase et sa jauge, sur toute la largeur. */
-.reward-site > span {
+.reward-site > span,
+.reward-pose > span {
   flex: 1;
 }
 .reward-site .goal-gauge {
@@ -5183,6 +5353,32 @@ details.island-fold-objectif {
   font-size: 1.2rem;
   justify-content: center;
 }
+/* Blocland : le logo se construit (src/game/AssemblingLogo.tsx) ; ses quatre cubes descendent en accélérant et
+   s’arrêtent d’un coup, sans rebond ; le logo entier ne bouge pas. Coupé quand l’appareil demande moins d’animations. */
+.title-logo-construit {
+  animation: none;
+}
+.logo-cube {
+  animation-name: logo-chute, logo-apparait;
+  animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45), linear;
+  animation-fill-mode: both;
+}
+@keyframes logo-chute {
+  from {
+    transform: translateY(-140px);
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes logo-apparait {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 /* Le bloc tombe et rebondit une fois (coupé quand l’appareil demande moins d’animations). */
 @keyframes title-drop {
   from {
@@ -5201,20 +5397,6 @@ details.island-fold-objectif {
   border-color: var(--cyan);
 }
 
-/* ===== Navigation d'appli ===== */
-/* Pas d'onglets : sur téléphone, la barre du haut garde le Menu et les Réglages ; sur grand écran, les grands endroits. */
-.nav-phone {
-  display: none;
-}
-@media (max-width: 640px) {
-  .topbar-nav .nav-desktop {
-    display: none;
-  }
-  .topbar-nav .nav-phone {
-    display: inline-flex;
-  }
-}
-
 /* Mode concentration : pendant une partie, seul le bouton Pause reste, en haut à droite. */
 .app-shell.focus .content {
   padding-top: calc(1rem + env(safe-area-inset-top));
@@ -5229,6 +5411,27 @@ details.island-fold-objectif {
   min-height: 56px;
   padding: 0;
   justify-content: center;
+}
+/* Hors du monde (Réglages, Succès, Missions…), dans les deux univers : le bouton Menu seul, plus de barre du haut. */
+.page-menu {
+  position: fixed;
+  top: calc(0.6rem + env(safe-area-inset-top));
+  right: calc(0.6rem + env(safe-area-inset-right));
+  z-index: 14;
+  width: 52px;
+  height: 52px;
+  min-height: 52px;
+  padding: 0;
+  justify-content: center;
+}
+.app-shell:has(> .page-menu) .content .back-link {
+  max-width: calc(100% - 52px - 1.2rem);
+}
+.app-shell:has(> .page-menu) .update-banner {
+  padding-right: calc(52px + 1.2rem + env(safe-area-inset-right));
+}
+.app-shell:has(> .page-menu) .content {
+  padding-top: calc(1rem + env(safe-area-inset-top));
 }
 .pause-screen {
   position: fixed;
@@ -5435,12 +5638,6 @@ details.island-fold-objectif {
 .hero-compact .hero-title {
   margin: 0;
 }
-/* Tablette : le nom « Archipéo » laisse sa place à la jauge d'XP et aux quatre boutons. */
-@media (max-width: 1100px) {
-  .brand-name {
-    display: none;
-  }
-}
 
 /* L'école du village : ses trois portes (des cartes-boutons), puis les missions de la porte choisie. */
 button.app-card {
@@ -5470,7 +5667,7 @@ button.app-card {
   margin: 1rem 0 0;
 }
 
-/* Le menu du village : un bouton Pause en haut à droite du monde, et son panneau. */
+/* Le menu du village : un bouton Menu (trois traits) en haut à droite du monde, et son panneau. */
 .world-menu-button {
   position: absolute;
   top: 0.6rem;
@@ -5487,24 +5684,30 @@ button.app-card {
   border-color: var(--on-sand);
   color: var(--on-sand);
 }
-/* Le panneau du haut s'arrête avant la colonne de droite (Pause, choix de l'archipel), mesurée : en grand texte, le
-   bouton « 3e » est plus large que Pause, et aucun bouton ne se pose sur le texte du panneau (DA-31). */
+/* Le panneau du haut s'arrête avant la colonne de droite (Menu, choix de l'archipel), mesurée : en grand texte, le
+   bouton « 3e » est plus large que Menu, et aucun bouton ne se pose sur le texte du panneau (DA-31). */
 .world-page .world-overlay-top {
   right: calc(0.6rem + max(52px, var(--colonne-w, 52px)) + 0.5rem);
 }
-/* Sur téléphone en grand texte, la place manque : Pause et le choix de l'archipel passent en ligne en haut (Pause
+/* Sur téléphone en grand texte, la place manque : Menu et le choix de l'archipel passent en ligne en haut (Menu
    reste dans le coin, l'archipel à sa gauche), et le panneau prend toute la largeur dessous (DA-31). */
 @media (max-width: 640px) {
   :root[data-texte="grand"] .world-page .world-archipel {
     top: 0.6rem;
     right: calc(0.6rem + 52px + 0.5rem);
+    flex-direction: row;
+    /* Quatre classes ne tiennent pas sur une ligne à 390 px : elles passent sur deux, sans sortir de l'écran. */
+    left: 0.6rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
   }
   :root[data-texte="grand"] .world-page .world-overlay-top {
-    top: calc(0.6rem + 52px + 0.5rem);
+    /* Sous la rangée de classes, mesurée (`--colonne-bas`) : sur une ou deux lignes, elle ne couvre jamais le panneau. */
+    top: calc(var(--colonne-bas, calc(0.6rem + 52px)) + 0.5rem);
     right: 0.6rem;
-    /* Pli fermé, le panneau de la Carte s'arrête sous « Y aller », entier ; la suite vient en le faisant défiler
-       (usePanneauDeLaCarte.ts). Des traits pointillés disent qu'il continue, en bas comme en haut. */
-    max-height: var(--carte-panneau-max, 60%);
+    /* Le chemin d'ouvrages de la Carte défile au-delà ; des traits pointillés disent qu'il continue, en bas comme en
+       haut (useMapPanel.ts). */
+    max-height: 60%;
   }
   /* Le trait est posé sur une bande du fond du panneau, collée au bord : il ne passe jamais sur une ligne coupée,
      qu'il sépare du bord par un peu d'air. */
@@ -5536,20 +5739,24 @@ button.app-card {
     padding-left: 12px;
     padding-right: 12px;
   }
-  :root[data-texte="grand"] .world-page .world-map-island {
-    padding-left: 10px;
-    padding-right: 10px;
-  }
 }
-.menu-resume {
-  width: 100%;
-  justify-content: center;
-  margin: 0.4rem 0 0.6rem;
+/* Le menu du village, en plein écran par-dessus le monde (comme les autres panneaux) : des lignes serrées, des cibles
+   d'au moins 48 px ; les Réglages tout en bas de l'écran, à part, sous un trait (après les lignes quand elles
+   défilent). */
+.world-page > .menu-sheet {
+  display: flex;
+  flex-direction: column;
 }
-/* Le menu du village tient sans défiler sur un écran d'ordinateur (1280 × 800) : des lignes plus serrées, des cibles
-   d'au moins 48 px. */
-.menu-sheet {
-  padding-bottom: 0.8rem;
+.world-page > .menu-sheet > * {
+  flex-shrink: 0;
+}
+.menu-end {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: var(--border-width) solid var(--ink);
+}
+.menu-sheet .menu-list {
+  margin-bottom: 1rem;
 }
 .menu-sheet .island-quests {
   gap: 0.35rem;
@@ -5559,11 +5766,6 @@ button.app-card {
   padding-top: 0.2rem;
   padding-bottom: 0.2rem;
 }
-/* Réglages et Accueil côte à côte, juste sous Reprendre : visibles d'emblée, même sur un téléphone. */
-.menu-quick {
-  grid-template-columns: repeat(auto-fit, minmax(min(9rem, 100%), 1fr));
-  margin-bottom: 0.6rem;
-}
 button.island-quest {
   width: 100%;
   font: inherit;
@@ -5571,7 +5773,7 @@ button.island-quest {
   cursor: pointer;
 }
 
-/* « Recentrer », après un glissé du monde : sous la colonne de droite (Pause, l'archipel), mesurée (`--colonne-bas`).
+/* « Recentrer », après un glissé du monde : sous la colonne de droite (Menu, l'archipel), mesurée (`--colonne-bas`).
    Il apparaît d'un coup, sans pousser personne ; la liste des archipels, ouverte, passe par-dessus. */
 .world-recentrer {
   position: absolute;
@@ -5582,8 +5784,23 @@ button.island-quest {
   gap: 0.4rem;
   white-space: nowrap;
 }
+/* Recentrer, dans les deux univers : le rond « toi » de la Carte (clair, bord sombre épais, ombre nette ; jamais d'or),
+   avec le visage du joueur ; 52 px, comme le bouton Menu au-dessus. */
+.world-recentrer-tete {
+  width: 52px;
+  height: 52px;
+  min-height: 52px;
+  padding: 0;
+  justify-content: center;
+  border-radius: 50%;
+  /* Par la variable du fond : le survol et l'appui le foncent un peu, sans le repeindre en bois. */
+  --button-bg: #fff6e0;
+  border: 4px solid #2b2118;
+  box-shadow: 0 4px 0 #2b2118;
+}
 
-/* Le sélecteur d'archipel : sous le bouton Menu, et sa petite liste. */
+/* La rangée de classes (lot 2 de « Toucher le monde ») : sous le bouton Menu, une classe par archipel atteint. La
+   classe où l'on est se reconnaît à sa forme (bord épais, coche), pas seulement à sa couleur ; elle ne se touche pas. */
 .world-archipel {
   position: absolute;
   top: calc(0.6rem + 52px + 0.5rem);
@@ -5593,68 +5810,276 @@ button.island-quest {
   flex-direction: column;
   align-items: flex-end;
   gap: 0.4rem;
-}
-.world-archipel-button {
-  min-width: 52px;
-  min-height: 48px;
-  padding: 0.2rem 0.5rem;
-  justify-content: center;
-  gap: 0.25rem;
-}
-.world-archipel-button[aria-expanded="true"] {
-  background: var(--sand);
-  border-color: var(--on-sand);
-  color: var(--on-sand);
-}
-.world-archipel-list {
-  width: min(19rem, calc(100vw - 2rem));
-  padding: 0.5rem;
-}
-.world-archipel-list ul {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: grid;
-  gap: 0.3rem;
 }
-.world-archipel-item,
-.world-archipel-more {
-  display: flex;
+.world-archipel-classe {
+  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  width: 100%;
+  justify-content: center;
+  gap: 0.25rem;
+  min-width: 52px;
   min-height: 48px;
-  padding: 0.3rem 0.6rem;
+  padding: 0.2rem 0.5rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.world-archipel-classe.ici {
   font: inherit;
-  text-align: left;
-  color: var(--text);
+  font-weight: 700;
+  background: var(--sand);
+  color: var(--on-sand);
+  border: calc(var(--border-width) * 2) solid var(--on-sand);
+  border-radius: var(--radius-control);
+  box-shadow: var(--shadow-float);
+}
+
+/* La fiche d'un objet du monde (lot 2 de « Toucher le monde ») : toujours à la même place, en bas à gauche, juste
+   au-dessus de la barre ; sa hauteur suit ce qu'elle dit (piste A du mainteneur, 4 octobre 2026 : plus de fiche grande
+   et vide). Sa largeur est fixe, 24rem au plus, jamais plus que la scène (la moitié de l'écran en paysage) :
+   la requête de conteneur de la fiche (`container: fiche`) lui interdit de se régler sur son contenu. Au plus 45 % de la
+   scène en portrait (70 % en paysage) : au-delà, le texte défile dans la fiche, le titre et les boutons restent
+   entiers, jamais de points de suspension. */
+.world-fiche-place {
+  position: absolute;
+  left: 0.6rem;
+  width: min(24rem, calc(100% - 1.2rem));
+  bottom: calc(var(--barre-h, 4rem) + 0.6rem);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  max-height: 45%;
+  pointer-events: none;
+}
+@media (orientation: landscape) {
+  .world-fiche-place {
+    width: min(24rem, 50%);
+  }
+}
+/* En paysage, jusqu'à 70 % : le titre, deux lignes et les boutons tiennent en grand texte (la fiche reste à gauche, la
+   caméra recadre l'objet à droite). */
+@media (orientation: landscape) {
+  .world-fiche-place {
+    max-height: 70%;
+  }
+  /* En grand texte, jusqu'en haut de la scène (sous la marge du haut) : le titre et le bouton principal restent entiers
+     (le Bloc-Navire, « Embarquer vers … » sur quatre lignes en OpenDyslexic 32 px). */
+  :root[data-texte="grand"] .world-fiche-place {
+    max-height: calc(100% - var(--barre-h, 4rem) - 1.8rem);
+  }
+}
+.world-fiche {
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-height: 0;
+  max-height: 100%;
+  padding: 0.5rem 0.6rem 0.7rem 0.9rem;
   background: var(--surface);
   border: var(--border-width) solid var(--ink);
-  border-radius: var(--radius-control);
-  cursor: pointer;
+  border-radius: var(--radius);
+  /* Dernier recours (grand texte, deux boutons, titre long) : la fiche entière défile plutôt que de passer sur la barre. */
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
-.world-archipel-item:disabled {
-  cursor: default;
-  opacity: 0.65;
-}
-.world-archipel-item.here {
-  opacity: 1;
-  background: var(--sand);
-  border-color: var(--on-sand);
-  color: var(--on-sand);
-}
-.world-archipel-state {
-  margin-left: auto;
-  font-size: 0.85rem;
-}
-.world-archipel-more {
-  margin-top: 0.4rem;
-  border-style: dashed;
-}
-.hop-line {
+.world-fiche-tete {
+  flex: none;
   display: flex;
   align-items: center;
+  gap: 0.4rem;
+}
+.world-fiche-titre {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 1.15rem;
+  /* Un mot plus long que la fiche (grand texte sur téléphone) passe à la ligne : rien n'est coupé. */
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+.world-fiche-titre > span {
+  min-width: 0;
+}
+.world-fiche-titre svg {
+  flex: none;
+}
+/* Un titre long dans une fiche étroite pour sa taille de texte (grand texte, tablette en paysage) : il passe sur sa
+   propre ligne, sous Écouter et la croix, plutôt que sur quatre lignes dans une colonne. */
+.world-fiche {
+  container: fiche / inline-size;
+}
+@container fiche (max-width: 14rem) {
+  .world-fiche-tete {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .world-fiche-titre {
+    order: 1;
+    flex-basis: 100%;
+    font-size: 1rem;
+  }
+}
+.world-fiche-texte {
+  flex: 1 1 auto;
+  /* Toujours au moins deux lignes de la phrase visibles ; s'il en reste, un trait pointillé le dit (.a-suivre). */
+  min-height: 3.2em;
+  min-height: 2lh;
+  overflow: auto;
+  overscroll-behavior: contain;
+  overflow-wrap: break-word;
+}
+.world-fiche.a-suivre {
+  border-bottom-style: dashed;
+}
+/* Sans phrase (une borne : ses étoiles, puis Jouer), rien n'est réservé : les étoiles et le bouton sur la même rangée,
+   l'un sous l'autre si la place manque (grand texte). */
+.world-fiche-texte:not(:has(.world-fiche-phrase)) {
+  min-height: 0;
+}
+.world-fiche-ligne {
+  /* Comme les boutons seuls : la rangée ne rétrécit jamais, Jouer reste entier ; si la place manque, la fiche entière
+     défile (son dernier recours). */
+  flex: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+}
+.world-fiche-ligne > .world-fiche-texte {
+  flex: 0 1 auto;
+  overflow: visible;
+}
+/* Deux boutons : une ligne de texte suffit (le trait pointillé dit la suite), pour que les boutons tiennent entiers. */
+.world-fiche:has(.world-fiche-actions > :nth-child(2)) .world-fiche-texte {
+  min-height: 1.6em;
+  min-height: 1lh;
+}
+.world-fiche-texte.a-suivre {
+  border-bottom: var(--border-width) dashed currentColor;
+}
+.world-fiche-phrase {
+  margin: 0.2rem 0;
+}
+.world-fiche-texte .stars {
+  display: inline-flex;
+  margin: 0.2rem 0;
+}
+.world-fiche-texte .build-status:empty {
+  display: none;
+}
+.world-fiche-actions {
+  flex: none;
+  display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
+}
+.world-fiche-actions .button {
+  min-height: 48px;
+  max-width: 100%;
+  white-space: normal;
+}
+/* Le cadre de la fiche : la fiche, et le portrait en médaillon de la créature ou du Gardien (WorldCard.tsx : en cubes
+   dans Blocland, le modèle en SVG dans Archipéo), posé en haut à gauche, qui dépasse de 24 px au-dessus d'elle (16 px sur
+   téléphone). Hors de la fiche qui défile : il reste entier, et sa hauteur compte dans la place de la fiche. Décoratif :
+   il ne se touche pas. */
+.world-fiche-cadre {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  max-height: 100%;
+}
+.world-fiche-cadre.avec-medaillon {
+  --medaillon: 72px;
+  --medaillon-depasse: 24px;
+  padding-top: var(--medaillon-depasse);
+}
+.world-fiche-medaillon {
+  position: absolute;
+  top: 0;
+  left: 0.6rem;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: var(--medaillon);
+  height: var(--medaillon);
+  padding: 4px;
+  /* Archipéo : un cadre arrondi, sur la surface, au trait de l'encre (Blocland en fait un bloc, blocland.css). */
+  background: var(--surface);
+  color: var(--text);
+  border: var(--border-width) solid var(--ink);
+  border-radius: var(--radius);
+  pointer-events: none;
+}
+.world-fiche-medaillon svg {
+  width: 100%;
+  height: 100%;
+}
+/* Le titre part à droite du médaillon ; la phrase dessous, puis un seul bouton principal sur toute la largeur. */
+.avec-medaillon .world-fiche-tete {
+  min-height: calc(var(--medaillon) - var(--medaillon-depasse) - 0.5rem);
+}
+.avec-medaillon .world-fiche-titre {
+  margin-left: calc(var(--medaillon) + 0.6rem + 0.4rem - 0.9rem);
+}
+/* Le titre sur sa propre ligne, sous Écouter et la croix (fiche étroite pour sa taille de texte) : il passe sous le
+   médaillon, toute la largeur. */
+@container fiche (max-width: 14rem) {
+  .avec-medaillon .world-fiche-titre {
+    margin-left: 0;
+  }
+}
+.avec-medaillon .world-fiche-actions .button.primary {
+  flex: 1 1 100%;
+}
+/* Sur une scène basse (téléphone en paysage) en grand texte, le médaillon s'efface aussi : le titre, la phrase et le
+   bouton principal gardent la hauteur. */
+@media (max-height: 500px) {
+  :root[data-texte="grand"] .world-fiche-cadre.avec-medaillon {
+    padding-top: 0;
+  }
+  :root[data-texte="grand"] .world-fiche-medaillon {
+    display: none;
+  }
+  :root[data-texte="grand"] .avec-medaillon .world-fiche-titre {
+    margin-left: 0;
+  }
+  /* Une ligne de la phrase au moins (elle défile, le pointillé le dit) : le bouton principal reste à l'écran. */
+  :root[data-texte="grand"] .world-fiche-texte {
+    min-height: 1.6em;
+    min-height: 1lh;
+  }
+}
+@media (max-width: 640px) {
+  .world-fiche-cadre.avec-medaillon {
+    --medaillon: 56px;
+    --medaillon-depasse: 16px;
+  }
+  /* Sur téléphone en grand texte, le médaillon s'efface, comme le portrait du mot de la créature : le titre et le
+     bouton restent entiers. */
+  :root[data-texte="grand"] .world-fiche-cadre.avec-medaillon {
+    padding-top: 0;
+  }
+  :root[data-texte="grand"] .world-fiche-medaillon {
+    display: none;
+  }
+  :root[data-texte="grand"] .avec-medaillon .world-fiche-tete {
+    min-height: 0;
+  }
+  :root[data-texte="grand"] .avec-medaillon .world-fiche-titre {
+    margin-left: 0;
+  }
+}
+/* La fiche ouverte : le haut garde un peu moins de place (une chose à la fois en bas). */
+.fiche-ouverte .world-overlay-top {
+  max-height: 40%;
 }
 
 /* ===== L'état du village (Archipéo, lot 3b) : cinq crans et un libellé ===== */
@@ -5728,7 +6153,10 @@ button.island-quest {
   fill: var(--muted);
 }
 
-/* ===== Le mot de la baleine (Archipéo, lot 5) : rare, aux grandes étapes, opaque et uni comme les autres panneaux ===== */
+/*
+ * ===== Le mot des grandes étapes (lot 5) : rare, opaque et uni comme les autres panneaux. La baleine le dit dans
+ * Archipéo ; dans Blocland, la créature de l'île-école, son portrait en cubes à côté de son nom écrit (GD-1). =====
+ */
 .whale-word {
   margin-bottom: 1.2rem;
   border-color: var(--primary-bg);
@@ -5746,6 +6174,15 @@ button.island-quest {
   flex: none;
   color: var(--primary-bg);
 }
+.whale-portrait {
+  width: 3rem;
+  height: 3rem;
+  flex: none;
+}
+.whale-portrait .creature {
+  width: 100%;
+  height: 100%;
+}
 .whale-word-text {
   margin: 0 0 0.8rem;
   max-width: none;
@@ -5755,6 +6192,13 @@ button.island-quest {
   flex-wrap: wrap;
   gap: 0.6rem;
   align-items: center;
+}
+/* Les nouveaux noms des archipels (GD-1) : une phrase par archipel, une par ligne. */
+.renommage-lignes {
+  margin: 0 0 0.8rem;
+  padding-left: 1.2rem;
+  display: grid;
+  gap: 0.4rem;
 }
 /* Les points de page (deux pages à l'arrivée) : la page en cours est pleine, les autres creuses. */
 .whale-word-dots {
@@ -5777,6 +6221,13 @@ button.island-quest {
 /* Le titre du défi (Archipéo) laisse la place du bouton Pause, fixé en haut à droite : il revient à la ligne avant lui. */
 .defi-titre {
   padding-right: calc(56px + 0.6rem);
+}
+/* Sur téléphone, le nom de l'écran (« Le défi du Golem de roche ») tient en deux lignes au lieu de trois. Sans effet en
+   grand texte, dont la taille de titre l'emporte. */
+@media (max-width: 640px) {
+  .defi-titre {
+    font-size: 1.3rem;
+  }
 }
 .rallumage-passer {
   min-height: 48px;
@@ -5820,9 +6271,9 @@ fieldset {
   :root[data-texte="grand"] .consigne > .speak-button {
     align-self: flex-start;
   }
-  /* En partie, la première ligne du titre laisse la place du bouton Pause, fixé en haut à droite ; les suivantes ont
-     toute la largeur. */
-  :root[data-texte="grand"] .app-shell.focus .page-title::before {
+  /* En partie, la première ligne du titre laisse la place du bouton Pause, fixé en haut à droite (hors du monde dans
+     Blocland, celle du bouton Menu) ; les suivantes ont toute la largeur. */
+  :root[data-texte="grand"] :is(.app-shell.focus, .app-shell:has(> .page-menu)) .page-title::before {
     content: "";
     float: right;
     width: calc(56px + 0.6rem);
@@ -5845,6 +6296,10 @@ fieldset {
   :root[data-texte="grand"] .island-sheet-titles {
     order: 1;
     flex-basis: 100%;
+  }
+  /* La croix reste en haut à droite, même seule sur sa ligne (le menu, un lieu sans créature) : toujours au même endroit. */
+  :root[data-texte="grand"] .island-sheet-close {
+    margin-left: auto;
   }
   :root[data-texte="grand"] .island-quest {
     flex-wrap: wrap;
@@ -5940,28 +6395,6 @@ fieldset {
     flex-wrap: wrap;
     gap: 0 1rem;
   }
-  /* La Carte : le bouton Écouter au-dessus de la phrase, qui a toute la largeur ; l'état d'une île sous son nom. */
-  :root[data-texte="grand"] .world-map-destination {
-    flex-direction: column;
-  }
-  /* Le trait pointillé seul dit la suite : au-dessus de la phrase, le chevron la montrerait à l'envers. */
-  :root[data-texte="grand"] .world-map-suite {
-    display: none;
-  }
-  /* Deux lignes entières de la phrase, puis « Y aller » et « Les quatre archipels » chacun sur une ligne, aux trois
-     quarts du texte (jamais sous 18 px) comme sur tablette : le panneau tient sans défiler, pli fermé, et laisse à la
-     Carte la place de la destination et de ses voisines (DA-31). */
-  :root[data-texte="grand"] .world-map-texte {
-    max-height: calc(2lh + 0.2em + var(--border-width));
-  }
-  :root[data-texte="grand"] .world-map-actions .button {
-    font-size: max(18px, 0.75em);
-    padding-left: 10px;
-    padding-right: 10px;
-  }
-  :root[data-texte="grand"] .world-map-island {
-    flex-wrap: wrap;
-  }
   :root[data-texte="grand"] .question-head .question-count {
     white-space: normal;
   }
@@ -5995,6 +6428,136 @@ fieldset {
   grid-template-columns: minmax(0, 1fr);
 }
 
+/* Le lieu où l'on assemble les blocs (GD-2) : la carte de l'archipel en entier, les autres sous un pli ; dans chaque
+   carte, les blocs à donner en vignettes, ce qu'il manque juste au-dessus du bouton, puis les monuments qui attendent. */
+.assemblage-recette {
+  margin: 0 0 1rem;
+  padding: 0.8rem 1rem;
+}
+.assemblage-tete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+.assemblage-recette .island-sheet-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+}
+.assemblage-archipel {
+  margin: 0 0 0.5rem;
+  color: var(--muted);
+}
+.assemblage-ingredients,
+.assemblage-pourquoi,
+.assemblage-pour {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.6rem;
+  display: grid;
+  gap: 0.4rem;
+}
+/* Vignettes | texte : le texte passe à la ligne à côté des vignettes, les lignes restent alignées d'une carte à l'autre. */
+.assemblage-ingredients li {
+  display: grid;
+  grid-template-columns: 3.4rem minmax(0, 1fr);
+  align-items: center;
+  gap: 0.5rem;
+}
+.assemblage-vignettes {
+  display: inline-flex;
+  gap: 0.15rem;
+}
+.assemblage-en-poche {
+  margin: 0 0 0.6rem;
+}
+.assemblage-recette .button.primary {
+  min-height: 48px;
+}
+.assemblage-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+/* Sous « Défaire » : refaire le bloc demandera une question (rien de caché). */
+.assemblage-refaire {
+  margin: 0.4rem 0 0;
+  color: var(--muted);
+}
+.assemblage-dit {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+}
+.assemblage-dit:empty {
+  margin: 0;
+}
+.assemblage-retour {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-height: 48px;
+}
+.assemblage-autres > summary {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 700;
+  margin-bottom: 0.6rem;
+}
+.plan-pourquoi {
+  margin: 0 0 0.6rem;
+  font-weight: 700;
+}
+/* La question d'un bloc assemblé (GD-2), sur l'écran d'une mission. Le résultat suit les réponses dans la page (pas de
+   bandeau fixe : il passait sous la question) : le cri et le message, puis le bouton pour continuer (revenir au lieu,
+   ou une autre question) et l'autre choix, l'un sous l'autre sur téléphone. La page y défile à la réponse. */
+.assemblage-resultat {
+  margin-top: 1rem;
+  padding: 0.8rem 1rem;
+  /* Un résultat plus haut que l'écran s'ouvre sur son début, sous le bouton Pause fixé en haut à droite. */
+  scroll-margin-top: calc(56px + 1.2rem + env(safe-area-inset-top));
+  scroll-margin-bottom: 1rem;
+}
+/* En grand texte, tout le résultat se lit en colonne : le cri, le message sur toute la largeur, Écouter, puis les
+   boutons. Le message ne passe plus sous le bouton Pause. */
+:root[data-texte="grand"] .assemblage-resultat .feedback-compact,
+:root[data-texte="grand"] .assemblage-resultat .feedback-body {
+  flex-direction: column;
+  align-items: flex-start;
+}
+:root[data-texte="grand"] .assemblage-resultat .feedback-body {
+  flex: none;
+  align-self: stretch;
+}
+:root[data-texte="grand"] .assemblage-resultat .feedback-body p {
+  align-self: stretch;
+}
+/* Côte à côte, chaque bouton a la largeur de son texte ; l'un sous l'autre, les deux prennent toute la largeur
+   (la même), texte centré. */
+.assemblage-question-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 0.5rem;
+  max-width: 48rem;
+  flex-shrink: 0;
+}
+.assemblage-question-actions .button {
+  flex: 1 1 auto;
+  min-height: 48px;
+  text-align: center;
+}
+/* Grisé sans quitter l'ordre du clavier (aria-disabled) : le focus reste sur le bouton après le dernier bloc assemblé. */
+.assemblage-recette .button[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 /* Le rôle et la jauge d'XP en tête du menu du village : la barre du haut de l'appli n'est pas sur l'écran du monde. */
 .menu-role {
   margin: 0.1rem 0 0.2rem;
@@ -6002,4 +6565,15 @@ fieldset {
 .menu-role .xp-title {
   font-size: 1rem;
   white-space: normal;
+}
+
+/* Archipéo : Recentrer, le rond « toi » aux couleurs de ses bulles (choix « 1a » du mainteneur, 4 octobre 2026) : Brume,
+   bord Nuit océan épais, ombre nette ; jamais la lumière de la prochaine chose à faire. */
+:root[data-univers="archipeo"] .world-recentrer-tete {
+  --button-bg: #e5ebe3;
+  border-color: #142b38;
+  box-shadow: 0 4px 0 #142b38;
+}
+:root[data-univers="archipeo"] .world-recentrer-tete:active:not(:disabled) {
+  box-shadow: 0 1px 0 #142b38;
 }

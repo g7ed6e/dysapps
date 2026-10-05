@@ -1,10 +1,11 @@
 import { Link } from 'react-router-dom';
 import { SUBJECTS, subjectInfo, visibleSubjects, type Subject } from '../apps/registry';
-import { useBlocland } from '../blocland/BloclandContext';
-import { questsToReview } from '../blocland/review';
-import { VillageStageLine } from '../blocland/VillageStageLine';
-import { archipelagoOf, getArchipelago, reachedArchipelagos, ARCHIPELAGOS } from '../blocland/world/archipelago';
-import { nextDestination } from '../blocland/world/destination';
+import { useBlocland } from '../game/BloclandContext';
+import { questsToReview } from '../game/review';
+import { VillageStageLine } from '../game/VillageStageLine';
+import { archipelagoOf, reachedArchipelagos, ARCHIPELAGOS } from '../game/world/archipelago';
+import { lienDeLaDestination, nextDestination } from '../game/world/destination';
+import { sansCommandes } from '../game/world/requests';
 import { Icon } from '../components/Icon';
 import { RoleBadge } from '../components/RoleBadge';
 import { SpeakButton } from '../components/SpeakButton';
@@ -13,10 +14,11 @@ import { useProgress } from '../core/ProgressContext';
 import { lastPlace } from '../core/lastPlace';
 import { levelFromXp } from '../core/progress';
 import { useSettings, useUnivers } from '../core/SettingsContext';
-import { UNIVERS } from '../core/univers';
+import { UNIVERS } from '../core/universe';
+import { nomDuRole, useTextes } from '../universes';
 
 /** Les expéditions du menu ; la LV2 à côté de l'anglais, sauf avec « Pas de LV2 ». */
-const EXPEDITIONS: Subject[] = ['maths', 'francais', 'anglais', 'lv2'];
+const EXPEDITIONS: Subject[] = ['maths', 'french', 'english', 'lv2'];
 
 /**
  * Le menu d'Archipéo, dans l'ordre du dossier : l'identité, ton village, « Reprendre l'aventure » vers la prochaine
@@ -27,14 +29,16 @@ export function HomePage() {
   const { settings } = useSettings();
   const { progress } = useProgress();
   const { state } = useBlocland();
+  const textes = useTextes();
   const rank = levelFromXp(progress.xp);
   const firstTime = progress.totalAnswers === 0;
   const resume = lastPlace();
-  const reviews = questsToReview(state.spaced, state.village.bridges);
-  const here = archipelagoOf(state.village.at ?? 'foret').classe;
-  const destination = nextDestination(state);
+  const reviews = questsToReview(state.spaced, state.world.links);
+  const here = archipelagoOf(state.world.place ?? 'french-6e-phonology').classe;
+  // Les commandes (GD-7) ne se suggèrent que dans un univers qui les montre (`commandes` dans ses textes).
+  const destination = nextDestination(textes.commandes ? state : sansCommandes(state), textes.archipels, textes.libelles);
   const destinationText = `Prochaine destination : ${destination.name}. ${destination.text}`;
-  const reached = reachedArchipelagos(state.village.bridges).length;
+  const reached = reachedArchipelagos(state.world.links).length;
   const univers = UNIVERS[useUnivers()];
 
   return (
@@ -53,9 +57,9 @@ export function HomePage() {
 
       <section className="panel home-village" aria-labelledby="ton-village">
         <h2 id="ton-village" className="home-heading">
-          <Icon name="map" /> Ton village : les {getArchipelago(here).name}
+          <Icon name="map" /> Ton village : les {textes.archipels[here]}
         </h2>
-        <VillageStageLine village={state.village} archipelago={here} withNext={false} />
+        <VillageStageLine village={state.world} archipelago={here} withNext={false} />
       </section>
 
       {firstTime ? (
@@ -77,7 +81,7 @@ export function HomePage() {
         </Link>
       ) : (
         <section className="panel home-resume" aria-label="Reprendre l’aventure">
-          <Link to={`/aventure/${destination.island}`} className="button primary home-resume-button">
+          <Link to={lienDeLaDestination(destination)} className="button primary home-resume-button">
             <Icon name="play" /> Reprendre l’aventure
           </Link>
           <p className="home-destination">
@@ -92,7 +96,7 @@ export function HomePage() {
               {resume && (
                 <li>
                   <Link to={resume.path}>
-                    <Icon name="play" /> Continuer : {resume.label}
+                    <Icon name="play" /> Ma dernière mission : {resume.label}
                   </Link>
                 </li>
               )}
@@ -100,7 +104,7 @@ export function HomePage() {
               {reviews.length > 0 && (
                 <li>
                   <Link to={reviews[0].path}>
-                    <Icon name="history" /> À revoir aujourd’hui : {reviews[0].label}
+                    <Icon name="history" /> Mes révisions du jour : {reviews[0].label}
                     {reviews.length > 1 && ` (et ${reviews.length - 1} autre${reviews.length > 2 ? 's' : ''})`}
                   </Link>
                 </li>
@@ -113,7 +117,7 @@ export function HomePage() {
       <p className="panel home-progress">
         <RoleBadge tier={rank.tier} className="home-role" />
         <strong>
-          {rank.title}, niveau {rank.level}
+          {nomDuRole(textes, rank.tier)}, niveau {rank.level}
         </strong>
         <span>
           {reached} archipel{reached > 1 ? 's' : ''} sur {ARCHIPELAGOS.length}

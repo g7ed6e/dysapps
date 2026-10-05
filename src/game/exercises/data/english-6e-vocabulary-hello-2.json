@@ -1,0 +1,231 @@
+{
+  "id": "english-6e-vocabulary-hello-2",
+  "biome": "english-6e-vocabulary",
+  "type": "hello",
+  "level": 2,
+  "lang": "en",
+  "instruction": "Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.",
+  "items": [
+    {
+      "key": "english-6e-vocabulary-hello-2-0",
+      "prompt": "… your book, please.",
+      "spoken": "blank your book, please.",
+      "choices": [
+        "Open",
+        "Sit",
+        "Listen"
+      ],
+      "answer": "Open",
+      "hint": "Que te demande le professeur ? Relis les phrases de la classe.",
+      "explanation": "« Open your book » = ouvre ton livre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "En classe",
+          "lines": [
+            "open = ouvre, close = ferme",
+            "sit down = assieds-toi, stand up = lève-toi",
+            "listen to = écoute, look at = regarde",
+            "repeat = répète (après moi)",
+            "I don’t understand. = Je ne comprends pas. What does… mean? = Que veut dire… ?"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-6e-vocabulary-hello-2-1",
+      "prompt": "… down, please.",
+      "spoken": "blank down, please.",
+      "choices": [
+        "Sit",
+        "Open",
+        "Repeat"
+      ],
+      "answer": "Sit",
+      "hint": "Que te demande le professeur ? Relis les phrases de la classe.",
+      "explanation": "« Sit down » = assieds-toi.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "En classe",
+          "lines": [
+            "open = ouvre, close = ferme",
+            "sit down = assieds-toi, stand up = lève-toi",
+            "listen to = écoute, look at = regarde",
+            "repeat = répète (après moi)",
+            "I don’t understand. = Je ne comprends pas. What does… mean? = Que veut dire… ?"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-6e-vocabulary-hello-2-2",
+      "prompt": "… to the teacher.",
+      "spoken": "blank to the teacher.",
+      "choices": [
+        "Listen",
+        "Open",
+        "Sit"
+      ],
+      "answer": "Listen",
+      "hint": "Que te demande le professeur ? Relis les phrases de la classe.",
+      "explanation": "« Listen to the teacher » = écoute le professeur.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "En classe",
+          "lines": [
+            "open = ouvre, close = ferme",
+            "sit down = assieds-toi, stand up = lève-toi",
+            "listen to = écoute, look at = regarde",
+            "repeat = répète (après moi)",
+            "I don’t understand. = Je ne comprends pas. What does… mean? = Que veut dire… ?"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-6e-vocabulary-hello-2-3",
+      "prompt": "… at the board.",
+      "spoken": "blank at the board.",
+      "choices": [
+        "Look",
+        "Sit",
+        "Open"
+      ],
+      "answer": "Look",
+      "hint": "Que te demande le professeur ? Relis les phrases de la classe.",
+      "explanation": "« Look at the board » = regarde le tableau.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "En classe",
+          "lines": [
+            "open = ouvre, close = ferme",
+            "sit down = assieds-toi, stand up = lève-toi",
+            "listen to = écoute, look at = regarde",
+            "repeat = répète (après moi)",
+            "I don’t understand. = Je ne comprends pas. What does… mean? = Que veut dire… ?"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-6e-vocabulary-hello-2-4",
+      "prompt": "… after me: apple.",
+      "spoken": "blank after me: apple.",
+      "choices": [
+        "Repeat",
+        "Open",
+        "Sit"
+      ],
+      "answer": "Repeat",
+      "hint": "Que te demande le professeur ? Relis les phrases de la classe.",
+      "explanation": "« Repeat after me » = répète après moi.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "En classe",
+          "lines": [
+            "open = ouvre, close = ferme",
+            "sit down = assieds-toi, stand up = lève-toi",
+            "listen to = écoute, look at = regarde",
+            "repeat = répète (après moi)",
+            "I don’t understand. = Je ne comprends pas. What does… mean? = Que veut dire… ?"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-6e-vocabulary-hello-2-5",
+      "prompt": "Can you … it, please? — C, A, T.",
+      "spoken": "Can you blank it, please? — C, A, T.",
+      "choices": [
+        "spell",
+        "listen",
+        "sit"
+      ],
+      "answer": "spell",
+      "hint": "On donne les lettres une par une.",
+      "explanation": "« Can you spell it? » = peux-tu l’épeler ?",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "En classe",
+          "lines": [
+            "open = ouvre, close = ferme",
+            "sit down = assieds-toi, stand up = lève-toi",
+            "listen to = écoute, look at = regarde",
+            "repeat = répète (après moi)",
+            "I don’t understand. = Je ne comprends pas. What does… mean? = Que veut dire… ?"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-6e-vocabulary-hello-2-6",
+      "prompt": "Sorry, I don’t … . Can you repeat that?",
+      "spoken": "Sorry, I don’t blank . Can you repeat that?",
+      "choices": [
+        "understand",
+        "open",
+        "spell"
+      ],
+      "answer": "understand",
+      "hint": "L’élève demande de répéter : pourquoi ?",
+      "explanation": "« I don’t understand » = je ne comprends pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "En classe",
+          "lines": [
+            "open = ouvre, close = ferme",
+            "sit down = assieds-toi, stand up = lève-toi",
+            "listen to = écoute, look at = regarde",
+            "repeat = répète (après moi)",
+            "I don’t understand. = Je ne comprends pas. What does… mean? = Que veut dire… ?"
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-6e-vocabulary-hello-2-7",
+      "prompt": "What does “cat” …? — Chat.",
+      "spoken": "What does “cat” blank? — Chat.",
+      "choices": [
+        "mean",
+        "sit",
+        "open"
+      ],
+      "answer": "mean",
+      "hint": "On demande le sens d’un mot.",
+      "explanation": "« What does… mean? » = que veut dire… ?",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "En classe",
+          "lines": [
+            "open = ouvre, close = ferme",
+            "sit down = assieds-toi, stand up = lève-toi",
+            "listen to = écoute, look at = regarde",
+            "repeat = répète (après moi)",
+            "I don’t understand. = Je ne comprends pas. What does… mean? = Que veut dire… ?"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien dit !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "english-6e-vocabulary",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

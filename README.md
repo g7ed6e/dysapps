@@ -21,19 +21,22 @@ Le détail est dans la documentation : [Démarrer](https://g7ed6e.github.io/dysa
 npm install
 npm run dev        # l'application : http://localhost:5173/
 npm test           # tests (Vitest)
+npm run lint       # règles des hooks de React (oxlint) : une erreur, ou plus de dix avertissements, arrête la CI
+npm run code-mort  # fichiers, exports et dépendances que rien n'utilise (knip, configuré dans package.json)
 npm run build      # vérification TypeScript + build de production dans dist/
 npm run www:dev   # la documentation (VitePress) : http://localhost:4173/
 npm run www:build # construit la documentation dans dist-www/
 npm run www:preview # sert dist-www/ tel que publié : http://localhost:4173/
-npm run pilotage:personnages # refait docs/pilotage/game-design/personnages.md
+npm run pilotage:personnages # refait docs/gameplay/personnages.md
 npm run www:captures # rejoue le jeu dans Chromium et fait les captures d’écran (www/_captures/, hors du dépôt, refaites par la CI sur main)
-npm run rendu:mesures # appels de dessin, triangles et images par seconde (rendu logiciel) du monde 3D par archipel, poids de Three.js (--captures <dossier> : captures « avant »)
+npm run rendu:mesures # appels de dessin, triangles et images par seconde (rendu logiciel) du monde 3D par archipel, poids de Three.js (--captures <dossier> : captures 3D ; --comparer <références> : planches avant/après des vues changées)
+npm run rendu:budget # triangles et appels de dessin de chaque poste du budget d’Archipéo, son enveloppe et sa marge, par archipel tout construit, sans navigateur (--archipel 6e,3e ; --json)
 npm run version:show # affiche la version calculée depuis git
 npm run splash     # refait les écrans de lancement d'iPhone et d'iPad (public/splash/)
 npm run programme:extract -- c3 # extrait le texte d'un programme officiel (c3, c4 ou une URL de PDF) dans .programme/
 ```
 
-React 19, TypeScript, Vite, Three.js, Vitest. Arborescence, moteurs d’exercice, format des données et déploiement : voir [Architecture](docs/conception/architecture.md), [Format des exercices](docs/conception/exercices.md) et [Déploiement et sécurité](docs/conception/deploiement.md).
+React 19, TypeScript, Vite, Three.js, Vitest. Arborescence, moteurs d’exercice, format des données et déploiement : voir [Architecture](docs/architecture/index.md), [Format des exercices](docs/conception/exercices.md) et [Déploiement et sécurité](docs/conception/deploiement.md).
 
 ## Contribuer
 
@@ -41,7 +44,7 @@ Le travail se fait par pull request sur `main`. Chaque pull request :
 
 1. ne touche pas à la version : elle se calcule depuis git à la fusion (mineure par défaut, `+semver: major|patch|none` dans le message pour un autre cran) ;
 2. met à jour le manuel (`www/manuel/`) et la conception (`docs/conception/`) quand ce qu’ils décrivent change, et la ligne de son chantier dans `docs/pilotage/chantiers.md` ; les pages du contenu pédagogique sont générées au build depuis les données du jeu. Le site publié ne montre que le manuel et le contenu pédagogique : il s’adresse aux élèves et aux adultes qui les accompagnent ;
-3. passe `npm test`, `npm run build` et `npm run www:build`.
+3. passe `npm run lint`, `npm run code-mort`, `npm test`, `npm run build` et `npm run www:build`.
 
 Les consignes complètes sont dans [Contribuer](docs/conception/contribuer.md), `CLAUDE.md` et `AGENTS.md`.
 
@@ -51,4 +54,4 @@ L’application est construite et publiée par Cloudflare Workers à partir de `
 
 ## Licence et crédits
 
-Code sous licence MIT (voir `LICENSE`). La police **Luciole** (`public/fonts/luciole/`, version 2.001, non modifiée) est © Laurent Bourcellier & Jonathan Fabreguettes (Perez), distribuée sous licence [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/legalcode.fr) ; la licence MIT du dépôt ne couvre pas ces fichiers, et le crédit est affiché dans l’application. Les textes de lecture sont du domaine public (La Fontaine, Daudet, Jules Verne) ; univers, créatures, textures et sons sont originaux et générés par le code. Les intitulés des programmes officiels (`src/programme/`) et la liste des mots-outils viennent de jeux de données du ministère de l’Éducation nationale publiés sur [data.gouv.fr](https://www.data.gouv.fr/datasets/programmes-denseignement-de-lecole-elementaire-et-du-college-cycles-2-3-et-4/), réutilisés sous [Licence Ouverte 2.0](https://www.etalab.gouv.fr/licence-ouverte-open-licence/) avec mention de la source.
+Code sous licence MIT (voir `LICENSE`). La police **Luciole** (`public/fonts/luciole/`, version 2.001, non modifiée) est © Laurent Bourcellier & Jonathan Fabreguettes (Perez), distribuée sous licence [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/legalcode.fr) ; la licence MIT du dépôt ne couvre pas ces fichiers, et le crédit est affiché dans l’application. Les textes de lecture sont du domaine public (La Fontaine, Daudet, Jules Verne) ; univers, créatures, textures et sons sont originaux et générés par le code. Les intitulés des programmes officiels (`src/curriculum/`) et la liste des mots-outils viennent de jeux de données du ministère de l’Éducation nationale publiés sur [data.gouv.fr](https://www.data.gouv.fr/datasets/programmes-denseignement-de-lecole-elementaire-et-du-college-cycles-2-3-et-4/), réutilisés sous [Licence Ouverte 2.0](https://www.etalab.gouv.fr/licence-ouverte-open-licence/) avec mention de la source.

@@ -1,0 +1,9 @@
+{
+  "id": "french-4e-agreement-1",
+  "biome": "french-4e-agreement",
+  "name": "La bergerie de Cléa",
+  "reward": {
+    "xp": 40
+  },
+  "done": "Ma bergerie ! Merci, bâtisseur. Les ardoises sont posées, la bergerie est finie : tout est accordé."
+}

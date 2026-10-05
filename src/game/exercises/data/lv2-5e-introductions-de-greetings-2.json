@@ -1,0 +1,250 @@
+{
+  "id": "lv2-5e-introductions-de-greetings-2",
+  "biome": "lv2-5e-introductions",
+  "type": "de-greetings",
+  "level": 2,
+  "lang": "de",
+  "instruction": "Lis et écoute la phrase en allemand, puis choisis la bonne réaction. La règle est affichée : lis-la avant de répondre.",
+  "programme": [
+    "c4.de.dialoguer.reagir"
+  ],
+  "items": [
+    {
+      "key": "lv2-5e-introductions-de-greetings-2-0",
+      "prompt": "Magst du Fußball?",
+      "spoken": "Magst du Fußball?",
+      "choices": [
+        "Ja, ich mag Fußball.",
+        "Ja, du magst Fußball.",
+        "Ja, ich mögen Fußball."
+      ],
+      "answer": "Ja, ich mag Fußball.",
+      "hint": "On te demande si tu aimes : tu réponds pour toi, avec ich.",
+      "explanation": "« Magst du Fußball? » = Tu aimes le football ? On répond pour soi : ich mag. Du magst veut dire « tu aimes » ; mögen est l’infinitif.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Réagir",
+          "lines": [
+            "Aimer : ich mag, du magst. Ne pas aimer : Ich mag Musik nicht.",
+            "Pas de : kein, keine ; au pluriel, keine (keine Hausaufgaben).",
+            "gern = volontiers ; bitte = s’il te plaît, je t’en prie.",
+            "kein Problem = pas de problème, ce n’est pas grave.",
+            "Moi aussi : ich auch (mot à mot, « je aussi »).",
+            "Alles Gute = tous mes vœux ; Gute Besserung = guéris vite.",
+            "Guten Appetit = bon appétit ; Herzlichen Glückwunsch = félicitations."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-de-greetings-2-1",
+      "prompt": "Magst du Katzen?",
+      "spoken": "Magst du Katzen?",
+      "choices": [
+        "Nein, ich mag keine Katzen.",
+        "Nein, ich mag kein Katzen.",
+        "Nein, ich nicht mag Katzen."
+      ],
+      "answer": "Nein, ich mag keine Katzen.",
+      "hint": "Katzen est au pluriel. Et le verbe reste juste après ich.",
+      "explanation": "Nein, ich mag keine Katzen = Non, je n’aime pas les chats. Devant un nom au pluriel, kein prend -e : keine. Le verbe mag reste à la deuxième place, juste après ich.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Réagir",
+          "lines": [
+            "Aimer : ich mag, du magst. Ne pas aimer : Ich mag Musik nicht.",
+            "Pas de : kein, keine ; au pluriel, keine (keine Hausaufgaben).",
+            "gern = volontiers ; bitte = s’il te plaît, je t’en prie.",
+            "kein Problem = pas de problème, ce n’est pas grave.",
+            "Moi aussi : ich auch (mot à mot, « je aussi »).",
+            "Alles Gute = tous mes vœux ; Gute Besserung = guéris vite.",
+            "Guten Appetit = bon appétit ; Herzlichen Glückwunsch = félicitations."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-de-greetings-2-2",
+      "prompt": "Kommst du mit ins Kino?",
+      "spoken": "Kommst du mit ins Kino?",
+      "choices": [
+        "Ja, gern!",
+        "Gut, danke!",
+        "Ich komme aus Köln."
+      ],
+      "answer": "Ja, gern!",
+      "hint": "On te propose d’aller au cinéma : tu acceptes.",
+      "explanation": "« Kommst du mit ins Kino? » = Tu viens au cinéma ? Ja, gern! = Oui, volontiers ! Gut, danke! répond à Wie geht’s? ; ich komme aus dit d’où l’on vient.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Réagir",
+          "lines": [
+            "Aimer : ich mag, du magst. Ne pas aimer : Ich mag Musik nicht.",
+            "Pas de : kein, keine ; au pluriel, keine (keine Hausaufgaben).",
+            "gern = volontiers ; bitte = s’il te plaît, je t’en prie.",
+            "kein Problem = pas de problème, ce n’est pas grave.",
+            "Moi aussi : ich auch (mot à mot, « je aussi »).",
+            "Alles Gute = tous mes vœux ; Gute Besserung = guéris vite.",
+            "Guten Appetit = bon appétit ; Herzlichen Glückwunsch = félicitations."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-de-greetings-2-3",
+      "prompt": "Danke für das Geschenk!",
+      "spoken": "Danke für das Geschenk!",
+      "choices": [
+        "Bitte schön!",
+        "Wie bitte?",
+        "Danke schön!"
+      ],
+      "answer": "Bitte schön!",
+      "hint": "On te dit merci pour le cadeau.",
+      "explanation": "Danke = merci. On répond Bitte schön! (je t’en prie). Wie bitte? veut dire « pardon ? », quand on n’a pas compris ; Danke schön, c’est dire merci à son tour.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Réagir",
+          "lines": [
+            "Aimer : ich mag, du magst. Ne pas aimer : Ich mag Musik nicht.",
+            "Pas de : kein, keine ; au pluriel, keine (keine Hausaufgaben).",
+            "gern = volontiers ; bitte = s’il te plaît, je t’en prie.",
+            "kein Problem = pas de problème, ce n’est pas grave.",
+            "Moi aussi : ich auch (mot à mot, « je aussi »).",
+            "Alles Gute = tous mes vœux ; Gute Besserung = guéris vite.",
+            "Guten Appetit = bon appétit ; Herzlichen Glückwunsch = félicitations."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-de-greetings-2-4",
+      "prompt": "Ich habe heute Geburtstag!",
+      "spoken": "Ich habe heute Geburtstag!",
+      "choices": [
+        "Alles Gute zum Geburtstag!",
+        "Gute Besserung!",
+        "Guten Appetit!"
+      ],
+      "answer": "Alles Gute zum Geburtstag!",
+      "hint": "heute = aujourd’hui ; der Geburtstag = l’anniversaire.",
+      "explanation": "C’est son anniversaire : Alles Gute zum Geburtstag! (joyeux anniversaire). Gute Besserung! se dit à un malade ; Guten Appetit!, avant de manger.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Réagir",
+          "lines": [
+            "Aimer : ich mag, du magst. Ne pas aimer : Ich mag Musik nicht.",
+            "Pas de : kein, keine ; au pluriel, keine (keine Hausaufgaben).",
+            "gern = volontiers ; bitte = s’il te plaît, je t’en prie.",
+            "kein Problem = pas de problème, ce n’est pas grave.",
+            "Moi aussi : ich auch (mot à mot, « je aussi »).",
+            "Alles Gute = tous mes vœux ; Gute Besserung = guéris vite.",
+            "Guten Appetit = bon appétit ; Herzlichen Glückwunsch = félicitations."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-de-greetings-2-5",
+      "prompt": "Ich bin krank.",
+      "spoken": "Ich bin krank.",
+      "choices": [
+        "Gute Besserung!",
+        "Guten Appetit!",
+        "Herzlichen Glückwunsch!"
+      ],
+      "answer": "Gute Besserung!",
+      "hint": "krank = malade.",
+      "explanation": "« Ich bin krank » = Je suis malade. On répond Gute Besserung! (guéris vite). Herzlichen Glückwunsch! veut dire félicitations.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Réagir",
+          "lines": [
+            "Aimer : ich mag, du magst. Ne pas aimer : Ich mag Musik nicht.",
+            "Pas de : kein, keine ; au pluriel, keine (keine Hausaufgaben).",
+            "gern = volontiers ; bitte = s’il te plaît, je t’en prie.",
+            "kein Problem = pas de problème, ce n’est pas grave.",
+            "Moi aussi : ich auch (mot à mot, « je aussi »).",
+            "Alles Gute = tous mes vœux ; Gute Besserung = guéris vite.",
+            "Guten Appetit = bon appétit ; Herzlichen Glückwunsch = félicitations."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-de-greetings-2-6",
+      "prompt": "Oh, Entschuldigung!",
+      "spoken": "Oh, Entschuldigung!",
+      "choices": [
+        "Kein Problem!",
+        "Danke schön!",
+        "Guten Appetit!"
+      ],
+      "answer": "Kein Problem!",
+      "hint": "Quelqu’un s’excuse : tu le rassures.",
+      "explanation": "Entschuldigung = pardon. On rassure : Kein Problem! (pas de problème). Danke schön veut dire merci beaucoup.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Réagir",
+          "lines": [
+            "Aimer : ich mag, du magst. Ne pas aimer : Ich mag Musik nicht.",
+            "Pas de : kein, keine ; au pluriel, keine (keine Hausaufgaben).",
+            "gern = volontiers ; bitte = s’il te plaît, je t’en prie.",
+            "kein Problem = pas de problème, ce n’est pas grave.",
+            "Moi aussi : ich auch (mot à mot, « je aussi »).",
+            "Alles Gute = tous mes vœux ; Gute Besserung = guéris vite.",
+            "Guten Appetit = bon appétit ; Herzlichen Glückwunsch = félicitations."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-de-greetings-2-7",
+      "prompt": "Ich mag Pizza. Und du?",
+      "spoken": "Ich mag Pizza. Und du?",
+      "choices": [
+        "Ich auch!",
+        "Mich auch!",
+        "Du auch!"
+      ],
+      "answer": "Ich auch!",
+      "hint": "Und du? = Et toi ? Tu dis que toi aussi, tu aimes.",
+      "explanation": "Ich auch! = Moi aussi (mot à mot, « je aussi »). Mich auch traduit « moi » mot à mot : c’est faux ici. Du auch veut dire toi aussi.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Réagir",
+          "lines": [
+            "Aimer : ich mag, du magst. Ne pas aimer : Ich mag Musik nicht.",
+            "Pas de : kein, keine ; au pluriel, keine (keine Hausaufgaben).",
+            "gern = volontiers ; bitte = s’il te plaît, je t’en prie.",
+            "kein Problem = pas de problème, ce n’est pas grave.",
+            "Moi aussi : ich auch (mot à mot, « je aussi »).",
+            "Alles Gute = tous mes vœux ; Gute Besserung = guéris vite.",
+            "Guten Appetit = bon appétit ; Herzlichen Glückwunsch = félicitations."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien répondu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lv2-5e-introductions",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

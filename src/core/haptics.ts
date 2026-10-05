@@ -4,7 +4,7 @@ import { useCallback } from 'react';
 import { useSettings } from './SettingsContext';
 
 /** Vibre `ms` millisecondes si l'appareil le permet (sinon, rien). */
-export function vibrate(ms: number): void {
+function vibrate(ms: number): void {
   try {
     if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') navigator.vibrate(ms);
   } catch {

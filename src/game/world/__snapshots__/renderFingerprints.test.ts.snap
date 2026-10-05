@@ -1,0 +1,45 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Empreintes du rendu Archipéo, par archipel (filet du socle) > 3e 1`] = `
+{
+  "ambiance": "cbe180cb",
+  "décor (lueurs)": "e8011d37",
+  "décor (primitives)": "319f01fb",
+  "décor (style a)": "02695748",
+  "modelé dessiné": "9419a15a",
+  "relief": "796ff8c3",
+}
+`;
+
+exports[`Empreintes du rendu Archipéo, par archipel (filet du socle) > 4e 1`] = `
+{
+  "ambiance": "de0f1ef0",
+  "décor (lueurs)": "9bde5e8f",
+  "décor (primitives)": "bd95e175",
+  "décor (style a)": "83661d85",
+  "modelé dessiné": "09a13b11",
+  "relief": "dbf8cbb1",
+}
+`;
+
+exports[`Empreintes du rendu Archipéo, par archipel (filet du socle) > 5e 1`] = `
+{
+  "ambiance": "a65ee8f8",
+  "décor (lueurs)": "13fe3a3b",
+  "décor (primitives)": "bcb4f925",
+  "décor (style a)": "709912b3",
+  "modelé dessiné": "44b89c17",
+  "relief": "10eea79c",
+}
+`;
+
+exports[`Empreintes du rendu Archipéo, par archipel (filet du socle) > 6e 1`] = `
+{
+  "ambiance": "c5e32c31",
+  "décor (lueurs)": "6ae32213",
+  "décor (primitives)": "45ba531f",
+  "décor (style a)": "5b599049",
+  "modelé dessiné": "0732ed59",
+  "relief": "46437afd",
+}
+`;

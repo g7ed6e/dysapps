@@ -1,0 +1,315 @@
+// Le cadrage de la vue : l'étendue de l'archipel, la zone et l'angle de la vue d'une île, l'île sous la vue, la caméra
+// d'une île et sa projection, le cadre d'une traversée.
+import { type ArchipelagoId, archipelagoOfIsland, coeurDe, islandDef, type IslandDef, landBox, mapOf } from '../map';
+import { dockBox } from '../harbor';
+import { BRIDGES, bridgesOf, bridgeState, getArchipelago, islandsOf, otherEnd, reachableIslands } from '../archipelago';
+import { type BiomeId, BIOMES } from '../../biomes';
+import { ISLET_GAP, ISLET_H } from './islets';
+import { BAC_LONG, bridgePath } from './links';
+import { islandCenter } from './base';
+
+/** Étendue d'un archipel (coordonnées de grille), terres, îlots et port compris. */
+export function worldBounds(a: ArchipelagoId): {
+  minX: number;
+  maxX: number;
+  minY: number;
+  maxY: number;
+} {
+  return bornesDesIles(a, mapOf(a));
+}
+
+/** Les bornes de quelques îles d'un archipel, et de son port (voir `worldBounds`). */
+function bornesDesIles(a: ArchipelagoId, iles: IslandDef[]): { minX: number; maxX: number; minY: number; maxY: number } {
+  let minX = Infinity;
+  let maxX = -Infinity;
+  let minY = Infinity;
+  let maxY = -Infinity;
+  for (const def of iles) {
+    const b = landBox(def);
+    // Deux cases de marge : la couronne d'un grand arbre, l'écume d'une cascade débordent de la terre.
+    minX = Math.min(minX, b.x0 - 2);
+    maxX = Math.max(maxX, b.x1 + 2);
+    minY = Math.min(minY, b.y0 - ISLET_H - ISLET_GAP);
+    maxY = Math.max(maxY, b.y1 + 2);
+  }
+  const dock = dockBox(getArchipelago(a).port);
+  minX = Math.min(minX, dock.x0 - 2);
+  maxX = Math.max(maxX, dock.x1 + 2);
+  minY = Math.min(minY, dock.y0 - 2);
+  return { minX, maxX, minY, maxY };
+}
+
+/**
+ * L'étendue à cadrer dans la vue d'ensemble : les îles ouvertes et celles qu'un ouvrage proposé peut atteindre,
+ * avec une marge. Au début, deux îles et leurs voisines ; le cadre s'élargit à mesure que le monde s'ouvre.
+ */
+export function overviewBounds(a: ArchipelagoId, bridges: string[]): { minX: number; maxX: number; minY: number; maxY: number } {
+  const open = reachableIslands(bridges);
+  const shown = new Set<BiomeId>([...open].filter((id) => archipelagoOfIsland(id) === a));
+  // Les liaisons du port (GD-7) comptent dès le départ, avec leur tracé : le cadre ne bouge pas quand on les ouvre.
+  const etoiles = BRIDGES.filter((b) => b.etoile && archipelagoOfIsland(b.from) === a);
+  for (const b of BRIDGES) {
+    if (archipelagoOfIsland(b.from) !== a || (!b.etoile && bridgeState(b, bridges) === 'far')) continue;
+    shown.add(b.from);
+    shown.add(b.to);
+  }
+  let minX = Infinity;
+  let maxX = -Infinity;
+  let minY = Infinity;
+  let maxY = -Infinity;
+  for (const b of etoiles)
+    for (const c of bridgePath(b)) {
+      minX = Math.min(minX, c.x);
+      maxX = Math.max(maxX, c.x);
+      minY = Math.min(minY, c.y);
+      maxY = Math.max(maxY, c.y);
+    }
+  for (const id of shown) {
+    const b = landBox(islandDef(id));
+    minX = Math.min(minX, b.x0);
+    maxX = Math.max(maxX, b.x1);
+    minY = Math.min(minY, b.y0 - ISLET_H - ISLET_GAP);
+    maxY = Math.max(maxY, b.y1);
+  }
+  return { minX: minX - 4, maxX: maxX + 4, minY: minY - 4, maxY: maxY + 4 };
+}
+
+/** Pivot maximal de la caméra vers le cœur du continent (radians) : le nord reste reconnaissable. */
+export const VIEW_YAW_MAX = (40 * Math.PI) / 180;
+
+/**
+ * La zone que la caméra cadre quand le bonhomme se tient sur une île : cette île et ses voisines (reliées par un
+ * ouvrage, construit ou non). Sur une île du bord, les voisines tirent l'image vers le continent : moins de mer.
+ *
+ * L'île de la LV2 (le Relais au 5e, le Jardin des heures au 4e) n'élargit jamais le cadrage de sa voisine (DA, 28/09,
+ * LV2-4) : avec « Pas de LV2 », la vue reste celle d'avant l'île ; avec une LV2, elle ne l'accueillerait que si son
+ * Gardien et son étiquette tenaient entiers au-dessus des boutons en 1024 × 768, 1280 × 800 et 800 × 1280 sans que
+ * l'île du bonhomme rapetisse, ce qui n'est pas le cas (au bout de la crête, l'étiquette sort de l'écran à gauche, de
+ * 65 à 340 px ; au 5e, celle du Relais aussi) : cadrage d'avant, sans entre-deux. Depuis l'île de la LV2, la voisine compte.
+ *
+ * Les liaisons du port (GD-7, `etoile`) n'y comptent pas : l'île au bout d'un long bac n'est pas une voisine, la vue
+ * reste celle d'avant.
+ */
+export function viewZone(home: BiomeId): { minX: number; maxX: number; minY: number; maxY: number } {
+  const ids = new Set<BiomeId>([home]);
+  for (const b of bridgesOf(home)) {
+    if (b.etoile) continue;
+    const other = otherEnd(b, home);
+    if (BIOMES.find((x) => x.id === other)?.subject === 'lv2') continue;
+    ids.add(other);
+  }
+  let minX = Infinity;
+  let maxX = -Infinity;
+  let minY = Infinity;
+  let maxY = -Infinity;
+  for (const id of ids) {
+    const b = landBox(islandDef(id));
+    minX = Math.min(minX, b.x0);
+    maxX = Math.max(maxX, b.x1);
+    minY = Math.min(minY, b.y0);
+    maxY = Math.max(maxY, b.y1);
+  }
+  return { minX, maxX, minY, maxY };
+}
+
+/**
+ * Le pivot de la caméra depuis une île : vers la colonne centrale du continent, borné à VIEW_YAW_MAX de part et
+ * d'autre du nord (plein pivot à 50 cases du centre). Positif : la caméra se place à l'ouest et regarde vers l'est.
+ */
+export function viewYaw(home: BiomeId): number {
+  const c = islandCenter(home);
+  // Seul l'écart est-ouest compte : la caméra regarde toujours vers le nord, on la tourne vers la colonne centrale.
+  const dx = colonneCentrale(archipelagoOfIsland(home)) - c.x;
+  return VIEW_YAW_MAX * Math.max(-1, Math.min(1, dx / 50));
+}
+
+/**
+ * Les îles de LV2 qui ne comptent pas dans la colonne centrale : le Refuge des carnets (3e), posé au bord de l'archipel,
+ * ne fait pas pivoter les caméras des autres îles, qui gardent leur cadrage (DA, LV2-5). Le Relais des voyageurs (5e) et
+ * le Jardin des heures (4e) y comptent : leurs lots ont validé avec eux le cadrage de leur archipel, qu'on ne rouvre pas.
+ */
+export const HORS_DE_LA_COLONNE: readonly BiomeId[] = ['lv2-3e-travel'];
+
+const colonnes = new Map<ArchipelagoId, number>();
+
+/**
+ * La colonne centrale d'un archipel, vers laquelle pivotent les caméras des îles : le milieu est-ouest de ses îles (sauf
+ * `HORS_DE_LA_COLONNE`) et de son port.
+ */
+function colonneCentrale(a: ArchipelagoId): number {
+  const connue = colonnes.get(a);
+  if (connue !== undefined) return connue;
+  const b = bornesDesIles(
+    a,
+    mapOf(a).filter((d) => !HORS_DE_LA_COLONNE.includes(d.id)),
+  );
+  const x = (b.minX + b.maxX) / 2;
+  colonnes.set(a, x);
+  return x;
+}
+
+/** Île la plus proche d'un point de la grille d'un archipel (pour le toucher : une île ou le pont qui y mène). */
+export function islandAt(a: ArchipelagoId, x: number, y: number): BiomeId {
+  const islands = islandsOf(a);
+  let best: BiomeId = islands[0].id;
+  let bestD = Infinity;
+  for (const b of islands) {
+    const c = islandCenter(b.id);
+    const d = Math.hypot(c.x - x, c.y - y);
+    if (d < bestD) {
+      bestD = d;
+      best = b.id;
+    }
+  }
+  return best;
+}
+
+/**
+ * L'île que montre la vue glissée de (`d.x`, `d.z`) cases depuis l'île `ici` : la plus proche de son cœur déplacé
+ * d'autant. Un petit glissé reste sur `ici` (les bulles la suivent, three/signs.ts).
+ */
+export function ileDeLaVueGlissee(a: ArchipelagoId, ici: BiomeId, d: { x: number; z: number }): BiomeId {
+  const c = islandCenter(ici);
+  return islandAt(a, c.x + d.x, c.y + d.z);
+}
+
+/** La direction de la vue d'une île (x, y de la grille, et hauteur) : de trois quarts avant-droite, plus haute que la vue du bonhomme. */
+export const VUE_DE_L_ILE = { dx: 0.7, dy: -0.7, up: 0.9 };
+
+/** La distance de la caméra de la vue d'une île au point visé (en paysage ; la vue en portrait recule, three/camera.ts). */
+export const DISTANCE_DE_LA_VUE_DE_L_ILE = 30;
+
+/** La caméra vise un bloc au-dessus du point qu'elle regarde (le centre d'une île à son altitude, le bonhomme). */
+export const VISEE_AU_DESSUS_DU_SOL = 1;
+
+/** La direction de la vue d'une île, pivot compris (`viewYaw`), non normée : x, y de la grille, z en hauteur. */
+function directionDeLaVue(id: BiomeId): [number, number, number] {
+  const yaw = -viewYaw(id);
+  const { dx, dy, up } = VUE_DE_L_ILE;
+  return [dx * Math.cos(yaw) - dy * Math.sin(yaw), dx * Math.sin(yaw) + dy * Math.cos(yaw), up];
+}
+
+/** Vers la caméra de la vue d'une île, pivot compris (`viewYaw`), en cases : x, y de la grille, z en hauteur. */
+export function versLaCamera(id: BiomeId): [number, number, number] {
+  const v = directionDeLaVue(id);
+  const l = Math.hypot(...v);
+  return [v[0] / l, v[1] / l, v[2] / l];
+}
+
+/**
+ * La place de la caméra de la vue d'une île (x, y de la grille, z en hauteur), en paysage et sans le glissement vers un
+ * grand repère d'Archipéo (world/framing.ts) : ce que calcule three/camera.ts dans le cas simple.
+ */
+export function cameraDeLIle(id: BiomeId): { x: number; y: number; z: number } {
+  const c = islandCenter(id);
+  const [dx, dy, up] = directionDeLaVue(id);
+  const d = DISTANCE_DE_LA_VUE_DE_L_ILE;
+  return { x: c.x + d * dx, y: c.y + d * dy, z: c.z + VISEE_AU_DESSUS_DU_SOL + d * up };
+}
+
+/**
+ * La vue d'une île panneau ouvert, telle que la lit la règle de cadrage des petites constructions (GD-7, PR 3, directeur
+ * artistique) : une tablette à l'horizontale (1024 × 768), le panneau de l'île à droite (26rem au texte de 20 px et son
+ * liseré de 8 px : global.css, `.island-sheet`), la scène dans les 496 px de gauche, donc en portrait (three/camera.ts
+ * recule alors de 1/√aspect), champ vertical de 40° (WorldCanvas.tsx). En bas, les deux rangées de boutons du monde ; en
+ * haut à droite, Pause et l'archipel. En pixels CSS.
+ */
+export const VUE_DE_L_ILE_PANNEAU_OUVERT = { largeur: 496, hauteur: 768, champ: 40, bas: 130, boutons: { largeur: 100, hauteur: 130 } } as const;
+
+/** Un point de la grille (x, y, z en hauteur, coordonnées du monde) à l'écran de la vue de l'île panneau ouvert, en pixels CSS. */
+export type ProjectionDeLaVue = (x: number, y: number, z: number) => [number, number];
+
+/**
+ * La projection de la vue d'une île panneau ouvert (`VUE_DE_L_ILE_PANNEAU_OUVERT`), le calcul de three/camera.ts
+ * (`framing`) et de `THREE.PerspectiveCamera.lookAt` refait sans Three.js : la scène y est en (x, hauteur, y).
+ * `cube` : la taille d'une case à l'écran, au point visé, en pixels ; `oeil` : la place de la caméra (x, y de la grille,
+ * z en hauteur).
+ */
+export function projectionDeLaVueDeLIle(id: BiomeId): { projeter: ProjectionDeLaVue; cube: number; oeil: { x: number; y: number; z: number } } {
+  const V = VUE_DE_L_ILE_PANNEAU_OUVERT;
+  const aspect = V.largeur / V.hauteur;
+  const c = islandCenter(id);
+  const [dx, dy, up] = directionDeLaVue(id);
+  const d = DISTANCE_DE_LA_VUE_DE_L_ILE * (aspect < 1 ? 1 / Math.sqrt(Math.max(0.4, aspect)) : 1);
+  const cible = [c.x, c.z + VISEE_AU_DESSUS_DU_SOL, c.y];
+  const oeil = [c.x + d * dx, c.z + VISEE_AU_DESSUS_DU_SOL + d * up, c.y + d * dy];
+  const norme = (v: number[]) => {
+    const l = Math.hypot(v[0], v[1], v[2]) || 1;
+    return [v[0] / l, v[1] / l, v[2] / l];
+  };
+  const az = norme([oeil[0] - cible[0], oeil[1] - cible[1], oeil[2] - cible[2]]);
+  // L'axe des x de la caméra : le haut (0, 1, 0) vectoriel l'arrière, puis celui des y : l'arrière vectoriel les x.
+  const ax = norme([az[2], 0, -az[0]]);
+  const ay = [az[1] * ax[2] - az[2] * ax[1], az[2] * ax[0] - az[0] * ax[2], az[0] * ax[1] - az[1] * ax[0]];
+  const t = Math.tan((V.champ * Math.PI) / 360);
+  const projeter: ProjectionDeLaVue = (x, y, z) => {
+    const v = [x - oeil[0], z - oeil[1], y - oeil[2]];
+    const profondeur = -(v[0] * az[0] + v[1] * az[1] + v[2] * az[2]);
+    const px = (v[0] * ax[0] + v[1] * ax[1] + v[2] * ax[2]) / (profondeur * t * aspect);
+    const py = (v[0] * ay[0] + v[1] * ay[1] + v[2] * ay[2]) / (profondeur * t);
+    return [((px + 1) / 2) * V.largeur, ((1 - py) / 2) * V.hauteur];
+  };
+  return { projeter, cube: V.hauteur / (2 * d * t), oeil: { x: oeil[0], y: oeil[2], z: oeil[1] } };
+}
+
+/** Les cases des longues traversées (plus de `BAC_LONG` cases) d'un archipel, et l'ouvrage de chacune. */
+const traverseesCache = new Map<ArchipelagoId, Map<string, string>>();
+
+function casesDesTraversees(a: ArchipelagoId): Map<string, string> {
+  let m = traverseesCache.get(a);
+  if (!m) {
+    m = new Map();
+    for (const b of BRIDGES) {
+      if (archipelagoOfIsland(b.from) !== a) continue;
+      const path = bridgePath(b);
+      if (path.length > BAC_LONG) for (const c of path) m.set(`${c.x},${c.y}`, b.id);
+    }
+    traverseesCache.set(a, m);
+  }
+  return m;
+}
+
+/** Un rectangle de la grille, en cases (bornes comprises). */
+export interface CadreDeCases {
+  minX: number;
+  maxX: number;
+  minY: number;
+  maxY: number;
+}
+
+/**
+ * Le cadre de la caméra pendant un trajet qui prend une longue traversée (GD-7, plus de `BAC_LONG` cases sur un même
+ * ouvrage) : tout le trajet, du départ à l'arrivée, et le cœur des deux îles du bout ; la caméra s'y pose et ne bouge
+ * plus, le bonhomme traverse. `null` pour un trajet ordinaire : la caméra le suit.
+ */
+export function cadreDeTraversee(a: ArchipelagoId, route: readonly { x: number; y: number }[]): CadreDeCases | null {
+  const cases = casesDesTraversees(a);
+  const parOuvrage = new Map<string, number>();
+  let longue = false;
+  for (const c of route) {
+    const id = cases.get(`${Math.round(c.x)},${Math.round(c.y)}`);
+    if (!id) continue;
+    const n = (parOuvrage.get(id) ?? 0) + 1;
+    parOuvrage.set(id, n);
+    if (n > BAC_LONG) longue = true;
+  }
+  if (!longue) return null;
+  let minX = Infinity;
+  let maxX = -Infinity;
+  let minY = Infinity;
+  let maxY = -Infinity;
+  const ajouter = (x: number, y: number) => {
+    minX = Math.min(minX, x);
+    maxX = Math.max(maxX, x);
+    minY = Math.min(minY, y);
+    maxY = Math.max(maxY, y);
+  };
+  for (const c of route) ajouter(c.x, c.y);
+  // Les cœurs des deux îles du bout, entiers : l'île d'arrivée se reconnaît, pas seulement la case où il s'arrête.
+  for (const c of [route[0], route[route.length - 1]]) {
+    const k = coeurDe(islandDef(islandAt(a, c.x, c.y)));
+    ajouter(k.x0, k.y0);
+    ajouter(k.x1 - 1, k.y1 - 1);
+  }
+  return { minX, maxX, minY, maxY };
+}

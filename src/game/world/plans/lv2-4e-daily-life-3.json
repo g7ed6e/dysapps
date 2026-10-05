@@ -1,0 +1,9 @@
+{
+  "id": "lv2-4e-daily-life-3",
+  "biome": "lv2-4e-daily-life",
+  "name": "La serre du jardin",
+  "reward": {
+    "xp": 60
+  },
+  "done": "Une serre, une barrière, une marche… Mon jardin est complet. À table, bâtisseur !"
+}

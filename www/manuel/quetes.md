@@ -1,6 +1,6 @@
 # Les missions du portail
 
-La page **Missions** (barre du haut, menu) mène aux pages **Français**, **Maths** et **Anglais**, qui listent les missions du portail, puis, sous « Dans Blocland » (ou « Dans l’aventure »), les îles de la même matière, de la 6e à la 3e. Les mêmes missions se trouvent derrière les trois portes de l’[école du village](blocland.md#lecole-du-village), dans l’aventure. Une mission du portail est une séance courte et autonome : on choisit un niveau ou un sous-thème, on répond à une dizaine de questions, on lit son bilan.
+La page **Missions** (par le menu) mène aux pages **Français**, **Maths** et **Anglais**, qui listent les missions du portail, puis, sous « Dans Blocland » (ou « Dans l’aventure »), les îles de la même matière, de la 6e à la 3e. Les mêmes missions se trouvent derrière les trois portes de l’[école du village](blocland.md#lecole-du-village), dans l’aventure. Une mission du portail est une séance courte et autonome : on choisit un niveau ou un sous-thème, on répond à une dizaine de questions, on lit son bilan.
 
 ![La page Missions : trois cartes, Français, Maths et Anglais, avec le nombre de missions disponibles.](/captures/quetes.jpg)
 
@@ -19,7 +19,7 @@ Chaque écran tient sans défiler :
 
 ## Le mode concentration
 
-Pendant une partie (mission du portail, mission ou défi du Gardien dans l’aventure), la barre du haut et le lien retour disparaissent : il ne reste que la question et un bouton **Pause** (⏸), en haut à droite. Le **menu pause** propose :
+Pendant une partie (mission du portail, mission ou défi du Gardien dans l’aventure), le bouton Menu et le lien retour disparaissent : il ne reste que la question et un bouton **Pause** (⏸), en haut à droite. Le **menu pause** propose :
 
 ![Le mode concentration : seulement la consigne, le mot « village », les réponses et le bouton Pause.](/captures/quete-ile.jpg)
 
@@ -27,9 +27,9 @@ Pendant une partie (mission du portail, mission ou défi du Gardien dans l’ave
 
 - **Reprendre** (ou la touche Échap) ;
 - des **réglages rapides** : taille du texte (A− et A+), syllabes en couleurs, lecture des consignes à voix haute ;
-- **Quitter la partie** : retour au choix des missions (ou, dans l’aventure, au panneau de l’île). Le menu dit ce qui est gardé : l’XP des réponses déjà données ; dans l’aventure, les blocs se gagnent en finissant la partie.
+- **Quitter la partie** : retour au choix des missions (ou, dans l’aventure, à l’île, dans le monde). Le menu dit ce qui est gardé : l’XP des réponses déjà données ; dans l’aventure, les blocs se gagnent en finissant la mission.
 
-Le **bouton retour** du téléphone ou du navigateur ouvre le menu pause au lieu de quitter sans prévenir. Une fois le bilan affiché, la barre du haut revient, et le bouton retour ramène à la page d’avant.
+Le **bouton retour** du téléphone ou du navigateur ouvre le menu pause au lieu de quitter sans prévenir. Une fois le bilan affiché, le bouton Menu revient, et le bouton retour ramène à la page d’avant.
 
 ## Le bilan
 

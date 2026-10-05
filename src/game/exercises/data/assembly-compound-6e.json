@@ -1,0 +1,315 @@
+{
+  "id": "assembly-compound-6e",
+  "bloc": "compound-6e",
+  "type": "assembly",
+  "level": 1,
+  "instruction": "Lis, calcule, puis choisis la bonne réponse. Le rappel est affiché.",
+  "programme": [
+    "c3.fr.langue.genre-nombre",
+    "c3.fr.langue.accord-sujet-verbe",
+    "c3.fr.langue.homophonie",
+    "c3.fr.langue.phonemes-graphemes",
+    "c3.fr.langue.mots-invariables",
+    "c3.fr.lecture.reprises",
+    "c3.fr.lecture.explicite",
+    "c3.fr.lecture.lexique-contexte",
+    "c3.ma.nombres.problemes",
+    "c3.ma.nombres.calcul-mental",
+    "c3.ma.grandeurs.perimetre",
+    "c3.ma.grandeurs.durees"
+  ],
+  "items": [
+    {
+      "key": "compound-6e-0",
+      "prompt": "Léa a 5 billes.\nElle en donne 4 à Tom.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Léa a 5 billes. Elle en donne 4 à Tom.",
+      "choices": [
+        "Il lui reste 1 bille.",
+        "Il lui reste 1 billes.",
+        "Il lui reste 9 billes."
+      ],
+      "answer": "Il lui reste 1 bille.",
+      "hint": "Combien en reste-t-il ? Puis : une seule, ou plusieurs ?",
+      "explanation": "5 − 4 = 1. Avec 1, le nom reste au singulier : 1 bille, sans s. 9, c’est 5 + 4 : donner, c’est enlever.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Un ou plusieurs ?",
+          "lines": [
+            "Donner, c’est enlever.",
+            "1 : pas de s (1 pomme). À partir de 2 : un s (2 pommes)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "compound-6e-1",
+      "prompt": "Un paquet contient 50 feuilles.\nNina achète 2 paquets.",
+      "question": "Combien de feuilles a-t-elle ?",
+      "spoken": "Un paquet contient 50 feuilles. Nina achète 2 paquets.",
+      "choices": [
+        "cent feuilles",
+        "sans feuilles",
+        "cinquante-deux feuilles"
+      ],
+      "answer": "cent feuilles",
+      "hint": "2 paquets de 50 : c’est 2 fois 50. Puis, quel mot écrit un nombre ?",
+      "explanation": "2 × 50 = 100, qui s’écrit cent. « sans » se dit pareil, mais veut dire « pas de ». 52, c’est 50 + 2 : on a ajouté le nombre de paquets.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Un son, plusieurs mots",
+          "lines": [
+            "3 paquets de 10 = 10 + 10 + 10.",
+            "cent = un nombre (deux cents, cent dix). sans = le contraire de avec."
+          ]
+        }
+      }
+    },
+    {
+      "key": "compound-6e-2",
+      "prompt": "Tom a 8 billes. Léa en a 5.\nElle lui en donne 2.",
+      "question": "Combien Tom a-t-il de billes maintenant ?",
+      "spoken": "Tom a 8 billes. Léa en a 5. Elle lui en donne 2.",
+      "choices": [
+        "6",
+        "10",
+        "13"
+      ],
+      "answer": "10",
+      "hint": "« Elle », c’est qui ? « lui », c’est qui ? Qui reçoit les billes ?",
+      "explanation": "Elle, c’est Léa ; lui, c’est Tom. Léa donne 2 billes à Tom : 8 + 2 = 10. 6, c’est si Tom donnait. 13, c’est 8 + 5 : Léa ne donne que 2 billes, pas toutes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Qui donne, qui reçoit ?",
+          "lines": [
+            "elle = une fille ou une femme ; lui = à lui, celui qui reçoit.",
+            "Recevoir, c’est ajouter. Donner, c’est enlever."
+          ]
+        }
+      }
+    },
+    {
+      "key": "compound-6e-3",
+      "prompt": "Tom partage 8 crêpes\nentre 4 amis, à parts égales.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Tom partage 8 crêpes entre 4 amis, à parts égales.",
+      "choices": [
+        "Chacun a 2 crêpe.",
+        "Chacun a 2 crêpes.",
+        "Chacun a 4 crêpes."
+      ],
+      "answer": "Chacun a 2 crêpes.",
+      "hint": "Partager en 4 parts égales : combien dans chaque part ? Puis : une seule, ou plusieurs ?",
+      "explanation": "8 ÷ 4 = 2 : chacun a 2 crêpes. À partir de 2, le nom prend un s. 4, c’est 8 − 4 : partager, ce n’est pas enlever, c’est diviser.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Partager, et le pluriel",
+          "lines": [
+            "Partager à parts égales, c’est diviser.",
+            "1 : pas de s (1 pomme). À partir de 2 : un s (3 pommes)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "compound-6e-4",
+      "prompt": "Une boîte a 4 rangées\nde 5 cases.",
+      "question": "Combien de cases y a-t-il ?",
+      "spoken": "Une boîte a 4 rangées de 5 cases.",
+      "choices": [
+        "vingt cases",
+        "vin cases",
+        "neuf cases"
+      ],
+      "answer": "vingt cases",
+      "hint": "4 rangées de 5 : c’est 4 fois 5. Puis, quel mot écrit un nombre ?",
+      "explanation": "4 × 5 = 20, qui s’écrit vingt, avec un g et un t. « vin » se dit pareil, mais c’est une boisson. 9, c’est 4 + 5 : des rangées, c’est une multiplication.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Un son, plusieurs mots",
+          "lines": [
+            "3 rangées de 5 = 5 + 5 + 5.",
+            "vingt = un nombre (vingt-deux, quatre-vingts). vin = la boisson faite avec du raisin."
+          ]
+        }
+      }
+    },
+    {
+      "key": "compound-6e-5",
+      "prompt": "Mia a 4 billes.\nElle en gagne 3.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Mia a 4 billes. Elle en gagne 3.",
+      "choices": [
+        "4 et 3 font 7.",
+        "4 est 3 font 7.",
+        "4 et 3 font 12."
+      ],
+      "answer": "4 et 3 font 7.",
+      "hint": "Gagner, c’est ajouter. Puis : peux-tu dire « et puis » ?",
+      "explanation": "4 + 3 = 7. On peut dire « 4 et puis 3 » : on écrit et. « est » veut dire « était ». 12, c’est 4 × 3 : gagner, c’est ajouter, pas multiplier.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Et, est",
+          "lines": [
+            "Gagner, c’est ajouter.",
+            "et = et puis. est = était (il est grand, il était grand)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "compound-6e-6",
+      "prompt": "Un carré a un périmètre de 20 cm.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Un carré a un périmètre de 20 centimètres.",
+      "choices": [
+        "Chaque côté mesure 5 cm.",
+        "Chaque côté mesurent 5 cm.",
+        "Chaque côté mesure 80 cm."
+      ],
+      "answer": "Chaque côté mesure 5 cm.",
+      "hint": "Un carré a 4 côtés égaux. Puis : chaque, c’est un ou plusieurs ?",
+      "explanation": "20 ÷ 4 = 5 : chaque côté mesure 5 cm. Après « chaque », le verbe est au singulier : mesure. 80, c’est 20 × 4 : le périmètre est déjà le tour entier.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le carré, et chaque",
+          "lines": [
+            "Périmètre du carré = 4 × côté.",
+            "chaque = un seul à la fois : le verbe est au singulier."
+          ]
+        }
+      }
+    },
+    {
+      "key": "compound-6e-7",
+      "prompt": "Paul a 16 billes.\nLéa en a le double.",
+      "question": "Combien Léa a-t-elle de billes ?",
+      "spoken": "Paul a 16 billes. Léa en a le double.",
+      "choices": [
+        "8",
+        "22",
+        "32"
+      ],
+      "answer": "32",
+      "hint": "Le double, c’est 2 fois plus. Pense à la retenue.",
+      "explanation": "Le double de 16, c’est 16 + 16 = 32. 8, c’est la moitié : 2 fois moins. 22, c’est la retenue oubliée : 6 + 6 = 12, on pose 2 et on retient 1.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Double et moitié",
+          "lines": [
+            "le double = 2 fois plus. la moitié = 2 fois moins.",
+            "Le double de 10 = 10 + 10 = 20."
+          ]
+        }
+      }
+    },
+    {
+      "key": "compound-6e-8",
+      "prompt": "Nina cueille 15 pommes.\nElle en mange 2, puis en donne 3 à Sam.",
+      "question": "Combien de pommes reste-t-il à Nina ?",
+      "spoken": "Nina cueille 15 pommes. Elle en mange 2, puis en donne 3 à Sam.",
+      "choices": [
+        "10",
+        "16",
+        "20"
+      ],
+      "answer": "10",
+      "hint": "« Elle », c’est qui ? « en », ce sont quoi ? Qui donne les pommes ?",
+      "explanation": "Elle, c’est Nina ; en, ce sont les pommes. Nina mange 2 pommes et en donne 3 : 15 − 2 − 3 = 10. 16, c’est si Sam donnait 3 pommes à Nina. 20, c’est 15 + 2 + 3 : manger et donner, c’est enlever.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Qui, quoi ?",
+          "lines": [
+            "en remplace un nom déjà dit : regarde la phrase d’avant.",
+            "Manger, donner : on enlève. Recevoir : on ajoute."
+          ]
+        }
+      }
+    },
+    {
+      "key": "compound-6e-9",
+      "prompt": "Le film commence à 14 h 30.\nIl finit à 16 h.",
+      "question": "Quelle phrase est juste ?",
+      "spoken": "Le film commence à 14 heures 30. Il finit à 16 heures.",
+      "choices": [
+        "Il dure 1 heure et demie.",
+        "Il dure 1 heures et demie.",
+        "Il dure 2 heures et demie."
+      ],
+      "answer": "Il dure 1 heure et demie.",
+      "hint": "Compte d’abord jusqu’à 15 heures, puis jusqu’à 16 heures. Puis : une heure, ou plusieurs ?",
+      "explanation": "De 14 h 30 à 15 h : 30 minutes. De 15 h à 16 h : 1 heure. En tout : 1 heure et demie. Avec 1, heure reste au singulier. 2 heures et demie, c’est 16 − 14 = 2, puis les 30 minutes ajoutées au lieu d’être enlevées.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Durée, et le pluriel",
+          "lines": [
+            "Une durée : compte par bonds, de l’heure du début jusqu’à l’heure de la fin.",
+            "1 heure : pas de s. 2 heures : un s."
+          ]
+        }
+      }
+    },
+    {
+      "key": "compound-6e-10",
+      "prompt": "Une école achète 2 boîtes.\nChaque boîte contient 500 cartes.",
+      "question": "Combien de cartes l’école a-t-elle ?",
+      "spoken": "Une école achète 2 boîtes. Chaque boîte contient 500 cartes.",
+      "choices": [
+        "mille cartes",
+        "milles cartes",
+        "cent cartes"
+      ],
+      "answer": "mille cartes",
+      "hint": "2 boîtes de 500 : c’est 500 plus 500. Compte bien les zéros.",
+      "explanation": "500 + 500 = 1 000, qui s’écrit mille. Mille ne prend jamais de s : deux mille, trois mille. 100, c’est un zéro oublié : 5 centaines + 5 centaines = 10 centaines = 1 000.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Mille, sans s",
+          "lines": [
+            "3 centaines + 2 centaines = 5 centaines.",
+            "mille ne change jamais : deux mille, dix mille."
+          ]
+        }
+      }
+    },
+    {
+      "key": "compound-6e-11",
+      "prompt": "Lucas a 9 €.\nIl veut savoir ce qui lui manque\npour un livre à 15 €.",
+      "question": "Quelle phrase répond à Lucas ?",
+      "spoken": "Lucas a 9 euros. Il veut savoir ce qui lui manque pour un livre à 15 euros.",
+      "choices": [
+        "Il lui manque 6 €.",
+        "Il lui reste 6 €.",
+        "Il lui manque 24 €."
+      ],
+      "answer": "Il lui manque 6 €.",
+      "hint": "Que veut savoir Lucas ? Cherche sa question dans la deuxième ligne.",
+      "explanation": "De 9 à 15, il y a 6 : il lui manque 6 €. « Il lui reste », c’est ce qu’on a encore après avoir payé : Lucas ne peut pas encore payer. 24, c’est 9 + 15 : on cherche l’écart, pas la somme.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Ce qui manque",
+          "lines": [
+            "Il manque = ce qu’il faut encore pour arriver au prix.",
+            "Pour trouver ce qui manque, compte du plus petit au plus grand."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien assemblé !",
+    "wrong": "{explanation}"
+  }
+}

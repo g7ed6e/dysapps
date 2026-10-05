@@ -1,0 +1,9 @@
+{
+  "id": "english-3e-grammar-3",
+  "biome": "english-3e-grammar",
+  "name": "Le rempart du château",
+  "reward": {
+    "xp": 60
+  },
+  "done": "Un rempart, une barrière, un escalier… Mon château est complet. It has been built by you!"
+}

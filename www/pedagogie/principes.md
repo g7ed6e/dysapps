@@ -37,7 +37,7 @@ Ces règles s’appliquent à chaque exercice, du portail comme d’Archipéo. E
 ## Sans stress
 
 - **Mode concentration** : pendant une partie, rien d’autre que la question et un bouton Pause ; quitter passe par un menu qui dit ce qui est gardé, et le bouton retour du téléphone ouvre ce menu au lieu de tout fermer.
-- **Toujours au même endroit, avec les mêmes mots** : Menu, Aventure, Missions, Succès, Réglages ; le bouton retour en haut à gauche ; dans le village, le bouton pause (⏸) en haut à droite, et le bouton retour du téléphone ouvre le même menu.
+- **Toujours au même endroit, avec les mêmes mots** : Menu, Aventure, Missions, Succès, Réglages ; le bouton retour en haut à gauche quand la page en a un ; le bouton Menu (trois traits) en haut à droite, dans le monde comme hors du monde (Blocland), et le bouton retour du téléphone ouvre le même menu ; ⏸ seulement pour mettre une partie en pause.
 - **Un écran titre qui attend l’élève** : pas de compte à rebours ni d’animation obligatoire ; son toucher débloque la voix, pour que la première consigne s’entende.
 - **Pas de chronomètre.** La seule exception mesure discrètement le temps de lecture d’Ascension pour l’élève lui-même, comparé à ses lectures précédentes, jamais à un barème.
 - **Pas de classement, pas de perte** : une erreur rapporte un point d’effort ; un bloc mal posé revient dans l’inventaire ; la série de régularité se fissure au lieu de casser.
@@ -54,7 +54,7 @@ Ces règles s’appliquent à chaque exercice, du portail comme d’Archipéo. E
 - **Répétition espacée** des items ratés (J+1, J+3, J+7, J+15, sortie après trois réussites d’affilée), particulièrement pour les mots-outils, les confusions de lettres et les homophones.
 - **Adaptation du niveau** par mission : monte après deux parties au-dessus du seuil, ou une seule quasi parfaite ; descend après deux parties en dessous du seuil bas.
 - **Variation** : chaque partie tire d’autres nombres ou un autre lot de mots, dans un autre ordre, dès la première partie et même après avoir recommencé le jeu : on ne retient pas une suite de réponses.
-- **Progression par archipel** : chaque île est un thème du programme avec une classe indicative (6e à 3e). Dans un archipel, rien n’est imposé : seuls les ouvrages ouvrent les îles, dans l’ordre que l’on veut. Passer à l’archipel suivant demande le Bloc-Navire, construit avec des blocs et quelques Gardiens vaincus ; on revient toujours en arrière, rien ne se perd.
+- **Progression par archipel** : chaque île est un thème du programme avec une classe indicative (6e à 3e). Dans un archipel, rien n’est imposé : seuls les ouvrages ouvrent les îles, dans l’ordre que l’on veut. Passer à l’archipel suivant demande le Bloc-Navire, construit avec des blocs et quelques Gardiens rallumés ; on revient toujours en arrière, rien ne se perd.
 - **Le geste apprend** : trier des mots, piocher une lettre, poser un bloc de lettres, glisser un sujet vers un verbe, lire à voix haute paragraphe par paragraphe.
 
 ## L’anglais : deux voix

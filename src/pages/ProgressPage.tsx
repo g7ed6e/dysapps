@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
 import { subjectInfo, visibleSubjects } from '../apps/registry';
 import { useSettings } from '../core/SettingsContext';
-import { useBlocland } from '../blocland/BloclandContext';
-import { Stars } from '../blocland/Stars';
+import { useBlocland } from '../game/BloclandContext';
+import { Stars } from '../game/Stars';
 import { BADGES, levelFromXp } from '../core/progress';
 import { useProgress } from '../core/ProgressContext';
 import { subjectProgress, type SubjectProgress } from '../core/subjectProgress';
@@ -11,8 +11,8 @@ import { RecordTag } from '../components/RecordTag';
 import { RankLadder } from '../components/RankLadder';
 import { XpBar } from '../components/XpBar';
 import { useUnivers } from '../core/SettingsContext';
-import { UNIVERS } from '../core/univers';
-import { useTextes } from '../univers';
+import { UNIVERS } from '../core/universe';
+import { texteDuSucces, useTextes } from '../universes';
 
 const plural = (n: number, word: string) => `${n} ${word}${n > 1 ? 's' : ''}`;
 
@@ -121,6 +121,7 @@ export function ProgressBody() {
   const { settings } = useSettings();
   const subjects = visibleSubjects(settings.lv2).map((s) => subjectProgress(s, progress.apps, state));
   const earned = BADGES.filter((b) => progress.badges[b.id]).length;
+  const textes = useTextes();
   const rate = progress.totalAnswers ? Math.round((progress.correctAnswers / progress.totalAnswers) * 100) : 0;
 
   return (
@@ -151,7 +152,7 @@ export function ProgressBody() {
           </div>
           <div>
             <dt>Bâtiments</dt>
-            <dd>{progress.plansCompleted}</dd>
+            <dd>{progress.structuresCompleted}</dd>
           </div>
         </dl>
       </div>
@@ -172,13 +173,14 @@ export function ProgressBody() {
       <ul className="grid badges">
         {BADGES.map((b) => {
           const date = progress.badges[b.id];
+          const t = texteDuSucces(textes, b);
           return (
             <li key={b.id} className={`panel badge${date ? ' earned' : ''}`}>
               <span className="badge-icon">
                 <Icon name={date ? b.icon : 'lock'} size="1.8rem" />
               </span>
-              <strong>{b.title}</strong>
-              <span>{b.description}</span>
+              <strong>{t.title}</strong>
+              <span>{t.description}</span>
               <span className="visually-hidden">{date ? 'Débloqué' : 'Verrouillé'}</span>
             </li>
           );

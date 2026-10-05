@@ -1,0 +1,247 @@
+{
+  "id": "lv2-4e-daily-life-es-my-day-1",
+  "biome": "lv2-4e-daily-life",
+  "type": "es-my-day",
+  "level": 1,
+  "lang": "es",
+  "instruction": "Lis ou écoute la question en espagnol, puis choisis la bonne réponse. La règle est affichée.",
+  "items": [
+    {
+      "key": "lv2-4e-daily-life-es-my-day-1-0",
+      "prompt": "¿A qué hora te levantas?",
+      "spoken": "A qué hora te levantas?",
+      "choices": [
+        "Me levanto a las siete.",
+        "Te levantas a las siete.",
+        "Levanto a las siete."
+      ],
+      "answer": "Me levanto a las siete.",
+      "hint": "On te demande à toi : tu réponds pour toi, avec me.",
+      "explanation": "On te pose la question : tu réponds pour toi, avec me. Me levanto a las siete. te levantas veut dire « tu te lèves » ; sans me, la phrase ne va pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Mi día : les verbes avec se",
+          "lines": [
+            "levantarse = se lever ; ducharse = se doucher ; peinarse = se coiffer",
+            "lavarse los dientes = se brosser les dents",
+            "llamarse : me llamo, te llamas, se llama, nos llamamos",
+            "Conjugué, le petit mot passe devant le verbe : me, te, se, nos.",
+            "Pour parler de quelqu’un d’autre : se.",
+            "desayunar = prendre le petit-déjeuner",
+            "comer = déjeuner ; cenar = dîner. Ces trois verbes n’ont pas de se."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-es-my-day-1-1",
+      "prompt": "¿Tu hermano se ducha por la mañana?",
+      "spoken": "Tu hermano se ducha por la mañana?",
+      "choices": [
+        "Sí, se ducha.",
+        "Sí, se duchas.",
+        "Sí, ducha."
+      ],
+      "answer": "Sí, se ducha.",
+      "hint": "On parle de ton frère : se, et le verbe avec él.",
+      "explanation": "On parle de ton frère : tu réponds avec se et le verbe de él. Sí, se ducha. se duchas mélange se et tú.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Mi día : les verbes avec se",
+          "lines": [
+            "levantarse = se lever ; ducharse = se doucher ; peinarse = se coiffer",
+            "lavarse los dientes = se brosser les dents",
+            "llamarse : me llamo, te llamas, se llama, nos llamamos",
+            "Conjugué, le petit mot passe devant le verbe : me, te, se, nos.",
+            "Pour parler de quelqu’un d’autre : se.",
+            "desayunar = prendre le petit-déjeuner",
+            "comer = déjeuner ; cenar = dîner. Ces trois verbes n’ont pas de se."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-es-my-day-1-2",
+      "prompt": "¿Te peinas antes de salir?",
+      "spoken": "Te peinas antes de salir?",
+      "choices": [
+        "Sí, me peino.",
+        "Sí, se peino.",
+        "Sí, peino."
+      ],
+      "answer": "Sí, me peino.",
+      "hint": "Tu réponds pour toi : quel petit mot va avec yo ?",
+      "explanation": "On te pose la question : tu réponds pour toi, avec me. Sí, me peino (je me coiffe). se va avec él ou ella.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Mi día : les verbes avec se",
+          "lines": [
+            "levantarse = se lever ; ducharse = se doucher ; peinarse = se coiffer",
+            "lavarse los dientes = se brosser les dents",
+            "llamarse : me llamo, te llamas, se llama, nos llamamos",
+            "Conjugué, le petit mot passe devant le verbe : me, te, se, nos.",
+            "Pour parler de quelqu’un d’autre : se.",
+            "desayunar = prendre le petit-déjeuner",
+            "comer = déjeuner ; cenar = dîner. Ces trois verbes n’ont pas de se."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-es-my-day-1-3",
+      "prompt": "¿A qué hora se levantan tus padres?",
+      "spoken": "A qué hora se levantan tus padres?",
+      "choices": [
+        "Se levantan a las seis.",
+        "Se levanta a las seis.",
+        "Nos levantamos a las seis."
+      ],
+      "answer": "Se levantan a las seis.",
+      "hint": "tus padres : ils sont deux.",
+      "explanation": "On parle de tes parents (ellos) : se levantan, avec -n. se levanta, c’est pour une seule personne ; nos levantamos, pour nous.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Mi día : les verbes avec se",
+          "lines": [
+            "levantarse = se lever ; ducharse = se doucher ; peinarse = se coiffer",
+            "lavarse los dientes = se brosser les dents",
+            "llamarse : me llamo, te llamas, se llama, nos llamamos",
+            "Conjugué, le petit mot passe devant le verbe : me, te, se, nos.",
+            "Pour parler de quelqu’un d’autre : se.",
+            "desayunar = prendre le petit-déjeuner",
+            "comer = déjeuner ; cenar = dîner. Ces trois verbes n’ont pas de se."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-es-my-day-1-4",
+      "prompt": "¿Lucía se lava los dientes?",
+      "spoken": "Lucía se lava los dientes?",
+      "choices": [
+        "Sí, se lava los dientes.",
+        "Sí, te lavas los dientes.",
+        "Sí, me lavo los dientes."
+      ],
+      "answer": "Sí, se lava los dientes.",
+      "hint": "On parle de Lucía, pas de toi.",
+      "explanation": "On parle de Lucía (ella) : tu réponds avec se. Se lava los dientes, elle se brosse les dents. me lavo, c’est pour toi.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Mi día : les verbes avec se",
+          "lines": [
+            "levantarse = se lever ; ducharse = se doucher ; peinarse = se coiffer",
+            "lavarse los dientes = se brosser les dents",
+            "llamarse : me llamo, te llamas, se llama, nos llamamos",
+            "Conjugué, le petit mot passe devant le verbe : me, te, se, nos.",
+            "Pour parler de quelqu’un d’autre : se.",
+            "desayunar = prendre le petit-déjeuner",
+            "comer = déjeuner ; cenar = dîner. Ces trois verbes n’ont pas de se."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-es-my-day-1-5",
+      "prompt": "¿A qué hora cenas?",
+      "spoken": "A qué hora cenas?",
+      "choices": [
+        "Ceno a las nueve.",
+        "Me ceno a las nueve.",
+        "Desayuno a las nueve."
+      ],
+      "answer": "Ceno a las nueve.",
+      "hint": "cenar = dîner. A-t-il un se ?",
+      "explanation": "On te pose la question : tu réponds pour toi. cenar n’a pas de se : ceno a las nueve. En Espagne, on dîne souvent tard.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Mi día : les verbes avec se",
+          "lines": [
+            "levantarse = se lever ; ducharse = se doucher ; peinarse = se coiffer",
+            "lavarse los dientes = se brosser les dents",
+            "llamarse : me llamo, te llamas, se llama, nos llamamos",
+            "Conjugué, le petit mot passe devant le verbe : me, te, se, nos.",
+            "Pour parler de quelqu’un d’autre : se.",
+            "desayunar = prendre le petit-déjeuner",
+            "comer = déjeuner ; cenar = dîner. Ces trois verbes n’ont pas de se."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-es-my-day-1-6",
+      "prompt": "¿Cuándo te duchas?",
+      "spoken": "Cuándo te duchas?",
+      "choices": [
+        "Me ducho por la mañana.",
+        "Te duchas por la mañana.",
+        "Ducho por la mañana."
+      ],
+      "answer": "Me ducho por la mañana.",
+      "hint": "Tu réponds pour toi, avec me.",
+      "explanation": "On te pose la question : tu réponds pour toi, avec me. Me ducho por la mañana. te duchas veut dire « tu te douches ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Mi día : les verbes avec se",
+          "lines": [
+            "levantarse = se lever ; ducharse = se doucher ; peinarse = se coiffer",
+            "lavarse los dientes = se brosser les dents",
+            "llamarse : me llamo, te llamas, se llama, nos llamamos",
+            "Conjugué, le petit mot passe devant le verbe : me, te, se, nos.",
+            "Pour parler de quelqu’un d’autre : se.",
+            "desayunar = prendre le petit-déjeuner",
+            "comer = déjeuner ; cenar = dîner. Ces trois verbes n’ont pas de se."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-4e-daily-life-es-my-day-1-7",
+      "prompt": "¿Dónde comes a mediodía?",
+      "spoken": "Dónde comes a mediodía?",
+      "choices": [
+        "Como en el comedor.",
+        "Me como en el comedor.",
+        "Ceno en el comedor."
+      ],
+      "answer": "Como en el comedor.",
+      "hint": "comer = déjeuner. A-t-il un se ?",
+      "explanation": "On te pose la question : tu réponds pour toi. comer n’a pas de se : como en el comedor, je déjeune à la cantine.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Mi día : les verbes avec se",
+          "lines": [
+            "levantarse = se lever ; ducharse = se doucher ; peinarse = se coiffer",
+            "lavarse los dientes = se brosser les dents",
+            "llamarse : me llamo, te llamas, se llama, nos llamamos",
+            "Conjugué, le petit mot passe devant le verbe : me, te, se, nos.",
+            "Pour parler de quelqu’un d’autre : se.",
+            "desayunar = prendre le petit-déjeuner",
+            "comer = déjeuner ; cenar = dîner. Ces trois verbes n’ont pas de se."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien répondu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lv2-4e-daily-life",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -1,0 +1,255 @@
+{
+  "id": "lv2-5e-introductions-es-articles-2",
+  "biome": "lv2-5e-introductions",
+  "type": "es-articles",
+  "level": 2,
+  "lang": "es",
+  "instruction": "Lis et écoute le nom espagnol, puis choisis son pluriel. La règle est affichée : lis-la avant de répondre.",
+  "items": [
+    {
+      "key": "lv2-5e-introductions-es-articles-2-0",
+      "prompt": "el profesor",
+      "spoken": "el profesor",
+      "choices": [
+        "las profesores",
+        "los profesores",
+        "los profesors"
+      ],
+      "answer": "los profesores",
+      "hint": "profesor finit par une consonne. Et el, que devient-il ?",
+      "explanation": "el profesor → los profesores : un nom qui finit par une consonne prend -es, et el devient los.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le pluriel",
+          "lines": [
+            "L’article se met au pluriel : el devient los, la devient las.",
+            "Voyelle à la fin : -s (el libro, los libros ; la casa, las casas).",
+            "Consonne à la fin : -es (el tren, los trenes ; la flor, las flores).",
+            "-z devient -ces : la luz, las luces.",
+            "L’accent de la fin disparaît avec -es : el ratón, los ratones ;",
+            "el inglés, los ingleses.",
+            "Le genre ne change pas : un nom masculin en -a garde los",
+            "(el mapa, los mapas)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-es-articles-2-1",
+      "prompt": "la ciudad",
+      "spoken": "la ciudad",
+      "choices": [
+        "las ciudades",
+        "las ciudads",
+        "los ciudades"
+      ],
+      "answer": "las ciudades",
+      "hint": "ciudad finit par une consonne. Et la, que devient-il ?",
+      "explanation": "la ciudad (la ville) → las ciudades : consonne à la fin, donc -es ; la devient las.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le pluriel",
+          "lines": [
+            "L’article se met au pluriel : el devient los, la devient las.",
+            "Voyelle à la fin : -s (el libro, los libros ; la casa, las casas).",
+            "Consonne à la fin : -es (el tren, los trenes ; la flor, las flores).",
+            "-z devient -ces : la luz, las luces.",
+            "L’accent de la fin disparaît avec -es : el ratón, los ratones ;",
+            "el inglés, los ingleses.",
+            "Le genre ne change pas : un nom masculin en -a garde los",
+            "(el mapa, los mapas)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-es-articles-2-2",
+      "prompt": "el lápiz",
+      "spoken": "el lápiz",
+      "choices": [
+        "los lápices",
+        "los lápiz",
+        "los lápizes"
+      ],
+      "answer": "los lápices",
+      "hint": "Regarde la dernière lettre : z.",
+      "explanation": "el lápiz (le crayon) → los lápices : un nom en -z prend -ces au pluriel, le z devient c.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le pluriel",
+          "lines": [
+            "L’article se met au pluriel : el devient los, la devient las.",
+            "Voyelle à la fin : -s (el libro, los libros ; la casa, las casas).",
+            "Consonne à la fin : -es (el tren, los trenes ; la flor, las flores).",
+            "-z devient -ces : la luz, las luces.",
+            "L’accent de la fin disparaît avec -es : el ratón, los ratones ;",
+            "el inglés, los ingleses.",
+            "Le genre ne change pas : un nom masculin en -a garde los",
+            "(el mapa, los mapas)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-es-articles-2-3",
+      "prompt": "la canción",
+      "spoken": "la canción",
+      "choices": [
+        "las canciones",
+        "las canciónes",
+        "las cancions"
+      ],
+      "answer": "las canciones",
+      "hint": "canción finit par une consonne. Et l’accent de la fin ?",
+      "explanation": "la canción (la chanson) → las canciones : consonne à la fin, donc -es, et l’accent disparaît au pluriel.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le pluriel",
+          "lines": [
+            "L’article se met au pluriel : el devient los, la devient las.",
+            "Voyelle à la fin : -s (el libro, los libros ; la casa, las casas).",
+            "Consonne à la fin : -es (el tren, los trenes ; la flor, las flores).",
+            "-z devient -ces : la luz, las luces.",
+            "L’accent de la fin disparaît avec -es : el ratón, los ratones ;",
+            "el inglés, los ingleses.",
+            "Le genre ne change pas : un nom masculin en -a garde los",
+            "(el mapa, los mapas)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-es-articles-2-4",
+      "prompt": "el problema",
+      "spoken": "el problema",
+      "choices": [
+        "las problemas",
+        "los problemas",
+        "los problemes"
+      ],
+      "answer": "los problemas",
+      "hint": "problema finit par -a, mais regarde son article : el.",
+      "explanation": "el problema → los problemas : il finit par -a, mais il est masculin (el), donc los. Voyelle à la fin : -s.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le pluriel",
+          "lines": [
+            "L’article se met au pluriel : el devient los, la devient las.",
+            "Voyelle à la fin : -s (el libro, los libros ; la casa, las casas).",
+            "Consonne à la fin : -es (el tren, los trenes ; la flor, las flores).",
+            "-z devient -ces : la luz, las luces.",
+            "L’accent de la fin disparaît avec -es : el ratón, los ratones ;",
+            "el inglés, los ingleses.",
+            "Le genre ne change pas : un nom masculin en -a garde los",
+            "(el mapa, los mapas)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-es-articles-2-5",
+      "prompt": "la mano",
+      "spoken": "la mano",
+      "choices": [
+        "las manas",
+        "las manos",
+        "los manos"
+      ],
+      "answer": "las manos",
+      "hint": "mano finit par -o, mais regarde son article : la.",
+      "explanation": "la mano (la main) → las manos : elle finit par -o, mais elle est féminine (la), donc las. Le nom garde son -o et prend -s.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le pluriel",
+          "lines": [
+            "L’article se met au pluriel : el devient los, la devient las.",
+            "Voyelle à la fin : -s (el libro, los libros ; la casa, las casas).",
+            "Consonne à la fin : -es (el tren, los trenes ; la flor, las flores).",
+            "-z devient -ces : la luz, las luces.",
+            "L’accent de la fin disparaît avec -es : el ratón, los ratones ;",
+            "el inglés, los ingleses.",
+            "Le genre ne change pas : un nom masculin en -a garde los",
+            "(el mapa, los mapas)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-es-articles-2-6",
+      "prompt": "el autobús",
+      "spoken": "el autobús",
+      "choices": [
+        "los autobús",
+        "los autobuses",
+        "los autobúses"
+      ],
+      "answer": "los autobuses",
+      "hint": "autobús finit par une consonne. Et l’accent de la fin ?",
+      "explanation": "el autobús → los autobuses : consonne à la fin, donc -es, et l’accent disparaît au pluriel.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le pluriel",
+          "lines": [
+            "L’article se met au pluriel : el devient los, la devient las.",
+            "Voyelle à la fin : -s (el libro, los libros ; la casa, las casas).",
+            "Consonne à la fin : -es (el tren, los trenes ; la flor, las flores).",
+            "-z devient -ces : la luz, las luces.",
+            "L’accent de la fin disparaît avec -es : el ratón, los ratones ;",
+            "el inglés, los ingleses.",
+            "Le genre ne change pas : un nom masculin en -a garde los",
+            "(el mapa, los mapas)."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-es-articles-2-7",
+      "prompt": "la mochila",
+      "spoken": "la mochila",
+      "choices": [
+        "la mochilas",
+        "las mochilas",
+        "los mochilas"
+      ],
+      "answer": "las mochilas",
+      "hint": "Voyelle à la fin : -s. Et l’article ?",
+      "explanation": "la mochila (le sac à dos) → las mochilas : l’article aussi se met au pluriel, la devient las.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le pluriel",
+          "lines": [
+            "L’article se met au pluriel : el devient los, la devient las.",
+            "Voyelle à la fin : -s (el libro, los libros ; la casa, las casas).",
+            "Consonne à la fin : -es (el tren, los trenes ; la flor, las flores).",
+            "-z devient -ces : la luz, las luces.",
+            "L’accent de la fin disparaît avec -es : el ratón, los ratones ;",
+            "el inglés, los ingleses.",
+            "Le genre ne change pas : un nom masculin en -a garde los",
+            "(el mapa, los mapas)."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "wrong": "{explanation}",
+    "correct": "Bon pluriel !"
+  },
+  "reward": {
+    "block": "lv2-5e-introductions",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

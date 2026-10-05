@@ -1,0 +1,231 @@
+{
+  "id": "english-5e-vocabulary-shopping-1",
+  "biome": "english-5e-vocabulary",
+  "type": "shopping",
+  "level": 1,
+  "lang": "en",
+  "instruction": "Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.",
+  "items": [
+    {
+      "key": "english-5e-vocabulary-shopping-1-0",
+      "prompt": "Can I have a … of water, please?",
+      "spoken": "Can I have a blank of water, please?",
+      "choices": [
+        "bottle",
+        "slice",
+        "piece"
+      ],
+      "answer": "bottle",
+      "hint": "Tu es au magasin : que dit-on pour acheter ?",
+      "explanation": "a bottle of water = une bouteille d’eau.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Au magasin",
+          "lines": [
+            "Can I help you? = Je peux vous aider ?",
+            "I’d like… = je voudrais… (poli).",
+            "how much is it? = combien ça coûte ? it’s two pounds = ça fait 2 livres.",
+            "a bottle of = une bouteille de, a piece of = un morceau de, a carton of = une brique de",
+            "Here you are. = Voilà."
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-vocabulary-shopping-1-1",
+      "prompt": "I’d like a … of cake, please.",
+      "spoken": "I’d like a blank of cake, please.",
+      "choices": [
+        "piece",
+        "bottle",
+        "carton"
+      ],
+      "answer": "piece",
+      "hint": "Tu es au magasin : que dit-on pour acheter ?",
+      "explanation": "a piece of cake = un morceau de gâteau.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Au magasin",
+          "lines": [
+            "Can I help you? = Je peux vous aider ?",
+            "I’d like… = je voudrais… (poli).",
+            "how much is it? = combien ça coûte ? it’s two pounds = ça fait 2 livres.",
+            "a bottle of = une bouteille de, a piece of = un morceau de, a carton of = une brique de",
+            "Here you are. = Voilà."
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-vocabulary-shopping-1-2",
+      "prompt": "How … is it? — It’s three pounds.",
+      "spoken": "How blank is it? — It’s three pounds.",
+      "choices": [
+        "much",
+        "many",
+        "old"
+      ],
+      "answer": "much",
+      "hint": "On demande un prix.",
+      "explanation": "How much is it? = Combien ça coûte ?",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Au magasin",
+          "lines": [
+            "Can I help you? = Je peux vous aider ?",
+            "I’d like… = je voudrais… (poli).",
+            "how much is it? = combien ça coûte ? it’s two pounds = ça fait 2 livres.",
+            "a bottle of = une bouteille de, a piece of = un morceau de, a carton of = une brique de",
+            "Here you are. = Voilà."
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-vocabulary-shopping-1-3",
+      "prompt": "Here … are!",
+      "spoken": "Here blank are!",
+      "choices": [
+        "you",
+        "is",
+        "it"
+      ],
+      "answer": "you",
+      "hint": "On tend quelque chose à quelqu’un.",
+      "explanation": "Here you are! = Voilà ! (en tendant quelque chose)",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Au magasin",
+          "lines": [
+            "Can I help you? = Je peux vous aider ?",
+            "I’d like… = je voudrais… (poli).",
+            "how much is it? = combien ça coûte ? it’s two pounds = ça fait 2 livres.",
+            "a bottle of = une bouteille de, a piece of = un morceau de, a carton of = une brique de",
+            "Here you are. = Voilà."
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-vocabulary-shopping-1-4",
+      "prompt": "A … of milk, please.",
+      "spoken": "A blank of milk, please.",
+      "choices": [
+        "carton",
+        "slice",
+        "loaf"
+      ],
+      "answer": "carton",
+      "hint": "Tu es au magasin : que dit-on pour acheter ?",
+      "explanation": "a carton of milk = une brique de lait.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Au magasin",
+          "lines": [
+            "Can I help you? = Je peux vous aider ?",
+            "I’d like… = je voudrais… (poli).",
+            "how much is it? = combien ça coûte ? it’s two pounds = ça fait 2 livres.",
+            "a bottle of = une bouteille de, a piece of = un morceau de, a carton of = une brique de",
+            "Here you are. = Voilà."
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-vocabulary-shopping-1-5",
+      "prompt": "Can I help …? — Yes, I’d like some apples.",
+      "spoken": "Can I help blank? — Yes, I’d like some apples.",
+      "choices": [
+        "you",
+        "me",
+        "it"
+      ],
+      "answer": "you",
+      "hint": "Le vendeur parle au client.",
+      "explanation": "Can I help you? = Je peux vous aider ?",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Au magasin",
+          "lines": [
+            "Can I help you? = Je peux vous aider ?",
+            "I’d like… = je voudrais… (poli).",
+            "how much is it? = combien ça coûte ? it’s two pounds = ça fait 2 livres.",
+            "a bottle of = une bouteille de, a piece of = un morceau de, a carton of = une brique de",
+            "Here you are. = Voilà."
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-vocabulary-shopping-1-6",
+      "prompt": "I’d … some bread, please.",
+      "spoken": "I’d blank some bread, please.",
+      "choices": [
+        "like",
+        "likes",
+        "liking"
+      ],
+      "answer": "like",
+      "hint": "I’d = I would : le verbe reste à la base.",
+      "explanation": "I’d like = je voudrais : c’est la façon polie de demander.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Au magasin",
+          "lines": [
+            "Can I help you? = Je peux vous aider ?",
+            "I’d like… = je voudrais… (poli).",
+            "how much is it? = combien ça coûte ? it’s two pounds = ça fait 2 livres.",
+            "a bottle of = une bouteille de, a piece of = un morceau de, a carton of = une brique de",
+            "Here you are. = Voilà."
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-5e-vocabulary-shopping-1-7",
+      "prompt": "Two apples and three …, please.",
+      "spoken": "Two apples and three blank, please.",
+      "choices": [
+        "bananas",
+        "banana",
+        "bananes"
+      ],
+      "answer": "bananas",
+      "hint": "Trois : c’est un pluriel.",
+      "explanation": "three bananas : le pluriel anglais prend un -s (bananes, c’est du français).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Au magasin",
+          "lines": [
+            "Can I help you? = Je peux vous aider ?",
+            "I’d like… = je voudrais… (poli).",
+            "how much is it? = combien ça coûte ? it’s two pounds = ça fait 2 livres.",
+            "a bottle of = une bouteille de, a piece of = un morceau de, a carton of = une brique de",
+            "Here you are. = Voilà."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien dit !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "english-5e-vocabulary",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -1,5 +1,6 @@
 import {
   Anchor,
+  Menu,
   ArrowLeft,
   Blocks,
   BookOpen,
@@ -47,14 +48,18 @@ import {
   Target,
   TreePine,
   Trophy,
-  Undo2,
   Volume2,
   VolumeX,
   Wheat,
   X,
   Zap,
+  createLucideIcon,
   type LucideIcon,
 } from 'lucide-react';
+import { CHEMIN_DE_L_OUVRAGE } from './linkIcon';
+
+/** Un ouvrage (GD-7) : la même image que la plaque de la flèche de la Carte (./linkIcon.ts). */
+const Ouvrage = createLucideIcon('ouvrage', [['path', { d: CHEMIN_DE_L_OUVRAGE, key: 'ouvrage' }]]);
 
 export const ICONS = {
   back: ArrowLeft,
@@ -109,9 +114,11 @@ export const ICONS = {
   volumeOff: VolumeX,
   zap: Zap,
   pause: Pause,
+  // Le menu (trois traits) : partout où l'on ouvre le menu ; ⏸ reste la pause d'une partie (mode concentration).
+  menu: Menu,
   ancre: Anchor,
   cube: Box,
-  recentrer: Undo2,
+  ouvrage: Ouvrage,
 } satisfies Record<string, LucideIcon>;
 
 export type AnyIconName = keyof typeof ICONS;

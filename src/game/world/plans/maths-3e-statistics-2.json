@@ -1,0 +1,9 @@
+{
+  "id": "maths-3e-statistics-2",
+  "biome": "maths-3e-statistics",
+  "name": "Le toit du dôme",
+  "reward": {
+    "xp": 50
+  },
+  "done": "Un toit et une porte ! La lanterne compte les étoiles avec moi, une par une."
+}

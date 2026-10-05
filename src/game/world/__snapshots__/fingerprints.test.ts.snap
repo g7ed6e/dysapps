@@ -1,0 +1,306 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 3e, la place des îles, des bornes, des lieux et du bonhomme 1`] = `"04067468"`;
+
+exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 3e, les ouvrages, l’embarquement et les voyages 1`] = `
+{
+  "embarquement": "3c49ac5f",
+  "ouvrages": "0275e10d",
+  "voyages": "e6548dc9",
+}
+`;
+
+exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 3e, partie mi-parcours 1`] = `
+{
+  "créatures et Gardiens": "b48c84bb",
+  "cubes": "e678e263",
+  "cubes avec créatures": "15cb5c02",
+  "décor posé sur la pente": "6359ab39",
+  "navire": "b4f5e3d8",
+  "sol (facettes)": "bb7ccaf5",
+  "sol (lave)": "13fe3a3b",
+  "trajets depuis le port": "2fa1824c",
+}
+`;
+
+exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 3e, partie tout construit 1`] = `
+{
+  "créatures et Gardiens": "c632e936",
+  "cubes": "062fc368",
+  "cubes avec créatures": "1a0b1ba3",
+  "décor posé sur la pente": "eefdc629",
+  "navire": "b4f5e3d8",
+  "sol (facettes)": "41000311",
+  "sol (lave)": "13fe3a3b",
+  "trajets depuis le port": "a2def160",
+}
+`;
+
+exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 3e, partie vierge 1`] = `
+{
+  "créatures et Gardiens": "741638a5",
+  "cubes": "9546cdf5",
+  "cubes avec créatures": "9546cdf5",
+  "décor posé sur la pente": "05cf7328",
+  "navire": "72dd9e54",
+  "sol (facettes)": "368e66f7",
+  "sol (lave)": "13fe3a3b",
+  "trajets depuis le port": "974f3796",
+}
+`;
+
+exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 4e, la place des îles, des bornes, des lieux et du bonhomme 1`] = `"40ee97d9"`;
+
+exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 4e, les ouvrages, l’embarquement et les voyages 1`] = `
+{
+  "embarquement": "c073d775",
+  "ouvrages": "106cbdce",
+  "voyages": "4624de80",
+}
+`;
+
+exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 4e, partie mi-parcours 1`] = `
+{
+  "créatures et Gardiens": "74bd110a",
+  "cubes": "0d1c4ac1",
+  "cubes avec créatures": "9db24137",
+  "décor posé sur la pente": "5570ad18",
+  "navire": "bc701ce8",
+  "sol (facettes)": "e0e4495a",
+  "sol (lave)": "13fe3a3b",
+  "trajets depuis le port": "3c71a65b",
+}
+`;
+
+exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 4e, partie tout construit 1`] = `
+{
+  "créatures et Gardiens": "d64dbfcd",
+  "cubes": "d1f3d80e",
+  "cubes avec créatures": "272c1fa9",
+  "décor posé sur la pente": "951f4482",
+  "navire": "bc701ce8",
+  "sol (facettes)": "dc05217d",
+  "sol (lave)": "13fe3a3b",
+  "trajets depuis le port": "14ab3f2c",
+}
+`;
+
+exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 4e, partie vierge 1`] = `
+{
+  "créatures et Gardiens": "741638a5",
+  "cubes": "219edea9",
+  "cubes avec créatures": "219edea9",
+  "décor posé sur la pente": "dd1d0718",
+  "navire": "bd94d816",
+  "sol (facettes)": "27371f25",
+  "sol (lave)": "13fe3a3b",
+  "trajets depuis le port": "37e85cba",
+}
+`;
+
+exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 5e, la place des îles, des bornes, des lieux et du bonhomme 1`] = `"b1e3c5ab"`;
+
+exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 5e, les ouvrages, l’embarquement et les voyages 1`] = `
+{
+  "embarquement": "38718b43",
+  "ouvrages": "71357a16",
+  "voyages": "4ee15b98",
+}
+`;
+
+exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 5e, partie mi-parcours 1`] = `
+{
+  "créatures et Gardiens": "e93a39b5",
+  "cubes": "27b7a444",
+  "cubes avec créatures": "e4c9392d",
+  "décor posé sur la pente": "78725311",
+  "navire": "11613e8f",
+  "sol (facettes)": "1ad164c2",
+  "sol (lave)": "13fe3a3b",
+  "trajets depuis le port": "c2ad0848",
+}
+`;
+
+exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 5e, partie tout construit 1`] = `
+{
+  "créatures et Gardiens": "21e82c58",
+  "cubes": "109ecf31",
+  "cubes avec créatures": "e3603dcc",
+  "décor posé sur la pente": "f807128a",
+  "navire": "11613e8f",
+  "sol (facettes)": "75899771",
+  "sol (lave)": "13fe3a3b",
+  "trajets depuis le port": "fac380b8",
+}
+`;
+
+exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 5e, partie vierge 1`] = `
+{
+  "créatures et Gardiens": "741638a5",
+  "cubes": "856fd163",
+  "cubes avec créatures": "856fd163",
+  "décor posé sur la pente": "ce3772d7",
+  "navire": "d2c15feb",
+  "sol (facettes)": "bfdb01b7",
+  "sol (lave)": "13fe3a3b",
+  "trajets depuis le port": "df6cb45b",
+}
+`;
+
+exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 6e, la place des îles, des bornes, des lieux et du bonhomme 1`] = `"664dfd22"`;
+
+exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 6e, les ouvrages, l’embarquement et les voyages 1`] = `
+{
+  "embarquement": "5c856140",
+  "ouvrages": "4720a551",
+  "voyages": "741638a5",
+}
+`;
+
+exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 6e, partie mi-parcours 1`] = `
+{
+  "créatures et Gardiens": "b2e07892",
+  "cubes": "7f829bd0",
+  "cubes avec créatures": "f90c190b",
+  "décor posé sur la pente": "d569807e",
+  "navire": "3c0ab4aa",
+  "sol (facettes)": "9eb472ec",
+  "sol (lave)": "13fe3a3b",
+  "trajets depuis le port": "1a3ce834",
+}
+`;
+
+exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 6e, partie tout construit 1`] = `
+{
+  "créatures et Gardiens": "42808654",
+  "cubes": "c4b69414",
+  "cubes avec créatures": "7a832736",
+  "décor posé sur la pente": "4dbab435",
+  "navire": "3c0ab4aa",
+  "sol (facettes)": "9a8444c5",
+  "sol (lave)": "13fe3a3b",
+  "trajets depuis le port": "e646a008",
+}
+`;
+
+exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 6e, partie vierge 1`] = `
+{
+  "créatures et Gardiens": "bbf4ad00",
+  "cubes": "c5e5d0e8",
+  "cubes avec créatures": "a09f32c8",
+  "décor posé sur la pente": "3e93b241",
+  "navire": "01fd767b",
+  "sol (facettes)": "3d2de3c2",
+  "sol (lave)": "13fe3a3b",
+  "trajets depuis le port": "de5ea9c9",
+}
+`;
+
+exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > les clés des cases de chaque plan (sauvegardes) 1`] = `
+{
+  "english-3e-comprehension-1": "2f052ce1",
+  "english-3e-comprehension-2": "9180c499",
+  "english-3e-comprehension-3": "45911060",
+  "english-3e-grammar-1": "150a97e9",
+  "english-3e-grammar-2": "429001d9",
+  "english-3e-grammar-3": "bbf7ff7a",
+  "english-4e-comprehension-1": "18d8075b",
+  "english-4e-comprehension-2": "429f7f59",
+  "english-4e-comprehension-3": "61c6f4d4",
+  "english-4e-grammar-1": "edb84ad3",
+  "english-4e-grammar-2": "b5db4e70",
+  "english-4e-grammar-3": "ad5408a7",
+  "english-5e-grammar-1": "18d8075b",
+  "english-5e-grammar-2": "a804a7ad",
+  "english-5e-grammar-3": "61c6f4d4",
+  "english-5e-vocabulary-1": "edb84ad3",
+  "english-5e-vocabulary-2": "b5db4e70",
+  "english-5e-vocabulary-3": "ad5408a7",
+  "english-6e-grammar-1": "150a97e9",
+  "english-6e-grammar-2": "f9b5a21c",
+  "english-6e-grammar-3": "bbf7ff7a",
+  "english-6e-vocabulary-1": "2f052ce1",
+  "english-6e-vocabulary-2": "9180c499",
+  "english-6e-vocabulary-3": "45911060",
+  "french-3e-close-reading-1": "150a97e9",
+  "french-3e-close-reading-2": "f9b5a21c",
+  "french-3e-close-reading-3": "bbf7ff7a",
+  "french-4e-agreement-1": "4ef40037",
+  "french-4e-agreement-2": "fe05b13c",
+  "french-4e-agreement-3": "ad5408a7",
+  "french-4e-vocabulary-1": "624bd1d4",
+  "french-4e-vocabulary-2": "90d1b98d",
+  "french-4e-vocabulary-3": "ad5408a7",
+  "french-5e-conjugation-1": "4ef40037",
+  "french-5e-conjugation-2": "fe05b13c",
+  "french-5e-conjugation-3": "ad5408a7",
+  "french-5e-homophones-1": "2f052ce1",
+  "french-5e-homophones-2": "9180c499",
+  "french-5e-homophones-3": "45911060",
+  "french-6e-grammar-spelling-1": "18d8075b",
+  "french-6e-grammar-spelling-2": "429f7f59",
+  "french-6e-grammar-spelling-3": "61c6f4d4",
+  "french-6e-letter-confusion-1": "2f052ce1",
+  "french-6e-letter-confusion-2": "6d31d5ed",
+  "french-6e-letter-confusion-3": "45911060",
+  "french-6e-phonology-1": "2f052ce1",
+  "french-6e-phonology-2": "9180c499",
+  "french-6e-phonology-3": "45911060",
+  "french-6e-reading-1": "150a97e9",
+  "french-6e-reading-2": "f9b5a21c",
+  "french-6e-reading-3": "bbf7ff7a",
+  "french-6e-word-spelling-1": "624bd1d4",
+  "french-6e-word-spelling-2": "90d1b98d",
+  "french-6e-word-spelling-3": "ad5408a7",
+  "landmark-3e-1": "ef9e075d",
+  "landmark-3e-2": "0e1f4797",
+  "landmark-4e-1": "e67f8392",
+  "landmark-4e-2": "115c8833",
+  "landmark-5e-1": "b3feb558",
+  "landmark-5e-2": "2d6285b0",
+  "landmark-6e-1": "cc9502f3",
+  "landmark-6e-2": "e5e8d2b5",
+  "lv2-3e-travel-1": "372fb85a",
+  "lv2-3e-travel-2": "a7efd0c6",
+  "lv2-3e-travel-3": "980f4bd1",
+  "lv2-4e-daily-life-1": "15d8c36b",
+  "lv2-4e-daily-life-2": "3c61837a",
+  "lv2-4e-daily-life-3": "6e1e2183",
+  "lv2-5e-introductions-1": "937c2204",
+  "lv2-5e-introductions-2": "011c6a1d",
+  "lv2-5e-introductions-3": "c08775ff",
+  "maths-3e-functions-1": "150a97e9",
+  "maths-3e-functions-2": "f9b5a21c",
+  "maths-3e-functions-3": "bbf7ff7a",
+  "maths-3e-geometry-1": "4522f510",
+  "maths-3e-geometry-2": "2c3dabe6",
+  "maths-3e-geometry-3": "45911060",
+  "maths-3e-statistics-1": "624bd1d4",
+  "maths-3e-statistics-2": "90d1b98d",
+  "maths-3e-statistics-3": "ad5408a7",
+  "maths-4e-algebra-1": "2f052ce1",
+  "maths-4e-algebra-2": "9180c499",
+  "maths-4e-algebra-3": "45911060",
+  "maths-4e-powers-1": "2f052ce1",
+  "maths-4e-powers-2": "6d31d5ed",
+  "maths-4e-powers-3": "45911060",
+  "maths-5e-proportionality-1": "edb84ad3",
+  "maths-5e-proportionality-2": "b5db4e70",
+  "maths-5e-proportionality-3": "ad5408a7",
+  "maths-5e-signed-numbers-1": "624bd1d4",
+  "maths-5e-signed-numbers-2": "90d1b98d",
+  "maths-5e-signed-numbers-3": "ad5408a7",
+  "maths-6e-calculation-1": "2f052ce1",
+  "maths-6e-calculation-2": "9180c499",
+  "maths-6e-calculation-3": "45911060",
+  "maths-6e-decimals-1": "4ef40037",
+  "maths-6e-decimals-2": "fe05b13c",
+  "maths-6e-decimals-3": "ad5408a7",
+  "maths-6e-fractions-1": "4ef40037",
+  "maths-6e-fractions-2": "fe05b13c",
+  "maths-6e-fractions-3": "ad5408a7",
+  "navire-ballon": "980fbb57",
+  "navire-coque": "93407c1e",
+  "navire-reacteur": "6c49ebfc",
+}
+`;

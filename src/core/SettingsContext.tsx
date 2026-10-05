@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import { applySettings, DEFAULT_SETTINGS, retenirReglages, sanitizeSettings, SETTINGS_KEY, type Settings } from './settings';
 import { loadJSON, saveJSON } from './storage';
 import { speak as speakRaw, stopSpeaking, type Lang } from './speech';
-import { aUneProgression, MESSAGE_UNIVERS_KEY, premierUnivers, universAffiche, type UniversChoice } from './univers';
+import { aUneProgression, MESSAGE_UNIVERS_KEY, premierUnivers, RENOMMAGE_KEY, renommageANoter, universAffiche, type UniversChoice } from './universe';
 
 interface SettingsContextValue {
   settings: Settings;
@@ -23,13 +23,29 @@ export function lireReglages(): { settings: Settings; message: boolean } {
   const settings = sanitizeSettings(loadJSON(SETTINGS_KEY, DEFAULT_SETTINGS));
   if (settings.univers !== undefined) return { settings, message: false };
   const { univers, message } = premierUnivers({
-    progression: aUneProgression(loadJSON<unknown>('progress', {}), loadJSON<unknown>('blocland', {})),
+    progression: aUneProgression(loadJSON<unknown>('progress', {}), loadJSON<unknown>('game', {})),
   });
   return { settings: { ...settings, univers }, message };
 }
 
+/**
+ * Les nouveaux noms des archipels (GD-1), notés une seule fois, au premier lancement qui les connaît : à dire à un
+ * appareil qui a déjà une progression, déjà dits pour un appareil neuf. Noté avant le premier rendu du monde, qui le lit,
+ * et avant que l'élève ne gagne quoi que ce soit dans la séance. Idempotent.
+ */
+export function noterRenommage(): void {
+  const deja = loadJSON<unknown>(RENOMMAGE_KEY, null);
+  // Déjà notée : rien à relire (le chemin de démarrage).
+  if (deja !== null) return;
+  const note = renommageANoter(deja, aUneProgression(loadJSON<unknown>('progress', {}), loadJSON<unknown>('game', {})));
+  if (note) saveJSON(RENOMMAGE_KEY, note);
+}
+
 export function SettingsProvider({ children }: { children: ReactNode }) {
-  const [lus] = useState(() => lireReglages());
+  const [lus] = useState(() => {
+    noterRenommage();
+    return lireReglages();
+  });
   const [settings, setSettings] = useState<Settings>(lus.settings);
   // Le rendu lit les réglages en mémoire dès le premier rendu du monde, avant les effets : posés ici, pendant le rendu.
   // Idempotent (la même valeur à chaque rendu), donc sans risque sous StrictMode.
@@ -37,7 +53,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 
   // Le message unique à dire, noté une seule fois, au premier lancement après la bascule.
   useEffect(() => {
-    if (lus.message) saveJSON(MESSAGE_UNIVERS_KEY, { dit: false });
+    if (lus.message) saveJSON(MESSAGE_UNIVERS_KEY, { said: false });
   }, [lus]);
 
   useEffect(() => {
@@ -74,7 +90,7 @@ export function useUnivers(): UniversChoice {
 
 /**
  * L'univers choisi dans les réglages, sans exiger de fournisseur (un composant rendu seul dans un test lit alors
- * l'univers par défaut). Pour les textes d'univers (`useTextes` de src/univers).
+ * l'univers par défaut). Pour les textes d'univers (`useTextes` de src/universes).
  */
 export function useUniversChoisi(): UniversChoice | undefined {
   return useContext(SettingsContext)?.settings.univers;

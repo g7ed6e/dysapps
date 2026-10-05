@@ -10,14 +10,14 @@ import { useSheetClearance } from './useSheetClearance';
 import { useAnswerKeys } from './useAnswerKeys';
 import { useFocusMode } from './FocusMode';
 import { useHaptics } from '../core/haptics';
-import { Stars } from '../blocland/Stars';
+import { Stars } from '../game/Stars';
 import { starsFor } from '../core/stars';
 import { useHoldCelebrations } from './Celebrations';
 import { MENU_PATH } from '../core/paths';
-import { useOptionalBlocland } from '../blocland/BloclandContext';
-import { BLOCKS, getBiome, ofBlock } from '../blocland/biomes';
-import { BlockIcon } from '../blocland/Voxel';
-import type { PortalCompletion } from '../blocland/engine';
+import { useOptionalBlocland } from '../game/BloclandContext';
+import { BLOCKS, getBiome, ofBlock } from '../game/biomes';
+import { BlockIcon } from '../game/Voxel';
+import type { PortalCompletion } from '../game/engine';
 
 export interface Question {
   id: string;

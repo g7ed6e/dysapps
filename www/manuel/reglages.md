@@ -1,6 +1,6 @@
 # Réglages et accessibilité
 
-La page **Réglages** (barre du haut, roue dentée sur téléphone ; dans le village, menu ⏸) s’applique à toute l’application, y compris aux panneaux du village, et montre un aperçu en direct. Les réglages sont enregistrés sur l’appareil. Dans chaque liste de choix, l’option choisie a sa case colorée et, dans son rond, un point plein ; les autres ronds sont vides. Les valeurs par défaut et leurs bornes exactes sont dans [Barème et succès](../pedagogie/bareme.md#reglages-par-defaut).
+La page **Réglages** (dans le menu, bouton Menu à trois traits) s’applique à toute l’application, y compris aux panneaux du village, et montre un aperçu en direct. Les réglages sont enregistrés sur l’appareil. Dans chaque liste de choix, l’option choisie a sa case colorée et, dans son rond, un point plein ; les autres ronds sont vides. Les valeurs par défaut et leurs bornes exactes sont dans [Barème et succès](../pedagogie/bareme.md#reglages-par-defaut).
 
 ![La page Réglages : l'aperçu en haut, le choix de la police d'écriture (Luciole, OpenDyslexic, Atkinson Hyperlegible, Arial), la lecture.](/captures/reglages.jpg)
 
@@ -26,9 +26,9 @@ Le texte à lire reste toujours dans la police choisie. La police des titres de 
 
 | Thème | Rendu |
 | --- | --- |
-| **Crème** (par défaut) | Fond crème peu contrasté, texte bleu nuit, barre du haut bleu nuit ; boutons principaux bleu pétrole. Le texte reste toujours sur un fond uni. |
+| **Crème** (par défaut) | Fond crème peu contrasté, texte bleu nuit ; boutons principaux bleu pétrole. Le texte reste toujours sur un fond uni. |
 | **Nuit** | Fond bleu nuit et texte crème ; boutons principaux couleur sable. |
-| **Clair** | Fond blanc, plat, sans ombre ; barre du haut blanche. |
+| **Clair** | Fond blanc, plat, sans ombre. |
 
 Le thème **Contraste élevé** n’est plus au choix : il reviendra dans un lot ultérieur. Un appareil qui l’avait choisi s’ouvre en Nuit, le thème sombre le plus proche.
 
@@ -56,14 +56,11 @@ Au menu, la LV2 prend le nom de la langue choisie, à côté de l’anglais. Ses
 
 ## Au démarrage
 
-- **Le village** (par défaut) : après l’écran titre, l’appli s’ouvre sur le village, sur l’île où se tient le bonhomme. Le menu est dans le village (bouton ⏸) et à l’adresse `#/menu`.
-- **Le menu** : l’appli s’ouvre sur le menu principal, comme avant le village au démarrage.
-
-Avec « La liste des îles », ou sur un appareil qui ne sait pas dessiner le monde, l’appli s’ouvre toujours sur le menu.
+Après l’écran titre, l’appli s’ouvre toujours sur le village, sur l’île où se tient le bonhomme ; le menu est dans le village (bouton Menu, trois traits). Ce n’est plus un réglage. Avec « La liste des îles », ou sur un appareil qui ne sait pas dessiner le monde, l’appli s’ouvre sur le menu en page.
 
 ## Animations et vue du monde
 
-- **Moins d’animations** : le réglage « Réduire les animations » n’est plus dans les Réglages ; il reviendra dans un lot ultérieur. D’ici là, l’appli suit la préférence de l’appareil : quand les réglages d’accessibilité de la tablette, du téléphone ou de l’ordinateur demandent de réduire les animations, l’appli fige le ciel, les créatures, les baleines, les particules, les transitions, les animations du Gardien, les repères de mission et les balises du chemin ; dans le Filon, le bloc attend au lieu de défiler. Où trouver cette préférence : sur iPad et iPhone, Réglages, Accessibilité, Mouvement, « Réduire les animations » ; sur Android, Accessibilité, « Supprimer les animations » ; sur Windows, Accessibilité, « Effets d’animation ».
+- **Moins d’animations** : le réglage « Réduire les animations » n’est plus dans les Réglages ; il reviendra dans un lot ultérieur. D’ici là, l’appli suit la préférence de l’appareil : quand les réglages d’accessibilité de la tablette, du téléphone ou de l’ordinateur demandent de réduire les animations, l’appli fige le ciel, les créatures, les baleines, les particules, les transitions, les animations du Gardien, les repères de mission, les cubes au-dessus de ce qui se touche (sans leur petit saut) et les balises du chemin ; dans Blocland, les boutons ne rebondissent plus quand on les relâche et les blocs gagnés ne volent plus jusqu’au compteur ; dans le Filon, le bloc attend au lieu de défiler. Où trouver cette préférence : sur iPad et iPhone, Réglages, Accessibilité, Mouvement, « Réduire les animations » ; sur Android, Accessibilité, « Supprimer les animations » ; sur Windows, Accessibilité, « Effets d’animation ».
 - **Vue du monde** : deux choix.
   - **Le monde en 3D** (par défaut).
   - **La liste des îles** : la **vue simple** (listes et pages), qui offre exactement les mêmes actions.
@@ -71,7 +68,7 @@ Avec « La liste des îles », ou sur un appareil qui ne sait pas dessiner le mo
   Si l’appareil ne sait pas dessiner le monde en 3D (pas de WebGL), l’appli montre la liste des îles. Une ancienne préférence « Vues en 3D » désactivée devient « La liste des îles », et un ancien choix « Le monde en 2D » redevient « Le monde en 3D ».
 
   Dessous, **La lumière du monde** : deux choix. **L’heure réelle** (par défaut) : la nuit tombe le soir sur le village (crépuscule à 20 h, aube à 7 h, nuit toujours claire). **Toujours le jour** : le village reste en plein jour. Tant que le tutoriel du village n’a pas été vu, c’est le jour, quel que soit ce choix.
-- **Sons dans le village** : les sons d’action (poser, retirer un bloc, plan terminé) et ceux du voyage en Bloc-Navire (corne de brume, voile, brûleur, réacteur, carillon d’arrivée).
+- **Sons dans le village** : les sons d’action (poser, retirer un bloc, partie posée, plan terminé) et ceux du voyage en Bloc-Navire (corne de brume, voile, brûleur, réacteur, carillon d’arrivée).
 - **Ambiance sonore du village** : vent, oiseaux le jour, grillons la nuit ; désactivée par défaut.
 - **Vibrer à la bonne réponse et à la pose d’un bloc** : une vibration très courte, comme dans les jeux ; seulement sur les téléphones Android (Safari ne sait pas vibrer). Activé par défaut.
 - **Pastille sur l’icône de l’appli** : un simple point sur l’icône de l’appli installée quand des révisions attendent aujourd’hui ; pas de nombre, pas de notification. Affiché par Android, les ordinateurs et les iPhone et iPad récents, pour l’appli installée. Activé par défaut.
@@ -85,7 +82,7 @@ L’univers change le dessin du monde et l’histoire ; la progression reste la 
 - **Blocland** (par défaut) : un monde en cubes, où l’élève reconstruit le village bloc par bloc.
 - **Archipéo** : une aventure en mer, où son savoir reconstruit l’archipel.
 
-Chaque univers a une icône, son nom et une phrase, avec un bouton pour l’écouter. Changer d’univers demande une confirmation, qui dit ce qui change (le dessin du monde, le titre et l’histoire ; les îles gardent leur nom) et ce qui reste (les étoiles, les blocs, les plans et les missions). **Changer d’univers** confirme, **Annuler** garde l’univers d’avant. Le changement se voit au retour au village. L’univers choisit aussi le titre de l’écran titre, la barre du haut et l’habillage de l’interface.
+Chaque univers a une icône, son nom et une phrase, avec un bouton pour l’écouter. Changer d’univers demande une confirmation, qui dit ce qui change (le dessin du monde, le titre et l’histoire ; les îles gardent leur nom) et ce qui reste (les étoiles, les blocs, les plans et les missions). **Changer d’univers** confirme, **Annuler** garde l’univers d’avant. Le changement se voit au retour au village. L’univers choisit aussi le titre de l’écran titre et l’habillage de l’interface (ses couleurs, ses polices de titre, la forme de ses boutons) ; la place des boutons et des écrans est la même dans les deux.
 
 Tous les appareils s’ouvrent dans Blocland, même ceux qui ont déjà une progression. Archipéo ne se choisit qu’ici : aucun écran ne le propose, et aucune adresse ne fait passer un appareil à Archipéo. **Affichage par défaut** ne change pas l’univers.
 
@@ -101,7 +98,7 @@ Deux liens s’ouvrent dans un nouvel onglet : **La documentation** (ce site, ht
 
 **Enregistrer ma progression** range dans un fichier (`dysapps-progression-<date>.json`) tout ce que l’appli garde sur l’appareil : XP, succès, étoiles, blocs, bâtiments, répétition espacée et réglages. Sur iPhone et iPad, la feuille de partage s’ouvre pour le ranger (Fichiers, e-mail) ; ailleurs, et quand l’appareil ne sait pas partager ce fichier, il se télécharge.
 
-**Restaurer une sauvegarde…** ouvre un fichier enregistré ainsi. L’appli dit de quel jour il date et qu’il va **remplacer** la progression de l’appareil ; sous la date, elle rappelle d’enregistrer d’abord la progression qu’on veut garder ; rien ne change avant d’avoir touché **Restaurer**. La page se recharge ensuite, et « Ta progression est restaurée. » s’affiche. Un fichier qui n’est pas une sauvegarde de l’appli est refusé, sans rien changer.
+**Restaurer une sauvegarde…** ouvre un fichier enregistré ainsi. L’appli dit de quel jour il date et qu’il va **remplacer** la progression de l’appareil ; sous la date, elle rappelle d’enregistrer d’abord la progression qu’on veut garder ; rien ne change avant d’avoir touché **Restaurer**. La page se recharge ensuite, et « Ta progression est restaurée. » s’affiche. Un fichier qui n’est pas une sauvegarde de l’appli est refusé, sans rien changer. Un fichier enregistré avec une version précédente de l’appli se restaure aussi, sans rien perdre. Dans l’autre sens, un appareil resté sur une version précédente refuse un fichier enregistré avec la nouvelle : mettre d’abord l’appli à jour sur cet appareil.
 
 Le fichier sert à changer d’appareil, ou à réinstaller l’appli sans rien perdre.
 

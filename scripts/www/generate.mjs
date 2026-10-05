@@ -27,11 +27,11 @@ export async function generatePages() {
     const load = (p) => server.ssrLoadModule(p);
     const [biomesMod, exercisesMod, plansMod, archMod, engineMod, progressMod, settingsMod, homophonesMod, tablesMod, fractionsMod, decimauxMod, registryMod, subjectMod, vocabulaireMod, irreguliersMod, programmeMod, exclusionsMod, motsOutilsMod] =
       await Promise.all([
-        load('/src/blocland/biomes.ts'),
-        load('/src/blocland/exercises/index.ts'),
-        load('/src/blocland/world/plans.ts'),
-        load('/src/blocland/world/archipelago.ts'),
-        load('/src/blocland/engine.ts'),
+        load('/src/game/biomes.ts'),
+        load('/src/game/exercises/index.ts'),
+        load('/src/game/world/plans.ts'),
+        load('/src/game/world/archipelago.ts'),
+        load('/src/game/engine.ts'),
         load('/src/core/progress.ts'),
         load('/src/core/settings.ts'),
         load('/src/apps/homophones/data.ts'),
@@ -42,15 +42,20 @@ export async function generatePages() {
         load('/src/core/subjectProgress.ts'),
         load('/src/apps/vocabulaire/data.ts'),
         load('/src/apps/irreguliers/data.ts'),
-        load('/src/programme/index.ts'),
-        load('/src/programme/exclusions.ts'),
-        load('/src/programme/motsOutils.ts'),
+        load('/src/curriculum/index.ts'),
+        load('/src/curriculum/exclusions.ts'),
+        load('/src/curriculum/functionWords.ts'),
       ]);
-    const vehicleMod = await load('/src/blocland/world/vehicle.ts');
-    const monumentsMod = await load('/src/blocland/world/monuments.ts');
+    const vehicleMod = await load('/src/game/world/vehicle.ts');
+    const monumentsMod = await load('/src/game/world/monuments.ts');
+    const recettesMod = await load('/src/game/world/recipes.ts');
+    const partiesMod = await load('/src/game/world/parts.ts');
+    // Les commandes des créatures (GD-7) : qui demande quoi, contre quoi.
+    const commandesMod = await load('/src/game/world/requests.ts');
     // Les textes d'univers (Gardiens, espèces) : ceux de l'univers par défaut, Blocland.
-    const universMod = await load('/src/univers/index.ts');
-    const universCore = await load('/src/core/univers.ts');
+    const universMod = await load('/src/universes/index.ts');
+    const universCore = await load('/src/core/universe.ts');
+    const legacyMod = await load('/src/core/legacyIds.ts');
     const texts = JSON.parse(readFileSync(new URL('../../src/apps/lecture/texts.json', import.meta.url), 'utf8'));
     const data = {
       version: appVersion(root),
@@ -62,6 +67,10 @@ export async function generatePages() {
       blockCount: biomesMod.blockCount,
       EXERCISES: await exercisesMod.loadAllExercises(),
       PLANS: plansMod.PLANS,
+      partiesDe: partiesMod.partiesDe,
+      commandeDeLIle: commandesMod.commandeDeLIle,
+      texteDeLaCommande: commandesMod.texteDeLaCommande,
+      SEUIL_DE_LA_PREMIERE_COMMANDE: commandesMod.SEUIL_DE_LA_PREMIERE_COMMANDE,
       BRIDGES: archMod.BRIDGES,
       KIND_NAME: archMod.KIND_NAME,
       CONDITION_OF: archMod.CONDITION_OF,
@@ -70,6 +79,9 @@ export async function generatePages() {
       VOYAGES: archMod.VOYAGES,
       VEHICLE_STAGES: vehicleMod.VEHICLE_STAGES,
       MONUMENTS: monumentsMod.MONUMENTS,
+      ASSEMBLAGE: recettesMod.ASSEMBLAGE,
+      // Les questions des blocs assemblés (GD-2), une par bloc : hors du catalogue des îles.
+      QUESTIONS_ASSEMBLAGE: (await Promise.all(recettesMod.ASSEMBLAGE.recettes.map((r) => exercisesMod.loadAssemblage(r.bloc)))).filter(Boolean),
       engine: engineMod,
       progress: progressMod,
       settings: settingsMod,
@@ -102,6 +114,9 @@ export async function generatePages() {
       anglaisPortailPage(data),
       ouvragesPage(data),
       baremePage(data),
+      // Les pages des îles sous leur ancienne adresse (avant les identifiants neutres, 2 octobre 2026) : un lien gardé
+      // par un enseignant mène à la page d'aujourd'hui.
+      ...Object.entries(legacyMod.LEGACY_PLACES).map(([avant, lieu]) => ({ path: `pedagogie/iles/${avant}.html`, redirect: `${lieu}.html` })),
     ];
   } finally {
     await server.close();
@@ -110,15 +125,24 @@ export async function generatePages() {
 
 // ---------- Outils ----------
 
-const SUBJECT_NAME = { francais: 'Français', maths: 'Maths', anglais: 'Anglais', lv2: 'LV2 (espagnol ou allemand)' };
+const SUBJECT_NAME = { french: 'Français', maths: 'Maths', english: 'Anglais', lv2: 'LV2 (espagnol ou allemand)' };
 /** Les matières, dans l'ordre du portail. */
 const SUBJECT_IDS = Object.keys(SUBJECT_NAME);
 /** « 3 d’anglais », « 1 de LV2 » : le complément de chaque matière dans le décompte des îles. */
-const SUBJECT_DE = { francais: 'de français', maths: 'de maths', anglais: 'd’anglais', lv2: 'de LV2' };
+const SUBJECT_DE = { french: 'de français', maths: 'de maths', english: 'd’anglais', lv2: 'de LV2' };
+// Quand arrive la première commande d'un archipel, selon `SEUIL_DE_LA_PREMIERE_COMMANDE` (src/game/world/requests.ts).
+const QUAND_LA_PREMIERE_COMMANDE = {
+  'premier-ouvrage': 'après le premier ouvrage construit dans l’archipel',
+  'premiere-mission': 'après la première mission réussie dans l’archipel',
+};
+function quandLaPremiereCommande(seuil) {
+  const texte = QUAND_LA_PREMIERE_COMMANDE[seuil];
+  if (!texte) throw new Error(`Seuil de la première commande inconnu : ${seuil} (à décrire dans QUAND_LA_PREMIERE_COMMANDE).`);
+  return texte;
+}
 const CONDITION_TEXT = {
   aucune: 'aucune condition',
-  plan: 'le premier plan de l’île de départ terminé',
-  gardien: 'le Gardien de l’île de départ vaincu',
+  plan: 'une mission de l’île de départ réussie (la première partie de son bâtiment posée)',
 };
 const AID_NAME = {
   dots: 'grille de points (par cinq)',
@@ -231,7 +255,7 @@ function programmesPage(d) {
   const lines = [
     '# Programmes officiels',
     '',
-    'Chaque mission d’Archipéo et du portail cite les compétences du programme officiel qu’elle travaille. Cette page les met en face du programme, domaine par domaine : ce qui est travaillé (et par quelle mission), ce qui reste **à couvrir** (la feuille de route du contenu) et ce qui est **hors périmètre** d’une application d’entraînement (l’oral, l’écriture libre, la lecture d’œuvres complètes, la géométrie de construction). Le référentiel est dans `src/programme/` ; les libellés sont des résumés fidèles du texte officiel, dont la page est indiquée ; le texte fait foi.',
+    'Chaque mission d’Archipéo et du portail cite les compétences du programme officiel qu’elle travaille. Cette page les met en face du programme, domaine par domaine : ce qui est travaillé (et par quelle mission), ce qui reste **à couvrir** (la feuille de route du contenu) et ce qui est **hors périmètre** d’une application d’entraînement (l’oral, l’écriture libre, la lecture d’œuvres complètes, la géométrie de construction). Le référentiel est dans `src/curriculum/` ; les libellés sont des résumés fidèles du texte officiel, dont la page est indiquée ; le texte fait foi.',
     '',
     'Le cycle 3 se termine en 6e ; le cycle 4 couvre la 5e, la 4e et la 3e, sans répartition par année dans le texte officiel. Une île de 5e, 4e ou 3e peut consolider une compétence du cycle 3 ; une île de 6e ne travaille jamais le cycle 4.',
     '',
@@ -281,7 +305,7 @@ function programmesPage(d) {
   }
   const { MOTS_OUTILS_CP, MOTS_OUTILS_CE1, MOTS_OUTILS_SOURCE, COFFRE_HORS_LISTE, motsOutilsDictables, motDictable } = d.motsOutils;
   const dictables = motsOutilsDictables();
-  const coffre = new Set(d.EXERCISES.filter((e) => e.type === 'coffre').flatMap((e) => e.items.map((it) => motDictable(String(it.word)))));
+  const coffre = new Set(d.EXERCISES.filter((e) => e.type === 'sight-words').flatMap((e) => e.items.map((it) => motDictable(String(it.word)))));
   const inList = [...coffre].filter((w) => dictables.has(w));
   lines.push(
     '## Mots-outils {#mots-outils}',
@@ -344,7 +368,7 @@ function describeItem(item) {
 // ---------- Pages ----------
 
 function archipelPage(d) {
-  const { BIOMES, EXERCISES, PLANS, BRIDGES } = d;
+  const { BIOMES, EXERCISES, BRIDGES } = d;
   const items = EXERCISES.reduce((n, e) => n + e.items.length, 0);
   const quests = BIOMES.reduce((n, b) => n + b.exercises.length, 0);
   const lines = [
@@ -362,11 +386,11 @@ function archipelPage(d) {
     `| Missions | ${quests} |`,
     `| Exercices (variantes et niveaux) | ${EXERCISES.length}, dont ${EXERCISES.filter((e) => e.generate).length} générés |`,
     `| Items de référence | ${items} |`,
-    `| Plans à construire | ${PLANS.length} |`,
+    `| Parties de bâtiment (une par mission) | ${BIOMES.reduce((n, b) => n + d.partiesDe(b.id).length, 0)} |`,
     `| Ouvrages entre les îles | ${BRIDGES.length} |`,
     `| Compétences du programme officiel travaillées | ${d.programme.PROGRAMME.filter((e) => d.coverage.has(e.id)).length} sur ${d.programme.PROGRAMME.length} (voir [Programmes officiels](programmes.md)) |`,
     '',
-    'Chaque île est un thème du programme. Elle a sa créature qui donne les missions, son bloc de construction, ses trois plans et son Gardien. Les îles s’ouvrent en construisant des ouvrages avec les blocs gagnés, et l’on passe d’un archipel au suivant avec le Bloc-Navire : voir [Ouvrages et plans](ouvrages.md).',
+    'Chaque île est un thème du programme. Elle a sa créature qui donne les missions, son bloc de construction, son bâtiment et son Gardien. Chaque mission réussie pour la première fois pose une partie du bâtiment. Les îles s’ouvrent en construisant des ouvrages avec les blocs gagnés, et l’on passe d’un archipel au suivant avec le Bloc-Navire : voir [Ouvrages et plans](ouvrages.md).',
     '',
     '## Les quatre archipels',
     '',
@@ -458,11 +482,11 @@ function islandPage(b, d) {
     '',
     `${d.TEXTES.gardiens[b.id].challenge}`,
     '',
-    'Le défi enchaîne deux manches de chaque mission de l’île, au niveau de l’élève, sans chrono. Deux étoiles le font tomber.',
+    'Le défi enchaîne deux manches de chaque mission de l’île, au niveau de l’élève, sans chrono. Deux étoiles le rallument.',
     '',
     `- Épreuve réussie : « ${d.TEXTES.gardiens[b.id].guardianSays.hit} »`,
     `- Épreuve ratée : « ${d.TEXTES.gardiens[b.id].guardianSays.miss} »`,
-    `- Vaincu : « ${d.TEXTES.gardiens[b.id].guardianSays.beaten} »`,
+    `- Rallumé : « ${d.TEXTES.gardiens[b.id].guardianSays.beaten} »`,
     '',
     '## Les missions',
     '',
@@ -471,7 +495,7 @@ function islandPage(b, d) {
     const exos = EXERCISES.filter((e) => e.biome === b.id && e.type === q.id).sort((a, c) => a.level - c.level);
     lines.push(`### ${q.title}`, '', `*${q.description}*`, '');
     lines.push(programmeLine([...q.programme, ...exos.flatMap((e) => e.programme ?? [])], d, '../'), '');
-    if (b.id === 'carriere' && q.id === 'coffre') lines.push('Les mots dictés viennent de la liste officielle des mots-outils (fin de CP, fin de CE1) : voir [Programmes officiels](../programmes.md#mots-outils).', '');
+    if (b.id === 'french-6e-word-spelling' && q.id === 'sight-words') lines.push('Les mots dictés viennent de la liste officielle des mots-outils (fin de CP, fin de CE1) : voir [Programmes officiels](../programmes.md#mots-outils).', '');
     if (exos.length === 0) {
       lines.push('Aucun exercice n’est encore écrit pour cette mission.', '');
       continue;
@@ -499,21 +523,28 @@ function islandPage(b, d) {
       lines.push(...e.items.map((it) => `- ${describeItem(it)}`), '', '</details>', '');
     }
   }
-  lines.push('## Les plans', '');
-  if (plans.length) {
+  const parties = d.partiesDe(b.id);
+  lines.push('## Le bâtiment', '');
+  if (parties.length) {
     lines.push(
+      `Le bâtiment de l’île a ${plural(parties.length, 'partie')}, une par mission. La première fois que l’élève termine une mission de l’île, une partie se pose toute seule, sans prendre de blocs, quels que soient le niveau, les étoiles et les jokers. Les parties se posent dans cet ordre, quelle que soit la mission jouée.`,
+      '',
       table(
-        ['Plan', 'Blocs', 'XP', 'Coffre', 'La créature dit'],
+        ['Partie', 'Nom', 'Blocs posés'],
+        parties.map((p) => [String(p.rang), p.nom, String(p.cases.reduce((n, c) => n + c.keys.length, 0))]),
+      ),
+      '',
+      'Le dessin du bâtiment suit trois plans. Un plan fini rapporte son XP, et la créature le dit.',
+      '',
+      table(
+        ['Plan', 'Blocs', 'XP', 'La créature dit'],
         plans.map((p) => {
           const byBlock = {};
           for (const c of p.cells) byBlock[c.block] = (byBlock[c.block] ?? 0) + 1;
           const blocks = Object.entries(byBlock)
             .map(([k, n]) => (BLOCKS[k] ? d.blockCount(k, n) : `${n} ${k}`))
             .join(', ');
-          const chest = Object.entries(p.reward.chest)
-            .map(([k, n]) => (BLOCKS[k] ? d.blockCount(k, n) : `${n} ${k}`))
-            .join(', ');
-          return [p.name, `${p.cells.length} (${blocks})`, String(p.reward.xp), chest || '—', `« ${p.done} »`];
+          return [p.name, `${p.cells.length} (${blocks})`, String(p.reward.xp), `« ${p.done} »`];
         }),
       ),
       '',
@@ -527,9 +558,28 @@ function islandPage(b, d) {
     lines.push(
       '## Le chantier du Bloc-Navire',
       '',
-      `Étape ${stage.stage} : **${stage.name}**, vers les ${d.ARCHIPELAGOS.find((a) => a.classe === stage.to).name}. Blocs à poser : ${count(stage.cells)}. Kit qui arrive avec ${stage.guardians} Gardien${stage.guardians > 1 ? 's' : ''} vaincu${stage.guardians > 1 ? 's' : ''} : ${count(stage.kit)}. ${stage.reward.xp} XP au départ.`,
+      `Étape ${stage.stage} : **${stage.name}**, vers les ${d.ARCHIPELAGOS.find((a) => a.classe === stage.to).name}. Blocs à poser : ${count(stage.cells)}. Kit qui arrive avec ${stage.guardians} Gardien${stage.guardians > 1 ? 's' : ''} rallumé${stage.guardians > 1 ? 's' : ''} : ${count(stage.kit)}. ${stage.reward.xp} XP au départ.`,
       '',
       `Quand le kit arrive : « ${stage.done} »`,
+      '',
+    );
+  }
+  const commande = d.commandeDeLIle(b.id);
+  if (commande) {
+    const lieu = d.ASSEMBLAGE.lieu.blocland.a;
+    lines.push(
+      '## La commande',
+      '',
+      `Dans Blocland, ${b.creature.name} passe une commande : ${d.blockCount(commande.block, commande.count)} pour ${commande.blocland.name}. Elle arrive ${quandLaPremiereCommande(d.SEUIL_DE_LA_PREMIERE_COMMANDE)}, une fois qu’une mission de l’île est réussie et que l’île qui donne ce bloc est ouverte${commande.afterPlan ? `, et seulement quand « ${d.PLANS.find((p) => p.id === commande.afterPlan)?.name ?? commande.afterPlan} » est bâti` : ''}. Livrée, elle pose ${commande.blocland.name} à côté de ${b.creature.name}, avec les blocs livrés : ni coffre ni XP, ni délai, rien à perdre si on la laisse de côté.`,
+      '',
+      table(
+        ['Quand', 'Ce que dit la ligne'],
+        [
+          ['Demandée', `« ${d.texteDeLaCommande(commande, 'ask', lieu)} »`],
+          ['Les blocs sont là', `« ${d.texteDeLaCommande(commande, 'ready', lieu)} »`],
+          ['Livrée', `« ${d.texteDeLaCommande(commande, 'done', lieu)} »`],
+        ],
+      ),
       '',
     );
   }
@@ -550,7 +600,7 @@ function islandPage(b, d) {
 }
 
 /**
- * La page « Personnages et Gardiens » du pilotage (docs/pilotage/game-design/personnages.md, hors du site de documentation,
+ * La page « Personnages et Gardiens » du pilotage (docs/gameplay/personnages.md, hors du site de documentation,
  * qui s'adresse aux élèves et aux adultes qui les accompagnent) : `npm run pilotage:personnages`.
  */
 export async function generatePersonnages() {
@@ -566,10 +616,10 @@ export async function generatePersonnages() {
   try {
     const load = (p) => server.ssrLoadModule(p);
     const [biomesMod, archMod, universMod, universCore] = await Promise.all([
-      load('/src/blocland/biomes.ts'),
-      load('/src/blocland/world/archipelago.ts'),
-      load('/src/univers/index.ts'),
-      load('/src/core/univers.ts'),
+      load('/src/game/biomes.ts'),
+      load('/src/game/world/archipelago.ts'),
+      load('/src/universes/index.ts'),
+      load('/src/core/universe.ts'),
     ]);
     return personnagesPage({
       BIOMES: biomesMod.BIOMES,
@@ -582,7 +632,17 @@ export async function generatePersonnages() {
   }
 }
 
-/** Les personnages : la baleine, puis une créature et un Gardien par île, avec ce qui change d'un univers à l'autre. */
+/**
+ * Les personnages : qui parle aux grandes étapes (la créature de l'île-école dans Blocland, la baleine dans Archipéo),
+ * puis une créature et un Gardien par île, avec ce qui change d'un univers à l'autre (noms des archipels compris).
+ */
+/** Qui dit le mot des grandes étapes dans un univers, en une phrase. */
+function parleDe(univers, t, d) {
+  if (t.baleine.parle === 'baleine') return `Dans ${univers}, la **baleine** le dit.`;
+  const ecoles = d.ARCHIPELAGOS.map((a) => `${d.BIOMES.find((b) => b.id === a.school).creature.name} en ${a.classe}`).join(', ');
+  return `Dans ${univers}, la **créature de l’île-école** de l’archipel le dit, son nom écrit et son portrait dans la bulle : ${ecoles}.`;
+}
+
 function personnagesPage(d) {
   const { BIOMES, TEXTES_DE, UNIVERS } = d;
   const bl = TEXTES_DE.blocland;
@@ -590,7 +650,7 @@ function personnagesPage(d) {
   for (const [u, t] of Object.entries(TEXTES_DE))
     for (const b of BIOMES)
       if (!t.gardiens[b.id] || !t.creatures[b.id] || !t.especes[b.id]) throw new Error(`generate.mjs : textes de ${u} incomplets pour l’île ${b.id}`);
-  // Les exemples du mot de la baleine : le premier archipel, son île-port, la première île ouverte par un ouvrage.
+  // Les exemples du mot des grandes étapes : le premier archipel, son île-port, la première île ouverte par un ouvrage.
   const premier = d.ARCHIPELAGOS[0];
   const nom = (id) => BIOMES.find((b) => b.id === id).name;
   const port = nom(premier.port);
@@ -600,17 +660,19 @@ function personnagesPage(d) {
     '',
     '<!-- Page produite par `npm run pilotage:personnages` : ne pas l’écrire à la main. -->',
     '',
-    'Cette page est produite à partir des données du jeu (`docs/contenu/` pour les noms, `src/univers/` pour les espèces et les répliques) par `npm run pilotage:personnages`. Elle se corrige dans le code, puis se régénère ; jamais à la main.',
+    'Cette page est produite à partir des données du jeu (`docs/contenu/` pour les noms, `src/universes/` pour les espèces et les répliques) par `npm run pilotage:personnages`. Elle se corrige dans le code, puis se régénère ; jamais à la main.',
     '',
-    `Chaque île a une **créature**, qui l’habite, donne les missions et parle à l’arrivée, et un **Gardien**, dont le défi ferme l’île. Les noms sont communs aux deux univers ; l’espèce de la créature et ce que dit le Gardien changent. Dans ${UNIVERS.blocland.nom}, on **vainc** le Gardien, qui devient une statue ; dans ${UNIVERS.archipeo.nom}, c’est une sentinelle de pierre éteinte que l’élève **rallume**. La **baleine** parle rarement, aux grandes étapes d’un archipel, dans les deux univers.`,
+    `Chaque île a une **créature**, qui l’habite, donne les missions et parle à l’arrivée, et un **Gardien**, dont le défi ferme l’île. Les noms sont communs aux deux univers ; l’espèce de la créature et ce que dit le Gardien changent. Dans les deux univers, le Gardien attend éteint sur son îlot et son défi le **rallume** : une statue de pierre qui reprend ses couleurs dans ${UNIVERS.blocland.nom}, une sentinelle de pierre éteinte dans ${UNIVERS.archipeo.nom}. Les noms des archipels changent d’un univers à l’autre (GD-1), leurs identifiants jamais.`,
     '',
-    '## La baleine',
+    '## Le mot des grandes étapes',
+    '',
+    `Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l’île-port, le premier ouvrage). ${parleDe(UNIVERS.blocland.nom, bl, d)} ${parleDe(UNIVERS.archipeo.nom, ar, d)}`,
     '',
     table(
       ['Moment', UNIVERS.blocland.nom, UNIVERS.archipeo.nom],
       [
         ...CLASSES.map((c) => [`Arrivée en ${c}`, bl.baleine.arrivee[c], ar.baleine.arrivee[c]]),
-        ['Tous les Gardiens d’un archipel (exemple)', bl.baleine.gardiens(premier.name), ar.baleine.gardiens(premier.name)],
+        ['Tous les Gardiens d’un archipel (exemple)', bl.baleine.gardiens(bl.archipels[premier.classe]), ar.baleine.gardiens(ar.archipels[premier.classe])],
         ['Île-port terminée (exemple)', bl.baleine.port(port), ar.baleine.port(port)],
         ['Premier ouvrage payé (exemple)', bl.baleine.ouvrage(ouverte), ar.baleine.ouvrage(ouverte)],
       ],
@@ -619,7 +681,7 @@ function personnagesPage(d) {
   ];
   for (const a of d.ARCHIPELAGOS) {
     const list = BIOMES.filter((b) => b.classe === a.classe);
-    lines.push(`## Les ${a.name} (${a.classe})`, '');
+    lines.push(`## ${bl.archipels[a.classe] === ar.archipels[a.classe] ? `Les ${bl.archipels[a.classe]}` : `Les ${bl.archipels[a.classe]} (${UNIVERS.blocland.nom}), les ${ar.archipels[a.classe]} (${UNIVERS.archipeo.nom})`}, ${a.classe}`, '');
     lines.push(
       table(
         ['Île', 'Créature', `Espèce (${UNIVERS.blocland.nom})`, `Espèce (${UNIVERS.archipeo.nom})`, 'Gardien'],
@@ -807,11 +869,11 @@ function ouvragesPage(d) {
   const lines = [
     '# Ouvrages et plans',
     '',
-    `Les ${BRIDGES.length} ouvrages relient les îles d’un même archipel. Un ouvrage se construit depuis le panneau d’une île ouverte qu’il touche et coûte des blocs gagnés sur n’importe quelle île (jamais les kits de finition des plans). Certains demandent en plus une condition. Îles ouvertes au départ : ${d.START_ISLANDS.map(name).join(' et ')}. D’un archipel au suivant, on voyage avec le Bloc-Navire.`,
+    `Les ${BRIDGES.length} ouvrages relient les îles d’un même archipel. Un ouvrage se construit depuis le panneau d’une île ouverte qu’il touche et coûte des blocs gagnés sur n’importe quelle île. L’or et le cristal ne paient rien : ce sont des trophées. Les blocs de finition (toit, porte, lanterne…) ne paient pas non plus. Certains demandent en plus une condition. Îles ouvertes au départ : ${d.START_ISLANDS.map(name).join(' et ')}. D’un archipel au suivant, on voyage avec le Bloc-Navire.`,
     '',
     '## Le Bloc-Navire',
     '',
-    'Un seul navire qui grandit en trois étapes, chacune un plan à construire sur le quai de l’île-port. Le kit (voile, haut du ballon, feux) arrive avec les Gardiens vaincus de l’archipel ; le reste se pose bloc par bloc. Embarquer est un bouton ; le voyage fait reste fait, on revient quand on veut.',
+    'Un seul navire qui grandit en trois étapes, chacune un plan à construire sur le quai de l’île-port. Le kit (voile, haut du ballon, feux) arrive avec les Gardiens rallumés de l’archipel ; le reste se pose bloc par bloc. Embarquer est un bouton ; le voyage fait reste fait, on revient quand on veut.',
     '',
     table(
       ['Étape', 'Nom', 'Se construit sur', 'Blocs à poser', 'Kit', 'Gardiens', 'Mène aux', 'XP'],
@@ -844,23 +906,35 @@ function ouvragesPage(d) {
         '',
       ];
     }),
-    '## Les plans',
+    '## Les bâtiments des îles',
     '',
-    `${PLANS.length} plans, trois par île, enchaînés : le bâtiment, puis son toit (porte et lanterne), puis sa cour (barrières et escalier). Les blocs de finition viennent des coffres, jamais des exercices.`,
+    'Chaque île a un bâtiment, avec une partie par mission (de 2 à 4). La première fois que l’élève termine une mission de l’île, une partie se pose toute seule, sans prendre de blocs, quels que soient le niveau, les étoiles et les jokers. Les parties se posent dans l’ordre du dessin. Les blocs gagnés vont dans le stock et servent aux ouvrages, aux monuments et au Bloc-Navire.',
+    '',
+    'Le dessin suit trois plans : le bâtiment, puis son toit, puis sa cour. Avec trois missions, chaque partie est un plan. Avec deux, la deuxième partie pose le toit et la cour ensemble. Avec quatre, le premier plan se pose en deux fois : le bas, puis le haut. Un plan fini rapporte son XP.',
     '',
     table(
-      ['Île', 'Plan', 'Blocs', 'XP', 'Coffre'],
-      PLANS.map((p) => {
-        const chest = Object.entries(p.reward.chest)
-          .map(([k, n]) => (BLOCKS[k] ? d.blockCount(k, n) : `${n} ${k}`))
-          .join(', ');
-        return [`[${name(p.biome)}](iles/${p.biome}.md)`, p.name, String(p.cells.length), String(p.reward.xp), chest || '—'];
-      }),
+      ['Île', 'Parties', 'Plans (XP)'],
+      d.BIOMES.filter((b) => d.partiesDe(b.id).length).map((b) => [
+        `[${name(b.id)}](iles/${b.id}.md)`,
+        d.partiesDe(b.id).map((p) => p.nom).join(' ; '),
+        PLANS.filter((p) => p.biome === b.id).map((p) => `${p.name} (${p.reward.xp})`).join(' ; '),
+      ]),
     ),
     '',
     '## Les monuments',
     '',
-    `${d.MONUMENTS.length} monuments, deux par archipel, chacun sur son îlot au large d’une île. Ils se construisent comme un plan, bloc par bloc, avec les blocs de plusieurs îles de leur archipel : de quoi employer les blocs qui restent une fois les bâtiments finis. Ils n’ouvrent rien et ne donnent pas de coffre ; un monument fini rapporte de l’XP, et le premier le succès Patrimoine.`,
+    `${d.MONUMENTS.length} monuments, deux par archipel, chacun sur son îlot au large d’une île. Ils se construisent à la main, bloc par bloc, avec les blocs de plusieurs îles de leur archipel : de quoi employer les blocs qui restent une fois les bâtiments finis. Ils n’ouvrent rien et ne donnent pas de coffre ; un monument fini rapporte de l’XP, et le premier le succès Patrimoine.`,
+    '',    `Chaque monument demande aussi quelques **blocs assemblés** : un par archipel, qu’aucune île ne donne. On les assemble sur l’île de l’école, ${d.ASSEMBLAGE.lieu.blocland.a} dans Blocland (${d.ASSEMBLAGE.lieu.archipeo.a} dans Archipéo), avec des blocs de deux îles de l’archipel.`,
+    '',
+    table(
+      ['Archipel', 'Bloc assemblé', 'Recette', 'Nom dans Archipéo'],
+      d.ASSEMBLAGE.recettes.map((r) => [
+        `Les ${d.ARCHIPELAGOS.find((a) => a.classe === r.archipelago).name}`,
+        r.noms.blocland.nom,
+        r.ingredients.map((i) => d.blockCount(i.bloc, i.n)).join(' et '),
+        r.noms.archipeo.nom,
+      ]),
+    ),
     '',
     table(
       ['Archipel', 'Monument', 'Au large de', 'Blocs', 'XP'],
@@ -873,8 +947,42 @@ function ouvragesPage(d) {
       }),
     ),
     '',
+    ...questionsAssemblage(d),
   ];
   return { path: 'pedagogie/ouvrages.md', title: 'Ouvrages et plans', body: lines.join('\n') };
+}
+
+/** Les questions des blocs assemblés (GD-2) : ce qu'elles travaillent, leur consigne et leurs questions. */
+function questionsAssemblage(d) {
+  if (d.QUESTIONS_ASSEMBLAGE.length === 0) return [];
+  const lines = [
+    '## Les questions de l’assemblage',
+    '',
+    'Chaque bloc assemblé demande de répondre à une question qui mêle les **deux matières de sa recette** : on lit un petit texte, on calcule, puis on choisit parmi trois réponses, avec le rappel des deux matières toujours affiché et un indice. Une bonne réponse, du premier coup ou au second essai, assemble le bloc ; une erreur ne fait rien perdre. Les questions ne rapportent ni XP ni étoiles. Chaque élève les rencontre dans son propre ordre ; une question ne revient jamais avant six autres, et une question manquée revient plus tard. Voir [La Fabrique](../manuel/blocland.md#la-question-de-lassemblage) dans le manuel.',
+    '',
+    table(
+      ['Bloc assemblé', 'Archipel', 'Recette', 'Questions'],
+      d.QUESTIONS_ASSEMBLAGE.map((q) => {
+        const r = d.ASSEMBLAGE.recettes.find((x) => x.bloc === q.bloc);
+        return [
+          r.noms.blocland.nom,
+          `Les ${d.ARCHIPELAGOS.find((a) => a.classe === r.archipelago).name}`,
+          r.ingredients.map((i) => d.blockCount(i.bloc, i.n)).join(' et '),
+          String(q.items.length),
+        ];
+      }),
+    ),
+    '',
+  ];
+  for (const q of d.QUESTIONS_ASSEMBLAGE) {
+    const r = d.ASSEMBLAGE.recettes.find((x) => x.bloc === q.bloc);
+    lines.push(`### ${r.noms.blocland.nom} (${r.noms.archipeo.nom} dans Archipéo)`, '');
+    lines.push(programmeLine(q.programme, d, ''), '');
+    lines.push(`Consigne : « ${q.instruction} »${q.lang === 'en' ? ' Le texte à lire est en anglais, lu en voix anglaise ; la question, l’indice et l’aide sont en français.' : ''}`, '');
+    lines.push('<details>', `<summary>Questions : ${q.items.length}</summary>`, '');
+    lines.push(...q.items.map((it) => `- ${describeItem(it)}`), '', '</details>', '');
+  }
+  return lines;
 }
 
 function baremePage(d) {
@@ -888,7 +996,7 @@ function baremePage(d) {
   const lines = [
     '# Barème, succès et valeurs par défaut',
     '',
-    'Les nombres de cette page viennent du code (`src/core/progress.ts`, `src/blocland/engine.ts`, `src/core/subjectProgress.ts`, `src/core/settings.ts`).',
+    'Les nombres de cette page viennent du code (`src/core/progress.ts`, `src/game/engine.ts`, `src/core/subjectProgress.ts`, `src/core/settings.ts`).',
     '',
     '## Points d’expérience (missions du portail)',
     '',
@@ -925,6 +1033,10 @@ function baremePage(d) {
           'Blocs d’une mission du portail (école du village)',
           `${PORTAL_BLOCKS} × le score, jamais 0 dès une bonne réponse, mêmes bonus d’étoiles et de première fois ; des blocs de l’île de l’école de l’archipel où se tient le bonhomme (${d.ARCHIPELAGOS.map((a) => `${d.BIOMES.find((b) => b.id === a.school).name} en ${a.classe}`).join(', ')}) ; la mission compte pour la régularité, pas pour les étoiles ni les Gardiens`,
         ],
+        [
+          'Blocs d’une révision (une mission qui a des questions à revoir aujourd’hui)',
+          `toujours autant qu’une mission sans faute (la base de la mission, +${d.engine.blocksBonus(3, false).stars} des trois étoiles), quel que soit le score : ni le joker ni les erreurs n’en retirent`,
+        ],
         ['XP', '+50 % sans aide ni erreur'],
         ['Répétition espacée des items ratés', `J+${INTERVALS.join(', J+')} ; sortie après ${GRADUATE_AT} réussites d’affilée`],
         ['Régularité', `un coffre de ${CHEST_BLOCKS} blocs tous les ${CHEST_EVERY} jours de suite ; la série se fissure après un jour manqué, réparable le lendemain`],
@@ -959,7 +1071,6 @@ function baremePage(d) {
         ['Vitesse de lecture', String(DEFAULT_SETTINGS.speechRate), '0,5 à 1,3'],
         ['Lire les consignes à voix haute', DEFAULT_SETTINGS.autoRead ? 'oui' : 'non', ''],
         ['Syllabes en couleurs', DEFAULT_SETTINGS.syllables ? 'oui' : 'non', ''],
-        ['Au démarrage', d.settings.START_LABELS[DEFAULT_SETTINGS.startIn], Object.values(d.settings.START_LABELS).join(', ')],
         ['Vue du monde', WORLD_VIEW_LABELS[DEFAULT_SETTINGS.worldView], Object.values(WORLD_VIEW_LABELS).join(', ')],
         ['Lumière du monde', d.settings.WORLD_LIGHT_LABELS[DEFAULT_SETTINGS.worldLight], Object.values(d.settings.WORLD_LIGHT_LABELS).join(', ')],
         ['Sons du village', DEFAULT_SETTINGS.sounds ? 'oui' : 'non', ''],

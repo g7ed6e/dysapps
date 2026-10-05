@@ -1,0 +1,161 @@
+// Les missions de maths de Blocland : construites à partir des générateurs des missions existantes (tables, fractions,
+// décimaux), avec un tirage reproductible par graine (une graine au hasard par partie). Les aides visuelles (grille de points, boîte de dix, droite…)
+// sont décrites en données (type + propriétés) pour rester sérialisables ; l'écran « calcul » les redessine.
+import { isValidElement, type ReactNode } from 'react';
+import type { Question } from '../../components/QuizSession';
+import { seeded } from '../../core/random';
+import { CompareBars, DotGroups, FractionBar, FractionDisc, GraduatedLine } from '../../components/math/FractionFigures';
+import { DecimalTable } from '../../apps/decimaux/DecimalTable';
+import { DotArray, NumberLineJumps, PlaceValueTable, TenFrame } from '../../apps/tables/aids';
+import { BarList, ClassTable, ColumnOperation, Graph, LongDivision, NumberLineInt, RatioTable, RightTriangle, RuleCard, ThalesFigure } from './Aids';
+import { Scene } from './Scene';
+import { complement10, complement100, double, half, multiplicationFrom } from '../../apps/tables/generators';
+import { compare as compareDecimals, complementToOne, decimalFraction, onLine as decimalOnLine, readDigit, timesPower } from '../../apps/decimaux/generators';
+import { compare as compareFractions, equivalent, ofQuantity, onLine as fractionOnLine, readFraction } from '../../apps/fractions/generators';
+import type { BiomeId, BlockId } from '../biomes';
+import type { ExerciseDef, ExerciseItem } from './types';
+
+/** Une aide visuelle décrite en données : le nom de la figure et ses propriétés. */
+export interface AidData {
+  kind: string;
+  props: Record<string, unknown>;
+}
+
+/** Figures connues, par nom (l'écran fait la conversion inverse). */
+export const AID_COMPONENTS: Record<string, (props: never) => ReactNode> = {
+  dots: DotArray,
+  ten: TenFrame,
+  jumps: NumberLineJumps,
+  places: PlaceValueTable,
+  'fraction-bar': FractionBar,
+  'fraction-disc': FractionDisc,
+  'compare-bars': CompareBars,
+  'graduated-line': GraduatedLine,
+  'dot-groups': DotGroups,
+  'decimal-table': DecimalTable,
+  'number-line': NumberLineInt,
+  'ratio-table': RatioTable,
+  'rule-card': RuleCard,
+  'right-triangle': RightTriangle,
+  'thales-figure': ThalesFigure,
+  'bar-list': BarList,
+  graph: Graph,
+  'column-operation': ColumnOperation,
+  'long-division': LongDivision,
+  'class-table': ClassTable,
+  scene: Scene,
+};
+
+/** Un élément React (aide d'un générateur) → sa description en données. */
+export function aidToData(node: ReactNode): AidData | undefined {
+  if (!isValidElement(node)) return undefined;
+  const kind = Object.entries(AID_COMPONENTS).find(([, c]) => c === node.type)?.[0];
+  if (!kind) return undefined;
+  return { kind, props: { ...(node.props as Record<string, unknown>) } };
+}
+
+type Generator = (rng: () => number) => Question & { key: string };
+
+/** Un item Blocland à partir d'une question de mission. */
+export function toItem(q: Question & { key: string }): ExerciseItem {
+  const item: ExerciseItem = {
+    key: q.key,
+    prompt: q.prompt,
+    spoken: q.spokenPrompt ?? q.prompt,
+    choices: q.choices,
+    answer: q.answer,
+    hint: q.hint ?? '',
+    explanation: q.explanation ?? '',
+  };
+  const aid = aidToData(q.aid);
+  if (aid) item.aid = aid;
+  const figure = aidToData(q.figure);
+  if (figure) item.figure = figure;
+  return item;
+}
+
+/** `count` items différents (par clé), en alternant les générateurs, tirés de façon reproductible. */
+export function buildItems(id: string, generators: Generator[], count = 8): ExerciseItem[] {
+  const rng = seeded(id);
+  const items: ExerciseItem[] = [];
+  const seen = new Set<string>();
+  for (let tries = 0; items.length < count && tries < count * 40; tries++) {
+    const q = generators[tries % generators.length](rng);
+    if (seen.has(q.key)) continue;
+    seen.add(q.key);
+    items.push(toItem(q));
+  }
+  return items;
+}
+
+interface Spec {
+  biome: BiomeId;
+  type: string;
+  level: number;
+  instruction: string;
+  generators: Generator[];
+  block: BlockId;
+  count?: number;
+}
+
+function define({ biome, type, level, instruction, generators, block, count }: Spec): ExerciseDef {
+  const id = `${biome}-${type}-${level}`;
+  return {
+    id,
+    biome,
+    type,
+    level,
+    instruction,
+    items: buildItems(id, generators, count),
+    // Chaque partie tire d'autres nombres : la graine change avec le nombre de parties jouées.
+    generate: (seed) => buildItems(seed, generators, count),
+    feedback: { correct: 'Bien calculé !', wrong: '{explanation}' },
+    reward: { block, amount: 4, xp: 12 },
+    adaptive: { promoteAt: 0.85, demoteAt: 0.5 },
+  };
+}
+
+// ---------- Plaine des nombres (calcul mental) ----------
+
+const TABLES = 'Calcule la multiplication. La grille de points te montre le résultat : compte les rangées, par cinq.';
+const COMPLEMENTS = 'Trouve le nombre qui manque pour arriver à dix, ou à cent. Regarde la boîte de dix ou la droite.';
+const DOUBLES = 'Trouve le double ou la moitié. Sépare le nombre en dizaines et en unités, puis assemble.';
+
+// ---------- Rivière des fractions ----------
+
+const NENUPHARS = 'Regarde la figure : en bas, le nombre de parts égales ; en haut, le nombre de parts coloriées.';
+const NENUPHARS_LINE = 'Sur la droite, compte en combien de parts est coupée l’unité, puis compte les parts jusqu’au point.';
+const DEUX_RIVES = 'Compare les deux fractions. Les barres te montrent laquelle est la plus grande.';
+const PARTAGE = 'Partage la quantité en parts égales, puis prends le nombre de parts demandé. Les points t’aident.';
+const PARTAGE_EGALES = 'Deux fractions égales : le nombre de parts a été multiplié, multiplie aussi les parts prises.';
+
+// ---------- Volcan des décimaux ----------
+
+const CRATERE = 'Repère la virgule : juste avant, les unités ; juste après, les dixièmes, puis les centièmes. Lis le rang demandé dans le tableau.';
+const CRATERE_FRACTION = 'Une fraction décimale devient un nombre à virgule : le dernier chiffre du haut va dans la colonne du bas.';
+const CRATERE_POWER = 'Multiplier ou diviser par 10, 100, 1 000 : chaque chiffre change de rang. Le tableau te montre le déplacement.';
+const COULEE = 'Compare les deux décimaux dans le tableau, rang par rang, depuis la gauche. Le plus long n’est pas toujours le plus grand.';
+const PENTE = 'Sur la droite, l’unité est coupée en dix : chaque graduation vaut un dixième. Lis le nombre repéré par le point.';
+const PENTE_UN = 'Trouve ce qui manque pour arriver à 1. La droite ou les bonds t’aident à compter.';
+
+export const MATHS_EXERCISES: ExerciseDef[] = [
+  define({ biome: 'maths-6e-calculation', type: 'times-tables', level: 1, instruction: TABLES, generators: [multiplicationFrom([2, 5, 10])], block: 'maths-6e-calculation' }),
+  define({ biome: 'maths-6e-calculation', type: 'times-tables', level: 2, instruction: TABLES, generators: [multiplicationFrom([3, 4])], block: 'maths-6e-calculation' }),
+  define({ biome: 'maths-6e-calculation', type: 'times-tables', level: 3, instruction: TABLES, generators: [multiplicationFrom([6, 7, 8, 9])], block: 'maths-6e-calculation' }),
+  define({ biome: 'maths-6e-calculation', type: 'make-ten', level: 1, instruction: COMPLEMENTS, generators: [complement10], block: 'maths-6e-calculation' }),
+  define({ biome: 'maths-6e-calculation', type: 'make-ten', level: 2, instruction: COMPLEMENTS, generators: [complement100], block: 'maths-6e-calculation' }),
+  define({ biome: 'maths-6e-calculation', type: 'doubles-halves', level: 1, instruction: DOUBLES, generators: [double, half], block: 'maths-6e-calculation' }),
+  // Rivière des fractions
+  define({ biome: 'maths-6e-fractions', type: 'number-line', level: 1, instruction: NENUPHARS, generators: [readFraction], block: 'maths-6e-fractions' }),
+  define({ biome: 'maths-6e-fractions', type: 'number-line', level: 2, instruction: NENUPHARS_LINE, generators: [fractionOnLine], block: 'maths-6e-fractions' }),
+  define({ biome: 'maths-6e-fractions', type: 'equivalence', level: 1, instruction: DEUX_RIVES, generators: [compareFractions], block: 'maths-6e-fractions' }),
+  define({ biome: 'maths-6e-fractions', type: 'sharing', level: 1, instruction: PARTAGE, generators: [ofQuantity], block: 'maths-6e-fractions' }),
+  define({ biome: 'maths-6e-fractions', type: 'sharing', level: 2, instruction: PARTAGE_EGALES, generators: [equivalent], block: 'maths-6e-fractions' }),
+  // Volcan des décimaux
+  define({ biome: 'maths-6e-decimals', type: 'ordering', level: 1, instruction: CRATERE, generators: [readDigit], block: 'maths-6e-decimals' }),
+  define({ biome: 'maths-6e-decimals', type: 'ordering', level: 2, instruction: CRATERE_FRACTION, generators: [decimalFraction], block: 'maths-6e-decimals' }),
+  define({ biome: 'maths-6e-decimals', type: 'ordering', level: 3, instruction: CRATERE_POWER, generators: [timesPower], block: 'maths-6e-decimals' }),
+  define({ biome: 'maths-6e-decimals', type: 'operations', level: 1, instruction: COULEE, generators: [compareDecimals], block: 'maths-6e-decimals' }),
+  define({ biome: 'maths-6e-decimals', type: 'scale', level: 1, instruction: PENTE, generators: [decimalOnLine], block: 'maths-6e-decimals' }),
+  define({ biome: 'maths-6e-decimals', type: 'scale', level: 2, instruction: PENTE_UN, generators: [complementToOne], block: 'maths-6e-decimals' }),
+];

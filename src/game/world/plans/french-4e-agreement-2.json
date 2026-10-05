@@ -1,0 +1,9 @@
+{
+  "id": "french-4e-agreement-2",
+  "biome": "french-4e-agreement",
+  "name": "Le toit de la bergerie",
+  "reward": {
+    "xp": 50
+  },
+  "done": "Un toit et une porte ! La lanterne, accrochée à la paroi, veille sur les chevreaux."
+}

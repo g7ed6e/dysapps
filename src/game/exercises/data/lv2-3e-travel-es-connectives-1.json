@@ -1,0 +1,231 @@
+{
+  "id": "lv2-3e-travel-es-connectives-1",
+  "biome": "lv2-3e-travel",
+  "type": "es-connectives",
+  "level": 1,
+  "lang": "es",
+  "instruction": "Lis la question en espagnol, ou appuie sur Écouter, puis choisis la bonne réponse. La règle est affichée.",
+  "items": [
+    {
+      "key": "lv2-3e-travel-es-connectives-1-0",
+      "prompt": "¿Por qué vas a Granada?",
+      "spoken": "Por qué vas a Granada?",
+      "choices": [
+        "Porque mi tía vive allí.",
+        "Por qué mi tía vive allí.",
+        "Cuando mi tía vive allí."
+      ],
+      "answer": "Porque mi tía vive allí.",
+      "hint": "¿Por qué? pose la question ; porque, en un seul mot, y répond.",
+      "explanation": "Porque mi tía vive allí = parce que ma tante habite là-bas. Por qué, en deux mots, sert à poser la question ; cuando = quand.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Relier deux idées",
+          "lines": [
+            "porque = parce que ; ¿por qué? = pourquoi ?",
+            "On répond à ¿por qué? par porque, en un seul mot.",
+            "cuando = quand ; pero = mais",
+            "por eso = c’est pour ça, donc",
+            "Leo mucho, pero no me gusta escribir."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-es-connectives-1-1",
+      "prompt": "¿Cuándo vas a la playa?",
+      "spoken": "Cuándo vas a la playa?",
+      "choices": [
+        "Cuando hace sol.",
+        "Porque hace sol.",
+        "Pero hace sol."
+      ],
+      "answer": "Cuando hace sol.",
+      "hint": "¿Cuándo? demande quand.",
+      "explanation": "¿Cuándo? = quand ? On répond cuando hace sol = quand il fait beau. porque répond à ¿por qué? ; pero = mais.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Relier deux idées",
+          "lines": [
+            "porque = parce que ; ¿por qué? = pourquoi ?",
+            "On répond à ¿por qué? par porque, en un seul mot.",
+            "cuando = quand ; pero = mais",
+            "por eso = c’est pour ça, donc",
+            "Leo mucho, pero no me gusta escribir."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-es-connectives-1-2",
+      "prompt": "¿Te gusta viajar en avión?",
+      "spoken": "Te gusta viajar en avión?",
+      "choices": [
+        "Sí, pero me da miedo.",
+        "Sí, porque me da miedo.",
+        "Sí, cuando me da miedo."
+      ],
+      "answer": "Sí, pero me da miedo.",
+      "hint": "me da miedo = j’ai peur. J’aime, et j’ai peur : quel petit mot relie les deux ?",
+      "explanation": "Sí, pero me da miedo = oui, mais j’ai peur. pero = mais relie deux idées qui s’opposent. « J’aime parce que j’ai peur » n’a pas de sens.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Relier deux idées",
+          "lines": [
+            "porque = parce que ; ¿por qué? = pourquoi ?",
+            "On répond à ¿por qué? par porque, en un seul mot.",
+            "cuando = quand ; pero = mais",
+            "por eso = c’est pour ça, donc",
+            "Leo mucho, pero no me gusta escribir."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-es-connectives-1-3",
+      "prompt": "¿Por qué no vienes al cine?",
+      "spoken": "Por qué no vienes al cine?",
+      "choices": [
+        "Porque tengo deberes.",
+        "Por eso tengo deberes.",
+        "Pero tengo deberes."
+      ],
+      "answer": "Porque tengo deberes.",
+      "hint": "¿Por qué? = pourquoi ? On répond par parce que.",
+      "explanation": "Porque tengo deberes = parce que j’ai des devoirs. por eso = c’est pour ça ; pero = mais.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Relier deux idées",
+          "lines": [
+            "porque = parce que ; ¿por qué? = pourquoi ?",
+            "On répond à ¿por qué? par porque, en un seul mot.",
+            "cuando = quand ; pero = mais",
+            "por eso = c’est pour ça, donc",
+            "Leo mucho, pero no me gusta escribir."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-es-connectives-1-4",
+      "prompt": "¿Cuándo haces los deberes?",
+      "spoken": "Cuándo haces los deberes?",
+      "choices": [
+        "Cuando vuelvo del colegio.",
+        "Porque vuelvo del colegio.",
+        "Pero vuelvo del colegio."
+      ],
+      "answer": "Cuando vuelvo del colegio.",
+      "hint": "¿Cuándo? demande quand.",
+      "explanation": "Cuando vuelvo del colegio = quand je rentre du collège. porque = parce que ; pero = mais.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Relier deux idées",
+          "lines": [
+            "porque = parce que ; ¿por qué? = pourquoi ?",
+            "On répond à ¿por qué? par porque, en un seul mot.",
+            "cuando = quand ; pero = mais",
+            "por eso = c’est pour ça, donc",
+            "Leo mucho, pero no me gusta escribir."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-es-connectives-1-5",
+      "prompt": "¿Cuándo sales de viaje?",
+      "spoken": "Cuándo sales de viaje?",
+      "choices": [
+        "Cuando terminan las clases.",
+        "Porque terminan las clases.",
+        "Pero terminan las clases."
+      ],
+      "answer": "Cuando terminan las clases.",
+      "hint": "¿Cuándo? demande quand.",
+      "explanation": "Cuando terminan las clases = quand les cours finissent. porque = parce que ; pero = mais.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Relier deux idées",
+          "lines": [
+            "porque = parce que ; ¿por qué? = pourquoi ?",
+            "On répond à ¿por qué? par porque, en un seul mot.",
+            "cuando = quand ; pero = mais",
+            "por eso = c’est pour ça, donc",
+            "Leo mucho, pero no me gusta escribir."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-es-connectives-1-6",
+      "prompt": "¿Quieres ir a Madrid?",
+      "spoken": "Quieres ir a Madrid?",
+      "choices": [
+        "Sí, pero no tengo dinero.",
+        "Sí, porque no tengo dinero.",
+        "Sí, cuando no tengo dinero."
+      ],
+      "answer": "Sí, pero no tengo dinero.",
+      "hint": "no tengo dinero = je n’ai pas d’argent. Je veux, mais je ne peux pas.",
+      "explanation": "Sí, pero no tengo dinero = oui, mais je n’ai pas d’argent. pero relie deux idées qui s’opposent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Relier deux idées",
+          "lines": [
+            "porque = parce que ; ¿por qué? = pourquoi ?",
+            "On répond à ¿por qué? par porque, en un seul mot.",
+            "cuando = quand ; pero = mais",
+            "por eso = c’est pour ça, donc",
+            "Leo mucho, pero no me gusta escribir."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-es-connectives-1-7",
+      "prompt": "¿Por qué te gusta Sevilla?",
+      "spoken": "Por qué te gusta Sevilla?",
+      "choices": [
+        "Porque hace buen tiempo.",
+        "Por eso hace buen tiempo.",
+        "Cuando hace buen tiempo."
+      ],
+      "answer": "Porque hace buen tiempo.",
+      "hint": "¿Por qué? = pourquoi ? On répond par parce que.",
+      "explanation": "Porque hace buen tiempo = parce qu’il fait beau. por eso = c’est pour ça ; cuando = quand. Sevilla, c’est Séville, en Andalousie.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Relier deux idées",
+          "lines": [
+            "porque = parce que ; ¿por qué? = pourquoi ?",
+            "On répond à ¿por qué? par porque, en un seul mot.",
+            "cuando = quand ; pero = mais",
+            "por eso = c’est pour ça, donc",
+            "Leo mucho, pero no me gusta escribir."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "wrong": "{explanation}",
+    "correct": "Bien répondu !"
+  },
+  "reward": {
+    "block": "lv2-3e-travel",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

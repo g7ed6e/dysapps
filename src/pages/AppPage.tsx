@@ -12,8 +12,8 @@ export function AppPage() {
   const app = getApp(appId);
   // Venu de l'école du village : le retour ramène à sa porte.
   const from = (useLocation().state as { from?: string } | null)?.from;
-  const fromSchool = typeof from === 'string' && from.startsWith('/aventure/ecole') ? from : null;
-  // « Continuer » (écran titre, menus) ramène à la dernière mission du portail (pas au Tutoriel).
+  const fromSchool = typeof from === 'string' && from.startsWith('/adventure/school') ? from : null;
+  // « Ma dernière mission » (écran titre, menus) ramène à la dernière mission du portail (pas au Tutoriel).
   useRememberPlace(app && !app.onHome && app.status === 'disponible' ? { path: `/app/${app.id}`, label: app.title } : null);
   if (!app || app.status !== 'disponible' || !app.component) return <NotFoundPage />;
   const Component = app.component;

@@ -1,0 +1,245 @@
+// La construction taillée d'Archipéo en 3D (lot R5, dans l’univers Archipéo (voir rendering.ts)) : les trois groupes de
+// world/construction.ts, trois appels de dessin. Les couleurs sont portées par les sommets ; trois matériaux, faits une
+// fois par scène et libérés avec elle, les complètent dans le shader (`onBeforeCompile`) :
+//
+// - les blocs : la teinte de chaque bloc (± 4 %, tirée de sa case), et le biseau peint, une lumière qui accroche les
+//   arêtes saillantes sur une bande de `BISEAU` case, un pixel et demi au moins (elle éclaircit, jamais n'assombrit :
+//   +22 %, et +14 niveaux au moins sur une teinte sombre, `eclatDuBiseau` ; de loin, quand une case tient en moins de
+//   16 pixels, elle s'efface, pour ne pas scintiller) ; le verre hors d'un mur, cerné d'une arête fine par case ;
+//   les murs de l'architecture modulaire (lot 7), peints d'après leur motif (world/architecture/paint.ts,
+//   `MOTIF_GLSL`) : le colombage, le bardage, le soubassement et le chaperon, aux couleurs du kit de l'archipel (l'uniforme
+//   `uRoles`) ; de loin, les traits fins s'effacent jusqu'au mur uni ; la nuit, rien ne s'allume ;
+//   les blocs assemblés (GD-2, world/construction.ts, `MOTIF_ASSEMBLE_GLSL`) : la forme de chacun, peinte sur son fond,
+//   effacée de loin comme le biseau. L'attribut `motif` porte l'un ou l'autre : sous `MOTIF_ASSEMBLE_DEBUT`, un mur
+//   peint ; au-delà, un bloc assemblé ;
+// - les fenêtres et les lanternes : la lueur `LUEUR`, exacte, qui monte avec la nuit, chacune à son moment ;
+// - les fantômes : le crème Brume, sans lumière, translucide, et l'arête fine de chaque case.
+//
+// Les modèles qui remplacent des cubes (le phare de Grimoire du 6e, les ponts de pierre et de bois et le phare du large
+// du 5e, DA-4) passent par les mêmes groupes : leur pierre dans les blocs, la lanterne ou le feu dans les fenêtres, qui
+// prend la lueur la nuit, fixe, sans pulser.
+//
+// Rien ne bouge image par image : les uniformes suivent la lumière (`lumiere.suivre`, chaque minute au plus).
+import * as THREE from 'three';
+import {
+  ARETE,
+  ARETE_DU_VERRE,
+  ARETE_FANTOME,
+  BISEAU,
+  BISEAU_GLSL,
+  ECLAT_DU_BISEAU,
+  ECLAT_GLSL,
+  FANTOME,
+  LUEUR,
+  MOTIF_ASSEMBLE_DEBUT,
+  MOTIF_ASSEMBLE_GLSL,
+  opaciteDesFantomes,
+  TEINTE_GLSL,
+  type GroupeDeConstruction,
+  type MaillageDeLaConstruction,
+} from '../world/construction';
+import { MOTIF_GLSL, ROLES_PEINTS } from '../world/architecture';
+import type { Lumiere } from './light';
+
+/** Les trois matériaux de la construction, partagés par ses maillages (le monde, le navire). */
+export interface MateriauxDeConstruction {
+  opaque: THREE.MeshLambertMaterial;
+  fenetres: THREE.MeshLambertMaterial;
+  fantomes: THREE.MeshBasicMaterial;
+  dispose(): void;
+}
+
+/**
+ * Les matériaux de la construction. `roles` : les couleurs linéaires des rôles peints du kit de l'archipel
+ * (world/construction.ts, `couleursDesRoles`), pour les murs de l'architecture modulaire ; sans elles, du noir (aucun
+ * motif ne les lit).
+ */
+export function creerMateriaux(lumiere: Lumiere | null, roles?: Float32Array): MateriauxDeConstruction {
+  const biseau = { value: ECLAT_DU_BISEAU };
+  const couleursDesRoles = Array.from({ length: ROLES_PEINTS.length * 2 }, (_, i) =>
+    roles ? new THREE.Color(roles[3 * i], roles[3 * i + 1], roles[3 * i + 2]) : new THREE.Color(0, 0, 0),
+  );
+  const opaque = new THREE.MeshLambertMaterial({ vertexColors: true });
+  opaque.onBeforeCompile = (s) => {
+    s.uniforms.uBiseau = biseau;
+    s.uniforms.uArete = { value: new THREE.Color(ARETE) };
+    s.uniforms.uRoles = { value: couleursDesRoles };
+    s.vertexShader = s.vertexShader
+      .replace(
+        '#include <common>',
+        '#include <common>\nattribute vec4 biseaux;\nattribute float teinte;\nattribute float arete;\nattribute float motif;\nvarying vec3 vCase;\nvarying vec3 vPos;\nvarying vec3 vN;\nvarying vec4 vBiseaux;\nvarying float vTeinte;\nvarying float vArete;\nflat varying float vMotif;',
+      )
+      // La case d'un sommet : un quart de case derrière sa face (world/construction.ts, `caseDeLaConstruction`).
+      .replace(
+        '#include <begin_vertex>',
+        '#include <begin_vertex>\nvCase = position - normal * 0.25;\nvPos = position;\nvN = normal;\nvBiseaux = biseaux;\nvTeinte = teinte;\nvArete = arete;\nvMotif = motif;',
+      );
+    s.fragmentShader = s.fragmentShader
+      .replace(
+        '#include <common>',
+        `#include <common>\nuniform float uBiseau;\nuniform vec3 uArete;\nvarying vec3 vCase;\nvarying vec3 vPos;\nvarying vec3 vN;\nvarying vec4 vBiseaux;\nvarying float vTeinte;\nvarying float vArete;\nflat varying float vMotif;\n${TEINTE_GLSL}\n${BISEAU_GLSL}\n${MOTIF_GLSL}\n${MOTIF_ASSEMBLE_GLSL}`,
+      )
+      .replace(
+        '#include <color_fragment>',
+        `#include <color_fragment>
+// Le motif : un mur peint (lot 7) sous ${MOTIF_ASSEMBLE_DEBUT}.0, un bloc assemblé (GD-2) au-delà. Les deux fonctions sont
+// appelées partout (leurs dérivées se prennent en flot uniforme) ; celle qui ne concerne pas la face reçoit 0 et rend
+// sa couleur aussitôt.
+bool assemble = vMotif > ${MOTIF_ASSEMBLE_DEBUT - 0.5};
+// Le mur peint, sur son fond, avant la teinte de sa case.
+diffuseColor.rgb = peindreLeMotif(diffuseColor.rgb, assemble ? 0.0 : vMotif, vPos, vN);
+diffuseColor.rgb *= vTeinte > 0.0 ? pow(vTeinte, 2.2) : teinteDeCase(floor(vCase));
+// Le bloc assemblé, sur son fond teinté, avant le biseau.
+diffuseColor.rgb = motifAssemble(diffuseColor.rgb, assemble ? vMotif - ${MOTIF_ASSEMBLE_DEBUT}.0 : 0.0, vPos, vN);
+{
+  // Le biseau peint : 1 au bord saillant, 0 au-delà de la bande. La bande garde au moins un pixel et demi (jamais un
+  // fil qui scintille) ; de loin, quand une case tient en moins de 16 pixels, elle s'efface (rien sous 8 pixels).
+  vec4 fw = max(fwidth(vBiseaux), vec4(1e-5));
+  vec4 w = max(vec4(${BISEAU.toFixed(3)}), 1.5 * fw);
+  vec4 k = (1.0 - smoothstep(w - 0.5 * fw, w + 0.5 * fw, vBiseaux)) * clamp((1.0 / fw - 8.0) / 8.0, 0.0, 1.0);
+  diffuseColor.rgb = biseauPeint(diffuseColor.rgb, max(max(k.x, k.y), max(k.z, k.w)), uBiseau);
+}
+if (vArete > 0.5) {
+  // Le verre hors d'un mur : une arête d'un pixel et demi au bord de chaque case, effacée de loin comme le biseau.
+  vec3 an = abs(vN);
+  vec2 q = an.x > 0.5 ? vPos.zy : (an.y > 0.5 ? vPos.xz : vPos.xy);
+  vec2 f = fract(q);
+  vec2 fq = max(fwidth(q), vec2(1e-5));
+  vec2 px = min(f, 1.0 - f) / fq;
+  float a = (1.0 - smoothstep(0.5, 1.0, min(px.x, px.y))) * clamp((1.0 / max(fq.x, fq.y) - 8.0) / 8.0, 0.0, 1.0);
+  diffuseColor.rgb = mix(diffuseColor.rgb, uArete, a * ${ARETE_DU_VERRE.toFixed(2)});
+}`,
+      );
+  };
+  opaque.customProgramCacheKey = () => 'construction-opaque';
+
+  const nuit = { value: 0 };
+  const lueur = { value: new THREE.Color(LUEUR) };
+  const fenetres = new THREE.MeshLambertMaterial({ vertexColors: true });
+  fenetres.onBeforeCompile = (s) => {
+    s.uniforms.uNuit = nuit;
+    s.uniforms.uLueur = lueur;
+    s.vertexShader = s.vertexShader
+      .replace('#include <common>', '#include <common>\nattribute float decalage;\nvarying float vDecalage;')
+      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvDecalage = decalage;');
+    s.fragmentShader = s.fragmentShader
+      .replace('#include <common>', `#include <common>\nuniform float uNuit;\nuniform vec3 uLueur;\nvarying float vDecalage;\n${ECLAT_GLSL}`)
+      // La nuit, la couleur de la lueur, exacte : elle remplace la surface éclairée.
+      .replace('#include <color_fragment>', '#include <color_fragment>\nfloat eclat = eclatDeFenetre(uNuit, vDecalage);\ndiffuseColor.rgb *= 1.0 - eclat;')
+      .replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\ntotalEmissiveRadiance += uLueur * eclat;');
+  };
+  fenetres.customProgramCacheKey = () => 'construction-fenetres';
+
+  const remplissage = { value: 0.35 };
+  const arete = { value: 0.5 };
+  const couleurDArete = { value: new THREE.Color(ARETE) };
+  const fantomes = new THREE.MeshBasicMaterial({ color: FANTOME, transparent: true, depthWrite: false });
+  fantomes.onBeforeCompile = (s) => {
+    s.uniforms.uRemplissage = remplissage;
+    s.uniforms.uArete = arete;
+    s.uniforms.uCouleurDArete = couleurDArete;
+    s.vertexShader = s.vertexShader
+      .replace('#include <common>', '#include <common>\nattribute vec2 caseUv;\nvarying vec2 vCaseUv;')
+      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvCaseUv = caseUv;');
+    s.fragmentShader = s.fragmentShader
+      .replace('#include <common>', '#include <common>\nuniform float uRemplissage;\nuniform float uArete;\nuniform vec3 uCouleurDArete;\nvarying vec2 vCaseUv;')
+      .replace(
+        '#include <color_fragment>',
+        `#include <color_fragment>
+{
+  // L'arête de chaque case : là où ses coordonnées sur le plan sont entières, jamais plus fine qu'un pixel.
+  vec2 f = fract(vCaseUv);
+  vec2 dd = min(f, 1.0 - f);
+  float d = min(dd.x, dd.y);
+  float fw = max(fwidth(d), 1e-5);
+  float w = max(${ARETE_FANTOME.toFixed(3)}, fw);
+  float a = 1.0 - smoothstep(w - fw * 0.5, w + fw * 0.5, d);
+  diffuseColor.rgb = mix(diffuseColor.rgb, uCouleurDArete, a);
+  diffuseColor.a = mix(uRemplissage, uArete, a);
+}`,
+      );
+  };
+  fantomes.customProgramCacheKey = () => 'construction-fantomes';
+
+  let jour = 1;
+  const regler = () => {
+    const o = opaciteDesFantomes(jour);
+    remplissage.value = o.remplissage;
+    arete.value = o.arete;
+    nuit.value = 1 - jour;
+  };
+  regler();
+  lumiere?.suivre((j) => {
+    jour = j;
+    regler();
+  });
+
+  return {
+    opaque,
+    fenetres,
+    fantomes,
+    dispose: () => {
+      opaque.dispose();
+      fenetres.dispose();
+      fantomes.dispose();
+    },
+  };
+}
+
+export interface ConstructionEn3D {
+  /** Les maillages de la construction ; `userData.construction` les distingue pour le toucher. */
+  group: THREE.Group;
+  /** Remplace la construction. */
+  peindre(m: MaillageDeLaConstruction): void;
+  /** Triangles dessinés (pour les mesures). */
+  triangles(): number;
+  /** Le maillage des blocs (le groupe opaque), s'il y en a un : le fondu de la pose y change ses couleurs (three/cubes.ts). */
+  opaque(): THREE.Mesh | null;
+  /** Libère les géométries (les matériaux sont à qui les a faits). */
+  dispose(): void;
+}
+
+export function creerConstruction(materiaux: MateriauxDeConstruction): ConstructionEn3D {
+  const group = new THREE.Group();
+  let triangles = 0;
+  let opaque: THREE.Mesh | null = null;
+  const vider = () => {
+    opaque = null;
+    for (const child of [...group.children]) {
+      group.remove(child);
+      (child as THREE.Mesh).geometry.dispose();
+    }
+    triangles = 0;
+  };
+  const ajouter = (g: GroupeDeConstruction, material: THREE.Material, attributs: Record<string, [Float32Array, number]>, groupe: string) => {
+    if (!g.indices.length) return;
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(g.positions, 3));
+    geo.setAttribute('normal', new THREE.BufferAttribute(g.normals, 3));
+    if (g.colors.length) geo.setAttribute('color', new THREE.BufferAttribute(g.colors, 3));
+    for (const [nom, [data, taille]] of Object.entries(attributs)) geo.setAttribute(nom, new THREE.BufferAttribute(data, taille));
+    geo.setIndex(new THREE.BufferAttribute(g.positions.length / 3 < 65536 ? Uint16Array.from(g.indices) : g.indices, 1));
+    geo.computeBoundingSphere();
+    const mesh = new THREE.Mesh(geo, material);
+    mesh.userData = { construction: true, groupe };
+    // Un seul maillage pour tout l'archipel : le tri par la vue ne ferait rien gagner.
+    mesh.frustumCulled = false;
+    triangles += g.indices.length / 3;
+    group.add(mesh);
+    return mesh;
+  };
+  return {
+    group,
+    peindre(m) {
+      vider();
+      // `motif` : le motif peint d'un mur ou d'une pièce d'architecture (lot 7), ou d'un bloc assemblé (GD-2), par face.
+      opaque = ajouter(m.opaque, materiaux.opaque, { biseaux: [m.opaque.biseaux, 4], teinte: [m.opaque.teintes, 1], arete: [m.opaque.aretes, 1], motif: [m.opaque.motifs, 1] }, 'opaque') ?? null;
+      ajouter(m.fenetres, materiaux.fenetres, { decalage: [m.fenetres.decalages, 1] }, 'fenetres');
+      const f = ajouter(m.fantomes, materiaux.fantomes, { caseUv: [m.fantomes.uvs, 2] }, 'fantomes');
+      if (f) f.renderOrder = 1;
+    },
+    triangles: () => triangles,
+    opaque: () => opaque,
+    dispose: vider,
+  };
+}

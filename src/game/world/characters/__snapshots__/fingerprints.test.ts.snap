@@ -1,0 +1,102 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Empreintes des personnages en facettes > le bonhomme 1`] = `
+{
+  "empreinte": "2c9c7d03",
+  "triangles": 472,
+}
+`;
+
+exports[`Empreintes des personnages en facettes > les créatures, île par île 1`] = `
+{
+  "atelier": "336 38a12594",
+  "baie": "244 712605e6",
+  "belvedere": "222 6065f789",
+  "cabinet": "204 7319f9c0",
+  "carrefour": "263 67e39f4d",
+  "carriere": "257 8b141147",
+  "chateau": "311 5bec53dd",
+  "comptoir": "229 d9d44216",
+  "donnees": "270 88e948f7",
+  "falaise": "275 dfc8c813",
+  "ferme": "247 58b1a34a",
+  "foret": "250 68d1d715",
+  "forge": "200 da24e468",
+  "gare": "249 79814f3d",
+  "glacier": "236 bb1c8d90",
+  "horloge": "265 f170a175",
+  "jardin": "291 cc1e4f78",
+  "manoir": "299 5bc8ac7c",
+  "marais": "259 e107cad9",
+  "marche": "319 4a4ff7b3",
+  "mine": "241 d3def54b",
+  "phare": "268 40b9051e",
+  "plaine": "256 eb13baf5",
+  "refuge": "277 8a3fb559",
+  "relais": "258 e1147d75",
+  "riviere": "248 2aa1c2bb",
+  "studio": "278 485c007e",
+  "textes": "318 1f141df2",
+  "theatre": "264 32d0b77e",
+  "tour": "247 164109af",
+  "volcan": "233 58147ea1",
+}
+`;
+
+exports[`Empreintes des personnages en facettes > les fusions, archipel par archipel (tout construit) 1`] = `
+{
+  "3e": {
+    "creatures": "1944 d052c882 1fa8bb28",
+    "gardiens": "1663 40690acc",
+  },
+  "4e": {
+    "creatures": "1819 d188d8c6 be575c92",
+    "gardiens": "1516 4bc9455c",
+  },
+  "5e": {
+    "creatures": "1863 beb1fb18 22e1c51a",
+    "gardiens": "1791 a9b7a570",
+  },
+  "6e": {
+    "creatures": "2488 75c755bd 163ed31f",
+    "gardiens": "2243 2a4102a3",
+  },
+  "bonhomme": "472 045a95c7 1032f390",
+}
+`;
+
+exports[`Empreintes des personnages en facettes > les sentinelles, île par île (éteintes) 1`] = `
+{
+  "atelier": "230 15752aea",
+  "baie": "700 88ce0325",
+  "belvedere": "207 f3f36d77",
+  "cabinet": "178 7787181c",
+  "carrefour": "180 ae511a7a",
+  "carriere": "142 449d334d",
+  "chateau": "219 d8494e2b",
+  "comptoir": "236 4c494f3d",
+  "donnees": "216 67b894e6",
+  "falaise": "235 6bcf243a",
+  "ferme": "176 7f60f372",
+  "foret": "162 f93f252b",
+  "forge": "195 f329daea",
+  "gare": "268 ad1ed548",
+  "glacier": "324 c03d8f81",
+  "horloge": "172 899e1347",
+  "jardin": "258 1f00506c",
+  "manoir": "198 eb770b39",
+  "marais": "265 5cb2305e",
+  "marche": "250 ab64a85d",
+  "mine": "177 80669e4a",
+  "phare": "203 b057d33b",
+  "plaine": "177 8335cb8f",
+  "refuge": "332 1ad4083c",
+  "relais": "338 261a1cd8",
+  "riviere": "190 08403a77",
+  "studio": "262 0e836ac3",
+  "textes": "224 97bdbfba",
+  "theatre": "152 f2538f92",
+  "tour": "172 8a7cb517",
+  "volcan": "175 64bcf769",
+}
+`;

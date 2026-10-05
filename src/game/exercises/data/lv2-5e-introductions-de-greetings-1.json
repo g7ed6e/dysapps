@@ -1,0 +1,231 @@
+{
+  "id": "lv2-5e-introductions-de-greetings-1",
+  "biome": "lv2-5e-introductions",
+  "type": "de-greetings",
+  "level": 1,
+  "lang": "de",
+  "instruction": "Lis et écoute la question en allemand, puis choisis la bonne réponse. La règle est affichée : lis-la avant de répondre.",
+  "items": [
+    {
+      "key": "lv2-5e-introductions-de-greetings-1-0",
+      "prompt": "Wie heißt du?",
+      "spoken": "Wie heißt du?",
+      "choices": [
+        "Ich heiße Lena.",
+        "Ich bin zwölf.",
+        "Ich wohne in Köln."
+      ],
+      "answer": "Ich heiße Lena.",
+      "hint": "Écoute le mot de la question : heißt (le nom), alt (l’âge), wo (où), woher (d’où).",
+      "explanation": "« Wie heißt du? » = Comment t’appelles-tu ? On répond avec heißen : Ich heiße Lena.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Se présenter",
+          "lines": [
+            "Hallo! Guten Tag! = bonjour. Tschüss! = au revoir.",
+            "Wie heißt du? — Ich heiße… (je m’appelle…)",
+            "Wie alt bist du? — Ich bin zwölf. (j’ai 12 ans : en allemand, on « est » son âge)",
+            "Wo wohnst du? (où ?) — Ich wohne in Köln. Woher kommst du? (d’où ?) — Ich komme aus Frankreich.",
+            "sein (être) : ich bin, du bist, er / sie ist. haben (avoir) : ich habe, du hast, er / sie hat."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-de-greetings-1-1",
+      "prompt": "Wie alt bist du?",
+      "spoken": "Wie alt bist du?",
+      "choices": [
+        "Ich bin zwölf.",
+        "Ich habe zwölf.",
+        "Ich heiße Paul."
+      ],
+      "answer": "Ich bin zwölf.",
+      "hint": "En allemand, on dit « je suis 12 », avec sein.",
+      "explanation": "« Wie alt bist du? » = Quel âge as-tu ? En allemand, on « est » son âge : Ich bin zwölf, jamais Ich habe zwölf.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Se présenter",
+          "lines": [
+            "Hallo! Guten Tag! = bonjour. Tschüss! = au revoir.",
+            "Wie heißt du? — Ich heiße… (je m’appelle…)",
+            "Wie alt bist du? — Ich bin zwölf. (j’ai 12 ans : en allemand, on « est » son âge)",
+            "Wo wohnst du? (où ?) — Ich wohne in Köln. Woher kommst du? (d’où ?) — Ich komme aus Frankreich.",
+            "sein (être) : ich bin, du bist, er / sie ist. haben (avoir) : ich habe, du hast, er / sie hat."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-de-greetings-1-2",
+      "prompt": "Wo wohnst du?",
+      "spoken": "Wo wohnst du?",
+      "choices": [
+        "Ich wohne in Hamburg.",
+        "Ich komme aus Frankreich.",
+        "Ich bin elf."
+      ],
+      "answer": "Ich wohne in Hamburg.",
+      "hint": "Écoute le mot de la question : heißt (le nom), alt (l’âge), wo (où), woher (d’où).",
+      "explanation": "« Wo wohnst du? » = Où habites-tu ? On répond avec wohnen : Ich wohne in Hamburg.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Se présenter",
+          "lines": [
+            "Hallo! Guten Tag! = bonjour. Tschüss! = au revoir.",
+            "Wie heißt du? — Ich heiße… (je m’appelle…)",
+            "Wie alt bist du? — Ich bin zwölf. (j’ai 12 ans : en allemand, on « est » son âge)",
+            "Wo wohnst du? (où ?) — Ich wohne in Köln. Woher kommst du? (d’où ?) — Ich komme aus Frankreich.",
+            "sein (être) : ich bin, du bist, er / sie ist. haben (avoir) : ich habe, du hast, er / sie hat."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-de-greetings-1-3",
+      "prompt": "Woher kommst du?",
+      "spoken": "Woher kommst du?",
+      "choices": [
+        "Ich komme aus Frankreich.",
+        "Ich wohne in Hamburg.",
+        "Ich heiße Tom."
+      ],
+      "answer": "Ich komme aus Frankreich.",
+      "hint": "Écoute le mot de la question : heißt (le nom), alt (l’âge), wo (où), woher (d’où).",
+      "explanation": "« Woher kommst du? » = D’où viens-tu ? On répond avec kommen aus : Ich komme aus Frankreich.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Se présenter",
+          "lines": [
+            "Hallo! Guten Tag! = bonjour. Tschüss! = au revoir.",
+            "Wie heißt du? — Ich heiße… (je m’appelle…)",
+            "Wie alt bist du? — Ich bin zwölf. (j’ai 12 ans : en allemand, on « est » son âge)",
+            "Wo wohnst du? (où ?) — Ich wohne in Köln. Woher kommst du? (d’où ?) — Ich komme aus Frankreich.",
+            "sein (être) : ich bin, du bist, er / sie ist. haben (avoir) : ich habe, du hast, er / sie hat."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-de-greetings-1-4",
+      "prompt": "Wie geht’s?",
+      "spoken": "Wie geht’s?",
+      "choices": [
+        "Gut, danke!",
+        "Tschüss!",
+        "Ich bin zwölf."
+      ],
+      "answer": "Gut, danke!",
+      "hint": "On te demande si tu vas bien.",
+      "explanation": "« Wie geht’s? » = Comment ça va ? On répond : Gut, danke! (Bien, merci !) Tschüss veut dire au revoir.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Se présenter",
+          "lines": [
+            "Hallo! Guten Tag! = bonjour. Tschüss! = au revoir.",
+            "Wie heißt du? — Ich heiße… (je m’appelle…)",
+            "Wie alt bist du? — Ich bin zwölf. (j’ai 12 ans : en allemand, on « est » son âge)",
+            "Wo wohnst du? (où ?) — Ich wohne in Köln. Woher kommst du? (d’où ?) — Ich komme aus Frankreich.",
+            "sein (être) : ich bin, du bist, er / sie ist. haben (avoir) : ich habe, du hast, er / sie hat."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-de-greetings-1-5",
+      "prompt": "Hast du Geschwister?",
+      "spoken": "Hast du Geschwister?",
+      "choices": [
+        "Ja, ich habe einen Bruder.",
+        "Ja, ich bin elf.",
+        "Ich wohne in Köln."
+      ],
+      "answer": "Ja, ich habe einen Bruder.",
+      "hint": "Geschwister = les frères et sœurs.",
+      "explanation": "« Hast du Geschwister? » = As-tu des frères et sœurs ? On répond avec haben : Ja, ich habe einen Bruder.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Se présenter",
+          "lines": [
+            "Hallo! Guten Tag! = bonjour. Tschüss! = au revoir.",
+            "Wie heißt du? — Ich heiße… (je m’appelle…)",
+            "Wie alt bist du? — Ich bin zwölf. (j’ai 12 ans : en allemand, on « est » son âge)",
+            "Wo wohnst du? (où ?) — Ich wohne in Köln. Woher kommst du? (d’où ?) — Ich komme aus Frankreich.",
+            "sein (être) : ich bin, du bist, er / sie ist. haben (avoir) : ich habe, du hast, er / sie hat."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-de-greetings-1-6",
+      "prompt": "Wie alt ist dein Bruder?",
+      "spoken": "Wie alt ist dein Bruder?",
+      "choices": [
+        "Er ist vierzehn.",
+        "Er hat vierzehn.",
+        "Ich bin vierzehn."
+      ],
+      "answer": "Er ist vierzehn.",
+      "hint": "On parle de ton frère : il (er). Et l’âge se dit avec sein.",
+      "explanation": "On parle de ton frère : er (il) ist vierzehn. L’âge se dit avec sein (ist, pas hat), et ich bin, c’est pour soi.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Se présenter",
+          "lines": [
+            "Hallo! Guten Tag! = bonjour. Tschüss! = au revoir.",
+            "Wie heißt du? — Ich heiße… (je m’appelle…)",
+            "Wie alt bist du? — Ich bin zwölf. (j’ai 12 ans : en allemand, on « est » son âge)",
+            "Wo wohnst du? (où ?) — Ich wohne in Köln. Woher kommst du? (d’où ?) — Ich komme aus Frankreich.",
+            "sein (être) : ich bin, du bist, er / sie ist. haben (avoir) : ich habe, du hast, er / sie hat."
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-5e-introductions-de-greetings-1-7",
+      "prompt": "Wie heißt deine Schwester?",
+      "spoken": "Wie heißt deine Schwester?",
+      "choices": [
+        "Sie heißt Emma.",
+        "Ich heiße Emma.",
+        "Du heißt Emma."
+      ],
+      "answer": "Sie heißt Emma.",
+      "hint": "On parle de ta sœur : elle (sie).",
+      "explanation": "deine Schwester = ta sœur : sie (elle) heißt Emma. Ich heiße, c’est pour soi ; du heißt, c’est pour celui à qui l’on parle.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Se présenter",
+          "lines": [
+            "Hallo! Guten Tag! = bonjour. Tschüss! = au revoir.",
+            "Wie heißt du? — Ich heiße… (je m’appelle…)",
+            "Wie alt bist du? — Ich bin zwölf. (j’ai 12 ans : en allemand, on « est » son âge)",
+            "Wo wohnst du? (où ?) — Ich wohne in Köln. Woher kommst du? (d’où ?) — Ich komme aus Frankreich.",
+            "sein (être) : ich bin, du bist, er / sie ist. haben (avoir) : ich habe, du hast, er / sie hat."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien répondu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lv2-5e-introductions",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

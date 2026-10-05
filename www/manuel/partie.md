@@ -1,6 +1,6 @@
 # Une partie commentée
 
-Cette page suit une élève, de sa première séance à la fin des Premiers Rivages, l'archipel de 6e. Les images viennent du jeu lui-même : elles sont prises en jouant (`npm run www:captures`), sur une tablette en paysage, sauf mention contraire.
+Cette page suit une élève, de sa première séance à la fin des Basses Terres, l'archipel de 6e. Les images viennent du jeu lui-même : elles sont prises en jouant (`npm run www:captures`), sur une tablette en paysage, sauf mention contraire.
 
 ## Première séance : le village en ruine
 
@@ -8,11 +8,11 @@ L'application s'ouvre sur l'**écran titre**. Un seul bouton, **Jouer** : ce pre
 
 ![L'écran titre : l'île en blocs de Blocland, « Blocland » et le gros bouton vert Jouer.](/captures/titre.jpg)
 
-Derrière, le **village** est déjà chargé. À la première visite, un tutoriel de trois bulles, lues à voix haute, montre l’essentiel : toucher la Forêt des sons, toucher une borne pour jouer, le bouton Menu. Le reste (les ouvrages, le Bloc-Navire) est dit par les créatures, la première fois qu’on le rencontre. Une flèche jaune montre la Forêt des sons, où tout commence. Mousso, la créature verte, attend sur son île ; les bornes étoilées sont les missions.
+Derrière, le **village** est déjà chargé. À la première visite, un tutoriel en trois étapes, lues à voix haute, montre l’essentiel : toucher la Forêt des sons, toucher une borne puis Jouer, le bouton Menu. Le reste (les ouvrages, le Bloc-Navire) est dit par les créatures, la première fois qu’on le rencontre. Une bulle bordée d’or montre la prochaine chose à faire. Mousso, la créature verte, attend sur son île ; les bornes étoilées sont les missions.
 
 ![Première visite du village en 3D : la Forêt des sons en couleurs au centre, les autres îles en ruine, et la première bulle du tutoriel « Bienvenue à Blocland ! ».](/captures/village-premiere-visite.jpg)
 
-Toucher l'île ouvre son **panneau** : Mousso se présente (tout son accueil est lu ; la première ligne est écrite, la suite dans le pli « La suite »), puis la liste des missions de l'île, et plus bas le **prochain objectif**.
+Le bouton au nom de l'île, dans la barre du bas, ouvre son **panneau**, en plein écran par-dessus le monde : Mousso se présente (tout son accueil est lu ; la première ligne est écrite, la suite dans le pli « La suite »), puis la liste des missions de l'île, et plus bas le **prochain objectif**.
 
 ![Le panneau de la Forêt des sons : Mousso accueille en une ligne, puis les missions.](/captures/panneau-ile.jpg)
 
@@ -26,19 +26,17 @@ Une erreur n'est jamais punie. La correction s'affiche en bas, sans cacher la qu
 
 ![La correction du tutoriel : « Pas cette fois ». La bonne réponse « a » est en vert, « à » en orangé ; l'astuce dit « On peut dire Léa avait un chat ».](/captures/quete-correction.jpg)
 
-Au **bilan**, pas de pourcentage : des étoiles, « 4 sur 4 du premier coup », l'XP, et les **blocs** gagnés pour le village. Un succès débloqué s'affiche en haut, une seule fois.
+Au **bilan**, pas de pourcentage : des étoiles, « 4 sur 4 du premier coup », l'XP, et les **blocs** gagnés pour le village. La première fois qu'une mission de l'île est terminée, le bilan dit aussi la partie du bâtiment qu'elle vient de poser. Un succès débloqué s'affiche en haut, une seule fois.
 
 ![Le bilan d'une mission sans faute : trois étoiles, « Sans faute ! », +75 XP, +6 blocs de bois pour le village, et le succès Combo x5.](/captures/quete-fin.jpg)
 
 ## Reconstruire
 
-Avec les blocs gagnés, l'élève revient sur l'île. Le premier plan, **la cabane de Mousso**, est dessiné en fantômes bleutés à gauche de la créature ; une partie des murs est déjà posée. Toucher un fantôme pose le bloc attendu, ou bien on utilise les boutons du panneau.
+Chaque île a un **bâtiment**, avec une partie par mission. Il se pose tout seul, sans prendre de blocs : la première fois que l'élève termine une mission de l'île, une partie se pose, quels que soient les étoiles et les jokers. Sur la Forêt des sons, c'est **la cabane de Mousso** : ce qui reste à poser est dessiné en fantômes bleutés à gauche de la créature.
 
 ![La Forêt des sons, panneau fermé : la cabane commencée, murs en bois et fantômes bleutés du reste.](/captures/plan-en-cours.jpg)
 
-**Poser tout ce que j'ai** pose d'un coup tous les blocs en poche. Le dernier bloc termine le bâtiment : Mousso remercie (lu à voix haute), le **coffre** donne les blocs de finition du plan suivant (la porte, les lanternes, les tuiles du toit) et de l'XP. Le plan suivant, le toit, s'affiche aussitôt.
-
-![La cabane terminée : « Ma cabane ! Merci, bâtisseur. » Coffre : 3 blocs de pierre, 1 porte, 3 lanternes, 18 toits, +40 XP ; le village passe en Réactivation, 2 sur 5.](/captures/plan-termine.jpg)
+Au bilan, une phrase le dit, écrite et lue à voix haute : « Partie posée : la cabane de Mousso. » Mousso remercie, et l'élève gagne de l'XP. La mission suivante posera le toit, puis la cour. Les blocs gagnés, eux, restent dans la poche : ils servent aux ouvrages, au Bloc-Navire et aux monuments.
 
 ## Ouvrir les îles
 
@@ -48,21 +46,21 @@ Les autres îles s'ouvrent par des **ouvrages** : un sentier, un pont, un bac. L
 
 Quelques séances plus tard, **Mes blocs** fait le point : ce qu'on peut construire tout de suite (un lien par chantier), puis chaque type de bloc et à quoi il sert.
 
-![Mes blocs : « Tu peux construire », avec les plans de quatre îles, le Bloc-Navire, deux monuments et les ouvrages.](/captures/mes-blocs.jpg)
+![Mes blocs : « Tu peux construire », avec le Bloc-Navire, deux monuments et les ouvrages.](/captures/mes-blocs.jpg)
 
-La **Carte** montre tout l'archipel vu d'en haut : le fanion jaune marque l'élève, les îles pâles sont encore fermées.
+La **Carte** montre tout l'archipel vu d'en haut : le médaillon à son visage marque l'élève, la bulle bordée d'or la prochaine destination, les îles pâles sont encore fermées.
 
-![La Carte des Premiers Rivages : chaque île avec son nom et son état (En chantier, À explorer, Fermée), la flèche jaune sur la Forêt des sons, et en haut la prochaine destination avec Y aller.](/captures/carte.jpg)
+![La Carte des Basses Terres : chaque île avec son nom et son état (En chantier, À explorer, Fermée), la bulle bordée d'or de la prochaine destination et le médaillon de l'élève.](/captures/carte.jpg)
 
 ## Le Gardien, le navire, l'école
 
-Chaque île a son **Gardien**. Pour le vaincre, on réussit ses épreuves : ici le Golem de roche de la Mine demande de piocher seulement les blocs qui portent la lettre d.
+Chaque île a son **Gardien**, éteint sur son îlot, en pierre grise. Pour le rallumer, on réussit ses épreuves : chacune lui rend une partie de ses couleurs. Ici, le Golem de roche de la Mine demande de piocher seulement les blocs qui portent la lettre d.
 
-![Le défi du Golem de roche : sa résistance 4 sur 4, sa phrase, et l'épreuve Filon « Pioche seulement les blocs avec la lettre d ».](/captures/gardien.jpg)
+![Le défi « Rallumer le Golem de roche » : le Golem en pierre grise, les pastilles des épreuves réussies (0 sur 4, il en faut 3), sa phrase, et l'épreuve Filon « Pioche seulement les blocs avec la lettre d ».](/captures/gardien.jpg)
 
-Au port, sur la Plaine des nombres, se construit le **Bloc-Navire** : ses blocs, et les Gardiens à vaincre pour la voile.
+Au port, sur la Plaine des nombres, se construit le **Bloc-Navire** : ses blocs, et les Gardiens à rallumer pour la voile.
 
-![Le chantier du Bloc-Navire : 24 sur 45 blocs posés, les bois, galets et pierre qui manquent avec l'île où les gagner, et « encore 1 Gardien à vaincre ».](/captures/navire-chantier.jpg)
+![Le chantier du Bloc-Navire : 24 sur 45 blocs posés, les bois, galets et pierre qui manquent avec l'île où les gagner, et « encore 1 Gardien à rallumer ».](/captures/navire-chantier.jpg)
 
 L'**école du village** ouvre les missions du portail (français, maths, anglais). Elles rapportent les blocs de l'île de l'école.
 
@@ -74,19 +72,19 @@ Quand les bâtiments sont finis, les blocs restants servent aux **monuments**, s
 
 ![L'observatoire des baleines en chantier sur son îlot : la plateforme de galets posée, la tour de brique commencée, le reste en fantômes ; le panneau montre 50 sur 116 blocs posés.](/captures/monument.jpg)
 
-## Les Premiers Rivages reconstruits
+## Les Basses Terres reconstruites
 
-À la fin de la 6e, toutes les îles sont ouvertes et bâties : maisons, tours, huttes, et les Gardiens vaincus devenus statues. Le Bloc-Navire emmène alors l'élève dans les **Îles Brumeuses**, l'archipel de 5e.
+À la fin de la 6e, toutes les îles sont ouvertes et bâties : maisons, tours, huttes, et les Gardiens rallumés, en couleurs sur leurs îlots. Le Bloc-Navire emmène alors l'élève dans les **Collines du Large**, l'archipel de 5e.
 
-![Les Premiers Rivages reconstruits : les îles reliées par des ponts, les maisons aux toits rouges, les statues des Gardiens.](/captures/village-reconstruit.jpg)
+![Les Basses Terres reconstruites : les îles reliées par des ponts, les maisons aux toits rouges, les Gardiens rallumés en couleurs.](/captures/village-reconstruit.jpg)
 
-![Le Marché des proportions, port des Îles Brumeuses : l'échoppe à l'auvent rayé et la maison de la créature.](/captures/collines-du-large.jpg)
+![Le Marché des proportions, port des Collines du Large : l'échoppe à l'auvent rayé et la maison de la créature.](/captures/collines-du-large.jpg)
 
 ## Sur téléphone, en liste
 
-Le même jeu tient sur un téléphone en portrait : le monde en haut, le panneau de l'île en dessous.
+Le même jeu tient sur un téléphone en portrait : le monde sur tout l'écran, la barre du bas en dessous ; le panneau de l'île s'ouvre par-dessus, en plein écran.
 
-![Sur téléphone : le monde en haut, les boutons en icônes, le panneau de la Forêt des sons en bas.](/captures/telephone-village.jpg)
+![Sur téléphone : le monde sur tout l'écran, les boutons en icônes dans la barre du bas.](/captures/telephone-village.jpg)
 
 La **vue simple** remplace le monde par des listes accessibles (voir [Réglages](reglages.md#animations-et-vue-du-monde)).
 

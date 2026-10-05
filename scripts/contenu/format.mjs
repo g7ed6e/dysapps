@@ -3,15 +3,15 @@
 // Le format est strict : un champ inconnu ou mal écrit arrête la génération, avec le numéro de ligne.
 //
 //   ---
-//   île : baie                               ← en-tête : l'identifiant de l'île, puis ce qu'elle est
+//   lieu : english-6e-vocabulary             ← en-tête : l'identifiant du lieu (matière, classe, thème), puis ce qu'il est
 //   module : Vocabulaire et écoute
 //   ---
 //   # Baie des mots                          ← le nom de l'île
 //   > une note                               ← ignorée
-//   ## Écoute · `ears`                       ← une mission : son titre et son identifiant
+//   ## Écoute · `first-listening`            ← une mission : son titre et son identifiant
 //   - description : …                        ← la mission (description, compétences, lv2)
 //   - consigne : Écoute le mot anglais, …    ← champs communs à tous ses niveaux
-//   ### Niveau 1 · `baie-ears-1`             ← un niveau : l'identifiant de l'exercice
+//   ### Niveau 1 · `english-6e-vocabulary-first-listening-1` ← un niveau : l'identifiant de l'exercice
 //   - langue : en                            ← champs propres à ce niveau
 //   Pour tous les items :                    ← champs communs à tous les items du niveau (ou de la mission)
 //   - aide « Se présenter » :
@@ -28,11 +28,13 @@
 // est remplacé ; « clé des items : mot » (ou lettre, ou paragraphe) donne la clé ; « mot troué : en[f]ant » donne
 // le mot, avant, après et la réponse.
 //
-// En fin de fichier, « ## Les plans » donne les plans des bâtiments de l'île en tableau (scripts/contenu/plans.mjs).
+// En fin de fichier, « ## Les plans » donne les plans des bâtiments de l'île en tableau (scripts/contenu/plans.mjs), puis
+// « ## Les demandes », les commandes de son habitant (scripts/contenu/demandes.mjs).
 //
 // Une valeur qui a un saut de ligne, des espaces au bord, qui est vide ou qui commence par « " »
 // s'écrit comme une chaîne JSON entre guillemets. Une liste s'écrit « a · b · c », ou en sous-liste si un élément
 // contient « · ».
+import { ecrireDemandes, lireDemandes, TITRE_DEMANDES } from './demandes.mjs';
 import { ecrirePlans, lirePlans, TITRE_PLANS } from './plans.mjs';
 import { aGuillemets, ecrireTexte, lireTexte } from './texte.mjs';
 
@@ -42,7 +44,6 @@ const ILE = [
   ['matière', 'subject'],
   ['classe', 'classe'],
   ['description', 'description'],
-  ['bloc', 'block'],
   ['gardien', 'guardian'],
   ['icône', 'icon'],
   ['créature', 'creature.name'],
@@ -326,10 +327,10 @@ function commune(valeurs) {
  * d'une mission, ou pour tous les items d'une mission ou d'un niveau, s'écrit une fois ; ce qui se déduit (clé,
  * lecture du trou, mot troué) ne s'écrit pas ; les items courts s'écrivent en tableau.
  */
-export function ecrireIle(ile, exercices, plans = []) {
-  verifierCles(ile, new Set(['id', 'name', 'exercises', ...ILE.map((c) => c[1].split('.')[0])]), ile.id);
+export function ecrireIle(ile, exercices, plans = [], demandes = []) {
+  verifierCles(ile, new Set(['id', 'name', 'exercises', 'block', ...ILE.map((c) => c[1].split('.')[0])]), ile.id);
   const entete = ILE.filter(([, chemin]) => obtenir(ile, chemin) !== undefined).map(([etiquette, chemin]) => `${etiquette} : ${ecrireTexte(obtenir(ile, chemin))}`);
-  const lignes = ['---', `île : ${ile.id}`, ...entete, '---', '', `# ${ile.name ?? ile.id}`, ''];
+  const lignes = ['---', `lieu : ${ile.id}`, ...entete, '---', '', `# ${ile.name ?? ile.id}`, ''];
   const missions = [...(ile.exercises ?? [])];
   for (const ex of exercices) {
     verifierCles(ex, CLES_NIVEAU, ex.id);
@@ -373,18 +374,22 @@ export function ecrireIle(ile, exercices, plans = []) {
       lignes.push(...ecrireItems(ex.items, clesParItem), '');
     });
   }
-  lignes.push(...ecrirePlans(ile.id, plans));
+  lignes.push(...ecrirePlans(ile.id, plans), ...ecrireDemandes(ile.id, demandes));
   return lignes.join('\n');
 }
 
 // ---------- Lecture ----------
 
-/** Lit le Markdown d'une île : { ile, missions: [{ id, titre }], biome, exercices, plans }. */
+/** Lit le Markdown d'une île : { ile, missions: [{ id, titre }], biome, exercices, plans, demandes }. */
 export function lireIle(md, fichier = 'md') {
   const toutes = md.replace(/^\uFEFF/, '').split(/\r?\n/);
-  // « ## Les plans », s'il y est, clôt le fichier : scripts/contenu/plans.mjs le lit.
+  // « ## Les plans », puis « ## Les demandes », s'ils y sont, closent le fichier : scripts/contenu/plans.mjs et
+  // scripts/contenu/demandes.mjs les lisent.
   const debutPlans = toutes.indexOf(TITRE_PLANS);
-  const lignes = debutPlans === -1 ? toutes : toutes.slice(0, debutPlans);
+  const debutDemandes = toutes.indexOf(TITRE_DEMANDES);
+  if (debutPlans !== -1 && debutDemandes !== -1 && debutDemandes < debutPlans) throw new Error(`${fichier}, ligne ${debutDemandes + 1} : « ${TITRE_DEMANDES} » vient après « ${TITRE_PLANS} »`);
+  const finDuContenu = [debutPlans, debutDemandes].find((n) => n !== -1) ?? toutes.length;
+  const lignes = toutes.slice(0, finDuContenu);
   let ile = null;
   const biome = {};
   const exercices = [];
@@ -404,9 +409,9 @@ export function lireIle(md, fichier = 'md') {
   for (i = 1; i < lignes.length && lignes[i] !== '---'; i++) {
     const m = /^(.+?) : (.+)$/.exec(lignes[i]);
     if (!m) throw erreur(`« étiquette : valeur » attendu dans l’en-tête, lu « ${lignes[i]} »`);
-    if (m[1] === 'île') {
-      if (ile) throw erreur('« île » écrite deux fois dans l’en-tête');
-      if (!/^[a-z0-9-]+$/.test(m[2])) throw erreur(`identifiant d’île mal écrit : ${m[2]}`);
+    if (m[1] === 'lieu') {
+      if (ile) throw erreur('« lieu » écrit deux fois dans l’en-tête');
+      if (!/^[a-z0-9-]+$/.test(m[2])) throw erreur(`identifiant de lieu mal écrit : ${m[2]}`);
       ile = m[2];
       continue;
     }
@@ -415,7 +420,7 @@ export function lireIle(md, fichier = 'md') {
     if (obtenir(biome, def[1]) !== undefined) throw erreur(`« ${m[1]} » écrit deux fois`);
     poser(biome, def[1], lireTexte(m[2], i + 1));
   }
-  if (!ile) throw erreur('« île : … » manque dans l’en-tête');
+  if (!ile) throw erreur('« lieu : … » manque dans l’en-tête');
   let nom;
 
   const finirExercice = () => {
@@ -596,13 +601,16 @@ export function lireIle(md, fichier = 'md') {
   finirExercice();
   const ordreMission = ['id', 'title', ...MISSION.map((c) => c[1])];
   const exercises = missions.map((d) => Object.fromEntries(ordreMission.filter((k) => d[k] !== undefined).map((k) => [k, d[k]])));
+  // La ressource d'un lieu porte l'identifiant du lieu : elle ne s'écrit pas.
+  biome.block = ile;
   const champsIle = Object.fromEntries(['module', 'subject', 'classe', 'description', 'block', 'guardian', 'icon', 'creature'].filter((k) => biome[k] !== undefined).map((k) => [k, biome[k]]));
   return {
     ile,
     missions: missions.map((d) => ({ id: d.id, titre: d.title })),
     biome: { id: ile, ...(nom === undefined ? {} : { name: nom }), ...champsIle, exercises },
     exercices: exercices.map(ordonner),
-    plans: debutPlans === -1 ? [] : lirePlans(toutes.slice(debutPlans), debutPlans, fichier, ile),
+    plans: debutPlans === -1 ? [] : lirePlans(toutes.slice(debutPlans, debutDemandes === -1 ? undefined : debutDemandes), debutPlans, fichier, ile),
+    demandes: debutDemandes === -1 ? [] : lireDemandes(toutes.slice(debutDemandes), debutDemandes, fichier, ile),
   };
 }
 

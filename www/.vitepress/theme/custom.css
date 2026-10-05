@@ -1,5 +1,5 @@
 /* Documentation DysApps : le thème VitePress à l'habillage de Blocland, l'univers par défaut de l'application
-   (src/styles/blocland.css, « L'habillage de Blocland » dans docs/conception/style.md) : des blocs vus de face,
+   (src/styles/blocland.css, « L'habillage de Blocland » dans docs/rendu/style.md) : des blocs vus de face,
    en aplats chauds (herbe, bois, terre, or), coins de 4 px, et une face de côté sous ce qui se touche.
    Le thème clair suit le thème Crème de Blocland, le thème sombre son thème Nuit. Titres courts et logotype en
    Archivo Black (embarquée, voir index.ts), tout texte à lire en Luciole, jamais sous 18 px. Une couleur ne porte

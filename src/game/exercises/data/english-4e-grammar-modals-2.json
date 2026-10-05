@@ -1,0 +1,215 @@
+{
+  "id": "english-4e-grammar-modals-2",
+  "biome": "english-4e-grammar",
+  "type": "modals",
+  "level": 2,
+  "lang": "en",
+  "instruction": "Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.",
+  "items": [
+    {
+      "key": "english-4e-grammar-modals-2-0",
+      "prompt": "I … to get up early on Mondays.",
+      "spoken": "I blank to get up early on Mondays.",
+      "choices": [
+        "have",
+        "must",
+        "can"
+      ],
+      "answer": "have",
+      "hint": "Il y a « to » après le trou.",
+      "explanation": "have to = devoir : I have to get up.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Have to, don’t have to, mustn’t",
+          "lines": [
+            "have to = devoir (obligation) : I have to, she has to.",
+            "don’t have to = ne pas être obligé ; mustn’t = c’est interdit !",
+            "Après can, must, should : verbe sans to et sans s."
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-4e-grammar-modals-2-1",
+      "prompt": "She … to wear a uniform at school.",
+      "spoken": "She blank to wear a uniform at school.",
+      "choices": [
+        "has",
+        "have",
+        "must"
+      ],
+      "answer": "has",
+      "hint": "Il y a « to » après le trou, et le sujet est she.",
+      "explanation": "she has to : have to avec she → has to.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Have to, don’t have to, mustn’t",
+          "lines": [
+            "have to = devoir (obligation) : I have to, she has to.",
+            "don’t have to = ne pas être obligé ; mustn’t = c’est interdit !",
+            "Après can, must, should : verbe sans to et sans s."
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-4e-grammar-modals-2-2",
+      "prompt": "You don’t have to … me, I can do it.",
+      "spoken": "You don’t have to blank me, I can do it.",
+      "choices": [
+        "help",
+        "helps",
+        "to help"
+      ],
+      "answer": "help",
+      "hint": "Have to + verbe à la base.",
+      "explanation": "don’t have to + base : help.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Have to, don’t have to, mustn’t",
+          "lines": [
+            "have to = devoir (obligation) : I have to, she has to.",
+            "don’t have to = ne pas être obligé ; mustn’t = c’est interdit !",
+            "Après can, must, should : verbe sans to et sans s."
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-4e-grammar-modals-2-3",
+      "prompt": "It’s Sunday: we … go to school.",
+      "spoken": "It’s Sunday: we blank go to school.",
+      "choices": [
+        "don’t have to",
+        "mustn’t",
+        "have to"
+      ],
+      "answer": "don’t have to",
+      "hint": "Le dimanche, c’est interdit ou pas obligé ?",
+      "explanation": "Pas obligé → don’t have to (mustn’t = interdit).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Have to, don’t have to, mustn’t",
+          "lines": [
+            "have to = devoir (obligation) : I have to, she has to.",
+            "don’t have to = ne pas être obligé ; mustn’t = c’est interdit !",
+            "Après can, must, should : verbe sans to et sans s."
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-4e-grammar-modals-2-4",
+      "prompt": "He can … the piano.",
+      "spoken": "He can blank the piano.",
+      "choices": [
+        "play",
+        "plays",
+        "to play"
+      ],
+      "answer": "play",
+      "hint": "Après can : base, sans s, sans to.",
+      "explanation": "can + base : he can play.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Have to, don’t have to, mustn’t",
+          "lines": [
+            "have to = devoir (obligation) : I have to, she has to.",
+            "don’t have to = ne pas être obligé ; mustn’t = c’est interdit !",
+            "Après can, must, should : verbe sans to et sans s."
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-4e-grammar-modals-2-5",
+      "prompt": "You must … your teeth every day.",
+      "spoken": "You must blank your teeth every day.",
+      "choices": [
+        "brush",
+        "to brush",
+        "brushes"
+      ],
+      "answer": "brush",
+      "hint": "Après must : base, sans to.",
+      "explanation": "must + base : you must brush.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Have to, don’t have to, mustn’t",
+          "lines": [
+            "have to = devoir (obligation) : I have to, she has to.",
+            "don’t have to = ne pas être obligé ; mustn’t = c’est interdit !",
+            "Après can, must, should : verbe sans to et sans s."
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-4e-grammar-modals-2-6",
+      "prompt": "Does she … to work on Saturdays?",
+      "spoken": "Does she blank to work on Saturdays?",
+      "choices": [
+        "have",
+        "has",
+        "must"
+      ],
+      "answer": "have",
+      "hint": "Après does, le verbe reste à la base.",
+      "explanation": "Does she have to…? : après does, have (sans s).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Have to, don’t have to, mustn’t",
+          "lines": [
+            "have to = devoir (obligation) : I have to, she has to.",
+            "don’t have to = ne pas être obligé ; mustn’t = c’est interdit !",
+            "Après can, must, should : verbe sans to et sans s."
+          ]
+        }
+      }
+    },
+    {
+      "key": "english-4e-grammar-modals-2-7",
+      "prompt": "You … touch it! It’s dangerous!",
+      "spoken": "You blank touch it! It’s dangerous!",
+      "choices": [
+        "mustn’t",
+        "don’t have to",
+        "can"
+      ],
+      "answer": "mustn’t",
+      "hint": "Dangereux : c’est interdit.",
+      "explanation": "Interdit → mustn’t.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Have to, don’t have to, mustn’t",
+          "lines": [
+            "have to = devoir (obligation) : I have to, she has to.",
+            "don’t have to = ne pas être obligé ; mustn’t = c’est interdit !",
+            "Après can, must, should : verbe sans to et sans s."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien dit !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "english-4e-grammar",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

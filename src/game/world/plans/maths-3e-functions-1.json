@@ -1,0 +1,9 @@
+{
+  "id": "maths-3e-functions-1",
+  "biome": "maths-3e-functions",
+  "name": "La lanterne de Fi",
+  "reward": {
+    "xp": 40
+  },
+  "done": "Ma lanterne ! Merci, bâtisseur. Entre x blocs, sort une lumière."
+}

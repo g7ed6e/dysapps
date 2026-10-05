@@ -3,11 +3,11 @@ import { QuizSession } from '../../components/QuizSession';
 import { Icon } from '../../components/Icon';
 import { useProgress } from '../../core/ProgressContext';
 import { LEVELS, QUESTIONS_PER_QUEST, THEMES, questionsForLevel, questionsForTheme, type Level } from './data';
-import { RecordTag } from '../../components/RecordTag';
+import { LevelCard } from '../../components/LevelCard';
 
 type Mode = { kind: 'niveau'; level: Level } | { kind: 'theme'; themeId: string };
 
-export const APP_ID = 'vocabulaire';
+const APP_ID = 'vocabulaire';
 
 function statsKey(mode: Mode): string {
   return mode.kind === 'niveau' ? `${APP_ID}:niveau-${mode.level}` : `${APP_ID}:theme-${mode.themeId}`;
@@ -45,20 +45,9 @@ export default function VocabulaireApp() {
         {LEVELS.map(({ level, title, description }) => {
           const record = best({ kind: 'niveau', level });
           return (
-            <li key={level}>
-              <button type="button" className={`panel level-card level-${level}`} onClick={() => setMode({ kind: 'niveau', level })}>
-                <span className="level-number" aria-hidden="true">
-                  {level}
-                </span>
-                <span className="level-title">
-                  Niveau {level} · {title}
-                </span>
-                <span className="level-sets">
-                  <span>{description}</span>
-                </span>
-                {record !== undefined ? <RecordTag record={record} /> : <span className="tag tag-new">Jouer</span>}
-              </button>
-            </li>
+            <LevelCard key={level} tone={level} number={level} title={<>Niveau {level} · {title}</>} record={record} onPlay={() => setMode({ kind: 'niveau', level })}>
+              <span>{description}</span>
+            </LevelCard>
           );
         })}
       </ul>

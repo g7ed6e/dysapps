@@ -1,26 +1,32 @@
-import { Link, useParams } from 'react-router-dom';
+import { Link, Navigate, useLocation, useParams } from 'react-router-dom';
+import { translatePath } from '../core/legacyIds';
 import { subjectInfo, visibleSubjects, type Subject } from '../apps/registry';
 import { useSettings, useUnivers } from '../core/SettingsContext';
 import { Icon } from '../components/Icon';
 import { SubjectApps } from '../components/SubjectApps';
 import { NotFoundPage } from './NotFoundPage';
-import { UNIVERS } from '../core/univers';
-import { biomesOf, missionsJouables, type Classe } from '../blocland/biomes';
-import { useBlocland } from '../blocland/BloclandContext';
-import { Creature } from '../blocland/Creatures';
-import { questProgress } from '../blocland/exercises';
-import { ARCHIPELAGOS, archipelagoTitle, isArchipelagoReached, isBiomeUnlocked } from '../blocland/world/archipelago';
+import { UNIVERS } from '../core/universe';
+import { biomesOf, missionsJouables, type Classe } from '../game/biomes';
+import { useBlocland } from '../game/BloclandContext';
+import { Creature } from '../game/Creatures';
+import { questProgress } from '../game/exercises';
+import { ARCHIPELAGOS, archipelagoTitle, isArchipelagoReached, isBiomeUnlocked } from '../game/world/archipelago';
+import { useTextes } from '../universes';
 
 export function SubjectPage() {
   const { subject } = useParams();
   const { state } = useBlocland();
   const { settings } = useSettings();
   const univers = useUnivers();
+  const { pathname, search } = useLocation();
+  // Une ancienne adresse (`/matiere/francais`) : la même page sous son adresse neutre.
+  const neuve = translatePath(pathname + search);
+  if (neuve !== pathname + search) return <Navigate to={neuve} replace />;
   if (!subject || !visibleSubjects(settings.lv2).includes(subject as Subject)) return <NotFoundPage />;
   const info = subjectInfo(subject as Subject, settings.lv2);
   const withIslands = ARCHIPELAGOS.filter((a) => biomesOf(subject as Subject).some((b) => b.classe === a.classe));
-  const reachedArchipelagos = withIslands.filter((a) => isArchipelagoReached(a.classe, state.village.bridges));
-  const laterArchipelagos = withIslands.filter((a) => !isArchipelagoReached(a.classe, state.village.bridges));
+  const reachedArchipelagos = withIslands.filter((a) => isArchipelagoReached(a.classe, state.world.links));
+  const laterArchipelagos = withIslands.filter((a) => !isArchipelagoReached(a.classe, state.world.links));
   const laterIslands = biomesOf(subject as Subject).filter((b) => laterArchipelagos.some((a) => a.classe === b.classe)).length;
 
   return (
@@ -70,19 +76,20 @@ function ArchipelagoIslands({ classe, subject }: { classe: Classe; subject: Subj
   const lv2 = useSettings().settings.lv2;
   const { state } = useBlocland();
   const islands = biomesOf(subject).filter((b) => b.classe === classe);
-  const reached = isArchipelagoReached(classe, state.village.bridges);
+  const reached = isArchipelagoReached(classe, state.world.links);
+  const textes = useTextes();
   return (
     <section aria-labelledby={`matiere-archipel-${classe}`}>
       <h3 id={`matiere-archipel-${classe}`} className="section-subtitle">
-        {archipelagoTitle(classe)}
+        {archipelagoTitle(classe, textes.archipels)}
       </h3>
       <ul className="grid apps blocland-islands">
         {islands.map((biome) => {
-          const unlocked = isBiomeUnlocked(biome.id, state.village.bridges);
+          const unlocked = isBiomeUnlocked(biome.id, state.world.links);
           const stars = missionsJouables(biome, lv2).reduce((n, x) => n + (questProgress(biome.id, x.id, state.progress)?.stars ?? 0), 0);
           return (
             <li key={biome.id}>
-              <Link to={`/aventure/${biome.id}`} className={`panel app-card biome-${biome.id}${unlocked ? '' : ' locked'}`}>
+              <Link to={`/adventure/${biome.id}`} className={`panel app-card biome-${biome.id}${unlocked ? '' : ' locked'}`}>
                 <span className="app-icon">
                   <Creature biome={biome.id} className="creature-small" />
                 </span>

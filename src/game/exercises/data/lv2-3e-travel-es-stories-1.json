@@ -1,0 +1,247 @@
+{
+  "id": "lv2-3e-travel-es-stories-1",
+  "biome": "lv2-3e-travel",
+  "type": "es-stories",
+  "level": 1,
+  "lang": "es",
+  "instruction": "Lis la question, puis lis l’histoire en espagnol. Pour l’entendre, appuie sur Écouter. Le lexique est affiché.",
+  "items": [
+    {
+      "key": "lv2-3e-travel-es-stories-1-0",
+      "prompt": "El padre de Lucía la llevó en coche.\nLuego, Lucía subió al autobús con su clase.\nFueron a Toledo y comieron en una plaza.",
+      "question": "Lucía part en voyage avec sa classe. Comment voyage la classe ?",
+      "spoken": "El padre de Lucía la llevó en coche. Luego, Lucía subió al autobús con su clase. Fueron a Toledo y comieron en una plaza.",
+      "choices": [
+        "En voiture",
+        "En bus",
+        "En train"
+      ],
+      "choicesLang": "fr",
+      "answer": "En bus",
+      "hint": "Cherche ce que fait Lucía con su clase (avec sa classe).",
+      "explanation": "Lucía subió al autobús con su clase : la classe voyage en bus. En coche (en voiture), c’est son père qui l’a emmenée.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Leer una historia",
+          "lines": [
+            "fue, fueron = il est allé, ils sont allés",
+            "salió, salieron = il est parti, ils sont partis",
+            "volvió, volvieron = il est rentré, ils sont rentrés",
+            "llevó = il, elle a emmené ; en coche = en voiture",
+            "de la mañana = du matin ; de la tarde : ajoute 12 h"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-es-stories-1-1",
+      "prompt": "Pablo y su hermano fueron al zoo.\nSalieron a las diez de la mañana.\nVolvieron a las seis de la tarde.",
+      "question": "Pablo et son frère sont allés au zoo. À quelle heure sont-ils rentrés ?",
+      "spoken": "Pablo y su hermano fueron al zoo. Salieron a las diez de la mañana. Volvieron a las seis de la tarde.",
+      "choices": [
+        "6 h 00",
+        "10 h 00",
+        "18 h 00"
+      ],
+      "choicesLang": "fr",
+      "answer": "18 h 00",
+      "hint": "volvieron = ils sont rentrés. Regarde aussi de la tarde.",
+      "explanation": "Volvieron a las seis de la tarde = ils sont rentrés à 6 h de l’après-midi : 6 + 12 = 18 h 00. À 10 h, ils sont partis (salieron).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Leer una historia",
+          "lines": [
+            "fue, fueron = il est allé, ils sont allés",
+            "salió, salieron = il est parti, ils sont partis",
+            "volvió, volvieron = il est rentré, ils sont rentrés",
+            "llevó = il, elle a emmené ; en coche = en voiture",
+            "de la mañana = du matin ; de la tarde : ajoute 12 h"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-es-stories-1-2",
+      "prompt": "Marta fue a Toledo con su abuela.\nSu padre las llevó a la estación.\nVolvieron a las ocho de la tarde.",
+      "question": "Marta a fait un voyage. Avec qui ?",
+      "spoken": "Marta fue a Toledo con su abuela. Su padre las llevó a la estación. Volvieron a las ocho de la tarde.",
+      "choices": [
+        "Sa grand-mère",
+        "Son grand-père",
+        "Son père"
+      ],
+      "choicesLang": "fr",
+      "answer": "Sa grand-mère",
+      "hint": "Cherche le mot con (avec) dans l’histoire.",
+      "explanation": "Marta fue a Toledo con su abuela = avec sa grand-mère. Son père (su padre) les a seulement emmenées à la gare.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Leer una historia",
+          "lines": [
+            "fue, fueron = il est allé, ils sont allés",
+            "salió, salieron = il est parti, ils sont partis",
+            "volvió, volvieron = il est rentré, ils sont rentrés",
+            "llevó = il, elle a emmené ; en coche = en voiture",
+            "de la mañana = du matin ; de la tarde : ajoute 12 h"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-es-stories-1-3",
+      "prompt": "Leo fue a Granada en tren.\nSalió a las siete de la mañana.\nVolvió a las nueve de la tarde.",
+      "question": "Leo a pris le train. À quelle heure est-il parti ?",
+      "spoken": "Leo fue a Granada en tren. Salió a las siete de la mañana. Volvió a las nueve de la tarde.",
+      "choices": [
+        "7 h 00",
+        "9 h 00",
+        "21 h 00"
+      ],
+      "choicesLang": "fr",
+      "answer": "7 h 00",
+      "hint": "salió = il est parti. Regarde aussi de la mañana.",
+      "explanation": "Salió a las siete de la mañana = il est parti à 7 h du matin : 7 h 00. À 21 h (las nueve de la tarde), il est rentré (volvió).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Leer una historia",
+          "lines": [
+            "fue, fueron = il est allé, ils sont allés",
+            "salió, salieron = il est parti, ils sont partis",
+            "volvió, volvieron = il est rentré, ils sont rentrés",
+            "llevó = il, elle a emmené ; en coche = en voiture",
+            "de la mañana = du matin ; de la tarde : ajoute 12 h"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-es-stories-1-4",
+      "prompt": "Ana salió con sus amigas.\nPor la mañana, fueron a la playa.\nPor la tarde, fueron al cine.",
+      "question": "Ana est sortie avec ses amies. Où sont-elles allées le matin ?",
+      "spoken": "Ana salió con sus amigas. Por la mañana, fueron a la playa. Por la tarde, fueron al cine.",
+      "choices": [
+        "À la plage",
+        "Au cinéma",
+        "À la piscine"
+      ],
+      "choicesLang": "fr",
+      "answer": "À la plage",
+      "hint": "por la mañana = le matin. Lis la phrase qui commence ainsi.",
+      "explanation": "Por la mañana, fueron a la playa = le matin, elles sont allées à la plage. Au cinéma (al cine), c’était l’après-midi (por la tarde).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Leer una historia",
+          "lines": [
+            "fue, fueron = il est allé, ils sont allés",
+            "salió, salieron = il est parti, ils sont partis",
+            "volvió, volvieron = il est rentré, ils sont rentrés",
+            "llevó = il, elle a emmené ; en coche = en voiture",
+            "de la mañana = du matin ; de la tarde : ajoute 12 h"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-es-stories-1-5",
+      "prompt": "Hugo viajó a Lima en avión.\nSu tío lo llevó al aeropuerto en coche.\nEn Lima, fue a casa de su prima.",
+      "question": "Hugo est parti en avion. Qui l’a emmené à l’aéroport ?",
+      "spoken": "Hugo viajó a Lima en avión. Su tío lo llevó al aeropuerto en coche. En Lima, fue a casa de su prima.",
+      "choices": [
+        "Son oncle",
+        "Sa cousine",
+        "Son père"
+      ],
+      "choicesLang": "fr",
+      "answer": "Son oncle",
+      "hint": "llevó = il a emmené. Qui a emmené Hugo ?",
+      "explanation": "Su tío lo llevó al aeropuerto = son oncle l’a emmené à l’aéroport. Sa cousine (su prima), il est allé chez elle à Lima.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Leer una historia",
+          "lines": [
+            "fue, fueron = il est allé, ils sont allés",
+            "salió, salieron = il est parti, ils sont partis",
+            "volvió, volvieron = il est rentré, ils sont rentrés",
+            "llevó = il, elle a emmené ; en coche = en voiture",
+            "de la mañana = du matin ; de la tarde : ajoute 12 h"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-es-stories-1-6",
+      "prompt": "Nora fue al museo con su clase.\nSalieron a las dos de la tarde.\nVolvieron a las cinco de la tarde.",
+      "question": "Nora est allée au musée. À quelle heure la classe est-elle partie ?",
+      "spoken": "Nora fue al museo con su clase. Salieron a las dos de la tarde. Volvieron a las cinco de la tarde.",
+      "choices": [
+        "2 h 00",
+        "14 h 00",
+        "17 h 00"
+      ],
+      "choicesLang": "fr",
+      "answer": "14 h 00",
+      "hint": "salieron = ils sont partis. Regarde aussi de la tarde.",
+      "explanation": "Salieron a las dos de la tarde = ils sont partis à 2 h de l’après-midi : 2 + 12 = 14 h 00. À 17 h, ils sont rentrés (volvieron).",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Leer una historia",
+          "lines": [
+            "fue, fueron = il est allé, ils sont allés",
+            "salió, salieron = il est parti, ils sont partis",
+            "volvió, volvieron = il est rentré, ils sont rentrés",
+            "llevó = il, elle a emmené ; en coche = en voiture",
+            "de la mañana = du matin ; de la tarde : ajoute 12 h"
+          ]
+        }
+      }
+    },
+    {
+      "key": "lv2-3e-travel-es-stories-1-7",
+      "prompt": "Sara fue a Mallorca con sus padres.\nFueron en barco desde Valencia.\nVolvieron a casa en avión.",
+      "question": "Sara est allée sur une île. Comment y est-elle allée ?",
+      "spoken": "Sara fue a Mallorca con sus padres. Fueron en barco desde Valencia. Volvieron a casa en avión.",
+      "choices": [
+        "En bateau",
+        "En avion",
+        "En voiture"
+      ],
+      "choicesLang": "fr",
+      "answer": "En bateau",
+      "hint": "Lis la 2e phrase : fueron en… Un barco va sur la mer.",
+      "explanation": "Fueron en barco = ils y sont allés en bateau. En avion (en avión), c’est pour rentrer à la maison.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Leer una historia",
+          "lines": [
+            "fue, fueron = il est allé, ils sont allés",
+            "salió, salieron = il est parti, ils sont partis",
+            "volvió, volvieron = il est rentré, ils sont rentrés",
+            "llevó = il, elle a emmené ; en coche = en voiture",
+            "de la mañana = du matin ; de la tarde : ajoute 12 h"
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien lu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "lv2-3e-travel",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

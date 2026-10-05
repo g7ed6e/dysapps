@@ -1,0 +1,142 @@
+{
+  "id": "french-6e-word-spelling-missing-letters-1",
+  "biome": "french-6e-word-spelling",
+  "type": "missing-letters",
+  "level": 1,
+  "instruction": "Écoute le mot, puis tape le bloc de lettres qui manque.",
+  "items": [
+    {
+      "key": "enfant",
+      "word": "enfant",
+      "before": "",
+      "after": "fant",
+      "choices": [
+        "en",
+        "an",
+        "in"
+      ],
+      "answer": "en"
+    },
+    {
+      "key": "pantalon",
+      "word": "pantalon",
+      "before": "p",
+      "after": "talon",
+      "choices": [
+        "an",
+        "en",
+        "on"
+      ],
+      "answer": "an"
+    },
+    {
+      "key": "montagne",
+      "word": "montagne",
+      "before": "m",
+      "after": "tagne",
+      "choices": [
+        "on",
+        "om",
+        "an"
+      ],
+      "answer": "on"
+    },
+    {
+      "key": "tomber",
+      "word": "tomber",
+      "before": "t",
+      "after": "ber",
+      "choices": [
+        "om",
+        "on",
+        "an"
+      ],
+      "answer": "om"
+    },
+    {
+      "key": "maison",
+      "word": "maison",
+      "before": "m",
+      "after": "son",
+      "choices": [
+        "ai",
+        "ei",
+        "è"
+      ],
+      "answer": "ai"
+    },
+    {
+      "key": "neige",
+      "word": "neige",
+      "before": "n",
+      "after": "ge",
+      "choices": [
+        "ei",
+        "ai",
+        "è"
+      ],
+      "answer": "ei"
+    },
+    {
+      "key": "lapin",
+      "word": "lapin",
+      "before": "lap",
+      "after": "",
+      "choices": [
+        "in",
+        "ain",
+        "un"
+      ],
+      "answer": "in"
+    },
+    {
+      "key": "main",
+      "word": "main",
+      "before": "m",
+      "after": "",
+      "choices": [
+        "ain",
+        "in",
+        "ein"
+      ],
+      "answer": "ain"
+    },
+    {
+      "key": "éléphant",
+      "word": "éléphant",
+      "before": "élé",
+      "after": "ant",
+      "choices": [
+        "ph",
+        "f",
+        "v"
+      ],
+      "answer": "ph"
+    },
+    {
+      "key": "chanson",
+      "word": "chanson",
+      "before": "",
+      "after": "anson",
+      "choices": [
+        "ch",
+        "j",
+        "s"
+      ],
+      "answer": "ch"
+    }
+  ],
+  "feedback": {
+    "correct": "Le mot est complet !",
+    "wrong": "{word} s’écrit avec « {answer} », pas « {chosen} »."
+  },
+  "reward": {
+    "block": "french-6e-word-spelling",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

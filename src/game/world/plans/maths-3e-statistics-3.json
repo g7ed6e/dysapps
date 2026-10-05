@@ -1,0 +1,9 @@
+{
+  "id": "maths-3e-statistics-3",
+  "biome": "maths-3e-statistics",
+  "name": "La terrasse du dôme",
+  "reward": {
+    "xp": 60
+  },
+  "done": "Une terrasse, une barrière, un escalier… Mon dôme est complet : probabilité 1."
+}

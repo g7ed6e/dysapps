@@ -1,0 +1,107 @@
+{
+  "id": "french-6e-phonology-sound-hunt-s",
+  "biome": "french-6e-phonology",
+  "type": "sound-hunt",
+  "level": 2,
+  "target": "s",
+  "instruction": "Tape les mots où tu entends le son [s], comme dans soleil. Puis valide.",
+  "items": [
+    {
+      "key": "souris",
+      "word": "souris",
+      "image": "🐭",
+      "heard": "[s]",
+      "correct": true
+    },
+    {
+      "key": "maison",
+      "word": "maison",
+      "image": "🏠",
+      "heard": "[z]",
+      "correct": false
+    },
+    {
+      "key": "poisson",
+      "word": "poisson",
+      "image": "🐟",
+      "heard": "[s]",
+      "correct": true
+    },
+    {
+      "key": "chaussette",
+      "word": "chaussette",
+      "image": "🧦",
+      "heard": "[s]",
+      "correct": true
+    },
+    {
+      "key": "zèbre",
+      "word": "zèbre",
+      "image": "🦓",
+      "heard": "[z]",
+      "correct": false
+    },
+    {
+      "key": "salade",
+      "word": "salade",
+      "image": "🥗",
+      "heard": "[s]",
+      "correct": true
+    },
+    {
+      "key": "tasse",
+      "word": "tasse",
+      "image": "☕",
+      "heard": "[s]",
+      "correct": true
+    },
+    {
+      "key": "valise",
+      "word": "valise",
+      "image": "🧳",
+      "heard": "[z]",
+      "correct": false
+    },
+    {
+      "key": "serpent",
+      "word": "serpent",
+      "image": "🐍",
+      "heard": "[s]",
+      "correct": true
+    },
+    {
+      "key": "rose",
+      "word": "rose",
+      "image": "🌹",
+      "heard": "[z]",
+      "correct": false
+    },
+    {
+      "key": "glace",
+      "word": "glace",
+      "image": "🍦",
+      "heard": "[s]",
+      "correct": true
+    },
+    {
+      "key": "sucre",
+      "word": "sucre",
+      "image": "🍬",
+      "heard": "[s]",
+      "correct": true
+    }
+  ],
+  "feedback": {
+    "wrong": "Dans {word}, on entend {heard}. Écoute encore et compare avec {target}.",
+    "correct": "Bravo, tu entends bien [s] !"
+  },
+  "reward": {
+    "block": "french-6e-phonology",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}
