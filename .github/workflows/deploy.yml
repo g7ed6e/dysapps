@@ -132,7 +132,8 @@ jobs:
         id: tete
         if: github.ref == 'refs/heads/main'
         run: |
-          tete=$(git ls-remote origin refs/heads/main | cut -f1)
+          tete=$(git ls-remote --exit-code origin refs/heads/main) || { echo "::error::Tête de main introuvable"; exit 1; }
+          tete=${tete%%$'\t'*}
           if [ "$tete" = "$GITHUB_SHA" ]; then echo "a_jour=true" >> "$GITHUB_OUTPUT"; else echo "Dépassé par $tete : pas de publication."; echo "a_jour=false" >> "$GITHUB_OUTPUT"; fi
 
   # Pose l'étiquette vX.Y.Z sur le commit publié : repère lisible dans l'historique, et point d'ancrage court
