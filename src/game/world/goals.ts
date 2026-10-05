@@ -14,7 +14,7 @@ import {
   conditionMet,
   isArchipelagoReached,
   otherEnd,
-  pathTo,
+  linkLength,
   payableBlocks,
   previousArchipelago,
   reachableIslands,
@@ -98,7 +98,7 @@ function arriveeDe(b: BridgeDef, open: Set<BiomeId>, depuis?: BiomeId): BiomeId 
  * Les ouvrages proposés, le suggéré d'abord (GD-7, point 3) ; le même tri pour la prochaine destination et pour le seul
  * « Construire » principal du panneau d'une île. D'abord ceux qui ouvrent une île ; les îles de LV2 après les autres
  * (elles restent en bout de chemin) ; puis ceux qu'on peut payer ; puis l'île de la matière la moins jouée (`partJouee`) ;
- * à égalité, l'ordre des matières, puis le moins cher, puis l'ordre de `BRIDGES`. Déduit de la sauvegarde seule, sans
+ * à égalité, l'ordre des matières, puis la plus courte (GD-9 : toutes coûtent le même prix), puis l'ordre de `BRIDGES`. Déduit de la sauvegarde seule, sans
  * hasard ni horloge : la suggestion ne change pas tant que l'élève n'a rien fait.
  */
 export function ouvragesParSuggestion(state: GameState, ouvrages: BridgeDef[], depuis?: BiomeId, open = ouvertes(state)): BridgeDef[] {
@@ -113,7 +113,7 @@ export function ouvragesParSuggestion(state: GameState, ouvrages: BridgeDef[], d
       have >= b.cost ? 0 : 1,
       part,
       ORDRE_DES_MATIERES.indexOf(matiere),
-      b.cost,
+      linkLength(b, state.world.links) ?? Number.MAX_SAFE_INTEGER,
       BRIDGES.indexOf(b),
     ];
   };
@@ -145,7 +145,7 @@ function objectifDOuvrage(state: GameState, b: BridgeDef, depuis: BiomeId, lv2: 
   const have = Math.min(b.cost, payableBlocks(state.stock));
   const left = b.cost - have;
   return {
-    text: `${left > 0 ? `Encore ${left} bloc${left > 1 ? 's' : ''} pour ${what}` : `Tu peux construire ${what}`}${raison}`,
+    text: `${left > 0 ? `Encore ${left} bloc${left > 1 ? 's' : ''} pour ${what}` : `Tu peux poser ${what}`}${raison}`,
     have,
     need: b.cost,
     ready: left === 0,
@@ -283,7 +283,6 @@ export function nextGoal(state: GameState, island: BiomeId, noms: NomsArchipels,
  */
 export function lockedHint(state: GameState, island: BiomeId, noms: NomsArchipels, mots: MotsDesGardiens): string {
   const bridges = state.world.links;
-  const open = reachableIslands(bridges);
   const world = { progress: state.progress, plans: state.world.parts };
   // Une île d'un autre archipel : il faut le Bloc-Navire.
   const archipelago = archipelagoOf(island);
@@ -304,21 +303,19 @@ export function lockedHint(state: GameState, island: BiomeId, noms: NomsArchipel
     const n = status.total - status.done;
     return `${head}, de l’autre côté ${travel}. Finis ${VEHICLE_NAME} sur ${port} : encore ${n} bloc${n > 1 ? 's' : ''}.`;
   }
-  const here = buildableBridges(bridges, island, world);
-  if (here.length) {
-    const b = here.reduce((a, c) => (c.cost < a.cost ? c : a));
+  // La liaison depuis le lieu relié le plus proche (GD-9) : la première des départs possibles.
+  const b = buildableBridges(bridges, island, world)[0];
+  if (b) {
     const from = getBiome(otherEnd(b, island))?.name ?? '';
     const cond = conditionMet(b, bridges, world) ? '' : ` ${conditionTextShort(b, from)}`;
-    return `Pas si vite ! Pour venir ici, construis ${ouvrageName(b.kind, '')}depuis ${from} : ${b.cost} blocs.${cond}`;
+    return `Pas si vite ! Pour venir ici, pose ${ouvrageName(b.kind, '')}depuis ${from} : ${b.cost} blocs.${cond}`;
   }
-  // Trop loin : la première île fermée sur le chemin est celle à ouvrir d'abord.
-  const path = pathTo(island);
-  const next = path.map((b) => (open.has(b.from) ? b.to : b.from)).find((id) => !open.has(id));
-  const name = next && next !== island ? getBiome(next)?.name : undefined;
-  return name
-    ? `Pas si vite ! Ouvre d’abord ${name} : de là, un ouvrage mène jusqu’ici.`
-    : 'Pas si vite ! Construis d’abord un chemin jusqu’à mon île, puis reviens me voir.';
+  // Aucune liaison ne tient (elle couperait un lieu ou une autre liaison, ou serait trop longue) : la fiche le dit.
+  return AUCUNE_LIAISON;
 }
+
+/** Ce que dit la fiche d'un lieu fermé quand aucune liaison ne tient jusqu'à lui (GD-9). */
+export const AUCUNE_LIAISON = 'Aucune liaison ne tient jusqu’ici pour l’instant : elle couperait un lieu ou une autre liaison.';
 
 const cap = (text: string) => `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
 

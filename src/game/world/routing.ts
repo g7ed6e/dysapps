@@ -1,15 +1,15 @@
-// Les tracés des liaisons (GD-9, L2) : c'est le jeu qui trace chaque liaison, droite ou en L à un seul coude sur l'eau,
-// jamais en biais, d'une arrivée d'un lieu (`landing` : sur sa côte, au pas de la grille, une par côté) à une arrivée
-// de l'autre, ou à un point d'attache du point de départ (à chaque pas sur ses quatre côtés). Une liaison part droit
+// Les tracés des liaisons (GD-9, L2) : l'élève pose ses liaisons, c'est le jeu qui les trace, droites ou en L à un
+// seul coude sur l'eau, jamais en biais, d'une arrivée d'un lieu (`landing` : sur sa côte, au pas de la grille, une par
+// côté ; au point de départ, autant qu'il y a de pas sur ses côtés) à une arrivée de l'autre. Une liaison part droit
 // vers le large, au moins deux cases, avant de tourner ; elle passe à deux cases au moins de toute emprise, ne coupe
-// aucun lieu, aucun écueil, aucune autre liaison. Courte, elle fait 36 cases au plus ; longue (le bac, les liaisons du
-// point de départ), 96. Code pur, sans Three.js : la même règle trace la carte de départ et dira, au geste « Aménager »,
-// si une place est possible (`placePossible`).
+// aucun lieu, aucun écueil, aucune autre liaison. Courte (un pont), elle fait 36 cases au plus ; longue (un bac), 96.
+// Code pur, sans Three.js : il trace les liaisons posées, dans l'ordre où elles l'ont été, puis dit si une liaison de
+// plus tiendrait, et le geste « Aménager » s'en servira (`placePossible`).
 import { BIOMES, type BiomeId } from '../biomes';
-import { ARCHIPELAGOS, type BridgeDef, BRIDGES } from './archipelago';
+import { ARCHIPELAGOS, type BridgeDef } from './archipelago';
 import { decorate } from './decor';
-import { cadreDe, distanceAuRectangle, ECART_DES_LIAISONS, ECART_ENTRE_LES_LIEUX, ecartEntre, empriseDuLieu, type PartDEmprise } from './footprint';
-import { type ArchipelagoId, archipelagoOfIsland, bornesDuCoeur, isLand, isLandDuMonde, isthmusOf, type IslandDef, landCells, landscape, margesDuCoeur, noise, tirage, versLeMonde } from './map';
+import { cadreDe, distanceAuRectangle, ECART_DES_LIAISONS, ECART_ENTRE_LES_LIEUX, ecartEntre, empriseDuLieu } from './footprint';
+import { type ArchipelagoId, bornesDuCoeur, isLand, isLandDuMonde, isthmusOf, type IslandDef, landCells, landscape, margesDuCoeur, noise, tirage, versLeMonde } from './map';
 import { LOW } from './paths';
 import { type Cote, COTES, PAS, type Quarts, tournerLaDirection, VERS_LE_LARGE } from './placement';
 
@@ -22,27 +22,15 @@ export const LONGUEUR_LONGUE = 96;
 /** Une liaison part droit vers le large d'au moins tant de cases avant son coude. */
 export const AU_LARGE_AVANT_LE_COUDE = 2;
 
-/** Les lieux du point de départ d'une région : ceux d'où partent les liaisons en étoile (au 6e, la Forêt et la Plaine). */
+/** Les lieux du point de départ d'une région (au 6e, la Forêt et la Plaine) : ils ont un point d'attache à chaque pas. */
 export function lieuxDuDepart(a: ArchipelagoId): readonly BiomeId[] {
   const def = ARCHIPELAGOS.find((x) => x.classe === a)!;
   return def.starts.includes(def.port) ? def.starts : [...def.starts, def.port];
 }
 
-/** Une liaison du point de départ : elle touche un lieu du point de départ. */
-export function liaisonDuDepart(b: BridgeDef): boolean {
-  const a = archipelagoOfIsland(b.from);
-  const depart = lieuxDuDepart(a);
-  return depart.includes(b.from) || depart.includes(b.to);
-}
-
 /** Deux lieux réunis (un isthme sur la carte de départ) : leur liaison est un sentier sur la terre, qui ne se trace pas ici. */
 export function liaisonEntreReunis(b: BridgeDef): boolean {
   return isthmusOf(b.from) === b.to;
-}
-
-/** La longueur la plus grande d'une liaison : longue pour un bac et pour une liaison du point de départ, courte sinon. */
-export function longueurMax(b: BridgeDef): number {
-  return b.kind === 'bac' || liaisonDuDepart(b) ? LONGUEUR_LONGUE : LONGUEUR_COURTE;
 }
 
 // ---------- Les arrivées et les points d'attache ----------
@@ -98,8 +86,9 @@ export function decalageDesLignes(q: Quarts): { colonnes: number; rangees: numbe
 /**
  * Les arrivées possibles d'un lieu, dans son repère (le lieu pas tourné), calculées une fois par orientation : elles ne
  * dépendent que de son dessin. Sur chaque côté, à chaque pas de la grille du monde (`decalageDesLignes`) : la case de
- * côte la plus au large de la colonne (ou de la rangée), si elle a de la terre ; jamais à côté d'un décor haut, ni
- * devant les bornes (la bande de devant, sur toute la largeur du cœur). `pas` : le rang de sa ligne, en pas.
+ * côte la plus au large de la colonne (ou de la rangée), si elle a de la terre ; jamais sous un décor haut (elle et la
+ * suivante vers l'intérieur), ni devant les bornes (la bande de devant, sur toute la largeur du cœur). `pas` : le rang
+ * de sa ligne, en pas.
  */
 export function arriveesPossibles(def: IslandDef): readonly ArriveeLocale[] {
   const cleDuLieu = `${def.id}:${def.quarts}`;
@@ -121,8 +110,10 @@ export function arriveesPossibles(def: IslandDef): readonly ArriveeLocale[] {
     x1 = Math.max(x1, x);
     y1 = Math.max(y1, y);
   }
-  const libre = (x: number, y: number) => {
-    for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) if (haut.has(`${x + dx},${y + dy}`)) return false;
+  // Libre : ni la case d'arrivée ni la suivante vers l'intérieur ne portent un décor haut (tronc ou feuillage) :
+  // le bonhomme descend de la liaison et entre tout droit dans le lieu.
+  const libre = (x: number, y: number, dx: number, dy: number) => {
+    for (let k = 0; k <= 1; k++) if (haut.has(`${x - k * dx},${y - k * dy}`)) return false;
     return true;
   };
   for (const cote of COTES) {
@@ -140,7 +131,7 @@ export function arriveesPossibles(def: IslandDef): readonly ArriveeLocale[] {
         if ((vertical ? x : y) !== p) continue;
         if (!best || (vertical ? (y - best.y) * dy > 0 : (x - best.x) * dx > 0)) best = { x, y };
       }
-      if (!best || !libre(best.x, best.y)) continue;
+      if (!best || !libre(best.x, best.y, dx, dy)) continue;
       out.push({ cote, pas: (p - d) / PAS, x: best.x, y: best.y });
     }
   }
@@ -228,81 +219,111 @@ class Grille {
 /** Ce qu'on donne au traceur : les lieux de la région à leur place, et les écueils de la mer (cases « x,y »). */
 export interface PlansDeLaRegion {
   lieux: readonly IslandDef[];
-  ecueils?: ReadonlySet<string>;
+  ecueils?: Iterable<string>;
   /** Les arrivées choisies par lieu (la disposition) ; sans elles, le traceur choisit, une par côté. */
   arrivees?: ReadonlyMap<BiomeId, readonly { cote: Cote; pas: number }[]>;
 }
 
 /**
- * Trace toutes les liaisons d'une région (`BRIDGES`, sauf celles des lieux réunis, sur leur isthme), les liaisons du
- * point de départ d'abord, puis les raccourcis, dans l'ordre des données : chacune prend, parmi les arrivées encore
- * libres de ses deux bouts (une par côté d'un lieu, une liaison par arrivée ; au point de départ, chaque point d'attache
- * une fois), le chemin valable le plus court (droit avant un L, puis le premier dans l'ordre). `null` : la liaison ne
- * tient pas (une liaison à reposer, GD-9).
+ * Le traceur d'une région : la grille de ce qu'une liaison ne touche pas (la terre et les îlots de chaque lieu, son
+ * quai, les écueils, et les liaisons déjà posées, avec leur abord), et les arrivées libres de chaque lieu. `poser` trace
+ * une liaison et la garde ; `essayer` dit seulement le tracé qu'elle prendrait. Chaque fois, le chemin valable le plus
+ * court parmi les arrivées encore libres de ses deux bouts (une par côté d'un lieu ; au point de départ, chaque point
+ * d'attache une fois), droit avant un L, puis le premier dans l'ordre ; `null` : elle ne tient pas.
  */
-export function tracerLaRegion(a: ArchipelagoId, plans: PlansDeLaRegion): Map<string, TraceDeLiaison | null> {
-  const lieux = plans.lieux;
-  const rang = new Map(lieux.map((d, i) => [d.id, i]));
-  const g = new Grille(a);
-  const emprises = new Map<BiomeId, PartDEmprise[]>(lieux.map((d) => [d.id, empriseDuLieu(d.id, d)]));
-  // Ce qui est dur : la terre de chaque lieu, ses îlots et son quai (et leur abord), les écueils (et leur abord).
-  for (const d of lieux) {
-    for (const p of emprises.get(d.id)!) {
-      if (p.genre === 'terre') {
-        const bit = 1 << rang.get(d.id)!;
-        g.rectangle(p, ECART_DES_LIAISONS - 1, (i) => (g.pres[i] |= bit));
-        g.rectangle(p, 0, (i) => {
-          const x = g.x0 + (i % g.w);
-          const y = g.y0 + Math.floor(i / g.w);
-          if (isLandDuMonde(d, x, y)) g.dur[i] = 1;
-        });
-      } else g.rectangle(p, ECART_DES_LIAISONS - 1, (i) => (g.dur[i] = 1));
+export class TraceurDeRegion {
+  private readonly g: Grille;
+  private readonly rang: Map<BiomeId, number>;
+  private readonly possibles = new Map<BiomeId, Accroche[]>();
+  private readonly depart: Set<BiomeId>;
+  private readonly prises = new Set<string>();
+  private readonly cotesPris = new Set<string>();
+
+  constructor(a: ArchipelagoId, plans: PlansDeLaRegion) {
+    const lieux = plans.lieux;
+    this.rang = new Map(lieux.map((d, i) => [d.id, i]));
+    const g = new Grille(a);
+    this.g = g;
+    // Ce qui est dur : la terre de chaque lieu, ses îlots et son quai (et leur abord), les écueils (et leur abord).
+    for (const d of lieux)
+      for (const p of empriseDuLieu(d.id, d)) {
+        if (p.genre === 'terre') {
+          const bit = 1 << this.rang.get(d.id)!;
+          g.rectangle(p, ECART_DES_LIAISONS - 1, (i) => (g.pres[i] |= bit));
+          g.rectangle(p, 0, (i) => {
+            const x = g.x0 + (i % g.w);
+            const y = g.y0 + Math.floor(i / g.w);
+            if (isLandDuMonde(d, x, y)) g.dur[i] = 1;
+          });
+        } else g.rectangle(p, ECART_DES_LIAISONS - 1, (i) => (g.dur[i] = 1));
+      }
+    for (const k of plans.ecueils ?? []) {
+      const [x, y] = k.split(',').map(Number);
+      g.rectangle({ x0: x, y0: y, x1: x + 1, y1: y + 1 }, 1, (i) => (g.dur[i] = 1));
+    }
+    this.depart = new Set(lieuxDuDepart(a));
+    for (const d of lieux) {
+      const choisies = plans.arrivees?.get(d.id);
+      const locales = arriveesPossibles(d).filter((l) => !choisies || choisies.some((c) => c.cote === l.cote && c.pas === l.pas));
+      this.possibles.set(d.id, locales.map((l) => accrocheDansLeMonde(d, l)));
     }
   }
-  for (const k of plans.ecueils ?? []) {
-    const [x, y] = k.split(',').map(Number);
-    g.rectangle({ x0: x, y0: y, x1: x + 1, y1: y + 1 }, 1, (i) => (g.dur[i] = 1));
+
+  private cle(c: Accroche): string {
+    return `${c.lieu}|${c.cote}|${c.pas}`;
   }
-  const depart = new Set(lieuxDuDepart(a));
-  const parId = new Map(lieux.map((d) => [d.id, d]));
-  // Les arrivées possibles de chaque lieu dans le monde ; celles prises, et les côtés pris (hors du point de départ).
-  const possibles = new Map<BiomeId, Accroche[]>();
-  for (const d of lieux) {
-    const choisies = plans.arrivees?.get(d.id);
-    const locales = arriveesPossibles(d).filter((l) => !choisies || choisies.some((c) => c.cote === l.cote && c.pas === l.pas));
-    possibles.set(d.id, locales.map((l) => accrocheDansLeMonde(d, l)));
+
+  private libre(c: Accroche): boolean {
+    return !this.prises.has(this.cle(c)) && (this.depart.has(c.lieu) || !this.cotesPris.has(`${c.lieu}|${c.cote}`));
   }
-  const prises = new Set<string>();
-  const cotesPris = new Set<string>();
-  const cle = (c: Accroche) => `${c.lieu}|${c.cote}|${c.pas}`;
-  const libre = (c: Accroche) => !prises.has(cle(c)) && (depart.has(c.lieu) || !cotesPris.has(`${c.lieu}|${c.cote}`));
-  const liaisons = BRIDGES.filter((b) => archipelagoOfIsland(b.from) === a && parId.has(b.from) && parId.has(b.to) && !liaisonEntreReunis(b));
-  const ordre = [...liaisons.filter(liaisonDuDepart), ...liaisons.filter((b) => !liaisonDuDepart(b))];
-  const out = new Map<string, TraceDeLiaison | null>();
-  for (const b of ordre) {
-    const bitA = 1 << rang.get(b.from)!;
-    const bitB = 1 << rang.get(b.to)!;
-    const max = longueurMax(b);
+
+  /** Le tracé que prendrait une liaison de `max` cases au plus, sans la poser ; `null` si elle ne tient pas. */
+  essayer(b: BridgeDef, max: number): TraceDeLiaison | null {
+    const ra = this.rang.get(b.from);
+    const rb = this.rang.get(b.to);
+    if (ra === undefined || rb === undefined) return null;
+    const bitA = 1 << ra;
+    const bitB = 1 << rb;
     let best: TraceDeLiaison | null = null;
-    for (const f of possibles.get(b.from)!) {
-      if (!libre(f)) continue;
-      for (const t of possibles.get(b.to)!) {
-        if (!libre(t)) continue;
+    for (const f of this.possibles.get(b.from)!) {
+      if (!this.libre(f)) continue;
+      for (const t of this.possibles.get(b.to)!) {
+        if (!this.libre(t)) continue;
         const ch = cheminEntre(f, t);
         if (!ch || ch.cases.length > max || (best && ch.cases.length >= best.cases.length)) continue;
-        if (!cheminLibre(g, ch, bitA, bitB)) continue;
+        if (!cheminLibre(this.g, ch, bitA, bitB)) continue;
         best = { id: b.id, cases: ch.cases, coude: ch.coude, depuis: f, vers: t };
       }
     }
-    out.set(b.id, best);
-    if (!best) continue;
-    prises.add(cle(best.depuis));
-    prises.add(cle(best.vers));
-    cotesPris.add(`${best.depuis.lieu}|${best.depuis.cote}`);
-    cotesPris.add(`${best.vers.lieu}|${best.vers.cote}`);
-    // La liaison et son abord deviennent durs pour les suivantes.
-    for (const c of best.cases) g.rectangle({ x0: c.x, y0: c.y, x1: c.x + 1, y1: c.y + 1 }, ECART_DES_LIAISONS - 1, (i) => (g.dur[i] = 1));
+    return best;
   }
+
+  /** Trace une liaison et la garde (ses arrivées prises, son chemin et son abord durs pour les suivantes). */
+  poser(b: BridgeDef, max: number): TraceDeLiaison | null {
+    const best = this.essayer(b, max);
+    if (!best) return null;
+    this.prises.add(this.cle(best.depuis));
+    this.prises.add(this.cle(best.vers));
+    this.cotesPris.add(`${best.depuis.lieu}|${best.depuis.cote}`);
+    this.cotesPris.add(`${best.vers.lieu}|${best.vers.cote}`);
+    for (const c of best.cases) this.g.rectangle({ x0: c.x, y0: c.y, x1: c.x + 1, y1: c.y + 1 }, ECART_DES_LIAISONS - 1, (i) => (this.g.dur[i] = 1));
+    return best;
+  }
+}
+
+/**
+ * Trace les liaisons posées d'une région, dans l'ordre où elles l'ont été (`liaisons`, sans celles des lieux réunis),
+ * chacune `max(b)` cases au plus. `null` : la liaison ne tient pas (une liaison à reposer, GD-9).
+ */
+export function tracerLaRegion(
+  a: ArchipelagoId,
+  plans: PlansDeLaRegion,
+  liaisons: readonly BridgeDef[],
+  max: (b: BridgeDef) => number,
+): Map<string, TraceDeLiaison | null> {
+  const t = new TraceurDeRegion(a, plans);
+  const out = new Map<string, TraceDeLiaison | null>();
+  for (const b of liaisons) if (!liaisonEntreReunis(b)) out.set(b.id, t.poser(b, max(b)));
   return out;
 }
 
@@ -335,17 +356,18 @@ function cheminLibre(g: Grille, ch: { cases: { x: number; y: number }[]; coude: 
 
 /**
  * Une place est-elle possible pour le lieu `id` dans la disposition `lieux` (le lieu à sa nouvelle place) ? Son emprise
- * tient dans le cadre, à `ECART_ENTRE_LES_LIEUX` cases d'eau des autres ; sa liaison au point de départ se trace (pour le
- * lieu de LV2, sans liaison directe au point de départ, l'une de ses liaisons) ; et elle ne bloque aucune liaison qui se
- * traçait avant (`avant` : les tracés de la disposition d'avant le geste). Code pur : le geste « Aménager » le lira.
+ * tient dans le cadre, à `ECART_ENTRE_LES_LIEUX` cases d'eau des autres, et les liaisons posées (`liaisons`, dans leur
+ * ordre) se tracent toutes encore. Code pur : le geste « Aménager » le lira.
  */
-export function placePossible(a: ArchipelagoId, lieux: readonly IslandDef[], id: BiomeId, avant?: ReadonlyMap<string, TraceDeLiaison | null>): boolean {
+export function placePossible(
+  a: ArchipelagoId,
+  lieux: readonly IslandDef[],
+  id: BiomeId,
+  liaisons: readonly BridgeDef[] = [],
+  max: (b: BridgeDef) => number = () => LONGUEUR_LONGUE,
+): boolean {
   if (ecartsTropPetits(a, lieux).some((e) => e.startsWith(`${id} `) || e.includes(` et ${id} `))) return false;
-  const traces = tracerLaRegion(a, { lieux });
-  const siennes = [...traces.keys()].map((k) => BRIDGES.find((b) => b.id === k)!).filter((b) => b.from === id || b.to === id);
-  const auDepart = siennes.filter(liaisonDuDepart);
-  if (auDepart.length ? auDepart.some((b) => !traces.get(b.id)) : siennes.length > 0 && !siennes.some((b) => traces.get(b.id))) return false;
-  if (avant) for (const [k, t] of avant) if (t && !traces.get(k)) return false;
+  for (const t of tracerLaRegion(a, { lieux }, liaisons, max).values()) if (!t) return false;
   return true;
 }
 

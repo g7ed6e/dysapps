@@ -10,7 +10,7 @@
 import type { BiomeId } from '../../biomes';
 import { bornesDuCoeur, islandDef, landCells } from '../map';
 import { origineDe } from '../terrain';
-import { amorcesDuDessin } from '../terrain/links';
+import { amorcesDOrigine } from '../terrain/links';
 import type { Modele } from './types';
 
 /** La hauteur d'un gradin (en blocs), son retrait sur le précédent (en cases), et la distance gardée aux ouvrages. */
@@ -25,7 +25,7 @@ function repere(id: BiomeId) {
   const o = origineDe(id);
   const cases = landCells(islandDef(id)).map((c) => ({ x: c.x - o.x, y: c.y - o.y }));
   const abords: { x: number; y: number }[] = [];
-  for (const a of amorcesDuDessin(id)) for (const c of a.cases) abords.push({ x: c.x, y: c.y });
+  abords.push(...amorcesDOrigine(id));
   const pres = (x: number, y: number) => abords.some((c) => Math.abs(c.x - x) <= ABORDS && Math.abs(c.y - y) <= ABORDS);
   // Le bord du fond du cœur (borne exclue), en repère d'île : la première rangée derrière le cœur.
   const fond = bornesDuCoeur(islandDef(id)).y1;

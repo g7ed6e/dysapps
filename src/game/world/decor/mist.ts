@@ -11,8 +11,8 @@
 //   ne se verrait), modulée par un bruit lent qui fait les bancs ; seuls les carrés où un sommet au moins est visible
 //   sont tracés. Sans la brume de profondeur : de la couleur de l'horizon, elle s'y fondrait.
 import { BIOMES } from '../../biomes';
-import { BRIDGES, getArchipelago } from '../archipelago';
-import { archipelagoOfIsland } from '../archipelagos';
+import { getArchipelago } from '../archipelago';
+import { liaisonsPoseesDe } from '../linkGeometry';
 import { dockBox } from '../harbor';
 import { lineaire, NIVEAU_EAU } from '../landMesh';
 import { landBox, landCells, mapOf, smoothNoise, type ArchipelagoId } from '../map';
@@ -74,7 +74,7 @@ export function placeDeLaBrume(a: ArchipelagoId): (x: number, y: number) => bool
     const o = bossIsletOrigin(BIOMES.findIndex((b) => b.id === def.id));
     for (let x = -1; x <= ISLET_W; x++) for (let y = -1; y <= ISLET_H; y++) interdit.add(cle(o.x + x, o.y + y));
   }
-  for (const def of BRIDGES.filter((br) => archipelagoOfIsland(br.from) === a))
+  for (const def of liaisonsPoseesDe(a))
     for (const c of bridgePath(def)) for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) interdit.add(cle(c.x + dx, c.y + dy));
   const quai = dockBox(getArchipelago(a).port);
   for (let x = quai.x0 - 2; x <= quai.x1 + 2; x++) for (let y = quai.y0 - 2; y <= quai.y1 + 2; y++) interdit.add(cle(x, y));
@@ -106,15 +106,19 @@ function opaciteDeLaBrume(c: CoucheDeBrume, k: number, x: number, y: number, est
   return c.opacite * banc * bord;
 }
 
-const cache = cacheDeLaDisposition<ArchipelagoId, BancsDeBrume | null>();
+const cache = cacheDeLaDisposition<string, BancsDeBrume | null>();
+
+/** La clé d'une brume : l'archipel et ses liaisons posées, dont elle s'écarte. */
+const cleDeLaBrume = (a: ArchipelagoId) => `${a}|${liaisonsPoseesDe(a).map((b) => b.id).join(',')}`;
 
 /** Les bancs de brume d'un archipel (calculés une fois), ou `null` s'il n'en a pas. */
 export function bancsDeBrume(a: ArchipelagoId): BancsDeBrume | null {
-  const connu = cache.get(a);
+  const cle = cleDeLaBrume(a);
+  const connu = cache.get(cle);
   if (connu !== undefined) return connu;
   const couches = BANCS_DE_BRUME[a];
   if (!couches) {
-    cache.set(a, null);
+    cache.set(cle, null);
     return null;
   }
   const b = worldBounds(a);
@@ -152,7 +156,7 @@ export function bancsDeBrume(a: ArchipelagoId): BancsDeBrume | null {
       }
   });
   const out: BancsDeBrume = { positions: Float32Array.from(positions), colors: Float32Array.from(colors), indices: Uint32Array.from(indices) };
-  cache.set(a, out);
+  cache.set(cle, out);
   return out;
 }
 
@@ -211,7 +215,7 @@ export function bordDesNappes(a: ArchipelagoId): (i: number, x: number, y: numbe
     const o = bossIsletOrigin(BIOMES.findIndex((b) => b.id === def.id));
     for (let x = -1; x <= ISLET_W; x++) for (let y = -1; y <= ISLET_H; y++) interdit.add(cle(o.x + x, o.y + y));
   }
-  for (const def of BRIDGES.filter((br) => archipelagoOfIsland(br.from) === a))
+  for (const def of liaisonsPoseesDe(a))
     for (const c of bridgePath(def)) for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) interdit.add(cle(c.x + dx, c.y + dy));
   const dans = (b: { x0: number; y0: number; x1: number; y1: number }, x: number, y: number) => x >= b.x0 && x <= b.x1 && y >= b.y0 && y <= b.y1;
   return (i, x, y) => {
@@ -274,15 +278,16 @@ export function nappesPosees(a: ArchipelagoId): NappePosee[] {
   });
 }
 
-const nappesCache = cacheDeLaDisposition<ArchipelagoId, BancsDeBrume | null>();
+const nappesCache = cacheDeLaDisposition<string, BancsDeBrume | null>();
 
 /** Les nappes des sommets d'un archipel (Archipéo), dans le format des bancs (un appel de dessin), ou `null`. */
 export function nappesDesSommets(a: ArchipelagoId): BancsDeBrume | null {
-  const connu = nappesCache.get(a);
+  const cle = cleDeLaBrume(a);
+  const connu = nappesCache.get(cle);
   if (connu !== undefined) return connu;
   const nappes = nappesPosees(a);
   if (!nappes.length) {
-    nappesCache.set(a, null);
+    nappesCache.set(cle, null);
     return null;
   }
   const N = NAPPES_3E;
@@ -312,7 +317,7 @@ export function nappesDesSommets(a: ArchipelagoId): BancsDeBrume | null {
     }
   }
   const out: BancsDeBrume = { positions: Float32Array.from(positions), colors: Float32Array.from(colors), indices: Uint32Array.from(indices) };
-  nappesCache.set(a, out);
+  nappesCache.set(cle, out);
   return out;
 }
 

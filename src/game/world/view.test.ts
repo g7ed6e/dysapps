@@ -1,10 +1,20 @@
 // La flèche de la Carte posée sur un ouvrage (GD-7) : sur sa liaison, côté île de départ, qui ne désigne que lui.
-import { BRIDGES } from './archipelago';
+// Sur une région toute reliée (GD-9 : une liaison ne se dessine que posée).
+import { ARCHIPELAGO_IDS } from './archipelagos';
+import { relierLaRegion, VOYAGES } from './archipelago';
+import { liaisonsPoseesDe, poserLesLiaisons } from './linkGeometry';
 import { archipelagoOfIsland } from './archipelagos';
 import { grilleDe } from './grid';
 import { isLand, mapOf } from './map';
 import { casesDeLOuvrage, placesDeLaFleche, premierCoude } from './terrain';
 import { estUnOuvrage } from './view';
+
+/** Les liaisons posées de chaque région, une région toute reliée (GD-9). */
+const POSEES = (() => {
+  const links = ARCHIPELAGO_IDS.reduce<string[]>((l, a) => relierLaRegion(a, l), VOYAGES.map((v) => v.id));
+  poserLesLiaisons(links);
+  return ARCHIPELAGO_IDS.flatMap((a) => liaisonsPoseesDe(a));
+})();
 
 it('la place de la flèche : la première case d’eau, puis trois cases vers l’arrivée', () => {
   const c = (x: number, troncon = 0) => ({ x, y: 0, z: 0, troncon });
@@ -40,8 +50,8 @@ it('une flèche d’ouvrage se reconnaît, une île ou une case non', () => {
   expect(estUnOuvrage(null)).toBe(false);
 });
 
-describe('la flèche de chaque ouvrage, depuis chacune de ses deux îles', () => {
-  for (const def of BRIDGES) {
+describe('la flèche de chaque liaison posée, depuis chacun de ses deux lieux', () => {
+  for (const def of POSEES) {
     const a = archipelagoOfIsland(def.from);
     for (const depuis of [def.from, def.to]) {
       it(`${def.id} depuis ${depuis}`, () => {
@@ -70,11 +80,11 @@ describe('la flèche de chaque ouvrage, depuis chacune de ses deux îles', () =>
 });
 
 it('la flèche d’un ouvrage n’est sur aucun autre : elle désigne un seul ouvrage parmi ceux d’une île', () => {
-  for (const def of BRIDGES) {
+  for (const def of POSEES) {
     const g = grilleDe(archipelagoOfIsland(def.from));
     for (const depuis of [def.from, def.to])
       for (const p of g.placesDeLaFleche(def.id, depuis))
-        for (const autre of BRIDGES) {
+        for (const autre of POSEES) {
           if (autre === def || archipelagoOfIsland(autre.from) !== archipelagoOfIsland(def.from)) continue;
           const sur = g.liaison(autre.id).some((c) => Math.abs(c.x - p.x) <= 1 && Math.abs(c.y - p.y) <= 1);
           expect(sur, `${def.id} depuis ${depuis} sur ${autre.id}`).toBe(false);

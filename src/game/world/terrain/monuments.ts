@@ -1,7 +1,8 @@
 // Les monuments, sur leur îlot au large.
-import { type ArchipelagoId, archipelagoOfIsland, DANS_LE_CIEL, landCells, mapOf } from '../map';
+import { type ArchipelagoId, DANS_LE_CIEL, landCells, mapOf } from '../map';
 import { BIOMES, BLOC, BLOCKS } from '../../biomes';
-import { BRIDGES, getArchipelago } from '../archipelago';
+import { getArchipelago } from '../archipelago';
+import { liaisonsPoseesDe } from '../linkGeometry';
 import { dockBox, dockOrigin } from '../harbor';
 import { MONUMENT_ISLET, type MonumentDef, monumentsOf } from '../monuments';
 import { ORIGINE_DES_MONUMENTS, planCells, type PlanDef, planOrigin } from '../plans';
@@ -27,7 +28,7 @@ export function monumentBlocked(a: ArchipelagoId): (x: number, y: number) => boo
     const o = bossIsletOrigin(BIOMES.findIndex((b) => b.id === def.id));
     for (let x = 0; x < ISLET_W; x++) for (let y = 0; y < ISLET_H; y++) near(o.x + x, o.y + y, 2);
   }
-  for (const def of BRIDGES.filter((br) => archipelagoOfIsland(br.from) === a)) for (const c of bridgePath(def)) near(c.x, c.y, 3);
+  for (const def of liaisonsPoseesDe(a)) for (const c of bridgePath(def)) near(c.x, c.y, 3);
   const dock = dockBox(getArchipelago(a).port);
   for (let x = dock.x0; x <= dock.x1; x++) for (let y = dock.y0; y <= dock.y1; y++) near(x, y, 3);
   const whales = whaleSpots(a);

@@ -1,25 +1,31 @@
 // Le cadrage de la vue : l'étendue de l'archipel, la zone et l'angle de la vue d'une île, l'île sous la vue, la caméra
 // d'une île et sa projection, le cadre d'une traversée.
-import { type ArchipelagoId, archipelagoOfIsland, coeurDe, islandDef, type IslandDef, landBox, lieuDeDepart, MAP, mapOf } from '../map';
+import { type ArchipelagoId, archipelagoOfIsland, coeurDe, islandDef, type IslandDef, landBox, lieuDeDepart, MAP } from '../map';
 import { dockBox } from '../harbor';
-import { BRIDGES, bridgesOf, bridgeState, getArchipelago, islandsOf, otherEnd, reachableIslands } from '../archipelago';
+import { getArchipelago, islandsOf } from '../archipelago';
 import { type BiomeId, BIOMES } from '../../biomes';
 import { ISLET_GAP, ISLET_H } from './islets';
 import { BAC_LONG, bridgePath } from './links';
 import { islandCenter } from './base';
 import { cacheDeLaDisposition } from '../placement';
+import { cadreDe } from '../footprint';
+import { liaisonsPoseesDe, voisinsDe } from '../linkGeometry';
 
-/** Étendue d'un archipel (coordonnées de grille), terres, îlots et port compris. */
+/**
+ * Étendue d'un archipel (coordonnées de grille) : le cadre fixe de sa région (GD-9, `CADRES`), où la mer est semée une
+ * fois et où tout lieu se pose. `maxX` et `maxY` exclus, comme le cadre.
+ */
 export function worldBounds(a: ArchipelagoId): {
   minX: number;
   maxX: number;
   minY: number;
   maxY: number;
 } {
-  return bornesDesIles(a, mapOf(a));
+  const c = cadreDe(a);
+  return { minX: c.x0, maxX: c.x1, minY: c.y0, maxY: c.y1 };
 }
 
-/** Les bornes de quelques îles d'un archipel, et de son port (voir `worldBounds`). */
+/** Les bornes de quelques îles d'un archipel, et de son port (la colonne centrale, `colonneCentrale`). */
 function bornesDesIles(a: ArchipelagoId, iles: readonly IslandDef[]): { minX: number; maxX: number; minY: number; maxY: number } {
   let minX = Infinity;
   let maxX = -Infinity;
@@ -41,38 +47,12 @@ function bornesDesIles(a: ArchipelagoId, iles: readonly IslandDef[]): { minX: nu
 }
 
 /**
- * L'étendue à cadrer dans la vue d'ensemble : les îles ouvertes et celles qu'un ouvrage proposé peut atteindre,
- * avec une marge. Au début, deux îles et leurs voisines ; le cadre s'élargit à mesure que le monde s'ouvre.
+ * L'étendue à cadrer dans la vue d'ensemble (la Carte) : tout le cadre de la région, dès le début (GD-9) ; elle ne
+ * bouge pas quand on pose une liaison. `bridges` : gardé pour l'appelant, le cadre n'en dépend plus.
  */
 export function overviewBounds(a: ArchipelagoId, bridges: string[]): { minX: number; maxX: number; minY: number; maxY: number } {
-  const open = reachableIslands(bridges);
-  const shown = new Set<BiomeId>([...open].filter((id) => archipelagoOfIsland(id) === a));
-  // Les liaisons du port (GD-7) comptent dès le départ, avec leur tracé : le cadre ne bouge pas quand on les ouvre.
-  const etoiles = BRIDGES.filter((b) => b.etoile && archipelagoOfIsland(b.from) === a);
-  for (const b of BRIDGES) {
-    if (archipelagoOfIsland(b.from) !== a || (!b.etoile && bridgeState(b, bridges) === 'far')) continue;
-    shown.add(b.from);
-    shown.add(b.to);
-  }
-  let minX = Infinity;
-  let maxX = -Infinity;
-  let minY = Infinity;
-  let maxY = -Infinity;
-  for (const b of etoiles)
-    for (const c of bridgePath(b)) {
-      minX = Math.min(minX, c.x);
-      maxX = Math.max(maxX, c.x);
-      minY = Math.min(minY, c.y);
-      maxY = Math.max(maxY, c.y);
-    }
-  for (const id of shown) {
-    const b = landBox(islandDef(id));
-    minX = Math.min(minX, b.x0);
-    maxX = Math.max(maxX, b.x1);
-    minY = Math.min(minY, b.y0 - ISLET_H - ISLET_GAP);
-    maxY = Math.max(maxY, b.y1);
-  }
-  return { minX: minX - 4, maxX: maxX + 4, minY: minY - 4, maxY: maxY + 4 };
+  void bridges;
+  return worldBounds(a);
 }
 
 /** Pivot maximal de la caméra vers le cœur du continent (radians) : le nord reste reconnaissable. */
@@ -88,14 +68,12 @@ export const VIEW_YAW_MAX = (40 * Math.PI) / 180;
  * l'île du bonhomme rapetisse, ce qui n'est pas le cas (au bout de la crête, l'étiquette sort de l'écran à gauche, de
  * 65 à 340 px ; au 5e, celle du Relais aussi) : cadrage d'avant, sans entre-deux. Depuis l'île de la LV2, la voisine compte.
  *
- * Les liaisons du port (GD-7, `etoile`) n'y comptent pas : l'île au bout d'un long bac n'est pas une voisine, la vue
- * reste celle d'avant.
+ * Les voisines sont les lieux qu'un pont relierait (GD-9 : une liaison de 36 cases au plus, `voisinsDe`) : l'île au
+ * bout d'un long bac n'est pas une voisine.
  */
 export function viewZone(home: BiomeId): { minX: number; maxX: number; minY: number; maxY: number } {
   const ids = new Set<BiomeId>([home]);
-  for (const b of bridgesOf(home)) {
-    if (b.etoile) continue;
-    const other = otherEnd(b, home);
+  for (const other of voisinsDe(home)) {
     if (BIOMES.find((x) => x.id === other)?.subject === 'lv2') continue;
     ids.add(other);
   }
@@ -277,19 +255,20 @@ export function projectionDeLaVueDeLIle(id: BiomeId): { projeter: ProjectionDeLa
   return { projeter, cube: V.hauteur / (2 * d * t), oeil: { x: oeil[0], y: oeil[2], z: oeil[1] } };
 }
 
-/** Les cases des longues traversées (plus de `BAC_LONG` cases) d'un archipel, et l'ouvrage de chacune. */
-const traverseesCache = cacheDeLaDisposition<ArchipelagoId, Map<string, string>>();
+/** Les cases des longues traversées (plus de `BAC_LONG` cases) d'un archipel, et l'ouvrage de chacune : les liaisons posées. */
+const traverseesCache = cacheDeLaDisposition<string, Map<string, string>>();
 
 function casesDesTraversees(a: ArchipelagoId): Map<string, string> {
-  let m = traverseesCache.get(a);
+  const posees = liaisonsPoseesDe(a);
+  const cle = `${a}|${posees.map((b) => b.id).join(',')}`;
+  let m = traverseesCache.get(cle);
   if (!m) {
     m = new Map();
-    for (const b of BRIDGES) {
-      if (archipelagoOfIsland(b.from) !== a) continue;
+    for (const b of posees) {
       const path = bridgePath(b);
       if (path.length > BAC_LONG) for (const c of path) m.set(`${c.x},${c.y}`, b.id);
     }
-    traverseesCache.set(a, m);
+    traverseesCache.set(cle, m);
   }
   return m;
 }

@@ -4,7 +4,7 @@
 import { BLOCKS, BIOMES, type BlockId } from './biomes';
 import { STARS_TO_BEAT, bossId } from './bossCore';
 import type { GameState } from './engine';
-import { BRIDGES } from './world/archipelago';
+import { ARCHIPELAGOS, grantAccess, relierLaRegion } from './world/archipelago';
 
 /** Les blocs de chaque sorte, remis à ce compte après chaque pose. */
 export const BLOCS_DU_BATISSEUR = 999;
@@ -27,6 +27,8 @@ export function bacASable(state: GameState): GameState {
     const avant = progress[id];
     if ((avant?.stars ?? 0) < STARS_TO_BEAT) progress[id] = { stars: STARS_TO_BEAT, attempts: avant?.attempts ?? 0, best: avant?.best ?? 1 };
   }
-  const bridges = [...new Set([...state.world.links, ...BRIDGES.map((b) => b.id)])];
+  // Chaque région toute reliée (GD-9) : les liaisons de l'élève, puis la plus courte vers chaque lieu encore fermé.
+  const relie = ARCHIPELAGOS.reduce<string[]>((links, a) => relierLaRegion(a.classe, links), [...state.world.links]);
+  const bridges = grantAccess(relie, BIOMES.map((b) => b.id));
   return { ...state, progress, stock: inventairePlein(), world: { ...state.world, links: bridges } };
 }

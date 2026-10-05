@@ -76,6 +76,7 @@ import {
 import {
   KIND_NAME,
   archipelagoOf,
+  departChoisi,
   getArchipelago,
   getBridge,
   isBiomeUnlocked,
@@ -181,12 +182,15 @@ export function WorldPage() {
   // Les commandes des habitants (GD-7, PR 3) : seulement dans un univers qui les montre (Blocland, Archipéo) ;
   // ailleurs, le monde se lit sans elles (ni petite construction, ni suggestion), la sauvegarde restant la même.
   const vu = useMemo(() => (textes.commandes ? state : sansCommandes(state)), [state, textes.commandes]);
+  // Un autre départ choisi pour une liaison vers un lieu fermé (GD-9, « Relier ») : le monde montre son fantôme.
+  const ouvrageVu = fiche?.objet.genre === 'ouvrage' ? fiche.objet.id : null;
+  const liaisonChoisie = useMemo(() => departChoisi(ouvrageVu, vu.world.links), [ouvrageVu, vu.world.links]);
   const cubes = useMemo(
-    () => worldCubes(a, vu.progress, vu.world, false, trophyBlocks, sentinelles, habillage.atelier),
+    () => worldCubes(a, vu.progress, vu.world, false, trophyBlocks, sentinelles, habillage.atelier, liaisonChoisie),
     // La LV2 choisit les bornes de l'île de la LV2 (world/terrain.ts, `questStations`) ; l'habillage (le lieu
     // d'assemblage) ne change pas tant que la page est montée (useState).
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [a, vu.progress, vu.world, trophyBlocks, sentinelles, settings.lv2, habillage.atelier],
+    [a, vu.progress, vu.world, trophyBlocks, sentinelles, settings.lv2, habillage.atelier, liaisonChoisie],
   );
   const creatures = useMemo(
     () => [

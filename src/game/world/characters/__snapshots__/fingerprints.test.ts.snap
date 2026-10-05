@@ -46,20 +46,20 @@ exports[`Empreintes des personnages en facettes > les créatures, île par île 
 exports[`Empreintes des personnages en facettes > les fusions, archipel par archipel (tout construit) 1`] = `
 {
   "3e": {
-    "creatures": "1944 d052c882 1fa8bb28",
-    "gardiens": "1663 40690acc",
+    "creatures": "1944 790cabb8 c368b0f4",
+    "gardiens": "1663 142fe5f5",
   },
   "4e": {
-    "creatures": "1819 d188d8c6 be575c92",
-    "gardiens": "1516 4bc9455c",
+    "creatures": "1819 5ba6f0c1 09b9a2ac",
+    "gardiens": "1516 158478aa",
   },
   "5e": {
-    "creatures": "1863 beb1fb18 22e1c51a",
-    "gardiens": "1791 a9b7a570",
+    "creatures": "1863 8a8a4b82 fab98054",
+    "gardiens": "1791 71a39281",
   },
   "6e": {
-    "creatures": "2488 75c755bd 163ed31f",
-    "gardiens": "1726 4ec64ea5",
+    "creatures": "2488 c4c15880 5de62d70",
+    "gardiens": "1726 e8f53528",
   },
   "bonhomme": "472 045a95c7 1032f390",
 }

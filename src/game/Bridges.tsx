@@ -7,8 +7,8 @@ import { BLOCKS, blockCount, getBiome, type BiomeId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { Foldable } from './IslandFold';
 import { playDone, playNope } from './sound';
-import { CONDITION_OF, KIND_NAME, buildableBridges, conditionMet, conditionText, otherEnd, payableBlocks, type BridgeDef } from './world/archipelago';
-import { ouvrageName, ouvragesParSuggestion } from './world/goals';
+import { CONDITION_OF, KIND_NAME, buildableBridges, conditionMet, conditionText, isBiomeUnlocked, otherEnd, payableBlocks, type BridgeDef } from './world/archipelago';
+import { AUCUNE_LIAISON, ouvrageName, ouvragesParSuggestion } from './world/goals';
 
 interface Props {
   island: BiomeId;
@@ -51,8 +51,9 @@ export function useConstruireUnOuvrage(island: BiomeId, onBuilt?: (to: BiomeId) 
       const used = Object.entries(r.used)
         .map(([id, n]) => blockCount(id as keyof typeof BLOCKS, n))
         .join(', ');
-      const built = b.kind === 'pont' || b.kind === 'bac' ? 'construit' : b.kind === 'tunnel' ? 'percé' : b.kind === 'sentier' ? 'tracé' : 'taillé';
-      text = `${what.charAt(0).toUpperCase()}${what.slice(1)} vers ${name} est ${built} ! Il t’a coûté ${used}. L’île est ouverte.`;
+      const built = b.kind === 'pont' || b.kind === 'bac' ? 'posé' : b.kind === 'tunnel' ? 'percé' : b.kind === 'sentier' ? 'tracé' : 'taillé';
+      const ouvre = !isBiomeUnlocked(b.from, state.world.links) || !isBiomeUnlocked(b.to, state.world.links);
+      text = `${what.charAt(0).toUpperCase()}${what.slice(1)} vers ${name} est ${built} ! Il t’a coûté ${used}.${ouvre ? ' L’île est ouverte.' : ''}`;
       if (settings.sounds) playDone();
       onBuilt?.(otherEnd(b, island));
     } else if (r.reason === 'blocs') {
@@ -61,7 +62,7 @@ export function useConstruireUnOuvrage(island: BiomeId, onBuilt?: (to: BiomeId) 
     } else if (r.reason === 'plan') {
       text = conditionText(b, state.world.links) ?? 'Il reste une étape avant de construire.';
       if (settings.sounds) playNope();
-    } else text = `${what.charAt(0).toUpperCase()}${what.slice(1)} ne peut pas être construit pour l’instant.`;
+    } else text = `${what.charAt(0).toUpperCase()}${what.slice(1)} ne peut pas être posé pour l’instant.`;
     setSaid(text);
     if (settings.autoRead) speak(frenchTypography(text));
   };
@@ -90,21 +91,32 @@ export function Bridges({ island, onBuilt, highlight = null, fold, objectif }: P
   const world = { progress: state.progress, plans: state.world.parts };
   const bridges = buildableBridges(state.world.links, island, world, settings.lv2);
   const have = payableBlocks(state.stock);
-  if (!bridges.length && !said) return null;
-
+  // Un lieu fermé (GD-9, « Relier ») : ses départs possibles, le lieu relié le plus proche d'abord.
+  const ferme = !isBiomeUnlocked(island, state.world.links);
+  if (!bridges.length && !said) {
+    if (!ferme) return null;
+    return (
+      <section className="bridges" aria-label="Relier">
+        <p className="bridges-have">
+          <Syllabified text={AUCUNE_LIAISON} />
+        </p>
+      </section>
+    );
+  }
 
   const heading = (
     <h3 id={`ponts-${island}`} className="island-sheet-heading">
-      <Icon name="ouvrage" /> Ouvrages
+      <Icon name="ouvrage" /> {ferme ? 'Relier' : 'Ouvrages'}
     </h3>
   );
   const readyOnes = bridges.filter((b) => have >= b.cost && conditionMet(b, state.world.links, world));
   // Un seul bouton principal : l'ouvrage du prochain objectif (même règle que `nextGoalInfo` sans objectif donné).
   const possibles = bridges.filter((b) => conditionMet(b, state.world.links, world));
-  const principal = objectif !== undefined ? objectif : (ouvragesParSuggestion(state, possibles, island)[0]?.id ?? null);
+  // Vers un lieu fermé, le principal est le départ le plus proche (le premier de `buildableBridges`).
+  const principal = objectif !== undefined ? objectif : ferme ? (possibles[0]?.id ?? null) : (ouvragesParSuggestion(state, possibles, island)[0]?.id ?? null);
   // L'ouvrage que le pli replié nomme, avec les mots de la Carte : le principal ; sans lui (l'objectif est le navire), le
   // premier dans l'ordre de la suggestion.
-  const enTete = bridges.find((b) => b.id === principal) ?? ouvragesParSuggestion(state, possibles.length ? possibles : bridges, island)[0];
+  const enTete = bridges.find((b) => b.id === principal) ?? (ferme ? bridges[0] : ouvragesParSuggestion(state, possibles.length ? possibles : bridges, island)[0]);
   const manque = enTete ? enTete.cost - have : 0;
   const status = readyOnes.length
     ? `${readyOnes.length} possible${readyOnes.length > 1 ? 's' : ''} · tu as ${have} bloc${have > 1 ? 's' : ''}`
@@ -122,17 +134,18 @@ export function Bridges({ island, onBuilt, highlight = null, fold, objectif }: P
       <section className="bridges" aria-labelledby={`ponts-${island}`}>
         {bridges.length > 0 && (
           <p className="bridges-have">
-            Tu as <strong>{have}</strong> bloc{have > 1 ? 's' : ''} pour construire. Un ouvrage ouvre l’île d’en face.
+            Tu as <strong>{have}</strong> bloc{have > 1 ? 's' : ''}.{' '}
+            {ferme ? 'Choisis d’où part la liaison : le lieu relié le plus proche est en premier.' : 'Une liaison relie deux lieux.'}
           </p>
         )}
-        <ul ref={list} className="island-actions bridges-list" aria-label="Ouvrages à construire">
+        <ul ref={list} className="island-actions bridges-list" aria-label={ferme ? 'Départs de la liaison' : 'Ouvrages à construire'}>
           {liste.map((b) => {
             const other = getBiome(otherEnd(b, island))!;
             const enough = have >= b.cost;
             const met = conditionMet(b, state.world.links, world);
             const ready = enough && met;
             const condition = CONDITION_OF[b.kind];
-            const title = `${KIND_NAME[b.kind]} vers ${other.name}`;
+            const title = `${KIND_NAME[b.kind]} ${ferme ? 'depuis' : 'vers'} ${other.name}`;
             // Pas encore possible : une ligne compacte qui dit ce qu'il manque, sans bouton grisé.
             if (!ready)
               return (
@@ -165,7 +178,7 @@ export function Bridges({ island, onBuilt, highlight = null, fold, objectif }: P
                   <span className="island-quest-desc">{b.cost} blocs</span>
                 </span>
                 <button type="button" className={b.id === principal ? 'button primary' : 'button'} onClick={() => build(b, other.name)}>
-                  <Icon name="hammer" /> Construire
+                  <Icon name="hammer" /> Poser
                 </button>
               </li>
             );

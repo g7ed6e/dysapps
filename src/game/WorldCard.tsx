@@ -39,7 +39,7 @@ import { statueDe } from './world/terrain';
 import type { VehicleBuilder } from './useVehicleBuilder';
 import { borneDe } from './world/affordance';
 import type { ObjetDeLaFiche } from './world/layout';
-import { KIND_NAME, bridgeState, conditionText, getArchipelago, getBridge, isBiomeUnlocked, otherEnd, payableBlocks, remainingPath, type ArchipelagoId } from './world/archipelago';
+import { KIND_NAME, bridgeState, conditionText, getArchipelago, getBridge, isBiomeUnlocked, linksToIsland, opensAnIsland, otherEnd, payableBlocks, reachableIslands, remainingPath, type ArchipelagoId } from './world/archipelago';
 import { estPrete, texteDeLaCommande, type Commande } from './world/requests';
 import { ileDeLOuvrage } from './world/model';
 import { earnIsland, whereToEarn } from './world/uses';
@@ -364,8 +364,12 @@ function FicheDuNavire({ port, ship, onBoard, onClose }: Props & { port: BiomeId
   );
 }
 
-/** Un ouvrage en fantôme : « Pont entre X et Y », ses blocs, « Construire » ; sinon ce qui manque. */
-function FicheDeLOuvrage({ id, onBuilt, onClose }: Props & { id: string }) {
+/**
+ * Une liaison en fantôme : « Pont entre X et Y », ses blocs, « Poser » ; sinon ce qui manque. Vers un lieu fermé (GD-9,
+ * « Relier ») : d'où elle part, et « Partir d'un autre lieu » quand un autre lieu relié peut l'accueillir (la fiche de
+ * cette autre liaison, dont le monde montre le fantôme).
+ */
+function FicheDeLOuvrage({ id, onBuilt, onClose, onVoirOuvrage }: Props & { id: string }) {
   const { state } = useBlocland();
   const { settings } = useSettings();
   const def = getBridge(id);
@@ -380,6 +384,12 @@ function FicheDeLOuvrage({ id, onBuilt, onClose }: Props & { id: string }) {
   const have = payableBlocks(state.stock);
   const sansLv2 = settings.lv2 === 'none' && [def.from, def.to].some((i) => getBiome(i)?.subject === 'lv2');
   const pret = etat === 'buildable' && have >= def.cost && !sansLv2;
+  // Vers un lieu fermé : les autres départs possibles, du plus proche au plus loin.
+  const open = reachableIslands(state.world.links);
+  const ferme = etat !== 'built' && opensAnIsland(def, open) ? (open.has(def.from) ? def.to : def.from) : null;
+  const departs = ferme ? linksToIsland(ferme, state.world.links, open) : [];
+  const suivant = departs.length > 1 ? departs[(departs.findIndex((d) => d.id === def.id) + 1) % departs.length] : null;
+  const depuis = ferme ? `Elle part de ${getBiome(otherEnd(def, ferme))?.name ?? ''}. ` : '';
   const phrase = sansLv2
     ? 'Choisis d’abord une LV2 dans les Réglages.'
     : etat === 'far'
@@ -387,10 +397,10 @@ function FicheDeLOuvrage({ id, onBuilt, onClose }: Props & { id: string }) {
       : etat === 'blocked'
         ? `${def.cost} blocs. ${conditionText(def, state.world.links) ?? ''}`.trim()
         : etat === 'built'
-          ? 'Déjà construit.'
+          ? 'Déjà posée.'
           : have >= def.cost
-            ? `${def.cost} blocs. Tu en as ${have}.`
-            : `${def.cost} blocs. Il t’en manque ${def.cost - have}.`;
+            ? `${depuis}${def.cost} blocs. Tu en as ${have}.`
+            : `${depuis}${def.cost} blocs. Il t’en manque ${def.cost - have}.`;
   const texte = said ?? phrase;
   return (
     <Fiche
@@ -399,11 +409,20 @@ function FicheDeLOuvrage({ id, onBuilt, onClose }: Props & { id: string }) {
       lecture={`${titre}. ${texte}`}
       onClose={onClose}
       actions={
-        pret &&
-        !said && (
-          <button type="button" className="button primary" onClick={() => build(def, getBiome(otherEnd(def, ile))?.name ?? '')}>
-            <Icon name="hammer" /> Construire
-          </button>
+        !said &&
+        (pret || (suivant && !sansLv2)) && (
+          <>
+            {pret && (
+              <button type="button" className="button primary" onClick={() => build(def, getBiome(otherEnd(def, ile))?.name ?? '')}>
+                <Icon name="hammer" /> Poser
+              </button>
+            )}
+            {suivant && !sansLv2 && (
+              <button type="button" className="button" onClick={() => onVoirOuvrage(suivant.id)}>
+                <Icon name="ouvrage" /> Partir d’un autre lieu
+              </button>
+            )}
+          </>
         )
       }
     >
@@ -413,8 +432,8 @@ function FicheDeLOuvrage({ id, onBuilt, onClose }: Props & { id: string }) {
 }
 
 /**
- * Une île pâle : l'indice de sa créature, la première fois la découverte des ouvrages, et « Voir le premier ouvrage » (la
- * fiche de cet ouvrage).
+ * Une île pâle : l'indice de sa créature, la première fois la découverte des ouvrages, et « Relier » (GD-9 : la fiche
+ * de la liaison depuis le lieu relié le plus proche, d'où l'on peut choisir un autre départ).
  */
 function FicheDeLIlePale({ ile, fiche, onVoirOuvrage, onClose }: Props & { ile: BiomeId }) {
   const { state } = useBlocland();
@@ -433,7 +452,7 @@ function FicheDeLIlePale({ ile, fiche, onVoirOuvrage, onClose }: Props & { ile: 
       actions={
         premier && (
           <button type="button" className="button primary" onClick={() => onVoirOuvrage(premier.id)}>
-            <Icon name="hammer" /> Voir le premier ouvrage
+            <Icon name="hammer" /> Relier
           </button>
         )
       }

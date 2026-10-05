@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { poserLesLiaisons } from './world/linkGeometry';
 import { gelerSauvegarde, loadJSON, removeKey, saveJSON, trySaveJSON } from '../core/storage';
 import { useProgress } from '../core/ProgressContext';
 import { bacASable, remplir } from './builder';
@@ -91,6 +92,9 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
   const [ouverture] = useState(() => rattraperLesParties(sanitizeState(loadJSON<unknown>(STORAGE_KEY, {}))));
   const [state, setState] = useState<GameState>(ouverture.state);
   const stateRef = useRef(state);
+  // Les liaisons posées de la partie (GD-9) : le tracé des liaisons (`bridgePath`) les lit. Idempotent, sans effet si
+  // elles n'ont pas changé.
+  poserLesLiaisons(state.world.links);
   const rattrapes = useRef(ouverture.plansFinis);
   useEffect(() => {
     // L'XP n'est donnée que si la sauvegarde rattrapée est bien écrite : sinon, le rattrapage refait à la prochaine

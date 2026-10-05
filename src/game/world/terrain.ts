@@ -9,7 +9,8 @@ import type { World } from '../engine';
 import type { VoxelCube } from './cube';
 import { type ArchipelagoId, archipelagoOfIsland, inCoeurDOrigine, inCore, islandDef, type IslandDef, landCells, landscape, margesDuCoeur, noise, tirage, tournerDansLeMonde } from './map';
 import { tournerLaCase } from './placement';
-import { type BridgeDef, BRIDGES, bridgeState, isBiomeUnlocked } from './archipelago';
+import { buildableBridges, bridgeState, getBridge, isBiomeUnlocked, opensAnIsland, reachableIslands } from './archipelago';
+import { liaisonsPoseesDe, poserLesLiaisons } from './linkGeometry';
 import { cascades, DECOR, decorate, GRASS, landmark, pontonEtBarque, type Put, WATER } from './decor';
 import { LOW } from './paths';
 import { guardianStatus } from '../boss';
@@ -115,7 +116,11 @@ export function worldCubes(
   sentinelles = false,
   /** La silhouette du lieu où l'on assemble (GD-2), selon l'univers (l'habillage) : la Fabrique ou la Halle. */
   atelier: Atelier = 'fabrique',
+  /** Le départ choisi d'une liaison vers un lieu fermé (GD-9, « Relier », `departChoisi`) : son fantôme à la place du plus proche. */
+  choisie: string | null = null,
 ): VoxelCube[] {
+  // Les liaisons posées de cette partie : leur tracé (`bridgePath`) et ce qui s'en écarte (mer, baleines) les lisent.
+  poserLesLiaisons(village.links);
   const cubes: VoxelCube[] = [];
   // Tout ce qui est déjà posé dans la scène : une cascade ne tombe jamais sur la terre de l'île voisine.
   const placed = new Set<number>();
@@ -129,7 +134,7 @@ export function worldCubes(
       cubes.push(c);
     }
   }
-  return entreLesIles(a, village, cubes);
+  return entreLesIles(a, village, cubes, choisie);
 }
 
 /** Une île posée en cases du monde, ajoutée à `cubes` ; `placed` : ce que la scène occupe déjà (l'île y ajoute les siens). */
@@ -386,24 +391,27 @@ export function casesDesPlansDansLeMonde(cases: readonly { plan: PlanDef; keys: 
 }
 
 /** Ce qui est entre les îles, en cases du monde, ajouté à `cubes` : le port, les îlots des monuments, la mer, les ouvrages. */
-function entreLesIles(a: ArchipelagoId, village: World, cubes: VoxelCube[]): VoxelCube[] {
+function entreLesIles(a: ArchipelagoId, village: World, cubes: VoxelCube[], choisie: string | null): VoxelCube[] {
   // Le port : la jetée (le Bloc-Navire est un objet à part, voir vehiclePlacement).
   harbor(a, village, cubes);
   // Les monuments, chacun sur son îlot au large : bâtis, ou en fantômes à construire.
   monumentIslets(a, village, cubes);
   // La mer habillée : rochers et bancs de sable, loin de tout (jamais sous un ouvrage, ni sur l'îlot d'un monument).
   for (const c of seaDecor(a)) cubes.push(c);
-  // Les ponts : en planches s'ils sont construits, en fantôme s'ils sont constructibles, absents s'ils sont trop loin.
-  // Avec « Pas de LV2 », pas de fantôme vers l'île de la LV2 : il n'est pas proposé (`buildableBridges`), rien ne
-  // l'annonce (DA, 28/09, LV2-4). Un pont déjà construit reste : la sauvegarde de l'élève ne perd rien.
+  // Les liaisons (GD-9) : en planches celles qui sont posées ; en fantôme, vers chaque lieu fermé, celle qui part du lieu
+  // relié le plus proche (`buildableBridges`), si elle tient ; les raccourcis entre lieux ouverts ne s'annoncent pas
+  // dans le monde (la fiche « Relier » les propose). Avec « Pas de LV2 », pas de fantôme vers l'île de la LV2 : elle
+  // n'est pas proposée, rien ne l'annonce (DA, 28/09, LV2-4). Une liaison posée reste : la sauvegarde ne perd rien.
   const occupied = new Set(cubes.map((c) => `${c.x},${c.y},${c.z}`));
-  const sansLv2 = lv2Courante() === 'none';
-  const versLaLv2 = (def: BridgeDef) => [def.from, def.to].some((id) => BIOMES.find((x) => x.id === id)?.subject === 'lv2');
-  for (const def of BRIDGES) {
-    if (archipelagoOfIsland(def.from) !== a) continue;
-    const state = bridgeState(def, village.links);
-    if (state === 'far' || (state !== 'built' && sansLv2 && versLaLv2(def))) continue;
-    bridge(def, cubes, state === 'buildable', occupied);
-  }
+  for (const def of liaisonsPoseesDe(a)) bridge(def, cubes, false, occupied);
+  // Un autre départ choisi dans la fiche (« Relier ») : son fantôme remplace celui du lieu relié le plus proche.
+  const open = reachableIslands(village.links);
+  const autre = choisie ? getBridge(choisie) : undefined;
+  const fermeeChoisie = autre && opensAnIsland(autre, open) ? (open.has(autre.from) ? autre.to : autre.from) : null;
+  const fantomes = buildableBridges(village.links, undefined, undefined, lv2Courante(), open).filter(
+    (def) => archipelagoOfIsland(def.from) === a && opensAnIsland(def, open) && def.from !== fermeeChoisie && def.to !== fermeeChoisie,
+  );
+  if (autre && fermeeChoisie && archipelagoOfIsland(autre.from) === a) fantomes.unshift(autre);
+  for (const def of fantomes) if (bridgeState(def, village.links, undefined, open) === 'buildable') bridge(def, cubes, true, occupied);
   return cubes;
 }

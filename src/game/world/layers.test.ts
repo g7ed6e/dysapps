@@ -98,10 +98,11 @@ const GRILLE = [
   'world/characters/creatures',
   'world/characters/guardians',
   // La place des lieux dans leur région (GD-9) : la pose et le quart de tour, l'emprise et le cadre de chaque région,
-  // le tracé des liaisons.
+  // le tracé des liaisons, et leur géométrie que lisent les règles (`provideLinkGeometry`).
   'world/placement',
   'world/footprint',
   'world/routing',
+  'world/linkGeometry',
 ];
 
 /**

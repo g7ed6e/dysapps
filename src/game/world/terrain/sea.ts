@@ -1,13 +1,16 @@
 // Le large : les baleines, le décor de la mer et les nappes de brume.
-import { type ArchipelagoId, archipelagoOfIsland, DANS_LE_CIEL, landBox, landCells, mapOf } from '../map';
+import { type ArchipelagoId, archipelagoOfIsland, DANS_LE_CIEL, landBox, landCells, lieuDeDepart, mapOf } from '../map';
 import { BIOMES } from '../../biomes';
 import { dockBox } from '../harbor';
 import { BRIDGES, getArchipelago } from '../archipelago';
+import { ilotDuMonument } from '../footprint';
+import { liaisonEntreReunis, LONGUEUR_LONGUE, TraceurDeRegion } from '../routing';
 import { MONUMENT_ISLET, monumentsOf } from '../monuments';
 import type { VoxelCube } from '../cube';
 import { semerLaMer } from '../decor';
-import { bossIsletOrigin, ISLET_H, ISLET_W } from './islets';
+import { bossIsletOrigin, ISLET_H, ISLET_W, rectangleDeLIlot } from './islets';
 import { bridgePath } from './links';
+import { liaisonsPoseesDe } from '../linkGeometry';
 import { worldBounds } from './view';
 import { cacheDeLaDisposition } from '../placement';
 
@@ -21,14 +24,20 @@ export const BALEINES_REPLACEES: Readonly<Partial<Record<ArchipelagoId, readonly
   '5e': [{ de: { x: 91, y: 345 }, vers: { x: 97, y: 344 } }],
 };
 
-const whaleCache = cacheDeLaDisposition<ArchipelagoId, { x: number; y: number; r: number }[]>();
+const whaleCache = cacheDeLaDisposition<string, { x: number; y: number; r: number }[]>();
 
+/**
+ * Les clairières des baleines : au large des lieux à leur place, des îlots, du quai, des écueils et des liaisons posées
+ * (GD-9 : elles changent quand on pose une liaison ou qu'on déplace un lieu).
+ */
 export function whaleSpots(a: ArchipelagoId): { x: number; y: number; r: number }[] {
-  const known = whaleCache.get(a);
+  const posees = liaisonsPoseesDe(a);
+  const cleDesBaleines = `${a}|${posees.map((br) => br.id).join(',')}`;
+  const known = whaleCache.get(cleDesBaleines);
   if (known) return known;
   // Les Îles du Ciel n'ont pas de mer : pas de baleines.
   if (DANS_LE_CIEL[a]) {
-    whaleCache.set(a, []);
+    whaleCache.set(cleDesBaleines, []);
     return [];
   }
   const land: { x: number; y: number }[] = [];
@@ -39,9 +48,9 @@ export function whaleSpots(a: ArchipelagoId): { x: number; y: number; r: number 
   }
   const dock = dockBox(getArchipelago(a).port);
   for (let x = dock.x0; x <= dock.x1; x++) for (let y = dock.y0; y <= dock.y1; y++) land.push({ x, y });
-  // Les liaisons du port (GD-7) passent au large : une baleine n'y fait pas surface (les autres ouvrages, entre deux îles
-  // proches, sont déjà loin des clairières).
-  for (const br of BRIDGES) if (br.etoile && archipelagoOfIsland(br.from) === a) land.push(...bridgePath(br));
+  // Une baleine ne fait surface ni sur une liaison posée, ni sur un écueil.
+  for (const br of posees) land.push(...bridgePath(br));
+  for (const c of seaDecor(a)) land.push(c);
   const b = worldBounds(a);
   const clearance = (x: number, y: number) => {
     let best = Infinity;
@@ -83,17 +92,17 @@ export function whaleSpots(a: ArchipelagoId): { x: number; y: number; r: number 
   // Dans un ordre qui ne dépend que de leur place (d'ouest en est, puis de l'avant vers l'arrière) : chaque baleine garde son rythme
   // (`three/offshore.ts` le tire de son rang) quand une île grandit et que les notes des clairières changent.
   spots.sort((p, q) => p.x - q.x || p.y - q.y);
-  whaleCache.set(a, spots);
+  whaleCache.set(cleDesBaleines, spots);
   return spots;
 }
 
-const seaCache = cacheDeLaDisposition<ArchipelagoId, VoxelCube[]>();
+const seaCache = new Map<ArchipelagoId, VoxelCube[]>();
 
 /**
  * L'habillage de la mer : des rochers qui affleurent (galet et pierre, un à quatre cubes) et des bancs de sable au
- * ras de l'eau, semés au hasard (bruit fixe) dans l'eau libre, à cinq cases au moins de toute terre, de tout îlot,
- * de tout ouvrage et des ronds des baleines. Plus denses au large, autour du continent, là où l'écran montrait
- * la mer seule. Calculé une fois.
+ * ras de l'eau, semés une fois pour toutes sur le cadre de la région (GD-9), au hasard (bruit fixe), dans l'eau libre de
+ * la carte de départ, à cinq cases au moins de toute terre, de tout îlot, du quai, et hors des couloirs des liaisons. Ce sont les écueils : ils ne bougent
+ * pas quand un lieu bouge, et aucune liaison ne passe dessus (`ecueilsDe`). Plus denses au large.
  */
 export function seaDecor(a: ArchipelagoId): VoxelCube[] {
   const known = seaCache.get(a);
@@ -104,26 +113,43 @@ export function seaDecor(a: ArchipelagoId): VoxelCube[] {
     return [];
   }
   const solid = new Set<string>();
-  for (const def of mapOf(a)) {
+  for (const id of mapOf(a).map((d) => d.id)) {
+    const def = lieuDeDepart(id);
     for (const c of landCells(def)) solid.add(`${c.x},${c.y}`);
-    const o = bossIsletOrigin(BIOMES.findIndex((b) => b.id === def.id));
-    for (let x = 0; x < ISLET_W; x++) for (let y = 0; y < ISLET_H; y++) solid.add(`${o.x + x},${o.y + y}`);
+    const r = rectangleDeLIlot(def);
+    for (let x = r.x0; x < r.x1; x++) for (let y = r.y0; y < r.y1; y++) solid.add(`${x},${y}`);
   }
-  for (const def of BRIDGES.filter((br) => archipelagoOfIsland(br.from) === a))
-    for (const c of bridgePath(def)) for (let dx = -2; dx <= 2; dx++) for (let dy = -2; dy <= 2; dy++) solid.add(`${c.x + dx},${c.y + dy}`);
   const dock = dockBox(getArchipelago(a).port);
   for (let x = dock.x0 - 1; x <= dock.x1 + 1; x++) for (let y = dock.y0 - 1; y <= dock.y1 + 1; y++) solid.add(`${x},${y}`);
   // Les îlots des monuments.
-  for (const m of monumentsOf(a)) for (let x = 0; x < MONUMENT_ISLET; x++) for (let y = 0; y < MONUMENT_ISLET; y++) solid.add(`${m.islet.x + x},${m.islet.y + y}`);
-  const whales = whaleSpots(a);
+  for (const m of monumentsOf(a)) {
+    const o = ilotDuMonument(m, lieuDeDepart(m.biome));
+    for (let x = 0; x < MONUMENT_ISLET; x++) for (let y = 0; y < MONUMENT_ISLET; y++) solid.add(`${o.x + x},${o.y + y}`);
+  }
+  // Les couloirs des liaisons (GD-9) : le tracé de chaque liaison seule sur la carte de départ. Aucun écueil n'y
+  // affleure, à deux cases près : la mer ne barre jamais d'avance une liaison que l'élève voudrait poser.
+  const couloirs = new Set<string>();
+  const traceur = new TraceurDeRegion(a, { lieux: mapOf(a).map((d) => lieuDeDepart(d.id)) });
+  for (const l of BRIDGES)
+    if (archipelagoOfIsland(l.from) === a && !liaisonEntreReunis(l)) for (const c of traceur.essayer(l, LONGUEUR_LONGUE)?.cases ?? []) couloirs.add(`${c.x},${c.y}`);
   const b = worldBounds(a);
   const free = (x: number, y: number) => {
     for (let dx = -5; dx <= 5; dx++) for (let dy = -5; dy <= 5; dy++) if (solid.has(`${x + dx},${y + dy}`)) return false;
-    return whales.every((w) => Math.hypot(w.x - x, w.y - y) > w.r + 4);
+    for (let dx = -2; dx <= 2; dx++) for (let dy = -2; dy <= 2; dy++) if (couloirs.has(`${x + dx},${y + dy}`)) return false;
+    return true;
   };
   const cubes = semerLaMer(a, b, free);
   seaCache.set(a, cubes);
   return cubes;
+}
+
+const ecueilsCache = new Map<ArchipelagoId, ReadonlySet<string>>();
+
+/** Les cases des écueils d'une région (« x,y ») : l'habillage de la mer (`seaDecor`), qu'aucune liaison ne coupe. */
+export function ecueilsDe(a: ArchipelagoId): ReadonlySet<string> {
+  let e = ecueilsCache.get(a);
+  if (!e) ecueilsCache.set(a, (e = new Set(seaDecor(a).map((c) => `${c.x},${c.y}`))));
+  return e;
 }
 
 /** Les nappes de brume des sommets (îles à 9) : centre, étendue et hauteur, en coordonnées de grille. */

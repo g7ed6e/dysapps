@@ -8,7 +8,7 @@
 import { AVATAR_PARTS } from '../Avatar';
 import { BIOMES, type BlockId } from '../biomes';
 import { CATALOG } from '../exercises';
-import { BRIDGES, VOYAGES } from './archipelago';
+import { ARCHIPELAGOS, grantAccess, relierLaRegion, VOYAGES } from './archipelago';
 import { ALTITUDE, type ArchipelagoId, DANS_LE_CIEL, mapOf } from './map';
 import { appelsDuSol, champDuSol, landMesh, poseDuDecor, trianglesDuSol } from './landMesh';
 import { modelerLeSol } from './drawnModel';
@@ -154,7 +154,10 @@ export function toutConstruit() {
     ...BIOMES.map((b) => [`${b.id}-challenge`, { stars: 3, attempts: 1, best: 1 }]),
   ]);
   const plans = Object.fromEntries([...PLANS, ...VEHICLE_STAGES, ...MONUMENTS].map((p) => [p.id, planCells(p).map((c) => c.key)]));
-  const bridges = [...BRIDGES, ...VOYAGES].map((b) => b.id);
+  // Chaque région toute reliée (GD-9), la liaison la plus courte vers chaque lieu ; un lieu qu'aucune liaison n'atteint
+  // (une disposition à l'étroit) s'ouvre quand même (`grantAccess`). Le pire cas des liaisons se compte à part (`pireCasDeLaRegion`).
+  const relie = ARCHIPELAGOS.reduce<string[]>((links, a) => relierLaRegion(a.classe, links), VOYAGES.map((v) => v.id));
+  const bridges = grantAccess(relie, BIOMES.map((b) => b.id));
   return { progress, world: { parts: plans, log: [], links: bridges } };
 }
 
@@ -218,8 +221,13 @@ function archipelArchipeo(a: ArchipelagoId, trophees: readonly BlockId[] = [], c
 
 // ---------- Le pire cas des liaisons tracées par le jeu (GD-9) ----------
 
-/** Les raccourcis qu'un élève pose au plus dans une région (GD-9). */
-export const RACCOURCIS_AU_PLUS = 3;
+/**
+ * Les liaisons d'une région de `n` lieux, au plus (GD-9) : deux liaisons ne se croisent jamais et ne coupent aucun lieu,
+ * si bien que les lieux et leurs liaisons forment un graphe planaire, qui a au plus 3n − 6 arêtes (n ≥ 3).
+ */
+export function liaisonsAuPlus(n: number): number {
+  return Math.max(n - 1, 3 * n - 6);
+}
 
 /** Ce que coûte au plus une réunion de deux lieux (la bande de terre qui les joint), en triangles (GD-9). */
 export const TRIANGLES_D_UNE_REUNION = 150;
@@ -250,9 +258,9 @@ export function trianglesDUneLiaison(a: ArchipelagoId, kind: BridgeKind, longueu
 
 /**
  * Le pire cas d'une région aménagée (GD-9), tout construit, commandes posées et bulles comprises : le monde d'aujourd'hui
- * sans ses liaisons (`base`), puis autant de liaisons qu'une disposition peut en avoir, toutes au plus long — une par lieu
- * vers le point de départ (lieux − 1, longues : des bacs sur la mer, des ponts dans le ciel), et `RACCOURCIS_AU_PLUS`
- * raccourcis au plus long de leur sorte (le plus cher d'un bac long ou d'un pont court) — et les réunions (lieux − 1).
+ * sans ses liaisons (`base`), puis autant de liaisons que l'élève peut en poser (`liaisonsAuPlus`), toutes au plus long —
+ * celles qui ouvrent un lieu (lieux − 1, longues : des bacs de 96 cases sur la mer, des ponts dans le ciel), les autres
+ * des raccourcis entre lieux ouverts (36 cases au plus, `SHORT_LINK`) — et les réunions (lieux − 1).
  */
 export function pireCasDeLaRegion(a: ArchipelagoId): { base: number; liaisons: number; reunions: number; triangles: number; drawCalls: number } {
   const { progress, world } = toutConstruitAvecLesCommandes();
@@ -263,8 +271,8 @@ export function pireCasDeLaRegion(a: ArchipelagoId): { base: number; liaisons: n
   const base = scene.triangles + signes.triangles - liaisonsDAujourdhui;
   const lieux = mapOf(a).length;
   const longue = trianglesDUneLiaison(a, DANS_LE_CIEL[a] ? 'pont' : 'bac', LONGUEUR_LONGUE);
-  const raccourci = Math.max(longue, trianglesDUneLiaison(a, 'pont', LONGUEUR_COURTE));
-  const liaisons = (lieux - 1) * longue + RACCOURCIS_AU_PLUS * raccourci;
+  const raccourci = trianglesDUneLiaison(a, 'pont', LONGUEUR_COURTE);
+  const liaisons = (lieux - 1) * longue + (liaisonsAuPlus(lieux) - (lieux - 1)) * raccourci;
   const reunions = (lieux - 1) * TRIANGLES_D_UNE_REUNION;
   return { base, liaisons, reunions, triangles: base + liaisons + reunions, drawCalls: scene.drawCalls + signes.drawCalls };
 }

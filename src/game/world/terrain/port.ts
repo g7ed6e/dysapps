@@ -7,7 +7,8 @@ import { DOCK_DX, dockCells, dockOrigin, dockPosts, shoreY, vehicleAfloat, vehic
 import { planCells, zoneDesPlans } from '../plans';
 import { commandeDeLIle } from '../requests';
 import { casesDeLaPetiteConstruction } from '../fixtures';
-import { BRIDGES, getArchipelago } from '../archipelago';
+import { getArchipelago } from '../archipelago';
+import { liaisonsPoseesDuLieu } from '../linkGeometry';
 import type { World } from '../../engine';
 import { villageStage } from '../villageStage';
 import { kitReady, launchedStages, stageBuildingAt } from '../vehicle';
@@ -117,7 +118,7 @@ function quaySpots(port: BiomeId, cubes: VoxelCube[]): { boat: QuaySpot | null; 
   // La cale, sur la côte devant la barque amarrée (à l'ouest de la jetée) : rien ne s'y pose, la barque reste lisible.
   for (let x = X - 4; x < X; x++) for (let y = S; y <= S + 1; y++) ban(x, y);
   // Les ouvrages qui partent de l'île-port, et une case autour.
-  for (const b of BRIDGES.filter((d) => d.from === port || d.to === port))
+  for (const b of liaisonsPoseesDuLieu(port))
     for (const c of bridgePath(b)) for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) ban(c.x + dx, c.y + dy);
   // Le niveau du sol de chaque case : le cœur (et son plateau), ou la terre autour.
   const land = new Map(landscape(def).map((c) => [`${c.x},${c.y}`, c]));

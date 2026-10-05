@@ -20,7 +20,7 @@ import { rectangleDeLIlot } from './terrain/islets';
  * du Ciel (leur arc, de l'artiste technique 3D).
  */
 export const CADRES: Readonly<Record<ArchipelagoId, Readonly<Rectangle>>> = Object.freeze({
-  '6e': Object.freeze({ x0: -21, y0: -13, x1: 171, y1: 131 }),
+  '6e': Object.freeze({ x0: -20, y0: -13, x1: 172, y1: 131 }),
   '5e': Object.freeze({ x0: 21, y0: 289, x1: 165, y1: 401 }),
   '4e': Object.freeze({ x0: -2, y0: 584, x1: 158, y1: 696 }),
   '3e': Object.freeze({ x0: -30, y0: 880, x1: 178, y1: 992 }),
@@ -60,10 +60,11 @@ export function rectangleDeLaTerre(def: IslandDef): Rectangle {
 
 /**
  * L'îlot d'une grande construction dans le monde : il se tient au large de son lieu (`MonumentDef.biome`) et le suit
- * quand il bouge (GD-9) ; `islet` est sa place sur la carte de départ d'avant GD-9, dans le repère de son lieu.
+ * quand il bouge (GD-9) ; `islet` est sa place sur la carte de départ.
  */
 export function ilotDuMonument(m: MonumentDef, def: IslandDef = islandDef(m.biome)): { x: number; y: number } {
-  const depuis = { x: m.islet.x - def.repere.x, y: m.islet.y - def.repere.y };
+  const depart = lieuDeDepart(m.biome).core;
+  const depuis = { x: m.islet.x - depart.x, y: m.islet.y - depart.y };
   const r = tournerLeRectangle({ x0: depuis.x, y0: depuis.y, x1: depuis.x + MONUMENT_ISLET, y1: depuis.y + MONUMENT_ISLET }, def.quarts);
   return { x: def.core.x + r.x0, y: def.core.y + r.y0 };
 }

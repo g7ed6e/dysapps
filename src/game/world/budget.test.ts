@@ -195,7 +195,7 @@ it('GD-9 : le plafond du monde en blocs passe à 88 000 triangles, les appels re
   expect(PLAFOND_DU_MONDE_EN_BLOCS).toEqual({ triangles: 88_000, drawCalls: 240 });
 });
 
-it('GD-9 : au pire (toutes les liaisons au plus long, tous les raccourcis, toutes les réunions), chaque région tient sous le plafond', () => {
+it('GD-9 : au pire (autant de liaisons qu’un graphe planaire en a, au plus long, et toutes les réunions), chaque région tient sous le plafond', () => {
   for (const a of ARCHIPELAGO_IDS) {
     const pire = pireCasDeLaRegion(a);
     expect(pire.triangles, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.triangles);

@@ -2,7 +2,8 @@
 // passe au large de l'île concernée. Code pur (sans Three.js) : le trajet sur l'eau, loin de toute terre, et son
 // déroulé dans le temps (plonger, refaire surface, souffler, replonger, revenir). La 3D ne fait que le dessiner.
 import { BIOMES, type BiomeId } from "../biomes";
-import { BRIDGES, getArchipelago } from "./archipelago";
+import { getArchipelago } from "./archipelago";
+import { liaisonsPoseesDe } from "./linkGeometry";
 import { dockBox } from "./harbor";
 import {
   archipelagoOfIsland,
@@ -50,11 +51,12 @@ interface Grid {
   cells: Uint8Array;
 }
 
-const gridCache = cacheDeLaDisposition<ArchipelagoId, Grid>();
+const gridCache = cacheDeLaDisposition<string, Grid>();
 
 /** Ce que la baleine évite, case par case : terres, îlots des Gardiens et des monuments, ouvrages, port, rochers. */
 function obstacles(a: ArchipelagoId): Grid {
-  const known = gridCache.get(a);
+  const cle = `${a}|${liaisonsPoseesDe(a).map((d) => d.id).join(',')}`;
+  const known = gridCache.get(cle);
   if (known) return known;
   const b = worldBounds(a);
   const M = 40;
@@ -74,8 +76,7 @@ function obstacles(a: ArchipelagoId): Grid {
     for (let x = 0; x < ISLET_W; x++)
       for (let y = 0; y < ISLET_H; y++) mark(o.x + x, o.y + y);
   }
-  for (const def of BRIDGES.filter((br) => archipelagoOfIsland(br.from) === a))
-    for (const c of bridgePath(def)) mark(c.x, c.y);
+  for (const def of liaisonsPoseesDe(a)) for (const c of bridgePath(def)) mark(c.x, c.y);
   const dock = dockBox(getArchipelago(a).port);
   for (let x = dock.x0; x <= dock.x1; x++)
     for (let y = dock.y0; y <= dock.y1; y++) mark(x, y);
@@ -85,7 +86,7 @@ function obstacles(a: ArchipelagoId): Grid {
         mark(m.islet.x + x, m.islet.y + y);
   for (const c of seaDecor(a)) mark(c.x, c.y);
   const grid = { x0, y0, w, h, cells };
-  gridCache.set(a, grid);
+  gridCache.set(cle, grid);
   return grid;
 }
 
