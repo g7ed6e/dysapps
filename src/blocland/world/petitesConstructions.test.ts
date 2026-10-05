@@ -14,12 +14,10 @@ import {
   boardingRoute,
   cacheUneBorne,
   cacheUnLieu,
-  calculerLaPlaceDeLaPetiteConstruction,
   casesDeLaPetiteConstructionDansLeMonde,
   creatureDuMonde,
   creatureSpot,
   cubesDeLIle,
-  examenDeLaPetiteConstruction,
   lieuxVus,
   origineDe,
   placeDeLaPetiteConstruction,
@@ -30,6 +28,7 @@ import {
   VUE_DE_L_ILE_PANNEAU_OUVERT,
   worldCubes,
 } from './terrain';
+import { calculerLaPlaceDeLaPetiteConstruction, examenDeLaPetiteConstruction } from './terrain/examenDeLaPetiteConstruction';
 import { cubesDeLaVague } from './vague';
 import { getArchipelago } from './archipelago';
 
