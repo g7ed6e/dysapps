@@ -219,6 +219,12 @@ const CAPTURES = [
     fiche: { genre: 'navire', port: 'maths-4e-algebra' },
   },
   { nom: 'fusee-archipel', vue: 'archipel', famille: 'fusee', ile: 'maths-4e-algebra', sansIles: { classe: '3e' }, sansPonts: ['passage-3e'] },
+  // Le chantier du réacteur, rien de posé puis à moitié (les cases à poser en fantôme), depuis la fiche du navire et
+  // depuis la caméra de l'île.
+  ...['reacteur-vide', 'reacteur-mi'].flatMap((partie) => [
+    { nom: `fusee-${partie}`, vue: 'île', famille: 'fusee', ile: 'maths-4e-algebra', partie, sansIles: { classe: '3e' }, sansPonts: ['passage-3e'], fiche: { genre: 'navire', port: 'maths-4e-algebra' } },
+    { nom: `fusee-${partie}-ile`, vue: 'île', famille: 'fusee', ile: 'maths-4e-algebra', partie, sansIles: { classe: '3e' }, sansPonts: ['passage-3e'] },
+  ]),
   // Les personnages hors du monde (lot R6) : chaque Gardien au défi, éteint, en 3D (`parIle` : un fichier par île,
   // `<archipel>-defi-<île>.jpg`) et en SVG (la vue « liste », sans la 3D) ; la bulle d'une créature (le défi pas encore ouvert : la partie
   // sans étoiles), en 3D et en SVG.
@@ -714,6 +720,9 @@ async function scenes() {
         const l = plansFor(b.id);
         if (l.length) delete plans[l[l.length - 1].id];
       }
+    // Le réacteur du Bloc-Navire (famille `fusee`) : rien de posé, ou sa première moitié.
+    if (partie === 'reacteur-vide') delete plans['navire-reacteur'];
+    if (partie === 'reacteur-mi') plans['navire-reacteur'] = plans['navire-reacteur'].slice(0, Math.ceil(plans['navire-reacteur'].length / 2));
     // Sur chaque île : le premier plan posé, rien après.
     if (partie === 'un-plan')
       for (const b of BIOMES) plansFor(b.id).forEach((p, i) => i > 0 && delete plans[p.id]);

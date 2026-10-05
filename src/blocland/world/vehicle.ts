@@ -81,12 +81,12 @@ function ballon(): { cells: PlanCell[]; kit: PlanCell[] } {
 
 function reacteur(): { cells: PlanCell[]; kit: PlanCell[] } {
   const cells: PlanCell[] = [];
-  // Sous la coque, pour monter droit vers le ciel : le ventre du réacteur en acier (Forge), sous tout le pont.
+  // Sous la coque, pour monter droit vers le ciel. Dans l'ordre de la pose, ce qui se voit d'abord : les ailerons en
+  // calque (Atelier) sur les flancs, à mi-longueur ; les trois tuyères en ardoise (Falaise), séparées, tournées vers le
+  // bas (deux sous le mât, une vers la poupe) ; puis le ventre du réacteur en acier (Forge), sous tout le pont.
+  cells.push({ x: 0, y: 3, z: -1, block: BLOC.calque }, { x: 4, y: 3, z: -1, block: BLOC.calque }, { x: 0, y: 4, z: -1, block: BLOC.calque }, { x: 4, y: 4, z: -1, block: BLOC.calque });
+  cells.push({ x: 1, y: 3, z: -2, block: BLOC.ardoise }, { x: 3, y: 3, z: -2, block: BLOC.ardoise }, { x: 2, y: 5, z: -2, block: BLOC.ardoise });
   fill(cells, 1, 1, -1, 3, 6, 1, BLOC.acier);
-  // Les ailerons en calque (Atelier), aux quatre coins du ventre.
-  cells.push({ x: 0, y: 1, z: -1, block: BLOC.calque }, { x: 4, y: 1, z: -1, block: BLOC.calque }, { x: 0, y: 6, z: -1, block: BLOC.calque }, { x: 4, y: 6, z: -1, block: BLOC.calque });
-  // Les trois tuyères en ardoise (Falaise), tournées vers le bas, en rangée sous le mât.
-  fill(cells, 1, 3, -2, 3, 1, 1, BLOC.ardoise);
   // Le kit : les feux de position, de part et d'autre de la poupe.
   const kit: PlanCell[] = [{ x: 1, y: 7, z: 0, block: BLOC.lanterne }, { x: 3, y: 7, z: 0, block: BLOC.lanterne }];
   return { cells, kit };
