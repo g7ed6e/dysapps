@@ -1,60 +1,24 @@
-import { useEffect, useRef, useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import { DEFAULT_SETTINGS, FONT_LABELS, LV2_LABELS, MIN_FONT_SIZE, MIN_LINE_HEIGHT, THEME_LABELS, spacingWord, speedWord, WORLD_LIGHT_LABELS, WORLD_VIEW_LABELS, type FontChoice, type Lv2Choice, type ThemeChoice, type WorldLightChoice, type WorldViewChoice } from '../core/settings';
+import type { ReactNode } from 'react';
+import { DEFAULT_SETTINGS, FONT_LABELS, MIN_FONT_SIZE, MIN_LINE_HEIGHT, THEME_LABELS, spacingWord, speedWord, WORLD_LIGHT_LABELS, WORLD_VIEW_LABELS, type FontChoice } from '../core/settings';
 import { useSettings } from '../core/SettingsContext';
-import { useProgress } from '../core/ProgressContext';
 import { isSpeechAvailable } from '../core/speech';
-import { useVoixDisponible } from '../core/useVoix';
 import { Icon } from '../components/Icon';
-import { frenchTypography } from '../components/math/RichText';
 import { SauvegardePanel } from '../components/SauvegardePanel';
-import { SpeakButton } from '../components/SpeakButton';
 import { Syllabified } from '../components/Syllabified';
-import { CONFIRMATION_UNIVERS, UNIVERS, UNIVERS_IDS, type UniversChoice } from '../core/univers';
-import { APP_VERSION, applyUpdate, checkForUpdate, useAppUpdate } from '../core/appUpdate';
+import { OptionRow, Slider } from './settings/controles';
+import { Lv2Section } from './settings/Lv2Section';
+import { UniversSection } from './settings/UniversSection';
+import { ApplicationSection } from './settings/ApplicationSection';
+import { EffacerSection } from './settings/EffacerSection';
 
 const SAMPLE = 'Le bâtisseur range ses blocs de bois dans la cabane. Il en a 3, il en pose 2 : il en reste 1.';
-const DOCS_URL = 'https://g7ed6e.github.io/dysapps/';
-const REPO_URL = 'https://github.com/g7ed6e/dysapps';
 const SAMPLE_EN = 'Hello! My name is Robin. I have got three blue blocks.';
-const LV2_TEXTE = 'À partir de la 5e. Tu peux en changer quand tu veux : ce que tu as construit reste, et chaque langue garde ses étoiles.';
-const sansVoixLv2 = (voix: string) =>
-  `Cet appareil n’a pas de voix ${voix} : les mots seraient lus avec un accent français. Ajoute une voix ${voix} dans les réglages de l’appareil, rubrique Langue ou Synthèse vocale.`;
-/** Une phrase de 5e dans chaque LV2, pour tester sa voix. */
-const SAMPLE_LV2: Record<Exclude<Lv2Choice, 'none'>, { text: string; voix: string }> = {
-  es: { text: '¡Hola! Me llamo Robin. Tengo tres bloques azules.', voix: 'espagnole' },
-  de: { text: 'Hallo! Ich heiße Robin. Ich habe drei blaue Blöcke.', voix: 'allemande' },
-};
+
+/** Le nom de chaque police, dans sa case. */
+const FONT_NAMES = Object.fromEntries((Object.keys(FONT_LABELS) as FontChoice[]).map((font) => [font, <span>{nomCoupable(FONT_LABELS[font])}</span>])) as Record<FontChoice, ReactNode>;
 
 export function SettingsPage() {
   const { settings, update, reset, speak } = useSettings();
-  const { resetProgress } = useProgress();
-  const [confirmReset, setConfirmReset] = useState(false);
-  const [typed, setTyped] = useState('');
-  const appUpdate = useAppUpdate();
-  const lv2 = settings.lv2 === 'none' ? null : settings.lv2;
-  const voixLv2 = useVoixDisponible(lv2);
-  // Le changement d'univers attend sa confirmation : ce qui change, ce qui reste.
-  const [universDemande, setUniversDemande] = useState<UniversChoice | null>(null);
-  const universRef = useRef<HTMLFieldSetElement>(null);
-  const confirmRef = useRef<HTMLParagraphElement>(null);
-  // La confirmation s'ouvre sous les choix : le focus y va, pour qu'elle ne s'ouvre jamais hors de l'écran.
-  useEffect(() => {
-    if (universDemande) confirmRef.current?.focus();
-  }, [universDemande]);
-  const state: unknown = useLocation().state;
-  const section = typeof state === 'object' && state !== null && 'section' in state ? state.section : null;
-  // Venu du message unique (« Voir le réglage ») : la section Univers, sous les yeux, et le focus sur le choix en cours.
-  useEffect(() => {
-    if (section !== 'univers') return;
-    universRef.current?.scrollIntoView({ block: 'start' });
-    universRef.current?.querySelector<HTMLInputElement>('input:checked')?.focus();
-  }, [section]);
-  // La confirmation fermée (changé ou annulé), le focus revient au choix en cours, jamais perdu.
-  const fermerConfirmation = () => {
-    setUniversDemande(null);
-    requestAnimationFrame(() => universRef.current?.querySelector<HTMLInputElement>('input:checked')?.focus());
-  };
 
   return (
     <>
@@ -69,14 +33,7 @@ export function SettingsPage() {
       <form className="settings" onSubmit={(e) => e.preventDefault()}>
         <fieldset className="panel">
           <legend>Police d’écriture</legend>
-          <div className="option-row">
-            {(Object.keys(FONT_LABELS) as FontChoice[]).map((font) => (
-              <label key={font} className={`option font-${font}${settings.font === font ? ' selected' : ''}`}>
-                <input type="radio" name="font" value={font} checked={settings.font === font} onChange={() => update({ font })} />
-                <span>{nomCoupable(FONT_LABELS[font])}</span>
-              </label>
-            ))}
-          </div>
+          <OptionRow name="font" labels={FONT_NAMES} value={settings.font} onChange={(font) => update({ font })} optionClass={(font) => `font-${font}`} />
           <p className="font-credit">
             Police Luciole © Laurent Bourcellier & Jonathan Fabreguettes (Perez), typographies.fr, sous licence{' '}
             <a href="https://creativecommons.org/licenses/by/4.0/deed.fr" target="_blank" rel="noopener noreferrer">
@@ -100,14 +57,7 @@ export function SettingsPage() {
 
         <fieldset className="panel">
           <legend>Couleurs</legend>
-          <div className="option-row">
-            {(Object.keys(THEME_LABELS) as ThemeChoice[]).map((theme) => (
-              <label key={theme} className={`option theme-swatch theme-${theme}${settings.theme === theme ? ' selected' : ''}`}>
-                <input type="radio" name="theme" value={theme} checked={settings.theme === theme} onChange={() => update({ theme })} />
-                {THEME_LABELS[theme]}
-              </label>
-            ))}
-          </div>
+          <OptionRow name="theme" labels={THEME_LABELS} value={settings.theme} onChange={(theme) => update({ theme })} optionClass={(theme) => `theme-swatch theme-${theme}`} />
         </fieldset>
 
         <fieldset className="panel">
@@ -176,58 +126,15 @@ export function SettingsPage() {
           )}
         </fieldset>
 
-        <fieldset className="panel">
-          <legend>Deuxième langue (LV2)</legend>
-          <div className="option-row">
-            {(Object.keys(LV2_LABELS) as Lv2Choice[]).map((choix) => (
-              <label key={choix} className={`option${settings.lv2 === choix ? ' selected' : ''}`}>
-                <input type="radio" name="lv2" value={choix} checked={settings.lv2 === choix} onChange={() => update({ lv2: choix })} />
-                {LV2_LABELS[choix]}
-              </label>
-            ))}
-          </div>
-          <p>
-            <Syllabified text={LV2_TEXTE} />
-          </p>
-          <SpeakButton text={LV2_TEXTE} compact />
-          {lv2 && isSpeechAvailable() && (
-            <>
-              <button type="button" className="button" onClick={() => speak(SAMPLE_LV2[lv2].text, undefined, lv2)}>
-                <Icon name="speaker" /> Tester la voix {SAMPLE_LV2[lv2].voix}
-              </button>
-              {voixLv2 === false && (
-                <>
-                  <p className="settings-note">
-                    <Syllabified text={sansVoixLv2(SAMPLE_LV2[lv2].voix)} />
-                  </p>
-                  <SpeakButton text={sansVoixLv2(SAMPLE_LV2[lv2].voix)} compact />
-                </>
-              )}
-            </>
-          )}
-        </fieldset>
+        <Lv2Section />
 
         <fieldset className="panel">
           <legend>Vue du monde</legend>
-          <div className="option-row">
-            {(Object.keys(WORLD_VIEW_LABELS) as WorldViewChoice[]).map((worldView) => (
-              <label key={worldView} className={`option${settings.worldView === worldView ? ' selected' : ''}`}>
-                <input type="radio" name="worldView" value={worldView} checked={settings.worldView === worldView} onChange={() => update({ worldView })} />
-                {WORLD_VIEW_LABELS[worldView]}
-              </label>
-            ))}
-          </div>
+          <OptionRow name="worldView" labels={WORLD_VIEW_LABELS} value={settings.worldView} onChange={(worldView) => update({ worldView })} />
           <p>Si l’appareil ne sait pas dessiner le monde en 3D, l’appli montre la liste des îles.</p>
           {/* Le soleil et la lune de la barre du village vivent ici : un réglage qui reste (allègement, point 2). */}
           <p id="reglage-lumiere">La lumière du monde</p>
-          <div className="option-row" role="radiogroup" aria-labelledby="reglage-lumiere">
-            {(Object.keys(WORLD_LIGHT_LABELS) as WorldLightChoice[]).map((worldLight) => (
-              <label key={worldLight} className={`option${settings.worldLight === worldLight ? ' selected' : ''}`}>
-                <input type="radio" name="worldLight" value={worldLight} checked={settings.worldLight === worldLight} onChange={() => update({ worldLight })} />
-                {WORLD_LIGHT_LABELS[worldLight]}
-              </label>
-            ))}
-          </div>
+          <OptionRow name="worldLight" labels={WORLD_LIGHT_LABELS} value={settings.worldLight} onChange={(worldLight) => update({ worldLight })} labelledBy="reglage-lumiere" />
           <p>Avec l’heure réelle, la nuit tombe le soir sur le village.</p>
         </fieldset>
 
@@ -251,87 +158,9 @@ export function SettingsPage() {
           </label>
         </fieldset>
 
-        <fieldset className="panel" id="reglage-univers" ref={universRef}>
-          <legend>Univers</legend>
-          <p>
-            <Syllabified text="L’univers change le dessin du monde et l’histoire. Ta progression reste la même." />
-          </p>
-          <div className="univers-choices">
-            {UNIVERS_IDS.map((u) => (
-              <div key={u} className={`option univers-choice${settings.univers === u ? ' selected' : ''}`}>
-                <label>
-                  <input type="radio" name="univers" value={u} checked={settings.univers === u} onChange={() => setUniversDemande(u)} />
-                  <Icon name={UNIVERS[u].icone} size="1.6em" />
-                  <span className="univers-text">
-                    <strong>{UNIVERS[u].nom}</strong>
-                    <Syllabified text={frenchTypography(UNIVERS[u].presentation)} />
-                  </span>
-                </label>
-                <SpeakButton text={`${UNIVERS[u].nom}. ${UNIVERS[u].presentation}`} compact />
-              </div>
-            ))}
-          </div>
-          {universDemande && universDemande !== settings.univers && (
-            <div className="univers-confirm" role="group" aria-labelledby="univers-confirm-titre">
-              <p id="univers-confirm-titre" ref={confirmRef} tabIndex={-1}>
-                <strong>
-                  <Syllabified text={frenchTypography(CONFIRMATION_UNIVERS.titre(universDemande))} />
-                </strong>
-              </p>
-              <p>
-                <Syllabified text={frenchTypography(CONFIRMATION_UNIVERS.texte)} />
-              </p>
-              <SpeakButton text={`${CONFIRMATION_UNIVERS.titre(universDemande)} ${CONFIRMATION_UNIVERS.texte}`} />
-              <div className="actions">
-                <button
-                  type="button"
-                  className="button primary"
-                  onClick={() => {
-                    update({ univers: universDemande });
-                    fermerConfirmation();
-                  }}
-                >
-                  {CONFIRMATION_UNIVERS.changer}
-                </button>
-                <button type="button" className="button" onClick={fermerConfirmation}>
-                  {CONFIRMATION_UNIVERS.annuler}
-                </button>
-              </div>
-            </div>
-          )}
-        </fieldset>
+        <UniversSection />
 
-        <fieldset className="panel">
-          <legend>Application</legend>
-          <p className="settings-version">DysApps, version {APP_VERSION}.</p>
-          {appUpdate.ready ? (
-            <button type="button" className="button primary" onClick={() => void applyUpdate()}>
-              Mettre à jour maintenant
-            </button>
-          ) : (
-            <button type="button" className="button" disabled={appUpdate.checking} onClick={() => void checkForUpdate()}>
-              {appUpdate.checking ? 'Recherche…' : 'Vérifier les mises à jour'}
-            </button>
-          )}
-          <p className="settings-note" role="status" aria-live="polite">
-            {appUpdate.ready
-              ? 'Une nouvelle version est prête : elle s’installe en un clic, puis la page se recharge.'
-              : appUpdate.checked === 'aucune'
-                ? 'Tu as la dernière version.'
-                : appUpdate.checked === 'hors-ligne'
-                  ? 'Pas de connexion : réessaie plus tard.'
-                  : 'L’application se met à jour toute seule ; ce bouton sert à ne pas attendre.'}
-          </p>
-          {/* Ouverts dans un nouvel onglet : l'appli reste où elle était. */}
-          <div className="settings-links">
-            <a className="button" href={DOCS_URL} target="_blank" rel="noopener noreferrer">
-              <Icon name="book" /> La documentation
-            </a>
-            <a className="button" href={REPO_URL} target="_blank" rel="noopener noreferrer">
-              <Icon name="globe" /> Le code sur GitHub
-            </a>
-          </div>
-        </fieldset>
+        <ApplicationSection />
 
         <SauvegardePanel />
 
@@ -341,78 +170,9 @@ export function SettingsPage() {
           </button>
         </div>
 
-        {/* Loin des autres boutons, et il faut écrire un mot : un doigt qui glisse n'efface rien. */}
-        <fieldset className="panel danger-zone">
-          <legend>Effacer ma progression</legend>
-          <p>XP, succès, étoiles, blocs et bâtiments seront perdus. Les réglages restent.</p>
-          {confirmReset ? (
-            <>
-              <label className="confirm-word">
-                Pour confirmer, écris <strong>effacer</strong> :
-                <input type="text" autoComplete="off" autoCapitalize="none" spellCheck={false} value={typed} onChange={(e) => setTyped(e.target.value)} />
-              </label>
-              <div className="actions">
-                <button
-                  type="button"
-                  className="button danger"
-                  disabled={typed.trim().toLowerCase() !== 'effacer'}
-                  onClick={() => {
-                    resetProgress();
-                    setConfirmReset(false);
-                    setTyped('');
-                  }}
-                >
-                  Tout effacer
-                </button>
-                <button
-                  type="button"
-                  className="button"
-                  onClick={() => {
-                    setConfirmReset(false);
-                    setTyped('');
-                  }}
-                >
-                  Annuler
-                </button>
-              </div>
-            </>
-          ) : (
-            <button type="button" className="button danger" onClick={() => setConfirmReset(true)}>
-              Effacer ma progression…
-            </button>
-          )}
-        </fieldset>
+        <EffacerSection />
       </form>
     </>
-  );
-}
-
-interface SliderProps {
-  label: string;
-  value: number;
-  min: number;
-  max: number;
-  step: number;
-  display: string;
-  onChange: (value: number) => void;
-}
-
-function Slider({ label, value, min, max, step, display, onChange }: SliderProps) {
-  return (
-    <label className="slider">
-      <span className="slider-label">
-        {label} <output>{display}</output>
-      </span>
-      <input
-        type="range"
-        min={min}
-        max={max}
-        step={step}
-        value={value}
-        aria-valuetext={display}
-        onChange={(e) => onChange(Number(e.target.value))}
-      />
-    </label>
   );
 }
 

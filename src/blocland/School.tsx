@@ -15,6 +15,7 @@ import { useBlocland } from './BloclandContext';
 import { BlockIcon } from './Voxel';
 import { archipelagoOf } from './world/archipelago';
 import { UNIVERS } from '../core/univers';
+import { Sheet } from './Sheet';
 
 export const SCHOOL_TITLE = 'École du village';
 /** L'adresse de l'école (dans le monde en 3D : son panneau ; en vue simple : sa page). */
@@ -104,20 +105,9 @@ function SchoolBody() {
 export function SchoolSheet({ onClose }: { onClose: () => void }) {
   const island = useSchoolIsland();
   return (
-    <section id="panneau-ecole" className={`island-sheet school-sheet biome-${island.id}`} role="dialog" aria-labelledby="ecole-titre" aria-modal="true">
-      <div className="island-sheet-head">
-        <div className="island-sheet-titles">
-          <h2 id="ecole-titre" className="island-sheet-title">
-            <Icon name="school" /> {SCHOOL_TITLE}
-          </h2>
-          <p className="island-sheet-module">Sur {island.name} · Français, maths, anglais</p>
-        </div>
-        <button type="button" className="icon-button island-sheet-close" aria-label="Fermer le panneau" onClick={onClose}>
-          <Icon name="close" />
-        </button>
-      </div>
+    <Sheet id="panneau-ecole" className={`school-sheet biome-${island.id}`} titleId="ecole-titre" icon="school" title={SCHOOL_TITLE} subtitle={<>Sur {island.name} · Français, maths, anglais</>} onClose={onClose}>
       <SchoolBody />
-    </section>
+    </Sheet>
   );
 }
 

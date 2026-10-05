@@ -10,6 +10,7 @@ import { useSettings } from '../core/SettingsContext';
 import { frenchTypography } from '../components/math/RichText';
 import { ProgressBody } from '../pages/ProgressPage';
 import { TROPHIES_TITLE } from './trophies';
+import { Sheet } from './Sheet';
 
 export function TrophySheet({ onClose }: { onClose: () => void }) {
   const { progress } = useProgress();
@@ -25,20 +26,7 @@ export function TrophySheet({ onClose }: { onClose: () => void }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
-    <section id="panneau-trophees" className="island-sheet trophy-sheet" role="dialog" aria-labelledby="trophees-titre" aria-modal="true">
-      <div className="island-sheet-head">
-        <div className="island-sheet-titles">
-          <h2 id="trophees-titre" className="island-sheet-title">
-            <Icon name="trophy" /> {TROPHIES_TITLE}
-          </h2>
-          <p className="island-sheet-module">
-            {earned} / {BADGES.length} trophées
-          </p>
-        </div>
-        <button type="button" className="icon-button island-sheet-close" aria-label="Fermer le panneau" onClick={onClose}>
-          <Icon name="close" />
-        </button>
-      </div>
+    <Sheet id="panneau-trophees" className="trophy-sheet" titleId="trophees-titre" icon="trophy" title={TROPHIES_TITLE} subtitle={<>{earned} / {BADGES.length} trophées</>} onClose={onClose}>
       {/* L'accueil de la salle, écrit dans un pli avec Écouter : les trophées se voient tout de suite. */}
       <details className="sheet-more">
         <summary>En savoir plus</summary>
@@ -53,6 +41,6 @@ export function TrophySheet({ onClose }: { onClose: () => void }) {
           <Icon name="trophy" /> La page Succès, hors du village
         </Link>
       </p>
-    </section>
+    </Sheet>
   );
 }

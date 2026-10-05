@@ -3,7 +3,7 @@ import { QuizSession } from '../../components/QuizSession';
 import { Icon } from '../../components/Icon';
 import { useProgress } from '../../core/ProgressContext';
 import { LEVELS, QUESTIONS_PER_QUEST, questionsForLevel, questionsForSet, setsForLevel, type Level } from './data';
-import { RecordTag } from '../../components/RecordTag';
+import { LevelCard } from '../../components/LevelCard';
 
 type Mode = { kind: 'niveau'; level: Level } | { kind: 'serie'; setId: string };
 
@@ -45,22 +45,11 @@ export default function HomophonesApp() {
         {LEVELS.map(({ level, title }) => {
           const record = best({ kind: 'niveau', level });
           return (
-            <li key={level}>
-              <button type="button" className={`panel level-card level-${level}`} onClick={() => setMode({ kind: 'niveau', level })}>
-                <span className="level-number" aria-hidden="true">
-                  {level}
-                </span>
-                <span className="level-title">
-                  Niveau {level} · {title}
-                </span>
-                <span className="level-sets">
-                  {setsForLevel(level).map((s) => (
-                    <span key={s.id}>{s.label}</span>
-                  ))}
-                </span>
-                {record !== undefined ? <RecordTag record={record} /> : <span className="tag tag-new">Jouer</span>}
-              </button>
-            </li>
+            <LevelCard key={level} tone={level} number={level} title={<>Niveau {level} · {title}</>} record={record} onPlay={() => setMode({ kind: 'niveau', level })}>
+              {setsForLevel(level).map((s) => (
+                <span key={s.id}>{s.label}</span>
+              ))}
+            </LevelCard>
           );
         })}
       </ul>

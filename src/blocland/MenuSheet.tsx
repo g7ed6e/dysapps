@@ -18,6 +18,7 @@ import { ASSEMBLAGE_PATH } from './world/assemblage';
 import { useTextes } from '../univers';
 import { Commandes } from './Commandes';
 import type { BiomeId } from './biomes';
+import { Sheet } from './Sheet';
 
 interface Props {
   /** La croix ou Échap : le menu se ferme, on est dans le village. */
@@ -63,17 +64,7 @@ export function MenuSheet({ onClose, onAller, onAide }: Props) {
     return () => window.removeEventListener('keydown', onKey, true);
   }, []);
   return (
-    <section id="panneau-menu" className="island-sheet menu-sheet" role="dialog" aria-labelledby="menu-titre" aria-modal="true">
-      <div className="island-sheet-head">
-        <div className="island-sheet-titles">
-          <h2 id="menu-titre" className="island-sheet-title">
-            <Icon name="menu" /> Menu
-          </h2>
-        </div>
-        <button type="button" className="icon-button island-sheet-close" aria-label="Fermer le menu" onClick={onClose} autoFocus>
-          <Icon name="close" />
-        </button>
-      </div>
+    <Sheet id="panneau-menu" className="menu-sheet" titleId="menu-titre" icon="menu" title="Menu" closeLabel="Fermer le menu" autoFocusClose onClose={onClose}>
       <div className="menu-role">
         <XpBar xp={progress.xp} />
       </div>
@@ -118,6 +109,6 @@ export function MenuSheet({ onClose, onAller, onAide }: Props) {
       <ul className="island-quests menu-end" aria-label="Réglages">
         <Row to="/reglages" icon="settings" title="Réglages" />
       </ul>
-    </section>
+    </Sheet>
   );
 }

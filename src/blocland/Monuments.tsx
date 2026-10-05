@@ -19,6 +19,7 @@ import { MONUMENTS, monumentsOf, type MonumentDef } from './world/monuments';
 import { useUnivers } from '../core/SettingsContext';
 import { UNIVERS } from '../core/univers';
 import { texteDuMonument, useTextes } from '../univers';
+import { Sheet } from './Sheet';
 
 export const MONUMENTS_TITLE = 'Monuments';
 /** L'adresse de la liste des monuments (un panneau dans le monde, une page en vue simple). */
@@ -170,20 +171,9 @@ export function MonumentSheet({ builder, onClose }: { builder: MonumentBuilder; 
   const m = builder.monument;
   const textes = useTextes();
   return (
-    <section id="panneau-monument" className={`island-sheet monument-sheet biome-${m.biome}`} role="dialog" aria-labelledby="monument-titre" aria-modal="true">
-      <div className="island-sheet-head">
-        <div className="island-sheet-titles">
-          <h2 id="monument-titre" className="island-sheet-title">
-            <Icon name="castle" /> {m.name}
-          </h2>
-          <p className="island-sheet-module">{subtitle(m, textes.archipels)}</p>
-        </div>
-        <button type="button" className="icon-button island-sheet-close" aria-label="Fermer le panneau" onClick={onClose}>
-          <Icon name="close" />
-        </button>
-      </div>
+    <Sheet id="panneau-monument" className={`monument-sheet biome-${m.biome}`} titleId="monument-titre" icon="castle" title={m.name} subtitle={subtitle(m, textes.archipels)} onClose={onClose}>
       <MonumentBody builder={builder} />
-    </section>
+    </Sheet>
   );
 }
 
@@ -252,20 +242,9 @@ export function MonumentsList() {
 
 export function MonumentsSheet({ onClose }: { onClose: () => void }) {
   return (
-    <section id="panneau-monuments" className="island-sheet monuments-sheet" role="dialog" aria-labelledby="monuments-titre" aria-modal="true">
-      <div className="island-sheet-head">
-        <div className="island-sheet-titles">
-          <h2 id="monuments-titre" className="island-sheet-title">
-            <Icon name="castle" /> {MONUMENTS_TITLE}
-          </h2>
-          <p className="island-sheet-module">{MONUMENTS.length} monuments, deux par archipel</p>
-        </div>
-        <button type="button" className="icon-button island-sheet-close" aria-label="Fermer le panneau" onClick={onClose}>
-          <Icon name="close" />
-        </button>
-      </div>
+    <Sheet id="panneau-monuments" className="monuments-sheet" titleId="monuments-titre" icon="castle" title={MONUMENTS_TITLE} subtitle={<>{MONUMENTS.length} monuments, deux par archipel</>} onClose={onClose}>
       <MonumentsList />
-    </section>
+    </Sheet>
   );
 }
 
