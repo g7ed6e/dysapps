@@ -12,7 +12,7 @@ import { gardienEnPartieRallume } from './world/terrain';
 import type { Allumage } from './world/characters/sentinel';
 
 /** Le Gardien d'Archipéo en SVG (lot R6, avec l'habillage d'Archipéo, voir skin.ts), chargé à la demande. */
-const PersonnageSvg = lazy(() => import('./CharacterSvg'));
+const CharacterSvg = lazy(() => import('./CharacterSvg'));
 
 export type GuardianMood = 'idle' | 'hit' | 'miss' | 'beaten';
 
@@ -48,7 +48,7 @@ export function Guardian3D({ biome, label, mood = 'idle', seq = 0, allumage: don
   const place = <span className="creature guardian-svg" role="img" aria-label={label} />;
   const svg = dessine ? (
     <Suspense fallback={place}>
-      <PersonnageSvg kind="guardian" id={biome} allumage={allumage} className="guardian-svg" label={label} />
+      <CharacterSvg kind="guardian" id={biome} allumage={allumage} className="guardian-svg" label={label} />
     </Suspense>
   ) : (
     enCubes

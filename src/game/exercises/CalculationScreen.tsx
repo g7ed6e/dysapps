@@ -18,7 +18,7 @@ import type { ScreenProps } from './registry';
  * en français (Observatoire des textes) est découpé en syllabes quand le réglage est actif. Un document peut porter une
  * image (`image`, un emoji) : le visuel qui l'accompagne (Signs), affiché devant lui, sans jamais donner la réponse.
  */
-export function CalculScreen({ items, answered, onAnswer, ruledOut, onHelp, lang = 'fr' }: ScreenProps) {
+export function CalculationScreen({ items, answered, onAnswer, ruledOut, onHelp, lang = 'fr' }: ScreenProps) {
   const item = items[0];
   const prompt = String(item.prompt ?? '');
   const spoken = String(item.spoken ?? prompt);

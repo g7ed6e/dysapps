@@ -210,7 +210,7 @@ function AssemblageBody() {
 }
 
 /** Le panneau du lieu, qui glisse depuis le bas du monde (comme celui de l'école). */
-export function AssemblageSheet({ onClose }: { onClose: () => void }) {
+export function AssemblySheet({ onClose }: { onClose: () => void }) {
   const island = useSchoolIsland();
   const { assemblage } = useTextes();
   return (
@@ -221,7 +221,7 @@ export function AssemblageSheet({ onClose }: { onClose: () => void }) {
 }
 
 /** Le lieu en vue simple : une page. */
-export function AssemblagePage() {
+export function AssemblyPage() {
   const univers = useUnivers();
   const island = useSchoolIsland();
   const { assemblage } = useTextes();
@@ -240,7 +240,7 @@ export function AssemblagePage() {
 }
 
 /** Le lien vers le lieu, sur l'île de l'école : une ligne du panneau de l'île, ou une carte en vue simple. */
-export function AssemblageLink({ variant = 'sheet' }: { variant?: 'sheet' | 'card' }) {
+export function AssemblyLink({ variant = 'sheet' }: { variant?: 'sheet' | 'card' }) {
   const { assemblage } = useTextes();
   const desc = 'Assemble tes blocs pour les monuments.';
   if (variant === 'card')

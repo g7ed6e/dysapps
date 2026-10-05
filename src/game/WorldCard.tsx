@@ -28,7 +28,7 @@ import { currentStage, levelFor } from './engine';
 import { pickExercise, questProgress } from './exercises';
 import { explicationDuGardien } from './IslandSheet';
 import { EarnLink } from './PlanSection';
-import { BoutonsDuRappel, PlusTardDit, TexteDuRappel, useRappelDeLaCreature } from './ResidentReminder';
+import { ReminderButtons, PlusTardDit, ReminderText, useRappelDeLaCreature } from './ResidentReminder';
 import { shipSummary } from './ShipSection';
 import { Stars } from './Stars';
 import { Creature } from './Creatures';
@@ -77,7 +77,7 @@ interface Props {
 }
 
 /** La fiche de l'objet touché ; la page la remonte à chaque ouverture (`key`). */
-export function FicheDuMonde(props: Props) {
+export function WorldCard(props: Props) {
   const { objet } = props.fiche;
   switch (objet.genre) {
     case 'borne':
@@ -165,7 +165,7 @@ function Fiche({ titre, icone, portrait, lecture, onClose, actions, ligne, child
 }
 
 /** Le personnage d'Archipéo en SVG, chargé à la demande (les modèles ne pèsent pas sur le monde en blocs). */
-const PersonnageSvg = lazy(() => import('./CharacterSvg'));
+const CharacterSvg = lazy(() => import('./CharacterSvg'));
 
 /**
  * Le portrait en médaillon, un dessin fixe, sans 3D : en cubes avec les figures en cubes (Blocland), le modèle en SVG
@@ -177,7 +177,7 @@ function portraitEnMedaillon(kind: 'creature' | 'guardian', ile: BiomeId, icone:
   return (
     <ErrorBoundary fallback={repli}>
       <Suspense fallback={repli}>
-        <PersonnageSvg kind={kind} id={ile} allumage={allumage} />
+        <CharacterSvg kind={kind} id={ile} allumage={allumage} />
       </Suspense>
     </ErrorBoundary>
   );
@@ -486,13 +486,13 @@ function FicheDeLaCreature({ ile, fiche, commande, onLivree, commandeEnCoursDePo
             <Icon name="hammer" /> {textes.commandes?.livrer ?? 'Livrer'}
           </button>
         ) : (
-          enRappel && <BoutonsDuRappel biome={biome} rappel={enRappel} onRemis={() => setRemis(true)} />
+          enRappel && <ReminderButtons biome={biome} rappel={enRappel} onRemis={() => setRemis(true)} />
         )
       }
     >
       {enRappel ? (
         <p className="world-fiche-phrase">
-          <TexteDuRappel rappel={enRappel} />
+          <ReminderText rappel={enRappel} />
         </p>
       ) : livree ? (
         <p className="world-fiche-phrase commande-posee" role="status" aria-live="polite">

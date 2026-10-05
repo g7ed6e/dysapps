@@ -7,7 +7,7 @@ import type { ScreenProps } from './registry';
  * Champs de l'item : meaning (ce que le mot veut dire), root, slot ('prefix' | 'suffix'), choices, answer, word (le mot assemblé),
  * spokenRoot (facultatif : la racine lue à voix haute quand le morceau écrit ne se lit pas seul, « lav » → « laver »).
  */
-export function FamillesScreen({ items, answered, onAnswer, ruledOut }: ScreenProps) {
+export function FamiliesScreen({ items, answered, onAnswer, ruledOut }: ScreenProps) {
   const item = items[0];
   const root = String(item.root);
   const spokenRoot = String(item.spokenRoot ?? root);

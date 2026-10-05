@@ -15,7 +15,7 @@ import { CATALOG } from './exercises';
 import { IslandSheet } from './IslandSheet';
 import { BloclandPage } from './BloclandPage';
 import { BiomePage } from './BiomePage';
-import { PLUS_TARD_DIT, RappelDeLaCreature, phraseDuRappel, titrePourLaVoix } from './ResidentReminder';
+import { PLUS_TARD_DIT, ResidentReminder, phraseDuRappel, titrePourLaVoix } from './ResidentReminder';
 import { textesDe } from '../universes';
 import { cheminDeRevision, creaturesQuiFontSigne, oublierLesRemises, remettreAPlusTard, remisesAPlusTard, revisionsDeLIle } from './reminders';
 import { BRIDGES } from './world/archipelago';
@@ -194,7 +194,7 @@ describe('la phrase de la créature', () => {
     localStorage.setItem('dysapps:settings', JSON.stringify({ syllables: true }));
     render(
       <Providers>
-        <RappelDeLaCreature biome={getBiome(FORET)!} rappel={phraseDuRappel(textes, 'For / since', 'en', '/x')} />
+        <ResidentReminder biome={getBiome(FORET)!} rappel={phraseDuRappel(textes, 'For / since', 'en', '/x')} />
       </Providers>,
     );
     const titre = screen.getByText('For / since');

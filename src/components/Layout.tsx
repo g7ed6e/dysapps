@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { AppUpdateBanner } from '../core/AppUpdateBanner';
-import { BandeauBatisseur } from './BuilderBanner';
+import { BuilderBanner } from './BuilderBanner';
 import { startAppUpdates } from '../core/appUpdate';
 import { stopSpeaking } from '../core/speech';
 import { moinsDAnimations } from '../core/motion';
@@ -66,7 +66,7 @@ function Shell() {
         </Link>
       )}
       <AppUpdateBanner />
-      <BandeauBatisseur />
+      <BuilderBanner />
       <Celebrations />
       <main id="contenu" className="content" ref={main} tabIndex={-1}>
         {/* Une page qui échoue n'emporte pas le bouton Menu ; changer de page efface l'erreur

@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { SauvegardePanel } from "./SaveFilePanel";
+import { SaveFilePanel } from "./SaveFilePanel";
 import { creerSauvegarde } from "../core/saveFile";
 import { SettingsProvider } from "../core/SettingsContext";
 
@@ -28,7 +28,7 @@ it("restaurer demande une confirmation, puis remplace la progression et recharge
   const user = userEvent.setup();
   render(
     <SettingsProvider>
-      <SauvegardePanel />
+      <SaveFilePanel />
     </SettingsProvider>,
   );
   await user.upload(screen.getByTestId("fichier-sauvegarde"), fichier(texte));
@@ -47,7 +47,7 @@ it("un fichier qui n’est pas une sauvegarde ne change rien", async () => {
   const user = userEvent.setup();
   render(
     <SettingsProvider>
-      <SauvegardePanel />
+      <SaveFilePanel />
     </SettingsProvider>,
   );
   await user.upload(
@@ -66,7 +66,7 @@ it("un fichier qui n’est pas une sauvegarde ne change rien", async () => {
 it("le mode d’emploi pour réinstaller commence par enregistrer la progression", () => {
   render(
     <SettingsProvider>
-      <SauvegardePanel />
+      <SaveFilePanel />
     </SettingsProvider>,
   );
   const etapes = screen

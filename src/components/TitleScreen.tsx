@@ -1,14 +1,14 @@
 import { useEffect, useEffectEvent, useLayoutEffect, useRef, useState, useSyncExternalStore, type PointerEvent } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useOptionalBlocland } from '../game/BloclandContext';
-import { LogoQuiSeConstruit } from '../game/BuildingLogo';
+import { AssemblingLogo } from '../game/AssemblingLogo';
 import { unlockSounds } from '../game/sound';
 import { lastPlace } from '../core/lastPlace';
 import { useSettings, useUnivers } from '../core/SettingsContext';
 import { unlockSpeech } from '../core/speech';
 import { loadJSON, saveJSON } from '../core/storage';
 import { MESSAGE_UNIVERS, MESSAGE_UNIVERS_KEY, PRESENTER_ARCHIPEO, UNIVERS } from '../core/universe';
-import { BANDEAU_BATISSEUR } from './BuilderBanner';
+import { BUILDER_BANNER } from './BuilderBanner';
 import { avancer, gesteDeGlissement, gesteDeTouche, gesteDeZone, LONGUEUR_SUITE, type Geste } from './secretCode';
 import { Icon } from './Icon';
 import { frenchTypography } from './math/RichText';
@@ -200,7 +200,7 @@ export function TitleScreen() {
       <div className="title-card">
         {universId === 'blocland' ? (
           // Blocland : le logo se construit, quatre cubes posés en moins d'une seconde ; le toucher n'attend pas.
-          <LogoQuiSeConstruit ref={logo} className="title-logo title-logo-construit" {...gestesDuLogo} />
+          <AssemblingLogo ref={logo} className="title-logo title-logo-construit" {...gestesDuLogo} />
         ) : (
           <img ref={logo} className="title-logo" src={`${import.meta.env.BASE_URL}${univers.logo}`} alt="" width={160} height={160} draggable={false} {...gestesDuLogo} />
         )}
@@ -212,7 +212,7 @@ export function TitleScreen() {
         </p>
         {batisseur && (
           <p className="title-batisseur" role="status">
-            {BANDEAU_BATISSEUR}
+            {BUILDER_BANNER}
           </p>
         )}
         <div className="title-actions">

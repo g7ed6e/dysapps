@@ -85,7 +85,7 @@ it('les nombres en lettres : les accords de cent, vingt, mille, million et milli
 });
 
 it('Nombres géants, niveau 1 : le chiffre d’un rang, dans le tableau par classes, les classes mal découpées en piège', () => {
-  let neighbourClass = 0;
+  let neighborClass = 0;
   let milliards = 0;
   for (const item of runs('maths-6e-decimals-large-numbers-1')) {
     const list = common(item);
@@ -99,13 +99,13 @@ it('Nombres géants, niveau 1 : le chiffre d’un rang, dans le tableau par clas
     expect(item.answer).toBe(at(i));
     expect(new Set(digits).size).toBe(digits.length);
     expect(list).toEqual([...list].sort());
-    if (list.includes(at(i - 3))) neighbourClass++;
+    if (list.includes(at(i - 3))) neighborClass++;
     if (digits.length === 10) milliards++;
     expect(String(item.explanation)).toMatch(new RegExp(`^Le chiffre des ${m[2]} est ${item.answer}\\. La classe des `));
     expect(item.figure).toEqual({ kind: 'class-table', props: { value: digits } });
     expect(rule(item).props.lines).toEqual(READ_RULES);
   }
-  expect(neighbourClass).toBeGreaterThan(1000);
+  expect(neighborClass).toBeGreaterThan(1000);
   // Jusqu’aux milliards : un nombre de dix chiffres une fois sur quatre environ.
   expect(milliards).toBeGreaterThan(250);
 });

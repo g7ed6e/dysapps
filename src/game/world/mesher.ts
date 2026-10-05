@@ -105,9 +105,9 @@ export function buildMesh(cubes: VoxelCube[], sol: VoxelCube[] = []): MeshGroup[
   const groups = new Map<string, MeshGroup>();
   for (const c of cubes) {
     for (const { d, face } of DIRS) {
-      const neighbour = byPos.get(key(c.x + d[0], c.y + d[1], c.z + d[2]));
+      const neighbor = byPos.get(key(c.x + d[0], c.y + d[1], c.z + d[2]));
       // Un fantôme ne cache jamais une face, et garde toutes les siennes.
-      if (neighbour && !neighbour.ghost && !c.ghost && !(seeThrough(neighbour) && !seeThrough(c))) continue;
+      if (neighbor && !neighbor.ghost && !c.ghost && !(seeThrough(neighbor) && !seeThrough(c))) continue;
       if (face === 'bottom' && !c.ghost && ground.has(key(c.x, c.y, c.z - 1))) continue;
       if (face === 'bottom' && c.sansDessous) continue;
       // Le dessus dessiné comme les côtés (`dessusCommeLesCotes`) : dans leur groupe, sans groupe de plus.

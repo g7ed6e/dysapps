@@ -2,7 +2,7 @@
 import { type ArchipelagoId, archipelagoOfIsland, DANS_LE_CIEL, landCells, mapOf } from '../map';
 import { BIOMES, BLOC, BLOCKS } from '../../biomes';
 import { BRIDGES, getArchipelago } from '../archipelago';
-import { dockBox, dockOrigin } from '../harbour';
+import { dockBox, dockOrigin } from '../harbor';
 import { MONUMENT_ISLET, type MonumentDef, monumentsOf } from '../monuments';
 import { ORIGINE_DES_MONUMENTS, planCells, type PlanDef, planOrigin } from '../plans';
 import type { World } from '../../engine';

@@ -7,7 +7,7 @@
 import { randomInt } from '../../core/random';
 import { POSEES_NOTE } from './Aids';
 import { defineData, fmt, type ItemGenerator } from './college';
-import { boundedDraw, byValue, rangeChoices, ruleCard as card } from './draw';
+import { boundedDraw, byValue, rangeChoices, ruleCard as card } from './sampling';
 import type { ExerciseDef, ExerciseItem } from './types';
 
 type Rng = () => number;
@@ -26,7 +26,7 @@ const notRound = (min: number, max: number, rng: Rng): number =>
   });
 
 /** Les voisins d’une réponse chiffrée, un, deux ou trois crans de `step` de chaque côté, les plus proches d’abord. */
-const neighbours = (answer: number, step: number): number[] =>
+const neighbors = (answer: number, step: number): number[] =>
   [1, 2, 3].flatMap((k) => [answer - k * step, answer + k * step]).filter((v) => v > 0);
 
 // ---------- Niveau 1 : les opérations posées ----------
@@ -78,7 +78,7 @@ const addDecimals: ItemGenerator = (rng) =>
       noCarry,
     ];
     // Voisins : une unité de plus ou de moins (la retenue qui passe la virgule).
-    const values = rangeChoices(sum, traps, neighbours(sum, 100), byValue, rng);
+    const values = rangeChoices(sum, traps, neighbors(sum, 100), byValue, rng);
     if (!values) return undefined;
     return {
       key: `add-${a}-${b}`,
@@ -118,7 +118,7 @@ const subtractPosed: ItemGenerator = (rng) =>
     const flipped = subtractFlipped(a, b);
     const noCarry = subtractWithoutCarry(a, b);
     if (flipped === diff || noCarry === diff) return undefined;
-    const values = rangeChoices(diff, [flipped, noCarry], neighbours(diff, 10), byValue, rng);
+    const values = rangeChoices(diff, [flipped, noCarry], neighbors(diff, 10), byValue, rng);
     if (!values) return undefined;
     // La première colonne où le chiffre du haut est trop petit (aucune retenue ne l’a encore changée).
     const i = digitsOf(a).findIndex((d, j) => d < (digitsOf(b)[j] ?? 0));
@@ -155,7 +155,7 @@ const multiplyPosed: ItemGenerator = (rng) =>
     // Les unités entre elles, les dizaines entre elles : 47 × 23 donne 821 (4 × 2 = 8, 7 × 3 = 21).
     const pairwise = Math.floor(a / 10) * tens * 100 + (a % 10) * units;
     if (noCarry === product) return undefined;
-    const values = rangeChoices(product, [noShift, noCarry, pairwise], neighbours(product, 10), byValue, rng);
+    const values = rangeChoices(product, [noShift, noCarry, pairwise], neighbors(product, 10), byValue, rng);
     if (!values) return undefined;
     return {
       key: `mul-${a}-${b}`,
@@ -336,7 +336,7 @@ const decimalDivision: ItemGenerator = (rng) =>
       q / 10,
     ];
     // Voisins : un dixième ou un centième de plus ou de moins, le dernier chiffre du quotient.
-    const values = rangeChoices(q, traps, neighbours(q, 1), byValue, rng, zeroForgotten);
+    const values = rangeChoices(q, traps, neighbors(q, 1), byValue, rng, zeroForgotten);
     if (!values) return undefined;
     const x = n / scale;
     const steps = divisionSteps(whole, decimals, d);

@@ -3,7 +3,7 @@
 // déroulé dans le temps (plonger, refaire surface, souffler, replonger, revenir). La 3D ne fait que le dessiner.
 import { BIOMES, type BiomeId } from "../biomes";
 import { BRIDGES, getArchipelago } from "./archipelago";
-import { dockBox } from "./harbour";
+import { dockBox } from "./harbor";
 import {
   archipelagoOfIsland,
   DANS_LE_CIEL,

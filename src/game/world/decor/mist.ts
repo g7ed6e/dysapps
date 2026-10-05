@@ -13,7 +13,7 @@
 import { BIOMES } from '../../biomes';
 import { BRIDGES, getArchipelago } from '../archipelago';
 import { archipelagoOfIsland } from '../archipelagos';
-import { dockBox } from '../harbour';
+import { dockBox } from '../harbor';
 import { lineaire, NIVEAU_EAU } from '../landMesh';
 import { landBox, landCells, mapOf, smoothNoise, type ArchipelagoId } from '../map';
 import { MONUMENT_ISLET, monumentsOf } from '../monuments';

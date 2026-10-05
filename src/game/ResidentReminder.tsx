@@ -73,7 +73,7 @@ interface Props {
 }
 
 /** La phrase du rappel : un titre dans une autre langue écrit à part, sans syllabes colorées. */
-export function TexteDuRappel({ rappel }: { rappel: Rappel }) {
+export function ReminderText({ rappel }: { rappel: Rappel }) {
   const { etranger } = rappel;
   return etranger ? (
     <>
@@ -87,7 +87,7 @@ export function TexteDuRappel({ rappel }: { rappel: Rappel }) {
 }
 
 /** « Reprendre » (le bouton principal) et « Plus tard ». */
-export function BoutonsDuRappel({ biome, rappel, onRemis }: Props) {
+export function ReminderButtons({ biome, rappel, onRemis }: Props) {
   const { remettre } = usePlusTard();
   return (
     <>
@@ -108,7 +108,7 @@ export function BoutonsDuRappel({ biome, rappel, onRemis }: Props) {
   );
 }
 
-export function RappelDeLaCreature({ biome, rappel, onRemis }: Props) {
+export function ResidentReminder({ biome, rappel, onRemis }: Props) {
   return (
     <div className="creature-rappel" role="group" aria-labelledby={`rappel-${biome.id}`}>
       <span className="creature-rappel-icone" aria-hidden="true">
@@ -116,12 +116,12 @@ export function RappelDeLaCreature({ biome, rappel, onRemis }: Props) {
       </span>
       <p id={`rappel-${biome.id}`} className="creature-rappel-texte">
         <strong>{biome.creature.name} : </strong>
-        <TexteDuRappel rappel={rappel} />
+        <ReminderText rappel={rappel} />
       </p>
       <div className="creature-rappel-actions">
         {/* Le même mot que pour l'accueil, juste au-dessus : « Réécouter ». */}
         <SpeakButton text={rappel.lu} label="Réécouter" compact />
-        <BoutonsDuRappel biome={biome} rappel={rappel} onRemis={onRemis} />
+        <ReminderButtons biome={biome} rappel={rappel} onRemis={onRemis} />
       </div>
     </div>
   );

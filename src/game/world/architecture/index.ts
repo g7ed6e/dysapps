@@ -9,7 +9,7 @@
 // - les blocs des lieux du village qui prennent la couverture de leur île (./places.ts).
 //
 // Les règles, décisions du directeur artistique :
-// - la règle lit le plan entier, fantômes compris (./neighbourhood.ts) ;
+// - la règle lit le plan entier, fantômes compris (./neighborhood.ts) ;
 // - un fantôme reste un cube Brume : seul un bloc posé devient pièce ;
 // - la matière reste lisible par famille : la table « bloc vers matière » du kit de l'archipel (./kits/) ;
 // - un bloc que le kit ne peint ni ne dessine reste un bloc taillé : un kit vide ne remplace rien ;
@@ -28,13 +28,13 @@ import { KITS, kitRempli, type CaseDuLieu, type Famille, type Kit } from './kits
 import { lieuxDuKit } from './places';
 import { peintureDuMur, type PeintureDuMur } from './paint';
 import { facettesPosees, tournerCouvre, type DessinDePiece, type Facette } from './rooms';
-import { COTES, estDuPlan, indexDuPlan, voisinageDe, type IndexDuPlan, type Voisinage } from './neighbourhood';
+import { COTES, estDuPlan, indexDuPlan, voisinageDe, type IndexDuPlan, type Voisinage } from './neighborhood';
 
 export { assemblerLesPieces } from './assembly';
 export { pieceDe, FORMES, type Forme, type IdDePiece } from './choices';
 export { COLOMBAGE, decharge, MOTIF, MOTIF_GLSL, peintureDuMur, ROLES_PEINTS, sensDeLaDecharge } from './paint';
 export { boiteDansLaCase, type DessinDePiece, type Role } from './rooms';
-export { indexDuPlan, voisinageDe, type Voisinage } from './neighbourhood';
+export { indexDuPlan, voisinageDe, type Voisinage } from './neighborhood';
 export { KITS, kitVide, type CaseDuLieu, type Kit } from './kits';
 export { estUnLieuDuVillage } from './places';
 

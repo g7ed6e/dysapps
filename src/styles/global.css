@@ -5353,7 +5353,7 @@ details.island-fold-objectif {
   font-size: 1.2rem;
   justify-content: center;
 }
-/* Blocland : le logo se construit (src/game/BuildingLogo.tsx) ; ses quatre cubes descendent en accélérant et
+/* Blocland : le logo se construit (src/game/AssemblingLogo.tsx) ; ses quatre cubes descendent en accélérant et
    s’arrêtent d’un coup, sans rebond ; le logo entier ne bouge pas. Coupé quand l’appareil demande moins d’animations. */
 .title-logo-construit {
   animation: none;

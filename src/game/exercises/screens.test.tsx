@@ -6,9 +6,9 @@ import { ProgressProvider } from '../../core/ProgressContext';
 import { AppRoutes } from '../../App';
 import { BloclandProvider } from '../BloclandContext';
 import { loadAllExercises } from './index';
-import { EnclosScreen } from './EnclosureScreen';
-import { QcmItem } from './ChoiceItem';
-import { FamillesScreen } from './FamiliesScreen';
+import { EnclosureScreen } from './EnclosureScreen';
+import { ChoiceItem } from './ChoiceItem';
+import { FamiliesScreen } from './FamiliesScreen';
 import { demanderMoinsDAnimations } from '../../core/motion.testing';
 
 const ALL = await loadAllExercises();
@@ -246,8 +246,8 @@ it('ascension : un étage par paragraphe validé, temps comparé à soi-même', 
 it('enclos et récolte : la carte de règle du niveau s’affiche avec les sujets et la phrase ; sans aide, pas de carte', () => {
   const props = { answered: null, onAnswer: () => {}, onHelp: () => {}, level: 1 };
   const cases = [
-    { Screen: EnclosScreen, def: getExercise('french-6e-grammar-spelling-word-classes-1')!, n: 4 },
-    { Screen: QcmItem, def: getExercise('french-6e-grammar-spelling-e-er-ez-1')!, n: 1 },
+    { Screen: EnclosureScreen, def: getExercise('french-6e-grammar-spelling-word-classes-1')!, n: 4 },
+    { Screen: ChoiceItem, def: getExercise('french-6e-grammar-spelling-e-er-ez-1')!, n: 1 },
   ];
   for (const { Screen, def, n } of cases) {
     const items = def.items.slice(0, n);
@@ -258,7 +258,7 @@ it('enclos et récolte : la carte de règle du niveau s’affiche avec les sujet
       </SettingsProvider>,
     );
     expect(screen.getByText(title)).toBeInTheDocument();
-    if (Screen === EnclosScreen) expect(container.querySelector('.panel.enclos.has-aid')).not.toBeNull();
+    if (Screen === EnclosureScreen) expect(container.querySelector('.panel.enclos.has-aid')).not.toBeNull();
     unmount();
     const bare = render(
       <SettingsProvider>
@@ -279,7 +279,7 @@ it('familles : quand le morceau écrit ne se lit pas seul, c’est le mot de la 
   expect(item.spokenRoot).toBe('danse');
   render(
     <SettingsProvider>
-      <FamillesScreen items={[item]} answered={null} onAnswer={() => {}} onHelp={() => {}} level={1} exerciseId={def.id} />
+      <FamiliesScreen items={[item]} answered={null} onAnswer={() => {}} onHelp={() => {}} level={1} exerciseId={def.id} />
     </SettingsProvider>,
   );
   expect(within(screen.getByLabelText(/danse/)).getByText('dans', { exact: true })).toBeInTheDocument();
@@ -289,10 +289,10 @@ it('mot troué en deux mots : « parce que » garde un écart visible entre les 
   const def = getExercise('french-6e-word-spelling-missing-letters-2')!;
   const item = def.items.find((it) => it.key === 'parce')!;
   expect(item.word).toBe('parce que');
-  const { MotTroueScreen } = await import('./GapWordScreen');
+  const { GapWordScreen } = await import('./GapWordScreen');
   const { container } = render(
     <SettingsProvider>
-      <MotTroueScreen items={[item]} answered={null} onAnswer={() => {}} onHelp={() => {}} level={2} exerciseId={def.id} />
+      <GapWordScreen items={[item]} answered={null} onAnswer={() => {}} onHelp={() => {}} level={2} exerciseId={def.id} />
     </SettingsProvider>,
   );
   const que = within(container.querySelector('.gap-word') as HTMLElement).getByText('que', { exact: true });

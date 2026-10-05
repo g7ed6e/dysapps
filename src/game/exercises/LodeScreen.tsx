@@ -11,7 +11,7 @@ const DURATIONS = [8, 6, 4.5, 3.5, 3];
  * Laisser passer une autre lettre est juste. Quand l’appareil demande moins d’animations, le bloc attend.
  * Champs de l'item : letter, correct, tip (repère pour la correction), et `target` quand la lettre à piocher change à chaque bloc.
  */
-export function FilonScreen({ items, answered, onAnswer, level, target }: ScreenProps) {
+export function LodeScreen({ items, answered, onAnswer, level, target }: ScreenProps) {
   const item = items[0];
   const [slow, setSlow] = useState(false);
   const timer = useRef<number | null>(null);

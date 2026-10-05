@@ -18,7 +18,7 @@ interface Props {
   onArrive: () => void;
 }
 
-export function BlocsQuiVolent({ bloc, nombre, depart, arrivee, onArrive }: Props) {
+export function FlyingBlocks({ bloc, nombre, depart, arrivee, onArrive }: Props) {
   const n = blocsDuVol(nombre);
   useEffect(() => {
     const timer = window.setTimeout(onArrive, dureeDuVol(nombre));

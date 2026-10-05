@@ -9,7 +9,7 @@
 import { fractionWords } from '../../core/fractions';
 import { randomInt, shuffle } from '../../core/random';
 import { defineData, fmt, type ItemGenerator } from './college';
-import { boundedDraw, byValue, rangeChoices, ruleCard as card } from './draw';
+import { boundedDraw, byValue, rangeChoices, ruleCard as card } from './sampling';
 import type { ExerciseDef, ExerciseItem } from './types';
 
 const draw = boundedDraw('Volcan des décimaux');
@@ -375,13 +375,13 @@ const frameFraction: ItemGenerator = (rng) =>
     ];
     if (q >= 2) traps.push([0, 1]);
     // Voisins : un entier plus loin de chaque côté, puis deux (la réponse prend ainsi chaque place).
-    const neighbours: Pair[] = [
+    const neighbors: Pair[] = [
       [q - 2, q - 1],
       [q + 2, q + 3],
       [q - 3, q - 2],
       [q + 3, q + 4],
     ];
-    const fillers = neighbours.filter(([lo]) => lo >= 0);
+    const fillers = neighbors.filter(([lo]) => lo >= 0);
     const values = rangeChoices<Pair>([q, q + 1], traps, fillers, byLower, rng);
     if (!values) return undefined;
     const words = fractionWords(n, d);

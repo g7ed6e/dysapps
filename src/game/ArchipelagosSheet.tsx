@@ -22,7 +22,7 @@ interface Props {
  * Les quatre archipels, en HTML : où l'on est, ce qui est ouvert, ce qu'il faut pour aller plus loin. Le navire tel
  * qu'il est aujourd'hui est dessiné sur l'archipel où l'on se trouve.
  */
-export function ArchipelsSheet({ onClose, onGo }: Props) {
+export function ArchipelagosSheet({ onClose, onGo }: Props) {
   const { state } = useBlocland();
   const textes = useTextes();
   const bridges = state.world.links;

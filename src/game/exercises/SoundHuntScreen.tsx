@@ -9,7 +9,7 @@ import { CARD_CLASS, cardState, sortSummary } from './sortCards';
  * Chasse au son : 4 mots avec pictogramme, l'élève tape ceux où il entend le son cible, puis valide.
  * Champs de l'item : word, correct, image (pictogramme), heard (son entendu, pour la correction).
  */
-export function ChasseSonScreen({ items, answered, onAnswer, target }: ScreenProps) {
+export function SoundHuntScreen({ items, answered, onAnswer, target }: ScreenProps) {
   const [picked, setPicked] = useState<Set<string>>(new Set());
 
   const toggle = (key: string) => {

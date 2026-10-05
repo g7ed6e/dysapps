@@ -3,7 +3,7 @@
 // voisines s'écartent d'autant dans MAP. Les clés de sauvegarde restent relatives à l'origine `core`, qui ne bouge pas.
 import type { BiomeId } from '../biomes';
 import { BRIDGES } from './archipelago';
-import { dockBox, dockOrigin, shoreY } from './harbour';
+import { dockBox, dockOrigin, shoreY } from './harbor';
 import {
   bornesDuCoeur,
   coeurDe,

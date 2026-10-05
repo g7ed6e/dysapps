@@ -1,6 +1,6 @@
 import type { VoxelCube } from '../cube';
 import { cotesDeReference, FORMES, PENTES, pieceDe, type Forme, type Pente } from './choices';
-import { indexDuPlan, tournerCotes, tournerVoisinage, voisinageDe, type Classe, type Voisinage } from './neighbourhood';
+import { indexDuPlan, tournerCotes, tournerVoisinage, voisinageDe, type Classe, type Voisinage } from './neighborhood';
 
 const AUTOUR: (Classe | 'rien')[] = ['rien', 'mur', 'toit'];
 

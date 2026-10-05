@@ -8,7 +8,7 @@ import { SpeakButton } from '../components/SpeakButton';
  * place des boutons d'un bilan de mission ou du résultat d'une question d'assemblage. Le texte s'écoute ; le focus va à
  * « J'arrête pour aujourd'hui », qui revient à l'aventure sans laisser l'écran dans l'historique.
  */
-export function PauseSeance({ suite, onContinuer }: { suite?: string; onContinuer: () => void }) {
+export function SessionPause({ suite, onContinuer }: { suite?: string; onContinuer: () => void }) {
   const arreter = useRef<HTMLAnchorElement>(null);
   const texte = `Tu as bien travaillé. Ton cerveau retient mieux avec des pauses.${suite ? ` ${suite}` : ''}`;
   // Sans preventScroll : le bouton qui reçoit le focus revient dans l'écran (grands réglages, téléphone).

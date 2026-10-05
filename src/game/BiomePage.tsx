@@ -5,10 +5,10 @@ import { NotFoundPage } from '../pages/NotFoundPage';
 import { BLOCKS, SANS_LV2, estIleLv2, getBiome, guardianTitle, missionsJouables, ofBlock } from './biomes';
 import { useSettings } from '../core/SettingsContext';
 import { SchoolLink } from './School';
-import { AssemblageLink } from './Assembly';
+import { AssemblyLink } from './Assembly';
 import { TROPHIES_TITLE } from './trophies';
 import { Bridges } from './Bridges';
-import { Commandes, TuYEs } from './Requests';
+import { Requests, YouAreHere } from './Requests';
 import { lockedHint, nextGoalInfo } from './world/goals';
 import { GoalLine } from './GoalLine';
 import { VillageStageLine } from './VillageStageLine';
@@ -26,11 +26,11 @@ import { ShipSection } from './ShipSection';
 import { useVehicleBuilder } from './useVehicleBuilder';
 import { stageAt } from './world/vehicle';
 import { WhaleWordPanel, useWhaleWord } from './WhaleWord';
-import { RenommagePanel, useRenommage } from './Renaming';
+import { RenamingPanel, useRenommage } from './Renaming';
 import { useTextes } from '../universes';
 import { useUnivers } from '../core/SettingsContext';
 import { UNIVERS } from '../core/universe';
-import { PlusTardDit, RappelDeLaCreature, useRappelDeLaCreature } from './ResidentReminder';
+import { PlusTardDit, ResidentReminder, useRappelDeLaCreature } from './ResidentReminder';
 
 /** Un biome : sa créature donne la mission, puis la liste des exercices. */
 export function BiomePage() {
@@ -79,7 +79,7 @@ export function BiomePage() {
 
       {/* Le mot de la baleine, aux grandes étapes de l'archipel où l'on se tient, en tête de la page. */}
       {renommage.ouvert ? (
-        <RenommagePanel onClose={renommage.fermer} />
+        <RenamingPanel onClose={renommage.fermer} />
       ) : (
         whale.word && <WhaleWordPanel word={whale.word} onClose={whale.close} />
       )}
@@ -92,7 +92,7 @@ export function BiomePage() {
       />
 
       {rappel && (
-        <RappelDeLaCreature
+        <ResidentReminder
           biome={biome}
           rappel={rappel}
           onRemis={() => {
@@ -105,7 +105,7 @@ export function BiomePage() {
 
       {goal && <GoalLine goal={goal} className="panel" />}
       {/* Les commandes des créatures de l'archipel (GD-7) : « Livrer » se touche ici pour celle de cette île. */}
-      {unlocked && !sansLv2 && <Commandes island={biome.id} highlight={chantier} niveau="h2" className="panel" onAuxMissions={() => setIci(biome.id)} />}
+      {unlocked && !sansLv2 && <Requests island={biome.id} highlight={chantier} niveau="h2" className="panel" onAuxMissions={() => setIci(biome.id)} />}
       {port && unlocked && <VillageStageLine village={state.world} archipelago={biome.classe} className="panel" />}
 
       {/* Un ouvrage construit ouvre l'île d'en face : on y va, sa créature accueille (comme en 3D). */}
@@ -130,7 +130,7 @@ export function BiomePage() {
       <h2 id={`missions-${biome.id}`} tabIndex={-1} className="section-title">
         <Icon name="hammer" /> Missions
       </h2>
-      <TuYEs dit={ici === biome.id} />
+      <YouAreHere dit={ici === biome.id} />
       <ul className="grid apps">
         {missionsJouables(biome, settings.lv2).map((exercise) => {
           const def = pickExercise(biome.id, exercise.id, levelFor(state, exercise.id), state.progress);
@@ -184,7 +184,7 @@ export function BiomePage() {
               <SchoolLink variant="card" />
             </li>
             <li>
-              <AssemblageLink variant="card" />
+              <AssemblyLink variant="card" />
             </li>
             <li>
               {/* En vue simple, la salle des trophées est la page Succès. */}

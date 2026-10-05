@@ -5,8 +5,8 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { SettingsProvider } from '../core/SettingsContext';
 import { ProgressProvider } from '../core/ProgressContext';
 import { BloclandProvider } from './BloclandContext';
-import { AssemblagePage } from './Assembly';
-import { AssemblageQuestionPage } from './AssemblyQuestion';
+import { AssemblyPage } from './Assembly';
+import { AssemblyQuestionPage } from './AssemblyQuestion';
 import { BRIDGES, VOYAGES } from './world/archipelago';
 import { prochaineQuestion, tirageNeuf, type TirageAssemblage } from './world/assembly';
 import type { AssemblageDef } from './exercises/types';
@@ -27,8 +27,8 @@ function renderIn(node: React.ReactNode, at = '/adventure/assembly') {
 function renderFabrique(at = '/adventure/assembly') {
   return renderIn(
     <Routes>
-      <Route path="/adventure/assembly" element={<AssemblagePage />} />
-      <Route path="/adventure/assembly/:bloc" element={<AssemblageQuestionPage />} />
+      <Route path="/adventure/assembly" element={<AssemblyPage />} />
+      <Route path="/adventure/assembly/:bloc" element={<AssemblyQuestionPage />} />
     </Routes>,
     at,
   );
@@ -60,7 +60,7 @@ afterEach(() => {
 
 it('la Fabrique montre la recette de l’archipel, ce qu’il manque et le monument qui attend le bloc', () => {
   localStorage.setItem('dysapps:game', JSON.stringify({ stock: { 'french-6e-phonology': 1 } }));
-  renderIn(<AssemblagePage />);
+  renderIn(<AssemblyPage />);
   expect(screen.getByRole('heading', { level: 1, name: /La Fabrique/ })).toBeInTheDocument();
   expect(screen.getByRole('heading', { level: 3, name: /Poutre/ })).toBeInTheDocument();
   expect(screen.getByRole('list', { name: 'Pour 1 poutre, il faut' }).textContent).toMatch(/2 blocs de bois.*1 brique/);
@@ -216,7 +216,7 @@ it('la question tapée à la main, sans assez de blocs, ramène au lieu', async 
 
 it('dans Archipéo, la Halle aux matériaux et le madrier', () => {
   localStorage.setItem('dysapps:settings', JSON.stringify({ univers: 'archipeo' }));
-  renderIn(<AssemblagePage />);
+  renderIn(<AssemblyPage />);
   expect(screen.getByRole('heading', { level: 1, name: /La Halle aux matériaux/ })).toBeInTheDocument();
   expect(screen.getByRole('heading', { level: 3, name: /Madrier/ })).toBeInTheDocument();
   expect(screen.getByRole('list', { name: 'Pour 1 madrier, il faut' })).toBeInTheDocument();
@@ -226,7 +226,7 @@ it('venue d’un monument, la Fabrique montre d’abord la recette du bloc deman
   // En 5e, la poutre (6e) passe devant le vitrail quand on vient d'un monument de 6e.
   const bridges = [...BRIDGES, ...VOYAGES].map((b) => b.id);
   localStorage.setItem('dysapps:game', JSON.stringify({ world: { place: 'maths-5e-proportionality', links: bridges } }));
-  renderIn(<AssemblagePage />, '/adventure/assembly?bloc=compound-6e');
+  renderIn(<AssemblyPage />, '/adventure/assembly?bloc=compound-6e');
   const titres = screen.getAllByRole('heading', { level: 3 }).map((h) => h.textContent);
   expect(titres[0]).toMatch(/Poutre/);
   expect(screen.getByText('Les autres archipels')).toBeInTheDocument();
@@ -235,7 +235,7 @@ it('venue d’un monument, la Fabrique montre d’abord la recette du bloc deman
 it('« Défaire » rend les blocs d’un bloc assemblé en poche', async () => {
   const user = userEvent.setup();
   localStorage.setItem('dysapps:game', JSON.stringify({ stock: { 'compound-6e': 1 } }));
-  renderIn(<AssemblagePage />);
+  renderIn(<AssemblyPage />);
   // Refaire la poutre posera une question : la carte le dit sous le bouton.
   expect(screen.getByText('Pour refaire 1 poutre, tu répondras à une question.')).toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: /Défaire 1 poutre/ }));

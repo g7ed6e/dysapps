@@ -13,7 +13,7 @@ import {
   partJouee,
 } from './goals';
 import { planCells, plansFor } from './plans';
-import { dockBox } from './harbour';
+import { dockBox } from './harbor';
 import { overviewBounds, worldBounds } from './terrain';
 import { VEHICLE_STAGES } from './vehicle';
 import { nextDestination as nextDestinationDe } from './destination';

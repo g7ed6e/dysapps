@@ -54,7 +54,7 @@ interface Props {
 }
 
 /** Le panneau opaque des nouveaux noms : lu à l'ouverture, Écouter pour le relire, un seul bouton, Échap ferme. */
-export function RenommagePanel({ onClose, className = '', aSuivre = false }: Props) {
+export function RenamingPanel({ onClose, className = '', aSuivre = false }: Props) {
   const { settings, speak, stop } = useSettings();
   const textes = useTextes().renommage;
   // Un bandeau de récompense attend que le panneau soit fermé (DA-9).

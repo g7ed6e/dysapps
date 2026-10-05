@@ -1,4 +1,4 @@
-// Le choix d'une pièce (lot 7 d'Archipéo) : le voisinage d'un bloc (./neighbourhood.ts) donne la pièce d'architecture qui
+// Le choix d'une pièce (lot 7 d'Archipéo) : le voisinage d'un bloc (./neighborhood.ts) donne la pièce d'architecture qui
 // prend sa place et son orientation. Une table de règles, la même pour tous les archipels : ce qui change d'un archipel
 // à l'autre, c'est son kit (./kits/), qui dit la famille de chaque bloc et dessine (ou non) chaque pièce.
 //
@@ -22,7 +22,7 @@
 //
 // Déterministe, et invariant par rotation : tourner le voisinage d'un quart de tour donne la même pièce, tournée d'un
 // quart de tour de plus (à la symétrie de la forme près).
-import { tournerCotes, type Voisinage } from './neighbourhood';
+import { tournerCotes, type Voisinage } from './neighborhood';
 
 /** La forme d'un mur, d'après ses voisines côte à côte. */
 export type Forme = 'seul' | 'bout' | 'droit' | 'angle' | 'te' | 'croix';

@@ -7,7 +7,7 @@ import { frenchTypography } from '../components/math/RichText';
 import { useSettings } from '../core/SettingsContext';
 import { estIleLv2, guardianTitle, missionsJouables, type BiomeDef } from './biomes';
 import { Bridges } from './Bridges';
-import { Commandes, TuYEs } from './Requests';
+import { Requests, YouAreHere } from './Requests';
 import type { Commande } from './world/requests';
 import { isBiomeUnlocked } from './world/archipelago';
 import { PlanSection } from './PlanSection';
@@ -28,7 +28,7 @@ import { VillageStageLine } from './VillageStageLine';
 import { archipelagoOf } from './world/archipelago';
 import { useTextes } from '../universes';
 import type { Partie } from './world/parts';
-import { PlusTardDit, RappelDeLaCreature, useRappelDeLaCreature } from './ResidentReminder';
+import { PlusTardDit, ResidentReminder, useRappelDeLaCreature } from './ResidentReminder';
 import { Sheet } from './Sheet';
 
 /**
@@ -141,7 +141,7 @@ export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight =
         </details>
       )}
 
-      {rappel && <RappelDeLaCreature biome={biome} rappel={rappel} onRemis={remettre} />}
+      {rappel && <ResidentReminder biome={biome} rappel={rappel} onRemis={remettre} />}
       <PlusTardDit dit={remis} />
 
       {sansLv2 ? (
@@ -160,7 +160,7 @@ export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight =
           <Icon name="hammer" /> Missions
         </h3>
       )}
-      {!sansLv2 && <TuYEs dit={ici} />}
+      {!sansLv2 && <YouAreHere dit={ici} />}
       <ul className="island-quests" aria-label="Missions de l’île">
         {missionsJouables(biome, settings.lv2).map((exercise) => {
           const def = pickExercise(biome.id, exercise.id, levelFor(state, exercise.id), state.progress);
@@ -244,7 +244,7 @@ export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight =
       )}
 
       {/* Les commandes des créatures de l'archipel (GD-7) : entre le prochain objectif et le bâtiment. */}
-      {unlocked && !sansLv2 && <Commandes island={biome.id} fold={fold} highlight={highlight} onLivree={onLivree} poseEnCours={commandeEnCoursDePose} onAuxMissions={() => setIci(true)} />}
+      {unlocked && !sansLv2 && <Requests island={biome.id} fold={fold} highlight={highlight} onLivree={onLivree} poseEnCours={commandeEnCoursDePose} onAuxMissions={() => setIci(true)} />}
 
       {unlocked && <PlanSection biome={biome} fold={fold} highlight={highlight === 'part'} vientDePoser={posees} enCoursDePose={enCoursDePose} />}
 

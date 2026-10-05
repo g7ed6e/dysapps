@@ -95,7 +95,7 @@ interface PanelProps {
 }
 
 /** Le mot du rallumage, à la place du mot de la baleine : « Le Grand Chêne brille à nouveau. », lu à voix haute. */
-export function RallumagePanel({ id, onClose, aSuivre = false }: PanelProps) {
+export function RekindlingPanel({ id, onClose, aSuivre = false }: PanelProps) {
   const { settings, speak } = useSettings();
   const textes = useTextes();
   const biome = getBiome(id);

@@ -63,13 +63,13 @@ interface Props {
   onAller?: (island: BiomeId, commande?: string) => void;
   /**
    * « Y aller » touché sur l'île qui donne déjà le bloc : le panneau (ou la page) pose « Tu y es » sous le titre
-   * « Missions » (`<TuYEs />`), là où il défile.
+   * « Missions » (`<YouAreHere />`), là où il défile.
    */
   onAuxMissions?: () => void;
 }
 
 /** « Tu y es : joue une mission ici. », sous le titre « Missions » quand « Y aller » d'une commande y amène. */
-export function TuYEs({ dit }: { dit: boolean }) {
+export function YouAreHere({ dit }: { dit: boolean }) {
   const texte = useTextes().commandes?.tuYEs;
   return (
     <p className={`commande-ici-missions${dit && texte ? '' : ' vide'}`} role="status" aria-live="polite">
@@ -106,7 +106,7 @@ function ileDuBloc(c: Commande, links: string[]): BiomeId | null {
   return ilesQuiDonnent(c.block).find((id) => isBiomeUnlocked(id, links)) ?? ilesQuiDonnent(c.block)[0];
 }
 
-export function Commandes({ island, fold, highlight = null, niveau = 'h3', className, onLivree, poseEnCours = null, onAller, onAuxMissions }: Props) {
+export function Requests({ island, fold, highlight = null, niveau = 'h3', className, onLivree, poseEnCours = null, onAller, onAuxMissions }: Props) {
   const { state, deliver } = useBlocland();
   const { settings, speak } = useSettings();
   const textes = useTextes();

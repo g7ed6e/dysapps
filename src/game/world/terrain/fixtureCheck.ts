@@ -4,7 +4,7 @@ import { casesDeLaPetiteConstruction } from '../fixtures';
 import { islandDef } from '../map';
 import { ARCHIPELAGOS, BRIDGES } from '../archipelago';
 import { planCells, plansFor } from '../plans';
-import { DOCK_DX, shoreY } from '../harbour';
+import { DOCK_DX, shoreY } from '../harbor';
 import { type ProjectionDeLaVue, projectionDeLaVueDeLIle, versLaCamera, VUE_DE_L_ILE_PANNEAU_OUVERT } from './view';
 import { creatureDuMonde, creatureSpot, solLibre } from './creatures';
 import { cacheUneBorne, questStations, rangeeDevantLesBornes } from './markers';

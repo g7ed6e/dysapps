@@ -14,7 +14,7 @@ import type { ScreenProps } from './registry';
  * n'est pas découpé non plus : les couleurs donneraient le nombre de syllabes. Une aide (`aid`, la carte de règle de la
  * Récolte) s'affiche entre la phrase et les réponses, comme sur l'écran à règle.
  */
-export function QcmItem({ items, answered, onAnswer, ruledOut, lang = 'fr', plainWord = false }: ScreenProps & { plainWord?: boolean }) {
+export function ChoiceItem({ items, answered, onAnswer, ruledOut, lang = 'fr', plainWord = false }: ScreenProps & { plainWord?: boolean }) {
   const item = items[0];
   const prompt = String(item.prompt ?? item.word ?? '');
   const choices = Array.isArray(item.choices) ? item.choices.map(String) : [];

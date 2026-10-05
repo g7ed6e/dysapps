@@ -11,7 +11,7 @@ import { CREATURE_CUBES } from './characters/creatures';
 import { GUARDIAN_CUBES } from './characters/guardians';
 import { ARCHIPELAGOS, BRIDGES, VOYAGES, archipelagoOf } from './archipelago';
 import { walkGround, walkPath } from './paths';
-import { dockBox, dockCells, dockOrigin, dockPosts, shoreY, vehicleRestZ, VEHICLE_DECK, VEHICLE_SIZE } from './harbour';
+import { dockBox, dockCells, dockOrigin, dockPosts, shoreY, vehicleRestZ, VEHICLE_DECK, VEHICLE_SIZE } from './harbor';
 import { VEHICLE_STAGES } from './vehicle';
 import { recetteDeLArchipel } from './assembly';
 import { toutConstruit } from './budget';

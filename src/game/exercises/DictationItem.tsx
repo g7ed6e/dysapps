@@ -12,7 +12,7 @@ import type { ScreenProps } from './registry';
  * En anglais (`lang: 'en'`), le mot est lu en voix anglaise. La ligne affichée suit l'item : avec une phrase, elle dit qu'on
  * écoute la phrase et qu'on écrit le mot.
  */
-export function DicteeItem({ items, answered, onAnswer, ruledOut, exerciseId, lang = 'fr' }: ScreenProps) {
+export function DictationItem({ items, answered, onAnswer, ruledOut, exerciseId, lang = 'fr' }: ScreenProps) {
   const { settings, speak } = useSettings();
   const item = items[0];
   const word = String(item.word);

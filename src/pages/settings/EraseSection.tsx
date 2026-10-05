@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useProgress } from '../../core/ProgressContext';
 
-export function EffacerSection() {
+export function EraseSection() {
   const { resetProgress } = useProgress();
   const [confirmReset, setConfirmReset] = useState(false);
   const [typed, setTyped] = useState('');

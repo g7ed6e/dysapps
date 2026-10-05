@@ -2,7 +2,7 @@
 // caméra (le plus court chemin en cases, le cadre fixe d'une longue traversée, la vue de l'île, la vue d'ensemble).
 import { BIOMES } from '../biomes';
 import { ARCHIPELAGOS, BRIDGES, PRIX_DU_PORT, archipelagoOf, bridgesOf, getArchipelago } from './archipelago';
-import { dockBox } from './harbour';
+import { dockBox } from './harbor';
 import { islandDef, isLand, landBox, mapOf } from './map';
 import { avatarWalk } from './scene';
 import { BAC_LONG, avatarRoute, bridgePath, cadreDeTraversee, overviewBounds, routeLengths, viewZone, whaleSpots, worldBounds, worldCubes } from './terrain';

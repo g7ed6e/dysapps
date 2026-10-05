@@ -3,7 +3,7 @@ import { DARK, PUFFS, SMOKE, TRUNK } from '../decor';
 import { type BiomeId, BIOMES, BLOC, BLOCKS } from '../../biomes';
 import type { VoxelCube } from '../cube';
 import { type ArchipelagoId, archipelagoOfIsland, DANS_LE_CIEL, inCore, isLand, islandDef, landscape, margesDuCoeur } from '../map';
-import { DOCK_DX, dockCells, dockOrigin, dockPosts, shoreY, vehicleAfloat, vehicleRestZ } from '../harbour';
+import { DOCK_DX, dockCells, dockOrigin, dockPosts, shoreY, vehicleAfloat, vehicleRestZ } from '../harbor';
 import { planCells, zoneDesPlans } from '../plans';
 import { commandeDeLIle } from '../requests';
 import { casesDeLaPetiteConstruction } from '../fixtures';
@@ -177,7 +177,7 @@ function quaySpots(port: BiomeId, cubes: VoxelCube[]): { boat: QuaySpot | null; 
  * dans les Îles du Ciel. Le Bloc-Navire amarré à côté n'est pas dans le terrain : il tangue, c'est un objet à part
  * (`vehiclePlacement`).
  */
-export function harbour(a: ArchipelagoId, village: Pick<World, 'parts' | 'links'>, cubes: VoxelCube[]): void {
+export function harbor(a: ArchipelagoId, village: Pick<World, 'parts' | 'links'>, cubes: VoxelCube[]): void {
   const port = getArchipelago(a).port;
   const rank = villageStage(village, a).rank;
   const def = islandDef(port);

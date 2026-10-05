@@ -25,8 +25,8 @@ import { BlockIcon } from './Voxel';
 import { VEHICLE_NAME, stageAt, stageTo } from './world/vehicle';
 import { VillageStageLine } from './VillageStageLine';
 import { WhaleWordPanel, useWhaleWord } from './WhaleWord';
-import { RenommagePanel, useRenommage } from './Renaming';
-import { RallumagePanel, useRallumage } from './Rekindling';
+import { RenamingPanel, useRenommage } from './Renaming';
+import { RekindlingPanel, useRallumage } from './Rekindling';
 import { playBell } from './sound';
 import { useSettings } from '../core/SettingsContext';
 import { useTextes } from '../universes';
@@ -39,7 +39,7 @@ import { useUnivers } from '../core/SettingsContext';
 import { UNIVERS } from '../core/universe';
 import { signesDesCreatures, signesParmi, usePlusTard } from './reminders';
 import { questsToReview } from './review';
-import { Commandes } from './Requests';
+import { Requests } from './Requests';
 
 /** Ce qu'il faut pour rejoindre un archipel fermé, en une phrase. */
 function lockedArchipelagoText(state: ReturnType<typeof useBlocland>['state'], classe: (typeof ARCHIPELAGOS)[number]['classe']): string {
@@ -108,9 +108,9 @@ export function BloclandPage() {
       </section>
 
       {renommage.ouvert ? (
-        <RenommagePanel onClose={renommage.fermer} />
+        <RenamingPanel onClose={renommage.fermer} />
       ) : rallume ? (
-        <RallumagePanel id={rallume} onClose={() => rallumage.enAttente.forEach(rallumage.noterVu)} />
+        <RekindlingPanel id={rallume} onClose={() => rallumage.enAttente.forEach(rallumage.noterVu)} />
       ) : (
         whale.word && <WhaleWordPanel word={whale.word} onClose={whale.close} />
       )}
@@ -128,7 +128,7 @@ export function BloclandPage() {
         </p>
       </section>
       {/* Les commandes des créatures de l'archipel du bonhomme (GD-7), sous la prochaine destination. */}
-      <Commandes niveau="h2" className="panel" />
+      <Requests niveau="h2" className="panel" />
       <ArchipelagoMap bridges={state.world.links} here={here} />
 
       {ARCHIPELAGOS.map((a) => {

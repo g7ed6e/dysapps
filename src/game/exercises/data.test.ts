@@ -2,8 +2,8 @@ import { BIOMES, BLOCKS } from '../biomes';
 import { CATALOG, UNORDERED, exercisesOf, loadAllExercises, pickExercise, questProgress } from './index';
 import { SCREEN_TYPES } from './registry';
 import { piegesDe } from './shuffle';
-import { CalculScreen } from './CalculationScreen';
-import { DicteeItem } from './DictationItem';
+import { CalculationScreen } from './CalculationScreen';
+import { DictationItem } from './DictationItem';
 import { fillTemplate } from './types';
 import { parseHour, parseNumber, placeAnswer, type Parsed } from '../../core/choices';
 import { COFFRE_HORS_LISTE, motDictable, motsOutilsDictables } from '../../curriculum/functionWords';
@@ -301,7 +301,7 @@ it('anglais : tout le contenu en anglais (lang: en), la réponse parmi les choix
       expect(String(it.explanation).length).toBeGreaterThan(5);
       // Apostrophes typographiques partout, en anglais aussi (I’m, don’t).
       for (const text of [it.prompt, it.spoken, it.word, it.hint, it.explanation, ...choices]) if (text !== undefined) expect(String(text), it.key).not.toContain("'");
-      if (screen === CalculScreen) {
+      if (screen === CalculationScreen) {
         // Le trou se lit « blank », comme en classe d'anglais ; la règle est toujours affichée.
         expect(String(it.spoken)).not.toContain('…');
         if (String(it.prompt).includes('…')) expect(String(it.spoken)).toContain('blank');
@@ -317,7 +317,7 @@ it('anglais : tout le contenu en anglais (lang: en), la réponse parmi les choix
         expect(String(it.hint), it.key).not.toMatch(/[£$€]|\d:\d/);
         expect(String(it.prompt), it.key).not.toContain('…');
       }
-      if (screen === DicteeItem) {
+      if (screen === DictationItem) {
         // Écoute d'abord : un mot ou une phrase à entendre ; on choisit son sens (en français) ou la bonne réplique
         // (en anglais, comme les Dialogues). Rien n'est écrit avant l'écoute : la réponse n'est pas le texte lu.
         expect([undefined, 'fr']).toContain(it.choicesLang);
@@ -334,7 +334,7 @@ it('LV2 (allemand, espagnol) : la langue de la mission, la règle affichée, ¿ 
   for (const def of defs) {
     // Une mission par langue : son identifiant dit sa langue (relais-de-hallo, relais-es-hola).
     expect(def.type.startsWith(`${def.lang}-`), def.id).toBe(true);
-    expect(SCREEN_TYPES[def.type].component, def.id).toBe(CalculScreen);
+    expect(SCREEN_TYPES[def.type].component, def.id).toBe(CalculationScreen);
     expect(def.items.length, def.id).toBe(8);
     for (const it of def.items) {
       const choices = it.choices as string[];

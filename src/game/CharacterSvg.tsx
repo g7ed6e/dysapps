@@ -6,7 +6,7 @@ import type { BiomeId } from './biomes';
 import { modeleDuPortrait, portraitDe } from './world/characters/portrait';
 import type { Allumage } from './world/characters/sentinel';
 
-export interface PersonnageSvgProps {
+export interface CharacterSvgProps {
   kind: 'creature' | 'guardian';
   id: BiomeId;
   /** Pour un Gardien : son degré d'allumage (0 : éteint, 1 : rallumé), ou celui de sa pierre et de ses lueurs. */
@@ -19,7 +19,7 @@ export interface PersonnageSvgProps {
 /** La marge autour du personnage, en blocs. */
 const MARGE = 0.15;
 
-export default function PersonnageSvg({ kind, id, allumage, label, className }: PersonnageSvgProps) {
+export default function CharacterSvg({ kind, id, allumage, label, className }: CharacterSvgProps) {
   // Le degré se lit en nombres : un nouvel objet de même valeur ne refait pas le portrait.
   const [pierre, lueurs] = typeof allumage === 'object' ? [allumage.pierre, allumage.lueurs] : [allumage ?? 0, allumage ?? 0];
   const portrait = useMemo(() => portraitDe(modeleDuPortrait(kind, id), kind === 'guardian' ? { allumage: { pierre, lueurs } } : {}), [kind, id, pierre, lueurs]);

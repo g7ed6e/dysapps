@@ -30,7 +30,7 @@ import { SCREEN_TYPES, retryAllowed, type ScreenAnswer } from './exercises/regis
 import { autoReadText, dicteeAutoText } from './exercises/reading';
 import { runItems, runSeed } from './exercises/run';
 import { fillTemplate, type ExerciseDef, type ExerciseItem, type ItemResult } from './exercises/types';
-import { PauseSeance } from './SessionPause';
+import { SessionPause } from './SessionPause';
 import { Stars } from './Stars';
 import { BlockIcon } from './Voxel';
 import { habillageDuMonde } from './skin';
@@ -321,7 +321,7 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
           )}
 
           {paused ? (
-            <PauseSeance
+            <SessionPause
               onContinuer={() => {
                 continueSession();
                 setPaused(false);
