@@ -32,10 +32,9 @@ import { worldBounds } from './terrain';
 import type { Cell } from './view';
 import { clamp } from '../../core/math';
 
-export { ELAN, FAMILLES, FEUILLAGE, PIED, TAILLES, valeur, type FacettesDuDecor } from './decor/pinceau';
+export { FAMILLES, FEUILLAGE, TAILLES, valeur, type FacettesDuDecor } from './decor/pinceau';
 export { ENFONCE } from './decor/communes';
-export { FUMEE, poserLesFumees, type FumeeDuDecor } from './decor/fumee';
-export { FORMES } from './decor/formes';
+export { FUMEE, poserLesFumees } from './decor/fumee';
 
 /** Un élément du décor : ses cubes dans le monde en blocs, et où il pousse. */
 export interface ElementDeDecor {

@@ -7,16 +7,16 @@ import { monumentsOf } from './monuments';
 import { partiesDe, premierePartiePosee, prochainePartie } from './parties';
 import { isPlanDone } from './plans';
 
-export type VillageStageId = 'abandonne' | 'reactivation' | 'reconstruction' | 'developpement' | 'port';
+type VillageStageId = 'abandonne' | 'reactivation' | 'reconstruction' | 'developpement' | 'port';
 
-export interface VillageStageDef {
+interface VillageStageDef {
   id: VillageStageId;
   /** Le rang, de 1 à 5. */
   rank: 1 | 2 | 3 | 4 | 5;
   name: string;
 }
 
-export const VILLAGE_STAGES: VillageStageDef[] = [
+const VILLAGE_STAGES: VillageStageDef[] = [
   { id: 'abandonne', rank: 1, name: 'Abandonné' },
   { id: 'reactivation', rank: 2, name: 'Réactivation' },
   { id: 'reconstruction', rank: 3, name: 'Reconstruction' },

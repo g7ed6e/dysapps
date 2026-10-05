@@ -10,7 +10,7 @@ import type { Couleur } from '../palette';
 import { BONHOMME, OEIL } from './couleurs';
 
 /** Un visage en pixels : des lignes de couleurs, de haut en bas, de gauche à droite. */
-export type VisageEnPixels = readonly (readonly string[])[];
+type VisageEnPixels = readonly (readonly string[])[];
 /** Une facette du visage peint : un polygone dans un carré de 24 de côté (y vers le bas), et sa couleur. */
 export interface FacetteDuVisage {
   couleur: string;

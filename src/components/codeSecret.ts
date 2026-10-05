@@ -33,7 +33,7 @@ export function gesteDeTouche(key: string): Geste | null {
 }
 
 /** Un glissement plus court que ce seuil (en pixels) compte comme un toucher. */
-export const SEUIL_GLISSEMENT = 40;
+const SEUIL_GLISSEMENT = 40;
 
 /** Le geste d'un glissement du doigt, selon son déplacement (y vers le bas), ou `toucher` s'il est trop court. */
 export function gesteDeGlissement(dx: number, dy: number): Geste {
@@ -43,7 +43,7 @@ export function gesteDeGlissement(dx: number, dy: number): Geste {
 }
 
 /** La part du logo, au centre, où un toucher compte pour B et A ; autour, le bord touché donne la flèche. */
-export const CENTRE_DU_LOGO = 0.34;
+const CENTRE_DU_LOGO = 0.34;
 
 /**
  * Le geste d'un toucher bref selon l'endroit du logo : le haut, le bas, la gauche ou la droite donnent la flèche, le

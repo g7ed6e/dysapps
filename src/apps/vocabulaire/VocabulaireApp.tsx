@@ -7,7 +7,7 @@ import { RecordTag } from '../../components/RecordTag';
 
 type Mode = { kind: 'niveau'; level: Level } | { kind: 'theme'; themeId: string };
 
-export const APP_ID = 'vocabulaire';
+const APP_ID = 'vocabulaire';
 
 function statsKey(mode: Mode): string {
   return mode.kind === 'niveau' ? `${APP_ID}:niveau-${mode.level}` : `${APP_ID}:theme-${mode.themeId}`;

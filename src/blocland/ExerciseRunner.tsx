@@ -65,7 +65,7 @@ function phraseDeLaPose(pose: NonNullable<Completion['pose']>): string {
 }
 
 /** Découpe les items en écrans selon le type d'exercice. */
-export function screensOf(def: ExerciseDef, seed = def.id, review: string[] = []): ExerciseItem[][] {
+function screensOf(def: ExerciseDef, seed = def.id, review: string[] = []): ExerciseItem[][] {
   const batch = SCREEN_TYPES[def.type]?.batch ?? 1;
   const items = runItems(def, seed, review);
   if (batch === 'all') return [items];

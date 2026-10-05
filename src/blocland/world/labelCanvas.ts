@@ -16,7 +16,7 @@ export interface IslandLabelState {
 }
 
 /** La police de lecture en cours (réglage de l'élève), en gras. */
-export function labelFont(px: number): string {
+function labelFont(px: number): string {
   const family = typeof document !== 'undefined' ? getComputedStyle(document.documentElement).getPropertyValue('--font-family').trim() : '';
   return `700 ${Math.round(px)}px ${family || 'Arial, sans-serif'}`;
 }
@@ -132,7 +132,7 @@ export function measureIslandLabel(ctx: CanvasRenderingContext2D, text: string, 
 }
 
 /** L'icône d'un état, centrée sur (x, y), dans un carré de côté `s`. */
-export function drawStateIcon(ctx: CanvasRenderingContext2D, id: IslandStateId, x: number, y: number, s: number, bg = '#fffdf7'): void {
+function drawStateIcon(ctx: CanvasRenderingContext2D, id: IslandStateId, x: number, y: number, s: number, bg = '#fffdf7'): void {
   const color = ICON_COLOR[id];
   ctx.save();
   ctx.fillStyle = color;

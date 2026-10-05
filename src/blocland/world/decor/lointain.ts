@@ -80,7 +80,7 @@ export interface Massif {
 }
 
 /** Une masse en gradins : des marches de `marche` blocs, en retrait de `retrait` cases, un sommet plat. */
-export interface MasseEnGradins extends Place {
+interface MasseEnGradins extends Place {
   genre: 'gradins';
   haut: number;
   /** Le rayon de sa base (cases). */
@@ -109,7 +109,7 @@ export interface Cone extends Place {
   sommet?: Couleur;
 }
 
-export type PieceDuLointain = RangDeCretes | MasseEnGradins | Cone;
+type PieceDuLointain = RangDeCretes | MasseEnGradins | Cone;
 
 /** Le lointain d'un archipel : ses pièces, et une graine pour leurs irrégularités. */
 export interface Lointain {
@@ -126,7 +126,7 @@ export interface Etendue {
 }
 
 /** Le sommet d'une masse en gradins, en part du rayon de sa base : au moins la moitié (un sommet plat, pas une pointe). */
-export const SOMMET_DES_GRADINS = 0.55;
+const SOMMET_DES_GRADINS = 0.55;
 
 /** Le pied des pièces : sous l'eau, pour qu'aucune ne flotte. */
 const PIED = NIVEAU_EAU - 1;

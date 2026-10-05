@@ -8,7 +8,7 @@ import { orbites, tube, veineSur, type Atelier } from '../sentinelle';
 export const surLeSocle = (T: Trace, base: number, e: number, z = 0): Trace => pose(T, (p) => [p[0] * e, base + p[1] * e, z + p[2] * e]);
 
 /** Le trois-quarts des bêtes couchées (Taureau, Lion) : leur corps tourné de 33° vers l'élève, l'avant (−X) vers −Z. */
-export const TROIS_QUARTS = -0.3;
+const TROIS_QUARTS = -0.3;
 /** Un repère tourné de trois-quarts autour de l'axe vertical qui passe par (`x`, `z`). */
 export function deTroisQuarts(T: Trace, x: number, z = 0): Trace {
   const r = repere([x, 0, z], 0, TROIS_QUARTS, 0);

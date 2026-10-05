@@ -21,6 +21,8 @@ Le détail est dans la documentation : [Démarrer](https://g7ed6e.github.io/dysa
 npm install
 npm run dev        # l'application : http://localhost:5173/
 npm test           # tests (Vitest)
+npm run lint       # règles des hooks de React (oxlint) : une erreur, ou plus de dix avertissements, arrête la CI
+npm run code-mort  # fichiers, exports et dépendances que rien n'utilise (knip, configuré dans package.json)
 npm run build      # vérification TypeScript + build de production dans dist/
 npm run www:dev   # la documentation (VitePress) : http://localhost:4173/
 npm run www:build # construit la documentation dans dist-www/
@@ -42,7 +44,7 @@ Le travail se fait par pull request sur `main`. Chaque pull request :
 
 1. ne touche pas à la version : elle se calcule depuis git à la fusion (mineure par défaut, `+semver: major|patch|none` dans le message pour un autre cran) ;
 2. met à jour le manuel (`www/manuel/`) et la conception (`docs/conception/`) quand ce qu’ils décrivent change, et la ligne de son chantier dans `docs/pilotage/chantiers.md` ; les pages du contenu pédagogique sont générées au build depuis les données du jeu. Le site publié ne montre que le manuel et le contenu pédagogique : il s’adresse aux élèves et aux adultes qui les accompagnent ;
-3. passe `npm test`, `npm run build` et `npm run www:build`.
+3. passe `npm run lint`, `npm run code-mort`, `npm test`, `npm run build` et `npm run www:build`.
 
 Les consignes complètes sont dans [Contribuer](docs/conception/contribuer.md), `CLAUDE.md` et `AGENTS.md`.
 

@@ -30,7 +30,7 @@ const deFacePour = (dx: number, dz: number) => Math.atan2(-dx, -dz);
  * `viewYaw`) : tourné de 52°, aucune ne le voit à plus de 33° de face. Au défi, sa caméra de trois quarts
  * (Guardians.tsx, `cameraDirection` [−0,55 ; −0,85]) le voit à 33° : il y reste droit.
  */
-export const TOURS_DU_SOLEIL = { monde: deFacePour(Math.sin((52 * Math.PI) / 180), -Math.cos((52 * Math.PI) / 180)), defi: 0 };
+const TOURS_DU_SOLEIL = { monde: deFacePour(Math.sin((52 * Math.PI) / 180), -Math.cos((52 * Math.PI) / 180)), defi: 0 };
 
 const TORSE_DU_TITAN: Anneau[] = [
   [2.8, 1.25, 0.8],

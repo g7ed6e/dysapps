@@ -19,7 +19,7 @@ import { HALLE } from '../../terrain';
 import type { CaseDuLieu, Kit, LieuDuKit } from './types';
 
 /** La hauteur des pilotis sous le plancher : celle du soubassement, qu'ils remplacent. */
-export const PILOTIS = { haut: 0.35, cote: 0.14 } as const;
+const PILOTIS = { haut: 0.35, cote: 0.14 } as const;
 
 /**
  * Un mur de bois sur pilotis : le plancher et le colombage au-dessus des pilotis (sa sablière basse posée sur eux), et
@@ -79,7 +79,7 @@ const souche = ({ x, y, z, w }: CaseDuLieu) => x === (w - 1) / 2 && y === 1 && z
  *   la recette) reste en blocs. Le dessin de Blocland (la Fabrique) n'est jamais repris : la construction taillée est
  *   celle d'Archipéo.
  */
-export const LIEUX_6E: Partial<Record<VillagePlaceId, LieuDuKit>> = {
+const LIEUX_6E: Partial<Record<VillagePlaceId, LieuDuKit>> = {
   school: (m) =>
     m.z <= 3 && (m.texture === 'brique' || m.texture === 'taille')
       ? { famille: 'bois' }

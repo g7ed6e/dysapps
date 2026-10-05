@@ -12,7 +12,7 @@ import { dessinerPhare, PHARES, PIECES_DU_PHARE } from './phare';
 import { boite, DELAVE, peintre, type Peindre, type Pinceau, type V3 } from './pinceau';
 
 /** Les couleurs de la fiche : la pierre de taille du socle et son ombre, la neige des terrasses, le sombre des baies. */
-export const COULEURS_3E = { pierre: 0xdbdadd, ombre: 0x5a7ba5, neige: 0xe5ebe3, baie: 0x2e3a52 } as const;
+const COULEURS_3E = { pierre: 0xdbdadd, ombre: 0x5a7ba5, neige: 0xe5ebe3, baie: 0x2e3a52 } as const;
 
 /** Le socle de salles : 3 × 3 cases sur 2 de haut, puis une salle de 2 × 2 sur 1 de haut (fiche, §2). */
 export const SOCLE_3E = { cote: 3, bas: 2, haut: 1, salle: 2 } as const;
@@ -23,7 +23,7 @@ export const SOCLE_3E = { cote: 3, bas: 2, haut: 1, salle: 2 } as const;
  * d'ombre (`joint` de haut, la pierre mêlée à son ombre à `ombre`) ; les deux débordent de `decolle` pour ne pas se
  * confondre avec le mur (ni scintiller contre lui). Les mesures de la fiche (3 × 3 sur 2, 2 × 2 sur 1) ne changent pas.
  */
-export const RETRAIT_3E = { bandeau: 0.16, joint: 0.12, ombre: 0.75, decolle: 0.03 } as const;
+const RETRAIT_3E = { bandeau: 0.16, joint: 0.12, ombre: 0.75, decolle: 0.03 } as const;
 
 /**
  * Le grand phare, tel que la caméra et les étiquettes d'Archipéo le gardent en vue (world/cadrage.ts, DA-17, DA-18) :

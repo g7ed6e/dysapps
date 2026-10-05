@@ -16,7 +16,7 @@ export interface IslandStateDef {
   icon: AnyIconName;
 }
 
-export const ISLAND_STATES: Record<IslandStateId, IslandStateDef> = {
+const ISLAND_STATES: Record<IslandStateId, IslandStateDef> = {
   fermee: { id: 'fermee', icon: 'lock' },
   'a-explorer': { id: 'a-explorer', icon: 'compass' },
   'en-chantier': { id: 'en-chantier', icon: 'hammer' },

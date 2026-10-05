@@ -11,7 +11,7 @@ import type { WalkGround } from './paths';
  * de l'étendue de l'île visée (chaque île a la sienne) : de quoi contourner un rivage ou traverser l'ouvrage où il se
  * trouve, sans faire le tour de l'archipel.
  */
-export const MARGE_DE_RECHERCHE = 0.3;
+const MARGE_DE_RECHERCHE = 0.3;
 
 /** La marge de recherche autour de l'île `ile`, en cases (voir `MARGE_DE_RECHERCHE`). */
 export function margeDeRecherche(ile: IslandDef): number {

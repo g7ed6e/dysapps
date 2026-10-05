@@ -49,7 +49,7 @@ export function EarnLink({ block, here }: { block: BlockId; here?: BiomeId }) {
 }
 
 /** L'état du bâtiment en une ligne, pour le pli replié : « 2 parties posées sur 4 », ou « Fini ». */
-export function batimentSummary(posees: number, total: number): string {
+function batimentSummary(posees: number, total: number): string {
   if (!total) return '';
   if (posees >= total) return 'Fini';
   return `${posees} partie${posees > 1 ? 's' : ''} posée${posees > 1 ? 's' : ''} sur ${total}`;

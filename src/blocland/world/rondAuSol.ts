@@ -26,8 +26,8 @@ export const RAYON_DU_CERNE = 0.46;
  * Le blanc et le bleu nuit du rond dans le monde en blocs : ceux du contour des repères en pixels. Le monde en blocs n'a
  * pas de palette nommée (ses couleurs sont dans ses textures, ./pixels.ts) : elles restent ici.
  */
-export const BLANC_DU_ROND = 0xffffff;
-export const BLEU_NUIT_DU_ROND = 0x1b2440;
+const BLANC_DU_ROND = 0xffffff;
+const BLEU_NUIT_DU_ROND = 0x1b2440;
 
 /** Quand on touche la case où il se tient déjà : le rond y reste ce temps (ms), fixe, sans marche. */
 export const DUREE_DU_ROND_SEUL = 1000;

@@ -18,10 +18,10 @@ export const BASALT = '#4a4448';
 export const LAVA = '#ff7a1a';
 export const WATER = '#4a9be0';
 export const PINE = '#2f6b4a';
-export const REED = '#8fae4f';
+const REED = '#8fae4f';
 export const CRYSTAL = '#5cd0c8';
-export const FLOWERS = ['#e8557a', '#f2c14e', '#f7f2e8', '#b56cd8'];
-export const MUSHROOM = '#d9453f';
+const FLOWERS = ['#e8557a', '#f2c14e', '#f7f2e8', '#b56cd8'];
+const MUSHROOM = '#d9453f';
 
 /**
  * Pose un cube ; `decor` nomme l'élément de décor dont il fait partie (un arbre, un buisson, un repère…), « genre@x,y »,
@@ -398,7 +398,7 @@ export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => numb
 type BlocsDuDecor = (put: Put, x: number, y: number, r: number) => void;
 
 /** Les formes en blocs du décor du paysage, par genre (le monde en blocs ; en primitives : `FORMES`, ./decor/formes.ts). */
-export const BLOCS_DU_DECOR: Record<Decor, BlocsDuDecor> = {
+const BLOCS_DU_DECOR: Record<Decor, BlocsDuDecor> = {
   arbre: (put, x, y, r) => tree(put, x, y, 0, r > 0.5 ? 3 : 2),
   sapin: (put, x, y, r) => {
     const tall = r > 0.5 ? 2 : 1;
@@ -527,7 +527,7 @@ interface OutilsDuRepereEnBlocs {
  * Les formes en blocs des repères, par genre (le monde en blocs ; en primitives : `FORMES`, ./decor/formes.ts). `put`
  * travaille en coordonnées du monde, z relatif au sol de l'île.
  */
-export const REPERES_EN_BLOCS: Record<Repere, (o: OutilsDuRepereEnBlocs) => void> = {
+const REPERES_EN_BLOCS: Record<Repere, (o: OutilsDuRepereEnBlocs) => void> = {
   'grand-arbre': ({ def, scenery, backY, named, put }) => {
     // Un chêne géant : tronc 2 × 2 de six blocs, large couronne en trois étages. Juste derrière le cœur, deux cases en
     // dedans de son bord gauche : depuis que le cœur de la Forêt a 20 cases (01/10/2026), le replat d'avant, quatre cases
@@ -623,7 +623,7 @@ export function landmark(def: IslandDef, scenery: LandCell[], place: Put): void 
 export const DEPTH_DU_SOL = 2;
 
 /** Les îles qui ont un ponton et sa barque, sur leur rivage est (DA, LV2-4 : le Jardin des heures). */
-export const PONTON_SUR: readonly BiomeId[] = ['lv2-4e-daily-life'];
+const PONTON_SUR: readonly BiomeId[] = ['lv2-4e-daily-life'];
 
 /**
  * Le ponton et sa barque : sur le rivage est de l'île (+x), au milieu du cœur à trois cases près, une échelle qui

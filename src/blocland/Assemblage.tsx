@@ -23,8 +23,6 @@ import { archipelagoOf, getArchipelago, reachableIslands } from './world/archipe
 import { archipelagoOfIsland, type ArchipelagoId } from './world/archipels';
 import { monumentsOf, type MonumentDef } from './world/monuments';
 
-export { ASSEMBLAGE_PATH };
-
 /**
  * Les recettes des archipels où l'élève a une île ouverte : d'abord celle du bloc demandé (`?bloc=`, depuis un
  * monument), sinon celle de l'archipel où il se tient ; puis les autres.
@@ -188,7 +186,7 @@ function RecetteCarte({ recette }: { recette: Recette }) {
 }
 
 /** Ce qu'on y fait, puis la recette de l'archipel (ou du bloc demandé) ; les autres sous un pli, un bouton principal à la fois. */
-export function AssemblageBody() {
+function AssemblageBody() {
   const { assemblage } = useTextes();
   const { premiere, autres } = useRecettes();
   return (

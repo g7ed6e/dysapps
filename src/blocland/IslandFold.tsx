@@ -42,7 +42,7 @@ export function Foldable({ fold, heading, children, ...rest }: FoldableProps) {
  * choix tient tant que le contexte ne change pas. L'état est calculé au rendu, jamais dans un effet, pour que les
  * défilements des enfants (« mis en avant ») trouvent leur section ouverte.
  */
-export function IslandFold({ name, heading, status, defaultOpen, resetKey, children }: Props) {
+function IslandFold({ name, heading, status, defaultOpen, resetKey, children }: Props) {
   const [user, setUser] = useState<{ key: string; open: boolean } | null>(null);
   const open = user?.key === resetKey ? user.open : defaultOpen;
   const onToggle = (e: SyntheticEvent<HTMLDetailsElement>) => {

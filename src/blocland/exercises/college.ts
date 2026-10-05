@@ -12,15 +12,14 @@ import { pythagoreHyp, pythagoreSide, reciprocalPythagore, reciprocalThales, tha
 import { frequencyFraction, frequencyPercent, mean, medianRange, probability, readChart } from './college/donnees';
 import { antecedent, graphAntecedent, graphImage, graphLine, imageOf, linearOrAffine } from './college/fonctions';
 
-export { buildDataItems, choices, defineData, fmt, type ItemGenerator, par, say, seededItems, textChoices } from './college/commun';
-export { addRelatifs, compareRelatifs, divRelatifs, mulRelatifs, readRelatif, subRelatifs } from './college/relatifs';
-export { addSubFractions, compareFractionsC4, mulDivFractions } from './college/fractions';
-export { fourthCoef, fourthInt, mapScale, percentChange, percentOf, speed } from './college/proportions';
-export { pow, powerOfNumber, powerOfTen, powerOfTenReverse, primeDecomposition, primeFactors, primeOrDivisor, productOfPowers, scientific, squareRoot, TO_FACTOR } from './college/puissances';
-export { developDouble, developSimple, equationOneStep, equationTwoSteps, factorNumber, factorX, productEquation, reduceMixed, reduceSimple, testEquality } from './college/litteral';
-export { NOT_RIGHT, pythagoreHyp, pythagoreSide, reciprocalPythagore, reciprocalThales, RECIPROQUE_PYTHAGORE_CHOICES, thales, THALES_CASES, trigo } from './college/geometrie';
-export { frequencyFraction, frequencyPercent, mean, medianRange, probability, readChart, type Survey, SURVEYS } from './college/donnees';
-export { antecedent, GRAPH_FRAME, graphAntecedent, graphChoices, graphImage, graphLine, imageOf, linearOrAffine, READ_ANTECEDENT_RULES, READ_IMAGE_RULES, READ_LINE_RULES } from './college/fonctions';
+export { buildDataItems, choices, defineData, fmt, type ItemGenerator, seededItems } from './college/commun';
+export { addRelatifs, compareRelatifs, mulRelatifs } from './college/relatifs';
+export { percentChange } from './college/proportions';
+export { pow, primeDecomposition, primeFactors, scientific, TO_FACTOR } from './college/puissances';
+export { developDouble, equationTwoSteps, factorNumber, factorX, productEquation, testEquality } from './college/litteral';
+export { NOT_RIGHT, pythagoreHyp, pythagoreSide, reciprocalPythagore, reciprocalThales, RECIPROQUE_PYTHAGORE_CHOICES, thales, THALES_CASES } from './college/geometrie';
+export { mean, SURVEYS } from './college/donnees';
+export { GRAPH_FRAME, graphAntecedent, graphImage, graphLine, READ_ANTECEDENT_RULES, READ_IMAGE_RULES, READ_LINE_RULES } from './college/fonctions';
 
 // ---------- Les exercices ----------
 

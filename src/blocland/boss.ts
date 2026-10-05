@@ -18,7 +18,7 @@ export const ROUNDS_PER_TYPE = 2;
 export { STARS_TO_BEAT, STARS_TO_UNLOCK, bossId, isBossBeaten };
 
 /** Une manche : un écran d'un type de mission, avec ses items. */
-export interface BossRound extends ExerciseItem {
+interface BossRound extends ExerciseItem {
   screenType: string;
   exerciseId: string;
   /** Consigne de la mission d'origine, affichée au-dessus de la manche. */

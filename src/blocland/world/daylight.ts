@@ -4,7 +4,7 @@
 import { DANS_LE_CIEL, type ArchipelagoId } from './map';
 import { smooth } from '../../core/math';
 
-export type DayPhase = 'jour' | 'nuit' | 'aube' | 'crepuscule';
+type DayPhase = 'jour' | 'nuit' | 'aube' | 'crepuscule';
 
 export interface Daylight {
   /** 0 (nuit) … 1 (plein jour). */
@@ -12,8 +12,8 @@ export interface Daylight {
   phase: DayPhase;
 }
 
-export const DAWN = 7;
-export const DUSK = 20;
+const DAWN = 7;
+const DUSK = 20;
 const TRANSITION = 1;
 
 /** Lumière du jour à une heure décimale (7,5 = 7 h 30). */

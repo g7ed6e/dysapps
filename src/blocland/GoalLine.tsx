@@ -7,7 +7,7 @@ import type { Goal } from './world/goals';
  * La jauge d'un objectif (« 5 / 16 »). Rien quand il ne se compte pas, ou quand tout est là : une jauge pleine
  * (« 3 / 3 ») à côté d'un objectif pas encore fait (« Tu peux construire le sentier ») laissait croire qu'il l'était.
  */
-export function GoalGauge({ goal }: { goal: Goal }) {
+function GoalGauge({ goal }: { goal: Goal }) {
   if (goal.need <= 1 || goal.ready) return null;
   const done = Math.min(goal.have, goal.need);
   return (

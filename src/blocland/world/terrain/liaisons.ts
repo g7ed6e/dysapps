@@ -123,7 +123,7 @@ export function premierCoude(cases: readonly CaseDeLiaison[]): number {
 }
 
 /** La flèche d'un ouvrage se pose à tant de cases de la première case d'eau, vers l'arrivée. */
-export const FLECHE_APRES_LA_RIVE = 3;
+const FLECHE_APRES_LA_RIVE = 3;
 
 /**
  * Les places de la flèche d'un ouvrage sur sa liaison (`cases`, de l'île de départ à l'île d'arrivée), de la voulue à

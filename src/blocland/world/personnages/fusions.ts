@@ -35,7 +35,7 @@ export interface Os {
 }
 
 /** Les triangles d'un personnage dans la fusion, de `debut` (compris) à `fin` (exclu). */
-export interface Plage {
+interface Plage {
   id: BiomeId;
   debut: number;
   fin: number;
@@ -115,7 +115,7 @@ function vide(triangles: number): Fusion {
 const ajoute = (a: V3, b: V3): V3 => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
 
 /** Les pièces d'une créature portées par son bras : le bras et son outil (le reste suit le corps). */
-export const PIECES_DU_BRAS: ReadonlySet<string> = new Set(['bras', 'outil']);
+const PIECES_DU_BRAS: ReadonlySet<string> = new Set(['bras', 'outil']);
 
 /** Les créatures placées, en un maillage : l'os `2i` porte le corps de la i-ième, l'os `2i + 1` son bras et son outil. */
 export function fusionDesCreatures(places: PersonnagePlace[]): FusionDesCreatures {

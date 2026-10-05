@@ -5,7 +5,7 @@
 // n'aura rien à réécrire.
 
 /** Un pic : son centre, sa hauteur au-dessus de l'altitude de l'île (en blocs) et son rayon (en cases). */
-export interface Pic {
+interface Pic {
   x: number;
   y: number;
   h: number;

@@ -10,6 +10,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
+    "lint": "oxlint --react-plugin -A all -D react-hooks/rules-of-hooks -W react-hooks/exhaustive-deps --max-warnings=10 src",
+    "code-mort": "knip --no-progress",
     "version:show": "node scripts/version.mjs",
     "splash": "node scripts/splash.mjs",
     "www:build": "vitepress build www",
@@ -43,6 +45,8 @@
     "@types/three": "^0.186.0",
     "@vitejs/plugin-react": "^6.1.1",
     "jsdom": "^30.1.1",
+    "knip": "^6.39.0",
+    "oxlint": "^1.86.0",
     "pdfjs-dist": "^6.3.289",
     "playwright-core": "~1.56.1",
     "typescript": "^7.0.2",
@@ -50,5 +54,50 @@
     "vite-plugin-pwa": "^1.3.0",
     "vitepress": "^1.6.4",
     "vitest": "^5.0.1"
+  },
+  "knip": {
+    "entry": [
+      "scripts/**/*.mjs",
+      "www/.vitepress/config.mts",
+      "www/.vitepress/theme/index.ts",
+      "src/apps/decimaux/generators.tsx",
+      "src/apps/fractions/generators.tsx",
+      "src/apps/homophones/data.ts",
+      "src/apps/irreguliers/data.ts",
+      "src/apps/registry.ts",
+      "src/apps/tables/generators.tsx",
+      "src/apps/vocabulaire/data.ts",
+      "src/blocland/biomes.ts",
+      "src/blocland/engine.ts",
+      "src/blocland/exercises/index.ts",
+      "src/blocland/world/archipelago.ts",
+      "src/blocland/world/budget.ts",
+      "src/blocland/world/commandes.ts",
+      "src/blocland/world/map.ts",
+      "src/blocland/world/monuments.ts",
+      "src/blocland/world/parties.ts",
+      "src/blocland/world/petitesConstructions.ts",
+      "src/blocland/world/plans.ts",
+      "src/blocland/world/recettes.ts",
+      "src/blocland/world/vehicle.ts",
+      "src/core/legacyIds.ts",
+      "src/core/progress.ts",
+      "src/core/settings.ts",
+      "src/core/subjectProgress.ts",
+      "src/core/univers.ts",
+      "src/programme/exclusions.ts",
+      "src/programme/index.ts",
+      "src/programme/motsOutils.ts",
+      "src/programme/sources.ts",
+      "src/univers/index.ts"
+    ],
+    "project": [
+      "src/**/*.{ts,tsx}",
+      "scripts/**/*.mjs",
+      "www/.vitepress/**/*.{ts,mts}"
+    ],
+    "ignoreDependencies": [
+      "vue"
+    ]
   }
 }

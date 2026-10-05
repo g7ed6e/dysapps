@@ -36,7 +36,7 @@ export interface IleDuModele {
 }
 
 /** Une borne de mission : à faire (`'new'`), les étoiles gagnées, ou fermée (`'locked'`). */
-export interface BorneDuModele {
+interface BorneDuModele {
   /** « île:mission ». */
   id: string;
   ile: BiomeId;
@@ -59,7 +59,7 @@ export function missionsDe(ile: BiomeId): string[] {
 }
 
 /** L'état d'une borne : fermée si son île l'est ou s'il n'y a rien à jouer, sinon à faire ou ses étoiles. */
-export function etatDeBorne(state: GameState, ile: BiomeId, mission: string): BorneDuModele['etat'] {
+function etatDeBorne(state: GameState, ile: BiomeId, mission: string): BorneDuModele['etat'] {
   if (!isBiomeUnlocked(ile, state.world.links)) return 'locked';
   const def = pickExercise(ile, mission, levelFor(state, mission), state.progress);
   if (!def) return 'locked';

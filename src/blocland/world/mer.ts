@@ -22,17 +22,17 @@ export const PAR_CASE = 2;
 /** Le plancher de nuages des Îles du Ciel : sa hauteur, sous la roche des îles (à 9), au-dessus de la mer qu'on ne voit plus. */
 export const PLANCHER_DE_NUAGES = 2.5;
 /** La marge de la carte autour de l'étendue de l'archipel, en cases : au-delà, le large. */
-export const MARGE = 24;
+const MARGE = 24;
 /** La distance à la terre gardée dans la carte (canal alpha), en cases. */
 export const PORTEE = 8;
 /** Les distances (en cases) où la mer passe du lagon à la mer de l'archipel, puis de la mer au large. */
 export const PALIERS = { lagon: 1.5, mer: 8, large: 22 } as const;
 /** Le lissage de la profondeur (rayon en cases) : pas de pli sombre à mi-chemin entre deux îles. */
-export const LISSAGE = 3;
+const LISSAGE = 3;
 /** Sur ce bord du cadre (en cases), la mer rejoint le large : rien ne s'étire au-delà de la carte. */
 export const BORD = 6;
 /** Le pas de la grille de la mer, en cases. */
-export const PAS = 4;
+const PAS = 4;
 /** L'écume du rivage : sa largeur (en cases), son souffle (± en cases), son bord (fondu, en cases). */
 /**
  * L'écume du rivage : le liseré (sa largeur et son bord, en cases, et son souffle, ± en cases) ; plus loin, à `ligne`

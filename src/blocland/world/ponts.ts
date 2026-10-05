@@ -17,14 +17,14 @@ import type { Couleur, Faces } from './palette';
 export const PONTS_DE_PIERRE_ET_DE_BOIS: ReadonlySet<string> = new Set(['maths-5e-proportionality-french-5e-conjugation', 'maths-5e-proportionality-english-5e-vocabulary', 'french-5e-conjugation-english-5e-grammar', 'english-5e-vocabulary-english-5e-grammar', 'english-5e-vocabulary-lv2-5e-introductions']);
 
 /** Les couleurs du pont (fiche d'intention du 5e). */
-export const COULEURS_DU_PONT = {
+const COULEURS_DU_PONT = {
   planche: 0x9c7c4b,
   gardeCorps: 0x6e5234,
   pierre: 0x7d8a86,
 } as const;
 
 /** Les mesures du pont, en part de case. */
-export const PONT = {
+const PONT = {
   /** Le dessus du tablier (le haut du cube de planches : le bonhomme y marche) et son épaisseur. */
   dessus: 1,
   planche: 0.18,
@@ -82,7 +82,7 @@ export function pontsDePierreEtDeBois(cubes: VoxelCube[]): { ponts: PoseDuPont[]
 }
 
 /** Le sens du tracé en une case : le long de x (sinon de y), d'après ses voisines. */
-export function leLongDeX(cases: readonly CaseDuPont[], i: number): boolean {
+function leLongDeX(cases: readonly CaseDuPont[], i: number): boolean {
   const a = cases[Math.max(0, i - 1)];
   const b = cases[Math.min(cases.length - 1, i + 1)];
   return Math.abs(b.x - a.x) >= Math.abs(b.y - a.y);

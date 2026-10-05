@@ -117,7 +117,7 @@ const deFacePour = (dx: number, dz: number) => Math.atan2(-dx, -dz);
  * de face. Au défi, sa caméra de trois quarts le voit à 33° : il y reste droit.
  */
 export const ANGLE_DU_PAPILLON = 52;
-export const TOURS_DU_PAPILLON = { monde: deFacePour(Math.sin((ANGLE_DU_PAPILLON * Math.PI) / 180), -Math.cos((ANGLE_DU_PAPILLON * Math.PI) / 180)), defi: 0 };
+const TOURS_DU_PAPILLON = { monde: deFacePour(Math.sin((ANGLE_DU_PAPILLON * Math.PI) / 180), -Math.cos((ANGLE_DU_PAPILLON * Math.PI) / 180)), defi: 0 };
 
 /** Le corps du Papillon : une colonne mince, du socle à la tête, sans visage. */
 const CORPS_DU_PAPILLON: Anneau[] = [

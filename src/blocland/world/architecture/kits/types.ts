@@ -9,8 +9,6 @@ import type { IdDePiece } from '../choix';
 import type { ManiereDuMur } from '../peinture';
 import type { DessinDePiece, Role } from '../pieces';
 
-export type { Role } from '../pieces';
-
 /**
  * La famille d'une matière : le bois (colombages, bardages, pilotis), la pierre (soubassement, mur plein), le toit.
  * Le verre et les lanternes n'ont pas de famille : ils restent ce qu'ils sont (vitres, lanternes).
@@ -36,7 +34,7 @@ export interface CaseDuLieu {
  * (`matiere`) au lieu de la sienne, et si son colombage se passe de décharge (`sansDecharge`, un pilier isolé) ;
  * `undefined` : il reste le bloc qu'il est.
  */
-export interface BlocDuKit {
+interface BlocDuKit {
   famille?: Famille;
   couverture?: boolean;
   matiere?: TextureKind;

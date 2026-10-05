@@ -24,18 +24,18 @@ export const MONUMENTS_TITLE = 'Monuments';
 /** L'adresse de la liste des monuments (un panneau dans le monde, une page en vue simple). */
 export const MONUMENTS_PATH = '/adventure/landmarks';
 
-export function monumentPath(m: MonumentDef): string {
+function monumentPath(m: MonumentDef): string {
   return `/adventure/${m.id}`;
 }
 
 /** Le monument est-il ouvert (son archipel atteint) ? */
-export function useMonumentOpen(m: MonumentDef): boolean {
+function useMonumentOpen(m: MonumentDef): boolean {
   const { state } = useBlocland();
   return isArchipelagoReached(m.archipelago, state.world.links);
 }
 
 /** Le contenu d'un monument : ce que c'est, son avancement, les blocs qu'il manque et où les gagner, les boutons. */
-export function MonumentBody({ builder }: { builder: MonumentBuilder }) {
+function MonumentBody({ builder }: { builder: MonumentBuilder }) {
   const { state } = useBlocland();
   const { monument, status } = builder;
   const open = useMonumentOpen(monument);

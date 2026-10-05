@@ -125,7 +125,7 @@ const onAxis = (v: number) => Number.isInteger(v) && Math.abs(v) <= 4;
  * coefficient directeur se compte en carreaux : de −5 à 5, jamais 0 (une droite horizontale, que le graphique ne montre
  * jamais).
  */
-export function graphChoices(answer: number, traps: number[], rng: Rng, coefficient = false): string[] {
+function graphChoices(answer: number, traps: number[], rng: Rng, coefficient = false): string[] {
   const readable = (t: number) => (coefficient ? Number.isInteger(t) && t !== 0 && Math.abs(t) <= 5 : onAxis(t));
   const pool: number[] = [];
   for (const t of traps) if (readable(t) && t !== answer && t !== -answer && !pool.includes(t)) pool.push(t);

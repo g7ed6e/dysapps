@@ -13,8 +13,8 @@ import { UNIVERS } from '../core/univers';
 
 const cap = (text: string) => `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
 
-const useIcon = (use: Use) => (use.kind === 'navire' ? 'ship' : 'castle');
-const useKey = (use: Use) => `${use.kind}-${use.to ?? use.island}`;
+const iconeDUsage = (use: Use) => (use.kind === 'navire' ? 'ship' : 'castle');
+const cleDUsage = (use: Use) => `${use.kind}-${use.to ?? use.island}`;
 
 /** « Tu peux construire » en montre trois ; « Tout voir » montre le reste. */
 export const READY_SHOWN = 3;
@@ -29,7 +29,7 @@ function readyRank(kind: Use['kind'] | 'ouvrage', here: boolean): number {
 }
 
 /** « Bloc-Navire : encore 6 à gagner », « Bloc-Navire : tu as tout, pose-les », « La tour : tu peux en poser 4 ». */
-function useLabel(use: Use, count: number): string {
+function libelleDUsage(use: Use, count: number): string {
   // Un monument prend ce qu'on a : on peut en poser dès le premier bloc.
   if (use.kind === 'monument') return `${use.name} : ${use.enough ? 'tu as tout, pose-les' : `tu peux en poser ${Math.min(count, use.need)}`}`;
   return `${cap(VEHICLE_NAME)} : ${use.enough ? 'tu as tout, pose-les' : `encore ${use.need - count} à gagner`}`;
@@ -41,7 +41,7 @@ function useLabel(use: Use, count: number): string {
  * qu'on ne peut pas encore atteindre sont seulement comptées). Même contenu dans le panneau 3D et en vue simple ;
  * les liens changent d'île (en 3D, la caméra y vole et son panneau s'ouvre).
  */
-export function InventoryBody() {
+function InventoryBody() {
   const { state } = useBlocland();
   const at = state.world.place ?? 'french-6e-phonology';
   const { rows, payable, ouvrages, missing } = inventoryUses(state);
@@ -49,12 +49,12 @@ export function InventoryBody() {
   const seen = new Set<string>();
   const readyUses = rows
     .flatMap((row) => row.uses.filter((u) => u.enough || u.kind === 'monument'))
-    .filter((u) => (seen.has(useKey(u)) ? false : (seen.add(useKey(u)), true)));
+    .filter((u) => (seen.has(cleDUsage(u)) ? false : (seen.add(cleDUsage(u)), true)));
   const readyOuvrages = ouvrages.filter((o) => o.enough);
   // Les trois premiers chantiers prêts, celui du prochain objectif de l'île du bonhomme en tête ; le reste sur demande.
   type Ready = { key: string; rank: number } & ({ genre: 'usage'; use: Use } | { genre: 'ouvrage'; ouvrage: (typeof ouvrages)[number] });
   const ready = [
-    ...readyUses.map((use): Ready => ({ genre: 'usage', key: useKey(use), rank: readyRank(use.kind, use.island === at), use })),
+    ...readyUses.map((use): Ready => ({ genre: 'usage', key: cleDUsage(use), rank: readyRank(use.kind, use.island === at), use })),
     ...readyOuvrages.map((o): Ready => ({ genre: 'ouvrage', key: o.bridge.id, rank: readyRank('ouvrage', o.from === at || o.to === at), ouvrage: o })),
   ]
     .map((item, i) => ({ item, i }))
@@ -97,7 +97,7 @@ export function InventoryBody() {
                 <li key={r.key}>
                   {r.genre === 'usage' ? (
                     <Link to={r.use.to ?? `/adventure/${r.use.island}`} className="tag tag-ok">
-                      <Icon name={useIcon(r.use)} />{' '}
+                      <Icon name={iconeDUsage(r.use)} />{' '}
                       {r.use.kind === 'navire' ? cap(VEHICLE_NAME) : r.use.name}
                     </Link>
                   ) : (
@@ -127,7 +127,7 @@ export function InventoryBody() {
       ) : (
         <ul className="inventory-list" aria-labelledby="inventaire-blocs">
           {rows.map((row) => {
-            const uses = row.uses.filter((u) => !listed.has(useKey(u)));
+            const uses = row.uses.filter((u) => !listed.has(cleDUsage(u)));
             return (
               <li key={row.block} className="inventory-row">
                 <span className="inventory-block">
@@ -146,8 +146,8 @@ export function InventoryBody() {
                     <span className="inventory-none">Pour un chantier plus haut</span>
                   ) : (
                     uses.map((use) => (
-                      <Link key={useKey(use)} to={use.to ?? `/adventure/${use.island}`} className={`tag${use.enough || use.kind === 'monument' ? ' tag-ok' : ''}`}>
-                        <Icon name={useIcon(use)} /> {useLabel(use, row.count)}
+                      <Link key={cleDUsage(use)} to={use.to ?? `/adventure/${use.island}`} className={`tag${use.enough || use.kind === 'monument' ? ' tag-ok' : ''}`}>
+                        <Icon name={iconeDUsage(use)} /> {libelleDUsage(use, row.count)}
                       </Link>
                     ))
                   )}

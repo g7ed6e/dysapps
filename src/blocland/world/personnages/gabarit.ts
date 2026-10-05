@@ -55,10 +55,10 @@ export const tailleDe = (e: Pick<Espece, 'gabarit'>): number => GABARITS[e.gabar
  * Où se porte la marque de la dominante (un ventre clair, une tête sombre…). Le visage ne prend que le bas de la face
  * (le masque clair tient sous 35 % de la face, et ne fait jamais un visage humain) ; le plastron, tout le devant du torse.
  */
-export type Marque = 'ventre' | 'poitrine' | 'plastron' | 'dos' | 'visage' | 'tete' | 'museau';
+type Marque = 'ventre' | 'poitrine' | 'plastron' | 'dos' | 'visage' | 'tete' | 'museau';
 
 /** Ce que porte une créature : les tenues peignent le torse ou l'habillent de quelques facettes. */
-export type Vetement = 'tablier' | 'robe' | 'cire' | 'gilet' | 'ceinture' | 'echarpe' | 'cape' | 'elytres' | 'ailes';
+type Vetement = 'tablier' | 'robe' | 'cire' | 'gilet' | 'ceinture' | 'echarpe' | 'cape' | 'elytres' | 'ailes';
 
 export interface Silhouette {
   /** Les demi-largeurs du torse (X) et sa demi-profondeur (Z), l'avancée du ventre. */
@@ -79,7 +79,7 @@ export interface Silhouette {
 const SILHOUETTE: Silhouette = { largeur: 0.31, profondeur: 0.25, ventre: 0.02, jambes: 0.7, jambe: 0.1, tete: 0.28, teteProfondeur: 0.25, crane: 0.8, bras: 0.62 };
 
 /** Ce qu'une espèce reçoit pour se dessiner : ses couleurs (prises à la demande) et ses mesures. */
-export class Kit {
+class Kit {
   constructor(
     readonly pot: Pot,
     private readonly espece: Espece,
@@ -125,7 +125,7 @@ export class Kit {
 }
 
 /** Un dessin d'une espèce, dans le repère de la créature (ou dans celui d'une main). */
-export type Dessin = (T: Trace, k: Kit) => void;
+type Dessin = (T: Trace, k: Kit) => void;
 
 export interface Espece {
   nom: string;
@@ -406,7 +406,7 @@ function tete(e: Espece, s: Silhouette, T: Trace, k: Kit): void {
 // ---------- La créature entière ----------
 
 /** Les pièces d'une créature, tirées de son espèce, à l'échelle de son gabarit. */
-export function piecesDe(e: Espece): Piece[] {
+function piecesDe(e: Espece): Piece[] {
   const s: Silhouette = { ...SILHOUETTE, ...e.silhouette };
   const g = GABARITS[e.gabarit ?? 'standard'];
   const h = g.taille / TAILLE_DE_CREATURE;

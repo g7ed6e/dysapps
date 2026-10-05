@@ -61,7 +61,7 @@ export const MESURES_DU_PHARE_DU_LARGE = {
  * sur son pan à `ecart` case en avant, calé sur la grille (le centre de la tour est au milieu d'une case) : le shader y
  * peint le hublot du bloc assemblé (world/construction.ts, `MOTIF_ASSEMBLE.vitrail`).
  */
-export const HUBLOTS_DU_PHARE_DU_LARGE = { haut: 4.5, cote: 0.66, ecart: 0.012 } as const;
+const HUBLOTS_DU_PHARE_DU_LARGE = { haut: 4.5, cote: 0.66, ecart: 0.012 } as const;
 
 /** Les hublots d'un phare du large fini, en coordonnées de grille (x, y, hauteur) : leurs quatre coins et leur normale. */
 export function hublotsDuPhareDuLarge(o: PoseDuPhareDuLarge): { points: V3[]; normale: V3 }[] {
@@ -172,4 +172,3 @@ export function dessinerPhareDuLarge(P: Pinceau, L: Pinceau, o: PoseDuPhareDuLar
   for (const f of M.flammes) tronconique(feu, cx + f.dx, cz + f.dz, at(M.corbeille.haut - 0.1), at(muted ? M.corbeille.haut + 0.2 : f.haut), f.rayon, 0, 5, f.rot, jour);
   if (!muted) L.deNuit = null;
 }
-

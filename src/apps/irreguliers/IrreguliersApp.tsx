@@ -4,7 +4,7 @@ import { useProgress } from '../../core/ProgressContext';
 import { LEVELS, QUESTIONS_PER_QUEST, questionsForLevel, verbsForLevel, type Level } from './data';
 import { RecordTag } from '../../components/RecordTag';
 
-export const APP_ID = 'irreguliers';
+const APP_ID = 'irreguliers';
 
 function statsKey(level: Level): string {
   return `${APP_ID}:niveau-${level}`;

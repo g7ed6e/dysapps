@@ -38,14 +38,14 @@ export const NIVEAU_EAU = -0.45;
 /** Là où la côte d'une île au niveau de la mer rejoint l'eau : juste au-dessus. */
 export const RIVAGE = -0.25;
 /** Sous l'eau, rien ne se voit : les falaises s'arrêtent là (sauf dans le ciel, où il n'y a pas d'eau). */
-export const PLANCHER = -1;
+const PLANCHER = -1;
 /** Les taches sur les dessus (option b, redosée sur les facettes) : ± 8 %, sur 9 blocs environ. */
-export const TACHES = 0.08;
+const TACHES = 0.08;
 /** Les strates des falaises : ± 5 %, sur les côtés seulement ; ± 3 % sur une paroi de plus de 4 blocs de haut. */
 export const STRATES = 0.05;
 export const STRATES_HAUTES = 0.03;
 /** Au-delà de cette hauteur (en blocs), une paroi prend les strates discrètes. */
-export const PAROI_HAUTE = 4;
+const PAROI_HAUTE = 4;
 /**
  * La frange de sable, au bord de la mer : la part de la case côté mer en sable pur (0,55 : un peu plus que la dernière
  * demi-case), puis le fondu vers le dessus, sur au plus `FONDU` de case.
@@ -66,7 +66,7 @@ export const PENTE_OMBRE = 0.85;
 /** Une case où seul un décor est posé descend si son socle dépasserait la pente de plus que ça. */
 export const SOCLE_MAX = 0.25;
 /** Une colonne dont la paroi plonge dans la mer de plus haut que ça (en blocs) prend un pied d'éboulis. */
-export const COLONNE_HAUTE = 3;
+const COLONNE_HAUTE = 3;
 /** La hauteur des éboulis du pied, au-dessus de `RIVAGE`. */
 export const EBOULIS = 0.45;
 /** Une île fermée : les couleurs délavées vers le gris clair (comme three/surface.ts). */
@@ -112,7 +112,7 @@ export interface Colonne {
 }
 
 /** Une case d'éboulis au pied d'une haute colonne de roche, dans l'eau. */
-export interface Pied {
+interface Pied {
   x: number;
   y: number;
   /** La colonne à laquelle il appartient (le toucher y renvoie). */
@@ -371,7 +371,7 @@ export function poseDuDecor(champ: ChampDuSol, cubes: VoxelCube[]): VoxelCube[] 
 }
 
 /** Un sol de la palette de l'archipel, nommé par le modelé dessiné (« sol:roche ») : sa matière, ou `null`. */
-export function solNomme(m: string): Ground | null {
+function solNomme(m: string): Ground | null {
   return m.startsWith('sol:') && m.slice(4) in SOLS ? (m.slice(4) as Ground) : null;
 }
 
@@ -402,7 +402,7 @@ function diagonaleDe(h: number[], x: number, y: number): 0 | 1 {
 }
 
 /** Les deux triangles d'une case, en indices de coins, selon sa diagonale. */
-export function trianglesDeLaCase(diagonale: 0 | 1): [[number, number, number], [number, number, number]] {
+function trianglesDeLaCase(diagonale: 0 | 1): [[number, number, number], [number, number, number]] {
   return diagonale === 0
     ? [
         [0, 1, 2],
@@ -985,7 +985,7 @@ export function ecartDeCouleur(a: Couleur, b: Couleur): number {
 }
 
 /** Au-delà de ce cosinus (moins de 14° de la verticale), une facette du dessous regarde trop bas pour être vue. */
-export const DESSOUS_CACHE = 0.97;
+const DESSOUS_CACHE = 0.97;
 
 /** Le cosinus de l'angle entre une facette et la verticale vers le bas (1 : elle regarde droit vers le bas). */
 function penteVersLeBas(a: V3, b: V3, c: V3): number {

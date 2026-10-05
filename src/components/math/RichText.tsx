@@ -3,7 +3,7 @@ import type { Lang } from '../../core/speech';
 import { frenchTypography } from '../../core/typographie';
 
 /** Fraction « en colonne » : numérateur au-dessus, dénominateur en dessous. « … » = case à compléter. */
-export function Frac({ n, d }: { n: string; d: string }) {
+function Frac({ n, d }: { n: string; d: string }) {
   const label = n === '…' || d === '…' ? `${n === '…' ? 'combien' : n} sur ${d === '…' ? 'combien' : d}` : fractionWords(Number(n), Number(d));
   return (
     <span className="frac" role="img" aria-label={label}>

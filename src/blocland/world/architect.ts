@@ -6,7 +6,7 @@
 import type { BiomeId, BlockId } from '../biomes';
 import { BLOC } from '../biomes';
 
-export interface ArchCell {
+interface ArchCell {
   x: number;
   y: number;
   z: number;
@@ -20,7 +20,7 @@ const ZW = 6;
 
 type TowerTop = 'phare' | 'horloge' | 'creneaux';
 
-export type BuildingStyle =
+type BuildingStyle =
   | { kind: 'maison'; w?: 4 | 5; chimney?: 1 | 2 }
   | { kind: 'tour'; top: TowerTop; /** Un étage sur deux dans un autre bloc (les bandes d'un phare). */ stripes?: BlockId }
   | { kind: 'dome'; cap?: BlockId }
@@ -32,7 +32,7 @@ export type BuildingStyle =
   | { kind: 'refuge' };
 
 /** La forme du bâtiment de chaque île (son nom, sa récompense et sa réplique sont dans docs/contenu/<île>.md, section « Les plans »). */
-export const BUILDING_OF: Record<BiomeId, BuildingStyle> = {
+const BUILDING_OF: Record<BiomeId, BuildingStyle> = {
   // Premiers Rivages (6e)
   'french-6e-phonology': { kind: 'maison' },
   'french-6e-letter-confusion': { kind: 'maison', chimney: 2 },

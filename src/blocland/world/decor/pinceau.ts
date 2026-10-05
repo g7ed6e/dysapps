@@ -98,8 +98,8 @@ export const hex = (s: string): Couleur => parseInt(s.slice(1), 16);
 /** Une île fermée : les couleurs délavées vers le gris clair, comme le sol (./landMesh.ts). */
 export const DELAVE: [Couleur, number] = [0xb8bcc0, 0.55];
 /** La nuance d'un décor : du pied (plus sombre) au sommet, `PIED` à `PIED + ELAN`. */
-export const PIED = 0.84;
-export const ELAN = 0.2;
+const PIED = 0.84;
+const ELAN = 0.2;
 
 /**
  * La peinture d'une matière : la couleur de côté vers le bas, celle du dessus vers le haut, plus sombre au pied (de

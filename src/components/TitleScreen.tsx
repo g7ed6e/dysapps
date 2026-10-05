@@ -81,19 +81,21 @@ export function TitleScreen() {
   const depart = useRef<{ id: number; x: number; y: number; zone: DOMRect } | null>(null);
   // Le logo : une image (Archipéo) ou le dessin qui se construit (Blocland) ; les gestes et le toucher gardé sont les mêmes.
   const logo = useRef<HTMLImageElement & SVGSVGElement>(null);
-  const geste = useEffectEvent((g: Geste) => {
+  // Un geste du logo (gestionnaire d'évènement) ou une touche (lue dans un effet, par `gesteLu`).
+  const geste = (g: Geste) => {
     suite.current = avancer(suite.current, g);
     if (suite.current === LONGUEUR_SUITE) {
       suite.current = 0;
       blocland?.ouvrirBatisseur();
     }
-  });
+  };
+  const gesteLu = useEffectEvent(geste);
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.repeat || e.ctrlKey || e.metaKey || e.altKey) return;
       const g = gesteDeTouche(e.key);
-      if (g) geste(g);
+      if (g) gesteLu(g);
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);

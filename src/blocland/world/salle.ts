@@ -13,7 +13,7 @@ export const EMPRISE_DE_LA_SALLE = { w: 8, d: 3 } as const;
 /** La salle de départ dans l'emprise : à droite, de x = 4 à 7 ; sa porte ne bouge pas. */
 export const SALLE_DE_DEPART = { x: 4, w: 4 } as const;
 /** Une travée : 2 cases de large, toute la profondeur ; la première de x = 2 à 3, la seconde de x = 0 à 1. */
-export const LARGEUR_D_UNE_TRAVEE = 2;
+const LARGEUR_D_UNE_TRAVEE = 2;
 /** Les places sous le toit de la salle de départ (six socles, deux rangs), puis de chaque travée (trois socles, deux rangs). */
 export const PLACES_DE_LA_SALLE = 12;
 export const PLACES_PAR_TRAVEE = 6;
@@ -29,7 +29,7 @@ export function traveesPour(n: number): number {
 }
 
 /** La première colonne bâtie de l'emprise avec `travees` travées (4 sans travée, 0 avec les deux). */
-export const debutDeLaSalle = (travees: number): number => bordDeLaTravee(travees);
+const debutDeLaSalle = (travees: number): number => bordDeLaTravee(travees);
 
 /**
  * Les colonnes des piliers dans l'emprise, de droite à gauche : les deux bouts de la salle de départ (7 et 4), puis le

@@ -10,7 +10,7 @@ import { BRIDGES } from './world/archipelago';
 export const BLOCS_DU_BATISSEUR = 999;
 
 /** L'inventaire plein. */
-export function inventairePlein(): Partial<Record<BlockId, number>> {
+function inventairePlein(): Partial<Record<BlockId, number>> {
   return Object.fromEntries(Object.keys(BLOCKS).map((b) => [b, BLOCS_DU_BATISSEUR])) as Partial<Record<BlockId, number>>;
 }
 

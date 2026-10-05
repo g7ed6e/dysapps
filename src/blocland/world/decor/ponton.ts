@@ -11,7 +11,7 @@ import { boite, DELAVE, eclaircir, peintre, tronconique, type Pinceau } from './
 /** Le bois du ponton : les planches du tablier, les pieux et l'échelle (DA, LV2-2). */
 export const COULEURS_DU_PONTON = { planche: 0x9c7c4b, poteau: 0x6e5234 } as const;
 
-export const PONTON = { long: 3.2, large: 1.1, dessus: NIVEAU_EAU + 0.5, planche: 0.14, pieu: 0.09 } as const;
+const PONTON = { long: 3.2, large: 1.1, dessus: NIVEAU_EAU + 0.5, planche: 0.14, pieu: 0.09 } as const;
 
 /** Les deux faces d'une couleur : un dessus un peu plus clair ; délavées si l'île est fermée. */
 function faces(c: Couleur, muted: boolean): Faces {

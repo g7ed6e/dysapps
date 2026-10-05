@@ -6,7 +6,7 @@
 import { migrateStorage } from "./migration";
 import { STORAGE_PREFIX } from "./storage";
 
-export const FORMAT_SAUVEGARDE = "dysapps-backup";
+const FORMAT_SAUVEGARDE = "dysapps-backup";
 const VERSION_FORMAT = 2;
 /** Le format d'avant les mots neutres, toujours lu. */
 const FORMAT_V1 = "dysapps-sauvegarde";

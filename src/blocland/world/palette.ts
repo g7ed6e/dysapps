@@ -50,7 +50,7 @@ export interface Ciel {
 
 type Moment = Omit<Ciel, 'brumeProche' | 'brumeLoin'>;
 
-export interface PaletteArchipel {
+interface PaletteArchipel {
   jour: Moment;
   nuit: Moment;
   /** La brume de profondeur (en blocs) : plus proche dans les Îles Brumeuses. */
@@ -238,10 +238,9 @@ export function domeDuCiel(c: Ciel, segments = 24): { positions: number[]; color
 
 // ---------- La mer (lot R3) ----------
 
-/** Les cinq valeurs de la planche maître du pack visuel (docs/univers/archipeo/cadrage.md, §3.4). */
+/** Les valeurs de la planche maître du pack visuel que le code lit (docs/univers/archipeo/cadrage.md, §3.4). */
 export const NUIT_OCEAN = 0x142b38;
 export const BLEU_LAGON = 0x178078;
-export const VERT_ILE = 0x438b82;
 export const SABLE = 0xdaa66a;
 export const BRUME = 0xe5ebe3;
 

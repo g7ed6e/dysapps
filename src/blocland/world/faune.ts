@@ -374,7 +374,7 @@ export function formeDeBaleine(): Forme {
 // ---------- L'oiseau ----------
 
 /** Les oiseaux de la fiche : blancs, ailes grises, le bout des ailes plus sombre. */
-export const OISEAU = { corps: 0xeef0ec, aile: 0x9ea8ad, pointe: 0x4e5559, dessous: 0xd8dcda } as const;
+const OISEAU = { corps: 0xeef0ec, aile: 0x9ea8ad, pointe: 0x4e5559, dessous: 0xd8dcda } as const;
 
 /**
  * Un oiseau de mer en facettes, d'un peu plus d'une unité d'envergure : un corps à huit faces, une queue, deux ailes en
@@ -415,7 +415,7 @@ export function formeDOiseau(): Forme {
 // ---------- Le nuage ----------
 
 /** Les cumulus de la fiche : crème en haut (`#ECEEEE`), bleutés dessous. */
-export const NUAGE = { dessus: 0xf3f4f1, milieu: 0xeceeee, dessous: 0xc9d2d7 } as const;
+const NUAGE = { dessus: 0xf3f4f1, milieu: 0xeceeee, dessous: 0xc9d2d7 } as const;
 
 /** Les vingt faces d'un icosaèdre (sommets de ./faune.ts). */
 function icosaedre(): { v: V3[]; f: [number, number, number][] } {

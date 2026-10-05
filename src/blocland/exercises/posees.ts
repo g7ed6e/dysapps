@@ -57,7 +57,7 @@ export function addWithoutCarry(a: number, b: number): number {
 }
 
 /** Addition de deux décimaux, l’un à un chiffre après la virgule, l’autre à deux : virgule sous virgule. */
-export const addDecimals: ItemGenerator = (rng) =>
+const addDecimals: ItemGenerator = (rng) =>
   draw('d’addition', (): ExerciseItem | undefined => {
     const whole = randomInt(10, 89, rng);
     const tenths = randomInt(1, 9, rng);
@@ -109,7 +109,7 @@ export function subtractWithoutCarry(a: number, b: number): number {
 }
 
 /** Soustraction de deux nombres à trois chiffres, avec au moins une retenue (et souvent un 0 en haut). */
-export const subtractPosed: ItemGenerator = (rng) =>
+const subtractPosed: ItemGenerator = (rng) =>
   draw('de soustraction', (): ExerciseItem | undefined => {
     // Un 0 au rang des dizaines une fois sur trois : 503 − 267.
     const a = rng() < 1 / 3 ? randomInt(3, 9, rng) * 100 + randomInt(1, 9, rng) : randomInt(300, 999, rng);
@@ -143,7 +143,7 @@ export function timesDigitWithoutCarry(a: number, m: number): number {
 }
 
 /** Multiplication d’un nombre à deux chiffres par un nombre à deux chiffres (de 12 à 39). */
-export const multiplyPosed: ItemGenerator = (rng) =>
+const multiplyPosed: ItemGenerator = (rng) =>
   draw('de multiplication', (): ExerciseItem | undefined => {
     const a = notRound(13, 98, rng);
     const tens = randomInt(1, 3, rng);
@@ -233,7 +233,7 @@ const compareQR = (a: QR, b: QR) => a[0] - b[0] || a[1] - b[1];
 const hasZero = (q: number) => String(q).includes('0');
 
 /** Division euclidienne d’un nombre à trois chiffres par un nombre à un chiffre ; un 0 au quotient une fois sur deux. */
-export const euclidPosed: ItemGenerator = (rng) => {
+const euclidPosed: ItemGenerator = (rng) => {
   // Tiré une fois : un quotient avec un 0 est plus rare, on le cherche jusqu’à le trouver.
   const zero = rng() < 0.5;
   return draw('de division', (): ExerciseItem | undefined => {
@@ -308,7 +308,7 @@ export function sayCommaStep(steps: DivisionStep[], divisor: number): string {
 }
 
 /** Division exacte d’un décimal (moins de 100, un ou deux chiffres après la virgule) par un nombre à un chiffre. */
-export const decimalDivision: ItemGenerator = (rng) =>
+const decimalDivision: ItemGenerator = (rng) =>
   draw('de division décimale', (): ExerciseItem | undefined => {
     const d = randomInt(2, 9, rng);
     const places = rng() < 0.5 ? 1 : 2;

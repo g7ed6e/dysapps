@@ -53,7 +53,7 @@ function vaporeux(voile: RGB, fondu: number): Peindre {
 }
 
 /** Le fondu d'une volute à la place `s` d'une fumée de `n` volutes : seules les dernières se fondent. */
-export function fonduALaPlace(s: number, n: number): number {
+function fonduALaPlace(s: number, n: number): number {
   return FUMEE.fondu * clamp((s - (n - 1 - FUMEE.volutes)) / FUMEE.volutes, 0, 1);
 }
 
