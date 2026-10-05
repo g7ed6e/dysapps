@@ -11,6 +11,13 @@ import { pose, type Peindre, type Trace, type V3 } from '../painted';
 import { HAUT_DU_SOCLE, type Atelier, type Statue } from '../sentinel';
 import { LION_DU_DEFI, LION_DU_MONDE, type ModeleDuLion } from './lionData';
 
+/**
+ * Le Lion se tourne pour être vu de trois-quarts, la tête vers l'élève, comme sur son concept (de l'avant gauche, le
+ * corps qui file à droite) : au défi, la caméra est déjà de trois-quarts (Guardians.tsx, `cameraDirection` [−0,55 ;
+ * −0,85]), il y reste droit ; dans le monde, la caméra regarde l'îlot de face, il s'y tourne de 35° (le museau vers +X).
+ */
+const TOUR_DU_LION = { monde: -0.61, defi: 0 } as const;
+
 /** La hauteur du Lion, dalle comprise, en blocs du modèle (sous les huit de la hauteur commune). */
 export const HAUTEUR_DU_LION = 6;
 
@@ -104,6 +111,7 @@ export const LION_DE_PIERRE: Statue = {
   allume: 'la crinière : huit veines d’or, de la racine vers la pointe des mèches',
   socle: QUAI_DU_LION === 'socle',
   grosPlan: true,
+  tour: TOUR_DU_LION,
   sculpture: sculptureDuLion,
   veines: veinesDuLion,
 };

@@ -31,6 +31,7 @@ npm run pilotage:personnages # refait docs/gameplay/personnages.md
 npm run www:captures # rejoue le jeu dans Chromium et fait les captures d’écran (www/_captures/, hors du dépôt, refaites par la CI sur main)
 npm run rendu:mesures # appels de dessin, triangles et images par seconde (rendu logiciel) du monde 3D par archipel, poids de Three.js (--captures <dossier> : captures 3D ; --comparer <références> : planches avant/après des vues changées)
 npm run rendu:budget # triangles et appels de dessin de chaque poste du budget d’Archipéo, son enveloppe et sa marge, par archipel tout construit, sans navigateur (--archipel 6e,3e ; --json)
+npm run rendu:lion  # refait les données du Lion de pierre (src/game/world/characters/statues/lionData.ts) depuis ses modèles réduits (scripts/rendu/lion-de-pierre/ ; --check : vérifie sans écrire)
 npm run version:show # affiche la version calculée depuis git
 npm run splash     # refait les écrans de lancement d'iPhone et d'iPad (public/splash/)
 npm run programme:extract -- c3 # extrait le texte d'un programme officiel (c3, c4 ou une URL de PDF) dans .programme/

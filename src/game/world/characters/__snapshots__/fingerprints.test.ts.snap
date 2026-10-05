@@ -59,7 +59,7 @@ exports[`Empreintes des personnages en facettes > les fusions, archipel par arch
   },
   "6e": {
     "creatures": "2488 75c755bd 163ed31f",
-    "gardiens": "2243 2a4102a3",
+    "gardiens": "2243 fe88cea0",
   },
   "bonhomme": "472 045a95c7 1032f390",
 }
@@ -68,7 +68,7 @@ exports[`Empreintes des personnages en facettes > les fusions, archipel par arch
 exports[`Empreintes des personnages en facettes > les sentinelles, île par île (éteintes) 1`] = `
 {
   "atelier": "230 15752aea",
-  "baie": "700 88ce0325",
+  "baie": "700 171efeba",
   "belvedere": "207 f3f36d77",
   "cabinet": "178 7787181c",
   "carrefour": "180 ae511a7a",

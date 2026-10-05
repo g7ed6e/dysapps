@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, bulles, fiches, menu-tete ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, bulles, fiches, menu-tete, lion ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 20` le plus long temps réel laissé au monde pour se construire (en secondes, 10 par défaut). L'horloge de la
 // page est pilotée (`preparerLaScene`, scripts/prise-de-vue.mjs) : deux prises du même état donnent la même image, les
@@ -560,6 +560,29 @@ const CAPTURES = [
     'french-4e-agreement', 'french-4e-vocabulary', 'english-4e-comprehension', 'english-4e-grammar', 'maths-3e-geometry', 'maths-3e-statistics',
     'maths-3e-functions', 'french-3e-close-reading', 'english-3e-comprehension', 'english-3e-grammar',
   ].map((ile) => ({ nom: `commandes-ile-${ile}`, vue: 'île', famille: 'commandes-iles', ile, posees: 'toutes' })),
+  // Le Lion de pierre tiré de son modèle (Baie des mots, 6e, famille `lion`) : au défi, rallumé (tout construit) et éteint
+  // (`debout` : son défi pas encore gagné), le modèle de 1 500 triangles ; dans le monde, le modèle de 700, vu de l'archipel
+  // et de la Carte, rallumé et éteint, de jour et de nuit.
+  { nom: 'lion-defi', vue: 'défi', famille: 'lion', ile: 'english-6e-vocabulary' },
+  { nom: 'lion-defi-eteint', vue: 'défi', famille: 'lion', ile: 'english-6e-vocabulary', debout: 'english-6e-vocabulary' },
+  { nom: 'lion-defi-pres', vue: 'défi', famille: 'lion', ile: 'english-6e-vocabulary', recadre: { x: 20, y: 85, width: 165, height: 225 }, finesse: 3 },
+  { nom: 'lion-defi-pres-eteint', vue: 'défi', famille: 'lion', ile: 'english-6e-vocabulary', debout: 'english-6e-vocabulary', recadre: { x: 20, y: 85, width: 165, height: 225 }, finesse: 3 },
+  ...[false, true].flatMap((nuit) =>
+    [null, 'english-6e-vocabulary'].flatMap((debout) =>
+      [
+        { vue: 'archipel', nom: 'archipel' },
+        { vue: 'archipel', nom: 'pres', recadre: { x: 430, y: 370, width: 240, height: 180 }, finesse: 2 },
+        { vue: 'carte', nom: 'carte' },
+      ].map(({ nom, ...v }) => ({
+        nom: `lion-${nom}${debout ? '-eteint' : ''}${nuit ? '-nuit' : ''}`,
+        ...v,
+        famille: 'lion',
+        ile: 'english-6e-vocabulary',
+        ...(debout ? { debout } : {}),
+        ...(nuit ? { nuit } : {}),
+      })),
+    ),
+  ),
 ];
 /** La lueur la nuit, à la vue île : au plus 3 % de la scène. */
 const LUEUR_MAX = 0.03;

@@ -195,8 +195,9 @@ describe('Les Gardiens en sentinelles', () => {
         for (let i = 0; i < f.positions.length; i += 3) {
           bas = Math.min(bas, f.positions[i + 1]);
           haut = Math.max(haut, f.positions[i + 1]);
+          if (importee) continue;
           expect(Math.abs(f.positions[i])).toBeLessThanOrEqual(DEMI_LARGEUR_DE_SENTINELLE);
-          if (!importee) expect(Math.abs(f.positions[i + 2])).toBeLessThanOrEqual(DEMI_LARGEUR_DE_SENTINELLE);
+          expect(Math.abs(f.positions[i + 2])).toBeLessThanOrEqual(DEMI_LARGEUR_DE_SENTINELLE);
         }
         expect(bas).toBeCloseTo(0, 6);
         if (!basse) return expect(Math.abs(haut - HAUTEUR_DE_SENTINELLE)).toBeLessThan(0.005);
@@ -271,7 +272,8 @@ describe('Les Gardiens en sentinelles', () => {
 
 describe('Les sentinelles qui se tournent pour se montrer de profil (la Diligence)', () => {
   const tournees = BIOMES.filter((b) => STATUES[b.id].tour);
-  it('la Diligence, et le Soleil et le Papillon de cuivre, qu’on ne doit pas voir par la tranche', () => expect(tournees.map((b) => b.id).sort()).toEqual(['lv2-3e-travel', 'lv2-4e-daily-life', 'lv2-5e-introductions']));
+  it('la Diligence, et le Soleil et le Papillon de cuivre, qu’on ne doit pas voir par la tranche ; le Lion de pierre, de trois-quarts dans le monde', () =>
+    expect(tournees.map((b) => b.id).sort()).toEqual(['english-6e-vocabulary', 'lv2-3e-travel', 'lv2-4e-daily-life', 'lv2-5e-introductions']));
 
   it('le Soleil de cuivre, dans le monde : de face (à 33° au plus) pour la caméra du Jardin (72°), du Théâtre (20 à 42°) et du rallumage (85°) ; dans les cinq cases', () => {
     const f = sentinellePeinte('lv2-4e-daily-life');
