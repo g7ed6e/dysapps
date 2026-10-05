@@ -1,4 +1,4 @@
-// Pour les tests à empreintes (./empreintes.test.ts…) : une valeur où chaque identifiant neutre est remis dans son mot
+// Pour les tests à empreintes (./fingerprints.test.ts…) : une valeur où chaque identifiant neutre est remis dans son mot
 // d'avant (src/core/legacyIds.ts), pour que les empreintes prises avant les mots neutres (2 octobre 2026) restent
 // valables et prouvent qu'un changement d'identifiant ne change rien de ce qui est dessiné.
 import { LEGACY_MISSIONS, LEGACY_PARTS, LEGACY_PLACES, LEGACY_RESOURCES } from '../../core/legacyIds';

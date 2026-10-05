@@ -1,6 +1,6 @@
 // Les personnages d'Archipéo en facettes peintes (lot R6) : le bonhomme, les créatures et, plus tard, les sentinelles,
 // dessinés par le code en quelques primitives basse résolution, à côté de leurs modèles en cubes (./creatures.ts,
-// ./gardiens.ts, qui gardent l'emprise au sol). Code pur, sans Three.js : la vue 3D en fait un maillage. Repère de
+// ./guardians.ts, qui gardent l'emprise au sol). Code pur, sans Three.js : la vue 3D en fait un maillage. Repère de
 // Three.js, en blocs : X à droite, Y en haut (les pieds en 0), le visage vers −Z.
 //
 // Un personnage est une liste de pièces (tête, corps, bras…) : chacune pivote autour de son `pivot` et chaque triangle

@@ -2,7 +2,7 @@
 // gabarits (trapu : 2,3 blocs et 1,2 fois plus large ; standard : 2,6 blocs, 1,3 fois le bonhomme ; élancé : 2,9 blocs
 // et 0,85 fois la largeur), la tête au cinquième, deux petits yeux sombres sans blanc ni sourire, trois couleurs (une
 // dominante désaturée et sa marque, une tenue de lin ou de cuir, un outil de bois, de fer ou de laiton). Chaque espèce
-// (./especes/) dit ce qui la fait reconnaître : sa silhouette, une signature qui dépasse du tronc (carapace, élytres,
+// (./species/) dit ce qui la fait reconnaître : sa silhouette, une signature qui dépasse du tronc (carapace, élytres,
 // queue, cornes, oreilles), et l'outil de son métier dans la main droite (côté +X : le personnage regarde vers −Z).
 // Une espèce se dessine dans le gabarit standard ; le trapu et l'élancé en sont une mise à l'échelle (la hauteur d'un
 // côté, la largeur et la profondeur de l'autre), les yeux gardant leur taille.

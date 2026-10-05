@@ -415,7 +415,7 @@ function refuge(b: BlockId): Stages {
   // LV2-5 : pierre claire et ardoise enneigée dans Archipéo ; le même bloc de pierre de taille en Blocland) : un
   // soubassement, un rang dont le milieu est la planche-perchoir, en planches ; au-dessus d'elle, le trou d'envol,
   // (4, 0, 2), laissé vide entre deux blocs de pierre ; un toit plat par-dessus (l'ardoise enneigée du 3e en Archipéo,
-  // `toits.ts`). Quatre blocs de haut.
+  // `roofs.ts`). Quatre blocs de haut.
   const yard: ArchCell[] = [
     { x: 2, y: 0, z: 0, block: BLOC.barriere },
     { x: doorX, y: 1, z: 0, block: BLOC.escalier },

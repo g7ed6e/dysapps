@@ -3,8 +3,8 @@
 // plan. Code pur, sans Three.js : `architectureDe` lit les cubes d'un monde (ou d'une île) et rend
 // - les murs peints (./paint.ts) : ils gardent la géométrie de leur bloc, et la fusion des faces de
 //   world/construction.ts ; le shader peint leur colombage, leur bardage, leur soubassement, leur chaperon ;
-// - les pièces dessinées (les toits de ./toits.ts, les pilotis du kit) : leurs facettes, en coordonnées de grille, que
-//   world/construction.ts assemble (./assemblage.ts) et peint dans son groupe opaque, avec la case de chacune (le
+// - les pièces dessinées (les toits de ./roofs.ts, les pilotis du kit) : leurs facettes, en coordonnées de grille, que
+//   world/construction.ts assemble (./assembly.ts) et peint dans son groupe opaque, avec la case de chacune (le
 //   toucher, toute la case) ; les cases qu'elles remplacent, et les faces de case qu'elles ferment ;
 // - les blocs des lieux du village qui prennent la couverture de leur île (./places.ts).
 //
@@ -66,7 +66,7 @@ export interface Architecture {
   couvre: Map<string, number>;
   /** Les murs peints (clé `x,y,z`). */
   peints: Map<string, MurPeint>;
-  /** Le nombre de triangles des pièces dessinées, avant leur assemblage (./assemblage.ts). */
+  /** Le nombre de triangles des pièces dessinées, avant leur assemblage (./assembly.ts). */
   triangles: number;
   /** Les blocs des lieux du village (pièces ou non) qui prennent la couverture de leur île (clé `x,y,z`, ./places.ts). */
   couverts: Set<string>;

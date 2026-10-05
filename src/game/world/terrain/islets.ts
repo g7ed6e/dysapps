@@ -1,4 +1,4 @@
-// La place des îlots des Gardiens au large de chaque île, sans leur contenu (./gardiens.ts).
+// La place des îlots des Gardiens au large de chaque île, sans leur contenu (./guardians.ts).
 import { coeurDe, COTE_DU_COEUR, islandDef, type IslandDef } from '../map';
 import { type BiomeId, BIOMES } from '../../biomes';
 

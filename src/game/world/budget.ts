@@ -231,7 +231,7 @@ export function decorCost(a: ArchipelagoId): { triangles: number; drawCalls: num
   return { triangles: decor.triangles + brume, drawCalls: decor.drawCalls + (brume ? 1 : 0) };
 }
 
-/** La mer d'Archipéo (lot R3) : la grille de ./mer.ts, jusqu'à l'horizon, en un appel de dessin. */
+/** La mer d'Archipéo (lot R3) : la grille de ./sea.ts, jusqu'à l'horizon, en un appel de dessin. */
 export function merCost(a: ArchipelagoId): { triangles: number; drawCalls: number } {
   const b = worldBounds(a);
   const width = Math.max(b.maxX - b.minX, b.maxY - b.minY);
@@ -240,7 +240,7 @@ export function merCost(a: ArchipelagoId): { triangles: number; drawCalls: numbe
 
 /**
  * La faune et le ciel d'Archipéo (lot R3) : les baleines (souffle compris), les oiseaux et les nuages, une instanciation
- * par famille (./faune.ts). Au plus trois appels de dessin, un de plus pendant le passage de la baleine (son écume).
+ * par famille (./fauna.ts). Au plus trois appels de dessin, un de plus pendant le passage de la baleine (son écume).
  */
 export function fauneCost(a: ArchipelagoId): { triangles: number; drawCalls: number } {
   const familles = [

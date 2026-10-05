@@ -202,7 +202,7 @@ describe('La construction taillée (lot R5)', () => {
       const sous = new Set(sol.map((c) => cle(c.x, c.y, c.z)));
       for (const mode of ['aucun', 'peint'] as const) {
         // Les blocs seuls, sans le kit d'architecture (lot 7b) : ses pièces et ses murs peints ont leurs propres tests
-        // (./architecture/toucher.test.ts).
+        // (./architecture/touch.test.ts).
         const m = maillageDeLaConstruction(a, cubes, sol, { biseau: mode, kit: kitVide() });
         let aire = 0;
         for (const [nom, g] of [['opaque', m.opaque], ['fenetres', m.fenetres]] as const) {

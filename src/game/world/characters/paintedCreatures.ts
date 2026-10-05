@@ -1,5 +1,5 @@
 // Les créatures d'Archipéo en facettes (lot R6), une par île : le registre des espèces (un fichier par archipel,
-// ./especes/) et leurs modèles, calculés une fois. À côté des modèles en cubes (./creatures.ts), qui gardent l'emprise
+// ./species/) et leurs modèles, calculés une fois. À côté des modèles en cubes (./creatures.ts), qui gardent l'emprise
 // au sol tant que la grille les lit.
 import type { BiomeId } from '../../biomes';
 import { ESPECES_6E } from './species/6e';

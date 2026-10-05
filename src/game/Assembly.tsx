@@ -45,7 +45,7 @@ function enMots(r: Recette): string {
   return r.ingredients.map((i) => blockCount(i.bloc, i.n)).join(' et ');
 }
 
-/** Une vignette par bloc à donner (les recettes en demandent deux au plus d'un même bloc : assemblage.test.ts). */
+/** Une vignette par bloc à donner (les recettes en demandent deux au plus d'un même bloc : assembly.test.ts). */
 function Vignettes({ bloc, n }: { bloc: BlockId; n: number }) {
   const b = BLOCKS[bloc];
   return (

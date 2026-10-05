@@ -5,7 +5,7 @@
 // ratée commence par « Mes couleurs restent. », la réplique finale dit « Je me rallume ». GD-1 (« le chantier du
 // bâtisseur », décidée le 30 septembre 2026) y ajoute sa voix et ses noms : la créature de l'île-école parle aux
 // grandes étapes, les archipels reprennent leurs noms d'origine, les rôles sont des métiers du chantier. Textes du
-// consultant de Blocland. Leur empreinte est vérifiée par src/universes/univers.test.ts.
+// consultant de Blocland. Leur empreinte est vérifiée par src/universes/universes.test.ts.
 import { ETATS_D_ILE, REPLIQUES } from '../common';
 import type { TextesUnivers } from '../types';
 import { lieuDAssemblage, nomsAssembles } from '../../game/world/assembly';

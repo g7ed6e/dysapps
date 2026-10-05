@@ -23,7 +23,7 @@
 // - Le toucher (`pickCell`) et la marche (`hauteurDuSol`, `piedsSur`) lisent le même champ : un point touché redevient
 //   une case, et le bonhomme reste posé sur la surface qu'on voit.
 //
-// Ce fichier garde le maillage ; à côté, dans ./landMesh/ : les réglages (`reglages.ts`), le champ, le toucher et la
+// Ce fichier garde le maillage ; à côté, dans ./landMesh/ : les réglages (`settings.ts`), le champ, le toucher et la
 // marche (`field.ts`), la couleur et l'éclairage (`lighting.ts`), la découpe des polygones (`polygons.ts`). Il en
 // réexporte les noms publics.
 import { ALTITUDE } from './map';

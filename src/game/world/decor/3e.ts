@@ -89,7 +89,7 @@ function salle(P: Pinceau, x0: number, z0: number, x1: number, z1: number, y0: n
 }
 
 /**
- * Le grand phare de l'île du Phare : le phare de référence (./phare.ts, `PHARES['3e']`) sur son socle de salles en
+ * Le grand phare de l'île du Phare : le phare de référence (./lighthouse.ts, `PHARES['3e']`) sur son socle de salles en
  * pierre de taille (deux étages en gradins, des baies cintrées sombres, de la neige sur les terrasses), à la place de la
  * tour de pierre à bandes de neige et au toit de prisme de Blocland. Il garde le site du phare de Blocland, dont il
  * couvre les cases (règle 1 du directeur artistique).

@@ -44,29 +44,29 @@ flowchart TD
   pages --> components[components/<br/>écrans et briques partagés]
   apps --> components
   game --> components
-  game --> univers[univers/<br/>les mots de chaque univers]
+  game --> universes[universes/<br/>les mots de chaque univers]
   components --> core[core/<br/>réglages, stockage, progression, outils]
   game --> core
   apps --> core
   core -. progression commune .-> game
   core -. progression par matière .-> apps
   core -. icônes .-> components
-  core -. mots des succès .-> univers
+  core -. mots des succès .-> universes
   components -. étoiles, partie, sons .-> game
   components -. catalogue .-> apps
-  apps -. types ProgrammeId .-> programme[programme/<br/>référentiel officiel]
-  game -. types ProgrammeId .-> programme
+  apps -. types ProgrammeId .-> curriculum[curriculum/<br/>référentiel officiel]
+  game -. types ProgrammeId .-> curriculum
   main --> styles[styles/<br/>thèmes et CSS]
 ```
 
 Une flèche se lit « importe ». Les flèches pleines sont le sens attendu ; les pointillés, les dépendances qui remontent aujourd’hui.
 
-- `core/` : les réglages, le stockage, la sauvegarde aux mots neutres (`migration.ts`), la progression commune, la synthèse vocale, et les petits outils que tout le code partage (`random.ts`, `math.ts`, `color.ts`), qui n’importent rien. Quelques fichiers de `core/` lisent pourtant le jeu : `progress.ts` (les îles et les plans, pour les succès), `subjectProgress.ts` (l’avancée d’une matière, portail et aventure), `universe.ts` et `AppUpdateBanner.tsx` (les icônes de `components/`), `ProgressContext.tsx` (les mots de `univers/`).
+- `core/` : les réglages, le stockage, la sauvegarde aux mots neutres (`migration.ts`), la progression commune, la synthèse vocale, et les petits outils que tout le code partage (`random.ts`, `math.ts`, `color.ts`), qui n’importent rien. Quelques fichiers de `core/` lisent pourtant le jeu : `progress.ts` (les îles et les plans, pour les succès), `subjectProgress.ts` (l’avancée d’une matière, portail et aventure), `universe.ts` et `AppUpdateBanner.tsx` (les icônes de `components/`), `ProgressContext.tsx` (les mots de `universes/`).
 - `components/` tient ce que les écrans partagent : la mise en page, l’écran titre, la session de quiz, les boutons de lecture. Plusieurs lisent le jeu : `Layout.tsx` (`useImmersive`), `QuizSession.tsx` et `RecordTag.tsx` (les étoiles, la partie), `TitleScreen.tsx` (la partie, le logo, les sons), `AppBadge.tsx` et `BuilderBanner.tsx` (la partie), `SubjectApps.tsx` (le catalogue des missions du portail).
 - `apps/` : une mission du portail par dossier, toutes sur `QuizSession` ou `QuestMenu`, déclarées dans `apps/registry.ts`.
 - `game/` : l’aventure, la plus grosse partie (voir [La partie](partie.md) et [Le monde](monde.md)) : le jeu commun aux deux univers (`src/blocland/` jusqu’au 5 octobre 2026).
-- `univers/` : les textes propres à chaque univers ; l’habillage du dessin est dans `game/world/skin/`.
-- `programme/` : le référentiel des programmes officiels, lu par les tests et le site ; l’application n’en importe que le type des identifiants.
+- `universes/` : les textes propres à chaque univers ; l’habillage du dessin est dans `game/world/skin/`.
+- `curriculum/` : le référentiel des programmes officiels, lu par les tests et le site ; l’application n’en importe que le type des identifiants.
 
 ## Les fournisseurs et les routes
 
@@ -87,7 +87,7 @@ Trois contextes, du plus général au plus particulier : les réglages (police, 
 
 ## Les couches du jeu
 
-Le dossier `game/` est rangé en couches ; `game/world/couches.test.ts` vérifie qu’aucun fichier n’importe une couche qu’il n’a pas le droit de lire.
+Le dossier `game/` est rangé en couches ; `game/world/layers.test.ts` vérifie qu’aucun fichier n’importe une couche qu’il n’a pas le droit de lire.
 
 ```mermaid
 flowchart BT
@@ -95,7 +95,7 @@ flowchart BT
   regle[règles<br/>engine, boss, biomes, world/model, world/plans…]
   grille[grille<br/>world/map, world/terrain, world/paths…]
   commun[contrat commun des vues<br/>world/view, world/scene]
-  univers[univers<br/>habillage, palette, modeleDessine, univers/]
+  univers[univers<br/>skin, palette, drawnModel, universes/]
   dessin[dessin<br/>three/, composants React]
   regle --> neutre
   grille --> regle

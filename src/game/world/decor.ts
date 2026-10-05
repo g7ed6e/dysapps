@@ -44,7 +44,7 @@ export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => numb
     // Le grand arbre du plateau a quitté sa place (l'école s'y tient, et le plateau s'arrête à la colonne 11 ; redistribution
     // « Trois bandes », 02/10/2026) : derrière la salle des trophées, en (4, 12) (cœur : (6, 15)), à côté de la zone des
     // plans. Sur le plateau, en (9, 5), il cachait le trophée du bout de la salle (relecture du référent dys, 02/10/2026) ;
-    // là, il ne cache ni un trophée, ni une borne, ni le rang avant de la zone des plans (troisBandes.test.ts).
+    // là, il ne cache ni un trophée, ni une borne, ni le rang avant de la zone des plans (threeBands.test.ts).
     for (const [tx, ty, tall] of [
       [8, 2, 2],
       [4, 12, 3],
@@ -156,7 +156,7 @@ export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => numb
   'maths-5e-proportionality': (put, h) => {
     // Un étal à auvent de toile sur des poteaux, des caisses. L'école se tient maintenant à sa droite (redistribution
     // « Trois bandes », 02/10/2026) : l'étal s'arrête une case plus tôt, trois cases de large au lieu de quatre, sur le
-    // plateau rogné. Glissé d'une case vers la gauche, son auvent cachait un trophée du bout de la salle (troisBandes.test.ts).
+    // plateau rogné. Glissé d'une case vers la gauche, son auvent cachait un trophée du bout de la salle (threeBands.test.ts).
     for (const [x, y] of [
       [7, 2],
       [9, 2],
@@ -217,7 +217,7 @@ export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => numb
     // la table, sur le bord du plateau rogné (redistribution « Trois bandes », 02/10/2026). Sur la place du village, la
     // table faisait fond à la borne du milieu, vue de la caméra (relectures du 02/10/2026) : elle se pose contre le flanc
     // gauche de la salle des trophées, en long, de (-3, 5) à (-3, 7) (cœur : de (-1, 8) à (-1, 10)), sur un sol plat, hors
-    // de l'axe de la caméra vers une borne (troisBandes.test.ts). Le calque glisse au milieu du plateau, en (8, 4).
+    // de l'axe de la caméra vers une borne (threeBands.test.ts). Le calque glisse au milieu du plateau, en (8, 4).
     put(-3, 5, h(-3, 5) + 1, TRUNK);
     put(-3, 7, h(-3, 7) + 1, TRUNK);
     for (let dy = 5; dy <= 7; dy++) put(-3, dy, h(-3, dy) + 2, BLOCKS[BLOC.bois].side);

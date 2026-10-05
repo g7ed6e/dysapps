@@ -14,7 +14,7 @@ export const ASSEMBLAGE_PATH = '/adventure/assembly';
 
 /**
  * Les univers que nomme docs/contenu/assemblage.md, par leur identifiant (ceux de `core/universe`, qu'un test compare).
- * Ce module n'importe pas la couche des univers (couches.test.ts) : ce sont les univers qui lisent ces noms, et
+ * Ce module n'importe pas la couche des univers (layers.test.ts) : ce sont les univers qui lisent ces noms, et
  * `nomDuBloc` (biomes.ts) prend l'univers choisi par `universCourant`, comme la LV2 par `lv2Courante`.
  */
 export type UniversNomme = 'blocland' | 'archipeo';

@@ -37,7 +37,7 @@ export interface DessinDePiece {
   couvre: number;
   /**
    * La pièce file le long de y (dans son orientation de référence) : une rangée de pièces pareilles se dessine d'un
-   * tenant (./assemblage.ts).
+   * tenant (./assembly.ts).
    */
   filant?: boolean;
 }

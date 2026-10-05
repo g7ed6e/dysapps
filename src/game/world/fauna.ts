@@ -417,7 +417,7 @@ export function formeDOiseau(): Forme {
 /** Les cumulus de la fiche : crème en haut (`#ECEEEE`), bleutés dessous. */
 const NUAGE = { dessus: 0xf3f4f1, milieu: 0xeceeee, dessous: 0xc9d2d7 } as const;
 
-/** Les vingt faces d'un icosaèdre (sommets de ./faune.ts). */
+/** Les vingt faces d'un icosaèdre (sommets de ./fauna.ts). */
 function icosaedre(): { v: V3[]; f: [number, number, number][] } {
   const p = (1 + Math.sqrt(5)) / 2;
   const v: V3[] = [

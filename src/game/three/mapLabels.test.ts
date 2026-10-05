@@ -52,7 +52,7 @@ function etiquette(nom: string, etat: string, largeur: (t: string) => number, el
 function laCarte(a: ArchipelagoId, etat: string, police: PoliceDeTest, elargir: number, destination: BiomeId | { ouvrage: string; depuis?: BiomeId } = getArchipelago(a).port) {
   const { w: W, h: H } = TABLETTE;
   // Une île : la pointe au-dessus de son cœur ; un ouvrage (GD-7) : juste au-dessus de ses places sur la liaison, la
-  // première pour le cadrage (`bornes.ts`).
+  // première pour le cadrage (`markers.ts`).
   const places = typeof destination === 'string' ? [] : grilleDe(a).placesDeLaFleche(destination.ouvrage, destination.depuis).map((m) => ({ x: m.x + 0.5, y: m.y + 0.5, z: m.z + 2 }));
   const ici = places[0] ?? null;
   const c = cadrageDeLaCarte(a, ici ?? (destination as BiomeId), W, H, placeLibre(W, H, [PANNEAU, BARRE], BOUTONS));

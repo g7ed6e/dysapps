@@ -8,7 +8,7 @@ import { dirname, join, relative } from 'node:path';
 type Couche = 'regle' | 'grille' | 'commun' | 'univers' | 'dessin' | 'neutre';
 
 const SRC = join(__dirname, '..', '..');
-const BLOCLAND = join(SRC, 'game');
+const GAME = join(SRC, 'game');
 
 /** Les règles du jeu : sans coordonnées du monde, sans React ni Three.js. */
 const REGLES = [
@@ -25,7 +25,7 @@ const REGLES = [
   'arrivals',
   'biomes',
   // Les îles et leurs missions, produites depuis docs/contenu/ par `npm run contenu`.
-  'iles',
+  'islands',
   'world/goals',
   'world/destination',
   'world/uses',
@@ -103,8 +103,8 @@ const GRILLE = [
  */
 function estUnivers(file: string): boolean {
   const n = nom(file);
-  if (!file.startsWith(BLOCLAND)) return n === 'univers' || n.startsWith('univers/') || n === 'core/universe';
-  return n === 'habillage' || n === 'world/habillage' || n.startsWith('world/skin/') || n === 'world/palette' || n === 'world/modeleDessine' || n.startsWith('world/drawnModel/');
+  if (!file.startsWith(GAME)) return n === 'universes' || n.startsWith('universes/') || n === 'core/universe';
+  return n === 'skin' || n === 'world/skin' || n.startsWith('world/skin/') || n === 'world/palette' || n === 'world/drawnModel' || n.startsWith('world/drawnModel/');
 }
 
 /** Le contrat commun des vues et sa simulation. */
@@ -131,9 +131,9 @@ const EXCEPTIONS: Record<string, string> = {
   'world/islandState → components/Icon': 'le nom d’icône d’un état d’île (un type seulement) (J7)',
 };
 
-/** Le nom court d'un module : chemin depuis src/ (ou depuis src/ hors de Blocland), sans extension. */
+/** Le nom court d'un module : chemin depuis src/ (ou depuis src/ hors du jeu), sans extension. */
 function nom(file: string): string {
-  const r = relative(BLOCLAND, file);
+  const r = relative(GAME, file);
   const n = r.startsWith('..') ? relative(SRC, file) : r;
   return n.replace(/\.(tsx?|json)$/, '').replace(/\/index$/, '');
 }
@@ -142,7 +142,7 @@ function couche(file: string): Couche {
   if (file.endsWith('.json')) return 'neutre';
   if (estUnivers(file)) return 'univers';
   const n = nom(file);
-  if (!file.startsWith(BLOCLAND)) return n.startsWith('components/') ? 'dessin' : 'neutre';
+  if (!file.startsWith(GAME)) return n.startsWith('components/') ? 'dessin' : 'neutre';
   if (REGLES.includes(n)) return 'regle';
   if (GRILLE.includes(n)) return 'grille';
   if (COMMUN.includes(n)) return 'commun';
@@ -161,8 +161,8 @@ function resoudre(from: string, spec: string): string | null {
 }
 
 function fichier(n: string): string {
-  const f = [`${n}.ts`, `${n}.tsx`, `${n}/index.ts`].map((x) => join(BLOCLAND, x)).find((x) => existsSync(x));
-  return f ?? join(BLOCLAND, `${n}.tsx`);
+  const f = [`${n}.ts`, `${n}.tsx`, `${n}/index.ts`].map((x) => join(GAME, x)).find((x) => existsSync(x));
+  return f ?? join(GAME, `${n}.tsx`);
 }
 
 /**
@@ -186,9 +186,9 @@ function fichiersDe(dossier: string): string[] {
 /** Ce qu'importe une couche pure hors du monde (world/, en .ts) : un paquet, une vue, un composant. */
 function impuretes(): string[] {
   const out = new Set<string>();
-  const monde = join(BLOCLAND, 'world');
+  const monde = join(GAME, 'world');
   for (const d of PURES)
-    for (const f of fichiersDe(join(BLOCLAND, d))) {
+    for (const f of fichiersDe(join(GAME, d))) {
       if (f.endsWith('.tsx')) out.add(`${nom(f)} (un composant)`);
       for (const m of readFileSync(f, 'utf8').matchAll(/(?:from|import)\s+['"]([^'"]+)['"]/g)) {
         const cible = resoudre(f, m[1]);
@@ -227,7 +227,7 @@ describe('Les couches du jeu', () => {
   });
 
   it('les couches pures du rendu (l’architecture modulaire) ne lisent que le monde : ni Three.js, ni React, ni une vue', () => {
-    expect(PURES.every((d) => existsSync(join(BLOCLAND, d)) && fichiersDe(join(BLOCLAND, d)).length > 0)).toBe(true);
+    expect(PURES.every((d) => existsSync(join(GAME, d)) && fichiersDe(join(GAME, d)).length > 0)).toBe(true);
     expect(impuretes()).toEqual([]);
   });
 
@@ -237,7 +237,7 @@ describe('Les couches du jeu', () => {
 
   it('les textes, l’habillage, la palette et le modelé de chaque univers sont dans la couche des univers', () => {
     const univers = ['universes/index.ts', 'universes/blocland/index.ts', 'universes/common.ts', 'core/universe.ts'].map((f) => join(SRC, f));
-    const habillages = ['skin.ts', 'world/skin/index.ts', 'world/skin/blocland.ts', 'world/skin/archipeo.ts', 'world/palette.ts', 'world/drawnModel/5e.ts'].map((f) => join(BLOCLAND, f));
+    const habillages = ['skin.ts', 'world/skin/index.ts', 'world/skin/blocland.ts', 'world/skin/archipeo.ts', 'world/palette.ts', 'world/drawnModel/5e.ts'].map((f) => join(GAME, f));
     expect([...univers, ...habillages].filter((f) => !existsSync(f) || couche(f) !== 'univers')).toEqual([]);
     expect(PERMIS.regle.includes('univers') || PERMIS.grille.includes('univers') || PERMIS.commun.includes('univers')).toBe(false);
   });

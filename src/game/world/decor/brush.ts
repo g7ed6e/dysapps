@@ -16,7 +16,7 @@ export interface FacettesDuDecor {
   normals: Float32Array;
   /**
    * Couleurs par sommet, dans l'espace linéaire de Three.js : entre 0 et 1, sauf le fût du phare, peint plus clair que
-   * blanc (./phare.ts, `ECLAT_DU_FUT`), que l'éclairage ramène à un crème à l'écran.
+   * blanc (./lighthouse.ts, `ECLAT_DU_FUT`), que l'éclairage ramène à un crème à l'écran.
    */
   colors: Float32Array;
   /** Pour chaque triangle, l'indice de son élément dans `elements` (le toucher y retrouve la case). */

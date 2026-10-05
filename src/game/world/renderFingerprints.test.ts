@@ -1,8 +1,8 @@
 // Le filet du rendu Archipéo (lot S, le socle de la piste Rendu, docs/univers/archipeo/cadrage.md §6) : une empreinte,
-// archipel par archipel, de ce que le rendu calcule sans Three.js et que la grille (./empreintes.test.ts) ne voit pas :
+// archipel par archipel, de ce que le rendu calcule sans Three.js et que la grille (./fingerprints.test.ts) ne voit pas :
 // le relief de chaque île, le décor en primitives et l'ambiance (ciel, lumière, surfaces, eaux). Chaque sous-lot de R4b
 // ne change que les empreintes de son archipel ; il les régénère avec
-// `npx vitest run -u src/game/world/empreintesDuRendu.test.ts` et le dit dans sa pull request. Un lot sans changement
+// `npx vitest run -u src/game/world/renderFingerprints.test.ts` et le dit dans sa pull request. Un lot sans changement
 // d'image (le socle, la découpe de la scène) les laisse telles quelles.
 import { ARCHIPELAGO_IDS, landscape, mapOf, type ArchipelagoId, type Ground } from './map';
 import { toutConstruit } from './budget';
@@ -14,7 +14,7 @@ import type { TextureKind } from './pixels';
 import { worldCubes } from './terrain';
 import { versLesIdsDAvant } from './legacyIds.testing';
 
-/** FNV-1a sur 32 bits, comme ./empreintes.test.ts. */
+/** FNV-1a sur 32 bits, comme ./fingerprints.test.ts. */
 function fnv(text: string): string {
   let h = 0x811c9dc5;
   for (let i = 0; i < text.length; i++) {

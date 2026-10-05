@@ -31,7 +31,7 @@ Un pilier : **le chantier du bâtisseur**. Dans Blocland, tout se nomme, se dit 
 
 ## Le coût
 
-- Changements 1 à 3 : textes seulement, dans `src/universes/blocland/`, `src/game/world/archipelago.ts` (le nom passe par les textes de l’univers), les rôles affichés par univers, l’écran de renommage d’U4. Taille M. Fichiers partagés avec les fils de contenu (`common.ts`, empreinte de `src/universes/univers.test.ts`) : chaque pull request se remet sur `main` avant fusion.
+- Changements 1 à 3 : textes seulement, dans `src/universes/blocland/`, `src/game/world/archipelago.ts` (le nom passe par les textes de l’univers), les rôles affichés par univers, l’écran de renommage d’U4. Taille M. Fichiers partagés avec les fils de contenu (`common.ts`, empreinte de `src/universes/universes.test.ts`) : chaque pull request se remet sur `main` avant fusion.
 - Changement 4 : un **dégel ciblé** du dessin de Blocland, figé depuis l’étiquette `blocland-reference` : un lot distinct des lots R, qui ajoute sans rien redessiner, sans toucher aux empreintes ni aux cases d’un plan, validé sur captures avant et après (jour et nuit). Code écrit par l’artiste technique 3D. Taille S à M.
 - Pages à tenir : le manuel (rôles, noms des archipels, bulles des étapes), [Personnages et Gardiens](../../personnages.md) (régénérée), la [fiche de Blocland](../../../univers/blocland/fiche.md), le [cadrage de Blocland](../../../univers/blocland/cadrage.md).
 

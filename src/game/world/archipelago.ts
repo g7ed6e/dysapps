@@ -150,7 +150,7 @@ const e = (from: BiomeId, to: BiomeId, kind: BridgeKind, via?: readonly Point[])
 /**
  * Les points de passage des liaisons du port (GD-7), entre l'ancrage des deux îles (`bridgePath`, world/terrain.ts) :
  * chaque tracé longe l'archipel sans toucher une autre île, un autre ouvrage, l'îlot d'un Gardien ou d'un monument ni la
- * jetée, et reste dans `worldBounds` (portEnEtoile.test.ts). Sans points de passage, la ligne droite.
+ * jetée, et reste dans `worldBounds` (starPort.test.ts). Sans points de passage, la ligne droite.
  */
 const VIA: Record<string, readonly Point[]> = {
   'maths-6e-calculation-french-6e-reading': [{ x: 61, y: 14 }, { x: 13, y: 14 }, { x: 13, y: 52 }],

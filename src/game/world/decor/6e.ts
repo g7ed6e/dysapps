@@ -1,5 +1,5 @@
 // Les formes du décor propres aux Premiers Rivages (6e) : leurs repères. Ce fichier appartient au sous-lot R4b-6e
-// (docs/univers/archipeo/cadrage.md §6). Le phare de référence, commun au 6e et au 3e, est dans ./phare.ts.
+// (docs/univers/archipeo/cadrage.md §6). Le phare de référence, commun au 6e et au 3e, est dans ./lighthouse.ts.
 import type { VoxelCube } from '../cube';
 import { enRepere, type Forme } from './tools';
 import { feuillage, icosaedre, octaedre, peintre, boite, lueur, tronconique } from './brush';

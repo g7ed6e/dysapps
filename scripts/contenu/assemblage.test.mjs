@@ -29,7 +29,7 @@ describe('l’assemblage des blocs en Markdown', () => {
 });
 
 describe('les questions des blocs assemblés en Markdown', () => {
-  // Un extrait écrit ici : le contenu de docs/contenu/assemblage.md, lui, est vérifié par src/game/exercises/assemblage.test.ts.
+  // Un extrait écrit ici : le contenu de docs/contenu/assemblage.md, lui, est vérifié par src/game/exercises/assembly.test.ts.
   const base = md.slice(0, md.includes('\n## Les questions') ? md.indexOf('\n## Les questions') : md.length).trimEnd();
   const questions = [
     '## Les questions',

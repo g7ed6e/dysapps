@@ -1,6 +1,6 @@
 // Ce que l'univers change au dessin du monde (étape J6 de docs/univers/univers.md §5) : une ligne par partie du
 // dessin. Des données seulement, sans React ni Three.js ; aucune règle du jeu ni aucune disposition ne l'importe
-// (world/couches.test.ts, couche « univers »).
+// (world/layers.test.ts, couche « univers »).
 import type { UniversId } from '../../../universes/types';
 import type { Atelier } from '../terrain';
 

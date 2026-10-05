@@ -40,8 +40,8 @@
 // les trois groupes.
 //
 // Ce fichier garde le maillage et les bornes ; à côté, dans ./construction/ : les réglages de l'intention et les couleurs
-// des rôles (`reglages.ts`), ce que le shader reprend (`shader.ts`), le genre des blocs (`kinds.ts`), le phare de
-// Grimoire (`phare.ts`), les bâtiments et les lieux que le kit reprend (`buildings.ts`). Il en réexporte les noms publics.
+// des rôles (`settings.ts`), ce que le shader reprend (`shader.ts`), le genre des blocs (`kinds.ts`), le phare de
+// Grimoire (`lighthouse.ts`), les bâtiments et les lieux que le kit reprend (`buildings.ts`). Il en réexporte les noms publics.
 import type { Cell } from './view';
 import { architectureDe, assemblerLesPieces, type Kit, KITS, MOTIF } from './architecture';
 import type { VoxelCube } from '../Voxel';

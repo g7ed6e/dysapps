@@ -29,10 +29,10 @@ flowchart LR
 flowchart TD
   wc[WorldCanvas.tsx] --> monde[Monde<br/>scène, archipel, habillage, étendue]
   monde --> lumiere[light.ts]
-  monde --> brume[brume.ts]
+  monde --> brume[mist.ts]
   monde --> large[offshore.ts<br/>la mer au loin, le ciel]
   monde --> cubes[cubes.ts<br/>le monde en blocs, le sol, le décor]
-  monde --> bornes[bornes.ts]
+  monde --> bornes[markers.ts]
   monde --> personnages[characters.ts<br/>bonhomme, créatures, Gardiens]
   monde --> navire[ship.ts]
   monde --> etiquettes[labels.ts<br/>les noms des îles]
@@ -55,7 +55,7 @@ sequenceDiagram
 ```
 
 - Les parties partagent un `Instant` (où en sont la marche et le voyage à cette image) et les `Derniers` props de la vue : la scène n’est pas refaite quand les props changent, les parties les relisent.
-- Le calcul des formes est pur et testé dans `world/` (`landMesh.ts` le sol en facettes, `construction.ts` les bâtiments, chacun avec ses réglages, ses couleurs et son éclairage rangés à côté, dans `landMesh/` et `construction/`, `decorMesh.ts` le décor, `mer.ts`, `faune.ts`, `personnages/`) ; `three/` ne fait que les donner à Three.js.
+- Le calcul des formes est pur et testé dans `world/` (`landMesh.ts` le sol en facettes, `construction.ts` les bâtiments, chacun avec ses réglages, ses couleurs et son éclairage rangés à côté, dans `landMesh/` et `construction/`, `decorMesh.ts` le décor, `sea.ts`, `fauna.ts`, `characters/`) ; `three/` ne fait que les donner à Three.js.
 - Chaque géométrie, matériau et texture est libéré quand la scène est refaite (`dispose`).
 
 ## Les univers

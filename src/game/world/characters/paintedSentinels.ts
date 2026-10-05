@@ -1,5 +1,5 @@
 // Les Gardiens d'Archipéo en sentinelles de pierre (lot R6), un par île : le registre des statues (un fichier par
-// archipel, ./statues/) et leurs modèles, calculés une fois. À côté des Gardiens en cubes (./gardiens.ts), qui gardent
+// archipel, ./statues/) et leurs modèles, calculés une fois. À côté des Gardiens en cubes (./guardians.ts), qui gardent
 // l'emprise au sol tant que la grille les lit.
 import type { BiomeId } from '../../biomes';
 import { STATUES_6E } from './statues/6e';
