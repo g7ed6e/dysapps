@@ -42,7 +42,7 @@ export function oublierRallumagesEnMemoire(): void {
  * d'eux vu. `actif` : l'univers a des sentinelles et le monde les montre. À la première ouverture, tout Gardien déjà
  * rallumé est noté vu sans moment.
  */
-export function useRallumage(progress: Record<string, { stars: number }>, a: ArchipelagoId, actif: boolean) {
+export function useRekindling(progress: Record<string, { stars: number }>, a: ArchipelagoId, actif: boolean) {
   const [tick, setTick] = useState(() => {
     if (loadJSON<RallumagesVus | null>(STORAGE_KEY, null) === null) {
       saveJSON(STORAGE_KEY, {});

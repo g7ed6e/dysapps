@@ -41,13 +41,13 @@ import { decouverteDeLIle } from './discoveries';
 import { usePanneauDeLaCarte } from './useMapPanel';
 import { usePlaceDesBulles } from './useBubblePlacement';
 import { WhaleWordPanel, useWhaleWord } from './WhaleWord';
-import { RenamingPanel, useRenommage } from './Renaming';
+import { RenamingPanel, useRenaming } from './Renaming';
 import { useAmbience } from './useAmbience';
 import { VoyagePanel, voyageSentence } from './VoyagePanel';
 import { useTraversee } from './useCrossing';
 import { usePoseEnVague, type Vague } from './useWavePose';
 import { playBell } from './sound';
-import { RekindlingPanel, toucherQuiSaute, useRallumage } from './Rekindling';
+import { RekindlingPanel, toucherQuiSaute, useRekindling } from './Rekindling';
 import { DEROULE } from './world/rekindling';
 import { habillageDuMonde } from './skin';
 import { useTextes } from '../universes';
@@ -176,7 +176,7 @@ export function WorldPage() {
   const textes = useTextes();
   const [habillage] = useState(habillageDuMonde);
   const sentinelles = textes.sentinelles !== null;
-  const rallumage = useRallumage(state.progress, a, sentinelles);
+  const rallumage = useRekindling(state.progress, a, sentinelles);
   const eteints = rallumage.enAttente.join();
   // Les commandes des habitants (GD-7, PR 3) : seulement dans un univers qui les montre (Blocland, Archipéo) ;
   // ailleurs, le monde se lit sans elles (ni petite construction, ni suggestion), la sauvegarde restant la même.
@@ -314,7 +314,7 @@ export function WorldPage() {
   const [tutoDone, setTutoDone] = useState(() => hasSeenTutorial('village-immersif'));
   // Le mot de la baleine attend la fin des rallumages (« Tous les Gardiens… » vient après).
   // Les nouveaux noms des archipels (GD-1), une fois par appareil : avant le mot des grandes étapes, un panneau à la fois.
-  const renommage = useRenommage(tutoDone && rallumage.enAttente.length === 0 && !vague && !vol, 1200);
+  const renommage = useRenaming(tutoDone && rallumage.enAttente.length === 0 && !vague && !vol, 1200);
   const whale = useWhaleWord(state, a, tutoDone && rallumage.enAttente.length === 0 && !renommage.ouvert && !vague && !vol);
   const [whaleOpen, setWhaleOpen] = useState<string | null>(null);
   const [whaleSeq, setWhaleSeq] = useState(0);

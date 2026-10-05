@@ -3,12 +3,12 @@ import { ProgressProvider } from '../core/ProgressContext';
 import { noterRenommage, SettingsProvider } from '../core/SettingsContext';
 import { loadJSON, saveJSON } from '../core/storage';
 import { RENOMMAGE_KEY } from '../core/universe';
-import { RenamingPanel, useRenommage } from './Renaming';
+import { RenamingPanel, useRenaming } from './Renaming';
 
 beforeEach(() => localStorage.clear());
 
 function Ecran() {
-  const r = useRenommage();
+  const r = useRenaming();
   return r.ouvert ? <RenamingPanel onClose={r.fermer} /> : <p>Rien à dire</p>;
 }
 

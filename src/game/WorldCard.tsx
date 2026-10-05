@@ -28,7 +28,7 @@ import { currentStage, levelFor } from './engine';
 import { pickExercise, questProgress } from './exercises';
 import { explicationDuGardien } from './IslandSheet';
 import { EarnLink } from './PlanSection';
-import { ReminderButtons, PlusTardDit, ReminderText, useRappelDeLaCreature } from './ResidentReminder';
+import { ReminderButtons, LaterSaid, ReminderText, useResidentReminder } from './ResidentReminder';
 import { shipSummary } from './ShipSection';
 import { Stars } from './Stars';
 import { Creature } from './Creatures';
@@ -455,7 +455,7 @@ function FicheDeLaCreature({ ile, fiche, commande, onLivree, commandeEnCoursDePo
   const { settings } = useSettings();
   const textes = useTextes();
   const biome = getBiome(ile);
-  const rappel = useRappelDeLaCreature(biome && isBiomeUnlocked(ile, state.world.links) ? biome : undefined);
+  const rappel = useResidentReminder(biome && isBiomeUnlocked(ile, state.world.links) ? biome : undefined);
   const [livree, setLivree] = useState<{ id: string; text: string } | null>(null);
   const [remis, setRemis] = useState(false);
   if (!biome) return null;
@@ -501,7 +501,7 @@ function FicheDeLaCreature({ ile, fiche, commande, onLivree, commandeEnCoursDePo
       ) : (
         <Phrase text={phrase} />
       )}
-      <PlusTardDit dit={remis} />
+      <LaterSaid dit={remis} />
     </Fiche>
   );
 }

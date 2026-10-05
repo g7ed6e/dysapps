@@ -19,7 +19,7 @@ import type { TextesRenommage } from '../universes/types';
  * Les nouveaux noms à dire maintenant (`ready` : aucun autre panneau n'attend l'élève), et de quoi les noter dits.
  * Ils attendent que l'écran titre soit fermé, puis `attenteMs` (le même instant que le mot des grandes étapes).
  */
-export function useRenommage(ready = true, attenteMs = 0): { ouvert: boolean; fermer: () => void } {
+export function useRenaming(ready = true, attenteMs = 0): { ouvert: boolean; fermer: () => void } {
   const textes = useTextes();
   const titre = useTitreOuvert();
   const [aDire, setADire] = useState(() => renommageADire(loadJSON<unknown>(RENOMMAGE_KEY, null)));

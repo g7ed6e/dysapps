@@ -28,7 +28,7 @@ import { VillageStageLine } from './VillageStageLine';
 import { archipelagoOf } from './world/archipelago';
 import { useTextes } from '../universes';
 import type { Partie } from './world/parts';
-import { PlusTardDit, ResidentReminder, useRappelDeLaCreature } from './ResidentReminder';
+import { LaterSaid, ResidentReminder, useResidentReminder } from './ResidentReminder';
 import { Sheet } from './Sheet';
 
 /**
@@ -89,7 +89,7 @@ export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight =
   // LV2 ») dit quoi faire : il reste entier.
   const says = unlocked && !sansLv2 ? firstSentences(greeting) : { first: greeting, rest: '' };
   // La créature qui se souvient (GD-4, étape 1) : des révisions dues sur l'île, elle propose de reprendre.
-  const rappelDue = useRappelDeLaCreature(biome);
+  const rappelDue = useResidentReminder(biome);
   const rappel = unlocked && !sansLv2 ? rappelDue : null;
   // Après « Plus tard » : le focus revient au titre de l'île, et une courte ligne le dit.
   const titreRef = useRef<HTMLHeadingElement>(null);
@@ -142,7 +142,7 @@ export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight =
       )}
 
       {rappel && <ResidentReminder biome={biome} rappel={rappel} onRemis={remettre} />}
-      <PlusTardDit dit={remis} />
+      <LaterSaid dit={remis} />
 
       {sansLv2 ? (
         // « Pas de LV2 » : rien à construire, rien à jouer ; le chemin vers le réglage (décision du directeur artistique).

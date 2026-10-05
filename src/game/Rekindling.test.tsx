@@ -3,7 +3,7 @@ import { act, fireEvent, render, renderHook } from '@testing-library/react';
 import { degelerSauvegarde, gelerSauvegarde, saveJSON } from '../core/storage';
 import { bacASable } from './builder';
 import { EMPTY_STATE } from './engine';
-import { oublierRallumagesEnMemoire, toucherQuiSaute, useRallumage } from './Rekindling';
+import { oublierRallumagesEnMemoire, toucherQuiSaute, useRekindling } from './Rekindling';
 
 it('un toucher sur la scène saute le moment sans atteindre le canvas, « Passer » garde le sien', () => {
   const sauter = vi.fn();
@@ -62,7 +62,7 @@ it('Menu, l’archipel, Recentrer et la barre gardent leur effet : le moment fin
   expect(sauter).not.toHaveBeenCalled();
 });
 
-describe('useRallumage quand rien ne s’écrit sur l’appareil', () => {
+describe('useRekindling quand rien ne s’écrit sur l’appareil', () => {
   beforeEach(() => {
     localStorage.clear();
     oublierRallumagesEnMemoire();
@@ -76,7 +76,7 @@ describe('useRallumage quand rien ne s’écrit sur l’appareil', () => {
     saveJSON('guardians-seen', {});
     gelerSauvegarde();
     const { progress } = bacASable(EMPTY_STATE);
-    const { result } = renderHook(() => useRallumage(progress, '6e', true));
+    const { result } = renderHook(() => useRekindling(progress, '6e', true));
     const premier = result.current.enAttente[0];
     expect(premier).toBe('french-6e-phonology');
     act(() => result.current.noterVu(premier));

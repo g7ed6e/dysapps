@@ -52,7 +52,7 @@ export function phraseDuRappel(textes: TextesUnivers, titre: string, langue: Lan
  * (GD-4, étape 1) : l'icône de la notion, une phrase courte, « Réécouter », « Reprendre » et « Plus tard ». Rien sur
  * une date, un échec ni des blocs à gagner ; « Plus tard » ne coûte rien et la fait taire jusqu'à la visite suivante.
  */
-export function useRappelDeLaCreature(biome: BiomeDef | undefined): Rappel | null {
+export function useResidentReminder(biome: BiomeDef | undefined): Rappel | null {
   const { state } = useBlocland();
   const { settings } = useSettings();
   const textes = useTextes();
@@ -130,7 +130,7 @@ export function ResidentReminder({ biome, rappel, onRemis }: Props) {
 /** Ce qui se dit après « Plus tard », dans une région montée vide d'avance (les lecteurs d'écran l'annoncent). */
 export const PLUS_TARD_DIT = 'D’accord, plus tard.';
 
-export function PlusTardDit({ dit }: { dit: boolean }) {
+export function LaterSaid({ dit }: { dit: boolean }) {
   return (
     <p className="creature-rappel-remis" role="status" aria-live="polite">
       {dit ? <Syllabified text={PLUS_TARD_DIT} /> : ''}

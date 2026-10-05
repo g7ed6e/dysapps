@@ -26,11 +26,11 @@ import { ShipSection } from './ShipSection';
 import { useVehicleBuilder } from './useVehicleBuilder';
 import { stageAt } from './world/vehicle';
 import { WhaleWordPanel, useWhaleWord } from './WhaleWord';
-import { RenamingPanel, useRenommage } from './Renaming';
+import { RenamingPanel, useRenaming } from './Renaming';
 import { useTextes } from '../universes';
 import { useUnivers } from '../core/SettingsContext';
 import { UNIVERS } from '../core/universe';
-import { PlusTardDit, ResidentReminder, useRappelDeLaCreature } from './ResidentReminder';
+import { LaterSaid, ResidentReminder, useResidentReminder } from './ResidentReminder';
 
 /** Un biome : sa créature donne la mission, puis la liste des exercices. */
 export function BiomePage() {
@@ -44,11 +44,11 @@ export function BiomePage() {
   const univers = useUnivers();
   const biome = getBiome(biomeId);
   // Les nouveaux noms des archipels passent avant le mot des grandes étapes, comme dans le monde et la vue simple.
-  const renommage = useRenommage(true, 1200);
+  const renommage = useRenaming(true, 1200);
   const whale = useWhaleWord(state, archipelagoOf(state.world.place ?? 'french-6e-phonology').classe, !renommage.ouvert);
   const ship = useVehicleBuilder(biome?.id ?? 'french-6e-phonology');
   // La créature qui se souvient (GD-4, étape 1) : le même panneau que dans le monde.
-  const rappelDue = useRappelDeLaCreature(biome);
+  const rappelDue = useResidentReminder(biome);
   // Après « Plus tard » : le focus revient au titre de l'île, et une courte ligne le dit.
   const titreRef = useRef<HTMLHeadingElement>(null);
   const [remis, setRemis] = useState(false);
@@ -101,7 +101,7 @@ export function BiomePage() {
           }}
         />
       )}
-      <PlusTardDit dit={remis} />
+      <LaterSaid dit={remis} />
 
       {goal && <GoalLine goal={goal} className="panel" />}
       {/* Les commandes des créatures de l'archipel (GD-7) : « Livrer » se touche ici pour celle de cette île. */}
