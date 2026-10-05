@@ -36,11 +36,8 @@ export const DIRECTION_STEP: Readonly<Record<Direction, { dx: number; dy: number
   ouest: { dx: -1, dy: 0 },
 };
 
-/** Ce que dit le jeu quand une flèche ne trouve plus de place libre dans sa direction. */
-export const NO_MORE_ROOM = 'Plus de place par là.';
-
 /** Pourquoi une action ne se fait pas. */
-export type ArrangeRefusal =
+type ArrangeRefusal =
   /** Le lieu de départ (en 6e, les deux lieux ouverts au départ) ne bouge pas. */
   | 'fixe'
   /** Ce n'est pas une place libre (hors du cadre, trop près d'un lieu, sur un écueil, hors de la bande…). */
@@ -391,13 +388,6 @@ export function guardianFacing(g: LayoutGuardian): GuardianFacing {
   return f === oppose ? 'ile' : 'cote';
 }
 
-/** La phrase écrite et lue quand on tourne un Gardien. */
-export const GUARDIAN_FACING_TEXT: Readonly<Record<GuardianFacing, string>> = {
-  mer: 'Il regarde vers la mer.',
-  ile: 'Il regarde vers son île.',
-  cote: 'Il regarde le long de la côte.',
-};
-
 /** Les places le long d'un côté, en pas (`LayoutGuardian.step`, au plus 8 de chaque côté). */
 const GUARDIAN_STEPS = Array.from({ length: 17 }, (_, i) => i - 8);
 
@@ -417,7 +407,7 @@ function isletMiddle(world: World, id: BiomeId, g: Pick<LayoutGuardian, 'side' |
  * cadre, loin des autres lieux et des écueils, à l'écart de la terre, des grandes constructions et du quai de son lieu,
  * et des liaisons posées (aucune ne se défait).
  */
-export function isFreeGuardianSpot(world: World, id: BiomeId, g: Pick<LayoutGuardian, 'side' | 'step'>): boolean {
+function isFreeGuardianSpot(world: World, id: BiomeId, g: Pick<LayoutGuardian, 'side' | 'step'>): boolean {
   const a = archipelagoOfIsland(id);
   const def = placeIn(world, id);
   const parts = footprintOf(id, def, g);

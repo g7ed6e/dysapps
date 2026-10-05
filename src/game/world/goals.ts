@@ -333,7 +333,7 @@ export function noDirectLinkHint(island: BiomeId, bridges: string[]): string {
 export const AUCUNE_LIAISON = 'Pas de passage jusqu’ici pour l’instant.';
 
 /** Ce que dit la fiche d'un lieu fermé qu'on atteint en reliant d'abord une autre île (GD-9). */
-export const relieDAbord = (ile: string) => `Relie d’abord ${ile}. De là, un ouvrage mène ici.`;
+const relieDAbord = (ile: string) => `Relie d’abord ${ile}. De là, un ouvrage mène ici.`;
 
 const cap = (text: string) => `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
 

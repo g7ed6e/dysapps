@@ -19,7 +19,7 @@ export const SIDE_OF: Readonly<Record<LayoutSide, Side>> = { front: 'devant', ri
 export const LAYOUT_SIDE_OF: Readonly<Record<Side, LayoutSide>> = { devant: 'front', droite: 'right', derriere: 'back', gauche: 'left' };
 
 /** Les liaisons à reposer et les arrivées choisies d'une disposition, toutes régions confondues. */
-export function linkLayoutOf(layout: Layout | undefined): { relink: Set<string>; landings: Map<string, LinkLandings> } {
+function linkLayoutOf(layout: Layout | undefined): { relink: Set<string>; landings: Map<string, LinkLandings> } {
   const relink = new Set<string>();
   const landings = new Map<string, LinkLandings>();
   for (const a of ARCHIPELAGO_IDS) {

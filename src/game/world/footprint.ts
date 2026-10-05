@@ -20,7 +20,7 @@ import { glisseDeLIlot, ISLET_GAP, ISLET_H, ISLET_W, rectangleDeLIlot, reculDeLI
  * les côtes de la Gare et de l'île de la LV2, aux deux bouts), 208 × 112 aux Îles
  * du Ciel (leur arc, de l'artiste technique 3D).
  */
-export const REGION_FRAMES: Readonly<Record<ArchipelagoId, Readonly<Rectangle>>> = Object.freeze({
+const REGION_FRAMES: Readonly<Record<ArchipelagoId, Readonly<Rectangle>>> = Object.freeze({
   '6e': Object.freeze({ x0: -20, y0: -13, x1: 172, y1: 131 }),
   '5e': Object.freeze({ x0: 21, y0: 289, x1: 165, y1: 401 }),
   '4e': Object.freeze({ x0: -6, y0: 584, x1: 162, y1: 696 }),
@@ -66,7 +66,7 @@ export function monumentIslet(m: MonumentDef, def: IslandDef = islandDef(m.biome
 }
 
 /** Le rectangle de l'îlot d'une grande construction. */
-export function monumentRectangle(m: MonumentDef, def: IslandDef = islandDef(m.biome)): Rectangle {
+function monumentRectangle(m: MonumentDef, def: IslandDef = islandDef(m.biome)): Rectangle {
   const o = monumentIslet(m, def);
   return { x0: o.x, y0: o.y, x1: o.x + MONUMENT_ISLET, y1: o.y + MONUMENT_ISLET };
 }

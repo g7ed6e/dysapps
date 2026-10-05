@@ -15,7 +15,7 @@ export type Quarts = 0 | 1 | 2 | 3;
 export const ORIENTATIONS: readonly Quarts[] = [0, 1, 2, 3];
 
 /** Une orientation quelconque ramenée de 0 à 3. */
-export function quarts(n: number): Quarts {
+function quarts(n: number): Quarts {
   return (((Math.round(n) % 4) + 4) % 4) as Quarts;
 }
 
@@ -33,7 +33,7 @@ export interface PlacePose {
  * Le milieu du cœur d'un lieu, en cases depuis l'origine de son repère, sur les deux axes : 8 pour un cœur de 16 comme
  * pour un cœur de 20 (de −2 à 18). Un lieu tourne autour de ce point : son cœur, carré, reste en place.
  */
-export const CORE_MIDDLE = 8;
+const CORE_MIDDLE = 8;
 
 /**
  * Une case du repère d'un lieu (x, y relatifs à l'origine de son cœur) tournée de `q` quarts de tour autour du milieu du
@@ -60,11 +60,6 @@ export function turnPoint(x: number, y: number, q: Quarts): { x: number; y: numb
   let py = y;
   for (let i = 0; i < q; i++) [px, py] = [py, 2 * m - px];
   return { x: px, y: py };
-}
-
-/** L'inverse de `turnPoint`. */
-export function unturnPoint(x: number, y: number, q: Quarts): { x: number; y: number } {
-  return turnPoint(x, y, quarts(4 - q));
 }
 
 /** Une direction (dx, dy) tournée de `q` quarts de tour, dans le même sens que `turnCell`. */

@@ -24,7 +24,7 @@ type Said = Record<string, boolean>;
  * L'annonce du changement de forme de la carte (GD-9) : à la première lecture de cette version, notée à dire pour une
  * partie d'avant (`playedBeforeReshape`), déjà dite pour une partie neuve. Ensuite, la clé décide seule.
  */
-export function initMapReshaped(state: Pick<GameState, 'world'>): void {
+function initMapReshaped(state: Pick<GameState, 'world'>): void {
   const said = loadJSON<Said>(STORAGE_KEY, {});
   if (MAP_RESHAPED in said) return;
   said[MAP_RESHAPED] = !playedBeforeReshape(state);
@@ -62,14 +62,15 @@ function initWhaleMemory(state: Pick<GameState, 'progress' | 'world'>): void {
  * Quand plusieurs tombent ensemble, une seule parle ; les autres sont notées dites à la fermeture, sans file d'attente.
  */
 export function useWhaleWord(state: Pick<GameState, 'progress' | 'world'>, a: ArchipelagoId, ready = true) {
-  const [tick, setTick] = useState(() => {
+  const [, setTick] = useState(() => {
     initWhaleMemory(state);
     initMapReshaped(state);
     return 0;
   });
   // L'annonce du changement de forme de la carte passe d'abord, une fois, dans l'archipel où l'on revient.
   const moments = useMemo(() => [mapReshapedMoment(a), ...reachedWhaleMoments(state, a)], [state, a]);
-  const said = useMemo(() => loadJSON<Said>(STORAGE_KEY, {}), [tick, moments]);
+  // Relu à chaque rendu (une petite clé du stockage local) : `close` en écrit une nouvelle, puis refait le rendu.
+  const said = loadJSON<Said>(STORAGE_KEY, {});
   const word = ready ? (moments.find((m) => !isSaid(m, said)) ?? null) : null;
   const close = () => {
     // L'annonce ne se dit que pour elle : les étapes atteintes en même temps parlent ensuite.

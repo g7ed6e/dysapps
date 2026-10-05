@@ -20,7 +20,7 @@ export const SHORT_LENGTH = 36;
 export const LONG_LENGTH = 96;
 
 /** Une liaison part droit vers le large d'au moins tant de cases avant son coude. */
-export const OFFSHORE_BEFORE_BEND = 2;
+const OFFSHORE_BEFORE_BEND = 2;
 
 /** Les lieux du point de départ d'une région (au 6e, la Forêt et la Plaine) : ils ont un point d'attache à chaque pas. */
 export function startingPlaces(a: ArchipelagoId): readonly BiomeId[] {
@@ -148,7 +148,7 @@ const walkableCache = new Map<string, Set<string>>();
  * au pas du monde tombe, dans le repère, sur x ≡ 3 (mod 4) plutôt que sur x ≡ 0. `colonnes` : les lignes de x constant
  * du repère (côtés devant et derrière) ; `rangees` : celles de y constant (côtés gauche et droit).
  */
-export function lineOffset(q: Quarts): { colonnes: number; rangees: number } {
+function lineOffset(q: Quarts): { colonnes: number; rangees: number } {
   return { colonnes: q === 1 || q === 2 ? STEP - 1 : 0, rangees: q === 2 || q === 3 ? STEP - 1 : 0 };
 }
 
@@ -306,7 +306,7 @@ export interface RegionPlans {
 }
 
 /** Une arrivée choisie : un côté du lieu (dans son repère) et sa place le long de ce côté, en pas. */
-export interface ChosenLanding {
+interface ChosenLanding {
   cote: Side;
   pas: number;
 }

@@ -16,7 +16,7 @@ export type LayoutTurn = 0 | 1 | 2 | 3;
 /** Un côté, au nom neutre de la sauvegarde. */
 export type LayoutSide = 'front' | 'right' | 'back' | 'left';
 
-export const LAYOUT_SIDES: readonly LayoutSide[] = ['front', 'right', 'back', 'left'];
+const LAYOUT_SIDES: readonly LayoutSide[] = ['front', 'right', 'back', 'left'];
 
 /** Une place sur la grille d'une région : en pas (`STEP`) depuis le coin de son cadre (`REGION_FRAMES`), et une orientation. */
 export interface LayoutSpot {

@@ -29,13 +29,8 @@ export function setLinkLayout(relink: ReadonlySet<string>, chosen: ReadonlyMap<s
   layoutChanged();
 }
 
-/** Une liaison construite est-elle à reposer (GD-9) ? */
-export function isToRelink(id: string): boolean {
-  return toRelink.has(id);
-}
-
 /** Les arrivées choisies d'une liaison dans la disposition de la partie. */
-export function chosenLandings(id: string): LinkLandings | undefined {
+function chosenLandings(id: string): LinkLandings | undefined {
   return landings.get(id);
 }
 
