@@ -1,7 +1,7 @@
 import { rankLadder } from '../core/progress';
 import { Icon } from './Icon';
 import { RoleBadge } from './RoleBadge';
-import { nomDuRole, useTextes } from '../univers';
+import { nomDuRole, useTextes } from '../universes';
 
 /** Les cinq rôles, dans les mots de l'univers affiché (Apprenti à Architecte dans Blocland) : atteints en couleur, à venir en pointillés avec leur niveau, le rôle actuel encadré. */
 export function RankLadder({ level }: { level: number }) {

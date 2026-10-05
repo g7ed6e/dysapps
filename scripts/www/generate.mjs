@@ -42,19 +42,19 @@ export async function generatePages() {
         load('/src/core/subjectProgress.ts'),
         load('/src/apps/vocabulaire/data.ts'),
         load('/src/apps/irreguliers/data.ts'),
-        load('/src/programme/index.ts'),
-        load('/src/programme/exclusions.ts'),
-        load('/src/programme/motsOutils.ts'),
+        load('/src/curriculum/index.ts'),
+        load('/src/curriculum/exclusions.ts'),
+        load('/src/curriculum/functionWords.ts'),
       ]);
     const vehicleMod = await load('/src/game/world/vehicle.ts');
     const monumentsMod = await load('/src/game/world/monuments.ts');
-    const recettesMod = await load('/src/game/world/recettes.ts');
-    const partiesMod = await load('/src/game/world/parties.ts');
+    const recettesMod = await load('/src/game/world/recipes.ts');
+    const partiesMod = await load('/src/game/world/parts.ts');
     // Les commandes des créatures (GD-7) : qui demande quoi, contre quoi.
-    const commandesMod = await load('/src/game/world/commandes.ts');
+    const commandesMod = await load('/src/game/world/requests.ts');
     // Les textes d'univers (Gardiens, espèces) : ceux de l'univers par défaut, Blocland.
-    const universMod = await load('/src/univers/index.ts');
-    const universCore = await load('/src/core/univers.ts');
+    const universMod = await load('/src/universes/index.ts');
+    const universCore = await load('/src/core/universe.ts');
     const legacyMod = await load('/src/core/legacyIds.ts');
     const texts = JSON.parse(readFileSync(new URL('../../src/apps/lecture/texts.json', import.meta.url), 'utf8'));
     const data = {
@@ -130,7 +130,7 @@ const SUBJECT_NAME = { french: 'Français', maths: 'Maths', english: 'Anglais', 
 const SUBJECT_IDS = Object.keys(SUBJECT_NAME);
 /** « 3 d’anglais », « 1 de LV2 » : le complément de chaque matière dans le décompte des îles. */
 const SUBJECT_DE = { french: 'de français', maths: 'de maths', english: 'd’anglais', lv2: 'de LV2' };
-// Quand arrive la première commande d'un archipel, selon `SEUIL_DE_LA_PREMIERE_COMMANDE` (src/game/world/commandes.ts).
+// Quand arrive la première commande d'un archipel, selon `SEUIL_DE_LA_PREMIERE_COMMANDE` (src/game/world/requests.ts).
 const QUAND_LA_PREMIERE_COMMANDE = {
   'premier-ouvrage': 'après le premier ouvrage construit dans l’archipel',
   'premiere-mission': 'après la première mission réussie dans l’archipel',
@@ -255,7 +255,7 @@ function programmesPage(d) {
   const lines = [
     '# Programmes officiels',
     '',
-    'Chaque mission d’Archipéo et du portail cite les compétences du programme officiel qu’elle travaille. Cette page les met en face du programme, domaine par domaine : ce qui est travaillé (et par quelle mission), ce qui reste **à couvrir** (la feuille de route du contenu) et ce qui est **hors périmètre** d’une application d’entraînement (l’oral, l’écriture libre, la lecture d’œuvres complètes, la géométrie de construction). Le référentiel est dans `src/programme/` ; les libellés sont des résumés fidèles du texte officiel, dont la page est indiquée ; le texte fait foi.',
+    'Chaque mission d’Archipéo et du portail cite les compétences du programme officiel qu’elle travaille. Cette page les met en face du programme, domaine par domaine : ce qui est travaillé (et par quelle mission), ce qui reste **à couvrir** (la feuille de route du contenu) et ce qui est **hors périmètre** d’une application d’entraînement (l’oral, l’écriture libre, la lecture d’œuvres complètes, la géométrie de construction). Le référentiel est dans `src/curriculum/` ; les libellés sont des résumés fidèles du texte officiel, dont la page est indiquée ; le texte fait foi.',
     '',
     'Le cycle 3 se termine en 6e ; le cycle 4 couvre la 5e, la 4e et la 3e, sans répartition par année dans le texte officiel. Une île de 5e, 4e ou 3e peut consolider une compétence du cycle 3 ; une île de 6e ne travaille jamais le cycle 4.',
     '',
@@ -618,8 +618,8 @@ export async function generatePersonnages() {
     const [biomesMod, archMod, universMod, universCore] = await Promise.all([
       load('/src/game/biomes.ts'),
       load('/src/game/world/archipelago.ts'),
-      load('/src/univers/index.ts'),
-      load('/src/core/univers.ts'),
+      load('/src/universes/index.ts'),
+      load('/src/core/universe.ts'),
     ]);
     return personnagesPage({
       BIOMES: biomesMod.BIOMES,
@@ -660,7 +660,7 @@ function personnagesPage(d) {
     '',
     '<!-- Page produite par `npm run pilotage:personnages` : ne pas l’écrire à la main. -->',
     '',
-    'Cette page est produite à partir des données du jeu (`docs/contenu/` pour les noms, `src/univers/` pour les espèces et les répliques) par `npm run pilotage:personnages`. Elle se corrige dans le code, puis se régénère ; jamais à la main.',
+    'Cette page est produite à partir des données du jeu (`docs/contenu/` pour les noms, `src/universes/` pour les espèces et les répliques) par `npm run pilotage:personnages`. Elle se corrige dans le code, puis se régénère ; jamais à la main.',
     '',
     `Chaque île a une **créature**, qui l’habite, donne les missions et parle à l’arrivée, et un **Gardien**, dont le défi ferme l’île. Les noms sont communs aux deux univers ; l’espèce de la créature et ce que dit le Gardien changent. Dans les deux univers, le Gardien attend éteint sur son îlot et son défi le **rallume** : une statue de pierre qui reprend ses couleurs dans ${UNIVERS.blocland.nom}, une sentinelle de pierre éteinte dans ${UNIVERS.archipeo.nom}. Les noms des archipels changent d’un univers à l’autre (GD-1), leurs identifiants jamais.`,
     '',

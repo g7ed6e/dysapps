@@ -4,7 +4,7 @@
 import type { World } from '../engine';
 import { ARCHIPELAGOS, BRIDGES, NOMS_ARCHIPELS, getArchipelago, islandsOf, voyageId, type ArchipelagoId, type NomsArchipels } from './archipelago';
 import { monumentsOf } from './monuments';
-import { partiesDe, premierePartiePosee, prochainePartie } from './parties';
+import { partiesDe, premierePartiePosee, prochainePartie } from './parts';
 import { isPlanDone } from './plans';
 
 type VillageStageId = 'abandonne' | 'reactivation' | 'reconstruction' | 'developpement' | 'port';

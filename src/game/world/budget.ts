@@ -11,20 +11,20 @@ import { CATALOG } from '../exercises';
 import { BRIDGES, VOYAGES } from './archipelago';
 import type { ArchipelagoId } from './map';
 import { appelsDuSol, champDuSol, landMesh, poseDuDecor, trianglesDuSol } from './landMesh';
-import { modelerLeSol } from './modeleDessine';
+import { modelerLeSol } from './drawnModel';
 import { buildMesh, faceCount, type MeshGroup } from './mesher';
 import { MONUMENTS } from './monuments';
 import { PLANS, planCells } from './plans';
 import { creaturePlacements, guardianPlacements, vehiclePlacement, whaleSpots, worldBounds, worldCubes } from './terrain';
-import { grilleDeLaMer, trianglesDeLaGrille } from './mer';
+import { grilleDeLaMer, trianglesDeLaGrille } from './sea';
 import { coutDuDecor, maillageDuDecor, rangerLeDecor } from './decorMesh';
-import { trianglesDeLaBrume } from './decor/brume';
+import { trianglesDeLaBrume } from './decor/mist';
 import { coutDeLaConstruction, coutDesPiliers, maillageDeLaConstruction, piliersDe, sansToursDuCoeur } from './construction';
-import { formeDeBaleine, formeDeNuage, formeDOiseau, nuagesDe, oiseauxDe, planeurDe, trianglesDe } from './faune';
+import { formeDeBaleine, formeDeNuage, formeDOiseau, nuagesDe, oiseauxDe, planeurDe, trianglesDe } from './fauna';
 import { MAST_TOP, VEHICLE_STAGES } from './vehicle';
-import { COMMANDES } from './commandes';
-import { casesDeLaPetiteConstruction } from './petitesConstructions';
-import { fusionDesCreatures, fusionDesGardiens, fusionDuBonhomme, trianglesDeLaFusion } from './personnages/fusions';
+import { COMMANDES } from './requests';
+import { casesDeLaPetiteConstruction } from './fixtures';
+import { fusionDesCreatures, fusionDesGardiens, fusionDuBonhomme, trianglesDeLaFusion } from './characters/merges';
 import { COUT_DES_BULLES } from './affordance';
 
 export const RENDER_BUDGET = {
@@ -257,7 +257,7 @@ export function fauneCost(a: ArchipelagoId): { triangles: number; drawCalls: num
 
 /**
  * Les personnages d'Archipéo (lot R6) dans un archipel tout construit : le bonhomme, les créatures fusionnées et les
- * Gardiens en sentinelles fusionnés (./personnages/fusions.ts), un appel de dessin chacun.
+ * Gardiens en sentinelles fusionnés (./characters/merges.ts), un appel de dessin chacun.
  */
 export function personnagesCost(a: ArchipelagoId): Record<'bonhomme' | 'creatures' | 'gardiens', { triangles: number; drawCalls: number }> {
   const { progress, world: village } = toutConstruit();
@@ -331,7 +331,7 @@ export function sceneCostArchipeo(a: ArchipelagoId): {
   const construction = constructionCost(a);
   const bornes = bornesCost(a);
   const navire = navireCost(a);
-  // Lot R6 : le bonhomme, les créatures et les Gardiens fusionnés (three/personnagesPeints.ts), plus en cubes.
+  // Lot R6 : le bonhomme, les créatures et les Gardiens fusionnés (three/paintedCharacters.ts), plus en cubes.
   const { bonhomme, creatures, gardiens } = personnagesCost(a);
   const personnages = { triangles: bonhomme.triangles + creatures.triangles + gardiens.triangles, drawCalls: bonhomme.drawCalls + creatures.drawCalls + gardiens.drawCalls };
   const mer = merCost(a);

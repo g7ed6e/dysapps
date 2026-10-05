@@ -2,9 +2,9 @@
 // de son cœur, à son altitude, et la grille la pose dans le monde. Rien ne change dans le monde (les empreintes de J0 le
 // gardent) : ces tests disent ce que vaut le repère d'une île.
 import { BRIDGES, bridgesOf, islandsOf } from './archipelago';
-import { ARCHIPELAGO_IDS } from './archipels';
+import { ARCHIPELAGO_IDS } from './archipelagos';
 import { toutConstruit } from './budget';
-import { dispositionEnGrille } from './grille';
+import { dispositionEnGrille } from './grid';
 import { planCells, plansFor } from './plans';
 import { bridgePath, cubesDeLIle, origineDe, portsDAttache, questStations, worldCubes } from './terrain';
 

@@ -1,7 +1,7 @@
-// Créatures originales de Blocland, dessinées en cubes (modèles : world/personnages/creatures.ts).
+// Créatures originales de Blocland, dessinées en cubes (modèles : world/characters/creatures.ts).
 import type { BiomeId } from './biomes';
 import { VoxelScene } from './Voxel';
-import { CREATURE_CUBES } from './world/personnages/creatures';
+import { CREATURE_CUBES } from './world/characters/creatures';
 
 interface Props {
   biome: BiomeId;

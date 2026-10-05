@@ -7,7 +7,7 @@
 
 Le mainteneur veut donner plus de caractère à Blocland, l’univers par défaut. Le dessin en a déjà : cubes texturés de 16 × 16, interface en blocs vus de face, 31 créatures qui tutoient le « bâtisseur », Gardiens qui deviennent statues et « aiment les revanches ». Ce qui lui manque, c’est sa voix et ses noms, parce qu’il parle encore avec les mots d’Archipéo :
 
-- la première voix qu’entend un élève neuf est la baleine (« Je suis la baleine… », `src/univers/blocland/index.ts`), figure d’Archipéo ([Plusieurs univers](../../../univers/univers.md), §4.1) ;
+- la première voix qu’entend un élève neuf est la baleine (« Je suis la baleine… », `src/universes/blocland/index.ts`), figure d’Archipéo ([Plusieurs univers](../../../univers/univers.md), §4.1) ;
 - les archipels de 5e et de 4e s’appellent « Îles Brumeuses » et « Anciens Ateliers » (`src/game/world/archipelago.ts`), la brume et les ruines étant le vocabulaire d’Archipéo (le réglage « Au démarrage », lui, dit « Le village » dans les deux univers) ;
 - trois des cinq rôles ont un lexique d’explorateur marin (Explorateur, Cartographe, Navigateur, Architecte de l’archipel) ;
 - aucun geste ni aucun son n’est propre à Blocland.
@@ -25,13 +25,13 @@ Un pilier : **le chantier du bâtisseur**. Dans Blocland, tout se nomme, se dit 
 
 - Le jeu commun : mêmes règles, mêmes seuils d’XP, mêmes étoiles et mêmes blocs dans les deux univers ; les sons de réussite et d’erreur restent communs (Plusieurs univers, §4).
 - Aucun identifiant ne change (`explorateur`, `cartographe`, `batisseur`, `navigateur`, `architecte`, identifiants des archipels et des îles, clés « déjà dit » des étapes) ; la sauvegarde n’est pas touchée.
-- Archipéo garde ses textes : ses étapes et sa baleine ne changent pas (aujourd’hui, `src/univers/archipeo/index.ts` reprend `...BLOCLAND.baleine` : il doit en garder sa propre copie).
+- Archipéo garde ses textes : ses étapes et sa baleine ne changent pas (aujourd’hui, `src/universes/archipeo/index.ts` reprend `...BLOCLAND.baleine` : il doit en garder sa propre copie).
 - Rien d’emprunté à un jeu existant ; tout reste dessiné et produit par le code (pas d’asset importé dans Blocland).
 - Règles dys : tout texte ajouté est dans un panneau et lu à voix haute ; le geste est court et doux, sans motif fin qui scintille ; rien sur une étiquette. Le réglage « Réduire les animations » étant retiré pour l’instant, le geste doit convenir à tous.
 
 ## Le coût
 
-- Changements 1 à 3 : textes seulement, dans `src/univers/blocland/`, `src/game/world/archipelago.ts` (le nom passe par les textes de l’univers), les rôles affichés par univers, l’écran de renommage d’U4. Taille M. Fichiers partagés avec les fils de contenu (`communs.ts`, empreinte de `src/univers/univers.test.ts`) : chaque pull request se remet sur `main` avant fusion.
+- Changements 1 à 3 : textes seulement, dans `src/universes/blocland/`, `src/game/world/archipelago.ts` (le nom passe par les textes de l’univers), les rôles affichés par univers, l’écran de renommage d’U4. Taille M. Fichiers partagés avec les fils de contenu (`common.ts`, empreinte de `src/universes/univers.test.ts`) : chaque pull request se remet sur `main` avant fusion.
 - Changement 4 : un **dégel ciblé** du dessin de Blocland, figé depuis l’étiquette `blocland-reference` : un lot distinct des lots R, qui ajoute sans rien redessiner, sans toucher aux empreintes ni aux cases d’un plan, validé sur captures avant et après (jour et nuit). Code écrit par l’artiste technique 3D. Taille S à M.
 - Pages à tenir : le manuel (rôles, noms des archipels, bulles des étapes), [Personnages et Gardiens](../../personnages.md) (régénérée), la [fiche de Blocland](../../../univers/blocland/fiche.md), le [cadrage de Blocland](../../../univers/blocland/cadrage.md).
 

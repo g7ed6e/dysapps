@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import type { VoxelCube } from '../Voxel';
-import { cadrageSerre, coinsDesCubes } from './cadrageSerre';
+import { cadrageSerre, coinsDesCubes } from './tightFraming';
 import { blockMaterial, tintedMaterial, type TextureKind } from './textures';
 
 export interface VoxelCanvasProps {

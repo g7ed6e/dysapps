@@ -1,6 +1,6 @@
 // L'assemblage des blocs (fiche GD-2), écrit en Markdown dans docs/contenu/assemblage.md : le nom du lieu où l'on assemble
 // dans chaque univers, et les blocs assemblés (leur archipel, leur recette, leur nom dans chaque univers). Il redonne
-// src/game/world/recettes.ts ; le dessin des blocs (couleurs, textures) et du lieu reste dans le code.
+// src/game/world/recipes.ts ; le dessin des blocs (couleurs, textures) et du lieu reste dans le code.
 // Sa section « ## Les questions » donne la question posée à chaque bloc assemblé : un « ### » par bloc, écrit comme une
 // mission d'île (mêmes champs, même lecteur, format.mjs), qui redonne src/game/exercises/data/assemblage-<bloc>.json.
 import { lireIle } from './format.mjs';
@@ -198,11 +198,11 @@ function lireUnBloc(titre, bloc, corps, n0, fichier) {
   return Object.fromEntries(ORDRE_QUESTIONS.filter((k) => sortie[k] !== undefined).map((k) => [k, sortie[k]]));
 }
 
-/** Le module TypeScript produit (src/game/world/recettes.ts). */
+/** Le module TypeScript produit (src/game/world/recipes.ts). */
 export function ecrireRecettes(assemblage) {
   return (
     "// Produit par `npm run contenu` depuis docs/contenu/assemblage.md : ne pas éditer.\n" +
-    "import type { Assemblage } from './assemblage';\n\n" +
+    "import type { Assemblage } from './assembly';\n\n" +
     `export const ASSEMBLAGE = ${JSON.stringify(assemblage, null, 2)} satisfies Assemblage;\n`
   );
 }

@@ -675,7 +675,7 @@ async function scenes() {
     load('/src/core/progress.ts'),
     load('/src/game/exercises/index.ts'),
   ]);
-  const { PETITES_CONSTRUCTIONS, casesDeLaPetiteConstruction } = await load('/src/game/world/petitesConstructions.ts');
+  const { PETITES_CONSTRUCTIONS, casesDeLaPetiteConstruction } = await load('/src/game/world/fixtures.ts');
   /** Une partie où les îles `iles` ont chacune toutes leurs missions jouées une fois (`jouees`), le premier exercice de chacune. */
   const missionsJouees = (iles) =>
     Object.fromEntries(
@@ -830,7 +830,7 @@ async function scenes() {
           localStorage.clear();
           sessionStorage.removeItem('dysapps:poses-montrees');
           sessionStorage.removeItem('dysapps:revisions-plus-tard');
-          // La pose à montrer (GD-6), comme la retient « Voir le bâtiment » (src/game/poseAMontrer.ts).
+          // La pose à montrer (GD-6), comme la retient « Voir le bâtiment » (src/game/poseToShow.ts).
           if (pose) sessionStorage.setItem('dysapps:pose', JSON.stringify(pose));
           else sessionStorage.removeItem('dysapps:pose');
           sessionStorage.setItem('dysapps:title-seen', '1');

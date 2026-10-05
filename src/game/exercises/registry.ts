@@ -3,17 +3,17 @@ import { createElement, type ComponentType } from 'react';
 import type { ExerciseItem } from './types';
 import type { Lang } from '../../core/speech';
 import { AscensionScreen } from './AscensionScreen';
-import { ChasseSonScreen } from './ChasseSonScreen';
-import { FilonScreen } from './FilonScreen';
-import { MotTroueScreen } from './MotTroueScreen';
-import { QcmItem } from './QcmItem';
-import { RimesScreen } from './RimesScreen';
-import { DicteeItem } from './DicteeItem';
-import { FamillesScreen } from './FamillesScreen';
-import { EnclosScreen } from './EnclosScreen';
+import { ChasseSonScreen } from './SoundHuntScreen';
+import { FilonScreen } from './LodeScreen';
+import { MotTroueScreen } from './GapWordScreen';
+import { QcmItem } from './ChoiceItem';
+import { RimesScreen } from './RhymesScreen';
+import { DicteeItem } from './DictationItem';
+import { FamillesScreen } from './FamiliesScreen';
+import { EnclosScreen } from './EnclosureScreen';
 import { BossScreen } from './BossScreen';
-import { CalculScreen } from './CalculScreen';
-import { RecitScreen } from './RecitScreen';
+import { CalculScreen } from './CalculationScreen';
+import { RecitScreen } from './StoryScreen';
 
 export interface ScreenAnswer {
   /** Résultat par item de l'écran. */

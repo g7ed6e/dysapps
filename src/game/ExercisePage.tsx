@@ -12,7 +12,7 @@ import { useLoaded } from '../core/useLoaded';
 import { exercisesToReview } from './review';
 import { useRememberPlace } from '../core/lastPlace';
 import { Loading } from '../components/Loading';
-import { PARAM_REVISION } from './rappels';
+import { PARAM_REVISION } from './reminders';
 
 /** Lance l'exercice d'un type dans un biome, au niveau adapté à l'élève. */
 export function ExercisePage() {

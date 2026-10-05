@@ -155,7 +155,7 @@ Le lieu de départ de chaque région rassemble ce qui était un portail à part 
 - **L’école**, là dès le début, qu’on ne construit pas : trois portes, une par matière, et derrière elles les missions du portail. Elles rapportent la ressource du lieu de départ de la région où se tient l’élève, au barème des missions, et ne comptent ni pour le défi ni pour les étoiles des lieux.
 - **La salle des succès** : un trophée par succès, à une place fixe, dans l’ordre de la liste. La salle garde douze places, puis s’agrandit d’une travée au 13e succès et au 19e, jusqu’à 8 × 3 cases ; rien n’est posé sur son toit ([GD-3](propositions/archives/GD-3.md)). Une travée apparaît entière, d’un coup, sans mouvement imposé ni son.
 - **Le lieu d’assemblage**, où se font les ressources composées.
-- **En trois bandes** : devant, les bornes seules ; au milieu, la salle des succès, une place libre, puis l’école ; au fond, la construction du lieu et le lieu d’assemblage. Rien ne se pose devant la porte d’un lieu ni une case autour. Les coordonnées sont dans le code (`world/terrain.ts`, `world/plans.ts`, `world/salle.ts`).
+- **En trois bandes** : devant, les bornes seules ; au milieu, la salle des succès, une place libre, puis l’école ; au fond, la construction du lieu et le lieu d’assemblage. Rien ne se pose devant la porte d’un lieu ni une case autour. Les coordonnées sont dans le code (`world/terrain.ts`, `world/plans.ts`, `world/trophyHall.ts`).
 
 ## La vie du monde
 

@@ -5,7 +5,7 @@ import { MONUMENTS, MONUMENT_ISLET, getMonument, monumentNeeds, monumentsOf } fr
 import { planCells } from './plans';
 import { monumentAnchor, monumentBlocked, monumentIsletFree, worldBounds, worldCubes } from './terrain';
 import { earnIsland } from './uses';
-import { recetteDe, recetteDeLArchipel } from './assemblage';
+import { recetteDe, recetteDeLArchipel } from './assembly';
 
 it('deux monuments par archipel, chacun avec ses blocs gagnés dans les îles de son archipel ou assemblés avec eux', () => {
   for (const a of ARCHIPELAGOS) expect(monumentsOf(a.classe)).toHaveLength(2);

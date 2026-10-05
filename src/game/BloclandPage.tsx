@@ -25,21 +25,21 @@ import { BlockIcon } from './Voxel';
 import { VEHICLE_NAME, stageAt, stageTo } from './world/vehicle';
 import { VillageStageLine } from './VillageStageLine';
 import { WhaleWordPanel, useWhaleWord } from './WhaleWord';
-import { RenommagePanel, useRenommage } from './Renommage';
-import { RallumagePanel, useRallumage } from './Rallumage';
+import { RenommagePanel, useRenommage } from './Renaming';
+import { RallumagePanel, useRallumage } from './Rekindling';
 import { playBell } from './sound';
 import { useSettings } from '../core/SettingsContext';
-import { useTextes } from '../univers';
+import { useTextes } from '../universes';
 import { ArchipelagoMap } from './ArchipelagoMap';
 import { lienDeLaDestination, nextDestination } from './world/destination';
-import { sansCommandes } from './world/commandes';
+import { sansCommandes } from './world/requests';
 import { islandState } from './world/islandState';
 import { SpeakButton } from '../components/SpeakButton';
 import { useUnivers } from '../core/SettingsContext';
-import { UNIVERS } from '../core/univers';
-import { signesDesCreatures, signesParmi, usePlusTard } from './rappels';
+import { UNIVERS } from '../core/universe';
+import { signesDesCreatures, signesParmi, usePlusTard } from './reminders';
 import { questsToReview } from './review';
-import { Commandes } from './Commandes';
+import { Commandes } from './Requests';
 
 /** Ce qu'il faut pour rejoindre un archipel fermé, en une phrase. */
 function lockedArchipelagoText(state: ReturnType<typeof useBlocland>['state'], classe: (typeof ARCHIPELAGOS)[number]['classe']): string {

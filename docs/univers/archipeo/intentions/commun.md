@@ -8,7 +8,7 @@
 2. **Tout décor nouveau d’Archipéo est hors de la grille**, posé sur des cases où le bonhomme ne va jamais : hors du cœur, des chemins balisés, du quai, de la route du navire et des places de la baleine. Il ne change ni la marche, ni les empreintes de J0, ni Blocland. Il ne renvoie rien au toucher.
 3. **Le lointain ne ressemble jamais à une île** : pas de plage, pas de quai, pas d’étiquette, rien à toucher. Il est caché sur la Carte.
 4. **Chaque genre de décor de Blocland** (écueil, banc, repère) garde ses cubes dans la grille. Seule sa forme dans Archipéo change, par archipel. Les cubes de `seaDecor` ne changent pas.
-5. **Ne bougent pas** : les entrées de nuit, la direction du soleil, les strates, la règle de mouvement (`world/decor/fumee.ts` : une volute toutes les 7 s, la brume qui respire sur 16 s, opacité ±10 %, glissement de 0,1 case par seconde au plus), le modèle du phare (`world/decor/phare.ts`) et la caméra.
+5. **Ne bougent pas** : les entrées de nuit, la direction du soleil, les strates, la règle de mouvement (`world/decor/smoke.ts` : une volute toutes les 7 s, la brume qui respire sur 16 s, opacité ±10 %, glissement de 0,1 case par seconde au plus), le modèle du phare (`world/decor/lighthouse.ts`) et la caméra.
 6. **Rien ne passe devant ni derrière ce qu’on lit ou ce qu’on suit** : nom et état d’île (dont « Fermée »), flèche « Commence ici », bonhomme, navire en voyage, repères des bornes. Aucune fumée, brume, grue ni oiseau, dans la vue d’une île, la vue de l’archipel, la Carte et l’arrivée en voyage. Les étiquettes ont un fond opaque dessiné par-dessus le relief : une couche transparente ne se dessine jamais après elles.
 7. **Rien ne s’écrit dans la scène** (fiche de famille, règle 7) : ni sur une bannière, ni sur un entrepôt, un mât ou une enseigne de R5.
 8. **Aucune lueur ne pulse, ne scintille ni ne varie par à-coups avec le degré de nuit** (fiche de famille, règle 5).
@@ -24,7 +24,7 @@ Le relief des îles (`world/silhouettes/<archipel>.ts`) est lu par la grille de 
 
 Mesures de l’artiste technique 3D : le relief ne naît que sur l’anneau de terre autour du cœur (2 à 6 cases de large) ; on obtient des crêtes au fond des îles, pas des masses isolées. Élargir une île fait chevaucher les îlots des Gardiens et des monuments : on ne le fait pas.
 
-## Le lointain (`world/decor/lointain.ts`, un module commun)
+## Le lointain (`world/decor/distant.ts`, un module commun)
 
 Il n’existe aujourd’hui ni en 3D, ni en 2D. Peint dans le dôme du ciel, il serait invisible : il se pose dans le monde.
 
@@ -37,9 +37,9 @@ Il n’existe aujourd’hui ni en 3D, ni en 2D. Peint dans le dôme du ciel, il 
 
 En plus du tableau « Qui possède quoi » du cadrage :
 
-- `world/decor/lointain.ts` : à R4b-5e, puis en lecture pour les autres.
-- `world/faune.ts` : à R4b-3e, pour l’oiseau planeur seulement. R6 ne l’écrit pas.
-- `three/brume.ts`, `mistPatches` et `seaDecor` de `terrain.ts` : à R4b-5e (les bancs), puis à R4b-3e (les nappes). Ils ne se chevauchent pas : le 3e part après la fusion du 5e.
+- `world/decor/distant.ts` : à R4b-5e, puis en lecture pour les autres.
+- `world/fauna.ts` : à R4b-3e, pour l’oiseau planeur seulement. R6 ne l’écrit pas.
+- `three/mist.ts`, `mistPatches` et `seaDecor` de `terrain.ts` : à R4b-5e (les bancs), puis à R4b-3e (les nappes). Ils ne se chevauchent pas : le 3e part après la fusion du 5e.
 - `palette.ts` : chaque sous-lot n’écrit que son entrée de `ambianceDe`.
 
 ## Les captures, pour chaque sous-lot

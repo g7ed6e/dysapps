@@ -2,11 +2,11 @@ import type { ComponentType } from 'react';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SettingsProvider } from '../../core/SettingsContext';
-import { CalculScreen } from './CalculScreen';
-import { autoReadText, dicteeAutoText } from './lecture';
-import { RecitScreen } from './RecitScreen';
-import { DicteeItem } from './DicteeItem';
-import { QcmItem } from './QcmItem';
+import { CalculScreen } from './CalculationScreen';
+import { autoReadText, dicteeAutoText } from './reading';
+import { RecitScreen } from './StoryScreen';
+import { DicteeItem } from './DictationItem';
+import { QcmItem } from './ChoiceItem';
 import type { ScreenProps } from './registry';
 
 // Les écrans en anglais : le contenu marqué `lang="en"` et lu en voix anglaise, la consigne et l'aide en français.

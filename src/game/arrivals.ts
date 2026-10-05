@@ -1,4 +1,4 @@
-// Les bulles pratiques de première arrivée dans un archipel, après le mot d'arrivée (src/univers/baleine.ts), lues à
+// Les bulles pratiques de première arrivée dans un archipel, après le mot d'arrivée (src/universes/whale.ts), lues à
 // voix haute, une seule fois par appareil (voir Tutorial). Partagées par le monde 3D (WorldPage) et la vue simple (la
 // page du port). Les noms des archipels viennent de l'appelant : ceux de l'univers affiché (GD-1).
 import type { ArchipelagoId, NomsArchipels } from './world/archipelago';

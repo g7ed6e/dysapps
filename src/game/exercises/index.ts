@@ -7,9 +7,9 @@ import type { BiomeId, BlockId } from '../biomes';
 import type { AssemblageDef, ExerciseDef } from './types';
 import { MATHS_EXERCISES } from './maths';
 import { COLLEGE_EXERCISES } from './college';
-import { POSEES_EXERCISES } from './posees';
-import { VOLCAN_EXERCISES } from './volcan';
-import { PROBLEMES_COLLEGE_EXERCISES, PROBLEMES_EXERCISES } from './problemes';
+import { POSEES_EXERCISES } from './writtenOperations';
+import { VOLCAN_EXERCISES } from './volcano';
+import { PROBLEMES_COLLEGE_EXERCISES, PROBLEMES_EXERCISES } from './problems';
 
 /** Ce qu'il faut d'un exercice pour les listes, les étoiles et le choix de la partie : sans ses items. */
 export type ExerciseMeta = Pick<ExerciseDef, 'id' | 'biome' | 'type' | 'level'>;

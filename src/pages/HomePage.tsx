@@ -5,7 +5,7 @@ import { questsToReview } from '../game/review';
 import { VillageStageLine } from '../game/VillageStageLine';
 import { archipelagoOf, reachedArchipelagos, ARCHIPELAGOS } from '../game/world/archipelago';
 import { lienDeLaDestination, nextDestination } from '../game/world/destination';
-import { sansCommandes } from '../game/world/commandes';
+import { sansCommandes } from '../game/world/requests';
 import { Icon } from '../components/Icon';
 import { RoleBadge } from '../components/RoleBadge';
 import { SpeakButton } from '../components/SpeakButton';
@@ -14,8 +14,8 @@ import { useProgress } from '../core/ProgressContext';
 import { lastPlace } from '../core/lastPlace';
 import { levelFromXp } from '../core/progress';
 import { useSettings, useUnivers } from '../core/SettingsContext';
-import { UNIVERS } from '../core/univers';
-import { nomDuRole, useTextes } from '../univers';
+import { UNIVERS } from '../core/universe';
+import { nomDuRole, useTextes } from '../universes';
 
 /** Les expéditions du menu ; la LV2 à côté de l'anglais, sauf avec « Pas de LV2 ». */
 const EXPEDITIONS: Subject[] = ['maths', 'french', 'english', 'lv2'];

@@ -37,9 +37,9 @@ import {
   THALES_CASES,
 } from './college';
 import { MATHS_EXERCISES } from './maths';
-import { POSEES_EXERCISES } from './posees';
-import { VOLCAN_EXERCISES } from './volcan';
-import { PROBLEMES_COLLEGE_EXERCISES, PROBLEMES_EXERCISES } from './problemes';
+import { POSEES_EXERCISES } from './writtenOperations';
+import { VOLCAN_EXERCISES } from './volcano';
+import { PROBLEMES_COLLEGE_EXERCISES, PROBLEMES_EXERCISES } from './problems';
 import { runItems } from './run';
 import { shuffleRunChoices } from './shuffle';
 import type { ExerciseItem } from './types';

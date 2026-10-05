@@ -4,11 +4,11 @@
 import { BIOMES } from '../biomes';
 import { toutConstruit } from './budget';
 import { sansToursDuCoeur } from './construction';
-import type { FacettesDuDecor } from './decor/pinceau';
+import type { FacettesDuDecor } from './decor/brush';
 import { maillageDuDecor, rangerLeDecor } from './decorMesh';
 import { champDuSol } from './landMesh';
 import { ARCHIPELAGO_IDS } from './map';
-import { modelerLeSol } from './modeleDessine';
+import { modelerLeSol } from './drawnModel';
 import { cameraDeLIle, origineDe, questStations, versLaCamera, worldCubes } from './terrain';
 
 /** Distance du rayon (origine `o`, direction `d`) au triangle `i` de `p`, ou −1 s'il ne le coupe pas (Möller–Trumbore). */

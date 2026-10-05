@@ -14,7 +14,7 @@ import { BLOCKS, getBiome, ofBlock, type BiomeDef } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { BlockIcon } from './Voxel';
 import { archipelagoOf } from './world/archipelago';
-import { UNIVERS } from '../core/univers';
+import { UNIVERS } from '../core/universe';
 import { Sheet } from './Sheet';
 
 export const SCHOOL_TITLE = 'École du village';

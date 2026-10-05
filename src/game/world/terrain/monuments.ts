@@ -8,10 +8,10 @@ import { ORIGINE_DES_MONUMENTS, planCells, type PlanDef, planOrigin } from '../p
 import type { World } from '../../engine';
 import type { PlaceId, VoxelCube } from '../cube';
 import { SNOW } from '../decor';
-import { bossIsletOrigin, ISLET_H, ISLET_W } from './ilots';
-import { bridgePath } from './liaisons';
-import { whaleSpots } from './mer';
-import { DEPTH, origineDe, taperLayers, TEXTURES } from './socle';
+import { bossIsletOrigin, ISLET_H, ISLET_W } from './islets';
+import { bridgePath } from './links';
+import { whaleSpots } from './sea';
+import { DEPTH, origineDe, taperLayers, TEXTURES } from './base';
 
 /**
  * Où un îlot de monument ne va pas : la terre des îles et leur abord (trois cases), les îlots des Gardiens, le port et sa

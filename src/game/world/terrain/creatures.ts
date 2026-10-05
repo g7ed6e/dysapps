@@ -1,9 +1,9 @@
 // Les créatures et les Gardiens dans le monde : leur modèle tourné, la place et les pas de la créature sur le sol libre
 // de son île.
 import { type BiomeId, BIOMES } from '../../biomes';
-import type { CubeDeModele } from '../personnages/ascii';
-import { CREATURE_CUBES } from '../personnages/creatures';
-import { GUARDIAN_CUBES } from '../personnages/gardiens';
+import type { CubeDeModele } from '../characters/ascii';
+import { CREATURE_CUBES } from '../characters/creatures';
+import { GUARDIAN_CUBES } from '../characters/guardians';
 import { lv2Courante } from '../../../core/settings';
 import { type ArchipelagoId, bornesDuCoeur, islandDef, landscape, margesDuCoeur, noise, tirage } from '../map';
 import { DECOR, decorate } from '../decor';
@@ -11,10 +11,10 @@ import { zoneDesPlans } from '../plans';
 import { BRIDGES, isBiomeUnlocked, islandsOf } from '../archipelago';
 import type { VoxelCube } from '../cube';
 import { cacheUnLieu, lieuxVus, placeCells, portesDesLieux } from './village';
-import { versLaCamera } from './vue';
-import { AVATAR_HOME, groundHeight, islandOrigin, LAYOUT_PAD } from './socle';
-import { questStations } from './bornes';
-import { bridgePath } from './liaisons';
+import { versLaCamera } from './view';
+import { AVATAR_HOME, groundHeight, islandOrigin, LAYOUT_PAD } from './base';
+import { questStations } from './markers';
+import { bridgePath } from './links';
 
 /** Les pas d'une créature qui se promène : une case à gauche ou en arrière (jamais vers les plans). */
 export const CREATURE_STEPS: [number, number][] = [

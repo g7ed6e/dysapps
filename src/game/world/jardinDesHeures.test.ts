@@ -7,15 +7,15 @@ import { bridgesOf, grantAccess, otherEnd } from './archipelago';
 import { buildingStages } from './architect';
 import { DEPTH_DU_SOL, GRASS } from './decor';
 import { luminance } from './palette';
-import { CREATURE_CUBES } from './personnages/creatures';
-import { GUARDIAN_CUBES } from './personnages/gardiens';
+import { CREATURE_CUBES } from './characters/creatures';
+import { GUARDIAN_CUBES } from './characters/guardians';
 import { PAINTERS, SIZE } from './pixels';
 import { DEPTH, islandCenter, worldCubes, viewZone } from './terrain';
 import { CORE, islandDef, landBox } from './map';
-import { LUEUR, SENTINELLE } from './personnages/couleurs';
-import { allumage, sentinelleEnFacettes } from './personnages/sentinelle';
-import { STATUES } from './personnages/sentinellesPeintes';
-import { SOLEIL_DE_CUIVRE } from './personnages/statues/4e';
+import { LUEUR, SENTINELLE } from './characters/colors';
+import { allumage, sentinelleEnFacettes } from './characters/sentinel';
+import { STATUES } from './characters/paintedSentinels';
+import { SOLEIL_DE_CUIVRE } from './characters/statues/4e';
 
 const LV2 = BIOMES.filter((b) => b.subject === 'lv2').map((b) => b.id);
 

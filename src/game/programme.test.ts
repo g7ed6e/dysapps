@@ -1,8 +1,8 @@
 // Le rattachement des missions au programme officiel : chaque mission cite des compétences qui existent et sont de son
 // cycle ; chaque compétence est travaillée par une mission, ou exclue avec un motif (jamais les deux).
 import { APPS } from '../apps/registry';
-import { CYCLE_OF, PROGRAMME, byId } from '../programme';
-import { EXCLUSIONS } from '../programme/exclusions';
+import { CYCLE_OF, PROGRAMME, byId } from '../curriculum';
+import { EXCLUSIONS } from '../curriculum/exclusions';
 import { BIOMES } from './biomes';
 import { loadAllExercises } from './exercises';
 
@@ -80,7 +80,7 @@ it('couverture : chaque compétence a une mission, ou une exclusion motivée, ja
   for (const e of PROGRAMME) {
     const by = covered.get(e.id);
     const excluded = EXCLUSIONS[e.id];
-    expect(by || excluded, `${e.id} n’est travaillée par aucune mission : ajouter une mission ou une exclusion motivée dans src/programme/exclusions.ts`).toBeTruthy();
+    expect(by || excluded, `${e.id} n’est travaillée par aucune mission : ajouter une mission ou une exclusion motivée dans src/curriculum/exclusions.ts`).toBeTruthy();
     expect(by && excluded ? `${e.id} est couverte par ${by.join(', ')} : retirer son exclusion` : '', e.id).toBe('');
   }
 });

@@ -3,7 +3,7 @@ import { ProgressProvider, useProgress } from '../core/ProgressContext';
 import { SettingsProvider } from '../core/SettingsContext';
 import { BloclandProvider, useBlocland } from './BloclandContext';
 import { exercisesOf } from './exercises';
-import { partiesPosees } from './world/parties';
+import { partiesPosees } from './world/parts';
 import { getPlan } from './world/plans';
 
 function Etat() {

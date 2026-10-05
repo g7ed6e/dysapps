@@ -2,13 +2,13 @@
 // derrière une île, où seul son souffle flotterait en l'air. Sans WebGL : on place la caméra (./camera.ts) et on suit
 // le rayon de la caméra vers chaque point du rond de la baleine, au-dessus de la plus haute case de chaque colonne.
 import * as THREE from 'three';
-import { HABILLAGES } from '../habillage';
+import { HABILLAGES } from '../skin';
 import { getArchipelago } from '../world/archipelago';
 import { toutConstruit } from '../world/budget';
 import { ARCHIPELAGO_IDS } from '../world/map';
 import { BALEINES_REPLACEES, whaleSpots, worldBounds, worldCubes } from '../world/terrain';
 import { creerCamera } from './camera';
-import type { Derniers, Instant, Monde } from './partie';
+import type { Derniers, Instant, Monde } from './scenePart';
 import type { ArchipelagoId } from '../world/archipelago';
 
 /** La tablette de référence (1024 × 768), moins la barre du haut ; la barre des boutons du bas (72 px) cache la mer. */

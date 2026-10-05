@@ -1,23 +1,23 @@
 // Moteur Blocland : étoiles, récompenses, répétition espacée, streak et adaptation.
 // Logique pure (l'heure et le hasard sont passés en paramètres) pour être testée facilement.
 // Ce fichier garde les plans, l'assemblage, la fin d'exercice, l'école du village et le Bloc-Navire ; à côté, dans
-// ./engine/ : l'état d'une partie (`etat.ts`), les dates (`dates.ts`), la lecture d'une sauvegarde (`lecture.ts`),
-// l'apprentissage (`apprentissage.ts`). Il en réexporte les noms publics.
+// ./engine/ : l'état d'une partie (`state.ts`), les dates (`dates.ts`), la lecture d'une sauvegarde (`lecture.ts`),
+// l'apprentissage (`learning.ts`). Il en réexporte les noms publics.
 import { type BiomeId, BIOMES, type BlockId, BLOCKS, getBiome } from './biomes';
 import { cellKey, planCells, type PlanDef } from './world/plans';
-import { assemblables, noterQuestion, recetteDe, type TirageAssemblage, tirageNeuf } from './world/assemblage';
-import { missionsTerminees, type Partie, poserLesParties } from './world/parties';
+import { assemblables, noterQuestion, recetteDe, type TirageAssemblage, tirageNeuf } from './world/assembly';
+import { missionsTerminees, type Partie, poserLesParties } from './world/parts';
 import type { ExerciseDef, ItemResult } from './exercises/types';
 import { starsFor } from '../core/stars';
 import { archipelagoOf, buildBridge as buildBridgePure, type BuildBridgeResult, getArchipelago, isBiomeUnlocked, reachableIslands, voyageId } from './world/archipelago';
 import { beatenGuardians, kitReady, VEHICLE_STAGES, type VehicleStage } from './world/vehicle';
-import type { GameState, SpacedItem } from './engine/etat';
+import type { GameState, SpacedItem } from './engine/state';
 import { todayISO } from './engine/dates';
-import { adapt, CHEST_BLOCKS, dueItems, recordSpaced, scoreOf, type StreakUpdate, updateStreak } from './engine/apprentissage';
-export { EMPTY_STATE, type ExerciseProgress, type GameState, type LogEntry, type SpacedItem, type Streak, type TypeStats, type World } from './engine/etat';
+import { adapt, CHEST_BLOCKS, dueItems, recordSpaced, scoreOf, type StreakUpdate, updateStreak } from './engine/learning';
+export { EMPTY_STATE, type ExerciseProgress, type GameState, type LogEntry, type SpacedItem, type Streak, type TypeStats, type World } from './engine/state';
 export { addDays, daysBetween, todayISO } from './engine/dates';
-export { sanitizeState } from './engine/lecture';
-export { adapt, CHEST_BLOCKS, CHEST_EVERY, dueItems, GRADUATE_AT, INTERVALS, levelFor, PROMOTE_AT_ONCE, recordSpaced, scoreOf, starsFor, type StreakUpdate, updateStreak } from './engine/apprentissage';
+export { sanitizeState } from './engine/reading';
+export { adapt, CHEST_BLOCKS, CHEST_EVERY, dueItems, GRADUATE_AT, INTERVALS, levelFor, PROMOTE_AT_ONCE, recordSpaced, scoreOf, starsFor, type StreakUpdate, updateStreak } from './engine/learning';
 
 // ---------- Plans (construction guidée) ----------
 

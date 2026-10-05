@@ -1,6 +1,6 @@
 import { fractionWords } from '../../core/fractions';
 import type { Lang } from '../../core/speech';
-import { frenchTypography } from '../../core/typographie';
+import { frenchTypography } from '../../core/typography';
 
 /** Fraction « en colonne » : numérateur au-dessus, dénominateur en dessous. « … » = case à compléter. */
 function Frac({ n, d }: { n: string; d: string }) {
@@ -15,7 +15,7 @@ function Frac({ n, d }: { n: string; d: string }) {
 
 const TOKEN = /((?:\d+|…)\/(?:\d+|…)|…)/;
 
-// La typographie française vit dans core/typographie.ts (le code pur s'en sert aussi) ; on la garde ici pour les écrans.
+// La typographie française vit dans core/typography.ts (le code pur s'en sert aussi) ; on la garde ici pour les écrans.
 export { frenchTypography };
 
 /**

@@ -17,23 +17,23 @@ import { planStatus } from './engine';
 import { archipelagoOf } from './world/archipelago';
 import { stageAt } from './world/vehicle';
 import { worksiteFor } from './world/worksite';
-import { retenirLaPose } from './poseAMontrer';
-import { retenirLesBlocs } from './volDesBlocs';
-import { minuscule } from './world/parties';
+import { retenirLaPose } from './poseToShow';
+import { retenirLesBlocs } from './blockFlight';
+import { minuscule } from './world/parts';
 import { voyageId } from './world/archipelago';
 import { useBlocland } from './BloclandContext';
 import type { Completion } from './engine';
 import { levelFor } from './engine';
 import { reviewKeys } from './review';
-import { cheminDeRevision, revisionsDeLIle } from './rappels';
+import { cheminDeRevision, revisionsDeLIle } from './reminders';
 import { SCREEN_TYPES, retryAllowed, type ScreenAnswer } from './exercises/registry';
-import { autoReadText, dicteeAutoText } from './exercises/lecture';
+import { autoReadText, dicteeAutoText } from './exercises/reading';
 import { runItems, runSeed } from './exercises/run';
 import { fillTemplate, type ExerciseDef, type ExerciseItem, type ItemResult } from './exercises/types';
-import { PauseSeance } from './PauseSeance';
+import { PauseSeance } from './SessionPause';
 import { Stars } from './Stars';
 import { BlockIcon } from './Voxel';
-import { habillageDuMonde } from './habillage';
+import { habillageDuMonde } from './skin';
 import { playDone, sonDePose } from './sound';
 
 interface Props {
@@ -219,7 +219,7 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
       return;
     }
     const completion = complete(def, all);
-    // Les blocs gagnés (la mission et ses coffres) : au retour sur l'île, ils volent jusqu'au compteur (volDesBlocs.ts).
+    // Les blocs gagnés (la mission et ses coffres) : au retour sur l'île, ils volent jusqu'au compteur (blockFlight.ts).
     const total = (stock: typeof state.stock) => Object.values(stock).reduce((n, v) => n + (v ?? 0), 0);
     retenirLesBlocs({ biome: biome.id, mission: def.type, bloc: completion.block, nombre: total(completion.state.stock) - total(state.stock), quand: Date.now() });
     completeSession(`blocland:${def.id}`, Math.round(completion.score * 100));

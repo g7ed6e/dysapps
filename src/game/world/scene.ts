@@ -5,7 +5,7 @@ import type { BiomeId } from '../biomes';
 import type { PlaceId, VoxelCube } from './cube';
 import { islandsOf, type ArchipelagoId } from './archipelago';
 import { BAC_LONG, type CadreDeCases, CREATURE_STEPS, boardingRoute, cadreDeTraversee, routeAt, routeLengths } from './terrain';
-import { WALK_SPEED, dureeDeMarche, grilleDe } from './grille';
+import { WALK_SPEED, dureeDeMarche, grilleDe } from './grid';
 import { legTiming, type LegTiming, type VoyageLeg } from './voyage';
 import type { Bonhomme, Cell, CreaturePlacement } from './view';
 
@@ -14,7 +14,7 @@ const ease = (t: number) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) /
 
 // ---- Le bonhomme
 
-// La vitesse du bonhomme et la durée d'un trajet viennent de la disposition en grille (./grille.ts).
+// La vitesse du bonhomme et la durée d'un trajet viennent de la disposition en grille (./grid.ts).
 export { WALK_SPEED };
 
 /** Un trajet du bonhomme : l'itinéraire, ses distances cumulées (calculées une fois), son départ et sa durée. */

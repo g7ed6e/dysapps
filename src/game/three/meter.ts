@@ -2,7 +2,7 @@
 // par seconde de la dernière image. Affiché dans un coin de la vue avec `?mesures` (invisible sans lui), et lu par
 // `npm run rendu:mesures` sur `window.__dysappsRendu` (en développement, ou avec `?mesures`).
 import type * as THREE from 'three';
-import type { Rendu } from '../rendu';
+import type { Rendu } from '../rendering';
 
 interface RenderStats {
   rendu: Rendu;

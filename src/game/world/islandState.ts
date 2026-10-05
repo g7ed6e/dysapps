@@ -10,7 +10,7 @@ import { isPlanDone, plansFor } from './plans';
 
 export type IslandStateId = 'fermee' | 'a-explorer' | 'en-chantier' | 'restauree';
 
-/** Un état d'île et son icône ; son mot est un texte d'univers (`etatsDIle`, src/univers/, U4). */
+/** Un état d'île et son icône ; son mot est un texte d'univers (`etatsDIle`, src/universes/, U4). */
 export interface IslandStateDef {
   id: IslandStateId;
   icon: AnyIconName;

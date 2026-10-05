@@ -1,5 +1,5 @@
 // Les plans d’avant le nouveau dessin des bâtiments (version 1 des sauvegardes) : leurs cases (clé « x,y,z » relative à
-// l’île : bloc) et leur coffre. La migration des sauvegardes s’en sert (engine/lecture.ts, sanitizeState) : un plan terminé avec
+// l’île : bloc) et leur coffre. La migration des sauvegardes s’en sert (engine/reading.ts, sanitizeState) : un plan terminé avec
 // l’ancien dessin reste terminé et son coffre est complété ; les blocs posés hors du nouveau dessin reviennent dans
 // l’inventaire. Ne pas modifier un dessin écrit ; un plan redessiné y ajoute l’ancien.
 import type { BlockId } from '../biomes';

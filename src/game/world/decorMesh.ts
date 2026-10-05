@@ -5,24 +5,24 @@
 // les cubes du décor rangés par nom (./props.ts, ./decor.ts) et le champ du sol (./landMesh.ts), et rend des tableaux
 // typés que la vue 3D dessine en un ou deux appels de dessin.
 //
-// - Chaque genre a sa forme, rangée dans le registre `FORMES` (./decor/formes.ts) : les formes communes aux quatre
-//   archipels (./decor/communes.ts), celles propres à chacun (./decor/6e.ts…), dessinées avec ./decor/pinceau.ts.
+// - Chaque genre a sa forme, rangée dans le registre `FORMES` (./decor/shapes.ts) : les formes communes aux quatre
+//   archipels (./decor/common.ts), celles propres à chacun (./decor/6e.ts…), dessinées avec ./decor/brush.ts.
 // - Chaque élément est posé au milieu de sa case, sur la pente (`hauteurDuSol`) : plus de socle plat sous le décor, le
 //   sol à facettes passe dessous (`rangerLeDecor` le sort des cubes qui figent une case). Un repère de plusieurs cases
 //   s'enfonce jusqu'au plus bas de son emprise, sur un pied élargi : il ne flotte jamais au bord d'une pente.
 // - Les cascades collent à la falaise de la case du bord, de la pente jusqu'à l'eau ; les écueils et les bancs
 //   affleurent à la surface de la mer.
-// - Seules les fumées bougent (./decor/fumee.ts, un maillage à part) ; « Réduire les animations » les fige dans la pose
+// - Seules les fumées bougent (./decor/smoke.ts, un maillage à part) ; « Réduire les animations » les fige dans la pose
 //   du lot R4. La nuit vient de la lumière de la scène, comme pour le sol ; ce qui brille (lanternes, lave) est à part,
 //   sans ombre ni lumière ; la lanterne du phare a en plus ses couleurs de nuit (claire de jour, elle brille la nuit).
 import type { VoxelCube } from './cube';
 import { mixColor } from './daylight';
 import { DECOR_BATI, REPERES, type Repere } from './decor';
-import { formeDe, LOINTAINS } from './decor/formes';
-import { decorHorsGrille, formeHorsGrille } from './decor/horsGrille';
-import { dessinerLointain } from './decor/lointain';
-import { Fumees, type FumeeDuDecor } from './decor/fumee';
-import { DELAVE, FAMILLES, hasardDe, hex, Pinceau, rgb, valeur, type FacettesDuDecor, type RGB } from './decor/pinceau';
+import { formeDe, LOINTAINS } from './decor/shapes';
+import { decorHorsGrille, formeHorsGrille } from './decor/offGrid';
+import { dessinerLointain } from './decor/distant';
+import { Fumees, type FumeeDuDecor } from './decor/smoke';
+import { DELAVE, FAMILLES, hasardDe, hex, Pinceau, rgb, valeur, type FacettesDuDecor, type RGB } from './decor/brush';
 import { colonneEn, hauteurDuSol, type ChampDuSol } from './landMesh';
 import { graineDuDessin, type ArchipelagoId } from './map';
 import { cielDe, couleurDeMatiere, couleurDuSol, MATIERES, type Faces } from './palette';
@@ -32,9 +32,9 @@ import { worldBounds } from './terrain';
 import type { Cell } from './view';
 import { clamp } from '../../core/math';
 
-export { FAMILLES, FEUILLAGE, TAILLES, valeur, type FacettesDuDecor } from './decor/pinceau';
-export { ENFONCE } from './decor/communes';
-export { FUMEE, poserLesFumees } from './decor/fumee';
+export { FAMILLES, FEUILLAGE, TAILLES, valeur, type FacettesDuDecor } from './decor/brush';
+export { ENFONCE } from './decor/common';
+export { FUMEE, poserLesFumees } from './decor/smoke';
 
 /** Un élément du décor : ses cubes dans le monde en blocs, et où il pousse. */
 export interface ElementDeDecor {
@@ -51,7 +51,7 @@ export interface ElementDeDecor {
   emprise: number;
   /** Île fermée : couleurs délavées. */
   muted: boolean;
-  /** Posé hors de la grille (./decor/horsGrille.ts) : sans cubes, il ne se touche pas. */
+  /** Posé hors de la grille (./decor/offGrid.ts) : sans cubes, il ne se touche pas. */
   horsGrille?: true;
   /** Au loin, avec le lointain (le panache du volcan du 4e) : ses fumées se cachent sur la Carte avec lui. */
   auLoin?: true;
@@ -124,12 +124,12 @@ export interface MaillageDuDecor {
   decor: FacettesDuDecor;
   /** Ce qui brille (lanternes, lave), sans lumière : un second appel, seulement s'il y en a. */
   lueurs: FacettesDuDecor;
-  /** Les fumées, qui bougent : un troisième appel, seulement s'il y en a (./decor/fumee.ts). */
+  /** Les fumées, qui bougent : un troisième appel, seulement s'il y en a (./decor/smoke.ts). */
   fumees: FumeeDuDecor;
   /** Les éléments dessinés, dans l'ordre de `elements`. */
   elements: ElementDeDecor[];
   /**
-   * Le premier triangle du lointain dans `decor` (./decor/lointain.ts) : il vient après ceux des éléments, jusqu'au
+   * Le premier triangle du lointain dans `decor` (./decor/distant.ts) : il vient après ceux des éléments, jusqu'au
    * bout ; la vue 3D le cache sur la Carte et ne le touche pas. Sans lointain, le nombre de triangles du décor.
    */
   debutDuLointain: number;

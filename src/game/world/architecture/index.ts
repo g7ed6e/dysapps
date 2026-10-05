@@ -1,15 +1,15 @@
 // L'architecture modulaire d'Archipéo (lot 7, docs/univers/archipeo/cadrage.md) : les blocs posés des plans
 // deviennent des pièces d'architecture (murs peints, toits en pente, pilotis), choisies selon leurs voisines dans le
 // plan. Code pur, sans Three.js : `architectureDe` lit les cubes d'un monde (ou d'une île) et rend
-// - les murs peints (./peinture.ts) : ils gardent la géométrie de leur bloc, et la fusion des faces de
+// - les murs peints (./paint.ts) : ils gardent la géométrie de leur bloc, et la fusion des faces de
 //   world/construction.ts ; le shader peint leur colombage, leur bardage, leur soubassement, leur chaperon ;
 // - les pièces dessinées (les toits de ./toits.ts, les pilotis du kit) : leurs facettes, en coordonnées de grille, que
 //   world/construction.ts assemble (./assemblage.ts) et peint dans son groupe opaque, avec la case de chacune (le
 //   toucher, toute la case) ; les cases qu'elles remplacent, et les faces de case qu'elles ferment ;
-// - les blocs des lieux du village qui prennent la couverture de leur île (./lieux.ts).
+// - les blocs des lieux du village qui prennent la couverture de leur île (./places.ts).
 //
 // Les règles, décisions du directeur artistique :
-// - la règle lit le plan entier, fantômes compris (./voisinage.ts) ;
+// - la règle lit le plan entier, fantômes compris (./neighbourhood.ts) ;
 // - un fantôme reste un cube Brume : seul un bloc posé devient pièce ;
 // - la matière reste lisible par famille : la table « bloc vers matière » du kit de l'archipel (./kits/) ;
 // - un bloc que le kit ne peint ni ne dessine reste un bloc taillé : un kit vide ne remplace rien ;
@@ -19,24 +19,24 @@
 //   de kit ;
 // - les lieux du village (l'école, la salle des trophées, le lieu où l'on assemble : au milieu des maisons, décision du
 //   30 septembre 2026) prennent le kit quand il les nomme (`lieux`, au 6e) : leur plan se lit sur leurs blocs, la
-//   famille de chaque bloc sur sa place dans leur modèle (./lieux.ts) ; ailleurs, ils gardent leur dessin.
+//   famille de chaque bloc sur sa place dans leur modèle (./places.ts) ; ailleurs, ils gardent leur dessin.
 import type { VoxelCube } from '../cube';
-import type { ArchipelagoId } from '../archipels';
+import type { ArchipelagoId } from '../archipelagos';
 import type { TextureKind } from '../pixels';
-import { pieceDe, type IdDePiece, type Rotation } from './choix';
+import { pieceDe, type IdDePiece, type Rotation } from './choices';
 import { KITS, kitRempli, type CaseDuLieu, type Famille, type Kit } from './kits';
-import { lieuxDuKit } from './lieux';
-import { peintureDuMur, type PeintureDuMur } from './peinture';
-import { facettesPosees, tournerCouvre, type DessinDePiece, type Facette } from './pieces';
-import { COTES, estDuPlan, indexDuPlan, voisinageDe, type IndexDuPlan, type Voisinage } from './voisinage';
+import { lieuxDuKit } from './places';
+import { peintureDuMur, type PeintureDuMur } from './paint';
+import { facettesPosees, tournerCouvre, type DessinDePiece, type Facette } from './rooms';
+import { COTES, estDuPlan, indexDuPlan, voisinageDe, type IndexDuPlan, type Voisinage } from './neighbourhood';
 
-export { assemblerLesPieces } from './assemblage';
-export { pieceDe, FORMES, type Forme, type IdDePiece } from './choix';
-export { COLOMBAGE, decharge, MOTIF, MOTIF_GLSL, peintureDuMur, ROLES_PEINTS, sensDeLaDecharge } from './peinture';
-export { boiteDansLaCase, type DessinDePiece, type Role } from './pieces';
-export { indexDuPlan, voisinageDe, type Voisinage } from './voisinage';
+export { assemblerLesPieces } from './assembly';
+export { pieceDe, FORMES, type Forme, type IdDePiece } from './choices';
+export { COLOMBAGE, decharge, MOTIF, MOTIF_GLSL, peintureDuMur, ROLES_PEINTS, sensDeLaDecharge } from './paint';
+export { boiteDansLaCase, type DessinDePiece, type Role } from './rooms';
+export { indexDuPlan, voisinageDe, type Voisinage } from './neighbourhood';
 export { KITS, kitVide, type CaseDuLieu, type Kit } from './kits';
-export { estUnLieuDuVillage } from './lieux';
+export { estUnLieuDuVillage } from './places';
 
 /** Une pièce dessinée, posée : le bloc qu'elle remplace (sa couleur, son île, son lieu), sa pièce, et ses facettes dans le monde. */
 interface PiecePosee {
@@ -68,9 +68,9 @@ export interface Architecture {
   peints: Map<string, MurPeint>;
   /** Le nombre de triangles des pièces dessinées, avant leur assemblage (./assemblage.ts). */
   triangles: number;
-  /** Les blocs des lieux du village (pièces ou non) qui prennent la couverture de leur île (clé `x,y,z`, ./lieux.ts). */
+  /** Les blocs des lieux du village (pièces ou non) qui prennent la couverture de leur île (clé `x,y,z`, ./places.ts). */
   couverts: Set<string>;
-  /** Les blocs des lieux du village qui prennent la couleur d'une autre matière (clé `x,y,z`, ./lieux.ts). */
+  /** Les blocs des lieux du village qui prennent la couleur d'une autre matière (clé `x,y,z`, ./places.ts). */
   matieres: Map<string, TextureKind>;
 }
 

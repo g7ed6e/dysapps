@@ -2,11 +2,11 @@ import { BIOMES, BLOCKS } from '../biomes';
 import { CATALOG, UNORDERED, exercisesOf, loadAllExercises, pickExercise, questProgress } from './index';
 import { SCREEN_TYPES } from './registry';
 import { piegesDe } from './shuffle';
-import { CalculScreen } from './CalculScreen';
-import { DicteeItem } from './DicteeItem';
+import { CalculScreen } from './CalculationScreen';
+import { DicteeItem } from './DictationItem';
 import { fillTemplate } from './types';
 import { parseHour, parseNumber, placeAnswer, type Parsed } from '../../core/choices';
-import { COFFRE_HORS_LISTE, motDictable, motsOutilsDictables } from '../../programme/motsOutils';
+import { COFFRE_HORS_LISTE, motDictable, motsOutilsDictables } from '../../curriculum/functionWords';
 
 const EXERCISES = await loadAllExercises();
 

@@ -21,7 +21,7 @@ Après le Théâtre, au bout de la crête, le Jardin des heures (LV2-4) est l’
   - Maçonnerie tronconique de pierre `#6F473D`, 5 cases de haut, de 1,7 à 1,2 case de section, deux cerclages de métal rouillé `#AF6C55`.
   - Une gueule voûtée en bas, de 0,8 × 1 case, sur la face vue par la caméra, qui rougeoie dans les lueurs `#E8662C`, sans pulser, sans scintiller, sans varier par à-coups avec le degré de nuit. Sur une île fermée, elle reste éteinte et délavée, comme la lanterne du phare : elle rougeoie une fois l’île ouverte, et la remise en marche garde son avant et son après. Elle compte dans les lueurs sous 5 % de l’image.
   - Trois volutes minces au sommet. Plus bas que la tour de l’atelier de R5.
-- **Le volcan lointain** (R4b, par `lointain.ts`, environ 150 triangles).
+- **Le volcan lointain** (R4b, par `distant.ts`, environ 150 triangles).
   - Cône tronqué à 9 pans, roche `#6A5048`, de 15 à 18 blocs, de 80 à 120 cases derrière le bout droit de la crête.
   - Panache de 5 volutes, dans l’appel des fumées. Pas de lueur au cratère.
   - Il se voit près du bord droit de la vue de l’archipel, sans passer sous les boutons de l’interface (R4b-4e : à `u` = 0,12, validé par le directeur artistique sur les captures le 28 septembre 2026).

@@ -5,10 +5,10 @@ import { NotFoundPage } from '../pages/NotFoundPage';
 import { BLOCKS, SANS_LV2, estIleLv2, getBiome, guardianTitle, missionsJouables, ofBlock } from './biomes';
 import { useSettings } from '../core/SettingsContext';
 import { SchoolLink } from './School';
-import { AssemblageLink } from './Assemblage';
+import { AssemblageLink } from './Assembly';
 import { TROPHIES_TITLE } from './trophies';
 import { Bridges } from './Bridges';
-import { Commandes, TuYEs } from './Commandes';
+import { Commandes, TuYEs } from './Requests';
 import { lockedHint, nextGoalInfo } from './world/goals';
 import { GoalLine } from './GoalLine';
 import { VillageStageLine } from './VillageStageLine';
@@ -26,11 +26,11 @@ import { ShipSection } from './ShipSection';
 import { useVehicleBuilder } from './useVehicleBuilder';
 import { stageAt } from './world/vehicle';
 import { WhaleWordPanel, useWhaleWord } from './WhaleWord';
-import { RenommagePanel, useRenommage } from './Renommage';
-import { useTextes } from '../univers';
+import { RenommagePanel, useRenommage } from './Renaming';
+import { useTextes } from '../universes';
 import { useUnivers } from '../core/SettingsContext';
-import { UNIVERS } from '../core/univers';
-import { PlusTardDit, RappelDeLaCreature, useRappelDeLaCreature } from './RappelDeLaCreature';
+import { UNIVERS } from '../core/universe';
+import { PlusTardDit, RappelDeLaCreature, useRappelDeLaCreature } from './ResidentReminder';
 
 /** Un biome : sa créature donne la mission, puis la liste des exercices. */
 export function BiomePage() {

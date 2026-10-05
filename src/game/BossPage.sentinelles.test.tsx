@@ -10,8 +10,8 @@ import { typesWithContent } from './boss';
 import { exercisesOf } from './exercises';
 import * as sound from './sound';
 
-vi.mock('../univers', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('../univers')>();
+vi.mock('../universes', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../universes')>();
   return { ...actual, useTextes: () => actual.textesDe('archipeo') };
 });
 

@@ -15,7 +15,7 @@ import {
 } from './progress';
 import { loadJSON, removeKey, saveJSON } from './storage';
 import { forgetPlace } from './lastPlace';
-import { nomDuRole, texteDuSucces, useTextes } from '../univers';
+import { nomDuRole, texteDuSucces, useTextes } from '../universes';
 
 export interface Celebration {
   id: number;

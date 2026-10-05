@@ -1,21 +1,21 @@
 // Les Îles du Ciel (R4b-3e) : le grand phare sur son socle de salles, le massif enneigé, les nappes des sommets et
 // l'oiseau planeur (docs/univers/archipeo/intentions/3e-iles-du-ciel.md).
 import { BRIDGES } from '../archipelago';
-import { archipelagoOfIsland } from '../archipels';
+import { archipelagoOfIsland } from '../archipelagos';
 import { toutConstruit } from '../budget';
 import { maillageDuDecor, rangerLeDecor } from '../decorMesh';
-import { ENVERGURE_DE_L_OISEAU, formeDOiseau, oiseauxDe, PLANEUR, planeurDe, poseDuPlaneur } from '../faune';
+import { ENVERGURE_DE_L_OISEAU, formeDOiseau, oiseauxDe, PLANEUR, planeurDe, poseDuPlaneur } from '../fauna';
 import { champDuSol } from '../landMesh';
 import { inCore, islandDef, landCells, mapOf } from '../map';
 import { ambianceDe } from '../palette';
 import { bridgePath, worldBounds, worldCubes } from '../terrain';
-import { houleDe, PLANCHER_DE_NUAGES } from '../mer';
+import { houleDe, PLANCHER_DE_NUAGES } from '../sea';
 import { empriseDuSocle, GRAND_PHARE_3E, LOINTAIN_3E, MASSIF_3E, SOCLE_3E } from './3e';
-import { nappesDesSommets, NAPPES_3E } from './brume';
-import { MOUVEMENT_DE_LA_BRUME } from './fumee';
-import { dessinerLointain, type RangDeCretes } from './lointain';
-import { Pinceau } from './pinceau';
-import { PHARE, PHARES } from './phare';
+import { nappesDesSommets, NAPPES_3E } from './mist';
+import { MOUVEMENT_DE_LA_BRUME } from './smoke';
+import { dessinerLointain, type RangDeCretes } from './distant';
+import { Pinceau } from './brush';
+import { PHARE, PHARES } from './lighthouse';
 
 const { progress, world: village } = toutConstruit();
 const cubes = worldCubes('3e', progress, village, false);

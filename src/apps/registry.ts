@@ -3,7 +3,7 @@
 import type { ComponentType } from 'react';
 import { lazy } from 'react';
 import type { AnyIconName } from '../components/Icon';
-import type { ProgrammeId } from '../programme';
+import type { ProgrammeId } from '../curriculum';
 import { LV2_LABELS, type Lv2Choice } from '../core/settings';
 
 /** Les matières ; `lv2` est la deuxième langue (espagnol ou allemand), dont le titre affiché suit les Réglages (`subjectTitle`). */
@@ -12,7 +12,7 @@ export type Subject = 'french' | 'maths' | 'english' | 'lv2';
 export interface AppDef {
   id: string;
   subject: Subject;
-  /** Compétences du programme officiel que la mission travaille (identifiants de src/programme/). */
+  /** Compétences du programme officiel que la mission travaille (identifiants de src/curriculum/). */
   programme?: readonly ProgrammeId[];
   title: string;
   description: string;

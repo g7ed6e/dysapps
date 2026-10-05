@@ -8,7 +8,7 @@ import { VoyagePanel } from './VoyagePanel';
 import { ARCHIPELAGOS, getArchipelago, isArchipelagoReached, type ArchipelagoId } from './world/archipelago';
 import { stageTo } from './world/vehicle';
 import { useUnivers } from '../core/SettingsContext';
-import { UNIVERS } from '../core/univers';
+import { UNIVERS } from '../core/universe';
 import { useHoldCelebrations } from '../components/Celebrations';
 
 /**

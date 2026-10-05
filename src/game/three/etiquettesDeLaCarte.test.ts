@@ -2,7 +2,7 @@
 // 5e quand les îles-écoles ont grandi). Sans WebGL ni navigateur : la caméra de la Carte se cadre comme dans la scène
 // (`cadrageDeLaCarte`), les îles et leurs étiquettes se projettent à l'écran, et le placement est celui des deux vues
 // (`placerEtiquettes`). Les étiquettes ont la taille de `labelCanvas.ts`, le texte mesuré dans la police de lecture
-// (la chasse lue dans son fichier, `policesDeTest.ts`) ; l'interface est celle relevée sur les captures de la tablette.
+// (la chasse lue dans son fichier, `testFonts.ts`) ; l'interface est celle relevée sur les captures de la tablette.
 // Ce que le test ne couvre pas :
 // - OpenDyslexic. En taille normale, son panneau est plus haut que celui relevé ici (non mesuré sans navigateur) ; avec
 //   un panneau de 214 px, un nom se tait encore au 3e (les Données) ; à 310 px, aussi au 6e (la Carrière) et au 5e (le
@@ -14,15 +14,15 @@
 import * as THREE from 'three';
 import type { BiomeId } from '../biomes';
 import { getArchipelago, islandsOf } from '../world/archipelago';
-import { ARCHIPELAGO_IDS, type ArchipelagoId } from '../world/archipels';
+import { ARCHIPELAGO_IDS, type ArchipelagoId } from '../world/archipelagos';
 import { placerAvecLaFlecheDOuvrage, placerEtiquettes, separateMark, type LabelBox } from '../world/labelLayout';
 import { avatarHome, islandCenter } from '../world/terrain';
 import { BRIDGES } from '../world/archipelago';
-import { archipelagoOfIsland } from '../world/archipels';
-import { grilleDe } from '../world/grille';
-import { placeLibre } from '../placeLibre';
+import { archipelagoOfIsland } from '../world/archipelagos';
+import { grilleDe } from '../world/grid';
+import { placeLibre } from '../freeSpace';
 import { cadrageDeLaCarte } from './camera';
-import { largeurEnGras, type PoliceDeTest } from './policesDeTest';
+import { largeurEnGras, type PoliceDeTest } from './testFonts';
 
 /** La tablette de référence, et ce que l'interface y pose sur la Carte (relevé sur les captures, village complet). */
 const TABLETTE = { w: 1024, h: 768 };
@@ -34,7 +34,7 @@ const BOUTONS: LabelBox[] = [
 ];
 const ZONES = [PANNEAU, BARRE, ...BOUTONS];
 
-/** L'étiquette d'une île sur la Carte, en pixels CSS : le nom à 18 px, l'état à 16 px (voir `labelCanvas.ts`, `etiquettes.ts`). */
+/** L'étiquette d'une île sur la Carte, en pixels CSS : le nom à 18 px, l'état à 16 px (voir `labelCanvas.ts`, `labels.ts`). */
 function etiquette(nom: string, etat: string, largeur: (t: string) => number, elargir: number): { w: number; h: number } {
   const px = 18;
   const nomW = largeur(nom) * px * elargir;
@@ -68,7 +68,7 @@ function laCarte(a: ArchipelagoId, etat: string, police: PoliceDeTest, elargir: 
   const iles = islandsOf(a);
   const largeur = largeurEnGras(police);
   const centres = iles.map((b) => islandCenter(b.id));
-  // L'étiquette flotte à 12 cases au-dessus du sol de son île (`etiquettes.ts`).
+  // L'étiquette flotte à 12 cases au-dessus du sol de son île (`labels.ts`).
   const boxes = iles.map((b, i) => ({ ...ecran(centres[i].x + 0.5, centres[i].z + 12, centres[i].y + 0.5), ...etiquette(b.name, etat, largeur, elargir) }));
   const points = centres.map((p) => ecran(p.x + 0.5, p.z, p.y + 0.5));
   // Le fanion du bonhomme et la flèche de la destination (`marksOnScreen`).
@@ -82,11 +82,11 @@ function laCarte(a: ArchipelagoId, etat: string, police: PoliceDeTest, elargir: 
     return { x: pointe.x + ecart.dx, y: pointe.y + ecart.dy - 24, w: (48 * 96) / 124, h: 48 };
   };
   // Sur un ouvrage, la flèche prend la première de ses places libres, et aucune étiquette ne se pose sur elle
-  // (`placerAvecLaFlecheDOuvrage`, comme `etiquettes.ts`).
+  // (`placerAvecLaFlecheDOuvrage`, comme `labels.ts`).
   const cadre = { w: W, h: H };
   const d = islandCenter((typeof destination === 'string' ? destination : iles[0].id) as BiomeId);
   const fleches = places.map((p) => flecheEn(ecran(p.x, p.z, p.y)));
-  // La destination : l'île, ou celle d'où part l'ouvrage (`etiquettes.ts`).
+  // La destination : l'île, ou celle d'où part l'ouvrage (`labels.ts`).
   const dest = typeof destination === 'string' ? destination : destination.depuis;
   const poids = { weights: iles.map((b) => (b.id === dest ? 2 : 1)) };
   const vue = { zones: ZONES, bulles: [], bounds: cadre, gap: 6 };

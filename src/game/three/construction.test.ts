@@ -1,5 +1,5 @@
 // Le shader des blocs de la construction taillée : l'attribut `motif` porte soit le motif d'un mur peint (lot 7b,
-// world/architecture/peinture.ts, en bits), soit celui d'un bloc assemblé (GD-2, au-delà de `MOTIF_ASSEMBLE_DEBUT`) ;
+// world/architecture/paint.ts, en bits), soit celui d'un bloc assemblé (GD-2, au-delà de `MOTIF_ASSEMBLE_DEBUT`) ;
 // chaque fonction ne reçoit que le sien.
 import type * as THREE from 'three';
 import { describe, expect, it } from 'vitest';

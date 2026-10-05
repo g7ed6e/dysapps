@@ -7,15 +7,15 @@ import type { ElementDeDecor } from '../decorMesh';
 import { coeurDe, inCore, islandDef } from '../map';
 import { NIVEAU_EAU, type ChampDuSol, type Colonne } from '../landMesh';
 import type { Couleur, Faces } from '../palette';
-import type { Lointain } from './lointain';
-import { enRepere, type Forme } from './outils';
-import { COULEURS_DU_PONTON, dessinerPonton } from './ponton';
-import { boite, DELAVE, eclaircir, icosaedre, pave, peintre, tronconique, type Peindre, type Pinceau, type V3 } from './pinceau';
+import type { Lointain } from './distant';
+import { enRepere, type Forme } from './tools';
+import { COULEURS_DU_PONTON, dessinerPonton } from './pontoon';
+import { boite, DELAVE, eclaircir, icosaedre, pave, peintre, tronconique, type Peindre, type Pinceau, type V3 } from './brush';
 
 /** Les couleurs de la fiche : la pierre des tours, l'ardoise, la mousse des roches, la glace de la calotte. */
 export const COULEURS_5E = { pierre: 0x7d8a86, ardoise: 0x224c5f, mousse: 0x5a7e50, roche: 0x6a7f86, glace: 0xe5ebe3, glaceCote: 0xc9d8dc, ecume: 0xe8eeec, roseau: 0x8a8a5a } as const;
 
-/** Le Relais des voyageurs (DA, LV2-2) : le bois du ponton (./ponton.ts) et le fer de la girouette. */
+/** Le Relais des voyageurs (DA, LV2-2) : le bois du ponton (./pontoon.ts) et le fer de la girouette. */
 const COULEURS_DU_RELAIS = { ...COULEURS_DU_PONTON, fer: 0x3a4148 } as const;
 
 /** Les deux faces d'une couleur de la fiche : un dessus un peu plus clair ; délavées si l'île est fermée. */
@@ -158,7 +158,7 @@ function girouette(P: Pinceau, cx: number, cz: number, base: number, muted: bool
   boite(P, cx - 0.05, y, cz - e, cx + 0.0, y + 0.25, cz + e, fer);
 }
 
-/** La tour en ruine, la calotte, le ponton et la girouette : des formes hors de la grille (./horsGrille.ts), sans cubes, qu'on ne touche pas. */
+/** La tour en ruine, la calotte, le ponton et la girouette : des formes hors de la grille (./offGrid.ts), sans cubes, qu'on ne touche pas. */
 export const FORMES_HORS_GRILLE_5E: Record<string, Forme> = {
   'tour-en-ruine': ({ P, e, cx, cz, base, hasard }) => tourEnRuine(P, cx, cz, base, 0.35, e.muted, hasard),
   calotte: ({ P, e, cx, cz, base, hasard }) => calotte(P, cx, base, cz, e.muted, hasard),

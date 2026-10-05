@@ -64,7 +64,7 @@ Le tableau vaut pour les deux univers : Blocland, l’univers construit et par d
 | Ne rien retenir | Consigne toujours écrite, aide visuelle et rappel de règle toujours affichés | [Principes](../../www/pedagogie/principes.md#aider-sans-pénaliser) |
 | Pas de temps limité, pas de perte | Pas de chronomètre, deuxième essai, joker jamais pénalisant, pas de classement | [Principes](../../www/pedagogie/principes.md#sans-stress) |
 | Gestes | Cibles de 48 px au moins, touches 1 à 9 et Entrée | [Principes](../../www/pedagogie/principes.md#une-chose-à-la-fois) |
-| Animations | La préférence de l’appareil « Réduire les animations » (`prefers-reduced-motion`) ; le réglage de l’appli du même nom, retiré le 28 septembre 2026, est à refaire pour tous les univers ([état des chantiers](../pilotage/chantiers.md#laccessibilité-dans-lappli)) | `src/core/mouvement.ts`, `src/styles/global.css` |
+| Animations | La préférence de l’appareil « Réduire les animations » (`prefers-reduced-motion`) ; le réglage de l’appli du même nom, retiré le 28 septembre 2026, est à refaire pour tous les univers ([état des chantiers](../pilotage/chantiers.md#laccessibilité-dans-lappli)) | `src/core/motion.ts`, `src/styles/global.css` |
 | Pas de texte dans la 3D | Tout texte est dans un panneau HTML | [Principes](../../www/pedagogie/principes.md) |
 
 ### À surveiller

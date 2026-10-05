@@ -45,8 +45,8 @@ Pourquoi B : elle règle le toit et fait de la récompense un agrandissement du 
 
 - **La taille** : une petite pull request commune (environ 60 lignes dans `terrain.ts`, une ligne du kit du 6e, la créature du Marché), à faire avant 7c.
 - **Les fichiers** :
-  - le code : `src/game/world/terrain.ts` (`TROPHY_SLOTS`, `trophyModel`, l’emprise de la salle, la place de la créature du Marché) ; `world/architecture/lieux.ts` et `kits/6e.ts` (les piliers lus par colonne) ;
-  - les tests : `terrain.test.ts`, `lieux.test.ts`, `three/cubes.test.ts` (Blocland), `world/budget.test.ts`, et les empreintes à régénérer (l’emprise est réservée dès le départ) ;
+  - le code : `src/game/world/terrain.ts` (`TROPHY_SLOTS`, `trophyModel`, l’emprise de la salle, la place de la créature du Marché) ; `world/architecture/places.ts` et `kits/6e.ts` (les piliers lus par colonne) ;
+  - les tests : `terrain.test.ts`, `places.test.ts`, `three/cubes.test.ts` (Blocland), `world/budget.test.ts`, et les empreintes à régénérer (l’emprise est réservée dès le départ) ;
   - les captures : `scripts/rendu/mesures.mjs` (familles `lieux-salle` et `lieux-pres`, dont le cadre s’élargit) ;
   - la documentation : le manuel `www/manuel/blocland.md` (« La salle des trophées »), `style.md`, `docs/univers/blocland/cadrage.md`, `docs/univers/archipeo/cadrage.md`, `docs/univers/blocland/fiche.md`, `decisions.md`.
 - **Les captures** : dans les deux univers, la salle avec 0, 6, 12, 18 et 24 succès, de jour et de nuit, de près et de loin.

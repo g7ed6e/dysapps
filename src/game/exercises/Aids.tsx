@@ -4,7 +4,7 @@ import { frenchTypography } from '../../components/math/RichText';
 import { SpeakButton } from '../../components/SpeakButton';
 import type { Lang } from '../../core/speech';
 import { GRAPH_FRAME, type GraphFrame } from './graph';
-import { motsAEcouter } from './lexique';
+import { motsAEcouter } from './lexicon';
 
 /** Droite graduée d'entiers (relatifs compris), avec des points marqués et, au besoin, un bond. */
 export function NumberLineInt({ min, max, points = [], jump }: { min: number; max: number; points?: number[]; jump?: [number, number] }) {
@@ -87,7 +87,7 @@ export function RatioTable({ cols, rows, caption }: { cols: string[]; rows: (str
 /**
  * Rappel de règle : quelques lignes courtes, toujours visibles. En anglais (`lang: 'en'`, passé par l'écran), une ligne de
  * lexique (« push = pousser, pull = tirer ») porte à sa droite un bouton Écouter qui lit ses mots anglais en voix anglaise
- * (« push, pull », voir `lexique.ts`) ; une ligne de méthode, en français, n'en a pas.
+ * (« push, pull », voir `lexicon.ts`) ; une ligne de méthode, en français, n'en a pas.
  */
 export function RuleCard({ title, lines, lang = 'fr' }: { title?: string; lines: string[]; lang?: Lang }) {
   return (

@@ -2,7 +2,7 @@
 // glisser à plat (bornée à l'archipel), eau autour des îles, vol vers une île, jour et nuit, créatures qui se
 // promènent. Chargé à la demande (voir ./index.ts).
 // La scène est faite de parties (cubes, navire, bornes, personnages, lumière, brume, étiquettes, le large, la caméra) :
-// ce composant les crée et leur passe les props ; les gestes (./gestes.ts) et la boucle d'image (./boucle.ts) sont à part.
+// ce composant les crée et leur passe les props ; les gestes (./gestures.ts) et la boucle d'image (./loop.ts) sont à part.
 import { useEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import type { BiomeId } from '../biomes';
@@ -10,28 +10,28 @@ import { ileDeLaVueGlissee, islandCenter, worldBounds } from '../world/terrain';
 import { cubeTags, type VoyageRun } from '../world/scene';
 import { rappelsDeLaVue, type WorldViewProps } from '../world/view';
 import { centreDeLObjet, cleDeLaCreature, cleDeLObjet, signesDesObjets, sommetsDesBornes, type ObjetDeLaFiche, type ObjetTouche } from '../world/affordance';
-import { useEnCasesDuMonde } from '../useEnCasesDuMonde';
+import { useEnCasesDuMonde } from '../useInWorldCells';
 import { createMeter } from './meter';
-import { habillageDe } from '../habillage';
-import { mesuresDemandees, renduDuMonde, styleDuMonde } from '../rendu';
+import { habillageDe } from '../skin';
+import { mesuresDemandees, renduDuMonde, styleDuMonde } from '../rendering';
 import { useSettings } from '../../core/SettingsContext';
 import { surfaceDe } from './surface';
-import type { Derniers, Instant, Monde, PartieDeLaScene } from './partie';
-import { creerLumiere } from './lumiere';
-import { creerBrume } from './brume';
-import { creerLarge } from './large';
-import { creerBornes, type Bornes } from './bornes';
+import type { Derniers, Instant, Monde, PartieDeLaScene } from './scenePart';
+import { creerLumiere } from './light';
+import { creerBrume } from './mist';
+import { creerLarge } from './offshore';
+import { creerBornes, type Bornes } from './markers';
 import { creerAffordance, type Affordance } from './affordance';
-import { creerEtiquettes, type Etiquettes } from './etiquettes';
-import { creerPersonnages, type Personnages } from './personnages';
-import { creerSignes, type Signes } from './signes';
+import { creerEtiquettes, type Etiquettes } from './labels';
+import { creerPersonnages, type Personnages } from './characters';
+import { creerSignes, type Signes } from './signs';
 import { creerCubes, type Cubes } from './cubes';
-import { creerNavire, type Amarre, type Navire } from './navire';
+import { creerNavire, type Amarre, type Navire } from './ship';
 import { creerCamera, type Camera } from './camera';
-import { creerRond } from './rond';
-import { ecouterLeClavier, ecouterLesGestes } from './gestes';
-import { lancerLaBoucle } from './boucle';
-import { contourner, lecteurDePlaceLibre, lirePlaceLibre, sousLaFiche, type PlaceLue } from '../placeLibre';
+import { creerRond } from './groundRing';
+import { ecouterLeClavier, ecouterLesGestes } from './gestures';
+import { lancerLaBoucle } from './loop';
+import { contourner, lecteurDePlaceLibre, lirePlaceLibre, sousLaFiche, type PlaceLue } from '../freeSpace';
 
 
 /** La scène en cours : le moteur de rendu, la caméra, et les parties que les props mettent à jour. */
@@ -109,7 +109,7 @@ export default function WorldCanvas({
   rappels.current = rappelsDuRendu;
   const { build, onVoyageLegEnd } = rappelsDuRendu;
   const host = useRef<HTMLDivElement>(null);
-  // Le rendu du monde (celui de l'univers, voir rendu.ts), lu une fois pour la vie du composant.
+  // Le rendu du monde (celui de l'univers, voir rendering.ts), lu une fois pour la vie du composant.
   const rendu = useRef(renduDuMonde()).current;
   const world = useRef<Scene3D | null>(null);
   /** Le voyage en cours dans la scène : son temps (départ ou arrivée), son début, où l'on en est. */
@@ -182,7 +182,7 @@ export default function WorldCanvas({
     // Les plaques des créatures (créées plus bas, lues seulement à l'animation) : les étiquettes s'en écartent.
     const plaques = { boites: (cam: THREE.Camera, W: number, H: number) => signesDesCreatures.boites(cam, W, H), get version() { return signesDesCreatures.version; } };
     // La place de la bulle d'or : relue tout de suite quand une fiche s'ouvre ou se ferme sur la Carte (comme les bulles
-    // de l'île, signes.ts : la clé change avec elle), et sans « Recentrer », qui paraît avec la vue déplacée, donc avec la
+    // de l'île, signs.ts : la clé change avec elle), et sans « Recentrer », qui paraît avec la vue déplacée, donc avec la
     // bulle tenue au bord. Le cadrage de la caméra, lui, ne le compte pas : la Carte s'ouvrirait autrement.
     const lirePlaceDeLaBulle = lecteurDePlaceLibre(el);
     const lecteurDeLaPlaceDeLaBulle = (contexte: string): PlaceLue => {
@@ -316,7 +316,7 @@ export default function WorldCanvas({
     const glissePermis = () => Boolean(vueDeplaceeRef.current) && !voyageRef.current && !instant.marche && !instant.navigue;
     /** Le zoom est permis : sur la Carte seulement, quand le glissé l'est. */
     const zoomPermis = () => glissePermis() && derniers.current.carte && instant.carte;
-    // Le clavier (les flèches vont à l'île voisine) et les gestes (./gestes.ts).
+    // Le clavier (les flèches vont à l'île voisine) et les gestes (./gestures.ts).
     const scenePourLesGestes = {
       canvas: renderer.domElement,
       camera,
@@ -424,7 +424,7 @@ export default function WorldCanvas({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [burst?.seq]);
 
-  // ---- La pose d'une partie en vague (GD-6, Blocland, world/vague.ts) : lancée une fois par `seq`, arrêtée quand la page
+  // ---- La pose d'une partie en vague (GD-6, Blocland, world/wave.ts) : lancée une fois par `seq`, arrêtée quand la page
   // la retire (finie ou touchée). Relancée si la scène est refaite (un autre archipel, « Réduire les animations ») : la
   // partie ne reste jamais cachée, et le terrain est reposé dans le même effet (la scène neuve n'a pas encore les cubes),
   // une seule fois, avec la vague. Sur la même scène, le terrain reçu suffit : la vague lancée ou arrêtée le refait.
@@ -493,7 +493,7 @@ export default function WorldCanvas({
   }, [voyage?.seq, voyage?.leg]);
 
   // ---- Ce que montre la flèche de la destination (une île, un ouvrage, ou une case du monde : le chantier du navire) ;
-  // la 3D la dessine en bulle sur la Carte (three/etiquettes.ts)
+  // la 3D la dessine en bulle sur la Carte (three/labels.ts)
   useEffect(() => {
     world.current?.bornes.poserLaFleche(marker);
   }, [marker]);

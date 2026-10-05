@@ -14,10 +14,10 @@ const BLOCLAND = join(SRC, 'game');
 const REGLES = [
   'engine',
   // Le moteur, un métier par fichier (qualité du code, lot 5) : engine.ts les réexporte.
-  'engine/etat',
+  'engine/state',
   'engine/dates',
-  'engine/lecture',
-  'engine/apprentissage',
+  'engine/reading',
+  'engine/learning',
   'boss',
   'bossCore',
   'trophies',
@@ -36,22 +36,22 @@ const REGLES = [
   'world/archipelago',
   'world/vehicle',
   'world/voyage',
-  'world/archipels',
+  'world/archipelagos',
   'world/plans',
   // Les parties du bâtiment d'un lieu, une par mission (GD-6) : des cases des plans, posées par les missions terminées.
-  'world/parties',
+  'world/parts',
   'world/plansV1',
   'world/architect',
   'world/monuments',
   // L'assemblage des blocs (GD-2) et ses recettes, produites depuis docs/contenu/assemblage.md par `npm run contenu`.
-  'world/assemblage',
-  'world/recettes',
+  'world/assembly',
+  'world/recipes',
   // Les commandes des habitants (GD-7) et la forme de leurs petites constructions, en repère propre.
-  'world/commandes',
-  'world/petitesConstructions',
-  'world/modele',
+  'world/requests',
+  'world/fixtures',
+  'world/model',
   // Le contrat entre le jeu et ses dispositions (types seulement) : le jeu dit ce dont il a besoin.
-  'world/disposition',
+  'world/layout',
 ];
 
 /** La disposition en grille : la place des îles, des chemins, du quai, en cases du monde. */
@@ -62,28 +62,28 @@ const GRILLE = [
   'world/paths',
   'world/terrain',
   // Le terrain, un métier par fichier (qualité du code, lot 2) : terrain.ts les assemble et les réexporte.
-  'world/terrain/socle',
-  'world/terrain/vue',
-  'world/terrain/bornes',
-  'world/terrain/liaisons',
+  'world/terrain/base',
+  'world/terrain/view',
+  'world/terrain/markers',
+  'world/terrain/links',
   'world/terrain/village',
   'world/terrain/creatures',
-  'world/terrain/ilots',
-  'world/terrain/gardiens',
-  'world/terrain/petiteConstruction',
-  'world/terrain/examenDeLaPetiteConstruction',
-  'world/terrain/mer',
+  'world/terrain/islets',
+  'world/terrain/guardians',
+  'world/terrain/fixture',
+  'world/terrain/fixtureCheck',
+  'world/terrain/sea',
   'world/terrain/port',
   'world/terrain/monuments',
   'world/decor',
   'world/whalePass',
-  'world/grille',
+  'world/grid',
   // Où va le bonhomme quand on touche le sol : la case touchée, ou la plus proche où il peut aller.
-  'world/arrivee',
+  'world/arrival',
   // Le monde en cubes : un cube en cases du monde, ce qu'on touche pour entrer (J5).
   'world/cube',
   // La salle des trophées qui s'agrandit (GD-3) : son emprise, ses travées et les places des trophées, en cases.
-  'world/salle',
+  'world/trophyHall',
   // Le relief de chaque île, en repère d'île, un fichier par archipel (socle de la piste Rendu).
   'world/silhouettes',
   'world/silhouettes/types',
@@ -92,9 +92,9 @@ const GRILLE = [
   'world/silhouettes/4e',
   'world/silhouettes/3e',
   // Les modèles des personnages en cubes, en repère propre : la grille les pose, les vues les dessinent (R6).
-  'world/personnages/ascii',
-  'world/personnages/creatures',
-  'world/personnages/gardiens',
+  'world/characters/ascii',
+  'world/characters/creatures',
+  'world/characters/guardians',
 ];
 
 /**
@@ -103,8 +103,8 @@ const GRILLE = [
  */
 function estUnivers(file: string): boolean {
   const n = nom(file);
-  if (!file.startsWith(BLOCLAND)) return n === 'univers' || n.startsWith('univers/') || n === 'core/univers';
-  return n === 'habillage' || n === 'world/habillage' || n.startsWith('world/habillage/') || n === 'world/palette' || n === 'world/modeleDessine' || n.startsWith('world/modeleDessine/');
+  if (!file.startsWith(BLOCLAND)) return n === 'univers' || n.startsWith('univers/') || n === 'core/universe';
+  return n === 'habillage' || n === 'world/habillage' || n.startsWith('world/skin/') || n === 'world/palette' || n === 'world/modeleDessine' || n.startsWith('world/drawnModel/');
 }
 
 /** Le contrat commun des vues et sa simulation. */
@@ -236,8 +236,8 @@ describe('Les couches du jeu', () => {
   });
 
   it('les textes, l’habillage, la palette et le modelé de chaque univers sont dans la couche des univers', () => {
-    const univers = ['univers/index.ts', 'univers/blocland/index.ts', 'univers/communs.ts', 'core/univers.ts'].map((f) => join(SRC, f));
-    const habillages = ['habillage.ts', 'world/habillage/index.ts', 'world/habillage/blocland.ts', 'world/habillage/archipeo.ts', 'world/palette.ts', 'world/modeleDessine/5e.ts'].map((f) => join(BLOCLAND, f));
+    const univers = ['universes/index.ts', 'universes/blocland/index.ts', 'universes/common.ts', 'core/universe.ts'].map((f) => join(SRC, f));
+    const habillages = ['skin.ts', 'world/skin/index.ts', 'world/skin/blocland.ts', 'world/skin/archipeo.ts', 'world/palette.ts', 'world/drawnModel/5e.ts'].map((f) => join(BLOCLAND, f));
     expect([...univers, ...habillages].filter((f) => !existsSync(f) || couche(f) !== 'univers')).toEqual([]);
     expect(PERMIS.regle.includes('univers') || PERMIS.grille.includes('univers') || PERMIS.commun.includes('univers')).toBe(false);
   });

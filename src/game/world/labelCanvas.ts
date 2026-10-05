@@ -7,8 +7,8 @@
 import type { IslandStateId } from './islandState';
 import { BLOCKS, type BlockId } from '../biomes';
 import { project, shade } from '../Voxel';
-import { COTE_DU_VISAGE, type Visage } from './personnages/visage';
-import type { Habillage } from './habillage/types';
+import { COTE_DU_VISAGE, type Visage } from './characters/face';
+import type { Habillage } from './skin/types';
 
 export interface IslandLabelState {
   id: IslandStateId;
@@ -28,13 +28,13 @@ const BLOC_DEMI = 0.52;
 const BLOC_ECART = 0.3;
 /** La largeur du bloc et de son écart avant le nom (un cube vu de trois quarts est large de √3 fois sa demi-hauteur). */
 const blocW = (px: number) => Math.sqrt(3) * BLOC_DEMI * px + BLOC_ECART * px;
-/** L'encre des étiquettes de Blocland, celle de ses bulles (three/signes.ts). */
+/** L'encre des étiquettes de Blocland, celle de ses bulles (three/signs.ts). */
 const ENCRE_DU_BLOC = '#2b2118';
 
 /**
  * Un bloc vu de trois quarts, centré sur (`cx`, `cy`), de demi-hauteur `demi` : le cube de `BlockIcon` (Voxel.tsx : le
  * dessus, la face gauche, la face droite plus sombre, mêmes couleurs, même projection), puis son contour et ses deux
- * arêtes intérieures au trait `encre`. Sert aux bulles des commandes (three/signes.ts) et aux étiquettes des îles.
+ * arêtes intérieures au trait `encre`. Sert aux bulles des commandes (three/signs.ts) et aux étiquettes des îles.
  * `traits` : l'épaisseur du contour et des arêtes, en pixels du canvas (par défaut, à l'échelle du bloc). `delave` :
  * les faces à demi transparentes sur le fond (une île fermée), le contour net.
  */
@@ -259,7 +259,7 @@ export const COULEURS_DES_SIGNES = {
  * Le médaillon « toi » de la Carte (Blocland, piste B choisie par le mainteneur le 4 octobre 2026 ; Archipéo, choix
  * « 1a », même jour) : un disque clair au bord sombre épais, à l'ombre nette, de rayon `r` centré en (`cx`, `cy`), aux
  * couleurs des bulles de l'univers (`couleurs`), qui porte le visage du joueur (`visage` : en pixels, ou en facettes ;
- * world/personnages/visage.ts). Jamais la couleur de la prochaine chose à faire. Il se distingue de la bulle de la
+ * world/characters/face.ts). Jamais la couleur de la prochaine chose à faire. Il se distingue de la bulle de la
  * destination par sa forme (un rond, pas une plaque ni un hexagone à pointe) et son image (un visage).
  */
 export function drawMedaillon(

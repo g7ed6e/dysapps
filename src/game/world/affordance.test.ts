@@ -28,10 +28,10 @@ import {
 } from './affordance';
 import { isBiomeUnlocked } from './archipelago';
 import { toutConstruit } from './budget';
-import { etatsDesObjets, modeleDuMonde } from './modele';
+import { etatsDesObjets, modeleDuMonde } from './model';
 import { creaturePlacements, gardienDuMonde, guardianPlacements, islandCenter, vehiclePlacement, worldCubes } from './terrain';
-import { textesDe } from '../../univers';
-import { GESTE_DU_SIGNE, hauteurDuSigne } from './signe';
+import { textesDe } from '../../universes';
+import { GESTE_DU_SIGNE, hauteurDuSigne } from './sign';
 import type { ArchipelagoId } from './map';
 
 const textes = textesDe('blocland');

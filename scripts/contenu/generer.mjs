@@ -1,4 +1,4 @@
-// npm run contenu : produit src/game/iles.ts, les JSON des exercices (src/game/exercises/data/<id>.json) et des
+// npm run contenu : produit src/game/islands.ts, les JSON des exercices (src/game/exercises/data/<id>.json) et des
 // plans des bâtiments (src/game/world/plans/<id>.json), des commandes des habitants (src/game/world/requests.json) depuis
 // les îles écrites en Markdown (docs/contenu/<île>.md, format : scripts/contenu/format.mjs), des questions des blocs
 // assemblés (docs/contenu/assemblage.md, src/game/exercises/data/assemblage-<bloc>.json), et les JSON des missions du

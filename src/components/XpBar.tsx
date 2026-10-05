@@ -1,6 +1,6 @@
 import { levelFromXp } from "../core/progress";
 import { RoleBadge } from "./RoleBadge";
-import { nomDuRole, useTextes } from "../univers";
+import { nomDuRole, useTextes } from "../universes";
 
 /** L'insigne du rôle, le niveau et la barre d'XP. */
 export function XpBar({ xp, large = false }: { xp: number; large?: boolean }) {

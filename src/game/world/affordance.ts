@@ -9,14 +9,14 @@
 // Gardien pas encore rallumé, le Bloc-Navire, chaque chantier en fantôme (un ouvrage, un monument à bâtir), l'école, la
 // salle des trophées et un monument bâti ; leur état dit qui porte une bulle (« à faire »). Et la zone de toucher : au
 // moins 48 pixels à l'écran autour d'une borne ou d'un Gardien petits (`zoneDuToucher`), qui ne remplace jamais un
-// toucher direct ni une face en chantier. Code pur, sans Three.js : three/signes.ts dessine les bulles (avec les plaques
+// toucher direct ni une face en chantier. Code pur, sans Three.js : three/signs.ts dessine les bulles (avec les plaques
 // des créatures), three/affordance.ts calcule les zones, world/budget.ts compte les bulles (`signesCost`).
 import { estUnBiome, type BiomeId, type BlockId } from '../biomes';
 import type { AnyIconName } from '../../components/Icon';
 import { getBridge } from './archipelago';
 import type { PlaceId, VoxelCube } from './cube';
-import type { EtatsDesObjets } from './modele';
-import type { ObjetDeLaFiche } from './disposition';
+import type { EtatsDesObjets } from './model';
+import type { ObjetDeLaFiche } from './layout';
 
 export type { ObjetDeLaFiche };
 import type { Cell, CreaturePlacement } from './paths';
@@ -120,7 +120,7 @@ function signeAuDessus(objet: ObjetTouche, etat: EtatDuSigne, iles: BiomeId[], b
 
 /**
  * Le sommet de chaque borne de mission (le dessus de son ardoise), par « île:mission » : la pile d'étoiles d'une borne
- * réussie s'y pose (three/bornes.ts).
+ * réussie s'y pose (three/markers.ts).
  */
 export function sommetsDesBornes(cubes: readonly VoxelCube[]): Map<string, number> {
   const out = new Map<string, number>();
@@ -135,7 +135,7 @@ export interface EntreeDesSignes {
   quests?: readonly { id: string; state: 'new' | 'locked' | number }[];
   creatures?: readonly CreaturePlacement[];
   vehicle?: VehiclePlacement | null;
-  /** Ce que les cubes ne disent pas (world/modele.ts) ; sans lui, tout ce qui n'est pas une borne à faire est « pas encore ». */
+  /** Ce que les cubes ne disent pas (world/model.ts) ; sans lui, tout ce qui n'est pas une borne à faire est « pas encore ». */
   etats?: EtatsDesObjets;
 }
 
@@ -251,7 +251,7 @@ export function centreDeLObjet(
 /**
  * Le saut d'une pile d'étoiles au toucher, en blocs, `ms` millisecondes après le doigt levé : 0 avant et après ; une seule bosse,
  * vive (un quart de sinus pour monter, un quart de cosinus pour redescendre), sans rebond. Rien à voir avec le saut lent
- * des révisions (world/signe.ts), qui dit « j'ai quelque chose pour toi » : celui-ci dit « je t'ai entendu ».
+ * des révisions (world/sign.ts), qui dit « j'ai quelque chose pour toi » : celui-ci dit « je t'ai entendu ».
  */
 export function sautDuSigne(ms: number): number {
   const { hauteur, monteeMs, descenteMs } = SIGNE.saut;

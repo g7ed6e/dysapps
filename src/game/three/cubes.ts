@@ -1,29 +1,29 @@
 // Les cubes de la scène 3D : le monde en blocs (une géométrie par matériau, faces visibles seulement) ; dans Archipéo,
 // le sol et la roche en facettes (lot R2) et le décor en primitives (lot R4), le reste en cubes. Aussi la case visée en
 // chantier, les éclats (la poussière d'un bloc posé, l'écume du navire) et, dans Blocland, le geste de pose (le dernier
-// bloc d'un plan descend et s'enclenche, world/pose.ts) et la pose d'une partie du bâtiment en vague (GD-6, world/vague.ts) ;
-// dans Archipéo, la même pose en fondu, de la pierre des ruines à la couleur du plan (world/maillageDuFondu.ts).
+// bloc d'un plan descend et s'enclenche, world/pose.ts) et la pose d'une partie du bâtiment en vague (GD-6, world/wave.ts) ;
+// dans Archipéo, la même pose en fondu, de la pierre des ruines à la couleur du plan (world/fadeMesh.ts).
 import * as THREE from 'three';
 import type { VoxelCube } from '../Voxel';
 import { caseDuDecor, maillageDuDecor, rangerLeDecor, signatureDuDecor } from '../world/decorMesh';
 import { champDuSol, landMesh, pickCell, poseDuDecor, signatureDuChamp, type ChampDuSol } from '../world/landMesh';
 import { cacheDeLaConstruction, caseDeLaConstruction, caseDeLaPiece, construireParIle, couleursDesRoles, miseBoutABout, piliersDe, type MaillageDeLaConstruction, sansToursDuCoeur } from '../world/construction';
-import { modelerLeSol } from '../world/modeleDessine';
+import { modelerLeSol } from '../world/drawnModel';
 import { buildMesh } from '../world/mesher';
 import { gesteFini, hauteurDuGeste } from '../world/pose';
-import { avanceeDuFondu, couchesPosees, cubesPartis, hauteurDansLaVague, planDeLaVague, type PlanDeLaVague } from '../world/vague';
-import { maillageAvecLaVague, type QueueDeLaVague } from '../world/maillageDeLaVague';
-import { couleurDuFondu, maillageDuFondu, type FonduDeLaPose } from '../world/maillageDuFondu';
+import { avanceeDuFondu, couchesPosees, cubesPartis, hauteurDansLaVague, planDeLaVague, type PlanDeLaVague } from '../world/wave';
+import { maillageAvecLaVague, type QueueDeLaVague } from '../world/waveMesh';
+import { couleurDuFondu, maillageDuFondu, type FonduDeLaPose } from '../world/fadeMesh';
 import type { EnCasesDuMonde } from '../world/view';
-import { styleDuMonde } from '../rendu';
-import { creerPiliers } from './bornes';
+import { styleDuMonde } from '../rendering';
+import { creerPiliers } from './markers';
 import { creerConstruction, creerMateriaux, type MateriauxDeConstruction } from './construction';
 import { creerDecor } from './decor';
-import type { Large } from './large';
-import type { Lumiere } from './lumiere';
-import { meshOf } from './maillage';
-import type { Instant, Monde, PartieDeLaScene } from './partie';
-import { creerSol } from './sol';
+import type { Large } from './offshore';
+import type { Lumiere } from './light';
+import { meshOf } from './meshes';
+import type { Instant, Monde, PartieDeLaScene } from './scenePart';
+import { creerSol } from './ground';
 
 type Case = { x: number; y: number; z: number };
 

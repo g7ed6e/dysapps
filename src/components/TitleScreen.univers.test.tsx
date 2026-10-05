@@ -4,12 +4,12 @@ import { MemoryRouter, useLocation } from 'react-router-dom';
 import { TitleScreen } from './TitleScreen';
 import { SettingsProvider } from '../core/SettingsContext';
 import { loadJSON, saveJSON } from '../core/storage';
-import { MESSAGE_UNIVERS_KEY } from '../core/univers';
+import { MESSAGE_UNIVERS_KEY } from '../core/universe';
 
 // L'écran titre voit le message unique rallumé (`PRESENTER_ARCHIPEO`) ; le premier univers, lui, garde la constante du
 // module : il ne note jamais le message.
-vi.mock('../core/univers', async (importOriginal) => ({
-  ...(await importOriginal<typeof import('../core/univers')>()),
+vi.mock('../core/universe', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('../core/universe')>()),
   PRESENTER_ARCHIPEO: true,
 }));
 

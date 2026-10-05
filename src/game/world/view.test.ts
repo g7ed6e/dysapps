@@ -1,7 +1,7 @@
 // La flèche de la Carte posée sur un ouvrage (GD-7) : sur sa liaison, côté île de départ, qui ne désigne que lui.
 import { BRIDGES } from './archipelago';
-import { archipelagoOfIsland } from './archipels';
-import { grilleDe } from './grille';
+import { archipelagoOfIsland } from './archipelagos';
+import { grilleDe } from './grid';
 import { isLand, mapOf } from './map';
 import { casesDeLOuvrage, placesDeLaFleche, premierCoude } from './terrain';
 import { estUnOuvrage } from './view';

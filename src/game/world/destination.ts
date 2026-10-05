@@ -10,8 +10,8 @@ import { isUnexplored } from './islandState';
 import { villageStage } from './villageStage';
 import { stageAt } from './vehicle';
 import type { Goal } from './goals';
-import { commandeMiseEnAvant, texteDeLaCommande } from './commandes';
-import { lieuDAssemblage } from './assemblage';
+import { commandeMiseEnAvant, texteDeLaCommande } from './requests';
+import { lieuDAssemblage } from './assembly';
 
 export interface Destination {
   island: BiomeId;
@@ -65,7 +65,7 @@ export function laDestinationEstLeNavire(d: Destination, objectifDuPort: Goal | 
  * 1. le Bloc-Navire prêt à partir (le port) ;
  * 2. l'île où se tient le bonhomme, où l'élève est allé de lui-même, quand il y reste quelque chose à faire tout de
  *    suite (un objectif prêt, une mission jamais jouée) ;
- * 3. la plus ancienne commande prête à livrer de l'archipel (GD-7, PR 3, world/commandes.ts) : l'île de sa créature,
+ * 3. la plus ancienne commande prête à livrer de l'archipel (GD-7, PR 3, world/requests.ts) : l'île de sa créature,
  *    avec sa phrase « prête » (un univers qui ne montre pas les commandes passe un état `sansCommandes`) ;
  * 4. une île ouverte pas encore explorée ;
  * 5. l'ouvrage suggéré (`ouvrageSuggere`) : celui qu'on peut payer et qui ouvre une île de la matière la moins jouée ;

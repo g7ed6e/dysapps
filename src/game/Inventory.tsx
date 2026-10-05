@@ -9,7 +9,7 @@ import { KIND_NAME } from './world/archipelago';
 import { blocTrophee, inventoryUses, whereToEarn, type Use } from './world/uses';
 import { VEHICLE_NAME } from './world/vehicle';
 import { useUnivers } from '../core/SettingsContext';
-import { UNIVERS } from '../core/univers';
+import { UNIVERS } from '../core/universe';
 import { Sheet } from './Sheet';
 
 const cap = (text: string) => `${text.charAt(0).toUpperCase()}${text.slice(1)}`;

@@ -6,8 +6,8 @@
 // Générateur pur : partagé entre le monde 3D, les pages simples et le moteur.
 import { BLOC, BIOMES, getBiome, type BiomeDef, type BiomeId, type BlockId } from '../biomes';
 import { lv2Courante, type Lv2Choice } from '../../core/settings';
-import { ARCHIPELAGO_IDS, archipelagoOfIsland, type ArchipelagoId } from './archipels';
-import { premierePartiePosee } from './parties';
+import { ARCHIPELAGO_IDS, archipelagoOfIsland, type ArchipelagoId } from './archipelagos';
+import { premierePartiePosee } from './parts';
 
 /** La place de chaque île est dans `map.ts` (MAP). */
 
@@ -19,7 +19,7 @@ export interface ArchipelagoDef {
   /**
    * Le nom commun, celui des données (le site de documentation, les tests) : sans article ni majuscule initiale
    * d'article, « Premiers Rivages » → « les Premiers Rivages ». Ce que lit l'élève passe par les textes de l'univers
-   * affiché (`archipels` de src/univers/), jamais par ce champ (GD-1).
+   * affiché (`archipels` de src/universes/), jamais par ce champ (GD-1).
    */
   name: string;
   port: BiomeId;

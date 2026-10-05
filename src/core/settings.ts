@@ -1,5 +1,5 @@
 import { translateSettings } from './migration';
-import { UNIVERS, UNIVERS_PAR_DEFAUT, universAffiche, type UniversChoice } from './univers';
+import { UNIVERS, UNIVERS_PAR_DEFAUT, universAffiche, type UniversChoice } from './universe';
 import { clamp } from './math';
 
 export type FontChoice = 'luciole' | 'opendyslexic' | 'atkinson' | 'arial';
@@ -10,7 +10,7 @@ export type ThemeChoice = 'cream' | 'night' | 'light';
 export type WorldViewChoice = '3d' | 'list';
 /** La lumière du monde : celle de l'heure réelle (la nuit tombe le soir), ou toujours le jour. */
 export type WorldLightChoice = 'real' | 'day';
-export type { UniversChoice } from './univers';
+export type { UniversChoice } from './universe';
 /**
  * La deuxième langue vivante, à partir de la 5e : une seule, comme au collège. Par défaut l'espagnol (décision de G du
  * 28/09/2026), la LV2 de la grande majorité des collégiens ; « aucune » pour un élève qui en est dispensé.
@@ -47,7 +47,7 @@ export interface Settings {
   /** La LV2 de l'élève : ses missions, sa voix. La langue non choisie n'apparaît nulle part. */
   lv2: Lv2Choice;
   /**
-   * L'univers de l'appareil (lot 6, src/core/univers.ts). Absent sur un appareil qui ne l'a jamais ouvert depuis la
+   * L'univers de l'appareil (lot 6, src/core/universe.ts). Absent sur un appareil qui ne l'a jamais ouvert depuis la
    * bascule : le premier choix se calcule alors au premier lancement, puis reste. Jamais dans les réglages par défaut.
    */
   univers?: UniversChoice;

@@ -5,7 +5,7 @@
 // - Le fourneau de la Forge remplace le haut-fourneau de basalte (dans son emprise de 2 × 2) : de la maçonnerie, une
 //   gueule qui rougeoie, trois volutes minces.
 // - Les aiguilles d'ardoise deviennent des écueils bas, cernés d'écume ; les rochers posés sur le basalte, de la pierre chaude.
-// - Hors de la grille (rien ne s'y touche, rien n'y marche) : la grue de bois de l'Atelier ; au loin (./lointain.ts), le
+// - Hors de la grille (rien ne s'y touche, rien n'y marche) : la grue de bois de l'Atelier ; au loin (./distant.ts), le
 //   volcan et deux rangs de crêtes.
 import type { VoxelCube } from '../cube';
 import { mixColor } from '../daylight';
@@ -16,12 +16,12 @@ import type { Couleur, Faces } from '../palette';
 import type { TextureKind } from '../pixels';
 import { PLAN_ZONE } from '../plans';
 import { worldBounds } from '../terrain';
-import { dessinerRocher, FORMES_COMMUNES } from './communes';
-import type { Cone, Etendue, Lointain } from './lointain';
-import { bouffees } from './fumee';
-import { dessinerPonton } from './ponton';
-import { enRepere, type Forme } from './outils';
-import { boite, DELAVE, eclaircir, hex, icosaedre, lueur, peintre, tronconique, type Peindre, type Pinceau, type V3 } from './pinceau';
+import { dessinerRocher, FORMES_COMMUNES } from './common';
+import type { Cone, Etendue, Lointain } from './distant';
+import { bouffees } from './smoke';
+import { dessinerPonton } from './pontoon';
+import { enRepere, type Forme } from './tools';
+import { boite, DELAVE, eclaircir, hex, icosaedre, lueur, peintre, tronconique, type Peindre, type Pinceau, type V3 } from './brush';
 
 /** Les couleurs de l'intention du directeur artistique. */
 export const COULEURS_4E = {
@@ -405,7 +405,7 @@ function contrefort(o: Parameters<Forme>[0]): void {
   for (const [x, z, r] of places.slice(0, C.rochers)) icosaedre(P, [x, NIVEAU_EAU + 0.02, z], r, 0.55, 0.2, hasard, peindre, hasard() * Math.PI);
 }
 
-/** Le ponton du Jardin : celui du Relais (./ponton.ts), sur son contrefort, et sa barque amarrée à deux cases du rivage, comme ses cubes. */
+/** Le ponton du Jardin : celui du Relais (./pontoon.ts), sur son contrefort, et sa barque amarrée à deux cases du rivage, comme ses cubes. */
 const pontonDuJardin: Forme = (o) => {
   const { P, e, cx, cz, base } = o;
   contrefort(o);
@@ -419,7 +419,7 @@ const pontonDuJardin: Forme = (o) => {
  * Le volcan du fond (DA, intention du 4e) : un cône tronqué à 9 pans, roche `#6A5048`, de 16 blocs, à 100 cases
  * derrière le bout droit de la crête (la droite de la caméra : l'ouest, `u` = 0), sans lueur au cratère. Il paraît plus
  * petit que la grue dans la vue de l'archipel ; la brume de profondeur le pâlit. Dessiné par le lointain commun
- * (./lointain.ts, R4b-5e) ; son panache de 5 volutes, dans l'appel des fumées (`FUMEE_DU_VOLCAN_4E`).
+ * (./distant.ts, R4b-5e) ; son panache de 5 volutes, dans l'appel des fumées (`FUMEE_DU_VOLCAN_4E`).
  */
 export const VOLCAN_DU_FOND: Cone = { genre: 'cone', u: 0.12, recul: 100, haut: 16, rayon: 8, cratere: 1.8, pans: 9, couleur: 0x6a5048 };
 
@@ -439,7 +439,7 @@ export const LOINTAIN_4E: Lointain = {
   ],
 };
 
-/** Le milieu du cratère du volcan, en cases (comme `ancre` de ./lointain.ts). */
+/** Le milieu du cratère du volcan, en cases (comme `ancre` de ./distant.ts). */
 export function cratereDuVolcan(e: Etendue): { x: number; y: number; z: number } {
   return { x: e.minX + VOLCAN_DU_FOND.u * (e.maxX - e.minX), y: e.maxY + VOLCAN_DU_FOND.recul, z: VOLCAN_DU_FOND.haut };
 }

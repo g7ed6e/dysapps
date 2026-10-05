@@ -2,10 +2,10 @@
 // `npm run contenu` dans data/assemblage-<bloc>.json. Chaque bloc a ses questions ; chacune mobilise les deux matières
 // de sa recette, au niveau de son archipel ; trois choix, une aide, rien que la voix lirait mal.
 import { APPS } from '../../apps/registry';
-import { CYCLE_OF, byId } from '../../programme';
+import { CYCLE_OF, byId } from '../../curriculum';
 import { BIOMES } from '../biomes';
-import { RECETTES } from '../world/assemblage';
-import { ILES } from '../iles';
+import { RECETTES } from '../world/assembly';
+import { ILES } from '../islands';
 import { BLOCS_A_QUESTIONS, CATALOG, UNORDERED, loadAllExercises, loadAssemblage } from './index';
 import { SCREEN_TYPES } from './registry';
 import { piegesDe, placerChoixAssemblage, valeursDesNombres } from './shuffle';

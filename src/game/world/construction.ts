@@ -20,14 +20,14 @@
 //   par bâtiment, aucune sur une île fermée.
 //
 // Le phare de Grimoire (6e, décision 16) : chaque étape finie de son plan laisse la place à une pièce du phare de
-// référence (world/decor/phare.ts), en facettes peintes dans l'opaque (sa lanterne dans les fenêtres).
+// référence (world/decor/lighthouse.ts), en facettes peintes dans l'opaque (sa lanterne dans les fenêtres).
 // Le phare du large (5e, revue d'ensemble du directeur artistique, DA-4) : fini, le monument laisse la place à sa tour
-// ronde de pierre à feu ouvert (./phareDuLarge.ts), dans l'opaque (son feu dans les fenêtres).
+// ronde de pierre à feu ouvert (./offshoreLighthouse.ts), dans l'opaque (son feu dans les fenêtres).
 //
 // L'architecture modulaire (lot 7, ./architecture/) : un bloc posé d'un plan d'île dont le kit de l'archipel peint le
 // mur garde sa géométrie et sa fusion, avec un motif par face (le colombage, le bardage, le soubassement, le chaperon,
 // peints par le shader : l'attribut `motifs`) ; un bloc dont le kit dessine la pièce (un toit en pente, des pilotis)
-// laisse sa case à cette pièce, assemblée (./architecture/assemblage.ts) et peinte dans l'opaque, à la fin. Seul le kit
+// laisse sa case à cette pièce, assemblée (./architecture/assembly.ts) et peinte dans l'opaque, à la fin. Seul le kit
 // des Premiers Rivages est rempli (lot 7b) : ailleurs, rien n'est remplacé. L'école, la salle des trophées et la Halle aux
 // matériaux de ce kit le prennent aussi (`caseDuLieu`) ; les monuments gardent leurs blocs taillés.
 //
@@ -40,32 +40,32 @@
 // les trois groupes.
 //
 // Ce fichier garde le maillage et les bornes ; à côté, dans ./construction/ : les réglages de l'intention et les couleurs
-// des rôles (`reglages.ts`), ce que le shader reprend (`shader.ts`), le genre des blocs (`genres.ts`), le phare de
-// Grimoire (`phare.ts`), les bâtiments et les lieux que le kit reprend (`batiments.ts`). Il en réexporte les noms publics.
+// des rôles (`reglages.ts`), ce que le shader reprend (`shader.ts`), le genre des blocs (`kinds.ts`), le phare de
+// Grimoire (`phare.ts`), les bâtiments et les lieux que le kit reprend (`buildings.ts`). Il en réexporte les noms publics.
 import type { Cell } from './view';
 import { architectureDe, assemblerLesPieces, type Kit, KITS, MOTIF } from './architecture';
 import type { VoxelCube } from '../Voxel';
 import { ambianceDe, type Couleur, couleurDeMatiere, type Faces, MATIERES } from './palette';
-import { DELAVE, eclaircir, type FacettesDuDecor, hex, Pinceau, rgb } from './decor/pinceau';
+import { DELAVE, eclaircir, type FacettesDuDecor, hex, Pinceau, rgb } from './decor/brush';
 import { lineaire } from './landMesh';
 import type { ArchipelagoId } from './map';
-import { dessinerPont, FANTOME_DU_PONT, pontsDePierreEtDeBois } from './ponts';
-import { dessinerPhareDuLarge, hublotsDuPhareDuLarge, phareDuLarge } from './phareDuLarge';
-import { estUnePlaceDeTrophee } from './salle';
+import { dessinerPont, FANTOME_DU_PONT, pontsDePierreEtDeBois } from './bridges';
+import { dessinerPhareDuLarge, hublotsDuPhareDuLarge, phareDuLarge } from './offshoreLighthouse';
+import { estUnePlaceDeTrophee } from './trophyHall';
 import { mixColor } from './daylight';
-import { couleursDuToit } from './toits';
+import { couleursDuToit } from './roofs';
 import type { TextureKind } from './pixels';
-import { dessinerPhare } from './decor/phare';
-import { CREME_DU_PHARE, phareDeGrimoire } from './construction/phare';
-import { cle, decalagesDe, genresDesBlocs } from './construction/genres';
+import { dessinerPhare } from './decor/lighthouse';
+import { CREME_DU_PHARE, phareDeGrimoire } from './construction/lighthouse';
+import { cle, decalagesDe, genresDesBlocs } from './construction/kinds';
 import { type BlocAssemble, MOTIF_ASSEMBLE, SANS_BISEAU, teinteDeCase } from './construction/shader';
-import { BISEAU, couleurDuRole, FANTOME, LANTERNE, PROFONDEUR, RANG_DES_SOCLES, TOILE_DU_NAVIRE, TROPHEE, VERRE_HORS_MUR, VITRE_DE_JOUR } from './construction/reglages';
-import { batimentsDe, caseDuLieu } from './construction/batiments';
-export { ALLUMAGE, ARETE, ARETE_DU_VERRE, ARETE_FANTOME, BISEAU, couleursDesRoles, DECALAGE_MAX, ECART_SOMBRE, ECLAT_DU_BISEAU, FANTOME, FENETRES_ALLUMEES, LANTERNES_ALLUMEES, LUEUR, PLEINE_NUIT, TEINTE, TROPHEE, VITRE_DE_JOUR } from './construction/reglages';
+import { BISEAU, couleurDuRole, FANTOME, LANTERNE, PROFONDEUR, RANG_DES_SOCLES, TOILE_DU_NAVIRE, TROPHEE, VERRE_HORS_MUR, VITRE_DE_JOUR } from './construction/settings';
+import { batimentsDe, caseDuLieu } from './construction/buildings';
+export { ALLUMAGE, ARETE, ARETE_DU_VERRE, ARETE_FANTOME, BISEAU, couleursDesRoles, DECALAGE_MAX, ECART_SOMBRE, ECLAT_DU_BISEAU, FANTOME, FENETRES_ALLUMEES, LANTERNES_ALLUMEES, LUEUR, PLEINE_NUIT, TEINTE, TROPHEE, VITRE_DE_JOUR } from './construction/settings';
 export { BISEAU_GLSL, type BlocAssemble, detailDuMotif, ECLAT_GLSL, eclatDeFenetre, eclatDuBiseau, MOTIF_ASSEMBLE, MOTIF_ASSEMBLE_DEBUT, MOTIF_ASSEMBLE_GLSL, opaciteDesFantomes, SANS_BISEAU, TEINTE_GLSL, teinteDeCase } from './construction/shader';
-export { genresDesBlocs } from './construction/genres';
-export { CREME_DU_PHARE, phareDeGrimoire } from './construction/phare';
-export { batimentsDe, caseDuLieu, ETAPES_DU_BATIMENT, sansToursDuCoeur } from './construction/batiments';
+export { genresDesBlocs } from './construction/kinds';
+export { CREME_DU_PHARE, phareDeGrimoire } from './construction/lighthouse';
+export { batimentsDe, caseDuLieu, ETAPES_DU_BATIMENT, sansToursDuCoeur } from './construction/buildings';
 
 // ---------- Le maillage ----------
 
@@ -104,7 +104,7 @@ interface GroupeOpaque extends GroupeDeConstruction {
   /** Par sommet : 1 sur le verre hors d'un mur, que le shader cerne d'une arête par case (`ARETE_DU_VERRE`), sinon 0. */
   aretes: Float32Array;
   /**
-   * Par sommet : le motif peint (0 : aucun). Celui d'un mur ou d'une pièce d'architecture (./architecture/peinture.ts,
+   * Par sommet : le motif peint (0 : aucun). Celui d'un mur ou d'une pièce d'architecture (./architecture/paint.ts,
    * `MOTIF`, en bits, sous `MOTIF_ASSEMBLE_DEBUT`) : le shader y peint le colombage, le bardage, le soubassement et le
    * chaperon. Celui d'un bloc assemblé (GD-2, `MOTIF_ASSEMBLE`, à partir de `MOTIF_ASSEMBLE_DEBUT`) : le shader y peint
    * sa forme (`MOTIF_ASSEMBLE_GLSL`). Ni l'un ni l'autre n'ajoute un triangle.
@@ -132,11 +132,11 @@ export interface MaillageDeLaConstruction {
    */
   phare?: { opaque: [number, number]; fenetres: [number, number]; cellules: Cell[] };
   /**
-   * Les ponts de pierre et de bois du 5e (./ponts.ts) : leur tranche du groupe opaque (triangles), une par île (mis bout
+   * Les ponts de pierre et de bois du 5e (./bridges.ts) : leur tranche du groupe opaque (triangles), une par île (mis bout
    * à bout, les îles en donnent plusieurs).
    */
   ponts?: { opaque: [number, number] }[];
-  /** Le phare du large du 5e (./phareDuLarge.ts), fini : comme `phare`, ses triangles et les cases du monument. */
+  /** Le phare du large du 5e (./offshoreLighthouse.ts), fini : comme `phare`, ses triangles et les cases du monument. */
   phareDuLarge?: { opaque: [number, number]; fenetres: [number, number]; cellules: Cell[] };
   /** Les pièces d'architecture (./architecture/) : leurs triangles de l'opaque et la case de chacun, une tranche par île. */
   pieces?: TrancheDesPieces[];
@@ -250,7 +250,7 @@ class Remplissage {
     for (let i = 1; i + 1 < pts.length; i++) this.idx.push(base, base + i, base + i + 1);
   }
   /**
-   * Des facettes déjà tracées (le phare, world/decor/phare.ts) : repère Three, couleurs linéaires, trois sommets par
+   * Des facettes déjà tracées (le phare, world/decor/lighthouse.ts) : repère Three, couleurs linéaires, trois sommets par
    * triangle ; `nuit` : prendre leurs couleurs de nuit. Rend l'intervalle de leurs triangles.
    */
   facettes(f: FacettesDuDecor, attr: { extra?: number; biseaux?: boolean; teinte?: number }): [number, number] {
@@ -298,9 +298,9 @@ export function maillageDeLaConstruction(
   const fusion = options.fusion ?? true;
   // Le phare de Grimoire : ses étapes finies laissent la place au modèle (dessiné à la fin).
   const phare = options.navire ? null : phareDeGrimoire(cubes, a);
-  // Les ponts de pierre et de bois du 5e : un pont construit laisse la place à son modèle (./ponts.ts).
+  // Les ponts de pierre et de bois du 5e : un pont construit laisse la place à son modèle (./bridges.ts).
   const ponts = options.navire ? null : pontsDePierreEtDeBois(cubes);
-  // Le phare du large du 5e : fini, il laisse la place à son modèle (./phareDuLarge.ts).
+  // Le phare du large du 5e : fini, il laisse la place à son modèle (./offshoreLighthouse.ts).
   const large = options.navire ? null : phareDuLarge(cubes);
   const parUnModele = (c: VoxelCube) => {
     const k = cle(c.x, c.y, c.z);
@@ -404,9 +404,9 @@ export function maillageDeLaConstruction(
   };
   const couleurDeFace = (c: VoxelCube, d: number) => (d === HAUT ? couleursDe(c).dessus : couleursDe(c).cote);
 
-  /** Le bit, dans le masque `couvre` d'une pièce (./architecture/pieces.ts), de la face de sa case tournée vers `d`. */
+  /** Le bit, dans le masque `couvre` d'une pièce (./architecture/rooms.ts), de la face de sa case tournée vers `d`. */
   const FACE_DE_CASE = [1, 4, 2, 8, 16, 32];
-  /** L'ordre des faces d'une peinture (./architecture/peinture.ts : +x, +y, −x, −y, haut, bas) pour la direction `d`. */
+  /** L'ordre des faces d'une peinture (./architecture/paint.ts : +x, +y, −x, −y, haut, bas) pour la direction `d`. */
   const FACE_PEINTE = [0, 2, 1, 3, 4, 5];
   /**
    * Le motif de la face `d` d'un bloc : celui d'un bloc assemblé (GD-2, `MOTIF_ASSEMBLE`, aucun sur une île fermée), sinon
@@ -514,7 +514,7 @@ export function maillageDeLaConstruction(
   };
 
   /**
-   * Le fantôme d'une case de pont à restaurer (./ponts.ts) : une boîte plus courte que la case le long du tracé et moins
+   * Le fantôme d'une case de pont à restaurer (./bridges.ts) : une boîte plus courte que la case le long du tracé et moins
    * haute, le haut au niveau du tablier, cernée sur tout son tour (ses uv vont de 0 à 1 sur chaque face).
    */
   const fantomeDePont = (c: VoxelCube, leLongDeX: boolean) => {

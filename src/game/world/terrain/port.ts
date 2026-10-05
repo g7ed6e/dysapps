@@ -5,20 +5,20 @@ import type { VoxelCube } from '../cube';
 import { type ArchipelagoId, archipelagoOfIsland, DANS_LE_CIEL, inCore, isLand, islandDef, landscape, margesDuCoeur } from '../map';
 import { DOCK_DX, dockCells, dockOrigin, dockPosts, shoreY, vehicleAfloat, vehicleRestZ } from '../harbour';
 import { planCells, zoneDesPlans } from '../plans';
-import { commandeDeLIle } from '../commandes';
-import { casesDeLaPetiteConstruction } from '../petitesConstructions';
+import { commandeDeLIle } from '../requests';
+import { casesDeLaPetiteConstruction } from '../fixtures';
 import { BRIDGES, getArchipelago } from '../archipelago';
 import type { World } from '../../engine';
 import { villageStage } from '../villageStage';
 import { kitReady, launchedStages, stageBuildingAt } from '../vehicle';
-import { cacheUneBorne, questStations, rangeeDevantLesBornes } from './bornes';
-import { AVATAR_HOME, fade, groundHeight, isSchoolIsland } from './socle';
-import { versLaCamera } from './vue';
+import { cacheUneBorne, questStations, rangeeDevantLesBornes } from './markers';
+import { AVATAR_HOME, fade, groundHeight, isSchoolIsland } from './base';
+import { versLaCamera } from './view';
 import { casesDuVillage, PLACE_IDS, VILLAGE_PLACES } from './village';
-import { placeDeLaPetiteConstruction } from './petiteConstruction';
+import { placeDeLaPetiteConstruction } from './fixture';
 import { creatureDuMonde, creatureSpot } from './creatures';
-import { boardingRoute, bridgePath } from './liaisons';
-import { bossIsletCells, bossIsletSteps } from './gardiens';
+import { boardingRoute, bridgePath } from './links';
+import { bossIsletCells, bossIsletSteps } from './guardians';
 
 /** Les cubes d'un objet haut du quai au-dessus de son sol (le mât et la toile d'un fanion, la fumée d'un foyer). */
 const HAUTEURS_D_UN_OBJET_HAUT = [0, 1, 2, 3] as const;

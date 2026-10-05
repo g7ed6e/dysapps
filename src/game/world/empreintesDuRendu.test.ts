@@ -7,12 +7,12 @@
 import { ARCHIPELAGO_IDS, landscape, mapOf, type ArchipelagoId, type Ground } from './map';
 import { toutConstruit } from './budget';
 import { champDuSol } from './landMesh';
-import { modelerLeSol } from './modeleDessine';
+import { modelerLeSol } from './drawnModel';
 import { maillageDuDecor, rangerLeDecor, type FacettesDuDecor } from './decorMesh';
 import { cielDe, couleurDeMatiere, couleurDuSol, eauxDe, MATIERES, SOLS } from './palette';
 import type { TextureKind } from './pixels';
 import { worldCubes } from './terrain';
-import { versLesIdsDAvant } from './idsDAvant.testing';
+import { versLesIdsDAvant } from './legacyIds.testing';
 
 /** FNV-1a sur 32 bits, comme ./empreintes.test.ts. */
 function fnv(text: string): string {
@@ -24,7 +24,7 @@ function fnv(text: string): string {
   return h.toString(16).padStart(8, '0');
 }
 
-/** Empreinte d'une valeur, identifiants dans leurs mots d'avant (./idsDAvant.testing.ts) : l'image n'en dépend pas. */
+/** Empreinte d'une valeur, identifiants dans leurs mots d'avant (./legacyIds.testing.ts) : l'image n'en dépend pas. */
 const empreinte = (v: unknown) => fnv(JSON.stringify(versLesIdsDAvant(v)));
 
 /** Tableaux typés arrondis au dix-millième (l'image ne bouge pas en deçà). */

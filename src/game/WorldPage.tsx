@@ -6,51 +6,51 @@ import { Syllabified } from '../components/Syllabified';
 import { frenchTypography } from '../components/math/RichText';
 import { useProgress } from '../core/ProgressContext';
 import { useSettings, useUnivers } from '../core/SettingsContext';
-import { useMoinsDAnimations } from '../core/mouvement';
+import { useMoinsDAnimations } from '../core/motion';
 import { NotFoundPage } from '../pages/NotFoundPage';
 import { getBiome, type BiomeId } from './biomes';
 import type { QuestMark } from './world/view';
 import { useBlocland } from './BloclandContext';
-import { ArchipelsSheet } from './ArchipelsSheet';
+import { ArchipelsSheet } from './ArchipelagosSheet';
 import { InventorySheet } from './Inventory';
 import { IslandSheet } from './IslandSheet';
-import { creaturesQuiFontSigne, signesDesCreatures, usePlusTard } from './rappels';
-import { sansCommandes } from './world/commandes';
+import { creaturesQuiFontSigne, signesDesCreatures, usePlusTard } from './reminders';
+import { sansCommandes } from './world/requests';
 import { SCHOOL_PATH, SchoolSheet } from './School';
 import { MonumentSheet, MonumentsSheet } from './Monuments';
 import { useMonumentBuilder } from './useMonumentBuilder';
 import { getMonument, monumentsOf } from './world/monuments';
-import { VisageDuBonhomme } from './VisageDuBonhomme';
-import { visageDuJoueur } from './world/personnages/visage';
+import { VisageDuBonhomme } from './AvatarFace';
+import { visageDuJoueur } from './world/characters/face';
 import { MenuSheet } from './MenuSheet';
-import { ArchipelSwitcher } from './ArchipelSwitcher';
+import { ArchipelSwitcher } from './ArchipelagoSwitcher';
 import { useBackOpensMenu } from './useBackOpensMenu';
-import { mesuresDemandees } from './rendu';
+import { mesuresDemandees } from './rendering';
 import { TrophySheet } from './TrophySheet';
-import { AssemblageSheet } from './Assemblage';
-import { ASSEMBLAGE_PATH } from './world/assemblage';
+import { AssemblageSheet } from './Assembly';
+import { ASSEMBLAGE_PATH } from './world/assembly';
 import { laDestinationEstLeNavire, lienDeLaDestination } from './world/destination';
 import { nextGoalInfo } from './world/goals';
 import { borneDe, cleDeLaCreature, cleDeLObjet, imageDeLaDestination } from './world/affordance';
-import { getCommande } from './world/commandes';
-import { FicheDuMonde, type FicheOuverte } from './FicheDuMonde';
+import { getCommande } from './world/requests';
+import { FicheDuMonde, type FicheOuverte } from './WorldCard';
 import { TROPHIES_PATH, trophies } from './trophies';
 import { WorldCanvas } from './three';
 import { Tutorial, hasSeenTutorial } from './Tutorial';
-import { decouverteDeLIle } from './decouvertes';
-import { usePanneauDeLaCarte } from './usePanneauDeLaCarte';
-import { usePlaceDesBulles } from './usePlaceDesBulles';
+import { decouverteDeLIle } from './discoveries';
+import { usePanneauDeLaCarte } from './useMapPanel';
+import { usePlaceDesBulles } from './useBubblePlacement';
 import { WhaleWordPanel, useWhaleWord } from './WhaleWord';
-import { RenommagePanel, useRenommage } from './Renommage';
+import { RenommagePanel, useRenommage } from './Renaming';
 import { useAmbience } from './useAmbience';
 import { VoyagePanel, voyageSentence } from './VoyagePanel';
-import { useTraversee } from './useTraversee';
-import { usePoseEnVague, type Vague } from './usePoseEnVague';
+import { useTraversee } from './useCrossing';
+import { usePoseEnVague, type Vague } from './useWavePose';
 import { playBell } from './sound';
-import { RallumagePanel, toucherQuiSaute, useRallumage } from './Rallumage';
-import { DEROULE } from './world/rallumage';
-import { habillageDuMonde } from './habillage';
-import { useTextes } from '../univers';
+import { RallumagePanel, toucherQuiSaute, useRallumage } from './Rekindling';
+import { DEROULE } from './world/rekindling';
+import { habillageDuMonde } from './skin';
+import { useTextes } from '../universes';
 import {
   capVers,
   ileDeLOuvrage,
@@ -58,13 +58,13 @@ import {
   modeleDuMonde,
   etatsDesObjets,
   voyageAJouer,
-} from './world/modele';
+} from './world/model';
 import { villageStage } from './world/villageStage';
-import { dispositionEnGrille, type BoutsDuTrajet } from './world/grille';
-import type { Entite, Intention, ObjetDeLaFiche, Point } from './world/disposition';
-import { resteDuTrajet } from './world/arrivee';
+import { dispositionEnGrille, type BoutsDuTrajet } from './world/grid';
+import type { Entite, Intention, ObjetDeLaFiche, Point } from './world/layout';
+import { resteDuTrajet } from './world/arrival';
 import type { Bonhomme } from './world/view';
-import { partiesDe, prochainePartie } from './world/parties';
+import { partiesDe, prochainePartie } from './world/parts';
 import { Loading } from '../components/Loading';
 import {
   creaturePlacements,
@@ -82,13 +82,13 @@ import {
   remainingPath,
   type ArchipelagoId,
 } from './world/archipelago';
-import type { Burst } from './poseCaseParCase';
+import type { Burst } from './cellByCellPose';
 import { useVehicleBuilder } from './useVehicleBuilder';
-import { UNIVERS } from '../core/univers';
+import { UNIVERS } from '../core/universe';
 import { useHoldCelebrations } from '../components/Celebrations';
-import { useASuivre } from '../components/useASuivre';
-import { chiffreDeLaPastille, nomDuBoutonBlocs, prendreLesBlocs, volALieu, VOL, type GainRetenu } from './volDesBlocs';
-import { BlocsQuiVolent } from './BlocsQuiVolent';
+import { useASuivre } from '../components/useNextUp';
+import { chiffreDeLaPastille, nomDuBoutonBlocs, prendreLesBlocs, volALieu, VOL, type GainRetenu } from './blockFlight';
+import { BlocsQuiVolent } from './FlyingBlocks';
 
 const samePoint = (p: { x: number; y: number } | undefined, q: { x: number; y: number }) => Boolean(p) && p!.x === q.x && p!.y === q.y;
 
@@ -116,14 +116,14 @@ export function WorldPage() {
   const univers = useUnivers();
   const reduceMotion = useMoinsDAnimations();
   const { state, moveTo, launch } = useBlocland();
-  // La pose d'une partie en vague (GD-6, Blocland) : ses cases, absentes du monde jusqu'à ce que la vue les pose (usePoseEnVague.ts).
+  // La pose d'une partie en vague (GD-6, Blocland) : ses cases, absentes du monde jusqu'à ce que la vue les pose (useWavePose.ts).
   // La petite construction d'une commande livrée (GD-7, PR 3) se pose de la même vague : `commande`, sans partie.
   const [vague, setVague] = useState<Vague | null>(null);
   const { launchVoyage, progress } = useProgress();
   // La fiche de l'objet touché (lot 2 de « Toucher le monde ») : une seule à la fois, toujours à la même place.
   const [fiche, setFiche] = useState<FicheOuverte | null>(null);
   const ficheSeq = useRef(0);
-  // Les blocs gagnés qui volent jusqu'au compteur, au retour d'une mission (proposition P2, PR 2, volDesBlocs.ts) :
+  // Les blocs gagnés qui volent jusqu'au compteur, au retour d'une mission (proposition P2, PR 2, blockFlight.ts) :
   // `attente` le temps que la caméra se pose, puis `vol`. Ce qui vient après (la pose de la partie, la fiche d'un
   // chantier) attend dans `apresLeVol` : un seul mouvement à la fois.
   const [vol, setVol] = useState<{ seq: number; gain: GainRetenu; phase: 'attente' | 'vol'; depart?: { x: number; y: number }; arrivee?: { x: number; y: number } } | null>(null);
@@ -201,7 +201,7 @@ export function WorldPage() {
     () => creaturesQuiFontSigne(state.spaced, state.world.links, a, remises, settings.lv2),
     [state.spaced, state.world.links, a, remises, settings.lv2],
   );
-  // La disposition en grille (world/grille.ts) : où sont les îles, les bornes, les ouvrages, et les trajets du bonhomme,
+  // La disposition en grille (world/grid.ts) : où sont les îles, les bornes, les ouvrages, et les trajets du bonhomme,
   // qui suit le sol et contourne arbres, bornes, maisons et créatures.
   const grille = useMemo(() => dispositionEnGrille(a, state.world.links, { cubes, creatures }), [a, state.world.links, cubes, creatures]);
   /** Où le bonhomme se tient sur une île (en cases du monde). */
@@ -239,7 +239,7 @@ export function WorldPage() {
     navigate(`/adventure/${at}`);
   };
   // Les bornes de mission des îles de l'archipel, avec leur état : à faire, étoiles gagnées, ou fermée.
-  // Le modèle du monde (world/modele.ts) : les îles, les bornes et leur état, en identifiants ; la grille dit où elles sont.
+  // Le modèle du monde (world/model.ts) : les îles, les bornes et leur état, en identifiants ; la grille dit où elles sont.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const modele = useMemo(() => modeleDuMonde(vu, a, textes.archipels, textes.libelles), [a, vu, settings.lv2, textes]);
   // Ce qui donne au Gardien, au Bloc-Navire et aux chantiers en fantôme leur signe (l'or ou la pierre, world/affordance.ts).
@@ -379,7 +379,7 @@ export function WorldPage() {
   // L'élève a fait glisser la vue (la 3D le dit) : « Recentrer » la ramène à son cadrage, d'un appui (`recentrage`).
   const [vueDeplacee, setVueDeplacee] = useState(false);
   const [recentrage, setRecentrage] = useState(0);
-  // Le voyage du Bloc-Navire : un fondu court pour un voyage déjà fait, la cinématique pour le premier (useTraversee.ts).
+  // Le voyage du Bloc-Navire : un fondu court pour un voyage déjà fait, la cinématique pour le premier (useCrossing.ts).
   const { voyage, veil, arriveeLue, later, hop, onBoard, arrive, onLegEnd } = useTraversee({
     a,
     at,
@@ -470,7 +470,7 @@ export function WorldPage() {
   }, [island?.id, mapOpen, placeOpen, monument?.id]);
 
   // Ce que le tutoriel ne dit plus, dit au moment où on le rencontre, une fois par appareil, par la créature de l'île :
-  // les ouvrages au premier toucher d'une île pâle, le Bloc-Navire à la première arrivée au port (decouvertes.ts).
+  // les ouvrages au premier toucher d'une île pâle, le Bloc-Navire à la première arrivée au port (discoveries.ts).
   function decouvrir(id: BiomeId): boolean {
     const text = decouverteDeLIle(state, id, { port: archipelago.port, navire: Boolean(ship.stage), textes });
     if (!text) return false;
@@ -530,7 +530,7 @@ export function WorldPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [island?.id, chantier]);
 
-  // La pose d'une partie en vague (GD-6) et d'une petite construction livrée (GD-7), après le vol des blocs (usePoseEnVague.ts).
+  // La pose d'une partie en vague (GD-6) et d'une petite construction livrée (GD-7), après le vol des blocs (useWavePose.ts).
   const { cubesVus, poseVue, partiesDites, onPose, poserToutDUnCoup, poserEnSilence, poserLaCommande } = usePoseEnVague({
     island,
     chantier,

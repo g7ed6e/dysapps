@@ -3,7 +3,7 @@
 // construit). Les étapes suivantes déplacent ce code sans rien changer à l'image : ces empreintes ne doivent pas bouger.
 // Si une empreinte change, c'est que le monde a changé ; un lot qui le veut (un lot de rendu, par exemple) met à jour
 // l'instantané avec `npx vitest run -u src/game/world/empreintes.test.ts` et le dit dans sa pull request.
-// Les identifiants y sont remis dans leurs mots d'avant (./idsDAvant.testing.ts) : un identifiant qui change ne change
+// Les identifiants y sont remis dans leurs mots d'avant (./legacyIds.testing.ts) : un identifiant qui change ne change
 // pas l'image, ni donc les empreintes.
 import { BIOMES, type BiomeId } from '../biomes';
 import { ARCHIPELAGO_IDS, archipelagoOfIsland, type ArchipelagoId } from './map';
@@ -14,7 +14,7 @@ import { walkGround } from './paths';
 import { PLANS, planCells } from './plans';
 import { VEHICLE_STAGES } from './vehicle';
 import { MONUMENTS } from './monuments';
-import { versLesIdsDAvant } from './idsDAvant.testing';
+import { versLesIdsDAvant } from './legacyIds.testing';
 import {
   avatarHome,
   avatarRoute,

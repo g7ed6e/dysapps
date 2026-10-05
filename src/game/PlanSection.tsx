@@ -6,14 +6,14 @@ import { BLOCKS, type BiomeDef, type BiomeId, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { InventoryLink } from './Inventory';
 import { Foldable } from './IslandFold';
-import { minuscule, partiePosee, partiesDe, phraseDesPartiesPosees, type Partie } from './world/parties';
+import { minuscule, partiePosee, partiesDe, phraseDesPartiesPosees, type Partie } from './world/parts';
 import { SpeakButton } from '../components/SpeakButton';
 import { frenchTypography } from '../components/math/RichText';
 import { getPlan, plansFor } from './world/plans';
 import { earnIsland, whereToEarn } from './world/uses';
-import { ASSEMBLAGE_PATH } from './world/assemblage';
-import { useTextes } from '../univers';
-import { useMoinsDAnimations } from '../core/mouvement';
+import { ASSEMBLAGE_PATH } from './world/assembly';
+import { useTextes } from '../universes';
+import { useMoinsDAnimations } from '../core/motion';
 
 interface Props {
   biome: BiomeDef;

@@ -1,15 +1,15 @@
 import { lazy, Suspense, useState } from 'react';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { useSettings } from '../core/SettingsContext';
-import { useMoinsDAnimations } from '../core/mouvement';
+import { useMoinsDAnimations } from '../core/motion';
 import type { BiomeId } from './biomes';
 import { Creature } from './Creatures';
-import { habillageDuMonde } from './habillage';
-import { CREATURE_CUBES } from './world/personnages/creatures';
+import { habillageDuMonde } from './skin';
+import { CREATURE_CUBES } from './world/characters/creatures';
 import { PersonnageCanvas, VoxelCanvas, hasWebGL } from './three';
 
-/** La créature d'Archipéo en SVG (lot R6, avec l'habillage d'Archipéo, voir habillage.ts), chargée à la demande. */
-const PersonnageSvg = lazy(() => import('./PersonnageSvg'));
+/** La créature d'Archipéo en SVG (lot R6, avec l'habillage d'Archipéo, voir skin.ts), chargée à la demande. */
+const PersonnageSvg = lazy(() => import('./CharacterSvg'));
 
 interface Props {
   biome: BiomeId;
@@ -21,7 +21,7 @@ interface Props {
 export function Creature3D({ biome, label, className }: Props) {
   const { settings } = useSettings();
   const reduceMotion = useMoinsDAnimations();
-  // Les figures de l'habillage (habillage.ts) : la créature en facettes, ou en cubes, inchangée.
+  // Les figures de l'habillage (skin.ts) : la créature en facettes, ou en cubes, inchangée.
   const [modeles] = useState(() => habillageDuMonde().figures === 'modeles');
   const cubes = <Creature biome={biome} label={label} className={className} />;
   // Le temps que la créature en facettes arrive : sa place, vide, à sa taille (pas la créature en cubes, qui sauterait).

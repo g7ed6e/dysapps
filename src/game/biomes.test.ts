@@ -1,7 +1,7 @@
-// Les îles s'écrivent dans docs/contenu/ (Markdown) et arrivent par iles.ts (vérifié par le compilateur) : ces tests
+// Les îles s'écrivent dans docs/contenu/ (Markdown) et arrivent par islands.ts (vérifié par le compilateur) : ces tests
 // vérifient ce que les types ne disent pas (bloc et icône existants, compétences du référentiel, ordre).
 import { ICONS } from '../components/Icon';
-import { byId } from '../programme';
+import { byId } from '../curriculum';
 import { BIOME_IDS, BIOMES, BLOCKS, missionsJouables } from './biomes';
 
 const MATIERES = ['french', 'maths', 'english', 'lv2'];

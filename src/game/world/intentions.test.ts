@@ -1,4 +1,4 @@
-import type { Intention } from './disposition';
+import type { Intention } from './layout';
 import { origineDe } from './terrain';
 import { rappelsDeLaVue } from './view';
 

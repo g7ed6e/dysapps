@@ -139,7 +139,7 @@ it('le nom du Gardien une seule fois, et sa réplique entière au lancement puis
 });
 
 it('la réplique repliée montre sa première phrase, le reste pour le lecteur d’écran, et le chevron l’ouvre (DA-34)', async () => {
-  const { gardiens } = (await import('../univers/blocland')).BLOCLAND;
+  const { gardiens } = (await import('../universes/blocland')).BLOCLAND;
   const says: { hit: string } = gardiens['french-6e-phonology'].guardianSays;
   // Le temps de ce test, une réplique de réussite en deux phrases, dont la première suffit à la ligne repliée.
   const avant = says.hit;

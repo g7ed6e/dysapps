@@ -3,7 +3,7 @@ import { exercisesOf } from '../exercises';
 import { sanitizeState } from '../engine';
 import { planCells, plansFor } from './plans';
 import { NOMS_ARCHIPELS } from './archipelago';
-import { textesDe } from '../../univers';
+import { textesDe } from '../../universes';
 import { laDestinationEstLeNavire, nextDestination as nextDestinationDe } from './destination';
 import { nextGoalInfo } from './goals';
 import { VEHICLE_STAGES } from './vehicle';

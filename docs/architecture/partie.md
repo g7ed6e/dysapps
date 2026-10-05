@@ -1,6 +1,6 @@
 # La partie et sa sauvegarde
 
-La partie de l’aventure est un seul objet, `GameState` (`src/game/engine/etat.ts`, réexporté par `engine.ts`), que des fonctions pures transforment et que `BloclandContext.tsx` tient en mémoire et enregistre. Les règles du jeu sont décrites dans [le jeu](../gameplay/index.md) ; cette page dit où elles vivent dans le code.
+La partie de l’aventure est un seul objet, `GameState` (`src/game/engine/state.ts`, réexporté par `engine.ts`), que des fonctions pures transforment et que `BloclandContext.tsx` tient en mémoire et enregistre. Les règles du jeu sont décrites dans [le jeu](../gameplay/index.md) ; cette page dit où elles vivent dans le code.
 
 ## L’état
 
@@ -46,7 +46,7 @@ La progression commune (XP, rôles, succès), partagée avec le portail, est à 
 ```mermaid
 flowchart LR
   ecran[Écrans<br/>ExerciseRunner, WorldPage, BossPage…] -- actions --> ctx[BloclandContext<br/>complete, buildBridge, deliver, moveTo, launch…]
-  ctx -- état courant --> regles[Fonctions pures<br/>engine.ts, world/commandes.ts, world/uses.ts…]
+  ctx -- état courant --> regles[Fonctions pures<br/>engine.ts, world/requests.ts, world/uses.ts…]
   regles -- nouvel état --> ctx
   ctx -- setState --> ecran
   ctx -- XP d’un plan fini --> prog[ProgressContext]
@@ -91,5 +91,5 @@ flowchart TD
 ```
 
 - Une sauvegarde n’est jamais perdue : une vieille forme est traduite en avant, jamais effacée avant que la nouvelle soit écrite et relue. Un refus d’écrire (stockage plein) laisse l’ancienne.
-- `core/storage.ts` range tout sous le préfixe `dysapps:` et peut geler la sauvegarde : plus rien ne s’écrit jusqu’au prochain chargement de la page. La sauvegarde dans un fichier et sa restauration sont dans `core/sauvegarde.ts`.
+- `core/storage.ts` range tout sous le préfixe `dysapps:` et peut geler la sauvegarde : plus rien ne s’écrit jusqu’au prochain chargement de la page. La sauvegarde dans un fichier et sa restauration sont dans `core/saveFile.ts`.
 - Le détail des clés et des traductions est dans [Les fichiers](fichiers.md#le-socle-commun-srccore).

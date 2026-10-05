@@ -397,7 +397,7 @@ export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => numb
 /** La forme en blocs d'un élément de décor du paysage : `put` pose un cube relatif au sol de sa case (z = 1 juste au-dessus). */
 type BlocsDuDecor = (put: Put, x: number, y: number, r: number) => void;
 
-/** Les formes en blocs du décor du paysage, par genre (le monde en blocs ; en primitives : `FORMES`, ./decor/formes.ts). */
+/** Les formes en blocs du décor du paysage, par genre (le monde en blocs ; en primitives : `FORMES`, ./decor/shapes.ts). */
 const BLOCS_DU_DECOR: Record<Decor, BlocsDuDecor> = {
   arbre: (put, x, y, r) => tree(put, x, y, 0, r > 0.5 ? 3 : 2),
   sapin: (put, x, y, r) => {
@@ -524,7 +524,7 @@ interface OutilsDuRepereEnBlocs {
 }
 
 /**
- * Les formes en blocs des repères, par genre (le monde en blocs ; en primitives : `FORMES`, ./decor/formes.ts). `put`
+ * Les formes en blocs des repères, par genre (le monde en blocs ; en primitives : `FORMES`, ./decor/shapes.ts). `put`
  * travaille en coordonnées du monde, z relatif au sol de l'île.
  */
 const REPERES_EN_BLOCS: Record<Repere, (o: OutilsDuRepereEnBlocs) => void> = {

@@ -1,7 +1,7 @@
 // Les îles écrites en Markdown (docs/contenu/<île>.md) et les missions du portail (docs/contenu/portail/), avec les
-// JSON qu'ils produisent (src/game/iles.ts, src/game/exercises/data/, src/game/world/plans/,
+// JSON qu'ils produisent (src/game/islands.ts, src/game/exercises/data/, src/game/world/plans/,
 // src/game/world/requests.json, src/apps/<mission>/),
-// et l'assemblage des blocs (docs/contenu/assemblage.md → src/game/world/recettes.ts, et ses questions →
+// et l'assemblage des blocs (docs/contenu/assemblage.md → src/game/world/recipes.ts, et ses questions →
 // src/game/exercises/data/assemblage-<bloc>.json).
 // Module sans effet : generer.mjs (npm run contenu) et importer.mjs s'en servent.
 import { readdirSync, readFileSync } from 'node:fs';
@@ -15,9 +15,9 @@ import { verifierDemandes } from './demandes.mjs';
 const racine = process.cwd();
 export const CONTENU = join(racine, 'docs/contenu');
 export const DATA = join(racine, 'src/game/exercises/data');
-export const ILES = join(racine, 'src/game/iles.ts');
+export const ILES = join(racine, 'src/game/islands.ts');
 export const PLANS = join(racine, 'src/game/world/plans');
-export const RECETTES = join(racine, 'src/game/world/recettes.ts');
+export const RECETTES = join(racine, 'src/game/world/recipes.ts');
 export const DEMANDES = join(racine, 'src/game/world/requests.json');
 
 /** Ce qu'une île et chacune de ses missions doivent donner pour que le jeu les montre. */
@@ -33,7 +33,7 @@ function ordreDesIles() {
 }
 
 /**
- * Les îles (src/game/iles.ts, dans l'ordre de docs/contenu/archipel.md) et les exercices écrits en Markdown :
+ * Les îles (src/game/islands.ts, dans l'ordre de docs/contenu/archipel.md) et les exercices écrits en Markdown :
  * { sortie: Map<chemin JSON, texte>, iles: Set<île> }.
  */
 export function produire() {
@@ -76,7 +76,7 @@ export function produire() {
   // compétences…), sans rien coûter à l'exécution.
   const entete = "// Produit par `npm run contenu` depuis docs/contenu/<île>.md, dans l'ordre de docs/contenu/archipel.md : ne pas éditer.\n";
   sortie.set(ILES, `${entete}import type { BiomeDef } from './biomes';\n\nexport const ILES = ${JSON.stringify(ordre.map((id) => biomes.get(id)), null, 2)} satisfies BiomeDef[];\n`);
-  // L'assemblage des blocs (GD-2) : docs/contenu/assemblage.md → src/game/world/recettes.ts, et la question de chaque
+  // L'assemblage des blocs (GD-2) : docs/contenu/assemblage.md → src/game/world/recipes.ts, et la question de chaque
   // bloc assemblé → src/game/exercises/data/assemblage-<bloc>.json.
   const mdAssemblage = readFileSync(join(CONTENU, FICHIER_ASSEMBLAGE), 'utf8');
   const fichierAssemblage = join('docs/contenu', FICHIER_ASSEMBLAGE);
