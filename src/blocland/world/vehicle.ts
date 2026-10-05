@@ -1,7 +1,7 @@
 // Le Bloc-Navire : un seul véhicule qui grandit en trois étapes, chacune un plan à construire sur le quai de l'île-port
 // d'un archipel. La coque et la voile mènent aux Îles Brumeuses (par la mer), le ballon aux Anciens Ateliers (par les
-// airs), le réacteur aux Îles du Ciel. Les cases « kit » (voile, haut du ballon, feux) ne se gagnent pas : elles
-// arrivent d'elles-mêmes quand assez de Gardiens de l'archipel sont vaincus. Le reste se pose bloc par bloc.
+// airs), le réacteur, sous la coque, aux Îles du Ciel. Les cases « kit » (voile, haut du ballon, feux) ne se gagnent
+// pas : elles arrivent d'elles-mêmes quand assez de Gardiens de l'archipel sont vaincus. Le reste se pose bloc par bloc.
 import { BLOC, BLOCKS, type BiomeId, type BlockId } from '../biomes';
 import { isBossBeaten } from '../bossCore';
 import { ARCHIPELAGOS, islandsOf, reachedArchipelagos, voyageId, type ArchipelagoId } from './archipelago';
@@ -81,13 +81,14 @@ function ballon(): { cells: PlanCell[]; kit: PlanCell[] } {
 
 function reacteur(): { cells: PlanCell[]; kit: PlanCell[] } {
   const cells: PlanCell[] = [];
-  // Le bloc du réacteur en acier (Forge), derrière la poupe.
-  fill(cells, 1, 8, 0, 3, 2, 3, BLOC.acier);
-  // Les ailerons en calque (Atelier), la tuyère en ardoise (Falaise).
-  cells.push({ x: 0, y: 8, z: 1, block: BLOC.calque }, { x: 4, y: 8, z: 1, block: BLOC.calque }, { x: 0, y: 9, z: 2, block: BLOC.calque }, { x: 4, y: 9, z: 2, block: BLOC.calque });
-  fill(cells, 1, 10, 1, 3, 1, 1, BLOC.ardoise);
-  // Le kit : les feux de position.
-  const kit: PlanCell[] = [{ x: 1, y: 9, z: 3, block: BLOC.lanterne }, { x: 3, y: 9, z: 3, block: BLOC.lanterne }];
+  // Sous la coque, pour monter droit vers le ciel : le ventre du réacteur en acier (Forge), sous tout le pont.
+  fill(cells, 1, 1, -1, 3, 6, 1, BLOC.acier);
+  // Les ailerons en calque (Atelier), aux quatre coins du ventre.
+  cells.push({ x: 0, y: 1, z: -1, block: BLOC.calque }, { x: 4, y: 1, z: -1, block: BLOC.calque }, { x: 0, y: 6, z: -1, block: BLOC.calque }, { x: 4, y: 6, z: -1, block: BLOC.calque });
+  // Les trois tuyères en ardoise (Falaise), tournées vers le bas, en rangée sous le mât.
+  fill(cells, 1, 3, -2, 3, 1, 1, BLOC.ardoise);
+  // Le kit : les feux de position, sous la poupe.
+  const kit: PlanCell[] = [{ x: 1, y: 7, z: -1, block: BLOC.lanterne }, { x: 3, y: 7, z: -1, block: BLOC.lanterne }];
   return { cells, kit };
 }
 

@@ -1,10 +1,11 @@
 // Le Bloc-Navire dans la scène 3D : amarré au quai, il tangue (ou plane, dans le ciel) et son ballon se balance au
-// sommet du mât ; en voyage, il s'éloigne ou accoste, le bonhomme à bord, avec l'écume à la poupe ou la flamme du réacteur.
+// sommet du mât ; en voyage, il s'éloigne ou accoste, le bonhomme à bord, avec l'écume à la poupe ou les flammes des
+// réacteurs, sous la coque.
 import * as THREE from 'three';
 import type { BiomeId } from '../biomes';
 import { maillageDeLaConstruction } from '../world/construction';
-import { VEHICLE_DECK } from '../world/harbour';
-import { MAST_TOP } from '../world/vehicle';
+import { VEHICLE_DECK, VEHICLE_SIZE } from '../world/harbour';
+import { MAST_TOP, VEHICLE_STAGES } from '../world/vehicle';
 import { buildMesh } from '../world/mesher';
 import { boardingWalk, startVoyage, voyageFrame, type VoyageRun } from '../world/scene';
 import type { WorldViewProps } from '../world/view';
@@ -50,10 +51,13 @@ export function creerNavire(
   vehicleGroup.userData = { vehicle: true };
   const hullGroup = new THREE.Group();
   const balloonGroup = new THREE.Group();
-  // La flamme du réacteur (troisième étape), visible seulement en vol.
+  // Les flammes des réacteurs (troisième étape), sous les trois tuyères, visibles seulement en vol : un seul appel de
+  // dessin ; elles s'allongent vers le bas depuis le dessous des tuyères.
   const flameMat = new THREE.MeshBasicMaterial({ color: 0xff7a1a, transparent: true, opacity: 0.9 });
-  const flame = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.9, 1.4), flameMat);
-  flame.position.set(2.5, 1.5, 11.6);
+  const tuyeres = VEHICLE_STAGES[2].cells.filter((c) => c.z === -VEHICLE_SIZE.below);
+  const flame = new THREE.InstancedMesh(new THREE.BoxGeometry(0.8, 1, 0.8).translate(0, -0.5, 0), flameMat, tuyeres.length);
+  tuyeres.forEach((c, i) => flame.setMatrixAt(i, new THREE.Matrix4().makeTranslation(c.x + 0.5, 0, c.y + 0.5)));
+  flame.position.y = -VEHICLE_SIZE.below;
   flame.visible = false;
   vehicleGroup.add(hullGroup, balloonGroup, flame);
   // Archipéo (lot R5) : la coque et le ballon en construction taillée, avec les matériaux de la construction du monde.
@@ -140,7 +144,7 @@ export function creerNavire(
       }
       if (f.underway && !reduit) {
         instant.navigue = { at: vehicleGroup.position.clone(), k: f.progress, stage: vy.stage };
-        // L'écume à la poupe (à la voile), la flamme qui vacille (au réacteur).
+        // L'écume à la poupe (à la voile), les flammes qui vacillent (aux réacteurs).
         if (vy.stage === 1 && now - vy.lastFoam > 100) {
           vy.lastFoam = now;
           const mesh = new THREE.Mesh(cubes.formeDEclat, new THREE.MeshBasicMaterial({ color: 0xf4f8fb, transparent: true, opacity: 0.9 }));
@@ -148,7 +152,7 @@ export function creerNavire(
           cubes.eclat(mesh, new THREE.Vector3((Math.random() - 0.5) * 1.5, 1.2, 1.5), now);
         }
         flame.visible = vy.stage === 3;
-        if (flame.visible) flame.scale.set(1, 1, 1 + 0.4 * Math.sin(t * 37) + 0.3 * Math.random());
+        if (flame.visible) flame.scale.set(1, 1 + 0.4 * Math.sin(t * 37) + 0.3 * Math.random(), 1);
       } else flame.visible = false;
       if (f.end) derniers.current.onVoyageLegEnd?.();
     },

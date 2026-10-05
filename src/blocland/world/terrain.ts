@@ -31,7 +31,7 @@ import {
   type IslandDef,
   type LandCell,
 } from './map';
-import { DOCK_DX, VEHICLE_DECK, dockBox, dockCells, dockOrigin, dockPosts, shoreY, vehicleRestZ } from './harbour';
+import { DOCK_DX, VEHICLE_DECK, dockBox, dockCells, dockOrigin, dockPosts, shoreY, vehicleAfloat, vehicleRestZ } from './harbour';
 import { villageStage } from './villageStage';
 import { kitReady, launchedStages, stageBuildingAt } from './vehicle';
 import { groundLevelAt } from './ground';
@@ -2206,10 +2206,11 @@ function harbour(a: ArchipelagoId, village: Pick<World, 'parts' | 'links'>, cube
     if (rank >= 5 || (p.lantern && rank >= 2)) lantern(p.x, p.y, p.z + 1);
     else if (p.lantern) cubes.push({ x: p.x, y: p.y, z: p.z + 1, color: BLOCKS[BLOC.bois].side, top: BLOCKS[BLOC.bois].top, texture: 'planches', tag: port });
   }
-  // Le feu de port, au large du bout de la jetée (à l'ouest de la proue du navire) : un pilier de pierre et sa lanterne.
+  // Le feu de port, au large du bout de la jetée (à l'ouest de la proue du navire) : un pilier de pierre et sa lanterne,
+  // posé sur l'eau (sur le quai dans le ciel), la lanterne au-dessus du quai.
   if (rank >= 5) {
     const end = cells[cells.length - 1];
-    for (let z = 0; z < 3; z++) cubes.push({ x: end.x, y: end.y - 1, z: rest + z, color: BLOCKS[BLOC.pierre].side, top: BLOCKS[BLOC.pierre].top, texture: 'pierre', tag: port });
+    for (let z = DANS_LE_CIEL[a] ? rest : 0; z < rest + 3; z++) cubes.push({ x: end.x, y: end.y - 1, z, color: BLOCKS[BLOC.pierre].side, top: BLOCKS[BLOC.pierre].top, texture: 'pierre', tag: port });
     lantern(end.x, end.y - 1, rest + 3);
   }
   const prop = (kind: string, at: QuaySpot) => `${port}/${kind}@${at.x},${at.y}`;
@@ -2230,7 +2231,7 @@ function harbour(a: ArchipelagoId, village: Pick<World, 'parts' | 'links'>, cube
     const clear = (by: number) => [0, 1].every((dx) => Array.from({ length: BOAT_LENGTH }, (_, dy) => [bx + dx, by + dy]).every(([x, y]) => !isLand(def, x, y) && !islet.has(`${x},${y}`)));
     for (let by = S - BOAT_LENGTH; by > cells[cells.length - 1].y; by--)
       if (clear(by)) {
-        boatAt(bx, by, rest, 'y', `${port}/barque@${bx},${by}`);
+        boatAt(bx, by, 0, 'y', `${port}/barque@${bx},${by}`);
         break;
       }
   }
@@ -2270,7 +2271,7 @@ export interface VehiclePlacement {
   origin: { x: number; y: number; z: number };
   /** Les cubes du navire, en coordonnées locales ; en fantôme, les cases encore à poser (ou le kit qui n'est pas arrivé). */
   cubes: VoxelCube[];
-  /** Le navire flotte sur l'eau (il tangue) ou plane à hauteur de quai (les Îles du Ciel). */
+  /** Le navire flotte sur l'eau (il tangue) ou plane : au-dessus de l'eau aux Anciens Ateliers, à quai dans les Îles du Ciel. */
   afloat: boolean;
   /** L'étape en chantier sur ce port, s'il y en a une. */
   building: string | null;
@@ -2300,7 +2301,7 @@ export function vehiclePlacement(a: ArchipelagoId, progress: Record<string, { st
     const kit = kitReady(building, progress);
     for (const c of building.kit) put(c, !kit);
   }
-  return { port, origin, cubes, afloat: !DANS_LE_CIEL[a], building: building?.id ?? null };
+  return { port, origin, cubes, afloat: vehicleAfloat(a), building: building?.id ?? null };
 }
 
 // ---------- Les lieux du village : l'école, la salle des trophées et le lieu où l'on assemble ----------

@@ -691,9 +691,12 @@ it('le port montre l’état du village : lanternes, barques, foyer, caisses, fa
         expect(lit).toEqual([]);
         expect(onPost('planches')).toHaveLength(2);
       } else expect(lit).toHaveLength(rank >= 5 ? posts.length : 2);
-      // Au port : une lanterne par poteau, et le feu au bout de la jetée (trois pierres et une lanterne).
+      // Au port : une lanterne par poteau, et le feu au bout de la jetée (un pilier de pierre depuis l'eau, ou depuis le
+      // quai dans le ciel, et une lanterne trois cases au-dessus du quai).
       const fire = mine.filter((c) => c.x === beacon.x && c.y === beacon.y);
-      if (rank >= 5) expect(fire.map((c) => c.texture)).toEqual(['pierre', 'pierre', 'pierre', 'lanterne']);
+      const rest = vehicleRestZ(a.classe);
+      const pied = a.classe === '3e' ? rest : 0;
+      if (rank >= 5) expect(fire.map((c) => c.texture)).toEqual([...Array(rest + 3 - pied).fill('pierre'), 'lanterne']);
       else expect(fire).toEqual([]);
       // Les barques : aucune dans le ciel ; grise sur la grève (1), en bois (2), à l'eau contre la jetée (3), une de chaque (4, 5).
       const boats = props.filter((c) => c.decor!.includes('/barque@'));

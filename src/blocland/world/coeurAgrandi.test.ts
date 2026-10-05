@@ -305,12 +305,13 @@ it('l’îlot du Gardien d’une île-école : au moins trois cases d’eau de t
 
 it('le quai d’une île-école qui est un port suit sa côte repoussée ; les clés de ses étapes ne bougent pas', () => {
   // La côte au pied de la jetée, deux cases plus bas qu'avant (316 au Marché, 630 à l'Atelier) ; le navire recule
-  // d'autant (305 et 618 avant).
+  // d'autant (305 et 618 avant). À l'Atelier, il plane deux cases au-dessus de l'eau (ses réacteurs sont dessous) : la
+  // jetée y descend de deux marches de moins, et le navire s'avance d'une case.
   expect(shoreY('maths-5e-proportionality')).toBe(314);
   expect(dockOrigin('maths-5e-proportionality')).toEqual({ x: 69 + 15, y: 303, z: 0 });
   expect(ORIGINE_DU_QUAI['maths-5e-proportionality']).toEqual({ x: 15, y: -12, z: -4 });
   expect(shoreY('maths-4e-algebra')).toBe(628);
-  expect(dockOrigin('maths-4e-algebra')).toEqual({ x: 62 + 15, y: 616, z: 0 });
+  expect(dockOrigin('maths-4e-algebra')).toEqual({ x: 62 + 15, y: 617, z: 2 });
   expect(ORIGINE_DU_QUAI['maths-4e-algebra']).toEqual({ x: 15, y: -14, z: -7 });
   // Le Phare, port des Îles du Ciel, sans étape du Bloc-Navire : le navire s'y pose devant sa côte repoussée.
   expect(shoreY('maths-3e-functions')).toBe(912 - 2 - 3 + 1);
