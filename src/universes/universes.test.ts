@@ -201,7 +201,7 @@ describe('GD-1 : le chantier du bâtisseur, dans Blocland seulement', () => {
     });
     expect([t.baleine.port('Plaine des nombres'), t.baleine.ouvrage('Mine des lettres')]).toEqual([
       'Plaine des nombres est bâtie. Tu avances bien : chaque île bâtie rend l’archipel plus beau.',
-      'Un chemin s’ouvre vers Mine des lettres. L’archipel s’agrandit.',
+      'Un chemin s’ouvre vers la Mine des lettres. L’archipel s’agrandit.',
     ]);
     // Les noms des archipels et des rôles sont ceux des données ; aucun succès renommé, aucun écran de renommage.
     expect(t.archipels).toEqual(NOMS_ARCHIPELS);

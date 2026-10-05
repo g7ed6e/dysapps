@@ -2,6 +2,7 @@
 // et où mène « Voir le chantier » : un ouvrage, le Bloc-Navire ou un monument. Le bâtiment de l'île n'en fait pas
 // partie : il se pose tout seul, une partie par mission réussie (GD-6). Code pur, déduit de la sauvegarde, sans rien y
 // ajouter : les chiffres sont ceux du panneau d'île et de « Mes blocs ».
+import { thePlace } from './placeArticle';
 import { getBiome, ofBlock, type BiomeId, type BlockId } from '../biomes';
 import { planStatus, type GameState } from '../engine';
 import type { PlanDef } from './plans';
@@ -70,7 +71,7 @@ function ouvrage(state: GameState, island: BiomeId, block: BlockId): Worksite | 
   const cheapest = bridges.reduce((a, b) => (b.cost < a.cost ? b : a));
   const to = getBiome(otherEnd(cheapest, island))?.name ?? cheapest.to;
   const kind = KIND_NAME[linkKind(cheapest, state.world.links)].toLowerCase();
-  const name = `${/^[aeiouy]/.test(kind) ? 'L’' : 'Le '}${kind} vers ${to}`;
+  const name = `${/^[aeiouy]/.test(kind) ? 'L’' : 'Le '}${kind} vers ${thePlace(to)}`;
   const have = Math.min(cheapest.cost, payableBlocks(state.stock));
   const ready = have >= cheapest.cost;
   const text = ready ? `${name} : tu peux le construire !` : `${name} : ${have} bloc${have > 1 ? 's' : ''} sur ${cheapest.cost}.`;

@@ -79,7 +79,7 @@ describe('déblocage des biomes', () => {
     renderAt('/adventure/french-6e-letter-confusion');
     expect(screen.queryByRole('link', { name: /Filon/ })).not.toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: /Poser/ }));
-    expect(document.body.textContent).toMatch(/Le pont vers Mine des lettres est posé/);
+    expect(document.body.textContent).toMatch(/Le pont vers la Mine des lettres est posé/);
     expect(screen.getByRole('link', { name: /Filon/ })).toBeInTheDocument();
     expect(JSON.parse(localStorage.getItem('dysapps:game')!).world.links).toEqual(['french-6e-phonology-french-6e-letter-confusion']);
     expect(JSON.parse(localStorage.getItem('dysapps:game')!).stock).toEqual({ 'french-6e-phonology': 1 });

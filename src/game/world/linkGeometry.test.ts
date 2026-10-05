@@ -1,6 +1,7 @@
 // Les liaisons que pose l'élève (GD-9) : sur la carte de départ calée sur le pas, chaque lieu peut être relié ; une
 // liaison est droite ou en L à un seul coude, ne coupe ni un lieu ni une autre liaison, coûte le même prix partout
 // dans la région ; un pont jusqu'à 36 cases, un bac au-delà. Une sauvegarde d'avant garde toutes ses liaisons.
+import { thePlace } from './placeArticle';
 import { describe, expect, it } from 'vitest';
 import { BIOMES, getBiome } from '../biomes';
 import { sanitizeState } from '../engine';
@@ -190,7 +191,7 @@ describe('un seul départ pour « Relier », la phrase de l’île pâle et le f
             continue;
           }
           const depuis = getBiome(otherEnd(depart, ile.id))!.name;
-          expect(lockedHint(state, ile.id, NOMS_ARCHIPELS, textesDe('blocland').libelles), ile.id).toContain(`depuis ${depuis} :`);
+          expect(lockedHint(state, ile.id, NOMS_ARCHIPELS, textesDe('blocland').libelles), ile.id).toContain(`depuis ${thePlace(depuis)} :`);
           expect(remainingPath(ile.id, links)[0]?.id, ile.id).toBe(depart.id);
           if (getBiome(ile.id)!.subject !== 'lv2') expect(fantomes.has(depart.id), `${ile.id} : ${depart.id}`).toBe(true);
           for (const autre of linksToIsland(ile.id, links, open).slice(1)) expect(fantomes.has(autre.id), autre.id).toBe(false);

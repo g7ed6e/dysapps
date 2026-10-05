@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { thePlace } from './world/placeArticle';
 import { Icon } from '../components/Icon';
 import { Syllabified } from '../components/Syllabified';
 import { frenchTypography } from '../components/math/RichText';
@@ -53,7 +54,7 @@ export function useConstruireUnOuvrage(island: BiomeId, onBuilt?: (to: BiomeId) 
     const open = reachableIslands(links);
     const ouvre = opensAnIsland(b, open);
     const arrivee = ouvre ? (open.has(b.from) ? b.to : b.from) : otherEnd(b, island);
-    const name = getBiome(arrivee)?.name ?? arrivee;
+    const name = thePlace(getBiome(arrivee)?.name ?? arrivee);
     const r = buildBridge(b.id);
     let text: string;
     const what = withArticle(kind);
@@ -154,7 +155,7 @@ export function Bridges({ island, onBuilt, highlight = null, fold, objectif }: P
             const ready = enough && met;
             const kind = linkKind(b, state.world.links);
             const condition = CONDITION_OF[kind];
-            const title = `${KIND_NAME[kind]} ${ferme ? 'depuis' : 'vers'} ${other.name}`;
+            const title = `${KIND_NAME[kind]} ${ferme ? 'depuis' : 'vers'} ${thePlace(other.name)}`;
             // Pas encore possible : une ligne compacte qui dit ce qu'il manque, sans bouton grisé.
             if (!ready)
               return (

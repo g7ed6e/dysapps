@@ -1,6 +1,7 @@
 // La construction qui réunit deux lieux (GD-9, point 10) : un panneau dans le monde en 3D, une page en vue simple, comme
 // un monument ; et sa ligne dans le panneau de chacun des deux lieux, d'où elle se pose. Son nom vient de l'univers
 // (« La digue », « La jetée ») ; les mots des gestes sont communs.
+import { thePlace } from './world/placeArticle';
 import { Link } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { SpeakButton } from '../components/SpeakButton';
@@ -31,7 +32,7 @@ function useMots(j: JoinDef): { nom: string; description: string } {
 }
 
 function sousTitre(j: JoinDef): string {
-  return `Entre ${nomDuLieu(j.pair[0])} et ${nomDuLieu(j.pair[1])}`;
+  return `Entre ${thePlace(nomDuLieu(j.pair[0]))} et ${thePlace(nomDuLieu(j.pair[1]))}`;
 }
 
 /** Ce qu'elle est, son avancement, les blocs qu'il manque et où les gagner, les deux boutons. */

@@ -1,6 +1,7 @@
 // Le village d'un archipel en cinq états, déduits de la progression à chaque rendu et jamais enregistrés : abandonné,
 // réactivation, reconstruction, développement, port. Chaque état correspond à un geste de l'élève (une première mission
 // réussie, qui pose une partie d'un bâtiment (GD-6) ; le port bâti et un ouvrage ; un monument ; le voyage). Code pur, partagé par le terrain (le port en cubes) et les panneaux.
+import { ofPlace } from './placeArticle';
 import type { World } from '../engine';
 import { ARCHIPELAGOS, BRIDGES, NOMS_ARCHIPELS, getArchipelago, islandsOf, voyageId, type ArchipelagoId, type NomsArchipels } from './archipelago';
 import { monumentsOf } from './monuments';
@@ -55,7 +56,7 @@ export function villageStage(village: Pick<World, 'parts' | 'links'>, a: Archipe
   if (portDone && linked && monument) return at(4, to ? `Fais partir le Bloc-Navire vers les ${noms[to]}.` : null);
   if (portDone && linked) return at(3, 'Termine un monument de l’archipel.');
   if (anyPart) {
-    const left = [!portDone && `réussis les missions de ${portName}`, !linked && `pose un ouvrage qui part de ${portName}`].filter(Boolean).join(' et ');
+    const left = [!portDone && `réussis les missions ${ofPlace(portName)}`, !linked && `pose un ouvrage qui part ${ofPlace(portName)}`].filter(Boolean).join(' et ');
     return at(2, `${left.charAt(0).toUpperCase()}${left.slice(1)}.`);
   }
   return at(1, 'Réussis une première mission sur une île.');

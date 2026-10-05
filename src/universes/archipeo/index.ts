@@ -3,6 +3,7 @@
 // épreuve ratée commence par « Rien ne s'éteint. », et la réplique finale dit que la sentinelle « se rallume » (« brille
 // à nouveau » est gardé pour le village et la baleine). Proposés par le consultant d'Archipéo, validés par le directeur
 // artistique le 28 septembre 2026 ; lus seulement une fois l'univers ouvert (voir src/universes/index.ts).
+import { thePlace } from '../../game/world/placeArticle';
 import { BLOCLAND } from '../blocland';
 import { ETATS_D_ILE, REPLIQUES } from '../common';
 import type { TextesUnivers } from '../types';
@@ -340,7 +341,7 @@ export const ARCHIPEO = {
     },
     gardiens: (archipel) => `Tous les Gardiens des ${archipel} brillent à nouveau. J’ai vu leur lumière depuis le large.`,
     port: (ile) => `${ile} est bâtie. Tu avances bien : chaque île bâtie rend l’archipel plus beau.`,
-    ouvrage: (ile) => `Un chemin s’ouvre vers ${ile}. L’archipel s’agrandit.`,
+    ouvrage: (ile) => `Un chemin s’ouvre vers ${thePlace(ile)}. L’archipel s’agrandit.`,
   },
   // Le phare du large est dessiné pour Archipéo (revue d'ensemble, DA-4) : une tour ronde de pierre à feu ouvert.
   monuments: {

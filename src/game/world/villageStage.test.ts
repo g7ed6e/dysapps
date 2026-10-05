@@ -13,7 +13,7 @@ it('le village passe par cinq états, déduits de la progression', () => {
   const carriere = Object.fromEntries(bas.cases.map(({ plan, keys }) => [plan.id, keys]));
   expect(villageStage({ parts: carriere, links: [] }, '6e')).toMatchObject({
     rank: 2,
-    next: 'Réussis les missions de Plaine des nombres et pose un ouvrage qui part de Plaine des nombres.',
+    next: 'Réussis les missions de la Plaine des nombres et pose un ouvrage qui part de la Plaine des nombres.',
   });
   // Le bâtiment du port fini ; le pont gratuit de la Forêt à la Plaine ne compte pas : il faut un ouvrage payé qui parte du port.
   const plaine = built(['maths-6e-calculation']);

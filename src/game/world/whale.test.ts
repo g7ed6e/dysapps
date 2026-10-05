@@ -28,7 +28,7 @@ it('les grandes étapes, de la plus grande à la plus petite', () => {
   expect(pages(m[2])[0]).toMatch(/^Plaine des nombres est bâtie\./);
   // Le pont de la Forêt ouvre la Mine ; le pont gratuit vers la Plaine ne compte pas.
   expect(m[3]).toMatchObject({ island: 'french-6e-letter-confusion' });
-  expect(pages(m[3])).toEqual(['Un chemin s’ouvre vers Mine des lettres. L’archipel s’agrandit.']);
+  expect(pages(m[3])).toEqual(['Un chemin s’ouvre vers la Mine des lettres. L’archipel s’agrandit.']);
 });
 
 it('l’arrivée en 5e garde la clé de l’ancienne bulle et sa page pratique', () => {

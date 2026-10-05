@@ -58,7 +58,7 @@ it('le panneau 3D replie le bâtiment et les ouvrages quand il n’y a rien à y
   expect(plan().textContent).toContain('0 partie posée sur 3');
   expect(ouvrages()).not.toHaveAttribute('open');
   // Le pli replié nomme l'ouvrage suggéré, avec les mots de la Carte ; il est en tête de la liste.
-  expect(ouvrages().textContent).toContain('Encore 4 blocs pour le pont vers Mine des lettres');
+  expect(ouvrages().textContent).toContain('Encore 4 blocs pour le pont vers la Mine des lettres');
   expect(ouvrages().querySelector('[data-bridge]')).toHaveAttribute('data-bridge', 'french-6e-phonology-french-6e-letter-confusion');
   expect(screen.getByRole('list', { name: 'Missions de l’île' })).toBeInTheDocument();
   // L'élève ouvre le pli lui-même : son choix tient.
@@ -87,10 +87,10 @@ it('les blocs qui manquent renvoient à l’île où les gagner, par un lien', (
 it('une île fermée montre ses missions verrouillées et renvoie à l’île précédente', async () => {
   const onClose = vi.fn();
   renderSheet('french-6e-letter-confusion', onClose);
-  expect(document.body.textContent).toContain('Pas si vite ! Pour venir ici, pose le pont depuis Forêt des sons : 4 blocs.');
+  expect(document.body.textContent).toContain('Pas si vite ! Pour venir ici, pose le pont depuis la Forêt des sons : 4 blocs.');
   // Sans bloc : l'ouvrage est une ligne compacte qui dit ce qu'il manque, sans bouton grisé.
   expect(screen.queryByRole('button', { name: /Poser/ })).not.toBeInTheDocument();
-  expect(document.body.textContent).toContain('Pont depuis Forêt des sons');
+  expect(document.body.textContent).toContain('Pont depuis la Forêt des sons');
   expect(document.body.textContent).toContain('Encore 4 blocs (4 en tout)');
   expect(screen.getByRole('list', { name: 'Missions de l’île' }).querySelectorAll('a.island-quest')).toHaveLength(0);
   expect(screen.getAllByText('Verrouillé').length).toBeGreaterThan(0);
@@ -148,7 +148,7 @@ it('le port montre le chantier du Bloc-Navire : ses blocs, ses Gardiens, puis le
 it('une île d’un autre archipel dit ce qu’il manque au Bloc-Navire, sans ouvrage à proposer', () => {
   renderSheet('maths-5e-proportionality');
   expect(document.body.textContent).toContain('Pas si vite ! Mon île est dans les Collines du Large, de l’autre côté de la mer.');
-  expect(document.body.textContent).toContain('Finis le Bloc-Navire sur Plaine des nombres');
+  expect(document.body.textContent).toContain('Finis le Bloc-Navire sur la Plaine des nombres');
   expect(screen.queryByText('Ouvrages')).not.toBeInTheDocument();
 });
 

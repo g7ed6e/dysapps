@@ -10,6 +10,9 @@ import { footprintOf, gapBetween, landRectangle, placedIsland, poseOfSpot } from
 import { STEP, type Rectangle } from './placement';
 import { placesOf } from './routing';
 import type { LayoutGuardian, LayoutSpot } from './savedLayout';
+import { ofPlace } from './placeArticle';
+
+export { ofPlace, thePlace, toPlace } from './placeArticle';
 
 /** Le nom d'un lieu dans l'univers en cours. */
 export type PlaceName = (id: BiomeId) => string;
@@ -18,19 +21,6 @@ const NOM_DU_JEU: PlaceName = (id) => getBiome(id)?.name ?? id;
 
 /** Les huit directions, dans le sens inverse des aiguilles d'une montre depuis l'est (à l'écran), avec leur préposition. */
 const DIRECTIONS = ['à l’est', 'au nord-est', 'au nord', 'au nord-ouest', 'à l’ouest', 'au sud-ouest', 'au sud', 'au sud-est'] as const;
-
-/** Les premiers mots des noms de lieux au féminin (« de la Forêt des sons ») ; les autres sont au masculin (« du Volcan »). */
-const FEMININS = new Set(['forêt', 'mine', 'carrière', 'ferme', 'tour', 'plaine', 'rivière', 'falaise', 'baie', 'horloge', 'gare', 'île', 'halle', 'fabrique']);
-
-/** Les premiers mots qui s'élident devant un h muet. */
-const H_MUETS = new Set(['horloge']);
-
-/** « de la Forêt des sons », « du Volcan des décimaux », « de l’Atelier du calcul littéral ». */
-export function ofPlace(nom: string): string {
-  const premier = nom.split(/\s/)[0].toLowerCase();
-  if (/^[aeiouyàâéèêëîïôöûü]/i.test(premier) || H_MUETS.has(premier)) return `de l’${nom}`;
-  return FEMININS.has(premier) ? `de la ${nom}` : `du ${nom}`;
-}
 
 /**
  * La direction en mots de `vers` vu depuis `depuis` (« au nord »), telle qu'on la voit sur la Carte : le nord en haut
@@ -57,6 +47,15 @@ export function distanceWords(ecart: number): string {
  * égalité).
  */
 export function placeSentence(world: World, id: BiomeId, spot: LayoutSpot = spotOf(world, id), nom: PlaceName = NOM_DU_JEU): string {
+  return placeWords(world, id, spot, nom, true);
+}
+
+/** La même phrase sans l'écart (« au nord de la Forêt des sons ») : la ligne courte du mode au téléphone. */
+export function placeDirection(world: World, id: BiomeId, spot: LayoutSpot = spotOf(world, id), nom: PlaceName = NOM_DU_JEU): string {
+  return placeWords(world, id, spot, nom, false);
+}
+
+function placeWords(world: World, id: BiomeId, spot: LayoutSpot, nom: PlaceName, ecart: boolean): string {
   const a = archipelagoOfIsland(id);
   const ici = landRectangle(placedIsland(id, poseOfSpot(a, spot)));
   let voisin: { id: BiomeId; r: Rectangle; ecart: number } | null = null;
@@ -67,7 +66,8 @@ export function placeSentence(world: World, id: BiomeId, spot: LayoutSpot = spot
     if (!voisin || ecart < voisin.ecart) voisin = { id: autre, r, ecart };
   }
   if (!voisin) return '';
-  return `${directionWords(milieu(voisin.r), milieu(ici))} ${ofPlace(nom(voisin.id))}, ${distanceWords(voisin.ecart)}`;
+  const ou = `${directionWords(milieu(voisin.r), milieu(ici))} ${ofPlace(nom(voisin.id))}`;
+  return ecart ? `${ou}, ${distanceWords(voisin.ecart)}` : ou;
 }
 
 /** Où est l'îlot d'un Gardien autour de son lieu (à sa place par défaut) : « au nord de son île ». */

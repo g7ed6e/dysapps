@@ -10,13 +10,13 @@ it('le bilan ne renvoie jamais au bâtiment de l’île, qui se pose tout seul (
   const some = sanitizeState({ stock: { [BLOC.bois]: 2 }, world: { place: 'french-6e-phonology' } });
   expect(worksiteFor(some, 'french-6e-phonology', BLOC.bois)).toMatchObject({
     kind: 'ouvrage',
-    text: 'Le pont vers Mine des lettres : 2 blocs sur 4.',
+    text: 'Le pont vers la Mine des lettres : 2 blocs sur 4.',
     have: 2,
     need: 4,
     ready: false,
   });
   const rich = sanitizeState({ stock: { [BLOC.bois]: 12 }, world: { place: 'french-6e-phonology' } });
-  expect(worksiteFor(rich, 'french-6e-phonology', BLOC.bois)).toMatchObject({ text: 'Le pont vers Mine des lettres : tu peux le construire !', ready: true });
+  expect(worksiteFor(rich, 'french-6e-phonology', BLOC.bois)).toMatchObject({ text: 'Le pont vers la Mine des lettres : tu peux le construire !', ready: true });
 });
 
 it('le bâtiment fini ou non, le bilan parle de l’ouvrage le moins cher qui en part', () => {
@@ -24,11 +24,11 @@ it('le bâtiment fini ou non, le bilan parle de l’ouvrage le moins cher qui en
   const state = sanitizeState({ stock: { [BLOC.bois]: 2 }, world: { place: 'french-6e-phonology', parts: plans } });
   expect(worksiteFor(state, 'french-6e-phonology', BLOC.bois)).toMatchObject({
     kind: 'ouvrage',
-    text: 'Le pont vers Mine des lettres : 2 blocs sur 4.',
+    text: 'Le pont vers la Mine des lettres : 2 blocs sur 4.',
     to: '/adventure/french-6e-phonology?worksite=french-6e-phonology-french-6e-letter-confusion',
   });
   const five = sanitizeState({ stock: { [BLOC.bois]: 5 }, world: { place: 'french-6e-phonology', parts: plans } });
-  expect(worksiteFor(five, 'french-6e-phonology', BLOC.bois).text).toBe('Le pont vers Mine des lettres : tu peux le construire !');
+  expect(worksiteFor(five, 'french-6e-phonology', BLOC.bois).text).toBe('Le pont vers la Mine des lettres : tu peux le construire !');
 });
 
 it('sur le port, les blocs servent le Bloc-Navire', () => {

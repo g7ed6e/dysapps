@@ -8,6 +8,7 @@
 // Dans les deux univers (proposition P2, PR 2, pour Blocland ; « 4a », 4 octobre 2026, pour Archipéo), la fiche de la
 // créature et celle du Gardien portent leur portrait en médaillon, qui déborde au-dessus de la fiche ; les autres gardent
 // l'icône du titre. Blocland le dessine en cubes, Archipéo avec son modèle en SVG (l'icône en attendant, ou en repli).
+import { ofPlace, thePlace, toPlace } from './world/placeArticle';
 import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { Link } from 'react-router-dom';
@@ -394,14 +395,14 @@ function FicheDeLOuvrage({ id, onBuilt, onClose, onVoirOuvrage }: Props & { id: 
   const departs = ferme ? linksToIsland(ferme, links, open) : [];
   const rang = departs.findIndex((d) => d.id === def.id);
   const suivant = departs.length > 1 ? departs[(rang + 1) % departs.length] : null;
-  const titre = ferme ? `Relier ${getBiome(ferme)?.name ?? ferme}` : `${KIND_NAME[kind]} entre ${a} et ${b}`;
+  const titre = ferme ? `Relier ${thePlace(getBiome(ferme)?.name ?? ferme)}` : `${KIND_NAME[kind]} entre ${thePlace(a)} et ${thePlace(b)}`;
   const quoi = withArticle(kind);
-  const depuis = ferme ? `${quoi.charAt(0).toUpperCase()}${quoi.slice(1)} part de ${getBiome(otherEnd(def, ferme))?.name ?? ''}. ` : '';
+  const depuis = ferme ? `${quoi.charAt(0).toUpperCase()}${quoi.slice(1)} part ${ofPlace(getBiome(otherEnd(def, ferme))?.name ?? '')}. ` : '';
   const numero = ferme && departs.length > 1 && rang >= 0 ? `Départ ${rang + 1} sur ${departs.length}. ` : '';
   const phrase = sansLv2
     ? 'Choisis d’abord une LV2 dans les Réglages.'
     : etat === 'far'
-      ? `Il faut d’abord un chemin jusqu’à ${a} ou ${b}.`
+      ? `Il faut d’abord un chemin jusqu’${toPlace(a)} ou ${toPlace(b)}.`
       : etat === 'blocked'
         ? `${def.cost} blocs. ${conditionText(def, links) ?? ''}`.trim()
         : etat === 'built'

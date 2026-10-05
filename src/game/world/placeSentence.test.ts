@@ -4,7 +4,8 @@ import type { BiomeId } from '../biomes';
 import type { World } from '../engine/state';
 import { BIOMES } from '../biomes';
 import { freeSpots, guardianOf, moveGuardian, startingSpot } from './arrange';
-import { distanceWords, directionWords, guardianSentence, ofPlace, placeSentence } from './placeSentence';
+import { distanceWords, directionWords, guardianSentence, ofPlace, placeDirection, placeSentence, thePlace, toPlace } from './placeSentence';
+import { lieuDAssemblage } from './assembly';
 
 const VIDE: World = { parts: {}, log: [], links: [] };
 
@@ -33,8 +34,27 @@ describe('où est une place, en mots', () => {
     expect(ofPlace('Atelier du calcul littéral')).toBe('de l’Atelier du calcul littéral');
     expect(ofPlace('Horloge des verbes')).toBe('de l’Horloge des verbes');
     expect(ofPlace('Observatoire des textes')).toBe('de l’Observatoire des textes');
+    expect(ofPlace('Forge des puissances')).toBe('de la Forge des puissances');
     // Aucun nom ne reste sans article.
     for (const b of BIOMES) expect(ofPlace(b.name)).toMatch(/^(de la |du |de l’)/);
+  });
+
+  it('un seul utilitaire d’article, accordé, pour les noms des lieux des deux univers (leurs lieux et leur lieu d’assemblage)', () => {
+    expect(thePlace('Tour du lecteur')).toBe('la Tour du lecteur');
+    expect(thePlace('Volcan des décimaux')).toBe('le Volcan des décimaux');
+    expect(thePlace('Horloge des verbes')).toBe('l’Horloge des verbes');
+    expect(toPlace('Ferme des accords')).toBe('à la Ferme des accords');
+    expect(toPlace('Marché des proportions')).toBe('au Marché des proportions');
+    expect(toPlace('Atelier du calcul littéral')).toBe('à l’Atelier du calcul littéral');
+    const assemblage = (['blocland', 'archipeo'] as const).map((u) => lieuDAssemblage(u).titre.replace(/^(La |Le |L’)/, ''));
+    for (const nom of [...BIOMES.map((b) => b.name), ...assemblage]) {
+      const le = thePlace(nom);
+      expect(le).toMatch(/^(la |le |l’)/);
+      // Les trois formes s'accordent entre elles : « de la » / « à la », « du » / « au », « de l’ » / « à l’ ».
+      const forme = le.startsWith('la ') ? 0 : le.startsWith('le ') ? 1 : 2;
+      expect(ofPlace(nom)).toBe([`de ${le}`, `du ${nom}`, `de ${le}`][forme]);
+      expect(toPlace(nom)).toBe([`à ${le}`, `au ${nom}`, `à ${le}`][forme]);
+    }
   });
 
   it('dit le voisin le plus proche, sa direction et l’écart, avec les noms de l’univers', () => {
@@ -42,6 +62,8 @@ describe('où est une place, en mots', () => {
     // Derrière la Forêt des sons, à côté de l'Horloge des verbes, à sa droite sur la Carte.
     expect(placeSentence(VIDE, id)).toMatch(/^à l’est de l’Horloge des verbes, à \d+ cases?$/);
     expect(placeSentence(VIDE, id, startingSpot(id), (x) => `Lieu ${x}`)).toMatch(/du Lieu /);
+    // La ligne courte du téléphone : la même direction, sans l'écart.
+    expect(placeDirection(VIDE, id)).toBe('à l’est de l’Horloge des verbes');
     // Une autre place, une autre phrase (le fantôme la dit à chaque calage).
     const ailleurs = freeSpots(VIDE, id).find((s) => Math.abs(s.x - startingSpot(id).x) + Math.abs(s.y - startingSpot(id).y) > 2);
     if (ailleurs) expect(typeof placeSentence(VIDE, id, ailleurs)).toBe('string');

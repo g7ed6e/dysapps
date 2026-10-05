@@ -2,6 +2,7 @@
 // île de la matière la moins jouée, GD-7), ou pour le Bloc-Navire (le bâtiment de l'île se pose tout seul, une partie par
 // mission réussie : GD-6). Code pur, partagé par le panneau d'île et la prochaine destination. Les noms des archipels
 // viennent de l'appelant (`noms` : ceux de l'univers affiché, GD-1).
+import { thePlace } from './placeArticle';
 import { BIOMES, blockCount, getBiome, type BiomeDef, type BiomeId, type BlockId } from '../biomes';
 import { LV2_LABELS, lv2Courante, type Lv2Choice } from '../../core/settings';
 import type { GameState } from '../engine';
@@ -194,10 +195,10 @@ function chercherLOuvrageSuggere(state: GameState, classe: ArchipelagoId, lv2: L
   return { b, ile: open.has(b.from) ? b.from : b.to };
 }
 
-/** « le pont vers la Mine », « l'escalier taillé vers le Carrefour » : le nom d'un ouvrage, le même partout. */
+/** « le pont vers la Mine », « l'escalier taillé vers le Carrefour » : le nom d'un ouvrage, le même partout ; `to`, le nom du lieu, sans article. */
 export function ouvrageName(kind: keyof typeof KIND_NAME, to: string): string {
   const name = KIND_NAME[kind].toLowerCase();
-  return `${/^[aeiouy]/.test(name) ? 'l’' : 'le '}${name}${to ? ` vers ${to}` : ' '}`;
+  return `${/^[aeiouy]/.test(name) ? 'l’' : 'le '}${name}${to ? ` vers ${thePlace(to)}` : ' '}`;
 }
 
 /** Le prochain objectif d'une île : une phrase, et une jauge (`have` sur `need`) quand il se compte. */
@@ -292,7 +293,7 @@ export function lockedHint(state: GameState, island: BiomeId, noms: NomsArchipel
   if (!isArchipelagoReached(archipelago.classe, bridges)) {
     const left = remainingVoyages(island, bridges);
     const stage = stageTo(left[0].toClasse)!;
-    const port = getBiome(stage.biome)?.name ?? stage.biome;
+    const port = thePlace(getBiome(stage.biome)?.name ?? stage.biome);
     const head = `Pas si vite ! Mon île est dans les ${noms[archipelago.classe]}`;
     if (left.length > 1) return `${head}. Va d’abord jusqu’aux ${noms[previousArchipelago(archipelago.classe)!.classe]} avec ${VEHICLE_NAME}.`;
     const travel = archipelago.travel === 'mer' ? 'de la mer' : archipelago.travel === 'airs' ? 'des airs' : 'du ciel';
@@ -312,7 +313,7 @@ export function lockedHint(state: GameState, island: BiomeId, noms: NomsArchipel
     const from = getBiome(otherEnd(b, island))?.name ?? '';
     const kind = linkKind(b, bridges);
     const cond = conditionMet(b, bridges, world) ? '' : ` ${conditionTextShort(kind, from)}`;
-    return `Pas si vite ! Pour venir ici, pose ${ouvrageName(kind, '')}depuis ${from} : ${b.cost} blocs.${cond}`;
+    return `Pas si vite ! Pour venir ici, pose ${ouvrageName(kind, '')}depuis ${thePlace(from)} : ${b.cost} blocs.${cond}`;
   }
   return noDirectLinkHint(island, bridges);
 }
@@ -333,12 +334,12 @@ export function noDirectLinkHint(island: BiomeId, bridges: string[]): string {
 export const AUCUNE_LIAISON = 'Pas de passage jusqu’ici pour l’instant.';
 
 /** Ce que dit la fiche d'un lieu fermé qu'on atteint en reliant d'abord une autre île (GD-9). */
-const relieDAbord = (ile: string) => `Relie d’abord ${ile}. De là, un ouvrage mène ici.`;
+const relieDAbord = (ile: string) => `Relie d’abord ${thePlace(ile)}. De là, un ouvrage mène ici.`;
 
 const cap = (text: string) => `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
 
 // L'escalier demande une mission réussie sur l'île de départ, qui y pose la première partie de son bâtiment (GD-6) ;
 // aucun ouvrage ne demande un Gardien (GD-7).
 function conditionTextShort(kind: keyof typeof KIND_NAME, from: string): string {
-  return kind === 'escalier' ? `Réussis aussi une mission sur ${from}.` : '';
+  return kind === 'escalier' ? `Réussis aussi une mission sur ${thePlace(from)}.` : '';
 }

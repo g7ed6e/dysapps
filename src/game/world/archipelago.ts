@@ -5,6 +5,7 @@
 // (`LEGACY_BRIDGES`). Une île s'ouvre quand un chemin de liaisons posées (et de voyages faits) y mène depuis une île
 // de départ. Un voyage fait reste fait : on revient toujours en arrière.
 // Générateur pur : partagé entre le monde 3D, les pages simples et le moteur.
+import { ofPlace } from './placeArticle';
 import { BLOC, BIOMES, getBiome, type BiomeDef, type BiomeId, type BlockId } from '../biomes';
 import { lv2Courante, type Lv2Choice } from '../../core/settings';
 import { ARCHIPELAGO_IDS, archipelagoOfIsland, type ArchipelagoId } from './archipelagos';
@@ -494,7 +495,7 @@ export function conditionText(bridge: BridgeDef, bridges: string[]): string | nu
   const open = reachableIslands(bridges);
   const island = [bridge.from, bridge.to].find((i) => open.has(i)) ?? bridge.from;
   const name = getBiome(island)?.name ?? island;
-  return `Réussis d’abord une mission de ${name}.`;
+  return `Réussis d’abord une mission ${ofPlace(name)}.`;
 }
 
 /**
