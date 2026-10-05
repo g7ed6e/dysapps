@@ -16,7 +16,7 @@ const REGLES = [
   // Le moteur, un métier par fichier (qualité du code, lot 5) : engine.ts les réexporte.
   'engine/state',
   'engine/dates',
-  'engine/reading',
+  'engine/sanitize',
   'engine/learning',
   'boss',
   'bossCore',

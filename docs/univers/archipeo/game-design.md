@@ -42,7 +42,7 @@ Depuis le lot R2, **le terrain n’est plus en cubes** : le sol et la roche des 
 - la côte descend jusqu’à l’eau et se teinte de sable au bord de la mer ; sous les îles en altitude, la roche s’amincit en facettes ;
 - les couleurs sont celles de la palette, nuancées selon l’option (b) retenue au lot R1 : plus sombres vers la mer, de larges taches sur les dessus, les couleurs voisines mêlées aux coins, pour que la grille ne se lise pas en damier ; deux dessus qui tranchent (une dalle claire contre la roche, une arène contre l’herbe) ne se mêlent pas d’un coin à l’autre : le passage se fait au bord, sur 0,3 case de chaque côté, comme le sable au rivage (lot R3) ; et d’un bloc d’écart, la dalle reste plate jusqu’à son bord, la roche descend jusqu’à elle (lot R4).
 
-Depuis le lot R3, **la mer et la faune** sont peintes aussi (`src/game/world/sea.ts`, `faune.ts`) :
+Depuis le lot R3, **la mer et la faune** sont peintes aussi (`src/game/world/sea.ts`, `fauna.ts`) :
 
 - la mer se lit en profondeur : le Bleu lagon de la planche (`#178078`) sur les hauts-fonds autour des îles, la teinte de mer de l’archipel un peu plus loin, puis le large, qui s’enfonce vers la Nuit océan (`#142B38`) ; les rochers et les bancs semés en mer ne font pas de lagon, seulement de l’écume ;
 - au ras de chaque côte, rocher ou pilotis, **un liseré d’écume** couleur Brume (`#E5EBE3`), et plus loin une ligne plus pâle ; il respire doucement ; le sable se détache du lagon comme sur la planche (2,2 pour 1) et l’écume à plus de 3 pour 1 ;
@@ -59,7 +59,7 @@ Depuis le lot R4, **le décor** est peint aussi (`src/game/world/decorMesh.ts`) 
 - les cascades collent à la falaise de la case du bord, en lame d’eau rayée de clair, jusqu’à une tache d’écume ; en mer, les écueils affleurent en rochers bosselés (des aiguilles d’ardoise aux Anciens Ateliers), les bancs en taches plates au ras de l’eau ;
 - rien n’y bouge : réduire les animations n’a rien à y arrêter ; une île fermée délave son décor comme son sol.
 
-Depuis le lot R5, **la construction est taillée** (`src/game/world/construction.ts`, `toits.ts`, `three/construction.ts`) : les bâtiments des plans, les ouvrages, les monuments, le quai, le décor resté en blocs au cœur des îles et le Bloc-Navire se lisent toujours en blocs posés, mais peints de la palette :
+Depuis le lot R5, **la construction est taillée** (`src/game/world/construction.ts`, `roofs.ts`, `three/construction.ts`) : les bâtiments des plans, les ouvrages, les monuments, le quai, le décor resté en blocs au cœur des îles et le Bloc-Navire se lisent toujours en blocs posés, mais peints de la palette :
 
 - chaque bloc a sa teinte propre, à 4 % près, tirée de sa case ; les faces d’une même matière sont fusionnées, sans joints ni texture ;
 - les arêtes saillantes accrochent la lumière (un biseau peint de 0,08 case, jamais moins de 1,5 pixel, plus clair de 22 % et d’au moins 14 niveaux sur les teintes sombres comme l’ardoise) ; il s’efface de loin ;

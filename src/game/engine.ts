@@ -1,7 +1,7 @@
 // Moteur Blocland : étoiles, récompenses, répétition espacée, streak et adaptation.
 // Logique pure (l'heure et le hasard sont passés en paramètres) pour être testée facilement.
 // Ce fichier garde les plans, l'assemblage, la fin d'exercice, l'école du village et le Bloc-Navire ; à côté, dans
-// ./engine/ : l'état d'une partie (`state.ts`), les dates (`dates.ts`), la lecture d'une sauvegarde (`reading.ts`),
+// ./engine/ : l'état d'une partie (`state.ts`), les dates (`dates.ts`), la lecture d'une sauvegarde (`sanitize.ts`),
 // l'apprentissage (`learning.ts`). Il en réexporte les noms publics.
 import { type BiomeId, BIOMES, type BlockId, BLOCKS, getBiome } from './biomes';
 import { cellKey, planCells, type PlanDef } from './world/plans';
@@ -16,7 +16,7 @@ import { todayISO } from './engine/dates';
 import { adapt, CHEST_BLOCKS, dueItems, recordSpaced, scoreOf, type StreakUpdate, updateStreak } from './engine/learning';
 export { EMPTY_STATE, type ExerciseProgress, type GameState, type LogEntry, type SpacedItem, type Streak, type TypeStats, type World } from './engine/state';
 export { addDays, daysBetween, todayISO } from './engine/dates';
-export { sanitizeState } from './engine/reading';
+export { sanitizeState } from './engine/sanitize';
 export { adapt, CHEST_BLOCKS, CHEST_EVERY, dueItems, GRADUATE_AT, INTERVALS, levelFor, PROMOTE_AT_ONCE, recordSpaced, scoreOf, starsFor, type StreakUpdate, updateStreak } from './engine/learning';
 
 // ---------- Plans (construction guidée) ----------
