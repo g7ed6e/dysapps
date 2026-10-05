@@ -100,6 +100,11 @@ const DONE6 = {
   },
   progress: { xp: 5200, totalAnswers: 1200, correctAnswers: 1010, sessionsCompleted: 90, structuresCompleted: 33, challengesWon: 11, passages: 1, landmarksCompleted: 2, badges: badges(17) },
 };
+/** Les Premiers Rivages reconstruits, avec de quoi poser une partie d'une digue entre la Tour et la Ferme. */
+const REUNIR = {
+  ...DONE6,
+  game: { ...DONE6.game, stock: { ...DONE6.game.stock, 'french-6e-reading': 14, 'french-6e-grammar-spelling': 10 }, world: { ...DONE6.game.world, place: 'french-6e-reading' } },
+};
 /** Arrivé dans les Îles Brumeuses. */
 const COLLINES = { ...DONE6, game: { ...DONE6.game, world: { ...DONE6.game.world, place: 'maths-5e-proportionality' } } };
 
@@ -139,6 +144,9 @@ const SHOTS = [
   { name: 'fiche-relier', state: EARLY_MINE, go: '/adventure/french-6e-phonology', act: relierDepuisUneAutreIle('maths-6e-fractions') },
   // Aménager sa région (GD-9) : sur la Carte, le mode ouvert, un lieu choisi et son fantôme calé sur une place libre.
   { name: 'amenager', state: MID, go: '/adventure/map', act: amenager('maths-6e-fractions', { x: 150, y: 100 }) },
+  // Réunir deux lieux (GD-9, point 10) : la Tour du lecteur choisie, « Réunir » touché, le mode fermé ; la digue posée
+  // en partie depuis son panneau, puis regardée dans le monde.
+  { name: 'reunir', state: REUNIR, go: '/adventure/map', act: reunir('french-6e-reading', 'french-6e-grammar-spelling') },
   { name: 'gardien', state: MID, go: '/adventure/french-6e-letter-confusion/challenge', wait: 2500 },
   { name: 'ecole', state: MID, go: '/adventure/school' },
   { name: 'trophees', state: MID, go: '/adventure/trophies' },
@@ -250,6 +258,27 @@ function amenager(ile, point) {
     await page.evaluate((ile) => window.__dysappsAmenager?.({ genre: 'ile', id: ile }), ile);
     await page.waitForTimeout(800);
     await page.evaluate((point) => window.__dysappsAmenager?.({ genre: 'mer', point }), point);
+    await page.waitForTimeout(2500);
+  };
+}
+/** Ouvre le mode « Aménager » sur la Carte, réunit `ile` à `autre`, ferme le mode, ouvre leur digue, en pose ce qu'il peut et referme son panneau. */
+function reunir(ile, autre) {
+  return async (page) => {
+    await page.getByRole('button', { name: /^Aménager/ }).click();
+    await page.waitForTimeout(500);
+    const bandeau = page.locator('.celebration button[aria-label="Fermer"]');
+    while (await bandeau.count()) await bandeau.first().click();
+    await page.evaluate((ile) => window.__dysappsAmenager?.({ genre: 'ile', id: ile }), ile);
+    await page.waitForTimeout(800);
+    await page.getByRole('button', { name: 'Réunir', exact: true }).click();
+    await page.waitForTimeout(800);
+    await page.getByRole('button', { name: /Terminé/ }).click();
+    await page.evaluate((id) => (location.hash = `#/adventure/join.${id}`), `${ile}.${autre}`);
+    await page.waitForTimeout(1500);
+    await page.getByRole('button', { name: /Poser tout ce que j’ai/ }).click();
+    await page.waitForTimeout(800);
+    // Le panneau fermé : la digue à moitié posée, la vue sur la Tour.
+    await page.locator('#panneau-reunion .island-sheet-close').click();
     await page.waitForTimeout(2500);
   };
 }
