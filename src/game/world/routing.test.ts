@@ -4,7 +4,7 @@
 import { describe, expect, it } from 'vitest';
 import { isLand, isLandDuMonde, lieuDeDepart, type IslandDef } from './map';
 import { empriseDuLieu, distanceAuRectangle } from './footprint';
-import { type Accroche, accrocheDansLeMonde, arriveesPossibles, placePossible, cheminEntre, LONGUEUR_LONGUE, tracerLaRegion } from './routing';
+import { type Accroche, accrocheDansLeMonde, arriveesPossibles, cheminsADeuxCoudes, placePossible, cheminEntre, LONGUEUR_LONGUE, tracerLaRegion } from './routing';
 import { bornesDuCoeur } from './map';
 import { PAS, VERS_LE_LARGE } from './placement';
 
@@ -16,10 +16,10 @@ const pose = (d: IslandDef, dx: number, dy: number, quarts: 0 | 1 | 2 | 3 = 0): 
 describe('un chemin entre deux arrivées', () => {
   it('droit quand elles se font face sur une même ligne, en L quand leurs directions se croisent', () => {
     const droit = cheminEntre(accroche(0, 0, 1, 0), accroche(10, 0, -1, 0))!;
-    expect(droit.coude).toBe(-1);
+    expect(droit.coudes).toEqual([]);
     expect(droit.cases).toEqual(Array.from({ length: 9 }, (_, i) => ({ x: i + 1, y: 0 })));
     const l = cheminEntre(accroche(0, 0, 1, 0), accroche(8, 6, 0, -1))!;
-    expect(l.cases[l.coude]).toEqual({ x: 8, y: 0 });
+    expect(l.cases[l.coudes[0]]).toEqual({ x: 8, y: 0 });
     expect(l.cases.length).toBe(8 + 5);
     // Chaque pas va d'une case à sa voisine, jamais en biais.
     for (const ch of [droit, l]) {
@@ -28,7 +28,23 @@ describe('un chemin entre deux arrivées', () => {
     }
   });
 
-  it('jamais en biais, en Z, à reculons, ni avec un coude collé à la côte', () => {
+  it('une liaison longue passe en Z ou en U, à deux coudes au large, du plus court au plus long', () => {
+    const z = [...cheminsADeuxCoudes(accroche(0, 0, 1, 0), accroche(10, 3, -1, 0), 96)];
+    expect(z.length).toBeGreaterThan(0);
+    // Le premier : le tronçon de travers au milieu du bras de mer.
+    expect(z[0].coudes.map((i) => z[0].cases[i])).toEqual([{ x: 5, y: 0 }, { x: 5, y: 3 }]);
+    expect(z[0].cases.length).toBe(9 + 3);
+    for (const c of z) expect(c.cases[c.cases.length - 1]).toEqual({ x: 9, y: 3 });
+    const u = [...cheminsADeuxCoudes(accroche(0, 0, 0, 1), accroche(8, 2, 0, 1), 40)];
+    expect(u[0].coudes.map((i) => u[0].cases[i])).toEqual([{ x: 0, y: 5 }, { x: 8, y: 5 }]);
+    expect(u.every((c, i) => i === 0 || c.cases.length > u[i - 1].cases.length)).toBe(true);
+    expect(u.every((c) => c.cases.length <= 40)).toBe(true);
+    // Trop long, ou des arrivées perpendiculaires : rien.
+    expect([...cheminsADeuxCoudes(accroche(0, 0, 1, 0), accroche(10, 3, -1, 0), 10)]).toEqual([]);
+    expect([...cheminsADeuxCoudes(accroche(0, 0, 1, 0), accroche(10, 3, 0, -1), 96)]).toEqual([]);
+  });
+
+  it('jamais en biais, en Z (à un coude), à reculons, ni avec un coude collé à la côte', () => {
     expect(cheminEntre(accroche(0, 0, 1, 0), accroche(10, 3, -1, 0))).toBeNull(); // face à face décalées : un Z
     expect(cheminEntre(accroche(0, 0, 1, 0), accroche(10, 0, 1, 0))).toBeNull(); // dans le même sens
     expect(cheminEntre(accroche(0, 0, 1, 0), accroche(-8, 6, 0, -1))).toBeNull(); // le coude derrière le départ
@@ -74,9 +90,9 @@ describe('le traceur d’une région', () => {
 
   it('trace une liaison droite entre deux lieux face à face, en L sinon, au plus long', () => {
     const droit = tracerLaRegion('6e', { lieux: [plaine, pose(galet, 60 - (galet.core.x - plaine.core.x), 0)] }).get('maths-6e-calculation-maths-6e-fractions')!;
-    expect(droit.coude).toBe(-1);
+    expect(droit.coudes).toEqual([]);
     const l = tracerLaRegion('6e', { lieux: [plaine, pose(galet, 60 - (galet.core.x - plaine.core.x), 40)] }).get('maths-6e-calculation-maths-6e-fractions')!;
-    expect(l.coude).toBeGreaterThan(0);
+    expect(l.coudes.length).toBe(1);
     for (const t of [droit, l]) expect(t.cases.length).toBeLessThanOrEqual(LONGUEUR_LONGUE);
   });
 
@@ -96,7 +112,7 @@ describe('le traceur d’une région', () => {
     const t = tracerLaRegion('6e', { lieux: [plaine, g, milieu] }).get('maths-6e-calculation-maths-6e-fractions');
     expect(t).not.toBeUndefined();
     if (t) {
-      expect(t.coude).toBeGreaterThan(0);
+      expect(t.coudes.length).toBeGreaterThan(0);
       for (const c of t.cases) for (const p of empriseDuLieu(milieu.id, milieu)) expect(distanceAuRectangle(c.x, c.y, p)).toBeGreaterThanOrEqual(2);
     }
   });
@@ -134,15 +150,17 @@ describe('une place possible (le geste « Aménager » le lira)', () => {
     expect(placePossible('6e', [plaine, pose(galet, dx(150), 0)], galet.id)).toBe(false);
   });
 
-  it('impossible s’il bloque une liaison qui se traçait', () => {
+  it('impossible s’il bloque une liaison qui se traçait (même en Z ou en U, elle ne tiendrait plus en 96 cases)', () => {
     const volcan = lieuDeDepart('maths-6e-decimals');
-    const v = { ...volcan, core: { x: plaine.core.x, y: plaine.core.y + 100 } };
-    const g = { ...galet, core: { x: plaine.core.x + 60, y: plaine.core.y + 50 } };
+    const v = { ...volcan, core: { x: plaine.core.x, y: plaine.core.y + 108 } };
+    const g = { ...galet, core: { x: plaine.core.x + 64, y: plaine.core.y } };
     const avant = tracerLaRegion('6e', { lieux: [plaine, g, v] });
     expect(avant.get('maths-6e-calculation-maths-6e-decimals')).not.toBeNull();
     // Le Galet posé entre la Plaine et le Volcan : sa propre liaison se trace, mais plus celle du Volcan.
-    const entre = { ...galet, core: { x: plaine.core.x, y: plaine.core.y + 50 } };
-    expect(tracerLaRegion('6e', { lieux: [plaine, entre, v] }).get('maths-6e-calculation-maths-6e-fractions')).not.toBeNull();
+    const entre = { ...galet, core: { x: plaine.core.x, y: plaine.core.y + 54 } };
+    const apres = tracerLaRegion('6e', { lieux: [plaine, entre, v] });
+    expect(apres.get('maths-6e-calculation-maths-6e-fractions')).not.toBeNull();
+    expect(apres.get('maths-6e-calculation-maths-6e-decimals')).toBeNull();
     expect(placePossible('6e', [plaine, entre, v], galet.id, avant)).toBe(false);
   });
 });

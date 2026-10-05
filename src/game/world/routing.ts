@@ -1,6 +1,6 @@
-// Les tracés des liaisons (GD-9, L2) : c'est le jeu qui trace chaque liaison, droite ou en L à un seul coude sur l'eau,
-// jamais en biais, d'une arrivée d'un lieu (`landing` : sur sa côte, au pas de la grille, une par côté) à une arrivée
-// de l'autre, ou à un point d'attache du point de départ (à chaque pas sur ses quatre côtés). Une liaison part droit
+// Les tracés des liaisons (GD-9, L2) : c'est le jeu qui trace chaque liaison, droite ou en L à un seul coude sur l'eau
+// (une liaison longue, si rien d'autre ne passe, en Z ou en U à deux coudes), jamais en biais, d'une arrivée d'un lieu
+// (`landing` : sur sa côte, au pas de la grille, une par côté) à une arrivée de l'autre, ou à un point d'attache du point de départ (à chaque pas sur ses quatre côtés). Une liaison part droit
 // vers le large, au moins deux cases, avant de tourner ; elle passe à deux cases au moins de toute emprise, ne coupe
 // aucun lieu, aucun écueil, aucune autre liaison. Courte, elle fait 36 cases au plus ; longue (le bac, les liaisons du
 // point de départ), 96. Code pur, sans Three.js : la même règle trace la carte de départ et dira, au geste « Aménager »,
@@ -158,26 +158,44 @@ export function accrocheDansLeMonde(def: IslandDef, a: ArriveeLocale): Accroche 
 
 // ---------- Les tracés ----------
 
-/** Le tracé d'une liaison : ses cases sur l'eau, d'une arrivée à l'autre (arrivées exclues), et son coude. */
+/** Un chemin sur l'eau : ses cases, d'une arrivée à l'autre (arrivées exclues), et l'indice de chacun de ses coudes. */
+export interface Chemin {
+  cases: { x: number; y: number }[];
+  /** Les indices des cases de ses coudes dans `cases`, dans l'ordre : aucun pour un chemin droit. */
+  coudes: number[];
+}
+
+/** Le tracé d'une liaison : son chemin, et les deux arrivées qu'il relie. */
 export interface TraceDeLiaison {
   id: string;
   cases: readonly { x: number; y: number }[];
-  /** L'indice de la case du coude dans `cases`, ou −1 pour une liaison droite. */
-  coude: number;
+  coudes: readonly number[];
   depuis: Accroche;
   vers: Accroche;
 }
 
-/** Le chemin droit ou en L d'une arrivée à une autre, ou `null` s'il n'y en a pas (jamais en biais, jamais en Z). */
-export function cheminEntre(f: Accroche, t: Accroche): { cases: { x: number; y: number }[]; coude: number } | null {
+/** Les cases d'une ligne droite de `p` (exclu) dans le sens (dx, dy), `n` cases. */
+function ligne(out: { x: number; y: number }[], p: { x: number; y: number }, dx: number, dy: number, n: number): { x: number; y: number } {
+  let x = p.x;
+  let y = p.y;
+  for (let i = 0; i < n; i++) {
+    x += dx;
+    y += dy;
+    out.push({ x, y });
+  }
+  return { x, y };
+}
+
+/** Le chemin droit ou en L d'une arrivée à une autre, ou `null` s'il n'y en a pas (jamais en biais). */
+export function cheminEntre(f: Accroche, t: Accroche): Chemin | null {
   const cases: { x: number; y: number }[] = [];
   // Droite : les deux arrivées se font face, sur la même ligne.
   if (f.dx === -t.dx && f.dy === -t.dy) {
     const n = f.dx !== 0 ? (t.x - f.x) * f.dx : (t.y - f.y) * f.dy;
     if (f.dx !== 0 ? f.y !== t.y : f.x !== t.x) return null;
     if (n < 2) return null;
-    for (let i = 1; i < n; i++) cases.push({ x: f.x + f.dx * i, y: f.y + f.dy * i });
-    return { cases, coude: -1 };
+    ligne(cases, f, f.dx, f.dy, n - 1);
+    return { cases, coudes: [] };
   }
   // En L : les deux directions sont perpendiculaires ; le coude est au croisement des deux lignes.
   if (f.dx * t.dx + f.dy * t.dy !== 0) return null;
@@ -185,10 +203,55 @@ export function cheminEntre(f: Accroche, t: Accroche): { cases: { x: number; y: 
   const a = f.dx !== 0 ? (c.x - f.x) * f.dx : (c.y - f.y) * f.dy;
   const b = t.dx !== 0 ? (c.x - t.x) * t.dx : (c.y - t.y) * t.dy;
   if (a < AU_LARGE_AVANT_LE_COUDE + 1 || b < AU_LARGE_AVANT_LE_COUDE + 1) return null;
-  for (let i = 1; i <= a; i++) cases.push({ x: f.x + f.dx * i, y: f.y + f.dy * i });
+  ligne(cases, f, f.dx, f.dy, a);
   const coude = cases.length - 1;
-  for (let i = b - 1; i >= 1; i--) cases.push({ x: t.x + t.dx * i, y: t.y + t.dy * i });
-  return { cases, coude };
+  ligne(cases, c, -t.dx, -t.dy, b - 1);
+  return { cases, coudes: [coude] };
+}
+
+/**
+ * Les chemins à deux coudes d'une arrivée à une autre (une liaison longue, `LONGUEUR_LONGUE`), du plus court au plus
+ * long, `max` cases au plus : en Z quand les arrivées se font face sur deux lignes voisines (le tronçon du milieu, de
+ * travers, au milieu du bras de mer d'abord), en U quand elles regardent du même côté (le tronçon du milieu au large des
+ * deux). Chaque tronçon part au moins `AU_LARGE_AVANT_LE_COUDE` cases au large ; jamais en biais.
+ */
+export function* cheminsADeuxCoudes(f: Accroche, t: Accroche, max: number): Generator<Chemin> {
+  const m = AU_LARGE_AVANT_LE_COUDE + 1;
+  // La position le long de la direction de départ, et de travers.
+  const le = (p: { x: number; y: number }) => p.x * f.dx + p.y * f.dy;
+  const [px, py] = [-f.dy, f.dx];
+  const travers = (t.x - f.x) * px + (t.y - f.y) * py;
+  if (travers === 0) return;
+  const [sx, sy] = travers > 0 ? [px, py] : [-px, -py];
+  const large = Math.abs(travers);
+  const chemin = (a: number, b: number): Chemin => {
+    const cases: { x: number; y: number }[] = [];
+    const c1 = ligne(cases, f, f.dx, f.dy, a);
+    const i1 = cases.length - 1;
+    const c2 = ligne(cases, c1, sx, sy, large);
+    const i2 = cases.length - 1;
+    ligne(cases, c2, -t.dx, -t.dy, b - 1);
+    return { cases, coudes: [i1, i2] };
+  };
+  if (f.dx === -t.dx && f.dy === -t.dy) {
+    // En Z : n cases d'une côte à l'autre le long du départ ; le tronçon du milieu à a cases du départ.
+    const n = le(t) - le(f);
+    if (n < 2 * m || n + large - 1 > max) return;
+    const milieu = Math.round(n / 2);
+    for (let d = 0; d <= n; d++)
+      for (const a of d === 0 ? [milieu] : [milieu - d, milieu + d]) if (a >= m && n - a >= m) yield chemin(a, n - a);
+    return;
+  }
+  if (f.dx === t.dx && f.dy === t.dy) {
+    // En U : le tronçon du milieu au large des deux arrivées, de plus en plus loin.
+    const debut = Math.max(le(f), le(t)) + m;
+    for (let l = debut; ; l++) {
+      const a = l - le(f);
+      const b = l - le(t);
+      if (a + b + large - 1 > max) return;
+      yield chemin(a, b);
+    }
+  }
 }
 
 /** Une grille de cases sur le cadre de la région. */
@@ -284,14 +347,23 @@ export function tracerLaRegion(a: ArchipelagoId, plans: PlansDeLaRegion): Map<st
     const bitB = 1 << rang.get(b.to)!;
     const max = longueurMax(b);
     let best: TraceDeLiaison | null = null;
+    const deuxCoudes = max === LONGUEUR_LONGUE;
     for (const f of possibles.get(b.from)!) {
       if (!libre(f)) continue;
       for (const t of possibles.get(b.to)!) {
         if (!libre(t)) continue;
         const ch = cheminEntre(f, t);
-        if (!ch || ch.cases.length > max || (best && ch.cases.length >= best.cases.length)) continue;
-        if (!cheminLibre(g, ch, bitA, bitB)) continue;
-        best = { id: b.id, cases: ch.cases, coude: ch.coude, depuis: f, vers: t };
+        if (ch && ch.cases.length <= max && (!best || ch.cases.length < best.cases.length) && cheminLibre(g, ch, bitA, bitB)) {
+          best = { id: b.id, cases: ch.cases, coudes: ch.coudes, depuis: f, vers: t };
+          continue;
+        }
+        if (!deuxCoudes || ch) continue;
+        // Une liaison longue qui ne passe ni droite ni en L : en Z ou en U, la première qui tient.
+        for (const z of cheminsADeuxCoudes(f, t, best ? Math.min(max, best.cases.length - 1) : max))
+          if (cheminLibre(g, z, bitA, bitB)) {
+            best = { id: b.id, cases: z.cases, coudes: z.coudes, depuis: f, vers: t };
+            break;
+          }
       }
     }
     out.set(b.id, best);
@@ -311,7 +383,7 @@ export function tracerLaRegion(a: ArchipelagoId, plans: PlansDeLaRegion): Map<st
  * des autres lieux ; près de la terre d'un de ses bouts seulement au départ de ce bout, avant le coude, et plus jamais
  * ensuite ; son coude au large des deux.
  */
-function cheminLibre(g: Grille, ch: { cases: { x: number; y: number }[]; coude: number }, bitA: number, bitB: number): boolean {
+function cheminLibre(g: Grille, ch: Chemin, bitA: number, bitB: number): boolean {
   const n = ch.cases.length;
   const idx: number[] = [];
   for (const c of ch.cases) {
@@ -320,15 +392,16 @@ function cheminLibre(g: Grille, ch: { cases: { x: number; y: number }[]; coude: 
     if (g.pres[i] & ~(bitA | bitB)) return false;
     idx.push(i);
   }
-  // Le départ de chaque bout : un préfixe (depuis son arrivée) près de sa terre, puis plus jamais.
-  const fin = ch.coude < 0 ? n : ch.coude;
+  const premier = ch.coudes.length ? ch.coudes[0] : n;
+  const dernier = ch.coudes.length ? ch.coudes[ch.coudes.length - 1] : -1;
+  // Le départ de chaque bout : un préfixe (depuis son arrivée) près de sa terre, avant le premier coude, puis plus jamais.
   let k = 0;
   while (k < n && g.pres[idx[k]] & bitA) k++;
-  if (k > fin && ch.coude >= 0) return false;
+  if (k > premier && ch.coudes.length) return false;
   for (let j = k; j < n; j++) if (g.pres[idx[j]] & bitA) return false;
   let m = n - 1;
   while (m >= 0 && g.pres[idx[m]] & bitB) m--;
-  if (ch.coude >= 0 && m < ch.coude) return false;
+  if (ch.coudes.length && m < dernier) return false;
   for (let j = m; j >= 0; j--) if (g.pres[idx[j]] & bitB) return false;
   return true;
 }
