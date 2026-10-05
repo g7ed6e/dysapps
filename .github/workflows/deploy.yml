@@ -98,6 +98,8 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: read
+    outputs:
+      a_jour: ${{ steps.tete.outputs.a_jour }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -123,6 +125,15 @@ jobs:
         if: github.ref == 'refs/heads/main'
         with:
           path: dist-www
+      # Une exécution dépassée par un commit plus récent de main ne publie pas : sans cela, une exécution plus
+      # lente (les captures) publierait l'ancien site par-dessus le nouveau. Décidé ici, et non dans deploy :
+      # le job deploy entre dans le groupe « pages » avant son premier pas, et y annulerait la publication récente.
+      - name: Vérifier que ce commit est toujours la tête de main
+        id: tete
+        if: github.ref == 'refs/heads/main'
+        run: |
+          tete=$(git ls-remote origin refs/heads/main | cut -f1)
+          if [ "$tete" = "$GITHUB_SHA" ]; then echo "a_jour=true" >> "$GITHUB_OUTPUT"; else echo "Dépassé par $tete : pas de publication."; echo "a_jour=false" >> "$GITHUB_OUTPUT"; fi
 
   # Pose l'étiquette vX.Y.Z sur le commit publié : repère lisible dans l'historique, et point d'ancrage court
   # pour le calcul des versions suivantes. N'exécute aucun code du dépôt (appel à l'API seulement).
@@ -150,12 +161,14 @@ jobs:
           fi
 
   deploy:
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && needs.docs.outputs.a_jour == 'true'
     needs: [build, docs]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     # Une publication plus récente remplace celle qui attend ou qui tourne encore : une publication restée
     # bloquée chez GitHub (du 30 septembre au 4 octobre 2026, le site n'a plus été publié) ne retient plus les suivantes.
+    # Le modèle de GitHub Pages met cancel-in-progress à false ; ici, true, pour cette raison. Une publication Pages
+    # annulée laisse le site précédent en ligne, et seule une plus ancienne peut l'être (voir le job docs).
     concurrency:
       group: pages
       cancel-in-progress: true
