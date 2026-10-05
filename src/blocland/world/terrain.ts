@@ -2201,7 +2201,9 @@ function harbour(a: ArchipelagoId, village: Pick<World, 'parts' | 'links'>, cube
   for (const c of cells)
     cubes.push({ x: c.x, y: c.y, z: c.z, color: BLOCKS[BLOC.bois].side, top: c.step ? BLOCKS[BLOC.escalier].top : undefined, texture: c.step ? 'escalier' : 'planches', tag: port });
   for (const p of dockPosts(port)) {
-    cubes.push({ x: p.x, y: p.y, z: p.z, color: TRUNK, texture: 'tronc', tag: port });
+    // Là où la jetée court à plat au-dessus de l'eau (aux Anciens Ateliers, où le navire plane), le poteau descend jusqu'à l'eau.
+    const pied = !DANS_LE_CIEL[a] && p.z === rest ? 0 : p.z;
+    for (let z = pied; z <= p.z; z++) cubes.push({ x: p.x, y: p.y, z, color: TRUNK, texture: 'tronc', tag: port });
     // Éteintes, les lanternes du bout de la jetée ne sont qu'un bouchon de bois (pas de lueur la nuit).
     if (rank >= 5 || (p.lantern && rank >= 2)) lantern(p.x, p.y, p.z + 1);
     else if (p.lantern) cubes.push({ x: p.x, y: p.y, z: p.z + 1, color: BLOCKS[BLOC.bois].side, top: BLOCKS[BLOC.bois].top, texture: 'planches', tag: port });

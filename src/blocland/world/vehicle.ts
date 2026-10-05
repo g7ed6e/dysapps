@@ -87,8 +87,8 @@ function reacteur(): { cells: PlanCell[]; kit: PlanCell[] } {
   cells.push({ x: 0, y: 1, z: -1, block: BLOC.calque }, { x: 4, y: 1, z: -1, block: BLOC.calque }, { x: 0, y: 6, z: -1, block: BLOC.calque }, { x: 4, y: 6, z: -1, block: BLOC.calque });
   // Les trois tuyères en ardoise (Falaise), tournées vers le bas, en rangée sous le mât.
   fill(cells, 1, 3, -2, 3, 1, 1, BLOC.ardoise);
-  // Le kit : les feux de position, sous la poupe.
-  const kit: PlanCell[] = [{ x: 1, y: 7, z: -1, block: BLOC.lanterne }, { x: 3, y: 7, z: -1, block: BLOC.lanterne }];
+  // Le kit : les feux de position, de part et d'autre de la poupe.
+  const kit: PlanCell[] = [{ x: 1, y: 7, z: 0, block: BLOC.lanterne }, { x: 3, y: 7, z: 0, block: BLOC.lanterne }];
   return { cells, kit };
 }
 
@@ -106,6 +106,9 @@ function stage(
   const to = ARCHIPELAGOS[n];
   return { id, biome: from.port, name, short, origin: { x: 0, y: 0 }, zone: 'port', stage: n, from: from.classe, to: to.classe, guardians, cells: parts.cells, kit: parts.kit, reward, done: fin(to.name), fin };
 }
+
+/** Les tuyères du réacteur (sous la coque, en z = −2) : les flammes en sortent, vers le bas, en vol (vues 3D et 2D). */
+export const TUYERES: readonly PlanCell[] = reacteur().cells.filter((c) => c.block === BLOC.ardoise);
 
 /** Les trois étapes, dans l'ordre. Chaque étape mène à l'archipel suivant. */
 export const VEHICLE_STAGES: VehicleStage[] = [
