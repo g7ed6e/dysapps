@@ -118,7 +118,7 @@ export function WorldPage() {
   const { settings, speak, stop } = useSettings();
   const univers = useUnivers();
   const reduceMotion = useMoinsDAnimations();
-  const { state, moveTo, launch } = useBlocland();
+  const { state, disposition, moveTo, launch } = useBlocland();
   // La pose d'une partie en vague (GD-6, Blocland) : ses cases, absentes du monde jusqu'à ce que la vue les pose (useWavePose.ts).
   // La petite construction d'une commande livrée (GD-7, PR 3) se pose de la même vague : `commande`, sans partie.
   const [vague, setVague] = useState<Vague | null>(null);
@@ -199,7 +199,9 @@ export function WorldPage() {
       ...creaturePlacements(a, state.world.links),
       ...guardianPlacements(a, state.progress, state.world.links, sentinelles).map((c) => (eteints.split(',').includes(c.id) ? { ...c, beaten: false, cubes: statueDe(c.cubes) } : c)),
     ],
-    [a, state.progress, state.world.links, sentinelles, eteints],
+    // La disposition (GD-9) : la place des créatures et des Gardiens suit leur lieu.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [a, state.progress, state.world.links, sentinelles, eteints, disposition],
   );
   // La créature qui se souvient (GD-4, étape 1) : celles dont l'île a des révisions dues font signe, sauf après « Plus tard ».
   const { remises } = usePlusTard();
@@ -380,8 +382,19 @@ export function WorldPage() {
   const arriveeDemandee = useRef<{ ile: BiomeId; sol: Point; enRoute?: Point } | null>(null);
   // Les vues reçoivent le trajet en ancrages : chaque point dans le repère de l'île la plus proche. Une disposition
   // à part, qui ne dépend que de l'archipel : `grille` change avec les cubes, et le bonhomme repartirait à chaque bloc posé.
-  const repere = useMemo(() => dispositionEnGrille(a), [a]);
+  // Elle suit la disposition (GD-9) : un lieu déplacé emporte ses repères.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const repere = useMemo(() => dispositionEnGrille(a), [a, disposition]);
   const avatar = useMemo(() => ({ ...walk, route: walk.route.map((p) => repere.versIle(p)) }), [walk, repere]);
+  // La disposition change (GD-9, un lieu déplacé ou tourné) : le bonhomme suit son lieu, à sa place, et reste à l'écran.
+  const dispositionVue = useRef(disposition);
+  useEffect(() => {
+    if (dispositionVue.current === disposition) return;
+    dispositionVue.current = disposition;
+    flanee.current = null;
+    setWalk((w) => ({ route: [seTenir(at)], seq: w.seq + 1 }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [disposition]);
   // L'élève a fait glisser la vue (la 3D le dit) : « Recentrer » la ramène à son cadrage, d'un appui (`recentrage`).
   const [vueDeplacee, setVueDeplacee] = useState(false);
   const [recentrage, setRecentrage] = useState(0);
@@ -938,6 +951,9 @@ export function WorldPage() {
       >
         <Suspense fallback={<Loading className="world-loading" text="Chargement du village…" />}>
           <WorldCanvas
+            // La scène est refaite quand la disposition change (GD-9) : chaque partie relit la place des lieux, et
+            // l'ancienne libère tout ce qu'elle tenait.
+            key={disposition}
             archipelago={a}
             cubes={cubesVus}
             creatures={creatures}

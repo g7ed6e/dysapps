@@ -5,6 +5,7 @@ import { getArchipelago } from '../archipelago';
 import { placedLinksOf } from '../linkGeometry';
 import { dockBox, dockOrigin } from '../harbor';
 import { MONUMENT_ISLET, type MonumentDef, monumentsOf } from '../monuments';
+import { monumentIslet } from '../footprint';
 import { ORIGINE_DES_MONUMENTS, planCells, type PlanDef, planOrigin } from '../plans';
 import type { World } from '../../engine';
 import type { PlaceId, VoxelCube } from '../cube';
@@ -44,13 +45,15 @@ export function monumentIsletFree(a: ArchipelagoId, links: readonly string[], x0
 /**
  * Le point du monde où tombe la clé (0, 0, 0) d'un monument : une case de son plan (`planCells`, clé relative au cœur
  * de son île, figée par `ORIGINE_DES_MONUMENTS`) est dessinée en `monumentAnchor + case`. Le rendu suit l'îlot
- * (`m.islet`, la case (0, 0, 0) du plan au-dessus de son coin intérieur) ; les clés des sauvegardes, elles, ne bougent pas
+ * (`monumentIslet`, la case (0, 0, 0) du plan au-dessus de son coin intérieur ; il suit son lieu, GD-9) ; les clés des
+ * sauvegardes, elles, ne bougent pas
  * si l'îlot ou le cœur bougent.
  */
 export function monumentAnchor(m: MonumentDef): { x: number; y: number; z: number } {
   const fige = ORIGINE_DES_MONUMENTS[m.id];
   if (!fige) throw new Error(`Monument sans origine : ${m.id}`);
-  return { x: m.islet.x + 1 - fige.x, y: m.islet.y + 1 - fige.y, z: (mapOf(m.archipelago)[0]?.altitude ?? 0) + 1 - fige.z };
+  const ilot = monumentIslet(m);
+  return { x: ilot.x + 1 - fige.x, y: ilot.y + 1 - fige.y, z: (mapOf(m.archipelago)[0]?.altitude ?? 0) + 1 - fige.z };
 }
 
 /**
@@ -76,7 +79,8 @@ export function decalageDuQuai(plan: PlanDef): { x: number; y: number; z: number
 
 /** Le milieu de l'îlot d'un monument, à mi-hauteur du monument (pour y cadrer la caméra). */
 export function monumentCenter(m: MonumentDef): { x: number; y: number; z: number } {
-  return { x: m.islet.x + (MONUMENT_ISLET - 1) / 2, y: m.islet.y + (MONUMENT_ISLET - 1) / 2, z: (mapOf(m.archipelago)[0]?.altitude ?? 0) + 3 };
+  const ilot = monumentIslet(m);
+  return { x: ilot.x + (MONUMENT_ISLET - 1) / 2, y: ilot.y + (MONUMENT_ISLET - 1) / 2, z: (mapOf(m.archipelago)[0]?.altitude ?? 0) + 3 };
 }
 
 /**
@@ -92,13 +96,15 @@ export function monumentIslets(a: ArchipelagoId, village: World, cubes: VoxelCub
     const place: PlaceId = `monument:${m.id}`;
     const n = MONUMENT_ISLET;
     const land: { x: number; y: number }[] = [];
+    // L'îlot suit le lieu au large duquel il se tient (GD-9, `monumentIslet`) ; le monument garde son orientation.
+    const ilot = monumentIslet(m);
     for (let dx = 0; dx < n; dx++)
       for (let dy = 0; dy < n; dy++) {
         // Les coins arrondis.
         const cx = Math.abs(dx - (n - 1) / 2);
         const cy = Math.abs(dy - (n - 1) / 2);
         if (cx + cy > n - 3) continue;
-        land.push({ x: m.islet.x + dx, y: m.islet.y + dy });
+        land.push({ x: ilot.x + dx, y: ilot.y + dy });
       }
     for (const c of land) {
       cubes.push({ x: c.x, y: c.y, z: alt, color: top, texture: TEXTURES[top], tag: m.biome, place, sol: true });

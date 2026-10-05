@@ -34,6 +34,7 @@ import type { ExerciseDef, ItemResult } from './exercises/types';
 import { useTextes } from '../universes';
 import { archipelagoOf, getBridge, type ArchipelagoId } from './world/archipelago';
 import { archipelDeLaCommande, faireArriverUneCommande, livrerLaCommande, type Livraison } from './world/requests';
+import { applyLayout } from './world/appliedLayout';
 
 /** Sessions courtes : on propose d'arrêter après ce nombre d'exercices ou cette durée. */
 const SESSION_MAX_EXERCISES = 3;
@@ -41,6 +42,11 @@ const SESSION_MAX_MINUTES = 10;
 
 interface BloclandContextValue {
   state: GameState;
+  /**
+   * Le numéro de la disposition du monde (GD-9, `layoutVersion`) : il change quand la place d'un lieu, une liaison à
+   * reposer ou une arrivée change. Les vues qui lisent la place des lieux s'en servent pour se refaire.
+   */
+  disposition: number;
   complete: (def: ExerciseDef, results: ItemResult[]) => Completion;
   /** Une mission du portail (l'école du village) terminée, score entre 0 et 1 : des blocs de l'île de l'école. */
   completePortal: (score: number, firstTime: boolean) => PortalCompletion;
@@ -90,6 +96,10 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
   // finissent est donnée une fois, juste après (plus bas).
   const [ouverture] = useState(() => rattraperLesParties(sanitizeState(loadJSON<unknown>(STORAGE_KEY, {}))));
   const [state, setState] = useState<GameState>(ouverture.state);
+  // La disposition de la partie (GD-9) posée sur le monde avant que les vues ne le lisent, à la lecture de la partie et
+  // à chaque changement de `world.layout` : un calcul sans effet visible hors du monde, qui ne refait rien si la
+  // disposition est la même (`applyLayout`).
+  const disposition = useMemo(() => applyLayout(state.world.layout), [state.world.layout]);
   const stateRef = useRef(state);
   const rattrapes = useRef(ouverture.plansFinis);
   useEffect(() => {
@@ -227,6 +237,7 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
   const value = useMemo(
     () => ({
       state,
+      disposition,
       complete,
       completePortal,
       dueCount,
@@ -247,6 +258,7 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
     }),
     [
       state,
+      disposition,
       complete,
       completePortal,
       dueCount,

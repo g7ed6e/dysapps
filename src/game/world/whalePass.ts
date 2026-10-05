@@ -4,6 +4,7 @@
 import { BIOMES, type BiomeId } from "../biomes";
 import { getArchipelago } from "./archipelago";
 import { placedLinksOf } from "./linkGeometry";
+import { monumentIslet } from "./footprint";
 import { dockBox } from "./harbor";
 import {
   archipelagoOfIsland,
@@ -80,10 +81,10 @@ function obstacles(a: ArchipelagoId, links: readonly string[]): Grid {
   const dock = dockBox(getArchipelago(a).port);
   for (let x = dock.x0; x <= dock.x1; x++)
     for (let y = dock.y0; y <= dock.y1; y++) mark(x, y);
-  for (const m of monumentsOf(a))
-    for (let x = 0; x < MONUMENT_ISLET; x++)
-      for (let y = 0; y < MONUMENT_ISLET; y++)
-        mark(m.islet.x + x, m.islet.y + y);
+  for (const m of monumentsOf(a)) {
+    const ilot = monumentIslet(m);
+    for (let x = 0; x < MONUMENT_ISLET; x++) for (let y = 0; y < MONUMENT_ISLET; y++) mark(ilot.x + x, ilot.y + y);
+  }
   for (const c of seaDecor(a)) mark(c.x, c.y);
   const grid = { x0, y0, w, h, cells };
   gridCache.set(cle, grid);

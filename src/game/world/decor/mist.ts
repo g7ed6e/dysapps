@@ -13,6 +13,7 @@
 import { BIOMES } from '../../biomes';
 import { getArchipelago } from '../archipelago';
 import { placedLinksOf } from '../linkGeometry';
+import { monumentIslet } from '../footprint';
 import { dockBox } from '../harbor';
 import { lineaire, NIVEAU_EAU } from '../landMesh';
 import { landBox, landCells, mapOf, smoothNoise, type ArchipelagoId } from '../map';
@@ -78,7 +79,10 @@ export function placeDeLaBrume(a: ArchipelagoId, links: readonly string[]): (x: 
     for (const c of bridgePath(def, links)) for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) interdit.add(cle(c.x + dx, c.y + dy));
   const quai = dockBox(getArchipelago(a).port);
   for (let x = quai.x0 - 2; x <= quai.x1 + 2; x++) for (let y = quai.y0 - 2; y <= quai.y1 + 2; y++) interdit.add(cle(x, y));
-  for (const m of monumentsOf(a)) for (let x = -1; x <= MONUMENT_ISLET; x++) for (let y = -1; y <= MONUMENT_ISLET; y++) interdit.add(cle(m.islet.x + x, m.islet.y + y));
+  for (const m of monumentsOf(a)) {
+    const ilot = monumentIslet(m);
+    for (let x = -1; x <= MONUMENT_ISLET; x++) for (let y = -1; y <= MONUMENT_ISLET; y++) interdit.add(cle(ilot.x + x, ilot.y + y));
+  }
   const baleines = whaleSpots(a, links);
   const auCoeur = (x: number, y: number) => {
     for (let dx = -BORD_DES_ILES; dx <= BORD_DES_ILES; dx += BORD_DES_ILES) for (let dy = -BORD_DES_ILES; dy <= BORD_DES_ILES; dy += BORD_DES_ILES) if (!terre.has(cle(x + dx, y + dy))) return false;

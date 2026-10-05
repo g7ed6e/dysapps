@@ -141,6 +141,14 @@ export function placeIslands(nouvelles: ReadonlyMap<BiomeId, PlacePose> | null):
     });
   if (pareil) return;
   poses = new Map(n);
+  layoutChanged();
+}
+
+/**
+ * La disposition a changé (les poses, ou ce que les liaisons en lisent : leurs arrivées, celles à reposer,
+ * ./appliedLayout.ts) : le numéro change et les caches qui lisent les places du monde se vident.
+ */
+export function layoutChanged(): void {
   version++;
   for (const c of caches) c.clear();
 }

@@ -9,7 +9,7 @@ import { layoutCache } from '../placement';
  * Les bornes de mission d'une île : une par mission, alignées sur la rangée de devant (côté caméra), en cases relatives
  * au cœur. On touche une borne pour lancer sa mission.
  */
-const QUEST_ROW = 1;
+export const QUEST_ROW = 1;
 
 /**
  * Les places des bornes d'une île-école, au pas de 4, centrées sur la visée de la caméra (le milieu du cœur, x = 8) :

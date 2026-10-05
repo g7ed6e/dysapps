@@ -77,8 +77,9 @@ export function whaleSpots(a: ArchipelagoId, links: readonly string[]): { x: num
   // Une baleine ne plonge pas sur l'îlot d'un monument (à deux cases près, comme `monumentBlocked`).
   const surUnMonument = (x: number, y: number, r: number) =>
     monumentsOf(a).some((m) => {
-      const px = Math.max(m.islet.x, Math.min(x, m.islet.x + MONUMENT_ISLET - 1));
-      const py = Math.max(m.islet.y, Math.min(y, m.islet.y + MONUMENT_ISLET - 1));
+      const ilot = monumentIslet(m);
+      const px = Math.max(ilot.x, Math.min(x, ilot.x + MONUMENT_ISLET - 1));
+      const py = Math.max(ilot.y, Math.min(y, ilot.y + MONUMENT_ISLET - 1));
       return Math.hypot(px - x, py - y) < r + 2;
     });
   const spots: { x: number; y: number; r: number }[] = [];

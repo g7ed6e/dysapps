@@ -298,6 +298,23 @@ export interface RegionPlans {
   ecueils?: Iterable<string>;
   /** Les arrivées choisies par lieu (la disposition) ; sans elles, le traceur choisit, une par côté. */
   arrivees?: ReadonlyMap<BiomeId, readonly { cote: Side; pas: number }[]>;
+  /**
+   * Les arrivées choisies d'une liaison, à ses deux bouts (`from`, `to` : ceux de la liaison), GD-9 : la liaison ne part
+   * que de celles-là ; un bout sans arrivée choisie laisse le traceur choisir.
+   */
+  arriveesDeLaLiaison?: (id: string) => LinkLandings | undefined;
+}
+
+/** Une arrivée choisie : un côté du lieu (dans son repère) et sa place le long de ce côté, en pas. */
+export interface ChosenLanding {
+  cote: Side;
+  pas: number;
+}
+
+/** Les arrivées choisies d'une liaison, à chacun de ses bouts. */
+export interface LinkLandings {
+  from?: ChosenLanding;
+  to?: ChosenLanding;
 }
 
 /**
@@ -314,8 +331,10 @@ export class RegionRouter {
   private readonly depart: Set<BiomeId>;
   private readonly prises = new Set<string>();
   private readonly cotesPris = new Set<string>();
+  private readonly choisies: RegionPlans['arriveesDeLaLiaison'];
 
   constructor(a: ArchipelagoId, plans: RegionPlans) {
+    this.choisies = plans.arriveesDeLaLiaison;
     const lieux = plans.lieux;
     // Un bit par lieu dans `Grid.pres` (un entier de 32 bits, signé par `1 << rang`) : 31 lieux au plus par région.
     if (lieux.length > MAX_ISLANDS_PER_REGION) throw new Error(`Le traceur tient ${MAX_ISLANDS_PER_REGION} lieux par région au plus (${a} en a ${lieux.length}).`);
@@ -370,11 +389,13 @@ export class RegionRouter {
     if (ra === undefined || rb === undefined) return null;
     const bitA = 1 << ra;
     const bitB = 1 << rb;
+    const choix = this.choisies?.(b.id);
+    const voulue = (c: Anchor, l: ChosenLanding | undefined) => !l || (c.cote === l.cote && c.pas === l.pas);
     let best: LinkRoute | null = null;
     for (const f of this.possibles.get(b.from)!) {
-      if (!this.libre(f)) continue;
+      if (!this.libre(f) || !voulue(f, choix?.from)) continue;
       for (const t of this.possibles.get(b.to)!) {
-        if (!this.libre(t)) continue;
+        if (!this.libre(t) || !voulue(t, choix?.to)) continue;
         const ch = pathBetween(f, t);
         if (!ch || ch.cases.length > max || (best && ch.cases.length >= best.cases.length)) continue;
         if (!freePath(this.g, ch, bitA, bitB)) continue;

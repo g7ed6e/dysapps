@@ -6,9 +6,38 @@
 import type { BiomeId } from '../biomes';
 import { type BridgeDef, type BridgeKind, BRIDGES, bridgesOf, getBridge, otherEnd, provideLinkGeometry, SHORT_LINK } from './archipelago';
 import { type ArchipelagoId, archipelagoOfIsland, DANS_LE_CIEL, mapOf } from './map';
-import { layoutCache } from './placement';
-import { linkBetweenJoined, LONG_LENGTH, type LinkRoute, RegionRouter } from './routing';
+import { layoutCache, layoutChanged } from './placement';
+import { linkBetweenJoined, type LinkLandings, LONG_LENGTH, type LinkRoute, RegionRouter } from './routing';
 import { ecueilsDe } from './terrain/sea';
+
+// ---------- Ce que la disposition dit des liaisons ----------
+
+/** Les liaisons à reposer (GD-9) : construites, gardées au stock, ni tracées ni dessinées tant qu'on ne les repose pas. */
+let toRelink: ReadonlySet<string> = new Set();
+/** Les arrivées choisies de chaque liaison (GD-9), par identifiant de liaison. */
+let landings: ReadonlyMap<string, LinkLandings> = new Map();
+
+/**
+ * Ce que la disposition de la partie dit des liaisons (./appliedLayout.ts) : celles à reposer et les arrivées choisies.
+ * Ne change rien, et garde les caches, si c'est le même.
+ */
+export function setLinkLayout(relink: ReadonlySet<string>, chosen: ReadonlyMap<string, LinkLandings>): void {
+  const cle = (r: ReadonlySet<string>, l: ReadonlyMap<string, LinkLandings>) => JSON.stringify([[...r].sort(), [...l].sort(([p], [q]) => p.localeCompare(q))]);
+  if (cle(relink, chosen) === cle(toRelink, landings)) return;
+  toRelink = new Set(relink);
+  landings = new Map(chosen);
+  layoutChanged();
+}
+
+/** Une liaison construite est-elle à reposer (GD-9) ? */
+export function isToRelink(id: string): boolean {
+  return toRelink.has(id);
+}
+
+/** Les arrivées choisies d'une liaison dans la disposition de la partie. */
+export function chosenLandings(id: string): LinkLandings | undefined {
+  return landings.get(id);
+}
 
 
 /** Le tracé d'une liaison seule dans la disposition (sans les autres liaisons) : ce qui fait sa nature. */
@@ -16,7 +45,7 @@ const soleRoutes = layoutCache<string, LinkRoute | null>();
 
 /** Le traceur d'une région, sans aucune liaison : la terre, les îlots, les quais et les écueils. */
 function emptyRouter(a: ArchipelagoId): RegionRouter {
-  return new RegionRouter(a, { lieux: mapOf(a), ecueils: ecueilsDe(a) });
+  return new RegionRouter(a, { lieux: mapOf(a), ecueils: ecueilsDe(a), arriveesDeLaLiaison: chosenLandings });
 }
 
 const emptyRouters = layoutCache<ArchipelagoId, RegionRouter>();
@@ -66,12 +95,15 @@ export function neighboursOf(id: BiomeId): BiomeId[] {
     .map((b) => otherEnd(b, id));
 }
 
-/** Les liaisons posées d'une région, dans l'ordre : le pont déjà construit au départ, puis celles de la sauvegarde. */
+/**
+ * Les liaisons posées d'une région, dans l'ordre : le pont déjà construit au départ, puis celles de la sauvegarde ; sans
+ * celles à reposer (GD-9), qui attendent au stock.
+ */
 function placedOf(a: ArchipelagoId, built: readonly string[]): BridgeDef[] {
-  const out = BRIDGES.filter((b) => b.cost === 0 && archipelagoOfIsland(b.from) === a);
+  const out = BRIDGES.filter((b) => b.cost === 0 && archipelagoOfIsland(b.from) === a && !toRelink.has(b.id));
   for (const id of built) {
     const b = getBridge(id);
-    if (b && b.cost !== 0 && archipelagoOfIsland(b.from) === a && !out.includes(b)) out.push(b);
+    if (b && b.cost !== 0 && archipelagoOfIsland(b.from) === a && !toRelink.has(b.id) && !out.includes(b)) out.push(b);
   }
   return out;
 }
