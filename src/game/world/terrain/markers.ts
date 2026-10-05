@@ -2,7 +2,8 @@
 import { type BiomeId, BIOMES, missionsJouables } from '../../biomes';
 import { coeurDe, islandDef } from '../map';
 import { isSchoolIsland } from './base';
-import { versLaCamera, VUE_DE_L_ILE } from './view';
+import { versLaCameraDuDessin, VUE_DE_L_ILE } from './view';
+import { cacheDeLaDisposition } from '../placement';
 
 /**
  * Les bornes de mission d'une île : une par mission, alignées sur la rangée de devant (côté caméra), en cases relatives
@@ -134,7 +135,7 @@ export function cacheUneBorne(bornes: readonly BorneVue[], vers: readonly [numbe
   return false;
 }
 
-const rangeesDevant = new Map<BiomeId, ReadonlySet<string>>();
+const rangeesDevant = cacheDeLaDisposition<BiomeId, ReadonlySet<string>>();
 
 /**
  * La rangée de côte devant les bornes d'une île-école (l'île de l'école de son archipel, `school`) : la première rangée
@@ -151,7 +152,7 @@ export function rangeeDevantLesBornes(id: BiomeId): ReadonlySet<string> {
   if (isSchoolIsland(id)) {
     const def = islandDef(id);
     const y = coeurDe(def).y0 - 1;
-    const [vx, vy] = versLaCamera(id);
+    const [vx, vy] = versLaCameraDuDessin(id);
     for (const st of questStations(id)) {
       const bx = def.core.x + st.x + 0.5;
       const by = def.core.y + st.y + 0.5;

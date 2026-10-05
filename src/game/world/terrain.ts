@@ -7,7 +7,8 @@
 import { type BiomeId, BIOMES, BLOC, BLOCKS } from '../biomes';
 import type { World } from '../engine';
 import type { VoxelCube } from './cube';
-import { type ArchipelagoId, archipelagoOfIsland, inCoeurDOrigine, inCore, islandDef, landCells, landscape, margesDuCoeur, noise, tirage } from './map';
+import { type ArchipelagoId, archipelagoOfIsland, inCoeurDOrigine, inCore, islandDef, type IslandDef, landCells, landscape, margesDuCoeur, noise, tirage, tournerDansLeMonde } from './map';
+import { tournerLaCase } from './placement';
 import { type BridgeDef, BRIDGES, bridgeState, isBiomeUnlocked } from './archipelago';
 import { cascades, DECOR, decorate, GRASS, landmark, pontonEtBarque, type Put, WATER } from './decor';
 import { LOW } from './paths';
@@ -19,7 +20,7 @@ import { lv2Courante } from '../../core/settings';
 import { type Atelier, atelierModel, casesDuVillage, PLACE_IDS, placeCells, placeCube, placeSpot, schoolModel, trophyModel, VILLAGE_PLACES } from './terrain/village';
 import { cleDeCube, DEPTH, fade, GROUND_COLOR, groundHeight, islandOrigin, LAYOUT_PAD, origineDe, taperLayers, TEXTURES, underground } from './terrain/base';
 import { cacheUneBorne, presDUneBorne, questStations, rangeeDevantLesBornes } from './terrain/markers';
-import { versLaCamera } from './terrain/view';
+import { versLaCameraDuDessin } from './terrain/view';
 import { abordsDansLesMarges, bridge, nearSentier, piedsDesOuvrages } from './terrain/links';
 import { bossIslet } from './terrain/guardians';
 import { creatureDuMonde, creatureSpot } from './terrain/creatures';
@@ -70,7 +71,33 @@ export function cubesDeLIle(
     c.y -= oy;
     c.z -= oz;
   }
+  tournerLesCubes(islandDef(id), cubes);
   return cubes;
+}
+
+/**
+ * Les cubes d'un lieu dans son repère (relatifs à l'origine de son cœur), tournés avec lui (GD-9, `IslandDef.quarts`) :
+ * le lieu se dessine sans être tourné, puis tourne d'un bloc autour du milieu de son cœur, bornes, bâtiments et îlot du
+ * Gardien compris. Le nom d'un élément du décor du paysage porte sa case du monde (« arbre@x,y ») : elle tourne aussi.
+ */
+function tournerLesCubes(def: IslandDef, cubes: VoxelCube[]): void {
+  if (!def.quarts) return;
+  for (const c of cubes) {
+    const t = tournerLaCase(c.x, c.y, def.quarts);
+    c.x = t.x;
+    c.y = t.y;
+    if (c.decor) c.decor = nomTourne(def, c.decor);
+  }
+}
+
+/** Le nom d'un élément de décor (« lieu/genre@x,y », x, y du monde, le lieu pas tourné), sa case tournée avec le lieu. */
+function nomTourne(def: IslandDef, nom: string): string {
+  const at = nom.lastIndexOf('@');
+  if (at < 0 || nom.includes('/cœur:')) return nom;
+  const [x, y] = nom.slice(at + 1).split(',').map(Number);
+  if (!Number.isInteger(x) || !Number.isInteger(y)) return nom;
+  const p = tournerDansLeMonde(def, x, y);
+  return `${nom.slice(0, at + 1)}${p.x},${p.y}`;
 }
 
 /**
@@ -231,7 +258,7 @@ function poserLIle(
   cascades(def, scenery, (x, y, z, color, decor) => !taken.has(cleDeCube(x, y, z)) && !placed.has(cleDeCube(x, y, oz + z)) && putWorld(x, y, z, color, decor));
   pontonEtBarque(def, scenery, (x, y, z, color, decor) => !taken.has(cleDeCube(x, y, z)) && !placed.has(cleDeCube(x, y, oz + z)) && putWorld(x, y, z, color, decor));
   const bornes = questStations(biome.id).map((st) => ({ x: ox + st.x, y: oy + st.y, base: h(st.x, st.y) }));
-  const vers = versLaCamera(biome.id);
+  const vers = versLaCameraDuDessin(biome.id);
   // Sur une île-école, la rangée de côte devant les bornes reste nue (`rangeeDevantLesBornes`).
   const devant = rangeeDevantLesBornes(biome.id);
   // Le décor de la côte, puis celui des marges d'un cœur agrandi (au même rythme), hors des abords de ses ouvrages.
@@ -261,7 +288,7 @@ function poserLIle(
   };
   for (let k = 0; k < scenery.length + marges.length; k++) {
     const c = k < scenery.length ? scenery[k] : marges[k - scenery.length];
-    if (!c.decor || nearSentier(c.x, c.y)) continue;
+    if (!c.decor || nearSentier(def, c.x, c.y)) continue;
     if (k >= scenery.length && abords.has(`${c.x},${c.y}`)) continue;
     const t = tirage(def, c.x, c.y);
     const r = noise(def.seed + 5, t.x, t.y);

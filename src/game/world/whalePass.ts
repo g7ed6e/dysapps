@@ -23,6 +23,7 @@ import {
   worldBounds,
 } from "./terrain";
 import { smoothstep } from "../../core/math";
+import { cacheDeLaDisposition } from './placement';
 
 /** Un passage : un segment droit sur l'eau, de `from` à `to` (coordonnées de grille, continues). */
 export interface WhaleRoute {
@@ -49,7 +50,7 @@ interface Grid {
   cells: Uint8Array;
 }
 
-const gridCache = new Map<ArchipelagoId, Grid>();
+const gridCache = cacheDeLaDisposition<ArchipelagoId, Grid>();
 
 /** Ce que la baleine évite, case par case : terres, îlots des Gardiens et des monuments, ouvrages, port, rochers. */
 function obstacles(a: ArchipelagoId): Grid {

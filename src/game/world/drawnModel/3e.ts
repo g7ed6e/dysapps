@@ -8,10 +8,9 @@
 // le socle du phare) ; les autres îles restent basses et arrondies. Comme au 5e, ni le cœur, ni la première rangée de
 // l'anneau, ni les abords d'un ouvrage ne bougent : la marche, les bornes, les plans et le chemin restent où ils sont.
 import type { BiomeId } from '../../biomes';
-import { BRIDGES } from '../archipelago';
-import { archipelagoOfIsland } from '../archipelagos';
 import { bornesDuCoeur, islandDef, landCells } from '../map';
-import { bridgePath, origineDe } from '../terrain';
+import { origineDe } from '../terrain';
+import { amorcesDuDessin } from '../terrain/links';
 import type { Modele } from './types';
 
 /** La hauteur d'un gradin (en blocs), son retrait sur le précédent (en cases), et la distance gardée aux ouvrages. */
@@ -26,7 +25,7 @@ function repere(id: BiomeId) {
   const o = origineDe(id);
   const cases = landCells(islandDef(id)).map((c) => ({ x: c.x - o.x, y: c.y - o.y }));
   const abords: { x: number; y: number }[] = [];
-  for (const b of BRIDGES) if ((b.from === id || b.to === id) && archipelagoOfIsland(b.from) === '3e') for (const c of bridgePath(b)) abords.push({ x: c.x - o.x, y: c.y - o.y });
+  for (const a of amorcesDuDessin(id)) for (const c of a.cases) abords.push({ x: c.x, y: c.y });
   const pres = (x: number, y: number) => abords.some((c) => Math.abs(c.x - x) <= ABORDS && Math.abs(c.y - y) <= ABORDS);
   // Le bord du fond du cœur (borne exclue), en repère d'île : la première rangée derrière le cœur.
   const fond = bornesDuCoeur(islandDef(id)).y1;

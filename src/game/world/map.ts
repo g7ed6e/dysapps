@@ -6,6 +6,7 @@
 import type { BiomeId } from '../biomes';
 import { archipelagoOfIsland, type ArchipelagoId } from './archipelagos';
 import { silhouetteDe } from './silhouettes';
+import { cacheDeLaDisposition, detournerLaCase, poseChoisie, type Quarts, tournerLaCase, tournerLeRectangle } from './placement';
 
 export { ARCHIPELAGO_IDS, archipelagoOfIsland, type ArchipelagoId } from './archipelagos';
 
@@ -51,11 +52,28 @@ export const GRAINES_DU_DESSIN: Readonly<Record<string, string>> = {
   'lv2-3e-travel': 'refuge',
 };
 
-/** Le nom qui tire le hasard du dessin d'un lieu (`GRAINES_DU_DESSIN`), ou d'un élément `<lieu>/<nom>` de son décor. */
+/**
+ * Le nom qui tire le hasard du dessin d'un lieu (`GRAINES_DU_DESSIN`), ou d'un élément `<lieu>/<nom>` de son décor. Un
+ * élément nommé par sa case du monde (« genre@x,y ») l'est ici par sa case dans le repère du lieu (GD-9) : déplacé ou
+ * tourné, le lieu garde le même hasard.
+ */
 export function graineDuDessin(nom: string): string {
   const i = nom.indexOf('/');
   const lieu = i < 0 ? nom : nom.slice(0, i);
-  return Object.hasOwn(GRAINES_DU_DESSIN, lieu) ? GRAINES_DU_DESSIN[lieu] + nom.slice(lieu.length) : nom;
+  if (!Object.hasOwn(GRAINES_DU_DESSIN, lieu)) return nom;
+  return GRAINES_DU_DESSIN[lieu] + auRepereDuNom(lieu as BiomeId, nom.slice(lieu.length));
+}
+
+/** La fin d'un nom d'élément de décor (« /genre@x,y »), sa case du monde ramenée dans le repère du lieu ; le reste tel quel. */
+function auRepereDuNom(lieu: BiomeId, fin: string): string {
+  const at = fin.lastIndexOf('@');
+  if (at < 0 || fin.startsWith('/cœur:')) return fin;
+  const [x, y] = fin.slice(at + 1).split(',').map(Number);
+  if (!Number.isInteger(x) || !Number.isInteger(y)) return fin;
+  const def = islandDef(lieu);
+  if (def.core.x === def.repere.x && def.core.y === def.repere.y && !def.quarts) return fin;
+  const l = versLeLieu(def, x, y);
+  return `${fin.slice(0, at + 1)}${def.repere.x + l.x},${def.repere.y + l.y}`;
 }
 
 export interface IslandDef {
@@ -70,12 +88,23 @@ export interface IslandDef {
   relief: Relief;
   seed: number;
   /**
-   * De combien l'île a été déplacée (en cases) depuis la place où sa côte, son relief et son décor ont été tirés : le
-   * bruit qui les dessine est lu à cette place (`tirage`), et l'île garde son dessin quand on l'écarte. Les voisines de
-   * la Forêt, écartées quand son cœur est passé à 20 (01/10/2026).
+   * De combien l'île a été déplacée (en cases), depuis son repère (`repere`), par rapport à la place où sa côte, son
+   * relief et son décor ont été tirés : le bruit qui les dessine est lu à cette place (`tirage`), et l'île garde son
+   * dessin quand on l'écarte. Les voisines de la Forêt, écartées quand son cœur est passé à 20 (01/10/2026).
    */
   deplacee?: { x: number; y: number };
+  /**
+   * Le repère du dessin du lieu (GD-9) : la place de son cœur quand son dessin a été figé. Sa côte, son relief et son
+   * décor sont lus là (`tirage`), quel que soit l'endroit où le lieu est posé (`core`) : un lieu déplacé ou tourné garde
+   * exactement son dessin.
+   */
+  repere: { x: number; y: number };
+  /** L'orientation du lieu posé (GD-9), en quarts de tour autour du milieu de son cœur (./placement.ts) ; 0 sur la carte de départ. */
+  quarts: Quarts;
 }
+
+/** Un lieu tel que la carte de départ l'écrit : son repère est sa place, sauf s'il est donné. */
+type LieuDeLaCarte = Omit<IslandDef, 'repere' | 'quarts'> & { repere?: { x: number; y: number } };
 
 /**
  * Côté du cœur d'origine (16) : le repère des clés de sauvegarde et des plans, posé sur `IslandDef.core`. L'étendue du
@@ -135,7 +164,7 @@ const e = (left: number, right: number, front: number, back: number) => ({ left,
  * sont des bandes plus au nord (y ≈ 300, 600, 900), jamais visibles depuis la 6e : chaque archipel est sa propre scène.
  * Dans chaque archipel, l'île-port est celle dont le quai (devant, côté −y) accueille le Bloc-Navire.
  */
-export const MAP: IslandDef[] = [
+const CARTE_DE_DEPART: LieuDeLaCarte[] = [
   // Premiers Rivages (6e), au niveau de la mer. Port : la Plaine. La Forêt, île-école, a un cœur de 20 (`COTE_DU_COEUR`)
   // et sa côte autour : sa terre a deux cases de plus de chaque côté. Ses voisines se sont écartées d'autant (01/10/2026)
   // pour garder les bras de mer et la longueur des ouvrages (à deux cases près), chacune avec son dessin (`deplacee`) :
@@ -206,9 +235,26 @@ export const MAP: IslandDef[] = [
   { id: 'lv2-3e-travel', region: 'montagne', core: { x: 158, y: 926 }, altitude: 9, ext: e(2, 2, 2, 9), relief: 'plat', seed: 96 },
 ];
 
-/** Les îles d'un archipel, dans l'ordre de MAP. */
-export function mapOf(a: ArchipelagoId): IslandDef[] {
-  return MAP.filter((d) => archipelagoOfIsland(d.id) === a);
+/**
+ * La carte de départ : chaque lieu à sa place, sans rotation, son repère compris. La place d'un lieu dans la partie
+ * (`islandDef`) suit la disposition choisie (./placement.ts) ; sans elle, c'est celle-ci.
+ */
+export const MAP: readonly IslandDef[] = Object.freeze(
+  CARTE_DE_DEPART.map((d): IslandDef => Object.freeze({ ...d, repere: d.repere ?? d.core, quarts: 0 as Quarts })),
+);
+
+const LIEUX_DE_DEPART = new Map(MAP.map((d) => [d.id, d]));
+
+/** Les lieux posés, mémorisés tant que la disposition ne change pas. */
+const lieuxPoses = cacheDeLaDisposition<BiomeId, IslandDef>();
+
+const lieuxDesArchipels = cacheDeLaDisposition<ArchipelagoId, readonly IslandDef[]>();
+
+/** Les îles d'un archipel à leur place, dans l'ordre de MAP (mémorisées tant que la disposition ne change pas). */
+export function mapOf(a: ArchipelagoId): readonly IslandDef[] {
+  let lieux = lieuxDesArchipels.get(a);
+  if (!lieux) lieuxDesArchipels.set(a, (lieux = Object.freeze(MAP.filter((d) => archipelagoOfIsland(d.id) === a).map((d) => islandDef(d.id)))));
+  return lieux;
 }
 
 /**
@@ -229,23 +275,72 @@ export function isthmusOf(id: BiomeId): BiomeId | null {
   return pair ? (pair[0] === id ? pair[1] : pair[0]) : null;
 }
 
+/**
+ * Un lieu à sa place dans la partie : sa place sur la carte de départ, ou celle de la disposition choisie
+ * (./placement.ts), son orientation comprise. Son repère (`repere`) et son dessin ne changent pas.
+ */
 export function islandDef(id: BiomeId): IslandDef {
-  const def = MAP.find((i) => i.id === id);
+  const connu = lieuxPoses.get(id);
+  if (connu) return connu;
+  const depart = LIEUX_DE_DEPART.get(id);
+  if (!depart) throw new Error(`Île inconnue : ${id}`);
+  const pose = poseChoisie(id);
+  const def: IslandDef =
+    pose && (pose.x !== depart.core.x || pose.y !== depart.core.y || pose.quarts !== 0)
+      ? Object.freeze({ ...depart, core: Object.freeze({ x: pose.x, y: pose.y }), quarts: pose.quarts })
+      : depart;
+  lieuxPoses.set(id, def);
+  return def;
+}
+
+/** Le lieu sur la carte de départ, quelle que soit la disposition choisie. */
+export function lieuDeDepart(id: BiomeId): IslandDef {
+  const def = LIEUX_DE_DEPART.get(id);
   if (!def) throw new Error(`Île inconnue : ${id}`);
   return def;
 }
 
 /**
- * Une case du monde ramenée à la place où le dessin de l'île (sa côte, son relief, son décor) a été tiré : avant son
- * déplacement (`IslandDef.deplacee`), et autour de son cœur d'origine. Autour d'un cœur agrandi, la terre d'avant est
+ * Une case du repère du lieu (relative à l'origine de son cœur, avant rotation) dans le monde, le lieu posé et tourné
+ * (`def.core`, `def.quarts`). Le dessin d'un lieu se fait sans rotation : ce qu'on en montre au monde passe par ici.
+ */
+export function versLeMonde(def: IslandDef, x: number, y: number): { x: number; y: number } {
+  if (!def.quarts) return { x: def.core.x + x, y: def.core.y + y };
+  const t = tournerLaCase(x, y, def.quarts);
+  return { x: def.core.x + t.x, y: def.core.y + t.y };
+}
+
+/** L'inverse de `versLeMonde` : une case du monde dans le repère du lieu (relative à l'origine de son cœur, avant rotation). */
+export function versLeLieu(def: IslandDef, x: number, y: number): { x: number; y: number } {
+  if (!def.quarts) return { x: x - def.core.x, y: y - def.core.y };
+  return detournerLaCase(x - def.core.x, y - def.core.y, def.quarts);
+}
+
+/**
+ * Une case du monde du dessin d'un lieu (posé, pas tourné : `def.core` + case du repère) ramenée dans le monde, le lieu
+ * tourné. Sans rotation, la case elle-même.
+ */
+export function tournerDansLeMonde(def: IslandDef, x: number, y: number): { x: number; y: number } {
+  return def.quarts ? versLeMonde(def, x - def.core.x, y - def.core.y) : { x, y };
+}
+
+/**
+ * Une case du monde (le lieu posé, pas tourné) ramenée à la place où le dessin de l'île (sa côte, son relief, son décor)
+ * a été tiré : dans son repère (`IslandDef.repere`), avant son déplacement (`IslandDef.deplacee`), et autour de son cœur
+ * d'origine. Autour d'un cœur agrandi, la terre d'avant est
  * repoussée d'autant de chaque côté : l'île garde sa silhouette, de la vraie terre en plus ; le long du cœur, le dessin
  * d'avant s'étire sur la largeur du cœur agrandi.
  */
 export function tirage(def: IslandDef, x: number, y: number): { x: number; y: number } {
   const b = bornesDuCoeur(def);
-  const ox = def.core.x - (def.deplacee?.x ?? 0);
-  const oy = def.core.y - (def.deplacee?.y ?? 0);
+  const ox = def.repere.x - (def.deplacee?.x ?? 0);
+  const oy = def.repere.y - (def.deplacee?.y ?? 0);
   return { x: ox + aLaPlaceDOrigine(x - def.core.x, b.x0, b.x1), y: oy + aLaPlaceDOrigine(y - def.core.y, b.y0, b.y1) };
+}
+
+/** Une case du monde (le lieu posé, pas tourné) dans son repère (`IslandDef.repere`) : là où était le lieu quand son dessin a été figé. */
+export function auRepere(def: IslandDef, x: number, y: number): [number, number] {
+  return [x - def.core.x + def.repere.x, y - def.core.y + def.repere.y];
 }
 
 /**
@@ -318,8 +413,16 @@ export function inIsthmus(def: IslandDef, x: number, y: number): boolean {
   return !isLandProper(other, x, y);
 }
 
-/** Boîte englobante de la terre d'une île (bornes hautes exclues), isthme compris. */
+/** Boîte englobante de la terre d'une île (bornes hautes exclues), isthme compris, dans le monde (le lieu tourné). */
 export function landBox(def: IslandDef): { x0: number; y0: number; x1: number; y1: number } {
+  const b = boiteDeLaTerre(def);
+  if (!def.quarts) return b;
+  const r = tournerLeRectangle({ x0: b.x0 - def.core.x, y0: b.y0 - def.core.y, x1: b.x1 - def.core.x, y1: b.y1 - def.core.y }, def.quarts);
+  return { x0: def.core.x + r.x0, y0: def.core.y + r.y0, x1: def.core.x + r.x1, y1: def.core.y + r.y1 };
+}
+
+/** La boîte de la terre d'un lieu posé, pas tourné : celle où son dessin se fait (`landBox` la tourne avec lui). */
+function boiteDeLaTerre(def: IslandDef): { x0: number; y0: number; x1: number; y1: number } {
   const c = coeurDe(def);
   const box = { x0: c.x0 - def.ext.left, y0: c.y0 - def.ext.front, x1: c.x1 + def.ext.right, y1: c.y1 + def.ext.back };
   const pair = isthmusPair(def);
@@ -345,7 +448,30 @@ export function inCoeurDOrigine(def: IslandDef, x: number, y: number): boolean {
   return lx >= 0 && lx < CORE && ly >= 0 && ly < CORE;
 }
 
-const margesCache = new Map<BiomeId, LandCell[]>();
+/**
+ * Une liste de cases d'un lieu calculée une fois dans son repère (relative à l'origine de son cœur, le lieu pas tourné)
+ * et sa copie à la place où il est posé (`def.core`), refaite quand il change de place : le dessin d'un lieu ne dépend
+ * pas de sa place.
+ */
+class CasesDuLieu<T extends { x: number; y: number }> {
+  private readonly locales = new Map<BiomeId, readonly T[]>();
+  private readonly posees = new Map<BiomeId, { x: number; y: number; cases: T[] }>();
+  constructor(private readonly calcul: (def: IslandDef) => T[]) {}
+  de(def: IslandDef): T[] {
+    const posee = this.posees.get(def.id);
+    if (posee && posee.x === def.core.x && posee.y === def.core.y) return posee.cases;
+    let locales = this.locales.get(def.id);
+    if (!locales) {
+      locales = this.calcul(def).map((c) => ({ ...c, x: c.x - def.core.x, y: c.y - def.core.y }));
+      this.locales.set(def.id, locales);
+    }
+    const cases = locales.map((c) => ({ ...c, x: c.x + def.core.x, y: c.y + def.core.y }));
+    this.posees.set(def.id, { x: def.core.x, y: def.core.y, cases });
+    return cases;
+  }
+}
+
+const margesDesLieux = new CasesDuLieu<LandCell>((def) => calculerLesMarges(def));
 
 /**
  * Le décor des marges allégé, île par île, quand celui de la côte n'y tient pas dans l'enveloppe du décor de son
@@ -379,8 +505,10 @@ function solAPlat(def: IslandDef): Ground {
  * enveloppe. Le rendu y pose ce décor sans jamais cacher une borne (terrain.ts, `cacheUneBorne`). Mémorisé.
  */
 export function margesDuCoeur(def: IslandDef): LandCell[] {
-  const cached = margesCache.get(def.id);
-  if (cached) return cached;
+  return margesDesLieux.de(def);
+}
+
+function calculerLesMarges(def: IslandDef): LandCell[] {
   const c = coeurDe(def);
   // Le sol à plat de la côte de l'île (comme dans `computeLandscape`), qui choisit son décor.
   const sol = solAPlat(def);
@@ -404,7 +532,6 @@ export function margesDuCoeur(def: IslandDef): LandCell[] {
       }
       out.push({ x, y, h: 0, ground: sol, decor });
     }
-  margesCache.set(def.id, out);
   return out;
 }
 
@@ -469,7 +596,7 @@ function jalonsDesMarges(def: IslandDef, c: Bornes, sol: Ground): Map<string, De
       let finales = egales;
       // (Pas sur une île allégée, `DECOR_DES_MARGES` : le Marché garde ses roseaux, une case sur deux, à leur place.)
       for (let essai = 0; essai < 4 && n > 0 && !DECOR_DES_MARGES[def.id]; essai++) {
-        const ps = egales.map((p) => p + Math.floor(noise(def.seed + 31 + essai, rangee[p][0], rangee[p][1]) * 3) - 1);
+        const ps = egales.map((p) => p + Math.floor(noise(def.seed + 31 + essai, ...auRepere(def, rangee[p][0], rangee[p][1])) * 3) - 1);
         if (ps.some((p, j) => p !== egales[j]) && tient(ps)) {
           finales = ps;
           break;
@@ -478,7 +605,7 @@ function jalonsDesMarges(def: IslandDef, c: Bornes, sol: Ground): Map<string, De
       let precedent = -1;
       for (const p of finales) {
         const [x, y] = rangee[p];
-        let g = Math.floor(noise(def.seed + 29, x, y) * genres.length) % genres.length;
+        let g = Math.floor(noise(def.seed + 29, ...auRepere(def, x, y)) * genres.length) % genres.length;
         if (g === precedent && genres.length > 1) g = (g + 1) % genres.length;
         precedent = g;
         out.set(`${x},${y}`, genres[g]);
@@ -512,27 +639,47 @@ interface TerreDeLIle {
   cases: Uint8Array;
   liste: readonly Readonly<{ x: number; y: number }>[];
 }
-const terres = new Map<BiomeId, TerreDeLIle>();
+/** La terre de chaque lieu dans son repère (relative à l'origine de son cœur), puis à sa place (`terreDe`). */
+const terresLocales = new Map<BiomeId, TerreDeLIle>();
+const terresPosees = new Map<BiomeId, { x: number; y: number; terre: TerreDeLIle }>();
 
+/**
+ * La terre d'un lieu à sa place (le lieu posé, pas tourné) : calculée une fois dans son repère (le dessin ne dépend pas
+ * de la place), puis décalée là où il est posé.
+ */
 function terreDe(def: IslandDef): TerreDeLIle {
-  let t = terres.get(def.id);
-  if (!t) {
-    const { x0, y0, x1, y1 } = landBox(def);
-    const w = x1 - x0;
-    const h = y1 - y0;
-    const cases = new Uint8Array(w * h);
-    const liste: Readonly<{ x: number; y: number }>[] = [];
-    // (Dans l'ordre d'avant : colonne par colonne.)
-    for (let x = x0; x < x1; x++)
-      for (let y = y0; y < y1; y++)
-        if (isLandProper(def, x, y) || inIsthmus(def, x, y)) {
-          cases[(y - y0) * w + (x - x0)] = 1;
-          liste.push(Object.freeze({ x, y }));
-        }
-    t = { x0, y0, w, h, cases, liste: Object.freeze(liste) };
-    terres.set(def.id, t);
+  const posee = terresPosees.get(def.id);
+  if (posee && posee.x === def.core.x && posee.y === def.core.y) return posee.terre;
+  let locale = terresLocales.get(def.id);
+  if (!locale) {
+    const t = calculerLaTerre(def);
+    locale = { ...t, x0: t.x0 - def.core.x, y0: t.y0 - def.core.y, liste: Object.freeze(t.liste.map((c) => Object.freeze({ x: c.x - def.core.x, y: c.y - def.core.y }))) };
+    terresLocales.set(def.id, locale);
   }
-  return t;
+  const terre: TerreDeLIle = {
+    ...locale,
+    x0: locale.x0 + def.core.x,
+    y0: locale.y0 + def.core.y,
+    liste: Object.freeze(locale.liste.map((c) => Object.freeze({ x: c.x + def.core.x, y: c.y + def.core.y }))),
+  };
+  terresPosees.set(def.id, { x: def.core.x, y: def.core.y, terre });
+  return terre;
+}
+
+function calculerLaTerre(def: IslandDef): TerreDeLIle {
+  const { x0, y0, x1, y1 } = boiteDeLaTerre(def);
+  const w = x1 - x0;
+  const h = y1 - y0;
+  const cases = new Uint8Array(w * h);
+  const liste: Readonly<{ x: number; y: number }>[] = [];
+  // (Dans l'ordre d'avant : colonne par colonne.)
+  for (let x = x0; x < x1; x++)
+    for (let y = y0; y < y1; y++)
+      if (isLandProper(def, x, y) || inIsthmus(def, x, y)) {
+        cases[(y - y0) * w + (x - x0)] = 1;
+        liste.push(Object.freeze({ x, y }));
+      }
+  return { x0, y0, w, h, cases, liste: Object.freeze(liste) };
 }
 
 /**
@@ -545,6 +692,16 @@ export function isLand(def: IslandDef, x: number, y: number): boolean {
   const lx = x - t.x0;
   const ly = y - t.y0;
   return lx >= 0 && ly >= 0 && lx < t.w && ly < t.h && t.cases[ly * t.w + lx] === 1;
+}
+
+/**
+ * La case (x, y) du monde est-elle de la terre du lieu, le lieu tourné (`def.quarts`) ? `isLand` lit le dessin, le lieu
+ * posé mais pas tourné ; ce qui regarde le monde (la marche, les liaisons, le toucher) passe par ici.
+ */
+export function isLandDuMonde(def: IslandDef, x: number, y: number): boolean {
+  if (!def.quarts) return isLand(def, x, y);
+  const l = versLeLieu(def, x, y);
+  return isLand(def, def.core.x + l.x, def.core.y + l.y);
 }
 
 /** La terre propre d'une île (sans l'isthme). */
@@ -608,15 +765,14 @@ function auLac(def: IslandDef, x: number, y: number): 'lac' | 'bord' | 'rive' | 
   return dans(0) ? 'lac' : dans(1) ? 'bord' : dans(2) ? 'rive' : null;
 }
 
-const landscapeCache = new Map<BiomeId, LandCell[]>();
+const paysages = new CasesDuLieu<LandCell>((def) => computeLandscape(def));
 
-/** Le paysage d'une île : chaque case de terre hors du cœur avec sa hauteur, son sol et son décor (mémorisé). */
+/**
+ * Le paysage d'une île : chaque case de terre hors du cœur avec sa hauteur, son sol et son décor (mémorisé dans le
+ * repère du lieu ; le lieu posé, pas tourné).
+ */
 export function landscape(def: IslandDef): LandCell[] {
-  const cached = landscapeCache.get(def.id);
-  if (cached) return cached;
-  const out = computeLandscape(def);
-  landscapeCache.set(def.id, out);
-  return out;
+  return paysages.de(def);
 }
 
 function computeLandscape(def: IslandDef): LandCell[] {

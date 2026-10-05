@@ -95,6 +95,8 @@ const GRILLE = [
   'world/characters/ascii',
   'world/characters/creatures',
   'world/characters/guardians',
+  // La place des lieux dans leur région (GD-9) : la pose et le quart de tour.
+  'world/placement',
 ];
 
 /**

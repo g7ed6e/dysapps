@@ -1,12 +1,13 @@
 // Le cadrage de la vue : l'étendue de l'archipel, la zone et l'angle de la vue d'une île, l'île sous la vue, la caméra
 // d'une île et sa projection, le cadre d'une traversée.
-import { type ArchipelagoId, archipelagoOfIsland, coeurDe, islandDef, type IslandDef, landBox, mapOf } from '../map';
+import { type ArchipelagoId, archipelagoOfIsland, coeurDe, islandDef, type IslandDef, landBox, lieuDeDepart, MAP, mapOf } from '../map';
 import { dockBox } from '../harbor';
 import { BRIDGES, bridgesOf, bridgeState, getArchipelago, islandsOf, otherEnd, reachableIslands } from '../archipelago';
 import { type BiomeId, BIOMES } from '../../biomes';
 import { ISLET_GAP, ISLET_H } from './islets';
 import { BAC_LONG, bridgePath } from './links';
 import { islandCenter } from './base';
+import { cacheDeLaDisposition } from '../placement';
 
 /** Étendue d'un archipel (coordonnées de grille), terres, îlots et port compris. */
 export function worldBounds(a: ArchipelagoId): {
@@ -19,7 +20,7 @@ export function worldBounds(a: ArchipelagoId): {
 }
 
 /** Les bornes de quelques îles d'un archipel, et de son port (voir `worldBounds`). */
-function bornesDesIles(a: ArchipelagoId, iles: IslandDef[]): { minX: number; maxX: number; minY: number; maxY: number } {
+function bornesDesIles(a: ArchipelagoId, iles: readonly IslandDef[]): { minX: number; maxX: number; minY: number; maxY: number } {
   let minX = Infinity;
   let maxX = -Infinity;
   let minY = Infinity;
@@ -117,9 +118,19 @@ export function viewZone(home: BiomeId): { minX: number; maxX: number; minY: num
  * d'autre du nord (plein pivot à 50 cases du centre). Positif : la caméra se place à l'ouest et regarde vers l'est.
  */
 export function viewYaw(home: BiomeId): number {
-  const c = islandCenter(home);
+  return yawDuLieu(home) + (islandDef(home).quarts * Math.PI) / 2;
+}
+
+/**
+ * Le pivot de la caméra de la vue d'un lieu tel qu'il est sur la carte de départ, sans rotation (GD-9) : la vue est
+ * celle du lieu, figée à sa naissance, qu'il soit déplacé ou non ; tourné, elle tourne avec lui (`viewYaw`). Le décor
+ * qui pourrait cacher une borne est tiré pour cette vue.
+ */
+function yawDuLieu(home: BiomeId): number {
+  const def = lieuDeDepart(home);
+  const c = coeurDe(def);
   // Seul l'écart est-ouest compte : la caméra regarde toujours vers le nord, on la tourne vers la colonne centrale.
-  const dx = colonneCentrale(archipelagoOfIsland(home)) - c.x;
+  const dx = colonneCentrale(archipelagoOfIsland(home)) - (c.x0 + c.x1) / 2;
   return VIEW_YAW_MAX * Math.max(-1, Math.min(1, dx / 50));
 }
 
@@ -134,14 +145,15 @@ const colonnes = new Map<ArchipelagoId, number>();
 
 /**
  * La colonne centrale d'un archipel, vers laquelle pivotent les caméras des îles : le milieu est-ouest de ses îles (sauf
- * `HORS_DE_LA_COLONNE`) et de son port.
+ * `HORS_DE_LA_COLONNE`) et de son port, sur la carte de départ.
  */
 function colonneCentrale(a: ArchipelagoId): number {
   const connue = colonnes.get(a);
   if (connue !== undefined) return connue;
+  // La carte de départ : la colonne ne bouge pas quand l'élève déplace un lieu (GD-9).
   const b = bornesDesIles(
     a,
-    mapOf(a).filter((d) => !HORS_DE_LA_COLONNE.includes(d.id)),
+    MAP.filter((d) => archipelagoOfIsland(d.id) === a && !HORS_DE_LA_COLONNE.includes(d.id)),
   );
   const x = (b.minX + b.maxX) / 2;
   colonnes.set(a, x);
@@ -182,9 +194,12 @@ export const DISTANCE_DE_LA_VUE_DE_L_ILE = 30;
 /** La caméra vise un bloc au-dessus du point qu'elle regarde (le centre d'une île à son altitude, le bonhomme). */
 export const VISEE_AU_DESSUS_DU_SOL = 1;
 
-/** La direction de la vue d'une île, pivot compris (`viewYaw`), non normée : x, y de la grille, z en hauteur. */
-function directionDeLaVue(id: BiomeId): [number, number, number] {
-  const yaw = -viewYaw(id);
+/**
+ * La direction de la vue d'une île, pivot compris (`viewYaw`), non normée : x, y de la grille, z en hauteur. `dessin` :
+ * celle du dessin du lieu, sans sa rotation (le lieu se dessine sans être tourné, puis tourne avec sa vue).
+ */
+function directionDeLaVue(id: BiomeId, dessin = false): [number, number, number] {
+  const yaw = -(dessin ? yawDuLieu(id) : viewYaw(id));
   const { dx, dy, up } = VUE_DE_L_ILE;
   return [dx * Math.cos(yaw) - dy * Math.sin(yaw), dx * Math.sin(yaw) + dy * Math.cos(yaw), up];
 }
@@ -192,6 +207,16 @@ function directionDeLaVue(id: BiomeId): [number, number, number] {
 /** Vers la caméra de la vue d'une île, pivot compris (`viewYaw`), en cases : x, y de la grille, z en hauteur. */
 export function versLaCamera(id: BiomeId): [number, number, number] {
   const v = directionDeLaVue(id);
+  const l = Math.hypot(...v);
+  return [v[0] / l, v[1] / l, v[2] / l];
+}
+
+/**
+ * Vers la caméra de la vue d'un lieu dans son dessin, le lieu pas tourné (`versLaCamera` sans sa rotation) : le décor
+ * qui pourrait cacher une borne, la place de la créature se tirent pour elle, et tournent avec le lieu.
+ */
+export function versLaCameraDuDessin(id: BiomeId): [number, number, number] {
+  const v = directionDeLaVue(id, true);
   const l = Math.hypot(...v);
   return [v[0] / l, v[1] / l, v[2] / l];
 }
@@ -253,7 +278,7 @@ export function projectionDeLaVueDeLIle(id: BiomeId): { projeter: ProjectionDeLa
 }
 
 /** Les cases des longues traversées (plus de `BAC_LONG` cases) d'un archipel, et l'ouvrage de chacune. */
-const traverseesCache = new Map<ArchipelagoId, Map<string, string>>();
+const traverseesCache = cacheDeLaDisposition<ArchipelagoId, Map<string, string>>();
 
 function casesDesTraversees(a: ArchipelagoId): Map<string, string> {
   let m = traverseesCache.get(a);

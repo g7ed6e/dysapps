@@ -21,6 +21,7 @@ import type { Couleur } from '../palette';
 import { rgb } from './brush';
 import { bossIsletOrigin, bridgePath, ISLET_W, ISLET_H, mistPatches, whaleSpots, worldBounds } from '../terrain';
 import { smooth } from '../../../core/math';
+import { cacheDeLaDisposition } from '../placement';
 
 /** Une couche de brume : sa hauteur au-dessus de l'eau, sa couleur, son opacité la plus forte et la part de la mer qu'elle couvre. */
 export interface CoucheDeBrume {
@@ -105,7 +106,7 @@ function opaciteDeLaBrume(c: CoucheDeBrume, k: number, x: number, y: number, est
   return c.opacite * banc * bord;
 }
 
-const cache = new Map<ArchipelagoId, BancsDeBrume | null>();
+const cache = cacheDeLaDisposition<ArchipelagoId, BancsDeBrume | null>();
 
 /** Les bancs de brume d'un archipel (calculés une fois), ou `null` s'il n'en a pas. */
 export function bancsDeBrume(a: ArchipelagoId): BancsDeBrume | null {
@@ -273,7 +274,7 @@ export function nappesPosees(a: ArchipelagoId): NappePosee[] {
   });
 }
 
-const nappesCache = new Map<ArchipelagoId, BancsDeBrume | null>();
+const nappesCache = cacheDeLaDisposition<ArchipelagoId, BancsDeBrume | null>();
 
 /** Les nappes des sommets d'un archipel (Archipéo), dans le format des bancs (un appel de dessin), ou `null`. */
 export function nappesDesSommets(a: ArchipelagoId): BancsDeBrume | null {

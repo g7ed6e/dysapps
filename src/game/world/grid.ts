@@ -10,10 +10,12 @@ import type { VillagePlaceId, VoxelCube } from './cube';
 import { getBridge, type ArchipelagoId } from './archipelago';
 import type { Ancrage, Disposition, Entite, Etendue, Point, Trajet } from './layout';
 import { caseDArrivee, toucheLEau, type Arrivee } from './arrival';
-import { isLand, islandDef, mapOf } from './map';
+import { isLandDuMonde, islandDef, mapOf } from './map';
+import { detournerLaCase, tournerLaCase } from './placement';
 import { getMonument } from './monuments';
 import { walkGround, walkPath, type Cell, type CreaturePlacement, type WalkGround } from './paths';
 import { avatarHome, avatarRoute, bossIsletCenter, bridgePath, casesDeLOuvrage, casesDesLieux, islandAt, islandCenter, monumentCenter, origineDe, placeDoor, placesDeLaFleche, questStations, routeLengths, viewZone, worldBounds } from './terrain';
+import { cacheDeLaDisposition } from './placement';
 
 /**
  * Le bonhomme marche à six cases par seconde, toujours : sur son île comme d'une île à l'autre, sans plafond qui le ferait
@@ -62,17 +64,21 @@ export interface DispositionEnGrille extends Disposition {
   placesDeLaFleche(ouvrage: string, depuis?: BiomeId): Cell[];
 }
 
-/** Un point du monde, ancré à l'île `ile` : dans son repère. */
+/**
+ * Un point du monde, ancré à l'île `ile` : dans son repère, avant sa rotation (GD-9). Une case et un point entre deux
+ * cases tournent de même (`tournerLaCase`, affine) : un ancrage revient toujours au même point du monde (`versMonde`).
+ */
 function ancre(ile: BiomeId, p: Point): Ancrage {
   const o = origineDe(ile);
-  return { ile, local: { x: p.x - o.x, y: p.y - o.y, z: p.z - o.z } };
+  const l = detournerLaCase(p.x - o.x, p.y - o.y, islandDef(ile).quarts);
+  return { ile, local: { x: l.x, y: l.y, z: p.z - o.z } };
 }
 
 /**
  * La disposition en grille d'un archipel, sans cubes ni ouvrages (ce qu'elle dit ne dépend alors que de l'archipel : où
  * sont les îles, le repère de chacune), faite une fois et partagée : le clavier, le toucher, les intentions des vues.
  */
-const grilles = new Map<ArchipelagoId, DispositionEnGrille>();
+const grilles = cacheDeLaDisposition<ArchipelagoId, DispositionEnGrille>();
 export function grilleDe(a: ArchipelagoId): DispositionEnGrille {
   let g = grilles.get(a);
   if (!g) grilles.set(a, (g = dispositionEnGrille(a)));
@@ -93,7 +99,8 @@ export function dispositionEnGrille(
   const seTenir = (ile: BiomeId) => ancre(ile, avatarHome(ile));
   const versMonde = (x: Ancrage): Point => {
     const o = origineDe(x.ile);
-    return { x: x.local.x + o.x, y: x.local.y + o.y, z: x.local.z + o.z };
+    const t = tournerLaCase(x.local.x, x.local.y, islandDef(x.ile).quarts);
+    return { x: t.x + o.x, y: t.y + o.y, z: x.local.z + o.z };
   };
   const ileEn = (p: Point) => islandAt(a, Math.floor(p.x), Math.floor(p.y));
   const raccord = (depuis: Point, vers: Point) => {
@@ -183,7 +190,7 @@ export function dispositionEnGrille(
       const cases = casesDeLOuvrage(def);
       // Toutes les îles de l'archipel : une liaison en contour ne pose jamais la flèche sur une terre qu'elle longe.
       const iles = mapOf(a);
-      return placesDeLaFleche(depuis === def.to ? [...cases].reverse() : cases, (x, y) => iles.some((d) => isLand(d, x, y)));
+      return placesDeLaFleche(depuis === def.to ? [...cases].reverse() : cases, (x, y) => iles.some((d) => isLandDuMonde(d, x, y)));
     },
   };
 }

@@ -9,6 +9,7 @@ import { semerLaMer } from '../decor';
 import { bossIsletOrigin, ISLET_H, ISLET_W } from './islets';
 import { bridgePath } from './links';
 import { worldBounds } from './view';
+import { cacheDeLaDisposition } from '../placement';
 
 /**
  * Les baleines replacées à la main, quand la clairière choisie par `whaleSpots` se cache derrière une île dans la vue
@@ -20,7 +21,7 @@ export const BALEINES_REPLACEES: Readonly<Partial<Record<ArchipelagoId, readonly
   '5e': [{ de: { x: 91, y: 345 }, vers: { x: 97, y: 344 } }],
 };
 
-const whaleCache = new Map<ArchipelagoId, { x: number; y: number; r: number }[]>();
+const whaleCache = cacheDeLaDisposition<ArchipelagoId, { x: number; y: number; r: number }[]>();
 
 export function whaleSpots(a: ArchipelagoId): { x: number; y: number; r: number }[] {
   const known = whaleCache.get(a);
@@ -86,7 +87,7 @@ export function whaleSpots(a: ArchipelagoId): { x: number; y: number; r: number 
   return spots;
 }
 
-const seaCache = new Map<ArchipelagoId, VoxelCube[]>();
+const seaCache = cacheDeLaDisposition<ArchipelagoId, VoxelCube[]>();
 
 /**
  * L'habillage de la mer : des rochers qui affleurent (galet et pierre, un à quatre cubes) et des bancs de sable au

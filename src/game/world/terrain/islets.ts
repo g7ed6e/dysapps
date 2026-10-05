@@ -1,6 +1,7 @@
 // La place des îlots des Gardiens au large de chaque île, sans leur contenu (./guardians.ts).
 import { coeurDe, COTE_DU_COEUR, islandDef, type IslandDef } from '../map';
 import { type BiomeId, BIOMES } from '../../biomes';
+import { tournerLePoint, tournerLeRectangle } from '../placement';
 
 /** L'îlot du Gardien : une petite île devant la sienne (côté caméra), tenue dans ISLET_W × ISLET_H cases (les Gardiens font jusqu’à 9 × 8). */
 export const ISLET_W = 13;
@@ -67,6 +68,19 @@ export function reculDeLIlot(id: BiomeId): number {
  * world/characters/sentinel.ts, `HAUTEUR_DANS_LE_MONDE` ; un test y tient les deux ensemble).
  */
 export function bossIsletCenter(id: BiomeId): { x: number; y: number; z: number } {
-  const o = bossIsletOrigin(BIOMES.findIndex((b) => b.id === id));
-  return { x: o.x + ISLET_CENTER.x, y: o.y + ISLET_CENTER.y, z: o.z + 2.6 };
+  const def = islandDef(id);
+  const o = origineDeLIlot(def);
+  // Le milieu de la case du centre de l'îlot, tourné avec le lieu (GD-9) ; sans rotation, le point d'avant.
+  const m = tournerLePoint(o.x + ISLET_CENTER.x + 0.5 - def.core.x, o.y + ISLET_CENTER.y + 0.5 - def.core.y, def.quarts);
+  return { x: def.core.x + m.x - 0.5, y: def.core.y + m.y - 0.5, z: o.z + 2.6 };
+}
+
+/**
+ * Le rectangle de l'îlot du Gardien d'un lieu dans le monde (`ISLET_W` × `ISLET_H` cases), le lieu tourné : son emprise
+ * avec celle de sa terre (GD-9).
+ */
+export function rectangleDeLIlot(def: IslandDef): { x0: number; y0: number; x1: number; y1: number } {
+  const o = origineDeLIlot(def);
+  const r = tournerLeRectangle({ x0: o.x - def.core.x, y0: o.y - def.core.y, x1: o.x - def.core.x + ISLET_W, y1: o.y - def.core.y + ISLET_H }, def.quarts);
+  return { x0: def.core.x + r.x0, y0: def.core.y + r.y0, x1: def.core.x + r.x1, y1: def.core.y + r.y1 };
 }

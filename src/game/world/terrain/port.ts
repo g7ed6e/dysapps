@@ -13,7 +13,7 @@ import { villageStage } from '../villageStage';
 import { kitReady, launchedStages, stageBuildingAt } from '../vehicle';
 import { cacheUneBorne, questStations, rangeeDevantLesBornes } from './markers';
 import { AVATAR_HOME, fade, groundHeight, isSchoolIsland } from './base';
-import { versLaCamera } from './view';
+import { versLaCameraDuDessin } from './view';
 import { casesDuVillage, PLACE_IDS, VILLAGE_PLACES } from './village';
 import { placeDeLaPetiteConstruction } from './fixture';
 import { creatureDuMonde, creatureSpot } from './creatures';
@@ -79,7 +79,7 @@ function quaySpots(port: BiomeId, cubes: VoxelCube[]): { boat: QuaySpot | null; 
   // Devant les bornes (voir `cacheUneBorne`) : ni mât de fanion ni fumée de foyer, qui cacheraient leur pied.
   const index = BIOMES.findIndex((b) => b.id === port);
   const bornes = questStations(port).map((st) => ({ x: def.core.x + st.x, y: def.core.y + st.y, base: def.altitude + groundHeight(index, st.x, st.y) }));
-  const vers = versLaCamera(port);
+  const vers = versLaCameraDuDessin(port);
   const zone = zoneDesPlans(port);
   for (let x = zone.x; x < zone.x + zone.w; x++) for (let y = zone.y; y < zone.y + zone.h; y++) core(x, y);
   for (const st of questStations(port)) for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) core(st.x + dx, st.y + dy);
