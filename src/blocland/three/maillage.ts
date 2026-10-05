@@ -30,7 +30,7 @@ const ghostCache = new Map<string, THREE.Material>();
 const GLOW: Partial<Record<TextureKind, [number, number]>> = { lanterne: [0xffb830, 0.55], lave: [0xff5a00, 0.6] };
 
 /** Matériau d'une face : les blocs texturés partagent les matériaux (cache), le reste est une couleur grainée. */
-export function materialFor(texture: string | undefined, face: FaceSide, color: string | undefined, ghost = false, muted = false): THREE.Material {
+function materialFor(texture: string | undefined, face: FaceSide, color: string | undefined, ghost = false, muted = false): THREE.Material {
   if (ghost) {
     const k = texture ?? color ?? 'gris';
     let m = ghostCache.get(k);

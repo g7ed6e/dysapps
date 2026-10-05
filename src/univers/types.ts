@@ -20,7 +20,7 @@ export interface TextesCreature {
 }
 
 /** Ce que dit un Gardien pendant son défi. */
-export interface TextesGardien {
+interface TextesGardien {
   /** Au début du défi, et tant qu'il n'a rien d'autre à dire. */
   challenge: string;
   /** Épreuve réussie, épreuve ratée, et à la fin du défi réussi. */
@@ -28,7 +28,7 @@ export interface TextesGardien {
 }
 
 /** Les libellés qui disent où en sont les Gardiens (rallumés, dans les deux univers depuis GD-8). */
-export interface LibellesGardiens {
+interface LibellesGardiens {
   /** Sous le nom du Gardien, dans le panneau d'une île, quand son défi est déjà réussi. */
   dejaFait: string;
   /** Les étoiles du Gardien, dans le panneau d'une île. */
@@ -73,7 +73,7 @@ export interface LibellesGardiens {
  * Le défi d'une sentinelle et son rallumage (lot 6, fil B2), dans un univers où les Gardiens sont des sentinelles
  * éteintes : la jauge compte les épreuves réussies, jamais celles qui restent, et le seuil est écrit.
  */
-export interface TextesSentinelles {
+interface TextesSentinelles {
   /** La consigne du défi, qui en dit la règle (le nombre d'épreuves et le seuil sont sur la jauge). */
   consigne: string;
   /**
@@ -97,7 +97,7 @@ export interface TextesSentinelles {
  * Le mot des grandes étapes d'un archipel (lot 5) : la baleine le dit dans Archipéo ; dans Blocland, la créature de
  * l'île-école de l'archipel (GD-1).
  */
-export interface TextesBaleine {
+interface TextesBaleine {
   /** Qui parle : la baleine, ou la créature de l'île-école de l'archipel (`school` de world/archipelago.ts). */
   parle: 'baleine' | 'ecole';
   /** La première page, à l'arrivée dans un archipel. */
@@ -111,13 +111,13 @@ export interface TextesBaleine {
 }
 
 /** Ce que dit le panneau d'un monument dont l'univers change le dessin ou les mots (sa description, son message de fin). */
-export interface TextesMonument {
+interface TextesMonument {
   description: string;
   done: string;
 }
 
 /** Un succès que l'univers nomme autrement (les rôles, un archipel nommé) : son titre et sa condition. */
-export interface TextesSucces {
+interface TextesSucces {
   title: string;
   description: string;
 }
@@ -178,7 +178,7 @@ export interface TextesUnivers {
 }
 
 /** Les mots des commandes des habitants dans un univers (GD-7). */
-export interface TextesCommandes {
+interface TextesCommandes {
   /** Le nom de la section, le même dans le panneau d'île, le menu et la vue simple. */
   titre: string;
   /** La phrase qui explique ce qu'est une commande, tant qu'aucune n'a été livrée. */
@@ -199,7 +199,7 @@ export interface TextesCommandes {
 }
 
 /** Les noms qu'un univers donne à des blocs (GD-2 : les blocs assemblés). */
-export type NomsDesBlocs = Partial<Record<BlockId, NomDeBloc>>;
+type NomsDesBlocs = Partial<Record<BlockId, NomDeBloc>>;
 
 /** Le lieu où l'on assemble les blocs (GD-2). */
-export type TextesAssemblage = LieuDAssemblage;
+type TextesAssemblage = LieuDAssemblage;

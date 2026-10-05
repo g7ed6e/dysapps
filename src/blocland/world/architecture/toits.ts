@@ -24,7 +24,7 @@ const dessous = rive(
 );
 
 /** Le versant : monte de x = 0 (au bas) à x = 1 (en haut), fermé derrière (x = 1) et dessous. */
-export const VERSANT: DessinDePiece = {
+const VERSANT: DessinDePiece = {
   facettes: [
     pente(
       [
@@ -67,7 +67,7 @@ export const VERSANT: DessinDePiece = {
 };
 
 /** Le faîte : deux pentes qui se rejoignent au milieu de la case, à mi-hauteur ; il file le long de y. */
-export const FAITE: DessinDePiece = {
+const FAITE: DessinDePiece = {
   facettes: [
     pente(
       [
@@ -110,7 +110,7 @@ export const FAITE: DessinDePiece = {
 };
 
 /** La croupe : le bout d'un faîte (il file vers +y) qui descend aussi vers −y. */
-export const CROUPE: DessinDePiece = {
+const CROUPE: DessinDePiece = {
   facettes: [
     pente(
       [
@@ -152,7 +152,7 @@ export const CROUPE: DessinDePiece = {
 };
 
 /** La pointe : une pyramide, qui descend de ses quatre côtés. */
-export const POINTE: DessinDePiece = {
+const POINTE: DessinDePiece = {
   facettes: [
     pente(
       [
@@ -192,7 +192,7 @@ export const POINTE: DessinDePiece = {
 };
 
 /** L'arêtier : le coin d'un toit en pyramide, qui monte vers le coin (+x, +y) ; deux pentes, deux rives. */
-export const ARETIER: DessinDePiece = {
+const ARETIER: DessinDePiece = {
   facettes: [
     pente(
       [

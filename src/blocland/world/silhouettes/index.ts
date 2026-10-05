@@ -8,7 +8,7 @@ import { SILHOUETTES_4E } from './4e';
 import { SILHOUETTES_3E } from './3e';
 import type { Silhouette } from './types';
 
-export type { Pic, Silhouette } from './types';
+export type { Silhouette } from './types';
 
 /** Le relief de chaque archipel, île par île. */
 export const SILHOUETTES = { '6e': SILHOUETTES_6E, '5e': SILHOUETTES_5E, '4e': SILHOUETTES_4E, '3e': SILHOUETTES_3E } as const;

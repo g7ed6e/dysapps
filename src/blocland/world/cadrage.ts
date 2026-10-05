@@ -23,7 +23,7 @@ export interface RepereCadre {
   pivot?: Partial<Record<BiomeId, number>>;
 }
 
-export const REPERES_CADRES: readonly RepereCadre[] = [GRAND_PHARE_3E];
+const REPERES_CADRES: readonly RepereCadre[] = [GRAND_PHARE_3E];
 
 /**
  * Comment la caméra garde le repère en vue : sa cible glisse de `vers` (en part du chemin) vers le pied du repère, et

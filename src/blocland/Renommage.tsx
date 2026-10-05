@@ -42,7 +42,7 @@ export function useRenommage(ready = true, attenteMs = 0): { ouvert: boolean; fe
 }
 
 /** Le texte lu à voix haute : le titre, la phrase d'intro, puis une phrase par archipel. */
-export function texteDuRenommage(t: TextesRenommage): string {
+function texteDuRenommage(t: TextesRenommage): string {
   return [`${t.titre}.`, t.intro, ...t.lignes].join(' ');
 }
 

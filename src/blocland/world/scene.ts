@@ -10,13 +10,12 @@ import { legTiming, type LegTiming, type VoyageLeg } from './voyage';
 import type { Bonhomme, Cell, CreaturePlacement } from './view';
 
 /** Accélère au début, ralentit à la fin. */
-export const ease = (t: number) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
+const ease = (t: number) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
 
 // ---- Le bonhomme
 
 // La vitesse du bonhomme et la durée d'un trajet viennent de la disposition en grille (./grille.ts).
 export { WALK_SPEED };
-
 
 /** Un trajet du bonhomme : l'itinéraire, ses distances cumulées (calculées une fois), son départ et sa durée. */
 export interface Walk {

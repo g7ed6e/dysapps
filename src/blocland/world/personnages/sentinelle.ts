@@ -76,7 +76,7 @@ export type OuSeMontre = 'monde' | 'defi';
 // ---------- Le socle commun, le foyer et la flamme ----------
 
 /** Le profil du socle : un octogone au fruit léger, sa corniche en haut. */
-export const SOCLE: Anneau[] = [
+const SOCLE: Anneau[] = [
   [0, 1.95],
   [0.85, 1.78],
   [HAUT_DU_SOCLE, 1.88],
@@ -85,7 +85,7 @@ export const SOCLE: Anneau[] = [
 export const FOYER = { z: -1.3, haut: 1.12 } as const;
 
 /** Le socle octogonal, le même pour toutes les sentinelles, et la coupe du foyer. */
-export function socle(T: Trace, a: Atelier): void {
+function socle(T: Trace, a: Atelier): void {
   fuseau(T, SOCLE, 8, a.moussue((k, j) => k === 0 && (j === 0 || j === 3 || j === 5)), { bas: false });
   fuseau(
     T,
@@ -100,7 +100,7 @@ export function socle(T: Trace, a: Atelier): void {
 }
 
 /** La flamme facettée, posée dans le foyer (une arête vers l'élève). */
-export function flamme(T: Trace, a: Atelier): void {
+function flamme(T: Trace, a: Atelier): void {
   fuseau(
     T,
     [
@@ -332,7 +332,7 @@ export function couleursAllumees(f: FacettesDePersonnage, degre: Allumage, dans 
  * Les quatre pièces d'une sentinelle ; `ou` : où elle se montre (une statue longue, `tour`, s'y tourne) ; `veines` : la
  * largeur de ses veines, en part de celle du dessin.
  */
-export function piecesDeSentinelle(s: Statue, { ou = 'monde', veines = 1 }: { ou?: OuSeMontre; veines?: number } = {}): Piece[] {
+function piecesDeSentinelle(s: Statue, { ou = 'monde', veines = 1 }: { ou?: OuSeMontre; veines?: number } = {}): Piece[] {
   const a = (pot: Pot) => new Atelier(pot, veines);
   const tour = s.tour?.[ou] ?? 0;
   const tourne = repere([0, 0, 0], 0, tour, 0);

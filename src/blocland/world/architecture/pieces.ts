@@ -43,14 +43,14 @@ export interface DessinDePiece {
 }
 
 /** Un point de la case tourné de `r` quarts de tour, dans le sens direct, autour de l'axe vertical du centre de la case. */
-export function tournerPoint(p: V3, r: number): V3 {
+function tournerPoint(p: V3, r: number): V3 {
   let [x, y] = p;
   for (let i = 0; i < ((r % 4) + 4) % 4; i++) [x, y] = [1 - y, x];
   return [x, y, p[2]];
 }
 
 /** Une direction tournée de `r` quarts de tour. */
-export function tournerDirection(n: V3, r: number): V3 {
+function tournerDirection(n: V3, r: number): V3 {
   let [x, y] = n;
   for (let i = 0; i < ((r % 4) + 4) % 4; i++) [x, y] = [-y, x];
   return [x, y, n[2]];

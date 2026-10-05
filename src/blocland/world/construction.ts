@@ -74,7 +74,7 @@ export const LANTERNES_ALLUMEES = 2;
  * Une lanterne (le genre `lanterne` : cours, comptoirs, sommets, pas les vitres) : un corps sombre de `corps` case de côté
  * et de haut, posé au milieu de sa case, et sur lui un cœur de `coeur` case, qui s'allume. Rien ne sort de la case.
  */
-export const LANTERNE = { corps: 0.3, coeur: 0.18 } as const;
+const LANTERNE = { corps: 0.3, coeur: 0.18 } as const;
 /**
  * Un trophée de la salle des trophées, dans Archipéo, quand le kit de l'archipel reprend la salle (GD-3, retouches du
  * directeur artistique : la halle ne se lit plus comme un mur de panneaux) : un bloc plus petit que sa case, au milieu,
@@ -87,14 +87,14 @@ export const TROPHEE = { bas: 0.62, haut: 0.46, hauteur: 0.66 } as const;
 /** Le rang des trophées posés sur leur socle (les autres sont posés sur eux). */
 const RANG_DES_SOCLES = Math.min(...TROPHY_SLOTS.map((t) => t.z));
 /** Le verre hors d'un mur (provisoire, jusqu'au phare de R4b) : 80 % Brume, 20 % Bleu lagon, avec une arête par case. */
-export const VERRE_HORS_MUR: Couleur = mixColor(BRUME, BLEU_LAGON, 0.2);
+const VERRE_HORS_MUR: Couleur = mixColor(BRUME, BLEU_LAGON, 0.2);
 /** L'arête du verre hors d'un mur : `ARETE`, à cette opacité, sur 1,5 pixel. */
 export const ARETE_DU_VERRE = 0.4;
 /** Le biseau peint : la lumière ajoutée au bord saillant (+22 %)… */
 export const ECLAT_DU_BISEAU = 0.22;
 /** … et au moins tant de niveaux sRGB de plus, par canal, sur une teinte sombre (luminance sous `SOMBRE`). */
 export const ECART_SOMBRE = 14;
-export const SOMBRE = 0.25;
+const SOMBRE = 0.25;
 /** Le décalage d'allumage d'une fenêtre, de 0 à cette valeur (en degré de nuit). */
 export const DECALAGE_MAX = 0.15;
 /** L'allumage : rien sous ce degré de nuit, tout allumé à `PLEINE_NUIT`. */
@@ -105,16 +105,16 @@ export const FANTOME: Couleur = BRUME;
 export const ARETE: Couleur = 0x142b38;
 export const ARETE_FANTOME = 0.035;
 /** Les pilotis : une case est sur le vide si rien de solide n'est dessous sur tant de cases (ou si c'est l'eau). */
-export const PROFONDEUR = 6;
+const PROFONDEUR = 6;
 /** La toile du Bloc-Navire : le crème Brume. */
-export const TOILE_DU_NAVIRE: Couleur = BRUME;
+const TOILE_DU_NAVIRE: Couleur = BRUME;
 /**
  * Le phare de Grimoire (décision 16 du cadrage) : le plan « Le phare de Grimoire » (les murs) donne, une fois fini, le
  * fût du phare de référence et ses bandes (world/decor/phare.ts) ; le plan suivant (le toit) donne la galerie, la
  * lanterne et le cône. Tant qu'une étape n'est pas finie, ses cases posées restent des blocs taillés, en crème (le fût)
  * au lieu du verre provisoire.
  */
-export const PHARE_DE_GRIMOIRE = {
+const PHARE_DE_GRIMOIRE = {
   archipel: '6e',
   ile: 'french-6e-reading',
   etapes: [
@@ -129,7 +129,7 @@ export const CREME_DU_PHARE: Couleur = COULEURS_DU_PHARE.fut;
  * La couleur d'un rôle du kit d'architecture (lot 7 : poteau, remplissage, soubassement, bardage, pilotis, chaperon), de
  * jour : sous le voile de l'archipel, comme les matières ; délavée si l'île est fermée.
  */
-export function couleurDuRole(a: ArchipelagoId, kit: Kit, role: Role, muted = false): Couleur {
+function couleurDuRole(a: ArchipelagoId, kit: Kit, role: Role, muted = false): Couleur {
   const [teinte, force] = ambianceDe(a).voile;
   const v = mixColor(kit.couleurs[role] ?? BRUME, teinte, force);
   return muted ? mixColor(v, DELAVE[0], DELAVE[1]) : v;
@@ -159,7 +159,7 @@ const fract = (v: number) => f32(v - Math.floor(v));
  * repère Three (X = x, Y = hauteur, Z = y). Le GPU peut arrondir autrement : la teinte d'un bloc reste stable d'une
  * image à l'autre, pas forcément identique au bit près à celle-ci.
  */
-export function hasardDeCase(x: number, y: number, z: number): number {
+function hasardDeCase(x: number, y: number, z: number): number {
   let px = fract(f32(x * f32(0.1031)));
   let py = fract(f32(z * f32(0.1031)));
   let pz = fract(f32(y * f32(0.1031)));
@@ -235,20 +235,20 @@ export interface GroupeDeConstruction {
   indices: Uint32Array;
 }
 
-export interface GroupeDesFenetres extends GroupeDeConstruction {
+interface GroupeDesFenetres extends GroupeDeConstruction {
   /** Par sommet : le décalage d'allumage (0 à `DECALAGE_MAX`), négatif pour une fenêtre qui ne s'allume jamais. */
   decalages: Float32Array;
 }
 
-export interface GroupeDesFantomes extends GroupeDeConstruction {
+interface GroupeDesFantomes extends GroupeDeConstruction {
   /** Par sommet : ses coordonnées sur le plan de sa face, en cases (l'arête d'une case est là où elles sont entières). */
   uvs: Float32Array;
 }
 
-export interface GroupeOpaque extends GroupeDeConstruction {
+interface GroupeOpaque extends GroupeDeConstruction {
   /**
    * Le biseau peint (mode `peint`) : par sommet, quatre distances (en cases) du sommet aux quatre bords de son rectangle,
-   * côté u−, u+, v−, v+ (voir `TANGENTES`), ou `SANS_BISEAU` pour un bord qui n'est pas une arête saillante. Vide dans
+   * côté u−, u+, v−, v+ (les axes du plan de la face, selon sa normale : X donne (Z, Y), Y donne (X, Z), Z donne (X, Y)), ou `SANS_BISEAU` pour un bord qui n'est pas une arête saillante. Vide dans
    * les autres modes.
    */
   biseaux: Float32Array;
@@ -270,7 +270,7 @@ export interface GroupeOpaque extends GroupeDeConstruction {
 }
 
 /** Des triangles de l'opaque (de, à) qui remplacent des cases : les cases de chaque triangle, pour le toucher. */
-export interface TrancheDesPieces {
+interface TrancheDesPieces {
   opaque: [number, number];
   /**
    * Les cases du triangle `de + i`, de `cases[6i..6i + 2]` à `cases[6i + 3..6i + 5]` (x, y, z) : une case, ou une
@@ -348,25 +348,6 @@ const cle = (x: number, y: number, z: number) => `${x},${y},${z}`;
 /** La distance d'un bord qui n'est pas une arête saillante, dans `biseaux`. */
 export const SANS_BISEAU = 64;
 
-/**
- * Les deux axes (u, v) du plan d'une face, selon l'axe de sa normale, dans le repère Three : le shader du biseau peint
- * les retrouve de la normale. Normale selon X : (Z, Y) ; selon Y : (X, Z) ; selon Z : (X, Y).
- */
-export const TANGENTES: Record<'x' | 'y' | 'z', [V3, V3]> = {
-  x: [
-    [0, 0, 1],
-    [0, 1, 0],
-  ],
-  y: [
-    [1, 0, 0],
-    [0, 0, 1],
-  ],
-  z: [
-    [1, 0, 0],
-    [0, 1, 0],
-  ],
-};
-
 const TOITURES = new Set(['toit', 'tuile']);
 const LUMIERES = new Set(['lanterne', 'verre']);
 
@@ -430,7 +411,7 @@ export const MOTIF_ASSEMBLE = {
 export type BlocAssemble = keyof typeof MOTIF_ASSEMBLE;
 
 /** Les mesures des motifs, en part de case, depuis le milieu de la face (le même dessin en JS et en GLSL). */
-export const MESURES_DES_MOTIFS = {
+const MESURES_DES_MOTIFS = {
   /** Le madrier : deux veines en long, et un collier à mi-hauteur ; sur le dessus, un cerne. */
   poutre: { veines: [-0.22, 0.18], veine: 0.025, collier: 0.09, cerne: 0.28, epaisseurDuCerne: 0.035 },
   /** Le hublot : un disque de verre dans son bord sombre, un reflet en haut à gauche. */
@@ -590,7 +571,7 @@ function decalagesDe(genres: Map<VoxelCube, Genre>): Map<VoxelCube, number> {
  * l'île du Phare (3e), la petite tour de pierre à lanterne doublait le grand phare. Cases du cœur (world/decor.ts,
  * `DECOR`), que Blocland garde : son dessin ne change pas.
  */
-export const TOURS_DU_COEUR: Partial<Record<BiomeId, readonly (readonly [number, number])[]>> = {
+const TOURS_DU_COEUR: Partial<Record<BiomeId, readonly (readonly [number, number])[]>> = {
   'french-6e-reading': [
     [8, 4],
     [9, 4],
@@ -1669,7 +1650,7 @@ export function piliersDe(cubes: VoxelCube[]): Pilier[] {
  * taillée, puis une tête d'ardoise (la couleur `borne`) chanfreinée sur le dessus. Elle tient dans ses deux cases, en
  * retrait des bords : le toucher (`caseDeLaConstruction`) retrouve la case du socle ou celle de la tête.
  */
-export const PILIER = { corps: [0.2, 0.8], hautDuCorps: 1.3, tete: [0.08, 0.92], chanfrein: 0.12, haut: 2 } as const;
+const PILIER = { corps: [0.2, 0.8], hautDuCorps: 1.3, tete: [0.08, 0.92], chanfrein: 0.12, haut: 2 } as const;
 
 export function formeDuPilier(a: ArchipelagoId): GroupeDeConstruction {
   const R = new Remplissage();

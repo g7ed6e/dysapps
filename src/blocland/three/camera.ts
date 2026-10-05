@@ -43,7 +43,7 @@ export const AUTOUR_DE_LA_DESTINATION = { haut: 124, bas: 64, cote: 110 };
  * Le zoom de la Carte, au plus près : une île (`LARGEUR_D_UNE_ILE` cases) y remplit les deux tiers du petit côté de la
  * place libre. Au plus loin, le cadrage d'ouverture (jamais sous le plancher).
  */
-export const ZOOM_DE_LA_CARTE = { ile: 2 / 3 };
+const ZOOM_DE_LA_CARTE = { ile: 2 / 3 };
 /** La largeur d'une île, en cases (environ, world/terrain.ts) : la mesure du zoom le plus proche. */
 const LARGEUR_D_UNE_ILE = 22;
 /** Entre l'archipel entier et le bord de la place libre. */

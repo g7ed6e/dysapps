@@ -2,10 +2,10 @@
 
 // Les types du monde en cubes vivent avec la grille (world/cube.ts) ; ce composant les dessine.
 import type { VoxelCube } from './world/cube';
-export type { PlaceId, VillagePlaceId, VoxelCube } from './world/cube';
+export type { VoxelCube } from './world/cube';
 
 /** Motif de grain pixel à déclarer une fois par SVG (<defs>). */
-export function PixelGrainDefs() {
+function PixelGrainDefs() {
   return (
     <defs>
       <pattern id="voxel-grain" width="4" height="4" patternUnits="userSpaceOnUse">
@@ -38,7 +38,7 @@ export function project(x: number, y: number, z: number, s: number): [number, nu
 const pts = (list: [number, number][]) => list.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' ');
 
 /** Un cube dessiné en trois faces : dessus, gauche, droite. */
-export function Cube({ x, y, z, color, top, s = 16 }: VoxelCube & { s?: number }) {
+function Cube({ x, y, z, color, top, s = 16 }: VoxelCube & { s?: number }) {
   const p = (dx: number, dy: number, dz: number) => project(x + dx, y + dy, z + dz, s);
   return (
     <g className="cube">
@@ -53,7 +53,7 @@ export function Cube({ x, y, z, color, top, s = 16 }: VoxelCube & { s?: number }
 }
 
 /** Ordre de dessin : de l'arrière vers l'avant, puis du bas vers le haut. */
-export function sortCubes<T extends VoxelCube>(cubes: T[]): T[] {
+function sortCubes<T extends VoxelCube>(cubes: T[]): T[] {
   return [...cubes].sort((a, b) => a.x + a.y - (b.x + b.y) || a.z - b.z);
 }
 

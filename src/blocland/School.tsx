@@ -32,7 +32,7 @@ function greetingOf(island: BiomeDef): string {
 }
 
 /** Les trois portes, ou les missions de la porte choisie (`?door=maths` : on y revient après une mission). */
-export function SchoolBody() {
+function SchoolBody() {
   const island = useSchoolIsland();
   const univers = useUnivers();
   const { settings, speak } = useSettings();

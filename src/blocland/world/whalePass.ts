@@ -33,7 +33,7 @@ export interface WhaleRoute {
 /** Longueur du passage (cases) : la baleine glisse lentement, environ deux cases par seconde. */
 export const PASS_LENGTH = 12;
 /** Écart minimal (cases) entre le trajet et toute terre, tout îlot, tout rocher, le port et son navire. */
-export const PASS_CLEARANCE = 3;
+const PASS_CLEARANCE = 3;
 
 /** Le déroulé dans le temps (secondes) : elle plonge à sa ronde, passe au large, puis reparaît à sa ronde. */
 export const PASS_TIMING = { sink: 1.2, swim: 7, rise: 1.2 };
@@ -142,7 +142,7 @@ export function routeIsClear(
  * - Vue étroite (téléphone, panneau de l'île ouvert) : le côté sort de l'écran et le nom de l'île en prend toute la
  *   largeur ; elle passe plus loin derrière, au-dessus du nom, près de l'axe.
  */
-export const PASS_AIM = {
+const PASS_AIM = {
   large: { depth: 15, side: 10, tiers: { depth: [8, 24], side: [7, 14] } },
   etroite: { depth: 23, side: 3, tiers: { depth: [19, 30], side: [0, 6] } },
 } as const;
@@ -251,7 +251,7 @@ export type PassPhase =
   | { phase: "done" };
 
 /** Le souffle : entre ces deux instants du trajet (fraction), une fois. */
-export const SPOUT_AT = { from: 0.38, to: 0.58 };
+const SPOUT_AT = { from: 0.38, to: 0.58 };
 
 export function passPhase(s: number): PassPhase {
   const { sink, swim, rise } = PASS_TIMING;

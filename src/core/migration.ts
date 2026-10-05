@@ -149,10 +149,10 @@ export function translateGame(input: unknown): unknown {
 }
 
 /** Les Gardiens déjà vus rallumés, par lieu. */
-export const translateGuardiansSeen = (v: unknown): unknown => mapKeys(v, translatePlaceId);
+const translateGuardiansSeen = (v: unknown): unknown => mapKeys(v, translatePlaceId);
 
 /** « Ma dernière mission » : l'adresse de la dernière page ouverte. */
-export function translateResume(v: unknown): unknown {
+function translateResume(v: unknown): unknown {
   return isRecord(v) && typeof v.path === 'string' ? { ...v, path: translatePath(v.path) } : v;
 }
 
@@ -176,7 +176,7 @@ export function translateSettings(input: unknown): unknown {
 }
 
 /** Un message déjà dit (`{ dit }`) aux mots neutres (`{ said }`). */
-export function translateSaid(input: unknown): unknown {
+function translateSaid(input: unknown): unknown {
   if (!isRecord(input)) return input;
   const out = { ...input };
   renameField(out, 'dit', 'said');

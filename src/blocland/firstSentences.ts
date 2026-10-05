@@ -2,7 +2,7 @@
 // le reste va dans un pli (« La suite »). Code pur.
 
 /** Longueur minimale de la partie visible : « Meuh ! » seul ne dit rien, on prend la phrase suivante avec. */
-export const VISIBLE_MIN = 30;
+const VISIBLE_MIN = 30;
 
 /**
  * Coupe un texte après sa première phrase, ou après les suivantes tant que la partie visible fait moins de `min`

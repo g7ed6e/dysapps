@@ -17,7 +17,7 @@ import type { GameState } from './engine';
 export const PARAM_REVISION = 'revision';
 
 /** Parmi les révisions dues (`questsToReview`), celles d'une île, une par mission jouable (la LV2 des Réglages). */
-export function revisionsDeLIleParmi(dues: readonly ReviewQuest[], biome: BiomeId, lv2?: Lv2Choice): ReviewQuest[] {
+function revisionsDeLIleParmi(dues: readonly ReviewQuest[], biome: BiomeId, lv2?: Lv2Choice): ReviewQuest[] {
   const b = getBiome(biome);
   if (!b) return [];
   const jouables = new Set(missionsJouables(b, lv2).map((m) => m.id));

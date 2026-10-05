@@ -5,7 +5,7 @@ import { randomInt } from '../../core/random';
 type Rng = () => number;
 
 /** Les tirages d’un item sont bornés : au-delà, le générateur a un défaut, qu’on signale plutôt que de boucler. */
-export const MAX_TRIES = 1000;
+const MAX_TRIES = 1000;
 
 /** Un tirage borné, dont l’erreur nomme la mission (`prefix`) et l’item cherché. */
 export const boundedDraw =

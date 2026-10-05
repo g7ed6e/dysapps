@@ -36,8 +36,8 @@ import { archipelagoOf, getBridge, type ArchipelagoId } from './world/archipelag
 import { archipelDeLaCommande, faireArriverUneCommande, livrerLaCommande, type Livraison } from './world/commandes';
 
 /** Sessions courtes : on propose d'arrêter après ce nombre d'exercices ou cette durée. */
-export const SESSION_MAX_EXERCISES = 3;
-export const SESSION_MAX_MINUTES = 10;
+const SESSION_MAX_EXERCISES = 3;
+const SESSION_MAX_MINUTES = 10;
 
 interface BloclandContextValue {
   state: GameState;

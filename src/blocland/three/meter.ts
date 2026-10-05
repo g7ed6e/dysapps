@@ -4,7 +4,7 @@
 import type * as THREE from 'three';
 import type { Rendu } from '../rendu';
 
-export interface RenderStats {
+interface RenderStats {
   rendu: Rendu;
   calls: number;
   triangles: number;

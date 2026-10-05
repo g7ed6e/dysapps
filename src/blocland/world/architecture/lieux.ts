@@ -13,7 +13,7 @@ import { classeDe, type Classe, type IndexDuPlan } from './voisinage';
 export const estUnLieuDuVillage = (place: PlaceId | undefined): place is VillagePlaceId => place === 'school' || place === 'trophies' || place === 'assembly';
 
 /** Un bloc d'un lieu que le kit reprend : sa famille et sa classe dans le plan du lieu, et s'il se passe de décharge. */
-export interface BlocDuLieu {
+interface BlocDuLieu {
   famille: Famille;
   classe: Classe;
   sansDecharge: boolean;

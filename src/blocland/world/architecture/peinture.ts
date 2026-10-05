@@ -86,7 +86,7 @@ export const COLOMBAGE = {
 export const ROLES_PEINTS = ['poteau', 'soubassement', 'chaperon'] as const;
 
 /** La couleur de fond d'un mur peint : la couleur de ses faces, avant le motif. */
-export type Fond = 'remplissage' | 'bardage' | 'matiere' | 'soubassement';
+type Fond = 'remplissage' | 'bardage' | 'matiere' | 'soubassement';
 
 /** Un mur peint : son fond et le motif de chacune de ses faces (ordre des bits de `FACES` : +x, +y, −x, −y, haut, bas). */
 export interface PeintureDuMur {

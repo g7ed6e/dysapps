@@ -223,7 +223,7 @@ export const GRUE = {
 } as const;
 
 /** La case de la grue : une case de terre de l'Atelier, hors du cœur, où rien n'est posé, la plus proche de la voulue. */
-export function caseDeLaGrue(champ: ChampDuSol, elements: readonly ElementDeDecor[]): { x: number; y: number; z: number } | null {
+function caseDeLaGrue(champ: ChampDuSol, elements: readonly ElementDeDecor[]): { x: number; y: number; z: number } | null {
   const def = MAP.find((d) => d.id === GRUE.ile);
   if (!def) return null;
   // Les cases prises par le décor posé (toute l'emprise d'un repère) : le décor du paysage, le même à toute étape de la partie.
@@ -320,7 +320,7 @@ const grue: Forme = ({ P, e, cx, cz, sol }) => {
  * sans mât ni voile (aucune verticale : la grue reste la seule du 4e). Une coque à six pans en plan, du bois de la grue,
  * pointue aux deux bouts, son dedans de planches et un banc.
  */
-export const BARQUE = { long: 2.2, large: 0.36, bord: 0.3, fond: 0.12, depuis: 0.75 } as const;
+const BARQUE = { long: 2.2, large: 0.36, bord: 0.3, fond: 0.12, depuis: 0.75 } as const;
 
 function barque(P: Pinceau, xc: number, cz: number, muted: boolean): void {
   const B = BARQUE;
@@ -424,7 +424,7 @@ const pontonDuJardin: Forme = (o) => {
 export const VOLCAN_DU_FOND: Cone = { genre: 'cone', u: 0.12, recul: 100, haut: 16, rayon: 8, cratere: 1.8, pans: 9, couleur: 0x6a5048 };
 
 /** Le panache du volcan : cinq volutes, poussées par le même vent que les fumées du lot R4 (vers +x et +y). */
-export const FUMEE_DU_VOLCAN_4E = { rayon: 1.1, volutes: 5, ecart: 0.7, vent: [0.15, 0.1] } as const;
+const FUMEE_DU_VOLCAN_4E = { rayon: 1.1, volutes: 5, ecart: 0.7, vent: [0.15, 0.1] } as const;
 
 /**
  * Le lointain des Anciens Ateliers (intention du 4e, §2) : le volcan, et deux rangs de crêtes chaudes, `#8A6E78` devant,

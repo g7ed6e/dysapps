@@ -8,7 +8,7 @@ import { BRIDGES, getArchipelago, islandsOf, isArchipelagoReached, reachableIsla
 import { isPlanDone, plansFor } from './plans';
 import { beatenGuardians } from './vehicle';
 
-export type WhaleMomentKind = 'arrivee' | 'gardiens' | 'port' | 'ouvrage';
+type WhaleMomentKind = 'arrivee' | 'gardiens' | 'port' | 'ouvrage';
 
 export interface WhaleMoment {
   /** Ce qui se note « déjà dit » ; l'arrivée garde la clé de l'ancienne bulle d'accueil (`archipel-5e`…). */

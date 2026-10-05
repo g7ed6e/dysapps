@@ -42,10 +42,10 @@ export const COUCHES_5E: readonly CoucheDeBrume[] = [
 ];
 
 /** Les bancs de brume des archipels qui en ont. */
-export const BANCS_DE_BRUME: Readonly<Partial<Record<ArchipelagoId, readonly CoucheDeBrume[]>>> = { '5e': COUCHES_5E };
+const BANCS_DE_BRUME: Readonly<Partial<Record<ArchipelagoId, readonly CoucheDeBrume[]>>> = { '5e': COUCHES_5E };
 
 /** Le pas de la grille, en cases, et la marge autour de l'archipel (celle de l'habillage de la mer). */
-export const PAS_DE_LA_BRUME = 6;
+const PAS_DE_LA_BRUME = 6;
 const MARGE = 26;
 /** La largeur du couloir laissé au navire, de part et d'autre de son quai, et sa longueur vers le large. */
 const ROUTE_DU_NAVIRE = { marge: 4, large: 30 };
@@ -94,7 +94,7 @@ export function placeDeLaBrume(a: ArchipelagoId): (x: number, y: number) => bool
  * L'opacité d'une couche en un point : nulle là où la brume n'a pas sa place, pleine au cœur d'un banc ; elle s'éteint au large,
  * au bord de la grille (`b` : l'étendue de l'archipel), pour qu'aucun bord droit ne se voie.
  */
-export function opaciteDeLaBrume(c: CoucheDeBrume, k: number, x: number, y: number, estLibre: (x: number, y: number) => boolean, b: { minX: number; maxX: number; minY: number; maxY: number }): number {
+function opaciteDeLaBrume(c: CoucheDeBrume, k: number, x: number, y: number, estLibre: (x: number, y: number) => boolean, b: { minX: number; maxX: number; minY: number; maxY: number }): number {
   if (!estLibre(x, y)) return 0;
   // Deux bruits lents, l'un large (les bancs), l'autre plus fin (leurs bords déchirés).
   const n = 0.7 * smoothNoise(91 + k * 7, x, y, 22) + 0.3 * smoothNoise(131 + k * 5, x, y, 9);

@@ -136,7 +136,7 @@ const colonnes = new Map<ArchipelagoId, number>();
  * La colonne centrale d'un archipel, vers laquelle pivotent les caméras des îles : le milieu est-ouest de ses îles (sauf
  * `HORS_DE_LA_COLONNE`) et de son port.
  */
-export function colonneCentrale(a: ArchipelagoId): number {
+function colonneCentrale(a: ArchipelagoId): number {
   const connue = colonnes.get(a);
   if (connue !== undefined) return connue;
   const b = bornesDesIles(

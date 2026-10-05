@@ -91,13 +91,13 @@ export function blockUses(state: GameState, block: BlockId): Use[] {
   return uses;
 }
 
-export interface InventoryRow {
+interface InventoryRow {
   block: BlockId;
   count: number;
   uses: Use[];
 }
 
-export interface OuvrageUse {
+interface OuvrageUse {
   bridge: BridgeDef;
   /** L'île ouverte d'où se construit l'ouvrage. */
   from: BiomeId;

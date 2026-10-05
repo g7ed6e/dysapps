@@ -44,7 +44,7 @@ function below1000(n: number, final: boolean): string {
 }
 
 /** Une classe en lettres, avec son nom : « quarante mille », « deux millions », « six cents » ; vide pour 0. */
-export function classInWords(value: number, cls: number): string {
+function classInWords(value: number, cls: number): string {
   if (value === 0) return '';
   if (cls === 0) return below1000(value, true);
   if (cls === 1) return value === 1 ? 'mille' : `${below1000(value, false)} mille`;
@@ -95,7 +95,7 @@ export function rankName(i: number): string {
 export const READ_RULES = ['Coupe par trois chiffres, depuis la droite.', 'Une classe : centaines, dizaines, unités.'];
 
 /** Niveau 1 : le chiffre d’un rang dans un nombre de sept à dix chiffres (jusqu’aux milliards), tous différents. */
-export const rankDigit: ItemGenerator = (rng) => {
+const rankDigit: ItemGenerator = (rng) => {
   const length = randomInt(7, 10, rng);
   const pool = shuffle([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], rng).slice(0, length);
   // Le premier chiffre n’est jamais 0 : on l’échange avec un autre.
@@ -141,7 +141,7 @@ const concat = (classes: number[], write: (v: number, cls: number) => string): n
  * Niveau 2 : écrire en chiffres un nombre écrit en lettres, jusqu’aux millions (les milliards sont aux niveaux 1 et 3 : en
  * lettres, l’énoncé passerait sur trois lignes), avec une classe incomplète au moins.
  */
-export const writeInDigits: ItemGenerator = (rng) => {
+const writeInDigits: ItemGenerator = (rng) => {
   // La place de la réponse, tirée une fois : on cherche un item qui la permet.
   const wanted = randomInt(0, 3, rng);
   return draw('à écrire en chiffres', (): ExerciseItem | undefined => {
@@ -229,7 +229,7 @@ export const countRules = (unit: string): string[] => [`Tous les chiffres, de la
  * Niveau 3 : le nombre de dizaines, de centaines, de milliers ou de millions d’un nombre de six à neuf chiffres. Les
  * milliards restent au niveau 1 : une réponse de dix chiffres ne tiendrait pas dans son bouton en OpenDyslexic.
  */
-export const countOf: ItemGenerator = (rng) =>
+const countOf: ItemGenerator = (rng) =>
   draw('« combien de »', (): ExerciseItem | undefined => {
     const length = randomInt(6, 9, rng);
     const n = randomInt(10 ** (length - 1), 10 ** length - 1, rng);
@@ -283,7 +283,7 @@ export const ORDER_RULES = ['Même nombre de chiffres après la virgule.', 'Comp
  * qu’un autre qui en a deux (3,5 et 3,45). Trois réponses, des rangements, chacune lue sur une ligne : le bon, celui de
  * la partie décimale lue comme un entier (3,5 ; 3,12 ; 3,45), et l’ordre à l’envers ; la réponse à une place tirée.
  */
-export const orderDecimals: ItemGenerator = (rng) =>
+const orderDecimals: ItemGenerator = (rng) =>
   draw('à ranger', (): ExerciseItem | undefined => {
     const u = randomInt(0, 9, rng);
     const t = randomInt(3, 9, rng);
@@ -325,7 +325,7 @@ export const BETWEEN_RULES = ['Même nombre de chiffres après la virgule.', 'Ch
  * Niveau 3 de la Coulée : un décimal entre 2,7 et 2,75. Les pièges lisent la partie décimale comme un entier (2,8 et
  * 2,69 « entre 7 et 75 ») ; les voisins sont juste au-delà des bornes.
  */
-export const betweenDecimals: ItemGenerator = (rng) =>
+const betweenDecimals: ItemGenerator = (rng) =>
   draw('à intercaler', (): ExerciseItem | undefined => {
     const u = randomInt(0, 9, rng);
     const t = randomInt(2, 8, rng);
@@ -364,7 +364,7 @@ const byLower = (a: Pair, b: Pair) => a[0] - b[0];
  * graduée en parts de l’unité. Pièges : l’entier voisin pris du mauvais côté (2 et 3, ou 4 et 5, pour 17/5), la
  * fraction toujours plus petite que 1 (0 et 1).
  */
-export const frameFraction: ItemGenerator = (rng) =>
+const frameFraction: ItemGenerator = (rng) =>
   draw('à encadrer', (): ExerciseItem | undefined => {
     const d = randomInt(2, 6, rng);
     const q = randomInt(1, 4, rng);

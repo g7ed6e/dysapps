@@ -79,7 +79,7 @@ const RULE_ARRIVEE = rule('Trouver l’heure d’arrivée', [
 // ---------- Niveau 1 : une étape ----------
 
 /** La longueur d’un pont de deux travées. */
-export const pontTotal: ItemGenerator = (rng) => {
+const pontTotal: ItemGenerator = (rng) => {
   const a = randomInt(12, 48, rng);
   let b = randomInt(12, 48, rng);
   if (b === a) b = a + 1;
@@ -100,7 +100,7 @@ export const pontTotal: ItemGenerator = (rng) => {
 };
 
 /** La durée d’une traversée qui ne passe pas l’heure pile. */
-export const dureeHeure: ItemGenerator = (rng) => {
+const dureeHeure: ItemGenerator = (rng) => {
   const h = randomInt(8, 16, rng);
   const m1 = five(5, 30, rng);
   const d = five(15, 55 - m1, rng);
@@ -124,7 +124,7 @@ export const dureeHeure: ItemGenerator = (rng) => {
 // ---------- Niveau 2 : le tour du quai, la durée qui passe l’heure ----------
 
 /** Le périmètre d’un quai rectangulaire. */
-export const quaiTour: ItemGenerator = (rng) => {
+const quaiTour: ItemGenerator = (rng) => {
   const L = randomInt(12, 40, rng);
   const l = randomInt(5, L - 3, rng);
   const P = 2 * (L + l);
@@ -143,7 +143,7 @@ export const quaiTour: ItemGenerator = (rng) => {
 };
 
 /** La durée d’une traversée qui passe l’heure pile (moins d’une heure). */
-export const dureePassage: ItemGenerator = (rng) => {
+const dureePassage: ItemGenerator = (rng) => {
   const h = randomInt(8, 16, rng);
   const m1 = five(30, 55, rng);
   const d = five(Math.max(15, 65 - m1), 55, rng);
@@ -168,7 +168,7 @@ export const dureePassage: ItemGenerator = (rng) => {
 // ---------- Niveau 3 : deux étapes ----------
 
 /** Ce qui reste à poser d’un pont de trois travées. */
-export const pontReste: ItemGenerator = (rng) => {
+const pontReste: ItemGenerator = (rng) => {
   let a = 0;
   let b = 0;
   let c = 0;
@@ -196,7 +196,7 @@ export const pontReste: ItemGenerator = (rng) => {
 };
 
 /** La largeur d’un quai, à partir de son tour et de sa longueur. */
-export const quaiLargeur: ItemGenerator = (rng) => {
+const quaiLargeur: ItemGenerator = (rng) => {
   const L = randomInt(12, 40, rng);
   const l = randomInt(5, L - 3, rng);
   const P = 2 * (L + l);
@@ -217,7 +217,7 @@ export const quaiLargeur: ItemGenerator = (rng) => {
 };
 
 /** L’heure d’arrivée, à partir du départ et de la durée (on passe l’heure pile). */
-export const arrivee: ItemGenerator = (rng) => {
+const arrivee: ItemGenerator = (rng) => {
   const h = randomInt(8, 16, rng);
   const m1 = five(20, 55, rng);
   const d = five(Math.max(15, 65 - m1), 55, rng);
@@ -286,7 +286,7 @@ const pick = <T>(list: readonly T[], rng: Rng): T => list[randomInt(0, list.leng
 const integers = (traps: number[]) => traps.filter((t) => Number.isInteger(t));
 
 /** Carte → vrai : la distance réelle, avec une échelle en mots (1 cm pour 500 m). */
-export const carteVersReel: ItemGenerator = (rng) => {
+const carteVersReel: ItemGenerator = (rng) => {
   const r = pick([200, 250, 400, 500], rng);
   const c = randomInt(2, 9, rng);
   const D = c * r;
@@ -305,7 +305,7 @@ export const carteVersReel: ItemGenerator = (rng) => {
 };
 
 /** Vrai → carte : la distance à tracer sur la carte. */
-export const reelVersCarte: ItemGenerator = (rng) => {
+const reelVersCarte: ItemGenerator = (rng) => {
   const r = pick([200, 250, 500], rng);
   const c = randomInt(2, 9, rng);
   const D = c * r;
@@ -325,7 +325,7 @@ export const reelVersCarte: ItemGenerator = (rng) => {
 };
 
 /** Carte → vrai à une échelle en fraction, puis la conversion en kilomètres. */
-export const carteFraction: ItemGenerator = (rng) => {
+const carteFraction: ItemGenerator = (rng) => {
   const f = pick([10000, 20000, 25000, 50000, 100000], rng);
   const c = randomInt(2, 9, rng);
   const cmReel = c * f;
@@ -347,7 +347,7 @@ export const carteFraction: ItemGenerator = (rng) => {
 };
 
 /** Une part d’un partage à deux navires, le total connu. */
-export const partageDeux: ItemGenerator = (rng) => {
+const partageDeux: ItemGenerator = (rng) => {
   const ratio = pick(RATIOS_2, rng);
   const [p, q] = rng() < 0.5 ? ratio : [ratio[1], ratio[0]];
   const u = randomInt(6, 12, rng);
@@ -374,7 +374,7 @@ export const partageDeux: ItemGenerator = (rng) => {
 };
 
 /** La part du navire B, à partir de celle du navire A (le total n’est pas donné). */
-export const partDepuisPart: ItemGenerator = (rng) => {
+const partDepuisPart: ItemGenerator = (rng) => {
   const [p, q] = pick(RATIOS_2, rng);
   const u = randomInt(6, 12, rng);
   const kind = rng() < 0.5 ? 'caisses' : 'kg';
@@ -398,7 +398,7 @@ export const partDepuisPart: ItemGenerator = (rng) => {
 };
 
 /** Une part d’un partage à trois navires, le total connu. */
-export const partageTrois: ItemGenerator = (rng) => {
+const partageTrois: ItemGenerator = (rng) => {
   const ratio = pick(RATIOS_3, rng);
   const u = randomInt(6, 12, rng);
   const kind = rng() < 0.5 ? 'caisses' : 'kg';
@@ -459,7 +459,7 @@ const RULE_VITESSE = ruleVitesse('vitesse = distance ÷ durée en heures.');
 const RULE_DUREE_ROUTE = ruleVitesse('durée en heures = distance ÷ vitesse ; puis × 60 pour les minutes.');
 
 /** La distance parcourue, la vitesse et la durée connues. */
-export const distanceRoute: ItemGenerator = (rng) => {
+const distanceRoute: ItemGenerator = (rng) => {
   const { v, t, d } = traversee(rng);
   const h = enHeures(t);
   return {
@@ -477,7 +477,7 @@ export const distanceRoute: ItemGenerator = (rng) => {
 };
 
 /** La vitesse du bateau, la distance et la durée connues. */
-export const vitesseRoute: ItemGenerator = (rng) => {
+const vitesseRoute: ItemGenerator = (rng) => {
   const { v, t, d } = traversee(rng);
   const h = enHeures(t);
   return {
@@ -495,7 +495,7 @@ export const vitesseRoute: ItemGenerator = (rng) => {
 };
 
 /** La durée de la traversée, en minutes, la distance et la vitesse connues. */
-export const dureeRoute: ItemGenerator = (rng) => {
+const dureeRoute: ItemGenerator = (rng) => {
   // Une réponse en minutes : au plus 1 h 30 min.
   const { v, t, d } = traversee(rng, [15, 30, 45, 90]);
   const h = enHeures(t);
@@ -538,7 +538,7 @@ function mast(rng: Rng): { h: number; p: number; c: number } {
 }
 
 /** La longueur du câble (l’hypoténuse). */
-export const matCable: ItemGenerator = (rng) => {
+const matCable: ItemGenerator = (rng) => {
   const { h, p, c } = mast(rng);
   return {
     key: `mat-cable-${h}-${p}`,
@@ -555,7 +555,7 @@ export const matCable: ItemGenerator = (rng) => {
 };
 
 /** La hauteur du mât (un côté de l’angle droit). */
-export const matHauteur: ItemGenerator = (rng) => {
+const matHauteur: ItemGenerator = (rng) => {
   const { h, p, c } = mast(rng);
   return {
     key: `mat-hauteur-${h}-${p}`,
@@ -592,7 +592,7 @@ const OMBRES = [2, 2.5, 3, 4, 5].flatMap((k) =>
 const shadows = (rng: Rng) => pick(OMBRES, rng);
 
 /** La hauteur du mât, depuis le bâton et les deux ombres. */
-export const ombreHauteur: ItemGenerator = (rng) => {
+const ombreHauteur: ItemGenerator = (rng) => {
   const { b, ob, k, H, O } = shadows(rng);
   return {
     key: `ombre-hauteur-${b}-${ob}-${k}`,
@@ -609,7 +609,7 @@ export const ombreHauteur: ItemGenerator = (rng) => {
 };
 
 /** L’ombre du mât, depuis le bâton, son ombre et la hauteur du mât. */
-export const ombreLongueur: ItemGenerator = (rng) => {
+const ombreLongueur: ItemGenerator = (rng) => {
   const { b, ob, k, H, O } = shadows(rng);
   return {
     key: `ombre-longueur-${b}-${ob}-${k}`,

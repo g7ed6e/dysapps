@@ -24,7 +24,7 @@ export interface Trace {
  * Le rôle d'une couleur dans un personnage : la dominante (le pelage, la peau ; sa marque, ventre ou tête, en fait
  * partie), la tenue (lin ou cuir), l'outil (bois, fer, laiton), les yeux, et ce qui brille (la nuit, ou au rallumage).
  */
-export type Role = 'dominante' | 'tenue' | 'outil' | 'yeux' | 'lueur';
+type Role = 'dominante' | 'tenue' | 'outil' | 'yeux' | 'lueur';
 
 /** Ce qui peint : une couleur de base et son rôle, nuancée selon la facette (les lueurs ne le sont pas). */
 export type Pot = (c: Couleur, role: Role) => Peindre;
@@ -41,7 +41,7 @@ export interface Piece {
 }
 
 /** Ce que la vue sait d'une pièce, sans son dessin. */
-export type PieceDuModele = Omit<Piece, 'dessiner'>;
+type PieceDuModele = Omit<Piece, 'dessiner'>;
 
 /** Un personnage en facettes : trois sommets par triangle, et pour chaque triangle sa pièce et sa couleur de base. */
 export interface FacettesDePersonnage {

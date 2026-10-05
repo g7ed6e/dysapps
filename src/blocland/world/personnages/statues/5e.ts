@@ -65,7 +65,7 @@ const deProfilPour = (dx: number, dz: number) => Math.atan2(-dx, -dz);
  * (0,97 ; −0,22) et celle qui glisse vers elle au rallumage (0,99 ; −0,13) (three/camera.ts, `VIEW`, `ISLAND_VIEW`,
  * `viewYaw`) ; au défi, vers sa caméra de trois quarts (Guardians.tsx, `cameraDirection` [−0,55 ; −0,85]).
  */
-export const TOURS_DE_LA_DILIGENCE = { monde: deProfilPour(0.98, -0.18), defi: deProfilPour(-0.55, -0.85) };
+const TOURS_DE_LA_DILIGENCE = { monde: deProfilPour(0.98, -0.18), defi: deProfilPour(-0.55, -0.85) };
 /** Le centre du cadran de la boussole, au-dessus du siège du cocher (le haut de la Diligence, vers 5 blocs). */
 const BOUSSOLE = { x: 1.3, y: 4.8 };
 

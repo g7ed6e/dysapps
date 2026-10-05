@@ -29,7 +29,7 @@ interface Sommet {
 }
 
 /** La hauteur d'une marche (2 à 3 blocs : 2,5 arrondi) et la distance gardée aux ouvrages (en cases). */
-export const MARCHE_DES_GRADINS = 2.5;
+const MARCHE_DES_GRADINS = 2.5;
 const ABORDS = 3;
 
 /**
@@ -58,7 +58,7 @@ function paliers(h: number): number[] {
 /** La matière des gradins : la roche nue de la palette de l'archipel (./types.ts, « sol: »). */
 export const ROCHE_NUE = 'sol:roche';
 /** La neige du sol du Glacier se peint en roche claire et froide (la neige de la palette du 5e), jamais en blanc. */
-export const NEIGE_DU_SOL = 'sol:neige';
+const NEIGE_DU_SOL = 'sol:neige';
 
 /** Le modelé d'une île à crêtes : la hauteur voulue de chaque case de l'anneau du fond, en marches. */
 function crete(id: BiomeId, sommets: Sommet[]): Modele {

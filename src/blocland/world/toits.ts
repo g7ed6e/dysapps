@@ -19,7 +19,7 @@ export type Couverture = 'ardoise' | 'terre-cuite';
 export const TERRE_CUITE_SUR: readonly string[] = ['french-6e-grammar-spelling', 'french-6e-letter-confusion', 'english-5e-vocabulary', 'english-4e-comprehension', 'maths-3e-geometry'];
 
 /** La terre cuite, la même dans les quatre archipels. */
-export const TERRE_CUITE: Couleur = 0xc0764a;
+const TERRE_CUITE: Couleur = 0xc0764a;
 
 /**
  * L'ardoise de chaque archipel : son dessus et ses rives (les côtés). Aux Îles du Ciel, le dessus est enneigé (le crème
@@ -35,7 +35,7 @@ export const ARDOISES: Record<ArchipelagoId, { dessus: Couleur; rives: Couleur }
 };
 
 /** Les côtés d'un toit, un peu plus sombres que son dessus : le plancher d'ombre des pentes (fiche de famille §3). */
-export const COTE_DU_TOIT = 0.85;
+const COTE_DU_TOIT = 0.85;
 
 /** La couverture du toit d'une île (le `tag` du cube). Une île inconnue est couverte d'ardoise. */
 export function toitDe(ile: string | undefined): Couverture {

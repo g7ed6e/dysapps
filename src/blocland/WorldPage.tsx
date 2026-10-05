@@ -939,7 +939,6 @@ export function WorldPage() {
   // Le bouton retour, dans le village sans panneau, ouvre le menu du village.
   useBackOpensMenu(!biomeId && !voyage, '/adventure/menu');
 
-  if (biomeId && !panelOpen && !island) return <NotFoundPage />;
   const blocksTotal = Object.values(state.stock).reduce((n, v) => n + (v ?? 0), 0);
   // Pendant le vol, la pastille garde le chiffre d'avant : il change une fois, à l'arrivée du dernier bloc.
   const pastille = chiffreDeLaPastille(blocksTotal, vol ? vol.gain.nombre : null);
@@ -1111,6 +1110,8 @@ export function WorldPage() {
     setRecentrage((n) => n + 1);
   };
 
+  // Après tous les hooks : leur ordre ne change jamais d'un rendu à l'autre.
+  if (biomeId && !panelOpen && !island) return <NotFoundPage />;
   return (
     <div
       className={`world-page${ficheVue ? ' fiche-ouverte' : ''}${whaleWord || motRallume || renommageOuvert ? ' bulle-ouverte' : ''}`}

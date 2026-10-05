@@ -8,6 +8,8 @@ Le dépôt est <https://github.com/g7ed6e/dysapps>. Le travail se fait par pull 
 npm install
 npm run dev        # l'application : http://localhost:5173/
 npm test           # tests (Vitest)
+npm run lint       # règles des hooks de React (oxlint) : une erreur, ou plus de dix avertissements, arrête la CI
+npm run code-mort  # fichiers, exports et dépendances que rien n'utilise (knip, configuré dans package.json)
 npm run build      # vérification TypeScript + build de production dans dist/
 npm run www:dev   # la documentation (VitePress) : http://localhost:4173/
 npm run www:build # construit la documentation dans dist-www/

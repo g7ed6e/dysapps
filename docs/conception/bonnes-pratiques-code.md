@@ -16,6 +16,8 @@ Les versions de `package-lock.json` au 28 septembre 2026 :
 | Vitest | 5, avec jsdom et Testing Library | `vite.config.ts` (`test`), `src/setupTests.ts` |
 | Three.js | r186, rendu WebGL | `src/blocland/three/` |
 | Application installable | vite-plugin-pwa (Workbox), mise à jour proposée | `vite.config.ts` (`VitePWA`) |
+| Règles des hooks de React | oxlint 1.86 (`rules-of-hooks`, `exhaustive-deps`) ; ESLint ne lit pas encore TypeScript 7 | `package.json` (script `lint`) |
+| Code mort | knip 6.39 | `package.json` (clé `knip`, script `code-mort`) |
 | CI | GitHub Actions, Node 22 | `.github/workflows/deploy.yml`, `.github/dependabot.yml` |
 
 ## 1. Sécurité
@@ -37,7 +39,7 @@ Les versions de `package-lock.json` au 28 septembre 2026 :
 ## 3. Maintenabilité
 
 - **TypeScript strict, sans échappatoire** : pas de `any`, peu de `as` et de `!`, des types dérivés des données (`typeof`, `keyof`, `satisfies`), des unions discriminées pour les états. TypeScript 7 vérifie 8 à 12 fois plus vite que la version 6 : le coût du typage complet ne justifie plus de le contourner (annonce de TypeScript 7.0).
-- **Les règles de React** : composants et hooks purs, pas de mutation pendant le rendu, hooks appelés au premier niveau. Un effet sert à se synchroniser avec l’extérieur, pas à calculer une valeur dérivée (react.dev, *Rules of React* et *You Might Not Need an Effect*). Ces règles sont vérifiées par `eslint-plugin-react-hooks`, qui porte depuis la version 6 les diagnostics du React Compiler.
+- **Les règles de React** : composants et hooks purs, pas de mutation pendant le rendu, hooks appelés au premier niveau. Un effet sert à se synchroniser avec l’extérieur, pas à calculer une valeur dérivée (react.dev, *Rules of React* et *You Might Not Need an Effect*). Les deux règles des hooks (`rules-of-hooks`, une erreur ; `exhaustive-deps`, un avertissement) sont vérifiées en CI par `npm run lint` (oxlint, qui les reprend d’`eslint-plugin-react-hooks`). ESLint lui-même ne peut pas lire ce dépôt : `typescript-eslint` demande TypeScript 6.0 au plus, et le dépôt est en TypeScript 7 ; les diagnostics du React Compiler, propres à `eslint-plugin-react-hooks`, attendent donc qu’il le lise.
 - **Séparer la logique de l’affichage** : la logique du jeu en fonctions pures, testées sans navigateur ; le rendu ne décide rien (voir [Séparer le jeu du rendu](separation-jeu-rendu.md)). Un module, un rôle ; un fichier qui dépasse le millier de lignes se découpe.
 - **Des tests qui ressemblent à l’usage** : Testing Library, requêtes par rôle et par nom accessible, pas de détail interne (Testing Library, *Guiding Principles*) ; hasard à graine fixe ; le mode navigateur de Vitest, stable depuis la version 4 (octobre 2025), teste dans un vrai navigateur ce que jsdom ne sait pas faire.
 - **Le navigateur d’abord** : une fonctionnalité de la plateforme marquée « Baseline, largement disponible » (30 mois après sa disponibilité dans tous les navigateurs principaux, web.dev) s’utilise sans bibliothèque ni solution de repli ; au-delà, on prévoit un repli.
@@ -65,6 +67,7 @@ Ce que l’élève doit vivre est dans les [Bonnes pratiques dys](bonnes-pratiqu
 | Chargement à la demande | 3D et missions en `lazy` ; exercices lus seulement au lancement d’une partie | `src/blocland/three/index.ts`, `src/apps/registry.ts` |
 | Ressources 3D libérées | `dispose` des géométries, matériaux et textures ; boucle arrêtée quand l’onglet est caché | `src/blocland/three/` (chaque partie de la scène a son `dispose`) |
 | Budget du rendu | Mesures d’appels de dessin et de triangles par archipel | `npm run rendu:mesures`, `npm run rendu:budget` (par poste, sans navigateur), `src/blocland/world/budget.ts` |
+| Règles de React et code mort | `rules-of-hooks` refusé, `exhaustive-deps` signalé (dix avertissements au plus, le seuil descend à chaque correction) ; aucun fichier, export ni dépendance que rien n’utilise | `npm run lint`, `npm run code-mort`, `.github/workflows/deploy.yml` |
 | Logique pure et testée | Monde calculé en fonctions pures, empreintes du monde | `src/blocland/world/`, `separation-jeu-rendu.md` |
 | Bornes d’erreur | Une page ou une scène qui ne charge pas propose de recharger | `src/components/ErrorBoundary.tsx` |
 | Hors ligne | Tout précaché, mise à jour proposée, jamais imposée | `vite.config.ts` (`VitePWA`) |
@@ -73,8 +76,9 @@ Ce que l’élève doit vivre est dans les [Bonnes pratiques dys](bonnes-pratiqu
 
 Ces points ne sont pas des défauts constatés : ce sont les endroits où le code peut s’éloigner de l’état de l’art, et que l’expert frontend regarde en priorité.
 
-- **Pas de linter** : aucune règle ne vérifie automatiquement les règles de React. Ajouter ESLint avec `eslint-plugin-react-hooks` (préréglage `recommended`) les ferait respecter à chaque pull request.
-- **Le React Compiler n’est pas activé** : il mémoïserait sans `useMemo` ni `useCallback` à la main. À décider après le linter, qui dit d’abord quels composants il ne pourrait pas compiler.
+- **Les dépendances des hooks** : `npm run lint` signale encore dix dépendances manquantes ou en trop (`exhaustive-deps`, en avertissement, `--max-warnings=10` : un onzième fait échouer la CI) ; chacune se corrige à part, car la corriger change quand l’effet se relance, et le seuil descend avec elle.
+- **Le code mort** : `npm run code-mort` (knip) refuse un fichier, un export ou une dépendance que rien n’utilise. Les modules que les scripts chargent par Vite (`ssrLoadModule`) sont déclarés comme entrées dans la clé `knip` de `package.json` : knip ne voit pas ces chargements.
+- **Le React Compiler n’est pas activé** : il mémoïserait sans `useMemo` ni `useCallback` à la main. À décider quand ESLint lira le dépôt : ses diagnostics disent d’abord quels composants il ne pourrait pas compiler.
 - **Les gros fichiers** : `world/landMesh.ts`, `biomes.ts` (`world/terrain.ts` est rangé par métier dans `world/terrain/` depuis le 5 octobre 2026). Chaque lot qui les touche ne les fait pas grossir sans raison.
 - **La mesure réelle** : l’INP et les images par seconde se mesurent sur la tablette de référence (`/?mesures`), pas seulement en local.
 - **`min-release-age`** : la CI tourne sur Node 22, dont le npm ne connaît pas ce réglage. Passer à Node 24 (LTS) permettrait de l’ajouter à `.npmrc`.
@@ -86,6 +90,7 @@ Consultées en septembre 2026. Un point décisif se revérifie à la source, ave
 
 - TypeScript, [Announcing TypeScript 7.0](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/) (juillet 2026)
 - React, [React Compiler v1.0](https://react.dev/blog/2025/10/07/react-compiler-1) (7 octobre 2025), [Rules of React](https://react.dev/reference/rules), [You Might Not Need an Effect](https://react.dev/learn/you-might-not-need-an-effect), [eslint-plugin-react-hooks](https://react.dev/reference/eslint-plugin-react-hooks)
+- oxlint, [règles `react-hooks`](https://oxc.rs/docs/guide/usage/linter/rules.html) ; knip, [Configuration](https://knip.dev/reference/configuration) et [Handling issues](https://knip.dev/guides/handling-issues) ; typescript-eslint, [Dependency versions](https://typescript-eslint.io/users/dependency-versions/) (TypeScript pris en charge)
 - Vite, [Vite 8.0 is out!](https://vite.dev/blog/announcing-vite8) (12 mars 2026)
 - Vitest, [Vitest 4.0 is out!](https://vitest.dev/blog/vitest-4) (octobre 2025) ; Testing Library, [Guiding Principles](https://testing-library.com/docs/guiding-principles)
 - Three.js, [WebGPURenderer](https://threejs.org/manual/en/webgpurenderer.html) et [How to dispose of objects](https://threejs.org/manual/#en/how-to-dispose-of-objects)

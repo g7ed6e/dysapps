@@ -73,7 +73,7 @@ export function tenirDansLaPlace(x: number, y: number, w: number, h: number, W: 
 }
 
 /** Autour du point d'un objet, en pixels CSS : la fiche le cache quand ce carré la touche. */
-export const MARGE_DE_LA_FICHE = 24;
+const MARGE_DE_LA_FICHE = 24;
 
 /**
  * La fiche d'un objet (lot 2 de « Toucher le monde ») cache-t-elle le point `ecran` de l'objet (pixels CSS de la vue) ?

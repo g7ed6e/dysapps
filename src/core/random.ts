@@ -25,7 +25,7 @@ export function mulberry32(seed: number): () => number {
 }
 
 /** La graine entière d'un texte (un hachage par 31). */
-export function seedOf(text: string): number {
+function seedOf(text: string): number {
   let s = 0;
   for (const ch of text) s = (Math.imul(s, 31) + ch.charCodeAt(0)) | 0;
   return s;

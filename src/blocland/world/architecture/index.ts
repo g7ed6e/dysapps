@@ -30,23 +30,16 @@ import { peintureDuMur, type PeintureDuMur } from './peinture';
 import { facettesPosees, tournerCouvre, type DessinDePiece, type Facette } from './pieces';
 import { COTES, estDuPlan, indexDuPlan, voisinageDe, type IndexDuPlan, type Voisinage } from './voisinage';
 
-export { assemblerLesPieces, type FacetteAssemblee } from './assemblage';
-export { pieceDe, FORMES, PENTES, type Forme, type IdDeMur, type IdDePiece, type IdDeToit, type Pente, type Rotation } from './choix';
-export { COLOMBAGE, decharge, MOTIF, MOTIF_GLSL, peintureDuMur, ROLES_PEINTS, sensDeLaDecharge, type Fond, type PeintureDuMur } from './peinture';
-export { boiteDansLaCase, FACES, facettesPosees, TOUTES_LES_FACES, trianglesDe, type DessinDePiece, type Facette, type Role } from './pieces';
-export { classeDe, COTES, estDuPlan, indexDuPlan, tournerVoisinage, voisinageDe, type Classe, type Voisinage } from './voisinage';
-export { KITS, kitRempli, kitVide, type CaseDuLieu, type Famille, type Kit, type LieuDuKit } from './kits';
-export { estUnLieuDuVillage, lieuxDuKit, type LieuxDuKit } from './lieux';
-
-/** Une case, en coordonnées de grille (z : hauteur). */
-export interface CaseDuPlan {
-  x: number;
-  y: number;
-  z: number;
-}
+export { assemblerLesPieces } from './assemblage';
+export { pieceDe, FORMES, type Forme, type IdDePiece } from './choix';
+export { COLOMBAGE, decharge, MOTIF, MOTIF_GLSL, peintureDuMur, ROLES_PEINTS, sensDeLaDecharge } from './peinture';
+export { boiteDansLaCase, type DessinDePiece, type Role } from './pieces';
+export { indexDuPlan, voisinageDe, type Voisinage } from './voisinage';
+export { KITS, kitVide, type CaseDuLieu, type Kit } from './kits';
+export { estUnLieuDuVillage } from './lieux';
 
 /** Une pièce dessinée, posée : le bloc qu'elle remplace (sa couleur, son île, son lieu), sa pièce, et ses facettes dans le monde. */
-export interface PiecePosee {
+interface PiecePosee {
   cube: VoxelCube;
   famille: Famille;
   piece: IdDePiece;
@@ -56,7 +49,7 @@ export interface PiecePosee {
 }
 
 /** Un mur peint : le bloc, qui garde sa géométrie, sa pièce, et sa peinture. */
-export interface MurPeint {
+interface MurPeint {
   cube: VoxelCube;
   famille: Famille;
   piece: IdDePiece;

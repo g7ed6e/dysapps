@@ -148,7 +148,7 @@ function tete(T: Trace, pot: Pot): void {
 }
 
 /** Les six pièces du bonhomme, de mêmes noms que celles du bonhomme en blocs. */
-export const PIECES_DU_BONHOMME: Piece[] = [
+const PIECES_DU_BONHOMME: Piece[] = [
   { nom: 'tete', pivot: [0, COU, 0], dessiner: tete },
   { nom: 'corps', pivot: [0, HANCHES, 0], dessiner: corps },
   { nom: 'bras-gauche', pivot: [-0.255, EPAULES, 0], dessiner: bras(-1) },

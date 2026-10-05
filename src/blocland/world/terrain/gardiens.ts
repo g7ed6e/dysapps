@@ -192,7 +192,7 @@ export function bossIslet(biome: BiomeDef, beaten: boolean, cubes: VoxelCube[], 
  * de pierre, le Titan…) se voient éteints, puis rallumés dès la première épreuve (GD-8, consultant de Blocland). Les
  * tests reconnaissent cette pierre à sa teinte (vert = rouge + 8, bleu = vert + 16) : la changer, c'est changer `estPierre`.
  */
-export function stoneOf(color: string): string {
+function stoneOf(color: string): string {
   const n = parseInt(color.slice(1), 16);
   const lum = ((n >> 16) & 255) * 0.3 + ((n >> 8) & 255) * 0.59 + (n & 255) * 0.11;
   const g = Math.round(64 + (lum / 255) * 76);

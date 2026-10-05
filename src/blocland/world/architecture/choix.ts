@@ -26,12 +26,12 @@ import { tournerCotes, type Voisinage } from './voisinage';
 
 /** La forme d'un mur, d'après ses voisines côte à côte. */
 export type Forme = 'seul' | 'bout' | 'droit' | 'angle' | 'te' | 'croix';
-export type Pied = 'pied' | 'haut' | 'pilotis';
+type Pied = 'pied' | 'haut' | 'pilotis';
 export type Tete = 'chaperon' | 'toit' | 'mur';
 /** La pente d'un toit. */
 export type Pente = 'versant' | 'aretier' | 'faite' | 'croupe' | 'pointe' | 'plat';
-export type Rive = 'rive' | 'courant';
-export type TeteDeToit = 'ciel' | 'toit' | 'mur';
+type Rive = 'rive' | 'courant';
+type TeteDeToit = 'ciel' | 'toit' | 'mur';
 
 export type IdDeMur = `mur.${Forme}.${Pied}.${Tete}`;
 export type IdDeToit = `toit.${Pente}.${Rive}.${TeteDeToit}`;

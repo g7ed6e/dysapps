@@ -14,7 +14,7 @@ export type Lang = 'fr' | 'en' | 'de' | 'es';
  * L'accent de chaque langue : français de France, anglais britannique (celui des manuels du collège), allemand
  * d'Allemagne et espagnol d'Espagne (ceux des manuels de LV2).
  */
-export const LOCALES: Record<Lang, string> = { fr: 'fr-FR', en: 'en-GB', de: 'de-DE', es: 'es-ES' };
+const LOCALES: Record<Lang, string> = { fr: 'fr-FR', en: 'en-GB', de: 'de-DE', es: 'es-ES' };
 
 /** Une langue vivante lue par sa propre voix (pas le français). */
 export type LangueVivante = Exclude<Lang, 'fr'>;

@@ -40,10 +40,9 @@ import type { PlaceLue, Rect } from '../placeLibre';
 export const CASE = 128;
 /** Quatre cases par côté : seize icônes, plus que d'îles dans un archipel. */
 const COTE = 4;
-export const SIGNES_MAX = COTE * COTE;
+const SIGNES_MAX = COTE * COTE;
 /** Les quatre coins d'un quadrilatère, en demi-tailles : bas gauche, bas droite, haut droite, haut gauche. */
 const COINS = [-1, -1, 1, -1, 1, 1, -1, 1] as const;
-
 
 export interface Signes extends PartieDeLaScene {
   /** Les créatures qui font signe (refait quand la liste change). */
@@ -132,7 +131,7 @@ export const PLAQUE = { x: 16, y: 4, cote: 96, coin: 8, ombre: 6, bord: 5, or: 6
  * L'hexagone d'Archipéo, dans la même place que la plaque (même hauteur, même pointe, même ombre, même bord) : pointe en
  * bas, de rayon la moitié du côté de la plaque (sa largeur : √3/2 de sa hauteur), aux coins adoucis.
  */
-export const HEXAGONE = { r: PLAQUE.cote / 2, coin: 9 } as const;
+const HEXAGONE = { r: PLAQUE.cote / 2, coin: 9 } as const;
 /** Un hexagone rentré de `d` (perpendiculairement à ses côtés) perd `d / cos 30°` de rayon. */
 const RENTRE = 2 / Math.sqrt(3);
 /** La taille à l'écran d'une case : la plaque (ou l'hexagone, aussi haut) fait `BULLE.px` (ou `prochainePx`), la case l'entoure. */

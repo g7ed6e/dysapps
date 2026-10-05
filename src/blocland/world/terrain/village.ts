@@ -10,14 +10,14 @@ import { fade, groundHeight, isSchoolIsland } from './socle';
 import { type BorneVue, cacheUneBorne } from './bornes';
 
 /** Encombrement de l'école : 5 cases de large (x), 4 de profondeur (y), la façade et sa porte côté caméra (y bas). */
-export const SCHOOL_SIZE = { w: 5, d: 4 };
+const SCHOOL_SIZE = { w: 5, d: 4 };
 
 /**
  * Le coin de l'école dans le cœur de son île : au milieu à droite, derrière la dernière borne, une case libre entre elle
  * et le bord du cœur ; sa porte en (14, 2). La rangée de devant ne porte que les bornes (redistribution « Trois
  * bandes », choix du mainteneur, 02/10/2026 ; elle était devant, en (11, 1)).
  */
-export const SCHOOL_AT = { x: 12, y: 3 };
+const SCHOOL_AT = { x: 12, y: 3 };
 
 /**
  * La salle des trophées : son emprise de 8 × 3 cases, réservée dès le départ (GD-3, ./salle.ts), au milieu du cœur
@@ -38,7 +38,7 @@ export const TROPHY_AT = { x: 0, y: 8 };
  */
 export const ASSEMBLAGE_SIZE = { w: 3, d: 5 };
 
-export const ASSEMBLAGE_AT = { x: 15, y: 11 };
+const ASSEMBLAGE_AT = { x: 15, y: 11 };
 
 /** Les lieux du village, posés sur l'île de l'école de chaque archipel : leur coin dans le cœur, leur taille, la colonne de leur porte. */
 export const VILLAGE_PLACES: Record<VillagePlaceId, { at: { x: number; y: number }; size: { w: number; d: number }; door: number }> = {

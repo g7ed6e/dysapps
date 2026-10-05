@@ -43,7 +43,7 @@ export interface MarqueDOuvrage {
  * dont le tracé se renforce sur la Carte, et `tirets`, celles qu'il dessine (`casesDesTirets`, calculées une fois) ;
  * `arrivee`, l'île d'en face, dont le nom pèse sur la Carte autant que celui de l'île de départ.
  */
-export interface MarqueDOuvrageEnCases extends MarqueDOuvrage {
+interface MarqueDOuvrageEnCases extends MarqueDOuvrage {
   cell: Cell;
   places: Cell[];
   trace: Cell[];
@@ -56,7 +56,7 @@ export function estUnOuvrage<M>(m: M): m is Extract<M, MarqueDOuvrage> {
   return typeof m === 'object' && m !== null && 'ouvrage' in m;
 }
 
-export interface WorldFocus {
+interface WorldFocus {
   /** Île à cadrer, ou `null` pour la vue d'ensemble. */
   island: BiomeId | null;
   /** Change à chaque demande, pour pouvoir redemander la même île. */
@@ -66,7 +66,7 @@ export interface WorldFocus {
 }
 
 /** Ce qu'une vue sait en plus d'une face touchée en chantier. */
-export interface OptionsDeLaFace {
+interface OptionsDeLaFace {
   /** L'île dont le plan est touché, quand la vue la connaît (le navire : son port) ; sinon l'île la plus proche. */
   ile?: BiomeId;
   /**
@@ -79,7 +79,7 @@ export interface OptionsDeLaFace {
 /**
  * En chantier : une face touchée, le bloc touché (`cell`) et la case voisine, devant la face (`next`), en cases du monde.
  */
-export interface BuildProps {
+interface BuildProps {
   onPickFace: (cell: Cell, next: Cell, options?: OptionsDeLaFace) => void;
 }
 

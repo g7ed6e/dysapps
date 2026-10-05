@@ -6,7 +6,7 @@ import { ALTITUDE, archipelagoOfIsland, coeurDe, isLand, islandDef, type Archipe
 /** Colonne de la jetée, à droite du cœur (l'îlot du Gardien tient dans les colonnes 0 à 12 devant l'île). */
 export const DOCK_DX = 14;
 /** Cases de jetée à plat au moins, une fois au niveau de repos du navire. */
-export const DOCK_FLAT = 3;
+const DOCK_FLAT = 3;
 
 /**
  * Encombrement du Bloc-Navire (coordonnées locales) : 5 de large (x), 11 de long (y, proue en y = 0), 11 de haut au-dessus
