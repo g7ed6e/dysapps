@@ -165,7 +165,7 @@ Décidé par le mainteneur le 3 octobre 2026 (Blocland seulement) : on voit dans
 
 **Le bloc de l’île à côté de son nom** (mainteneur, 4 octobre 2026 : « Sur la vue monde, ajoute une icône du type de bloc à côté du nom des îles ») : dans Blocland et dans Archipéo (qui reprend le jeu de Blocland, mot du mainteneur du même jour), l’étiquette de chaque île, dans le monde et sur la Carte (en 3D comme en 2D), porte avant le nom le bloc que l’île rapporte, dessiné comme dans Mes blocs et dans la bulle d’une commande (`drawBlock`, `src/blocland/world/labelCanvas.ts` ; ligne `blocDesIles` de l’habillage). Coût : rien de plus, le bloc est dans la texture de l’étiquette. Quand la place manque, le nom passe avant le bloc. **Fusionnée (#339).**
 
-**Le bonhomme toujours là** (mainteneur, 5 octobre 2026 : « Des fois le bonhomme ne s’affiche pas ») : la scène 3D, refaite à chaque changement d’archipel (arrivée sur une autre classe) et quand l’appareil change « Réduire les animations », perdait le bonhomme jusqu’au rechargement de la page. Elle le remet désormais là où il se tient, dans les deux univers. En pull request.
+**Le bonhomme toujours là** (mainteneur, 5 octobre 2026 : « Des fois le bonhomme ne s’affiche pas ») : la scène 3D, refaite à chaque changement d’archipel (arrivée sur une autre classe) et quand l’appareil change « Réduire les animations », perdait le bonhomme jusqu’au rechargement de la page (et, au seul changement de réglage, les créatures, le Bloc-Navire, les noms des îles et le chemin de la Carte). Elle les remet désormais, le bonhomme là où il se tient, dans les deux univers. En pull request.
 
 ### Les îles-écoles agrandies
 

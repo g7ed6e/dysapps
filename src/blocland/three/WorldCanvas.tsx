@@ -883,7 +883,9 @@ export default function WorldCanvas({
   // ---- Créatures : un groupe chacune, positionné sur son île, animé dans la boucle
   useEffect(() => {
     world.current?.personnages.poserLesCreatures(creatures);
-  }, [creatures]);
+    // Reposées aussi quand la scène est refaite (un autre archipel, la préférence de mouvement).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [creatures, reduceMotion, archipelago]);
 
   // ---- Les créatures qui font signe (GD-4, étape 1) : un geste à l'arrivée sur leur île, puis l'icône de la notion
   const signesKey = signes.map((x) => `${x.id}:${x.icone}:${x.bloc ?? ''}`).join('|');
@@ -903,7 +905,8 @@ export default function WorldCanvas({
   // ---- Le Bloc-Navire : la coque (tout ce qui est sous le mât) et le ballon, qui pivote au sommet du mât
   useEffect(() => {
     world.current?.navire.poser(vehicle);
-  }, [vehicle]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vehicle, reduceMotion, archipelago]);
 
   // ---- Le voyage : au départ, le bonhomme marche jusqu'au pont ; à l'arrivée, il est à bord et le navire accoste
   useEffect(() => {
@@ -933,7 +936,7 @@ export default function WorldCanvas({
     etiquettes.poser(islandLabels);
     return etiquettes.vider;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [labelsKey]);
+  }, [labelsKey, reduceMotion, archipelago]);
 
   // ---- Mode chantier : pas de case visée en dehors
   useEffect(() => {
@@ -984,7 +987,8 @@ export default function WorldCanvas({
   // ---- Le chemin à construire (sur la Carte) : une balise toutes les trois cases, au-dessus du sol.
   useEffect(() => {
     world.current?.bornes.poserLeChemin(trail);
-  }, [trail]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [trail, reduceMotion, archipelago]);
 
   // ---- La fiche ouverte (lot 2 de « Toucher le monde ») : son signe saute s'il n'a pas été touché ; une fois la fiche
   // posée (deux images), l'objet qu'elle cacherait est recadré dans la place libre.
