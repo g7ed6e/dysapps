@@ -419,7 +419,9 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
     canvas.style.cursor = creature || hit ? 'pointer' : 'grab';
     cubesDuMonde.viser(hit && rappels.current.build ? cubesDuMonde.casesTouchees(hit).next : null);
   };
-  const onLeave = () => cubesDuMonde.viser(null);  canvas.addEventListener('pointerdown', onDown);
+  const onLeave = () => cubesDuMonde.viser(null);
+
+  canvas.addEventListener('pointerdown', onDown);
   canvas.addEventListener('pointerup', onUp);
   canvas.addEventListener('pointermove', onHover);
   canvas.addEventListener('pointerleave', onLeave);
@@ -476,5 +478,6 @@ export function ecouterLeClavier(el: HTMLElement, scene: ScenePourLeClavier): ()
     const next = islandInDirection(archRef.current, { x: cadrage.cible.x, y: cadrage.cible.z }, dir);
     if (next) rappels.current.onPickIsland(next);
   };
-  el.addEventListener('keydown', onKey);  return () => el.removeEventListener('keydown', onKey);
+  el.addEventListener('keydown', onKey);
+  return () => el.removeEventListener('keydown', onKey);
 }
