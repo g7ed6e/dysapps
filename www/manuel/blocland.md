@@ -80,16 +80,36 @@ Le bâtiment de l’île n’a pas de fiche : on y marche. L’école, la salle 
 
 Aucun texte à lire n’est dessiné dans la 3D : tout ce qui se lit est dans des panneaux HTML, dans la police et la taille choisies, et lu à voix haute.
 
+## Aménager la carte
+
+Chaque élève peut ranger la carte de sa région à sa façon : les lieux, leurs Gardiens, les bornes et les arrivées des ouvrages changent de place. **Deux cartes de la même classe peuvent donc être différentes** ; les îles, les missions et les ouvrages construits restent les mêmes, et rien de ce qui est gagné ne se perd. On aménage sur la Carte, hors des missions.
+
+![Le mode Aménager sur la Carte : la Rivière des fractions choisie, son fantôme en pointillés sur la mer avec les places libres autour, la phrase « Rivière des fractions : au nord-est de la Mine des lettres, à 4 cases. » en haut et la barre du mode en bas.](/captures/amenager.jpg)
+
+- **Le bouton Aménager** (quatre flèches) est dans la barre du bas, à côté de **Carte**, quand la Carte est ouverte. Il porte une pastille, une liaison séparée et un nombre, quand des ouvrages sont **à reposer** (voir plus bas).
+- **Choisir.** On touche un lieu : il se soulève un peu (d’un coup quand l’appareil demande de [réduire les animations](reglages.md#animations-et-vue-du-monde)). On peut aussi toucher un Gardien, une borne, ou un ouvrage construit près de son bout (son arrivée). Le point de départ de la région ne bouge pas : la phrase le dit.
+- **Le fantôme.** Toucher la mer y cale le fantôme du lieu, au contour en pointillés, sur la place libre la plus proche. Seules les places libres autour du fantôme se montrent, en petits plots. Les ouvrages du lieu se dessinent en pointillés comme ils seraient après la pose ; un ouvrage qui ne tiendrait plus est barré, avec une croix au-dessus. La vue suit le fantôme. Faire glisser le doigt déplace aussi le fantôme : c’est un raccourci, tout se fait sans glisser.
+- **La phrase.** À chaque calage et après chaque pose, une phrase écrite en haut, sur un fond uni, dit où est le choix : « Rivière des fractions : au nord-est de la Mine des lettres, à 4 cases. » Elle est lue à voix haute si la lecture automatique est réglée, et son haut-parleur la relit.
+- **La barre du mode** remplace la barre du bas, toujours à la même place : **Ouest**, **Nord**, **Sud**, **Est** (les flèches du clavier aussi), **Tourner**, **Poser ici** ; puis la flèche qui défait la dernière pose, **Remettre comme avant** et **Terminé**. Un seul bouton est mis en avant : **Poser ici** pendant un choix, **Terminé** sinon. Un bouton sans effet reste à sa place, grisé. Au bord de la région, la phrase dit « Plus de place par là ».
+- **Poser.** Dans Blocland, le lieu se démonte couche par couche, du haut vers le bas, puis se remonte à sa nouvelle place, du bas vers le haut, et la pose fait « clac ». Dans Archipéo, un voile de brume couvre le lieu, passe sur la nouvelle place et se lève, avec un seul « toc ». Le geste dure un peu plus d’une seconde, sans éclair ni secousse, et la caméra ne bouge pas ; un toucher le termine tout de suite. Quand l’appareil demande de réduire les animations, le lieu est posé d’un coup. Un Gardien, une borne ou une arrivée se posent d’un coup.
+- **Un Gardien** se déplace autour de son île, avec son îlot et son passage. **Tourner** le fait regarder ailleurs, tout de suite, et la phrase dit où il regarde.
+- **Les ouvrages à reposer.** Quand un lieu part trop loin, un ouvrage déjà construit peut se séparer : il devient **à reposer**. Rien n’est perdu : on le repose gratuitement. On touche le bouton Aménager à la pastille ; la liste des ouvrages à reposer s’ouvre (la première fois, une phrase explique le mot) ; on choisit un ouvrage, puis, avec les flèches, les deux lieux voisins qu’il relie, et **Poser ici**.
+- **Remettre comme avant** ramène tout ce qui a bougé depuis l’ouverture du mode ; la flèche défait la dernière pose. **Terminé** ferme le mode ; quitter la Carte aussi.
+- **Les écueils** de la mer se cachent sous une île posée sur eux, et reviennent quand elle repart.
+- **Carte de départ**, dans le [menu du village](#le-menu-du-village), remet tous les lieux de la région à leur place de départ, après une question de confirmation ; tous les ouvrages restent construits.
+- **En vue simple**, la carte des îles a une section **Aménager la carte** : une ligne par lieu et par Gardien de la région, avec sa place dite en mots, et un bouton **Déplacer** ; puis les flèches et **Poser ici** de la même barre. L’ordre de la liste ne change jamais, même quand la carte est aménagée.
+
 ## Le menu du village
 
 Le bouton **Menu** (trois traits), toujours en haut à droite du monde, ouvre le **menu du village** en plein écran, par-dessus le monde. C’est le menu pause du jeu, et l’appli n’a pas de barre du haut :
 
-![Le menu du village, en plein écran par-dessus le monde : le rôle, puis École du village, Monuments, Missions, Succès, Tutoriel, Aide du village, et Réglages tout en bas.](/captures/menu-village.jpg)
+![Le menu du village, en plein écran par-dessus le monde : le rôle, puis École du village, Monuments, Missions, Succès, Tutoriel, Aide du village, Carte de départ, et Réglages tout en bas.](/captures/menu-village.jpg)
 
 - en tête, le titre **Menu** et la **croix**, qui referme le menu et ramène au village (la touche Échap aussi) ; puis une ligne avec l’insigne du **rôle**, le niveau et la **jauge d’XP** ;
 - **Ma dernière mission** : la dernière mission ouverte ; **Mes révisions du jour**, s’il y a des révisions (un raccourci : la créature de l’île les propose aussi, voir [La créature qui se souvient](#la-creature-qui-se-souvient)) ;
 - **Commandes**, s’il y en a dans l’archipel : une section repliée, dont le titre dit combien de commandes sont prêtes (« Commandes · 1 prête » ; sans aucune prête, « Commandes · 2 en attente ») ; elle s’ouvre d’elle-même quand une commande est prête, et un toucher sur le titre l’ouvre ou la referme. Dedans, la même liste que dans le panneau d’une île, avec **Y aller** sur chaque ligne, qui emmène sur l’île et ouvre la fiche de la créature qui commande (voir [Les commandes](#les-commandes)) ;
 - **École du village** (« Français, maths, anglais »), **Monuments** (« Bâtis avec tes blocs »), **La Fabrique** (« Assemble tes blocs » ; la Halle aux matériaux dans Archipéo), **Missions** (« Toutes, par matière »), **Succès** (la salle des trophées, dans le village : « Ton rôle, tes trophées »), puis **Tutoriel** (« Prendre les commandes en main ») et **Aide du village** (« Revois les conseils du début »), qui referme le menu et remontre les trois bulles d’aide du village.
+- **Carte de départ** (grisée tant que la région du bonhomme est à sa carte de départ) : une question s’ouvre dans le menu (« Tous les lieux de cette région reviennent à leur place de départ. Tes liaisons restent toutes construites : rien n’est perdu. »), avec **Revenir à la carte de départ** et **Non, garder ma carte** (voir [Aménager la carte](#amenager-la-carte)) ;
 - tout en bas de l’écran, à part, sous un trait : **Réglages** (la roue dentée).
 
 Il n’y a plus de page Accueil : l’ancienne adresse `#/menu` ouvre ce menu.
