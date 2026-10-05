@@ -8,7 +8,7 @@ Les règles du jeu sont communes aux univers et écrites en mots neutres dans [L
 
 ## Ce qu’on garde absolument
 
-Les règles qui ne se négocient jamais sont communes aux univers : [Le jeu](../../gameplay/index.md#ce-qui-ne-se-négocie-jamais). Pour la tablette d’entrée de gamme, le monde en blocs a son plafond, vérifié par un test : 80 000 triangles et 240 appels de dessin par archipel tout construit (`src/game/world/budget.test.ts`, voir la [fiche](fiche.md#3-le-monde)).
+Les règles qui ne se négocient jamais sont communes aux univers : [Le jeu](../../gameplay/index.md#ce-qui-ne-se-négocie-jamais). Pour la tablette d’entrée de gamme, le monde en blocs a son plafond, vérifié par un test : 88 000 triangles (80 000 avant GD-9) et 240 appels de dessin par archipel tout construit (`src/game/world/budget.test.ts`, voir la [fiche](fiche.md#3-le-monde)).
 
 ## Le monde et les archipels
 
@@ -28,7 +28,7 @@ Dans Blocland, « ouvrage » ne nomme que les liaisons : pont, bac, sentier de p
 
 - **Le port en étoile** ([GD-7](../../gameplay/propositions/archives/GD-7.md), 3 octobre 2026) : huit ouvrages du port, des ouvrages déjà connus, sans forme nouvelle. En 6e, un bac de la Plaine des nombres vers la Tour du lecteur et un autre vers la Carrière des mots, un pont de la Forêt des sons vers la Baie des mots ; en 5e, un bac du Marché des proportions vers le Carrefour des homophones ; en 4e, deux bacs de l’Atelier du calcul littéral, vers la Gare du futur et vers le Cabinet des mots ; en 3e, deux ponts du Phare des fonctions, vers le Studio des ondes et vers le Château des hypothèses (aux Îles du Ciel, sans eau, pas de bac). Le Manoir du passé et le Théâtre des voix n’en ont pas (un monument, l’îlot d’un Gardien ou une baleine sur tous les tracés ; décision du mainteneur, 3 octobre 2026).
 - **Les bacs en contour** : un long bac longe l’archipel par des points de passage, sans toucher une autre île, un autre ouvrage, l’îlot d’un Gardien ou d’un monument ni la jetée, et sans élargir le cadre du monde (`via`, `src/game/world/archipelago.ts` ; tracé dans `bridgePath`, `world/terrain.ts`). Les baleines ne font pas surface sur leur trajet.
-- **Les longs bacs** (plus de 36 cases, `BAC_LONG`) : un radeau de trois planches et une corde de halage, comme les autres, mais un poteau de bois toutes les quatre cases au lieu de trois, ce qui les fait tenir dans le plafond (80 000 triangles, 240 appels), qui ne change pas ; la nuit, une lanterne à chaque bout, comme tous les ouvrages.
+- **Les longs bacs** (plus de 36 cases, `BAC_LONG`) : un radeau de trois planches et une corde de halage, comme les autres, mais un poteau de bois toutes les quatre cases au lieu de trois, ce qui les fait tenir dans le plafond (80 000 triangles, 240 appels, à l’époque ; 88 000 triangles depuis GD-9) ; la nuit, une lanterne à chaque bout, comme tous les ouvrages.
 - **Aucun Gardien** n’est la condition d’un ouvrage : le tunnel et le col ne demandent que des blocs ; l’escalier taillé garde sa mission réussie sur l’île de départ.
 - **Les petites constructions ne sont pas des ouvrages** (GD-7, PR 3) : une commande livrée pose une « petite construction » chez la créature, nommée par son objet (« le puits de Tunel ») ; elle n’ouvre aucune île. Leur liste est écrite avec le contenu des îles :
 
