@@ -5,7 +5,8 @@
 import { mixColor } from '../daylight';
 import { SOLEIL_DIRECTION, type Couleur, type Faces } from '../palette';
 import { lineaire } from '../landMesh';
-import { boite, clamp, DELAVE, lueur, peintre, rgb, tronconique, type Peindre, type Pinceau, type RGB } from './pinceau';
+import { clamp } from '../../../core/math';
+import { boite, DELAVE, lueur, peintre, rgb, tronconique, type Peindre, type Pinceau, type RGB } from './pinceau';
 
 /**
  * Les proportions du phare, en fraction de sa hauteur H au-dessus du socle (DA, 28/09) ; les rayons en fraction du

@@ -2,6 +2,7 @@
 // arbres ronds, sapins, buissons, fleurs, champignons, rochers, souches, roseaux, cristaux. Rien d'emprunté.
 
 import { PROP_KINDS, type PropKind } from '../world/props';
+import { fadeRgb } from '../../core/color';
 
 /** Un sprite par genre de décor rangé (world/props.ts). */
 export const SPRITE_KINDS = PROP_KINDS;
@@ -183,12 +184,6 @@ export function spriteBox(kind: SpriteKind): { w: number; h: number; ax: number;
 
 const cache = new Map<string, HTMLCanvasElement | null>();
 
-/** Délave une couleur (île verrouillée), comme la 3D. */
-function fadeRGB(r: number, g: number, b: number): [number, number, number] {
-  const lum = r * 0.3 + g * 0.59 + b * 0.11;
-  const mix = (c: number) => (c * 0.4 + lum * 0.6) * 0.55 + 205 * 0.45;
-  return [mix(r), mix(g), mix(b)];
-}
 
 function spriteCanvas(kind: SpriteKind, muted: boolean): HTMLCanvasElement | null {
   const k = `${kind}:${muted ? 1 : 0}`;
@@ -206,7 +201,7 @@ function spriteCanvas(kind: SpriteKind, muted: boolean): HTMLCanvasElement | nul
         if (!c) continue;
         const n = parseInt(c.slice(1), 16);
         let rgb: [number, number, number] = [(n >> 16) & 255, (n >> 8) & 255, n & 255];
-        if (muted) rgb = fadeRGB(...rgb);
+        if (muted) rgb = fadeRgb(...rgb);
         const i = (y * def.w + x) * 4;
         [img.data[i], img.data[i + 1], img.data[i + 2]] = rgb;
         img.data[i + 3] = 255;

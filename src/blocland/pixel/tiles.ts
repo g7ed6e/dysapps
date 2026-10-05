@@ -3,19 +3,8 @@
 // Quatre variantes par sol, choisies par la case : le sol ne se répète pas.
 import { PAINTERS, SIZE, type TextureKind } from '../world/pixels';
 import type { Material } from './surface';
-
-type RGB = [number, number, number];
-const hex = (h: string): RGB => {
-  const n = parseInt(h.slice(1), 16);
-  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
-};
-
-/** Hasard reproductible par case (et par graine). */
-export function hash(x: number, y: number, seed = 0): number {
-  let h = Math.imul(x | 0, 374761393) ^ Math.imul(y | 0, 668265263) ^ Math.imul(seed | 0, 1442695041);
-  h = Math.imul(h ^ (h >>> 13), 1274126177);
-  return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
-}
+import { fadeRgb, hexToRgb, type RGB } from '../../core/color';
+import { cellHash } from '../../core/random';
 
 /** Les couleurs de chaque sol : fond, ombre, lumière (les franges d'un sol chez son voisin les reprennent). */
 export const PALETTE: Record<Exclude<Material, 'autre'>, { base: string; dark: string; light: string }> = {
@@ -46,16 +35,16 @@ const CLIFF: Record<Exclude<Material, 'autre'>, { base: string; dark: string; li
 };
 
 type Grid = RGB[][];
-const grid = (fill: string): Grid => Array.from({ length: SIZE }, () => Array.from({ length: SIZE }, () => hex(fill)));
+const grid = (fill: string): Grid => Array.from({ length: SIZE }, () => Array.from({ length: SIZE }, () => hexToRgb(fill)));
 const set = (g: Grid, x: number, y: number, c: string) => {
-  if (x >= 0 && y >= 0 && x < SIZE && y < SIZE) g[y][x] = hex(c);
+  if (x >= 0 && y >= 0 && x < SIZE && y < SIZE) g[y][x] = hexToRgb(c);
 };
 
 /** Le dessus d'un sol, variante 0 à 3. */
 function paintTop(m: Exclude<Material, 'autre'>, v: number): Grid {
   const p = PALETTE[m];
   const g = grid(p.base);
-  const r = (i: number) => hash(v, i, 7 + m.length);
+  const r = (i: number) => cellHash(v, i, 7 + m.length);
   switch (m) {
     case 'herbe':
       // Des touffes en V, sombres, avec un brin clair ; quelques brins isolés.
@@ -164,22 +153,22 @@ function paintCliff(m: Exclude<Material, 'autre'>, v: number, lip: boolean): Gri
         const col = (x + v) % 5;
         if (col === 4) set(g, x, y, c.dark);
         else if (col === 0) set(g, x, y, c.light);
-        if (y % 7 === 6 && hash(x, v, 4) > 0.5) set(g, x, y, c.dark);
+        if (y % 7 === 6 && cellHash(x, v, 4) > 0.5) set(g, x, y, c.dark);
       }
     return g;
   }
   for (let x = 0; x < SIZE; x++) {
-    const s1 = 5 + Math.floor(hash(x >> 2, v, 3) * 2);
-    const s2 = 11 + Math.floor(hash(x >> 2, v, 5) * 2);
+    const s1 = 5 + Math.floor(cellHash(x >> 2, v, 3) * 2);
+    const s2 = 11 + Math.floor(cellHash(x >> 2, v, 5) * 2);
     set(g, x, s1, c.dark);
     set(g, x, s2, c.dark);
     set(g, x, s1 - 1, c.light);
-    if (hash(x, v, 9) > 0.8) set(g, x, 8, c.light);
+    if (cellHash(x, v, 9) > 0.8) set(g, x, 8, c.light);
   }
   if (lip) {
     const grass = PALETTE[m === 'neige' || m === 'mousse' ? m : 'herbe'];
     for (let x = 0; x < SIZE; x++) {
-      const d = 2 + Math.floor(hash(x, v, 11) * 3);
+      const d = 2 + Math.floor(cellHash(x, v, 11) * 3);
       for (let y = 0; y < d; y++) set(g, x, y, y === d - 1 ? grass.dark : grass.base);
     }
   }
@@ -189,11 +178,7 @@ function paintCliff(m: Exclude<Material, 'autre'>, v: number, lip: boolean): Gri
 /** Délave une grille (île verrouillée), comme la 3D. */
 function fade(g: Grid): Grid {
   return g.map((row) =>
-    row.map(([r, gg, b]) => {
-      const lum = r * 0.3 + gg * 0.59 + b * 0.11;
-      const mix = (c: number) => (c * 0.4 + lum * 0.6) * 0.55 + 205 * 0.45;
-      return [mix(r), mix(gg), mix(b)] as RGB;
-    }),
+    row.map(([r, gg, b]) => fadeRgb(r, gg, b)),
   );
 }
 
@@ -267,7 +252,7 @@ export function pavedTile(kind: TextureKind, variant: number, muted = false): HT
       const by = y % 8;
       if (by === 7 || bx === 7) row.push(dark);
       else if (by === 0 || bx === 0) row.push(light);
-      else if (hash(x, y, variant + 40) > 0.94) row.push(shadeRGB(base, -0.08));
+      else if (cellHash(x, y, variant + 40) > 0.94) row.push(shadeRGB(base, -0.08));
       else row.push(base);
     }
     g.push(row);
@@ -282,7 +267,7 @@ export function fringeColors(m: Exclude<Material, 'autre'>, muted: boolean): { b
   const p = PALETTE[m];
   if (!muted) return p;
   const f = (h: string) => {
-    const [r, g, b] = fade([[hex(h)]])[0][0];
+    const [r, g, b] = fade([[hexToRgb(h)]])[0][0];
     return `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
   };
   return { base: f(p.base), dark: f(p.dark) };

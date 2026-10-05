@@ -6,7 +6,7 @@
 // restent tels quels (replacer une réponse chiffrée inventerait des pièges, ou changerait les nombres de l'énoncé).
 import { parseHour, parseNumber, placeChoices } from '../../core/choices';
 import { BIOMES } from '../biomes';
-import { seeded } from './maths';
+import { seeded } from '../../core/random';
 import type { AssemblageDef, ExerciseDef, ExerciseItem } from './types';
 
 /** Les items d'une partie, leurs `choices` placés au hasard. */

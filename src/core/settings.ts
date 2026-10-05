@@ -1,5 +1,6 @@
 import { translateSettings } from './migration';
 import { UNIVERS, UNIVERS_PAR_DEFAUT, universAffiche, type UniversChoice } from './univers';
+import { clamp } from './math';
 
 export type FontChoice = 'luciole' | 'opendyslexic' | 'atkinson' | 'arial';
 export type ThemeChoice = 'cream' | 'night' | 'light';
@@ -118,10 +119,6 @@ const FONT_STACKS: Record<FontChoice, string> = {
   atkinson: "'Atkinson Hyperlegible', Arial, sans-serif",
   arial: 'Arial, Helvetica, sans-serif',
 };
-
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(max, Math.max(min, value));
-}
 
 /** Corrige des réglages lus depuis le stockage (valeurs manquantes ou hors bornes). */
 export function sanitizeSettings(raw: Partial<Settings> & { view3d?: unknown }): Settings {

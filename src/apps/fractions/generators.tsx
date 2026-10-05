@@ -217,8 +217,6 @@ export function buildQuest(generators: Generator[], rng: Rng = Math.random, coun
   return placeChoices(shuffle(out, rng), rng);
 }
 
-export const GENERATORS = { readFraction, compare, equivalent, ofQuantity, onLine };
-
 export const QUESTS: (QuestDef & { makeWith: (rng: Rng) => Question[] })[] = [
   { id: 'lire', title: 'Lire une fraction', detail: 'Barres et disques', gen: readFraction },
   { id: 'comparer', title: 'Comparer', detail: 'Laquelle est la plus grande ?', gen: compare },

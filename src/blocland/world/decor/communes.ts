@@ -7,7 +7,8 @@ import { colonneEn, hauteurDuSol, NIVEAU_EAU, type ChampDuSol } from '../landMes
 import { couleurDeMatiere, MATIERES, type Couleur, type Faces } from '../palette';
 import type { TextureKind } from '../pixels';
 import { enBoites, type Forme, type OutilsDeForme } from './outils';
-import { clamp, DELAVE, eclaircir, feuillage, icosaedre, octaedre, peintre, TAILLES, tronconique, type Pinceau, type V3 } from './pinceau';
+import { clamp } from '../../../core/math';
+import { DELAVE, eclaircir, feuillage, icosaedre, octaedre, peintre, TAILLES, tronconique, type Pinceau, type V3 } from './pinceau';
 
 /** Combien s'enfonce le pied d'un élément sous le sol (il ne flotte jamais au-dessus d'une facette). */
 export const ENFONCE = 0.15;

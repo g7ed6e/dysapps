@@ -2,10 +2,9 @@
 // avec leurs aides visuelles en données (droite des relatifs, tableau de proportionnalité, rappel de règle).
 import { drawChoices } from '../../core/choices';
 import { fractionWords } from '../../core/fractions';
-import { randomInt, shuffle } from '../../core/random';
+import { randomInt, seeded, shuffle } from '../../core/random';
 import type { BiomeId, BlockId } from '../biomes';
 import { GRAPH_FRAME } from './graph';
-import { seeded } from './maths';
 
 export const seededItems = seeded;
 import type { ExerciseDef, ExerciseItem } from './types';

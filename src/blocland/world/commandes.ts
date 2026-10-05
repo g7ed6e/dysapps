@@ -199,9 +199,6 @@ export function texteDeLaCommande(c: Commande, phrase: 'ask' | 'ready' | 'done',
   return frenchTypography(c.blocland[phrase].replaceAll('{objet}', blockCount(c.block, c.count)).replaceAll('{blocs}', blockName(c.block, c.count)).replaceAll('{à}', lieu));
 }
 
-/** Le nom de la petite construction en début de phrase (« Le puits »). */
-export const nomDeLaPetiteConstruction = (c: Commande): string => c.blocland.name.charAt(0).toUpperCase() + c.blocland.name.slice(1);
-
 /**
  * Le signe d'une créature (affordance-blocland.md §8 et 9 ; arbitrage du directeur artistique) : un seul, la plaque.
  * La commande d'abord, si elle est prête ET suggérée (`suggeree` : la commande de la prochaine destination), avec le

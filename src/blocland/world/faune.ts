@@ -11,6 +11,7 @@ import { ALTITUDE, landBox, mapOf, type ArchipelagoId } from './map';
 import { ISLET_H, ISLET_W, origineDeLIlot } from './terrain';
 import { passPhase, type WhaleRoute } from './whalePass';
 import { BRUME, type Couleur } from './palette';
+import { cellHash } from '../../core/random';
 
 /**
  * Les nuages au-dessus d'un archipel : position relative à son étendue (0..1) et longueur en blocs. Aux Îles du Ciel,
@@ -130,10 +131,10 @@ export function placeDesNuagesDArchipeo(a: ArchipelagoId, bounds: { minX: number
   // Les tirages changent d'un archipel à l'autre (graine : son altitude).
   const graine = ALTITUDE[a] * 7;
   return nuagesDe(a).map(([fx, , len], i) => {
-    const fond = hasard(i * 17 + 3, 101 + graine);
+    const fond = cellHash(i * 17 + 3, 101 + graine);
     return {
       x: ouest + Math.max(0, Math.min(1, fx / 1.1)) * (est - ouest) - len / 2,
-      y: ALTITUDE[a] + L.hauteur + hasard(i * 29 + 7, 211 + graine) * L.ecart,
+      y: ALTITUDE[a] + L.hauteur + cellHash(i * 29 + 7, 211 + graine) * L.ecart,
       z: bounds.maxY + L.recul + fond * L.profondeur,
       len,
       grossi: L.grossi[0] + fond * (L.grossi[1] - L.grossi[0]),
@@ -208,13 +209,6 @@ export const trianglesDe = (f: Forme) => f.positions.length / 9;
 
 const versLineaire = (v: number) => (v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4));
 const rgbLineaire = (c: Couleur): V3 => [versLineaire(((c >> 16) & 255) / 255), versLineaire(((c >> 8) & 255) / 255), versLineaire((c & 255) / 255)];
-
-/** Un hasard reproductible, de 0 à 1. */
-function hasard(x: number, y: number): number {
-  let h = Math.imul(x | 0, 374761393) ^ Math.imul(y | 0, 668265263);
-  h = Math.imul(h ^ (h >>> 13), 1274126177);
-  return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
-}
 
 /** Une forme en construction. */
 class Atelier {
@@ -468,7 +462,7 @@ export function formeDeNuage(): Forme {
   const peinte = (y: number) => (y < 0.12 ? NUAGE.dessous : y < 0.75 ? NUAGE.milieu : NUAGE.dessus);
   boules.forEach(([cx, cy, cz, r], b) => {
     const pts = v.map((q, i): V3 => {
-      const k = r * (0.88 + 0.24 * hasard(b * 31 + i, i * 7 + 3));
+      const k = r * (0.88 + 0.24 * cellHash(b * 31 + i, i * 7 + 3));
       return [cx + q[0] * k * 1.1, Math.max(0, cy + q[1] * k * 0.72), cz + q[2] * k];
     });
     for (const [i, j, k] of faces) {

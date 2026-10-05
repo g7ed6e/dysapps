@@ -4,6 +4,7 @@
 // La recette est fixe et toujours affichée ; un toucher assemble un bloc, sans grille ni recette à deviner. Code pur,
 // commun aux univers. Les recettes et les noms (du lieu et des blocs, propres à chaque univers) s'écrivent dans
 // docs/contenu/assemblage.md, que `npm run contenu` recopie dans recettes.ts ; les textes d'univers les reprennent.
+import { seeded } from '../../core/random';
 import type { BlockId } from '../biomes';
 import type { ArchipelagoId } from './archipels';
 import { ASSEMBLAGE } from './recettes';
@@ -123,21 +124,9 @@ export function tirageNeuf(graine: string): TirageAssemblage {
   return { graine, tour: 0, posees: [], recentes: [], ratees: [] };
 }
 
-/** Un générateur reproductible (mulberry32) : la même suite pour la même graine. */
-function hasard(graine: string): () => number {
-  let s = 0;
-  for (const ch of graine) s = (Math.imul(s, 31) + ch.charCodeAt(0)) | 0;
-  return () => {
-    s = (s + 0x6d2b79f5) | 0;
-    let t = Math.imul(s ^ (s >>> 15), 1 | s);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
 /** L'ordre des questions d'un tour : une permutation propre à l'élève (sa graine) et au tour. */
 export function ordreDuTour(cles: readonly string[], t: Pick<TirageAssemblage, 'graine' | 'tour'>): string[] {
-  const rng = hasard(`${t.graine}:${t.tour}`);
+  const rng = seeded(`${t.graine}:${t.tour}`);
   for (let k = 0; k < 4; k++) rng();
   const out = [...cles];
   for (let i = out.length - 1; i > 0; i--) {

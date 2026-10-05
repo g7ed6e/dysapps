@@ -12,7 +12,8 @@
 import { SOLEIL_DIRECTION, type Couleur } from '../palette';
 import { eclairement, lineaire, NIVEAU_EAU } from '../landMesh';
 import type { ArchipelagoId } from '../map';
-import { clamp, hasardDe, rgb, type Peindre, type Pinceau, type RGB, type V3 } from './pinceau';
+import { clamp } from '../../../core/math';
+import { hasardDe, rgb, type Peindre, type Pinceau, type RGB, type V3 } from './pinceau';
 
 /** L'élément des triangles du lointain : aucun (le toucher ne les retrouve pas). */
 export const SANS_ELEMENT = -1;

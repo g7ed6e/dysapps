@@ -12,6 +12,7 @@
 import { AMBIENCE, mixColor } from './daylight';
 import type { ArchipelagoId, Ground } from './map';
 import type { TextureKind } from './pixels';
+import { smooth } from '../../core/math';
 
 /** Une couleur 0xRRGGBB. */
 export type Couleur = number;
@@ -192,7 +193,6 @@ export function teinteSur(cible: Couleur, moyenne: Couleur): Couleur {
 /** Hauteur (sinus de l'élévation) de la lueur au-dessus de l'horizon. */
 export const LUEUR = 0.06;
 
-const smooth = (t: number) => t * t * (3 - 2 * t);
 
 /**
  * La couleur du dôme à une élévation (sinus de l'angle au-dessus de l'horizon, de −1 à 1) : l'horizon sous la ligne

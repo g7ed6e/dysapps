@@ -9,19 +9,12 @@
 // - (c) cubes adoucis : la couleur de la palette, et des normales penchées vers les coins, qui arrondissent la lumière
 //   de chaque cube comme un biseau, sans ajouter un triangle.
 
+import { clamp, smooth } from '../../core/math';
+import { cellHash } from '../../core/random';
+
 export type StyleSurface = 'a' | 'b' | 'c';
 
 export const STYLES: StyleSurface[] = ['a', 'b', 'c'];
-
-const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
-const smooth = (t: number) => t * t * (3 - 2 * t);
-
-/** Un hasard reproductible par case entière, de 0 à 1 (arithmétique entière : le même sur tout moteur). */
-export function hash(i: number, j: number): number {
-  let h = Math.imul(i, 374761393) ^ Math.imul(j, 668265263);
-  h = Math.imul(h ^ (h >>> 13), 1274126177);
-  return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
-}
 
 /** Un bruit de valeur lissé, continu, de 0 à 1 : de larges taches, sans motif répété à l'œil. */
 export function bruit(x: number, y: number): number {
@@ -29,8 +22,8 @@ export function bruit(x: number, y: number): number {
   const j = Math.floor(y);
   const u = smooth(x - i);
   const v = smooth(y - j);
-  const a = hash(i, j) + (hash(i + 1, j) - hash(i, j)) * u;
-  const b = hash(i, j + 1) + (hash(i + 1, j + 1) - hash(i, j + 1)) * u;
+  const a = cellHash(i, j) + (cellHash(i + 1, j) - cellHash(i, j)) * u;
+  const b = cellHash(i, j + 1) + (cellHash(i + 1, j + 1) - cellHash(i, j + 1)) * u;
   return a + (b - a) * v;
 }
 

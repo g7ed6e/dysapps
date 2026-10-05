@@ -8,8 +8,9 @@ import { mixColor } from '../daylight';
 import { SMOKE } from '../decor';
 import { cielDe, deNuit, luminance, type Couleur, type Faces } from '../palette';
 import type { ArchipelagoId } from '../map';
-import { clamp, hex, icosaedre, Pinceau, rgb, type FacettesDuDecor, type Peindre, type RGB, type V3 } from './pinceau';
+import { hex, icosaedre, Pinceau, rgb, type FacettesDuDecor, type Peindre, type RGB, type V3 } from './pinceau';
 import { lineaire } from '../landMesh';
+import { clamp } from '../../../core/math';
 
 /** La fumée : chaque volute plus grosse que la précédente de `FUMEE.croissance` (de la première), dérivée sous le vent
  * comme le carré de son rang ; les dernières se fondent dans l'horizon (`FUMEE.fondu`), comme plus transparentes. */
