@@ -10,7 +10,7 @@ import { type ArchipelagoId, archipelagoOfIsland, coeurDe, islandDef, type Islan
 import { MONUMENT_ISLET, monumentsOf, type MonumentDef } from './monuments';
 import { STEP, type PlacePose, type Rectangle, turnRectangle } from './placement';
 import type { Layout, LayoutGuardian, LayoutSpot } from './savedLayout';
-import { glisseDeLIlot, ISLET_GAP, ISLET_H, ISLET_W, rectangleDeLIlot, reculDeLIlot } from './terrain/islets';
+import { rectangleDeLIlot, rectangleDeLIlotAutour } from './terrain/islets';
 
 /**
  * Le cadre de chaque région, en cases du monde : la Carte le montre tout entier, la mer et ses écueils y sont semés une
@@ -85,23 +85,7 @@ export interface FootprintPart extends Rectangle {
  * (`rectangleDeLIlot`). Le lieu tourné, l'îlot tourne avec lui.
  */
 export function guardianIsletRectangle(def: IslandDef, g: Pick<LayoutGuardian, 'side' | 'step'>): Rectangle {
-  const c = coeurDe(def);
-  const glisse = glisseDeLIlot(def.id);
-  const pas = g.step * STEP;
-  let r: Rectangle;
-  if (g.side === 'front') {
-    const y0 = c.y0 - def.ext.front - ISLET_H - ISLET_GAP + reculDeLIlot(def.id);
-    r = { x0: c.x0 - glisse + pas, y0, x1: c.x0 - glisse + pas + ISLET_W, y1: y0 + ISLET_H };
-  } else if (g.side === 'back') {
-    const y0 = c.y1 + def.ext.back + ISLET_GAP;
-    r = { x0: c.x0 - glisse + pas, y0, x1: c.x0 - glisse + pas + ISLET_W, y1: y0 + ISLET_H };
-  } else if (g.side === 'left') {
-    const x0 = c.x0 - def.ext.left - ISLET_GAP - ISLET_H;
-    r = { x0, y0: c.y0 + pas, x1: x0 + ISLET_H, y1: c.y0 + pas + ISLET_W };
-  } else {
-    const x0 = c.x1 + def.ext.right + ISLET_GAP;
-    r = { x0, y0: c.y0 + pas, x1: x0 + ISLET_H, y1: c.y0 + pas + ISLET_W };
-  }
+  const r = rectangleDeLIlotAutour(def, g);
   const t = turnRectangle({ x0: r.x0 - def.core.x, y0: r.y0 - def.core.y, x1: r.x1 - def.core.x, y1: r.y1 - def.core.y }, def.quarts);
   return { x0: def.core.x + t.x0, y0: def.core.y + t.y0, x1: def.core.x + t.x1, y1: def.core.y + t.y1 };
 }

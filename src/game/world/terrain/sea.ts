@@ -1,9 +1,9 @@
 // Le large : les baleines, le décor de la mer et les nappes de brume.
-import { type ArchipelagoId, archipelagoOfIsland, DANS_LE_CIEL, landBox, landCells, startingIsland, mapOf } from '../map';
+import { type ArchipelagoId, archipelagoOfIsland, DANS_LE_CIEL, islandDef, landBox, landCells, startingIsland, mapOf } from '../map';
 import { BIOMES } from '../../biomes';
 import { dockBox } from '../harbor';
 import { BRIDGES, getArchipelago } from '../archipelago';
-import { monumentIslet } from '../footprint';
+import { footprintOf, monumentIslet } from '../footprint';
 import { linkBetweenJoined, LONG_LENGTH, RegionRouter } from '../routing';
 import { MONUMENT_ISLET, monumentsOf } from '../monuments';
 import type { VoxelCube } from '../cube';
@@ -12,7 +12,7 @@ import { bossIsletOrigin, ISLET_H, ISLET_W, rectangleDeLIlot } from './islets';
 import { bridgePath } from './links';
 import { placedLinksOf } from '../linkGeometry';
 import { bornesDeDepart, worldBounds } from './view';
-import { layoutCache } from '../placement';
+import { chosenGuardian, layoutCache, type Rectangle } from '../placement';
 
 /**
  * Les baleines replacées à la main, quand la clairière choisie par `whaleSpots` se cache derrière une île dans la vue
@@ -155,6 +155,46 @@ export function ecueilsDe(a: ArchipelagoId): ReadonlySet<string> {
   let e = ecueilsCache.get(a);
   if (!e) ecueilsCache.set(a, (e = new Set(seaDecor(a).map((c) => `${c.x},${c.y}`))));
   return e;
+}
+
+/**
+ * La marge d'eau autour de l'emprise d'un lieu où ses écueils sont cachés aussi : un rocher collé à la côte se lirait
+ * comme un morceau du lieu.
+ */
+const MARGE_DES_ECUEILS = 1;
+
+/**
+ * Les écueils d'une région qui restent à l'air, des lieux étant posés sur l'emprise `parts` (GD-9, mainteneur, 5 octobre
+ * 2026, « Cacher ») : une île posée sur des écueils les cache sous elle (sa terre, l'îlot de son Gardien, ses îlots, à
+ * `MARGE_DES_ECUEILS` près) ; ils reviennent quand elle repart. La mer semée ne change pas.
+ */
+export function reefsOutside(a: ArchipelagoId, parts: readonly Rectangle[]): Set<string> {
+  const m = MARGE_DES_ECUEILS;
+  const out = new Set<string>();
+  for (const k of ecueilsDe(a)) {
+    const [x, y] = k.split(',').map(Number);
+    if (!parts.some((p) => x >= p.x0 - m && x < p.x1 + m && y >= p.y0 - m && y < p.y1 + m)) out.add(k);
+  }
+  return out;
+}
+
+const visiblesCache = layoutCache<ArchipelagoId, ReadonlySet<string>>();
+
+/** Les écueils à l'air d'une région, ses lieux et leurs Gardiens à leur place du moment (`reefsOutside`). */
+export function visibleReefs(a: ArchipelagoId): ReadonlySet<string> {
+  let v = visiblesCache.get(a);
+  if (!v) {
+    const parts = mapOf(a).flatMap((d) => footprintOf(d.id, islandDef(d.id), chosenGuardian(d.id)));
+    visiblesCache.set(a, (v = reefsOutside(a, parts)));
+  }
+  return v;
+}
+
+/** L'habillage de la mer tel qu'il se dessine : sans les écueils qu'un lieu posé cache sous lui (`visibleReefs`). */
+export function seaDecorShown(a: ArchipelagoId): VoxelCube[] {
+  const v = visibleReefs(a);
+  const toutes = seaDecor(a);
+  return v.size === ecueilsDe(a).size ? toutes : toutes.filter((c) => v.has(`${c.x},${c.y}`));
 }
 
 /** Les nappes de brume des sommets (îles à 9) : centre, étendue et hauteur, en coordonnées de grille. */

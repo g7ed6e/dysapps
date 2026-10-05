@@ -8,18 +8,18 @@
 import { type BiomeId, getBiome } from '../biomes';
 import type { World } from '../engine/state';
 import { BRIDGES, type BridgeDef, getBridge, reachableIslands } from './archipelago';
-import { type ArchipelagoId, archipelagoOfIsland, bornesDuCoeur, type IslandDef, isLandInWorld, startingIsland } from './map';
+import { type ArchipelagoId, archipelagoOfIsland, bornesDuCoeur, type IslandDef, startingIsland } from './map';
 import { SIDE_OF, LAYOUT_SIDE_OF } from './appliedLayout';
-import { type FootprintPart, footprintOf, frameOf, GAP_BETWEEN_PLACES, gapBetween, LINK_GAP, placedIsland, poseOfSpot, spotInSteps } from './footprint';
+import { footprintOf, frameOf, GAP_BETWEEN_PLACES, gapBetween, LINK_GAP, placedIsland, poseOfSpot, spotInSteps } from './footprint';
 import { STEP, type Quarts, type Rectangle, SIDES, turnDirection, turnedSide } from './placement';
 import { LONG_LENGTH, possibleLandings, RegionRouter, type LinkLandings, type LinkRoute, startingPlaces, placesOf } from './routing';
 import { LAYOUT_LAST_SPOT, type LayoutGuardian, type LayoutLanding, type LayoutSide, type LayoutSpot, type LayoutTurn, type RegionLayout } from './savedLayout';
-import { ecueilsDe } from './terrain/sea';
+import { reefsOutside } from './terrain/sea';
 import { zoneDesPlans } from './plans';
 import { AVATAR_HOME } from './terrain/base';
 import { portesDesLieux } from './terrain/village';
 import { creatureDuMonde, creatureSpot } from './terrain/creatures';
-import { QUEST_ROW, questStations } from './terrain/markers';
+import { QUEST_ROW, startingStations } from './terrain/markers';
 
 // ---------- Les mots communs ----------
 
@@ -40,7 +40,7 @@ export const DIRECTION_STEP: Readonly<Record<Direction, { dx: number; dy: number
 type ArrangeRefusal =
   /** Le lieu de départ (en 6e, les deux lieux ouverts au départ) ne bouge pas. */
   | 'fixe'
-  /** Ce n'est pas une place libre (hors du cadre, trop près d'un lieu, sur un écueil, hors de la bande…). */
+  /** Ce n'est pas une place libre (hors du cadre, trop près d'un lieu, hors de la bande…). */
   | 'occupee'
   /** Un lieu, une borne, une liaison inconnus. */
   | 'inconnu'
@@ -114,22 +114,6 @@ function footprintIn(world: World, id: BiomeId, def: IslandDef = placeIn(world, 
   return footprintOf(id, def, gardien);
 }
 
-/**
- * Une emprise tombe-t-elle sur un écueil (GD-9 : les écueils de la mer restent fixes, une place libre ne tombe jamais
- * sur l'un d'eux) ? Sur une case de la terre du lieu, ou sur ses îlots (Gardien, grande construction, quai).
- */
-function onReef(a: ArchipelagoId, def: IslandDef, parts: readonly FootprintPart[]): boolean {
-  for (const k of ecueilsDe(a)) {
-    const [x, y] = k.split(',').map(Number);
-    for (const p of parts) {
-      if (x < p.x0 || x >= p.x1 || y < p.y0 || y >= p.y1) continue;
-      if (p.genre !== 'terre') return true;
-      if (isLandInWorld(def, x, y)) return true;
-    }
-  }
-  return false;
-}
-
 /** Des rectangles tiennent-ils dans le cadre de la région ? */
 function inFrame(a: ArchipelagoId, rs: readonly Rectangle[]): boolean {
   const c = frameOf(a);
@@ -173,7 +157,9 @@ function placedLinks(world: World, a: ArchipelagoId): BridgeDef[] {
 function routerOf(world: World, a: ArchipelagoId): RegionRouter {
   const r = regionOf(world, a);
   const lieux = placesOf(a).map((id) => placeIn(world, id));
-  return new RegionRouter(a, { lieux, ecueils: ecueilsDe(a), arriveesDeLaLiaison: landingsOf(r) });
+  // Les écueils qu'un lieu posé dessus cache ne barrent rien (GD-9, « Cacher »).
+  const ecueils = reefsOutside(a, placesOf(a).flatMap((id) => footprintIn(world, id)));
+  return new RegionRouter(a, { lieux, ecueils, arriveesDeLaLiaison: landingsOf(r) });
 }
 
 /** Les tracés des liaisons posées d'une région dans un monde, dans leur ordre (`null` : elle ne se trace pas). */
@@ -268,7 +254,7 @@ export function freeSpots(world: World, id: BiomeId, turn: LayoutTurn = spotOf(w
       const spot: LayoutSpot = { x, y, turn };
       const def = placedIsland(id, poseOfSpot(a, spot));
       const rs = footprintOf(id, def, gardien);
-      if (inFrame(a, rs) && farEnough(rs, autres) && !onReef(a, def, rs)) out.push(spot);
+      if (inFrame(a, rs) && farEnough(rs, autres)) out.push(spot);
     }
   return out;
 }
@@ -280,7 +266,7 @@ export function isFreeSpot(world: World, id: BiomeId, spot: LayoutSpot): boolean
   if (spot.x < 0 || spot.y < 0 || spot.x > max.x || spot.y > max.y) return false;
   const def = placedIsland(id, poseOfSpot(a, spot));
   const rs = footprintOf(id, def, guardianOf(world, id));
-  return inFrame(a, rs) && farEnough(rs, othersFootprints(world, a, id)) && !onReef(a, def, rs);
+  return inFrame(a, rs) && farEnough(rs, othersFootprints(world, a, id));
 }
 
 /** Le milieu du cœur d'un lieu posé à une place, en cases du monde. */
@@ -404,7 +390,7 @@ function isletMiddle(world: World, id: BiomeId, g: Pick<LayoutGuardian, 'side' |
 
 /**
  * Une place libre pour l'îlot d'un Gardien : contre son lieu (l'îlot longe au moins 4 cases de sa terre), dans le
- * cadre, loin des autres lieux et des écueils, à l'écart de la terre, des grandes constructions et du quai de son lieu,
+ * cadre, loin des autres lieux, à l'écart de la terre, des grandes constructions et du quai de son lieu,
  * et des liaisons posées (aucune ne se défait).
  */
 function isFreeGuardianSpot(world: World, id: BiomeId, g: Pick<LayoutGuardian, 'side' | 'step'>): boolean {
@@ -417,7 +403,7 @@ function isFreeGuardianSpot(world: World, id: BiomeId, g: Pick<LayoutGuardian, '
   const face = Math.min(ilot.x1, terre.x1) - Math.max(ilot.x0, terre.x0);
   const faceY = Math.min(ilot.y1, terre.y1) - Math.max(ilot.y0, terre.y0);
   if (Math.max(face, faceY) < 4) return false;
-  if (!inFrame(a, [ilot]) || onReef(a, def, [ilot]) || !farEnough([ilot], othersFootprints(world, a, id))) return false;
+  if (!inFrame(a, [ilot]) || !farEnough([ilot], othersFootprints(world, a, id))) return false;
   // Les grandes constructions et le quai de son lieu : au moins une case d'eau.
   if (parts.some((p) => p.genre !== 'ilot' && p.genre !== 'terre' && gapBetween(p, ilot) < 1)) return false;
   // Les liaisons posées restent : aucune ne passe sur l'îlot (ni à moins de `LINK_GAP` cases).
@@ -481,7 +467,7 @@ export function stationOf(world: World, key: string): { x: number; y: number } |
   if (!getBiome(id)) return null;
   const moved = regionOf(world, archipelagoOfIsland(id)).stations?.[key];
   if (moved) return moved;
-  const st = questStations(id).find((s) => s.typeId === mission);
+  const st = startingStations(id).find((s) => s.typeId === mission);
   return st ? { x: st.x, y: st.y } : null;
 }
 
@@ -522,7 +508,7 @@ export function freeStationSpots(world: World, key: string): { x: number; y: num
     for (const k of around(x, y)) pris.add(k);
   }
   const autresPres = new Set<string>();
-  for (const st of questStations(id)) {
+  for (const st of startingStations(id)) {
     const autre = `${id}:${st.typeId}`;
     if (autre === key) continue;
     const p = stationOf(world, autre)!;
@@ -533,7 +519,7 @@ export function freeStationSpots(world: World, key: string): { x: number; y: num
   }
   // Sa place de départ lui reste toujours ouverte, si aucune autre borne ne s'en est approchée.
   const [, mission] = key.split(':');
-  const depart = questStations(id).find((st) => st.typeId === mission)!;
+  const depart = startingStations(id).find((st) => st.typeId === mission)!;
   const candidates = [...stationBand(id)];
   if (!candidates.some((p) => p.x === depart.x && p.y === depart.y)) candidates.push({ x: depart.x, y: depart.y });
   return candidates.filter((p) => !pris.has(`${p.x},${p.y}`) || (p.x === depart.x && p.y === depart.y && !autresPres.has(`${p.x},${p.y}`)));
@@ -547,7 +533,7 @@ export function moveStation(world: World, key: string, to: { x: number; y: numbe
   const a = archipelagoOfIsland(id);
   const r = regionOf(world, a);
   const stations = { ...r.stations };
-  const depart = questStations(id).find((s) => s.typeId === mission);
+  const depart = startingStations(id).find((s) => s.typeId === mission);
   if (depart && depart.x === to.x && depart.y === to.y) delete stations[key];
   else stations[key] = { x: to.x, y: to.y };
   return { ok: true, world: withRegion(world, a, { ...r, stations }), relink: [] };

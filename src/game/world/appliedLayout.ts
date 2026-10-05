@@ -8,7 +8,8 @@ import { getBridge } from './archipelago';
 import { ARCHIPELAGO_IDS } from './archipelagos';
 import { posesOfLayout } from './footprint';
 import { setLinkLayout } from './linkGeometry';
-import { layoutVersion, placeIslands, type Side } from './placement';
+import { type GuardianPose, layoutVersion, placeFixtures, placeIslands, type Side } from './placement';
+import type { BiomeId } from '../biomes';
 import type { LinkLandings } from './routing';
 import type { Layout, LayoutSide } from './savedLayout';
 
@@ -32,6 +33,19 @@ function linkLayoutOf(layout: Layout | undefined): { relink: Set<string>; landin
   return { relink, landings };
 }
 
+/** Les Gardiens et les bornes déplacés d'une disposition, toutes régions confondues (leur dessin les lit, ./placement.ts). */
+function fixturesOf(layout: Layout | undefined): [Map<BiomeId, GuardianPose>, Map<string, { x: number; y: number }>] {
+  const gardiens = new Map<BiomeId, GuardianPose>();
+  const bornes = new Map<string, { x: number; y: number }>();
+  for (const a of ARCHIPELAGO_IDS) {
+    const r = layout?.[a];
+    if (!r) continue;
+    for (const [id, g] of Object.entries(r.guardians ?? {})) if (g) gardiens.set(id as BiomeId, { side: g.side, step: g.step, turn: g.turn });
+    for (const [k, p] of Object.entries(r.stations ?? {})) bornes.set(k, { x: p.x, y: p.y });
+  }
+  return [gardiens, bornes];
+}
+
 /** La dernière disposition appliquée, et le numéro qu'elle a donné : le même objet ne se réapplique pas. */
 let applied: { layout: Layout | undefined; version: number } | null = null;
 
@@ -43,6 +57,7 @@ let applied: { layout: Layout | undefined; version: number } | null = null;
 export function applyLayout(layout: Layout | undefined): number {
   if (applied && applied.layout === layout && applied.version === layoutVersion()) return applied.version;
   placeIslands(posesOfLayout(layout));
+  placeFixtures(...fixturesOf(layout));
   const { relink, landings } = linkLayoutOf(layout);
   setLinkLayout(relink, landings);
   applied = { layout, version: layoutVersion() };

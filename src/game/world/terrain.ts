@@ -28,7 +28,7 @@ import { creatureDuMonde, creatureSpot } from './terrain/creatures';
 import { placeDeLaPetiteConstruction } from './terrain/fixture';
 import { harbor } from './terrain/port';
 import { monumentIslets } from './terrain/monuments';
-import { seaDecor } from './terrain/sea';
+import { seaDecorShown } from './terrain/sea';
 
 export { avatarHome, DEPTH, fade, FIN_DU_PLATEAU_DES_ECOLES, groundHeight, ISLAND, islandCenter, islandOrigin, LAYOUT_PAD, origineDe } from './terrain/base';
 export { type CadreDeCases, cadreDeLaLiaison, cadreDeTraversee, cameraDeLIle, DISTANCE_DE_LA_VUE_DE_L_ILE, HORS_DE_LA_COLONNE, ileDeLaVueGlissee, islandAt, overviewBounds, projectionDeLaVueDeLIle, versLaCamera, VIEW_YAW_MAX, viewYaw, viewZone, VISEE_AU_DESSUS_DU_SOL, VUE_DE_L_ILE, VUE_DE_L_ILE_PANNEAU_OUVERT, worldBounds } from './terrain/view';
@@ -395,7 +395,8 @@ function entreLesIles(a: ArchipelagoId, village: World, cubes: VoxelCube[], choi
   // Les monuments, chacun sur son îlot au large : bâtis, ou en fantômes à construire.
   monumentIslets(a, village, cubes);
   // La mer habillée : rochers et bancs de sable, loin de tout (jamais sous un ouvrage, ni sur l'îlot d'un monument).
-  for (const c of seaDecor(a)) cubes.push(c);
+  // Sans les écueils qu'un lieu posé dessus cache (GD-9, « Cacher »).
+  for (const c of seaDecorShown(a)) cubes.push(c);
   // Les liaisons (GD-9) : en planches celles qui sont posées ; en fantôme, vers chaque lieu fermé, celle qui part du lieu
   // relié le plus proche (`buildableBridges`), si elle tient ; les raccourcis entre lieux ouverts ne s'annoncent pas
   // dans le monde (la fiche « Relier » les propose). Avec « Pas de LV2 », pas de fantôme vers l'île de la LV2 : elle

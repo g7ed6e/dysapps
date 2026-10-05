@@ -3,7 +3,7 @@ import { type BiomeId, BIOMES, missionsJouables } from '../../biomes';
 import { coeurDe, islandDef } from '../map';
 import { isSchoolIsland } from './base';
 import { versLaCameraDuDessin, VUE_DE_L_ILE } from './view';
-import { layoutCache } from '../placement';
+import { chosenStation, layoutCache } from '../placement';
 
 /**
  * Les bornes de mission d'une île : une par mission, alignées sur la rangée de devant (côté caméra), en cases relatives
@@ -32,7 +32,20 @@ export function placesDesBornes(n: number): readonly number[] | null {
   return places.slice(debut, debut + n);
 }
 
+/**
+ * Les bornes de mission d'un lieu, dans son repère, à leur place réelle : celle de la carte de départ
+ * (`startingStations`), ou celle où l'élève l'a déplacée dans la bande de devant (GD-9, `chosenStation`). Le dessin,
+ * le décor qui les évite, la créature et la marche lisent celle-ci.
+ */
 export function questStations(id: BiomeId): { typeId: string; x: number; y: number }[] {
+  return startingStations(id).map((st) => {
+    const p = chosenStation(`${id}:${st.typeId}`);
+    return p ? { typeId: st.typeId, x: p.x, y: p.y } : st;
+  });
+}
+
+/** Les bornes de mission d'un lieu à leur place de la carte de départ, dans son repère. */
+export function startingStations(id: BiomeId): { typeId: string; x: number; y: number }[] {
   const biome = BIOMES.find((b) => b.id === id);
   if (!biome) return [];
   const missions = missionsJouables(biome);

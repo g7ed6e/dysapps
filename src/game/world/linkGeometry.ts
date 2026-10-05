@@ -8,7 +8,7 @@ import { type BridgeDef, type BridgeKind, BRIDGES, bridgesOf, getBridge, otherEn
 import { type ArchipelagoId, archipelagoOfIsland, DANS_LE_CIEL, mapOf } from './map';
 import { layoutCache, layoutChanged } from './placement';
 import { linkBetweenJoined, type LinkLandings, LONG_LENGTH, type LinkRoute, RegionRouter } from './routing';
-import { ecueilsDe } from './terrain/sea';
+import { visibleReefs } from './terrain/sea';
 
 // ---------- Ce que la disposition dit des liaisons ----------
 
@@ -40,7 +40,7 @@ const soleRoutes = layoutCache<string, LinkRoute | null>();
 
 /** Le traceur d'une région, sans aucune liaison : la terre, les îlots, les quais et les écueils. */
 function emptyRouter(a: ArchipelagoId): RegionRouter {
-  return new RegionRouter(a, { lieux: mapOf(a), ecueils: ecueilsDe(a), arriveesDeLaLiaison: chosenLandings });
+  return new RegionRouter(a, { lieux: mapOf(a), ecueils: visibleReefs(a), arriveesDeLaLiaison: chosenLandings });
 }
 
 const emptyRouters = layoutCache<ArchipelagoId, RegionRouter>();

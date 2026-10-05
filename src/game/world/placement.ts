@@ -139,6 +139,49 @@ export function placeIslands(nouvelles: ReadonlyMap<BiomeId, PlacePose> | null):
   layoutChanged();
 }
 
+/** La place d'un Gardien autour de son lieu (la forme de `LayoutGuardian`, ./savedLayout.ts, sans l'importer). */
+export interface GuardianPose {
+  side: 'front' | 'right' | 'back' | 'left';
+  step: number;
+  turn: Quarts;
+}
+
+/** Les Gardiens et les bornes déplacés (GD-9) : un Gardien ou une borne absent est à sa place de la carte de départ. */
+let gardiens: ReadonlyMap<BiomeId, GuardianPose> = new Map();
+let bornes: ReadonlyMap<string, { x: number; y: number }> = new Map();
+
+/** La place choisie du Gardien d'un lieu, ou `undefined` : devant, au pas 0, de face. */
+export function chosenGuardian(id: BiomeId): GuardianPose | undefined {
+  return gardiens.get(id);
+}
+
+/** La place choisie d'une borne (clé « lieu:mission »), dans le repère de son lieu, ou `undefined` : sa place de départ. */
+export function chosenStation(key: string): { x: number; y: number } | undefined {
+  return bornes.get(key);
+}
+
+/**
+ * Pose les Gardiens et les bornes déplacés (la disposition d'une sauvegarde, ./appliedLayout.ts). Ne change rien, et
+ * garde les caches, si ce sont les mêmes.
+ */
+export function placeFixtures(g: ReadonlyMap<BiomeId, GuardianPose>, b: ReadonlyMap<string, { x: number; y: number }>): void {
+  const memes =
+    g.size === gardiens.size &&
+    [...g].every(([id, p]) => {
+      const q = gardiens.get(id);
+      return q !== undefined && q.side === p.side && q.step === p.step && q.turn === p.turn;
+    }) &&
+    b.size === bornes.size &&
+    [...b].every(([k, p]) => {
+      const q = bornes.get(k);
+      return q !== undefined && q.x === p.x && q.y === p.y;
+    });
+  if (memes) return;
+  gardiens = new Map(g);
+  bornes = new Map(b);
+  layoutChanged();
+}
+
 /**
  * La disposition a changé (les poses, ou ce que les liaisons en lisent : leurs arrivées, celles à reposer,
  * ./appliedLayout.ts) : le numéro change et les caches qui lisent les places du monde se vident.
