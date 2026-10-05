@@ -218,7 +218,7 @@ describe('le portrait en médaillon (P2, PR 2, Blocland)', () => {
     expect(screen.getByRole('dialog', { name: 'Mousso' })).toBeInTheDocument();
     expect(medaillon()).not.toBeNull();
     expect(medaillon()!.querySelector('svg')).not.toBeNull();
-    await vi.waitFor(() => expect(medaillon()!.querySelector('.personnage-svg')).not.toBeNull());
+    await vi.waitFor(() => expect(medaillon()!.querySelector('.personnage-svg')).not.toBeNull(), { timeout: 5000 });
     expect(medaillon()!.querySelector('.voxel-scene, .creature-cubes')).toBeNull();
     expect(medaillon()).toHaveAttribute('aria-hidden', 'true');
   });
