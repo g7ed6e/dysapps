@@ -315,7 +315,7 @@ export const ARCHIPEO = {
     defiPretCourt: 'Défi prêt',
     arene: (gardien) => `Le défi ${du(gardien)}`,
     decouverteOuvrages:
-      'Les îles pâles sont fermées. Pour y aller, construis un ouvrage. Chaque ouvrage se paie en blocs. Un escalier demande aussi une mission réussie.',
+      'Les îles pâles sont fermées. Pour y aller, construis un ouvrage. Chaque ouvrage se paie en blocs, depuis le lieu de ton choix.',
     navireGardiensManquants: (n, archipel) => `rallume encore ${n} Gardien${s(n)} des ${archipel}`,
     decouverteNavire: BLOCLAND.libelles.decouverteNavire,
   },

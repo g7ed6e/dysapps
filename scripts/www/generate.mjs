@@ -46,6 +46,8 @@ export async function generatePages() {
         load('/src/curriculum/exclusions.ts'),
         load('/src/curriculum/functionWords.ts'),
       ]);
+    // La géométrie des liaisons (GD-9) : sans elle, les règles n'ont ni nature ni longueur (`provideLinkGeometry`).
+    await load('/src/game/world/linkGeometry.ts');
     const vehicleMod = await load('/src/game/world/vehicle.ts');
     const monumentsMod = await load('/src/game/world/monuments.ts');
     const recettesMod = await load('/src/game/world/recipes.ts');
@@ -889,7 +891,11 @@ function ouvragesPage(d) {
     '',
     table(
       ['Nature', 'Condition en plus des blocs', 'Nombre'],
-      Object.keys(KIND_NAME).map((k) => [KIND_NAME[k], CONDITION_TEXT[CONDITION_OF[k]], String(BRIDGES.filter((b) => b.kind === k).length)]),
+      // Seulement les natures qu'un ouvrage prend aujourd'hui (GD-9 : plus d'escalier taillé, de tunnel ni de col).
+      Object.keys(KIND_NAME)
+        .map((k) => [k, BRIDGES.filter((b) => b.kind === k).length])
+        .filter(([, n]) => n > 0)
+        .map(([k, n]) => [KIND_NAME[k], CONDITION_TEXT[CONDITION_OF[k]], String(n)]),
     ),
     '',
     '## Tous les ouvrages',

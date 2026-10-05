@@ -1,8 +1,9 @@
-// Les quatre archipels et ce qui relie les îles : les ouvrages (pont, bac, sentier, escalier taillé, tunnel, col) à
-// l'intérieur d'un archipel, et les voyages du Bloc-Navire d'un archipel au suivant.
-// Un ouvrage coûte des blocs gagnés n'importe où ; certains demandent aussi un plan terminé ou un Gardien vaincu
-// sur l'île de départ. Une île s'ouvre quand un chemin d'ouvrages construits (et de voyages faits) y mène depuis une
-// île de départ. Un voyage fait reste fait : on revient toujours en arrière.
+// Les quatre archipels et ce qui relie les îles : les liaisons (pont, bac, sentier) à l'intérieur d'un archipel, et
+// les voyages du Bloc-Navire d'un archipel au suivant. Depuis GD-9, une liaison relie chaque paire de lieux d'une
+// région, au même prix, et ne demande rien d'autre que des blocs gagnés n'importe où ; sa nature suit son tracé.
+// Les natures d'avant (escalier taillé, tunnel, col) ne servent plus qu'à relire les anciennes sauvegardes
+// (`LEGACY_BRIDGES`). Une île s'ouvre quand un chemin de liaisons posées (et de voyages faits) y mène depuis une île
+// de départ. Un voyage fait reste fait : on revient toujours en arrière.
 // Générateur pur : partagé entre le monde 3D, les pages simples et le moteur.
 import { BLOC, BIOMES, getBiome, type BiomeDef, type BiomeId, type BlockId } from '../biomes';
 import { lv2Courante, type Lv2Choice } from '../../core/settings';
@@ -80,8 +81,9 @@ export function previousArchipelago(a: ArchipelagoId): ArchipelagoDef | null {
 export const START_ISLANDS: BiomeId[] = ARCHIPELAGOS[0].starts;
 
 /**
- * Les ouvrages : un sentier de pierres de gué entre deux îles qui se touchent, un pont entre deux îles, un bac (radeau)
- * sur un large bras de mer, un escalier taillé, un tunnel, un col. Tous relient deux îles du même archipel.
+ * Les liaisons : un sentier de pierres de gué entre deux îles qui se touchent, un pont entre deux îles, un bac (radeau)
+ * sur un large bras de mer. Toutes relient deux îles du même archipel. L'escalier taillé, le tunnel et le col ne sont
+ * plus posés depuis GD-9 : ils ne servent qu'aux anciennes sauvegardes (`LEGACY_BRIDGES`).
  */
 export type BridgeKind = 'pont' | 'bac' | 'escalier' | 'tunnel' | 'col' | 'sentier';
 
@@ -93,8 +95,8 @@ export interface BridgeDef {
   from: BiomeId;
   to: BiomeId;
   /**
-   * Sa nature : celle d'avant GD-9 pour un sentier entre deux lieux réunis, l'escalier taillé et le col ; sinon un pont
-   * jusqu'à 36 cases, un bac au-delà (un pont dans le ciel), selon son tracé dans la disposition (`linkKind`).
+   * Sa nature, selon son tracé dans la disposition (`linkKind`) : un sentier entre deux lieux réunis, sinon un pont
+   * jusqu'à 36 cases, un bac au-delà (un pont dans le ciel).
    */
   readonly kind: BridgeKind;
   /** Nombre de blocs (de n'importe quel type gagné sur une île) pour le construire ; 0 = pont déjà construit. */
@@ -106,7 +108,7 @@ export interface BridgeDef {
   via?: readonly { x: number; y: number }[];
 }
 
-/** La condition d'un ouvrage dépend de sa nature : l'escalier veut des bâtisseurs (la première partie du bâtiment d'une de ses îles, posée par une mission) ; le tunnel et le col ne demandent que des blocs, aucun Gardien n'étant la condition d'une liaison (GD-7). */
+/** La condition d'une liaison : aucune depuis GD-9 (seul l'escalier d'avant voulait une mission réussie, `LEGACY_BRIDGES`). */
 export const CONDITION_OF: Record<BridgeKind, BridgeCondition> = {
   pont: 'aucune',
   bac: 'aucune',

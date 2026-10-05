@@ -19,14 +19,14 @@ interface Props {
   /** Dans le panneau 3D : la section se replie quand aucun ouvrage n'est constructible (la clé change avec l'île). */
   fold?: string;
   /**
-   * L'ouvrage du prochain objectif de l'île (`nextGoalInfo`, `Goal.ouvrage`) : le seul dont « Construire » est le bouton
+   * L'ouvrage du prochain objectif de l'île (`nextGoalInfo`, `Goal.ouvrage`) : le seul dont « Poser » est le bouton
    * principal ; `null` : l'objectif n'est pas un ouvrage (le Bloc-Navire), aucun ne l'est. Sans objectif (une île
    * fermée), le suggéré de ceux qu'on peut faire (`ouvragesParSuggestion`), comme le choisirait l'objectif.
    */
   objectif?: string | null;
 }
 
-/** « le pont », « l'escalier taillé »… */
+/** « le pont », « le bac », « le sentier ». */
 function withArticle(kind: BridgeDef['kind']): string {
   const name = KIND_NAME[kind].toLowerCase();
   return /^[aeiouy]/.test(name) ? `l’${name}` : `le ${name}`;
@@ -70,11 +70,11 @@ export function useConstruireUnOuvrage(island: BiomeId, onBuilt?: (to: BiomeId) 
 }
 
 /**
- * Les ouvrages que l'on peut construire depuis (ou vers) une île : un pont, un bac, un escalier taillé, un tunnel,
- * un col. Chacun coûte quelques blocs, de n'importe quel type gagné sur une île ; l'escalier demande aussi un plan
- * terminé, et plus aucun ouvrage n'attend un Gardien vaincu (GD-7). Un seul bouton par ouvrage : « Construire » en
- * bouton principal pour l'ouvrage du prochain objectif de l'île, en bouton secondaire pour les autres ; ce qui manque
- * est dit clairement.
+ * Les liaisons que l'on peut poser depuis (ou vers) une île : un pont, un bac, ou un sentier entre deux lieux réunis
+ * (GD-9). Chacune coûte le même prix dans sa région, en blocs de n'importe quel type gagné sur une île ; aucune
+ * n'attend un Gardien vaincu (GD-7) ni un plan terminé (GD-9). Un seul bouton par liaison : « Poser » en bouton
+ * principal pour celle du prochain objectif de l'île, en bouton secondaire pour les autres ; ce qui manque est dit
+ * clairement. Vers un lieu fermé, le pli s'appelle « Relier » et liste les départs possibles.
  */
 export function Bridges({ island, onBuilt, highlight = null, fold, objectif }: Props) {
   const { state } = useBlocland();

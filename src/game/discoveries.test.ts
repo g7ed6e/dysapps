@@ -26,9 +26,9 @@ it('les découvertes : les ouvrages sur une île pâle, le Bloc-Navire au port, 
     expect(decouverteDeLIle(fresh, 'maths-6e-calculation', ou)).toBe(textes.libelles.decouverteNavire);
     expect(decouverteDeLIle(fresh, 'maths-6e-calculation', ou)).toBeNull();
   }
-  // Aucun ouvrage ne demande un Gardien (GD-7) : seul l'escalier demande, en plus des blocs, une mission réussie.
+  // Aucun ouvrage ne demande un Gardien (GD-7) ni une mission (GD-9) : des blocs, depuis le lieu de son choix.
   for (const u of ['blocland', 'archipeo'] as const) {
-    expect(textesDe(u).libelles.decouverteOuvrages).toContain('Un escalier demande aussi une mission réussie.');
+    expect(textesDe(u).libelles.decouverteOuvrages).toContain('Chaque ouvrage se paie en blocs, depuis le lieu de ton choix.');
     expect(textesDe(u).libelles.decouverteOuvrages).not.toContain('Gardien');
   }
 });
