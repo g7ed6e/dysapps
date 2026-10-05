@@ -137,6 +137,8 @@ const SHOTS = [
   { name: 'fiche-borne', state: EARLY, go: '/adventure/french-6e-phonology', act: ouvrirLaFiche({ genre: 'borne', id: 'french-6e-phonology:syllables' }) },
   // Relier une île pâle (GD-9) : la fiche de l'ouvrage proposé, puis le départ suivant.
   { name: 'fiche-relier', state: EARLY_MINE, go: '/adventure/french-6e-phonology', act: relierDepuisUneAutreIle('maths-6e-fractions') },
+  // Aménager sa région (GD-9) : sur la Carte, le mode ouvert, un lieu choisi et son fantôme calé sur une place libre.
+  { name: 'amenager', state: MID, go: '/adventure/map', act: amenager('maths-6e-fractions', { x: 150, y: 100 }) },
   { name: 'gardien', state: MID, go: '/adventure/french-6e-letter-confusion/challenge', wait: 2500 },
   { name: 'ecole', state: MID, go: '/adventure/school' },
   { name: 'trophees', state: MID, go: '/adventure/trophies' },
@@ -233,6 +235,21 @@ function relierDepuisUneAutreIle(ile) {
     // Le bandeau d'un succès gagné par l'état préparé cacherait le cadrage de la liaison.
     const bandeau = page.locator('.celebration button[aria-label="Fermer"]');
     while (await bandeau.count()) await bandeau.first().click();
+    await page.waitForTimeout(2500);
+  };
+}
+/** Ouvre le mode « Aménager » sur la Carte, choisit un lieu et touche la mer en `point` (en cases du monde). */
+function amenager(ile, point) {
+  return async (page) => {
+    await page.getByRole('button', { name: /^Aménager/ }).click();
+    await page.waitForTimeout(500);
+    // Le bandeau d'un succès gagné par l'état préparé cacherait la scène.
+    const bandeau = page.locator('.celebration button[aria-label="Fermer"]');
+    while (await bandeau.count()) await bandeau.first().click();
+    // Deux touchers, l'un après l'autre : le second lit le choix fait par le premier.
+    await page.evaluate((ile) => window.__dysappsAmenager?.({ genre: 'ile', id: ile }), ile);
+    await page.waitForTimeout(800);
+    await page.evaluate((point) => window.__dysappsAmenager?.({ genre: 'mer', point }), point);
     await page.waitForTimeout(2500);
   };
 }

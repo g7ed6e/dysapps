@@ -100,6 +100,8 @@ declare global {
   interface Window {
     /** Ouvrir la fiche d'un objet, pour les captures (en développement, ou avec `?mesures`). */
     __dysappsFiche?: (objet: ObjetDeLaFiche) => void;
+    /** Un toucher dans le mode « Aménager », pour les captures (en développement, ou avec `?mesures`). */
+    __dysappsAmenager?: (i: Intention) => void;
   }
 }
 
@@ -770,6 +772,17 @@ export function WorldPage() {
     };
   }, []);
 
+  // Pour les captures (en développement, ou avec `?mesures`) : un toucher dans le mode « Aménager », sans viser la scène.
+  const intentionRef = useRef<(i: Intention) => void>(() => {});
+  useEffect(() => {
+    if (!(import.meta.env.DEV || mesuresDemandees())) return;
+    const toucher = (i: Intention) => intentionRef.current(i);
+    window.__dysappsAmenager = toucher;
+    return () => {
+      if (window.__dysappsAmenager === toucher) delete window.__dysappsAmenager;
+    };
+  }, []);
+
   // Le bouton retour, dans le village sans panneau, ouvre le menu du village.
   useBackOpensMenu(!biomeId && !voyage, '/adventure/menu');
 
@@ -900,6 +913,7 @@ export function WorldPage() {
         return;
     }
   };
+  intentionRef.current = onIntent;
   const ouvrageLabel = (b: BridgeDef) =>
     `${KIND_NAME[linkKind(b, state.world.links)]} entre ${getBiome(b.from)?.name ?? b.from} et ${getBiome(b.to)?.name ?? b.to} (${b.cost} blocs)`;
 

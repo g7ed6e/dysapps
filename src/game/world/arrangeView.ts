@@ -68,6 +68,17 @@ function contourDeLaTerre(def: IslandDef, z: number, out: ArrangeCell[]): void {
     }
 }
 
+/** Une place libre : quatre plots en losange autour d'une case, bien visibles sur l'eau. */
+function place(p: { x: number; y: number }, z: number, out: ArrangeCell[]): void {
+  for (const [dx, dy] of [
+    [1, 0],
+    [-1, 0],
+    [0, 1],
+    [0, -1],
+  ])
+    out.push({ x: p.x + dx, y: p.y + dy, z, genre: 'place' });
+}
+
 /** Une croix de cinq cubes, au-dessus d'une case : l'icône d'une liaison qui ne tiendrait plus. */
 function croix(p: { x: number; y: number }, z: number, out: ArrangeCell[]): void {
   for (const [dx, dy] of [
@@ -128,7 +139,7 @@ export function arrangeView(world: World, c: ArrangeChoice): ArrangeView {
       for (const s of freeSpots(world, c.id, c.spot.turn)) {
         if (Math.max(Math.abs(s.x - c.spot.x), Math.abs(s.y - c.spot.y)) > PAS_AUTOUR || (s.x === c.spot.x && s.y === c.spot.y)) continue;
         const p = poseOfSpot(a, s);
-        out.push({ x: p.x + 8, y: p.y + 8, z: eau, genre: 'place' });
+        place({ x: p.x + 8, y: p.y + 8 }, eau, out);
       }
       const r = moveIsland(world, c.id, c.spot);
       const relink = r.ok ? r.relink : [];
@@ -141,7 +152,7 @@ export function arrangeView(world: World, c: ArrangeChoice): ArrangeView {
       for (const g of freeGuardianSpots(world, c.id)) {
         if (g.side === c.place.side && g.step === c.place.step) continue;
         const q = guardianIsletRectangle(ici, g);
-        out.push({ x: Math.floor((q.x0 + q.x1) / 2), y: Math.floor((q.y0 + q.y1) / 2), z: eau, genre: 'place' });
+        place({ x: Math.floor((q.x0 + q.x1) / 2), y: Math.floor((q.y0 + q.y1) / 2) }, eau, out);
       }
       const avant = footprintOf(c.id, ici, guardianOf(world, c.id)).find((p) => p.genre === 'ilot')!;
       return { cases: out, souleve: avant, suivre: { x: (r.x0 + r.x1) / 2, y: (r.y0 + r.y1) / 2, z: eau }, barrees: [] };

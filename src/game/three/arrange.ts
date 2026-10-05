@@ -57,7 +57,7 @@ export function avecLAmenagement<M extends THREE.Material>(m: M): M {
 /** L'allure de chaque sorte de case : sa taille (largeur, hauteur) et sa couleur (la croix dit « barrée » avec la couleur). */
 const ALLURE: Readonly<Record<ArrangeCellKind, { l: number; h: number; couleur: number }>> = {
   fantome: { l: 0.9, h: 0.9, couleur: 0xeaf6ff },
-  place: { l: 0.8, h: 0.25, couleur: 0x7fc4ff },
+  place: { l: 0.7, h: 1.2, couleur: 0xffd866 },
   liaison: { l: 0.7, h: 0.35, couleur: 0xffffff },
   barree: { l: 0.7, h: 0.35, couleur: 0xc0392b },
   croix: { l: 0.85, h: 0.85, couleur: 0xc0392b },

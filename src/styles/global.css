@@ -6636,3 +6636,19 @@ fieldset {
 :root[data-univers="archipeo"] .world-recentrer-tete:active:not(:disabled) {
   box-shadow: 0 1px 0 #142b38;
 }
+/* « Carte de départ » au menu du village (GD-9) : la confirmation, sous la ligne, sur un fond uni. */
+.menu-confirmer {
+  margin: 0.4rem 0 0.6rem;
+  padding: 0.8rem;
+  border: 2px solid var(--ink);
+  border-radius: var(--radius, 8px);
+  background: var(--surface, #fff);
+}
+.menu-confirmer p {
+  margin: 0 0 0.6rem;
+}
+.menu-confirmer-boutons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}

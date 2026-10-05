@@ -246,7 +246,7 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     const r = resetToEntry(session, worldRef.current);
     setSession(r.session);
     arrange(r.world);
-    choisir(null, 'Tout est remis comme avant. ↶ le défait.');
+    choisir(null, 'Tout est remis comme avant.');
   };
 
   const ouvrirLaListe = () => {
@@ -454,7 +454,7 @@ export function ArrangeBar({ amenagement }: { amenagement: Amenagement }) {
       </div>
       <div className="arrange-bar-row">
         <button type="button" className="button" disabled={!amenagement.peutDefaire || occupe} onClick={amenagement.defaire} aria-label="Défaire la dernière pose">
-          <Icon name="defaire" /> <span aria-hidden="true">↶</span>
+          <Icon name="defaire" />
         </button>
         <button type="button" className="button" disabled={!amenagement.peutRemettre || occupe} onClick={amenagement.remettre}>
           <Icon name="replay" /> <span>Remettre comme avant</span>

@@ -9,6 +9,9 @@ import { BADGES } from '../core/progress';
 import { demanderMoinsDAnimations } from '../core/motion.testing';
 import { textesDe } from '../universes';
 import { VOL, dureeDuVol } from './blockFlight';
+import { EMPTY_STATE } from './engine/state';
+import { freeSpots, moveIsland, spotOf } from './world/arrange';
+import { applyLayout } from './world/appliedLayout';
 
 // Pas de WebGL dans les tests : un monde factice, qui montre l'île cadrée et laisse toucher une île. Il connaît la
 // première case de la cabane de Mousso, dans le repère de l'île (un fantôme du bâtiment, posable à la main avant GD-6).
@@ -683,6 +686,34 @@ it('le menu du village : le bouton Menu l’ouvre en plein écran, Réglages en 
   window.removeEventListener('keydown', dessous);
   expect(priseAvant).toBe(true);
   expect(screen.queryByRole('dialog', { name: 'Menu' })).not.toBeInTheDocument();
+});
+
+it('le menu : « Carte de départ » remet la région à sa carte de départ, après confirmation, sans perdre une liaison', async () => {
+  const depart = { ...EMPTY_STATE.world, links: ['french-6e-phonology-french-6e-letter-confusion'] };
+  const ailleurs = freeSpots(depart, 'maths-6e-fractions')[0];
+  const bouge = moveIsland(depart, 'maths-6e-fractions', ailleurs);
+  if (!bouge.ok) throw new Error('la Rivière devrait pouvoir bouger');
+  localStorage.setItem('dysapps:game', JSON.stringify({ world: bouge.world }));
+  const user = userEvent.setup();
+  renderAt('/adventure');
+  await user.click(await screen.findByRole('button', { name: 'Menu' }));
+  const menu = await screen.findByRole('dialog', { name: 'Menu' });
+  await user.click(within(menu).getByRole('button', { name: /Carte de départ/ }));
+  const question = within(menu).getByRole('group', { name: 'Revenir à la carte de départ ?' });
+  expect(question).toHaveTextContent('rien n’est perdu');
+  // « Non » ne change rien.
+  await user.click(within(question).getByRole('button', { name: /Non, garder ma carte/ }));
+  expect(JSON.parse(localStorage.getItem('dysapps:game')!).world.layout).toBeTruthy();
+  await user.click(within(menu).getByRole('button', { name: /Carte de départ/ }));
+  await user.click(within(menu).getByRole('button', { name: /Revenir à la carte de départ/ }));
+  expect(within(menu).getByRole('status')).toHaveTextContent('toutes tes liaisons sont là');
+  await waitFor(() => expect(JSON.parse(localStorage.getItem('dysapps:game')!).world.layout?.['6e']).toBeUndefined());
+  const monde = JSON.parse(localStorage.getItem('dysapps:game')!).world;
+  expect(monde.links).toEqual(depart.links);
+  expect(spotOf(monde, 'maths-6e-fractions')).toEqual(spotOf(depart, 'maths-6e-fractions'));
+  // La région est à sa carte de départ : la ligne le dit, et ne se touche plus.
+  expect(within(menu).getByRole('button', { name: /Carte de départ/ })).toBeDisabled();
+  applyLayout(undefined);
 });
 
 it('la salle des trophées : on la touche dans le monde, son panneau montre les succès', async () => {
