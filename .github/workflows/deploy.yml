@@ -12,9 +12,11 @@ on:
 # Aucune permission par défaut : chaque job ne reçoit que ce dont il a besoin.
 permissions: {}
 
+# Sur une pull request, une exécution nouvelle annule l'ancienne. Sur main, chaque exécution a son propre groupe :
+# les tests, les captures et la construction du site ne s'attendent jamais l'une l'autre ; seul le job deploy
+# se range dans le groupe « pages » (plus bas).
 concurrency:
-  group: pages-${{ github.ref }}
-  # On annule les anciennes exécutions de PR, jamais un déploiement en cours sur main.
+  group: ci-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
@@ -152,6 +154,11 @@ jobs:
     needs: [build, docs]
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    # Une publication plus récente remplace celle qui attend ou qui tourne encore : une publication restée
+    # bloquée chez GitHub (du 30 septembre au 4 octobre 2026, le site n'a plus été publié) ne retient plus les suivantes.
+    concurrency:
+      group: pages
+      cancel-in-progress: true
     # Seul ce job peut publier : il n'exécute aucun code du dépôt.
     permissions:
       pages: write
