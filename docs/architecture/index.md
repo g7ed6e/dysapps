@@ -50,15 +50,19 @@ flowchart TD
   apps --> core
   core -. progression commune .-> blocland
   core -. progression par matière .-> apps
+  core -. icônes .-> components
+  core -. mots des succès .-> univers
+  components -. étoiles, partie, sons .-> blocland
+  components -. catalogue .-> apps
   apps -. types ProgrammeId .-> programme[programme/<br/>référentiel officiel]
   blocland -. types ProgrammeId .-> programme
-  styles[styles/<br/>thèmes et CSS] --> main
+  main --> styles[styles/<br/>thèmes et CSS]
 ```
 
-Les flèches pleines sont le sens attendu ; les pointillés, les dépendances qui remontent aujourd’hui.
+Une flèche se lit « importe ». Les flèches pleines sont le sens attendu ; les pointillés, les dépendances qui remontent aujourd’hui.
 
 - `core/` : les réglages, le stockage, la sauvegarde aux mots neutres (`migration.ts`), la progression commune, la synthèse vocale, et les petits outils que tout le code partage (`random.ts`, `math.ts`, `color.ts`), qui n’importent rien. Quelques fichiers de `core/` lisent pourtant le jeu : `progress.ts` (les îles et les plans, pour les succès), `subjectProgress.ts` (l’avancée d’une matière, portail et aventure), `univers.ts` et `AppUpdateBanner.tsx` (les icônes de `components/`), `ProgressContext.tsx` (les mots de `univers/`).
-- `components/` tient ce que les écrans partagent : la mise en page, l’écran titre, la session de quiz, les boutons de lecture. Quelques badges lisent la partie (`AppBadge.tsx`, `BandeauBatisseur.tsx`).
+- `components/` tient ce que les écrans partagent : la mise en page, l’écran titre, la session de quiz, les boutons de lecture. Plusieurs lisent le jeu : `Layout.tsx` (`useImmersive`), `QuizSession.tsx` et `RecordTag.tsx` (les étoiles, la partie), `TitleScreen.tsx` (la partie, le logo, les sons), `AppBadge.tsx` et `BandeauBatisseur.tsx` (la partie), `SubjectApps.tsx` (le catalogue des missions du portail).
 - `apps/` : une mission du portail par dossier, toutes sur `QuizSession` ou `QuestMenu`, déclarées dans `apps/registry.ts`.
 - `blocland/` : l’aventure, la plus grosse partie (voir [La partie](partie.md) et [Le monde](monde.md)). Le nom du dossier est historique : il porte le jeu commun aux deux univers.
 - `univers/` : les textes propres à chaque univers ; l’habillage du dessin est dans `blocland/world/habillage/`.
@@ -99,6 +103,7 @@ flowchart BT
   univers --> commun
   dessin --> univers
   dessin --> commun
+  univers -. sa palette lit l’heure, son habillage le rendu choisi .-> dessin
 ```
 
 Une flèche se lit « peut importer » ; une couche peut aussi lire toutes celles que lit la couche qu’elle importe. Les règles ne connaissent ni case ni dessin ; la grille place les choses en cases sans savoir comment on les dessine ; un univers habille le dessin sans changer le jeu. Les trois exceptions d’aujourd’hui sont listées dans le test, chacune avec son motif.
