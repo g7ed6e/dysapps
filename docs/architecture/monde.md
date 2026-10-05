@@ -55,7 +55,7 @@ sequenceDiagram
 ```
 
 - Les parties partagent un `Instant` (où en sont la marche et le voyage à cette image) et les `Derniers` props de la vue : la scène n’est pas refaite quand les props changent, les parties les relisent.
-- Le calcul des formes est pur et testé dans `world/` (`landMesh.ts` le sol en facettes, `construction.ts` les bâtiments, `decorMesh.ts` le décor, `mer.ts`, `faune.ts`, `personnages/`) ; `three/` ne fait que les donner à Three.js.
+- Le calcul des formes est pur et testé dans `world/` (`landMesh.ts` le sol en facettes, `construction.ts` les bâtiments, chacun avec ses réglages, ses couleurs et son éclairage rangés à côté, dans `landMesh/` et `construction/`, `decorMesh.ts` le décor, `mer.ts`, `faune.ts`, `personnages/`) ; `three/` ne fait que les donner à Three.js.
 - Chaque géométrie, matériau et texture est libéré quand la scène est refaite (`dispose`).
 
 ## Les univers

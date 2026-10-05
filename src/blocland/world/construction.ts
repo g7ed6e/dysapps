@@ -38,191 +38,34 @@
 //
 // Un maillage par île (`construireParIle`) : poser un bloc ne refait que son île ; les îles sont mises bout à bout dans
 // les trois groupes.
+//
+// Ce fichier garde le maillage et les bornes ; à côté, dans ./construction/ : les réglages de l'intention et les couleurs
+// des rôles (`reglages.ts`), ce que le shader reprend (`shader.ts`), le genre des blocs (`genres.ts`), le phare de
+// Grimoire (`phare.ts`), les bâtiments et les lieux que le kit reprend (`batiments.ts`). Il en réexporte les noms publics.
+import type { Cell } from './view';
+import { architectureDe, assemblerLesPieces, type Kit, KITS, MOTIF } from './architecture';
 import type { VoxelCube } from '../Voxel';
-import { architectureDe, assemblerLesPieces, estUnLieuDuVillage, KITS, MOTIF, ROLES_PEINTS, type CaseDuLieu, type Kit, type Role } from './architecture';
-import { BLOCKS, type BiomeId } from '../biomes';
-import { mixColor } from './daylight';
-import { COULEURS_DU_PHARE, dessinerPhare, PHARES, type PieceDuPhare, type PoseDuPhare } from './decor/phare';
-import { DELAVE, eclaircir, hex, Pinceau, rgb, type FacettesDuDecor } from './decor/pinceau';
+import { ambianceDe, type Couleur, couleurDeMatiere, type Faces, MATIERES } from './palette';
+import { DELAVE, eclaircir, type FacettesDuDecor, hex, Pinceau, rgb } from './decor/pinceau';
 import { lineaire } from './landMesh';
+import type { ArchipelagoId } from './map';
 import { dessinerPont, FANTOME_DU_PONT, pontsDePierreEtDeBois } from './ponts';
 import { dessinerPhareDuLarge, hublotsDuPhareDuLarge, phareDuLarge } from './phareDuLarge';
-import { islandDef, mapOf, type ArchipelagoId } from './map';
-import { LAYOUT_PAD, origineDe, placeSpot, VILLAGE_PLACES } from './terrain';
-import { estUnePlaceDeTrophee, TROPHY_SLOTS } from './salle';
-import { decalageDesPlans, getPlan, planCells, plansFor } from './plans';
-import { ambianceDe, BLEU_LAGON, BRUME, couleurDeMatiere, DETAILS_ASSEMBLES, MATIERES, type Couleur, type Faces } from './palette';
-import type { TextureKind } from './pixels';
+import { estUnePlaceDeTrophee } from './salle';
+import { mixColor } from './daylight';
 import { couleursDuToit } from './toits';
-import type { Cell } from './view';
-
-// ---------- Les réglages de l'intention (directeur artistique, 28 septembre 2026) ----------
-
-/** La variation de luminosité d'un bloc à l'autre : ± 4 %, jamais une autre teinte. */
-export const TEINTE = 0.04;
-/** Le biseau des arêtes saillantes, en part de case. */
-export const BISEAU = 0.08;
-/** La lueur des fenêtres et des lanternes, la nuit. */
-export const LUEUR: Couleur = 0xffd866;
-/** Le verre d'une vitre, le jour : le verre de la palette, à cette part de sa luminosité. */
-export const VITRE_DE_JOUR = 0.55;
-/** Au plus tant de vitres allumées par bâtiment. */
-export const FENETRES_ALLUMEES = 3;
-/** Au plus tant de lanternes allumées par cour (une île et un lieu, comme les vitres). */
-export const LANTERNES_ALLUMEES = 2;
-/**
- * Une lanterne (le genre `lanterne` : cours, comptoirs, sommets, pas les vitres) : un corps sombre de `corps` case de côté
- * et de haut, posé au milieu de sa case, et sur lui un cœur de `coeur` case, qui s'allume. Rien ne sort de la case.
- */
-const LANTERNE = { corps: 0.3, coeur: 0.18 } as const;
-/**
- * Un trophée de la salle des trophées, dans Archipéo, quand le kit de l'archipel reprend la salle (GD-3, retouches du
- * directeur artistique : la halle ne se lit plus comme un mur de panneaux) : un bloc plus petit que sa case, au milieu,
- * pour qu'il ne touche ni le pilier voisin ni la sablière et qu'on voie le fond de velours autour et au-dessus de lui.
- * `bas` : le côté du trophée posé sur son socle ; `haut` : celui du second rang, posé sur lui (et non sur le sol de sa
- * case : il ne flotte pas) ; `hauteur` : la hauteur de chacun. Les deux rangs laissent `2 - 2 × hauteur` case d'ombre
- * sous le toit. Blocland garde ses trophées en blocs entiers (three/cubes.ts).
- */
-export const TROPHEE = { bas: 0.62, haut: 0.46, hauteur: 0.66 } as const;
-/** Le rang des trophées posés sur leur socle (les autres sont posés sur eux). */
-const RANG_DES_SOCLES = Math.min(...TROPHY_SLOTS.map((t) => t.z));
-/** Le verre hors d'un mur (provisoire, jusqu'au phare de R4b) : 80 % Brume, 20 % Bleu lagon, avec une arête par case. */
-const VERRE_HORS_MUR: Couleur = mixColor(BRUME, BLEU_LAGON, 0.2);
-/** L'arête du verre hors d'un mur : `ARETE`, à cette opacité, sur 1,5 pixel. */
-export const ARETE_DU_VERRE = 0.4;
-/** Le biseau peint : la lumière ajoutée au bord saillant (+22 %)… */
-export const ECLAT_DU_BISEAU = 0.22;
-/** … et au moins tant de niveaux sRGB de plus, par canal, sur une teinte sombre (luminance sous `SOMBRE`). */
-export const ECART_SOMBRE = 14;
-const SOMBRE = 0.25;
-/** Le décalage d'allumage d'une fenêtre, de 0 à cette valeur (en degré de nuit). */
-export const DECALAGE_MAX = 0.15;
-/** L'allumage : rien sous ce degré de nuit, tout allumé à `PLEINE_NUIT`. */
-export const ALLUMAGE = 0.3;
-export const PLEINE_NUIT = 0.8;
-/** Le fantôme : sa teinte, son arête, et l'épaisseur de l'arête en part de case. */
-export const FANTOME: Couleur = BRUME;
-export const ARETE: Couleur = 0x142b38;
-export const ARETE_FANTOME = 0.035;
-/** Les pilotis : une case est sur le vide si rien de solide n'est dessous sur tant de cases (ou si c'est l'eau). */
-const PROFONDEUR = 6;
-/** La toile du Bloc-Navire : le crème Brume. */
-const TOILE_DU_NAVIRE: Couleur = BRUME;
-/**
- * Le phare de Grimoire (décision 16 du cadrage) : le plan « Le phare de Grimoire » (les murs) donne, une fois fini, le
- * fût du phare de référence et ses bandes (world/decor/phare.ts) ; le plan suivant (le toit) donne la galerie, la
- * lanterne et le cône. Tant qu'une étape n'est pas finie, ses cases posées restent des blocs taillés, en crème (le fût)
- * au lieu du verre provisoire.
- */
-const PHARE_DE_GRIMOIRE = {
-  archipel: '6e',
-  ile: 'french-6e-reading',
-  etapes: [
-    { plan: 'french-6e-reading-1', pieces: ['anneau', 'fut'] },
-    { plan: 'french-6e-reading-2', pieces: ['galerie', 'lanterne', 'toit'] },
-  ],
-} as const satisfies { archipel: ArchipelagoId; ile: string; etapes: readonly { plan: string; pieces: readonly PieceDuPhare[] }[] };
-/** Le crème des cases posées du phare, tant que leur étape n'est pas finie. */
-export const CREME_DU_PHARE: Couleur = COULEURS_DU_PHARE.fut;
-
-/**
- * La couleur d'un rôle du kit d'architecture (lot 7 : poteau, remplissage, soubassement, bardage, pilotis, chaperon), de
- * jour : sous le voile de l'archipel, comme les matières ; délavée si l'île est fermée.
- */
-function couleurDuRole(a: ArchipelagoId, kit: Kit, role: Role, muted = false): Couleur {
-  const [teinte, force] = ambianceDe(a).voile;
-  const v = mixColor(kit.couleurs[role] ?? BRUME, teinte, force);
-  return muted ? mixColor(v, DELAVE[0], DELAVE[1]) : v;
-}
-
-/**
- * Les couleurs des rôles que le shader peint sur les murs (`ROLES_PEINTS` : poteau, soubassement, chaperon), puis les
- * mêmes délavées, dans l'espace linéaire de Three.js : l'uniforme `uRoles` des blocs (three/construction.ts).
- */
-export function couleursDesRoles(a: ArchipelagoId, kit: Kit = KITS[a]): Float32Array {
-  const out: number[] = [];
-  for (const muted of [false, true])
-    for (const r of ROLES_PEINTS) {
-      const k = rgb(couleurDuRole(a, kit, r, muted));
-      out.push(lineaire(k[0] / 255), lineaire(k[1] / 255), lineaire(k[2] / 255));
-    }
-  return Float32Array.from(out);
-}
-
-// ---------- Les fonctions que le shader reprend ----------
-
-const f32 = Math.fround;
-const fract = (v: number) => f32(v - Math.floor(v));
-
-/**
- * Le hasard d'une case, de 0 à 1, stable : le même calcul que `TEINTE_GLSL` (en flottants 32 bits), sur la case dans le
- * repère Three (X = x, Y = hauteur, Z = y). Le GPU peut arrondir autrement : la teinte d'un bloc reste stable d'une
- * image à l'autre, pas forcément identique au bit près à celle-ci.
- */
-function hasardDeCase(x: number, y: number, z: number): number {
-  let px = fract(f32(x * f32(0.1031)));
-  let py = fract(f32(z * f32(0.1031)));
-  let pz = fract(f32(y * f32(0.1031)));
-  // p += dot(p, p.zyx + 31.32)
-  const k = f32(31.32);
-  const d = f32(f32(f32(px * f32(pz + k)) + f32(py * f32(py + k))) + f32(pz * f32(px + k)));
-  px = f32(px + d);
-  py = f32(py + d);
-  pz = f32(pz + d);
-  return fract(f32(f32(px + py) * pz));
-}
-
-/** La teinte d'un bloc : un facteur de luminosité (sur la couleur affichée, sRGB), de 1 − `TEINTE` à 1 + `TEINTE`. */
-export function teinteDeCase(x: number, y: number, z: number): number {
-  return 1 + TEINTE * (2 * hasardDeCase(x, y, z) - 1);
-}
-
-/**
- * Le même calcul en GLSL : `teinteDeCase(floor(position - normal * 0.25))`, en coordonnées de l'objet (le maillage est
- * posé à l'origine du monde), rend le facteur à appliquer à la couleur linéaire (la puissance 2,2 fait ± 4 % sur la
- * couleur affichée).
- */
-export const TEINTE_GLSL = `
-float teinteDeCase(vec3 c) {
-  vec3 p = fract(c * 0.1031);
-  p += dot(p, p.zyx + 31.32);
-  float h = fract((p.x + p.y) * p.z);
-  return pow(1.0 + ${TEINTE.toFixed(3)} * (2.0 * h - 1.0), 2.2);
-}
-`;
-
-/**
- * L'éclat d'une fenêtre ou d'une lanterne, de 0 (éteinte) à 1 (pleine lueur), selon le degré de nuit `n` (0 : plein
- * jour, 1 : nuit ; `1 - daylight().light`) et son décalage (de 0 à `DECALAGE_MAX` ; négatif : jamais allumée). Rien sous
- * `ALLUMAGE`, tout allumé à `PLEINE_NUIT` ; chaque fenêtre s'allume sur sa rampe, un peu après les autres selon son
- * décalage. Monotone en `n`, en douceur (pas de clignotement).
- */
-export function eclatDeFenetre(n: number, decalage: number): number {
-  if (decalage < 0) return 0;
-  const debut = ALLUMAGE + Math.min(decalage, DECALAGE_MAX);
-  const fin = Math.min(PLEINE_NUIT, debut + (PLEINE_NUIT - ALLUMAGE) - DECALAGE_MAX);
-  const t = Math.min(1, Math.max(0, (n - debut) / (fin - debut)));
-  return t * t * (3 - 2 * t);
-}
-
-/** Le même calcul en GLSL (`n` : uniforme, `decalage` : attribut par sommet). */
-export const ECLAT_GLSL = `
-float eclatDeFenetre(float n, float decalage) {
-  if (decalage < 0.0) return 0.0;
-  float debut = ${ALLUMAGE.toFixed(3)} + min(decalage, ${DECALAGE_MAX.toFixed(3)});
-  float fin = min(${PLEINE_NUIT.toFixed(3)}, debut + ${(PLEINE_NUIT - ALLUMAGE - DECALAGE_MAX).toFixed(3)});
-  return smoothstep(debut, fin, n);
-}
-`;
-
-/**
- * L'opacité des fantômes, entre la nuit (`light` = 0) et le jour (1) : le remplissage (0,35 de jour, 0,45 de nuit)
- * et l'arête (70 % : à 50 %, les fantômes crème disparaissaient sur le marbre des Îles du Ciel).
- */
-export function opaciteDesFantomes(light: number): { remplissage: number; arete: number } {
-  const l = Math.min(1, Math.max(0, light));
-  return { remplissage: 0.45 + (0.35 - 0.45) * l, arete: 0.7 };
-}
+import type { TextureKind } from './pixels';
+import { dessinerPhare } from './decor/phare';
+import { CREME_DU_PHARE, phareDeGrimoire } from './construction/phare';
+import { cle, decalagesDe, genresDesBlocs } from './construction/genres';
+import { type BlocAssemble, MOTIF_ASSEMBLE, SANS_BISEAU, teinteDeCase } from './construction/shader';
+import { BISEAU, couleurDuRole, FANTOME, LANTERNE, PROFONDEUR, RANG_DES_SOCLES, TOILE_DU_NAVIRE, TROPHEE, VERRE_HORS_MUR, VITRE_DE_JOUR } from './construction/reglages';
+import { batimentsDe, caseDuLieu } from './construction/batiments';
+export { ALLUMAGE, ARETE, ARETE_DU_VERRE, ARETE_FANTOME, BISEAU, couleursDesRoles, DECALAGE_MAX, ECART_SOMBRE, ECLAT_DU_BISEAU, FANTOME, FENETRES_ALLUMEES, LANTERNES_ALLUMEES, LUEUR, PLEINE_NUIT, TEINTE, TROPHEE, VITRE_DE_JOUR } from './construction/reglages';
+export { BISEAU_GLSL, type BlocAssemble, detailDuMotif, ECLAT_GLSL, eclatDeFenetre, eclatDuBiseau, MOTIF_ASSEMBLE, MOTIF_ASSEMBLE_DEBUT, MOTIF_ASSEMBLE_GLSL, opaciteDesFantomes, SANS_BISEAU, TEINTE_GLSL, teinteDeCase } from './construction/shader';
+export { genresDesBlocs } from './construction/genres';
+export { CREME_DU_PHARE, phareDeGrimoire } from './construction/phare';
+export { batimentsDe, caseDuLieu, ETAPES_DU_BATIMENT, sansToursDuCoeur } from './construction/batiments';
 
 // ---------- Le maillage ----------
 
@@ -323,9 +166,6 @@ export interface OptionsDeLaConstruction {
   solEntier?: (x: number, y: number, z: number) => VoxelCube | undefined;
 }
 
-/** Le genre d'un bloc dans la construction. */
-export type Genre = 'bloc' | 'vitre' | 'lanterne' | 'fantome';
-
 type V3 = [number, number, number];
 
 /** Les six directions, en coordonnées de grille (z : hauteur). */
@@ -337,259 +177,16 @@ const DIRS: V3[] = [
   [0, 0, 1],
   [0, 0, -1],
 ];
+
 const HAUT = 4;
+
 const BAS = 5;
+
 const axeDe = (d: number) => d >> 1;
+
 const signeDe = (d: number) => (d & 1 ? -1 : 1);
+
 const dir = (axe: number, signe: number) => axe * 2 + (signe > 0 ? 0 : 1);
-
-const cle = (x: number, y: number, z: number) => `${x},${y},${z}`;
-
-/** La distance d'un bord qui n'est pas une arête saillante, dans `biseaux`. */
-export const SANS_BISEAU = 64;
-
-const TOITURES = new Set(['toit', 'tuile']);
-const LUMIERES = new Set(['lanterne', 'verre']);
-
-const srgbVersLineaire = (v: number) => (v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4));
-const lineaireVersSrgb = (v: number) => (v <= 0.0031308 ? v * 12.92 : 1.055 * Math.pow(v, 1 / 2.4) - 0.055);
-
-/**
- * La couleur (sRGB) au bord saillant d'une face de couleur `c`, là où le biseau peint est plein : +`ECLAT_DU_BISEAU` de
- * lumière, et, sur une teinte sombre, au moins +`ECART_SOMBRE` niveaux par canal (le même calcul que `BISEAU_GLSL`).
- * Toujours plus clair, jamais plus sombre.
- */
-export function eclatDuBiseau(c: Couleur): Couleur {
-  const k = rgb(c).map((v) => v / 255);
-  const lin = k.map(srgbVersLineaire);
-  const sombre = 0.2126 * lin[0] + 0.7152 * lin[1] + 0.0722 * lin[2] < SOMBRE;
-  const out = lin.map((l, i) => {
-    let f = l * (1 + ECLAT_DU_BISEAU);
-    if (sombre) f = Math.max(f, srgbVersLineaire(Math.min(1, k[i] + ECART_SOMBRE / 255)));
-    return Math.round(Math.min(1, lineaireVersSrgb(Math.min(1, f))) * 255);
-  });
-  return (out[0] << 16) | (out[1] << 8) | out[2];
-}
-
-/**
- * Le biseau peint en GLSL : \`biseauPeint(c, k, force)\` rend la couleur linéaire \`c\` éclaircie à la part \`k\` de la bande
- * (\`force\` : \`ECLAT_DU_BISEAU\`, 0 pour l'éteindre). Les fonctions sRGB sont celles de Three.js.
- */
-export const BISEAU_GLSL = `
-vec3 biseauPeint(vec3 c, float k, float force) {
-  vec3 fort = c * (1.0 + force);
-  if (force > 0.0 && dot(c, vec3(0.2126, 0.7152, 0.0722)) < ${SOMBRE.toFixed(2)}) {
-    vec3 s = sRGBTransferOETF(vec4(c, 1.0)).rgb + ${(ECART_SOMBRE / 255).toFixed(5)};
-    fort = max(fort, sRGBTransferEOTF(vec4(min(s, vec3(1.0)), 1.0)).rgb);
-  }
-  return mix(c, fort, k);
-}
-`;
-
-// ---------- Les motifs des blocs assemblés (GD-2) ----------
-
-/**
- * Le premier motif des blocs assemblés : le bit au-dessus de tous ceux d'un mur peint (./architecture/peinture.ts,
- * `MOTIF`), si bien qu'aucun mur peint, quels que soient ses drapeaux, ne peut se lire comme un bloc assemblé, ni
- * l'inverse. Il suit `MOTIF` s'il gagne un drapeau.
- */
-export const MOTIF_ASSEMBLE_DEBUT = 2 * Math.max(...Object.values(MOTIF));
-
-/**
- * Le motif peint de chaque bloc assemblé, par sommet (l'attribut `motifs`, qu'il partage avec les murs peints du lot 7 :
- * les blocs assemblés prennent `MOTIF_ASSEMBLE_DEBUT` + 1 à + 4, au-delà de leurs bits ; 1025 à 1028 aujourd'hui, des
- * entiers exacts en flottant). Il se peint dans le shader, sans un triangle de plus, par-dessus la couleur de fond du
- * bloc (world/palette.ts, `MATIERES`) : deux blocs ne se distinguent jamais par la couleur seule. Un bloc délavé (île
- * fermée) n'a pas de motif.
- */
-export const MOTIF_ASSEMBLE = {
-  poutre: MOTIF_ASSEMBLE_DEBUT + 1,
-  vitrail: MOTIF_ASSEMBLE_DEBUT + 2,
-  engrenage: MOTIF_ASSEMBLE_DEBUT + 3,
-  miroir: MOTIF_ASSEMBLE_DEBUT + 4,
-} as const;
-export type BlocAssemble = keyof typeof MOTIF_ASSEMBLE;
-
-/** Les mesures des motifs, en part de case, depuis le milieu de la face (le même dessin en JS et en GLSL). */
-const MESURES_DES_MOTIFS = {
-  /** Le madrier : deux veines en long, et un collier à mi-hauteur ; sur le dessus, un cerne. */
-  poutre: { veines: [-0.22, 0.18], veine: 0.025, collier: 0.09, cerne: 0.28, epaisseurDuCerne: 0.035 },
-  /** Le hublot : un disque de verre dans son bord sombre, un reflet en haut à gauche. */
-  vitrail: { bord: 0.35, verre: 0.3, reflet: [-0.1, 0.1, 0.07] },
-  /** La poulie : la roue, sa gorge, son axe. */
-  engrenage: { roue: 0.38, gorge: 0.26, epaisseurDeGorge: 0.035, axe: 0.07 },
-  /** La loupe : l'anneau, le verre, l'éclat, et le manche vers le coin bas-droit. */
-  miroir: { anneau: 0.32, verre: 0.23, eclat: [-0.08, 0.08, 0.06], manche: [0.2, -0.2, 0.46, -0.46], epaisseurDuManche: 0.05 },
-} as const;
-
-/** Le détail peint au point (`u`, `v`) d'une face d'un bloc assemblé, de −0,5 à 0,5 depuis son milieu (`v` monte sur un côté) ; `null` : son fond. */
-export function detailDuMotif(bloc: BlocAssemble, u: number, v: number, dessus: boolean): string | null {
-  const r = Math.hypot(u, v);
-  if (bloc === 'poutre') {
-    const M = MESURES_DES_MOTIFS.poutre;
-    if (dessus) return Math.abs(r - M.cerne) < M.epaisseurDuCerne ? 'veine' : null;
-    if (Math.abs(v) < M.collier) return 'collier';
-    return M.veines.some((x) => Math.abs(u - x) < M.veine) ? 'veine' : null;
-  }
-  if (bloc === 'vitrail') {
-    const M = MESURES_DES_MOTIFS.vitrail;
-    if (Math.hypot(u - M.reflet[0], v - M.reflet[1]) < M.reflet[2]) return 'reflet';
-    return r < M.verre ? 'verre' : r < M.bord ? 'bord' : null;
-  }
-  if (bloc === 'engrenage') {
-    const M = MESURES_DES_MOTIFS.engrenage;
-    if (r < M.axe || Math.abs(r - M.gorge) < M.epaisseurDeGorge) return 'gorge';
-    return r < M.roue ? 'roue' : null;
-  }
-  const M = MESURES_DES_MOTIFS.miroir;
-  if (Math.hypot(u - M.eclat[0], v - M.eclat[1]) < M.eclat[2]) return 'eclat';
-  if (r < M.verre) return 'verre';
-  if (r < M.anneau) return 'laiton';
-  const [ax, ay, bx, by] = M.manche;
-  const t = Math.min(1, Math.max(0, ((u - ax) * (bx - ax) + (v - ay) * (by - ay)) / ((bx - ax) ** 2 + (by - ay) ** 2)));
-  return Math.hypot(u - ax - (bx - ax) * t, v - ay - (by - ay) * t) < M.epaisseurDuManche ? 'laiton' : null;
-}
-
-const glslLin = (c: Couleur) => {
-  const [r, g, b] = rgb(c).map((v) => srgbVersLineaire(v / 255).toFixed(4));
-  return `vec3(${r}, ${g}, ${b})`;
-};
-const f3 = (v: number) => v.toFixed(3);
-
-/**
- * Les motifs en GLSL : `motifAssemble(c, m, pos, n)` peint le bloc assemblé `m` (son rang : 1 poutre, 2 vitrail,
- * 3 engrenage, 4 miroir ; 0 : aucun) sur la couleur linéaire `c`, à la position `pos` d'une face de normale `n` (repère
- * Three). Le shader lui passe `motif − MOTIF_ASSEMBLE_DEBUT` pour un bloc assemblé, 0 sinon (three/construction.ts).
- * Bords adoucis sur un pixel ; de loin, quand une case tient en moins de 12 pixels, le motif s'efface vers le fond (rien
- * sous 6 pixels) : jamais de moiré. Les dérivées se prennent avant tout branchement.
- */
-export const MOTIF_ASSEMBLE_GLSL = (() => {
-  const D = DETAILS_ASSEMBLES;
-  const P = MESURES_DES_MOTIFS;
-  return `
-float dansLeMotif(float d, float fw) { return 1.0 - smoothstep(-fw, fw, d); }
-vec3 motifAssemble(vec3 c, float m, vec3 pos, vec3 n) {
-  vec3 an = abs(n);
-  bool dessus = an.y > 0.5;
-  vec2 q = an.x > 0.5 ? pos.zy : (dessus ? pos.xz : pos.xy);
-  vec2 fq = fwidth(q);
-  float fw = max(max(fq.x, fq.y), 1e-5);
-  if (m < 0.5) return c;
-  float k = clamp((1.0 / fw - 6.0) / 6.0, 0.0, 1.0);
-  vec2 p = fract(q) - 0.5;
-  float r = length(p);
-  if (m < 1.5) {
-    if (dessus) return mix(c, ${glslLin(D.poutre.veine)}, dansLeMotif(abs(r - ${f3(P.poutre.cerne)}) - ${f3(P.poutre.epaisseurDuCerne)}, fw) * k);
-    float v = min(abs(p.x - (${f3(P.poutre.veines[0])})), abs(p.x - ${f3(P.poutre.veines[1])})) - ${f3(P.poutre.veine)};
-    c = mix(c, ${glslLin(D.poutre.veine)}, dansLeMotif(v, fw) * k);
-    return mix(c, ${glslLin(D.poutre.collier)}, dansLeMotif(abs(p.y) - ${f3(P.poutre.collier)}, fw) * k);
-  }
-  if (m < 2.5) {
-    c = mix(c, ${glslLin(D.vitrail.bord)}, dansLeMotif(r - ${f3(P.vitrail.bord)}, fw) * k);
-    c = mix(c, ${glslLin(D.vitrail.verre)}, dansLeMotif(r - ${f3(P.vitrail.verre)}, fw) * k);
-    return mix(c, ${glslLin(D.vitrail.reflet)}, dansLeMotif(length(p - vec2(${f3(P.vitrail.reflet[0])}, ${f3(P.vitrail.reflet[1])})) - ${f3(P.vitrail.reflet[2])}, fw) * k);
-  }
-  if (m < 3.5) {
-    c = mix(c, ${glslLin(D.engrenage.roue)}, dansLeMotif(r - ${f3(P.engrenage.roue)}, fw) * k);
-    c = mix(c, ${glslLin(D.engrenage.gorge)}, dansLeMotif(abs(r - ${f3(P.engrenage.gorge)}) - ${f3(P.engrenage.epaisseurDeGorge)}, fw) * k);
-    return mix(c, ${glslLin(D.engrenage.gorge)}, dansLeMotif(r - ${f3(P.engrenage.axe)}, fw) * k);
-  }
-  vec2 a = vec2(${f3(P.miroir.manche[0])}, ${f3(P.miroir.manche[1])});
-  vec2 ab = vec2(${f3(P.miroir.manche[2])}, ${f3(P.miroir.manche[3])}) - a;
-  float t = clamp(dot(p - a, ab) / dot(ab, ab), 0.0, 1.0);
-  c = mix(c, ${glslLin(D.miroir.laiton)}, dansLeMotif(length(p - a - ab * t) - ${f3(P.miroir.epaisseurDuManche)}, fw) * k);
-  c = mix(c, ${glslLin(D.miroir.laiton)}, dansLeMotif(r - ${f3(P.miroir.anneau)}, fw) * k);
-  c = mix(c, ${glslLin(D.miroir.verre)}, dansLeMotif(r - ${f3(P.miroir.verre)}, fw) * k);
-  return mix(c, ${glslLin(D.miroir.eclat)}, dansLeMotif(length(p - vec2(${f3(P.miroir.eclat[0])}, ${f3(P.miroir.eclat[1])})) - ${f3(P.miroir.eclat[2])}, fw) * k);
-}
-`;
-})();
-
-/**
- * Le genre de chaque bloc : une vitre est une lanterne ou un verre pris dans un mur (deux blocs pleins de part et
- * d'autre sur une rangée, un bloc de la construction dessous, pas de toit dessus : les fenêtres de world/architect.ts,
- * celles de l'école) ; les autres lanternes (cours, comptoirs, sommets, la lanterne d'un phare sous son toit) restent
- * des lanternes ; le reste est un bloc.
- */
-export function genresDesBlocs(cubes: VoxelCube[]): Map<VoxelCube, Genre> {
-  const plein = new Map<string, VoxelCube>();
-  for (const c of cubes) if (!c.ghost) plein.set(cle(c.x, c.y, c.z), c);
-  const mur = (x: number, y: number, z: number) => {
-    const n = plein.get(cle(x, y, z));
-    return n !== undefined && !LUMIERES.has(n.texture ?? '');
-  };
-  const out = new Map<VoxelCube, Genre>();
-  for (const c of cubes) {
-    if (c.ghost) {
-      out.set(c, 'fantome');
-      continue;
-    }
-    if (!LUMIERES.has(c.texture ?? '')) {
-      out.set(c, 'bloc');
-      continue;
-    }
-    const dessus = plein.get(cle(c.x, c.y, c.z + 1));
-    const pris =
-      ((mur(c.x - 1, c.y, c.z) && mur(c.x + 1, c.y, c.z)) || (mur(c.x, c.y - 1, c.z) && mur(c.x, c.y + 1, c.z))) &&
-      mur(c.x, c.y, c.z - 1) &&
-      !(dessus && TOITURES.has(dessus.texture ?? ''));
-    out.set(c, pris ? 'vitre' : c.texture === 'lanterne' ? 'lanterne' : 'bloc');
-  }
-  return out;
-}
-
-/** Le bâtiment d'un bloc, pour compter ses vitres allumées : son île et son lieu. */
-const batimentDe = (c: VoxelCube) => `${c.tag ?? ''}|${c.place ?? ''}`;
-
-/**
- * Les décalages d'allumage des vitres et des lanternes : `FENETRES_ALLUMEES` vitres par bâtiment, `LANTERNES_ALLUMEES`
- * lanternes par cour (une île et un lieu), rien sur une île fermée.
- */
-function decalagesDe(genres: Map<VoxelCube, Genre>): Map<VoxelCube, number> {
-  const out = new Map<VoxelCube, number>();
-  const parBatiment = new Map<string, VoxelCube[]>();
-  for (const [c, g] of genres) {
-    if (g !== 'vitre' && g !== 'lanterne') continue;
-    const d = c.muted ? -1 : DECALAGE_MAX * hasardDeCase(c.x + 17, c.y + 5, c.z + 11);
-    out.set(c, d);
-    if (c.muted) continue;
-    const b = `${g}|${batimentDe(c)}`;
-    const list = parBatiment.get(b);
-    if (list) list.push(c);
-    else parBatiment.set(b, [c]);
-  }
-  for (const [b, list] of parBatiment) {
-    const rang = list.map((c) => ({ c, h: hasardDeCase(c.x, c.y + 31, c.z + 7) })).sort((p, q) => p.h - q.h);
-    for (const { c } of rang.slice(b.startsWith('vitre') ? FENETRES_ALLUMEES : LANTERNES_ALLUMEES)) out.set(c, -1);
-  }
-  return out;
-}
-
-/**
- * Les tours du décor du cœur que le rendu Archipéo ne dessine pas (décision du directeur artistique, lot R5) : un seul
- * phare par île. Sur l'île de la Tour (6e), la tour de verre à sommet d'or cachait le pied du phare de Grimoire ; sur
- * l'île du Phare (3e), la petite tour de pierre à lanterne doublait le grand phare. Cases du cœur (world/decor.ts,
- * `DECOR`), que Blocland garde : son dessin ne change pas.
- */
-const TOURS_DU_COEUR: Partial<Record<BiomeId, readonly (readonly [number, number])[]>> = {
-  'french-6e-reading': [
-    [8, 4],
-    [9, 4],
-    [8, 5],
-    [9, 5],
-  ],
-  'maths-3e-functions': [[9, 3]],
-};
-
-/** Les cubes du monde sans les tours du décor du cœur (`TOURS_DU_COEUR`) : le rendu Archipéo seulement. */
-export function sansToursDuCoeur(cubes: VoxelCube[]): VoxelCube[] {
-  const retirees = new Set<string>();
-  for (const [ile, cases] of Object.entries(TOURS_DU_COEUR)) {
-    const o = origineDe(ile as Parameters<typeof origineDe>[0]);
-    for (const [dx, dy] of cases ?? []) retirees.add(`${ile}|${o.x + LAYOUT_PAD.x + dx},${o.y + LAYOUT_PAD.y + dy}`);
-  }
-  return cubes.filter((c) => c.sol || c.decor || c.ghost || !retirees.has(`${c.tag}|${c.x},${c.y}`));
-}
 
 /** Les vitres et les lanternes d'un monde, et leur décalage d'allumage. */
 export type FenetresDuMonde = Map<VoxelCube, { genre: 'vitre' | 'lanterne'; decalage: number }>;
@@ -607,133 +204,6 @@ export function fenetresDe(cubes: VoxelCube[]): FenetresDuMonde {
   const out = new Map<VoxelCube, { genre: 'vitre' | 'lanterne'; decalage: number }>();
   for (const [c, g] of genres) if (g === 'vitre' || g === 'lanterne') out.set(c, { genre: g, decalage: decalages.get(c) ?? -1 });
   return out;
-}
-
-/** Le phare de Grimoire dans un monde : les cases que le modèle remplace, celles encore en chantier, et sa pose. */
-export interface PhareDeGrimoire {
-  /** Les cases des étapes finies (clés `x,y,z`), que le modèle remplace. */
-  remplacees: Set<string>;
-  /** Les cases des étapes pas encore finies. */
-  enCours: Set<string>;
-  /** Les cases remplacées, pour le toucher. */
-  cellules: Cell[];
-  /** Où poser le modèle, et ses pièces (vides tant qu'aucune étape n'est finie). */
-  pose: PoseDuPhare;
-}
-
-/**
- * Le phare de Grimoire, s'il est dans ce monde : ses étapes, finies ou non, lues sur les cubes (une étape est finie
- * quand toutes ses cases sont posées). Posé au centre de l'emprise de la tour (ses murs), pied au sol. `null` hors du
- * 6e ou tant que la tour n'a aucune case dans le monde (une île fermée ne montre pas ses plans ; l'île de la Tour
- * n'existe qu'au 6e).
- */
-export function phareDeGrimoire(cubes: VoxelCube[], a: ArchipelagoId = PHARE_DE_GRIMOIRE.archipel): PhareDeGrimoire | null {
-  const P = PHARE_DE_GRIMOIRE;
-  if (a !== P.archipel) return null;
-  const tour = new Map<string, VoxelCube>();
-  for (const c of cubes) if (c.tag === P.ile && !c.quest) tour.set(cle(c.x, c.y, c.z), c);
-  if (!tour.size) return null;
-  const def = islandDef(P.ile);
-  const remplacees = new Set<string>();
-  const enCours = new Set<string>();
-  const cellules: Cell[] = [];
-  const pieces = new Set<PieceDuPhare>();
-  let emprise: Cell[] | null = null;
-  let muted = false;
-  for (const e of P.etapes) {
-    const plan = getPlan(e.plan);
-    if (!plan) continue;
-    const d = decalageDesPlans(plan);
-    const cases = planCells(plan).map((c) => ({ x: def.core.x + c.x + d.x, y: def.core.y + c.y + d.y, z: def.altitude + c.z + d.z + 1 }));
-    emprise ??= cases;
-    const posees = cases.map((c) => tour.get(cle(c.x, c.y, c.z)));
-    // Une étape pas encore dans le monde (la précédente n'est pas finie) : les suivantes non plus.
-    if (posees.some((c) => !c)) break;
-    muted ||= posees.some((c) => c?.muted);
-    const finie = posees.every((c) => !c?.ghost);
-    for (const c of cases) (finie ? remplacees : enCours).add(cle(c.x, c.y, c.z));
-    if (finie) {
-      cellules.push(...cases);
-      for (const p of e.pieces) pieces.add(p);
-    }
-  }
-  if (!emprise || (!remplacees.size && !enCours.size)) return null;
-  return { remplacees, enCours, cellules, pose: poseDuPhare(a, emprise, pieces, muted) };
-}
-
-/** La pose du phare du 6e sur l'emprise de sa tour : au centre, pied au sol, sans socle. */
-function poseDuPhare(a: ArchipelagoId, emprise: Cell[], pieces: Set<PieceDuPhare>, muted: boolean): PoseDuPhare {
-  const xs = emprise.map((c) => c.x);
-  const ys = emprise.map((c) => c.y);
-  const pied = Math.min(...emprise.map((c) => c.z));
-  const { H, r, emprise: cote } = PHARES['6e'];
-  return {
-    cx: (Math.min(...xs) + Math.max(...xs) + 1) / 2,
-    cz: (Math.min(...ys) + Math.max(...ys) + 1) / 2,
-    pied,
-    y: pied,
-    H,
-    r,
-    emprise: cote,
-    // Huit pans : deux faces à plat vers la caméra (face au sud et à l'est).
-    rot: Math.PI / 8,
-    pierre: couleurDeMatiere(a, 'pierre'),
-    verre: couleurDeMatiere(a, 'verre'),
-    muted,
-    pieces,
-  };
-}
-
-/** Les étapes d'un bâtiment qui prennent le kit d'architecture : les murs et le toit (world/architect.ts, `Stages`). */
-export const ETAPES_DU_BATIMENT = 2;
-
-const batiments = new Map<ArchipelagoId, ReadonlyMap<string, string>>();
-
-/**
- * Les bâtiments des îles d'un archipel (lot 7b), entiers, posés ou non : les cases des murs et du toit de chaque île
- * (clé `x,y,z` du monde) et la texture de leur bloc. La cour (barrières, jardinières, quai, ponton), la jetée du port,
- * le décor, les ponts, les bornes et les monuments n'y sont pas : ils gardent leur dessin ; les lieux du village non
- * plus (l'école, la salle des trophées, le lieu où l'on assemble : ils prennent le kit par `caseDuLieu`).
- */
-export function batimentsDe(a: ArchipelagoId): ReadonlyMap<string, string> {
-  const deja = batiments.get(a);
-  if (deja) return deja;
-  const out = new Map<string, string>();
-  for (const def of mapOf(a))
-    for (const plan of plansFor(def.id).slice(0, ETAPES_DU_BATIMENT)) {
-      // Comme world/terrain.ts : la case (x, y, z) d'un plan est posée en (cœur + x, cœur + y, altitude + z + 1), décalée
-      // au fond de la zone au Marché et à l'Atelier (`decalageDesPlans`).
-      const d = decalageDesPlans(plan);
-      for (const c of planCells(plan))
-        out.set(`${def.core.x + c.x + d.x},${def.core.y + c.y + d.y},${def.altitude + c.z + d.z + 1}`, BLOCKS[c.block].texture);
-    }
-  batiments.set(a, out);
-  return out;
-}
-
-/** Le coin de chaque lieu du village posé (clé `<lieu>|<île>`) : x, y, et z du rang posé sur le sol (`null` ailleurs). */
-const coinsDesLieux = new Map<string, { x: number; y: number; z: number } | null>();
-
-/**
- * La case d'un bloc d'un lieu du village dans le modèle de son lieu (world/terrain.ts : `schoolModel`, `trophyModel` et
- * les trophées posés, `atelierModel`), relative à son coin ; `null` hors du modèle (le soubassement qui rattrape une
- * marche du sol) ou hors d'un lieu du village (un monument).
- */
-export function caseDuLieu(c: VoxelCube): CaseDuLieu | null {
-  if (!estUnLieuDuVillage(c.place) || !c.tag) return null;
-  const k = `${c.place}|${c.tag}`;
-  let coin = coinsDesLieux.get(k);
-  if (coin === undefined) {
-    const ile = c.tag as BiomeId;
-    const s = placeSpot(c.place, ile);
-    coin = s && { x: s.x, y: s.y, z: islandDef(ile).altitude + s.h };
-    coinsDesLieux.set(k, coin);
-  }
-  if (!coin) return null;
-  const z = c.z - coin.z;
-  if (z < 1) return null;
-  const { w, d } = VILLAGE_PLACES[c.place].size;
-  return { x: c.x - coin.x, y: c.y - coin.y, z, w, d, texture: c.texture ?? '' };
 }
 
 /** Un groupe en cours de remplissage. */
