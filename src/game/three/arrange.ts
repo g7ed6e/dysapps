@@ -50,14 +50,17 @@ const materiauxDesBlocs = new Set<THREE.Material>();
 /** Le mode « Aménager » est ouvert dans la scène : les matériaux des blocs portent l'ajout du mode. */
 let modeOuvert = false;
 
-/** L'ajout du mode, posé sur un matériau des blocs : le même programme pour tous (une compilation par sorte de matériau). */
+/**
+ * L'ajout du mode, posé sur un matériau des blocs : le même programme pour tous (une compilation par sorte de matériau).
+ * Un maillage en instances (les cubes de nuages, ./offshore.ts) se lit à la place de chaque instance.
+ */
 function injecter(shader: THREE.WebGLProgramParametersWithUniforms): void {
   Object.assign(shader.uniforms, zoneDuMode);
   shader.vertexShader = shader.vertexShader
     .replace('#include <common>', '#include <common>\nuniform vec4 uAmZone;\nuniform float uAmLift;\nvarying vec3 vAmWp;')
     .replace(
       '#include <begin_vertex>',
-      `#include <begin_vertex>\nvec4 p = modelMatrix * vec4(transformed, 1.0);\nif (${DANS_LA_ZONE}) { transformed.y += uAmLift; p.y += uAmLift; }\nvAmWp = p.xyz;`,
+      `#include <begin_vertex>\n#ifdef USE_INSTANCING\nvec4 p = modelMatrix * instanceMatrix * vec4(transformed, 1.0);\n#else\nvec4 p = modelMatrix * vec4(transformed, 1.0);\n#endif\nif (${DANS_LA_ZONE}) { transformed.y += uAmLift; p.y += uAmLift; }\nvAmWp = p.xyz;`,
     );
   shader.fragmentShader = shader.fragmentShader
     .replace('#include <common>', '#include <common>\nuniform vec4 uAmZone;\nuniform float uAmCut;\nvarying vec3 vAmWp;')
