@@ -8,7 +8,7 @@ import { useState } from 'react';
 import { SettingsProvider } from '../core/SettingsContext';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { World } from './engine/state';
-import { type Amenagement, useAmenagement } from './Arranging';
+import { type Amenagement, QUESTION_D_ANNULATION, useAmenagement } from './Arranging';
 import { ArrangeBar, ArrangeButton, ArrangeSentence } from './ArrangeBar';
 import { ArrangeHandles } from './ArrangeHandles';
 import { HABILLAGES } from './world/skin';
@@ -74,7 +74,10 @@ describe('le mode « Aménager »', () => {
     render(<SettingsProvider><Banc reduit depart={depart()} /></SettingsProvider>);
     fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
     act(() => void dernier.intention({ genre: 'creature', id: VOLCAN, gardien: true }));
-    expect(screen.getByRole('status').textContent).toMatch(/^Le Gardien du /);
+    // La ligne de signes, comme un lieu : son île pour repère, la flèche, l'écart ; dite en mots.
+    expect(screen.getByRole('status').textContent).toMatch(/^Le Gardien : (au|à l’) [a-z-]+ du [^,]+, à \d+ cases?\.$/);
+    expect(dernier.ligne?.genre).toBe('gardien');
+    expect(document.querySelector('.arrange-signes')?.textContent).toContain(VOLCAN);
     fireEvent.click(screen.getByRole('button', { name: /Tourner/ }));
     // Plus de « C’est posé » : la ligne dit où il regarde, le son de la pose suffit.
     expect(screen.getByRole('status').textContent).not.toMatch(/C’est posé/);
@@ -137,38 +140,79 @@ describe('le mode « Aménager »', () => {
     act(() => void dernier.intention({ genre: 'mer', point: { x: 0, y: 0 } }));
     fireEvent.click(screen.getByRole('button', { name: 'Poser' }));
     expect(spotOf(monde, VOLCAN)).not.toEqual(avant);
+    // Quelque chose a bougé : « Annuler » demande d'abord, à sa place (« Garder » ou « Annuler »).
     fireEvent.click(screen.getByRole('button', { name: 'Annuler' }));
+    const question = screen.getByRole('group', { name: QUESTION_D_ANNULATION });
+    expect(within(question).getByRole('button', { name: 'Garder' })).toBeInTheDocument();
+    fireEvent.click(within(question).getByRole('button', { name: 'Annuler' }));
     expect(spotOf(monde, VOLCAN)).toEqual(avant);
     expect(dernier.ouvert).toBe(false);
   });
 
-  it('« Valider » garde le plan ; Échap annule ; sans changement, « Annuler » ferme sans rien dire', () => {
+  it('« Valider » pose le choix en cours et garde le plan ; Échap n’annule jamais ; « Annuler » demande, sauf sans changement', () => {
     const dit: string[] = [];
     render(<SettingsProvider><Banc reduit depart={depart()} dire={(t) => dit.push(t)} /></SettingsProvider>);
+    const entree = spotOf(monde, VOLCAN);
+    fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
+    act(() => void dernier.intention({ genre: 'ile', id: VOLCAN }));
+    act(() => void dernier.intention({ genre: 'mer', point: { x: 0, y: 0 } }));
+    // « Valider » pendant un choix : il le pose d'abord, puis ferme.
+    fireEvent.click(screen.getByRole('button', { name: 'Valider' }));
+    expect(dernier.ouvert).toBe(false);
+    const posee = spotOf(monde, VOLCAN);
+    expect(posee).not.toEqual(entree);
+    // Échap : il désélectionne le choix, puis ne fait plus rien ; il n'annule jamais.
+    fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
+    act(() => void dernier.intention({ genre: 'ile', id: VOLCAN }));
+    act(() => void dernier.intention({ genre: 'mer', point: { x: 190, y: 140 } }));
+    fireEvent.click(screen.getByRole('button', { name: 'Poser' }));
+    const deplacee = spotOf(monde, VOLCAN);
+    expect(deplacee).not.toEqual(posee);
+    act(() => void dernier.intention({ genre: 'ile', id: VOLCAN }));
+    fireEvent.keyDown(window, { key: 'Escape' });
+    expect(dernier.choix).toBeNull();
+    fireEvent.keyDown(window, { key: 'Escape' });
+    expect(dernier.ouvert).toBe(true);
+    expect(spotOf(monde, VOLCAN)).toEqual(deplacee);
+    // « Annuler » demande ; Échap ferme la question, « Garder » aussi : rien n'est remis.
+    fireEvent.click(screen.getByRole('button', { name: 'Annuler' }));
+    expect(dernier.aConfirmer).toBe(true);
+    expect(dit.at(-1)).toBe(QUESTION_D_ANNULATION);
+    fireEvent.keyDown(window, { key: 'Escape' });
+    expect(dernier.aConfirmer).toBe(false);
+    fireEvent.click(screen.getByRole('button', { name: 'Annuler' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Garder' }));
+    expect(dernier.ouvert).toBe(true);
+    expect(spotOf(monde, VOLCAN)).toEqual(deplacee);
+    // Confirmé : le plan revient à l'entrée du mode.
+    fireEvent.click(screen.getByRole('button', { name: 'Annuler' }));
+    fireEvent.click(within(screen.getByRole('group', { name: QUESTION_D_ANNULATION })).getByRole('button', { name: 'Annuler' }));
+    expect(dernier.ouvert).toBe(false);
+    expect(spotOf(monde, VOLCAN)).toEqual(posee);
+    expect(dit.at(-1)).toBe('Le plan est remis comme avant.');
+    // Rien de changé : « Annuler » ferme tout de suite, sans rien dire.
+    fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
+    const avant = dit.length;
+    fireEvent.click(screen.getByRole('button', { name: 'Annuler' }));
+    expect(dernier.ouvert).toBe(false);
+    expect(dit.slice(avant).filter((t) => /remis|comme avant/.test(t))).toHaveLength(0);
+  });
+
+  it('« Valider » sur une place prise : le choix reste à sa place d’avant, rien de posé ne se perd', () => {
+    render(<SettingsProvider><Banc reduit depart={depart()} /></SettingsProvider>);
     fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
     act(() => void dernier.intention({ genre: 'ile', id: VOLCAN }));
     act(() => void dernier.intention({ genre: 'mer', point: { x: 0, y: 0 } }));
     fireEvent.click(screen.getByRole('button', { name: 'Poser' }));
     const posee = spotOf(monde, VOLCAN);
+    // Un choix qui ne se pose pas (un lieu fixe se refuse ; on force ici un choix sur la place d'un autre lieu).
+    act(() => void dernier.intention({ genre: 'ile', id: VOLCAN }));
+    const c = dernier.choix;
+    expect(c?.genre).toBe('lieu');
+    if (c?.genre === 'lieu') act(() => dernier.choisirDirect({ ...c, spot: spotOf(monde, TOUR) }));
     fireEvent.click(screen.getByRole('button', { name: 'Valider' }));
     expect(dernier.ouvert).toBe(false);
     expect(spotOf(monde, VOLCAN)).toEqual(posee);
-    // Échap : comme « Annuler ».
-    fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
-    act(() => void dernier.intention({ genre: 'ile', id: VOLCAN }));
-    act(() => void dernier.intention({ genre: 'mer', point: { x: 190, y: 140 } }));
-    fireEvent.click(screen.getByRole('button', { name: 'Poser' }));
-    expect(spotOf(monde, VOLCAN)).not.toEqual(posee);
-    fireEvent.keyDown(window, { key: 'Escape' });
-    expect(dernier.ouvert).toBe(false);
-    expect(spotOf(monde, VOLCAN)).toEqual(posee);
-    expect(dit.at(-1)).toBe('Le plan est remis comme avant.');
-    // Rien de changé : « Annuler » ferme, sans rien dire.
-    fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
-    const avant = dit.length;
-    fireEvent.click(screen.getByRole('button', { name: 'Annuler' }));
-    expect(dernier.ouvert).toBe(false);
-    expect(dit.slice(avant).filter((t) => /remis/.test(t))).toHaveLength(0);
   });
 
   it('le geste de la pose dure 1,5 s au plus, et un toucher le termine', () => {

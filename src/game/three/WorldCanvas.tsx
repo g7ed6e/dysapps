@@ -476,6 +476,8 @@ export default function WorldCanvas({
     const w = world.current;
     if (!w) return;
     w.amenagement.poser(vueDuMode);
+    // Le lieu choisi : son nom n'est écrit qu'une fois, sur son fantôme.
+    w.etiquettes.cacher(vueDuMode?.lieu ?? null);
     if (vueDuMode) w.garderEnVue(vueDuMode.cadre ?? { rect: { x0: vueDuMode.suivre.x, y0: vueDuMode.suivre.y, x1: vueDuMode.suivre.x + 1, y1: vueDuMode.suivre.y + 1 }, z: vueDuMode.suivre.z });
     // Reposé aussi quand la scène est refaite (un lieu posé, la préférence de mouvement).
     // eslint-disable-next-line react-hooks/exhaustive-deps

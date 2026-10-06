@@ -39,6 +39,8 @@ export interface ArrangeView {
   barrees: string[];
   /** Le nom du lieu choisi, écrit sur son fantôme (le nom de l'univers, donné par la page). */
   nom?: string;
+  /** Le lieu choisi : son étiquette sur l'île se tait le temps du choix, son nom n'est écrit qu'une fois, sur le fantôme. */
+  lieu?: string;
   /** Ce que la vue garde entier à l'écran : le fantôme (les deux lieux réunis et leur réunion), à hauteur de l'eau. */
   cadre?: CadreDuMode;
 }

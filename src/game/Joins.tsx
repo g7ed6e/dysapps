@@ -115,11 +115,11 @@ function JoinBody({ builder }: { builder: BigBuilder<JoinDef> }) {
                 })}
               </ul>
             </details>
-            {/* Un seul bouton nommé, « Poser » (le bloc suivant) ; « Poser tout ce que j'ai » en icône. */}
+            {/* Un seul bouton nommé, « Poser » (le bloc suivant) ; « Tout poser » en icône. */}
             <button type="button" className="button primary" aria-label="Poser le bloc suivant" disabled={!builder.canFill} onClick={builder.fillNext}>
               <Icon name="hammer" /> Poser
             </button>
-            <IconButton icone="blocks" nom="Poser tout ce que j’ai" mot="Tout poser" disabled={!builder.canFill} onClick={builder.fillAll} />
+            <IconButton icone="blocks" nom="Tout poser, tout ce que j’ai" mot="Tout poser" disabled={!builder.canFill} onClick={builder.fillAll} />
           </>
         )}
       </section>

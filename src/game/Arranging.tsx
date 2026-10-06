@@ -38,7 +38,8 @@ import type { ArrangeGesture, ArrangeView, CadreDuMode } from './world/view';
 import { footprintOf } from './world/footprint';
 import type { Intention, Point } from './world/layout';
 import type { Rectangle } from './world/placement';
-import { type PlaceName, type PlaceSigns, placeSigns, placeSignsSentence } from './world/placeSentence';
+import { guardianSigns, type PlaceName, type PlaceSigns, placeSigns, placeSignsSentence } from './world/placeSentence';
+import type { LayoutGuardian } from './world/savedLayout';
 import { joinedSentence, thePlace } from './world/placeArticle';
 import { LIAISON, type LinkPhrases, type LinkWord, linkPhrases } from './world/linkWord';
 
@@ -73,12 +74,14 @@ function explicationDeLaReunion(reunion: TextesDeLaReunion): string {
  * `role="status"` disent `phrase`, la même chose en mots.
  * - `place` : le voisin repère, la flèche, le nombre et la case (« Mine des lettres ↖ 4 ⬚ »), et les ouvrages à reposer ;
  * - `refus` : une croix (ou un cadenas pour le lieu fixe) et deux ou trois mots, toujours écrits (référent dys) ;
+ * - `gardien` : le bouclier, son île, la flèche, l'écart (comme `place`, son île pour repère) ;
  * - `reunis` : les deux lieux réunis, l'icône de « Réunir » entre eux ;
- * - `texte` : une phrase écrite telle quelle (un Gardien, une borne, une arrivée, « Touche un lieu… »).
+ * - `texte` : une phrase écrite telle quelle (une borne, une arrivée, « Touche un lieu… »).
  */
 export type LigneDuMode =
   | { genre: 'texte'; texte: string }
   | { genre: 'place'; signes: PlaceSigns; aReposer: number }
+  | { genre: 'gardien'; signes: PlaceSigns }
   | { genre: 'refus'; icone: 'close' | 'lock'; texte: string }
   | { genre: 'reunis'; a: string; b: string; aReposer: number };
 
@@ -96,6 +99,9 @@ function refus(reason: string): Extract<LigneDuMode, { genre: 'refus' }> {
 
 /** « Plus de place par là » : la flèche bute sur le bord. */
 const PLUS_DE_PLACE: Extract<LigneDuMode, { genre: 'refus' }> = { genre: 'refus', icone: 'close', texte: NO_MORE_ROOM.replace(/\.$/, '') };
+
+/** Ce que demande « Annuler » quand quelque chose a bougé, écrit dans la ligne et dit. */
+export const QUESTION_D_ANNULATION = 'Tout remettre comme avant\u00a0?';
 
 /** Une phrase, sa première lettre en capitale et un point final. */
 function enPhrase(texte: string): string {
@@ -140,6 +146,8 @@ interface Options {
    * dans le vide ; sans elle, 24 cases au-dessus de son sol.
    */
   hautDuLieu?: (id: BiomeId) => number | undefined;
+  /** Le panneau où le mode s'ouvre (la vue simple), s'il y en a un : Échap le ferme, après la question. */
+  fermerLePanneau?: () => void;
 }
 
 /** « Réunir » touché : la question, avec un bouton par voisin possible (GD-9, point 10). */
@@ -163,15 +171,22 @@ export interface Amenagement {
   ouvert: boolean;
   ouvrir(): void;
   /**
-   * « Valider » : le mode se ferme, le plan reste tel qu'il est (chaque pose est déjà enregistrée au fil de l'eau ; un
-   * plan modifié reste gardé si l'appli se ferme en plein mode).
+   * « Valider » : le choix en cours se pose d'abord, s'il est valable (sinon il reste à sa place d'avant), puis le mode
+   * se ferme, le plan tel qu'il est (chaque pose est déjà enregistrée au fil de l'eau ; un plan modifié reste gardé si
+   * l'appli se ferme en plein mode).
    */
   valider(): void;
   /**
-   * « Annuler » (ou Échap) : le plan revient tel qu'il était à l'entrée dans le mode, puis le mode se ferme ; sans rien
-   * dire si rien n'a changé.
+   * « Annuler » : rien n'a bougé, le mode se ferme ; sinon il demande d'abord « Tout remettre comme avant ? »
+   * (`aConfirmer`), à la même place. Échap n'annule jamais.
    */
   annuler(): void;
+  /** « Annuler » attend sa confirmation : « Garder » ou « Annuler ». */
+  aConfirmer: boolean;
+  /** « Annuler » confirmé : le plan revient tel qu'il était à l'entrée dans le mode, puis le mode se ferme. */
+  confirmerLAnnulation(): void;
+  /** « Garder » : rien n'est remis, le mode reste ouvert. */
+  garder(): void;
   choix: ArrangeChoice | null;
   vue: ArrangeView | null;
   /** Ce que dit la ligne du mode, en mots (la voix, le `role="status"`). */
@@ -239,7 +254,21 @@ function emprise(world: World, id: BiomeId): Rectangle {
   };
 }
 
-export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage, sons, dire, versMonde, reunion = REUNION_COMMUNE, liaisons = LIAISON, hautDuLieu }: Options): Amenagement {
+export function useAmenagement({
+  world,
+  a,
+  arrange,
+  nom,
+  reduceMotion,
+  habillage,
+  sons,
+  dire,
+  versMonde,
+  reunion = REUNION_COMMUNE,
+  liaisons = LIAISON,
+  hautDuLieu,
+  fermerLePanneau,
+}: Options): Amenagement {
   const mot = useMemo(() => linkPhrases(liaisons), [liaisons]);
   const [session, setSession] = useState<ArrangeSession | null>(null);
   const [choix, setChoix] = useState<ArrangeChoice | null>(null);
@@ -251,6 +280,9 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
   // Ce que la vue garde entier après une réunion : la paire et sa construction.
   const [cadre, setCadre] = useState<CadreDuMode | null>(null);
   const [geste, setGeste] = useState<ArrangeGesture | null>(null);
+  // « Annuler » attend sa confirmation ; la ligne d'avant la question, rendue à « Garder ».
+  const [aConfirmer, setAConfirmer] = useState(false);
+  const avantLaQuestion = useRef<{ ligne: LigneDuMode | null; phrase: string }>({ ligne: null, phrase: '' });
   const enCours = useRef<GesteEnCours | null>(null);
   const seq = useRef(0);
   const worldRef = useRef(world);
@@ -273,22 +305,32 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
    * Où est un lieu à une place, en signes ; la voix dit « Au nord-ouest de la Mine des lettres, à 4 cases. », et `apres`
    * (les ouvrages à reposer). Sans voisin, son nom.
    */
-  const ligneDuLieu = (w: World, id: BiomeId, spot = spotOf(w, id), aReposer = 0) => {
+  const ligneDuLieu = (w: World, id: BiomeId, spot = spotOf(w, id), aReposer = 0): { ligne: LigneDuMode; lu: string } => {
     const signes = placeSigns(w, id, spot, nom);
-    if (!signes) return { ligne: { genre: 'texte', texte: nom(id) } as LigneDuMode, lu: nom(id) };
+    if (!signes) return { ligne: { genre: 'texte', texte: nom(id) }, lu: nom(id) };
     const lu = enPhrase(placeSignsSentence(signes)) + (aReposer ? ` ${mot.aReposer(aReposer)}` : '');
-    return { ligne: { genre: 'place', signes, aReposer } as LigneDuMode, lu };
+    return { ligne: { genre: 'place', signes, aReposer }, lu };
   };
   /** Le lieu avec lequel un lieu se réunirait, à sa place dans un monde (le premier voisin ouvert), ou rien. */
   const voisinAReunir = (w: World, id: BiomeId) => joinCandidates(w, id)[0] ?? null;
+  /** Où est le Gardien d'un lieu, en signes (son île, la flèche, l'écart) ; dit en mots. */
+  const ligneDuGardien = (w: World, id: BiomeId, g?: Pick<LayoutGuardian, 'side' | 'step'>): { ligne: LigneDuMode; lu: string } => {
+    const signes = guardianSigns(w, id, g, nom);
+    return { ligne: { genre: 'gardien', signes }, lu: `Le Gardien : ${placeSignsSentence(signes)}.` };
+  };
   const choisir = (c: ArrangeChoice | null, texte?: string) => {
     setChoix(c);
     setQuestion(null);
     setCadre(null);
+    setAConfirmer(false);
     const w = worldRef.current;
     if (texte !== undefined || !c) return direTexte(texte ?? '');
     if (c.genre === 'lieu') {
       const l = ligneDuLieu(w, c.id, c.spot);
+      return annoncer(l.ligne, l.lu);
+    }
+    if (c.genre === 'gardien') {
+      const l = ligneDuGardien(w, c.id, c.place);
       return annoncer(l.ligne, l.lu);
     }
     direTexte(choiceSentence(w, c, nom, mot));
@@ -321,13 +363,15 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     setCadre(null);
     // Après une pose, aucune bulle (« C'est posé » n'est plus écrit) : la ligne se met à jour, le son de la pose suffit.
     const n = r.relink.length;
-    const apres =
+    const apres: { ligne: LigneDuMode; lu: string } =
       choix.genre === 'lieu'
         ? ligneDuLieu(r.world, choix.id, spotOf(r.world, choix.id), n)
-        : (() => {
+        : choix.genre === 'gardien' && !n
+          ? ligneDuGardien(r.world, choix.id)
+          : (() => {
             const t = poseSentence(r.world, choix, nom, mot);
             const lu = t + (n ? ` ${mot.aReposer(n)}` : '');
-            return { ligne: { genre: 'texte', texte: lu } as LigneDuMode, lu };
+            return { ligne: { genre: 'texte', texte: lu } satisfies LigneDuMode, lu };
           })();
     setChoix(null);
     // Le geste (un lieu seulement) : démonté à sa place d'avant, remonté à la nouvelle ; d'un coup avec moins d'animations.
@@ -372,14 +416,40 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     setCadre(null);
     setListe(false);
     setExplication(false);
+    setAConfirmer(false);
     setPhrase('');
     setLigne(null);
   };
   const valider = () => {
-    finirLeGeste();
+    if (enCours.current) finirLeGeste();
+    else if (choix && session) {
+      // Le choix en cours se pose d'un coup, s'il est valable ; sinon il reste à sa place d'avant, rien n'est perdu.
+      const r = poseChoice(worldRef.current, choix);
+      if (r.ok) {
+        arrange(r.world);
+        if (sons) sonDeLaPose();
+      }
+    }
     fermer();
   };
   const annuler = () => {
+    if (!session) return;
+    if (!aConfirmer && (enCours.current || hasChanged(session, worldRef.current))) {
+      // Quelque chose a bougé : « Tout remettre comme avant ? », à la place d'« Annuler ».
+      avantLaQuestion.current = { ligne, phrase };
+      setAConfirmer(true);
+      annoncer({ genre: 'texte', texte: QUESTION_D_ANNULATION }, QUESTION_D_ANNULATION);
+      return;
+    }
+    confirmerLAnnulation();
+  };
+  const garder = () => {
+    if (!aConfirmer) return;
+    setAConfirmer(false);
+    setLigne(avantLaQuestion.current.ligne);
+    setPhrase(avantLaQuestion.current.phrase);
+  };
+  const confirmerLAnnulation = () => {
     if (!session) return;
     // Un geste en cours s'arrête là : sa pose n'est pas faite (s'il remontait déjà, l'instantané la défait aussi).
     const g = enCours.current;
@@ -543,8 +613,9 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     }
   };
 
-  // Au clavier : les flèches décalent le fantôme (hors d'un champ de saisie) ; Échap ferme la question de « Réunir » ou
-  // la liste des ouvrages à reposer, s'il y en a une d'ouverte, sinon il annule (« Annuler »).
+  // Au clavier : les flèches décalent le fantôme (hors d'un champ de saisie) ; Échap ferme d'abord la question ouverte
+  // (« Réunir », « Tout remettre comme avant ? »), puis le panneau ouvert (la liste des ouvrages à reposer, le panneau de
+  // la vue simple), puis il désélectionne le choix. Il n'annule jamais.
   useEffect(() => {
     if (!ouvert) return;
     const onKey = (e: KeyboardEvent) => {
@@ -552,8 +623,10 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
       if (e.key === 'Escape') {
         e.preventDefault();
         if (question) annulerReunion();
+        else if (aConfirmer) garder();
         else if (liste) fermerLaListe();
-        else annuler();
+        else if (fermerLePanneau) fermerLePanneau();
+        else if (choix && !enCours.current) choisir(null, '');
         return;
       }
       const f = FLECHES.find((x) => x.touche === e.key);
@@ -565,15 +638,18 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     return () => window.removeEventListener('keydown', onKey);
   });
 
-  // Le nom du lieu choisi se pose sur son fantôme (la 3D l'écrit au-dessus).
+  // Le nom du lieu choisi se pose sur son fantôme (la 3D l'écrit au-dessus) ; son étiquette sur l'île se tait.
   const nomChoisi = choix?.genre === 'lieu' ? nom(choix.id) : undefined;
-  const vue = useMemo(() => (choix ? { ...arrangeView(world, choix), ...(nomChoisi ? { nom: nomChoisi } : {}) } : null), [world, choix, nomChoisi]);
+  const vue = useMemo(() => (choix ? { ...arrangeView(world, choix), ...(nomChoisi && choix.genre === 'lieu' ? { nom: nomChoisi, lieu: choix.id } : {}) } : null), [world, choix, nomChoisi]);
   const reunirAvec = choix?.genre === 'lieu' && sameSpot(choix.spot, spotOf(world, choix.id)) ? voisinAReunir(world, choix.id) : null;
   return {
     ouvert,
     ouvrir,
     valider,
     annuler,
+    aConfirmer,
+    confirmerLAnnulation,
+    garder,
     choix,
     vue,
     phrase,

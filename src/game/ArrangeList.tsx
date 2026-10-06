@@ -1,5 +1,6 @@
 // Le mode « Aménager » dans la vue simple (GD-9, point 4) : une ligne par lieu et par Gardien de la région du bonhomme,
-// sa place en signes (piste A : le voisin, la flèche, le nombre, la case ; dite en mots aux lecteurs d'écran) ;
+// sa place en signes, la même ligne que sur la Carte (piste A : le voisin, la flèche, le nombre, la case ; pour un
+// Gardien, son île pour repère ; dite en mots aux lecteurs d'écran), sans phrase ;
 // « Déplacer » (quatre flèches) le choisit, puis les flèches et « Poser » de la barre du mode le posent ; « Valider » ou
 // « Annuler » ferment le mode, comme sur la Carte (décision du mainteneur, 6 octobre 2026). Sous chaque
 // lieu, dans un pli, une ligne par borne et par arrivée de ses liaisons, qui se déplacent de même.
@@ -20,7 +21,7 @@ import type { ArchipelagoId } from './world/archipelagos';
 import { currentLandings, isFixedPlace, joinedWith, routesIn } from './world/arrange';
 import { type ArrangeChoice, chooseStation, choiceSentence } from './world/arrangeMode';
 import { agreeWithPlace, thePlace, toPlace } from './world/placeArticle';
-import { guardianSentence, ofPlace, placeSigns, placeSignsSentence } from './world/placeSentence';
+import { guardianSigns, ofPlace, placeSigns, placeSignsSentence } from './world/placeSentence';
 import type { LinkPhrases } from './world/linkWord';
 import { startingStations } from './world/terrain/markers';
 import type { World } from './engine/state';
@@ -89,6 +90,8 @@ export function ArrangeList({ a, enPanneau = false, onFin }: { a: ArchipelagoId;
     versMonde: sansMonde,
     reunion: textes.reunion,
     liaisons: textes.liaisons,
+    // Dans le panneau, Échap le ferme (après la question ouverte).
+    fermerLePanneau: enPanneau ? onFin : undefined,
   });
   const { choix } = amenagement;
   // Dans le panneau : le mode ouvert dès l'arrivée (la liste des ouvrages à reposer d'abord, s'il y en a) ; « Valider »
@@ -138,6 +141,8 @@ export function ArrangeList({ a, enPanneau = false, onFin }: { a: ArchipelagoId;
               const voisin = amenagement.voisinAReunir(b.id);
               const elements = sesElements(state.world, b.id, a, amenagement.mot);
               const signes = fixe ? null : placeSigns(state.world, b.id, undefined, nomDuLieu);
+              // Son Gardien, dans la même ligne de signes : son île pour repère, la flèche, l'écart.
+              const gardien = guardianSigns(state.world, b.id, undefined, nomDuLieu);
               // Ce que la ligne dit en mots (lecteurs d'écran) : sa place, ou qu'il est le point de départ ; réuni, à qui.
               const lu = `${b.name} : ${fixe ? 'le point de départ de la région, il ne bouge pas' : signes ? placeSignsSentence(signes) : ''}.${reuni ? ` ${agreeWithPlace(b.name, 'Réuni')} ${toPlaceName(reuni)}.` : ''}`;
               return [
@@ -187,8 +192,10 @@ export function ArrangeList({ a, enPanneau = false, onFin }: { a: ArchipelagoId;
                       <ul className="arrange-list-sub">
                         {elements.map((e) => (
                           <li key={e.cle} className={memeElement(choix, e.choix) ? 'arrange-list-chosen' : undefined}>
+                            {/* Son nom écrit ; où il se tient, dit aux lecteurs d'écran (aucune phrase écrite). */}
                             <p>
-                              <strong>{e.nom}</strong> : {choiceSentence(state.world, e.choix, nomDuLieu, amenagement.mot)}
+                              <strong>{e.nom}</strong>
+                              <span className="visually-hidden"> : {choiceSentence(state.world, e.choix, nomDuLieu, amenagement.mot)}</span>
                             </p>
                             <IconButton
                               icone="amenager"
@@ -205,16 +212,16 @@ export function ArrangeList({ a, enPanneau = false, onFin }: { a: ArchipelagoId;
                 </li>,
                 <li key={`${b.id}-gardien`} className={choisi('gardien', b.id) ? 'arrange-list-chosen' : undefined}>
                   <p>
-                    <span className="visually-hidden">{`Le Gardien ${ofPlace(b.name)} : ${guardianSentence(state.world, b.id)}.`}</span>
+                    <span className="visually-hidden">{`Le Gardien ${ofPlace(b.name)} : ${placeSignsSentence(gardien)}.`}</span>
                     <span aria-hidden="true">
-                      <Icon name="shield" /> <strong>{b.name}</strong>
+                      <Icon name="shield" />
                       {choisi('gardien', b.id) && (
                         <>
                           {' '}
                           <Icon name="check" />
                         </>
                       )}{' '}
-                      : {guardianSentence(state.world, b.id)}
+                      <PlaceSignsLine signes={gardien} />
                     </span>
                   </p>
                   <IconButton

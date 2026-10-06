@@ -152,7 +152,7 @@ export const ICONS = {
   liste: List,
   tourner: RotateCw,
   defaire: Undo2,
-  // « Poser » : une flèche vers le bas, sur un trait (la coche reste à « Terminé »).
+  // « Poser » : une flèche vers le bas, sur un trait.
   poser: ArrowDownToLine,
   aReposer: Unlink,
   // Réunir deux lieux (GD-9, point 10) : deux chemins qui se rejoignent.

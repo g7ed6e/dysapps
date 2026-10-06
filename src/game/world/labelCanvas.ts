@@ -10,6 +10,12 @@ import { project, shade } from '../Voxel';
 import { COTE_DU_VISAGE, type Visage } from './characters/face';
 import type { Habillage } from './skin/types';
 
+/**
+ * Le signe avant le nom : le bloc que l'île rapporte, ou, sur le fantôme du lieu choisi dans « Modifier le plan »
+ * (GD-9), les quatre flèches de l'icône du mode (`deplacer`).
+ */
+export type SigneDuNom = BlockId | 'deplacer';
+
 export interface IslandLabelState {
   id: IslandStateId;
   name: string;
@@ -84,6 +90,38 @@ export function drawBlock(
   ctx.restore();
 }
 
+/** Quatre flèches en croix (l'icône du mode « Modifier le plan »), centrées sur (x, y), dans un carré de côté `s`. */
+function drawDeplacer(ctx: CanvasRenderingContext2D, x: number, y: number, s: number, encre: string): void {
+  ctx.save();
+  ctx.strokeStyle = encre;
+  ctx.fillStyle = encre;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.lineWidth = s * 0.11;
+  const r = s * 0.46;
+  const p = s * 0.17;
+  ctx.beginPath();
+  ctx.moveTo(x - r + p, y);
+  ctx.lineTo(x + r - p, y);
+  ctx.moveTo(x, y - r + p);
+  ctx.lineTo(x, y + r - p);
+  ctx.stroke();
+  for (const [dx, dy] of [
+    [1, 0],
+    [-1, 0],
+    [0, 1],
+    [0, -1],
+  ] as const) {
+    ctx.beginPath();
+    ctx.moveTo(x + dx * r, y + dy * r);
+    ctx.lineTo(x + dx * (r - p) - dy * p, y + dy * (r - p) - dx * p);
+    ctx.lineTo(x + dx * (r - p) + dy * p, y + dy * (r - p) + dx * p);
+    ctx.closePath();
+    ctx.fill();
+  }
+  ctx.restore();
+}
+
 /** Les couleurs de l'étiquette : fond, bord, texte. Fermée : fond grisé et bord adouci, texte toujours ≥ 7:1. */
 const PALETTE = {
   open: { bg: '#fffdf7', border: '#3b2d20', text: '#2b2118' },
@@ -107,7 +145,7 @@ interface LabelMetrics {
   stateW: number;
 }
 
-function metrics(ctx: CanvasRenderingContext2D, text: string, px: number, state?: IslandLabelState, bloc?: BlockId): LabelMetrics {
+function metrics(ctx: CanvasRenderingContext2D, text: string, px: number, state?: IslandLabelState, bloc?: SigneDuNom): LabelMetrics {
   ctx.save();
   ctx.font = labelFont(px);
   // La ligne du nom : le bloc de l'île, s'il y en a un, puis le nom.
@@ -126,7 +164,7 @@ function metrics(ctx: CanvasRenderingContext2D, text: string, px: number, state?
 }
 
 /** La taille de l'étiquette (bord compris), en pixels du canvas : pour dimensionner une texture ou écarter les voisines. */
-export function measureIslandLabel(ctx: CanvasRenderingContext2D, text: string, px: number, state?: IslandLabelState, bloc?: BlockId): { w: number; h: number } {
+export function measureIslandLabel(ctx: CanvasRenderingContext2D, text: string, px: number, state?: IslandLabelState, bloc?: SigneDuNom): { w: number; h: number } {
   const m = metrics(ctx, text, px, state, bloc);
   return { w: m.w, h: m.h };
 }
@@ -202,7 +240,7 @@ function drawStateIcon(ctx: CanvasRenderingContext2D, id: IslandStateId, x: numb
  * seconde ligne : l'icône et le mot de l'état. Avec `bloc`, le bloc que l'île rapporte, avant le nom.
  * Renvoie sa largeur, bord compris.
  */
-export function drawIslandLabel(ctx: CanvasRenderingContext2D, text: string, cx: number, cy: number, px: number, state?: IslandLabelState, bloc?: BlockId): number {
+export function drawIslandLabel(ctx: CanvasRenderingContext2D, text: string, cx: number, cy: number, px: number, state?: IslandLabelState, bloc?: SigneDuNom): number {
   const m = metrics(ctx, text, px, state, bloc);
   const colors = state?.id === 'fermee' ? PALETTE.closed : PALETTE.open;
   const w = m.w - m.border * 2;
@@ -218,7 +256,8 @@ export function drawIslandLabel(ctx: CanvasRenderingContext2D, text: string, cx:
   // étiquette (une couleur vive ne doit pas y attirer l'œil), le contour net.
   const nameY = state ? y + px * 0.95 : cy;
   const lineLeft = cx - m.nameW / 2;
-  if (bloc) drawBlock(ctx, lineLeft + (Math.sqrt(3) * BLOC_DEMI * px) / 2, nameY, bloc, BLOC_DEMI * px, colors.border, undefined, state?.id === 'fermee');
+  if (bloc === 'deplacer') drawDeplacer(ctx, lineLeft + (Math.sqrt(3) * BLOC_DEMI * px) / 2, nameY, Math.sqrt(3) * BLOC_DEMI * px, colors.border);
+  else if (bloc) drawBlock(ctx, lineLeft + (Math.sqrt(3) * BLOC_DEMI * px) / 2, nameY, bloc, BLOC_DEMI * px, colors.border, undefined, state?.id === 'fermee');
   ctx.font = labelFont(px);
   ctx.textBaseline = 'middle';
   ctx.fillStyle = colors.text;

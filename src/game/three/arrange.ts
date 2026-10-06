@@ -191,15 +191,16 @@ const NOM_CSS = 18 / NOM_PX;
 /** Au-dessus du fantôme, en cases. */
 const NOM_AU_DESSUS = 6;
 
-/** Le nom du lieu choisi, dans une texture (rien sans contexte 2D). */
+/** Le nom du lieu choisi, dans une texture, les quatre flèches du mode avant lui (rien sans contexte 2D). */
 function textureDuNom(texte: string): { map: THREE.CanvasTexture; w: number; h: number } | null {
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
   if (!ctx) return null;
-  const size = measureIslandLabel(ctx, texte, NOM_PX);
+  // Les quatre flèches du mode avant le nom, à la place du bloc de l'île : c'est le lieu qu'on déplace.
+  const size = measureIslandLabel(ctx, texte, NOM_PX, undefined, 'deplacer');
   canvas.width = Math.ceil(size.w + 4);
   canvas.height = Math.ceil(size.h + 4);
-  drawIslandLabel(ctx, texte, canvas.width / 2, canvas.height / 2, NOM_PX);
+  drawIslandLabel(ctx, texte, canvas.width / 2, canvas.height / 2, NOM_PX, undefined, 'deplacer');
   const map = new THREE.CanvasTexture(canvas);
   map.colorSpace = THREE.SRGBColorSpace;
   return { map, w: canvas.width * NOM_CSS, h: canvas.height * NOM_CSS };
@@ -211,9 +212,9 @@ const RELECTURE_DE_LA_PLACE_MS = 250;
 const DEMI_CHOIX = 1.5;
 
 /** Où le mode dit à la page que se tient le choix à l'écran (rien : la page ne pose pas de flèches). */
-type SuiviALEcran = () => ((b: ChoixALEcran | null) => void) | null | undefined;
+type EcouteDuChoixALEcran = () => ((b: ChoixALEcran | null) => void) | null | undefined;
 
-export function creerAmenagement(monde: Monde, reduit: boolean, camera: THREE.PerspectiveCamera, el: HTMLElement, lumiere?: Lumiere, aLEcran?: SuiviALEcran): Amenagement {
+export function creerAmenagement(monde: Monde, reduit: boolean, camera: THREE.PerspectiveCamera, el: HTMLElement, lumiere?: Lumiere, aLEcran?: EcouteDuChoixALEcran): Amenagement {
   const blocs = monde.habillage.pose === 'geste';
   // Un carré plat, couché : deux triangles par case.
   const forme = new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2);
@@ -271,79 +272,98 @@ export function creerAmenagement(monde: Monde, reduit: boolean, camera: THREE.Pe
   let souleve: ArrangeView['souleve'] = null;
   let souleveDepuis = 0;
   let enCours: ArrangeGesture | null = null;
-  // ---- Où se tient le choix à l'écran, donné à la page (les flèches autour de lui)
+  // ---- Où se tient le choix à l'écran, donné à la page (les flèches autour de lui). Rien n'est alloué à chaque image :
+  // les projections vont dans des variables gardées, et l'objet donné à la page n'est construit que s'il a changé.
   let vueCourante: ArrangeView | null = null;
   let dernierALEcran: ChoixALEcran | null = null;
   let dernierSuivi: ((b: ChoixALEcran | null) => void) | null = null;
-  let place: { libre: Rect; dx: number; dy: number } | null = null;
+  /** La place libre, le décalage de la vue dans la scène de la page et la taille de la vue, relus ensemble. */
+  let place: { libre: Rect; dx: number; dy: number; w: number; h: number } | null = null;
   let placeLue = -Infinity;
   const point = new THREE.Vector3();
-  /** Un point du monde (en cases : x, y au sol, z la hauteur) à l'écran, dans la vue ; rien s'il est derrière la caméra. */
-  const projeter = (x: number, y: number, z: number, w: number, h: number) => {
+  /** Le dernier point projeté (pixels CSS de la vue). */
+  let px = 0;
+  let py = 0;
+  /**
+   * Un point du monde (en cases : x, y au sol, z la hauteur) à l'écran, dans la vue, dans `px` et `py` ; `false` s'il
+   * est derrière la caméra.
+   */
+  const projeter = (x: number, y: number, z: number, w: number, h: number): boolean => {
     point.set(x, z, y).project(camera);
-    return point.z > 1 ? null : { x: ((point.x + 1) / 2) * w, y: ((1 - point.y) / 2) * h };
+    if (point.z > 1) return false;
+    px = ((point.x + 1) / 2) * w;
+    py = ((1 - point.y) / 2) * h;
+    return true;
   };
-  /** Où se tient le choix à l'écran maintenant (la caméra de cette image), ou rien. */
-  const choixALEcran = (maintenant: number): ChoixALEcran | null => {
-    const vue = vueCourante;
-    const w = el.clientWidth;
-    const h = el.clientHeight;
-    if (!vue || enCours || !w || !h) return null;
-    if (!place || maintenant - placeLue > RELECTURE_DE_LA_PLACE_MS) {
-      const scene = el.closest('[data-scene]');
-      const r = el.getBoundingClientRect();
-      const s = scene?.getBoundingClientRect();
-      place = { libre: lirePlaceReelle(el), dx: s ? r.left - s.left : 0, dy: s ? r.top - s.top : 0 };
-      placeLue = maintenant;
-    }
-    // La caméra de cette image (le cadrage l'a déjà bougée) : ses matrices à jour avant de projeter.
-    camera.updateMatrixWorld();
-    const { suivre } = vue;
-    const milieu = projeter(suivre.x, suivre.y, suivre.z, w, h);
-    if (!milieu) return null;
-    const rect = vue.cadre?.rect ?? { x0: suivre.x - DEMI_CHOIX, y0: suivre.y - DEMI_CHOIX, x1: suivre.x + DEMI_CHOIX, y1: suivre.y + DEMI_CHOIX };
-    const z = vue.cadre?.z ?? suivre.z;
-    let rx = 0;
-    let ry = 0;
-    for (const x of [rect.x0, rect.x1])
-      for (const y of [rect.y0, rect.y1]) {
-        const c = projeter(x, y, z, w, h);
-        if (!c) continue;
-        rx = Math.max(rx, Math.abs(c.x - milieu.x));
-        ry = Math.max(ry, Math.abs(c.y - milieu.y));
-      }
-    // Le nom posé sur le fantôme compte dans le choix : les flèches ne se posent jamais dessus.
-    if (nomSprite.visible) {
-      const n = projeter(suivre.x, suivre.y, suivre.z + NOM_AU_DESSUS, w, h);
-      if (n) {
-        rx = Math.max(rx, Math.abs(n.x - milieu.x) + nomTaille.w / 2);
-        ry = Math.max(ry, Math.abs(n.y - milieu.y) + nomTaille.h / 2);
-      }
-    }
-    const { libre, dx, dy } = place;
-    return { x: milieu.x + dx, y: milieu.y + dy, rx, ry, libre: { x0: libre.x0 + dx, y0: libre.y0 + dy, x1: libre.x1 + dx, y1: libre.y1 + dy } };
-  };
-  /** Donne à la page où se tient le choix, seulement s'il a bougé d'au moins un demi-pixel (ou si elle vient d'arriver). */
+  /**
+   * Où se tient le choix à l'écran maintenant (la caméra de cette image), donné à `f` s'il a bougé d'au moins un
+   * demi-pixel, ou si la page vient d'arriver.
+   */
   const suivreALEcran = (maintenant: number) => {
     const f = aLEcran?.() ?? null;
     if (!f) return;
-    const b = choixALEcran(maintenant);
-    const pareil = (p: ChoixALEcran | null, q: ChoixALEcran | null) =>
-      p === q ||
-      (p !== null &&
-        q !== null &&
-        Math.abs(p.x - q.x) < 0.5 &&
-        Math.abs(p.y - q.y) < 0.5 &&
-        Math.abs(p.rx - q.rx) < 0.5 &&
-        Math.abs(p.ry - q.ry) < 0.5 &&
-        p.libre.x0 === q.libre.x0 &&
-        p.libre.y0 === q.libre.y0 &&
-        p.libre.x1 === q.libre.x1 &&
-        p.libre.y1 === q.libre.y1);
-    if (f === dernierSuivi && pareil(b, dernierALEcran)) return;
+    const vue = vueCourante;
+    if (vue && !enCours && (!place || maintenant - placeLue > RELECTURE_DE_LA_PLACE_MS)) {
+      const scene = el.closest('[data-scene]');
+      const r = el.getBoundingClientRect();
+      const s = scene?.getBoundingClientRect();
+      place = { libre: lirePlaceReelle(el), dx: s ? r.left - s.left : 0, dy: s ? r.top - s.top : 0, w: el.clientWidth, h: el.clientHeight };
+      placeLue = maintenant;
+    }
+    let visible = false;
+    let x = 0;
+    let y = 0;
+    let rx = 0;
+    let ry = 0;
+    if (vue && !enCours && place && place.w && place.h) {
+      const { w, h } = place;
+      // La caméra de cette image (le cadrage l'a déjà bougée) : ses matrices à jour avant de projeter.
+      camera.updateMatrixWorld();
+      const { suivre } = vue;
+      if (projeter(suivre.x, suivre.y, suivre.z, w, h)) {
+        visible = true;
+        x = px;
+        y = py;
+        const r = vue.cadre?.rect;
+        const x0 = r ? r.x0 : suivre.x - DEMI_CHOIX;
+        const x1 = r ? r.x1 : suivre.x + DEMI_CHOIX;
+        const y0 = r ? r.y0 : suivre.y - DEMI_CHOIX;
+        const y1 = r ? r.y1 : suivre.y + DEMI_CHOIX;
+        const z = vue.cadre?.z ?? suivre.z;
+        for (let i = 0; i < 4; i++) {
+          if (!projeter(i & 1 ? x1 : x0, i & 2 ? y1 : y0, z, w, h)) continue;
+          rx = Math.max(rx, Math.abs(px - x));
+          ry = Math.max(ry, Math.abs(py - y));
+        }
+        // Le nom posé sur le fantôme compte dans le choix : les flèches ne se posent jamais dessus.
+        if (nomSprite.visible && projeter(suivre.x, suivre.y, suivre.z + NOM_AU_DESSUS, w, h)) {
+          rx = Math.max(rx, Math.abs(px - x) + nomTaille.w / 2);
+          ry = Math.max(ry, Math.abs(py - y) + nomTaille.h / 2);
+        }
+        x += place.dx;
+        y += place.dy;
+      }
+    }
+    const d = dernierALEcran;
+    const libre = place?.libre;
+    const pareil = visible
+      ? d !== null &&
+        libre !== undefined &&
+        Math.abs(d.x - x) < 0.5 &&
+        Math.abs(d.y - y) < 0.5 &&
+        Math.abs(d.rx - rx) < 0.5 &&
+        Math.abs(d.ry - ry) < 0.5 &&
+        d.libre.x0 === libre.x0 + place!.dx &&
+        d.libre.y0 === libre.y0 + place!.dy &&
+        d.libre.x1 === libre.x1 + place!.dx &&
+        d.libre.y1 === libre.y1 + place!.dy
+      : d === null;
+    if (f === dernierSuivi && pareil) return;
     dernierSuivi = f;
-    dernierALEcran = b;
-    f(b);
+    if (pareil) return f(d);
+    const p = place!;
+    dernierALEcran = visible ? { x, y, rx, ry, libre: { x0: p.libre.x0 + p.dx, y0: p.libre.y0 + p.dy, x1: p.libre.x1 + p.dx, y1: p.libre.y1 + p.dy } } : null;
+    f(dernierALEcran);
   };
 
   const vider = () => {

@@ -4,7 +4,7 @@ import type { BiomeId } from '../biomes';
 import type { World } from '../engine/state';
 import { BIOMES } from '../biomes';
 import { freeSpots, guardianOf, moveGuardian, startingSpot } from './arrange';
-import { casesWord, DIRECTIONS, distanceWords, directionWords, guardianSentence, ofPlace, placeSentence, placeSigns, placeSignsSentence, thePlace, toPlace } from './placeSentence';
+import { casesWord, DIRECTIONS, distanceWords, directionWords, guardianSentence, guardianSigns, ofPlace, placeSentence, placeSigns, placeSignsSentence, thePlace, toPlace } from './placeSentence';
 import { lieuDAssemblage } from './assembly';
 import { agreeWithPlace, joinedSentence } from './placeArticle';
 
@@ -104,5 +104,14 @@ describe('où est une place, en mots', () => {
       expect(guardianOf(r.world, id).side).toBe('right');
       expect(guardianSentence(r.world, id)).toMatch(/ouest de son île$/);
     }
+  });
+
+  it('l’îlot d’un Gardien en signes, comme un lieu : son île pour repère, la flèche, l’écart', () => {
+    const id: BiomeId = 'maths-6e-decimals';
+    const s = guardianSigns(VIDE, id, undefined, () => 'Volcan');
+    expect(s.voisin).toBe('Volcan');
+    expect(s.direction.mot).toBe('sud');
+    expect(s.cases).toBeGreaterThanOrEqual(1);
+    expect(placeSignsSentence(s)).toMatch(/^au sud du Volcan, à \d+ cases?$/);
   });
 });

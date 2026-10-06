@@ -1,14 +1,15 @@
 // Le mode « Aménager » à l'écran (GD-9, point 1 ; piste A « des signes à la place des phrases ») : le bouton
 // « Modifier le plan » de la Carte et sa pastille, la ligne du mode (des signes : « Mine des lettres ↖ 4 ⬚ », dits en
 // mots par la voix), la question de « Réunir », la proposition de la liste au téléphone en grand texte, et la barre du
-// mode (↶, « Poser », puis « Annuler » et « Valider », qui le ferment ; décision du mainteneur, 6 octobre 2026). Les
+// mode (↶, « Poser », puis « Annuler » et « Valider », qui le ferment ; décision du mainteneur, 6 octobre 2026 ;
+// « Annuler » demande confirmation quand quelque chose a bougé). Les
 // flèches, « Tourner » et « Réunir » se posent autour du choix (ArrangeHandles.tsx). Les icônes sans mot sont nommées
 // pour les lecteurs d'écran, leur mot dessous en grand texte (comme la barre du monde). Les icônes et les signes sont
 // communs aux deux univers. L'état du mode vient de `useAmenagement` (Arranging.tsx).
 import { useEffect, useState } from 'react';
 import { Icon, IconButton } from '../components/Icon';
 import { SpeakButton } from '../components/SpeakButton';
-import { type Amenagement, FLECHES, type LigneDuMode } from './Arranging';
+import { type Amenagement, FLECHES, type LigneDuMode, QUESTION_D_ANNULATION } from './Arranging';
 import { getBridge } from './world/archipelago';
 import { canTurn } from './world/arrangeMode';
 import { thePlace } from './world/placeArticle';
@@ -132,6 +133,15 @@ function Signes({ ligne }: { ligne: LigneDuMode }) {
   switch (ligne.genre) {
     case 'texte':
       return <>{ligne.texte}</>;
+    case 'gardien':
+      return (
+        <>
+          <span className="signe">
+            <Icon name="shield" />
+          </span>{' '}
+          <PlaceSignsLine signes={ligne.signes} />
+        </>
+      );
     case 'place':
       return (
         <>
@@ -288,12 +298,24 @@ export function ArrangeBar({ amenagement, className, croix = false }: { amenagem
           <Icon name="poser" /> <span>Poser</span>
         </button>
       </div>
-      {/* Les deux boutons qui ferment le mode, toujours à la même place, jamais dans la partie qui défile. */}
+      {/* Les deux boutons qui ferment le mode, toujours à la même place, jamais dans la partie qui défile. Quand quelque
+          chose a bougé, « Annuler » demande confirmation à sa place : « Garder » ou « Annuler ». */}
       <div className="arrange-bar-fin">
-        <button type="button" className="button bouton-cta arrange-annuler" onClick={amenagement.annuler}>
-          <Icon name="close" /> <span>Annuler</span>
-        </button>
-        <button type="button" className={`button bouton-cta arrange-valider${choix ? '' : ' primary'}`} onClick={amenagement.valider}>
+        {amenagement.aConfirmer ? (
+          <div className="arrange-confirmer" role="group" aria-label={QUESTION_D_ANNULATION}>
+            <button type="button" className="button bouton-cta arrange-garder" onClick={amenagement.garder}>
+              <Icon name="back" /> <span>Garder</span>
+            </button>
+            <button type="button" className="button bouton-cta arrange-annuler" onClick={amenagement.confirmerLAnnulation}>
+              <Icon name="close" /> <span>Annuler</span>
+            </button>
+          </div>
+        ) : (
+          <button type="button" className="button bouton-cta arrange-annuler" onClick={amenagement.annuler}>
+            <Icon name="close" /> <span>Annuler</span>
+          </button>
+        )}
+        <button type="button" className={`button bouton-cta arrange-valider${choix || amenagement.aConfirmer ? '' : ' primary'}`} onClick={amenagement.valider}>
           <Icon name="check" /> <span>Valider</span>
         </button>
       </div>

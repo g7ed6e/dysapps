@@ -222,6 +222,8 @@ SHOTS.push(
 SHOTS.push(
   { ...archipeo({ base: 'amenager-geste', name: 'archipeo-amenager-geste' }), act: amenagerGesteFleche('french-6e-letter-confusion', 'Nord', 300), surDemande: true },
   { ...archipeo({ base: 'reunir', name: 'archipeo-reunir' }), surDemande: true },
+  // « Modifier le plan » ouvert dans Archipéo, la Rivière des fractions choisie : son nom sur son fantôme, une fois.
+  { ...archipeo({ base: 'amenager', name: 'archipeo-modifier-le-plan' }), surDemande: true },
   { ...archipeo({ base: 'amenager-geste', name: 'archipeo-amenager-geste-nuit' }), act: amenagerGeste('maths-6e-fractions', { x: 150, y: 100 }, 450), settings: { univers: 'archipeo' }, nuit: true, surDemande: true },
 );
 SHOTS.push(
@@ -363,7 +365,7 @@ function reunir(ile, autre) {
     await page.getByRole('button', { name: 'Valider', exact: true }).click();
     await page.evaluate((id) => (location.hash = `#/adventure/join.${id}`), `${ile}.${autre}`);
     await page.waitForTimeout(1500);
-    await page.getByRole('button', { name: /Poser tout ce que j’ai/ }).click();
+    await page.getByRole('button', { name: /Tout poser/ }).click();
     await page.waitForTimeout(800);
     // Le panneau fermé : la digue finie, sans le bandeau d'un succès gagné en chemin ; puis la Carte, zoomée sur elle.
     await page.locator('#panneau-reunion .island-sheet-close').click();

@@ -67,6 +67,11 @@ export interface Etiquettes extends PartieDeLaScene {
    * ou zoomée) et le point (`x`, `y`, pixels CSS de la vue) est sur elle. La toucher ramène la vue d'ensemble.
    */
   bulleAuBordSous(x: number, y: number): boolean;
+  /**
+   * Le lieu choisi dans « Modifier le plan » (GD-9), ou rien : son étiquette se tait le temps du choix (son nom est sur
+   * son fantôme, three/arrange.ts) ; l'écart des autres ne change pas.
+   */
+  cacher(id: string | null): void;
   vider(): void;
 }
 
@@ -437,8 +442,14 @@ export function creerEtiquettes(
         s.scale.set(forme.w * perPx, forme.h * perPx, 1);
       }
       s.center.set(0.5 - o.dx / s.userData.px.w, 0.5 + o.dy / s.userData.px.h);
-      s.visible = visibles[i];
+      s.userData.montree = visibles[i];
     });
+  };
+  /** Le lieu dont l'étiquette se tait (le lieu choisi du mode « Modifier le plan »). */
+  let cachee: string | null = null;
+  /** Chaque étiquette montrée, sauf celle qui se tait : à chaque image, sans rien allouer. */
+  const montrerLesEtiquettes = () => {
+    for (const c of labelsGroup.children) c.visible = Boolean(c.userData.montree) && c.userData.id !== cachee;
   };
 
   const vider = () => {
@@ -481,10 +492,14 @@ export function creerEtiquettes(
       dessinerLaFleche();
       arrowTex.needsUpdate = true;
     },
+    cacher: (id) => {
+      cachee = id;
+    },
     bulleAuBordSous: (x, y) => bulleALEcran.visible && Math.abs(x - bulleALEcran.x) <= bulleALEcran.w / 2 && Math.abs(y - bulleALEcran.y) <= bulleALEcran.h / 2,
     animer: (t, _dt, reduit) => {
       placeMarks(instant.carte, t, reduit);
       placeLabels(instant.carte);
+      montrerLesEtiquettes();
     },
     dispose: () => {
       arrowTex.dispose();

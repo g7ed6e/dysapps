@@ -120,3 +120,14 @@ export function guardianSentence(world: World, id: BiomeId, g: Pick<LayoutGuardi
   const ilot = parts.find((p) => p.genre === 'ilot')!;
   return `${directionWords(milieu(terre), milieu(ilot))} de son île`;
 }
+
+/**
+ * Où est l'îlot d'un Gardien (à sa place par défaut), en signes, comme un lieu : son île pour repère, la direction et
+ * l'écart en cases (« Mine des lettres ↑ 1 ⬚ »), dits en mots par `placeSignsSentence`.
+ */
+export function guardianSigns(world: World, id: BiomeId, g: Pick<LayoutGuardian, 'side' | 'step'> = guardianOf(world, id), nom: PlaceName = NOM_DU_JEU): PlaceSigns {
+  const parts = footprintOf(id, placeIn(world, id), g);
+  const terre = parts.find((p) => p.genre === 'terre')!;
+  const ilot = parts.find((p) => p.genre === 'ilot')!;
+  return { voisin: nom(id), direction: directionOf(milieu(terre), milieu(ilot)), cases: casesOf(gapBetween(terre, ilot)) };
+}

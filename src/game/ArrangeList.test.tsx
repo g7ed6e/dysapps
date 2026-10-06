@@ -32,7 +32,7 @@ function monter() {
 const lignes = () =>
   Array.from(screen.getAllByRole('list')[0].children)
     .filter((li) => li.tagName === 'LI')
-    .map((li) => li.querySelector('strong')!.textContent);
+    .map((li) => li.querySelector('strong, .signe-voisin')!.textContent);
 
 afterEach(() => {
   cleanup();
@@ -48,7 +48,7 @@ describe('Aménager en vue simple', () => {
     const avant = lignes();
     expect(avant).toHaveLength(lieux.length * 2);
     expect(avant[0]).toBe(lieux[0].name);
-    // Le Gardien : le bouclier et le nom de son lieu.
+    // Le Gardien : le bouclier et la même ligne de signes, son île pour repère.
     expect(avant[1]).toBe(lieux[0].name);
     // Pas de phrase d'introduction : les lignes suffisent.
     expect(document.querySelector('.section-intro')).toBeNull();
@@ -84,10 +84,12 @@ describe('Aménager en vue simple', () => {
     const b = islandsOf('6e')[0];
     const li = screen.getByRole('button', { name: `Déplacer le Gardien ${ofPlace(b.name)}` }).closest('li')!;
     const avant = li.querySelector('p .visually-hidden')!.textContent;
-    expect(avant).toMatch(/de son île\.$/);
+    expect(avant).toMatch(/, à \d+ cases?\.$/);
+    expect(avant).not.toMatch(/son île/);
+    expect(li.querySelector('.signes-de-place')).not.toBeNull();
     fireEvent.click(within(li).getByRole('button', { name: `Déplacer le Gardien ${ofPlace(b.name)}` }));
     // Les flèches le mènent jusqu'à un autre côté de son île (quelques pas le long du même côté d'abord).
-    const cote = (t: string | null | undefined) => /: (.*) de son île/.exec(t ?? '')?.[1];
+    const cote = (t: string | null | undefined) => /: (?:au|à l’) ([a-z-]+) /.exec(t ?? '')?.[1];
     const depart = cote(avant);
     tour: for (const nom of ['Est', 'Ouest', 'Nord']) {
       for (let i = 0; i < 8; i++) {

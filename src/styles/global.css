@@ -3878,6 +3878,12 @@ figure.class-table {
 .arrange-bar-telephone .arrange-cross .button {
   padding: 0;
 }
+/* En grand texte au téléphone, les mots des boutons gardent toute la largeur : presque pas de marge intérieure. */
+:root[data-texte="grand"] .arrange-bar-telephone .arrange-pose,
+:root[data-texte="grand"] .arrange-bar-telephone .arrange-bar-fin .button {
+  min-width: 0;
+  padding-inline: 2px;
+}
 /* Les flèches autour du choix (ArrangeHandles.tsx) : des boutons posés sur la scène à la place projetée du choix, dans
    la place libre ; cachés le temps que la scène dise où il est. Ronds, 48 px au moins, bordés (jamais la couleur
    seule) ; en grand texte, leur mot dessous. */
@@ -3988,11 +3994,24 @@ figure.class-table {
 .arrange-list-items .arrange-question {
   flex: 1 1 100%;
 }
-/* La pastille des ouvrages à reposer : l'icône (un ouvrage séparé) et le nombre, jamais la couleur seule. */
+/* La pastille des ouvrages à reposer : l'icône (un ouvrage séparé) et le nombre, jamais la couleur seule. Plus large
+   qu'un compte de blocs, elle se pose dans le coin haut droit, au-dessus du bord, hors de l'icône du bouton, devant le
+   bouton voisin. */
 .world-bar .arrange-count {
   display: inline-flex;
   align-items: center;
   gap: 2px;
+  top: -24px;
+  right: -6px;
+  z-index: 1;
+}
+:root[data-texte="grand"] .world-bar .arrange-count {
+  top: -28px;
+  right: -6px;
+}
+/* « Annuler » qui demande confirmation : « Garder » et « Annuler », à sa place. */
+.arrange-confirmer {
+  display: contents;
 }
 .arrange-line p,
 .arrange-relink p {
