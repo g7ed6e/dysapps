@@ -49,8 +49,11 @@
   --pink: #d9772e; /* brique */
   --cyan: #8fd3e6; /* verre */
   --violet: #8f5ee0; /* cristal */
-  --lv2: #d98cb3; /* églantine : la deuxième langue, à 48° au moins des autres teintes */
+  --lv2: #d98cb3; /* églantine : la deuxième langue ; une matière ne se reconnaît jamais à sa couleur seule, mais à sa couleur, son icône et son nom ensemble */
   --history-geography: #8fb339; /* vert mousse : l'histoire-géographie, loin du vert de la réussite */
+  --life-earth-sciences: #5fb8a0; /* vert d'eau : les sciences de la vie et de la Terre */
+  --physics-chemistry: #8a9be8; /* lavande : la physique-chimie */
+  --technology: #c98ad0; /* mauve : la technologie */
   --green: #6cb33f; /* herbe */
   /* Texte posé sur une couleur de remplissage (sable, matière). */
   --on-accent: #13283d;
@@ -304,6 +307,15 @@ svg {
 .title-history-geography svg {
   color: var(--history-geography);
 }
+.title-life-earth-sciences svg {
+  color: var(--life-earth-sciences);
+}
+.title-physics-chemistry svg {
+  color: var(--physics-chemistry);
+}
+.title-technology svg {
+  color: var(--technology);
+}
 .back-link {
   /* Le bouton retour : toujours en haut à gauche, même forme partout (comme dans un jeu). */
   display: inline-flex;
@@ -379,7 +391,10 @@ button.app-card:active {
 .app-card.subject-maths,
 .app-card.subject-english,
 .app-card.subject-lv2,
-.app-card.subject-history-geography {
+.app-card.subject-history-geography,
+.app-card.subject-life-earth-sciences,
+.app-card.subject-physics-chemistry,
+.app-card.subject-technology {
   border-top-width: 8px;
 }
 .subject-french {
@@ -396,6 +411,15 @@ button.app-card:active {
 }
 .subject-history-geography {
   border-top-color: var(--history-geography);
+}
+.subject-life-earth-sciences {
+  border-top-color: var(--life-earth-sciences);
+}
+.subject-physics-chemistry {
+  border-top-color: var(--physics-chemistry);
+}
+.subject-technology {
+  border-top-color: var(--technology);
 }
 .app-card.locked {
   border-top-width: var(--border-width);
@@ -423,6 +447,12 @@ button.app-card:active {
 .subject-lv2 .app-icon,
 .subject-history-geography .subject-icon,
 .subject-history-geography .app-icon,
+.subject-life-earth-sciences .subject-icon,
+.subject-life-earth-sciences .app-icon,
+.subject-physics-chemistry .subject-icon,
+.subject-physics-chemistry .app-icon,
+.subject-technology .subject-icon,
+.subject-technology .app-icon,
 .app-card[class*="biome-"] .app-icon {
   color: var(--on-accent);
 }
@@ -445,6 +475,18 @@ button.app-card:active {
 .subject-history-geography .subject-icon,
 .subject-history-geography .app-icon {
   background: var(--history-geography);
+}
+.subject-life-earth-sciences .subject-icon,
+.subject-life-earth-sciences .app-icon {
+  background: var(--life-earth-sciences);
+}
+.subject-physics-chemistry .subject-icon,
+.subject-physics-chemistry .app-icon {
+  background: var(--physics-chemistry);
+}
+.subject-technology .subject-icon,
+.subject-technology .app-icon {
+  background: var(--technology);
 }
 /* Cartes de mission d'une île : l'icône sur un aplat de sable, bleu nuit dessus. */
 .app-card[class*="biome-"] .app-icon {

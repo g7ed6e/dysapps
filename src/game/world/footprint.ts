@@ -15,7 +15,9 @@ import { rectangleDeLIlot, rectangleDeLIlotAutour } from './terrain/islets';
 /**
  * Le cadre de chaque région, en cases du monde : la Carte le montre tout entier, la mer et ses écueils y sont semés une
  * fois, et un lieu ne se pose qu'au-dedans. Son coin est sur la grille des places (au pas de `STEP`) : la place d'un lieu
- * s'écrit en pas depuis ce coin (`spotInSteps`). Ordres de grandeur décidés avec GD-9 : 192 × 144 aux Premiers Rivages,
+ * s'écrit en pas depuis ce coin (`spotInSteps`). Ordres de grandeur décidés avec GD-9 : 192 × 144 aux Premiers Rivages
+ * (les trois îles de sciences, SC-2, y tiennent : agrandi vers le fond, le cadre ne tenait plus sur la Carte de la
+ * tablette au plancher du zoom),
  * 144 × 112 aux Îles Brumeuses (168 × 112 depuis HG-3, comme les Anciens Ateliers : le cadre s'élargit de 24 cases vers
  * l'est pour le Bourg des chroniques et le Delta des ressources, DA, 6 octobre 2026 ; chaque lieu mobile y tourne, sauf le
  * Glacier des relatifs, 52 cases de large tourné avec son monument, qu'aucune place libre ne tient), 168 × 112 aux Anciens Ateliers (redessinés : ils étaient en ligne ; leur cadre tient

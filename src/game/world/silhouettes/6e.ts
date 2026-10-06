@@ -18,4 +18,7 @@ export const SILHOUETTES_6E = {
   'english-6e-grammar': { pics: [] },
   'history-6e-antiquity': { pics: [] },
   'geography-6e-living': { pics: [] },
+  'life-earth-sciences-6e-living-world': { pics: [] },
+  'physics-chemistry-6e-matter-energy': { pics: [] },
+  'technology-6e-objects': { pics: [] },
 } satisfies Partial<Record<BiomeId, Silhouette>>;

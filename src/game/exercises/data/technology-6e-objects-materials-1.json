@@ -1,0 +1,241 @@
+{
+  "id": "technology-6e-objects-materials-1",
+  "biome": "technology-6e-objects",
+  "type": "materials",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "technology-6e-objects-materials-1-0",
+      "prompt": "La tasse en porcelaine est faite d’une …",
+      "spoken": "La tasse en porcelaine est faite d’une  (mot manquant) ",
+      "choices": [
+        "céramique",
+        "plastique",
+        "métal"
+      ],
+      "answer": "céramique",
+      "hint": "Relis la ligne « Céramiques » du rappel.",
+      "explanation": "La porcelaine est une céramique, comme la terre cuite : une terre cuite au four, dure mais cassante.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les familles de matériaux",
+          "lines": [
+            "Métaux : fer, acier, aluminium, cuivre.",
+            "Le bois, les plastiques, le verre.",
+            "Céramiques : la terre cuite, la porcelaine.",
+            "L’aimant attire le fer et l’acier, mais pas tous les métaux.",
+            "Les métaux conduisent la chaleur. Le bois et le plastique l’isolent.",
+            "Le verre est transparent mais cassant."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-materials-1-1",
+      "prompt": "Test à l’aimant\nTrombone en acier : attiré.\nCanette en aluminium : pas attirée.\nFil de cuivre : pas attiré.",
+      "question": "Que montre ce test ?",
+      "spoken": "Test à l’aimant. Trombone en acier, attiré. Canette en aluminium, pas attirée. Fil de cuivre, pas attiré.",
+      "choices": [
+        "tous les métaux sont attirés",
+        "l’aimant n’attire aucun métal",
+        "certains métaux ne sont pas attirés"
+      ],
+      "answer": "certains métaux ne sont pas attirés",
+      "hint": "L’aluminium et le cuivre sont aussi des métaux.",
+      "explanation": "L’acier est attiré, mais l’aluminium et le cuivre ne le sont pas, alors que ce sont des métaux : l’aimant n’attire pas tous les métaux.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les familles de matériaux",
+          "lines": [
+            "Métaux : fer, acier, aluminium, cuivre.",
+            "Le bois, les plastiques, le verre.",
+            "Céramiques : la terre cuite, la porcelaine.",
+            "L’aimant attire le fer et l’acier, mais pas tous les métaux.",
+            "Les métaux conduisent la chaleur. Le bois et le plastique l’isolent.",
+            "Le verre est transparent mais cassant."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-materials-1-2",
+      "prompt": "Le manche de la casserole est en bois, pour ne pas se brûler : le bois isole de la …",
+      "spoken": "Le manche de la casserole est en bois, pour ne pas se brûler : le bois isole de la  (mot manquant) ",
+      "choices": [
+        "chaleur",
+        "lumière",
+        "pluie"
+      ],
+      "answer": "chaleur",
+      "hint": "Relis la ligne « Les métaux » du rappel.",
+      "explanation": "Le bois isole de la chaleur : on tient le manche sans se brûler. Le métal de la casserole, lui, conduit la chaleur jusqu’aux aliments.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les familles de matériaux",
+          "lines": [
+            "Métaux : fer, acier, aluminium, cuivre.",
+            "Le bois, les plastiques, le verre.",
+            "Céramiques : la terre cuite, la porcelaine.",
+            "L’aimant attire le fer et l’acier, mais pas tous les métaux.",
+            "Les métaux conduisent la chaleur. Le bois et le plastique l’isolent.",
+            "Le verre est transparent mais cassant."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-materials-1-3",
+      "prompt": "La fenêtre est en verre parce que le verre est …",
+      "spoken": "La fenêtre est en verre parce que le verre est  (mot manquant) ",
+      "choices": [
+        "souple",
+        "léger",
+        "transparent"
+      ],
+      "answer": "transparent",
+      "hint": "À quoi sert une fenêtre ?",
+      "explanation": "Le verre est transparent : il laisse passer la lumière, et on voit dehors. Il n’est pas souple : il est cassant.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les familles de matériaux",
+          "lines": [
+            "Métaux : fer, acier, aluminium, cuivre.",
+            "Le bois, les plastiques, le verre.",
+            "Céramiques : la terre cuite, la porcelaine.",
+            "L’aimant attire le fer et l’acier, mais pas tous les métaux.",
+            "Les métaux conduisent la chaleur. Le bois et le plastique l’isolent.",
+            "Le verre est transparent mais cassant."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-materials-1-4",
+      "prompt": "Fiche d’un vélo\nCadre : aluminium, léger et solide.\nPneus : caoutchouc, souple.\nSelle : plastique et mousse.",
+      "question": "Pourquoi le cadre est-il en aluminium ?",
+      "spoken": "Fiche d’un vélo. Cadre, aluminium, léger et solide. Pneus, caoutchouc, souple. Selle, plastique et mousse.",
+      "choices": [
+        "il est souple comme le pneu",
+        "il est léger et solide",
+        "il est transparent"
+      ],
+      "answer": "il est léger et solide",
+      "hint": "Cherche la ligne du cadre.",
+      "explanation": "L’aluminium est léger et solide : le cadre porte le cycliste sans peser lourd. C’est le pneu qui est souple.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les familles de matériaux",
+          "lines": [
+            "Métaux : fer, acier, aluminium, cuivre.",
+            "Le bois, les plastiques, le verre.",
+            "Céramiques : la terre cuite, la porcelaine.",
+            "L’aimant attire le fer et l’acier, mais pas tous les métaux.",
+            "Les métaux conduisent la chaleur. Le bois et le plastique l’isolent.",
+            "Le verre est transparent mais cassant."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-materials-1-5",
+      "prompt": "Le pot de fleurs en terre cuite fait partie des …",
+      "spoken": "Le pot de fleurs en terre cuite fait partie des  (mot manquant) ",
+      "choices": [
+        "plastiques",
+        "céramiques",
+        "métaux"
+      ],
+      "answer": "céramiques",
+      "hint": "Relis la ligne « Céramiques » du rappel.",
+      "explanation": "La terre cuite est une céramique : de l’argile cuite au four.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les familles de matériaux",
+          "lines": [
+            "Métaux : fer, acier, aluminium, cuivre.",
+            "Le bois, les plastiques, le verre.",
+            "Céramiques : la terre cuite, la porcelaine.",
+            "L’aimant attire le fer et l’acier, mais pas tous les métaux.",
+            "Les métaux conduisent la chaleur. Le bois et le plastique l’isolent.",
+            "Le verre est transparent mais cassant."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-materials-1-6",
+      "prompt": "Le fil électrique est en cuivre, parce que ce métal conduit bien l’…",
+      "spoken": "Le fil électrique est en cuivre, parce que ce métal conduit bien l’ (mot manquant) ",
+      "choices": [
+        "eau",
+        "air",
+        "électricité"
+      ],
+      "answer": "électricité",
+      "hint": "À quoi sert un fil électrique ?",
+      "explanation": "Le cuivre conduit très bien l’électricité : c’est pour cela qu’on en fait les fils électriques.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les familles de matériaux",
+          "lines": [
+            "Métaux : fer, acier, aluminium, cuivre.",
+            "Le bois, les plastiques, le verre.",
+            "Céramiques : la terre cuite, la porcelaine.",
+            "L’aimant attire le fer et l’acier, mais pas tous les métaux.",
+            "Les métaux conduisent la chaleur. Le bois et le plastique l’isolent.",
+            "Le verre est transparent mais cassant."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-materials-1-7",
+      "prompt": "Le choix de Paul\nPaul veut une boîte qui ne casse pas si elle tombe.\nIl hésite entre le verre, le plastique et la porcelaine.",
+      "question": "Quel matériau doit-il choisir ?",
+      "spoken": "Le choix de Paul. Paul veut une boîte qui ne casse pas si elle tombe. Il hésite entre le verre, le plastique et la porcelaine.",
+      "choices": [
+        "le plastique",
+        "le verre",
+        "la porcelaine"
+      ],
+      "answer": "le plastique",
+      "hint": "Le verre et la porcelaine sont cassants.",
+      "explanation": "Le verre et la porcelaine, une céramique, cassent en tombant. Le plastique résiste au choc : c’est le bon choix.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les familles de matériaux",
+          "lines": [
+            "Métaux : fer, acier, aluminium, cuivre.",
+            "Le bois, les plastiques, le verre.",
+            "Céramiques : la terre cuite, la porcelaine.",
+            "L’aimant attire le fer et l’acier, mais pas tous les métaux.",
+            "Les métaux conduisent la chaleur. Le bois et le plastique l’isolent.",
+            "Le verre est transparent mais cassant."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "technology-6e-objects",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -44,6 +44,9 @@ export type TextureKind =
   | 'conteneur'
   | 'reliure'
   | 'gres'
+  | 'fossile'
+  | 'aimant'
+  | 'carton'
   | 'poutre'
   | 'vitrail'
   | 'engrenage'
@@ -230,6 +233,68 @@ function enluminure(t: TonsDEnluminure): Painter {
     if (d <= 3) return ombre;
     // Le rinceau des coins, hors du cadre : une diagonale claire d'un pixel sur deux.
     if (bord < 2 && (x + y) % 4 === 0) return reflet;
+    return fond;
+  };
+}
+
+/** La coquille en spirale du fossile, 10 × 10 pixels, dessinée à la main (« # » : le trait de la spirale). */
+const SPIRALE = ['...####...', '..#....#..', '.#..##..#.', '#..#..#..#', '#.#..#.#.#', '#.#.##.#.#', '#..#...#.#', '.#..###..#', '..#.....#.', '...#####..'];
+
+/** Les tons du fossile : la pierre, son grain plus sombre, le trait de la coquille. */
+type TonsDuFossile = { pierre: string; grain: string; trait: string };
+
+/**
+ * Du fossile (la Vallée du vivant, SVT 6e ; DA, SC-2) : une pierre beige, un grain d'un pixel sur cinq tiré d'un hachage
+ * (pas le hasard du canvas, pour que chaque face soit la même), et au milieu la coquille en spirale de 10 × 10 pixels,
+ * d'un trait sombre. C'est la spirale qui le nomme, à côté de la pierre de taille (des joints) et du sable (un grain
+ * seul). Trois tons, sans dégradé.
+ */
+function fossile(t: TonsDuFossile): Painter {
+  const [pierre, grainSombre, trait] = [hexToRgb(t.pierre), hexToRgb(t.grain), hexToRgb(t.trait)];
+  return (x, y) => {
+    const [u, v] = [x - 3, y - 3];
+    if (u >= 0 && u < 10 && v >= 0 && v < 10 && SPIRALE[v][u] === '#') return trait;
+    return (x * 7 + y * 11 + x * y) % 5 === 0 ? grainSombre : pierre;
+  };
+}
+
+/** L'aimant en U des côtés de l'aimant, 10 × 9 pixels (« # » : le métal sombre du U). */
+const AIMANT_EN_U = ['###....###', '###....###', '###....###', '###....###', '###....###', '###....###', '####..####', '.########.', '..######..'];
+
+/**
+ * De l'aimant (le Laboratoire des éléments, physique-chimie 6e ; DA, SC-2). Le dessus en deux moitiés, rouge à gauche et
+ * bleue à droite, séparées d'un trait sombre de deux pixels : les deux pôles se lisent au partage, jamais à la couleur
+ * seule. Les côtés gris métal, deux reflets clairs en haut, un U de métal sombre au milieu. Sans hasard.
+ */
+function aimant(face: 'top' | 'side'): Painter {
+  const [rouge, bleu, joint, metal, clair, sombre] = [hexToRgb('#b84a40'), hexToRgb('#4a72a8'), hexToRgb('#3a3e44'), hexToRgb('#8c9298'), hexToRgb('#b4bac0'), hexToRgb('#565c64')];
+  if (face === 'top')
+    return (x) => {
+      if (x === 7 || x === 8) return joint;
+      return x < 7 ? rouge : bleu;
+    };
+  return (x, y) => {
+    const [u, v] = [x - 3, y - 4];
+    if (u >= 0 && u < 10 && v >= 0 && v < AIMANT_EN_U.length && AIMANT_EN_U[v][u] === '#') return sombre;
+    return y === 1 && x % 5 !== 4 ? clair : metal;
+  };
+}
+
+/** Les tons du carton : le carton, la cannelure en creux, son bord clair. */
+type TonsDuCarton = { carton: string; creux: string; clair: string };
+
+/**
+ * Du carton ondulé (le Hangar des inventions, technologie 6e ; DA, SC-2) : des cannelures verticales, tous les quatre
+ * pixels un creux sombre bordé d'un pixel clair, sur un brun clair uni. Trois tons, sans grain : les cannelures le
+ * séparent des planches (des lames horizontales et leurs nœuds) et de la terre (un grain). Le motif se raccorde d'un
+ * bloc à l'autre.
+ */
+function carton(t: TonsDuCarton): Painter {
+  const [fond, creux, clair] = [hexToRgb(t.carton), hexToRgb(t.creux), hexToRgb(t.clair)];
+  return (x) => {
+    const u = x % 4;
+    if (u === 0) return creux;
+    if (u === 1) return clair;
     return fond;
   };
 }
@@ -659,6 +724,19 @@ export const PAINTERS: Record<TextureKind, { top: Painter; side: Painter; bottom
   gres: {
     top: gres({ pierre: '#d49a94', clair: '#e4b2ac', sombre: '#c08680', lit: '#c88e88' }),
     side: gres({ pierre: '#b07872', clair: '#c28c86', sombre: '#9c6862', lit: '#a46e68' }),
+  },
+  // Fossile (la Vallée du vivant, SVT 6e) : une pierre beige, une coquille en spirale d'un trait sombre au milieu.
+  fossile: {
+    top: fossile({ pierre: '#b3a68a', grain: '#a39678', trait: '#5e5240' }),
+    side: fossile({ pierre: '#8f8370', grain: '#82765f', trait: '#4e4434' }),
+  },
+  // Aimant (le Laboratoire des éléments, physique-chimie 6e) : le dessus rouge et bleu, partagé d'un trait ; les côtés
+  // gris métal, un U sombre.
+  aimant: { top: aimant('top'), side: aimant('side') },
+  // Carton (le Hangar des inventions, technologie 6e) : du carton ondulé, ses cannelures verticales.
+  carton: {
+    top: carton({ carton: '#b98d5a', creux: '#8a6a40', clair: '#cca474' }),
+    side: carton({ carton: '#9a7246', creux: '#6e5030', clair: '#ae8858' }),
   },
   // Les blocs assemblés (GD-2), chacun son motif : la poutre (un rondin équarri, ses chevilles), le vitrail (des
   // carreaux sertis de plomb), l'engrenage (une roue dentée sur l'ardoise), le miroir (un disque clair cerclé de violet).

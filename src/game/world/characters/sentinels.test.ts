@@ -150,12 +150,13 @@ describe('Les Gardiens en sentinelles', () => {
     expect(new Set(Object.values(STATUES).map((s) => s.nom)).size).toBe(BIOMES.length);
   });
 
-  // 2 100 depuis les deux Gardiens d'histoire-géographie du 6e (HG-2, mainteneur, 6 octobre 2026 : 2 065 mesurés) ;
-  // 2 150 depuis les six des 5e, 4e et 3e (HG-3, même mot : 2 144 mesurés aux Îles Brumeuses).
-  it('tiennent dans leur budget : 2 150 triangles au plus par archipel, toutes ensemble', () => {
+  // 2 100 depuis les deux Gardiens d'histoire-géographie du 6e (HG-2, mainteneur, 6 octobre 2026 : 2 065 mesurés), 2 780
+  // depuis les trois Gardiens de sciences (SC-2, même mot : 2 756 mesurés) ; les six des 5e, 4e et 3e (HG-3, même mot)
+  // y tiennent (2 144 mesurés aux Îles Brumeuses).
+  it('tiennent dans leur budget : 2 780 triangles au plus par archipel, toutes ensemble', () => {
     for (const a of ARCHIPELAGO_IDS) {
       const somme = BIOMES.filter((b) => b.classe === a).reduce((n, b) => n + nbTriangles(sentinellePeinte(b.id)), 0);
-      expect(somme, a).toBeLessThanOrEqual(2_150);
+      expect(somme, a).toBeLessThanOrEqual(2_780);
     }
   });
 
@@ -203,10 +204,11 @@ describe('Les Gardiens en sentinelles', () => {
         expect(droite - gauche).toBeGreaterThan(haut - HAUT_DU_SOCLE);
       });
 
-      it('quatre pièces figées ; seules la flamme et les veines s’allument, et elles seules sont de lueur', () => {
-        expect(f.table.map((p) => p.nom)).toEqual(['socle', 'sculpture', 'flamme', 'veines']);
-        expect(f.table.map((p) => p.lueur ?? null)).toEqual([null, null, 'allumage', 'allumage']);
-        for (const nomDePiece of ['socle', 'sculpture', 'flamme', 'veines']) expect(f.pieces.includes(f.table.findIndex((p) => p.nom === nomDePiece)), nomDePiece).toBe(true);
+      it('quatre pièces figées (trois sans flamme) ; seules la flamme et les veines s’allument, et elles seules sont de lueur', () => {
+        const noms = STATUES[b.id].sansFlamme ? ['socle', 'sculpture', 'veines'] : ['socle', 'sculpture', 'flamme', 'veines'];
+        expect(f.table.map((p) => p.nom)).toEqual(noms);
+        expect(f.table.map((p) => p.lueur ?? null)).toEqual(noms.map((n) => (n === 'flamme' || n === 'veines' ? 'allumage' : null)));
+        for (const nomDePiece of noms) expect(f.pieces.includes(f.table.findIndex((p) => p.nom === nomDePiece)), nomDePiece).toBe(true);
         for (let t = 0; t < nbTriangles(f); t++) expect(f.teintes[t] === LUEUR, `triangle ${t} (${nom(t)})`).toBe(nom(t) === 'flamme' || nom(t) === 'veines');
       });
 
@@ -236,8 +238,10 @@ describe('Les Gardiens en sentinelles', () => {
         }
       });
 
-      it('porte la flamme dans le foyer, devant', () => {
+      it(STATUES[b.id].sansFlamme ? 'n’a pas de flamme au foyer' : 'porte la flamme dans le foyer, devant', () => {
         const flamme = [...f.pieces.keys()].filter((t) => nom(t) === 'flamme');
+        if (STATUES[b.id].sansFlamme) return expect(flamme).toEqual([]);
+        expect(flamme.length).toBeGreaterThan(0);
         for (const t of flamme) for (let k = 0; k < 3; k++) expect(Math.abs(sommet(f, t, k)[2] - FOYER.z)).toBeLessThan(0.3);
         expect(FOYER.z).toBeLessThan(0);
       });

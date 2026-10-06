@@ -1,0 +1,240 @@
+{
+  "id": "life-earth-sciences-6e-living-world-living-groups-1",
+  "biome": "life-earth-sciences-6e-living-world",
+  "type": "living-groups",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "life-earth-sciences-6e-living-world-living-groups-1-0",
+      "prompt": "La chauve-souris a des ailes et des poils. C’est un …",
+      "spoken": "La chauve-souris a des ailes et des poils. C’est un  (mot manquant) ",
+      "choices": [
+        "oiseau",
+        "mammifère",
+        "insecte"
+      ],
+      "answer": "mammifère",
+      "hint": "Regarde ce qu’elle a sur le corps : des poils ou des plumes ?",
+      "explanation": "La chauve-souris a des poils : c’est un mammifère. Voler ne compte pas : on classe selon ce qu’on a, pas selon ce qu’on fait.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Classer le vivant",
+          "lines": [
+            "On classe selon ce que les êtres vivants ont : leurs attributs.",
+            "Pas selon ce qu’ils font, ni selon l’endroit où ils vivent.",
+            "Un squelette interne, avec une colonne vertébrale : les vertébrés.",
+            "Des poils et des mamelles : les mammifères. Des plumes : les oiseaux.",
+            "Six pattes : les insectes. Huit pattes : les araignées.",
+            "Les groupes s’emboîtent : un mammifère est aussi un vertébré."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-living-groups-1-1",
+      "prompt": "Le manchot ne vole pas, mais il a des plumes. C’est un …",
+      "spoken": "Le manchot ne vole pas, mais il a des plumes. C’est un  (mot manquant) ",
+      "choices": [
+        "poisson",
+        "mammifère",
+        "oiseau"
+      ],
+      "answer": "oiseau",
+      "hint": "Quel groupe a des plumes ?",
+      "explanation": "Le manchot a des plumes : c’est un oiseau, même s’il nage et ne vole pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Classer le vivant",
+          "lines": [
+            "On classe selon ce que les êtres vivants ont : leurs attributs.",
+            "Pas selon ce qu’ils font, ni selon l’endroit où ils vivent.",
+            "Un squelette interne, avec une colonne vertébrale : les vertébrés.",
+            "Des poils et des mamelles : les mammifères. Des plumes : les oiseaux.",
+            "Six pattes : les insectes. Huit pattes : les araignées.",
+            "Les groupes s’emboîtent : un mammifère est aussi un vertébré."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-living-groups-1-2",
+      "prompt": "La baleine vit dans la mer. Elle a des mamelles. C’est un …",
+      "spoken": "La baleine vit dans la mer. Elle a des mamelles. C’est un  (mot manquant) ",
+      "choices": [
+        "poisson",
+        "oiseau",
+        "mammifère"
+      ],
+      "answer": "mammifère",
+      "hint": "Le lieu de vie ne compte pas. Que possède-t-elle ?",
+      "explanation": "La baleine a des mamelles : c’est un mammifère. Vivre dans la mer ne fait pas d’elle un poisson.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Classer le vivant",
+          "lines": [
+            "On classe selon ce que les êtres vivants ont : leurs attributs.",
+            "Pas selon ce qu’ils font, ni selon l’endroit où ils vivent.",
+            "Un squelette interne, avec une colonne vertébrale : les vertébrés.",
+            "Des poils et des mamelles : les mammifères. Des plumes : les oiseaux.",
+            "Six pattes : les insectes. Huit pattes : les araignées.",
+            "Les groupes s’emboîtent : un mammifère est aussi un vertébré."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-living-groups-1-3",
+      "prompt": "Ce que chaque animal possède\nChat : squelette interne, poils\nMoineau : squelette interne, plumes\nTruite : squelette interne, écailles\nEscargot : coquille",
+      "question": "Le chat et le moineau sont des vertébrés. Quel autre animal en est un ?",
+      "spoken": "Ce que chaque animal possède. Chat, squelette interne, poils. Moineau, squelette interne, plumes. Truite, squelette interne, écailles. Escargot, coquille.",
+      "choices": [
+        "la truite",
+        "l’escargot",
+        "aucun des deux"
+      ],
+      "answer": "la truite",
+      "hint": "Cherche les lignes où il est écrit « squelette interne ».",
+      "explanation": "La truite a un squelette interne : c’est un vertébré, même si elle vit dans l’eau. La coquille de l’escargot n’est pas un squelette interne : elle est dehors.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Classer le vivant",
+          "lines": [
+            "On classe selon ce que les êtres vivants ont : leurs attributs.",
+            "Pas selon ce qu’ils font, ni selon l’endroit où ils vivent.",
+            "Un squelette interne, avec une colonne vertébrale : les vertébrés.",
+            "Des poils et des mamelles : les mammifères. Des plumes : les oiseaux.",
+            "Six pattes : les insectes. Huit pattes : les araignées.",
+            "Les groupes s’emboîtent : un mammifère est aussi un vertébré."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-living-groups-1-4",
+      "prompt": "L’araignée a huit pattes. Un insecte en a …",
+      "spoken": "L’araignée a huit pattes. Un insecte en a  (mot manquant) ",
+      "choices": [
+        "quatre",
+        "six",
+        "huit"
+      ],
+      "answer": "six",
+      "hint": "Relis la ligne « Six pattes » du rappel.",
+      "explanation": "Un insecte a six pattes, une araignée en a huit : l’araignée n’est donc pas un insecte.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Classer le vivant",
+          "lines": [
+            "On classe selon ce que les êtres vivants ont : leurs attributs.",
+            "Pas selon ce qu’ils font, ni selon l’endroit où ils vivent.",
+            "Un squelette interne, avec une colonne vertébrale : les vertébrés.",
+            "Des poils et des mamelles : les mammifères. Des plumes : les oiseaux.",
+            "Six pattes : les insectes. Huit pattes : les araignées.",
+            "Les groupes s’emboîtent : un mammifère est aussi un vertébré."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-living-groups-1-5",
+      "prompt": "Le schéma des groupes\nUne grande boîte : les vertébrés.\nDedans, une boîte : les mammifères.\nDedans aussi, une autre boîte : les oiseaux.\nLe lapin est dans la boîte des mammifères.",
+      "question": "Dans quelles boîtes se trouve le lapin ?",
+      "spoken": "Le schéma des groupes. Une grande boîte, les vertébrés. Dedans, une boîte, les mammifères. Dedans aussi, une autre boîte, les oiseaux. Le lapin est dans la boîte des mammifères.",
+      "choices": [
+        "mammifères seulement",
+        "mammifères et vertébrés",
+        "mammifères, vertébrés et oiseaux"
+      ],
+      "answer": "mammifères et vertébrés",
+      "hint": "La boîte des mammifères est rangée dans une plus grande boîte.",
+      "explanation": "Les groupes s’emboîtent : la boîte des mammifères est dans celle des vertébrés. Le lapin est donc dans les deux, mais pas chez les oiseaux : il n’a pas de plumes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Classer le vivant",
+          "lines": [
+            "On classe selon ce que les êtres vivants ont : leurs attributs.",
+            "Pas selon ce qu’ils font, ni selon l’endroit où ils vivent.",
+            "Un squelette interne, avec une colonne vertébrale : les vertébrés.",
+            "Des poils et des mamelles : les mammifères. Des plumes : les oiseaux.",
+            "Six pattes : les insectes. Huit pattes : les araignées.",
+            "Les groupes s’emboîtent : un mammifère est aussi un vertébré."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-living-groups-1-6",
+      "prompt": "Ce que possède un être vivant, et qui sert à le classer, s’appelle un …",
+      "spoken": "Ce que possède un être vivant, et qui sert à le classer, s’appelle un  (mot manquant) ",
+      "choices": [
+        "milieu",
+        "attribut",
+        "aliment"
+      ],
+      "answer": "attribut",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Un attribut, c’est ce qu’un être vivant possède : des poils, des plumes, un squelette. Le milieu, c’est l’endroit où il vit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Classer le vivant",
+          "lines": [
+            "On classe selon ce que les êtres vivants ont : leurs attributs.",
+            "Pas selon ce qu’ils font, ni selon l’endroit où ils vivent.",
+            "Un squelette interne, avec une colonne vertébrale : les vertébrés.",
+            "Des poils et des mamelles : les mammifères. Des plumes : les oiseaux.",
+            "Six pattes : les insectes. Huit pattes : les araignées.",
+            "Les groupes s’emboîtent : un mammifère est aussi un vertébré."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-living-groups-1-7",
+      "prompt": "Le dauphin et le requin nagent. Pour les classer, on regarde …",
+      "spoken": "Le dauphin et le requin nagent. Pour les classer, on regarde  (mot manquant) ",
+      "choices": [
+        "ce qu’ils ont",
+        "où ils vivent",
+        "ce qu’ils mangent"
+      ],
+      "answer": "ce qu’ils ont",
+      "hint": "Relis les deux premières lignes du rappel.",
+      "explanation": "On classe selon les attributs : ce que les êtres vivants ont. Le lieu de vie et la nourriture ne comptent pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Classer le vivant",
+          "lines": [
+            "On classe selon ce que les êtres vivants ont : leurs attributs.",
+            "Pas selon ce qu’ils font, ni selon l’endroit où ils vivent.",
+            "Un squelette interne, avec une colonne vertébrale : les vertébrés.",
+            "Des poils et des mamelles : les mammifères. Des plumes : les oiseaux.",
+            "Six pattes : les insectes. Huit pattes : les araignées.",
+            "Les groupes s’emboîtent : un mammifère est aussi un vertébré."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien classé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "life-earth-sciences-6e-living-world",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

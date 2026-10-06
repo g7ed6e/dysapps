@@ -370,6 +370,21 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
     lines: ['J’arpente la vallée pas à pas : un jalon, puis un autre.', 'Du grès rose pour ma mairie : lis un document.', 'Ville, campagne, outre-mer : chaque territoire compte.'],
     home: 'Ma mairie est finie. Toute la vallée peut y venir.',
   },
+  'life-earth-sciences-6e-living-world': {
+    greeting: 'Bonjour, bâtisseur ! Ici, on regarde le vivant : les plantes, les bêtes et la Terre. Chaque bonne réponse te donne un fossile. Un fossile, c’est la trace d’un être vivant très ancien, gardée dans la pierre.',
+    lines: ['Un escargot ne se presse jamais : toi non plus, prends ton temps.', 'Des fossiles pour ma serre : réponds à une question.', 'On classe un être vivant selon ce qu’il a, pas selon ce qu’il fait.'],
+    home: 'Ma serre est prête. Les graines germent au chaud.',
+  },
+  'physics-chemistry-6e-matter-energy': {
+    greeting: 'Bonjour, bâtisseur ! Ici, on fait des expériences : l’eau, les mouvements et les circuits. Chaque bonne réponse te donne un aimant. Un aimant attire le fer.',
+    lines: ['Blop ! Regarde bien l’instrument avant de répondre.', 'Des aimants pour mon laboratoire : fais une expérience.', 'L’eau peut être solide, liquide ou gazeuse.'],
+    home: 'Mon laboratoire est complet. Mes éprouvettes ont leur étagère.',
+  },
+  'technology-6e-objects': {
+    greeting: 'Bonjour, bâtisseur ! Ici, on ouvre les objets pour voir comment ils marchent. Chaque bonne réponse te donne du carton. Le carton, c’est du papier épais : on le plie, on le découpe, on le recycle.',
+    lines: ['Un objet a une fonction : à quoi sert-il ?', 'Du carton pour mon atelier : réponds à une question.', 'Chaque outil a sa place. Chaque mot du rappel aussi.'],
+    home: 'Mon atelier est complet. Chaque outil a sa place.',
+  },
   'lv2-3e-travel': {
     greeting:
       'Bonjour, bâtisseur ! Au refuge, les voyageurs racontent leurs voyages dans ta deuxième langue. Appuie sur Écouter : la voix lit la question et l’histoire pour toi. Chaque bonne réponse te donne un bardeau. Les bardeaux, ce sont les petites planches de bois qui couvrent les murs du refuge.',

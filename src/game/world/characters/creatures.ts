@@ -557,6 +557,54 @@ const JALON = fromLayers(
   { R: '#9c3f24', A: '#1f1a16', E: '#1f1a16', P: '#f6f1e6', Q: '#d23a2e' },
 );
 
+// Fougère : un escargot jardinier (DA, SC-2), tourné vers la droite pour montrer sa coquille : la coquille brun roux et
+// sa spirale crème (un « C » ouvert vers le centre), le corps vert sauge sur son pied, deux antennes au bout brun, un
+// petit arrosoir crème posé devant lui. Trois couleurs (un appel de dessin par couleur).
+const FOUGERE = fromLayers(
+  [
+    ['GGGGGGGG.', 'GGGGGGGG.', 'GGGGGGGG.'],
+    ['.RRR..GGC', 'RRRRR.GG.', '.RRR..GG.'],
+    ['RCCCR.GGC', 'RRRRR.GG.', 'RRRRR....'],
+    ['RCRRR.GG.', 'RRRRR.GG.', 'RRRRR....'],
+    ['RCCCR....', 'RRRRR.GG.', 'RRRRR....'],
+    ['.RRR.....', '.RRR..RR.', '.RRR.....'],
+  ],
+  { G: '#8aa878', R: '#9a5530', C: '#efe2c4' },
+);
+
+// Bulle : une goutte d'eau vivante (DA, SC-2), bleu clair et mate, un reflet blanc, deux yeux sombres ; à son côté, une
+// éprouvette blanche, le fond bleu. Trois couleurs.
+const BULLE = fromLayers(
+  [
+    ['.BBB..', 'BBBBBB', 'BBBBB.', 'BBBBB.', '.BBB..'],
+    ['.BBB..', 'BBBBBW', 'BBBBB.', 'BBBBB.', '.BBB..'],
+    ['.KBK..', 'BBBBBW', 'BBBBB.', 'BBBBB.', '.BBB..'],
+    ['.BBW..', '.BBB..', '.BBB..', '.BBB..', '......'],
+    ['......', '..B...', '..B...', '..B...', '......'],
+    ['......', '......', '..B...', '......', '......'],
+  ],
+  { B: '#8ec8ea', W: '#f6f8fa', K: '#1f1a16' },
+);
+
+// Pince : une fourmi bricoleuse debout (DA, SC-2), brun-rouge, trois segments séparés par une taille fine (l'abdomen
+// derrière, le thorax et sa bavette de tablier de cuir, la tête), deux antennes coudées ; la clé plate grise levée à
+// sa droite. Haute et étroite, elle ne se confond pas avec Coco, ronde et rouge vif. Trois couleurs : les yeux
+// reprennent le cuir du tablier.
+const BOULON = fromLayers(
+  [
+    ['.....', '.N.N.', '.....', '.....'],
+    ['.....', '.N.N.', '.NNN.', '.NNN.'],
+    ['.....', '..N..', 'NNNNN', '.NNN.'],
+    ['.TTTM', 'NNNNN', '.NNN.', '.....'],
+    ['....M', '..N..', '.....', '.....'],
+    ['.NNNM', '.NNN.', '.....', '.....'],
+    ['.TNT.', '.NNN.', '.....', '.....'],
+    ['.....', '.N.N.', '.....', '.....'],
+    ['.....', 'N...N', '.....', '.....'],
+  ],
+  { N: '#8e3a26', T: '#5a3a22', M: '#9aa2aa' },
+);
+
 export const CREATURE_CUBES: Record<BiomeId, CubeDeModele[]> = {
   'french-6e-phonology': MOUSSO,
   'french-6e-letter-confusion': TUNEL,
@@ -588,6 +636,9 @@ export const CREATURE_CUBES: Record<BiomeId, CubeDeModele[]> = {
   'geography-4e-globalization': FRET,
   'history-3e-twentieth-century': MEMO,
   'geography-3e-france': JALON,
+  'life-earth-sciences-6e-living-world': FOUGERE,
+  'physics-chemistry-6e-matter-energy': BULLE,
+  'technology-6e-objects': BOULON,
   'english-5e-vocabulary': PUDDING,
   'english-5e-grammar': MOUSTACHE,
   'lv2-5e-introductions': LINA,

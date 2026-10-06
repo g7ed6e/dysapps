@@ -22,12 +22,19 @@ import { chosenGuardian, layoutCache, type Rectangle } from '../placement';
  *
  * Depuis GD-9, les lieux se déplacent et les clairières suivent : celle du 5e, calée sur la clairière de 91, 345, ne
  * l'est plus. Au 6e, la clairière de 3, 109 passe d'un pas vers l'ouest (DA, 5 octobre 2026 : depuis la vue du port,
- * une côte cachait le bord de son rond) ; elle ne l'est que tant que la clairière choisie est celle-là. Au 5e, depuis
- * le cadre élargi de 24 cases (HG-3), la clairière de 29, 345 se cache derrière les îles de l'ouest : la baleine nage
- * en 97, 313, au nord du port : la seule clairière (un rond de 4 cases) qui s'y voit entière.
+ * une côte cachait le bord de son rond) ; elle ne l'est que tant que la clairière choisie est celle-là. Depuis les îles
+ * de sciences (SC-2), le Hangar des inventions au coin de devant, à l'ouest, une clairière s'ouvre derrière la Tour du
+ * lecteur, qui la cache tout entière depuis le port : en -12, 73 au village tout construit, en -9, 76 sans liaison (les
+ * liaisons posées la déplacent). Elle passe à 47, 85, au même rang, dans la passe entre la Ferme et la Forêt. Au 5e,
+ * depuis le cadre élargi de 24 cases (HG-3), la clairière de 29, 345 se cache derrière les îles de l'ouest : la baleine
+ * nage en 97, 313, au nord du port : la seule clairière (un rond de 4 cases) qui s'y voit entière.
  */
 export const BALEINES_REPLACEES: Readonly<Partial<Record<ArchipelagoId, readonly { de: { x: number; y: number }; vers: { x: number; y: number } }[]>>> = {
-  '6e': [{ de: { x: 3, y: 109 }, vers: { x: -1, y: 109 } }],
+  '6e': [
+    { de: { x: 3, y: 109 }, vers: { x: -1, y: 109 } },
+    { de: { x: -9, y: 76 }, vers: { x: 47, y: 85 } },
+    { de: { x: -12, y: 73 }, vers: { x: 47, y: 85 } },
+  ],
   '5e': [{ de: { x: 29, y: 345 }, vers: { x: 97, y: 313 } }],
 };
 

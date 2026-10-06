@@ -87,8 +87,8 @@ describe('La disposition en grille', () => {
     }
   });
 
-  // Chaque paire d'îles de chaque archipel, deux fois (39 îles depuis HG-3) : plus long que les 5 s par défaut.
-  it('les trajets d’île en île : le chemin et la durée d’avant, sur le sol', { timeout: 20_000 }, () => {
+  // Chaque paire d'îles de chaque archipel, deux fois (42 îles depuis HG-3 et SC-2) : plus long que les 5 s par défaut.
+  it('les trajets d’île en île : le chemin et la durée d’avant, sur le sol', () => {
     for (const a of ARCHIPELAGO_IDS) {
       const { g, ground } = grilleDe(a);
       for (const from of islandsOf(a))
@@ -101,10 +101,11 @@ describe('La disposition en grille', () => {
     }
     // Sans ouvrage construit, pas de chemin d'une île à l'autre.
     expect(dispositionEnGrille('6e').trajet({ genre: 'ile', id: 'french-6e-phonology' }, { genre: 'ile', id: 'french-6e-letter-confusion' })).toBeNull();
-  });
+    // Chaque paire d'îles de chaque archipel : quinze îles au 6e depuis les sciences (SC-2), plus de cinq secondes.
+  }, 30_000);
 
-  // Chaque île du 6e, et chaque ouvrage qui en part (39 îles depuis HG-3) : plus long que les 5 s par défaut.
-  it('changer de but en chemin : le trajet part de l’île où il se trouve, sans finir de traverser l’ouvrage', { timeout: 20_000 }, () => {
+  // Chaque paire d'îles du 6e (quinze îles depuis SC-2), avec un aller et deux retours : plusieurs secondes.
+  it('changer de but en chemin : le trajet part de l’île où il se trouve, sans finir de traverser l’ouvrage', () => {
     const a = '6e';
     const { g } = grilleDe(a);
     let essais = 0;
@@ -124,7 +125,7 @@ describe('La disposition en grille', () => {
         essais++;
       }
     expect(essais).toBeGreaterThan(0);
-  });
+  }, 30_000);
 
   it('le trajet jusqu’à la porte d’un lieu du village : celui d’avant', () => {
     for (const a of ARCHIPELAGO_IDS) {

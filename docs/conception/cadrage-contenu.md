@@ -34,14 +34,14 @@ Le contenu livré, île par île, est décrit par les pages générées (archipe
 
 Un archipel par classe. En français et en maths, une île par grand thème ; en anglais, deux îles par classe : une de vocabulaire et d’écoute, une de grammaire ; en LV2, une île par classe à partir de la 5e, la même pour l’allemand et l’espagnol.
 
-| Archipel | Français | Maths | Anglais | Histoire-géo | LV2 |
-| --- | --- | --- | --- | --- | --- |
-| 6e, Premiers Rivages | Forêt des sons, Mine des lettres, Carrière des mots, Ferme des accords, Tour du lecteur | Plaine des nombres, Rivière des fractions, Volcan des décimaux | Baie des mots, Horloge des verbes | Fouille des siècles, Pointe des paysages | — |
-| 5e, Îles Brumeuses | Carrefour des homophones, Marais des temps | Glacier des relatifs, Marché des proportions | Comptoir, Manoir du passé | Bourg des chroniques, Delta des ressources | Relais des voyageurs |
-| 4e, Anciens Ateliers | Falaise des accords, Cabinet des mots | Forge des puissances, Atelier du calcul littéral | Théâtre des voix, Gare du futur | Imprimerie des révolutions, Escale des échanges | Jardin des heures |
-| 3e, Îles du Ciel | Observatoire des textes | Belvédère de Thalès, Observatoire des données, Phare des fonctions | Studio des ondes, Château des hypothèses | Kiosque des témoins, Vallée des territoires | Refuge des carnets |
+| Archipel | Français | Maths | Anglais | Histoire-géo | Sciences | LV2 |
+| --- | --- | --- | --- | --- | --- | --- |
+| 6e, Premiers Rivages | Forêt des sons, Mine des lettres, Carrière des mots, Ferme des accords, Tour du lecteur | Plaine des nombres, Rivière des fractions, Volcan des décimaux | Baie des mots, Horloge des verbes | Fouille des siècles, Pointe des paysages | Vallée du vivant (SVT), Laboratoire des éléments (physique-chimie), Hangar des inventions (technologie) | — |
+| 5e, Îles Brumeuses | Carrefour des homophones, Marais des temps | Glacier des relatifs, Marché des proportions | Comptoir, Manoir du passé | Bourg des chroniques, Delta des ressources | — | Relais des voyageurs |
+| 4e, Anciens Ateliers | Falaise des accords, Cabinet des mots | Forge des puissances, Atelier du calcul littéral | Théâtre des voix, Gare du futur | Imprimerie des révolutions, Escale des échanges | — | Jardin des heures |
+| 3e, Îles du Ciel | Observatoire des textes | Belvédère de Thalès, Observatoire des données, Phare des fonctions | Studio des ondes, Château des hypothèses | Kiosque des témoins, Vallée des territoires | — | Refuge des carnets |
 
-Soit 39 îles et 135 missions, dont 24 de LV2 (quatre par île et par langue) et 24 d’histoire-géographie, plus 7 missions au portail.
+Soit 42 îles et 144 missions, dont 24 de LV2 (quatre par île et par langue), 24 d’histoire-géographie et 9 de sciences, plus 7 missions au portail.
 
 ### L’anglais
 
@@ -109,12 +109,13 @@ Choix du mainteneur du 5 octobre 2026 (« C pour l’instant ») : commencer par
 
 ### Les sciences et la technologie
 
-Choix du mainteneur du 5 octobre 2026 (« C ») : commencer par la 6e, avec trois îles, une de SVT, une de physique-chimie et une de technologie, avant le reste du collège.
+Choix du mainteneur du 5 octobre 2026 (« C ») : commencer par la 6e, avec trois îles, une de SVT, une de physique-chimie et une de technologie, avant le reste du collège. Elles sont au jeu depuis SC-2 (6 octobre 2026).
 
 - **Le programme** : en 6e, une seule matière, « Sciences et technologie », dont le texte en vigueur est celui du BO n° 25 du 22 juin 2023 (le nouveau, du BO n° 24 du 11 juin 2026, s’applique en 6e à la rentrée 2027 : la bascule sera une étape à part). Le référentiel la découpe comme au collège : SVT (le vivant, la planète Terre), physique-chimie (matière, mouvement, énergie, signal), technologie (matériaux et objets techniques) ; chacune reprend les démarches communes qu’elle travaille. Fabriquer un objet en équipe est hors périmètre. Libellés et pages n’ont pas pu être vérifiés (téléchargement refusé depuis l’environnement de travail) : ils sont à relire avant la première île.
-- **Trois îles de 6e**, trois missions chacune, deux niveaux de huit items, sur les écrans existants : la question à trou et la question sur un document. Chaque mission mêle une notion, le lexique et un document court (un texte, un petit tableau de mesures, un schéma décrit en mots).
+- **Les matières** : trois matières de l’application, chacune son expédition, son icône et sa couleur : « SVT » (`life-earth-sciences`, expédition **Graines et milieux**, icône `leaf`, vert d’eau), « Physique-chimie » (`physics-chemistry`, **Eau et circuits**, `flask-conical`, lavande), « Technologie » (`technology`, **Outils et inventions**, `wrench`, mauve). Aucune n’a de mission au portail : leur page ramène au Menu.
+- **Trois îles de 6e**, trois missions chacune, deux niveaux de huit items, sur les écrans existants : la question à trou et la question sur un document. Chaque mission mêle une notion, le lexique et un document court (un texte, un petit tableau de mesures, un schéma décrit en mots). La **Vallée du vivant** (`life-earth-sciences-6e-living-world`, Gardien le Cerf des sous-bois, créature Fougère, bloc Fossile), le **Laboratoire des éléments** (`physics-chemistry-6e-matter-energy`, l’Alambic de verre, Bulle, Aimant) et le **Hangar des inventions** (`technology-6e-objects`, l’Automate de laiton, Pince, Carton), noms décidés par le directeur artistique le 6 octobre 2026.
 - **Les mesures** se lisent sur un instrument décrit, jamais par un calcul (dyscalculie) ; aucun schéma à voir tant qu’il n’y a pas d’écran pour lui : il se légende par des mots à choisir.
-- **Les étapes SC-n** : SC-1, le référentiel de 6e et le contenu des trois îles, écrit en attendant le monde sur la grille ([GD-9](../gameplay/propositions/GD-9.md)) ; SC-2, l’entrée au jeu après la première pull request de GD-9, comme HG-2 ; puis, à proposer, un écran de schéma à légender, le cycle 4 (SVT, physique-chimie, technologie séparées) et le nouveau programme de 6e.
+- **Les étapes SC-n** : SC-1, le référentiel de 6e et le contenu des trois îles, écrit en attendant le monde sur la grille ([GD-9](../gameplay/propositions/GD-9.md)) ; SC-2, fait le 6 octobre 2026, l’entrée au jeu des trois îles, comme HG-2 (les compétences couvertes ont quitté les exclusions ; concevoir et fabriquer restent hors périmètre) ; puis, à proposer, un écran de schéma à légender, le cycle 4 (SVT, physique-chimie, technologie séparées) et le nouveau programme de 6e.
 
 ### Les problèmes situés dans l’archipel
 

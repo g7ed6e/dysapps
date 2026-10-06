@@ -40,6 +40,9 @@ describe('où est une place, en mots', () => {
     expect(ofPlace('Imprimerie des révolutions')).toBe('de l’Imprimerie des révolutions');
     expect(joinedSentence('Escale des échanges', 'Kiosque des témoins')).toBe('L’Escale des échanges est réunie au Kiosque des témoins.');
     expect(toPlace('Vallée des territoires')).toBe('à la Vallée des territoires');
+    expect(ofPlace('Vallée du vivant')).toBe('de la Vallée du vivant');
+    expect(ofPlace('Laboratoire des éléments')).toBe('du Laboratoire des éléments');
+    expect(ofPlace('Hangar des inventions')).toBe('du Hangar des inventions');
     expect(ofPlace('Observatoire des textes')).toBe('de l’Observatoire des textes');
     expect(ofPlace('Forge des puissances')).toBe('de la Forge des puissances');
     // Aucun nom ne reste sans article.

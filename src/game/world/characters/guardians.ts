@@ -691,7 +691,7 @@ const COLOMBE = fromLayers(
 // Le Cerf de lauze (DA, HG-3) : un cerf debout sur quatre pattes fines aux sabots sombres, rallumé au pelage fauve, la
 // gorge crème ; le cou court, la tête levée, le museau qui avance, deux oreilles ; ses bois de lauze sombre montent en V,
 // en escalier, un andouiller vers l'avant de chaque côté (DA, relecture des planches : plus un lama). Quatre couleurs.
-const CERF = fromLayers(
+const CERF_DE_LAUZE = fromLayers(
   [
     ['.......', '.......', '..D.D..', '.......', '.......', '..D.D..', '.......'],
     ['.......', '.......', '..L.L..', '.......', '.......', '..L.L..', '.......'],
@@ -707,6 +707,67 @@ const CERF = fromLayers(
     ['.......', '.......', 'D.....D', '.......', '.......', '.......', '.......'],
   ],
   { L: '#c98f3c', C: '#f0e2c0', D: '#4e4a42', K: '#1f1a16' },
+);
+
+// Le Cerf des sous-bois (DA, SC-2) : debout, de profil, de la taille du Taureau ; brun roux, le ventre crème, la mousse
+// verte sur le dos et au bout des bois ; les bois ramifiés, trois pointes de chaque côté, au-dessus de la tête. Quatre
+// couleurs, les yeux sombres compris.
+const CERF = fromLayers(
+  [
+    ['.R....R...', '..........', '..........', '.R....R...'],
+    ['.R....R...', '..........', '..........', '.R....R...'],
+    ['RCCCCCCR..', 'RCCCCCCR..', 'RCCCCCCR..', 'RCCCCCCR..'],
+    ['RRRRRRRR..', 'RRRRRRRR..', 'RRRRRRRR..', 'RRRRRRRR..'],
+    ['RRRRRRRR..', 'MMMMMMRR..', 'MMMMMMRR..', 'RRRRRRRR..'],
+    ['..........', '......RR..', '......RR..', '..........'],
+    ['..........', '......RRRC', '......RRRC', '..........'],
+    ['..........', '......RKR.', '......RKR.', '..........'],
+    ['.......R..', '.......R..', '.......R..', '.......R..'],
+    ['.....RRRRR', '..........', '..........', '.....RRRRR'],
+    ['.....R.M.R', '..........', '..........', '.....R.M.R'],
+  ],
+  { R: '#9a5530', C: '#efe2c4', M: '#5e8a3a', K: '#1f1a16' },
+);
+
+// L'Alambic de verre (DA, SC-2) : un ballon presque incolore, des reflets blancs, le liquide bleu lavande dans sa moitié
+// basse, posé sur un trépied de bois sombre ; son col monte, puis un long bec courbe descend dans un petit flacon.
+// Aucune flamme. Quatre couleurs : les yeux reprennent le bois du trépied.
+const ALAMBIC = fromLayers(
+  [
+    ['.B...B...', '.......LL', '.......LL', '.........', '...B.....'],
+    ['.B...B...', '.......VV', '.......VV', '.........', '...B.....'],
+    ['.BBBBB...', '.B...B...', '.B...B.V.', '.B...B...', '.BBBBB...'],
+    ['.........', '..LLL....', '..LLL..V.', '..LLL....', '.........'],
+    ['..LLL....', '.LLLLL...', '.LLLLL.V.', '.LLLLL...', '..LLL....'],
+    ['..LLL....', '.LLLLL...', '.LLLLL.V.', '.LLLLL...', '..LLL....'],
+    ['..BVB....', '.VVVVV...', '.VVVVV.V.', '.VVVVV...', '..VVV....'],
+    ['..WVV....', '.VVVVV...', '.VVVVV.V.', '.VVVVV...', '..VVV....'],
+    ['.........', '..VVV....', '..VVV..V.', '..VVV....', '.........'],
+    ['.........', '.........', '...V..V..', '.........', '.........'],
+    ['.........', '.........', '...VVV...', '.........', '.........'],
+  ],
+  { V: '#dfe9ee', W: '#ffffff', L: '#9c9ae0', B: '#4a3828' },
+);
+
+// L'Automate de laiton (DA, SC-2) : trapu, une tête-cube à deux hublots clairs, trois boutons clairs en colonne sur la
+// poitrine, des rivets sombres aux coins, la grande clé de remontage dans le dos ; ni antenne ni visage-écran. Trois
+// couleurs. Pour que la tête et les bras se lisent (retouche du DA sur captures, 6 octobre 2026) : un cou sombre d'un
+// cube détache la tête du tronc, les bras pendent des épaules, décollés du tronc d'une case et tenus par une
+// articulation sombre, et le laiton clair des hublots, des boutons et de la clé est éclairci pour trancher sur le tronc.
+const AUTOMATE = fromLayers(
+  [
+    ['.........', '..AA.AA..', '..AA.AA..', '.........', '.........', '.........'],
+    ['.........', '..AA.AA..', '..AA.AA..', '.........', '.........', '.........'],
+    ['..SAEAS..', 'A.AAAAA.A', 'A.AAAAA.A', '..AAAAA..', '.........', '.........'],
+    ['..AAEAA..', 'A.AAAAA.A', 'A.AAAAA.A', '..AAAAA..', '.........', '...EEE...'],
+    ['..AAEAA..', 'A.AAAAA.A', 'A.AAAAA.A', '..AAAAA..', '....A....', '...E.E...'],
+    ['..SAAAS..', 'ASAAAAASA', 'ASAAAAASA', '..AAAAA..', '.........', '...EEE...'],
+    ['.........', '....S....', '....S....', '.........', '.........', '.........'],
+    ['...AAA...', '...AAA...', '...AAA...', '.........', '.........', '.........'],
+    ['...EAE...', '...AAA...', '...AAA...', '.........', '.........', '.........'],
+    ['...SAS...', '...AAA...', '...AAA...', '.........', '.........', '.........'],
+  ],
+  { A: '#c9a43c', E: '#f3e09a', S: '#4a3c22' },
 );
 
 export const GUARDIAN_CUBES: Record<BiomeId, CubeDeModele[]> = {
@@ -739,7 +800,10 @@ export const GUARDIAN_CUBES: Record<BiomeId, CubeDeModele[]> = {
   'history-4e-revolutions': PAON,
   'geography-4e-globalization': POULPE,
   'history-3e-twentieth-century': COLOMBE,
-  'geography-3e-france': CERF,
+  'geography-3e-france': CERF_DE_LAUZE,
+  'life-earth-sciences-6e-living-world': CERF,
+  'physics-chemistry-6e-matter-energy': ALAMBIC,
+  'technology-6e-objects': AUTOMATE,
   'english-5e-vocabulary': REINE,
   'english-5e-grammar': SPECTRE,
   'lv2-5e-introductions': DILIGENCE,

@@ -66,6 +66,9 @@ export const TEXTURES: Record<string, string> = {
   [BLOCKS[BLOC.conteneur].side]: 'conteneur',
   [BLOCKS[BLOC.reliure].side]: 'reliure',
   [BLOCKS[BLOC.gres].side]: 'gres',
+  [BLOCKS[BLOC.fossile].side]: 'fossile',
+  [BLOCKS[BLOC.aimant].side]: 'aimant',
+  [BLOCKS[BLOC.carton].side]: 'carton',
   [BLOCKS[BLOC.poutre].side]: 'poutre',
   [BLOCKS[BLOC.vitrail].side]: 'vitrail',
   [BLOCKS[BLOC.engrenage].side]: 'engrenage',
@@ -135,12 +138,16 @@ const estIndexDEcole = (index: number) =>
 
 /**
  * Les îles entrées au jeu au milieu de la liste des îles (`BIOMES`) : les îles d'histoire-géographie (HG-2 en 6e, HG-3 de
- * la 5e à la 3e), rangées avant les îles de LV2. La forme du plateau d'une île se tire de son rang (`groundHeight`) ; compté sans elles, le
+ * la 5e à la 3e) et de sciences de 6e (SC-2), rangées avant les îles de LV2. La forme du plateau d'une île se tire de son rang (`groundHeight`) ; compté sans elles, le
  * rang des îles d'avant ne bouge pas, ni leur relief.
  */
 const VENUES_AU_MILIEU: readonly string[] = [
   'history-6e-antiquity',
   'geography-6e-living',
+  // Les îles de sciences de 6e (SC-2).
+  'life-earth-sciences-6e-living-world',
+  'physics-chemistry-6e-matter-energy',
+  'technology-6e-objects',
   // Les îles d'histoire-géographie de 5e à 3e (HG-3, DA, 6 octobre 2026).
   'history-5e-middle-ages',
   'geography-5e-resources',

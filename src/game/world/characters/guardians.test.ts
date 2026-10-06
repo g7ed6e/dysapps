@@ -16,3 +16,17 @@ describe('L’Amphore peinte (DA, HG-2)', () => {
     }
   });
 });
+
+describe('Le Cerf des sous-bois (DA, SC-2)', () => {
+  it('porte ses bois au-dessus de la tête, trois pointes de chaque côté', () => {
+    const cubes = GUARDIAN_CUBES['life-earth-sciences-6e-living-world'];
+    const haut = Math.max(...cubes.map((c) => c.z));
+    const pointes = (y: number) => {
+      const xs = cubes.filter((c) => c.z === haut && c.y === y).map((c) => c.x).sort((a, b) => a - b);
+      return xs.filter((x, i) => i === 0 || x - xs[i - 1] > 1).length;
+    };
+    const cotes = [...new Set(cubes.filter((c) => c.z === haut).map((c) => c.y))];
+    expect(cotes).toHaveLength(2);
+    for (const y of cotes) expect(pointes(y), `côté ${y}`).toBe(3);
+  });
+});

@@ -11,11 +11,12 @@ import { ambianceDe, type Couleur, type Faces } from './palette';
 export type Couverture = 'ardoise' | 'terre-cuite';
 
 /**
- * Les îles couvertes de terre cuite : 6e la Ferme, la Mine et la Pointe des paysages (HG-2 : ses toits de ville, jamais
- * voisine de la Mine ; la Fouille des siècles, sa voisine, reste d'ardoise), 5e le Comptoir, 4e le Théâtre, 3e le
- * Belvédère. Les îles
- * de la LV2 restent d'ardoise et sont hors de ce compte : le Relais des voyageurs (5e), voisin du Comptoir (jamais deux
- * voisins en terre cuite), le Jardin des heures (4e, DA LV2-4), voisin du Théâtre, d'ardoise #3E3636, et le Refuge des carnets (3e, DA LV2-5), d'ardoise enneigée. Les îles
+ * Les îles couvertes de terre cuite : 6e la Ferme, la Mine, la Pointe des paysages (HG-2 : ses toits de ville, jamais
+ * voisine de la Mine ; la Fouille des siècles, sa voisine, reste d'ardoise) et le Hangar des inventions (DA, SC-2 ; la
+ * Tour du lecteur et le Volcan des décimaux, ses voisins, sont d'ardoise, et il n'est pas voisin de la Pointe), 5e le
+ * Comptoir, 4e le Théâtre, 3e le Belvédère. Les îles de la LV2 restent d'ardoise et sont hors de ce compte : le Relais
+ * des voyageurs (5e), voisin du Comptoir (jamais deux voisins en terre cuite), le Jardin des heures (4e, DA LV2-4), voisin
+ * du Théâtre, d'ardoise #3E3636, et le Refuge des carnets (3e, DA LV2-5), d'ardoise enneigée. Les îles
  * d'histoire-géographie de 5e à 3e (HG-3, DA) : en terre cuite le Delta des ressources (5e), l'Imprimerie des révolutions
  * (4e) et la Vallée des territoires (3e) ; d'ardoise le Bourg des chroniques et l'Escale des échanges, d'ardoise
  * enneigée le Kiosque des témoins. Chaque archipel des 5e à 3e garde ainsi deux îles de terre cuite, jamais voisines :
@@ -26,6 +27,7 @@ export const TERRE_CUITE_SUR: readonly string[] = [
   'french-6e-grammar-spelling',
   'french-6e-letter-confusion',
   'geography-6e-living',
+  'technology-6e-objects',
   'english-5e-vocabulary',
   'geography-5e-resources',
   'english-4e-comprehension',

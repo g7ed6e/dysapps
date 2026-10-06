@@ -279,6 +279,30 @@ export const ARCHIPEO = {
         beaten: 'Mes lauzes se rallument. La vallée est à toi, et à Jalon.',
       },
     },
+    'life-earth-sciences-6e-living-world': {
+      challenge: 'Le Cerf des sous-bois dit doucement : « Mon manteau de mousse est éteint. Tu as observé tout le vivant de la vallée : aide-moi à le classer. »',
+      guardianSays: {
+        hit: 'Une touffe de mon manteau s’allume. C’est juste.',
+        miss: 'Rien ne s’éteint. Relis le document, regarde ce que l’être vivant possède, et reprends.',
+        beaten: 'Mon manteau se rallume. La vallée est à toi, et à Fougère.',
+      },
+    },
+    'physics-chemistry-6e-matter-energy': {
+      challenge: 'L’Alambic de verre dit doucement : « Mon ballon de verre est éteint. Tu as fait toutes les expériences du laboratoire : aide-moi à les comprendre. »',
+      guardianSays: {
+        hit: 'Une bulle de mon ballon s’allume. C’est juste.',
+        miss: 'Rien ne s’éteint. Relis le document, regarde l’instrument, et reprends.',
+        beaten: 'Mon ballon se rallume. Le laboratoire est à toi, et à Bulle.',
+      },
+    },
+    'technology-6e-objects': {
+      challenge: 'L’Automate de laiton dit doucement : « Les boutons de ma poitrine sont éteints. Tu as essayé tous les objets du hangar : dis-moi à quoi ils servent. »',
+      guardianSays: {
+        hit: 'Un bouton de ma poitrine s’allume. C’est juste.',
+        miss: 'Rien ne s’éteint. Relis le schéma, cherche à quoi sert l’objet, et reprends.',
+        beaten: 'Mes boutons se rallument. Le hangar est à toi, et à Pince.',
+      },
+    },
     'lv2-3e-travel': {
       challenge: 'Le Papillon de cuivre dit doucement : « Le bord de mes ailes est éteint. Tu as rencontré tous les voyageurs du refuge : dis-moi ce qu’ils ont vécu. »',
       guardianSays: {
@@ -370,6 +394,9 @@ export const ARCHIPEO = {
     'geography-4e-globalization': 'crabe grutier',
     'history-3e-twentieth-century': 'marmotte bibliothécaire',
     'geography-3e-france': 'fourmi arpenteuse',
+    'life-earth-sciences-6e-living-world': 'escargot jardinier',
+    'physics-chemistry-6e-matter-energy': 'poulpe chimiste',
+    'technology-6e-objects': 'fourmi bricoleuse',
   },
   libelles: {
     dejaFait: 'Déjà rallumé. Tu veux rejouer ?',

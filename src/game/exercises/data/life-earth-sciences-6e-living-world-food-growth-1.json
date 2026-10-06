@@ -1,0 +1,241 @@
+{
+  "id": "life-earth-sciences-6e-living-world-food-growth-1",
+  "biome": "life-earth-sciences-6e-living-world",
+  "type": "food-growth",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "life-earth-sciences-6e-living-world-food-growth-1-0",
+      "prompt": "Les pâtes font partie des …",
+      "spoken": "Les pâtes font partie des  (mot manquant) ",
+      "choices": [
+        "produits laitiers",
+        "féculents",
+        "matières grasses"
+      ],
+      "answer": "féculents",
+      "hint": "Les pâtes ressemblent au pain et au riz : de quel groupe sont-ils ?",
+      "explanation": "Les pâtes sont des féculents, comme le pain, le riz et les pommes de terre. Elles donnent de l’énergie.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les aliments",
+          "lines": [
+            "Les aliments donnent de l’énergie et font grandir le corps.",
+            "Féculents : pain, riz, pommes de terre.",
+            "Produits laitiers : lait, fromage.",
+            "Micro-organismes : des êtres vivants trop petits pour être vus.",
+            "Certains abîment les aliments, d’autres servent à en fabriquer.",
+            "Le froid les ralentit ; la cuisson en tue beaucoup."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-food-growth-1-1",
+      "prompt": "Avant de manger, on se lave les mains pour enlever des …",
+      "spoken": "Avant de manger, on se lave les mains pour enlever des  (mot manquant) ",
+      "choices": [
+        "micro-organismes",
+        "vitamines",
+        "aliments"
+      ],
+      "answer": "micro-organismes",
+      "hint": "Qu’y a-t-il sur les mains, qu’on ne voit pas ?",
+      "explanation": "Les mains portent des micro-organismes, trop petits pour être vus. Certains rendent malade : le savon et l’eau les enlèvent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les aliments",
+          "lines": [
+            "Les aliments donnent de l’énergie et font grandir le corps.",
+            "Féculents : pain, riz, pommes de terre.",
+            "Produits laitiers : lait, fromage.",
+            "Micro-organismes : des êtres vivants trop petits pour être vus.",
+            "Certains abîment les aliments, d’autres servent à en fabriquer.",
+            "Le froid les ralentit ; la cuisson en tue beaucoup."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-food-growth-1-2",
+      "prompt": "Pour garder la viande plus longtemps, on la range au …",
+      "spoken": "Pour garder la viande plus longtemps, on la range au  (mot manquant) ",
+      "choices": [
+        "placard",
+        "soleil",
+        "réfrigérateur"
+      ],
+      "answer": "réfrigérateur",
+      "hint": "Qu’est-ce qui ralentit les micro-organismes ?",
+      "explanation": "Le froid du réfrigérateur ralentit les micro-organismes qui abîment la viande. Au placard ou au soleil, ils se multiplient vite.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les aliments",
+          "lines": [
+            "Les aliments donnent de l’énergie et font grandir le corps.",
+            "Féculents : pain, riz, pommes de terre.",
+            "Produits laitiers : lait, fromage.",
+            "Micro-organismes : des êtres vivants trop petits pour être vus.",
+            "Certains abîment les aliments, d’autres servent à en fabriquer.",
+            "Le froid les ralentit ; la cuisson en tue beaucoup."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-food-growth-1-3",
+      "prompt": "Expérience sur deux tranches de pain\nTranche 1 : dans un sac fermé, au réfrigérateur.\nTranche 2 : dans un sac fermé, dans la cuisine.\nUne semaine plus tard :\nTranche 1 : pas de moisissure.\nTranche 2 : des taches vertes de moisissure.",
+      "question": "Que montre cette expérience ?",
+      "spoken": "Expérience sur deux tranches de pain. Tranche 1, dans un sac fermé, au réfrigérateur. Tranche 2, dans un sac fermé, dans la cuisine. Une semaine plus tard. Tranche 1, pas de moisissure. Tranche 2, des taches vertes de moisissure.",
+      "choices": [
+        "le sac fait pousser la moisissure",
+        "le froid ralentit la moisissure",
+        "le pain moisit toujours"
+      ],
+      "answer": "le froid ralentit la moisissure",
+      "hint": "Les deux tranches sont dans un sac. Qu’est-ce qui change entre elles ?",
+      "explanation": "Une seule chose change : le froid. La tranche au réfrigérateur n’a pas moisi : le froid ralentit les moisissures, qui sont des micro-organismes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les aliments",
+          "lines": [
+            "Les aliments donnent de l’énergie et font grandir le corps.",
+            "Féculents : pain, riz, pommes de terre.",
+            "Produits laitiers : lait, fromage.",
+            "Micro-organismes : des êtres vivants trop petits pour être vus.",
+            "Certains abîment les aliments, d’autres servent à en fabriquer.",
+            "Le froid les ralentit ; la cuisson en tue beaucoup."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-food-growth-1-4",
+      "prompt": "Le yaourt est fabriqué avec du lait, grâce à des …",
+      "spoken": "Le yaourt est fabriqué avec du lait, grâce à des  (mot manquant) ",
+      "choices": [
+        "sucres",
+        "bactéries",
+        "vitamines"
+      ],
+      "answer": "bactéries",
+      "hint": "Relis la ligne « Certains » du rappel.",
+      "explanation": "Des bactéries, des micro-organismes utiles, transforment le lait en yaourt.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les aliments",
+          "lines": [
+            "Les aliments donnent de l’énergie et font grandir le corps.",
+            "Féculents : pain, riz, pommes de terre.",
+            "Produits laitiers : lait, fromage.",
+            "Micro-organismes : des êtres vivants trop petits pour être vus.",
+            "Certains abîment les aliments, d’autres servent à en fabriquer.",
+            "Le froid les ralentit ; la cuisson en tue beaucoup."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-food-growth-1-5",
+      "prompt": "La pâte à pain gonfle grâce à des micro-organismes : les …",
+      "spoken": "La pâte à pain gonfle grâce à des micro-organismes : les  (mot manquant) ",
+      "choices": [
+        "levures",
+        "moisissures",
+        "vitamines"
+      ],
+      "answer": "levures",
+      "hint": "Ce micro-organisme utile s’achète en sachet chez le boulanger.",
+      "explanation": "Les levures font gonfler la pâte à pain. Les moisissures, elles, abîment les aliments ; les vitamines ne sont pas vivantes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les aliments",
+          "lines": [
+            "Les aliments donnent de l’énergie et font grandir le corps.",
+            "Féculents : pain, riz, pommes de terre.",
+            "Produits laitiers : lait, fromage.",
+            "Micro-organismes : des êtres vivants trop petits pour être vus.",
+            "Certains abîment les aliments, d’autres servent à en fabriquer.",
+            "Le froid les ralentit ; la cuisson en tue beaucoup."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-food-growth-1-6",
+      "prompt": "Étiquette d’un pot de compote\nÀ conserver au frais après ouverture.\nÀ consommer dans les 3 jours.",
+      "question": "Tu as ouvert le pot. Où le ranges-tu ?",
+      "spoken": "Étiquette d’un pot de compote. À conserver au frais après ouverture. À consommer dans les trois jours.",
+      "choices": [
+        "au réfrigérateur",
+        "dans le placard de la cuisine",
+        "près du four"
+      ],
+      "answer": "au réfrigérateur",
+      "hint": "Que veut dire « au frais » ?",
+      "explanation": "« Au frais » veut dire au froid : au réfrigérateur. Une fois ouvert, le pot reçoit des micro-organismes de l’air, que le froid ralentit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les aliments",
+          "lines": [
+            "Les aliments donnent de l’énergie et font grandir le corps.",
+            "Féculents : pain, riz, pommes de terre.",
+            "Produits laitiers : lait, fromage.",
+            "Micro-organismes : des êtres vivants trop petits pour être vus.",
+            "Certains abîment les aliments, d’autres servent à en fabriquer.",
+            "Le froid les ralentit ; la cuisson en tue beaucoup."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-food-growth-1-7",
+      "prompt": "Le repas du soir de Nina\nEntrée : salade de tomates\nPlat : poisson et riz\nDessert : à choisir",
+      "question": "Quel dessert ajoute un produit laitier au repas ?",
+      "spoken": "Le repas du soir de Nina. Entrée, salade de tomates. Plat, poisson et riz. Dessert, à choisir.",
+      "choices": [
+        "une pomme",
+        "une part de gâteau",
+        "un yaourt"
+      ],
+      "answer": "un yaourt",
+      "hint": "Les produits laitiers sont faits avec du lait.",
+      "explanation": "Le yaourt est fait avec du lait : c’est un produit laitier. La pomme est un fruit, le gâteau un produit sucré.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les aliments",
+          "lines": [
+            "Les aliments donnent de l’énergie et font grandir le corps.",
+            "Féculents : pain, riz, pommes de terre.",
+            "Produits laitiers : lait, fromage.",
+            "Micro-organismes : des êtres vivants trop petits pour être vus.",
+            "Certains abîment les aliments, d’autres servent à en fabriquer.",
+            "Le froid les ralentit ; la cuisson en tue beaucoup."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "life-earth-sciences-6e-living-world",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -72,6 +72,8 @@ export interface Statue {
    * dans le monde et au défi, pour se montrer de profil à chaque caméra. Le socle et son foyer ne tournent pas.
    */
   tour?: Record<OuSeMontre, number>;
+  /** Sans flamme au foyer : sous un trépied, elle se lirait comme un bec Bunsen (l'Alambic de verre ; DA, SC-2). */
+  sansFlamme?: true;
 }
 
 /** Là où se montre une sentinelle : dans le monde, ou au défi (le portrait). */
@@ -346,7 +348,7 @@ function piecesDeSentinelle(s: Statue, { ou = 'monde', veines = 1 }: { ou?: OuSe
   return [
     { nom: 'socle', pivot: [0, 0, 0], dessiner: (T, pot) => socle(T, a(pot)) },
     { nom: 'sculpture', pivot: [0, HAUT_DU_SOCLE, 0], dessiner: (T, pot) => s.sculpture(R(T), a(pot)) },
-    { nom: 'flamme', pivot: [0, FOYER.haut, FOYER.z], lueur: 'allumage', dessiner: (T, pot) => flamme(T, a(pot)) },
+    ...(s.sansFlamme ? [] : [{ nom: 'flamme', pivot: [0, FOYER.haut, FOYER.z], lueur: 'allumage', dessiner: (T: Trace, pot: Pot) => flamme(T, a(pot)) } satisfies Piece]),
     { nom: 'veines', pivot: [0, HAUT_DU_SOCLE, 0], lueur: 'allumage', dessiner: (T, pot) => s.veines(R(T), a(pot)) },
   ];
 }

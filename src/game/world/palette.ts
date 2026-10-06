@@ -348,6 +348,12 @@ export const MATIERES: Record<TextureKind, Faces> = {
   conteneur: { dessus: 0x3d7fb0, cote: 0x2c6189 },
   reliure: { dessus: 0x2f6f74, cote: 0x22545a },
   gres: { dessus: 0xd49a94, cote: 0xb07872 },
+  // Le fossile de la Vallée : une pierre beige, plus grise que le sable, plus chaude que la pierre de taille.
+  fossile: { dessus: 0xb3a68a, cote: 0x8f8370 },
+  // L'aimant du Laboratoire : gris métal dominant (DA, SC-2) ; le rouge et le bleu restent au motif de Blocland.
+  aimant: { dessus: 0xa4aab0, cote: 0x8c9298 },
+  // Le carton du Hangar : un brun clair, plus jaune que la terre, plus terne que les planches.
+  carton: { dessus: 0xb98d5a, cote: 0x9a7246 },
   // Les blocs assemblés (GD-2) : la couleur de fond de chaque bloc ; son motif (world/construction.ts, `MOTIF_ASSEMBLE`)
   // le peint par-dessus, avec les couleurs de `DETAILS_ASSEMBLES`. Le madrier, un bois de charpente plus clair que les
   // planches ; le hublot, son cadre jaune ; la poulie, sa chape brune ; la loupe, sur une pierre mauve pâle.

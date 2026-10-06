@@ -41,6 +41,9 @@ export const BIOME_IDS = [
   'english-3e-grammar',
   'history-6e-antiquity',
   'geography-6e-living',
+  'life-earth-sciences-6e-living-world',
+  'physics-chemistry-6e-matter-energy',
+  'technology-6e-objects',
   'history-5e-middle-ages',
   'geography-5e-resources',
   'history-4e-revolutions',
@@ -90,6 +93,9 @@ export type BlockId =
   | 'english-3e-grammar'
   | 'history-6e-antiquity'
   | 'geography-6e-living'
+  | 'life-earth-sciences-6e-living-world'
+  | 'physics-chemistry-6e-matter-energy'
+  | 'technology-6e-objects'
   | 'history-5e-middle-ages'
   | 'geography-5e-resources'
   | 'history-4e-revolutions'
@@ -148,6 +154,9 @@ export const BLOC = {
   taille: 'english-3e-grammar',
   mosaique: 'history-6e-antiquity',
   chaume: 'geography-6e-living',
+  fossile: 'life-earth-sciences-6e-living-world',
+  aimant: 'physics-chemistry-6e-matter-energy',
+  carton: 'technology-6e-objects',
   enluminure: 'history-5e-middle-ages',
   riziere: 'geography-5e-resources',
   fonte: 'history-4e-revolutions',
@@ -215,6 +224,9 @@ export type BlockTexture =
   | 'taille'
   | 'mosaique'
   | 'chaume'
+  | 'fossile'
+  | 'aimant'
+  | 'carton'
   | 'enluminure'
   | 'riziere'
   | 'fonte'
@@ -275,6 +287,15 @@ export const BLOCKS: Record<BlockId, BlockDef> = {
   // Le bloc de la Pointe des paysages (géographie, 6e) : des bottes de paille en couches qui se chevauchent, distinctes
   // du sable, de l'osier et du parchemin par le motif, pas par la teinte seule.
   'geography-6e-living': { id: 'geography-6e-living', name: 'Chaume', top: '#d8b860', side: '#b0903e', texture: 'chaume' },
+  // Le bloc de la Vallée du vivant (SVT, 6e) : une pierre beige où dort une coquille en spirale, sombre ; distinct de la
+  // pierre de taille et du sable par la spirale, pas par la teinte seule (DA, SC-2).
+  'life-earth-sciences-6e-living-world': { id: 'life-earth-sciences-6e-living-world', name: 'Fossile', top: '#b3a68a', side: '#8f8370', texture: 'fossile' },
+  // Le bloc du Laboratoire des éléments (physique-chimie, 6e) : un aimant, le dessus en deux moitiés, rouge et bleue,
+  // les côtés gris métal marqués d'un U (DA, SC-2) ; jamais la couleur seule : les deux pôles se lisent à la forme.
+  'physics-chemistry-6e-matter-energy': { id: 'physics-chemistry-6e-matter-energy', name: 'Aimant', top: '#b84a40', side: '#8c9298', texture: 'aimant' },
+  // Le bloc du Hangar des inventions (technologie, 6e) : du carton ondulé brun clair, ses cannelures verticales,
+  // distinct des planches et de la terre par le motif (DA, SC-2).
+  'technology-6e-objects': { id: 'technology-6e-objects', name: 'Carton', top: '#b98d5a', side: '#9a7246', texture: 'carton' },
   // Le bloc du Bourg des chroniques (histoire, 5e) : un violet profond parcouru de filets d'or, comme une page enluminée,
   // distinct de l'obsidienne par les filets et par un violet plus clair.
   'history-5e-middle-ages': { id: 'history-5e-middle-ages', name: 'Enluminure', top: '#6a4c9c', side: '#4e3878', texture: 'enluminure' },
@@ -338,7 +359,7 @@ export function ofBlock(id: BlockId): string {
  * dys). Les autres blocs sont des objets qu’on compte : « 5 toits », « 2 lanternes ».
  */
 const MATIERES: ReadonlySet<BlockId> = new Set<BlockId>(
-  ['french-6e-phonology', 'french-6e-letter-confusion', 'french-6e-word-spelling', 'french-6e-grammar-spelling', 'french-6e-reading', 'maths-6e-decimals', 'maths-5e-signed-numbers', 'maths-5e-proportionality', 'french-5e-conjugation', 'maths-4e-powers', 'maths-3e-geometry', 'maths-3e-statistics', 'english-4e-comprehension', 'english-5e-grammar', 'geography-6e-living', 'history-5e-middle-ages', 'geography-5e-resources', 'history-4e-revolutions', 'history-3e-twentieth-century', 'geography-3e-france', 'trophy-gold'],
+  ['french-6e-phonology', 'french-6e-letter-confusion', 'french-6e-word-spelling', 'french-6e-grammar-spelling', 'french-6e-reading', 'maths-6e-decimals', 'maths-5e-signed-numbers', 'maths-5e-proportionality', 'french-5e-conjugation', 'maths-4e-powers', 'maths-3e-geometry', 'maths-3e-statistics', 'english-4e-comprehension', 'english-5e-grammar', 'geography-6e-living', 'technology-6e-objects', 'history-5e-middle-ages', 'geography-5e-resources', 'history-4e-revolutions', 'history-3e-twentieth-century', 'geography-3e-france', 'trophy-gold'],
 );
 
 /** Les pluriels qui ne s’écrivent pas en ajoutant un « s » au nom du bloc. */

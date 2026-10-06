@@ -117,7 +117,7 @@ describe('le mode « Aménager »', () => {
     // La mer touchée : le fantôme se cale ; la ligne le montre en signes (le voisin, la flèche, le nombre, la case), et
     // le dit en mots (le nom du lieu choisi n'est pas répété : il est sur son fantôme).
     act(() => void dernier.intention({ genre: 'mer', point: { x: 0, y: 0 } }));
-    expect(screen.getByRole('status').textContent).toMatch(/^(Au|À l’) [a-z-]+ (de la |du |de l’)[^,]+, à \d+ cases?\.$/);
+    expect(screen.getByRole('status').textContent).toMatch(/^(Au [a-z-]+|À l’[a-z-]+) (de la |du |de l’)[^,]+, à \d+ cases?\.$/);
     expect(dernier.ligne?.genre).toBe('place');
     const signes = document.querySelector('.arrange-signes')!;
     expect(signes).toHaveAttribute('aria-hidden', 'true');
@@ -317,7 +317,8 @@ describe('le mode « Aménager »', () => {
     render(<SettingsProvider><Banc reduit depart={depart()} /></SettingsProvider>);
     fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
     act(() => void dernier.intention({ genre: 'ile', id: VOLCAN }));
-    act(() => void dernier.intention({ genre: 'mer', point: { x: 0, y: 0 } }));
+    // Le coin libre du fond, à l'ouest : le coin de devant porte le Hangar des inventions depuis SC-2.
+    act(() => void dernier.intention({ genre: 'mer', point: { x: 0, y: 120 } }));
     fireEvent.click(screen.getByRole('button', { name: 'Poser' }));
     const posee = spotOf(monde, VOLCAN);
     // Un choix qui ne se pose pas (un lieu fixe se refuse ; on force ici un choix sur la place d'un autre lieu).
@@ -335,7 +336,8 @@ describe('le mode « Aménager »', () => {
     render(<SettingsProvider><Banc reduit={false} depart={depart()} /></SettingsProvider>);
     fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
     act(() => void dernier.intention({ genre: 'ile', id: VOLCAN }));
-    act(() => void dernier.intention({ genre: 'mer', point: { x: 0, y: 0 } }));
+    // Le coin libre du fond, à l'ouest : le coin de devant porte le Hangar des inventions depuis SC-2.
+    act(() => void dernier.intention({ genre: 'mer', point: { x: 0, y: 120 } }));
     const avant = spotOf(monde, VOLCAN);
     fireEvent.click(screen.getByRole('button', { name: 'Poser' }));
     expect(dernier.geste?.phase).toBe('demonte');
@@ -482,7 +484,7 @@ describe('le mode « Aménager »', () => {
       expect(nord.closest('.arrange-bar')).toBeNull();
       expect(document.querySelector('.arrange-signes .signes-de-place')).not.toBeNull();
       expect(screen.getByRole('status').textContent).toBe(dernier.phrase);
-      expect(dernier.phrase).toMatch(/^(Au|À l’) [a-z-]+ (de la |du |de l’)[^,]+, à \d+ cases?\.$/);
+      expect(dernier.phrase).toMatch(/^(Au [a-z-]+|À l’[a-z-]+) (de la |du |de l’)[^,]+, à \d+ cases?\.$/);
     } finally {
       window.matchMedia = avant;
     }

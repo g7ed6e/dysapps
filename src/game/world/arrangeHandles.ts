@@ -550,6 +550,13 @@ function petitRadeau(t: Traceur, style: StyleDesPoignees): void {
   t.dessus(-m, -m, m, m, RADEAU_HAUT + 0.02, k.fleche);
 }
 
+/**
+ * Le plafond des bouts de liaison, dans leur maillage à eux : 480 triangles, un appel de dessin. Au pire, autant de
+ * liaisons qu'un graphe planaire en a : 3 n − 6 entre n lieux, deux bouts chacune, 6 triangles par bout ; au 6e, quinze
+ * lieux depuis les îles de sciences (SC-2) : 468 triangles, au-dessus des 400 des poignées d'un choix.
+ */
+export const BUDGET_DES_BOUTS = { triangles: 480, drawCalls: 1 } as const;
+
 /** Ce que coûtent les poignées des bouts de liaison : un appel pour toutes, sans choix en cours seulement. */
 export function coutDesBouts(n: number): { triangles: number; drawCalls: number } {
   return n ? { triangles: formeDesBouts(n, 'blocs').index.length / 3, drawCalls: 1 } : { triangles: 0, drawCalls: 0 };

@@ -219,7 +219,7 @@ export const BLOCLAND = {
       guardianSays: {
         hit: 'Juste. Une bande de ma frise reprend sa couleur.',
         miss: 'Mes couleurs restent. Regarde la frise, du plus ancien au plus récent, et reprends.',
-        beaten: 'Je me rallume, du col jusqu’au pied. La Fouille est à toi, et à Silex.',
+        beaten: 'Je me rallume, du pied jusqu’au col. La Fouille est à toi, et à Silex.',
       },
     },
     'geography-6e-living': {
@@ -276,6 +276,30 @@ export const BLOCLAND = {
         hit: 'Juste. Un bloc de mon pelage redevient fauve.',
         miss: 'Mes couleurs restent. Relis le document, cherche le mot du rappel, et reprends.',
         beaten: 'Je me rallume, des sabots jusqu’au bout des bois. La Vallée est à toi, et à Jalon.',
+      },
+    },
+    'life-earth-sciences-6e-living-world': {
+      challenge: 'Le Cerf des sous-bois baisse la tête : « Me voilà tout gris. Tu as parcouru toute ma vallée : range chaque être vivant à sa place. »',
+      guardianSays: {
+        hit: 'Juste. Un bloc de mon dos reprend sa couleur.',
+        miss: 'Mes couleurs restent. Relis le document, regarde le groupe, et reprends.',
+        beaten: 'Je me rallume, des sabots jusqu’aux bois. La Vallée est à toi, et à Fougère.',
+      },
+    },
+    'physics-chemistry-6e-matter-energy': {
+      challenge: 'L’Alambic de verre fait une petite bulle : « Mon ballon est tout gris. Tu as fait toutes mes expériences : aide-moi à les comprendre. »',
+      guardianSays: {
+        hit: 'Juste. Une bulle de mon ballon reprend sa couleur.',
+        miss: 'Mes couleurs restent. Regarde l’instrument, cherche le mot du rappel, et reprends.',
+        beaten: 'Blop ! Je me rallume, du pied jusqu’au bec. Le Laboratoire est à toi, et à Bulle.',
+      },
+    },
+    'technology-6e-objects': {
+      challenge: 'L’Automate de laiton fait tourner sa clé : « Me voilà tout gris. Tu as ouvert tous mes objets : dis-moi à quoi ils servent. »',
+      guardianSays: {
+        hit: 'Juste. Un bouton de ma poitrine reprend sa couleur.',
+        miss: 'Mes couleurs restent. Regarde le schéma, relis la légende, et reprends.',
+        beaten: 'Clic ! Je me rallume, des pieds jusqu’à la clé. Le Hangar est à toi, et à Pince.',
       },
     },
     'lv2-3e-travel': {
@@ -366,6 +390,9 @@ export const BLOCLAND = {
     'geography-4e-globalization': 'crabe grutier',
     'history-3e-twentieth-century': 'marmotte bibliothécaire',
     'geography-3e-france': 'fourmi arpenteuse',
+    'life-earth-sciences-6e-living-world': 'escargot jardinier',
+    'physics-chemistry-6e-matter-energy': 'goutte chimiste',
+    'technology-6e-objects': 'fourmi bricoleuse',
     'english-5e-grammar': 'chat du manoir',
     'english-4e-comprehension': 'lutin souffleur',
     'english-4e-grammar': 'blaireau chef de gare',

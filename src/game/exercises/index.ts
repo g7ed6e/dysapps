@@ -111,6 +111,13 @@ const ORDER: (string | ExerciseDef[])[] = [
   'geography-4e-globalization-urbanization-1', 'geography-4e-globalization-urbanization-2', 'geography-4e-globalization-mobilities-1', 'geography-4e-globalization-mobilities-2', 'geography-4e-globalization-globalization-1', 'geography-4e-globalization-globalization-2',
   'history-3e-twentieth-century-total-wars-1', 'history-3e-twentieth-century-total-wars-2', 'history-3e-twentieth-century-world-since-1945-1', 'history-3e-twentieth-century-world-since-1945-2', 'history-3e-twentieth-century-republic-1', 'history-3e-twentieth-century-republic-2',
   'geography-3e-france-territories-1', 'geography-3e-france-territories-2', 'geography-3e-france-planning-1', 'geography-3e-france-planning-2', 'geography-3e-france-france-eu-1', 'geography-3e-france-france-eu-2',
+  // Sciences et technologie (Vallée du vivant, Laboratoire des éléments, Hangar des inventions, 6e).
+  'life-earth-sciences-6e-living-world-living-groups-1', 'life-earth-sciences-6e-living-world-living-groups-2', 'life-earth-sciences-6e-living-world-food-growth-1', 'life-earth-sciences-6e-living-world-food-growth-2',
+  'life-earth-sciences-6e-living-world-planet-earth-1', 'life-earth-sciences-6e-living-world-planet-earth-2',
+  'physics-chemistry-6e-matter-energy-states-of-matter-1', 'physics-chemistry-6e-matter-energy-states-of-matter-2', 'physics-chemistry-6e-matter-energy-motion-signals-1', 'physics-chemistry-6e-matter-energy-motion-signals-2',
+  'physics-chemistry-6e-matter-energy-energy-circuits-1', 'physics-chemistry-6e-matter-energy-energy-circuits-2',
+  'technology-6e-objects-object-function-1', 'technology-6e-objects-object-function-2', 'technology-6e-objects-materials-1', 'technology-6e-objects-materials-2',
+  'technology-6e-objects-information-networks-1', 'technology-6e-objects-information-networks-2',
   // LV2 (Relais des voyageurs, 5e) : une mission par langue et par thème, l’allemand puis l’espagnol.
   'lv2-5e-introductions-de-greetings-1', 'lv2-5e-introductions-de-greetings-2', 'lv2-5e-introductions-de-numbers-1', 'lv2-5e-introductions-de-numbers-2', 'lv2-5e-introductions-de-family-1',
   'lv2-5e-introductions-de-family-2', 'lv2-5e-introductions-de-articles-1', 'lv2-5e-introductions-de-articles-2', 'lv2-5e-introductions-es-greetings-1', 'lv2-5e-introductions-es-greetings-2',

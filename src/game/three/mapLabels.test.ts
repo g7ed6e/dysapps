@@ -229,21 +229,27 @@ describe('La Carte : chaque île a son nom (tablette 1024 × 768)', () => {
       }
   });
 
-  it('6e, à l’ouverture de la Carte : chaque nom garde la place du placement simple ; la recherche complète reste bornée (HG-3, DA)', () => {
-    // Le DA, 6 octobre 2026 : au 6e, chaque nom garde la place qu'il avait avant HG-3 ; la recherche complète ne se lance
-    // que si le placement simple tait un nom ou en pose un sur une autre île (`placerDAbordSimplement`). Dans la police
-    // de lecture, rien ne la lance ; 10 % plus large, la Grammaire (anglais) se poserait sur le Vocabulaire : la
-    // recherche la remet sur son île, en quelques centaines d'essais (avant : onze recherches par ouverture, 52 000
-    // places vérifiées et 2 000 essais).
+  it('6e, à l’ouverture de la Carte : chaque nom sur son île ; la recherche complète reste bornée (HG-3, DA ; SC-2)', () => {
+    // Le DA, 6 octobre 2026 : au 6e, chaque nom gardait la place qu'il avait avant HG-3 ; la recherche complète ne se lance
+    // que si le placement simple tait un nom ou en pose un sur une autre île (`placerDAbordSimplement`). Avant les îles de
+    // sciences, rien ne la lançait dans la police de lecture ; 10 % plus large, la Grammaire (anglais) se posait sur le
+    // Vocabulaire : la recherche la remettait sur son île, en quelques centaines d'essais (avant : onze recherches par
+    // ouverture, 52 000 places vérifiées et 2 000 essais).
     const { progress, world } = toutConstruit();
     const etat = sanitizeState({ progress, world: { ...world, place: islandsOf('6e')[0].id } } as never);
     const d = nextDestination(etat, NOMS_ARCHIPELS, textesDe('blocland').libelles);
     const destination = d.ouvrage ? { ouvrage: d.ouvrage, depuis: d.island } : d.island;
     for (const [univers, mot] of Object.entries(ETATS)) {
+      // Depuis les trois îles de sciences (SC-2, la grille du 6e réarrangée), le placement simple pose le nom de la Mine
+      // des lettres plus près de la Carrière des mots, et celui de la Ferme des accords plus près de la Tour du lecteur :
+      // la recherche complète se lance dès la police de lecture et les remet sur leur île (270 essais, 3 570 places
+      // vérifiées). À revoir par le DA : sa règle « au 6e, chaque nom garde la place d'avant HG-3 » ne tient plus pour
+      // ces deux noms.
       const simple = laCarte('6e', mot, 'atkinson-hyperlegible', 1, destination, true);
-      expect(simple.recherche, univers).toBeNull();
-      expect(simple.commeLePlacementSimple, univers).toBe(true);
+      expect(simple.tus, univers).toEqual([]);
       expect(simple.ailleurs, univers).toEqual([]);
+      expect(simple.recherche?.essais ?? 0, univers).toBeLessThanOrEqual(300);
+      expect(simple.recherche?.places ?? 0, univers).toBeLessThanOrEqual(4_000);
       const large = laCarte('6e', mot, 'atkinson-hyperlegible', 1.1, destination, true);
       expect(large.tus, `${univers}, ×1,1`).toEqual([]);
       expect(large.recherche?.essais ?? 0, `${univers}, ×1,1`).toBeLessThanOrEqual(300);

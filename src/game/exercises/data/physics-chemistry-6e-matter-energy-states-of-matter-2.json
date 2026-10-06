@@ -1,0 +1,241 @@
+{
+  "id": "physics-chemistry-6e-matter-energy-states-of-matter-2",
+  "biome": "physics-chemistry-6e-matter-energy",
+  "type": "states-of-matter",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "physics-chemistry-6e-matter-energy-states-of-matter-2-0",
+      "prompt": "L’éprouvette graduée\nLes traits sont en millilitres.\nLe bas de la surface de l’eau touche le trait 40.",
+      "question": "Quel est le volume d’eau ?",
+      "spoken": "L’éprouvette graduée. Les traits sont en millilitres. Le bas de la surface de l’eau touche le trait 40.",
+      "choices": [
+        "40 centimètres",
+        "40 grammes",
+        "40 millilitres"
+      ],
+      "answer": "40 millilitres",
+      "hint": "L’éprouvette mesure un volume.",
+      "explanation": "L’éprouvette mesure le volume, en millilitres : il y a 40 millilitres d’eau. Les grammes sont pour la masse.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Mesurer et mélanger",
+          "lines": [
+            "Masse : la balance, en grammes. Volume : l’éprouvette, en millilitres.",
+            "L’éprouvette se lit au bas de la surface de l’eau, l’œil à sa hauteur.",
+            "Le sucre dans l’eau se dissout : il ne disparaît pas, sa masse reste.",
+            "Se dissoudre, dans un liquide, ce n’est pas fondre, à la chaleur.",
+            "Hétérogène : on voit plusieurs choses. Homogène : on n’en voit qu’une.",
+            "Séparer : laisser reposer, filtrer, ou faire partir l’eau."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-states-of-matter-2-1",
+      "prompt": "Pour mesurer la masse d’une pomme, on utilise une …",
+      "spoken": "Pour mesurer la masse d’une pomme, on utilise une  (mot manquant) ",
+      "choices": [
+        "éprouvette",
+        "balance",
+        "règle"
+      ],
+      "answer": "balance",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "La masse se mesure avec une balance, en grammes. L’éprouvette mesure un volume, la règle une longueur.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Mesurer et mélanger",
+          "lines": [
+            "Masse : la balance, en grammes. Volume : l’éprouvette, en millilitres.",
+            "L’éprouvette se lit au bas de la surface de l’eau, l’œil à sa hauteur.",
+            "Le sucre dans l’eau se dissout : il ne disparaît pas, sa masse reste.",
+            "Se dissoudre, dans un liquide, ce n’est pas fondre, à la chaleur.",
+            "Hétérogène : on voit plusieurs choses. Homogène : on n’en voit qu’une.",
+            "Séparer : laisser reposer, filtrer, ou faire partir l’eau."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-states-of-matter-2-2",
+      "prompt": "Le sucre mis dans l’eau ne disparaît pas : il …",
+      "spoken": "Le sucre mis dans l’eau ne disparaît pas : il  (mot manquant) ",
+      "choices": [
+        "fond",
+        "se dissout",
+        "s’évapore"
+      ],
+      "answer": "se dissout",
+      "hint": "Relis la ligne « Se dissoudre » du rappel.",
+      "explanation": "Le sucre se dissout dans l’eau : il est toujours là, l’eau a un goût sucré. Fondre, c’est passer de solide à liquide avec la chaleur.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Mesurer et mélanger",
+          "lines": [
+            "Masse : la balance, en grammes. Volume : l’éprouvette, en millilitres.",
+            "L’éprouvette se lit au bas de la surface de l’eau, l’œil à sa hauteur.",
+            "Le sucre dans l’eau se dissout : il ne disparaît pas, sa masse reste.",
+            "Se dissoudre, dans un liquide, ce n’est pas fondre, à la chaleur.",
+            "Hétérogène : on voit plusieurs choses. Homogène : on n’en voit qu’une.",
+            "Séparer : laisser reposer, filtrer, ou faire partir l’eau."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-states-of-matter-2-3",
+      "prompt": "Expérience sur la balance\nAvant : un verre d’eau et un sucre posé à côté.\nLa balance affiche 210 g.\nOn met le sucre dans l’eau, et on attend qu’il se dissolve.",
+      "question": "Que va afficher la balance ?",
+      "spoken": "Expérience sur la balance. Avant, un verre d’eau et un sucre posé à côté. La balance affiche 210 grammes. On met le sucre dans l’eau, et on attend qu’il se dissolve.",
+      "choices": [
+        "moins de 210 grammes",
+        "210 grammes",
+        "plus de 210 grammes"
+      ],
+      "answer": "210 grammes",
+      "hint": "Le sucre a-t-il quitté la balance ?",
+      "explanation": "Le sucre dissous est toujours dans le verre : la masse se conserve, la balance affiche encore 210 grammes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Mesurer et mélanger",
+          "lines": [
+            "Masse : la balance, en grammes. Volume : l’éprouvette, en millilitres.",
+            "L’éprouvette se lit au bas de la surface de l’eau, l’œil à sa hauteur.",
+            "Le sucre dans l’eau se dissout : il ne disparaît pas, sa masse reste.",
+            "Se dissoudre, dans un liquide, ce n’est pas fondre, à la chaleur.",
+            "Hétérogène : on voit plusieurs choses. Homogène : on n’en voit qu’une.",
+            "Séparer : laisser reposer, filtrer, ou faire partir l’eau."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-states-of-matter-2-4",
+      "prompt": "L’eau et l’huile ne se mélangent pas : on voit deux couches. C’est un mélange …",
+      "spoken": "L’eau et l’huile ne se mélangent pas : on voit deux couches. C’est un mélange  (mot manquant) ",
+      "choices": [
+        "homogène",
+        "hétérogène",
+        "invisible"
+      ],
+      "answer": "hétérogène",
+      "hint": "Relis la ligne « Hétérogène » du rappel.",
+      "explanation": "On voit deux choses, l’huile au-dessus de l’eau : le mélange est hétérogène. L’eau sucrée, où l’on ne voit qu’une chose, est homogène.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Mesurer et mélanger",
+          "lines": [
+            "Masse : la balance, en grammes. Volume : l’éprouvette, en millilitres.",
+            "L’éprouvette se lit au bas de la surface de l’eau, l’œil à sa hauteur.",
+            "Le sucre dans l’eau se dissout : il ne disparaît pas, sa masse reste.",
+            "Se dissoudre, dans un liquide, ce n’est pas fondre, à la chaleur.",
+            "Hétérogène : on voit plusieurs choses. Homogène : on n’en voit qu’une.",
+            "Séparer : laisser reposer, filtrer, ou faire partir l’eau."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-states-of-matter-2-5",
+      "prompt": "Deux essais\nEau boueuse, on la filtre : l’eau qui coule est claire.\nEau salée, on la filtre : l’eau qui coule est encore salée.",
+      "question": "Pourquoi le filtre ne retire-t-il pas le sel ?",
+      "spoken": "Deux essais. Eau boueuse, on la filtre, l’eau qui coule est claire. Eau salée, on la filtre, l’eau qui coule est encore salée.",
+      "choices": [
+        "le filtre est troué",
+        "le sel est dissous dans l’eau",
+        "le sel est plus lourd que l’eau"
+      ],
+      "answer": "le sel est dissous dans l’eau",
+      "hint": "Peut-on voir le sel dans l’eau salée ?",
+      "explanation": "Le sel est dissous : il passe à travers le filtre avec l’eau. Le filtre retient seulement ce qu’on voit, comme la terre. Pour récupérer le sel, on fait partir l’eau.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Mesurer et mélanger",
+          "lines": [
+            "Masse : la balance, en grammes. Volume : l’éprouvette, en millilitres.",
+            "L’éprouvette se lit au bas de la surface de l’eau, l’œil à sa hauteur.",
+            "Le sucre dans l’eau se dissout : il ne disparaît pas, sa masse reste.",
+            "Se dissoudre, dans un liquide, ce n’est pas fondre, à la chaleur.",
+            "Hétérogène : on voit plusieurs choses. Homogène : on n’en voit qu’une.",
+            "Séparer : laisser reposer, filtrer, ou faire partir l’eau."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-states-of-matter-2-6",
+      "prompt": "Dans les marais salants, le soleil fait partir l’eau de mer, et il reste le sel. On l’obtient par …",
+      "spoken": "Dans les marais salants, le soleil fait partir l’eau de mer, et il reste le sel. On l’obtient par  (mot manquant) ",
+      "choices": [
+        "filtration",
+        "décantation",
+        "évaporation"
+      ],
+      "answer": "évaporation",
+      "hint": "L’eau part dans l’air.",
+      "explanation": "L’eau de mer s’évapore au soleil, et le sel dissous reste : c’est l’évaporation. Filtrer ne retire pas le sel.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Mesurer et mélanger",
+          "lines": [
+            "Masse : la balance, en grammes. Volume : l’éprouvette, en millilitres.",
+            "L’éprouvette se lit au bas de la surface de l’eau, l’œil à sa hauteur.",
+            "Le sucre dans l’eau se dissout : il ne disparaît pas, sa masse reste.",
+            "Se dissoudre, dans un liquide, ce n’est pas fondre, à la chaleur.",
+            "Hétérogène : on voit plusieurs choses. Homogène : on n’en voit qu’une.",
+            "Séparer : laisser reposer, filtrer, ou faire partir l’eau."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-states-of-matter-2-7",
+      "prompt": "Laisser reposer l’eau boueuse pour que la terre tombe au fond, c’est la …",
+      "spoken": "Laisser reposer l’eau boueuse pour que la terre tombe au fond, c’est la  (mot manquant) ",
+      "choices": [
+        "décantation",
+        "filtration",
+        "fusion"
+      ],
+      "answer": "décantation",
+      "hint": "On ne fait rien : on attend.",
+      "explanation": "Laisser reposer pour que la terre tombe au fond, c’est la décantation. Filtrer, c’est faire passer l’eau à travers un filtre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Mesurer et mélanger",
+          "lines": [
+            "Masse : la balance, en grammes. Volume : l’éprouvette, en millilitres.",
+            "L’éprouvette se lit au bas de la surface de l’eau, l’œil à sa hauteur.",
+            "Le sucre dans l’eau se dissout : il ne disparaît pas, sa masse reste.",
+            "Se dissoudre, dans un liquide, ce n’est pas fondre, à la chaleur.",
+            "Hétérogène : on voit plusieurs choses. Homogène : on n’en voit qu’une.",
+            "Séparer : laisser reposer, filtrer, ou faire partir l’eau."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "physics-chemistry-6e-matter-energy",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

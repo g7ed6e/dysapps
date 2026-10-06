@@ -1,0 +1,226 @@
+{
+  "id": "technology-6e-objects-information-networks-2",
+  "biome": "technology-6e-objects",
+  "type": "information-networks",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "technology-6e-objects-information-networks-2-0",
+      "prompt": "Trois téléphones, du plus ancien au plus récent\nLe téléphone fixe, relié au mur par un fil.\nLe téléphone portable, à touches.\nLe smartphone, à écran tactile.",
+      "question": "Quel nouveau besoin le téléphone portable a-t-il satisfait ?",
+      "spoken": "Trois téléphones, du plus ancien au plus récent. Le téléphone fixe, relié au mur par un fil. Le téléphone portable, à touches. Le smartphone, à écran tactile.",
+      "choices": [
+        "voir des vidéos",
+        "téléphoner partout, sans fil",
+        "prendre des photos de ses amis"
+      ],
+      "answer": "téléphoner partout, sans fil",
+      "hint": "Qu’est-ce qui change entre le fixe et le portable ?",
+      "explanation": "Le fixe est relié au mur par un fil ; le portable permet de téléphoner partout. Les vidéos et les photos sont venues avec le smartphone.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les objets changent",
+          "lines": [
+            "Un objet change avec les besoins des gens.",
+            "Il change aussi avec les techniques et les matériaux nouveaux.",
+            "Lire une frise : d’abord, ensuite, puis, aujourd’hui.",
+            "Une lampe d’aujourd’hui consomme peu d’énergie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-information-networks-2-1",
+      "prompt": "Avant l’ampoule électrique, on s’éclairait avec des bougies et des lampes à …",
+      "spoken": "Avant l’ampoule électrique, on s’éclairait avec des bougies et des lampes à  (mot manquant) ",
+      "choices": [
+        "basse consommation",
+        "pétrole",
+        "piles"
+      ],
+      "answer": "pétrole",
+      "hint": "Il n’y avait pas encore d’électricité dans les maisons.",
+      "explanation": "Avant l’électricité, on s’éclairait à la bougie et à la lampe à pétrole. Les lampes basse consommation et les lampes à piles sont bien plus récentes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les objets changent",
+          "lines": [
+            "Un objet change avec les besoins des gens.",
+            "Il change aussi avec les techniques et les matériaux nouveaux.",
+            "Lire une frise : d’abord, ensuite, puis, aujourd’hui.",
+            "Une lampe d’aujourd’hui consomme peu d’énergie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-information-networks-2-2",
+      "prompt": "La lampe d’aujourd’hui éclaire autant que l’ancienne ampoule, mais elle consomme …",
+      "spoken": "La lampe d’aujourd’hui éclaire autant que l’ancienne ampoule, mais elle consomme  (mot manquant) ",
+      "choices": [
+        "plus d’énergie",
+        "moins d’énergie",
+        "autant d’énergie"
+      ],
+      "answer": "moins d’énergie",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "La lampe d’aujourd’hui consomme beaucoup moins d’énergie pour éclairer autant : une nouvelle technique a fait changer l’objet.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les objets changent",
+          "lines": [
+            "Un objet change avec les besoins des gens.",
+            "Il change aussi avec les techniques et les matériaux nouveaux.",
+            "Lire une frise : d’abord, ensuite, puis, aujourd’hui.",
+            "Une lampe d’aujourd’hui consomme peu d’énergie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-information-networks-2-3",
+      "prompt": "La draisienne, l’ancêtre du vélo\nDeux roues en bois et un guidon.\nPas de pédales : on pousse le sol avec les pieds.",
+      "question": "Qu’a ajouté le vélo d’aujourd’hui ?",
+      "spoken": "La draisienne, l’ancêtre du vélo. Deux roues en bois et un guidon. Pas de pédales, on pousse le sol avec les pieds.",
+      "choices": [
+        "les roues",
+        "le guidon",
+        "les pédales et la chaîne"
+      ],
+      "answer": "les pédales et la chaîne",
+      "hint": "Qu’est-ce qui manque à la draisienne ?",
+      "explanation": "La draisienne avait déjà des roues et un guidon. Le vélo a ajouté les pédales et la chaîne : on n’a plus besoin de pousser le sol.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les objets changent",
+          "lines": [
+            "Un objet change avec les besoins des gens.",
+            "Il change aussi avec les techniques et les matériaux nouveaux.",
+            "Lire une frise : d’abord, ensuite, puis, aujourd’hui.",
+            "Une lampe d’aujourd’hui consomme peu d’énergie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-information-networks-2-4",
+      "prompt": "Les raquettes de tennis étaient en bois. Aujourd’hui, on les fait dans des matériaux plus …",
+      "spoken": "Les raquettes de tennis étaient en bois. Aujourd’hui, on les fait dans des matériaux plus  (mot manquant) ",
+      "choices": [
+        "lourds",
+        "légers",
+        "fragiles"
+      ],
+      "answer": "légers",
+      "hint": "Une raquette doit se manier vite.",
+      "explanation": "Les nouveaux matériaux rendent la raquette plus légère et solide : un objet change avec ses matériaux.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les objets changent",
+          "lines": [
+            "Un objet change avec les besoins des gens.",
+            "Il change aussi avec les techniques et les matériaux nouveaux.",
+            "Lire une frise : d’abord, ensuite, puis, aujourd’hui.",
+            "Une lampe d’aujourd’hui consomme peu d’énergie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-information-networks-2-5",
+      "prompt": "Une frise des objets pour écouter de la musique\nD’abord : le disque vinyle.\nEnsuite : la cassette.\nPuis : le CD.\nAujourd’hui : la musique en ligne, sur le téléphone.",
+      "question": "Quel objet vient juste avant le CD ?",
+      "spoken": "Une frise des objets pour écouter de la musique. D’abord, le disque vinyle. Ensuite, la cassette. Puis, le CD. Aujourd’hui, la musique en ligne, sur le téléphone.",
+      "choices": [
+        "le disque vinyle",
+        "la cassette",
+        "le téléphone"
+      ],
+      "answer": "la cassette",
+      "hint": "Cherche la ligne juste au-dessus du CD.",
+      "explanation": "La cassette vient juste avant le CD. Le disque vinyle est le plus ancien, la musique en ligne la plus récente.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les objets changent",
+          "lines": [
+            "Un objet change avec les besoins des gens.",
+            "Il change aussi avec les techniques et les matériaux nouveaux.",
+            "Lire une frise : d’abord, ensuite, puis, aujourd’hui.",
+            "Une lampe d’aujourd’hui consomme peu d’énergie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-information-networks-2-6",
+      "prompt": "Beaucoup de jouets en bois sont devenus des jouets en plastique : c’est un nouveau …",
+      "spoken": "Beaucoup de jouets en bois sont devenus des jouets en plastique : c’est un nouveau  (mot manquant) ",
+      "choices": [
+        "matériau",
+        "besoin",
+        "jeu"
+      ],
+      "answer": "matériau",
+      "hint": "Le bois et le plastique : est-ce une matière, ou un usage ?",
+      "explanation": "Le plastique est un matériau plus récent que le bois : les objets changent quand de nouveaux matériaux apparaissent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les objets changent",
+          "lines": [
+            "Un objet change avec les besoins des gens.",
+            "Il change aussi avec les techniques et les matériaux nouveaux.",
+            "Lire une frise : d’abord, ensuite, puis, aujourd’hui.",
+            "Une lampe d’aujourd’hui consomme peu d’énergie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-information-networks-2-7",
+      "prompt": "Deux cartables\nCelui de Mamie : en cuir, lourd, porté à la main.\nLe tien : en tissu synthétique, léger, sur le dos ou à roulettes.",
+      "question": "Qu’est-ce qui a changé ?",
+      "spoken": "Deux cartables. Celui de Mamie, en cuir, lourd, porté à la main. Le tien, en tissu synthétique, léger, sur le dos ou à roulettes.",
+      "choices": [
+        "seulement la couleur et la taille",
+        "le matériau et la façon de le porter",
+        "rien du tout"
+      ],
+      "answer": "le matériau et la façon de le porter",
+      "hint": "Compare les deux lignes : la matière, puis comment on le porte.",
+      "explanation": "Le cuir a laissé la place à un tissu léger, et l’on porte le cartable sur le dos ou à roulettes : le matériau et l’usage ont changé avec les besoins.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les objets changent",
+          "lines": [
+            "Un objet change avec les besoins des gens.",
+            "Il change aussi avec les techniques et les matériaux nouveaux.",
+            "Lire une frise : d’abord, ensuite, puis, aujourd’hui.",
+            "Une lampe d’aujourd’hui consomme peu d’énergie."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "technology-6e-objects",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

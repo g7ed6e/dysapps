@@ -117,9 +117,18 @@ import escaleCour from './plans/geography-4e-globalization-3.json';
 import kiosqueBibliotheque from './plans/history-3e-twentieth-century-1.json';
 import kiosqueToit from './plans/history-3e-twentieth-century-2.json';
 import kiosqueCour from './plans/history-3e-twentieth-century-3.json';
-import valleeMairie from './plans/geography-3e-france-1.json';
-import valleeToit from './plans/geography-3e-france-2.json';
-import valleePlace from './plans/geography-3e-france-3.json';
+import territoiresMairie from './plans/geography-3e-france-1.json';
+import territoiresToit from './plans/geography-3e-france-2.json';
+import territoiresPlace from './plans/geography-3e-france-3.json';
+import valleeSerre from './plans/life-earth-sciences-6e-living-world-1.json';
+import valleeToit from './plans/life-earth-sciences-6e-living-world-2.json';
+import valleeJardin from './plans/life-earth-sciences-6e-living-world-3.json';
+import laboratoireSalle from './plans/physics-chemistry-6e-matter-energy-1.json';
+import laboratoireToit from './plans/physics-chemistry-6e-matter-energy-2.json';
+import laboratoireCour from './plans/physics-chemistry-6e-matter-energy-3.json';
+import hangarAtelier from './plans/technology-6e-objects-1.json';
+import hangarToit from './plans/technology-6e-objects-2.json';
+import hangarCour from './plans/technology-6e-objects-3.json';
 
 export interface PlanCell {
   x: number;
@@ -318,9 +327,18 @@ const PLAN_FILES = [
   kiosqueBibliotheque,
   kiosqueToit,
   kiosqueCour,
-  valleeMairie,
+  territoiresMairie,
+  territoiresToit,
+  territoiresPlace,
+  valleeSerre,
   valleeToit,
-  valleePlace,
+  valleeJardin,
+  laboratoireSalle,
+  laboratoireToit,
+  laboratoireCour,
+  hangarAtelier,
+  hangarToit,
+  hangarCour,
 ] as (Omit<PlanDef, 'cells' | 'origin' | 'reward'> & { reward: { xp: number } })[];
 
 /**
