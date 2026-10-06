@@ -60,7 +60,7 @@ describe('les textes d’univers', () => {
         return [b.id, { challenge: g.challenge, ...g.guardianSays, species: t.especes[b.id] }];
       }),
     );
-    expect(createHash('sha256').update(JSON.stringify(textes)).digest('hex')).toBe('fbc182e1e6620080758e1733e48233115228404b1800986a0c6ad6167e259610');
+    expect(createHash('sha256').update(JSON.stringify(textes)).digest('hex')).toBe('aabbf268ae26ed026500058fd85c4f533f672b8f165545a615351466bc5dd459');
     const l = t.libelles;
     expect([l.dejaFait, l.etoiles, l.etoilesSur3(2), l.resistance(2, 6), l.dejaFaitArene('Le Grand Chêne')]).toEqual([
       'Déjà rallumé. On rejoue ?',

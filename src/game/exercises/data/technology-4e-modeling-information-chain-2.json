@@ -16,7 +16,7 @@
         "le store"
       ],
       "answer": "la carte programmable",
-      "hint": "Relis la deuxième ligne du rappel : qui donne l’ordre ?",
+      "hint": "Relis la ligne « Elle donne un ordre » du rappel : qui donne l’ordre ?",
       "explanation": "La carte programmable reçoit l’information du capteur et donne l’ordre au moteur : elle relie la chaîne d’information à la chaîne d’énergie.",
       "aid": {
         "kind": "rule-card",

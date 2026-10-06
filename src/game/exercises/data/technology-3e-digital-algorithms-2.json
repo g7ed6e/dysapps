@@ -41,7 +41,7 @@
         "condition"
       ],
       "answer": "condition",
-      "hint": "Relis la première ligne du rappel.",
+      "hint": "Relis la ligne du rappel qui parle de « si » et de « sinon ».",
       "explanation": "« Si », puis « alors » : le programme teste quelque chose avant d’agir : c’est une condition. Une boucle répète, sans tester.",
       "aid": {
         "kind": "rule-card",
@@ -92,7 +92,7 @@
         "condition"
       ],
       "answer": "variable",
-      "hint": "Relis la deuxième ligne du rappel.",
+      "hint": "Relis la ligne du rappel qui parle d’une case qui garde une valeur.",
       "explanation": "Une variable garde une valeur qui peut changer : le score en est une.",
       "aid": {
         "kind": "rule-card",

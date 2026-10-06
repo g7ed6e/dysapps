@@ -40,11 +40,11 @@ Pour tous les items :
   - Une contrainte : une limite à respecter (prix, taille, poids).
   - Une norme : une règle commune aux fabricants, souvent pour la sécurité.
 
-1. énoncé : Lina oublie souvent sa gourde. Elle voudrait un objet qui le lui rappelle : c’est son …
+1. énoncé : Elsa oublie souvent sa gourde. Elle voudrait un objet qui le lui rappelle : c’est son …
    - choix : besoin · matériau · cahier des charges
    - réponse : besoin
    - indice : Relis la ligne « Le besoin » du rappel.
-   - explication : Ce qui manque à Lina, c’est son besoin : ne plus oublier sa gourde. Le cahier des charges viendra après, pour dire ce que l’objet doit faire.
+   - explication : Ce qui manque à Elsa, c’est son besoin : ne plus oublier sa gourde. Le cahier des charges viendra après, pour dire ce que l’objet doit faire.
 2. énoncé : Ce que l’objet doit faire, dit avec un verbe, est une …
    - choix : contrainte · fonction · norme
    - réponse : fonction
@@ -249,7 +249,7 @@ Pour tous les items :
 3. énoncé : On garde la solution qui respecte toutes les …
    - choix : contraintes · couleurs · idées
    - réponse : contraintes
-   - indice : Relis la troisième ligne du rappel.
+   - indice : Relis la ligne « On garde la solution » du rappel.
    - explication : Une solution est bonne si elle respecte toutes les contraintes du cahier des charges, pas seulement une.
 4. énoncé : "Le sac de sport\nCahier des charges : moins de 900 grammes, et lavable.\nSac A : 800 grammes, lavable.\nSac B : 600 grammes, pas lavable.\nSac C : 950 grammes, lavable."
    - question : Quel sac choisir ?
@@ -261,7 +261,7 @@ Pour tous les items :
 5. énoncé : Le prix, le poids ou la durée, ce que l’on vérifie pour comparer des solutions, s’appelle un …
    - choix : besoin · critère · croquis
    - réponse : critère
-   - indice : Relis la deuxième ligne du rappel.
+   - indice : Relis la ligne du rappel qui cite le prix, le poids et la durée.
    - explication : Ce que l’on vérifie pour comparer s’appelle un critère : le prix, le poids, la durée.
 6. énoncé : "La boîte à bijoux\nCahier des charges : s’ouvrir d’une seule main.\nAimant : s’ouvre d’une main.\nCadenas : s’ouvre avec une clé, à deux mains.\nNœud de ruban : se défait à deux mains."
    - question : Quelle solution choisir ?

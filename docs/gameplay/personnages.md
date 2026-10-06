@@ -253,7 +253,7 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 
 |  | Blocland | Archipéo |
 | --- | --- | --- |
-| Au défi | Le Flamant de sel lève une patte : « Mes plumes sont toutes grises. Tu as fait tous les mélanges de la saline : dis-moi ce qu’il y a dedans. » | Le Flamant de sel dit doucement : « Les grains de sel de mes ailes sont éteints. Tu as fait tous les mélanges de la saline : aide-moi à les séparer. » |
+| Au défi | Le Flamant de sel lève une patte : « Mes plumes sont toutes grises. Tu as fait tous les mélanges de la saline : dis-moi ce qu’il y a dedans. » | Le Flamant de sel dit doucement : « Les grains de sel de mes ailes sont éteints. Tu as fait tous les mélanges de la saline : aide-moi à séparer mes mélanges. » |
 | À la fin | Je me rallume, des pattes jusqu’au bout du bec. La Saline est à toi, et à Perle. | Mes ailes se rallument. La saline est à toi, et à Perle. |
 | Perle à l’arrivée | Bonjour, bâtisseur ! À la saline, on mélange, on sépare, on pèse. Chaque bonne réponse te donne du sel. Le sel, c’est ce qui reste quand l’eau de mer s’en va. | Bonjour, bâtisseur ! À la saline, on mélange, on sépare, on pèse. Chaque bonne réponse te donne du sel. Le sel, c’est ce qui reste quand l’eau de mer s’en va. |
 
@@ -488,7 +488,7 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 |  | Blocland | Archipéo |
 | --- | --- | --- |
 | Au défi | L’Abeille de topaze bat doucement des ailes : « Me voilà toute grise. Tu as suivi tous les chemins de la ruche : dis-moi comment voyagent les données. » | L’Abeille de topaze dit doucement : « Les cases de mes ailes sont éteintes. Tu as suivi tous les chemins de la ruche : dis-moi comment voyagent les données. » |
-| À la fin | Bzz ! Je me rallume, des antennes jusqu’aux rayures. La Ruche est à toi, et à Navette. | Les cases de mes ailes se rallument. La ruche est à toi, et à Navette. |
+| À la fin | Bzzz ! Je me rallume, des antennes jusqu’aux rayures. La Ruche est à toi, et à Navette. | Les cases de mes ailes se rallument. La ruche est à toi, et à Navette. |
 | Navette à l’arrivée | Bonjour, bâtisseur ! À la ruche, les messages voyagent d’un point à l’autre, comme dans un réseau. Chaque bonne réponse te donne de la cire. Les abeilles font leurs cases en cire. | Bonjour, bâtisseur ! À la ruche, les messages voyagent d’un point à l’autre, comme dans un réseau. Chaque bonne réponse te donne de la cire. Les abeilles font leurs cases en cire. |
 
 ### Le Papillon de cuivre, Refuge des carnets

@@ -312,7 +312,7 @@ export const ARCHIPEO = {
       },
     },
     'physics-chemistry-5e-matter-universe': {
-      challenge: 'Le Flamant de sel dit doucement : « Les grains de sel de mes ailes sont éteints. Tu as fait tous les mélanges de la saline : aide-moi à les séparer. »',
+      challenge: 'Le Flamant de sel dit doucement : « Les grains de sel de mes ailes sont éteints. Tu as fait tous les mélanges de la saline : aide-moi à séparer mes mélanges. »',
       guardianSays: {
         hit: 'Un grain de sel s’allume. C’est juste.',
         miss: 'Rien ne s’éteint. Regarde la mesure, cherche le mot du rappel, et reprends.',
@@ -355,7 +355,7 @@ export const ARCHIPEO = {
       challenge: 'Le Dauphin de turquoise dit doucement : « Les reflets de mon dos sont éteints. Tu as fait le tour du verger : dis-moi comment le corps reste en bonne santé. »',
       guardianSays: {
         hit: 'Un reflet de mon dos s’allume. C’est juste.',
-        miss: 'Rien ne s’éteint. Relis le document, cherche l’organe sur le schéma, et reprends.',
+        miss: 'Rien ne s’éteint. Relis le document, cherche le mot du rappel, et reprends.',
         beaten: 'Mon dos se rallume. Le verger est à toi, et à Olive.',
       },
     },
@@ -363,7 +363,7 @@ export const ARCHIPEO = {
       challenge: 'Le Kangourou de rubis dit doucement : « Les ressorts de mes pattes sont éteints. Tu as essayé tout le tremplin : dis-moi ce qui fait bouger chaque chose. »',
       guardianSays: {
         hit: 'Un ressort de mes pattes s’allume. C’est juste.',
-        miss: 'Rien ne s’éteint. Regarde les flèches des forces, relis l’unité, et reprends.',
+        miss: 'Rien ne s’éteint. Regarde la flèche de la force, relis l’unité, et reprends.',
         beaten: 'Mes ressorts se rallument. Le tremplin est à toi, et à Virage.',
       },
     },

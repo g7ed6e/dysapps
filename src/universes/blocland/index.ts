@@ -306,7 +306,7 @@ export const BLOCLAND = {
       challenge: 'La Tortue d’ocre lève lentement la tête : « Me voilà toute grise. Tu as parcouru toute ma prairie : dis-moi comment change la Terre. »',
       guardianSays: {
         hit: 'Juste. Une écaille de ma carapace reprend sa couleur.',
-        miss: 'Mes couleurs restent. Regarde la carte ou le graphique, cherche le mot du rappel, et reprends.',
+        miss: 'Mes couleurs restent. Relis le document, cherche le mot du rappel, et reprends.',
         beaten: 'Je me rallume, des pattes jusqu’à la carapace. La Prairie est à toi, et à Humus.',
       },
     },
@@ -330,7 +330,7 @@ export const BLOCLAND = {
       challenge: 'La Girafe d’ambre baisse son long cou : « Mes taches sont toutes grises. Tu as fait le tour de ma source : dis-moi comment le vivant se transmet et change. »',
       guardianSays: {
         hit: 'Juste. Une tache de mon cou reprend sa couleur.',
-        miss: 'Mes couleurs restent. Compare les deux documents, regarde ce qui change, et reprends.',
+        miss: 'Mes couleurs restent. Compare les deux cas du document, regarde ce qui change, et reprends.',
         beaten: 'Je me rallume, des sabots jusqu’au bout du cou. La Source est à toi, et à Nectar.',
       },
     },
@@ -346,7 +346,7 @@ export const BLOCLAND = {
       challenge: 'Le Grand-bi d’érable fait tourner doucement sa grande roue : « Me voilà tout gris. Tu as vu toutes les maquettes du bassin : dis-moi comment l’énergie et l’information circulent. »',
       guardianSays: {
         hit: 'Juste. Un rayon de ma roue reprend sa couleur.',
-        miss: 'Mes couleurs restent. Suis les flèches du schéma, d’une case à l’autre, et reprends.',
+        miss: 'Mes couleurs restent. Suis les cases du schéma, dans l’ordre, et reprends.',
         beaten: 'Je me rallume, des roues jusqu’à la selle. Le Bassin est à toi, et à Manivelle.',
       },
     },
@@ -354,7 +354,7 @@ export const BLOCLAND = {
       challenge: 'Le Dauphin de turquoise souffle doucement : « Me voilà tout gris. Tu as fait le tour du verger : dis-moi comment ton corps fonctionne. »',
       guardianSays: {
         hit: 'Juste. Un bloc de mon dos reprend sa couleur.',
-        miss: 'Mes couleurs restent. Suis le schéma, d’un organe au suivant, et reprends.',
+        miss: 'Mes couleurs restent. Relis le document, cherche le mot du rappel, et reprends.',
         beaten: 'Je me rallume, de la queue jusqu’au museau. Le Verger est à toi, et à Olive.',
       },
     },
@@ -371,7 +371,7 @@ export const BLOCLAND = {
       guardianSays: {
         hit: 'Juste. Une case de mes ailes reprend sa couleur.',
         miss: 'Mes couleurs restent. Relis le document ligne par ligne, et reprends.',
-        beaten: 'Bzz ! Je me rallume, des antennes jusqu’aux rayures. La Ruche est à toi, et à Navette.',
+        beaten: 'Bzzz ! Je me rallume, des antennes jusqu’aux rayures. La Ruche est à toi, et à Navette.',
       },
     },
     'lv2-3e-travel': {

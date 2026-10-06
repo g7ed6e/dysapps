@@ -117,16 +117,16 @@
     },
     {
       "key": "life-earth-sciences-5e-active-planet-active-earth-2-4",
-      "prompt": "La question de la classe\nPourquoi trouve-t-on des fossiles de coquillages en haut d’une montagne ?\nL’hypothèse de Lina : ces roches se sont formées au fond de la mer, puis ont été soulevées.",
-      "question": "Quelle observation appuie l’hypothèse de Lina ?",
-      "spoken": "La question de la classe. Pourquoi trouve-t-on des fossiles de coquillages en haut d’une montagne ? L’hypothèse de Lina, ces roches se sont formées au fond de la mer, puis ont été soulevées.",
+      "prompt": "La question de la classe\nPourquoi trouve-t-on des fossiles de coquillages en haut d’une montagne ?\nL’hypothèse de Romy : ces roches se sont formées au fond de la mer, puis ont été soulevées.",
+      "question": "Quelle observation appuie l’hypothèse de Romy ?",
+      "spoken": "La question de la classe. Pourquoi trouve-t-on des fossiles de coquillages en haut d’une montagne ? L’hypothèse de Romy, ces roches se sont formées au fond de la mer, puis ont été soulevées.",
       "choices": [
         "d’autres fossiles d’animaux marins dans ces roches",
         "des arbres au sommet",
         "de la neige en hiver"
       ],
       "answer": "d’autres fossiles d’animaux marins dans ces roches",
-      "hint": "Lina dit que ces roches viennent de la mer. Quelle observation le montre ?",
+      "hint": "Romy dit que ces roches viennent de la mer. Quelle observation le montre ?",
       "explanation": "Des fossiles d’animaux marins montrent que ces roches se sont formées sous la mer. Les plaques, en se rapprochant, les ont ensuite soulevées. Les arbres et la neige ne disent rien de l’origine des roches.",
       "aid": {
         "kind": "rule-card",

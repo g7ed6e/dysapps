@@ -120,12 +120,12 @@ Pour tous les items :
    - réponse : à surveiller le volcan
    - indice : Les appareils mesurent, comptent et analysent : ils agissent sur le volcan, ou ils l’observent ?
    - explication : Ces appareils surveillent le volcan. Quand il se réveille, on peut prévenir les habitants et les faire partir à temps. Personne ne peut arrêter une éruption.
-5. énoncé : "La question de la classe\nPourquoi trouve-t-on des fossiles de coquillages en haut d’une montagne ?\nL’hypothèse de Lina : ces roches se sont formées au fond de la mer, puis ont été soulevées."
-   - question : Quelle observation appuie l’hypothèse de Lina ?
-   - lu : La question de la classe. Pourquoi trouve-t-on des fossiles de coquillages en haut d’une montagne ? L’hypothèse de Lina, ces roches se sont formées au fond de la mer, puis ont été soulevées.
+5. énoncé : "La question de la classe\nPourquoi trouve-t-on des fossiles de coquillages en haut d’une montagne ?\nL’hypothèse de Romy : ces roches se sont formées au fond de la mer, puis ont été soulevées."
+   - question : Quelle observation appuie l’hypothèse de Romy ?
+   - lu : La question de la classe. Pourquoi trouve-t-on des fossiles de coquillages en haut d’une montagne ? L’hypothèse de Romy, ces roches se sont formées au fond de la mer, puis ont été soulevées.
    - choix : d’autres fossiles d’animaux marins dans ces roches · des arbres au sommet · de la neige en hiver
    - réponse : d’autres fossiles d’animaux marins dans ces roches
-   - indice : Lina dit que ces roches viennent de la mer. Quelle observation le montre ?
+   - indice : Romy dit que ces roches viennent de la mer. Quelle observation le montre ?
    - explication : Des fossiles d’animaux marins montrent que ces roches se sont formées sous la mer. Les plaques, en se rapprochant, les ont ensuite soulevées. Les arbres et la neige ne disent rien de l’origine des roches.
 6. énoncé : Le sable et la boue se déposent au fond de la mer, couche après couche : ils forment des roches …
    - choix : volcaniques · sédimentaires · précieuses

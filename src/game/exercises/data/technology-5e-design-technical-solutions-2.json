@@ -67,7 +67,7 @@
         "idées"
       ],
       "answer": "contraintes",
-      "hint": "Relis la troisième ligne du rappel.",
+      "hint": "Relis la ligne « On garde la solution » du rappel.",
       "explanation": "Une solution est bonne si elle respecte toutes les contraintes du cahier des charges, pas seulement une.",
       "aid": {
         "kind": "rule-card",
@@ -118,7 +118,7 @@
         "croquis"
       ],
       "answer": "critère",
-      "hint": "Relis la deuxième ligne du rappel.",
+      "hint": "Relis la ligne du rappel qui cite le prix, le poids et la durée.",
       "explanation": "Ce que l’on vérifie pour comparer s’appelle un critère : le prix, le poids, la durée.",
       "aid": {
         "kind": "rule-card",

@@ -316,7 +316,7 @@ Pour tous les items :
    - lu : L’eau pure a un pé-ache de 7, elle est (mot manquant).
    - choix : acide · neutre · basique
    - réponse : neutre
-   - indice : Relis la troisième ligne du rappel.
+   - indice : Relis la ligne « pH égal à 7 » du rappel.
    - explication : Un pH égal à 7, c’est une solution neutre, ni acide ni basique.
 3. énoncé : L’eau savonneuse a un pH de 10 : elle est …
    - lu : L’eau savonneuse a un pé-ache de 10, elle est (mot manquant).
@@ -329,13 +329,13 @@ Pour tous les items :
    - lu : Le pé-ache de trois liquides de la maison. Vinaigre, 3. Eau du robinet, 7. Eau de Javel, 12.
    - choix : le vinaigre · l’eau du robinet · l’eau de Javel
    - réponse : le vinaigre
-   - indice : Relis la cinquième ligne du rappel.
+   - indice : Relis la ligne « Plus le pH est petit » du rappel.
    - explication : Le plus acide a le pH le plus petit : le vinaigre, pH 3. L’eau de Javel, pH 12, est dangereuse, mais elle est basique.
 5. énoncé : Plus le pH est petit, plus la solution est …
    - lu : Plus le pé-ache est petit, plus la solution est (mot manquant).
    - choix : acide · neutre · basique
    - réponse : acide
-   - indice : Relis la cinquième ligne du rappel.
+   - indice : Relis la ligne « Plus le pH est petit » du rappel.
    - explication : Un pH petit, c’est une solution très acide. En montant vers 7, elle l’est de moins en moins.
 6. énoncé : Une solution basique contient beaucoup d’ions …
    - choix : hydrogène · hydroxyde · oxygène
@@ -354,7 +354,7 @@ Pour tous les items :
    - lu : On ajoute beaucoup d’eau à du vinaigre. Avant, pé-ache 3. Après, pé-ache 5.
    - choix : elle augmente · elle diminue · elle ne change pas
    - réponse : elle diminue
-   - indice : Relis la cinquième ligne du rappel.
+   - indice : Relis la ligne « Plus le pH est petit » du rappel.
    - explication : Le pH monte de 3 à 5 en se rapprochant de 7 : le vinaigre dilué est moins acide. Le pH monte, l’acidité diminue.
 
 ### Niveau 2 · `physics-chemistry-3e-motion-energy-acids-bases-2`

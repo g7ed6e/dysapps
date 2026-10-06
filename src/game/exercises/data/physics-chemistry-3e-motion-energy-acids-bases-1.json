@@ -42,7 +42,7 @@
         "basique"
       ],
       "answer": "neutre",
-      "hint": "Relis la troisième ligne du rappel.",
+      "hint": "Relis la ligne « pH égal à 7 » du rappel.",
       "explanation": "Un pH égal à 7, c’est une solution neutre, ni acide ni basique.",
       "aid": {
         "kind": "rule-card",
@@ -97,7 +97,7 @@
         "l’eau de Javel"
       ],
       "answer": "le vinaigre",
-      "hint": "Relis la cinquième ligne du rappel.",
+      "hint": "Relis la ligne « Plus le pH est petit » du rappel.",
       "explanation": "Le plus acide a le pH le plus petit : le vinaigre, pH 3. L’eau de Javel, pH 12, est dangereuse, mais elle est basique.",
       "aid": {
         "kind": "rule-card",
@@ -124,7 +124,7 @@
         "basique"
       ],
       "answer": "acide",
-      "hint": "Relis la cinquième ligne du rappel.",
+      "hint": "Relis la ligne « Plus le pH est petit » du rappel.",
       "explanation": "Un pH petit, c’est une solution très acide. En montant vers 7, elle l’est de moins en moins.",
       "aid": {
         "kind": "rule-card",
@@ -207,7 +207,7 @@
         "elle ne change pas"
       ],
       "answer": "elle diminue",
-      "hint": "Relis la cinquième ligne du rappel.",
+      "hint": "Relis la ligne « Plus le pH est petit » du rappel.",
       "explanation": "Le pH monte de 3 à 5 en se rapprochant de 7 : le vinaigre dilué est moins acide. Le pH monte, l’acidité diminue.",
       "aid": {
         "kind": "rule-card",

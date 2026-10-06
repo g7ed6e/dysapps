@@ -233,7 +233,7 @@ Pour tous les items :
    - lu : Le store automatique. Un capteur mesure le soleil. La carte programmable décide. Elle donne l’ordre au moteur. Le moteur descend le store.
    - choix : le capteur · la carte programmable · le store
    - réponse : la carte programmable
-   - indice : Relis la deuxième ligne du rappel : qui donne l’ordre ?
+   - indice : Relis la ligne « Elle donne un ordre » du rappel : qui donne l’ordre ?
    - explication : La carte programmable reçoit l’information du capteur et donne l’ordre au moteur : elle relie la chaîne d’information à la chaîne d’énergie.
 2. énoncé : Le moteur qui descend le store fait partie de …
    - choix : la chaîne d’information · les deux chaînes · la chaîne d’énergie

@@ -7,8 +7,8 @@
   "items": [
     {
       "key": "technology-5e-design-specifications-1-0",
-      "prompt": "Lina oublie souvent sa gourde. Elle voudrait un objet qui le lui rappelle : c’est son …",
-      "spoken": "Lina oublie souvent sa gourde. Elle voudrait un objet qui le lui rappelle : c’est son  (mot manquant) ",
+      "prompt": "Elsa oublie souvent sa gourde. Elle voudrait un objet qui le lui rappelle : c’est son …",
+      "spoken": "Elsa oublie souvent sa gourde. Elle voudrait un objet qui le lui rappelle : c’est son  (mot manquant) ",
       "choices": [
         "besoin",
         "matériau",
@@ -16,7 +16,7 @@
       ],
       "answer": "besoin",
       "hint": "Relis la ligne « Le besoin » du rappel.",
-      "explanation": "Ce qui manque à Lina, c’est son besoin : ne plus oublier sa gourde. Le cahier des charges viendra après, pour dire ce que l’objet doit faire.",
+      "explanation": "Ce qui manque à Elsa, c’est son besoin : ne plus oublier sa gourde. Le cahier des charges viendra après, pour dire ce que l’objet doit faire.",
       "aid": {
         "kind": "rule-card",
         "props": {

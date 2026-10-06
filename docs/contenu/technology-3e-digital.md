@@ -373,7 +373,7 @@ Pour tous les items :
 2. énoncé : « S’il pleut, alors fermer la fenêtre » est une …
    - choix : boucle · variable · condition
    - réponse : condition
-   - indice : Relis la première ligne du rappel.
+   - indice : Relis la ligne du rappel qui parle de « si » et de « sinon ».
    - explication : « Si », puis « alors » : le programme teste quelque chose avant d’agir : c’est une condition. Une boucle répète, sans tester.
 3. énoncé : "Le jeu de Nina\nAu début, le score vaut 0.\nÀ chaque pièce attrapée, ajouter 1 au score.\nNina attrape 3 pièces."
    - question : Combien vaut le score ?
@@ -385,7 +385,7 @@ Pour tous les items :
 4. énoncé : Le score, qui change pendant le jeu, est gardé dans une …
    - choix : variable · boucle · condition
    - réponse : variable
-   - indice : Relis la deuxième ligne du rappel.
+   - indice : Relis la ligne du rappel qui parle d’une case qui garde une valeur.
    - explication : Une variable garde une valeur qui peut changer : le score en est une.
 5. énoncé : "Le programme de l’arrosage\nSi la terre est sèche, alors arroser 5 minutes.\nSinon, ne rien faire."
    - question : La terre est humide. Que fait le programme ?

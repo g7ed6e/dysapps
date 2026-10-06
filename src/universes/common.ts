@@ -412,12 +412,12 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
   },
   'technology-4e-modeling': {
     greeting: 'Bonjour, bâtisseur ! Au bassin, on fait des maquettes pour comprendre les machines. Chaque bonne réponse te donne du liège. Le liège, c’est une écorce très légère : il flotte.',
-    lines: ['Je tourne ma manivelle tout doucement : un tour à la fois.', 'Du liège pour mon usine : réponds à une question.', 'Un schéma se lit dans le sens des flèches.'],
+    lines: ['Je tourne ma manivelle tout doucement : un tour à la fois.', 'Du liège pour mon usine : réponds à une question.', 'Un schéma se lit case par case, dans l’ordre.'],
     home: 'Mon usine est finie. Toutes mes maquettes tournent.',
   },
   'life-earth-sciences-3e-human-body': {
     greeting: 'Bonjour, bâtisseur ! Au verger, on prend soin du corps : bouger, dormir, bien manger. Chaque bonne réponse te donne du savon.',
-    lines: ['Je mange doucement, et je fais des pauses. Toi aussi.', 'Du savon pour mon infirmerie : réponds à une question.', 'Un schéma du corps se lit organe par organe.'],
+    lines: ['Je mange doucement, et je fais des pauses. Toi aussi.', 'Du savon pour mon infirmerie : réponds à une question.', 'Le rappel a les mots qu’il faut : relis-le.'],
     home: 'Mon infirmerie est prête. Ici, on vient se reposer.',
   },
   'physics-chemistry-3e-motion-energy': {
