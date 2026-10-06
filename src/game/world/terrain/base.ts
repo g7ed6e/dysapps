@@ -1,6 +1,6 @@
 // Le socle des îles : leur place dans le monde, la hauteur du sol, les couches de terre et de roche dessous, la
 // maison du bonhomme, les couleurs et textures du sol.
-import { coeurDe, CORE, type Ground, islandDef, type IslandDef, type LandCell } from '../map';
+import { coeurDe, CORE, type Ground, islandDef, type IslandDef, type LandCell, toWorld } from '../map';
 import { fadeRgb, hexToRgb } from '../../../core/color';
 import { BASALT, CRYSTAL, GRASS, HAY, LAVA, LEAF, MOSS, PINE, SNOW, TRUNK, WATER } from '../decor';
 import { type BiomeId, BIOMES, BLOC, BLOCKS } from '../../biomes';
@@ -149,7 +149,8 @@ export function avatarHome(id: BiomeId): { x: number; y: number; z: number } {
   const index = BIOMES.findIndex((b) => b.id === id);
   // Le bloc de sol du cœur est en z = altitude (+ 1 sur le plateau) : on se tient sur son dessus, comme les créatures.
   const z = def.altitude + groundHeight(index, AVATAR_HOME.x, AVATAR_HOME.y) + 1;
-  return { x: def.core.x + AVATAR_HOME.x, y: def.core.y + AVATAR_HOME.y, z };
+  // Sur le lieu tourné (GD-9) : sa place tourne avec lui.
+  return { ...toWorld(def, AVATAR_HOME.x, AVATAR_HOME.y), z };
 }
 
 /**

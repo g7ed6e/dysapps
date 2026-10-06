@@ -262,7 +262,7 @@ svg {
 }
 @media (max-width: 640px) {
   .celebration {
-    padding: 0.4rem 0.4rem 0.4rem 0.7rem;
+    padding: 0.4rem calc(48px + 0.6rem) 0.4rem 0.7rem;
   }
   .celebration-icon {
     width: 2.4rem;
@@ -887,8 +887,13 @@ button.app-card:active {
   display: flex;
   align-items: center;
   gap: 0.8rem;
-  width: min(30rem, calc(100% - 2rem));
-  padding: 0.7rem 0.6rem 0.7rem 0.9rem;
+  /* Dans la zone sûre de l'écran, et jamais plus haut que l'écran (il défile alors). */
+  width: min(30rem, calc(100% - 1rem - env(safe-area-inset-left) - env(safe-area-inset-right)));
+  max-height: calc(100dvh - 6.2rem - env(safe-area-inset-bottom));
+  overflow-y: auto;
+  flex-wrap: wrap;
+  /* La place de Fermer, posé dans le coin haut droit du bandeau : il reste toujours dans la zone sûre. */
+  padding: 0.7rem calc(48px + 0.9rem) 0.7rem 0.9rem;
   background: var(--sand);
   color: var(--on-sand);
   border: var(--border-width) solid var(--ink);
@@ -900,8 +905,19 @@ button.app-card:active {
   background: var(--cyan);
 }
 .celebration-text {
-  flex: 1;
+  /* Une largeur minimale : quand la place manque, le texte passe sous l'icône plutôt que de se casser une lettre par
+     ligne ; il revient à la ligne entre les mots, sans les couper. */
+  flex: 1 1 9em;
+  min-width: 0;
   line-height: 1.35;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: manual;
+}
+.celebration > .icon-button {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.4rem;
 }
 .celebration-kicker {
   font-weight: 700;
@@ -3451,6 +3467,9 @@ figure.class-table {
   left: 0.6rem;
   right: 0.6rem;
   display: grid;
+  /* Une colonne de la largeur du haut, jamais plus : une ligne qui ne passe pas à la ligne (la phrase courte du mode
+     « Aménager ») se coupe dans le panneau au lieu de l'élargir hors de l'écran. */
+  grid-template-columns: minmax(0, 1fr);
   gap: 0.5rem;
   pointer-events: none;
   max-height: 60%;
@@ -3731,6 +3750,246 @@ figure.class-table {
   top: -12px;
   right: -12px;
   font-size: max(18px, 1rem);
+}
+/* ===== Le mode « Aménager » (GD-9), sur la Carte : la barre du mode à place fixe, en bas, à la place de la barre du
+   monde ; les boutons gardent leur place, éteints quand ils ne font rien ; 48 px au moins (« Poser ici » : 56 px). Un
+   seul bouton mis en avant (`primary`) : « Poser ici » pendant un choix, ✓ Terminé sinon. ===== */
+.arrange-bar {
+  position: absolute;
+  left: 0.6rem;
+  right: 0.6rem;
+  bottom: calc(0.6rem + env(safe-area-inset-bottom));
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-template-areas:
+    'croix outils'
+    'croix fin';
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+.arrange-bar .button {
+  min-width: 48px;
+  min-height: 48px;
+  padding: 0 12px;
+  gap: 6px;
+}
+/* La croix des flèches : le nord en haut, l'ouest à gauche, l'est à droite, le sud en bas. */
+.arrange-cross {
+  grid-area: croix;
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  grid-template-areas:
+    '. nord .'
+    'ouest . est'
+    '. sud .';
+  gap: 4px;
+  justify-content: center;
+}
+.arrange-cross .arrange-arrow-nord { grid-area: nord; }
+.arrange-cross .arrange-arrow-sud { grid-area: sud; }
+.arrange-cross .arrange-arrow-ouest { grid-area: ouest; }
+.arrange-cross .arrange-arrow-est { grid-area: est; }
+.arrange-bar .arrange-cross .button {
+  padding: 0 8px;
+}
+.arrange-bar-outils,
+.arrange-bar-pli,
+.arrange-bar-fin {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+.arrange-bar-outils {
+  grid-area: outils;
+}
+/* La rangée fixe, en bas : « Poser ici » et ✓ Terminé, jamais dans la partie qui défile. */
+.arrange-bar-fin {
+  grid-area: fin;
+}
+.arrange-bar .arrange-pose {
+  min-height: 56px;
+  padding: 0 18px;
+}
+/* Éteint : sans relief, au bord en tirets (la forme, pas la couleur seule), sa place gardée. Des couleurs pleines, pas
+   d'opacité (la mer passait au travers) : le texte `--muted` sur `--secondary-bg` reste au-dessus de 4,5:1 partout
+   (mesuré : Blocland 6,1:1 le jour, 7,2:1 la nuit ; Archipéo 6,3:1 et 5,5:1). */
+.arrange-bar .button:disabled {
+  --button-bg: var(--secondary-bg);
+  background: var(--secondary-bg);
+  color: var(--muted);
+  border-style: dashed;
+  box-shadow: none;
+  cursor: default;
+}
+/* En grand texte, le mot plafonné à 24 px, comme la barre du monde. */
+:root[data-texte="grand"] .arrange-bar .button {
+  font-size: min(1em, 24px);
+  padding: 4px 8px;
+}
+/* Au téléphone : la croix d'icônes à gauche, « Plus » à droite (son pli défile s'il déborde), puis la rangée fixe
+   « Poser ici » et ✓ Terminé sur toute la largeur. La barre ne monte jamais plus haut que la moitié de l'écran. */
+.arrange-bar.arrange-bar-telephone {
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas:
+    'croix outils'
+    'fin fin';
+  gap: 6px;
+  max-height: 50vh;
+  grid-template-rows: minmax(0, 1fr) auto;
+}
+.arrange-bar-telephone .arrange-bar-outils {
+  flex-direction: column;
+  align-items: stretch;
+  align-self: stretch;
+  justify-content: flex-start;
+  min-height: 0;
+  max-height: 100%;
+  overflow-y: auto;
+}
+.arrange-bar-telephone .arrange-bar-pli {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+}
+/* Les deux boutons de la rangée fixe se partagent la largeur ; en très grand texte, s'ils ne tiennent pas côte à côte,
+   ils passent l'un sous l'autre, sans jamais couper un mot. */
+.arrange-bar-telephone .arrange-bar-fin .button {
+  flex: 1 1 auto;
+  justify-content: center;
+  white-space: nowrap;
+}
+.arrange-bar-telephone .arrange-cross .button {
+  padding: 0;
+}
+/* Au téléphone, la phrase du mode tient en une ligne (le nom et la direction) ; le toucher l'ouvre en entier. */
+.arrange-line-courte {
+  /* Une largeur définie (celle du haut, 26rem au plus) : la ligne courte s'y coupe au lieu de l'élargir. */
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+  flex-wrap: nowrap;
+  align-items: center;
+  padding-top: 0.2rem;
+  padding-bottom: 0.2rem;
+}
+.arrange-line-courte.ouverte {
+  align-items: flex-start;
+}
+.arrange-line-texte {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 48px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  /* La ligne courte se coupe entre les mots, jamais au milieu d'un nom ni avec « … » : elle tient sur deux lignes. */
+  white-space: normal;
+  overflow-wrap: normal;
+}
+.arrange-line-courte.ouverte .arrange-line-texte {
+  white-space: normal;
+  max-height: 33vh;
+  overflow-y: auto;
+}
+/* La question de « Réunir » (un bouton par voisin, et « Non »), dans la zone de la phrase ou sous la ligne du lieu. */
+.arrange-question p {
+  margin: 0;
+}
+.arrange-question-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 0.4rem;
+}
+.arrange-question-buttons .button {
+  min-height: 48px;
+}
+.arrange-list-items .arrange-question {
+  flex: 1 1 100%;
+}
+/* La pastille des ouvrages à reposer : l'icône (un ouvrage séparé) et le nombre, jamais la couleur seule. */
+.world-bar .arrange-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+.arrange-line p,
+.arrange-relink p {
+  margin: 0;
+}
+.arrange-relink-list {
+  list-style: none;
+  margin: 0.4rem 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.arrange-relink-list .button {
+  min-height: 48px;
+}
+.arrange-explication {
+  margin-bottom: 0.4rem;
+}
+/* Le mode en vue simple (ArrangeList.tsx) : la barre dans la page, sous la liste ; la ligne choisie, bordée et en gras
+   (jamais la couleur seule). */
+.arrange-bar.arrange-bar-inline {
+  position: static;
+  margin-top: 0.6rem;
+}
+.arrange-list .arrange-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+.arrange-list-items {
+  list-style: none;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.arrange-list-items li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 8px;
+  border: 2px solid transparent;
+  border-radius: 8px;
+}
+.arrange-list-items li p {
+  margin: 0;
+  flex: 1 1 16rem;
+}
+.arrange-list-items .button {
+  min-height: 48px;
+}
+.arrange-list-items .arrange-list-chosen {
+  border-color: currentColor;
+  font-weight: 700;
+}
+/* Le pli d'un lieu (ses bornes et ses arrivées) prend toute la largeur de sa ligne ; ses lignes sont en retrait. */
+.arrange-list-items .arrange-list-more {
+  flex: 1 1 100%;
+}
+.arrange-list-sub {
+  list-style: none;
+  margin: 0.4rem 0 0;
+  padding: 0 0 0 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 /* Les blocs gagnés qui volent jusqu'au compteur (Blocland, FlyingBlocks.tsx) : posés sur la pastille, ils partent de la
    borne (`--vol-dx`, `--vol-dy`) en arc simple, l'un après l'autre ; ni éclat ni traînée, rien qui se touche. Sans
@@ -5709,6 +5968,11 @@ button.app-card {
        haut (useMapPanel.ts). */
     max-height: 60%;
   }
+  /* Pendant « Aménager », la colonne de droite (Menu, puis le rond « Recentrer » dessous) reste réservée : le rond de
+     l'avatar ne se pose jamais sur le haut-parleur de la phrase. */
+  :root[data-texte="grand"] .world-page.en-amenagement .world-overlay-top {
+    right: calc(0.6rem + 52px + 0.5rem);
+  }
   /* Le trait est posé sur une bande du fond du panneau, collée au bord : il ne passe jamais sur une ligne coupée,
      qu'il sépare du bord par un peu d'air. */
   :root[data-texte="grand"] .world-page .world-overlay-top[data-suite~="haut"]::before,
@@ -6576,4 +6840,20 @@ fieldset {
 }
 :root[data-univers="archipeo"] .world-recentrer-tete:active:not(:disabled) {
   box-shadow: 0 1px 0 #142b38;
+}
+/* « Carte de départ » au menu du village (GD-9) : la confirmation, sous la ligne, sur un fond uni. */
+.menu-confirmer {
+  margin: 0.4rem 0 0.6rem;
+  padding: 0.8rem;
+  border: 2px solid var(--ink);
+  border-radius: var(--radius, 8px);
+  background: var(--surface, #fff);
+}
+.menu-confirmer p {
+  margin: 0 0 0.6rem;
+}
+.menu-confirmer-boutons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }

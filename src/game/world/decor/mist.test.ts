@@ -6,12 +6,12 @@ import { mistPatches } from '../terrain';
 import { bordDesNappes, ilesDesNappes, NAPPES_3E, nappesDesSommets, nappesPosees, VARIATION_DES_NAPPES } from './mist';
 
 describe('les nappes des sommets (3e)', () => {
-  const nappes = nappesPosees('3e');
+  const nappes = nappesPosees('3e', []);
   const V = VARIATION_DES_NAPPES;
 
   it('une nappe par île haute, au même nombre de triangles qu’avant (14 pans, 3 triangles par pan)', () => {
     expect(nappes.length).toBe(mistPatches('3e').length);
-    expect(nappesDesSommets('3e')!.indices.length / 3).toBe(nappes.length * NAPPES_3E.pans * 3);
+    expect(nappesDesSommets('3e', [])!.indices.length / 3).toBe(nappes.length * NAPPES_3E.pans * 3);
   });
 
   it('chacune la sienne : centre décalé, taille, opacité et pans tirés, pas deux pareilles', () => {
@@ -38,7 +38,7 @@ describe('les nappes des sommets (3e)', () => {
   });
 
   it('jamais sur une autre île, un îlot ni un pont : le bord et le milieu de chaque côté restent libres', () => {
-    const libre = bordDesNappes('3e');
+    const libre = bordDesNappes('3e', []);
     nappes.forEach((n, i) => {
       const bord = (j: number) => {
         const a = (j / NAPPES_3E.pans) * Math.PI * 2;
@@ -54,7 +54,7 @@ describe('les nappes des sommets (3e)', () => {
   });
 
   it('reproductibles : les mêmes nappes à chaque calcul', () => {
-    expect(nappesPosees('3e')).toEqual(nappes);
+    expect(nappesPosees('3e', [])).toEqual(nappes);
   });
 });
 

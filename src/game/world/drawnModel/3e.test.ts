@@ -49,7 +49,7 @@ it('l’Observatoire des textes monte en trois gradins de 2 blocs, neige en haut
 });
 
 it('ni le cœur, ni la première rangée du fond, ni les abords d’un ouvrage, ni ce qui est posé ne bougent', () => {
-  const chemins = BRIDGES.filter((b) => archipelagoOfIsland(b.from) === '3e').flatMap((b) => bridgePath(b));
+  const chemins = BRIDGES.filter((b) => archipelagoOfIsland(b.from) === '3e').flatMap((b) => bridgePath(b, []));
   const posees = new Set(reste.map((c) => `${c.x},${c.y}`));
   for (const c of avant.colonnes) {
     const d = ecart(c.x, c.y);

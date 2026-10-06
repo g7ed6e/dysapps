@@ -307,6 +307,11 @@ export function recordMonument(p: Progress, xp: number, now = new Date().toISOSt
   return finish(p, { ...p, xp: p.xp + xp, landmarksCompleted: p.landmarksCompleted + 1 }, xp, now);
 }
 
+/** Une construction qui réunit deux lieux terminée (GD-9, point 10) : son XP, sans succès ni compte à part. */
+export function recordJoin(p: Progress, xp: number, now = new Date().toISOString()): ProgressUpdate {
+  return finish(p, { ...p, xp: p.xp + xp }, xp, now);
+}
+
 export function recordPlan(p: Progress, xp: number, now = new Date().toISOString()): ProgressUpdate {
   const after: Progress = { ...p, xp: p.xp + xp, structuresCompleted: p.structuresCompleted + 1 };
   return finish(p, after, xp, now);

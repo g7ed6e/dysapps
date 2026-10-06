@@ -28,7 +28,7 @@ import { KITS, kitRempli, type CaseDuLieu, type Famille, type Kit } from './kits
 import { lieuxDuKit } from './places';
 import { peintureDuMur, type PeintureDuMur } from './paint';
 import { facettesPosees, tournerCouvre, type DessinDePiece, type Facette } from './rooms';
-import { COTES, estDuPlan, indexDuPlan, voisinageDe, type IndexDuPlan, type Voisinage } from './neighborhood';
+import { SIDES, estDuPlan, indexDuPlan, voisinageDe, type IndexDuPlan, type Voisinage } from './neighborhood';
 
 export { assemblerLesPieces } from './assembly';
 export { pieceDe, FORMES, type Forme, type IdDePiece } from './choices';
@@ -180,7 +180,7 @@ export function architectureDe(a: ArchipelagoId, cubes: readonly VoxelCube[], op
     const m = centres.get(batimentDe(c));
     const exterieur = (cote: number) => {
       if (!m) return true;
-      const [dx, dy] = COTES[cote];
+      const [dx, dy] = SIDES[cote];
       return dx * (c.x + 0.5 - m.x / m.n) + dy * (c.y + 0.5 - m.y / m.n) > 0;
     };
     const peinture = peintureDuMur(v, maniere, { barde: kit.bardes.includes(c.tag ?? ''), exterieur, sansDecharge });

@@ -22,6 +22,7 @@ import { Stars } from './Stars';
 import { STARS_TO_UNLOCK, isBossBeaten, isBossOpen, missingForBoss } from './boss';
 import { BlockIcon } from './Voxel';
 import { PlanSection } from './PlanSection';
+import { JoinLine } from './Joins';
 import { ShipSection } from './ShipSection';
 import { useVehicleBuilder } from './useVehicleBuilder';
 import { stageAt } from './world/vehicle';
@@ -248,6 +249,9 @@ export function BiomePage() {
           </div>
         </>
       )}
+
+      {/* Réuni à un autre lieu (GD-9) : la construction qui les réunit se pose depuis sa page. */}
+      {unlocked && <JoinLine island={biome.id} />}
 
       {unlocked && stageAt(biome.id) && (
         <>

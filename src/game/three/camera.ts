@@ -20,12 +20,17 @@ export { AUTOUR_DE_LA_DESTINATION, cadrageDeLaCarte, cadrageDeLaTraversee, decal
 declare global {
   interface Window {
     /** La caméra, pour les captures (en développement, ou avec `?mesures`) : voir `Camera.poser`. */
-    __dysappsCamera?: { poser(): number };
+    __dysappsCamera?: { poser(): number; ecran(p: { x: number; y: number; z: number }): { x: number; y: number } | null };
     /**
      * Pour les captures d'un lot (scripts/rendu/mesures.mjs, `poseA`, avec `?mesures`) : la pose d'une partie tenue à
      * cette part de sa durée dès son lancement (three/cubes.ts, `tenirLaVague`).
      */
     __dysappsPoseA?: number;
+    /**
+     * Pour les captures (en développement, ou avec `?mesures`) : le geste de la pose du mode « Aménager » tenu à ce
+     * moment de son démontage, en ms (Arranging.tsx ne passe pas au remontage ; ./arrange.ts lit l'heure tenue).
+     */
+    __dysappsGesteA?: number;
   }
 }
 
@@ -71,7 +76,8 @@ export interface Camera extends PartieDeLaScene {
   /**
    * La fiche d'un objet le cache (lot 2 de « Toucher le monde ») : le cadrage glisse à plat pour que ce point du monde se
    * pose en `vers` (coordonnées normalisées de l'écran, −1 à 1), sans changer de distance ni de direction. Effacé quand
-   * l'application reprend la main (une île, la Carte, une marche, un voyage).
+   * l'application reprend la main (une île, la Carte, une marche, un voyage). Sur la Carte (le mode « Aménager »), la
+   * Carte glisse une fois de ce qu'il faut, comme sous le doigt, zoom gardé.
    */
   recadrer(point: THREE.Vector3, vers: { x: number; y: number }): void;
 }
@@ -247,6 +253,8 @@ export function creerCamera(
   const rayon = new THREE.Raycaster();
   const glissement = new THREE.Vector3();
   const projete = new THREE.Vector3();
+  const essaiCible = new THREE.Vector3();
+  const essaiPlace = new THREE.Vector3();
   /** Place la caméra de travail en `pos`, regardant `target`, comme la vraie. */
   const placerLEssai = (target: THREE.Vector3, pos: THREE.Vector3) => {
     essai.fov = camera.fov;
@@ -339,7 +347,10 @@ export function creerCamera(
       demande.ile = ile;
       demande.carte = carteDemandee;
       // Une longue traversée : le cadre fixe, s'il tient à une taille lisible ; sinon la caméra suit le bonhomme.
-      const fixe = !sailing && walking && instant.traversee ? traversee(instant.traversee, camera.aspect) : null;
+      // Une liaison montrée depuis un autre départ (GD-9, « Partir d'une autre île ») : le même cadre fixe, au-dessus de
+      // la fiche ; d'un coup quand l'appareil demande moins d'animations (`reduit`).
+      const choisie = !sailing && !walking && !instant.carte ? derniers.current.cadreDeLaLiaison : null;
+      const fixe = !sailing && walking && instant.traversee ? traversee(instant.traversee, camera.aspect) : choisie ? traversee(choisie, camera.aspect) : null;
       // En mer (ou dans les airs) : vue de côté sur le navire, la caméra s'écarte à mesure qu'il s'éloigne.
       const frame = sailing
         ? (() => {
@@ -378,6 +389,17 @@ export function creerCamera(
       const kVu = 1 / zoom;
       base.x = target.x;
       base.z = target.z;
+      // Sur la Carte, le mode « Aménager » garde le fantôme dans la bande libre (`recadrer`) : la Carte glisse une fois,
+      // comme sous le doigt, d'après la vue visée (zoom et glissement compris), puis l'élève la reprend.
+      if (recadre && surLaCarteIci) {
+        essaiCible.set(target.x + decalage.x, target.y, target.z + decalage.z);
+        essaiPlace.set(target.x + (pos.x - target.x) * kVu + decalage.x, target.y + (pos.y - target.y) * kVu, target.z + (pos.z - target.z) * kVu + decalage.z);
+        placerLEssai(essaiCible, essaiPlace);
+        decalagePourViser(essai, recadre.point, recadre.vers, glissement, rayon);
+        decalage.x += glissement.x;
+        decalage.z += glissement.z;
+        recadre = null;
+      }
       // La place visée a pu bouger (la vue a changé de taille) : le décalage reste dans l'archipel.
       bornerLeDecalage(base, decalage, etendue, decalage);
       if (!self.glissant) {

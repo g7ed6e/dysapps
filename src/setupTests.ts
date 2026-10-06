@@ -5,3 +5,5 @@ afterEach(() => {
   sessionStorage.clear();
   vi.unstubAllGlobals();
 });
+// La géométrie des liaisons (GD-9), que les règles du monde demandent à la grille, comme dans l'application.
+import './game/world/linkGeometry';

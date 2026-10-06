@@ -2,6 +2,15 @@ import {
   Anchor,
   Menu,
   ArrowLeft,
+  ArrowDown,
+  ArrowDownToLine,
+  ArrowRight,
+  ArrowUp,
+  Move,
+  RotateCw,
+  Undo2,
+  Unlink,
+  Merge,
   Blocks,
   BookOpen,
   Box,
@@ -119,6 +128,19 @@ export const ICONS = {
   ancre: Anchor,
   cube: Box,
   ouvrage: Ouvrage,
+  // Le mode « Aménager » (GD-9) : quatre flèches, les flèches de la barre, « Tourner », ↶, une liaison à reposer.
+  amenager: Move,
+  nord: ArrowUp,
+  sud: ArrowDown,
+  est: ArrowRight,
+  ouest: ArrowLeft,
+  tourner: RotateCw,
+  defaire: Undo2,
+  // « Poser ici » : une flèche vers le bas, sur un trait (la coche reste à « Terminé »).
+  poser: ArrowDownToLine,
+  aReposer: Unlink,
+  // Réunir deux lieux (GD-9, point 10) : deux chemins qui se rejoignent.
+  reunir: Merge,
 } satisfies Record<string, LucideIcon>;
 
 export type AnyIconName = keyof typeof ICONS;

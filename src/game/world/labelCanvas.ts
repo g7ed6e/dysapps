@@ -10,8 +10,14 @@ import { project, shade } from '../Voxel';
 import { COTE_DU_VISAGE, type Visage } from './characters/face';
 import type { Habillage } from './skin/types';
 
+/**
+ * L'état écrit sous le nom : celui de l'île, ou « choisi » dans le mode « Aménager » (GD-9), où l'icône de l'état laisse
+ * la place à celle d'Aménager (quatre flèches) le temps du choix ; l'état revient à la pose.
+ */
+type LabelStateId = IslandStateId | 'choisi';
+
 export interface IslandLabelState {
-  id: IslandStateId;
+  id: LabelStateId;
   name: string;
 }
 
@@ -91,7 +97,8 @@ const PALETTE = {
 };
 
 /** La couleur de l'icône de chaque état (la forme porte le sens, la couleur ne fait qu'aider). */
-const ICON_COLOR: Record<IslandStateId, string> = {
+const ICON_COLOR: Record<LabelStateId, string> = {
+  choisi: '#3b2d20',
   fermee: '#5a4d40',
   'a-explorer': '#1f5d8a',
   'en-chantier': '#8a4a12',
@@ -132,7 +139,7 @@ export function measureIslandLabel(ctx: CanvasRenderingContext2D, text: string, 
 }
 
 /** L'icône d'un état, centrée sur (x, y), dans un carré de côté `s`. */
-function drawStateIcon(ctx: CanvasRenderingContext2D, id: IslandStateId, x: number, y: number, s: number, bg = '#fffdf7'): void {
+function drawStateIcon(ctx: CanvasRenderingContext2D, id: LabelStateId, x: number, y: number, s: number, bg = '#fffdf7'): void {
   const color = ICON_COLOR[id];
   ctx.save();
   ctx.fillStyle = color;
@@ -174,6 +181,25 @@ function drawStateIcon(ctx: CanvasRenderingContext2D, id: IslandStateId, x: numb
     ctx.lineTo(x - b * 0.7, y - b * 0.7);
     ctx.closePath();
     ctx.stroke();
+  } else if (id === 'choisi') {
+    // Quatre flèches en croix (l'icône d'Aménager) : deux traits, une pointe pleine au bout de chacun.
+    ctx.lineWidth = s * 0.11;
+    const r = s * 0.44;
+    const p = s * 0.16;
+    ctx.beginPath();
+    ctx.moveTo(x - r + p, y);
+    ctx.lineTo(x + r - p, y);
+    ctx.moveTo(x, y - r + p);
+    ctx.lineTo(x, y + r - p);
+    ctx.stroke();
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+      ctx.beginPath();
+      ctx.moveTo(x + dx * r, y + dy * r);
+      ctx.lineTo(x + dx * (r - p) - dy * p, y + dy * (r - p) - dx * p);
+      ctx.lineTo(x + dx * (r - p) + dy * p, y + dy * (r - p) + dx * p);
+      ctx.closePath();
+      ctx.fill();
+    }
   } else if (id === 'en-chantier') {
     // Marteau : un manche en biais, une tête pleine.
     ctx.translate(x, y);

@@ -1,7 +1,12 @@
 import { BADGES } from '../../core/progress';
 import { trophyBlock } from '../trophies';
-import { APPEL_DU_PASSAGE, bornesCost, commandesCost, constructionCost, decorCost, ENVELOPPES, enveloppeDe, fauneCost, merCost, navireCost, personnagesCost, PLAFOND_DU_MONDE_EN_BLOCS, RENDER_BUDGET, sceneCost, sceneCostArchipeo, signesCost, solCost, toutConstruit, type Poste } from './budget';
-import { ARCHIPELAGO_IDS, type ArchipelagoId } from './map';
+import { APPEL_DU_PASSAGE, bornesCost, linkCubes, worstCaseOfRegion, commandesCost, constructionCost, decorCost, ENVELOPPES, enveloppeDe, fauneCost, merCost, navireCost, personnagesCost, PLAFOND_DU_MONDE_EN_BLOCS, RENDER_BUDGET, sceneCost, sceneCostArchipeo, signesCost, solCost, toutConstruit, type Poste } from './budget';
+import { ARCHIPELAGO_IDS, type ArchipelagoId, mapOf } from './map';
+import { chooseGuardian, chooseIsland } from './arrangeMode';
+import { arrangeView, arrangeViewCost } from './arrangeView';
+import { buildMesh } from './mesher';
+import { worldCubes } from './terrain';
+import { SHORT_LENGTH, LONG_LENGTH } from './routing';
 
 it('prépare une partie vraiment tout construite (Gardiens vaincus, navire, ouvrages)', () => {
   const { progress, world: village } = toutConstruit();
@@ -72,7 +77,8 @@ it('le rendu Archipéo : la mer en un appel de dessin, la faune et le ciel en tr
     const faune = fauneCost(a);
     expect(mer, a).toEqual(sceneCostArchipeo(a).mer);
     expect(mer.drawCalls, a).toBe(1);
-    expect(mer.triangles, a).toBeLessThanOrEqual(6000);
+    // 6 200 aux Premiers Rivages depuis que la mer couvre tout le cadre de la région (GD-9).
+    expect(mer.triangles, a).toBeLessThanOrEqual(6300);
     // Baleines, oiseaux, nuages : une instanciation par famille (pas de baleine aux Îles du Ciel).
     expect(faune.drawCalls, a).toBeLessThanOrEqual(3);
     expect(faune.triangles, a).toBeLessThanOrEqual(1500);
@@ -96,11 +102,11 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
 
   // Ailleurs, 52 300 jusqu'au cœur agrandi de l'Atelier (01/10/2026) : son sol en demande 660 de plus (world/budget.ts),
   // enveloppe validée par le mainteneur le 01/10/2026 ; 53 040 avec la Halle aux matériaux (GD-2, validé par le mainteneur le 01/10/2026, world/budget.ts), 53 060 avec la salle des trophées (GD-3, même jour).
-  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-7 : les liaisons du port) : 58 500 triangles et 25 appels aux Premiers Rivages, 53 320 et 24 ailleurs', () => {
+  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9 : la carte de départ calée sur la grille) : 59 500 triangles et 25 appels aux Premiers Rivages, 55 790 et 24 ailleurs', () => {
     const total = (a: '6e' | '5e') => postes.reduce((n, p) => n + enveloppeDe(p, a).triangles, 0);
     const appels = (a: '6e' | '5e') => postes.reduce((n, p) => n + enveloppeDe(p, a).drawCalls, 0);
-    expect([total('6e'), appels('6e')]).toEqual([58_500, 25]);
-    expect([total('5e'), appels('5e')]).toEqual([53_320, 24]);
+    expect([total('6e'), appels('6e')]).toEqual([59_500, 25]);
+    expect([total('5e'), appels('5e')]).toEqual([55_790, 24]);
   });
 
   // GD-3 : la salle des trophées change avec les succès (une travée au 13e et au 19e, les trophées sous le toit) ; la
@@ -186,4 +192,49 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
         expect(cout.drawCalls, a).toBeLessThanOrEqual(enveloppeDe(p, a).drawCalls);
       }
     });
+});
+
+it('GD-9 : le plafond du monde en blocs passe à 88 000 triangles, les appels restent à 240', () => {
+  expect(PLAFOND_DU_MONDE_EN_BLOCS).toEqual({ triangles: 88_000, drawCalls: 240 });
+});
+
+it('GD-9 : au pire (autant de liaisons qu’un graphe planaire en a, au plus long, et toutes les réunions), chaque région tient sous le plafond', () => {
+  for (const a of ARCHIPELAGO_IDS) {
+    const pire = worstCaseOfRegion(a);
+    expect(pire.triangles, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.triangles);
+    expect(pire.drawCalls, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.drawCalls);
+    // Le pire cas compte plus que le monde d'aujourd'hui.
+    expect(pire.triangles, a).toBeGreaterThan(sceneCost(a, true).triangles);
+  }
+});
+
+it('GD-9 : au pire de chaque région, le dessin d’un choix du mode « Aménager » (au plus grand nombre de places) tient aussi sous le plafond', () => {
+  const { world } = toutConstruit();
+  for (const a of ARCHIPELAGO_IDS) {
+    const pire = worstCaseOfRegion(a);
+    let plus = { triangles: 0, drawCalls: 0, places: 0 };
+    for (const id of mapOf(a).map((d) => d.id)) {
+      const choix = [chooseIsland(world, id), chooseGuardian(world, id)].filter((c) => c !== null);
+      for (const c of choix) {
+        const v = arrangeView(world, c);
+        const cout = arrangeViewCost(v);
+        if (cout.triangles > plus.triangles) plus = { ...cout, places: v.cases.filter((k) => k.genre === 'place').length };
+      }
+    }
+    // Les places libres autour du fantôme : sept sur sept au plus, la sienne non comprise.
+    expect(plus.places, a).toBeLessThanOrEqual(48);
+    expect(pire.triangles + plus.triangles, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.triangles);
+    // Un appel de plus, pendant un choix seulement (mainteneur, 5 octobre 2026 : quelques appels passagers acceptés).
+    expect(plus.drawCalls, a).toBeLessThanOrEqual(1);
+  }
+});
+
+it('GD-9 : une liaison au plus long, de chaque sorte, ne prend aucun matériau nouveau (aucun appel de plus)', () => {
+  const { progress, world } = toutConstruit();
+  for (const a of ARCHIPELAGO_IDS) {
+    const terrain = worldCubes(a, progress, world, false);
+    const avant = buildMesh(terrain).length;
+    for (const [kind, n] of [['bac', LONG_LENGTH], ['pont', LONG_LENGTH], ['pont', SHORT_LENGTH], ['sentier', SHORT_LENGTH]] as const)
+      expect(buildMesh([...terrain, ...linkCubes(a, kind, n)]).length, `${a} ${kind}`).toBe(avant);
+  }
 });

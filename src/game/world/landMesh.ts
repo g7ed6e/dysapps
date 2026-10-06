@@ -245,7 +245,7 @@ export function landMesh(champ: ChampDuSol, options: OptionsDuSol = {}): Maillag
 
   const HAUT: V3 = [0, 1, 0];
   const BAS: V3 = [0, -1, 0];
-  const COTES: [number, number, number, number][] = [
+  const SIDES: [number, number, number, number][] = [
     [1, 0, 1, 2],
     [-1, 0, 0, 3],
     [0, 1, 3, 2],
@@ -310,7 +310,7 @@ export function landMesh(champ: ChampDuSol, options: OptionsDuSol = {}): Maillag
     // ---- Les falaises, sur les quatre côtés : ce que la voisine ne couvre pas, coupé en strates.
     const matiere = (zz: number) => col.matieres[clamp(zz - col.bas, 0, col.matieres.length - 1)];
     const ep = epaisseurDesStrates(col.ile);
-    for (const [dx, dy, k0, k1] of COTES) {
+    for (const [dx, dy, k0, k1] of SIDES) {
       const e0: [number, number] = [col.x + COINS[k0][0], col.y + COINS[k0][1]];
       const e1: [number, number] = [col.x + COINS[k1][0], col.y + COINS[k1][1]];
       const t0 = col.coins[k0];

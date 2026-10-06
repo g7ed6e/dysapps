@@ -6,7 +6,8 @@
 import { useEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import type { BiomeId } from '../biomes';
-import { ileDeLaVueGlissee, islandCenter, worldBounds } from '../world/terrain';
+import { cadreDeLaLiaison, ileDeLaVueGlissee, islandCenter, worldBounds } from '../world/terrain';
+import { getBridge } from '../world/archipelago';
 import { cubeTags, type VoyageRun } from '../world/scene';
 import { rappelsDeLaVue, type WorldViewProps } from '../world/view';
 import { centreDeLObjet, cleDeLaCreature, cleDeLObjet, signesDesObjets, sommetsDesBornes, type ObjetDeLaFiche, type ObjetTouche } from '../world/affordance';
@@ -31,7 +32,8 @@ import { creerCamera, type Camera } from './camera';
 import { creerRond } from './groundRing';
 import { ecouterLeClavier, ecouterLesGestes } from './gestures';
 import { lancerLaBoucle } from './loop';
-import { contourner, lecteurDePlaceLibre, lirePlaceLibre, sousLaFiche, type PlaceLue } from '../freeSpace';
+import { creerAmenagement, type Amenagement } from './arrange';
+import { contourner, lecteurDePlaceLibre, lirePlaceLibre, lirePlaceReelle, sousLaFiche, type PlaceLue } from '../freeSpace';
 
 
 /** La scène en cours : le moteur de rendu, la caméra, et les parties que les props mettent à jour. */
@@ -46,6 +48,11 @@ interface Scene3D {
   signes: Signes;
   cubes: Cubes;
   navire: Navire;
+  /** Le mode « Aménager » (GD-9). */
+  amenagement: Amenagement;
+  /** Le fantôme du mode est hors de la vue : le cadrage glisse pour le poser au centre de la place libre. */
+  /** Garde entier à l'écran un rectangle du monde (en cases, x et y) à une hauteur : la vue glisse s'il en sort. */
+  garderEnVue(cadre: { rect: { x0: number; y0: number; x1: number; y1: number }; z: number }): void;
   /** Efface le décalage de l'élève et le dit à la page. */
   recentrer(): void;
   /** Le signe de l'objet d'une fiche fait son petit saut (s'il en porte un). */
@@ -68,6 +75,7 @@ export default function WorldCanvas({
   calme = false,
   forceDay = false,
   bridges = [],
+  liaisonCadree = null,
   marker: markerEnAncrage = null,
   imageDeLaCarte = null,
   vehicle = null,
@@ -92,6 +100,8 @@ export default function WorldCanvas({
   label,
   onIntent,
   chantier = false,
+  amenager = null,
+  geste: gesteDuMode = null,
 }: WorldViewProps) {
   // Les positions reçues en ancrages (une île, un point dans son repère), dessinées en cases du monde.
   const { focus, marker, avatar, trail, quests, burst } = useEnCasesDuMonde({
@@ -102,6 +112,7 @@ export default function WorldCanvas({
     trail: trailEnAncrages,
     quests: questsEnAncrages,
     burst: burstEnAncrage,
+    bridges,
   });
   // Les gestes deviennent des intentions (world/view.ts) : la vue garde ses rappels, tirés d'elles, lus au moment du geste.
   const rappelsDuRendu = rappelsDeLaVue(onIntent, archipelago, chantier);
@@ -118,12 +129,14 @@ export default function WorldCanvas({
   const vehicleRef = useRef<Amarre | null>(null);
   // Les cubes des bornes de mission et des ouvrages, par case : pour savoir ce qu'on touche.
   const tags = useRef(cubeTags([]));
+  const dansLeMode = Boolean(amenager);
   useEffect(() => {
     // Un ouvrage construit se touche comme le sol (lot 2 de « Toucher le monde ») : seuls ceux en fantôme sont des cibles.
     const t = cubeTags(cubes);
-    for (const [cle, id] of t.bridges) if (bridges.includes(id)) t.bridges.delete(cle);
+    // Dans le mode « Aménager » (GD-9), une liaison posée se touche : son arrivée la plus proche se choisit.
+    if (!dansLeMode) for (const [cle, id] of t.bridges) if (bridges.includes(id)) t.bridges.delete(cle);
     tags.current = t;
-  }, [cubes, bridges]);
+  }, [cubes, bridges, dansLeMode]);
   // Ce qu'il faut pour trouver l'objet d'une fiche dans le monde (lu au moment du recadrage, pas à chaque image).
   const objetsRef = useRef({ cubes, creatures, vehicle });
   objetsRef.current = { cubes, creatures, vehicle };
@@ -135,10 +148,20 @@ export default function WorldCanvas({
   vueDeplaceeRef.current = onVueDeplacee;
   const { settings } = useSettings();
   // Les props que la scène lit à chaque image (elle n'est pas refaite quand elles changent).
-  const derniers = useRef<Derniers>({ carte: map, focus, home: home ?? null, forceDay, whalePass, sons: settings.sounds, calme, onVoyageLegEnd });
-  derniers.current = { carte: map, focus, home: home ?? null, forceDay, whalePass, sons: settings.sounds, calme, onVoyageLegEnd };
+  // Une liaison montrée depuis un autre départ (GD-9) : son cadre, le même objet tant qu'elle ne change pas.
+  const cadreChoisi = useMemo(() => {
+    const def = liaisonCadree ? getBridge(liaisonCadree) : undefined;
+    return def ? cadreDeLaLiaison(def, bridges) : null;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [liaisonCadree, bridges.join(',')]);
+  const modeDAmenager = amenager ? (amenager.vue ? 'choix' : 'mode') : 'non';
+  const derniers = useRef<Derniers>({ carte: map, focus, home: home ?? null, forceDay, whalePass, sons: settings.sounds, calme, cadreDeLaLiaison: cadreChoisi, onVoyageLegEnd, amenager: modeDAmenager });
+  derniers.current = { carte: map, focus, home: home ?? null, forceDay, whalePass, sons: settings.sounds, calme, cadreDeLaLiaison: cadreChoisi, onVoyageLegEnd, amenager: modeDAmenager };
   // Le passage de la baleine : demandé par `whalePass`, joué une fois par `seq` (même si la scène est refaite).
   const passSeqRef = useRef<number | null>(null);
+  // Les liaisons posées (GD-9), lues par la scène quand elle se construit et à chaque trajet : elle n'est pas refaite pour elles.
+  const liaisonsRef = useRef<readonly string[]>(bridges);
+  liaisonsRef.current = bridges;
 
   // ---- Création de la scène (une fois par archipel)
   useEffect(() => {
@@ -167,6 +190,7 @@ export default function WorldCanvas({
       etendue: bounds,
       centre: { x: (bounds.minX + bounds.maxX) / 2, y: (bounds.minY + bounds.maxY) / 2 },
       largeur: Math.max(bounds.maxX - bounds.minX, bounds.maxY - bounds.minY),
+      liaisons: () => liaisonsRef.current,
     };
     const camera = new THREE.PerspectiveCamera(40, el.clientWidth / Math.max(1, el.clientHeight), 0.5, monde.largeur * 10);
     const instant: Instant = { now: 0, marche: false, traversee: null, navigue: null, carte: false, but: { target: new THREE.Vector3(), pos: new THREE.Vector3() } };
@@ -228,7 +252,28 @@ export default function WorldCanvas({
       },
     };
     const cadrage = creerCamera(monde, camera, personnages.avatar, derniers, instant, lecture);
+    const amenagement = creerAmenagement(monde, reduceMotion, camera, el, lumiere);
     world.current = {
+      amenagement,
+      garderEnVue: ({ rect: r, z }) => {
+        const point = new THREE.Vector3((r.x0 + r.x1) / 2, z, (r.y0 + r.y1) / 2);
+        const vue = el.getBoundingClientRect();
+        // La hauteur réelle de la barre du mode et de sa phrase (un pli ouvert compris) : le fantôme se cadre dans la
+        // bande libre entre les deux.
+        const libre = lirePlaceReelle(el);
+        const marge = 24;
+        // Les quatre coins dans la place libre : rien à faire.
+        const dedans = [r.x0, r.x1].every((x) =>
+          [r.y0, r.y1].every((y) => {
+            const ecran = cadrage.auBut(new THREE.Vector3(x, z, y), vue.width, vue.height);
+            return ecran !== null && ecran.x >= libre.x0 + marge && ecran.x <= libre.x1 - marge && ecran.y >= libre.y0 + marge && ecran.y <= libre.y1 - marge;
+          }),
+        );
+        if (dedans) return;
+        const w = Math.max(1, el.clientWidth);
+        const h = Math.max(1, el.clientHeight);
+        cadrage.recadrer(point, { x: (libre.x0 + libre.x1) / w - 1, y: 1 - (libre.y0 + libre.y1) / h });
+      },
       camera,
       cadrage,
       bornes,
@@ -253,7 +298,15 @@ export default function WorldCanvas({
     if (ici?.route.length) personnages.marcher({ route: [ici.route[ici.route.length - 1]], seq: 0 });
     // Les captures (scripts/prise-de-vue.mjs) posent la caméra à son cadrage sans attendre son pas : lisible par les
     // scripts, comme le compteur de mesures.
-    const pourLesCaptures = { poser: () => cadrage.poser() };
+    // `ecran` : où un point du monde (en cases) se pose dans la page, pour viser une construction à la molette.
+    const pourLesCaptures = {
+      poser: () => cadrage.poser(),
+      ecran: (p: { x: number; y: number; z: number }) => {
+        const e = cadrage.auBut(new THREE.Vector3(p.x, p.z, p.y), el.clientWidth, el.clientHeight);
+        const r = el.getBoundingClientRect();
+        return e ? { x: e.x + r.left, y: e.y + r.top } : null;
+      },
+    };
     if (import.meta.env.DEV || mesuresDemandees()) window.__dysappsCamera = pourLesCaptures;
     /** La vue déplacée, telle que la page la connaît : on ne la prévient que quand cela change. */
     let deplacee = false;
@@ -270,7 +323,7 @@ export default function WorldCanvas({
     /** Ce qui bouge dans le monde, avant la caméra : le bonhomme, puis le navire (qui le fait embarquer et débarquer). */
     const deplacements: PartieDeLaScene[] = [personnages, navire];
     /** Le reste de l'image, dans cet ordre : la caméra suit ce qui a bougé ; les étiquettes se placent pour elle, en dernier. */
-    const parties: PartieDeLaScene[] = [personnages, cadrage, bornes, affordance, brume, lumiere, large, navire, cubesDuMonde, rond, signesDesCreatures, etiquettes];
+    const parties: PartieDeLaScene[] = [personnages, cadrage, bornes, affordance, brume, lumiere, large, navire, cubesDuMonde, rond, amenagement, signesDesCreatures, etiquettes];
 
     /** Un objet touché répond : la pile d'étoiles d'une borne réussie saute, sinon sa bulle rebondit, s'il en a une. */
     const sauterLeSigne = (objet: ObjetTouche) => {
@@ -300,7 +353,7 @@ export default function WorldCanvas({
       const vue = el.getBoundingClientRect();
       const ecran = cadrage.auBut(point, vue.width, vue.height);
       const f = feuille.getBoundingClientRect();
-      // Hors de la vue (« Voir le premier ouvrage », « Y aller »), il est aussi caché.
+      // Hors de la vue (« Relier », « Y aller »), il est aussi caché.
       const horsDeLaVue = !ecran || ecran.x < 0 || ecran.y < 0 || ecran.x > vue.width || ecran.y > vue.height;
       if (!horsDeLaVue && !sousLaFiche(ecran, { x0: f.left - vue.left, y0: f.top - vue.top, x1: f.right - vue.left, y1: f.bottom - vue.top })) return;
       const { libre } = lirePlaceLibre(el);
@@ -393,6 +446,8 @@ export default function WorldCanvas({
       for (const p of parties) p.dispose();
       meter?.dispose();
       if (window.__dysappsCamera === pourLesCaptures) delete window.__dysappsCamera;
+      // Le contexte WebGL est rendu tout de suite (une scène refaite à chaque pose en ouvrirait sinon plusieurs à la fois).
+      renderer.forceContextLoss();
       renderer.dispose();
       renderer.domElement.remove();
       world.current = null;
@@ -404,6 +459,34 @@ export default function WorldCanvas({
     // caméra sont mis à jour à part. Le changement d'archipel se fait derrière l'écran du voyage.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reduceMotion, archipelago]);
+
+  // ---- Le mode « Aménager » (GD-9) : l'ajout aux matériaux des blocs, seulement le temps que le mode est ouvert
+  useEffect(() => {
+    world.current?.amenagement.ouvrir(dansLeMode);
+    // Reposé aussi quand la scène est refaite (un lieu posé, la préférence de mouvement).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dansLeMode, reduceMotion, archipelago]);
+  // ---- Le dessin du choix, et la vue qui suit le fantôme s'il sort de l'écran
+  const vueDuMode = amenager?.vue ?? null;
+  useEffect(() => {
+    const w = world.current;
+    if (!w) return;
+    w.amenagement.poser(vueDuMode);
+    if (vueDuMode) w.garderEnVue(vueDuMode.cadre ?? { rect: { x0: vueDuMode.suivre.x, y0: vueDuMode.suivre.y, x1: vueDuMode.suivre.x + 1, y1: vueDuMode.suivre.y + 1 }, z: vueDuMode.suivre.z });
+    // Reposé aussi quand la scène est refaite (un lieu posé, la préférence de mouvement).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vueDuMode, reduceMotion, archipelago]);
+  // ---- Après une réunion : la paire et sa construction entières à l'écran (la scène est refaite, la vue les cadre)
+  const cadreDuMode = amenager?.cadre ?? null;
+  useEffect(() => {
+    if (cadreDuMode) world.current?.garderEnVue(cadreDuMode);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cadreDuMode?.seq, reduceMotion, archipelago]);
+  // ---- Le geste de la pose : il continue dans la scène refaite (le lieu à sa nouvelle place)
+  useEffect(() => {
+    world.current?.amenagement.geste(gesteDuMode);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gesteDuMode?.seq, gesteDuMode?.phase, reduceMotion, archipelago]);
 
   // ---- « Recentrer » : la vue efface son décalage, la caméra revient en douceur à son cadrage
   useEffect(() => {
@@ -507,7 +590,7 @@ export default function WorldCanvas({
   }, [cleDeLImageDeLaCarte, reduceMotion, archipelago]);
 
   // ---- Le nom des îles ouvertes (une texture par étiquette, refaite quand la liste change) ; sur la Carte, leur état
-  const labelsKey = (islandLabels ?? []).map((l) => `${l.id}:${l.text}:${l.state?.id ?? ''}:${l.bloc ?? ''}`).join('|');
+  const labelsKey = (islandLabels ?? []).map((l) => `${l.id}:${l.text}:${l.state?.id ?? ''}:${l.state?.name ?? ''}:${l.bloc ?? ''}`).join('|');
   useEffect(() => {
     const etiquettes = world.current?.etiquettes;
     if (!etiquettes) return;

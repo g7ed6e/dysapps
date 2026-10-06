@@ -10,6 +10,65 @@ import type { Cell, CreaturePlacement } from './paths';
 import type { Ancrage, Intention, ObjetDeLaFiche } from './layout';
 import type { EtatsDesObjets } from './model';
 import { grilleDe } from './grid';
+import type { Rectangle } from './placement';
+
+/** Ce qu'est une case du dessin du mode « Aménager » (GD-9 ; calculé par ./arrangeView.ts). */
+export type ArrangeCellKind = 'fantome' | 'place' | 'liaison' | 'barree' | 'croix';
+
+/**
+ * Une case du dessin du mode, en cases du monde : un carré plat posé sur le dessus de la case (z + 1), bordé d'un
+ * contour sombre (la couleur n'est jamais seule), de `l` cases de côté (1 par défaut).
+ */
+export interface ArrangeCell {
+  x: number;
+  y: number;
+  z: number;
+  genre: ArrangeCellKind;
+  /** Le côté du carré, en cases (une place libre d'un lieu : 3 ; d'un îlot de Gardien : 2). */
+  l?: number;
+}
+
+/** Le dessin du mode pendant un choix (./arrangeView.ts). */
+export interface ArrangeView {
+  cases: ArrangeCell[];
+  /** L'emprise du choix à sa place d'avant (le lieu, ou l'îlot du Gardien), soulevée tant qu'il est choisi ; ou rien. */
+  souleve: Rectangle | null;
+  /** Le milieu du fantôme : la vue le suit s'il sort de l'écran. */
+  suivre: { x: number; y: number; z: number };
+  /** Les liaisons qui ne tiendraient plus après la pose (leur nombre se dit dans la barre). */
+  barrees: string[];
+  /** Le nom du lieu choisi, écrit sur son fantôme (le nom de l'univers, donné par la page). */
+  nom?: string;
+  /** Ce que la vue garde entier à l'écran : le fantôme (les deux lieux réunis et leur réunion), à hauteur de l'eau. */
+  cadre?: CadreDuMode;
+}
+
+/** Un rectangle du monde (en cases, x et y) à garder entier à l'écran, à une hauteur ; `seq` change à chaque demande. */
+export interface CadreDuMode {
+  rect: Rectangle;
+  z: number;
+  seq: number;
+}
+
+/**
+ * Le geste de la pose en cours (./arrangeGesture.ts) : la zone du monde où il se joue (en cases du monde, x et y), le
+ * temps (`demonte` à la place d'avant, `remonte` à la nouvelle), son début (horloge de la page, `performance.now`), sa
+ * durée, et les hauteurs du lieu (`bas` sous l'eau, `haut` au-dessus de son plus haut cube).
+ */
+export interface ArrangeGesture {
+  seq: number;
+  phase: 'demonte' | 'remonte';
+  zone: Rectangle;
+  /**
+   * L'autre place du geste (la nouvelle pendant le démontage, l'ancienne pendant le remontage) : le voile de brume
+   * d'Archipéo glisse de l'une à l'autre.
+   */
+  autre?: Rectangle;
+  debut: number;
+  dureeMs: number;
+  bas: number;
+  haut: number;
+}
 
 // Une case du monde et la place d'une créature : définies avec la grille de marche (./paths.ts), qui les lit.
 export type { Cell, CreaturePlacement } from './paths';
@@ -118,8 +177,12 @@ export interface Burst {
 export interface IslandLabel {
   id: BiomeId;
   text: string;
-  /** Sur la Carte : l'état de l'île (Fermée, À explorer, En chantier, Restaurée ou Bâtie selon l'univers : textes.etatsDIle), dessiné en icône et en mot sous le nom. */
-  state?: { id: IslandStateId; name: string };
+  /**
+   * Sur la Carte : l'état de l'île (Fermée, À explorer, En chantier, Restaurée ou Bâtie selon l'univers :
+   * textes.etatsDIle), dessiné en icône et en mot sous le nom ; « choisi » dans le mode « Aménager » (GD-9), avec
+   * l'icône d'Aménager.
+   */
+  state?: { id: IslandStateId | 'choisi'; name: string };
   /** Le bloc que l'île rapporte (sa ressource), dessiné avant le nom, comme dans Mes blocs. */
   bloc?: BlockId;
 }
@@ -178,6 +241,12 @@ export interface WorldViewProps {
   /** Les ouvrages construits : la vue d'ensemble cadre les îles ouvertes et leurs voisines. */
   bridges?: string[];
   /**
+   * Une liaison montrée en fantôme depuis un autre départ (GD-9, « Partir d'une autre île ») : la caméra tient son
+   * départ et son arrivée dans la place libre au-dessus de la fiche (`cadreDeLaLiaison`), comme une longue traversée ;
+   * d'un coup quand l'appareil demande moins d'animations. La vue simple l'ignore.
+   */
+  liaisonCadree?: string | null;
+  /**
    * Une flèche jaune qui flotte au-dessus d'une île (« Commence ici »), d'un point (le chantier du navire) ou, sur la
    * Carte, d'un ouvrage (la prochaine destination est un ouvrage à construire, GD-7) : posée sur sa liaison, côté île de
    * départ (`placesDeLaFleche`), avec l'icône d'un ouvrage.
@@ -230,6 +299,15 @@ export interface WorldViewProps {
    * revenue à son cadrage (`false`), pour le bouton « Recentrer ». Sans ce rappel, la vue ne glisse pas.
    */
   onVueDeplacee?: (deplacee: boolean) => void;
+  /**
+   * Le mode « Aménager » (GD-9), sur la Carte : `vue`, le dessin du choix en cours (fantôme, places autour, liaisons
+   * retracées et barrées, lieu soulevé ; ./arrangeView.ts), ou rien. Dans le mode, toucher la mer donne une intention
+   * `mer` ; avec un choix, glisser le doigt cale le fantôme sous lui (un raccourci) au lieu de faire glisser la vue ; et
+   * si le fantôme sort de l'écran, la vue le suit. La vue simple l'ignore.
+   */
+  amenager?: { vue: ArrangeView | null; cadre?: CadreDuMode | null } | null;
+  /** Le geste de la pose en cours dans le mode « Aménager » (./arrangeGesture.ts), ou rien. */
+  geste?: ArrangeGesture | null;
   /** Change à chaque appui sur « Recentrer » : la vue efface son décalage et revient en douceur à son cadrage. */
   recentrage?: number;
   /**
@@ -268,7 +346,9 @@ export interface EnCasesDuMonde {
 export interface RappelsDeLaVue {
   /** Une île : touchée sur le sol en `sol` (le bonhomme en route en `enRoute`), ou choisie au clavier. En cases du monde. */
   onPickIsland?: (id: BiomeId, sol?: Cell, enRoute?: Cell) => void;
-  onPickBridge?: (id: string) => void;
+  onPickBridge?: (id: string, point?: { x: number; y: number }) => void;
+  /** Le mode « Aménager » : la mer touchée (ou le doigt qui glisse, avec un choix), en cases du monde. */
+  onPickSea?: (point: { x: number; y: number }) => void;
   onPickQuest?: (biome: BiomeId, typeId: string) => void;
   onPickPlace?: (place: PlaceId, island: BiomeId) => void;
   onPickCreature?: (id: BiomeId, kind: 'creature' | 'guardian') => void;
@@ -298,7 +378,8 @@ export function rappelsDeLaVue(onIntent: ((i: Intention) => void) | undefined, a
       const g = grilleDe(archipel);
       onIntent({ genre: 'ile', id, sol: g.versIle(sol, id), ...(enRoute ? { enRoute: g.versIle(enRoute) } : {}) });
     },
-    onPickBridge: (id) => onIntent({ genre: 'ouvrage', id }),
+    onPickBridge: (id, point) => onIntent({ genre: 'ouvrage', id, ...(point ? { point } : {}) }),
+    onPickSea: (point) => onIntent({ genre: 'mer', point }),
     onPickQuest: (ile, mission) => onIntent({ genre: 'borne', ile, mission }),
     onPickPlace: (id, ile) => onIntent({ genre: 'lieu', id, ile }),
     onPickCreature: (id, kind) => onIntent({ genre: 'creature', id, gardien: kind === 'guardian' }),

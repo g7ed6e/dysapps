@@ -46,6 +46,8 @@ export async function generatePages() {
         load('/src/curriculum/exclusions.ts'),
         load('/src/curriculum/functionWords.ts'),
       ]);
+    // La géométrie des liaisons (GD-9) : sans elle, les règles n'ont ni nature ni longueur (`provideLinkGeometry`).
+    await load('/src/game/world/linkGeometry.ts');
     const vehicleMod = await load('/src/game/world/vehicle.ts');
     const monumentsMod = await load('/src/game/world/monuments.ts');
     const recettesMod = await load('/src/game/world/recipes.ts');
@@ -73,6 +75,8 @@ export async function generatePages() {
       SEUIL_DE_LA_PREMIERE_COMMANDE: commandesMod.SEUIL_DE_LA_PREMIERE_COMMANDE,
       BRIDGES: archMod.BRIDGES,
       KIND_NAME: archMod.KIND_NAME,
+      // La nature d'un ouvrage suit son tracé sur la carte de départ, sans liaison posée (GD-9, `linkKind`).
+      kindOf: (b) => archMod.linkKind(b, []),
       CONDITION_OF: archMod.CONDITION_OF,
       START_ISLANDS: archMod.START_ISLANDS,
       ARCHIPELAGOS: archMod.ARCHIPELAGOS,
@@ -588,10 +592,10 @@ function islandPage(b, d) {
     table(
       ['Ouvrage', 'Relie', 'Coût', 'Condition'],
       bridges.map((br) => [
-        KIND_NAME[br.kind],
+        KIND_NAME[d.kindOf(br)],
         `${name(br.from)} ↔ ${name(br.to)}`,
         br.cost === 0 ? 'déjà construit' : plural(br.cost, 'bloc'),
-        CONDITION_TEXT[CONDITION_OF[br.kind]],
+        CONDITION_TEXT[CONDITION_OF[d.kindOf(br)]],
       ]),
     ),
     '',
@@ -889,7 +893,11 @@ function ouvragesPage(d) {
     '',
     table(
       ['Nature', 'Condition en plus des blocs', 'Nombre'],
-      Object.keys(KIND_NAME).map((k) => [KIND_NAME[k], CONDITION_TEXT[CONDITION_OF[k]], String(BRIDGES.filter((b) => b.kind === k).length)]),
+      // Seulement les natures qu'un ouvrage prend aujourd'hui (GD-9 : plus d'escalier taillé, de tunnel ni de col).
+      Object.keys(KIND_NAME)
+        .map((k) => [k, BRIDGES.filter((b) => d.kindOf(b) === k).length])
+        .filter(([, n]) => n > 0)
+        .map(([k, n]) => [KIND_NAME[k], CONDITION_TEXT[CONDITION_OF[k]], String(n)]),
     ),
     '',
     '## Tous les ouvrages',
@@ -901,7 +909,7 @@ function ouvragesPage(d) {
         '',
         table(
           ['De', 'Vers', 'Nature', 'Coût', 'Condition'],
-          own.map((b) => [name(b.from), name(b.to), KIND_NAME[b.kind], b.cost === 0 ? 'déjà construit' : plural(b.cost, 'bloc'), CONDITION_TEXT[CONDITION_OF[b.kind]]]),
+          own.map((b) => [name(b.from), name(b.to), KIND_NAME[d.kindOf(b)], b.cost === 0 ? 'déjà construit' : plural(b.cost, 'bloc'), CONDITION_TEXT[CONDITION_OF[d.kindOf(b)]]]),
         ),
         '',
       ];

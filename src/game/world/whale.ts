@@ -4,11 +4,11 @@
 // la baleine est un texte d'univers : src/universes/whale.ts.
 import type { BiomeId } from '../biomes';
 import type { GameState } from '../engine';
-import { BRIDGES, getArchipelago, islandsOf, isArchipelagoReached, reachableIslands, type ArchipelagoId } from './archipelago';
+import { ARCHIPELAGOS, BRIDGES, getArchipelago, getBridge, islandsOf, isArchipelagoReached, reachableIslands, type ArchipelagoId } from './archipelago';
 import { isPlanDone, plansFor } from './plans';
 import { beatenGuardians } from './vehicle';
 
-type WhaleMomentKind = 'arrivee' | 'gardiens' | 'port' | 'ouvrage';
+type WhaleMomentKind = 'arrivee' | 'gardiens' | 'port' | 'ouvrage' | 'carte';
 
 export interface WhaleMoment {
   /** Ce qui se note « déjà dit » ; l'arrivée garde la clé de l'ancienne bulle d'accueil (`archipel-5e`…). */
@@ -47,4 +47,26 @@ export function reachedWhaleMoments(state: Pick<GameState, 'progress' | 'world'>
     out.push({ id: `baleine-${a}-ouvrage`, kind: 'ouvrage', archipelago: a, island: opened });
   }
   return out;
+}
+
+/**
+ * La clé « déjà dit » de l'annonce du changement de forme de la carte (GD-9, décision du mainteneur, 5 octobre 2026),
+ * en anglais, parmi ce que la baleine a dit sur cet appareil (useWhaleWord).
+ */
+export const MAP_RESHAPED = 'map-reshaped';
+
+/**
+ * Une partie commencée avant le changement de forme de la carte (GD-9) : au moins une liaison payée par l'élève, ou un
+ * lieu ouvert en plus des lieux de départ. Une partie neuve n'en a pas : l'annonce ne lui est jamais faite.
+ */
+export function playedBeforeReshape(state: Pick<GameState, 'world'>): boolean {
+  const links = state.world.links;
+  if (links.some((id) => (getBridge(id)?.cost ?? 0) > 0)) return true;
+  const depart = new Set<BiomeId>(ARCHIPELAGOS[0].starts);
+  return [...reachableIslands(links)].some((id) => !depart.has(id));
+}
+
+/** L'annonce du changement de forme de la carte, dite au port de l'archipel où l'on est. */
+export function mapReshapedMoment(a: ArchipelagoId): WhaleMoment {
+  return { id: MAP_RESHAPED, kind: 'carte', archipelago: a, island: getArchipelago(a).port };
 }

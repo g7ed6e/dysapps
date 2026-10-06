@@ -120,9 +120,10 @@ export interface PlanDef {
   done: string;
   /**
    * Où le plan se pose : dans la zone des plans de l'île (par défaut), sur le quai du port (le Bloc-Navire), ou sur l'îlot
-   * d'un monument (`origin` est alors le coin du monument dans le monde).
+   * d'un monument (`origin` est alors le coin du monument dans le monde), ou entre deux lieux réunis (GD-9, ./join.ts :
+   * ses clés sont dans le repère de la paire).
    */
-  zone?: 'plans' | 'port' | 'monument';
+  zone?: 'plans' | 'port' | 'monument' | 'join';
 }
 
 /**
@@ -167,7 +168,7 @@ export const PLANS_AU_FOND: Readonly<Partial<Record<BiomeId, Readonly<{ x: numbe
  * et des monuments ont leur propre ancre (`ancreDuQuai`, `monumentAnchor`).
  */
 export function decalageDesPlans(plan: Pick<PlanDef, 'biome' | 'zone'>): Readonly<{ x: number; y: number; z: number }> {
-  if (plan.zone === 'port' || plan.zone === 'monument') return SANS_DECALAGE;
+  if (plan.zone === 'port' || plan.zone === 'monument' || plan.zone === 'join') return SANS_DECALAGE;
   return PLANS_AU_FOND[plan.biome] ?? SANS_DECALAGE;
 }
 
@@ -342,6 +343,8 @@ export function planOrigin(plan: PlanDef): { x: number; y: number; z: number } {
     if (!o) throw new Error(`Pas de quai sur ${plan.biome}`);
     return { x: o.x + plan.origin.x, y: o.y + plan.origin.y, z: o.z };
   }
+  // La construction qui réunit deux lieux (GD-9) : ses cases sont déjà dans le repère de la paire (./join.ts).
+  if (plan.zone === 'join') return { x: 0, y: 0, z: 0 };
   if (plan.zone === 'monument') {
     const o = ORIGINE_DES_MONUMENTS[plan.id];
     if (!o) throw new Error(`Monument sans origine : ${plan.id}`);
@@ -352,5 +355,10 @@ export function planOrigin(plan: PlanDef): { x: number; y: number; z: number } {
 
 /** Un plan est terminé quand toutes ses cellules sont posées. */
 export function isPlanDone(plan: PlanDef, done: Record<string, string[]>): boolean {
-  return (done[plan.id]?.length ?? 0) >= plan.cells.length;
+  const posees = done[plan.id];
+  if (!posees || posees.length < plan.cells.length) return false;
+  // Terminé quand toutes les cases DU plan sont posées (une réunion garde des clés dans le repère de sa paire, qu'une
+  // autre forme ne contient pas : on compte les cases, pas la longueur de la liste).
+  const cles = new Set(posees);
+  return planCells(plan).every((c) => cles.has(c.key));
 }

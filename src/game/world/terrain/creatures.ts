@@ -8,13 +8,15 @@ import { lv2Courante } from '../../../core/settings';
 import { type ArchipelagoId, bornesDuCoeur, islandDef, landscape, margesDuCoeur, noise, tirage } from '../map';
 import { DECOR, decorate } from '../decor';
 import { zoneDesPlans } from '../plans';
-import { BRIDGES, isBiomeUnlocked, islandsOf } from '../archipelago';
+import { isBiomeUnlocked, islandsOf } from '../archipelago';
 import type { VoxelCube } from '../cube';
+import { turnDirection, turnPlacedModel } from '../placement';
 import { cacheUnLieu, lieuxVus, placeCells, portesDesLieux } from './village';
-import { versLaCamera } from './view';
+import { versLaCameraDuDessin } from './view';
 import { AVATAR_HOME, groundHeight, islandOrigin, LAYOUT_PAD } from './base';
 import { questStations } from './markers';
-import { bridgePath } from './links';
+import { amorcesDuDessin } from './links';
+import { layoutCache } from '../placement';
 
 /** Les pas d'une créature qui se promène : une case à gauche ou en arrière (jamais vers les plans). */
 export const CREATURE_STEPS: [number, number][] = [
@@ -67,7 +69,7 @@ export const creatureDuMonde = (id: BiomeId): CubeDeModele[] => tourne('creature
 export const gardienDuMonde = (id: BiomeId): CubeDeModele[] => tourne('gardien', id, GUARDIAN_CUBES[id]);
 
 // Par île et par LV2 : la place de la créature évite les bornes, dont le nombre suit la LV2 sur l'île de la LV2.
-const creatureSpots = new Map<string, CreatureSpot>();
+const creatureSpots = layoutCache<string, CreatureSpot>();
 
 export interface CreatureSpot {
   x: number;
@@ -91,7 +93,7 @@ export function creatureSpot(id: BiomeId): CreatureSpot {
   const free = solLibre(id);
   const cubes = creatureDuMonde(id);
   const lieux = lieuxVus(id);
-  const vers = versLaCamera(id);
+  const vers = versLaCameraDuDessin(id);
   const coeur = bornesDuCoeur(islandDef(id));
   // La créature se tient sur le sol de l'île (z = 1 au-dessus, comme les lieux, sur un sol plat : voir `solLibre`).
   const libre = (x: number, y: number, [sx, sy]: [number, number]) => cubes.every((c) => free(x + sx + c.x, y + sy + c.y));
@@ -117,7 +119,7 @@ export function creatureSpot(id: BiomeId): CreatureSpot {
 }
 
 // Par île et par LV2 : le sol libre où la créature et la petite construction de sa commande peuvent se poser.
-const solsLibres = new Map<string, (x: number, y: number) => boolean>();
+const solsLibres = layoutCache<string, (x: number, y: number) => boolean>();
 
 /**
  * Les cases du sol d'une île (relatives au cœur) où rien n'est posé : ni le décor, ni les bornes et leur pourtour, ni la
@@ -143,8 +145,7 @@ export function solLibre(id: BiomeId): (x: number, y: number) => boolean {
   // … ni sur la case devant la porte d'un lieu, où le bonhomme s'arrête.
   for (const k of portesDesLieux(id)) blocked.add(k);
   // Ni sur un ouvrage qui part de l'île, ni à côté (sa rampe, son pied sur la côte).
-  for (const b of BRIDGES.filter((d) => d.from === id || d.to === id))
-    for (const c of bridgePath(b)) for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) blocked.add(`${c.x + dx - def.core.x},${c.y + dy - def.core.y}`);
+  for (const { cases } of amorcesDuDessin(id)) for (const c of cases) for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) blocked.add(`${c.x + dx},${c.y + dy}`);
   // Le décor des marges du cœur (un cœur agrandi) : la créature ne s'y pose pas.
   for (const m of margesDuCoeur(def)) if (m.decor) blocked.add(`${m.x - def.core.x},${m.y - def.core.y}`);
   const coeur = bornesDuCoeur(def);
@@ -177,6 +178,13 @@ export function creaturePlacements(
     .map((b) => {
       const { ox, oy, oz } = islandOrigin(BIOMES.indexOf(b));
       const spot = creatureSpot(b.id);
-      return { id: b.id, cubes: creatureDuMonde(b.id), origin: { x: ox + spot.x, y: oy + spot.y, z: oz + 1 }, steps: spot.steps };
+      // Sur le lieu tourné (GD-9), la créature et ses pas tournent avec lui.
+      const def = islandDef(b.id);
+      const pose = turnPlacedModel(def.core, { x: ox + spot.x, y: oy + spot.y, z: oz + 1 }, creatureDuMonde(b.id), def.quarts);
+      const steps = spot.steps.map(([dx, dy]): [number, number] => {
+        const t = turnDirection(dx, dy, def.quarts);
+        return [t.dx, t.dy];
+      });
+      return { id: b.id, cubes: pose.cubes as VoxelCube[], origin: pose.origine, steps };
     });
 }

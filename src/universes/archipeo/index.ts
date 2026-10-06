@@ -3,6 +3,7 @@
 // épreuve ratée commence par « Rien ne s'éteint. », et la réplique finale dit que la sentinelle « se rallume » (« brille
 // à nouveau » est gardé pour le village et la baleine). Proposés par le consultant d'Archipéo, validés par le directeur
 // artistique le 28 septembre 2026 ; lus seulement une fois l'univers ouvert (voir src/universes/index.ts).
+import { agreeWithPlace, thePlace } from '../../game/world/placeArticle';
 import { BLOCLAND } from '../blocland';
 import { ETATS_D_ILE, REPLIQUES } from '../common';
 import type { TextesUnivers } from '../types';
@@ -315,7 +316,7 @@ export const ARCHIPEO = {
     defiPretCourt: 'Défi prêt',
     arene: (gardien) => `Le défi ${du(gardien)}`,
     decouverteOuvrages:
-      'Les îles pâles sont fermées. Pour y aller, construis un ouvrage. Chaque ouvrage se paie en blocs. Un escalier demande aussi une mission réussie.',
+      'Les îles pâles sont fermées. Pour y aller, pose un ouvrage. Il part de l’île de ton choix. Chaque ouvrage coûte le même nombre de blocs.',
     navireGardiensManquants: (n, archipel) => `rallume encore ${n} Gardien${s(n)} des ${archipel}`,
     decouverteNavire: BLOCLAND.libelles.decouverteNavire,
   },
@@ -339,8 +340,9 @@ export const ARCHIPEO = {
       '3e': 'Le Bloc-Navire a fait sa traversée. Te voilà dans les Îles du Ciel : ici, les îles flottent dans les nuages.',
     },
     gardiens: (archipel) => `Tous les Gardiens des ${archipel} brillent à nouveau. J’ai vu leur lumière depuis le large.`,
-    port: (ile) => `${ile} est bâtie. Tu avances bien : chaque île bâtie rend l’archipel plus beau.`,
-    ouvrage: (ile) => `Un chemin s’ouvre vers ${ile}. L’archipel s’agrandit.`,
+    // Le nom avec son article, « bâti » accordé (« La Plaine des nombres est bâtie. », « Le Marché des proportions est bâti. »).
+    port: (ile) => `${thePlace(ile).charAt(0).toUpperCase()}${thePlace(ile).slice(1)} est ${agreeWithPlace(ile, 'bâti')}. Tu avances bien : chaque île bâtie rend l’archipel plus beau.`,
+    ouvrage: (ile) => `Un chemin s’ouvre vers ${thePlace(ile)}. L’archipel s’agrandit.`,
   },
   // Le phare du large est dessiné pour Archipéo (revue d'ensemble, DA-4) : une tour ronde de pierre à feu ouvert.
   monuments: {
@@ -362,6 +364,13 @@ export const ARCHIPEO = {
   },
   // Les blocs assemblés et leur lieu (GD-2) : écrits dans docs/contenu/assemblage.md.
   blocs: nomsAssembles('archipeo'),
+  // Une liaison s'appelle « ouvrage » à l'écran, partout (GD-9 : le mode « Aménager » et le menu aussi).
+  liaisons: { nom: 'ouvrage', pluriel: 'ouvrages', feminin: false },
+  reunion: {
+    nom: 'La jetée',
+    description: 'Une jetée de pierre, simple, d’une île à l’autre : on passe à pied.',
+    fini: 'La jetée est posée ! On passe à pied d’une île à l’autre.',
+  },
   assemblage: lieuDAssemblage('archipeo'),
   // Les noms d'avant GD-1, ceux des données (world/archipelago.ts).
   archipels: { '6e': 'Premiers Rivages', '5e': 'Îles Brumeuses', '4e': 'Anciens Ateliers', '3e': 'Îles du Ciel' },

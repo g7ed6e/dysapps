@@ -6,6 +6,7 @@ import { LAYOUT_PAD, origineDe, placeSpot, VILLAGE_PLACES } from '../terrain';
 import { type ArchipelagoId, islandDef, mapOf } from '../map';
 import { decalageDesPlans, planCells, plansFor } from '../plans';
 import { type CaseDuLieu, estUnLieuDuVillage } from '../architecture';
+import { layoutCache } from '../placement';
 
 /**
  * Les tours du décor du cœur que le rendu Archipéo ne dessine pas (décision du directeur artistique, lot R5) : un seul
@@ -36,7 +37,7 @@ export function sansToursDuCoeur(cubes: VoxelCube[]): VoxelCube[] {
 /** Les étapes d'un bâtiment qui prennent le kit d'architecture : les murs et le toit (world/architect.ts, `Stages`). */
 export const ETAPES_DU_BATIMENT = 2;
 
-const batiments = new Map<ArchipelagoId, ReadonlyMap<string, string>>();
+const batiments = layoutCache<ArchipelagoId, ReadonlyMap<string, string>>();
 
 /**
  * Les bâtiments des îles d'un archipel (lot 7b), entiers, posés ou non : les cases des murs et du toit de chaque île
@@ -61,7 +62,7 @@ export function batimentsDe(a: ArchipelagoId): ReadonlyMap<string, string> {
 }
 
 /** Le coin de chaque lieu du village posé (clé `<lieu>|<île>`) : x, y, et z du rang posé sur le sol (`null` ailleurs). */
-const coinsDesLieux = new Map<string, { x: number; y: number; z: number } | null>();
+const coinsDesLieux = layoutCache<string, { x: number; y: number; z: number } | null>();
 
 /**
  * La case d'un bloc d'un lieu du village dans le modèle de son lieu (world/terrain.ts : `schoolModel`, `trophyModel` et

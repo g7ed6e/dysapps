@@ -46,14 +46,17 @@ export type FillResult =
 
 /** Pose le bloc attendu à une cellule du plan (le type est imposé par le plan). Termine le plan si c'était la dernière. */
 export function fillPlanCell(state: GameState, plan: PlanDef, x: number, y: number, z: number, today = todayISO()): FillResult {
-  const cell = planCells(plan).find((c) => c.x === x && c.y === y && c.z === z);
+  const cells = planCells(plan);
+  const cell = cells.find((c) => c.x === x && c.y === y && c.z === z);
   if (!cell) return { state, ok: false, reason: 'pas-dans-le-plan' };
   const done = state.world.parts[plan.id] ?? [];
   if (done.includes(cell.key)) return { state, ok: false, reason: 'deja-pose', block: cell.block };
   if ((state.stock[cell.block] ?? 0) <= 0) return { state, ok: false, reason: 'plus-de-blocs', block: cell.block };
   const inventory = { ...state.stock, [cell.block]: (state.stock[cell.block] ?? 0) - 1 };
   const nextDone = [...done, cell.key];
-  const completed = nextDone.length === plan.cells.length;
+  // Terminé quand toutes les cases de CE plan sont posées (une réunion peut garder des clés d'une autre forme).
+  const posees = new Set(nextDone);
+  const completed = cells.every((c) => posees.has(c.key));
   if (completed) for (const [b, n] of Object.entries(plan.reward.chest)) inventory[b as BlockId] = (inventory[b as BlockId] ?? 0) + (n ?? 0);
   return {
     ok: true,

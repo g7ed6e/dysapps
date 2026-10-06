@@ -126,7 +126,7 @@ describe('Au pied des ouvrages', () => {
         const home = avatarHome(ile.id);
         const bouts = bridgesOf(ile.id)
           .filter((b) => village.links.includes(b.id))
-          .map((b) => tablier(b, ile.id))
+          .map((b) => tablier(b, ile.id, village.links))
           .filter((deck) => deck.length)
           .map((deck) => deck[0]);
         for (const bout of bouts) {

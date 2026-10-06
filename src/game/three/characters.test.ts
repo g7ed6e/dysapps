@@ -17,7 +17,7 @@ const monde = (): Monde => ({
   surface: null,
   etendue: { minX: 0, maxX: 10, minY: 0, maxY: 10 },
   centre: { x: 5, y: 5 },
-  largeur: 10,
+  largeur: 10, liaisons: () => [],
 });
 const instant = (): Instant => ({
   now: 0,

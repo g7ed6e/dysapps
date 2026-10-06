@@ -7,12 +7,11 @@
 // précédente. Ni le cœur, ni la première rangée de l'anneau, ni les abords d'un ouvrage ne bougent : la marche, les
 // bornes, les plans et le chemin restent où ils sont, et un gradin ne cache jamais une case où l'on marche.
 import type { BiomeId } from '../../biomes';
-import { BRIDGES } from '../archipelago';
-import { archipelagoOfIsland } from '../archipelagos';
 import { bornesDuCoeur, islandDef, landCells } from '../map';
 import { smooth } from '../../../core/math';
 import { cellHash } from '../../../core/random';
-import { bridgePath, origineDe } from '../terrain';
+import { origineDe } from '../terrain';
+import { amorcesDOrigine } from '../terrain/links';
 import type { Modele } from './types';
 
 /**
@@ -69,7 +68,7 @@ function crete(id: BiomeId, sommets: Sommet[]): Modele {
   const bordDuCoeur = bornesDuCoeur(islandDef(id)).y1;
   // Les abords des ouvrages de l'île, et des liaisons du port qui la longent (GD-7) : leurs cases, en repère d'île.
   const abords: { x: number; y: number }[] = [];
-  for (const b of BRIDGES) if ((b.from === id || b.to === id || b.etoile) && archipelagoOfIsland(b.from) === '5e') for (const c of bridgePath(b)) abords.push({ x: c.x - o.x, y: c.y - o.y });
+  abords.push(...amorcesDOrigine(id, true));
   const pres = (x: number, y: number) => abords.some((c) => Math.abs(c.x - x) <= ABORDS && Math.abs(c.y - y) <= ABORDS);
   const casse = sommets.some((s) => s.pans);
   // Les paliers de chaque sommet, calculés une fois.

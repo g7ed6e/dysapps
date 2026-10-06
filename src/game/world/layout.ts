@@ -90,7 +90,10 @@ export type Intention =
   | { genre: 'borne'; ile: BiomeId; mission: string }
   /** Un lieu du village (l'école, la salle des trophées) ou un monument (« monument:<id> »). */
   | { genre: 'lieu'; id: string; ile: BiomeId }
-  | { genre: 'ouvrage'; id: string }
+  /** Un ouvrage ; dans le mode « Aménager », touché en `point` (en cases du monde) : le bout le plus proche se choisit. */
+  | { genre: 'ouvrage'; id: string; point?: { x: number; y: number } }
+  /** Dans le mode « Aménager » (GD-9), la mer touchée en `point`, en cases du monde : le fantôme s'y cale. */
+  | { genre: 'mer'; point: { x: number; y: number } }
   | { genre: 'creature'; id: BiomeId; gardien: boolean }
   | { genre: 'navire'; port: BiomeId }
   /**

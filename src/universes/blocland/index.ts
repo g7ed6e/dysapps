@@ -316,7 +316,7 @@ export const BLOCLAND = {
     defiPretCourt: 'Défi prêt',
     arene: (gardien) => `Rallumer ${gardien}`,
     decouverteOuvrages:
-      'Les îles pâles sont fermées. Pour y venir, construis un ouvrage. Chaque ouvrage se paie en blocs. Un escalier demande aussi une mission réussie.',
+      'Les îles pâles sont fermées. Pour y venir, pose un ouvrage. Il part de l’île de ton choix. Chaque ouvrage coûte le même nombre de blocs.',
     navireGardiensManquants: (n, archipel) => `rallume encore ${n} Gardien${s(n)} des ${archipel}`,
     decouverteNavire: 'Ici, au port, le Bloc-Navire attend ses blocs. Quand il est prêt, embarque : un autre archipel t’attend, et tu peux toujours revenir.',
   },
@@ -350,6 +350,13 @@ export const BLOCLAND = {
     tuYEs: 'Tu y es : joue une mission ici.',
   },
   blocs: nomsAssembles('blocland'),
+  // Une liaison s'appelle « ouvrage » à l'écran, partout (GD-9 : le mode « Aménager » et le menu aussi).
+  liaisons: { nom: 'ouvrage', pluriel: 'ouvrages', feminin: false },
+  reunion: {
+    nom: 'La digue',
+    description: 'Une digue de cubes d’herbe sur la pierre, d’un lieu à l’autre : on passe à pied.',
+    fini: 'La digue tient bon ! On passe à pied d’un lieu à l’autre.',
+  },
   assemblage: lieuDAssemblage('blocland'),
   // La créature de l'île-école de l'archipel parle : Mousso en 6e, Bazar en 5e, Ixe en 4e, Fi en 3e (GD-1, point 1).
   baleine: {

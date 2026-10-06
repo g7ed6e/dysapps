@@ -17,9 +17,9 @@ import { getArchipelago, islandsOf } from '../world/archipelago';
 import { ARCHIPELAGO_IDS, type ArchipelagoId } from '../world/archipelagos';
 import { placerAvecLaFlecheDOuvrage, placerEtiquettes, separateMark, type LabelBox } from '../world/labelLayout';
 import { avatarHome, islandCenter } from '../world/terrain';
-import { BRIDGES } from '../world/archipelago';
+import { BRIDGES, linkWholeRegion, VOYAGES } from '../world/archipelago';
 import { archipelagoOfIsland } from '../world/archipelagos';
-import { grilleDe } from '../world/grid';
+import { dispositionEnGrille } from '../world/grid';
 import { placeLibre } from '../freeSpace';
 import { cadrageDeLaCarte } from './camera';
 import { largeurEnGras, type PoliceDeTest } from './testFonts';
@@ -49,11 +49,14 @@ function etiquette(nom: string, etat: string, largeur: (t: string) => number, el
  * le bonhomme sur la première île de l'archipel. Rend les îles dont le nom se tait alors que l'île se voit (`tus`), et
  * de combien chaque nom se pose au-dessus de son île, en pixels (`dessus`).
  */
+// Les liaisons posées d'une partie : depuis GD-9, une liaison qui ne tient pas n'a ni tracé ni flèche.
+const POSEES = [...new Set([...ARCHIPELAGO_IDS.flatMap((a) => linkWholeRegion(a, VOYAGES.map((v) => v.id))), ...VOYAGES.map((v) => v.id)])];
+
 function laCarte(a: ArchipelagoId, etat: string, police: PoliceDeTest, elargir: number, destination: BiomeId | { ouvrage: string; depuis?: BiomeId } = getArchipelago(a).port) {
   const { w: W, h: H } = TABLETTE;
   // Une île : la pointe au-dessus de son cœur ; un ouvrage (GD-7) : juste au-dessus de ses places sur la liaison, la
   // première pour le cadrage (`markers.ts`).
-  const places = typeof destination === 'string' ? [] : grilleDe(a).placesDeLaFleche(destination.ouvrage, destination.depuis).map((m) => ({ x: m.x + 0.5, y: m.y + 0.5, z: m.z + 2 }));
+  const places = typeof destination === 'string' ? [] : dispositionEnGrille(a, POSEES).placesDeLaFleche(destination.ouvrage, destination.depuis).map((m) => ({ x: m.x + 0.5, y: m.y + 0.5, z: m.z + 2 }));
   const ici = places[0] ?? null;
   const c = cadrageDeLaCarte(a, ici ?? (destination as BiomeId), W, H, placeLibre(W, H, [PANNEAU, BARRE], BOUTONS));
   const cam = new THREE.PerspectiveCamera(40, W / H, 0.5, 1e5);
@@ -132,8 +135,10 @@ describe('La Carte : chaque île a son nom (tablette 1024 × 768)', () => {
     for (const dest of islandsOf(a).map((b) => b.id)) expect(nomsTus(a, ETATS.blocland, 'atkinson-hyperlegible', 1, dest), `${a} → ${dest}`).toEqual([]);
   });
 
+  const posees = POSEES;
+
   it.each(ARCHIPELAGO_IDS)('%s : la flèche sur un ouvrage (GD-7), depuis chacune de ses îles, reste libre, aucune étiquette dessus', (a) => {
-    for (const def of BRIDGES.filter((b) => archipelagoOfIsland(b.from) === a))
+    for (const def of BRIDGES.filter((b) => archipelagoOfIsland(b.from) === a && posees.includes(b.id)))
       for (const depuis of [def.from, def.to]) {
         const carte = laCarte(a, ETATS.blocland, 'atkinson-hyperlegible', 1, { ouvrage: def.id, depuis });
         expect(carte.surLaFleche, `${def.id} depuis ${depuis}`).toEqual([]);
@@ -141,12 +146,12 @@ describe('La Carte : chaque île a son nom (tablette 1024 × 768)', () => {
   });
 
   it.each(ARCHIPELAGO_IDS)('%s : la flèche sur un ouvrage, l’île de départ (la destination) garde son nom', (a) => {
-    for (const def of BRIDGES.filter((b) => archipelagoOfIsland(b.from) === a))
+    for (const def of BRIDGES.filter((b) => archipelagoOfIsland(b.from) === a && posees.includes(b.id)))
       for (const depuis of [def.from, def.to]) expect(nomsTus(a, ETATS.blocland, 'atkinson-hyperlegible', 1, { ouvrage: def.id, depuis }), `${def.id} depuis ${depuis}`).not.toContain(depuis);
   });
 
   it.each(['5e', '4e', '3e'] as const)('%s : la flèche sur un ouvrage, chaque île qui se voit garde son nom', (a) => {
-    for (const def of BRIDGES.filter((b) => archipelagoOfIsland(b.from) === a))
+    for (const def of BRIDGES.filter((b) => archipelagoOfIsland(b.from) === a && posees.includes(b.id)))
       for (const depuis of [def.from, def.to]) {
         expect(nomsTus(a, ETATS.blocland, 'atkinson-hyperlegible', 1, { ouvrage: def.id, depuis }), `${def.id} depuis ${depuis}`).toEqual([]);
       }

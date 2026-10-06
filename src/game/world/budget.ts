@@ -8,8 +8,8 @@
 import { AVATAR_PARTS } from '../Avatar';
 import { BIOMES, type BlockId } from '../biomes';
 import { CATALOG } from '../exercises';
-import { BRIDGES, VOYAGES } from './archipelago';
-import type { ArchipelagoId } from './map';
+import { ARCHIPELAGOS, grantAccess, linkWholeRegion, VOYAGES } from './archipelago';
+import { ALTITUDE, type ArchipelagoId, DANS_LE_CIEL, mapOf } from './map';
 import { appelsDuSol, champDuSol, landMesh, poseDuDecor, trianglesDuSol } from './landMesh';
 import { modelerLeSol } from './drawnModel';
 import { buildMesh, faceCount, type MeshGroup } from './mesher';
@@ -22,6 +22,14 @@ import { trianglesDeLaBrume } from './decor/mist';
 import { coutDeLaConstruction, coutDesPiliers, maillageDeLaConstruction, piliersDe, sansToursDuCoeur } from './construction';
 import { formeDeBaleine, formeDeNuage, formeDOiseau, nuagesDe, oiseauxDe, planeurDe, trianglesDe } from './fauna';
 import { MAST_TOP, VEHICLE_STAGES } from './vehicle';
+import { bridge, type CaseDOuvrage } from './terrain/links';
+import { DEPTH } from './terrain/base';
+import { GAP_BETWEEN_PLACES, landRectangle } from './footprint';
+import { STEP } from './placement';
+import { JOIN_FILL, JOIN_MAX_STEPS } from './join';
+import { SHORT_LENGTH, LONG_LENGTH } from './routing';
+import type { BridgeKind } from './archipelago';
+import type { VoxelCube } from './cube';
 import { COMMANDES } from './requests';
 import { casesDeLaPetiteConstruction } from './fixtures';
 import { fusionDesCreatures, fusionDesGardiens, fusionDuBonhomme, trianglesDeLaFusion } from './characters/merges';
@@ -37,9 +45,11 @@ export const RENDER_BUDGET = {
 /**
  * Le plafond du monde en blocs (Blocland), tout construit : mesuré au lot R0 (77 216 triangles et 234 appels aux
  * Premiers Rivages), il l'empêche seulement de grossir ; les liaisons du port (GD-7) et les petites constructions des
- * commandes y tiennent sans le changer (`sceneCost`).
+ * commandes y tiennent (`sceneCost`). Relevé de 80 000 à 88 000 triangles pour GD-9 (mainteneur, 5 octobre 2026) : les
+ * liaisons tracées par le jeu, au pire toutes au plus long, et les réunions y tiennent (`worstCaseOfRegion`) ; aucun
+ * matériau nouveau, les appels ne bougent pas.
  */
-export const PLAFOND_DU_MONDE_EN_BLOCS = { triangles: 80_000, drawCalls: 240 } as const;
+export const PLAFOND_DU_MONDE_EN_BLOCS = { triangles: 88_000, drawCalls: 240 } as const;
 
 /** Un poste du budget d'Archipéo : une part de la scène, et le lot qui la dessine. */
 export type Poste = 'sol' | 'mer' | 'faune' | 'decor' | 'construction' | 'commandes' | 'bornes' | 'navire' | 'bonhomme' | 'creatures' | 'gardiens' | 'scene';
@@ -80,7 +90,17 @@ export const ENVELOPPES: Record<Poste, { lot: 'R4b' | 'R5' | 'R6' | 'GD-7' | 'so
   // mesurés tout construit, 7 157 au pire de la salle des trophées), celle des autres archipels de 7 260 à 7 500 (7 435
   // au pire, aux Îles Brumeuses), le sol des autres de 24 760 à 24 780 (24 774 aux Anciens Ateliers). Les sommes passent
   // à 58 500 aux Premiers Rivages et 53 320 ailleurs, toujours sous les 60 000 des tablettes.
-  sol: { lot: 'R4b', nom: 'Sol', premiersRivages: { triangles: 25_000, drawCalls: 2 }, autres: { triangles: 24_780, drawCalls: 1 } },
+  // La carte de départ calée sur la grille (GD-9, 5 octobre 2026) : chaque lieu se pose au pas de 4 depuis le coin du
+  // cadre de sa région, et les Anciens Ateliers sont redessinés en deux rangs, si bien que chaque région s'étend un peu
+  // plus. Proposition de l'artiste technique 3D, à valider par le mainteneur, mesurée tout construit
+  // (`npm run rendu:budget`) : la mer est tendue sur tout le cadre de la région (un lieu peut se poser partout), et les
+  // écueils sont semés sur une carte plus large. Aux Premiers Rivages, la mer passe de 5 000 à 6 300 (6 200 mesurés) et
+  // le décor de 12 050 à 12 100 (12 055) ; 350 sont pris au navire (408 mesurés ; 1 000 → 650), le reste sur la réserve
+  // sous les 60 000 des tablettes, et leur somme passe de 58 500 à 59 500. Ailleurs, la mer passe de 4 550 à 5 600
+  // (5 544 aux Îles du Ciel), le décor de 9 150 à 10 500 (10 417 aux Îles Brumeuses) et le sol de 24 780 à 24 850
+  // (24 818 aux Anciens Ateliers) ; aucun autre poste n'a de marge (la construction garde la sienne pour la salle des
+  // trophées : 7 435 au pire), et la somme des « autres » passe de 53 320 à 55 790.
+  sol: { lot: 'R4b', nom: 'Sol', premiersRivages: { triangles: 25_000, drawCalls: 2 }, autres: { triangles: 24_850, drawCalls: 1 } },
   // Proposition de l'artiste technique 3D pour le Relais des voyageurs (LV2, 5e), à valider par le mainteneur : une île
   // de plus aux Îles Brumeuses coûte environ 800 triangles de décor et 850 de construction. Les enveloppes « autres » en
   // passent 1 600 du navire, de la mer, des créatures et des bornes (qui ont de la marge dans les trois archipels) au
@@ -92,7 +112,7 @@ export const ENVELOPPES: Record<Poste, { lot: 'R4b' | 'R5' | 'R6' | 'GD-7' | 'so
   // pour le décor, 7 069 pour la construction, aux Îles Brumeuses) ; puis 20 du navire (420 partout) aux bornes, qui
   // n'avaient plus de marge (700 aux Îles Brumeuses) ; la somme ne change pas (52 300). Le refuge, retouché (île plus
   // profonde de deux rangs, pour un lac loin du bord), porte le sol du 3e à 22 505.
-  mer: { lot: 'R4b', nom: 'Mer', premiersRivages: { triangles: 5_000, drawCalls: 1 }, autres: { triangles: 4_550, drawCalls: 1 } },
+  mer: { lot: 'R4b', nom: 'Mer', premiersRivages: { triangles: 6_300, drawCalls: 1 }, autres: { triangles: 5_600, drawCalls: 1 } },
   // Un appel de plus pendant le passage de la baleine (son écume) : voir `APPEL_DU_PASSAGE`.
   // Proposition de l'artiste technique 3D pour les missions ajoutées en 6e (étapes de contenu C-1 à C-5), à valider par
   // le mainteneur : 36 bornes de 28 triangles portent le poste des Premiers Rivages à 1 008, au-dessus de ses 1 000.
@@ -106,7 +126,7 @@ export const ENVELOPPES: Record<Poste, { lot: 'R4b' | 'R5' | 'R6' | 'GD-7' | 'so
   // Îles Brumeuses, 186 aux Anciens Ateliers, 152 aux Îles du Ciel, aucun appel de plus. Aux Premiers Rivages, les 450
   // passent du décor (12 500 → 12 050 ; 11 746 mesurés). Ailleurs, le décor des Îles Brumeuses (9 103 mesurés) n'a que
   // 247 de marge : proposition de l'artiste technique 3D, validée par le mainteneur le 4 octobre 2026, 200 seulement (9 350 → 9 150).
-  decor: { lot: 'R4b', nom: 'Décor et repères signatures', premiersRivages: { triangles: 12_050, drawCalls: 3 }, autres: { triangles: 9_150, drawCalls: 3 } },
+  decor: { lot: 'R4b', nom: 'Décor et repères signatures', premiersRivages: { triangles: 12_100, drawCalls: 3 }, autres: { triangles: 10_500, drawCalls: 3 } },
   construction: {
     lot: 'R5',
     nom: 'Construction (bâtiments, ouvrages, monuments, quai, cœur des îles ; fantômes et fenêtres compris)',
@@ -120,7 +140,7 @@ export const ENVELOPPES: Record<Poste, { lot: 'R4b' | 'R5' | 'R6' | 'GD-7' | 'so
     autres: { triangles: 200, drawCalls: 0 },
   },
   bornes: { lot: 'R5', nom: 'Bornes (instanciées)', premiersRivages: { triangles: 1_250, drawCalls: 1 }, autres: { triangles: 715, drawCalls: 1 } },
-  navire: { lot: 'R5', nom: 'Navire', premiersRivages: { triangles: 1_000, drawCalls: 3 }, autres: { triangles: 420, drawCalls: 3 } },
+  navire: { lot: 'R5', nom: 'Navire', premiersRivages: { triangles: 650, drawCalls: 3 }, autres: { triangles: 420, drawCalls: 3 } },
   bonhomme: { lot: 'R6', nom: 'Bonhomme', premiersRivages: { triangles: 500, drawCalls: 2 }, autres: { triangles: 475, drawCalls: 2 } },
   creatures: { lot: 'R6', nom: 'Créatures', premiersRivages: { triangles: 2_500, drawCalls: 1 }, autres: { triangles: 1_950, drawCalls: 1 } },
   gardiens: { lot: 'R6', nom: 'Gardiens en sentinelles', premiersRivages: { triangles: 1_800, drawCalls: 1 }, autres: { triangles: 1_800, drawCalls: 1 } },
@@ -148,7 +168,10 @@ export function toutConstruit() {
     ...BIOMES.map((b) => [`${b.id}-challenge`, { stars: 3, attempts: 1, best: 1 }]),
   ]);
   const plans = Object.fromEntries([...PLANS, ...VEHICLE_STAGES, ...MONUMENTS].map((p) => [p.id, planCells(p).map((c) => c.key)]));
-  const bridges = [...BRIDGES, ...VOYAGES].map((b) => b.id);
+  // Chaque région toute reliée (GD-9), la liaison la plus courte vers chaque lieu ; un lieu qu'aucune liaison n'atteint
+  // (une disposition à l'étroit) s'ouvre quand même (`grantAccess`). Le pire cas des liaisons se compte à part (`worstCaseOfRegion`).
+  const relie = ARCHIPELAGOS.reduce<string[]>((links, a) => linkWholeRegion(a.classe, links), VOYAGES.map((v) => v.id));
+  const bridges = grantAccess(relie, BIOMES.map((b) => b.id));
   return { progress, world: { parts: plans, log: [], links: bridges } };
 }
 
@@ -210,6 +233,119 @@ function archipelArchipeo(a: ArchipelagoId, trophees: readonly BlockId[] = [], c
   return { ground, elements, reste, champ: champDuSol(a, ground, reste) };
 }
 
+// ---------- Le pire cas des liaisons tracées par le jeu (GD-9) ----------
+
+/**
+ * Les liaisons d'une région de `n` lieux, au plus (GD-9) : deux liaisons ne se croisent jamais et ne coupent aucun lieu,
+ * si bien que les lieux et leurs liaisons forment un graphe planaire, qui a au plus 3n − 6 arêtes (n ≥ 3).
+ */
+export function maxLinks(n: number): number {
+  return Math.max(n - 1, 3 * n - 6);
+}
+
+/**
+ * La construction qui réunit deux lieux au plus large et au plus long qu'elle puisse être dans une région (GD-9,
+ * ./join.ts), toute posée : sur la largeur du côté commun le plus large (le second plus grand côté de terre des lieux de
+ * la région), de l'écart le plus grand au plus près de la grille, plus deux creux de baie, avec ses trois marches,
+ * pleine jusqu'au pied de la terre. Chaque colonne s'arrête sur une case de terre de chaque lieu (pleine elle aussi
+ * jusqu'au pied, `terre`) : au pire, la côte est d'un cran plus basse que la construction à ses deux bouts.
+ */
+export function joinCubes(a: ArchipelagoId): { cubes: VoxelCube[]; terre: VoxelCube[] } {
+  const cotes = mapOf(a)
+    .map((d) => {
+      const r = landRectangle(d);
+      return Math.max(r.x1 - r.x0, r.y1 - r.y0);
+    })
+    .sort((p, q) => q - p);
+  const largeur = cotes[1] ?? cotes[0];
+  const longueur = GAP_BETWEEN_PLACES + STEP - 1 + 2 * JOIN_FILL;
+  const alt = ALTITUDE[a];
+  const k = (u: number) => Math.min(JOIN_MAX_STEPS, Math.floor((u * (JOIN_MAX_STEPS + 1)) / longueur));
+  const cubes: VoxelCube[] = [];
+  const terre: VoxelCube[] = [];
+  const colonne = (out: VoxelCube[], u: number, j: number, haut: number, texture: string) => {
+    for (let z = alt - DEPTH; z <= haut; z++) out.push({ x: 2000 + u, y: 2000 + j, z, color: '#000', texture: z === haut ? texture : 'pierre', sansDessous: z === alt - DEPTH ? true : undefined });
+  };
+  for (let j = 0; j < largeur; j++) {
+    for (let u = 0; u < longueur; u++) colonne(cubes, u, j, alt + k(u), 'herbe');
+    colonne(terre, -1, j, alt + k(0) - 1, 'herbe');
+    colonne(terre, longueur, j, alt + k(longueur - 1) - 1, 'herbe');
+  }
+  return { cubes, terre };
+}
+
+/**
+ * Ce que coûte au plus une réunion de deux lieux dans une région (`joinCubes`), en triangles (GD-9) : les faces de ses
+ * cubes que ni elle ni la terre des deux lieux ne cachent (le dessous de son pied, sous la mer, n'est pas dessiné).
+ */
+export function joinTriangles(a: ArchipelagoId): number {
+  const { cubes, terre } = joinCubes(a);
+  const plein = new Set([...cubes, ...terre].map((c) => `${c.x},${c.y},${c.z}`));
+  let faces = 0;
+  for (const c of cubes)
+    for (const [dx, dy, dz] of [
+      [1, 0, 0],
+      [-1, 0, 0],
+      [0, 1, 0],
+      [0, -1, 0],
+      [0, 0, 1],
+      [0, 0, -1],
+    ]) {
+      if (dz === -1 && c.sansDessous) continue;
+      if (!plein.has(`${c.x + dx},${c.y + dy},${c.z + dz}`)) faces++;
+    }
+  return faces * 2;
+}
+
+/** Le coin d'une liaison en L : dans Blocland, un cube plein de plus (12 triangles au plus). */
+export const TRIANGLES_OF_A_BEND = 12;
+
+/**
+ * Une liaison en L de `longueur` cases, à son coude au milieu, à l'altitude de sa région : les cubes que le terrain y
+ * pose (`bridge`, ./terrain/links.ts), seuls (sans le terrain pour cacher une face : le pire).
+ */
+export function linkCubes(a: ArchipelagoId, kind: BridgeKind, longueur: number): VoxelCube[] {
+  const z = ALTITUDE[a];
+  const moitie = Math.floor(longueur / 2);
+  const path: CaseDOuvrage[] = [];
+  for (let i = 0; i < longueur; i++)
+    path.push(i < moitie ? { x: 1000 + i, y: 1000, z, climbing: false, dx: 1, dy: 0 } : { x: 1000 + moitie - 1, y: 1000 + i - moitie + 1, z, climbing: false, dx: 0, dy: 1 });
+  const ids = mapOf(a);
+  const cubes: VoxelCube[] = [];
+  bridge({ id: 'pire', from: ids[0].id, to: ids[1].id, cost: 0 }, kind, path, cubes, false, new Set());
+  return cubes;
+}
+
+/** Les triangles d'une liaison au plus long (`linkCubes`), son coin compris. */
+export function linkTriangles(a: ArchipelagoId, kind: BridgeKind, longueur: number): number {
+  return faceCount(buildMesh(linkCubes(a, kind, longueur))) * 2 + TRIANGLES_OF_A_BEND;
+}
+
+/**
+ * Le pire cas d'une région aménagée (GD-9), tout construit, commandes posées et bulles comprises : le monde d'aujourd'hui
+ * sans ses liaisons (`base`), puis autant de liaisons que l'élève peut en poser (`maxLinks`), toutes au plus long —
+ * celles qui ouvrent un lieu (lieux − 1, longues : des bacs de 96 cases sur la mer, des ponts dans le ciel), les autres
+ * des raccourcis entre lieux ouverts (36 cases au plus, `SHORT_LINK`) — et les réunions : un lieu ne se réunit qu'à un
+ * seul autre (lieux ÷ 2 au plus), chacune au plus large (`joinTriangles`). Une réunion est un côté du même graphe
+ * planaire que les liaisons (elle ne croise aucune liaison, et aucune liaison ne relie deux lieux réunis) : chacune
+ * prend la place d'un raccourci.
+ */
+export function worstCaseOfRegion(a: ArchipelagoId): { base: number; liaisons: number; reunions: number; triangles: number; drawCalls: number } {
+  const { progress, world } = toutConstruitAvecLesCommandes();
+  const terrain = worldCubes(a, progress, world, false);
+  const scene = sceneCost(a, true);
+  const signes = signesCost();
+  const liaisonsDAujourdhui = (faceCount(buildMesh(terrain)) - faceCount(buildMesh(terrain.filter((c) => !c.bridge)))) * 2;
+  const base = scene.triangles + signes.triangles - liaisonsDAujourdhui;
+  const lieux = mapOf(a).length;
+  const longue = linkTriangles(a, DANS_LE_CIEL[a] ? 'pont' : 'bac', LONG_LENGTH);
+  const raccourci = linkTriangles(a, 'pont', SHORT_LENGTH);
+  const nReunions = Math.floor(lieux / 2);
+  const liaisons = (lieux - 1) * longue + (maxLinks(lieux) - (lieux - 1) - nReunions) * raccourci;
+  const reunions = nReunions * joinTriangles(a);
+  return { base, liaisons, reunions, triangles: base + liaisons + reunions, drawCalls: scene.drawCalls + signes.drawCalls };
+}
+
 /**
  * Le sol et la roche d'un archipel tout construit dans le rendu Archipéo (lot R2) : le maillage à facettes de
  * ./landMesh.ts, un appel de dessin (deux s'il y a de la lave).
@@ -227,7 +363,7 @@ export function decorCost(a: ArchipelagoId): { triangles: number; drawCalls: num
   const { champ, elements } = archipelArchipeo(a);
   const decor = coutDuDecor(maillageDuDecor(a, champ, elements));
   // Les bancs de brume (R4b-5e) : dans l'enveloppe du décor, un appel de dessin.
-  const brume = trianglesDeLaBrume(a);
+  const brume = trianglesDeLaBrume(a, toutConstruit().world.links);
   return { triangles: decor.triangles + brume, drawCalls: decor.drawCalls + (brume ? 1 : 0) };
 }
 
@@ -244,7 +380,7 @@ export function merCost(a: ArchipelagoId): { triangles: number; drawCalls: numbe
  */
 export function fauneCost(a: ArchipelagoId): { triangles: number; drawCalls: number } {
   const familles = [
-    { n: whaleSpots(a).length, t: trianglesDe(formeDeBaleine()) },
+    { n: whaleSpots(a, toutConstruit().world.links).length, t: trianglesDe(formeDeBaleine()) },
     // Les oiseaux, et le planeur des Îles du Ciel (une instance de plus).
     { n: oiseauxDe(a).nombre + (planeurDe(a, worldBounds(a)) ? 1 : 0), t: trianglesDe(formeDOiseau()) },
     { n: nuagesDe(a).length, t: trianglesDe(formeDeNuage()) },
