@@ -190,8 +190,6 @@ export interface Amenagement {
   mot: LinkPhrases;
   aReposer: string[];
   geste: ArrangeGesture | null;
-  /** Le lieu qui se déplace pendant le geste (son étiquette garde « Choisi » jusqu'à la fin), ou rien. */
-  lieuDuGeste: BiomeId | null;
   /** Une intention de la vue dans le mode : `true` si le mode l'a prise. */
   intention(i: Intention): boolean;
   /** Un toucher pendant le geste : il se termine tout de suite. */
@@ -253,7 +251,6 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
   // Ce que la vue garde entier après une réunion : la paire et sa construction.
   const [cadre, setCadre] = useState<CadreDuMode | null>(null);
   const [geste, setGeste] = useState<ArrangeGesture | null>(null);
-  const [lieuDuGeste, setLieuDuGeste] = useState<BiomeId | null>(null);
   const enCours = useRef<GesteEnCours | null>(null);
   const seq = useRef(0);
   const worldRef = useRef(world);
@@ -305,7 +302,6 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     enCours.current = null;
     if (!g.remonte) arrange(g.apres);
     setGeste(null);
-    setLieuDuGeste(null);
     if (sons) sonDeLaPose();
     annoncer(g.ligne, g.phrase);
   };
@@ -351,7 +347,6 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     const ancienne = gestureZone(emprise(w, id));
     const nouvelle = gestureZone(emprise(r.world, id));
     setGeste({ ...base, seq: ++seq.current, phase: 'demonte', zone: ancienne, autre: nouvelle, debut: performance.now() });
-    setLieuDuGeste(id);
     // Les captures tiennent le geste dans son démontage (`__dysappsGesteA`) : il ne passe pas au remontage.
     if (typeof window.__dysappsGesteA === 'number' && (import.meta.env.DEV || mesuresDemandees())) return;
     g.timers.push(
@@ -391,7 +386,6 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     if (g) for (const t of g.timers) window.clearTimeout(t);
     enCours.current = null;
     setGeste(null);
-    setLieuDuGeste(null);
     // Les poses du passage ne coûtent rien (une réunion se paie plus tard, quand on bâtit sa construction, hors du
     // mode) : revenir à l'instantané de l'entrée ne perd ni bloc ni XP.
     const w = worldRef.current;
@@ -592,7 +586,6 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     mot,
     aReposer,
     geste,
-    lieuDuGeste,
     intention,
     finirLeGeste,
     fleche,

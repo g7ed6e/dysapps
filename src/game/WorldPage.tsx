@@ -358,21 +358,19 @@ export function WorldPage() {
   // Le nom de chaque île ouverte de l'archipel, écrit au-dessus d'elle dans le monde ; sur la Carte, toutes les îles,
   // avec leur état en icône et en mot. Le bloc que l'île rapporte, avant son nom (ligne `blocDesIles` de l'habillage).
   const blocDesIles = habillage.blocDesIles === 'avant-le-nom';
-  // Pendant le geste de la pose, le lieu qui se déplace garde « Choisi » (dans les deux univers) jusqu'à la fin.
-  const lieuChoisi = !enAmenageant ? null : amenagement.choix?.genre === 'lieu' ? amenagement.choix.id : amenagement.lieuDuGeste;
+  // Dans « Modifier le plan » (GD-9), les étiquettes se réduisent au nom et au bloc, sans leur ligne d'état : elles
+  // prennent moins de place sous les flèches posées autour du choix, dont le nom est sur son fantôme (three/arrange.ts).
+  const etatsSurLaCarte = mapOpen && !enAmenageant;
   const islandLabels = useMemo(
     () =>
       ilesDuModele(state, a)
         .filter((i) => mapOpen || i.ouverte)
         .map((i) => {
           const bloc = blocDesIles ? getBiome(i.id)?.block : undefined;
-          // Dans « Aménager », le lieu choisi porte « Choisi » et l'icône d'Aménager sous son nom (son fantôme porte son
-          // nom) ; son état revient à la pose.
-          const etat = i.id === lieuChoisi ? { id: 'choisi' as const, name: 'Choisi' } : { id: i.etat.id, name: textes.etatsDIle[i.etat.id] };
-          return { id: i.id, text: i.nom, ...(bloc ? { bloc } : {}), ...(mapOpen ? { state: etat } : {}) };
+          return { id: i.id, text: i.nom, ...(bloc ? { bloc } : {}), ...(etatsSurLaCarte ? { state: { id: i.etat.id, name: textes.etatsDIle[i.etat.id] } } : {}) };
         }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [a, mapOpen, state.world.links, state.world.parts, state.progress, textes, blocDesIles, lieuChoisi],
+    [a, mapOpen, etatsSurLaCarte, state.world.links, state.world.parts, state.progress, textes, blocDesIles],
   );
   const [focus, setFocus] = useState<{ island: BiomeId | null; seq: number }>({ island: island?.id ?? null, seq: 0 });
   // Tant que le tutoriel n'est pas vu, c'est le jour : une première minute lisible, même à 20 h. Ensuite, le réglage

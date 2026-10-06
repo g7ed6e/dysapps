@@ -106,7 +106,7 @@ describe('le mode « Aménager »', () => {
     expect(icone('Poser')).not.toBe(icone('Valider'));
     expect(icone('Annuler')).not.toBe(icone('Valider'));
     // La mer touchée : le fantôme se cale ; la ligne le montre en signes (le voisin, la flèche, le nombre, la case), et
-    // le dit en mots (le nom du lieu choisi n'est pas répété : il est sur l'étiquette « Choisi »).
+    // le dit en mots (le nom du lieu choisi n'est pas répété : il est sur son fantôme).
     act(() => void dernier.intention({ genre: 'mer', point: { x: 0, y: 0 } }));
     expect(screen.getByRole('status').textContent).toMatch(/^(Au|À l’) [a-z-]+ (de la |du |de l’)[^,]+, à \d+ cases?\.$/);
     expect(dernier.ligne?.genre).toBe('place');
@@ -180,9 +180,7 @@ describe('le mode « Aménager »', () => {
     const avant = spotOf(monde, VOLCAN);
     fireEvent.click(screen.getByRole('button', { name: 'Poser' }));
     expect(dernier.geste?.phase).toBe('demonte');
-    // Le lieu qui se déplace reste « Choisi » le temps du geste (son étiquette ne revient pas à son état).
     expect(dernier.choix).toBeNull();
-    expect(dernier.lieuDuGeste).toBe(VOLCAN);
     // Le démontage part du plus haut cube du lieu, pas du vide au-dessus ; le voile d'Archipéo sait où il va.
     expect(dernier.geste?.haut).toBe(8);
     expect(dernier.geste?.autre).toBeDefined();
@@ -192,7 +190,6 @@ describe('le mode « Aménager »', () => {
     expect(spotOf(monde, VOLCAN)).not.toEqual(avant);
     act(() => void vi.advanceTimersByTime(GESTE_DU_LIEU.remonteMs));
     expect(dernier.geste).toBeNull();
-    expect(dernier.lieuDuGeste).toBeNull();
     // Une autre pose : un toucher pendant le démontage pose tout de suite.
     act(() => void dernier.intention({ genre: 'ile', id: VOLCAN }));
     act(() => void dernier.intention({ genre: 'mer', point: { x: 190, y: 140 } }));

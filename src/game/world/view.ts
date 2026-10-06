@@ -193,10 +193,10 @@ export interface IslandLabel {
   text: string;
   /**
    * Sur la Carte : l'état de l'île (Fermée, À explorer, En chantier, Restaurée ou Bâtie selon l'univers :
-   * textes.etatsDIle), dessiné en icône et en mot sous le nom ; « choisi » dans le mode « Aménager » (GD-9), avec
-   * l'icône d'Aménager.
+   * textes.etatsDIle), dessiné en icône et en mot sous le nom ; rien dans le mode « Aménager » (GD-9), où l'étiquette
+   * se réduit au nom.
    */
-  state?: { id: IslandStateId | 'choisi'; name: string };
+  state?: { id: IslandStateId; name: string };
   /** Le bloc que l'île rapporte (sa ressource), dessiné avant le nom, comme dans Mes blocs. */
   bloc?: BlockId;
 }
