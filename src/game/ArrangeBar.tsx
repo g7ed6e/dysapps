@@ -125,11 +125,11 @@ function SigneAReposer({ n }: { n: number }) {
 function SigneReunis({ a, b }: { a: string; b: string }) {
   return (
     <>
-      {a}{' '}
+      <span className="signe-voisin">{a}</span>{' '}
       <span className="signe">
         <Icon name="reunir" />
       </span>{' '}
-      {b}
+      <span className="signe-voisin">{b}</span>
     </>
   );
 }
@@ -157,7 +157,7 @@ function Signes({ ligne }: { ligne: LigneDuMode }) {
             <>
               {' '}
               <span className="signe">
-                <Icon name="ouvrage" /> {ligne.vers}
+                <Icon name="ouvrage" /> <span className="signe-voisin">{ligne.vers}</span>
               </span>
             </>
           )}{' '}

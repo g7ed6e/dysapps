@@ -72,26 +72,40 @@ export function placerLesBoutons(b: ChoixALEcran): Map<CleDePoignee, { x: number
 /** La clé du bouton d'un bout de liaison (`data-bout`). */
 const cleDuBout = (b: Pick<LinkEndOnScreen, 'link' | 'end'>) => `${b.link}|${b.end}`;
 
+/** Jamais une cible partagée sous cette taille, en pixels CSS : en dessous, un seul bouton pour deux bouts. */
+const CIBLE_PARTAGEE_MIN = 24;
+
 /**
  * Le bouton de chaque bout de liaison à sa place : sur son petit radeau, 48 px au moins. Deux bouts trop proches ont
  * déjà reculé le long de leur ponton (three/arrangeHandles.ts) ; s'ils se couvrent encore (deux bouts côte à côte sur
  * la même côte), leurs boutons se partagent la place à mi-distance, sur l'axe où ils s'écartent le plus : aucun bouton
- * n'en couvre un autre. Pur.
+ * n'en couvre un autre. Un partage qui laisserait une cible sous `CIBLE_PARTAGEE_MIN` (ou deux bouts au même point) :
+ * un seul bouton pour les deux, celui du bout le plus près du milieu de la place libre (le premier, à égalité) ;
+ * l'autre arrivée se choisit en touchant son ouvrage, ou dans la vue simple. Pur.
  */
 export function placerLesBoutsDesLiaisons(b: ChoixALEcran): Map<string, { x: number; y: number; w: number; h: number }> {
   const out = new Map<string, { x: number; y: number; w: number; h: number }>();
-  const liste = (b.bouts ?? []).map((p) => ({ cle: cleDuBout(p), x: p.x, y: p.y, w: Math.max(CIBLE_MIN, p.w), h: Math.max(CIBLE_MIN, p.h) }));
+  const liste = (b.bouts ?? []).map((p) => ({ cle: cleDuBout(p), x: p.x, y: p.y, w: Math.max(CIBLE_MIN, p.w), h: Math.max(CIBLE_MIN, p.h), retire: false }));
+  const mx = (b.libre.x0 + b.libre.x1) / 2;
+  const my = (b.libre.y0 + b.libre.y1) / 2;
+  const loin = (p: { x: number; y: number }) => Math.hypot(p.x - mx, p.y - my);
   for (let i = 0; i < liste.length; i++)
     for (let j = i + 1; j < liste.length; j++) {
       const p = liste[i];
       const q = liste[j];
+      if (p.retire || q.retire) continue;
       const dx = Math.abs(p.x - q.x);
       const dy = Math.abs(p.y - q.y);
-      if (dx >= (p.w + q.w) / 2 || dy >= (p.h + q.h) / 2 || (dx === 0 && dy === 0)) continue;
+      if (dx >= (p.w + q.w) / 2 || dy >= (p.h + q.h) / 2) continue;
+      if (Math.max(dx, dy) < CIBLE_PARTAGEE_MIN) {
+        // Trop près pour deux cibles : le bout le plus près du milieu garde la sienne, entière.
+        (loin(q) < loin(p) ? p : q).retire = true;
+        continue;
+      }
       if (dx >= dy) p.w = q.w = Math.min(p.w, q.w, dx);
       else p.h = q.h = Math.min(p.h, q.h, dy);
     }
-  for (const { cle, ...p } of liste) out.set(cle, p);
+  for (const { cle, retire, ...p } of liste) if (!retire) out.set(cle, p);
   return out;
 }
 
@@ -115,13 +129,23 @@ function relaiDuGlisse() {
       relaye = false;
     },
     onPointerMove(e: ReactPointerEvent<HTMLButtonElement>) {
-      if (!appui || relaye || e.pointerId !== appui.id || Math.hypot(e.clientX - appui.x, e.clientY - appui.y) < SEUIL_DU_TOUCHER) return;
+      // Un survol sans bouton enfoncé (la souris) n'est pas un glissé.
+      if (!appui || relaye || e.buttons === 0 || e.pointerId !== appui.id || Math.hypot(e.clientX - appui.x, e.clientY - appui.y) < SEUIL_DU_TOUCHER) return;
       const canvas = e.currentTarget.closest('[data-scene]')?.querySelector('canvas');
       if (!canvas || typeof PointerEvent === 'undefined') return;
       relaye = true;
       if (e.currentTarget.hasPointerCapture?.(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId);
       canvas.dispatchEvent(Object.assign(pointeur('pointerdown', e, appui.x, appui.y), { [RELAYE_DEPUIS_UN_BOUTON]: true }));
       canvas.dispatchEvent(pointeur('pointermove', e, e.clientX, e.clientY));
+    },
+    /** Le doigt levé : plus d'appui (le clic qui suit lit encore `relaye`). */
+    onPointerUp() {
+      appui = null;
+    },
+    /** Le geste annulé : plus d'appui ni de glissé. */
+    onPointerCancel() {
+      appui = null;
+      relaye = false;
     },
     /** Le clic n'est un toucher que si le doigt n'est pas parti en glissé. */
     toucher(): boolean {
@@ -196,8 +220,12 @@ export function ArrangeHandles({ amenagement, suivi }: { amenagement: Amenagemen
             aria-label={b.nom}
             onPointerDown={relai.onPointerDown}
             onPointerMove={relai.onPointerMove}
-            onClick={() => {
-              if (relai.toucher()) amenagement.choisirUnBout(b.link, b.end);
+            onPointerUp={relai.onPointerUp}
+            onPointerCancel={relai.onPointerCancel}
+            onClick={(e) => {
+              // Au clavier (Entrée, Espace : `detail` à 0), le bouton choisit toujours ; au doigt, si ce n'était pas un glissé.
+              const auToucher = relai.toucher();
+              if (e.detail === 0 || auToucher) amenagement.choisirUnBout(b.link, b.end);
             }}
           />
         ))}

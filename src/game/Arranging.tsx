@@ -40,6 +40,7 @@ import { getBridge } from './world/archipelago';
 import { GESTE_DU_LIEU, GESTE_SOUS_LE_SOL, gestureZone } from './world/arrangeGesture';
 import type { ArrangeGesture, ArrangeView, CadreDuMode, LinkEndHandle } from './world/view';
 import { footprintOf } from './world/footprint';
+import { mapOf } from './world/map';
 import type { Intention, Point } from './world/layout';
 import type { Rectangle } from './world/placement';
 import { guardianSigns, type PlaceName, type PlaceSigns, placeSigns, placeSignsSentence } from './world/placeSentence';
@@ -315,6 +316,11 @@ export function useAmenagement({
   const ouvert = session !== null;
   const aReposer = linksToRelink(world, a);
 
+  /**
+   * Une phrase écrite dans la ligne du haut, les noms des lieux de la région liés par des espaces insécables : un nom ne
+   * se coupe jamais en fin de ligne (la voix lit la phrase telle quelle).
+   */
+  const insecable = (texte: string) => mapOf(a).reduce((t, d) => t.split(nom(d.id)).join(nom(d.id).replace(/ /g, '\u00a0')), texte);
   /** La ligne du mode (des signes) et ce qu'elle dit en mots, lu à voix haute. */
   const annoncer = (l: LigneDuMode | null, lu: string) => {
     setLigne(l);
@@ -361,7 +367,9 @@ export function useAmenagement({
           : (() => {
             const t = choiceSentence(w, c, nom, mot);
             const vers = c.genre === 'arrivee' ? lieuDEnFace(c.link, c.end) : null;
-            return { ligne: { genre: 'texte', texte: t, ...(vers ? { vers: nom(vers) } : {}) } satisfies LigneDuMode, lu: t };
+            // Dit : « L’arrivée, sur la côte sud de la Forêt des sons, vers la Plaine des nombres. » (comme le nom du bouton).
+            const lu = vers ? `${t.replace(/\.$/, '')}, vers ${thePlace(nom(vers))}.` : t;
+            return { ligne: { genre: 'texte', texte: insecable(t), ...(vers ? { vers: nom(vers) } : {}) } satisfies LigneDuMode, lu };
           })();
     if (!prise) return annoncer(l.ligne, l.lu);
     if (l.ligne.genre === 'place') return annoncer({ ...l.ligne, prise: true }, `${enPhrase(ou(l.ligne.signes))} ${PLACE_PRISE}.`);
@@ -406,7 +414,7 @@ export function useAmenagement({
           : (() => {
             const t = poseSentence(r.world, choix, nom, mot);
             const lu = t + (n ? ` ${mot.aReposer(n)}` : '');
-            return { ligne: { genre: 'texte', texte: lu } satisfies LigneDuMode, lu };
+            return { ligne: { genre: 'texte', texte: insecable(lu) } satisfies LigneDuMode, lu };
           })();
     setChoix(null);
     // Posé là, le lieu se colle à un voisin (une place à l'icône de « Réunir ») : il reste choisi, « Réunir » s'allume.
@@ -635,7 +643,7 @@ export function useAmenagement({
         return true;
       }
       case 'creature':
-        if ((choix?.genre === 'gardien' && i.gardien) || (choix?.genre === 'lieu' && !i.gardien)) if (choix.id === i.id) return relacher();
+        if (((choix?.genre === 'gardien' && i.gardien) || (choix?.genre === 'lieu' && !i.gardien)) && choix.id === i.id) return relacher();
         if (i.gardien) choisir(chooseGuardian(w, i.id));
         else {
           const c = chooseIsland(w, i.id);
@@ -650,6 +658,8 @@ export function useAmenagement({
         return true;
       }
       case 'ouvrage': {
+        // L'ouvrage d'une arrivée choisie, retouché : elle est relâchée, comme le lieu, le Gardien ou la borne.
+        if (choix?.genre === 'arrivee' && choix.link === i.id) return relacher();
         const c = i.point && w.links.includes(i.id) ? chooseLanding(w, i.id, i.point) : null;
         if (c) choisir(c);
         return true;

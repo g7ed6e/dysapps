@@ -271,6 +271,14 @@ describe('le mode « Aménager »', () => {
     // La ligne dit vers quel lieu l'ouvrage part, en signes : l'icône de l'ouvrage, puis le lieu d'en face.
     expect(dernier.ligne?.genre === 'texte' && dernier.ligne.vers).toBeTruthy();
     expect(document.querySelector('.arrange-signes')!.textContent).toContain(dernier.ligne?.genre === 'texte' ? dernier.ligne.vers : '?');
+    // Dit aussi le lieu d'en face, comme le nom du bouton.
+    expect(dernier.phrase).toMatch(/^L’arrivée, sur la côte .+, vers (le |la |l’).+\.$/);
+    // Retoucher son ouvrage la relâche, comme le lieu, le Gardien ou la borne.
+    const ouvrage = dernier.choix?.genre === 'arrivee' ? dernier.choix.link : '';
+    act(() => void dernier.intention({ genre: 'ouvrage', id: ouvrage, point: { x: 0, y: 0 } } as Parameters<typeof dernier.intention>[0]));
+    expect(dernier.choix).toBeNull();
+    fireEvent.click(within(screen.getByRole('group', { name: 'Déplacer une arrivée' })).getAllByRole('button')[0]);
+    expect(dernier.choix?.genre).toBe('arrivee');
     // Échap : plus de choix, les poignées des bouts reviennent.
     fireEvent.keyDown(window, { key: 'Escape' });
     expect(dernier.choix).toBeNull();

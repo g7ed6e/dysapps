@@ -4105,6 +4105,11 @@ figure.class-table {
 .signe svg {
   flex: none;
 }
+/* Le nom d'un lieu dans la ligne du haut ne se coupe pas en fin de ligne : il passe entier à la ligne suivante (il ne
+   se coupe que s'il ne tient pas seul sur une ligne). */
+.signe-voisin {
+  display: inline-block;
+}
 .signes-de-place strong,
 .signe-a-reposer strong {
   font-size: 1.1em;
