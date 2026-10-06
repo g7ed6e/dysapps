@@ -15,7 +15,7 @@ import {
   freeStationSpots,
   groupAt,
   guardianOf,
-  joinCandidatesAt,
+  joinsAround,
   joinsIn,
   moveIsland,
   moveLanding,
@@ -153,15 +153,17 @@ function dessinDuChoix(world: World, c: ArrangeChoice): ArrangeView {
       // Pour chaque voisin auquel il se collerait, la place la plus proche du fantôme : une seule icône par voisin (des
       // places voisines, d'un pas l'une de l'autre, empileraient leurs icônes à l'écran).
       const parVoisin = new Map<BiomeId, { d: number; x: number; y: number }>();
-      for (const s of freeSpots(world, c.id, c.spot.turn)) {
+      const reunionsA = joinsAround(world, c.id);
+      for (const s of freeSpots(world, c.id, c.spot.turn, { ...c.spot, pas: PAS_AUTOUR })) {
         if (Math.max(Math.abs(s.x - c.spot.x), Math.abs(s.y - c.spot.y)) > PAS_AUTOUR || (s.x === c.spot.x && s.y === c.spot.y)) continue;
         const p = poseOfSpot(a, s);
         place({ x: p.x + 8, y: p.y + 8 }, eau, 3, out);
-        // Posé là, le lieu se collerait à un voisin : l'icône de « Réunir » sur la place ; « Réunir » s'allumera dans la barre.
+        // Posé là, le lieu se collerait à un voisin : l'icône de « Réunir » sur la jointure, sur l'eau entre les deux terres,
+        // là où irait leur construction (jamais sur la terre du lieu) ; « Réunir » s'allumera dans la barre.
         const d = Math.abs(s.x - c.spot.x) + Math.abs(s.y - c.spot.y);
-        for (const v of joinCandidatesAt(world, c.id, s)) {
-          const q = parVoisin.get(v);
-          if (!q || d < q.d) parVoisin.set(v, { d, x: p.x + 8.5, y: p.y + 8.5 });
+        for (const j of reunionsA(s)) {
+          const q = parVoisin.get(j.id);
+          if (!q || d < q.d) parVoisin.set(j.id, { d, x: (j.zone.x0 + j.zone.x1) / 2, y: (j.zone.y0 + j.zone.y1) / 2 });
         }
       }
       const reunions = [...new Map([...parVoisin.values()].map((q) => [`${q.x},${q.y}`, { x: q.x, y: q.y, z: eau + 1 }])).values()];

@@ -86,21 +86,27 @@ export function ArrangeListOffer({ onListe, onCarte }: { onListe: () => void; on
 /**
  * Où est un lieu, en signes, dans l'ordre de la voix : le nom du voisin repère, la flèche, le nombre, la case
  * (« Mine des lettres ↖ 4 ⬚ »). En grand texte, le mot de la direction s'ajoute à la flèche, et « cases » au nombre.
- * Décoratif : la phrase en mots est dite à côté (`role="status"`, le haut-parleur).
+ * Décoratif : la phrase en mots est dite à côté (`role="status"`, le haut-parleur). `sansEcart` : sur une place prise, ni
+ * nombre ni case (la croix et « Place prise » les remplacent).
  */
-export function PlaceSignsLine({ signes }: { signes: PlaceSigns }) {
+export function PlaceSignsLine({ signes, sansEcart = false }: { signes: PlaceSigns; sansEcart?: boolean }) {
   return (
     <span className="signes-de-place">
       <span className="signe-voisin">{signes.voisin}</span>{' '}
       <span className="signe">
         <Icon name={signes.direction.icone} />
         <span className="mot-signe">{signes.direction.mot}</span>
-      </span>{' '}
-      <span className="signe">
-        <strong>{signes.cases}</strong>
-        <Icon name="case" />
-        <span className="mot-signe">{casesWord(signes.cases).replace(/^\d+ /, '')}</span>
       </span>
+      {!sansEcart && (
+        <>
+          {' '}
+          <span className="signe">
+            <strong>{signes.cases}</strong>
+            <Icon name="case" />
+            <span className="mot-signe">{casesWord(signes.cases).replace(/^\d+ /, '')}</span>
+          </span>
+        </>
+      )}
     </span>
   );
 }
@@ -128,7 +134,10 @@ function SigneReunis({ a, b }: { a: string; b: string }) {
   );
 }
 
-/** Une place prise (choix 3 du mainteneur) : la croix et ses deux mots, comme un refus. */
+/**
+ * Une place prise (choix 3 du mainteneur) : la croix et ses deux mots, comme un refus, sur la même ligne que les signes
+ * de la place (à la place du nombre de cases : la ligne garde sa hauteur).
+ */
 function SignePrise({ prise }: { prise?: boolean }) {
   return prise ? (
     <span className="signe signe-refus">
@@ -143,7 +152,16 @@ function Signes({ ligne }: { ligne: LigneDuMode }) {
     case 'texte':
       return (
         <>
-          {ligne.texte} <SignePrise prise={ligne.prise} />
+          {ligne.texte}
+          {ligne.vers && (
+            <>
+              {' '}
+              <span className="signe">
+                <Icon name="ouvrage" /> {ligne.vers}
+              </span>
+            </>
+          )}{' '}
+          <SignePrise prise={ligne.prise} />
         </>
       );
     case 'gardien':
@@ -152,13 +170,13 @@ function Signes({ ligne }: { ligne: LigneDuMode }) {
           <span className="signe">
             <Icon name="shield" />
           </span>{' '}
-          <PlaceSignsLine signes={ligne.signes} /> <SignePrise prise={ligne.prise} />
+          <PlaceSignsLine signes={ligne.signes} sansEcart={ligne.prise} /> <SignePrise prise={ligne.prise} />
         </>
       );
     case 'place':
       return (
         <>
-          <PlaceSignsLine signes={ligne.signes} /> <SigneAReposer n={ligne.aReposer} /> <SignePrise prise={ligne.prise} />
+          <PlaceSignsLine signes={ligne.signes} sansEcart={ligne.prise} /> <SigneAReposer n={ligne.aReposer} /> <SignePrise prise={ligne.prise} />
         </>
       );
     case 'refus':

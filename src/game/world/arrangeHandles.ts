@@ -6,7 +6,8 @@
 // ouvert, sa pointe en marches (↷). Dans Archipéo (rattrapage), un radeau de trois planches, une flèche peinte à plat ;
 // « Tourner » : une flèche en arc fin peinte sur une bouée ronde à huit pans, sa pointe marquée, dans le même sens (↷).
 // Quand une terre occupe la place d'une poignée, la flèche se pose quand même là, par-dessus, toujours visible.
-// Indisponible (au bord de la carte) : le radeau gris pierre, la pointe disparaît (la tige seule). Le choix sur une
+// Indisponible (au bord de la carte) : le radeau gris pierre, la pointe disparaît (la tige seule) ; une arrivée ou une
+// borne, qui ne vont que le long de leur côte ou de leur rangée, ne montrent pas leurs flèches indisponibles. Le choix sur une
 // place prise (choix 3 du mainteneur, 6 octobre 2026) : une croix grise, bordée de sombre, au milieu de son emprise.
 // Sans choix, chaque bout de liaison posée porte un petit radeau (choix 1a) : le toucher choisit cette arrivée. Rien à
 // lire dans le monde : les boutons HTML transparents posés par-dessus (ArrangeHandles.tsx) portent les noms.
@@ -16,11 +17,10 @@
 import type { World } from '../engine/state';
 import { getBridge } from './archipelago';
 import { currentLandings, DIRECTION_STEP, placeIn, routesIn } from './arrange';
-import { type ArrangeChoice, canTurn, choiceFits, landingTip, stepChoice } from './arrangeMode';
+import { type ArrangeChoice, canTurn, choiceFits, landingInWorld, landingTip, stepChoice } from './arrangeMode';
 import type { ArchipelagoId } from './map';
 import type { Rectangle } from './placement';
 import type { CleDePoignee, LinkEndHandle, PoigneeDuMonde, PoigneesDuChoix } from './view';
-
 
 /** Le côté d'un radeau, en cases (à l'échelle 1). */
 export const COTE_DU_RADEAU = 3;
@@ -70,7 +70,8 @@ function brasDeLaCroix(rx: number, ry: number): number {
  * flèche de son côté, « Tourner » au coin nord-est, chacune à une place (`ECART`) du bord de l'emprise, et à
  * `ELOIGNEMENT` demi-côtés au moins du milieu. Jamais plus loin (mainteneur, 6 octobre 2026) : une poignée qui tombe
  * sur une terre y reste, par-dessus (la 3D la dessine devant le décor) ; « toujours visible » prime sur l'eau libre.
- * Calculé à chaque échelle de `ECHELLES`. « Tourner » seulement pour ce qui tourne (`canTurn`).
+ * Calculé à chaque échelle de `ECHELLES`. « Tourner » seulement pour ce qui tourne (`canTurn`) ; pour une arrivée ou une
+ * borne, seulement les flèches qui mènent quelque part.
  */
 export function poigneesDuChoix(world: World, c: ArrangeChoice, r: Rectangle, z: number): PoigneesDuChoix {
   const cx = (r.x0 + r.x1) / 2;
@@ -80,6 +81,10 @@ export function poigneesDuChoix(world: World, c: ArrangeChoice, r: Rectangle, z:
   const liste: PoigneeDuMonde[] = [];
   for (const cle of CLES_DES_POIGNEES) {
     if (cle === 'tourner' && !canTurn(c)) continue;
+    const dispo = sert(world, c, cle);
+    // Une arrivée ou une borne ne va que le long de sa côte ou de sa rangée : une flèche qui ne mène nulle part n'y est
+    // pas montrée (deux radeaux gris à tige courte, côte à côte, s'y lisaient comme des dalles).
+    if (!dispo && (c.genre === 'arrivee' || c.genre === 'borne')) continue;
     const sens = SENS[cle];
     const places: number[] = [];
     for (const e of ECHELLES) {
@@ -87,7 +92,7 @@ export function poigneesDuChoix(world: World, c: ArrangeChoice, r: Rectangle, z:
       const loin = (rayon: number) => Math.max(rayon + ECART + demi, ELOIGNEMENT * e);
       places.push(sens.dx * loin(rx), sens.dy * loin(ry));
     }
-    liste.push({ cle, ox: places[0], oy: places[1], places, dispo: sert(world, c, cle) });
+    liste.push({ cle, ox: places[0], oy: places[1], places, dispo });
   }
   const demi = COTE_DU_RADEAU / 2;
   const xs = liste.map((p) => cx + p.ox);
@@ -124,10 +129,64 @@ export function linkEndHandles(world: World, a: ArchipelagoId): LinkEndHandle[] 
     for (const end of ['from', 'to'] as const) {
       const id = end === 'from' ? b.from : b.to;
       const p = landingTip(world, id, l[end]);
-      out.push({ link, end, x: p.x + 0.5, y: p.y + 0.5, z: placeIn(world, id).altitude });
+      const c = landingInWorld(world, id, l[end]);
+      out.push({ link, end, x: p.x + 0.5, y: p.y + 0.5, z: placeIn(world, id).altitude, dx: p.x - c.x, dy: p.y - c.y });
     }
   }
   return out;
+}
+
+/** Le plus long recul d'un bout le long de son ponton, vers sa côte, en côtés de son petit radeau. */
+export const RECUL_MAX_DU_BOUT = 1.5;
+/** Le pas du recul, en côtés de son petit radeau. */
+const PAS_DU_RECUL = 0.25;
+
+/**
+ * Les bouts trop proches à l'écran (deux bouts d'une liaison courte, de part et d'autre d'un bras d'eau étroit ; deux
+ * bouts au coin d'un même lieu) : à chaque pas, celui des deux (ou les deux) qui les écarte le plus recule le long de
+ * son ponton, vers sa côte, tant qu'ils sont à moins de `min` pixels et que reculer les écarte vraiment ; jamais plus
+ * de `RECUL_MAX_DU_BOUT` côtés de radeau (`cote`, en cases, le côté du radeau à l'échelle de la vue). Deux bouts côte à
+ * côte sur la même côte ne s'écartent pas en reculant : ils restent, et leurs boutons se partagent la place à
+ * mi-distance (ArrangeHandles.tsx). `ecran(i, recul)` : où se tient le bout `i` reculé de `recul` cases, en pixels (ou
+ * rien, hors de la vue). Rend le recul de chaque bout, en cases. Pur.
+ */
+export function reculsDesBouts(n: number, ecran: (i: number, recul: number) => { x: number; y: number } | null, min: number, cote = 1): number[] {
+  const reculs = new Array<number>(n).fill(0);
+  const max = RECUL_MAX_DU_BOUT * cote;
+  const pas = PAS_DU_RECUL * cote;
+  const distance = (i: number, ri: number, j: number, rj: number) => {
+    const a = ecran(i, ri);
+    const b = ecran(j, rj);
+    return a && b ? Math.hypot(a.x - b.x, a.y - b.y) : Infinity;
+  };
+  for (let tour = 0; tour < Math.ceil(2 * RECUL_MAX_DU_BOUT / PAS_DU_RECUL); tour++) {
+    let bouge = false;
+    for (let i = 0; i < n; i++)
+      for (let j = i + 1; j < n; j++) {
+        const d = distance(i, reculs[i], j, reculs[j]);
+        if (d >= min) continue;
+        const ri = Math.min(max, reculs[i] + pas);
+        const rj = Math.min(max, reculs[j] + pas);
+        // Les deux, l'un, ou l'autre : ce qui les écarte le plus.
+        const essais: [number, number][] = [
+          [ri, rj],
+          [ri, reculs[j]],
+          [reculs[i], rj],
+        ];
+        let mieux: [number, number] | null = null;
+        let dMieux = d + 0.1;
+        for (const [a, b] of essais) {
+          if (a === reculs[i] && b === reculs[j]) continue;
+          const e = distance(i, a, j, b);
+          if (e > dMieux) [mieux, dMieux] = [[a, b], e];
+        }
+        if (!mieux) continue;
+        [reculs[i], reculs[j]] = mieux;
+        bouge = true;
+      }
+    if (!bouge) break;
+  }
+  return reculs;
 }
 
 /**
@@ -174,11 +233,13 @@ const rgb = (hex: number): Rgb => [((hex >> 16) & 255) / 255, ((hex >> 8) & 255)
 /**
  * Les couleurs des poignées (intention du directeur artistique, point 8) : le radeau clair des boutons (Blocland : crème,
  * deux tons pour lire les cubes, à bord sombre ; Archipéo : Brume #E5EBE3 bordé de Nuit océan #142B38), la flèche sombre
- * (#3b2d20 ; Nuit océan) ; indisponible, le radeau gris pierre. Jamais le jaune des places libres (#ffc21a).
+ * (#3b2d20 ; Nuit océan) ; indisponible, le radeau gris pierre. La croix d'une place prise, d'un gris pierre plus clair
+ * (`croix`) : 3:1 au moins contre l'eau de jour, où son bord sombre se fond ; son bord porte le contraste sur l'eau
+ * claire des Îles du Ciel (mesures dans docs/rendu/style.md). Jamais le jaune des places libres (#ffc21a).
  */
 export const COULEURS_DES_POIGNEES = {
-  blocs: { clair: rgb(0xf3e4c0), clair2: rgb(0xebdcb4), bord: rgb(0x3b2d20), fleche: rgb(0x3b2d20), pierre: rgb(0xa8a59c), pierre2: rgb(0x9c998f) },
-  peint: { clair: rgb(0xe5ebe3), clair2: rgb(0xd8e0d6), bord: rgb(0x142b38), fleche: rgb(0x142b38), pierre: rgb(0xa9aea9), pierre2: rgb(0x9da39e) },
+  blocs: { clair: rgb(0xf3e4c0), clair2: rgb(0xebdcb4), bord: rgb(0x3b2d20), fleche: rgb(0x3b2d20), pierre: rgb(0xa8a59c), pierre2: rgb(0x9c998f), croix: rgb(0xd2cfc6) },
+  peint: { clair: rgb(0xe5ebe3), clair2: rgb(0xd8e0d6), bord: rgb(0x142b38), fleche: rgb(0x142b38), pierre: rgb(0xa9aea9), pierre2: rgb(0x9da39e), croix: rgb(0xd3d8d3) },
 } as const;
 
 /** La forme des poignées : sommets (x, hauteur, y, en cases, autour du milieu de chaque poignée), couleurs et triangles. */
@@ -383,13 +444,22 @@ function poigneePeinte(t: Traceur, p: Pick<PoigneeDuMonde, 'cle' | 'dispo'>): vo
   if (p.dispo) t.tri(v(-0.8, 0.1), v(0, 1.15), v(0.8, 0.1), k.fleche);
 }
 
-/** L'épaisseur des barres de la croix grise, en part de sa demi-taille ; son bord sombre, en cases. */
+/** L'épaisseur des barres de la croix grise, en part de sa demi-taille. */
 const CROIX_EPAISSEUR = 0.36;
-const CROIX_BORD = 0.14;
+
+/**
+ * Le bord sombre de la croix grise de demi-taille `bras`, en cases (à l'échelle 1) : 2 px au moins à l'écran, à toute
+ * échelle (référent dys ; 2,16 px au plus juste). La croix est tenue à un demi-radeau au moins (`COTE_DU_RADEAU / 2`
+ * cases à l'échelle `s`, un radeau faisant `POIGNEE_MIN_PX` de haut), d'où ce bord en part de sa demi-taille, et 0,14
+ * case au moins pour une petite croix.
+ */
+export function bordDeLaCroix(bras: number): number {
+  return Math.max(0.14, 0.09 * bras);
+}
 
 /**
  * La croix grise d'une place prise (choix 3 du mainteneur), de demi-taille `bras` : deux barres en diagonale, gris
- * pierre bordé de sombre (la croix, pas la couleur seule, dit « prise »), à plat au-dessus de l'eau. 8 triangles.
+ * pierre clair bordé de sombre (la croix, pas la couleur seule, dit « prise »), à plat au-dessus de l'eau. 8 triangles.
  */
 function croixGrise(t: Traceur, bras: number, style: StyleDesPoignees): void {
   const k = COULEURS_DES_POIGNEES[style];
@@ -403,10 +473,11 @@ function croixGrise(t: Traceur, bras: number, style: StyleDesPoignees): void {
     t.quad(v(-long, -large), v(long, -large), v(long, large), v(-long, large), c);
   };
   // Les bords sombres d'abord, le gris par-dessus : le croisement reste net (sans test de profondeur).
-  barre(1, bras + CROIX_BORD, e + CROIX_BORD, h - 0.02, k.bord);
-  barre(-1, bras + CROIX_BORD, e + CROIX_BORD, h - 0.02, k.bord);
-  barre(1, bras, e, h, k.pierre);
-  barre(-1, bras, e, h, k.pierre);
+  const bord = bordDeLaCroix(bras);
+  barre(1, bras + bord, e + bord, h - 0.02, k.bord);
+  barre(-1, bras + bord, e + bord, h - 0.02, k.bord);
+  barre(1, bras, e, h, k.croix);
+  barre(-1, bras, e, h, k.croix);
 }
 
 /**

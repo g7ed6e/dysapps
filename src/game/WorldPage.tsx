@@ -1052,7 +1052,7 @@ export function WorldPage() {
             liaisonCadree={fiche?.cadrer && fiche.objet.genre === 'ouvrage' ? fiche.objet.id : null}
             // Dans le mode « Aménager », « Poser » ou ✓ Valider est le seul élément mis en avant.
             marker={enAmenageant ? null : marker}
-            amenager={enAmenageant ? { vue: amenagement.vue, bouts: amenagement.bouts, cadre: amenagement.cadre, ecran: suiviDuChoix.suivre, touchers: suiviDuChoix.touchers } : null}
+            amenager={enAmenageant ? { vue: amenagement.vue, bouts: amenagement.boutsDuMonde, cadre: amenagement.cadre, ecran: suiviDuChoix.suivre, touchers: suiviDuChoix.touchers } : null}
             geste={amenagement.geste}
             imageDeLaCarte={imageDeLaCarte}
             vehicle={vehicle}

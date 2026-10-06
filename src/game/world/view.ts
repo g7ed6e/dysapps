@@ -46,8 +46,9 @@ export interface ArrangeView {
   /** Les flèches et « Tourner », dessinées sur l'eau autour du choix (./arrangeHandles.ts). */
   poignees?: PoigneesDuChoix;
   /**
-   * Les places libres montrées qui colleraient le lieu à un voisin (6 octobre 2026, choix 2a du mainteneur) : leur
-   * milieu, en cases du monde, `z` le dessus de leur carré ; la page y pose l'icône de « Réunir ».
+   * Les places libres montrées qui colleraient le lieu à un voisin (6 octobre 2026, choix 2a du mainteneur), une par
+   * voisin, la plus proche du fantôme : le milieu de leur jointure (sur l'eau, là où irait la construction), en cases du
+   * monde, `z` le dessus de l'eau ; la page y pose l'icône de « Réunir ».
    */
   reunions?: { x: number; y: number; z: number }[];
 }
@@ -77,7 +78,7 @@ export interface ChoixALEcran {
   poignees: readonly PoigneeALEcran[];
   /** Les poignées des bouts de liaison, à l'écran (sans choix en cours ; choix 1a du mainteneur). */
   bouts?: readonly LinkEndOnScreen[];
-  /** Les places qui colleraient le lieu choisi à un voisin, à l'écran (leur milieu ; choix 2a du mainteneur). */
+  /** Les places qui colleraient le lieu choisi à un voisin, à l'écran (le milieu de leur jointure ; choix 2a du mainteneur). */
   reunions?: readonly { x: number; y: number }[];
   libre: Rectangle;
 }
@@ -103,6 +104,9 @@ export interface LinkEndHandle {
   x: number;
   y: number;
   z: number;
+  /** Le sens du ponton, de la côte vers le large (une case) : un bout trop près d'un autre recule à l'opposé. */
+  dx: number;
+  dy: number;
 }
 
 /**

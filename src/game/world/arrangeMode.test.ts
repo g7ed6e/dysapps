@@ -4,7 +4,8 @@
 import { describe, expect, it } from 'vitest';
 import type { BiomeId } from '../biomes';
 import type { World } from '../engine/state';
-import { DIRECTIONS, freeSpots, guardianOf, isFreeSpot, linksToRelink, spotOf, stationOf } from './arrange';
+import { DIRECTIONS, freeSpots, guardianOf, isFreeSpot, linksToRelink, placeIn, spotOf, stationOf } from './arrange';
+import { isLandInWorld, mapOf } from './map';
 import {
   type ArrangeChoice,
   choiceFits,
@@ -95,9 +96,13 @@ describe('un lieu : caler, décaler, tourner, poser', () => {
     const v = arrangeView(w, c);
     const reunions = v.reunions ?? [];
     expect(reunions.length).toBeGreaterThan(0);
-    // Chaque icône est au milieu d'une place libre montrée (son carré jaune), où le lieu se réunirait.
+    // Chaque icône est sur la jointure, sur l'eau où irait la construction : jamais sur une terre (ni celle du lieu
+    // choisi, ni à sa place d'aujourd'hui), à fleur d'eau ; une par voisin au plus.
     const places = v.cases.filter((x) => x.genre === 'place');
-    for (const r of reunions) expect(places.some((p) => p.x + 0.5 === r.x && p.y + 0.5 === r.y && p.z + 1 === r.z)).toBe(true);
+    for (const r of reunions) {
+      for (const l of mapOf('6e').map((d) => d.id)) expect(isLandInWorld(placeIn(w, l), Math.floor(r.x), Math.floor(r.y)), l).toBe(false);
+      expect(r.z).toBe(places[0].z + 1);
+    }
     // Pas toutes : seulement celles qui le colleraient à un voisin.
     expect(reunions.length).toBeLessThan(places.length);
   });

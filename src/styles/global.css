@@ -3988,9 +3988,16 @@ figure.class-table {
   min-height: 48px;
   will-change: transform;
 }
+/* Le bouton d'un bout de liaison : un glissé parti de lui fait glisser la Carte (ArrangeHandles.tsx le relaie à la
+   scène) ; le navigateur ne le prend pas pour un défilement. Ses 48 px se partagent à mi-distance avec un bout voisin. */
+.arrange-handles-poses .arrange-handle[data-bout] {
+  touch-action: none;
+  min-width: 0;
+  min-height: 0;
+}
 /* L'icône de « Réunir » sur une place libre qui collerait le lieu choisi à un voisin (GD-9, choix 2a du mainteneur) :
    la même icône que le bouton de la barre, sombre sur un petit radeau clair bordé de sombre (le style des poignées),
-   posée au milieu de la place ; elle ne reçoit pas le toucher (toucher la place cale le fantôme dessus). */
+   posée sur la jointure, sur l'eau où irait la construction entre les deux terres ; elle ne reçoit pas le toucher. */
 .arrange-reunir-place {
   position: absolute;
   left: 0;
@@ -4001,7 +4008,8 @@ figure.class-table {
   width: 30px;
   height: 30px;
   border: 2px solid #3b2d20;
-  border-radius: 6px;
+  /* Des coins presque droits, comme les blocs (consultant Blocland) ; Archipéo garde ses coins arrondis. */
+  border-radius: 3px;
   background: #f3e4c0;
   color: #3b2d20;
   pointer-events: none;
@@ -4010,6 +4018,7 @@ figure.class-table {
   display: none;
 }
 :root[data-univers="archipeo"] .arrange-reunir-place {
+  border-radius: 6px;
   border-color: #142b38;
   background: #e5ebe3;
   color: #142b38;

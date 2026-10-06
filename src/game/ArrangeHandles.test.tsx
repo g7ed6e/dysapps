@@ -1,8 +1,11 @@
 // Les boutons transparents posés sur les poignées dessinées dans le monde (GD-9, 6 octobre 2026) : chacun sur sa
 // poignée, jamais sous 48 px, jamais détaché d’elle ; la dernière place donnée aux boutons qui arrivent après
 // elle ; et les touchers transmis à la 3D. Sans choix, un bouton sur chaque bout de liaison (choix 1a du mainteneur).
-import { describe, expect, it } from 'vitest';
-import { creerSuiviALEcran, placerLesBoutons, placerLesBoutsDesLiaisons } from './ArrangeHandles';
+import { fireEvent, render } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
+import { ArrangeHandles, creerSuiviALEcran, placerLesBoutons, placerLesBoutsDesLiaisons } from './ArrangeHandles';
+import type { Amenagement } from './Arranging';
+import { RELAYE_DEPUIS_UN_BOUTON } from './three/drag';
 import type { ChoixALEcran } from './world/view';
 
 const LIBRE = { x0: 0, y0: 80, x1: 800, y1: 500 };
@@ -58,5 +61,62 @@ describe('les boutons des poignées', () => {
     expect(p.get('a-b|from')).toEqual({ x: 100, y: 120, w: 48, h: 48 });
     expect(p.get('a-b|to')).toEqual({ x: 300, y: 220, w: 60, h: 50 });
     expect(placerLesBoutsDesLiaisons({ libre: LIBRE, poignees: [] }).size).toBe(0);
+  });
+
+  it('deux bouts trop proches : leurs boutons se partagent la place à mi-distance, aucun ne couvre l’autre', () => {
+    const p = placerLesBoutsDesLiaisons({
+      libre: LIBRE,
+      poignees: [],
+      bouts: [
+        { link: 'a-b', end: 'from', x: 100, y: 100, w: 28, h: 28 },
+        { link: 'a-b', end: 'to', x: 130, y: 104, w: 28, h: 28 },
+        { link: 'c-d', end: 'from', x: 400, y: 100, w: 28, h: 28 },
+      ],
+    });
+    const a = p.get('a-b|from')!;
+    const b = p.get('a-b|to')!;
+    expect(a.w).toBe(30);
+    expect(b.w).toBe(30);
+    // Plus de recouvrement : leurs bords se touchent à mi-distance.
+    expect(a.x + a.w / 2).toBeLessThanOrEqual(b.x - b.w / 2);
+    expect(p.get('c-d|from')).toEqual({ x: 400, y: 100, w: 48, h: 48 });
+  });
+});
+
+describe('le bouton d’un bout de liaison, au doigt', () => {
+  const monter = () => {
+    const choisirUnBout = vi.fn();
+    const amenagement = { choix: null, geste: null, vue: null, bouts: [{ link: 'a-b', end: 'from', x: 0, y: 0, z: 0, dx: 1, dy: 0, nom: 'L’arrivée' }], choisirUnBout } as unknown as Amenagement;
+    const { container } = render(
+      <div data-scene>
+        <canvas />
+        <ArrangeHandles amenagement={amenagement} suivi={creerSuiviALEcran()} />
+      </div>,
+    );
+    const recus: { type: string; relaye: boolean }[] = [];
+    const canvas = container.querySelector('canvas')!;
+    for (const type of ['pointerdown', 'pointermove']) canvas.addEventListener(type, (e) => recus.push({ type, relaye: RELAYE_DEPUIS_UN_BOUTON in e }));
+    return { bouton: container.querySelector<HTMLButtonElement>('[data-bout]')!, choisirUnBout, recus };
+  };
+
+  it('un toucher court (moins de 8 px) choisit l’arrivée', () => {
+    const { bouton, choisirUnBout, recus } = monter();
+    fireEvent.pointerDown(bouton, { pointerId: 1, isPrimary: true, clientX: 100, clientY: 100 });
+    fireEvent.pointerMove(bouton, { pointerId: 1, isPrimary: true, clientX: 104, clientY: 102 });
+    fireEvent.click(bouton);
+    expect(choisirUnBout).toHaveBeenCalledWith('a-b', 'from');
+    expect(recus).toEqual([]);
+  });
+
+  it('un glissé parti du bouton est relayé à la Carte, qui glisse ; il ne choisit rien', () => {
+    const { bouton, choisirUnBout, recus } = monter();
+    fireEvent.pointerDown(bouton, { pointerId: 1, isPrimary: true, clientX: 100, clientY: 100 });
+    fireEvent.pointerMove(bouton, { pointerId: 1, isPrimary: true, clientX: 112, clientY: 100 });
+    fireEvent.click(bouton);
+    expect(choisirUnBout).not.toHaveBeenCalled();
+    expect(recus).toEqual([
+      { type: 'pointerdown', relaye: true },
+      { type: 'pointermove', relaye: false },
+    ]);
   });
 });

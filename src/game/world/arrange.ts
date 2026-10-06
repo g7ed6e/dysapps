@@ -157,6 +157,18 @@ function othersFootprints(world: World, a: ArchipelagoId, sauf: BiomeId | readon
   ];
 }
 
+/** Les emprises des autres lieux d'une région que `sauf` (et des réunions sans lui), chacune avec ses lieux. */
+function othersFootprintsByPlace(world: World, a: ArchipelagoId, sauf: BiomeId): { lieux: readonly BiomeId[]; r: Rectangle }[] {
+  return [
+    ...placesOf(a)
+      .filter((id) => id !== sauf)
+      .flatMap((id) => footprintIn(world, id).map((r) => ({ lieux: [id], r }))),
+    ...joinsIn(world, a)
+      .filter((j) => !j.pair.includes(sauf))
+      .map((j) => ({ lieux: j.pair, r: j.shape.zone })),
+  ];
+}
+
 /** Des rectangles laissent-ils au moins `GAP_BETWEEN_PLACES` cases d'eau à ceux des autres ? */
 function farEnough(rs: readonly Rectangle[], autres: readonly Rectangle[]): boolean {
   return rs.every((r) => autres.every((o) => gapBetween(r, o) >= GAP_BETWEEN_PLACES));
@@ -318,14 +330,17 @@ function groupOf(world: World, id: BiomeId): BiomeId[] {
   return p ? [id, p] : [id];
 }
 
-/** Les places libres d'un lieu dans un monde (à son orientation `turn`, la sienne par défaut), dans l'ordre de la grille. */
-export function freeSpots(world: World, id: BiomeId, turn: LayoutTurn = spotOf(world, id).turn): LayoutSpot[] {
+/** Les places libres d’un lieu dans un monde (à son orientation `turn`, la sienne par défaut), dans l’ordre de la grille ; `autour` : à quelques crans d’une place seulement. */
+export function freeSpots(world: World, id: BiomeId, turn: LayoutTurn = spotOf(world, id).turn, autour?: { x: number; y: number; pas: number }): LayoutSpot[] {
   const a = archipelagoOfIsland(id);
   const autres = othersFootprints(world, a, groupOf(world, id));
   const max = LAYOUT_LAST_SPOT[a];
   const out: LayoutSpot[] = [];
-  for (let y = 0; y <= max.y; y++)
-    for (let x = 0; x <= max.x; x++) {
+  // `autour` : seulement les places à `pas` crans au plus d'une place (le dessin d'un choix n'en montre pas d'autres).
+  const [x0, x1] = autour ? [Math.max(0, autour.x - autour.pas), Math.min(max.x, autour.x + autour.pas)] : [0, max.x];
+  const [y0, y1] = autour ? [Math.max(0, autour.y - autour.pas), Math.min(max.y, autour.y + autour.pas)] : [0, max.y];
+  for (let y = y0; y <= y1; y++)
+    for (let x = x0; x <= x1; x++) {
       const spot: LayoutSpot = { x, y, turn };
       if (fitsAt(world, id, spot, autres)) out.push(spot);
     }
@@ -487,7 +502,32 @@ export function joinCandidates(world: World, id: BiomeId): BiomeId[] {
  * places portent l'icône de « Réunir ») ; vide pour deux lieux déjà réunis.
  */
 export function joinCandidatesAt(world: World, id: BiomeId, spot: LayoutSpot): BiomeId[] {
-  return joinableFrom(world, id, placedIsland(id, poseOfSpot(archipelagoOfIsland(id), spot)));
+  return joinsAround(world, id)(spot).map((j) => j.id);
+}
+
+/**
+ * Pour un lieu, de quoi dire, place par place, avec quels voisins il se réunirait s'il était posé là, et où irait leur
+ * construction (`zone`, sur l'eau entre les deux terres) : l'icône de « Réunir » s'y pose (choix 2a du mainteneur). Ce
+ * qui ne dépend pas de la place (les emprises des autres lieux, qui est ouvert) se calcule une fois : le dessin d'un
+ * choix le demande pour chacune de ses places.
+ */
+export function joinsAround(world: World, id: BiomeId): (spot: LayoutSpot) => { id: BiomeId; zone: Rectangle }[] {
+  const a = archipelagoOfIsland(id);
+  if (!getBiome(id) || joinedWith(world, id) || !isBiomeUnlocked(id, world.links)) return () => [];
+  const voisins = placesOf(a)
+    .filter((b) => b !== id && !joinedWith(world, b) && isBiomeUnlocked(b, world.links))
+    .map((b) => ({ id: b, def: placeIn(world, b) }));
+  // Les emprises de tous les autres, chacune avec son lieu : celle du voisin essayé ne compte pas.
+  const autres = othersFootprintsByPlace(world, a, id);
+  return (spot) => {
+    const def = placedIsland(id, poseOfSpot(a, spot));
+    const out: { id: BiomeId; zone: Rectangle }[] = [];
+    for (const v of voisins) {
+      const forme = joinShape(def, v.def);
+      if (forme && autres.every((o) => o.lieux.includes(v.id) || gapBetween(forme.zone, o.r) >= GAP_BETWEEN_PLACES)) out.push({ id: v.id, zone: forme.zone });
+    }
+    return out;
+  };
 }
 
 /** Les voisins avec lesquels un lieu, posé comme `def`, se réunirait (les règles de `joinCandidates`). */

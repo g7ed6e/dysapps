@@ -81,11 +81,13 @@ function explicationDeLaReunion(reunion: TextesDeLaReunion): string {
  * - `refus` : une croix (ou un cadenas pour le lieu fixe) et deux ou trois mots, toujours écrits (référent dys) ;
  * - `gardien` : le bouclier, son île, la flèche, l'écart (comme `place`, son île pour repère) ;
  * - `reunis` : les deux lieux réunis, l'icône de « Réunir » entre eux ;
- * - `texte` : une phrase écrite telle quelle (une borne, une arrivée, « Touche un lieu… »).
- * `prise` : le choix est sur une place prise (choix 3 du mainteneur) ; la ligne y ajoute la croix et « Place prise ».
+ * - `texte` : une phrase écrite telle quelle (une borne, une arrivée, « Touche un lieu… ») ; pour une arrivée, `vers` :
+ *   le lieu d'en face, écrit après l'icône de l'ouvrage (consultant UX UI) ;
+ * `prise` : le choix est sur une place prise (choix 3 du mainteneur) ; la ligne y ajoute la croix et « Place prise »,
+ * sur la même ligne, à la place du nombre de cases (il n'y a pas d'écart à dire : « Plaine des nombres ← ✕ Place prise »).
  */
 export type LigneDuMode =
-  | { genre: 'texte'; texte: string; prise?: boolean }
+  | { genre: 'texte'; texte: string; vers?: string; prise?: boolean }
   | { genre: 'place'; signes: PlaceSigns; aReposer: number; prise?: boolean }
   | { genre: 'gardien'; signes: PlaceSigns; prise?: boolean }
   | { genre: 'refus'; icone: 'close' | 'lock'; texte: string }
@@ -252,6 +254,8 @@ export interface Amenagement {
    * nom de leur bouton ; ou rien.
    */
   bouts: readonly (LinkEndHandle & { nom: string })[] | null;
+  /** Les mêmes poignées, sans leur nom, pour la 3D : la même liste tant que le monde ne bouge pas. */
+  boutsDuMonde: readonly LinkEndHandle[] | null;
   /** Toucher la poignée d'un bout : son arrivée est choisie. */
   choisirUnBout(link: string, end: 'from' | 'to'): void;
 }
@@ -345,17 +349,24 @@ export function useAmenagement({
     setAConfirmer(false);
     const w = worldRef.current;
     if (texte !== undefined || !c) return direTexte(texte ?? '');
-    const l =
+    const prise = c.genre !== 'liaison' && !choiceFits(w, c);
+    // Sur une place prise (choix 3 du mainteneur) : la croix et « Place prise » prennent la place du nombre de cases, sur
+    // la même ligne ; la voix dit « À l’ouest de la Plaine des nombres. Place prise. ».
+    const ou = (signes: PlaceSigns) => `${signes.direction.avec} ${ofPlace(signes.voisin)}`;
+    const l: { ligne: LigneDuMode; lu: string } =
       c.genre === 'lieu'
         ? ligneDuLieu(w, c.id, c.spot)
         : c.genre === 'gardien'
           ? ligneDuGardien(w, c.id, c.place)
           : (() => {
             const t = choiceSentence(w, c, nom, mot);
-            return { ligne: { genre: 'texte', texte: t } as LigneDuMode, lu: t };
+            const vers = c.genre === 'arrivee' ? lieuDEnFace(c.link, c.end) : null;
+            return { ligne: { genre: 'texte', texte: t, ...(vers ? { vers: nom(vers) } : {}) } satisfies LigneDuMode, lu: t };
           })();
-    // Sur une place prise (choix 3 du mainteneur) : la ligne y ajoute la croix et « Place prise », dits aussi.
-    if (c.genre !== 'liaison' && !choiceFits(w, c) && l.ligne.genre !== 'refus' && l.ligne.genre !== 'reunis') return annoncer({ ...l.ligne, prise: true }, `${l.lu} ${PLACE_PRISE}.`);
+    if (!prise) return annoncer(l.ligne, l.lu);
+    if (l.ligne.genre === 'place') return annoncer({ ...l.ligne, prise: true }, `${enPhrase(ou(l.ligne.signes))} ${PLACE_PRISE}.`);
+    if (l.ligne.genre === 'gardien') return annoncer({ ...l.ligne, prise: true }, `Le Gardien : ${ou(l.ligne.signes)}. ${PLACE_PRISE}.`);
+    if (l.ligne.genre === 'texte') return annoncer({ ...l.ligne, prise: true }, `${l.lu} ${PLACE_PRISE}.`);
     annoncer(l.ligne, l.lu);
   };
 
@@ -588,6 +599,11 @@ export function useAmenagement({
     const r = emprise(worldRef.current, id);
     return p.x < r.x0 || p.x >= r.x1 || p.y < r.y0 || p.y >= r.y1;
   };
+  /** Le choix relâché (Échap, ou le choix retouché) : rien n'est choisi, les poignées des bouts reviennent. */
+  const relacher = (): true => {
+    choisir(null, '');
+    return true;
+  };
   const intention = (i: Intention): boolean => {
     if (!ouvert) return false;
     if (enCours.current) {
@@ -611,12 +627,15 @@ export function useAmenagement({
           choisir(snapChoice(w, choix, p));
           return true;
         }
+        // Le lieu choisi, retouché sur sa terre : il est relâché, comme avec Échap (sans clavier aussi).
+        if (choix?.genre === 'lieu' && choix.id === i.id) return relacher();
         const c = chooseIsland(w, i.id);
         if (!c) direRefus(refus('fixe'));
         else choisir(c);
         return true;
       }
       case 'creature':
+        if ((choix?.genre === 'gardien' && i.gardien) || (choix?.genre === 'lieu' && !i.gardien)) if (choix.id === i.id) return relacher();
         if (i.gardien) choisir(chooseGuardian(w, i.id));
         else {
           const c = chooseIsland(w, i.id);
@@ -625,6 +644,7 @@ export function useAmenagement({
         }
         return true;
       case 'borne': {
+        if (choix?.genre === 'borne' && choix.key === `${i.ile}:${i.mission}`) return relacher();
         const c = chooseStation(w, `${i.ile}:${i.mission}`);
         if (c) choisir(c);
         return true;
@@ -652,7 +672,7 @@ export function useAmenagement({
         else if (aConfirmer) garder();
         else if (liste) fermerLaListe();
         else if (fermerLePanneau) fermerLePanneau();
-        else if (choix && !enCours.current) choisir(null, '');
+        else if (choix && !enCours.current) relacher();
         return;
       }
       const f = FLECHES.find((x) => x.touche === e.key);
@@ -671,19 +691,14 @@ export function useAmenagement({
   const placePrise = useMemo(() => (choix ? !choiceFits(world, choix) : false), [world, choix]);
   // Sans choix ni geste, chaque bout de liaison posée porte sa poignée, nommée pour son bouton.
   const montrerLesBouts = ouvert && !choix && !geste && !question;
-  // Le tracé des liaisons se calcule une fois par monde ; les noms des boutons, à chaque fois (les noms de l'univers).
+  // Le tracé des liaisons se calcule une fois par monde (la 3D le reçoit tel quel) ; les noms des boutons, à chaque fois.
   const boutsDuMonde = useMemo(() => (montrerLesBouts ? linkEndHandles(world, a) : null), [montrerLesBouts, world, a]);
-  const bouts = useMemo(
-    () =>
-      boutsDuMonde?.map((b) => {
-        const l = getBridge(b.link)!;
-        const [ici, la] = b.end === 'from' ? [l.from, l.to] : [l.to, l.from];
-        return { ...b, nom: `L’arrivée ${ofPlace(nom(ici))}, vers ${thePlace(nom(la))}` };
-      }) ?? null,
-    // Les noms ne changent qu'avec l'univers, comme `nom` : la liste reste la même tant que le monde ne bouge pas.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [boutsDuMonde],
-  );
+  const bouts =
+    boutsDuMonde?.map((b) => {
+      const la = lieuDEnFace(b.link, b.end);
+      const ici = lieuDEnFace(b.link, b.end === 'from' ? 'to' : 'from');
+      return { ...b, nom: `L’arrivée sur ${ici ? thePlace(nom(ici)) : ''}, ${mot.du} vers ${la ? thePlace(nom(la)) : ''}` };
+    }) ?? null;
   return {
     ouvert,
     ouvrir,
@@ -720,6 +735,7 @@ export function useAmenagement({
     reunirAvec,
     placePrise,
     bouts,
+    boutsDuMonde,
     choisirUnBout: (link, end) => {
       if (enCours.current) return;
       const c = chooseLinkEnd(worldRef.current, link, end);
@@ -728,6 +744,12 @@ export function useAmenagement({
     voisinAReunir: (id) => voisinAReunir(world, id),
     choisirDirect: (c) => choisir(c),
   };
+}
+
+/** Le lieu à l'autre bout d'une liaison, vu depuis son bout `end`. */
+function lieuDEnFace(link: string, end: 'from' | 'to'): BiomeId | null {
+  const l = getBridge(link);
+  return l ? (end === 'from' ? l.to : l.from) : null;
 }
 
 /** Deux places de la grille sont-elles la même (orientation comprise) ? */

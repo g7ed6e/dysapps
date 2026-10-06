@@ -17,6 +17,7 @@ import {
   formeDesPoignees,
   placerALEchelle,
   POIGNEE_MIN_PX,
+  reculsDesBouts,
   type PoigneesDuChoix,
   type StyleDesPoignees,
 } from '../world/arrangeHandles';
@@ -321,15 +322,21 @@ export interface BoutsDesLiaisons {
  * Les petits radeaux des bouts de liaison (6 octobre 2026, choix 1a du mainteneur) : un seul maillage à couleurs par
  * sommet (6 triangles par bout, un appel), sans lumière ni brume, toujours visible (sans test de profondeur, après le
  * décor) ; jamais sous `BOUT_MIN_PX` à l'écran. Rien à lire : les boutons transparents posés par-dessus portent les noms.
+ * Deux bouts à moins d'un bouton l'un de l'autre à l'écran reculent chacun le long de son ponton, vers sa côte
+ * (`reculsDesBouts`), à chaque changement de zoom : aucun bouton n'en couvre un autre.
  */
 export function creerBoutsDesLiaisons(scene: THREE.Scene, camera: THREE.PerspectiveCamera, style: StyleDesPoignees): BoutsDesLiaisons {
   const matiere = new THREE.MeshBasicMaterial({ vertexColors: true, fog: false, side: THREE.DoubleSide, transparent: true, depthTest: false, depthWrite: false });
   matiere.forceSinglePass = true;
   let maillage: THREE.Mesh | null = null;
   let liste: readonly LinkEndHandle[] = [];
+  /** Le recul de chaque bout le long de son ponton, en cases. */
+  let reculs: number[] = [];
   let base: Float32Array = new Float32Array(0);
   let debuts: number[] = [];
   let echelle = 0;
+  /** Le zoom de la dernière mise à l'échelle (l'échelle voulue, sans plancher) : les reculs se refont quand il change. */
+  let zoom = 0;
   let version = 0;
   const couleur = new THREE.Color();
   const point = new THREE.Vector3();
@@ -347,22 +354,23 @@ export function creerBoutsDesLiaisons(scene: THREE.Scene, camera: THREE.Perspect
     const pos = maillage.geometry.getAttribute('position') as THREE.BufferAttribute;
     const out = pos.array as Float32Array;
     liste.forEach((b, i) => {
+      const r = reculs[i] ?? 0;
       for (let v = debuts[i]; v < debuts[i + 1]; v++) {
-        out[3 * v] = b.x + base[3 * v] * s;
+        out[3 * v] = b.x - b.dx * r + base[3 * v] * s;
         out[3 * v + 1] = b.z + base[3 * v + 1];
-        out[3 * v + 2] = b.y + base[3 * v + 2] * s;
+        out[3 * v + 2] = b.y - b.dy * r + base[3 * v + 2] * s;
       }
     });
     pos.needsUpdate = true;
   };
-  /** L'échelle qui garde chaque radeau à `BOUT_MIN_PX` au moins à l'écran (1 au plus près), au milieu des bouts. */
+  /** L'échelle qui garderait chaque radeau à `BOUT_MIN_PX` à l'écran, au milieu des bouts (elle suit le zoom ; 1 au moins à l'usage). */
   const echelleVoulue = (hauteur: number): number => {
     point.set(centre.x, centre.z, centre.y);
     camera.getWorldDirection(regard);
     const profondeur = Math.max(0.1, point.sub(camera.position).dot(regard));
     const parPixel = (2 * profondeur * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2)) / Math.max(1, hauteur);
     const biais = Math.max(0.5, Math.abs(regard.y));
-    return Math.max(1, (BOUT_MIN_PX * parPixel) / (COTE_DU_BOUT * biais));
+    return (BOUT_MIN_PX * parPixel) / (COTE_DU_BOUT * biais);
   };
   let px = 0;
   let py = 0;
@@ -373,12 +381,19 @@ export function creerBoutsDesLiaisons(scene: THREE.Scene, camera: THREE.Perspect
     py = ((1 - point.y) / 2) * h;
     return true;
   };
+  /** Le bout `i`, reculé de `r` cases le long de son ponton (son recul du moment par défaut), à l'écran. */
+  const projeterLeBout = (cam: THREE.Camera, i: number, w: number, h: number, d = 0, r = reculs[i] ?? 0): boolean => {
+    const b = liste[i];
+    return projeter(cam, b.x - b.dx * r + d, b.y - b.dy * r + d, b.z, w, h);
+  };
 
   return {
     poser(bouts) {
       vider();
       liste = bouts ?? [];
+      reculs = liste.map(() => 0);
       echelle = 0;
+      zoom = 0;
       version++;
       if (!liste.length) return;
       centre.x = liste.reduce((t, b) => t + b.x, 0) / liste.length;
@@ -408,10 +423,15 @@ export function creerBoutsDesLiaisons(scene: THREE.Scene, camera: THREE.Perspect
     },
     animer(hauteur) {
       if (!maillage) return;
-      const s = echelleVoulue(hauteur);
-      if (Math.abs(s - echelle) <= 0.01 * echelle) return;
+      const z = echelleVoulue(hauteur);
+      if (Math.abs(z - zoom) <= 0.01 * zoom) return;
+      zoom = z;
+      const s = Math.max(1, z);
       echelle = s;
       version++;
+      // Les bouts trop proches pour leurs boutons de 48 px reculent le long de leur ponton.
+      const w = hauteur * camera.aspect;
+      reculs = reculsDesBouts(liste.length, (i, r) => (projeterLeBout(camera, i, w, hauteur, 0, r) ? { x: px, y: py } : null), BOUT_BOUTON_PX, COTE_DU_BOUT * s);
       ecrire(s);
     },
     aLEcran(cam, w, h, out) {
@@ -419,11 +439,10 @@ export function creerBoutsDesLiaisons(scene: THREE.Scene, camera: THREE.Perspect
       const demi = (COTE_DU_BOUT / 2) * Math.max(1, echelle);
       let k = 0;
       for (let i = 0; i < n; i++) {
-        const b = liste[i];
-        if (!projeter(cam, b.x, b.y, b.z, w, h)) continue;
+        if (!projeterLeBout(cam, i, w, h)) continue;
         const x = px;
         const y = py;
-        if (!projeter(cam, b.x + demi, b.y + demi, b.z, w, h)) continue;
+        if (!projeterLeBout(cam, i, w, h, demi)) continue;
         out[5 * k] = i;
         out[5 * k + 1] = x;
         out[5 * k + 2] = y;
@@ -443,11 +462,11 @@ export function creerBoutsDesLiaisons(scene: THREE.Scene, camera: THREE.Perspect
       // Le petit radeau dessiné (pas son bouton de 48 px) : les étiquettes s'en écartent sans s'éloigner pour rien.
       const out: LabelBox[] = [];
       const demi = (COTE_DU_BOUT / 2) * Math.max(1, echelle);
-      for (const b of liste) {
-        if (!projeter(cam, b.x, b.y, b.z, w, h)) continue;
+      for (let i = 0; i < liste.length; i++) {
+        if (!projeterLeBout(cam, i, w, h)) continue;
         const x = px;
         const y = py;
-        if (!projeter(cam, b.x + demi, b.y + demi, b.z, w, h)) continue;
+        if (!projeterLeBout(cam, i, w, h, demi)) continue;
         out.push({ x, y, w: 2 * Math.abs(px - x), h: 2 * Math.abs(py - y) });
       }
       return out;
@@ -459,6 +478,7 @@ export function creerBoutsDesLiaisons(scene: THREE.Scene, camera: THREE.Perspect
       vider();
       matiere.dispose();
       liste = [];
+      reculs = [];
     },
   };
 }

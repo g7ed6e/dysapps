@@ -152,8 +152,11 @@ const SHOTS = [
   { name: 'amenager-arrivee', state: MID, go: '/adventure/map', act: amenagerUnBout },
   // Choix 3 : une flèche mène le fantôme d'un cran sur une place prise : la croix grise, « Place prise », Poser éteint.
   { name: 'amenager-place-prise', state: MID, go: '/adventure/map', act: amenagerPlacePrise('maths-6e-fractions', ['Est', 'Nord', 'Ouest', 'Sud']) },
-  // Choix 2a, pour les relectures : la Tour choisie, les places qui la colleraient à un voisin portent l'icône de Réunir.
-  { name: 'amenager-reunir-places', state: REUNIR, go: '/adventure/map', act: amenagerChoisir('french-6e-reading'), surDemande: true },
+  // La même de nuit, pour relire le contraste de la croix sur l'eau.
+  { name: 'amenager-place-prise-nuit', state: MID, go: '/adventure/map', nuit: true, act: amenagerPlacePrise('maths-6e-fractions', ['Est', 'Nord', 'Ouest', 'Sud']), surDemande: true },
+  // Choix 2a, pour les relectures : la Rivière des fractions choisie, au milieu des Premiers Rivages (quelques ouvrages,
+  // la Carte lisible) ; la place qui la collerait à un voisin porte l'icône de Réunir, sur la jointure.
+  { name: 'amenager-reunir-places', state: MID, go: '/adventure/map', act: amenagerChoisir('maths-6e-fractions'), surDemande: true },
   // Réunir deux lieux (GD-9, point 10) : la Tour du lecteur choisie, « Réunir » touché, la question, « Réunir avec la
   // Ferme des accords », « Valider » ; la digue finie depuis son panneau, puis regardée de près sur la Carte (l'herbe
   // sur la pierre, la marche).
@@ -161,6 +164,9 @@ const SHOTS = [
   // Pour les relectures, sur demande : le mode au téléphone, la question de « Réunir », et le geste tenu au milieu du
   // démontage (on ne doit voir aucun creux dans la couche qui reste).
   { name: 'telephone-amenager', state: MID, go: '/adventure/map', size: PHONE, act: amenager('maths-6e-fractions', { x: 150, y: 100 }), surDemande: true },
+  // Au téléphone : les petits radeaux des bouts, et une place prise en grand texte (la ligne du haut garde sa hauteur).
+  { name: 'telephone-amenager-bouts', state: MID, go: '/adventure/map', size: PHONE, act: amenagerOuvrir, surDemande: true },
+  { name: 'telephone-amenager-place-prise', state: MID, go: '/adventure/map', size: PHONE, settings: { fontSize: 28 }, act: amenagerPlacePrise('maths-6e-fractions', ['Est', 'Nord', 'Ouest', 'Sud']), surDemande: true },
   // Au téléphone en grand texte, « Modifier le plan » propose d'abord la liste : la liste ouverte dans son panneau.
   { name: 'telephone-amenager-liste', state: MID, go: '/adventure/map', size: PHONE, settings: { fontSize: 28 }, act: amenagerEnListe, surDemande: true },
   { name: 'reunir-question', state: REUNIR, go: '/adventure/map', act: reunirQuestion('french-6e-reading'), surDemande: true },
@@ -238,6 +244,11 @@ SHOTS.push(
   { ...archipeo({ base: 'reunir', name: 'archipeo-reunir' }), surDemande: true },
   // « Modifier le plan » ouvert dans Archipéo, la Rivière des fractions choisie : son nom sur son fantôme, une fois.
   { ...archipeo({ base: 'amenager', name: 'archipeo-modifier-le-plan' }), surDemande: true },
+  // Le plan sans choix (les radeaux Brume des bouts) et une place prise (la croix grise), de jour et de nuit.
+  { ...archipeo({ base: 'amenager-bouts', name: 'archipeo-amenager-bouts' }), surDemande: true },
+  { ...archipeo({ base: 'amenager-bouts', name: 'archipeo-amenager-bouts-nuit' }), nuit: true, surDemande: true },
+  { ...archipeo({ base: 'amenager-place-prise', name: 'archipeo-amenager-place-prise' }), surDemande: true },
+  { ...archipeo({ base: 'amenager-place-prise', name: 'archipeo-amenager-place-prise-nuit' }), nuit: true, surDemande: true },
   { ...archipeo({ base: 'amenager-geste', name: 'archipeo-amenager-geste-nuit' }), act: amenagerGeste('maths-6e-fractions', { x: 150, y: 100 }, 450), settings: { univers: 'archipeo' }, nuit: true, surDemande: true },
 );
 SHOTS.push(

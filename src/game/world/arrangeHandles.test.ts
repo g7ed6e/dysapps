@@ -8,7 +8,11 @@ import { DIRECTION_STEP, placeIn, routesIn, spotOf } from './arrange';
 import { getBridge } from './archipelago';
 import { ARCHIPELAGO_IDS } from './archipelagos';
 import {
+  bordDeLaCroix,
   BUDGET_DES_POIGNEES,
+  POIGNEE_MIN_PX,
+  RECUL_MAX_DU_BOUT,
+  reculsDesBouts,
   coutDesBouts,
   formeDesBouts,
   linkEndHandles,
@@ -199,11 +203,34 @@ describe('une place prise (choix 3 du mainteneur)', () => {
       const sans = formeDesPoignees(p.liste, style);
       expect(f.index.length - sans.index.length).toBe(8 * 3);
       const teintes = new Set(Array.from({ length: f.couleurs.length / 3 }, (_, i) => Array.from(f.couleurs.slice(3 * i, 3 * i + 3)).join(',')).slice(f.debuts.at(-2)));
-      expect(teintes.has(Float32Array.from(COULEURS_DES_POIGNEES[style].pierre).join(','))).toBe(true);
+      expect(teintes.has(Float32Array.from(COULEURS_DES_POIGNEES[style].croix).join(','))).toBe(true);
       expect(teintes.has(Float32Array.from(COULEURS_DES_POIGNEES[style].bord).join(','))).toBe(true);
     }
     // Sur une place libre, pas de croix.
     expect(arrangeView(world, unLieu).poignees!.prise).toBeUndefined();
+  });
+
+  it('son bord sombre fait 2 px au moins à l’écran, à toute échelle et pour toute taille de croix', () => {
+    // À l'échelle `s`, un radeau de `COTE_DU_RADEAU × s` cases fait `POIGNEE_MIN_PX` de haut (au moins, à l'échelle 1) ;
+    // la croix est agrandie de `max(1, s × COTE_DU_RADEAU / (2 × bras))` (three/arrangeHandles.ts).
+    for (let bras = 1.2; bras <= 5; bras += 0.1)
+      for (let s = 1; s <= 12; s += 0.25) {
+        const f = Math.max(1, (s * COTE_DU_RADEAU) / (2 * bras));
+        const pxParCase = POIGNEE_MIN_PX / (COTE_DU_RADEAU * s);
+        expect(bordDeLaCroix(bras) * f * pxParCase, `bras ${bras.toFixed(1)}, échelle ${s}`).toBeGreaterThanOrEqual(2);
+      }
+  });
+});
+
+describe('une arrivée ou une borne choisie', () => {
+  it('seulement les flèches qui mènent quelque part : aucun radeau gris qui se lirait comme une dalle', () => {
+    for (const a of ARCHIPELAGO_IDS)
+      for (const b of linkEndHandles(world, a)) {
+        const c = chooseLinkEnd(world, b.link, b.end)!;
+        const p = arrangeView(world, c).poignees!;
+        expect(p.liste.every((q) => q.dispo), `${b.link} ${b.end}`).toBe(true);
+        expect(p.liste.map((q) => q.cle)).toEqual(CLES_DES_POIGNEES.filter((k) => k !== 'tourner' && stepChoice(world, c, k) !== null));
+      }
   });
 });
 
@@ -220,6 +247,40 @@ describe('les poignées des bouts de liaison (choix 1a du mainteneur)', () => {
         expect(chooseLinkEnd(world, b.link, b.end)?.genre).toBe('arrivee');
       }
     }
+  });
+
+  it('le sens de chaque ponton, de sa côte vers le large, une case', () => {
+    for (const b of linkEndHandles(world, '6e')) expect(Math.abs(b.dx) + Math.abs(b.dy), `${b.link} ${b.end}`).toBe(1);
+  });
+
+  it('deux bouts trop proches à l’écran reculent chacun le long de son ponton, jamais plus que le recul permis', () => {
+    // Deux bouts face à face sur un bras d'eau étroit (1 case = 6 px) : 4 cases d'écart, 24 px.
+    const bouts = [
+      { x: 0, dx: 1 },
+      { x: 4, dx: -1 },
+    ];
+    const ecran = (i: number, r: number) => ({ x: (bouts[i].x - bouts[i].dx * r) * 6, y: 0 });
+    // Un radeau de 2 cases.
+    const r = reculsDesBouts(2, ecran, 48, 2);
+    expect(r[0]).toBeGreaterThan(0);
+    expect(r[0]).toBe(r[1]);
+    expect(Math.abs(ecran(0, r[0]).x - ecran(1, r[1]).x)).toBeGreaterThanOrEqual(48);
+    expect(Math.max(...r)).toBeLessThanOrEqual(RECUL_MAX_DU_BOUT * 2);
+    // Au coin d'un même lieu : l'un pointe au nord au-dessus de l'autre, qui pointe à l'ouest ; reculer le premier les
+    // rapprocherait, c'est l'autre qui recule.
+    const coin = [
+      { x: 0, y: 0, dx: 0, dy: -1 },
+      { x: 0, y: 4, dx: -1, dy: 0 },
+    ];
+    const ecranDuCoin = (i: number, rr: number) => ({ x: (coin[i].x - coin[i].dx * rr) * 6, y: (coin[i].y - coin[i].dy * rr) * 6 });
+    const rc = reculsDesBouts(2, ecranDuCoin, 48, 4);
+    expect(rc[0]).toBe(0);
+    expect(rc[1]).toBeGreaterThan(0);
+    // Côte à côte sur la même côte (même sens) : reculer ne les écarte pas, ils restent ; leurs boutons se partagent la place.
+    const cote = (i: number, rr: number) => ({ x: i * 12, y: rr * 6 });
+    expect(reculsDesBouts(2, cote, 48)).toEqual([0, 0]);
+    // Loin l'un de l'autre : rien ne bouge.
+    expect(reculsDesBouts(2, (i) => ({ x: i * 100, y: 0 }), 48)).toEqual([0, 0]);
   });
 
   it('un petit radeau clair à bord sombre et sa prise, 6 triangles, jamais le jaune ; toutes sous 400 triangles, un appel', () => {
