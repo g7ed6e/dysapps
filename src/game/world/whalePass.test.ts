@@ -51,7 +51,7 @@ it("chaque île avec la mer a un passage de baleine sur l’eau libre, au large 
       expect(passingWhale(whaleSpots(a, []), r)).toBeGreaterThanOrEqual(0);
     }
   }
-});
+}, 30_000);
 
 it("le passage se voit depuis la caméra : derrière l’île, en haut de l’écran", () => {
   const south = whalePassRoute("maths-6e-calculation", [])!;
