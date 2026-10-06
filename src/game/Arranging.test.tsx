@@ -154,6 +154,8 @@ describe('le mode « Aménager »', () => {
     expect(fin()).toEqual(['Garder', 'Valider']);
     const ordre = Array.from(document.querySelectorAll('.arrange-bar button')).map((b) => b.getAttribute('aria-label') ?? b.textContent?.trim());
     expect(ordre.indexOf('Garder')).toBe(ordre.indexOf('Annuler') + 1);
+    // Une seule action attend : « Poser » s'éteint pendant la question.
+    expect(screen.getByRole('button', { name: 'Poser' })).toBeDisabled();
     // « Garder » porte l'icône du mode (on continue d'aménager), celle de « Modifier le plan », pas la flèche de retour.
     const dessin = (name: 'amenager' | 'back') => render(<Icon name={name} />).container.querySelector('svg')?.innerHTML;
     const garder = document.querySelector('.arrange-garder svg')?.innerHTML;

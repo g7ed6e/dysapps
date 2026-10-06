@@ -294,7 +294,7 @@ export function ArrangeBar({ amenagement, className, croix = false }: { amenagem
       <div className="arrange-bar-outils">
         {croix && <IconButton icone="tourner" nom="Tourner" disabled={!canTurn(choix) || occupe} onClick={amenagement.tourner} />}
         <IconButton icone="defaire" nom="Défaire la dernière pose" mot="Défaire" disabled={!amenagement.peutDefaire || occupe} onClick={amenagement.defaire} />
-        <button type="button" className={`button arrange-pose${choix && !enQuestion ? ' primary' : ''}`} disabled={!choix || occupe || enQuestion} onClick={amenagement.poserIci}>
+        <button type="button" className={`button arrange-pose${choix && !enQuestion && !amenagement.aConfirmer ? ' primary' : ''}`} disabled={!choix || occupe || enQuestion || amenagement.aConfirmer} onClick={amenagement.poserIci}>
           <Icon name="poser" /> <span>Poser</span>
         </button>
         {/* La place de « Réunir », entre « Poser » et « Annuler », réservée dès qu'un lieu est choisi (sur la Carte ; la
