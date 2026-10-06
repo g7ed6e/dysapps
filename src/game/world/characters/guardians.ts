@@ -639,20 +639,23 @@ const ALAMBIC = fromLayers(
 
 // L'Automate de laiton (DA, SC-2) : trapu, une tête-cube à deux hublots clairs, trois boutons clairs en colonne sur la
 // poitrine, des rivets sombres aux coins, la grande clé de remontage dans le dos ; ni antenne ni visage-écran. Trois
-// couleurs.
+// couleurs. Pour que la tête et les bras se lisent (retouche du DA sur captures, 6 octobre 2026) : un cou sombre d'un
+// cube détache la tête du tronc, les bras pendent des épaules, décollés du tronc d'une case et tenus par une
+// articulation sombre, et le laiton clair des hublots, des boutons et de la clé est éclairci pour trancher sur le tronc.
 const AUTOMATE = fromLayers(
   [
-    ['.......', '.AA.AA.', '.AA.AA.', '.......', '.......', '.......'],
-    ['.......', '.AA.AA.', '.AA.AA.', '.......', '.......', '.......'],
-    ['.SAEAS.', '.AAAAA.', '.AAAAA.', '.AAAAA.', '.......', '.......'],
-    ['.AAEAA.', 'AAAAAAA', 'AAAAAAA', '.AAAAA.', '.......', '..EEE..'],
-    ['.AAEAA.', 'AAAAAAA', 'AAAAAAA', '.AAAAA.', '...A...', '..E.E..'],
-    ['.SAAAS.', '.AAAAA.', '.AAAAA.', '.AAAAA.', '.......', '..EEE..'],
-    ['..AAA..', '..AAA..', '..AAA..', '.......', '.......', '.......'],
-    ['..EAE..', '..AAA..', '..AAA..', '.......', '.......', '.......'],
-    ['..SAS..', '..AAA..', '..AAA..', '.......', '.......', '.......'],
+    ['.........', '..AA.AA..', '..AA.AA..', '.........', '.........', '.........'],
+    ['.........', '..AA.AA..', '..AA.AA..', '.........', '.........', '.........'],
+    ['..SAEAS..', 'A.AAAAA.A', 'A.AAAAA.A', '..AAAAA..', '.........', '.........'],
+    ['..AAEAA..', 'A.AAAAA.A', 'A.AAAAA.A', '..AAAAA..', '.........', '...EEE...'],
+    ['..AAEAA..', 'A.AAAAA.A', 'A.AAAAA.A', '..AAAAA..', '....A....', '...E.E...'],
+    ['..SAAAS..', 'ASAAAAASA', 'ASAAAAASA', '..AAAAA..', '.........', '...EEE...'],
+    ['.........', '....S....', '....S....', '.........', '.........', '.........'],
+    ['...AAA...', '...AAA...', '...AAA...', '.........', '.........', '.........'],
+    ['...EAE...', '...AAA...', '...AAA...', '.........', '.........', '.........'],
+    ['...SAS...', '...AAA...', '...AAA...', '.........', '.........', '.........'],
   ],
-  { A: '#c9a43c', E: '#e2c25a', S: '#5a4a2a' },
+  { A: '#c9a43c', E: '#f3e09a', S: '#4a3c22' },
 );
 
 export const GUARDIAN_CUBES: Record<BiomeId, CubeDeModele[]> = {
