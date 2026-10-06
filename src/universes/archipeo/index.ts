@@ -232,7 +232,7 @@ export const ARCHIPEO = {
       },
     },
     'history-5e-middle-ages': {
-      challenge: 'Le Griffon d’émail dit doucement : « Mes émaux sont éteints. Tu as lu toutes les chroniques du bourg : remets chaque siècle à sa place. »',
+      challenge: 'Le Griffon d’émail dit doucement : « Mes émaux sont éteints. Tu as lu toutes les chroniques du bourg : dis-moi en quel siècle vient chaque chose. »',
       guardianSays: {
         hit: 'Un émail de mes ailes s’allume. C’est juste.',
         miss: 'Rien ne s’éteint. Regarde la frise, relis le document, et reprends.',
@@ -248,7 +248,7 @@ export const ARCHIPEO = {
       },
     },
     'history-4e-revolutions': {
-      challenge: 'Le Paon de faïence dit doucement : « Les yeux de ma roue sont éteints. Tu as lu toutes les pages de l’imprimerie : remets chaque révolution à sa date. »',
+      challenge: 'Le Paon de faïence dit doucement : « Les yeux de ma roue sont éteints. Tu as lu toutes les pages de l’imprimerie : dis-moi ce que chaque révolution a changé. »',
       guardianSays: {
         hit: 'Un œil de ma roue s’allume. C’est juste.',
         miss: 'Rien ne s’éteint. Regarde la frise, relis le document, et reprends.',
@@ -272,7 +272,7 @@ export const ARCHIPEO = {
       },
     },
     'geography-3e-france': {
-      challenge: 'Le Cerf de lauze dit doucement : « Les lauzes de mes bois sont éteintes. Tu as parcouru toute la vallée : dis-moi comment vit le territoire. »',
+      challenge: 'Le Cerf de lauze dit doucement : « Les lauzes de mes bois sont éteintes. Une lauze, c’est une pierre plate. Tu as parcouru toute la vallée : dis-moi comment vit le territoire. »',
       guardianSays: {
         hit: 'Une lauze de mes bois s’allume. C’est juste.',
         miss: 'Rien ne s’éteint. Relis le document, cherche le mot du rappel, et reprends.',

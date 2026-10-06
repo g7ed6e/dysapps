@@ -341,7 +341,7 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
     home: 'Mon quartier est complet : la ville, les champs et la mer.',
   },
   'history-5e-middle-ages': {
-    greeting: 'Bonjour, bâtisseur ! Ici, on écrit les chroniques du Moyen Âge. Chaque bonne réponse te donne un bloc d’enluminure. Une enluminure, c’est une page peinte à la main, avec des filets d’or.',
+    greeting: 'Bonjour, bâtisseur ! Ici, on écrit les chroniques du Moyen Âge. Chaque bonne réponse te donne un bloc d’enluminure. Une enluminure, c’est une page peinte à la main, avec des traits d’or.',
     lines: ['Une page à la fois, un siècle à la fois.', 'De l’enluminure pour mon logis : réponds à une question.', 'Un siècle, c’est cent ans. Le rappel te dit où il commence.'],
     home: 'Mon logis est fini. Mes pages enluminées ont leur place.',
   },

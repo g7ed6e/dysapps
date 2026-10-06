@@ -70,7 +70,7 @@ Pour tous les items :
 6. énoncé : Les riches et les pauvres vivent dans des quartiers séparés : c’est la … .
    - choix : densité · ségrégation · mondialisation
    - réponse : ségrégation
-   - indice : Cherche « Ségrégation » dans le rappel.
+   - indice : Cherche « riches et pauvres » dans le rappel.
    - explication : La ségrégation : les habitants sont séparés selon leur richesse. On la voit dans beaucoup de grandes villes.
 7. énoncé : À Mumbai, Dharavi est un des plus grands … d’Asie.
    - choix : ports · quartiers d’affaires · bidonvilles
@@ -186,7 +186,7 @@ Pour tous les items :
 2. énoncé : Quitter son pays pour aller vivre ailleurs, c’est … .
    - choix : émigrer · immigrer · voyager
    - réponse : émigrer
-   - indice : Lis la ligne « Émigrer » du rappel.
+   - indice : Cherche « quitter son pays » dans le rappel.
    - explication : Émigrer : quitter son pays. Immigrer : arriver dans un pays. La même personne émigre du Mali et immigre en France.
 3. énoncé : Une personne qui fuit la guerre dans son pays est un … .
    - choix : réfugié · touriste · saisonnier

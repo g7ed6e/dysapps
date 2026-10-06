@@ -231,7 +231,7 @@ export const BLOCLAND = {
       },
     },
     'history-5e-middle-ages': {
-      challenge: 'Le Griffon d’émail déploie ses ailes : « Mes émaux sont tout gris. Tu as lu toutes les chroniques du bourg : remets chaque siècle à sa place. »',
+      challenge: 'Le Griffon d’émail déploie ses ailes : « Mes émaux sont tout gris. Tu as lu toutes les chroniques du bourg : dis-moi en quel siècle vient chaque chose. »',
       guardianSays: {
         hit: 'Juste. Un émail de mes ailes reprend sa couleur.',
         miss: 'Mes couleurs restent. Regarde la frise, relis le document, et reprends.',
@@ -247,7 +247,7 @@ export const BLOCLAND = {
       },
     },
     'history-4e-revolutions': {
-      challenge: 'Le Paon de faïence ouvre sa roue : « Ma roue est toute grise. Tu as lu toutes les pages de l’imprimerie : remets chaque révolution à sa date. »',
+      challenge: 'Le Paon de faïence ouvre sa roue : « Ma roue est toute grise. Tu as lu toutes les pages de l’imprimerie : dis-moi ce que chaque révolution a changé. »',
       guardianSays: {
         hit: 'Juste. Une plume de ma roue reprend sa couleur.',
         miss: 'Mes couleurs restent. Regarde la frise, relis le document, et reprends.',
@@ -271,7 +271,7 @@ export const BLOCLAND = {
       },
     },
     'geography-3e-france': {
-      challenge: 'Le Cerf de lauze lève la tête : « Mes bois sont tout gris. Tu as parcouru toute la vallée : dis-moi comment vit le territoire. »',
+      challenge: 'Le Cerf de lauze lève la tête : « Mes bois sont tout gris. Une lauze, c’est une pierre plate. Tu as parcouru toute la vallée : dis-moi comment vit le territoire. »',
       guardianSays: {
         hit: 'Juste. Une lauze de mes bois reprend sa couleur.',
         miss: 'Mes couleurs restent. Relis le document, cherche le mot du rappel, et reprends.',

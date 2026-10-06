@@ -42,7 +42,7 @@
         "voyager"
       ],
       "answer": "émigrer",
-      "hint": "Lis la ligne « Émigrer » du rappel.",
+      "hint": "Cherche « quitter son pays » dans le rappel.",
       "explanation": "Émigrer : quitter son pays. Immigrer : arriver dans un pays. La même personne émigre du Mali et immigre en France.",
       "aid": {
         "kind": "rule-card",

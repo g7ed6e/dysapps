@@ -71,7 +71,7 @@ Pour tous les items :
 6. énoncé : Quand presque tous les habitants peuvent se nourrir, se soigner et aller à l’école, le pays est … .
    - choix : développé · en développement · pauvre
    - réponse : développé
-   - indice : Cherche « Développement » dans le rappel.
+   - indice : Cherche « se soigner » dans le rappel.
    - explication : Se nourrir, se soigner, s’instruire : quand presque tous le peuvent, le pays est développé, comme la Norvège ou le Japon.
 7. énoncé : Pour mesurer le développement, on regarde la santé, l’éducation et la … .
    - choix : superficie · richesse · religion

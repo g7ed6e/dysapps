@@ -69,7 +69,7 @@ Pour tous les items :
 6. énoncé : Les bureaux, les commerces et les hôpitaux font partie du secteur … .
    - choix : primaire · secondaire · tertiaire
    - réponse : tertiaire
-   - indice : Cherche « tertiaire » dans le rappel.
+   - indice : Cherche « les services » dans le rappel.
    - explication : Les services forment le secteur tertiaire, qui emploie la plupart des Français. Le primaire, c’est l’agriculture ; le secondaire, l’industrie.
 7. énoncé : Un lieu qui réunit universités, laboratoires et entreprises de pointe est une … .
    - choix : zone industrielle · technopole · métropole

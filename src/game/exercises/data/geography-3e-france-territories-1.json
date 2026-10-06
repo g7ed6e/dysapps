@@ -150,7 +150,7 @@
         "tertiaire"
       ],
       "answer": "tertiaire",
-      "hint": "Cherche « tertiaire » dans le rappel.",
+      "hint": "Cherche « les services » dans le rappel.",
       "explanation": "Les services forment le secteur tertiaire, qui emploie la plupart des Français. Le primaire, c’est l’agriculture ; le secondaire, l’industrie.",
       "aid": {
         "kind": "rule-card",
