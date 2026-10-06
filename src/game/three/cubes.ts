@@ -158,6 +158,8 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
         const mesh = meshOf(groupe, surface);
         terrain.add(mesh);
         if (!queue) continue;
+        // Les cubes de la vague descendent de haut, hors de la sphère englobante : ces maillages-là se dessinent toujours.
+        mesh.frustumCulled = false;
         const position = mesh.geometry.getAttribute('position') as THREE.BufferAttribute;
         position.setUsage(THREE.DynamicDrawUsage);
         const repos = new Float32Array(queue.rangDuSommet.length);

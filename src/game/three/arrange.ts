@@ -183,7 +183,9 @@ const VOILE_OPACITE = 0.78;
 const VOILE_DE_NUIT = 0x5d7196;
 
 /** La hauteur du soulèvement du lieu choisi (en cases), et le temps qu'il met à monter (ms). */
-const SOULEVEMENT = { hauteur: 1, dureeMs: 220 };
+/** De combien le mode soulève le lieu choisi : les sphères englobantes des blocs en tiennent compte (./meshes.ts). */
+export const HAUTEUR_DU_SOULEVEMENT = 1;
+const SOULEVEMENT = { hauteur: HAUTEUR_DU_SOULEVEMENT, dureeMs: 220 };
 
 export interface Amenagement extends PartieDeLaScene {
   /** Le dessin du choix (ou rien : le mode sans choix, ou hors du mode). */

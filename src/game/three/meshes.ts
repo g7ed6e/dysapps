@@ -4,7 +4,7 @@ import * as THREE from 'three';
 import { isPlainTint, type FaceSide, type MeshGroup } from '../world/mesher';
 import { blockMaterial, tintedMaterial, vertexTintedMaterial, type TextureKind } from './textures';
 import type { Surface } from './surface';
-import { avecLAmenagement } from './arrange';
+import { avecLAmenagement, HAUTEUR_DU_SOULEVEMENT } from './arrange';
 
 /** Une nappe de brume : blanc au centre, qui s'efface vers les bords (dégradé radial peint une fois). */
 export function mistTexture(): THREE.Texture | null {
@@ -73,8 +73,20 @@ export function meshOf(g: MeshGroup, surface: Surface | null = null): THREE.Mesh
   // Les blocs savent le mode « Aménager » (le lieu choisi soulevé, le geste de la pose : ./arrange.ts).
   const mesh = new THREE.Mesh(geo, surface?.material(g) ?? avecLAmenagement(materialFor(g.texture, g.face, g.color, g.ghost, g.muted)));
   if (g.ghost) mesh.renderOrder = 1;
-  // Les faces cachées ne sont plus là : on peut renoncer au tri par la taille de la scène.
-  mesh.frustumCulled = false;
+  return trieParLaVue(mesh);
+}
+
+/**
+ * Un maillage que Three.js ne dessine pas quand il est hors de l'écran. Un matériau sert souvent une ou deux îles : à la
+ * vue d'une île, la plupart des maillages du terrain sont hors champ (6e : 181 → 94 appels, étude du 06/10/2026). Sa
+ * sphère englobante grandit de la hauteur dont le mode « Aménager » soulève un lieu (./arrange.ts), qui déplace ses
+ * sommets dans le shader.
+ */
+function trieParLaVue(mesh: THREE.Mesh): THREE.Mesh {
+  mesh.geometry.computeBoundingSphere();
+  const sphere = mesh.geometry.boundingSphere;
+  if (sphere) sphere.radius += HAUTEUR_DU_SOULEVEMENT;
+  mesh.frustumCulled = true;
   return mesh;
 }
 
@@ -110,8 +122,6 @@ export function meshesOf(groups: MeshGroup[], surface: Surface | null = null): T
   geo.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
   geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
   geo.setIndex(indices);
-  const mesh = new THREE.Mesh(geo, avecLAmenagement(vertexTintedMaterial()));
-  mesh.frustumCulled = false;
-  meshes.push(mesh);
+  meshes.push(trieParLaVue(new THREE.Mesh(geo, avecLAmenagement(vertexTintedMaterial()))));
   return meshes;
 }
