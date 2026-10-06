@@ -76,6 +76,14 @@ it('le Tutoriel est sur l’accueil, pas dans Français, et son retour mène à 
   for (const link of screen.getAllByRole('link', { name: /^Menu$/ })) expect(link).toHaveAttribute('href', '/menu');
 });
 
+it('une matière sans mission du portail ramène au menu', () => {
+  for (const path of ['/matiere/history-geography', '/matiere/lv2']) {
+    document.body.innerHTML = '';
+    renderAt(path);
+    for (const link of screen.getAllByRole('link', { name: /^Menu$/ })) expect(link).toHaveAttribute('href', '/menu');
+  }
+});
+
 it('liste les missions d’anglais du portail', () => {
   renderAt('/matiere/english');
   expect(screen.getByRole('link', { name: /Vocabulaire/ })).toBeInTheDocument();

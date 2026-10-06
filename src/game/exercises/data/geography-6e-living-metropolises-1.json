@@ -66,10 +66,10 @@
       "choices": [
         "Inde",
         "Égypte",
-        "Indonésie"
+        "Brésil"
       ],
       "answer": "Inde",
-      "hint": "Son ancien nom est Bombay, au bord de l’océan Indien.",
+      "hint": "Son ancien nom est Bombay. Cherche le pays d’Asie.",
       "explanation": "Mumbai est en Inde, en Asie du Sud. C’est l’une des plus grandes métropoles du monde.",
       "aid": {
         "kind": "rule-card",

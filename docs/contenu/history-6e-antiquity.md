@@ -64,7 +64,7 @@ Pour tous les items :
 5. énoncé : La Préhistoire se termine avec l’invention de … .
    - choix : l’agriculture · l’écriture · le feu
    - réponse : l’écriture
-   - indice : Lis les deux premières lignes du rappel.
+   - indice : Lis les deux premières lignes de la frise.
    - explication : Avec l’écriture, on passe de la Préhistoire à l’Antiquité. L’agriculture, c’est le Néolithique, encore dans la Préhistoire.
 6. énoncé : Le Néolithique commence … l’invention de l’écriture.
    - choix : avant · après · en même temps que
@@ -174,7 +174,7 @@ Pour tous les items :
   - En haut, le plus ancien ; en bas, le plus récent.
   - VIIIe siècle avant J.-C. : Jeux d’Olympie, fondation de Rome.
   - VIe siècle avant J.-C. : Rome devient une République.
-  - Ve siècle avant J.-C. : Athènes et sa démocratie.
+  - Ve siècle avant J.-C. : Athènes, sa démocratie et l’Ecclésia.
 
 1. énoncé : Athènes et Sparte sont deux … grecques.
    - choix : provinces · cités · îles
@@ -306,9 +306,9 @@ Pour tous les items :
 - trou lu : (mot manquant)
 - aide « La frise de l’Empire » :
   - J.-C. : Jésus-Christ.
+  - I vaut 1, V vaut 5 : IV vaut 4.
   - En haut, le plus ancien ; en bas, le plus récent.
-  - Ier siècle avant J.-C. : César conquiert la Gaule.
-  - Ier siècle avant J.-C. : Auguste, premier empereur.
+  - Ier siècle avant J.-C. : César conquiert la Gaule ; Auguste, premier empereur.
   - Ier siècle et IIe siècle après J.-C. : la paix romaine.
   - IVe siècle après J.-C. : l’empire devient chrétien.
 
@@ -363,16 +363,16 @@ Pour tous les items :
 - aide « Lire un document » :
   - Qui a écrit ? À qui ? La première ligne le dit souvent.
   - J.-C. : Jésus-Christ.
-  - Le IIe siècle après J.-C. : de l’an 101 à l’an 200.
   - Le IIIe siècle après J.-C. : de l’an 201 à l’an 300.
+  - Le IVe siècle après J.-C. : de l’an 301 à l’an 400.
 
-1. énoncé : "Une loi de l’empereur Caracalla\nAn 212 après J.-C.\nTous les hommes libres de l’empire\ndeviennent citoyens romains."
-   - question : En quel siècle est cette loi ?
-   - lu : Une loi de l’empereur Caracalla. An deux cent douze après Jésus-Christ. Tous les hommes libres de l’empire deviennent citoyens romains.
-   - choix : au IIe siècle après J.-C. · au IIIe siècle après J.-C. · au IIIe siècle avant J.-C.
-   - réponse : au IIIe siècle après J.-C.
-   - indice : Dans le rappel, 212 est-il entre 101 et 200, ou entre 201 et 300 ?
-   - explication : L’an 212 après J.-C. est entre l’an 201 et l’an 300 : c’est le IIIe siècle après J.-C. Le IIe siècle s’arrête à l’an 200.
+1. énoncé : "Une décision de l’empereur Constantin\nAn 313 après J.-C.\nLes chrétiens ont le droit\nde prier leur Dieu."
+   - question : En quel siècle est cette décision ?
+   - lu : Une décision de l’empereur Constantin. An trois cent treize après Jésus-Christ. Les chrétiens ont le droit de prier leur Dieu.
+   - choix : au IIIe siècle après J.-C. · au IVe siècle après J.-C. · au IVe siècle avant J.-C.
+   - réponse : au IVe siècle après J.-C.
+   - indice : Dans le rappel, 313 est-il entre 201 et 300, ou entre 301 et 400 ?
+   - explication : L’an 313 après J.-C. est entre l’an 301 et l’an 400 : c’est le IVe siècle après J.-C. Le IIIe siècle s’arrête à l’an 300.
 2. énoncé : "Description d’une photo\nLe pont du Gard, près de Nîmes\nIl portait l’eau jusqu’à la ville."
    - question : À quoi servait ce pont ?
    - lu : Description d’une photo. Le pont du Gard, près de Nîmes. Il portait l’eau jusqu’à la ville.

@@ -224,7 +224,7 @@ export const ARCHIPEO = {
       },
     },
     'geography-6e-living': {
-      challenge: 'Le Castor d’argile dit doucement : « Mes couleurs sont éteintes. Tu as regardé tous mes paysages : dis-moi où vivent les humains. »',
+      challenge: 'Le Castor de glaise dit doucement : « Mes couleurs sont éteintes. Tu as regardé tous mes paysages : dis-moi où vivent les humains. »',
       guardianSays: {
         hit: 'Un trait de mon pelage s’allume. C’est juste.',
         miss: 'Rien ne s’éteint. Relis le document, cherche le mot du rappel, et reprends.',
@@ -314,7 +314,7 @@ export const ARCHIPEO = {
     'english-4e-grammar': 'blaireau chef de gare',
     'english-3e-comprehension': 'chauve-souris animatrice radio',
     'english-3e-grammar': 'petit chevalier',
-    'history-6e-antiquity': 'blaireau des fouilles',
+    'history-6e-antiquity': 'ourson des fouilles',
     'geography-6e-living': 'pélican des ports',
   },
   libelles: {

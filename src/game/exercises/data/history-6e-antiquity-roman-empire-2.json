@@ -7,17 +7,17 @@
   "items": [
     {
       "key": "history-6e-antiquity-roman-empire-2-0",
-      "prompt": "Une loi de l’empereur Caracalla\nAn 212 après J.-C.\nTous les hommes libres de l’empire\ndeviennent citoyens romains.",
-      "question": "En quel siècle est cette loi ?",
-      "spoken": "Une loi de l’empereur Caracalla. An deux cent douze après Jésus-Christ. Tous les hommes libres de l’empire deviennent citoyens romains.",
+      "prompt": "Une décision de l’empereur Constantin\nAn 313 après J.-C.\nLes chrétiens ont le droit\nde prier leur Dieu.",
+      "question": "En quel siècle est cette décision ?",
+      "spoken": "Une décision de l’empereur Constantin. An trois cent treize après Jésus-Christ. Les chrétiens ont le droit de prier leur Dieu.",
       "choices": [
-        "au IIe siècle après J.-C.",
         "au IIIe siècle après J.-C.",
-        "au IIIe siècle avant J.-C."
+        "au IVe siècle après J.-C.",
+        "au IVe siècle avant J.-C."
       ],
-      "answer": "au IIIe siècle après J.-C.",
-      "hint": "Dans le rappel, 212 est-il entre 101 et 200, ou entre 201 et 300 ?",
-      "explanation": "L’an 212 après J.-C. est entre l’an 201 et l’an 300 : c’est le IIIe siècle après J.-C. Le IIe siècle s’arrête à l’an 200.",
+      "answer": "au IVe siècle après J.-C.",
+      "hint": "Dans le rappel, 313 est-il entre 201 et 300, ou entre 301 et 400 ?",
+      "explanation": "L’an 313 après J.-C. est entre l’an 301 et l’an 400 : c’est le IVe siècle après J.-C. Le IIIe siècle s’arrête à l’an 300.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -25,8 +25,8 @@
           "lines": [
             "Qui a écrit ? À qui ? La première ligne le dit souvent.",
             "J.-C. : Jésus-Christ.",
-            "Le IIe siècle après J.-C. : de l’an 101 à l’an 200.",
-            "Le IIIe siècle après J.-C. : de l’an 201 à l’an 300."
+            "Le IIIe siècle après J.-C. : de l’an 201 à l’an 300.",
+            "Le IVe siècle après J.-C. : de l’an 301 à l’an 400."
           ]
         }
       }
@@ -51,8 +51,8 @@
           "lines": [
             "Qui a écrit ? À qui ? La première ligne le dit souvent.",
             "J.-C. : Jésus-Christ.",
-            "Le IIe siècle après J.-C. : de l’an 101 à l’an 200.",
-            "Le IIIe siècle après J.-C. : de l’an 201 à l’an 300."
+            "Le IIIe siècle après J.-C. : de l’an 201 à l’an 300.",
+            "Le IVe siècle après J.-C. : de l’an 301 à l’an 400."
           ]
         }
       }
@@ -77,8 +77,8 @@
           "lines": [
             "Qui a écrit ? À qui ? La première ligne le dit souvent.",
             "J.-C. : Jésus-Christ.",
-            "Le IIe siècle après J.-C. : de l’an 101 à l’an 200.",
-            "Le IIIe siècle après J.-C. : de l’an 201 à l’an 300."
+            "Le IIIe siècle après J.-C. : de l’an 201 à l’an 300.",
+            "Le IVe siècle après J.-C. : de l’an 301 à l’an 400."
           ]
         }
       }
@@ -103,8 +103,8 @@
           "lines": [
             "Qui a écrit ? À qui ? La première ligne le dit souvent.",
             "J.-C. : Jésus-Christ.",
-            "Le IIe siècle après J.-C. : de l’an 101 à l’an 200.",
-            "Le IIIe siècle après J.-C. : de l’an 201 à l’an 300."
+            "Le IIIe siècle après J.-C. : de l’an 201 à l’an 300.",
+            "Le IVe siècle après J.-C. : de l’an 301 à l’an 400."
           ]
         }
       }
@@ -129,8 +129,8 @@
           "lines": [
             "Qui a écrit ? À qui ? La première ligne le dit souvent.",
             "J.-C. : Jésus-Christ.",
-            "Le IIe siècle après J.-C. : de l’an 101 à l’an 200.",
-            "Le IIIe siècle après J.-C. : de l’an 201 à l’an 300."
+            "Le IIIe siècle après J.-C. : de l’an 201 à l’an 300.",
+            "Le IVe siècle après J.-C. : de l’an 301 à l’an 400."
           ]
         }
       }
@@ -155,8 +155,8 @@
           "lines": [
             "Qui a écrit ? À qui ? La première ligne le dit souvent.",
             "J.-C. : Jésus-Christ.",
-            "Le IIe siècle après J.-C. : de l’an 101 à l’an 200.",
-            "Le IIIe siècle après J.-C. : de l’an 201 à l’an 300."
+            "Le IIIe siècle après J.-C. : de l’an 201 à l’an 300.",
+            "Le IVe siècle après J.-C. : de l’an 301 à l’an 400."
           ]
         }
       }
@@ -181,8 +181,8 @@
           "lines": [
             "Qui a écrit ? À qui ? La première ligne le dit souvent.",
             "J.-C. : Jésus-Christ.",
-            "Le IIe siècle après J.-C. : de l’an 101 à l’an 200.",
-            "Le IIIe siècle après J.-C. : de l’an 201 à l’an 300."
+            "Le IIIe siècle après J.-C. : de l’an 201 à l’an 300.",
+            "Le IVe siècle après J.-C. : de l’an 301 à l’an 400."
           ]
         }
       }
@@ -207,8 +207,8 @@
           "lines": [
             "Qui a écrit ? À qui ? La première ligne le dit souvent.",
             "J.-C. : Jésus-Christ.",
-            "Le IIe siècle après J.-C. : de l’an 101 à l’an 200.",
-            "Le IIIe siècle après J.-C. : de l’an 201 à l’an 300."
+            "Le IIIe siècle après J.-C. : de l’an 201 à l’an 300.",
+            "Le IVe siècle après J.-C. : de l’an 301 à l’an 400."
           ]
         }
       }

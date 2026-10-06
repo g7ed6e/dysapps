@@ -50,6 +50,14 @@ describe('le texte lu à voix haute', () => {
     expect(pourLaVoix('1\u00a0234\u202f567 reste\u00a08')).toBe('1234567 reste\u00a08');
     expect(pourLaVoix('12 et 345')).toBe('12 et 345');
     expect(pourLaVoix('12\u00a0km')).toBe('12\u00a0km');
+  });
+
+  it('dit les siècles et « J.-C. » en mots', () => {
+    expect(pourLaVoix('Au VIIIe siècle avant J.-C.')).toBe('Au huitième siècle avant Jésus-Christ');
+    expect(pourLaVoix('Ier siècle, IVe siècle, Ve siècle, IXe siècle')).toBe('premier siècle, quatrième siècle, cinquième siècle, neuvième siècle');
+    expect(pourLaVoix('XIXe siècle, XXIe siècle')).toBe('dix-neuvième siècle, vingt-et-unième siècle');
+    // Hors d'un siècle, rien ne change.
+    expect(pourLaVoix('Le IIe arrondissement, Louis XIV')).toBe('Le IIe arrondissement, Louis XIV');
     expect(pourLaVoix('3\u202f82')).toBe('3\u202f82');
     // Les grands nombres (Nombres géants) : toutes les classes recollées, jusqu’aux milliards.
     expect(pourLaVoix((12345678).toLocaleString('fr-FR'))).toBe('12345678');

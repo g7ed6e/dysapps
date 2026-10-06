@@ -26,7 +26,8 @@
             "Un littoral industriel : un port, des usines, des conteneurs.",
             "Un littoral touristique : des plages, des hôtels, des vacanciers.",
             "Foyer de peuplement : beaucoup d’habitants.",
-            "Désert humain : presque personne."
+            "Désert humain : presque personne.",
+            "Un milliard, c’est mille millions."
           ]
         }
       }
@@ -52,7 +53,8 @@
             "Un littoral industriel : un port, des usines, des conteneurs.",
             "Un littoral touristique : des plages, des hôtels, des vacanciers.",
             "Foyer de peuplement : beaucoup d’habitants.",
-            "Désert humain : presque personne."
+            "Désert humain : presque personne.",
+            "Un milliard, c’est mille millions."
           ]
         }
       }
@@ -78,7 +80,8 @@
             "Un littoral industriel : un port, des usines, des conteneurs.",
             "Un littoral touristique : des plages, des hôtels, des vacanciers.",
             "Foyer de peuplement : beaucoup d’habitants.",
-            "Désert humain : presque personne."
+            "Désert humain : presque personne.",
+            "Un milliard, c’est mille millions."
           ]
         }
       }
@@ -104,21 +107,22 @@
             "Un littoral industriel : un port, des usines, des conteneurs.",
             "Un littoral touristique : des plages, des hôtels, des vacanciers.",
             "Foyer de peuplement : beaucoup d’habitants.",
-            "Désert humain : presque personne."
+            "Désert humain : presque personne.",
+            "Un milliard, c’est mille millions."
           ]
         }
       }
     },
     {
       "key": "geography-6e-living-inhabited-world-1-4",
-      "prompt": "Plus de huit … d’humains vivent sur la Terre.",
-      "spoken": "Plus de huit (mot manquant) d’humains vivent sur la Terre.",
+      "prompt": "Sur la Terre, les humains sont plus de … .",
+      "spoken": "Sur la Terre, les humains sont plus de (mot manquant) .",
       "choices": [
-        "millions",
-        "milliards",
-        "mille"
+        "8 000",
+        "8 millions",
+        "8 milliards"
       ],
-      "answer": "milliards",
+      "answer": "8 milliards",
       "hint": "La France seule a déjà près de 70 millions d’habitants.",
       "explanation": "Plus de 8 milliards d’humains vivent sur la Terre. Un milliard, c’est mille millions.",
       "aid": {
@@ -130,7 +134,8 @@
             "Un littoral industriel : un port, des usines, des conteneurs.",
             "Un littoral touristique : des plages, des hôtels, des vacanciers.",
             "Foyer de peuplement : beaucoup d’habitants.",
-            "Désert humain : presque personne."
+            "Désert humain : presque personne.",
+            "Un milliard, c’est mille millions."
           ]
         }
       }
@@ -156,7 +161,8 @@
             "Un littoral industriel : un port, des usines, des conteneurs.",
             "Un littoral touristique : des plages, des hôtels, des vacanciers.",
             "Foyer de peuplement : beaucoup d’habitants.",
-            "Désert humain : presque personne."
+            "Désert humain : presque personne.",
+            "Un milliard, c’est mille millions."
           ]
         }
       }
@@ -182,7 +188,8 @@
             "Un littoral industriel : un port, des usines, des conteneurs.",
             "Un littoral touristique : des plages, des hôtels, des vacanciers.",
             "Foyer de peuplement : beaucoup d’habitants.",
-            "Désert humain : presque personne."
+            "Désert humain : presque personne.",
+            "Un milliard, c’est mille millions."
           ]
         }
       }
@@ -208,7 +215,8 @@
             "Un littoral industriel : un port, des usines, des conteneurs.",
             "Un littoral touristique : des plages, des hôtels, des vacanciers.",
             "Foyer de peuplement : beaucoup d’habitants.",
-            "Désert humain : presque personne."
+            "Désert humain : presque personne.",
+            "Un milliard, c’est mille millions."
           ]
         }
       }

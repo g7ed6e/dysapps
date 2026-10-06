@@ -70,7 +70,31 @@ export function ecouterVoix(rappel: () => void): () => void {
  * espace ordinaire entre deux nombres (« 12 et 15 ») reste une séparation.
  */
 export function pourLaVoix(text: string): string {
-  return text.replace(/(\d)[\u00a0\u202f](?=\d{3}(?!\d))/g, '$1');
+  return text
+    .replace(/(\d)[\u00a0\u202f](?=\d{3}(?!\d))/g, '$1')
+    .replace(/\b([IVXL]+)(?:er|e)(?=[\s\u00a0]+siècles?\b)/g, (tout, romain: string) => siecleEnMots(romain) ?? tout)
+    .replace(/\bJ\.-C\./g, 'Jésus-Christ');
+}
+
+const ROMAINS: Readonly<Record<string, number>> = { I: 1, V: 5, X: 10, L: 50 };
+const UNITES = ['', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf', 'dix', 'onze', 'douze', 'treize', 'quatorze', 'quinze', 'seize'];
+
+/**
+ * « VIIIe » (devant « siècle ») tel qu'on le dit : « huitième ». Les chiffres romains et l'exposant se lisent sinon lettre
+ * par lettre (« V, I, I, I, e »). Jusqu'au XXIe siècle ; au-delà, ou pour une suite qui n'est pas un nombre, rien.
+ */
+function siecleEnMots(romain: string): string | undefined {
+  let n = 0;
+  for (let i = 0; i < romain.length; i++) {
+    const v = ROMAINS[romain[i]];
+    const suivant = ROMAINS[romain[i + 1]] ?? 0;
+    n += v < suivant ? -v : v;
+  }
+  if (n < 1 || n > 21) return undefined;
+  if (n === 1) return 'premier';
+  const cardinal = n <= 16 ? UNITES[n] : n < 20 ? `dix-${UNITES[n - 10]}` : n === 20 ? 'vingt' : 'vingt-et-un';
+  // « cinq » prend un u, « neuf » change son f en v, le e final tombe (« quatre », « onze »).
+  return `${cardinal.replace(/q$/, 'qu').replace(/f$/, 'v').replace(/e$/, '')}ième`;
 }
 
 export function speak(text: string, rate = 0.9, onEnd?: () => void, lang: Lang = 'fr'): void {

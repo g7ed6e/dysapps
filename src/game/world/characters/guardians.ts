@@ -576,7 +576,7 @@ const AMPHORE = fromLayers(
   { T: '#b5653a', K: '#2e2622', O: '#d9a441' },
 );
 
-// Le Castor d'argile (DA, HG-2) : un castor assis, d'argile ocre, la queue en dalle plate posée derrière lui, deux dents
+// Le Castor de glaise (DA, HG-2) : un castor assis, de glaise ocre, la queue en dalle plate posée derrière lui, deux dents
 // blanches sous le museau, la truffe et les yeux sombres, deux petites oreilles. Trois couleurs.
 const CASTOR = fromLayers(
   [

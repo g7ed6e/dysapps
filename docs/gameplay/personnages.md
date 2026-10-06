@@ -34,8 +34,8 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 | [Volcan des décimaux](https://g7ed6e.github.io/dysapps/pedagogie/iles/maths-6e-decimals.html) (Maths) | Lavi | salamandre de lave | salamandre de lave | Le Dragon de cendre |
 | [Baie des mots](https://g7ed6e.github.io/dysapps/pedagogie/iles/english-6e-vocabulary.html) (Anglais) | Robin | rouge-gorge des quais | rouge-gorge des quais | Le Lion de pierre |
 | [Horloge des verbes](https://g7ed6e.github.io/dysapps/pedagogie/iles/english-6e-grammar.html) (Anglais) | Tick | hérisson horloger | hérisson horloger | Le Coucou de bronze |
-| [Fouille des siècles](https://g7ed6e.github.io/dysapps/pedagogie/iles/history-6e-antiquity.html) (Histoire-géo) | Silex | ourson fouilleur | blaireau des fouilles | L’Amphore peinte |
-| [Pointe des paysages](https://g7ed6e.github.io/dysapps/pedagogie/iles/geography-6e-living.html) (Histoire-géo) | Boussole | tortue géographe | pélican des ports | Le Castor d’argile |
+| [Fouille des siècles](https://g7ed6e.github.io/dysapps/pedagogie/iles/history-6e-antiquity.html) (Histoire-géo) | Silex | ourson fouilleur | ourson des fouilles | L’Amphore peinte |
+| [Pointe des paysages](https://g7ed6e.github.io/dysapps/pedagogie/iles/geography-6e-living.html) (Histoire-géo) | Boussole | tortue géographe | pélican des ports | Le Castor de glaise |
 
 ### Le Grand Chêne, Forêt des sons
 
@@ -125,13 +125,13 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 | À la fin | Je me rallume, du col jusqu’au pied. La Fouille est à toi, et à Silex. | Ma frise se rallume. La Fouille est à toi, et à Silex. |
 | Silex à l’arrivée | Bonjour, bâtisseur ! Ici, on fouille le passé. Chaque bonne réponse te donne une mosaïque. Regarde la frise : le plus ancien est en haut. | Bonjour, bâtisseur ! Ici, on fouille le passé. Chaque bonne réponse te donne une mosaïque. Regarde la frise : le plus ancien est en haut. |
 
-### Le Castor d’argile, Pointe des paysages
+### Le Castor de glaise, Pointe des paysages
 
 |  | Blocland | Archipéo |
 | --- | --- | --- |
-| Au défi | Le Castor d’argile lève la tête : « Me voilà tout gris. Tu as vu tous les paysages de la Pointe : dis-moi où vivent les humains. » | Le Castor d’argile dit doucement : « Mes couleurs sont éteintes. Tu as regardé tous mes paysages : dis-moi où vivent les humains. » |
+| Au défi | Le Castor de glaise lève la tête : « Me voilà tout gris. Tu as vu tous les paysages de la Pointe : dis-moi où vivent les humains. » | Le Castor de glaise dit doucement : « Mes couleurs sont éteintes. Tu as regardé tous mes paysages : dis-moi où vivent les humains. » |
 | À la fin | Je me rallume, de la queue jusqu’aux dents. La Pointe est à toi, et à Boussole. | Mes couleurs se rallument. La Pointe est à toi, et à Boussole. |
-| Boussole à l’arrivée | Bonjour, bâtisseur ! Ici, on regarde où vivent les humains : en ville, à la campagne, au bord de la mer. Chaque bonne réponse te donne du chaume. | Bonjour, bâtisseur ! Ici, on regarde où vivent les humains : en ville, à la campagne, au bord de la mer. Chaque bonne réponse te donne du chaume. |
+| Boussole à l’arrivée | Bonjour, bâtisseur ! Ici, on regarde où vivent les humains : en ville, à la campagne, au bord de la mer. Chaque bonne réponse te donne du chaume. Le chaume, c’est la paille qui couvre les toits. | Bonjour, bâtisseur ! Ici, on regarde où vivent les humains : en ville, à la campagne, au bord de la mer. Chaque bonne réponse te donne du chaume. Le chaume, c’est la paille qui couvre les toits. |
 
 ## Les Collines du Large (Blocland), les Îles Brumeuses (Archipéo), 5e
 

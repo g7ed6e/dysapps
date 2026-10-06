@@ -10,7 +10,7 @@
 import { type BiomeId, getBiome } from '../biomes';
 import type { World } from '../engine/state';
 import { BRIDGES, type BridgeDef, getBridge, isBiomeUnlocked, reachableIslands } from './archipelago';
-import { ARCHIPELAGO_IDS, type ArchipelagoId, archipelagoOfIsland, bornesDuCoeur, type IslandDef, startingIsland } from './map';
+import { ARCHIPELAGO_IDS, type ArchipelagoId, archipelagoOfIsland, bornesDuCoeur, CORE, type IslandDef, startingIsland } from './map';
 import { SIDE_OF, LAYOUT_SIDE_OF } from './appliedLayout';
 import { fittingPlaces, footprintOf, frameOf, GAP_BETWEEN_PLACES, gapBetween, LINK_GAP, placedIsland, poseOfSpot, spotInSteps, tooSmallGaps } from './footprint';
 import { STEP, type Quarts, type Rectangle, SIDES, turnDirection, turnedSide } from './placement';
@@ -442,8 +442,9 @@ export function settleNewPlaces(world: World): World {
     let essai: World | null = w;
     for (const id of nouveaux) {
       const depart = startingIsland(id).core;
-      const libre: LayoutSpot | null = essai && nearestFreeSpot(essai, id, { x: depart.x + 8, y: depart.y + 8 }, 0);
-      if (!essai || !libre) {
+      // On cherche autour du milieu du cœur de départ, pas de son coin.
+      const libre = nearestFreeSpot(essai, id, { x: depart.x + CORE / 2, y: depart.y + CORE / 2 }, 0);
+      if (!libre) {
         essai = null;
         break;
       }

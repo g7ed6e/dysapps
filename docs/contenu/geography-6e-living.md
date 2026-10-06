@@ -4,7 +4,7 @@ module : Géographie, habiter le monde
 matière : history-geography
 classe : 6e
 description : Habiter une métropole, un espace de faible densité, un littoral, et voir où vivent les humains sur la Terre : les mots de la géographie et des documents courts.
-gardien : le Castor d’argile
+gardien : le Castor de glaise
 icône : map-pin-house
 créature : Boussole
 ---
@@ -52,9 +52,9 @@ Pour tous les items :
    - indice : Tokyo est la capitale de ce pays.
    - explication : Tokyo est au Japon, en Asie : c’est sa capitale.
 3. énoncé : Mumbai est une grande métropole. Elle est en … .
-   - choix : Inde · Égypte · Indonésie
+   - choix : Inde · Égypte · Brésil
    - réponse : Inde
-   - indice : Son ancien nom est Bombay, au bord de l’océan Indien.
+   - indice : Son ancien nom est Bombay. Cherche le pays d’Asie.
    - explication : Mumbai est en Inde, en Asie du Sud. C’est l’une des plus grandes métropoles du monde.
 4. énoncé : Juste autour du centre-ville, on trouve la … .
    - choix : campagne · banlieue · espace périurbain
@@ -96,7 +96,7 @@ Pour tous les items :
 1. énoncé : "Paris en chiffres\nLa ville : environ 2 millions d’habitants\nL’agglomération : environ 11 millions"
    - question : Combien de personnes vivent dans l’agglomération de Paris ?
    - lu : Paris en chiffres. La ville : environ deux millions d’habitants. L’agglomération : environ onze millions.
-   - choix : 2 millions · 11 millions · 13 millions
+   - choix : 2 millions · 11 millions · 20 millions
    - réponse : 11 millions
    - indice : Lis la ligne qui commence par « L’agglomération ».
    - explication : L’agglomération, la ville et ses banlieues, compte 11 millions d’habitants. La ville seule en compte 2 millions, et ils sont déjà dans les 11.
@@ -308,6 +308,7 @@ Pour tous les items :
   - Un littoral touristique : des plages, des hôtels, des vacanciers.
   - Foyer de peuplement : beaucoup d’habitants.
   - Désert humain : presque personne.
+  - Un milliard, c’est mille millions.
 
 1. énoncé : Une ville de vacances au bord de la mer est une station … .
    - choix : de ski · balnéaire · thermale
@@ -329,9 +330,9 @@ Pour tous les items :
    - réponse : d’Europe
    - indice : Les Pays-Bas sont au nord de la France.
    - explication : Rotterdam est le premier port d’Europe, au bord de la mer du Nord.
-5. énoncé : Plus de huit … d’humains vivent sur la Terre.
-   - choix : millions · milliards · mille
-   - réponse : milliards
+5. énoncé : Sur la Terre, les humains sont plus de … .
+   - choix : 8 000 · 8 millions · 8 milliards
+   - réponse : 8 milliards
    - indice : La France seule a déjà près de 70 millions d’habitants.
    - explication : Plus de 8 milliards d’humains vivent sur la Terre. Un milliard, c’est mille millions.
 6. énoncé : Aujourd’hui, le pays le plus peuplé du monde est … .

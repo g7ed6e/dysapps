@@ -223,7 +223,7 @@ export const BLOCLAND = {
       },
     },
     'geography-6e-living': {
-      challenge: 'Le Castor d’argile lève la tête : « Me voilà tout gris. Tu as vu tous les paysages de la Pointe : dis-moi où vivent les humains. »',
+      challenge: 'Le Castor de glaise lève la tête : « Me voilà tout gris. Tu as vu tous les paysages de la Pointe : dis-moi où vivent les humains. »',
       guardianSays: {
         hit: 'Juste. Un bloc de mon pelage redevient ocre.',
         miss: 'Mes couleurs restent. Relis le document, cherche le mot du rappel, et reprends.',

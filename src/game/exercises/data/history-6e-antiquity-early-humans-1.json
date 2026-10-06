@@ -123,7 +123,7 @@
         "le feu"
       ],
       "answer": "l’écriture",
-      "hint": "Lis les deux premières lignes du rappel.",
+      "hint": "Lis les deux premières lignes de la frise.",
       "explanation": "Avec l’écriture, on passe de la Préhistoire à l’Antiquité. L’agriculture, c’est le Néolithique, encore dans la Préhistoire.",
       "aid": {
         "kind": "rule-card",

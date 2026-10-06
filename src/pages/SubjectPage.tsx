@@ -1,5 +1,6 @@
 import { Link, Navigate, useLocation, useParams } from 'react-router-dom';
 import { translatePath } from '../core/legacyIds';
+import { MENU_PATH } from '../core/paths';
 import { appsBySubject, subjectInfo, visibleSubjects, type Subject } from '../apps/registry';
 import { useSettings, useUnivers } from '../core/SettingsContext';
 import { Icon } from '../components/Icon';
@@ -50,7 +51,7 @@ export function SubjectPage() {
           <Icon name="back" /> Missions
         </Link>
       ) : (
-        <Link to="/" className="back-link">
+        <Link to={MENU_PATH} className="back-link">
           <Icon name="back" /> Menu
         </Link>
       )}

@@ -343,16 +343,16 @@ export const ESPECES_6E = {
     autreMain: { pose: [Math.PI / 2, 0, 0], dessiner: (T, k) => disque(T, 0.06, 0.2, 0.08, k.laiton, 6) },
   },
   // Archipéo est en pause (2 octobre 2026) : ces deux habitants n'ont que le strict nécessaire, sans coiffe ni pièce de
-  // plus (budget de l'archipel). Silex y est un blaireau des fouilles, Boussole un pélican des ports (DA, HG-2).
+  // plus (budget de l'archipel). Silex y est un ourson des fouilles, Boussole un pélican des ports (DA, HG-2).
   'history-6e-antiquity': {
     nom: 'Silex',
     metier: 'fouilleur',
-    // Large, deux petites oreilles rondes : sa silhouette ne se confond ni avec Rouxel ni avec Lavi.
-    dominante: 0x6a6a66,
-    marque: { couleur: 0xd8d2c4, ou: ['museau'] },
+    // Large, brun, deux petites oreilles basses : sa silhouette ne se confond ni avec Rouxel ni avec Lavi.
+    dominante: 0x7a5638,
+    marque: { couleur: 0xc8a878, ou: ['museau'] },
     silhouette: { largeur: 0.46, ventre: 0.08, tete: 0.34 },
     coiffe: (T, k) => {
-      for (const c of [-1, 1]) pointe(T, [c * 0.2, 2.38, 0.04], 0.1, 0.16, k.dom, [0, 0, -c * 0.7], 3);
+      for (const c of [-1, 1]) pointe(T, [c * 0.2, 2.38, 0.04], 0.11, 0.09, k.dom, [0, 0, -c * 0.7], 3);
     },
     tenue: { couleur: TENUE.lin, vetements: ['tablier'] },
     museau: { forme: 'museau', long: 0.2, r: 0.08 },

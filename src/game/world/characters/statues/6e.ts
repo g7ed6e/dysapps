@@ -132,7 +132,7 @@ const AMPHORE: Anneau[] = [
   [8, 0.62],
 ];
 
-/** Le Castor d'argile, assis : le corps, puis la tête au museau avancé. */
+/** Le Castor de glaise, assis : le corps, puis la tête au museau avancé. */
 const CORPS_DU_CASTOR: Anneau[] = [
   [1, 1.0, 0.85],
   [3.0, 1.2, 1.0],
@@ -560,7 +560,7 @@ export const STATUES_6E: Partial<Record<BiomeId, Statue>> = {
     },
   },
   'geography-6e-living': {
-    nom: 'le Castor d’argile',
+    nom: 'le Castor de glaise',
     allume: 'sa queue plate',
     sculpture: (T, a) => {
       fuseau(T, CORPS_DU_CASTOR, 6, a.moussue((k, j) => k === 0 && j % 2 === 1), { bas: false });

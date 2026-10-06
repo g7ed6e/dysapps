@@ -336,8 +336,8 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
     home: 'Mon musée est prêt. Chaque trouvaille a sa place.',
   },
   'geography-6e-living': {
-    greeting: 'Bonjour, bâtisseur ! Ici, on regarde où vivent les humains : en ville, à la campagne, au bord de la mer. Chaque bonne réponse te donne du chaume.',
-    lines: ['Je vais lentement : prends ton temps, toi aussi.', 'Du chaume pour mon quartier : lis un document.', 'Ville, champs, littoral : chaque paysage a ses habitants.'],
+    greeting: 'Bonjour, bâtisseur ! Ici, on regarde où vivent les humains : en ville, à la campagne, au bord de la mer. Chaque bonne réponse te donne du chaume. Le chaume, c’est la paille qui couvre les toits.',
+    lines: ['Je regarde le paysage de loin avant de répondre : prends ton temps, toi aussi.', 'Du chaume pour mon quartier : lis un document.', 'Ville, champs, littoral : chaque paysage a ses habitants.'],
     home: 'Mon quartier est complet : la ville, les champs et la mer.',
   },
   'lv2-3e-travel': {

@@ -25,7 +25,7 @@ exports[`Empreintes des personnages en facettes > les créatures, île par île 
   "gare": "249 79814f3d",
   "geography-6e-living": "200 52b79dc2",
   "glacier": "236 bb1c8d90",
-  "history-6e-antiquity": "201 089b3e5d",
+  "history-6e-antiquity": "201 5bd88376",
   "horloge": "265 f170a175",
   "jardin": "291 cc1e4f78",
   "manoir": "299 5bc8ac7c",
@@ -60,7 +60,7 @@ exports[`Empreintes des personnages en facettes > les fusions, archipel par arch
     "gardiens": "1791 71a39281",
   },
   "6e": {
-    "creatures": "2889 ce989bb8 db5b5e24",
+    "creatures": "2889 4f28c6cf db5b5e24",
     "gardiens": "2065 e6a19f9d",
   },
   "bonhomme": "472 045a95c7 1032f390",

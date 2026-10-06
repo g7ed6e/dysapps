@@ -1377,7 +1377,7 @@ export const ILES = [
     "classe": "6e",
     "description": "Habiter une métropole, un espace de faible densité, un littoral, et voir où vivent les humains sur la Terre : les mots de la géographie et des documents courts.",
     "block": "geography-6e-living",
-    "guardian": "le Castor d’argile",
+    "guardian": "le Castor de glaise",
     "icon": "map-pin-house",
     "creature": {
       "name": "Boussole"
