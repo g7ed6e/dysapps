@@ -117,7 +117,7 @@ describe('La Carte dans la place libre (DA-31)', () => {
   });
 
   it('au large : l’archipel entier tient dans la place libre, plus près que le plancher, la destination dedans', () => {
-    for (const a of ['5e', '4e', '3e'] as const) {
+    for (const a of ['6e', '5e', '4e', '3e'] as const) {
       const libre = { x0: 0, y0: 250, x1: 1024, y1: 578 };
       const dest = mapOf(a)[1].id;
       const c = cadrageDeLaCarte(a, dest, T.w, T.h, { x0: 0, y0: 0, x1: T.w, y1: T.h - 64 });
@@ -133,18 +133,6 @@ describe('La Carte dans la place libre (DA-31)', () => {
       expect(dedans(centre(dest, c, T), { x0: 0, y0: 0, x1: T.w, y1: T.h - 64 }), a).toBe(true);
       // Plus serré, l'archipel se resserre ou passe au plancher, mais la destination reste dans la place.
       expect(dedans(centre(dest, cadrageDeLaCarte(a, dest, T.w, T.h, libre), T), libre), `${a} serré`).toBe(true);
-    }
-  });
-
-  it('au large, les Premiers Rivages (SC-2 : 192 × 172 cases) : au plancher, la destination au milieu de la place libre', () => {
-    // Le cadre agrandi vers le fond pour les trois îles de sciences ne tient plus entier sur la tablette à 3,4 px par
-    // case : la caméra reste au plancher (DA-31), le bord de l'archipel sort, la destination reste dans la place.
-    const place = { x0: 0, y0: 0, x1: T.w, y1: T.h - 64 };
-    for (const def of mapOf('6e')) {
-      const c = cadrageDeLaCarte('6e', def.id, T.w, T.h, place);
-      expect(c.auPlancher, def.id).toBe(true);
-      expect(c.echelle, def.id).toBeCloseTo(PLANCHER_DE_LA_CARTE, 1);
-      expect(dedans(centre(def.id, c, T), place), def.id).toBe(true);
     }
   });
 

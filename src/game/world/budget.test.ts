@@ -80,9 +80,9 @@ it('le rendu Archipéo : la mer en un appel de dessin, la faune et le ciel en tr
     const faune = fauneCost(a);
     expect(mer, a).toEqual(sceneCostArchipeo(a).mer);
     expect(mer.drawCalls, a).toBe(1);
-    // 6 200 aux Premiers Rivages depuis que la mer couvre tout le cadre de la région (GD-9) ; 7 068 avec le cadre agrandi
-    // vers le fond pour les îles de sciences (SC-2, mainteneur, 6 octobre 2026).
-    expect(mer.triangles, a).toBeLessThanOrEqual(7100);
+    // 6 200 aux Premiers Rivages depuis que la mer couvre tout le cadre de la région (GD-9) ; les îles de sciences (SC-2)
+    // tiennent dans le même cadre.
+    expect(mer.triangles, a).toBeLessThanOrEqual(6300);
     // Baleines, oiseaux, nuages : une instanciation par famille (pas de baleine aux Îles du Ciel).
     expect(faune.drawCalls, a).toBeLessThanOrEqual(3);
     expect(faune.triangles, a).toBeLessThanOrEqual(1500);

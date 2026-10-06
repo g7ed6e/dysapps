@@ -10,8 +10,7 @@
 //   la Carte est au plancher (`PLANCHER_DE_LA_CARTE`) : les îles y sont à 115 px les unes des autres, leurs noms en
 //   OpenDyslexic font de 240 à 400 px de large dans une bande de 180 px de haut ; tous ne peuvent pas se montrer.
 // - Au 6e, une autre destination que le port : onze îles serrées, le fanion du bonhomme sur la Forêt ; un nom peut
-//   s'y taire (la Ferme, quand la destination est la Tour). Depuis les îles de sciences (SC-2), à l'ouverture de la
-//   Carte, la Pointe des paysages se tait dans le coin du fond (en police élargie, aussi la Mine et le Hangar).
+//   s'y taire (la Ferme, quand la destination est la Tour).
 import * as THREE from 'three';
 import type { BiomeId } from '../biomes';
 import { getArchipelago, islandsOf } from '../world/archipelago';
@@ -166,11 +165,7 @@ describe('La Carte : chaque île a son nom (tablette 1024 × 768)', () => {
       for (const elargir of [1, 1.1]) expect(nomsTus(a, etat, 'atkinson-hyperlegible', elargir), `${a}, ${univers}, ×${elargir}`).toEqual([]);
   });
 
-  // Depuis les îles de sciences (SC-2), le cadre agrandi vers le fond, la Carte s'éloigne et le coin du fond est le plus
-  // serré : à l'ouverture, la Pointe des paysages se tait ; en police élargie, aussi la Mine des lettres et le Hangar
-  // des inventions. Relevé tel quel, à trancher par le directeur artistique et le référent dys (SC-2).
-  const TUS_AU_FOND: Record<number, string[]> = { 1: ['geography-6e-living'], 1.1: ['french-6e-letter-confusion', 'geography-6e-living', 'technology-6e-objects'] };
-  it('6e, à l’ouverture de la Carte (sans panneau, la destination du jeu tout construit) : chaque nom montré sur son île (HG-2), ceux du coin du fond relevés (SC-2)', () => {
+  it('6e, à l’ouverture de la Carte (sans panneau, la destination du jeu tout construit) : aucune île ne perd son nom, chacun sur son île (HG-2)', () => {
     // La destination que le jeu donne au village tout construit, le bonhomme sur la Forêt des sons (`nextDestination`).
     const { progress, world } = toutConstruit();
     const etat = sanitizeState({ progress, world: { ...world, place: islandsOf('6e')[0].id } } as never);
@@ -179,11 +174,11 @@ describe('La Carte : chaque île a son nom (tablette 1024 × 768)', () => {
     for (const [univers, mot] of Object.entries(ETATS))
       for (const elargir of [1, 1.1]) {
         const carte = laCarte('6e', mot, 'atkinson-hyperlegible', elargir, destination, true);
-        expect(carte.tus, `${univers}, ×${elargir}`).toEqual(TUS_AU_FOND[elargir]);
+        expect(carte.tus, `${univers}, ×${elargir}`).toEqual([]);
         // La Fouille des siècles et la Pointe des paysages, voisines : chaque nom sur son île, pas sur l'autre.
         expect(carte.ailleurs.filter((id) => id === 'history-6e-antiquity' || id === 'geography-6e-living'), `${univers}, ×${elargir}`).toEqual([]);
-        // Toutes les îles du 6e se voient (aucune sous l'interface) : les autres montrent leur nom.
-        expect(carte.vues.length + carte.tus.length, `${univers}, ×${elargir}`).toBe(islandsOf('6e').length);
+        // Toutes les îles du 6e se voient (aucune sous l'interface) : aucune ne perd son nom.
+        expect(carte.vues.length, `${univers}, ×${elargir}`).toBe(islandsOf('6e').length);
       }
   });
 

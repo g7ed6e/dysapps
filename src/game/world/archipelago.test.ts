@@ -97,9 +97,9 @@ it('la Forêt et la Plaine sont ouvertes au début (pont déjà là) ; de l’un
     'french-6e-phonology-french-6e-grammar-spelling',
     'french-6e-phonology-french-6e-letter-confusion',
     'french-6e-phonology-history-6e-antiquity',
-    'french-6e-phonology-technology-6e-objects',
     'maths-6e-calculation-maths-6e-decimals',
     'maths-6e-calculation-maths-6e-fractions',
+    'maths-6e-calculation-technology-6e-objects',
   ]);
   expect(isBiomeUnlocked('maths-6e-decimals', ['french-6e-phonology-french-6e-grammar-spelling', 'french-6e-grammar-spelling-maths-6e-decimals'])).toBe(true);
   // La Rivière s'atteint par la Plaine ou par la Mine.
@@ -147,12 +147,12 @@ it('un voyage ouvre le port de l’archipel suivant, et rien de plus ; il faut l
     'french-6e-phonology-french-6e-grammar-spelling',
     'french-6e-phonology-french-6e-letter-confusion',
     'french-6e-phonology-history-6e-antiquity',
-    'french-6e-phonology-technology-6e-objects',
     'maths-5e-proportionality-english-5e-grammar',
     'maths-5e-proportionality-english-5e-vocabulary',
     'maths-5e-signed-numbers-maths-5e-proportionality',
     'maths-6e-calculation-maths-6e-decimals',
     'maths-6e-calculation-maths-6e-fractions',
+    'maths-6e-calculation-technology-6e-objects',
   ]);
 });
 

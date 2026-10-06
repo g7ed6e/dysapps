@@ -15,11 +15,12 @@ const lien5e = BRIDGES.find((b) => archipelagoOfIsland(b.from) === '5e')!.id;
 
 /**
  * Une disposition du 6e complète et valide : la Ferme déplacée vers un coin du cadre, sans rien toucher (au coin bas-droit
- * jusqu'à HG-2 : les îles d'histoire-géographie y sont entrées).
+ * jusqu'à HG-2, puis au coin haut-droit jusqu'à SC-2 : les îles d'histoire-géographie, puis le Laboratoire des éléments y
+ * sont entrés ; elle passe au coin bas-gauche).
  */
 const valide: Layout = {
   '6e': {
-    islands: { 'maths-6e-decimals': { x: 42, y: 3, turn: 1 } },
+    islands: { 'maths-6e-decimals': { x: 2, y: 27, turn: 1 } },
     guardians: { 'maths-6e-decimals': { side: 'left', step: 1, turn: 2 } },
     stations: { 'maths-6e-decimals:ordering': { x: 4, y: 14 } },
     landings: { [lien6e]: { from: { side: 'back', step: 2 }, to: { side: 'front', step: -1 } } },
@@ -58,14 +59,14 @@ describe('la disposition de la sauvegarde', () => {
       { islands: { 'maths-6e-decimals': { x: 1.5, y: 1, turn: 0 } } }, // hors du pas
       { islands: { 'maths-6e-decimals': { x: 1, y: 1, turn: 4 } } }, // une orientation qui n'existe pas
       { islands: { 'maths-6e-decimals': { x: 49, y: 1, turn: 0 } } }, // hors du cadre (48 pas au plus aux Premiers Rivages)
-      { islands: { 'maths-6e-decimals': { x: 1, y: 44, turn: 0 } } }, // hors du cadre (43 pas au plus)
+      { islands: { 'maths-6e-decimals': { x: 1, y: 37, turn: 0 } } }, // hors du cadre (36 pas au plus)
       { guardians: { 'maths-6e-decimals': { side: 'haut', step: 0, turn: 0 } } },
       { joined: [['french-6e-phonology', 'french-6e-phonology']] },
       { joined: [['french-6e-phonology', 'french-6e-letter-confusion'], ['french-6e-phonology', 'french-6e-reading']] },
     ];
     for (const r of casses) expect(sanitizeLayout({ '6e': r, '5e': { relink: [lien5e] } }), JSON.stringify(r)).toEqual({ '5e': { relink: [lien5e] } });
     // Le bout du cadre est encore une place.
-    expect(sanitizeLayout({ '6e': { islands: { 'maths-6e-decimals': { x: 48, y: 43, turn: 0 } } } })).toEqual({ '6e': { islands: { 'maths-6e-decimals': { x: 48, y: 43, turn: 0 } } } });
+    expect(sanitizeLayout({ '6e': { islands: { 'maths-6e-decimals': { x: 48, y: 36, turn: 0 } } } })).toEqual({ '6e': { islands: { 'maths-6e-decimals': { x: 48, y: 36, turn: 0 } } } });
   });
 
   it('une borne, une arrivée, un raccourci ou une liaison à reposer invalide n’oublie qu’elle-même', () => {
@@ -90,7 +91,7 @@ describe('la disposition de la sauvegarde', () => {
     // La Ferme vers un coin du cadre : elle tient.
     const poses = posesOfLayout(valide);
     const c = frameOf('6e');
-    expect(poses.get('maths-6e-decimals')).toEqual({ x: c.x0 + 42 * STEP, y: c.y0 + 3 * STEP, quarts: 1 });
+    expect(poses.get('maths-6e-decimals')).toEqual({ x: c.x0 + 2 * STEP, y: c.y0 + 27 * STEP, quarts: 1 });
     // Posée sur la Forêt, ou hors du cadre : la région reste à sa carte de départ.
     const foret = startingIsland('french-6e-phonology').core;
     const surLaForet = { x: (foret.x - c.x0) / STEP, y: Math.round((foret.y - c.y0) / STEP), turn: 0 as const };

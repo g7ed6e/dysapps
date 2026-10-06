@@ -117,7 +117,7 @@ describe('le mode « Aménager »', () => {
     // La mer touchée : le fantôme se cale ; la ligne le montre en signes (le voisin, la flèche, le nombre, la case), et
     // le dit en mots (le nom du lieu choisi n'est pas répété : il est sur son fantôme).
     act(() => void dernier.intention({ genre: 'mer', point: { x: 0, y: 0 } }));
-    expect(screen.getByRole('status').textContent).toMatch(/^(Au|À l’) [a-z-]+ (de la |du |de l’)[^,]+, à \d+ cases?\.$/);
+    expect(screen.getByRole('status').textContent).toMatch(/^(Au [a-z-]+|À l’[a-z-]+) (de la |du |de l’)[^,]+, à \d+ cases?\.$/);
     expect(dernier.ligne?.genre).toBe('place');
     const signes = document.querySelector('.arrange-signes')!;
     expect(signes).toHaveAttribute('aria-hidden', 'true');
@@ -482,7 +482,7 @@ describe('le mode « Aménager »', () => {
       expect(nord.closest('.arrange-bar')).toBeNull();
       expect(document.querySelector('.arrange-signes .signes-de-place')).not.toBeNull();
       expect(screen.getByRole('status').textContent).toBe(dernier.phrase);
-      expect(dernier.phrase).toMatch(/^(Au|À l’) [a-z-]+ (de la |du |de l’)[^,]+, à \d+ cases?\.$/);
+      expect(dernier.phrase).toMatch(/^(Au [a-z-]+|À l’[a-z-]+) (de la |du |de l’)[^,]+, à \d+ cases?\.$/);
     } finally {
       window.matchMedia = avant;
     }

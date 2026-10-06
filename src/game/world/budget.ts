@@ -131,6 +131,8 @@ export const ENVELOPPES: Record<Poste, { lot: 'R4b' | 'R5' | 'R6' | 'GD-7' | 'so
   // commandes de 520 à 640 (632), les bornes de 1 250 à 1 450 (1 428), les créatures de 2 950 à 3 650 (3 635), les
   // Gardiens de 2 100 à 2 780 (2 756). La somme des Premiers Rivages passe de 63 370 à 72 770, `RENDER_BUDGET_6E` à
   // 72 800 (71 368 triangles comptés, « Dans la scène » à part). La mesure sur tablette reste à faire.
+  // Les trois îles replacées dans le cadre de 192 × 144 (SC-2, retouche de la Carte) : la mer revient à 6 200 (900 de
+  // marge), le sol à 32 728, le décor à 13 227 ; les enveloppes restent celles du mot du mainteneur.
   sol: { lot: 'R4b', nom: 'Sol', premiersRivages: { triangles: 32_800, drawCalls: 2 }, autres: { triangles: 24_850, drawCalls: 1 } },
   // Proposition de l'artiste technique 3D pour le Relais des voyageurs (LV2, 5e), à valider par le mainteneur : une île
   // de plus aux Îles Brumeuses coûte environ 800 triangles de décor et 850 de construction. Les enveloppes « autres » en

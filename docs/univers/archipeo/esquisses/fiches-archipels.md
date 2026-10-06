@@ -36,9 +36,9 @@ Les esquisses qui les illustrent sont **dessinées en code** (Three.js rendu dan
 
 - **La Fouille des siècles (HG)** : au bout du second rang ; le musée de Silex en mosaïque ocre et crème, toit d’ardoise ; un éclat de mosaïque et un tas de sable. Silex : ourson des fouilles brun, museau crème, pinceau de fouille. L’Amphore peinte : terre cuite à bandes sombres et ocre.
 - **La Pointe des paysages (HG)** : à côté de la Fouille ; le quartier de Boussole, murs de chaume, toits de terre cuite, ses champs et son quai. Boussole : pélican des ports, blanc, au bec à poche jaune pâle. Le Castor de glaise : assis, la queue en dalle plate.
-- **La Vallée du vivant (SC)** : au rang du fond, derrière la Pointe ; la serre de Fougère en fossile, toit d’ardoise ; deux touffes de mousse et une feuille. Fougère : escargot jardinier vert sauge, coquille brune à spirale claire. Le Cerf des sous-bois : debout, de profil, des bois à trois pointes.
-- **Le Laboratoire des éléments (SC)** : derrière la Fouille ; le laboratoire de Bulle en aimant, gris dominant, toit d’ardoise ; trois galets. Bulle : poulpe chimiste bleu ardoise, éprouvette. L’Alambic de verre : ballon sur trépied, bec courbe vers un flacon, sans flamme.
-- **Le Hangar des inventions (SC)** : au bout du rang ; l’atelier de Pince en carton, toit de terre cuite ; deux cartons empilés. Pince : fourmi bricoleuse brun-rouge, clé plate. L’Automate de laiton : trapu, tête-cube à deux hublots, trois boutons.
+- **La Vallée du vivant (SC)** : au second rang, entre l’Horloge et la Fouille ; la serre de Fougère en fossile, toit d’ardoise ; deux touffes de mousse et une feuille. Fougère : escargot jardinier vert sauge, coquille brune à spirale claire. Le Cerf des sous-bois : debout, de profil, des bois à trois pointes.
+- **Le Laboratoire des éléments (SC)** : au coin de devant, à l’est, après la Rivière ; le laboratoire de Bulle en aimant, gris dominant, toit d’ardoise ; trois galets. Bulle : poulpe chimiste bleu ardoise, éprouvette. L’Alambic de verre : ballon sur trépied, bec courbe vers un flacon, sans flamme.
+- **Le Hangar des inventions (SC)** : au coin de devant, à l’ouest, à côté du Volcan ; l’atelier de Pince en carton, toit de terre cuite ; deux cartons empilés. Pince : fourmi bricoleuse brun-rouge, clé plate. L’Automate de laiton : trapu, tête-cube à deux hublots, trois boutons.
 
 ## 5e — Les Îles Brumeuses
 

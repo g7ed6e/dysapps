@@ -214,9 +214,9 @@ describe('la houle et la grille', () => {
       const b = worldBounds(a);
       const loin = Math.max(b.maxX - b.minX, b.maxY - b.minY) * 4;
       const g = grilleDeLaMer(b, loin);
-      // 6 200 aux Premiers Rivages depuis que la mer couvre tout le cadre de la région (GD-9), 7 068 depuis le cadre
-      // agrandi vers le fond pour les îles de sciences (SC-2, mainteneur, 6 octobre 2026).
-      expect(trianglesDeLaGrille(g), a).toBeLessThanOrEqual(7100);
+      // 6 200 aux Premiers Rivages depuis que la mer couvre tout le cadre de la région (GD-9) ; les îles de sciences (SC-2)
+      // tiennent dans le même cadre.
+      expect(trianglesDeLaGrille(g), a).toBeLessThanOrEqual(6300);
       let minX = Infinity;
       let maxX = -Infinity;
       for (let t = 0; t < g.indices.length; t += 3) {

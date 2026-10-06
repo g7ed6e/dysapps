@@ -98,9 +98,9 @@ it('l’inventaire commenté : les lignes rangées par utilité, les ouvrages un
       'french-6e-phonology-english-6e-vocabulary',
       'french-6e-phonology-french-6e-letter-confusion',
       'french-6e-phonology-history-6e-antiquity',
-      'french-6e-phonology-technology-6e-objects',
       'maths-6e-calculation-maths-6e-fractions',
       'maths-6e-calculation-maths-6e-decimals',
+      'maths-6e-calculation-technology-6e-objects',
     ].sort(),
   );
   expect(inv.ouvrages.every((o) => o.enough)).toBe(true);

@@ -217,9 +217,10 @@ it('sans assez de blocs, la suggestion dit ce qu’il manque ; le panneau de l�
 });
 
 it('sur l’île d’où part l’ouvrage suggéré, son objectif est cet ouvrage, même si le Bloc-Navire est plus proche (une seule source)', () => {
-  // La Forêt jouée en entier, la Plaine (le port) une fois, l'anglais beaucoup : les maths sont les moins jouées, et
-  // la liaison suggérée part de la Plaine, 4 blocs (1 en stock). Le Bloc-Navire n'attend plus qu'une case : 1 bloc,
-  // plus proche que les 3 de la liaison.
+  // La Forêt jouée en entier, la Plaine (le port) une fois, l'anglais beaucoup : les maths sont les moins jouées. Les
+  // îles jouées sont reliées à la lecture de la sauvegarde ; le Hangar des inventions (SC-2), relié à la Plaine, est le
+  // plus près du Volcan : la liaison suggérée part de lui, 4 blocs (1 en stock). Le Bloc-Navire n'attend plus qu'une
+  // case : 1 bloc, plus proche que les 3 de la liaison.
   const progress = {
     ...joue('french-6e-phonology', 99),
     ...joue('maths-6e-calculation', 1),
@@ -234,13 +235,13 @@ it('sur l’île d’où part l’ouvrage suggéré, son objectif est cet ouvrag
   const presque = planCells(coque).map((c) => c.key).slice(1);
   const state = sanitizeState({ progress, stock: { [BLOC.bois]: 1 }, world: { place: 'french-6e-phonology', links: [], parts: { [coque.id]: presque } } });
   const s = ouvrageSuggere(state, '6e')!;
-  expect(s.ile).toBe('maths-6e-calculation');
-  const goal = nextGoalInfo(state, 'maths-6e-calculation');
+  expect(s.ile).toBe('technology-6e-objects');
+  const goal = nextGoalInfo(state, s.ile);
   expect(goal).toMatchObject({ have: 1, need: 4, ouvrage: s.goal.ouvrage });
   expect(goal?.text).toMatch(/^Encore 3 blocs pour le pont vers .+\. Il ouvre une île de maths\.$/);
   // La prochaine destination dit la même phrase, mot pour mot, avec la même jauge.
   const d = nextDestinationDe(state, NOMS_ARCHIPELS, textesDe('blocland').libelles);
-  expect(d).toMatchObject({ island: 'maths-6e-calculation', text: goal!.text, have: goal!.have, need: goal!.need, ouvrage: goal!.ouvrage });
+  expect(d).toMatchObject({ island: s.ile, text: goal!.text, have: goal!.have, need: goal!.need, ouvrage: goal!.ouvrage });
   // Le Bloc-Navire prêt à partir reste premier, même sur l'île de départ de l'ouvrage suggéré.
   const hull = planCells(coque).map((c) => c.key);
   const pret = sanitizeState({

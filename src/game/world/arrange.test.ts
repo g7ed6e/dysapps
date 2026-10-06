@@ -321,7 +321,7 @@ describe('Un lieu nouveau dans une région déjà aménagée (HG-2)', () => {
   const FOUILLE: BiomeId = 'history-6e-antiquity';
   const POINTE: BiomeId = 'geography-6e-living';
   const HORLOGE: BiomeId = 'english-6e-grammar';
-  const LABORATOIRE: BiomeId = 'physics-chemistry-6e-matter-energy';
+  const VALLEE: BiomeId = 'life-earth-sciences-6e-living-world';
   const ancienne = (): World => ({ ...partie(), layout: { '6e': { islands: { [HORLOGE]: startingSpot(FOUILLE) } } } });
 
   it('sans rien faire, la région ne tiendrait plus et reviendrait toute à la carte de départ', () => {
@@ -336,11 +336,11 @@ describe('Un lieu nouveau dans une région déjà aménagée (HG-2)', () => {
     expect(islands[FOUILLE]).toBeDefined();
     expect(islands[FOUILLE]).not.toEqual(startingSpot(FOUILLE));
     expect(islands[FOUILLE]?.turn).toBe(0);
-    // La Pointe ne touchait rien : elle reste à sa place de départ, hors de la disposition, comme les autres lieux. Le
-    // Laboratoire des éléments (SC-2), au rang de derrière, touche l'Horloge plus large que la Fouille : nouveau lui
-    // aussi, il se pose à la place libre la plus proche.
-    expect(Object.keys(islands).sort()).toEqual([HORLOGE, FOUILLE, LABORATOIRE].sort());
-    expect(islands[LABORATOIRE]?.turn).toBe(0);
+    // La Pointe ne touchait rien : elle reste à sa place de départ, hors de la disposition, comme les autres lieux. La
+    // Vallée du vivant (SC-2), entre l'Horloge et la Fouille, touche l'Horloge plus large que la Fouille : nouvelle elle
+    // aussi, elle se pose à la place libre la plus proche.
+    expect(Object.keys(islands).sort()).toEqual([HORLOGE, FOUILLE, VALLEE].sort());
+    expect(islands[VALLEE]?.turn).toBe(0);
     expect(isFreeSpot({ ...w, layout: { '6e': { islands: { [HORLOGE]: islands[HORLOGE]! } } } }, FOUILLE, islands[FOUILLE]!)).toBe(true);
     const poses = posesOfLayout(w.layout);
     expect(poses.get(HORLOGE)).toBeDefined();

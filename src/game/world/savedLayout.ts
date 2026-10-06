@@ -96,7 +96,7 @@ function readLanding(v: unknown): LayoutLanding | null {
  * (savedLayout.test.ts vérifie qu'ils s'accordent).
  */
 export const LAYOUT_LAST_SPOT: Readonly<Record<ArchipelagoId, Readonly<{ x: number; y: number }>>> = {
-  '6e': { x: 48, y: 43 },
+  '6e': { x: 48, y: 36 },
   '5e': { x: 36, y: 28 },
   '4e': { x: 42, y: 28 },
   '3e': { x: 52, y: 28 },
