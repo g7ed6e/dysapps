@@ -374,16 +374,62 @@ export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => numb
     put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.carton].side);
     put(9, 3, h(9, 3) + 2, BLOCKS[BLOC.carton].side);
   },
-  // SC-3, provisoire : aucun décor pour les neuf îles de sciences de 5e à 3e, en attendant l'artiste technique 3D.
-  'life-earth-sciences-5e-active-planet': () => {},
-  'physics-chemistry-5e-matter-universe': () => {},
-  'technology-5e-design': () => {},
-  'life-earth-sciences-4e-cells-evolution': () => {},
-  'physics-chemistry-4e-signals-circuits': () => {},
-  'technology-4e-modeling': () => {},
-  'life-earth-sciences-3e-human-body': () => {},
-  'physics-chemistry-3e-motion-energy': () => {},
-  'technology-3e-digital': () => {},
+  // Les îles de sciences de 5e à 3e (SC-3) : un décor par île (DA), sobre, quelques blocs au sol, aucune lanterne.
+  'life-earth-sciences-5e-active-planet': (put, h) => {
+    // Un rocher à strates : trois cubes de strate en marche.
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.strate].side);
+    put(10, 3, h(10, 3) + 1, BLOCKS[BLOC.strate].side);
+    put(10, 3, h(10, 3) + 2, BLOCKS[BLOC.strate].side);
+  },
+  'physics-chemistry-5e-matter-universe': (put, h) => {
+    // Un tas de sel en pyramide : trois cubes de sel au sol, un dessus.
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.sel].side);
+    put(10, 3, h(10, 3) + 1, BLOCKS[BLOC.sel].side);
+    put(9, 4, h(9, 4) + 1, BLOCKS[BLOC.sel].side);
+    put(9, 3, h(9, 3) + 2, BLOCKS[BLOC.sel].side);
+  },
+  'technology-5e-design': (put, h) => {
+    // Un tas de planches : deux au sol, une dessus.
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.bois].side);
+    put(10, 3, h(10, 3) + 1, BLOCKS[BLOC.bois].side);
+    put(9, 3, h(9, 3) + 2, BLOCKS[BLOC.bois].side);
+  },
+  'life-earth-sciences-4e-cells-evolution': (put, h) => {
+    // Une vasque d'eau d'une case, cerclée de galets.
+    for (let x = 8; x <= 10; x++)
+      for (let y = 2; y <= 4; y++) put(x, y, h(x, y) + 1, x === 9 && y === 3 ? WATER : BLOCKS[BLOC.galet].side);
+  },
+  'physics-chemistry-4e-signals-circuits': (put, h) => {
+    // Une longue-vue de cuivre couchée sur un trépied de bois.
+    for (let z = 1; z <= 2; z++) put(9, 3, h(9, 3) + z, TRUNK);
+    put(9, 3, h(9, 3) + 3, BLOCKS[BLOC.bobine].side);
+    put(10, 3, h(10, 3) + 3, BLOCKS[BLOC.bobine].side);
+  },
+  'technology-4e-modeling': (put, h) => {
+    // Une maquette de maison sur une caisse : la caisse de planches, un mur de liège, un toit de tuile.
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.bois].side);
+    put(9, 3, h(9, 3) + 2, BLOCKS[BLOC.liege].side);
+    put(9, 3, h(9, 3) + 3, BLOCKS[BLOC.tuile].side);
+  },
+  'life-earth-sciences-3e-human-body': (put, h) => {
+    // Un arbre fruitier : deux fruits rouges pendus sous le feuillage.
+    const base = h(9, 3);
+    tree(put, 9, 3, base, 2);
+    put(10, 2, base + 2, MUSHROOM, 'arbre@9,3');
+    put(8, 4, base + 2, MUSHROOM, 'arbre@9,3');
+  },
+  'physics-chemistry-3e-motion-energy': (put, h) => {
+    // Un plan incliné de deux marches, une balle au pied.
+    put(10, 3, h(10, 3) + 1, BLOCKS[BLOC.bois].side);
+    put(11, 3, h(11, 3) + 1, BLOCKS[BLOC.bois].side);
+    put(11, 3, h(11, 3) + 2, BLOCKS[BLOC.bois].side);
+    put(9, 3, h(9, 3) + 1, FLOWERS[0]);
+  },
+  'technology-3e-digital': (put, h) => {
+    // Une ruche de paille : deux cubes de paille l'un sur l'autre.
+    put(9, 3, h(9, 3) + 1, HAY);
+    put(9, 3, h(9, 3) + 2, HAY);
+  },
   'english-5e-vocabulary': (put, h) => {
     // Un étal : deux poteaux, un auvent de tuiles, une caisse de bois devant ; une pile de tuiles au sol.
     for (const px of [8, 10]) for (let z = 1; z <= 2; z++) put(px, 3, h(px, 3) + z, TRUNK);

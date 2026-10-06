@@ -195,6 +195,30 @@ const FORMES: Record<string, Cube[]> = {
   // Fret, le treuil (HG-3) : deux poteaux de deux fontes aux bouts, l'axe d'une barrière entre eux en haut (le bois du
   // contenu n'est ni de l'île ni de finition).
   'geography-4e-globalization-fixture-1': [...colonne(0, 0, 0, 1, BLOC.fonte), ...colonne(2, 0, 0, 1, BLOC.fonte), [1, 0, 1, 'fence']],
+  // Les îles de sciences de 5e à 3e (SC-3), d'après la forme décidée par le directeur artistique (docs/contenu, « > Forme »).
+  // Humus, le composteur : un U de trois bambous au sol (deux bras devant, le fond derrière), une barrière au fond.
+  'life-earth-sciences-5e-active-planet-fixture-1': [[0, 0, 0, BLOC.bambou], [2, 0, 0, BLOC.bambou], [1, 1, 0, BLOC.bambou], [1, 2, 0, 'fence']],
+  // Perle, le filtre : deux strates sur deux barrières, la troisième au milieu, tenue par les deux autres.
+  'physics-chemistry-5e-matter-universe-fixture-1': [[0, 0, 0, 'fence'], [2, 0, 0, 'fence'], ...rangee(0, 2, 0, 1, BLOC.strate)],
+  // Rabot, la salière : trois de haut au plus, la colonne n'a que deux sels, le troisième à son pied ; un toit dessus.
+  'technology-5e-design-fixture-1': [...colonne(0, 0, 0, 1, BLOC.sel), [1, 0, 0, BLOC.sel], [0, 0, 2, 'roof']],
+  // Nectar, la jardinière : trois lièges en rang (trois cases de large au plus : les barrières se posent sur les lièges
+  // des bouts, pas à côté).
+  'life-earth-sciences-4e-cells-evolution-fixture-1': [...rangee(0, 2, 0, 0, BLOC.liege), [0, 0, 1, 'fence'], [2, 0, 1, 'fence']],
+  // Radar, l'estrade : deux rangs de deux conteneurs, un escalier devant.
+  'physics-chemistry-4e-signals-circuits-fixture-1': [...rangee(0, 1, 1, 0, BLOC.conteneur), ...rangee(0, 1, 2, 0, BLOC.conteneur), [0, 0, 0, 'stairs']],
+  // Manivelle, le moteur : deux bobines au sol aux bouts, la troisième dessus, au milieu, sur une barrière (quatre
+  // cubes au moins).
+  'technology-4e-modeling-fixture-1': [[0, 0, 0, BLOC.bobine], [2, 0, 0, BLOC.bobine], [1, 0, 0, 'fence'], [1, 0, 1, BLOC.bobine]],
+  // Olive, la veilleuse : deux cires en colonne, une lanterne dessus (sans flamme), un savon à son pied (quatre cubes au
+  // moins).
+  'life-earth-sciences-3e-human-body-fixture-1': [...colonne(0, 0, 0, 1, BLOC.cire), [0, 0, 2, 'lantern'], [1, 0, 0, BLOC.savon]],
+  // Virage, le portique : deux poteaux de deux grès roses, une barrière en travers en haut.
+  'physics-chemistry-3e-motion-energy-fixture-1': [...colonne(0, 0, 0, 1, BLOC.gres), ...colonne(2, 0, 0, 1, BLOC.gres), [1, 0, 1, 'fence']],
+  // Navette, le carillon : deux ressorts en colonne, un toit de deux cubes dessus, qui déborde d'un côté (quatre cubes au
+  // moins).
+  'technology-3e-digital-fixture-1': [...colonne(0, 0, 0, 1, BLOC.ressort), [0, 0, 2, 'roof'], [1, 0, 2, 'roof']],
+
   // 3e : les Îles du Ciel.
   // Théo, l'équerre : une branche debout de trois prismes, une branche couchée de deux portes (le marbre se perdait sur
   // le sol de marbre du Belvédère, retouche du directeur artistique).
@@ -304,6 +328,15 @@ const PLACES: Record<string, readonly [number, number]> = {
   'english-4e-grammar-fixture-1': [8, 9],
   'english-3e-comprehension-fixture-1': [0, 12],
   'english-3e-grammar-fixture-1': [1, 10],
+  'life-earth-sciences-5e-active-planet-fixture-1': [3, 10],
+  'physics-chemistry-5e-matter-universe-fixture-1': [1, 11],
+  'technology-5e-design-fixture-1': [3, 12],
+  'life-earth-sciences-4e-cells-evolution-fixture-1': [8, 9],
+  'physics-chemistry-4e-signals-circuits-fixture-1': [8, 3],
+  'technology-4e-modeling-fixture-1': [2, 11],
+  'life-earth-sciences-3e-human-body-fixture-1': [-2, 8],
+  'physics-chemistry-3e-motion-energy-fixture-1': [-1, 12],
+  'technology-3e-digital-fixture-1': [2, 11],
 };
 
 /**

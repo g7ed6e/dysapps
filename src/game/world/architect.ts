@@ -838,7 +838,7 @@ function chalet(b: BlockId): Stages {
 /**
  * La scierie (la scierie de Rabot, technologie 5e ; DA, SC-3) : un atelier, sans lame ni hache. La scierie : quatre sur
  * trois, trois blocs de haut, de bambou. Le toit de la scierie : la porte, une fenêtre éclairée, le toit à deux pans. La
- * cour de la scierie : à droite, le bois qui sèche (trois planches au sol, deux dessus), la barrière, son portillon, deux
+ * cour de la scierie : à droite, le bois qui sèche (trois planches au sol, la dernière une botte de cannes, deux dessus), la barrière, son portillon, deux
  * lanternes et la marche.
  */
 function scierie(b: BlockId): Stages {
@@ -846,7 +846,9 @@ function scierie(b: BlockId): Stages {
   const fenetres: [number, number, number][] = [[2, 2, 1]];
   const roof = [...ouvertures([doorX, 2, 0], fenetres), ...deuxPans(0, 3, 2, 3, b, 0, 3)];
   const cour: ArchCell[] = [];
-  for (let y = 2; y <= 4; y++) cour.push({ x: 5, y, z: 0, block: BLOC.bois });
+  // La planche de devant est une botte de cannes de l'île : son dessus se voit, comme celui du composteur d'Humus (la
+  // commande de la Prairie), qui ne demande ainsi aucun appel de dessin de plus dans Blocland (budget.test.ts).
+  for (let y = 2; y <= 4; y++) cour.push({ x: 5, y, z: 0, block: y === 4 ? b : BLOC.bois });
   cour.push({ x: 5, y: 2, z: 1, block: BLOC.bois }, { x: 5, y: 3, z: 1, block: BLOC.bois }, { x: doorX, y: 1, z: 0, block: BLOC.escalier }, ...barriereDeDevant([doorX], [0, ZW - 1]));
   return [without(salle(b, 0, 4, 3), [[doorX, 2, 0], ...fenetres]), roof, cour];
 }
