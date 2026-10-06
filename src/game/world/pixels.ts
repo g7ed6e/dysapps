@@ -157,8 +157,9 @@ function bardeau(t: TonsDuBardeau): Painter {
 type TonsDeMosaique = { terre: string; ocre: string; joint: string; bord: string };
 
 /**
- * De la mosaïque (la Fouille des siècles, histoire 6e ; DA, HG-2) : des tesselles de 2 × 2 pixels, terre cuite ou ocre
- * (un hachage de la tesselle, pas le hasard du canvas), séparées d'un joint clair, crème, d'un pixel ; sur le dessus, une
+ * De la mosaïque (la Fouille des siècles, histoire 6e ; DA, HG-2) : des tesselles de 2 × 2 pixels, ocre ou terre cuite
+ * (un hachage de la tesselle, pas le hasard du canvas : trois sur cinq ocre, pour que l'ocre et le crème dominent et
+ * que le bloc ne se lise pas comme la brique ; consultant Blocland, retouches HG-2), séparées d'un joint clair, crème, d'un pixel ; sur le dessus, une
  * bordure d'un rang sombre tout autour. Quatre tons, mats, sans grain : ni plomb sombre ni couleurs vives, ce qui la
  * sépare du vitrail. Les tesselles vont de 1 à 14 ; le pixel 0 et le pixel 15 sont la bordure (dessus) ou un joint
  * (côté) : d'un bloc à l'autre, le joint double d'un côté se lit comme le bord d'un panneau.
@@ -171,7 +172,7 @@ function mosaique(t: TonsDeMosaique, bordure: boolean): Painter {
     const [u, v] = [(x - 1) % 3, (y - 1) % 3];
     if (u === 2 || v === 2) return joint;
     const [i, j] = [Math.floor((x - 1) / 3), Math.floor((y - 1) / 3)];
-    return (i * 7 + j * 13 + i * j) % 5 < 2 ? ocre : terre;
+    return (i * 7 + j * 13 + i * j) % 5 < 2 ? terre : ocre;
   };
 }
 
@@ -468,8 +469,8 @@ export const PAINTERS: Record<TextureKind, { top: Painter; side: Painter; bottom
     top: bardeau({ bois: '#96724e', joint: '#4e3826' }),
     side: bardeau({ bois: '#7c5c3e', joint: '#402e20' }),
   },
-  // Mosaïque (la Fouille des siècles, histoire 6e) : des tesselles de 2 × 2 terre cuite et ocre, joints crème, la
-  // bordure sombre sur le dessus. Mate et terreuse : jamais confondue avec le vitrail (plomb sombre, couleurs vives).
+  // Mosaïque (la Fouille des siècles, histoire 6e) : des tesselles de 2 × 2 ocre et terre cuite, l'ocre dominant, joints
+  // crème, la bordure sombre sur le dessus. Mate et terreuse : jamais confondue avec le vitrail (plomb sombre, couleurs vives).
   mosaique: {
     top: mosaique({ terre: '#c07048', ocre: '#d8a454', joint: '#eadfc6', bord: '#5e3e2a' }, true),
     side: mosaique({ terre: '#a45a36', ocre: '#bc8840', joint: '#d6c9ac', bord: '#5e3e2a' }, false),

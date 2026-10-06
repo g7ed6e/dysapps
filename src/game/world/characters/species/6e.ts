@@ -1,5 +1,5 @@
 // Les habitants des Premiers Rivages (6e) en facettes (lot R6) : l'espèce, le métier et son outil, d'après
-// l'intention du directeur artistique. Budget serré : dix îles pour 2 500 triangles.
+// l'intention du directeur artistique. Budget serré : douze îles pour 2 950 triangles (relevé le 6 octobre 2026).
 import type { BiomeId } from '../../../biomes';
 import { SABLE } from '../../palette';
 import { TENUE } from '../colors';
@@ -347,29 +347,36 @@ export const ESPECES_6E = {
   'history-6e-antiquity': {
     nom: 'Silex',
     metier: 'fouilleur',
-    // Large, brun, deux petites oreilles basses : sa silhouette ne se confond ni avec Rouxel ni avec Lavi.
+    // Large, brun, deux petites oreilles rondes d'ourson, basses : sa silhouette ne se confond ni avec Rouxel ni avec
+    // Lavi (consultant Archipéo, retouches HG-2 : des oreilles rondes, pas des cônes).
     dominante: 0x7a5638,
     marque: { couleur: 0xc8a878, ou: ['museau'] },
     silhouette: { largeur: 0.46, ventre: 0.08, tete: 0.34 },
     coiffe: (T, k) => {
-      for (const c of [-1, 1]) pointe(T, [c * 0.2, 2.38, 0.04], 0.11, 0.09, k.dom, [0, 0, -c * 0.7], 3);
+      for (const c of [-1, 1]) disque(pose(T, repere([c * 0.22, 2.42, 0.04], Math.PI / 2, 0, 0)), 0, 0.1, 0.05, k.dom, 5);
     },
     tenue: { couleur: TENUE.lin, vetements: ['tablier'] },
     museau: { forme: 'museau', long: 0.2, r: 0.08 },
     outil: {
       // Le pinceau de fouille : un manche de bois, une touffe sombre au bout.
       pose: [-0.2, 0, 0],
-      dessiner: (T, k) => manche(T, -0.02, 0.62, 0.03, k.bois),
+      dessiner: (T, k) => {
+        manche(T, -0.02, 0.62, 0.03, k.bois);
+        pointe(T, [0, 0.6, 0], 0.05, 0.12, k.fer, [0, 0, 0], 3);
+      },
     },
   },
   'geography-6e-living': {
     nom: 'Boussole',
     metier: 'géographe',
     dominante: 0xeeeae0,
+    // La poche du bec, jaune pâle.
+    marque: { couleur: 0xeedc96, ou: ['museau'] },
     tenue: { couleur: TENUE.cuir, vetements: ['ailes'] },
-    // Le long bec du pélican, élancé sur de longues pattes : sa silhouette ne se confond avec aucune autre.
+    // Le long bec du pélican, sur un corps lourd, un peu de ventre et des pattes courtes : il ne se confond pas avec
+    // Lina, la cigogne élancée du 5e (consultant Archipéo, retouches HG-2).
     museau: { forme: 'bec', long: 0.5, r: 0.09, y: 2.18 },
-    silhouette: { largeur: 0.28, jambes: 0.9, tete: 0.22 },
+    silhouette: { largeur: 0.4, ventre: 0.06, jambes: 0.5, tete: 0.22 },
     outil: {
       // Le rouleau de la carte.
       pose: [0, 0, 0],

@@ -15,10 +15,15 @@ export interface LabelOffset {
   dy: number;
 }
 
-/** Les décalages essayés, en fractions de la hauteur (dy) et de la largeur (dx) de l'étiquette, du plus proche au plus loin. */
+/**
+ * Les décalages essayés, en fractions de la hauteur (dy) et de la largeur (dx) de l'étiquette, du plus proche au plus loin.
+ * De côté, par pas de 0,15 largeur : au pas de 0,3, la Forêt des sons se taisait sur la Carte du 6e dans une police
+ * 10 % plus large, ses voisines (la Fouille des siècles, la Pointe des paysages) serrées sous le panneau sans place
+ * entre deux crans (HG-2, 6 octobre 2026).
+ */
 const TRIES: [number, number][] = (() => {
   const out: [number, number][] = [];
-  for (const fy of [0, 0.55, -0.55, 1.1, -1.1, 1.65, -1.65, 2.2, -2.2, 2.75, -2.75]) for (const fx of [0, 0.3, -0.3, 0.6, -0.6]) out.push([fx, fy]);
+  for (const fy of [0, 0.55, -0.55, 1.1, -1.1, 1.65, -1.65, 2.2, -2.2, 2.75, -2.75]) for (const fx of [0, 0.15, -0.15, 0.3, -0.3, 0.45, -0.45, 0.6, -0.6]) out.push([fx, fy]);
   return out.sort((a, b) => Math.hypot(a[0] * 1.6, a[1]) - Math.hypot(b[0] * 1.6, b[1]));
 })();
 

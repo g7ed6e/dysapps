@@ -244,9 +244,10 @@ export const BLOCKS: Record<BlockId, BlockDef> = {
   'english-4e-grammar': { id: 'english-4e-grammar', name: 'Rail', top: '#85603a', side: '#4a4a50', texture: 'rail' },
   'english-3e-comprehension': { id: 'english-3e-comprehension', name: 'Antenne', top: '#b4bcc4', side: '#9aa4ae', texture: 'antenne' },
   'english-3e-grammar': { id: 'english-3e-grammar', name: 'Pierre de taille', top: '#e6dcc4', side: '#d8ccb0', texture: 'taille' },
-  // Le bloc de la Fouille des siècles (histoire, 6e) : des tesselles de 2 × 2 en tons terre cuite, ocre et crème, mats,
-  // distinctes du vitrail par l'absence de plomb et de couleurs vives.
-  'history-6e-antiquity': { id: 'history-6e-antiquity', name: 'Mosaïque', top: '#c98a5c', side: '#a86c44', texture: 'mosaique' },
+  // Le bloc de la Fouille des siècles (histoire, 6e) : des tesselles de 2 × 2 en tons ocre, terre cuite et crème, mats,
+  // l'ocre et le crème dominants (plus jaune que la brique, plus rouge que le chaume), distinctes du vitrail par
+  // l'absence de plomb et de couleurs vives.
+  'history-6e-antiquity': { id: 'history-6e-antiquity', name: 'Mosaïque', top: '#d6a258', side: '#b47c40', texture: 'mosaique' },
   // Le bloc de la Pointe des paysages (géographie, 6e) : des bottes de paille en couches qui se chevauchent, distinctes
   // du sable, de l'osier et du parchemin par le motif, pas par la teinte seule.
   'geography-6e-living': { id: 'geography-6e-living', name: 'Chaume', top: '#d8b860', side: '#b0903e', texture: 'chaume' },

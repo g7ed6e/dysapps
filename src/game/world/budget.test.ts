@@ -102,10 +102,11 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
 
   // Ailleurs, 52 300 jusqu'au cœur agrandi de l'Atelier (01/10/2026) : son sol en demande 660 de plus (world/budget.ts),
   // enveloppe validée par le mainteneur le 01/10/2026 ; 53 040 avec la Halle aux matériaux (GD-2, validé par le mainteneur le 01/10/2026, world/budget.ts), 53 060 avec la salle des trophées (GD-3, même jour).
-  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9 : la carte de départ calée sur la grille) : 59 500 triangles et 25 appels aux Premiers Rivages, 55 790 et 24 ailleurs', () => {
+  // HG-2 (mainteneur, 6 octobre 2026) : les Premiers Rivages passent de 59 500 à 63 370 avec les deux îles d'histoire-géographie.
+  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2 : les îles d’histoire-géographie) : 63 370 triangles et 25 appels aux Premiers Rivages, 55 790 et 24 ailleurs', () => {
     const total = (a: '6e' | '5e') => postes.reduce((n, p) => n + enveloppeDe(p, a).triangles, 0);
     const appels = (a: '6e' | '5e') => postes.reduce((n, p) => n + enveloppeDe(p, a).drawCalls, 0);
-    expect([total('6e'), appels('6e')]).toEqual([59_500, 25]);
+    expect([total('6e'), appels('6e')]).toEqual([63_370, 25]);
     expect([total('5e'), appels('5e')]).toEqual([55_790, 24]);
   });
 
@@ -194,8 +195,8 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
     });
 });
 
-it('GD-9 : le plafond du monde en blocs passe à 88 000 triangles, les appels restent à 240', () => {
-  expect(PLAFOND_DU_MONDE_EN_BLOCS).toEqual({ triangles: 88_000, drawCalls: 240 });
+it('GD-9 puis HG-2 : le plafond du monde en blocs passe à 88 000 triangles, puis à 100 000 triangles et 256 appels (mainteneur, 6 octobre 2026)', () => {
+  expect(PLAFOND_DU_MONDE_EN_BLOCS).toEqual({ triangles: 100_000, drawCalls: 256 });
 });
 
 it('GD-9 : au pire (autant de liaisons qu’un graphe planaire en a, au plus long, et toutes les réunions), chaque région tient sous le plafond', () => {
