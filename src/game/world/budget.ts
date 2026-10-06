@@ -59,15 +59,13 @@ export const RENDER_BUDGET_6E = { triangles: 72_800, drawCalls: RENDER_BUDGET.dr
  * 2026 (« Budget on augmente pour l'instant ») pour les deux îles d'histoire-géographie du 6e (HG-2), aux valeurs
  * mesurées avec une petite marge : aux Premiers Rivages, 86 028 triangles et 252 appels tout construit, 253 avec les
  * bulles, 98 928 triangles au pire de la région aménagée, 99 154 avec le dessin d'un choix du mode « Aménager ». Puis
- * à 120 000 triangles et 284 appels, du même mot (« Budget on augmente pour l'instant », 6 octobre 2026), pour les trois
- * îles de sciences du 6e (SC-2), aux valeurs mesurées avec une petite marge : aux Premiers Rivages, 100 928 triangles et
- * 279 appels tout construit (101 436 avec les commandes posées), 280 avec les bulles, 117 366 triangles au pire de la
- * région aménagée, 117 992 avec le dessin d'un choix du mode « Aménager ». Les 27 appels de plus : sept pour les trois
- * blocs nouveaux (le dessus et les côtés de chacun, et le dessous du fossile, sous un pont), vingt pour les six
- * personnages en cubes (un appel par couleur : trois, quatre pour le Cerf et l'Alambic). La mesure sur tablette reste à
- * faire.
+ * ramené à 100 000 triangles et 180 appels pour les trois îles de sciences du 6e (SC-2), après le lot qui fond les
+ * couleurs des personnages en cubes (#372, choix du mainteneur « Fondre puis relever », 6 octobre 2026) : les triangles
+ * n'ont pas à être relevés, les appels sont ramenés aux valeurs mesurées avec une petite marge. Aux Premiers Rivages,
+ * avec les sciences : 81 154 triangles et 167 appels tout construit (81 646 avec les commandes posées), 168 avec les
+ * bulles, 97 732 triangles au pire de la région aménagée. La mesure sur tablette reste à faire.
  */
-export const PLAFOND_DU_MONDE_EN_BLOCS = { triangles: 120_000, drawCalls: 284 } as const;
+export const PLAFOND_DU_MONDE_EN_BLOCS = { triangles: 100_000, drawCalls: 180 } as const;
 
 /** Un poste du budget d'Archipéo : une part de la scène, et le lot qui la dessine. */
 export type Poste = 'sol' | 'mer' | 'faune' | 'decor' | 'construction' | 'commandes' | 'bornes' | 'navire' | 'bonhomme' | 'creatures' | 'gardiens' | 'scene';
