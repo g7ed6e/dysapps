@@ -9,6 +9,9 @@ import type { ArrangeGesture } from './view';
 /** Les deux temps du geste (ms) : ensemble, au plus 1,5 s (GD-9, « Ce qui ne bouge pas »). */
 export const GESTE_DU_LIEU = { demonteMs: 600, remonteMs: 600 } as const;
 
+/** Le bas du geste est à tant de cases sous le sol du lieu (la coupe part de là, sous l'eau). */
+export const GESTE_SOUS_LE_SOL = 5;
+
 /** L'avancée du geste à l'heure `now`, de 0 à 1. */
 function gestureProgress(g: ArrangeGesture, now: number): number {
   return g.dureeMs <= 0 ? 1 : Math.min(1, Math.max(0, (now - g.debut) / g.dureeMs));
@@ -68,4 +71,16 @@ const VOILE_PASSAGE = 0.4;
 /** La zone d'un geste autour d'une emprise : une case de plus de chaque côté (une cascade, un ponton). */
 export function gestureZone(r: Rectangle): Rectangle {
   return { x0: r.x0 - 1, y0: r.y0 - 1, x1: r.x1 + 1, y1: r.y1 + 1 };
+}
+
+/**
+ * Le rectangle du voile, posé à la hauteur `hauteur` au-dessus du sol du lieu, pour qu'il couvre à l'écran le lieu et ce
+ * qui s'y dresse : vu de biais, un point haut de `h` se voit à la place d'un point du sol décalé de `h × pente` (la
+ * pente : la direction de la caméra au sol, par unité de hauteur, en cases du monde). Le voile couvre donc la zone, et
+ * la zone ramenée de ce décalage : jamais plus, sur aucun côté.
+ */
+export function veilFootprint(r: Rectangle, hauteur: number, pente: { x: number; y: number }): Rectangle {
+  const dx = pente.x * Math.max(0, hauteur);
+  const dy = pente.y * Math.max(0, hauteur);
+  return ensemble(r, { x0: r.x0 - dx, y0: r.y0 - dy, x1: r.x1 - dx, y1: r.y1 - dy });
 }

@@ -1,7 +1,7 @@
 // Le geste de la pose du mode « Aménager » (GD-9) : 1,5 s au plus ; la coupe descend puis monte d'une couche entière à
 // la fois ; le voile d'Archipéo couvre puis se lève.
 import { describe, expect, it } from 'vitest';
-import { GESTE_DU_LIEU, gestureCut, gestureZone, veilOpacity, veilZone } from './arrangeGesture';
+import { GESTE_DU_LIEU, gestureCut, gestureZone, veilFootprint, veilOpacity, veilZone } from './arrangeGesture';
 import type { ArrangeGesture } from './view';
 
 const geste = (phase: ArrangeGesture['phase']): ArrangeGesture => ({ seq: 1, phase, zone: { x0: 0, y0: 0, x1: 10, y1: 10 }, debut: 1000, dureeMs: 600, bas: -5, haut: 24 });
@@ -55,5 +55,16 @@ describe('le geste de la pose', () => {
       expect(Math.abs(z.x1 - avant.x1)).toBeLessThan(8);
       avant = z;
     }
+  });
+
+  it('le voile, posé au-dessus du lieu, couvre à l’écran le lieu et ce qui s’y dresse, sans déborder plus loin', () => {
+    const r = { x0: 0, y0: 0, x1: 20, y1: 20 };
+    // La caméra de la Carte regarde vers le nord : 0,4 case au sol par case de hauteur ; 10 cases de haut.
+    expect(veilFootprint(r, 10, { x: 0, y: 0.4 })).toEqual({ x0: 0, y0: -4, x1: 20, y1: 20 });
+    // À plat, rien ne change ; jamais plus grand que la zone et son décalage.
+    expect(veilFootprint(r, 0, { x: 0.1, y: 0.4 })).toEqual(r);
+    const v = veilFootprint(r, 10, { x: 0.1, y: 0.4 });
+    expect(v.x1 - v.x0).toBeCloseTo(21);
+    expect(v.y1 - v.y0).toBeCloseTo(24);
   });
 });

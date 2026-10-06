@@ -32,7 +32,7 @@ import {
 } from './world/arrangeMode';
 import { type ArrangeSession, canUndo, hasChanged, recordPose, resetToEntry, startArranging, undoLast } from './world/arrangeSession';
 import { arrangeView } from './world/arrangeView';
-import { GESTE_DU_LIEU, gestureZone } from './world/arrangeGesture';
+import { GESTE_DU_LIEU, GESTE_SOUS_LE_SOL, gestureZone } from './world/arrangeGesture';
 import type { ArrangeGesture, ArrangeView, CadreDuMode } from './world/view';
 import { footprintOf } from './world/footprint';
 import type { Intention, Point } from './world/layout';
@@ -292,7 +292,7 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     // Le démontage part du plus haut cube du lieu (et de celui qui lui est réuni) : pas de temps mort au début du geste.
     const autre = joinedWith(w, id);
     const sommets = [id, ...(autre ? [autre] : [])].map((l) => hautDuLieu?.(l)).filter((h): h is number => h !== undefined);
-    const base = { bas: alt - 5, haut: sommets.length ? Math.max(...sommets) + 1 : alt + 24, dureeMs: GESTE_DU_LIEU.demonteMs };
+    const base = { bas: alt - GESTE_SOUS_LE_SOL, haut: sommets.length ? Math.max(...sommets) + 1 : alt + 24, dureeMs: GESTE_DU_LIEU.demonteMs };
     const g: GesteEnCours = { apres: r.world, phrase: texte, resume: court, timers: [], remonte: false };
     enCours.current = g;
     const ancienne = gestureZone(emprise(w, id));

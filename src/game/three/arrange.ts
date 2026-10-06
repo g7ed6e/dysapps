@@ -8,7 +8,7 @@
 import type { Lumiere } from './light';
 import { mixColor } from '../world/daylight';
 import * as THREE from 'three';
-import { gestureCut, veilOpacity, veilZone } from '../world/arrangeGesture';
+import { GESTE_SOUS_LE_SOL, gestureCut, veilFootprint, veilOpacity, veilZone } from '../world/arrangeGesture';
 import type { ArrangeCellKind, ArrangeGesture, ArrangeView } from '../world/view';
 import { drawIslandLabel, measureIslandLabel } from '../world/labelCanvas';
 import type { Monde, PartieDeLaScene } from './scenePart';
@@ -255,6 +255,8 @@ export function creerAmenagement(monde: Monde, reduit: boolean, camera: THREE.Pe
     const perPx = 2 / (camera.projectionMatrix.elements[5] * Math.max(1, el.clientHeight));
     nomSprite.scale.set(nomTaille.w * perPx, nomTaille.h * perPx, 1);
   };
+  // La direction de la caméra, relue à chaque image du geste (sans allocation).
+  const regard = new THREE.Vector3();
   let souleve: ArrangeView['souleve'] = null;
   let souleveDepuis = 0;
   let enCours: ArrangeGesture | null = null;
@@ -279,7 +281,11 @@ export function creerAmenagement(monde: Monde, reduit: boolean, camera: THREE.Pe
         zoneDuMode.uAmLift.value = 0;
         zoneDuMode.uAmCut.value = gestureCut(enCours, now);
       } else if (voile && voileMat) {
-        const r = veilZone(enCours, now);
+        // Posé au-dessus du plus haut cube, vu de biais : ramené vers la caméra de la hauteur du lieu, pour couvrir à
+        // l'écran le lieu et ce qui s'y dresse, pas l'eau derrière lui (`veilFootprint`).
+        camera.getWorldDirection(regard);
+        const pente = { x: regard.x / Math.max(0.1, -regard.y), y: regard.z / Math.max(0.1, -regard.y) };
+        const r = veilFootprint(veilZone(enCours, now), enCours.haut - (enCours.bas + GESTE_SOUS_LE_SOL), pente);
         voile.visible = true;
         voile.position.set((r.x0 + r.x1) / 2, enCours.haut, (r.y0 + r.y1) / 2);
         voile.scale.set(r.x1 - r.x0 + VOILE_DEBORDE * 2, r.y1 - r.y0 + VOILE_DEBORDE * 2, 1);

@@ -220,7 +220,7 @@ SHOTS.push(
 // Archipéo, sur demande : le voile de brume tenu à mi-démontage (plein, serré sur le lieu, dont le contour se devine
 // dessous), la nuit aux trois quarts (étiré vers la nouvelle place), et la jetée finie, ses dalles plus claires.
 SHOTS.push(
-  { ...archipeo({ base: 'amenager-geste', name: 'archipeo-amenager-geste' }), act: amenagerGeste('maths-6e-fractions', { x: 150, y: 100 }, 300), surDemande: true },
+  { ...archipeo({ base: 'amenager-geste', name: 'archipeo-amenager-geste' }), act: amenagerGesteFleche('french-6e-letter-confusion', 'Nord', 300), surDemande: true },
   { ...archipeo({ base: 'reunir', name: 'archipeo-reunir' }), surDemande: true },
   { ...archipeo({ base: 'amenager-geste', name: 'archipeo-amenager-geste-nuit' }), act: amenagerGeste('maths-6e-fractions', { x: 150, y: 100 }, 450), settings: { univers: 'archipeo' }, nuit: true, surDemande: true },
 );
@@ -316,6 +316,25 @@ function amenagerGeste(ile, point, ms) {
   const choisir = amenager(ile, point);
   return async (page) => {
     await choisir(page);
+    await page.evaluate((ms) => (window.__dysappsGesteA = ms), ms);
+    await page.getByRole('button', { name: /Poser ici/ }).click();
+    await page.waitForTimeout(2500);
+  };
+}
+/**
+ * Comme `amenagerGeste`, mais le fantôme part d'une flèche (`fleche` : « Ouest », « Nord »…) : l'ancienne place reste
+ * dans la vue, sous le voile.
+ */
+function amenagerGesteFleche(ile, fleche, ms) {
+  return async (page) => {
+    await fermerLesBandeaux(page);
+    await page.getByRole('button', { name: /^Aménager/ }).click();
+    await page.waitForTimeout(500);
+    await fermerLesBandeaux(page);
+    await page.evaluate((ile) => window.__dysappsAmenager?.({ genre: 'ile', id: ile }), ile);
+    await page.waitForTimeout(800);
+    await page.getByRole('button', { name: fleche, exact: true }).click();
+    await page.waitForTimeout(2500);
     await page.evaluate((ms) => (window.__dysappsGesteA = ms), ms);
     await page.getByRole('button', { name: /Poser ici/ }).click();
     await page.waitForTimeout(2500);

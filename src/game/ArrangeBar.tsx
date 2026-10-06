@@ -4,7 +4,7 @@
 // défile, avec « Poser ici » et ✓ Terminé ; les flèches en croix d'icônes (leur nom en accessibilité, le mot visible
 // sur tablette) ; au téléphone, « Tourner », « Réunir », « Défaire » et « Remettre comme avant » dans un pli « Plus ».
 // L'état du mode vient de `useAmenagement` (Arranging.tsx).
-import { useEffect, useId, useState } from 'react';
+import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 import { Icon } from '../components/Icon';
 import { SpeakButton } from '../components/SpeakButton';
 import { type Amenagement, FLECHES } from './Arranging';
@@ -135,18 +135,36 @@ export function ArrangeSentence({ amenagement, nom, questionAilleurs = false }: 
 }
 
 /**
- * La phrase au téléphone : une ligne courte (deux lignes au plus), la phrase entière au toucher (refermée à chaque
- * nouvelle phrase). La zone annoncée est à part, hors du bouton : ouvrir la phrase ne la fait pas relire.
+ * La ligne courte sans le lieu voisin, quand elle ne tient pas sur deux lignes : « Au nord-ouest, à 4 cases. » pour
+ * « Au nord-ouest de la Mine des lettres, à 4 cases. » (et « Posé au nord-ouest, à 4 cases. » après une pose). Une
+ * autre phrase reste telle quelle.
+ */
+export function briefSummary(resume: string): string {
+  return resume.replace(/^(.*?\b(?:nord|sud|est|ouest)(?:-(?:est|ouest))?) (?:de la |du |de l’)[^,]+(, à \d+ cases?\.)$/, '$1$2');
+}
+
+/**
+ * La phrase au téléphone : une ligne courte, sur deux lignes au plus, qui se coupe entre les mots, jamais avec « … » ;
+ * si la direction et l'écart avec le nom du voisin n'y tiennent pas (le texte agrandi, une police plus large), elle
+ * dit la direction et l'écart seuls. La phrase entière au toucher (refermée à chaque nouvelle phrase). La zone annoncée
+ * est à part, hors du bouton : ouvrir la phrase ne la fait pas relire.
  */
 function LigneCourte({ phrase, resume }: { phrase: string; resume: string }) {
   const [ouverte, setOuverte] = useState(false);
+  const [bref, setBref] = useState(false);
+  const texte = useRef<HTMLSpanElement>(null);
+  const court = bref ? briefSummary(resume) : resume;
+  // Mesurée une fois écrite : plus de deux lignes, la version sans le voisin.
+  useLayoutEffect(() => {
+    if (!ouverte && !bref && texte.current && texte.current.getClientRects().length > 2 && briefSummary(resume) !== resume) setBref(true);
+  }, [ouverte, bref, resume]);
   return (
     <div className={`creature-line world-line arrange-line arrange-line-courte${ouverte ? ' ouverte' : ''}`}>
       <p className="visually-hidden" role="status" aria-live="polite">
         {phrase}
       </p>
       <button type="button" className="arrange-line-texte" aria-expanded={ouverte} onClick={() => setOuverte(!ouverte)}>
-        {ouverte ? phrase : resume}
+        <span ref={texte}>{ouverte ? phrase : court}</span>
       </button>
       <SpeakButton text={phrase} compact />
     </div>

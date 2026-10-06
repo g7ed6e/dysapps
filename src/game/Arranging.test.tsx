@@ -2,19 +2,19 @@
 // jusqu'à « Plus de place par là », « Poser ici » (avec son geste, qu'un toucher termine ; d'un coup avec moins
 // d'animations), ↶ et « Remettre comme avant » ; la barre ne met en avant qu'un bouton ; la pastille des liaisons à
 // reposer, et le mot expliqué la première fois.
-import { thePlace, toPlace } from './world/placeArticle';
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { useState } from 'react';
 import { SettingsProvider } from '../core/SettingsContext';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { World } from './engine/state';
 import { type Amenagement, useAmenagement } from './Arranging';
-import { ArrangeBar, ArrangeButton, ArrangeSentence } from './ArrangeBar';
+import { ArrangeBar, ArrangeButton, ArrangeSentence, briefSummary } from './ArrangeBar';
 import { HABILLAGES } from './world/skin';
 import { toutConstruit } from './world/budget';
 import { joinedWith, linksToRelink, NO_MORE_ROOM, spotOf } from './world/arrange';
 import { GESTE_DU_LIEU } from './world/arrangeGesture';
 import { applyLayout } from './world/appliedLayout';
+import { thePlace, toPlace } from './world/placeArticle';
 
 vi.mock('./sound', async (original) => ({ ...(await original<typeof import('./sound')>()), playClac: vi.fn(), playPlace: vi.fn() }));
 
@@ -245,6 +245,11 @@ describe('le mode « Aménager »', () => {
       const ligne = document.querySelector('.arrange-line-texte') as HTMLButtonElement;
       expect(ligne.textContent).toMatch(/^(Au|À l’) [a-z-]+ (de la|du|de l’) [^,]+, à \d+ cases?\.$/);
       expect(ligne.textContent).not.toMatch(/…/);
+      // Sur plus de deux lignes (texte agrandi), la ligne courte dit la direction et l'écart sans le voisin.
+      expect(briefSummary('Au nord-ouest de la Mine des lettres, à 4 cases.')).toBe('Au nord-ouest, à 4 cases.');
+      expect(briefSummary('Posé à l’est du Volcan des décimaux, à 1 case.')).toBe('Posé à l’est, à 1 case.');
+      expect(briefSummary('Au sud de l’Horloge des verbes, à 2 cases.')).toBe('Au sud, à 2 cases.');
+      expect(briefSummary('La borne : place 2 sur 4')).toBe('La borne : place 2 sur 4');
       // La zone annoncée est hors du bouton : l'ouvrir ne fait pas relire la phrase.
       expect(ligne.closest('[role="status"]')).toBeNull();
       expect(screen.getByRole('status').textContent).toBe(dernier.phrase);
