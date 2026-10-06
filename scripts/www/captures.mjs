@@ -14,6 +14,8 @@ const root = process.cwd();
 const OUT = join(root, 'www', '_captures');
 /** Une heure de jour, pour que le ciel et la lumière soient les mêmes à chaque capture. */
 const DAY = new Date('2026-09-28T10:30:00');
+/** Une heure de nuit (`nuit: true`), pour relire ce que la nuit fait au monde. */
+const NIGHT = new Date('2026-09-28T22:30:00');
 const TABLET = { width: 1024, height: 768 };
 const PHONE = { width: 390, height: 844 };
 
@@ -144,14 +146,21 @@ const SHOTS = [
   { name: 'fiche-relier', state: EARLY_MINE, go: '/adventure/french-6e-phonology', act: relierDepuisUneAutreIle('maths-6e-fractions') },
   // Aménager sa région (GD-9) : sur la Carte, le mode ouvert, un lieu choisi et son fantôme calé sur une place libre.
   { name: 'amenager', state: MID, go: '/adventure/map', act: amenager('maths-6e-fractions', { x: 150, y: 100 }) },
-  // Réunir deux lieux (GD-9, point 10) : la Tour du lecteur choisie, « Réunir » touché, la question, « Réunir à la Ferme
-  // des accords », le mode fermé ; la digue finie depuis son panneau, avec sa marche, puis regardée dans le monde.
+  // Réunir deux lieux (GD-9, point 10) : la Tour du lecteur choisie, « Réunir » touché, la question, « Réunir avec la
+  // Ferme des accords », le mode fermé ; la digue finie depuis son panneau, puis regardée de près sur la Carte (l'herbe
+  // sur la pierre, la marche).
   { name: 'reunir', state: REUNIR, go: '/adventure/map', act: reunir('french-6e-reading', 'french-6e-grammar-spelling') },
   // Pour les relectures, sur demande : le mode au téléphone, la question de « Réunir », et le geste tenu au milieu du
   // démontage (on ne doit voir aucun creux dans la couche qui reste).
   { name: 'telephone-amenager', state: MID, go: '/adventure/map', size: PHONE, act: amenager('maths-6e-fractions', { x: 150, y: 100 }), surDemande: true },
+  // Au téléphone en grand texte, « Aménager » propose d'abord la liste : la liste ouverte dans son panneau.
+  { name: 'telephone-amenager-liste', state: MID, go: '/adventure/map', size: PHONE, settings: { fontSize: 28 }, act: amenagerEnListe, surDemande: true },
   { name: 'reunir-question', state: REUNIR, go: '/adventure/map', act: reunirQuestion('french-6e-reading'), surDemande: true },
   { name: 'amenager-geste', state: MID, go: '/adventure/map', act: amenagerGeste('maths-6e-fractions', { x: 150, y: 100 }, 300), surDemande: true },
+  // Le port de la 6e à la carte de départ, de près : la baleine y est-elle cachée ? (question du directeur artistique)
+  { name: 'port-6e-baleine', state: MID, go: '/adventure/maths-6e-calculation', act: fermerLesBandeaux, surDemande: true },
+  // Le bandeau « Succès débloqué » au téléphone : relu aux réglages extrêmes (texte sous l'icône, Fermer dans l'écran).
+  { name: 'telephone-succes', state: MID, go: '/adventure/map', size: PHONE, act: attendre(1500), surDemande: true },
   { name: 'gardien', state: MID, go: '/adventure/french-6e-letter-confusion/challenge', wait: 2500 },
   { name: 'ecole', state: MID, go: '/adventure/school' },
   { name: 'trophees', state: MID, go: '/adventure/trophies' },
@@ -188,6 +197,8 @@ SHOTS.push(
   extreme('gardien', 'clair'),
   extreme('quete-fin', 'clair'),
   extreme('vue-simple', 'creme'),
+  extreme('telephone-succes', 'nuit'),
+  extreme('telephone-amenager-liste', 'nuit'),
 );
 
 /**
@@ -211,6 +222,7 @@ SHOTS.push(
 SHOTS.push(
   { ...archipeo({ base: 'amenager-geste', name: 'archipeo-amenager-geste' }), act: amenagerGeste('maths-6e-fractions', { x: 150, y: 100 }, 450), surDemande: true },
   { ...archipeo({ base: 'reunir', name: 'archipeo-reunir' }), surDemande: true },
+  { ...archipeo({ base: 'amenager-geste', name: 'archipeo-amenager-geste-nuit' }), act: amenagerGeste('maths-6e-fractions', { x: 150, y: 100 }, 450), settings: { univers: 'archipeo' }, nuit: true, surDemande: true },
 );
 SHOTS.push(
   archipeo({ base: 'gardien', name: 'archipeo-gardien' }),
@@ -267,6 +279,9 @@ function amenager(ile, point) {
     await page.getByRole('button', { name: /^Aménager/ }).click();
     await page.waitForTimeout(500);
     await fermerLesBandeaux(page);
+    // Au téléphone en grand texte, la Carte propose d'abord la liste : on reste sur la Carte.
+    const rester = page.getByRole('button', { name: /Rester sur la Carte/ });
+    if (await rester.count()) await rester.click();
     // Deux touchers, l'un après l'autre : le second lit le choix fait par le premier.
     await page.evaluate((ile) => window.__dysappsAmenager?.({ genre: 'ile', id: ile }), ile);
     await page.waitForTimeout(800);
@@ -274,11 +289,27 @@ function amenager(ile, point) {
     await page.waitForTimeout(2500);
   };
 }
-/** Ferme les bandeaux des succès gagnés par l'état préparé. */
+/** Touche « Aménager », puis « Aménager en liste » (au téléphone en grand texte), et choisit la Rivière des fractions. */
+async function amenagerEnListe(page) {
+  await fermerLesBandeaux(page);
+  await page.getByRole('button', { name: /^Aménager/ }).click();
+  await page.waitForTimeout(500);
+  await page.getByRole('button', { name: /Aménager en liste/ }).click();
+  await page.waitForTimeout(800);
+  await page.getByRole('button', { name: 'Déplacer Rivière des fractions' }).click();
+  await page.waitForTimeout(800);
+}
+/**
+ * Ferme les bandeaux des succès gagnés par l'état préparé, seulement pour qu'ils ne couvrent pas la scène : un vrai
+ * toucher, puisque Fermer reste toujours dans l'écran (`telephone-succes` le montre, réglages extrêmes compris).
+ */
 async function fermerLesBandeaux(page) {
-  // Cliqué par le script : en grand texte au téléphone, le bandeau déborde de l'écran et son bouton n'est plus visible.
   const bandeau = page.locator('.celebration button[aria-label="Fermer"]');
-  while (await bandeau.count()) await bandeau.first().evaluate((b) => b.click());
+  while (await bandeau.count()) await bandeau.first().click();
+}
+/** Attend `ms`, sans autre geste. */
+function attendre(ms) {
+  return (page) => page.waitForTimeout(ms);
 }
 /** Le geste de la pose tenu à `ms` de son démontage (`window.__dysappsGesteA`), après le choix d'un lieu et de sa place. */
 function amenagerGeste(ile, point, ms) {
@@ -308,19 +339,42 @@ function reunir(ile, autre) {
   const question = reunirQuestion(ile);
   return async (page) => {
     await question(page);
-    await page.getByRole('button', { name: /^Réunir à / }).first().click();
+    await page.getByRole('button', { name: /^Réunir avec / }).first().click();
     await page.waitForTimeout(800);
     await page.getByRole('button', { name: /Terminé/ }).click();
     await page.evaluate((id) => (location.hash = `#/adventure/join.${id}`), `${ile}.${autre}`);
     await page.waitForTimeout(1500);
     await page.getByRole('button', { name: /Poser tout ce que j’ai/ }).click();
     await page.waitForTimeout(800);
-    // Le panneau fermé : la digue finie, la vue sur la Tour, sans le bandeau d'un succès gagné en chemin.
+    // Le panneau fermé : la digue finie, sans le bandeau d'un succès gagné en chemin ; puis la Carte, zoomée sur elle.
     await page.locator('#panneau-reunion .island-sheet-close').click();
     await page.waitForTimeout(800);
     await fermerLesBandeaux(page);
-    await page.waitForTimeout(2000);
+    await page.evaluate(() => (location.hash = '#/adventure/map'));
+    await page.waitForTimeout(2500);
+    await fermerLesBandeaux(page);
+    await zoomerSurLaReunion(page, ile);
   };
+}
+/** Sur la Carte, zoome à la molette sur la construction qui réunit `ile` à son voisin (calculée depuis la partie). */
+async function zoomerSurLaReunion(page, ile) {
+  const world = await page.evaluate(() => JSON.parse(localStorage.getItem('dysapps:game')).world);
+  const { joinsIn, placeIn } = await load('/src/game/world/arrange.ts');
+  const { archipelagoOfIsland } = await load('/src/game/world/archipelagos.ts');
+  const j = joinsIn(world, archipelagoOfIsland(ile)).find((x) => x.pair.includes(ile));
+  if (!j) throw new Error('aucune réunion à regarder');
+  const z = j.shape.zone;
+  const centre = { x: (z.x0 + z.x1) / 2, y: (z.y0 + z.y1) / 2, z: Math.max(...j.pair.map((id) => placeIn(world, id).altitude)) };
+  await page.evaluate(() => window.__dysappsCamera?.poser());
+  for (let i = 0; i < 6; i++) {
+    const p = await page.evaluate((c) => window.__dysappsCamera?.ecran(c), centre);
+    if (!p) break;
+    await page.mouse.move(p.x, p.y);
+    await page.mouse.wheel(0, -400);
+    await page.waitForTimeout(400);
+    await page.evaluate(() => window.__dysappsCamera?.poser());
+  }
+  await page.waitForTimeout(1500);
 }
 function openFold(name) {
   return async (page) => {
@@ -411,7 +465,7 @@ for (const shot of SHOTS.filter((s) => (only.length === 0 && !s.surDemande) || o
 /** Prend une capture ; rend le message d'erreur, ou null si elle est prise. */
 async function take(shot) {
   const page = await browser.newPage({ viewport: shot.size ?? TABLET, deviceScaleFactor: 1, reducedMotion: shot.reduit ? 'reduce' : 'no-preference' });
-  await page.clock.setFixedTime(DAY);
+  await page.clock.setFixedTime(shot.nuit ? NIGHT : DAY);
   // Un hasard à graine fixe : mêmes questions, mêmes phrases, à chaque capture (et d'un chargement à l'autre).
   await page.addInitScript(hasardFixe);
   await page.addInitScript(figeable);
