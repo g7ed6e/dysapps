@@ -2,7 +2,7 @@
 // du terrain, un par matériau. Calcul pur, sans Three.js ; à part de ./wave.ts pour que le mailleur reste dans le
 // paquet de la 3D, chargé à la demande.
 import type { VoxelCube } from './cube';
-import { buildMesh, type MeshGroup } from './mesher';
+import { buildMesh, type MeshGroup, type MeshOptions } from './mesher';
 import type { PlanDeLaVague } from './wave';
 
 /** La part de la vague dans un groupe de faces du terrain : ses sommets et ses indices, à la fin du groupe. */
@@ -32,11 +32,11 @@ export interface GroupeAvecLaVague {
  * terrain : pas un appel de dessin de plus pour un matériau que le terrain a déjà ; un matériau que seule la partie
  * porte (absent du terrain sans elle) ouvre un groupe de plus, donc un appel de dessin de plus pendant la vague. Chaque cube de la vague garde ses faces de côté et du
  * dessus, puisqu'il descend seul ; le dessous, que la caméra ne voit jamais (elle regarde d'en haut), n'est pas dessiné.
- * Les cubes partis sont les premiers de la vague dans chaque groupe : la 3D n'en dessine que le début (`indicesJusquA`).
+ * `options` : celles du terrain (les dessous sous l'eau, Blocland). Les cubes partis sont les premiers de la vague dans chaque groupe : la 3D n'en dessine que le début (`indicesJusquA`).
  */
-export function maillageAvecLaVague(terrain: readonly VoxelCube[], cubes: readonly VoxelCube[], plan: PlanDeLaVague): GroupeAvecLaVague[] {
+export function maillageAvecLaVague(terrain: readonly VoxelCube[], cubes: readonly VoxelCube[], plan: PlanDeLaVague, options: MeshOptions = {}): GroupeAvecLaVague[] {
   const groupes = new Map<string, GroupeAvecLaVague>();
-  for (const groupe of buildMesh([...terrain])) groupes.set(groupe.key, { groupe, vague: null });
+  for (const groupe of buildMesh([...terrain], [], options)) groupes.set(groupe.key, { groupe, vague: null });
   plan.ordre.forEach((c, rang) => {
     for (const g of buildMesh([cubes[c]])) {
       if (g.face === 'bottom') continue;

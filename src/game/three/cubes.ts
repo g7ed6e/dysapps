@@ -9,7 +9,8 @@ import { caseDuDecor, maillageDuDecor, rangerLeDecor, signatureDuDecor } from '.
 import { champDuSol, landMesh, pickCell, poseDuDecor, signatureDuChamp, type ChampDuSol } from '../world/landMesh';
 import { cacheDeLaConstruction, caseDeLaConstruction, caseDeLaPiece, construireParIle, couleursDesRoles, miseBoutABout, piliersDe, type MaillageDeLaConstruction, sansToursDuCoeur } from '../world/construction';
 import { modelerLeSol } from '../world/drawnModel';
-import { buildMesh } from '../world/mesher';
+import { buildMesh, type MeshOptions } from '../world/mesher';
+import { hiddenBottomLevel } from '../world/sea';
 import { gesteFini, hauteurDuGeste } from '../world/pose';
 import { avanceeDuFondu, couchesPosees, cubesPartis, hauteurDansLaVague, planDeLaVague, type PlanDeLaVague } from '../world/wave';
 import { maillageAvecLaVague, type QueueDeLaVague } from '../world/waveMesh';
@@ -135,6 +136,9 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
   let derniers: VoxelCube[] = [];
   let aRefaire = false;
 
+  /** Blocland : les dessous sous l'eau (ou sous le plancher de nuages) ne sont pas dessinés. */
+  const dessous: MeshOptions = { hiddenBottomsUpTo: hiddenBottomLevel(archipel) };
+
   const viderLeTerrain = () => {
     for (const child of [...terrain.children]) {
       terrain.remove(child);
@@ -150,7 +154,7 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
     if (!sol && vague) {
       // La vague à la fin des maillages du terrain : ses sommets bougent, le terrain non.
       vague.queues = [];
-      for (const { groupe, vague: queue } of maillageAvecLaVague(cubes, vague.cubes, vague.plan)) {
+      for (const { groupe, vague: queue } of maillageAvecLaVague(cubes, vague.cubes, vague.plan, dessous)) {
         const mesh = meshOf(groupe, surface);
         terrain.add(mesh);
         if (!queue) continue;
@@ -164,7 +168,7 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
       return;
     }
     if (!sol) {
-      for (const g of buildMesh(cubes)) terrain.add(meshOf(g, surface));
+      for (const g of buildMesh(cubes, [], dessous)) terrain.add(meshOf(g, surface));
       return;
     }
     // Archipéo : le sol et la roche en facettes, le reste en cubes. Le maillage du sol n'est refait que s'il change

@@ -12,7 +12,8 @@ import { ARCHIPELAGOS, grantAccess, linkWholeRegion, VOYAGES } from './archipela
 import { ALTITUDE, type ArchipelagoId, DANS_LE_CIEL, mapOf } from './map';
 import { appelsDuSol, champDuSol, landMesh, poseDuDecor, trianglesDuSol } from './landMesh';
 import { modelerLeSol } from './drawnModel';
-import { buildMesh, faceCount, type MeshGroup } from './mesher';
+import { buildMesh, drawCallsOf, faceCount, type MeshGroup } from './mesher';
+import { hiddenBottomLevel } from './sea';
 import { MONUMENTS } from './monuments';
 import { PLANS, planCells } from './plans';
 import { creaturePlacements, guardianPlacements, vehiclePlacement, whaleSpots, worldBounds, worldCubes } from './terrain';
@@ -205,17 +206,18 @@ export function toutConstruitAvecLesCommandes() {
 
 /**
  * Les modèles en blocs de la scène d'un archipel tout construit, chacun en groupes de `buildMesh`. `commandes` : avec
- * les petites constructions des commandes posées.
+ * les petites constructions des commandes posées. Le terrain sans ses dessous sous l'eau (three/cubes.ts) ; `tints` :
+ * un modèle dont les couleurs unies se dessinent ensemble (les personnages, three/meshes.ts `meshesOf`).
  */
-export function sceneModels(a: ArchipelagoId, commandes = false): { name: string; groups: MeshGroup[] }[] {
+export function sceneModels(a: ArchipelagoId, commandes = false): { name: string; groups: MeshGroup[]; tints?: true }[] {
   const { progress, world: village } = commandes ? toutConstruitAvecLesCommandes() : toutConstruit();
   const ship = vehiclePlacement(a, progress, village)?.cubes ?? [];
   return [
-    { name: 'terrain', groups: buildMesh(worldCubes(a, progress, village, false)) },
-    ...[...creaturePlacements(a, village.links), ...guardianPlacements(a, progress, village.links)].map((c) => ({ name: c.id, groups: buildMesh(c.cubes) })),
+    { name: 'terrain', groups: buildMesh(worldCubes(a, progress, village, false), [], { hiddenBottomsUpTo: hiddenBottomLevel(a) }) },
+    ...[...creaturePlacements(a, village.links), ...guardianPlacements(a, progress, village.links)].map((c) => ({ name: c.id, groups: buildMesh(c.cubes), tints: true as const })),
     { name: 'coque', groups: buildMesh(ship.filter((c) => c.z < MAST_TOP)) },
     { name: 'ballon', groups: buildMesh(ship.filter((c) => c.z >= MAST_TOP)) },
-    ...AVATAR_PARTS.map((p) => ({ name: p.name, groups: buildMesh(p.cubes) })),
+    ...AVATAR_PARTS.map((p) => ({ name: p.name, groups: buildMesh(p.cubes), tints: true as const })),
   ];
 }
 
@@ -224,7 +226,7 @@ export function sceneCost(a: ArchipelagoId, commandes = false): { triangles: num
   const models = sceneModels(a, commandes);
   return {
     triangles: models.reduce((n, m) => n + faceCount(m.groups) * 2, 0),
-    drawCalls: models.reduce((n, m) => n + m.groups.length, 0),
+    drawCalls: models.reduce((n, m) => n + (m.tints ? drawCallsOf(m.groups) : m.groups.length), 0),
   };
 }
 
@@ -352,7 +354,8 @@ export function worstCaseOfRegion(a: ArchipelagoId): { base: number; liaisons: n
   const terrain = worldCubes(a, progress, world, false);
   const scene = sceneCost(a, true);
   const signes = signesCost();
-  const liaisonsDAujourdhui = (faceCount(buildMesh(terrain)) - faceCount(buildMesh(terrain.filter((c) => !c.bridge)))) * 2;
+  const dessous = { hiddenBottomsUpTo: hiddenBottomLevel(a) };
+  const liaisonsDAujourdhui = (faceCount(buildMesh(terrain, [], dessous)) - faceCount(buildMesh(terrain.filter((c) => !c.bridge), [], dessous))) * 2;
   const base = scene.triangles + signes.triangles - liaisonsDAujourdhui;
   const lieux = mapOf(a).length;
   const longue = linkTriangles(a, DANS_LE_CIEL[a] ? 'pont' : 'bac', LONG_LENGTH);
