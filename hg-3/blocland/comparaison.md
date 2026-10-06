@@ -1,62 +1,83 @@
 # Comparaison avec main
 
-Références : main au commit 7b13ec10e86aa656fd8dd9d0b5864bdae5e1f118 (après : 38587701be90e4f51b5110cedc7bc7004fa2ef78). Une vue est changée au-delà de 0,3 % de pixels différents.
+Références : preview au commit c295cb1d5c3e46258fb7e845b23cbed4226d28d2 (après : b8d1805dfb80eae67afed55830bb7fcd575c941f). Une vue est changée au-delà de 0,3 % de pixels différents.
 
-## Changées (42) : planches dans `planches/`
+## Changées (21) : planches dans `planches/`
 
-- 3e-archipel-nuit.jpg : 41,3 %
-- 3e-archipel.jpg : 43,7 %
-- 3e-bulle-svg.jpg : 0,5 %
-- 3e-bulle.jpg : 0,5 %
-- 3e-carte-nuit.jpg : 30,7 %
-- 3e-carte.jpg : 21,1 %
-- 3e-defi-english-3e-comprehension.jpg : 2,1 %
-- 3e-defi-english-3e-grammar.jpg : 1,3 %
-- 3e-defi-french-3e-close-reading.jpg : 2,7 %
-- 3e-defi-lv2-3e-travel.jpg : 0,6 %
-- 3e-defi-maths-3e-geometry.jpg : 0,7 %
-- 3e-defi-maths-3e-statistics.jpg : 10,4 %
-- 3e-defi-svg.jpg : 0,7 %
-- 3e-ile-nuit.jpg : 6,8 %
-- 3e-ile.jpg : 7,0 %
-- 4e-archipel-nuit.jpg : 56,9 %
-- 4e-archipel.jpg : 63,4 %
-- 4e-bulle-svg.jpg : 3,4 %
-- 4e-bulle.jpg : 3,4 %
-- 4e-carte-nuit.jpg : 36,8 %
-- 4e-carte.jpg : 39,3 %
-- 4e-defi-english-4e-comprehension.jpg : 1,3 %
-- 4e-defi-english-4e-grammar.jpg : 5,6 %
-- 4e-defi-french-4e-agreement.jpg : 1,1 %
-- 4e-defi-french-4e-vocabulary.jpg : 1,6 %
-- 4e-defi-lv2-4e-daily-life.jpg : 0,5 %
-- 4e-ile-nuit.jpg : 39,3 %
-- 4e-ile.jpg : 49,2 %
-- 5e-archipel-nuit.jpg : 55,8 %
-- 5e-archipel.jpg : 60,2 %
-- 5e-bulle-svg.jpg : 1,0 %
-- 5e-bulle.jpg : 1,0 %
-- 5e-carte-nuit.jpg : 44,1 %
+- 3e-archipel-nuit.jpg : 39,2 %
+- 3e-archipel.jpg : 41,6 %
+- 3e-carte-nuit.jpg : 27,8 %
+- 3e-carte.jpg : 18,3 %
+- 3e-ile-nuit.jpg : 2,8 %
+- 3e-ile.jpg : 2,9 %
+- 4e-archipel-nuit.jpg : 53,0 %
+- 4e-archipel.jpg : 62,0 %
+- 4e-carte-nuit.jpg : 30,7 %
+- 4e-carte.jpg : 33,6 %
+- 4e-ile-nuit.jpg : 4,1 %
+- 4e-ile.jpg : 4,6 %
+- 5e-archipel-nuit.jpg : 2,0 %
+- 5e-archipel.jpg : 8,8 %
+- 5e-carte-nuit.jpg : 36,7 %
 - 5e-carte.jpg : 46,9 %
-- 5e-defi-english-5e-grammar.jpg : 1,8 %
-- 5e-defi-english-5e-vocabulary.jpg : 5,3 %
-- 5e-defi-french-5e-conjugation.jpg : 2,2 %
-- 5e-defi-french-5e-homophones.jpg : 1,2 %
-- 5e-defi-lv2-5e-introductions.jpg : 0,4 %
-- 5e-defi-maths-5e-proportionality.jpg : 2,0 %
-- 5e-ile-nuit.jpg : 21,5 %
-- 5e-ile.jpg : 26,5 %
+- 5e-ile-nuit.jpg : 1,1 %
+- 5e-ile.jpg : 1,5 %
+- 6e-carte-nuit.jpg : 35,7 %
+- 6e-carte.jpg : 38,6 %
+- 6e-defi-french-6e-letter-confusion.jpg : 0,6 %
 
-## Inchangées (6) : non publiées
+## Inchangées (48) : non publiées
 
-- 3e-defi-maths-3e-functions.jpg : 0,3 %
-- 4e-defi-maths-4e-algebra.jpg : 0,1 %
+- 3e-bulle-svg.jpg : 0,0 %
+- 3e-bulle.jpg : 0,0 %
+- 3e-defi-english-3e-comprehension.jpg : 0,0 %
+- 3e-defi-english-3e-grammar.jpg : 0,0 %
+- 3e-defi-french-3e-close-reading.jpg : 0,0 %
+- 3e-defi-lv2-3e-travel.jpg : 0,0 %
+- 3e-defi-maths-3e-functions.jpg : 0,0 %
+- 3e-defi-maths-3e-geometry.jpg : 0,0 %
+- 3e-defi-maths-3e-statistics.jpg : 0,0 %
+- 3e-defi-svg.jpg : 0,0 %
+- 4e-bulle-svg.jpg : 0,0 %
+- 4e-bulle.jpg : 0,0 %
+- 4e-defi-english-4e-comprehension.jpg : 0,0 %
+- 4e-defi-english-4e-grammar.jpg : 0,0 %
+- 4e-defi-french-4e-agreement.jpg : 0,0 %
+- 4e-defi-french-4e-vocabulary.jpg : 0,0 %
+- 4e-defi-lv2-4e-daily-life.jpg : 0,0 %
+- 4e-defi-maths-4e-algebra.jpg : 0,0 %
 - 4e-defi-maths-4e-powers.jpg : 0,0 %
 - 4e-defi-svg.jpg : 0,0 %
-- 5e-defi-maths-5e-signed-numbers.jpg : 0,2 %
-- 5e-defi-svg.jpg : 0,2 %
+- 5e-bulle-svg.jpg : 0,0 %
+- 5e-bulle.jpg : 0,0 %
+- 5e-defi-english-5e-grammar.jpg : 0,0 %
+- 5e-defi-english-5e-vocabulary.jpg : 0,0 %
+- 5e-defi-french-5e-conjugation.jpg : 0,0 %
+- 5e-defi-french-5e-homophones.jpg : 0,0 %
+- 5e-defi-lv2-5e-introductions.jpg : 0,0 %
+- 5e-defi-maths-5e-proportionality.jpg : 0,0 %
+- 5e-defi-maths-5e-signed-numbers.jpg : 0,0 %
+- 5e-defi-svg.jpg : 0,0 %
+- 6e-archipel-nuit.jpg : 0,0 %
+- 6e-archipel.jpg : 0,0 %
+- 6e-bulle-svg.jpg : 0,0 %
+- 6e-bulle.jpg : 0,0 %
+- 6e-defi-english-6e-grammar.jpg : 0,0 %
+- 6e-defi-english-6e-vocabulary.jpg : 0,0 %
+- 6e-defi-french-6e-grammar-spelling.jpg : 0,0 %
+- 6e-defi-french-6e-phonology.jpg : 0,0 %
+- 6e-defi-french-6e-reading.jpg : 0,0 %
+- 6e-defi-french-6e-word-spelling.jpg : 0,0 %
+- 6e-defi-geography-6e-living.jpg : 0,0 %
+- 6e-defi-history-6e-antiquity.jpg : 0,0 %
+- 6e-defi-maths-6e-calculation.jpg : 0,0 %
+- 6e-defi-maths-6e-decimals.jpg : 0,0 %
+- 6e-defi-maths-6e-fractions.jpg : 0,0 %
+- 6e-defi-svg.jpg : 0,0 %
+- 6e-ile-nuit.jpg : 0,0 %
+- 6e-ile.jpg : 0,0 %
 
-## Sans référence (51) : dans `planches/` telles quelles
+## Sans référence (73) : dans `planches/` telles quelles
 
 - 3e-defi-geography-3e-france.jpg
 - 3e-defi-history-3e-twentieth-century.jpg
@@ -66,6 +87,8 @@ Références : main au commit 7b13ec10e86aa656fd8dd9d0b5864bdae5e1f118 (après :
 - 3e-histoire-geo-college-geography-3e-france-avant-nuit.jpg
 - 3e-histoire-geo-college-geography-3e-france-avant.jpg
 - 3e-histoire-geo-college-geography-3e-france-commande.jpg
+- 3e-histoire-geo-college-geography-3e-france-defi-mi.jpg
+- 3e-histoire-geo-college-geography-3e-france-defi.jpg
 - 3e-histoire-geo-college-geography-3e-france-gardien-apres.jpg
 - 3e-histoire-geo-college-geography-3e-france-gardien-avant.jpg
 - 3e-histoire-geo-college-history-3e-twentieth-century-apres-nuit.jpg
@@ -73,16 +96,23 @@ Références : main au commit 7b13ec10e86aa656fd8dd9d0b5864bdae5e1f118 (après :
 - 3e-histoire-geo-college-history-3e-twentieth-century-avant-nuit.jpg
 - 3e-histoire-geo-college-history-3e-twentieth-century-avant.jpg
 - 3e-histoire-geo-college-history-3e-twentieth-century-commande.jpg
+- 3e-histoire-geo-college-history-3e-twentieth-century-defi-mi.jpg
+- 3e-histoire-geo-college-history-3e-twentieth-century-defi.jpg
 - 3e-histoire-geo-college-history-3e-twentieth-century-gardien-apres.jpg
 - 3e-histoire-geo-college-history-3e-twentieth-century-gardien-avant.jpg
 - 4e-defi-geography-4e-globalization.jpg
 - 4e-defi-history-4e-revolutions.jpg
+- 4e-histoire-geo-college-carte-4e-390x844.jpg
+- 4e-histoire-geo-college-carte-4e-800x1280.jpg
+- 4e-histoire-geo-college-carte-4e-od32.jpg
 - 4e-histoire-geo-college-carte-4e.jpg
 - 4e-histoire-geo-college-geography-4e-globalization-apres-nuit.jpg
 - 4e-histoire-geo-college-geography-4e-globalization-apres.jpg
 - 4e-histoire-geo-college-geography-4e-globalization-avant-nuit.jpg
 - 4e-histoire-geo-college-geography-4e-globalization-avant.jpg
 - 4e-histoire-geo-college-geography-4e-globalization-commande.jpg
+- 4e-histoire-geo-college-geography-4e-globalization-defi-mi.jpg
+- 4e-histoire-geo-college-geography-4e-globalization-defi.jpg
 - 4e-histoire-geo-college-geography-4e-globalization-gardien-apres.jpg
 - 4e-histoire-geo-college-geography-4e-globalization-gardien-avant.jpg
 - 4e-histoire-geo-college-history-4e-revolutions-apres-nuit.jpg
@@ -90,16 +120,23 @@ Références : main au commit 7b13ec10e86aa656fd8dd9d0b5864bdae5e1f118 (après :
 - 4e-histoire-geo-college-history-4e-revolutions-avant-nuit.jpg
 - 4e-histoire-geo-college-history-4e-revolutions-avant.jpg
 - 4e-histoire-geo-college-history-4e-revolutions-commande.jpg
+- 4e-histoire-geo-college-history-4e-revolutions-defi-mi.jpg
+- 4e-histoire-geo-college-history-4e-revolutions-defi.jpg
 - 4e-histoire-geo-college-history-4e-revolutions-gardien-apres.jpg
 - 4e-histoire-geo-college-history-4e-revolutions-gardien-avant.jpg
 - 5e-defi-geography-5e-resources.jpg
 - 5e-defi-history-5e-middle-ages.jpg
+- 5e-histoire-geo-college-carte-5e-390x844.jpg
+- 5e-histoire-geo-college-carte-5e-800x1280.jpg
+- 5e-histoire-geo-college-carte-5e-od32.jpg
 - 5e-histoire-geo-college-carte-5e.jpg
 - 5e-histoire-geo-college-geography-5e-resources-apres-nuit.jpg
 - 5e-histoire-geo-college-geography-5e-resources-apres.jpg
 - 5e-histoire-geo-college-geography-5e-resources-avant-nuit.jpg
 - 5e-histoire-geo-college-geography-5e-resources-avant.jpg
 - 5e-histoire-geo-college-geography-5e-resources-commande.jpg
+- 5e-histoire-geo-college-geography-5e-resources-defi-mi.jpg
+- 5e-histoire-geo-college-geography-5e-resources-defi.jpg
 - 5e-histoire-geo-college-geography-5e-resources-gardien-apres.jpg
 - 5e-histoire-geo-college-geography-5e-resources-gardien-avant.jpg
 - 5e-histoire-geo-college-history-5e-middle-ages-apres-nuit.jpg
@@ -107,5 +144,11 @@ Références : main au commit 7b13ec10e86aa656fd8dd9d0b5864bdae5e1f118 (après :
 - 5e-histoire-geo-college-history-5e-middle-ages-avant-nuit.jpg
 - 5e-histoire-geo-college-history-5e-middle-ages-avant.jpg
 - 5e-histoire-geo-college-history-5e-middle-ages-commande.jpg
+- 5e-histoire-geo-college-history-5e-middle-ages-defi-mi.jpg
+- 5e-histoire-geo-college-history-5e-middle-ages-defi.jpg
 - 5e-histoire-geo-college-history-5e-middle-ages-gardien-apres.jpg
 - 5e-histoire-geo-college-history-5e-middle-ages-gardien-avant.jpg
+- 6e-histoire-geo-college-mes-blocs-conteneur-reliure-nuit.jpg
+- 6e-histoire-geo-college-mes-blocs-conteneur-reliure.jpg
+- 6e-histoire-geo-college-mes-blocs-gres-brique-tuile-nuit.jpg
+- 6e-histoire-geo-college-mes-blocs-gres-brique-tuile.jpg
