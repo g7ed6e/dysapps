@@ -463,7 +463,8 @@ const KEPT_NAME_PLACES = 8;
  * Sur la Carte, les noms qui ne se taisent jamais tant que leur île se voit (`kept` : la prochaine destination, puis
  * l'île du bonhomme ; DA, HG-3). Un tel nom encore tu essaie les places simples autour de son île (dessus, dessous, de
  * côté ; dessus et dessous passent le médaillon ou la bulle posés sur l'île : sa place de plus, sous son île, consultant
- * UX UI), puis celles de la dernière chance (`TRIES_FINS`) : entière, hors de l'interface et des repères (la bulle, le
+ * UX UI), puis celles de la dernière chance (`TRIES_FINS`), puis dessus et dessous glissés de côté pour tenir dans le
+ * cadre (la distance à l'île comptée sans le repère passé) : entière, hors de l'interface et des repères (la bulle, le
  * médaillon, la flèche d'un ouvrage), pas plus loin de son île que d'`ECART_MAX` hauteurs de plus, pas plus près d'une
  * autre île que de la sienne (vu de son milieu), hors de la garde de la destination (`isFree`), sans couvrir l'autre nom
  * gardé. Les noms montrés qu'elle couvre se taisent, puis cherchent une autre place (`repair`) ; parmi les
@@ -490,16 +491,24 @@ function showAtAllCosts(
       if (!inTheWay.length) return y;
       return side < 0 ? Math.min(...inTheWay.map((v) => v.y - v.h / 2)) - b.h / 2 - gap : Math.max(...inTheWay.map((v) => v.y + v.h / 2)) + b.h / 2 + gap;
     };
+    const natural = [ile.y - b.h / 2 - gap, ile.y + b.h / 2 + gap];
     const simple = [
-      { ...b, x: ile.x, y: pass(ile.y - b.h / 2 - gap, -1) },
-      { ...b, x: ile.x, y: pass(ile.y + b.h / 2 + gap, 1) },
+      { ...b, x: ile.x, y: pass(natural[0], -1) },
+      { ...b, x: ile.x, y: pass(natural[1], 1) },
       { ...b, x: ile.x - b.w / 2 - gap, y: ile.y },
       { ...b, x: ile.x + b.w / 2 + gap, y: ile.y },
     ];
+    // Une île au bord de l'écran : dessus et dessous, le nom glissé de côté pour y tenir entier, en dernier ; sa distance
+    // à l'île se compte sans la hauteur du repère qu'il passe (la bulle de la destination est plus haute qu'`ECART_MAX` ;
+    // la Ruche des réseaux, au bord gauche de la Carte du 3e en OpenDyslexic, le bonhomme dessus : consultant UX UI, SC-3).
+    const slid = simple
+      .slice(0, 2)
+      .map((s, k) => ({ at: { ...s, x: clamp(s.x, b.w / 2 + gap, bounds.w - b.w / 2 - gap) }, passed: Math.abs(s.y - natural[k]) }))
+      .filter((s) => s.at.x !== ile.x);
     const candidates: { at: LabelBox; covered: number[] }[] = [];
-    for (const at of [...simple, ...placesAutour(b, bounds, gap)]) {
+    for (const { at, passed } of [...[...simple, ...placesAutour(b, bounds, gap)].map((at) => ({ at, passed: 0 })), ...slid]) {
       if (!entiere(b, { dx: at.x - b.x, dy: at.y - b.y }, couvert, bounds) || obstacles.some((v) => overlap(at, v, gap) > 0) || !isFree(i, at)) continue;
-      if (distanceA(at, ile) > distanceA(b, ile) + ECART_MAX * b.h) continue;
+      if (distanceA(at, ile) - passed > distanceA(b, ile) + ECART_MAX * b.h) continue;
       const half = milieu(at);
       const d = distanceA(half, ile);
       if (iles.some((q, j) => j !== i && distanceA(half, q) < d)) continue;

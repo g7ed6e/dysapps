@@ -23,10 +23,13 @@ import { bossIsletOrigin, HORS_DE_LA_COLONNE, ISLET_H, ISLET_W, viewYaw, worldBo
 const ouvert = { parts: {}, log: [], links: grantAccess([], ['lv2-3e-travel']) };
 
 describe('la place du Refuge sur la carte du 3e', () => {
-  it('à l’est du Château, un cran derrière, sans toucher sa terre', () => {
+  it('à l’est du Château, à sa hauteur, sans toucher sa terre', () => {
+    // Un cran derrière jusqu'aux îles de sciences ; avancé à hauteur du Château depuis (SC-3, consultant UX UI) : au bord
+    // gauche de la Carte, entre la Géographie et le Château, son nom n'avait aucune place en OpenDyslexic quand le
+    // bonhomme y était (mapLabels.test.ts).
     const [r, c] = [landBox(islandDef('lv2-3e-travel')), landBox(islandDef('english-3e-grammar'))];
     expect(r.x0).toBeGreaterThan(c.x1);
-    expect(islandDef('lv2-3e-travel').core.y).toBeGreaterThan(islandDef('english-3e-grammar').core.y);
+    expect(islandDef('lv2-3e-travel').core.y).toBe(islandDef('english-3e-grammar').core.y);
     expect(islandDef('lv2-3e-travel').altitude).toBe(9);
   });
 });

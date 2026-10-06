@@ -1,5 +1,5 @@
 // Les ouvrages entre les îles (ponts, rampes, bacs), leurs abords, et les chemins du bonhomme qui les empruntent.
-import { type BiomeId, BLOC, BLOCKS, getBiome } from '../../biomes';
+import { type BiomeDef, type BiomeId, BLOC, BLOCKS, getBiome, SCIENCE_SUBJECTS } from '../../biomes';
 import { type BridgeDef, type BridgeKind, bridgesOf, LINKS_BEFORE_GD9, bridgeState, otherEnd } from '../archipelago';
 import { coeurDe, CORE, inCoeurDOrigine, inCore, isLand, islandDef, type IslandDef, startingIsland, margesDuCoeur } from '../map';
 import { groundLevelAt } from '../ground';
@@ -157,8 +157,8 @@ export function amorcesDuDessin(id: BiomeId): { ouvrage: BridgeDef; depart: bool
 }
 
 /** Une île venue après GD-9 : d'histoire-géographie (HG-2, HG-3), ou de sciences hors des Premiers Rivages (SC-3). */
-const estIleVenueApresGd9 = (b: { subject: string; classe: string } | undefined): boolean =>
-  !!b && (b.subject === 'history-geography' || (b.classe !== '6e' && ['life-earth-sciences', 'physics-chemistry', 'technology'].includes(b.subject)));
+const isIslandAddedAfterGd9 = (b: Pick<BiomeDef, 'subject' | 'classe'> | undefined): boolean =>
+  !!b && (b.subject === 'history-geography' || (b.classe !== '6e' && SCIENCE_SUBJECTS.includes(b.subject)));
 
 /** Les tracés de départ des liaisons vers les îles venues après GD-9, mémorisés : la carte de départ ne change pas. */
 const tracesVersLesIlesVenues = new Map<string, readonly Readonly<{ x: number; y: number }>[]>();
@@ -173,7 +173,7 @@ const tracesVersLesIlesVenues = new Map<string, readonly Readonly<{ x: number; y
 export function amorcesVersLesIlesVenues(id: BiomeId): { x: number; y: number }[] {
   const o = startingIsland(id).core;
   return bridgesOf(id)
-    .filter((b) => estIleVenueApresGd9(getBiome(otherEnd(b, id))))
+    .filter((b) => isIslandAddedAfterGd9(getBiome(otherEnd(b, id))))
     .flatMap((b) => {
       let cases = tracesVersLesIlesVenues.get(b.id);
       if (!cases) {

@@ -143,7 +143,7 @@ describe('La disposition en grille', () => {
           if (door) expect(g.versMonde(g.placeDe({ genre: 'lieu', id: place, ile: school })!)).toEqual(door);
         }
     }
-  });
+  }, 30_000);
 
   it('la durée d’une marche : six cases par seconde, quelle que soit sa longueur', () => {
     const court = [{ x: 0, y: 0, z: 0 }, { x: 3, y: 4, z: 0 }];

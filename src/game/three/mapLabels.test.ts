@@ -250,10 +250,11 @@ const ETATS = { blocland: 'Bâtie', archipeo: 'Restaurée' };
  */
 const TUS_EN_PORTRAIT: Partial<Record<string, string[]>> = {
   '5e:lv2-5e-introductions': ['geography-5e-resources'],
-  // Depuis les îles de sciences (SC-3), mesurés : au 4e vers l'Escale, l'Imprimerie ; au 3e vers les Fonctions, les
-  // Statistiques en plus du Refuge.
+  // Depuis les îles de sciences (SC-3), mesurés : au 4e vers l'Escale, l'Imprimerie ; au 3e, le Refuge (avancé à hauteur
+  // du Château), vers les Fonctions et vers l'Observatoire des textes.
   '4e:geography-4e-globalization': ['history-4e-revolutions'],
-  '3e:maths-3e-functions': ['maths-3e-statistics', 'lv2-3e-travel'],
+  '3e:maths-3e-functions': ['lv2-3e-travel'],
+  '3e:french-3e-close-reading': ['lv2-3e-travel'],
 };
 
 /**
@@ -267,13 +268,6 @@ const TUS_EN_OD32: Record<string, string[]> = {
   'french-6e-phonology': ['history-6e-antiquity', 'life-earth-sciences-6e-living-world'],
 };
 
-/**
- * Le téléphone 390 × 844, au 6e, selon l'île du bonhomme : les noms qui se taisent (mesurés, consultant UX UI). La
- * Carte y cadre la destination (la Forêt des sons) : sept îles se voient avec leur nom, sept autres sont hors du cadre,
- * la Fouille comprise. Un seul nom se tait, en bas à droite, au bord de l'écran : le Volcan des décimaux ; dans la page,
- * le bonhomme sur la Forêt, c'est son voisin le Hangar des inventions (les noms du test, un peu plus larges, laissent
- * l'autre se taire). Le même nombre avant la règle du médaillon (preview, 161ded36) et après.
- */
 /**
  * La tablette, panneau ouvert, selon la destination : les noms qui se taisent depuis les îles de sciences (SC-3, mesurés).
  * Trois îles de plus par classe, posées sur les seules places libres hors de la colonne de la caméra : la recherche des
@@ -300,6 +294,44 @@ const TUS_SUR_UN_OUVRAGE: Partial<Record<ArchipelagoId, Record<string, string[]>
   },
 };
 
+/**
+ * La tablette à l'ouverture de la Carte, en OpenDyslexic, le bonhomme sur la destination (il y est arrivé) : les noms
+ * qui se taisent selon la destination, dans les deux univers, sauf une clé « blocland:… », qui ne vaut que dans Blocland
+ * (« Bâtie » et « Restaurée » n'ont pas la même largeur) (SC-3, mesurés ; consultant UX UI). La bulle et
+ * le médaillon se posent alors sur la même île et prennent la place de plusieurs noms ; jamais celui de la destination.
+ * Au 3e, la Ruche des réseaux et le Refuge des carnets, au bord gauche de l'écran, s'y taisaient eux-mêmes : la Ruche
+ * prend son nom au-dessus de la bulle, glissé pour tenir dans l'écran (`showAtAllCosts`), et le Refuge avance à hauteur du
+ * Château (map.ts). Huit destinations sur douze y taisent un à trois autres noms.
+ */
+const TUS_EN_OD_SUR_LA_DESTINATION: Partial<Record<ArchipelagoId, Record<string, string[]>>> = {
+  '5e': {
+    'blocland:english-5e-vocabulary': ['history-5e-middle-ages'],
+    'geography-5e-resources': ['history-5e-middle-ages'],
+  },
+  '4e': {
+    'maths-4e-powers': ['geography-4e-globalization'],
+    'french-4e-agreement': ['lv2-4e-daily-life'],
+    'geography-4e-globalization': ['history-4e-revolutions'],
+  },
+  '3e': {
+    'maths-3e-geometry': ['history-3e-twentieth-century', 'physics-chemistry-3e-motion-energy'],
+    'maths-3e-statistics': ['french-3e-close-reading', 'geography-3e-france', 'physics-chemistry-3e-motion-energy'],
+    'history-3e-twentieth-century': ['technology-3e-digital'],
+    'geography-3e-france': ['physics-chemistry-3e-motion-energy'],
+    'life-earth-sciences-3e-human-body': ['physics-chemistry-3e-motion-energy'],
+    'physics-chemistry-3e-motion-energy': ['history-3e-twentieth-century'],
+    'technology-3e-digital': ['french-3e-close-reading'],
+    'lv2-3e-travel': ['french-3e-close-reading'],
+  },
+};
+
+/**
+ * Le téléphone 390 × 844, au 6e, selon l'île du bonhomme : les noms qui se taisent (mesurés, consultant UX UI). La
+ * Carte y cadre la destination (la Forêt des sons) : sept îles se voient avec leur nom, sept autres sont hors du cadre,
+ * la Fouille comprise. Un seul nom se tait, en bas à droite, au bord de l'écran : le Volcan des décimaux ; dans la page,
+ * le bonhomme sur la Forêt, c'est son voisin le Hangar des inventions (les noms du test, un peu plus larges, laissent
+ * l'autre se taire). Le même nombre avant la règle du médaillon (preview, 161ded36) et après.
+ */
 const TUS_AU_TELEPHONE: Record<string, string[]> = {
   'history-6e-antiquity': ['maths-6e-decimals'],
   'french-6e-phonology': ['maths-6e-decimals'],
@@ -423,7 +455,8 @@ describe('La Carte : chaque île a son nom (tablette 1024 × 768)', () => {
         if (t) attendus[`${univers}:${vers}`] = t;
       }
     expect(tusDebout, '800 × 1280').toEqual(attendus);
-  });
+    // Huit Cartes et vingt-quatre en portrait, chacune avec sa recherche : plus que les 5 s par défaut sur la CI.
+  }, 60_000);
 
   it('6e, à l’ouverture de la Carte : chaque nom sur son île ; la recherche complète reste bornée (HG-3, DA ; SC-2)', () => {
     // La recherche complète ne se lance que si le placement simple tait un nom ou en pose un sur une autre île
@@ -497,4 +530,22 @@ describe('La Carte : chaque île a son nom (tablette 1024 × 768)', () => {
       }
     expect(tus).toEqual(TUS_SUR_UN_OUVRAGE[a] ?? {});
   });
+
+  it.each(['5e', '4e', '3e'] as const)(
+    '%s, à l’ouverture en OpenDyslexic, le bonhomme sur la destination, quelle qu’elle soit, deux univers : ni la destination ni l’île du bonhomme ne se taisent, les autres noms tus sont ceux mesurés (SC-3, UX UI)',
+    (a) => {
+      const tus: Record<string, string[]> = {};
+      for (const vers of islandsOf(a).map((b) => b.id))
+        for (const [univers, mot] of Object.entries(ETATS)) {
+          const carte = laCarte(a, mot, 'opendyslexic', 1, vers, true, TABLETTE_A_L_OUVERTURE, vers);
+          expect(carte.tus, `${univers}, vers ${vers}`).not.toContain(vers);
+          if (carte.tus.length) tus[`${univers}:${vers}`] = carte.tus;
+        }
+      const attendus: Record<string, string[]> = {};
+      for (const [cle, noms] of Object.entries(TUS_EN_OD_SUR_LA_DESTINATION[a] ?? {}))
+        for (const univers of cle.includes(':') ? [''] : Object.keys(ETATS)) attendus[univers ? `${univers}:${cle}` : cle] = noms;
+      expect(tus).toEqual(attendus);
+    },
+    60_000,
+  );
 });

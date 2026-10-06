@@ -362,11 +362,11 @@ export const BLOCKS: Record<BlockId, BlockDef> = {
   'life-earth-sciences-4e-cells-evolution': { id: 'life-earth-sciences-4e-cells-evolution', name: 'Pétale', top: '#e88fb4', side: '#c8638e', texture: 'petale' },
   // Le bloc de la Vigie des signaux (physique-chimie, 4e) : du fil de cuivre enroulé, l’axe gris dessus, les spires #8a4a22 sur les côtés.
   'physics-chemistry-4e-signals-circuits': { id: 'physics-chemistry-4e-signals-circuits', name: 'Bobine', top: '#c47a3c', side: '#b5652e', texture: 'bobine' },
-  // Le bloc de le Bassin des maquettes (technologie, 4e) : du liège cannelle moucheté de #4e3020 et de #d0a070.
+  // Le bloc du Bassin des maquettes (technologie, 4e) : du liège cannelle moucheté de #4e3020 et de #d0a070.
   'technology-4e-modeling': { id: 'technology-4e-modeling', name: 'Liège', top: '#b0785a', side: '#93603f', texture: 'liege' },
-  // Le bloc de le Verger de la santé (SVT, 3e) : un savon vert menthe, une rainure et un ovale en relief #d8f0e4.
+  // Le bloc du Verger de la santé (SVT, 3e) : un savon vert menthe, une rainure et un ovale en relief #d8f0e4.
   'life-earth-sciences-3e-human-body': { id: 'life-earth-sciences-3e-human-body', name: 'Savon', top: '#a6d8c0', side: '#86bfa4', texture: 'savon' },
-  // Le bloc de le Tremplin des forces (physique-chimie, 3e) : un métal gris, un ressort en zigzag laiton #d6b04a.
+  // Le bloc du Tremplin des forces (physique-chimie, 3e) : un métal gris, un ressort en zigzag laiton #d6b04a.
   'physics-chemistry-3e-motion-energy': { id: 'physics-chemistry-3e-motion-energy', name: 'Ressort', top: '#5a606a', side: '#4a4f58', texture: 'ressort' },
   // Le bloc de la Ruche des réseaux (technologie, 3e) : de la cire couleur miel, des alvéoles en traits fins #8f5f1e.
   'technology-3e-digital': { id: 'technology-3e-digital', name: 'Cire', top: '#d9a03c', side: '#b98030', texture: 'cire' },
@@ -480,6 +480,9 @@ export interface BiomeDef {
  * islands.ts, que le compilateur vérifie (`satisfies BiomeDef[]`), avec les tests (biomes.test.ts).
  */
 export const BIOMES: BiomeDef[] = ILES;
+
+/** Les matières des sciences (SVT, physique-chimie, technologie : SC-2 en 6e, SC-3 de la 5e à la 3e). */
+export const SCIENCE_SUBJECTS: readonly Subject[] = ['life-earth-sciences', 'physics-chemistry', 'technology'];
 
 /** Les îles d'une matière, dans l'ordre des classes. */
 export function biomesOf(subject: Subject): BiomeDef[] {

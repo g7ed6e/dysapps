@@ -384,6 +384,27 @@ describe('Un lieu nouveau dans une région déjà aménagée (HG-2)', () => {
     expect(Object.keys(w.layout ?? {})).toEqual(['5e']);
   });
 
+  // Une sauvegarde d'avant les îles de sciences (SC-3) : un lieu posé sur la place de départ d'une île de sciences, dans
+  // le cadre d'alors (le Château des hypothèses, 4e, sur la Source des espèces ; le Kiosque des témoins, 3e, sur le
+  // Tremplin des forces).
+  it.each([
+    { a: '4e', lieu: 'english-4e-grammar', sur: 'life-earth-sciences-4e-cells-evolution' },
+    { a: '3e', lieu: 'history-3e-twentieth-century', sur: 'physics-chemistry-3e-motion-energy' },
+  ] as const)('au $a (SC-3) : un lieu posé sur la place de départ d’une île de sciences reste où l’élève l’a mis ; l’île nouvelle se pose ailleurs', ({ a, lieu, sur }) => {
+    const ici = startingSpot(sur);
+    expect(fittingPlaces(a, { [lieu]: ici })).toBeNull();
+    const w = settleNewPlaces({ ...partie(), layout: { [a]: { islands: { [lieu]: ici } } } });
+    const islands = w.layout?.[a]?.islands ?? {};
+    expect(islands[lieu]).toEqual(ici);
+    expect(islands[sur]).toBeDefined();
+    expect(islands[sur]).not.toEqual(ici);
+    expect(islands[sur]?.turn).toBe(0);
+    // Rien d'autre ne bouge : seuls le lieu de l'élève et l'île nouvelle sont dans la disposition, qui tient.
+    expect(Object.keys(islands).sort()).toEqual([lieu, sur].sort());
+    expect(fittingPlaces(a, islands)).not.toBeNull();
+    expect(Object.keys(w.layout ?? {})).toEqual([a]);
+  });
+
   it('une disposition qui tient, ou pas de disposition, reste la même', () => {
     const w = partie();
     expect(settleNewPlaces(w)).toBe(w);

@@ -4,7 +4,7 @@
 // ce fichier réexporte : on importe le terrain d'ici. Le décor (arbres, repères, cascades, habillage de la mer) est
 // dessiné par ./decor.ts, et posé ici.
 
-import { type BiomeId, BIOMES, BLOC, BLOCKS } from '../biomes';
+import { type BiomeId, BIOMES, BLOC, BLOCKS, SCIENCE_SUBJECTS } from '../biomes';
 import type { World } from '../engine';
 import type { VoxelCube } from './cube';
 import { type ArchipelagoId, archipelagoOfIsland, inCoeurDOrigine, inCore, islandDef, type IslandDef, landCells, landscape, margesDuCoeur, noise, tirage, turnInWorld } from './map';
@@ -168,9 +168,7 @@ function poserLIle(
     biome.id === 'lv2-4e-daily-life' ||
     biome.id === 'lv2-3e-travel' ||
     biome.subject === 'history-geography' ||
-    biome.subject === 'life-earth-sciences' ||
-    biome.subject === 'physics-chemistry' ||
-    biome.subject === 'technology';
+    SCIENCE_SUBJECTS.includes(biome.subject);
   const h = (x: number, y: number) => groundHeight(index, x, y);
   // Cubes du cœur (coordonnées relatives au cœur, z relatif au sol de l'île).
   // Cubes de la terre autour du cœur (coordonnées du monde). Île verrouillée : mêmes formes, couleurs délavées.
