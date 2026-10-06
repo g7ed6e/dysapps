@@ -54,9 +54,12 @@ export const RENDER_BUDGET_6E = { triangles: 72_800, drawCalls: RENDER_BUDGET.dr
  * Les Îles Brumeuses, les Anciens Ateliers et les Îles du Ciel (5e, 4e, 3e) dépassent à leur tour les 60 000 des tablettes
  * depuis leurs six îles d'histoire-géographie (HG-3), du même mot du mainteneur (« Budget on augmente pour l'instant ») :
  * relevé à la somme des enveloppes « autres » (62 875). Mesurés tout construit, « Dans la scène » compris : 57 336 aux
- * Îles Brumeuses, 55 292 aux Anciens Ateliers, 52 531 aux Îles du Ciel. La mesure sur tablette reste à faire.
+ * Îles Brumeuses, 55 292 aux Anciens Ateliers, 52 531 aux Îles du Ciel. Puis, avec leurs neuf îles de sciences (SC-3),
+ * du même mot, de 62 900 à 74 900, à la somme des enveloppes « autres » (74 805). Mesurés tout construit, « Dans la
+ * scène » à part : 69 880 aux Îles Brumeuses, 67 080 aux Anciens Ateliers, 63 791 aux Îles du Ciel. La mesure sur
+ * tablette reste à faire.
  */
-export const RENDER_BUDGET_AUTRES = { triangles: 62_900, drawCalls: RENDER_BUDGET.drawCalls } as const;
+export const RENDER_BUDGET_AUTRES = { triangles: 74_900, drawCalls: RENDER_BUDGET.drawCalls } as const;
 
 /** Le budget de la scène 3D d'un archipel, tout construit. */
 export function renderBudgetOf(a: ArchipelagoId): { triangles: number; drawCalls: number } {
@@ -151,7 +154,15 @@ export const ENVELOPPES: Record<Poste, { lot: 'R4b' | 'R5' | 'R6' | 'GD-7' | 'so
   // les Gardiens de 1 800 à 2 150 (2 144 aux Îles Brumeuses). La somme des « autres » passe de 55 790 à 62 875 :
   // `RENDER_BUDGET_AUTRES`. Le monde en blocs tient sous son plafond, depuis la fonte des couleurs des personnages (#372) :
   // au pire de la région aménagée, 79 280 triangles et 156 appels aux Anciens Ateliers, 151 appels aux Îles Brumeuses.
-  sol: { lot: 'R4b', nom: 'Sol', premiersRivages: { triangles: 32_800, drawCalls: 2 }, autres: { triangles: 29_850, drawCalls: 1 } },
+  // Les neuf îles de sciences des 5e, 4e et 3e (SC-3) : enveloppes « autres » relevées du même mot (consigne du lot), aux
+  // valeurs mesurées tout construit (`npm run rendu:budget`, le plus gourmand des trois archipels) avec une petite marge,
+  // sans lot d'optimisation (Archipéo en pause) : le sol de 29 850 à 37 200 (37 194 aux Anciens Ateliers), la mer de
+  // 5 600 à 5 850 (5 808 aux Îles du Ciel, leur plancher de nuages élargi), le décor de 11 660 à 13 600 (13 595 aux Îles
+  // Brumeuses), la construction de 7 340 à 8 000 (7 971, 7 987 au pire de la salle des trophées, aux Îles Brumeuses), les
+  // commandes de 280 à 370 (368), les bornes de 870 à 1 130 (1 120), les créatures de 2 450 à 3 200 (3 181 aux Îles du
+  // Ciel), les Gardiens de 2 150 à 2 780 (2 775 aux Îles Brumeuses, le budget des statues). La somme des « autres » passe
+  // de 62 875 à 74 805 : `RENDER_BUDGET_AUTRES`.
+  sol: { lot: 'R4b', nom: 'Sol', premiersRivages: { triangles: 32_800, drawCalls: 2 }, autres: { triangles: 37_200, drawCalls: 1 } },
   // Proposition de l'artiste technique 3D pour le Relais des voyageurs (LV2, 5e), à valider par le mainteneur : une île
   // de plus aux Îles Brumeuses coûte environ 800 triangles de décor et 850 de construction. Les enveloppes « autres » en
   // passent 1 600 du navire, de la mer, des créatures et des bornes (qui ont de la marge dans les trois archipels) au
@@ -163,7 +174,7 @@ export const ENVELOPPES: Record<Poste, { lot: 'R4b' | 'R5' | 'R6' | 'GD-7' | 'so
   // pour le décor, 7 069 pour la construction, aux Îles Brumeuses) ; puis 20 du navire (420 partout) aux bornes, qui
   // n'avaient plus de marge (700 aux Îles Brumeuses) ; la somme ne change pas (52 300). Le refuge, retouché (île plus
   // profonde de deux rangs, pour un lac loin du bord), porte le sol du 3e à 22 505.
-  mer: { lot: 'R4b', nom: 'Mer', premiersRivages: { triangles: 7_100, drawCalls: 1 }, autres: { triangles: 5_600, drawCalls: 1 } },
+  mer: { lot: 'R4b', nom: 'Mer', premiersRivages: { triangles: 7_100, drawCalls: 1 }, autres: { triangles: 5_850, drawCalls: 1 } },
   // Un appel de plus pendant le passage de la baleine (son écume) : voir `APPEL_DU_PASSAGE`.
   // Proposition de l'artiste technique 3D pour les missions ajoutées en 6e (étapes de contenu C-1 à C-5), à valider par
   // le mainteneur : 36 bornes de 28 triangles portent le poste des Premiers Rivages à 1 008, au-dessus de ses 1 000.
@@ -181,24 +192,24 @@ export const ENVELOPPES: Record<Poste, { lot: 'R4b' | 'R5' | 'R6' | 'GD-7' | 'so
   // 24 cases (168 × 112) sème plus d'écueils dans sa mer, et leur décor passe à 11 660 triangles (mesuré tout construit,
   // `npm run rendu:budget`). Les enveloppes « autres » en passent 160 de la construction (6 679 au plus, aux Îles
   // Brumeuses) au décor ; la somme ne change pas (62 875).
-  decor: { lot: 'R4b', nom: 'Décor et repères signatures', premiersRivages: { triangles: 13_700, drawCalls: 3 }, autres: { triangles: 11_660, drawCalls: 3 } },
+  decor: { lot: 'R4b', nom: 'Décor et repères signatures', premiersRivages: { triangles: 13_700, drawCalls: 3 }, autres: { triangles: 13_600, drawCalls: 3 } },
   construction: {
     lot: 'R5',
     nom: 'Construction (bâtiments, ouvrages, monuments, quai, cœur des îles ; fantômes et fenêtres compris)',
     premiersRivages: { triangles: 7_750, drawCalls: 3 },
-    autres: { triangles: 7_340, drawCalls: 3 },
+    autres: { triangles: 8_000, drawCalls: 3 },
   },
   commandes: {
     lot: 'GD-7',
     nom: 'Commandes (les petites constructions livrées, dans le sol et la construction, sans appel de plus)',
     premiersRivages: { triangles: 640, drawCalls: 0 },
-    autres: { triangles: 280, drawCalls: 0 },
+    autres: { triangles: 370, drawCalls: 0 },
   },
-  bornes: { lot: 'R5', nom: 'Bornes (instanciées)', premiersRivages: { triangles: 1_450, drawCalls: 1 }, autres: { triangles: 870, drawCalls: 1 } },
+  bornes: { lot: 'R5', nom: 'Bornes (instanciées)', premiersRivages: { triangles: 1_450, drawCalls: 1 }, autres: { triangles: 1_130, drawCalls: 1 } },
   navire: { lot: 'R5', nom: 'Navire', premiersRivages: { triangles: 650, drawCalls: 3 }, autres: { triangles: 420, drawCalls: 3 } },
   bonhomme: { lot: 'R6', nom: 'Bonhomme', premiersRivages: { triangles: 500, drawCalls: 2 }, autres: { triangles: 475, drawCalls: 2 } },
-  creatures: { lot: 'R6', nom: 'Créatures', premiersRivages: { triangles: 3_650, drawCalls: 1 }, autres: { triangles: 2_450, drawCalls: 1 } },
-  gardiens: { lot: 'R6', nom: 'Gardiens en sentinelles', premiersRivages: { triangles: 2_780, drawCalls: 1 }, autres: { triangles: 2_150, drawCalls: 1 } },
+  creatures: { lot: 'R6', nom: 'Créatures', premiersRivages: { triangles: 3_650, drawCalls: 1 }, autres: { triangles: 3_200, drawCalls: 1 } },
+  gardiens: { lot: 'R6', nom: 'Gardiens en sentinelles', premiersRivages: { triangles: 2_780, drawCalls: 1 }, autres: { triangles: 2_780, drawCalls: 1 } },
   scene: {
     lot: 'socle',
     nom: 'Dans la scène : étiquettes, flèche, fanion, balises',
