@@ -70,6 +70,9 @@ function tallDecor(def: IslandDef): Set<string> {
     const t = tirage(def, c.x, c.y);
     decorate((x, y) => ajouter(x, y), c.decor, c.x, c.y, noise(def.seed + 5, t.x, t.y));
   }
+  // Le repère du lieu aussi, chapeau ou feuillage compris : la liaison du Marais des temps à la Prairie des climats (SC-3)
+  // arrivait sous le chapeau du champignon géant, où le bonhomme ne passe pas (arrival.test.ts).
+  landmark(def, landscape(def), (x, y) => ajouter(x, y));
   return out;
 }
 

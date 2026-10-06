@@ -90,10 +90,10 @@ describe('un lieu : caler, décaler, tourner, poser', () => {
   });
 
   it('« Tourner » ne fait pas pivoter le fantôme d’un lieu qui, tourné, n’a aucune place libre (HG-3, consultant UX UI)', () => {
-    // Le Glacier des relatifs (5e) et la Gare du futur (4e) : `SANS_PLACE` (arrange.test.ts). La ligne dit alors le
-    // refus (Arranging.tsx).
+    // Le Glacier des relatifs (5e) et la Gare du futur (4e) depuis HG-3, la Grammaire (5e) et le Refuge des carnets (3e)
+    // depuis SC-3 : `SANS_PLACE` (arrange.test.ts). La ligne dit alors le refus (Arranging.tsx).
     const w = partie();
-    for (const id of ['maths-5e-signed-numbers', 'english-4e-grammar'] as BiomeId[]) {
+    for (const id of ['maths-5e-signed-numbers', 'english-5e-grammar', 'english-4e-grammar', 'lv2-3e-travel'] as BiomeId[]) {
       const c = chooseIsland(w, id);
       if (c?.genre !== 'lieu') throw new Error(id);
       expect(freeSpots(w, id, ((c.spot.turn + 1) % 4) as 0 | 1 | 2 | 3), id).toEqual([]);

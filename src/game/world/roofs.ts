@@ -23,11 +23,13 @@ export type Couverture = 'ardoise' | 'terre-cuite';
  * au 5e, le Relais et le Bourg séparent le Comptoir du Delta ; au 4e, l'Escale sépare l'Imprimerie du Théâtre (deux sur
  * dix) ; au 3e, le Belvédère et le Plateau sont aux deux bouts de l'archipel. Les îles de sciences de 5e à 3e (SC-3, DA) :
  * une de plus en terre cuite par archipel, trois sur onze (la LV2 hors du compte), jamais voisine des deux autres : la
- * Menuiserie des objets (5e), au coin de devant, à l'est, après le Relais, loin du Comptoir et du Delta ; la Source des
- * espèces (4e), au coin de devant, à l'ouest, avant la Forge, loin du Théâtre et de l'Imprimerie ; le Verger de la santé
- * (3e), à côté du Kiosque, loin du Belvédère et du Plateau. Les autres sont d'ardoise : #224C5F pour la Prairie des
- * climats et la Saline des mélanges, #3E3636 pour la Vigie des signaux et le Bassin des maquettes, enneigée pour le
- * Tremplin des forces et la Ruche des réseaux.
+ * Prairie des climats (5e) — la DA donnait la Menuiserie des objets, mais à sa place sur la Carte, au coin de devant à
+ * l'est, elle est voisine du Delta ; la DA prévoit alors l'échange avec une autre île de sciences de l'archipel, et la
+ * Prairie, entre le Marais et la Saline, n'est voisine ni du Comptoir ni du Delta ; la Source des espèces (4e), voisine
+ * de la Forge seulement ; le Verger de la santé (3e), voisin de l'Observatoire des textes et du Kiosque, loin du
+ * Belvédère et du Plateau. Les autres sont d'ardoise : #224C5F pour la Menuiserie des objets et la Saline des mélanges,
+ * #3E3636 pour la Vigie des signaux et le Bassin des maquettes, enneigée pour le Tremplin des forces et la Ruche des
+ * réseaux. Vérifié par construction.test.ts (« deux îles voisines »).
  */
 export const TERRE_CUITE_SUR: readonly string[] = [
   'french-6e-grammar-spelling',
@@ -36,7 +38,7 @@ export const TERRE_CUITE_SUR: readonly string[] = [
   'technology-6e-objects',
   'english-5e-vocabulary',
   'geography-5e-resources',
-  'technology-5e-design',
+  'life-earth-sciences-5e-active-planet',
   'english-4e-comprehension',
   'history-4e-revolutions',
   'life-earth-sciences-4e-cells-evolution',

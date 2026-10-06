@@ -156,19 +156,24 @@ export function amorcesDuDessin(id: BiomeId): { ouvrage: BridgeDef; depart: bool
     });
 }
 
-/** Les tracés de départ des liaisons vers les îles d'histoire-géographie, mémorisés : la carte de départ ne change pas. */
+/** Une île venue après GD-9 : d'histoire-géographie (HG-2, HG-3), ou de sciences hors des Premiers Rivages (SC-3). */
+const estIleVenueApresGd9 = (b: { subject: string; classe: string } | undefined): boolean =>
+  !!b && (b.subject === 'history-geography' || (b.classe !== '6e' && ['life-earth-sciences', 'physics-chemistry', 'technology'].includes(b.subject)));
+
+/** Les tracés de départ des liaisons vers les îles venues après GD-9, mémorisés : la carte de départ ne change pas. */
 const tracesVersLesIlesVenues = new Map<string, readonly Readonly<{ x: number; y: number }>[]>();
 
 /**
- * Les abords des liaisons d'un lieu vers les îles d'histoire-géographie (HG-2, HG-3), venues après GD-9, tracées sur la
- * carte de départ, dans le repère du lieu : le modelé dessiné d'Archipéo, en pause, les garde bas lui aussi (la liaison du
- * Relais des voyageurs au Bourg des chroniques longe la crête du Relais, celle de l'Observatoire des textes au Kiosque
- * des témoins ses gradins ; drawnModel/3e.ts, 5e.ts). Rien du monde de Blocland ne les lit.
+ * Les abords des liaisons d'un lieu vers les îles d'histoire-géographie (HG-2, HG-3) et vers les îles de sciences de 5e à
+ * 3e (SC-3), venues après GD-9, tracées sur la carte de départ, dans le repère du lieu : le modelé dessiné d'Archipéo, en
+ * pause, les garde bas lui aussi (la liaison du Relais des voyageurs au Bourg des chroniques longe la crête du Relais,
+ * celle de l'Observatoire des textes au Kiosque des témoins ses gradins ; drawnModel/3e.ts, 5e.ts). Rien du monde de
+ * Blocland ne les lit.
  */
 export function amorcesVersLesIlesVenues(id: BiomeId): { x: number; y: number }[] {
   const o = startingIsland(id).core;
   return bridgesOf(id)
-    .filter((b) => getBiome(otherEnd(b, id))?.subject === 'history-geography')
+    .filter((b) => estIleVenueApresGd9(getBiome(otherEnd(b, id))))
     .flatMap((b) => {
       let cases = tracesVersLesIlesVenues.get(b.id);
       if (!cases) {

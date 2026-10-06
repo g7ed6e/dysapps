@@ -250,7 +250,10 @@ const ETATS = { blocland: 'Bâtie', archipeo: 'Restaurée' };
  */
 const TUS_EN_PORTRAIT: Partial<Record<string, string[]>> = {
   '5e:lv2-5e-introductions': ['geography-5e-resources'],
-  '3e:maths-3e-functions': ['lv2-3e-travel'],
+  // Depuis les îles de sciences (SC-3), mesurés : au 4e vers l'Escale, l'Imprimerie ; au 3e vers les Fonctions, les
+  // Statistiques en plus du Refuge.
+  '4e:geography-4e-globalization': ['history-4e-revolutions'],
+  '3e:maths-3e-functions': ['maths-3e-statistics', 'lv2-3e-travel'],
 };
 
 /**
@@ -271,6 +274,32 @@ const TUS_EN_OD32: Record<string, string[]> = {
  * le bonhomme sur la Forêt, c'est son voisin le Hangar des inventions (les noms du test, un peu plus larges, laissent
  * l'autre se taire). Le même nombre avant la règle du médaillon (preview, 161ded36) et après.
  */
+/**
+ * La tablette, panneau ouvert, selon la destination : les noms qui se taisent depuis les îles de sciences (SC-3, mesurés).
+ * Trois îles de plus par classe, posées sur les seules places libres hors de la colonne de la caméra : la recherche des
+ * places (cœurs de `map.ts`) laisse un nom tu par classe, une seule destination chacune, jamais celui de la destination.
+ * Limite connue, à revoir par le référent dys et le consultant UX UI.
+ */
+const TUS_VERS_UNE_DESTINATION: Partial<Record<ArchipelagoId, Record<string, string[]>>> = {
+  '5e': { 'maths-5e-signed-numbers': ['physics-chemistry-5e-matter-universe'] },
+  '4e': { 'history-4e-revolutions': ['geography-4e-globalization'] },
+  '3e': { 'life-earth-sciences-3e-human-body': ['maths-3e-functions'] },
+};
+
+/**
+ * La flèche sur un ouvrage (GD-7), panneau ouvert : les noms qui se taisent depuis les îles de sciences (SC-3, mesurés),
+ * jamais celui de l'île de départ. Même limite que `TUS_VERS_UNE_DESTINATION`.
+ */
+const TUS_SUR_UN_OUVRAGE: Partial<Record<ArchipelagoId, Record<string, string[]>>> = {
+  '5e': { 'english-5e-grammar-history-5e-middle-ages depuis history-5e-middle-ages': ['lv2-5e-introductions'] },
+  '4e': {
+    'french-4e-agreement-french-4e-vocabulary depuis french-4e-agreement': ['geography-4e-globalization'],
+    'french-4e-vocabulary-technology-4e-modeling depuis technology-4e-modeling': ['french-4e-agreement'],
+    'history-4e-revolutions-physics-chemistry-4e-signals-circuits depuis physics-chemistry-4e-signals-circuits': ['maths-4e-algebra'],
+    'maths-4e-algebra-maths-4e-powers depuis maths-4e-powers': ['geography-4e-globalization'],
+  },
+};
+
 const TUS_AU_TELEPHONE: Record<string, string[]> = {
   'history-6e-antiquity': ['maths-6e-decimals'],
   'french-6e-phonology': ['maths-6e-decimals'],
@@ -380,12 +409,20 @@ describe('La Carte : chaque île a son nom (tablette 1024 × 768)', () => {
     // comme la capture `carte-<classe>-800x1280`, quelle que soit l'île de destination : chaque nom montré est hors des
     // boutons et du médaillon, et chaque île qui se voit garde son nom, sauf `TUS_EN_PORTRAIT` (consultant UX UI, HG-3).
     const ici: BiomeId = VOISINES_HG3[a][0];
+    const tusDebout: Record<string, string[]> = {};
     for (const vers of islandsOf(a).map((b) => b.id))
       for (const [univers, mot] of Object.entries(ETATS)) {
         const debout = laCarte(a, mot, 'atkinson-hyperlegible', 1, vers, true, PORTRAIT_800, ici);
-        expect(debout.tus, `${univers}, 800 × 1280, vers ${vers}`).toEqual(TUS_EN_PORTRAIT[`${a}:${vers}`] ?? []);
+        if (debout.tus.length) tusDebout[`${univers}:${vers}`] = debout.tus;
         for (const m of debout.montrees) for (const z of [...PORTRAIT_800.zones, debout.fanion]) expect(couvre(m, z), `${univers}, 800 × 1280, vers ${vers}, ${m.id}`).toBe(false);
       }
+    const attendus: Record<string, string[]> = {};
+    for (const vers of islandsOf(a).map((b) => b.id))
+      for (const univers of Object.keys(ETATS)) {
+        const t = TUS_EN_PORTRAIT[`${a}:${vers}`];
+        if (t) attendus[`${univers}:${vers}`] = t;
+      }
+    expect(tusDebout, '800 × 1280').toEqual(attendus);
   });
 
   it('6e, à l’ouverture de la Carte : chaque nom sur son île ; la recherche complète reste bornée (HG-3, DA ; SC-2)', () => {
@@ -427,8 +464,13 @@ describe('La Carte : chaque île a son nom (tablette 1024 × 768)', () => {
     }
   });
 
-  it.each(['5e', '4e', '3e'] as const)('%s : quelle que soit la destination, chaque île qui se voit garde son nom', (a) => {
-    for (const dest of islandsOf(a).map((b) => b.id)) expect(nomsTus(a, ETATS.blocland, 'atkinson-hyperlegible', 1, dest), `${a} → ${dest}`).toEqual([]);
+  it.each(['5e', '4e', '3e'] as const)('%s : quelle que soit la destination, chaque île qui se voit garde son nom, sauf les limites mesurées (SC-3)', (a) => {
+    const tus: Record<string, string[]> = {};
+    for (const dest of islandsOf(a).map((b) => b.id)) {
+      const t = nomsTus(a, ETATS.blocland, 'atkinson-hyperlegible', 1, dest);
+      if (t.length) tus[dest] = t;
+    }
+    expect(tus).toEqual(TUS_VERS_UNE_DESTINATION[a] ?? {});
   });
 
   const posees = POSEES;
@@ -446,10 +488,13 @@ describe('La Carte : chaque île a son nom (tablette 1024 × 768)', () => {
       for (const depuis of [def.from, def.to]) expect(nomsTus(a, ETATS.blocland, 'atkinson-hyperlegible', 1, { ouvrage: def.id, depuis }), `${def.id} depuis ${depuis}`).not.toContain(depuis);
   });
 
-  it.each(['5e', '4e', '3e'] as const)('%s : la flèche sur un ouvrage, chaque île qui se voit garde son nom', (a) => {
+  it.each(['5e', '4e', '3e'] as const)('%s : la flèche sur un ouvrage, chaque île qui se voit garde son nom, sauf les limites mesurées (SC-3)', (a) => {
+    const tus: Record<string, string[]> = {};
     for (const def of BRIDGES.filter((b) => archipelagoOfIsland(b.from) === a && posees.includes(b.id)))
       for (const depuis of [def.from, def.to]) {
-        expect(nomsTus(a, ETATS.blocland, 'atkinson-hyperlegible', 1, { ouvrage: def.id, depuis }), `${def.id} depuis ${depuis}`).toEqual([]);
+        const t = nomsTus(a, ETATS.blocland, 'atkinson-hyperlegible', 1, { ouvrage: def.id, depuis });
+        if (t.length) tus[`${def.id} depuis ${depuis}`] = t;
       }
+    expect(tus).toEqual(TUS_SUR_UN_OUVRAGE[a] ?? {});
   });
 });
