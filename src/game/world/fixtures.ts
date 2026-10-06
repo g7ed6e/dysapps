@@ -151,14 +151,9 @@ const FORMES: Record<string, Cube[]> = {
   // Vélin, l'écritoire (HG-3) : un pied de trois tourbes en ligne au sol, le plateau d'enluminure (le bloc de l'île : le
   // bois du contenu n'est ni de l'île ni de finition) sur celle du milieu, la lanterne sur celle du bout.
   'history-5e-middle-ages-fixture-1': [...rangee(0, 2, 0, 0, BLOC.tourbe), [1, 0, 1, BLOC.enluminure], [2, 0, 1, 'lantern']],
-  // Sillon, l'abreuvoir (HG-3) : quatre enluminures au sol autour d'une case, l'eau au milieu (`EAU` : le verre du
-  // contenu n'est ni de l'île ni de finition, l'eau du terrain le remplace, comme au puits de Tunel).
-  'geography-5e-resources-fixture-1': [
-    [1, 0, 0, BLOC.enluminure],
-    [0, 1, 0, BLOC.enluminure],
-    [2, 1, 0, BLOC.enluminure],
-    [1, 2, 0, BLOC.enluminure],
-  ],
+  // Sillon, le coffre à graines (HG-3, retouche du consultant Blocland) : quatre enluminures au sol en carré de 2 × 2,
+  // la lanterne sur une enluminure du fond ; sans eau.
+  'geography-5e-resources-fixture-1': [...rangee(0, 1, 0, 0, BLOC.enluminure), ...rangee(0, 1, 1, 0, BLOC.enluminure), [1, 1, 1, 'lantern']],
 
   // 4e : les Monts de Feu.
   // Braise, le wagonnet : une voie de trois rails, un wagonnet de deux aciers.
@@ -213,20 +208,18 @@ const FORMES: Record<string, Cube[]> = {
   // Mémo, le pupitre (HG-3) : deux quartz côte à côte au fond, un troisième sur l'un d'eux (le plateau), la marche
   // devant (un escalier : le bois du contenu n'est ni de l'île ni de finition), la lanterne à côté.
   'history-3e-twentieth-century-fixture-1': [[0, 1, 0, BLOC.quartz], [1, 1, 0, BLOC.quartz], [1, 1, 1, BLOC.quartz], [1, 0, 0, 'stairs'], [0, 0, 0, 'lantern']],
-  // Jalon, la fontaine (HG-3) : trois reliures en U au sol autour de l'eau (`EAU`), la lanterne sur la reliure du fond.
+  // Jalon, la boîte à livres (HG-3, retouche du consultant Blocland) : trois reliures en U au sol, la lanterne sur la
+  // reliure du fond ; sans eau.
   'geography-3e-france-fixture-1': [[0, 0, 0, BLOC.reliure], [2, 0, 0, BLOC.reliure], [1, 1, 0, BLOC.reliure], [1, 1, 1, 'lantern']],
 };
 
 /**
  * L'eau d'une petite construction, en repère propre : un cube d'eau du terrain (la texture de l'eau des îles, aucun
  * matériau de plus), posé avec elle, hors de ses cases (il ne compte ni parmi ses cubes ni dans la sauvegarde). Le puits
- * de Tunel, plein jusqu'à la margelle (retouche du directeur artistique) ; l'abreuvoir de Sillon et la fontaine de Jalon.
+ * de Tunel, plein jusqu'à la margelle (retouche du directeur artistique).
  */
 const EAU: Record<string, readonly (readonly [number, number, number])[]> = {
   'french-6e-letter-confusion-fixture-1': [[1, 1, 0]],
-  // L'abreuvoir de Sillon et la fontaine de Jalon (HG-3).
-  'geography-5e-resources-fixture-1': [[1, 1, 0]],
-  'geography-3e-france-fixture-1': [[1, 0, 0]],
 };
 
 /** L'eau d'une petite construction (voir `EAU`), vide sans eau. */
@@ -271,7 +264,7 @@ const PLACES: Record<string, readonly [number, number]> = {
   'maths-6e-calculation-fixture-1': [9, 3],
   'maths-6e-fractions-fixture-1': [-1, 11],
   'maths-6e-decimals-fixture-1': [5, 12],
-  'maths-5e-signed-numbers-fixture-1': [6, 12],
+  'maths-5e-signed-numbers-fixture-1': [8, 5],
   'maths-5e-proportionality-fixture-1': [-1, 4],
   'french-5e-homophones-fixture-1': [10, 4],
   'french-5e-conjugation-fixture-1': [-3, 12],
@@ -279,7 +272,7 @@ const PLACES: Record<string, readonly [number, number]> = {
   'maths-4e-algebra-fixture-1': [5, 19],
   'french-4e-agreement-fixture-1': [4, 11],
   'french-4e-vocabulary-fixture-1': [6, 10],
-  'maths-3e-geometry-fixture-1': [5, 11],
+  'maths-3e-geometry-fixture-1': [10, 3],
   'maths-3e-statistics-fixture-1': [2, 10],
   'maths-3e-functions-fixture-1': [6, 19],
   'french-3e-close-reading-fixture-1': [5, 11],
@@ -288,16 +281,16 @@ const PLACES: Record<string, readonly [number, number]> = {
   'history-6e-antiquity-fixture-1': [0, 10],
   'geography-6e-living-fixture-1': [-1, 11],
   'history-5e-middle-ages-fixture-1': [1, 10],
-  'geography-5e-resources-fixture-1': [0, 10],
+  'geography-5e-resources-fixture-1': [2, 10],
   'history-4e-revolutions-fixture-1': [8, 6],
   'geography-4e-globalization-fixture-1': [10, 3],
-  'history-3e-twentieth-century-fixture-1': [6, 12],
-  'geography-3e-france-fixture-1': [1, 10],
+  'history-3e-twentieth-century-fixture-1': [10, 3],
+  'geography-3e-france-fixture-1': [5, 12],
   'english-5e-vocabulary-fixture-1': [4, 11],
   'english-5e-grammar-fixture-1': [10, 3],
   'english-4e-comprehension-fixture-1': [7, 9],
   'english-4e-grammar-fixture-1': [8, 9],
-  'english-3e-comprehension-fixture-1': [6, 12],
+  'english-3e-comprehension-fixture-1': [0, 12],
   'english-3e-grammar-fixture-1': [1, 10],
 };
 

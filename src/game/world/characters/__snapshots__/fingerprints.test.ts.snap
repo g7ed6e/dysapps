@@ -30,7 +30,7 @@ exports[`Empreintes des personnages en facettes > les créatures, île par île 
   "glacier": "236 bb1c8d90",
   "history-3e-twentieth-century": "221 438bdb08",
   "history-4e-revolutions": "263 a1f8a7c3",
-  "history-5e-middle-ages": "205 085bf7ef",
+  "history-5e-middle-ages": "205 6b07445a",
   "history-6e-antiquity": "229 6d0369ad",
   "horloge": "265 f170a175",
   "jardin": "291 cc1e4f78",
@@ -54,16 +54,16 @@ exports[`Empreintes des personnages en facettes > les créatures, île par île 
 exports[`Empreintes des personnages en facettes > les fusions, archipel par archipel (tout construit) 1`] = `
 {
   "3e": {
-    "creatures": "2405 13eb8699 69d9d9ef",
-    "gardiens": "2007 f4b00552",
+    "creatures": "2405 ee823f14 804e4be5",
+    "gardiens": "2045 9ec401a8",
   },
   "4e": {
     "creatures": "2292 45d2b0c4 9f5be038",
     "gardiens": "1931 1eeb65ca",
   },
   "5e": {
-    "creatures": "2296 a751feeb 5fded4ff",
-    "gardiens": "2144 5f393b2a",
+    "creatures": "2296 2d4ee3d0 5fded4ff",
+    "gardiens": "2144 bfc06914",
   },
   "6e": {
     "creatures": "2917 bc745c32 46904ee0",
@@ -91,12 +91,12 @@ exports[`Empreintes des personnages en facettes > les sentinelles, île par île
   "gare": "268 ad1ed548",
   "geography-3e-france": "169 a7a3c81a",
   "geography-4e-globalization": "226 39c885cf",
-  "geography-5e-resources": "188 b0a11597",
+  "geography-5e-resources": "188 a15403b7",
   "geography-6e-living": "149 50fdef34",
   "glacier": "324 c03d8f81",
-  "history-3e-twentieth-century": "175 8d2f771d",
+  "history-3e-twentieth-century": "213 d1a7ecd2",
   "history-4e-revolutions": "189 71eb8840",
-  "history-5e-middle-ages": "165 643e06aa",
+  "history-5e-middle-ages": "165 a614ba62",
   "history-6e-antiquity": "190 c078b9a1",
   "horloge": "172 899e1347",
   "jardin": "258 1f00506c",

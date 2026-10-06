@@ -163,12 +163,16 @@ export const ENVELOPPES: Record<Poste, { lot: 'R4b' | 'R5' | 'R6' | 'GD-7' | 'so
   // Îles Brumeuses, 186 aux Anciens Ateliers, 152 aux Îles du Ciel, aucun appel de plus. Aux Premiers Rivages, les 450
   // passent du décor (12 500 → 12 050 ; 11 746 mesurés). Ailleurs, le décor des Îles Brumeuses (9 103 mesurés) n'a que
   // 247 de marge : proposition de l'artiste technique 3D, validée par le mainteneur le 4 octobre 2026, 200 seulement (9 350 → 9 150).
-  decor: { lot: 'R4b', nom: 'Décor et repères signatures', premiersRivages: { triangles: 12_350, drawCalls: 3 }, autres: { triangles: 11_500, drawCalls: 3 } },
+  // Proposition de l'artiste technique 3D pour HG-3, à valider par le mainteneur : le cadre des Îles Brumeuses élargi de
+  // 24 cases (168 × 112) sème plus d'écueils dans sa mer, et leur décor passe à 11 660 triangles (mesuré tout construit,
+  // `npm run rendu:budget`). Les enveloppes « autres » en passent 160 de la construction (6 679 au plus, aux Îles
+  // Brumeuses) au décor ; la somme ne change pas (62 875).
+  decor: { lot: 'R4b', nom: 'Décor et repères signatures', premiersRivages: { triangles: 12_350, drawCalls: 3 }, autres: { triangles: 11_660, drawCalls: 3 } },
   construction: {
     lot: 'R5',
     nom: 'Construction (bâtiments, ouvrages, monuments, quai, cœur des îles ; fantômes et fenêtres compris)',
     premiersRivages: { triangles: 7_200, drawCalls: 3 },
-    autres: { triangles: 7_500, drawCalls: 3 },
+    autres: { triangles: 7_340, drawCalls: 3 },
   },
   commandes: {
     lot: 'GD-7',

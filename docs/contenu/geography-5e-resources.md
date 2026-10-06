@@ -437,9 +437,9 @@ Pour tous les items :
 - habitant : Sillon
 - bloc : `history-5e-middle-ages`
 - combien : 4
-- petite construction : l’abreuvoir
-- demande : Il me faut {objet} pour mon abreuvoir. Joue une mission du Bourg des chroniques.
+- petite construction : le coffre à graines
+- demande : Il me faut {objet} pour mon coffre à graines. Joue une mission du Bourg des chroniques.
 - prête : Tu as les {blocs} ! Livre-les à Sillon.
-- posée : Abreuvoir posé chez Sillon !
+- posée : Coffre à graines posé chez Sillon !
 
-> Forme, pour l’artiste technique 3D : 4 enluminures au sol autour d’une case (une devant, une derrière, une de chaque côté), 1 verre au milieu pour l’eau ; 5 cubes, 3 × 3 cases, 1 de haut.
+> Forme, pour l’artiste technique 3D : 4 enluminures au sol en carré de 2 × 2 (le coffre), 1 lanterne posée sur une enluminure du fond ; sans eau ; 5 cubes, 2 × 2 cases, 2 de haut.

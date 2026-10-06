@@ -3,7 +3,7 @@
 // socles compris.
 import type { BiomeId } from '../../../biomes';
 import { pointe } from '../template';
-import { devant, fuseau, pave, type Anneau } from '../painted';
+import { devant, fuseau, pave, pose, repere, type Anneau } from '../painted';
 import { dalle, orbites, plaque, tube, veineSur, type Statue } from '../sentinel';
 
 const TETE_DU_MAMMOUTH: Anneau[] = [
@@ -151,6 +151,17 @@ const AILES_DE_LA_LIBELLULE: [number, number][] = [
   [4.9, 5.4],
   [5.9, 6.4],
 ];
+
+/**
+ * Les ailes du Griffon et de la Libellule s'ouvrent en V, chacune reculée de cet angle depuis sa racine (radians) : vues
+ * par la tranche, de profil, elles se lisaient comme un obélisque (DA, relecture des planches, HG-3) ; ouvertes, elles
+ * ont de l'aire de face comme de profil, dans les cinq cases.
+ */
+const OUVERTURE_DES_AILES = 0.55;
+/** Le repère d'une aile (`s` : −1 à gauche, 1 à droite) : sa racine en `racine`, reculée de `OUVERTURE_DES_AILES`. */
+const repereDAile = (s: number, racine: [number, number]) => repere([s * racine[0], 0, racine[1]], 0, -s * OUVERTURE_DES_AILES, 0);
+const RACINE_DES_AILES_DU_GRIFFON: [number, number] = [0.7, 0.4];
+const RACINE_DES_AILES_DE_LA_LIBELLULE: [number, number] = [0.3, 0];
 
 export const STATUES_5E: Partial<Record<BiomeId, Statue>> = {
   'maths-5e-signed-numbers': {
@@ -576,15 +587,15 @@ export const STATUES_5E: Partial<Record<BiomeId, Statue>> = {
       pointe(T, [0, 6.5, devant(TETE_DU_GRIFFON, 5, 6.5).z + 0.1], 0.2, 0.5, a.pierre, [-Math.PI / 2, 0, 0], 3);
       for (const s of [-1, 1])
         dalle(
-          T,
+          pose(T, repereDAile(s, RACINE_DES_AILES_DU_GRIFFON)),
           [
-            [s * 0.7, 2.6],
-            [s * 1.9, 3.5],
-            [s * 2.1, 6.1],
-            [s * 0.9, 5.2],
+            [0, 2.6],
+            [s * 1.4, 3.4],
+            [s * 1.7, 6.3],
+            [s * 0.2, 5.2],
           ],
-          0.35,
-          0.5,
+          -0.075,
+          0.075,
           a.pierre,
         );
       orbites(T, a, 0, 6.8, devant(TETE_DU_GRIFFON, 5, 6.8).z, 0.22, 0.12);
@@ -600,12 +611,12 @@ export const STATUES_5E: Partial<Record<BiomeId, Statue>> = {
       for (const s of [-1, 1])
         for (const [y0, y1] of AILES_DE_LA_LIBELLULE)
           dalle(
-            T,
+            pose(T, repereDAile(s, RACINE_DES_AILES_DE_LA_LIBELLULE)),
             [
-              [s * 0.3, y0],
-              [s * 2.3, y0 + 0.5],
-              [s * 2.4, y1],
-              [s * 0.3, y1],
+              [0, y0],
+              [s * 2.1, y0 + 0.5],
+              [s * 2.2, y1],
+              [0, y1],
             ],
             -0.05,
             0.05,
@@ -615,7 +626,8 @@ export const STATUES_5E: Partial<Record<BiomeId, Statue>> = {
     },
     veines: (T, a) => {
       // Une nervure sur chaque aile du haut.
-      for (const s of [-1, 1]) for (const [y0, y1] of AILES_DE_LA_LIBELLULE.slice(1)) plaque(T, s * 1.4, (y0 + y1) / 2 + 0.2, 0.7, 0.07 * a.veines, 4, a.lueur, () => -0.05);
+      for (const s of [-1, 1])
+        for (const [y0, y1] of AILES_DE_LA_LIBELLULE.slice(1)) plaque(pose(T, repereDAile(s, RACINE_DES_AILES_DE_LA_LIBELLULE)), s * 1.1, (y0 + y1) / 2 + 0.2, 0.7, 0.07 * a.veines, 4, a.lueur, () => -0.05);
     },
   },
 };

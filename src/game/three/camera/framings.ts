@@ -1,7 +1,7 @@
 // Les cadrages de la caméra : les vues (île, suivi, Carte, voyage), le cadrage de la Carte selon la place libre et la
 // destination, celui de la traversée, et le décalage qui vise un point au-dessus du sol.
 import * as THREE from 'three';
-import { type CadreDeCases, DISTANCE_DE_LA_VUE_DE_L_ILE, islandCenter, VISEE_AU_DESSUS_DU_SOL, VUE_DE_L_ILE, worldBounds } from '../../world/terrain';
+import { bornesDesLieux, type CadreDeCases, DISTANCE_DE_LA_VUE_DE_L_ILE, islandCenter, VISEE_AU_DESSUS_DU_SOL, VUE_DE_L_ILE, worldBounds } from '../../world/terrain';
 import type { PlaceLue, Rect } from '../../freeSpace';
 import type { BiomeId } from '../../biomes';
 import type { ArchipelagoId } from '../../world/archipelago';
@@ -60,6 +60,12 @@ export const LARGEUR_D_UNE_ILE = 22;
 
 /** Entre l'archipel entier et le bord de la place libre. */
 const MARGE_DE_LA_CARTE = 12;
+
+/** À combien de cases au-dessus du sol de son île flotte le nom d'une île (three/labels.ts). */
+export const HAUTEUR_DES_NOMS = 12;
+
+/** La moitié de la hauteur de l'étiquette d'une île sur la Carte (le nom et l'état, 18 px, labelCanvas.ts), en pixels CSS. */
+const DEMI_HAUTEUR_D_UN_NOM = 31;
 
 /** Sans page autour (un aperçu, un test) : une vue de tablette, moins la bande des boutons du bas. */
 export const HAUTEUR_DE_TABLETTE = 688;
@@ -145,6 +151,24 @@ export function cadrageDeLaCarte(
     }
     return r;
   };
+  /** À l'écran, les lieux d'aujourd'hui (îlots et port compris) et leurs noms (`HAUTEUR_DES_NOMS` au-dessus de chaque île). */
+  const lieux = () => {
+    const b = bornesDesLieux(archipel);
+    const r = { y0: Infinity, y1: -Infinity };
+    for (const x of [b.minX, b.maxX])
+      for (const y of [b.minY, b.maxY]) {
+        v.set(x, altitude, y).project(cam);
+        const q = ((1 - v.y) / 2) * h;
+        r.y0 = Math.min(r.y0, q);
+        r.y1 = Math.max(r.y1, q);
+      }
+    for (const def of mapOf(archipel)) {
+      const p = islandCenter(def.id);
+      v.set(p.x + 0.5, p.z + HAUTEUR_DES_NOMS, p.y + 0.5).project(cam);
+      r.y0 = Math.min(r.y0, ((1 - v.y) / 2) * h - DEMI_HAUTEUR_D_UN_NOM);
+    }
+    return r;
+  };
   const lw = libre.x1 - libre.x0 - 2 * MARGE_DE_LA_CARTE;
   const lh = libre.y1 - libre.y0 - 2 * MARGE_DE_LA_CARTE;
   const centreDesTerres = () => target.set((e.minX + e.maxX) / 2, sol, (e.minY + e.maxY) / 2);
@@ -180,25 +204,43 @@ export function cadrageDeLaCarte(
   // Au plancher, un cadre plus haut que la place s'aligne sur son haut : le nom au-dessus de la flèche reste entier.
   const r0 = (placer(d), cadre(tout));
   if (r0.y1 - r0.y0 > lh) vise.y = libre.y0 + MARGE_DE_LA_CARTE + (r0.y1 - r0.y0) / 2;
-  for (let i = 0; i < 4; i++) {
-    const m0 = milieu();
-    target.x += 1;
-    const mx = milieu();
-    target.x -= 1;
-    target.z += 1;
-    const mz = milieu();
-    target.z -= 1;
-    // Le déplacement à l'écran d'une case vers l'est (x) et vers le nord (z), puis la case à viser.
-    const a = mx.x - m0.x;
-    const b = mz.x - m0.x;
-    const cc = mx.y - m0.y;
-    const dd = mz.y - m0.y;
-    const det = a * dd - b * cc;
-    if (Math.abs(det) < 1e-9) break;
-    const ex = vise.x - m0.x;
-    const ey = vise.y - m0.y;
-    target.x += (dd * ex - b * ey) / det;
-    target.z += (a * ey - cc * ex) / det;
+  const glisser = () => {
+    for (let i = 0; i < 4; i++) {
+      const m0 = milieu();
+      target.x += 1;
+      const mx = milieu();
+      target.x -= 1;
+      target.z += 1;
+      const mz = milieu();
+      target.z -= 1;
+      // Le déplacement à l'écran d'une case vers l'est (x) et vers le nord (z), puis la case à viser.
+      const a = mx.x - m0.x;
+      const b = mz.x - m0.x;
+      const cc = mx.y - m0.y;
+      const dd = mz.y - m0.y;
+      const det = a * dd - b * cc;
+      if (Math.abs(det) < 1e-9) break;
+      const ex = vise.x - m0.x;
+      const ey = vise.y - m0.y;
+      target.x += (dd * ex - b * ey) / det;
+      target.z += (a * ey - cc * ex) / det;
+    }
+  };
+  glisser();
+  if (!auPlancher && r0.y1 - r0.y0 <= lh) {
+    // Les lieux occupent rarement tout le cadre de leur région : au 5e et au 4e, ils sont au nord, et le sud du cadre
+    // laissait 250 px de mer vide sous eux sur la tablette, leurs noms à 5 px du haut (UX UI, HG-3). Les lieux et leurs
+    // noms glissent au milieu de la place, haut et bas à égalité, tant que le cadre, la destination et ce qui l'entoure
+    // restent dedans (GD-9 : on aménage partout dans la région, la vue d'ensemble la montre toute).
+    placer(d);
+    const r = cadre(true);
+    const l = lieux();
+    const voulu = (libre.y0 + libre.y1) / 2 - (l.y0 + l.y1) / 2;
+    const ecart = Math.min(libre.y1 - MARGE_DE_LA_CARTE - r.y1, Math.max(libre.y0 + MARGE_DE_LA_CARTE - r.y0, voulu));
+    if (Math.abs(ecart) > 0.5) {
+      vise.y += ecart;
+      glisser();
+    }
   }
   placer(d);
   return { target: target.clone(), pos: cam.position.clone(), echelle: h / (2 * d * tan), auPlancher };

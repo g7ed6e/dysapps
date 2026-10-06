@@ -457,7 +457,7 @@ const BOUSSOLE = fromLayers(
   { C: '#5e7a3e', H: '#b4a676', L: '#b4a676', E: '#1f1a16' },
 );
 
-// Vélin : un lapin enlumineur assis (DA, HG-3), gris-brun au ventre crème, le museau crème à la truffe rose, deux
+// Vélin : un lapin enlumineur assis (DA, HG-3), gris-fauve au ventre crème (pas le gris-pierre d'une statue, DA), le museau crème à la truffe rose, deux
 // longues oreilles debout, roses dedans ; à sa patte droite, debout, une plume d'enluminure violette à la pointe sombre.
 const VELIN = fromLayers(
   [
@@ -470,7 +470,7 @@ const VELIN = fromLayers(
     ['.P.P.', '.B.B.', '.....', '.....'],
     ['.....', '.B.B.', '.....', '.....'],
   ],
-  { B: '#b8aea0', C: '#f6f1e6', P: '#e0a0a8', E: '#1f1a16', K: '#1f1a16', F: '#6a4c9c' },
+  { B: '#a08870', C: '#f6f1e6', P: '#e0a0a8', E: '#1f1a16', K: '#1f1a16', F: '#6a4c9c' },
 );
 
 // Sillon : un ibis cultivateur (DA, HG-3), blanc, la queue noire, le cou et la tête noirs, le long bec noir qui se
@@ -521,35 +521,37 @@ const FRET = fromLayers(
 );
 
 // Mémo : une marmotte bibliothécaire assise (DA, HG-3), brun-gris, le ventre et le museau crème, deux incisives
-// blanches, deux petites oreilles ; elle tient contre elle un livre de reliure bleu-vert. Cinq couleurs.
+// blanches ; elle tient contre elle un livre de reliure bleu-vert. La tête, de trois cubes de large, se pose en ressaut
+// sur le corps, ses deux petites oreilles rentrées d'une colonne, les yeux au-dessus du museau, vus de la caméra (DA,
+// relecture des planches : plus une caisse ouverte). Cinq couleurs.
 const MEMO = fromLayers(
   [
     ['.B.B.', 'BBBBB', 'BBBBB', '.BBB.'],
     ['.LLL.', 'BCCCB', 'BBBBB', '.BBB.'],
     ['.LLL.', 'BCCCB', 'BBBBB', '.BBB.'],
-    ['.CWC.', 'BBBBB', 'BBBBB', '.....'],
-    ['..N..', 'BEBEB', 'BBBBB', '.....'],
     ['.....', 'BBBBB', 'BBBBB', '.....'],
-    ['.....', 'B...B', '.....', '.....'],
+    ['.CWC.', '.BBB.', '.BBB.', '.....'],
+    ['..N..', '.EBE.', '.BBB.', '.....'],
+    ['.....', '.BBB.', '.BBB.', '.....'],
+    ['.....', '.B.B.', '.....', '.....'],
   ],
   { B: '#8a7058', C: '#e6d8bc', W: '#f6f1e6', N: '#1f1a16', E: '#1f1a16', L: '#2f6f74' },
 );
 
-// Jalon : une fourmi arpenteuse debout (DA, HG-3), brun-rouge sombre, le gros abdomen derrière, la taille fine, la tête
-// ronde et deux antennes ; à sa patte droite, un jalon d'arpenteur rayé blanc et rouge, plus haut qu'elle.
+// Jalon : une fourmi arpenteuse (DA, HG-3), à l'horizontale, brun-rouge, trois parties à la file (la tête aux deux
+// antennes, le thorax étroit, le gros abdomen derrière) sur six pattes sombres ; à côté d'elle, séparé d'une case, son
+// jalon d'arpenteur planté, rayé blanc et rouge par deux cubes, d'un cube plus haut que ses antennes (DA, relecture des
+// planches : plus une cheminée ni un phare).
 const JALON = fromLayers(
   [
-    ['.A.AP', '.....', '.....', '.....'],
-    ['.A.AQ', '.RRR.', '.RRR.', '.RRR.'],
-    ['....P', '.RRR.', 'RRRRR', '.RRR.'],
-    ['....Q', '..R..', '.RRR.', '.....'],
-    ['A...P', '.RRR.', '.....', '.....'],
-    ['....Q', 'RRRRR', 'RRRRR', '.....'],
-    ['....P', 'RARAR', 'RRRRR', '.....'],
-    ['....Q', '.RRR.', '.....', '.....'],
-    ['.A.A.', '.A.A.', '.....', '.....'],
+    ['.......', 'A...A..', 'A...A.P', 'A...A..', '.......', '.......'],
+    ['.RRR...', '.ARA...', '.ARA..P', '.RRR...', '.RRR...', '..R....'],
+    ['.ERE...', '..R....', '..R...Q', '.RRR...', '.RRR...', '.RRR...'],
+    ['.A.A...', '.......', '......Q', '..R....', '.RRR...', '..R....'],
+    ['A...A..', '.......', '......P', '.......', '.......', '.......'],
+    ['.......', '.......', '......P', '.......', '.......', '.......'],
   ],
-  { R: '#6e2a22', A: '#1f1a16', P: '#f6f1e6', Q: '#c42e28' },
+  { R: '#9c3f24', A: '#1f1a16', E: '#1f1a16', P: '#f6f1e6', Q: '#d23a2e' },
 );
 
 export const CREATURE_CUBES: Record<BiomeId, CubeDeModele[]> = {

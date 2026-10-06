@@ -247,7 +247,8 @@ export const ESPECES_5E = {
   'history-5e-middle-ages': {
     nom: 'Vélin',
     metier: 'enlumineur',
-    dominante: 0xb8aea0,
+    // Gris-fauve : le gris-pierre d'avant (#B8AEA0) se confondait avec une statue (DA, relecture des planches).
+    dominante: 0xa08870,
     marque: { couleur: 0xdcd0bc, ou: ['ventre', 'museau'] },
     tenue: { couleur: TENUE.lin, vetements: ['tablier'] },
     museau: { forme: 'museau', long: 0.14, r: 0.07 },

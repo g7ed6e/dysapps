@@ -136,6 +136,15 @@ describe('les places des lieux', () => {
     }
   });
 
+  it('aux 5e, 4e et 3e, chaque lieu mobile de la carte de départ peut tourner (à sa place ou ailleurs), sauf deux (HG-3)', () => {
+    // Tournés, le Glacier des relatifs (52 × 34 cases avec son monument) et la Gare du futur (4e, 37 × 28) ne trouvent
+    // aucune place libre : il faudrait au Glacier un cadre de 48 cases de plus vers l'est, ou de 20 vers le nord.
+    const SANS_PLACE: readonly BiomeId[] = ['maths-5e-signed-numbers', 'english-4e-grammar'];
+    const w = partie();
+    for (const a of ['5e', '4e', '3e'] as const)
+      for (const id of placesOf(a).filter((p) => !isFixedPlace(p))) expect(turnIsland(w, id).ok, id).toBe(!SANS_PLACE.includes(id));
+  });
+
   it('tourner un lieu d’un quart de tour, quatre fois, le ramène à son orientation', () => {
     let w = partie();
     const turns: number[] = [];
@@ -324,6 +333,28 @@ describe('Un lieu nouveau dans une région déjà aménagée (HG-2)', () => {
     expect(poses.get(HORLOGE)).toBeDefined();
     expect(poses.get(FOUILLE)).toBeDefined();
     expect(poses.has(POINTE)).toBe(false);
+  });
+
+  it('au 5e (HG-3) : une île déplacée vers l’est, là où entrent le Bourg et le Delta, reste où l’élève l’a mise ; les deux lieux nouveaux se posent à côté', () => {
+    // Une sauvegarde d'avant HG-3 : la Grammaire (english-5e-grammar) posée à l'est, dans le cadre d'alors (144 cases de
+    // large), sur les places de départ du Bourg des chroniques et du Delta des ressources.
+    const BOURG: BiomeId = 'history-5e-middle-ages';
+    const DELTA: BiomeId = 'geography-5e-resources';
+    const GRAMMAIRE: BiomeId = 'english-5e-grammar';
+    const ici = { x: 29, y: 19, turn: 0 as const };
+    const avant: World = { ...partie(), layout: { '5e': { islands: { [GRAMMAIRE]: ici } } } };
+    expect(fittingPlaces('5e', { [GRAMMAIRE]: ici })).toBeNull();
+    const w = settleNewPlaces(avant);
+    const islands = w.layout?.['5e']?.islands ?? {};
+    expect(islands[GRAMMAIRE]).toEqual(ici);
+    for (const id of [BOURG, DELTA]) {
+      expect(islands[id], id).toBeDefined();
+      expect(islands[id]?.turn, id).toBe(0);
+    }
+    expect(Object.keys(islands).sort()).toEqual([GRAMMAIRE, BOURG, DELTA].sort());
+    expect(fittingPlaces('5e', islands)).not.toBeNull();
+    // Les autres régions n'ont pas de disposition : rien n'y bouge.
+    expect(Object.keys(w.layout ?? {})).toEqual(['5e']);
   });
 
   it('une disposition qui tient, ou pas de disposition, reste la même', () => {

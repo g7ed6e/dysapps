@@ -348,7 +348,7 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
   'geography-5e-resources': {
     greeting: 'Bonjour, bâtisseur ! Au delta, on partage l’eau, l’énergie et la nourriture. Chaque bonne réponse te donne un bloc de rizière. Une rizière, c’est un champ plein d’eau où pousse le riz.',
     lines: ['Je marche dans l’eau du delta : elle nourrit les champs.', 'De la rizière pour mon moulin : lis un document.', 'Les nombres sont arrondis : on les compare, on ne calcule pas.'],
-    home: 'Mon moulin tourne. L’eau du delta est partagée.',
+    home: 'Mon moulin est fini. L’eau du delta est partagée.',
   },
   'history-4e-revolutions': {
     greeting: 'Bonjour, bâtisseur ! À l’imprimerie, on imprime les nouvelles des révolutions. Chaque bonne réponse te donne un bloc de fonte. La fonte, c’est un métal lourd, coulé dans un moule.',

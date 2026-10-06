@@ -255,7 +255,7 @@ export const BLOCLAND = {
       },
     },
     'geography-4e-globalization': {
-      challenge: 'Le Poulpe de corail sort de l’eau du quai : « Mes bras sont tout gris. Tu as vu passer tous les bateaux de l’escale : dis-moi comment le monde échange. »',
+      challenge: 'Le Poulpe de corail étale ses bras sur son socle : « Mes bras sont tout gris. Tu as vu passer tous les bateaux de l’escale : dis-moi comment le monde échange. »',
       guardianSays: {
         hit: 'Juste. Un bloc de mes bras redevient corail.',
         miss: 'Mes couleurs restent. Relis le document, cherche le mot du rappel, et reprends.',

@@ -254,6 +254,7 @@ export function placerEtiquettes(
   carte: CarteDesEtiquettes | null,
   tenues: number[] = [],
 ): { offsets: LabelOffset[]; visibles: boolean[] } {
+  if (carte && !vue.recherche) vue = { ...vue, recherche: rechercheDuCadrage() };
   const souples = carte ? (vue.souples ?? []) : [];
   const arrivee = carte?.arrivee;
   const lourde = carte && arrivee !== undefined && carte.weights[arrivee] !== undefined ? carte.weights.map((p, i) => (i === arrivee ? Math.max(p, ...carte.weights) : p)) : null;
@@ -284,6 +285,11 @@ export interface VueDesEtiquettes {
   souples?: LabelBox[];
   /** Les obstacles durs, qu'aucune étiquette ne couvre jamais : les poignées du mode « Modifier le plan » (GD-9). */
   dures?: LabelBox[];
+  /**
+   * Sur la Carte, la recherche complète partagée par tous les placements d'un même cadrage (`RechercheDuCadrage`) ;
+   * sans elle, chaque appel de `placerEtiquettes` ou de `placerAvecLaFlecheDOuvrage` en prend une neuve.
+   */
+  recherche?: RechercheDuCadrage;
 }
 
 /**
@@ -413,7 +419,7 @@ function placerSansSouples(
       const at = { ...b, x: ile.x, y: Math.min(ile.y, ...fleches.map((v) => v.y - v.h / 2)) - b.h / 2 - gap };
       if (entiere(b, { dx: at.x - b.x, dy: at.y - b.y }, couvert, bounds) && !obstacles.some((v) => overlap(at, v, gap) > 0)) dessus = { i: destination, at };
     }
-    reparerLaCarte(boxes, iles, offsets, visibles, vues, { couvert, obstacles, bounds, gap }, poids, horsDeLaGarde, autreQueLaDestination, dessus);
+    reparerLaCarte(boxes, iles, offsets, visibles, vues, { couvert, obstacles, bounds, gap, recherche: vue.recherche ?? rechercheDuCadrage() }, poids, horsDeLaGarde, autreQueLaDestination, dessus);
   }
   // Une étiquette tenue dont l'île se voit ne se tait jamais : sans place simple libre, elle garde la place que lui donne
   // l'écart (rentrée dans le cadre, hors de l'interface), et les noms plus légers qu'elle couvre se taisent. Elle ne se
@@ -495,29 +501,35 @@ function reparerLaCarte(
   offsets: LabelOffset[],
   visibles: boolean[],
   vues: Map<number, LabelBox>,
-  vue: { couvert: LabelBox[]; obstacles: LabelBox[]; bounds: { w: number; h: number }; gap: number },
+  vue: { couvert: LabelBox[]; obstacles: LabelBox[]; bounds: { w: number; h: number }; gap: number; recherche: RechercheDuCadrage },
   poids: (i: number) => number,
   libre: (i: number, at: LabelBox) => boolean,
   poussable: (j: number) => boolean,
   voulue: { i: number; at: LabelBox } | null = null,
 ): void {
-  const { couvert, obstacles, bounds, gap } = vue;
+  const { couvert, obstacles, bounds, gap, recherche } = vue;
   const ileVue = (i: number) => {
     const p = { ...iles[i], w: 1, h: 1 };
     return !horsDuCadre(p, bounds) && !couvert.some((z) => overlap(p, z, 0) > 0);
   };
-  /** La place `at` tient-elle pour le nom `i`, sans compter les autres noms ? */
-  const tient = (i: number, at: LabelBox) => {
+  /**
+   * La place `at` tient-elle pour le nom `i`, sans compter les autres noms ni les repères : entière, hors de
+   * l'interface, près de son île, pas plus près d'une autre ?
+   */
+  const tientSeule = (i: number, at: LabelBox) => {
     const b = boxes[i];
     const ile = iles[i];
     if (!entiere(b, { dx: at.x - b.x, dy: at.y - b.y }, couvert, bounds)) return false;
-    if (obstacles.some((v) => overlap(at, v, gap) > 0) || !libre(i, at)) return false;
     if (distanceA(at, ile) > distanceA(b, ile) + ECART_MAX * b.h) return false;
     // Pas plus près d'une autre île que de la sienne, vu du milieu du nom (voir `milieu`).
     const m = milieu(at);
     const d = distanceA(m, ile);
     return !iles.some((q, j) => j !== i && distanceA(m, q) < d);
   };
+  /** La place `at` est-elle hors des repères, et libre pour le nom `i` (la garde de la destination) ? */
+  const horsDesReperes = (i: number, at: LabelBox) => !obstacles.some((v) => overlap(at, v, gap) > 0) && libre(i, at);
+  /** La place `at` tient-elle pour le nom `i`, sans compter les autres noms ? */
+  const tient = (i: number, at: LabelBox) => tientSeule(i, at) && horsDesReperes(i, at);
   const genes = (at: LabelBox, sauf: number[]) => [...vues].filter(([j, v]) => !sauf.includes(j) && overlap(at, v, gap) > 0).map(([j]) => j);
   const poser = (i: number, at: LabelBox) => {
     offsets[i] = { dx: at.x - boxes[i].x, dy: at.y - boxes[i].y };
@@ -553,11 +565,60 @@ function reparerLaCarte(
   if (voulue) for (const [j, at] of deplacer(voulue.i, [], [], POUSSEES_MAX, [voulue.at]) ?? []) poser(j, at);
   const tus = boxes.map((_, i) => i).filter((i) => !visibles[i] && ileVue(i)).sort((a, b) => poids(b) - poids(a) || a - b);
   for (const i of tus) for (const [j, at] of deplacer(i, [], [], POUSSEES_MAX) ?? []) poser(j, at);
-  chercherToutesLesPlaces(boxes, iles, vues, ileVue, tient, { bounds, gap }, poussable, voulue, poser);
+  chercherToutesLesPlaces({ boxes, iles, vues, ileVue, tientSeule, horsDesReperes, bounds, gap, poussable, voulue, poser, recherche, autour: { couvert, obstacles } });
 }
 
-/** Combien de places la recherche complète de la Carte essaie au plus (voir `chercherToutesLesPlaces`). */
+/**
+ * Combien de places la recherche complète de la Carte essaie au plus pendant tout le placement d'un cadrage (voir
+ * `chercherToutesLesPlaces`, `RechercheDuCadrage`) : la flèche d'un ouvrage, le tracé suggéré et les noms repliés sans
+ * leur bloc refont le placement jusqu'à une trentaine de fois, chacun avec sa recherche.
+ */
 const ESSAIS_DE_LA_RECHERCHE = 2_000;
+
+/** Combien de places la recherche complète essaie au plus par nom, à chaque essai (voir `chercherToutesLesPlaces`). */
+const RETOURS_PAR_NOM = 4;
+
+/**
+ * Ce que la recherche complète de la Carte (`chercherToutesLesPlaces`) dépense pendant le placement d'un cadrage, à
+ * partager entre tous les placements de ce cadrage (`VueDesEtiquettes.recherche`) : `essais`, les places essayées, sous
+ * un seul plafond (`ESSAIS_DE_LA_RECHERCHE`) ; `places`, les places dont on a vérifié qu'elles tiennent (`tientSeule`) ; `deja`, ce que
+ * chaque recherche déjà faite a trouvé (`null` : rien), pour ne pas la refaire sur les mêmes boîtes ; `autour`, les
+ * places de chaque nom qui tiennent (hors repères), pour ne pas les vérifier deux fois. Au 6e, la recherche
+ * se lançait onze fois par ouverture de la Carte et vérifiait 52 000 places (HG-3, expert frontend, 6 octobre 2026).
+ */
+export interface RechercheDuCadrage {
+  essais: number;
+  places: number;
+  readonly deja: Map<string, readonly (readonly [number, LabelBox])[] | null>;
+  /** Les places autour de chaque nom qui tiennent (sans les repères), déjà vérifiées dans ce cadrage. */
+  readonly autour: Map<string, LabelBox[]>;
+}
+
+/** Une recherche neuve, pour le placement d'un cadrage (voir `RechercheDuCadrage`). */
+export function rechercheDuCadrage(): RechercheDuCadrage {
+  return { essais: 0, places: 0, deja: new Map(), autour: new Map() };
+}
+
+/** Ce que reçoit la recherche complète de la Carte (voir `chercherToutesLesPlaces`). */
+interface DemandeDeRecherche {
+  boxes: LabelBox[];
+  iles: { x: number; y: number }[];
+  /** Les noms montrés, à leur place. */
+  vues: Map<number, LabelBox>;
+  ileVue: (i: number) => boolean;
+  /** La place tient-elle pour ce nom, sans compter les autres noms ni les repères (voir `reparerLaCarte`) ? */
+  tientSeule: (i: number, at: LabelBox) => boolean;
+  /** La place est-elle hors des repères, et libre pour ce nom ? */
+  horsDesReperes: (i: number, at: LabelBox) => boolean;
+  bounds: { w: number; h: number };
+  gap: number;
+  poussable: (j: number) => boolean;
+  voulue: { i: number; at: LabelBox } | null;
+  poser: (i: number, at: LabelBox) => void;
+  recherche: RechercheDuCadrage;
+  /** Ce qui, hors des boîtes, change ce qui tient : l'interface, les repères (dont la flèche de la destination). */
+  autour: { couvert: LabelBox[]; obstacles: LabelBox[] };
+}
 
 /**
  * Sur la Carte, le dernier recours de `reparerLaCarte` : quand un nom dont l'île se voit se tait encore, qu'un nom
@@ -565,45 +626,106 @@ const ESSAIS_DE_LA_RECHERCHE = 2_000;
  * n'a pas pu remonter au-dessus de sa flèche (`voulue`), toutes les places de tous les noms se cherchent ensemble : chaque
  * nom parmi sa place actuelle (si elle tient) et les places autour de la sienne qui tiennent (`tient`), sans en couvrir
  * un autre ; le nom de la destination garde la sienne (ou prend `voulue`). Les noms aux places les plus rares se posent
- * d'abord, chacun à la plus proche ; au plus `ESSAIS_DE_LA_RECHERCHE` places essayées. La recherche ne change rien si
- * elle ne trouve pas de quoi montrer tous les noms. Les Anciens Ateliers et les Îles du Ciel, avec leurs îles
- * d'histoire-géographie (HG-3), serrent neuf noms dans la bande sous le panneau : les poussées de deux noms ne suffisent
- * plus (6 octobre 2026).
+ * d'abord, chacun à la plus proche ; au plus `ESSAIS_DE_LA_RECHERCHE` places essayées pour tout le cadrage. La recherche
+ * ne change rien si elle ne trouve pas de quoi montrer tous les noms ; elle s'arrête tout de suite si un nom (autre que
+ * celui de la destination) n'a aucune place qui tient. Les places de chaque nom se vérifient une fois par recherche, et
+ * une recherche déjà faite sur les mêmes boîtes ne se refait pas (`RechercheDuCadrage`). Les Anciens Ateliers et les
+ * Îles du Ciel, avec leurs îles d'histoire-géographie (HG-3), serrent neuf noms dans la bande sous le panneau : les
+ * poussées de deux noms ne suffisent plus (6 octobre 2026).
  */
-function chercherToutesLesPlaces(
-  boxes: LabelBox[],
-  iles: { x: number; y: number }[],
-  vues: Map<number, LabelBox>,
-  ileVue: (i: number) => boolean,
-  tient: (i: number, at: LabelBox) => boolean,
-  { bounds, gap }: { bounds: { w: number; h: number }; gap: number },
-  poussable: (j: number) => boolean,
-  voulue: { i: number; at: LabelBox } | null,
-  poser: (i: number, at: LabelBox) => void,
-): void {
-  const noms = boxes.map((_, i) => i).filter(ileVue);
+function chercherToutesLesPlaces(d: DemandeDeRecherche): void {
+  const { boxes, iles, vues, tientSeule, horsDesReperes, bounds, gap, poussable, voulue, poser, recherche } = d;
+  let noms = boxes.map((_, i) => i).filter(d.ileVue);
   const surSonIle = (i: number, at: LabelBox) => {
     const m = milieu(at);
-    const d = distanceA(m, iles[i]);
-    return !iles.some((q, j) => j !== i && distanceA(m, q) < d);
+    const loin = distanceA(m, iles[i]);
+    return !iles.some((q, j) => j !== i && distanceA(m, q) < loin);
   };
-  const tus = noms.some((i) => !vues.has(i));
+  const tus = noms.filter((i) => !vues.has(i));
   const ailleurs = noms.some((i) => poussable(i) && vues.has(i) && !surSonIle(i, vues.get(i)!));
-  const enBas = voulue !== null && vues.get(voulue.i) !== voulue.at;
-  if (!tus && !ailleurs && !enBas) return;
-  const placesDe = (i: number, fixe: LabelBox[] | undefined): LabelBox[] => {
-    if (fixe) return fixe;
-    const ici = vues.get(i);
-    const autour = placesAutour(boxes[i], bounds, gap, TRIES_DE_LA_RECHERCHE).filter((at) => tient(i, at));
-    return ici && tient(i, ici) ? [ici, ...autour] : autour;
+  // Le nom de la destination n'est pas à la place voulue (comparée par ses coordonnées : `poser` la pose telle quelle).
+  const montree = voulue ? vues.get(voulue.i) : undefined;
+  const enBas = voulue !== null && (!montree || montree.x !== voulue.at.x || montree.y !== voulue.at.y);
+  if (!tus.length && !ailleurs && !enBas) return;
+  // La même recherche, déjà faite dans ce cadrage : son résultat (les places, ou rien).
+  const cle = JSON.stringify([boxes, iles, [...vues], voulue, d.autour, noms.filter((i) => !poussable(i)), bounds, gap]);
+  // (Une clé de quelques kilo-octets : bien moins cher que les milliers de places qu'elle évite de vérifier.)
+  const deja = recherche.deja.get(cle);
+  const appliquer = (r: readonly (readonly [number, LabelBox])[] | null) => {
+    recherche.deja.set(cle, r);
+    if (r) for (const [i, at] of r) poser(i, at);
   };
-  const essayer = (fixes: Map<number, LabelBox[]>): Map<number, LabelBox> | null => {
-    const places = new Map(noms.map((i) => [i, placesDe(i, fixes.get(i))]));
+  if (deja !== undefined) return appliquer(deja);
+  // Les places de chaque nom, vérifiées une seule fois : sa place actuelle si elle tient, puis celles autour. Celles
+  // autour, sans les repères, ne dépendent que de sa boîte, des îles et de l'interface : les autres recherches du cadrage
+  // (la flèche de l'ouvrage à une autre place, un autre tracé suggéré) les reprennent, et n'en retirent que celles que
+  // couvre un repère.
+  const tient = (i: number, at: LabelBox) => (recherche.places++, tientSeule(i, at)) && horsDesReperes(i, at);
+  const commun = JSON.stringify([iles, d.autour.couvert, bounds, gap]);
+  const autourDe = new Map<number, LabelBox[]>();
+  const placesAutourDe = (i: number) => {
+    let l = autourDe.get(i);
+    if (l) return l;
+    const k = `${i} ${JSON.stringify(boxes[i])} ${commun}`;
+    let seules = recherche.autour.get(k);
+    if (!seules) {
+      seules = placesAutour(boxes[i], bounds, gap, TRIES_DE_LA_RECHERCHE).filter((at) => (recherche.places++, tientSeule(i, at)));
+      recherche.autour.set(k, seules);
+    }
+    autourDe.set(i, (l = seules.filter((at) => horsDesReperes(i, at))));
+    return l;
+  };
+  const toutes = new Map<number, LabelBox[]>();
+  const placesDe = (i: number) => {
+    let l = toutes.get(i);
+    if (!l) {
+      const ici = vues.get(i);
+      toutes.set(i, (l = ici && tient(i, ici) ? [ici, ...placesAutourDe(i)] : placesAutourDe(i)));
+    }
+    return l;
+  };
+  // Le nom de la destination (le seul qu'on ne pousse pas) garde sa place, ou prend celle au-dessus de sa flèche.
+  const destination = noms.find((i) => !poussable(i));
+  const fixables = new Set([destination, voulue?.i]);
+  // Un nom montré sans aucune place qui tient (ni la sienne, ni une autre) : aucun essai ne les posera tous. Un nom tu
+  // sans aucune place reste tu, et la recherche pose les autres (au 3e, en OpenDyslexic 10 % plus large, la Géométrie
+  // n'a aucune place : le Kiosque des témoins retrouve la sienne, HG-3).
+  if (noms.some((i) => vues.has(i) && !fixables.has(i) && !placesDe(i).length)) return appliquer(null);
+  const sansPlace = new Set(tus.filter((i) => !fixables.has(i) && !placesDe(i).length));
+  if (sansPlace.size) {
+    noms = noms.filter((i) => !sansPlace.has(i));
+    // Plus rien à gagner : aucun autre nom tu, aucun mal placé, la destination à sa place.
+    if (!noms.some((i) => !vues.has(i)) && !ailleurs && !enBas) return appliquer(null);
+  }
+  // Les places, à plat : chacune par son indice, ses bords dans des tableaux de nombres (le retour en arrière en compare
+  // des milliers).
+  const toutesLesPlaces: LabelBox[] = [];
+  const bords: number[] = [];
+  const indices = new Map<LabelBox, number>();
+  const indiceDe = (at: LabelBox) => {
+    let k = indices.get(at);
+    if (k === undefined) {
+      indices.set(at, (k = toutesLesPlaces.length));
+      toutesLesPlaces.push(at);
+      bords.push(at.x - at.w / 2, at.x + at.w / 2, at.y - at.h / 2, at.y + at.h / 2);
+    }
+    return k;
+  };
+  // Comme `overlap(a, b, gap) > 0`.
+  const secouvrent = (a: number, b: number) =>
+    Math.min(bords[4 * a + 1], bords[4 * b + 1]) - Math.max(bords[4 * a], bords[4 * b]) + gap > 0 &&
+    Math.min(bords[4 * a + 3], bords[4 * b + 3]) - Math.max(bords[4 * a + 2], bords[4 * b + 2]) + gap > 0;
+  /**
+   * Une place pour chaque nom, parmi les siennes (`fixes`, sinon `placesDe`), en `retours` places essayées au plus par
+   * nom (et sous le plafond du cadrage) : les places trouvées, ou `null`.
+   */
+  const essayer = (fixes: Map<number, LabelBox[]>, retours: number): Map<number, LabelBox> | null => {
+    const places = new Map(noms.map((i) => [i, (fixes.get(i) ?? placesDe(i)).map(indiceDe)]));
     if ([...places.values()].some((l) => !l.length)) return null;
     const out = new Map<number, LabelBox>();
-    let essais = 0;
+    const plafond = Math.min(ESSAIS_DE_LA_RECHERCHE, recherche.essais + retours * noms.length);
     // Les places encore libres de chaque nom à poser : chaque nom posé retire celles qu'il couvre.
-    const poserLeSuivant = (restes: Map<number, LabelBox[]>): boolean => {
+    const poserLeSuivant = (restes: Map<number, number[]>): boolean => {
       // Le nom qui a le moins de places encore libres se pose d'abord ; un nom sans place libre : on revient en arrière.
       let suivant: number | undefined;
       for (const [i, l] of restes) {
@@ -612,10 +734,11 @@ function chercherToutesLesPlaces(
       }
       if (suivant === undefined) return true;
       for (const at of restes.get(suivant)!) {
-        if (++essais > ESSAIS_DE_LA_RECHERCHE) return false;
-        const suite = new Map<number, LabelBox[]>();
-        for (const [i, l] of restes) if (i !== suivant) suite.set(i, l.filter((q) => overlap(at, q, gap) <= 0));
-        out.set(suivant, at);
+        if (recherche.essais >= plafond) return false;
+        recherche.essais++;
+        const suite = new Map<number, number[]>();
+        for (const [i, l] of restes) if (i !== suivant) suite.set(i, l.filter((q) => !secouvrent(at, q)));
+        out.set(suivant, toutesLesPlaces[at]);
         if (poserLeSuivant(suite)) return true;
         out.delete(suivant);
       }
@@ -623,25 +746,35 @@ function chercherToutesLesPlaces(
     };
     return poserLeSuivant(places) ? out : null;
   };
-  // Le nom de la destination (le seul qu'on ne pousse pas) garde sa place, ou prend celle au-dessus de sa flèche.
-  const destination = noms.find((i) => !poussable(i));
   const ici = destination === undefined ? undefined : vues.get(destination);
-  const essais: Map<number, LabelBox[]>[] = [];
-  if (voulue) essais.push(new Map([[voulue.i, [voulue.at]]]));
+  // D'abord toutes les places à la fois, celles que les essais suivants préfèrent comprises (la place voulue du nom de
+  // la destination, sa place actuelle) : si aucune façon de poser tous les noms n'existe, aucun essai plus étroit n'en
+  // trouvera. Au 6e, une recherche sur deux échouait ainsi, après des centaines d'essais (HG-3, expert frontend).
+  const large = new Map<number, LabelBox[]>();
+  const ajouter = (i: number, at: LabelBox) => {
+    const l = large.get(i) ?? placesDe(i);
+    if (!l.includes(at)) large.set(i, [at, ...l]);
+  };
+  if (voulue) ajouter(voulue.i, voulue.at);
+  if (destination !== undefined && ici) ajouter(destination, ici);
+  const une = essayer(large, Infinity);
+  // Rien qui montre tous les noms (ou le plafond du cadrage atteint) : rien ne change, et l'échec est retenu.
+  if (!une) return appliquer(null);
+  const contraintes: Map<number, LabelBox[]>[] = [];
+  if (voulue) contraintes.push(new Map([[voulue.i, [voulue.at]]]));
   if (destination !== undefined && ici) {
-    essais.push(new Map([[destination, [ici]]]));
+    contraintes.push(new Map([[destination, [ici]]]));
     // Sinon, une autre place au-dessus de son île (DA-31), toujours hors de sa flèche.
-    const dessus = placesAutour(boxes[destination], bounds, gap, TRIES_DE_LA_RECHERCHE).filter((at) => at.y + at.h / 2 <= iles[destination].y && tient(destination, at));
-    if (dessus.length) essais.push(new Map([[destination, dessus]]));
+    const dessus = placesAutourDe(destination).filter((at) => at.y + at.h / 2 <= iles[destination].y);
+    if (dessus.length) contraintes.push(new Map([[destination, dessus]]));
   }
-  // Enfin, toutes ses places : plutôt son nom sous son île qu'un autre nom tu.
-  essais.push(new Map());
-  for (const fixes of essais) {
-    const r = essayer(fixes);
-    if (!r) continue;
-    for (const [i, at] of r) poser(i, at);
-    return;
+  // Chacune en quelques places essayées par nom (`RETOURS_PAR_NOM`) : la recherche large a déjà trouvé une solution, qui
+  // reste si aucune préférée ne se trouve vite (plutôt le nom de la destination sous son île qu'un autre nom tu).
+  for (const fixes of contraintes) {
+    const trouvees = essayer(fixes, RETOURS_PAR_NOM);
+    if (trouvees) return appliquer([...trouvees]);
   }
+  return appliquer([...une]);
 }
 
 /**
@@ -718,6 +851,7 @@ export function placerAvecLaFlecheDOuvrage(
   carte: CarteDesEtiquettes,
 ): { fleche: number; offsets: LabelOffset[]; visibles: boolean[] } {
   const fleches = toutes.slice(0, PLACES_DE_LA_FLECHE_MAX);
+  if (!vue.recherche) vue = { ...vue, recherche: rechercheDuCadrage() };
   const { zones, bounds } = vue;
   const avec = (k: number) => ({ fleche: k, ...placerEtiquettes(boxes, iles, { ...vue, dures: fleches[k] ? [...(vue.dures ?? []), fleches[k]] : (vue.dures ?? []) }, carte) });
   if (!fleches.length) return avec(0);

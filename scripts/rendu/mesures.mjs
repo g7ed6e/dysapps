@@ -614,6 +614,44 @@ const CAPTURES = [
     ['4e', 'history-4e-revolutions'],
     ['3e', 'history-3e-twentieth-century'],
   ].map(([a, ile]) => ({ nom: `histoire-geo-college-carte-${a}`, vue: 'carte', famille: 'histoire-geo-college', ile })),
+  // Retouches HG-3 : la Carte du 5e et du 4e (le cadrage des îles et de leurs noms) en portrait 800 × 1280, au téléphone et
+  // en OpenDyslexic 32 px (UX UI) ; « Mes blocs » avec le Conteneur et la Reliure côte à côte, puis le Grès rose à côté
+  // de la Brique et de la Tuile, de jour et de nuit (référent dys) ; chaque Gardien de près, au défi, éteint puis à
+  // mi-parcours (consultant Archipéo).
+  ...[
+    ['5e', 'history-5e-middle-ages'],
+    ['4e', 'history-4e-revolutions'],
+  ].flatMap(([a, ile]) =>
+    [
+      { suffixe: '-800x1280', taille: { width: 800, height: 1280 } },
+      { suffixe: '-390x844', taille: { width: 390, height: 844 } },
+      { suffixe: '-od32', reglages: { font: 'opendyslexic', fontSize: 32 } },
+    ].map(({ suffixe, ...autres }) => ({ nom: `histoire-geo-college-carte-${a}${suffixe}`, vue: 'carte', famille: 'histoire-geo-college', ile, ...autres })),
+  ),
+  ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].flatMap(({ suffixe, ...autres }) => [
+    {
+      nom: `histoire-geo-college-mes-blocs-conteneur-reliure${suffixe}`,
+      vue: 'île',
+      famille: 'histoire-geo-college',
+      ile: 'history-6e-antiquity',
+      lieu: 'stock',
+      inventaire: { 'geography-4e-globalization': 4, 'history-3e-twentieth-century': 3 },
+      ...autres,
+    },
+    {
+      nom: `histoire-geo-college-mes-blocs-gres-brique-tuile${suffixe}`,
+      vue: 'île',
+      famille: 'histoire-geo-college',
+      ile: 'history-6e-antiquity',
+      lieu: 'stock',
+      inventaire: { 'maths-6e-calculation': 4, 'english-5e-vocabulary': 3, 'geography-3e-france': 5 },
+      ...autres,
+    },
+  ]),
+  ...['history-5e-middle-ages', 'geography-5e-resources', 'history-4e-revolutions', 'geography-4e-globalization', 'history-3e-twentieth-century', 'geography-3e-france'].flatMap((ile) => [
+    { nom: `histoire-geo-college-${ile}-defi`, vue: 'défi', famille: 'histoire-geo-college', ile, debout: ile },
+    { nom: `histoire-geo-college-${ile}-defi-mi`, vue: 'défi', famille: 'histoire-geo-college', ile, debout: ile, reussir: 3 },
+  ]),
 ];
 /** La lueur la nuit, à la vue île : au plus 3 % de la scène. */
 const LUEUR_MAX = 0.03;

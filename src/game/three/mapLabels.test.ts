@@ -9,13 +9,16 @@
 //   Marais). C'était déjà le cas avant les îles-écoles agrandies, et plus souvent (référent dys). En grand texte,
 //   la Carte est au plancher (`PLANCHER_DE_LA_CARTE`) : les îles y sont à 115 px les unes des autres, leurs noms en
 //   OpenDyslexic font de 240 à 400 px de large dans une bande de 180 px de haut ; tous ne peuvent pas se montrer.
+// - OpenDyslexic 10 % plus large, au 3e : la Géométrie et les Statistiques n'ont aucune place qui tienne (entière, hors
+//   de l'interface, près de leur île et pas plus près d'une autre) ; elles se taisent, les autres noms se montrent.
+//   Le plafond d'essais de la recherche n'y est pour rien : elle ne s'arrête pas sur eux (HG-3).
 // - Au 6e, une autre destination que le port : onze îles serrées, le fanion du bonhomme sur la Forêt ; un nom peut
 //   s'y taire (la Ferme, quand la destination est la Tour).
 import * as THREE from 'three';
 import type { BiomeId } from '../biomes';
 import { getArchipelago, islandsOf } from '../world/archipelago';
 import { ARCHIPELAGO_IDS, type ArchipelagoId } from '../world/archipelagos';
-import { boitesDuTrace, placerAvecLaFlecheDOuvrage, placerEtiquettes, replierLesSignes, separateMark, type LabelBox } from '../world/labelLayout';
+import { boitesDuTrace, placerAvecLaFlecheDOuvrage, placerEtiquettes, rechercheDuCadrage, replierLesSignes, separateMark, type LabelBox } from '../world/labelLayout';
 import { avatarHome, casesDeLOuvrage, islandCenter } from '../world/terrain';
 import { BRIDGES, getBridge, linkWholeRegion, NOMS_ARCHIPELS, VOYAGES } from '../world/archipelago';
 import { archipelagoOfIsland } from '../world/archipelagos';
@@ -123,7 +126,9 @@ function laCarte(a: ArchipelagoId, etat: string, police: PoliceDeTest, elargir: 
   const poids = { weights: iles.map((b) => (b.id === dest ? 2 : 1)), ...(parDefaut && indice >= 0 ? { destination: indice } : {}), ...(arrivee >= 0 ? { arrivee } : {}) };
   // Le tracé de l'ouvrage, que les étiquettes évitent si elles peuvent (`souplesDuTrace`).
   const souples = parDefaut && def ? boitesDuTrace(casesDeLOuvrage(def, POSEES).map((p) => ecran(p.x + 0.5, p.z + 1, p.y + 0.5))) : [];
-  const vue = { zones, bulles: [], bounds: cadre, gap: 6, souples };
+  // Une recherche complète pour tout le placement du cadrage, comme `labels.ts`.
+  const recherche = rechercheDuCadrage();
+  const vue = { zones, bulles: [], bounds: cadre, gap: 6, souples, recherche };
   const placer = (b: LabelBox[]) =>
     places.length
       ? placerAvecLaFlecheDOuvrage(fleches, b, points, { ...vue, obstacles: [fanion] }, poids)
@@ -134,6 +139,8 @@ function laCarte(a: ArchipelagoId, etat: string, police: PoliceDeTest, elargir: 
   const seVoit = (p: { x: number; y: number }) => p.x >= 0 && p.x <= W && p.y >= 0 && p.y <= H && !sousLInterface(p);
   const recouvre = (p: LabelBox, q: LabelBox) => Math.abs(p.x - q.x) < (p.w + q.w) / 2 && Math.abs(p.y - q.y) < (p.h + q.h) / 2;
   return {
+    /** Ce que la recherche complète a dépensé pour ce cadrage (`RechercheDuCadrage`). */
+    recherche,
     /** Sur un ouvrage, l'indice de la place prise par la flèche. */
     prise,
     /** Les îles qui se voient et montrent leur nom. */
@@ -201,7 +208,27 @@ describe('La Carte : chaque île a son nom (tablette 1024 × 768)', () => {
         expect(carte.tus, `${univers}, ×${elargir}`).toEqual([]);
         expect(carte.ailleurs.filter((id) => hg.includes(id)), `${univers}, ×${elargir}`).toEqual([]);
         expect(carte.vues.length, `${univers}, ×${elargir}`).toBe(islandsOf(a).length);
+        // En OpenDyslexic : tous les noms en taille normale ; 10 % plus large, ceux des îles d'histoire-géographie (au
+        // 3e, la Géométrie et les Statistiques n'ont alors aucune place, voir l'en-tête).
+        const od = laCarte(a, mot, 'opendyslexic', elargir, destination, true);
+        expect(elargir === 1 ? od.tus : od.tus.filter((id) => hg.includes(id)), `${univers}, OpenDyslexic ×${elargir}`).toEqual([]);
+        expect(od.ailleurs.filter((id) => hg.includes(id)), `${univers}, OpenDyslexic ×${elargir}`).toEqual([]);
       }
+  });
+
+  it('6e, à l’ouverture de la Carte : la recherche complète des places reste bornée (HG-3, expert frontend)', () => {
+    // Avant : onze recherches par ouverture, 52 000 places vérifiées et 2 000 essais. Les places de chaque nom se vérifient
+    // une fois par cadrage, une recherche impossible s'arrête tôt, et les essais ont un seul plafond pour le cadrage.
+    const { progress, world } = toutConstruit();
+    const etat = sanitizeState({ progress, world: { ...world, place: islandsOf('6e')[0].id } } as never);
+    const d = nextDestination(etat, NOMS_ARCHIPELS, textesDe('blocland').libelles);
+    const destination = d.ouvrage ? { ouvrage: d.ouvrage, depuis: d.island } : d.island;
+    for (const elargir of [1, 1.1]) {
+      const { recherche, tus } = laCarte('6e', ETATS.blocland, 'atkinson-hyperlegible', elargir, destination, true);
+      expect(tus, `×${elargir}`).toEqual([]);
+      expect(recherche.essais, `×${elargir}`).toBeLessThanOrEqual(300);
+      expect(recherche.places, `×${elargir}`).toBeLessThanOrEqual(4_000);
+    }
   });
 
   it('le Marais des temps (5e) garde son nom, et l’Atelier (4e, la destination) le sien au-dessus de son île', () => {

@@ -145,18 +145,29 @@ function rentre(c: [number, number][], k: number): [number, number][] {
   return c.map(([x, y]) => [cx + (x - cx) * k, cy + (y - cy) * k]);
 }
 
-/** La Colombe d'albâtre, posée : le corps qui penche en avant, puis la tête. */
+/**
+ * La Colombe d'albâtre, posée : le corps, puis un cou étroit d'où la tête sort vers l'avant (DA, relecture des planches :
+ * pas un obélisque).
+ */
 const CORPS_DE_LA_COLOMBE: Anneau[] = [
-  [1, 0.9, 1.1, 0.3],
-  [3.0, 1.2, 1.4, 0.2],
-  [5.0, 0.95, 1.0, -0.1],
-  [6.4, 0.55, 0.55, -0.3],
+  [1, 0.85, 1.1, 0.4],
+  [2.6, 1.1, 1.4, 0.3],
+  [4.2, 0.9, 1.1, 0.1],
+  [5.2, 0.42, 0.45, -0.3],
 ];
 const TETE_DE_LA_COLOMBE: Anneau[] = [
-  [6.2, 0.55, 0.55, -0.5],
-  [7.5, 0.55, 0.55, -0.6],
-  [8, 0.3, 0.3, -0.55],
+  [5.1, 0.42, 0.45, -0.45],
+  [6.2, 0.55, 0.6, -0.8],
+  [7.2, 0.45, 0.5, -0.8],
+  [8, 0.15, 0.2, -0.75],
 ];
+/** À quelle hauteur les yeux, sur les côtés de la tête, et à quelle distance de son axe. */
+const OEIL_DE_LA_COLOMBE = { y: 6.75, x: 0.5 } as const;
+/**
+ * Le tour de la Colombe (DA, relecture des planches) : de trois quarts, le côté du rameau vers l'élève, comme le
+ * Papillon de cuivre ; dans le monde comme au défi.
+ */
+const TOURS_DE_LA_COLOMBE = { monde: -0.6, defi: -0.6 };
 
 /** Le Cerf de lauze, couché : le corps, le cou qui se lève ; puis la tête. */
 const CORPS_DU_CERF: Anneau[] = [
@@ -563,10 +574,11 @@ export const STATUES_3E: Partial<Record<BiomeId, Statue>> = {
   'history-3e-twentieth-century': {
     nom: 'la Colombe d’albâtre',
     allume: 'ses plumes',
+    tour: TOURS_DE_LA_COLOMBE,
     sculpture: (T, a) => {
       fuseau(T, CORPS_DE_LA_COLOMBE, 6, a.moussue((k, j) => k === 0 && j % 2 === 0), { bas: false });
       fuseau(T, TETE_DE_LA_COLOMBE, 5, a.pierre, { bas: false });
-      // La queue relevée derrière elle, le bec, et le rameau en travers du bec.
+      // La queue relevée derrière elle, puis le bec, vers l'avant.
       dalle(
         T,
         [
@@ -579,20 +591,40 @@ export const STATUES_3E: Partial<Record<BiomeId, Statue>> = {
         1.5,
         a.pierre,
       );
-      const bec = devant(TETE_DE_LA_COLOMBE, 5, 6.9).z;
-      pointe(T, [0, 6.9, bec + 0.05], 0.12, 0.35, a.pierre, [-Math.PI / 2, 0, 0], 3);
+      const bec = devant(TETE_DE_LA_COLOMBE, 5, 6.6).z;
+      pointe(T, [0, 6.6, bec + 0.05], 0.12, 0.35, a.pierre, [-Math.PI / 2, 0, 0], 3);
+      // Le rameau, d'un seul côté du bec (jamais en travers : de face, il faisait un masque, DA) : une tige fine en biais,
+      // deux feuilles plates au bout.
+      const z = bec - 0.3;
       tube(
         T,
         [
-          [-0.9, 6.7, bec - 0.25],
-          [0, 6.85, bec - 0.3],
-          [0.9, 7.0, bec - 0.25],
+          [0.1, 6.5, z],
+          [0.6, 6.05, z - 0.05],
+          [1.05, 5.6, z],
         ],
-        0.06,
+        0.045,
         3,
-        a.pierre,
+        a.rameau,
       );
-      orbites(T, a, 0, 7.3, devant(TETE_DE_LA_COLOMBE, 5, 7.3).z, 0.26, 0.1);
+      for (const f of [
+        [
+          [0.55, 6.05],
+          [0.85, 6.35],
+          [1.0, 6.2],
+          [0.75, 5.95],
+        ],
+        [
+          [1.0, 5.6],
+          [1.35, 5.75],
+          [1.45, 5.45],
+          [1.1, 5.4],
+        ],
+      ] as [number, number][][])
+        dalle(T, f, z - 0.03, z + 0.03, a.rameau);
+      // Les yeux, sur les côtés de la tête.
+      const tete = TETE_DE_LA_COLOMBE[1][3]!;
+      for (const s of [-1, 1]) orbites(pose(T, repere([s * OEIL_DE_LA_COLOMBE.x, OEIL_DE_LA_COLOMBE.y, tete], 0, -s * (Math.PI / 2), 0)), a, 0, 0, 0, 0, 0.12);
     },
     veines: (T, a) => {
       // Trois rangs de plumes sur la poitrine, en chevrons.
@@ -613,7 +645,8 @@ export const STATUES_3E: Partial<Record<BiomeId, Statue>> = {
   },
   'geography-3e-france': {
     nom: 'le Cerf de lauze',
-    allume: 'les lauzes de ses bois',
+    // Ce qui s'allume, ce que dit le texte : les lauzes de son poitrail (HG-3, sans un triangle de plus).
+    allume: 'les lauzes de son poitrail',
     sculpture: (T, a) => {
       fuseau(T, CORPS_DU_CERF, 6, a.moussue((k, j) => k === 0 && j % 2 === 1), { bas: false });
       fuseau(T, TETE_DU_CERF, 5, a.pierre, { bas: false });

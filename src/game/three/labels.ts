@@ -11,8 +11,9 @@ import { visageDuJoueur } from '../world/characters/face';
 import { CASE, PLAQUE, caseALEcran, dessinerLaCase } from './signs';
 import { tenirDansLaPlace, type PlaceLue } from '../freeSpace';
 import { reperesDe } from '../world/framing';
-import { boitesDuTrace, placerAvecLaFlecheDOuvrage, placerEtiquettes, replierLesSignes, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
+import { boitesDuTrace, placerAvecLaFlecheDOuvrage, placerEtiquettes, rechercheDuCadrage, replierLesSignes, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
 import { islandCenter } from '../world/terrain';
+import { HAUTEUR_DES_NOMS } from './camera/framings';
 import { lecteurDeZones } from '../coveredZones';
 import type { IslandLabel, WorldViewProps } from '../world/view';
 import type { Instant, Monde, PartieDeLaScene } from './scenePart';
@@ -28,8 +29,8 @@ const ARROW_GAP = 56;
 /** Sur la Carte : le médaillon « toi », 44 px de diamètre à l'écran (son canvas : 96 px, le disque 80). */
 export const MEDAILLON_CSS = 44;
 const MEDAILLON_CANVAS = 96;
-/** L'étiquette flotte à 12 cases au-dessus du sol de son île. */
-const ETIQUETTE_AU_DESSUS = 12;
+/** L'étiquette flotte à 12 cases au-dessus du sol de son île (le cadrage de la Carte en tient compte). */
+const ETIQUETTE_AU_DESSUS = HAUTEUR_DES_NOMS;
 
 /** Une forme d'étiquette : sa texture et sa taille à l'écran (pixels CSS). */
 interface FormeDeLEtiquette {
@@ -429,7 +430,8 @@ export function creerEtiquettes(
     const souples = ouvrage ? souplesDuTrace(goalCamera, W, H) : [];
     // Les poignées du mode « Modifier le plan », des obstacles durs : une étiquette ne s'y pose jamais, elle se tait plutôt.
     const dures = poignees?.boites(goalCamera, W, H) ?? [];
-    const vue = { zones, bulles, obstacles, souples, bounds: cadre, gap: 6, dures };
+    // Une seule recherche complète pour tout le placement de ce cadrage (ses essais sous un même plafond).
+    const vue = { zones, bulles, obstacles, souples, bounds: cadre, gap: 6, dures, recherche: rechercheDuCadrage() };
     let offsets: LabelOffset[];
     let visibles: boolean[];
     let sansSigne: boolean[];

@@ -1,6 +1,6 @@
 // Le cadrage de la vue : l'étendue de l'archipel, la zone et l'angle de la vue d'une île, l'île sous la vue, la caméra
 // d'une île et sa projection, le cadre d'une traversée.
-import { type ArchipelagoId, archipelagoOfIsland, coeurDe, islandDef, type IslandDef, landBox, startingIsland, MAP } from '../map';
+import { type ArchipelagoId, archipelagoOfIsland, coeurDe, islandDef, type IslandDef, landBox, mapOf, startingIsland, MAP } from '../map';
 import { dockBox } from '../harbor';
 import { type BridgeDef, getArchipelago, islandsOf } from '../archipelago';
 import { type BiomeId, BIOMES } from '../../biomes';
@@ -31,6 +31,11 @@ export function worldBounds(a: ArchipelagoId): {
  */
 export function bornesDeDepart(a: ArchipelagoId): { minX: number; maxX: number; minY: number; maxY: number } {
   return bornesDesIles(a, MAP.filter((d) => archipelagoOfIsland(d.id) === a).map((d) => startingIsland(d.id)));
+}
+
+/** L'étendue des lieux d'une région à leur place d'aujourd'hui (déplacés ou non, GD-9), îlots et port compris. */
+export function bornesDesLieux(a: ArchipelagoId): { minX: number; maxX: number; minY: number; maxY: number } {
+  return bornesDesIles(a, mapOf(a));
 }
 
 /** Les bornes de quelques îles d'un archipel, et de son port (la colonne centrale, `colonneCentrale`). */

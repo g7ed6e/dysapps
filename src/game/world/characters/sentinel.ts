@@ -44,6 +44,10 @@ export class Atelier {
   get lichen(): Peindre {
     return this.pot(SENTINELLE.lichen, 'dominante');
   }
+  /** Le rameau de la Colombe : de pierre éteint, vert rallumé (`SENTINELLE.rameau`). */
+  get rameau(): Peindre {
+    return this.pot(SENTINELLE.rameau, 'dominante');
+  }
   get orbite(): Peindre {
     return this.pot(SENTINELLE.orbite, 'yeux');
   }
@@ -278,12 +282,14 @@ export function orbites(T: Trace, a: Atelier, x: number, y: number, z: number, e
 const ALLUMAGE = new Map<Couleur, [Couleur, Couleur]>([
   [SENTINELLE.pierre, [SENTINELLE.pierre, SENTINELLE.rallumee]],
   [SENTINELLE.lichen, [SENTINELLE.lichen, SENTINELLE.rallumee]],
+  [SENTINELLE.rameau, [SENTINELLE.rameau, SENTINELLE.feuillage]],
   [LUEUR, [SENTINELLE.cendre, LUEUR]],
 ]);
 
 /**
  * La couleur d'une teinte de sentinelle au degré d'allumage `degre` (0 : éteinte, 1 : rallumée) : la pierre passe de
- * #8E8C84 (et son lichen) au Sable #DAA66A, la flamme et les veines de la cendre à la lueur ; les orbites ne changent pas.
+ * #8E8C84 (et son lichen) au Sable #DAA66A, le rameau de la Colombe au vert, la flamme et les veines de la cendre à la
+ * lueur ; les orbites ne changent pas.
  */
 export function allumage(c: Couleur, degre: number): Couleur {
   const de = ALLUMAGE.get(c);

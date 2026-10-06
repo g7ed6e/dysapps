@@ -116,7 +116,8 @@ function gapBetween(a: readonly [number, number][], b: readonly [number, number]
  * - elle se lit entière dans la vue de l'île panneau ouvert : à une case au moins (à l'écran) du bord du panneau et des
  *   autres bords, au-dessus des boutons du bas, hors de Pause et de l'archipel.
  * Puis, par ordre de préférence (une préférence ne tombe que si aucune place ne la tient) : jamais devant la rangée
- * des bornes (le passage du bonhomme) ; à l'écran, rien d'elle sur la silhouette d'une borne, puis une demi-case au
+ * des bornes (le passage du bonhomme) ; à l'écran, rien d'elle sur la silhouette de la créature à sa place (jamais
+ * cachée derrière elle), puis rien d'elle sur la silhouette d'une borne, puis une demi-case au
  * moins entre elles (une case nue entre elle et toute borne) ; les cubes posés au sol ne sont pas du bloc du sol de leur
  * case (sinon ils s'y fondent) ; le moins possible de ses cubes cachés en partie (milieu et coins de chacun) ; une case
  * nue autour d'elle (ni mur, ni tronc, ni borne au-dessus du sol), pour que sa silhouette se détache. Parmi les places
@@ -126,10 +127,11 @@ function gapBetween(a: readonly [number, number][], b: readonly [number, number]
 export function calculerLaPlaceDeLaPetiteConstruction(id: BiomeId, fixture: string): { x: number; y: number } | null {
   const examen = examenDeLaPetiteConstruction(id, fixture);
   if (!examen) return null;
-  // Les préférences, de la plus forte à la plus faible : derrière la rangée des bornes, puis jamais sur une borne à
+  // Les préférences, de la plus forte à la plus faible : derrière la rangée des bornes, puis rien d'elle sur la créature à
+  // l'écran (jamais cachée derrière elle, retouche du directeur artistique, HG-3), puis jamais sur une borne à
   // l'écran, puis une case (à l'écran) entre elle et toute borne, puis sur un autre sol, puis entière (le moins de points
   // cachés), puis dégagée ; à préférences égales, la plus proche (la première trouvée à score égal).
-  const rang = (p: ExamenDUnePlace) => [p.derriere ? 0 : 1, p.libre ? 0 : 1, p.ecartee ? 0 : 1, p.sol ? 0 : 1, p.caches, p.degagee ? 0 : 1, p.score];
+  const rang = (p: ExamenDUnePlace) => [p.derriere ? 0 : 1, p.horsDeLaCreature ? 0 : 1, p.libre ? 0 : 1, p.ecartee ? 0 : 1, p.sol ? 0 : 1, p.caches, p.degagee ? 0 : 1, p.score];
   const avant = (a: number[], b: number[]) => {
     for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return a[i] < b[i];
     return false;
@@ -150,6 +152,8 @@ export interface ExamenDUnePlace {
   score: number;
   /** Derrière la rangée des bornes. */
   derriere: boolean;
+  /** Rien d'elle sur la silhouette de la créature à sa place, à l'écran (elle ne se cache pas derrière). */
+  horsDeLaCreature: boolean;
   /** Rien d'elle sur la silhouette d'une borne (son socle, son ardoise, le repère au-dessus), à l'écran. */
   libre: boolean;
   /** Une demi-case au moins, à l'écran, entre elle et toute borne. */
@@ -240,6 +244,11 @@ export function examenDeLaPetiteConstruction(
   // Les bornes à l'écran (le socle, l'ardoise et le haut doré) : de préférence, la forme ne touche la silhouette d'aucune,
   // et une demi-case au moins (à l'écran) l'en sépare.
   const bornesALEcran = bornes.map((b) => silhouette(projeter, [1, 2, 3].map((z) => ({ x: o.x + b.x, y: o.y + b.y, z: o.z + b.base + z }))));
+  // La créature à sa place, à l'écran : de préférence, la forme ne touche pas sa silhouette.
+  const creatureALEcran = silhouette(
+    projeter,
+    creature.map((c) => ({ x: o.x + spot.x + c.x, y: o.y + spot.y + c.y, z: o.z + c.z + 1 })),
+  );
   const cadreDeLaForme = (ox: number, oy: number) => cadreALEcran(projeter, cases.map((c) => ({ x: o.x + ox + c.x, y: o.y + oy + c.y, z: o.z + c.z + 1 })));
   // Le plus petit écart, en pixels, entre un cube de la forme et une borne (négatif s'ils se recouvrent à l'écran).
   const ecartAuxBornes = (ox: number, oy: number) => {
@@ -317,6 +326,7 @@ export function examenDeLaPetiteConstruction(
       // Trop près d'une borne à l'écran : d'autant plus loin dans l'ordre qu'elle s'en approche.
       score: distance + 2 * Math.max(0, avance - 1) + (4 * Math.max(0, cube / 2 - ecart)) / cube,
       derriere: pied.every((p) => oy + p.y >= devant),
+      horsDeLaCreature: avance >= 0 || gapBetween(silhouette(projeter, cases.map((c) => ({ x: o.x + ox + c.x, y: o.y + oy + c.y, z: o.z + c.z + 1 }))), creatureALEcran) > 0,
       libre: ecart > 0,
       ecartee: ecart >= cube / 2,
       sol: cubes.every((c) => !c.commeLeSol),

@@ -410,10 +410,10 @@
     "count": 4,
     "fixture": "geography-5e-resources-fixture-1",
     "blocland": {
-      "name": "l’abreuvoir",
-      "ask": "Il me faut {objet} pour mon abreuvoir. Joue une mission du Bourg des chroniques.",
+      "name": "le coffre à graines",
+      "ask": "Il me faut {objet} pour mon coffre à graines. Joue une mission du Bourg des chroniques.",
       "ready": "Tu as les {blocs} ! Livre-les à Sillon.",
-      "done": "Abreuvoir posé chez Sillon !"
+      "done": "Coffre à graines posé chez Sillon !"
     }
   },
   {
@@ -462,10 +462,10 @@
     "count": 3,
     "fixture": "geography-3e-france-fixture-1",
     "blocland": {
-      "name": "la fontaine",
-      "ask": "Il me faut {objet} pour ma fontaine. Joue une mission du Kiosque des témoins.",
+      "name": "la boîte à livres",
+      "ask": "Il me faut {objet} pour ma boîte à livres. Joue une mission du Kiosque des témoins.",
       "ready": "Tu as les {blocs} ! Livre-les à Jalon.",
-      "done": "Fontaine posée chez Jalon !"
+      "done": "Boîte à livres posée chez Jalon !"
     }
   }
 ]

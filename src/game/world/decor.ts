@@ -328,10 +328,12 @@ export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => numb
     put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.pierre].side);
   },
   'history-4e-revolutions': (put, h) => {
-    // Deux plaques de fonte empilées (une presse au repos), une caisse de planches ; une pierre.
-    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.fonte].side);
-    put(9, 3, h(9, 3) + 2, BLOCKS[BLOC.fonte].side);
-    put(10, 3, h(10, 3) + 1, BLOCKS[BLOC.bois].side);
+    // Deux plaques de fonte empilées (une presse au repos), une caisse de planches ; une pierre. Au coin de l'île, loin du
+    // réverbère de Typo, d'ardoise : la fonte et l'ardoise, deux gris sombres, ne se touchent jamais (DA, relecture des
+    // planches HG-3).
+    put(3, 9, h(3, 9) + 1, BLOCKS[BLOC.fonte].side);
+    put(3, 9, h(3, 9) + 2, BLOCKS[BLOC.fonte].side);
+    put(4, 9, h(4, 9) + 1, BLOCKS[BLOC.bois].side);
     put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.pierre].side);
   },
   'geography-4e-globalization': (put, h) => {

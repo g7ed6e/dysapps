@@ -22,10 +22,13 @@ import { chosenGuardian, layoutCache, type Rectangle } from '../placement';
  *
  * Depuis GD-9, les lieux se déplacent et les clairières suivent : celle du 5e, calée sur la clairière de 91, 345, ne
  * l'est plus. Au 6e, la clairière de 3, 109 passe d'un pas vers l'ouest (DA, 5 octobre 2026 : depuis la vue du port,
- * une côte cachait le bord de son rond) ; elle ne l'est que tant que la clairière choisie est celle-là.
+ * une côte cachait le bord de son rond) ; elle ne l'est que tant que la clairière choisie est celle-là. Au 5e, depuis
+ * le cadre élargi de 24 cases (HG-3), la clairière de 29, 345 se cache derrière les îles de l'ouest : la baleine nage
+ * en 97, 313, au nord du port : la seule clairière (un rond de 4 cases) qui s'y voit entière.
  */
 export const BALEINES_REPLACEES: Readonly<Partial<Record<ArchipelagoId, readonly { de: { x: number; y: number }; vers: { x: number; y: number } }[]>>> = {
   '6e': [{ de: { x: 3, y: 109 }, vers: { x: -1, y: 109 } }],
+  '5e': [{ de: { x: 29, y: 345 }, vers: { x: 97, y: 313 } }],
 };
 
 const whaleCache = layoutCache<string, { x: number; y: number; r: number }[]>();

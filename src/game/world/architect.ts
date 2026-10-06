@@ -569,8 +569,8 @@ function logis(b: BlockId): Stages {
 /**
  * Le moulin (le moulin de Sillon, géographie 5e ; DA, HG-3) : un moulin à eau, sa roue fixe. Le moulin : une tour basse de
  * rizière, trois sur trois, trois blocs de haut. Le toit du moulin : la porte, deux fenêtres, le toit à deux pans, et sur
- * son flanc est la roue, un anneau de huit planches debout, immobile. La cour du moulin : le bief d'eau (du verre) au pied
- * de la roue, un rang de rizière au bord, la barrière, son portillon, deux lanternes et la marche.
+ * son flanc est la roue, un anneau de huit planches debout, à une case du mur, immobile. La cour du moulin : le bief
+ * d'eau (du verre) entre le mur et la roue, un rang de rizière au bord, la barrière, son portillon, deux lanternes et la marche.
  */
 function moulin(b: BlockId): Stages {
   const doorX = 1;
@@ -581,10 +581,12 @@ function moulin(b: BlockId): Stages {
   const walls: ArchCell[] = [];
   for (let z = 0; z < 3; z++) for (const [x, y] of ring(0, 2, 3, 3)) walls.push({ x, y, z, block: b });
   const roue: ArchCell[] = [];
-  for (let y = 2; y <= 4; y++) for (let z = 0; z <= 2; z++) if (y !== 3 || z !== 1) roue.push({ x: 3, y, z, block: BLOC.bois });
+  // Décollée du mur d'une case, la roue se lit comme un anneau : par son milieu vide et autour d'elle, on voit le mur
+  // de la tour derrière (DA, relecture des planches : collée, elle faisait façade).
+  for (let y = 2; y <= 4; y++) for (let z = 0; z <= 2; z++) if (y !== 3 || z !== 1) roue.push({ x: 4, y, z, block: BLOC.bois });
   const roof = [...ouvertures([doorX, 2, 0], fenetres), ...deuxPans(0, 2, 2, 3, b, 0, 2), ...roue];
   const cour: ArchCell[] = [];
-  for (let y = 2; y <= 4; y++) cour.push({ x: 4, y, z: 0, block: BLOC.verre });
+  for (let y = 2; y <= 4; y++) cour.push({ x: 3, y, z: 0, block: BLOC.verre });
   for (let y = 1; y <= 4; y++) cour.push({ x: 5, y, z: 0, block: b });
   for (let x = 0; x < ZW; x++) if (x !== doorX) cour.push({ x, y: 0, z: 0, block: BLOC.barriere });
   cour.push({ x: 0, y: 0, z: 1, block: BLOC.lanterne }, { x: ZW - 1, y: 0, z: 1, block: BLOC.lanterne }, { x: doorX, y: 1, z: 0, block: BLOC.escalier });
@@ -655,7 +657,7 @@ function bibliotheque(b: BlockId): Stages {
  * La mairie (la mairie de Jalon, géographie 3e ; DA, HG-3) : symétrique, sans drapeau ni horloge. La mairie : cinq sur
  * trois, trois blocs de haut, de grès rose, la porte au milieu. Le toit de la mairie : la porte, deux fenêtres de part et
  * d'autre, deux sur les flancs, le toit à deux pans, ses pignons. La place de la mairie : symétrique elle aussi, la
- * barrière et son portillon au milieu, deux lanternes aux bouts, la marche, deux jardinières.
+ * barrière et son portillon au milieu, deux lanternes aux bouts, la marche, deux jardinières. La façade regarde l'est.
  */
 function mairie(b: BlockId): Stages {
   const doorX = 2;
@@ -672,7 +674,11 @@ function mairie(b: BlockId): Stages {
   for (const x of [0, 1, 3, 4]) place.push({ x, y: 0, z: 0, block: BLOC.barriere });
   place.push({ x: 0, y: 0, z: 1, block: BLOC.lanterne }, { x: 4, y: 0, z: 1, block: BLOC.lanterne }, { x: doorX, y: 1, z: 0, block: BLOC.escalier });
   place.push({ x: 0, y: 1, z: 0, block: b }, { x: 4, y: 1, z: 0, block: b });
-  return [without(walls, [[doorX, 2, 0], ...fenetres]), roof, place];
+  // Tout est tracé la façade côté y = 0, puis tourné d'un quart de tour : à la Vallée, la caméra de l'île pivote à fond
+  // vers l'est (`viewYaw`) et voyait le pignon ; la façade, sa porte au milieu, regarde maintenant l'est, vers elle (DA,
+  // relecture des planches).
+  const versLEst = (cells: ArchCell[]) => cells.map((c) => ({ ...c, x: ZW - 1 - c.y, y: c.x }));
+  return [versLEst(without(walls, [[doorX, 2, 0], ...fenetres])), versLEst(roof), versLEst(place)];
 }
 
 /** Les trois étapes du bâtiment d'une île. */

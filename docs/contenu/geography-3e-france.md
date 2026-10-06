@@ -434,9 +434,9 @@ Pour tous les items :
 - habitant : Jalon
 - bloc : `history-3e-twentieth-century`
 - combien : 3
-- petite construction : la fontaine
-- demande : Il me faut {objet} pour ma fontaine. Joue une mission du Kiosque des témoins.
+- petite construction : la boîte à livres
+- demande : Il me faut {objet} pour ma boîte à livres. Joue une mission du Kiosque des témoins.
 - prête : Tu as les {blocs} ! Livre-les à Jalon.
-- posée : Fontaine posée chez Jalon !
+- posée : Boîte à livres posée chez Jalon !
 
-> Le bloc : celui de l’île d’histoire de 3e, comme la Pointe des paysages demande celui de la Fouille des siècles en 6e (les blocs des îles de 3e déjà là sont tous demandés, sauf `maths-3e-statistics`, que prend l’île d’histoire). Forme, pour l’artiste technique 3D : 3 reliures en U au sol autour d’1 verre (l’eau), 1 lanterne sur la reliure du fond ; 5 cubes, 3 × 2 cases, 2 de haut.
+> Le bloc : celui de l’île d’histoire de 3e, comme la Pointe des paysages demande celui de la Fouille des siècles en 6e (les blocs des îles de 3e déjà là sont tous demandés, sauf `maths-3e-statistics`, que prend l’île d’histoire). Forme, pour l’artiste technique 3D : 3 reliures en U au sol (une à chaque bout devant, une au fond au milieu), 1 lanterne sur la reliure du fond ; sans eau ; 4 cubes, 3 × 2 cases, 2 de haut.
