@@ -57,13 +57,14 @@ export function ArrangeButton({ amenagement, proposer }: { amenagement: Amenagem
 }
 
 /** Ce que dit la Carte au téléphone en grand texte, avant d'ouvrir le mode. */
-export const PROPOSITION_DE_LA_LISTE = 'L’écran est petit et le texte est grand : la carte s’aménage plus facilement en liste.';
+export const PROPOSITION_DE_LA_LISTE = 'La carte s’aménage plus facilement en liste.';
 
 /**
  * Au téléphone en grand texte, « Aménager » propose d'abord la liste « Aménager la carte » (la vue simple), mise en
- * avant, et garde le choix de rester sur la Carte. La phrase est écrite, et lue par l'appelant.
+ * avant, et garde le choix de rester sur la Carte ; toucher « Aménager » à nouveau la referme. La phrase est écrite, et
+ * lue par l'appelant.
  */
-export function ArrangeListOffer({ onListe, onCarte, onFermer }: { onListe: () => void; onCarte: () => void; onFermer: () => void }) {
+export function ArrangeListOffer({ onListe, onCarte }: { onListe: () => void; onCarte: () => void }) {
   return (
     <div className="creature-line world-line arrange-line arrange-offre" role="group" aria-label="Aménager">
       <p>
@@ -77,9 +78,6 @@ export function ArrangeListOffer({ onListe, onCarte, onFermer }: { onListe: () =
           <Icon name="map" /> Rester sur la Carte
         </button>
       </div>
-      <button type="button" className="icon-button" aria-label="Fermer" onClick={onFermer}>
-        <Icon name="close" />
-      </button>
     </div>
   );
 }

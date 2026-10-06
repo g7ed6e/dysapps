@@ -273,8 +273,8 @@ export function WorldPage() {
   const proposerLaListe =
     telephone && texteGrand(settings)
       ? () => {
-          setOffreDeLaListe(true);
-          if (settings.autoRead) speak(frenchTypography(PROPOSITION_DE_LA_LISTE));
+          setOffreDeLaListe(!offreDeLaListe);
+          if (!offreDeLaListe && settings.autoRead) speak(frenchTypography(PROPOSITION_DE_LA_LISTE));
         }
       : undefined;
   useEffect(() => {
@@ -1126,7 +1126,6 @@ export function WorldPage() {
                 if (amenagement.aReposer.length) amenagement.ouvrirLaListe();
                 else amenagement.ouvrir();
               }}
-              onFermer={() => setOffreDeLaListe(false)}
             />
           )}
           {panneauDeLaCarte && !enAmenageant && mapTarget && (

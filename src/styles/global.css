@@ -3467,6 +3467,9 @@ figure.class-table {
   left: 0.6rem;
   right: 0.6rem;
   display: grid;
+  /* Une colonne de la largeur du haut, jamais plus : une ligne qui ne passe pas à la ligne (la phrase courte du mode
+     « Aménager ») se coupe dans le panneau au lieu de l'élargir hors de l'écran. */
+  grid-template-columns: minmax(0, 1fr);
   gap: 0.5rem;
   pointer-events: none;
   max-height: 60%;
@@ -3851,23 +3854,32 @@ figure.class-table {
   align-items: stretch;
   gap: 6px;
 }
-.arrange-bar-telephone .arrange-bar-fin {
-  flex-wrap: nowrap;
-}
+/* Les deux boutons de la rangée fixe se partagent la largeur ; en très grand texte, s'ils ne tiennent pas côte à côte,
+   ils passent l'un sous l'autre, sans jamais couper un mot. */
 .arrange-bar-telephone .arrange-bar-fin .button {
-  flex: 1 1 0;
-  min-width: 0;
+  flex: 1 1 auto;
   justify-content: center;
+  white-space: nowrap;
 }
 .arrange-bar-telephone .arrange-cross .button {
   padding: 0;
 }
 /* Au téléphone, la phrase du mode tient en une ligne (le nom et la direction) ; le toucher l'ouvre en entier. */
 .arrange-line-courte {
+  /* Une largeur définie (celle du haut, 26rem au plus) : la ligne courte s'y coupe au lieu de l'élargir. */
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+  flex-wrap: nowrap;
   align-items: center;
+  padding-top: 0.2rem;
+  padding-bottom: 0.2rem;
+}
+.arrange-line-courte.ouverte {
+  align-items: flex-start;
 }
 .arrange-line-texte {
-  flex: 1 1 auto;
+  flex: 1 1 0;
   min-width: 0;
   min-height: 48px;
   margin: 0;
@@ -3886,15 +3898,6 @@ figure.class-table {
   white-space: normal;
   max-height: 33vh;
   overflow-y: auto;
-}
-/* Au téléphone en grand texte, la question de « Réunir » et la proposition de la liste gardent un tiers de la hauteur
-   au plus, et défilent si elles débordent, plutôt que de couvrir la barre. */
-@media (max-width: 600px) {
-  :root[data-texte="grand"] .arrange-question.world-line,
-  :root[data-texte="grand"] .arrange-offre {
-    max-height: 33vh;
-    overflow-y: auto;
-  }
 }
 /* La question de « Réunir » (un bouton par voisin, et « Non »), dans la zone de la phrase ou sous la ligne du lieu. */
 .arrange-question p {

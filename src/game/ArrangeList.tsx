@@ -84,16 +84,15 @@ export function ArrangeList({ a, enPanneau = false, onFin }: { a: ArchipelagoId;
     liaisons: textes.liaisons,
   });
   const { choix } = amenagement;
-  // Dans le panneau : le mode ouvert dès l'arrivée (la liste des ouvrages à reposer d'abord, s'il y en a).
-  const ouvert = useRef(false);
+  // Dans le panneau : le mode ouvert dès l'arrivée (la liste des ouvrages à reposer d'abord, s'il y en a) ; ✓ Terminé
+  // (le mode qui se ferme après avoir été ouvert) ferme le panneau. Un effet rejoué (mode strict) ne le ferme pas.
+  const etaitOuvert = useRef(false);
   useEffect(() => {
     if (!enPanneau) return;
-    if (amenagement.ouvert) ouvert.current = true;
-    else if (!ouvert.current) {
-      ouvert.current = true;
-      if (amenagement.aReposer.length) amenagement.ouvrirLaListe();
-      else amenagement.ouvrir();
-    } else onFin?.();
+    if (amenagement.ouvert) etaitOuvert.current = true;
+    else if (etaitOuvert.current) onFin?.();
+    else if (amenagement.aReposer.length) amenagement.ouvrirLaListe();
+    else amenagement.ouvrir();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enPanneau, amenagement.ouvert]);
   const choisi = (genre: 'lieu' | 'gardien', id: BiomeId) => choix?.genre === genre && choix.id === id;
