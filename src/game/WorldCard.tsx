@@ -369,9 +369,10 @@ function FicheDuNavire({ port, ship, onBoard, onClose }: Props & { port: BiomeId
 
 /**
  * Un ouvrage : « Pont entre X et Y », ses blocs, « Poser » ; sinon ce qui manque ; « Déjà posé. » une fois construit. Un
- * ouvrage qui ouvre une île (GD-9, « Relier ») : le titre « Relier <île> », fixe, d'où il part (« Le pont part de X. »),
- * « Départ 2 sur 3 » quand l'île a plusieurs départs, et « Partir d'une autre île » (la fiche du départ suivant, dont
- * le monde montre le fantôme et que la caméra cadre).
+ * ouvrage qui ouvre une île (GD-9, « Relier » ; piste A, des signes à la place des phrases) : le titre, fixe, est le nom
+ * de l'île à ouvrir ; dessous, en signes, l'île de départ (l'icône d'un ouvrage et son nom), le coût (un cube et le
+ * nombre) et, s'il manque des blocs, combien (jamais en rouge seul) ; quand l'île a plusieurs départs, « 2/3 » et le
+ * chevron du départ suivant (dont le monde montre le fantôme et que la caméra cadre). La voix dit tout en mots.
  */
 function FicheDeLOuvrage({ id, onBuilt, onClose, onVoirOuvrage }: Props & { id: string }) {
   const { state } = useBlocland();
@@ -395,9 +396,11 @@ function FicheDeLOuvrage({ id, onBuilt, onClose, onVoirOuvrage }: Props & { id: 
   const departs = ferme ? linksToIsland(ferme, links, open) : [];
   const rang = departs.findIndex((d) => d.id === def.id);
   const suivant = departs.length > 1 ? departs[(rang + 1) % departs.length] : null;
-  const titre = ferme ? `Relier ${thePlace(getBiome(ferme)?.name ?? ferme)}` : `${KIND_NAME[kind]} entre ${thePlace(a)} et ${thePlace(b)}`;
+  const nomDeLIle = ferme ? (getBiome(ferme)?.name ?? ferme) : '';
+  const titre = ferme ? nomDeLIle : `${KIND_NAME[kind]} entre ${thePlace(a)} et ${thePlace(b)}`;
+  const depart = ferme ? (getBiome(otherEnd(def, ferme))?.name ?? otherEnd(def, ferme)) : '';
   const quoi = withArticle(kind);
-  const depuis = ferme ? `${quoi.charAt(0).toUpperCase()}${quoi.slice(1)} part ${ofPlace(getBiome(otherEnd(def, ferme))?.name ?? otherEnd(def, ferme))}. ` : '';
+  const depuis = ferme ? `${quoi.charAt(0).toUpperCase()}${quoi.slice(1)} part ${ofPlace(depart)}. ` : '';
   const numero = ferme && departs.length > 1 && rang >= 0 ? `Départ ${rang + 1} sur ${departs.length}. ` : '';
   const phrase = sansLv2
     ? 'Choisis d’abord une LV2 dans les Réglages.'
@@ -411,11 +414,13 @@ function FicheDeLOuvrage({ id, onBuilt, onClose, onVoirOuvrage }: Props & { id: 
             ? `${depuis}${numero}${def.cost} blocs. Tu en as ${have}.`
             : `${depuis}${numero}${def.cost} blocs. Il t’en manque ${def.cost - have}.`;
   const texte = said ?? phrase;
+  // En signes : l'île à relier attend un départ, des blocs ; la phrase reste pour ce qui empêche (LV2, chemin, condition).
+  const enSignes = Boolean(ferme && !said && !sansLv2 && etat !== 'far' && etat !== 'blocked' && etat !== 'built');
   return (
     <Fiche
       titre={titre}
       icone="ouvrage"
-      lecture={`${titre}. ${texte}`}
+      lecture={`${ferme ? `Relier ${thePlace(nomDeLIle)}` : titre}. ${texte}`}
       onClose={onClose}
       actions={
         !said &&
@@ -427,15 +432,51 @@ function FicheDeLOuvrage({ id, onBuilt, onClose, onVoirOuvrage }: Props & { id: 
               </button>
             )}
             {suivant && !sansLv2 && (
-              <button type="button" className="button" onClick={() => onVoirOuvrage(suivant.id, true)}>
-                <Icon name="ouvrage" /> Partir d’une autre île
+              <button
+                type="button"
+                className="button bouton-icone"
+                aria-label={`Autre départ, ${rang + 1} sur ${departs.length}`}
+                onClick={() => onVoirOuvrage(suivant.id, true)}
+              >
+                <span className="signe">
+                  {rang + 1}/{departs.length}
+                  <Icon name="chevronRight" />
+                </span>
+                <span className="mot-sous-icone" aria-hidden="true">
+                  Autre départ
+                </span>
               </button>
             )}
           </>
         )
       }
     >
-      <Phrase text={texte} role="status" />
+      {enSignes ? (
+        <>
+          <p className="visually-hidden" role="status" aria-live="polite">
+            {frenchTypography(texte)}
+          </p>
+          <p className="world-fiche-phrase fiche-signes" aria-hidden="true">
+            <span className="signe">
+              <Icon name="ouvrage" /> {depart}
+            </span>{' '}
+            <span className="signe">
+              <Icon name="cube" /> {def.cost}
+            </span>{' '}
+            {have >= def.cost ? (
+              <span className="signe">
+                <Icon name="check" />
+              </span>
+            ) : (
+              <span className="signe">
+                <Icon name="blocks" /> −{def.cost - have}
+              </span>
+            )}
+          </p>
+        </>
+      ) : (
+        <Phrase text={texte} role="status" />
+      )}
     </Fiche>
   );
 }
@@ -463,7 +504,7 @@ function FicheDeLIlePale({ ile, fiche, onVoirOuvrage, onClose }: Props & { ile: 
       actions={
         premier && (
           <button type="button" className="button primary" onClick={() => onVoirOuvrage(premier.id)}>
-            <Icon name="hammer" /> Relier
+            <Icon name="ouvrage" /> Relier
           </button>
         )
       }

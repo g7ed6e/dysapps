@@ -4,9 +4,13 @@ import {
   Menu,
   ArrowLeft,
   ArrowDown,
+  ArrowDownLeft,
+  ArrowDownRight,
   ArrowDownToLine,
   ArrowRight,
   ArrowUp,
+  ArrowUpLeft,
+  ArrowUpRight,
   Move,
   RotateCw,
   Undo2,
@@ -35,6 +39,7 @@ import {
   House,
   Landmark,
   Library,
+  List,
   Languages,
   Lightbulb,
   Lock,
@@ -56,6 +61,7 @@ import {
   Sparkles,
   Sun,
   Square,
+  SquareDashed,
   Star,
   Target,
   TreePine,
@@ -68,6 +74,7 @@ import {
   createLucideIcon,
   type LucideIcon,
 } from 'lucide-react';
+import type { ButtonHTMLAttributes } from 'react';
 import { CHEMIN_DE_L_OUVRAGE } from './linkIcon';
 
 /** Un ouvrage (GD-7) : la même image que la plaque de la flèche de la Carte (./linkIcon.ts). */
@@ -140,9 +147,18 @@ export const ICONS = {
   sud: ArrowDown,
   est: ArrowRight,
   ouest: ArrowLeft,
+  // Les quatre diagonales, de la même famille : les huit directions de la ligne de place (GD-9, piste A).
+  nordOuest: ArrowUpLeft,
+  nordEst: ArrowUpRight,
+  sudOuest: ArrowDownLeft,
+  sudEst: ArrowDownRight,
+  // Une case de la grille des places : le carré pointillé, le même dessin que la place libre sur la Carte.
+  case: SquareDashed,
+  // La vue en liste (« En liste »).
+  liste: List,
   tourner: RotateCw,
   defaire: Undo2,
-  // « Poser ici » : une flèche vers le bas, sur un trait (la coche reste à « Terminé »).
+  // « Poser » : une flèche vers le bas, sur un trait.
   poser: ArrowDownToLine,
   aReposer: Unlink,
   // Réunir deux lieux (GD-9, point 10) : deux chemins qui se rejoignent.
@@ -161,4 +177,19 @@ interface Props {
 export function Icon({ name, size = '1.2em', className }: Props) {
   const Component = ICONS[name];
   return <Component size={size} strokeWidth={2.5} className={className} aria-hidden="true" focusable="false" />;
+}
+
+/**
+ * Un bouton d'icône : l'icône seule, son nom pour les lecteurs d'écran (`nom`), et son mot (`mot`, le nom par défaut)
+ * écrit dessous en grand texte seulement, comme la barre du monde.
+ */
+export function IconButton({ icone, nom, mot = nom, className, ...rest }: { icone: AnyIconName; nom: string; mot?: string } & Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'>) {
+  return (
+    <button type="button" className={`button bouton-icone${className ? ` ${className}` : ''}`} aria-label={nom} {...rest}>
+      <Icon name={icone} />
+      <span className="mot-sous-icone" aria-hidden="true">
+        {mot}
+      </span>
+    </button>
+  );
 }

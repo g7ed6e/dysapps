@@ -97,3 +97,7 @@ La pose d’une partie (GD-6, « 2c ») : la partie est là en pierre des ruines
 ### Les petites constructions des commandes (4 octobre 2026)
 
 Avec le gameplay de Blocland, les commandes des habitants (GD-7) arrivent dans Archipéo, sous les mêmes règles et avec les mêmes formes, places et sauvegarde (`src/game/world/fixtures.ts`). Une petite construction livrée passe par la construction taillée d’Archipéo, aux couleurs de sa palette, comme les bâtiments des plans : elle se lit en blocs posés, peints (piste A du consultant et du directeur artistique). Un test vérifie, sur le relief à facettes, que chaque cube posé au sol l’est sur une case plate. Les mots : « Commandes », « Livrer », « Les commandes des habitants », et la première fois « Un habitant te demande des blocs pour bâtir chez lui. Tu les livres quand tu veux. » (`src/universes/archipeo/index.ts`). Coût : un poste « commandes » du budget, sans appel de dessin (430 triangles mesurés aux Premiers Rivages, 152 à 186 ailleurs).
+
+### Les poignées de « Modifier le plan » (6 octobre 2026)
+
+Rattrapage du jeu de Blocland (GD-9) : pendant un choix, les poignées du mode se posent sur l’eau autour de lui, des radeaux de trois planches Brume (`#E5EBE3`) bordés de Nuit océan (`#142B38`), une flèche peinte à plat en Nuit océan, et pour « Tourner » une flèche en arc fin (↷, le sens de Blocland) peinte sur une bouée ronde à huit pans ; sans lumière ni brume, un appel de dessin seulement pendant un choix (`src/game/world/arrangeHandles.ts`).

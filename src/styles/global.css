@@ -3766,21 +3766,61 @@ figure.class-table {
   font-size: max(18px, 1rem);
 }
 /* ===== Le mode « Aménager » (GD-9), sur la Carte : la barre du mode à place fixe, en bas, à la place de la barre du
-   monde ; les boutons gardent leur place, éteints quand ils ne font rien ; 48 px au moins (« Poser ici » : 56 px). Un
-   seul bouton mis en avant (`primary`) : « Poser ici » pendant un choix, ✓ Terminé sinon. ===== */
+   monde (↶, « Poser », puis « Annuler » et « Valider », qui ferment le mode ; décision du mainteneur, 6 octobre 2026) ;
+   les boutons gardent leur place, éteints quand ils ne font rien ; 48 px au moins (« Poser », « Annuler » et
+   « Valider » : 56 px). Un seul bouton mis en avant (`primary`) : « Poser » pendant un choix, ✓ Valider sinon ;
+   la place de « Réunir », entre « Poser » et « Annuler », réservée dès qu'un lieu est choisi (éteint quand il ne sert
+   pas) ; « Garder » prend la place d'« Annuler » quand il demande confirmation, l'« Annuler » qui confirme à celle de
+   « Réunir ». Les flèches et « Tourner » sont dessinées dans le monde,
+   leurs boutons transparents par-dessus (`.arrange-handles`) ; en vue simple, la croix reste dans la barre. ===== */
 .arrange-bar {
   position: absolute;
   left: 0.6rem;
   right: 0.6rem;
   bottom: calc(0.6rem + env(safe-area-inset-bottom));
   display: grid;
+  /* Des places fixes : les outils finissent au milieu de la barre, « Annuler » et « Valider » commencent juste après ;
+     « Réunir » qui paraît, ou « Garder » à la place d'« Annuler », ne décalent jamais « Annuler » ni « Valider ». */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-areas: 'outils fin';
+  align-items: center;
+  gap: 8px 16px;
+}
+.arrange-bar > .arrange-bar-outils {
+  justify-self: end;
+}
+.arrange-bar > .arrange-bar-fin {
+  justify-self: start;
+}
+/* En grand texte, les outils ne tiennent plus dans la moitié de la barre : « Annuler » et « Valider » se tiennent au
+   bord droit, en bas, les outils prennent le reste ; s'ils n'y tiennent pas (l'« Annuler » qui confirme), le dernier
+   passe au-dessus des autres, jamais hors de l'écran (la barre à 8 px des bords : ↶, « Poser » et « Réunir » tiennent
+   sur la rangée sur une tablette de 1024 px). */
+:root[data-texte="grand"] .arrange-bar:not(.arrange-bar-telephone):not(.arrange-bar-croix) {
+  left: 8px;
+  right: 8px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  column-gap: 8px;
+}
+:root[data-texte="grand"] .arrange-bar:not(.arrange-bar-telephone):not(.arrange-bar-croix) > .arrange-bar-fin {
+  justify-self: end;
+}
+:root[data-texte="grand"] .arrange-bar:not(.arrange-bar-telephone):not(.arrange-bar-croix) > .arrange-bar-outils {
+  flex-wrap: wrap-reverse;
+  justify-content: flex-end;
+}
+.arrange-bar.arrange-bar-croix {
   grid-template-columns: auto auto;
   grid-template-areas:
     'croix outils'
     'croix fin';
   justify-content: center;
-  align-items: center;
   gap: 8px;
+}
+.arrange-bar.arrange-bar-croix > .arrange-bar-outils,
+.arrange-bar.arrange-bar-croix > .arrange-bar-fin {
+  justify-self: center;
 }
 .arrange-bar .button {
   min-width: 48px;
@@ -3788,7 +3828,7 @@ figure.class-table {
   padding: 0 12px;
   gap: 6px;
 }
-/* La croix des flèches : le nord en haut, l'ouest à gauche, l'est à droite, le sud en bas. */
+/* La croix des flèches (vue simple) : le nord en haut, l'ouest à gauche, l'est à droite, le sud en bas. */
 .arrange-cross {
   grid-area: croix;
   display: grid;
@@ -3808,7 +3848,6 @@ figure.class-table {
   padding: 0 8px;
 }
 .arrange-bar-outils,
-.arrange-bar-pli,
 .arrange-bar-fin {
   display: flex;
   flex-wrap: wrap;
@@ -3819,11 +3858,12 @@ figure.class-table {
 .arrange-bar-outils {
   grid-area: outils;
 }
-/* La rangée fixe, en bas : « Poser ici » et ✓ Terminé, jamais dans la partie qui défile. */
+/* La rangée qui ferme le mode : « Annuler » et « Valider », jamais dans la partie qui défile. */
 .arrange-bar-fin {
   grid-area: fin;
 }
-.arrange-bar .arrange-pose {
+.arrange-bar .arrange-pose,
+.arrange-bar .bouton-cta {
   min-height: 56px;
   padding: 0 18px;
 }
@@ -3838,84 +3878,216 @@ figure.class-table {
   box-shadow: none;
   cursor: default;
 }
-/* En grand texte, le mot plafonné à 24 px, comme la barre du monde. */
+/* En grand texte, le mot plafonné à 24 px, comme la barre du monde ; sous l'icône pour « Annuler » et « Valider ». */
 :root[data-texte="grand"] .arrange-bar .button {
   font-size: min(1em, 24px);
   padding: 4px 8px;
 }
-/* Au téléphone : la croix d'icônes à gauche, « Plus » à droite (son pli défile s'il déborde), puis la rangée fixe
-   « Poser ici » et ✓ Terminé sur toute la largeur. La barre ne monte jamais plus haut que la moitié de l'écran. */
+:root[data-texte="grand"] .arrange-bar .bouton-cta {
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 12px;
+  line-height: 1.2;
+}
+/* Au téléphone : ↶, « Poser » et la place de « Réunir » sur une rangée, « Annuler » et « Valider » dessous, sur toute la largeur ; en vue
+   simple, la croix à gauche des outils. La barre ne monte jamais plus haut que la moitié de l'écran. */
 .arrange-bar.arrange-bar-telephone {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    'outils'
+    'fin';
+  gap: 6px;
+  max-height: 50vh;
+}
+.arrange-bar.arrange-bar-telephone.arrange-bar-croix {
   grid-template-columns: auto minmax(0, 1fr);
   grid-template-areas:
     'croix outils'
     'fin fin';
-  gap: 6px;
-  max-height: 50vh;
-  grid-template-rows: minmax(0, 1fr) auto;
 }
-.arrange-bar-telephone .arrange-bar-outils {
-  flex-direction: column;
-  align-items: stretch;
-  align-self: stretch;
-  justify-content: flex-start;
-  min-height: 0;
-  max-height: 100%;
-  overflow-y: auto;
+:root[data-texte="grand"] .arrange-bar.arrange-bar-telephone.arrange-bar-croix {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    'croix'
+    'outils'
+    'fin';
 }
-.arrange-bar-telephone .arrange-bar-pli {
-  flex-direction: column;
-  align-items: stretch;
-  gap: 6px;
+.arrange-bar-telephone .arrange-bar-outils,
+.arrange-bar-telephone .arrange-bar-fin {
+  flex-wrap: nowrap;
 }
-/* Les deux boutons de la rangée fixe se partagent la largeur ; en très grand texte, s'ils ne tiennent pas côte à côte,
-   ils passent l'un sous l'autre, sans jamais couper un mot. */
+/* Au téléphone, chaque rangée prend toute la largeur : « Annuler » et « Valider » s'y partagent leurs places fixes. */
+.arrange-bar.arrange-bar-telephone > .arrange-bar-outils,
+.arrange-bar.arrange-bar-telephone > .arrange-bar-fin {
+  justify-self: stretch;
+}
+/* « Poser », « Annuler » et « Valider » se partagent la largeur, sans jamais couper un mot. */
+.arrange-bar-telephone .arrange-pose,
 .arrange-bar-telephone .arrange-bar-fin .button {
-  flex: 1 1 auto;
+  flex: 1 1 0;
   justify-content: center;
   white-space: nowrap;
 }
 .arrange-bar-telephone .arrange-cross .button {
   padding: 0;
 }
-/* Au téléphone, la phrase du mode tient en une ligne (le nom et la direction) ; le toucher l'ouvre en entier. */
-.arrange-line-courte {
-  /* Une largeur définie (celle du haut, 26rem au plus) : la ligne courte s'y coupe au lieu de l'élargir. */
-  width: 100%;
-  box-sizing: border-box;
-  min-width: 0;
-  flex-wrap: nowrap;
-  align-items: center;
-  padding-top: 0.2rem;
-  padding-bottom: 0.2rem;
+/* En grand texte au téléphone, trois mots ne tiennent pas sur une rangée : les outils sur deux colonnes, dans l'ordre
+   de lecture (↶ et « Poser », puis la place de « Réunir » sous ↶), « Annuler » et « Valider » dessous, aux mêmes
+   colonnes ; le mot plafonné à 20 px (« Défaire », sept lettres espacées, tient dans une demi-largeur de 390 px), une marge de 6 px de chaque côté et 12 px entre deux boutons : jamais deux mots
+   collés. */
+:root[data-texte="grand"] .arrange-bar-telephone .arrange-bar-outils {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 6px 12px;
 }
-.arrange-line-courte.ouverte {
-  align-items: flex-start;
+:root[data-texte="grand"] .arrange-bar-telephone .arrange-bar-fin {
+  gap: 12px;
 }
-.arrange-line-texte {
-  flex: 1 1 0;
-  min-width: 0;
-  min-height: 48px;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  background: none;
-  color: inherit;
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
-  /* La ligne courte se coupe entre les mots, jamais au milieu d'un nom ni avec « … » : elle tient sur deux lignes. */
-  white-space: normal;
+:root[data-texte="grand"] .arrange-bar.arrange-bar-telephone {
+  left: 8px;
+  right: 8px;
+}
+:root[data-texte="grand"] .arrange-bar-telephone .button,
+:root[data-texte="grand"] .arrange-bar-telephone .mot-sous-icone {
+  font-size: min(1em, 20px);
+  /* L'espacement réglé, recalculé à cette taille (le même en em, pas celui du texte de 32 px). */
+  letter-spacing: var(--letter-spacing);
+  word-spacing: var(--word-spacing);
+}
+/* Un mot ne se coupe jamais : il tient entier dans son bouton. */
+:root[data-texte="grand"] .arrange-bar .mot-sous-icone {
+  white-space: nowrap;
   overflow-wrap: normal;
 }
-.arrange-line-courte.ouverte .arrange-line-texte {
-  white-space: normal;
-  max-height: 33vh;
-  overflow-y: auto;
+:root[data-texte="grand"] .arrange-bar-telephone .arrange-pose,
+:root[data-texte="grand"] .arrange-bar-telephone .arrange-bar-outils .button,
+:root[data-texte="grand"] .arrange-bar-telephone .arrange-bar-fin .button {
+  min-width: 0;
+  padding-inline: 6px;
+  justify-content: center;
+  white-space: nowrap;
 }
-/* La question de « Réunir » (un bouton par voisin, et « Non »), dans la zone de la phrase ou sous la ligne du lieu. */
+/* Les flèches autour du choix (ArrangeHandles.tsx) : des boutons posés sur la scène à la place projetée du choix, dans
+   la place libre ; cachés le temps que la scène dise où il est. Ronds, 48 px au moins, bordés (jamais la couleur
+   seule) ; en grand texte, leur mot dessous. */
+.arrange-handles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.arrange-handles[data-place='non'] {
+  visibility: hidden;
+}
+.arrange-handles-poses .arrange-handle {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: auto;
+  min-width: 48px;
+  min-height: 48px;
+  will-change: transform;
+}
+/* Les poignées sont dessinées dans le monde (three/arrangeHandles.ts) : leur bouton, par-dessus, est transparent, sans
+   rien à lire ; seul son focus se voit (le contour du focus, bordé de blanc : lisible sur l'eau de jour comme de nuit). */
+.arrange-handle {
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  box-shadow: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.arrange-handle:hover,
+.arrange-handle:active {
+  background: transparent;
+  box-shadow: none;
+  transform: none;
+}
+.arrange-handles-poses .arrange-handle:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px #fff, inset 0 0 0 2px #fff;
+}
+/* Un bouton d'icône (GD-9, piste A) : l'icône seule, son nom pour les lecteurs d'écran ; en grand texte, son mot
+   dessous, plafonné à 24 px, comme la barre du monde. */
+.bouton-icone .mot-sous-icone {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.bouton-icone {
+  position: relative;
+}
+:root[data-texte="grand"] .bouton-icone {
+  flex-direction: column;
+  gap: 2px;
+  height: auto;
+}
+:root[data-texte="grand"] .bouton-icone .mot-sous-icone {
+  position: static;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  clip-path: none;
+  white-space: normal;
+  word-break: keep-all;
+  text-align: center;
+  line-height: 1.3;
+  font-size: min(1rem, 24px);
+}
+/* La ligne de signes (GD-9, piste A) : « Mine des lettres ↖ 4 ⬚ », dans l'ordre de la voix. Chaque signe reste entier
+   (la flèche et son mot, le nombre et sa case) ; la ligne passe à la ligne entre deux signes. */
+.arrange-signes {
+  margin: 0;
+  flex: 1 1 0;
+  min-width: 0;
+}
+/* Au téléphone en grand texte, les signes prennent toute la largeur de la ligne, sa marge intérieure réduite à 12 px, le
+   haut-parleur passe dessous : un mot comme « accords » ou « remettre » tient entier au lieu de se couper. */
+@media (max-width: 600px) {
+  :root[data-texte="grand"] .arrange-line {
+    padding-inline: 12px;
+  }
+  :root[data-texte="grand"] .arrange-line .arrange-signes {
+    flex-basis: 100%;
+  }
+}
+.signe {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.signe svg {
+  flex: none;
+}
+.signes-de-place strong,
+.signe-a-reposer strong {
+  font-size: 1.1em;
+}
+/* En grand texte seulement, le mot de la direction à côté de la flèche, et « cases » à côté du nombre. */
+.mot-signe {
+  display: none;
+}
+:root[data-texte="grand"] .mot-signe {
+  display: inline;
+}
+/* La question de « Réunir » (« Réunir », ou un bouton par voisin ; la croix en haut à droite pour ne pas réunir), dans
+   la zone de la ligne ou sous la ligne du lieu. */
 .arrange-question p {
   margin: 0;
+}
+.arrange-question .arrange-question-fermer {
+  margin-left: auto;
+}
+.arrange-question .arrange-explication,
+.arrange-question .arrange-question-buttons {
+  flex: 1 1 100%;
 }
 .arrange-question-buttons {
   display: flex;
@@ -3929,11 +4101,20 @@ figure.class-table {
 .arrange-list-items .arrange-question {
   flex: 1 1 100%;
 }
-/* La pastille des ouvrages à reposer : l'icône (un ouvrage séparé) et le nombre, jamais la couleur seule. */
+/* La pastille des ouvrages à reposer : l'icône (un ouvrage séparé) et le nombre, jamais la couleur seule. Plus large
+   qu'un compte de blocs, elle se pose dans le coin haut droit, au-dessus du bord, hors de l'icône du bouton, devant le
+   bouton voisin. */
 .world-bar .arrange-count {
   display: inline-flex;
   align-items: center;
   gap: 2px;
+  top: -24px;
+  right: -6px;
+  z-index: 1;
+}
+:root[data-texte="grand"] .world-bar .arrange-count {
+  top: -28px;
+  right: -6px;
 }
 .arrange-line p,
 .arrange-relink p {

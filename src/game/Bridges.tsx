@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { thePlace } from './world/placeArticle';
-import { Icon } from '../components/Icon';
+import { Icon, IconButton } from '../components/Icon';
 import { Syllabified } from '../components/Syllabified';
 import { frenchTypography } from '../components/math/RichText';
 import { useSettings } from '../core/SettingsContext';
@@ -142,11 +142,20 @@ export function Bridges({ island, onBuilt, highlight = null, fold, objectif }: P
   return (
     <Foldable fold={fold} name="ouvrages" heading={heading} status={status} defaultOpen={defaultOpen}>
       <section className="bridges" aria-labelledby={`ponts-${island}`}>
-        {bridges.length > 0 && (
-          <p className="bridges-have">
-            Tu as <strong>{have}</strong> bloc{have > 1 ? 's' : ''}.{ferme ? ' Choisis l’île de départ. La plus proche est en premier.' : ''}
-          </p>
-        )}
+        {bridges.length > 0 &&
+          (ferme ? (
+            // Vers une île fermée (GD-9, piste A) : les blocs en poche en signes, sans phrase ; le plus proche en premier.
+            <p className="bridges-have">
+              <span className="visually-hidden">{`Tu as ${have} bloc${have > 1 ? 's' : ''}.`}</span>
+              <span className="signe" aria-hidden="true">
+                <Icon name="cube" /> <strong>{have}</strong>
+              </span>
+            </p>
+          ) : (
+            <p className="bridges-have">
+              Tu as <strong>{have}</strong> bloc{have > 1 ? 's' : ''}.
+            </p>
+          ))}
         <ul ref={list} className="island-actions bridges-list" aria-label={ferme ? 'Départs de l’ouvrage' : 'Ouvrages à poser'}>
           {liste.map((b) => {
             const other = getBiome(otherEnd(b, island))!;
@@ -176,6 +185,32 @@ export function Bridges({ island, onBuilt, highlight = null, fold, objectif }: P
                       {!met && conditionText(b, state.world.links)}
                     </span>
                   </span>
+                </li>
+              );
+            // Vers une île fermée : l'ouvrage, le nom du départ et son coût en signes ; « Poser » écrit sur le plus proche
+            // seulement, le marteau seul sur les autres (son mot dessous en grand texte).
+            if (ferme)
+              return (
+                <li key={b.id} data-bridge={b.id} className={`island-quest bridge-item bridge-${kind}${highlight === b.id ? ' bridge-highlight' : ''}`}>
+                  <span className="island-quest-icon bridge-icon">
+                    <Icon name="ouvrage" />
+                  </span>
+                  <span className="island-quest-text">
+                    <span className="visually-hidden">{`${title}, ${b.cost} blocs`}</span>
+                    <span aria-hidden="true">
+                      <span className="island-quest-title">{other.name}</span>
+                      <span className="island-quest-desc signe">
+                        <Icon name="cube" /> {b.cost}
+                      </span>
+                    </span>
+                  </span>
+                  {b.id === principal ? (
+                    <button type="button" className="button primary" onClick={() => build(b)}>
+                      <Icon name="hammer" /> Poser
+                    </button>
+                  ) : (
+                    <IconButton icone="hammer" nom={`Poser depuis ${thePlace(other.name)}`} mot="Poser" onClick={() => build(b)} />
+                  )}
                 </li>
               );
             return (

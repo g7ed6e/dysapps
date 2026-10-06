@@ -130,6 +130,9 @@ export default function WorldCanvas({
   // Les cubes des bornes de mission et des ouvrages, par case : pour savoir ce qu'on touche.
   const tags = useRef(cubeTags([]));
   const dansLeMode = Boolean(amenager);
+  // Où la page veut savoir que se tient le choix du mode à l'écran (les flèches autour de lui), lu à chaque image.
+  const ecranDuModeRef = useRef(amenager?.ecran);
+  ecranDuModeRef.current = amenager?.ecran;
   useEffect(() => {
     // Un ouvrage construit se touche comme le sol (lot 2 de « Toucher le monde ») : seuls ceux en fantôme sont des cibles.
     const t = cubeTags(cubes);
@@ -218,7 +221,9 @@ export default function WorldCanvas({
       const libre = contourner(lue.libre, { x: b.left - vue.left + b.width / 2, y: b.top - vue.top + b.height / 2, w: b.width, h: b.height });
       return libre === lue.libre ? lue : { ...lue, libre };
     };
-    const etiquettes = creerEtiquettes(monde, el, camera, bornes.donneesDeLaFleche, () => personnages.avatar, instant, plaques, lecteurDeLaPlaceDeLaBulle);
+    // Les poignées du mode « Modifier le plan » (créées plus bas, lues seulement à l'animation) : des obstacles durs.
+    const poigneesDuMode = { boites: (cam: THREE.Camera, W: number, H: number) => amenagement.poignees.boites(cam, W, H), get version() { return amenagement.poignees.version; } };
+    const etiquettes = creerEtiquettes(monde, el, camera, bornes.donneesDeLaFleche, () => personnages.avatar, instant, plaques, lecteurDeLaPlaceDeLaBulle, poigneesDuMode);
     const personnages = creerPersonnages(monde, () => cubesDuMonde.champ(), instant, lumiere);
     const cubesDuMonde = creerCubes(monde, large, lumiere, instant);
     const navire = creerNavire(monde, personnages, cubesDuMonde, derniers, instant, vehicleRef, voyageRef);
@@ -252,7 +257,17 @@ export default function WorldCanvas({
       },
     };
     const cadrage = creerCamera(monde, camera, personnages.avatar, derniers, instant, lecture);
-    const amenagement = creerAmenagement(monde, reduceMotion, camera, el, lumiere);
+    // Une poignée du mode sort de la place libre : la Carte glisse pour poser le milieu du choix au milieu de la place
+    // libre (pas pendant un glissé de l'élève ; une fois le doigt levé).
+    const ramenerLesPoignees = (p: { cx: number; cy: number; z: number }) => {
+      if (cadrage.glissant) return false;
+      const libre = lirePlaceReelle(el);
+      const w = Math.max(1, el.clientWidth);
+      const h = Math.max(1, el.clientHeight);
+      cadrage.recadrer(new THREE.Vector3(p.cx, p.z, p.cy), { x: (libre.x0 + libre.x1) / w - 1, y: 1 - (libre.y0 + libre.y1) / h });
+      return true;
+    };
+    const amenagement = creerAmenagement(monde, reduceMotion, camera, el, lumiere, () => ecranDuModeRef.current, ramenerLesPoignees);
     world.current = {
       amenagement,
       garderEnVue: ({ rect: r, z }) => {
@@ -261,6 +276,7 @@ export default function WorldCanvas({
         // La hauteur réelle de la barre du mode et de sa phrase (un pli ouvert compris) : le fantôme se cadre dans la
         // bande libre entre les deux.
         const libre = lirePlaceReelle(el);
+        // Une marge pour les poignées, déjà comprises dans le cadre (`garderEnVue` reçoit leur emprise) : rien au ras du bord.
         const marge = 24;
         // Les quatre coins dans la place libre : rien à faire.
         const dedans = [r.x0, r.x1].every((x) =>
@@ -472,10 +488,19 @@ export default function WorldCanvas({
     const w = world.current;
     if (!w) return;
     w.amenagement.poser(vueDuMode);
-    if (vueDuMode) w.garderEnVue(vueDuMode.cadre ?? { rect: { x0: vueDuMode.suivre.x, y0: vueDuMode.suivre.y, x1: vueDuMode.suivre.x + 1, y1: vueDuMode.suivre.y + 1 }, z: vueDuMode.suivre.z });
+    // Le lieu choisi : son nom n'est écrit qu'une fois, sur son fantôme.
+    w.etiquettes.cacher(vueDuMode?.lieu ?? null);
+    // La vue garde à l'écran le fantôme et ses poignées sur l'eau autour de lui.
+    if (vueDuMode) {
+      const p = vueDuMode.poignees;
+      w.garderEnVue(p ? { rect: p.emprise, z: p.z } : (vueDuMode.cadre ?? { rect: { x0: vueDuMode.suivre.x, y0: vueDuMode.suivre.y, x1: vueDuMode.suivre.x + 1, y1: vueDuMode.suivre.y + 1 }, z: vueDuMode.suivre.z }));
+    }
     // Reposé aussi quand la scène est refaite (un lieu posé, la préférence de mouvement).
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vueDuMode, reduceMotion, archipelago]);
+  // ---- Le bouton d'une poignée touché : la poignée dessinée s'enfonce et remonte
+  const touchersDuMode = amenager?.touchers;
+  useEffect(() => touchersDuMode?.ecouter((cle) => world.current?.amenagement.toucher(cle)), [touchersDuMode]);
   // ---- Après une réunion : la paire et sa construction entières à l'écran (la scène est refaite, la vue les cadre)
   const cadreDuMode = amenager?.cadre ?? null;
   useEffect(() => {
