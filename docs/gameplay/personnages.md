@@ -36,6 +36,9 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 | [Horloge des verbes](https://g7ed6e.github.io/dysapps/pedagogie/iles/english-6e-grammar.html) (Anglais) | Tick | hérisson horloger | hérisson horloger | Le Coucou de bronze |
 | [Fouille des siècles](https://g7ed6e.github.io/dysapps/pedagogie/iles/history-6e-antiquity.html) (Histoire-géo) | Silex | ourson fouilleur | ourson des fouilles | L’Amphore peinte |
 | [Pointe des paysages](https://g7ed6e.github.io/dysapps/pedagogie/iles/geography-6e-living.html) (Histoire-géo) | Boussole | tortue géographe | pélican des ports | Le Castor de glaise |
+| [Vallée du vivant](https://g7ed6e.github.io/dysapps/pedagogie/iles/life-earth-sciences-6e-living-world.html) (SVT) | Fougère | escargot jardinier | escargot jardinier | Le Cerf des sous-bois |
+| [Laboratoire des éléments](https://g7ed6e.github.io/dysapps/pedagogie/iles/physics-chemistry-6e-matter-energy.html) (Physique-chimie) | Bulle | goutte chimiste | poulpe chimiste | L’Alambic de verre |
+| [Hangar des inventions](https://g7ed6e.github.io/dysapps/pedagogie/iles/technology-6e-objects.html) (Technologie) | Boulon | fourmi bricoleuse | fourmi bricoleuse | L’Automate de laiton |
 
 ### Le Grand Chêne, Forêt des sons
 
@@ -122,7 +125,7 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 |  | Blocland | Archipéo |
 | --- | --- | --- |
 | Au défi | L’Amphore peinte attend sur son îlot : « Mes bandes peintes sont toutes grises. Tu as fouillé toute l’île : remets chaque époque à sa place. » | L’Amphore peinte dit doucement : « Mes bandes peintes sont éteintes. Tu as relevé toutes les trouvailles : remets chaque époque à sa place. » |
-| À la fin | Je me rallume, du col jusqu’au pied. La Fouille est à toi, et à Silex. | Ma frise se rallume. La fouille est à toi, et à Silex. |
+| À la fin | Je me rallume, du pied jusqu’au col. La Fouille est à toi, et à Silex. | Ma frise se rallume. La fouille est à toi, et à Silex. |
 | Silex à l’arrivée | Bonjour, bâtisseur ! Ici, on fouille le passé. Chaque bonne réponse te donne une mosaïque. Regarde la frise : le plus ancien est en haut. | Bonjour, bâtisseur ! Ici, on fouille le passé. Chaque bonne réponse te donne une mosaïque. Regarde la frise : le plus ancien est en haut. |
 
 ### Le Castor de glaise, Pointe des paysages
@@ -132,6 +135,30 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 | Au défi | Le Castor de glaise lève la tête : « Me voilà tout gris. Tu as vu tous les paysages de la Pointe : dis-moi où vivent les humains. » | Le Castor de glaise dit doucement : « Les traits de mon pelage sont éteints. Tu as regardé tous les paysages de la Pointe : dis-moi où vivent les humains. » |
 | À la fin | Je me rallume, de la queue jusqu’aux oreilles. La Pointe est à toi, et à Boussole. | Mon pelage se rallume. La pointe est à toi, et à Boussole. |
 | Boussole à l’arrivée | Bonjour, bâtisseur ! Ici, on regarde où vivent les humains : en ville, à la campagne, au bord de la mer. Chaque bonne réponse te donne du chaume. Le chaume, c’est de la paille séchée, serrée en bottes. | Bonjour, bâtisseur ! Ici, on regarde où vivent les humains : en ville, à la campagne, au bord de la mer. Chaque bonne réponse te donne du chaume. Le chaume, c’est de la paille séchée, serrée en bottes. |
+
+### Le Cerf des sous-bois, Vallée du vivant
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | Le Cerf des sous-bois baisse la tête : « Me voilà tout gris. Tu as parcouru toute ma vallée : range chaque être vivant à sa place. » | Le Cerf des sous-bois dit doucement : « Mon manteau de mousse est éteint. Tu as observé tout le vivant de la vallée : aide-moi à le classer. » |
+| À la fin | Je me rallume, des sabots jusqu’aux bois. La Vallée est à toi, et à Fougère. | Mon manteau se rallume. La vallée est à toi, et à Fougère. |
+| Fougère à l’arrivée | Bonjour, bâtisseur ! Ici, on regarde le vivant : les plantes, les bêtes et la Terre. Chaque bonne réponse te donne un fossile. Un fossile, c’est la trace d’un être vivant très ancien, gardée dans la pierre. | Bonjour, bâtisseur ! Ici, on regarde le vivant : les plantes, les bêtes et la Terre. Chaque bonne réponse te donne un fossile. Un fossile, c’est la trace d’un être vivant très ancien, gardée dans la pierre. |
+
+### L’Alambic de verre, Laboratoire des éléments
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | L’Alambic de verre fait une petite bulle : « Mon ballon est tout gris. Tu as fait toutes mes expériences : explique-les-moi. » | L’Alambic de verre dit doucement : « Mon ballon de verre est éteint. Tu as fait toutes les expériences du laboratoire : aide-moi à les comprendre. » |
+| À la fin | Blop ! Je me rallume, du pied jusqu’au bec. Le Laboratoire est à toi, et à Bulle. | Mon ballon se rallume. Le laboratoire est à toi, et à Bulle. |
+| Bulle à l’arrivée | Bonjour, bâtisseur ! Ici, on fait des expériences : l’eau, les mouvements et les circuits. Chaque bonne réponse te donne un aimant. Un aimant attire le fer. | Bonjour, bâtisseur ! Ici, on fait des expériences : l’eau, les mouvements et les circuits. Chaque bonne réponse te donne un aimant. Un aimant attire le fer. |
+
+### L’Automate de laiton, Hangar des inventions
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | L’Automate de laiton fait tourner sa clé : « Me voilà tout gris. Tu as ouvert tous mes objets : dis-moi à quoi ils servent. » | L’Automate de laiton dit doucement : « Les boutons de ma poitrine sont éteints. Tu as essayé tous les objets du hangar : dis-moi à quoi ils servent. » |
+| À la fin | Clic ! Je me rallume, des pieds jusqu’à la clé. Le Hangar est à toi, et à Boulon. | Mes boutons se rallument. Le hangar est à toi, et à Boulon. |
+| Boulon à l’arrivée | Bonjour, bâtisseur ! Ici, on ouvre les objets pour voir comment ils marchent. Chaque bonne réponse te donne du carton. Le carton, c’est du papier épais : on le plie, on le découpe, on le recycle. | Bonjour, bâtisseur ! Ici, on ouvre les objets pour voir comment ils marchent. Chaque bonne réponse te donne du carton. Le carton, c’est du papier épais : on le plie, on le découpe, on le recycle. |
 
 ## Les Collines du Large (Blocland), les Îles Brumeuses (Archipéo), 5e
 
