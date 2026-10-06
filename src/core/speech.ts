@@ -101,7 +101,7 @@ function siecleEnMots(romain: string): string | undefined {
 }
 
 /** Les mots à majuscule qui précèdent un chiffre romain sans être un nom de souverain (« Le XIV », « Chapitre III »). */
-const PAS_UN_SOUVERAIN: ReadonlySet<string> = new Set(['Le', 'La', 'Les', 'Au', 'Aux', 'Du', 'Des', 'De', 'En', 'Chapitre', 'Tome', 'Acte']);
+const PAS_UN_SOUVERAIN: ReadonlySet<string> = new Set(['Le', 'La', 'Les', 'Au', 'Aux', 'Du', 'Des', 'De', 'En', 'Soit', 'Chapitre', 'Tome', 'Acte']);
 
 /** « Louis XIV », « François Ier », « Napoléon III » tels qu'on les dit : « quatorze », « premier », « trois ». */
 function souverainEnMots(romain: string): string | undefined {
@@ -110,7 +110,11 @@ function souverainEnMots(romain: string): string | undefined {
   return n === undefined ? undefined : cardinalEnMots(n);
 }
 
+/** Les chiffres romains bien formés de 1 à 39 (« VV » ou « IIII » n'en sont pas). */
+const ROMAIN_VALIDE = /^X{0,3}(IX|IV|V?I{0,3})$/;
+
 function romainEnNombre(romain: string): number | undefined {
+  if (!ROMAIN_VALIDE.test(romain)) return undefined;
   let n = 0;
   for (let i = 0; i < romain.length; i++) {
     const v = ROMAINS[romain[i]];

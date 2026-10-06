@@ -70,6 +70,8 @@ describe('le texte lu à voix haute', () => {
     // Un « I » seul n'est pas un roi, et l'anglais garde ses lettres.
     expect(pourLaVoix('Because I missed the bus. Can I go?')).toBe('Because I missed the bus. Can I go?');
     expect(pourLaVoix('Louis XIV', 'en')).toBe('Louis XIV');
+    // Une suite qui n'est pas un chiffre romain bien formé, ou une inconnue de maths, reste telle quelle.
+    expect(pourLaVoix('Louis VV, Soit X')).toBe('Louis VV, Soit X');
     expect(pourLaVoix('Ier siècle, IVe siècle, Ve siècle, IXe siècle')).toBe('premier siècle, quatrième siècle, cinquième siècle, neuvième siècle');
     expect(pourLaVoix('XIXe siècle, XXIe siècle')).toBe('dix-neuvième siècle, vingt-et-unième siècle');
     // Hors d'un siècle, rien ne change.
