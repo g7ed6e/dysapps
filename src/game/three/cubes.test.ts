@@ -6,6 +6,7 @@ import { HABILLAGES, type Habillage } from '../skin';
 import { toutConstruit } from '../world/budget';
 import { maillageDeLaConstruction } from '../world/construction';
 import { buildMesh } from '../world/mesher';
+import { hiddenBottomLevel } from '../world/sea';
 import { worldCubes } from '../world/terrain';
 import { KITS } from '../world/architecture';
 import { creerCubes } from './cubes';
@@ -75,9 +76,9 @@ describe('Le rendu de Blocland ne montre aucune pièce d’architecture', () => 
       expect(Object.hasOwn(x, 'onBeforeCompile')).toBe(false);
       expect(x.customProgramCacheKey()).not.toBe('amenager');
     }
-    // Exactement les triangles du monde en blocs (world/mesher.ts), cube pour cube.
+    // Exactement les triangles du monde en blocs (world/mesher.ts), cube pour cube, sans les dessous sous l'eau.
     const tri = (g: THREE.BufferGeometry) => (g.index ? g.index.count : g.getAttribute('position').count) / 3;
-    const attendus = buildMesh(cubes).reduce((n, g) => n + g.indices.length / 3, 0);
+    const attendus = buildMesh(cubes, [], { hiddenBottomsUpTo: hiddenBottomLevel('6e') }).reduce((n, g) => n + g.indices.length / 3, 0);
     expect(maillages.reduce((n, o) => n + tri(o.geometry), 0)).toBe(attendus);
     c.dispose();
   });

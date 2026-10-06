@@ -1,8 +1,8 @@
 // Les maillages et matériaux partagés par les parties de la scène 3D : un groupe de faces du mailleur en maillage, le
 // matériau d'une face (cache), la texture d'une nappe de brume.
 import * as THREE from 'three';
-import type { FaceSide, MeshGroup } from '../world/mesher';
-import { blockMaterial, tintedMaterial, type TextureKind } from './textures';
+import { isPlainTint, type FaceSide, type MeshGroup } from '../world/mesher';
+import { blockMaterial, tintedMaterial, vertexTintedMaterial, type TextureKind } from './textures';
 import type { Surface } from './surface';
 import { avecLAmenagement } from './arrange';
 
@@ -76,4 +76,42 @@ export function meshOf(g: MeshGroup, surface: Surface | null = null): THREE.Mesh
   // Les faces cachées ne sont plus là : on peut renoncer au tri par la taille de la scène.
   mesh.frustumCulled = false;
   return mesh;
+}
+
+/**
+ * Les groupes de faces d'un modèle (personnages) en maillages : ses couleurs unies ensemble, en un seul maillage aux
+ * couleurs dans les sommets (un appel de dessin au lieu d'un par couleur), le reste un maillage par groupe (`meshOf`).
+ * La même image : la couleur d'une face est celle de `tintedMaterial`, sur le même grain. Avec `surface` (lot R1),
+ * chaque groupe garde le sien.
+ */
+export function meshesOf(groups: MeshGroup[], surface: Surface | null = null): THREE.Mesh[] {
+  const tints = surface ? [] : groups.filter(isPlainTint);
+  const meshes = groups.filter((g) => !tints.includes(g)).map((g) => meshOf(g, surface));
+  if (tints.length === 0) return meshes;
+  const positions: number[] = [];
+  const normals: number[] = [];
+  const uvs: number[] = [];
+  const colors: number[] = [];
+  const indices: number[] = [];
+  const color = new THREE.Color();
+  for (const g of tints) {
+    const base = positions.length / 3;
+    // En linéaire, comme la couleur d'un matériau : la teinte ne bouge pas.
+    color.set(g.color ?? '#9c9c9c');
+    positions.push(...g.positions);
+    normals.push(...g.normals);
+    uvs.push(...g.uvs);
+    for (let i = 0; i < g.positions.length / 3; i++) colors.push(color.r, color.g, color.b);
+    for (const i of g.indices) indices.push(base + i);
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  geo.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
+  geo.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
+  geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+  geo.setIndex(indices);
+  const mesh = new THREE.Mesh(geo, avecLAmenagement(vertexTintedMaterial()));
+  mesh.frustumCulled = false;
+  meshes.push(mesh);
+  return meshes;
 }

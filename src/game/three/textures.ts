@@ -36,17 +36,34 @@ export function blockMaterial(kind: TextureKind, muted = false): THREE.Material 
   return material;
 }
 
-/** Matériau d'une couleur unie avec un léger grain pixel (créatures). */
-export function tintedMaterial(color: string): THREE.Material {
-  const key = `tint:${color}`;
-  const cached = cache.get(key);
-  if (cached) return cached as THREE.Material;
+/** La texture du grain pixel des couleurs unies, peinte une fois. */
+function grainTexture(): THREE.Texture | null {
   let grainMap = cache.get('grainmap') as unknown as THREE.Texture | undefined;
   if (!grainMap) {
     grainMap = textureOf(canvasFor(grain('#d8d8d8', '#ffffff'), 5)) ?? undefined;
     if (grainMap) cache.set('grainmap', grainMap as unknown as THREE.Material);
   }
-  const material = new THREE.MeshLambertMaterial({ color: new THREE.Color(color), map: grainMap ?? null });
+  return grainMap ?? null;
+}
+
+/** Matériau d'une couleur unie avec un léger grain pixel (créatures). */
+export function tintedMaterial(color: string): THREE.Material {
+  const key = `tint:${color}`;
+  const cached = cache.get(key);
+  if (cached) return cached as THREE.Material;
+  const material = new THREE.MeshLambertMaterial({ color: new THREE.Color(color), map: grainTexture() });
   cache.set(key, material);
+  return material;
+}
+
+/**
+ * Le matériau de toutes les couleurs unies d'un modèle à la fois (personnages) : la couleur de chaque face est dans ses
+ * sommets, le grain le même que `tintedMaterial`. Une seule couleur par appel de dessin coûtait un appel par couleur.
+ */
+export function vertexTintedMaterial(): THREE.Material {
+  const cached = cache.get('vertex-tint');
+  if (cached) return cached as THREE.Material;
+  const material = new THREE.MeshLambertMaterial({ vertexColors: true, map: grainTexture() });
+  cache.set('vertex-tint', material);
   return material;
 }
