@@ -317,7 +317,8 @@ describe('le mode « Aménager »', () => {
     render(<SettingsProvider><Banc reduit depart={depart()} /></SettingsProvider>);
     fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
     act(() => void dernier.intention({ genre: 'ile', id: VOLCAN }));
-    act(() => void dernier.intention({ genre: 'mer', point: { x: 0, y: 0 } }));
+    // Le coin libre du fond, à l'ouest : le coin de devant porte le Hangar des inventions depuis SC-2.
+    act(() => void dernier.intention({ genre: 'mer', point: { x: 0, y: 120 } }));
     fireEvent.click(screen.getByRole('button', { name: 'Poser' }));
     const posee = spotOf(monde, VOLCAN);
     // Un choix qui ne se pose pas (un lieu fixe se refuse ; on force ici un choix sur la place d'un autre lieu).
@@ -335,7 +336,8 @@ describe('le mode « Aménager »', () => {
     render(<SettingsProvider><Banc reduit={false} depart={depart()} /></SettingsProvider>);
     fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
     act(() => void dernier.intention({ genre: 'ile', id: VOLCAN }));
-    act(() => void dernier.intention({ genre: 'mer', point: { x: 0, y: 0 } }));
+    // Le coin libre du fond, à l'ouest : le coin de devant porte le Hangar des inventions depuis SC-2.
+    act(() => void dernier.intention({ genre: 'mer', point: { x: 0, y: 120 } }));
     const avant = spotOf(monde, VOLCAN);
     fireEvent.click(screen.getByRole('button', { name: 'Poser' }));
     expect(dernier.geste?.phase).toBe('demonte');
