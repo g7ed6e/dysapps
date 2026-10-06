@@ -227,7 +227,7 @@ export const BLOCLAND = {
       guardianSays: {
         hit: 'Juste. Un bloc de mon pelage redevient ocre.',
         miss: 'Mes couleurs restent. Relis le document, cherche le mot du rappel, et reprends.',
-        beaten: 'Je me rallume, de la queue jusqu’aux dents. La Pointe est à toi, et à Boussole.',
+        beaten: 'Je me rallume, de la queue jusqu’aux oreilles. La Pointe est à toi, et à Boussole.',
       },
     },
     'lv2-3e-travel': {

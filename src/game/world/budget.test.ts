@@ -1,6 +1,6 @@
 import { BADGES } from '../../core/progress';
 import { trophyBlock } from '../trophies';
-import { APPEL_DU_PASSAGE, bornesCost, linkCubes, worstCaseOfRegion, commandesCost, constructionCost, decorCost, ENVELOPPES, enveloppeDe, fauneCost, merCost, navireCost, personnagesCost, PLAFOND_DU_MONDE_EN_BLOCS, RENDER_BUDGET, sceneCost, sceneCostArchipeo, signesCost, solCost, toutConstruit, type Poste } from './budget';
+import { APPEL_DU_PASSAGE, bornesCost, linkCubes, worstCaseOfRegion, commandesCost, constructionCost, decorCost, ENVELOPPES, enveloppeDe, fauneCost, merCost, navireCost, personnagesCost, PLAFOND_DU_MONDE_EN_BLOCS, RENDER_BUDGET, RENDER_BUDGET_6E, sceneCost, sceneCostArchipeo, signesCost, solCost, toutConstruit, type Poste } from './budget';
 import { ARCHIPELAGO_IDS, type ArchipelagoId, mapOf } from './map';
 import { chooseGuardian, chooseIsland } from './arrangeMode';
 import { arrangeView, arrangeViewCost } from './arrangeView';
@@ -25,6 +25,7 @@ it('le monde en blocs ne recule pas : triangles et appels de dessin de chaque ar
     expect(drawCalls, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.drawCalls);
   }
   expect(RENDER_BUDGET).toEqual({ triangles: 60_000, drawCalls: 40 });
+  expect(RENDER_BUDGET_6E).toEqual({ triangles: 63_400, drawCalls: 40 });
 });
 
 it('les petites constructions des commandes (GD-7, PR 3) se fondent dans le terrain : aucun appel de plus, sous le plafond', () => {
@@ -95,8 +96,9 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
   it('la somme des enveloppes tient dans le budget des tablettes, dans chaque archipel, baleine comprise', () => {
     for (const a of ARCHIPELAGO_IDS) {
       const somme = postes.reduce((t, p) => ({ triangles: t.triangles + enveloppeDe(p, a).triangles, drawCalls: t.drawCalls + enveloppeDe(p, a).drawCalls }), { triangles: 0, drawCalls: 0 });
-      expect(somme.triangles, a).toBeLessThanOrEqual(RENDER_BUDGET.triangles);
-      expect(somme.drawCalls + APPEL_DU_PASSAGE, a).toBeLessThanOrEqual(RENDER_BUDGET.drawCalls);
+      const budget = a === '6e' ? RENDER_BUDGET_6E : RENDER_BUDGET;
+      expect(somme.triangles, a).toBeLessThanOrEqual(budget.triangles);
+      expect(somme.drawCalls + APPEL_DU_PASSAGE, a).toBeLessThanOrEqual(budget.drawCalls);
     }
   });
 

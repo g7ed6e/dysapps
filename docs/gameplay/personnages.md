@@ -122,16 +122,16 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 |  | Blocland | Archipéo |
 | --- | --- | --- |
 | Au défi | L’Amphore peinte attend sur son îlot : « Mes bandes peintes sont toutes grises. Tu as fouillé toute l’île : remets chaque époque à sa place. » | L’Amphore peinte dit doucement : « Mes bandes peintes sont éteintes. Tu as relevé toutes les trouvailles : remets chaque époque à sa place. » |
-| À la fin | Je me rallume, du col jusqu’au pied. La Fouille est à toi, et à Silex. | Ma frise se rallume. La Fouille est à toi, et à Silex. |
+| À la fin | Je me rallume, du col jusqu’au pied. La Fouille est à toi, et à Silex. | Ma frise se rallume. La fouille est à toi, et à Silex. |
 | Silex à l’arrivée | Bonjour, bâtisseur ! Ici, on fouille le passé. Chaque bonne réponse te donne une mosaïque. Regarde la frise : le plus ancien est en haut. | Bonjour, bâtisseur ! Ici, on fouille le passé. Chaque bonne réponse te donne une mosaïque. Regarde la frise : le plus ancien est en haut. |
 
 ### Le Castor de glaise, Pointe des paysages
 
 |  | Blocland | Archipéo |
 | --- | --- | --- |
-| Au défi | Le Castor de glaise lève la tête : « Me voilà tout gris. Tu as vu tous les paysages de la Pointe : dis-moi où vivent les humains. » | Le Castor de glaise dit doucement : « Mes couleurs sont éteintes. Tu as regardé tous mes paysages : dis-moi où vivent les humains. » |
-| À la fin | Je me rallume, de la queue jusqu’aux dents. La Pointe est à toi, et à Boussole. | Mes couleurs se rallument. La Pointe est à toi, et à Boussole. |
-| Boussole à l’arrivée | Bonjour, bâtisseur ! Ici, on regarde où vivent les humains : en ville, à la campagne, au bord de la mer. Chaque bonne réponse te donne du chaume. Le chaume, c’est la paille qui couvre les toits. | Bonjour, bâtisseur ! Ici, on regarde où vivent les humains : en ville, à la campagne, au bord de la mer. Chaque bonne réponse te donne du chaume. Le chaume, c’est la paille qui couvre les toits. |
+| Au défi | Le Castor de glaise lève la tête : « Me voilà tout gris. Tu as vu tous les paysages de la Pointe : dis-moi où vivent les humains. » | Le Castor de glaise dit doucement : « Les traits de mon pelage sont éteints. Tu as regardé tous les paysages de la Pointe : dis-moi où vivent les humains. » |
+| À la fin | Je me rallume, de la queue jusqu’aux oreilles. La Pointe est à toi, et à Boussole. | Mon pelage se rallume. La pointe est à toi, et à Boussole. |
+| Boussole à l’arrivée | Bonjour, bâtisseur ! Ici, on regarde où vivent les humains : en ville, à la campagne, au bord de la mer. Chaque bonne réponse te donne du chaume. Le chaume, c’est de la paille séchée, serrée en bottes. | Bonjour, bâtisseur ! Ici, on regarde où vivent les humains : en ville, à la campagne, au bord de la mer. Chaque bonne réponse te donne du chaume. Le chaume, c’est de la paille séchée, serrée en bottes. |
 
 ## Les Collines du Large (Blocland), les Îles Brumeuses (Archipéo), 5e
 

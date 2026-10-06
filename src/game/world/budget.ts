@@ -43,6 +43,13 @@ export const RENDER_BUDGET = {
 } as const;
 
 /**
+ * Les Premiers Rivages (6e) dépassent les 60 000 des tablettes depuis les deux îles d'histoire-géographie (HG-2) : relevé
+ * par le mainteneur le 6 octobre 2026 (« Budget on augmente pour l'instant »), à la somme de leurs enveloppes. La mesure
+ * sur tablette reste à faire.
+ */
+export const RENDER_BUDGET_6E = { triangles: 63_400, drawCalls: RENDER_BUDGET.drawCalls } as const;
+
+/**
  * Le plafond du monde en blocs (Blocland), tout construit : mesuré au lot R0 (77 216 triangles et 234 appels aux
  * Premiers Rivages), il l'empêche seulement de grossir ; les liaisons du port (GD-7) et les petites constructions des
  * commandes y tiennent (`sceneCost`). Relevé de 80 000 à 88 000 triangles pour GD-9 (mainteneur, 5 octobre 2026) : les
@@ -108,9 +115,8 @@ export const ENVELOPPES: Record<Poste, { lot: 'R4b' | 'R5' | 'R6' | 'GD-7' | 'so
   // 6 octobre 2026 (« Budget on augmente pour l'instant »), aux valeurs mesurées tout construit avec une petite marge,
   // sans lot d'optimisation : le sol de 25 000 à 27 800 (27 785 mesurés), le décor de 12 100 à 12 350 (12 332), les
   // commandes de 450 à 520 (516), les créatures de 2 500 à 2 950 (2 917), les Gardiens de 1 800 à 2 100 (2 065). La
-  // somme des Premiers Rivages passe de 59 500 à 63 370 : au-dessus des 60 000 des tablettes (`RENDER_BUDGET`), que ce
-  // relevé ne change pas (61 386 triangles comptés, « Dans la scène » à part) ; à trancher par le mainteneur. La mesure
-  // sur tablette reste à faire.
+  // somme des Premiers Rivages passe de 59 500 à 63 370 : au-dessus des 60 000 des tablettes : `RENDER_BUDGET_6E`,
+  // relevé du même mot (61 386 triangles comptés, « Dans la scène » à part). La mesure sur tablette reste à faire.
   sol: { lot: 'R4b', nom: 'Sol', premiersRivages: { triangles: 27_800, drawCalls: 2 }, autres: { triangles: 24_850, drawCalls: 1 } },
   // Proposition de l'artiste technique 3D pour le Relais des voyageurs (LV2, 5e), à valider par le mainteneur : une île
   // de plus aux Îles Brumeuses coûte environ 800 triangles de décor et 850 de construction. Les enveloppes « autres » en
