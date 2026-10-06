@@ -2,7 +2,7 @@ import { BLOCKS, BIOMES } from './biomes';
 import { bacASable, BLOCS_DU_BATISSEUR, remplir } from './builder';
 import { isBossBeaten } from './bossCore';
 import { EMPTY_STATE, fillPlanCell } from './engine';
-import { BRIDGES, isBiomeUnlocked } from './world/archipelago';
+import { isBiomeUnlocked } from './world/archipelago';
 import { plansFor, planCells } from './world/plans';
 
 describe('mode bâtisseur', () => {
@@ -12,8 +12,9 @@ describe('mode bâtisseur', () => {
     for (const b of Object.keys(BLOCKS)) expect(bac.stock[b as keyof typeof BLOCKS]).toBe(BLOCS_DU_BATISSEUR);
   });
 
-  it('pose tous les ponts et compte les Gardiens comme vaincus', () => {
-    for (const b of BRIDGES) expect(bac.world.links).toContain(b.id);
+  it('relie chaque lieu et compte les Gardiens comme vaincus', () => {
+    // GD-9 : toutes les liaisons ne se posent pas (deux liaisons ne se croisent pas) ; chaque lieu est relié.
+    for (const b of BIOMES) expect(isBiomeUnlocked(b.id, bac.world.links), b.id).toBe(true);
     for (const b of BIOMES) expect(isBossBeaten(b.id, bac.progress)).toBe(true);
     expect(isBiomeUnlocked(BIOMES[0].id, bac.world.links)).toBe(true);
   });

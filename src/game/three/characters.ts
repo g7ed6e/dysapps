@@ -12,7 +12,7 @@ import { avatarWalk, startStrolls, strollAt, walkPose, type Stroll, type Walk } 
 import { hauteurDuSigne } from '../world/sign';
 import type { EnCasesDuMonde, WorldViewProps } from '../world/view';
 import type { Lumiere } from './light';
-import { meshOf } from './meshes';
+import { meshesOf } from './meshes';
 import type { Instant, Monde, PartieDeLaScene } from './scenePart';
 
 export interface Personnages extends PartieDeLaScene {
@@ -83,7 +83,7 @@ function habitsEnCubes(monde: Monde, champ: () => ChampDuSol | null, instant: In
     pivot.position.set(part.pivot.x, part.pivot.z, part.pivot.y);
     const inner = new THREE.Group();
     inner.position.set(-part.pivot.x, -part.pivot.z, -part.pivot.y);
-    for (const g of buildMesh(part.cubes)) inner.add(meshOf(g, surface));
+    inner.add(...meshesOf(buildMesh(part.cubes), surface));
     pivot.add(inner);
     avatarBody.add(pivot);
     if (part.name.startsWith('bras')) arms.push(pivot);
@@ -116,7 +116,7 @@ function habitsEnCubes(monde: Monde, champ: () => ChampDuSol | null, instant: In
   const habillerEnCouleurs = (id: BiomeId) => {
     couches = [];
     const group = viderLeGardien(id);
-    if (group) for (const g of buildMesh(gardienDuMonde(id))) group.add(meshOf(g, surface));
+    if (group) group.add(...meshesOf(buildMesh(gardienDuMonde(id)), surface));
   };
   /** Les maillages du Gardien retirés et libérés ; son groupe, ou rien s'il n'est pas posé. */
   const viderLeGardien = (id: BiomeId) => {
@@ -138,16 +138,17 @@ function habitsEnCubes(monde: Monde, champ: () => ChampDuSol | null, instant: In
     const group = viderLeGardien(id);
     if (!group) return;
     if (fondu.fini) {
-      for (const g of buildMesh(gardienDuMonde(id))) group.add(meshOf(g, surface));
+      group.add(...meshesOf(buildMesh(gardienDuMonde(id)), surface));
       return;
     }
     const cubes = gardienDuMonde(id);
+    // Des pieds vers la tête, pour tous les Gardiens (GD-8).
     for (const z of [...new Set(cubes.map((c) => c.z))].sort((a, b) => a - b)) {
       const couche = cubes.filter((c) => c.z === z);
       const pierre = new THREE.Group();
       const couleurs = new THREE.Group();
-      for (const g of buildMesh(statueDe(couche))) pierre.add(meshOf(g, surface));
-      for (const g of buildMesh(couche)) couleurs.add(meshOf(g, surface));
+      pierre.add(...meshesOf(buildMesh(statueDe(couche)), surface));
+      couleurs.add(...meshesOf(buildMesh(couche), surface));
       group.add(pierre, couleurs);
       couches.push({ pierre, couleurs });
     }
@@ -172,7 +173,7 @@ function habitsEnCubes(monde: Monde, champ: () => ChampDuSol | null, instant: In
       walkers = creatures.map((c, i) => {
         const group = new THREE.Group();
         group.userData = { creature: c.id, kind: c.kind ?? 'creature' };
-        for (const g of buildMesh(c.cubes)) group.add(meshOf(g, surface));
+        group.add(...meshesOf(buildMesh(c.cubes), surface));
         // Le milieu de son emprise au sol : c'est là qu'on lit la hauteur du sol à facettes.
         const pieds = c.cubes.filter((q) => q.z === Math.min(...c.cubes.map((k) => k.z)));
         const centre = pieds.length
@@ -272,7 +273,7 @@ export function creerPersonnages(monde: Monde, champ: () => ChampDuSol | null, i
     },
     marcher: (avatar) => {
       // Six cases par seconde, toujours (un toucher dans le vide fait arriver tout de suite).
-      p.marche = p.trajet = avatarWalk(avatar, performance.now(), monde.archipel);
+      p.marche = p.trajet = avatarWalk(avatar, performance.now(), { archipel: monde.archipel, links: monde.liaisons() });
     },
     poserLesCreatures: (creatures) => {
       places = creatures;

@@ -1,6 +1,6 @@
 // La pose d'une partie en vague (GD-6, Blocland, piste B) : l'ordre, le rythme borné à six secondes, le maillage partagé.
 import { BIOMES } from '../biomes';
-import { sceneCost, toutConstruit } from './budget';
+import { PLAFOND_DU_MONDE_EN_BLOCS, sceneCost, toutConstruit } from './budget';
 import { ARCHIPELAGO_IDS } from './map';
 import { buildMesh, faceCount } from './mesher';
 import { partiesDe } from './parts';
@@ -113,7 +113,7 @@ it('trouve dans le monde les cases de chaque partie, et le monde sans elles les 
   }
 }, 30_000);
 
-it('reste dans le plafond du monde en blocs pendant la vague (80 000 triangles, 240 appels)', () => {
+it('reste dans le plafond du monde en blocs pendant la vague (PLAFOND_DU_MONDE_EN_BLOCS : 100 000 triangles, 180 appels)', () => {
   const { progress, world } = toutConstruit();
   for (const a of ARCHIPELAGO_IDS) {
     // L'archipel tout construit, sauf la partie qui se pose en vague : la pire de ses parties.
@@ -127,8 +127,8 @@ it('reste dans le plafond du monde en blocs pendant la vague (80 000 triangles, 
         const groupes = maillageAvecLaVague(sansLaPartie(cubes, cases), vague, planDeLaVague(vague));
         const triangles = scene.triangles - faceCount(terrain) * 2 + faceCount(groupes.map((g) => g.groupe)) * 2;
         const appels = scene.drawCalls - terrain.length + groupes.length;
-        expect(triangles, partie.nom).toBeLessThanOrEqual(80_000);
-        expect(appels, partie.nom).toBeLessThanOrEqual(240);
+        expect(triangles, partie.nom).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.triangles);
+        expect(appels, partie.nom).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.drawCalls);
       }
   }
 }, 60_000);

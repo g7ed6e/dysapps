@@ -1312,6 +1312,267 @@ export const ILES = [
     ]
   },
   {
+    "id": "history-6e-antiquity",
+    "name": "Fouille des siècles",
+    "module": "Histoire, de la Préhistoire à l’Empire romain",
+    "subject": "history-geography",
+    "classe": "6e",
+    "description": "Des premiers humains aux premiers États, les Grecs, les Romains et les Hébreux, puis l’Empire romain, les chrétiens et la route de la soie : se repérer dans le temps et lire un document.",
+    "block": "history-6e-antiquity",
+    "guardian": "l’Amphore peinte",
+    "icon": "amphora",
+    "creature": {
+      "name": "Silex"
+    },
+    "exercises": [
+      {
+        "id": "early-humans",
+        "title": "Premiers humains, premiers États",
+        "description": "Les premiers humains, le Néolithique, les premiers États et les premières écritures.",
+        "programme": [
+          "c3.hg.histoire.debuts-humanite",
+          "c3.hg.histoire.neolithique",
+          "c3.hg.histoire.premiers-etats",
+          "c3.hg.temps.periodes",
+          "c3.hg.temps.ordonner",
+          "c3.hg.demarches.lexique",
+          "c3.hg.demarches.document"
+        ]
+      },
+      {
+        "id": "ancient-peoples",
+        "title": "Grecs, Romains et Hébreux",
+        "description": "Les cités grecques et Athènes, Rome de la légende à la République, et le Dieu unique des Hébreux.",
+        "programme": [
+          "c3.hg.histoire.cites-grecques",
+          "c3.hg.histoire.rome-mythe",
+          "c3.hg.histoire.monotheisme-juif",
+          "c3.hg.temps.frise",
+          "c3.hg.temps.ordonner",
+          "c3.hg.demarches.lexique",
+          "c3.hg.demarches.document"
+        ]
+      },
+      {
+        "id": "roman-empire",
+        "title": "L’Empire romain et le monde",
+        "description": "Les conquêtes et la paix romaine, les premiers chrétiens, la route de la soie et la Chine des Han.",
+        "programme": [
+          "c3.hg.histoire.empire-romain",
+          "c3.hg.histoire.chretiens",
+          "c3.hg.histoire.route-de-la-soie",
+          "c3.hg.temps.frise",
+          "c3.hg.temps.periodes",
+          "c3.hg.demarches.lexique",
+          "c3.hg.demarches.document"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "geography-6e-living",
+    "name": "Pointe des paysages",
+    "module": "Géographie, habiter le monde",
+    "subject": "history-geography",
+    "classe": "6e",
+    "description": "Habiter une métropole, un espace de faible densité, un littoral, et voir où vivent les humains sur la Terre : les mots de la géographie et des documents courts.",
+    "block": "geography-6e-living",
+    "guardian": "le Castor de glaise",
+    "icon": "map-pin-house",
+    "creature": {
+      "name": "Boussole"
+    },
+    "exercises": [
+      {
+        "id": "metropolises",
+        "title": "Les métropoles",
+        "description": "Les métropoles du monde, leurs quartiers, leurs habitants, et la ville de demain.",
+        "programme": [
+          "c3.hg.geographie.metropoles",
+          "c3.hg.geographie.ville-de-demain",
+          "c3.hg.espace.localiser",
+          "c3.hg.demarches.lexique",
+          "c3.hg.demarches.document",
+          "c3.hg.demarches.cartes"
+        ]
+      },
+      {
+        "id": "low-density",
+        "title": "Les espaces de faible densité",
+        "description": "Les grands espaces agricoles, les déserts, la montagne, le froid et la forêt : habiter là où il y a peu d’habitants.",
+        "programme": [
+          "c3.hg.geographie.agricole",
+          "c3.hg.geographie.contraintes",
+          "c3.hg.espace.localiser",
+          "c3.hg.espace.situer",
+          "c3.hg.demarches.lexique",
+          "c3.hg.demarches.document",
+          "c3.hg.demarches.cartes"
+        ]
+      },
+      {
+        "id": "inhabited-world",
+        "title": "Littoraux et monde habité",
+        "description": "Les ports et les plages des littoraux, puis où vivent les humains sur la Terre.",
+        "programme": [
+          "c3.hg.geographie.littoral-portuaire",
+          "c3.hg.geographie.littoral-touristique",
+          "c3.hg.geographie.population-mondiale",
+          "c3.hg.geographie.occupation",
+          "c3.hg.espace.localiser",
+          "c3.hg.demarches.lexique",
+          "c3.hg.demarches.document",
+          "c3.hg.demarches.cartes"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "life-earth-sciences-6e-living-world",
+    "name": "Vallée du vivant",
+    "module": "Le vivant et la Terre",
+    "subject": "life-earth-sciences",
+    "classe": "6e",
+    "description": "Classer les êtres vivants, se nourrir et grandir, la Terre et ses milieux de vie, avec un document court sous les yeux.",
+    "block": "life-earth-sciences-6e-living-world",
+    "guardian": "le Cerf des sous-bois",
+    "icon": "sprout",
+    "creature": {
+      "name": "Fougère"
+    },
+    "exercises": [
+      {
+        "id": "living-groups",
+        "title": "Classer le vivant",
+        "description": "Classer les êtres vivants selon ce qu’ils ont, puis lire les fossiles et les liens de parenté.",
+        "programme": [
+          "c3.sv.vivant.classer",
+          "c3.sv.vivant.evolution",
+          "c3.sv.demarches.langages"
+        ]
+      },
+      {
+        "id": "food-growth",
+        "title": "Se nourrir et grandir",
+        "description": "Les groupes d’aliments et leur conservation, puis les étapes de la vie d’un animal et d’une plante.",
+        "programme": [
+          "c3.sv.vivant.alimentation",
+          "c3.sv.vivant.developpement",
+          "c3.sv.vivant.matiere-organique",
+          "c3.sv.demarches.observer",
+          "c3.sv.demarches.responsable"
+        ]
+      },
+      {
+        "id": "planet-earth",
+        "title": "La Terre et ses milieux",
+        "description": "La Terre dans le système solaire, les volcans, les séismes et le temps qu’il fait, puis les milieux de vie et ce que l’humain y change.",
+        "programme": [
+          "c3.sv.terre.systeme-solaire",
+          "c3.sv.terre.phenomenes",
+          "c3.sv.terre.peuplement",
+          "c3.sv.terre.environnement",
+          "c3.sv.vivant.matiere-organique",
+          "c3.sv.demarches.responsable"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "physics-chemistry-6e-matter-energy",
+    "name": "Laboratoire des éléments",
+    "module": "Matière, mouvement, énergie",
+    "subject": "physics-chemistry",
+    "classe": "6e",
+    "description": "Les états de l’eau et les mélanges, décrire un mouvement, lire un signal, mener une expérience, puis l’énergie et le circuit électrique.",
+    "block": "physics-chemistry-6e-matter-energy",
+    "guardian": "l’Alambic de verre",
+    "icon": "lightbulb",
+    "creature": {
+      "name": "Bulle"
+    },
+    "exercises": [
+      {
+        "id": "states-of-matter",
+        "title": "États et mélanges",
+        "description": "Solide, liquide, gaz et les changements d’état, puis mesurer, dissoudre et séparer.",
+        "programme": [
+          "c3.pc.matiere.etats",
+          "c3.pc.matiere.grandeurs",
+          "c3.pc.matiere.melanges",
+          "c3.pc.demarches.mesurer",
+          "c3.pc.demarches.langages"
+        ]
+      },
+      {
+        "id": "motion-signals",
+        "title": "Mouvements et signaux",
+        "description": "Décrire un mouvement par sa trajectoire et sa vitesse, puis reconnaître un signal et tester une idée par une expérience.",
+        "programme": [
+          "c3.pc.matiere.mouvements",
+          "c3.pc.matiere.signal",
+          "c3.pc.demarches.experimenter",
+          "c3.pc.demarches.langages"
+        ]
+      },
+      {
+        "id": "energy-circuits",
+        "title": "Énergie et circuits",
+        "description": "Les sources d’énergie et ce qu’en font les objets, puis le circuit électrique et ses règles de sécurité.",
+        "programme": [
+          "c3.pc.matiere.energie",
+          "c3.pc.matiere.circuit",
+          "c3.pc.demarches.langages"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "technology-6e-objects",
+    "name": "Hangar des inventions",
+    "module": "Les objets techniques",
+    "subject": "technology",
+    "classe": "6e",
+    "description": "À quoi sert un objet et comment il marche, de quoi il est fait et ce qu’il devient, comment il stocke et transmet l’information, et comment il a changé.",
+    "block": "technology-6e-objects",
+    "guardian": "l’Automate de laiton",
+    "icon": "ruler",
+    "creature": {
+      "name": "Pince"
+    },
+    "exercises": [
+      {
+        "id": "object-function",
+        "title": "À quoi ça sert",
+        "description": "Le besoin, la fonction d’usage et les éléments d’un objet, puis l’énergie qui le fait marcher et les mouvements qu’il transmet.",
+        "programme": [
+          "c3.te.objets.fonction",
+          "c3.te.objets.fonctionnement",
+          "c3.te.demarches.representer"
+        ]
+      },
+      {
+        "id": "materials",
+        "title": "Les matériaux",
+        "description": "Les familles de matériaux et leurs propriétés, puis d’où ils viennent, comment les recycler et comment jeter moins.",
+        "programme": [
+          "c3.te.objets.materiaux",
+          "c3.te.objets.recyclage"
+        ]
+      },
+      {
+        "id": "information-networks",
+        "title": "L’information et les objets",
+        "description": "Stocker et transmettre l’information, les réseaux, chercher et ranger avec le numérique, puis comment les objets ont changé.",
+        "programme": [
+          "c3.te.objets.information",
+          "c3.te.demarches.numerique",
+          "c3.te.objets.evolution"
+        ]
+      }
+    ]
+  },
+  {
     "id": "lv2-5e-introductions",
     "name": "Relais des voyageurs",
     "module": "Se présenter, compter, décrire",

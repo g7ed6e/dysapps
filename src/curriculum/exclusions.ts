@@ -21,6 +21,10 @@ const LV2_LANGAGES = A_COUVRIR(
   'Médias, chansons et cinéma : rien ne s’emprunte ; il faudrait des documents inventés (programme de télévision, affiche de concert, message sur un réseau), comme ceux de c4.en.culture.langages en anglais (Studio des ondes, School and media).',
 );
 
+// Sciences et technologie : les trois îles de 6e (la Vallée du vivant, le Laboratoire des éléments, le Hangar des
+// inventions, SC-2) couvrent le cycle 3, sauf fabriquer. Le cycle 4 viendra ensuite.
+const FABRIQUER = HORS('Fabriquer, mesurer pour de vrai, travailler en équipe : le travail de la classe, que l’application ne remplace pas.');
+
 export const EXCLUSIONS: Partial<Record<ProgrammeId, Exclusion>> = {
   // ---------- Cycle 3, français ----------
   'c3.fr.oral.comprendre-s-exprimer': HORS(ORAL),
@@ -72,4 +76,11 @@ export const EXCLUSIONS: Partial<Record<ProgrammeId, Exclusion>> = {
   'c4.es.ecrire.recit': HORS(ECRITURE_LIBRE),
   'c4.es.culture.langages': LV2_LANGAGES,
   'c4.es.langue.phonologie': HORS(ORAL),
+  // ---------- Cycle 3, histoire et géographie ----------
+  'c3.hg.demarches.point-de-vue': A_COUVRIR('Questionner le point de vue d’un document : aucune question de la Fouille des siècles ni de la Pointe des paysages ne le fait encore ; prévu en niveau de plus.'),
+  'c3.hg.demarches.ecrire-dire': HORS('Écrire et dire : l’application propose des réponses à choisir, sans rédaction ni micro.'),
+  'c3.hg.demarches.raisonner': HORS('Enquêter, chercher en ligne, travailler en groupe : la démarche de classe, que l’application ne remplace pas.'),
+  // ---------- Cycle 3, sciences et technologie (SVT, physique-chimie, technologie) : fabriquer reste à la classe ----------
+  'c3.te.demarches.concevoir': FABRIQUER,
+  'c3.te.objets.realiser': FABRIQUER,
 };

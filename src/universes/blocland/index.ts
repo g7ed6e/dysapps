@@ -214,6 +214,46 @@ export const BLOCLAND = {
         beaten: 'Je me rallume, tous rayons dehors ! Le Jardin est à toi, et à Muscade.',
       },
     },
+    'history-6e-antiquity': {
+      challenge: 'L’Amphore peinte attend sur son îlot : « Mes bandes peintes sont toutes grises. Tu as fouillé toute l’île : remets chaque époque à sa place. »',
+      guardianSays: {
+        hit: 'Juste. Une bande de ma frise reprend sa couleur.',
+        miss: 'Mes couleurs restent. Regarde la frise, du plus ancien au plus récent, et reprends.',
+        beaten: 'Je me rallume, du pied jusqu’au col. La Fouille est à toi, et à Silex.',
+      },
+    },
+    'geography-6e-living': {
+      challenge: 'Le Castor de glaise lève la tête : « Me voilà tout gris. Tu as vu tous les paysages de la Pointe : dis-moi où vivent les humains. »',
+      guardianSays: {
+        hit: 'Juste. Un bloc de mon pelage redevient ocre.',
+        miss: 'Mes couleurs restent. Relis le document, cherche le mot du rappel, et reprends.',
+        beaten: 'Je me rallume, de la queue jusqu’aux oreilles. La Pointe est à toi, et à Boussole.',
+      },
+    },
+    'life-earth-sciences-6e-living-world': {
+      challenge: 'Le Cerf des sous-bois baisse la tête : « Me voilà tout gris. Tu as parcouru toute ma vallée : range chaque être vivant à sa place. »',
+      guardianSays: {
+        hit: 'Juste. Un bloc de mon dos reprend sa couleur.',
+        miss: 'Mes couleurs restent. Relis le document, regarde le groupe, et reprends.',
+        beaten: 'Je me rallume, des sabots jusqu’aux bois. La Vallée est à toi, et à Fougère.',
+      },
+    },
+    'physics-chemistry-6e-matter-energy': {
+      challenge: 'L’Alambic de verre fait une petite bulle : « Mon ballon est tout gris. Tu as fait toutes mes expériences : aide-moi à les comprendre. »',
+      guardianSays: {
+        hit: 'Juste. Une bulle de mon ballon reprend sa couleur.',
+        miss: 'Mes couleurs restent. Regarde l’instrument, cherche le mot du rappel, et reprends.',
+        beaten: 'Blop ! Je me rallume, du pied jusqu’au bec. Le Laboratoire est à toi, et à Bulle.',
+      },
+    },
+    'technology-6e-objects': {
+      challenge: 'L’Automate de laiton fait tourner sa clé : « Me voilà tout gris. Tu as ouvert tous mes objets : dis-moi à quoi ils servent. »',
+      guardianSays: {
+        hit: 'Juste. Un bouton de ma poitrine reprend sa couleur.',
+        miss: 'Mes couleurs restent. Regarde le schéma, relis la légende, et reprends.',
+        beaten: 'Clic ! Je me rallume, des pieds jusqu’à la clé. Le Hangar est à toi, et à Pince.',
+      },
+    },
     'lv2-3e-travel': {
       challenge: 'Le Papillon de cuivre attend devant le refuge : « Mes ailes sont toutes grises. Tu as rencontré tous les voyageurs du refuge : dis-moi ce qu’ils ont vécu. »',
       guardianSays: {
@@ -294,6 +334,11 @@ export const BLOCLAND = {
     'lv2-5e-introductions': 'cigogne voyageuse',
     'lv2-4e-daily-life': 'écureuil cuisinier',
     'lv2-3e-travel': 'loutre factrice',
+    'history-6e-antiquity': 'ourson fouilleur',
+    'geography-6e-living': 'tortue géographe',
+    'life-earth-sciences-6e-living-world': 'escargot jardinier',
+    'physics-chemistry-6e-matter-energy': 'goutte chimiste',
+    'technology-6e-objects': 'fourmi bricoleuse',
     'english-5e-grammar': 'chat du manoir',
     'english-4e-comprehension': 'lutin souffleur',
     'english-4e-grammar': 'blaireau chef de gare',
@@ -316,7 +361,7 @@ export const BLOCLAND = {
     defiPretCourt: 'Défi prêt',
     arene: (gardien) => `Rallumer ${gardien}`,
     decouverteOuvrages:
-      'Les îles pâles sont fermées. Pour y venir, construis un ouvrage. Chaque ouvrage se paie en blocs. Un escalier demande aussi une mission réussie.',
+      'Les îles pâles sont fermées. Pour y venir, pose un ouvrage. Il part de l’île de ton choix. Chaque ouvrage coûte le même nombre de blocs.',
     navireGardiensManquants: (n, archipel) => `rallume encore ${n} Gardien${s(n)} des ${archipel}`,
     decouverteNavire: 'Ici, au port, le Bloc-Navire attend ses blocs. Quand il est prêt, embarque : un autre archipel t’attend, et tu peux toujours revenir.',
   },
@@ -350,6 +395,13 @@ export const BLOCLAND = {
     tuYEs: 'Tu y es : joue une mission ici.',
   },
   blocs: nomsAssembles('blocland'),
+  // Une liaison s'appelle « ouvrage » à l'écran, partout (GD-9 : le mode « Aménager » et le menu aussi).
+  liaisons: { nom: 'ouvrage', pluriel: 'ouvrages', feminin: false },
+  reunion: {
+    nom: 'La digue',
+    description: 'Une digue de cubes d’herbe sur la pierre, d’un lieu à l’autre : on passe à pied.',
+    fini: 'La digue tient bon ! On passe à pied d’un lieu à l’autre.',
+  },
   assemblage: lieuDAssemblage('blocland'),
   // La créature de l'île-école de l'archipel parle : Mousso en 6e, Bazar en 5e, Ixe en 4e, Fi en 3e (GD-1, point 1).
   baleine: {

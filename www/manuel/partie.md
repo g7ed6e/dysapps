@@ -42,7 +42,7 @@ Au bilan, une phrase le dit, écrite et lue à voix haute : « Partie posée : l
 
 Les autres îles s'ouvrent par des **ouvrages** : un sentier, un pont, un bac. Le pli **Ouvrages** du panneau dit combien de blocs l'élève a pour construire, et propose ceux qu'il peut payer.
 
-![Le pli Ouvrages de la Ferme des accords : 65 blocs pour construire, trois ouvrages avec leur bouton Construire (sentier vers la Tour du lecteur, bac vers le Volcan, pont vers la Baie des mots).](/captures/ouvrages.jpg)
+![Le pli Ouvrages de la Ferme des accords : les blocs en poche, et les ouvrages possibles avec leur bouton Poser.](/captures/ouvrages.jpg)
 
 Quelques séances plus tard, **Mes blocs** fait le point : ce qu'on peut construire tout de suite (un lien par chantier), puis chaque type de bloc et à quoi il sert.
 

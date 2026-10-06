@@ -36,6 +36,11 @@ export type TextureKind =
   | 'dalle'
   | 'osier'
   | 'bardeau'
+  | 'mosaique'
+  | 'chaume'
+  | 'fossile'
+  | 'aimant'
+  | 'carton'
   | 'poutre'
   | 'vitrail'
   | 'engrenage'
@@ -148,6 +153,114 @@ function bardeau(t: TonsDuBardeau): Painter {
     const u = (x + (Math.floor(y / 4) % 2 ? 4 : 0)) % 8;
     if (v === 2 && (u <= 1 || u >= 6)) return joint;
     return bois;
+  };
+}
+
+/** Les tons de la mosaïque : deux tons de tesselles, le joint clair, la bordure sombre du dessus. */
+type TonsDeMosaique = { terre: string; ocre: string; joint: string; bord: string };
+
+/**
+ * De la mosaïque (la Fouille des siècles, histoire 6e ; DA, HG-2) : des tesselles de 2 × 2 pixels, ocre ou terre cuite
+ * (un hachage de la tesselle, pas le hasard du canvas : trois sur cinq ocre, pour que l'ocre et le crème dominent et
+ * que le bloc ne se lise pas comme la brique ; consultant Blocland, retouches HG-2), séparées d'un joint clair, crème, d'un pixel ; sur le dessus, une
+ * bordure d'un rang sombre tout autour. Quatre tons, mats, sans grain : ni plomb sombre ni couleurs vives, ce qui la
+ * sépare du vitrail. Les tesselles vont de 1 à 14 ; le pixel 0 et le pixel 15 sont la bordure (dessus) ou un joint
+ * (côté) : d'un bloc à l'autre, le joint double d'un côté se lit comme le bord d'un panneau.
+ */
+function mosaique(t: TonsDeMosaique, bordure: boolean): Painter {
+  const [terre, ocre, joint, bord] = [hexToRgb(t.terre), hexToRgb(t.ocre), hexToRgb(t.joint), hexToRgb(t.bord)];
+  return (x, y) => {
+    const auBord = x === 0 || x === 15 || y === 0 || y === 15;
+    if (auBord) return bordure ? bord : joint;
+    const [u, v] = [(x - 1) % 3, (y - 1) % 3];
+    if (u === 2 || v === 2) return joint;
+    const [i, j] = [Math.floor((x - 1) / 3), Math.floor((y - 1) / 3)];
+    return (i * 7 + j * 13 + i * j) % 5 < 2 ? terre : ocre;
+  };
+}
+
+/** Les tons du chaume : la paille, son brin clair, l'ombre sous chaque botte, le lien brun. */
+type TonsDuChaume = { paille: string; brin: string; ombre: string; lien: string };
+
+/**
+ * Du chaume (la Pointe des paysages, géographie 6e ; DA, HG-2) : des bottes de paille de 8 × 4 pixels, en couches qui se
+ * chevauchent en escalier (chaque couche décalée de deux pixels sur la précédente), l'ombre de la couche du dessus sous
+ * chaque botte et à son bout, chaque botte liée d'un trait brun en son milieu ; des brins clairs en diagonale. Quatre
+ * tons, sans hasard : c'est l'escalier des bottes et leur lien qui le nomment, à côté du sable (un grain), de l'osier
+ * (une tresse) et du parchemin (uni). Quatre couches de quatre pixels décalées de deux : le motif se raccorde d'un bloc
+ * à l'autre dans les deux sens.
+ */
+function chaume(t: TonsDuChaume): Painter {
+  const [paille, brin, ombre, lien] = [hexToRgb(t.paille), hexToRgb(t.brin), hexToRgb(t.ombre), hexToRgb(t.lien)];
+  return (x, y) => {
+    const couche = Math.floor(y / 4);
+    const v = y % 4;
+    const u = (x + couche * 2) % 8;
+    if (v === 3 || u === 0) return ombre;
+    if (u === 4) return lien;
+    return (x + y) % 3 === 0 ? brin : paille;
+  };
+}
+
+/** La coquille en spirale du fossile, 10 × 10 pixels, dessinée à la main (« # » : le trait de la spirale). */
+const SPIRALE = ['...####...', '..#....#..', '.#..##..#.', '#..#..#..#', '#.#..#.#.#', '#.#.##.#.#', '#..#...#.#', '.#..###..#', '..#.....#.', '...#####..'];
+
+/** Les tons du fossile : la pierre, son grain plus sombre, le trait de la coquille. */
+type TonsDuFossile = { pierre: string; grain: string; trait: string };
+
+/**
+ * Du fossile (la Vallée du vivant, SVT 6e ; DA, SC-2) : une pierre beige, un grain d'un pixel sur cinq tiré d'un hachage
+ * (pas le hasard du canvas, pour que chaque face soit la même), et au milieu la coquille en spirale de 10 × 10 pixels,
+ * d'un trait sombre. C'est la spirale qui le nomme, à côté de la pierre de taille (des joints) et du sable (un grain
+ * seul). Trois tons, sans dégradé.
+ */
+function fossile(t: TonsDuFossile): Painter {
+  const [pierre, grainSombre, trait] = [hexToRgb(t.pierre), hexToRgb(t.grain), hexToRgb(t.trait)];
+  return (x, y) => {
+    const [u, v] = [x - 3, y - 3];
+    if (u >= 0 && u < 10 && v >= 0 && v < 10 && SPIRALE[v][u] === '#') return trait;
+    return (x * 7 + y * 11 + x * y) % 5 === 0 ? grainSombre : pierre;
+  };
+}
+
+/** L'aimant en U des côtés de l'aimant, 10 × 9 pixels (« # » : le métal sombre du U). */
+const AIMANT_EN_U = ['###....###', '###....###', '###....###', '###....###', '###....###', '###....###', '####..####', '.########.', '..######..'];
+
+/**
+ * De l'aimant (le Laboratoire des éléments, physique-chimie 6e ; DA, SC-2). Le dessus en deux moitiés, rouge à gauche et
+ * bleue à droite, séparées d'un trait sombre de deux pixels : les deux pôles se lisent au partage, jamais à la couleur
+ * seule. Les côtés gris métal, deux reflets clairs en haut, un U de métal sombre au milieu. Sans hasard.
+ */
+function aimant(face: 'top' | 'side'): Painter {
+  const [rouge, bleu, joint, metal, clair, sombre] = [hexToRgb('#b84a40'), hexToRgb('#4a72a8'), hexToRgb('#3a3e44'), hexToRgb('#8c9298'), hexToRgb('#b4bac0'), hexToRgb('#565c64')];
+  if (face === 'top')
+    return (x) => {
+      if (x === 7 || x === 8) return joint;
+      return x < 7 ? rouge : bleu;
+    };
+  return (x, y) => {
+    const [u, v] = [x - 3, y - 4];
+    if (u >= 0 && u < 10 && v >= 0 && v < AIMANT_EN_U.length && AIMANT_EN_U[v][u] === '#') return sombre;
+    return y === 1 && x % 5 !== 4 ? clair : metal;
+  };
+}
+
+/** Les tons du carton : le carton, la cannelure en creux, son bord clair. */
+type TonsDuCarton = { carton: string; creux: string; clair: string };
+
+/**
+ * Du carton ondulé (le Hangar des inventions, technologie 6e ; DA, SC-2) : des cannelures verticales, tous les quatre
+ * pixels un creux sombre bordé d'un pixel clair, sur un brun clair uni. Trois tons, sans grain : les cannelures le
+ * séparent des planches (des lames horizontales et leurs nœuds) et de la terre (un grain). Le motif se raccorde d'un
+ * bloc à l'autre.
+ */
+function carton(t: TonsDuCarton): Painter {
+  const [fond, creux, clair] = [hexToRgb(t.carton), hexToRgb(t.creux), hexToRgb(t.clair)];
+  return (x) => {
+    const u = x % 4;
+    if (u === 0) return creux;
+    if (u === 1) return clair;
+    return fond;
   };
 }
 
@@ -420,6 +533,31 @@ export const PAINTERS: Record<TextureKind, { top: Painter; side: Painter; bottom
   bardeau: {
     top: bardeau({ bois: '#96724e', joint: '#4e3826' }),
     side: bardeau({ bois: '#7c5c3e', joint: '#402e20' }),
+  },
+  // Mosaïque (la Fouille des siècles, histoire 6e) : des tesselles de 2 × 2 ocre et terre cuite, l'ocre dominant, joints
+  // crème, la bordure sombre sur le dessus. Mate et terreuse : jamais confondue avec le vitrail (plomb sombre, couleurs vives).
+  mosaique: {
+    top: mosaique({ terre: '#c07048', ocre: '#d8a454', joint: '#eadfc6', bord: '#5e3e2a' }, true),
+    side: mosaique({ terre: '#a45a36', ocre: '#bc8840', joint: '#d6c9ac', bord: '#5e3e2a' }, false),
+  },
+  // Chaume (la Pointe des paysages, géographie 6e) : des bottes de paille en couches qui se chevauchent en escalier,
+  // liées d'un trait brun. Distinct du sable, de l'osier et du parchemin par le motif.
+  chaume: {
+    top: chaume({ paille: '#d8b860', brin: '#ead08a', ombre: '#9c7c34', lien: '#6e4c26' }),
+    side: chaume({ paille: '#c09c48', brin: '#d6b868', ombre: '#84682a', lien: '#5e4020' }),
+  },
+  // Fossile (la Vallée du vivant, SVT 6e) : une pierre beige, une coquille en spirale d'un trait sombre au milieu.
+  fossile: {
+    top: fossile({ pierre: '#b3a68a', grain: '#a39678', trait: '#5e5240' }),
+    side: fossile({ pierre: '#8f8370', grain: '#82765f', trait: '#4e4434' }),
+  },
+  // Aimant (le Laboratoire des éléments, physique-chimie 6e) : le dessus rouge et bleu, partagé d'un trait ; les côtés
+  // gris métal, un U sombre.
+  aimant: { top: aimant('top'), side: aimant('side') },
+  // Carton (le Hangar des inventions, technologie 6e) : du carton ondulé, ses cannelures verticales.
+  carton: {
+    top: carton({ carton: '#b98d5a', creux: '#8a6a40', clair: '#cca474' }),
+    side: carton({ carton: '#9a7246', creux: '#6e5030', clair: '#ae8858' }),
   },
   // Les blocs assemblés (GD-2), chacun son motif : la poutre (un rondin équarri, ses chevilles), le vitrail (des
   // carreaux sertis de plomb), l'engrenage (une roue dentée sur l'ardoise), le miroir (un disque clair cerclé de violet).

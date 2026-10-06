@@ -96,12 +96,33 @@ import chateauRempart from './plans/english-3e-grammar-3.json';
 import refugePoste from './plans/lv2-3e-travel-1.json';
 import refugeSalle from './plans/lv2-3e-travel-2.json';
 import refugePigeonnier from './plans/lv2-3e-travel-3.json';
+import fouilleMusee from './plans/history-6e-antiquity-1.json';
+import fouilleToit from './plans/history-6e-antiquity-2.json';
+import fouilleCour from './plans/history-6e-antiquity-3.json';
+import pointeQuartier from './plans/geography-6e-living-1.json';
+import pointeChamps from './plans/geography-6e-living-2.json';
+import pointeQuai from './plans/geography-6e-living-3.json';
+import valleeSerre from './plans/life-earth-sciences-6e-living-world-1.json';
+import valleeToit from './plans/life-earth-sciences-6e-living-world-2.json';
+import valleeJardin from './plans/life-earth-sciences-6e-living-world-3.json';
+import laboratoireSalle from './plans/physics-chemistry-6e-matter-energy-1.json';
+import laboratoireToit from './plans/physics-chemistry-6e-matter-energy-2.json';
+import laboratoireCour from './plans/physics-chemistry-6e-matter-energy-3.json';
+import hangarAtelier from './plans/technology-6e-objects-1.json';
+import hangarToit from './plans/technology-6e-objects-2.json';
+import hangarCour from './plans/technology-6e-objects-3.json';
 
 export interface PlanCell {
   x: number;
   y: number;
   z: number;
   block: BlockId;
+  /**
+   * Le bloc de la case dans le rendu Archipéo, quand il n'est pas `block` (world/architect.ts : le toit de terre cuite de
+   * la maison basse du quartier, de chaume dans Blocland). Seule la construction d'Archipéo le lit
+   * (world/construction/buildings.ts) ; le jeu, les sauvegardes et Blocland ne connaissent que `block`.
+   */
+  archipeo?: BlockId;
 }
 
 export interface PlanDef {
@@ -120,9 +141,10 @@ export interface PlanDef {
   done: string;
   /**
    * Où le plan se pose : dans la zone des plans de l'île (par défaut), sur le quai du port (le Bloc-Navire), ou sur l'îlot
-   * d'un monument (`origin` est alors le coin du monument dans le monde).
+   * d'un monument (`origin` est alors le coin du monument dans le monde), ou entre deux lieux réunis (GD-9, ./join.ts :
+   * ses clés sont dans le repère de la paire).
    */
-  zone?: 'plans' | 'port' | 'monument';
+  zone?: 'plans' | 'port' | 'monument' | 'join';
 }
 
 /**
@@ -167,7 +189,7 @@ export const PLANS_AU_FOND: Readonly<Partial<Record<BiomeId, Readonly<{ x: numbe
  * et des monuments ont leur propre ancre (`ancreDuQuai`, `monumentAnchor`).
  */
 export function decalageDesPlans(plan: Pick<PlanDef, 'biome' | 'zone'>): Readonly<{ x: number; y: number; z: number }> {
-  if (plan.zone === 'port' || plan.zone === 'monument') return SANS_DECALAGE;
+  if (plan.zone === 'port' || plan.zone === 'monument' || plan.zone === 'join') return SANS_DECALAGE;
   return PLANS_AU_FOND[plan.biome] ?? SANS_DECALAGE;
 }
 
@@ -266,6 +288,21 @@ const PLAN_FILES = [
   refugePoste,
   refugeSalle,
   refugePigeonnier,
+  fouilleMusee,
+  fouilleToit,
+  fouilleCour,
+  pointeQuartier,
+  pointeChamps,
+  pointeQuai,
+  valleeSerre,
+  valleeToit,
+  valleeJardin,
+  laboratoireSalle,
+  laboratoireToit,
+  laboratoireCour,
+  hangarAtelier,
+  hangarToit,
+  hangarCour,
 ] as (Omit<PlanDef, 'cells' | 'origin' | 'reward'> & { reward: { xp: number } })[];
 
 /**
@@ -342,6 +379,8 @@ export function planOrigin(plan: PlanDef): { x: number; y: number; z: number } {
     if (!o) throw new Error(`Pas de quai sur ${plan.biome}`);
     return { x: o.x + plan.origin.x, y: o.y + plan.origin.y, z: o.z };
   }
+  // La construction qui réunit deux lieux (GD-9) : ses cases sont déjà dans le repère de la paire (./join.ts).
+  if (plan.zone === 'join') return { x: 0, y: 0, z: 0 };
   if (plan.zone === 'monument') {
     const o = ORIGINE_DES_MONUMENTS[plan.id];
     if (!o) throw new Error(`Monument sans origine : ${plan.id}`);
@@ -352,5 +391,10 @@ export function planOrigin(plan: PlanDef): { x: number; y: number; z: number } {
 
 /** Un plan est terminé quand toutes ses cellules sont posées. */
 export function isPlanDone(plan: PlanDef, done: Record<string, string[]>): boolean {
-  return (done[plan.id]?.length ?? 0) >= plan.cells.length;
+  const posees = done[plan.id];
+  if (!posees || posees.length < plan.cells.length) return false;
+  // Terminé quand toutes les cases DU plan sont posées (une réunion garde des clés dans le repère de sa paire, qu'une
+  // autre forme ne contient pas : on compte les cases, pas la longueur de la liste).
+  const cles = new Set(posees);
+  return planCells(plan).every((c) => cles.has(c.key));
 }

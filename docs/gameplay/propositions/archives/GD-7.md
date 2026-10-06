@@ -103,3 +103,7 @@ Le même jour : les deux îles d’anglais que la géographie ferme au port (le 
 ## La décision
 
 2 octobre 2026, mainteneur : « ok pour réponse A » (le port en étoile, sans Gardien comme condition d’une liaison) ; puis « Un petit ouvrage » et « Trois au plus », choisis un par un.
+
+Amendement du 6 octobre 2026, mainteneur : « 1 », les habitants des lieux d’histoire-géographie (HG-2) passent aussi une commande, comme ceux de français, de maths et d’anglais ; la LV2 reste sans commande.
+
+Amendement du 6 octobre 2026 (SC-2, consigne du lot, à confirmer par le mainteneur) : les habitants des trois lieux de sciences de 6e passent aussi une commande, comme ceux d’histoire-géographie.

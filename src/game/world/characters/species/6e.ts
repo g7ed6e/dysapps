@@ -1,5 +1,6 @@
 // Les habitants des Premiers Rivages (6e) en facettes (lot R6) : l'espèce, le métier et son outil, d'après
-// l'intention du directeur artistique. Budget serré : dix îles pour 2 500 triangles.
+// l'intention du directeur artistique. Budget serré : quinze îles, relevé le 6 octobre 2026 pour l'histoire-géographie,
+// puis pour les sciences (world/budget.ts).
 import type { BiomeId } from '../../../biomes';
 import { SABLE } from '../../palette';
 import { TENUE } from '../colors';
@@ -341,5 +342,127 @@ export const ESPECES_6E = {
     // L'horloge de laiton, tenue cadran en avant.
     autreBras: { rx: 0.35, rz: 0.2 },
     autreMain: { pose: [Math.PI / 2, 0, 0], dessiner: (T, k) => disque(T, 0.06, 0.2, 0.08, k.laiton, 6) },
+  },
+  // Archipéo est en pause (2 octobre 2026) : ces deux habitants n'ont que le strict nécessaire, sans coiffe ni pièce de
+  // plus (budget de l'archipel). Silex y est un ourson des fouilles, Boussole un pélican des ports (DA, HG-2).
+  'history-6e-antiquity': {
+    nom: 'Silex',
+    metier: 'fouilleur',
+    // Large, brun, deux petites oreilles rondes d'ourson, basses : sa silhouette ne se confond ni avec Rouxel ni avec
+    // Lavi (consultant Archipéo, retouches HG-2 : des oreilles rondes, pas des cônes).
+    dominante: 0x7a5638,
+    marque: { couleur: 0xc8a878, ou: ['museau'] },
+    silhouette: { largeur: 0.46, ventre: 0.08, tete: 0.34 },
+    coiffe: (T, k) => {
+      for (const c of [-1, 1]) disque(pose(T, repere([c * 0.22, 2.42, 0.04], Math.PI / 2, 0, 0)), 0, 0.1, 0.05, k.dom, 5);
+    },
+    tenue: { couleur: TENUE.lin, vetements: ['tablier'] },
+    museau: { forme: 'museau', long: 0.2, r: 0.08 },
+    outil: {
+      // Le pinceau de fouille : un manche de bois, une touffe sombre au bout.
+      pose: [-0.2, 0, 0],
+      dessiner: (T, k) => {
+        manche(T, -0.02, 0.62, 0.03, k.bois);
+        pointe(T, [0, 0.6, 0], 0.05, 0.12, k.fer, [0, 0, 0], 3);
+      },
+    },
+  },
+  'geography-6e-living': {
+    nom: 'Boussole',
+    metier: 'géographe',
+    dominante: 0xeeeae0,
+    // La poche du bec, jaune pâle.
+    marque: { couleur: 0xeedc96, ou: ['museau'] },
+    tenue: { couleur: TENUE.cuir, vetements: ['ailes'] },
+    // Le long bec du pélican, sur un corps lourd, un peu de ventre et des pattes courtes : il ne se confond pas avec
+    // Lina, la cigogne élancée du 5e (consultant Archipéo, retouches HG-2).
+    museau: { forme: 'bec', long: 0.5, r: 0.09, y: 2.18 },
+    silhouette: { largeur: 0.4, ventre: 0.06, jambes: 0.5, tete: 0.22 },
+    outil: {
+      // Le rouleau de la carte.
+      pose: [0, 0, 0],
+      dessiner: (T, k) => manche(T, -0.1, 0.2, 0.04, k.lin, 4),
+    },
+  },
+  // Archipéo est en pause (2 octobre 2026) : ces trois habitants n'ont que le strict nécessaire, sans pièce de plus que
+  // leur signature (budget de l'archipel). Fougère y est un escargot jardinier, Bulle un poulpe chimiste, Pince une
+  // fourmi bricoleuse (DA, SC-2).
+  'life-earth-sciences-6e-living-world': {
+    nom: 'Fougère',
+    metier: 'jardinier',
+    gabarit: 'trapu',
+    dominante: 0x8aa878,
+    marque: { couleur: 0xa8c49a, ou: ['ventre'] },
+    tenue: { couleur: TENUE.lin, vetements: ['ceinture'] },
+    silhouette: { tete: 0.3, teteProfondeur: 0.27, crane: 0.9 },
+    coiffe: (T, k) => {
+      // Les deux antennes.
+      for (const c of [-1, 1]) pointe(T, [c * 0.1, 2.45, 0], 0.03, 0.26, k.dom, [0, 0, -c * 0.3], 3);
+    },
+    corps: (T, k) => {
+      // La coquille en spirale sur le dos, de cuir brun, sa spirale de lin : un disque épais, debout, qui déborde des
+      // épaules (le cuir et le lin des outils : trois couleurs, pas une de plus).
+      fuseau(pose(T, repere([0, 1.4, 0.24], Math.PI / 2, 0, 0)), [[0, 0.55], [0.18, 0.5], [0.27, 0]], 8, k.cuir, { rot: 0 });
+      fuseau(pose(T, repere([0, 1.4, 0.52], Math.PI / 2, 0, 0)), [[0, 0.24], [0.03, 0]], 6, k.lin, { rot: 0 });
+    },
+    outil: {
+      // Le petit arrosoir : un pot de fer et son bec.
+      pose: [0, 0, 0],
+      dessiner: (T, k) => {
+        pave(T, -0.1, -0.1, -0.08, 0.1, 0.12, 0.08, k.fer);
+        pointe(T, [0, 0.02, -0.08], 0.03, 0.2, k.fer, [-Math.PI / 2 - 0.5, 0, 0], 3);
+      },
+    },
+  },
+  'physics-chemistry-6e-matter-energy': {
+    nom: 'Bulle',
+    metier: 'chimiste',
+    dominante: 0x56708a,
+    marque: { couleur: 0x8aa2b8, ou: ['ventre'] },
+    tenue: { couleur: TENUE.lin, vetements: ['tablier'] },
+    // Une grosse tête ronde de poulpe, sans cou marqué.
+    silhouette: { tete: 0.46, teteProfondeur: 0.4, crane: 1, largeur: 0.26 },
+    corps: (T, k) => {
+      // Les tentacules, quatre petits fuseaux autour des jambes, qui touchent le sol.
+      for (const c of [-1, 1])
+        for (const z of [-0.12, 0.12]) pointe(T, [c * 0.28, 0.42, z], 0.07, 0.5, k.dom, [Math.PI, 0, c * 0.85], 3);
+    },
+    outil: {
+      // L'éprouvette : un tube clair, de lin, fermé d'un bouchon de bois (les matières des outils).
+      pose: [0, 0, 0],
+      dessiner: (T, k) => {
+        manche(T, -0.02, 0.36, 0.045, k.lin, 5);
+        manche(T, 0.36, 0.44, 0.05, k.bois, 5);
+      },
+    },
+  },
+  'technology-6e-objects': {
+    nom: 'Pince',
+    metier: 'bricoleuse',
+    dominante: 0x8e3a26,
+    marque: { couleur: 0x6a2a1c, ou: ['tete'] },
+    tenue: { couleur: TENUE.cuir, vetements: ['tablier'] },
+    // Trois segments : la taille fine, la tête ronde ; l'abdomen derrière (`corps`).
+    silhouette: { largeur: 0.26, profondeur: 0.22, ventre: 0, tete: 0.27 },
+    coiffe: (T, k) => {
+      // Les antennes coudées : elles montent, puis partent sur le côté.
+      for (const c of [-1, 1]) {
+        manche(pose(T, repere([c * 0.1, 2.44, 0], 0, 0, -c * 0.2)), 0, 0.16, 0.025, k.marque, 3);
+        manche(pose(T, repere([c * 0.13, 2.58, 0], 0, 0, -c * 1.1)), 0, 0.18, 0.025, k.marque, 3);
+      }
+    },
+    corps: (T, k) => {
+      // L'abdomen, le troisième segment, derrière les hanches.
+      fuseau(pose(T, repere([0, 0.85, 0.32], 1.1, 0, 0)), [[0, 0.16], [0.18, 0.24], [0.42, 0]], 6, k.dom);
+    },
+    outil: {
+      // La clé plate : un manche de fer, une tête ouverte.
+      pose: [-0.2, 0, 0],
+      dessiner: (T, k) => {
+        pave(T, -0.03, -0.06, -0.015, 0.03, 0.42, 0.015, k.fer);
+        pave(T, -0.09, 0.42, -0.015, -0.03, 0.54, 0.015, k.fer);
+        pave(T, 0.03, 0.42, -0.015, 0.09, 0.54, 0.015, k.fer);
+      },
+    },
   },
 } satisfies Partial<Record<BiomeId, Espece>>;

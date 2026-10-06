@@ -26,12 +26,12 @@ function renderAt(path: string) {
   );
 }
 
-it('l’accueil est le menu de Blocland : le village, les Expéditions (la LV2 à côté de l’anglais), puis Missions et Réglages', () => {
+it('l’accueil est le menu de Blocland : le village, les Expéditions (la LV2 en dernier), puis Missions et Réglages', () => {
   renderAt('/');
   expect(screen.getByRole('heading', { name: 'Blocland', level: 1 })).toBeInTheDocument();
   expect(screen.getByRole('heading', { name: /Ton village : les Basses Terres/ })).toBeInTheDocument();
   const menu = screen.getByRole('navigation', { name: 'Menu principal' });
-  expect(within(menu).getAllByRole('link').map((a) => a.getAttribute('href'))).toEqual(['/matiere/maths', '/matiere/french', '/matiere/english', '/matiere/lv2']);
+  expect(within(menu).getAllByRole('link').map((a) => a.getAttribute('href'))).toEqual(['/matiere/maths', '/matiere/french', '/matiere/english', '/matiere/lv2', '/matiere/history-geography', '/matiere/life-earth-sciences', '/matiere/physics-chemistry', '/matiere/technology']);
   expect(within(menu).getByRole('link', { name: /Espagnol.*Expédition/ })).toHaveAttribute('href', '/matiere/lv2');
   expect(within(menu).getByRole('link', { name: /Français.*Expédition/ })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /Toutes les missions/ })).toHaveAttribute('href', '/quetes');
@@ -74,6 +74,14 @@ it('le Tutoriel est sur l’accueil, pas dans Français, et son retour mène à 
   renderAt('/app/demo');
   // Le lien retour et l'onglet Menu mènent au menu.
   for (const link of screen.getAllByRole('link', { name: /^Menu$/ })) expect(link).toHaveAttribute('href', '/menu');
+});
+
+it('une matière sans mission du portail ramène au menu', () => {
+  for (const path of ['/matiere/history-geography', '/matiere/life-earth-sciences', '/matiere/physics-chemistry', '/matiere/technology', '/matiere/lv2']) {
+    document.body.innerHTML = '';
+    renderAt(path);
+    for (const link of screen.getAllByRole('link', { name: /^Menu$/ })) expect(link).toHaveAttribute('href', '/menu');
+  }
 });
 
 it('liste les missions d’anglais du portail', () => {
@@ -204,7 +212,7 @@ it('en vue simple, « Mes blocs » est une page : ce que chaque bloc construit, 
   expect(screen.getByRole('link', { name: 'Forêt des sons' })).toHaveAttribute('href', '/adventure/french-6e-phonology');
   // D'abord ce qu'on peut faire tout de suite : 4 blocs paient un ouvrage à 3 blocs.
   const now = screen.getByRole('list', { name: /Tu peux construire/ });
-  expect(within(now).getByRole('link', { name: /Sentier vers Mine des lettres/ })).toHaveAttribute('href', '/adventure/french-6e-phonology?worksite=french-6e-phonology-french-6e-letter-confusion');
+  expect(within(now).getByRole('link', { name: /Pont vers la Mine des lettres/ })).toHaveAttribute('href', '/adventure/french-6e-phonology?worksite=french-6e-phonology-french-6e-letter-confusion');
   // Les îles fermées ne sont pas listées une par une, seulement comptées.
   expect(screen.queryByText(/île fermée/)).not.toBeInTheDocument();
   expect(screen.getByLabelText(/sur des îles que tu ouvriras plus tard/)).toBeInTheDocument();
@@ -236,7 +244,9 @@ it('en vue simple, la Carte et la page des quatre archipels renvoient à la list
   document.body.innerHTML = '';
   renderAt('/adventure/world');
   expect(screen.getByRole('heading', { name: 'Blocland' })).toBeInTheDocument();
-});
+  // Deux pages qui dessinent toutes les îles des quatre archipels : environ 4 s en local depuis les sciences (#370),
+  // plus que les 5 s par défaut sur la CI.
+}, 15_000);
 
 it('l’accueil annonce le Bloc-Navire quand il est prêt à partir', async () => {
   const { VEHICLE_STAGES } = await import('./game/world/vehicle');
@@ -253,13 +263,14 @@ it('l’accueil annonce le Bloc-Navire quand il est prêt à partir', async () =
 it('quand la prochaine destination est un ouvrage, « Reprendre l’aventure » et « Y aller » ouvrent son île sur lui, mis en avant', async () => {
   const { getBiome, missionsJouables } = await import('./game/biomes');
   const { exercisesOf } = await import('./game/exercises');
-  // La Forêt, la Plaine, la Mine et la Rivière jouées, 4 blocs : le pont de la Forêt vers l'Horloge des verbes.
+  // La Forêt, la Plaine, la Mine et la Rivière jouées, 4 blocs, le bonhomme sur la Forêt : la liaison de la Forêt vers la Baie, île d’anglais
+  // jamais jouée (GD-9 : la suggestion part du lieu relié le plus proche du lieu fermé).
   const iles = ['french-6e-phonology', 'maths-6e-calculation', 'french-6e-letter-confusion', 'maths-6e-fractions'] as const;
   const progress = Object.fromEntries(iles.flatMap((ile) => missionsJouables(getBiome(ile)!).map((m) => [exercisesOf(ile, m.id)[0].id, { stars: 2, attempts: 1, best: 0.8 }])));
-  const world = { place: 'french-6e-letter-confusion', links: ['french-6e-phonology-french-6e-letter-confusion', 'maths-6e-calculation-maths-6e-fractions'] };
+  const world = { place: 'french-6e-phonology', links: ['french-6e-phonology-french-6e-letter-confusion', 'maths-6e-calculation-maths-6e-fractions'] };
   localStorage.setItem('dysapps:game', JSON.stringify({ progress, stock: { 'french-6e-phonology': 4 }, world }));
   localStorage.setItem('dysapps:progress', JSON.stringify({ totalAnswers: 3 }));
-  const lien = '/adventure/french-6e-phonology?worksite=french-6e-phonology-english-6e-grammar';
+  const lien = '/adventure/french-6e-phonology?worksite=french-6e-phonology-english-6e-vocabulary';
   renderAt('/');
   expect(screen.getByRole('link', { name: /Reprendre l’aventure/ })).toHaveAttribute('href', lien);
   document.body.innerHTML = '';
@@ -268,7 +279,7 @@ it('quand la prochaine destination est un ouvrage, « Reprendre l’aventure » 
   expect(screen.getByRole('link', { name: /Y aller/ })).toHaveAttribute('href', lien);
   document.body.innerHTML = '';
   renderAt(lien);
-  expect(document.querySelector('[data-bridge="french-6e-phonology-english-6e-grammar"]')).toHaveClass('bridge-highlight');
+  expect(document.querySelector('[data-bridge="french-6e-phonology-english-6e-vocabulary"]')).toHaveClass('bridge-highlight');
 });
 
 it('surligne les syllabes en couleurs alternées quand le réglage est actif', () => {

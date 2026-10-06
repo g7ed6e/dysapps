@@ -23,7 +23,7 @@ export const DEMANDES = join(racine, 'src/game/world/requests.json');
 /** Ce qu'une île et chacune de ses missions doivent donner pour que le jeu les montre. */
 const CHAMPS_ILE = ['name', 'module', 'subject', 'classe', 'description', 'block', 'guardian', 'icon', 'creature'];
 const CHAMPS_MISSION = ['description', 'programme'];
-const MATIERES = ['french', 'maths', 'english', 'lv2'];
+const MATIERES = ['french', 'maths', 'english', 'history-geography', 'life-earth-sciences', 'physics-chemistry', 'technology', 'lv2'];
 const CLASSES = ['6e', '5e', '4e', '3e'];
 
 /** L'ordre des îles : docs/contenu/archipel.md, une ligne « 1. `french-6e-phonology` » par lieu. */

@@ -1,0 +1,234 @@
+{
+  "id": "life-earth-sciences-6e-living-world-planet-earth-2",
+  "biome": "life-earth-sciences-6e-living-world",
+  "type": "planet-earth",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "life-earth-sciences-6e-living-world-planet-earth-2-0",
+      "prompt": "Relevé dans le jardin\nSous une pierre, à l’ombre, humide : 12 cloportes\nSur la pelouse, au soleil, sec : 0 cloporte",
+      "question": "Où les cloportes préfèrent-ils vivre ?",
+      "spoken": "Relevé dans le jardin. Sous une pierre, à l’ombre, humide, 12 cloportes. Sur la pelouse, au soleil, sec, 0 cloporte.",
+      "choices": [
+        "au soleil, sur la pelouse sèche",
+        "à l’ombre, dans l’humide",
+        "partout pareil"
+      ],
+      "answer": "à l’ombre, dans l’humide",
+      "hint": "Sur quelle ligne a-t-on trouvé des cloportes ?",
+      "explanation": "Les cloportes sont sous la pierre, à l’ombre et dans l’humide, et aucun au soleil : ils vivent là où le milieu leur convient.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les milieux de vie",
+          "lines": [
+            "Un être vivant vit là où il trouve ce dont il a besoin.",
+            "L’hiver : certains animaux hibernent (ils dorment), d’autres migrent.",
+            "Dans une chaîne alimentaire, la flèche veut dire « est mangé par ».",
+            "Les décomposeurs, comme le ver de terre, recyclent les restes morts.",
+            "Les déchets et les fumées des humains abîment les milieux."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-planet-earth-2-1",
+      "prompt": "En hiver, le hérisson dort dans un abri de feuilles : il …",
+      "spoken": "En hiver, le hérisson dort dans un abri de feuilles : il  (mot manquant) ",
+      "choices": [
+        "hiberne",
+        "migre",
+        "pond"
+      ],
+      "answer": "hiberne",
+      "hint": "Relis la ligne « L’hiver » du rappel.",
+      "explanation": "Le hérisson passe l’hiver endormi : il hiberne. Migrer, c’est partir ailleurs.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les milieux de vie",
+          "lines": [
+            "Un être vivant vit là où il trouve ce dont il a besoin.",
+            "L’hiver : certains animaux hibernent (ils dorment), d’autres migrent.",
+            "Dans une chaîne alimentaire, la flèche veut dire « est mangé par ».",
+            "Les décomposeurs, comme le ver de terre, recyclent les restes morts.",
+            "Les déchets et les fumées des humains abîment les milieux."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-planet-earth-2-2",
+      "prompt": "À l’automne, l’hirondelle part vers l’Afrique, où il fait plus chaud : elle …",
+      "spoken": "À l’automne, l’hirondelle part vers l’Afrique, où il fait plus chaud : elle  (mot manquant) ",
+      "choices": [
+        "hiberne",
+        "se cache",
+        "migre"
+      ],
+      "answer": "migre",
+      "hint": "Elle part loin, elle ne dort pas.",
+      "explanation": "L’hirondelle part passer l’hiver dans un pays chaud : elle migre. Elle revient au printemps.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les milieux de vie",
+          "lines": [
+            "Un être vivant vit là où il trouve ce dont il a besoin.",
+            "L’hiver : certains animaux hibernent (ils dorment), d’autres migrent.",
+            "Dans une chaîne alimentaire, la flèche veut dire « est mangé par ».",
+            "Les décomposeurs, comme le ver de terre, recyclent les restes morts.",
+            "Les déchets et les fumées des humains abîment les milieux."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-planet-earth-2-3",
+      "prompt": "Le schéma d’une chaîne alimentaire\nUne flèche va de la salade à l’escargot.\nUne autre flèche va de l’escargot au hérisson.",
+      "question": "Qui mange l’escargot ?",
+      "spoken": "Le schéma d’une chaîne alimentaire. Une flèche va de la salade à l’escargot. Une autre flèche va de l’escargot au hérisson.",
+      "choices": [
+        "la salade",
+        "le hérisson",
+        "personne"
+      ],
+      "answer": "le hérisson",
+      "hint": "La flèche veut dire « est mangé par ».",
+      "explanation": "La flèche va de l’escargot au hérisson : l’escargot est mangé par le hérisson. La salade, elle, est mangée par l’escargot.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les milieux de vie",
+          "lines": [
+            "Un être vivant vit là où il trouve ce dont il a besoin.",
+            "L’hiver : certains animaux hibernent (ils dorment), d’autres migrent.",
+            "Dans une chaîne alimentaire, la flèche veut dire « est mangé par ».",
+            "Les décomposeurs, comme le ver de terre, recyclent les restes morts.",
+            "Les déchets et les fumées des humains abîment les milieux."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-planet-earth-2-4",
+      "prompt": "Le ver de terre transforme les feuilles mortes en matière pour le sol : c’est un …",
+      "spoken": "Le ver de terre transforme les feuilles mortes en matière pour le sol : c’est un  (mot manquant) ",
+      "choices": [
+        "prédateur",
+        "décomposeur",
+        "producteur"
+      ],
+      "answer": "décomposeur",
+      "hint": "Relis la ligne « Les décomposeurs » du rappel.",
+      "explanation": "Le ver de terre est un décomposeur : il transforme les restes morts en matière qui nourrit le sol, puis les plantes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les milieux de vie",
+          "lines": [
+            "Un être vivant vit là où il trouve ce dont il a besoin.",
+            "L’hiver : certains animaux hibernent (ils dorment), d’autres migrent.",
+            "Dans une chaîne alimentaire, la flèche veut dire « est mangé par ».",
+            "Les décomposeurs, comme le ver de terre, recyclent les restes morts.",
+            "Les déchets et les fumées des humains abîment les milieux."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-planet-earth-2-5",
+      "prompt": "Deux bacs de feuilles mortes, deux mois plus tard\nBac 1 : terre avec des vers de terre. Les feuilles ont presque disparu.\nBac 2 : terre sans aucun petit animal. Les feuilles sont encore là.",
+      "question": "Que montre cette expérience ?",
+      "spoken": "Deux bacs de feuilles mortes, deux mois plus tard. Bac 1, terre avec des vers de terre. Les feuilles ont presque disparu. Bac 2, terre sans aucun petit animal. Les feuilles sont encore là.",
+      "choices": [
+        "les feuilles disparaissent toutes seules",
+        "la terre seule fait disparaître les feuilles",
+        "les vers de terre décomposent les feuilles"
+      ],
+      "answer": "les vers de terre décomposent les feuilles",
+      "hint": "Qu’est-ce qui change entre les deux bacs ?",
+      "explanation": "Seuls les vers de terre changent entre les deux bacs. Là où ils sont, les feuilles disparaissent : ce sont des décomposeurs.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les milieux de vie",
+          "lines": [
+            "Un être vivant vit là où il trouve ce dont il a besoin.",
+            "L’hiver : certains animaux hibernent (ils dorment), d’autres migrent.",
+            "Dans une chaîne alimentaire, la flèche veut dire « est mangé par ».",
+            "Les décomposeurs, comme le ver de terre, recyclent les restes morts.",
+            "Les déchets et les fumées des humains abîment les milieux."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-planet-earth-2-6",
+      "prompt": "Le journal du collège\nSur la plage, la classe a ramassé des sacs en plastique.\nLes tortues de mer prennent ces sacs pour des méduses et les avalent.",
+      "question": "Quel geste protège les tortues ?",
+      "spoken": "Le journal du collège. Sur la plage, la classe a ramassé des sacs en plastique. Les tortues de mer prennent ces sacs pour des méduses et les avalent.",
+      "choices": [
+        "jeter ses déchets à la poubelle",
+        "ramasser les méduses",
+        "nourrir les tortues sur la plage"
+      ],
+      "answer": "jeter ses déchets à la poubelle",
+      "hint": "Qu’est-ce qui fait du mal aux tortues ?",
+      "explanation": "Les sacs jetés finissent dans la mer, où les tortues les avalent. Jeter ses déchets à la poubelle protège leur milieu de vie.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les milieux de vie",
+          "lines": [
+            "Un être vivant vit là où il trouve ce dont il a besoin.",
+            "L’hiver : certains animaux hibernent (ils dorment), d’autres migrent.",
+            "Dans une chaîne alimentaire, la flèche veut dire « est mangé par ».",
+            "Les décomposeurs, comme le ver de terre, recyclent les restes morts.",
+            "Les déchets et les fumées des humains abîment les milieux."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-planet-earth-2-7",
+      "prompt": "Les fumées des voitures polluent surtout …",
+      "spoken": "Les fumées des voitures polluent surtout  (mot manquant) ",
+      "choices": [
+        "les roches",
+        "la mer",
+        "l’air"
+      ],
+      "answer": "l’air",
+      "hint": "Où vont les fumées quand elles sortent du pot d’échappement ?",
+      "explanation": "Les fumées des voitures partent dans l’air et le polluent. Marcher, faire du vélo ou prendre le bus pollue moins.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les milieux de vie",
+          "lines": [
+            "Un être vivant vit là où il trouve ce dont il a besoin.",
+            "L’hiver : certains animaux hibernent (ils dorment), d’autres migrent.",
+            "Dans une chaîne alimentaire, la flèche veut dire « est mangé par ».",
+            "Les décomposeurs, comme le ver de terre, recyclent les restes morts.",
+            "Les déchets et les fumées des humains abîment les milieux."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien observé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "life-earth-sciences-6e-living-world",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

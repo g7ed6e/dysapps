@@ -8,6 +8,9 @@ import type { TextesUnivers } from './types';
 
 const nameOf = (island: BiomeId) => getBiome(island)?.name ?? island;
 
+/** L'annonce du changement de forme de la carte (GD-9), aux mêmes mots dans les deux univers (mainteneur, 5 octobre 2026). */
+export const CARTE_CHANGEE = 'L’archipel a changé de forme. Tes îles et tes ouvrages sont gardés.';
+
 /** Une page, deux pour l'arrivée hors de la 6e (la phrase d'arrivée, puis la bulle pratique sur le navire). */
 export function pagesBaleine(m: WhaleMoment, textes: TextesUnivers): string[] {
   const b = textes.baleine;
@@ -20,6 +23,8 @@ export function pagesBaleine(m: WhaleMoment, textes: TextesUnivers): string[] {
       return [b.port(nameOf(m.island))];
     case 'ouvrage':
       return [b.ouvrage(nameOf(m.island))];
+    case 'carte':
+      return [CARTE_CHANGEE];
   }
 }
 

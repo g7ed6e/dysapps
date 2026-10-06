@@ -1,6 +1,7 @@
 // Les textes d'un univers (lot 6, une tranche de J8 avancée) : ce que disent les Gardiens, l'espèce des créatures, les
 // libellés qui disent où en sont les Gardiens, le mot des grandes étapes, les noms des archipels et des rôles (GD-1). Du texte brut, affiché par React ; les clés
 // viennent des identifiants stables du jeu, qu'un univers habille sans jamais les remplacer.
+import type { LinkWord } from '../game/world/linkWord';
 import type { BiomeId, BlockId } from '../game/biomes';
 import type { ArchipelagoId, NomsArchipels } from '../game/world/archipelago';
 import type { Tier } from '../core/progress';
@@ -175,6 +176,26 @@ export interface TextesUnivers {
    * première fois. Sans eux, l'univers ne montre pas les commandes (ni arrivée, ni liste, ni petite construction).
    */
   commandes?: TextesCommandes;
+  /**
+   * La construction qui réunit deux lieux (GD-9, point 10 ; mot neutre `join`) : son nom, ce qu'elle est, ce que dit sa
+   * fin. Sans elle, les mots communs (« La réunion »).
+   */
+  reunion?: TextesReunion;
+  /**
+   * Le mot qui nomme une liaison à l'écran (GD-9 : le mode « Aménager », le menu), le même que partout ailleurs dans
+   * l'univers (« ouvrage ») ; sans lui, le mot du jeu (« liaison »).
+   */
+  liaisons?: LinkWord;
+}
+
+/** Les mots de la construction qui réunit deux lieux dans un univers (GD-9). */
+interface TextesReunion {
+  /** Son nom, avec l'article (« La digue »). */
+  nom: string;
+  /** Ce qu'elle est, en une phrase. */
+  description: string;
+  /** Ce que dit sa fin. */
+  fini: string;
 }
 
 /** Les mots des commandes des habitants dans un univers (GD-7). */

@@ -76,7 +76,7 @@ function silhouette(projeter: ProjectionDeLaVue, cubes: readonly { x: number; y:
  * L'écart, en pixels, entre deux silhouettes convexes (le plus grand vide le long des normales de leurs côtés) ; négatif
  * quand elles se recouvrent.
  */
-function ecartEntre(a: readonly [number, number][], b: readonly [number, number][]): number {
+function gapBetween(a: readonly [number, number][], b: readonly [number, number][]): number {
   let ecart = -Infinity;
   for (const poly of [a, b])
     for (let i = 0; i < poly.length; i++) {
@@ -246,7 +246,7 @@ export function examenDeLaPetiteConstruction(
     let min = Infinity;
     for (const c of cases) {
       const s = silhouette(projeter, [{ x: o.x + ox + c.x, y: o.y + oy + c.y, z: o.z + c.z + 1 }]);
-      for (const b of bornesALEcran) min = Math.min(min, ecartEntre(s, b));
+      for (const b of bornesALEcran) min = Math.min(min, gapBetween(s, b));
     }
     return min;
   };

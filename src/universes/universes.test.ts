@@ -60,7 +60,7 @@ describe('les textes d’univers', () => {
         return [b.id, { challenge: g.challenge, ...g.guardianSays, species: t.especes[b.id] }];
       }),
     );
-    expect(createHash('sha256').update(JSON.stringify(textes)).digest('hex')).toBe('3aec13017720eff807ba96049b824ac116dcf8afdde08ec6090d63cd690eaf43');
+    expect(createHash('sha256').update(JSON.stringify(textes)).digest('hex')).toBe('e572da6f17dd28b1e24eb7e6543944dc8cab55604100a11cfaea9ac804160b10');
     const l = t.libelles;
     expect([l.dejaFait, l.etoiles, l.etoilesSur3(2), l.resistance(2, 6), l.dejaFaitArene('Le Grand Chêne')]).toEqual([
       'Déjà rallumé. On rejoue ?',
@@ -174,8 +174,19 @@ describe('les textes communs (J8, U4)', () => {
     // Quand un univers aura ses propres répliques, l'empreinte ne vaudra plus que pour Blocland.
     for (const u of UNIVERS) {
       const t = textesDe(u);
-      // Les îles venues après U4 (le Jardin des heures, LV2-4 ; le Refuge des carnets, LV2-5) n'ont pas de réplique « d'avant » : hors de l'empreinte.
-      const r = Object.fromEntries(BIOMES.filter((b) => b.id !== 'lv2-4e-daily-life' && b.id !== 'lv2-3e-travel').map((b) => [ANCIEN_LIEU[b.id], t.creatures[b.id]]));
+      // Les îles venues après U4 (le Jardin des heures, LV2-4 ; le Refuge des carnets, LV2-5 ; la Fouille des siècles et la
+      // Pointe des paysages, HG-2 ; la Vallée du vivant, le Laboratoire des éléments et le Hangar des inventions, SC-2)
+      // n'ont pas de réplique « d'avant » : hors de l'empreinte.
+      const APRES_U4: readonly string[] = [
+        'lv2-4e-daily-life',
+        'lv2-3e-travel',
+        'history-6e-antiquity',
+        'geography-6e-living',
+        'life-earth-sciences-6e-living-world',
+        'physics-chemistry-6e-matter-energy',
+        'technology-6e-objects',
+      ];
+      const r = Object.fromEntries(BIOMES.filter((b) => !APRES_U4.includes(b.id)).map((b) => [ANCIEN_LIEU[b.id], t.creatures[b.id]]));
       expect(createHash('sha256').update(JSON.stringify(r)).digest('hex')).toBe('ee5d7b2fcc1a7a49749e0a41c5077b279215383439d33d63e023e6b85b618ccf');
     }
   });
@@ -190,7 +201,7 @@ describe('les textes communs (J8, U4)', () => {
 describe('GD-1 : le chantier du bâtisseur, dans Blocland seulement', () => {
   const arrivee = (a: (typeof ARCHIPELAGOS)[number]): WhaleMoment => ({ id: `archipel-${a.classe}`, kind: 'arrivee', archipelago: a.classe, island: a.port });
 
-  it('Archipéo garde ses textes d’avant GD-1, sans un mot changé', () => {
+  it('Archipéo garde ses textes d’avant GD-1 (le nom de l’île-port avec son article, 6 octobre 2026)', () => {
     const t = textesDe('archipeo');
     expect(t.baleine.parle).toBe('baleine');
     expect(t.baleine.arrivee).toEqual({
@@ -199,9 +210,10 @@ describe('GD-1 : le chantier du bâtisseur, dans Blocland seulement', () => {
       '4e': 'Le Bloc-Navire a fait sa traversée. Te voilà dans les Anciens Ateliers : les vieux ateliers attendent qu’on les remette en marche.',
       '3e': 'Le Bloc-Navire a fait sa traversée. Te voilà dans les Îles du Ciel : ici, les îles flottent dans les nuages.',
     });
-    expect([t.baleine.port('Plaine des nombres'), t.baleine.ouvrage('Mine des lettres')]).toEqual([
-      'Plaine des nombres est bâtie. Tu avances bien : chaque île bâtie rend l’archipel plus beau.',
-      'Un chemin s’ouvre vers Mine des lettres. L’archipel s’agrandit.',
+    expect([t.baleine.port('Plaine des nombres'), t.baleine.port('Marché des proportions'), t.baleine.ouvrage('Mine des lettres')]).toEqual([
+      'La Plaine des nombres est bâtie. Tu avances bien : chaque île bâtie rend l’archipel plus beau.',
+      'Le Marché des proportions est bâti. Tu avances bien : chaque île bâtie rend l’archipel plus beau.',
+      'Un chemin s’ouvre vers la Mine des lettres. L’archipel s’agrandit.',
     ]);
     // Les noms des archipels et des rôles sont ceux des données ; aucun succès renommé, aucun écran de renommage.
     expect(t.archipels).toEqual(NOMS_ARCHIPELS);

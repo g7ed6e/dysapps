@@ -79,8 +79,10 @@ export function creerLarge(
 
   // Blocland : nuages en cubes, au-dessus du monde ; dans les Îles du Ciel, deux fois plus, et bas, entre les îles.
   // Archipéo : des cumulus facettés, au loin derrière l'archipel (DA-11), dessinés avec la faune (plus bas).
-  const cloudGeo = new THREE.BoxGeometry(1, 0.5, 1.2);
+  const cloudGeo = sidesThenTopThenBottom(new THREE.BoxGeometry(1, 0.5, 1.2));
+  /** La place de chaque nuage en cubes ; ses cubes sont des instances d'un seul maillage (`puffMesh`). */
   const clouds = new THREE.Group();
+  const puffs: { cloud: THREE.Object3D; k: number }[] = [];
   /**
    * Où sont les nuages : le coin de leur premier cube (le monde en blocs), et leur longueur. Archipéo : au loin, au nord
    * de l'archipel, jamais sur un pont ni sur un chemin (DA-11, world/fauna.ts).
@@ -90,32 +92,42 @@ export function creerLarge(
   const derive = deriveDesNuages(bounds);
   if (!peinte)
     cloudAt.forEach(({ x, y, z, len }) => {
-      const cloud = new THREE.Group();
-      for (let k = 0; k < len; k++) {
-        const puff = new THREE.Mesh(cloudGeo, blockMaterial('nuage'));
-        puff.position.set(k, (k % 2) * 0.5, 0);
-        cloud.add(puff);
-      }
+      const cloud = new THREE.Object3D();
+      for (let k = 0; k < len; k++) puffs.push({ cloud, k });
       cloud.position.set(x, y, z);
       clouds.add(cloud);
     });
-  scene.add(clouds);
+  // Tous les cubes de nuages en un maillage : trois appels de dessin (côtés, dessus, dessous), pas six par cube.
+  const puffMesh = puffs.length ? new THREE.InstancedMesh(cloudGeo, blockMaterial('nuage'), puffs.length) : null;
+  const puffMatrix = new THREE.Matrix4();
+  /** Chaque cube de nuage à sa place, dans son nuage. */
+  const placePuffs = () => {
+    if (!puffMesh) return;
+    puffs.forEach(({ cloud, k }, i) => puffMesh.setMatrixAt(i, puffMatrix.makeTranslation(cloud.position.x + k, cloud.position.y + (k % 2) * 0.5, cloud.position.z)));
+    puffMesh.instanceMatrix.needsUpdate = true;
+  };
+  if (puffMesh) {
+    placePuffs();
+    // Les nuages dérivent : la boîte de leurs instances ne suit pas, on ne les trie pas par la vue.
+    puffMesh.frustumCulled = false;
+    scene.add(puffMesh);
+  }
 
   // Les oiseaux : de petits V sombres qui tournent au-dessus du monde, ailes battantes.
   const birdMat = new THREE.MeshLambertMaterial({ color: 0x3a2f2a });
   const wingGeo = new THREE.BoxGeometry(0.5, 0.08, 0.16);
-  const birds: { group: THREE.Group; wings: THREE.Mesh[]; cx: number; cy: number; r: number; alt: number; phase: number; speed: number }[] = [];
+  const birds: { group: THREE.Object3D; wings: THREE.Object3D[]; cx: number; cy: number; r: number; alt: number; phase: number; speed: number }[] = [];
   // Plus d'oiseaux et plus haut dans les Anciens Ateliers ; tout en haut dans les Îles du Ciel.
   const { nombre: birdCount, altitude: birdAlt } = oiseauxDe(archipel);
   for (let i = 0; i < birdCount; i++) {
-    const group = new THREE.Group();
-    const left = new THREE.Mesh(wingGeo, birdMat);
-    const right = new THREE.Mesh(wingGeo, birdMat);
+    // La pose de l'oiseau et de ses ailes ; elles se dessinent en instances (`wingMesh`). Archipéo : les oiseaux sont des
+    // instances de la faune, plus bas ; le groupe ne sert qu'à garder leur vol.
+    const group = new THREE.Object3D();
+    const left = new THREE.Object3D();
+    const right = new THREE.Object3D();
     left.position.x = -0.25;
     right.position.x = 0.25;
     group.add(left, right);
-    // (Archipéo : les oiseaux sont des instances de la faune, plus bas ; le groupe ne sert qu'à garder leur vol.)
-    if (!peinte) scene.add(group);
     birds.push({
       group,
       wings: [left, right],
@@ -127,13 +139,29 @@ export function creerLarge(
       speed: 0.25 + (i % 3) * 0.05,
     });
   }
+  // Toutes les ailes de Blocland en un seul appel de dessin.
+  const wingMesh = !peinte && birds.length ? new THREE.InstancedMesh(wingGeo, birdMat, birds.length * 2) : null;
+  /** Les ailes de chaque oiseau à la pose de son groupe. */
+  const placeWings = () => {
+    if (!wingMesh) return;
+    birds.forEach((b, i) => {
+      b.group.updateMatrixWorld(true);
+      b.wings.forEach((w, j) => wingMesh.setMatrixAt(2 * i + j, w.matrixWorld));
+    });
+    wingMesh.instanceMatrix.needsUpdate = true;
+  };
+  if (wingMesh) {
+    placeWings();
+    wingMesh.frustumCulled = false;
+    scene.add(wingMesh);
+  }
 
   // Les baleines : trois grandes bêtes bleu ardoise qui tournent au large, font surface et soufflent.
   const whaleMat = new THREE.MeshLambertMaterial({ color: 0x3f5d7a });
   const bellyMat = new THREE.MeshLambertMaterial({ color: 0xc9d6e2 });
   const spoutMat = new THREE.MeshLambertMaterial({ color: 0xf4f8fb, transparent: true, opacity: 0.85 });
   const whales: ({ group: THREE.Group; fluke: THREE.Mesh; spout: THREE.Group; skin: THREE.Mesh[] } & Ronde)[] = [];
-  whaleSpots(archipel).forEach((spot, i) => {
+  whaleSpots(archipel, monde.liaisons()).forEach((spot, i) => {
     const group = new THREE.Group();
     const body = new THREE.Mesh(new THREE.BoxGeometry(3.4, 1.3, 1.5), whaleMat);
     const head = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.1, 1.3), whaleMat);
@@ -246,6 +274,7 @@ export function creerLarge(
         cloud.position.x -= 0.004;
         if (cloud.position.x < bounds.minX - 12) cloud.position.x = bounds.maxX + 12;
       }
+      placePuffs();
       if (faune)
         cloudAt.forEach((c, i) => {
           c.x -= 0.004;
@@ -269,6 +298,7 @@ export function creerLarge(
         b.wings[0].rotation.z = flap;
         b.wings[1].rotation.z = -flap;
       }
+      placeWings();
       // Le mot de la baleine : un nouveau `seq`, un passage (s'il y a une mer et de l'eau libre au large de l'île).
       const wp = derniers.current.whalePass;
       if (wp && wp.seq !== passSeq.current) {
@@ -277,7 +307,7 @@ export function creerLarge(
           // Vers la caméra de la vue de l'île (le même pivot que le cadrage) : le passage se voit depuis cette vue.
           const yaw = -viewYaw(wp.island);
           const toCamera = { x: ISLAND_VIEW.dx * Math.cos(yaw) - ISLAND_VIEW.dy * Math.sin(yaw), y: ISLAND_VIEW.dx * Math.sin(yaw) + ISLAND_VIEW.dy * Math.cos(yaw) };
-          const route = whales.length > 0 ? whalePassRoute(wp.island, toCamera, camera.aspect < 0.9) : null;
+          const route = whales.length > 0 ? whalePassRoute(wp.island, monde.liaisons(), toCamera, camera.aspect < 0.9) : null;
           const i = route ? passingWhale(whales.map((wh) => ({ x: wh.cx, y: wh.cy })), route) : -1;
           if (route && i >= 0) {
             pass = { whale: i, route, heading: Math.atan2(-(route.to.y - route.from.y), route.to.x - route.from.x), start: t, blown: false };
@@ -344,10 +374,29 @@ export function creerLarge(
       cloudFloor.geometry.dispose();
       cloudFloorMat.dispose();
       cloudGeo.dispose();
+      puffMesh?.dispose();
       wingGeo.dispose();
+      wingMesh?.dispose();
       birdMat.dispose();
       mer?.dispose();
       faune?.dispose();
     },
   };
+}
+
+/**
+ * La boîte d'un cube de nuage, ses faces rangées en trois groupes : les quatre côtés, le dessus, le dessous (les
+ * matériaux 0, 2 et 3 d'un bloc, ./textures.ts). Trois appels de dessin au lieu de six.
+ */
+function sidesThenTopThenBottom(box: THREE.BoxGeometry): THREE.BoxGeometry {
+  const index = box.getIndex();
+  if (!index) return box;
+  // Une BoxGeometry range ses faces dans l'ordre +x, −x, +y (dessus), −y (dessous), +z, −z, six indices chacune.
+  const face = (f: number) => Array.from(index.array.slice(f * 6, f * 6 + 6));
+  box.setIndex([0, 1, 4, 5, 2, 3].flatMap(face));
+  box.clearGroups();
+  box.addGroup(0, 24, 0);
+  box.addGroup(24, 6, 2);
+  box.addGroup(30, 6, 3);
+  return box;
 }

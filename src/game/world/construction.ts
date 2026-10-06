@@ -60,12 +60,12 @@ import { CREME_DU_PHARE, phareDeGrimoire } from './construction/lighthouse';
 import { cle, decalagesDe, genresDesBlocs } from './construction/kinds';
 import { type BlocAssemble, MOTIF_ASSEMBLE, SANS_BISEAU, teinteDeCase } from './construction/shader';
 import { BISEAU, couleurDuRole, FANTOME, LANTERNE, PROFONDEUR, RANG_DES_SOCLES, TOILE_DU_NAVIRE, TROPHEE, VERRE_HORS_MUR, VITRE_DE_JOUR } from './construction/settings';
-import { batimentsDe, caseDuLieu } from './construction/buildings';
+import { batimentsDe, blocsDArchipeoDe, caseDuLieu, enBlocsDArchipeo } from './construction/buildings';
 export { ALLUMAGE, ARETE, ARETE_DU_VERRE, ARETE_FANTOME, BISEAU, couleursDesRoles, DECALAGE_MAX, ECART_SOMBRE, ECLAT_DU_BISEAU, FANTOME, FENETRES_ALLUMEES, LANTERNES_ALLUMEES, LUEUR, PLEINE_NUIT, TEINTE, TROPHEE, VITRE_DE_JOUR } from './construction/settings';
 export { BISEAU_GLSL, type BlocAssemble, detailDuMotif, ECLAT_GLSL, eclatDeFenetre, eclatDuBiseau, MOTIF_ASSEMBLE, MOTIF_ASSEMBLE_DEBUT, MOTIF_ASSEMBLE_GLSL, opaciteDesFantomes, SANS_BISEAU, TEINTE_GLSL, teinteDeCase } from './construction/shader';
 export { genresDesBlocs } from './construction/kinds';
 export { CREME_DU_PHARE, phareDeGrimoire } from './construction/lighthouse';
-export { batimentsDe, caseDuLieu, ETAPES_DU_BATIMENT, sansToursDuCoeur } from './construction/buildings';
+export { batimentsDe, blocsDArchipeoDe, caseDuLieu, enBlocsDArchipeo, ETAPES_DU_BATIMENT, sansToursDuCoeur } from './construction/buildings';
 
 // ---------- Le maillage ----------
 
@@ -291,6 +291,8 @@ export function maillageDeLaConstruction(
   sol: VoxelCube[] = [],
   options: OptionsDeLaConstruction = {},
 ): MaillageDeLaConstruction {
+  // Les blocs qui changent dans Archipéo (le toit de terre cuite de la maison basse du quartier, DA, retouches HG-2).
+  if (!options.navire && !options.kit) cubes = enBlocsDArchipeo(a, cubes);
   const mode = options.biseau ?? 'peint';
   const b = mode === 'aucun' ? 0 : (options.largeur ?? BISEAU);
   /** Les faces rentrent sous le biseau taillé ; le biseau peint ne change pas la géométrie. */
@@ -330,6 +332,7 @@ export function maillageDeLaConstruction(
         exclure: (c) => parUnModele(c) || Boolean(phare?.enCours.has(cle(c.x, c.y, c.z))),
         kit,
         batiments: options.kit ? undefined : batimentsDe(a),
+        toitures: options.kit ? undefined : blocsDArchipeoDe(a),
         surLeVide,
         caseDuLieu,
       });

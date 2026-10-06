@@ -70,9 +70,11 @@ describe('La disposition en grille', () => {
   it('les ouvrages : leur tracé, et leur place au milieu du tracé', () => {
     const g = dispositionEnGrille('6e');
     for (const b of BRIDGES) {
-      const path = bridgePath(b);
+      const path = bridgePath(b, []);
       expect(g.liaison(b.id)).toEqual(path.map((c) => ({ x: c.x, y: c.y, z: c.z })));
-      expect(g.placeDe({ genre: 'ouvrage', id: b.id })).toMatchObject({ ile: b.from });
+      // Une liaison qui ne tient pas dans la disposition n'a ni tracé ni place (GD-9).
+      if (path.length) expect(g.placeDe({ genre: 'ouvrage', id: b.id })).toMatchObject({ ile: b.from });
+      else expect(g.placeDe({ genre: 'ouvrage', id: b.id })).toBeNull();
     }
     expect(g.liaison('inconnu')).toEqual([]);
   });
@@ -98,8 +100,10 @@ describe('La disposition en grille', () => {
     }
     // Sans ouvrage construit, pas de chemin d'une île à l'autre.
     expect(dispositionEnGrille('6e').trajet({ genre: 'ile', id: 'french-6e-phonology' }, { genre: 'ile', id: 'french-6e-letter-confusion' })).toBeNull();
-  });
+    // Chaque paire d'îles de chaque archipel : quinze îles au 6e depuis les sciences (SC-2), plus de cinq secondes.
+  }, 30_000);
 
+  // Chaque paire d'îles du 6e (quinze îles depuis SC-2), avec un aller et deux retours : plusieurs secondes.
   it('changer de but en chemin : le trajet part de l’île où il se trouve, sans finir de traverser l’ouvrage', () => {
     const a = '6e';
     const { g } = grilleDe(a);
@@ -120,7 +124,7 @@ describe('La disposition en grille', () => {
         essais++;
       }
     expect(essais).toBeGreaterThan(0);
-  });
+  }, 30_000);
 
   it('le trajet jusqu’à la porte d’un lieu du village : celui d’avant', () => {
     for (const a of ARCHIPELAGO_IDS) {

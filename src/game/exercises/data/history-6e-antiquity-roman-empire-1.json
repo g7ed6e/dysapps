@@ -1,0 +1,238 @@
+{
+  "id": "history-6e-antiquity-roman-empire-1",
+  "biome": "history-6e-antiquity",
+  "type": "roman-empire",
+  "level": 1,
+  "instruction": "Choisis le mot qui complète la phrase. La frise est affichée.",
+  "items": [
+    {
+      "key": "history-6e-antiquity-roman-empire-1-0",
+      "prompt": "Au Ier siècle avant J.-C., Jules César conquiert la … .",
+      "spoken": "Au premier siècle avant Jésus-Christ, Jules César conquiert la (mot manquant).",
+      "choices": [
+        "Grèce",
+        "Gaule",
+        "Chine"
+      ],
+      "answer": "Gaule",
+      "hint": "Cherche César dans la frise.",
+      "explanation": "César conquiert la Gaule et bat Vercingétorix à Alésia. La Gaule devient romaine.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise de l’Empire",
+          "lines": [
+            "J.-C. : Jésus-Christ.",
+            "I vaut 1, V vaut 5 : IV vaut 4.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "Ier siècle avant J.-C. : César conquiert la Gaule ; Auguste, premier empereur.",
+            "Ier siècle et IIe siècle après J.-C. : la paix romaine.",
+            "IVe siècle après J.-C. : l’empire devient chrétien."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-roman-empire-1-1",
+      "prompt": "Auguste est le premier … romain.",
+      "spoken": "Auguste est le premier (mot manquant) romain.",
+      "choices": [
+        "consul",
+        "pharaon",
+        "empereur"
+      ],
+      "answer": "empereur",
+      "hint": "Cherche Auguste dans la frise.",
+      "explanation": "Auguste est le premier empereur : il dirige seul l’empire. Les consuls dirigeaient la République.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise de l’Empire",
+          "lines": [
+            "J.-C. : Jésus-Christ.",
+            "I vaut 1, V vaut 5 : IV vaut 4.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "Ier siècle avant J.-C. : César conquiert la Gaule ; Auguste, premier empereur.",
+            "Ier siècle et IIe siècle après J.-C. : la paix romaine.",
+            "IVe siècle après J.-C. : l’empire devient chrétien."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-roman-empire-1-2",
+      "prompt": "Pendant la … romaine, il n’y a presque pas de guerre dans l’empire.",
+      "spoken": "Pendant la (mot manquant) romaine, il n’y a presque pas de guerre dans l’empire.",
+      "choices": [
+        "paix",
+        "République",
+        "conquête"
+      ],
+      "answer": "paix",
+      "hint": "Le contraire de la guerre.",
+      "explanation": "La paix romaine dure environ deux siècles : le Ier siècle et le IIe siècle après J.-C.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise de l’Empire",
+          "lines": [
+            "J.-C. : Jésus-Christ.",
+            "I vaut 1, V vaut 5 : IV vaut 4.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "Ier siècle avant J.-C. : César conquiert la Gaule ; Auguste, premier empereur.",
+            "Ier siècle et IIe siècle après J.-C. : la paix romaine.",
+            "IVe siècle après J.-C. : l’empire devient chrétien."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-roman-empire-1-3",
+      "prompt": "Parler latin et vivre dans une ville à la romaine, c’est la … .",
+      "spoken": "Parler latin et vivre dans une ville à la romaine, c’est la (mot manquant) .",
+      "choices": [
+        "conquête",
+        "citoyenneté",
+        "romanisation"
+      ],
+      "answer": "romanisation",
+      "hint": "Le mot ressemble à « romain ».",
+      "explanation": "La romanisation : les peuples conquis adoptent la langue, les villes et la façon de vivre des Romains.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise de l’Empire",
+          "lines": [
+            "J.-C. : Jésus-Christ.",
+            "I vaut 1, V vaut 5 : IV vaut 4.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "Ier siècle avant J.-C. : César conquiert la Gaule ; Auguste, premier empereur.",
+            "Ier siècle et IIe siècle après J.-C. : la paix romaine.",
+            "IVe siècle après J.-C. : l’empire devient chrétien."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-roman-empire-1-4",
+      "prompt": "Jésus a vécu en Judée, dans l’Empire … .",
+      "spoken": "Jésus a vécu en Judée, dans l’Empire (mot manquant) .",
+      "choices": [
+        "romain",
+        "grec",
+        "chinois"
+      ],
+      "answer": "romain",
+      "hint": "À cette époque, Rome domine tout le tour de la Méditerranée.",
+      "explanation": "La Judée est une province de l’Empire romain. Jésus y vit au Ier siècle après J.-C.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise de l’Empire",
+          "lines": [
+            "J.-C. : Jésus-Christ.",
+            "I vaut 1, V vaut 5 : IV vaut 4.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "Ier siècle avant J.-C. : César conquiert la Gaule ; Auguste, premier empereur.",
+            "Ier siècle et IIe siècle après J.-C. : la paix romaine.",
+            "IVe siècle après J.-C. : l’empire devient chrétien."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-roman-empire-1-5",
+      "prompt": "Les premiers chrétiens sont parfois … : on les arrête, on les condamne.",
+      "spoken": "Les premiers chrétiens sont parfois (mot manquant) : on les arrête, on les condamne.",
+      "choices": [
+        "protégés",
+        "persécutés",
+        "respectés"
+      ],
+      "answer": "persécutés",
+      "hint": "Est-ce un bon ou un mauvais traitement ?",
+      "explanation": "Persécuter : arrêter, punir, faire souffrir. Certains empereurs persécutent les chrétiens, qui refusent d’honorer les dieux romains.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise de l’Empire",
+          "lines": [
+            "J.-C. : Jésus-Christ.",
+            "I vaut 1, V vaut 5 : IV vaut 4.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "Ier siècle avant J.-C. : César conquiert la Gaule ; Auguste, premier empereur.",
+            "Ier siècle et IIe siècle après J.-C. : la paix romaine.",
+            "IVe siècle après J.-C. : l’empire devient chrétien."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-roman-empire-1-6",
+      "prompt": "Les marchands apportent la soie de … jusqu’à Rome.",
+      "spoken": "Les marchands apportent la soie de (mot manquant) jusqu’à Rome.",
+      "choices": [
+        "Chine",
+        "Égypte",
+        "Grèce"
+      ],
+      "answer": "Chine",
+      "hint": "La route de la soie part d’Asie.",
+      "explanation": "La soie vient de Chine, au bout de la route de la soie. Elle traverse l’Asie avant d’arriver à Rome.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise de l’Empire",
+          "lines": [
+            "J.-C. : Jésus-Christ.",
+            "I vaut 1, V vaut 5 : IV vaut 4.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "Ier siècle avant J.-C. : César conquiert la Gaule ; Auguste, premier empereur.",
+            "Ier siècle et IIe siècle après J.-C. : la paix romaine.",
+            "IVe siècle après J.-C. : l’empire devient chrétien."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-roman-empire-1-7",
+      "prompt": "Le Ier siècle avant J.-C. vient … le Ier siècle après J.-C.",
+      "spoken": "Le premier siècle avant Jésus-Christ vient (mot manquant) le premier siècle après Jésus-Christ.",
+      "choices": [
+        "après",
+        "en même temps que",
+        "avant"
+      ],
+      "answer": "avant",
+      "hint": "Sur la frise, lequel est le plus haut ?",
+      "explanation": "Avant J.-C. vient toujours avant après J.-C. : le Ier siècle avant J.-C. vient juste avant le Ier siècle après J.-C.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise de l’Empire",
+          "lines": [
+            "J.-C. : Jésus-Christ.",
+            "I vaut 1, V vaut 5 : IV vaut 4.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "Ier siècle avant J.-C. : César conquiert la Gaule ; Auguste, premier empereur.",
+            "Ier siècle et IIe siècle après J.-C. : la paix romaine.",
+            "IVe siècle après J.-C. : l’empire devient chrétien."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "history-6e-antiquity",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

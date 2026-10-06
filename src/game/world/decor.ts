@@ -300,6 +300,36 @@ export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => numb
     put(4, 9, h(4, 9) + 1, BLOCKS[BLOC.cadran].side);
     put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.pierre].side);
   },
+  'history-6e-antiquity': (put, h) => {
+    // Sobre (le plus chargé des archipels) : un éclat de sol de mosaïque mis au jour, un tas de sable de fouille, une pierre.
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.mosaique].side);
+    put(10, 3, h(10, 3) + 1, BLOCKS[BLOC.mosaique].side);
+    put(3, 9, h(3, 9) + 1, BLOCKS[BLOC.sable].side);
+    put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.pierre].side);
+  },
+  'geography-6e-living': (put, h) => {
+    // Sobre : deux bottes de chaume en bord de champ, une borne de pierre au bord du chemin.
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.chaume].side);
+    put(10, 3, h(10, 3) + 1, BLOCKS[BLOC.chaume].side);
+    put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.pierre].side);
+  },
+  'life-earth-sciences-6e-living-world': (put, h) => {
+    // Sobre (DA, SC-2) : une touffe de fougères au bord du chemin, deux cubes de mousse, une feuille dessus.
+    put(9, 3, h(9, 3) + 1, MOSS);
+    put(10, 3, h(10, 3) + 1, MOSS);
+    put(9, 3, h(9, 3) + 2, LEAF);
+  },
+  'physics-chemistry-6e-matter-energy': (put, h) => {
+    // Sobre (DA, SC-2) : un tas de galets, deux au sol, un dessus.
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.galet].side);
+    put(10, 3, h(10, 3) + 1, BLOCKS[BLOC.galet].side);
+    put(9, 3, h(9, 3) + 2, BLOCKS[BLOC.galet].side);
+  },
+  'technology-6e-objects': (put, h) => {
+    // Sobre (DA, SC-2) : une caisse en carton, deux cartons l'un sur l'autre.
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.carton].side);
+    put(9, 3, h(9, 3) + 2, BLOCKS[BLOC.carton].side);
+  },
   'english-5e-vocabulary': (put, h) => {
     // Un étal : deux poteaux, un auvent de tuiles, une caisse de bois devant ; une pile de tuiles au sol.
     for (const px of [8, 10]) for (let z = 1; z <= 2; z++) put(px, 3, h(px, 3) + z, TRUNK);

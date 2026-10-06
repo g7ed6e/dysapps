@@ -21,6 +21,8 @@ export interface Monde {
   centre: { x: number; y: number };
   /** Étendue la plus grande de l'archipel (largeur ou profondeur) : sert au cadrage, à la brume et au zoom maximal. */
   largeur: number;
+  /** Les liaisons posées de la partie, les dernières données à la vue (GD-9) : baleines, brume et traversées s'en écartent. */
+  liaisons(): readonly string[];
 }
 
 /** Les dernières props de la vue, lues à chaque image (la scène n'est pas refaite quand elles changent). */
@@ -33,7 +35,11 @@ export interface Derniers {
   sons: boolean;
   /** Une fiche, un panneau ou un mot est ouvert par-dessus le monde : on lit, rien ne bouge pour attirer l'œil. */
   calme: boolean;
+  /** Le cadre d'une liaison montrée depuis un autre départ (GD-9, `liaisonCadree`), ou `null`. */
+  cadreDeLaLiaison: CadreDeCases | null;
   onVoyageLegEnd?: () => void;
+  /** Le mode « Aménager » (GD-9) : pas ouvert, ouvert sans choix, ou avec un choix (le doigt qui glisse cale le fantôme). */
+  amenager: 'non' | 'mode' | 'choix';
 }
 
 /** L'instant d'une image : ce que les déplacements (le bonhomme, le navire) ont décidé, que les autres parties lisent. */

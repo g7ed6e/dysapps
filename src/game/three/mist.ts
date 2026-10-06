@@ -45,7 +45,7 @@ export function creerBrume(monde: Monde, lumiere: Lumiere, instant: Instant): Pa
 
   // Les bancs de brume (Archipéo, 5e) ou les nappes des sommets (3e) : sans lumière ; la nuit les assombrit vers le bleu
   // de crépuscule.
-  const bancs = fiche ? brumeDArchipeo(archipel) : null;
+  const bancs = fiche ? brumeDArchipeo(archipel, monde.liaisons()) : null;
   let banc: THREE.Mesh | null = null;
   const bancMat = new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, depthWrite: false, fog: false });
   if (bancs) {

@@ -34,7 +34,7 @@ it('la matière LV2 prend le nom de la langue choisie, et disparaît avec « Pas
   expect(subjectInfo('english', 'de').title).toBe('Anglais');
   expect(visibleSubjects('es')).toContain('lv2');
   expect(visibleSubjects('none')).not.toContain('lv2');
-  expect(visibleSubjects('none')).toEqual(['french', 'maths', 'english']);
+  expect(visibleSubjects('none')).toEqual(['french', 'maths', 'english', 'history-geography', 'life-earth-sciences', 'physics-chemistry', 'technology']);
 });
 
 it('avec « Pas de LV2 », aucun pont ne mène au Relais ; avec une LV2, le pont depuis le Comptoir est proposé', () => {
@@ -43,8 +43,10 @@ it('avec « Pas de LV2 », aucun pont ne mène au Relais ; avec une LV2, le pont
   const versRelais = (lv2: 'es' | 'none') => buildableBridges(faits, 'lv2-5e-introductions', undefined, lv2).map((b) => b.id);
   expect(versRelais('none')).toEqual([]);
   expect(buildableBridges(faits, 'english-5e-vocabulary', undefined, 'none').some((b) => b.to === 'lv2-5e-introductions' || b.from === 'lv2-5e-introductions')).toBe(false);
-  expect(bridgesOf('lv2-5e-introductions').map((b) => [b.from, b.to])).toEqual([['english-5e-vocabulary', 'lv2-5e-introductions']]);
-  expect(versRelais('es')).toHaveLength(bridgesOf('lv2-5e-introductions').length);
+  // Depuis GD-9, chaque paire de lieux de la région a sa liaison : le Relais en a une avec chacun, dont le Comptoir.
+  expect(bridgesOf('lv2-5e-introductions').map((b) => b.id)).toContain('english-5e-vocabulary-lv2-5e-introductions');
+  // Avec une LV2, le départ proposé vers le Relais est le Comptoir, le seul lieu relié d'où une liaison tienne.
+  expect(versRelais('es')).toEqual(['english-5e-vocabulary-lv2-5e-introductions']);
 });
 
 it('« À revoir » ne propose que les missions de la LV2 choisie', () => {

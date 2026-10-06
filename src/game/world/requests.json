@@ -363,5 +363,70 @@
       "ready": "Tu as les {blocs} ! Livre-les à Knight.",
       "done": "Fontaine posée chez Knight !"
     }
+  },
+  {
+    "id": "history-6e-antiquity-request-1",
+    "biome": "history-6e-antiquity",
+    "block": "french-6e-word-spelling",
+    "count": 3,
+    "fixture": "history-6e-antiquity-fixture-1",
+    "blocland": {
+      "name": "le tamis",
+      "ask": "Il me faut {objet} pour mon tamis. Joue une mission de la Carrière des mots.",
+      "ready": "Tu as les {blocs} ! Livre-les à Silex.",
+      "done": "Tamis posé chez Silex !"
+    }
+  },
+  {
+    "id": "geography-6e-living-request-1",
+    "biome": "geography-6e-living",
+    "block": "history-6e-antiquity",
+    "count": 4,
+    "fixture": "geography-6e-living-fixture-1",
+    "blocland": {
+      "name": "la placette",
+      "ask": "Il me faut {objet} pour ma placette. Joue une mission de la Fouille des siècles.",
+      "ready": "Tu as les {blocs} ! Livre-les à Boussole.",
+      "done": "Placette posée chez Boussole !"
+    }
+  },
+  {
+    "id": "life-earth-sciences-6e-living-world-request-1",
+    "biome": "life-earth-sciences-6e-living-world",
+    "block": "geography-6e-living",
+    "count": 3,
+    "fixture": "life-earth-sciences-6e-living-world-fixture-1",
+    "blocland": {
+      "name": "le nichoir",
+      "ask": "Il me faut {objet} pour mon nichoir. Joue une mission de la Pointe des paysages.",
+      "ready": "Tu as les {blocs} ! Livre-les à Fougère.",
+      "done": "Nichoir posé chez Fougère !"
+    }
+  },
+  {
+    "id": "physics-chemistry-6e-matter-energy-request-1",
+    "biome": "physics-chemistry-6e-matter-energy",
+    "block": "technology-6e-objects",
+    "count": 3,
+    "fixture": "physics-chemistry-6e-matter-energy-fixture-1",
+    "blocland": {
+      "name": "l’étagère à flacons",
+      "ask": "Il me faut {objet} pour mon étagère à flacons. Joue une mission du Hangar des inventions.",
+      "ready": "Tu as les {blocs} ! Livre-les à Bulle.",
+      "done": "Étagère à flacons posée chez Bulle !"
+    }
+  },
+  {
+    "id": "technology-6e-objects-request-1",
+    "biome": "technology-6e-objects",
+    "block": "physics-chemistry-6e-matter-energy",
+    "count": 3,
+    "fixture": "technology-6e-objects-fixture-1",
+    "blocland": {
+      "name": "l’établi",
+      "ask": "Il me faut {objet} pour mon établi. Joue une mission du Laboratoire des éléments.",
+      "ready": "Tu as les {blocs} ! Livre-les à Pince.",
+      "done": "Établi posé chez Pince !"
+    }
   }
 ]

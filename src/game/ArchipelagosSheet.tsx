@@ -1,4 +1,5 @@
 import { Icon } from '../components/Icon';
+import { thePlace } from './world/placeArticle';
 import { SpeakButton } from '../components/SpeakButton';
 import { Syllabified } from '../components/Syllabified';
 import { getBiome, type BiomeId } from './biomes';
@@ -45,7 +46,7 @@ export function ArchipelagosSheet({ onClose, onGo }: Props) {
           const launch = next ? canLaunch(state, next) : null;
           let need = '';
           if (next && status) {
-            const shipyard = getBiome(next.biome)?.name ?? next.biome;
+            const shipyard = thePlace(getBiome(next.biome)?.name ?? next.biome);
             if (left.length > 1) need = `Il faut d’abord ${VEHICLE_NAME} avec ${left.map((v) => stageTo(v.toClasse)?.short).join(', puis ')}. Commence au port, sur ${shipyard}.`;
             else if (launch?.ok) need = `${VEHICLE_NAME.charAt(0).toUpperCase()}${VEHICLE_NAME.slice(1)} est prêt sur ${shipyard} : embarque !`;
             else if (launch && !launch.ok && launch.reason === 'gardiens')

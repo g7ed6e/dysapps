@@ -15,7 +15,7 @@ import { ShipSection } from './ShipSection';
 import type { VehicleBuilder } from './useVehicleBuilder';
 import type { ArchipelagoId } from './world/archipelago';
 import { useBlocland } from './BloclandContext';
-import { STARS_TO_UNLOCK, isBossBeaten, isBossOpen, missingForBoss } from './boss';
+import { STARS_TO_UNLOCK, isBossBeaten, isBossOpen, missingForBoss, quoted } from './boss';
 import { levelFor } from './engine';
 import { pickExercise, questProgress } from './exercises';
 import { Creature } from './Creatures';
@@ -30,6 +30,7 @@ import { useTextes } from '../universes';
 import type { Partie } from './world/parts';
 import { LaterSaid, ResidentReminder, useResidentReminder } from './ResidentReminder';
 import { Sheet } from './Sheet';
+import { JoinLine } from './Joins';
 
 /**
  * Comment ouvrir le défi d'un Gardien : les étoiles à gagner et les missions où les gagner (`missingForBoss`), ou qu'il
@@ -38,7 +39,8 @@ import { Sheet } from './Sheet';
  */
 export function explicationDuGardien(biome: BiomeDef, progress: Record<string, { stars: number }>, unlocked: boolean): string {
   if (!unlocked) return 'Il faut d’abord un chemin jusqu’à cette île.';
-  const missing = missingForBoss(biome, progress);
+  // Chaque titre entre guillemets : un titre qui a lui-même des virgules ou un « et » ne se confond pas avec la liste.
+  const missing = missingForBoss(biome, progress).map(quoted);
   // Ce qu'il y a à faire, jamais ce qui a raté (GD-8) ; les missions liées par « et », pas seulement par des virgules.
   const liste = missing.length > 1 ? `${missing.slice(0, -1).join(', ')} et ${missing[missing.length - 1]}` : (missing[0] ?? 'chaque mission');
   return `Pour ouvrir son défi, gagne ${STARS_TO_UNLOCK} étoiles dans ${liste}.`;
@@ -220,7 +222,7 @@ export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight =
                 <span className="island-quest-text">
                   <span className="island-quest-title">{guardianTitle(biome)}</span>
                   <span className="island-quest-desc">
-                    {STARS_TO_UNLOCK} étoiles dans : {missingForBoss(biome, state.progress).join(', ') || 'chaque mission'}
+                    {STARS_TO_UNLOCK} étoiles dans : {missingForBoss(biome, state.progress).map(quoted).join(', ') || 'chaque mission'}
                   </span>
                 </span>
               </button>
@@ -251,6 +253,9 @@ export function IslandSheet({ biome, in3d = false, onClose, onBuilt, highlight =
       {unlocked && ship && onBoard && <ShipSection biome={biome} builder={ship} in3d={in3d} onBoard={onBoard} highlight={highlight === 'vehicle'} fold={fold} />}
 
       {unlocked && <Bridges island={biome.id} onBuilt={onBuilt} highlight={highlight} fold={fold} objectif={goal?.ouvrage ?? null} />}
+
+      {/* Réuni à un autre lieu (GD-9) : la construction qui les réunit se pose d'ici, comme une grande construction. */}
+      {unlocked && <JoinLine island={biome.id} />}
 
       {/* La matière, la classe (cadrage-contenu) et l'archipel : une ligne au pied du panneau. */}
       <p className="island-sheet-module island-sheet-foot">

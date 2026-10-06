@@ -14,6 +14,8 @@ const root = process.cwd();
 const OUT = join(root, 'www', '_captures');
 /** Une heure de jour, pour que le ciel et la lumière soient les mêmes à chaque capture. */
 const DAY = new Date('2026-09-28T10:30:00');
+/** Une heure de nuit (`nuit: true`), pour relire ce que la nuit fait au monde. */
+const NIGHT = new Date('2026-09-28T22:30:00');
 const TABLET = { width: 1024, height: 768 };
 const PHONE = { width: 390, height: 844 };
 
@@ -59,6 +61,8 @@ const EARLY = {
   },
   progress: { xp: 180, totalAnswers: 40, correctAnswers: 31, sessionsCompleted: 4, badges: badges(3) },
 };
+/** Le début, la Mine reliée : la Rivière a deux départs (« Autre départ », GD-9). */
+const EARLY_MINE = { ...EARLY, game: { ...EARLY.game, world: { ...EARLY.game.world, links: [...EARLY.game.world.links, 'french-6e-phonology-french-6e-letter-confusion'] } } };
 /** Au milieu des Premiers Rivages : des îles ouvertes, des bâtiments finis, la coque du navire commencée. */
 const six = islandsOf('6e');
 const MID = {
@@ -98,6 +102,11 @@ const DONE6 = {
   },
   progress: { xp: 5200, totalAnswers: 1200, correctAnswers: 1010, sessionsCompleted: 90, structuresCompleted: 33, challengesWon: 11, passages: 1, landmarksCompleted: 2, badges: badges(17) },
 };
+/** Les Premiers Rivages reconstruits, avec de quoi poser toute la digue entre la Tour et la Ferme (91 cases, une marche). */
+const REUNIR = {
+  ...DONE6,
+  game: { ...DONE6.game, stock: { ...DONE6.game.stock, 'french-6e-reading': 100, 'french-6e-grammar-spelling': 100 }, world: { ...DONE6.game.world, place: 'french-6e-reading' } },
+};
 /** Arrivé dans les Îles Brumeuses. */
 const COLLINES = { ...DONE6, game: { ...DONE6.game, world: { ...DONE6.game.world, place: 'maths-5e-proportionality' } } };
 
@@ -133,6 +142,39 @@ const SHOTS = [
   { name: 'navire-chantier', state: MID, go: '/adventure/maths-6e-calculation', act: openFold('navire') },
   // La fiche d'une borne (Toucher le monde, lot 2), ouverte comme d'un toucher.
   { name: 'fiche-borne', state: EARLY, go: '/adventure/french-6e-phonology', act: ouvrirLaFiche({ genre: 'borne', id: 'french-6e-phonology:syllables' }) },
+  // Relier une île pâle (GD-9) : la fiche de l'ouvrage proposé, puis le départ suivant.
+  { name: 'fiche-relier', state: EARLY_MINE, go: '/adventure/french-6e-phonology', act: relierDepuisUneAutreIle('maths-6e-fractions') },
+  // Aménager sa région (GD-9) : sur la Carte, le mode ouvert, un lieu choisi et son fantôme calé sur une place libre.
+  { name: 'amenager', state: MID, go: '/adventure/map', act: amenager('maths-6e-fractions', { x: 150, y: 100 }) },
+  // Choix 1a du mainteneur (6 octobre 2026) : le mode ouvert sans choix, un petit radeau au bout de chaque ouvrage ;
+  // puis l'arrivée d'un bout choisie par sa poignée, les flèches autour d'elle.
+  { name: 'amenager-bouts', state: MID, go: '/adventure/map', act: amenagerOuvrir },
+  { name: 'amenager-arrivee', state: MID, go: '/adventure/map', act: amenagerUnBout },
+  // Choix 3 : une flèche mène le fantôme d'un cran sur une place prise : la croix grise, « Place prise », Poser éteint.
+  { name: 'amenager-place-prise', state: MID, go: '/adventure/map', act: amenagerPlacePrise('maths-6e-fractions', ['Est', 'Nord', 'Ouest', 'Sud']) },
+  // La même de nuit, pour relire le contraste de la croix sur l'eau.
+  { name: 'amenager-place-prise-nuit', state: MID, go: '/adventure/map', nuit: true, act: amenagerPlacePrise('maths-6e-fractions', ['Est', 'Nord', 'Ouest', 'Sud']), surDemande: true },
+  // Choix 2a, pour les relectures : la Rivière des fractions choisie, au milieu des Premiers Rivages (quelques ouvrages,
+  // la Carte lisible) ; la place qui la collerait à un voisin porte l'icône de Réunir, sur la jointure.
+  { name: 'amenager-reunir-places', state: MID, go: '/adventure/map', act: amenagerChoisir('maths-6e-fractions'), surDemande: true },
+  // Réunir deux lieux (GD-9, point 10) : la Tour du lecteur choisie, « Réunir » touché, la question, « Réunir avec la
+  // Ferme des accords », « Valider » ; la digue finie depuis son panneau, puis regardée de près sur la Carte (l'herbe
+  // sur la pierre, la marche).
+  { name: 'reunir', state: REUNIR, go: '/adventure/map', act: reunir('french-6e-reading', 'french-6e-grammar-spelling') },
+  // Pour les relectures, sur demande : le mode au téléphone, la question de « Réunir », et le geste tenu au milieu du
+  // démontage (on ne doit voir aucun creux dans la couche qui reste).
+  { name: 'telephone-amenager', state: MID, go: '/adventure/map', size: PHONE, act: amenager('maths-6e-fractions', { x: 150, y: 100 }), surDemande: true },
+  // Au téléphone : les petits radeaux des bouts, et une place prise en grand texte (la ligne du haut garde sa hauteur).
+  { name: 'telephone-amenager-bouts', state: MID, go: '/adventure/map', size: PHONE, act: amenagerOuvrir, surDemande: true },
+  { name: 'telephone-amenager-place-prise', state: MID, go: '/adventure/map', size: PHONE, settings: { fontSize: 28 }, act: amenagerPlacePrise('maths-6e-fractions', ['Est', 'Nord', 'Ouest', 'Sud']), surDemande: true },
+  // Au téléphone en grand texte, « Modifier le plan » propose d'abord la liste : la liste ouverte dans son panneau.
+  { name: 'telephone-amenager-liste', state: MID, go: '/adventure/map', size: PHONE, settings: { fontSize: 28 }, act: amenagerEnListe, surDemande: true },
+  { name: 'reunir-question', state: REUNIR, go: '/adventure/map', act: reunirQuestion('french-6e-reading'), surDemande: true },
+  { name: 'amenager-geste', state: MID, go: '/adventure/map', act: amenagerGeste('maths-6e-fractions', { x: 150, y: 100 }, 300), surDemande: true },
+  // Le port de la 6e à la carte de départ, de près : la baleine y est-elle cachée ? (question du directeur artistique)
+  { name: 'port-6e-baleine', state: MID, go: '/adventure/maths-6e-calculation', act: fermerLesBandeaux, surDemande: true },
+  // Le bandeau « Succès débloqué » au téléphone : relu aux réglages extrêmes (texte sous l'icône, Fermer dans l'écran).
+  { name: 'telephone-succes', state: MID, go: '/adventure/map', size: PHONE, act: attendre(1500), surDemande: true },
   { name: 'gardien', state: MID, go: '/adventure/french-6e-letter-confusion/challenge', wait: 2500 },
   { name: 'ecole', state: MID, go: '/adventure/school' },
   { name: 'trophees', state: MID, go: '/adventure/trophies' },
@@ -159,7 +201,15 @@ const deBase = (n) => SHOTS.find((s) => s.name === n) ?? (() => { throw new Erro
 // Le nom de la capture garde le mot affiché du thème ; le réglage, sa valeur neutre.
 const THEMES = { creme: 'cream', nuit: 'night', clair: 'light' };
 const extreme = (name, theme) => ({ ...deBase(name), name: `extreme-${name}-${theme}`, settings: { ...EXTREMES, theme: THEMES[theme] }, reduit: true, surDemande: true });
+// Le mode aux réglages extrêmes : la Tour du lecteur choisie près de la Ferme, « Réunir » allumé à sa place réservée ;
+// puis, après une pose, un premier toucher sur « Annuler » : « Garder » à sa place, l'« Annuler » qui confirme avant lui.
+const AMENAGER_REUNIR = { state: REUNIR, act: amenagerChoisir('french-6e-reading') };
+const AMENAGER_GARDER = { state: MID, act: amenagerGarder('maths-6e-fractions', { x: 150, y: 100 }) };
 SHOTS.push(
+  { ...extreme('amenager', 'creme'), ...AMENAGER_REUNIR },
+  { ...extreme('telephone-amenager', 'nuit'), ...AMENAGER_REUNIR },
+  { ...extreme('amenager', 'creme'), ...AMENAGER_GARDER, name: 'extreme-amenager-garder-creme' },
+  { ...extreme('telephone-amenager', 'nuit'), ...AMENAGER_GARDER, name: 'extreme-telephone-amenager-garder-nuit' },
   extreme('quete-correction', 'creme'),
   extreme('telephone-quete', 'creme'),
   extreme('carte', 'nuit'),
@@ -167,6 +217,8 @@ SHOTS.push(
   extreme('gardien', 'clair'),
   extreme('quete-fin', 'clair'),
   extreme('vue-simple', 'creme'),
+  extreme('telephone-succes', 'nuit'),
+  extreme('telephone-amenager-liste', 'nuit'),
 );
 
 /**
@@ -184,6 +236,20 @@ SHOTS.push(
   { ...tutoTelephone, name: 'telephone-tutoriel' },
   { ...tutoTelephone, name: 'telephone-tutoriel-archipeo', settings: { univers: 'archipeo' } },
   { ...tutoTelephone, name: 'telephone-tutoriel-grand-texte', settings: { fontSize: 28 } },
+);
+// Archipéo, sur demande : le voile de brume tenu à mi-démontage (plein, serré sur le lieu, dont le contour se devine
+// dessous), la nuit aux trois quarts (étiré vers la nouvelle place), et la jetée finie, ses dalles plus claires.
+SHOTS.push(
+  { ...archipeo({ base: 'amenager-geste', name: 'archipeo-amenager-geste' }), act: amenagerGesteFleche('french-6e-letter-confusion', 'Nord', 300), surDemande: true },
+  { ...archipeo({ base: 'reunir', name: 'archipeo-reunir' }), surDemande: true },
+  // « Modifier le plan » ouvert dans Archipéo, la Rivière des fractions choisie : son nom sur son fantôme, une fois.
+  { ...archipeo({ base: 'amenager', name: 'archipeo-modifier-le-plan' }), surDemande: true },
+  // Le plan sans choix (les radeaux Brume des bouts) et une place prise (la croix grise), de jour et de nuit.
+  { ...archipeo({ base: 'amenager-bouts', name: 'archipeo-amenager-bouts' }), surDemande: true },
+  { ...archipeo({ base: 'amenager-bouts', name: 'archipeo-amenager-bouts-nuit' }), nuit: true, surDemande: true },
+  { ...archipeo({ base: 'amenager-place-prise', name: 'archipeo-amenager-place-prise' }), surDemande: true },
+  { ...archipeo({ base: 'amenager-place-prise', name: 'archipeo-amenager-place-prise-nuit' }), nuit: true, surDemande: true },
+  { ...archipeo({ base: 'amenager-geste', name: 'archipeo-amenager-geste-nuit' }), act: amenagerGeste('maths-6e-fractions', { x: 150, y: 100 }, 450), settings: { univers: 'archipeo' }, nuit: true, surDemande: true },
 );
 SHOTS.push(
   archipeo({ base: 'gardien', name: 'archipeo-gardien' }),
@@ -217,6 +283,202 @@ function ouvrirLaFiche(objet) {
     await page.evaluate((o) => window.__dysappsFiche(o), objet);
     await page.waitForTimeout(2500);
   };
+}
+/** Ouvre la fiche d'une île pâle, touche « Relier », puis le chevron « Autre départ » (l'état préparé a deux départs). */
+function relierDepuisUneAutreIle(ile) {
+  return async (page) => {
+    await ouvrirLaFiche({ genre: 'ile', id: ile })(page);
+    await page.getByRole('button', { name: 'Relier' }).click();
+    await page.waitForTimeout(1500);
+    const autre = page.getByRole('button', { name: /^Autre départ/ });
+    await autre.click();
+    // Le bandeau d'un succès gagné par l'état préparé cacherait le cadrage de la liaison.
+    const bandeau = page.locator('.celebration button[aria-label="Fermer"]');
+    while (await bandeau.count()) await bandeau.first().click();
+    await page.waitForTimeout(2500);
+  };
+}
+/** Ouvre le mode « Aménager » sur la Carte, choisit un lieu et touche la mer en `point` (en cases du monde). */
+function amenager(ile, point) {
+  return async (page) => {
+    // Le bandeau d'un succès gagné par l'état préparé cacherait la scène (et, en grand texte au téléphone, le bouton).
+    await fermerLesBandeaux(page);
+    await page.getByRole('button', { name: /^Modifier le plan/ }).click();
+    await page.waitForTimeout(500);
+    await fermerLesBandeaux(page);
+    // Au téléphone en grand texte, la Carte propose d'abord la liste : on reste sur la Carte.
+    const rester = page.getByRole('button', { name: /Rester sur la Carte/ });
+    if (await rester.count()) await rester.click();
+    // Deux touchers, l'un après l'autre : le second lit le choix fait par le premier.
+    await page.evaluate((ile) => window.__dysappsAmenager?.({ genre: 'ile', id: ile }), ile);
+    await page.waitForTimeout(800);
+    await page.evaluate((point) => window.__dysappsAmenager?.({ genre: 'mer', point }), point);
+    await page.waitForTimeout(2500);
+  };
+}
+/** Ouvre le mode « Aménager » sur la Carte, sans rien choisir : les poignées des bouts des ouvrages se montrent. */
+async function amenagerOuvrir(page) {
+  await fermerLesBandeaux(page);
+  await page.getByRole('button', { name: /^Modifier le plan/ }).click();
+  await page.waitForTimeout(500);
+  await fermerLesBandeaux(page);
+  const rester = page.getByRole('button', { name: /Rester sur la Carte/ });
+  if (await rester.count()) await rester.click();
+  await page.waitForTimeout(2500);
+}
+/** Ouvre le mode et touche la poignée du premier bout d'ouvrage (un vrai toucher sur son bouton) : son arrivée est choisie. */
+async function amenagerUnBout(page) {
+  await amenagerOuvrir(page);
+  await page.getByRole('group', { name: 'Déplacer une arrivée' }).getByRole('button').first().click();
+  await page.waitForTimeout(2500);
+}
+/** Choisit un lieu, puis touche une flèche, cran par cran (au plus 12 par direction), jusqu'à une place prise. */
+function amenagerPlacePrise(ile, fleches) {
+  return async (page) => {
+    await amenagerChoisir(ile)(page);
+    for (const fleche of fleches) {
+      for (let i = 0; i < 12; i++) {
+        await page.getByRole('button', { name: fleche, exact: true }).click();
+        await page.waitForTimeout(300);
+        const ligne = (await page.locator('.arrange-signes').textContent()) ?? '';
+        if (ligne.includes('Place prise')) return page.waitForTimeout(2500);
+        if (ligne.includes('Plus de place')) break;
+      }
+    }
+    await page.waitForTimeout(2500);
+  };
+}
+/** Ouvre le mode « Aménager » sur la Carte et choisit un lieu, laissé à sa place. */
+function amenagerChoisir(ile) {
+  return async (page) => {
+    await fermerLesBandeaux(page);
+    await page.getByRole('button', { name: /^Modifier le plan/ }).click();
+    await page.waitForTimeout(500);
+    await fermerLesBandeaux(page);
+    const rester = page.getByRole('button', { name: /Rester sur la Carte/ });
+    if (await rester.count()) await rester.click();
+    await page.evaluate((ile) => window.__dysappsAmenager?.({ genre: 'ile', id: ile }), ile);
+    await page.waitForTimeout(2500);
+  };
+}
+/** Choisit un lieu, le pose en `point`, le choisit de nouveau, puis touche une fois « Annuler » : « Garder » paraît. */
+function amenagerGarder(ile, point) {
+  const choisir = amenager(ile, point);
+  return async (page) => {
+    await choisir(page);
+    await page.getByRole('button', { name: 'Poser', exact: true }).click();
+    await page.waitForTimeout(2000);
+    await page.evaluate((ile) => window.__dysappsAmenager?.({ genre: 'ile', id: ile }), ile);
+    await page.waitForTimeout(800);
+    await page.getByRole('button', { name: 'Annuler', exact: true }).click();
+    await page.waitForTimeout(1500);
+  };
+}
+/** Touche « Modifier le plan », puis « En liste » (au téléphone en grand texte), et choisit la Rivière des fractions. */
+async function amenagerEnListe(page) {
+  await fermerLesBandeaux(page);
+  await page.getByRole('button', { name: /^Modifier le plan/ }).click();
+  await page.waitForTimeout(500);
+  await page.getByRole('button', { name: 'En liste', exact: true }).click();
+  await page.waitForTimeout(800);
+  await page.getByRole('button', { name: 'Déplacer Rivière des fractions' }).click();
+  await page.waitForTimeout(800);
+}
+/**
+ * Ferme les bandeaux des succès gagnés par l'état préparé, seulement pour qu'ils ne couvrent pas la scène : un vrai
+ * toucher, puisque Fermer reste toujours dans l'écran (`telephone-succes` le montre, réglages extrêmes compris).
+ */
+async function fermerLesBandeaux(page) {
+  const bandeau = page.locator('.celebration button[aria-label="Fermer"]');
+  while (await bandeau.count()) await bandeau.first().click();
+}
+/** Attend `ms`, sans autre geste. */
+function attendre(ms) {
+  return (page) => page.waitForTimeout(ms);
+}
+/** Le geste de la pose tenu à `ms` de son démontage (`window.__dysappsGesteA`), après le choix d'un lieu et de sa place. */
+function amenagerGeste(ile, point, ms) {
+  const choisir = amenager(ile, point);
+  return async (page) => {
+    await choisir(page);
+    await page.evaluate((ms) => (window.__dysappsGesteA = ms), ms);
+    await page.getByRole('button', { name: 'Poser', exact: true }).click();
+    await page.waitForTimeout(2500);
+  };
+}
+/**
+ * Comme `amenagerGeste`, mais le fantôme part d'une flèche (`fleche` : « Ouest », « Nord »…) : l'ancienne place reste
+ * dans la vue, sous le voile.
+ */
+function amenagerGesteFleche(ile, fleche, ms) {
+  return async (page) => {
+    await fermerLesBandeaux(page);
+    await page.getByRole('button', { name: /^Modifier le plan/ }).click();
+    await page.waitForTimeout(500);
+    await fermerLesBandeaux(page);
+    await page.evaluate((ile) => window.__dysappsAmenager?.({ genre: 'ile', id: ile }), ile);
+    await page.waitForTimeout(800);
+    await page.getByRole('button', { name: fleche, exact: true }).click();
+    await page.waitForTimeout(2500);
+    await page.evaluate((ms) => (window.__dysappsGesteA = ms), ms);
+    await page.getByRole('button', { name: 'Poser', exact: true }).click();
+    await page.waitForTimeout(2500);
+  };
+}
+/** Ouvre le mode « Aménager », choisit `ile` et touche « Réunir » : la question s'ouvre. */
+function reunirQuestion(ile) {
+  return async (page) => {
+    await fermerLesBandeaux(page);
+    await page.getByRole('button', { name: /^Modifier le plan/ }).click();
+    await page.waitForTimeout(500);
+    await fermerLesBandeaux(page);
+    await page.evaluate((ile) => window.__dysappsAmenager?.({ genre: 'ile', id: ile }), ile);
+    await page.waitForTimeout(800);
+    await page.getByRole('button', { name: 'Réunir', exact: true }).click();
+    await page.waitForTimeout(800);
+  };
+}
+/** Réunit `ile` à `autre` (la question, puis « Réunir »), ferme le mode, ouvre leur digue, la pose entière et referme son panneau. */
+function reunir(ile, autre) {
+  const question = reunirQuestion(ile);
+  return async (page) => {
+    await question(page);
+    await page.getByRole('button', { name: /^Réunir avec / }).first().click();
+    await page.waitForTimeout(800);
+    await page.getByRole('button', { name: 'Valider', exact: true }).click();
+    await page.evaluate((id) => (location.hash = `#/adventure/join.${id}`), `${ile}.${autre}`);
+    await page.waitForTimeout(1500);
+    await page.getByRole('button', { name: /Tout poser/ }).click();
+    await page.waitForTimeout(800);
+    // Le panneau fermé : la digue finie, sans le bandeau d'un succès gagné en chemin ; puis la Carte, zoomée sur elle.
+    await page.locator('#panneau-reunion .island-sheet-close').click();
+    await page.waitForTimeout(800);
+    await fermerLesBandeaux(page);
+    await page.evaluate(() => (location.hash = '#/adventure/map'));
+    await page.waitForTimeout(2500);
+    await fermerLesBandeaux(page);
+    await zoomerSurLaReunion(page, ile);
+  };
+}
+/** Sur la Carte, zoome à la molette sur la construction qui réunit `ile` à son voisin (calculée depuis la partie). */
+async function zoomerSurLaReunion(page, ile) {
+  const world = await page.evaluate(() => JSON.parse(localStorage.getItem('dysapps:game')).world);
+  const { joinsIn, placeIn } = await load('/src/game/world/arrange.ts');
+  const { archipelagoOfIsland } = await load('/src/game/world/archipelagos.ts');
+  const j = joinsIn(world, archipelagoOfIsland(ile)).find((x) => x.pair.includes(ile));
+  if (!j) throw new Error('aucune réunion à regarder');
+  const z = j.shape.zone;
+  const centre = { x: (z.x0 + z.x1) / 2, y: (z.y0 + z.y1) / 2, z: Math.max(...j.pair.map((id) => placeIn(world, id).altitude)) };
+  await page.evaluate(() => window.__dysappsCamera?.poser());
+  for (let i = 0; i < 6; i++) {
+    const p = await page.evaluate((c) => window.__dysappsCamera?.ecran(c), centre);
+    if (!p) break;
+    await page.mouse.move(p.x, p.y);
+    await page.mouse.wheel(0, -400);
+    await page.waitForTimeout(400);
+    await page.evaluate(() => window.__dysappsCamera?.poser());
+  }
+  await page.waitForTimeout(1500);
 }
 function openFold(name) {
   return async (page) => {
@@ -307,7 +569,7 @@ for (const shot of SHOTS.filter((s) => (only.length === 0 && !s.surDemande) || o
 /** Prend une capture ; rend le message d'erreur, ou null si elle est prise. */
 async function take(shot) {
   const page = await browser.newPage({ viewport: shot.size ?? TABLET, deviceScaleFactor: 1, reducedMotion: shot.reduit ? 'reduce' : 'no-preference' });
-  await page.clock.setFixedTime(DAY);
+  await page.clock.setFixedTime(shot.nuit ? NIGHT : DAY);
   // Un hasard à graine fixe : mêmes questions, mêmes phrases, à chaque capture (et d'un chargement à l'autre).
   await page.addInitScript(hasardFixe);
   await page.addInitScript(figeable);

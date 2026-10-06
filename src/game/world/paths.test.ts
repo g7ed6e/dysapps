@@ -50,7 +50,7 @@ it('d’île en île, le bonhomme ne repasse pas par le milieu des îles travers
     expect(route.some((p) => p.x === home.x && p.y === home.y)).toBe(false);
   }
   // Chaque point hors ouvrage est une case libre du sol, et les pieds ne sautent jamais plus d'un bloc entre deux points.
-  const deck = new Set(BRIDGES.filter((b) => bridges.includes(b.id)).flatMap((b) => bridgePath(b).map((c) => `${c.x},${c.y}`)));
+  const deck = new Set(BRIDGES.filter((b) => bridges.includes(b.id)).flatMap((b) => bridgePath(b, bridges).map((c) => `${c.x},${c.y}`)));
   const homes = new Set(['maths-6e-fractions', 'french-6e-letter-confusion'].map((id) => `${avatarHome(id as 'french-6e-letter-confusion').x},${avatarHome(id as 'french-6e-letter-confusion').y}`));
   for (const p of route) {
     const k = `${p.x},${p.y}`;

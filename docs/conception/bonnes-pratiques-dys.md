@@ -31,6 +31,7 @@ Les règles de l’application sont dans [Principes dys](../../www/pedagogie/pri
 
 - Mots courants, phrases courtes, une idée par phrase, la même chose toujours nommée du même mot (règles européennes du Facile à lire et à comprendre, FALC ; objectif 3 du W3C « Making Content Usable »).
 - Des éléments familiers : icônes et gestes connus, toujours au même endroit (objectif 1 du W3C ; critère « aide cohérente » des WCAG 2.2).
+- Peu de texte dans l’interface (choix du mainteneur, 3 et 6 octobre 2026) : hors des exercices, une icône plutôt qu’un mot, un signe plutôt qu’une phrase, un seul bouton d’action nommé d’un ou deux mots. La voix lit le nom des icônes ; en grand texte, le mot revient sous l’icône. L’objectif 3 du W3C recommande un texte avec chaque icône : c’est un écart choisi, que les tests en classe confirment ou rouvrent, pas une réserve à reposer à chaque relecture.
 
 ### Se concentrer et se souvenir
 

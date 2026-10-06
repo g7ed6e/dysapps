@@ -1,5 +1,5 @@
 import type { VoxelCube } from './cube';
-import { buildMesh, faceCount } from './mesher';
+import { buildMesh, drawCallsOf, faceCount } from './mesher';
 
 const cube = (x: number, y: number, z: number, texture = 'terre'): VoxelCube => ({ x, y, z, color: '#94694a', texture });
 
@@ -52,4 +52,24 @@ it('rendu Archipéo : un cube posé sur le sol en facettes garde son dessous cac
   expect(posed.some((g) => g.face === 'bottom')).toBe(false);
   // Un fantôme garde toutes ses faces.
   expect(faceCount(buildMesh([{ ...borne[0], ghost: true }], sol))).toBe(6);
+});
+
+it('Blocland : ne dessine pas les dessous à la hauteur de l’eau ou plus bas, ceux d’un fantôme si', () => {
+  const sousLEau = { hiddenBottomsUpTo: -1 };
+  expect(faceCount(buildMesh([cube(0, 0, -2)], [], sousLEau))).toBe(5);
+  expect(faceCount(buildMesh([cube(0, 0, -1)], [], sousLEau))).toBe(5);
+  expect(faceCount(buildMesh([cube(0, 0, 0)], [], sousLEau))).toBe(6);
+  expect(faceCount(buildMesh([{ ...cube(0, 0, -2), ghost: true }], [], sousLEau))).toBe(6);
+});
+
+it('compte un seul appel de dessin pour toutes les couleurs unies d’un modèle, un par texture ou fantôme', () => {
+  const groups = buildMesh([
+    cube(0, 0, 0, 'herbe'),
+    { x: 2, y: 0, z: 0, color: '#ff0000' },
+    { x: 4, y: 0, z: 0, color: '#00ff00' },
+    { x: 6, y: 0, z: 0, color: '#0000ff', ghost: true },
+  ]);
+  expect(groups).toHaveLength(6);
+  expect(drawCallsOf(groups)).toBe(5);
+  expect(drawCallsOf(buildMesh([cube(0, 0, 0, 'herbe')]))).toBe(3);
 });

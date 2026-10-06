@@ -39,6 +39,11 @@ export const BIOME_IDS = [
   'english-4e-grammar',
   'english-3e-comprehension',
   'english-3e-grammar',
+  'history-6e-antiquity',
+  'geography-6e-living',
+  'life-earth-sciences-6e-living-world',
+  'physics-chemistry-6e-matter-energy',
+  'technology-6e-objects',
   'lv2-5e-introductions',
   'lv2-4e-daily-life',
   'lv2-3e-travel',
@@ -80,6 +85,11 @@ export type BlockId =
   | 'english-4e-grammar'
   | 'english-3e-comprehension'
   | 'english-3e-grammar'
+  | 'history-6e-antiquity'
+  | 'geography-6e-living'
+  | 'life-earth-sciences-6e-living-world'
+  | 'physics-chemistry-6e-matter-energy'
+  | 'technology-6e-objects'
   | 'trophy-gold'
   | 'trophy-crystal'
   | 'lv2-5e-introductions'
@@ -130,6 +140,11 @@ export const BLOC = {
   rail: 'english-4e-grammar',
   antenne: 'english-3e-comprehension',
   taille: 'english-3e-grammar',
+  mosaique: 'history-6e-antiquity',
+  chaume: 'geography-6e-living',
+  fossile: 'life-earth-sciences-6e-living-world',
+  aimant: 'physics-chemistry-6e-matter-energy',
+  carton: 'technology-6e-objects',
   dalle: 'lv2-5e-introductions',
   osier: 'lv2-4e-daily-life',
   bardeau: 'lv2-3e-travel',
@@ -189,6 +204,11 @@ export type BlockTexture =
   | 'rail'
   | 'antenne'
   | 'taille'
+  | 'mosaique'
+  | 'chaume'
+  | 'fossile'
+  | 'aimant'
+  | 'carton'
   | 'or'
   | 'cristal'
   | 'dalle'
@@ -236,6 +256,22 @@ export const BLOCKS: Record<BlockId, BlockDef> = {
   'english-4e-grammar': { id: 'english-4e-grammar', name: 'Rail', top: '#85603a', side: '#4a4a50', texture: 'rail' },
   'english-3e-comprehension': { id: 'english-3e-comprehension', name: 'Antenne', top: '#b4bcc4', side: '#9aa4ae', texture: 'antenne' },
   'english-3e-grammar': { id: 'english-3e-grammar', name: 'Pierre de taille', top: '#e6dcc4', side: '#d8ccb0', texture: 'taille' },
+  // Le bloc de la Fouille des siècles (histoire, 6e) : des tesselles de 2 × 2 en tons ocre, terre cuite et crème, mats,
+  // l'ocre et le crème dominants (plus jaune que la brique, plus rouge que le chaume), distinctes du vitrail par
+  // l'absence de plomb et de couleurs vives.
+  'history-6e-antiquity': { id: 'history-6e-antiquity', name: 'Mosaïque', top: '#d6a258', side: '#b47c40', texture: 'mosaique' },
+  // Le bloc de la Pointe des paysages (géographie, 6e) : des bottes de paille en couches qui se chevauchent, distinctes
+  // du sable, de l'osier et du parchemin par le motif, pas par la teinte seule.
+  'geography-6e-living': { id: 'geography-6e-living', name: 'Chaume', top: '#d8b860', side: '#b0903e', texture: 'chaume' },
+  // Le bloc de la Vallée du vivant (SVT, 6e) : une pierre beige où dort une coquille en spirale, sombre ; distinct de la
+  // pierre de taille et du sable par la spirale, pas par la teinte seule (DA, SC-2).
+  'life-earth-sciences-6e-living-world': { id: 'life-earth-sciences-6e-living-world', name: 'Fossile', top: '#b3a68a', side: '#8f8370', texture: 'fossile' },
+  // Le bloc du Laboratoire des éléments (physique-chimie, 6e) : un aimant, le dessus en deux moitiés, rouge et bleue,
+  // les côtés gris métal marqués d'un U (DA, SC-2) ; jamais la couleur seule : les deux pôles se lisent à la forme.
+  'physics-chemistry-6e-matter-energy': { id: 'physics-chemistry-6e-matter-energy', name: 'Aimant', top: '#b84a40', side: '#8c9298', texture: 'aimant' },
+  // Le bloc du Hangar des inventions (technologie, 6e) : du carton ondulé brun clair, ses cannelures verticales,
+  // distinct des planches et de la terre par le motif (DA, SC-2).
+  'technology-6e-objects': { id: 'technology-6e-objects', name: 'Carton', top: '#b98d5a', side: '#9a7246', texture: 'carton' },
   'trophy-gold': { id: 'trophy-gold', name: 'Or', top: '#f2c944', side: '#cfa326', texture: 'or', rare: true },
   'trophy-crystal': { id: 'trophy-crystal', name: 'Cristal', top: '#8ff0e8', side: '#4fc3bb', texture: 'cristal', rare: true },
   // Le bloc du Relais des voyageurs (LV2, 5e) : des dalles de 8 × 8 décalées, distinctes de la pierre de taille par le motif.
@@ -281,7 +317,7 @@ export function ofBlock(id: BlockId): string {
  * dys). Les autres blocs sont des objets qu’on compte : « 5 toits », « 2 lanternes ».
  */
 const MATIERES: ReadonlySet<BlockId> = new Set<BlockId>(
-  ['french-6e-phonology', 'french-6e-letter-confusion', 'french-6e-word-spelling', 'french-6e-grammar-spelling', 'french-6e-reading', 'maths-6e-decimals', 'maths-5e-signed-numbers', 'maths-5e-proportionality', 'french-5e-conjugation', 'maths-4e-powers', 'maths-3e-geometry', 'maths-3e-statistics', 'english-4e-comprehension', 'english-5e-grammar', 'trophy-gold'],
+  ['french-6e-phonology', 'french-6e-letter-confusion', 'french-6e-word-spelling', 'french-6e-grammar-spelling', 'french-6e-reading', 'maths-6e-decimals', 'maths-5e-signed-numbers', 'maths-5e-proportionality', 'french-5e-conjugation', 'maths-4e-powers', 'maths-3e-geometry', 'maths-3e-statistics', 'english-4e-comprehension', 'english-5e-grammar', 'geography-6e-living', 'technology-6e-objects', 'trophy-gold'],
 );
 
 /** Les pluriels qui ne s’écrivent pas en ajoutant un « s » au nom du bloc. */

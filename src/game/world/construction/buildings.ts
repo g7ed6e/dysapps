@@ -6,6 +6,7 @@ import { LAYOUT_PAD, origineDe, placeSpot, VILLAGE_PLACES } from '../terrain';
 import { type ArchipelagoId, islandDef, mapOf } from '../map';
 import { decalageDesPlans, planCells, plansFor } from '../plans';
 import { type CaseDuLieu, estUnLieuDuVillage } from '../architecture';
+import { layoutCache } from '../placement';
 
 /**
  * Les tours du décor du cœur que le rendu Archipéo ne dessine pas (décision du directeur artistique, lot R5) : un seul
@@ -36,7 +37,7 @@ export function sansToursDuCoeur(cubes: VoxelCube[]): VoxelCube[] {
 /** Les étapes d'un bâtiment qui prennent le kit d'architecture : les murs et le toit (world/architect.ts, `Stages`). */
 export const ETAPES_DU_BATIMENT = 2;
 
-const batiments = new Map<ArchipelagoId, ReadonlyMap<string, string>>();
+const batiments = layoutCache<ArchipelagoId, ReadonlyMap<string, string>>();
 
 /**
  * Les bâtiments des îles d'un archipel (lot 7b), entiers, posés ou non : les cases des murs et du toit de chaque île
@@ -53,15 +54,60 @@ export function batimentsDe(a: ArchipelagoId): ReadonlyMap<string, string> {
       // Comme world/terrain.ts : la case (x, y, z) d'un plan est posée en (cœur + x, cœur + y, altitude + z + 1), décalée
       // au fond de la zone au Marché et à l'Atelier (`decalageDesPlans`).
       const d = decalageDesPlans(plan);
-      for (const c of planCells(plan))
-        out.set(`${def.core.x + c.x + d.x},${def.core.y + c.y + d.y},${def.altitude + c.z + d.z + 1}`, BLOCKS[c.block].texture);
+      planCells(plan).forEach((c, i) => {
+        out.set(`${def.core.x + c.x + d.x},${def.core.y + c.y + d.y},${def.altitude + c.z + d.z + 1}`, BLOCKS[plan.cells[i].archipeo ?? c.block].texture);
+      });
     }
   batiments.set(a, out);
   return out;
 }
 
+const blocsDArchipeo = layoutCache<ArchipelagoId, ReadonlyMap<string, string>>();
+
+/**
+ * Les cases des bâtiments dont le bloc change dans Archipéo (`PlanCell.archipeo`, world/plans.ts), et la texture qu'il y
+ * prend : le toit de terre cuite de la maison basse du quartier, de chaume dans Blocland (DA, retouches HG-2). C'est aussi
+ * une toiture à part (./architecture/neighborhood.ts, `toitures`) : le toit de la maison basse ne prolonge pas celui de la
+ * maison haute, qu'il touche.
+ */
+export function blocsDArchipeoDe(a: ArchipelagoId): ReadonlyMap<string, string> {
+  const deja = blocsDArchipeo.get(a);
+  if (deja) return deja;
+  const out = new Map<string, string>();
+  for (const def of mapOf(a))
+    for (const plan of plansFor(def.id).slice(0, ETAPES_DU_BATIMENT)) {
+      const d = decalageDesPlans(plan);
+      planCells(plan).forEach((c, i) => {
+        const autre = plan.cells[i].archipeo;
+        if (autre) out.set(`${def.core.x + c.x + d.x},${def.core.y + c.y + d.y},${def.altitude + c.z + d.z + 1}`, BLOCKS[autre].texture);
+      });
+    }
+  blocsDArchipeo.set(a, out);
+  return out;
+}
+
+/**
+ * Les cubes posés du monde avec le bloc qu'ils prennent dans Archipéo (`blocsDArchipeoDe`) : un nouveau cube pour ceux-là
+ * seulement, les autres tels quels. Les fantômes restent des cubes Brume. Le rendu Archipéo seulement : Blocland garde son
+ * dessin.
+ */
+export function enBlocsDArchipeo(a: ArchipelagoId, cubes: VoxelCube[]): VoxelCube[] {
+  const autres = blocsDArchipeoDe(a);
+  if (!autres.size) return cubes;
+  let out: VoxelCube[] | null = null;
+  for (let i = 0; i < cubes.length; i++) {
+    const c = cubes[i];
+    if (c.ghost || c.place || c.decor || c.sol) continue;
+    const t = autres.get(`${c.x},${c.y},${c.z}`);
+    if (!t || t === c.texture) continue;
+    out ??= cubes.slice();
+    out[i] = { ...c, texture: t };
+  }
+  return out ?? cubes;
+}
+
 /** Le coin de chaque lieu du village posé (clé `<lieu>|<île>`) : x, y, et z du rang posé sur le sol (`null` ailleurs). */
-const coinsDesLieux = new Map<string, { x: number; y: number; z: number } | null>();
+const coinsDesLieux = layoutCache<string, { x: number; y: number; z: number } | null>();
 
 /**
  * La case d'un bloc d'un lieu du village dans le modèle de son lieu (world/terrain.ts : `schoolModel`, `trophyModel` et

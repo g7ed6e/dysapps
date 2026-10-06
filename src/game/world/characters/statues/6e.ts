@@ -1,8 +1,8 @@
 // Les Gardiens des Premiers Rivages (6e) en sentinelles de pierre (lot R6), d'après l'intention du directeur
-// artistique : la statue et ce qui s'allume. Budget serré : dix îles pour 1 800 triangles, socles compris.
+// artistique : la statue et ce qui s'allume. Budget serré : quinze îles, socles compris (world/budget.ts).
 import type { BiomeId } from '../../../biomes';
 import { pointe } from '../template';
-import { devant, fuseau, pave, type Anneau } from '../painted';
+import { devant, fuseau, pave, pose, repere, type Anneau } from '../painted';
 import { dalle, orbites, plaque, tube, veineSur, type Statue } from '../sentinel';
 import { deTroisQuarts, dragonAssis, surLeSocle, ventreDuDragon, HAUTEUR_DU_DRAGON } from './common';
 
@@ -118,6 +118,63 @@ const LANTERNE_DU_LION: Anneau[] = [
 const TOUR_DU_COUCOU: Anneau[] = [
   [1, 1.2, 1.0],
   [5.9, 1.05, 0.9],
+];
+
+/** L'Amphore peinte : le pied, la panse, l'épaule, le col et la lèvre. */
+const AMPHORE: Anneau[] = [
+  [1, 0.5],
+  [1.7, 0.42],
+  [2.8, 1.25],
+  [4.6, 1.4],
+  [5.9, 0.85],
+  [6.5, 0.42],
+  [7.6, 0.42],
+  [8, 0.62],
+];
+
+/** Le Castor de glaise, assis : le corps, puis la tête au museau avancé. */
+const CORPS_DU_CASTOR: Anneau[] = [
+  [1, 1.0, 0.85],
+  [3.0, 1.2, 1.0],
+  [5.0, 0.85, 0.75],
+  [5.6, 0.5, 0.45],
+];
+const TETE_DU_CASTOR: Anneau[] = [
+  [5.4, 0.62, 0.55, -0.15],
+  [7.3, 0.58, 0.52, -0.3],
+  [8, 0.3, 0.28, -0.3],
+];
+
+/** Le corps du Cerf des sous-bois, couché le long de X (`repere`, un quart de tour) : la croupe, le ventre, le poitrail. */
+const CORPS_DU_CERF: Anneau[] = [
+  [0, 0.42],
+  [0.5, 0.68],
+  [2.3, 0.66],
+  [2.8, 0.4],
+];
+/** La tête du Cerf, au bout du cou, le museau en bas. */
+const TETE_DU_CERF: Anneau[] = [
+  [4.6, 0.22],
+  [5.0, 0.32],
+  [5.6, 0.3],
+  [5.9, 0.16],
+];
+
+/** Le ballon de l'Alambic de verre : le fond, la panse, l'épaule, le col et sa lèvre. */
+const BALLON: Anneau[] = [
+  [3.0, 0.35],
+  [3.4, 1.0],
+  [4.3, 1.25],
+  [5.2, 1.0],
+  [5.7, 0.34],
+  [7.7, 0.28],
+  [8, 0.38],
+];/** Le petit flacon où tombe le bec. */
+const FLACON: Anneau[] = [
+  [1, 0.42],
+  [1.8, 0.45],
+  [2.2, 0.16],
+  [2.6, 0.16],
 ];
 
 export const STATUES_6E: Partial<Record<BiomeId, Statue>> = {
@@ -496,5 +553,117 @@ export const STATUES_6E: Partial<Record<BiomeId, Statue>> = {
       pave(T, -0.03, 3.77, z - 0.02, 0.32, 3.83, z, a.pierre);
     },
     veines: (T, a) => plaque(T, 0, 3.8, 0.6, 0.6, 8, a.lueur, (y) => devant(TOUR_DU_COUCOU, 4, y).z),
+  },
+  // Archipéo est en pause (2 octobre 2026) : ces deux sentinelles n'ont que le strict nécessaire (budget de l'archipel).
+  'history-6e-antiquity': {
+    nom: 'l’Amphore peinte',
+    allume: 'ses bandes peintes',
+    sculpture: (T, a) => {
+      fuseau(T, AMPHORE, 6, a.moussue((k, j) => k === 0 && j % 2 === 0), { bas: false });
+      // Les deux anses, du col à l'épaule.
+      for (const s of [-1, 1])
+        tube(
+          T,
+          [
+            [s * 0.4, 7.3, 0],
+            [s * 1.0, 7.1, 0],
+            [s * 0.95, 5.95, 0],
+          ],
+          0.1,
+          3,
+          a.pierre,
+        );
+      orbites(T, a, 0, 5.1, devant(AMPHORE, 6, 5.1).z, 0.3, 0.16);
+    },
+    veines: (T, a) => {
+      // Deux bandes peintes, sur la panse et sous l'épaule.
+      for (const y of [3.6, 5.6])
+        veineSur(
+          T,
+          AMPHORE,
+          6,
+          [
+            [-0.6, y],
+            [0.6, y],
+          ],
+          0.09 * a.veines,
+          a.lueur,
+        );
+    },
+  },
+  'geography-6e-living': {
+    nom: 'le Castor de glaise',
+    allume: 'les traits de son pelage',
+    sculpture: (T, a) => {
+      fuseau(T, CORPS_DU_CASTOR, 6, a.moussue((k, j) => k === 0 && j % 2 === 1), { bas: false });
+      fuseau(T, TETE_DU_CASTOR, 5, a.pierre, { bas: false });
+      // La queue en dalle plate, posée derrière lui.
+      pave(T, -0.55, 1, 0.8, 0.55, 1.25, 2.3, a.pierre);
+      orbites(T, a, 0, 7.0, devant(TETE_DU_CASTOR, 5, 7.0).z, 0.2, 0.12);
+    },
+    veines: (T, a) => plaque(T, 0, 3.0, 0.45, 0.6, 6, a.lueur, (y) => devant(CORPS_DU_CASTOR, 6, y).z),
+  },
+  // Archipéo est en pause (2 octobre 2026) : ces trois sentinelles n'ont que le strict nécessaire (budget de l'archipel).
+  'life-earth-sciences-6e-living-world': {
+    nom: 'le Cerf des sous-bois',
+    allume: 'la mousse de son flanc',
+    sculpture: (T, a) => {
+      // Debout, de profil (DA, SC-2) : quatre pattes, le corps le long de X, le cou et la tête au bout, la mousse au dos.
+      for (const x of [-1.2, 0.6]) for (const z of [-0.25, 0.25]) tube(T, [[x, 1, z], [x, 2.75, z]], 0.13, 3, a.pierre);
+      fuseau(pose(T, repere([-1.7, 3.3, 0], 0, 0, -Math.PI / 2)), CORPS_DU_CERF, 6, a.moussue((k, j) => k === 1 && j % 2 === 0), { bas: false });
+      tube(T, [[0.8, 3.5, 0], [1.2, 4.7, 0]], 0.24, 4, a.pierre);
+      fuseau(T, TETE_DU_CERF, 5, a.pierre, { x: 1.25, bas: false });
+      orbites(T, a, 1.25, 5.3, devant(TETE_DU_CERF, 5, 5.3).z, 0.15, 0.1);
+      // Les bois ramifiés : de chaque côté une perche et deux andouillers, trois pointes ; la perche finit à huit blocs.
+      for (const c of [-1, 1]) {
+        const x = (d: number) => 1.25 + c * d;
+        tube(T, [[x(0.15), 5.75, 0], [x(0.5), 6.6, 0], [x(0.8), 8, 0]], [0.07, 0.07, 0], 3, a.pierre);
+        tube(T, [[x(0.4), 6.3, 0], [x(0.25), 7.1, 0]], [0.06, 0], 3, a.pierre);
+        tube(T, [[x(0.62), 7.1, 0], [x(1.1), 7.5, 0]], [0.06, 0], 3, a.pierre);
+      }
+    },
+    veines: (T, a) => plaque(T, -0.3, 3.3, 0.7, 0.28, 6, a.lueur, () => -0.6),
+  },
+  'physics-chemistry-6e-matter-energy': {
+    nom: 'l’Alambic de verre',
+    allume: 'le liquide de son ballon',
+    sansFlamme: true,
+    sculpture: (T, a) => {
+      // Le trépied de bois, le ballon et son long col, le bec courbe qui descend dans un petit flacon. Aucune flamme.
+      for (const t of [0, 1, 2]) {
+        const ang = (t / 3) * Math.PI * 2 + Math.PI / 2;
+        tube(T, [[Math.cos(ang) * 0.9, 1, Math.sin(ang) * 0.9], [Math.cos(ang) * 0.6, 3.2, Math.sin(ang) * 0.6]], 0.09, 3, a.pierre);
+      }
+      fuseau(T, BALLON, 7, a.moussue((k, j) => k === 0 && j % 3 === 0), { bas: false });
+      tube(T, [[0.2, 7.2, 0], [1.1, 7.4, 0], [1.8, 6.3, 0], [1.9, 2.7, 0]], 0.1, 4, a.pierre);
+      fuseau(T, FLACON, 6, a.pierre, { x: 1.9, bas: false });
+      orbites(T, a, 0, 4.6, devant(BALLON, 7, 4.6).z, 0.3, 0.15);
+    },
+    veines: (T, a) => plaque(T, 0, 3.8, 0.6, 0.3, 6, a.lueur, (y) => devant(BALLON, 7, y).z),
+  },
+  'technology-6e-objects': {
+    nom: 'l’Automate de laiton',
+    allume: 'les boutons de sa poitrine',
+    sculpture: (T, a) => {
+      // Trapu, sans antenne ni visage-écran (DA, SC-2) : deux jambes courtes, un corps carré, une tête-cube à deux
+      // hublots sur un cou court, la grande clé de remontage dans le dos.
+      for (const x of [-0.55, 0.25]) pave(T, x, 1, -0.35, x + 0.3, 2.8, 0.35, a.pierre);
+      pave(T, -1, 2.8, -0.7, 1, 5.8, 0.7, a.pierre);
+      for (const c of [-1, 1]) pave(T, c > 0 ? 1 : -1.3, 3.9, -0.25, c > 0 ? 1.3 : -1, 5.6, 0.25, a.pierre);
+      pave(T, -0.3, 5.8, -0.3, 0.3, 6.6, 0.3, a.pierre);
+      pave(T, -0.62, 6.6, -0.6, 0.62, 8, 0.6, a.pierre);
+      orbites(T, a, 0, 7.3, -0.6, 0.28, 0.22);
+      // La clé : une tige, puis l'anneau de la poignée, debout derrière le dos.
+      tube(T, [[0, 4.4, 0.7], [0, 4.4, 1.15]], 0.08, 3, a.pierre);
+      const anneauDeLaCle = Array.from({ length: 7 }, (_, i): [number, number, number] => {
+        const ang = (i / 6) * Math.PI * 2;
+        return [Math.cos(ang) * 0.45, 4.4 + Math.sin(ang) * 0.45, 1.2];
+      });
+      tube(T, anneauDeLaCle, 0.08, 3, a.pierre);
+    },
+    veines: (T, a) => {
+      // Les trois boutons en colonne sur la poitrine.
+      for (const y of [3.6, 4.3, 5.0]) plaque(T, 0, y, 0.16, 0.16, 5, a.lueur, () => -0.7);
+    },
   },
 };

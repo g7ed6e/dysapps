@@ -3,9 +3,9 @@
 // commandes, l'école, les grands endroits de l'appli et le Tutoriel ; les Réglages tout en bas, à part (mot du
 // mainteneur, 4 octobre 2026, qui reprend le brief de l'ancienne #282). La croix ou Échap le referment : plus de
 // « Reprendre ». L'aide du village se revoit avec le « ? » de la barre du bas.
-import { useEffect, useEffectEvent } from 'react';
+import { useEffect, useEffectEvent, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Icon, type AnyIconName } from '../components/Icon';
+import { Icon, IconButton, type AnyIconName } from '../components/Icon';
 import { XpBar } from '../components/XpBar';
 import { useProgress } from '../core/ProgressContext';
 import { lastPlace } from '../core/lastPlace';
@@ -19,6 +19,10 @@ import { useTextes } from '../universes';
 import { Requests } from './Requests';
 import type { BiomeId } from './biomes';
 import { Sheet } from './Sheet';
+import { archipelagoOf } from './world/archipelago';
+import { backToStartingMap, startingMapState } from './world/arrange';
+import { linkPhrases } from './world/linkWord';
+import { SpeakButton } from '../components/SpeakButton';
 
 interface Props {
   /** La croix ou Échap : le menu se ferme, on est dans le village. */
@@ -46,8 +50,23 @@ function Row({ to, icon, title, desc }: { to: string; icon: AnyIconName; title: 
 }
 
 export function MenuSheet({ onClose, onAller, onAide }: Props) {
-  const { state } = useBlocland();
-  const { assemblage } = useTextes();
+  const { state, arrange } = useBlocland();
+  // « Carte de départ » (GD-9) : la région du bonhomme revient à sa carte de départ, après confirmation ; aucun ouvrage
+  // (le mot de l'univers pour une liaison) n'est perdu : ceux à reposer redeviennent posés.
+  const [confirmer, setConfirmer] = useState(false);
+  const [revenue, setRevenue] = useState(false);
+  const region = archipelagoOf(state.world.place ?? 'french-6e-phonology').classe;
+  // Ce que donnerait le retour, avant de le proposer : le bouton n'est actif que s'il change vraiment la carte ; si des
+  // lieux réunis l'empêchent (GD-9, ils ne se séparent plus), on le dit tout de suite, sans proposer le bouton.
+  const retour = useMemo(() => startingMapState(state.world, region), [state.world, region]);
+  const revenirALaCarteDeDepart = () => {
+    const apres = backToStartingMap(state.world, region);
+    if (apres) arrange(apres);
+    setConfirmer(false);
+    setRevenue(Boolean(apres));
+  };
+  const { assemblage, liaisons } = useTextes();
+  const mot = linkPhrases(liaisons);
   const { progress } = useProgress();
   const resume = lastPlace();
   const reviews = questsToReview(state.spaced, state.world.links);
@@ -104,6 +123,77 @@ export function MenuSheet({ onClose, onAller, onAide }: Props) {
             </button>
           </li>
         )}
+      </ul>
+      {/* « Carte de départ » (GD-9, piste A) : le titre écrit (un menu se lit en mots), l'état en signes, nommés pour les
+          lecteurs d'écran ; un seul bouton nommé dans la confirmation, « Revenir ». */}
+      <ul className="island-quests menu-list" aria-label="Carte">
+        <li>
+          {retour === 'bloquee' ? (
+            <div className="island-quest" role="note">
+              <span className="island-quest-icon">
+                <Icon name="map" />
+              </span>
+              <span className="island-quest-text">
+                <span className="island-quest-title">Carte de départ</span>
+                <span className="island-quest-desc">
+                  <span className="visually-hidden">Des lieux réunis bloquent le retour : déplace-les avec « Modifier le plan ».</span>
+                  <span aria-hidden="true">
+                    <span className="signe">
+                      <Icon name="lock" />
+                      <span className="mot-signe">bloqué</span>
+                    </span>{' '}
+                    <span className="signe">
+                      <Icon name="reunir" />
+                      <span className="mot-signe">réunis</span>
+                    </span>
+                  </span>
+                </span>
+              </span>
+            </div>
+          ) : (
+            <button type="button" className="island-quest" aria-expanded={confirmer} onClick={() => setConfirmer(!confirmer)} disabled={retour === 'pareille'}>
+              <span className="island-quest-icon">
+                <Icon name="map" />
+              </span>
+              <span className="island-quest-text">
+                <span className="island-quest-title">Carte de départ</span>
+                {retour === 'pareille' && (
+                  <span className="island-quest-desc">
+                    {revenue ? (
+                      <span className="signe">
+                        <Icon name="check" />
+                        <span className="mot-signe">fait</span>
+                      </span>
+                    ) : null}
+                    <span className="visually-hidden">Les lieux sont à leur place de départ.</span>
+                  </span>
+                )}
+              </span>
+            </button>
+          )}
+          <p className="visually-hidden" role="status">
+            {revenue ? 'C’est fait : les lieux sont revenus à leur place de départ.' : ''}
+          </p>
+          {confirmer && retour === 'possible' && (
+            <div className="menu-confirmer" role="group" aria-label="Revenir à la carte de départ ?">
+              {/* Avant une action qui semble tout défaire, la même phrase à chaque fois (6 octobre 2026, choix 2a du
+                  mainteneur) : une phrase, écrite et lue. */}
+              <p>
+                <span className="signe" aria-hidden="true">
+                  <Icon name="ouvrage" />
+                  <Icon name="check" />
+                </span>{' '}
+                {`Tes ${mot.pluriel} restent.`} <SpeakButton text={`Tes ${mot.pluriel} restent.`} compact />
+              </p>
+              <div className="menu-confirmer-boutons">
+                <button type="button" className="button primary" aria-label="Revenir à la carte de départ" onClick={revenirALaCarteDeDepart}>
+                  <Icon name="history" /> Revenir
+                </button>
+                <IconButton icone="close" nom="Non, garder ma carte" mot="Non" onClick={() => setConfirmer(false)} />
+              </div>
+            </div>
+          )}
+        </li>
       </ul>
       {/* Les Réglages tout en bas, à part, sous un trait. */}
       <ul className="island-quests menu-end" aria-label="Réglages">

@@ -1,46 +1,63 @@
 // Les ouvrages entre les îles (ponts, rampes, bacs), leurs abords, et les chemins du bonhomme qui les empruntent.
 import { type BiomeId, BLOC, BLOCKS } from '../../biomes';
-import { type BridgeDef, BRIDGES, bridgesOf, bridgeState, otherEnd } from '../archipelago';
-import { coeurDe, CORE, inCoeurDOrigine, inCore, isLand, islandDef, type IslandDef, margesDuCoeur } from '../map';
+import { type BridgeDef, type BridgeKind, bridgesOf, LINKS_BEFORE_GD9, bridgeState, otherEnd } from '../archipelago';
+import { coeurDe, CORE, inCoeurDOrigine, inCore, isLand, islandDef, type IslandDef, startingIsland, margesDuCoeur } from '../map';
 import { groundLevelAt } from '../ground';
 import { type Cell, type WalkGround, walkPath } from '../paths';
 import type { VoxelCube } from '../cube';
 import { TRUNK } from '../decor';
 import { DOCK_DX, dockCells, dockOrigin, VEHICLE_DECK } from '../harbor';
 import { avatarHome, cleDeCube, origineDe } from './base';
+import { layoutCache } from '../placement';
+import { placedLinksOfPlace, linkRoute, soleRoute } from '../linkGeometry';
+import { linkBetweenJoined } from '../routing';
+import { joinOf } from '../join';
+import { archipelagoOfIsland } from '../map';
 
 const STEP = '#8f8f8f';
 
 /**
- * Les ports d'attache d'une île (étape J5) : là où chacun de ses ouvrages la touche, la première case de l'ouvrage de
+ * Les ports d'attache d'une île (étape J5) : là où chacune de ses liaisons posées la touche, la première case de l'ouvrage de
  * son côté, dans le repère de l'île. Une côte dessinée par île (R4b) les lit pour laisser l'ouvrage aborder.
  */
-export function portsDAttache(id: BiomeId): { ouvrage: string; local: { x: number; y: number; z: number } }[] {
+export function portsDAttache(id: BiomeId, links: readonly string[]): { ouvrage: string; local: { x: number; y: number; z: number } }[] {
   const o = origineDe(id);
-  return bridgesOf(id).map((def) => {
-    const path = bridgePath(def);
+  return placedLinksOfPlace(id, links).map((def) => {
+    const path = bridgePath(def, links);
     const c = def.from === id ? path[0] : path[path.length - 1];
     return { ouvrage: def.id, local: { x: c.x - o.x, y: c.y - o.y, z: c.z - o.z } };
   });
 }
 
-/**
- * Le tracé d'un ouvrage entre deux îles : de bord de terre à bord de terre, sur la ligne qui joint les deux cœurs.
- * Deux îles l'une devant l'autre : l'ouvrage part du côté droit du cœur (l'îlot du Gardien est devant, à gauche),
- * descend jusqu'au bord de l'île de devant, fait un coude, puis y entre. Une liaison du port en contour (`via`, GD-7)
- * passe par ses points de passage. Chaque case a son altitude (interpolée).
- */
-export function bridgePath(def: BridgeDef): { x: number; y: number; z: number; climbing: boolean; dx: number; dy: number }[] {
-  return casesDeLOuvrage(def).map((c) => ({ x: c.x, y: c.y, z: c.z, climbing: c.climbing, dx: c.dx, dy: c.dy }));
+/** Une case d'un ouvrage : sa place, son altitude, si elle monte, et son sens. */
+export interface CaseDOuvrage {
+  x: number;
+  y: number;
+  z: number;
+  climbing: boolean;
+  dx: number;
+  dy: number;
+  /** Le coude d'une liaison en L (GD-9) : un bac y pose un cube plein, où la corde tourne. */
+  coude?: boolean;
 }
 
 /**
- * Les cases d'un ouvrage (`bridgePath`), chacune avec son tronçon : le segment du tracé, d'un point au suivant (0 depuis
- * l'île `from`). La flèche de la Carte reste sur le premier depuis l'île de départ (`placesDeLaFleche`).
+ * Le tracé d'une liaison, ses cases sur l'eau d'une arrivée à l'autre (GD-9) : celui que le jeu lui donne, droit ou en
+ * L à un seul coude, les liaisons posées de la partie tracées dans leur ordre (`linkRoute`) ; une liaison posée
+ * que le traceur ne refait pas garde son tracé d'origine (`traceDOrigine`) ; entre deux lieux réunis, un sentier sur leur
+ * isthme. Une liaison qui ne tiendrait pas n'a pas de cases. Chaque case a son altitude (interpolée).
  */
-export function casesDeLOuvrage(def: BridgeDef): { x: number; y: number; z: number; climbing: boolean; dx: number; dy: number; troncon: number }[] {
-  const a = islandDef(def.from);
-  const b = islandDef(def.to);
+export function bridgePath(def: BridgeDef, links: readonly string[]): CaseDOuvrage[] {
+  return casesDeLOuvrage(def, links).map((c) => ({ x: c.x, y: c.y, z: c.z, climbing: c.climbing, dx: c.dx, dy: c.dy, ...(c.coude ? { coude: true } : {}) }));
+}
+
+/**
+ * Le tracé d'origine d'une liaison d'avant GD-9, de bord de terre à bord de terre, sur la ligne qui joint les deux
+ * cœurs : deux îles l'une devant l'autre, l'ouvrage part du côté droit du cœur, descend jusqu'au bord de l'île de
+ * devant, fait un coude, puis y entre ; une liaison du port en contour passe par ses points de passage (`via`). Un
+ * sentier suit la terre, de bord de cœur à bord de cœur.
+ */
+function traceDOrigine(def: BridgeDef, a: IslandDef, b: IslandDef, sentier: boolean): { x: number; y: number; troncon: number }[] {
   const vertical = Math.abs(b.core.y - a.core.y) >= Math.abs(b.core.x - a.core.x);
   const anchor = (d: IslandDef) => {
     const c = coeurDe(d);
@@ -49,7 +66,6 @@ export function casesDeLOuvrage(def: BridgeDef): { x: number; y: number; z: numb
   const ca = anchor(a);
   const cb = anchor(b);
   const points = [ca];
-  // Un bac en contour (GD-7) : ses points de passage, puis l'ancrage de l'île d'arrivée ; pas de coude calculé.
   if (def.via) points.push(...def.via);
   else if (vertical && ca.x !== cb.x) {
     const front = a.core.y < b.core.y ? a : b;
@@ -72,25 +88,84 @@ export function casesDeLOuvrage(def: BridgeDef): { x: number; y: number; z: numb
       cells.push({ x, y, troncon: s });
     }
   }
-  // Un sentier suit la terre : de bord de cœur à bord de cœur, posé sur le sol. Les autres ouvrages franchissent
-  // l'eau : on ne garde que la partie hors des deux terres.
-  let first = cells.findIndex((c) => (def.kind === 'sentier' ? !inCore(a, c.x, c.y) : !isLand(a, c.x, c.y)));
+  let first = cells.findIndex((c) => (sentier ? !inCore(a, c.x, c.y) : !isLand(a, c.x, c.y)));
   let last = cells.length - 1;
-  while (last > 0 && (def.kind === 'sentier' ? inCore(b, cells[last].x, cells[last].y) : isLand(b, cells[last].x, cells[last].y))) last--;
+  while (last > 0 && (sentier ? inCore(b, cells[last].x, cells[last].y) : isLand(b, cells[last].x, cells[last].y))) last--;
   if (first < 0 || first > last) {
     first = 0;
     last = cells.length - 1;
   }
-  const span = cells.slice(first, last + 1);
+  return cells.slice(first, last + 1);
+}
+
+/**
+ * Les cases d'un ouvrage (`bridgePath`), chacune avec son tronçon (avant ou après son coude, 0 depuis l'île `from`) et
+ * son coude marqué. La flèche de la Carte reste sur le premier tronçon depuis l'île de départ (`placesDeLaFleche`).
+ * `lieu` : `startingIsland` pour le sentier d'un isthme sur la carte de départ (`amorcesDuDessin`).
+ */
+export function casesDeLOuvrage(
+  def: BridgeDef,
+  links: readonly string[],
+  lieu: (id: BiomeId) => IslandDef = islandDef,
+): { x: number; y: number; z: number; climbing: boolean; dx: number; dy: number; troncon: number; coude?: boolean }[] {
+  const a = lieu(def.from);
+  const b = lieu(def.to);
+  let span: { x: number; y: number; troncon: number; coude?: boolean }[];
+  const sentier = linkBetweenJoined(def);
+  if (sentier) span = traceDOrigine(def, a, b, true);
+  else {
+    const estPosee = def.cost === 0 || links.includes(def.id);
+    // Une liaison posée que le traceur ne refait pas (une sauvegarde d'avant GD-9) : le tracé qu'elle prendrait seule
+    // sur la disposition du moment, et, à défaut, son tracé d'origine.
+    const trace = linkRoute(def, links) ?? (estPosee ? soleRoute(def) : null);
+    if (trace) span = trace.cases.map((c, i) => ({ x: c.x, y: c.y, troncon: trace.coude >= 0 && i > trace.coude ? 1 : 0, ...(i === trace.coude ? { coude: true } : {}) }));
+    else if (estPosee) span = traceDOrigine(def, a, b, false);
+    else return [];
+  }
   let prevZ = a.altitude;
   return span.map((c, i) => {
-    const z = def.kind === 'sentier' ? groundLevelAt(c.x, c.y) : Math.round(a.altitude + ((b.altitude - a.altitude) * (i + 1)) / (span.length + 1));
+    const z = sentier ? groundLevelAt(c.x, c.y) : Math.round(a.altitude + ((b.altitude - a.altitude) * (i + 1)) / (span.length + 1));
     const climbing = z !== prevZ;
     prevZ = z;
     const next = span[Math.min(i + 1, span.length - 1)];
     const prev = span[Math.max(i - 1, 0)];
-    return { x: c.x, y: c.y, z, climbing, dx: Math.sign(next.x - prev.x), dy: Math.sign(next.y - prev.y), troncon: c.troncon };
+    return { x: c.x, y: c.y, z, climbing, dx: Math.sign(next.x - prev.x), dy: Math.sign(next.y - prev.y), troncon: c.troncon, ...(c.coude ? { coude: true } : {}) };
   });
+}
+
+/** Les sentiers des isthmes de la carte de départ, mémorisés : elle ne change pas. */
+const tracesDeDepart = new Map<string, readonly Readonly<{ x: number; y: number; dx: number; dy: number }>[]>();
+
+/**
+ * Les amorces des liaisons d'un lieu, figées avec son dessin (GD-9) : les cases du sentier de son isthme, s'il est
+ * réuni, tracé sur la carte de départ, dans le repère du lieu (relatives à l'origine de son cœur, avant rotation). Le
+ * décor qui laisse libres les pierres de gué et le sol libre de la créature les lisent. Les autres liaisons ne changent
+ * rien au dessin : le jeu les fait aborder là où la côte est libre (`possibleLandings`, ../routing.ts).
+ */
+export function amorcesDuDessin(id: BiomeId): { ouvrage: BridgeDef; depart: boolean; cases: readonly Readonly<{ x: number; y: number; dx: number; dy: number }>[] }[] {
+  const o = startingIsland(id).core;
+  return bridgesOf(id)
+    .filter(linkBetweenJoined)
+    .map((b) => {
+      let cases = tracesDeDepart.get(b.id);
+      if (!cases) {
+        cases = casesDeLOuvrage(b, [], startingIsland).map((c) => ({ x: c.x, y: c.y, dx: c.dx, dy: c.dy }));
+        tracesDeDepart.set(b.id, cases);
+      }
+      return { ouvrage: b, depart: b.from === id, cases: cases.map((c) => ({ x: c.x - o.x, y: c.y - o.y, dx: c.dx, dy: c.dy })) };
+    });
+}
+
+/**
+ * Les abords des liaisons d'avant GD-9 d'un lieu (et des liaisons du port qui le longeaient, avec `etoile`), tracées à
+ * la main sur la carte de départ, dans le repère du lieu : le modelé dessiné d'Archipéo, en pause, les garde bas
+ * (drawnModel/3e.ts, 5e.ts). Rien du monde de Blocland ne les lit.
+ */
+export function amorcesDOrigine(id: BiomeId, etoile = false): { x: number; y: number }[] {
+  const o = startingIsland(id).core;
+  return LINKS_BEFORE_GD9.filter((b) => b.from === id || b.to === id || (etoile && b.etoile)).flatMap((b) =>
+    traceDOrigine(b, startingIsland(b.from), startingIsland(b.to), b.kind === 'sentier').map((c) => ({ x: c.x - o.x, y: c.y - o.y, a: archipelagoOfIsland(b.from) })),
+  ).filter((c) => c.a === archipelagoOfIsland(id)).map(({ x, y }) => ({ x, y }));
 }
 
 /** Une case d'une liaison, et le tronçon de son tracé où elle est (`casesDeLOuvrage`). */
@@ -158,8 +233,7 @@ export const BAC_LONG = 36;
  * au fil de l'eau), escalier taillé dans la pierre, tunnel (galerie voûtée, lanternes), col (escalier à garde-fou).
  * Fantôme tant qu'il n'est pas construit.
  */
-export function bridge(def: BridgeDef, cubes: VoxelCube[], ghost: boolean, occupied: Set<string>): void {
-  const path = bridgePath(def);
+export function bridge(def: BridgeDef, kind: BridgeKind, path: readonly CaseDOuvrage[], cubes: VoxelCube[], ghost: boolean, occupied: Set<string>): void {
   const onPath = new Set(path.map((c) => `${c.x},${c.y}`));
   // Un cube d'ouvrage ne remplace jamais un cube du terrain (un buisson sur l'isthme, par exemple).
   const add = (x: number, y: number, z: number, color: string, texture: string, top?: string) => {
@@ -178,7 +252,7 @@ export function bridge(def: BridgeDef, cubes: VoxelCube[], ghost: boolean, occup
     // Perpendiculaire au tracé (pour les arches et le garde-fou).
     const px = c.dy !== 0 ? 1 : 0;
     const py = c.dy !== 0 ? 0 : 1;
-    switch (def.kind) {
+    switch (kind) {
       case 'sentier':
         // Des pierres de gué une case sur deux, posées sur le sol de l'isthme.
         if (i % 2 === 0) add(c.x, c.y, c.z + 1, BLOCKS[BLOC.galet].side, 'galet');
@@ -190,7 +264,9 @@ export function bridge(def: BridgeDef, cubes: VoxelCube[], ghost: boolean, occup
         // Un radeau de trois planches au milieu, des poteaux de bois qui tiennent la corde de halage : toutes les trois
         // cases, toutes les quatre sur un long bac (GD-7, `BAC_LONG`).
         const mid = Math.abs(i - (n - 1) / 2) <= 1;
-        if (mid) {
+        // Au coude d'une liaison en L (GD-9), un cube plein de planches : la corde y tourne.
+        if (c.coude) add(c.x, c.y, c.z, BLOCKS[BLOC.bois].side, 'planches');
+        else if (mid) {
           add(c.x, c.y, c.z, BLOCKS[BLOC.bois].side, 'planches');
           if (i === Math.floor((n - 1) / 2)) add(c.x + px, c.y + py, c.z, BLOCKS[BLOC.bois].side, 'planches');
         } else if (i % (n > BAC_LONG ? 4 : 3) === 0 || i === n - 1) add(c.x, c.y, c.z, TRUNK, 'tronc');
@@ -222,18 +298,29 @@ export function bridge(def: BridgeDef, cubes: VoxelCube[], ghost: boolean, occup
     if (!c) continue;
     const px = c.dy !== 0 ? 1 : 0;
     const py = c.dy !== 0 ? 0 : 1;
-    const base = def.kind === 'sentier' ? c.z + 1 : c.z;
+    const base = kind === 'sentier' ? c.z + 1 : c.z;
     beside(c.x + px, c.y + py, base, TRUNK, 'tronc');
     beside(c.x + px, c.y + py, base + 1, BLOCKS[BLOC.lanterne].side, 'lanterne');
   }
 }
 
-let sentierCache: Set<string> | null = null;
+const sentiersCache = new Map<BiomeId, Set<number>>();
 
-/** Les cases des sentiers (pierres de gué) et leurs voisines : le décor des isthmes les laisse libres (feuillages compris). */
-export function nearSentier(x: number, y: number): boolean {
-  if (!sentierCache) sentierCache = new Set(BRIDGES.filter((b) => b.kind === 'sentier').flatMap((b) => bridgePath(b).map((c) => `${c.x},${c.y}`)));
-  for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) if (sentierCache.has(`${x + dx},${y + dy}`)) return true;
+/**
+ * Les cases des sentiers (pierres de gué) d'un lieu et leurs voisines (x, y du lieu posé, avant rotation) : le décor des
+ * isthmes les laisse libres (feuillages compris). Figées avec le dessin du lieu (`amorcesDuDessin`).
+ */
+export function nearSentier(def: IslandDef, x: number, y: number): boolean {
+  let cases = sentiersCache.get(def.id);
+  if (!cases) {
+    cases = new Set();
+    for (const a of amorcesDuDessin(def.id)) for (const c of a.cases) cases.add(cleDeCube(c.x, c.y));
+    sentiersCache.set(def.id, cases);
+  }
+  if (!cases.size) return false;
+  const lx = x - def.core.x;
+  const ly = y - def.core.y;
+  for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) if (cases.has(cleDeCube(lx + dx, ly + dy))) return true;
   return false;
 }
 
@@ -242,7 +329,7 @@ export function nearSentier(x: number, y: number): boolean {
  * cœur d'origine, la case du passage et ses voisines. Le décor des marges les laisse libres : le bonhomme y va tout
  * droit du cœur à l'ouvrage. Vide pour une île sans marges. Mémorisé (les ouvrages et les marges ne bougent pas).
  */
-const abordsCache = new Map<BiomeId, ReadonlySet<string>>();
+const abordsCache = layoutCache<BiomeId, ReadonlySet<string>>();
 
 export function abordsDansLesMarges(def: IslandDef): ReadonlySet<string> {
   const connus = abordsCache.get(def.id);
@@ -250,11 +337,10 @@ export function abordsDansLesMarges(def: IslandDef): ReadonlySet<string> {
   const out = new Set<string>();
   abordsCache.set(def.id, out);
   if (!margesDuCoeur(def).length) return out;
-  for (const b of bridgesOf(def.id)) {
-    const path = bridgePath(b);
-    if (!path.length) continue;
-    const depart = b.from === def.id;
-    const bout = depart ? path[0] : path[path.length - 1];
+  for (const { cases, depart } of amorcesDuDessin(def.id)) {
+    if (!cases.length) continue;
+    const fin = depart ? cases[0] : cases[cases.length - 1];
+    const bout = { ...fin, x: def.core.x + fin.x, y: def.core.y + fin.y };
     // Vers l'intérieur de l'île : à rebours du tracé à son départ, dans son sens à son arrivée.
     const [sx, sy] = depart ? [-bout.dx, -bout.dy] : [bout.dx, bout.dy];
     if (!sx && !sy) continue;
@@ -270,33 +356,33 @@ export function abordsDansLesMarges(def: IslandDef): ReadonlySet<string> {
  * descend toujours d'un ouvrage sur le sol libre (un sapin bouchait la sortie du pont de la Plaine des nombres, et le
  * bonhomme passait au travers, 04/10/2026). En clés numériques (`cleDeCube`), mémorisé (les ouvrages ne bougent pas).
  */
-const piedsCache = new Map<BiomeId, ReadonlySet<number>>();
+const piedsCache = layoutCache<BiomeId, ReadonlySet<number>>();
 
 export function piedsDesOuvrages(def: IslandDef): ReadonlySet<number> {
   const connus = piedsCache.get(def.id);
   if (connus) return connus;
   const out = new Set<number>();
   piedsCache.set(def.id, out);
-  for (const b of bridgesOf(def.id)) {
-    const path = bridgePath(b);
-    if (!path.length) continue;
-    const bout = b.from === def.id ? path[0] : path[path.length - 1];
+  for (const { cases, depart } of amorcesDuDessin(def.id)) {
+    if (!cases.length) continue;
+    const fin = depart ? cases[0] : cases[cases.length - 1];
+    const bout = { x: def.core.x + fin.x, y: def.core.y + fin.y };
     for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) out.add(cleDeCube(bout.x + dx, bout.y + dy));
   }
   return out;
 }
 
 /** Les cases où marche le bonhomme sur un ouvrage, dans le sens de `from` à l'autre bout (exportée pour les tests). */
-export function tablier(def: BridgeDef, from: BiomeId): { x: number; y: number; z: number }[] {
+export function tablier(def: BridgeDef, from: BiomeId, links: readonly string[]): { x: number; y: number; z: number }[] {
   // Sur un ouvrage on marche sur le tablier (z + 1) ; sur un sentier, de pierre de gué en pierre de gué (la pierre est
   // posée sur le sol en z + 1, on marche dessus : z + 2).
   const deck =
-    def.kind === 'sentier'
-      ? bridgePath(def)
+    linkBetweenJoined(def)
+      ? bridgePath(def, links)
           .map((c, i) => ({ x: c.x, y: c.y, z: c.z + 2, stone: i % 2 === 0 }))
           .filter((c) => c.stone)
           .map(({ x, y, z }) => ({ x, y, z }))
-      : bridgePath(def).map((c) => ({ x: c.x, y: c.y, z: c.z + 1 }));
+      : bridgePath(def, links).map((c) => ({ x: c.x, y: c.y, z: c.z + 1 }));
   if (def.from !== from) deck.reverse();
   return deck;
 }
@@ -343,7 +429,7 @@ export function avatarRoute(
       if (bridgeState(b, bridges) !== 'built') continue;
       const there = otherEnd(b, here);
       if (done.has(there)) continue;
-      const deck = tablier(b, here);
+      const deck = tablier(b, here, bridges);
       if (!deck.length) continue;
       const bout = deck[deck.length - 1];
       // Sur l'île d'arrivée, le pas jusqu'à sa place (ou la case touchée) compte : deux ouvrages n'y abordent pas au même endroit.
@@ -351,6 +437,20 @@ export function avatarRoute(
       const cout = e.cout + Math.hypot(deck[0].x - e.at.x, deck[0].y - e.at.y) + routeLengths(deck)[deck.length - 1] + fin;
       const connu = best.get(there);
       if (!connu || cout < connu.cout) best.set(there, { cout, at: deck[deck.length - 1], via: b, deck });
+    }
+    // Deux lieux réunis (GD-9, point 10) : on passe sur la construction qui les réunit, par son milieu.
+    const j = joinOf(here);
+    if (j) {
+      const there = j.pair[0] === here ? j.pair[1] : j.pair[0];
+      if (!done.has(there) && j.shape.deck.length) {
+        const deck = j.pair[0] === here ? [...j.shape.deck] : [...j.shape.deck].reverse();
+        const bout = deck[deck.length - 1];
+        const fin = there === to ? Math.hypot(arrivee.x - bout.x, arrivee.y - bout.y) : 0;
+        const cout = e.cout + Math.hypot(deck[0].x - e.at.x, deck[0].y - e.at.y) + routeLengths(deck)[deck.length - 1] + fin;
+        const connu = best.get(there);
+        const via: BridgeDef = { id: `${j.plan.id}`, from: j.pair[0], to: j.pair[1], cost: 0 };
+        if (!connu || cout < connu.cout) best.set(there, { cout, at: bout, via, deck });
+      }
     }
   }
   if (!best.has(to)) return null;

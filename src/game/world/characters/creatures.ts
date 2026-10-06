@@ -428,6 +428,83 @@ const TIMBRE = fromLayers(
   { B: '#5e4b3e', T: '#54433a', C: '#e6d8bc', E: '#1f1a16', O: '#4a3b31', S: '#a8703a', L: '#a8703a' },
 );
 
+// Silex : un ourson fouilleur assis (DA, HG-2), brun, le museau crème et la truffe sombre, deux petites oreilles rondes ;
+// à sa patte droite, debout, un pinceau de fouille (un manche clair, une touffe sombre au bout). Trois couleurs : le
+// manche reprend le crème du museau, la touffe le sombre des yeux (un appel de dessin par couleur).
+const SILEX = fromLayers(
+  [
+    ['.B.B.', 'BBBBB', 'BBBBB', '.BBB.'],
+    ['....P', 'BBBBB', 'BBBBB', '.BBB.'],
+    ['....P', 'BBBBB', 'BBBBB', '.BBB.'],
+    ['.CCCH', 'BBBBB', 'BBBBB', '.....'],
+    ['..N..', 'BEBEB', 'BBBBB', '.....'],
+    ['.....', 'BBBBB', 'BBBBB', '.....'],
+    ['.....', 'B...B', '.....', '.....'],
+  ],
+  { B: '#6e4a2c', C: '#efe0c0', N: '#1f1a16', E: '#1f1a16', P: '#efe0c0', H: '#1f1a16' },
+);
+
+// Boussole : une tortue géographe (DA, HG-2), la carapace en pavé à marches (un rang large, un rang plus étroit, une case
+// au sommet : les marches se lisent à la forme), quatre pattes aux coins, la tête devant aux yeux sombres, une petite
+// queue derrière. Trois couleurs.
+const BOUSSOLE = fromLayers(
+  [
+    ['.....', 'L...L', '.....', 'L...L', '.....'],
+    ['.HHH.', 'CCCCC', 'CCCCC', 'CCCCC', '..L..'],
+    ['.EHE.', '.CCC.', '.CCC.', '.CCC.', '.....'],
+    ['.....', '.....', '..C..', '.....', '.....'],
+  ],
+  { C: '#5e7a3e', H: '#b4a676', L: '#b4a676', E: '#1f1a16' },
+);
+
+// Fougère : un escargot jardinier (DA, SC-2), tourné vers la droite pour montrer sa coquille : la coquille brun roux et
+// sa spirale crème (un « C » ouvert vers le centre), le corps vert sauge sur son pied, deux antennes au bout brun, un
+// petit arrosoir crème posé devant lui. Trois couleurs (un appel de dessin par couleur).
+const FOUGERE = fromLayers(
+  [
+    ['GGGGGGGG.', 'GGGGGGGG.', 'GGGGGGGG.'],
+    ['.RRR..GGC', 'RRRRR.GG.', '.RRR..GG.'],
+    ['RCCCR.GGC', 'RRRRR.GG.', 'RRRRR....'],
+    ['RCRRR.GG.', 'RRRRR.GG.', 'RRRRR....'],
+    ['RCCCR....', 'RRRRR.GG.', 'RRRRR....'],
+    ['.RRR.....', '.RRR..RR.', '.RRR.....'],
+  ],
+  { G: '#8aa878', R: '#9a5530', C: '#efe2c4' },
+);
+
+// Bulle : une goutte d'eau vivante (DA, SC-2), bleu clair et mate, un reflet blanc, deux yeux sombres ; à son côté, une
+// éprouvette blanche, le fond bleu. Trois couleurs.
+const BULLE = fromLayers(
+  [
+    ['.BBB..', 'BBBBBB', 'BBBBB.', 'BBBBB.', '.BBB..'],
+    ['.BBB..', 'BBBBBW', 'BBBBB.', 'BBBBB.', '.BBB..'],
+    ['.KBK..', 'BBBBBW', 'BBBBB.', 'BBBBB.', '.BBB..'],
+    ['.BBW..', '.BBB..', '.BBB..', '.BBB..', '......'],
+    ['......', '..B...', '..B...', '..B...', '......'],
+    ['......', '......', '..B...', '......', '......'],
+  ],
+  { B: '#8ec8ea', W: '#f6f8fa', K: '#1f1a16' },
+);
+
+// Pince : une fourmi bricoleuse debout (DA, SC-2), brun-rouge, trois segments séparés par une taille fine (l'abdomen
+// derrière, le thorax et sa bavette de tablier de cuir, la tête), deux antennes coudées ; la clé plate grise levée à
+// sa droite. Haute et étroite, elle ne se confond pas avec Coco, ronde et rouge vif. Trois couleurs : les yeux
+// reprennent le cuir du tablier.
+const BOULON = fromLayers(
+  [
+    ['.....', '.N.N.', '.....', '.....'],
+    ['.....', '.N.N.', '.NNN.', '.NNN.'],
+    ['.....', '..N..', 'NNNNN', '.NNN.'],
+    ['.TTTM', 'NNNNN', '.NNN.', '.....'],
+    ['....M', '..N..', '.....', '.....'],
+    ['.NNNM', '.NNN.', '.....', '.....'],
+    ['.TNT.', '.NNN.', '.....', '.....'],
+    ['.....', '.N.N.', '.....', '.....'],
+    ['.....', 'N...N', '.....', '.....'],
+  ],
+  { N: '#8e3a26', T: '#5a3a22', M: '#9aa2aa' },
+);
+
 export const CREATURE_CUBES: Record<BiomeId, CubeDeModele[]> = {
   'french-6e-phonology': MOUSSO,
   'french-6e-letter-confusion': TUNEL,
@@ -451,6 +528,11 @@ export const CREATURE_CUBES: Record<BiomeId, CubeDeModele[]> = {
   'french-3e-close-reading': ASTRA,
   'english-6e-vocabulary': ROBIN,
   'english-6e-grammar': TICK,
+  'history-6e-antiquity': SILEX,
+  'geography-6e-living': BOUSSOLE,
+  'life-earth-sciences-6e-living-world': FOUGERE,
+  'physics-chemistry-6e-matter-energy': BULLE,
+  'technology-6e-objects': BOULON,
   'english-5e-vocabulary': PUDDING,
   'english-5e-grammar': MOUSTACHE,
   'lv2-5e-introductions': LINA,

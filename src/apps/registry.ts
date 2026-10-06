@@ -7,7 +7,7 @@ import type { ProgrammeId } from '../curriculum';
 import { LV2_LABELS, type Lv2Choice } from '../core/settings';
 
 /** Les matières ; `lv2` est la deuxième langue (espagnol ou allemand), dont le titre affiché suit les Réglages (`subjectTitle`). */
-export type Subject = 'french' | 'maths' | 'english' | 'lv2';
+export type Subject = 'french' | 'maths' | 'english' | 'history-geography' | 'life-earth-sciences' | 'physics-chemistry' | 'technology' | 'lv2';
 
 export interface AppDef {
   id: string;
@@ -23,11 +23,19 @@ export interface AppDef {
   onHome?: boolean;
 }
 
-/** Chaque matière est une expédition d’Archipéo : le français les archives, les maths les mécanismes, l’anglais les routes maritimes. */
+/**
+ * Chaque matière est une expédition : le français les archives, les maths les mécanismes, l’anglais les routes maritimes,
+ * l’histoire-géographie les traces et les paysages, les sciences de la vie et de la Terre les graines et les milieux, la
+ * physique-chimie l’eau et les circuits, la technologie les outils et les inventions, la LV2 les escales.
+ */
 export const SUBJECTS: Record<Subject, { title: string; icon: AnyIconName; description: string; expedition: string }> = {
   french: { title: 'Français', icon: 'book', description: 'Homophones, lecture, compréhension', expedition: 'Archives et récits' },
   maths: { title: 'Maths', icon: 'calculator', description: 'Calcul mental, fractions, décimaux', expedition: 'Mécanismes et énigmes' },
   english: { title: 'Anglais', icon: 'globe', description: 'Vocabulaire, verbes irréguliers, grammaire', expedition: 'Cartes et messages' },
+  'history-geography': { title: 'Histoire-géo', icon: 'landmark', description: 'Repères, frises, documents, paysages', expedition: 'Traces et paysages' },
+  'life-earth-sciences': { title: 'SVT', icon: 'leaf', description: 'Classer le vivant, se nourrir, la Terre', expedition: 'Graines et milieux' },
+  'physics-chemistry': { title: 'Physique-chimie', icon: 'flask-conical', description: 'États de l’eau, mouvements, circuits', expedition: 'Eau et circuits' },
+  technology: { title: 'Technologie', icon: 'wrench', description: 'Objets, matériaux, information', expedition: 'Outils et inventions' },
   lv2: { title: 'LV2', icon: 'languages', description: 'Se présenter, compter, parler de sa famille', expedition: 'Escales et rencontres' },
 };
 

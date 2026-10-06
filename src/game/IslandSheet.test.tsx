@@ -58,7 +58,7 @@ it('le panneau 3D replie le bâtiment et les ouvrages quand il n’y a rien à y
   expect(plan().textContent).toContain('0 partie posée sur 3');
   expect(ouvrages()).not.toHaveAttribute('open');
   // Le pli replié nomme l'ouvrage suggéré, avec les mots de la Carte ; il est en tête de la liste.
-  expect(ouvrages().textContent).toContain('Encore 4 blocs pour le sentier vers Mine des lettres');
+  expect(ouvrages().textContent).toContain('Encore 4 blocs pour le pont vers la Mine des lettres');
   expect(ouvrages().querySelector('[data-bridge]')).toHaveAttribute('data-bridge', 'french-6e-phonology-french-6e-letter-confusion');
   expect(screen.getByRole('list', { name: 'Missions de l’île' })).toBeInTheDocument();
   // L'élève ouvre le pli lui-même : son choix tient.
@@ -70,7 +70,7 @@ it('le panneau 3D replie le bâtiment et les ouvrages quand il n’y a rien à y
   renderSheet('french-6e-phonology', () => {}, undefined, true);
   expect(plan()).not.toHaveAttribute('open');
   expect(ouvrages()).toHaveAttribute('open');
-  expect(screen.getAllByRole('button', { name: /Construire/ }).length).toBeGreaterThan(0);
+  expect(screen.getAllByRole('button', { name: /Poser/ }).length).toBeGreaterThan(0);
 });
 
 it('les blocs qui manquent renvoient à l’île où les gagner, par un lien', () => {
@@ -87,10 +87,10 @@ it('les blocs qui manquent renvoient à l’île où les gagner, par un lien', (
 it('une île fermée montre ses missions verrouillées et renvoie à l’île précédente', async () => {
   const onClose = vi.fn();
   renderSheet('french-6e-letter-confusion', onClose);
-  expect(document.body.textContent).toContain('Pas si vite ! Pour venir ici, construis le sentier depuis Forêt des sons : 4 blocs.');
+  expect(document.body.textContent).toContain('Pas si vite ! Pour venir ici, pose le pont depuis la Forêt des sons : 4 blocs.');
   // Sans bloc : l'ouvrage est une ligne compacte qui dit ce qu'il manque, sans bouton grisé.
-  expect(screen.queryByRole('button', { name: /Construire/ })).not.toBeInTheDocument();
-  expect(document.body.textContent).toContain('Sentier vers Forêt des sons');
+  expect(screen.queryByRole('button', { name: /Poser/ })).not.toBeInTheDocument();
+  expect(document.body.textContent).toContain('Pont depuis la Forêt des sons');
   expect(document.body.textContent).toContain('Encore 4 blocs (4 en tout)');
   expect(screen.getByRole('list', { name: 'Missions de l’île' }).querySelectorAll('a.island-quest')).toHaveLength(0);
   expect(screen.getAllByText('Verrouillé').length).toBeGreaterThan(0);
@@ -148,7 +148,7 @@ it('le port montre le chantier du Bloc-Navire : ses blocs, ses Gardiens, puis le
 it('une île d’un autre archipel dit ce qu’il manque au Bloc-Navire, sans ouvrage à proposer', () => {
   renderSheet('maths-5e-proportionality');
   expect(document.body.textContent).toContain('Pas si vite ! Mon île est dans les Collines du Large, de l’autre côté de la mer.');
-  expect(document.body.textContent).toContain('Finis le Bloc-Navire sur Plaine des nombres');
+  expect(document.body.textContent).toContain('Finis le Bloc-Navire sur la Plaine des nombres');
   expect(screen.queryByText('Ouvrages')).not.toBeInTheDocument();
 });
 
@@ -213,7 +213,7 @@ it('la jauge du prochain objectif se compte tant qu’il manque des blocs, et s�
   cleanup();
   localStorage.setItem('dysapps:game', JSON.stringify({ stock: { 'french-6e-phonology': 4 } }));
   renderSheet('french-6e-phonology');
-  expect(document.querySelector('.island-goal')).toHaveTextContent('Tu peux construire le sentier');
+  expect(document.querySelector('.island-goal')).toHaveTextContent('Tu peux poser le pont');
   // Plus de « 4 / 4 » à côté d'un ouvrage pas encore construit.
   expect(document.querySelector('.island-goal .goal-gauge')).toBeNull();
 });
@@ -236,12 +236,13 @@ it('sur l’île-port, le prochain objectif et le village sont un seul pli, titr
   expect(document.querySelector('.village-stage')).toBeNull();
 });
 
-it('le pli Ouvrages : un seul « Construire » principal, celui de l’ouvrage du prochain objectif ; les autres en secondaire', () => {
+it('le pli Ouvrages : un seul « Poser » principal, celui de l’ouvrage du prochain objectif ; les autres en secondaire', () => {
   // La Plaine, port des Premiers Rivages (GD-7), avec 4 blocs : plusieurs ouvrages se construisent tout de suite.
   localStorage.setItem('dysapps:game', JSON.stringify({ stock: { 'french-6e-phonology': 4 } }));
   renderSheet('maths-6e-calculation', () => {}, undefined, true);
-  const boutons = screen.getAllByRole('button', { name: /Construire/ });
-  expect(boutons.length).toBeGreaterThanOrEqual(3);
+  const boutons = screen.getAllByRole('button', { name: /^Poser$/ });
+  // Depuis GD-9, une liaison est proposée par lieu fermé : deux se posent tout de suite depuis la Plaine.
+  expect(boutons.length).toBeGreaterThanOrEqual(2);
   const principaux = boutons.filter((b) => b.classList.contains('primary'));
   expect(principaux).toHaveLength(1);
   for (const b of boutons) expect(b).toHaveClass('button');
@@ -250,7 +251,7 @@ it('le pli Ouvrages : un seul « Construire » principal, celui de l’ouvrage d
   const titre = ligne.querySelector('.island-quest-title')!.textContent!;
   const vers = titre.replace(/^.* vers /, '');
   expect(document.querySelector('.island-goal')!.textContent).toContain(`vers ${vers}`);
-  expect(document.querySelector('.island-goal')!.textContent).toMatch(new RegExp(`construire l[e’] ?${titre.split(' vers ')[0].toLowerCase()}`));
+  expect(document.querySelector('.island-goal')!.textContent).toMatch(new RegExp(`poser l[e’] ?${titre.split(' vers ')[0].toLowerCase()}`));
 });
 
 it('le panneau de l’île de l’école n’a plus l’école, le lieu où l’on assemble ni la salle des trophées : ce sont des lieux du monde', () => {

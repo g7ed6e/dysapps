@@ -17,8 +17,8 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 | Arrivée en 4e | Bip. Le Bloc-Navire a fait sa traversée. Moi, c’est Ixe, le robot dessinateur. Bienvenue dans les Monts de Feu : ici, le feu du volcan fait tourner les machines. À toi d’en bâtir ! | Le Bloc-Navire a fait sa traversée. Te voilà dans les Anciens Ateliers : les vieux ateliers attendent qu’on les remette en marche. |
 | Arrivée en 3e | Le Bloc-Navire a fait sa traversée. Moi, c’est Fi, la lampe du phare. Bienvenue dans les Îles du Ciel : je t’éclaire, bâtisseur, on bâtit tout en haut. | Le Bloc-Navire a fait sa traversée. Te voilà dans les Îles du Ciel : ici, les îles flottent dans les nuages. |
 | Tous les Gardiens d’un archipel (exemple) | Tous les Gardiens des Basses Terres ont retrouvé leurs couleurs ! Ils veillent sur ton chantier. | Tous les Gardiens des Premiers Rivages brillent à nouveau. J’ai vu leur lumière depuis le large. |
-| Île-port terminée (exemple) | Chantier fini : Plaine des nombres ! Bloc après bloc, ton archipel grandit. | Plaine des nombres est bâtie. Tu avances bien : chaque île bâtie rend l’archipel plus beau. |
-| Premier ouvrage payé (exemple) | Ton ouvrage tient bon ! Nouvelle île ouverte : Mine des lettres. | Un chemin s’ouvre vers Mine des lettres. L’archipel s’agrandit. |
+| Île-port terminée (exemple) | Chantier fini : Plaine des nombres ! Bloc après bloc, ton archipel grandit. | La Plaine des nombres est bâtie. Tu avances bien : chaque île bâtie rend l’archipel plus beau. |
+| Premier ouvrage payé (exemple) | Ton ouvrage tient bon ! Nouvelle île ouverte : Mine des lettres. | Un chemin s’ouvre vers la Mine des lettres. L’archipel s’agrandit. |
 
 ## Les Basses Terres (Blocland), les Premiers Rivages (Archipéo), 6e
 
@@ -34,6 +34,11 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 | [Volcan des décimaux](https://g7ed6e.github.io/dysapps/pedagogie/iles/maths-6e-decimals.html) (Maths) | Lavi | salamandre de lave | salamandre de lave | Le Dragon de cendre |
 | [Baie des mots](https://g7ed6e.github.io/dysapps/pedagogie/iles/english-6e-vocabulary.html) (Anglais) | Robin | rouge-gorge des quais | rouge-gorge des quais | Le Lion de pierre |
 | [Horloge des verbes](https://g7ed6e.github.io/dysapps/pedagogie/iles/english-6e-grammar.html) (Anglais) | Tick | hérisson horloger | hérisson horloger | Le Coucou de bronze |
+| [Fouille des siècles](https://g7ed6e.github.io/dysapps/pedagogie/iles/history-6e-antiquity.html) (Histoire-géo) | Silex | ourson fouilleur | ourson des fouilles | L’Amphore peinte |
+| [Pointe des paysages](https://g7ed6e.github.io/dysapps/pedagogie/iles/geography-6e-living.html) (Histoire-géo) | Boussole | tortue géographe | pélican des ports | Le Castor de glaise |
+| [Vallée du vivant](https://g7ed6e.github.io/dysapps/pedagogie/iles/life-earth-sciences-6e-living-world.html) (SVT) | Fougère | escargot jardinier | escargot jardinier | Le Cerf des sous-bois |
+| [Laboratoire des éléments](https://g7ed6e.github.io/dysapps/pedagogie/iles/physics-chemistry-6e-matter-energy.html) (Physique-chimie) | Bulle | goutte chimiste | poulpe chimiste | L’Alambic de verre |
+| [Hangar des inventions](https://g7ed6e.github.io/dysapps/pedagogie/iles/technology-6e-objects.html) (Technologie) | Pince | fourmi bricoleuse | fourmi bricoleuse | L’Automate de laiton |
 
 ### Le Grand Chêne, Forêt des sons
 
@@ -114,6 +119,46 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 | Au défi | Le Coucou de bronze sort de son horloge : « Mon cadran est tout gris. Tu as remonté tous mes rouages : vérifie chaque verbe avec moi. » | Le Coucou de bronze chuchote du haut de son horloge : « Mon cadran est éteint. Tu as remonté tous mes rouages, vérifie chaque verbe avec moi. » |
 | À la fin | Coucou ! Je me rallume, du cadran au toit pointu. Les verbes sont à toi, et à Tick. | Mon cadran se rallume. Les verbes sont à toi, et à Tick. |
 | Tick à l’arrivée | Hello, bâtisseur ! Dans mon horloge, chaque verbe a sa place : am, is ou are, have ou has. Regarde d’abord le sujet, la règle est affichée. Chaque bon verbe, c’est un cadran pour le village. | Hello, bâtisseur ! Dans mon horloge, chaque verbe a sa place : am, is ou are, have ou has. Regarde d’abord le sujet, la règle est affichée. Chaque bon verbe, c’est un cadran pour le village. |
+
+### L’Amphore peinte, Fouille des siècles
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | L’Amphore peinte attend sur son îlot : « Mes bandes peintes sont toutes grises. Tu as fouillé toute l’île : remets chaque époque à sa place. » | L’Amphore peinte dit doucement : « Mes bandes peintes sont éteintes. Tu as relevé toutes les trouvailles : remets chaque époque à sa place. » |
+| À la fin | Je me rallume, du pied jusqu’au col. La Fouille est à toi, et à Silex. | Ma frise se rallume. La fouille est à toi, et à Silex. |
+| Silex à l’arrivée | Bonjour, bâtisseur ! Ici, on fouille le passé. Chaque bonne réponse te donne une mosaïque. Regarde la frise : le plus ancien est en haut. | Bonjour, bâtisseur ! Ici, on fouille le passé. Chaque bonne réponse te donne une mosaïque. Regarde la frise : le plus ancien est en haut. |
+
+### Le Castor de glaise, Pointe des paysages
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | Le Castor de glaise lève la tête : « Me voilà tout gris. Tu as vu tous les paysages de la Pointe : dis-moi où vivent les humains. » | Le Castor de glaise dit doucement : « Les traits de mon pelage sont éteints. Tu as regardé tous les paysages de la Pointe : dis-moi où vivent les humains. » |
+| À la fin | Je me rallume, de la queue jusqu’aux oreilles. La Pointe est à toi, et à Boussole. | Mon pelage se rallume. La pointe est à toi, et à Boussole. |
+| Boussole à l’arrivée | Bonjour, bâtisseur ! Ici, on regarde où vivent les humains : en ville, à la campagne, au bord de la mer. Chaque bonne réponse te donne du chaume. Le chaume, c’est de la paille séchée, serrée en bottes. | Bonjour, bâtisseur ! Ici, on regarde où vivent les humains : en ville, à la campagne, au bord de la mer. Chaque bonne réponse te donne du chaume. Le chaume, c’est de la paille séchée, serrée en bottes. |
+
+### Le Cerf des sous-bois, Vallée du vivant
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | Le Cerf des sous-bois baisse la tête : « Me voilà tout gris. Tu as parcouru toute ma vallée : range chaque être vivant à sa place. » | Le Cerf des sous-bois dit doucement : « Mon manteau de mousse est éteint. Tu as observé tout le vivant de la vallée : aide-moi à le classer. » |
+| À la fin | Je me rallume, des sabots jusqu’aux bois. La Vallée est à toi, et à Fougère. | Mon manteau se rallume. La vallée est à toi, et à Fougère. |
+| Fougère à l’arrivée | Bonjour, bâtisseur ! Ici, on regarde le vivant : les plantes, les bêtes et la Terre. Chaque bonne réponse te donne un fossile. Un fossile, c’est la trace d’un être vivant très ancien, gardée dans la pierre. | Bonjour, bâtisseur ! Ici, on regarde le vivant : les plantes, les bêtes et la Terre. Chaque bonne réponse te donne un fossile. Un fossile, c’est la trace d’un être vivant très ancien, gardée dans la pierre. |
+
+### L’Alambic de verre, Laboratoire des éléments
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | L’Alambic de verre fait une petite bulle : « Mon ballon est tout gris. Tu as fait toutes mes expériences : aide-moi à les comprendre. » | L’Alambic de verre dit doucement : « Mon ballon de verre est éteint. Tu as fait toutes les expériences du laboratoire : aide-moi à les comprendre. » |
+| À la fin | Blop ! Je me rallume, du pied jusqu’au bec. Le Laboratoire est à toi, et à Bulle. | Mon ballon se rallume. Le laboratoire est à toi, et à Bulle. |
+| Bulle à l’arrivée | Bonjour, bâtisseur ! Ici, on fait des expériences : l’eau, les mouvements et les circuits. Chaque bonne réponse te donne un aimant. Un aimant attire le fer. | Bonjour, bâtisseur ! Ici, on fait des expériences : l’eau, les mouvements et les circuits. Chaque bonne réponse te donne un aimant. Un aimant attire le fer. |
+
+### L’Automate de laiton, Hangar des inventions
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | L’Automate de laiton fait tourner sa clé : « Me voilà tout gris. Tu as ouvert tous mes objets : dis-moi à quoi ils servent. » | L’Automate de laiton dit doucement : « Les boutons de ma poitrine sont éteints. Tu as essayé tous les objets du hangar : dis-moi à quoi ils servent. » |
+| À la fin | Clic ! Je me rallume, des pieds jusqu’à la clé. Le Hangar est à toi, et à Pince. | Mes boutons se rallument. Le hangar est à toi, et à Pince. |
+| Pince à l’arrivée | Bonjour, bâtisseur ! Ici, on ouvre les objets pour voir comment ils marchent. Chaque bonne réponse te donne du carton. Le carton, c’est du papier épais : on le plie, on le découpe, on le recycle. | Bonjour, bâtisseur ! Ici, on ouvre les objets pour voir comment ils marchent. Chaque bonne réponse te donne du carton. Le carton, c’est du papier épais : on le plie, on le découpe, on le recycle. |
 
 ## Les Collines du Large (Blocland), les Îles Brumeuses (Archipéo), 5e
 

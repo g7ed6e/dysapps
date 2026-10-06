@@ -102,11 +102,11 @@ export interface ContexteDuMur {
   barde?: boolean;
   /** Un pilier isolé (la salle des trophées) : poteaux et sablières seulement, aucune décharge. */
   sansDecharge?: boolean;
-  /** La face du côté `cote` (0 à 3, ordre de `COTES`) regarde-t-elle le dehors du bâtiment ? (Les décharges y vont seules.) */
+  /** La face du côté `cote` (0 à 3, ordre de `SIDES`) regarde-t-elle le dehors du bâtiment ? (Les décharges y vont seules.) */
   exterieur?: (cote: number) => boolean;
 }
 
-/** Les quatre côtés : +x, +y, −x, −y (comme `COTES`). */
+/** Les quatre côtés : +x, +y, −x, −y (comme `SIDES`). */
 const DX = [1, 0, -1, 0];
 const DY = [0, 1, 0, -1];
 

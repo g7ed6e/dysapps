@@ -7,7 +7,7 @@ import { exercisesOf, loadExercise, pickExercise } from './exercises';
 import { runItems } from './exercises/run';
 import { isBiomeUnlocked } from './world/archipelago';
 import type { ExerciseDef, ExerciseItem } from './exercises/types';
-import { shuffle } from '../core/random';
+import { mulberry32, shuffle } from '../core/random';
 import type { Lang } from '../core/speech';
 
 import { STARS_TO_BEAT, STARS_TO_UNLOCK, bossId, isBossBeaten } from './bossCore';
@@ -85,9 +85,13 @@ export function bossesBeaten(progress: Record<string, { stars: number }>): Biome
  * Construit le défi : pour chaque type de mission, deux manches tirées d'un exercice au niveau de l'élève
  * (des items différents pour chaque manche ; un texte entier pour les types « tout sur un écran »). Les items sont
  * ceux d'une partie tirée au hasard : d'autres nombres, d'autres mots, et des réponses qui changent de place.
- * Le contenu des exercices est chargé à la demande (voir `loadExercise`).
+ * Le contenu des exercices est chargé à la demande (voir `loadExercise`). Le hasard du défi est tiré d'un coup, avant
+ * le chargement (`hasard`, une graine) : deux tirages lancés ensemble (le double lancement d'un effet en développement)
+ * ne se partagent pas la suite de `rng` selon l'ordre où leurs chargements arrivent, et le défi d'une île ne dépend que
+ * de cette graine, ni des autres îles ni de ce qui tire au hasard pendant le chargement.
  */
 export async function bossDef(biome: BiomeDef, state: GameState, rng: () => number = Math.random): Promise<ExerciseDef> {
+  const hasard = mulberry32(Math.floor(rng() * 2 ** 32));
   const types = typesWithContent(biome);
   const defs = await Promise.all(
     types.map((type) => {
@@ -100,7 +104,7 @@ export async function bossDef(biome: BiomeDef, state: GameState, rng: () => numb
     const def = defs[t];
     if (!def) return;
     const batch = SCREEN_TYPES[type]?.batch ?? 1;
-    const items = runItems(def, `${def.id}#gardien${Math.floor(rng() * 2 ** 32).toString(36)}`);
+    const items = runItems(def, `${def.id}#gardien${Math.floor(hasard() * 2 ** 32).toString(36)}`);
     if (batch === 'all') {
       rounds.push({ key: `${type}-0`, screenType: type, exerciseId: def.id, instruction: def.instruction, target: def.target, lang: def.lang, items, wrong: def.feedback.wrong });
       return;
@@ -108,7 +112,7 @@ export async function bossDef(biome: BiomeDef, state: GameState, rng: () => numb
     // Les écrans de l'exercice, dans un ordre mélangé, sans en reprendre deux fois le même.
     const ecrans: ExerciseItem[][] = [];
     for (let i = 0; i + batch <= items.length; i += batch) ecrans.push(items.slice(i, i + batch));
-    shuffle(ecrans, rng).slice(0, ROUNDS_PER_TYPE).forEach((items, i) => {
+    shuffle(ecrans, hasard).slice(0, ROUNDS_PER_TYPE).forEach((items, i) => {
       rounds.push({ key: `${type}-${i}`, screenType: type, exerciseId: def.id, instruction: def.instruction, target: def.target, lang: def.lang, items, wrong: def.feedback.wrong });
     });
   });
@@ -123,4 +127,9 @@ export async function bossDef(biome: BiomeDef, state: GameState, rng: () => numb
     reward: { block: 'trophy-gold', amount: 3, xp: 60 },
     adaptive: { promoteAt: 1.1, demoteAt: -1 },
   };
+}
+
+/** « Chasse au son » : un titre de mission cité dans une phrase. */
+export function quoted(titre: string): string {
+  return `«\u00a0${titre}\u00a0»`;
 }

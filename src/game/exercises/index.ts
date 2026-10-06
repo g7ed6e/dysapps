@@ -100,6 +100,16 @@ const ORDER: (string | ExerciseDef[])[] = [
   'english-3e-comprehension-understanding-1', 'english-3e-comprehension-understanding-2', 'english-3e-comprehension-linking-words-1', 'english-3e-comprehension-linking-words-2', 'english-3e-comprehension-false-friends-1',
   'english-3e-comprehension-false-friends-2', 'english-3e-comprehension-media-1', 'english-3e-comprehension-media-2', 'english-3e-grammar-for-since-1', 'english-3e-grammar-for-since-2', 'english-3e-grammar-if-1', 'english-3e-grammar-if-2',
   'english-3e-grammar-passive-1', 'english-3e-grammar-passive-2',
+  // Histoire et géographie (Fouille des siècles, Pointe des paysages, 6e).
+  'history-6e-antiquity-early-humans-1', 'history-6e-antiquity-early-humans-2', 'history-6e-antiquity-ancient-peoples-1', 'history-6e-antiquity-ancient-peoples-2', 'history-6e-antiquity-roman-empire-1', 'history-6e-antiquity-roman-empire-2',
+  'geography-6e-living-metropolises-1', 'geography-6e-living-metropolises-2', 'geography-6e-living-low-density-1', 'geography-6e-living-low-density-2', 'geography-6e-living-inhabited-world-1', 'geography-6e-living-inhabited-world-2',
+  // Sciences et technologie (Vallée du vivant, Laboratoire des éléments, Hangar des inventions, 6e).
+  'life-earth-sciences-6e-living-world-living-groups-1', 'life-earth-sciences-6e-living-world-living-groups-2', 'life-earth-sciences-6e-living-world-food-growth-1', 'life-earth-sciences-6e-living-world-food-growth-2',
+  'life-earth-sciences-6e-living-world-planet-earth-1', 'life-earth-sciences-6e-living-world-planet-earth-2',
+  'physics-chemistry-6e-matter-energy-states-of-matter-1', 'physics-chemistry-6e-matter-energy-states-of-matter-2', 'physics-chemistry-6e-matter-energy-motion-signals-1', 'physics-chemistry-6e-matter-energy-motion-signals-2',
+  'physics-chemistry-6e-matter-energy-energy-circuits-1', 'physics-chemistry-6e-matter-energy-energy-circuits-2',
+  'technology-6e-objects-object-function-1', 'technology-6e-objects-object-function-2', 'technology-6e-objects-materials-1', 'technology-6e-objects-materials-2',
+  'technology-6e-objects-information-networks-1', 'technology-6e-objects-information-networks-2',
   // LV2 (Relais des voyageurs, 5e) : une mission par langue et par thème, l’allemand puis l’espagnol.
   'lv2-5e-introductions-de-greetings-1', 'lv2-5e-introductions-de-greetings-2', 'lv2-5e-introductions-de-numbers-1', 'lv2-5e-introductions-de-numbers-2', 'lv2-5e-introductions-de-family-1',
   'lv2-5e-introductions-de-family-2', 'lv2-5e-introductions-de-articles-1', 'lv2-5e-introductions-de-articles-2', 'lv2-5e-introductions-es-greetings-1', 'lv2-5e-introductions-es-greetings-2',

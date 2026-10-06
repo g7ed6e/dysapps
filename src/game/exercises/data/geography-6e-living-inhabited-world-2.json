@@ -1,0 +1,238 @@
+{
+  "id": "geography-6e-living-inhabited-world-2",
+  "biome": "geography-6e-living",
+  "type": "inhabited-world",
+  "level": 2,
+  "instruction": "Lis la question, puis le document. Choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "geography-6e-living-inhabited-world-2-0",
+      "prompt": "Description d’une photo du port du Havre\nAu premier plan : des grues et des conteneurs\nÀ l’arrière-plan : une raffinerie, des usines",
+      "question": "Quel littoral montre la photo ?",
+      "spoken": "Description d’une photo du port du Havre. Au premier plan : des grues et des conteneurs. À l’arrière-plan : une raffinerie, des usines.",
+      "choices": [
+        "un littoral touristique",
+        "un littoral industriel",
+        "un littoral sauvage"
+      ],
+      "answer": "un littoral industriel",
+      "hint": "Des conteneurs, des usines : on y vient pour se baigner ou pour travailler ?",
+      "explanation": "Un port et des usines au bord de la mer : c’est un littoral industriel et portuaire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "Premier plan : ce qui est devant, sur la photo.",
+            "Arrière-plan : ce qui est au fond.",
+            "On vit surtout près des côtes, des fleuves, dans les plaines.",
+            "Foyer de peuplement : beaucoup d’habitants.",
+            "Désert humain : presque personne."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-6e-living-inhabited-world-2-1",
+      "prompt": "La Grande-Motte, au bord de la Méditerranée\nEn hiver : environ 9 000 habitants\nEn été : plus de 100 000 personnes",
+      "question": "Pourquoi la ville est-elle si remplie en été ?",
+      "spoken": "La Grande-Motte, au bord de la Méditerranée. En hiver : environ neuf mille habitants. En été : plus de cent mille personnes.",
+      "choices": [
+        "les usines embauchent",
+        "les touristes viennent",
+        "les habitants rentrent"
+      ],
+      "answer": "les touristes viennent",
+      "hint": "C’est une station balnéaire.",
+      "explanation": "En été, les touristes viennent à la plage : la station se remplit. En hiver, seuls les habitants restent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "Premier plan : ce qui est devant, sur la photo.",
+            "Arrière-plan : ce qui est au fond.",
+            "On vit surtout près des côtes, des fleuves, dans les plaines.",
+            "Foyer de peuplement : beaucoup d’habitants.",
+            "Désert humain : presque personne."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-6e-living-inhabited-world-2-2",
+      "prompt": "Sur la côte, en été\nDes plages très pleines\nDes embouteillages sur les routes\nBeaucoup de déchets",
+      "question": "Quel problème montre ce document ?",
+      "spoken": "Sur la côte, en été. Des plages très pleines. Des embouteillages sur les routes. Beaucoup de déchets.",
+      "choices": [
+        "trop de monde en même temps",
+        "pas assez de touristes",
+        "le grand froid"
+      ],
+      "answer": "trop de monde en même temps",
+      "hint": "Tout le monde vient-il au même moment ?",
+      "explanation": "Tout le monde vient au même moment : plages pleines, embouteillages, déchets. Le tourisme abîme parfois le littoral.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "Premier plan : ce qui est devant, sur la photo.",
+            "Arrière-plan : ce qui est au fond.",
+            "On vit surtout près des côtes, des fleuves, dans les plaines.",
+            "Foyer de peuplement : beaucoup d’habitants.",
+            "Désert humain : presque personne."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-6e-living-inhabited-world-2-3",
+      "prompt": "Sur 10 humains, environ :\n6 vivent en Asie\n2 vivent en Afrique\n2 vivent en Europe ou en Amérique",
+      "question": "Sur quel continent vivent le plus d’humains ?",
+      "spoken": "Sur dix humains, environ : six vivent en Asie, deux vivent en Afrique, deux vivent en Europe ou en Amérique.",
+      "choices": [
+        "en Asie",
+        "en Afrique",
+        "en Europe"
+      ],
+      "answer": "en Asie",
+      "hint": "Cherche le plus grand nombre.",
+      "explanation": "6 humains sur 10 vivent en Asie : l’Inde et la Chine sont les deux plus grands foyers de peuplement.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "Premier plan : ce qui est devant, sur la photo.",
+            "Arrière-plan : ce qui est au fond.",
+            "On vit surtout près des côtes, des fleuves, dans les plaines.",
+            "Foyer de peuplement : beaucoup d’habitants.",
+            "Désert humain : presque personne."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-6e-living-inhabited-world-2-4",
+      "prompt": "La Sibérie, en Russie\nUn territoire immense\nTrès peu d’habitants\nUn hiver long et très froid",
+      "question": "Qu’est-ce que la Sibérie ?",
+      "spoken": "La Sibérie, en Russie. Un territoire immense. Très peu d’habitants. Un hiver long et très froid.",
+      "choices": [
+        "un foyer de peuplement",
+        "une métropole",
+        "un désert humain"
+      ],
+      "answer": "un désert humain",
+      "hint": "Regarde la dernière ligne du rappel.",
+      "explanation": "Très peu d’habitants sur un immense territoire : la Sibérie est un désert humain. Le grand froid en est la cause.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "Premier plan : ce qui est devant, sur la photo.",
+            "Arrière-plan : ce qui est au fond.",
+            "On vit surtout près des côtes, des fleuves, dans les plaines.",
+            "Foyer de peuplement : beaucoup d’habitants.",
+            "Désert humain : presque personne."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-6e-living-inhabited-world-2-5",
+      "prompt": "La vallée du Nil, en Égypte\nPresque tous les Égyptiens vivent près du fleuve.\nAutour : le désert.",
+      "question": "Pourquoi les Égyptiens vivent-ils près du Nil ?",
+      "spoken": "La vallée du Nil, en Égypte. Presque tous les Égyptiens vivent près du fleuve. Autour : le désert.",
+      "choices": [
+        "le fleuve les protège",
+        "le fleuve donne de l’eau",
+        "la mer est toute proche"
+      ],
+      "answer": "le fleuve donne de l’eau",
+      "hint": "Que manque-t-il dans le désert ?",
+      "explanation": "Le Nil donne de l’eau dans un pays de désert : on y boit, on y cultive. Les humains vivent souvent près des fleuves.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "Premier plan : ce qui est devant, sur la photo.",
+            "Arrière-plan : ce qui est au fond.",
+            "On vit surtout près des côtes, des fleuves, dans les plaines.",
+            "Foyer de peuplement : beaucoup d’habitants.",
+            "Désert humain : presque personne."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-6e-living-inhabited-world-2-6",
+      "prompt": "Où vivent les humains ?\nPrès des côtes : beaucoup de grandes villes\nDans les plaines : beaucoup de villages\nEn haute montagne : très peu d’habitants",
+      "question": "Où vit-on le moins ?",
+      "spoken": "Où vivent les humains ? Près des côtes : beaucoup de grandes villes. Dans les plaines : beaucoup de villages. En haute montagne : très peu d’habitants.",
+      "choices": [
+        "près des côtes",
+        "en haute montagne",
+        "dans les plaines"
+      ],
+      "answer": "en haute montagne",
+      "hint": "Cherche les mots « très peu ».",
+      "explanation": "La haute montagne a de fortes contraintes, le froid et la pente : très peu de gens y vivent. Les côtes et les plaines sont bien plus peuplées.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "Premier plan : ce qui est devant, sur la photo.",
+            "Arrière-plan : ce qui est au fond.",
+            "On vit surtout près des côtes, des fleuves, dans les plaines.",
+            "Foyer de peuplement : beaucoup d’habitants.",
+            "Désert humain : presque personne."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-6e-living-inhabited-world-2-7",
+      "prompt": "Le port de Rotterdam, aux Pays-Bas\nLe premier port d’Europe\nLe Rhin, un grand fleuve, le relie à l’Allemagne.",
+      "question": "À quoi sert le Rhin pour le port ?",
+      "spoken": "Le port de Rotterdam, aux Pays-Bas. Le premier port d’Europe. Le Rhin, un grand fleuve, le relie à l’Allemagne.",
+      "choices": [
+        "à faire venir des touristes",
+        "à transporter des marchandises",
+        "à protéger le port des tempêtes"
+      ],
+      "answer": "à transporter des marchandises",
+      "hint": "Que fait-on dans un port ?",
+      "explanation": "Par le Rhin, les bateaux portent les marchandises du port jusqu’en Allemagne et plus loin dans l’Europe.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "Premier plan : ce qui est devant, sur la photo.",
+            "Arrière-plan : ce qui est au fond.",
+            "On vit surtout près des côtes, des fleuves, dans les plaines.",
+            "Foyer de peuplement : beaucoup d’habitants.",
+            "Désert humain : presque personne."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "geography-6e-living",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

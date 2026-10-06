@@ -245,7 +245,7 @@ const FICHES: Fiche[] = [
     archipelago: '6e',
     name: 'L’observatoire des baleines',
     description: 'Une tour de brique sur une plateforme de galets, et au sommet une longue-vue tournée vers le large, là où soufflent les baleines.',
-    islet: { x: 0, y: 78 },
+    islet: { x: -1, y: 73 }, // suit la Tour calée sur le pas (GD-9, 05/10/2026)
     reward: { xp: 150, chest: {} },
     done: 'L’observatoire est debout ! D’en haut, on voit les baleines souffler au large.',
     draw: observatoire,
@@ -256,7 +256,7 @@ const FICHES: Fiche[] = [
     archipelago: '6e',
     name: 'Le grand moulin',
     description: 'Un moulin de brique et de pierre, ses quatre ailes de bois et de toile tournées vers le vent du large.',
-    islet: { x: 25, y: 84 }, // 2 cases à l'ouest avec la Ferme (la Forêt a grandi, 01/10/2026)
+    islet: { x: 24, y: 82 }, // suit la Ferme : la Forêt a grandi (01/10/2026), la carte s'est calée sur le pas (GD-9)
     reward: { xp: 150, chest: {} },
     done: 'Le grand moulin tourne ! Il moud le grain de toutes les îles des Premiers Rivages.',
     draw: moulin,
@@ -278,7 +278,7 @@ const FICHES: Fiche[] = [
     archipelago: '5e',
     name: 'Le kiosque à musique',
     description: 'Un kiosque rond au plancher de lambris, huit poteaux et un toit rayé de toile et de tuiles, pour les fanfares du dimanche.',
-    islet: { x: 89, y: 353 },
+    islet: { x: 87, y: 352 }, // suit l'île calée sur le pas (GD-9, 05/10/2026)
     reward: { xp: 180, chest: {} },
     done: 'Le kiosque à musique est fini ! La fanfare des Collines peut jouer.',
     draw: kiosqueMusique,
@@ -289,7 +289,7 @@ const FICHES: Fiche[] = [
     archipelago: '4e',
     name: 'Le viaduc',
     description: 'Des piles et des arches d’ardoise, un tablier de rails, et une locomotive d’acier qui attend le départ.',
-    islet: { x: 13, y: 618 },
+    islet: { x: 17, y: 646 }, // suit la Gare, au second rang des Anciens Ateliers redessinés (GD-9, 05/10/2026)
     reward: { xp: 210, chest: {} },
     done: 'Le viaduc tient bon ! La locomotive siffle au-dessus de la mer.',
     draw: viaduc,
@@ -300,7 +300,7 @@ const FICHES: Fiche[] = [
     archipelago: '4e',
     name: 'L’amphithéâtre',
     description: 'Trois gradins de velours, une scène de parchemin entre deux colonnes, et des projecteurs pour les grands soirs.',
-    islet: { x: 155, y: 641 },
+    islet: { x: 87, y: 683 }, // suit le Théâtre, au second rang des Anciens Ateliers redessinés (GD-9, 05/10/2026)
     reward: { xp: 210, chest: {} },
     done: 'L’amphithéâtre est prêt ! Tout le monde des Anciens Ateliers viendra au spectacle.',
     draw: amphitheatre,
@@ -311,7 +311,7 @@ const FICHES: Fiche[] = [
     archipelago: '3e',
     name: 'L’observatoire des étoiles',
     description: 'Un tambour de quartz sous une coupole de lentilles, et une grande lunette pointée vers le ciel.',
-    islet: { x: 43, y: 963 },
+    islet: { x: 43, y: 965 }, // suit l'île calée sur le pas (GD-9, 05/10/2026)
     reward: { xp: 240, chest: {} },
     done: 'L’observatoire des étoiles est ouvert ! On voit plus loin que les nuages.',
     draw: etoiles,
@@ -322,7 +322,7 @@ const FICHES: Fiche[] = [
     archipelago: '3e',
     name: 'Le temple de marbre',
     description: 'Huit colonnes de marbre sur un soubassement de pierre de taille, un toit de prismes et un faîte de miroirs qui brillent au soleil.',
-    islet: { x: 3, y: 935 }, // 2 cases à l'ouest avec le Belvédère (le Phare a grandi, 01/10/2026)
+    islet: { x: 3, y: 937 }, // suit le Belvédère : le Phare a grandi (01/10/2026), la carte s'est calée sur le pas (GD-9)
     reward: { xp: 240, chest: {} },
     done: 'Le temple de marbre brille au-dessus des nuages. Les Îles du Ciel sont fières de toi.',
     draw: temple,

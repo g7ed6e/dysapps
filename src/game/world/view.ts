@@ -10,6 +10,124 @@ import type { Cell, CreaturePlacement } from './paths';
 import type { Ancrage, Intention, ObjetDeLaFiche } from './layout';
 import type { EtatsDesObjets } from './model';
 import { grilleDe } from './grid';
+import type { Rectangle } from './placement';
+
+/** Ce qu'est une case du dessin du mode « Aménager » (GD-9 ; calculé par ./arrangeView.ts). */
+export type ArrangeCellKind = 'fantome' | 'place' | 'liaison' | 'barree' | 'croix';
+
+/**
+ * Une case du dessin du mode, en cases du monde : un carré plat posé sur le dessus de la case (z + 1), bordé d'un
+ * contour sombre (la couleur n'est jamais seule), de `l` cases de côté (1 par défaut).
+ */
+export interface ArrangeCell {
+  x: number;
+  y: number;
+  z: number;
+  genre: ArrangeCellKind;
+  /** Le côté du carré, en cases (une place libre d'un lieu : 3 ; d'un îlot de Gardien : 2). */
+  l?: number;
+}
+
+/** Le dessin du mode pendant un choix (./arrangeView.ts). */
+export interface ArrangeView {
+  cases: ArrangeCell[];
+  /** L'emprise du choix à sa place d'avant (le lieu, ou l'îlot du Gardien), soulevée tant qu'il est choisi ; ou rien. */
+  souleve: Rectangle | null;
+  /** Le milieu du fantôme : la vue le suit s'il sort de l'écran. */
+  suivre: { x: number; y: number; z: number };
+  /** Les liaisons qui ne tiendraient plus après la pose (leur nombre se dit dans la barre). */
+  barrees: string[];
+  /** Le nom du lieu choisi, écrit sur son fantôme (le nom de l'univers, donné par la page). */
+  nom?: string;
+  /** Le lieu choisi : son étiquette sur l'île se tait le temps du choix, son nom n'est écrit qu'une fois, sur le fantôme. */
+  lieu?: string;
+  /** Ce que la vue garde entier à l'écran : le fantôme (les deux lieux réunis et leur réunion), à hauteur de l'eau. */
+  cadre?: CadreDuMode;
+  /** Les flèches et « Tourner », dessinées sur l'eau autour du choix (./arrangeHandles.ts). */
+  poignees?: PoigneesDuChoix;
+  /**
+   * Les places libres montrées qui colleraient le lieu à un voisin (6 octobre 2026, choix 2a du mainteneur), une par
+   * voisin, la plus proche du fantôme : le milieu de leur jointure (sur l'eau, là où irait la construction), en cases du
+   * monde, `z` le dessus de l'eau ; la page y pose l'icône de « Réunir ».
+   */
+  reunions?: { x: number; y: number; z: number }[];
+}
+
+/** Un rectangle du monde (en cases, x et y) à garder entier à l'écran, à une hauteur ; `seq` change à chaque demande. */
+export interface CadreDuMode {
+  rect: Rectangle;
+  z: number;
+  seq: number;
+}
+
+/** Une poignée dessinée dans le monde, à l'écran : son milieu et sa taille (pixels CSS, `POIGNEE_MIN_PX` au moins). */
+interface PoigneeALEcran {
+  cle: CleDePoignee;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
+/**
+ * Où se tiennent les poignées du mode « Modifier le plan » à l'écran, image après image (pixels CSS, dans le repère de
+ * la scène de la page, `[data-scene]`), et la place libre (`libre` : sous la ligne du mode, au-dessus de sa barre, sans
+ * les boutons du haut). Les boutons transparents posés sur les poignées dessinées (ArrangeHandles.tsx) s'y placent.
+ */
+export interface ChoixALEcran {
+  poignees: readonly PoigneeALEcran[];
+  /** Les poignées des bouts de liaison, à l'écran (sans choix en cours ; choix 1a du mainteneur). */
+  bouts?: readonly LinkEndOnScreen[];
+  /** Les places qui colleraient le lieu choisi à un voisin, à l'écran (le milieu de leur jointure ; choix 2a du mainteneur). */
+  reunions?: readonly { x: number; y: number }[];
+  libre: Rectangle;
+}
+
+/** La poignée d'un bout de liaison à l'écran : son milieu et sa taille (pixels CSS, 48 px au moins pour le bouton). */
+export interface LinkEndOnScreen {
+  link: string;
+  end: 'from' | 'to';
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
+/**
+ * La poignée d'un bout de liaison posée (6 octobre 2026, choix 1a du mainteneur) : dans le mode, sans choix en cours,
+ * chaque bout porte un petit radeau, au bout de son ponton (en cases du monde, `z` le dessus de l'eau) ; la toucher
+ * choisit cette arrivée (./arrangeHandles.ts la place).
+ */
+export interface LinkEndHandle {
+  link: string;
+  end: 'from' | 'to';
+  x: number;
+  y: number;
+  z: number;
+  /** Le sens du ponton, de la côte vers le large (une case) : un bout trop près d'un autre recule à l'opposé. */
+  dx: number;
+  dy: number;
+}
+
+/**
+ * Le geste de la pose en cours (./arrangeGesture.ts) : la zone du monde où il se joue (en cases du monde, x et y), le
+ * temps (`demonte` à la place d'avant, `remonte` à la nouvelle), son début (horloge de la page, `performance.now`), sa
+ * durée, et les hauteurs du lieu (`bas` sous l'eau, `haut` au-dessus de son plus haut cube).
+ */
+export interface ArrangeGesture {
+  seq: number;
+  phase: 'demonte' | 'remonte';
+  zone: Rectangle;
+  /**
+   * L'autre place du geste (la nouvelle pendant le démontage, l'ancienne pendant le remontage) : le voile de brume
+   * d'Archipéo glisse de l'une à l'autre.
+   */
+  autre?: Rectangle;
+  debut: number;
+  dureeMs: number;
+  bas: number;
+  haut: number;
+}
 
 // Une case du monde et la place d'une créature : définies avec la grille de marche (./paths.ts), qui les lit.
 export type { Cell, CreaturePlacement } from './paths';
@@ -118,7 +236,11 @@ export interface Burst {
 export interface IslandLabel {
   id: BiomeId;
   text: string;
-  /** Sur la Carte : l'état de l'île (Fermée, À explorer, En chantier, Restaurée ou Bâtie selon l'univers : textes.etatsDIle), dessiné en icône et en mot sous le nom. */
+  /**
+   * Sur la Carte : l'état de l'île (Fermée, À explorer, En chantier, Restaurée ou Bâtie selon l'univers :
+   * textes.etatsDIle), dessiné en icône et en mot sous le nom ; rien dans le mode « Aménager » (GD-9), où l'étiquette
+   * se réduit au nom.
+   */
   state?: { id: IslandStateId; name: string };
   /** Le bloc que l'île rapporte (sa ressource), dessiné avant le nom, comme dans Mes blocs. */
   bloc?: BlockId;
@@ -178,6 +300,12 @@ export interface WorldViewProps {
   /** Les ouvrages construits : la vue d'ensemble cadre les îles ouvertes et leurs voisines. */
   bridges?: string[];
   /**
+   * Une liaison montrée en fantôme depuis un autre départ (GD-9, « Partir d'une autre île ») : la caméra tient son
+   * départ et son arrivée dans la place libre au-dessus de la fiche (`cadreDeLaLiaison`), comme une longue traversée ;
+   * d'un coup quand l'appareil demande moins d'animations. La vue simple l'ignore.
+   */
+  liaisonCadree?: string | null;
+  /**
    * Une flèche jaune qui flotte au-dessus d'une île (« Commence ici »), d'un point (le chantier du navire) ou, sur la
    * Carte, d'un ouvrage (la prochaine destination est un ouvrage à construire, GD-7) : posée sur sa liaison, côté île de
    * départ (`placesDeLaFleche`), avec l'icône d'un ouvrage.
@@ -230,6 +358,25 @@ export interface WorldViewProps {
    * revenue à son cadrage (`false`), pour le bouton « Recentrer ». Sans ce rappel, la vue ne glisse pas.
    */
   onVueDeplacee?: (deplacee: boolean) => void;
+  /**
+   * Le mode « Aménager » (GD-9), sur la Carte : `vue`, le dessin du choix en cours (fantôme, places autour, liaisons
+   * retracées et barrées, lieu soulevé ; ./arrangeView.ts), ou rien. Dans le mode, toucher la mer donne une intention
+   * `mer` ; avec un choix, glisser le doigt cale le fantôme sous lui (un raccourci) au lieu de faire glisser la vue ; et
+   * si le fantôme sort de l'écran, la vue le suit. Les poignées (les flèches et « Tourner ») sont dessinées sur l'eau autour
+   * du choix ; `ecran` reçoit, à chaque image où elles bougent, où elles se tiennent à l'écran (rien sans choix, ni
+   * pendant le geste) : la page y pose leurs boutons transparents. La vue simple l'ignore.
+   */
+  amenager?: {
+    vue: ArrangeView | null;
+    /** Les poignées des bouts de liaison, dessinées quand rien n'est choisi (choix 1a du mainteneur), ou rien. */
+    bouts?: readonly LinkEndHandle[] | null;
+    cadre?: CadreDuMode | null;
+    ecran?: (b: ChoixALEcran | null) => void;
+    /** Les touchers des boutons posés sur les poignées : la poignée touchée s'enfonce dans le monde. */
+    touchers?: { ecouter(f: (cle: CleDePoignee) => void): () => void };
+  } | null;
+  /** Le geste de la pose en cours dans le mode « Aménager » (./arrangeGesture.ts), ou rien. */
+  geste?: ArrangeGesture | null;
   /** Change à chaque appui sur « Recentrer » : la vue efface son décalage et revient en douceur à son cadrage. */
   recentrage?: number;
   /**
@@ -268,7 +415,9 @@ export interface EnCasesDuMonde {
 export interface RappelsDeLaVue {
   /** Une île : touchée sur le sol en `sol` (le bonhomme en route en `enRoute`), ou choisie au clavier. En cases du monde. */
   onPickIsland?: (id: BiomeId, sol?: Cell, enRoute?: Cell) => void;
-  onPickBridge?: (id: string) => void;
+  onPickBridge?: (id: string, point?: { x: number; y: number }) => void;
+  /** Le mode « Aménager » : la mer touchée (ou le doigt qui glisse, avec un choix), en cases du monde. */
+  onPickSea?: (point: { x: number; y: number }) => void;
   onPickQuest?: (biome: BiomeId, typeId: string) => void;
   onPickPlace?: (place: PlaceId, island: BiomeId) => void;
   onPickCreature?: (id: BiomeId, kind: 'creature' | 'guardian') => void;
@@ -298,7 +447,8 @@ export function rappelsDeLaVue(onIntent: ((i: Intention) => void) | undefined, a
       const g = grilleDe(archipel);
       onIntent({ genre: 'ile', id, sol: g.versIle(sol, id), ...(enRoute ? { enRoute: g.versIle(enRoute) } : {}) });
     },
-    onPickBridge: (id) => onIntent({ genre: 'ouvrage', id }),
+    onPickBridge: (id, point) => onIntent({ genre: 'ouvrage', id, ...(point ? { point } : {}) }),
+    onPickSea: (point) => onIntent({ genre: 'mer', point }),
     onPickQuest: (ile, mission) => onIntent({ genre: 'borne', ile, mission }),
     onPickPlace: (id, ile) => onIntent({ genre: 'lieu', id, ile }),
     onPickCreature: (id, kind) => onIntent({ genre: 'creature', id, gardien: kind === 'guardian' }),
@@ -308,4 +458,39 @@ export function rappelsDeLaVue(onIntent: ((i: Intention) => void) | undefined, a
     onVoyageSkip: () => onIntent({ genre: 'voyage-saute' }),
     onArrive: () => onIntent({ genre: 'arrivee' }),
   };
+}
+
+// Les poignées du mode « Modifier le plan » (GD-9), calculées par ./arrangeHandles.ts : leurs types vivent ici, avec la vue,
+// pour que la vue ne dépende pas du calcul.
+
+/** Une poignée : une des quatre flèches, ou « Tourner ». */
+export type CleDePoignee = 'nord' | 'sud' | 'est' | 'ouest' | 'tourner';
+
+/**
+ * Une poignée posée : son décalage depuis le milieu du choix à chaque échelle de `ECHELLES` (en cases du monde, x puis y),
+ * le premier à l'échelle 1 (`ox`, `oy`), et si elle sert.
+ */
+export interface PoigneeDuMonde {
+  cle: CleDePoignee;
+  ox: number;
+  oy: number;
+  places: readonly number[];
+  dispo: boolean;
+}
+
+/** Les poignées d'un choix : le milieu de son emprise, la hauteur de l'eau (le dessus), et chaque poignée. */
+export interface PoigneesDuChoix {
+  cx: number;
+  cy: number;
+  z: number;
+  liste: PoigneeDuMonde[];
+  /**
+   * Le choix est sur une place prise (choix 3 du mainteneur) : une croix grise se dessine au milieu de son emprise,
+   * de la demi-taille `bras` (en cases, à l'échelle 1) ; rien sinon.
+   */
+  prise?: { bras: number };
+  /** Une arrivée choisie (choix 1a) : le petit radeau de son bout se dessine au milieu du choix, sous les flèches. */
+  bout?: boolean;
+  /** Ce que couvrent les radeaux à l'échelle 1, emprise du choix comprise : la vue le garde à l'écran. */
+  emprise: Rectangle;
 }

@@ -1,4 +1,4 @@
-import { formatDuree, formatHeure, formatNombre, type Cote, type SceneProps } from './Scene';
+import { formatDuree, formatHeure, formatNombre, type Side, type SceneProps } from './Scene';
 import { PROBLEMES_COLLEGE_EXERCISES, PROBLEMES_EXERCISES } from './problems';
 import type { ExerciseDef, ExerciseItem } from './types';
 
@@ -11,7 +11,7 @@ const sceneOf = (it: ExerciseItem): SceneProps => {
 };
 
 const withUnit = (u: string) => (n: number) => `${formatNombre(n)} ${u}`;
-const num = (c: Cote | null | undefined) => (typeof c === 'number' ? c : 0);
+const num = (c: Side | null | undefined) => (typeof c === 'number' ? c : 0);
 
 /**
  * Ce que montre un schéma : les cotes affichées (texte), les autres données écrites dans l’énoncé (échelle, ratio),
@@ -21,7 +21,7 @@ function read(s: SceneProps): { shown: string[]; data: string[]; answer: string 
   const shown: string[] = [];
   const data: string[] = [];
   let answer = '';
-  const add = (c: Cote | null | undefined, format: (n: number) => string, value: () => number) => {
+  const add = (c: Side | null | undefined, format: (n: number) => string, value: () => number) => {
     if (c === undefined || c === null) return;
     if (c === '?') answer = format(Math.round(value() * 1000) / 1000);
     else shown.push(format(c));

@@ -17,12 +17,15 @@ import { useSettings, useUnivers } from '../core/SettingsContext';
 import { UNIVERS } from '../core/universe';
 import { nomDuRole, useTextes } from '../universes';
 
-/** Les expéditions du menu ; la LV2 à côté de l'anglais, sauf avec « Pas de LV2 ». */
-const EXPEDITIONS: Subject[] = ['maths', 'french', 'english', 'lv2'];
+/**
+ * Les expéditions du menu : les deux langues côte à côte, puis l'histoire-géo et les trois sciences (SVT,
+ * physique-chimie, technologie), même sans LV2 (« Pas de LV2 »).
+ */
+const EXPEDITIONS: Subject[] = ['maths', 'french', 'english', 'lv2', 'history-geography', 'life-earth-sciences', 'physics-chemistry', 'technology'];
 
 /**
  * Le menu d'Archipéo, dans l'ordre du dossier : l'identité, ton village, « Reprendre l'aventure » vers la prochaine
- * destination, la progression, puis les trois Expéditions. Une seule action principale ; sur téléphone, les trois
+ * destination, la progression, puis les Expéditions. Une seule action principale ; sur téléphone, les trois
  * premiers blocs tiennent sans défiler.
  */
 export function HomePage() {
