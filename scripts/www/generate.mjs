@@ -129,11 +129,11 @@ export async function generatePages() {
 
 // ---------- Outils ----------
 
-const SUBJECT_NAME = { french: 'Français', maths: 'Maths', english: 'Anglais', lv2: 'LV2 (espagnol ou allemand)' };
+const SUBJECT_NAME = { french: 'Français', maths: 'Maths', english: 'Anglais', 'history-geography': 'Histoire-géo', lv2: 'LV2 (espagnol ou allemand)' };
 /** Les matières, dans l'ordre du portail. */
 const SUBJECT_IDS = Object.keys(SUBJECT_NAME);
 /** « 3 d’anglais », « 1 de LV2 » : le complément de chaque matière dans le décompte des îles. */
-const SUBJECT_DE = { french: 'de français', maths: 'de maths', english: 'd’anglais', lv2: 'de LV2' };
+const SUBJECT_DE = { french: 'de français', maths: 'de maths', english: 'd’anglais', 'history-geography': 'd’histoire-géo', lv2: 'de LV2' };
 // Quand arrive la première commande d'un archipel, selon `SEUIL_DE_LA_PREMIERE_COMMANDE` (src/game/world/requests.ts).
 const QUAND_LA_PREMIERE_COMMANDE = {
   'premier-ouvrage': 'après le premier ouvrage construit dans l’archipel',
