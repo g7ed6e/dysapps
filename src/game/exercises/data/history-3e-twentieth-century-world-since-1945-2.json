@@ -42,7 +42,7 @@
         "le début de la guerre froide"
       ],
       "answer": "la chute du mur de Berlin",
-      "hint": "Relis la deuxième ligne.",
+      "hint": "Relis la ligne qui commence par « Le mur ».",
       "explanation": "Le 9 novembre 1989, le mur s’ouvre : c’est la chute du mur de Berlin. Il avait été construit en 1961.",
       "aid": {
         "kind": "rule-card",
@@ -68,7 +68,7 @@
         "Cuba devient américaine"
       ],
       "answer": "les missiles repartent",
-      "hint": "Relis la dernière ligne.",
+      "hint": "Relis la ligne qui commence par « Les missiles ».",
       "explanation": "Le monde a eu peur d’une guerre nucléaire, mais les missiles repartent : la crise de Cuba se finit sans guerre.",
       "aid": {
         "kind": "rule-card",
@@ -120,7 +120,7 @@
         "la fin de la guerre d’Algérie"
       ],
       "answer": "la fin de la guerre d’Algérie",
-      "hint": "Relis la deuxième ligne.",
+      "hint": "Relis la ligne qui commence par « La guerre ».",
       "explanation": "Les accords d’Évian arrêtent la guerre d’Algérie en mars 1962. En juillet, l’Algérie devient indépendante.",
       "aid": {
         "kind": "rule-card",
@@ -172,7 +172,7 @@
         "la livre"
       ],
       "answer": "le franc",
-      "hint": "Relis la dernière ligne.",
+      "hint": "Relis la ligne qui commence par « En France ».",
       "explanation": "En 2002, l’euro remplace le franc en France. Le mark était la monnaie de l’Allemagne.",
       "aid": {
         "kind": "rule-card",

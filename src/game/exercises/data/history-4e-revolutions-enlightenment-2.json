@@ -7,17 +7,17 @@
   "items": [
     {
       "key": "history-4e-revolutions-enlightenment-2-0",
-      "prompt": "Le commerce triangulaire\nD’Europe vers l’Afrique : des tissus, des armes\nD’Afrique vers les Amériques : des esclaves\nDes Amériques vers l’Europe : du sucre, du café",
+      "prompt": "Le commerce triangulaire\nD’Europe vers l’Afrique : des tissus, des armes\nD’Afrique vers les Amériques : des Africains réduits en esclavage\nDes Amériques vers l’Europe : du sucre, du café",
       "question": "Que rapportent les navires en Europe ?",
-      "spoken": "Le commerce triangulaire. D’Europe vers l’Afrique : des tissus, des armes. D’Afrique vers les Amériques : des esclaves. Des Amériques vers l’Europe : du sucre, du café.",
+      "spoken": "Le commerce triangulaire. D’Europe vers l’Afrique : des tissus, des armes. D’Afrique vers les Amériques : des Africains réduits en esclavage. Des Amériques vers l’Europe : du sucre, du café.",
       "choices": [
         "des tissus et des armes",
         "du sucre et du café",
-        "des esclaves"
+        "des Africains réduits en esclavage"
       ],
       "answer": "du sucre et du café",
-      "hint": "Lis la ligne qui finit par « vers l’Europe ».",
-      "explanation": "Les navires rapportent en Europe le sucre et le café des plantations, où travaillent les esclaves. Les tissus et les armes partent d’Europe.",
+      "hint": "Lis la ligne qui contient « vers l’Europe ».",
+      "explanation": "Les navires rapportent en Europe le sucre et le café des plantations, où travaillent les Africains réduits en esclavage. Les tissus et les armes partent d’Europe.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -39,7 +39,7 @@
       "choices": [
         "le prix trop cher du sucre",
         "l’esclavage dans les plantations",
-        "la cuisine des Européens"
+        "le commerce des tissus"
       ],
       "answer": "l’esclavage dans les plantations",
       "hint": "Qui parle ? De quel « prix » parle-t-il ?",
@@ -68,7 +68,7 @@
         "séparer les pouvoirs"
       ],
       "answer": "séparer les pouvoirs",
-      "hint": "Relis la troisième ligne.",
+      "hint": "Relis la ligne qui commence par « on sépare ».",
       "explanation": "Montesquieu propose de séparer les pouvoirs, pour qu’un roi ne décide pas de tout seul. C’est une idée des Lumières.",
       "aid": {
         "kind": "rule-card",
@@ -146,7 +146,7 @@
         "la richesse pour tous"
       ],
       "answer": "l’égalité des droits",
-      "hint": "Relis la dernière ligne.",
+      "hint": "Relis les mots entre les guillemets.",
       "explanation": "Libres et égaux en droits : la loi est la même pour tous. Égaux en droits ne veut pas dire aussi riches.",
       "aid": {
         "kind": "rule-card",
@@ -172,7 +172,7 @@
         "les mêmes lois pour tous"
       ],
       "answer": "les mêmes lois pour tous",
-      "hint": "Relis la dernière ligne.",
+      "hint": "Relis la ligne qui contient « lois ».",
       "explanation": "Le Code civil donne les mêmes lois à tous les Français. Il garde une idée de la Révolution : l’égalité devant la loi.",
       "aid": {
         "kind": "rule-card",

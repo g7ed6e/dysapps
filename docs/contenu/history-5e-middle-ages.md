@@ -101,7 +101,7 @@ Pour tous les items :
    - lu : Description d’une photo. Sainte-Sophie, à Constantinople. Une immense église chrétienne. Construite au sixième siècle pour l’empereur Justinien.
    - choix : à Rome · à Constantinople · à Jérusalem
    - réponse : à Constantinople
-   - indice : Lis la deuxième ligne.
+   - indice : Lis la ligne qui commence par « Sainte-Sophie ».
    - explication : Sainte-Sophie est à Constantinople, la capitale de l’Empire byzantin. L’empereur Justinien l’a fait construire.
 2. énoncé : "Un événement\nAn 622\nMahomet quitte La Mecque pour Médine.\nC’est l’Hégire."
    - question : En quel siècle a lieu l’Hégire ?
@@ -110,19 +110,19 @@ Pour tous les items :
    - réponse : au VIIe siècle
    - indice : Dans le rappel, 622 est-il entre 601 et 700 ?
    - explication : L’an 622 est entre l’an 601 et l’an 700 : c’est le VIIe siècle. Le 6 du début ne donne pas le siècle.
-3. énoncé : "Trois des cinq piliers de l’islam\nCroire en un Dieu unique\nPrier cinq fois par jour\nJeûner pendant le ramadan"
+3. énoncé : "Des piliers de l’islam\nCroire en un Dieu unique\nPrier cinq fois par jour\nJeûner pendant le ramadan"
    - question : Combien de fois par jour un musulman doit-il prier ?
-   - lu : Trois des cinq piliers de l’islam. Croire en un Dieu unique. Prier cinq fois par jour. Jeûner pendant le ramadan.
-   - choix : une fois · trois fois · cinq fois
+   - lu : Des piliers de l’islam. Croire en un Dieu unique. Prier cinq fois par jour. Jeûner pendant le ramadan.
+   - choix : une fois · quand il le veut · cinq fois
    - réponse : cinq fois
    - indice : Lis la ligne qui commence par « Prier ».
-   - explication : Le document dit de prier cinq fois par jour. Le nombre trois, sur la première ligne, compte les piliers montrés.
+   - explication : Le document dit de prier cinq fois par jour. La prière est l’un des piliers de l’islam.
 4. énoncé : "Description d’une carte\nL’expansion de l’islam\nEn 632 : l’Arabie\nVers 750 : de l’Espagne jusqu’au fleuve Indus"
    - question : Que montre cette carte ?
    - lu : Description d’une carte. L’expansion de l’islam. En six cent trente-deux : l’Arabie. Vers sept cent cinquante : de l’Espagne jusqu’au fleuve Indus.
    - choix : un territoire qui grandit vite · un territoire qui rétrécit · un territoire qui ne change pas
    - réponse : un territoire qui grandit vite
-   - indice : Compare la troisième ligne et la dernière.
+   - indice : Compare la ligne « En 632 » et la ligne « Vers 750 ».
    - explication : D’abord l’Arabie, puis de l’Espagne jusqu’à l’Indus : les conquêtes agrandissent vite le territoire des musulmans.
 5. énoncé : "Ce que fait Charlemagne\nIl fait ouvrir des écoles près des églises.\nIl fait venir des savants.\nIl fait recopier des livres anciens."
    - question : À quoi Charlemagne s’intéresse-t-il ?
@@ -188,7 +188,7 @@ Pour tous les items :
 2. énoncé : Un seigneur qui reçoit une terre d’un autre seigneur devient son … .
    - choix : serf · vassal · moine
    - réponse : vassal
-   - indice : Lis la deuxième ligne du rappel.
+   - indice : Cherche « reçoit une terre » dans le rappel.
    - explication : Le vassal reçoit un fief et jure d’être fidèle à son seigneur. Un serf est un paysan qui n’est pas libre.
 3. énoncé : Le travail gratuit que les paysans doivent au seigneur s’appelle la … .
    - choix : dîme · récolte · corvée
@@ -214,7 +214,7 @@ Pour tous les items :
    - lu : En neuf cent quatre-vingt-sept, Hugues Capet devient (mot manquant).
    - choix : roi · pape · empereur
    - réponse : roi
-   - indice : Lis la dernière ligne du rappel.
+   - indice : Cherche 987 dans le rappel.
    - explication : En 987, Hugues Capet devient roi. Ses descendants, les Capétiens, régneront des siècles sur la France.
 8. énoncé : Au Moyen Âge, les habitants des villes s’appellent les … .
    - choix : paysans · bourgeois · seigneurs
@@ -266,7 +266,7 @@ Pour tous les items :
    - lu : Une charte, au Moyen Âge. Le seigneur donne des libertés aux bourgeois de la ville. Ils choisissent ceux qui la gouvernent.
    - choix : les moines · les paysans · les bourgeois
    - réponse : les bourgeois
-   - indice : Lis la troisième ligne.
+   - indice : Lis ce qui suit « donne des libertés ».
    - explication : Par la charte, le seigneur donne des libertés aux bourgeois : ils gouvernent un peu leur ville eux-mêmes.
 6. énoncé : "Description d’une photo\nNotre-Dame de Paris\nUne cathédrale de style gothique\nCommencée en 1163"
    - question : En quel siècle commence la construction ?
@@ -392,35 +392,35 @@ Pour tous les items :
    - lu : Les Amérindiens après l’arrivée des Européens. Des guerres et du travail forcé. Des maladies venues d’Europe, comme la variole. Beaucoup d’entre eux meurent.
    - choix : des maladies venues d’Europe · le grand froid · une famine en Europe
    - réponse : des maladies venues d’Europe
-   - indice : Lis la troisième ligne.
+   - indice : Lis la ligne qui commence par « Des maladies ».
    - explication : La guerre, le travail forcé et surtout les maladies venues d’Europe tuent beaucoup d’Amérindiens. Leur corps ne connaissait pas ces maladies.
 4. énoncé : "Avant l’imprimerie\nUn moine copie un livre à la main, très lentement.\nAvec l’imprimerie\nOn fabrique beaucoup de livres, vite."
    - question : Que change l’imprimerie ?
    - lu : Avant l’imprimerie. Un moine copie un livre à la main, très lentement. Avec l’imprimerie. On fabrique beaucoup de livres, vite.
    - choix : seuls les moines lisent · les livres sont plus nombreux · les livres disparaissent
    - réponse : les livres sont plus nombreux
-   - indice : Compare la deuxième ligne et la dernière.
+   - indice : Compare la ligne « Un moine copie » et la ligne « On fabrique ».
    - explication : Avec l’imprimerie, on fabrique beaucoup de livres, vite. Les idées des humanistes et de Luther se répandent dans toute l’Europe.
 5. énoncé : "D’après Rabelais, 1532\nUn père écrit à son fils :\n« Je veux que tu apprennes les langues,\nd’abord le grec, puis le latin. »"
    - question : Quelles langues le père veut-il que son fils apprenne ?
    - lu : D’après Rabelais, mille cinq cent trente-deux. Un père écrit à son fils : « Je veux que tu apprennes les langues, d’abord le grec, puis le latin. »
    - choix : l’anglais et l’espagnol · le français seul · le grec et le latin
    - réponse : le grec et le latin
-   - indice : Lis la dernière ligne.
+   - indice : Lis la ligne qui commence par « d’abord ».
    - explication : Le grec et le latin sont les langues de l’Antiquité. Apprendre les langues anciennes pour lire les vieux textes : c’est l’idée des humanistes.
 6. énoncé : "Ce que pense Luther, en 1517\nOn ne gagne pas le paradis en payant l’Église.\nSeule la Bible dit ce qu’il faut croire."
    - question : Que critique Luther ?
    - lu : Ce que pense Luther, en mille cinq cent dix-sept. On ne gagne pas le paradis en payant l’Église. Seule la Bible dit ce qu’il faut croire.
    - choix : l’argent payé à l’Église pour le paradis · la Bible · l’imprimerie
    - réponse : l’argent payé à l’Église pour le paradis
-   - indice : Lis la deuxième ligne.
+   - indice : Lis la ligne qui commence par « On ne gagne ».
    - explication : Luther critique l’Église qui fait payer les fidèles pour gagner le paradis. Pour lui, seule la Bible compte.
 7. énoncé : "L’édit de Nantes, en 1598\nLe roi Henri IV veut la paix entre chrétiens.\nLes protestants peuvent pratiquer leur religion."
    - question : Qui obtient le droit de pratiquer sa religion ?
    - lu : L’édit de Nantes, en mille cinq cent quatre-vingt-dix-huit. Le roi Henri quatre veut la paix entre chrétiens. Les protestants peuvent pratiquer leur religion.
    - choix : les catholiques · les protestants · les musulmans
    - réponse : les protestants
-   - indice : Lis la dernière ligne.
+   - indice : Lis la ligne qui contient « pratiquer ».
    - explication : Par l’édit de Nantes, Henri IV permet aux protestants de pratiquer leur religion. Il veut mettre fin aux guerres de religion.
 8. énoncé : "Louis XIV, à partir de 1661\nIl gouverne seul, sans Premier ministre.\nIl fait bâtir le château de Versailles.\nLes nobles vivent à la cour, près de lui."
    - question : Comment appelle-t-on ce pouvoir ?

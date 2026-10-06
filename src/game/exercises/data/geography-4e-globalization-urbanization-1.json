@@ -150,7 +150,7 @@
         "mondialisation"
       ],
       "answer": "ségrégation",
-      "hint": "Regarde l’avant-dernière ligne du rappel.",
+      "hint": "Cherche « Ségrégation » dans le rappel.",
       "explanation": "La ségrégation : les habitants sont séparés selon leur richesse. On la voit dans beaucoup de grandes villes.",
       "aid": {
         "kind": "rule-card",
@@ -177,7 +177,7 @@
         "bidonvilles"
       ],
       "answer": "bidonvilles",
-      "hint": "Regarde la dernière ligne du rappel.",
+      "hint": "Cherche « cabanes » dans le rappel.",
       "explanation": "Dharavi est un immense bidonville de Mumbai, en Inde. Ses habitants y travaillent aussi : on y recycle, on y fabrique.",
       "aid": {
         "kind": "rule-card",

@@ -69,7 +69,7 @@ Pour tous les items :
 6. énoncé : Les bureaux, les commerces et les hôpitaux font partie du secteur … .
    - choix : primaire · secondaire · tertiaire
    - réponse : tertiaire
-   - indice : Regarde l’avant-dernière ligne du rappel.
+   - indice : Cherche « tertiaire » dans le rappel.
    - explication : Les services forment le secteur tertiaire, qui emploie la plupart des Français. Le primaire, c’est l’agriculture ; le secondaire, l’industrie.
 7. énoncé : Un lieu qui réunit universités, laboratoires et entreprises de pointe est une … .
    - choix : zone industrielle · technopole · métropole
@@ -79,7 +79,7 @@ Pour tous les items :
 8. énoncé : Une commune de montagne avec très peu d’habitants est un espace de … densité.
    - choix : forte · grande · faible
    - réponse : faible
-   - indice : Regarde la dernière ligne du rappel.
+   - indice : Cherche « peu d’habitants » dans le rappel.
    - explication : Peu d’habitants pour beaucoup d’espace : la densité est faible. Une forte densité, c’est beaucoup d’habitants serrés, comme en ville.
 
 ### Niveau 2 · `geography-3e-france-territories-2`
@@ -98,7 +98,7 @@ Pour tous les items :
    - lu : La population de la France, en deux mille vingt-cinq. Près de soixante-neuf millions d’habitants. Plus de huit sur dix vivent dans une aire urbaine.
    - choix : dans les campagnes isolées · en haute montagne · dans une aire urbaine
    - réponse : dans une aire urbaine
-   - indice : Relis la dernière ligne.
+   - indice : Relis la ligne qui commence par « Plus de ».
    - explication : Plus de 8 Français sur 10 vivent dans une aire urbaine : la ville, ses banlieues ou ses communes périurbaines.
 2. énoncé : "Les plus grandes aires urbaines de France\nParis : environ 13 millions d’habitants\nLyon : environ 2 millions\nMarseille : environ 2 millions"
    - question : Quelle aire urbaine est de loin la plus peuplée ?
@@ -203,7 +203,7 @@ Pour tous les items :
 6. énoncé : La Guadeloupe, la Martinique, la Guyane, La Réunion et Mayotte sont des territoires … .
    - choix : ultramarins · métropolitains · étrangers
    - réponse : ultramarins
-   - indice : Regarde la dernière ligne du rappel.
+   - indice : Cherche « outre-mer » dans le rappel.
    - explication : Ces territoires sont en outre-mer : ils sont ultramarins. Ils sont français, pas étrangers ; la France métropolitaine, c’est la France d’Europe.
 7. énoncé : La Guyane se trouve en … du Sud.
    - choix : Afrique · Amérique · Asie
@@ -241,10 +241,10 @@ Pour tous les items :
    - réponse : un trajet plus court
    - indice : Compare « Avant » et « Après ».
    - explication : Après, le trajet est plus court : la ligne rapproche Bordeaux de Paris. C’est un aménagement de transport.
-3. énoncé : "Les personnes au chômage, en 2023\nEn France métropolitaine : environ 7 actifs sur 100\nÀ La Réunion : environ 18 actifs sur 100"
+3. énoncé : "Le chômage, en 2023\nEn France métropolitaine : environ 7 sur 100\nÀ La Réunion : environ 18 sur 100"
    - question : Où le chômage est-il le plus fort ?
-   - lu : Les personnes au chômage, en deux mille vingt-trois. En France métropolitaine : environ sept actifs sur cent. À La Réunion : environ dix-huit actifs sur cent.
-   - choix : en France métropolitaine · à La Réunion · autant partout
+   - lu : Le chômage, en deux mille vingt-trois. En France métropolitaine : environ sept sur cent. À La Réunion : environ dix-huit sur cent.
+   - choix : en France métropolitaine · à La Réunion · autant dans les deux
    - réponse : à La Réunion
    - indice : Cherche le plus grand nombre.
    - explication : 18 est plus grand que 7 : le chômage est plus fort à La Réunion. Les territoires ultramarins ont plus de chômage que la France métropolitaine : c’est une inégalité.
@@ -253,21 +253,21 @@ Pour tous les items :
    - lu : Le centre spatial de Kourou, en Guyane. Les fusées européennes partent d’ici. Près de l’équateur, un lancement est plus facile.
    - choix : elle est en Europe · elle a peu de forêt · elle est près de l’équateur
    - réponse : elle est près de l’équateur
-   - indice : Relis la dernière ligne.
+   - indice : Relis la ligne qui commence par « Près de ».
    - explication : La Guyane est près de l’équateur : les fusées partent plus facilement. C’est un atout de ce territoire ultramarin, en Amérique du Sud.
 5. énoncé : "La France et ses mers\nLa France a le deuxième espace maritime du monde.\nPresque tout est autour des territoires d’outre-mer."
    - question : D’où vient la plus grande partie de cet espace maritime ?
    - lu : La France et ses mers. La France a le deuxième espace maritime du monde. Presque tout est autour des territoires d’outre-mer.
    - choix : des côtes de Bretagne · des territoires d’outre-mer · de la Méditerranée
    - réponse : des territoires d’outre-mer
-   - indice : Relis la dernière ligne.
+   - indice : Relis la ligne qui commence par « Presque tout ».
    - explication : Les îles d’outre-mer, dans tous les océans, donnent à la France un immense espace maritime, le deuxième du monde.
 6. énoncé : "Panneau d’un chantier\nNouvelle route du village\nPayée par la région, le département et l’Union européenne"
    - question : Qui paie cette route ?
    - lu : Panneau d’un chantier. Nouvelle route du village. Payée par la région, le département et l’Union européenne.
    - choix : la commune seule · l’ONU · la région, le département et l’Union européenne
    - réponse : la région, le département et l’Union européenne
-   - indice : Relis la dernière ligne.
+   - indice : Relis la ligne qui commence par « Payée par ».
    - explication : Plusieurs acteurs paient ensemble : la région, le département et l’Union européenne. Aménager se fait souvent à plusieurs.
 7. énoncé : "Deux quartiers d’une même métropole\nAu centre : des commerces, des musées, un tram\nEn périphérie : peu de commerces, un bus par heure"
    - question : Que montre ce document ?
@@ -318,7 +318,7 @@ Pour tous les items :
 2. énoncé : La monnaie commune de nombreux pays de l’Union est … .
    - choix : le franc · le dollar · l’euro
    - réponse : l’euro
-   - indice : Regarde la troisième ligne du rappel.
+   - indice : Cherche « monnaie commune » dans le rappel.
    - explication : L’euro est la monnaie commune de nombreux pays de l’Union, dont la France. Le franc était l’ancienne monnaie française ; le dollar est celle des États-Unis.
 3. énoncé : Le Parlement européen siège à … , en France.
    - choix : Strasbourg · Bruxelles · Paris
@@ -333,7 +333,7 @@ Pour tous les items :
 5. énoncé : Dans l’espace … , on circule librement d’un pays à l’autre.
    - choix : Erasmus · Schengen · euro
    - réponse : Schengen
-   - indice : Regarde la quatrième ligne du rappel.
+   - indice : Cherche « librement » dans le rappel.
    - explication : L’espace Schengen permet de passer d’un pays à l’autre sans contrôle à chaque frontière. Erasmus est un programme pour étudier à l’étranger.
 6. énoncé : Le programme … permet à des étudiants d’étudier dans un autre pays de l’Union.
    - choix : Erasmus · Schengen · Airbus
@@ -388,14 +388,14 @@ Pour tous les items :
    - lu : La France, en deux mille vingt-quatre. Le pays le plus visité du monde. Environ cent millions de touristes étrangers.
    - choix : la France attire le monde entier · peu de touristes viennent en France · la France est le pays le plus peuplé
    - réponse : la France attire le monde entier
-   - indice : Relis la deuxième ligne.
+   - indice : Relis la ligne qui commence par « Le pays ».
    - explication : Avec environ 100 millions de touristes étrangers, la France est le pays le plus visité du monde : elle attire le monde entier.
 5. énoncé : "La langue française dans le monde\nEnviron 320 millions de personnes parlent français.\nOn le parle sur les cinq continents."
    - question : Où parle-t-on français ?
    - lu : La langue française dans le monde. Environ trois cent vingt millions de personnes parlent français. On le parle sur les cinq continents.
    - choix : seulement en France · seulement en Europe · sur les cinq continents
    - réponse : sur les cinq continents
-   - indice : Relis la dernière ligne.
+   - indice : Relis la ligne qui commence par « On le parle ».
    - explication : Le français se parle sur les cinq continents, en Afrique surtout : c’est la francophonie.
 6. énoncé : "Le Conseil de sécurité de l’ONU\n5 membres permanents\nLes États-Unis, la Chine, la Russie, le Royaume-Uni et la France"
    - question : Que montre ce document sur la France ?
@@ -409,14 +409,14 @@ Pour tous les items :
    - lu : Le tunnel sous la Manche. Il relie la France et le Royaume-Uni. Des trains de voyageurs et de camions le traversent.
    - choix : à séparer deux pays · à relier deux pays · à produire de l’électricité
    - réponse : à relier deux pays
-   - indice : Relis la deuxième ligne.
+   - indice : Relis la ligne qui contient « relie ».
    - explication : Le tunnel relie la France et le Royaume-Uni : voyageurs et marchandises le traversent. Le Royaume-Uni a quitté l’Union en 2020, mais les flux continuent.
 8. énoncé : "L’euro\nLes billets sont les mêmes dans tous les pays de l’euro.\nUn Français paie en euros en Espagne ou en Italie."
    - question : Qu’apporte l’euro aux voyageurs ?
    - lu : L’euro. Les billets sont les mêmes dans tous les pays de l’euro. Un Français paie en euros en Espagne ou en Italie.
    - choix : pas besoin de changer de monnaie · des billets différents dans chaque pays · le droit de vote
    - réponse : pas besoin de changer de monnaie
-   - indice : Relis la dernière ligne.
+   - indice : Relis la ligne qui commence par « Un Français ».
    - explication : Avec l’euro, un Français paie en Espagne ou en Italie avec la même monnaie : plus besoin de changer d’argent.
 
 ## Les plans

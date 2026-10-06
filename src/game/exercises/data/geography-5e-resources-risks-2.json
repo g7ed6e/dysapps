@@ -42,7 +42,7 @@
         "par manque de place"
       ],
       "answer": "à cause du risque d’inondation",
-      "hint": "Lis la deuxième ligne.",
+      "hint": "Lis la ligne qui commence par « En bleu ».",
       "explanation": "Ne pas construire là où l’eau peut monter, c’est de la prévention : il y aura moins d’enjeux menacés.",
       "aid": {
         "kind": "rule-card",
@@ -68,7 +68,7 @@
         "il est bas et la mer monte"
       ],
       "answer": "il est bas et la mer monte",
-      "hint": "Relis la deuxième ligne et la dernière.",
+      "hint": "Relis la ligne « Un pays bas » et la ligne « Le niveau de la mer ».",
       "explanation": "Un pays bas, la mer qui monte : c’est l’aléa. Des millions d’habitants : ce sont les enjeux. Le risque est grand.",
       "aid": {
         "kind": "rule-card",
@@ -94,7 +94,7 @@
         "les touristes"
       ],
       "answer": "les personnes âgées",
-      "hint": "Relis la dernière ligne.",
+      "hint": "Relis la ligne qui commence par « Beaucoup ».",
       "explanation": "Pendant la canicule de 2003, les personnes âgées sont les plus touchées. Depuis, on veille sur elles dès les premières chaleurs.",
       "aid": {
         "kind": "rule-card",
@@ -146,7 +146,7 @@
         "en plantant des arbres"
       ],
       "answer": "avec des digues et des barrages",
-      "hint": "Relis la dernière ligne.",
+      "hint": "Relis la ligne qui contient « protègent ».",
       "explanation": "Les digues et les barrages retiennent la mer : les Pays-Bas s’adaptent à une contrainte, et ils les renforcent car la mer monte.",
       "aid": {
         "kind": "rule-card",

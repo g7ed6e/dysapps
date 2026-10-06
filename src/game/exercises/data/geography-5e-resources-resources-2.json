@@ -42,7 +42,7 @@
         "il est interdit"
       ],
       "answer": "on l’utilise plus vite qu’il ne se forme",
-      "hint": "Compare la deuxième ligne et la dernière.",
+      "hint": "Compare la ligne « Il s’est formé » et la ligne « On le pompe ».",
       "explanation": "Le pétrole se forme très lentement, et on le pompe bien plus vite : il finira par manquer. C’est une ressource non renouvelable.",
       "aid": {
         "kind": "rule-card",
@@ -120,7 +120,7 @@
         "en Asie et en Afrique"
       ],
       "answer": "en Asie et en Afrique",
-      "hint": "Relis la dernière ligne.",
+      "hint": "Relis la ligne qui commence par « La plupart ».",
       "explanation": "La plupart des personnes qui ont faim vivent en Asie et en Afrique, souvent dans des pays pauvres ou en guerre.",
       "aid": {
         "kind": "rule-card",
@@ -193,7 +193,7 @@
       "question": "Lequel demande le plus d’eau ?",
       "spoken": "L’eau qu’il faut pour produire un kilo. De blé : moins de deux mille litres. De bœuf : plus de quinze mille litres.",
       "choices": [
-        "autant les deux",
+        "autant dans les deux",
         "le blé",
         "le bœuf"
       ],

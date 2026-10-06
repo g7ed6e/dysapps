@@ -16,7 +16,7 @@
         "à Jérusalem"
       ],
       "answer": "à Constantinople",
-      "hint": "Lis la deuxième ligne.",
+      "hint": "Lis la ligne qui commence par « Sainte-Sophie ».",
       "explanation": "Sainte-Sophie est à Constantinople, la capitale de l’Empire byzantin. L’empereur Justinien l’a fait construire.",
       "aid": {
         "kind": "rule-card",
@@ -59,17 +59,17 @@
     },
     {
       "key": "history-5e-middle-ages-christendoms-islam-2-2",
-      "prompt": "Trois des cinq piliers de l’islam\nCroire en un Dieu unique\nPrier cinq fois par jour\nJeûner pendant le ramadan",
+      "prompt": "Des piliers de l’islam\nCroire en un Dieu unique\nPrier cinq fois par jour\nJeûner pendant le ramadan",
       "question": "Combien de fois par jour un musulman doit-il prier ?",
-      "spoken": "Trois des cinq piliers de l’islam. Croire en un Dieu unique. Prier cinq fois par jour. Jeûner pendant le ramadan.",
+      "spoken": "Des piliers de l’islam. Croire en un Dieu unique. Prier cinq fois par jour. Jeûner pendant le ramadan.",
       "choices": [
         "une fois",
-        "trois fois",
+        "quand il le veut",
         "cinq fois"
       ],
       "answer": "cinq fois",
       "hint": "Lis la ligne qui commence par « Prier ».",
-      "explanation": "Le document dit de prier cinq fois par jour. Le nombre trois, sur la première ligne, compte les piliers montrés.",
+      "explanation": "Le document dit de prier cinq fois par jour. La prière est l’un des piliers de l’islam.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -94,7 +94,7 @@
         "un territoire qui ne change pas"
       ],
       "answer": "un territoire qui grandit vite",
-      "hint": "Compare la troisième ligne et la dernière.",
+      "hint": "Compare la ligne « En 632 » et la ligne « Vers 750 ».",
       "explanation": "D’abord l’Arabie, puis de l’Espagne jusqu’à l’Indus : les conquêtes agrandissent vite le territoire des musulmans.",
       "aid": {
         "kind": "rule-card",

@@ -94,7 +94,7 @@
         "la France est le pays le plus peuplé"
       ],
       "answer": "la France attire le monde entier",
-      "hint": "Relis la deuxième ligne.",
+      "hint": "Relis la ligne qui commence par « Le pays ».",
       "explanation": "Avec environ 100 millions de touristes étrangers, la France est le pays le plus visité du monde : elle attire le monde entier.",
       "aid": {
         "kind": "rule-card",
@@ -120,7 +120,7 @@
         "sur les cinq continents"
       ],
       "answer": "sur les cinq continents",
-      "hint": "Relis la dernière ligne.",
+      "hint": "Relis la ligne qui commence par « On le parle ».",
       "explanation": "Le français se parle sur les cinq continents, en Afrique surtout : c’est la francophonie.",
       "aid": {
         "kind": "rule-card",
@@ -172,7 +172,7 @@
         "à produire de l’électricité"
       ],
       "answer": "à relier deux pays",
-      "hint": "Relis la deuxième ligne.",
+      "hint": "Relis la ligne qui contient « relie ».",
       "explanation": "Le tunnel relie la France et le Royaume-Uni : voyageurs et marchandises le traversent. Le Royaume-Uni a quitté l’Union en 2020, mais les flux continuent.",
       "aid": {
         "kind": "rule-card",
@@ -198,7 +198,7 @@
         "le droit de vote"
       ],
       "answer": "pas besoin de changer de monnaie",
-      "hint": "Relis la dernière ligne.",
+      "hint": "Relis la ligne qui commence par « Un Français ».",
       "explanation": "Avec l’euro, un Français paie en Espagne ou en Italie avec la même monnaie : plus besoin de changer d’argent.",
       "aid": {
         "kind": "rule-card",

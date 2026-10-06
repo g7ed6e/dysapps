@@ -59,13 +59,13 @@
     },
     {
       "key": "geography-3e-france-planning-2-2",
-      "prompt": "Les personnes au chômage, en 2023\nEn France métropolitaine : environ 7 actifs sur 100\nÀ La Réunion : environ 18 actifs sur 100",
+      "prompt": "Le chômage, en 2023\nEn France métropolitaine : environ 7 sur 100\nÀ La Réunion : environ 18 sur 100",
       "question": "Où le chômage est-il le plus fort ?",
-      "spoken": "Les personnes au chômage, en deux mille vingt-trois. En France métropolitaine : environ sept actifs sur cent. À La Réunion : environ dix-huit actifs sur cent.",
+      "spoken": "Le chômage, en deux mille vingt-trois. En France métropolitaine : environ sept sur cent. À La Réunion : environ dix-huit sur cent.",
       "choices": [
         "en France métropolitaine",
         "à La Réunion",
-        "autant partout"
+        "autant dans les deux"
       ],
       "answer": "à La Réunion",
       "hint": "Cherche le plus grand nombre.",
@@ -94,7 +94,7 @@
         "elle est près de l’équateur"
       ],
       "answer": "elle est près de l’équateur",
-      "hint": "Relis la dernière ligne.",
+      "hint": "Relis la ligne qui commence par « Près de ».",
       "explanation": "La Guyane est près de l’équateur : les fusées partent plus facilement. C’est un atout de ce territoire ultramarin, en Amérique du Sud.",
       "aid": {
         "kind": "rule-card",
@@ -120,7 +120,7 @@
         "de la Méditerranée"
       ],
       "answer": "des territoires d’outre-mer",
-      "hint": "Relis la dernière ligne.",
+      "hint": "Relis la ligne qui commence par « Presque tout ».",
       "explanation": "Les îles d’outre-mer, dans tous les océans, donnent à la France un immense espace maritime, le deuxième du monde.",
       "aid": {
         "kind": "rule-card",
@@ -146,7 +146,7 @@
         "la région, le département et l’Union européenne"
       ],
       "answer": "la région, le département et l’Union européenne",
-      "hint": "Relis la dernière ligne.",
+      "hint": "Relis la ligne qui commence par « Payée par ».",
       "explanation": "Plusieurs acteurs paient ensemble : la région, le département et l’Union européenne. Aménager se fait souvent à plusieurs.",
       "aid": {
         "kind": "rule-card",

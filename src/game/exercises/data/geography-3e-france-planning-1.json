@@ -145,7 +145,7 @@
         "étrangers"
       ],
       "answer": "ultramarins",
-      "hint": "Regarde la dernière ligne du rappel.",
+      "hint": "Cherche « outre-mer » dans le rappel.",
       "explanation": "Ces territoires sont en outre-mer : ils sont ultramarins. Ils sont français, pas étrangers ; la France métropolitaine, c’est la France d’Europe.",
       "aid": {
         "kind": "rule-card",

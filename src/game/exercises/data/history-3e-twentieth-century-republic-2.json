@@ -16,7 +16,7 @@
         "le président est élu"
       ],
       "answer": "les femmes votent",
-      "hint": "Relis la dernière ligne.",
+      "hint": "Relis les mots qui suivent « Pour la première fois ».",
       "explanation": "En avril 1945, les femmes votent pour la première fois en France. Elles ont obtenu ce droit en 1944.",
       "aid": {
         "kind": "rule-card",
@@ -68,7 +68,7 @@
         "par une décision du président"
       ],
       "answer": "par un référendum",
-      "hint": "Relis la dernière ligne.",
+      "hint": "Relis la ligne qui commence par « Les Français ».",
       "explanation": "Les Français approuvent la Constitution par référendum : chaque électeur répond oui ou non. Elle fonde la cinquième République.",
       "aid": {
         "kind": "rule-card",
@@ -90,7 +90,7 @@
       "spoken": "La France, en mille neuf cent quatre-vingt-six. Président : François Mitterrand, de gauche. Premier ministre : Jacques Chirac, de droite.",
       "choices": [
         "l’alternance",
-        "le Front populaire",
+        "la Résistance",
         "la cohabitation"
       ],
       "answer": "la cohabitation",
@@ -121,7 +121,7 @@
       ],
       "answer": "la société de consommation",
       "hint": "Les familles achètent de plus en plus.",
-      "explanation": "On achète de plus en plus d’objets : c’est la société de consommation, pendant les Trente Glorieuses. La société d’ordres, c’est la France d’avant 1789.",
+      "explanation": "On achète de plus en plus d’objets : c’est la société de consommation. La société d’ordres, c’est la France d’avant 1789.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -198,7 +198,7 @@
         "ils partent à la campagne"
       ],
       "answer": "ils font grève",
-      "hint": "Relis la dernière ligne.",
+      "hint": "Relis la ligne qui commence par « Des millions ».",
       "explanation": "En mai 1968, les étudiants manifestent et des millions d’ouvriers font grève : ils arrêtent le travail pour demander des changements.",
       "aid": {
         "kind": "rule-card",

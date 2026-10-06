@@ -101,17 +101,17 @@ Pour tous les items :
   - Le XVIIIe siècle : de l’an 1701 à l’an 1800.
   - Le XIXe siècle : de l’an 1801 à l’an 1900.
 
-1. énoncé : "Le commerce triangulaire\nD’Europe vers l’Afrique : des tissus, des armes\nD’Afrique vers les Amériques : des esclaves\nDes Amériques vers l’Europe : du sucre, du café"
+1. énoncé : "Le commerce triangulaire\nD’Europe vers l’Afrique : des tissus, des armes\nD’Afrique vers les Amériques : des Africains réduits en esclavage\nDes Amériques vers l’Europe : du sucre, du café"
    - question : Que rapportent les navires en Europe ?
-   - lu : Le commerce triangulaire. D’Europe vers l’Afrique : des tissus, des armes. D’Afrique vers les Amériques : des esclaves. Des Amériques vers l’Europe : du sucre, du café.
-   - choix : des tissus et des armes · du sucre et du café · des esclaves
+   - lu : Le commerce triangulaire. D’Europe vers l’Afrique : des tissus, des armes. D’Afrique vers les Amériques : des Africains réduits en esclavage. Des Amériques vers l’Europe : du sucre, du café.
+   - choix : des tissus et des armes · du sucre et du café · des Africains réduits en esclavage
    - réponse : du sucre et du café
-   - indice : Lis la ligne qui finit par « vers l’Europe ».
-   - explication : Les navires rapportent en Europe le sucre et le café des plantations, où travaillent les esclaves. Les tissus et les armes partent d’Europe.
+   - indice : Lis la ligne qui contient « vers l’Europe ».
+   - explication : Les navires rapportent en Europe le sucre et le café des plantations, où travaillent les Africains réduits en esclavage. Les tissus et les armes partent d’Europe.
 2. énoncé : "Voltaire, Candide, 1759\nUn esclave des plantations parle à Candide :\n« C’est à ce prix que vous mangez du sucre en Europe. »"
    - question : Que dénonce Voltaire ?
    - lu : Voltaire, Candide, mille sept cent cinquante-neuf. Un esclave des plantations parle à Candide : « C’est à ce prix que vous mangez du sucre en Europe. »
-   - choix : le prix trop cher du sucre · l’esclavage dans les plantations · la cuisine des Européens
+   - choix : le prix trop cher du sucre · l’esclavage dans les plantations · le commerce des tissus
    - réponse : l’esclavage dans les plantations
    - indice : Qui parle ? De quel « prix » parle-t-il ?
    - explication : Le « prix », c’est la vie de l’esclave, pas de l’argent. Voltaire, philosophe des Lumières, dénonce l’esclavage qui produit le sucre.
@@ -120,7 +120,7 @@ Pour tous les items :
    - lu : Une idée de Montesquieu, mille sept cent quarante-huit. Pour qu’un seul homme n’ait pas tout le pouvoir, on sépare trois pouvoirs : faire les lois, les appliquer, juger.
    - choix : donner tout le pouvoir au roi · supprimer les lois · séparer les pouvoirs
    - réponse : séparer les pouvoirs
-   - indice : Relis la troisième ligne.
+   - indice : Relis la ligne qui commence par « on sépare ».
    - explication : Montesquieu propose de séparer les pouvoirs, pour qu’un roi ne décide pas de tout seul. C’est une idée des Lumières.
 4. énoncé : "L’Encyclopédie\nDirigée par Diderot et d’Alembert\nParue de 1751 à 1772\nElle réunit les savoirs de son temps."
    - question : En quel siècle paraît l’Encyclopédie ?
@@ -141,14 +141,14 @@ Pour tous les items :
    - lu : Déclaration des droits de l’homme et du citoyen. Vingt-six août mille sept cent quatre-vingt-neuf. Article premier : « Les hommes naissent et demeurent libres et égaux en droits. »
    - choix : le pouvoir du roi · l’égalité des droits · la richesse pour tous
    - réponse : l’égalité des droits
-   - indice : Relis la dernière ligne.
+   - indice : Relis les mots entre les guillemets.
    - explication : Libres et égaux en droits : la loi est la même pour tous. Égaux en droits ne veut pas dire aussi riches.
 7. énoncé : "Le Code civil, 1804\nVoulu par Napoléon Bonaparte\nLes mêmes lois pour tous les Français"
    - question : Qu’apporte le Code civil ?
    - lu : Le Code civil, mille huit cent quatre. Voulu par Napoléon Bonaparte. Les mêmes lois pour tous les Français.
    - choix : des lois pour les nobles seulement · la fin de l’Empire · les mêmes lois pour tous
    - réponse : les mêmes lois pour tous
-   - indice : Relis la dernière ligne.
+   - indice : Relis la ligne qui contient « lois ».
    - explication : Le Code civil donne les mêmes lois à tous les Français. Il garde une idée de la Révolution : l’égalité devant la loi.
 8. énoncé : "Trois événements\n1789 : la prise de la Bastille\n1792 : la République\n1804 : l’Empire"
    - question : Quel événement est le plus récent ?
@@ -244,7 +244,7 @@ Pour tous les items :
    - lu : Le travail des enfants, d’après une enquête de mille huit cent quarante. Des enfants de huit ans travaillent à l’usine. Ils y passent plus de douze heures par jour.
    - choix : les enfants travaillent très dur · les enfants vont tous à l’école · les enfants jouent à l’usine
    - réponse : les enfants travaillent très dur
-   - indice : Relis la dernière ligne.
+   - indice : Relis la ligne qui contient « heures ».
    - explication : Des enfants de 8 ans, plus de 12 heures par jour : le travail à l’usine est très dur. Des lois le limitent peu à peu.
 2. énoncé : "Le chemin de fer en France\n1850 : environ 3 000 km de voies\n1900 : plus de 35 000 km de voies"
    - question : Comment change le réseau ?
@@ -258,7 +258,7 @@ Pour tous les items :
    - lu : Description d’un tableau : une ville industrielle. Des cheminées d’usine. Une fumée noire dans le ciel. Des maisons d’ouvriers serrées.
    - choix : la pollution · le manque d’usines · la vie à la campagne
    - réponse : la pollution
-   - indice : Relis la troisième ligne.
+   - indice : Relis la ligne qui commence par « Une fumée ».
    - explication : La fumée noire du charbon salit l’air : c’est la pollution. Les ouvriers vivent serrés, près des usines.
 4. énoncé : "Une grève, d’après un journal ouvrier\nLes ouvriers arrêtent le travail.\nIls demandent un meilleur salaire\net moins d’heures de travail."
    - question : Comment s’appelle cette action ?
@@ -272,7 +272,7 @@ Pour tous les items :
    - lu : D’après un discours de Jules Ferry, mille huit cent quatre-vingt-cinq. Il faut des colonies pour vendre les produits de nos usines. Il dit aussi vouloir « civiliser » d’autres peuples.
    - choix : à fermer des usines · à rendre leur liberté aux peuples · à vendre les produits des usines
    - réponse : à vendre les produits des usines
-   - indice : Relis la deuxième et la troisième ligne.
+   - indice : Relis la phrase qui commence par « Il faut des colonies ».
    - explication : Pour Jules Ferry, les colonies achètent ce que fabriquent les usines françaises. C’est son point de vue de colonisateur.
 6. énoncé : "D’après la réponse de Georges Clemenceau, 1885\nIl répond à Jules Ferry, devant les députés.\nPour lui, aucun peuple n’a le droit\nd’en dominer un autre."
    - question : Quel est le point de vue de Clemenceau ?
@@ -361,7 +361,7 @@ Pour tous les items :
    - lu : Au dix-neuvième siècle, les femmes n’ont pas le droit de (mot manquant).
    - choix : travailler · voter · aller à l’école
    - réponse : voter
-   - indice : Regarde la dernière ligne de la frise.
+   - indice : Cherche « Les femmes » dans la frise.
    - explication : Au XIXe siècle, les femmes travaillent et les filles vont à l’école, mais elles ne votent pas. Elles votent pour la première fois en 1945.
 8. énoncé : Le suffrage universel masculin arrive … la Troisième République.
    - choix : avant · après · en même temps que
@@ -385,7 +385,7 @@ Pour tous les items :
    - lu : Le vote en France, en mille huit cent quarante-huit. Tous les hommes de vingt et un ans et plus votent. Les femmes ne votent pas.
    - choix : oui, tout le monde vote · non, seuls les riches votent · non, les femmes ne votent pas
    - réponse : non, les femmes ne votent pas
-   - indice : Relis la dernière ligne.
+   - indice : Relis la ligne qui commence par « Les femmes ».
    - explication : Tous les hommes votent, mais pas les femmes : le suffrage est universel pour les hommes seulement. On dit « masculin ».
 2. énoncé : "Le nombre d’électeurs en France\n1846 : environ 250 000\n1848 : plus de 9 000 000"
    - question : Pourquoi y a-t-il bien plus d’électeurs en 1848 ?
@@ -399,7 +399,7 @@ Pour tous les items :
    - lu : Victor Hugo, écrivain. En mille huit cent cinquante et un, il s’oppose au coup d’État de Louis-Napoléon Bonaparte. Il vit en exil jusqu’en mille huit cent soixante-dix.
    - choix : il s’oppose à Louis-Napoléon Bonaparte · il soutient Louis-Napoléon Bonaparte · il veut voyager
    - réponse : il s’oppose à Louis-Napoléon Bonaparte
-   - indice : Relis la deuxième ligne.
+   - indice : Relis la ligne qui commence par « En 1851 ».
    - explication : Victor Hugo s’oppose au coup d’État : il doit quitter la France. Louis-Napoléon Bonaparte devient l’empereur Napoléon III. Hugo rentre quand l’Empire tombe, en 1870.
 4. énoncé : "Les symboles de la République\n1879 : la Marseillaise devient l’hymne national.\n1880 : le 14 juillet devient la fête nationale.\nMarianne entre dans les mairies."
    - question : Pourquoi la République choisit-elle ces symboles ?
@@ -413,15 +413,15 @@ Pour tous les items :
    - lu : D’après la loi du vingt-huit mars mille huit cent quatre-vingt-deux. L’école est obligatoire de six à treize ans, pour les garçons et pour les filles.
    - choix : les garçons seulement · les garçons et les filles · les enfants riches seulement
    - réponse : les garçons et les filles
-   - indice : Relis la dernière ligne.
+   - indice : Relis la fin de la phrase, après « de 6 à 13 ans ».
    - explication : La loi oblige tous les enfants, garçons et filles, à aller à l’école. Elle est gratuite depuis 1881 : riches ou pauvres, tous y vont.
-6. énoncé : "D’après la loi du 9 décembre 1905\nLa République garantit la liberté de croire ou de ne pas croire.\nElle ne paie aucun culte."
+6. énoncé : "D’après la loi du 9 décembre 1905\nLa République garantit la liberté de croire ou de ne pas croire.\nElle ne paie aucune religion."
    - question : Que change cette loi pour les religions ?
-   - lu : D’après la loi du neuf décembre mille neuf cent cinq. La République garantit la liberté de croire ou de ne pas croire. Elle ne paie aucun culte.
+   - lu : D’après la loi du neuf décembre mille neuf cent cinq. La République garantit la liberté de croire ou de ne pas croire. Elle ne paie aucune religion.
    - choix : l’État interdit les religions · l’État choisit une religion · l’État ne paie aucune religion
    - réponse : l’État ne paie aucune religion
-   - indice : Relis la dernière ligne.
-   - explication : L’État ne paie plus aucun culte, mais chacun reste libre de croire : la laïcité n’interdit pas les religions.
+   - indice : Relis la ligne qui commence par « Elle ».
+   - explication : L’État ne paie plus aucune religion, mais chacun reste libre de croire : la laïcité n’interdit pas les religions.
 7. énoncé : "Julie-Victoire Daubié\nEn 1861, elle est la première femme\nreçue au baccalauréat en France."
    - question : Que montre ce document ?
    - lu : Julie-Victoire Daubié. En mille huit cent soixante et un, elle est la première femme reçue au baccalauréat en France.
@@ -434,7 +434,7 @@ Pour tous les items :
    - lu : Hubertine Auclert, mille huit cent quatre-vingt-un. Elle crée un journal, La Citoyenne. Elle demande le droit de vote pour les femmes.
    - choix : la fin de l’école obligatoire · le droit de vote des femmes · le retour du roi
    - réponse : le droit de vote des femmes
-   - indice : Relis la dernière ligne.
+   - indice : Relis la ligne qui contient « demande ».
    - explication : Hubertine Auclert se bat pour que les femmes votent. Au XIXe siècle, elles n’ont pas ce droit.
 
 ## Les plans

@@ -16,7 +16,7 @@
         "non, les femmes ne votent pas"
       ],
       "answer": "non, les femmes ne votent pas",
-      "hint": "Relis la dernière ligne.",
+      "hint": "Relis la ligne qui commence par « Les femmes ».",
       "explanation": "Tous les hommes votent, mais pas les femmes : le suffrage est universel pour les hommes seulement. On dit « masculin ».",
       "aid": {
         "kind": "rule-card",
@@ -68,7 +68,7 @@
         "il veut voyager"
       ],
       "answer": "il s’oppose à Louis-Napoléon Bonaparte",
-      "hint": "Relis la deuxième ligne.",
+      "hint": "Relis la ligne qui commence par « En 1851 ».",
       "explanation": "Victor Hugo s’oppose au coup d’État : il doit quitter la France. Louis-Napoléon Bonaparte devient l’empereur Napoléon III. Hugo rentre quand l’Empire tombe, en 1870.",
       "aid": {
         "kind": "rule-card",
@@ -120,7 +120,7 @@
         "les enfants riches seulement"
       ],
       "answer": "les garçons et les filles",
-      "hint": "Relis la dernière ligne.",
+      "hint": "Relis la fin de la phrase, après « de 6 à 13 ans ».",
       "explanation": "La loi oblige tous les enfants, garçons et filles, à aller à l’école. Elle est gratuite depuis 1881 : riches ou pauvres, tous y vont.",
       "aid": {
         "kind": "rule-card",
@@ -137,17 +137,17 @@
     },
     {
       "key": "history-4e-revolutions-french-society-2-5",
-      "prompt": "D’après la loi du 9 décembre 1905\nLa République garantit la liberté de croire ou de ne pas croire.\nElle ne paie aucun culte.",
+      "prompt": "D’après la loi du 9 décembre 1905\nLa République garantit la liberté de croire ou de ne pas croire.\nElle ne paie aucune religion.",
       "question": "Que change cette loi pour les religions ?",
-      "spoken": "D’après la loi du neuf décembre mille neuf cent cinq. La République garantit la liberté de croire ou de ne pas croire. Elle ne paie aucun culte.",
+      "spoken": "D’après la loi du neuf décembre mille neuf cent cinq. La République garantit la liberté de croire ou de ne pas croire. Elle ne paie aucune religion.",
       "choices": [
         "l’État interdit les religions",
         "l’État choisit une religion",
         "l’État ne paie aucune religion"
       ],
       "answer": "l’État ne paie aucune religion",
-      "hint": "Relis la dernière ligne.",
-      "explanation": "L’État ne paie plus aucun culte, mais chacun reste libre de croire : la laïcité n’interdit pas les religions.",
+      "hint": "Relis la ligne qui commence par « Elle ».",
+      "explanation": "L’État ne paie plus aucune religion, mais chacun reste libre de croire : la laïcité n’interdit pas les religions.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -198,7 +198,7 @@
         "le retour du roi"
       ],
       "answer": "le droit de vote des femmes",
-      "hint": "Relis la dernière ligne.",
+      "hint": "Relis la ligne qui contient « demande ».",
       "explanation": "Hubertine Auclert se bat pour que les femmes votent. Au XIXe siècle, elles n’ont pas ce droit.",
       "aid": {
         "kind": "rule-card",

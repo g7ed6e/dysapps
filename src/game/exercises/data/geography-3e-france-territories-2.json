@@ -16,7 +16,7 @@
         "dans une aire urbaine"
       ],
       "answer": "dans une aire urbaine",
-      "hint": "Relis la dernière ligne.",
+      "hint": "Relis la ligne qui commence par « Plus de ».",
       "explanation": "Plus de 8 Français sur 10 vivent dans une aire urbaine : la ville, ses banlieues ou ses communes périurbaines.",
       "aid": {
         "kind": "rule-card",

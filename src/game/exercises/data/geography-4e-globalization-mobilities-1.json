@@ -42,7 +42,7 @@
         "voyager"
       ],
       "answer": "émigrer",
-      "hint": "« É » vient d’un mot latin qui veut dire « hors de ».",
+      "hint": "Lis la ligne « Émigrer » du rappel.",
       "explanation": "Émigrer : quitter son pays. Immigrer : arriver dans un pays. La même personne émigre du Mali et immigre en France.",
       "aid": {
         "kind": "rule-card",
@@ -88,16 +88,16 @@
     },
     {
       "key": "geography-4e-globalization-mobilities-1-3",
-      "prompt": "Dans le monde, environ … de personnes vivent hors de leur pays de naissance.",
-      "spoken": "Dans le monde, environ (mot manquant) de personnes vivent hors de leur pays de naissance.",
+      "prompt": "Une personne qui vient travailler une saison, puis rentre chez elle, est un travailleur … .",
+      "spoken": "Une personne qui vient travailler une saison, puis rentre chez elle, est un travailleur (mot manquant) .",
       "choices": [
-        "3 millions",
-        "300 millions",
-        "3 milliards"
+        "saisonnier",
+        "réfugié",
+        "touriste"
       ],
-      "answer": "300 millions",
-      "hint": "C’est beaucoup, mais bien moins que la moitié des humains.",
-      "explanation": "Environ 300 millions de migrants, sur plus de 8 milliards d’humains : la plupart des gens vivent dans leur pays de naissance.",
+      "answer": "saisonnier",
+      "hint": "Une saison : l’été, ou le temps des vendanges.",
+      "explanation": "Le travailleur saisonnier vient pour une saison, puis repart. Le touriste voyage pour ses loisirs ; le réfugié fuit la guerre.",
       "aid": {
         "kind": "rule-card",
         "props": {

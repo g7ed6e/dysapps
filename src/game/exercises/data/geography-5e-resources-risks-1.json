@@ -150,7 +150,7 @@
         "secours"
       ],
       "answer": "enjeux",
-      "hint": "Lis la deuxième ligne du rappel.",
+      "hint": "Cherche « menacés » dans le rappel.",
       "explanation": "Les enjeux sont ce qui est menacé : les personnes, les maisons, les routes. Sans enjeux, un aléa n’est pas un risque.",
       "aid": {
         "kind": "rule-card",

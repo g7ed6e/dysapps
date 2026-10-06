@@ -42,7 +42,7 @@
         "l’euro"
       ],
       "answer": "l’euro",
-      "hint": "Regarde la troisième ligne du rappel.",
+      "hint": "Cherche « monnaie commune » dans le rappel.",
       "explanation": "L’euro est la monnaie commune de nombreux pays de l’Union, dont la France. Le franc était l’ancienne monnaie française ; le dollar est celle des États-Unis.",
       "aid": {
         "kind": "rule-card",
@@ -123,7 +123,7 @@
         "euro"
       ],
       "answer": "Schengen",
-      "hint": "Regarde la quatrième ligne du rappel.",
+      "hint": "Cherche « librement » dans le rappel.",
       "explanation": "L’espace Schengen permet de passer d’un pays à l’autre sans contrôle à chaque frontière. Erasmus est un programme pour étudier à l’étranger.",
       "aid": {
         "kind": "rule-card",

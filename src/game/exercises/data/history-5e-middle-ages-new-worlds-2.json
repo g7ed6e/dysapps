@@ -68,7 +68,7 @@
         "une famine en Europe"
       ],
       "answer": "des maladies venues d’Europe",
-      "hint": "Lis la troisième ligne.",
+      "hint": "Lis la ligne qui commence par « Des maladies ».",
       "explanation": "La guerre, le travail forcé et surtout les maladies venues d’Europe tuent beaucoup d’Amérindiens. Leur corps ne connaissait pas ces maladies.",
       "aid": {
         "kind": "rule-card",
@@ -94,7 +94,7 @@
         "les livres disparaissent"
       ],
       "answer": "les livres sont plus nombreux",
-      "hint": "Compare la deuxième ligne et la dernière.",
+      "hint": "Compare la ligne « Un moine copie » et la ligne « On fabrique ».",
       "explanation": "Avec l’imprimerie, on fabrique beaucoup de livres, vite. Les idées des humanistes et de Luther se répandent dans toute l’Europe.",
       "aid": {
         "kind": "rule-card",
@@ -120,7 +120,7 @@
         "le grec et le latin"
       ],
       "answer": "le grec et le latin",
-      "hint": "Lis la dernière ligne.",
+      "hint": "Lis la ligne qui commence par « d’abord ».",
       "explanation": "Le grec et le latin sont les langues de l’Antiquité. Apprendre les langues anciennes pour lire les vieux textes : c’est l’idée des humanistes.",
       "aid": {
         "kind": "rule-card",
@@ -146,7 +146,7 @@
         "l’imprimerie"
       ],
       "answer": "l’argent payé à l’Église pour le paradis",
-      "hint": "Lis la deuxième ligne.",
+      "hint": "Lis la ligne qui commence par « On ne gagne ».",
       "explanation": "Luther critique l’Église qui fait payer les fidèles pour gagner le paradis. Pour lui, seule la Bible compte.",
       "aid": {
         "kind": "rule-card",
@@ -172,7 +172,7 @@
         "les musulmans"
       ],
       "answer": "les protestants",
-      "hint": "Lis la dernière ligne.",
+      "hint": "Lis la ligne qui contient « pratiquer ».",
       "explanation": "Par l’édit de Nantes, Henri IV permet aux protestants de pratiquer leur religion. Il veut mettre fin aux guerres de religion.",
       "aid": {
         "kind": "rule-card",

@@ -42,7 +42,7 @@
         "moine"
       ],
       "answer": "vassal",
-      "hint": "Lis la deuxième ligne du rappel.",
+      "hint": "Cherche « reçoit une terre » dans le rappel.",
       "explanation": "Le vassal reçoit un fief et jure d’être fidèle à son seigneur. Un serf est un paysan qui n’est pas libre.",
       "aid": {
         "kind": "rule-card",
@@ -177,7 +177,7 @@
         "empereur"
       ],
       "answer": "roi",
-      "hint": "Lis la dernière ligne du rappel.",
+      "hint": "Cherche 987 dans le rappel.",
       "explanation": "En 987, Hugues Capet devient roi. Ses descendants, les Capétiens, régneront des siècles sur la France.",
       "aid": {
         "kind": "rule-card",

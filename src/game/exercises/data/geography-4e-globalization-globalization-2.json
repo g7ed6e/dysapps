@@ -26,7 +26,7 @@
             "La première ligne dit de quoi parle le document.",
             "Une ligne, une information.",
             "D’où vient ce qui circule ? Où va-t-il ?",
-            "ZEE, zone économique exclusive : la mer qu’un pays exploite, jusqu’à 370 kilomètres de ses côtes."
+            "Zone économique exclusive (ZEE) : la mer qu’un pays exploite."
           ]
         }
       }
@@ -52,7 +52,7 @@
             "La première ligne dit de quoi parle le document.",
             "Une ligne, une information.",
             "D’où vient ce qui circule ? Où va-t-il ?",
-            "ZEE, zone économique exclusive : la mer qu’un pays exploite, jusqu’à 370 kilomètres de ses côtes."
+            "Zone économique exclusive (ZEE) : la mer qu’un pays exploite."
           ]
         }
       }
@@ -78,7 +78,7 @@
             "La première ligne dit de quoi parle le document.",
             "Une ligne, une information.",
             "D’où vient ce qui circule ? Où va-t-il ?",
-            "ZEE, zone économique exclusive : la mer qu’un pays exploite, jusqu’à 370 kilomètres de ses côtes."
+            "Zone économique exclusive (ZEE) : la mer qu’un pays exploite."
           ]
         }
       }
@@ -94,7 +94,7 @@
         "il sert aux touristes"
       ],
       "answer": "il raccourcit le trajet Europe-Asie",
-      "hint": "Relis la dernière ligne.",
+      "hint": "Relis la ligne qui commence par « Les navires ».",
       "explanation": "Sans le canal, il faut faire le tour de l’Afrique. Avec lui, le trajet entre l’Europe et l’Asie est bien plus court.",
       "aid": {
         "kind": "rule-card",
@@ -104,7 +104,7 @@
             "La première ligne dit de quoi parle le document.",
             "Une ligne, une information.",
             "D’où vient ce qui circule ? Où va-t-il ?",
-            "ZEE, zone économique exclusive : la mer qu’un pays exploite, jusqu’à 370 kilomètres de ses côtes."
+            "Zone économique exclusive (ZEE) : la mer qu’un pays exploite."
           ]
         }
       }
@@ -130,24 +130,24 @@
             "La première ligne dit de quoi parle le document.",
             "Une ligne, une information.",
             "D’où vient ce qui circule ? Où va-t-il ?",
-            "ZEE, zone économique exclusive : la mer qu’un pays exploite, jusqu’à 370 kilomètres de ses côtes."
+            "Zone économique exclusive (ZEE) : la mer qu’un pays exploite."
           ]
         }
       }
     },
     {
       "key": "geography-4e-globalization-globalization-2-5",
-      "prompt": "La France et la mer\nGrâce à ses îles d’outre-mer,\nla France a une des plus grandes ZEE du monde.",
-      "question": "Pourquoi la ZEE de la France est-elle si grande ?",
-      "spoken": "La France et la mer. Grâce à ses îles d’outre-mer, la France a une des plus grandes zones économiques exclusives du monde.",
+      "prompt": "La France et la mer\nGrâce à ses îles d’outre-mer,\nla France a une des plus grandes zones de mer du monde.",
+      "question": "Pourquoi la France a-t-elle une si grande zone de mer ?",
+      "spoken": "La France et la mer. Grâce à ses îles d’outre-mer, la France a une des plus grandes zones de mer du monde.",
       "choices": [
         "grâce à ses montagnes",
         "grâce à ses îles d’outre-mer",
         "grâce à ses grandes villes"
       ],
       "answer": "grâce à ses îles d’outre-mer",
-      "hint": "Relis la deuxième ligne.",
-      "explanation": "Autour de chaque île d’outre-mer, la France exploite la mer : sa ZEE couvre tous les océans.",
+      "hint": "Relis la ligne qui commence par « Grâce à ».",
+      "explanation": "Autour de chaque île d’outre-mer, la France exploite la mer : sa zone de mer s’étend sur tous les océans.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -156,7 +156,7 @@
             "La première ligne dit de quoi parle le document.",
             "Une ligne, une information.",
             "D’où vient ce qui circule ? Où va-t-il ?",
-            "ZEE, zone économique exclusive : la mer qu’un pays exploite, jusqu’à 370 kilomètres de ses côtes."
+            "Zone économique exclusive (ZEE) : la mer qu’un pays exploite."
           ]
         }
       }
@@ -172,7 +172,7 @@
         "le manque de ports"
       ],
       "answer": "la piraterie",
-      "hint": "Relis la deuxième ligne.",
+      "hint": "Relis la ligne qui contient « attaquent ».",
       "explanation": "Les pirates attaquent les navires : c’est la piraterie. Des navires de guerre protègent cette route entre l’Europe et l’Asie.",
       "aid": {
         "kind": "rule-card",
@@ -182,7 +182,7 @@
             "La première ligne dit de quoi parle le document.",
             "Une ligne, une information.",
             "D’où vient ce qui circule ? Où va-t-il ?",
-            "ZEE, zone économique exclusive : la mer qu’un pays exploite, jusqu’à 370 kilomètres de ses côtes."
+            "Zone économique exclusive (ZEE) : la mer qu’un pays exploite."
           ]
         }
       }
@@ -198,7 +198,7 @@
         "en Chine"
       ],
       "answer": "en Chine",
-      "hint": "Relis la deuxième ligne.",
+      "hint": "Relis la ligne qui commence par « Plus de la moitié ».",
       "explanation": "Plus de la moitié des grands ports à conteneurs sont en Chine : elle vend ses produits dans le monde entier.",
       "aid": {
         "kind": "rule-card",
@@ -208,7 +208,7 @@
             "La première ligne dit de quoi parle le document.",
             "Une ligne, une information.",
             "D’où vient ce qui circule ? Où va-t-il ?",
-            "ZEE, zone économique exclusive : la mer qu’un pays exploite, jusqu’à 370 kilomètres de ses côtes."
+            "Zone économique exclusive (ZEE) : la mer qu’un pays exploite."
           ]
         }
       }

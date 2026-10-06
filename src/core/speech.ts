@@ -69,11 +69,14 @@ export function ecouterVoix(rappel: () => void): () => void {
  * recollés (« 3822 »), sinon certaines voix lisent « trois, huit cent vingt-deux ». L'affichage ne change pas, et une
  * espace ordinaire entre deux nombres (« 12 et 15 ») reste une séparation.
  */
-export function pourLaVoix(text: string): string {
-  return text
-    .replace(/(\d)[\u00a0\u202f](?=\d{3}(?!\d))/g, '$1')
-    .replace(/\b([IVXL]+)(?:er|e)(?=[\s\u00a0]+siècles?\b)/g, (tout, romain: string) => siecleEnMots(romain) ?? tout)
-    .replace(/\b(\p{Lu}\p{Ll}+)[\s\u00a0]+(Ier|[IVX]+)(?![\p{L}\d])/gu, (tout, nom: string, romain: string) =>
+export function pourLaVoix(text: string, lang: Lang = 'fr'): string {
+  const recolle = text.replace(/(\d)[\u00a0\u202f](?=\d{3}(?!\d))/g, '$1');
+  // Les chiffres romains ne se lisent en mots qu'en français : « If I had » reste de l'anglais.
+  if (lang !== 'fr') return recolle;
+  return recolle
+    .replace(/(?<!\p{L})([IVXL]+)(?:er|e)(?=[\s\u00a0]+(?:siècles?|République)\b)/gu, (tout, romain: string) => siecleEnMots(romain) ?? tout)
+    // Un souverain : « Louis XIV », « François Ier ». Un « I » seul n'en est jamais un (« Can I », « Because I »).
+    .replace(/(?<!\p{L})(\p{Lu}\p{Ll}+)[\s\u00a0]+(Ier|[IVX]{2,}|V|X)(?![\p{L}\d])/gu, (tout, nom: string, romain: string) =>
       PAS_UN_SOUVERAIN.has(nom) ? tout : `${nom} ${souverainEnMots(romain) ?? romain}`,
     )
     // Le point de « J.-C. » qui finit une phrase reste un point, pour la pause.
@@ -85,7 +88,7 @@ const ROMAINS: Readonly<Record<string, number>> = { I: 1, V: 5, X: 10, L: 50 };
 const UNITES = ['', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf', 'dix', 'onze', 'douze', 'treize', 'quatorze', 'quinze', 'seize'];
 
 /**
- * « VIIIe » (devant « siècle ») tel qu'on le dit : « huitième ». Les chiffres romains et l'exposant se lisent sinon lettre
+ * « VIIIe » (devant « siècle » ou « République ») tel qu'on le dit : « huitième ». Les chiffres romains et l'exposant se lisent sinon lettre
  * par lettre (« V, I, I, I, e »). Jusqu'au XXIe siècle ; au-delà, ou pour une suite qui n'est pas un nombre, rien.
  */
 function siecleEnMots(romain: string): string | undefined {
@@ -124,7 +127,7 @@ function cardinalEnMots(n: number): string {
 export function speak(text: string, rate = 0.9, onEnd?: () => void, lang: Lang = 'fr'): void {
   if (!isSpeechAvailable() || !text.trim()) return;
   window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(pourLaVoix(text));
+  const utterance = new SpeechSynthesisUtterance(pourLaVoix(text, lang));
   utterance.lang = LOCALES[lang];
   utterance.rate = rate;
   const voice = pickVoice(window.speechSynthesis.getVoices(), lang);

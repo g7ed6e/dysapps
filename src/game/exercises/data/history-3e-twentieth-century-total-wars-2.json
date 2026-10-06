@@ -42,7 +42,7 @@
         "la guerre est finie"
       ],
       "answer": "les hommes sont au front",
-      "hint": "Relis la dernière ligne.",
+      "hint": "Relis la ligne qui commence par « Les hommes ».",
       "explanation": "Les hommes se battent au front : les femmes les remplacent à l’usine et fabriquent des armes. Les civils servent la guerre : c’est une guerre totale.",
       "aid": {
         "kind": "rule-card",
@@ -63,8 +63,8 @@
       "question": "En quelle année commence ce génocide ?",
       "spoken": "Ce que disent les historiens. En mille neuf cent quinze, dans l’Empire ottoman, le gouvernement fait tuer plus d’un million d’Arméniens. C’est un génocide.",
       "choices": [
-        "1918",
         "1915",
+        "1918",
         "1939"
       ],
       "answer": "1915",
@@ -198,7 +198,7 @@
         "la défaite de la France"
       ],
       "answer": "le débarquement",
-      "hint": "Relis le verbe de la deuxième ligne.",
+      "hint": "Relis le verbe de la ligne qui commence par « Des soldats ».",
       "explanation": "Le 6 juin 1944, les Alliés débarquent en Normandie : c’est le débarquement. Paris est libéré en août 1944, et l’Allemagne capitule le 8 mai 1945.",
       "aid": {
         "kind": "rule-card",

@@ -71,7 +71,7 @@ Pour tous les items :
 6. énoncé : Quand presque tous les habitants peuvent se nourrir, se soigner et aller à l’école, le pays est … .
    - choix : développé · en développement · pauvre
    - réponse : développé
-   - indice : Lis la dernière ligne du rappel.
+   - indice : Cherche « Développement » dans le rappel.
    - explication : Se nourrir, se soigner, s’instruire : quand presque tous le peuvent, le pays est développé, comme la Norvège ou le Japon.
 7. énoncé : Pour mesurer le développement, on regarde la santé, l’éducation et la … .
    - choix : superficie · richesse · religion
@@ -114,33 +114,33 @@ Pour tous les items :
    - lu : Description d’une photo, dans un village du Niger. Une classe sous un abri de paille. Beaucoup d’élèves, peu de livres.
    - choix : une école très riche · une école qui manque de moyens · une école vide
    - réponse : une école qui manque de moyens
-   - indice : Relis la dernière ligne.
+   - indice : Relis la ligne qui commence par « Beaucoup ».
    - explication : Un abri de paille, beaucoup d’élèves, peu de livres : l’école manque de moyens. S’instruire fait partie du développement.
 4. énoncé : "L’Italie, en 2024\nPrès d’un habitant sur quatre a plus de 65 ans.\nIl y a moins de naissances que de décès."
    - question : Quel défi l’Italie connaît-elle ?
    - lu : L’Italie, en deux mille vingt-quatre. Près d’un habitant sur quatre a plus de soixante-cinq ans. Il y a moins de naissances que de décès.
    - choix : le vieillissement · trop de naissances · une population très jeune
    - réponse : le vieillissement
-   - indice : Relis la deuxième ligne.
+   - indice : Relis la ligne qui commence par « Près d’un habitant ».
    - explication : Beaucoup de personnes âgées, peu de naissances : la population de l’Italie vieillit.
 5. énoncé : "L’Afrique aujourd’hui\nLa moitié des habitants a moins de 20 ans.\nBeaucoup de naissances chaque année"
    - question : Comment est la population de l’Afrique ?
    - lu : L’Afrique aujourd’hui. La moitié des habitants a moins de vingt ans. Beaucoup de naissances chaque année.
    - choix : très âgée · en baisse · très jeune
    - réponse : très jeune
-   - indice : Relis la deuxième ligne.
+   - indice : Relis la ligne qui commence par « La moitié ».
    - explication : La moitié des Africains a moins de 20 ans : la population est très jeune, et elle grandit vite.
 6. énoncé : "Rio de Janeiro, au Brésil\nAu bord de la mer : des immeubles de luxe\nSur les collines : des favelas, des quartiers pauvres"
    - question : Que montre ce document ?
    - lu : Rio de Janeiro, au Brésil. Au bord de la mer : des immeubles de luxe. Sur les collines : des favelas, des quartiers pauvres.
    - choix : une ville où tous sont riches · de grandes inégalités · une ville où tous sont pauvres
    - réponse : de grandes inégalités
-   - indice : Compare la deuxième ligne et la dernière.
+   - indice : Compare la ligne « Au bord de la mer » et la ligne « Sur les collines ».
    - explication : Des immeubles de luxe et des quartiers pauvres dans la même ville : ce sont des inégalités. Le développement est inégal, même dans un pays.
 7. énoncé : "Les adultes qui savent lire\nNorvège : presque tous\nTchad : moins de la moitié"
    - question : Quel pays est le moins développé ?
    - lu : Les adultes qui savent lire. Norvège : presque tous. Tchad : moins de la moitié.
-   - choix : la Norvège · les deux autant · le Tchad
+   - choix : la Norvège · autant dans les deux · le Tchad
    - réponse : le Tchad
    - indice : Savoir lire fait partie du développement.
    - explication : Au Tchad, moins d’un adulte sur deux sait lire : le pays est moins développé que la Norvège.
@@ -181,7 +181,7 @@ Pour tous les items :
 1. énoncé : Le pétrole, le gaz et le charbon sont des énergies … .
    - choix : fossiles · renouvelables · solaires
    - réponse : fossiles
-   - indice : Lis la quatrième ligne du rappel.
+   - indice : Cherche « le pétrole, le gaz » dans le rappel.
    - explication : Le pétrole, le gaz et le charbon sont des énergies fossiles : elles se sont formées sous la terre, en des millions d’années.
 2. énoncé : Le vent et le soleil sont des énergies … .
    - choix : fossiles · nucléaires · renouvelables
@@ -191,7 +191,7 @@ Pour tous les items :
 3. énoncé : Le pétrole finira par manquer : c’est une ressource … .
    - choix : renouvelable · non renouvelable · inépuisable
    - réponse : non renouvelable
-   - indice : Lis la troisième ligne du rappel.
+   - indice : Cherche « s’épuise » dans le rappel.
    - explication : Le pétrole met des millions d’années à se former : on l’use bien plus vite. C’est une ressource non renouvelable.
 4. énoncé : Une eau que l’on peut boire sans danger est une eau … .
    - choix : salée · potable · usée
@@ -201,7 +201,7 @@ Pour tous les items :
 5. énoncé : Apporter de l’eau aux champs par des canaux, c’est l’… .
    - choix : inondation · évaporation · irrigation
    - réponse : irrigation
-   - indice : Lis la dernière ligne du rappel.
+   - indice : Cherche « apporter de l’eau » dans le rappel.
    - explication : L’irrigation apporte l’eau aux cultures. Une inondation, c’est de l’eau qui déborde là où on n’en veut pas.
 6. énoncé : Sur la Terre, presque toute l’eau est … .
    - choix : douce · salée · potable
@@ -242,7 +242,7 @@ Pour tous les items :
    - lu : Le pétrole. Il s’est formé sous la terre, en des millions d’années. On le pompe bien plus vite.
    - choix : on l’utilise plus vite qu’il ne se forme · il s’évapore · il est interdit
    - réponse : on l’utilise plus vite qu’il ne se forme
-   - indice : Compare la deuxième ligne et la dernière.
+   - indice : Compare la ligne « Il s’est formé » et la ligne « On le pompe ».
    - explication : Le pétrole se forme très lentement, et on le pompe bien plus vite : il finira par manquer. C’est une ressource non renouvelable.
 3. énoncé : "Description d’une photo, en Égypte\nLe Nil au milieu du désert\nDes champs verts le long du fleuve\nDes canaux qui partent du fleuve"
    - question : Avec quelle eau arrose-t-on ces champs ?
@@ -263,7 +263,7 @@ Pour tous les items :
    - lu : La faim dans le monde, en deux mille vingt-quatre. Environ sept cents millions de personnes ont faim. La plupart vivent en Asie et en Afrique.
    - choix : en Europe · en Amérique du Nord · en Asie et en Afrique
    - réponse : en Asie et en Afrique
-   - indice : Relis la dernière ligne.
+   - indice : Relis la ligne qui commence par « La plupart ».
    - explication : La plupart des personnes qui ont faim vivent en Asie et en Afrique, souvent dans des pays pauvres ou en guerre.
 6. énoncé : "Description d’une photo, en mer du Nord\nDes dizaines d’éoliennes dans la mer\nElles tournent avec le vent."
    - question : Quelle énergie produit-on ici ?
@@ -282,7 +282,7 @@ Pour tous les items :
 8. énoncé : "L’eau qu’il faut pour produire 1 kilo\nDe blé : moins de 2 000 litres\nDe bœuf : plus de 15 000 litres"
    - question : Lequel demande le plus d’eau ?
    - lu : L’eau qu’il faut pour produire un kilo. De blé : moins de deux mille litres. De bœuf : plus de quinze mille litres.
-   - choix : autant les deux · le blé · le bœuf
+   - choix : autant dans les deux · le blé · le bœuf
    - réponse : le bœuf
    - indice : Cherche le plus grand nombre.
    - explication : Plus de 15 000 litres pour le bœuf, moins de 2 000 pour le blé : la viande demande bien plus d’eau. Il faut d’abord nourrir l’animal.
@@ -341,7 +341,7 @@ Pour tous les items :
 6. énoncé : Les personnes et les maisons menacées par un aléa sont les … .
    - choix : aléas · enjeux · secours
    - réponse : enjeux
-   - indice : Lis la deuxième ligne du rappel.
+   - indice : Cherche « menacés » dans le rappel.
    - explication : Les enjeux sont ce qui est menacé : les personnes, les maisons, les routes. Sans enjeux, un aléa n’est pas un risque.
 7. énoncé : La mer monte : les îles très … sont menacées.
    - choix : hautes · froides · basses
@@ -377,21 +377,21 @@ Pour tous les items :
    - lu : Description de la carte des risques d’une ville. En bleu : les zones qui peuvent être inondées. Dans ces zones, on ne construit plus de maisons.
    - choix : à cause du risque d’inondation · à cause du bruit · par manque de place
    - réponse : à cause du risque d’inondation
-   - indice : Lis la deuxième ligne.
+   - indice : Lis la ligne qui commence par « En bleu ».
    - explication : Ne pas construire là où l’eau peut monter, c’est de la prévention : il y aura moins d’enjeux menacés.
 3. énoncé : "Le Bangladesh\nUn pays bas, dans le delta de grands fleuves\nUn pays très peuplé\nLe niveau de la mer monte."
    - question : Pourquoi le Bangladesh est-il menacé ?
    - lu : Le Bangladesh. Un pays bas, dans le delta de grands fleuves. Un pays très peuplé. Le niveau de la mer monte.
    - choix : il est en haute montagne · il a peu d’habitants · il est bas et la mer monte
    - réponse : il est bas et la mer monte
-   - indice : Relis la deuxième ligne et la dernière.
+   - indice : Relis la ligne « Un pays bas » et la ligne « Le niveau de la mer ».
    - explication : Un pays bas, la mer qui monte : c’est l’aléa. Des millions d’habitants : ce sont les enjeux. Le risque est grand.
 4. énoncé : "En France, en août 2003\nUne très forte canicule\nBeaucoup de personnes âgées meurent de la chaleur."
    - question : Qui est le plus touché ?
    - lu : En France, en août deux mille trois. Une très forte canicule. Beaucoup de personnes âgées meurent de la chaleur.
    - choix : les enfants · les personnes âgées · les touristes
    - réponse : les personnes âgées
-   - indice : Relis la dernière ligne.
+   - indice : Relis la ligne qui commence par « Beaucoup ».
    - explication : Pendant la canicule de 2003, les personnes âgées sont les plus touchées. Depuis, on veille sur elles dès les premières chaleurs.
 5. énoncé : "Un exercice dans une école de Tokyo\nL’alarme sonne : « Séisme ! »\nLes élèves se cachent sous les tables.\nPuis ils sortent dans la cour."
    - question : Que fait cette école ?
@@ -405,7 +405,7 @@ Pour tous les items :
    - lu : Les Pays-Bas. Une partie du pays est plus basse que la mer. Des digues et des barrages le protègent.
    - choix : avec des digues et des barrages · en déplaçant les villes · en plantant des arbres
    - réponse : avec des digues et des barrages
-   - indice : Relis la dernière ligne.
+   - indice : Relis la ligne qui contient « protègent ».
    - explication : Les digues et les barrages retiennent la mer : les Pays-Bas s’adaptent à une contrainte, et ils les renforcent car la mer monte.
 7. énoncé : "La mer de Glace, un glacier des Alpes\nIl perd plusieurs mètres d’épaisseur chaque année.\nLa cause : le réchauffement climatique."
    - question : Pourquoi le glacier fond-il ?

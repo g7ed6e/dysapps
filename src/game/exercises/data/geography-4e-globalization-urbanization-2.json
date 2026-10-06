@@ -42,7 +42,7 @@
         "la fermeture des usines"
       ],
       "answer": "l’exode rural",
-      "hint": "Relis la dernière ligne.",
+      "hint": "Relis la ligne qui commence par « Chaque jour ».",
       "explanation": "Des familles quittent la campagne pour la ville : c’est l’exode rural. Il fait grandir Lagos très vite.",
       "aid": {
         "kind": "rule-card",
@@ -120,7 +120,7 @@
         "la ville manque de place"
       ],
       "answer": "on dépend de la voiture",
-      "hint": "Relis les deux dernières lignes.",
+      "hint": "Relis la ligne « Des autoroutes » et la ligne « Peu de transports ».",
       "explanation": "Une ville très étalée, peu de transports en commun : il faut la voiture pour tout. Cela pollue et crée des embouteillages.",
       "aid": {
         "kind": "rule-card",
@@ -146,7 +146,7 @@
         "tous les habitants"
       ],
       "answer": "les familles modestes",
-      "hint": "Relis la dernière ligne.",
+      "hint": "Relis la ligne qui contient « partent ».",
       "explanation": "Le centre devient trop cher : les familles modestes partent, des familles plus riches arrivent. Les quartiers se séparent.",
       "aid": {
         "kind": "rule-card",
@@ -172,7 +172,7 @@
         "à réduire les embouteillages"
       ],
       "answer": "à réduire les embouteillages",
-      "hint": "Relis la dernière ligne.",
+      "hint": "Relis la ligne qui commence par « Moins de voitures ».",
       "explanation": "Avec le métro, moins de voitures roulent : moins d’embouteillages et moins de pollution. C’est une idée de la ville durable.",
       "aid": {
         "kind": "rule-card",

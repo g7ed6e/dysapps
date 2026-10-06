@@ -16,7 +16,7 @@
         "les enfants jouent à l’usine"
       ],
       "answer": "les enfants travaillent très dur",
-      "hint": "Relis la dernière ligne.",
+      "hint": "Relis la ligne qui contient « heures ».",
       "explanation": "Des enfants de 8 ans, plus de 12 heures par jour : le travail à l’usine est très dur. Des lois le limitent peu à peu.",
       "aid": {
         "kind": "rule-card",
@@ -68,7 +68,7 @@
         "la vie à la campagne"
       ],
       "answer": "la pollution",
-      "hint": "Relis la troisième ligne.",
+      "hint": "Relis la ligne qui commence par « Une fumée ».",
       "explanation": "La fumée noire du charbon salit l’air : c’est la pollution. Les ouvriers vivent serrés, près des usines.",
       "aid": {
         "kind": "rule-card",
@@ -120,7 +120,7 @@
         "à vendre les produits des usines"
       ],
       "answer": "à vendre les produits des usines",
-      "hint": "Relis la deuxième et la troisième ligne.",
+      "hint": "Relis la phrase qui commence par « Il faut des colonies ».",
       "explanation": "Pour Jules Ferry, les colonies achètent ce que fabriquent les usines françaises. C’est son point de vue de colonisateur.",
       "aid": {
         "kind": "rule-card",

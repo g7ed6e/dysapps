@@ -42,7 +42,7 @@
         "au pays d’arrivée"
       ],
       "answer": "aux familles restées au pays",
-      "hint": "Relis la deuxième ligne.",
+      "hint": "Relis la ligne qui contient « aide ».",
       "explanation": "L’argent envoyé aide les familles du pays de départ. Pour certains pays, cet argent compte beaucoup.",
       "aid": {
         "kind": "rule-card",
@@ -94,7 +94,7 @@
         "l’Europe"
       ],
       "answer": "l’Europe",
-      "hint": "Relis la troisième ligne.",
+      "hint": "Relis la ligne qui contient « atteindre ».",
       "explanation": "Les bateaux partent d’Afrique du Nord vers l’Europe. L’Afrique est leur continent de départ, pas d’arrivée.",
       "aid": {
         "kind": "rule-card",
@@ -172,7 +172,7 @@
         "pour ses usines"
       ],
       "answer": "pour ses monuments",
-      "hint": "Relis la deuxième ligne.",
+      "hint": "Relis la ligne qui commence par « La tour Eiffel ».",
       "explanation": "La tour Eiffel, le Louvre, Notre-Dame : les touristes viennent voir les monuments et les musées de Paris.",
       "aid": {
         "kind": "rule-card",
@@ -198,7 +198,7 @@
         "pour fuir le froid"
       ],
       "answer": "pour travailler",
-      "hint": "Relis la dernière ligne.",
+      "hint": "Relis la ligne qui contient « construisent ».",
       "explanation": "Ils viennent travailler sur les chantiers du Qatar. Ce sont des migrants de travail, venus d’Asie.",
       "aid": {
         "kind": "rule-card",

@@ -42,7 +42,7 @@
         "ports"
       ],
       "answer": "flux",
-      "hint": "Regarde la deuxième ligne du rappel.",
+      "hint": "Cherche « ce qui circule » dans le rappel.",
       "explanation": "Un flux, c’est ce qui circule. Les ports sont les lieux où passent les flux de marchandises.",
       "aid": {
         "kind": "rule-card",

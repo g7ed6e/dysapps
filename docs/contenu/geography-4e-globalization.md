@@ -70,12 +70,12 @@ Pour tous les items :
 6. énoncé : Les riches et les pauvres vivent dans des quartiers séparés : c’est la … .
    - choix : densité · ségrégation · mondialisation
    - réponse : ségrégation
-   - indice : Regarde l’avant-dernière ligne du rappel.
+   - indice : Cherche « Ségrégation » dans le rappel.
    - explication : La ségrégation : les habitants sont séparés selon leur richesse. On la voit dans beaucoup de grandes villes.
 7. énoncé : À Mumbai, Dharavi est un des plus grands … d’Asie.
    - choix : ports · quartiers d’affaires · bidonvilles
    - réponse : bidonvilles
-   - indice : Regarde la dernière ligne du rappel.
+   - indice : Cherche « cabanes » dans le rappel.
    - explication : Dharavi est un immense bidonville de Mumbai, en Inde. Ses habitants y travaillent aussi : on y recycle, on y fabrique.
 8. énoncé : En 2050, environ 2 humains sur 3 vivront en ville : la population des villes va … .
    - lu : En deux mille cinquante, environ deux humains sur trois vivront en ville : la population des villes va (mot manquant).
@@ -107,7 +107,7 @@ Pour tous les items :
    - lu : Lagos, au Nigeria. Plus de dix millions d’habitants. Chaque jour, des familles arrivent des campagnes.
    - choix : le tourisme · l’exode rural · la fermeture des usines
    - réponse : l’exode rural
-   - indice : Relis la dernière ligne.
+   - indice : Relis la ligne qui commence par « Chaque jour ».
    - explication : Des familles quittent la campagne pour la ville : c’est l’exode rural. Il fait grandir Lagos très vite.
 3. énoncé : "Description d’une photo de Rio de Janeiro, au Brésil\nAu premier plan : une favela sur la colline\nÀ l’arrière-plan : des immeubles de luxe près de la plage"
    - question : Que montre cette photo ?
@@ -128,21 +128,21 @@ Pour tous les items :
    - lu : Los Angeles, aux États-Unis. Des maisons avec jardin sur des kilomètres. Des autoroutes partout. Peu de transports en commun.
    - choix : on dépend de la voiture · on va partout à pied · la ville manque de place
    - réponse : on dépend de la voiture
-   - indice : Relis les deux dernières lignes.
+   - indice : Relis la ligne « Des autoroutes » et la ligne « Peu de transports ».
    - explication : Une ville très étalée, peu de transports en commun : il faut la voiture pour tout. Cela pollue et crée des embouteillages.
 6. énoncé : "Le centre d’une grande ville\nLes loyers sont de plus en plus chers.\nLes familles modestes partent en banlieue."
    - question : Qui quitte le centre ?
    - lu : Le centre d’une grande ville. Les loyers sont de plus en plus chers. Les familles modestes partent en banlieue.
    - choix : les familles riches · les familles modestes · tous les habitants
    - réponse : les familles modestes
-   - indice : Relis la dernière ligne.
+   - indice : Relis la ligne qui contient « partent ».
    - explication : Le centre devient trop cher : les familles modestes partent, des familles plus riches arrivent. Les quartiers se séparent.
 7. énoncé : "Projet pour une mégapole\nUne nouvelle ligne de métro\nMoins de voitures dans les rues"
    - question : À quoi sert ce projet ?
    - lu : Projet pour une mégapole. Une nouvelle ligne de métro. Moins de voitures dans les rues.
    - choix : à attirer plus de voitures · à construire des autoroutes · à réduire les embouteillages
    - réponse : à réduire les embouteillages
-   - indice : Relis la dernière ligne.
+   - indice : Relis la ligne qui commence par « Moins de voitures ».
    - explication : Avec le métro, moins de voitures roulent : moins d’embouteillages et moins de pollution. C’est une idée de la ville durable.
 8. énoncé : "Où vivent les Français ?\nEnviron 8 sur 10 : dans une ville ou autour\nEnviron 2 sur 10 : à la campagne, loin des villes"
    - question : Où vivent la plupart des Français ?
@@ -186,18 +186,18 @@ Pour tous les items :
 2. énoncé : Quitter son pays pour aller vivre ailleurs, c’est … .
    - choix : émigrer · immigrer · voyager
    - réponse : émigrer
-   - indice : « É » vient d’un mot latin qui veut dire « hors de ».
+   - indice : Lis la ligne « Émigrer » du rappel.
    - explication : Émigrer : quitter son pays. Immigrer : arriver dans un pays. La même personne émigre du Mali et immigre en France.
 3. énoncé : Une personne qui fuit la guerre dans son pays est un … .
    - choix : réfugié · touriste · saisonnier
    - réponse : réfugié
    - indice : Elle cherche un refuge, un endroit sûr.
    - explication : Un réfugié fuit la guerre ou les persécutions : il cherche un refuge dans un autre pays.
-4. énoncé : Dans le monde, environ … de personnes vivent hors de leur pays de naissance.
-   - choix : 3 millions · 300 millions · 3 milliards
-   - réponse : 300 millions
-   - indice : C’est beaucoup, mais bien moins que la moitié des humains.
-   - explication : Environ 300 millions de migrants, sur plus de 8 milliards d’humains : la plupart des gens vivent dans leur pays de naissance.
+4. énoncé : Une personne qui vient travailler une saison, puis rentre chez elle, est un travailleur … .
+   - choix : saisonnier · réfugié · touriste
+   - réponse : saisonnier
+   - indice : Une saison : l’été, ou le temps des vendanges.
+   - explication : Le travailleur saisonnier vient pour une saison, puis repart. Le touriste voyage pour ses loisirs ; le réfugié fuit la guerre.
 5. énoncé : Beaucoup de Mexicains émigrent vers les … .
    - choix : États-Unis · Philippines · Pays-Bas
    - réponse : États-Unis
@@ -243,7 +243,7 @@ Pour tous les items :
    - lu : L’argent envoyé par les migrants. Il aide les familles restées au pays à payer l’école, la santé, la maison.
    - choix : aux familles restées au pays · aux touristes · au pays d’arrivée
    - réponse : aux familles restées au pays
-   - indice : Relis la deuxième ligne.
+   - indice : Relis la ligne qui contient « aide ».
    - explication : L’argent envoyé aide les familles du pays de départ. Pour certains pays, cet argent compte beaucoup.
 3. énoncé : "Pourquoi partir ?\nCertains partent pour travailler.\nD’autres fuient la guerre.\nD’autres rejoignent leur famille."
    - question : Que montre ce document ?
@@ -257,7 +257,7 @@ Pour tous les items :
    - lu : En mer Méditerranée. Des bateaux trop chargés partent d’Afrique du Nord. Ils veulent atteindre l’Europe. La traversée est dangereuse.
    - choix : l’Afrique · l’Asie · l’Europe
    - réponse : l’Europe
-   - indice : Relis la troisième ligne.
+   - indice : Relis la ligne qui contient « atteindre ».
    - explication : Les bateaux partent d’Afrique du Nord vers l’Europe. L’Afrique est leur continent de départ, pas d’arrivée.
 5. énoncé : "Les touristes internationaux dans le monde\n1950 : environ 25 millions\n2024 : environ 1 400 millions"
    - question : Comment change le tourisme international ?
@@ -278,14 +278,14 @@ Pour tous les items :
    - lu : Paris, ville touristique. La tour Eiffel, le Louvre, Notre-Dame. Des visiteurs du monde entier.
    - choix : pour ses plages · pour ses monuments · pour ses usines
    - réponse : pour ses monuments
-   - indice : Relis la deuxième ligne.
+   - indice : Relis la ligne qui commence par « La tour Eiffel ».
    - explication : La tour Eiffel, le Louvre, Notre-Dame : les touristes viennent voir les monuments et les musées de Paris.
 8. énoncé : "Le Qatar, dans le golfe Persique\nDes travailleurs viennent d’Inde et du Népal.\nIls construisent des tours et des stades."
    - question : Pourquoi viennent-ils au Qatar ?
    - lu : Le Qatar, dans le golfe Persique. Des travailleurs viennent d’Inde et du Népal. Ils construisent des tours et des stades.
    - choix : pour les vacances · pour travailler · pour fuir le froid
    - réponse : pour travailler
-   - indice : Relis la dernière ligne.
+   - indice : Relis la ligne qui contient « construisent ».
    - explication : Ils viennent travailler sur les chantiers du Qatar. Ce sont des migrants de travail, venus d’Asie.
 
 ## Mers, ports et mondialisation · `globalization`
@@ -322,7 +322,7 @@ Pour tous les items :
 2. énoncé : Les marchandises et les informations qui circulent entre les pays sont des … .
    - choix : frontières · flux · ports
    - réponse : flux
-   - indice : Regarde la deuxième ligne du rappel.
+   - indice : Cherche « ce qui circule » dans le rappel.
    - explication : Un flux, c’est ce qui circule. Les ports sont les lieux où passent les flux de marchandises.
 3. énoncé : La plupart des marchandises du monde voyagent en … .
    - choix : avion · camion · bateau
@@ -364,7 +364,7 @@ Pour tous les items :
   - La première ligne dit de quoi parle le document.
   - Une ligne, une information.
   - D’où vient ce qui circule ? Où va-t-il ?
-  - ZEE, zone économique exclusive : la mer qu’un pays exploite, jusqu’à 370 kilomètres de ses côtes.
+  - Zone économique exclusive (ZEE) : la mer qu’un pays exploite.
 
 1. énoncé : "Le voyage d’un tee-shirt\nLe coton : cultivé en Inde\nLa couture : au Bangladesh\nLa vente : en France"
    - question : Que montre ce voyage ?
@@ -392,7 +392,7 @@ Pour tous les items :
    - lu : Le canal de Suez, en Égypte. Il relie la Méditerranée et la mer Rouge. Les navires ne font plus le tour de l’Afrique.
    - choix : il raccourcit le trajet Europe-Asie · il apporte l’eau du Nil · il sert aux touristes
    - réponse : il raccourcit le trajet Europe-Asie
-   - indice : Relis la dernière ligne.
+   - indice : Relis la ligne qui commence par « Les navires ».
    - explication : Sans le canal, il faut faire le tour de l’Afrique. Avec lui, le trajet entre l’Europe et l’Asie est bien plus court.
 5. énoncé : "Mars 2021, canal de Suez\nUn porte-conteneurs géant bloque le canal.\nDes centaines de navires attendent."
    - question : Que montre cet événement ?
@@ -401,26 +401,26 @@ Pour tous les items :
    - réponse : le commerce dépend de quelques passages
    - indice : Un seul navire bloqué : combien de navires attendent ?
    - explication : Un seul navire bloqué, et des centaines attendent : le commerce mondial dépend de quelques passages, comme les canaux et les détroits.
-6. énoncé : "La France et la mer\nGrâce à ses îles d’outre-mer,\nla France a une des plus grandes ZEE du monde."
-   - question : Pourquoi la ZEE de la France est-elle si grande ?
-   - lu : La France et la mer. Grâce à ses îles d’outre-mer, la France a une des plus grandes zones économiques exclusives du monde.
+6. énoncé : "La France et la mer\nGrâce à ses îles d’outre-mer,\nla France a une des plus grandes zones de mer du monde."
+   - question : Pourquoi la France a-t-elle une si grande zone de mer ?
+   - lu : La France et la mer. Grâce à ses îles d’outre-mer, la France a une des plus grandes zones de mer du monde.
    - choix : grâce à ses montagnes · grâce à ses îles d’outre-mer · grâce à ses grandes villes
    - réponse : grâce à ses îles d’outre-mer
-   - indice : Relis la deuxième ligne.
-   - explication : Autour de chaque île d’outre-mer, la France exploite la mer : sa ZEE couvre tous les océans.
+   - indice : Relis la ligne qui commence par « Grâce à ».
+   - explication : Autour de chaque île d’outre-mer, la France exploite la mer : sa zone de mer s’étend sur tous les océans.
 7. énoncé : "Au large de la Somalie\nDes pirates attaquent des navires de commerce.\nDes navires de guerre les protègent."
    - question : Quelle menace pèse sur cette route maritime ?
    - lu : Au large de la Somalie. Des pirates attaquent des navires de commerce. Des navires de guerre les protègent.
    - choix : la piraterie · la glace · le manque de ports
    - réponse : la piraterie
-   - indice : Relis la deuxième ligne.
+   - indice : Relis la ligne qui contient « attaquent ».
    - explication : Les pirates attaquent les navires : c’est la piraterie. Des navires de guerre protègent cette route entre l’Europe et l’Asie.
 8. énoncé : "Les dix plus grands ports à conteneurs du monde\nPlus de la moitié sont en Chine.\nAucun n’est en Afrique."
    - question : Dans quel pays sont la plupart de ces ports ?
    - lu : Les dix plus grands ports à conteneurs du monde. Plus de la moitié sont en Chine. Aucun n’est en Afrique.
    - choix : aux États-Unis · en France · en Chine
    - réponse : en Chine
-   - indice : Relis la deuxième ligne.
+   - indice : Relis la ligne qui commence par « Plus de la moitié ».
    - explication : Plus de la moitié des grands ports à conteneurs sont en Chine : elle vend ses produits dans le monde entier.
 
 ## Les plans

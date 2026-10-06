@@ -13,7 +13,7 @@ créature : Mémo
 
 > Écrans existants seulement : le niveau 1 de chaque mission est une question à trou (repères et lexique), le niveau 2 une question sur un document (énoncé = document court, quatre lignes au plus, une information par ligne). Plus tard, une frise à remettre dans l’ordre ferait placer 1914, 1939, 1945, 1958 et 1989 d’un geste ; une carte à toucher ferait situer Verdun, Berlin, la Normandie, l’Algérie et l’Inde.
 
-> Les dates (règles de l’île de 6e, relecture dys du 6 octobre 2026) : une année s’écrit en chiffres, avec ses quatre chiffres, et se dit en lettres dans `lu` (« mille neuf cent quatorze ») ; jamais « 14-18 », « les années 50 » ni « 1914-1918 » (le tiret se lirait « moins ») : on écrit « de 1914 à 1918 ». Une République se dit en lettres (« la cinquième République ») ; « Ve République » ne s’écrit que dans l’aide, suivi de « la cinquième ». Pas de siècle en chiffres romains, pas de sigle qui se lit mal : « l’Union soviétique », jamais « URSS ». Chaque frise dit « En haut, le plus ancien ; en bas, le plus récent. ». Jamais de durée à calculer.
+> Les dates (règles de l’île de 6e, relecture dys du 6 octobre 2026) : une année s’écrit en chiffres, avec ses quatre chiffres, et se dit en lettres dans `lu` (« mille neuf cent quatorze ») ; jamais « 14-18 », « les années 50 » ni « 1914-1918 » (le tiret se lirait « moins ») : on écrit « de 1914 à 1918 ». Une République se dit en lettres (« la cinquième République »), jamais en chiffres romains, même dans l’aide. Pas de siècle en chiffres romains, pas de sigle qui se lit mal : « l’Union soviétique », jamais « URSS ». Chaque frise dit « En haut, le plus ancien ; en bas, le plus récent. ». Jamais de durée à calculer.
 
 > Guerres et génocides : des faits, des dates, des nombres ronds, au niveau d’un manuel de 3e, sans détail violent ni image choquante. La Shoah et le génocide des Arméniens sont nommés et datés ; ils ne sont jamais un choix faux, et un autre crime n’est jamais proposé à leur place.
 
@@ -56,14 +56,16 @@ Pour tous les items :
 3. énoncé : Quand tout le pays, soldats, civils et usines, sert la guerre, c’est une guerre … .
    - choix : civile · froide · totale
    - réponse : totale
-   - indice : Regarde la dernière ligne de la frise.
+   - indice : Cherche « tout le pays » dans la frise.
    - explication : Une guerre totale mobilise tout le pays : les soldats au front, les civils dans les usines. Une guerre civile oppose les habitants d’un même pays.
 4. énoncé : En 1916, à … , Français et Allemands se battent pendant des mois.
+   - lu : En mille neuf cent seize, à (mot manquant), Français et Allemands se battent pendant des mois.
    - choix : Verdun · Waterloo · Stalingrad
    - réponse : Verdun
    - indice : C’est une ville de l’est de la France.
    - explication : La bataille de Verdun dure presque toute l’année 1916. Waterloo est une bataille de Napoléon ; Stalingrad, une bataille de la Seconde Guerre mondiale.
 5. énoncé : Le 11 novembre 1918, un … arrête les combats.
+   - lu : Le onze novembre mille neuf cent dix-huit, un (mot manquant) arrête les combats.
    - choix : traité · armistice · débarquement
    - réponse : armistice
    - indice : Un accord pour arrêter de se battre.
@@ -107,12 +109,12 @@ Pour tous les items :
    - lu : Description d’une photo, mille neuf cent dix-sept. Des femmes fabriquent des obus dans une usine. Les hommes sont au front.
    - choix : les hommes sont au front · les usines sont fermées · la guerre est finie
    - réponse : les hommes sont au front
-   - indice : Relis la dernière ligne.
+   - indice : Relis la ligne qui commence par « Les hommes ».
    - explication : Les hommes se battent au front : les femmes les remplacent à l’usine et fabriquent des armes. Les civils servent la guerre : c’est une guerre totale.
 3. énoncé : "Ce que disent les historiens\nEn 1915, dans l’Empire ottoman,\nle gouvernement fait tuer plus d’un million d’Arméniens.\nC’est un génocide."
    - question : En quelle année commence ce génocide ?
    - lu : Ce que disent les historiens. En mille neuf cent quinze, dans l’Empire ottoman, le gouvernement fait tuer plus d’un million d’Arméniens. C’est un génocide.
-   - choix : 1918 · 1915 · 1939
+   - choix : 1915 · 1918 · 1939
    - réponse : 1915
    - indice : Lis la ligne qui commence par « En ».
    - explication : Le génocide des Arméniens commence en 1915, pendant la Première Guerre mondiale, dans l’Empire ottoman.
@@ -149,7 +151,7 @@ Pour tous les items :
    - lu : Le six juin mille neuf cent quarante-quatre, en Normandie. Des soldats américains, britanniques et canadiens débarquent. Ils viennent libérer la France.
    - choix : l’armistice · le débarquement · la défaite de la France
    - réponse : le débarquement
-   - indice : Relis le verbe de la deuxième ligne.
+   - indice : Relis le verbe de la ligne qui commence par « Des soldats ».
    - explication : Le 6 juin 1944, les Alliés débarquent en Normandie : c’est le débarquement. Paris est libéré en août 1944, et l’Allemagne capitule le 8 mai 1945.
 
 ## Le monde depuis 1945 · `world-since-1945`
@@ -179,9 +181,10 @@ Pour tous les items :
   - 1989 : le mur de Berlin tombe.
 
 1. énoncé : En 1945, … est créée pour garder la paix dans le monde.
+   - lu : En mille neuf cent quarante-cinq, (mot manquant) est créée pour garder la paix dans le monde.
    - choix : la Société des Nations · l’ONU · l’Union européenne
    - réponse : l’ONU
-   - indice : Regarde la deuxième ligne de la frise.
+   - indice : Cherche 1945 dans la frise.
    - explication : L’ONU, l’Organisation des Nations unies, est créée en 1945. La Société des Nations date de 1919, après la Première Guerre mondiale.
 2. énoncé : Pendant la guerre froide, les États-Unis s’opposent à … .
    - choix : l’Union soviétique · la France · l’Allemagne
@@ -194,9 +197,10 @@ Pour tous les items :
    - indice : Cherche le nom de la période dans la frise.
    - explication : Une guerre froide : les deux camps s’opposent sans se faire la guerre directement, l’un contre l’autre. Elle dure de 1947 à 1991.
 4. énoncé : De 1961 à 1989, un … coupe la ville de Berlin en deux.
+   - lu : De mille neuf cent soixante et un à mille neuf cent quatre-vingt-neuf, un (mot manquant) coupe la ville de Berlin en deux.
    - choix : mur · front · rideau
    - réponse : mur
-   - indice : Regarde la dernière ligne de la frise.
+   - indice : Cherche 1989 dans la frise.
    - explication : Le mur de Berlin sépare l’Est et l’Ouest de la ville de 1961 à 1989. Le « rideau de fer » est une image : il coupe toute l’Europe en deux camps.
 5. énoncé : Quand une colonie devient un pays indépendant, c’est la … .
    - choix : colonisation · décolonisation · collaboration
@@ -204,16 +208,18 @@ Pour tous les items :
    - indice : « Dé » veut dire le contraire.
    - explication : La décolonisation, c’est la fin des colonies : les peuples colonisés deviennent indépendants. La colonisation, c’est le contraire.
 6. énoncé : En 1947, … devient indépendante, après la lutte menée par Gandhi.
+   - lu : En mille neuf cent quarante-sept, (mot manquant) devient indépendante, après la lutte menée par Gandhi.
    - choix : l’Algérie · la Tunisie · l’Inde
    - réponse : l’Inde
    - indice : Gandhi est un Indien.
    - explication : L’Inde devient indépendante en 1947 : le Royaume-Uni la quitte. L’Algérie devient indépendante plus tard, en 1962.
 7. énoncé : L’Algérie devient indépendante en … , après une longue guerre contre la France.
-   - choix : 1962 · 1945 · 1989
+   - choix : 1945 · 1962 · 1989
    - réponse : 1962
    - indice : Cherche l’Algérie dans la frise.
    - explication : La guerre d’Algérie dure de 1954 à 1962. L’Algérie devient indépendante en 1962.
 8. énoncé : En 1957, six pays signent le traité de … : c’est le début de la construction européenne.
+   - lu : En mille neuf cent cinquante-sept, six pays signent le traité de (mot manquant) : c’est le début de la construction européenne.
    - choix : Versailles · Rome · Maastricht
    - réponse : Rome
    - indice : Cherche 1957 dans la frise.
@@ -242,14 +248,14 @@ Pour tous les items :
    - lu : Berlin, le neuf novembre mille neuf cent quatre-vingt-neuf. Le mur s’ouvre. Les Berlinois de l’Est passent à l’Ouest. La foule fait la fête.
    - choix : la chute du mur de Berlin · la construction du mur · le début de la guerre froide
    - réponse : la chute du mur de Berlin
-   - indice : Relis la deuxième ligne.
+   - indice : Relis la ligne qui commence par « Le mur ».
    - explication : Le 9 novembre 1989, le mur s’ouvre : c’est la chute du mur de Berlin. Il avait été construit en 1961.
 3. énoncé : "Octobre 1962, à Cuba\nL’Union soviétique installe des missiles nucléaires.\nLes États-Unis, tout proches, exigent leur départ.\nLes missiles repartent."
    - question : Comment finit cette crise ?
    - lu : Octobre mille neuf cent soixante-deux, à Cuba. L’Union soviétique installe des missiles nucléaires. Les États-Unis, tout proches, exigent leur départ. Les missiles repartent.
    - choix : une guerre nucléaire éclate · les missiles repartent · Cuba devient américaine
    - réponse : les missiles repartent
-   - indice : Relis la dernière ligne.
+   - indice : Relis la ligne qui commence par « Les missiles ».
    - explication : Le monde a eu peur d’une guerre nucléaire, mais les missiles repartent : la crise de Cuba se finit sans guerre.
 4. énoncé : "L’Inde, 15 août 1947\nLe Royaume-Uni quitte l’Inde.\nL’Inde devient un État indépendant."
    - question : Quel pays avait colonisé l’Inde ?
@@ -263,7 +269,7 @@ Pour tous les items :
    - lu : Les accords d’Évian, mars mille neuf cent soixante-deux. La guerre d’Algérie s’arrête. En juillet, l’Algérie devient indépendante.
    - choix : le début de la guerre · l’entrée de l’Algérie dans l’Europe · la fin de la guerre d’Algérie
    - réponse : la fin de la guerre d’Algérie
-   - indice : Relis la deuxième ligne.
+   - indice : Relis la ligne qui commence par « La guerre ».
    - explication : Les accords d’Évian arrêtent la guerre d’Algérie en mars 1962. En juillet, l’Algérie devient indépendante.
 6. énoncé : "La construction européenne\n1957 : 6 pays\n1995 : 15 pays\nAujourd’hui : 27 pays"
    - question : Combien de pays l’Union européenne compte-t-elle aujourd’hui ?
@@ -277,7 +283,7 @@ Pour tous les items :
    - lu : L’euro, deux mille deux. Les premiers billets et les premières pièces en euros. En France, l’euro remplace le franc.
    - choix : le mark · le franc · la livre
    - réponse : le franc
-   - indice : Relis la dernière ligne.
+   - indice : Relis la ligne qui commence par « En France ».
    - explication : En 2002, l’euro remplace le franc en France. Le mark était la monnaie de l’Allemagne.
 8. énoncé : "Deux événements\nLa chute du mur de Berlin : 1989\nLa fin de l’Union soviétique : 1991"
    - question : Lequel vient en premier ?
@@ -309,44 +315,51 @@ Pour tous les items :
   - En haut, le plus ancien ; en bas, le plus récent.
   - 1944 : les femmes obtiennent le droit de vote.
   - 1945 : la Sécurité sociale est créée.
-  - 1958 : la Ve République, la cinquième, avec de Gaulle.
+  - 1958 : la cinquième République, avec de Gaulle.
   - 1962 : les électeurs élisent eux-mêmes le président.
   - 1981 : François Mitterrand est élu ; la peine de mort est abolie.
 
 1. énoncé : En 1944, les femmes obtiennent le droit de … .
+   - lu : En mille neuf cent quarante-quatre, les femmes obtiennent le droit de (mot manquant).
    - choix : travailler · voter · étudier
    - réponse : voter
-   - indice : Regarde la deuxième ligne de la frise.
+   - indice : Cherche 1944 dans la frise.
    - explication : Les femmes pouvaient déjà travailler et étudier. En 1944, elles obtiennent le droit de voter ; elles votent pour la première fois en 1945.
 2. énoncé : En 1945, la France crée la … pour aider à payer les soins des malades.
+   - lu : En mille neuf cent quarante-cinq, la France crée la (mot manquant) pour aider à payer les soins des malades.
    - choix : carte Vitale · Constitution · Sécurité sociale
    - réponse : Sécurité sociale
    - indice : Cherche 1945 dans la frise.
    - explication : La Sécurité sociale, créée en 1945, aide à payer les soins. La carte Vitale vient bien plus tard, dans les années 1990.
 3. énoncé : En 1958, la … République commence.
+   - lu : En mille neuf cent cinquante-huit, la (mot manquant) République commence.
    - choix : troisième · quatrième · cinquième
    - réponse : cinquième
    - indice : Cherche 1958 dans la frise.
    - explication : La cinquième République commence en 1958, avec le général de Gaulle. C’est toujours la nôtre aujourd’hui.
 4. énoncé : La Constitution de 1958 donne beaucoup de pouvoir au … de la République.
+   - lu : La Constitution de mille neuf cent cinquante-huit donne beaucoup de pouvoir au (mot manquant) de la République.
    - choix : président · maire · préfet
    - réponse : président
    - indice : De Gaulle occupe cette place à partir de 1959.
    - explication : La Constitution de 1958 donne un grand pouvoir au président de la République. Le maire dirige une commune, le préfet représente l’État dans un département.
 5. énoncé : Depuis 1962, le président est élu directement par les … .
+   - lu : Depuis mille neuf cent soixante-deux, le président est élu directement par les (mot manquant).
    - choix : députés · électeurs · maires
    - réponse : électeurs
    - indice : Cherche 1962 dans la frise.
    - explication : Depuis 1962, tous les électeurs élisent le président : c’est le suffrage universel direct. En 1958, de Gaulle avait été élu par des élus, pas par tous les électeurs.
 6. énoncé : En 1981, le pouvoir passe de la droite à la gauche avec François Mitterrand : c’est une … .
+   - lu : En mille neuf cent quatre-vingt-un, le pouvoir passe de la droite à la gauche avec François Mitterrand : c’est une (mot manquant).
    - choix : alternance · cohabitation · révolution
    - réponse : alternance
    - indice : Le pouvoir passe d’un camp à l’autre, par le vote.
    - explication : L’alternance : le pouvoir change de camp après une élection. La cohabitation, c’est quand le président et le Premier ministre sont de camps opposés.
 7. énoncé : En 1981, la France abolit … .
+   - lu : En mille neuf cent quatre-vingt-un, la France abolit (mot manquant).
    - choix : la monarchie · la peine de mort · le service militaire
    - réponse : la peine de mort
-   - indice : Regarde la dernière ligne de la frise.
+   - indice : Cherche 1981 dans la frise.
    - explication : En 1981, la loi supprime la peine de mort en France. La monarchie avait disparu bien avant ; le service militaire est suspendu plus tard, en 1997.
 8. énoncé : Les femmes obtiennent le droit de vote … le début de la cinquième République.
    - choix : avant · après · en même temps que
@@ -370,7 +383,7 @@ Pour tous les items :
    - lu : Les élections municipales, avril mille neuf cent quarante-cinq. Pour la première fois en France, les femmes votent.
    - choix : les femmes votent · les jeunes de 18 ans votent · le président est élu
    - réponse : les femmes votent
-   - indice : Relis la dernière ligne.
+   - indice : Relis les mots qui suivent « Pour la première fois ».
    - explication : En avril 1945, les femmes votent pour la première fois en France. Elles ont obtenu ce droit en 1944.
 2. énoncé : "Programme du Conseil national de la Résistance, 1944\nUn plan complet de sécurité sociale\npour tous les citoyens"
    - question : Qui a écrit ce programme ?
@@ -384,12 +397,12 @@ Pour tous les items :
    - lu : Paris, le quatre septembre mille neuf cent cinquante-huit. De Gaulle présente une nouvelle Constitution. Les Français l’approuvent par référendum.
    - choix : par un vote des députés · par un référendum · par une décision du président
    - réponse : par un référendum
-   - indice : Relis la dernière ligne.
+   - indice : Relis la ligne qui commence par « Les Français ».
    - explication : Les Français approuvent la Constitution par référendum : chaque électeur répond oui ou non. Elle fonde la cinquième République.
 4. énoncé : "La France, en 1986\nPrésident : François Mitterrand, de gauche\nPremier ministre : Jacques Chirac, de droite"
    - question : Comment appelle-t-on cette situation ?
    - lu : La France, en mille neuf cent quatre-vingt-six. Président : François Mitterrand, de gauche. Premier ministre : Jacques Chirac, de droite.
-   - choix : l’alternance · le Front populaire · la cohabitation
+   - choix : l’alternance · la Résistance · la cohabitation
    - réponse : la cohabitation
    - indice : Le président et le Premier ministre sont-ils du même camp ?
    - explication : Un président de gauche, un Premier ministre de droite : ils doivent gouverner ensemble, c’est la cohabitation. L’alternance, c’est le changement de camp, comme en 1981.
@@ -399,7 +412,7 @@ Pour tous les items :
    - choix : la société de consommation · la société rurale · la société d’ordres
    - réponse : la société de consommation
    - indice : Les familles achètent de plus en plus.
-   - explication : On achète de plus en plus d’objets : c’est la société de consommation, pendant les Trente Glorieuses. La société d’ordres, c’est la France d’avant 1789.
+   - explication : On achète de plus en plus d’objets : c’est la société de consommation. La société d’ordres, c’est la France d’avant 1789.
 6. énoncé : "Les campagnes françaises, années 1950\nLes jeunes quittent les fermes.\nIls partent travailler en ville."
    - question : Comment appelle-t-on ce départ ?
    - lu : Les campagnes françaises, années mille neuf cent cinquante. Les jeunes quittent les fermes. Ils partent travailler en ville.
@@ -419,7 +432,7 @@ Pour tous les items :
    - lu : Paris, mai mille neuf cent soixante-huit. Des étudiants manifestent. Des millions d’ouvriers font grève.
    - choix : ils votent · ils font grève · ils partent à la campagne
    - réponse : ils font grève
-   - indice : Relis la dernière ligne.
+   - indice : Relis la ligne qui commence par « Des millions ».
    - explication : En mai 1968, les étudiants manifestent et des millions d’ouvriers font grève : ils arrêtent le travail pour demander des changements.
 
 ## Les plans

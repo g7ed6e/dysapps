@@ -150,7 +150,7 @@
         "tertiaire"
       ],
       "answer": "tertiaire",
-      "hint": "Regarde l’avant-dernière ligne du rappel.",
+      "hint": "Cherche « tertiaire » dans le rappel.",
       "explanation": "Les services forment le secteur tertiaire, qui emploie la plupart des Français. Le primaire, c’est l’agriculture ; le secondaire, l’industrie.",
       "aid": {
         "kind": "rule-card",
@@ -204,7 +204,7 @@
         "faible"
       ],
       "answer": "faible",
-      "hint": "Regarde la dernière ligne du rappel.",
+      "hint": "Cherche « peu d’habitants » dans le rappel.",
       "explanation": "Peu d’habitants pour beaucoup d’espace : la densité est faible. Une forte densité, c’est beaucoup d’habitants serrés, comme en ville.",
       "aid": {
         "kind": "rule-card",

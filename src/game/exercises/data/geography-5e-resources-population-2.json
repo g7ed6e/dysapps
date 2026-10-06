@@ -68,7 +68,7 @@
         "une école vide"
       ],
       "answer": "une école qui manque de moyens",
-      "hint": "Relis la dernière ligne.",
+      "hint": "Relis la ligne qui commence par « Beaucoup ».",
       "explanation": "Un abri de paille, beaucoup d’élèves, peu de livres : l’école manque de moyens. S’instruire fait partie du développement.",
       "aid": {
         "kind": "rule-card",
@@ -94,7 +94,7 @@
         "une population très jeune"
       ],
       "answer": "le vieillissement",
-      "hint": "Relis la deuxième ligne.",
+      "hint": "Relis la ligne qui commence par « Près d’un habitant ».",
       "explanation": "Beaucoup de personnes âgées, peu de naissances : la population de l’Italie vieillit.",
       "aid": {
         "kind": "rule-card",
@@ -120,7 +120,7 @@
         "très jeune"
       ],
       "answer": "très jeune",
-      "hint": "Relis la deuxième ligne.",
+      "hint": "Relis la ligne qui commence par « La moitié ».",
       "explanation": "La moitié des Africains a moins de 20 ans : la population est très jeune, et elle grandit vite.",
       "aid": {
         "kind": "rule-card",
@@ -146,7 +146,7 @@
         "une ville où tous sont pauvres"
       ],
       "answer": "de grandes inégalités",
-      "hint": "Compare la deuxième ligne et la dernière.",
+      "hint": "Compare la ligne « Au bord de la mer » et la ligne « Sur les collines ».",
       "explanation": "Des immeubles de luxe et des quartiers pauvres dans la même ville : ce sont des inégalités. Le développement est inégal, même dans un pays.",
       "aid": {
         "kind": "rule-card",
@@ -168,7 +168,7 @@
       "spoken": "Les adultes qui savent lire. Norvège : presque tous. Tchad : moins de la moitié.",
       "choices": [
         "la Norvège",
-        "les deux autant",
+        "autant dans les deux",
         "le Tchad"
       ],
       "answer": "le Tchad",
