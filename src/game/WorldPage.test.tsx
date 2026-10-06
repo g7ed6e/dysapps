@@ -1261,7 +1261,7 @@ describe('les blocs gagnés volent jusqu’au compteur, au retour d’une missio
   });
 });
 
-it('au téléphone en grand texte, « Aménager » propose d’abord la liste (« En liste »), et garde le choix de rester sur la Carte', async () => {
+it('au téléphone en grand texte, « Modifier le plan » propose d’abord la liste (« En liste »), et garde le choix de rester sur la Carte', async () => {
   const user = userEvent.setup();
   const avant = window.matchMedia;
   window.matchMedia = ((q: string) => ({ matches: q.includes('max-width'), media: q, addEventListener: () => {}, removeEventListener: () => {} })) as unknown as typeof window.matchMedia;
@@ -1269,18 +1269,20 @@ it('au téléphone en grand texte, « Aménager » propose d’abord la liste (�
     localStorage.setItem('dysapps:settings', JSON.stringify({ fontSize: 32 }));
     localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true, 'archipel-6e': true }));
     renderAt('/adventure/map');
-    await user.click(screen.getByRole('button', { name: /^Aménager/ }));
-    const offre = screen.getByRole('group', { name: 'Aménager' });
+    await user.click(screen.getByRole('button', { name: /^Modifier le plan/ }));
+    const offre = screen.getByRole('group', { name: 'Modifier le plan' });
     // Un seul bouton nommé, « En liste », mis en avant ; la Carte en icône, son mot dessous (grand texte).
     expect(within(offre).getByRole('button', { name: 'En liste' }).className).toMatch(/primary/);
     expect(within(offre).getByRole('button', { name: 'Rester sur la Carte' })).toHaveTextContent('Carte');
     await user.click(within(offre).getByRole('button', { name: 'En liste' }));
-    const panneau = screen.getByRole('dialog', { name: /Aménager la carte/ });
+    const panneau = screen.getByRole('dialog', { name: /Modifier le plan/ });
     expect(within(panneau).getAllByRole('button', { name: /^Déplacer / }).length).toBeGreaterThan(0);
-    await user.click(within(panneau).getByRole('button', { name: /Terminé/ }));
-    expect(screen.queryByRole('dialog', { name: /Aménager la carte/ })).toBeNull();
+    // La liste a les mêmes boutons qui ferment le mode : « Valider » et « Annuler ».
+    expect(within(panneau).getByRole('button', { name: 'Annuler' })).toBeInTheDocument();
+    await user.click(within(panneau).getByRole('button', { name: 'Valider' }));
+    expect(screen.queryByRole('dialog', { name: /Modifier le plan/ })).toBeNull();
     // Rester sur la Carte : le mode s'ouvre dans le monde.
-    await user.click(screen.getByRole('button', { name: /^Aménager/ }));
+    await user.click(screen.getByRole('button', { name: /^Modifier le plan/ }));
     await user.click(screen.getByRole('button', { name: /Rester sur la Carte/ }));
     expect(document.querySelector('.arrange-bar')).not.toBeNull();
   } finally {

@@ -1,6 +1,7 @@
 // Le mode « Aménager » dans la vue simple (GD-9, point 4) : une ligne par lieu et par Gardien de la région du bonhomme,
 // sa place en signes (piste A : le voisin, la flèche, le nombre, la case ; dite en mots aux lecteurs d'écran) ;
-// « Déplacer » (quatre flèches) le choisit, puis les flèches et « Poser » de la barre du mode le posent. Sous chaque
+// « Déplacer » (quatre flèches) le choisit, puis les flèches et « Poser » de la barre du mode le posent ; « Valider » ou
+// « Annuler » ferment le mode, comme sur la Carte (décision du mainteneur, 6 octobre 2026). Sous chaque
 // lieu, dans un pli, une ligne par borne et par arrivée de ses liaisons, qui se déplacent de même.
 // « Réunir » est proposé sur la ligne d'un lieu qui a un voisin ouvert à la bonne distance (GD-9, point 10). L'ordre de
 // la liste est celui des lieux de la région, jamais celui de la disposition : une carte aménagée ne déplace pas les
@@ -10,7 +11,7 @@ import { frenchTypography } from '../components/math/RichText';
 import { Icon, IconButton } from '../components/Icon';
 import { useSettings } from '../core/SettingsContext';
 import { useAmenagement } from './Arranging';
-import { ArrangeBar, ArrangeButton, ArrangeJoinQuestion, ArrangeSentence, PlaceSignsLine } from './ArrangeBar';
+import { ArrangeBar, ArrangeButton, ArrangeJoinQuestion, ArrangeSentence, MODIFIER_LE_PLAN, PlaceSignsLine } from './ArrangeBar';
 import { getBiome, type BiomeId } from './biomes';
 import { useBlocland } from './BloclandContext';
 import { habillageDuMonde } from './skin';
@@ -63,9 +64,10 @@ function memeElement(p: ArrangeChoice | null, q: ArrangeChoice): boolean {
 }
 
 /**
- * Aménager la région `a` en liste. `enPanneau` : dans le panneau « Aménager la carte » du monde (au téléphone en grand
- * texte) ; le mode s'y ouvre tout de suite, sans titre (le panneau a le sien), et ✓ Terminé appelle `onFin`. Les
- * lieux se suivent sans phrase d'introduction : chaque ligne dit sa place en signes.
+ * Aménager la région `a` en liste. `enPanneau` : dans le panneau « Modifier le plan » du monde (au téléphone en grand
+ * texte) ; le mode s'y ouvre tout de suite, sans titre (le panneau a le sien), et « Valider » ou « Annuler » appellent
+ * `onFin`. Hors du panneau, « Modifier le plan » l'ouvre. Les lieux se suivent sans phrase d'introduction : chaque ligne
+ * dit sa place en signes.
  */
 export function ArrangeList({ a, enPanneau = false, onFin }: { a: ArchipelagoId; enPanneau?: boolean; onFin?: () => void }) {
   const { state, arrange } = useBlocland();
@@ -89,8 +91,8 @@ export function ArrangeList({ a, enPanneau = false, onFin }: { a: ArchipelagoId;
     liaisons: textes.liaisons,
   });
   const { choix } = amenagement;
-  // Dans le panneau : le mode ouvert dès l'arrivée (la liste des ouvrages à reposer d'abord, s'il y en a) ; ✓ Terminé
-  // (le mode qui se ferme après avoir été ouvert) ferme le panneau. Un effet rejoué (mode strict) ne le ferme pas.
+  // Dans le panneau : le mode ouvert dès l'arrivée (la liste des ouvrages à reposer d'abord, s'il y en a) ; « Valider »
+  // ou « Annuler » (le mode qui se ferme après avoir été ouvert) ferment le panneau. Un effet rejoué (mode strict) ne le ferme pas.
   const etaitOuvert = useRef(false);
   useEffect(() => {
     if (!enPanneau) return;
@@ -122,10 +124,10 @@ export function ArrangeList({ a, enPanneau = false, onFin }: { a: ArchipelagoId;
     <section ref={section} className={enPanneau ? 'arrange-list arrange-list-panneau' : 'panel arrange-list'} aria-labelledby={enPanneau ? undefined : `amenager-${a}`}>
       {!enPanneau && (
         <h2 id={`amenager-${a}`} className="section-title">
-          <Icon name="amenager" /> Aménager la carte
+          <Icon name="amenager" /> {MODIFIER_LE_PLAN}
         </h2>
       )}
-      {!enPanneau && <ArrangeButton amenagement={amenagement} />}
+      {!enPanneau && !amenagement.ouvert && <ArrangeButton amenagement={amenagement} />}
       <ArrangeSentence amenagement={amenagement} nom={nomDuLieu} questionAilleurs />
       {amenagement.ouvert && (
         <>
@@ -226,7 +228,7 @@ export function ArrangeList({ a, enPanneau = false, onFin }: { a: ArchipelagoId;
               ];
             })}
           </ul>
-          <ArrangeBar amenagement={amenagement} className="arrange-bar-inline" />
+          <ArrangeBar amenagement={amenagement} className="arrange-bar-inline" croix />
         </>
       )}
     </section>

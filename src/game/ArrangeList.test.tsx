@@ -43,7 +43,7 @@ afterEach(() => {
 describe('Aménager en vue simple', () => {
   it('une ligne par lieu et par Gardien, sa place en signes ; « Déplacer », une flèche, « Poser » ; l’ordre ne bouge pas', () => {
     monter();
-    fireEvent.click(screen.getByRole('button', { name: 'Aménager' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
     const lieux = islandsOf('6e');
     const avant = lignes();
     expect(avant).toHaveLength(lieux.length * 2);
@@ -80,7 +80,7 @@ describe('Aménager en vue simple', () => {
 
   it('le Gardien se déplace autour de son île', () => {
     monter();
-    fireEvent.click(screen.getByRole('button', { name: 'Aménager' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
     const b = islandsOf('6e')[0];
     const li = screen.getByRole('button', { name: `Déplacer le Gardien ${ofPlace(b.name)}` }).closest('li')!;
     const avant = li.querySelector('p .visually-hidden')!.textContent;
@@ -102,7 +102,7 @@ describe('Aménager en vue simple', () => {
   });
   it('les bornes et les arrivées d’un lieu, dans son pli, se déplacent de même', () => {
     monter();
-    fireEvent.click(screen.getByRole('button', { name: 'Aménager' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
     const boutons = screen.getAllByRole('button', { name: /^Déplacer (la borne|l’arrivée)/ });
     expect(boutons.length).toBeGreaterThan(0);
     const borne = screen.getAllByRole('button', { name: /^Déplacer la borne/ })[0];
@@ -122,7 +122,7 @@ describe('Aménager en vue simple', () => {
   it('« Réunir » sur la ligne d’un lieu qui a un voisin ouvert au plus près : la paire est réunie et sauvegardée', () => {
     localStorage.setItem('dysapps:game', JSON.stringify({ world: { links: toutConstruit().world.links } }));
     monter();
-    fireEvent.click(screen.getByRole('button', { name: 'Aménager' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
     const reunir = screen.queryAllByRole('button', { name: /^Réunir / });
     // Sur la carte de départ, la Tour et la Ferme (leur isthme d'avant) sont déjà au plus près.
     expect(reunir.length).toBeGreaterThan(0);

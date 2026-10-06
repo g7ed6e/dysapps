@@ -1,4 +1,4 @@
-// « Remettre comme avant » et ↶ (GD-9) : l'instantané pris à l'entrée dans le mode « Aménager » et la pile des poses.
+// « Annuler » et ↶ (GD-9) : l'instantané pris à l'entrée dans le mode « Aménager » et la pile des poses.
 import { describe, expect, it } from 'vitest';
 import type { BiomeId } from '../biomes';
 import type { World } from '../engine/state';
@@ -14,7 +14,7 @@ function poser(session: ReturnType<typeof startArranging>, w: World, r: ReturnTy
   return { session: recordPose(session, w, r.world), world: r.world };
 }
 
-describe('Remettre comme avant, et ↶', () => {
+describe('Annuler, et ↶', () => {
   it('↶ défait la dernière pose, puis la précédente ; rien à défaire à l’entrée', () => {
     const w0 = toutConstruit().world;
     let s = startArranging(w0);
@@ -32,7 +32,7 @@ describe('Remettre comme avant, et ↶', () => {
     expect(canUndo(u2.session)).toBe(false);
   });
 
-  it('« Remettre comme avant » revient à l’entrée, et ↶ le défait', () => {
+  it('« Annuler » revient à l’entrée, et ↶ le défait', () => {
     const w0 = toutConstruit().world;
     const place = freeSpots(w0, VOLCAN).find((p) => p.x !== startingSpot(VOLCAN).x)!;
     const a = poser(startArranging(w0), w0, moveIsland(w0, VOLCAN, place));

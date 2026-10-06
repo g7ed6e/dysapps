@@ -51,6 +51,20 @@ export interface CadreDuMode {
 }
 
 /**
+ * Où se tient le choix du mode « Aménager » à l'écran, image après image (pixels CSS, dans le repère de la scène de la
+ * page, `[data-scene]`) : son milieu (`x`, `y`), sa demi-largeur et sa demi-hauteur (`rx`, `ry`), et la place libre
+ * (`libre` : sous la ligne du mode, au-dessus de sa barre, sans les boutons du haut). Les flèches posées autour de lui
+ * (ArrangeHandles.tsx) s'y placent.
+ */
+export interface ChoixALEcran {
+  x: number;
+  y: number;
+  rx: number;
+  ry: number;
+  libre: Rectangle;
+}
+
+/**
  * Le geste de la pose en cours (./arrangeGesture.ts) : la zone du monde où il se joue (en cases du monde, x et y), le
  * temps (`demonte` à la place d'avant, `remonte` à la nouvelle), son début (horloge de la page, `performance.now`), sa
  * durée, et les hauteurs du lieu (`bas` sous l'eau, `haut` au-dessus de son plus haut cube).
@@ -303,9 +317,10 @@ export interface WorldViewProps {
    * Le mode « Aménager » (GD-9), sur la Carte : `vue`, le dessin du choix en cours (fantôme, places autour, liaisons
    * retracées et barrées, lieu soulevé ; ./arrangeView.ts), ou rien. Dans le mode, toucher la mer donne une intention
    * `mer` ; avec un choix, glisser le doigt cale le fantôme sous lui (un raccourci) au lieu de faire glisser la vue ; et
-   * si le fantôme sort de l'écran, la vue le suit. La vue simple l'ignore.
+   * si le fantôme sort de l'écran, la vue le suit. `ecran` reçoit, à chaque image où il change, où se tient le choix à
+   * l'écran (rien sans choix, ni pendant le geste) : les flèches s'y posent autour de lui. La vue simple l'ignore.
    */
-  amenager?: { vue: ArrangeView | null; cadre?: CadreDuMode | null } | null;
+  amenager?: { vue: ArrangeView | null; cadre?: CadreDuMode | null; ecran?: (b: ChoixALEcran | null) => void } | null;
   /** Le geste de la pose en cours dans le mode « Aménager » (./arrangeGesture.ts), ou rien. */
   geste?: ArrangeGesture | null;
   /** Change à chaque appui sur « Recentrer » : la vue efface son décalage et revient en douceur à son cadrage. */

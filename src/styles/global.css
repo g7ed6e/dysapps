@@ -3752,8 +3752,10 @@ figure.class-table {
   font-size: max(18px, 1rem);
 }
 /* ===== Le mode « Aménager » (GD-9), sur la Carte : la barre du mode à place fixe, en bas, à la place de la barre du
-   monde ; les boutons gardent leur place, éteints quand ils ne font rien ; 48 px au moins (« Poser » : 56 px). Un
-   seul bouton mis en avant (`primary`) : « Poser » pendant un choix, ✓ Terminé sinon. ===== */
+   monde (↶, « Poser », puis « Annuler » et « Valider », qui ferment le mode ; décision du mainteneur, 6 octobre 2026) ;
+   les boutons gardent leur place, éteints quand ils ne font rien ; 48 px au moins (« Poser », « Annuler » et
+   « Valider » : 56 px). Un seul bouton mis en avant (`primary`) : « Poser » pendant un choix, ✓ Valider sinon. Les
+   flèches se posent autour du choix (`.arrange-handles`) ; en vue simple, la croix reste dans la barre. ===== */
 .arrange-bar {
   position: absolute;
   left: 0.6rem;
@@ -3761,11 +3763,15 @@ figure.class-table {
   bottom: calc(0.6rem + env(safe-area-inset-bottom));
   display: grid;
   grid-template-columns: auto auto;
+  grid-template-areas: 'outils fin';
+  justify-content: center;
+  align-items: center;
+  gap: 8px 16px;
+}
+.arrange-bar.arrange-bar-croix {
   grid-template-areas:
     'croix outils'
     'croix fin';
-  justify-content: center;
-  align-items: center;
   gap: 8px;
 }
 .arrange-bar .button {
@@ -3774,7 +3780,7 @@ figure.class-table {
   padding: 0 12px;
   gap: 6px;
 }
-/* La croix des flèches : le nord en haut, l'ouest à gauche, l'est à droite, le sud en bas. */
+/* La croix des flèches (vue simple) : le nord en haut, l'ouest à gauche, l'est à droite, le sud en bas. */
 .arrange-cross {
   grid-area: croix;
   display: grid;
@@ -3804,11 +3810,12 @@ figure.class-table {
 .arrange-bar-outils {
   grid-area: outils;
 }
-/* La rangée fixe, en bas : « Poser » et ✓ Terminé, jamais dans la partie qui défile. */
+/* La rangée qui ferme le mode : « Annuler » et « Valider », jamais dans la partie qui défile. */
 .arrange-bar-fin {
   grid-area: fin;
 }
-.arrange-bar .arrange-pose {
+.arrange-bar .arrange-pose,
+.arrange-bar .bouton-cta {
   min-height: 56px;
   padding: 0 18px;
 }
@@ -3823,59 +3830,81 @@ figure.class-table {
   box-shadow: none;
   cursor: default;
 }
-/* En grand texte, le mot plafonné à 24 px, comme la barre du monde. */
+/* En grand texte, le mot plafonné à 24 px, comme la barre du monde ; sous l'icône pour « Annuler » et « Valider ». */
 :root[data-texte="grand"] .arrange-bar .button {
   font-size: min(1em, 24px);
   padding: 4px 8px;
 }
-/* Au téléphone : la croix d'icônes à gauche, les quatre outils à droite, sans pli, deux rangées de deux au plus ; puis
-   la rangée fixe « Poser » et ✓ Terminé sur toute la largeur. La barre ne monte jamais plus haut que la moitié de
-   l'écran : s'il le faut, les outils défilent, jamais la rangée fixe. */
+:root[data-texte="grand"] .arrange-bar .bouton-cta {
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 12px;
+  line-height: 1.2;
+}
+/* Au téléphone : ↶ et « Poser » sur une rangée, « Annuler » et « Valider » dessous, sur toute la largeur ; en vue
+   simple, la croix à gauche des outils. La barre ne monte jamais plus haut que la moitié de l'écran. */
 .arrange-bar.arrange-bar-telephone {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    'outils'
+    'fin';
+  gap: 6px;
+  max-height: 50vh;
+}
+.arrange-bar.arrange-bar-telephone.arrange-bar-croix {
   grid-template-columns: auto minmax(0, 1fr);
   grid-template-areas:
     'croix outils'
     'fin fin';
-  gap: 6px;
-  max-height: 50vh;
-  grid-template-rows: minmax(0, 1fr) auto;
 }
-.arrange-bar-telephone .arrange-bar-outils {
-  display: grid;
-  grid-template-columns: repeat(2, auto);
-  justify-content: center;
-  align-content: center;
-  gap: 8px;
-  min-height: 0;
-  max-height: 100%;
-  overflow-y: auto;
-}
-.arrange-bar-telephone .arrange-bar-outils .button {
-  min-width: 56px;
-  min-height: 56px;
-}
-/* En grand texte au téléphone, les mots sous les icônes ne tiennent plus à côté de la croix : les outils passent
-   dessous, sur une rangée s'ils tiennent, sinon deux rangées de deux, jamais dans un pli. */
-:root[data-texte="grand"] .arrange-bar.arrange-bar-telephone {
+:root[data-texte="grand"] .arrange-bar.arrange-bar-telephone.arrange-bar-croix {
   grid-template-columns: minmax(0, 1fr);
   grid-template-areas:
     'croix'
     'outils'
     'fin';
-  grid-template-rows: auto minmax(0, 1fr) auto;
 }
-:root[data-texte="grand"] .arrange-bar-telephone .arrange-bar-outils {
-  grid-template-columns: repeat(auto-fit, minmax(min-content, max-content));
+.arrange-bar-telephone .arrange-bar-outils,
+.arrange-bar-telephone .arrange-bar-fin {
+  flex-wrap: nowrap;
 }
-/* Les deux boutons de la rangée fixe se partagent la largeur ; en très grand texte, s'ils ne tiennent pas côte à côte,
-   ils passent l'un sous l'autre, sans jamais couper un mot. */
+/* « Poser », « Annuler » et « Valider » se partagent la largeur, sans jamais couper un mot. */
+.arrange-bar-telephone .arrange-pose,
 .arrange-bar-telephone .arrange-bar-fin .button {
-  flex: 1 1 auto;
+  flex: 1 1 0;
   justify-content: center;
   white-space: nowrap;
 }
 .arrange-bar-telephone .arrange-cross .button {
   padding: 0;
+}
+/* Les flèches autour du choix (ArrangeHandles.tsx) : des boutons posés sur la scène à la place projetée du choix, dans
+   la place libre ; cachés le temps que la scène dise où il est. Ronds, 48 px au moins, bordés (jamais la couleur
+   seule) ; en grand texte, leur mot dessous. */
+.arrange-handles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.arrange-handles[data-place='non'] {
+  visibility: hidden;
+}
+.arrange-handles-poses .arrange-handle {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: auto;
+  min-width: 48px;
+  min-height: 48px;
+  padding: 0 8px;
+  border-radius: var(--radius-pill);
+  will-change: transform;
+}
+:root[data-texte="grand"] .arrange-handles .arrange-handle {
+  font-size: min(1em, 24px);
+  padding: 4px 8px;
+  border-radius: 12px;
 }
 /* Un bouton d'icône (GD-9, piste A) : l'icône seule, son nom pour les lecteurs d'écran ; en grand texte, son mot
    dessous, plafonné à 24 px, comme la barre du monde. */

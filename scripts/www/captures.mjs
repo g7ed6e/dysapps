@@ -147,13 +147,13 @@ const SHOTS = [
   // Aménager sa région (GD-9) : sur la Carte, le mode ouvert, un lieu choisi et son fantôme calé sur une place libre.
   { name: 'amenager', state: MID, go: '/adventure/map', act: amenager('maths-6e-fractions', { x: 150, y: 100 }) },
   // Réunir deux lieux (GD-9, point 10) : la Tour du lecteur choisie, « Réunir » touché, la question, « Réunir avec la
-  // Ferme des accords », le mode fermé ; la digue finie depuis son panneau, puis regardée de près sur la Carte (l'herbe
+  // Ferme des accords », « Valider » ; la digue finie depuis son panneau, puis regardée de près sur la Carte (l'herbe
   // sur la pierre, la marche).
   { name: 'reunir', state: REUNIR, go: '/adventure/map', act: reunir('french-6e-reading', 'french-6e-grammar-spelling') },
   // Pour les relectures, sur demande : le mode au téléphone, la question de « Réunir », et le geste tenu au milieu du
   // démontage (on ne doit voir aucun creux dans la couche qui reste).
   { name: 'telephone-amenager', state: MID, go: '/adventure/map', size: PHONE, act: amenager('maths-6e-fractions', { x: 150, y: 100 }), surDemande: true },
-  // Au téléphone en grand texte, « Aménager » propose d'abord la liste : la liste ouverte dans son panneau.
+  // Au téléphone en grand texte, « Modifier le plan » propose d'abord la liste : la liste ouverte dans son panneau.
   { name: 'telephone-amenager-liste', state: MID, go: '/adventure/map', size: PHONE, settings: { fontSize: 28 }, act: amenagerEnListe, surDemande: true },
   { name: 'reunir-question', state: REUNIR, go: '/adventure/map', act: reunirQuestion('french-6e-reading'), surDemande: true },
   { name: 'amenager-geste', state: MID, go: '/adventure/map', act: amenagerGeste('maths-6e-fractions', { x: 150, y: 100 }, 300), surDemande: true },
@@ -276,7 +276,7 @@ function amenager(ile, point) {
   return async (page) => {
     // Le bandeau d'un succès gagné par l'état préparé cacherait la scène (et, en grand texte au téléphone, le bouton).
     await fermerLesBandeaux(page);
-    await page.getByRole('button', { name: /^Aménager/ }).click();
+    await page.getByRole('button', { name: /^Modifier le plan/ }).click();
     await page.waitForTimeout(500);
     await fermerLesBandeaux(page);
     // Au téléphone en grand texte, la Carte propose d'abord la liste : on reste sur la Carte.
@@ -289,10 +289,10 @@ function amenager(ile, point) {
     await page.waitForTimeout(2500);
   };
 }
-/** Touche « Aménager », puis « En liste » (au téléphone en grand texte), et choisit la Rivière des fractions. */
+/** Touche « Modifier le plan », puis « En liste » (au téléphone en grand texte), et choisit la Rivière des fractions. */
 async function amenagerEnListe(page) {
   await fermerLesBandeaux(page);
-  await page.getByRole('button', { name: /^Aménager/ }).click();
+  await page.getByRole('button', { name: /^Modifier le plan/ }).click();
   await page.waitForTimeout(500);
   await page.getByRole('button', { name: 'En liste', exact: true }).click();
   await page.waitForTimeout(800);
@@ -328,7 +328,7 @@ function amenagerGeste(ile, point, ms) {
 function amenagerGesteFleche(ile, fleche, ms) {
   return async (page) => {
     await fermerLesBandeaux(page);
-    await page.getByRole('button', { name: /^Aménager/ }).click();
+    await page.getByRole('button', { name: /^Modifier le plan/ }).click();
     await page.waitForTimeout(500);
     await fermerLesBandeaux(page);
     await page.evaluate((ile) => window.__dysappsAmenager?.({ genre: 'ile', id: ile }), ile);
@@ -344,7 +344,7 @@ function amenagerGesteFleche(ile, fleche, ms) {
 function reunirQuestion(ile) {
   return async (page) => {
     await fermerLesBandeaux(page);
-    await page.getByRole('button', { name: /^Aménager/ }).click();
+    await page.getByRole('button', { name: /^Modifier le plan/ }).click();
     await page.waitForTimeout(500);
     await fermerLesBandeaux(page);
     await page.evaluate((ile) => window.__dysappsAmenager?.({ genre: 'ile', id: ile }), ile);
@@ -360,7 +360,7 @@ function reunir(ile, autre) {
     await question(page);
     await page.getByRole('button', { name: /^Réunir avec / }).first().click();
     await page.waitForTimeout(800);
-    await page.getByRole('button', { name: /Terminé/ }).click();
+    await page.getByRole('button', { name: 'Valider', exact: true }).click();
     await page.evaluate((id) => (location.hash = `#/adventure/join.${id}`), `${ile}.${autre}`);
     await page.waitForTimeout(1500);
     await page.getByRole('button', { name: /Poser tout ce que j’ai/ }).click();

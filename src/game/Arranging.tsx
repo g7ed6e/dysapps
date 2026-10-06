@@ -1,7 +1,9 @@
-// Le mode « Aménager » (GD-9, point 1), sur la Carte : l'état du mode (`useAmenagement`) : le choix, la ligne du mode à
+// Le mode « Aménager » (GD-9, point 1), sur la Carte, ouvert par « Modifier le plan » et fermé par « Valider » ou
+// « Annuler » (décision du mainteneur, 6 octobre 2026) : l'état du mode (`useAmenagement`) : le choix, la ligne du mode à
 // chaque calage et après chaque pose (des signes écrits, la même chose dite en mots ; piste A), la liste des ouvrages à reposer (le
 // mot de l'univers), la question de « Réunir », et le geste de la pose (1,5 s au plus, un toucher le termine ; posé
-// d'un coup avec moins d'animations). Ce qui s'affiche est dans ArrangeBar.tsx ; les règles dans world/arrange.ts et
+// d'un coup avec moins d'animations). Ce qui s'affiche est dans ArrangeBar.tsx et ArrangeHandles.tsx (les flèches autour
+// du choix) ; les règles dans world/arrange.ts et
 // world/arrangeMode.ts ; la 3D dessine le choix (three/arrange.ts). Les mots sont communs aux deux univers ; chaque
 // univers habille le geste et son son.
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -109,7 +111,7 @@ interface TextesDeLaReunion {
 /** Sans univers : les mots communs. */
 const REUNION_COMMUNE: TextesDeLaReunion = { nom: 'La construction qui les réunit', description: 'On la bâtit bloc par bloc, comme une grande construction.' };
 
-/** Les flèches de la barre, dans leur ordre, nommées en mots. */
+/** Les flèches autour du choix (ou de la barre, en vue simple), dans leur ordre, nommées en mots. */
 export const FLECHES: readonly { dir: Direction; icone: AnyIconName; nom: string; touche: string }[] = [
   { dir: 'ouest', icone: 'ouest', nom: 'Ouest', touche: 'ArrowLeft' },
   { dir: 'nord', icone: 'nord', nom: 'Nord', touche: 'ArrowUp' },
@@ -160,7 +162,16 @@ interface GesteEnCours {
 export interface Amenagement {
   ouvert: boolean;
   ouvrir(): void;
-  terminer(): void;
+  /**
+   * « Valider » : le mode se ferme, le plan reste tel qu'il est (chaque pose est déjà enregistrée au fil de l'eau ; un
+   * plan modifié reste gardé si l'appli se ferme en plein mode).
+   */
+  valider(): void;
+  /**
+   * « Annuler » (ou Échap) : le plan revient tel qu'il était à l'entrée dans le mode, puis le mode se ferme ; sans rien
+   * dire si rien n'a changé.
+   */
+  annuler(): void;
   choix: ArrangeChoice | null;
   vue: ArrangeView | null;
   /** Ce que dit la ligne du mode, en mots (la voix, le `role="status"`). */
@@ -189,9 +200,7 @@ export interface Amenagement {
   tourner(): void;
   poserIci(): void;
   defaire(): void;
-  remettre(): void;
   peutDefaire: boolean;
-  peutRemettre: boolean;
   choisirUneLiaison(id: string): void;
   /**
    * « Réunir » (GD-9, point 10) : la question, pour le lieu choisi (ou `id`, depuis la vue simple), à sa place, avec un
@@ -360,8 +369,8 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     setSession(startArranging(worldRef.current));
     choisir(null, `Touche un lieu, un Gardien, une borne ou ${mot.un} pour le déplacer.`);
   };
-  const terminer = () => {
-    finirLeGeste();
+  /** Le mode se ferme : rien n'est en cours, plus rien ne s'affiche. */
+  const fermer = () => {
     setSession(null);
     setChoix(null);
     setQuestion(null);
@@ -370,6 +379,27 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     setExplication(false);
     setPhrase('');
     setLigne(null);
+  };
+  const valider = () => {
+    finirLeGeste();
+    fermer();
+  };
+  const annuler = () => {
+    if (!session) return;
+    // Un geste en cours s'arrête là : sa pose n'est pas faite (s'il remontait déjà, l'instantané la défait aussi).
+    const g = enCours.current;
+    if (g) for (const t of g.timers) window.clearTimeout(t);
+    enCours.current = null;
+    setGeste(null);
+    setLieuDuGeste(null);
+    // Les poses du passage ne coûtent rien (une réunion se paie plus tard, quand on bâtit sa construction, hors du
+    // mode) : revenir à l'instantané de l'entrée ne perd ni bloc ni XP.
+    const w = worldRef.current;
+    if (hasChanged(session, w)) {
+      arrange(resetToEntry(session, w).world);
+      dire('Le plan est remis comme avant.');
+    }
+    fermer();
   };
 
   const fleche = (dir: Direction) => {
@@ -402,13 +432,6 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     setSession(r.session);
     arrange(r.world);
     choisir(null, 'La dernière pose est défaite.');
-  };
-  const remettre = () => {
-    if (!session || enCours.current) return;
-    const r = resetToEntry(session, worldRef.current);
-    setSession(r.session);
-    arrange(r.world);
-    choisir(null, 'Tout est remis comme avant.');
   };
 
   const demanderReunion = (direct?: BiomeId) => {
@@ -526,12 +549,21 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     }
   };
 
-  // Au clavier : les flèches décalent le fantôme (hors d'un champ de saisie).
+  // Au clavier : les flèches décalent le fantôme (hors d'un champ de saisie) ; Échap ferme la question de « Réunir » ou
+  // la liste des ouvrages à reposer, s'il y en a une d'ouverte, sinon il annule (« Annuler »).
   useEffect(() => {
     if (!ouvert) return;
     const onKey = (e: KeyboardEvent) => {
+      if (e.defaultPrevented || (e.target as Element | null)?.closest?.('input, select, textarea')) return;
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        if (question) annulerReunion();
+        else if (liste) fermerLaListe();
+        else annuler();
+        return;
+      }
       const f = FLECHES.find((x) => x.touche === e.key);
-      if (!f || e.defaultPrevented || (e.target as Element | null)?.closest?.('input, select, textarea')) return;
+      if (!f) return;
       e.preventDefault();
       fleche(f.dir);
     };
@@ -546,7 +578,8 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
   return {
     ouvert,
     ouvrir,
-    terminer,
+    valider,
+    annuler,
     choix,
     vue,
     phrase,
@@ -566,9 +599,7 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     tourner,
     poserIci,
     defaire,
-    remettre,
     peutDefaire: Boolean(session && canUndo(session)),
-    peutRemettre: Boolean(session && hasChanged(session, world)),
     choisirUneLiaison,
     demanderReunion,
     question,

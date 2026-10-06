@@ -130,6 +130,9 @@ export default function WorldCanvas({
   // Les cubes des bornes de mission et des ouvrages, par case : pour savoir ce qu'on touche.
   const tags = useRef(cubeTags([]));
   const dansLeMode = Boolean(amenager);
+  // Où la page veut savoir que se tient le choix du mode à l'écran (les flèches autour de lui), lu à chaque image.
+  const ecranDuModeRef = useRef(amenager?.ecran);
+  ecranDuModeRef.current = amenager?.ecran;
   useEffect(() => {
     // Un ouvrage construit se touche comme le sol (lot 2 de « Toucher le monde ») : seuls ceux en fantôme sont des cibles.
     const t = cubeTags(cubes);
@@ -252,7 +255,7 @@ export default function WorldCanvas({
       },
     };
     const cadrage = creerCamera(monde, camera, personnages.avatar, derniers, instant, lecture);
-    const amenagement = creerAmenagement(monde, reduceMotion, camera, el, lumiere);
+    const amenagement = creerAmenagement(monde, reduceMotion, camera, el, lumiere, () => ecranDuModeRef.current);
     world.current = {
       amenagement,
       garderEnVue: ({ rect: r, z }) => {
@@ -261,7 +264,8 @@ export default function WorldCanvas({
         // La hauteur réelle de la barre du mode et de sa phrase (un pli ouvert compris) : le fantôme se cadre dans la
         // bande libre entre les deux.
         const libre = lirePlaceReelle(el);
-        const marge = 24;
+        // Assez de marge pour les flèches posées autour du choix (48 px et leur écart) : elles ne se tassent pas au bord.
+        const marge = 64;
         // Les quatre coins dans la place libre : rien à faire.
         const dedans = [r.x0, r.x1].every((x) =>
           [r.y0, r.y1].every((y) => {

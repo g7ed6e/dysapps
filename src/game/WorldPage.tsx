@@ -98,6 +98,7 @@ import { FlyingBlocks } from './FlyingBlocks';
 import { useAmenagement } from './Arranging';
 import { ArrangeBar, ArrangeButton, ArrangeListOffer, ArrangeSentence, PROPOSITION_DE_LA_LISTE, useTelephone } from './ArrangeBar';
 import { ArrangeList } from './ArrangeList';
+import { ArrangeHandles, creerSuiviALEcran } from './ArrangeHandles';
 import { Sheet } from './Sheet';
 import { texteGrand } from '../core/settings';
 
@@ -265,7 +266,9 @@ export function WorldPage() {
     },
   });
   const enAmenageant = mapOpen && amenagement.ouvert;
-  // Au téléphone en grand texte, « Aménager » propose d'abord la liste (`offreDeLaListe`), qui s'ouvre dans un panneau
+  // Où se tient le choix du mode à l'écran, donné par la 3D image après image : les flèches s'y posent autour de lui.
+  const [suiviDuChoix] = useState(creerSuiviALEcran);
+  // Au téléphone en grand texte, « Modifier le plan » propose d'abord la liste (`offreDeLaListe`), qui s'ouvre dans un panneau
   // (`listeDAmenagement`) ; l'élève peut rester sur la Carte.
   const telephone = useTelephone();
   const [offreDeLaListe, setOffreDeLaListe] = useState(false);
@@ -278,7 +281,8 @@ export function WorldPage() {
         }
       : undefined;
   useEffect(() => {
-    if (!mapOpen && amenagement.ouvert) amenagement.terminer();
+    // Quitter la Carte en plein mode garde le plan tel qu'il est, comme « Valider ».
+    if (!mapOpen && amenagement.ouvert) amenagement.valider();
     if (!mapOpen) {
       setOffreDeLaListe(false);
       setListeDAmenagement(false);
@@ -1048,9 +1052,9 @@ export function WorldPage() {
             forceDay={forceDay}
             bridges={state.world.links}
             liaisonCadree={fiche?.cadrer && fiche.objet.genre === 'ouvrage' ? fiche.objet.id : null}
-            // Dans le mode « Aménager », « Poser ici » ou ✓ Terminé est le seul élément mis en avant.
+            // Dans le mode « Aménager », « Poser » ou ✓ Valider est le seul élément mis en avant.
             marker={enAmenageant ? null : marker}
-            amenager={enAmenageant ? { vue: amenagement.vue, cadre: amenagement.cadre } : null}
+            amenager={enAmenageant ? { vue: amenagement.vue, cadre: amenagement.cadre, ecran: suiviDuChoix.suivre } : null}
             geste={amenagement.geste}
             imageDeLaCarte={imageDeLaCarte}
             vehicle={vehicle}
@@ -1205,6 +1209,8 @@ export function WorldPage() {
             />
           </div>
         )}
+        {/* Les flèches, « Tourner » et « Réunir », posées autour du choix (au-dessus de la scène, dans sa place libre). */}
+        {enAmenageant && <ArrangeHandles amenagement={amenagement} suivi={suiviDuChoix} />}
         {enAmenageant ? (
           <ArrangeBar amenagement={amenagement} />
         ) : (
@@ -1230,7 +1236,7 @@ export function WorldPage() {
           >
             <Icon name="map" /> <span className="world-bar-text">Carte</span>
           </button>
-          {/* Sur la Carte, hors voyage : « Aménager », à sa place fixe, après la Carte. */}
+          {/* Sur la Carte, hors voyage : « Modifier le plan », à sa place fixe, après la Carte. */}
           {mapOpen && !voyage && <ArrangeButton amenagement={amenagement} proposer={proposerLaListe} />}
           {!voyage && (
             <button
@@ -1260,7 +1266,7 @@ export function WorldPage() {
           <VoyagePanel to={voyage.to} back={voyage.back} onArrive={arrive} />
         </div>
       ) : voyage ? null : mapOpen && listeDAmenagement ? (
-        <Sheet id="panneau-amenager" className="arrange-sheet" titleId="amenager-titre" icon="amenager" title="Aménager la carte" onClose={() => setListeDAmenagement(false)}>
+        <Sheet id="panneau-amenager" className="arrange-sheet" titleId="amenager-titre" icon="amenager" title="Modifier le plan" onClose={() => setListeDAmenagement(false)}>
           <ArrangeList a={a} enPanneau onFin={() => setListeDAmenagement(false)} />
         </Sheet>
       ) : mondeOpen ? (

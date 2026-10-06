@@ -5,11 +5,14 @@
 // ajout aux matériaux des blocs (`avecLAmenagement`), posé seulement le temps que le mode est ouvert, sans maillage de
 // plus ; dans Archipéo, le voile de brume du geste.
 // Moins d'animations : le lieu se soulève d'un coup, et la page pose sans geste.
+// À chaque image où il change, où se tient le choix à l'écran est donné à la page (`ChoixALEcran`) : elle y pose les
+// flèches, en boutons HTML (ArrangeHandles.tsx) ; aucun dessin de plus dans la scène.
 import type { Lumiere } from './light';
 import { mixColor } from '../world/daylight';
 import * as THREE from 'three';
 import { GESTE_SOUS_LE_SOL, gestureCut, veilFootprint, veilOpacity, veilZone } from '../world/arrangeGesture';
-import type { ArrangeCellKind, ArrangeGesture, ArrangeView } from '../world/view';
+import type { ArrangeCellKind, ArrangeGesture, ArrangeView, ChoixALEcran } from '../world/view';
+import { lirePlaceReelle, type Rect } from '../freeSpace';
 import { drawIslandLabel, measureIslandLabel } from '../world/labelCanvas';
 import type { Monde, PartieDeLaScene } from './scenePart';
 import { mesuresDemandees } from '../rendering';
@@ -202,7 +205,15 @@ function textureDuNom(texte: string): { map: THREE.CanvasTexture; w: number; h: 
   return { map, w: canvas.width * NOM_CSS, h: canvas.height * NOM_CSS };
 }
 
-export function creerAmenagement(monde: Monde, reduit: boolean, camera: THREE.PerspectiveCamera, el: HTMLElement, lumiere?: Lumiere): Amenagement {
+/** La place libre et la place de la vue dans la scène de la page sont relues au plus quatre fois par seconde. */
+const RELECTURE_DE_LA_PLACE_MS = 250;
+/** Sans cadre (un Gardien, une borne, une arrivée), la demi-taille du choix autour de son milieu, en cases. */
+const DEMI_CHOIX = 1.5;
+
+/** Où le mode dit à la page que se tient le choix à l'écran (rien : la page ne pose pas de flèches). */
+type SuiviALEcran = () => ((b: ChoixALEcran | null) => void) | null | undefined;
+
+export function creerAmenagement(monde: Monde, reduit: boolean, camera: THREE.PerspectiveCamera, el: HTMLElement, lumiere?: Lumiere, aLEcran?: SuiviALEcran): Amenagement {
   const blocs = monde.habillage.pose === 'geste';
   // Un carré plat, couché : deux triangles par case.
   const forme = new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2);
@@ -260,6 +271,80 @@ export function creerAmenagement(monde: Monde, reduit: boolean, camera: THREE.Pe
   let souleve: ArrangeView['souleve'] = null;
   let souleveDepuis = 0;
   let enCours: ArrangeGesture | null = null;
+  // ---- Où se tient le choix à l'écran, donné à la page (les flèches autour de lui)
+  let vueCourante: ArrangeView | null = null;
+  let dernierALEcran: ChoixALEcran | null = null;
+  let dernierSuivi: ((b: ChoixALEcran | null) => void) | null = null;
+  let place: { libre: Rect; dx: number; dy: number } | null = null;
+  let placeLue = -Infinity;
+  const point = new THREE.Vector3();
+  /** Un point du monde (en cases : x, y au sol, z la hauteur) à l'écran, dans la vue ; rien s'il est derrière la caméra. */
+  const projeter = (x: number, y: number, z: number, w: number, h: number) => {
+    point.set(x, z, y).project(camera);
+    return point.z > 1 ? null : { x: ((point.x + 1) / 2) * w, y: ((1 - point.y) / 2) * h };
+  };
+  /** Où se tient le choix à l'écran maintenant (la caméra de cette image), ou rien. */
+  const choixALEcran = (maintenant: number): ChoixALEcran | null => {
+    const vue = vueCourante;
+    const w = el.clientWidth;
+    const h = el.clientHeight;
+    if (!vue || enCours || !w || !h) return null;
+    if (!place || maintenant - placeLue > RELECTURE_DE_LA_PLACE_MS) {
+      const scene = el.closest('[data-scene]');
+      const r = el.getBoundingClientRect();
+      const s = scene?.getBoundingClientRect();
+      place = { libre: lirePlaceReelle(el), dx: s ? r.left - s.left : 0, dy: s ? r.top - s.top : 0 };
+      placeLue = maintenant;
+    }
+    // La caméra de cette image (le cadrage l'a déjà bougée) : ses matrices à jour avant de projeter.
+    camera.updateMatrixWorld();
+    const { suivre } = vue;
+    const milieu = projeter(suivre.x, suivre.y, suivre.z, w, h);
+    if (!milieu) return null;
+    const rect = vue.cadre?.rect ?? { x0: suivre.x - DEMI_CHOIX, y0: suivre.y - DEMI_CHOIX, x1: suivre.x + DEMI_CHOIX, y1: suivre.y + DEMI_CHOIX };
+    const z = vue.cadre?.z ?? suivre.z;
+    let rx = 0;
+    let ry = 0;
+    for (const x of [rect.x0, rect.x1])
+      for (const y of [rect.y0, rect.y1]) {
+        const c = projeter(x, y, z, w, h);
+        if (!c) continue;
+        rx = Math.max(rx, Math.abs(c.x - milieu.x));
+        ry = Math.max(ry, Math.abs(c.y - milieu.y));
+      }
+    // Le nom posé sur le fantôme compte dans le choix : les flèches ne se posent jamais dessus.
+    if (nomSprite.visible) {
+      const n = projeter(suivre.x, suivre.y, suivre.z + NOM_AU_DESSUS, w, h);
+      if (n) {
+        rx = Math.max(rx, Math.abs(n.x - milieu.x) + nomTaille.w / 2);
+        ry = Math.max(ry, Math.abs(n.y - milieu.y) + nomTaille.h / 2);
+      }
+    }
+    const { libre, dx, dy } = place;
+    return { x: milieu.x + dx, y: milieu.y + dy, rx, ry, libre: { x0: libre.x0 + dx, y0: libre.y0 + dy, x1: libre.x1 + dx, y1: libre.y1 + dy } };
+  };
+  /** Donne à la page où se tient le choix, seulement s'il a bougé d'au moins un demi-pixel (ou si elle vient d'arriver). */
+  const suivreALEcran = (maintenant: number) => {
+    const f = aLEcran?.() ?? null;
+    if (!f) return;
+    const b = choixALEcran(maintenant);
+    const pareil = (p: ChoixALEcran | null, q: ChoixALEcran | null) =>
+      p === q ||
+      (p !== null &&
+        q !== null &&
+        Math.abs(p.x - q.x) < 0.5 &&
+        Math.abs(p.y - q.y) < 0.5 &&
+        Math.abs(p.rx - q.rx) < 0.5 &&
+        Math.abs(p.ry - q.ry) < 0.5 &&
+        p.libre.x0 === q.libre.x0 &&
+        p.libre.y0 === q.libre.y0 &&
+        p.libre.x1 === q.libre.x1 &&
+        p.libre.y1 === q.libre.y1);
+    if (f === dernierSuivi && pareil(b, dernierALEcran)) return;
+    dernierSuivi = f;
+    dernierALEcran = b;
+    f(b);
+  };
 
   const vider = () => {
     if (!cases) return;
@@ -305,6 +390,7 @@ export function creerAmenagement(monde: Monde, reduit: boolean, camera: THREE.Pe
   return {
     poser(vue) {
       vider();
+      vueCourante = vue;
       const meme = souleve && vue?.souleve && souleve.x0 === vue.souleve.x0 && souleve.y0 === vue.souleve.y0 && souleve.x1 === vue.souleve.x1;
       if (!meme) souleveDepuis = performance.now();
       souleve = vue?.souleve ?? null;
@@ -334,12 +420,16 @@ export function creerAmenagement(monde: Monde, reduit: boolean, camera: THREE.Pe
       ouvrirLeModeDansLesMateriaux(oui);
     },
     animer() {
-      regler(performance.now());
+      const maintenant = performance.now();
+      regler(maintenant);
       tailleDuNom();
+      suivreALEcran(maintenant);
     },
     dispose() {
       vider();
       neutre();
+      // La scène refaite (une pose) en donnera une nouvelle : la page ne garde pas de flèches posées sur l'ancienne.
+      if (dernierSuivi && dernierALEcran) dernierSuivi(null);
       oublierLesMateriaux();
       monde.scene.remove(nomSprite);
       nomMat.map?.dispose();

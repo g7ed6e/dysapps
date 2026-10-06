@@ -136,7 +136,7 @@ export function MenuSheet({ onClose, onAller, onAide }: Props) {
               <span className="island-quest-text">
                 <span className="island-quest-title">Carte de départ</span>
                 <span className="island-quest-desc">
-                  <span className="visually-hidden">Des lieux réunis bloquent le retour : déplace-les avec « Aménager ».</span>
+                  <span className="visually-hidden">Des lieux réunis bloquent le retour : déplace-les avec « Modifier le plan ».</span>
                   <span aria-hidden="true">
                     <span className="signe">
                       <Icon name="lock" />

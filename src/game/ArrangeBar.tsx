@@ -1,10 +1,10 @@
 // Le mode « Aménager » à l'écran (GD-9, point 1 ; piste A « des signes à la place des phrases ») : le bouton
-// « Aménager » de la Carte et sa pastille, la ligne du mode (des signes : « Mine des lettres ↖ 4 ⬚ », dits en mots par
-// la voix), la question de « Réunir », la proposition de la liste au téléphone en grand texte, et la barre du mode. Un
-// seul bouton nommé par écran (Poser, Réunir, En liste) ; les autres sont des icônes, nommées pour les lecteurs
-// d'écran, leur mot dessous en grand texte (comme la barre du monde). La barre garde une rangée fixe en bas, jamais dans
-// la partie qui défile, avec « Poser » et ✓ Terminé ; au téléphone, les quatre outils tiennent sans pli. Les icônes et
-// les signes sont communs aux deux univers. L'état du mode vient de `useAmenagement` (Arranging.tsx).
+// « Modifier le plan » de la Carte et sa pastille, la ligne du mode (des signes : « Mine des lettres ↖ 4 ⬚ », dits en
+// mots par la voix), la question de « Réunir », la proposition de la liste au téléphone en grand texte, et la barre du
+// mode (↶, « Poser », puis « Annuler » et « Valider », qui le ferment ; décision du mainteneur, 6 octobre 2026). Les
+// flèches, « Tourner » et « Réunir » se posent autour du choix (ArrangeHandles.tsx). Les icônes sans mot sont nommées
+// pour les lecteurs d'écran, leur mot dessous en grand texte (comme la barre du monde). Les icônes et les signes sont
+// communs aux deux univers. L'état du mode vient de `useAmenagement` (Arranging.tsx).
 import { useEffect, useState } from 'react';
 import { Icon, IconButton } from '../components/Icon';
 import { SpeakButton } from '../components/SpeakButton';
@@ -31,9 +31,13 @@ export function useTelephone(): boolean {
   return etroit;
 }
 
+/** Le nom du bouton qui ouvre le mode (décision du mainteneur, 6 octobre 2026). */
+export const MODIFIER_LE_PLAN = 'Modifier le plan';
+
 /**
- * Le bouton « Aménager » de la barre de la Carte : quatre flèches, et la pastille des liaisons à reposer (icône et
- * nombre). `proposer` : au lieu d'ouvrir le mode, la Carte propose d'abord la liste (au téléphone en grand texte).
+ * Le bouton « Modifier le plan » de la barre de la Carte : quatre flèches, et la pastille des liaisons à reposer (icône
+ * et nombre). Il ouvre le mode ; « Valider » ou « Annuler » le ferment. `proposer` : au lieu d'ouvrir le mode, la Carte
+ * propose d'abord la liste (au téléphone en grand texte).
  */
 export function ArrangeButton({ amenagement, proposer }: { amenagement: Amenagement; proposer?: () => void }) {
   const n = amenagement.aReposer.length;
@@ -42,11 +46,10 @@ export function ArrangeButton({ amenagement, proposer }: { amenagement: Amenagem
     <button
       type="button"
       className="button world-bar-amenager"
-      aria-pressed={amenagement.ouvert}
-      aria-label={n ? `Aménager (${n} ${n > 1 ? amenagement.mot.pluriel : amenagement.mot.nom} à reposer)` : 'Aménager'}
-      onClick={() => (amenagement.ouvert ? amenagement.terminer() : proposer ? proposer() : ouvrir())}
+      aria-label={n ? `${MODIFIER_LE_PLAN} (${n} ${n > 1 ? amenagement.mot.pluriel : amenagement.mot.nom} à reposer)` : MODIFIER_LE_PLAN}
+      onClick={() => (proposer ? proposer() : ouvrir())}
     >
-      <Icon name="amenager" /> <span className="world-bar-text">Aménager</span>
+      <Icon name="amenager" /> <span className="world-bar-text">{MODIFIER_LE_PLAN}</span>
       {n > 0 && (
         <span className="world-bar-count arrange-count" aria-hidden="true">
           <Icon name="aReposer" size={14} />
@@ -58,16 +61,16 @@ export function ArrangeButton({ amenagement, proposer }: { amenagement: Amenagem
 }
 
 /** Ce que dit la Carte au téléphone en grand texte, avant d'ouvrir le mode (lu ; seul « En liste » est écrit). */
-export const PROPOSITION_DE_LA_LISTE = 'Aménager en liste ?';
+export const PROPOSITION_DE_LA_LISTE = 'Modifier le plan en liste ?';
 
 /**
- * Au téléphone en grand texte, « Aménager » propose d'abord la liste « Aménager la carte » (la vue simple) : un seul
- * bouton nommé, « En liste », mis en avant, et la Carte en icône pour y rester ; toucher « Aménager » à nouveau la
- * referme. La question est lue par l'appelant.
+ * Au téléphone en grand texte, « Modifier le plan » propose d'abord la liste (la vue simple) : un seul bouton nommé,
+ * « En liste », mis en avant, et la Carte en icône pour y rester ; toucher « Modifier le plan » à nouveau la referme.
+ * La question est lue par l'appelant.
  */
 export function ArrangeListOffer({ onListe, onCarte }: { onListe: () => void; onCarte: () => void }) {
   return (
-    <div className="creature-line world-line arrange-line arrange-offre" role="group" aria-label="Aménager">
+    <div className="creature-line world-line arrange-line arrange-offre" role="group" aria-label={MODIFIER_LE_PLAN}>
       <div className="arrange-question-buttons">
         <button type="button" className="button primary" onClick={onListe}>
           <Icon name="liste" /> En liste
@@ -251,40 +254,47 @@ export function ArrangeJoinQuestion({ amenagement, nom, className }: { amenageme
 }
 
 /**
- * La barre du mode, à place fixe : la croix des flèches, puis « Tourner », « Réunir », « Défaire » et « Tout remettre
- * comme avant », en icônes (leur mot dessous en grand texte), puis la rangée fixe « Poser » et ✓ Terminé. Un seul bouton
- * mis en avant : « Poser » pendant un choix, ✓ Terminé quand rien n'est en cours. Les boutons sans effet restent à leur
- * place, éteints. Au téléphone, plus de pli « Plus » : les outils tiennent à côté de la croix, sur deux rangées de deux
- * au plus.
+ * La barre du mode, à place fixe, en bas (décision du mainteneur, 6 octobre 2026) : ↶ « Défaire » en icône et
+ * « Poser », puis les deux boutons qui ferment le mode, ✕ « Annuler » et ✓ « Valider », qui gardent leur mot partout
+ * (en grand texte, il passe sous l'icône). Un seul bouton mis en avant : « Poser » pendant un choix, « Valider » quand
+ * rien n'est en cours. Les boutons sans effet restent à leur place, éteints. Sur la Carte, les flèches et « Tourner » se
+ * posent autour du choix (ArrangeHandles.tsx) ; en vue simple (`croix`), sans scène, la croix des flèches et « Tourner »
+ * restent dans la barre.
  */
-export function ArrangeBar({ amenagement, className }: { amenagement: Amenagement; className?: string }) {
+export function ArrangeBar({ amenagement, className, croix = false }: { amenagement: Amenagement; className?: string; croix?: boolean }) {
   const { choix, geste, question } = amenagement;
   const telephone = useTelephone();
   // Pendant la question de « Réunir », c'est elle qui attend la réponse : rien n'est mis en avant dans la barre.
   const occupe = Boolean(geste);
   const enQuestion = Boolean(question);
   return (
-    <nav className={`arrange-bar${telephone ? ' arrange-bar-telephone' : ''}${className ? ` ${className}` : ''}`} data-couvre="scene" aria-label="Aménager">
-      {/* La croix des flèches : des icônes, leur nom en accessibilité, le mot dessous en grand texte. */}
-      <div className="arrange-cross" role="group" aria-label="Déplacer">
-        {FLECHES.map((f) => (
-          <IconButton key={f.dir} icone={f.icone} nom={f.nom} className={`arrange-arrow arrange-arrow-${f.dir}`} disabled={!choix || occupe} onClick={() => amenagement.fleche(f.dir)} />
-        ))}
-      </div>
+    <nav
+      className={`arrange-bar${croix ? ' arrange-bar-croix' : ''}${telephone ? ' arrange-bar-telephone' : ''}${className ? ` ${className}` : ''}`}
+      data-couvre="scene"
+      aria-label="Modifier le plan"
+    >
+      {croix && (
+        // La croix des flèches (vue simple) : des icônes, leur nom en accessibilité, le mot dessous en grand texte.
+        <div className="arrange-cross" role="group" aria-label="Déplacer">
+          {FLECHES.map((f) => (
+            <IconButton key={f.dir} icone={f.icone} nom={f.nom} className={`arrange-arrow arrange-arrow-${f.dir}`} disabled={!choix || occupe} onClick={() => amenagement.fleche(f.dir)} />
+          ))}
+        </div>
+      )}
       <div className="arrange-bar-outils">
-        <IconButton icone="tourner" nom="Tourner" disabled={!canTurn(choix) || occupe} onClick={amenagement.tourner} />
-        <IconButton icone="reunir" nom="Réunir" aria-pressed={enQuestion} disabled={!amenagement.reunirAvec || occupe} onClick={() => amenagement.demanderReunion()} />
+        {croix && <IconButton icone="tourner" nom="Tourner" disabled={!canTurn(choix) || occupe} onClick={amenagement.tourner} />}
         <IconButton icone="defaire" nom="Défaire la dernière pose" mot="Défaire" disabled={!amenagement.peutDefaire || occupe} onClick={amenagement.defaire} />
-        {/* L'horloge à flèche, à l'écart de ↶ : une flèche pour la dernière pose, une horloge pour tout le passage. */}
-        <IconButton icone="history" nom="Tout remettre comme avant" mot="Tout défaire" disabled={!amenagement.peutRemettre || occupe} onClick={amenagement.remettre} />
-      </div>
-      {/* La rangée fixe, en bas, jamais dans la partie qui défile. */}
-      <div className="arrange-bar-fin">
         <button type="button" className={`button arrange-pose${choix && !enQuestion ? ' primary' : ''}`} disabled={!choix || occupe || enQuestion} onClick={amenagement.poserIci}>
           <Icon name="poser" /> <span>Poser</span>
         </button>
-        <button type="button" className={`button arrange-fin${choix ? '' : ' primary'}`} onClick={amenagement.terminer}>
-          <Icon name="check" /> <span>Terminé</span>
+      </div>
+      {/* Les deux boutons qui ferment le mode, toujours à la même place, jamais dans la partie qui défile. */}
+      <div className="arrange-bar-fin">
+        <button type="button" className="button bouton-cta arrange-annuler" onClick={amenagement.annuler}>
+          <Icon name="close" /> <span>Annuler</span>
+        </button>
+        <button type="button" className={`button bouton-cta arrange-valider${choix ? '' : ' primary'}`} onClick={amenagement.valider}>
+          <Icon name="check" /> <span>Valider</span>
         </button>
       </div>
     </nav>
