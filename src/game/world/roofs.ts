@@ -13,9 +13,8 @@ export type Couverture = 'ardoise' | 'terre-cuite';
 /**
  * Les îles couvertes de terre cuite : 6e la Ferme, la Mine, la Pointe des paysages (HG-2 : ses toits de ville, jamais
  * voisine de la Mine ; la Fouille des siècles, sa voisine, reste d'ardoise) et le Hangar des inventions (DA, SC-2 ; la
- * Tour du lecteur et le Volcan des décimaux, ses voisins, sont d'ardoise, et il n'est pas voisin de la Pointe), 5e le Comptoir, 4e le Théâtre, 3e le
- * Belvédère. Les îles
- * de la LV2 restent d'ardoise et sont hors de ce compte : le Relais des voyageurs (5e), voisin du Comptoir (jamais deux
+ * Tour du lecteur et le Volcan des décimaux, ses voisins, sont d'ardoise, et il n'est pas voisin de la Pointe), 5e le
+ * Comptoir, 4e le Théâtre, 3e le Belvédère. Les îles de la LV2 restent d'ardoise et sont hors de ce compte : le Relais des voyageurs (5e), voisin du Comptoir (jamais deux
  * voisins en terre cuite), le Jardin des heures (4e, DA LV2-4), voisin du Théâtre, d'ardoise #3E3636 (le 4e garde
  * une île de terre cuite sur six), et le Refuge des carnets (3e, DA LV2-5), d'ardoise enneigée.
  */

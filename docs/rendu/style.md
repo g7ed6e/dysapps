@@ -115,7 +115,7 @@ Chaque type de bloc a une **texture 16 × 16 générée par le code** (`src/game
 
 - **`serre`** (la serre de Fougère, la Vallée) : une salle longue de fossile, six sur trois, trois blocs de haut ; le deuxième plan pose la porte, cinq vitres de verre (trois sur la façade, une de chaque côté) et le toit ; la cour, sa barrière, ses lanternes et ses jardinières.
 - **`laboratoire`** (le laboratoire de Bulle, le Laboratoire) : une salle d’aimant, quatre sur trois, trois blocs de haut, au milieu de la zone ; la porte, une lampe à la fenêtre (une lanterne) et le toit ; la cour.
-- **`atelier`** (l’atelier de Pince, le Hangar) : une salle de carton, cinq sur trois, trois blocs de haut, une porte large de deux cases sur deux de haut, une lanterne au mur à côté ; le toit ; la cour. Dans Archipéo, le Hangar est en terre cuite (`roofs.ts`), ses deux voisins, la Vallée et le Laboratoire, en ardoise.
+- **`atelier`** (l’atelier de Pince, le Hangar) : une salle de carton, cinq sur trois, trois blocs de haut, une porte large de deux cases sur deux de haut, une lanterne au mur à côté ; le toit ; la cour. Dans Archipéo, le Hangar est en terre cuite (`roofs.ts`), ses deux voisins, la Tour du lecteur et le Volcan des décimaux, en ardoise.
 
 Les textures ne servent plus qu’à dessiner le monde ; dans l’interface, un bloc (inventaire, plans, récompenses) est un petit cube dessiné par le code. L’habillage (page, boutons, bandeaux, cartes) n’en a plus, ni biseau en relief ni cadre crénelé (la bande claire du dessus est un aplat), et aucune n’est **jamais placée derrière du texte**.
 
