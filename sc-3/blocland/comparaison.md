@@ -1,0 +1,150 @@
+# Comparaison avec main
+
+Références : main au commit cb7800e438d71014b750bdd85394005ce609fcc0 (après : 6ce2876350b48f78b23cd0d34a647db8750d1212). Une vue est changée au-delà de 0,3 % de pixels différents.
+
+## Changées (21) : planches dans `planches/`
+
+- 3e-archipel-nuit.jpg : 5,0 %
+- 3e-archipel.jpg : 4,6 %
+- 3e-carte-nuit.jpg : 32,5 %
+- 3e-carte.jpg : 22,6 %
+- 3e-ile-nuit.jpg : 1,9 %
+- 3e-ile-recul.jpg : 4,2 %
+- 3e-ile.jpg : 2,0 %
+- 4e-archipel-nuit.jpg : 61,7 %
+- 4e-archipel.jpg : 69,9 %
+- 4e-carte-nuit.jpg : 37,5 %
+- 4e-carte.jpg : 40,6 %
+- 4e-ile-nuit.jpg : 1,4 %
+- 4e-ile-recul.jpg : 5,2 %
+- 4e-ile.jpg : 1,9 %
+- 5e-archipel-nuit.jpg : 9,0 %
+- 5e-archipel.jpg : 10,0 %
+- 5e-carte-nuit.jpg : 43,8 %
+- 5e-carte.jpg : 46,4 %
+- 5e-ile-nuit.jpg : 1,3 %
+- 5e-ile-recul.jpg : 3,1 %
+- 5e-ile.jpg : 2,4 %
+
+## Inchangées (36) : non publiées
+
+- 3e-bulle-svg.jpg : 0,0 %
+- 3e-bulle.jpg : 0,0 %
+- 3e-defi-english-3e-comprehension.jpg : 0,0 %
+- 3e-defi-english-3e-grammar.jpg : 0,0 %
+- 3e-defi-french-3e-close-reading.jpg : 0,0 %
+- 3e-defi-geography-3e-france.jpg : 0,0 %
+- 3e-defi-history-3e-twentieth-century.jpg : 0,0 %
+- 3e-defi-lv2-3e-travel.jpg : 0,0 %
+- 3e-defi-maths-3e-functions.jpg : 0,0 %
+- 3e-defi-maths-3e-geometry.jpg : 0,0 %
+- 3e-defi-maths-3e-statistics.jpg : 0,0 %
+- 3e-defi-svg.jpg : 0,0 %
+- 4e-bulle-svg.jpg : 0,0 %
+- 4e-bulle.jpg : 0,0 %
+- 4e-defi-english-4e-comprehension.jpg : 0,0 %
+- 4e-defi-english-4e-grammar.jpg : 0,0 %
+- 4e-defi-french-4e-agreement.jpg : 0,0 %
+- 4e-defi-french-4e-vocabulary.jpg : 0,0 %
+- 4e-defi-geography-4e-globalization.jpg : 0,0 %
+- 4e-defi-history-4e-revolutions.jpg : 0,0 %
+- 4e-defi-lv2-4e-daily-life.jpg : 0,0 %
+- 4e-defi-maths-4e-algebra.jpg : 0,0 %
+- 4e-defi-maths-4e-powers.jpg : 0,0 %
+- 4e-defi-svg.jpg : 0,0 %
+- 5e-bulle-svg.jpg : 0,0 %
+- 5e-bulle.jpg : 0,0 %
+- 5e-defi-english-5e-grammar.jpg : 0,0 %
+- 5e-defi-english-5e-vocabulary.jpg : 0,0 %
+- 5e-defi-french-5e-conjugation.jpg : 0,0 %
+- 5e-defi-french-5e-homophones.jpg : 0,0 %
+- 5e-defi-geography-5e-resources.jpg : 0,0 %
+- 5e-defi-history-5e-middle-ages.jpg : 0,0 %
+- 5e-defi-lv2-5e-introductions.jpg : 0,0 %
+- 5e-defi-maths-5e-proportionality.jpg : 0,0 %
+- 5e-defi-maths-5e-signed-numbers.jpg : 0,0 %
+- 5e-defi-svg.jpg : 0,0 %
+
+## Sans référence (81) : dans `planches/` telles quelles
+
+- 3e-defi-life-earth-sciences-3e-human-body.jpg
+- 3e-defi-physics-chemistry-3e-motion-energy.jpg
+- 3e-defi-technology-3e-digital.jpg
+- 3e-sciences-college-carte-3e-800x1280.jpg
+- 3e-sciences-college-carte-3e-od32.jpg
+- 3e-sciences-college-carte-3e.jpg
+- 3e-sciences-college-life-earth-sciences-3e-human-body-apres-nuit.jpg
+- 3e-sciences-college-life-earth-sciences-3e-human-body-apres.jpg
+- 3e-sciences-college-life-earth-sciences-3e-human-body-avant-nuit.jpg
+- 3e-sciences-college-life-earth-sciences-3e-human-body-avant.jpg
+- 3e-sciences-college-life-earth-sciences-3e-human-body-commande.jpg
+- 3e-sciences-college-life-earth-sciences-3e-human-body-gardien-apres.jpg
+- 3e-sciences-college-life-earth-sciences-3e-human-body-gardien-avant.jpg
+- 3e-sciences-college-physics-chemistry-3e-motion-energy-apres-nuit.jpg
+- 3e-sciences-college-physics-chemistry-3e-motion-energy-apres.jpg
+- 3e-sciences-college-physics-chemistry-3e-motion-energy-avant-nuit.jpg
+- 3e-sciences-college-physics-chemistry-3e-motion-energy-avant.jpg
+- 3e-sciences-college-physics-chemistry-3e-motion-energy-commande.jpg
+- 3e-sciences-college-physics-chemistry-3e-motion-energy-gardien-apres.jpg
+- 3e-sciences-college-physics-chemistry-3e-motion-energy-gardien-avant.jpg
+- 3e-sciences-college-technology-3e-digital-apres-nuit.jpg
+- 3e-sciences-college-technology-3e-digital-apres.jpg
+- 3e-sciences-college-technology-3e-digital-avant-nuit.jpg
+- 3e-sciences-college-technology-3e-digital-avant.jpg
+- 3e-sciences-college-technology-3e-digital-commande.jpg
+- 3e-sciences-college-technology-3e-digital-gardien-apres.jpg
+- 3e-sciences-college-technology-3e-digital-gardien-avant.jpg
+- 4e-defi-life-earth-sciences-4e-cells-evolution.jpg
+- 4e-defi-physics-chemistry-4e-signals-circuits.jpg
+- 4e-defi-technology-4e-modeling.jpg
+- 4e-sciences-college-carte-4e-800x1280.jpg
+- 4e-sciences-college-carte-4e-od32.jpg
+- 4e-sciences-college-carte-4e.jpg
+- 4e-sciences-college-life-earth-sciences-4e-cells-evolution-apres-nuit.jpg
+- 4e-sciences-college-life-earth-sciences-4e-cells-evolution-apres.jpg
+- 4e-sciences-college-life-earth-sciences-4e-cells-evolution-avant-nuit.jpg
+- 4e-sciences-college-life-earth-sciences-4e-cells-evolution-avant.jpg
+- 4e-sciences-college-life-earth-sciences-4e-cells-evolution-commande.jpg
+- 4e-sciences-college-life-earth-sciences-4e-cells-evolution-gardien-apres.jpg
+- 4e-sciences-college-life-earth-sciences-4e-cells-evolution-gardien-avant.jpg
+- 4e-sciences-college-physics-chemistry-4e-signals-circuits-apres-nuit.jpg
+- 4e-sciences-college-physics-chemistry-4e-signals-circuits-apres.jpg
+- 4e-sciences-college-physics-chemistry-4e-signals-circuits-avant-nuit.jpg
+- 4e-sciences-college-physics-chemistry-4e-signals-circuits-avant.jpg
+- 4e-sciences-college-physics-chemistry-4e-signals-circuits-commande.jpg
+- 4e-sciences-college-physics-chemistry-4e-signals-circuits-gardien-apres.jpg
+- 4e-sciences-college-physics-chemistry-4e-signals-circuits-gardien-avant.jpg
+- 4e-sciences-college-technology-4e-modeling-apres-nuit.jpg
+- 4e-sciences-college-technology-4e-modeling-apres.jpg
+- 4e-sciences-college-technology-4e-modeling-avant-nuit.jpg
+- 4e-sciences-college-technology-4e-modeling-avant.jpg
+- 4e-sciences-college-technology-4e-modeling-commande.jpg
+- 4e-sciences-college-technology-4e-modeling-gardien-apres.jpg
+- 4e-sciences-college-technology-4e-modeling-gardien-avant.jpg
+- 5e-defi-life-earth-sciences-5e-active-planet.jpg
+- 5e-defi-physics-chemistry-5e-matter-universe.jpg
+- 5e-defi-technology-5e-design.jpg
+- 5e-sciences-college-carte-5e-800x1280.jpg
+- 5e-sciences-college-carte-5e-od32.jpg
+- 5e-sciences-college-carte-5e.jpg
+- 5e-sciences-college-life-earth-sciences-5e-active-planet-apres-nuit.jpg
+- 5e-sciences-college-life-earth-sciences-5e-active-planet-apres.jpg
+- 5e-sciences-college-life-earth-sciences-5e-active-planet-avant-nuit.jpg
+- 5e-sciences-college-life-earth-sciences-5e-active-planet-avant.jpg
+- 5e-sciences-college-life-earth-sciences-5e-active-planet-commande.jpg
+- 5e-sciences-college-life-earth-sciences-5e-active-planet-gardien-apres.jpg
+- 5e-sciences-college-life-earth-sciences-5e-active-planet-gardien-avant.jpg
+- 5e-sciences-college-physics-chemistry-5e-matter-universe-apres-nuit.jpg
+- 5e-sciences-college-physics-chemistry-5e-matter-universe-apres.jpg
+- 5e-sciences-college-physics-chemistry-5e-matter-universe-avant-nuit.jpg
+- 5e-sciences-college-physics-chemistry-5e-matter-universe-avant.jpg
+- 5e-sciences-college-physics-chemistry-5e-matter-universe-commande.jpg
+- 5e-sciences-college-physics-chemistry-5e-matter-universe-gardien-apres.jpg
+- 5e-sciences-college-physics-chemistry-5e-matter-universe-gardien-avant.jpg
+- 5e-sciences-college-technology-5e-design-apres-nuit.jpg
+- 5e-sciences-college-technology-5e-design-apres.jpg
+- 5e-sciences-college-technology-5e-design-avant-nuit.jpg
+- 5e-sciences-college-technology-5e-design-avant.jpg
+- 5e-sciences-college-technology-5e-design-commande.jpg
+- 5e-sciences-college-technology-5e-design-gardien-apres.jpg
+- 5e-sciences-college-technology-5e-design-gardien-avant.jpg
