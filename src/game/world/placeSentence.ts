@@ -47,15 +47,6 @@ export function distanceWords(ecart: number): string {
  * égalité).
  */
 export function placeSentence(world: World, id: BiomeId, spot: LayoutSpot = spotOf(world, id), nom: PlaceName = NOM_DU_JEU): string {
-  return placeWords(world, id, spot, nom, true);
-}
-
-/** La même phrase sans l'écart (« au nord de la Forêt des sons ») : la ligne courte du mode au téléphone. */
-export function placeDirection(world: World, id: BiomeId, spot: LayoutSpot = spotOf(world, id), nom: PlaceName = NOM_DU_JEU): string {
-  return placeWords(world, id, spot, nom, false);
-}
-
-function placeWords(world: World, id: BiomeId, spot: LayoutSpot, nom: PlaceName, ecart: boolean): string {
   const a = archipelagoOfIsland(id);
   const ici = landRectangle(placedIsland(id, poseOfSpot(a, spot)));
   let voisin: { id: BiomeId; r: Rectangle; ecart: number } | null = null;
@@ -66,8 +57,7 @@ function placeWords(world: World, id: BiomeId, spot: LayoutSpot, nom: PlaceName,
     if (!voisin || ecart < voisin.ecart) voisin = { id: autre, r, ecart };
   }
   if (!voisin) return '';
-  const ou = `${directionWords(milieu(voisin.r), milieu(ici))} ${ofPlace(nom(voisin.id))}`;
-  return ecart ? `${ou}, ${distanceWords(voisin.ecart)}` : ou;
+  return `${directionWords(milieu(voisin.r), milieu(ici))} ${ofPlace(nom(voisin.id))}, ${distanceWords(voisin.ecart)}`;
 }
 
 /** Où est l'îlot d'un Gardien autour de son lieu (à sa place par défaut) : « au nord de son île ». */

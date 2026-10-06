@@ -41,7 +41,7 @@ import { archipelagoOfIsland, toWorld } from './map';
 import { poseOfSpot } from './footprint';
 import { turnedSide, type Quarts, type Side } from './placement';
 import { type LinkPhrases, linkPhrases } from './linkWord';
-import { guardianSentence, ofPlace, placeDirection, placeSentence, type PlaceName } from './placeSentence';
+import { guardianSentence, ofPlace, placeSentence, type PlaceName } from './placeSentence';
 import { anchorInWorld, possibleLandings } from './routing';
 import type { LayoutGuardian, LayoutLanding, LayoutSpot, LayoutTurn } from './savedLayout';
 
@@ -280,13 +280,16 @@ function rangDeLaBorne(world: World, c: Extract<ArrangeChoice, { genre: 'borne' 
 }
 
 /**
- * La ligne courte du choix, au téléphone (la phrase entière s'ouvre au toucher) : le nom et la direction, sans l'écart
- * (« Rivière des fractions : au nord de la Forêt des sons »).
+ * La ligne courte du choix, au téléphone (la phrase entière s'ouvre au toucher), sur deux lignes au plus : pour un lieu,
+ * la direction et l'écart (« Au nord-ouest de la Mine des lettres, à 4 cases. »), son nom étant sur l'étiquette « Choisi ».
  */
 export function choiceSummary(world: World, c: ArrangeChoice, nom: PlaceName = NOM_DU_JEU, mot: LinkPhrases = linkPhrases()): string {
   switch (c.genre) {
-    case 'lieu':
-      return `${nom(c.id)} : ${placeDirection(world, c.id, c.spot, nom)}`;
+    case 'lieu': {
+      // Le nom est déjà sur l'étiquette « Choisi » : la ligne courte dit la direction et l'écart.
+      const ou = placeSentence(world, c.id, c.spot, nom);
+      return ou ? `${ou.charAt(0).toUpperCase()}${ou.slice(1)}.` : `${nom(c.id)}.`;
+    }
     case 'gardien':
       return `Le Gardien : ${guardianSentence(world, c.id, c.place)}`;
     case 'borne': {

@@ -37,6 +37,9 @@ describe('le geste de la pose', () => {
     const r = { ...geste('remonte'), zone: nouvelle, autre: ancienne, debut: 1600 };
     // Démontage : sur l'ancienne place au début, sur les deux à la fin, plein.
     expect(veilZone(d, 1000)).toEqual(ancienne);
+    // Plein, il tient encore à l'emprise de l'ancienne place : le contour du lieu se devine dessous.
+    expect(veilOpacity(d, 1300)).toBe(1);
+    expect(veilZone(d, 1300)).toEqual(ancienne);
     expect(veilZone(d, 1600)).toEqual({ x0: 0, y0: 0, x1: 50, y1: 10 });
     expect(veilOpacity(d, 1600)).toBe(1);
     // Remontage : il part des deux (là où le démontage l'a laissé), se resserre sur la nouvelle place, puis se lève.

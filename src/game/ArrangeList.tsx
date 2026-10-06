@@ -4,7 +4,6 @@
 // « Réunir » est proposé sur la ligne d'un lieu qui a un voisin ouvert à la bonne distance (GD-9, point 10). L'ordre de
 // la liste est celui des lieux de la région, jamais celui de la disposition : une carte aménagée ne déplace pas les
 // lignes. Pas de geste ici (rien ne se dessine) : la pose est immédiate, avec son son.
-import { thePlace, toPlace } from './world/placeArticle';
 import { useEffect, useRef, useState } from 'react';
 import { frenchTypography } from '../components/math/RichText';
 import { Icon } from '../components/Icon';
@@ -18,6 +17,7 @@ import { getBridge, islandsOf } from './world/archipelago';
 import type { ArchipelagoId } from './world/archipelagos';
 import { currentLandings, isFixedPlace, joinedWith, routesIn } from './world/arrange';
 import { type ArrangeChoice, chooseStation, choiceSentence } from './world/arrangeMode';
+import { agreeWithPlace, thePlace, toPlace } from './world/placeArticle';
 import { guardianSentence, ofPlace, placeSentence } from './world/placeSentence';
 import type { LinkPhrases } from './world/linkWord';
 import { startingStations } from './world/terrain/markers';
@@ -96,8 +96,25 @@ export function ArrangeList({ a, enPanneau = false, onFin }: { a: ArchipelagoId;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enPanneau, amenagement.ouvert]);
   const choisi = (genre: 'lieu' | 'gardien', id: BiomeId) => choix?.genre === genre && choix.id === id;
+  // Dans le panneau, à chaque nouveau choix : il défile jusqu'au début de la ligne choisie, son nom juste sous le titre
+  // (qui reste en haut) ; rien de choisi, il revient en haut. Les flèches, qui gardent le même choix, ne le font pas
+  // bouger.
+  const section = useRef<HTMLElement>(null);
+  const cleDuChoix = choix?.genre === 'lieu' || choix?.genre === 'gardien' ? `${choix.genre}:${choix.id}` : choix ? 'autre' : '';
+  useEffect(() => {
+    if (!enPanneau || cleDuChoix === 'autre') return;
+    const panneau = section.current?.closest<HTMLElement>('.island-sheet');
+    if (!panneau) return;
+    const ligne = cleDuChoix ? section.current?.querySelector<HTMLElement>('.arrange-list-items > .arrange-list-chosen') : null;
+    if (!ligne) {
+      panneau.scrollTop = 0;
+      return;
+    }
+    const titre = panneau.querySelector<HTMLElement>('.island-sheet-head')?.getBoundingClientRect().height ?? 0;
+    panneau.scrollTop += ligne.getBoundingClientRect().top - panneau.getBoundingClientRect().top - panneau.clientTop - titre - 8;
+  }, [enPanneau, cleDuChoix]);
   return (
-    <section className={enPanneau ? 'arrange-list arrange-list-panneau' : 'panel arrange-list'} aria-labelledby={enPanneau ? undefined : `amenager-${a}`}>
+    <section ref={section} className={enPanneau ? 'arrange-list arrange-list-panneau' : 'panel arrange-list'} aria-labelledby={enPanneau ? undefined : `amenager-${a}`}>
       {!enPanneau && (
         <h2 id={`amenager-${a}`} className="section-title">
           <Icon name="amenager" /> Aménager la carte
@@ -119,7 +136,7 @@ export function ArrangeList({ a, enPanneau = false, onFin }: { a: ArchipelagoId;
                   <p>
                     <strong>{b.name}</strong>
                     {choisi('lieu', b.id) && <span className="arrange-list-mark"> (choisi)</span>} : {fixe ? 'le point de départ de la région, il ne bouge pas.' : `${placeSentence(state.world, b.id, undefined, nomDuLieu)}.`}
-                    {reuni && ` Réuni ${toPlace(nomDuLieu(reuni))} : ils bougent ensemble.`}
+                    {reuni && ` ${agreeWithPlace(nomDuLieu(b.id), 'Réuni')} ${toPlace(nomDuLieu(reuni))} : les deux lieux bougent ensemble.`}
                   </p>
                   {!fixe && (
                     <button type="button" className="button" aria-pressed={choisi('lieu', b.id)} aria-label={`Déplacer ${b.name}`} onClick={() => amenagement.intention({ genre: 'ile', id: b.id })}>

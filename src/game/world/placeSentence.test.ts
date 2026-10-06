@@ -4,8 +4,9 @@ import type { BiomeId } from '../biomes';
 import type { World } from '../engine/state';
 import { BIOMES } from '../biomes';
 import { freeSpots, guardianOf, moveGuardian, startingSpot } from './arrange';
-import { distanceWords, directionWords, guardianSentence, ofPlace, placeDirection, placeSentence, thePlace, toPlace } from './placeSentence';
+import { distanceWords, directionWords, guardianSentence, ofPlace, placeSentence, thePlace, toPlace } from './placeSentence';
 import { lieuDAssemblage } from './assembly';
+import { agreeWithPlace, joinedSentence } from './placeArticle';
 
 const VIDE: World = { parts: {}, log: [], links: [] };
 
@@ -57,13 +58,26 @@ describe('où est une place, en mots', () => {
     }
   });
 
+  it('« réuni » s’accorde avec le premier lieu : féminin et féminin, masculin et féminin, féminin et masculin', () => {
+    expect(joinedSentence('Tour du lecteur', 'Ferme des accords')).toBe('La Tour du lecteur est réunie à la Ferme des accords.');
+    expect(joinedSentence('Horloge des verbes', 'Baie des mots')).toBe('L’Horloge des verbes est réunie à la Baie des mots.');
+    expect(joinedSentence('Volcan des décimaux', 'Mine des lettres')).toBe('Le Volcan des décimaux est réuni à la Mine des lettres.');
+    expect(joinedSentence('Atelier du calcul littéral', 'Forge des puissances')).toBe('L’Atelier du calcul littéral est réuni à la Forge des puissances.');
+    expect(joinedSentence('Rivière des fractions', 'Volcan des décimaux')).toBe('La Rivière des fractions est réunie au Volcan des décimaux.');
+    expect(agreeWithPlace('Mine des lettres', 'Réuni')).toBe('Réunie');
+    expect(agreeWithPlace('Marché des proportions', 'Réuni')).toBe('Réuni');
+    // Le genre suit l'article de chaque nom qui en montre un (« la » : féminin, « le » : masculin).
+    for (const b of BIOMES) {
+      const le = thePlace(b.name);
+      if (!le.startsWith('l’')) expect(agreeWithPlace(b.name, 'réuni')).toBe(le.startsWith('la ') ? 'réunie' : 'réuni');
+    }
+  });
+
   it('dit le voisin le plus proche, sa direction et l’écart, avec les noms de l’univers', () => {
     const id: BiomeId = 'english-6e-vocabulary';
     // Derrière la Forêt des sons, à côté de l'Horloge des verbes, à sa droite sur la Carte.
     expect(placeSentence(VIDE, id)).toMatch(/^à l’est de l’Horloge des verbes, à \d+ cases?$/);
     expect(placeSentence(VIDE, id, startingSpot(id), (x) => `Lieu ${x}`)).toMatch(/du Lieu /);
-    // La ligne courte du téléphone : la même direction, sans l'écart.
-    expect(placeDirection(VIDE, id)).toBe('à l’est de l’Horloge des verbes');
     // Une autre place, une autre phrase (le fantôme la dit à chaque calage).
     const ailleurs = freeSpots(VIDE, id).find((s) => Math.abs(s.x - startingSpot(id).x) + Math.abs(s.y - startingSpot(id).y) > 2);
     if (ailleurs) expect(typeof placeSentence(VIDE, id, ailleurs)).toBe('string');

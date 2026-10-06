@@ -217,10 +217,10 @@ SHOTS.push(
   { ...tutoTelephone, name: 'telephone-tutoriel-archipeo', settings: { univers: 'archipeo' } },
   { ...tutoTelephone, name: 'telephone-tutoriel-grand-texte', settings: { fontSize: 28 } },
 );
-// Archipéo, sur demande : le voile de brume tenu aux trois quarts du démontage (plein, étiré vers la nouvelle place), et
-// la jetée finie, ses dalles plus claires que sa colonne.
+// Archipéo, sur demande : le voile de brume tenu à mi-démontage (plein, serré sur le lieu, dont le contour se devine
+// dessous), la nuit aux trois quarts (étiré vers la nouvelle place), et la jetée finie, ses dalles plus claires.
 SHOTS.push(
-  { ...archipeo({ base: 'amenager-geste', name: 'archipeo-amenager-geste' }), act: amenagerGeste('maths-6e-fractions', { x: 150, y: 100 }, 450), surDemande: true },
+  { ...archipeo({ base: 'amenager-geste', name: 'archipeo-amenager-geste' }), act: amenagerGeste('maths-6e-fractions', { x: 150, y: 100 }, 300), surDemande: true },
   { ...archipeo({ base: 'reunir', name: 'archipeo-reunir' }), surDemande: true },
   { ...archipeo({ base: 'amenager-geste', name: 'archipeo-amenager-geste-nuit' }), act: amenagerGeste('maths-6e-fractions', { x: 150, y: 100 }, 450), settings: { univers: 'archipeo' }, nuit: true, surDemande: true },
 );

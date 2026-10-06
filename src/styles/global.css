@@ -3890,9 +3890,9 @@ figure.class-table {
   font: inherit;
   text-align: left;
   cursor: pointer;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  /* La ligne courte se coupe entre les mots, jamais au milieu d'un nom ni avec « … » : elle tient sur deux lignes. */
+  white-space: normal;
+  overflow-wrap: normal;
 }
 .arrange-line-courte.ouverte .arrange-line-texte {
   white-space: normal;
@@ -5967,6 +5967,11 @@ button.app-card {
     /* Le chemin d'ouvrages de la Carte défile au-delà ; des traits pointillés disent qu'il continue, en bas comme en
        haut (useMapPanel.ts). */
     max-height: 60%;
+  }
+  /* Pendant « Aménager », la colonne de droite (Menu, puis le rond « Recentrer » dessous) reste réservée : le rond de
+     l'avatar ne se pose jamais sur le haut-parleur de la phrase. */
+  :root[data-texte="grand"] .world-page.en-amenagement .world-overlay-top {
+    right: calc(0.6rem + 52px + 0.5rem);
   }
   /* Le trait est posé sur une bande du fond du panneau, collée au bord : il ne passe jamais sur une ligne coupée,
      qu'il sépare du bord par un peu d'air. */

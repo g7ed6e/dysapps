@@ -21,7 +21,9 @@ vi.mock('./sound', async (original) => ({ ...(await original<typeof import('./so
 const VOLCAN = 'maths-6e-decimals' as const;
 const TOUR = 'french-6e-reading' as const;
 const FERME = 'french-6e-grammar-spelling' as const;
-const nom = (id: string) => id;
+// Les noms du jeu pour la Tour et la Ferme (deux noms féminins, pour l'accord de « réunie ») ; l'identifiant pour les autres.
+const NOMS: Record<string, string> = { [TOUR]: 'Tour du lecteur', [FERME]: 'Ferme des accords' };
+const nom = (id: string) => NOMS[id] ?? id;
 
 let dernier: Amenagement;
 let monde: World;
@@ -123,6 +125,9 @@ describe('le mode « Aménager »', () => {
     const avant = spotOf(monde, VOLCAN);
     fireEvent.click(screen.getByRole('button', { name: /Poser ici/ }));
     expect(dernier.geste?.phase).toBe('demonte');
+    // Le lieu qui se déplace reste « Choisi » le temps du geste (son étiquette ne revient pas à son état).
+    expect(dernier.choix).toBeNull();
+    expect(dernier.lieuDuGeste).toBe(VOLCAN);
     // Le démontage part du plus haut cube du lieu, pas du vide au-dessus ; le voile d'Archipéo sait où il va.
     expect(dernier.geste?.haut).toBe(8);
     expect(dernier.geste?.autre).toBeDefined();
@@ -132,6 +137,7 @@ describe('le mode « Aménager »', () => {
     expect(spotOf(monde, VOLCAN)).not.toEqual(avant);
     act(() => void vi.advanceTimersByTime(GESTE_DU_LIEU.remonteMs));
     expect(dernier.geste).toBeNull();
+    expect(dernier.lieuDuGeste).toBeNull();
     // Une autre pose : un toucher pendant le démontage pose tout de suite.
     act(() => void dernier.intention({ genre: 'ile', id: VOLCAN }));
     act(() => void dernier.intention({ genre: 'mer', point: { x: 190, y: 140 } }));
@@ -179,12 +185,12 @@ describe('le mode « Aménager »', () => {
     act(() => void dernier.intention({ genre: 'ile', id: TOUR }));
     expect(reunir()).toBeEnabled();
     expect(reunir().className).not.toMatch(/primary/);
-    expect(screen.getByRole('status').textContent).toMatch(new RegExp(`Il peut se réunir ${toPlace(FERME)}`));
+    expect(screen.getByRole('status').textContent).toMatch(new RegExp(`Il peut se réunir ${toPlace(nom(FERME))}`));
     // « Réunir » pose la question (un bouton par voisin, « Ne pas réunir ») : rien ne se fait avant la réponse.
     fireEvent.click(reunir());
     expect(joinedWith(monde, TOUR)).toBeNull();
-    const question = screen.getByRole('group', { name: `Réunir ${thePlace(TOUR)} ?` });
-    expect(question.textContent).toMatch(new RegExp(`Réunir ${thePlace(TOUR)} et ${thePlace(FERME)}\u00a0\\? Ils ne se sépareront plus\\.`));
+    const question = screen.getByRole('group', { name: `Réunir ${thePlace(nom(TOUR))} ?` });
+    expect(question.textContent).toMatch(new RegExp(`Réunir ${thePlace(nom(TOUR))} et ${thePlace(nom(FERME))}\u00a0\\? Les deux lieux ne se sépareront plus\\.`));
     // Pendant la question, rien n'est mis en avant dans la barre, et « Poser ici » attend.
     expect(screen.getByRole('button', { name: /Poser ici/ })).toBeDisabled();
     expect(document.querySelectorAll('.arrange-bar .primary')).toHaveLength(0);
@@ -197,12 +203,14 @@ describe('le mode « Aménager »', () => {
     act(() => void dernier.intention({ genre: 'ile', id: TOUR }));
     fireEvent.click(reunir());
     // La deuxième fois, le mot n'est plus expliqué.
-    expect(screen.getByRole('group', { name: `Réunir ${thePlace(TOUR)} ?` }).querySelector('.arrange-explication')).toBeNull();
-    fireEvent.click(screen.getByRole('button', { name: `Réunir avec ${thePlace(FERME)}` }));
+    expect(screen.getByRole('group', { name: `Réunir ${thePlace(nom(TOUR))} ?` }).querySelector('.arrange-explication')).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: `Réunir avec ${thePlace(nom(FERME))}` }));
     expect(joinedWith(monde, TOUR)).toBe(FERME);
     const apres = screen.getByRole('status').textContent!;
     // Des phrases courtes, une idée chacune, sans symbole.
-    expect(apres).toMatch(/^.+ et .+ sont réunis\. Ils bougent ensemble\. (Un ouvrage est à reposer\. |Une liaison est à reposer\. )?La construction qui les réunit se construit depuis le panneau de l’île\. Défaire annule la réunion\.$/);
+    // « réuni » s'accorde avec le premier lieu : la Tour et la Ferme, deux noms féminins.
+    expect(apres.startsWith('La Tour du lecteur est réunie à la Ferme des accords. Les deux lieux bougent ensemble. ')).toBe(true);
+    expect(apres).toMatch(/^.+ est réunie? (à la|au|à l’) .+\. Les deux lieux bougent ensemble\. (Un ouvrage est à reposer\. |Une liaison est à reposer\. )?La construction qui les réunit se construit depuis le panneau de l’île\. Défaire annule la réunion\.$/);
     expect(apres).not.toMatch(/[↶✓]/);
     // « Défaire » : l'icône et le mot, toujours écrits.
     expect(screen.getByRole('button', { name: 'Défaire la dernière pose' })).toHaveTextContent('Défaire');
@@ -232,10 +240,14 @@ describe('le mode « Aménager »', () => {
       fireEvent.click(plus);
       expect(plus).toHaveAttribute('aria-expanded', 'true');
       for (const n of [/Tourner/, /^Réunir$/, /Défaire/, /Remettre comme avant/]) expect(screen.getByRole('button', { name: n })).toBeInTheDocument();
-      // La phrase : le nom et la direction sur une ligne ; la phrase entière au toucher.
+      // La phrase : la direction et l'écart, sans le nom (sur l'étiquette « Choisi ») ni « … » ; la phrase entière au toucher.
       act(() => void dernier.intention({ genre: 'ile', id: VOLCAN }));
       const ligne = document.querySelector('.arrange-line-texte') as HTMLButtonElement;
-      expect(ligne.textContent).toMatch(new RegExp(`^${VOLCAN} : (au|à l’) [a-z-]+ (de la|du|de l’) [^,]+$`));
+      expect(ligne.textContent).toMatch(/^(Au|À l’) [a-z-]+ (de la|du|de l’) [^,]+, à \d+ cases?\.$/);
+      expect(ligne.textContent).not.toMatch(/…/);
+      // La zone annoncée est hors du bouton : l'ouvrir ne fait pas relire la phrase.
+      expect(ligne.closest('[role="status"]')).toBeNull();
+      expect(screen.getByRole('status').textContent).toBe(dernier.phrase);
       fireEvent.click(ligne);
       expect(ligne).toHaveAttribute('aria-expanded', 'true');
       expect(ligne.textContent).toBe(dernier.phrase);

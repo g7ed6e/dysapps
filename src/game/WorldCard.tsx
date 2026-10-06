@@ -8,7 +8,6 @@
 // Dans les deux univers (proposition P2, PR 2, pour Blocland ; « 4a », 4 octobre 2026, pour Archipéo), la fiche de la
 // créature et celle du Gardien portent leur portrait en médaillon, qui déborde au-dessus de la fiche ; les autres gardent
 // l'icône du titre. Blocland le dessine en cubes, Archipéo avec son modèle en SVG (l'icône en attendant, ou en repli).
-import { ofPlace, thePlace, toPlace } from './world/placeArticle';
 import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react';
 import { ErrorBoundary } from '../components/ErrorBoundary';
 import { Link } from 'react-router-dom';
@@ -43,6 +42,7 @@ import type { ObjetDeLaFiche } from './world/layout';
 import { KIND_NAME, bridgeState, conditionText, getArchipelago, getBridge, isBiomeUnlocked, linkKind, linksToIsland, nearestDeparture, opensAnIsland, otherEnd, payableBlocks, reachableIslands, type ArchipelagoId } from './world/archipelago';
 import { estPrete, texteDeLaCommande, type Commande } from './world/requests';
 import { ileDeLOuvrage } from './world/model';
+import { ofPlace, thePlace, toPlace } from './world/placeArticle';
 import { earnIsland, whereToEarn } from './world/uses';
 import { VEHICLE_NAME, VEHICLE_STAGES } from './world/vehicle';
 
@@ -397,7 +397,7 @@ function FicheDeLOuvrage({ id, onBuilt, onClose, onVoirOuvrage }: Props & { id: 
   const suivant = departs.length > 1 ? departs[(rang + 1) % departs.length] : null;
   const titre = ferme ? `Relier ${thePlace(getBiome(ferme)?.name ?? ferme)}` : `${KIND_NAME[kind]} entre ${thePlace(a)} et ${thePlace(b)}`;
   const quoi = withArticle(kind);
-  const depuis = ferme ? `${quoi.charAt(0).toUpperCase()}${quoi.slice(1)} part ${ofPlace(getBiome(otherEnd(def, ferme))?.name ?? '')}. ` : '';
+  const depuis = ferme ? `${quoi.charAt(0).toUpperCase()}${quoi.slice(1)} part ${ofPlace(getBiome(otherEnd(def, ferme))?.name ?? otherEnd(def, ferme))}. ` : '';
   const numero = ferme && departs.length > 1 && rang >= 0 ? `Départ ${rang + 1} sur ${departs.length}. ` : '';
   const phrase = sansLv2
     ? 'Choisis d’abord une LV2 dans les Réglages.'

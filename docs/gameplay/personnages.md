@@ -17,7 +17,7 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 | Arrivée en 4e | Bip. Le Bloc-Navire a fait sa traversée. Moi, c’est Ixe, le robot dessinateur. Bienvenue dans les Monts de Feu : ici, le feu du volcan fait tourner les machines. À toi d’en bâtir ! | Le Bloc-Navire a fait sa traversée. Te voilà dans les Anciens Ateliers : les vieux ateliers attendent qu’on les remette en marche. |
 | Arrivée en 3e | Le Bloc-Navire a fait sa traversée. Moi, c’est Fi, la lampe du phare. Bienvenue dans les Îles du Ciel : je t’éclaire, bâtisseur, on bâtit tout en haut. | Le Bloc-Navire a fait sa traversée. Te voilà dans les Îles du Ciel : ici, les îles flottent dans les nuages. |
 | Tous les Gardiens d’un archipel (exemple) | Tous les Gardiens des Basses Terres ont retrouvé leurs couleurs ! Ils veillent sur ton chantier. | Tous les Gardiens des Premiers Rivages brillent à nouveau. J’ai vu leur lumière depuis le large. |
-| Île-port terminée (exemple) | Chantier fini : Plaine des nombres ! Bloc après bloc, ton archipel grandit. | Plaine des nombres est bâtie. Tu avances bien : chaque île bâtie rend l’archipel plus beau. |
+| Île-port terminée (exemple) | Chantier fini : Plaine des nombres ! Bloc après bloc, ton archipel grandit. | La Plaine des nombres est bâtie. Tu avances bien : chaque île bâtie rend l’archipel plus beau. |
 | Premier ouvrage payé (exemple) | Ton ouvrage tient bon ! Nouvelle île ouverte : Mine des lettres. | Un chemin s’ouvre vers la Mine des lettres. L’archipel s’agrandit. |
 
 ## Les Basses Terres (Blocland), les Premiers Rivages (Archipéo), 6e

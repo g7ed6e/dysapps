@@ -354,7 +354,7 @@ export const BLOCLAND = {
   liaisons: { nom: 'ouvrage', pluriel: 'ouvrages', feminin: false },
   reunion: {
     nom: 'La digue',
-    description: 'Une digue de cubes d’herbe sur la pierre, d’un lieu à l’autre, avec des marches si l’un est plus haut : on passe à pied.',
+    description: 'Une digue de cubes d’herbe sur la pierre, d’un lieu à l’autre : on passe à pied.',
     fini: 'La digue tient bon ! On passe à pied d’un lieu à l’autre.',
   },
   assemblage: lieuDAssemblage('blocland'),

@@ -163,8 +163,8 @@ function textureDuVoile(): THREE.DataTexture {
 
 /** La part du voile, depuis son bord, où il se fond (en fraction de sa demi-largeur). */
 const VOILE_FONDU = 0.4;
-/** Autour du voile, en cases : à peine plus large que l'emprise du lieu, le fondu commençant sur le lieu. */
-const VOILE_DEBORDE = 2;
+/** Autour du voile, en cases : serré à l'emprise du lieu (déjà élargie d'une case), le fondu commençant sur le lieu. */
+const VOILE_DEBORDE = 1;
 /** Au plus fort du geste, le voile laisse un peu voir le lieu dessous (un peu transparent, jamais un flash blanc). */
 const VOILE_OPACITE = 0.78;
 /** La nuit, le voile prend ce bleu sombre (celui des bancs de brume de nuit) : jamais une tache claire sur la mer de nuit. */
@@ -227,7 +227,9 @@ export function creerAmenagement(monde: Monde, reduit: boolean, camera: THREE.Pe
   const nomMat = new THREE.SpriteMaterial({ depthTest: false, transparent: true, sizeAttenuation: false, fog: false });
   const nomSprite = new THREE.Sprite(nomMat);
   nomSprite.visible = false;
-  nomSprite.renderOrder = 3;
+  // Au-dessus des autres étiquettes (les noms des lieux à 10 et 11, la flèche et le médaillon de la Carte à 12) : le nom
+  // du fantôme n'est jamais caché pendant le mode.
+  nomSprite.renderOrder = 13;
   nomSprite.raycast = () => {};
   monde.scene.add(nomSprite);
   let nomEcrit = '';

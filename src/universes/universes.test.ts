@@ -190,7 +190,7 @@ describe('les textes communs (J8, U4)', () => {
 describe('GD-1 : le chantier du bâtisseur, dans Blocland seulement', () => {
   const arrivee = (a: (typeof ARCHIPELAGOS)[number]): WhaleMoment => ({ id: `archipel-${a.classe}`, kind: 'arrivee', archipelago: a.classe, island: a.port });
 
-  it('Archipéo garde ses textes d’avant GD-1, sans un mot changé', () => {
+  it('Archipéo garde ses textes d’avant GD-1 (le nom de l’île-port avec son article, 6 octobre 2026)', () => {
     const t = textesDe('archipeo');
     expect(t.baleine.parle).toBe('baleine');
     expect(t.baleine.arrivee).toEqual({
@@ -199,8 +199,9 @@ describe('GD-1 : le chantier du bâtisseur, dans Blocland seulement', () => {
       '4e': 'Le Bloc-Navire a fait sa traversée. Te voilà dans les Anciens Ateliers : les vieux ateliers attendent qu’on les remette en marche.',
       '3e': 'Le Bloc-Navire a fait sa traversée. Te voilà dans les Îles du Ciel : ici, les îles flottent dans les nuages.',
     });
-    expect([t.baleine.port('Plaine des nombres'), t.baleine.ouvrage('Mine des lettres')]).toEqual([
-      'Plaine des nombres est bâtie. Tu avances bien : chaque île bâtie rend l’archipel plus beau.',
+    expect([t.baleine.port('Plaine des nombres'), t.baleine.port('Marché des proportions'), t.baleine.ouvrage('Mine des lettres')]).toEqual([
+      'La Plaine des nombres est bâtie. Tu avances bien : chaque île bâtie rend l’archipel plus beau.',
+      'Le Marché des proportions est bâti. Tu avances bien : chaque île bâtie rend l’archipel plus beau.',
       'Un chemin s’ouvre vers la Mine des lettres. L’archipel s’agrandit.',
     ]);
     // Les noms des archipels et des rôles sont ceux des données ; aucun succès renommé, aucun écran de renommage.

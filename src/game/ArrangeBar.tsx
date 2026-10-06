@@ -84,7 +84,7 @@ export function ArrangeListOffer({ onListe, onCarte }: { onListe: () => void; on
 
 /**
  * La phrase du mode, en haut, sur un fond uni : écrite, et lisible à voix haute. Au téléphone (hors de la liste), une
- * ligne courte, le nom et la direction, que le toucher ouvre sur la phrase entière ; le haut-parleur lit toujours la
+ * ligne courte, la direction et l'écart, que le toucher ouvre sur la phrase entière ; le haut-parleur lit toujours la
  * phrase entière.
  */
 export function ArrangeSentence({ amenagement, nom, questionAilleurs = false }: { amenagement: Amenagement; nom: PlaceName; questionAilleurs?: boolean }) {
@@ -134,11 +134,17 @@ export function ArrangeSentence({ amenagement, nom, questionAilleurs = false }: 
   );
 }
 
-/** La phrase au téléphone : une ligne, la phrase entière au toucher (refermée à chaque nouvelle phrase). */
+/**
+ * La phrase au téléphone : une ligne courte (deux lignes au plus), la phrase entière au toucher (refermée à chaque
+ * nouvelle phrase). La zone annoncée est à part, hors du bouton : ouvrir la phrase ne la fait pas relire.
+ */
 function LigneCourte({ phrase, resume }: { phrase: string; resume: string }) {
   const [ouverte, setOuverte] = useState(false);
   return (
-    <div className={`creature-line world-line arrange-line arrange-line-courte${ouverte ? ' ouverte' : ''}`} role="status" aria-live="polite">
+    <div className={`creature-line world-line arrange-line arrange-line-courte${ouverte ? ' ouverte' : ''}`}>
+      <p className="visually-hidden" role="status" aria-live="polite">
+        {phrase}
+      </p>
       <button type="button" className="arrange-line-texte" aria-expanded={ouverte} onClick={() => setOuverte(!ouverte)}>
         {ouverte ? phrase : resume}
       </button>
@@ -149,7 +155,7 @@ function LigneCourte({ phrase, resume }: { phrase: string; resume: string }) {
 
 /**
  * La question de « Réunir » (GD-9, point 10), dans la zone de la phrase (ou sous la ligne du lieu, en vue simple) :
- * « Réunir la Tour du lecteur et la Ferme des accords ? Ils ne se sépareront plus. », la phrase sur la construction de
+ * « Réunir la Tour du lecteur et la Ferme des accords ? Les deux lieux ne se sépareront plus. », la phrase sur la construction de
  * l'univers la première fois, un bouton « Réunir avec … » par voisin possible, et « Ne pas réunir ». Rien n'y est mis
  * en avant : c'est à l'élève de choisir.
  */

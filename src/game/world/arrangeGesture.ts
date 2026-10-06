@@ -48,17 +48,22 @@ const ensemble = (a: Rectangle, b: Rectangle): Rectangle => ({ x0: Math.min(a.x0
 
 /**
  * Où se tient le voile de brume d'Archipéo : il ne disparaît jamais d'une place pour reparaître à l'autre, il GLISSE.
- * Démontage : il couvre l'ancienne place, puis, plein, s'étire jusqu'à couvrir les deux ; au plus fort (le lieu change
- * de place dessous), il couvre les deux. Remontage : il se resserre sur la nouvelle place, puis s'y lève. Sans `autre`,
+ * Démontage : il couvre l'ancienne place, à son emprise, puis, plein, s'étire jusqu'à couvrir les deux ; au plus fort (le
+ * lieu change de place dessous), il couvre les deux. Remontage : il se resserre sur la nouvelle place, puis s'y lève. Sans `autre`,
  * il reste sur sa zone.
  */
 export function veilZone(g: ArrangeGesture, now: number): Rectangle {
   if (!g.autre) return g.zone;
   const k = gestureProgress(g, now);
   const deux = ensemble(g.zone, g.autre);
-  if (g.phase === 'demonte') return entre(g.zone, deux, doux(Math.max(0, k * 2 - 1)));
-  return entre(deux, g.zone, doux(Math.min(1, k * 2)));
+  // Il ne couvre les deux places que le temps du passage (les derniers 40 % du démontage, les premiers 40 % du
+  // remontage) : le reste du geste, il tient à l'emprise du lieu.
+  if (g.phase === 'demonte') return entre(g.zone, deux, doux(Math.max(0, (k - (1 - VOILE_PASSAGE)) / VOILE_PASSAGE)));
+  return entre(deux, g.zone, doux(Math.min(1, k / VOILE_PASSAGE)));
 }
+
+/** La part de chaque moitié du geste où le voile s'étire d'une place à l'autre. */
+const VOILE_PASSAGE = 0.4;
 
 /** La zone d'un geste autour d'une emprise : une case de plus de chaque côté (une cascade, un ponton). */
 export function gestureZone(r: Rectangle): Rectangle {

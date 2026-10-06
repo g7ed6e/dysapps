@@ -37,8 +37,8 @@ import type { ArrangeGesture, ArrangeView, CadreDuMode } from './world/view';
 import { footprintOf } from './world/footprint';
 import type { Intention, Point } from './world/layout';
 import type { Rectangle } from './world/placement';
-import type { PlaceName } from './world/placeSentence';
-import { thePlace, toPlace } from './world/placeArticle';
+import { type PlaceName, placeSentence } from './world/placeSentence';
+import { joinedSentence, thePlace, toPlace } from './world/placeArticle';
 import { LIAISON, type LinkPhrases, type LinkWord, linkPhrases } from './world/linkWord';
 
 /** La clé de l'appareil qui retient que le mot « ouvrage à reposer » (le mot de l'univers) a été expliqué (une fois). */
@@ -53,14 +53,12 @@ function explicationDeLaLiaison(m: LinkPhrases): string {
 }
 
 /**
- * Ce que dit « Réunir » la première fois, après la question (qui dit déjà qu'ils ne se sépareront plus) : une phrase sur
- * la construction de l'univers (la digue dans Blocland, la jetée dans Archipéo).
+ * Ce que dit « Réunir » la première fois, après la question (qui dit déjà que les deux lieux ne se sépareront plus) : une
+ * phrase sur la construction de l'univers (la digue dans Blocland, la jetée dans Archipéo).
  */
 function explicationDeLaReunion(reunion: TextesDeLaReunion): string {
   return reunion.description;
 }
-
-const majuscule = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 /** Ce que dit le jeu quand une pose ne se fait pas. */
 function refus(reason: string, m: LinkPhrases): string {
@@ -152,6 +150,8 @@ export interface Amenagement {
   mot: LinkPhrases;
   aReposer: string[];
   geste: ArrangeGesture | null;
+  /** Le lieu qui se déplace pendant le geste (son étiquette garde « Choisi » jusqu'à la fin), ou rien. */
+  lieuDuGeste: BiomeId | null;
   /** Une intention de la vue dans le mode : `true` si le mode l'a prise. */
   intention(i: Intention): boolean;
   /** Un toucher pendant le geste : il se termine tout de suite. */
@@ -216,6 +216,7 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
   // Ce que la vue garde entier après une réunion : la paire et sa construction.
   const [cadre, setCadre] = useState<CadreDuMode | null>(null);
   const [geste, setGeste] = useState<ArrangeGesture | null>(null);
+  const [lieuDuGeste, setLieuDuGeste] = useState<BiomeId | null>(null);
   const enCours = useRef<GesteEnCours | null>(null);
   const seq = useRef(0);
   const worldRef = useRef(world);
@@ -254,6 +255,7 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     enCours.current = null;
     if (!g.remonte) arrange(g.apres);
     setGeste(null);
+    setLieuDuGeste(null);
     if (sons) sonDeLaPose();
     annoncer(g.phrase, g.resume);
   };
@@ -271,7 +273,9 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     if (!r.ok) return annoncer(refus(r.reason, mot));
     setSession(recordPose(session, w, r.world));
     setCadre(null);
-    const court = `C’est posé. ${choiceSummary(r.world, choix.genre === 'lieu' ? { ...choix, spot: spotOf(r.world, choix.id) } : choix, nom, mot)}`;
+    // La ligne courte au téléphone : « Posé au nord de la Forêt des sons, à 2 cases. » pour un lieu, deux lignes au plus.
+    const court =
+      choix.genre === 'lieu' ? `Posé ${placeSentence(r.world, choix.id, spotOf(r.world, choix.id), nom)}.` : `C’est posé. ${choiceSummary(r.world, choix, nom, mot)}`;
     const texte =
       poseSentence(r.world, choix, nom, mot) +
       (r.relink.length ? ` ${mot.aReposer(r.relink.length)}` : '') +
@@ -294,6 +298,7 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     const ancienne = gestureZone(emprise(w, id));
     const nouvelle = gestureZone(emprise(r.world, id));
     setGeste({ ...base, seq: ++seq.current, phase: 'demonte', zone: ancienne, autre: nouvelle, debut: performance.now() });
+    setLieuDuGeste(id);
     // Les captures tiennent le geste dans son démontage (`__dysappsGesteA`) : il ne passe pas au remontage.
     if (typeof window.__dysappsGesteA === 'number' && (import.meta.env.DEV || mesuresDemandees())) return;
     g.timers.push(
@@ -374,7 +379,7 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     const q: QuestionDeReunion = { id, voisins, explication: premiere ? explicationDeLaReunion(reunion) : null };
     setQuestion(q);
     // L'espace insécable avant « ? » : le point d'interrogation ne part jamais seul à la ligne.
-    const texte = `Réunir ${thePlace(nom(id))} et ${voisins.length === 1 ? thePlace(nom(voisins[0])) : 'quel lieu'}\u00a0? Ils ne se sépareront plus.`;
+    const texte = `Réunir ${thePlace(nom(id))} et ${voisins.length === 1 ? thePlace(nom(voisins[0])) : 'quel lieu'}\u00a0? Les deux lieux ne se sépareront plus.`;
     setPhrase(texte);
     setResume(premierePhrase(texte));
     dire(q.explication ? `${texte} ${q.explication}` : texte);
@@ -395,10 +400,10 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     setChoix(null);
     setCadre({ rect: emprise(r.world, id), z: placeIn(r.world, id).altitude, seq: ++seq.current });
     if (sons) sonDeLaPose();
-    // Des phrases courtes, une idée chacune, sans symbole.
-    const reunis = `${majuscule(thePlace(nom(id)))} et ${thePlace(nom(autre))} sont réunis.`;
+    // Des phrases courtes, une idée chacune, sans symbole ; « réuni » s'accorde avec le premier lieu.
+    const reunis = joinedSentence(nom(id), nom(autre));
     annoncer(
-      [reunis, 'Ils bougent ensemble.', r.relink.length ? mot.aReposer(r.relink.length) : '', `${reunion.nom} se construit depuis le panneau de l’île.`, 'Défaire annule la réunion.'].filter(Boolean).join(' '),
+      [reunis, 'Les deux lieux bougent ensemble.', r.relink.length ? mot.aReposer(r.relink.length) : '', `${reunion.nom} se construit depuis le panneau de l’île.`, 'Défaire annule la réunion.'].filter(Boolean).join(' '),
       reunis,
     );
   };
@@ -512,6 +517,7 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     mot,
     aReposer,
     geste,
+    lieuDuGeste,
     intention,
     finirLeGeste,
     fleche,

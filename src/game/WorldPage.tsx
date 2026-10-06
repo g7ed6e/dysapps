@@ -1,5 +1,4 @@
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
-import { thePlace, toPlace } from './world/placeArticle';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { SpeakButton } from '../components/SpeakButton';
@@ -36,6 +35,7 @@ import { laDestinationEstLeNavire, lienDeLaDestination } from './world/destinati
 import { nextGoalInfo } from './world/goals';
 import { borneDe, cleDeLaCreature, cleDeLObjet, imageDeLaDestination } from './world/affordance';
 import { getCommande } from './world/requests';
+import { thePlace, toPlace } from './world/placeArticle';
 import { WorldCard, type FicheOuverte } from './WorldCard';
 import { TROPHIES_PATH, trophies } from './trophies';
 import { WorldCanvas } from './three';
@@ -354,7 +354,8 @@ export function WorldPage() {
   // Le nom de chaque île ouverte de l'archipel, écrit au-dessus d'elle dans le monde ; sur la Carte, toutes les îles,
   // avec leur état en icône et en mot. Le bloc que l'île rapporte, avant son nom (ligne `blocDesIles` de l'habillage).
   const blocDesIles = habillage.blocDesIles === 'avant-le-nom';
-  const lieuChoisi = enAmenageant && amenagement.choix?.genre === 'lieu' ? amenagement.choix.id : null;
+  // Pendant le geste de la pose, le lieu qui se déplace garde « Choisi » (dans les deux univers) jusqu'à la fin.
+  const lieuChoisi = !enAmenageant ? null : amenagement.choix?.genre === 'lieu' ? amenagement.choix.id : amenagement.lieuDuGeste;
   const islandLabels = useMemo(
     () =>
       ilesDuModele(state, a)
@@ -1010,7 +1011,7 @@ export function WorldPage() {
   if (biomeId && !panelOpen && !island) return <NotFoundPage />;
   return (
     <div
-      className={`world-page${ficheVue ? ' fiche-ouverte' : ''}${whaleWord || motRallume || renommageOuvert ? ' bulle-ouverte' : ''}`}
+      className={`world-page${ficheVue ? ' fiche-ouverte' : ''}${enAmenageant ? ' en-amenagement' : ''}${whaleWord || motRallume || renommageOuvert ? ' bulle-ouverte' : ''}`}
     >
       <p className="visually-hidden" role="status" data-testid="arrivee-lue">
         {arriveeLue}
