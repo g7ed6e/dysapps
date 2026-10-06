@@ -1,5 +1,5 @@
-// Le référentiel des programmes officiels : les compétences des cycles 3 et 4 (français, maths, anglais ; histoire et
-// géographie, SVT, physique-chimie et technologie, 6e seulement pour l'instant ; allemand et espagnol en LV2, cycle 4
+// Le référentiel des programmes officiels : les compétences des cycles 3 et 4 (français, maths, anglais, histoire et
+// géographie ; SVT, physique-chimie et technologie, 6e seulement pour l'instant ; allemand et espagnol en LV2, cycle 4
 // seulement) que les missions citent (champ `programme` de biomes.ts et de apps/registry.ts).
 // Provenance : data.gouv.fr, Licence Ouverte.
 // Ce module n'entre pas dans le bundle de l'application : les missions n'en importent que des types.

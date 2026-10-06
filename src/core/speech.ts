@@ -73,6 +73,9 @@ export function pourLaVoix(text: string): string {
   return text
     .replace(/(\d)[\u00a0\u202f](?=\d{3}(?!\d))/g, '$1')
     .replace(/\b([IVXL]+)(?:er|e)(?=[\s\u00a0]+siècles?\b)/g, (tout, romain: string) => siecleEnMots(romain) ?? tout)
+    .replace(/\b(\p{Lu}\p{Ll}+)[\s\u00a0]+(Ier|[IVX]+)(?![\p{L}\d])/gu, (tout, nom: string, romain: string) =>
+      PAS_UN_SOUVERAIN.has(nom) ? tout : `${nom} ${souverainEnMots(romain) ?? romain}`,
+    )
     // Le point de « J.-C. » qui finit une phrase reste un point, pour la pause.
     .replace(/\bJ\.-C\.(?=\s+\p{Lu}|\s*$)/gu, 'Jésus-Christ.')
     .replace(/\bJ\.-C\./g, 'Jésus-Christ');
@@ -86,17 +89,36 @@ const UNITES = ['', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'hui
  * par lettre (« V, I, I, I, e »). Jusqu'au XXIe siècle ; au-delà, ou pour une suite qui n'est pas un nombre, rien.
  */
 function siecleEnMots(romain: string): string | undefined {
+  const n = romainEnNombre(romain);
+  if (n === undefined) return undefined;
+  if (n === 1) return 'premier';
+  const cardinal = cardinalEnMots(n);
+  // « cinq » prend un u, « neuf » change son f en v, le e final tombe (« quatre », « onze »).
+  return `${cardinal.replace(/q$/, 'qu').replace(/f$/, 'v').replace(/e$/, '')}ième`;
+}
+
+/** Les mots à majuscule qui précèdent un chiffre romain sans être un nom de souverain (« Le XIV », « Chapitre III »). */
+const PAS_UN_SOUVERAIN: ReadonlySet<string> = new Set(['Le', 'La', 'Les', 'Au', 'Aux', 'Du', 'Des', 'De', 'En', 'Chapitre', 'Tome', 'Acte']);
+
+/** « Louis XIV », « François Ier », « Napoléon III » tels qu'on les dit : « quatorze », « premier », « trois ». */
+function souverainEnMots(romain: string): string | undefined {
+  if (romain === 'Ier') return 'premier';
+  const n = romainEnNombre(romain);
+  return n === undefined ? undefined : cardinalEnMots(n);
+}
+
+function romainEnNombre(romain: string): number | undefined {
   let n = 0;
   for (let i = 0; i < romain.length; i++) {
     const v = ROMAINS[romain[i]];
     const suivant = ROMAINS[romain[i + 1]] ?? 0;
     n += v < suivant ? -v : v;
   }
-  if (n < 1 || n > 21) return undefined;
-  if (n === 1) return 'premier';
-  const cardinal = n <= 16 ? UNITES[n] : n < 20 ? `dix-${UNITES[n - 10]}` : n === 20 ? 'vingt' : 'vingt-et-un';
-  // « cinq » prend un u, « neuf » change son f en v, le e final tombe (« quatre », « onze »).
-  return `${cardinal.replace(/q$/, 'qu').replace(/f$/, 'v').replace(/e$/, '')}ième`;
+  return n < 1 || n > 21 ? undefined : n;
+}
+
+function cardinalEnMots(n: number): string {
+  return n <= 16 ? UNITES[n] : n < 20 ? `dix-${UNITES[n - 10]}` : n === 20 ? 'vingt' : 'vingt-et-un';
 }
 
 export function speak(text: string, rate = 0.9, onEnd?: () => void, lang: Lang = 'fr'): void {

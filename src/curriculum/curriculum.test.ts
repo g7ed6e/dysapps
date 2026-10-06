@@ -8,13 +8,14 @@ const straightApostrophe = (t: string) => t.includes("'");
 
 /** Les LV2 commencent en 5e : elles n'ont que le cycle 4. */
 const LV2 = ['german', 'spanish'] as const;
-/** L'histoire et la géographie et les sciences n'ont pour l'instant que la 6e (cycle 3) : le cycle 4 viendra avec leurs îles. */
-const CYCLE_3_ONLY: readonly string[] = ['history-geography', 'life-earth-sciences', 'physics-chemistry', 'technology'];
+/** Les sciences n'ont pour l'instant que la 6e (cycle 3) : le cycle 4 viendra avec leurs îles. */
+const CYCLE_3_ONLY: readonly string[] = ['life-earth-sciences', 'physics-chemistry', 'technology'];
 
 it('le référentiel a une taille raisonnable et chaque discipline est présente dans ses cycles', () => {
   // 188 compétences pour le français, les maths et l'anglais, plus 20 par LV2 (le programme de langues vivantes du
   // cycle 4 est commun à toutes les langues) : le plafond passe de 200 à 250 pour les accueillir, puis à 300 pour
-  // l'histoire et la géographie et les sciences de 6e.
+  // l'histoire et la géographie et les sciences de 6e. L'histoire et la géographie du cycle 4 (28 compétences) y
+  // tiennent : 284 en tout.
   expect(PROGRAMME.length).toBeGreaterThanOrEqual(100);
   expect(PROGRAMME.length).toBeLessThanOrEqual(300);
   for (const discipline of Object.keys(DISCIPLINES) as (keyof typeof DISCIPLINES)[]) {
