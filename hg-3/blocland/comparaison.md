@@ -1,27 +1,27 @@
 # Comparaison avec main
 
-Références : preview au commit 161ded365e39196d3597fbcf8cf21d9c6f3b071e (après : 413effdee8640a033870ecfa4b590829252f51b1). Une vue est changée au-delà de 0,3 % de pixels différents.
+Références : preview au commit 161ded365e39196d3597fbcf8cf21d9c6f3b071e (après : f7f8f103df20965c89f36eb75dd20a7920383c26). Une vue est changée au-delà de 0,3 % de pixels différents.
 
 ## Changées (20) : planches dans `planches/`
 
 - 3e-archipel-nuit.jpg : 39,2 %
 - 3e-archipel.jpg : 41,6 %
 - 3e-carte-nuit.jpg : 27,8 %
-- 3e-carte.jpg : 23,2 %
-- 3e-ile-nuit.jpg : 2,9 %
+- 3e-carte.jpg : 18,3 %
+- 3e-ile-nuit.jpg : 2,8 %
 - 3e-ile.jpg : 2,9 %
-- 4e-archipel-nuit.jpg : 53,1 %
-- 4e-archipel.jpg : 62,5 %
+- 4e-archipel-nuit.jpg : 53,0 %
+- 4e-archipel.jpg : 62,0 %
 - 4e-carte-nuit.jpg : 30,7 %
 - 4e-carte.jpg : 33,6 %
 - 4e-ile-nuit.jpg : 4,0 %
-- 4e-ile.jpg : 4,4 %
-- 5e-archipel-nuit.jpg : 1,9 %
-- 5e-archipel.jpg : 8,8 %
+- 4e-ile.jpg : 4,6 %
+- 5e-archipel-nuit.jpg : 2,0 %
+- 5e-archipel.jpg : 51,4 %
 - 5e-carte-nuit.jpg : 36,7 %
 - 5e-carte.jpg : 39,2 %
-- 5e-ile-nuit.jpg : 0,8 %
-- 5e-ile.jpg : 1,4 %
+- 5e-ile-nuit.jpg : 0,9 %
+- 5e-ile.jpg : 1,3 %
 - 6e-carte-nuit.jpg : 38,1 %
 - 6e-carte.jpg : 41,2 %
 
@@ -29,8 +29,8 @@ Références : preview au commit 161ded365e39196d3597fbcf8cf21d9c6f3b071e (aprè
 
 - 6e-archipel-nuit.jpg : 0,0 %
 - 6e-archipel.jpg : 0,0 %
-- 6e-ile-nuit.jpg : 0,2 %
-- 6e-ile.jpg : 0,0 %
+- 6e-ile-nuit.jpg : 0,0 %
+- 6e-ile.jpg : 0,3 %
 
 ## Sans référence (89) : dans `planches/` telles quelles
 
