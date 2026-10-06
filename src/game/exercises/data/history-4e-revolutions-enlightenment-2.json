@@ -1,0 +1,230 @@
+{
+  "id": "history-4e-revolutions-enlightenment-2",
+  "biome": "history-4e-revolutions",
+  "type": "enlightenment",
+  "level": 2,
+  "instruction": "Lis la question, puis le document. Choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "history-4e-revolutions-enlightenment-2-0",
+      "prompt": "Le commerce triangulaire\nD’Europe vers l’Afrique : des tissus, des armes\nD’Afrique vers les Amériques : des Africains réduits en esclavage\nDes Amériques vers l’Europe : du sucre, du café",
+      "question": "Que rapportent les navires en Europe ?",
+      "spoken": "Le commerce triangulaire. D’Europe vers l’Afrique : des tissus, des armes. D’Afrique vers les Amériques : des Africains réduits en esclavage. Des Amériques vers l’Europe : du sucre, du café.",
+      "choices": [
+        "des tissus et des armes",
+        "du sucre et du café",
+        "des Africains réduits en esclavage"
+      ],
+      "answer": "du sucre et du café",
+      "hint": "Lis la ligne qui contient « vers l’Europe ».",
+      "explanation": "Les navires rapportent en Europe le sucre et le café des plantations, où travaillent les Africains réduits en esclavage. Les tissus et les armes partent d’Europe.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Qui parle ? Son point de vue n’est pas celui de tous.",
+            "Le XVIIIe siècle : de l’an 1701 à l’an 1800.",
+            "Le XIXe siècle : de l’an 1801 à l’an 1900."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-4e-revolutions-enlightenment-2-1",
+      "prompt": "Voltaire, Candide, 1759\nUn esclave des plantations parle à Candide :\n« C’est à ce prix que vous mangez du sucre en Europe. »",
+      "question": "Que dénonce Voltaire ?",
+      "spoken": "Voltaire, Candide, mille sept cent cinquante-neuf. Un esclave des plantations parle à Candide : « C’est à ce prix que vous mangez du sucre en Europe. »",
+      "choices": [
+        "le prix trop cher du sucre",
+        "l’esclavage dans les plantations",
+        "le commerce des tissus"
+      ],
+      "answer": "l’esclavage dans les plantations",
+      "hint": "Qui parle ? De quel « prix » parle-t-il ?",
+      "explanation": "Le « prix », c’est la vie de l’esclave, pas de l’argent. Voltaire, philosophe des Lumières, dénonce l’esclavage qui produit le sucre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Qui parle ? Son point de vue n’est pas celui de tous.",
+            "Le XVIIIe siècle : de l’an 1701 à l’an 1800.",
+            "Le XIXe siècle : de l’an 1801 à l’an 1900."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-4e-revolutions-enlightenment-2-2",
+      "prompt": "Une idée de Montesquieu, 1748\nPour qu’un seul homme n’ait pas tout le pouvoir,\non sépare trois pouvoirs :\nfaire les lois, les appliquer, juger.",
+      "question": "Que propose Montesquieu ?",
+      "spoken": "Une idée de Montesquieu, mille sept cent quarante-huit. Pour qu’un seul homme n’ait pas tout le pouvoir, on sépare trois pouvoirs : faire les lois, les appliquer, juger.",
+      "choices": [
+        "donner tout le pouvoir au roi",
+        "supprimer les lois",
+        "séparer les pouvoirs"
+      ],
+      "answer": "séparer les pouvoirs",
+      "hint": "Relis la ligne qui commence par « on sépare ».",
+      "explanation": "Montesquieu propose de séparer les pouvoirs, pour qu’un roi ne décide pas de tout seul. C’est une idée des Lumières.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Qui parle ? Son point de vue n’est pas celui de tous.",
+            "Le XVIIIe siècle : de l’an 1701 à l’an 1800.",
+            "Le XIXe siècle : de l’an 1801 à l’an 1900."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-4e-revolutions-enlightenment-2-3",
+      "prompt": "L’Encyclopédie\nDirigée par Diderot et d’Alembert\nParue de 1751 à 1772\nElle réunit les savoirs de son temps.",
+      "question": "En quel siècle paraît l’Encyclopédie ?",
+      "spoken": "L’Encyclopédie. Dirigée par Diderot et d’Alembert. Parue de mille sept cent cinquante et un à mille sept cent soixante-douze. Elle réunit les savoirs de son temps.",
+      "choices": [
+        "au XVIIe siècle",
+        "au XVIIIe siècle",
+        "au XIXe siècle"
+      ],
+      "answer": "au XVIIIe siècle",
+      "hint": "Dans le rappel, 1751 est-il entre 1701 et 1800 ?",
+      "explanation": "1751 et 1772 sont entre 1701 et 1800 : c’est le XVIIIe siècle. Les années en 17 sont au XVIIIe siècle, pas au XVIIe.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Qui parle ? Son point de vue n’est pas celui de tous.",
+            "Le XVIIIe siècle : de l’an 1701 à l’an 1800.",
+            "Le XIXe siècle : de l’an 1801 à l’an 1900."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-4e-revolutions-enlightenment-2-4",
+      "prompt": "Ce que demandent des paysans en 1789\nDans leur cahier de doléances :\nmoins d’impôts pour le tiers état ;\nque les nobles paient aussi.",
+      "question": "Qui donne son point de vue dans ce document ?",
+      "spoken": "Ce que demandent des paysans en mille sept cent quatre-vingt-neuf. Dans leur cahier de doléances : moins d’impôts pour le tiers état ; que les nobles paient aussi.",
+      "choices": [
+        "des paysans",
+        "des nobles",
+        "le roi"
+      ],
+      "answer": "des paysans",
+      "hint": "Relis la première ligne.",
+      "explanation": "Ce sont des paysans, du tiers état. Ils trouvent injuste de payer plus que les nobles. En 1789, chaque ordre écrit ses doléances au roi.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Qui parle ? Son point de vue n’est pas celui de tous.",
+            "Le XVIIIe siècle : de l’an 1701 à l’an 1800.",
+            "Le XIXe siècle : de l’an 1801 à l’an 1900."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-4e-revolutions-enlightenment-2-5",
+      "prompt": "Déclaration des droits de l’homme et du citoyen\n26 août 1789\nArticle 1 : « Les hommes naissent et demeurent\nlibres et égaux en droits. »",
+      "question": "Quelle idée affirme cet article ?",
+      "spoken": "Déclaration des droits de l’homme et du citoyen. Vingt-six août mille sept cent quatre-vingt-neuf. Article premier : « Les hommes naissent et demeurent libres et égaux en droits. »",
+      "choices": [
+        "le pouvoir du roi",
+        "l’égalité des droits",
+        "la richesse pour tous"
+      ],
+      "answer": "l’égalité des droits",
+      "hint": "Relis les mots entre les guillemets.",
+      "explanation": "Libres et égaux en droits : la loi est la même pour tous. Égaux en droits ne veut pas dire aussi riches.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Qui parle ? Son point de vue n’est pas celui de tous.",
+            "Le XVIIIe siècle : de l’an 1701 à l’an 1800.",
+            "Le XIXe siècle : de l’an 1801 à l’an 1900."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-4e-revolutions-enlightenment-2-6",
+      "prompt": "Le Code civil, 1804\nVoulu par Napoléon Bonaparte\nLes mêmes lois pour tous les Français",
+      "question": "Qu’apporte le Code civil ?",
+      "spoken": "Le Code civil, mille huit cent quatre. Voulu par Napoléon Bonaparte. Les mêmes lois pour tous les Français.",
+      "choices": [
+        "des lois pour les nobles seulement",
+        "la fin de l’Empire",
+        "les mêmes lois pour tous"
+      ],
+      "answer": "les mêmes lois pour tous",
+      "hint": "Relis la ligne qui contient « lois ».",
+      "explanation": "Le Code civil donne les mêmes lois à tous les Français. Il garde une idée de la Révolution : l’égalité devant la loi.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Qui parle ? Son point de vue n’est pas celui de tous.",
+            "Le XVIIIe siècle : de l’an 1701 à l’an 1800.",
+            "Le XIXe siècle : de l’an 1801 à l’an 1900."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-4e-revolutions-enlightenment-2-7",
+      "prompt": "Trois événements\n1789 : la prise de la Bastille\n1792 : la République\n1804 : l’Empire",
+      "question": "Quel événement est le plus récent ?",
+      "spoken": "Trois événements. Mille sept cent quatre-vingt-neuf : la prise de la Bastille. Mille sept cent quatre-vingt-douze : la République. Mille huit cent quatre : l’Empire.",
+      "choices": [
+        "la prise de la Bastille",
+        "la République",
+        "l’Empire"
+      ],
+      "answer": "l’Empire",
+      "hint": "Le plus récent a la plus grande année.",
+      "explanation": "1804 est la plus grande année : l’Empire est le plus récent. La prise de la Bastille, en 1789, est la plus ancienne.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Qui parle ? Son point de vue n’est pas celui de tous.",
+            "Le XVIIIe siècle : de l’an 1701 à l’an 1800.",
+            "Le XIXe siècle : de l’an 1801 à l’an 1900."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "history-4e-revolutions",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

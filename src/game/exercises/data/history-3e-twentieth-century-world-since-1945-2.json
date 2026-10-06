@@ -1,0 +1,230 @@
+{
+  "id": "history-3e-twentieth-century-world-since-1945-2",
+  "biome": "history-3e-twentieth-century",
+  "type": "world-since-1945",
+  "level": 2,
+  "instruction": "Lis la question, puis le document. Choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "history-3e-twentieth-century-world-since-1945-2-0",
+      "prompt": "L’Europe en 1950\nÀ l’ouest : les États-Unis et leurs alliés, en démocratie\nÀ l’est : l’Union soviétique et ses alliés, communistes",
+      "question": "Quel pays dirige le camp de l’Est ?",
+      "spoken": "L’Europe en mille neuf cent cinquante. À l’ouest : les États-Unis et leurs alliés, en démocratie. À l’est : l’Union soviétique et ses alliés, communistes.",
+      "choices": [
+        "les États-Unis",
+        "la France",
+        "l’Union soviétique"
+      ],
+      "answer": "l’Union soviétique",
+      "hint": "Lis la ligne qui commence par « À l’est ».",
+      "explanation": "Le camp de l’Est, communiste, est dirigé par l’Union soviétique. Le camp de l’Ouest est dirigé par les États-Unis.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document d’histoire",
+          "lines": [
+            "La première ligne dit ce qu’est le document et sa date.",
+            "À l’ouest : les États-Unis et leurs alliés.",
+            "À l’est : l’Union soviétique et ses alliés, communistes.",
+            "Un pays indépendant décide seul de ses lois."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-3e-twentieth-century-world-since-1945-2-1",
+      "prompt": "Berlin, 9 novembre 1989\nLe mur s’ouvre.\nLes Berlinois de l’Est passent à l’Ouest.\nLa foule fait la fête.",
+      "question": "Que se passe-t-il ce jour-là ?",
+      "spoken": "Berlin, le neuf novembre mille neuf cent quatre-vingt-neuf. Le mur s’ouvre. Les Berlinois de l’Est passent à l’Ouest. La foule fait la fête.",
+      "choices": [
+        "la chute du mur de Berlin",
+        "la construction du mur",
+        "le début de la guerre froide"
+      ],
+      "answer": "la chute du mur de Berlin",
+      "hint": "Relis la ligne qui commence par « Le mur ».",
+      "explanation": "Le 9 novembre 1989, le mur s’ouvre : c’est la chute du mur de Berlin. Il avait été construit en 1961.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document d’histoire",
+          "lines": [
+            "La première ligne dit ce qu’est le document et sa date.",
+            "À l’ouest : les États-Unis et leurs alliés.",
+            "À l’est : l’Union soviétique et ses alliés, communistes.",
+            "Un pays indépendant décide seul de ses lois."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-3e-twentieth-century-world-since-1945-2-2",
+      "prompt": "Octobre 1962, à Cuba\nL’Union soviétique installe des missiles nucléaires.\nLes États-Unis, tout proches, exigent leur départ.\nLes missiles repartent.",
+      "question": "Comment finit cette crise ?",
+      "spoken": "Octobre mille neuf cent soixante-deux, à Cuba. L’Union soviétique installe des missiles nucléaires. Les États-Unis, tout proches, exigent leur départ. Les missiles repartent.",
+      "choices": [
+        "une guerre nucléaire éclate",
+        "les missiles repartent",
+        "Cuba devient américaine"
+      ],
+      "answer": "les missiles repartent",
+      "hint": "Relis la ligne qui commence par « Les missiles ».",
+      "explanation": "Le monde a eu peur d’une guerre nucléaire, mais les missiles repartent : la crise de Cuba se finit sans guerre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document d’histoire",
+          "lines": [
+            "La première ligne dit ce qu’est le document et sa date.",
+            "À l’ouest : les États-Unis et leurs alliés.",
+            "À l’est : l’Union soviétique et ses alliés, communistes.",
+            "Un pays indépendant décide seul de ses lois."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-3e-twentieth-century-world-since-1945-2-3",
+      "prompt": "L’Inde, 15 août 1947\nLe Royaume-Uni quitte l’Inde.\nL’Inde devient un État indépendant.",
+      "question": "Quel pays avait colonisé l’Inde ?",
+      "spoken": "L’Inde, le quinze août mille neuf cent quarante-sept. Le Royaume-Uni quitte l’Inde. L’Inde devient un État indépendant.",
+      "choices": [
+        "la France",
+        "le Royaume-Uni",
+        "l’Espagne"
+      ],
+      "answer": "le Royaume-Uni",
+      "hint": "Qui quitte l’Inde ?",
+      "explanation": "L’Inde était une colonie du Royaume-Uni. En 1947, elle devient indépendante.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document d’histoire",
+          "lines": [
+            "La première ligne dit ce qu’est le document et sa date.",
+            "À l’ouest : les États-Unis et leurs alliés.",
+            "À l’est : l’Union soviétique et ses alliés, communistes.",
+            "Un pays indépendant décide seul de ses lois."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-3e-twentieth-century-world-since-1945-2-4",
+      "prompt": "Les accords d’Évian, mars 1962\nLa guerre d’Algérie s’arrête.\nEn juillet, l’Algérie devient indépendante.",
+      "question": "Qu’apportent ces accords ?",
+      "spoken": "Les accords d’Évian, mars mille neuf cent soixante-deux. La guerre d’Algérie s’arrête. En juillet, l’Algérie devient indépendante.",
+      "choices": [
+        "le début de la guerre",
+        "l’entrée de l’Algérie dans l’Europe",
+        "la fin de la guerre d’Algérie"
+      ],
+      "answer": "la fin de la guerre d’Algérie",
+      "hint": "Relis la ligne qui commence par « La guerre ».",
+      "explanation": "Les accords d’Évian arrêtent la guerre d’Algérie en mars 1962. En juillet, l’Algérie devient indépendante.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document d’histoire",
+          "lines": [
+            "La première ligne dit ce qu’est le document et sa date.",
+            "À l’ouest : les États-Unis et leurs alliés.",
+            "À l’est : l’Union soviétique et ses alliés, communistes.",
+            "Un pays indépendant décide seul de ses lois."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-3e-twentieth-century-world-since-1945-2-5",
+      "prompt": "La construction européenne\n1957 : 6 pays\n1995 : 15 pays\nAujourd’hui : 27 pays",
+      "question": "Combien de pays l’Union européenne compte-t-elle aujourd’hui ?",
+      "spoken": "La construction européenne. Mille neuf cent cinquante-sept : six pays. Mille neuf cent quatre-vingt-quinze : quinze pays. Aujourd’hui : vingt-sept pays.",
+      "choices": [
+        "6",
+        "15",
+        "27"
+      ],
+      "answer": "27",
+      "hint": "Lis la ligne qui commence par « Aujourd’hui ».",
+      "explanation": "L’Union européenne compte aujourd’hui 27 pays. Elle a commencé à 6 pays, en 1957.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document d’histoire",
+          "lines": [
+            "La première ligne dit ce qu’est le document et sa date.",
+            "À l’ouest : les États-Unis et leurs alliés.",
+            "À l’est : l’Union soviétique et ses alliés, communistes.",
+            "Un pays indépendant décide seul de ses lois."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-3e-twentieth-century-world-since-1945-2-6",
+      "prompt": "L’euro, 2002\nLes premiers billets et les premières pièces en euros\nEn France, l’euro remplace le franc.",
+      "question": "Quelle monnaie l’euro remplace-t-il en France ?",
+      "spoken": "L’euro, deux mille deux. Les premiers billets et les premières pièces en euros. En France, l’euro remplace le franc.",
+      "choices": [
+        "le mark",
+        "le franc",
+        "la livre"
+      ],
+      "answer": "le franc",
+      "hint": "Relis la ligne qui commence par « En France ».",
+      "explanation": "En 2002, l’euro remplace le franc en France. Le mark était la monnaie de l’Allemagne.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document d’histoire",
+          "lines": [
+            "La première ligne dit ce qu’est le document et sa date.",
+            "À l’ouest : les États-Unis et leurs alliés.",
+            "À l’est : l’Union soviétique et ses alliés, communistes.",
+            "Un pays indépendant décide seul de ses lois."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-3e-twentieth-century-world-since-1945-2-7",
+      "prompt": "Deux événements\nLa chute du mur de Berlin : 1989\nLa fin de l’Union soviétique : 1991",
+      "question": "Lequel vient en premier ?",
+      "spoken": "Deux événements. La chute du mur de Berlin : mille neuf cent quatre-vingt-neuf. La fin de l’Union soviétique : mille neuf cent quatre-vingt-onze.",
+      "choices": [
+        "les deux la même année",
+        "la chute du mur de Berlin",
+        "la fin de l’Union soviétique"
+      ],
+      "answer": "la chute du mur de Berlin",
+      "hint": "Compare les deux années : laquelle est la plus petite ?",
+      "explanation": "1989 vient avant 1991 : le mur tombe d’abord, puis l’Union soviétique disparaît. C’est la fin de la guerre froide.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document d’histoire",
+          "lines": [
+            "La première ligne dit ce qu’est le document et sa date.",
+            "À l’ouest : les États-Unis et leurs alliés.",
+            "À l’est : l’Union soviétique et ses alliés, communistes.",
+            "Un pays indépendant décide seul de ses lois."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "history-3e-twentieth-century",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

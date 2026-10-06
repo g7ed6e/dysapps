@@ -1,0 +1,230 @@
+{
+  "id": "history-5e-middle-ages-feudal-west-2",
+  "biome": "history-5e-middle-ages",
+  "type": "feudal-west",
+  "level": 2,
+  "instruction": "Lis la question, puis le document. Choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "history-5e-middle-ages-feudal-west-2-0",
+      "prompt": "Adalbéron, évêque de Laon, vers 1030\n« Les uns prient,\nles autres combattent,\nles autres travaillent. »",
+      "question": "Qui a écrit ce texte ?",
+      "spoken": "Adalbéron, évêque de Laon, vers mille trente. « Les uns prient, les autres combattent, les autres travaillent. »",
+      "choices": [
+        "un paysan",
+        "un évêque",
+        "un roi"
+      ],
+      "answer": "un évêque",
+      "hint": "Lis la première ligne.",
+      "explanation": "Adalbéron est évêque de Laon : c’est un homme d’Église. Il décrit la société en trois groupes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "Qui a écrit ? Quand ? La première ligne le dit souvent.",
+            "Un point de vue : ce que pense celui qui écrit.",
+            "Toutes les dates sont après Jésus-Christ.",
+            "Le XIIe siècle : de l’an 1101 à l’an 1200."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-5e-middle-ages-feudal-west-2-1",
+      "prompt": "Un évêque décrit la société, vers 1030\nD’abord ceux qui prient : le clergé\nPuis ceux qui combattent : les seigneurs\nPuis ceux qui travaillent : les paysans",
+      "question": "Pourquoi l’évêque met-il ceux qui prient en premier ?",
+      "spoken": "Un évêque décrit la société, vers mille trente. D’abord ceux qui prient : le clergé. Puis ceux qui combattent : les seigneurs. Puis ceux qui travaillent : les paysans.",
+      "choices": [
+        "les paysans le lui demandent",
+        "il fait lui-même partie du clergé",
+        "le roi prie toute la journée"
+      ],
+      "answer": "il fait lui-même partie du clergé",
+      "hint": "Qui écrit ? Lis la première ligne.",
+      "explanation": "Un évêque est un homme d’Église : il place le clergé en premier. C’est son point de vue.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "Qui a écrit ? Quand ? La première ligne le dit souvent.",
+            "Un point de vue : ce que pense celui qui écrit.",
+            "Toutes les dates sont après Jésus-Christ.",
+            "Le XIIe siècle : de l’an 1101 à l’an 1200."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-5e-middle-ages-feudal-west-2-2",
+      "prompt": "Ce que les paysans doivent au seigneur\nUne part de la récolte\nDes journées de travail gratuit\nUn paiement pour utiliser son moulin",
+      "question": "Comment s’appellent les journées de travail gratuit ?",
+      "spoken": "Ce que les paysans doivent au seigneur. Une part de la récolte. Des journées de travail gratuit. Un paiement pour utiliser son moulin.",
+      "choices": [
+        "la corvée",
+        "la dîme",
+        "le fief"
+      ],
+      "answer": "la corvée",
+      "hint": "Ce travail est dû au seigneur, pas à l’Église.",
+      "explanation": "Les journées de travail gratuit pour le seigneur, c’est la corvée. La dîme est due à l’Église.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "Qui a écrit ? Quand ? La première ligne le dit souvent.",
+            "Un point de vue : ce que pense celui qui écrit.",
+            "Toutes les dates sont après Jésus-Christ.",
+            "Le XIIe siècle : de l’an 1101 à l’an 1200."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-5e-middle-ages-feudal-west-2-3",
+      "prompt": "Description d’un dessin\nUn château fort sur une colline\nDes murs épais et des tours\nAutour : des champs et un village",
+      "question": "À quoi servent les murs épais et les tours ?",
+      "spoken": "Description d’un dessin. Un château fort sur une colline. Des murs épais et des tours. Autour : des champs et un village.",
+      "choices": [
+        "à se défendre",
+        "à prier",
+        "à garder la récolte au frais"
+      ],
+      "answer": "à se défendre",
+      "hint": "Pourquoi construire un château en hauteur, avec des murs épais ?",
+      "explanation": "Les murs épais et les tours protègent des attaques : le château fort sert à se défendre et à surveiller les terres.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "Qui a écrit ? Quand ? La première ligne le dit souvent.",
+            "Un point de vue : ce que pense celui qui écrit.",
+            "Toutes les dates sont après Jésus-Christ.",
+            "Le XIIe siècle : de l’an 1101 à l’an 1200."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-5e-middle-ages-feudal-west-2-4",
+      "prompt": "Une charte, au Moyen Âge\nLe seigneur donne des libertés\naux bourgeois de la ville.\nIls choisissent ceux qui la gouvernent.",
+      "question": "Qui reçoit des libertés ?",
+      "spoken": "Une charte, au Moyen Âge. Le seigneur donne des libertés aux bourgeois de la ville. Ils choisissent ceux qui la gouvernent.",
+      "choices": [
+        "les moines",
+        "les paysans",
+        "les bourgeois"
+      ],
+      "answer": "les bourgeois",
+      "hint": "Lis ce qui suit « donne des libertés ».",
+      "explanation": "Par la charte, le seigneur donne des libertés aux bourgeois : ils gouvernent un peu leur ville eux-mêmes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "Qui a écrit ? Quand ? La première ligne le dit souvent.",
+            "Un point de vue : ce que pense celui qui écrit.",
+            "Toutes les dates sont après Jésus-Christ.",
+            "Le XIIe siècle : de l’an 1101 à l’an 1200."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-5e-middle-ages-feudal-west-2-5",
+      "prompt": "Description d’une photo\nNotre-Dame de Paris\nUne cathédrale de style gothique\nCommencée en 1163",
+      "question": "En quel siècle commence la construction ?",
+      "spoken": "Description d’une photo. Notre-Dame de Paris. Une cathédrale de style gothique. Commencée en mille cent soixante-trois.",
+      "choices": [
+        "au XIe siècle",
+        "au XIIe siècle",
+        "au XIIIe siècle"
+      ],
+      "answer": "au XIIe siècle",
+      "hint": "Dans le rappel, 1163 est-il entre 1101 et 1200 ?",
+      "explanation": "L’an 1163 est entre l’an 1101 et l’an 1200 : c’est le XIIe siècle. Le 11 du début ne donne pas le siècle.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "Qui a écrit ? Quand ? La première ligne le dit souvent.",
+            "Un point de vue : ce que pense celui qui écrit.",
+            "Toutes les dates sont après Jésus-Christ.",
+            "Le XIIe siècle : de l’an 1101 à l’an 1200."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-5e-middle-ages-feudal-west-2-6",
+      "prompt": "La bataille de Bouvines, en 1214\nLe roi de France, Philippe Auguste,\nbat l’empereur germanique et ses alliés.",
+      "question": "Qui gagne la bataille ?",
+      "spoken": "La bataille de Bouvines, en mille deux cent quatorze. Le roi de France, Philippe Auguste, bat l’empereur germanique et ses alliés.",
+      "choices": [
+        "l’empereur germanique",
+        "les alliés de l’empereur",
+        "le roi Philippe Auguste"
+      ],
+      "answer": "le roi Philippe Auguste",
+      "hint": "« Bat » veut dire « gagne contre ».",
+      "explanation": "Philippe Auguste bat l’empereur et ses alliés : sa victoire rend le roi de France plus fort.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "Qui a écrit ? Quand ? La première ligne le dit souvent.",
+            "Un point de vue : ce que pense celui qui écrit.",
+            "Toutes les dates sont après Jésus-Christ.",
+            "Le XIIe siècle : de l’an 1101 à l’an 1200."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-5e-middle-ages-feudal-west-2-7",
+      "prompt": "Le roi de France, à la fin du Moyen Âge\nIl lève un impôt dans tout le royaume.\nIl paie une armée toujours prête.\nSes officiers rendent la justice en son nom.",
+      "question": "Que montre ce document ?",
+      "spoken": "Le roi de France, à la fin du Moyen Âge. Il lève un impôt dans tout le royaume. Il paie une armée toujours prête. Ses officiers rendent la justice en son nom.",
+      "choices": [
+        "le roi perd son pouvoir",
+        "les seigneurs lèvent l’impôt du roi",
+        "le pouvoir du roi grandit"
+      ],
+      "answer": "le pouvoir du roi grandit",
+      "hint": "Impôt, armée, justice : qui les a dans les mains ?",
+      "explanation": "Un impôt, une armée et des juges pour tout le royaume : le pouvoir du roi grandit. L’État s’affirme en France.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "Qui a écrit ? Quand ? La première ligne le dit souvent.",
+            "Un point de vue : ce que pense celui qui écrit.",
+            "Toutes les dates sont après Jésus-Christ.",
+            "Le XIIe siècle : de l’an 1101 à l’an 1200."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "history-5e-middle-ages",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

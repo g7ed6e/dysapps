@@ -42,10 +42,11 @@ it('chaque île a une place ; les ouvrages ouvrent son archipel, les voyages ouv
   // Toutes les liaisons posées sans voyage : seules les Premiers Rivages ; avec les voyages : tout.
   expect(reachableIslands(BRIDGES.map((b) => b.id)).size).toBe(15);
   expect(reachableIslands([...BRIDGES, ...VOYAGES].map((b) => b.id)).size).toBe(BIOMES.length);
-  // GD-9 : une liaison possible entre chaque paire de lieux d'une même région (105 en 6e, 21 dans les trois autres).
-  expect(BRIDGES).toHaveLength(105 + 3 * 21);
+  // GD-9 : une liaison possible entre chaque paire de lieux d'une même région (105 en 6e depuis les îles de sciences de
+  // SC-2, 36 dans les trois autres depuis les îles d'histoire-géographie de HG-3, 21 avant).
+  expect(BRIDGES).toHaveLength(105 + 3 * 36);
   expect(VOYAGES.map((v) => v.id)).toEqual(['passage-5e', 'passage-4e', 'passage-3e']);
-  expect(BIOMES.length).toBe(36);
+  expect(BIOMES.length).toBe(42);
   // Le Relais des voyageurs (LV2) reste en bout de chemin : la liaison la plus proche vient du Comptoir.
   expect(remainingPath('lv2-5e-introductions', ['passage-5e', 'maths-5e-proportionality-english-5e-vocabulary']).map((b) => b.id)).toEqual(['english-5e-vocabulary-lv2-5e-introductions']);
   expect(isBiomeUnlocked('lv2-5e-introductions', ['passage-5e', 'maths-5e-proportionality-english-5e-vocabulary', 'english-5e-vocabulary-lv2-5e-introductions'])).toBe(true);

@@ -231,6 +231,54 @@ export const ARCHIPEO = {
         beaten: 'Mon pelage se rallume. La pointe est à toi, et à Boussole.',
       },
     },
+    'history-5e-middle-ages': {
+      challenge: 'Le Griffon d’émail dit doucement : « Mes émaux sont éteints. Tu as lu toutes les chroniques du bourg : dis-moi en quel siècle vient chaque chose. »',
+      guardianSays: {
+        hit: 'Un émail de ma poitrine s’allume. C’est juste.',
+        miss: 'Rien ne s’éteint. Regarde la frise, relis le document, et reprends.',
+        beaten: 'Mes émaux se rallument. Le bourg est à toi, et à Vélin.',
+      },
+    },
+    'geography-5e-resources': {
+      challenge: 'La Libellule de jade dit doucement : « Les nervures de mes ailes sont éteintes. Tu as suivi l’eau de tout le delta : dis-moi comment on partage les ressources. »',
+      guardianSays: {
+        hit: 'Une nervure de mes ailes s’allume. C’est juste.',
+        miss: 'Rien ne s’éteint. Relis le document, compare les nombres, et reprends.',
+        beaten: 'Mes ailes se rallument. Le delta est à toi, et à Sillon.',
+      },
+    },
+    'history-4e-revolutions': {
+      challenge: 'Le Paon de faïence dit doucement : « Les yeux de ma roue sont éteints. Tu as lu toutes les pages de l’imprimerie : dis-moi ce que chaque révolution a changé. »',
+      guardianSays: {
+        hit: 'Un œil de ma roue s’allume. C’est juste.',
+        miss: 'Rien ne s’éteint. Regarde la frise, relis le document, et reprends.',
+        beaten: 'Ma roue se rallume. L’imprimerie est à toi, et à Typo.',
+      },
+    },
+    'geography-4e-globalization': {
+      challenge: 'Le Poulpe de corail dit doucement : « Mes ventouses sont éteintes. Tu as vu passer tous les bateaux de l’escale : dis-moi comment le monde échange. »',
+      guardianSays: {
+        hit: 'Une ventouse s’allume. C’est juste.',
+        miss: 'Rien ne s’éteint. Relis le document, cherche le mot du rappel, et reprends.',
+        beaten: 'Mes bras se rallument. L’escale est à toi, et à Fret.',
+      },
+    },
+    'history-3e-twentieth-century': {
+      challenge: 'La Colombe d’albâtre dit doucement : « Mes plumes sont éteintes. Tu as écouté tous les témoins du kiosque : aide-moi à me souvenir, date après date. »',
+      guardianSays: {
+        hit: 'Une plume s’allume, doucement. C’est juste.',
+        miss: 'Rien ne s’éteint. Regarde la frise, relis qui parle, et reprends.',
+        beaten: 'Mes plumes se rallument, jusqu’au rameau vert. Le kiosque est à toi, et à Mémo.',
+      },
+    },
+    'geography-3e-france': {
+      challenge: 'Le Cerf de lauze dit doucement : « Les lauzes de ma poitrine sont éteintes. Une lauze, c’est une pierre plate. Tu as parcouru tout le plateau. Dis-moi comment vit le territoire. »',
+      guardianSays: {
+        hit: 'Une lauze de ma poitrine s’allume. C’est juste.',
+        miss: 'Rien ne s’éteint. Relis le document, cherche le mot du rappel, et reprends.',
+        beaten: 'Mes lauzes se rallument. Le plateau est à toi, et à Jalon.',
+      },
+    },
     'life-earth-sciences-6e-living-world': {
       challenge: 'Le Cerf des sous-bois dit doucement : « Mon manteau de mousse est éteint. Tu as observé tout le vivant de la vallée : aide-moi à le classer. »',
       guardianSays: {
@@ -340,6 +388,12 @@ export const ARCHIPEO = {
     'english-3e-grammar': 'petit chevalier',
     'history-6e-antiquity': 'ourson des fouilles',
     'geography-6e-living': 'pélican des ports',
+    'history-5e-middle-ages': 'lapin enlumineur',
+    'geography-5e-resources': 'ibis des rizières',
+    'history-4e-revolutions': 'souris imprimeuse',
+    'geography-4e-globalization': 'crabe grutier',
+    'history-3e-twentieth-century': 'marmotte bibliothécaire',
+    'geography-3e-france': 'fourmi arpenteuse',
     'life-earth-sciences-6e-living-world': 'escargot jardinier',
     'physics-chemistry-6e-matter-energy': 'poulpe chimiste',
     'technology-6e-objects': 'fourmi bricoleuse',

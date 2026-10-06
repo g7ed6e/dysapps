@@ -75,6 +75,8 @@ function lueurs(f: FacettesDePersonnage): number {
 
 /** Les sentinelles sans visage : le Spectre voilé, la Locomotive, la Grande Antenne, le Soleil et le Papillon de cuivre. */
 const SANS_VISAGE: BiomeId[] = ['english-5e-grammar', 'english-4e-grammar', 'english-3e-comprehension', 'lv2-4e-daily-life', 'lv2-3e-travel'];
+/** Les sentinelles aux yeux sur les côtés de la tête (DA, relecture des planches HG-3) : la Colombe d'albâtre. */
+const YEUX_DE_COTE: BiomeId[] = ['history-3e-twentieth-century'];
 /**
  * Les sentinelles basses : leur haut, en blocs. La Diligence, plus longue que haute (retouche du directeur artistique) ;
  * le Soleil de cuivre, sans mât (DA, LV2-4), qui repose sur son rayon du bas.
@@ -149,7 +151,8 @@ describe('Les Gardiens en sentinelles', () => {
   });
 
   // 2 100 depuis les deux Gardiens d'histoire-géographie du 6e (HG-2, mainteneur, 6 octobre 2026 : 2 065 mesurés), 2 780
-  // depuis les trois Gardiens de sciences (SC-2, même mot : 2 756 mesurés).
+  // depuis les trois Gardiens de sciences (SC-2, même mot : 2 756 mesurés) ; les six des 5e, 4e et 3e (HG-3, même mot)
+  // y tiennent (2 144 mesurés aux Îles Brumeuses).
   it('tiennent dans leur budget : 2 780 triangles au plus par archipel, toutes ensemble', () => {
     for (const a of ARCHIPELAGO_IDS) {
       const somme = BIOMES.filter((b) => b.classe === a).reduce((n, b) => n + nbTriangles(sentinellePeinte(b.id)), 0);
@@ -216,7 +219,8 @@ describe('Les Gardiens en sentinelles', () => {
       });
 
       it('de la pierre, du lichen, des orbites et la lueur, rien d’autre', () => {
-        const permises = new Set<number>([SENTINELLE.pierre, SENTINELLE.lichen, SENTINELLE.orbite, LUEUR]);
+        // (Et le rameau de la Colombe d'albâtre, vert une fois rallumée, HG-3.)
+        const permises = new Set<number>([SENTINELLE.pierre, SENTINELLE.lichen, SENTINELLE.orbite, LUEUR, ...(b.id === 'history-3e-twentieth-century' ? [SENTINELLE.rameau] : [])]);
         for (const p of f.palette) expect(permises.has(p.couleur), p.couleur.toString(16)).toBe(true);
       });
 
@@ -228,7 +232,9 @@ describe('Les Gardiens en sentinelles', () => {
           expect(nom(t)).toBe('sculpture');
           // Vers −Z, tournées avec la statue quand elle se tourne pour se montrer de profil (`tour`).
           const tour = STATUES[b.id].tour?.monde ?? 0;
-          expect(-Math.sin(tour) * f.normals[t * 9] - Math.cos(tour) * f.normals[t * 9 + 2]).toBeGreaterThan(0.95);
+          // Les yeux d'un oiseau, sur les côtés de sa tête (la Colombe d'albâtre, HG-3) : vers ±X, tournés avec elle.
+          if (YEUX_DE_COTE.includes(b.id)) expect(Math.abs(Math.cos(tour) * f.normals[t * 9] - Math.sin(tour) * f.normals[t * 9 + 2])).toBeGreaterThan(0.95);
+          else expect(-Math.sin(tour) * f.normals[t * 9] - Math.cos(tour) * f.normals[t * 9 + 2]).toBeGreaterThan(0.95);
         }
       });
 
@@ -248,7 +254,8 @@ describe('Les Gardiens en sentinelles', () => {
 
 describe('Les sentinelles qui se tournent pour se montrer de profil (la Diligence)', () => {
   const tournees = BIOMES.filter((b) => STATUES[b.id].tour);
-  it('la Diligence, et le Soleil et le Papillon de cuivre, qu’on ne doit pas voir par la tranche', () => expect(tournees.map((b) => b.id).sort()).toEqual(['lv2-3e-travel', 'lv2-4e-daily-life', 'lv2-5e-introductions']));
+  it('la Diligence, et le Soleil et le Papillon de cuivre, qu’on ne doit pas voir par la tranche ; la Colombe d’albâtre, de trois quarts', () =>
+    expect(tournees.map((b) => b.id).sort()).toEqual(['history-3e-twentieth-century', 'lv2-3e-travel', 'lv2-4e-daily-life', 'lv2-5e-introductions']));
 
   it('le Soleil de cuivre, dans le monde : de face (à 33° au plus) pour la caméra du Jardin (72°), du Théâtre (20 à 42°) et du rallumage (85°) ; dans les cinq cases', () => {
     const f = sentinellePeinte('lv2-4e-daily-life');

@@ -1,0 +1,238 @@
+{
+  "id": "geography-5e-resources-resources-1",
+  "biome": "geography-5e-resources",
+  "type": "resources",
+  "level": 1,
+  "instruction": "Choisis le mot qui complète la phrase. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "geography-5e-resources-resources-1-0",
+      "prompt": "Le pétrole, le gaz et le charbon sont des énergies … .",
+      "spoken": "Le pétrole, le gaz et le charbon sont des énergies (mot manquant) .",
+      "choices": [
+        "fossiles",
+        "renouvelables",
+        "solaires"
+      ],
+      "answer": "fossiles",
+      "hint": "Cherche « le pétrole, le gaz » dans le rappel.",
+      "explanation": "Le pétrole, le gaz et le charbon sont des énergies fossiles : elles se sont formées sous la terre, en des millions d’années.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots des ressources",
+          "lines": [
+            "Ressource : ce que l’on tire de la nature pour vivre.",
+            "Renouvelable : elle se reforme vite, comme le vent ou le soleil.",
+            "Non renouvelable : elle s’épuise, comme le pétrole.",
+            "Énergies fossiles : le pétrole, le gaz, le charbon.",
+            "Eau potable : une eau que l’on peut boire.",
+            "Irrigation : apporter de l’eau aux cultures."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-5e-resources-resources-1-1",
+      "prompt": "Le vent et le soleil sont des énergies … .",
+      "spoken": "Le vent et le soleil sont des énergies (mot manquant) .",
+      "choices": [
+        "fossiles",
+        "nucléaires",
+        "renouvelables"
+      ],
+      "answer": "renouvelables",
+      "hint": "Le vent souffle encore demain.",
+      "explanation": "Le vent et le soleil ne s’épuisent pas : ce sont des énergies renouvelables.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots des ressources",
+          "lines": [
+            "Ressource : ce que l’on tire de la nature pour vivre.",
+            "Renouvelable : elle se reforme vite, comme le vent ou le soleil.",
+            "Non renouvelable : elle s’épuise, comme le pétrole.",
+            "Énergies fossiles : le pétrole, le gaz, le charbon.",
+            "Eau potable : une eau que l’on peut boire.",
+            "Irrigation : apporter de l’eau aux cultures."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-5e-resources-resources-1-2",
+      "prompt": "Le pétrole finira par manquer : c’est une ressource … .",
+      "spoken": "Le pétrole finira par manquer : c’est une ressource (mot manquant) .",
+      "choices": [
+        "renouvelable",
+        "non renouvelable",
+        "inépuisable"
+      ],
+      "answer": "non renouvelable",
+      "hint": "Cherche « s’épuise » dans le rappel.",
+      "explanation": "Le pétrole met des millions d’années à se former : on l’use bien plus vite. C’est une ressource non renouvelable.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots des ressources",
+          "lines": [
+            "Ressource : ce que l’on tire de la nature pour vivre.",
+            "Renouvelable : elle se reforme vite, comme le vent ou le soleil.",
+            "Non renouvelable : elle s’épuise, comme le pétrole.",
+            "Énergies fossiles : le pétrole, le gaz, le charbon.",
+            "Eau potable : une eau que l’on peut boire.",
+            "Irrigation : apporter de l’eau aux cultures."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-5e-resources-resources-1-3",
+      "prompt": "Une eau que l’on peut boire sans danger est une eau … .",
+      "spoken": "Une eau que l’on peut boire sans danger est une eau (mot manquant) .",
+      "choices": [
+        "salée",
+        "potable",
+        "usée"
+      ],
+      "answer": "potable",
+      "hint": "Lis la ligne qui commence par « Eau ».",
+      "explanation": "L’eau potable se boit sans danger. L’eau usée, elle, doit être nettoyée avant de revenir dans la nature.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots des ressources",
+          "lines": [
+            "Ressource : ce que l’on tire de la nature pour vivre.",
+            "Renouvelable : elle se reforme vite, comme le vent ou le soleil.",
+            "Non renouvelable : elle s’épuise, comme le pétrole.",
+            "Énergies fossiles : le pétrole, le gaz, le charbon.",
+            "Eau potable : une eau que l’on peut boire.",
+            "Irrigation : apporter de l’eau aux cultures."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-5e-resources-resources-1-4",
+      "prompt": "Apporter de l’eau aux champs par des canaux, c’est l’… .",
+      "spoken": "Apporter de l’eau aux champs par des canaux, c’est l’(mot manquant) .",
+      "choices": [
+        "inondation",
+        "évaporation",
+        "irrigation"
+      ],
+      "answer": "irrigation",
+      "hint": "Cherche « apporter de l’eau » dans le rappel.",
+      "explanation": "L’irrigation apporte l’eau aux cultures. Une inondation, c’est de l’eau qui déborde là où on n’en veut pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots des ressources",
+          "lines": [
+            "Ressource : ce que l’on tire de la nature pour vivre.",
+            "Renouvelable : elle se reforme vite, comme le vent ou le soleil.",
+            "Non renouvelable : elle s’épuise, comme le pétrole.",
+            "Énergies fossiles : le pétrole, le gaz, le charbon.",
+            "Eau potable : une eau que l’on peut boire.",
+            "Irrigation : apporter de l’eau aux cultures."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-5e-resources-resources-1-5",
+      "prompt": "Sur la Terre, presque toute l’eau est … .",
+      "spoken": "Sur la Terre, presque toute l’eau est (mot manquant) .",
+      "choices": [
+        "douce",
+        "salée",
+        "potable"
+      ],
+      "answer": "salée",
+      "hint": "Pense aux océans.",
+      "explanation": "Presque toute l’eau de la Terre est dans les mers et les océans : elle est salée. L’eau douce est rare.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots des ressources",
+          "lines": [
+            "Ressource : ce que l’on tire de la nature pour vivre.",
+            "Renouvelable : elle se reforme vite, comme le vent ou le soleil.",
+            "Non renouvelable : elle s’épuise, comme le pétrole.",
+            "Énergies fossiles : le pétrole, le gaz, le charbon.",
+            "Eau potable : une eau que l’on peut boire.",
+            "Irrigation : apporter de l’eau aux cultures."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-5e-resources-resources-1-6",
+      "prompt": "Brûler du pétrole ou du charbon rejette des gaz qui … la Terre.",
+      "spoken": "Brûler du pétrole ou du charbon rejette des gaz qui (mot manquant) la Terre.",
+      "choices": [
+        "réchauffent",
+        "refroidissent",
+        "protègent"
+      ],
+      "answer": "réchauffent",
+      "hint": "On parle de réchauffement climatique.",
+      "explanation": "Brûler des énergies fossiles rejette des gaz qui réchauffent la Terre : c’est l’effet de serre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots des ressources",
+          "lines": [
+            "Ressource : ce que l’on tire de la nature pour vivre.",
+            "Renouvelable : elle se reforme vite, comme le vent ou le soleil.",
+            "Non renouvelable : elle s’épuise, comme le pétrole.",
+            "Énergies fossiles : le pétrole, le gaz, le charbon.",
+            "Eau potable : une eau que l’on peut boire.",
+            "Irrigation : apporter de l’eau aux cultures."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-5e-resources-resources-1-7",
+      "prompt": "Quand des personnes n’ont pas assez à manger, on parle de … .",
+      "spoken": "Quand des personnes n’ont pas assez à manger, on parle de (mot manquant) .",
+      "choices": [
+        "surpopulation",
+        "sous-alimentation",
+        "pollution"
+      ],
+      "answer": "sous-alimentation",
+      "hint": "« Sous » veut dire « pas assez ».",
+      "explanation": "Sous-alimentation : ne pas manger assez. Elle touche surtout des pays pauvres d’Afrique et d’Asie.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots des ressources",
+          "lines": [
+            "Ressource : ce que l’on tire de la nature pour vivre.",
+            "Renouvelable : elle se reforme vite, comme le vent ou le soleil.",
+            "Non renouvelable : elle s’épuise, comme le pétrole.",
+            "Énergies fossiles : le pétrole, le gaz, le charbon.",
+            "Eau potable : une eau que l’on peut boire.",
+            "Irrigation : apporter de l’eau aux cultures."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "geography-5e-resources",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

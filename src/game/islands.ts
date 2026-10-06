@@ -1573,6 +1573,338 @@ export const ILES = [
     ]
   },
   {
+    "id": "history-5e-middle-ages",
+    "name": "Bourg des chroniques",
+    "module": "Histoire, du Moyen Âge aux Temps modernes",
+    "subject": "history-geography",
+    "classe": "5e",
+    "description": "Byzance, l’Empire carolingien et l’islam, les seigneurs, les paysans et les villes de l’Occident féodal, puis les grandes découvertes, la Renaissance, les réformes et le roi absolu : se repérer dans le temps et lire un document.",
+    "block": "history-5e-middle-ages",
+    "guardian": "le Griffon d’émail",
+    "icon": "feather",
+    "creature": {
+      "name": "Vélin"
+    },
+    "exercises": [
+      {
+        "id": "christendoms-islam",
+        "title": "Chrétientés et islam",
+        "description": "Byzance, l’Empire de Charlemagne, la naissance et l’expansion de l’islam, les croisades : des mondes en contact, du VIe au XIIIe siècle.",
+        "programme": [
+          "c4.hg.histoire.chretientes-islam",
+          "c4.hg.temps.reperes",
+          "c4.hg.temps.ordonner",
+          "c4.hg.espace.localiser",
+          "c4.hg.demarches.lexique",
+          "c4.hg.demarches.document"
+        ]
+      },
+      {
+        "id": "feudal-west",
+        "title": "L’Occident féodal",
+        "description": "Les seigneurs et les paysans, la ville et les bourgeois, l’Église et ses cathédrales, le roi de France qui affirme son pouvoir, du XIe au XVe siècle.",
+        "programme": [
+          "c4.hg.histoire.occident-feodal",
+          "c4.hg.temps.reperes",
+          "c4.hg.temps.ordonner",
+          "c4.hg.demarches.lexique",
+          "c4.hg.demarches.document",
+          "c4.hg.demarches.point-de-vue"
+        ]
+      },
+      {
+        "id": "new-worlds",
+        "title": "Vers les Temps modernes",
+        "description": "Les grandes découvertes, l’Humanisme et la Renaissance, les réformes, du prince de la Renaissance au roi absolu, au XVIe et au XVIIe siècle.",
+        "programme": [
+          "c4.hg.histoire.europe-xvie-xviie",
+          "c4.hg.temps.reperes",
+          "c4.hg.temps.ordonner",
+          "c4.hg.espace.localiser",
+          "c4.hg.demarches.lexique",
+          "c4.hg.demarches.document"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "geography-5e-resources",
+    "name": "Delta des ressources",
+    "module": "Géographie, des ressources pour 8 milliards d’humains",
+    "subject": "history-geography",
+    "classe": "5e",
+    "description": "La population du monde et l’inégal développement, l’énergie, l’eau et l’alimentation à gérer, les risques et le changement climatique : les mots de la géographie et des documents courts.",
+    "block": "geography-5e-resources",
+    "guardian": "la Libellule de jade",
+    "icon": "droplets",
+    "creature": {
+      "name": "Sillon"
+    },
+    "exercises": [
+      {
+        "id": "population",
+        "title": "Population et développement",
+        "description": "Les naissances, les décès et l’espérance de vie, des populations jeunes et des populations qui vieillissent, et le développement inégal des pays.",
+        "programme": [
+          "c4.hg.geographie.demographie-developpement",
+          "c4.hg.espace.localiser",
+          "c4.hg.demarches.lexique",
+          "c4.hg.demarches.document",
+          "c4.hg.demarches.raisonner"
+        ]
+      },
+      {
+        "id": "resources",
+        "title": "Des ressources à gérer",
+        "description": "L’énergie, l’eau et l’alimentation : des ressources limitées, à partager, à économiser et à renouveler.",
+        "programme": [
+          "c4.hg.geographie.ressources",
+          "c4.hg.espace.localiser",
+          "c4.hg.demarches.lexique",
+          "c4.hg.demarches.document",
+          "c4.hg.demarches.raisonner"
+        ]
+      },
+      {
+        "id": "risks",
+        "title": "Risques et changement climatique",
+        "description": "Séismes, inondations, sécheresses et canicules : prévenir les risques, et s’adapter au changement climatique.",
+        "programme": [
+          "c4.hg.geographie.risques-changement-global",
+          "c4.hg.espace.localiser",
+          "c4.hg.espace.situer",
+          "c4.hg.demarches.lexique",
+          "c4.hg.demarches.document",
+          "c4.hg.demarches.cartes",
+          "c4.hg.demarches.raisonner"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "history-4e-revolutions",
+    "name": "Imprimerie des révolutions",
+    "module": "Histoire, du XVIIIe siècle à la France du XIXe siècle",
+    "subject": "history-geography",
+    "classe": "4e",
+    "description": "Le commerce atlantique et la traite, les Lumières, la Révolution et l’Empire, puis l’industrie, les colonies et la République : se repérer dans le temps et lire un document.",
+    "block": "history-4e-revolutions",
+    "guardian": "le Paon de faïence",
+    "icon": "factory",
+    "creature": {
+      "name": "Typo"
+    },
+    "exercises": [
+      {
+        "id": "enlightenment",
+        "title": "Le XVIIIe siècle, Lumières et révolutions",
+        "description": "Le commerce atlantique et la traite, les Lumières, la Révolution française et l’Empire.",
+        "programme": [
+          "c4.hg.histoire.xviiie-revolutions",
+          "c4.hg.temps.reperes",
+          "c4.hg.temps.ordonner",
+          "c4.hg.espace.localiser",
+          "c4.hg.demarches.lexique",
+          "c4.hg.demarches.document",
+          "c4.hg.demarches.point-de-vue"
+        ]
+      },
+      {
+        "id": "industrial-europe",
+        "title": "L’Europe et le monde au XIXe siècle",
+        "description": "La révolution industrielle, les usines et les ouvriers, puis la colonisation.",
+        "programme": [
+          "c4.hg.histoire.europe-monde-xixe",
+          "c4.hg.temps.reperes",
+          "c4.hg.temps.ordonner",
+          "c4.hg.espace.localiser",
+          "c4.hg.demarches.lexique",
+          "c4.hg.demarches.document",
+          "c4.hg.demarches.point-de-vue"
+        ]
+      },
+      {
+        "id": "french-society",
+        "title": "La France au XIXe siècle",
+        "description": "La conquête du suffrage universel, la Troisième République et l’école, la place des femmes.",
+        "programme": [
+          "c4.hg.histoire.france-xixe",
+          "c4.hg.temps.reperes",
+          "c4.hg.temps.ordonner",
+          "c4.hg.demarches.lexique",
+          "c4.hg.demarches.document",
+          "c4.hg.demarches.point-de-vue",
+          "c4.hg.demarches.raisonner"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "geography-4e-globalization",
+    "name": "Escale des échanges",
+    "module": "Géographie, un monde de villes et d’échanges",
+    "subject": "history-geography",
+    "classe": "4e",
+    "description": "Les villes qui grandissent, les migrants et les touristes, les mers, les ports et les échanges de la mondialisation : les mots de la géographie et des documents courts.",
+    "block": "geography-4e-globalization",
+    "guardian": "le Poulpe de corail",
+    "icon": "container",
+    "creature": {
+      "name": "Fret"
+    },
+    "exercises": [
+      {
+        "id": "urbanization",
+        "title": "L’urbanisation du monde",
+        "description": "Des villes de plus en plus grandes et nombreuses, leurs quartiers, leurs inégalités.",
+        "programme": [
+          "c4.hg.geographie.urbanisation",
+          "c4.hg.espace.localiser",
+          "c4.hg.espace.situer",
+          "c4.hg.demarches.lexique",
+          "c4.hg.demarches.document",
+          "c4.hg.demarches.raisonner"
+        ]
+      },
+      {
+        "id": "mobilities",
+        "title": "Les mobilités humaines",
+        "description": "Les migrants, les réfugiés et les touristes : ceux qui traversent les frontières, et pourquoi.",
+        "programme": [
+          "c4.hg.geographie.mobilites",
+          "c4.hg.espace.localiser",
+          "c4.hg.espace.situer",
+          "c4.hg.demarches.lexique",
+          "c4.hg.demarches.document",
+          "c4.hg.demarches.point-de-vue",
+          "c4.hg.demarches.raisonner"
+        ]
+      },
+      {
+        "id": "globalization",
+        "title": "Mers, ports et mondialisation",
+        "description": "Les échanges entre les pays du monde, les navires et les conteneurs, les ports, les canaux et les détroits.",
+        "programme": [
+          "c4.hg.geographie.mondialisation",
+          "c4.hg.espace.localiser",
+          "c4.hg.espace.situer",
+          "c4.hg.demarches.lexique",
+          "c4.hg.demarches.document",
+          "c4.hg.demarches.cartes",
+          "c4.hg.demarches.raisonner"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "history-3e-twentieth-century",
+    "name": "Kiosque des témoins",
+    "module": "Histoire, de 1914 à nos jours",
+    "subject": "history-geography",
+    "classe": "3e",
+    "description": "Les guerres totales en Europe, le monde depuis 1945, puis la République refondée : se repérer dans le temps, lire un document et dire qui parle.",
+    "block": "history-3e-twentieth-century",
+    "guardian": "la Colombe d’albâtre",
+    "icon": "newspaper",
+    "creature": {
+      "name": "Mémo"
+    },
+    "exercises": [
+      {
+        "id": "total-wars",
+        "title": "Les guerres totales",
+        "description": "L’Europe de 1914 à 1945 : la Première Guerre mondiale, les régimes totalitaires, la Seconde Guerre mondiale, la France défaite et occupée.",
+        "programme": [
+          "c4.hg.histoire.guerres-totales",
+          "c4.hg.temps.reperes",
+          "c4.hg.temps.ordonner",
+          "c4.hg.demarches.lexique",
+          "c4.hg.demarches.document",
+          "c4.hg.demarches.point-de-vue"
+        ]
+      },
+      {
+        "id": "world-since-1945",
+        "title": "Le monde depuis 1945",
+        "description": "La décolonisation et les nouveaux États, la guerre froide, la construction européenne.",
+        "programme": [
+          "c4.hg.histoire.monde-depuis-1945",
+          "c4.hg.temps.reperes",
+          "c4.hg.temps.ordonner",
+          "c4.hg.espace.situer",
+          "c4.hg.demarches.lexique",
+          "c4.hg.demarches.document"
+        ]
+      },
+      {
+        "id": "republic",
+        "title": "Une République repensée",
+        "description": "Refonder la République de 1944 à 1947, la cinquième République, femmes et hommes dans la société des années 1950 aux années 1980.",
+        "programme": [
+          "c4.hg.histoire.republique-repensee",
+          "c4.hg.temps.reperes",
+          "c4.hg.temps.ordonner",
+          "c4.hg.demarches.lexique",
+          "c4.hg.demarches.document",
+          "c4.hg.demarches.point-de-vue"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "geography-3e-france",
+    "name": "Plateau des territoires",
+    "module": "Géographie, la France et l’Union européenne",
+    "subject": "history-geography",
+    "classe": "3e",
+    "description": "Les villes, les espaces productifs et les campagnes de la France, aménager le territoire et l’outre-mer, puis la France dans l’Union européenne et dans le monde : les mots de la géographie et des documents courts.",
+    "block": "geography-3e-france",
+    "guardian": "le Cerf de lauze",
+    "icon": "route",
+    "creature": {
+      "name": "Jalon"
+    },
+    "exercises": [
+      {
+        "id": "territories",
+        "title": "Les territoires de la France",
+        "description": "Les aires urbaines, les espaces productifs et les espaces de faible densité de la France d’aujourd’hui.",
+        "programme": [
+          "c4.hg.geographie.dynamiques-france",
+          "c4.hg.espace.localiser",
+          "c4.hg.demarches.lexique",
+          "c4.hg.demarches.document",
+          "c4.hg.demarches.raisonner"
+        ]
+      },
+      {
+        "id": "planning",
+        "title": "Aménager le territoire",
+        "description": "Pourquoi et comment aménager : répondre aux inégalités entre territoires, et les territoires ultramarins.",
+        "programme": [
+          "c4.hg.geographie.amenager",
+          "c4.hg.espace.localiser",
+          "c4.hg.espace.situer",
+          "c4.hg.demarches.lexique",
+          "c4.hg.demarches.document",
+          "c4.hg.demarches.raisonner"
+        ]
+      },
+      {
+        "id": "france-eu",
+        "title": "La France et l’Union européenne",
+        "description": "L’Union européenne, un nouveau territoire de référence, puis la France et l’Europe dans le monde.",
+        "programme": [
+          "c4.hg.geographie.france-ue",
+          "c4.hg.espace.localiser",
+          "c4.hg.espace.situer",
+          "c4.hg.demarches.lexique",
+          "c4.hg.demarches.document"
+        ]
+      }
+    ]
+  },
+  {
     "id": "lv2-5e-introductions",
     "name": "Relais des voyageurs",
     "module": "Se présenter, compter, décrire",

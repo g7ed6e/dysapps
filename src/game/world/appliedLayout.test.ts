@@ -166,13 +166,15 @@ describe('les liaisons à reposer quittent le dessin', () => {
 
 describe('le budget, des lieux déplacés et tournés (GD-9)', () => {
   it.each(ARCHIPELAGO_IDS)('%s : le pire cas reste sous 100 000 triangles et 180 appels', (a) => {
-    // Chaque lieu qui bouge, tourné d'un quart et posé à la place libre la plus loin de la sienne.
+    // Chaque lieu qui bouge, tourné d'un quart et posé à la place libre la plus loin de la sienne ; de face s'il n'a
+    // aucune place tourné (aux Îles Brumeuses, depuis les îles d'histoire-géographie de HG-3, seul le Relais en a une).
     let w: World = partie.world;
     for (const id of placesOf(a)) {
       if (isFixedPlace(id)) continue;
       const d = startingSpot(id);
       const ecart = (s: { x: number; y: number }) => Math.abs(s.x - d.x) + Math.abs(s.y - d.y);
-      const loin = [...freeSpots(w, id, 1)].sort((p, s) => ecart(s) - ecart(p))[0];
+      const tournees = freeSpots(w, id, 1);
+      const loin = [...(tournees.length ? tournees : freeSpots(w, id, 0))].sort((p, s) => ecart(s) - ecart(p))[0];
       const r = loin ? moveIsland(w, id, loin) : null;
       if (r?.ok) w = r.world;
     }

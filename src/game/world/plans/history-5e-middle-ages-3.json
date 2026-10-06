@@ -1,0 +1,9 @@
+{
+  "id": "history-5e-middle-ages-3",
+  "biome": "history-5e-middle-ages",
+  "name": "La cour du logis",
+  "reward": {
+    "xp": 60
+  },
+  "done": "La cour est prête. Mon logis est complet, et c’est toi qui l’as bâti, bâtisseur !"
+}

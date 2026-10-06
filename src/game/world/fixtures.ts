@@ -156,6 +156,13 @@ const FORMES: Record<string, Cube[]> = {
   // Moustache, la serre : deux portes (le lambris se perdait sur le sol de lambris), deux vitraux, deux toits.
   'english-5e-grammar-fixture-1': [...rangee(0, 1, 0, 0, 'door'), ...rangee(0, 1, 0, 1, BLOC.vitrail), ...rangee(0, 1, 0, 2, 'roof')],
 
+  // Vélin, l'écritoire (HG-3) : un pied de trois tourbes en ligne au sol, le plateau d'enluminure (le bloc de l'île : le
+  // bois du contenu n'est ni de l'île ni de finition) sur celle du milieu, la lanterne sur celle du bout.
+  'history-5e-middle-ages-fixture-1': [...rangee(0, 2, 0, 0, BLOC.tourbe), [1, 0, 1, BLOC.enluminure], [2, 0, 1, 'lantern']],
+  // Sillon, le coffre à graines (HG-3, retouche du consultant Blocland) : quatre enluminures au sol en carré de 2 × 2,
+  // la lanterne sur une enluminure du fond ; sans eau.
+  'geography-5e-resources-fixture-1': [...rangee(0, 1, 0, 0, BLOC.enluminure), ...rangee(0, 1, 1, 0, BLOC.enluminure), [1, 1, 1, 'lantern']],
+
   // 4e : les Monts de Feu.
   // Braise, le wagonnet : une voie de trois rails, un wagonnet de deux aciers.
   'maths-4e-powers-fixture-1': [...rangee(0, 2, 0, 0, BLOC.rail), [0, 0, 1, BLOC.acier], [1, 0, 1, BLOC.acier]],
@@ -182,6 +189,12 @@ const FORMES: Record<string, Cube[]> = {
   // toit de trois calques.
   'english-4e-grammar-fixture-1': [[0, 0, 0, 'fence'], [0, 0, 1, BLOC.rail], [2, 0, 0, 'fence'], [2, 0, 1, BLOC.rail], ...rangee(0, 2, 0, 2, BLOC.calque)],
 
+  // Typo, le réverbère (HG-3) : un mât de deux ardoises, la lanterne au sommet, la troisième ardoise en socle au pied
+  // et une barrière de l'autre côté (trois de haut au plus : le contenu en demandait quatre).
+  'history-4e-revolutions-fixture-1': [[0, 0, 0, 'fence'], ...colonne(1, 0, 0, 1, BLOC.ardoise), [1, 0, 2, 'lantern'], [2, 0, 0, BLOC.ardoise]],
+  // Fret, le treuil (HG-3) : deux poteaux de deux fontes aux bouts, l'axe d'une barrière entre eux en haut (le bois du
+  // contenu n'est ni de l'île ni de finition).
+  'geography-4e-globalization-fixture-1': [...colonne(0, 0, 0, 1, BLOC.fonte), ...colonne(2, 0, 0, 1, BLOC.fonte), [1, 0, 1, 'fence']],
   // 3e : les Îles du Ciel.
   // Théo, l'équerre : une branche debout de trois prismes, une branche couchée de deux portes (le marbre se perdait sur
   // le sol de marbre du Belvédère, retouche du directeur artistique).
@@ -200,6 +213,13 @@ const FORMES: Record<string, Cube[]> = {
   // puis l'escalier beige sur ce sol beige : le bois brun de la barrière, déjà dessiné en 3e, arbitrage du directeur
   // artistique), une colonne de deux marbres au milieu.
   'english-3e-grammar-fixture-1': [[0, 0, 0, 'fence'], [2, 0, 0, 'fence'], ...rangee(0, 2, 1, 0, 'fence'), ...colonne(1, 0, 0, 1, BLOC.marbre)],
+  // Mémo, le pupitre (HG-3) : deux quartz côte à côte au fond, un troisième sur l'un d'eux (le plateau), la marche
+  // devant (un escalier : le bois du contenu n'est ni de l'île ni de finition), la lanterne à côté.
+  'history-3e-twentieth-century-fixture-1': [[0, 1, 0, BLOC.quartz], [1, 1, 0, BLOC.quartz], [1, 1, 1, BLOC.quartz], [1, 0, 0, 'stairs'], [0, 0, 0, 'lantern']],
+  // Jalon, la boîte à livres (HG-3, retouches du consultant Blocland et du DA) : trois reliures en rang au sol, comme une
+  // étagère, la lanterne sur celle du milieu ; sans eau. Le rang va le long des y : la caméra du Plateau regarde l'île
+  // le long des x (`viewYaw`, −40°), elle le voit de face. Sa place est voulue (`WANTED_PLACES`).
+  'geography-3e-france-fixture-1': [[0, 0, 0, BLOC.reliure], [0, 1, 0, BLOC.reliure], [0, 2, 0, BLOC.reliure], [0, 1, 1, 'lantern']],
 };
 
 /**
@@ -253,7 +273,7 @@ const PLACES: Record<string, readonly [number, number]> = {
   'maths-6e-calculation-fixture-1': [9, 3],
   'maths-6e-fractions-fixture-1': [-1, 11],
   'maths-6e-decimals-fixture-1': [5, 12],
-  'maths-5e-signed-numbers-fixture-1': [6, 12],
+  'maths-5e-signed-numbers-fixture-1': [8, 5],
   'maths-5e-proportionality-fixture-1': [-1, 4],
   'french-5e-homophones-fixture-1': [10, 4],
   'french-5e-conjugation-fixture-1': [-3, 12],
@@ -261,7 +281,7 @@ const PLACES: Record<string, readonly [number, number]> = {
   'maths-4e-algebra-fixture-1': [5, 19],
   'french-4e-agreement-fixture-1': [4, 11],
   'french-4e-vocabulary-fixture-1': [6, 10],
-  'maths-3e-geometry-fixture-1': [5, 11],
+  'maths-3e-geometry-fixture-1': [10, 3],
   'maths-3e-statistics-fixture-1': [2, 10],
   'maths-3e-functions-fixture-1': [6, 19],
   'french-3e-close-reading-fixture-1': [5, 11],
@@ -269,6 +289,12 @@ const PLACES: Record<string, readonly [number, number]> = {
   'english-6e-grammar-fixture-1': [10, 9],
   'history-6e-antiquity-fixture-1': [0, 10],
   'geography-6e-living-fixture-1': [-1, 11],
+  'history-5e-middle-ages-fixture-1': [1, 10],
+  'geography-5e-resources-fixture-1': [2, 10],
+  'history-4e-revolutions-fixture-1': [8, 6],
+  'geography-4e-globalization-fixture-1': [10, 3],
+  'history-3e-twentieth-century-fixture-1': [10, 3],
+  'geography-3e-france-fixture-1': [14, 4],
   'life-earth-sciences-6e-living-world-fixture-1': [3, 9],
   'physics-chemistry-6e-matter-energy-fixture-1': [1, 11],
   'technology-6e-objects-fixture-1': [8, 6],
@@ -276,9 +302,27 @@ const PLACES: Record<string, readonly [number, number]> = {
   'english-5e-grammar-fixture-1': [10, 3],
   'english-4e-comprehension-fixture-1': [7, 9],
   'english-4e-grammar-fixture-1': [8, 9],
-  'english-3e-comprehension-fixture-1': [6, 12],
+  'english-3e-comprehension-fixture-1': [0, 12],
   'english-3e-grammar-fixture-1': [1, 10],
 };
+
+/**
+ * Les places voulues (relecture des captures) : le calcul (`calculerLaPlaceDeLaPetiteConstruction`) garde celle-ci si
+ * elle tient toutes ses règles, avant de chercher. Au Plateau des territoires, la boîte à livres de Jalon se posait
+ * derrière la mairie, cachée dans la vue de l'île : le calcul ne voit pas les bâtiments des îles des 5e, 4e et 3e (il
+ * ouvre les îles par les ouvrages, sans les voyages ; corrigé, il déplacerait presque toutes leurs petites constructions,
+ * à décider à part). Elle se pose donc sur l'herbe dégagée devant Jalon, à plus d'une case de lui, le rang face à la
+ * caméra, loin de la façade (consultant Blocland, DA, HG-3).
+ */
+const WANTED_PLACES: Record<string, readonly [number, number]> = {
+  'geography-3e-france-fixture-1': [14, 4],
+};
+
+/** La place voulue d'une petite construction (voir `WANTED_PLACES`), ou `null`. */
+export function wantedPlace(id: string): { x: number; y: number } | null {
+  const p = WANTED_PLACES[id];
+  return p ? { x: p[0], y: p[1] } : null;
+}
 
 /** La place écrite d'une petite construction (voir `PLACES`), ou `null` pour un identifiant inconnu. */
 export function placeEcrite(id: string): { x: number; y: number } | null {

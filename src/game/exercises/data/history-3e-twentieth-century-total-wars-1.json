@@ -1,0 +1,238 @@
+{
+  "id": "history-3e-twentieth-century-total-wars-1",
+  "biome": "history-3e-twentieth-century",
+  "type": "total-wars",
+  "level": 1,
+  "instruction": "Choisis le mot qui complète la phrase. La frise est affichée.",
+  "items": [
+    {
+      "key": "history-3e-twentieth-century-total-wars-1-0",
+      "prompt": "La Première Guerre mondiale commence en … .",
+      "spoken": "La Première Guerre mondiale commence en (mot manquant) .",
+      "choices": [
+        "1914",
+        "1918",
+        "1939"
+      ],
+      "answer": "1914",
+      "hint": "Cherche la ligne de la Première Guerre mondiale.",
+      "explanation": "La Première Guerre mondiale dure de 1914 à 1918. En 1939 commence la Seconde Guerre mondiale.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise des guerres totales",
+          "lines": [
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "De 1914 à 1918 : la Première Guerre mondiale.",
+            "1933 : Hitler prend le pouvoir en Allemagne.",
+            "De 1939 à 1945 : la Seconde Guerre mondiale.",
+            "1940 : la France est battue et occupée.",
+            "Guerre totale : tout le pays, soldats et civils, sert la guerre."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-3e-twentieth-century-total-wars-1-1",
+      "prompt": "Pendant la Première Guerre mondiale, les soldats vivent dans des … creusées dans la terre.",
+      "spoken": "Pendant la Première Guerre mondiale, les soldats vivent dans des (mot manquant) creusées dans la terre.",
+      "choices": [
+        "casernes",
+        "tranchées",
+        "tentes"
+      ],
+      "answer": "tranchées",
+      "hint": "Des fossés profonds, face à l’ennemi.",
+      "explanation": "Les tranchées sont des fossés où les soldats vivent et combattent, dans la boue et le froid. Les casernes sont des bâtiments, loin du front.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise des guerres totales",
+          "lines": [
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "De 1914 à 1918 : la Première Guerre mondiale.",
+            "1933 : Hitler prend le pouvoir en Allemagne.",
+            "De 1939 à 1945 : la Seconde Guerre mondiale.",
+            "1940 : la France est battue et occupée.",
+            "Guerre totale : tout le pays, soldats et civils, sert la guerre."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-3e-twentieth-century-total-wars-1-2",
+      "prompt": "Quand tout le pays, soldats, civils et usines, sert la guerre, c’est une guerre … .",
+      "spoken": "Quand tout le pays, soldats, civils et usines, sert la guerre, c’est une guerre (mot manquant) .",
+      "choices": [
+        "civile",
+        "froide",
+        "totale"
+      ],
+      "answer": "totale",
+      "hint": "Cherche « tout le pays » dans la frise.",
+      "explanation": "Une guerre totale mobilise tout le pays : les soldats au front, les civils dans les usines. Une guerre civile oppose les habitants d’un même pays.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise des guerres totales",
+          "lines": [
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "De 1914 à 1918 : la Première Guerre mondiale.",
+            "1933 : Hitler prend le pouvoir en Allemagne.",
+            "De 1939 à 1945 : la Seconde Guerre mondiale.",
+            "1940 : la France est battue et occupée.",
+            "Guerre totale : tout le pays, soldats et civils, sert la guerre."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-3e-twentieth-century-total-wars-1-3",
+      "prompt": "En 1916, à … , Français et Allemands se battent pendant des mois.",
+      "spoken": "En mille neuf cent seize, à (mot manquant), Français et Allemands se battent pendant des mois.",
+      "choices": [
+        "Verdun",
+        "Waterloo",
+        "Stalingrad"
+      ],
+      "answer": "Verdun",
+      "hint": "C’est une ville de l’est de la France.",
+      "explanation": "La bataille de Verdun dure presque toute l’année 1916. Waterloo est une bataille de Napoléon ; Stalingrad, une bataille de la Seconde Guerre mondiale.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise des guerres totales",
+          "lines": [
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "De 1914 à 1918 : la Première Guerre mondiale.",
+            "1933 : Hitler prend le pouvoir en Allemagne.",
+            "De 1939 à 1945 : la Seconde Guerre mondiale.",
+            "1940 : la France est battue et occupée.",
+            "Guerre totale : tout le pays, soldats et civils, sert la guerre."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-3e-twentieth-century-total-wars-1-4",
+      "prompt": "Le 11 novembre 1918, un … arrête les combats.",
+      "spoken": "Le onze novembre mille neuf cent dix-huit, un (mot manquant) arrête les combats.",
+      "choices": [
+        "traité",
+        "armistice",
+        "débarquement"
+      ],
+      "answer": "armistice",
+      "hint": "Un accord pour arrêter de se battre.",
+      "explanation": "L’armistice du 11 novembre 1918 arrête les combats. Le traité de Versailles, en 1919, fixe ensuite la paix.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise des guerres totales",
+          "lines": [
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "De 1914 à 1918 : la Première Guerre mondiale.",
+            "1933 : Hitler prend le pouvoir en Allemagne.",
+            "De 1939 à 1945 : la Seconde Guerre mondiale.",
+            "1940 : la France est battue et occupée.",
+            "Guerre totale : tout le pays, soldats et civils, sert la guerre."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-3e-twentieth-century-total-wars-1-5",
+      "prompt": "En Allemagne, Hitler installe un régime … : un seul parti, la peur, aucune liberté.",
+      "spoken": "En Allemagne, Hitler installe un régime (mot manquant) : un seul parti, la peur, aucune liberté.",
+      "choices": [
+        "démocratique",
+        "républicain",
+        "totalitaire"
+      ],
+      "answer": "totalitaire",
+      "hint": "Le mot ressemble à « total ».",
+      "explanation": "Un régime totalitaire contrôle tout : un seul parti, un seul chef, aucune liberté. Une démocratie, au contraire, laisse voter et s’exprimer.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise des guerres totales",
+          "lines": [
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "De 1914 à 1918 : la Première Guerre mondiale.",
+            "1933 : Hitler prend le pouvoir en Allemagne.",
+            "De 1939 à 1945 : la Seconde Guerre mondiale.",
+            "1940 : la France est battue et occupée.",
+            "Guerre totale : tout le pays, soldats et civils, sert la guerre."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-3e-twentieth-century-total-wars-1-6",
+      "prompt": "En Union soviétique, … dirige un régime totalitaire.",
+      "spoken": "En Union soviétique, (mot manquant) dirige un régime totalitaire.",
+      "choices": [
+        "Staline",
+        "Hitler",
+        "Mussolini"
+      ],
+      "answer": "Staline",
+      "hint": "Hitler dirige l’Allemagne.",
+      "explanation": "Staline dirige l’Union soviétique. Hitler dirige l’Allemagne nazie, Mussolini l’Italie fasciste.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise des guerres totales",
+          "lines": [
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "De 1914 à 1918 : la Première Guerre mondiale.",
+            "1933 : Hitler prend le pouvoir en Allemagne.",
+            "De 1939 à 1945 : la Seconde Guerre mondiale.",
+            "1940 : la France est battue et occupée.",
+            "Guerre totale : tout le pays, soldats et civils, sert la guerre."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-3e-twentieth-century-total-wars-1-7",
+      "prompt": "La Shoah, le génocide des Juifs d’Europe par les nazis, a lieu pendant la … .",
+      "spoken": "La Shoah, le génocide des Juifs d’Europe par les nazis, a lieu pendant la (mot manquant) .",
+      "choices": [
+        "Première Guerre mondiale",
+        "Seconde Guerre mondiale",
+        "guerre froide"
+      ],
+      "answer": "Seconde Guerre mondiale",
+      "hint": "Cherche la guerre qui commence en 1939.",
+      "explanation": "La Shoah a lieu pendant la Seconde Guerre mondiale : les nazis assassinent près de 6 millions de Juifs d’Europe. Les Tsiganes sont aussi victimes d’un génocide.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise des guerres totales",
+          "lines": [
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "De 1914 à 1918 : la Première Guerre mondiale.",
+            "1933 : Hitler prend le pouvoir en Allemagne.",
+            "De 1939 à 1945 : la Seconde Guerre mondiale.",
+            "1940 : la France est battue et occupée.",
+            "Guerre totale : tout le pays, soldats et civils, sert la guerre."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "history-3e-twentieth-century",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -389,7 +389,7 @@ describe('La construction taillée (lot R5)', () => {
       expect(part, `${a} : ${iles.join(', ')}`).toBeGreaterThanOrEqual(a === '5e' || a === '4e' ? 1 / 6 : 0.2);
       expect(part, a).toBeLessThanOrEqual(a === '3e' ? 1 / 3 : 0.3);
     }
-    expect(TERRE_CUITE_SUR).toHaveLength(7);
+    expect(TERRE_CUITE_SUR).toHaveLength(10);
     // Aux Îles du Ciel, le dessus est enneigé et les rives restent d'ardoise ; délavé sur une île fermée.
     const ciel = couleursDuToit('3e', 'maths-3e-functions');
     expect(ciel.dessus).not.toBe(ciel.cote);

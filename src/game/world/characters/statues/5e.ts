@@ -3,8 +3,8 @@
 // socles compris.
 import type { BiomeId } from '../../../biomes';
 import { pointe } from '../template';
-import { devant, fuseau, pave, type Anneau } from '../painted';
-import { orbites, plaque, tube, veineSur, type Statue } from '../sentinel';
+import { devant, fuseau, pave, pose, repere, type Anneau } from '../painted';
+import { dalle, orbites, plaque, tube, veineSur, type Statue } from '../sentinel';
 
 const TETE_DU_MAMMOUTH: Anneau[] = [
   [5.0, 0.8, 0.75, -1.2],
@@ -119,6 +119,72 @@ const VOILE: Anneau[] = [
   [7.6, 0.45, 0.42],
   [8, 0],
 ];
+
+/** Le Griffon d'émail, assis : le corps de lion, puis la tête d'aigle au bec avancé. */
+const CORPS_DU_GRIFFON: Anneau[] = [
+  [1, 1.0, 0.9],
+  [3.0, 1.15, 1.0],
+  [5.0, 0.8, 0.7],
+  [5.6, 0.5, 0.45],
+];
+const TETE_DU_GRIFFON: Anneau[] = [
+  [5.4, 0.55, 0.5, -0.2],
+  [7.2, 0.5, 0.45, -0.3],
+  [8, 0.3, 0.28, -0.3],
+];
+
+/** La Libellule de jade, debout sur sa queue : la queue fine, le thorax ; puis la tête aux gros yeux. */
+const CORPS_DE_LA_LIBELLULE: Anneau[] = [
+  [1, 0.18],
+  [3.5, 0.22],
+  [5.2, 0.35],
+  [6.2, 0.4],
+  [6.4, 0.3],
+];
+const TETE_DE_LA_LIBELLULE: Anneau[] = [
+  [6.3, 0.45, 0.4],
+  [7.3, 0.5, 0.45],
+  [8, 0.25, 0.25],
+];
+/**
+ * Ses deux paires d'ailes, de chaque côté, presque à plat (consultant Archipéo et DA, HG-3 : dressées, elles se
+ * lisaient comme les bras d'un poteau indicateur) : la hauteur de l'attache et le sens de la flèche (−1 : la paire du
+ * haut, tirée vers l'avant, côté visage ; 1 : celle du bas, tirée vers l'arrière). Vues d'en haut, les quatre ailes
+ * font un X. Larges d'une case à l'attache, la pointe émoussée, sans un triangle de plus : la marge des Gardiens du 5e
+ * est de quelques triangles.
+ */
+const AILES_DE_LA_LIBELLULE: [hauteur: number, fleche: -1 | 1][] = [
+  [5.3, 1],
+  [6.0, -1],
+];
+/** Le léger dièdre des ailes de la Libellule (radians) : la pointe relevée. */
+const DIEDRE_DE_LA_LIBELLULE = 0.16;
+/** Le contour d'une aile de la Libellule, à plat : (écart au corps, profondeur), la paire du haut (flèche −1). */
+const AILE_DE_LA_LIBELLULE: [number, number][] = [
+  [0, -0.35],
+  [1.95, -0.95],
+  [2.1, -0.4],
+  [0, 0.25],
+];
+/**
+ * Le repère d'une aile à plat de la Libellule (`s` : −1 à gauche, 1 à droite) : le contour (x, y) de la dalle devient
+ * l'écart et la profondeur, son épaisseur la hauteur, retournée (la face −Z de la dalle regarde le ciel : la nervure s'y
+ * pose) ; puis le dièdre relève la pointe.
+ */
+const repereDAileAPlat = (s: -1 | 1, hauteur: number) => {
+  const [c, n] = [Math.cos(s * DIEDRE_DE_LA_LIBELLULE), Math.sin(s * DIEDRE_DE_LA_LIBELLULE)];
+  return ([x, y, z]: [number, number, number]): [number, number, number] => [s * 0.3 + x * c + z * n, hauteur + x * n - z * c, y];
+};
+
+/**
+ * Les ailes du Griffon s'ouvrent en V, chacune reculée de cet angle depuis sa racine (radians) : vues par la tranche, de
+ * profil, elles se lisaient comme un obélisque (DA, relecture des planches, HG-3) ; ouvertes, elles ont de l'aire de
+ * face comme de profil, dans les cinq cases.
+ */
+const OUVERTURE_DES_AILES = 0.55;
+/** Le repère d'une aile (`s` : −1 à gauche, 1 à droite) : sa racine en `racine`, reculée de `OUVERTURE_DES_AILES`. */
+const repereDAile = (s: number, racine: [number, number]) => repere([s * racine[0], 0, racine[1]], 0, -s * OUVERTURE_DES_AILES, 0);
+const RACINE_DES_AILES_DU_GRIFFON: [number, number] = [0.7, 0.4];
 
 export const STATUES_5E: Partial<Record<BiomeId, Statue>> = {
   'maths-5e-signed-numbers': {
@@ -530,6 +596,56 @@ export const STATUES_5E: Partial<Record<BiomeId, Statue>> = {
       // Le cadran de la boussole et son aiguille.
       plaque(T, BOUSSOLE.x, BOUSSOLE.y, 0.28, 0.28, 8, a.lueur, () => -0.18);
       plaque(T, BOUSSOLE.x, BOUSSOLE.y, 0.05, 0.26, 4, a.lueur, () => -0.2);
+    },
+  },
+  // Les Gardiens d'histoire-géographie (HG-3) : Archipéo est en pause (2 octobre 2026), ces sentinelles n'ont que le
+  // strict nécessaire (budget de l'archipel).
+  'history-5e-middle-ages': {
+    nom: 'le Griffon d’émail',
+    allume: 'ses émaux',
+    sculpture: (T, a) => {
+      fuseau(T, CORPS_DU_GRIFFON, 6, a.moussue((k, j) => k === 0 && j % 2 === 0), { bas: false });
+      fuseau(T, TETE_DU_GRIFFON, 5, a.pierre, { bas: false });
+      // Le bec d'aigle, vers l'élève ; les deux ailes levées de part et d'autre du dos.
+      pointe(T, [0, 6.5, devant(TETE_DU_GRIFFON, 5, 6.5).z + 0.1], 0.2, 0.5, a.pierre, [-Math.PI / 2, 0, 0], 3);
+      for (const s of [-1, 1])
+        dalle(
+          pose(T, repereDAile(s, RACINE_DES_AILES_DU_GRIFFON)),
+          [
+            [0, 2.6],
+            [s * 1.4, 3.4],
+            [s * 1.7, 6.3],
+            [s * 0.2, 5.2],
+          ],
+          -0.075,
+          0.075,
+          a.pierre,
+        );
+      orbites(T, a, 0, 6.8, devant(TETE_DU_GRIFFON, 5, 6.8).z, 0.22, 0.12);
+    },
+    veines: (T, a) => plaque(T, 0, 3.6, 0.45, 0.6, 6, a.lueur, (y) => devant(CORPS_DU_GRIFFON, 6, y).z),
+  },
+  'geography-5e-resources': {
+    nom: 'la Libellule de jade',
+    allume: 'les nervures de ses ailes',
+    sculpture: (T, a) => {
+      fuseau(T, CORPS_DE_LA_LIBELLULE, 5, a.pierre, { bas: false });
+      fuseau(T, TETE_DE_LA_LIBELLULE, 5, a.moussue((k, j) => k === 1 && j % 2 === 0), { bas: false });
+      for (const s of [-1, 1] as const)
+        for (const [hauteur, fleche] of AILES_DE_LA_LIBELLULE)
+          dalle(
+            pose(T, repereDAileAPlat(s, hauteur)),
+            AILE_DE_LA_LIBELLULE.map(([x, y]): [number, number] => [s * x, -fleche * y]),
+            -0.05,
+            0.05,
+            a.pierre,
+          );
+      orbites(T, a, 0, 7.3, devant(TETE_DE_LA_LIBELLULE, 5, 7.3).z, 0.26, 0.14);
+    },
+    veines: (T, a) => {
+      // Une nervure sur chaque aile du haut, sur sa face tournée vers le ciel.
+      for (const s of [-1, 1] as const)
+        for (const [hauteur, fleche] of AILES_DE_LA_LIBELLULE.slice(1)) plaque(pose(T, repereDAileAPlat(s, hauteur)), s * 1.0, fleche * 0.3, 0.65, 0.07 * a.veines, 4, a.lueur, () => -0.05);
     },
   },
 };

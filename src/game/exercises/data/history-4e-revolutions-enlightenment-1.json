@@ -1,0 +1,238 @@
+{
+  "id": "history-4e-revolutions-enlightenment-1",
+  "biome": "history-4e-revolutions",
+  "type": "enlightenment",
+  "level": 1,
+  "instruction": "Choisis le mot qui complète la phrase. La frise est affichée.",
+  "items": [
+    {
+      "key": "history-4e-revolutions-enlightenment-1-0",
+      "prompt": "Au XVIIIe siècle, des navires européens emmènent des Africains réduits en esclavage en … .",
+      "spoken": "Au dix-huitième siècle, des navires européens emmènent des Africains réduits en esclavage en (mot manquant).",
+      "choices": [
+        "Amérique",
+        "Asie",
+        "Europe"
+      ],
+      "answer": "Amérique",
+      "hint": "Les navires traversent l’océan Atlantique, vers l’ouest.",
+      "explanation": "C’est la traite atlantique : des millions d’Africains sont emmenés de force vers les Amériques, pour travailler dans les plantations.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise du XVIIIe siècle",
+          "lines": [
+            "X vaut 10, V vaut 5, I vaut 1 : XVIII vaut 18.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "XVIIIe siècle : la traite atlantique, les Lumières.",
+            "1789 : la Révolution française commence.",
+            "1792 : la France devient une République.",
+            "1804 : Napoléon Bonaparte devient empereur."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-4e-revolutions-enlightenment-1-1",
+      "prompt": "Ce commerce a trois étapes : l’Europe, l’Afrique, les Amériques. On l’appelle le commerce … .",
+      "spoken": "Ce commerce a trois étapes : l’Europe, l’Afrique, les Amériques. On l’appelle le commerce (mot manquant) .",
+      "choices": [
+        "triangulaire",
+        "national",
+        "intérieur"
+      ],
+      "answer": "triangulaire",
+      "hint": "Trois étapes, comme les trois côtés d’une figure.",
+      "explanation": "Trois étapes, comme les trois côtés d’un triangle : c’est le commerce triangulaire. Il traverse les mers, il n’est donc ni national ni intérieur.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise du XVIIIe siècle",
+          "lines": [
+            "X vaut 10, V vaut 5, I vaut 1 : XVIII vaut 18.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "XVIIIe siècle : la traite atlantique, les Lumières.",
+            "1789 : la Révolution française commence.",
+            "1792 : la France devient une République.",
+            "1804 : Napoléon Bonaparte devient empereur."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-4e-revolutions-enlightenment-1-2",
+      "prompt": "Au XVIIIe siècle, Voltaire et Montesquieu veulent éclairer les esprits par la raison : ce sont les philosophes des … .",
+      "spoken": "Au dix-huitième siècle, Voltaire et Montesquieu veulent éclairer les esprits par la raison : ce sont les philosophes des (mot manquant).",
+      "choices": [
+        "Lumières",
+        "humanistes",
+        "révolutionnaires"
+      ],
+      "answer": "Lumières",
+      "hint": "Éclairer, c’est apporter de la lumière.",
+      "explanation": "Les philosophes des Lumières veulent éclairer les esprits par la raison. Les humanistes, c’est la Renaissance, bien avant.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise du XVIIIe siècle",
+          "lines": [
+            "X vaut 10, V vaut 5, I vaut 1 : XVIII vaut 18.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "XVIIIe siècle : la traite atlantique, les Lumières.",
+            "1789 : la Révolution française commence.",
+            "1792 : la France devient une République.",
+            "1804 : Napoléon Bonaparte devient empereur."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-4e-revolutions-enlightenment-1-3",
+      "prompt": "Avant 1789, la société a trois ordres : le clergé, la noblesse et le … .",
+      "spoken": "Avant mille sept cent quatre-vingt-neuf, la société a trois ordres : le clergé, la noblesse et le (mot manquant).",
+      "choices": [
+        "tiers état",
+        "seigneur",
+        "roi"
+      ],
+      "answer": "tiers état",
+      "hint": "« Tiers » veut dire troisième.",
+      "explanation": "Le tiers état est le troisième ordre : paysans, artisans, bourgeois. Le roi est au-dessus des trois ordres.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise du XVIIIe siècle",
+          "lines": [
+            "X vaut 10, V vaut 5, I vaut 1 : XVIII vaut 18.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "XVIIIe siècle : la traite atlantique, les Lumières.",
+            "1789 : la Révolution française commence.",
+            "1792 : la France devient une République.",
+            "1804 : Napoléon Bonaparte devient empereur."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-4e-revolutions-enlightenment-1-4",
+      "prompt": "Le 14 juillet 1789, les Parisiens prennent … .",
+      "spoken": "Le quatorze juillet mille sept cent quatre-vingt-neuf, les Parisiens prennent (mot manquant).",
+      "choices": [
+        "la Bastille",
+        "le Louvre",
+        "la tour Eiffel"
+      ],
+      "answer": "la Bastille",
+      "hint": "C’est une prison du roi, à Paris.",
+      "explanation": "Le 14 juillet 1789, les Parisiens prennent la Bastille, une prison du roi. La tour Eiffel ne sera construite qu’en 1889.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise du XVIIIe siècle",
+          "lines": [
+            "X vaut 10, V vaut 5, I vaut 1 : XVIII vaut 18.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "XVIIIe siècle : la traite atlantique, les Lumières.",
+            "1789 : la Révolution française commence.",
+            "1792 : la France devient une République.",
+            "1804 : Napoléon Bonaparte devient empereur."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-4e-revolutions-enlightenment-1-5",
+      "prompt": "En 1789, la Déclaration des droits de l’homme et du citoyen dit que les hommes naissent libres et … en droits.",
+      "spoken": "En mille sept cent quatre-vingt-neuf, la Déclaration des droits de l’homme et du citoyen dit que les hommes naissent libres et (mot manquant) en droits.",
+      "choices": [
+        "égaux",
+        "riches",
+        "nobles"
+      ],
+      "answer": "égaux",
+      "hint": "Les mêmes droits pour tous.",
+      "explanation": "La Déclaration dit que les hommes naissent libres et égaux en droits : c’est la fin des privilèges des nobles et du clergé.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise du XVIIIe siècle",
+          "lines": [
+            "X vaut 10, V vaut 5, I vaut 1 : XVIII vaut 18.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "XVIIIe siècle : la traite atlantique, les Lumières.",
+            "1789 : la Révolution française commence.",
+            "1792 : la France devient une République.",
+            "1804 : Napoléon Bonaparte devient empereur."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-4e-revolutions-enlightenment-1-6",
+      "prompt": "En 1804, Napoléon Bonaparte devient … des Français.",
+      "spoken": "En mille huit cent quatre, Napoléon Bonaparte devient (mot manquant) des Français.",
+      "choices": [
+        "empereur",
+        "roi",
+        "président"
+      ],
+      "answer": "empereur",
+      "hint": "Cherche 1804 dans la frise.",
+      "explanation": "En 1804, Napoléon Bonaparte est sacré empereur des Français : il devient Napoléon Ier. Ce n’est pas un roi : la monarchie a été abolie en 1792.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise du XVIIIe siècle",
+          "lines": [
+            "X vaut 10, V vaut 5, I vaut 1 : XVIII vaut 18.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "XVIIIe siècle : la traite atlantique, les Lumières.",
+            "1789 : la Révolution française commence.",
+            "1792 : la France devient une République.",
+            "1804 : Napoléon Bonaparte devient empereur."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-4e-revolutions-enlightenment-1-7",
+      "prompt": "La Révolution française commence … le sacre de Napoléon.",
+      "spoken": "La Révolution française commence (mot manquant) le sacre de Napoléon.",
+      "choices": [
+        "avant",
+        "après",
+        "en même temps que"
+      ],
+      "answer": "avant",
+      "hint": "Sur la frise, lequel est le plus haut ?",
+      "explanation": "La Révolution commence en 1789, le sacre a lieu en 1804 : la Révolution vient avant.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise du XVIIIe siècle",
+          "lines": [
+            "X vaut 10, V vaut 5, I vaut 1 : XVIII vaut 18.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "XVIIIe siècle : la traite atlantique, les Lumières.",
+            "1789 : la Révolution française commence.",
+            "1792 : la France devient une République.",
+            "1804 : Napoléon Bonaparte devient empereur."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "history-4e-revolutions",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

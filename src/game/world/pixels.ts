@@ -38,6 +38,12 @@ export type TextureKind =
   | 'bardeau'
   | 'mosaique'
   | 'chaume'
+  | 'enluminure'
+  | 'riziere'
+  | 'fonte'
+  | 'conteneur'
+  | 'reliure'
+  | 'gres'
   | 'fossile'
   | 'aimant'
   | 'carton'
@@ -202,6 +208,35 @@ function chaume(t: TonsDuChaume): Painter {
   };
 }
 
+/** Un hachage entier d'une case (sans hasard du canvas : la même texture sur chaque face, quelle que soit la graine). */
+const hacher = (i: number, j: number) => (((i * 73856093) ^ (j * 19349663)) >>> 0) % 1000;
+
+/** Les tons de l'enluminure : le fond violet, son reflet, le filet d'or et l'or sombre de son ombre. */
+type TonsDEnluminure = { fond: string; reflet: string; or: string; ombre: string };
+
+/**
+ * De l'enluminure (le Bourg des chroniques, histoire 5e ; DA, HG-3) : une page peinte violette, cernée d'un filet d'or
+ * d'un pixel à deux pixels du bord (l'ombre de l'or juste dedans), un losange d'or au milieu, et un rinceau de pixels
+ * plus clairs en diagonale dans les coins. Quatre tons, sans hasard : les filets d'or la séparent de l'obsidienne
+ * (noire, sans dessin) et du velours (des plis verticaux). Le bord du bloc est le fond : d'un bloc à l'autre, chaque
+ * page garde son cadre.
+ */
+function enluminure(t: TonsDEnluminure): Painter {
+  const [fond, reflet, or, ombre] = [hexToRgb(t.fond), hexToRgb(t.reflet), hexToRgb(t.or), hexToRgb(t.ombre)];
+  return (x, y) => {
+    const bord = Math.min(x, y, 15 - x, 15 - y);
+    if (bord === 2) return or;
+    if (bord === 3) return ombre;
+    // Le losange d'or au milieu, cerné de son ombre.
+    const d = Math.abs(x - 7.5) + Math.abs(y - 7.5);
+    if (d <= 2) return or;
+    if (d <= 3) return ombre;
+    // Le rinceau des coins, hors du cadre : une diagonale claire d'un pixel sur deux.
+    if (bord < 2 && (x + y) % 4 === 0) return reflet;
+    return fond;
+  };
+}
+
 /** La coquille en spirale du fossile, 10 × 10 pixels, dessinée à la main (« # » : le trait de la spirale). */
 const SPIRALE = ['...####...', '..#....#..', '.#..##..#.', '#..#..#..#', '#.#..#.#.#', '#.#.##.#.#', '#..#...#.#', '.#..###..#', '..#.....#.', '...#####..'];
 
@@ -261,6 +296,118 @@ function carton(t: TonsDuCarton): Painter {
     if (u === 0) return creux;
     if (u === 1) return clair;
     return fond;
+  };
+}
+
+/** Les tons de la rizière : la pousse, son bout clair, l'eau et le reflet de l'eau, la levée de terre. */
+type TonsDeRiziere = { pousse: string; clair: string; eau: string; reflet: string; levee: string };
+
+/**
+ * De la rizière (le Delta des ressources, géographie 5e ; DA, HG-3). Sur le dessus, des rangs de pousses vertes plantées
+ * dans l'eau bleu-vert : une touffe de deux pixels de large tous les quatre, sur deux rangs sur quatre, en quinconce, des
+ * reflets clairs dans l'eau entre elles. Sur le côté, une terrasse : en haut, les pousses dépassent de l'eau, puis l'eau,
+ * puis la levée de terre qui la retient, en bas. Cinq tons, sans hasard : l'eau entre les rangs la sépare de l'herbe et
+ * des feuilles, les pousses de l'eau du monde.
+ */
+function riziere(t: TonsDeRiziere, cote: boolean): Painter {
+  const [pousse, clair, eau, reflet, levee] = [hexToRgb(t.pousse), hexToRgb(t.clair), hexToRgb(t.eau), hexToRgb(t.reflet), hexToRgb(t.levee)];
+  return (x, y) => {
+    if (cote) {
+      if (y >= 12) return y === 12 ? clair : levee;
+      if (y < 6) {
+        // Les pousses de la terrasse, des brins verticaux qui dépassent de l'eau.
+        const u = x % 4;
+        if (u === 1 || u === 2) return y < 2 && u === 1 ? clair : pousse;
+        return eau;
+      }
+      return (x + y * 3) % 7 === 0 ? reflet : eau;
+    }
+    const rang = Math.floor(y / 4);
+    const u = (x + (rang % 2) * 2) % 4;
+    if (y % 4 < 2 && u < 2) return y % 4 === 0 && u === 0 ? clair : pousse;
+    return (x * 5 + y) % 11 === 0 ? reflet : eau;
+  };
+}
+
+/** Les tons de la fonte : la plaque, son joint, le rivet et son ombre. */
+type TonsDeFonte = { plaque: string; joint: string; rivet: string; ombre: string };
+
+/**
+ * De la fonte (l'Imprimerie des révolutions, histoire 4e ; DA, HG-3) : des plaques de 8 × 8 pixels, un joint sombre
+ * d'un pixel entre elles, et dans chaque coin d'une plaque un rivet clair, son ombre d'un pixel en bas à droite. Quatre
+ * tons, sans grain : ce sont les rivets qui la nomment, à côté de l'obsidienne (unie, des éclats), de l'acier (des
+ * stries) et de l'ardoise (des lits). Le motif se raccorde d'un bloc à l'autre.
+ */
+function fonte(t: TonsDeFonte): Painter {
+  const [plaque, joint, rivet, ombre] = [hexToRgb(t.plaque), hexToRgb(t.joint), hexToRgb(t.rivet), hexToRgb(t.ombre)];
+  return (x, y) => {
+    const [u, v] = [x % 8, y % 8];
+    if (u === 7 || v === 7) return joint;
+    const pres = (a: number) => a === 1 || a === 5;
+    if (pres(u) && pres(v)) return rivet;
+    if (pres(u - 1) && pres(v - 1)) return ombre;
+    return plaque;
+  };
+}
+
+/** Les tons du conteneur : la crête de l'onde, son creux, le flanc entre eux, le cadre d'acier. */
+type TonsDuConteneur = { crete: string; flanc: string; creux: string; cadre: string };
+
+/**
+ * De la tôle ondulée de conteneur (l'Escale des échanges, géographie 4e ; DA, HG-3) : des ondes droites et serrées, une
+ * tous les quatre pixels (la crête claire, le flanc, le creux sombre sur deux pixels), verticales sur le côté, entre un
+ * cadre sombre d'un pixel en haut et en bas ; sur le dessus, les mêmes ondes couchées, dans un cadre tout autour. Quatre
+ * tons, sans hasard : les ondes droites la séparent de l'eau (des vagues claires et rondes) et du verre.
+ */
+function conteneur(t: TonsDuConteneur, dessus: boolean): Painter {
+  const [crete, flanc, creux, cadre] = [hexToRgb(t.crete), hexToRgb(t.flanc), hexToRgb(t.creux), hexToRgb(t.cadre)];
+  return (x, y) => {
+    if (y === 0 || y === 15 || (dessus && (x === 0 || x === 15))) return cadre;
+    const u = (dessus ? y : x) % 4;
+    return u === 0 ? crete : u === 1 ? flanc : creux;
+  };
+}
+
+/** Les tons de la reliure : deux tons de dos de livres, le nerf clair, le creux entre deux livres, la tranche des pages. */
+type TonsDeReliure = { dos: string; autre: string; nerf: string; creux: string; pages: string };
+
+/**
+ * De la reliure (le Kiosque des témoins, histoire 3e ; DA, HG-3) : sur le côté, des dos de livres debout, serrés, de
+ * trois ou quatre pixels de large (un hachage du livre), deux tons qui alternent, un creux sombre d'un pixel entre eux,
+ * deux nerfs clairs en travers de chaque dos ; aucune lettre. Sur le dessus, la tranche des pages, crème, entre les
+ * couvertures. Cinq tons, sans hasard : les dos verticaux la séparent du lambris (des rainures et deux filets dorés) et
+ * de la rizière.
+ */
+function reliure(t: TonsDeReliure, dessus: boolean): Painter {
+  const [dos, autre, nerf, creux, pages] = [hexToRgb(t.dos), hexToRgb(t.autre), hexToRgb(t.nerf), hexToRgb(t.creux), hexToRgb(t.pages)];
+  // Les bords gauches des livres sur les seize pixels : des largeurs de 4, 3, 4, 5 (seize en tout, le motif se raccorde).
+  const debuts = [0, 4, 7, 11];
+  return (x, y) => {
+    const livre = debuts.filter((d) => d <= x).length - 1;
+    const u = x - debuts[livre];
+    if (u === 0) return creux;
+    const couverture = livre % 2 ? autre : dos;
+    if (dessus) return u === 1 || x === debuts[livre + 1] - 1 || x === 15 ? couverture : pages;
+    if (y === 2 + (livre % 2) || y === 12 - (livre % 2)) return nerf;
+    return couverture;
+  };
+}
+
+/** Les tons du grès : la pierre, son grain clair, son grain sombre, le lit d'une assise. */
+type TonsDuGres = { pierre: string; clair: string; sombre: string; lit: string };
+
+/**
+ * Du grès rose (le Plateau des territoires, géographie 3e ; DA, HG-3) : une pierre à grain fin, des pixels clairs et
+ * sombres semés par un hachage, et des assises de cinq pixels à peine marquées : un lit d'un ton à peine plus sombre que
+ * la pierre, sans joint vertical. Quatre tons proches, sans hasard : ni les joints de la brique, ni les rangs de la
+ * tuile, ni le blanc veiné du marbre.
+ */
+function gres(t: TonsDuGres): Painter {
+  const [pierre, clair, sombre, lit] = [hexToRgb(t.pierre), hexToRgb(t.clair), hexToRgb(t.sombre), hexToRgb(t.lit)];
+  return (x, y) => {
+    if (y % 5 === 4) return lit;
+    const h = hacher(x, y);
+    return h < 110 ? clair : h < 200 ? sombre : pierre;
   };
 }
 
@@ -545,6 +692,38 @@ export const PAINTERS: Record<TextureKind, { top: Painter; side: Painter; bottom
   chaume: {
     top: chaume({ paille: '#d8b860', brin: '#ead08a', ombre: '#9c7c34', lien: '#6e4c26' }),
     side: chaume({ paille: '#c09c48', brin: '#d6b868', ombre: '#84682a', lien: '#5e4020' }),
+  },
+  // Enluminure (le Bourg des chroniques, histoire 5e) : une page violette cernée d'un filet d'or, un losange d'or au
+  // milieu. Les filets la séparent de l'obsidienne.
+  enluminure: {
+    top: enluminure({ fond: '#6a4c9c', reflet: '#8668b6', or: '#e0b84a', ombre: '#9a7a30' }),
+    side: enluminure({ fond: '#4e3878', reflet: '#68529a', or: '#c9a23c', ombre: '#7e6428' }),
+  },
+  // Rizière (le Delta des ressources, géographie 5e) : des rangs de pousses dans l'eau, une terrasse sur le côté.
+  riziere: {
+    top: riziere({ pousse: '#a2bf42', clair: '#c8de6a', eau: '#4f8c86', reflet: '#7fb4ac', levee: '#7a6040' }, false),
+    side: riziere({ pousse: '#8eab36', clair: '#b4cc5a', eau: '#437a74', reflet: '#6ea29a', levee: '#6a5236' }, true),
+  },
+  // Fonte (l'Imprimerie des révolutions, histoire 4e) : des plaques vert-noir rivetées. Les rivets la séparent de
+  // l'obsidienne, de l'acier et de l'ardoise.
+  fonte: {
+    top: fonte({ plaque: '#3e4a44', joint: '#232b27', rivet: '#8a9a90', ombre: '#1c2420' }),
+    side: fonte({ plaque: '#2c3631', joint: '#1a201d', rivet: '#76867c', ombre: '#141a17' }),
+  },
+  // Conteneur (l'Escale des échanges, géographie 4e) : de la tôle ondulée bleue, des ondes droites et serrées.
+  conteneur: {
+    top: conteneur({ crete: '#5a9cc8', flanc: '#3d7fb0', creux: '#2e6890', cadre: '#20486a' }, true),
+    side: conteneur({ crete: '#4a88b4', flanc: '#2c6189', creux: '#204c6e', cadre: '#183a56' }, false),
+  },
+  // Reliure (le Kiosque des témoins, histoire 3e) : des dos de livres serrés, sans lettres.
+  reliure: {
+    top: reliure({ dos: '#2f6f74', autre: '#285e63', nerf: '#5a9a9c', creux: '#16383c', pages: '#e6dcc4' }, true),
+    side: reliure({ dos: '#22545a', autre: '#2c6a70', nerf: '#5a9294', creux: '#122e32', pages: '#e6dcc4' }, false),
+  },
+  // Grès rose (le Plateau des territoires, géographie 3e) : un grain fin en assises à peine marquées.
+  gres: {
+    top: gres({ pierre: '#d49a94', clair: '#e4b2ac', sombre: '#c08680', lit: '#c88e88' }),
+    side: gres({ pierre: '#b07872', clair: '#c28c86', sombre: '#9c6862', lit: '#a46e68' }),
   },
   // Fossile (la Vallée du vivant, SVT 6e) : une pierre beige, une coquille en spirale d'un trait sombre au milieu.
   fossile: {

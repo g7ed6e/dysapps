@@ -1,6 +1,6 @@
 // L'architecte du village : le dessin des bâtiments des îles, en trois étapes (les murs, le toit, la cour), calculé à partir
 // d'une forme (maison, tour, dôme, échoppe, hutte, kiosque, relais, jardin, refuge,
-// musée, quartier, serre, laboratoire, atelier) et du bloc de l'île. Les cases sont relatives à la zone des
+// musée, quartier, logis, moulin, halle, entrepôt, bibliothèque, mairie, serre, laboratoire, atelier) et du bloc de l'île. Les cases sont relatives à la zone des
 // plans de l'île (6 × 5 cases, z = 0 : premier bloc sur le sol) ; la façade et la porte sont devant (y bas), la cour aussi.
 // Les blocs de finition (toit, porte, lanterne, barrière, escalier) viennent des coffres des étapes précédentes : un coffre
 // donne exactement ceux de l'étape suivante (voir plans.ts).
@@ -35,6 +35,12 @@ type BuildingStyle =
   | { kind: 'refuge' }
   | { kind: 'musee' }
   | { kind: 'quartier' }
+  | { kind: 'logis' }
+  | { kind: 'moulin' }
+  | { kind: 'halle' }
+  | { kind: 'entrepot' }
+  | { kind: 'bibliotheque' }
+  | { kind: 'mairie' }
   | { kind: 'serre' }
   | { kind: 'laboratoire' }
   | { kind: 'atelier' };
@@ -65,6 +71,8 @@ const BUILDING_OF: Record<BiomeId, BuildingStyle> = {
   'english-5e-vocabulary': { kind: 'echoppe' },
   'english-5e-grammar': { kind: 'maison', w: 5, chimney: 2 },
   'lv2-5e-introductions': { kind: 'relais' },
+  'history-5e-middle-ages': { kind: 'logis' },
+  'geography-5e-resources': { kind: 'moulin' },
   // Anciens Ateliers (4e)
   'maths-4e-algebra': { kind: 'maison' },
   'maths-4e-powers': { kind: 'maison', chimney: 2 },
@@ -73,6 +81,8 @@ const BUILDING_OF: Record<BiomeId, BuildingStyle> = {
   'english-4e-comprehension': { kind: 'maison', w: 5 },
   'english-4e-grammar': { kind: 'echoppe' },
   'lv2-4e-daily-life': { kind: 'jardin' },
+  'history-4e-revolutions': { kind: 'halle' },
+  'geography-4e-globalization': { kind: 'entrepot' },
   // Îles du Ciel (3e)
   'maths-3e-functions': { kind: 'tour', top: 'phare' },
   'maths-3e-geometry': { kind: 'kiosque' },
@@ -81,6 +91,8 @@ const BUILDING_OF: Record<BiomeId, BuildingStyle> = {
   'english-3e-comprehension': { kind: 'maison' },
   'english-3e-grammar': { kind: 'tour', top: 'creneaux' },
   'lv2-3e-travel': { kind: 'refuge' },
+  'history-3e-twentieth-century': { kind: 'bibliotheque' },
+  'geography-3e-france': { kind: 'mairie' },
 };
 
 // ---------- Outils ----------
@@ -524,6 +536,162 @@ function quartier(b: BlockId): Stages {
 }
 
 /**
+ * Le toit à deux pans d'un bâtiment de trois rangs de profondeur (de `y0` à `y0 + 2`), de `x0` à `x1` : les deux pans au
+ * niveau `h`, le faîte au milieu un cran plus haut, en `bloc` (les tuiles par défaut), et les deux pignons du bloc des
+ * murs aux bouts des murs (`murs`, de `mx0` à `mx1`).
+ */
+function deuxPans(x0: number, x1: number, y0: number, h: number, b: BlockId, mx0: number, mx1: number, bloc: BlockId = BLOC.toit, faite: BlockId = bloc): ArchCell[] {
+  const out: ArchCell[] = [];
+  for (let x = x0; x <= x1; x++) out.push({ x, y: y0, z: h, block: bloc }, { x, y: y0 + 2, z: h, block: bloc }, { x, y: y0 + 1, z: h + 1, block: faite });
+  out.push({ x: mx0, y: y0 + 1, z: h, block: b }, { x: mx1, y: y0 + 1, z: h, block: b });
+  return out;
+}
+
+/** Des ouvertures (porte, fenêtres éclairées) posées dans les trous des murs. */
+function ouvertures(porte: [number, number, number], fenetres: [number, number, number][]): ArchCell[] {
+  return [{ x: porte[0], y: porte[1], z: porte[2], block: BLOC.porte }, ...fenetres.map(([x, y, z]) => ({ x, y, z, block: BLOC.lanterne }))];
+}
+
+/**
+ * Le logis (le logis de Vélin, histoire 5e ; DA, HG-3) : un logis à étage en avancée, ni église ni château. Le logis : le
+ * rez-de-chaussée d'enluminure, quatre sur trois, deux blocs de haut, et l'étage, deux blocs de haut, qui avance d'un
+ * rang sur la rue. Le toit du logis : la porte, une fenêtre en bas, deux à l'étage sur l'avancée, le toit à deux pans
+ * sur l'étage, ses pignons. La cour du logis : la cour de toujours (barrière, portillon, lanternes, marche, jardinière).
+ */
+function logis(b: BlockId): Stages {
+  const doorX = 2;
+  const fenetres: [number, number, number][] = [
+    [4, 3, 1],
+    [2, 1, 2],
+    [3, 1, 2],
+  ];
+  const walls: ArchCell[] = [];
+  for (let z = 0; z < 2; z++) for (const [x, y] of ring(1, 2, 4, 3)) walls.push({ x, y, z, block: b });
+  for (let z = 2; z < 4; z++) for (const [x, y] of ring(1, 1, 4, 3)) walls.push({ x, y, z, block: b });
+  const roof = [...ouvertures([doorX, 2, 0], fenetres), ...deuxPans(0, ZW - 1, 1, 4, b, 1, 4)];
+  return [without(walls, [[doorX, 2, 0], ...fenetres]), roof, yard(b, doorX, 2)];
+}
+
+/**
+ * Le moulin (le moulin de Sillon, géographie 5e ; DA, HG-3) : un moulin à eau, sa roue fixe. Le moulin : une tour basse de
+ * rizière, trois sur trois, trois blocs de haut. Le toit du moulin : la porte, deux fenêtres, le toit à deux pans, et sur
+ * son flanc est la roue, un anneau de huit planches debout, à une case du mur, immobile. La cour du moulin : le bief
+ * d'eau (du verre) entre le mur et la roue, un rang de rizière devant, la barrière, son portillon, deux lanternes et la marche.
+ * Au Delta, la caméra de l'île pivote à fond vers l'est (`viewYaw`, −40°) : l'anneau, sur le flanc est, lui fait face ;
+ * rien ne se pose devant lui (le rang de rizière, au bord est, en cachait le bas et le milieu vide : la roue se lisait
+ * comme un mur de planches, DA, relecture des planches, HG-3).
+ */
+function moulin(b: BlockId): Stages {
+  const doorX = 1;
+  const fenetres: [number, number, number][] = [
+    [0, 3, 1],
+    [1, 4, 1],
+  ];
+  const walls: ArchCell[] = [];
+  for (let z = 0; z < 3; z++) for (const [x, y] of ring(0, 2, 3, 3)) walls.push({ x, y, z, block: b });
+  const roue: ArchCell[] = [];
+  // Décollée du mur d'une case, la roue se lit comme un anneau : par son milieu vide et autour d'elle, on voit le mur
+  // de la tour derrière (DA, relecture des planches : collée, elle faisait façade).
+  for (let y = 2; y <= 4; y++) for (let z = 0; z <= 2; z++) if (y !== 3 || z !== 1) roue.push({ x: 4, y, z, block: BLOC.bois });
+  const roof = [...ouvertures([doorX, 2, 0], fenetres), ...deuxPans(0, 2, 2, 3, b, 0, 2), ...roue];
+  const cour: ArchCell[] = [];
+  for (let y = 2; y <= 4; y++) cour.push({ x: 3, y, z: 0, block: BLOC.verre });
+  // Le rang de rizière, devant, à côté de la marche : jamais entre la roue et la caméra.
+  for (let x = 2; x < ZW; x++) cour.push({ x, y: 1, z: 0, block: b });
+  for (let x = 0; x < ZW; x++) if (x !== doorX) cour.push({ x, y: 0, z: 0, block: BLOC.barriere });
+  cour.push({ x: 0, y: 0, z: 1, block: BLOC.lanterne }, { x: ZW - 1, y: 0, z: 1, block: BLOC.lanterne }, { x: doorX, y: 1, z: 0, block: BLOC.escalier });
+  return [without(walls, [[doorX, 2, 0], ...fenetres]), roof, cour];
+}
+
+/**
+ * La halle (la halle de Typo, histoire 4e ; DA, HG-3) : une halle de fonte à verrière. La halle : une salle longue de
+ * fonte, six sur trois, deux blocs de haut. Le toit de la halle : la porte, trois fenêtres, le toit à deux pans sur toute
+ * la longueur (de terre cuite dans Archipéo, `roofs.ts`), sa verrière au faîte (un rang de verre) et ses deux pignons de
+ * fonte. La cour de la halle : la cour de toujours.
+ */
+function halle(b: BlockId): Stages {
+  const doorX = 2;
+  const fenetres: [number, number, number][] = [
+    [4, 2, 1],
+    [0, 3, 1],
+    [5, 3, 1],
+  ];
+  const walls: ArchCell[] = [];
+  for (let z = 0; z < 2; z++) for (const [x, y] of ring(0, 2, ZW, 3)) walls.push({ x, y, z, block: b });
+  const roof = [...ouvertures([doorX, 2, 0], fenetres), ...deuxPans(0, ZW - 1, 2, 2, b, 0, ZW - 1, BLOC.toit, BLOC.verre)];
+  return [without(walls, [[doorX, 2, 0], ...fenetres]), roof, yard(b, doorX, 2)];
+}
+
+/**
+ * L'entrepôt (l'entrepôt de Fret, géographie 4e ; DA, HG-3) : un entrepôt de port et ses conteneurs empilés. L'entrepôt :
+ * quatre sur trois, trois blocs de haut, de tôle de conteneur. Le toit de l'entrepôt : la porte, deux fenêtres, un toit
+ * bas à deux pans. La cour de l'entrepôt : à droite, les conteneurs empilés (trois au sol, deux dessus), une caisse de
+ * planches, la barrière du quai, son portillon, deux lanternes et la marche.
+ */
+function entrepot(b: BlockId): Stages {
+  const doorX = 1;
+  const fenetres: [number, number, number][] = [
+    [2, 2, 1],
+    [0, 3, 1],
+  ];
+  const walls: ArchCell[] = [];
+  for (let z = 0; z < 3; z++) for (const [x, y] of ring(0, 2, 4, 3)) walls.push({ x, y, z, block: b });
+  const roof = [...ouvertures([doorX, 2, 0], fenetres), ...deuxPans(0, 3, 2, 3, b, 0, 3)];
+  const cour: ArchCell[] = [];
+  for (let y = 2; y <= 4; y++) cour.push({ x: 5, y, z: 0, block: b });
+  cour.push({ x: 5, y: 3, z: 1, block: b }, { x: 5, y: 4, z: 1, block: b }, { x: 4, y: 1, z: 0, block: BLOC.bois });
+  for (let x = 0; x < ZW; x++) if (x !== doorX) cour.push({ x, y: 0, z: 0, block: BLOC.barriere });
+  cour.push({ x: 0, y: 0, z: 1, block: BLOC.lanterne }, { x: ZW - 1, y: 0, z: 1, block: BLOC.lanterne }, { x: doorX, y: 1, z: 0, block: BLOC.escalier });
+  return [without(walls, [[doorX, 2, 0], ...fenetres]), roof, cour];
+}
+
+/**
+ * La bibliothèque (la bibliothèque de Mémo, histoire 3e ; DA, HG-3) : sobre, rien de ludique. La bibliothèque : quatre
+ * sur trois, trois blocs de haut, de reliure. Le toit de la bibliothèque : la porte, trois fenêtres, le toit à deux pans,
+ * ses pignons. La cour de la bibliothèque : la cour de toujours, calme.
+ */
+function bibliotheque(b: BlockId): Stages {
+  const doorX = 2;
+  const fenetres: [number, number, number][] = [
+    [3, 2, 1],
+    [1, 3, 1],
+    [4, 3, 1],
+  ];
+  const walls: ArchCell[] = [];
+  for (let z = 0; z < 3; z++) for (const [x, y] of ring(1, 2, 4, 3)) walls.push({ x, y, z, block: b });
+  const roof = [...ouvertures([doorX, 2, 0], fenetres), ...deuxPans(0, ZW - 1, 2, 3, b, 1, 4)];
+  return [without(walls, [[doorX, 2, 0], ...fenetres]), roof, yard(b, doorX, 2)];
+}
+
+/**
+ * La mairie (la mairie de Jalon, géographie 3e ; DA, HG-3) : symétrique, sans drapeau ni horloge. La mairie : cinq sur
+ * trois, trois blocs de haut, de grès rose, la porte au milieu. Le toit de la mairie : la porte, deux fenêtres de part et
+ * d'autre, deux sur les flancs, le toit à deux pans, ses pignons. La place de la mairie : symétrique elle aussi, la
+ * barrière et son portillon au milieu, deux lanternes aux bouts, la marche, deux jardinières. La façade regarde l'est.
+ */
+function mairie(b: BlockId): Stages {
+  const doorX = 2;
+  const fenetres: [number, number, number][] = [
+    [1, 2, 1],
+    [3, 2, 1],
+    [0, 3, 1],
+    [4, 3, 1],
+  ];
+  const walls: ArchCell[] = [];
+  for (let z = 0; z < 3; z++) for (const [x, y] of ring(0, 2, 5, 3)) walls.push({ x, y, z, block: b });
+  const roof = [...ouvertures([doorX, 2, 0], fenetres), ...deuxPans(0, 4, 2, 3, b, 0, 4)];
+  const place: ArchCell[] = [];
+  for (const x of [0, 1, 3, 4]) place.push({ x, y: 0, z: 0, block: BLOC.barriere });
+  place.push({ x: 0, y: 0, z: 1, block: BLOC.lanterne }, { x: 4, y: 0, z: 1, block: BLOC.lanterne }, { x: doorX, y: 1, z: 0, block: BLOC.escalier });
+  place.push({ x: 0, y: 1, z: 0, block: b }, { x: 4, y: 1, z: 0, block: b });
+  // Tout est tracé la façade côté y = 0, puis tourné d'un quart de tour : au Plateau, la caméra de l'île pivote à fond
+  // vers l'est (`viewYaw`) et voyait le pignon ; la façade, sa porte au milieu, regarde maintenant l'est, vers elle (DA,
+  // relecture des planches).
+  const versLEst = (cells: ArchCell[]) => cells.map((c) => ({ ...c, x: ZW - 1 - c.y, y: c.x }));
+  return [versLEst(without(walls, [[doorX, 2, 0], ...fenetres])), versLEst(roof), versLEst(place)];
+}
+
+/**
  * Un toit bas à deux pans sur un bâtiment de `w` cases de large et 3 de profond, posé sur ses murs de `h` blocs : les
  * deux pans devant et derrière (niveau h), le faîte au milieu (h + 1) sur toute la longueur, les deux pignons du bloc
  * des murs aux bouts. Celui du musée, repris par la serre, le laboratoire et l'atelier (SC-2).
@@ -620,6 +788,18 @@ export function buildingStages(biome: BiomeId, block: BlockId): Stages {
       return musee(block);
     case 'quartier':
       return quartier(block);
+    case 'logis':
+      return logis(block);
+    case 'moulin':
+      return moulin(block);
+    case 'halle':
+      return halle(block);
+    case 'entrepot':
+      return entrepot(block);
+    case 'bibliotheque':
+      return bibliotheque(block);
+    case 'mairie':
+      return mairie(block);
     case 'serre':
       return serre(block);
     case 'laboratoire':

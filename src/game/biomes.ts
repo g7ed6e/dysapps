@@ -44,6 +44,12 @@ export const BIOME_IDS = [
   'life-earth-sciences-6e-living-world',
   'physics-chemistry-6e-matter-energy',
   'technology-6e-objects',
+  'history-5e-middle-ages',
+  'geography-5e-resources',
+  'history-4e-revolutions',
+  'geography-4e-globalization',
+  'history-3e-twentieth-century',
+  'geography-3e-france',
   'lv2-5e-introductions',
   'lv2-4e-daily-life',
   'lv2-3e-travel',
@@ -90,6 +96,12 @@ export type BlockId =
   | 'life-earth-sciences-6e-living-world'
   | 'physics-chemistry-6e-matter-energy'
   | 'technology-6e-objects'
+  | 'history-5e-middle-ages'
+  | 'geography-5e-resources'
+  | 'history-4e-revolutions'
+  | 'geography-4e-globalization'
+  | 'history-3e-twentieth-century'
+  | 'geography-3e-france'
   | 'trophy-gold'
   | 'trophy-crystal'
   | 'lv2-5e-introductions'
@@ -145,6 +157,12 @@ export const BLOC = {
   fossile: 'life-earth-sciences-6e-living-world',
   aimant: 'physics-chemistry-6e-matter-energy',
   carton: 'technology-6e-objects',
+  enluminure: 'history-5e-middle-ages',
+  riziere: 'geography-5e-resources',
+  fonte: 'history-4e-revolutions',
+  conteneur: 'geography-4e-globalization',
+  reliure: 'history-3e-twentieth-century',
+  gres: 'geography-3e-france',
   dalle: 'lv2-5e-introductions',
   osier: 'lv2-4e-daily-life',
   bardeau: 'lv2-3e-travel',
@@ -209,6 +227,12 @@ export type BlockTexture =
   | 'fossile'
   | 'aimant'
   | 'carton'
+  | 'enluminure'
+  | 'riziere'
+  | 'fonte'
+  | 'conteneur'
+  | 'reliure'
+  | 'gres'
   | 'or'
   | 'cristal'
   | 'dalle'
@@ -272,6 +296,24 @@ export const BLOCKS: Record<BlockId, BlockDef> = {
   // Le bloc du Hangar des inventions (technologie, 6e) : du carton ondulé brun clair, ses cannelures verticales,
   // distinct des planches et de la terre par le motif (DA, SC-2).
   'technology-6e-objects': { id: 'technology-6e-objects', name: 'Carton', top: '#b98d5a', side: '#9a7246', texture: 'carton' },
+  // Le bloc du Bourg des chroniques (histoire, 5e) : un violet profond parcouru de filets d'or, comme une page enluminée,
+  // distinct de l'obsidienne par les filets et par un violet plus clair.
+  'history-5e-middle-ages': { id: 'history-5e-middle-ages', name: 'Enluminure', top: '#6a4c9c', side: '#4e3878', texture: 'enluminure' },
+  // Le bloc du Delta des ressources (géographie, 5e) : des rangs de pousses vertes sur une eau bleu-vert, en terrasses,
+  // distincts de l'herbe et des feuilles par l'eau entre les rangs.
+  'geography-5e-resources': { id: 'geography-5e-resources', name: 'Rizière', top: '#a2bf42', side: '#4f8c86', texture: 'riziere' },
+  // Le bloc de l'Imprimerie des révolutions (histoire, 4e) : une fonte vert-noir à rivets, distincte de l'obsidienne, de
+  // l'acier et de l'ardoise par les rivets et par sa teinte verte.
+  'history-4e-revolutions': { id: 'history-4e-revolutions', name: 'Fonte', top: '#3e4a44', side: '#2c3631', texture: 'fonte' },
+  // Le bloc de l'Escale des échanges (géographie, 4e) : la tôle ondulée bleue d'un conteneur, distincte de l'eau par les
+  // ondes droites et serrées.
+  'geography-4e-globalization': { id: 'geography-4e-globalization', name: 'Conteneur', top: '#3d7fb0', side: '#2c6189', texture: 'conteneur' },
+  // Le bloc du Kiosque des témoins (histoire, 3e) : des dos de livres serrés, sans lettres, bleu-vert sombre, distincts
+  // du lambris et de la rizière par les dos verticaux.
+  'history-3e-twentieth-century': { id: 'history-3e-twentieth-century', name: 'Reliure', top: '#2f6f74', side: '#22545a', texture: 'reliure' },
+  // Le bloc du Plateau des territoires (géographie, 3e) : un grès rose à grain fin, en assises, distinct de la brique
+  // et de la tuile par sa teinte plus pâle et l'absence de joints marqués.
+  'geography-3e-france': { id: 'geography-3e-france', name: 'Grès rose', top: '#d49a94', side: '#b07872', texture: 'gres' },
   'trophy-gold': { id: 'trophy-gold', name: 'Or', top: '#f2c944', side: '#cfa326', texture: 'or', rare: true },
   'trophy-crystal': { id: 'trophy-crystal', name: 'Cristal', top: '#8ff0e8', side: '#4fc3bb', texture: 'cristal', rare: true },
   // Le bloc du Relais des voyageurs (LV2, 5e) : des dalles de 8 × 8 décalées, distinctes de la pierre de taille par le motif.
@@ -317,7 +359,7 @@ export function ofBlock(id: BlockId): string {
  * dys). Les autres blocs sont des objets qu’on compte : « 5 toits », « 2 lanternes ».
  */
 const MATIERES: ReadonlySet<BlockId> = new Set<BlockId>(
-  ['french-6e-phonology', 'french-6e-letter-confusion', 'french-6e-word-spelling', 'french-6e-grammar-spelling', 'french-6e-reading', 'maths-6e-decimals', 'maths-5e-signed-numbers', 'maths-5e-proportionality', 'french-5e-conjugation', 'maths-4e-powers', 'maths-3e-geometry', 'maths-3e-statistics', 'english-4e-comprehension', 'english-5e-grammar', 'geography-6e-living', 'technology-6e-objects', 'trophy-gold'],
+  ['french-6e-phonology', 'french-6e-letter-confusion', 'french-6e-word-spelling', 'french-6e-grammar-spelling', 'french-6e-reading', 'maths-6e-decimals', 'maths-5e-signed-numbers', 'maths-5e-proportionality', 'french-5e-conjugation', 'maths-4e-powers', 'maths-3e-geometry', 'maths-3e-statistics', 'english-4e-comprehension', 'english-5e-grammar', 'geography-6e-living', 'technology-6e-objects', 'history-5e-middle-ages', 'geography-5e-resources', 'history-4e-revolutions', 'history-3e-twentieth-century', 'geography-3e-france', 'trophy-gold'],
 );
 
 /** Les pluriels qui ne s’écrivent pas en ajoutant un « s » au nom du bloc. */

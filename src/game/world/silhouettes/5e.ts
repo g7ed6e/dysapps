@@ -18,4 +18,7 @@ export const SILHOUETTES_5E = {
   'english-5e-grammar': { pics: [] },
   // Le Relais des voyageurs (LV2) : une île plate, au bout de la ligne ; son relief dessiné est dans ../drawnModel/5e.ts.
   'lv2-5e-introductions': { pics: [] },
+  // Histoire-géographie (HG-3) : des îles plates, sans pic.
+  'history-5e-middle-ages': { pics: [] },
+  'geography-5e-resources': { pics: [] },
 } satisfies Partial<Record<BiomeId, Silhouette>>;

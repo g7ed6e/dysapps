@@ -60,7 +60,7 @@ try {
         mesure: { triangles: somme('triangles', comptes.map((p) => p.mesure)), drawCalls: somme('drawCalls', comptes.map((p) => p.mesure)) },
         enveloppes: { triangles: somme('triangles', comptes.map((p) => p.enveloppe)), drawCalls: somme('drawCalls', comptes.map((p) => p.enveloppe)) },
       },
-      plafond: budget.RENDER_BUDGET,
+      plafond: budget.renderBudgetOf(a),
       // Le monde en blocs de Blocland (`sceneCost`), tout construit, puis avec les petites constructions des commandes
       // posées (GD-7, PR 3), sous son plafond.
       blocs: {

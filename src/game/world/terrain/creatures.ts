@@ -39,7 +39,9 @@ export const QUARTS_DE_TOUR: Partial<Record<BiomeId, number>> = { 'lv2-3e-travel
  * Les créatures seules (pas leur Gardien) tournées d'un quart de tour de plus, même sens. Au Marché des proportions
  * (5e), Bazar est long (sept cases du museau à la queue) : de face, il n'a aucune place hors de la vue de la salle des
  * trophées (GD-3) ; tourné, il se tient derrière elle, le visage du côté des x croissants, celui de la caméra. Le quart
- * de tour dans l'autre sens lui ferait tourner le dos à la caméra (retouches de GD-3).
+ * de tour dans l'autre sens lui ferait tourner le dos à la caméra (retouches de GD-3). Jalon (le Plateau des territoires,
+ * 3e) n'est pas tournée : la caméra de son île pivote à fond vers l'est (`viewYaw`, −40°) et la regarde déjà de profil ;
+ * un quart de tour la lui montrerait de face (voir `JALON`, ../characters/creatures.ts).
  */
 export const QUARTS_DE_TOUR_DE_LA_CREATURE: Partial<Record<BiomeId, number>> = { 'maths-5e-proportionality': 1 };
 
@@ -52,12 +54,20 @@ function tourner(cubes: CubeDeModele[], quarts = 0): CubeDeModele[] {
   return out;
 }
 
+/**
+ * Les Gardiens seuls (pas leur créature) tournés de quarts de tour de plus, même sens. Au Kiosque des témoins (3e), la
+ * caméra de l'île regarde du sud (`viewYaw`, +40°) : de face, la Colombe d'albâtre se lisait comme un bloc ; tournée de
+ * trois quarts de tour, elle montre son flanc, la tête vers l'ouest, l'œil, le bec et le rameau du côté de la caméra
+ * (DA, relecture des planches, HG-3).
+ */
+const QUARTS_DE_TOUR_DU_GARDIEN: Partial<Record<BiomeId, number>> = { 'history-3e-twentieth-century': 3 };
+
 const personnagesTournes = new Map<string, CubeDeModele[]>();
 
 const tourne = (genre: 'creature' | 'gardien', id: BiomeId, cubes: CubeDeModele[]) => {
   const cle = `${genre}:${id}`;
   let t = personnagesTournes.get(cle);
-  const quarts = (QUARTS_DE_TOUR[id] ?? 0) + (genre === 'creature' ? (QUARTS_DE_TOUR_DE_LA_CREATURE[id] ?? 0) : 0);
+  const quarts = (QUARTS_DE_TOUR[id] ?? 0) + (genre === 'creature' ? (QUARTS_DE_TOUR_DE_LA_CREATURE[id] ?? 0) : (QUARTS_DE_TOUR_DU_GARDIEN[id] ?? 0));
   if (!t) personnagesTournes.set(cle, (t = tourner(cubes, quarts)));
   return t;
 };
@@ -65,7 +75,7 @@ const tourne = (genre: 'creature' | 'gardien', id: BiomeId, cubes: CubeDeModele[
 /** La créature d'une île telle qu'elle se tient dans le monde (voir `QUARTS_DE_TOUR` et `QUARTS_DE_TOUR_DE_LA_CREATURE`). */
 export const creatureDuMonde = (id: BiomeId): CubeDeModele[] => tourne('creature', id, CREATURE_CUBES[id]);
 
-/** Le Gardien d'une île tel qu'il se tient sur son îlot (voir `QUARTS_DE_TOUR`). */
+/** Le Gardien d'une île tel qu'il se tient sur son îlot (voir `QUARTS_DE_TOUR` et `QUARTS_DE_TOUR_DU_GARDIEN`). */
 export const gardienDuMonde = (id: BiomeId): CubeDeModele[] => tourne('gardien', id, GUARDIAN_CUBES[id]);
 
 // Par île et par LV2 : la place de la créature évite les bornes, dont le nombre suit la LV2 sur l'île de la LV2.

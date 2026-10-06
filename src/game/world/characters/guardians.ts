@@ -597,6 +597,118 @@ const CASTOR = fromLayers(
   { A: '#b07a48', W: '#f6f1e6', K: '#2a2622' },
 );
 
+// Le Griffon d'émail (DA, HG-3) : un griffon assis, corps de lion et tête d'aigle, d'émail bleu, le bec d'or, les yeux
+// sombres, deux aigrettes sur la tête, une touffe d'or au bout de la queue ; ses deux ailes d'or levées s'ouvrent en V
+// de part et d'autre du dos, jusqu'aux bords de ses neuf cubes de large, et reculent en montant (DA, relecture des
+// planches : de loin, plus un obélisque). Trois couleurs.
+const GRIFFON = fromLayers(
+  [
+    ['.........', '...B.B...', '.........', '..BB.BB..', '.........', '.........'],
+    ['.........', '...B.B...', '..BBBBB..', '..BBBBB..', '..BBBBB..', '.........'],
+    ['.........', '..BBBBB..', '..BBBBB..', '..BBBBB..', '..BBBBB..', '....B....'],
+    ['.........', '..BBBBB..', '..BBBBB..', '..BBBBB..', '...BBB...', '....B....'],
+    ['.........', '...BBB...', '.GBBBBBG.', '.GBBBBBG.', '.........', '....G....'],
+    ['.........', '...BBB...', 'GG.BBB.GG', 'GG.....GG', '.........', '.........'],
+    ['.........', '...BBB...', '...BBB...', 'GG.....GG', 'G.......G', '.........'],
+    ['....G....', '...KBK...', '...BBB...', 'G.......G', 'G.......G', '.........'],
+    ['.........', '...BBB...', '...BBB...', '.........', 'G.......G', '.........'],
+    ['.........', '.........', '...B.B...', '.........', '.........', '.........'],
+  ],
+  { B: '#3a6ea8', G: '#d9a441', K: '#1f1a16' },
+);
+
+// La Libellule de jade (DA, HG-3) : une libellule posée à l'horizontale sur un roseau, la tête aux deux gros yeux sombres
+// devant, le thorax, la longue queue derrière ; ses deux paires d'ailes claires étendues à plat sur neuf cubes de large
+// (DA, relecture des planches : plus debout sur la pointe de sa queue) ; le roseau a une feuille en biais. Quatre
+// couleurs, le roseau compris.
+const LIBELLULE = fromLayers(
+  [
+    ['.........', '....R....', '.........', '.........', '.........', '.........', '.........'],
+    ['.........', '....R....', '.........', '.........', '.........', '.........', '.........'],
+    ['.........', '....RR...', '.........', '.........', '.........', '.........', '.........'],
+    ['.........', '....R.R..', '.........', '.........', '.........', '.........', '.........'],
+    ['.........', '....R....', '.........', '.........', '.........', '.........', '.........'],
+    ['.........', '....R....', '.........', '.........', '.........', '.........', '.........'],
+    ['...JJJ...', '...JJJ...', '....J....', '....J....', '....J....', '....J....', '....J....'],
+    ['...K.K...', 'AAAAJAAAA', '.AAAJAAA.', '.........', '.........', '.........', '.........'],
+  ],
+  { J: '#4fa07a', A: '#cfe8dc', K: '#1f1a16', R: '#7a8a4a' },
+);
+
+// Le Paon de faïence (DA, HG-3 ; aucun symbole national) : un paon debout, de faïence bleue et blanche, sa roue
+// déployée derrière lui, semée d'yeux d'or ; le bec et la petite crête d'or. Trois couleurs.
+const PAON = fromLayers(
+  [
+    ['.......', '..F.F..', '.......', '...F...'],
+    ['.......', '..FFF..', '..FFF..', '..FFF..'],
+    ['.......', '..FWF..', '..FFF..', '.FWFWF.'],
+    ['.......', '...F...', '..FFF..', 'FOFWFOF'],
+    ['.......', '...F...', '.......', 'WFWOWFW'],
+    ['...O...', '..FFF..', '.......', 'FOFWFOF'],
+    ['.......', '..WFW..', '.......', 'WFWOWFW'],
+    ['.......', '...O...', '.......', '.FOFOF.'],
+    ['.......', '.......', '.......', '..WFW..'],
+  ],
+  { F: '#2f5f9e', W: '#f2efe6', O: '#d9a441' },
+);
+
+// Le Poulpe de corail (DA, HG-3) : un poulpe de corail posé sur ses bras, qui s'étalent tout autour au sol, leurs bouts
+// clairs ; la tête ronde dressée, deux yeux sombres sur le devant. Trois couleurs.
+const POULPE = fromLayers(
+  [
+    ['C.C.C.C', '.......', 'C.....C', '.......', 'C.C.C.C'],
+    ['.CPCPC.', 'CC...CC', '.C...C.', 'CC...CC', '.CCCCC.'],
+    ['.......', '.CCCCC.', '.CCCCC.', '.CCCCC.', '.......'],
+    ['.......', '.CKCKC.', '.CCCCC.', '.CCCCC.', '.......'],
+    ['.......', '.CCCCC.', '.CCCCC.', '.CCCCC.', '.......'],
+    ['.......', '..CCC..', '.CCCCC.', '..CCC..', '.......'],
+    ['.......', '.......', '..CCC..', '..CCC..', '.......'],
+    ['.......', '.......', '...C...', '.......', '.......'],
+  ],
+  { C: '#e0705a', P: '#f2b8a0', K: '#1f1a16' },
+);
+
+// La Colombe d'albâtre (DA, HG-3 ; aucune arme) : une colombe posée, d'albâtre, les ailes repliées, la queue relevée
+// derrière. Sa tête, plus étroite que le corps, en sort vers l'avant ; le bec d'un cube, gris rosé, sur un côté de la
+// tête, les yeux sur ses côtés, dans sa moitié avant (de face, plus de masque, DA). Le rameau, court, d'un seul côté du
+// bec et à sa hauteur : une tige d'un cube, deux feuilles, rien sous la poitrine (DA, relecture des planches, HG-3).
+// Rallumée, le rameau est vert. Dans le monde, elle se tourne de trois quarts de tour (`QUARTS_DE_TOUR_DU_GARDIEN`) :
+// la caméra du Kiosque la voit de flanc, l'œil et le rameau de son côté.
+const COLOMBE = fromLayers(
+  [
+    ['........', '........', '........', '...B.B..', '........', '........', '........'],
+    ['........', '........', '..AAA...', '.AAAAA..', '.AAAAA..', '..AAA...', '........'],
+    ['........', '........', '.AAAAA..', '.AAAAA..', '.AAAAA..', '.AAAAA..', '..AAA...'],
+    ['........', '........', '.AAAAA..', '.AAAAA..', '.AAAAA..', '..AAA...', '..AAA...'],
+    ['........', '........', '..AAA...', '.AAAAA..', '..AAA...', '........', '...A....'],
+    ['......V.', '..AAA...', '..AAA...', '........', '........', '........', '........'],
+    ['....BTV.', '..KAK...', '..AAA...', '........', '........', '........', '........'],
+    ['........', '..AAA...', '..AAA...', '........', '........', '........', '........'],
+  ],
+  { A: '#ece8de', B: '#c9a69a', K: '#1f1a16', V: '#5a9a3e', T: '#4f7a34' },
+);
+
+// Le Cerf de lauze (DA, HG-3) : un cerf debout sur quatre pattes fines aux sabots sombres, rallumé au pelage fauve, la
+// gorge crème ; le cou court, la tête levée, le museau qui avance, deux oreilles ; ses bois de lauze sombre montent en V,
+// en escalier, un andouiller vers l'avant de chaque côté (DA, relecture des planches : plus un lama). Quatre couleurs.
+const CERF_DE_LAUZE = fromLayers(
+  [
+    ['.......', '.......', '..D.D..', '.......', '.......', '..D.D..', '.......'],
+    ['.......', '.......', '..L.L..', '.......', '.......', '..L.L..', '.......'],
+    ['.......', '.......', '..L.L..', '.......', '.......', '..L.L..', '.......'],
+    ['.......', '.......', '..LLL..', '..LLL..', '..LLL..', '..LLL..', '...L...'],
+    ['.......', '.......', '..LLL..', '..LLL..', '..LLL..', '..LLL..', '.......'],
+    ['.......', '.......', '..LCL..', '.......', '.......', '.......', '.......'],
+    ['...K...', '...L...', '..LLL..', '.......', '.......', '.......', '.......'],
+    ['.......', '.......', '.LKLKL.', '.......', '.......', '.......', '.......'],
+    ['.......', '.......', '..D.D..', '.......', '.......', '.......', '.......'],
+    ['.......', '.......', '.D...D.', '.......', '.......', '.......', '.......'],
+    ['.......', '.D...D.', 'D.....D', '.......', '.......', '.......', '.......'],
+    ['.......', '.......', 'D.....D', '.......', '.......', '.......', '.......'],
+  ],
+  { L: '#c98f3c', C: '#f0e2c0', D: '#4e4a42', K: '#1f1a16' },
+);
+
 // Le Cerf des sous-bois (DA, SC-2) : debout, de profil, de la taille du Taureau ; brun roux, le ventre crème, la mousse
 // verte sur le dos et au bout des bois ; les bois ramifiés, trois pointes de chaque côté, au-dessus de la tête. Quatre
 // couleurs, les yeux sombres compris.
@@ -683,6 +795,12 @@ export const GUARDIAN_CUBES: Record<BiomeId, CubeDeModele[]> = {
   'english-6e-grammar': COUCOU,
   'history-6e-antiquity': AMPHORE,
   'geography-6e-living': CASTOR,
+  'history-5e-middle-ages': GRIFFON,
+  'geography-5e-resources': LIBELLULE,
+  'history-4e-revolutions': PAON,
+  'geography-4e-globalization': POULPE,
+  'history-3e-twentieth-century': COLOMBE,
+  'geography-3e-france': CERF_DE_LAUZE,
   'life-earth-sciences-6e-living-world': CERF,
   'physics-chemistry-6e-matter-energy': ALAMBIC,
   'technology-6e-objects': AUTOMATE,

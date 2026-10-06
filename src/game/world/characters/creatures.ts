@@ -457,6 +457,109 @@ const BOUSSOLE = fromLayers(
   { C: '#5e7a3e', H: '#b4a676', L: '#b4a676', E: '#1f1a16' },
 );
 
+// Vélin : un lapin enlumineur assis (DA, HG-3), gris-fauve au ventre crème (pas le gris-pierre d'une statue, DA), le museau crème à la truffe rose, deux
+// longues oreilles debout, roses dedans ; à sa patte droite, debout, une plume d'enluminure violette à la pointe sombre.
+const VELIN = fromLayers(
+  [
+    ['.B.B.', 'BBBBB', 'BBBBB', '.BBB.'],
+    ['.CCC.', 'BBBBB', 'BBBBB', '.BBB.'],
+    ['.CCCK', 'BBBBB', 'BBBBB', '..C..'],
+    ['.CPCF', 'BBBBB', 'BBBBB', '.....'],
+    ['....F', 'BEBEB', 'BBBBB', '.....'],
+    ['.....', 'BBBBB', 'BBBBB', '.....'],
+    ['.P.P.', '.B.B.', '.....', '.....'],
+    ['.....', '.B.B.', '.....', '.....'],
+  ],
+  { B: '#a08870', C: '#f6f1e6', P: '#e0a0a8', E: '#1f1a16', K: '#1f1a16', F: '#6a4c9c' },
+);
+
+// Sillon : un ibis cultivateur (DA, HG-3), blanc, la queue noire, le cou et la tête noirs, le long bec noir qui se
+// courbe vers le bas, perché sur ses deux pattes fines ; un chapeau de paille sur la tête. Trois couleurs.
+const SILLON = fromLayers(
+  [
+    ['.....', '.K.K.', '.....', '.....'],
+    ['.....', '.K.K.', '.....', '.....'],
+    ['.WWW.', 'WWWWW', 'WWWWW', '.WWW.'],
+    ['.WWW.', 'WWWWW', 'WWWWW', '.KKK.'],
+    ['.....', '.WWW.', '.WWW.', '.....'],
+    ['..K..', '..K..', '.....', '.....'],
+    ['..K..', '.KKK.', '.....', '.....'],
+    ['.HHH.', 'HHHHH', '.HHH.', '.....'],
+    ['.....', '.HHH.', '.....', '.....'],
+  ],
+  { W: '#f2efe6', K: '#1f1a16', H: '#d8b860' },
+);
+
+// Typo : une souris imprimeuse (DA, HG-3), grise, deux grandes oreilles rondes, la truffe et la queue roses, un tablier
+// d'encre sombre. Quatre couleurs.
+const TYPO = fromLayers(
+  [
+    ['.G.G.', 'GGGGG', 'GGGGG', '.GGG.'],
+    ['.AAA.', 'GGGGG', 'GGGGG', '.GGG.'],
+    ['.AAA.', 'GGGGG', 'GGGGG', '..P..'],
+    ['.GPG.', 'GGGGG', 'GGGGG', '...P.'],
+    ['.....', 'GEGEG', 'GGGGG', '.....'],
+    ['.....', 'GGGGG', 'GGGGG', '.....'],
+    ['.....', 'GG.GG', '.....', '.....'],
+    ['.....', 'GG.GG', '.....', '.....'],
+  ],
+  { G: '#8c8a86', A: '#2e2622', P: '#e0a0a8', E: '#1f1a16' },
+);
+
+// Fret : un crabe grutier (DA, HG-3), large et bas, rouge, ses deux pinces levées devant, six pattes, deux yeux noirs
+// sur leurs tiges et un casque jaune entre eux. Trois couleurs.
+const FRET = fromLayers(
+  [
+    ['.......', 'R.....R', '.R...R.', 'R.....R', '.......'],
+    ['R.....R', '.RRRRR.', '.RRRRR.', '.RRRRR.', '.......'],
+    ['R.....R', '.RRRRR.', '.RRRRR.', '.RRRRR.', '.......'],
+    ['RR...RR', '..RRR..', '..RRR..', '.......', '.......'],
+    ['.......', '..RHR..', '...H...', '.......', '.......'],
+    ['.......', '..K.K..', '.......', '.......', '.......'],
+  ],
+  { R: '#c8502e', H: '#f2c944', K: '#1f1a16' },
+);
+
+// Mémo : une marmotte bibliothécaire assise (DA, HG-3), brun-gris, le ventre et le museau crème, deux incisives
+// blanches ; elle tient contre elle un livre de reliure bleu-vert. La tête, de trois cubes de large, se pose en ressaut
+// sur le corps, ses deux petites oreilles rentrées d'une colonne, les yeux au-dessus du museau, vus de la caméra (DA,
+// relecture des planches : plus une caisse ouverte). Cinq couleurs.
+const MEMO = fromLayers(
+  [
+    ['.B.B.', 'BBBBB', 'BBBBB', '.BBB.'],
+    ['.LLL.', 'BCCCB', 'BBBBB', '.BBB.'],
+    ['.LLL.', 'BCCCB', 'BBBBB', '.BBB.'],
+    ['.....', 'BBBBB', 'BBBBB', '.....'],
+    ['.CWC.', '.BBB.', '.BBB.', '.....'],
+    ['..N..', '.EBE.', '.BBB.', '.....'],
+    ['.....', '.BBB.', '.BBB.', '.....'],
+    ['.....', '.B.B.', '.....', '.....'],
+  ],
+  { B: '#8a7058', C: '#e6d8bc', W: '#f6f1e6', N: '#1f1a16', E: '#1f1a16', L: '#2f6f74' },
+);
+
+// Jalon : une fourmi arpenteuse (DA, HG-3), à l'horizontale, ocre sable (DA : plus brun-rouge, la couleur de Pince,
+// la fourmi bricoleuse du Hangar des inventions), trois parties à la file (la tête aux deux antennes, le thorax étroit,
+// le gros abdomen derrière) sur six pattes d'un brun très sombre, plus doux que le noir des yeux (consultant Blocland,
+// HG-3 : en noir, pattes et antennes faisaient une masse plus grande que le corps) ; son jalon d'arpenteur planté, rayé
+// blanc et rouge par deux cubes, d'un cube plus haut que ses antennes (DA, relecture des planches : plus une cheminée ni un phare), à côté de son
+// abdomen, séparé d'elle d'une case. La caméra du Plateau la regarde de l'est (`viewYaw`, −40°), donc de profil, la
+// tête d'un côté, l'abdomen de l'autre ; la mairie se tient plus à l'est et au-delà de l'abdomen (x et y croissants) :
+// le jalon est du côté ouest (x = 0 du modèle), celui qui s'éloigne de la mairie, à hauteur de l'abdomen et non plus
+// au-delà, pour ne pas se lire comme une cheminée sur le toit de la mairie (consultant Blocland et DA, HG-3) ; il n'est
+// jamais entre elle et la caméra. De face (les portraits), derrière elle, à sa gauche.
+const JALON = fromLayers(
+  [
+    ['.......', '..A...A', '..A...A', '..A...A', 'P......', '.......'],
+    ['...RRR.', '...ARA.', '...ARA.', '...RRR.', 'P..RRR.', '....R..'],
+    ['...ERE.', '....R..', '....R..', '...RRR.', 'Q..RRR.', '...RRR.'],
+    ['...A.A.', '.......', '.......', '....R..', 'Q..RRR.', '....R..'],
+    ['..A...A', '.......', '.......', '.......', 'P......', '.......'],
+    ['.......', '.......', '.......', '.......', 'P......', '.......'],
+  ],
+  { R: '#c9a066', A: '#3a2a1a', E: '#1f1a16', P: '#f6f1e6', Q: '#d23a2e' },
+);
+
 // Fougère : un escargot jardinier (DA, SC-2), tourné vers la droite pour montrer sa coquille : la coquille brun roux et
 // sa spirale crème (un « C » ouvert vers le centre), le corps vert sauge sur son pied, deux antennes au bout brun, un
 // petit arrosoir crème posé devant lui. Trois couleurs (un appel de dessin par couleur).
@@ -530,6 +633,12 @@ export const CREATURE_CUBES: Record<BiomeId, CubeDeModele[]> = {
   'english-6e-grammar': TICK,
   'history-6e-antiquity': SILEX,
   'geography-6e-living': BOUSSOLE,
+  'history-5e-middle-ages': VELIN,
+  'geography-5e-resources': SILLON,
+  'history-4e-revolutions': TYPO,
+  'geography-4e-globalization': FRET,
+  'history-3e-twentieth-century': MEMO,
+  'geography-3e-france': JALON,
   'life-earth-sciences-6e-living-world': FOUGERE,
   'physics-chemistry-6e-matter-energy': BULLE,
   'technology-6e-objects': BOULON,

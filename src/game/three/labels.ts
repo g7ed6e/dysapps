@@ -11,8 +11,9 @@ import { visageDuJoueur } from '../world/characters/face';
 import { CASE, PLAQUE, caseALEcran, dessinerLaCase } from './signs';
 import { tenirDansLaPlace, type PlaceLue } from '../freeSpace';
 import { reperesDe } from '../world/framing';
-import { boitesDuTrace, placerAvecLaFlecheDOuvrage, placerEtiquettes, replierLesSignes, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
+import { boitesDuTrace, placerAvecLaFlecheDOuvrage, placerDAbordSimplement, placerEtiquettes, replierLesSignes, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
 import { islandCenter } from '../world/terrain';
+import { HAUTEUR_DES_NOMS } from './camera/framings';
 import { lecteurDeZones } from '../coveredZones';
 import type { IslandLabel, WorldViewProps } from '../world/view';
 import type { Instant, Monde, PartieDeLaScene } from './scenePart';
@@ -28,8 +29,8 @@ const ARROW_GAP = 56;
 /** Sur la Carte : le médaillon « toi », 44 px de diamètre à l'écran (son canvas : 96 px, le disque 80). */
 export const MEDAILLON_CSS = 44;
 const MEDAILLON_CANVAS = 96;
-/** L'étiquette flotte à 12 cases au-dessus du sol de son île. */
-const ETIQUETTE_AU_DESSUS = 12;
+/** L'étiquette flotte à 12 cases au-dessus du sol de son île (le cadrage de la Carte en tient compte). */
+const ETIQUETTE_AU_DESSUS = HAUTEUR_DES_NOMS;
 
 /** Une forme d'étiquette : sa texture et sa taille à l'écran (pixels CSS). */
 interface FormeDeLEtiquette {
@@ -316,20 +317,23 @@ export function creerEtiquettes(
           f = i + 1;
           break;
         }
-    let b = 0;
+    return f * 1024 + avatarIslandIndex(sprites) + 1;
+  };
+  /** L'indice de l'île la plus proche du bonhomme, -1 s'il ne se voit pas. */
+  const avatarIslandIndex = (sprites: THREE.Sprite[]): number => {
     const av = bonhomme();
-    if (av.visible) {
-      let bestD = Infinity;
-      for (let i = 0; i < sprites.length; i++) {
-        const p = sprites[i].position;
-        const d = (p.x - av.position.x) ** 2 + (p.z - av.position.z) ** 2;
-        if (d < bestD) {
-          b = i + 1;
-          bestD = d;
-        }
+    if (!av.visible) return -1;
+    let b = -1;
+    let bestD = Infinity;
+    for (let i = 0; i < sprites.length; i++) {
+      const p = sprites[i].position;
+      const d = (p.x - av.position.x) ** 2 + (p.z - av.position.z) ** 2;
+      if (d < bestD) {
+        b = i;
+        bestD = d;
       }
     }
-    return f * 1024 + b;
+    return b;
   };
   const indicesTenus = (cle: number): number[] => [...new Set([Math.floor(cle / 1024) - 1, (cle % 1024) - 1])].filter((i) => i >= 0);
   // L'interface posée sur la scène (le panneau de la Carte, les bulles, les boutons) : aucune étiquette ne se pose
@@ -348,7 +352,9 @@ export function creerEtiquettes(
     const indice = sprites.findIndex((s) => s.userData.id === destination);
     const auBout = arrivee ? sprites.findIndex((s) => s.userData.id === arrivee) : -1;
     const weights = sprites.map((s) => (s.userData.id === destination ? 2 : s.userData.fermee ? 0.5 : 1));
-    return { weights, ...(indice >= 0 ? { destination: indice } : {}), ...(auBout >= 0 ? { arrivee: auBout } : {}) };
+    // L'île du bonhomme : son nom ne se tait jamais, comme celui de la destination (DA, HG-3).
+    const avatarIsland = avatarIslandIndex(sprites);
+    return { weights, ...(indice >= 0 ? { destination: indice } : {}), ...(auBout >= 0 ? { arrivee: auBout } : {}), ...(avatarIsland >= 0 ? { avatarIsland } : {}) };
   };
   /** Le tracé de l'ouvrage désigné à l'écran, vu par `cam` : des obstacles souples pour les étiquettes (GD-7). */
   const souplesDuTrace = (cam: THREE.Camera, W: number, H: number): LabelBox[] => {
@@ -370,7 +376,8 @@ export function creerEtiquettes(
     const plaquesVersion = plaques?.version ?? 0;
     const poigneesVersion = poignees?.version ?? 0;
     if (!spread && labelLayout && vise.plaques === plaquesVersion && vise.poignees === poigneesVersion && vise.tenues === tenuesCle && vise.n === sprites.length && vise.w === W && vise.h === H && vise.zones === zonesCle && vise.pos.equals(camGoal.pos) && vise.target.equals(camGoal.target) && sprites.every((s, i) => vise.ids[i] === s.id)) return;
-    const av = bonhomme().position;
+    const lui = bonhomme();
+    const av = lui.position;
     // Hors de la Carte, les îles dont le nom ne se tait jamais tant qu'elles se voient : celle de la flèche « Commence
     // ici » et celle du bonhomme (l'île la plus proche de lui).
     const tenues = indicesTenus(tenuesCle);
@@ -378,7 +385,9 @@ export function creerEtiquettes(
     vise.plaques = plaquesVersion;
     vise.poignees = poigneesVersion;
     const montre = donnees();
-    const marks = spread ? `${montre.ouvrage ?? montre.island ?? ''}:${av.toArray().map((v) => v.toFixed(0))}` : `reperes:${tenues.join(',')}:plaques${plaquesVersion}`;
+    // Sur la Carte, le médaillon est un obstacle tant que le bonhomme se voit : l'écart se refait quand il paraît (sans
+    // quoi le médaillon, montré après le calcul, se posait sur un nom : la Pointe des paysages au 6e, DA, HG-3).
+    const marks = spread ? `${montre.ouvrage ?? montre.island ?? ''}:${lui.visible ? av.toArray().map((v) => v.toFixed(0)) : '-'}` : `reperes:${tenues.join(',')}:plaques${plaquesVersion}`;
     const key = `${sprites.map((s) => s.id).join(',')}@${camGoal.pos.toArray().map((v) => v.toFixed(1))}>${camGoal.target.toArray().map((v) => v.toFixed(1))}@${W}x${H}@${marks}@${zonesCle}@p${poigneesVersion}`;
     // Sur la Carte, l'écart est autre : au retour, il se refait.
     if (spread) vise.n = -1;
@@ -429,16 +438,20 @@ export function creerEtiquettes(
     const souples = ouvrage ? souplesDuTrace(goalCamera, W, H) : [];
     // Les poignées du mode « Modifier le plan », des obstacles durs : une étiquette ne s'y pose jamais, elle se tait plutôt.
     const dures = poignees?.boites(goalCamera, W, H) ?? [];
+    // Le placement simple d'abord ; sur la Carte, une seule recherche complète pour tout le placement de ce cadrage (ses
+    // essais sous un même plafond), seulement s'il tait un nom ou en pose un sur une autre île (`placerDAbordSimplement`).
     const vue = { zones, bulles, obstacles, souples, bounds: cadre, gap: 6, dures };
     let offsets: LabelOffset[];
     let visibles: boolean[];
     let sansSigne: boolean[];
     if (ouvrage && carte) {
       const fleches = pointes.map((p) => marksOnScreen(goalCamera, W, H, p).arrow).filter((b): b is LabelBox => b !== null);
-      const r = replierLesSignes(boxes, etroites, (b) => placerAvecLaFlecheDOuvrage(fleches, b, iles, vue, carte));
+      const r = placerDAbordSimplement(boxes, iles, vue, (recherche) => replierLesSignes(boxes, etroites, (b) => placerAvecLaFlecheDOuvrage(fleches, b, iles, { ...vue, recherche }, carte)), etroites);
       placeDeLOuvrage = { ouvrage, i: r.fleche };
       ({ offsets, visibles, sansSigne } = r);
-    } else ({ offsets, visibles, sansSigne } = replierLesSignes(boxes, etroites, (b) => placerEtiquettes(b, iles, vue, carte, tenues)));
+    } else if (carte)
+      ({ offsets, visibles, sansSigne } = placerDAbordSimplement(boxes, iles, vue, (recherche) => replierLesSignes(boxes, etroites, (b) => placerEtiquettes(b, iles, { ...vue, recherche }, carte, tenues)), etroites));
+    else ({ offsets, visibles, sansSigne } = replierLesSignes(boxes, etroites, (b) => placerEtiquettes(b, iles, vue, carte, tenues)));
     labelLayout = { key, offsets };
     offsets.forEach((o, i) => {
       const s = sprites[i];

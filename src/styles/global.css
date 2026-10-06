@@ -2278,6 +2278,11 @@ figure.class-table {
   height: 1.6em;
   margin-right: 0.3em;
 }
+/* En thème Nuit, un bloc sombre (la Reliure, #2f6f74) tombait à 2,3:1 sur le fond des panneaux : un liseré clair d'un
+   pixel autour de l'icône la détache du fond (3:1 au moins, WCAG 1.4.11 ; référent dys, HG-3). Fixe, sans animation. */
+:root[data-theme="night"] .block-icon {
+  filter: drop-shadow(1px 0 0 var(--muted)) drop-shadow(-1px 0 0 var(--muted)) drop-shadow(0 1px 0 var(--muted)) drop-shadow(0 -1px 0 var(--muted));
+}
 .adventure-card {
   display: flex;
   flex-wrap: wrap;

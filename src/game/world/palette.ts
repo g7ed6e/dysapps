@@ -341,6 +341,13 @@ export const MATIERES: Record<TextureKind, Faces> = {
   mosaique: { dessus: 0xd6a258, cote: 0xb47c40 },
   // Le chaume de la Pointe : une paille dorée, plus jaune que l'osier, plus sombre que le sable.
   chaume: { dessus: 0xd8b860, cote: 0xb0903e },
+  // Les blocs des îles d'histoire-géographie de 5e à 3e (HG-3) : la couleur de leur bloc (biomes.ts).
+  enluminure: { dessus: 0x6a4c9c, cote: 0x4e3878 },
+  riziere: { dessus: 0xa2bf42, cote: 0x4f8c86 },
+  fonte: { dessus: 0x3e4a44, cote: 0x2c3631 },
+  conteneur: { dessus: 0x3d7fb0, cote: 0x2c6189 },
+  reliure: { dessus: 0x2f6f74, cote: 0x22545a },
+  gres: { dessus: 0xd49a94, cote: 0xb07872 },
   // Le fossile de la Vallée : une pierre beige, plus grise que le sable, plus chaude que la pierre de taille.
   fossile: { dessus: 0xb3a68a, cote: 0x8f8370 },
   // L'aimant du Laboratoire : gris métal dominant (DA, SC-2) ; le rouge et le bleu restent au motif de Blocland.

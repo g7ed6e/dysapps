@@ -60,6 +60,12 @@ export const TEXTURES: Record<string, string> = {
   [BLOCKS[BLOC.bardeau].side]: 'bardeau',
   [BLOCKS[BLOC.mosaique].side]: 'mosaique',
   [BLOCKS[BLOC.chaume].side]: 'chaume',
+  [BLOCKS[BLOC.enluminure].side]: 'enluminure',
+  [BLOCKS[BLOC.riziere].side]: 'riziere',
+  [BLOCKS[BLOC.fonte].side]: 'fonte',
+  [BLOCKS[BLOC.conteneur].side]: 'conteneur',
+  [BLOCKS[BLOC.reliure].side]: 'reliure',
+  [BLOCKS[BLOC.gres].side]: 'gres',
   [BLOCKS[BLOC.fossile].side]: 'fossile',
   [BLOCKS[BLOC.aimant].side]: 'aimant',
   [BLOCKS[BLOC.carton].side]: 'carton',
@@ -131,11 +137,25 @@ const estIndexDEcole = (index: number) =>
   (indexDesEcoles ??= new Set(ARCHIPELAGOS.map((a) => BIOMES.findIndex((b) => b.id === a.school)))).has(index);
 
 /**
- * Les îles entrées au jeu au milieu de la liste des îles (`BIOMES`) : les îles d'histoire-géographie de 6e (HG-2) et de
- * sciences de 6e (SC-2), rangées avant les îles de LV2. La forme du plateau d'une île se tire de son rang (`groundHeight`) ; compté sans elles, le
+ * Les îles entrées au jeu au milieu de la liste des îles (`BIOMES`) : les îles d'histoire-géographie (HG-2 en 6e, HG-3 de
+ * la 5e à la 3e) et de sciences de 6e (SC-2), rangées avant les îles de LV2. La forme du plateau d'une île se tire de son rang (`groundHeight`) ; compté sans elles, le
  * rang des îles d'avant ne bouge pas, ni leur relief.
  */
-const VENUES_AU_MILIEU: readonly string[] = ['history-6e-antiquity', 'geography-6e-living', 'life-earth-sciences-6e-living-world', 'physics-chemistry-6e-matter-energy', 'technology-6e-objects'];
+const VENUES_AU_MILIEU: readonly string[] = [
+  'history-6e-antiquity',
+  'geography-6e-living',
+  // Les îles de sciences de 6e (SC-2).
+  'life-earth-sciences-6e-living-world',
+  'physics-chemistry-6e-matter-energy',
+  'technology-6e-objects',
+  // Les îles d'histoire-géographie de 5e à 3e (HG-3, DA, 6 octobre 2026).
+  'history-5e-middle-ages',
+  'geography-5e-resources',
+  'history-4e-revolutions',
+  'geography-4e-globalization',
+  'history-3e-twentieth-century',
+  'geography-3e-france',
+];
 
 let rangsDuDessin: readonly number[] | undefined;
 

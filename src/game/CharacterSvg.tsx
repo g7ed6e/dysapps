@@ -4,6 +4,7 @@
 import { useMemo } from 'react';
 import type { BiomeId } from './biomes';
 import { modeleDuPortrait, portraitDe } from './world/characters/portrait';
+import { guardianPortraitView } from './world/characters/portraitView';
 import type { Allumage } from './world/characters/sentinel';
 
 export interface CharacterSvgProps {
@@ -22,7 +23,8 @@ const MARGE = 0.15;
 export default function CharacterSvg({ kind, id, allumage, label, className }: CharacterSvgProps) {
   // Le degré se lit en nombres : un nouvel objet de même valeur ne refait pas le portrait.
   const [pierre, lueurs] = typeof allumage === 'object' ? [allumage.pierre, allumage.lueurs] : [allumage ?? 0, allumage ?? 0];
-  const portrait = useMemo(() => portraitDe(modeleDuPortrait(kind, id), kind === 'guardian' ? { allumage: { pierre, lueurs } } : {}), [kind, id, pierre, lueurs]);
+  // Un Gardien peut avoir sa vue (la Libellule de jade, de trois quarts par au-dessus : `guardianPortraitView`).
+  const portrait = useMemo(() => portraitDe(modeleDuPortrait(kind, id), kind === 'guardian' ? { allumage: { pierre, lueurs }, ...(guardianPortraitView(id) ?? {}) } : {}), [kind, id, pierre, lueurs]);
   const { x, y, largeur, hauteur } = portrait.cadre;
   const box = [x - MARGE, y - MARGE, largeur + 2 * MARGE, hauteur + 2 * MARGE].map((v) => v.toFixed(3)).join(' ');
   return (

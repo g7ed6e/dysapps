@@ -230,6 +230,54 @@ export const BLOCLAND = {
         beaten: 'Je me rallume, de la queue jusqu’aux oreilles. La Pointe est à toi, et à Boussole.',
       },
     },
+    'history-5e-middle-ages': {
+      challenge: 'Le Griffon d’émail déploie ses ailes : « Mes émaux sont tout gris. Tu as lu toutes les chroniques du bourg : dis-moi en quel siècle vient chaque chose. »',
+      guardianSays: {
+        hit: 'Juste. Un bloc d’émail reprend sa couleur.',
+        miss: 'Mes couleurs restent. Regarde la frise, relis le document, et reprends.',
+        beaten: 'Je me rallume, du bec jusqu’à la queue. Le Bourg est à toi, et à Vélin.',
+      },
+    },
+    'geography-5e-resources': {
+      challenge: 'La Libellule de jade se pose sur un roseau : « Mes ailes sont toutes grises. Tu as suivi l’eau de tout le delta : dis-moi comment on partage les ressources. »',
+      guardianSays: {
+        hit: 'Juste. Un bloc de mes ailes redevient vert.',
+        miss: 'Mes couleurs restent. Relis le document, compare les nombres, et reprends.',
+        beaten: 'Je me rallume, des ailes jusqu’au bout de la queue. Le Delta est à toi, et à Sillon.',
+      },
+    },
+    'history-4e-revolutions': {
+      challenge: 'Le Paon de faïence ouvre sa roue : « Ma roue est toute grise. Tu as lu toutes les pages de l’imprimerie : dis-moi ce que chaque révolution a changé. »',
+      guardianSays: {
+        hit: 'Juste. Une plume de ma roue reprend sa couleur.',
+        miss: 'Mes couleurs restent. Regarde la frise, relis le document, et reprends.',
+        beaten: 'Je me rallume, de la crête jusqu’au bout de ma roue. L’Imprimerie est à toi, et à Typo.',
+      },
+    },
+    'geography-4e-globalization': {
+      challenge: 'Le Poulpe de corail étale ses bras sur son socle : « Mes bras sont tout gris. Tu as vu passer tous les bateaux de l’escale : dis-moi comment le monde échange. »',
+      guardianSays: {
+        hit: 'Juste. Un bloc de mes bras redevient corail.',
+        miss: 'Mes couleurs restent. Relis le document, cherche le mot du rappel, et reprends.',
+        beaten: 'Je me rallume, de la tête au bout des huit bras. L’Escale est à toi, et à Fret.',
+      },
+    },
+    'history-3e-twentieth-century': {
+      challenge: 'La Colombe d’albâtre attend, un rameau au bec : « Mes plumes sont toutes grises. Tu as écouté tous les témoins du kiosque : aide-moi à me souvenir, date après date. »',
+      guardianSays: {
+        hit: 'Juste. Une plume reprend sa couleur.',
+        miss: 'Mes couleurs restent. Regarde la frise, relis qui parle, et reprends.',
+        beaten: 'Je me rallume, jusqu’au rameau vert. Le Kiosque est à toi, et à Mémo. Merci de te souvenir avec moi.',
+      },
+    },
+    'geography-3e-france': {
+      challenge: 'Le Cerf de lauze lève la tête : « Mon pelage est tout gris. Une lauze, c’est une pierre plate : mes bois en sont faits. Tu as parcouru tout le plateau. Dis-moi comment vit le territoire. »',
+      guardianSays: {
+        hit: 'Juste. Un bloc de mon pelage reprend sa couleur.',
+        miss: 'Mes couleurs restent. Relis le document, cherche le mot du rappel, et reprends.',
+        beaten: 'Je me rallume, du museau jusqu’aux oreilles, sous mes bois de lauze. Le plateau est à toi, et à Jalon.',
+      },
+    },
     'life-earth-sciences-6e-living-world': {
       challenge: 'Le Cerf des sous-bois baisse la tête : « Me voilà tout gris. Tu as parcouru toute ma vallée : range chaque être vivant à sa place. »',
       guardianSays: {
@@ -336,6 +384,12 @@ export const BLOCLAND = {
     'lv2-3e-travel': 'loutre factrice',
     'history-6e-antiquity': 'ourson fouilleur',
     'geography-6e-living': 'tortue géographe',
+    'history-5e-middle-ages': 'lapin enlumineur',
+    'geography-5e-resources': 'ibis cultivateur',
+    'history-4e-revolutions': 'souris imprimeuse',
+    'geography-4e-globalization': 'crabe grutier',
+    'history-3e-twentieth-century': 'marmotte bibliothécaire',
+    'geography-3e-france': 'fourmi arpenteuse',
     'life-earth-sciences-6e-living-world': 'escargot jardinier',
     'physics-chemistry-6e-matter-energy': 'goutte chimiste',
     'technology-6e-objects': 'fourmi bricoleuse',

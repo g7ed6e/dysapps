@@ -36,6 +36,10 @@ describe('où est une place, en mots', () => {
     expect(ofPlace('Horloge des verbes')).toBe('de l’Horloge des verbes');
     expect(ofPlace('Fouille des siècles')).toBe('de la Fouille des siècles');
     expect(thePlace('Pointe des paysages')).toBe('la Pointe des paysages');
+    expect(ofPlace('Bourg des chroniques')).toBe('du Bourg des chroniques');
+    expect(ofPlace('Imprimerie des révolutions')).toBe('de l’Imprimerie des révolutions');
+    expect(joinedSentence('Escale des échanges', 'Kiosque des témoins')).toBe('L’Escale des échanges est réunie au Kiosque des témoins.');
+    expect(toPlace('Plateau des territoires')).toBe('au Plateau des territoires');
     expect(ofPlace('Vallée du vivant')).toBe('de la Vallée du vivant');
     expect(ofPlace('Laboratoire des éléments')).toBe('du Laboratoire des éléments');
     expect(ofPlace('Hangar des inventions')).toBe('du Hangar des inventions');

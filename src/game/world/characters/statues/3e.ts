@@ -1,8 +1,9 @@
 // Les Gardiens de L'Horizon (3e) en sentinelles de pierre (lot R6), d'après l'intention du directeur artistique : la
 // statue et ce qui s'allume. Six îles pour 1 800 triangles, socles compris.
 import type { BiomeId } from '../../../biomes';
+import { pointe } from '../template';
 import { devant, facette, fuseau, pave, pose, repere, type Anneau, type V3 } from '../painted';
-import { dalle, etoile, orbites, tube, veine, veineSur, type Statue } from '../sentinel';
+import { dalle, etoile, orbites, plaque, tube, veine, veineSur, type Statue } from '../sentinel';
 import { ailesDeployees, dragonAssis, HAUTEUR_DU_DRAGON, surLeSocle } from './common';
 
 const CORPS_DU_SPHINX: Anneau[] = [
@@ -143,6 +144,43 @@ function rentre(c: [number, number][], k: number): [number, number][] {
   const [cx, cy] = [c.reduce((s, p) => s + p[0], 0) / c.length, c.reduce((s, p) => s + p[1], 0) / c.length];
   return c.map(([x, y]) => [cx + (x - cx) * k, cy + (y - cy) * k]);
 }
+
+/**
+ * La Colombe d'albâtre, posée : le corps, puis un cou étroit d'où la tête sort vers l'avant (DA, relecture des planches :
+ * pas un obélisque).
+ */
+const CORPS_DE_LA_COLOMBE: Anneau[] = [
+  [1, 0.85, 1.1, 0.4],
+  [2.6, 1.1, 1.4, 0.3],
+  [4.2, 0.9, 1.1, 0.1],
+  [5.2, 0.42, 0.45, -0.3],
+];
+const TETE_DE_LA_COLOMBE: Anneau[] = [
+  [5.1, 0.42, 0.45, -0.45],
+  [6.2, 0.55, 0.6, -0.8],
+  [7.2, 0.45, 0.5, -0.8],
+  [8, 0.15, 0.2, -0.75],
+];
+/** À quelle hauteur les yeux, sur les côtés de la tête, et à quelle distance de son axe. */
+const OEIL_DE_LA_COLOMBE = { y: 6.75, x: 0.5 } as const;
+/**
+ * Le tour de la Colombe (DA, relecture des planches) : de trois quarts, le côté du rameau vers l'élève, comme le
+ * Papillon de cuivre ; dans le monde comme au défi.
+ */
+const TOURS_DE_LA_COLOMBE = { monde: -0.6, defi: -0.6 };
+
+/** Le Cerf de lauze, couché : le corps, le cou qui se lève ; puis la tête. */
+const CORPS_DU_CERF: Anneau[] = [
+  [1, 1.1, 1.3, 0.2],
+  [2.6, 1.1, 1.4, 0.2],
+  [3.4, 0.8, 0.9, 0],
+  [4.4, 0.45, 0.45, -0.5],
+];
+const TETE_DU_CERF: Anneau[] = [
+  [4.2, 0.45, 0.5, -0.6],
+  [5.4, 0.42, 0.5, -0.8],
+  [5.8, 0.2, 0.25, -0.9],
+];
 
 export const STATUES_3E: Partial<Record<BiomeId, Statue>> = {
   'maths-3e-geometry': {
@@ -529,6 +567,118 @@ export const STATUES_3E: Partial<Record<BiomeId, Statue>> = {
           veine(R, trace, l, a.lueur, () => -P.epaisseur - 0.005);
         }
       }
+    },
+  },
+  // Les Gardiens d'histoire-géographie (HG-3) : Archipéo est en pause (2 octobre 2026), ces sentinelles n'ont que le
+  // strict nécessaire (budget de l'archipel). La Colombe d'albâtre porte un rameau, aucune arme (DA, HG-3).
+  'history-3e-twentieth-century': {
+    nom: 'la Colombe d’albâtre',
+    allume: 'ses plumes',
+    tour: TOURS_DE_LA_COLOMBE,
+    sculpture: (T, a) => {
+      fuseau(T, CORPS_DE_LA_COLOMBE, 6, a.moussue((k, j) => k === 0 && j % 2 === 0), { bas: false });
+      fuseau(T, TETE_DE_LA_COLOMBE, 5, a.pierre, { bas: false });
+      // La queue relevée derrière elle, puis le bec, vers l'avant.
+      dalle(
+        T,
+        [
+          [-0.5, 2.2],
+          [0.5, 2.2],
+          [0.8, 4.4],
+          [-0.8, 4.4],
+        ],
+        1.3,
+        1.5,
+        a.pierre,
+      );
+      const bec = devant(TETE_DE_LA_COLOMBE, 5, 6.6).z;
+      pointe(T, [0, 6.6, bec + 0.05], 0.12, 0.35, a.pierre, [-Math.PI / 2, 0, 0], 3);
+      // Le rameau, d'un seul côté du bec (jamais en travers : de face, il faisait un masque, DA) : une tige fine en biais,
+      // deux feuilles plates au bout, assez grandes pour se lire de loin (DA, relecture des planches, HG-3).
+      const z = bec - 0.3;
+      tube(
+        T,
+        [
+          [0.1, 6.5, z],
+          [0.6, 6.05, z - 0.05],
+          [1.05, 5.6, z],
+        ],
+        0.045,
+        3,
+        a.rameau,
+      );
+      for (const f of [
+        [
+          [0.55, 6.05],
+          [1.03, 6.53],
+          [1.27, 6.29],
+          [0.87, 5.89],
+        ],
+        [
+          [1.0, 5.6],
+          [1.56, 5.84],
+          [1.72, 5.36],
+          [1.16, 5.28],
+        ],
+      ] as [number, number][][])
+        dalle(T, f, z - 0.03, z + 0.03, a.rameau);
+      // Les yeux, sur les côtés de la tête.
+      const tete = TETE_DE_LA_COLOMBE[1][3]!;
+      for (const s of [-1, 1]) orbites(pose(T, repere([s * OEIL_DE_LA_COLOMBE.x, OEIL_DE_LA_COLOMBE.y, tete], 0, -s * (Math.PI / 2), 0)), a, 0, 0, 0, 0, 0.12);
+    },
+    veines: (T, a) => {
+      // Trois rangs de plumes sur la poitrine, en chevrons.
+      for (const y of [2.4, 3.3, 4.2])
+        veineSur(
+          T,
+          CORPS_DE_LA_COLOMBE,
+          6,
+          [
+            [-0.5, y + 0.15],
+            [0, y - 0.1],
+            [0.5, y + 0.15],
+          ],
+          0.09 * a.veines,
+          a.lueur,
+        );
+    },
+  },
+  'geography-3e-france': {
+    nom: 'le Cerf de lauze',
+    // Ce qui s'allume, ce que dit le texte : les lauzes de sa poitrine (HG-3, sans un triangle de plus).
+    allume: 'les lauzes de sa poitrine',
+    sculpture: (T, a) => {
+      fuseau(T, CORPS_DU_CERF, 6, a.moussue((k, j) => k === 0 && j % 2 === 1), { bas: false });
+      fuseau(T, TETE_DU_CERF, 5, a.pierre, { bas: false });
+      // Les bois, qui s'ouvrent au-dessus de lui, un andouiller chacun.
+      for (const s of [-1, 1]) {
+        tube(
+          T,
+          [
+            [s * 0.25, 5.5, -0.6],
+            [s * 0.8, 6.7, -0.4],
+            [s * 1.3, 8, -0.3],
+          ],
+          [0.1, 0.08, 0],
+          3,
+          a.pierre,
+        );
+        tube(
+          T,
+          [
+            [s * 0.8, 6.7, -0.4],
+            [s * 0.5, 7.5, -0.55],
+          ],
+          [0.07, 0],
+          3,
+          a.pierre,
+        );
+      }
+      orbites(T, a, 0, 5.0, devant(TETE_DU_CERF, 5, 5.0).z, 0.26, 0.1);
+    },
+    // Deux lauzes sur la poitrine.
+    veines: (T, a) => {
+      for (const y of [2.0, 2.9]) plaque(T, 0, y, 0.5, 0.3, 6, a.lueur, (yy) => devant(CORPS_DU_CERF, 6, yy).z);
     },
   },
 };

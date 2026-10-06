@@ -431,10 +431,10 @@ describe('les caméras des îles', () => {
     for (const [ile, deg] of Object.entries(AVANT_LE_REFUGE))
       expect((viewYaw(ile as BiomeId) * 180) / Math.PI, ile).toBeCloseTo(deg, 3);
   });
-  it('seules des îles de LV2 et les îles d’histoire-géographie et de sciences de 6e sortent de la colonne centrale', () => {
+  it('seules des îles de LV2, les îles d’histoire-géographie et les îles de sciences de 6e sortent de la colonne centrale', () => {
     for (const id of HORS_DE_LA_COLONNE) {
       const b = BIOMES.find((x) => x.id === id);
-      expect(b && (estIleLv2(b) || (b.classe === '6e' && b.subject !== 'french' && b.subject !== 'maths' && b.subject !== 'english')), id).toBe(true);
+      expect(b && (estIleLv2(b) || b.subject === 'history-geography' || (b.classe === '6e' && b.subject !== 'french' && b.subject !== 'maths' && b.subject !== 'english')), id).toBe(true);
     }
   });
 });

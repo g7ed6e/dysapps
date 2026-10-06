@@ -1,0 +1,9 @@
+{
+  "id": "geography-4e-globalization-2",
+  "biome": "geography-4e-globalization",
+  "name": "Le toit de l’entrepôt",
+  "reward": {
+    "xp": 50
+  },
+  "done": "Le toit est posé. Les marchandises attendent au sec le prochain bateau."
+}

@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, bulles, fiches, menu-tete, debut, histoire-geo, sciences ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-college, sciences ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 20` le plus long temps réel laissé au monde pour se construire (en secondes, 10 par défaut). L'horloge de la
 // page est pilotée (`preparerLaScene`, scripts/prise-de-vue.mjs) : deux prises du même état donnent la même image, les
@@ -596,6 +596,98 @@ const CAPTURES = [
     },
     { nom: `histoire-geo-mosaique-brique-chaume-archipel${suffixe}`, vue: 'archipel', famille: 'histoire-geo', ile: 'history-6e-antiquity', ...autres },
   ]),
+  // Les six îles d'histoire-géographie des 5e, 4e et 3e (lot HG-3, famille `histoire-geo-college`), à retirer une fois le
+  // lot fusionné : chacune de près, de jour et de nuit, avant sa restauration (le Gardien en statue grise, `sansIles`)
+  // et tout construit (le Gardien rallumé) ; son Gardien, sa fiche ouverte, avant et après ; sa commande livrée (la
+  // petite construction posée) ; et la Carte de chaque archipel tout construit, pour les noms des îles.
+  ...['history-5e-middle-ages', 'geography-5e-resources', 'history-4e-revolutions', 'geography-4e-globalization', 'history-3e-twentieth-century', 'geography-3e-france'].flatMap((ile) => [
+    ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].flatMap(({ suffixe, ...autres }) => [
+      { nom: `histoire-geo-college-${ile}-avant${suffixe}`, vue: 'île', famille: 'histoire-geo-college', ile, sansIles: [ile], ...autres },
+      { nom: `histoire-geo-college-${ile}-apres${suffixe}`, vue: 'île', famille: 'histoire-geo-college', ile, ...autres },
+    ]),
+    { nom: `histoire-geo-college-${ile}-gardien-avant`, vue: 'île', famille: 'histoire-geo-college', ile, sansIles: [ile], fiche: { genre: 'gardien', id: ile } },
+    { nom: `histoire-geo-college-${ile}-gardien-apres`, vue: 'île', famille: 'histoire-geo-college', ile, fiche: { genre: 'gardien', id: ile } },
+    { nom: `histoire-geo-college-${ile}-commande`, vue: 'île', famille: 'histoire-geo-college', ile, posees: 'toutes' },
+  ]),
+  ...[
+    ['5e', 'history-5e-middle-ages'],
+    ['4e', 'history-4e-revolutions'],
+    ['3e', 'history-3e-twentieth-century'],
+  ].map(([a, ile]) => ({ nom: `histoire-geo-college-carte-${a}`, vue: 'carte', famille: 'histoire-geo-college', ile })),
+  // Retouches HG-3 : la Carte du 5e et du 4e (le cadrage des îles et de leurs noms) en portrait 800 × 1280, au téléphone et
+  // en OpenDyslexic 32 px (UX UI) ; « Mes blocs » avec le Conteneur et la Reliure côte à côte, puis le Grès rose à côté
+  // de la Brique et de la Tuile, de jour et de nuit (référent dys) ; chaque Gardien de près, au défi, éteint puis à
+  // mi-parcours (consultant Archipéo).
+  // Deuxième tour (UX UI, référent dys) : le 3e aussi ; la Carte du 6e au téléphone et en OpenDyslexic 32 px (au 6e
+  // comme ailleurs, chaque nom sur son île et aucun tu, le placement simple d'abord : le DA lève sa règle du 6e, dont
+  // les îles ont bougé avec SC-2). Troisième tour (DA) : aucun nom sous un bouton, hors de l'écran ni sous le médaillon.
+  ...[
+    ['5e', 'history-5e-middle-ages'],
+    ['4e', 'history-4e-revolutions'],
+    ['3e', 'history-3e-twentieth-century'],
+  ].flatMap(([a, ile]) =>
+    [
+      { suffixe: '-800x1280', taille: { width: 800, height: 1280 } },
+      { suffixe: '-390x844', taille: { width: 390, height: 844 } },
+      { suffixe: '-od32', reglages: { font: 'opendyslexic', fontSize: 32 } },
+    ].map(({ suffixe, ...autres }) => ({ nom: `histoire-geo-college-carte-${a}${suffixe}`, vue: 'carte', famille: 'histoire-geo-college', ile, ...autres })),
+  ),
+  ...[
+    { suffixe: '-390x844', taille: { width: 390, height: 844 } },
+    { suffixe: '-od32', reglages: { font: 'opendyslexic', fontSize: 32 } },
+  ].map(({ suffixe, ...autres }) => ({ nom: `histoire-geo-college-carte-6e${suffixe}`, vue: 'carte', famille: 'histoire-geo-college', ile: 'history-6e-antiquity', ...autres })),
+  // « Mes blocs » en thème Nuit de l'interface (le fond des panneaux #16304a : le liseré clair des icônes, référent dys),
+  // et de jour.
+  ...[{ suffixe: '' }, { suffixe: '-theme-nuit', reglages: { theme: 'night' } }].flatMap(({ suffixe, ...autres }) => [
+    {
+      nom: `histoire-geo-college-mes-blocs-conteneur-reliure${suffixe}`,
+      vue: 'île',
+      famille: 'histoire-geo-college',
+      ile: 'history-6e-antiquity',
+      lieu: 'stock',
+      inventaire: { 'geography-4e-globalization': 4, 'history-3e-twentieth-century': 3 },
+      ...autres,
+    },
+    {
+      nom: `histoire-geo-college-mes-blocs-gres-brique-tuile${suffixe}`,
+      vue: 'île',
+      famille: 'histoire-geo-college',
+      ile: 'history-6e-antiquity',
+      lieu: 'stock',
+      inventaire: { 'maths-6e-calculation': 4, 'english-5e-vocabulary': 3, 'geography-3e-france': 5 },
+      ...autres,
+    },
+  ]),
+  ...['history-5e-middle-ages', 'geography-5e-resources', 'history-4e-revolutions', 'geography-4e-globalization', 'history-3e-twentieth-century', 'geography-3e-france'].flatMap((ile) => [
+    { nom: `histoire-geo-college-${ile}-defi`, vue: 'défi', famille: 'histoire-geo-college', ile, debout: ile },
+    { nom: `histoire-geo-college-${ile}-defi-mi`, vue: 'défi', famille: 'histoire-geo-college', ile, debout: ile, reussir: 3 },
+    // Le Gardien de près, dans le monde (consultant Archipéo) : sa fiche ouverte, la caméra rapprochée de deux crans,
+    // éteint puis rallumé.
+    { nom: `histoire-geo-college-${ile}-gardien-pres-avant`, vue: 'île', famille: 'histoire-geo-college', ile, sansIles: [ile], fiche: { genre: 'gardien', id: ile }, zoomer: 2 },
+    { nom: `histoire-geo-college-${ile}-gardien-pres-apres`, vue: 'île', famille: 'histoire-geo-college', ile, fiche: { genre: 'gardien', id: ile }, zoomer: 2 },
+  ]),
+  // Des petites constructions posées, chacune près de sa créature (sa fiche ouverte, la caméra rapprochée) : la boîte à
+  // livres de Jalon, de profil, son jalon à côté (consultant Blocland, DA) ; l'équerre de Théo, le haut-parleur d'Écho, la
+  // cabane de Frimas (DA).
+  // L'équerre de Théo, la fiche fermée : ouverte, sa bulle cachait la branche couchée (consultant Blocland, HG-3).
+  ...[
+    ['jalon-boite-a-livres', 'geography-3e-france'],
+    ['theo-equerre', 'maths-3e-geometry', { sansFiche: true }],
+    ['echo-haut-parleur', 'english-3e-comprehension'],
+    ['frimas-cabane', 'maths-5e-signed-numbers'],
+  ].map(([sujet, ile, { sansFiche } = {}]) => ({
+    nom: `histoire-geo-college-${sujet}`,
+    vue: 'île',
+    famille: 'histoire-geo-college',
+    ile,
+    posees: 'toutes',
+    ...(sansFiche ? {} : { fiche: { genre: 'creature', id: ile } }),
+    zoomer: 1,
+  })),
+  // La baleine du 5e vue du port, entière, de l'eau autour (DA) : à la vue de l'archipel, 77 pas de plus (9,6 s de plus
+  // de la scène, le hasard fixe) la posent en surface, son souffle ouvert, au large de la jetée. À la vue de l'île, aucune
+  // ne passe dans le cadre (la plus proche tourne juste sous son bord) : pas de capture de l'île.
+  { nom: 'histoire-geo-college-baleine-5e-port-archipel', vue: 'archipel', famille: 'histoire-geo-college', ile: 'maths-5e-proportionality', pasEnPlus: 77 },
   // Les îles de sciences de 6e (lot SC-2, famille `sciences`), à retirer une fois le lot fusionné : la Vallée du vivant,
   // le Laboratoire des éléments et le Hangar des inventions de près, de jour et de nuit, avant leur restauration
   // (`sansIles`) et tout construit, chacune avec la fiche de son Gardien ; le défi de l'Alambic de verre à mi-parcours ;

@@ -37,11 +37,11 @@ Un archipel par classe. En français et en maths, une île par grand thème ; en
 | Archipel | Français | Maths | Anglais | Histoire-géo | Sciences | LV2 |
 | --- | --- | --- | --- | --- | --- | --- |
 | 6e, Premiers Rivages | Forêt des sons, Mine des lettres, Carrière des mots, Ferme des accords, Tour du lecteur | Plaine des nombres, Rivière des fractions, Volcan des décimaux | Baie des mots, Horloge des verbes | Fouille des siècles, Pointe des paysages | Vallée du vivant (SVT), Laboratoire des éléments (physique-chimie), Hangar des inventions (technologie) | — |
-| 5e, Îles Brumeuses | Carrefour des homophones, Marais des temps | Glacier des relatifs, Marché des proportions | Comptoir, Manoir du passé | — | — | Relais des voyageurs |
-| 4e, Anciens Ateliers | Falaise des accords, Cabinet des mots | Forge des puissances, Atelier du calcul littéral | Théâtre des voix, Gare du futur | — | — | Jardin des heures |
-| 3e, Îles du Ciel | Observatoire des textes | Belvédère de Thalès, Observatoire des données, Phare des fonctions | Studio des ondes, Château des hypothèses | — | — | Refuge des carnets |
+| 5e, Îles Brumeuses | Carrefour des homophones, Marais des temps | Glacier des relatifs, Marché des proportions | Comptoir, Manoir du passé | Bourg des chroniques, Delta des ressources | — | Relais des voyageurs |
+| 4e, Anciens Ateliers | Falaise des accords, Cabinet des mots | Forge des puissances, Atelier du calcul littéral | Théâtre des voix, Gare du futur | Imprimerie des révolutions, Escale des échanges | — | Jardin des heures |
+| 3e, Îles du Ciel | Observatoire des textes | Belvédère de Thalès, Observatoire des données, Phare des fonctions | Studio des ondes, Château des hypothèses | Kiosque des témoins, Plateau des territoires | — | Refuge des carnets |
 
-Soit 36 îles et 126 missions, dont 24 de LV2 (quatre par île et par langue), 6 d’histoire-géographie et 9 de sciences, plus 7 missions au portail.
+Soit 42 îles et 144 missions, dont 24 de LV2 (quatre par île et par langue), 24 d’histoire-géographie et 9 de sciences, plus 7 missions au portail.
 
 ### L’anglais
 
@@ -93,7 +93,19 @@ Choix du mainteneur du 5 octobre 2026 (« C pour l’instant ») : commencer par
 - **Deux îles de 6e** : la **Fouille des siècles** (`history-6e-antiquity`, Gardien l’Amphore peinte, créature Silex, bloc Mosaïque) et la **Pointe des paysages** (`geography-6e-living`, Gardien le Castor d’argile, créature Boussole, bloc Chaume), noms tranchés par le directeur artistique entre les deux consultants. Trois missions chacune, deux niveaux de huit items, sur l’écran de la question à trou (niveau 1, repères et lexique) et de la question sur un document (niveau 2) ; aucun écran nouveau.
 - **Les dates** s’écrivent en siècles (« Ve siècle », sans exposant, toujours suivi de « siècle »), se lisent en toutes lettres, et se situent sur une frise affichée dans le rappel (« En haut, le plus ancien ; en bas, le plus récent. », « J.-C. : Jésus-Christ ») ; jamais un calcul de durée, jamais de chiffre romain ni de « J.-C. » dans un indice. La Préhistoire se date en « il y a … ans ».
 - **Pas de carte à voir** tant qu’il n’y a pas d’écran pour elle : un document de géographie est un texte court, un petit tableau ou la description d’une photographie de paysage, quatre lignes au plus.
-- **Les étapes HG-n** : HG-1, le référentiel de 6e ; HG-2, les deux îles au jeu. À proposer ensuite : une frise à remettre dans l’ordre et une carte à toucher (écrans nouveaux), le point de vue d’un document, le cycle 4, et le nouveau programme de 6e à la rentrée 2027.
+- **Le cycle 4** (décision du mainteneur du 6 octobre 2026) : de la 5e à la 3e, deux îles par classe, comme en 6e, une d’histoire et une de géographie, trois missions chacune, une par thème du programme du cycle 4 en vigueur (annexe 3 du BO n° 31 du 30 juillet 2020, le même PDF que le français et les maths du cycle 4). Le texte répartit ses thèmes par classe : chaque thème est une compétence du référentiel (`c4.hg.histoire.*`, `c4.hg.geographie.*`), donc une mission. Chaque mission cite son thème et les démarches qu’elle travaille (`c4.hg.temps.reperes`, `c4.hg.temps.ordonner`, `c4.hg.espace.localiser`, `c4.hg.espace.situer`, `c4.hg.demarches.document`, `c4.hg.demarches.point-de-vue`, `c4.hg.demarches.lexique`, `c4.hg.demarches.cartes`, `c4.hg.demarches.raisonner`) ; une île de 5e à 3e ne cite que le cycle 4 ou consolide le cycle 3. Mêmes écrans, mêmes règles d’écriture qu’en 6e (siècles en mots, frise dans le rappel, pas de carte à voir). Les noms des îles, de leurs Gardiens et de leurs créatures relèvent du directeur artistique.
+
+| Classe | Île | Mission 1 | Mission 2 | Mission 3 |
+| --- | --- | --- | --- | --- |
+| 5e | histoire | `c4.hg.histoire.chretientes-islam` (Chrétientés et islam, VIe-XIIIe siècle) | `c4.hg.histoire.occident-feodal` (l’Occident féodal, XIe-XVe siècle) | `c4.hg.histoire.europe-xvie-xviie` (l’Europe et le monde, XVIe-XVIIe siècle) |
+| 5e | géographie | `c4.hg.geographie.demographie-developpement` | `c4.hg.geographie.ressources` | `c4.hg.geographie.risques-changement-global` |
+| 4e | histoire | `c4.hg.histoire.xviiie-revolutions` | `c4.hg.histoire.europe-monde-xixe` | `c4.hg.histoire.france-xixe` |
+| 4e | géographie | `c4.hg.geographie.urbanisation` | `c4.hg.geographie.mobilites` | `c4.hg.geographie.mondialisation` |
+| 3e | histoire | `c4.hg.histoire.guerres-totales` | `c4.hg.histoire.monde-depuis-1945` | `c4.hg.histoire.republique-repensee` |
+| 3e | géographie | `c4.hg.geographie.dynamiques-france` | `c4.hg.geographie.amenager` | `c4.hg.geographie.france-ue` |
+
+  Le référentiel du cycle 4 (`src/curriculum/cycle4.ts`, 28 compétences) est écrit de mémoire, le PDF n’ayant pas pu être téléchargé : libellés et pages sont marqués « à vérifier ». Ses compétences ont quitté les exclusions avec l’entrée des six îles au jeu (HG-3) : chacune est citée par une mission, sauf écrire, dire et produire (`c4.hg.demarches.ecrire-dire`), hors périmètre. L’enseignement moral et civique, qui suit dans le PDF, n’est pas une matière de l’application : il reste hors périmètre, sans entrée au référentiel.
+- **Les étapes HG-n** : HG-1, le référentiel de 6e ; HG-2, les deux îles au jeu ; le référentiel du cycle 4 (6 octobre 2026), puis les six îles de 5e à 3e. À proposer ensuite : une frise à remettre dans l’ordre et une carte à toucher (écrans nouveaux), le point de vue d’un document en 6e, et le nouveau programme de 6e à la rentrée 2027.
 
 ### Les sciences et la technologie
 

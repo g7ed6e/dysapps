@@ -19,4 +19,7 @@ export const SILHOUETTES_4E = {
   'english-4e-grammar': { pics: [] },
   // Le Jardin des heures (LV2) : une île plate, au bout est de la crête, sans pic (aucune verticale à côté de la grue).
   'lv2-4e-daily-life': { pics: [] },
+  // Histoire-géographie (HG-3) : des îles plates, sans pic.
+  'history-4e-revolutions': { pics: [] },
+  'geography-4e-globalization': { pics: [] },
 } satisfies Partial<Record<BiomeId, Silhouette>>;
