@@ -60,6 +60,9 @@ export const TEXTURES: Record<string, string> = {
   [BLOCKS[BLOC.bardeau].side]: 'bardeau',
   [BLOCKS[BLOC.mosaique].side]: 'mosaique',
   [BLOCKS[BLOC.chaume].side]: 'chaume',
+  [BLOCKS[BLOC.fossile].side]: 'fossile',
+  [BLOCKS[BLOC.aimant].side]: 'aimant',
+  [BLOCKS[BLOC.carton].side]: 'carton',
   [BLOCKS[BLOC.poutre].side]: 'poutre',
   [BLOCKS[BLOC.vitrail].side]: 'vitrail',
   [BLOCKS[BLOC.engrenage].side]: 'engrenage',
@@ -128,11 +131,11 @@ const estIndexDEcole = (index: number) =>
   (indexDesEcoles ??= new Set(ARCHIPELAGOS.map((a) => BIOMES.findIndex((b) => b.id === a.school)))).has(index);
 
 /**
- * Les îles entrées au jeu au milieu de la liste des îles (`BIOMES`) : les îles d'histoire-géographie de 6e (HG-2), rangées
- * avant les îles de LV2. La forme du plateau d'une île se tire de son rang (`groundHeight`) ; compté sans elles, le
+ * Les îles entrées au jeu au milieu de la liste des îles (`BIOMES`) : les îles d'histoire-géographie de 6e (HG-2) et de
+ * sciences de 6e (SC-2), rangées avant les îles de LV2. La forme du plateau d'une île se tire de son rang (`groundHeight`) ; compté sans elles, le
  * rang des îles d'avant ne bouge pas, ni leur relief.
  */
-const VENUES_AU_MILIEU: readonly string[] = ['history-6e-antiquity', 'geography-6e-living'];
+const VENUES_AU_MILIEU: readonly string[] = ['history-6e-antiquity', 'geography-6e-living', 'life-earth-sciences-6e-living-world', 'physics-chemistry-6e-matter-energy', 'technology-6e-objects'];
 
 let rangsDuDessin: readonly number[] | undefined;
 

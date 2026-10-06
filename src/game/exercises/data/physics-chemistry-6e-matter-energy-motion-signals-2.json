@@ -1,0 +1,233 @@
+{
+  "id": "physics-chemistry-6e-matter-energy-motion-signals-2",
+  "biome": "physics-chemistry-6e-matter-energy",
+  "type": "motion-signals",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "physics-chemistry-6e-matter-energy-motion-signals-2-0",
+      "prompt": "La sonnerie du collège annonce la fin du cours : c’est un signal …",
+      "spoken": "La sonnerie du collège annonce la fin du cours : c’est un signal  (mot manquant) ",
+      "choices": [
+        "lumineux",
+        "sonore",
+        "électrique"
+      ],
+      "answer": "sonore",
+      "hint": "On l’entend, ou on le voit ?",
+      "explanation": "On entend la sonnerie : c’est un signal sonore. Il porte une information : le cours est fini.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Signaux et expériences",
+          "lines": [
+            "Un signal transporte une information : lumineux, sonore ou électrique.",
+            "L’émetteur envoie le signal. Le récepteur le reçoit.",
+            "L’hypothèse : l’idée qu’une expérience va tester.",
+            "On ne change qu’une seule chose à la fois. Le reste est pareil.",
+            "On compare les résultats, puis on conclut."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-motion-signals-2-1",
+      "prompt": "Le bonhomme vert du feu dit qu’on peut traverser : c’est un signal …",
+      "spoken": "Le bonhomme vert du feu dit qu’on peut traverser : c’est un signal  (mot manquant) ",
+      "choices": [
+        "sonore",
+        "électrique",
+        "lumineux"
+      ],
+      "answer": "lumineux",
+      "hint": "On l’entend, ou on le voit ?",
+      "explanation": "On voit le bonhomme vert s’allumer : c’est un signal lumineux. Il porte une information : on peut traverser.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Signaux et expériences",
+          "lines": [
+            "Un signal transporte une information : lumineux, sonore ou électrique.",
+            "L’émetteur envoie le signal. Le récepteur le reçoit.",
+            "L’hypothèse : l’idée qu’une expérience va tester.",
+            "On ne change qu’une seule chose à la fois. Le reste est pareil.",
+            "On compare les résultats, puis on conclut."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-motion-signals-2-2",
+      "prompt": "Le phare et le bateau\nLa nuit, le phare envoie un éclair de lumière.\nLe marin voit l’éclair et sait où est la côte.",
+      "question": "Qui reçoit le signal ?",
+      "spoken": "Le phare et le bateau. La nuit, le phare envoie un éclair de lumière. Le marin voit l’éclair et sait où est la côte.",
+      "choices": [
+        "le phare",
+        "le marin",
+        "la mer"
+      ],
+      "answer": "le marin",
+      "hint": "Relis la ligne « L’émetteur » du rappel.",
+      "explanation": "Le phare envoie le signal : c’est l’émetteur. Le marin le reçoit : c’est le récepteur.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Signaux et expériences",
+          "lines": [
+            "Un signal transporte une information : lumineux, sonore ou électrique.",
+            "L’émetteur envoie le signal. Le récepteur le reçoit.",
+            "L’hypothèse : l’idée qu’une expérience va tester.",
+            "On ne change qu’une seule chose à la fois. Le reste est pareil.",
+            "On compare les résultats, puis on conclut."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-motion-signals-2-3",
+      "prompt": "Dans le fil, entre le bouton de la sonnette et le carillon, passe un signal …",
+      "spoken": "Dans le fil, entre le bouton de la sonnette et le carillon, passe un signal  (mot manquant) ",
+      "choices": [
+        "électrique",
+        "lumineux",
+        "sonore"
+      ],
+      "answer": "électrique",
+      "hint": "Qu’est-ce qui passe dans un fil ?",
+      "explanation": "Dans le fil passe un signal électrique. Le carillon le reçoit, puis sonne : là, le signal devient sonore.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Signaux et expériences",
+          "lines": [
+            "Un signal transporte une information : lumineux, sonore ou électrique.",
+            "L’émetteur envoie le signal. Le récepteur le reçoit.",
+            "L’hypothèse : l’idée qu’une expérience va tester.",
+            "On ne change qu’une seule chose à la fois. Le reste est pareil.",
+            "On compare les résultats, puis on conclut."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-motion-signals-2-4",
+      "prompt": "Une idée qu’on veut tester par une expérience s’appelle une …",
+      "spoken": "Une idée qu’on veut tester par une expérience s’appelle une  (mot manquant) ",
+      "choices": [
+        "conclusion",
+        "mesure",
+        "hypothèse"
+      ],
+      "answer": "hypothèse",
+      "hint": "Relis la ligne « L’hypothèse » du rappel.",
+      "explanation": "L’idée à tester est l’hypothèse. La conclusion vient à la fin, quand on a les résultats.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Signaux et expériences",
+          "lines": [
+            "Un signal transporte une information : lumineux, sonore ou électrique.",
+            "L’émetteur envoie le signal. Le récepteur le reçoit.",
+            "L’hypothèse : l’idée qu’une expérience va tester.",
+            "On ne change qu’une seule chose à la fois. Le reste est pareil.",
+            "On compare les résultats, puis on conclut."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-motion-signals-2-5",
+      "prompt": "L’idée de Lina : le sucre se dissout plus vite dans l’eau chaude.\nExpérience A : eau chaude et eau froide, autant d’eau, le même sucre.\nExpérience B : eau chaude avec du sucre, eau froide avec du sel.",
+      "question": "Quelle expérience teste bien son idée ?",
+      "spoken": "L’idée de Lina, le sucre se dissout plus vite dans l’eau chaude. Expérience A, eau chaude et eau froide, autant d’eau, le même sucre. Expérience B, eau chaude avec du sucre, eau froide avec du sel.",
+      "choices": [
+        "l’expérience A",
+        "l’expérience B",
+        "les deux"
+      ],
+      "answer": "l’expérience A",
+      "hint": "Dans quelle expérience une seule chose change-t-elle ?",
+      "explanation": "Dans l’expérience A, seule la température de l’eau change. Dans la B, l’eau et ce qu’on dissout changent tous les deux : on ne saurait pas ce qui compte.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Signaux et expériences",
+          "lines": [
+            "Un signal transporte une information : lumineux, sonore ou électrique.",
+            "L’émetteur envoie le signal. Le récepteur le reçoit.",
+            "L’hypothèse : l’idée qu’une expérience va tester.",
+            "On ne change qu’une seule chose à la fois. Le reste est pareil.",
+            "On compare les résultats, puis on conclut."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-motion-signals-2-6",
+      "prompt": "Les résultats de Lina\nEau chaude : on ne voit plus le sucre après 1 minute.\nEau froide : on ne voit plus le sucre après 4 minutes.",
+      "question": "Que peut conclure Lina ?",
+      "spoken": "Les résultats de Lina. Eau chaude, on ne voit plus le sucre après une minute. Eau froide, on ne voit plus le sucre après quatre minutes.",
+      "choices": [
+        "l’eau froide fait fondre le sucre",
+        "le sucre se dissout plus vite dans l’eau chaude",
+        "le sucre disparaît pour de bon dans l’eau chaude"
+      ],
+      "answer": "le sucre se dissout plus vite dans l’eau chaude",
+      "hint": "Dans quelle eau le sucre a-t-il mis le moins de temps ?",
+      "explanation": "Dans l’eau chaude, il faut moins de temps : l’hypothèse de Lina est juste. Le sucre ne disparaît pas, il se dissout ; et il ne fond pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Signaux et expériences",
+          "lines": [
+            "Un signal transporte une information : lumineux, sonore ou électrique.",
+            "L’émetteur envoie le signal. Le récepteur le reçoit.",
+            "L’hypothèse : l’idée qu’une expérience va tester.",
+            "On ne change qu’une seule chose à la fois. Le reste est pareil.",
+            "On compare les résultats, puis on conclut."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-motion-signals-2-7",
+      "prompt": "À la fin, on dit si l’hypothèse était juste : c’est la …",
+      "spoken": "À la fin, on dit si l’hypothèse était juste : c’est la  (mot manquant) ",
+      "choices": [
+        "question",
+        "conclusion",
+        "mesure"
+      ],
+      "answer": "conclusion",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "La conclusion dit si l’hypothèse est juste ou fausse, d’après les résultats.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Signaux et expériences",
+          "lines": [
+            "Un signal transporte une information : lumineux, sonore ou électrique.",
+            "L’émetteur envoie le signal. Le récepteur le reçoit.",
+            "L’hypothèse : l’idée qu’une expérience va tester.",
+            "On ne change qu’une seule chose à la fois. Le reste est pareil.",
+            "On compare les résultats, puis on conclut."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "physics-chemistry-6e-matter-energy",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

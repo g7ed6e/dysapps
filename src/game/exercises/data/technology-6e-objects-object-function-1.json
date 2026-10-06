@@ -1,0 +1,225 @@
+{
+  "id": "technology-6e-objects-object-function-1",
+  "biome": "technology-6e-objects",
+  "type": "object-function",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "technology-6e-objects-object-function-1-0",
+      "prompt": "Un objet fabriqué par l’humain pour répondre à un besoin est un objet …",
+      "spoken": "Un objet fabriqué par l’humain pour répondre à un besoin est un objet  (mot manquant) ",
+      "choices": [
+        "naturel",
+        "technique",
+        "vivant"
+      ],
+      "answer": "technique",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Un objet fabriqué pour répondre à un besoin est un objet technique. Un objet naturel, comme un caillou, n’a pas été fabriqué.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "À quoi sert un objet",
+          "lines": [
+            "Un objet technique est fabriqué pour répondre à un besoin.",
+            "Sa fonction d’usage : à quoi il sert, dit avec un verbe.",
+            "Chaque élément de l’objet a sa fonction : ce qu’il fait.",
+            "Exemple : le capuchon du stylo protège la pointe."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-object-function-1-1",
+      "prompt": "Fiche de la gourde\nBesoin : boire pendant le sport.\nÉléments : le corps, le bouchon, la sangle.\nMatériau : plastique.",
+      "question": "Quelle est la fonction d’usage de la gourde ?",
+      "spoken": "Fiche de la gourde. Besoin, boire pendant le sport. Éléments, le corps, le bouchon, la sangle. Matériau, plastique.",
+      "choices": [
+        "être en plastique transparent",
+        "transporter de l’eau à boire",
+        "avoir un bouchon qui se visse"
+      ],
+      "answer": "transporter de l’eau à boire",
+      "hint": "La fonction d’usage dit à quoi sert l’objet, avec un verbe.",
+      "explanation": "La gourde sert à transporter de l’eau à boire : c’est sa fonction d’usage. Le plastique est son matériau, le bouchon un de ses éléments.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "À quoi sert un objet",
+          "lines": [
+            "Un objet technique est fabriqué pour répondre à un besoin.",
+            "Sa fonction d’usage : à quoi il sert, dit avec un verbe.",
+            "Chaque élément de l’objet a sa fonction : ce qu’il fait.",
+            "Exemple : le capuchon du stylo protège la pointe."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-object-function-1-2",
+      "prompt": "Sur la trottinette, le guidon sert à …",
+      "spoken": "Sur la trottinette, le guidon sert à  (mot manquant) ",
+      "choices": [
+        "diriger",
+        "freiner",
+        "avancer"
+      ],
+      "answer": "diriger",
+      "hint": "Que fais-tu en tournant le guidon ?",
+      "explanation": "En tournant le guidon, on choisit où l’on va : il sert à diriger. Le frein sert à ralentir.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "À quoi sert un objet",
+          "lines": [
+            "Un objet technique est fabriqué pour répondre à un besoin.",
+            "Sa fonction d’usage : à quoi il sert, dit avec un verbe.",
+            "Chaque élément de l’objet a sa fonction : ce qu’il fait.",
+            "Exemple : le capuchon du stylo protège la pointe."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-object-function-1-3",
+      "prompt": "Sur la lampe de poche, l’interrupteur sert à …",
+      "spoken": "Sur la lampe de poche, l’interrupteur sert à  (mot manquant) ",
+      "choices": [
+        "éclairer",
+        "garder l’énergie de la pile",
+        "allumer et éteindre"
+      ],
+      "answer": "allumer et éteindre",
+      "hint": "Que se passe-t-il quand on appuie dessus ?",
+      "explanation": "L’interrupteur sert à allumer et à éteindre la lampe. C’est l’ampoule qui éclaire, et la pile qui garde l’énergie.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "À quoi sert un objet",
+          "lines": [
+            "Un objet technique est fabriqué pour répondre à un besoin.",
+            "Sa fonction d’usage : à quoi il sert, dit avec un verbe.",
+            "Chaque élément de l’objet a sa fonction : ce qu’il fait.",
+            "Exemple : le capuchon du stylo protège la pointe."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-object-function-1-4",
+      "prompt": "Fiche du taille-crayon\nLa lame : elle coupe le bois du crayon.\nLe trou : il guide le crayon.\nLe réservoir : il garde les copeaux.",
+      "question": "Quel élément garde les copeaux ?",
+      "spoken": "Fiche du taille-crayon. La lame, elle coupe le bois du crayon. Le trou, il guide le crayon. Le réservoir, il garde les copeaux.",
+      "choices": [
+        "la lame",
+        "le trou",
+        "le réservoir"
+      ],
+      "answer": "le réservoir",
+      "hint": "Cherche la ligne où il est écrit « copeaux ».",
+      "explanation": "Le réservoir garde les copeaux. Chaque élément a sa fonction : la lame coupe, le trou guide.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "À quoi sert un objet",
+          "lines": [
+            "Un objet technique est fabriqué pour répondre à un besoin.",
+            "Sa fonction d’usage : à quoi il sert, dit avec un verbe.",
+            "Chaque élément de l’objet a sa fonction : ce qu’il fait.",
+            "Exemple : le capuchon du stylo protège la pointe."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-object-function-1-5",
+      "prompt": "Un caillou ramassé dans la rivière n’a pas été fabriqué : c’est un objet …",
+      "spoken": "Un caillou ramassé dans la rivière n’a pas été fabriqué : c’est un objet  (mot manquant) ",
+      "choices": [
+        "technique",
+        "naturel",
+        "électrique"
+      ],
+      "answer": "naturel",
+      "hint": "Qui l’a fait : l’humain, ou la nature ?",
+      "explanation": "Le caillou n’a pas été fabriqué par l’humain : c’est un objet naturel.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "À quoi sert un objet",
+          "lines": [
+            "Un objet technique est fabriqué pour répondre à un besoin.",
+            "Sa fonction d’usage : à quoi il sert, dit avec un verbe.",
+            "Chaque élément de l’objet a sa fonction : ce qu’il fait.",
+            "Exemple : le capuchon du stylo protège la pointe."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-object-function-1-6",
+      "prompt": "Le besoin de Tom\nPendant la balade d’hiver, Tom veut garder sa boisson chaude.",
+      "question": "Quel objet répond à son besoin ?",
+      "spoken": "Le besoin de Tom. Pendant la balade d’hiver, Tom veut garder sa boisson chaude.",
+      "choices": [
+        "une bouteille en verre",
+        "une gourde isotherme",
+        "un gobelet en carton"
+      ],
+      "answer": "une gourde isotherme",
+      "hint": "« Isotherme » veut dire : qui garde la même température.",
+      "explanation": "La gourde isotherme garde le chaud : elle répond au besoin de Tom. Une bouteille en verre ou un gobelet laissent la boisson refroidir.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "À quoi sert un objet",
+          "lines": [
+            "Un objet technique est fabriqué pour répondre à un besoin.",
+            "Sa fonction d’usage : à quoi il sert, dit avec un verbe.",
+            "Chaque élément de l’objet a sa fonction : ce qu’il fait.",
+            "Exemple : le capuchon du stylo protège la pointe."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-object-function-1-7",
+      "prompt": "La sonnette du vélo sert à …",
+      "spoken": "La sonnette du vélo sert à  (mot manquant) ",
+      "choices": [
+        "prévenir les piétons",
+        "freiner",
+        "éclairer la route la nuit"
+      ],
+      "answer": "prévenir les piétons",
+      "hint": "On l’entend : à qui parle-t-elle ?",
+      "explanation": "La sonnette sert à prévenir les piétons qu’un vélo arrive. Le frein sert à ralentir, la lampe à éclairer.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "À quoi sert un objet",
+          "lines": [
+            "Un objet technique est fabriqué pour répondre à un besoin.",
+            "Sa fonction d’usage : à quoi il sert, dit avec un verbe.",
+            "Chaque élément de l’objet a sa fonction : ce qu’il fait.",
+            "Exemple : le capuchon du stylo protège la pointe."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "technology-6e-objects",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -4,7 +4,7 @@ import { ICONS } from '../components/Icon';
 import { byId } from '../curriculum';
 import { BIOME_IDS, BIOMES, BLOCKS, missionsJouables } from './biomes';
 
-const MATIERES = ['french', 'maths', 'english', 'history-geography', 'lv2'];
+const MATIERES = ['french', 'maths', 'english', 'history-geography', 'life-earth-sciences', 'physics-chemistry', 'technology', 'lv2'];
 const CLASSES = ['6e', '5e', '4e', '3e'];
 const CHAMPS_ILE = ['id', 'name', 'module', 'subject', 'classe', 'description', 'block', 'guardian', 'icon', 'creature', 'exercises'];
 

@@ -33,8 +33,14 @@ import { VEHICLE_NAME, beatenGuardians, stageAt, stageTo } from './vehicle';
 
 type Matiere = BiomeDef['subject'];
 
-/** L'ordre des matières à égalité : celui de docs/contenu/archipel.md (français, maths, anglais, histoire-géographie, puis la LV2). */
-const ORDRE_DES_MATIERES: Matiere[] = ['french', 'maths', 'english', 'history-geography', 'lv2'];
+/**
+ * L'ordre des matières à égalité : celui de docs/contenu/archipel.md (français, maths, anglais, histoire-géographie, SVT,
+ * physique-chimie, technologie, puis la LV2).
+ */
+const ORDRE_DES_MATIERES: Matiere[] = ['french', 'maths', 'english', 'history-geography', 'life-earth-sciences', 'physics-chemistry', 'technology', 'lv2'];
+
+/** Les matières dont on mesure la part jouée (toutes sauf la LV2, à part : on peut ne pas l'avoir). */
+const MATIERES_COMPTEES = ['french', 'maths', 'english', 'history-geography', 'life-earth-sciences', 'physics-chemistry', 'technology'] as const;
 
 /**
  * Combien chaque matière est jouée dans une classe (GD-7, mesure choisie par le mainteneur le 3 octobre 2026) : les
@@ -44,7 +50,7 @@ const ORDRE_DES_MATIERES: Matiere[] = ['french', 'maths', 'english', 'history-ge
  * étoiles) : une matière moins réussie n'est pas montrée du doigt.
  */
 export function partJouee(progress: Record<string, { attempts: number }>, classe: ArchipelagoId): Record<Exclude<Matiere, 'lv2'>, number> {
-  const part = { french: 0, maths: 0, english: 0, 'history-geography': 0 };
+  const part = { french: 0, maths: 0, english: 0, 'history-geography': 0, 'life-earth-sciences': 0, 'physics-chemistry': 0, technology: 0 };
   // Un seul passage sur la progression (une sauvegarde pleine compte des centaines d'exercices) : chaque île de la
   // classe ne relit que les siens (`missionsTerminees` départage ensuite les lieux dont le nom en prolonge un autre).
   const iles = BIOMES.filter((b) => b.classe === classe && b.subject !== 'lv2');
@@ -58,7 +64,7 @@ export function partJouee(progress: Record<string, { attempts: number }>, classe
       if (siens && ex.startsWith(`${b.id}-`)) siens[ex] = p;
     }
   }
-  for (const matiere of ['french', 'maths', 'english', 'history-geography'] as const) {
+  for (const matiere of MATIERES_COMPTEES) {
     const deLaMatiere = iles.filter((b) => b.subject === matiere);
     if (deLaMatiere.length) part[matiere] = deLaMatiere.reduce((n, b) => n + missionsTerminees(parIle.get(b.id) ?? {}, b.id), 0) / deLaMatiere.length;
   }
@@ -131,9 +137,12 @@ export function ouvragesParSuggestion(state: GameState, ouvrages: BridgeDef[], d
     .map(({ b }) => b);
 }
 
-/** « de français », « de maths », « d'anglais », « d'histoire-géo », « d'espagnol » : la matière d'une île, dans « une île de… ». */
+/**
+ * « de français », « de maths », « d'anglais », « d'histoire-géo », « de SVT », « de physique-chimie », « de technologie »,
+ * « d'espagnol » : la matière d'une île, dans « une île de… ».
+ */
 function deLaMatiere(matiere: Matiere, lv2: Lv2Choice): string {
-  const mot = { french: 'français', maths: 'maths', english: 'anglais', 'history-geography': 'histoire-géo', lv2: LV2_LABELS[lv2].toLowerCase() }[matiere];
+  const mot = { french: 'français', maths: 'maths', english: 'anglais', 'history-geography': 'histoire-géo', 'life-earth-sciences': 'SVT', 'physics-chemistry': 'physique-chimie', technology: 'technologie', lv2: LV2_LABELS[lv2].toLowerCase() }[matiere];
   return /^[aeiouyh]/.test(mot) ? `d’${mot}` : `de ${mot}`;
 }
 

@@ -4,7 +4,7 @@ import { APPEL_DU_PASSAGE, bornesCost, linkCubes, worstCaseOfRegion, commandesCo
 import { ARCHIPELAGO_IDS, type ArchipelagoId, mapOf } from './map';
 import { chooseGuardian, chooseIsland } from './arrangeMode';
 import { arrangeView, arrangeViewCost } from './arrangeView';
-import { BUDGET_DES_POIGNEES, coutDesBouts, coutDesPoignees, linkEndHandles } from './arrangeHandles';
+import { BUDGET_DES_BOUTS, BUDGET_DES_POIGNEES, coutDesBouts, coutDesPoignees, linkEndHandles } from './arrangeHandles';
 import { buildMesh } from './mesher';
 import { worldCubes } from './terrain';
 import { SHORT_LENGTH, LONG_LENGTH } from './routing';
@@ -26,7 +26,7 @@ it('le monde en blocs ne recule pas : triangles et appels de dessin de chaque ar
     expect(drawCalls, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.drawCalls);
   }
   expect(RENDER_BUDGET).toEqual({ triangles: 60_000, drawCalls: 40 });
-  expect(RENDER_BUDGET_6E).toEqual({ triangles: 63_400, drawCalls: 40 });
+  expect(RENDER_BUDGET_6E).toEqual({ triangles: 72_800, drawCalls: 40 });
 });
 
 it('les petites constructions des commandes (GD-7, PR 3) se fondent dans le terrain : aucun appel de plus, sous le plafond', () => {
@@ -62,7 +62,8 @@ it('le rendu Archipéo : le sol en facettes tient en deux appels de dessin et la
     // trois avec ses fumées, qui bougent (R4b-6e).
     expect(decor.drawCalls, a).toBeLessThanOrEqual(3);
     expect(decor.triangles, a).toBeLessThanOrEqual(15_000);
-    expect(sol.triangles, a).toBeLessThanOrEqual(RENDER_BUDGET.triangles / 2);
+    // Aux Premiers Rivages, la moitié de leur budget relevé (SC-2 : 32 724 mesurés, mainteneur, 6 octobre 2026).
+    expect(sol.triangles, a).toBeLessThanOrEqual((a === '6e' ? RENDER_BUDGET_6E : RENDER_BUDGET).triangles / 2);
     // Et les modèles de la scène (sans la mer ni la faune, que le monde en blocs ne compte pas) ne dessinent pas plus
     // que le monde en blocs.
     const blocs = sceneCost(a);
@@ -79,7 +80,8 @@ it('le rendu Archipéo : la mer en un appel de dessin, la faune et le ciel en tr
     const faune = fauneCost(a);
     expect(mer, a).toEqual(sceneCostArchipeo(a).mer);
     expect(mer.drawCalls, a).toBe(1);
-    // 6 200 aux Premiers Rivages depuis que la mer couvre tout le cadre de la région (GD-9).
+    // 6 200 aux Premiers Rivages depuis que la mer couvre tout le cadre de la région (GD-9) ; les îles de sciences (SC-2)
+    // tiennent dans le même cadre.
     expect(mer.triangles, a).toBeLessThanOrEqual(6300);
     // Baleines, oiseaux, nuages : une instanciation par famille (pas de baleine aux Îles du Ciel).
     expect(faune.drawCalls, a).toBeLessThanOrEqual(3);
@@ -105,11 +107,12 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
 
   // Ailleurs, 52 300 jusqu'au cœur agrandi de l'Atelier (01/10/2026) : son sol en demande 660 de plus (world/budget.ts),
   // enveloppe validée par le mainteneur le 01/10/2026 ; 53 040 avec la Halle aux matériaux (GD-2, validé par le mainteneur le 01/10/2026, world/budget.ts), 53 060 avec la salle des trophées (GD-3, même jour).
-  // HG-2 (mainteneur, 6 octobre 2026) : les Premiers Rivages passent de 59 500 à 63 370 avec les deux îles d'histoire-géographie.
-  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2 : les îles d’histoire-géographie) : 63 370 triangles et 25 appels aux Premiers Rivages, 55 790 et 24 ailleurs', () => {
+  // HG-2 (mainteneur, 6 octobre 2026) : les Premiers Rivages passent de 59 500 à 63 370 avec les deux îles d'histoire-géographie,
+  // puis à 72 770 avec les trois îles de sciences (SC-2, même mot : « Budget on augmente pour l'instant »).
+  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2 et SC-2 : les îles d’histoire-géographie et de sciences) : 72 770 triangles et 25 appels aux Premiers Rivages, 55 790 et 24 ailleurs', () => {
     const total = (a: '6e' | '5e') => postes.reduce((n, p) => n + enveloppeDe(p, a).triangles, 0);
     const appels = (a: '6e' | '5e') => postes.reduce((n, p) => n + enveloppeDe(p, a).drawCalls, 0);
-    expect([total('6e'), appels('6e')]).toEqual([63_370, 25]);
+    expect([total('6e'), appels('6e')]).toEqual([72_770, 25]);
     expect([total('5e'), appels('5e')]).toEqual([55_790, 24]);
   });
 
@@ -198,8 +201,8 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
     });
 });
 
-it('GD-9 puis HG-2 : le plafond du monde en blocs passe à 88 000 triangles, puis à 100 000 triangles et 256 appels (mainteneur, 6 octobre 2026)', () => {
-  expect(PLAFOND_DU_MONDE_EN_BLOCS).toEqual({ triangles: 100_000, drawCalls: 256 });
+it('GD-9, HG-2 puis SC-2 : le plafond du monde en blocs passe à 88 000 triangles, puis à 100 000 triangles et 256 appels, puis 180 appels après le lot qui fond les couleurs (SC-2, #372 ; mainteneur, 6 octobre 2026)', () => {
+  expect(PLAFOND_DU_MONDE_EN_BLOCS).toEqual({ triangles: 100_000, drawCalls: 180 });
 });
 
 it('GD-9 : au pire (autant de liaisons qu’un graphe planaire en a, au plus long, et toutes les réunions), chaque région tient sous le plafond', () => {
@@ -210,7 +213,8 @@ it('GD-9 : au pire (autant de liaisons qu’un graphe planaire en a, au plus lon
     // Le pire cas compte plus que le monde d'aujourd'hui.
     expect(pire.triangles, a).toBeGreaterThan(sceneCost(a, true).triangles);
   }
-});
+  // Le pire cas du 6e compte 105 liaisons possibles depuis les sciences (SC-2) : plus de 3 s seul, plus de 5 s avec la suite.
+}, 20_000);
 
 // Ces deux tests construisent le dessin de chaque choix possible de chaque région (plusieurs secondes sur la CI) : un délai
 // à leur mesure plutôt que les 5 s par défaut.
@@ -239,6 +243,7 @@ it('GD-9 : au pire de chaque région, le dessin d’un choix du mode « Aménage
 it('GD-9 : les poignées du mode « Modifier le plan » (les flèches et « Tourner ») : un appel, 400 triangles au plus, seulement pendant un choix', () => {
   const { world } = toutConstruit();
   expect(BUDGET_DES_POIGNEES).toEqual({ triangles: 400, drawCalls: 1 });
+  expect(BUDGET_DES_BOUTS).toEqual({ triangles: 480, drawCalls: 1 });
   for (const a of ARCHIPELAGO_IDS)
     for (const id of mapOf(a).map((d) => d.id))
       for (const c of [chooseIsland(world, id), chooseGuardian(world, id)].filter((c) => c !== null)) {
@@ -255,15 +260,15 @@ it('GD-9 : les poignées du mode « Modifier le plan » (les flèches et « Tour
   expect(arrangeViewCost(null)).toEqual({ triangles: 0, drawCalls: 0 });
 }, 20_000);
 
-it('GD-9, choix 1a : les poignées des bouts de liaison, sans choix, un appel et 400 triangles au plus, même au pire (autant de liaisons qu’un graphe planaire en a)', () => {
+it('GD-9, choix 1a : les poignées des bouts de liaison, sans choix, un appel et 480 triangles au plus, même au pire (autant de liaisons qu’un graphe planaire en a)', () => {
   const { world } = toutConstruit();
   for (const a of ARCHIPELAGO_IDS) {
     const c = coutDesBouts(linkEndHandles(world, a).length);
-    expect(c.triangles, a).toBeLessThanOrEqual(BUDGET_DES_POIGNEES.triangles);
+    expect(c.triangles, a).toBeLessThanOrEqual(BUDGET_DES_BOUTS.triangles);
     expect(c.drawCalls, a).toBe(1);
     // Au pire : 3 n − 6 liaisons entre n lieux, deux bouts chacune.
     const n = mapOf(a).length;
-    expect(coutDesBouts(2 * (3 * n - 6)).triangles, a).toBeLessThanOrEqual(BUDGET_DES_POIGNEES.triangles);
+    expect(coutDesBouts(2 * (3 * n - 6)).triangles, a).toBeLessThanOrEqual(BUDGET_DES_BOUTS.triangles);
   }
 });
 

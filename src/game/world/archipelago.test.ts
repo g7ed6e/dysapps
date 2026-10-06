@@ -40,12 +40,12 @@ it('chaque île a une place ; les ouvrages ouvrent son archipel, les voyages ouv
     expect(MAP.find((i) => i.id === b.to)).toBeDefined();
   }
   // Toutes les liaisons posées sans voyage : seules les Premiers Rivages ; avec les voyages : tout.
-  expect(reachableIslands(BRIDGES.map((b) => b.id)).size).toBe(12);
+  expect(reachableIslands(BRIDGES.map((b) => b.id)).size).toBe(15);
   expect(reachableIslands([...BRIDGES, ...VOYAGES].map((b) => b.id)).size).toBe(BIOMES.length);
-  // GD-9 : une liaison possible entre chaque paire de lieux d'une même région (66 en 6e, 21 dans les trois autres).
-  expect(BRIDGES).toHaveLength(66 + 3 * 21);
+  // GD-9 : une liaison possible entre chaque paire de lieux d'une même région (105 en 6e, 21 dans les trois autres).
+  expect(BRIDGES).toHaveLength(105 + 3 * 21);
   expect(VOYAGES.map((v) => v.id)).toEqual(['passage-5e', 'passage-4e', 'passage-3e']);
-  expect(BIOMES.length).toBe(33);
+  expect(BIOMES.length).toBe(36);
   // Le Relais des voyageurs (LV2) reste en bout de chemin : la liaison la plus proche vient du Comptoir.
   expect(remainingPath('lv2-5e-introductions', ['passage-5e', 'maths-5e-proportionality-english-5e-vocabulary']).map((b) => b.id)).toEqual(['english-5e-vocabulary-lv2-5e-introductions']);
   expect(isBiomeUnlocked('lv2-5e-introductions', ['passage-5e', 'maths-5e-proportionality-english-5e-vocabulary', 'english-5e-vocabulary-lv2-5e-introductions'])).toBe(true);
@@ -99,6 +99,7 @@ it('la Forêt et la Plaine sont ouvertes au début (pont déjà là) ; de l’un
     'french-6e-phonology-history-6e-antiquity',
     'maths-6e-calculation-maths-6e-decimals',
     'maths-6e-calculation-maths-6e-fractions',
+    'maths-6e-calculation-technology-6e-objects',
   ]);
   expect(isBiomeUnlocked('maths-6e-decimals', ['french-6e-phonology-french-6e-grammar-spelling', 'french-6e-grammar-spelling-maths-6e-decimals'])).toBe(true);
   // La Rivière s'atteint par la Plaine ou par la Mine.
@@ -151,6 +152,7 @@ it('un voyage ouvre le port de l’archipel suivant, et rien de plus ; il faut l
     'maths-5e-signed-numbers-maths-5e-proportionality',
     'maths-6e-calculation-maths-6e-decimals',
     'maths-6e-calculation-maths-6e-fractions',
+    'maths-6e-calculation-technology-6e-objects',
   ]);
 });
 

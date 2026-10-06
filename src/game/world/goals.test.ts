@@ -164,9 +164,10 @@ const ouvrage = (id: string) => getBridge(id) as BridgeDef;
 
 it('la matière la moins jouée se mesure par île : l’anglais, avec deux îles, ne gagne pas parce qu’il en a moins', () => {
   // Français : 2 missions sur 5 îles (0,4) ; maths : 3 missions sur 3 îles (1) ; anglais : 1 mission sur 2 îles (0,5) ;
-  // histoire-géographie : 2 missions sur 2 îles (1), fermées.
-  const progress = { ...joue('french-6e-phonology', 2), ...joue('maths-6e-calculation', 3), ...joue('english-6e-grammar', 1), ...joue('history-6e-antiquity', 2) };
-  expect(partJouee(progress, '6e')).toEqual({ french: 0.4, maths: 1, english: 0.5, 'history-geography': 1 });
+  // histoire-géographie : 2 missions sur 2 îles (1), fermées ; chaque science : 2 missions sur son île (2), fermée.
+  const sciences = { ...joue('life-earth-sciences-6e-living-world', 2), ...joue('physics-chemistry-6e-matter-energy', 2), ...joue('technology-6e-objects', 2) };
+  const progress = { ...joue('french-6e-phonology', 2), ...joue('maths-6e-calculation', 3), ...joue('english-6e-grammar', 1), ...joue('history-6e-antiquity', 2), ...sciences };
+  expect(partJouee(progress, '6e')).toEqual({ french: 0.4, maths: 1, english: 0.5, 'history-geography': 1, 'life-earth-sciences': 2, 'physics-chemistry': 2, technology: 2 });
   // En missions seules, l'anglais (1) serait le moins joué ; divisé par ses îles, c'est le français.
   const state = sanitizeState({ progress, stock: { [BLOC.bois]: 4 }, world: { links: ['french-6e-phonology-english-6e-grammar'] } });
   expect(ouvrageSuggere(state, '6e')).toMatchObject({
@@ -182,7 +183,7 @@ it('la matière la moins jouée se mesure par île : l’anglais, avec deux île
 it('à égalité, l’ordre des matières de l’archipel : le français, puis les maths, puis l’anglais', () => {
   // Une mission sur chaque île de la 6e : chaque matière à 1.
   const egal = Object.assign({}, ...islandsOf('6e').map((b) => joue(b.id, 1)));
-  expect(partJouee(egal, '6e')).toEqual({ french: 1, maths: 1, english: 1, 'history-geography': 1 });
+  expect(partJouee(egal, '6e')).toEqual({ french: 1, maths: 1, english: 1, 'history-geography': 1, 'life-earth-sciences': 1, 'physics-chemistry': 1, technology: 1 });
   const choix = ouvragesParSuggestion(sanitizeState({ progress: egal }), [ouvrage('french-6e-phonology-english-6e-grammar'), ouvrage('maths-6e-calculation-maths-6e-fractions'), ouvrage('french-6e-phonology-french-6e-grammar-spelling')]);
   expect(choix.map((b) => b.id)).toEqual(['french-6e-phonology-french-6e-grammar-spelling', 'maths-6e-calculation-maths-6e-fractions', 'french-6e-phonology-english-6e-grammar']);
 });
@@ -216,9 +217,10 @@ it('sans assez de blocs, la suggestion dit ce qu’il manque ; le panneau de l�
 });
 
 it('sur l’île d’où part l’ouvrage suggéré, son objectif est cet ouvrage, même si le Bloc-Navire est plus proche (une seule source)', () => {
-  // La Forêt jouée en entier, la Plaine (le port) une fois, l'anglais beaucoup : les maths sont les moins jouées, et
-  // la liaison suggérée part de la Plaine, 4 blocs (1 en stock). Le Bloc-Navire n'attend plus qu'une case : 1 bloc,
-  // plus proche que les 3 de la liaison.
+  // La Forêt jouée en entier, la Plaine (le port) une fois, l'anglais beaucoup : les maths sont les moins jouées. Les
+  // îles jouées sont reliées à la lecture de la sauvegarde ; le Hangar des inventions (SC-2), relié à la Plaine, est le
+  // plus près du Volcan : la liaison suggérée part de lui, 4 blocs (1 en stock). Le Bloc-Navire n'attend plus qu'une
+  // case : 1 bloc, plus proche que les 3 de la liaison.
   const progress = {
     ...joue('french-6e-phonology', 99),
     ...joue('maths-6e-calculation', 1),
@@ -226,17 +228,20 @@ it('sur l’île d’où part l’ouvrage suggéré, son objectif est cet ouvrag
     ...joue('english-6e-vocabulary', 99),
     ...joue('history-6e-antiquity', 99),
     ...joue('geography-6e-living', 99),
+    ...joue('life-earth-sciences-6e-living-world', 99),
+    ...joue('physics-chemistry-6e-matter-energy', 99),
+    ...joue('technology-6e-objects', 99),
   };
   const presque = planCells(coque).map((c) => c.key).slice(1);
   const state = sanitizeState({ progress, stock: { [BLOC.bois]: 1 }, world: { place: 'french-6e-phonology', links: [], parts: { [coque.id]: presque } } });
   const s = ouvrageSuggere(state, '6e')!;
-  expect(s.ile).toBe('maths-6e-calculation');
-  const goal = nextGoalInfo(state, 'maths-6e-calculation');
+  expect(s.ile).toBe('technology-6e-objects');
+  const goal = nextGoalInfo(state, s.ile);
   expect(goal).toMatchObject({ have: 1, need: 4, ouvrage: s.goal.ouvrage });
   expect(goal?.text).toMatch(/^Encore 3 blocs pour le pont vers .+\. Il ouvre une île de maths\.$/);
   // La prochaine destination dit la même phrase, mot pour mot, avec la même jauge.
   const d = nextDestinationDe(state, NOMS_ARCHIPELS, textesDe('blocland').libelles);
-  expect(d).toMatchObject({ island: 'maths-6e-calculation', text: goal!.text, have: goal!.have, need: goal!.need, ouvrage: goal!.ouvrage });
+  expect(d).toMatchObject({ island: s.ile, text: goal!.text, have: goal!.have, need: goal!.need, ouvrage: goal!.ouvrage });
   // Le Bloc-Navire prêt à partir reste premier, même sur l'île de départ de l'ouvrage suggéré.
   const hull = planCells(coque).map((c) => c.key);
   const pret = sanitizeState({

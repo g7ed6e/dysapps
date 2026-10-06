@@ -14,9 +14,9 @@ import { questProgress } from '../game/exercises';
 import { ARCHIPELAGOS, archipelagoTitle, isArchipelagoReached, isBiomeUnlocked } from '../game/world/archipelago';
 import { useTextes } from '../universes';
 
-/** « de français », « d’anglais », « d’histoire-géo » : la matière après « Les îles ». */
+/** « de français », « d’anglais », « d’histoire-géo », « de SVT » : la matière après « Les îles » (un sigle garde ses capitales). */
 function ofSubject(title: string): string {
-  const mot = title.toLowerCase();
+  const mot = title === title.toUpperCase() ? title : title.toLowerCase();
   return /^[aeiouyéh]/.test(mot) ? `d’${mot}` : `de ${mot}`;
 }
 

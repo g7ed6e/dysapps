@@ -15,7 +15,9 @@ import { rectangleDeLIlot, rectangleDeLIlotAutour } from './terrain/islets';
 /**
  * Le cadre de chaque région, en cases du monde : la Carte le montre tout entier, la mer et ses écueils y sont semés une
  * fois, et un lieu ne se pose qu'au-dedans. Son coin est sur la grille des places (au pas de `STEP`) : la place d'un lieu
- * s'écrit en pas depuis ce coin (`spotInSteps`). Ordres de grandeur décidés avec GD-9 : 192 × 144 aux Premiers Rivages,
+ * s'écrit en pas depuis ce coin (`spotInSteps`). Ordres de grandeur décidés avec GD-9 : 192 × 144 aux Premiers Rivages
+ * (les trois îles de sciences, SC-2, y tiennent : agrandi vers le fond, le cadre ne tenait plus sur la Carte de la
+ * tablette au plancher du zoom),
  * 144 × 112 aux Îles Brumeuses, 168 × 112 aux Anciens Ateliers (redessinés : ils étaient en ligne ; leur cadre tient
  * les côtes de la Gare et de l'île de la LV2, aux deux bouts), 208 × 112 aux Îles
  * du Ciel (leur arc, de l'artiste technique 3D).

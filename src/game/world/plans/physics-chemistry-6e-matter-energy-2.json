@@ -1,0 +1,9 @@
+{
+  "id": "physics-chemistry-6e-matter-energy-2",
+  "biome": "physics-chemistry-6e-matter-energy",
+  "name": "Le toit du laboratoire",
+  "reward": {
+    "xp": 50
+  },
+  "done": "Un toit et une lampe : je pourrai faire mes expériences même la nuit."
+}

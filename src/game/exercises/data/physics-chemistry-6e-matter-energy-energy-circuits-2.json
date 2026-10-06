@@ -1,0 +1,241 @@
+{
+  "id": "physics-chemistry-6e-matter-energy-energy-circuits-2",
+  "biome": "physics-chemistry-6e-matter-energy",
+  "type": "energy-circuits",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "physics-chemistry-6e-matter-energy-energy-circuits-2-0",
+      "prompt": "Le fil électrique est en cuivre, un métal : c’est un …",
+      "spoken": "Le fil électrique est en cuivre, un métal : c’est un  (mot manquant) ",
+      "choices": [
+        "isolant",
+        "conducteur",
+        "générateur"
+      ],
+      "answer": "conducteur",
+      "hint": "Relis la ligne « Conducteurs » du rappel.",
+      "explanation": "Les métaux, comme le cuivre, laissent passer le courant : ce sont des conducteurs.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le circuit électrique",
+          "lines": [
+            "Circuit fermé : une boucle sans coupure. La lampe brille.",
+            "Interrupteur ouvert : la boucle est coupée. La lampe s’éteint.",
+            "La pile est le générateur. La lampe est un récepteur.",
+            "Conducteurs : les métaux. Isolants : plastique, bois sec, verre.",
+            "Court-circuit : un fil relie seul les deux bornes de la pile. Danger !",
+            "La prise : rien dedans, et jamais avec les mains mouillées."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-energy-circuits-2-1",
+      "prompt": "L’enveloppe du fil électrique est en plastique : elle est …",
+      "spoken": "L’enveloppe du fil électrique est en plastique : elle est  (mot manquant) ",
+      "choices": [
+        "conductrice",
+        "métallique",
+        "isolante"
+      ],
+      "answer": "isolante",
+      "hint": "Le plastique laisse-t-il passer le courant ?",
+      "explanation": "Le plastique ne laisse pas passer le courant : il est isolant. Il protège la main qui touche le fil.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le circuit électrique",
+          "lines": [
+            "Circuit fermé : une boucle sans coupure. La lampe brille.",
+            "Interrupteur ouvert : la boucle est coupée. La lampe s’éteint.",
+            "La pile est le générateur. La lampe est un récepteur.",
+            "Conducteurs : les métaux. Isolants : plastique, bois sec, verre.",
+            "Court-circuit : un fil relie seul les deux bornes de la pile. Danger !",
+            "La prise : rien dedans, et jamais avec les mains mouillées."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-energy-circuits-2-2",
+      "prompt": "On place un objet dans le circuit\nCuillère en acier : la lampe brille.\nRègle en plastique : la lampe ne brille pas.\nGomme : la lampe ne brille pas.",
+      "question": "Quel objet est conducteur ?",
+      "spoken": "On place un objet dans le circuit. Cuillère en acier, la lampe brille. Règle en plastique, la lampe ne brille pas. Gomme, la lampe ne brille pas.",
+      "choices": [
+        "la règle en plastique",
+        "la cuillère en acier",
+        "la gomme"
+      ],
+      "answer": "la cuillère en acier",
+      "hint": "Avec quel objet la lampe brille-t-elle ?",
+      "explanation": "La lampe brille avec la cuillère : l’acier, un métal, laisse passer le courant. Il est conducteur. Le plastique et la gomme sont isolants.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le circuit électrique",
+          "lines": [
+            "Circuit fermé : une boucle sans coupure. La lampe brille.",
+            "Interrupteur ouvert : la boucle est coupée. La lampe s’éteint.",
+            "La pile est le générateur. La lampe est un récepteur.",
+            "Conducteurs : les métaux. Isolants : plastique, bois sec, verre.",
+            "Court-circuit : un fil relie seul les deux bornes de la pile. Danger !",
+            "La prise : rien dedans, et jamais avec les mains mouillées."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-energy-circuits-2-3",
+      "prompt": "Le schéma d’un circuit\nUne pile : un grand trait et un petit trait.\nUn rond avec une croix dedans.\nUn interrupteur fermé.\nDes fils relient le tout en boucle.",
+      "question": "Que représente le rond avec une croix ?",
+      "spoken": "Le schéma d’un circuit. Une pile, un grand trait et un petit trait. Un rond avec une croix dedans. Un interrupteur fermé. Des fils relient le tout en boucle.",
+      "choices": [
+        "la pile",
+        "la lampe",
+        "l’interrupteur"
+      ],
+      "answer": "la lampe",
+      "hint": "La pile et l’interrupteur ont déjà leur ligne.",
+      "explanation": "Sur un schéma, la lampe se dessine par un rond avec une croix. La pile, ce sont deux traits ; l’interrupteur, un trait qui ferme ou ouvre la boucle.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le circuit électrique",
+          "lines": [
+            "Circuit fermé : une boucle sans coupure. La lampe brille.",
+            "Interrupteur ouvert : la boucle est coupée. La lampe s’éteint.",
+            "La pile est le générateur. La lampe est un récepteur.",
+            "Conducteurs : les métaux. Isolants : plastique, bois sec, verre.",
+            "Court-circuit : un fil relie seul les deux bornes de la pile. Danger !",
+            "La prise : rien dedans, et jamais avec les mains mouillées."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-energy-circuits-2-4",
+      "prompt": "Le circuit de Malo\nPile, lampe, interrupteur et fils forment une boucle.\nL’interrupteur est ouvert.",
+      "question": "La lampe brille-t-elle ?",
+      "spoken": "Le circuit de Malo. Pile, lampe, interrupteur et fils forment une boucle. L’interrupteur est ouvert.",
+      "choices": [
+        "oui, la pile est branchée",
+        "non, la boucle est coupée",
+        "oui, mais faiblement"
+      ],
+      "answer": "non, la boucle est coupée",
+      "hint": "Relis la ligne « Interrupteur ouvert » du rappel.",
+      "explanation": "Ouvert veut dire coupé : le courant ne passe pas. La lampe ne brille pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le circuit électrique",
+          "lines": [
+            "Circuit fermé : une boucle sans coupure. La lampe brille.",
+            "Interrupteur ouvert : la boucle est coupée. La lampe s’éteint.",
+            "La pile est le générateur. La lampe est un récepteur.",
+            "Conducteurs : les métaux. Isolants : plastique, bois sec, verre.",
+            "Court-circuit : un fil relie seul les deux bornes de la pile. Danger !",
+            "La prise : rien dedans, et jamais avec les mains mouillées."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-energy-circuits-2-5",
+      "prompt": "Un fil relie seul les deux bornes de la pile, sans lampe : c’est un …",
+      "spoken": "Un fil relie seul les deux bornes de la pile, sans lampe : c’est un  (mot manquant) ",
+      "choices": [
+        "interrupteur",
+        "isolant",
+        "court-circuit"
+      ],
+      "answer": "court-circuit",
+      "hint": "Relis la ligne « Court-circuit » du rappel.",
+      "explanation": "Les deux bornes reliées par un seul fil, c’est un court-circuit : la pile chauffe et s’abîme. C’est dangereux.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le circuit électrique",
+          "lines": [
+            "Circuit fermé : une boucle sans coupure. La lampe brille.",
+            "Interrupteur ouvert : la boucle est coupée. La lampe s’éteint.",
+            "La pile est le générateur. La lampe est un récepteur.",
+            "Conducteurs : les métaux. Isolants : plastique, bois sec, verre.",
+            "Court-circuit : un fil relie seul les deux bornes de la pile. Danger !",
+            "La prise : rien dedans, et jamais avec les mains mouillées."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-energy-circuits-2-6",
+      "prompt": "Pour débrancher le sèche-cheveux, on doit avoir les mains …",
+      "spoken": "Pour débrancher le sèche-cheveux, on doit avoir les mains  (mot manquant) ",
+      "choices": [
+        "mouillées",
+        "sèches",
+        "savonneuses"
+      ],
+      "answer": "sèches",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "Le courant de la prise est dangereux, et l’eau le conduit jusqu’au corps : on touche une prise ou un appareil branché avec les mains sèches.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le circuit électrique",
+          "lines": [
+            "Circuit fermé : une boucle sans coupure. La lampe brille.",
+            "Interrupteur ouvert : la boucle est coupée. La lampe s’éteint.",
+            "La pile est le générateur. La lampe est un récepteur.",
+            "Conducteurs : les métaux. Isolants : plastique, bois sec, verre.",
+            "Court-circuit : un fil relie seul les deux bornes de la pile. Danger !",
+            "La prise : rien dedans, et jamais avec les mains mouillées."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-energy-circuits-2-7",
+      "prompt": "Dans le circuit, la pile donne l’énergie : c’est le …",
+      "spoken": "Dans le circuit, la pile donne l’énergie : c’est le  (mot manquant) ",
+      "choices": [
+        "générateur",
+        "récepteur",
+        "conducteur"
+      ],
+      "answer": "générateur",
+      "hint": "Relis la ligne « La pile » du rappel.",
+      "explanation": "La pile est le générateur : elle fournit l’énergie au circuit. La lampe, qui la reçoit, est un récepteur.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le circuit électrique",
+          "lines": [
+            "Circuit fermé : une boucle sans coupure. La lampe brille.",
+            "Interrupteur ouvert : la boucle est coupée. La lampe s’éteint.",
+            "La pile est le générateur. La lampe est un récepteur.",
+            "Conducteurs : les métaux. Isolants : plastique, bois sec, verre.",
+            "Court-circuit : un fil relie seul les deux bornes de la pile. Danger !",
+            "La prise : rien dedans, et jamais avec les mains mouillées."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "physics-chemistry-6e-matter-energy",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

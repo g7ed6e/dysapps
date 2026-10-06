@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, bulles, fiches, menu-tete, debut, histoire-geo ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, bulles, fiches, menu-tete, debut, histoire-geo, sciences ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 20` le plus long temps réel laissé au monde pour se construire (en secondes, 10 par défaut). L'horloge de la
 // page est pilotée (`preparerLaScene`, scripts/prise-de-vue.mjs) : deux prises du même état donnent la même image, les
@@ -596,6 +596,35 @@ const CAPTURES = [
     },
     { nom: `histoire-geo-mosaique-brique-chaume-archipel${suffixe}`, vue: 'archipel', famille: 'histoire-geo', ile: 'history-6e-antiquity', ...autres },
   ]),
+  // Les îles de sciences de 6e (lot SC-2, famille `sciences`), à retirer une fois le lot fusionné : la Vallée du vivant,
+  // le Laboratoire des éléments et le Hangar des inventions de près, de jour et de nuit, avant leur restauration
+  // (`sansIles`) et tout construit, chacune avec la fiche de son Gardien ; le défi de l'Alambic de verre à mi-parcours ;
+  // « Mes blocs » avec du Fossile, de l'Aimant et du Carton en poche ; la vue de l'archipel depuis la Vallée (le cadre
+  // agrandi vers le fond, les trois îles derrière la Mine, la Fouille et la Pointe), de jour et de nuit.
+  ...['life-earth-sciences-6e-living-world', 'physics-chemistry-6e-matter-energy', 'technology-6e-objects'].flatMap((ile) =>
+    [{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].flatMap(({ suffixe, ...autres }) => [
+      { nom: `sciences-${ile}-avant${suffixe}`, vue: 'île', famille: 'sciences', ile, sansIles: [ile], ...autres },
+      { nom: `sciences-${ile}-apres${suffixe}`, vue: 'île', famille: 'sciences', ile, ...autres },
+      { nom: `sciences-${ile}-gardien-avant${suffixe}`, vue: 'île', famille: 'sciences', ile, sansIles: [ile], fiche: { genre: 'gardien', id: ile }, ...autres },
+      { nom: `sciences-${ile}-gardien-apres${suffixe}`, vue: 'île', famille: 'sciences', ile, fiche: { genre: 'gardien', id: ile }, ...autres },
+    ]),
+  ),
+  { nom: 'sciences-defi-alambic-mi', vue: 'défi', famille: 'sciences', ile: 'physics-chemistry-6e-matter-energy', debout: 'physics-chemistry-6e-matter-energy', reussir: 3 },
+  {
+    nom: 'sciences-mes-blocs',
+    vue: 'île',
+    famille: 'sciences',
+    ile: 'life-earth-sciences-6e-living-world',
+    lieu: 'stock',
+    inventaire: { 'life-earth-sciences-6e-living-world': 6, 'physics-chemistry-6e-matter-energy': 5, 'technology-6e-objects': 4 },
+  },
+  ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].map(({ suffixe, ...autres }) => ({
+    nom: `sciences-archipel${suffixe}`,
+    vue: 'archipel',
+    famille: 'sciences',
+    ile: 'life-earth-sciences-6e-living-world',
+    ...autres,
+  })),
 ];
 /** La lueur la nuit, à la vue île : au plus 3 % de la scène. */
 const LUEUR_MAX = 0.03;

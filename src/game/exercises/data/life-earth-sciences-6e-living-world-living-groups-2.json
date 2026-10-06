@@ -1,0 +1,234 @@
+{
+  "id": "life-earth-sciences-6e-living-world-living-groups-2",
+  "biome": "life-earth-sciences-6e-living-world",
+  "type": "living-groups",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "life-earth-sciences-6e-living-world-living-groups-2-0",
+      "prompt": "L’empreinte d’une feuille, gardée dans une roche très ancienne, est un …",
+      "spoken": "L’empreinte d’une feuille, gardée dans une roche très ancienne, est un  (mot manquant) ",
+      "choices": [
+        "fossile",
+        "cristal",
+        "minéral"
+      ],
+      "answer": "fossile",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Une trace d’être vivant gardée dans la roche est un fossile. Un cristal et un minéral ne viennent pas d’un être vivant.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Fossiles et parenté",
+          "lines": [
+            "Fossile : le reste ou la trace d’un être vivant, gardé dans la roche.",
+            "Dans une falaise, les couches du bas sont les plus anciennes.",
+            "Des espèces disparaissent, d’autres apparaissent.",
+            "Plus deux espèces partagent d’attributs, plus elles sont parentes.",
+            "La forme du corps et le lieu de vie ne suffisent pas."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-living-groups-2-1",
+      "prompt": "Le mammouth ne vit plus nulle part aujourd’hui : c’est une espèce …",
+      "spoken": "Le mammouth ne vit plus nulle part aujourd’hui : c’est une espèce  (mot manquant) ",
+      "choices": [
+        "protégée",
+        "nouvelle",
+        "disparue"
+      ],
+      "answer": "disparue",
+      "hint": "Il ne reste aucun mammouth vivant.",
+      "explanation": "Une espèce dont il ne reste aucun individu vivant est une espèce disparue. On la connaît par ses fossiles.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Fossiles et parenté",
+          "lines": [
+            "Fossile : le reste ou la trace d’un être vivant, gardé dans la roche.",
+            "Dans une falaise, les couches du bas sont les plus anciennes.",
+            "Des espèces disparaissent, d’autres apparaissent.",
+            "Plus deux espèces partagent d’attributs, plus elles sont parentes.",
+            "La forme du corps et le lieu de vie ne suffisent pas."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-living-groups-2-2",
+      "prompt": "Les couches d’une falaise, de haut en bas\nEn haut : fossiles de mammifères\nAu milieu : fossiles de poissons\nEn bas : fossiles de coquillages",
+      "question": "Quels fossiles sont les plus anciens ?",
+      "spoken": "Les couches d’une falaise, de haut en bas. En haut, fossiles de mammifères. Au milieu, fossiles de poissons. En bas, fossiles de coquillages.",
+      "choices": [
+        "les mammifères",
+        "les poissons",
+        "les coquillages"
+      ],
+      "answer": "les coquillages",
+      "hint": "Quelle couche s’est déposée en premier ?",
+      "explanation": "Les couches se déposent les unes sur les autres : celle du bas est la plus ancienne. Les coquillages sont donc les plus anciens. La couche du haut n’est pas la plus ancienne.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Fossiles et parenté",
+          "lines": [
+            "Fossile : le reste ou la trace d’un être vivant, gardé dans la roche.",
+            "Dans une falaise, les couches du bas sont les plus anciennes.",
+            "Des espèces disparaissent, d’autres apparaissent.",
+            "Plus deux espèces partagent d’attributs, plus elles sont parentes.",
+            "La forme du corps et le lieu de vie ne suffisent pas."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-living-groups-2-3",
+      "prompt": "Les attributs de trois animaux\nRequin : squelette interne, nageoires\nDauphin : squelette interne, nageoires, poils, mamelles\nVache : squelette interne, poils, mamelles",
+      "question": "Qui est le plus proche parent du dauphin ?",
+      "spoken": "Les attributs de trois animaux. Requin, squelette interne, nageoires. Dauphin, squelette interne, nageoires, poils, mamelles. Vache, squelette interne, poils, mamelles.",
+      "choices": [
+        "le requin",
+        "la vache",
+        "aucun des deux"
+      ],
+      "answer": "la vache",
+      "hint": "Qui a, comme le dauphin, des poils et des mamelles ?",
+      "explanation": "Le dauphin a des poils et des mamelles, comme la vache : ce sont deux mammifères. Le requin lui ressemble et vit dans la mer, mais ce n’est pas un mammifère.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Fossiles et parenté",
+          "lines": [
+            "Fossile : le reste ou la trace d’un être vivant, gardé dans la roche.",
+            "Dans une falaise, les couches du bas sont les plus anciennes.",
+            "Des espèces disparaissent, d’autres apparaissent.",
+            "Plus deux espèces partagent d’attributs, plus elles sont parentes.",
+            "La forme du corps et le lieu de vie ne suffisent pas."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-living-groups-2-4",
+      "prompt": "Des espèces apparaissent, d’autres disparaissent : au cours du temps, la biodiversité …",
+      "spoken": "Des espèces apparaissent, d’autres disparaissent : au cours du temps, la biodiversité  (mot manquant) ",
+      "choices": [
+        "change",
+        "reste la même",
+        "s’arrête"
+      ],
+      "answer": "change",
+      "hint": "Relis la ligne « Des espèces » du rappel.",
+      "explanation": "La biodiversité change au cours du temps : des espèces apparaissent et d’autres disparaissent. Les fossiles le montrent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Fossiles et parenté",
+          "lines": [
+            "Fossile : le reste ou la trace d’un être vivant, gardé dans la roche.",
+            "Dans une falaise, les couches du bas sont les plus anciennes.",
+            "Des espèces disparaissent, d’autres apparaissent.",
+            "Plus deux espèces partagent d’attributs, plus elles sont parentes.",
+            "La forme du corps et le lieu de vie ne suffisent pas."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-living-groups-2-5",
+      "prompt": "La photo d’un fossile\nUn animal de la taille d’un pigeon, pris dans la roche.\nOn voit des plumes, des dents et une longue queue d’os.",
+      "question": "Quel attribut le rapproche des oiseaux ?",
+      "spoken": "La photo d’un fossile. Un animal de la taille d’un pigeon, pris dans la roche. On voit des plumes, des dents et une longue queue d’os.",
+      "choices": [
+        "les dents",
+        "la longue queue",
+        "les plumes"
+      ],
+      "answer": "les plumes",
+      "hint": "Quel attribut a-t-on pour classer les oiseaux ?",
+      "explanation": "Les plumes sont l’attribut des oiseaux. Les oiseaux d’aujourd’hui n’ont ni dents ni longue queue d’os : cet animal disparu est un parent ancien des oiseaux.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Fossiles et parenté",
+          "lines": [
+            "Fossile : le reste ou la trace d’un être vivant, gardé dans la roche.",
+            "Dans une falaise, les couches du bas sont les plus anciennes.",
+            "Des espèces disparaissent, d’autres apparaissent.",
+            "Plus deux espèces partagent d’attributs, plus elles sont parentes.",
+            "La forme du corps et le lieu de vie ne suffisent pas."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-living-groups-2-6",
+      "prompt": "La diversité de tous les êtres vivants s’appelle la …",
+      "spoken": "La diversité de tous les êtres vivants s’appelle la  (mot manquant) ",
+      "choices": [
+        "biodiversité",
+        "géographie",
+        "météo"
+      ],
+      "answer": "biodiversité",
+      "hint": "Le mot commence par « bio », qui veut dire la vie.",
+      "explanation": "La biodiversité, c’est la diversité du vivant : toutes les espèces, et leurs différences.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Fossiles et parenté",
+          "lines": [
+            "Fossile : le reste ou la trace d’un être vivant, gardé dans la roche.",
+            "Dans une falaise, les couches du bas sont les plus anciennes.",
+            "Des espèces disparaissent, d’autres apparaissent.",
+            "Plus deux espèces partagent d’attributs, plus elles sont parentes.",
+            "La forme du corps et le lieu de vie ne suffisent pas."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-living-groups-2-7",
+      "prompt": "Les attributs de trois animaux\nChauve-souris : ailes, poils, mamelles\nMoineau : ailes, plumes\nChat : poils, mamelles",
+      "question": "Qui est le plus proche parent de la chauve-souris ?",
+      "spoken": "Les attributs de trois animaux. Chauve-souris, ailes, poils, mamelles. Moineau, ailes, plumes. Chat, poils, mamelles.",
+      "choices": [
+        "le moineau",
+        "le chat",
+        "les deux autant"
+      ],
+      "answer": "le chat",
+      "hint": "Qui a, comme la chauve-souris, des poils et des mamelles ?",
+      "explanation": "La chauve-souris a des poils et des mamelles, comme le chat : ce sont deux mammifères. Les ailes ne suffisent pas à la rapprocher du moineau.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Fossiles et parenté",
+          "lines": [
+            "Fossile : le reste ou la trace d’un être vivant, gardé dans la roche.",
+            "Dans une falaise, les couches du bas sont les plus anciennes.",
+            "Des espèces disparaissent, d’autres apparaissent.",
+            "Plus deux espèces partagent d’attributs, plus elles sont parentes.",
+            "La forme du corps et le lieu de vie ne suffisent pas."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien classé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "life-earth-sciences-6e-living-world",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}
