@@ -469,7 +469,8 @@ function musee(b: BlockId): Stages {
 /**
  * Le quartier (le quartier de Boussole, géographie 6e) : trois plans, trois paysages qu'on lit l'un après l'autre (DA,
  * HG-2). Le quartier : une ville serrée, deux maisons de chaume mur contre mur au fond à gauche, l'une de trois blocs,
- * l'autre de deux. Les champs du quartier : les toits à deux pans de tuiles, les portes et les fenêtres des maisons, et à droite deux
+ * l'autre de deux. Les champs du quartier : les toits à deux pans (de tuiles sur la maison haute, de chaume sur la basse),
+ * les portes et les fenêtres des maisons, et à droite deux
  * rangs de bottes de chaume, une de plus sur le rang du fond ; les maisons s'espacent. Le quai du quartier : devant, un rang de
  * planches, une bitte d'amarrage, deux barrières, une lanterne, et la marche devant la porte. Ni amer ni phare.
  */
@@ -477,8 +478,8 @@ function quartier(b: BlockId): Stages {
   const y0 = 2;
   const d = 3;
   const maisons = [
-    { x0: 0, h: 3, porte: [0, y0, 0], fenetre: [1, y0, 1] },
-    { x0: 2, h: 2, porte: [3, y0, 0], fenetre: [2, y0, 1] },
+    { x0: 0, h: 3, porte: [0, y0, 0], fenetre: [1, y0, 1], toit: BLOC.toit },
+    { x0: 2, h: 2, porte: [3, y0, 0], fenetre: [2, y0, 1], toit: b },
   ] as const;
   const murs: ArchCell[] = [];
   const champs: ArchCell[] = [];
@@ -486,9 +487,10 @@ function quartier(b: BlockId): Stages {
     for (let z = 0; z < m.h; z++) for (let x = m.x0; x < m.x0 + 2; x++) for (let y = y0; y < y0 + d; y++) murs.push({ x, y, z, block: b });
     champs.push({ x: m.porte[0], y: m.porte[1], z: m.porte[2], block: BLOC.porte }, { x: m.fenetre[0], y: m.fenetre[1], z: m.fenetre[2], block: BLOC.lanterne });
     // Le toit à deux pans de chaque maison : devant et derrière au niveau de son haut, le faîte au milieu, un cran plus
-    // haut, sur ses pignons de chaume.
+    // haut, sur ses pignons de chaume. La maison haute en tuiles (la terre cuite de la Pointe, `roofs.ts`), la maison
+    // basse en chaume (DA, HG-2) : le bloc des murs, déjà dans la scène, sans matériau ni appel de dessin de plus.
     for (let x = m.x0; x < m.x0 + 2; x++)
-      champs.push({ x, y: y0, z: m.h, block: BLOC.toit }, { x, y: y0 + d - 1, z: m.h, block: BLOC.toit }, { x, y: y0 + 1, z: m.h, block: b }, { x, y: y0 + 1, z: m.h + 1, block: BLOC.toit });
+      champs.push({ x, y: y0, z: m.h, block: m.toit }, { x, y: y0 + d - 1, z: m.h, block: m.toit }, { x, y: y0 + 1, z: m.h, block: b }, { x, y: y0 + 1, z: m.h + 1, block: m.toit });
   }
   const ville = without(
     murs,

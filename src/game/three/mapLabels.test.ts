@@ -15,14 +15,20 @@ import * as THREE from 'three';
 import type { BiomeId } from '../biomes';
 import { getArchipelago, islandsOf } from '../world/archipelago';
 import { ARCHIPELAGO_IDS, type ArchipelagoId } from '../world/archipelagos';
-import { placerAvecLaFlecheDOuvrage, placerEtiquettes, separateMark, type LabelBox } from '../world/labelLayout';
-import { avatarHome, islandCenter } from '../world/terrain';
-import { BRIDGES, linkWholeRegion, VOYAGES } from '../world/archipelago';
+import { boitesDuTrace, placerAvecLaFlecheDOuvrage, placerEtiquettes, replierLesSignes, separateMark, type LabelBox } from '../world/labelLayout';
+import { avatarHome, casesDeLOuvrage, islandCenter } from '../world/terrain';
+import { BRIDGES, getBridge, linkWholeRegion, NOMS_ARCHIPELS, VOYAGES } from '../world/archipelago';
 import { archipelagoOfIsland } from '../world/archipelagos';
 import { dispositionEnGrille } from '../world/grid';
 import { placeLibre } from '../freeSpace';
 import { cadrageDeLaCarte } from './camera';
 import { largeurEnGras, type PoliceDeTest } from './testFonts';
+import { caseALEcran } from './signs';
+import { MEDAILLON_CSS } from './labels';
+import { sanitizeState } from '../engine';
+import { textesDe } from '../../universes';
+import { nextDestination } from '../world/destination';
+import { toutConstruit } from '../world/budget';
 
 /** La tablette de référence, et ce que l'interface y pose sur la Carte (relevé sur les captures, village complet). */
 const TABLETTE = { w: 1024, h: 768 };
@@ -33,6 +39,15 @@ const BOUTONS: LabelBox[] = [
   { x: 966, y: 98, w: 66, h: 46 },
 ];
 const ZONES = [PANNEAU, BARRE, ...BOUTONS];
+/**
+ * La Carte à l'ouverture, telle que la montrent les captures depuis que le panneau de l'île ne s'ouvre plus tout seul :
+ * pas de panneau, la barre du bas, Pause et la colonne des quatre classes (relevé sur les captures du lot HG-2).
+ */
+const CLASSES: LabelBox[] = [154, 211, 267].map((y) => ({ x: 980, y, w: 50, h: 46 }));
+const ZONES_PAR_DEFAUT = [BARRE, ...BOUTONS, ...CLASSES];
+
+/** La largeur du bloc de l'île et de son écart avant le nom (`labelCanvas.ts`, `blocW`), le nom à 18 px. */
+const BLOC_W = (Math.sqrt(3) * 0.52 + 0.3) * 18;
 
 /** L'étiquette d'une île sur la Carte, en pixels CSS : le nom à 18 px, l'état à 16 px (voir `labelCanvas.ts`, `labels.ts`). */
 function etiquette(nom: string, etat: string, largeur: (t: string) => number, elargir: number): { w: number; h: number } {
@@ -52,13 +67,20 @@ function etiquette(nom: string, etat: string, largeur: (t: string) => number, el
 // Les liaisons posées d'une partie : depuis GD-9, une liaison qui ne tient pas n'a ni tracé ni flèche.
 const POSEES = [...new Set([...ARCHIPELAGO_IDS.flatMap((a) => linkWholeRegion(a, VOYAGES.map((v) => v.id))), ...VOYAGES.map((v) => v.id)])];
 
-function laCarte(a: ArchipelagoId, etat: string, police: PoliceDeTest, elargir: number, destination: BiomeId | { ouvrage: string; depuis?: BiomeId } = getArchipelago(a).port) {
+/**
+ * `parDefaut` : la Carte à l'ouverture, au plus près de la scène (`labels.ts`) : sans panneau (`ZONES_PAR_DEFAUT`), la
+ * bulle de la destination à sa taille (`caseALEcran`), le médaillon « toi », les étiquettes avec le bloc de leur île
+ * (repliées sans lui si un nom se tait, `replierLesSignes`), et sur un ouvrage le tracé suggéré et le poids de l'île
+ * d'arrivée.
+ */
+function laCarte(a: ArchipelagoId, etat: string, police: PoliceDeTest, elargir: number, destination: BiomeId | { ouvrage: string; depuis?: BiomeId } = getArchipelago(a).port, parDefaut = false) {
+  const zones = parDefaut ? ZONES_PAR_DEFAUT : ZONES;
   const { w: W, h: H } = TABLETTE;
   // Une île : la pointe au-dessus de son cœur ; un ouvrage (GD-7) : juste au-dessus de ses places sur la liaison, la
   // première pour le cadrage (`markers.ts`).
   const places = typeof destination === 'string' ? [] : dispositionEnGrille(a, POSEES).placesDeLaFleche(destination.ouvrage, destination.depuis).map((m) => ({ x: m.x + 0.5, y: m.y + 0.5, z: m.z + 2 }));
   const ici = places[0] ?? null;
-  const c = cadrageDeLaCarte(a, ici ?? (destination as BiomeId), W, H, placeLibre(W, H, [PANNEAU, BARRE], BOUTONS));
+  const c = cadrageDeLaCarte(a, ici ?? (destination as BiomeId), W, H, placeLibre(W, H, parDefaut ? [BARRE] : [PANNEAU, BARRE], parDefaut ? [...BOUTONS, ...CLASSES] : BOUTONS));
   const cam = new THREE.PerspectiveCamera(40, W / H, 0.5, 1e5);
   cam.position.copy(c.pos);
   cam.lookAt(c.target);
@@ -72,17 +94,20 @@ function laCarte(a: ArchipelagoId, etat: string, police: PoliceDeTest, elargir: 
   const largeur = largeurEnGras(police);
   const centres = iles.map((b) => islandCenter(b.id));
   // L'étiquette flotte à 12 cases au-dessus du sol de son île (`labels.ts`).
-  const boxes = iles.map((b, i) => ({ ...ecran(centres[i].x + 0.5, centres[i].z + 12, centres[i].y + 0.5), ...etiquette(b.name, etat, largeur, elargir) }));
+  const sansBloc = iles.map((b, i) => ({ ...ecran(centres[i].x + 0.5, centres[i].z + 12, centres[i].y + 0.5), ...etiquette(b.name, etat, largeur, elargir) }));
+  const boxes = parDefaut ? sansBloc.map((b) => ({ ...b, w: b.w + BLOC_W * elargir })) : sansBloc;
   const points = centres.map((p) => ecran(p.x + 0.5, p.z, p.y + 0.5));
   // Le fanion du bonhomme et la flèche de la destination (`marksOnScreen`).
   const av = avatarHome(iles[0].id);
   const pied = ecran(av.x + 0.5, av.z + 4.5, av.y + 0.5);
   const tete = ecran(av.x + 0.5, av.z + 17, av.y + 0.5);
   const fh = Math.max(24, Math.abs(pied.y - tete.y));
-  const fanion = { x: (pied.x + tete.x) / 2, y: (pied.y + tete.y) / 2, w: Math.max(24, fh * 0.9), h: fh };
+  // À l'ouverture : le médaillon posé au-dessus de la tête, la bulle de la destination pointe en bas (`marksOnScreen`).
+  const fanion = parDefaut ? { x: pied.x, y: pied.y - MEDAILLON_CSS / 2, w: MEDAILLON_CSS, h: MEDAILLON_CSS } : { x: (pied.x + tete.x) / 2, y: (pied.y + tete.y) / 2, w: Math.max(24, fh * 0.9), h: fh };
+  const bulle = caseALEcran(true);
   const flecheEn = (pointe: { x: number; y: number }) => {
     const ecart = separateMark(pointe, { x: fanion.x, y: fanion.y + fanion.h / 2 }, 56);
-    return { x: pointe.x + ecart.dx, y: pointe.y + ecart.dy - 24, w: (48 * 96) / 124, h: 48 };
+    return parDefaut ? { x: pointe.x + ecart.dx, y: pointe.y + ecart.dy - bulle / 2, w: bulle, h: bulle } : { x: pointe.x + ecart.dx, y: pointe.y + ecart.dy - 24, w: (48 * 96) / 124, h: 48 };
   };
   // Sur un ouvrage, la flèche prend la première de ses places libres, et aucune étiquette ne se pose sur elle
   // (`placerAvecLaFlecheDOuvrage`, comme `labels.ts`).
@@ -91,22 +116,41 @@ function laCarte(a: ArchipelagoId, etat: string, police: PoliceDeTest, elargir: 
   const fleches = places.map((p) => flecheEn(ecran(p.x, p.z, p.y)));
   // La destination : l'île, ou celle d'où part l'ouvrage (`labels.ts`).
   const dest = typeof destination === 'string' ? destination : destination.depuis;
-  const poids = { weights: iles.map((b) => (b.id === dest ? 2 : 1)) };
-  const vue = { zones: ZONES, bulles: [], bounds: cadre, gap: 6 };
-  const { visibles, offsets, fleche: prise } = places.length
-    ? placerAvecLaFlecheDOuvrage(fleches, boxes, points, { ...vue, obstacles: [fanion] }, poids)
-    : { fleche: 0, ...placerEtiquettes(boxes, points, { ...vue, obstacles: [flecheEn(ecran(d.x + 0.5, d.z + 8, d.y + 0.5)), fanion] }, poids) };
+  const def = typeof destination === 'string' ? undefined : getBridge(destination.ouvrage);
+  const enFace = def && (dest === def.to ? def.from : def.to);
+  const arrivee = parDefaut && enFace ? iles.findIndex((b) => b.id === enFace) : -1;
+  const indice = iles.findIndex((b) => b.id === dest);
+  const poids = { weights: iles.map((b) => (b.id === dest ? 2 : 1)), ...(parDefaut && indice >= 0 ? { destination: indice } : {}), ...(arrivee >= 0 ? { arrivee } : {}) };
+  // Le tracé de l'ouvrage, que les étiquettes évitent si elles peuvent (`souplesDuTrace`).
+  const souples = parDefaut && def ? boitesDuTrace(casesDeLOuvrage(def, POSEES).map((p) => ecran(p.x + 0.5, p.z + 1, p.y + 0.5))) : [];
+  const vue = { zones, bulles: [], bounds: cadre, gap: 6, souples };
+  const placer = (b: LabelBox[]) =>
+    places.length
+      ? placerAvecLaFlecheDOuvrage(fleches, b, points, { ...vue, obstacles: [fanion] }, poids)
+      : { fleche: 0, ...placerEtiquettes(b, points, { ...vue, obstacles: [flecheEn(ecran(d.x + 0.5, d.z + 8, d.y + 0.5)), fanion] }, poids) };
+  const { visibles, offsets, fleche: prise } = parDefaut ? replierLesSignes(boxes, sansBloc.map((b) => b.w), placer) : placer(boxes);
   const fleche = places.length ? fleches[prise] : flecheEn(ecran(d.x + 0.5, d.z + 8, d.y + 0.5));
-  const sousLInterface = (p: { x: number; y: number }) => ZONES.some((z) => Math.abs(p.x - z.x) < z.w / 2 && Math.abs(p.y - z.y) < z.h / 2);
+  const sousLInterface = (p: { x: number; y: number }) => zones.some((z) => Math.abs(p.x - z.x) < z.w / 2 && Math.abs(p.y - z.y) < z.h / 2);
   const seVoit = (p: { x: number; y: number }) => p.x >= 0 && p.x <= W && p.y >= 0 && p.y <= H && !sousLInterface(p);
   const recouvre = (p: LabelBox, q: LabelBox) => Math.abs(p.x - q.x) < (p.w + q.w) / 2 && Math.abs(p.y - q.y) < (p.h + q.h) / 2;
   return {
     /** Sur un ouvrage, l'indice de la place prise par la flèche. */
     prise,
+    /** Les îles qui se voient et montrent leur nom. */
+    vues: iles.filter((_, i) => visibles[i] && seVoit(points[i])).map((b) => b.id),
     tus: iles.filter((_, i) => !visibles[i] && seVoit(points[i])).map((b) => b.id),
     /** Les étiquettes montrées posées sur la flèche. */
     surLaFleche: iles.filter((_, i) => visibles[i] && recouvre({ ...boxes[i], x: boxes[i].x + offsets[i].dx, y: boxes[i].y + offsets[i].dy }, fleche)).map((b) => b.id),
     dessus: new Map(iles.map((b, i) => [b.id, points[i].y - (boxes[i].y + offsets[i].dy)])),
+    /** Les îles dont le nom, montré, est plus près d'une autre île que de la sienne, vu de son milieu. */
+    ailleurs: iles
+      .filter((_, i) => {
+        if (!visibles[i]) return false;
+        const at = { x: boxes[i].x + offsets[i].dx, y: boxes[i].y + offsets[i].dy, w: boxes[i].w / 2, h: boxes[i].h };
+        const loin = (p: { x: number; y: number }) => Math.hypot(Math.max(0, Math.abs(p.x - at.x) - at.w / 2), Math.max(0, Math.abs(p.y - at.y) - at.h / 2));
+        return points.some((p, j) => j !== i && loin(p) < loin(points[i]));
+      })
+      .map((b) => b.id),
   };
 }
 const nomsTus = (...args: Parameters<typeof laCarte>) => laCarte(...args).tus;
@@ -119,6 +163,23 @@ describe('La Carte : chaque île a son nom (tablette 1024 × 768)', () => {
     for (const [univers, etat] of Object.entries(ETATS))
       // La police de lecture par défaut, et la même 10 % plus large (une police de repli, si elle manque à l'appareil).
       for (const elargir of [1, 1.1]) expect(nomsTus(a, etat, 'atkinson-hyperlegible', elargir), `${a}, ${univers}, ×${elargir}`).toEqual([]);
+  });
+
+  it('6e, à l’ouverture de la Carte (sans panneau, la destination du jeu tout construit) : aucune île ne perd son nom, chacun sur son île (HG-2)', () => {
+    // La destination que le jeu donne au village tout construit, le bonhomme sur la Forêt des sons (`nextDestination`).
+    const { progress, world } = toutConstruit();
+    const etat = sanitizeState({ progress, world: { ...world, place: islandsOf('6e')[0].id } } as never);
+    const d = nextDestination(etat, NOMS_ARCHIPELS, textesDe('blocland').libelles);
+    const destination = d.ouvrage ? { ouvrage: d.ouvrage, depuis: d.island } : d.island;
+    for (const [univers, mot] of Object.entries(ETATS))
+      for (const elargir of [1, 1.1]) {
+        const carte = laCarte('6e', mot, 'atkinson-hyperlegible', elargir, destination, true);
+        expect(carte.tus, `${univers}, ×${elargir}`).toEqual([]);
+        // La Fouille des siècles et la Pointe des paysages, voisines : chaque nom sur son île, pas sur l'autre.
+        expect(carte.ailleurs.filter((id) => id === 'history-6e-antiquity' || id === 'geography-6e-living'), `${univers}, ×${elargir}`).toEqual([]);
+        // Toutes les îles du 6e se voient (aucune sous l'interface) : aucune ne perd son nom.
+        expect(carte.vues.length, `${univers}, ×${elargir}`).toBe(islandsOf('6e').length);
+      }
   });
 
   it('le Marais des temps (5e) garde son nom, et l’Atelier (4e, la destination) le sien au-dessus de son île', () => {

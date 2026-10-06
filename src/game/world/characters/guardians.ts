@@ -557,8 +557,10 @@ const PAPILLON: CubeDeModele[] = (() => {
 })();
 
 // L'Amphore peinte (DA, HG-2) : une amphore de terre cuite sur un pied étroit, la panse large, l'épaule, le col et sa
-// lèvre, deux anses du col à l'épaule ; des bandes peintes, sombres et ocre, d'un rang chacune ; deux yeux ocre dans la
-// bande sombre de la panse. Trois couleurs. Elle se rallume du col vers le pied (`RALLUMAGE_DU_HAUT`).
+// lèvre, deux anses de l'épaule au haut du col, détachées du col par un vide d'un cube, pour qu'elle se lise de face
+// comme une amphore et pas comme un tonneau ; des bandes peintes, sombres et ocre, d'un rang chacune ; deux yeux ocre
+// dans la bande sombre de la panse. Trois couleurs. Elle se rallume comme les autres, du pied vers le col (GD-8 ; le DA
+// n'a pas retenu l'exception, 6 octobre 2026).
 const AMPHORE = fromLayers(
   [
     ['.......', '..TTT..', '..TTT..', '..TTT..', '.......'],
@@ -568,9 +570,10 @@ const AMPHORE = fromLayers(
     ['.TTTTT.', 'TTTTTTT', 'TTTTTTT', 'TTTTTTT', '.TTTTT.'],
     ['.KOKOK.', 'KKKKKKK', 'KKKKKKK', 'KKKKKKK', '.KKKKK.'],
     ['.TTTTT.', 'TTTTTTT', 'TTTTTTT', 'TTTTTTT', '.TTTTT.'],
-    ['..TTT..', '.TTTTT.', '.TTTTT.', '.TTTTT.', '..TTT..'],
-    ['.......', '..OOO..', '.TOOOT.', '..OOO..', '.......'],
-    ['.......', '..TTT..', '.TTTTT.', '..TTT..', '.......'],
+    ['..TTT..', '.TTTTT.', 'TTTTTTT', '.TTTTT.', '..TTT..'],
+    ['.......', '..OOO..', 'T.OOO.T', '..OOO..', '.......'],
+    ['.......', '..TTT..', 'T.TTT.T', '..TTT..', '.......'],
+    ['.......', '..TTT..', 'TTTTTTT', '..TTT..', '.......'],
     ['.......', '..KKK..', '.KK.KK.', '..KKK..', '.......'],
   ],
   { T: '#b5653a', K: '#2e2622', O: '#d9a441' },
@@ -593,12 +596,6 @@ const CASTOR = fromLayers(
   ],
   { A: '#b07a48', W: '#f6f1e6', K: '#2a2622' },
 );
-
-/**
- * Les Gardiens qui se rallument du haut vers le bas (GD-8 : les autres, des pieds vers la tête) : l'Amphore peinte, dont
- * les bandes reprennent leurs couleurs du col vers le pied (DA, HG-2).
- */
-export const RALLUMAGE_DU_HAUT: ReadonlySet<BiomeId> = new Set<BiomeId>(['history-6e-antiquity']);
 
 export const GUARDIAN_CUBES: Record<BiomeId, CubeDeModele[]> = {
   'french-6e-phonology': GRAND_CHENE,

@@ -73,7 +73,7 @@ describe('Le rallumage d’un Gardien en cubes', () => {
     p.dispose();
   });
 
-  it('l’Amphore peinte se rallume du col vers le pied (DA, HG-2)', () => {
+  it('l’Amphore peinte se rallume comme les autres, du pied vers le col (GD-8 ; DA, HG-2)', () => {
     let maintenant = 1000;
     vi.spyOn(performance, 'now').mockImplementation(() => maintenant);
     const amphore = 'history-6e-antiquity';
@@ -82,7 +82,7 @@ describe('Le rallumage d’un Gardien en cubes', () => {
     p.rallumer(amphore, 1000);
     maintenant = 1300;
     p.animer?.(1, 0.016, false);
-    // Les hauteurs des maillages visibles, en pierre et en couleurs : le haut d'abord en couleurs, le bas encore en pierre.
+    // Les hauteurs des maillages visibles, en pierre et en couleurs : le bas d'abord en couleurs, le haut encore en pierre.
     const hauteurs = (pierre: boolean) => {
       const group = p.creatures.children.find((c) => c.userData.creature === amphore && c.userData.kind === 'guardian');
       const out: number[] = [];
@@ -97,7 +97,7 @@ describe('Le rallumage d’un Gardien en cubes', () => {
     const [pierre, couleurs] = [hauteurs(true), hauteurs(false)];
     expect(pierre.length).toBeGreaterThan(0);
     expect(couleurs.length).toBeGreaterThan(0);
-    expect(Math.min(...couleurs)).toBeGreaterThan(Math.max(...pierre));
+    expect(Math.max(...couleurs)).toBeLessThan(Math.min(...pierre));
     p.dispose();
   });
 
