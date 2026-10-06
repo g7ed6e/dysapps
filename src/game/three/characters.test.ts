@@ -3,7 +3,7 @@
 import * as THREE from 'three';
 import { HABILLAGES } from '../skin';
 import { toutConstruit } from '../world/budget';
-import { buildMesh } from '../world/mesher';
+import { buildMesh, drawCallsOf } from '../world/mesher';
 import { gardienDuMonde, guardianPlacements } from '../world/terrain';
 import type { Instant, Monde } from './scenePart';
 import { creerPersonnages } from './characters';
@@ -28,14 +28,44 @@ const instant = (): Instant => ({
   but: { target: new THREE.Vector3(), pos: new THREE.Vector3() },
 });
 
-/** Les couleurs des maillages visibles d'un Gardien posé. */
-function couleursVisibles(p: ReturnType<typeof creerPersonnages>, id: string): string[] {
+/**
+ * Les couleurs des maillages visibles d'un Gardien posé, chacune avec le bas de ses sommets : celle du matériau, ou
+ * celles des sommets quand ses couleurs unies sont réunies en un maillage (three/meshes.ts `meshesOf`).
+ */
+function teintesVisibles(p: ReturnType<typeof creerPersonnages>, id: string): { hex: string; bas: number }[] {
   const group = p.creatures.children.find((c) => c.userData.creature === id && c.userData.kind === 'guardian');
-  const out: string[] = [];
+  const out: { hex: string; bas: number }[] = [];
   group?.traverseVisible((o) => {
-    if (o instanceof THREE.Mesh && o.material instanceof THREE.MeshLambertMaterial) out.push(`#${o.material.color.getHexString()}`);
+    if (!(o instanceof THREE.Mesh) || !(o.material instanceof THREE.MeshLambertMaterial)) return;
+    const position = o.geometry.getAttribute('position');
+    const couleurs = o.geometry.getAttribute('color');
+    if (!couleurs) {
+      o.geometry.computeBoundingBox();
+      out.push({ hex: `#${o.material.color.getHexString()}`, bas: o.geometry.boundingBox!.min.y });
+      return;
+    }
+    const bas = new Map<string, number>();
+    const c = new THREE.Color();
+    for (let i = 0; i < couleurs.count; i++) {
+      const hex = `#${c.setRGB(couleurs.getX(i), couleurs.getY(i), couleurs.getZ(i)).getHexString()}`;
+      bas.set(hex, Math.min(bas.get(hex) ?? Infinity, position.getY(i)));
+    }
+    for (const [hex, y] of bas) out.push({ hex, bas: y });
   });
   return out;
+}
+
+/** Les couleurs visibles d'un Gardien posé. */
+const couleursVisibles = (p: ReturnType<typeof creerPersonnages>, id: string): string[] => teintesVisibles(p, id).map((t) => t.hex);
+
+/** Les maillages visibles d'un Gardien posé (ses appels de dessin). */
+function maillagesVisibles(p: ReturnType<typeof creerPersonnages>, id: string): number {
+  const group = p.creatures.children.find((c) => c.userData.creature === id && c.userData.kind === 'guardian');
+  let n = 0;
+  group?.traverseVisible((o) => {
+    if (o instanceof THREE.Mesh) n++;
+  });
+  return n;
 }
 
 /** La pierre éteinte d'une statue (`stoneOf`) : un gris froid, bleu de 24 de plus que le rouge. */
@@ -69,7 +99,7 @@ describe('Le rallumage d’un Gardien en cubes', () => {
     p.animer?.(1, 0.016, false);
     expect(couleursVisibles(p, id).some(estPierre)).toBe(false);
     // Le fondu fini, plus de couches : un seul maillage, autant d'appels qu'un Gardien posé.
-    expect(couleursVisibles(p, id)).toHaveLength(buildMesh(gardienDuMonde(id)).length);
+    expect(maillagesVisibles(p, id)).toBe(drawCallsOf(buildMesh(gardienDuMonde(id))));
     p.dispose();
   });
 
@@ -83,17 +113,10 @@ describe('Le rallumage d’un Gardien en cubes', () => {
     maintenant = 1300;
     p.animer?.(1, 0.016, false);
     // Les hauteurs des maillages visibles, en pierre et en couleurs : le bas d'abord en couleurs, le haut encore en pierre.
-    const hauteurs = (pierre: boolean) => {
-      const group = p.creatures.children.find((c) => c.userData.creature === amphore && c.userData.kind === 'guardian');
-      const out: number[] = [];
-      group?.traverseVisible((o) => {
-        if (!(o instanceof THREE.Mesh) || !(o.material instanceof THREE.MeshLambertMaterial)) return;
-        if (estPierre(`#${o.material.color.getHexString()}`) !== pierre) return;
-        o.geometry.computeBoundingBox();
-        out.push(o.geometry.boundingBox!.min.y);
-      });
-      return out;
-    };
+    const hauteurs = (pierre: boolean) =>
+      teintesVisibles(p, amphore)
+        .filter((t) => estPierre(t.hex) === pierre)
+        .map((t) => t.bas);
     const [pierre, couleurs] = [hauteurs(true), hauteurs(false)];
     expect(pierre.length).toBeGreaterThan(0);
     expect(couleurs.length).toBeGreaterThan(0);

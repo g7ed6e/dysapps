@@ -1,5 +1,5 @@
 // Les gestes sur le monde en 3D (sortis de WorldCanvas.tsx, qualité du code, lot 7) : toucher une île, un objet, une
-// créature ou une face en chantier ; faire glisser la vue ; pincer la Carte ou la zoomer à la molette ; le clavier. Les
+// créature ou une face en chantier ; faire glisser la vue ; la pincer ou la zoomer à la molette (la Carte comme le monde) ; le clavier. Les
 // touchers deviennent les rappels de la vue (world/view.ts), lus au moment du geste.
 import * as THREE from 'three';
 import { estUnBiome, type BiomeId } from '../biomes';
@@ -28,7 +28,7 @@ interface Appui {
   /** Où il est maintenant (un second doigt peut se poser après qu'il a glissé). */
   cx: number;
   cy: number;
-  /** Un second doigt s'est posé (la Carte se pince) : lever les doigts n'ouvre rien. */
+  /** Un second doigt s'est posé (la vue se pince) : lever les doigts n'ouvre rien. */
   pince?: boolean;
 }
 
@@ -54,7 +54,7 @@ export interface ScenePourLesGestes {
   reduceMotion: boolean;
   /** Le glissé est permis (voir WorldCanvas.tsx). */
   glissePermis(): boolean;
-  /** Le zoom est permis : sur la Carte seulement, quand le glissé l'est. */
+  /** Le zoom est permis : quand le glissé l'est, sur la Carte comme dans le monde. */
   zoomPermis(): boolean;
   recentrer(): void;
   /** Dit à la page que la vue est déplacée, ou ne l'est plus. */
@@ -94,8 +94,9 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
   const { canvas, camera, monde, derniers, personnages, bornes, navire, cubes: cubesDuMonde, affordance, signes: signesDesCreatures, etiquettes, cadrage } = scene;
   const { rappels, voyage: voyageRef, amarre: vehicleRef, archipel: archRef, tags, reduceMotion, glissePermis, zoomPermis, recentrer, signaler, sauterLeSigne } = scene;
   // Toucher une île (son sol : le bonhomme y va), une face ou une créature : un tap, pas un glissé. Un glissé d'un
-  // doigt (ou à la souris) fait glisser la vue à plat (./drag.ts). Sur la Carte, deux doigts qui se pincent la
-  // zooment (la molette et les touches + et − aussi) ; ailleurs, un second doigt est ignoré.
+  // doigt (ou à la souris) fait glisser la vue à plat (./drag.ts). Deux doigts qui se pincent la zooment, sur la
+  // Carte comme dans le monde (la molette et les touches + et − aussi) ; pendant une marche ou un voyage, un second
+  // doigt est ignoré.
   const ray = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
   /**
@@ -151,7 +152,7 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
     return false;
   };
   const onDown = (e: PointerEvent) => {
-    // Sur la Carte, un second doigt posé pendant que le premier touche ou glisse : on pince.
+    // Un second doigt posé pendant que le premier touche ou glisse : on pince.
     if (down && !pince && e.pointerType === 'touch' && e.pointerId !== down.id && zoomPermis()) return pincer(e, down);
     // Un seul doigt : le second, posé pendant que le premier touche ou glisse, ne fait rien.
     if (down || !e.isPrimary || (e.pointerType === 'mouse' && e.button !== 0)) return;
@@ -169,7 +170,7 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
     return { x: ((x - rect.left) / Math.max(1, rect.width)) * 2 - 1, y: -((y - rect.top) / Math.max(1, rect.height)) * 2 + 1 };
   };
   /**
-   * Les deux doigts qui pincent la Carte : leurs identifiants et où ils sont, et leur écart et leur milieu au dernier
+   * Les deux doigts qui pincent la vue : leurs identifiants et où ils sont, et leur écart et leur milieu au dernier
    * mouvement. Le milieu entraîne aussi la vue (deux doigts qui glissent ensemble la font glisser).
    */
   let pince: { a: { id: number; x: number; y: number }; b: { id: number; x: number; y: number }; ecart: number; mx: number; my: number } | null = null;
@@ -186,7 +187,7 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
       // Un pointeur déjà relâché : rien à capturer.
     }
   };
-  /** Un des deux doigts bouge : la Carte zoome autour de leur milieu, et glisse avec lui. */
+  /** Un des deux doigts bouge : la vue zoome autour de leur milieu, et glisse avec lui. */
   const pincement = (e: PointerEvent) => {
     if (!pince) return;
     const { a, b } = pince;
@@ -205,7 +206,7 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
     pince.my = my;
     signaler();
   };
-  /** La molette (ou le pavé tactile qui pince) sur la Carte : elle zoome autour du pointeur. */
+  /** La molette (ou le pavé tactile qui pince) : la vue zoome autour du pointeur. */
   const onWheel = (e: WheelEvent) => {
     if (!zoomPermis()) return;
     e.preventDefault();
@@ -504,7 +505,7 @@ export function ecouterLeClavier(el: HTMLElement, scene: ScenePourLeClavier): ()
       rappels.current.onArrive?.();
       return;
     }
-    // Sur la Carte, + et − zooment autour du centre de la place libre ; avec Ctrl ou Cmd, ils restent au navigateur
+    // + et − zooment autour du centre de la place libre ; avec Ctrl ou Cmd, ils restent au navigateur
     // (agrandir la page).
     const modifie = e.ctrlKey || e.metaKey || e.altKey;
     const zoomClavier = modifie ? 0 : e.key === '+' || e.key === '=' ? 1.25 : e.key === '-' || e.key === '_' ? 0.8 : 0;

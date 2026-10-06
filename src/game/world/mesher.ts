@@ -93,12 +93,21 @@ function normalOf(a: [number, number, number], b: [number, number, number], c: [
 /** Le verre laisse voir les faces des blocs opaques derrière lui. */
 const seeThrough = (c: VoxelCube | undefined) => c?.texture === 'verre';
 
+export interface MeshOptions {
+  /**
+   * Blocland : le dessous des cubes posés à cette hauteur ou plus bas n'est pas dessiné (`hiddenBottomLevel`,
+   * world/sea.ts) ; sans elle, tous les dessous visibles le sont.
+   */
+  hiddenBottomsUpTo?: number;
+}
+
 /**
  * Construit les groupes de faces visibles d'un ensemble de cubes. `sol` (rendu Archipéo, lot R2) : les cubes du sol,
  * dessinés à part en facettes (./landMesh.ts) ; ils ne sont pas dessinés ici, mais le dessous d'un cube posé sur eux
  * reste caché (la case où quelque chose est posé reste plate, à la hauteur du dessus du cube de sol).
  */
-export function buildMesh(cubes: VoxelCube[], sol: VoxelCube[] = []): MeshGroup[] {
+export function buildMesh(cubes: VoxelCube[], sol: VoxelCube[] = [], options: MeshOptions = {}): MeshGroup[] {
+  const { hiddenBottomsUpTo = -Infinity } = options;
   const byPos = new Map<string, VoxelCube>();
   for (const c of cubes) byPos.set(key(c.x, c.y, c.z), c);
   const ground = new Set(sol.map((c) => key(c.x, c.y, c.z)));
@@ -110,6 +119,8 @@ export function buildMesh(cubes: VoxelCube[], sol: VoxelCube[] = []): MeshGroup[
       if (neighbor && !neighbor.ghost && !c.ghost && !(seeThrough(neighbor) && !seeThrough(c))) continue;
       if (face === 'bottom' && !c.ghost && ground.has(key(c.x, c.y, c.z - 1))) continue;
       if (face === 'bottom' && c.sansDessous) continue;
+      // Sous l'eau (ou sous le plancher de nuages), un dessous n'est jamais vu : la caméra reste au-dessus.
+      if (face === 'bottom' && !c.ghost && c.z <= hiddenBottomsUpTo) continue;
       // Le dessus dessiné comme les côtés (`dessusCommeLesCotes`) : dans leur groupe, sans groupe de plus.
       const dessinee = face === 'top' && c.dessusCommeLesCotes ? 'side' : face;
       const gkey = (c.muted ? 'muted:' : '') + (c.ghost ? `ghost:${c.texture ?? c.color}` : c.texture ? `tex:${c.texture}:${dessinee}` : `tint:${c.color}`);
@@ -143,6 +154,18 @@ export function buildMesh(cubes: VoxelCube[], sol: VoxelCube[] = []): MeshGroup[
     }
   }
   return [...groups.values()];
+}
+
+/** Un groupe de couleur unie (ni texture, ni fantôme) : tous ceux d'un modèle se dessinent ensemble (three/meshes.ts). */
+export const isPlainTint = (g: MeshGroup): boolean => !g.texture && !g.ghost;
+
+/**
+ * Les appels de dessin d'un modèle dessiné par `meshesOf` (three/meshes.ts) : un par groupe texturé ou fantôme, un
+ * seul pour toutes ses couleurs unies.
+ */
+export function drawCallsOf(groups: MeshGroup[]): number {
+  const tints = groups.filter(isPlainTint).length;
+  return groups.length - tints + (tints > 0 ? 1 : 0);
 }
 
 /** Nombre total de faces d'un maillage (pour les tests et le budget de performance). */
