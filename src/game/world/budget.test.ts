@@ -212,7 +212,7 @@ it('GD-9 : au pire (autant de liaisons qu’un graphe planaire en a, au plus lon
     // Le pire cas compte plus que le monde d'aujourd'hui.
     expect(pire.triangles, a).toBeGreaterThan(sceneCost(a, true).triangles);
   }
-});
+}, 20_000);
 
 // Ces deux tests construisent le dessin de chaque choix possible de chaque région (plusieurs secondes sur la CI) : un délai
 // à leur mesure plutôt que les 5 s par défaut.

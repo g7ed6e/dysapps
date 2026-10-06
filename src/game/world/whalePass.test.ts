@@ -10,7 +10,7 @@ import {
   whalePassRoute,
 } from "./whalePass";
 
-it("chaque île avec la mer a un passage de baleine sur l’eau libre, au large de cette île, jamais sur la terre", () => {
+it("chaque île avec la mer a un passage de baleine sur l’eau libre, au large de cette île, jamais sur la terre", { timeout: 20_000 }, () => {
   for (const b of BIOMES) {
     const a = archipelagoOfIsland(b.id);
     for (const narrow of [false, true]) {

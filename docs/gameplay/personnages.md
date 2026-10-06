@@ -199,9 +199,9 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 
 |  | Blocland | Archipéo |
 | --- | --- | --- |
-| Au défi | Le Griffon d’émail déploie ses ailes : « Mes émaux sont tout gris. Tu as lu toutes les chroniques du bourg : remets chaque siècle à sa place. » | Le Griffon d’émail dit doucement : « Mes émaux sont éteints. Tu as lu toutes les chroniques du bourg : remets chaque siècle à sa place. » |
+| Au défi | Le Griffon d’émail déploie ses ailes : « Mes émaux sont tout gris. Tu as lu toutes les chroniques du bourg : dis-moi en quel siècle vient chaque chose. » | Le Griffon d’émail dit doucement : « Mes émaux sont éteints. Tu as lu toutes les chroniques du bourg : dis-moi en quel siècle vient chaque chose. » |
 | À la fin | Je me rallume, du bec jusqu’à la queue. Le Bourg est à toi, et à Vélin. | Mes émaux se rallument. Le bourg est à toi, et à Vélin. |
-| Vélin à l’arrivée | Bonjour, bâtisseur ! Ici, on écrit les chroniques du Moyen Âge. Chaque bonne réponse te donne un bloc d’enluminure. Une enluminure, c’est une page peinte à la main, avec des filets d’or. | Bonjour, bâtisseur ! Ici, on écrit les chroniques du Moyen Âge. Chaque bonne réponse te donne un bloc d’enluminure. Une enluminure, c’est une page peinte à la main, avec des filets d’or. |
+| Vélin à l’arrivée | Bonjour, bâtisseur ! Ici, on écrit les chroniques du Moyen Âge. Chaque bonne réponse te donne un bloc d’enluminure. Une enluminure, c’est une page peinte à la main, avec des traits d’or. | Bonjour, bâtisseur ! Ici, on écrit les chroniques du Moyen Âge. Chaque bonne réponse te donne un bloc d’enluminure. Une enluminure, c’est une page peinte à la main, avec des traits d’or. |
 
 ### La Libellule de jade, Delta des ressources
 
@@ -285,7 +285,7 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 
 |  | Blocland | Archipéo |
 | --- | --- | --- |
-| Au défi | Le Paon de faïence ouvre sa roue : « Ma roue est toute grise. Tu as lu toutes les pages de l’imprimerie : remets chaque révolution à sa date. » | Le Paon de faïence dit doucement : « Les yeux de ma roue sont éteints. Tu as lu toutes les pages de l’imprimerie : remets chaque révolution à sa date. » |
+| Au défi | Le Paon de faïence ouvre sa roue : « Ma roue est toute grise. Tu as lu toutes les pages de l’imprimerie : dis-moi ce que chaque révolution a changé. » | Le Paon de faïence dit doucement : « Les yeux de ma roue sont éteints. Tu as lu toutes les pages de l’imprimerie : dis-moi ce que chaque révolution a changé. » |
 | À la fin | Je me rallume, de la crête jusqu’au bout de ma roue. L’Imprimerie est à toi, et à Typo. | Ma roue se rallume. L’imprimerie est à toi, et à Typo. |
 | Typo à l’arrivée | Bonjour, bâtisseur ! À l’imprimerie, on imprime les nouvelles des révolutions. Chaque bonne réponse te donne un bloc de fonte. La fonte, c’est un métal lourd, coulé dans un moule. | Bonjour, bâtisseur ! À l’imprimerie, on imprime les nouvelles des révolutions. Chaque bonne réponse te donne un bloc de fonte. La fonte, c’est un métal lourd, coulé dans un moule. |
 
@@ -379,7 +379,7 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 
 |  | Blocland | Archipéo |
 | --- | --- | --- |
-| Au défi | Le Cerf de lauze lève la tête : « Mes bois sont tout gris. Tu as parcouru toute la vallée : dis-moi comment vit le territoire. » | Le Cerf de lauze dit doucement : « Les lauzes de mes bois sont éteintes. Tu as parcouru toute la vallée : dis-moi comment vit le territoire. » |
+| Au défi | Le Cerf de lauze lève la tête : « Mes bois sont tout gris. Une lauze, c’est une pierre plate. Tu as parcouru toute la vallée : dis-moi comment vit le territoire. » | Le Cerf de lauze dit doucement : « Les lauzes de mes bois sont éteintes. Une lauze, c’est une pierre plate. Tu as parcouru toute la vallée : dis-moi comment vit le territoire. » |
 | À la fin | Je me rallume, des sabots jusqu’au bout des bois. La Vallée est à toi, et à Jalon. | Mes bois se rallument. La vallée est à toi, et à Jalon. |
 | Jalon à l’arrivée | Bonjour, bâtisseur ! Dans la vallée, on regarde la France : ses villes, ses campagnes, ses routes. Chaque bonne réponse te donne un bloc de grès rose. Le grès, c’est une pierre faite de sable serré. | Bonjour, bâtisseur ! Dans la vallée, on regarde la France : ses villes, ses campagnes, ses routes. Chaque bonne réponse te donne un bloc de grès rose. Le grès, c’est une pierre faite de sable serré. |
 

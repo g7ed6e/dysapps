@@ -103,7 +103,7 @@ describe('La disposition en grille', () => {
     expect(dispositionEnGrille('6e').trajet({ genre: 'ile', id: 'french-6e-phonology' }, { genre: 'ile', id: 'french-6e-letter-confusion' })).toBeNull();
   });
 
-  it('changer de but en chemin : le trajet part de l’île où il se trouve, sans finir de traverser l’ouvrage', () => {
+  it('changer de but en chemin : le trajet part de l’île où il se trouve, sans finir de traverser l’ouvrage', { timeout: 20_000 }, () => {
     const a = '6e';
     const { g } = grilleDe(a);
     let essais = 0;

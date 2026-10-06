@@ -29,6 +29,12 @@ on:
         default: les-deux
         type: choice
         options: [blocland, archipeo, les-deux]
+      contre:
+        description: "Branche dont la branche du lot part : l'avant est pris sur leur ancêtre commun (preview pour un lot qui en part)"
+        required: true
+        default: main
+        type: choice
+        options: [main, preview]
 
 # Aucune permission par défaut : chaque job ne reçoit que ce dont il a besoin.
 permissions: {}
@@ -61,6 +67,7 @@ jobs:
           FAMILLES: ${{ inputs.familles }}
           ARCHIPELS: ${{ inputs.archipels }}
           UNIVERS: ${{ inputs.univers }}
+          CONTRE: ${{ inputs.contre }}
         run: |
           set -eu
           [[ "$LOT" =~ ^[a-z0-9][a-z0-9-]{0,40}$ ]] || { echo "::error::Nom de lot refusé : $LOT"; exit 1; }
@@ -68,8 +75,9 @@ jobs:
           [[ "$UNIVERS" =~ ^(blocland|archipeo|les-deux)$ ]] || { echo "::error::Univers refusé : $UNIVERS"; exit 1; }
           [[ "$ARCHIPELS" =~ ^(6e|5e|4e|3e)(,(6e|5e|4e|3e))*$ ]] || { echo "::error::Archipels refusés : $ARCHIPELS"; exit 1; }
           if [ "$UNIVERS" = les-deux ]; then univers='["blocland","archipeo"]'; else univers="[\"$UNIVERS\"]"; fi
-          if [ "$GITHUB_REF_NAME" = main ]; then echo "::error::À lancer sur la branche du lot, pas sur main."; exit 1; fi
-          base=$(git merge-base HEAD origin/main)
+          [[ "$CONTRE" =~ ^(main|preview)$ ]] || { echo "::error::Branche de départ refusée : $CONTRE"; exit 1; }
+          if [ "$GITHUB_REF_NAME" = "$CONTRE" ]; then echo "::error::À lancer sur la branche du lot, pas sur $CONTRE."; exit 1; fi
+          base=$(git merge-base HEAD "origin/$CONTRE")
           archipels=$(printf '%s' "$ARCHIPELS" | jq -Rc 'split(",") | unique')
           prises=$(jq -nc --argjson u "$univers" --argjson a "$archipels" \
             '[$u[] as $u | $a[] as $a | ["avant", "apres"][] as $c | {univers: $u, archipel: $a, cote: $c}]')
@@ -147,6 +155,7 @@ jobs:
         env:
           UNIVERS: ${{ join(fromJSON(needs.plan.outputs.univers), ' ') }}
           BASE: ${{ needs.plan.outputs.base }}
+          CONTRE: ${{ inputs.contre }}
           NAVIGATEUR: chrome
         run: |
           set -eu
@@ -154,7 +163,7 @@ jobs:
             mkdir -p "avant/$u" "sortie/$u"
             cp prises/prises-avant-"$u"-*/*.jpg "avant/$u/"
             cp prises/prises-apres-"$u"-*/*.jpg "sortie/$u/"
-            node scripts/rendu/comparer.mjs "avant/$u" "sortie/$u" "main au commit $BASE (après : $GITHUB_SHA)"
+            node scripts/rendu/comparer.mjs "avant/$u" "sortie/$u" "$CONTRE au commit $BASE (après : $GITHUB_SHA)"
             mkdir -p "planches/$u"
             cp "sortie/$u/comparaison.md" "planches/$u/"
             find "sortie/$u/planches" -name '*.jpg' -exec cp {} "planches/$u/" \;
