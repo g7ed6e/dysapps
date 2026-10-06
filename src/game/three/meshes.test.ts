@@ -35,3 +35,12 @@ it('sans couleur unie, un maillage par groupe, comme avant', () => {
   const groups = buildMesh([cubes[3]]);
   expect(meshesOf(groups)).toHaveLength(groups.length);
 });
+
+it('laisse Three.js écarter un maillage hors de l’écran, sa sphère grandie de la hauteur du soulèvement d’« Aménager »', () => {
+  const [g] = buildMesh([cubes[0]]);
+  const mesh = meshOf(g);
+  expect(mesh.frustumCulled).toBe(true);
+  // Un cube d'un de côté : rayon √3 / 2, plus un.
+  expect(mesh.geometry.boundingSphere!.radius).toBeCloseTo(Math.sqrt(3) / 2 + 1);
+  for (const m of meshesOf(buildMesh(cubes))) expect(m.frustumCulled).toBe(true);
+});
