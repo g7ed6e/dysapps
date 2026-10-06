@@ -11,6 +11,9 @@
   // Adresse *.workers.dev et adresses d'aperçu, comme avant ce fichier.
   "workers_dev": true,
   "preview_urls": true,
+  // Aperçus de branche (Workers Builds lance « npx wrangler preview » hors de main) : le bloc peut rester vide,
+  // les fichiers servis et la compatibilité restent en haut. La branche « preview » sert de pré-version.
+  "previews": {},
   "assets": {
     "directory": "./dist",
     "not_found_handling": "single-page-application"
