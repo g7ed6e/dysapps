@@ -5,7 +5,7 @@
 // « Reprendre ». L'aide du village se revoit avec le « ? » de la barre du bas.
 import { useEffect, useEffectEvent, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Icon, type AnyIconName } from '../components/Icon';
+import { Icon, IconButton, type AnyIconName } from '../components/Icon';
 import { XpBar } from '../components/XpBar';
 import { useProgress } from '../core/ProgressContext';
 import { lastPlace } from '../core/lastPlace';
@@ -22,6 +22,7 @@ import { Sheet } from './Sheet';
 import { archipelagoOf } from './world/archipelago';
 import { backToStartingMap, startingMapState } from './world/arrange';
 import { linkPhrases } from './world/linkWord';
+import { EXPLICATIONS_DE_LA_PREMIERE_FOIS } from './Arranging';
 
 interface Props {
   /** La croix ou Échap : le menu se ferme, on est dans le village. */
@@ -123,6 +124,8 @@ export function MenuSheet({ onClose, onAller, onAide }: Props) {
           </li>
         )}
       </ul>
+      {/* « Carte de départ » (GD-9, piste A) : le titre écrit (un menu se lit en mots), l'état en signes, nommés pour les
+          lecteurs d'écran ; un seul bouton nommé dans la confirmation, « Revenir ». */}
       <ul className="island-quests menu-list" aria-label="Carte">
         <li>
           {retour === 'bloquee' ? (
@@ -132,7 +135,19 @@ export function MenuSheet({ onClose, onAller, onAide }: Props) {
               </span>
               <span className="island-quest-text">
                 <span className="island-quest-title">Carte de départ</span>
-                <span className="island-quest-desc">Pas de retour possible pour l’instant : des lieux réunis prennent la place d’autres lieux. Déplace-les d’abord avec « Aménager ».</span>
+                <span className="island-quest-desc">
+                  <span className="visually-hidden">Des lieux réunis bloquent le retour : déplace-les avec « Aménager ».</span>
+                  <span aria-hidden="true">
+                    <span className="signe">
+                      <Icon name="lock" />
+                      <span className="mot-signe">bloqué</span>
+                    </span>{' '}
+                    <span className="signe">
+                      <Icon name="reunir" />
+                      <span className="mot-signe">réunis</span>
+                    </span>
+                  </span>
+                </span>
               </span>
             </div>
           ) : (
@@ -142,25 +157,41 @@ export function MenuSheet({ onClose, onAller, onAide }: Props) {
               </span>
               <span className="island-quest-text">
                 <span className="island-quest-title">Carte de départ</span>
-                <span className="island-quest-desc">{retour === 'possible' ? 'Remettre les lieux de cette région à leur place de départ' : 'Les lieux sont à leur place de départ.'}</span>
+                {retour === 'pareille' && (
+                  <span className="island-quest-desc">
+                    {revenue ? (
+                      <span className="signe">
+                        <Icon name="check" />
+                        <span className="mot-signe">fait</span>
+                      </span>
+                    ) : null}
+                    <span className="visually-hidden">Les lieux sont à leur place de départ.</span>
+                  </span>
+                )}
               </span>
             </button>
           )}
-          {revenue && (
-            <p className="menu-confirmer" role="status">
-              C’est fait : les lieux sont revenus à leur place de départ. Rien n’est perdu.
-            </p>
-          )}
+          <p className="visually-hidden" role="status">
+            {revenue ? 'C’est fait : les lieux sont revenus à leur place de départ.' : ''}
+          </p>
           {confirmer && retour === 'possible' && (
             <div className="menu-confirmer" role="group" aria-label="Revenir à la carte de départ ?">
-              <p>Tous les lieux de cette région reviennent à leur place de départ. {`${mot.accord('Tous', 'Toutes')} tes ${mot.pluriel} restent ${mot.accord('construits', 'construites')}`} : rien n’est perdu.</p>
+              {EXPLICATIONS_DE_LA_PREMIERE_FOIS ? (
+                <p>Tous les lieux de cette région reviennent à leur place de départ. {`${mot.accord('Tous', 'Toutes')} tes ${mot.pluriel} restent ${mot.accord('construits', 'construites')}`} : rien n’est perdu.</p>
+              ) : (
+                <p>
+                  <span className="visually-hidden">{`${mot.accord('Tous', 'Toutes')} tes ${mot.pluriel} restent.`}</span>
+                  <span className="signe" aria-hidden="true">
+                    <Icon name="ouvrage" />
+                    <Icon name="check" />
+                  </span>
+                </p>
+              )}
               <div className="menu-confirmer-boutons">
-                <button type="button" className="button primary" onClick={revenirALaCarteDeDepart}>
-                  <Icon name="check" /> Revenir à la carte de départ
+                <button type="button" className="button primary" aria-label="Revenir à la carte de départ" onClick={revenirALaCarteDeDepart}>
+                  <Icon name="history" /> Revenir
                 </button>
-                <button type="button" className="button" onClick={() => setConfirmer(false)}>
-                  <Icon name="close" /> Non, garder ma carte
-                </button>
+                <IconButton icone="close" nom="Non, garder ma carte" mot="Non" onClick={() => setConfirmer(false)} />
               </div>
             </div>
           )}

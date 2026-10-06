@@ -4,7 +4,7 @@ import type { BiomeId } from '../biomes';
 import type { World } from '../engine/state';
 import { BIOMES } from '../biomes';
 import { freeSpots, guardianOf, moveGuardian, startingSpot } from './arrange';
-import { distanceWords, directionWords, guardianSentence, ofPlace, placeSentence, thePlace, toPlace } from './placeSentence';
+import { casesWord, DIRECTIONS, distanceWords, directionWords, guardianSentence, ofPlace, placeSentence, placeSigns, placeSignsSentence, thePlace, toPlace } from './placeSentence';
 import { lieuDAssemblage } from './assembly';
 import { agreeWithPlace, joinedSentence } from './placeArticle';
 
@@ -81,6 +81,18 @@ describe('où est une place, en mots', () => {
     // Une autre place, une autre phrase (le fantôme la dit à chaque calage).
     const ailleurs = freeSpots(VIDE, id).find((s) => Math.abs(s.x - startingSpot(id).x) + Math.abs(s.y - startingSpot(id).y) > 2);
     if (ailleurs) expect(typeof placeSentence(VIDE, id, ailleurs)).toBe('string');
+  });
+
+  it('la ligne de signes (piste A) : le voisin, la flèche, le nombre ; dite en mots, la même phrase', () => {
+    const id: BiomeId = 'english-6e-vocabulary';
+    const s = placeSigns(VIDE, id)!;
+    expect(s).toMatchObject({ voisin: 'Horloge des verbes', direction: { mot: 'est', icone: 'est' } });
+    expect(s.cases).toBeGreaterThan(0);
+    expect(placeSignsSentence(s)).toBe(placeSentence(VIDE, id));
+    expect(placeSignsSentence({ voisin: 'Mine des lettres', direction: DIRECTIONS[3], cases: 4 })).toBe('au nord-ouest de la Mine des lettres, à 4 cases');
+    expect(casesWord(1)).toBe('1 case');
+    // Huit flèches, une par direction, toutes différentes.
+    expect(new Set(DIRECTIONS.map((d) => d.icone)).size).toBe(8);
   });
 
   it('l’îlot d’un Gardien : « au sud de son île », puis le côté où il va', () => {

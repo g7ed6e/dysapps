@@ -1,5 +1,5 @@
-// Le mode « Aménager » (GD-9, point 1), sur la Carte : l'état du mode (`useAmenagement`) : le choix, la phrase écrite et
-// lue à chaque calage et après chaque pose (et sa ligne courte, pour le téléphone), la liste des ouvrages à reposer (le
+// Le mode « Aménager » (GD-9, point 1), sur la Carte : l'état du mode (`useAmenagement`) : le choix, la ligne du mode à
+// chaque calage et après chaque pose (des signes écrits, la même chose dite en mots ; piste A), la liste des ouvrages à reposer (le
 // mot de l'univers), la question de « Réunir », et le geste de la pose (1,5 s au plus, un toucher le termine ; posé
 // d'un coup avec moins d'animations). Ce qui s'affiche est dans ArrangeBar.tsx ; les règles dans world/arrange.ts et
 // world/arrangeMode.ts ; la 3D dessine le choix (three/arrange.ts). Les mots sont communs aux deux univers ; chaque
@@ -22,7 +22,6 @@ import {
   chooseRelink,
   chooseStation,
   choiceSentence,
-  choiceSummary,
   poseChoice,
   poseSentence,
   snapChoice,
@@ -37,9 +36,16 @@ import type { ArrangeGesture, ArrangeView, CadreDuMode } from './world/view';
 import { footprintOf } from './world/footprint';
 import type { Intention, Point } from './world/layout';
 import type { Rectangle } from './world/placement';
-import { type PlaceName, placeSentence } from './world/placeSentence';
-import { joinedSentence, thePlace, toPlace } from './world/placeArticle';
+import { type PlaceName, type PlaceSigns, placeSigns, placeSignsSentence } from './world/placeSentence';
+import { joinedSentence, thePlace } from './world/placeArticle';
 import { LIAISON, type LinkPhrases, type LinkWord, linkPhrases } from './world/linkWord';
+
+/**
+ * Les phrases d'explication de la première fois (GD-9, piste A, en attente du choix du mainteneur) : l'ouvrage « à
+ * reposer », « Réunir » et la construction de l'univers (la digue, la jetée), et « Tes ouvrages restent » avant
+ * « Revenir » (MenuSheet.tsx). `false` les retire toutes d'un coup ; le reste du mode n'en dépend pas.
+ */
+export const EXPLICATIONS_DE_LA_PREMIERE_FOIS: boolean = true;
 
 /** La clé de l'appareil qui retient que le mot « ouvrage à reposer » (le mot de l'univers) a été expliqué (une fois). */
 const CLE_DE_L_EXPLICATION = 'amenager-liaison-expliquee';
@@ -60,16 +66,38 @@ function explicationDeLaReunion(reunion: TextesDeLaReunion): string {
   return reunion.description;
 }
 
-/** Ce que dit le jeu quand une pose ne se fait pas. */
-function refus(reason: string, m: LinkPhrases): string {
+/**
+ * Ce que montre la ligne du mode, en haut (GD-9, piste A : des signes à la place des phrases). La voix et le
+ * `role="status"` disent `phrase`, la même chose en mots.
+ * - `place` : le voisin repère, la flèche, le nombre et la case (« Mine des lettres ↖ 4 ⬚ »), et les ouvrages à reposer ;
+ * - `refus` : une croix (ou un cadenas pour le lieu fixe) et deux ou trois mots, toujours écrits (référent dys) ;
+ * - `reunis` : les deux lieux réunis, l'icône de « Réunir » entre eux ;
+ * - `texte` : une phrase écrite telle quelle (un Gardien, une borne, une arrivée, « Touche un lieu… »).
+ */
+export type LigneDuMode =
+  | { genre: 'texte'; texte: string }
+  | { genre: 'place'; signes: PlaceSigns; aReposer: number }
+  | { genre: 'refus'; icone: 'close' | 'lock'; texte: string }
+  | { genre: 'reunis'; a: string; b: string; aReposer: number };
+
+/** Ce que montre le jeu quand une pose ne se fait pas : une croix ou un cadenas, et deux ou trois mots. */
+function refus(reason: string): Extract<LigneDuMode, { genre: 'refus' }> {
   const textes: Readonly<Record<string, string>> = {
-    fixe: 'Ce lieu ne bouge pas : c’est le point de départ de la région.',
-    occupee: 'Cette place n’est pas libre.',
-    reunis: 'Ce lieu ne peut pas se réunir à un autre ici.',
-    liaison: `${m.Ce} ne se pose pas là.`,
-    inconnu: 'Ce n’est pas possible ici.',
+    occupee: 'Place prise',
+    reunis: 'Pas de réunion ici',
+    liaison: 'Pas ici',
+    inconnu: 'Pas ici',
   };
-  return textes[reason] ?? textes.inconnu;
+  if (reason === 'fixe') return { genre: 'refus', icone: 'lock', texte: 'Ce lieu ne bouge pas' };
+  return { genre: 'refus', icone: 'close', texte: textes[reason] ?? textes.inconnu };
+}
+
+/** « Plus de place par là » : la flèche bute sur le bord. */
+const PLUS_DE_PLACE: Extract<LigneDuMode, { genre: 'refus' }> = { genre: 'refus', icone: 'close', texte: NO_MORE_ROOM.replace(/\.$/, '') };
+
+/** Une phrase, sa première lettre en capitale et un point final. */
+function enPhrase(texte: string): string {
+  return `${texte.charAt(0).toUpperCase()}${texte.slice(1)}.`;
 }
 
 /** Le nom et la description de la construction qui réunit deux lieux, dans l'univers (`textes.reunion`). */
@@ -123,8 +151,8 @@ interface QuestionDeReunion {
 /** Le geste de pose en cours : ce qu'il posera, et ses minuteries. */
 interface GesteEnCours {
   apres: World;
+  ligne: LigneDuMode | null;
   phrase: string;
-  resume: string;
   timers: number[];
   remonte: boolean;
 }
@@ -135,9 +163,10 @@ export interface Amenagement {
   terminer(): void;
   choix: ArrangeChoice | null;
   vue: ArrangeView | null;
+  /** Ce que dit la ligne du mode, en mots (la voix, le `role="status"`). */
   phrase: string;
-  /** La ligne courte de la phrase, au téléphone : le nom et la direction, ou sa première phrase. */
-  resume: string;
+  /** Ce que montre la ligne du mode, en signes, ou rien. */
+  ligne: LigneDuMode | null;
   /** La liste des liaisons à reposer est ouverte. */
   liste: boolean;
   ouvrirLaListe(): void;
@@ -208,8 +237,7 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
   const [session, setSession] = useState<ArrangeSession | null>(null);
   const [choix, setChoix] = useState<ArrangeChoice | null>(null);
   const [phrase, setPhrase] = useState('');
-  // La ligne courte de la phrase, au téléphone (le nom et la direction) ; sans elle, la première phrase.
-  const [resume, setResume] = useState('');
+  const [ligne, setLigne] = useState<LigneDuMode | null>(null);
   const [liste, setListe] = useState(false);
   const [explication, setExplication] = useState(false);
   const [question, setQuestion] = useState<QuestionDeReunion | null>(null);
@@ -225,26 +253,39 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
   const ouvert = session !== null;
   const aReposer = linksToRelink(world, a);
 
-  const annoncer = (texte: string, court = premierePhrase(texte)) => {
-    setPhrase(texte);
-    setResume(court);
-    if (texte) dire(texte);
+  /** La ligne du mode (des signes) et ce qu'elle dit en mots, lu à voix haute. */
+  const annoncer = (l: LigneDuMode | null, lu: string) => {
+    setLigne(l);
+    setPhrase(lu);
+    if (lu) dire(lu);
+  };
+  /** Une phrase écrite telle quelle (vide : la ligne s'efface). */
+  const direTexte = (texte: string) => annoncer(texte ? { genre: 'texte', texte } : null, texte);
+  /** Un refus : ses mots écrits, et dits. */
+  const direRefus = (r: Extract<LigneDuMode, { genre: 'refus' }>) => annoncer(r, `${r.texte}.`);
+  /**
+   * Où est un lieu à une place, en signes ; la voix dit « Au nord-ouest de la Mine des lettres, à 4 cases. », et `apres`
+   * (les ouvrages à reposer). Sans voisin, son nom.
+   */
+  const ligneDuLieu = (w: World, id: BiomeId, spot = spotOf(w, id), aReposer = 0) => {
+    const signes = placeSigns(w, id, spot, nom);
+    if (!signes) return { ligne: { genre: 'texte', texte: nom(id) } as LigneDuMode, lu: nom(id) };
+    const lu = enPhrase(placeSignsSentence(signes)) + (aReposer ? ` ${mot.aReposer(aReposer)}` : '');
+    return { ligne: { genre: 'place', signes, aReposer } as LigneDuMode, lu };
   };
   /** Le lieu avec lequel un lieu se réunirait, à sa place dans un monde (le premier voisin ouvert), ou rien. */
   const voisinAReunir = (w: World, id: BiomeId) => joinCandidates(w, id)[0] ?? null;
-  /** « Il peut se réunir à … » : dit quand un lieu choisi ou posé a un voisin ouvert à réunir. */
-  const peutSeReunir = (w: World, id: BiomeId) => {
-    const v = voisinAReunir(w, id);
-    return v ? ` Il peut se réunir ${toPlace(nom(v))}. Touche à nouveau ${thePlace(nom(id))}, puis « Réunir ».` : '';
-  };
   const choisir = (c: ArrangeChoice | null, texte?: string) => {
     setChoix(c);
     setQuestion(null);
     setCadre(null);
     const w = worldRef.current;
-    const aReunir = c?.genre === 'lieu' && sameSpot(c.spot, spotOf(w, c.id)) && voisinAReunir(w, c.id) ? ` Il peut se réunir ${toPlace(nom(voisinAReunir(w, c.id)!))} : « Réunir ».` : '';
-    if (texte !== undefined || !c) annoncer(texte ?? '');
-    else annoncer(choiceSentence(w, c, nom, mot) + aReunir, choiceSummary(w, c, nom, mot));
+    if (texte !== undefined || !c) return direTexte(texte ?? '');
+    if (c.genre === 'lieu') {
+      const l = ligneDuLieu(w, c.id, c.spot);
+      return annoncer(l.ligne, l.lu);
+    }
+    direTexte(choiceSentence(w, c, nom, mot));
   };
 
   /** Le geste fini (ou touché) : le monde posé, le son, la phrase. */
@@ -257,7 +298,7 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     setGeste(null);
     setLieuDuGeste(null);
     if (sons) sonDeLaPose();
-    annoncer(g.phrase, g.resume);
+    annoncer(g.ligne, g.phrase);
   };
   useEffect(
     () => () => {
@@ -270,22 +311,25 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     const w = worldRef.current;
     if (!choix || !session || enCours.current) return;
     const r = poseChoice(w, choix);
-    if (!r.ok) return annoncer(refus(r.reason, mot));
+    if (!r.ok) return direRefus(refus(r.reason));
     setSession(recordPose(session, w, r.world));
     setCadre(null);
-    // La ligne courte au téléphone : « Posé au nord de la Forêt des sons, à 2 cases. » pour un lieu, deux lignes au plus.
-    const court =
-      choix.genre === 'lieu' ? `Posé ${placeSentence(r.world, choix.id, spotOf(r.world, choix.id), nom)}.` : `C’est posé. ${choiceSummary(r.world, choix, nom, mot)}`;
-    const texte =
-      poseSentence(r.world, choix, nom, mot) +
-      (r.relink.length ? ` ${mot.aReposer(r.relink.length)}` : '') +
-      (choix.genre === 'lieu' ? peutSeReunir(r.world, choix.id) : '');
+    // Après une pose, aucune bulle (« C'est posé » n'est plus écrit) : la ligne se met à jour, le son de la pose suffit.
+    const n = r.relink.length;
+    const apres =
+      choix.genre === 'lieu'
+        ? ligneDuLieu(r.world, choix.id, spotOf(r.world, choix.id), n)
+        : (() => {
+            const t = poseSentence(r.world, choix, nom, mot);
+            const lu = t + (n ? ` ${mot.aReposer(n)}` : '');
+            return { ligne: { genre: 'texte', texte: lu } as LigneDuMode, lu };
+          })();
     setChoix(null);
     // Le geste (un lieu seulement) : démonté à sa place d'avant, remonté à la nouvelle ; d'un coup avec moins d'animations.
     if (choix.genre !== 'lieu' || reduceMotion) {
       arrange(r.world);
       if (sons) sonDeLaPose();
-      return annoncer(texte, court);
+      return annoncer(apres.ligne, apres.lu);
     }
     const id = choix.id;
     const alt = placeIn(w, id).altitude;
@@ -293,7 +337,7 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     const autre = joinedWith(w, id);
     const sommets = [id, ...(autre ? [autre] : [])].map((l) => hautDuLieu?.(l)).filter((h): h is number => h !== undefined);
     const base = { bas: alt - GESTE_SOUS_LE_SOL, haut: sommets.length ? Math.max(...sommets) + 1 : alt + 24, dureeMs: GESTE_DU_LIEU.demonteMs };
-    const g: GesteEnCours = { apres: r.world, phrase: texte, resume: court, timers: [], remonte: false };
+    const g: GesteEnCours = { apres: r.world, ligne: apres.ligne, phrase: apres.lu, timers: [], remonte: false };
     enCours.current = g;
     const ancienne = gestureZone(emprise(w, id));
     const nouvelle = gestureZone(emprise(r.world, id));
@@ -325,13 +369,13 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     setListe(false);
     setExplication(false);
     setPhrase('');
-    setResume('');
+    setLigne(null);
   };
 
   const fleche = (dir: Direction) => {
     if (!choix || enCours.current) return;
     const s = stepChoice(worldRef.current, choix, dir);
-    if (!s) return annoncer(NO_MORE_ROOM);
+    if (!s) return direRefus(PLUS_DE_PLACE);
     choisir(s);
   };
   const tourner = () => {
@@ -339,16 +383,16 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     if (choix.genre === 'gardien') {
       const w = worldRef.current;
       const { result, sentence } = turnGuardianNow(w, choix.id);
-      if (!result.ok) return annoncer(refus(result.reason, mot));
+      if (!result.ok) return direRefus(refus(result.reason));
       setSession(recordPose(session, w, result.world));
       arrange(result.world);
       if (sons) sonDeLaPose();
-      // Tourner un Gardien le pose tout de suite : la phrase le dit.
-      return annoncer(`C’est posé. ${sentence}`);
+      // Tourner un Gardien le pose tout de suite : la ligne dit où il regarde, le son de la pose suffit.
+      return direTexte(sentence);
     }
     if (choix.genre !== 'lieu') return;
     const t = turnChoice(worldRef.current, choix);
-    if (!t) return annoncer(refus('occupee', mot));
+    if (!t) return direRefus(refus('occupee'));
     choisir(t);
   };
   const defaire = () => {
@@ -372,21 +416,22 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     if (!session || enCours.current) return;
     const id = direct ?? (choix?.genre === 'lieu' && sameSpot(choix.spot, spotOf(w, choix.id)) ? choix.id : null);
     const voisins = id ? joinCandidates(w, id) : [];
-    if (!id || !voisins.length) return annoncer(refus('reunis', mot));
+    if (!id || !voisins.length) return direRefus(refus('reunis'));
     // Le mot « réunir » et la construction de l'univers, expliqués la première fois.
-    const premiere = !loadJSON<{ vu: boolean }>(CLE_DE_LA_REUNION, { vu: false }).vu;
+    const premiere = EXPLICATIONS_DE_LA_PREMIERE_FOIS && !loadJSON<{ vu: boolean }>(CLE_DE_LA_REUNION, { vu: false }).vu;
     if (premiere) saveJSON(CLE_DE_LA_REUNION, { vu: true });
     const q: QuestionDeReunion = { id, voisins, explication: premiere ? explicationDeLaReunion(reunion) : null };
     setQuestion(q);
-    // L'espace insécable avant « ? » : le point d'interrogation ne part jamais seul à la ligne.
+    // Écrite en signes (« A ⋈ B 🔒 ») ; dite en mots. L'espace insécable avant « ? » : le point d'interrogation ne part
+    // jamais seul à la ligne.
     const texte = `Réunir ${thePlace(nom(id))} et ${voisins.length === 1 ? thePlace(nom(voisins[0])) : 'quel lieu'}\u00a0? Les deux lieux ne se sépareront plus.`;
+    setLigne(null);
     setPhrase(texte);
-    setResume(premierePhrase(texte));
     dire(q.explication ? `${texte} ${q.explication}` : texte);
   };
   const annulerReunion = () => {
     setQuestion(null);
-    annoncer('Rien n’est réuni.');
+    annoncer(null, '');
   };
 
   const reunir = (id: BiomeId, autre: BiomeId) => {
@@ -394,25 +439,22 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     setQuestion(null);
     if (!session || enCours.current) return;
     const r = joinIslands(w, id, autre);
-    if (!r.ok) return annoncer(refus(r.reason, mot));
+    if (!r.ok) return direRefus(refus(r.reason));
     setSession(recordPose(session, w, r.world));
     arrange(r.world);
     setChoix(null);
     setCadre({ rect: emprise(r.world, id), z: placeIn(r.world, id).altitude, seq: ++seq.current });
     if (sons) sonDeLaPose();
-    // Des phrases courtes, une idée chacune, sans symbole ; « réuni » s'accorde avec le premier lieu.
-    const reunis = joinedSentence(nom(id), nom(autre));
-    annoncer(
-      [reunis, 'Les deux lieux bougent ensemble.', r.relink.length ? mot.aReposer(r.relink.length) : '', `${reunion.nom} se construit depuis le panneau de l’île.`, 'Défaire annule la réunion.'].filter(Boolean).join(' '),
-      reunis,
-    );
+    // Écrit « A ⋈ B » ; dit en mots, « réuni » accordé avec le premier lieu.
+    const n = r.relink.length;
+    annoncer({ genre: 'reunis', a: nom(id), b: nom(autre), aReposer: n }, [joinedSentence(nom(id), nom(autre)), n ? mot.aReposer(n) : ''].filter(Boolean).join(' '));
   };
 
   const ouvrirLaListe = () => {
     if (!ouvert) ouvrir();
     setListe(true);
     setExplication(false);
-    if (!loadJSON<{ vu: boolean }>(CLE_DE_L_EXPLICATION, { vu: false }).vu) {
+    if (EXPLICATIONS_DE_LA_PREMIERE_FOIS && !loadJSON<{ vu: boolean }>(CLE_DE_L_EXPLICATION, { vu: false }).vu) {
       setExplication(true);
       saveJSON(CLE_DE_L_EXPLICATION, { vu: true });
       dire(explicationDeLaLiaison(mot));
@@ -443,7 +485,7 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     switch (i.genre) {
       case 'mer':
         if (choix) choisir(snapChoice(w, choix, i.point));
-        else annoncer('Touche d’abord un lieu, un gardien, une borne ou une liaison.');
+        else direTexte('Touche d’abord un lieu, un gardien, une borne ou une liaison.');
         return true;
       case 'ile': {
         const p = i.sol ? versMonde(i.sol) : null;
@@ -457,7 +499,7 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
           return true;
         }
         const c = chooseIsland(w, i.id);
-        if (!c) annoncer(refus('fixe', mot));
+        if (!c) direRefus(refus('fixe'));
         else choisir(c);
         return true;
       }
@@ -466,7 +508,7 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
         else {
           const c = chooseIsland(w, i.id);
           if (c) choisir(c);
-          else annoncer(refus('fixe', mot));
+          else direRefus(refus('fixe'));
         }
         return true;
       case 'borne': {
@@ -508,7 +550,7 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     choix,
     vue,
     phrase,
-    resume,
+    ligne,
     liste,
     ouvrirLaListe,
     fermerLaListe,
@@ -537,12 +579,6 @@ export function useAmenagement({ world, a, arrange, nom, reduceMotion, habillage
     voisinAReunir: (id) => voisinAReunir(world, id),
     choisirDirect: (c) => choisir(c),
   };
-}
-
-/** La première phrase d'un texte (jusqu'au premier point, point d'interrogation ou d'exclamation suivi d'une espace). */
-function premierePhrase(texte: string): string {
-  const m = /^.*?[.?!](?=\s|$)/.exec(texte);
-  return m ? m[0] : texte;
 }
 
 /** Deux places de la grille sont-elles la même (orientation comprise) ? */

@@ -61,7 +61,7 @@ const EARLY = {
   },
   progress: { xp: 180, totalAnswers: 40, correctAnswers: 31, sessionsCompleted: 4, badges: badges(3) },
 };
-/** Le début, la Mine reliée : la Rivière a deux départs (« Partir d'une autre île », GD-9). */
+/** Le début, la Mine reliée : la Rivière a deux départs (« Autre départ », GD-9). */
 const EARLY_MINE = { ...EARLY, game: { ...EARLY.game, world: { ...EARLY.game.world, links: [...EARLY.game.world.links, 'french-6e-phonology-french-6e-letter-confusion'] } } };
 /** Au milieu des Premiers Rivages : des îles ouvertes, des bâtiments finis, la coque du navire commencée. */
 const six = islandsOf('6e');
@@ -257,13 +257,13 @@ function ouvrirLaFiche(objet) {
     await page.waitForTimeout(2500);
   };
 }
-/** Ouvre la fiche d'une île pâle, touche « Relier », puis « Partir d'une autre île » (l'état préparé a deux départs). */
+/** Ouvre la fiche d'une île pâle, touche « Relier », puis le chevron « Autre départ » (l'état préparé a deux départs). */
 function relierDepuisUneAutreIle(ile) {
   return async (page) => {
     await ouvrirLaFiche({ genre: 'ile', id: ile })(page);
     await page.getByRole('button', { name: 'Relier' }).click();
     await page.waitForTimeout(1500);
-    const autre = page.getByRole('button', { name: /Partir d.une autre île/ });
+    const autre = page.getByRole('button', { name: /^Autre départ/ });
     await autre.click();
     // Le bandeau d'un succès gagné par l'état préparé cacherait le cadrage de la liaison.
     const bandeau = page.locator('.celebration button[aria-label="Fermer"]');
@@ -289,12 +289,12 @@ function amenager(ile, point) {
     await page.waitForTimeout(2500);
   };
 }
-/** Touche « Aménager », puis « Aménager en liste » (au téléphone en grand texte), et choisit la Rivière des fractions. */
+/** Touche « Aménager », puis « En liste » (au téléphone en grand texte), et choisit la Rivière des fractions. */
 async function amenagerEnListe(page) {
   await fermerLesBandeaux(page);
   await page.getByRole('button', { name: /^Aménager/ }).click();
   await page.waitForTimeout(500);
-  await page.getByRole('button', { name: /Aménager en liste/ }).click();
+  await page.getByRole('button', { name: 'En liste', exact: true }).click();
   await page.waitForTimeout(800);
   await page.getByRole('button', { name: 'Déplacer Rivière des fractions' }).click();
   await page.waitForTimeout(800);
@@ -317,7 +317,7 @@ function amenagerGeste(ile, point, ms) {
   return async (page) => {
     await choisir(page);
     await page.evaluate((ms) => (window.__dysappsGesteA = ms), ms);
-    await page.getByRole('button', { name: /Poser ici/ }).click();
+    await page.getByRole('button', { name: 'Poser', exact: true }).click();
     await page.waitForTimeout(2500);
   };
 }
@@ -336,7 +336,7 @@ function amenagerGesteFleche(ile, fleche, ms) {
     await page.getByRole('button', { name: fleche, exact: true }).click();
     await page.waitForTimeout(2500);
     await page.evaluate((ms) => (window.__dysappsGesteA = ms), ms);
-    await page.getByRole('button', { name: /Poser ici/ }).click();
+    await page.getByRole('button', { name: 'Poser', exact: true }).click();
     await page.waitForTimeout(2500);
   };
 }
@@ -353,7 +353,7 @@ function reunirQuestion(ile) {
     await page.waitForTimeout(800);
   };
 }
-/** Réunit `ile` à `autre` (la question, puis « Réunir à … »), ferme le mode, ouvre leur digue, la pose entière et referme son panneau. */
+/** Réunit `ile` à `autre` (la question, puis « Réunir »), ferme le mode, ouvre leur digue, la pose entière et referme son panneau. */
 function reunir(ile, autre) {
   const question = reunirQuestion(ile);
   return async (page) => {
