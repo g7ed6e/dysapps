@@ -2,7 +2,8 @@ import { DISCIPLINES, DOMAINES, PROGRAMME, SOURCES, byId, domaineOf, entriesOf }
 import { EXCLUSIONS } from './exclusions';
 import { COFFRE_HORS_LISTE, MOTS_OUTILS_CE1, MOTS_OUTILS_CP, MOTS_OUTILS_SOURCE, motDictable, motsOutilsDictables } from './functionWords';
 
-const ID = /^c[34]\.(fr|ma|en|de|es|hg|sv|pc|te)\.[a-z0-9-]+\.[a-z0-9-]+$/;
+const SHORTS = Object.values(DISCIPLINES).map((d) => d.short).join('|');
+const ID = new RegExp(`^c[34]\\.(${SHORTS})\\.[a-z0-9-]+\\.[a-z0-9-]+$`);
 const straightApostrophe = (t: string) => t.includes("'");
 
 /** Les LV2 commencent en 5e : elles n'ont que le cycle 4. */
@@ -71,7 +72,7 @@ it('les libellés sont courts, sans apostrophe droite ni barre verticale, avec u
   }
   const domaineIds = DOMAINES.map((d) => d.id);
   expect(new Set(domaineIds).size).toBe(domaineIds.length);
-  for (const d of DOMAINES) expect(d.id).toMatch(/^c[34]-(fr|ma|en|de|es|hg|sv|pc|te)-[a-z0-9-]+$/);
+  for (const d of DOMAINES) expect(d.id).toMatch(new RegExp(`^c[34]-(${SHORTS})-[a-z0-9-]+$`));
 });
 
 it('les sources disent d’où vient le texte : jeu de données, PDF, licence, texte réglementaire, date', () => {

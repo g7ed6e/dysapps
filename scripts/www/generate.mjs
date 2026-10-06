@@ -259,7 +259,7 @@ function programmesPage(d) {
   const lines = [
     '# Programmes officiels',
     '',
-    'Chaque mission d’Archipéo et du portail cite les compétences du programme officiel qu’elle travaille. Cette page les met en face du programme, domaine par domaine : ce qui est travaillé (et par quelle mission), ce qui reste **à couvrir** (la feuille de route du contenu) et ce qui est **hors périmètre** d’une application d’entraînement (l’oral, l’écriture libre, la lecture d’œuvres complètes, la géométrie de construction). Le référentiel est dans `src/curriculum/` ; les libellés sont des résumés fidèles du texte officiel, dont la page est indiquée ; le texte fait foi.',
+    'Chaque mission d’Archipéo et du portail cite les compétences du programme officiel qu’elle travaille. Cette page les met en face du programme, domaine par domaine : ce qui est travaillé (et par quelle mission), ce qui reste **à couvrir** (la feuille de route du contenu) et ce qui est **hors périmètre** d’une application d’entraînement (l’oral, l’écriture libre, la lecture d’œuvres complètes, la géométrie de construction). Le référentiel est dans `src/curriculum/` ; les libellés sont des résumés fidèles du texte officiel, dont la page est indiquée (« à vérifier » quand elle n’a pas encore été relue dans le texte en vigueur) ; le texte fait foi.',
     '',
     'Le cycle 3 se termine en 6e ; le cycle 4 couvre la 5e, la 4e et la 3e, sans répartition par année dans le texte officiel. Une île de 5e, 4e ou 3e peut consolider une compétence du cycle 3 ; une île de 6e ne travaille jamais le cycle 4.',
     '',
@@ -287,7 +287,7 @@ function programmesPage(d) {
         const entries = PROGRAMME.filter((e) => e.domaine === dom.id);
         lines.push(`### ${dom.title} {#${dom.id}}`, '');
         const attendus = [...new Set(entries.map((e) => e.attendu))];
-        lines.push(`*Attendus de fin de cycle (p. ${dom.page}) : ${attendus.map((a) => `${a.replace(/\.$/, '')}`).join(' ; ')}.*`, '');
+        lines.push(`*Attendus de fin de cycle (p. ${dom.page}${dom.unverified ? ', à vérifier' : ''}) : ${attendus.map((a) => `${a.replace(/\.$/, '')}`).join(' ; ')}.*`, '');
         lines.push(
           table(
             ['Compétence', 'Page', 'Missions'],
@@ -299,7 +299,7 @@ function programmesPage(d) {
                 : x
                   ? `*${x.kind === 'a-couvrir' ? 'À couvrir' : 'Hors périmètre'} — ${x.motif}*`
                   : '*aucune*';
-              return [e.competence, String(e.page), quests];
+              return [e.competence, e.unverified ? `${e.page} (à vérifier)` : String(e.page), quests];
             }),
           ),
           '',

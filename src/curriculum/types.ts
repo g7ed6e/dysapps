@@ -40,7 +40,7 @@ export interface ProgrammeSource {
 
 /** Un domaine du programme (« Étude de la langue », « Thème A – Nombres et calculs », « Écouter et comprendre »). */
 export interface ProgrammeDomaine {
-  /** Ancre stable, ex. « c3-fr-langue », « c4-es-lire » (c<cycle>-<fr|ma|en|de|es|hg|sv|pc|te>-<domaine>). */
+  /** Ancre stable, ex. « c3-fr-langue », « c4-es-lire » (c<cycle>-<short>-<domaine>, short : DISCIPLINES). */
   id: string;
   cycle: Cycle;
   discipline: Discipline;
@@ -48,11 +48,13 @@ export interface ProgrammeDomaine {
   title: string;
   /** Page du PDF où le domaine commence. */
   page: number;
+  /** Page estimée, pas encore lue dans le texte en vigueur : le site l'affiche « à vérifier ». */
+  unverified?: true;
 }
 
 /** Une compétence du programme, au grain d'une mission : ce qu'une mission peut travailler. */
 export interface ProgrammeEntry {
-  /** Identifiant stable : c<cycle>.<fr|ma|en|de|es|hg|sv|pc|te>.<domaine>.<compétence>. */
+  /** Identifiant stable : c<cycle>.<short>.<domaine>.<compétence> (short : DISCIPLINES). */
   id: string;
   cycle: Cycle;
   discipline: Discipline;
@@ -64,6 +66,8 @@ export interface ProgrammeEntry {
   competence: string;
   /** Page du PDF source. */
   page: number;
+  /** Libellé et page estimés, pas encore lus dans le texte en vigueur : le site l'affiche « à vérifier ». */
+  unverified?: true;
 }
 
 export type ExclusionKind = 'hors-perimetre' | 'a-couvrir';
