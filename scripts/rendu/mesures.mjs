@@ -726,6 +726,12 @@ async function reussirLesEpreuves(page, n, reponses) {
 }
 
 /** Le panneau de l'île ouvert par son bouton (il ne s'ouvre jamais tout seul), quand `selecteur` n'est pas déjà à l'écran. */
+/** Recule ou rapproche la vue (`zoomer` : autant de touches − ou + que sa valeur), le monde ayant le focus. */
+async function zoomerLaVue(page, zoomer) {
+  await page.locator('.voxel-canvas').first().focus();
+  for (let i = 0; i < Math.abs(zoomer); i++) await page.keyboard.press(zoomer > 0 ? '+' : '-');
+}
+
 async function ouvrirLePanneauPour(page, selecteur) {
   if (await page.locator(selecteur).count()) return;
   const bouton = page.getByRole('button', { name: /^Ouvrir le panneau de / });
@@ -994,10 +1000,7 @@ async function scenes() {
         // le temps que la caméra glisse pour la laisser voir (16 pas, deux secondes de la scène).
         if (fiche) await page.evaluate((objet) => window.__dysappsFiche?.(objet), fiche);
         // La Carte zoomée (`zoomer`) : la touche +, le monde ayant le focus, autour du centre de la place libre.
-        if (zoomer) {
-          await page.locator('.voxel-canvas').first().focus();
-          for (let i = 0; i < Math.abs(zoomer); i++) await page.keyboard.press(zoomer > 0 ? '+' : '-');
-        }
+        if (zoomer) await zoomerLaVue(page, zoomer);
         // Plus loin dans le temps de la scène (la pose finie, par exemple), du même pas que la préparation.
         for (let i = 0; i < (pasEnPlus ?? (fiche || zoomer ? 16 : 0)); i++) {
           await page.clock.runFor(125);
@@ -1036,8 +1039,7 @@ async function scenes() {
         if (!(await preparerLaScene(page, WAIT))) throw new Error(`aucun monde 3D en ${WAIT / 1000} s`);
         // Reculé ou rapproché (`zoomer` : la touche − ou +, le monde ayant le focus), le temps que la caméra s'y pose.
         if (zoomer) {
-          await page.locator('.voxel-canvas').first().focus();
-          for (let i = 0; i < Math.abs(zoomer); i++) await page.keyboard.press(zoomer > 0 ? '+' : '-');
+          await zoomerLaVue(page, zoomer);
           for (let i = 0; i < 16; i++) {
             await page.clock.runFor(125);
             await page.waitForTimeout(30);

@@ -78,9 +78,10 @@ export function meshOf(g: MeshGroup, surface: Surface | null = null): THREE.Mesh
 
 /**
  * Un maillage que Three.js ne dessine pas quand il est hors de l'écran. Un matériau sert souvent une ou deux îles : à la
- * vue d'une île, la plupart des maillages du terrain sont hors champ (6e : 181 → 94 appels, étude du 06/10/2026). Sa
+ * vue d'une île, la plupart des maillages du terrain sont hors champ (6e : 182 → 96 appels, mesuré le 06/10/2026). Sa
  * sphère englobante grandit de la hauteur dont le mode « Aménager » soulève un lieu (./arrange.ts), qui déplace ses
- * sommets dans le shader.
+ * sommets dans le shader. Ne pas recalculer cette sphère ensuite (computeBoundingSphere, applyMatrix4) : repasser par
+ * trieParLaVue.
  */
 function trieParLaVue(mesh: THREE.Mesh): THREE.Mesh {
   mesh.geometry.computeBoundingSphere();
