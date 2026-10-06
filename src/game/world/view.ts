@@ -11,6 +11,7 @@ import type { Ancrage, Intention, ObjetDeLaFiche } from './layout';
 import type { EtatsDesObjets } from './model';
 import { grilleDe } from './grid';
 import type { Rectangle } from './placement';
+import type { CleDePoignee, PoigneesDuChoix } from './arrangeHandles';
 
 /** Ce qu'est une case du dessin du mode « Aménager » (GD-9 ; calculé par ./arrangeView.ts). */
 export type ArrangeCellKind = 'fantome' | 'place' | 'liaison' | 'barree' | 'croix';
@@ -43,6 +44,8 @@ export interface ArrangeView {
   lieu?: string;
   /** Ce que la vue garde entier à l'écran : le fantôme (les deux lieux réunis et leur réunion), à hauteur de l'eau. */
   cadre?: CadreDuMode;
+  /** Les flèches et « Tourner », dessinées sur l'eau autour du choix (./arrangeHandles.ts). */
+  poignees?: PoigneesDuChoix;
 }
 
 /** Un rectangle du monde (en cases, x et y) à garder entier à l'écran, à une hauteur ; `seq` change à chaque demande. */
@@ -52,17 +55,22 @@ export interface CadreDuMode {
   seq: number;
 }
 
-/**
- * Où se tient le choix du mode « Aménager » à l'écran, image après image (pixels CSS, dans le repère de la scène de la
- * page, `[data-scene]`) : son milieu (`x`, `y`), sa demi-largeur et sa demi-hauteur (`rx`, `ry`), et la place libre
- * (`libre` : sous la ligne du mode, au-dessus de sa barre, sans les boutons du haut). Les flèches posées autour de lui
- * (ArrangeHandles.tsx) s'y placent.
- */
-export interface ChoixALEcran {
+/** Une poignée dessinée dans le monde, à l'écran : son milieu et sa taille (pixels CSS, `POIGNEE_MIN_PX` au moins). */
+interface PoigneeALEcran {
+  cle: CleDePoignee;
   x: number;
   y: number;
-  rx: number;
-  ry: number;
+  w: number;
+  h: number;
+}
+
+/**
+ * Où se tiennent les poignées du mode « Modifier le plan » à l'écran, image après image (pixels CSS, dans le repère de
+ * la scène de la page, `[data-scene]`), et la place libre (`libre` : sous la ligne du mode, au-dessus de sa barre, sans
+ * les boutons du haut). Les boutons transparents posés sur les poignées dessinées (ArrangeHandles.tsx) s'y placent.
+ */
+export interface ChoixALEcran {
+  poignees: readonly PoigneeALEcran[];
   libre: Rectangle;
 }
 
@@ -319,10 +327,17 @@ export interface WorldViewProps {
    * Le mode « Aménager » (GD-9), sur la Carte : `vue`, le dessin du choix en cours (fantôme, places autour, liaisons
    * retracées et barrées, lieu soulevé ; ./arrangeView.ts), ou rien. Dans le mode, toucher la mer donne une intention
    * `mer` ; avec un choix, glisser le doigt cale le fantôme sous lui (un raccourci) au lieu de faire glisser la vue ; et
-   * si le fantôme sort de l'écran, la vue le suit. `ecran` reçoit, à chaque image où il change, où se tient le choix à
-   * l'écran (rien sans choix, ni pendant le geste) : les flèches s'y posent autour de lui. La vue simple l'ignore.
+   * si le fantôme sort de l'écran, la vue le suit. Les poignées (les flèches et « Tourner ») sont dessinées sur l'eau autour
+   * du choix ; `ecran` reçoit, à chaque image où elles bougent, où elles se tiennent à l'écran (rien sans choix, ni
+   * pendant le geste) : la page y pose leurs boutons transparents. La vue simple l'ignore.
    */
-  amenager?: { vue: ArrangeView | null; cadre?: CadreDuMode | null; ecran?: (b: ChoixALEcran | null) => void } | null;
+  amenager?: {
+    vue: ArrangeView | null;
+    cadre?: CadreDuMode | null;
+    ecran?: (b: ChoixALEcran | null) => void;
+    /** Les touchers des boutons posés sur les poignées : la poignée touchée s'enfonce dans le monde. */
+    touchers?: { ecouter(f: (cle: CleDePoignee) => void): () => void };
+  } | null;
   /** Le geste de la pose en cours dans le mode « Aménager » (./arrangeGesture.ts), ou rien. */
   geste?: ArrangeGesture | null;
   /** Change à chaque appui sur « Recentrer » : la vue efface son décalage et revient en douceur à son cadrage. */

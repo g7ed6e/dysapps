@@ -4,6 +4,7 @@ import { APPEL_DU_PASSAGE, bornesCost, linkCubes, worstCaseOfRegion, commandesCo
 import { ARCHIPELAGO_IDS, type ArchipelagoId, mapOf } from './map';
 import { chooseGuardian, chooseIsland } from './arrangeMode';
 import { arrangeView, arrangeViewCost } from './arrangeView';
+import { BUDGET_DES_POIGNEES, coutDesPoignees } from './arrangeHandles';
 import { buildMesh } from './mesher';
 import { worldCubes } from './terrain';
 import { SHORT_LENGTH, LONG_LENGTH } from './routing';
@@ -224,9 +225,29 @@ it('GD-9 : au pire de chaque région, le dessin d’un choix du mode « Aménage
     // Les places libres autour du fantôme : sept sur sept au plus, la sienne non comprise.
     expect(plus.places, a).toBeLessThanOrEqual(48);
     expect(pire.triangles + plus.triangles, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.triangles);
-    // Un appel de plus, pendant un choix seulement (mainteneur, 5 octobre 2026 : quelques appels passagers acceptés).
-    expect(plus.drawCalls, a).toBeLessThanOrEqual(1);
+    // Deux appels de plus, pendant un choix seulement (mainteneur, 5 octobre 2026 : quelques appels passagers acceptés) :
+    // les cases du choix, et les poignées dessinées autour de lui (directeur artistique, 6 octobre 2026).
+    expect(plus.drawCalls, a).toBeLessThanOrEqual(2);
   }
+});
+
+it('GD-9 : les poignées du mode « Modifier le plan » (les flèches et « Tourner ») : un appel, 400 triangles au plus, seulement pendant un choix', () => {
+  const { world } = toutConstruit();
+  expect(BUDGET_DES_POIGNEES).toEqual({ triangles: 400, drawCalls: 1 });
+  for (const a of ARCHIPELAGO_IDS)
+    for (const id of mapOf(a).map((d) => d.id))
+      for (const c of [chooseIsland(world, id), chooseGuardian(world, id)].filter((c) => c !== null)) {
+        const v = arrangeView(world, c);
+        for (const style of ['blocs', 'peint'] as const) {
+          const p = coutDesPoignees(v.poignees, style);
+          expect(p.triangles, `${id} ${style}`).toBeLessThanOrEqual(BUDGET_DES_POIGNEES.triangles);
+          expect(p.drawCalls, `${id} ${style}`).toBe(1);
+        }
+        // Dans le coût du dessin du choix : un appel pour les cases, un pour les poignées.
+        expect(arrangeViewCost(v).triangles).toBe(2 * v.cases.length + coutDesPoignees(v.poignees, 'blocs').triangles);
+      }
+  // Hors d'un choix, rien.
+  expect(arrangeViewCost(null)).toEqual({ triangles: 0, drawCalls: 0 });
 });
 
 it('GD-9 : une liaison au plus long, de chaque sorte, ne prend aucun matériau nouveau (aucun appel de plus)', () => {

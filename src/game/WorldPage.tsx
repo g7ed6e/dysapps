@@ -1052,7 +1052,7 @@ export function WorldPage() {
             liaisonCadree={fiche?.cadrer && fiche.objet.genre === 'ouvrage' ? fiche.objet.id : null}
             // Dans le mode « Aménager », « Poser » ou ✓ Valider est le seul élément mis en avant.
             marker={enAmenageant ? null : marker}
-            amenager={enAmenageant ? { vue: amenagement.vue, cadre: amenagement.cadre, ecran: suiviDuChoix.suivre } : null}
+            amenager={enAmenageant ? { vue: amenagement.vue, cadre: amenagement.cadre, ecran: suiviDuChoix.suivre, touchers: suiviDuChoix.touchers } : null}
             geste={amenagement.geste}
             imageDeLaCarte={imageDeLaCarte}
             vehicle={vehicle}
@@ -1207,7 +1207,7 @@ export function WorldPage() {
             />
           </div>
         )}
-        {/* Les flèches, « Tourner » et « Réunir », posées autour du choix (au-dessus de la scène, dans sa place libre). */}
+        {/* Les boutons transparents des flèches et de « Tourner », sur leurs poignées dessinées dans le monde. */}
         {enAmenageant && <ArrangeHandles amenagement={amenagement} suivi={suiviDuChoix} />}
         {enAmenageant ? (
           <ArrangeBar amenagement={amenagement} />

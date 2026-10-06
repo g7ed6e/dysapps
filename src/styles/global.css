@@ -3754,8 +3754,9 @@ figure.class-table {
 /* ===== Le mode « Aménager » (GD-9), sur la Carte : la barre du mode à place fixe, en bas, à la place de la barre du
    monde (↶, « Poser », puis « Annuler » et « Valider », qui ferment le mode ; décision du mainteneur, 6 octobre 2026) ;
    les boutons gardent leur place, éteints quand ils ne font rien ; 48 px au moins (« Poser », « Annuler » et
-   « Valider » : 56 px). Un seul bouton mis en avant (`primary`) : « Poser » pendant un choix, ✓ Valider sinon. Les
-   flèches se posent autour du choix (`.arrange-handles`) ; en vue simple, la croix reste dans la barre. ===== */
+   « Valider » : 56 px). Un seul bouton mis en avant (`primary`) : « Poser » pendant un choix, ✓ Valider sinon ;
+   « Réunir » entre « Poser » et « Annuler », quand il sert. Les flèches et « Tourner » sont dessinées dans le monde,
+   leurs boutons transparents par-dessus (`.arrange-handles`) ; en vue simple, la croix reste dans la barre. ===== */
 .arrange-bar {
   position: absolute;
   left: 0.6rem;
@@ -3903,14 +3904,28 @@ figure.class-table {
   pointer-events: auto;
   min-width: 48px;
   min-height: 48px;
-  padding: 0 8px;
-  border-radius: var(--radius-pill);
   will-change: transform;
 }
-:root[data-texte="grand"] .arrange-handles .arrange-handle {
-  font-size: min(1em, 24px);
-  padding: 4px 8px;
-  border-radius: 12px;
+/* Les poignées sont dessinées dans le monde (three/arrangeHandles.ts) : leur bouton, par-dessus, est transparent, sans
+   rien à lire ; seul son focus se voit (le contour du focus, bordé de blanc : lisible sur l'eau de jour comme de nuit). */
+.arrange-handle {
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  box-shadow: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.arrange-handle:hover,
+.arrange-handle:active {
+  background: transparent;
+  box-shadow: none;
+  transform: none;
+}
+.arrange-handles-poses .arrange-handle:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px #fff, inset 0 0 0 2px #fff;
 }
 /* Un bouton d'icône (GD-9, piste A) : l'icône seule, son nom pour les lecteurs d'écran ; en grand texte, son mot
    dessous, plafonné à 24 px, comme la barre du monde. */

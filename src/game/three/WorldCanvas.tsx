@@ -221,7 +221,9 @@ export default function WorldCanvas({
       const libre = contourner(lue.libre, { x: b.left - vue.left + b.width / 2, y: b.top - vue.top + b.height / 2, w: b.width, h: b.height });
       return libre === lue.libre ? lue : { ...lue, libre };
     };
-    const etiquettes = creerEtiquettes(monde, el, camera, bornes.donneesDeLaFleche, () => personnages.avatar, instant, plaques, lecteurDeLaPlaceDeLaBulle);
+    // Les poignées du mode « Modifier le plan » (créées plus bas, lues seulement à l'animation) : des obstacles durs.
+    const poigneesDuMode = { boites: (cam: THREE.Camera, W: number, H: number) => amenagement.poignees.boites(cam, W, H), get version() { return amenagement.poignees.version; } };
+    const etiquettes = creerEtiquettes(monde, el, camera, bornes.donneesDeLaFleche, () => personnages.avatar, instant, plaques, lecteurDeLaPlaceDeLaBulle, poigneesDuMode);
     const personnages = creerPersonnages(monde, () => cubesDuMonde.champ(), instant, lumiere);
     const cubesDuMonde = creerCubes(monde, large, lumiere, instant);
     const navire = creerNavire(monde, personnages, cubesDuMonde, derniers, instant, vehicleRef, voyageRef);
@@ -264,8 +266,8 @@ export default function WorldCanvas({
         // La hauteur réelle de la barre du mode et de sa phrase (un pli ouvert compris) : le fantôme se cadre dans la
         // bande libre entre les deux.
         const libre = lirePlaceReelle(el);
-        // Assez de marge pour les flèches posées autour du choix (48 px et leur écart) : elles ne se tassent pas au bord.
-        const marge = 64;
+        // Une marge pour les poignées, déjà comprises dans le cadre (`garderEnVue` reçoit leur emprise) : rien au ras du bord.
+        const marge = 24;
         // Les quatre coins dans la place libre : rien à faire.
         const dedans = [r.x0, r.x1].every((x) =>
           [r.y0, r.y1].every((y) => {
@@ -478,10 +480,17 @@ export default function WorldCanvas({
     w.amenagement.poser(vueDuMode);
     // Le lieu choisi : son nom n'est écrit qu'une fois, sur son fantôme.
     w.etiquettes.cacher(vueDuMode?.lieu ?? null);
-    if (vueDuMode) w.garderEnVue(vueDuMode.cadre ?? { rect: { x0: vueDuMode.suivre.x, y0: vueDuMode.suivre.y, x1: vueDuMode.suivre.x + 1, y1: vueDuMode.suivre.y + 1 }, z: vueDuMode.suivre.z });
+    // La vue garde à l'écran le fantôme et ses poignées sur l'eau autour de lui.
+    if (vueDuMode) {
+      const p = vueDuMode.poignees;
+      w.garderEnVue(p ? { rect: p.emprise, z: p.z } : (vueDuMode.cadre ?? { rect: { x0: vueDuMode.suivre.x, y0: vueDuMode.suivre.y, x1: vueDuMode.suivre.x + 1, y1: vueDuMode.suivre.y + 1 }, z: vueDuMode.suivre.z }));
+    }
     // Reposé aussi quand la scène est refaite (un lieu posé, la préférence de mouvement).
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vueDuMode, reduceMotion, archipelago]);
+  // ---- Le bouton d'une poignée touché : la poignée dessinée s'enfonce et remonte
+  const touchersDuMode = amenager?.touchers;
+  useEffect(() => touchersDuMode?.ecouter((cle) => world.current?.amenagement.toucher(cle)), [touchersDuMode]);
   // ---- Après une réunion : la paire et sa construction entières à l'écran (la scène est refaite, la vue les cadre)
   const cadreDuMode = amenager?.cadre ?? null;
   useEffect(() => {

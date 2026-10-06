@@ -93,6 +93,11 @@ export function creerEtiquettes(
    * Carte y reste entière ; sans elle (les tests), toute la vue.
    */
   lirePlace: ((contexte: string) => PlaceLue) | null = null,
+  /**
+   * Les poignées du mode « Modifier le plan » (three/arrangeHandles.ts) : des obstacles durs, aucune étiquette ne se
+   * pose jamais dessus (intention du directeur artistique, 6 octobre 2026).
+   */
+  poignees: { boites(cam: THREE.Camera, W: number, H: number): LabelBox[]; readonly version: number } | null = null,
 ): Etiquettes {
   const { scene } = monde;
   // Blocland (piste B, choisie par le mainteneur le 4 octobre 2026), puis Archipéo (choix « 1a », même jour) : sur la
@@ -297,7 +302,7 @@ export function creerEtiquettes(
       return [{ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, w: 2 * r.rayon * parPx + 8, h: Math.abs(a.y - b.y) }];
     });
   /** Ce que visait la caméra au dernier écart hors de la Carte. */
-  const vise = { pos: new THREE.Vector3(), target: new THREE.Vector3(), w: 0, h: 0, n: 0, ids: [] as number[], zones: '', tenues: 0, plaques: -1 };
+  const vise = { pos: new THREE.Vector3(), target: new THREE.Vector3(), w: 0, h: 0, n: 0, ids: [] as number[], zones: '', tenues: 0, plaques: -1, poignees: -1 };
   /**
    * Les étiquettes tenues, en un nombre (sans rien allouer à chaque image) : l'indice de l'île de la flèche « Commence
    * ici » et celui de l'île la plus proche du bonhomme, plus un (0 : aucune), en `cle = fleche * 1024 + bonhomme`.
@@ -363,16 +368,18 @@ export function creerEtiquettes(
     // la clé ne se refait que si l'un d'eux a bougé (pas de chaîne construite à chaque image).
     const tenuesCle = spread ? 0 : ilesTenues(sprites);
     const plaquesVersion = plaques?.version ?? 0;
-    if (!spread && labelLayout && vise.plaques === plaquesVersion && vise.tenues === tenuesCle && vise.n === sprites.length && vise.w === W && vise.h === H && vise.zones === zonesCle && vise.pos.equals(camGoal.pos) && vise.target.equals(camGoal.target) && sprites.every((s, i) => vise.ids[i] === s.id)) return;
+    const poigneesVersion = poignees?.version ?? 0;
+    if (!spread && labelLayout && vise.plaques === plaquesVersion && vise.poignees === poigneesVersion && vise.tenues === tenuesCle && vise.n === sprites.length && vise.w === W && vise.h === H && vise.zones === zonesCle && vise.pos.equals(camGoal.pos) && vise.target.equals(camGoal.target) && sprites.every((s, i) => vise.ids[i] === s.id)) return;
     const av = bonhomme().position;
     // Hors de la Carte, les îles dont le nom ne se tait jamais tant qu'elles se voient : celle de la flèche « Commence
     // ici » et celle du bonhomme (l'île la plus proche de lui).
     const tenues = indicesTenus(tenuesCle);
     vise.tenues = tenuesCle;
     vise.plaques = plaquesVersion;
+    vise.poignees = poigneesVersion;
     const montre = donnees();
     const marks = spread ? `${montre.ouvrage ?? montre.island ?? ''}:${av.toArray().map((v) => v.toFixed(0))}` : `reperes:${tenues.join(',')}:plaques${plaquesVersion}`;
-    const key = `${sprites.map((s) => s.id).join(',')}@${camGoal.pos.toArray().map((v) => v.toFixed(1))}>${camGoal.target.toArray().map((v) => v.toFixed(1))}@${W}x${H}@${marks}@${zonesCle}`;
+    const key = `${sprites.map((s) => s.id).join(',')}@${camGoal.pos.toArray().map((v) => v.toFixed(1))}>${camGoal.target.toArray().map((v) => v.toFixed(1))}@${W}x${H}@${marks}@${zonesCle}@p${poigneesVersion}`;
     // Sur la Carte, l'écart est autre : au retour, il se refait.
     if (spread) vise.n = -1;
     else {
@@ -420,7 +427,9 @@ export function creerEtiquettes(
     const carte = spread ? carteDesEtiquettes(sprites) : null;
     // Le tracé de l'ouvrage, un obstacle souple : les étiquettes l'évitent si elles peuvent, sans se taire pour lui.
     const souples = ouvrage ? souplesDuTrace(goalCamera, W, H) : [];
-    const vue = { zones, bulles, obstacles, souples, bounds: cadre, gap: 6 };
+    // Les poignées du mode « Modifier le plan », des obstacles durs : une étiquette ne s'y pose jamais, elle se tait plutôt.
+    const dures = poignees?.boites(goalCamera, W, H) ?? [];
+    const vue = { zones, bulles, obstacles, souples, bounds: cadre, gap: 6, dures };
     let offsets: LabelOffset[];
     let visibles: boolean[];
     let sansSigne: boolean[];

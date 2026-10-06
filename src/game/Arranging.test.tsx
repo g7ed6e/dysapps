@@ -101,6 +101,11 @@ describe('le mode « Aménager »', () => {
     const autour = screen.getByRole('group', { name: 'Déplacer' });
     expect(autour.closest('.arrange-bar')).toBeNull();
     for (const n of ['Nord', 'Sud', 'Ouest', 'Est', 'Tourner']) expect(within(autour).getByRole('button', { name: n })).toBeInTheDocument();
+    // Une poignée qui ne sert pas : son bouton reste là, `aria-disabled` (le toucher dit « Plus de place par là »).
+    for (const q of dernier.vue!.poignees!.liste) {
+      const b = autour.querySelector(`[data-cle="${q.cle}"]`)!;
+      expect(b.getAttribute('aria-disabled'), q.cle).toBe(q.dispo ? null : 'true');
+    }
     expect(dernier.vue?.cases.length).toBeGreaterThan(0);
     // Le nom du lieu choisi se pose sur son fantôme.
     expect(dernier.vue?.nom).toBe(VOLCAN);
@@ -279,8 +284,11 @@ describe('le mode « Aménager »', () => {
     act(() => void dernier.intention({ genre: 'ile', id: VOLCAN }));
     expect(screen.queryByRole('button', { name: 'Réunir' })).toBeNull();
     act(() => void dernier.intention({ genre: 'ile', id: TOUR }));
-    // Près du choix, avec les flèches, pas dans la barre.
-    expect(reunir().closest('.arrange-handles')).not.toBeNull();
+    // Dans la barre du bas, entre « Poser » et « Annuler » (intention du directeur artistique, 6 octobre 2026).
+    expect(reunir().closest('.arrange-bar')).not.toBeNull();
+    const ordre = Array.from(document.querySelectorAll('.arrange-bar button')).map((b) => b.getAttribute('aria-label') ?? b.textContent?.trim());
+    expect(ordre.indexOf('Réunir')).toBe(ordre.indexOf('Poser') + 1);
+    expect(ordre.indexOf('Annuler')).toBe(ordre.indexOf('Réunir') + 1);
     expect(reunir().className).not.toMatch(/primary/);
     // Le bouton allumé suffit : la ligne ne le redit pas en phrase.
     expect(screen.getByRole('status').textContent).not.toMatch(/réunir/);
@@ -333,9 +341,9 @@ describe('le mode « Aménager »', () => {
       expect(screen.getByRole('button', { name: 'Défaire la dernière pose' })).toHaveClass('bouton-icone');
       // La ligne : la même qu'à la tablette, des signes, dits en entier.
       act(() => void dernier.intention({ genre: 'ile', id: VOLCAN }));
-      // Les flèches autour du choix : des icônes nommées pour l'accessibilité, leur mot réservé au grand texte.
+      // Les flèches sont dessinées dans le monde : leurs boutons, transparents, n'ont rien à lire, seulement leur nom.
       const nord = screen.getByRole('button', { name: 'Nord' });
-      expect(nord.querySelector('.mot-sous-icone')?.textContent).toBe('Nord');
+      expect(nord.textContent).toBe('');
       expect(nord.closest('.arrange-bar')).toBeNull();
       expect(document.querySelector('.arrange-signes .signes-de-place')).not.toBeNull();
       expect(screen.getByRole('status').textContent).toBe(dernier.phrase);

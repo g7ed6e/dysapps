@@ -1,9 +1,9 @@
 // Le mode « Aménager » à l'écran (GD-9, point 1 ; piste A « des signes à la place des phrases ») : le bouton
 // « Modifier le plan » de la Carte et sa pastille, la ligne du mode (des signes : « Mine des lettres ↖ 4 ⬚ », dits en
 // mots par la voix), la question de « Réunir », la proposition de la liste au téléphone en grand texte, et la barre du
-// mode (↶, « Poser », puis « Annuler » et « Valider », qui le ferment ; décision du mainteneur, 6 octobre 2026 ;
-// « Annuler » demande confirmation quand quelque chose a bougé). Les
-// flèches, « Tourner » et « Réunir » se posent autour du choix (ArrangeHandles.tsx). Les icônes sans mot sont nommées
+// mode (↶, « Poser », « Réunir » quand il sert, puis « Annuler » et « Valider », qui le ferment ; décision du mainteneur,
+// 6 octobre 2026 ; « Annuler » demande confirmation quand quelque chose a bougé). Les flèches et « Tourner » sont
+// dessinées dans le monde autour du choix, leurs boutons transparents par-dessus (ArrangeHandles.tsx). Les icônes sans mot sont nommées
 // pour les lecteurs d'écran, leur mot dessous en grand texte (comme la barre du monde). Les icônes et les signes sont
 // communs aux deux univers. L'état du mode vient de `useAmenagement` (Arranging.tsx).
 import { useEffect, useState } from 'react';
@@ -265,10 +265,10 @@ export function ArrangeJoinQuestion({ amenagement, nom, className }: { amenageme
 
 /**
  * La barre du mode, à place fixe, en bas (décision du mainteneur, 6 octobre 2026) : ↶ « Défaire » en icône et
- * « Poser », puis les deux boutons qui ferment le mode, ✕ « Annuler » et ✓ « Valider », qui gardent leur mot partout
+ * « Poser », « Réunir » quand il sert (sur la Carte), puis les deux boutons qui ferment le mode, ✕ « Annuler » et ✓ « Valider », qui gardent leur mot partout
  * (en grand texte, il passe sous l'icône). Un seul bouton mis en avant : « Poser » pendant un choix, « Valider » quand
- * rien n'est en cours. Les boutons sans effet restent à leur place, éteints. Sur la Carte, les flèches et « Tourner » se
- * posent autour du choix (ArrangeHandles.tsx) ; en vue simple (`croix`), sans scène, la croix des flèches et « Tourner »
+ * rien n'est en cours. Les boutons sans effet restent à leur place, éteints. Sur la Carte, les flèches et « Tourner » sont
+ * dessinées autour du choix (ArrangeHandles.tsx) ; en vue simple (`croix`), sans scène, la croix des flèches et « Tourner »
  * restent dans la barre.
  */
 export function ArrangeBar({ amenagement, className, croix = false }: { amenagement: Amenagement; className?: string; croix?: boolean }) {
@@ -297,6 +297,10 @@ export function ArrangeBar({ amenagement, className, croix = false }: { amenagem
         <button type="button" className={`button arrange-pose${choix && !enQuestion ? ' primary' : ''}`} disabled={!choix || occupe || enQuestion} onClick={amenagement.poserIci}>
           <Icon name="poser" /> <span>Poser</span>
         </button>
+        {/* « Réunir », entre « Poser » et « Annuler », seulement quand il sert (sur la Carte ; la vue simple l'a dans sa liste). */}
+        {!croix && amenagement.reunirAvec && !occupe && (
+          <IconButton icone="reunir" nom="Réunir" className="arrange-reunir" aria-pressed={enQuestion} onClick={() => amenagement.demanderReunion()} />
+        )}
       </div>
       {/* Les deux boutons qui ferment le mode, toujours à la même place, jamais dans la partie qui défile. Quand quelque
           chose a bougé, « Annuler » demande confirmation à sa place : « Garder » ou « Annuler ». */}
