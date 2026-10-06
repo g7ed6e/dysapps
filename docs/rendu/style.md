@@ -111,7 +111,7 @@ Chaque type de bloc a une **texture 16 × 16 générée par le code** (`src/game
 - **Reliure** (`BLOC.reliure`, le Kiosque des témoins, HG-3) : sur le côté, des dos de livres debout, de trois ou quatre pixels de large, deux tons qui alternent, un creux d’un pixel entre eux, deux nerfs clairs sur chaque dos, aucune lettre ; sur le dessus, la tranche crème des pages. Cinq tons : les dos verticaux la séparent du lambris et de la rizière.
 - **Grès rose** (`BLOC.gres`, la Vallée des territoires, HG-3) : une pierre à grain fin semé par un hachage, des assises de cinq pixels à peine marquées, sans joint vertical. Quatre tons proches : ni les joints de la brique, ni les rangs de la tuile, ni le blanc veiné du marbre.
 
-Les paires de couleurs voisines (l’enluminure et l’obsidienne, la fonte et l’ardoise, la rizière et l’herbe, le grès rose et la brique) se distinguent par leur motif, jamais par la couleur seule ; elles restent à juger sur les captures (famille `histoire-geo-cycle4`).
+Les paires de couleurs voisines (l’enluminure et l’obsidienne, la fonte et l’ardoise, la rizière et l’herbe, le grès rose et la brique) se distinguent par leur motif, jamais par la couleur seule ; elles restent à juger sur les captures (famille `histoire-geo-college`).
 
 **Les bâtiments des îles d’histoire-géographie** (HG-2 et HG-3, `world/architect.ts`), dessinés bloc par bloc comme les autres, sans pièce nouvelle ni matériau de plus (les toits : terre cuite au Delta, à l’Imprimerie et à la Vallée, ardoise au Bourg et à l’Escale, ardoise enneigée au Kiosque dans Archipéo, `roofs.ts`) :
 
