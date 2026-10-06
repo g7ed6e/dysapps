@@ -96,6 +96,8 @@ export interface OptionsDeLArchitecture {
    * cette fonction, les lieux gardent leur dessin, même si le kit les nomme.
    */
   caseDuLieu?: (c: VoxelCube) => CaseDuLieu | null;
+  /** Les toitures à part (./neighborhood.ts, `OptionsDuVoisinage.toitures`). */
+  toitures?: ReadonlyMap<string, string>;
 }
 
 /** L'index du plan de chaque carte des bâtiments (world/construction.ts, `batimentsDe`, la garde par archipel). */
@@ -150,7 +152,7 @@ export function architectureDe(a: ArchipelagoId, cubes: readonly VoxelCube[], op
     if (!dansLesCases(c)) continue;
     const famille = kit.matieres[c.texture as TextureKind];
     if (!famille) continue;
-    const v = voisinageDe(c, index, { surLeVide: options.surLeVide });
+    const v = voisinageDe(c, index, { surLeVide: options.surLeVide, toitures: options.toitures });
     if (!v) continue;
     const { piece, rotation } = pieceDe(v);
     choisis.push({ c, famille, v, piece, rotation });

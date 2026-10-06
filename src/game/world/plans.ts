@@ -108,6 +108,12 @@ export interface PlanCell {
   y: number;
   z: number;
   block: BlockId;
+  /**
+   * Le bloc de la case dans le rendu Archipéo, quand il n'est pas `block` (world/architect.ts : le toit de terre cuite de
+   * la maison basse du quartier, de chaume dans Blocland). Seule la construction d'Archipéo le lit
+   * (world/construction/buildings.ts) ; le jeu, les sauvegardes et Blocland ne connaissent que `block`.
+   */
+  archipeo?: BlockId;
 }
 
 export interface PlanDef {

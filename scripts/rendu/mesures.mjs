@@ -569,18 +569,33 @@ const CAPTURES = [
   // siècles et la Pointe des paysages de près, de jour et de nuit, avant leur restauration (l'île ouverte, rien d'y joué
   // ni posé, le Gardien en statue grise : `sansIles`) et tout construit (le Gardien rallumé) ; le défi de l'Amphore peinte
   // à mi-parcours (trois épreuves réussies sur six, `reussir`, le Gardien encore à rallumer) ; « Mes blocs » ouvert
-  // dans le monde (`lieu` « stock ») avec des blocs de Mosaïque et de Chaume en poche.
+  // dans le monde (`lieu` « stock ») avec des blocs de Mosaïque et de Chaume en poche. Pour juger la Mosaïque face à la
+  // Brique (référent dys, retouches HG-2) : la Mosaïque, la Brique (la Plaine des nombres) et le Chaume côte à côte,
+  // en icône dans « Mes blocs », de jour et de nuit, et en 3D, la vue de l'archipel depuis la Fouille : la Fouille
+  // (mosaïque) et la Pointe (chaume) devant, le dôme à coupole de brique de l'île des Mots, au nord, de jour et de nuit.
   ...['history-6e-antiquity', 'geography-6e-living'].flatMap((ile) =>
     [{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].flatMap(({ suffixe, ...autres }) => [
-      { nom: `hg-2-${ile}-avant${suffixe}`, vue: 'île', famille: 'histoire-geo', ile, sansIles: [ile], ...autres },
-      { nom: `hg-2-${ile}-apres${suffixe}`, vue: 'île', famille: 'histoire-geo', ile, ...autres },
+      { nom: `histoire-geo-${ile}-avant${suffixe}`, vue: 'île', famille: 'histoire-geo', ile, sansIles: [ile], ...autres },
+      { nom: `histoire-geo-${ile}-apres${suffixe}`, vue: 'île', famille: 'histoire-geo', ile, ...autres },
       // Le Gardien, hors du cadre de l'île : sa fiche ouverte comme d'un toucher, la caméra recadrée sur lui.
-      { nom: `hg-2-${ile}-gardien-avant${suffixe}`, vue: 'île', famille: 'histoire-geo', ile, sansIles: [ile], fiche: { genre: 'gardien', id: ile }, ...autres },
-      { nom: `hg-2-${ile}-gardien-apres${suffixe}`, vue: 'île', famille: 'histoire-geo', ile, fiche: { genre: 'gardien', id: ile }, ...autres },
+      { nom: `histoire-geo-${ile}-gardien-avant${suffixe}`, vue: 'île', famille: 'histoire-geo', ile, sansIles: [ile], fiche: { genre: 'gardien', id: ile }, ...autres },
+      { nom: `histoire-geo-${ile}-gardien-apres${suffixe}`, vue: 'île', famille: 'histoire-geo', ile, fiche: { genre: 'gardien', id: ile }, ...autres },
     ]),
   ),
-  { nom: 'hg-2-defi-amphore-mi', vue: 'défi', famille: 'histoire-geo', ile: 'history-6e-antiquity', debout: 'history-6e-antiquity', reussir: 3 },
-  { nom: 'hg-2-mes-blocs', vue: 'île', famille: 'histoire-geo', ile: 'history-6e-antiquity', lieu: 'stock', inventaire: { 'history-6e-antiquity': 6, 'geography-6e-living': 5 } },
+  { nom: 'histoire-geo-defi-amphore-mi', vue: 'défi', famille: 'histoire-geo', ile: 'history-6e-antiquity', debout: 'history-6e-antiquity', reussir: 3 },
+  { nom: 'histoire-geo-mes-blocs', vue: 'île', famille: 'histoire-geo', ile: 'history-6e-antiquity', lieu: 'stock', inventaire: { 'history-6e-antiquity': 6, 'geography-6e-living': 5 } },
+  ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].flatMap(({ suffixe, ...autres }) => [
+    {
+      nom: `histoire-geo-mosaique-brique-chaume${suffixe}`,
+      vue: 'île',
+      famille: 'histoire-geo',
+      ile: 'history-6e-antiquity',
+      lieu: 'stock',
+      inventaire: { 'history-6e-antiquity': 6, 'maths-6e-calculation': 4, 'geography-6e-living': 5 },
+      ...autres,
+    },
+    { nom: `histoire-geo-mosaique-brique-chaume-archipel${suffixe}`, vue: 'archipel', famille: 'histoire-geo', ile: 'history-6e-antiquity', ...autres },
+  ]),
 ];
 /** La lueur la nuit, à la vue île : au plus 3 % de la scène. */
 const LUEUR_MAX = 0.03;
