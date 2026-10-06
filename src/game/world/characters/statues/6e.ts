@@ -561,7 +561,7 @@ export const STATUES_6E: Partial<Record<BiomeId, Statue>> = {
   },
   'geography-6e-living': {
     nom: 'le Castor de glaise',
-    allume: 'sa queue plate',
+    allume: 'les traits de son pelage',
     sculpture: (T, a) => {
       fuseau(T, CORPS_DU_CASTOR, 6, a.moussue((k, j) => k === 0 && j % 2 === 1), { bas: false });
       fuseau(T, TETE_DU_CASTOR, 5, a.pierre, { bas: false });

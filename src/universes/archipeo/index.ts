@@ -220,15 +220,15 @@ export const ARCHIPEO = {
       guardianSays: {
         hit: 'Une bande de ma frise s’allume. C’est juste.',
         miss: 'Rien ne s’éteint. Regarde la frise, du plus ancien au plus récent, et reprends.',
-        beaten: 'Ma frise se rallume. La Fouille est à toi, et à Silex.',
+        beaten: 'Ma frise se rallume. La fouille est à toi, et à Silex.',
       },
     },
     'geography-6e-living': {
-      challenge: 'Le Castor de glaise dit doucement : « Mes couleurs sont éteintes. Tu as regardé tous mes paysages : dis-moi où vivent les humains. »',
+      challenge: 'Le Castor de glaise dit doucement : « Les traits de mon pelage sont éteints. Tu as regardé tous les paysages de la Pointe : dis-moi où vivent les humains. »',
       guardianSays: {
         hit: 'Un trait de mon pelage s’allume. C’est juste.',
         miss: 'Rien ne s’éteint. Relis le document, cherche le mot du rappel, et reprends.',
-        beaten: 'Mes couleurs se rallument. La Pointe est à toi, et à Boussole.',
+        beaten: 'Mon pelage se rallume. La pointe est à toi, et à Boussole.',
       },
     },
     'lv2-3e-travel': {
