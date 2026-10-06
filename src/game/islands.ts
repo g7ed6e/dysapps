@@ -1312,6 +1312,122 @@ export const ILES = [
     ]
   },
   {
+    "id": "history-6e-antiquity",
+    "name": "Fouille des siècles",
+    "module": "Histoire, de la Préhistoire à l’Empire romain",
+    "subject": "history-geography",
+    "classe": "6e",
+    "description": "Des premiers humains aux premiers États, les Grecs, les Romains et les Hébreux, puis l’Empire romain, les chrétiens et la route de la soie : se repérer dans le temps et lire un document.",
+    "block": "history-6e-antiquity",
+    "guardian": "l’Amphore peinte",
+    "icon": "amphora",
+    "creature": {
+      "name": "Silex"
+    },
+    "exercises": [
+      {
+        "id": "early-humans",
+        "title": "Premiers humains, premiers États",
+        "description": "Les premiers humains, le Néolithique, les premiers États et les premières écritures.",
+        "programme": [
+          "c3.hg.histoire.debuts-humanite",
+          "c3.hg.histoire.neolithique",
+          "c3.hg.histoire.premiers-etats",
+          "c3.hg.temps.periodes",
+          "c3.hg.temps.ordonner",
+          "c3.hg.demarches.lexique",
+          "c3.hg.demarches.document"
+        ]
+      },
+      {
+        "id": "ancient-peoples",
+        "title": "Grecs, Romains et Hébreux",
+        "description": "Les cités grecques et Athènes, Rome de la légende à la République, et le Dieu unique des Hébreux.",
+        "programme": [
+          "c3.hg.histoire.cites-grecques",
+          "c3.hg.histoire.rome-mythe",
+          "c3.hg.histoire.monotheisme-juif",
+          "c3.hg.temps.frise",
+          "c3.hg.temps.ordonner",
+          "c3.hg.demarches.lexique",
+          "c3.hg.demarches.document"
+        ]
+      },
+      {
+        "id": "roman-empire",
+        "title": "L’Empire romain et le monde",
+        "description": "Les conquêtes et la paix romaine, les premiers chrétiens, la route de la soie et la Chine des Han.",
+        "programme": [
+          "c3.hg.histoire.empire-romain",
+          "c3.hg.histoire.chretiens",
+          "c3.hg.histoire.route-de-la-soie",
+          "c3.hg.temps.frise",
+          "c3.hg.temps.periodes",
+          "c3.hg.demarches.lexique",
+          "c3.hg.demarches.document"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "geography-6e-living",
+    "name": "Pointe des paysages",
+    "module": "Géographie, habiter le monde",
+    "subject": "history-geography",
+    "classe": "6e",
+    "description": "Habiter une métropole, un espace de faible densité, un littoral, et voir où vivent les humains sur la Terre : les mots de la géographie et des documents courts.",
+    "block": "geography-6e-living",
+    "guardian": "le Castor de glaise",
+    "icon": "map-pin-house",
+    "creature": {
+      "name": "Boussole"
+    },
+    "exercises": [
+      {
+        "id": "metropolises",
+        "title": "Les métropoles",
+        "description": "Les métropoles du monde, leurs quartiers, leurs habitants, et la ville de demain.",
+        "programme": [
+          "c3.hg.geographie.metropoles",
+          "c3.hg.geographie.ville-de-demain",
+          "c3.hg.espace.localiser",
+          "c3.hg.demarches.lexique",
+          "c3.hg.demarches.document",
+          "c3.hg.demarches.cartes"
+        ]
+      },
+      {
+        "id": "low-density",
+        "title": "Les espaces de faible densité",
+        "description": "Les grands espaces agricoles, les déserts, la montagne, le froid et la forêt : habiter là où il y a peu d’habitants.",
+        "programme": [
+          "c3.hg.geographie.agricole",
+          "c3.hg.geographie.contraintes",
+          "c3.hg.espace.localiser",
+          "c3.hg.espace.situer",
+          "c3.hg.demarches.lexique",
+          "c3.hg.demarches.document",
+          "c3.hg.demarches.cartes"
+        ]
+      },
+      {
+        "id": "inhabited-world",
+        "title": "Littoraux et monde habité",
+        "description": "Les ports et les plages des littoraux, puis où vivent les humains sur la Terre.",
+        "programme": [
+          "c3.hg.geographie.littoral-portuaire",
+          "c3.hg.geographie.littoral-touristique",
+          "c3.hg.geographie.population-mondiale",
+          "c3.hg.geographie.occupation",
+          "c3.hg.espace.localiser",
+          "c3.hg.demarches.lexique",
+          "c3.hg.demarches.document",
+          "c3.hg.demarches.cartes"
+        ]
+      }
+    ]
+  },
+  {
     "id": "lv2-5e-introductions",
     "name": "Relais des voyageurs",
     "module": "Se présenter, compter, décrire",

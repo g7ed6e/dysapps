@@ -34,7 +34,7 @@ it('la matière LV2 prend le nom de la langue choisie, et disparaît avec « Pas
   expect(subjectInfo('english', 'de').title).toBe('Anglais');
   expect(visibleSubjects('es')).toContain('lv2');
   expect(visibleSubjects('none')).not.toContain('lv2');
-  expect(visibleSubjects('none')).toEqual(['french', 'maths', 'english']);
+  expect(visibleSubjects('none')).toEqual(['french', 'maths', 'english', 'history-geography']);
 });
 
 it('avec « Pas de LV2 », aucun pont ne mène au Relais ; avec une LV2, le pont depuis le Comptoir est proposé', () => {

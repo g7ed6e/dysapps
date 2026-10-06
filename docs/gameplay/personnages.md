@@ -34,6 +34,8 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 | [Volcan des décimaux](https://g7ed6e.github.io/dysapps/pedagogie/iles/maths-6e-decimals.html) (Maths) | Lavi | salamandre de lave | salamandre de lave | Le Dragon de cendre |
 | [Baie des mots](https://g7ed6e.github.io/dysapps/pedagogie/iles/english-6e-vocabulary.html) (Anglais) | Robin | rouge-gorge des quais | rouge-gorge des quais | Le Lion de pierre |
 | [Horloge des verbes](https://g7ed6e.github.io/dysapps/pedagogie/iles/english-6e-grammar.html) (Anglais) | Tick | hérisson horloger | hérisson horloger | Le Coucou de bronze |
+| [Fouille des siècles](https://g7ed6e.github.io/dysapps/pedagogie/iles/history-6e-antiquity.html) (Histoire-géo) | Silex | ourson fouilleur | ourson des fouilles | L’Amphore peinte |
+| [Pointe des paysages](https://g7ed6e.github.io/dysapps/pedagogie/iles/geography-6e-living.html) (Histoire-géo) | Boussole | tortue géographe | pélican des ports | Le Castor de glaise |
 
 ### Le Grand Chêne, Forêt des sons
 
@@ -114,6 +116,22 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 | Au défi | Le Coucou de bronze sort de son horloge : « Mon cadran est tout gris. Tu as remonté tous mes rouages : vérifie chaque verbe avec moi. » | Le Coucou de bronze chuchote du haut de son horloge : « Mon cadran est éteint. Tu as remonté tous mes rouages, vérifie chaque verbe avec moi. » |
 | À la fin | Coucou ! Je me rallume, du cadran au toit pointu. Les verbes sont à toi, et à Tick. | Mon cadran se rallume. Les verbes sont à toi, et à Tick. |
 | Tick à l’arrivée | Hello, bâtisseur ! Dans mon horloge, chaque verbe a sa place : am, is ou are, have ou has. Regarde d’abord le sujet, la règle est affichée. Chaque bon verbe, c’est un cadran pour le village. | Hello, bâtisseur ! Dans mon horloge, chaque verbe a sa place : am, is ou are, have ou has. Regarde d’abord le sujet, la règle est affichée. Chaque bon verbe, c’est un cadran pour le village. |
+
+### L’Amphore peinte, Fouille des siècles
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | L’Amphore peinte attend sur son îlot : « Mes bandes peintes sont toutes grises. Tu as fouillé toute l’île : remets chaque époque à sa place. » | L’Amphore peinte dit doucement : « Mes bandes peintes sont éteintes. Tu as relevé toutes les trouvailles : remets chaque époque à sa place. » |
+| À la fin | Je me rallume, du col jusqu’au pied. La Fouille est à toi, et à Silex. | Ma frise se rallume. La fouille est à toi, et à Silex. |
+| Silex à l’arrivée | Bonjour, bâtisseur ! Ici, on fouille le passé. Chaque bonne réponse te donne une mosaïque. Regarde la frise : le plus ancien est en haut. | Bonjour, bâtisseur ! Ici, on fouille le passé. Chaque bonne réponse te donne une mosaïque. Regarde la frise : le plus ancien est en haut. |
+
+### Le Castor de glaise, Pointe des paysages
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | Le Castor de glaise lève la tête : « Me voilà tout gris. Tu as vu tous les paysages de la Pointe : dis-moi où vivent les humains. » | Le Castor de glaise dit doucement : « Les traits de mon pelage sont éteints. Tu as regardé tous les paysages de la Pointe : dis-moi où vivent les humains. » |
+| À la fin | Je me rallume, de la queue jusqu’aux oreilles. La Pointe est à toi, et à Boussole. | Mon pelage se rallume. La pointe est à toi, et à Boussole. |
+| Boussole à l’arrivée | Bonjour, bâtisseur ! Ici, on regarde où vivent les humains : en ville, à la campagne, au bord de la mer. Chaque bonne réponse te donne du chaume. Le chaume, c’est de la paille séchée, serrée en bottes. | Bonjour, bâtisseur ! Ici, on regarde où vivent les humains : en ville, à la campagne, au bord de la mer. Chaque bonne réponse te donne du chaume. Le chaume, c’est de la paille séchée, serrée en bottes. |
 
 ## Les Collines du Large (Blocland), les Îles Brumeuses (Archipéo), 5e
 

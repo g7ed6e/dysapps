@@ -428,6 +428,35 @@ const TIMBRE = fromLayers(
   { B: '#5e4b3e', T: '#54433a', C: '#e6d8bc', E: '#1f1a16', O: '#4a3b31', S: '#a8703a', L: '#a8703a' },
 );
 
+// Silex : un ourson fouilleur assis (DA, HG-2), brun, le museau crème et la truffe sombre, deux petites oreilles rondes ;
+// à sa patte droite, debout, un pinceau de fouille (un manche clair, une touffe sombre au bout). Trois couleurs : le
+// manche reprend le crème du museau, la touffe le sombre des yeux (un appel de dessin par couleur).
+const SILEX = fromLayers(
+  [
+    ['.B.B.', 'BBBBB', 'BBBBB', '.BBB.'],
+    ['....P', 'BBBBB', 'BBBBB', '.BBB.'],
+    ['....P', 'BBBBB', 'BBBBB', '.BBB.'],
+    ['.CCCH', 'BBBBB', 'BBBBB', '.....'],
+    ['..N..', 'BEBEB', 'BBBBB', '.....'],
+    ['.....', 'BBBBB', 'BBBBB', '.....'],
+    ['.....', 'B...B', '.....', '.....'],
+  ],
+  { B: '#6e4a2c', C: '#efe0c0', N: '#1f1a16', E: '#1f1a16', P: '#efe0c0', H: '#1f1a16' },
+);
+
+// Boussole : une tortue géographe (DA, HG-2), la carapace en pavé à marches (un rang large, un rang plus étroit, une case
+// au sommet : les marches se lisent à la forme), quatre pattes aux coins, la tête devant aux yeux sombres, une petite
+// queue derrière. Trois couleurs.
+const BOUSSOLE = fromLayers(
+  [
+    ['.....', 'L...L', '.....', 'L...L', '.....'],
+    ['.HHH.', 'CCCCC', 'CCCCC', 'CCCCC', '..L..'],
+    ['.EHE.', '.CCC.', '.CCC.', '.CCC.', '.....'],
+    ['.....', '.....', '..C..', '.....', '.....'],
+  ],
+  { C: '#5e7a3e', H: '#b4a676', L: '#b4a676', E: '#1f1a16' },
+);
+
 export const CREATURE_CUBES: Record<BiomeId, CubeDeModele[]> = {
   'french-6e-phonology': MOUSSO,
   'french-6e-letter-confusion': TUNEL,
@@ -451,6 +480,8 @@ export const CREATURE_CUBES: Record<BiomeId, CubeDeModele[]> = {
   'french-3e-close-reading': ASTRA,
   'english-6e-vocabulary': ROBIN,
   'english-6e-grammar': TICK,
+  'history-6e-antiquity': SILEX,
+  'geography-6e-living': BOUSSOLE,
   'english-5e-vocabulary': PUDDING,
   'english-5e-grammar': MOUSTACHE,
   'lv2-5e-introductions': LINA,

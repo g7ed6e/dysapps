@@ -207,6 +207,13 @@ export const SCREEN_TYPES: Record<string, ScreenType> = {
   'es-stories': { component: CalculationScreen, batch: 1 },
   'es-countries': { component: CalculationScreen, batch: 1 },
   'es-connectives': { component: CalculationScreen, batch: 1 },
+  // Histoire et géographie (6e) : repères et lexique en question à trou au niveau 1, un document court au niveau 2.
+  'early-humans': { component: CalculationScreen, batch: 1 },
+  'ancient-peoples': { component: CalculationScreen, batch: 1 },
+  'roman-empire': { component: CalculationScreen, batch: 1 },
+  'metropolises': { component: CalculationScreen, batch: 1 },
+  'low-density': { component: CalculationScreen, batch: 1 },
+  'inhabited-world': { component: CalculationScreen, batch: 1 },
   // La question d'un bloc assemblé (GD-2) : un document à lire sur deux matières, sa question, trois choix, le rappel
   // des deux matières toujours affiché (docs/contenu/assemblage.md). Hors des îles : elle se pose à la Fabrique.
   assembly: { component: CalculationScreen, batch: 1 },

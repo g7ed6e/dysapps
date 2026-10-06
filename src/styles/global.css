@@ -50,6 +50,7 @@
   --cyan: #8fd3e6; /* verre */
   --violet: #8f5ee0; /* cristal */
   --lv2: #d98cb3; /* églantine : la deuxième langue, à 48° au moins des autres teintes */
+  --history-geography: #8fb339; /* vert mousse : l'histoire-géographie, loin du vert de la réussite */
   --green: #6cb33f; /* herbe */
   /* Texte posé sur une couleur de remplissage (sable, matière). */
   --on-accent: #13283d;
@@ -300,6 +301,9 @@ svg {
 .title-lv2 svg {
   color: var(--lv2);
 }
+.title-history-geography svg {
+  color: var(--history-geography);
+}
 .back-link {
   /* Le bouton retour : toujours en haut à gauche, même forme partout (comme dans un jeu). */
   display: inline-flex;
@@ -374,7 +378,8 @@ button.app-card:active {
 .app-card.subject-french,
 .app-card.subject-maths,
 .app-card.subject-english,
-.app-card.subject-lv2 {
+.app-card.subject-lv2,
+.app-card.subject-history-geography {
   border-top-width: 8px;
 }
 .subject-french {
@@ -388,6 +393,9 @@ button.app-card:active {
 }
 .subject-lv2 {
   border-top-color: var(--lv2);
+}
+.subject-history-geography {
+  border-top-color: var(--history-geography);
 }
 .app-card.locked {
   border-top-width: var(--border-width);
@@ -413,6 +421,8 @@ button.app-card:active {
 .subject-english .app-icon,
 .subject-lv2 .subject-icon,
 .subject-lv2 .app-icon,
+.subject-history-geography .subject-icon,
+.subject-history-geography .app-icon,
 .app-card[class*="biome-"] .app-icon {
   color: var(--on-accent);
 }
@@ -431,6 +441,10 @@ button.app-card:active {
 .subject-lv2 .subject-icon,
 .subject-lv2 .app-icon {
   background: var(--lv2);
+}
+.subject-history-geography .subject-icon,
+.subject-history-geography .app-icon {
+  background: var(--history-geography);
 }
 /* Cartes de mission d'une île : l'icône sur un aplat de sable, bleu nuit dessus. */
 .app-card[class*="biome-"] .app-icon {
@@ -6028,7 +6042,7 @@ details.island-fold-objectif {
 .home-role {
   flex: none;
 }
-/* Les trois Expéditions : une icône de la couleur de la matière, son nom et celui de l'expédition. */
+/* Les Expéditions : une icône de la couleur de la matière, son nom et celui de l'expédition. */
 .home-menu {
   margin-top: 0.4rem;
   grid-template-columns: repeat(auto-fit, minmax(min(14rem, 100%), 1fr));

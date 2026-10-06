@@ -35,6 +35,7 @@ import { useTextes } from '../universes';
 import { archipelagoOf, getBridge, type ArchipelagoId } from './world/archipelago';
 import { archipelDeLaCommande, faireArriverUneCommande, livrerLaCommande, type Livraison } from './world/requests';
 import { applyLayout } from './world/appliedLayout';
+import { settleNewPlaces } from './world/arrange';
 import type { World } from './engine/state';
 
 /** Sessions courtes : on propose d'arrêter après ce nombre d'exercices ou cette durée. */
@@ -100,7 +101,12 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
   const { completePlan } = useProgress();
   // Une sauvegarde d'avant GD-6 reçoit tout de suite les parties de ses missions déjà terminées ; l'XP des plans qu'elles
   // finissent est donnée une fois, juste après (plus bas).
-  const [ouverture] = useState(() => rattraperLesParties(sanitizeState(loadJSON<unknown>(STORAGE_KEY, {}))));
+  // Un lieu entré au jeu après l'aménagement de sa région se pose à la place libre la plus proche (`settleNewPlaces`) :
+  // la disposition de l'élève tient, au lieu de revenir toute à la carte de départ.
+  const [ouverture] = useState(() => {
+    const lue = sanitizeState(loadJSON<unknown>(STORAGE_KEY, {}));
+    return rattraperLesParties({ ...lue, world: settleNewPlaces(lue.world) });
+  });
   const [state, setState] = useState<GameState>(ouverture.state);
   // La disposition de la partie (GD-9) posée sur le monde avant que les vues ne le lisent, à la lecture de la partie et
   // à chaque changement de `world.layout` : un calcul sans effet visible hors du monde, qui ne refait rien si la

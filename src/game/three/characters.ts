@@ -142,6 +142,7 @@ function habitsEnCubes(monde: Monde, champ: () => ChampDuSol | null, instant: In
       return;
     }
     const cubes = gardienDuMonde(id);
+    // Des pieds vers la tête, pour tous les Gardiens (GD-8).
     for (const z of [...new Set(cubes.map((c) => c.z))].sort((a, b) => a - b)) {
       const couche = cubes.filter((c) => c.z === z);
       const pierre = new THREE.Group();

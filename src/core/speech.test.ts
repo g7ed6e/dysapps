@@ -57,4 +57,15 @@ describe('le texte lu à voix haute', () => {
     // Dans Nombres géants, les classes séparées par une espace insécable pleine, plus large : recollées aussi.
     expect(pourLaVoix('Combien de milliers y a-t-il dans 24\u00a0091\u00a0912 ?')).toBe('Combien de milliers y a-t-il dans 24091912 ?');
   });
+
+  it('dit les siècles et « J.-C. » en mots', () => {
+    expect(pourLaVoix('Au VIIIe siècle avant J.-C.')).toBe('Au huitième siècle avant Jésus-Christ.');
+    // Le point de « J.-C. » qui finit la phrase reste, pour la pause.
+    expect(pourLaVoix('Avant J.-C. Les Romains, après J.-C., l’Empire')).toBe('Avant Jésus-Christ. Les Romains, après Jésus-Christ, l’Empire');
+    expect(pourLaVoix('Le siècle')).toBe('Le siècle');
+    expect(pourLaVoix('Ier siècle, IVe siècle, Ve siècle, IXe siècle')).toBe('premier siècle, quatrième siècle, cinquième siècle, neuvième siècle');
+    expect(pourLaVoix('XIXe siècle, XXIe siècle')).toBe('dix-neuvième siècle, vingt-et-unième siècle');
+    // Hors d'un siècle, rien ne change.
+    expect(pourLaVoix('Le IIe arrondissement, Louis XIV')).toBe('Le IIe arrondissement, Louis XIV');
+  });
 });

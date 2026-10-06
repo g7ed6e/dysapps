@@ -214,6 +214,22 @@ export const BLOCLAND = {
         beaten: 'Je me rallume, tous rayons dehors ! Le Jardin est à toi, et à Muscade.',
       },
     },
+    'history-6e-antiquity': {
+      challenge: 'L’Amphore peinte attend sur son îlot : « Mes bandes peintes sont toutes grises. Tu as fouillé toute l’île : remets chaque époque à sa place. »',
+      guardianSays: {
+        hit: 'Juste. Une bande de ma frise reprend sa couleur.',
+        miss: 'Mes couleurs restent. Regarde la frise, du plus ancien au plus récent, et reprends.',
+        beaten: 'Je me rallume, du col jusqu’au pied. La Fouille est à toi, et à Silex.',
+      },
+    },
+    'geography-6e-living': {
+      challenge: 'Le Castor de glaise lève la tête : « Me voilà tout gris. Tu as vu tous les paysages de la Pointe : dis-moi où vivent les humains. »',
+      guardianSays: {
+        hit: 'Juste. Un bloc de mon pelage redevient ocre.',
+        miss: 'Mes couleurs restent. Relis le document, cherche le mot du rappel, et reprends.',
+        beaten: 'Je me rallume, de la queue jusqu’aux oreilles. La Pointe est à toi, et à Boussole.',
+      },
+    },
     'lv2-3e-travel': {
       challenge: 'Le Papillon de cuivre attend devant le refuge : « Mes ailes sont toutes grises. Tu as rencontré tous les voyageurs du refuge : dis-moi ce qu’ils ont vécu. »',
       guardianSays: {
@@ -294,6 +310,8 @@ export const BLOCLAND = {
     'lv2-5e-introductions': 'cigogne voyageuse',
     'lv2-4e-daily-life': 'écureuil cuisinier',
     'lv2-3e-travel': 'loutre factrice',
+    'history-6e-antiquity': 'ourson fouilleur',
+    'geography-6e-living': 'tortue géographe',
     'english-5e-grammar': 'chat du manoir',
     'english-4e-comprehension': 'lutin souffleur',
     'english-4e-grammar': 'blaireau chef de gare',

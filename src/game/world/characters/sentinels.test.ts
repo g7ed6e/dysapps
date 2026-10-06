@@ -148,10 +148,11 @@ describe('Les Gardiens en sentinelles', () => {
     expect(new Set(Object.values(STATUES).map((s) => s.nom)).size).toBe(BIOMES.length);
   });
 
-  it('tiennent dans leur budget : 1 800 triangles au plus par archipel, toutes ensemble', () => {
+  // 2 100 depuis les deux Gardiens d'histoire-géographie du 6e (HG-2, mainteneur, 6 octobre 2026 : 2 065 mesurés).
+  it('tiennent dans leur budget : 2 100 triangles au plus par archipel, toutes ensemble', () => {
     for (const a of ARCHIPELAGO_IDS) {
       const somme = BIOMES.filter((b) => b.classe === a).reduce((n, b) => n + nbTriangles(sentinellePeinte(b.id)), 0);
-      expect(somme, a).toBeLessThanOrEqual(1_800);
+      expect(somme, a).toBeLessThanOrEqual(2_100);
     }
   });
 

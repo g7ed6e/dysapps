@@ -33,6 +33,7 @@ import {
   relinkBetween,
   relinkChoices,
   routesIn,
+  settleNewPlaces,
   spotOf,
   startingSpot,
   stationBand,
@@ -41,7 +42,7 @@ import {
   turnIsland,
 } from './arrange';
 import { toutConstruit } from './budget';
-import { frameOf, guardianIsletRectangle, posesOfLayout } from './footprint';
+import { fittingPlaces, frameOf, guardianIsletRectangle, posesOfLayout } from './footprint';
 import { startingIsland } from './map';
 import { placesOf, startingPlaces } from './routing';
 import { sanitizeLayout } from './savedLayout';
@@ -293,5 +294,41 @@ describe('les arrivées des liaisons', () => {
     expect(sanitizeLayout(JSON.parse(JSON.stringify(w2.layout)))).toEqual(w2.layout);
     // Une arrivée qui n'est pas sur la côte : refusée.
     expect(moveLanding(w, id, 'to', { side: 'front', step: 40 }).ok).toBe(false);
+  });
+});
+
+describe('Un lieu nouveau dans une région déjà aménagée (HG-2)', () => {
+  // Une sauvegarde d'avant les îles d'histoire-géographie : l'Horloge posée là où la Fouille des siècles entre au jeu.
+  const FOUILLE: BiomeId = 'history-6e-antiquity';
+  const POINTE: BiomeId = 'geography-6e-living';
+  const HORLOGE: BiomeId = 'english-6e-grammar';
+  const ancienne = (): World => ({ ...partie(), layout: { '6e': { islands: { [HORLOGE]: startingSpot(FOUILLE) } } } });
+
+  it('sans rien faire, la région ne tiendrait plus et reviendrait toute à la carte de départ', () => {
+    expect(fittingPlaces('6e', { [HORLOGE]: startingSpot(FOUILLE) })).toBeNull();
+    expect(posesOfLayout(ancienne().layout).size).toBe(0);
+  });
+
+  it('le lieu nouveau se pose à la place libre la plus proche de sa place de départ ; l’Horloge reste où l’élève l’a mise, rien d’autre ne bouge', () => {
+    const w = settleNewPlaces(ancienne());
+    const islands = w.layout?.['6e']?.islands ?? {};
+    expect(islands[HORLOGE]).toEqual(startingSpot(FOUILLE));
+    expect(islands[FOUILLE]).toBeDefined();
+    expect(islands[FOUILLE]).not.toEqual(startingSpot(FOUILLE));
+    expect(islands[FOUILLE]?.turn).toBe(0);
+    // La Pointe ne touchait rien : elle reste à sa place de départ, hors de la disposition, comme les autres lieux.
+    expect(Object.keys(islands).sort()).toEqual([HORLOGE, FOUILLE].sort());
+    expect(isFreeSpot({ ...w, layout: { '6e': { islands: { [HORLOGE]: islands[HORLOGE]! } } } }, FOUILLE, islands[FOUILLE]!)).toBe(true);
+    const poses = posesOfLayout(w.layout);
+    expect(poses.get(HORLOGE)).toBeDefined();
+    expect(poses.get(FOUILLE)).toBeDefined();
+    expect(poses.has(POINTE)).toBe(false);
+  });
+
+  it('une disposition qui tient, ou pas de disposition, reste la même', () => {
+    const w = partie();
+    expect(settleNewPlaces(w)).toBe(w);
+    const deplace = apres(moveIsland(w, VOLCAN, freeSpots(w, VOLCAN).find((s) => s.x !== startingSpot(VOLCAN).x)!));
+    expect(settleNewPlaces(deplace)).toBe(deplace);
   });
 });

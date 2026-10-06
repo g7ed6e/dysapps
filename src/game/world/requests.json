@@ -363,5 +363,31 @@
       "ready": "Tu as les {blocs} ! Livre-les à Knight.",
       "done": "Fontaine posée chez Knight !"
     }
+  },
+  {
+    "id": "history-6e-antiquity-request-1",
+    "biome": "history-6e-antiquity",
+    "block": "french-6e-word-spelling",
+    "count": 3,
+    "fixture": "history-6e-antiquity-fixture-1",
+    "blocland": {
+      "name": "le tamis",
+      "ask": "Il me faut {objet} pour mon tamis. Joue une mission de la Carrière des mots.",
+      "ready": "Tu as les {blocs} ! Livre-les à Silex.",
+      "done": "Tamis posé chez Silex !"
+    }
+  },
+  {
+    "id": "geography-6e-living-request-1",
+    "biome": "geography-6e-living",
+    "block": "history-6e-antiquity",
+    "count": 4,
+    "fixture": "geography-6e-living-fixture-1",
+    "blocland": {
+      "name": "la placette",
+      "ask": "Il me faut {objet} pour ma placette. Joue une mission de la Fouille des siècles.",
+      "ready": "Tu as les {blocs} ! Livre-les à Boussole.",
+      "done": "Placette posée chez Boussole !"
+    }
   }
 ]

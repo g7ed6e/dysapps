@@ -15,10 +15,15 @@ export interface LabelOffset {
   dy: number;
 }
 
-/** Les décalages essayés, en fractions de la hauteur (dy) et de la largeur (dx) de l'étiquette, du plus proche au plus loin. */
+/**
+ * Les décalages essayés, en fractions de la hauteur (dy) et de la largeur (dx) de l'étiquette, du plus proche au plus loin.
+ * De côté, par pas de 0,15 largeur : au pas de 0,3, la Forêt des sons se taisait sur la Carte du 6e dans une police
+ * 10 % plus large, ses voisines (la Fouille des siècles, la Pointe des paysages) serrées sous le panneau sans place
+ * entre deux crans (HG-2, 6 octobre 2026).
+ */
 const TRIES: [number, number][] = (() => {
   const out: [number, number][] = [];
-  for (const fy of [0, 0.55, -0.55, 1.1, -1.1, 1.65, -1.65, 2.2, -2.2, 2.75, -2.75]) for (const fx of [0, 0.3, -0.3, 0.6, -0.6]) out.push([fx, fy]);
+  for (const fy of [0, 0.55, -0.55, 1.1, -1.1, 1.65, -1.65, 2.2, -2.2, 2.75, -2.75]) for (const fx of [0, 0.15, -0.15, 0.3, -0.3, 0.45, -0.45, 0.6, -0.6]) out.push([fx, fy]);
   return out.sort((a, b) => Math.hypot(a[0] * 1.6, a[1]) - Math.hypot(b[0] * 1.6, b[1]));
 })();
 
@@ -425,18 +430,39 @@ function placerSansSouples(
 /** Sur la Carte, combien de noms un nom tu peut pousser en chaîne pour trouver sa place (voir `reparerLaCarte`). */
 const POUSSEES_MAX = 2;
 
-/** Les places essayées autour d'une étiquette (décalages de `TRIES`), rentrées dans le cadre, de la plus proche à la plus loin. */
+/**
+ * Les décalages de la dernière chance de la Carte (`reparerLaCarte`) : ceux de `TRIES`, et entre eux des pas plus fins en
+ * hauteur (0,1 hauteur), près de la place voulue. Au 6e, la Pointe des paysages, au bord de la Carte, n'a de place
+ * qu'entre le nom de la Fouille des siècles, monté d'un cran, et la bulle de l'ouvrage qui les sépare de la Carrière :
+ * une bande de quelques pixels, qu'aucun cran de 0,55 hauteur ne touche (HG-2, 6 octobre 2026).
+ */
+const TRIES_FINS: [number, number][] = (() => {
+  const out: [number, number][] = [...TRIES];
+  for (const fy of [0.1, -0.1, 0.2, -0.2, 0.3, -0.3, 0.4, -0.4]) for (const fx of [0, 0.15, -0.15, 0.3, -0.3]) out.push([fx, fy]);
+  return out.sort((a, b) => Math.hypot(a[0] * 1.6, a[1]) - Math.hypot(b[0] * 1.6, b[1]));
+})();
+
+/** Les places essayées autour d'une étiquette (décalages de `TRIES_FINS`), rentrées dans le cadre, de la plus proche à la plus loin. */
 function placesAutour(b: LabelBox, bounds: { w: number; h: number }, gap: number): LabelBox[] {
   const x = clamp(b.x, b.w / 2 + gap, bounds.w - b.w / 2 - gap);
   const y = clamp(b.y, b.h / 2 + gap, bounds.h - b.h / 2 - gap);
-  return TRIES.map(([fx, fy]) => ({ x: x + fx * b.w, y: y + fy * b.h, w: b.w, h: b.h }));
+  return TRIES_FINS.map(([fx, fy]) => ({ x: x + fx * b.w, y: y + fy * b.h, w: b.w, h: b.h }));
+}
+
+/**
+ * Le milieu d'une étiquette, la moitié de sa largeur : un nom désigne l'île qui est sous son milieu, pas celle qui
+ * touche son bord. Deux îles voisines sous un nom large (la Pointe des paysages et la Fouille des siècles, au 6e) sont
+ * toutes deux sous l'étiquette ; c'est l'île sous son milieu qu'elle nomme.
+ */
+function milieu(r: LabelBox): LabelBox {
+  return { ...r, w: r.w / 2 };
 }
 
 /**
  * Sur la Carte, la dernière chance des noms tus (voir `placerEtiquettes`) : chacun, le plus lourd d'abord, essaie les
- * places autour de sa place voulue ; une place se prend si le nom y est entier, hors de l'interface et des repères,
- * pas plus loin de son île que d'`ECART_MAX` hauteurs de plus, pas plus près d'une autre île que de la sienne, et
- * libre. Sinon, une place qu'un ou deux noms (`poussable`, pas plus lourds) occupent se prend si chacun trouve, lui, une autre
+ * places autour de sa place voulue (`TRIES_FINS`) ; une place se prend si le nom y est entier, hors de l'interface et
+ * des repères, pas plus loin de son île que d'`ECART_MAX` hauteurs de plus, pas plus près d'une autre île que de la
+ * sienne vu de son milieu (`milieu`), et libre. Sinon, une place qu'un ou deux noms (`poussable`, pas plus lourds) occupent se prend si chacun trouve, lui, une autre
  * place qui tient aux mêmes conditions (deux noms au plus à chaque pas, `POUSSEES_MAX` pas en chaîne). `libre` : une
  * condition de plus (la garde de la destination). `voulue` : une place à donner d'abord à un nom déjà montré (le nom de
  * la destination au-dessus de sa flèche), aux mêmes conditions de poussée. Modifie `offsets`, `visibles` et `vues`.
@@ -464,9 +490,11 @@ function reparerLaCarte(
     const ile = iles[i];
     if (!entiere(b, { dx: at.x - b.x, dy: at.y - b.y }, couvert, bounds)) return false;
     if (obstacles.some((v) => overlap(at, v, gap) > 0) || !libre(i, at)) return false;
-    const d = distanceA(at, ile);
-    if (d > distanceA(b, ile) + ECART_MAX * b.h) return false;
-    return !iles.some((q, j) => j !== i && distanceA(at, q) < d);
+    if (distanceA(at, ile) > distanceA(b, ile) + ECART_MAX * b.h) return false;
+    // Pas plus près d'une autre île que de la sienne, vu du milieu du nom (voir `milieu`).
+    const m = milieu(at);
+    const d = distanceA(m, ile);
+    return !iles.some((q, j) => j !== i && distanceA(m, q) < d);
   };
   const genes = (at: LabelBox, sauf: number[]) => [...vues].filter(([j, v]) => !sauf.includes(j) && overlap(at, v, gap) > 0).map(([j]) => j);
   const poser = (i: number, at: LabelBox) => {

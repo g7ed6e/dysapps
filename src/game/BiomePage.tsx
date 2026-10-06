@@ -19,7 +19,7 @@ import { CreatureBubble } from './CreatureBubble';
 import { InventoryLink } from './Inventory';
 import { pickExercise, questProgress } from './exercises';
 import { Stars } from './Stars';
-import { STARS_TO_UNLOCK, isBossBeaten, isBossOpen, missingForBoss } from './boss';
+import { STARS_TO_UNLOCK, isBossBeaten, isBossOpen, missingForBoss, quoted } from './boss';
 import { BlockIcon } from './Voxel';
 import { PlanSection } from './PlanSection';
 import { JoinLine } from './Joins';
@@ -223,7 +223,7 @@ export function BiomePage() {
               <span className="tag tag-new">{textes.libelles.defiPretCourt}</span>
             ) : (
               <span className="tag">
-                <Icon name="lock" /> {STARS_TO_UNLOCK} étoiles dans : {missingForBoss(biome, state.progress).join(', ') || 'chaque mission'}
+                <Icon name="lock" /> {STARS_TO_UNLOCK} étoiles dans : {missingForBoss(biome, state.progress).map(quoted).join(', ') || 'chaque mission'}
               </span>
             )}
           </>

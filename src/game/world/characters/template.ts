@@ -9,8 +9,8 @@
 //
 // Six pièces : le corps (jambes, torse, tenue, bras gauche, queue), la tête, la coiffe, les yeux, le bras porteur et
 // l'outil ; ce que tient la main gauche en fait une septième (`autre-main`, qui suit le corps), et une autre brille la
-// nuit chez trois espèces (Fi, Astra, Braise). Budget : 250 triangles par créature en moyenne aux Premiers Rivages (dix
-// îles pour 2 500), davantage ailleurs (six îles).
+// nuit chez trois espèces (Fi, Astra, Braise). Budget : environ 250 triangles par créature aux Premiers Rivages (douze
+// îles pour 2 950 depuis l'histoire-géographie, 6 octobre 2026), davantage ailleurs (six îles).
 import type { Couleur } from '../palette';
 import { LUEUR, OEIL, OUTIL, TENUE } from './colors';
 import {

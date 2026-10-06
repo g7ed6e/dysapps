@@ -34,6 +34,8 @@ describe('où est une place, en mots', () => {
     expect(ofPlace('Volcan des décimaux')).toBe('du Volcan des décimaux');
     expect(ofPlace('Atelier du calcul littéral')).toBe('de l’Atelier du calcul littéral');
     expect(ofPlace('Horloge des verbes')).toBe('de l’Horloge des verbes');
+    expect(ofPlace('Fouille des siècles')).toBe('de la Fouille des siècles');
+    expect(thePlace('Pointe des paysages')).toBe('la Pointe des paysages');
     expect(ofPlace('Observatoire des textes')).toBe('de l’Observatoire des textes');
     expect(ofPlace('Forge des puissances')).toBe('de la Forge des puissances');
     // Aucun nom ne reste sans article.

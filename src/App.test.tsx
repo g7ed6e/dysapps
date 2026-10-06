@@ -26,12 +26,12 @@ function renderAt(path: string) {
   );
 }
 
-it('l’accueil est le menu de Blocland : le village, les Expéditions (la LV2 à côté de l’anglais), puis Missions et Réglages', () => {
+it('l’accueil est le menu de Blocland : le village, les Expéditions (la LV2 en dernier), puis Missions et Réglages', () => {
   renderAt('/');
   expect(screen.getByRole('heading', { name: 'Blocland', level: 1 })).toBeInTheDocument();
   expect(screen.getByRole('heading', { name: /Ton village : les Basses Terres/ })).toBeInTheDocument();
   const menu = screen.getByRole('navigation', { name: 'Menu principal' });
-  expect(within(menu).getAllByRole('link').map((a) => a.getAttribute('href'))).toEqual(['/matiere/maths', '/matiere/french', '/matiere/english', '/matiere/lv2']);
+  expect(within(menu).getAllByRole('link').map((a) => a.getAttribute('href'))).toEqual(['/matiere/maths', '/matiere/french', '/matiere/english', '/matiere/lv2', '/matiere/history-geography']);
   expect(within(menu).getByRole('link', { name: /Espagnol.*Expédition/ })).toHaveAttribute('href', '/matiere/lv2');
   expect(within(menu).getByRole('link', { name: /Français.*Expédition/ })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /Toutes les missions/ })).toHaveAttribute('href', '/quetes');
@@ -74,6 +74,14 @@ it('le Tutoriel est sur l’accueil, pas dans Français, et son retour mène à 
   renderAt('/app/demo');
   // Le lien retour et l'onglet Menu mènent au menu.
   for (const link of screen.getAllByRole('link', { name: /^Menu$/ })) expect(link).toHaveAttribute('href', '/menu');
+});
+
+it('une matière sans mission du portail ramène au menu', () => {
+  for (const path of ['/matiere/history-geography', '/matiere/lv2']) {
+    document.body.innerHTML = '';
+    renderAt(path);
+    for (const link of screen.getAllByRole('link', { name: /^Menu$/ })) expect(link).toHaveAttribute('href', '/menu');
+  }
 });
 
 it('liste les missions d’anglais du portail', () => {

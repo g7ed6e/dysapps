@@ -215,6 +215,22 @@ export const ARCHIPEO = {
         beaten: 'Mes rayons se rallument. Le jardin est à toi, et à Muscade.',
       },
     },
+    'history-6e-antiquity': {
+      challenge: 'L’Amphore peinte dit doucement : « Mes bandes peintes sont éteintes. Tu as relevé toutes les trouvailles : remets chaque époque à sa place. »',
+      guardianSays: {
+        hit: 'Une bande de ma frise s’allume. C’est juste.',
+        miss: 'Rien ne s’éteint. Regarde la frise, du plus ancien au plus récent, et reprends.',
+        beaten: 'Ma frise se rallume. La fouille est à toi, et à Silex.',
+      },
+    },
+    'geography-6e-living': {
+      challenge: 'Le Castor de glaise dit doucement : « Les traits de mon pelage sont éteints. Tu as regardé tous les paysages de la Pointe : dis-moi où vivent les humains. »',
+      guardianSays: {
+        hit: 'Un trait de mon pelage s’allume. C’est juste.',
+        miss: 'Rien ne s’éteint. Relis le document, cherche le mot du rappel, et reprends.',
+        beaten: 'Mon pelage se rallume. La pointe est à toi, et à Boussole.',
+      },
+    },
     'lv2-3e-travel': {
       challenge: 'Le Papillon de cuivre dit doucement : « Le bord de mes ailes est éteint. Tu as rencontré tous les voyageurs du refuge : dis-moi ce qu’ils ont vécu. »',
       guardianSays: {
@@ -298,6 +314,8 @@ export const ARCHIPEO = {
     'english-4e-grammar': 'blaireau chef de gare',
     'english-3e-comprehension': 'chauve-souris animatrice radio',
     'english-3e-grammar': 'petit chevalier',
+    'history-6e-antiquity': 'ourson des fouilles',
+    'geography-6e-living': 'pélican des ports',
   },
   libelles: {
     dejaFait: 'Déjà rallumé. Tu veux rejouer ?',

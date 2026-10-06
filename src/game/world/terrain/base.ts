@@ -58,6 +58,8 @@ export const TEXTURES: Record<string, string> = {
   [BLOCKS[BLOC.dalle].side]: 'dalle',
   [BLOCKS[BLOC.osier].side]: 'osier',
   [BLOCKS[BLOC.bardeau].side]: 'bardeau',
+  [BLOCKS[BLOC.mosaique].side]: 'mosaique',
+  [BLOCKS[BLOC.chaume].side]: 'chaume',
   [BLOCKS[BLOC.poutre].side]: 'poutre',
   [BLOCKS[BLOC.vitrail].side]: 'vitrail',
   [BLOCKS[BLOC.engrenage].side]: 'engrenage',
@@ -125,13 +127,26 @@ let indexDesEcoles: ReadonlySet<number> | undefined;
 const estIndexDEcole = (index: number) =>
   (indexDesEcoles ??= new Set(ARCHIPELAGOS.map((a) => BIOMES.findIndex((b) => b.id === a.school)))).has(index);
 
+/**
+ * Les îles entrées au jeu au milieu de la liste des îles (`BIOMES`) : les îles d'histoire-géographie de 6e (HG-2), rangées
+ * avant les îles de LV2. La forme du plateau d'une île se tire de son rang (`groundHeight`) ; compté sans elles, le
+ * rang des îles d'avant ne bouge pas, ni leur relief.
+ */
+const VENUES_AU_MILIEU: readonly string[] = ['history-6e-antiquity', 'geography-6e-living'];
+
+let rangsDuDessin: readonly number[] | undefined;
+
+/** Le rang qui tire la forme du plateau d'une île : son rang dans `BIOMES`, sans les îles venues au milieu avant elle. */
+const rangDuDessin = (index: number): number =>
+  (rangsDuDessin ??= BIOMES.map((b, i) => (VENUES_AU_MILIEU.includes(b.id) ? i : i - BIOMES.slice(0, i).filter((x) => VENUES_AU_MILIEU.includes(x.id)).length)))[index] ?? index;
+
 export function groundHeight(index: number, x: number, y: number): number {
   const lx = x - LAYOUT_PAD.x;
   const ly = y - LAYOUT_PAD.y;
   if (lx < 0 || ly < 0 || lx >= LAYOUT || ly >= LAYOUT) return 0;
   if (x >= FIN_DU_PLATEAU_DES_ECOLES && estIndexDEcole(index)) return 0;
   const fromBack = LAYOUT - 1 - lx;
-  const shape = index % 3;
+  const shape = rangDuDessin(index) % 3;
   // Le plateau est à l'arrière-droite, devant la zone des plans (qui reste plate).
   const inner = lx >= 7 && ly >= 2 && ly <= 5;
   if (!inner) return 0;

@@ -98,13 +98,30 @@ export interface OptionsDuVoisinage {
   surLeVide?: (x: number, y: number, z: number) => boolean;
   /** La classe du bloc, quand elle ne se lit pas sur sa texture (un bloc d'un lieu du village : ./places.ts). */
   classe?: Classe;
+  /**
+   * La toiture des cases de toit qui n'appartiennent pas à la toiture commune (clé `x,y,z`, un nom par toiture) : deux
+   * toits de toitures différentes ne se prolongent pas, chacun lit ses pentes sur les siens (le toit de terre cuite de la
+   * maison basse du quartier, contre celui de la maison haute, world/construction/buildings.ts). Sans elle, une seule
+   * toiture.
+   */
+  toitures?: ReadonlyMap<string, string>;
 }
 
 /** Le voisinage d'un bloc du plan (`null` pour une lanterne, qui ne fait pas masse). */
 export function voisinageDe(c: VoxelCube, index: IndexDuPlan, options: OptionsDuVoisinage = {}): Voisinage | null {
   const classe = options.classe ?? classeDe(c.texture);
   if (!classe) return null;
-  const a = (dx: number, dy: number, dz: number) => index.get(cle(c.x + dx, c.y + dy, c.z + dz));
+  const toitures = options.toitures;
+  const sienne = toitures && classe === 'toit' ? toitures.get(cle(c.x, c.y, c.z)) : undefined;
+  const lue = (dx: number, dy: number, dz: number) => index.get(cle(c.x + dx, c.y + dy, c.z + dz));
+  // Pour un toit, un toit d'une autre toiture ne compte pas parmi ses voisines de même classe.
+  const a =
+    toitures && classe === 'toit'
+      ? (dx: number, dy: number, dz: number) => {
+          const k = lue(dx, dy, dz);
+          return k === 'toit' && toitures.get(cle(c.x + dx, c.y + dy, c.z + dz)) !== sienne ? undefined : k;
+        }
+      : lue;
   let cotes = 0;
   let monte = 0;
   let descend = 0;

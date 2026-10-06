@@ -26,7 +26,7 @@ const LABEL_RESERVE = 72;
 /** Sur la Carte, la bulle de la prochaine destination : à 56 px au moins du médaillon. */
 const ARROW_GAP = 56;
 /** Sur la Carte : le médaillon « toi », 44 px de diamètre à l'écran (son canvas : 96 px, le disque 80). */
-const MEDAILLON_CSS = 44;
+export const MEDAILLON_CSS = 44;
 const MEDAILLON_CANVAS = 96;
 /** L'étiquette flotte à 12 cases au-dessus du sol de son île. */
 const ETIQUETTE_AU_DESSUS = 12;

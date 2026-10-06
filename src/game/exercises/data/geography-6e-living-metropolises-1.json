@@ -1,0 +1,238 @@
+{
+  "id": "geography-6e-living-metropolises-1",
+  "biome": "geography-6e-living",
+  "type": "metropolises",
+  "level": 1,
+  "instruction": "Choisis le mot qui complète la phrase. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "geography-6e-living-metropolises-1-0",
+      "prompt": "New York attire des entreprises du monde entier : c’est une … mondiale.",
+      "spoken": "New York attire des entreprises du monde entier : c’est une (mot manquant) mondiale.",
+      "choices": [
+        "capitale",
+        "métropole",
+        "banlieue"
+      ],
+      "answer": "métropole",
+      "hint": "Quel mot du rappel parle d’une ville qui attire ?",
+      "explanation": "New York est une métropole : elle attire habitants et entreprises du monde entier. Ce n’est pas une capitale : la capitale des États-Unis est Washington.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots de la ville",
+          "lines": [
+            "Métropole : une grande ville qui attire habitants et entreprises.",
+            "Au centre : le centre-ville.",
+            "Autour : la banlieue.",
+            "Plus loin : l’espace périurbain, entre ville et champs.",
+            "Agglomération : la ville et ses banlieues ensemble.",
+            "Ville durable : moins de pollution, plus de transports en commun."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-6e-living-metropolises-1-1",
+      "prompt": "Tokyo est la grande métropole du … .",
+      "spoken": "Tokyo est la grande métropole du (mot manquant) .",
+      "choices": [
+        "Japon",
+        "Brésil",
+        "Chine"
+      ],
+      "answer": "Japon",
+      "hint": "Tokyo est la capitale de ce pays.",
+      "explanation": "Tokyo est au Japon, en Asie : c’est sa capitale.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots de la ville",
+          "lines": [
+            "Métropole : une grande ville qui attire habitants et entreprises.",
+            "Au centre : le centre-ville.",
+            "Autour : la banlieue.",
+            "Plus loin : l’espace périurbain, entre ville et champs.",
+            "Agglomération : la ville et ses banlieues ensemble.",
+            "Ville durable : moins de pollution, plus de transports en commun."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-6e-living-metropolises-1-2",
+      "prompt": "Mumbai est une grande métropole. Elle est en … .",
+      "spoken": "Mumbai est une grande métropole. Elle est en (mot manquant) .",
+      "choices": [
+        "Inde",
+        "Égypte",
+        "Brésil"
+      ],
+      "answer": "Inde",
+      "hint": "Son ancien nom est Bombay. Cherche le pays d’Asie.",
+      "explanation": "Mumbai est en Inde, en Asie du Sud. C’est l’une des plus grandes métropoles du monde.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots de la ville",
+          "lines": [
+            "Métropole : une grande ville qui attire habitants et entreprises.",
+            "Au centre : le centre-ville.",
+            "Autour : la banlieue.",
+            "Plus loin : l’espace périurbain, entre ville et champs.",
+            "Agglomération : la ville et ses banlieues ensemble.",
+            "Ville durable : moins de pollution, plus de transports en commun."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-6e-living-metropolises-1-3",
+      "prompt": "Juste autour du centre-ville, on trouve la … .",
+      "spoken": "Juste autour du centre-ville, on trouve la (mot manquant) .",
+      "choices": [
+        "campagne",
+        "banlieue",
+        "espace périurbain"
+      ],
+      "answer": "banlieue",
+      "hint": "Lis la ligne qui commence par « Autour ».",
+      "explanation": "Après le centre-ville vient la banlieue, puis l’espace périurbain, où les maisons se mêlent aux champs.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots de la ville",
+          "lines": [
+            "Métropole : une grande ville qui attire habitants et entreprises.",
+            "Au centre : le centre-ville.",
+            "Autour : la banlieue.",
+            "Plus loin : l’espace périurbain, entre ville et champs.",
+            "Agglomération : la ville et ses banlieues ensemble.",
+            "Ville durable : moins de pollution, plus de transports en commun."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-6e-living-metropolises-1-4",
+      "prompt": "Des quartiers de cabanes, souvent sans eau courante, sont des … .",
+      "spoken": "Des quartiers de cabanes, souvent sans eau courante, sont des (mot manquant) .",
+      "choices": [
+        "banlieues",
+        "bidonvilles",
+        "villages"
+      ],
+      "answer": "bidonvilles",
+      "hint": "Les cabanes sont faites de bidons, de tôle, de planches.",
+      "explanation": "Un bidonville : des cabanes faites avec des matériaux de récupération. Il y en a à Mumbai ou à Lagos. Une banlieue n’est pas un bidonville.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots de la ville",
+          "lines": [
+            "Métropole : une grande ville qui attire habitants et entreprises.",
+            "Au centre : le centre-ville.",
+            "Autour : la banlieue.",
+            "Plus loin : l’espace périurbain, entre ville et champs.",
+            "Agglomération : la ville et ses banlieues ensemble.",
+            "Ville durable : moins de pollution, plus de transports en commun."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-6e-living-metropolises-1-5",
+      "prompt": "Ceux qui font chaque jour le trajet entre la maison et le travail sont des … .",
+      "spoken": "Ceux qui font chaque jour le trajet entre la maison et le travail sont des (mot manquant) .",
+      "choices": [
+        "navetteurs",
+        "touristes",
+        "migrants"
+      ],
+      "answer": "navetteurs",
+      "hint": "Ils vont et viennent, comme une navette.",
+      "explanation": "Un navetteur fait l’aller et le retour chaque jour. Un migrant, lui, change de pays ou de région pour y vivre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots de la ville",
+          "lines": [
+            "Métropole : une grande ville qui attire habitants et entreprises.",
+            "Au centre : le centre-ville.",
+            "Autour : la banlieue.",
+            "Plus loin : l’espace périurbain, entre ville et champs.",
+            "Agglomération : la ville et ses banlieues ensemble.",
+            "Ville durable : moins de pollution, plus de transports en commun."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-6e-living-metropolises-1-6",
+      "prompt": "Une ville … pollue moins et pense aux habitants de demain.",
+      "spoken": "Une ville (mot manquant) pollue moins et pense aux habitants de demain.",
+      "choices": [
+        "étalée",
+        "ancienne",
+        "durable"
+      ],
+      "answer": "durable",
+      "hint": "Regarde la dernière ligne du rappel.",
+      "explanation": "Une ville durable pollue moins : tram, vélo, bâtiments qui consomment peu, parcs.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots de la ville",
+          "lines": [
+            "Métropole : une grande ville qui attire habitants et entreprises.",
+            "Au centre : le centre-ville.",
+            "Autour : la banlieue.",
+            "Plus loin : l’espace périurbain, entre ville et champs.",
+            "Agglomération : la ville et ses banlieues ensemble.",
+            "Ville durable : moins de pollution, plus de transports en commun."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-6e-living-metropolises-1-7",
+      "prompt": "Prendre le tram plutôt que la voiture réduit la … de l’air.",
+      "spoken": "Prendre le tram plutôt que la voiture réduit la (mot manquant) de l’air.",
+      "choices": [
+        "pollution",
+        "chaleur",
+        "densité"
+      ],
+      "answer": "pollution",
+      "hint": "Que rejettent les pots d’échappement ?",
+      "explanation": "Moins de voitures, c’est moins de gaz dans l’air : la pollution baisse. C’est l’idée de la ville durable.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots de la ville",
+          "lines": [
+            "Métropole : une grande ville qui attire habitants et entreprises.",
+            "Au centre : le centre-ville.",
+            "Autour : la banlieue.",
+            "Plus loin : l’espace périurbain, entre ville et champs.",
+            "Agglomération : la ville et ses banlieues ensemble.",
+            "Ville durable : moins de pollution, plus de transports en commun."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "geography-6e-living",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -165,7 +165,7 @@ describe('les liaisons à reposer quittent le dessin', () => {
 });
 
 describe('le budget, des lieux déplacés et tournés (GD-9)', () => {
-  it.each(ARCHIPELAGO_IDS)('%s : le pire cas reste sous 88 000 triangles et 240 appels', (a) => {
+  it.each(ARCHIPELAGO_IDS)('%s : le pire cas reste sous 100 000 triangles et 256 appels', (a) => {
     // Chaque lieu qui bouge, tourné d'un quart et posé à la place libre la plus loin de la sienne.
     let w: World = partie.world;
     for (const id of placesOf(a)) {

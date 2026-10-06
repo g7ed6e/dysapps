@@ -330,6 +330,16 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
     ],
     home: 'Ma cuisine est finie ! Il y a une place à table pour toi, à toute heure.',
   },
+  'history-6e-antiquity': {
+    greeting: 'Bonjour, bâtisseur ! Ici, on fouille le passé. Chaque bonne réponse te donne une mosaïque. Regarde la frise : le plus ancien est en haut.',
+    lines: ['Une trouvaille ! Elle a sa place sur la frise.', 'Des mosaïques pour mon musée : réponds à une question.', 'Avant Jésus-Christ, on compte à l’envers. La frise t’aide.'],
+    home: 'Mon musée est prêt. Chaque trouvaille a sa place.',
+  },
+  'geography-6e-living': {
+    greeting: 'Bonjour, bâtisseur ! Ici, on regarde où vivent les humains : en ville, à la campagne, au bord de la mer. Chaque bonne réponse te donne du chaume. Le chaume, c’est de la paille séchée, serrée en bottes.',
+    lines: ['Je regarde le paysage de loin avant de répondre : prends ton temps, toi aussi.', 'Du chaume pour mon quartier : lis un document.', 'Ville, champs, littoral : chaque paysage a ses habitants.'],
+    home: 'Mon quartier est complet : la ville, les champs et la mer.',
+  },
   'lv2-3e-travel': {
     greeting:
       'Bonjour, bâtisseur ! Au refuge, les voyageurs racontent leurs voyages dans ta deuxième langue. Appuie sur Écouter : la voix lit la question et l’histoire pour toi. Chaque bonne réponse te donne un bardeau. Les bardeaux, ce sont les petites planches de bois qui couvrent les murs du refuge.',

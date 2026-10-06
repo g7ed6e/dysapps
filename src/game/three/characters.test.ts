@@ -73,6 +73,34 @@ describe('Le rallumage d’un Gardien en cubes', () => {
     p.dispose();
   });
 
+  it('l’Amphore peinte se rallume comme les autres, du pied vers le col (GD-8 ; DA, HG-2)', () => {
+    let maintenant = 1000;
+    vi.spyOn(performance, 'now').mockImplementation(() => maintenant);
+    const amphore = 'history-6e-antiquity';
+    const p = creerPersonnages(monde(), () => null, instant(), null);
+    p.poserLesCreatures(guardianPlacements('6e', progress, village.links));
+    p.rallumer(amphore, 1000);
+    maintenant = 1300;
+    p.animer?.(1, 0.016, false);
+    // Les hauteurs des maillages visibles, en pierre et en couleurs : le bas d'abord en couleurs, le haut encore en pierre.
+    const hauteurs = (pierre: boolean) => {
+      const group = p.creatures.children.find((c) => c.userData.creature === amphore && c.userData.kind === 'guardian');
+      const out: number[] = [];
+      group?.traverseVisible((o) => {
+        if (!(o instanceof THREE.Mesh) || !(o.material instanceof THREE.MeshLambertMaterial)) return;
+        if (estPierre(`#${o.material.color.getHexString()}`) !== pierre) return;
+        o.geometry.computeBoundingBox();
+        out.push(o.geometry.boundingBox!.min.y);
+      });
+      return out;
+    };
+    const [pierre, couleurs] = [hauteurs(true), hauteurs(false)];
+    expect(pierre.length).toBeGreaterThan(0);
+    expect(couleurs.length).toBeGreaterThan(0);
+    expect(Math.max(...couleurs)).toBeLessThan(Math.min(...pierre));
+    p.dispose();
+  });
+
   it('d’un coup quand l’appareil demande moins d’animations', () => {
     const p = creerPersonnages(monde(), () => null, instant(), null);
     p.poserLesCreatures(gardiens);
