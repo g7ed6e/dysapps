@@ -5861,7 +5861,7 @@ details.island-fold-objectif {
 .home-role {
   flex: none;
 }
-/* Les trois Expéditions : une icône de la couleur de la matière, son nom et celui de l'expédition. */
+/* Les Expéditions : une icône de la couleur de la matière, son nom et celui de l'expédition. */
 .home-menu {
   margin-top: 0.4rem;
   grid-template-columns: repeat(auto-fit, minmax(min(14rem, 100%), 1fr));

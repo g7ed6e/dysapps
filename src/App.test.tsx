@@ -31,7 +31,7 @@ it('l’accueil est le menu de Blocland : le village, les Expéditions (la LV2 e
   expect(screen.getByRole('heading', { name: 'Blocland', level: 1 })).toBeInTheDocument();
   expect(screen.getByRole('heading', { name: /Ton village : les Basses Terres/ })).toBeInTheDocument();
   const menu = screen.getByRole('navigation', { name: 'Menu principal' });
-  expect(within(menu).getAllByRole('link').map((a) => a.getAttribute('href'))).toEqual(['/matiere/maths', '/matiere/french', '/matiere/english', '/matiere/history-geography', '/matiere/lv2']);
+  expect(within(menu).getAllByRole('link').map((a) => a.getAttribute('href'))).toEqual(['/matiere/maths', '/matiere/french', '/matiere/english', '/matiere/lv2', '/matiere/history-geography']);
   expect(within(menu).getByRole('link', { name: /Espagnol.*Expédition/ })).toHaveAttribute('href', '/matiere/lv2');
   expect(within(menu).getByRole('link', { name: /Français.*Expédition/ })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: /Toutes les missions/ })).toHaveAttribute('href', '/quetes');

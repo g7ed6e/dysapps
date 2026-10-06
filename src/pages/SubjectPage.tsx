@@ -59,7 +59,7 @@ export function SubjectPage() {
         <Icon name={info.icon} /> {info.title}
       </h1>
       <p className="intro">Expédition {info.expedition}.</p>
-      <SubjectApps subject={subject as Subject} />
+      {appsBySubject(subject as Subject).length > 0 && <SubjectApps subject={subject as Subject} />}
 
       {/* Une matière sans île dans Blocland (pas encore) : pas de section vide. */}
       {biomesOf(subject as Subject).length > 0 && (
