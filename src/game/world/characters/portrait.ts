@@ -7,10 +7,22 @@ import { clamp } from '../../../core/math';
 import { creaturePeinte } from './paintedCreatures';
 import type { FacettesDePersonnage } from './painted';
 import { couleursAllumees, type Allumage } from './sentinel';
-import { sentinelleAuDefi } from './paintedSentinels';
+import { sentinelleAuDefi, STATUES } from './paintedSentinels';
 
 /** Le modèle d'un personnage montré hors du monde : la créature d'une île, ou son Gardien en sentinelle. */
 export const modeleDuPortrait = (kind: 'creature' | 'guardian', id: BiomeId): FacettesDePersonnage => (kind === 'guardian' ? sentinelleAuDefi(id) : creaturePeinte(id));
+
+/**
+ * Les sommets que la caméra du défi cadre (x, y, z à la suite) : tout le personnage, sauf pour une sentinelle qui ne
+ * se fait cadrer qu'au-dessus d'une hauteur (`Statue.framedAbove` : le Lion de pierre seul, sans sa dalle).
+ */
+export function framingPoints(kind: 'creature' | 'guardian', id: BiomeId, f: FacettesDePersonnage): Float32Array {
+  const dessus = kind === 'guardian' ? STATUES[id]?.framedAbove : undefined;
+  if (dessus === undefined) return f.positions;
+  const garde: number[] = [];
+  for (let i = 0; i < f.positions.length; i += 3) if (f.positions[i + 1] > dessus) garde.push(f.positions[i], f.positions[i + 1], f.positions[i + 2]);
+  return Float32Array.from(garde);
+}
 
 export interface OptionsDuPortrait {
   /** La rotation du personnage autour de la verticale, en radians (0 : de face ; par défaut, un trois quarts léger). */

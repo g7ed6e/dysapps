@@ -8,7 +8,7 @@ import type { BiomeId } from '../biomes';
 import { lineaire } from '../world/landMesh';
 import { rgb } from '../world/decor/brush';
 import { LUEUR } from '../world/characters/colors';
-import { modeleDuPortrait } from '../world/characters/portrait';
+import { framingPoints, modeleDuPortrait } from '../world/characters/portrait';
 import { couleursAllumees, degresDAllumage, type Allumage } from '../world/characters/sentinel';
 import { cadrageSerre } from './tightFraming';
 import { materiauALueur } from './paintedCharacters';
@@ -95,12 +95,13 @@ export default function PersonnageCanvas({
       l.fill(0);
       if (d.lueurs > 0)
         for (let t = 0; t < f.pieces.length; t++) {
-          if (f.table[f.pieces[t]].lueur !== 'allumage') continue;
+          const piece = f.table[f.pieces[t]];
+          if (piece.lueur !== 'allumage') continue;
           for (let v = t * 3; v < t * 3 + 3; v++) {
             l[v * 4] = k[0];
             l[v * 4 + 1] = k[1];
             l[v * 4 + 2] = k[2];
-            l[v * 4 + 3] = d.lueurs;
+            l[v * 4 + 3] = d.lueurs * (piece.glowWeight ?? 1);
           }
         }
       couleurs.needsUpdate = true;
@@ -125,8 +126,9 @@ export default function PersonnageCanvas({
     const camera = new THREE.PerspectiveCamera(30, el.clientWidth / Math.max(1, el.clientHeight), 0.1, 200);
     const dir = new THREE.Vector3(cameraDirection[0], elevation, cameraDirection[1]).normalize();
     if (remplir) {
-      // Au plus près où chaque sommet tient dans le cadre (la sentinelle ne respire pas ; la créature, à peine).
-      const sommets = g.getAttribute('position').array;
+      // Au plus près où chaque sommet cadré tient dans le cadre (la sentinelle ne respire pas ; la créature, à peine) ;
+      // le Lion de pierre seul, sans sa dalle.
+      const sommets = framingPoints(kind, id, f);
       const points = new Float64Array(sommets.length);
       const respire = kind === 'creature' ? RESPIRATION.amplitude : 0;
       for (let i = 0; i < sommets.length; i += 3) {

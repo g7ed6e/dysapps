@@ -10,9 +10,9 @@
 //   arrondit les sommets au millième de bloc et soude ceux qui se confondent ;
 // - repeint le lichen en trois ou quatre taches (retouche du directeur artistique) : le lichen de TRELLIS.2, épars, est
 //   oublié ; jamais sur les crêtes des veines ;
-// - pose les veines : la crête de huit mèches de devant de la crinière, de la racine vers la pointe, relevées sur la
-//   vue de face et suivies de la racine à la pointe sur les arêtes saillantes (le jeu en fait des rubans pliés sur la
-//   crête : src/game/world/characters/statues/lion.ts) ;
+// - pose les veines : quatre segments droits, indépendants du maillage, sur les mèches de la tempe et du bas de la
+//   joue, de chaque côté, de la racine vers la pointe, relevés sur la vue de face, posés à plat sur la mèche et levés
+//   juste assez pour ne s'enfoncer nulle part (le jeu en fait des bandes plates : src/game/world/characters/statues/lion.ts) ;
 // - désigne les orbites : les facettes déjà sombres des yeux, peintes de la couleur qui ne s'allume jamais (sans les
 //   creuser).
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
@@ -28,24 +28,18 @@ const SORTIE = join(RACINE, 'src/game/world/characters/statues/lionData.ts');
 const HAUTEUR = 6;
 
 /**
- * Les huit veines, relevées sur la vue de face (depuis −Z, le Lion posé par ce script) : la racine et la pointe de la
- * mèche (x, y). Le script projette les deux sur la pierre, puis suit la crête de la mèche de l'une à l'autre (les arêtes
- * saillantes du maillage). Deux au sommet de la tête, deux par joue (la mèche de la tempe et celle du bas de la
- * joue : à la hauteur des yeux, une veine horizontale près du museau se lirait comme une moustache), deux sur le poitrail.
+ * Les quatre veines, relevées sur la vue de face (depuis −Z, le Lion posé par ce script) : la racine et la pointe de la
+ * mèche (x, y). Le script projette les deux sur la pierre et tend entre eux un segment droit (directeur artistique,
+ * 06/10/2026) : la mèche de la tempe et celle du bas de la joue, de chaque côté ; aucune sur le sommet de la tête ni le
+ * poitrail. À la hauteur des yeux, une veine horizontale près du museau se lirait comme une moustache.
  */
 const VEINES = [
-  // le sommet de la tête
-  [[0.38, 5.26], [1.02, 5.63]],
-  [[-0.67, 5.26], [-1.06, 5.62]],
   // la joue gauche de l'élève (+X) : la mèche de la tempe, puis celle du bas de la joue
-  [[0.66, 5.16], [1.2, 5.3]],
-  [[0.68, 4.12], [1.64, 3.75]],
+  [[0.66, 5.18], [1.36, 5.47]],
+  [[0.64, 4.1], [1.32, 3.52]],
   // l'autre joue (−X)
-  [[-0.88, 5.28], [-1.38, 5.34]],
-  [[-0.8, 4.0], [-1.75, 3.75]],
-  // le poitrail
-  [[0.32, 3.72], [1.02, 2.82]],
-  [[-0.72, 3.72], [-1.26, 2.82]],
+  [[-0.82, 5.15], [-1.45, 5.45]],
+  [[-0.8, 4.0], [-1.6, 3.35]],
 ];
 
 /**
@@ -169,25 +163,6 @@ function aretesDe({ sommets, triangles }) {
   return { aretes, voisins };
 }
 
-/** Ce que coûte l'écart d'une arête au tracé relevé (par bloc d'écart, vu de face). */
-const ECART = 30;
-
-/** L'écart moyen, vu de face (x, y), d'une arête [a, b] au segment relevé [r, p]. */
-function ecartAuTrace(a, b, r, p) {
-  const d = (q) => {
-    const [ux, uy] = [p[0] - r[0], p[1] - r[1]];
-    const t = Math.max(0, Math.min(1, ((q[0] - r[0]) * ux + (q[1] - r[1]) * uy) / (ux * ux + uy * uy)));
-    return Math.hypot(q[0] - r[0] - ux * t, q[1] - r[1] - uy * t);
-  };
-  return (d(a) + d(b) + d([(a[0] + b[0]) / 2, (a[1] + b[1]) / 2])) / 3;
-}
-
-/** Le sommet d'un triangle le plus proche d'un point. */
-function sommetProche(modele, t, p) {
-  const s = (k) => modele.sommets.slice(k * 3, k * 3 + 3).map((x) => x / 1000);
-  return [0, 1, 2].map((j) => modele.triangles[t * 3 + j]).sort((a, b) => Math.hypot(...sub(s(a), p)) - Math.hypot(...sub(s(b), p)))[0];
-}
-
 /** Ce que touche un rayon de face en (x, y), ou, s'il passe à côté de ce modèle-ci, un peu plus vers `vers`. */
 function toucher(m, [x, y], vers) {
   for (let k = 0; k < 8; k++) {
@@ -197,74 +172,83 @@ function toucher(m, [x, y], vers) {
   throw new Error(`Rien devant (${x}, ${y})`);
 }
 
+/** La marge entre la pierre et le dessous d'une veine, en blocs : le segment ne s'enfonce nulle part. */
+const MARGE = 0.006;
+/** La demi-largeur sous laquelle on vérifie que le segment ne s'enfonce pas : celle du serti, un peu élargie. */
+const DEMI_LARGEUR_SOUS_LA_VEINE = 0.13;
+/** La part de la longueur de sa mèche qu'une veine couvre au moins (directeur artistique, 06/10/2026). */
+const PART_DE_LA_MECHE = 0.6;
+
+/** La première pierre que touche un rayon tiré de `depuis` vers `vers` : sa distance, ou l'infini. */
+function premiereDistance(m, depuis, vers) {
+  const r = new THREE.Raycaster(new THREE.Vector3(...depuis), new THREE.Vector3(...vers));
+  const [h] = r.intersectObject(m);
+  return h ? h.distance : Infinity;
+}
+
 /**
- * Une veine : la crête d'une mèche, de sa racine à sa pointe, en arêtes saillantes du maillage (le plus court chemin
- * qui préfère les arêtes vives et convexes, tournées vers l'élève). Pour chaque arête, ses deux bouts et, pour chacune
- * de ses deux facettes, la direction qui entre dans la facette et sa normale : le jeu y plie un ruban, à cheval sur la
- * crête.
+ * La mèche d'un point : la facette touchée de face et ses voisines tournées du même côté (à moins de 30°), de proche
+ * en proche, à moins de 1,5 bloc. Rend sa longueur le long de la direction `d`.
  */
-function veine(modele, m, graphe, [racine, pointe]) {
+function longueurDeLaMeche(modele, graphe, t0, centre, d) {
   const s = (k) => modele.sommets.slice(k * 3, k * 3 + 3).map((x) => x / 1000);
   const normale = (t) => {
     const [a, b, c] = [0, 1, 2].map((j) => s(modele.triangles[t * 3 + j]));
     return unit(croix(sub(b, a), sub(c, a)));
   };
-  const hr = toucher(m, racine, pointe);
-  const hp = toucher(m, pointe, racine);
-  const [depart, arrivee] = [sommetProche(modele, hr.triangle, hr.point), sommetProche(modele, hp.triangle, hp.point)];
-  const cout = (i, j) => {
-    const faces = graphe.aretes.get(i < j ? `${i},${j}` : `${j},${i}`);
-    const l = Math.hypot(...sub(s(i), s(j)));
-    if (faces.length !== 2) return l * 50;
-    const [n1, n2] = faces.map(normale);
-    // Convexe : le troisième sommet de l'une est sous le plan de l'autre.
-    const autre = modele.triangles.slice(faces[1] * 3, faces[1] * 3 + 3).find((k) => k !== i && k !== j);
-    const convexe = n1[0] * sub(s(autre), s(i))[0] + n1[1] * sub(s(autre), s(i))[1] + n1[2] * sub(s(autre), s(i))[2] < -1e-4;
-    const vive = 1 - (n1[0] * n2[0] + n1[1] * n2[1] + n1[2] * n2[2]);
-    const deFace_ = (n1[2] + n2[2]) / 2 < 0.2;
-    if (!deFace_) return l * 50;
-    // Au plus près de la ligne relevée, vue de face : la veine file droit de la racine à la pointe.
-    const ecart = ecartAuTrace(s(i), s(j), racine, pointe);
-    return l * (convexe ? 1 + 3 * Math.max(0, 0.5 - vive) : 4) * (1 + ECART * ecart);
-  };
-  // Dijkstra, sur quelques centaines de sommets : une file triée suffit.
-  const dist = new Map([[depart, 0]]);
-  const avant = new Map();
-  const file = [depart];
-  const vus = new Set();
+  const n0 = normale(t0);
+  const vus = new Set([t0]);
+  const file = [t0];
+  let [bas, haut] = [Infinity, -Infinity];
   while (file.length) {
-    file.sort((a, b) => dist.get(a) - dist.get(b));
-    const i = file.shift();
-    if (vus.has(i)) continue;
-    vus.add(i);
-    if (i === arrivee) break;
-    for (const j of graphe.voisins[i]) {
-      const d = dist.get(i) + cout(i, j);
-      if (d < (dist.get(j) ?? Infinity)) {
-        dist.set(j, d);
-        avant.set(j, i);
-        file.push(j);
+    const t = file.shift();
+    for (let k = 0; k < 3; k++) {
+      const p = s(modele.triangles[t * 3 + k]);
+      const x = p[0] * d[0] + p[1] * d[1] + p[2] * d[2];
+      [bas, haut] = [Math.min(bas, x), Math.max(haut, x)];
+      const [i, j] = [modele.triangles[t * 3 + k], modele.triangles[t * 3 + ((k + 1) % 3)]];
+      for (const u of graphe.aretes.get(i < j ? `${i},${j}` : `${j},${i}`)) {
+        if (vus.has(u)) continue;
+        vus.add(u);
+        const nu = normale(u);
+        const c = [0, 1, 2].map((a) => [0, 1, 2].reduce((m, j2) => m + s(modele.triangles[u * 3 + j2])[a], 0) / 3);
+        if (nu[0] * n0[0] + nu[1] * n0[1] + nu[2] * n0[2] > Math.cos(Math.PI / 6) && Math.hypot(...sub(c, centre)) < 1.5) file.push(u);
       }
     }
   }
-  const chemin = [arrivee];
-  while (chemin[0] !== depart) chemin.unshift(avant.get(chemin[0]));
-  const aretes = [];
-  for (let k = 0; k + 1 < chemin.length; k++) {
-    const [i, j] = [chemin[k], chemin[k + 1]];
-    const faces = graphe.aretes.get(i < j ? `${i},${j}` : `${j},${i}`);
-    if (faces.length !== 2) throw new Error(`Une veine passe par une arête à ${faces.length} facette(s)`);
-    const [A, B] = [s(i), s(j)];
-    const plis = faces.flatMap((t) => {
-      const n = normale(t);
-      const C = s(modele.triangles.slice(t * 3, t * 3 + 3).find((x) => x !== i && x !== j));
-      let d = unit(croix(n, sub(B, A)));
-      if (d[0] * sub(C, A)[0] + d[1] * sub(C, A)[1] + d[2] * sub(C, A)[2] < 0) d = d.map((x) => -x);
-      return [...d, ...n];
-    });
-    aretes.push([...A, ...B, ...plis].map(mil));
-  }
-  return { aretes, points: chemin.map(s) };
+  return haut - bas;
+}
+
+/**
+ * Une veine : un segment droit sur une mèche, de sa racine à sa pointe, indépendant du maillage (directeur artistique,
+ * 06/10/2026). Ses deux bouts sont les points de la pierre vus de face ; il est posé à plat, tourné comme la mèche
+ * (la moyenne des facettes de ses bouts et de son milieu), puis levé juste assez pour ne s'enfoncer nulle part sous sa
+ * largeur. Rend ses deux bouts, sa normale et la direction de sa largeur (12 nombres, en millièmes), et sa part de la
+ * longueur de la mèche.
+ */
+function veine(modele, m, graphe, [racine, pointe]) {
+  const hr = toucher(m, racine, pointe);
+  const hp = toucher(m, pointe, racine);
+  const milieu = toucher(m, [(racine[0] + pointe[0]) / 2, (racine[1] + pointe[1]) / 2], racine);
+  const [A, B] = [hr.point, hp.point];
+  const d = unit(sub(B, A));
+  const somme = [0, 1, 2].map((k) => hr.normale[k] + hp.normale[k] + 2 * milieu.normale[k]);
+  const pn = somme[0] * d[0] + somme[1] * d[1] + somme[2] * d[2];
+  const n = unit(somme.map((v, k) => v - d[k] * pn));
+  const w = unit(croix(d, n));
+  // Levé juste assez : sous chaque point de sa largeur, la pierre reste en dessous.
+  let leve = 0;
+  for (let i = 0; i <= 24; i++)
+    for (const c of [-1, 0, 1]) {
+      const q = [0, 1, 2].map((k) => A[k] + (B[k] - A[k]) * (i / 24) + w[k] * c * DEMI_LARGEUR_SOUS_LA_VEINE);
+      const h = 1 - premiereDistance(m, q.map((v, k) => v + n[k]), n.map((v) => -v));
+      if (h > -0.5) leve = Math.max(leve, h);
+    }
+  leve += MARGE;
+  const [A2, B2] = [A, B].map((p) => p.map((v, k) => v + n[k] * leve));
+  const longueur = Math.hypot(...sub(B, A));
+  const meche = longueurDeLaMeche(modele, graphe, milieu.triangle, milieu.point, d);
+  return { veine: [...A2, ...B2, ...n, ...w].map(mil), points: [A2, B2], part: longueur / meche, leve, longueur, meche };
 }
 
 /** La distance d'un point à une ligne brisée (en blocs). */
@@ -285,7 +269,8 @@ function version(fichier, taches, avecVeines) {
   const m = maillage(modele);
   const graphe = aretesDe(modele);
   const toutes = VEINES.map((t) => veine(modele, m, graphe, t));
-  const veines = avecVeines ? toutes.map((v) => v.aretes) : [];
+  const veines = avecVeines ? toutes.map((v) => v.veine) : [];
+  for (const v of toutes) if (v.part < PART_DE_LA_MECHE) throw new Error(`Une veine ne couvre que ${Math.round(v.part * 100)} % de sa mèche (${fichier})`);
   // Le lichen évite la crête des mèches même dans la version sans veines.
   const lignes = toutes.map((v) => v.points);
   const s = (k) => modele.sommets.slice(k * 3, k * 3 + 3).map((x) => x / 1000);
@@ -346,8 +331,8 @@ function produire() {
     '// ne pas modifier à la main. Le Lion de pierre, couché sur sa dalle, le museau vers −Z, les pieds en 0, en millièmes de bloc.',
     '',
     '/** Un modèle du Lion : ses sommets (x, y, z en millièmes de bloc), ses triangles (trois sommets, face avant dans le sens',
-    ' * direct), ceux de lichen et des orbites, et ses veines : pour chaque arête de la crête d’une mèche, de la racine à la',
-    ' * pointe, ses deux bouts puis, pour ses deux facettes, la direction qui entre dans la facette et sa normale (18 nombres). */',
+    ' * direct), ceux de lichen et des orbites, et ses veines : pour chacune, un segment droit sur une mèche, sa racine, sa',
+    ' * pointe, sa normale et la direction de sa largeur (12 nombres, en millièmes). */',
     'export interface ModeleDuLion {',
     '  sommets: readonly number[];',
     '  triangles: readonly number[];',
@@ -356,7 +341,7 @@ function produire() {
     '  veines: readonly (readonly number[])[];',
     '}',
     '',
-    ecrire('LION_DU_DEFI', v1500, `Le Lion du défi, en gros plan (${v1500.triangles.length / 3} triangles, lion-1500.glb) : quatre taches de lichen, huit veines.`),
+    ecrire('LION_DU_DEFI', v1500, `Le Lion du défi, en gros plan (${v1500.triangles.length / 3} triangles, lion-1500.glb) : quatre taches de lichen, quatre veines.`),
     '',
     ecrire('LION_DU_MONDE', v700, `Le Lion du monde, sentinelle de la carte (${v700.triangles.length / 3} triangles, lion-700.glb) : le lichen de l’épaule, sans veines.`),
     '',

@@ -37,6 +37,11 @@ export interface Piece {
   lueur?: 'nuit' | 'allumage';
   /** La couleur que prend la nuit une pièce qui brille, si elle n'est pas celle dont elle est peinte (le verre de Fi). */
   nuit?: Couleur;
+  /**
+   * La part de son allumage qu'une pièce qui brille emprunte à la lueur (1 par défaut : pleinement émissive) ; en
+   * dessous, elle garde un peu de l'ombre de ses facettes (les veines du Lion de pierre, « légèrement émissives »).
+   */
+  glowWeight?: number;
   dessiner(T: Trace, pot: Pot): void;
 }
 
@@ -114,7 +119,7 @@ export function peindrePersonnage(pieces: Piece[]): FacettesDePersonnage {
     colors: f.colors,
     pieces: f.elements.map((e) => e & 255),
     teintes: f.elements.map((e) => palette[e >> 8].couleur),
-    table: pieces.map(({ nom, pivot, lueur, nuit }) => ({ nom, pivot, ...(lueur ? { lueur } : {}), ...(nuit !== undefined ? { nuit } : {}) })),
+    table: pieces.map(({ nom, pivot, lueur, nuit, glowWeight }) => ({ nom, pivot, ...(lueur ? { lueur } : {}), ...(nuit !== undefined ? { nuit } : {}), ...(glowWeight !== undefined ? { glowWeight } : {}) })),
     palette,
   };
 }

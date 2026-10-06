@@ -48,8 +48,9 @@ export const BONHOMME = {
 /**
  * Les sentinelles (les Gardiens de pierre) : la pierre éteinte et son lichen, la pierre rallumée, les orbites (qui ne
  * s'allument jamais) et la cendre, ce que sont la flamme et les veines tant qu'elles sont éteintes (`LUEUR` rallumées) ;
- * le serti, le liseré sombre qui borde les veines du Lion de pierre et ne s'allume jamais : l'or s'y lit à plus de 3:1
- * (référent dys, 05/10/2026), sur la pierre grise du défi comme sur le Sable de la pierre rallumée.
+ * le serti, le liseré sombre qui borde les veines du Lion de pierre : de la couleur de la pierre tant qu'elles sont
+ * éteintes, il s'assombrit avec elles jusqu'à cette couleur (directeur artistique, 06/10/2026) ; l'or s'y lit à plus de
+ * 3:1 (référent dys), sur la pierre grise du défi comme sur le Sable de la pierre rallumée.
  * Rallumée, la pierre se réchauffe jusqu'au Sable (#DAA66A, DA lot 6) : « brille à nouveau » se lit à la distance de
  * la vue d'archipel, sans lueur au sol ni halo, et ne se confond plus avec la pierre grise aux veines dorées du défi.
  */

@@ -1,13 +1,16 @@
+import { cadrageSerre } from '../../../three/tightFraming';
 import { lineaire } from '../../landMesh';
 import { toutConstruit } from '../../budget';
 import { guardianPlacements } from '../../terrain';
 import { gardienDuMonde } from '../../terrain/creatures';
 import { LUEUR, SENTINELLE } from '../colors';
+import { FIRST_STEP } from '../glow';
 import { fusionDesGardiens, pointDePose } from '../merges';
 import type { FacettesDePersonnage, V3 } from '../painted';
 import { sentinelleAuDefi, sentinellePeinte, STATUES } from '../paintedSentinels';
-import { ECHELLE_DANS_LE_MONDE } from '../sentinel';
-import { HAUTEUR_DU_LION, LION_DE_PIERRE, QUAI_DU_LION, VEINE_DU_LION } from './lion';
+import { framingPoints } from '../portrait';
+import { allumage, couleursAllumees, degreDuSerti, ECHELLE_DANS_LE_MONDE } from '../sentinel';
+import { HAUTEUR_DU_LION, LION_DE_PIERRE, LION_SLAB_TOP, LION_VEIN_GLOW, QUAI_DU_LION, VEINE_DU_LION } from './lion';
 import { LION_DU_DEFI, LION_DU_MONDE } from './lionData';
 
 const ID = 'english-6e-vocabulary';
@@ -22,6 +25,10 @@ function luminance(c: number): number {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 const contraste = (a: number, b: number) => (Math.max(luminance(a), luminance(b)) + 0.05) / (Math.min(luminance(a), luminance(b)) + 0.05);
+/** La luminance d'un triangle peint (couleurs linéaires, celles de son premier sommet). */
+const luminanceDe = (c: Float32Array, t: number) => 0.2126 * c[t * 9] + 0.7152 * c[t * 9 + 1] + 0.0722 * c[t * 9 + 2];
+/** Ce que la tablette donne à la vitrine du défi, en pixels (src/styles/global.css, `.arena-vitrine .guardian-3d`). */
+const VITRINE_DE_TABLETTE = 140;
 
 /** Les taches d'un ensemble de triangles : ceux qui se touchent (un sommet commun) en font une. */
 function taches(f: FacettesDePersonnage, ts: number[]): number {
@@ -66,11 +73,21 @@ describe('Le Lion de pierre, tiré de son modèle (Baie des mots, 6e)', () => {
     }
   });
 
+  it('la nuit comme le jour, la dalle reste de pierre et la flamme commune brille comme celle des autres sentinelles', () => {
+    const autre = sentinellePeinte('french-6e-phonology');
+    const piece = (f: FacettesDePersonnage, n: string) => f.table.find((p) => p.nom === n);
+    for (const f of [monde, defi]) {
+      expect(piece(f, 'flamme')).toEqual({ ...piece(autre, 'flamme'), pivot: piece(f, 'flamme')!.pivot });
+      // La dalle : la pierre sous le haut de la dalle, ni lueur ni serti.
+      for (const t of triangles(f, 'sculpture')) if ([0, 1, 2].every((k) => sommet(f, t, k)[1] < LION_SLAB_TOP)) expect(f.teintes[t]).toBe(SENTINELLE.pierre);
+    }
+  });
+
   it('la dalle a ses bords sur l’axe nord-sud, dans le monde comme au défi : le modèle n’est jamais tourné (décision du mainteneur du 06/10/2026)', () => {
     expect(LION_DE_PIERRE.tour).toBeUndefined();
   });
 
-  it('deux modèles : 700 triangles dans le monde, sans veines ; 1 500 au défi, plus ses huit veines serties', () => {
+  it('deux modèles : 700 triangles dans le monde, sans veines ; 1 500 au défi, plus ses quatre veines serties', () => {
     expect(LION_DU_MONDE.triangles.length / 3).toBe(700);
     expect(LION_DU_DEFI.triangles.length / 3).toBe(1_500);
     // La coupe et sa flamme ajoutent les mêmes quelques triangles aux deux modèles.
@@ -79,12 +96,12 @@ describe('Le Lion de pierre, tiré de son modèle (Baie des mots, 6e)', () => {
     expect(feu).toBeLessThanOrEqual(30);
     expect(triangles(monde, 'veines')).toEqual([]);
     expect(LION_DU_MONDE.veines).toEqual([]);
-    expect(LION_DU_DEFI.veines.length).toBe(8);
-    // Chaque arête d'une veine porte deux bandes (une par facette), d'or et de serti : 1 500 + 2 × 2 × arêtes.
-    const aretes = LION_DU_DEFI.veines.reduce((n, v) => n + v.length / 18, 0);
-    expect(triangles(defi, 'veines', LUEUR).length).toBe(aretes * 4);
-    expect(triangles(defi, 'sculpture', SENTINELLE.serti).length).toBe(aretes * 4);
-    expect(defi.pieces.length).toBe(1_500 + aretes * 8 + feu);
+    expect(LION_DU_DEFI.veines.length).toBe(4);
+    // Chaque veine est une bande d'or sur une bande de serti, de deux triangles chacune : 1 500 + 4 × 4.
+    for (const v of LION_DU_DEFI.veines) expect(v.length).toBe(12);
+    expect(triangles(defi, 'veines', LUEUR).length).toBe(8);
+    expect(triangles(defi, 'sculpture', SENTINELLE.serti).length).toBe(8);
+    expect(defi.pieces.length).toBe(1_500 + 16 + feu);
     // Le gros plan reste léger : moins de 1 800 triangles, veines comprises.
     expect(defi.pieces.length).toBeLessThan(1_800);
   });
@@ -134,22 +151,134 @@ describe('Le Lion de pierre, tiré de son modèle (Baie des mots, 6e)', () => {
     }
   });
 
-  it('les veines sont sur la crinière, devant : de la tête au poitrail, jamais sur le corps ni la dalle', () => {
-    for (const t of triangles(defi, 'veines')) {
-      const [x, y, z] = centre(defi, t);
-      expect(y).toBeGreaterThan(2.5);
-      expect(Math.abs(x)).toBeLessThan(2.2);
-      expect(z).toBeLessThan(-0.8);
+  it('quatre veines droites, la tempe et le bas de la joue de chaque côté ; aucune sur le sommet de la tête ni le poitrail', () => {
+    const veines = LION_DU_DEFI.veines.map((v) => {
+      const [A, B, n] = [0, 3, 6].map((k) => [v[k] / 1000, v[k + 1] / 1000, v[k + 2] / 1000] as V3);
+      return { A, B, n, longueur: Math.hypot(B[0] - A[0], B[1] - A[1], B[2] - A[2]), x: (A[0] + B[0]) / 2, y: (A[1] + B[1]) / 2, z: (A[2] + B[2]) / 2 };
+    });
+    for (const v of veines) {
+      // Devant, sur la crinière : ni le poitrail (sous 3,3 blocs), ni le sommet de la tête (au-dessus de 5,6 blocs).
+      expect(v.z).toBeLessThan(-0.8);
+      expect(Math.abs(v.x)).toBeGreaterThan(0.6);
+      expect(Math.abs(v.x)).toBeLessThan(2.2);
+      for (const p of [v.A, v.B]) {
+        expect(p[1]).toBeGreaterThan(3.3);
+        expect(p[1]).toBeLessThan(5.6);
+      }
+      // Assez longue pour se lire (le script vérifie qu'elle couvre au moins 60 % de sa mèche).
+      expect(v.longueur).toBeGreaterThan(0.55);
+      expect(Math.hypot(...v.n)).toBeCloseTo(1, 2);
+    }
+    for (const cote of [1, -1]) {
+      const deCeCote = veines.filter((v) => Math.sign(v.x) === cote).sort((a, b) => b.y - a.y);
+      expect(deCeCote.length).toBe(2);
+      // La tempe, au-dessus des yeux ; le bas de la joue, sous le museau.
+      expect(deCeCote[0].y).toBeGreaterThan(4.9);
+      expect(deCeCote[1].y).toBeLessThan(4.2);
+    }
+    // Droites : les deux triangles de chaque bande d'or sont dans le même plan.
+    const or = triangles(defi, 'veines', LUEUR);
+    for (let i = 0; i < or.length; i += 2) {
+      const [p, q] = [or[i], or[i + 1]];
+      const n: V3 = [defi.normals[p * 9], defi.normals[p * 9 + 1], defi.normals[p * 9 + 2]];
+      const m: V3 = [defi.normals[q * 9], defi.normals[q * 9 + 1], defi.normals[q * 9 + 2]];
+      expect(n[0] * m[0] + n[1] * m[1] + n[2] * m[2]).toBeGreaterThan(0.999);
     }
   });
 
-  it('l’or se lit sur son serti à plus de 3:1 en niveaux de gris, éteint ou rallumé ; le serti déborde de l’or des deux côtés', () => {
+  it('les veines sont « légèrement émissives » : une part seulement de leur allumage vient de la lueur ; la flamme, pleinement', () => {
+    expect(defi.table.find((p) => p.nom === 'veines')?.glowWeight).toBe(LION_VEIN_GLOW);
+    expect(LION_VEIN_GLOW).toBeGreaterThan(0);
+    expect(LION_VEIN_GLOW).toBeLessThan(1);
+    expect(defi.table.find((p) => p.nom === 'flamme')?.glowWeight).toBeUndefined();
+  });
+
+  it('le serti suit l’allumage des veines : de la couleur de la pierre éteint, jusqu’à #403D38, sombre dès la première réussite', () => {
+    expect(allumage(SENTINELLE.serti, 0)).toBe(SENTINELLE.pierre);
+    expect(allumage(SENTINELLE.serti, 1)).toBe(SENTINELLE.serti);
+    expect(degreDuSerti(0)).toBe(0);
+    expect(degreDuSerti(FIRST_STEP)).toBe(1);
+    expect(degreDuSerti(1)).toBe(1);
+    // Éteint, le serti est peint comme la pierre : pas de trait sombre sur la crinière.
+    const eteint = couleursAllumees(defi, { pierre: 0, lueurs: 0 });
+    const pierre = luminance(SENTINELLE.pierre);
+    for (const t of triangles(defi, 'sculpture', SENTINELLE.serti)) {
+      // À la nuance de sa facette près (de 0,84 à 1, ../painted.ts) : la luminance de la pierre, ou un peu moins.
+      expect(luminanceDe(eteint, t)).toBeLessThanOrEqual(pierre + 1e-4);
+      expect(luminanceDe(eteint, t)).toBeGreaterThan(luminance(0x777670));
+    }
+  });
+
+  it('l’or se lit sur son serti à plus de 3:1 en niveaux de gris, de la première réussite à la victoire ; le serti déborde de l’or de tous côtés', () => {
     expect(contraste(LUEUR, SENTINELLE.serti)).toBeGreaterThanOrEqual(3);
     // Sans serti, l'or ne se lirait pas sur la pierre : ni grise (défi en cours), ni rallumée.
     expect(contraste(LUEUR, SENTINELLE.pierre)).toBeLessThan(3);
     expect(contraste(LUEUR, SENTINELLE.rallumee)).toBeLessThan(3);
+    // Sur les couleurs peintes, facette par facette : chaque bande d'or contre la bande de serti qui la porte (même
+    // ordre, deux triangles par veine), du premier pas du défi à la victoire, la pierre éteinte puis rallumée.
+    const or = triangles(defi, 'veines', LUEUR);
+    const serti = triangles(defi, 'sculpture', SENTINELLE.serti);
+    expect(or.length).toBe(serti.length);
+    for (const degre of [
+      { pierre: 0, lueurs: FIRST_STEP },
+      { pierre: 0, lueurs: 0.5 },
+      { pierre: 0, lueurs: 0.8 },
+      { pierre: 0, lueurs: 1 },
+      { pierre: 1, lueurs: 1 },
+    ]) {
+      const c = couleursAllumees(defi, degre);
+      for (let i = 0; i < or.length; i++) {
+        const [o, s] = [luminanceDe(c, or[i]), luminanceDe(c, serti[i])];
+        expect((o + 0.05) / (s + 0.05), `lueurs ${degre.lueurs}, bande ${i}`).toBeGreaterThanOrEqual(3);
+      }
+    }
     expect(VEINE_DU_LION.serti).toBeGreaterThan(VEINE_DU_LION.or * 1.8);
     expect(VEINE_DU_LION.hauteurDeLOr).toBeGreaterThan(VEINE_DU_LION.hauteurDuSerti);
+  });
+
+  it('au défi, la caméra cadre le Lion seul, sans sa dalle : sa tête fait au moins 50 px dans la vitrine d’une tablette', () => {
+    const cadre = framingPoints('guardian', ID, defi);
+    expect(cadre.length).toBeLessThan(defi.positions.length);
+    for (let i = 1; i < cadre.length; i += 3) expect(cadre[i]).toBeGreaterThan(LION_SLAB_TOP);
+    // La flamme reste dans le cadre.
+    for (const t of triangles(defi, 'flamme')) for (let k = 0; k < 3; k++) expect(sommet(defi, t, k)[1]).toBeGreaterThan(LION_SLAB_TOP);
+    // La caméra du défi (Guardians.tsx, PersonnageCanvas.tsx) : de trois-quarts, 30° de champ, la vitrine carrée.
+    const direction: V3 = [-0.55, 0.35, -0.85];
+    const fov = 30;
+    const [mn, mx] = [[Infinity, Infinity, Infinity], [-Infinity, -Infinity, -Infinity]];
+    for (let i = 0; i < defi.positions.length; i += 3)
+      for (let k = 0; k < 3; k++) [mn[k], mx[k]] = [Math.min(mn[k], defi.positions[i + k]), Math.max(mx[k], defi.positions[i + k])];
+    const centre = [0, 1, 2].map((k) => (mn[k] + mx[k]) / 2);
+    const { cible, distance } = cadrageSerre(
+      cadre.map((v, i) => v - centre[i % 3]),
+      direction,
+      fov,
+      1,
+    );
+    const l = Math.hypot(...direction);
+    const N = direction.map((v) => v / l);
+    const oeil = [0, 1, 2].map((k) => centre[k] + cible[k] + N[k] * distance);
+    // La droite et le haut de l'image, comme Object3D.lookAt avec le haut du monde.
+    const rl = Math.hypot(N[2], N[0]);
+    const R = [N[2] / rl, 0, -N[0] / rl];
+    const U = [N[1] * R[2], N[2] * R[0] - N[0] * R[2], -N[1] * R[0]];
+    const t = Math.tan((fov * Math.PI) / 360);
+    const ecran = (p: V3) => {
+      const d = [p[0] - oeil[0], p[1] - oeil[1], p[2] - oeil[2]];
+      const z = -(d[0] * N[0] + d[1] * N[1] + d[2] * N[2]);
+      const demi = VITRINE_DE_TABLETTE / 2;
+      return [((d[0] * R[0] + d[2] * R[2]) / (z * t)) * demi, ((d[0] * U[0] + d[1] * U[1] + d[2] * U[2]) / (z * t)) * demi];
+    };
+    // La tête, crinière comprise : la pierre au-dessus de quatre blocs.
+    const tete = triangles(defi, 'sculpture')
+      .flatMap((u) => [0, 1, 2].map((k) => sommet(defi, u, k)))
+      .filter((p) => p[1] > 4)
+      .map(ecran);
+    const [largeur, hauteur] = [0, 1].map((k) => Math.max(...tete.map((p) => p[k])) - Math.min(...tete.map((p) => p[k])));
+    expect(largeur).toBeGreaterThanOrEqual(50);
+    expect(hauteur).toBeGreaterThanOrEqual(50);
+    // Tout le Lion tient dans la vitrine.
+    for (let i = 0; i < cadre.length; i += 3) for (const v of ecran([cadre[i], cadre[i + 1], cadre[i + 2]])) expect(Math.abs(v)).toBeLessThanOrEqual(VITRINE_DE_TABLETTE / 2 + 1e-6);
   });
 
   it('des orbites sombres sur les yeux du modèle, sans les creuser, qui ne s’allument jamais', () => {

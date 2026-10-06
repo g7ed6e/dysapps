@@ -2,7 +2,7 @@
 // code. Le concept validé (essai 5) a été mis en volume par TRELLIS.2 puis réduit à 700 et 1 500 triangles (fiche :
 // docs/univers/archipeo/modele-lion-de-pierre.md) ; ./lionData.ts en garde les données pures, produites par
 // scripts/rendu/lion-de-pierre/convertir.mjs (npm run rendu:lion). Ici, le modèle devient une statue comme les autres : pierre, lichen en taches,
-// orbites qui ne s'allument jamais, et la crinière qui se rallume, huit veines d'or serties de sombre.
+// orbites qui ne s'allument jamais, et la crinière qui se rallume : quatre veines d'or droites, serties de sombre.
 //
 // Deux modèles (décision du mainteneur) : 700 triangles dans le monde (la sentinelle de la carte), 1 500 au défi.
 // Couché, six blocs de haut dalle comprise (décision du mainteneur du 01/10/2026), le museau vers −Z : la caméra du
@@ -34,10 +34,23 @@ const FLAMME_SUR_LA_DALLE = { pied: [0, 1.21, -3.88] as V3, echelle: 0.8 };
 const SUR_LE_SOCLE = { echelle: 0.32, recul: 0.35 } as const;
 
 /**
- * Les veines : la largeur de l'or et celle de son serti, en blocs du modèle, et leur hauteur au-dessus de la pierre.
- * Le serti, sombre, déborde de chaque côté de l'or : c'est sur lui que l'or se lit (plus de 3:1 en niveaux de gris).
+ * Les veines : la largeur de l'or et celle de son serti, en blocs du modèle, leur hauteur au-dessus du segment posé
+ * sur la mèche, et la largeur de leur pointe (en part de celle de la racine). Le serti, sombre, déborde de l'or de tous
+ * côtés, aux bouts compris : c'est sur lui que l'or se lit (plus de 3:1 en niveaux de gris).
  */
 export const VEINE_DU_LION = { or: 0.1, serti: 0.22, hauteurDuSerti: 0.03, hauteurDeLOr: 0.055, pointe: 0.45 } as const;
+
+/**
+ * Les veines « légèrement émissives » (directeur artistique, 06/10/2026) : la part de leur allumage qu'elles empruntent
+ * à la lueur ; le reste garde l'ombre de leur facette, comme la pierre.
+ */
+export const LION_VEIN_GLOW = 0.6;
+
+/**
+ * Le haut de la dalle, en blocs du modèle : au défi, la caméra ne cadre que ce qui le dépasse, le Lion seul et sa
+ * flamme, pour que sa tête se lise (au moins 50 px sur une tablette).
+ */
+export const LION_SLAB_TOP = 0.8;
 
 /** Le modèle du Lion selon l'endroit où il se montre. */
 const modeleDuLion = (ou: Atelier['ou']): ModeleDuLion => (ou === 'defi' ? LION_DU_DEFI : LION_DU_MONDE);
@@ -57,7 +70,10 @@ function repereDuLion(T: Trace): Trace {
   return pose(T, (p) => [p[0] * e, HAUT_DU_SOCLE + p[1] * e, recul + p[2] * e]);
 }
 
-/** Le Lion lui-même : chaque triangle du modèle, de pierre, de lichen ou d'orbite, puis le serti de ses veines. */
+/**
+ * Le Lion lui-même : chaque triangle du modèle, de pierre, de lichen ou d'orbite, puis le serti de ses veines, qui
+ * s'assombrit avec leurs lueurs (`degreDuSerti`, ../sentinel.ts).
+ */
 function sculptureDuLion(T: Trace, a: Atelier): void {
   const m = modeleDuLion(a.ou);
   const L = repereDuLion(T);
@@ -70,46 +86,41 @@ function sculptureDuLion(T: Trace, a: Atelier): void {
     const dedans: V3 = [(p[0] + q[0] + r[0]) / 3 - n[0] * 0.1, (p[1] + q[1] + r[1]) / 3 - n[1] * 0.1, (p[2] + q[2] + r[2]) / 3 - n[2] * 0.1];
     L.triangle(p, q, r, dedans, orbites.has(t) ? a.orbite : lichen.has(t) ? a.lichen : a.pierre);
   }
-  for (const v of m.veines) ruban(L, v, VEINE_DU_LION.serti * a.veines, VEINE_DU_LION.hauteurDuSerti, a.serti);
+  const { or, serti, hauteurDuSerti } = VEINE_DU_LION;
+  for (const v of m.veines) straightVein(L, v, serti * a.veines, hauteurDuSerti, ((serti - or) / 2) * a.veines, a.serti);
 }
 
-/** Les veines d'or, sur le serti, de la racine vers la pointe des mèches. */
+/** Les veines d'or, sur leur serti, de la racine vers la pointe des mèches. */
 function veinesDuLion(T: Trace, a: Atelier): void {
   const L = repereDuLion(T);
-  for (const v of modeleDuLion(a.ou).veines) ruban(L, v, VEINE_DU_LION.or * a.veines, VEINE_DU_LION.hauteurDeLOr, a.lueur);
+  for (const v of modeleDuLion(a.ou).veines) straightVein(L, v, VEINE_DU_LION.or * a.veines, VEINE_DU_LION.hauteurDeLOr, 0, a.lueur);
 }
 
 /**
- * Un ruban plié à cheval sur la crête d'une mèche, arête par arête, de la racine à la pointe : sur chacune des deux
- * facettes de l'arête, une bande de `largeur / 2` qui entre dans la facette, levée de `hauteur` ; affiné vers la pointe.
+ * Une veine droite, indépendante du maillage : une bande plate de `largeur`, de la racine `A` à la pointe `B` de la
+ * mèche, levée de `hauteur` le long de sa normale `n`, affinée vers la pointe et prolongée de `bout` à chaque bout ;
+ * sa pointe garde aussi `bout` de chaque côté (le serti déborde ainsi de l'or d'autant, partout). `v` : A, B, n et la
+ * direction de la largeur, en millièmes (./lionData.ts).
  */
-function ruban(T: Trace, aretes: readonly number[], largeur: number, hauteur: number, pe: Peindre): void {
-  const n = aretes.length / 18;
-  const v = (i: number, k: number): V3 => [aretes[i * 18 + k] / 1000, aretes[i * 18 + k + 1] / 1000, aretes[i * 18 + k + 2] / 1000];
-  const longueurs = Array.from({ length: n }, (_, i) => Math.hypot(...sub(v(i, 3), v(i, 0))));
-  const total = longueurs.reduce((s, l) => s + l, 0);
-  const demi = (fait: number) => (largeur / 2) * (1 - (1 - VEINE_DU_LION.pointe) * (fait / total));
-  let fait = 0;
-  for (let i = 0; i < n; i++) {
-    const [A, B] = [v(i, 0), v(i, 3)];
-    const [wa, wb] = [demi(fait), demi(fait + longueurs[i])];
-    for (const k of [6, 12]) {
-      const [d, m] = [v(i, k), v(i, k + 3)];
-      const leve = (p: V3, w: number): V3 => [p[0] + m[0] * hauteur + d[0] * w, p[1] + m[1] * hauteur + d[1] * w, p[2] + m[2] * hauteur + d[2] * w];
-      const dedans: V3 = [(A[0] + B[0]) / 2 - m[0], (A[1] + B[1]) / 2 - m[1], (A[2] + B[2]) / 2 - m[2]];
-      T.quad(leve(A, 0), leve(B, 0), leve(B, wb), leve(A, wa), dedans, pe);
-    }
-    fait += longueurs[i];
-  }
+function straightVein(T: Trace, v: readonly number[], largeur: number, hauteur: number, bout: number, pe: Peindre): void {
+  const at = (k: number): V3 => [v[k] / 1000, v[k + 1] / 1000, v[k + 2] / 1000];
+  const [A, B, n, w] = [at(0), at(3), at(6), at(9)];
+  const d = unit(sub(B, A));
+  const [wa, wb] = [largeur / 2, (largeur / 2) * VEINE_DU_LION.pointe + bout * (1 - VEINE_DU_LION.pointe)];
+  const coin = (p: V3, le: number, la: number): V3 => [0, 1, 2].map((k) => p[k] + d[k] * le + n[k] * hauteur + w[k] * la) as V3;
+  const dedans: V3 = [(A[0] + B[0]) / 2 - n[0], (A[1] + B[1]) / 2 - n[1], (A[2] + B[2]) / 2 - n[2]];
+  T.quad(coin(A, -bout, -wa), coin(B, bout, -wb), coin(B, bout, wb), coin(A, -bout, wa), dedans, pe);
 }
 
 /** Le Lion de pierre, Gardien de la Baie des mots. */
 export const LION_DE_PIERRE: Statue = {
   nom: 'le Lion de pierre',
-  allume: 'la crinière : huit veines d’or, de la racine vers la pointe des mèches',
+  allume: 'la crinière : quatre veines d’or, de la racine vers la pointe des mèches',
   socle: QUAI_DU_LION === 'socle',
   ...(QUAI_DU_LION === 'dalle' ? { flamme: FLAMME_SUR_LA_DALLE } : {}),
   grosPlan: true,
+  veinGlow: LION_VEIN_GLOW,
+  framedAbove: LION_SLAB_TOP,
   sculpture: sculptureDuLion,
   veines: veinesDuLion,
 };

@@ -13,6 +13,7 @@ import type { Couleur } from '../palette';
 import { clamp } from '../../../core/math';
 import { rgb } from '../decor/brush';
 import { LUEUR, SENTINELLE } from './colors';
+import { FIRST_STEP } from './glow';
 import { anneauA, avant, devant, facette, fuseau, NUANCE, parFace, peindrePersonnage, pose, repere, yeux, type Anneau, type FacettesDePersonnage, type Peindre, type Piece, type Pot, type Trace, type V3 } from './painted';
 
 /** La hauteur d'une sentinelle, socle compris, et celle du socle, en blocs (le modèle, tel que le montre l'écran du défi). */
@@ -53,7 +54,10 @@ export class Atelier {
   get lueur(): Peindre {
     return this.pot(LUEUR, 'lueur');
   }
-  /** Le serti sombre d'une veine, qui ne s'allume jamais : l'or s'y lit à 3:1 au moins, éteinte ou rallumée. */
+  /**
+   * Le serti d'une veine : de la couleur de la pierre tant que la veine est éteinte, il s'assombrit avec ses lueurs
+   * jusqu'à #403D38 (`allumage`) : l'or s'y lit à 3:1 au moins dès la première réussite.
+   */
   get serti(): Peindre {
     return this.pot(SENTINELLE.serti, 'dominante');
   }
@@ -84,6 +88,13 @@ export interface Statue {
   flamme?: { pied: V3; echelle: number };
   /** La statue a un modèle propre au défi, plus fin (le Lion de pierre : 1 500 triangles au lieu de 700). */
   grosPlan?: boolean;
+  /** La part de leur allumage que les veines empruntent à la lueur (`Piece.glowWeight`, 1 par défaut). */
+  veinGlow?: number;
+  /**
+   * Au défi, la caméra ne cadre que ce qui dépasse cette hauteur, en blocs du modèle (le Lion de pierre : lui seul, sa
+   * flamme comprise, sans sa dalle) ; sans elle, toute la statue.
+   */
+  framedAbove?: number;
 }
 
 /** Là où se montre une sentinelle : dans le monde, ou au défi (le portrait). */
@@ -305,11 +316,19 @@ const ALLUMAGE = new Map<Couleur, [Couleur, Couleur]>([
   [SENTINELLE.pierre, [SENTINELLE.pierre, SENTINELLE.rallumee]],
   [SENTINELLE.lichen, [SENTINELLE.lichen, SENTINELLE.rallumee]],
   [LUEUR, [SENTINELLE.cendre, LUEUR]],
+  [SENTINELLE.serti, [SENTINELLE.pierre, SENTINELLE.serti]],
 ]);
 
 /**
+ * Le degré du serti des veines (le Lion de pierre) au degré `lueurs` de ses lueurs : il les suit, plus vite, sombre
+ * dès la première réussite du défi (`FIRST_STEP`), pour que l'or s'y lise dès qu'il paraît.
+ */
+export const degreDuSerti = (lueurs: number): number => clamp(lueurs / FIRST_STEP, 0, 1);
+
+/**
  * La couleur d'une teinte de sentinelle au degré d'allumage `degre` (0 : éteinte, 1 : rallumée) : la pierre passe de
- * #8E8C84 (et son lichen) au Sable #DAA66A, la flamme et les veines de la cendre à la lueur ; les orbites ne changent pas.
+ * #8E8C84 (et son lichen) au Sable #DAA66A, la flamme et les veines de la cendre à la lueur, le serti des veines de la
+ * pierre à #403D38 ; les orbites ne changent pas.
  */
 export function allumage(c: Couleur, degre: number): Couleur {
   const de = ALLUMAGE.get(c);
@@ -335,17 +354,18 @@ export function degresDAllumage(a: Allumage): { pierre: number; lueurs: number }
 /**
  * Les couleurs d'une sentinelle au degré `degre`, sommet par sommet, dans l'espace linéaire (écrites dans `dans` s'il
  * est donné) : la teinte de `allumage`, nuancée selon la facette comme tout personnage ; une lueur perd sa nuance à
- * mesure qu'elle s'allume, et brille pleinement à 1.
+ * mesure qu'elle s'allume (au poids `glowWeight` de sa pièce), et brille pleinement à 1 ; le serti suit les lueurs
+ * (`degreDuSerti`).
  */
 export function couleursAllumees(f: FacettesDePersonnage, degre: Allumage, dans = new Float32Array(f.colors.length)): Float32Array {
   const { pierre, lueurs: dl } = degresDAllumage(degre);
   const lueurs = new Set(f.palette.filter((p) => p.role === 'lueur').map((p) => p.couleur));
   for (let t = 0; t < f.teintes.length; t++) {
-    const d = lueurs.has(f.teintes[t]) ? dl : pierre;
+    const d = lueurs.has(f.teintes[t]) ? dl : f.teintes[t] === SENTINELLE.serti ? degreDuSerti(dl) : pierre;
     const k = rgb(allumage(f.teintes[t], d));
     const ny = f.normals[t * 9 + 1];
     let w = NUANCE[0] + (NUANCE[1] - NUANCE[0]) * clamp(0.5 + 0.5 * ny, 0, 1);
-    if (lueurs.has(f.teintes[t])) w += (1 - w) * d;
+    if (lueurs.has(f.teintes[t])) w += (1 - w) * d * (f.table[f.pieces[t]].glowWeight ?? 1);
     const c = [lineaire((k[0] / 255) * w), lineaire((k[1] / 255) * w), lineaire((k[2] / 255) * w)];
     for (let s = 0; s < 3; s++) dans.set(c, t * 9 + s * 3);
   }
@@ -372,7 +392,7 @@ function piecesDeSentinelle(s: Statue, { ou = 'monde', veines = 1 }: { ou?: OuSe
     return [
       { nom: 'sculpture', pivot: [0, 0, 0], dessiner: sculpture },
       ...(f ? [{ nom: 'flamme', pivot: tourne([f.pied[0], f.pied[1] + (FOYER.haut - 0.9) * f.echelle, f.pied[2]]), lueur: 'allumage' as const, dessiner: (T: Trace, pot: Pot) => flamme(R(horsDuSocle(T, f)), a(pot)) }] : []),
-      { nom: 'veines', pivot: [0, 0, 0], lueur: 'allumage', dessiner: (T, pot) => s.veines(R(T), a(pot)) },
+      { nom: 'veines', pivot: [0, 0, 0], lueur: 'allumage', ...(s.veinGlow !== undefined ? { glowWeight: s.veinGlow } : {}), dessiner: (T, pot) => s.veines(R(T), a(pot)) },
     ];
   }
   return [

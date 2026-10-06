@@ -89,7 +89,7 @@ const BASSES: Partial<Record<BiomeId, [number, number]>> = {
 /**
  * Les sentinelles tirées d'un modèle importé (le Lion de pierre, ./statues/lion.ts) : couchées sur leur propre quai, sans
  * le socle commun, la flamme commune posée sur le quai, plus longues que les cinq cases (leur emprise est tenue par ./lion.test.ts), et la
- * crinière comme lueur (huit veines, au défi seulement). Leurs règles propres sont dans ./lion.test.ts.
+ * crinière comme lueur (quatre veines, au défi seulement). Leurs règles propres sont dans ./lion.test.ts.
  */
 const IMPORTEES: BiomeId[] = ['english-6e-vocabulary'];
 /** Les sentinelles basses plus longues que hautes. */
