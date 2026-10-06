@@ -57,15 +57,25 @@ describe('les poignées autour du choix', () => {
     }
   });
 
-  it('une borne : pas de « Tourner » ; posée sur une terre, une poignée glisse jusqu’à l’eau de son côté', () => {
+  it('une borne : pas de « Tourner » ; posée sur une terre, une poignée y reste : jamais plus d’une place du bord de l’emprise', () => {
     const id = lieux[0];
     const [st] = questStations(id);
     const c = chooseStation(world, `${id}:${st.typeId}`)!;
     expect(c).not.toBeNull();
-    const p = arrangeView(world, c).poignees!;
-    expect(p.liste.map((q) => q.cle)).not.toContain('tourner');
-    // La borne est sur son île : au moins une poignée a glissé plus loin que sa place de départ (2,5 cases du milieu).
-    expect(Math.max(...p.liste.map((q) => Math.abs(q.ox) + Math.abs(q.oy)))).toBeGreaterThan(1.5 + 1 + COTE_DU_RADEAU / 2);
+    for (const choix of [c, unLieu, chooseGuardian(world, lieux[1])!]) {
+      const v = arrangeView(world, choix);
+      const p = v.poignees!;
+      if (choix === c) expect(p.liste.map((q) => q.cle)).not.toContain('tourner');
+      const demi = COTE_DU_RADEAU / 2;
+      // Pas plus loin qu'une place du bord de l'emprise (ou que l'écart qui garde deux radeaux voisins séparés).
+      const loin = (rayon: number) => Math.max(rayon + 1 + demi, COTE_DU_RADEAU + COTE_DU_RADEAU / 6) + 1e-9;
+      const fantome = v.cases.filter((k) => k.genre === 'fantome');
+      const r = v.cadre?.rect ?? (fantome.length ? { x0: Math.min(...fantome.map((k) => k.x)), x1: Math.max(...fantome.map((k) => k.x)) + 1, y0: Math.min(...fantome.map((k) => k.y)), y1: Math.max(...fantome.map((k) => k.y)) + 1 } : { x0: 0, x1: 3, y0: 0, y1: 3 });
+      for (const q of p.liste) {
+        expect(Math.abs(q.ox), `${choix.genre} ${q.cle}`).toBeLessThanOrEqual(loin((r.x1 - r.x0) / 2));
+        expect(Math.abs(q.oy), `${choix.genre} ${q.cle}`).toBeLessThanOrEqual(loin((r.y1 - r.y0) / 2));
+      }
+    }
   });
 
   it('un Gardien tourne : « Tourner » sert toujours', () => {

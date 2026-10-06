@@ -52,8 +52,14 @@ export interface Poignees {
 }
 
 export function creerPoignees(scene: THREE.Scene, camera: THREE.PerspectiveCamera, style: StyleDesPoignees, reduit: boolean): Poignees {
-  // Les deux faces : les facettes peintes d'Archipéo se tracent dans les deux sens (aucun triangle de plus).
-  const matiere = new THREE.MeshBasicMaterial({ vertexColors: true, fog: false, side: THREE.DoubleSide });
+  // Les deux faces : les facettes peintes d'Archipéo se tracent dans les deux sens (aucun triangle de plus). Toujours
+  // visibles (mainteneur, 6 octobre 2026) : sans test de profondeur, dessinées après le décor, la brume et les cases du
+  // choix, avant les étiquettes ; une poignée posée sur une terre se voit par-dessus. Dans le maillage, l'ordre des
+  // triangles fait la profondeur : le radeau, ses cubes, puis la flèche.
+  const matiere = new THREE.MeshBasicMaterial({ vertexColors: true, fog: false, side: THREE.DoubleSide, transparent: true, depthTest: false, depthWrite: false });
+  // Une seule passe : transparent et à deux faces, Three tracerait les faces de dos d'abord, puis celles de face, et
+  // l'ordre des triangles ne ferait plus la profondeur (la flèche en arc d'Archipéo passait sous sa bouée).
+  matiere.forceSinglePass = true;
   let maillage: THREE.Mesh | null = null;
   let choix: PoigneesDuChoix | null = null;
   /** Les sommets de la forme (autour du milieu de chaque poignée, à l'échelle 1), ses couleurs en linéaire. */
@@ -191,7 +197,7 @@ export function creerPoignees(scene: THREE.Scene, camera: THREE.PerspectiveCamer
       maillage = new THREE.Mesh(g, matiere);
       // Les poignées ne se touchent pas dans la scène : leurs boutons, par-dessus, reçoivent le toucher.
       maillage.raycast = () => {};
-      maillage.renderOrder = 3;
+      maillage.renderOrder = 9;
       maillage.frustumCulled = false;
       scene.add(maillage);
       ecrire(1, 0);
