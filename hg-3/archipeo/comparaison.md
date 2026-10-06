@@ -1,12 +1,12 @@
 # Comparaison avec main
 
-Références : preview au commit 161ded365e39196d3597fbcf8cf21d9c6f3b071e (après : 0972a60acf8ab139a1e8eba32c53c3393b00ba73). Une vue est changée au-delà de 0,3 % de pixels différents.
+Références : preview au commit 161ded365e39196d3597fbcf8cf21d9c6f3b071e (après : 413effdee8640a033870ecfa4b590829252f51b1). Une vue est changée au-delà de 0,3 % de pixels différents.
 
 ## Changées (21) : planches dans `planches/`
 
 - 3e-archipel-nuit.jpg : 30,9 %
 - 3e-archipel.jpg : 34,3 %
-- 3e-carte-nuit.jpg : 27,1 %
+- 3e-carte-nuit.jpg : 28,2 %
 - 3e-carte.jpg : 27,0 %
 - 3e-ile-nuit.jpg : 2,6 %
 - 3e-ile.jpg : 2,5 %
@@ -14,7 +14,7 @@ Références : preview au commit 161ded365e39196d3597fbcf8cf21d9c6f3b071e (aprè
 - 4e-archipel.jpg : 61,0 %
 - 4e-carte-nuit.jpg : 30,8 %
 - 4e-carte.jpg : 32,5 %
-- 4e-ile-nuit.jpg : 3,3 %
+- 4e-ile-nuit.jpg : 39,2 %
 - 4e-ile.jpg : 3,4 %
 - 5e-archipel-nuit.jpg : 1,0 %
 - 5e-archipel.jpg : 2,3 %
@@ -22,17 +22,17 @@ Références : preview au commit 161ded365e39196d3597fbcf8cf21d9c6f3b071e (aprè
 - 5e-carte.jpg : 51,5 %
 - 5e-ile-nuit.jpg : 1,1 %
 - 5e-ile.jpg : 1,2 %
-- 6e-archipel-nuit.jpg : 31,4 %
+- 6e-archipel.jpg : 35,6 %
 - 6e-carte-nuit.jpg : 38,6 %
 - 6e-carte.jpg : 41,1 %
 
 ## Inchangées (3) : non publiées
 
-- 6e-archipel.jpg : 0,0 %
-- 6e-ile-nuit.jpg : 0,1 %
-- 6e-ile.jpg : 0,0 %
+- 6e-archipel-nuit.jpg : 0,0 %
+- 6e-ile-nuit.jpg : 0,0 %
+- 6e-ile.jpg : 0,1 %
 
-## Sans référence (90) : dans `planches/` telles quelles
+## Sans référence (89) : dans `planches/` telles quelles
 
 - 3e-histoire-geo-college-carte-3e-390x844.jpg
 - 3e-histoire-geo-college-carte-3e-800x1280.jpg
@@ -90,7 +90,6 @@ Références : preview au commit 161ded365e39196d3597fbcf8cf21d9c6f3b071e (aprè
 - 4e-histoire-geo-college-history-4e-revolutions-gardien-pres-apres.jpg
 - 4e-histoire-geo-college-history-4e-revolutions-gardien-pres-avant.jpg
 - 5e-histoire-geo-college-baleine-5e-port-archipel.jpg
-- 5e-histoire-geo-college-baleine-5e-port.jpg
 - 5e-histoire-geo-college-carte-5e-390x844.jpg
 - 5e-histoire-geo-college-carte-5e-800x1280.jpg
 - 5e-histoire-geo-college-carte-5e-od32.jpg
