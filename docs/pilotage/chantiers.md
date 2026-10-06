@@ -2,6 +2,8 @@
 
 Cette page dit, chantier par chantier, où en est le projet : ce qui est construit, ce qui est en cours, ce qui attend une décision et de qui. Elle est le point d’entrée du mainteneur et des agents ; le détail reste dans les cadrages, cités à chaque ligne. **Mise à jour le 3 octobre 2026.**
 
+La pré-version (`preview`) a été versée dans `main` le 6 octobre 2026, avec #365, #367 à #370 et #372 à #374 : ce qui était à essayer sur la pré-version passe en production ; les essais sur tablette notés plus bas restent à faire.
+
 Chaque pull request qui fait avancer un chantier met à jour sa ligne ici, dans la même pull request (règle du `CLAUDE.md`). C’est la seule page de `docs/pilotage/`, qui n’est pas publiée : le site (`www/`) s’adresse aux élèves, aux familles, aux enseignants et aux orthophonistes. Une décision de game design ne s’écrit pas ici mais dans le [game design](../gameplay/index.md) ; les univers sont dans [`docs/univers/`](../univers/univers.md), l’interface dans [`docs/ux-ui/`](../ux-ui/README.md), le rendu dans [`docs/rendu/`](../rendu/README.md).
 
 ## Les références
