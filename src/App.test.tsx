@@ -244,7 +244,8 @@ it('en vue simple, la Carte et la page des quatre archipels renvoient à la list
   document.body.innerHTML = '';
   renderAt('/adventure/world');
   expect(screen.getByRole('heading', { name: 'Blocland' })).toBeInTheDocument();
-});
+  // La Carte en liste et le monde se construisent pour 39 îles : plus de 5 s sur la CI chargée.
+}, 15_000);
 
 it('l’accueil annonce le Bloc-Navire quand il est prêt à partir', async () => {
   const { VEHICLE_STAGES } = await import('./game/world/vehicle');
