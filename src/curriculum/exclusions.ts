@@ -22,8 +22,13 @@ const LV2_LANGAGES = A_COUVRIR(
 );
 
 // Sciences et technologie : les trois îles de 6e (la Vallée du vivant, le Laboratoire des éléments, le Hangar des
-// inventions, SC-2) couvrent le cycle 3, sauf fabriquer. Le cycle 4 viendra ensuite.
+// inventions, SC-2) couvrent le cycle 3, sauf fabriquer. Le cycle 4 (SC-3) entre au référentiel avant ses îles : tout y
+// est à couvrir, sauf manipuler, fabriquer et programmer un objet réel ; le nombre d’îles attend le choix du mainteneur
+// (docs/conception/cadrage-contenu.md, « Sciences »).
 const FABRIQUER = HORS('Fabriquer, mesurer pour de vrai, travailler en équipe : le travail de la classe, que l’application ne remplace pas.');
+const MANIPULER = HORS('Manipuler, mesurer, observer pour de vrai (montage, microscope, terrain) : le travail de la classe, que l’application ne remplace pas.');
+const ILES_SCIENCES_C4 = 'les îles de sciences de 5e, 4e et 3e (SC-3) ne sont pas encore écrites.';
+const SC4 = (sujet: string): Exclusion => A_COUVRIR(`${sujet} : ${ILES_SCIENCES_C4}`);
 
 export const EXCLUSIONS: Partial<Record<ProgrammeId, Exclusion>> = {
   // ---------- Cycle 3, français ----------
@@ -85,4 +90,41 @@ export const EXCLUSIONS: Partial<Record<ProgrammeId, Exclusion>> = {
   // ---------- Cycle 3, sciences et technologie (SVT, physique-chimie, technologie) : fabriquer reste à la classe ----------
   'c3.te.demarches.concevoir': FABRIQUER,
   'c3.te.objets.realiser': FABRIQUER,
+  // ---------- Cycle 4, physique-chimie (SC-3, référentiel seul) ----------
+  'c4.pc.demarches.experimenter': SC4('Hypothèse, expérience, conclusion'),
+  'c4.pc.demarches.manipuler': MANIPULER,
+  'c4.pc.demarches.langages': SC4('Tableaux, graphiques, unités et ordres de grandeur'),
+  'c4.pc.matiere.etats': SC4('États de la matière, masse volumique, mélanges'),
+  'c4.pc.matiere.transformations': SC4('Transformations chimiques'),
+  'c4.pc.matiere.acides-bases': SC4('Acides, bases et pH'),
+  'c4.pc.matiere.univers': SC4('L’Univers, le système solaire, l’atome'),
+  'c4.pc.mouvement.decrire': SC4('Trajectoire et vitesse'),
+  'c4.pc.mouvement.forces': SC4('Forces, poids et masse, gravitation'),
+  'c4.pc.energie.formes': SC4('Formes et conversions d’énergie'),
+  'c4.pc.energie.circuits': SC4('Circuits électriques, loi d’Ohm, puissance'),
+  'c4.pc.signaux.lumiere-son': SC4('Lumière et son'),
+  // ---------- Cycle 4, SVT (SC-3, référentiel seul) ----------
+  'c4.sv.demarches.raisonner': SC4('Problème, hypothèse, expérience, argumentation'),
+  'c4.sv.demarches.manipuler': MANIPULER,
+  'c4.sv.demarches.langages': SC4('Tableaux, graphiques, schémas et vocabulaire scientifique'),
+  'c4.sv.terre.geologie': SC4('Tectonique, séismes et volcans'),
+  'c4.sv.terre.climat': SC4('Météo et climat'),
+  'c4.sv.terre.action-humaine': SC4('Ressources et action humaine'),
+  'c4.sv.vivant.nutrition': SC4('Cellule et nutrition'),
+  'c4.sv.vivant.genetique': SC4('Reproduction et génétique'),
+  'c4.sv.vivant.evolution': SC4('Biodiversité et évolution'),
+  'c4.sv.corps.effort-nerveux': SC4('Effort physique et système nerveux'),
+  'c4.sv.corps.digestion-microbes': SC4('Digestion et monde microbien'),
+  'c4.sv.corps.reproduction': SC4('Puberté et reproduction humaine'),
+  // ---------- Cycle 4, technologie (SC-3, référentiel seul) ----------
+  'c4.te.demarches.langages': SC4('Croquis, schémas et diagrammes'),
+  'c4.te.demarches.responsable': SC4('Cycle de vie et impact d’un objet'),
+  'c4.te.design.besoin': SC4('Besoin et cahier des charges'),
+  'c4.te.design.solutions': SC4('Solutions techniques et fonctions'),
+  'c4.te.design.prototype': FABRIQUER,
+  'c4.te.objets.evolution': SC4('Évolution des objets, objets communicants'),
+  'c4.te.modelisation.fonctionnement': SC4('Chaîne d’énergie et chaîne d’information'),
+  'c4.te.modelisation.simuler': SC4('Lire le résultat d’une simulation donnée (courbe, tableau), sans logiciel à manipuler'),
+  'c4.te.informatique.reseaux': SC4('Réseaux informatiques'),
+  'c4.te.informatique.programmer': HORS('Programmer un objet réel : demande un éditeur de programme et un système à commander, hors du périmètre de l’application (comme c4.ma.e.programmation).'),
 };

@@ -45,6 +45,25 @@ export const DOMAINES_C4: readonly ProgrammeDomaine[] = [
   { id: 'c4-hg-demarches', cycle: 4, discipline: 'history-geography', title: 'Histoire et géographie : raisonner, analyser et comprendre un document, pratiquer différents langages', page: 83, unverified: true },
   { id: 'c4-hg-histoire', cycle: 4, discipline: 'history-geography', title: 'Histoire, classes de cinquième, quatrième et troisième', page: 86, unverified: true },
   { id: 'c4-hg-geographie', cycle: 4, discipline: 'history-geography', title: 'Géographie, classes de cinquième, quatrième et troisième', page: 88, unverified: true },
+  // Physique-chimie, SVT et technologie : trois enseignements distincts au cycle 4, dans cet ordre dans le PDF, avant
+  // les mathématiques. Écrits de mémoire, au plus près du texte, et pages estimées (le site du ministère et celui de
+  // data.gouv.fr sont refusés depuis l'environnement de travail, 6 octobre 2026) : à relire dans le PDF avant la
+  // première île de 5e. Le texte ne répartit pas ces programmes par classe. Les compétences travaillées (démarches,
+  // langages, outils, responsabilité) sont communes aux trois : chaque discipline reprend celles qu'elle travaille.
+  { id: 'c4-pc-demarches', cycle: 4, discipline: 'physics-chemistry', title: 'Physique-chimie : compétences travaillées', page: 100, unverified: true },
+  { id: 'c4-pc-matiere', cycle: 4, discipline: 'physics-chemistry', title: 'Organisation et transformations de la matière', page: 102, unverified: true },
+  { id: 'c4-pc-mouvement', cycle: 4, discipline: 'physics-chemistry', title: 'Mouvement et interactions', page: 105, unverified: true },
+  { id: 'c4-pc-energie', cycle: 4, discipline: 'physics-chemistry', title: 'L’énergie et ses conversions', page: 106, unverified: true },
+  { id: 'c4-pc-signaux', cycle: 4, discipline: 'physics-chemistry', title: 'Des signaux pour observer et communiquer', page: 108, unverified: true },
+  { id: 'c4-sv-demarches', cycle: 4, discipline: 'life-earth-sciences', title: 'Sciences de la vie et de la Terre : compétences travaillées', page: 110, unverified: true },
+  { id: 'c4-sv-terre', cycle: 4, discipline: 'life-earth-sciences', title: 'La planète Terre, l’environnement et l’action humaine', page: 112, unverified: true },
+  { id: 'c4-sv-vivant', cycle: 4, discipline: 'life-earth-sciences', title: 'Le vivant et son évolution', page: 115, unverified: true },
+  { id: 'c4-sv-corps', cycle: 4, discipline: 'life-earth-sciences', title: 'Le corps humain et la santé', page: 117, unverified: true },
+  { id: 'c4-te-demarches', cycle: 4, discipline: 'technology', title: 'Technologie : compétences travaillées', page: 120, unverified: true },
+  { id: 'c4-te-design', cycle: 4, discipline: 'technology', title: 'Design, innovation et créativité', page: 122, unverified: true },
+  { id: 'c4-te-objets', cycle: 4, discipline: 'technology', title: 'Les objets techniques, les services et les changements induits dans la société', page: 123, unverified: true },
+  { id: 'c4-te-modelisation', cycle: 4, discipline: 'technology', title: 'La modélisation et la simulation des objets et systèmes techniques', page: 124, unverified: true },
+  { id: 'c4-te-informatique', cycle: 4, discipline: 'technology', title: 'L’informatique et la programmation', page: 126, unverified: true },
 ];
 
 const FR_L1 = 'Lire et comprendre en autonomie des textes variés, des images et des documents composites, sur différents supports';
@@ -84,6 +103,32 @@ const HG_4H = 'Histoire, classe de quatrième : le XVIIIe et le XIXe siècle';
 const HG_4G = 'Géographie, classe de quatrième : l’urbanisation du monde, les mobilités et la mondialisation';
 const HG_3H = 'Histoire, classe de troisième : le monde et la France depuis 1914';
 const HG_3G = 'Géographie, classe de troisième : le territoire de la France et l’Union européenne';
+// Physique-chimie, SVT et technologie : les compétences travaillées, communes aux trois enseignements.
+const ST_DEMARCHE = 'Pratiquer des démarches scientifiques et technologiques';
+const ST_OUTILS = 'S’approprier des outils et des méthodes ; concevoir, créer, réaliser';
+const ST_LANGAGES = 'Pratiquer des langages';
+const ST_RESPONSABLE = 'Adopter un comportement éthique et responsable';
+const PC_CONSTITUTION = 'Décrire la constitution et les états de la matière';
+const PC_TRANSFORMATIONS = 'Décrire et expliquer des transformations chimiques';
+const PC_UNIVERS = 'Décrire l’organisation de la matière dans l’Univers';
+const PC_MOUVEMENT = 'Caractériser un mouvement';
+const PC_FORCE = 'Modéliser une interaction par une force caractérisée par un point d’application, une direction, un sens et une valeur';
+const PC_ENERGIE = 'Identifier les sources, les transferts, les conversions et les formes d’énergie ; utiliser la conservation de l’énergie';
+const PC_ELECTRICITE = 'Réaliser des circuits électriques simples et exploiter les lois de l’électricité';
+const PC_SIGNAUX = 'Caractériser différents types de signaux (lumineux, sonores, radio) ; utiliser les propriétés de ces signaux';
+const SV_GEOLOGIE = 'Expliquer quelques phénomènes géologiques à partir du contexte géodynamique global';
+const SV_CLIMAT = 'Expliquer quelques phénomènes météorologiques et climatiques';
+const SV_ACTION = 'Identifier les principaux impacts de l’action humaine, bénéfices et risques, à la surface de la planète Terre ; envisager ou justifier des comportements responsables face à l’environnement et à la préservation des ressources limitées de la planète';
+const SV_VIVANT = 'Expliquer l’organisation du monde vivant, sa structure et son dynamisme à différentes échelles d’espace et de temps';
+const SV_CAUSALITE = 'Mettre en relation différents faits et établir des relations de causalité pour expliquer la diversité génétique des individus, la biodiversité, la classification et l’évolution des êtres vivants';
+const SV_CORPS = 'Expliquer quelques processus biologiques impliqués dans le fonctionnement de l’organisme humain ; les relier aux enjeux des comportements responsables, individuels et collectifs, en matière de santé';
+const TE_DESIGN = 'Imaginer des solutions en réponse aux besoins, matérialiser des idées en intégrant une dimension design';
+const TE_PROJET = 'Réaliser, de manière collaborative, le prototype de tout ou partie d’un objet pour valider une solution';
+const TE_OBJETS = 'Comparer et commenter les évolutions des objets et systèmes ; exprimer sa pensée à l’aide d’outils de description adaptés ; développer les bonnes pratiques de l’usage des objets communicants';
+const TE_ANALYSER = 'Analyser le fonctionnement et la structure d’un objet';
+const TE_SIMULER = 'Utiliser une modélisation et simuler le comportement d’un objet';
+const TE_RESEAU = 'Comprendre le fonctionnement d’un réseau informatique';
+const TE_PROGRAMMER = 'Écrire, mettre au point et exécuter un programme';
 
 export const ENTRIES_C4 = [
   // ---------- Français ----------
@@ -242,4 +287,41 @@ export const ENTRIES_C4 = [
   { id: 'c4.hg.geographie.dynamiques-france', cycle: 4, discipline: 'history-geography', domaine: 'c4-hg-geographie', attendu: HG_3G, competence: 'Thème 1 : Dynamiques territoriales de la France contemporaine ; les aires urbaines ; les espaces productifs et leurs évolutions ; les espaces de faible densité et leurs atouts', page: 94, unverified: true },
   { id: 'c4.hg.geographie.amenager', cycle: 4, discipline: 'history-geography', domaine: 'c4-hg-geographie', attendu: HG_3G, competence: 'Thème 2 : Pourquoi et comment aménager le territoire ? Aménager pour répondre aux inégalités entre territoires, à toutes les échelles ; les territoires ultramarins français, une problématique spécifique', page: 94, unverified: true },
   { id: 'c4.hg.geographie.france-ue', cycle: 4, discipline: 'history-geography', domaine: 'c4-hg-geographie', attendu: HG_3G, competence: 'Thème 3 : La France et l’Union européenne ; l’Union européenne, un nouveau territoire de référence et d’appartenance ; la France et l’Europe dans le monde', page: 95, unverified: true },
+  // ---------- Physique-chimie (5e, 4e, 3e ; libellés et pages à vérifier) ----------
+  { id: 'c4.pc.demarches.experimenter', cycle: 4, discipline: 'physics-chemistry', domaine: 'c4-pc-demarches', attendu: ST_DEMARCHE, competence: 'Identifier une question scientifique ; formuler une hypothèse ; proposer une expérience pour la tester ; interpréter les résultats et conclure', page: 100, unverified: true },
+  { id: 'c4.pc.demarches.manipuler', cycle: 4, discipline: 'physics-chemistry', domaine: 'c4-pc-demarches', attendu: ST_OUTILS, competence: 'Mettre en œuvre un protocole expérimental : réaliser un montage, manipuler, mesurer, en respectant les règles de sécurité', page: 100, unverified: true },
+  { id: 'c4.pc.demarches.langages', cycle: 4, discipline: 'physics-chemistry', domaine: 'c4-pc-demarches', attendu: ST_LANGAGES, competence: 'Lire et exploiter des données (tableau, graphique, schéma) ; passer d’un langage à un autre ; utiliser les unités et les ordres de grandeur', page: 101, unverified: true },
+  { id: 'c4.pc.matiere.etats', cycle: 4, discipline: 'physics-chemistry', domaine: 'c4-pc-matiere', attendu: PC_CONSTITUTION, competence: 'États de la matière et changements d’état ; masse et volume, masse volumique ; corps purs et mélanges ; solubilité et miscibilité', page: 102, unverified: true },
+  { id: 'c4.pc.matiere.transformations', cycle: 4, discipline: 'physics-chemistry', domaine: 'c4-pc-matiere', attendu: PC_TRANSFORMATIONS, competence: 'Distinguer transformation chimique et mélange ou changement d’état ; réactifs et produits ; redistribution des atomes et conservation de la masse ; l’équation de réaction', page: 103, unverified: true },
+  { id: 'c4.pc.matiere.acides-bases', cycle: 4, discipline: 'physics-chemistry', domaine: 'c4-pc-matiere', attendu: PC_TRANSFORMATIONS, competence: 'Solutions acides, neutres et basiques : le pH, les ions hydrogène et hydroxyde ; les précautions à prendre', page: 103, unverified: true },
+  { id: 'c4.pc.matiere.univers', cycle: 4, discipline: 'physics-chemistry', domaine: 'c4-pc-matiere', attendu: PC_UNIVERS, competence: 'La structure de l’Univers et du système solaire ; l’année-lumière et les ordres de grandeur des distances ; atomes, noyau et électrons ; les éléments formés dans les étoiles', page: 104, unverified: true },
+  { id: 'c4.pc.mouvement.decrire', cycle: 4, discipline: 'physics-chemistry', domaine: 'c4-pc-mouvement', attendu: PC_MOUVEMENT, competence: 'Décrire un mouvement par rapport à un objet de référence : trajectoire, vitesse (direction, sens, valeur) ; mouvement uniforme, accéléré, ralenti ; calculer une vitesse', page: 105, unverified: true },
+  { id: 'c4.pc.mouvement.forces', cycle: 4, discipline: 'physics-chemistry', domaine: 'c4-pc-mouvement', attendu: PC_FORCE, competence: 'Les actions mécaniques et leur modélisation par une force ; le poids et la masse ; la gravitation', page: 105, unverified: true },
+  { id: 'c4.pc.energie.formes', cycle: 4, discipline: 'physics-chemistry', domaine: 'c4-pc-energie', attendu: PC_ENERGIE, competence: 'Les formes d’énergie (cinétique, de position, thermique, électrique, chimique, nucléaire, lumineuse) ; sources, transferts, conversions ; puissance et énergie, le kilowattheure', page: 106, unverified: true },
+  { id: 'c4.pc.energie.circuits', cycle: 4, discipline: 'physics-chemistry', domaine: 'c4-pc-energie', attendu: PC_ELECTRICITE, competence: 'Circuits en série et en dérivation ; intensité et tension, leurs lois ; la loi d’Ohm ; la puissance électrique ; les règles de sécurité électrique', page: 107, unverified: true },
+  { id: 'c4.pc.signaux.lumiere-son', cycle: 4, discipline: 'physics-chemistry', domaine: 'c4-pc-signaux', attendu: PC_SIGNAUX, competence: 'La lumière se propage en ligne droite, sa vitesse ; le son a besoin d’un milieu matériel, sa vitesse ; fréquence et hauteur d’un son, infrasons et ultrasons ; le niveau sonore et ses dangers', page: 108, unverified: true },
+  // ---------- SVT (5e, 4e, 3e ; libellés et pages à vérifier) ----------
+  { id: 'c4.sv.demarches.raisonner', cycle: 4, discipline: 'life-earth-sciences', domaine: 'c4-sv-demarches', attendu: ST_DEMARCHE, competence: 'Formuler une question ou un problème scientifique ; proposer des hypothèses ; concevoir une expérience pour les tester ; interpréter des résultats et argumenter', page: 110, unverified: true },
+  { id: 'c4.sv.demarches.manipuler', cycle: 4, discipline: 'life-earth-sciences', domaine: 'c4-sv-demarches', attendu: ST_OUTILS, competence: 'Observer au microscope, disséquer, faire une culture, un prélèvement ou une sortie sur le terrain', page: 110, unverified: true },
+  { id: 'c4.sv.demarches.langages', cycle: 4, discipline: 'life-earth-sciences', domaine: 'c4-sv-demarches', attendu: ST_LANGAGES, competence: 'Lire et exploiter des données (tableau, graphique, schéma, carte) ; les représenter sous une autre forme ; utiliser le vocabulaire scientifique', page: 111, unverified: true },
+  { id: 'c4.sv.terre.geologie', cycle: 4, discipline: 'life-earth-sciences', domaine: 'c4-sv-terre', attendu: SV_GEOLOGIE, competence: 'La Terre, planète active : structure du globe, tectonique des plaques, séismes et volcans ; érosion et formation des roches ; les risques sismiques et volcaniques', page: 112, unverified: true },
+  { id: 'c4.sv.terre.climat', cycle: 4, discipline: 'life-earth-sciences', domaine: 'c4-sv-terre', attendu: SV_CLIMAT, competence: 'Les mouvements des masses d’air et d’eau ; distinguer météo et climat ; les changements climatiques passés et actuels ; les risques météorologiques et leur prévention', page: 113, unverified: true },
+  { id: 'c4.sv.terre.action-humaine', cycle: 4, discipline: 'life-earth-sciences', domaine: 'c4-sv-terre', attendu: SV_ACTION, competence: 'L’exploitation des ressources (eau, sols, roches, énergies fossiles, ressources de la mer) ; l’action humaine sur les écosystèmes ; les comportements responsables', page: 114, unverified: true },
+  { id: 'c4.sv.vivant.nutrition', cycle: 4, discipline: 'life-earth-sciences', domaine: 'c4-sv-vivant', attendu: SV_VIVANT, competence: 'La cellule, unité du vivant ; la nutrition des végétaux et des animaux, les échanges avec le milieu ; la photosynthèse', page: 115, unverified: true },
+  { id: 'c4.sv.vivant.genetique', cycle: 4, discipline: 'life-earth-sciences', domaine: 'c4-sv-vivant', attendu: SV_CAUSALITE, competence: 'Reproduction sexuée et asexuée ; chromosomes, gènes et ADN ; l’unicité génétique de chaque individu ; la dynamique des populations', page: 116, unverified: true },
+  { id: 'c4.sv.vivant.evolution', cycle: 4, discipline: 'life-earth-sciences', domaine: 'c4-sv-vivant', attendu: SV_CAUSALITE, competence: 'La biodiversité et ses changements ; la classification par les liens de parenté ; l’évolution des espèces : variation, sélection naturelle', page: 116, unverified: true },
+  { id: 'c4.sv.corps.effort-nerveux', cycle: 4, discipline: 'life-earth-sciences', domaine: 'c4-sv-corps', attendu: SV_CORPS, competence: 'L’effort physique : muscles, cœur, respiration ; le système nerveux et le cerveau ; les effets du sommeil, des écrans et des drogues', page: 117, unverified: true },
+  { id: 'c4.sv.corps.digestion-microbes', cycle: 4, discipline: 'life-earth-sciences', domaine: 'c4-sv-corps', attendu: SV_CORPS, competence: 'Alimentation et digestion ; le monde microbien, le microbiote ; infections et défenses de l’organisme ; vaccination, antiseptiques, antibiotiques', page: 118, unverified: true },
+  { id: 'c4.sv.corps.reproduction', cycle: 4, discipline: 'life-earth-sciences', domaine: 'c4-sv-corps', attendu: SV_CORPS, competence: 'La puberté ; la reproduction humaine ; la contraception et une sexualité responsable', page: 118, unverified: true },
+  // ---------- Technologie (5e, 4e, 3e ; libellés et pages à vérifier) ----------
+  { id: 'c4.te.demarches.langages', cycle: 4, discipline: 'technology', domaine: 'c4-te-demarches', attendu: ST_LANGAGES, competence: 'Lire et produire des représentations : croquis, schéma, carte mentale, diagramme, représentation numérique ; utiliser le vocabulaire technique', page: 120, unverified: true },
+  { id: 'c4.te.demarches.responsable', cycle: 4, discipline: 'technology', domaine: 'c4-te-demarches', attendu: ST_RESPONSABLE, competence: 'Mesurer l’impact d’un objet sur l’environnement et la société : cycle de vie, consommation d’énergie, recyclage', page: 121, unverified: true },
+  { id: 'c4.te.design.besoin', cycle: 4, discipline: 'technology', domaine: 'c4-te-design', attendu: TE_DESIGN, competence: 'Identifier un besoin et énoncer un problème technique ; s’approprier un cahier des charges : fonctions, contraintes, normes', page: 122, unverified: true },
+  { id: 'c4.te.design.solutions', cycle: 4, discipline: 'technology', domaine: 'c4-te-design', attendu: TE_DESIGN, competence: 'Imaginer des solutions ; associer des solutions techniques à des fonctions ; choisir une solution selon les critères du cahier des charges', page: 122, unverified: true },
+  { id: 'c4.te.design.prototype', cycle: 4, discipline: 'technology', domaine: 'c4-te-design', attendu: TE_PROJET, competence: 'Réaliser en équipe le prototype de tout ou partie d’un objet pour valider une solution ; organiser un projet', page: 122, unverified: true },
+  { id: 'c4.te.objets.evolution', cycle: 4, discipline: 'technology', domaine: 'c4-te-objets', attendu: TE_OBJETS, competence: 'L’évolution des objets et des systèmes : contexte, progrès techniques, changements dans la société ; les objets communicants et leurs bonnes pratiques (données personnelles)', page: 123, unverified: true },
+  { id: 'c4.te.modelisation.fonctionnement', cycle: 4, discipline: 'technology', domaine: 'c4-te-modelisation', attendu: TE_ANALYSER, competence: 'Fonctions et structure d’un objet ; chaîne d’énergie et chaîne d’information : capteurs, actionneurs, transmission du mouvement ; les matériaux et leurs propriétés', page: 124, unverified: true },
+  { id: 'c4.te.modelisation.simuler', cycle: 4, discipline: 'technology', domaine: 'c4-te-modelisation', attendu: TE_SIMULER, competence: 'Lire une modélisation, interpréter le résultat d’une simulation (courbe, tableau) et le comparer aux exigences du cahier des charges', page: 125, unverified: true },
+  { id: 'c4.te.informatique.reseaux', cycle: 4, discipline: 'technology', domaine: 'c4-te-informatique', attendu: TE_RESEAU, competence: 'Le réseau informatique : ses composants, l’adresse d’un appareil, les protocoles ; internet et le stockage des données', page: 126, unverified: true },
+  { id: 'c4.te.informatique.programmer', cycle: 4, discipline: 'technology', domaine: 'c4-te-informatique', attendu: TE_PROGRAMMER, competence: 'Écrire, mettre au point et exécuter un programme qui commande un système réel : séquences, boucles, conditions, variables, événements', page: 126, unverified: true },
 ] as const satisfies readonly ProgrammeEntry[];
