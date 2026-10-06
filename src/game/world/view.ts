@@ -39,8 +39,12 @@ export interface ArrangeView {
   barrees: string[];
   /** Le nom du lieu choisi, écrit sur son fantôme (le nom de l'univers, donné par la page). */
   nom?: string;
+  /** Le lieu choisi : son étiquette sur l'île se tait le temps du choix, son nom n'est écrit qu'une fois, sur le fantôme. */
+  lieu?: string;
   /** Ce que la vue garde entier à l'écran : le fantôme (les deux lieux réunis et leur réunion), à hauteur de l'eau. */
   cadre?: CadreDuMode;
+  /** Les flèches et « Tourner », dessinées sur l'eau autour du choix (./arrangeHandles.ts). */
+  poignees?: PoigneesDuChoix;
 }
 
 /** Un rectangle du monde (en cases, x et y) à garder entier à l'écran, à une hauteur ; `seq` change à chaque demande. */
@@ -48,6 +52,25 @@ export interface CadreDuMode {
   rect: Rectangle;
   z: number;
   seq: number;
+}
+
+/** Une poignée dessinée dans le monde, à l'écran : son milieu et sa taille (pixels CSS, `POIGNEE_MIN_PX` au moins). */
+interface PoigneeALEcran {
+  cle: CleDePoignee;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
+/**
+ * Où se tiennent les poignées du mode « Modifier le plan » à l'écran, image après image (pixels CSS, dans le repère de
+ * la scène de la page, `[data-scene]`), et la place libre (`libre` : sous la ligne du mode, au-dessus de sa barre, sans
+ * les boutons du haut). Les boutons transparents posés sur les poignées dessinées (ArrangeHandles.tsx) s'y placent.
+ */
+export interface ChoixALEcran {
+  poignees: readonly PoigneeALEcran[];
+  libre: Rectangle;
 }
 
 /**
@@ -179,10 +202,10 @@ export interface IslandLabel {
   text: string;
   /**
    * Sur la Carte : l'état de l'île (Fermée, À explorer, En chantier, Restaurée ou Bâtie selon l'univers :
-   * textes.etatsDIle), dessiné en icône et en mot sous le nom ; « choisi » dans le mode « Aménager » (GD-9), avec
-   * l'icône d'Aménager.
+   * textes.etatsDIle), dessiné en icône et en mot sous le nom ; rien dans le mode « Aménager » (GD-9), où l'étiquette
+   * se réduit au nom.
    */
-  state?: { id: IslandStateId | 'choisi'; name: string };
+  state?: { id: IslandStateId; name: string };
   /** Le bloc que l'île rapporte (sa ressource), dessiné avant le nom, comme dans Mes blocs. */
   bloc?: BlockId;
 }
@@ -303,9 +326,17 @@ export interface WorldViewProps {
    * Le mode « Aménager » (GD-9), sur la Carte : `vue`, le dessin du choix en cours (fantôme, places autour, liaisons
    * retracées et barrées, lieu soulevé ; ./arrangeView.ts), ou rien. Dans le mode, toucher la mer donne une intention
    * `mer` ; avec un choix, glisser le doigt cale le fantôme sous lui (un raccourci) au lieu de faire glisser la vue ; et
-   * si le fantôme sort de l'écran, la vue le suit. La vue simple l'ignore.
+   * si le fantôme sort de l'écran, la vue le suit. Les poignées (les flèches et « Tourner ») sont dessinées sur l'eau autour
+   * du choix ; `ecran` reçoit, à chaque image où elles bougent, où elles se tiennent à l'écran (rien sans choix, ni
+   * pendant le geste) : la page y pose leurs boutons transparents. La vue simple l'ignore.
    */
-  amenager?: { vue: ArrangeView | null; cadre?: CadreDuMode | null } | null;
+  amenager?: {
+    vue: ArrangeView | null;
+    cadre?: CadreDuMode | null;
+    ecran?: (b: ChoixALEcran | null) => void;
+    /** Les touchers des boutons posés sur les poignées : la poignée touchée s'enfonce dans le monde. */
+    touchers?: { ecouter(f: (cle: CleDePoignee) => void): () => void };
+  } | null;
   /** Le geste de la pose en cours dans le mode « Aménager » (./arrangeGesture.ts), ou rien. */
   geste?: ArrangeGesture | null;
   /** Change à chaque appui sur « Recentrer » : la vue efface son décalage et revient en douceur à son cadrage. */
@@ -389,4 +420,32 @@ export function rappelsDeLaVue(onIntent: ((i: Intention) => void) | undefined, a
     onVoyageSkip: () => onIntent({ genre: 'voyage-saute' }),
     onArrive: () => onIntent({ genre: 'arrivee' }),
   };
+}
+
+// Les poignées du mode « Modifier le plan » (GD-9), calculées par ./arrangeHandles.ts : leurs types vivent ici, avec la vue,
+// pour que la vue ne dépende pas du calcul.
+
+/** Une poignée : une des quatre flèches, ou « Tourner ». */
+export type CleDePoignee = 'nord' | 'sud' | 'est' | 'ouest' | 'tourner';
+
+/**
+ * Une poignée posée : son décalage depuis le milieu du choix à chaque échelle de `ECHELLES` (en cases du monde, x puis y),
+ * le premier à l'échelle 1 (`ox`, `oy`), et si elle sert.
+ */
+export interface PoigneeDuMonde {
+  cle: CleDePoignee;
+  ox: number;
+  oy: number;
+  places: readonly number[];
+  dispo: boolean;
+}
+
+/** Les poignées d'un choix : le milieu de son emprise, la hauteur de l'eau (le dessus), et chaque poignée. */
+export interface PoigneesDuChoix {
+  cx: number;
+  cy: number;
+  z: number;
+  liste: PoigneeDuMonde[];
+  /** Ce que couvrent les radeaux à l'échelle 1, emprise du choix comprise : la vue le garde à l'écran. */
+  emprise: Rectangle;
 }

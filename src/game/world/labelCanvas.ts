@@ -1,5 +1,5 @@
 // Le nom d'une île, dessiné sur un canvas 2D : une étiquette claire à bord brun, texte dans la police de lecture choisie
-// par l'élève. La vue 3D en fait une texture. Sur la Carte, une
+// par l'élève. La vue 3D en fait une texture. Sur la Carte (hors du mode « Aménager », GD-9), une
 // seconde ligne donne l'état de l'île : une petite icône dessinée ici (aucune police d'emoji, rien d'importé) et le mot,
 // jamais la couleur seule (DP-08). Une île Fermée a une étiquette plus discrète, mais son texte garde un fort contraste.
 // Avant le nom, le bloc que l'île rapporte (`bloc`), dessiné comme dans Mes blocs : un signe plutôt
@@ -11,13 +11,13 @@ import { COTE_DU_VISAGE, type Visage } from './characters/face';
 import type { Habillage } from './skin/types';
 
 /**
- * L'état écrit sous le nom : celui de l'île, ou « choisi » dans le mode « Aménager » (GD-9), où l'icône de l'état laisse
- * la place à celle d'Aménager (quatre flèches) le temps du choix ; l'état revient à la pose.
+ * Le signe avant le nom : le bloc que l'île rapporte, ou, sur le fantôme du lieu choisi dans « Modifier le plan »
+ * (GD-9), les quatre flèches de l'icône du mode (`deplacer`).
  */
-type LabelStateId = IslandStateId | 'choisi';
+export type SigneDuNom = BlockId | 'deplacer';
 
 export interface IslandLabelState {
-  id: LabelStateId;
+  id: IslandStateId;
   name: string;
 }
 
@@ -90,6 +90,38 @@ export function drawBlock(
   ctx.restore();
 }
 
+/** Quatre flèches en croix (l'icône du mode « Modifier le plan »), centrées sur (x, y), dans un carré de côté `s`. */
+function drawDeplacer(ctx: CanvasRenderingContext2D, x: number, y: number, s: number, encre: string): void {
+  ctx.save();
+  ctx.strokeStyle = encre;
+  ctx.fillStyle = encre;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.lineWidth = s * 0.11;
+  const r = s * 0.46;
+  const p = s * 0.17;
+  ctx.beginPath();
+  ctx.moveTo(x - r + p, y);
+  ctx.lineTo(x + r - p, y);
+  ctx.moveTo(x, y - r + p);
+  ctx.lineTo(x, y + r - p);
+  ctx.stroke();
+  for (const [dx, dy] of [
+    [1, 0],
+    [-1, 0],
+    [0, 1],
+    [0, -1],
+  ] as const) {
+    ctx.beginPath();
+    ctx.moveTo(x + dx * r, y + dy * r);
+    ctx.lineTo(x + dx * (r - p) - dy * p, y + dy * (r - p) - dx * p);
+    ctx.lineTo(x + dx * (r - p) + dy * p, y + dy * (r - p) + dx * p);
+    ctx.closePath();
+    ctx.fill();
+  }
+  ctx.restore();
+}
+
 /** Les couleurs de l'étiquette : fond, bord, texte. Fermée : fond grisé et bord adouci, texte toujours ≥ 7:1. */
 const PALETTE = {
   open: { bg: '#fffdf7', border: '#3b2d20', text: '#2b2118' },
@@ -97,8 +129,7 @@ const PALETTE = {
 };
 
 /** La couleur de l'icône de chaque état (la forme porte le sens, la couleur ne fait qu'aider). */
-const ICON_COLOR: Record<LabelStateId, string> = {
-  choisi: '#3b2d20',
+const ICON_COLOR: Record<IslandStateId, string> = {
   fermee: '#5a4d40',
   'a-explorer': '#1f5d8a',
   'en-chantier': '#8a4a12',
@@ -114,7 +145,7 @@ interface LabelMetrics {
   stateW: number;
 }
 
-function metrics(ctx: CanvasRenderingContext2D, text: string, px: number, state?: IslandLabelState, bloc?: BlockId): LabelMetrics {
+function metrics(ctx: CanvasRenderingContext2D, text: string, px: number, state?: IslandLabelState, bloc?: SigneDuNom): LabelMetrics {
   ctx.save();
   ctx.font = labelFont(px);
   // La ligne du nom : le bloc de l'île, s'il y en a un, puis le nom.
@@ -133,13 +164,13 @@ function metrics(ctx: CanvasRenderingContext2D, text: string, px: number, state?
 }
 
 /** La taille de l'étiquette (bord compris), en pixels du canvas : pour dimensionner une texture ou écarter les voisines. */
-export function measureIslandLabel(ctx: CanvasRenderingContext2D, text: string, px: number, state?: IslandLabelState, bloc?: BlockId): { w: number; h: number } {
+export function measureIslandLabel(ctx: CanvasRenderingContext2D, text: string, px: number, state?: IslandLabelState, bloc?: SigneDuNom): { w: number; h: number } {
   const m = metrics(ctx, text, px, state, bloc);
   return { w: m.w, h: m.h };
 }
 
 /** L'icône d'un état, centrée sur (x, y), dans un carré de côté `s`. */
-function drawStateIcon(ctx: CanvasRenderingContext2D, id: LabelStateId, x: number, y: number, s: number, bg = '#fffdf7'): void {
+function drawStateIcon(ctx: CanvasRenderingContext2D, id: IslandStateId, x: number, y: number, s: number, bg = '#fffdf7'): void {
   const color = ICON_COLOR[id];
   ctx.save();
   ctx.fillStyle = color;
@@ -181,25 +212,6 @@ function drawStateIcon(ctx: CanvasRenderingContext2D, id: LabelStateId, x: numbe
     ctx.lineTo(x - b * 0.7, y - b * 0.7);
     ctx.closePath();
     ctx.stroke();
-  } else if (id === 'choisi') {
-    // Quatre flèches en croix (l'icône d'Aménager) : deux traits, une pointe pleine au bout de chacun.
-    ctx.lineWidth = s * 0.11;
-    const r = s * 0.44;
-    const p = s * 0.16;
-    ctx.beginPath();
-    ctx.moveTo(x - r + p, y);
-    ctx.lineTo(x + r - p, y);
-    ctx.moveTo(x, y - r + p);
-    ctx.lineTo(x, y + r - p);
-    ctx.stroke();
-    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
-      ctx.beginPath();
-      ctx.moveTo(x + dx * r, y + dy * r);
-      ctx.lineTo(x + dx * (r - p) - dy * p, y + dy * (r - p) - dx * p);
-      ctx.lineTo(x + dx * (r - p) + dy * p, y + dy * (r - p) + dx * p);
-      ctx.closePath();
-      ctx.fill();
-    }
   } else if (id === 'en-chantier') {
     // Marteau : un manche en biais, une tête pleine.
     ctx.translate(x, y);
@@ -228,7 +240,7 @@ function drawStateIcon(ctx: CanvasRenderingContext2D, id: LabelStateId, x: numbe
  * seconde ligne : l'icône et le mot de l'état. Avec `bloc`, le bloc que l'île rapporte, avant le nom.
  * Renvoie sa largeur, bord compris.
  */
-export function drawIslandLabel(ctx: CanvasRenderingContext2D, text: string, cx: number, cy: number, px: number, state?: IslandLabelState, bloc?: BlockId): number {
+export function drawIslandLabel(ctx: CanvasRenderingContext2D, text: string, cx: number, cy: number, px: number, state?: IslandLabelState, bloc?: SigneDuNom): number {
   const m = metrics(ctx, text, px, state, bloc);
   const colors = state?.id === 'fermee' ? PALETTE.closed : PALETTE.open;
   const w = m.w - m.border * 2;
@@ -244,7 +256,8 @@ export function drawIslandLabel(ctx: CanvasRenderingContext2D, text: string, cx:
   // étiquette (une couleur vive ne doit pas y attirer l'œil), le contour net.
   const nameY = state ? y + px * 0.95 : cy;
   const lineLeft = cx - m.nameW / 2;
-  if (bloc) drawBlock(ctx, lineLeft + (Math.sqrt(3) * BLOC_DEMI * px) / 2, nameY, bloc, BLOC_DEMI * px, colors.border, undefined, state?.id === 'fermee');
+  if (bloc === 'deplacer') drawDeplacer(ctx, lineLeft + (Math.sqrt(3) * BLOC_DEMI * px) / 2, nameY, Math.sqrt(3) * BLOC_DEMI * px, colors.border);
+  else if (bloc) drawBlock(ctx, lineLeft + (Math.sqrt(3) * BLOC_DEMI * px) / 2, nameY, bloc, BLOC_DEMI * px, colors.border, undefined, state?.id === 'fermee');
   ctx.font = labelFont(px);
   ctx.textBaseline = 'middle';
   ctx.fillStyle = colors.text;

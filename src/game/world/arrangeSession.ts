@@ -1,7 +1,8 @@
-// « Remettre comme avant » et ↶ dans le mode « Aménager » (GD-9) : un instantané pris à l'entrée dans le mode et une
-// pile des poses. Chaque pose (un lieu, un Gardien, une borne, une arrivée, une liaison reposée) empile le monde d'avant ;
-// ↶ le reprend ; « Remettre comme avant » revient à l'instantané, et se défait lui aussi par ↶. Seules la disposition et
-// les liaisons reposées reviennent : une liaison payée entre-temps reste (rien ne se perd). Code pur, sans Three.js.
+// « Annuler » et ↶ dans le mode « Aménager » (GD-9) : un instantané pris à l'entrée dans le mode (« Modifier le plan »)
+// et une pile des poses. Chaque pose (un lieu, un Gardien, une borne, une arrivée, une liaison reposée, une réunion)
+// empile le monde d'avant ; ↶ le reprend ; « Annuler » revient à l'instantané et ferme le mode (décision du mainteneur,
+// 6 octobre 2026). Seules la disposition et les liaisons reposées reviennent : une liaison payée entre-temps reste (rien
+// ne se perd). Code pur, sans Three.js.
 import type { World } from '../engine/state';
 
 /** Ce qu'une pose change dans le monde : la disposition et les liaisons (une liaison reposée change d'identifiant). */
@@ -53,7 +54,7 @@ export function hasChanged(session: ArrangeSession, world: World): boolean {
   return JSON.stringify(arrangement(world).layout ?? null) !== JSON.stringify(session.entry.layout ?? null) || world.links.some((id) => session.added.includes(id));
 }
 
-/** « Remettre comme avant » : tout ce qui a bougé depuis l'entrée dans le mode revient ; ↶ le défait. */
+/** « Annuler » : tout ce qui a bougé depuis l'entrée dans le mode revient (la session rendue garde ↶ pour le défaire). */
 export function resetToEntry(session: ArrangeSession, world: World): { world: World; session: ArrangeSession } {
   if (!hasChanged(session, world)) return { world, session };
   return { world: restore(session, world, session.entry), session: { ...session, undo: [...session.undo, arrangement(world)] } };

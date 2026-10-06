@@ -5,14 +5,21 @@
 // ajout aux matériaux des blocs (`avecLAmenagement`), posé seulement le temps que le mode est ouvert, sans maillage de
 // plus ; dans Archipéo, le voile de brume du geste.
 // Moins d'animations : le lieu se soulève d'un coup, et la page pose sans geste.
+// Les poignées (les quatre flèches et « Tourner ») sont dessinées sur l'eau autour du choix, en un appel de dessin de plus
+// (./arrangeHandles.ts) ; à chaque image où elles bougent à l'écran, leur place est donnée à la page (`ChoixALEcran`) :
+// elle y pose des boutons HTML transparents (ArrangeHandles.tsx), qui portent leur nom et reçoivent le toucher.
 import type { Lumiere } from './light';
 import { mixColor } from '../world/daylight';
 import * as THREE from 'three';
 import { GESTE_SOUS_LE_SOL, gestureCut, veilFootprint, veilOpacity, veilZone } from '../world/arrangeGesture';
-import type { ArrangeCellKind, ArrangeGesture, ArrangeView } from '../world/view';
+import type { ArrangeCellKind, ArrangeGesture, ArrangeView, ChoixALEcran } from '../world/view';
+import { lirePlaceReelle, type Rect } from '../freeSpace';
 import { drawIslandLabel, measureIslandLabel } from '../world/labelCanvas';
 import type { Monde, PartieDeLaScene } from './scenePart';
 import { mesuresDemandees } from '../rendering';
+import { creerPoignees } from './arrangeHandles';
+import { type CleDePoignee, type PoigneesDuChoix, sortDeLaPlace } from '../world/arrangeHandles';
+import type { LabelBox } from '../world/labelLayout';
 
 /** Ce qui ne coupe ni ne soulève rien. */
 const LOIN = 1e6;
@@ -180,6 +187,10 @@ export interface Amenagement extends PartieDeLaScene {
   geste(g: ArrangeGesture | null): void;
   /** Le mode est ouvert : les matériaux des blocs portent son ajout ; fermé, ils redeviennent ceux d'avant. */
   ouvrir(oui: boolean): void;
+  /** Une poignée vient d'être touchée (son bouton) : elle s'enfonce et remonte. */
+  toucher(cle: CleDePoignee): void;
+  /** Les poignées, des obstacles durs pour les étiquettes (vues par `cam`), et ce qui change quand elles bougent. */
+  readonly poignees: { boites(cam: THREE.Camera, w: number, h: number): LabelBox[]; readonly version: number };
 }
 
 /** Le nom posé sur le fantôme : dessiné à 40 px, affiché à 18 px CSS, comme les étiquettes des îles (./labels.ts). */
@@ -188,21 +199,46 @@ const NOM_CSS = 18 / NOM_PX;
 /** Au-dessus du fantôme, en cases. */
 const NOM_AU_DESSUS = 6;
 
-/** Le nom du lieu choisi, dans une texture (rien sans contexte 2D). */
+/** Le nom du lieu choisi, dans une texture, les quatre flèches du mode avant lui (rien sans contexte 2D). */
 function textureDuNom(texte: string): { map: THREE.CanvasTexture; w: number; h: number } | null {
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
   if (!ctx) return null;
-  const size = measureIslandLabel(ctx, texte, NOM_PX);
+  // Les quatre flèches du mode avant le nom, à la place du bloc de l'île : c'est le lieu qu'on déplace.
+  const size = measureIslandLabel(ctx, texte, NOM_PX, undefined, 'deplacer');
   canvas.width = Math.ceil(size.w + 4);
   canvas.height = Math.ceil(size.h + 4);
-  drawIslandLabel(ctx, texte, canvas.width / 2, canvas.height / 2, NOM_PX);
+  drawIslandLabel(ctx, texte, canvas.width / 2, canvas.height / 2, NOM_PX, undefined, 'deplacer');
   const map = new THREE.CanvasTexture(canvas);
   map.colorSpace = THREE.SRGBColorSpace;
   return { map, w: canvas.width * NOM_CSS, h: canvas.height * NOM_CSS };
 }
 
-export function creerAmenagement(monde: Monde, reduit: boolean, camera: THREE.PerspectiveCamera, el: HTMLElement, lumiere?: Lumiere): Amenagement {
+/** La place libre et la place de la vue dans la scène de la page sont relues au plus quatre fois par seconde. */
+const RELECTURE_DE_LA_PLACE_MS = 250;
+/** Cinq poignées au plus, cinq nombres chacune (`Poignees.aLEcran`). */
+const POIGNEES_MAX = 5;
+/** Le temps laissé à la caméra pour glisser après un recadrage, avant d'en demander un autre. */
+const RAMENER_MS = 1000;
+
+/** Où le mode dit à la page que se tient le choix à l'écran (rien : la page ne pose pas de flèches). */
+type EcouteDuChoixALEcran = () => ((b: ChoixALEcran | null) => void) | null | undefined;
+
+/**
+ * Une poignée sort de la place libre : la vue se recadre pour ramener les poignées du choix `p` au milieu de la place
+ * libre ; rend `false` si elle ne le peut pas maintenant (un glissé en cours).
+ */
+type RamenerLesPoignees = (p: PoigneesDuChoix) => boolean;
+
+export function creerAmenagement(
+  monde: Monde,
+  reduit: boolean,
+  camera: THREE.PerspectiveCamera,
+  el: HTMLElement,
+  lumiere?: Lumiere,
+  aLEcran?: EcouteDuChoixALEcran,
+  ramener?: RamenerLesPoignees,
+): Amenagement {
   const blocs = monde.habillage.pose === 'geste';
   // Un carré plat, couché : deux triangles par case.
   const forme = new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2);
@@ -252,6 +288,13 @@ export function creerAmenagement(monde: Monde, reduit: boolean, camera: THREE.Pe
   };
   const tailleDuNom = () => {
     if (!nomSprite.visible) return;
+    // Avec des poignées, le nom se pose au-dessus d'elles (le bas du nom sur le bord nord du plus haut radeau) : jamais
+    // sur une poignée. Sans elles, au-dessus du fantôme.
+    if (poignees.auDessus(nomSprite.position)) nomSprite.center.set(0.5, -0.15);
+    else if (vueCourante) {
+      nomSprite.center.set(0.5, 0.5);
+      nomSprite.position.set(vueCourante.suivre.x, vueCourante.suivre.z + NOM_AU_DESSUS, vueCourante.suivre.y);
+    }
     const perPx = 2 / (camera.projectionMatrix.elements[5] * Math.max(1, el.clientHeight));
     nomSprite.scale.set(nomTaille.w * perPx, nomTaille.h * perPx, 1);
   };
@@ -260,6 +303,74 @@ export function creerAmenagement(monde: Monde, reduit: boolean, camera: THREE.Pe
   let souleve: ArrangeView['souleve'] = null;
   let souleveDepuis = 0;
   let enCours: ArrangeGesture | null = null;
+  // ---- Les poignées, dessinées dans le monde ; où elles se tiennent à l'écran, donné à la page (leurs boutons). Rien
+  // n'est alloué à chaque image : les places vont dans un tableau gardé, et l'objet donné à la page n'est construit que
+  // s'il a changé.
+  const poignees = creerPoignees(monde.scene, camera, blocs ? 'blocs' : 'peint', reduit);
+  let vueCourante: ArrangeView | null = null;
+  let dernierALEcran: ChoixALEcran | null = null;
+  let dernierSuivi: ((b: ChoixALEcran | null) => void) | null = null;
+  /** La place libre, le décalage de la vue dans la scène de la page et la taille de la vue, relus ensemble. */
+  let place: { libre: Rect; dx: number; dy: number; w: number; h: number } | null = null;
+  let placeLue = -Infinity;
+  const ici = new Float32Array(5 * POIGNEES_MAX);
+  const point = new THREE.Vector3();
+  /** Le dernier recadrage demandé parce qu'une poignée sortait de la place libre (horloge de la page). */
+  let rameneeA = -Infinity;
+  /**
+   * Où se tiennent les poignées à l'écran maintenant (la caméra de cette image), donné à `f` si l'une a bougé d'au moins
+   * un demi-pixel, ou si la page vient d'arriver. Une poignée sort de la place libre (sous la ligne du haut, sous la
+   * barre, hors de l'écran) : la vue se recadre pour la ramener (`ramener`), une fois le temps que la caméra glisse ;
+   * les boutons restent posés sur les flèches dessinées.
+   */
+  const suivreALEcran = (maintenant: number) => {
+    const f = aLEcran?.() ?? null;
+    if (!f) return;
+    const vue = vueCourante;
+    if (vue && !enCours && (!place || maintenant - placeLue > RELECTURE_DE_LA_PLACE_MS)) {
+      const scene = el.closest('[data-scene]');
+      const r = el.getBoundingClientRect();
+      const s = scene?.getBoundingClientRect();
+      place = { libre: lirePlaceReelle(el), dx: s ? r.left - s.left : 0, dy: s ? r.top - s.top : 0, w: el.clientWidth, h: el.clientHeight };
+      placeLue = maintenant;
+    }
+    // La place, seulement quand les poignées se montrent : le typage suit, sans assertion.
+    const p = vue && !enCours && place && place.w && place.h ? place : null;
+    let n = 0;
+    if (p) {
+      // La caméra de cette image (le cadrage l'a déjà bougée) : ses matrices à jour avant de projeter.
+      camera.updateMatrixWorld();
+      n = poignees.aLEcran(camera, p.w, p.h, ici);
+      const toutes = n === (vue?.poignees?.liste.length ?? 0);
+      if (vue?.poignees && (!toutes || sortDeLaPlace(ici, n, p.libre)) && maintenant - rameneeA > RAMENER_MS && ramener?.(vue.poignees)) rameneeA = maintenant;
+    }
+    const d = dernierALEcran;
+    let pareil: boolean;
+    if (!p || !n) pareil = d === null;
+    else {
+      pareil = d !== null && d.poignees.length === n && d.libre.x0 === p.libre.x0 + p.dx && d.libre.y0 === p.libre.y0 + p.dy && d.libre.x1 === p.libre.x1 + p.dx && d.libre.y1 === p.libre.y1 + p.dy;
+      for (let k = 0; d && pareil && k < n; k++) {
+        const q = d.poignees[k];
+        pareil =
+          q.cle === poignees.cle(ici[5 * k]) &&
+          Math.abs(q.x - (ici[5 * k + 1] + p.dx)) < 0.5 &&
+          Math.abs(q.y - (ici[5 * k + 2] + p.dy)) < 0.5 &&
+          Math.abs(q.w - ici[5 * k + 3]) < 0.5 &&
+          Math.abs(q.h - ici[5 * k + 4]) < 0.5;
+      }
+    }
+    if (f === dernierSuivi && pareil) return;
+    dernierSuivi = f;
+    if (pareil) return f(d);
+    const liste: ChoixALEcran['poignees'][number][] = [];
+    if (p)
+      for (let k = 0; k < n; k++) {
+        const cle = poignees.cle(ici[5 * k]);
+        if (cle) liste.push({ cle, x: ici[5 * k + 1] + p.dx, y: ici[5 * k + 2] + p.dy, w: ici[5 * k + 3], h: ici[5 * k + 4] });
+      }
+    dernierALEcran = p && liste.length ? { poignees: liste, libre: { x0: p.libre.x0 + p.dx, y0: p.libre.y0 + p.dy, x1: p.libre.x1 + p.dx, y1: p.libre.y1 + p.dy } } : null;
+    f(dernierALEcran);
+  };
 
   const vider = () => {
     if (!cases) return;
@@ -305,42 +416,74 @@ export function creerAmenagement(monde: Monde, reduit: boolean, camera: THREE.Pe
   return {
     poser(vue) {
       vider();
+      vueCourante = vue;
       const meme = souleve && vue?.souleve && souleve.x0 === vue.souleve.x0 && souleve.y0 === vue.souleve.y0 && souleve.x1 === vue.souleve.x1;
       if (!meme) souleveDepuis = performance.now();
       souleve = vue?.souleve ?? null;
       regler(performance.now());
       poserLeNom(vue);
+      poignees.poser(vue?.poignees ?? null);
       tailleDuNom();
       if (!vue || !vue.cases.length) return;
-      cases = new THREE.InstancedMesh(forme, matiere, vue.cases.length);
-      cases.frustumCulled = false;
+      const dessin = new THREE.InstancedMesh(forme, matiere, vue.cases.length);
+      dessin.frustumCulled = false;
       // Le dessin du mode ne se touche pas : le toucher passe à la mer ou au lieu dessous.
-      cases.raycast = () => {};
-      cases.renderOrder = 2;
+      dessin.raycast = () => {};
+      dessin.renderOrder = 2;
       vue.cases.forEach((c, i) => {
         const a = ALLURE[c.genre];
         const l = a.l * (c.l ?? 1);
         m.makeScale(l, 1, l).setPosition(c.x + 0.5, c.z + 1 + AU_DESSUS, c.y + 0.5);
-        cases!.setMatrixAt(i, m);
-        cases!.setColorAt(i, couleur.setHex(a.couleur));
+        dessin.setMatrixAt(i, m);
+        dessin.setColorAt(i, couleur.setHex(a.couleur));
       });
-      monde.scene.add(cases);
+      cases = dessin;
+      monde.scene.add(dessin);
     },
     geste(g) {
       enCours = g;
       regler(performance.now());
+      // Pendant le geste, pas de poignées : le choix est posé.
+      poignees.poser(g ? null : (vueCourante?.poignees ?? null));
     },
     ouvrir(oui) {
       ouvrirLeModeDansLesMateriaux(oui);
     },
+    toucher(cle) {
+      poignees.toucher(cle, performance.now());
+    },
+    poignees: {
+      // Les poignées, et le nom posé au-dessus d'elles : aucune étiquette d'île ne se pose dessus.
+      boites(cam, w, h) {
+        const out = poignees.boites(cam, w, h);
+        if (nomSprite.visible && nomTaille.w) {
+          point.copy(nomSprite.position).project(cam);
+          if (point.z <= 1) {
+            const x = ((point.x + 1) / 2) * w;
+            const y = ((1 - point.y) / 2) * h;
+            out.push({ x: x + (0.5 - nomSprite.center.x) * nomTaille.w, y: y - (0.5 - nomSprite.center.y) * nomTaille.h, w: nomTaille.w, h: nomTaille.h });
+          }
+        }
+        return out;
+      },
+      get version() {
+        return poignees.version;
+      },
+    },
     animer() {
-      regler(performance.now());
+      const maintenant = performance.now();
+      regler(maintenant);
       tailleDuNom();
+      poignees.animer(maintenant, el.clientHeight);
+      suivreALEcran(maintenant);
     },
     dispose() {
       vider();
       neutre();
+      // La scène refaite (une pose) en donnera une nouvelle : la page ne garde pas de flèches posées sur l'ancienne.
+      if (dernierSuivi && dernierALEcran) dernierSuivi(null);
       oublierLesMateriaux();
+      poignees.dispose();
       monde.scene.remove(nomSprite);
       nomMat.map?.dispose();
       nomMat.dispose();

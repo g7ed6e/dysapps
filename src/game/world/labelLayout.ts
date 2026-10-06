@@ -237,7 +237,7 @@ export function replierLesSignes<R extends { visibles: boolean[] }>(
 export function placerEtiquettes(
   boxes: LabelBox[],
   iles: { x: number; y: number }[],
-  vue: VueDesEtiquettes & { dures?: LabelBox[] },
+  vue: VueDesEtiquettes,
   carte: CarteDesEtiquettes | null,
   tenues: number[] = [],
 ): { offsets: LabelOffset[]; visibles: boolean[] } {
@@ -269,6 +269,8 @@ export interface VueDesEtiquettes {
   gap: number;
   /** Sur la Carte, les obstacles souples : le tracé de l'ouvrage suggéré (GD-7). */
   souples?: LabelBox[];
+  /** Les obstacles durs, qu'aucune étiquette ne couvre jamais : les poignées du mode « Modifier le plan » (GD-9). */
+  dures?: LabelBox[];
 }
 
 /**
@@ -284,7 +286,7 @@ export interface CarteDesEtiquettes {
 function placerSansSouples(
   boxes: LabelBox[],
   iles: { x: number; y: number }[],
-  vue: VueDesEtiquettes & { dures?: LabelBox[] },
+  vue: VueDesEtiquettes,
   carte: CarteDesEtiquettes | null,
   tenues: number[],
   souples: LabelBox[],
@@ -578,7 +580,7 @@ export function placerAvecLaFlecheDOuvrage(
 ): { fleche: number; offsets: LabelOffset[]; visibles: boolean[] } {
   const fleches = toutes.slice(0, PLACES_DE_LA_FLECHE_MAX);
   const { zones, bounds } = vue;
-  const avec = (k: number) => ({ fleche: k, ...placerEtiquettes(boxes, iles, { ...vue, dures: fleches[k] ? [fleches[k]] : [] }, carte) });
+  const avec = (k: number) => ({ fleche: k, ...placerEtiquettes(boxes, iles, { ...vue, dures: fleches[k] ? [...(vue.dures ?? []), fleches[k]] : (vue.dures ?? []) }, carte) });
   if (!fleches.length) return avec(0);
   const dansLeCadre = (f: LabelBox) => outside(f, bounds) < 1 && !zones.some((z) => overlap(f, z, 0) > 0);
   const sans = placerEtiquettes(boxes, iles, vue, carte);

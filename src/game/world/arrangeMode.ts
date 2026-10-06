@@ -1,7 +1,7 @@
 // Le mode « Aménager » (GD-9, L5) : ce que l'élève a choisi (un lieu, un Gardien, une borne, une arrivée, une liaison à
 // reposer), où se tient son fantôme, et ce que font les gestes de la barre du mode : toucher la mer (le fantôme se cale
 // sur la place libre la plus proche), les flèches (la place libre suivante, ou « Plus de place par là »), « Tourner »,
-// « Poser ici ». La phrase écrite et lue dit toujours où. Les actions elles-mêmes sont dans ./arrange.ts ; ici, le choix
+// « Poser ». La phrase écrite et lue dit toujours où. Les actions elles-mêmes sont dans ./arrange.ts ; ici, le choix
 // en cours et son fantôme ; un lieu réuni emmène son voisin et leur réunion. Code pur, sans Three.js.
 import { thePlace } from './placeArticle';
 import { type BiomeId, getBiome } from '../biomes';
@@ -207,7 +207,7 @@ export function turnChoice(world: World, c: Extract<ArrangeChoice, { genre: 'lie
   return s && { ...c, spot: s };
 }
 
-/** « Poser ici » : l'action du choix. */
+/** « Poser » : l'action du choix. */
 export function poseChoice(world: World, c: ArrangeChoice): ArrangeResult {
   switch (c.genre) {
     case 'lieu':
@@ -280,42 +280,19 @@ function rangDeLaBorne(world: World, c: Extract<ArrangeChoice, { genre: 'borne' 
 }
 
 /**
- * La ligne courte du choix, au téléphone (la phrase entière s'ouvre au toucher), sur deux lignes au plus : pour un lieu,
- * la direction et l'écart (« Au nord-ouest de la Mine des lettres, à 4 cases. »), son nom étant sur l'étiquette « Choisi ».
+ * La phrase après une pose : où est maintenant ce qu'on a posé, dans le monde d'après. Sans « C’est posé » (GD-9, piste
+ * A) : la ligne qui se met à jour et le son de la pose le disent.
  */
-export function choiceSummary(world: World, c: ArrangeChoice, nom: PlaceName = NOM_DU_JEU, mot: LinkPhrases = linkPhrases()): string {
-  switch (c.genre) {
-    case 'lieu': {
-      // Le nom est déjà sur l'étiquette « Choisi » : la ligne courte dit la direction et l'écart.
-      const ou = placeSentence(world, c.id, c.spot, nom);
-      return ou ? `${ou.charAt(0).toUpperCase()}${ou.slice(1)}.` : `${nom(c.id)}.`;
-    }
-    case 'gardien':
-      return `Le Gardien : ${guardianSentence(world, c.id, c.place)}`;
-    case 'borne': {
-      const { rang, n } = rangDeLaBorne(world, c);
-      return rang > 0 ? `La borne : place ${rang} sur ${n}` : 'La borne : à sa place';
-    }
-    case 'arrivee': {
-      const cote = turnedSide(SIDE_OF[c.landing.side], placeIn(world, placeOfChoice(c)).quarts as Quarts);
-      return `L’arrivée : côte ${POINT_CARDINAL[cote]}`;
-    }
-    case 'liaison':
-      return `${mot.Le} à reposer`;
-  }
-}
-
-/** La phrase après une pose : où est maintenant ce qu'on a posé, dans le monde d'après. */
 export function poseSentence(after: World, c: ArrangeChoice, nom: PlaceName = NOM_DU_JEU, mot: LinkPhrases = linkPhrases()): string {
   switch (c.genre) {
     case 'lieu':
-      return `C’est posé. ${nom(c.id)} : ${placeSentence(after, c.id, spotOf(after, c.id), nom)}.`;
+      return `${nom(c.id)} : ${placeSentence(after, c.id, spotOf(after, c.id), nom)}.`;
     case 'gardien':
-      return `C’est posé. Le Gardien ${ofPlace(nom(c.id))} : ${guardianSentence(after, c.id)}.`;
+      return `Le Gardien ${ofPlace(nom(c.id))} : ${guardianSentence(after, c.id)}.`;
     case 'borne':
-      return `C’est posé. ${choiceSentence(after, c, nom, mot)}`;
+      return choiceSentence(after, c, nom, mot);
     case 'arrivee':
-      return `C’est posé. ${choiceSentence(after, c, nom, mot)} ${mot.Le} repart de là.`;
+      return `${choiceSentence(after, c, nom, mot)} ${mot.Le} repart de là.`;
     case 'liaison': {
       const b = c.to ? getBridge(c.to) : undefined;
       return b ? `${mot.Le} est ${mot.accord('reposé')} entre ${thePlace(nom(b.from))} et ${thePlace(nom(b.to))}.` : '';

@@ -22,6 +22,7 @@ import {
   routesIn,
 } from './arrange';
 import { type ArrangeChoice, landingInWorld, placeOfChoice, stationInWorld } from './arrangeMode';
+import { coutDesPoignees, poigneesDuChoix, type StyleDesPoignees } from './arrangeHandles';
 import { footprintOf, guardianIsletRectangle, landRectangle, poseOfSpot } from './footprint';
 import { joinShape } from './join';
 import { archipelagoOfIsland, type IslandDef, isLandInWorld } from './map';
@@ -58,12 +59,14 @@ function place(p: { x: number; y: number }, z: number, l: number, out: ArrangeCe
 
 /**
  * Ce que coûte le dessin d'un choix (three/arrange.ts) : chaque case est un carré plat de deux triangles, toutes dans
- * un seul maillage instancié (un appel de dessin, seulement pendant un choix). Vérifié avec le pire cas de chaque
+ * un seul maillage instancié (un appel de dessin, seulement pendant un choix) ; et les poignées, dans un autre maillage
+ * (un appel, `coutDesPoignees`, comptées dans le style le plus coûteux, en cubes). Vérifié avec le pire cas de chaque
  * région sous le plafond du monde en blocs (budget.test.ts).
  */
-export function arrangeViewCost(v: ArrangeView | null): { triangles: number; drawCalls: number } {
+export function arrangeViewCost(v: ArrangeView | null, style: StyleDesPoignees = 'blocs'): { triangles: number; drawCalls: number } {
   const n = v?.cases.length ?? 0;
-  return { triangles: 2 * n, drawCalls: n ? 1 : 0 };
+  const p = coutDesPoignees(v?.poignees, style);
+  return { triangles: 2 * n + p.triangles, drawCalls: (n ? 1 : 0) + p.drawCalls };
 }
 
 /** Une croix de cinq cubes, au-dessus d'une case : l'icône d'une liaison qui ne tiendrait plus. */
@@ -114,8 +117,21 @@ function milieu(cases: readonly { x: number; y: number }[], z: number): { x: num
   return { x: (Math.min(...xs) + Math.max(...xs)) / 2, y: (Math.min(...ys) + Math.max(...ys)) / 2, z };
 }
 
-/** Le dessin du mode pour un choix, dans un monde. */
+/** Sans emprise (une borne, une liaison), la demi-taille du choix autour du point que la vue suit, en cases. */
+const DEMI_CHOIX = 1.5;
+
+/**
+ * Le dessin du mode pour un choix, dans un monde, avec ses poignées (./arrangeHandles.ts) posées sur l'eau autour de
+ * l'emprise du fantôme (ou, sans fantôme, du point suivi).
+ */
 export function arrangeView(world: World, c: ArrangeChoice): ArrangeView {
+  const v = dessinDuChoix(world, c);
+  const fantome = v.cases.filter((k) => k.genre === 'fantome');
+  const r = v.cadre?.rect ?? (fantome.length ? union(fantome.map((q) => ({ x0: q.x, y0: q.y, x1: q.x + 1, y1: q.y + 1 }))) : { x0: v.suivre.x - DEMI_CHOIX, y0: v.suivre.y - DEMI_CHOIX, x1: v.suivre.x + DEMI_CHOIX, y1: v.suivre.y + DEMI_CHOIX });
+  return { ...v, poignees: poigneesDuChoix(world, c, r, placeIn(world, placeOfChoice(c)).altitude) };
+}
+
+function dessinDuChoix(world: World, c: ArrangeChoice): ArrangeView {
   const out: ArrangeCell[] = [];
   const lieu = placeOfChoice(c);
   const ici = placeIn(world, lieu);

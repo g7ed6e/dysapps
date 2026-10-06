@@ -3,7 +3,7 @@
 // (« La digue », « La jetée ») ; les mots des gestes sont communs.
 import { thePlace } from './world/placeArticle';
 import { Link } from 'react-router-dom';
-import { Icon } from '../components/Icon';
+import { Icon, IconButton } from '../components/Icon';
 import { SpeakButton } from '../components/SpeakButton';
 import { Syllabified } from '../components/Syllabified';
 import { BLOCKS, blockName, getBiome, type BiomeId, type BlockId } from './biomes';
@@ -31,8 +31,20 @@ function useMots(j: JoinDef): { nom: string; description: string } {
   return { nom: r?.nom ?? j.name, description: r?.description ?? 'Une construction entre les deux lieux : on passe de l’un à l’autre à pied.' };
 }
 
-function sousTitre(j: JoinDef): string {
-  return `Entre ${thePlace(nomDuLieu(j.pair[0]))} et ${thePlace(nomDuLieu(j.pair[1]))}`;
+/** « A ⋈ B » : les deux lieux réunis, en signes (GD-9, piste A) ; « Entre A et B » pour les lecteurs d'écran. */
+function SousTitre({ j }: { j: JoinDef }) {
+  return (
+    <>
+      <span className="visually-hidden">{`Entre ${thePlace(nomDuLieu(j.pair[0]))} et ${thePlace(nomDuLieu(j.pair[1]))}`}</span>
+      <span aria-hidden="true">
+        {nomDuLieu(j.pair[0])}{' '}
+        <span className="signe">
+          <Icon name="reunir" />
+        </span>{' '}
+        {nomDuLieu(j.pair[1])}
+      </span>
+    </>
+  );
 }
 
 /** Ce qu'elle est, son avancement, les blocs qu'il manque et où les gagner, les deux boutons. */
@@ -63,7 +75,7 @@ function JoinBody({ builder }: { builder: BigBuilder<JoinDef> }) {
           <div className="plan-fill" style={{ width: `${Math.round((status.done / status.total) * 100)}%` }} />
         </div>
         <p className="plan-count">
-          <strong>{status.done}</strong> / {status.total} blocs posés · +{plan.reward.xp} XP à la fin
+          <strong>{status.done}</strong>/{status.total} · +{plan.reward.xp} XP
         </p>
         {status.complete ? (
           <p className="plan-done">
@@ -85,20 +97,29 @@ function JoinBody({ builder }: { builder: BigBuilder<JoinDef> }) {
                     <li key={block}>
                       <BlockIcon top={BLOCKS[block].top} side={BLOCKS[block].side} size={28} />
                       <span>
-                        <strong>{n}</strong> {blockName(block, n)}
-                        {have >= n ? ' · tu les as' : <> · tu en as {have}, <EarnLink block={block} /></>}
+                        <strong>{n}</strong> {blockName(block, n)}{' '}
+                        {have >= n ? (
+                          <span className="signe">
+                            <Icon name="check" />
+                            <span className="visually-hidden">tu les as</span>
+                          </span>
+                        ) : (
+                          <>
+                            <span className="visually-hidden">tu en as </span>
+                            {have}/{n} <EarnLink block={block} />
+                          </>
+                        )}
                       </span>
                     </li>
                   );
                 })}
               </ul>
             </details>
-            <button type="button" className="button primary" disabled={!builder.canFill} onClick={builder.fillNext}>
-              <Icon name="hammer" /> Poser le bloc suivant
+            {/* Un seul bouton nommé, « Poser » (le bloc suivant) ; « Tout poser » en icône. */}
+            <button type="button" className="button primary" aria-label="Poser le bloc suivant" disabled={!builder.canFill} onClick={builder.fillNext}>
+              <Icon name="hammer" /> Poser
             </button>
-            <button type="button" className="button" disabled={!builder.canFill} onClick={builder.fillAll}>
-              <Icon name="blocks" /> Poser tout ce que j’ai
-            </button>
+            <IconButton icone="blocks" nom="Tout poser, tout ce que j’ai" mot="Tout poser" disabled={!builder.canFill} onClick={builder.fillAll} />
           </>
         )}
       </section>
@@ -117,7 +138,7 @@ export function JoinSheet({ builder, onClose }: { builder: BigBuilder<JoinDef>; 
   const j = builder.plan;
   const { nom } = useMots(j);
   return (
-    <Sheet id="panneau-reunion" className={`monument-sheet biome-${j.biome}`} titleId="reunion-titre" icon="reunir" title={nom} subtitle={sousTitre(j)} onClose={onClose}>
+    <Sheet id="panneau-reunion" className={`monument-sheet biome-${j.biome}`} titleId="reunion-titre" icon="reunir" title={nom} subtitle={<SousTitre j={j} />} onClose={onClose}>
       <JoinBody builder={builder} />
     </Sheet>
   );
@@ -135,7 +156,9 @@ export function JoinPage({ builder }: { builder: BigBuilder<JoinDef> }) {
       <h1 className="page-title">
         <Icon name="reunir" /> {nom}
       </h1>
-      <p className="section-intro">{sousTitre(j)}.</p>
+      <p className="section-intro">
+        <SousTitre j={j} />
+      </p>
       <JoinBody builder={builder} />
     </>
   );
@@ -160,7 +183,13 @@ export function JoinLine({ island }: { island: BiomeId }) {
             <span className="island-quest-title">
               {textes.reunion?.nom ?? j.plan.name} avec {nomDuLieu(autre)}
             </span>
-            <span className="island-quest-desc">{s.complete ? 'Terminée : on passe à pied.' : `${s.done} / ${s.total} blocs posés`}</span>
+            {/* Fini : l'étoile suffit ; sinon l'avancement en chiffres. */}
+            {!s.complete && (
+              <span className="island-quest-desc">
+                {s.done}/{s.total}
+                <span className="visually-hidden"> blocs posés</span>
+              </span>
+            )}
           </span>
         </Link>
       </li>

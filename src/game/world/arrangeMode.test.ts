@@ -58,7 +58,7 @@ describe('un lieu : caler, décaler, tourner, poser', () => {
     }
   });
 
-  it('« Tourner » fait pivoter le fantôme sur une place libre ; « Poser ici » le pose, et la phrase le dit', () => {
+  it('« Tourner » fait pivoter le fantôme sur une place libre ; « Poser » le pose, et la phrase le dit', () => {
     const w = partie();
     const c = chooseIsland(w, VOLCAN)!;
     if (c.genre !== 'lieu') throw new Error('lieu');
@@ -70,7 +70,7 @@ describe('un lieu : caler, décaler, tourner, poser', () => {
     const r = poseChoice(w, t);
     if (!r.ok) throw new Error(r.reason);
     expect(spotOf(r.world, VOLCAN)).toEqual(t.spot);
-    expect(poseSentence(r.world, t)).toMatch(/^C’est posé\. Volcan des décimaux : /);
+    expect(poseSentence(r.world, t)).toMatch(/^Volcan des décimaux : /);
   });
 
   it('le dessin du choix : fantôme en pointillés, places autour seulement, liaisons retracées, barrées avec une croix', () => {
