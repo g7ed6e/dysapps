@@ -42,6 +42,11 @@ export interface Piece {
    * dessous, elle garde un peu de l'ombre de ses facettes (les veines du Lion de pierre, « légèrement émissives »).
    */
   glowWeight?: number;
+  /**
+   * Pour une pièce qui brille au rallumage : le degré qu'elle a déjà au premier pas des lueurs (`FIRST_STEP`, ./glow.ts),
+   * pour monter plus vite au début (les veines du Lion de pierre) ; sans lui, elle suit les lueurs.
+   */
+  firstStepGlow?: number;
   dessiner(T: Trace, pot: Pot): void;
 }
 
@@ -119,7 +124,14 @@ export function peindrePersonnage(pieces: Piece[]): FacettesDePersonnage {
     colors: f.colors,
     pieces: f.elements.map((e) => e & 255),
     teintes: f.elements.map((e) => palette[e >> 8].couleur),
-    table: pieces.map(({ nom, pivot, lueur, nuit, glowWeight }) => ({ nom, pivot, ...(lueur ? { lueur } : {}), ...(nuit !== undefined ? { nuit } : {}), ...(glowWeight !== undefined ? { glowWeight } : {}) })),
+    table: pieces.map(({ nom, pivot, lueur, nuit, glowWeight, firstStepGlow }) => ({
+      nom,
+      pivot,
+      ...(lueur ? { lueur } : {}),
+      ...(nuit !== undefined ? { nuit } : {}),
+      ...(glowWeight !== undefined ? { glowWeight } : {}),
+      ...(firstStepGlow !== undefined ? { firstStepGlow } : {}),
+    })),
     palette,
   };
 }

@@ -2,8 +2,8 @@
 // ne pas modifier à la main. Le Lion de pierre, couché sur sa dalle, le museau vers −Z, les pieds en 0, en millièmes de bloc.
 
 /** Un modèle du Lion : ses sommets (x, y, z en millièmes de bloc), ses triangles (trois sommets, face avant dans le sens
- * direct), ceux de lichen et des orbites, et ses veines : pour chacune, un segment droit sur une mèche, sa racine, sa
- * pointe, sa normale et la direction de sa largeur (12 nombres, en millièmes). */
+ * direct), ceux de lichen et des orbites, et ses veines : pour chacune, posée à plat sur une mèche, sa normale puis
+ * ses points, de la racine à la pointe (deux, ou trois quand elle se plie), en millièmes. */
 export interface ModeleDuLion {
   sommets: readonly number[];
   triangles: readonly number[];
@@ -19,10 +19,10 @@ export const LION_DU_DEFI: ModeleDuLion = {
   lichen: [265,398,603,607,795,995,1147,1164,1274,1276,1424,1431],
   orbites: [431,1134],
   veines: [
-    [681,5209,-2606,1136,5397,-2325,328,448,-832,-499,830,250],
-    [656,4158,-2436,1336,3578,-2655,131,481,-867,661,609,438],
-    [-861,5173,-2377,-1396,5428,-2059,-413,231,-881,-443,-896,-28],
-    [-865,4039,-2681,-1665,3389,-2391,-546,327,-771,380,-724,-576],
+    [135,637,-759,281,5114,-2760,731,5331,-2455],
+    [303,295,-906,594,4314,-2628,1172,3532,-2607],
+    [-469,429,-772,-832,5081,-2532,-1357,5404,-2034],
+    [-806,211,-553,-755,4249,-3290,-1515,3356,-2540],
   ],
 };
 

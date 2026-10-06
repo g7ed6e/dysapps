@@ -9,7 +9,7 @@ import { lineaire } from '../world/landMesh';
 import { rgb } from '../world/decor/brush';
 import { LUEUR } from '../world/characters/colors';
 import { framingPoints, modeleDuPortrait } from '../world/characters/portrait';
-import { couleursAllumees, degresDAllumage, type Allumage } from '../world/characters/sentinel';
+import { couleursAllumees, degresDAllumage, glowDegree, type Allumage } from '../world/characters/sentinel';
 import { cadrageSerre } from './tightFraming';
 import { materiauALueur } from './paintedCharacters';
 
@@ -97,11 +97,12 @@ export default function PersonnageCanvas({
         for (let t = 0; t < f.pieces.length; t++) {
           const piece = f.table[f.pieces[t]];
           if (piece.lueur !== 'allumage') continue;
+          const poids = glowDegree(piece, d.lueurs) * (piece.glowWeight ?? 1);
           for (let v = t * 3; v < t * 3 + 3; v++) {
             l[v * 4] = k[0];
             l[v * 4 + 1] = k[1];
             l[v * 4 + 2] = k[2];
-            l[v * 4 + 3] = d.lueurs * (piece.glowWeight ?? 1);
+            l[v * 4 + 3] = poids;
           }
         }
       couleurs.needsUpdate = true;

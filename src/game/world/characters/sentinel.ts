@@ -90,6 +90,8 @@ export interface Statue {
   grosPlan?: boolean;
   /** La part de leur allumage que les veines empruntent à la lueur (`Piece.glowWeight`, 1 par défaut). */
   veinGlow?: number;
+  /** Le degré des veines au premier pas des lueurs (`Piece.firstStepGlow`) ; sans lui, elles suivent les lueurs. */
+  veinFirstStep?: number;
   /**
    * Au défi, la caméra ne cadre que ce qui dépasse cette hauteur, en blocs du modèle (le Lion de pierre : lui seul, sa
    * flamme comprise, sans sa dalle) ; sans elle, toute la statue.
@@ -326,6 +328,17 @@ const ALLUMAGE = new Map<Couleur, [Couleur, Couleur]>([
 export const degreDuSerti = (lueurs: number): number => clamp(lueurs / FIRST_STEP, 0, 1);
 
 /**
+ * Le degré d'une pièce qui brille au degré `lueurs` de ses lueurs : le même, ou, avec `firstStepGlow`, déjà celui-ci au
+ * premier pas (`FIRST_STEP`), puis jusqu'à 1 en ligne droite (les veines du Lion de pierre).
+ */
+export function glowDegree(piece: { firstStepGlow?: number }, lueurs: number): number {
+  const d = clamp(lueurs, 0, 1);
+  const r = piece.firstStepGlow;
+  if (r === undefined) return d;
+  return d <= FIRST_STEP ? (d / FIRST_STEP) * r : r + ((1 - r) * (d - FIRST_STEP)) / (1 - FIRST_STEP);
+}
+
+/**
  * La couleur d'une teinte de sentinelle au degré d'allumage `degre` (0 : éteinte, 1 : rallumée) : la pierre passe de
  * #8E8C84 (et son lichen) au Sable #DAA66A, la flamme et les veines de la cendre à la lueur, le serti des veines de la
  * pierre à #403D38 ; les orbites ne changent pas.
@@ -354,18 +367,19 @@ export function degresDAllumage(a: Allumage): { pierre: number; lueurs: number }
 /**
  * Les couleurs d'une sentinelle au degré `degre`, sommet par sommet, dans l'espace linéaire (écrites dans `dans` s'il
  * est donné) : la teinte de `allumage`, nuancée selon la facette comme tout personnage ; une lueur perd sa nuance à
- * mesure qu'elle s'allume (au poids `glowWeight` de sa pièce), et brille pleinement à 1 ; le serti suit les lueurs
+ * mesure qu'elle s'allume (au degré `glowDegree` et au poids `glowWeight` de sa pièce), et brille pleinement à 1 ; le serti suit les lueurs
  * (`degreDuSerti`).
  */
 export function couleursAllumees(f: FacettesDePersonnage, degre: Allumage, dans = new Float32Array(f.colors.length)): Float32Array {
   const { pierre, lueurs: dl } = degresDAllumage(degre);
   const lueurs = new Set(f.palette.filter((p) => p.role === 'lueur').map((p) => p.couleur));
   for (let t = 0; t < f.teintes.length; t++) {
-    const d = lueurs.has(f.teintes[t]) ? dl : f.teintes[t] === SENTINELLE.serti ? degreDuSerti(dl) : pierre;
+    const piece = f.table[f.pieces[t]];
+    const d = lueurs.has(f.teintes[t]) ? glowDegree(piece, dl) : f.teintes[t] === SENTINELLE.serti ? degreDuSerti(dl) : pierre;
     const k = rgb(allumage(f.teintes[t], d));
     const ny = f.normals[t * 9 + 1];
     let w = NUANCE[0] + (NUANCE[1] - NUANCE[0]) * clamp(0.5 + 0.5 * ny, 0, 1);
-    if (lueurs.has(f.teintes[t])) w += (1 - w) * d * (f.table[f.pieces[t]].glowWeight ?? 1);
+    if (lueurs.has(f.teintes[t])) w += (1 - w) * d * (piece.glowWeight ?? 1);
     const c = [lineaire((k[0] / 255) * w), lineaire((k[1] / 255) * w), lineaire((k[2] / 255) * w)];
     for (let s = 0; s < 3; s++) dans.set(c, t * 9 + s * 3);
   }
@@ -392,7 +406,7 @@ function piecesDeSentinelle(s: Statue, { ou = 'monde', veines = 1 }: { ou?: OuSe
     return [
       { nom: 'sculpture', pivot: [0, 0, 0], dessiner: sculpture },
       ...(f ? [{ nom: 'flamme', pivot: tourne([f.pied[0], f.pied[1] + (FOYER.haut - 0.9) * f.echelle, f.pied[2]]), lueur: 'allumage' as const, dessiner: (T: Trace, pot: Pot) => flamme(R(horsDuSocle(T, f)), a(pot)) }] : []),
-      { nom: 'veines', pivot: [0, 0, 0], lueur: 'allumage', ...(s.veinGlow !== undefined ? { glowWeight: s.veinGlow } : {}), dessiner: (T, pot) => s.veines(R(T), a(pot)) },
+      { nom: 'veines', pivot: [0, 0, 0], lueur: 'allumage', ...(s.veinGlow !== undefined ? { glowWeight: s.veinGlow } : {}), ...(s.veinFirstStep !== undefined ? { firstStepGlow: s.veinFirstStep } : {}), dessiner: (T, pot) => s.veines(R(T), a(pot)) },
     ];
   }
   return [

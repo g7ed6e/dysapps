@@ -12,13 +12,15 @@
 //   oublié ; jamais sur les crêtes des veines ;
 // - pose les veines : quatre segments droits, indépendants du maillage, sur les mèches de la tempe et du bas de la
 //   joue, de chaque côté, de la racine vers la pointe, relevés sur la vue de face, posés à plat sur la mèche et levés
-//   juste assez pour ne s'enfoncer nulle part (le jeu en fait des bandes plates : src/game/world/characters/statues/lion.ts) ;
+//   juste assez pour ne s'enfoncer nulle part, sans flotter ni sortir du contour de la pierre vu de la caméra du défi
+//   (pliés en deux ou raccourcis s'il le faut ; le jeu en fait des bandes plates : src/game/world/characters/statues/lion.ts) ;
 // - désigne les orbites : les facettes déjà sombres des yeux, peintes de la couleur qui ne s'allume jamais (sans les
 //   creuser).
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as THREE from 'three';
+import { cadrageSerre } from '../../../src/game/three/tightFraming.ts';
 
 const SOURCES = dirname(fileURLToPath(import.meta.url));
 const RACINE = join(SOURCES, '..', '..', '..');
@@ -29,17 +31,20 @@ const HAUTEUR = 6;
 
 /**
  * Les quatre veines, relevées sur la vue de face (depuis −Z, le Lion posé par ce script) : la racine et la pointe de la
- * mèche (x, y). Le script projette les deux sur la pierre et tend entre eux un segment droit (directeur artistique,
- * 06/10/2026) : la mèche de la tempe et celle du bas de la joue, de chaque côté ; aucune sur le sommet de la tête ni le
- * poitrail. À la hauteur des yeux, une veine horizontale près du museau se lirait comme une moustache.
+ * mèche (x, y), et, s'il le faut, de combien la tourner vers la caméra du défi. Le script projette les deux sur la
+ * pierre et tend entre eux un segment droit (directeur artistique, 06/10/2026) : la mèche de la tempe et celle du bas de
+ * la joue, de chaque côté ; aucune sur le sommet de la tête ni le poitrail. À la hauteur des yeux, une veine horizontale
+ * près du museau se lirait comme une moustache. La tempe de la joue gauche de l'élève (+X) est du côté que la caméra du
+ * défi voit de biais : sa mèche est au contour de la tête ; la veine part donc plus près du front, au-dessus de l'œil,
+ * pour que son serti ne sorte jamais de la pierre (deuxième passe du directeur artistique, 06/10/2026).
  */
 const VEINES = [
   // la joue gauche de l'élève (+X) : la mèche de la tempe, puis celle du bas de la joue
-  [[0.66, 5.18], [1.36, 5.47]],
-  [[0.64, 4.1], [1.32, 3.52]],
+  [[0.28, 5.11], [0.88, 5.4]],
+  [[0.58, 4.3], [1.26, 3.38]],
   // l'autre joue (−X)
-  [[-0.82, 5.15], [-1.45, 5.45]],
-  [[-0.8, 4.0], [-1.6, 3.35]],
+  [[-0.82, 5.07], [-1.52, 5.5]],
+  [[-0.72, 4.24], [-1.52, 3.3]],
 ];
 
 /**
@@ -172,12 +177,54 @@ function toucher(m, [x, y], vers) {
   throw new Error(`Rien devant (${x}, ${y})`);
 }
 
-/** La marge entre la pierre et le dessous d'une veine, en blocs : le segment ne s'enfonce nulle part. */
+/** La marge entre la pierre et le dessous d'une veine, en blocs : la veine ne s'enfonce nulle part. */
 const MARGE = 0.006;
-/** La demi-largeur sous laquelle on vérifie que le segment ne s'enfonce pas : celle du serti, un peu élargie. */
-const DEMI_LARGEUR_SOUS_LA_VEINE = 0.13;
+/**
+ * Le contour du serti autour de la ligne d'une veine, en blocs : sa demi-largeur et ce qui dépasse à chaque bout, un
+ * peu élargis (src/game/world/characters/statues/lion.ts, `VEINE_DU_LION`).
+ */
+const CONTOUR_DU_SERTI = { demiLargeur: 0.165, bout: 0.07 };
+/**
+ * Au plus haut, le dessous d'une veine au-dessus de la pierre, en blocs, le long de sa ligne : le serti se pose encore
+ * 0,012 plus haut, sous les 0,06 du directeur artistique (06/10/2026).
+ */
+const FLOTTE_AU_PLUS = 0.048;
+/** Le pli d'une veine en deux segments, au plus : presque alignés (directeur artistique, 06/10/2026). */
+const PLI_AU_PLUS = (20 * Math.PI) / 180;
+/** Une veine regarde la caméra du défi au moins autant : sa largeur se lit (au moins 2 px d'or, référent dys). */
+const VERS_LA_CAMERA_AU_MOINS = 0.5;
 /** La part de la longueur de sa mèche qu'une veine couvre au moins (directeur artistique, 06/10/2026). */
 const PART_DE_LA_MECHE = 0.6;
+/** D'où regarde la caméra du défi (src/game/Guardians.tsx) : aucun point du serti ne sort du contour de la pierre. */
+const CAMERA_DU_DEFI = unit([-0.55, 0.35, -0.85]);
+/** Au défi, la caméra ne cadre que ce qui dépasse le haut de la dalle (`LION_SLAB_TOP`, statues/lion.ts). */
+const HAUT_DE_LA_DALLE = 0.8;
+/** La marge des rayons de la caméra, en radians : le cadrage du jeu compte aussi la flamme, que ce script ignore. */
+const MARGE_DES_RAYONS = (2 * Math.PI) / 180;
+
+/**
+ * L'œil de la caméra du défi devant le Lion posé : le cadrage serré du jeu (src/game/three/tightFraming.ts), de la
+ * même direction, sur le Lion au-dessus de sa dalle, autour du milieu de sa boîte (src/game/three/PersonnageCanvas.tsx).
+ */
+function oeilDuDefi({ sommets }) {
+  const [mn, mx] = [[Infinity, Infinity, Infinity], [-Infinity, -Infinity, -Infinity]];
+  for (let i = 0; i < sommets.length; i += 3)
+    for (let k = 0; k < 3; k++) [mn[k], mx[k]] = [Math.min(mn[k], sommets[i + k] / 1000), Math.max(mx[k], sommets[i + k] / 1000)];
+  const milieu = [0, 1, 2].map((k) => (mn[k] + mx[k]) / 2);
+  const points = [];
+  for (let i = 0; i < sommets.length; i += 3) if (sommets[i + 1] / 1000 > HAUT_DE_LA_DALLE) points.push(...[0, 1, 2].map((k) => sommets[i + k] / 1000 - milieu[k]));
+  const { cible, distance } = cadrageSerre(points, [-0.55, 0.35, -0.85], 30, 1);
+  return [0, 1, 2].map((k) => milieu[k] + cible[k] + CAMERA_DU_DEFI[k] * distance);
+}
+
+/** Les rayons de l'œil vers `q` : le sien, et penchés de `MARGE_DES_RAYONS` en haut, en bas et sur les côtés. */
+function rayons(oeil, q) {
+  const axe = unit(sub(q, oeil));
+  const droite = unit(croix(axe, [0, 1, 0]));
+  const haut = croix(droite, axe);
+  const a = Math.tan(MARGE_DES_RAYONS);
+  return [axe, ...[[haut, 1], [haut, -1], [droite, 1], [droite, -1]].map(([u, sg]) => unit(axe.map((v, k) => v + u[k] * sg * a)))];
+}
 
 /** La première pierre que touche un rayon tiré de `depuis` vers `vers` : sa distance, ou l'infini. */
 function premiereDistance(m, depuis, vers) {
@@ -220,35 +267,86 @@ function longueurDeLaMeche(modele, graphe, t0, centre, d) {
 }
 
 /**
- * Une veine : un segment droit sur une mèche, de sa racine à sa pointe, indépendant du maillage (directeur artistique,
- * 06/10/2026). Ses deux bouts sont les points de la pierre vus de face ; il est posé à plat, tourné comme la mèche
- * (la moyenne des facettes de ses bouts et de son milieu), puis levé juste assez pour ne s'enfoncer nulle part sous sa
- * largeur. Rend ses deux bouts, sa normale et la direction de sa largeur (12 nombres, en millièmes), et sa part de la
- * longueur de la mèche.
+ * Une veine posée sur la ligne brisée `pts` (des points de la pierre), à plat le long de la normale `n` : levée juste
+ * assez pour que la pierre reste dessous sur toute la largeur du serti. Rend les points levés, de combien elle flotte
+ * au plus au-dessus de la pierre le long de sa ligne, et si le serti sort du contour vu de la caméra du défi.
  */
-function veine(modele, m, graphe, [racine, pointe]) {
+function poserLaVeine(m, pts, n, oeil) {
+  const echantillons = [];
+  for (let s = 0; s + 1 < pts.length; s++) {
+    const [A, B] = [pts[s], pts[s + 1]];
+    const d = unit(sub(B, A));
+    const w = unit(croix(d, n));
+    for (let i = 0; i <= 16; i++)
+      for (const c of [-1, 0, 1]) echantillons.push({ q: [0, 1, 2].map((k) => A[k] + (B[k] - A[k]) * (i / 16) + w[k] * c * CONTOUR_DU_SERTI.demiLargeur), ligne: c === 0 });
+  }
+  // La hauteur de la pierre au-dessus de chaque point, le long de `n` (négative : la pierre est dessous).
+  const hauteur = (q) => 1 - premiereDistance(m, q.map((v, k) => v + n[k]), n.map((v) => -v));
+  let leve = 0;
+  for (const e of echantillons) leve = Math.max(leve, hauteur(e.q));
+  leve += MARGE;
+  // Ce qui se voit flotter : les bouts de la veine et son pli, au-dessus de la pierre.
+  let flotte = 0;
+  for (const p of pts) flotte = Math.max(flotte, leve - Math.max(-1, hauteur(p)));
+  const leves = pts.map((p) => p.map((v, k) => v + n[k] * leve));
+  // Le contour du serti, vu de la caméra du défi : derrière chacun de ses points, de la pierre, sous tous ses rayons.
+  const contour = [];
+  for (let s = 0; s + 1 < leves.length; s++) {
+    const [A, B] = [leves[s], leves[s + 1]];
+    const d = unit(sub(B, A));
+    const w = unit(croix(d, n));
+    const [a0, b0] = [s === 0 ? CONTOUR_DU_SERTI.bout : 0, s + 2 === leves.length ? CONTOUR_DU_SERTI.bout : 0];
+    for (let i = 0; i <= 8; i++)
+      for (const c of [-1, 1]) {
+        const t = i / 8;
+        contour.push([0, 1, 2].map((k) => A[k] + (B[k] - A[k]) * t - d[k] * a0 * (1 - t) + d[k] * b0 * t + w[k] * c * CONTOUR_DU_SERTI.demiLargeur));
+      }
+  }
+  const sort = contour.some((q) => rayons(oeil, q).some((v) => premiereDistance(m, q, v) > 4));
+  return { leves, flotte, sort };
+}
+
+/**
+ * Une veine : un segment droit sur une mèche, de sa racine à sa pointe, indépendant du maillage (directeur artistique,
+ * 06/10/2026). Ses deux bouts sont les points de la pierre vus de face ; elle est posée à plat, tournée comme la mèche
+ * (la moyenne des facettes de ses bouts et de son milieu), puis levée juste assez pour ne s'enfoncer nulle part sous sa
+ * largeur. Si elle flotte alors de plus de `FLOTTE_AU_PLUS`, elle se plie en deux segments presque alignés, au milieu
+ * de la mèche ; puis, s'il le faut, elle se raccourcit vers la racine, sans couvrir moins de `PART_DE_LA_MECHE` de sa
+ * mèche. Rend sa normale puis ses points (en millièmes), et sa part de la longueur de la mèche.
+ */
+function veine(modele, m, graphe, oeil, [racine, pointe, tourne = 0], verifier) {
+  const vers = (u) => [racine[0] + (pointe[0] - racine[0]) * u, racine[1] + (pointe[1] - racine[1]) * u];
   const hr = toucher(m, racine, pointe);
   const hp = toucher(m, pointe, racine);
-  const milieu = toucher(m, [(racine[0] + pointe[0]) / 2, (racine[1] + pointe[1]) / 2], racine);
-  const [A, B] = [hr.point, hp.point];
-  const d = unit(sub(B, A));
+  const milieu = toucher(m, vers(0.5), racine);
+  const d = unit(sub(hp.point, hr.point));
   const somme = [0, 1, 2].map((k) => hr.normale[k] + hp.normale[k] + 2 * milieu.normale[k]);
   const pn = somme[0] * d[0] + somme[1] * d[1] + somme[2] * d[2];
-  const n = unit(somme.map((v, k) => v - d[k] * pn));
-  const w = unit(croix(d, n));
-  // Levé juste assez : sous chaque point de sa largeur, la pierre reste en dessous.
-  let leve = 0;
-  for (let i = 0; i <= 24; i++)
-    for (const c of [-1, 0, 1]) {
-      const q = [0, 1, 2].map((k) => A[k] + (B[k] - A[k]) * (i / 24) + w[k] * c * DEMI_LARGEUR_SOUS_LA_VEINE);
-      const h = 1 - premiereDistance(m, q.map((v, k) => v + n[k]), n.map((v) => -v));
-      if (h > -0.5) leve = Math.max(leve, h);
-    }
-  leve += MARGE;
-  const [A2, B2] = [A, B].map((p) => p.map((v, k) => v + n[k] * leve));
-  const longueur = Math.hypot(...sub(B, A));
+  // Tournée vers la caméra du défi de `tourne` (une mèche du côté qui s'en détourne : sa largeur se lit).
+  const vise = somme.map((v, k) => v - d[k] * pn);
+  const lv = Math.hypot(...vise);
+  const cam = CAMERA_DU_DEFI.map((v, k) => v - d[k] * (CAMERA_DU_DEFI[0] * d[0] + CAMERA_DU_DEFI[1] * d[1] + CAMERA_DU_DEFI[2] * d[2]));
+  const n = unit(vise.map((v, k) => v / lv + tourne * cam[k]));
   const meche = longueurDeLaMeche(modele, graphe, milieu.triangle, milieu.point, d);
-  return { veine: [...A2, ...B2, ...n, ...w].map(mil), points: [A2, B2], part: longueur / meche, leve, longueur, meche };
+  const essais = [];
+  for (let u = 1; u >= 0.5; u -= 0.05) {
+    const bout = toucher(m, vers(u), racine).point;
+    essais.push([hr.point, bout], [hr.point, toucher(m, vers(u / 2), racine).point, bout]);
+  }
+  if (verifier && n[0] * CAMERA_DU_DEFI[0] + n[1] * CAMERA_DU_DEFI[1] + n[2] * CAMERA_DU_DEFI[2] < VERS_LA_CAMERA_AU_MOINS)
+    throw new Error(`Une veine se détourne de la caméra du défi (${racine} → ${pointe})`);
+  for (const pts of essais) {
+    const longueur = pts.slice(1).reduce((l, p, i) => l + Math.hypot(...sub(p, pts[i])), 0);
+    if (verifier && longueur / meche < PART_DE_LA_MECHE) break;
+    if (verifier && pts.length === 3) {
+      const [u, w] = [unit(sub(pts[1], pts[0])), unit(sub(pts[2], pts[1]))];
+      if (u[0] * w[0] + u[1] * w[1] + u[2] * w[2] < Math.cos(PLI_AU_PLUS)) continue;
+    }
+    const pose = poserLaVeine(m, pts, n, oeil);
+    if (verifier && (pose.flotte > FLOTTE_AU_PLUS || pose.sort)) continue;
+    return { veine: [...n, ...pose.leves.flat()].map(mil), points: pose.leves, part: longueur / meche, flotte: pose.flotte };
+  }
+  throw new Error(`Une veine flotte ou sort du contour de la pierre, même pliée et raccourcie (${racine} → ${pointe})`);
 }
 
 /** La distance d'un point à une ligne brisée (en blocs). */
@@ -268,9 +366,9 @@ function version(fichier, taches, avecVeines) {
   const modele = poser(lireGlb(join(SOURCES, fichier)));
   const m = maillage(modele);
   const graphe = aretesDe(modele);
-  const toutes = VEINES.map((t) => veine(modele, m, graphe, t));
+  const oeil = oeilDuDefi(modele);
+  const toutes = VEINES.map((t) => veine(modele, m, graphe, oeil, t, avecVeines));
   const veines = avecVeines ? toutes.map((v) => v.veine) : [];
-  for (const v of toutes) if (v.part < PART_DE_LA_MECHE) throw new Error(`Une veine ne couvre que ${Math.round(v.part * 100)} % de sa mèche (${fichier})`);
   // Le lichen évite la crête des mèches même dans la version sans veines.
   const lignes = toutes.map((v) => v.points);
   const s = (k) => modele.sommets.slice(k * 3, k * 3 + 3).map((x) => x / 1000);
@@ -331,8 +429,8 @@ function produire() {
     '// ne pas modifier à la main. Le Lion de pierre, couché sur sa dalle, le museau vers −Z, les pieds en 0, en millièmes de bloc.',
     '',
     '/** Un modèle du Lion : ses sommets (x, y, z en millièmes de bloc), ses triangles (trois sommets, face avant dans le sens',
-    ' * direct), ceux de lichen et des orbites, et ses veines : pour chacune, un segment droit sur une mèche, sa racine, sa',
-    ' * pointe, sa normale et la direction de sa largeur (12 nombres, en millièmes). */',
+    ' * direct), ceux de lichen et des orbites, et ses veines : pour chacune, posée à plat sur une mèche, sa normale puis',
+    ' * ses points, de la racine à la pointe (deux, ou trois quand elle se plie), en millièmes. */',
     'export interface ModeleDuLion {',
     '  sommets: readonly number[];',
     '  triangles: readonly number[];',
