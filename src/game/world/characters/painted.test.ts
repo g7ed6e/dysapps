@@ -350,11 +350,12 @@ describe('Les créatures en facettes', () => {
     expect(GABARITS.standard.taille).toBeCloseTo(1.3 * TAILLE_DU_BONHOMME, 9);
   });
 
-  // 2 950 depuis les deux habitants d'histoire-géographie du 6e (HG-2, mainteneur, 6 octobre 2026 : 2 917 mesurés).
-  it('tiennent dans leur budget : 2 950 triangles au plus par archipel, toutes ensemble', () => {
+  // 2 950 depuis les deux habitants d'histoire-géographie du 6e (HG-2, mainteneur, 6 octobre 2026 : 2 917 mesurés), 3 650
+  // depuis les trois habitants de sciences (SC-2, même mot : 3 635 mesurés).
+  it('tiennent dans leur budget : 3 650 triangles au plus par archipel, toutes ensemble', () => {
     for (const a of ARCHIPELAGO_IDS) {
       const somme = BIOMES.filter((b) => b.classe === a).reduce((n, b) => n + nbTriangles(creaturePeinte(b.id)), 0);
-      expect(somme, a).toBeLessThanOrEqual(2_950);
+      expect(somme, a).toBeLessThanOrEqual(3_650);
     }
   });
 

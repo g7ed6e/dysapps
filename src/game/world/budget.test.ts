@@ -26,7 +26,7 @@ it('le monde en blocs ne recule pas : triangles et appels de dessin de chaque ar
     expect(drawCalls, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.drawCalls);
   }
   expect(RENDER_BUDGET).toEqual({ triangles: 60_000, drawCalls: 40 });
-  expect(RENDER_BUDGET_6E).toEqual({ triangles: 63_400, drawCalls: 40 });
+  expect(RENDER_BUDGET_6E).toEqual({ triangles: 72_800, drawCalls: 40 });
 });
 
 it('les petites constructions des commandes (GD-7, PR 3) se fondent dans le terrain : aucun appel de plus, sous le plafond', () => {
@@ -62,7 +62,8 @@ it('le rendu Archipéo : le sol en facettes tient en deux appels de dessin et la
     // trois avec ses fumées, qui bougent (R4b-6e).
     expect(decor.drawCalls, a).toBeLessThanOrEqual(3);
     expect(decor.triangles, a).toBeLessThanOrEqual(15_000);
-    expect(sol.triangles, a).toBeLessThanOrEqual(RENDER_BUDGET.triangles / 2);
+    // Aux Premiers Rivages, la moitié de leur budget relevé (SC-2 : 32 724 mesurés, mainteneur, 6 octobre 2026).
+    expect(sol.triangles, a).toBeLessThanOrEqual((a === '6e' ? RENDER_BUDGET_6E : RENDER_BUDGET).triangles / 2);
     // Et les modèles de la scène (sans la mer ni la faune, que le monde en blocs ne compte pas) ne dessinent pas plus
     // que le monde en blocs.
     const blocs = sceneCost(a);
@@ -79,8 +80,9 @@ it('le rendu Archipéo : la mer en un appel de dessin, la faune et le ciel en tr
     const faune = fauneCost(a);
     expect(mer, a).toEqual(sceneCostArchipeo(a).mer);
     expect(mer.drawCalls, a).toBe(1);
-    // 6 200 aux Premiers Rivages depuis que la mer couvre tout le cadre de la région (GD-9).
-    expect(mer.triangles, a).toBeLessThanOrEqual(6300);
+    // 6 200 aux Premiers Rivages depuis que la mer couvre tout le cadre de la région (GD-9) ; 7 068 avec le cadre agrandi
+    // vers le fond pour les îles de sciences (SC-2, mainteneur, 6 octobre 2026).
+    expect(mer.triangles, a).toBeLessThanOrEqual(7100);
     // Baleines, oiseaux, nuages : une instanciation par famille (pas de baleine aux Îles du Ciel).
     expect(faune.drawCalls, a).toBeLessThanOrEqual(3);
     expect(faune.triangles, a).toBeLessThanOrEqual(1500);
@@ -105,11 +107,12 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
 
   // Ailleurs, 52 300 jusqu'au cœur agrandi de l'Atelier (01/10/2026) : son sol en demande 660 de plus (world/budget.ts),
   // enveloppe validée par le mainteneur le 01/10/2026 ; 53 040 avec la Halle aux matériaux (GD-2, validé par le mainteneur le 01/10/2026, world/budget.ts), 53 060 avec la salle des trophées (GD-3, même jour).
-  // HG-2 (mainteneur, 6 octobre 2026) : les Premiers Rivages passent de 59 500 à 63 370 avec les deux îles d'histoire-géographie.
-  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2 : les îles d’histoire-géographie) : 63 370 triangles et 25 appels aux Premiers Rivages, 55 790 et 24 ailleurs', () => {
+  // HG-2 (mainteneur, 6 octobre 2026) : les Premiers Rivages passent de 59 500 à 63 370 avec les deux îles d'histoire-géographie,
+  // puis à 72 770 avec les trois îles de sciences (SC-2, même mot : « Budget on augmente pour l'instant »).
+  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2 et SC-2 : les îles d’histoire-géographie et de sciences) : 72 770 triangles et 25 appels aux Premiers Rivages, 55 790 et 24 ailleurs', () => {
     const total = (a: '6e' | '5e') => postes.reduce((n, p) => n + enveloppeDe(p, a).triangles, 0);
     const appels = (a: '6e' | '5e') => postes.reduce((n, p) => n + enveloppeDe(p, a).drawCalls, 0);
-    expect([total('6e'), appels('6e')]).toEqual([63_370, 25]);
+    expect([total('6e'), appels('6e')]).toEqual([72_770, 25]);
     expect([total('5e'), appels('5e')]).toEqual([55_790, 24]);
   });
 
@@ -198,8 +201,8 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
     });
 });
 
-it('GD-9 puis HG-2 : le plafond du monde en blocs passe à 88 000 triangles, puis à 100 000 triangles et 256 appels (mainteneur, 6 octobre 2026)', () => {
-  expect(PLAFOND_DU_MONDE_EN_BLOCS).toEqual({ triangles: 100_000, drawCalls: 256 });
+it('GD-9, HG-2 puis SC-2 : le plafond du monde en blocs passe à 88 000 triangles, puis à 100 000 triangles et 256 appels, puis à 120 000 et 284 (mainteneur, 6 octobre 2026)', () => {
+  expect(PLAFOND_DU_MONDE_EN_BLOCS).toEqual({ triangles: 120_000, drawCalls: 284 });
 });
 
 it('GD-9 : au pire (autant de liaisons qu’un graphe planaire en a, au plus long, et toutes les réunions), chaque région tient sous le plafond', () => {
