@@ -440,19 +440,15 @@ describe('la flèche d’un ouvrage sur la Carte (GD-7)', () => {
 
   it('aucune étiquette ne se pose sur elle, même faute de place : elle se déplace ou se tait', () => {
     // Un cadre bas (la bande libre d'un téléphone au grand texte) : une étiquette aussi large que lui, la flèche dessous.
-    // Simple obstacle, l'étiquette resterait dessus (sortir du cadre coûterait plus) ; obstacle dur, jamais.
+    // L'écart seul la laisserait dessus (sortir du cadre coûterait plus) ; sur la Carte, obstacle dur ou simple (la bulle,
+    // le médaillon : DA, HG-3), jamais.
     const etroit = { w: 390, h: 80 };
     const boxes: LabelBox[] = [{ x: 195, y: 40, w: 370, h: 60 }];
     const iles = boxes.map((b) => ({ x: b.x, y: b.y + 20 }));
     const dure: LabelBox = { x: 195, y: 40, w: 38, h: 48 };
-    const simple = placerEtiquettes(boxes, iles, { zones: [], bulles: [], obstacles: [dure], bounds: etroit, gap: 6 }, { weights: [1] });
-    expect(simple.visibles[0] && overlaps({ ...boxes[0], x: boxes[0].x + simple.offsets[0].dx, y: boxes[0].y + simple.offsets[0].dy }, dure)).toBe(true);
-    const { offsets, visibles } = placerEtiquettes(boxes, iles, { zones: [], bulles: [], obstacles: [], dures: [dure], bounds: etroit, gap: 6 }, { weights: [1] });
-    boxes.forEach((b, i) => {
-      if (!visibles[i]) return;
-      const at = { ...b, x: b.x + offsets[i].dx, y: b.y + offsets[i].dy };
-      expect(Math.abs(at.x - dure.x) < (at.w + dure.w) / 2 && Math.abs(at.y - dure.y) < (at.h + dure.h) / 2, `étiquette ${i}`).toBe(false);
-    });
+    const pose = (r: { offsets: { dx: number; dy: number }[]; visibles: boolean[] }) => r.visibles[0] && overlaps({ ...boxes[0], x: boxes[0].x + r.offsets[0].dx, y: boxes[0].y + r.offsets[0].dy }, dure);
+    expect(pose(placerEtiquettes(boxes, iles, { zones: [], bulles: [], obstacles: [dure], bounds: etroit, gap: 6 }, { weights: [1] }))).toBe(false);
+    expect(pose(placerEtiquettes(boxes, iles, { zones: [], bulles: [], obstacles: [], dures: [dure], bounds: etroit, gap: 6 }, { weights: [1] }))).toBe(false);
   });
 });
 

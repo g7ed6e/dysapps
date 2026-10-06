@@ -39,7 +39,7 @@ export const QUARTS_DE_TOUR: Partial<Record<BiomeId, number>> = { 'lv2-3e-travel
  * Les créatures seules (pas leur Gardien) tournées d'un quart de tour de plus, même sens. Au Marché des proportions
  * (5e), Bazar est long (sept cases du museau à la queue) : de face, il n'a aucune place hors de la vue de la salle des
  * trophées (GD-3) ; tourné, il se tient derrière elle, le visage du côté des x croissants, celui de la caméra. Le quart
- * de tour dans l'autre sens lui ferait tourner le dos à la caméra (retouches de GD-3). Jalon (la Vallée des territoires,
+ * de tour dans l'autre sens lui ferait tourner le dos à la caméra (retouches de GD-3). Jalon (le Plateau des territoires,
  * 3e) n'est pas tournée : la caméra de son île pivote à fond vers l'est (`viewYaw`, −40°) et la regarde déjà de profil ;
  * un quart de tour la lui montrerait de face (voir `JALON`, ../characters/creatures.ts).
  */

@@ -371,7 +371,8 @@ export function creerEtiquettes(
     const plaquesVersion = plaques?.version ?? 0;
     const poigneesVersion = poignees?.version ?? 0;
     if (!spread && labelLayout && vise.plaques === plaquesVersion && vise.poignees === poigneesVersion && vise.tenues === tenuesCle && vise.n === sprites.length && vise.w === W && vise.h === H && vise.zones === zonesCle && vise.pos.equals(camGoal.pos) && vise.target.equals(camGoal.target) && sprites.every((s, i) => vise.ids[i] === s.id)) return;
-    const av = bonhomme().position;
+    const lui = bonhomme();
+    const av = lui.position;
     // Hors de la Carte, les îles dont le nom ne se tait jamais tant qu'elles se voient : celle de la flèche « Commence
     // ici » et celle du bonhomme (l'île la plus proche de lui).
     const tenues = indicesTenus(tenuesCle);
@@ -379,7 +380,9 @@ export function creerEtiquettes(
     vise.plaques = plaquesVersion;
     vise.poignees = poigneesVersion;
     const montre = donnees();
-    const marks = spread ? `${montre.ouvrage ?? montre.island ?? ''}:${av.toArray().map((v) => v.toFixed(0))}` : `reperes:${tenues.join(',')}:plaques${plaquesVersion}`;
+    // Sur la Carte, le médaillon est un obstacle tant que le bonhomme se voit : l'écart se refait quand il paraît (sans
+    // quoi le médaillon, montré après le calcul, se posait sur un nom : la Pointe des paysages au 6e, DA, HG-3).
+    const marks = spread ? `${montre.ouvrage ?? montre.island ?? ''}:${lui.visible ? av.toArray().map((v) => v.toFixed(0)) : '-'}` : `reperes:${tenues.join(',')}:plaques${plaquesVersion}`;
     const key = `${sprites.map((s) => s.id).join(',')}@${camGoal.pos.toArray().map((v) => v.toFixed(1))}>${camGoal.target.toArray().map((v) => v.toFixed(1))}@${W}x${H}@${marks}@${zonesCle}@p${poigneesVersion}`;
     // Sur la Carte, l'écart est autre : au retour, il se refait.
     if (spread) vise.n = -1;

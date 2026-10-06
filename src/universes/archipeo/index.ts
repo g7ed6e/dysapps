@@ -272,11 +272,11 @@ export const ARCHIPEO = {
       },
     },
     'geography-3e-france': {
-      challenge: 'Le Cerf de lauze dit doucement : « Les lauzes de ma poitrine sont éteintes. Une lauze, c’est une pierre plate. Tu as parcouru toute la vallée : dis-moi comment vit le territoire. »',
+      challenge: 'Le Cerf de lauze dit doucement : « Les lauzes de ma poitrine sont éteintes. Une lauze, c’est une pierre plate. Tu as parcouru tout le plateau. Dis-moi comment vit le territoire. »',
       guardianSays: {
         hit: 'Une lauze de ma poitrine s’allume. C’est juste.',
         miss: 'Rien ne s’éteint. Relis le document, cherche le mot du rappel, et reprends.',
-        beaten: 'Mes lauzes se rallument. La vallée est à toi, et à Jalon.',
+        beaten: 'Mes lauzes se rallument. Le Plateau est à toi, et à Jalon.',
       },
     },
     'life-earth-sciences-6e-living-world': {

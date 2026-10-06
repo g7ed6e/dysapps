@@ -311,7 +311,7 @@ export const BLOCKS: Record<BlockId, BlockDef> = {
   // Le bloc du Kiosque des témoins (histoire, 3e) : des dos de livres serrés, sans lettres, bleu-vert sombre, distincts
   // du lambris et de la rizière par les dos verticaux.
   'history-3e-twentieth-century': { id: 'history-3e-twentieth-century', name: 'Reliure', top: '#2f6f74', side: '#22545a', texture: 'reliure' },
-  // Le bloc de la Vallée des territoires (géographie, 3e) : un grès rose à grain fin, en assises, distinct de la brique
+  // Le bloc du Plateau des territoires (géographie, 3e) : un grès rose à grain fin, en assises, distinct de la brique
   // et de la tuile par sa teinte plus pâle et l'absence de joints marqués.
   'geography-3e-france': { id: 'geography-3e-france', name: 'Grès rose', top: '#d49a94', side: '#b07872', texture: 'gres' },
   'trophy-gold': { id: 'trophy-gold', name: 'Or', top: '#f2c944', side: '#cfa326', texture: 'or', rare: true },

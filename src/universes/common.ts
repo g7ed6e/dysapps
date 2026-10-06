@@ -366,9 +366,9 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
     home: 'Ma bibliothèque est prête. On peut venir lire et se souvenir, au calme.',
   },
   'geography-3e-france': {
-    greeting: 'Bonjour, bâtisseur ! Dans la vallée, on regarde la France : ses villes, ses campagnes, ses routes. Chaque bonne réponse te donne un bloc de grès rose. Le grès, c’est une pierre faite de sable serré.',
-    lines: ['J’arpente la vallée pas à pas : un jalon, puis un autre.', 'Du grès rose pour ma mairie : lis un document.', 'Ville, campagne, outre-mer : chaque territoire compte.'],
-    home: 'Ma mairie est finie. Toute la vallée peut y venir.',
+    greeting: 'Bonjour, bâtisseur ! Sur le plateau, on regarde la France : ses villes, ses campagnes, ses routes. Chaque bonne réponse te donne un bloc de grès rose. Le grès, c’est une pierre faite de sable serré.',
+    lines: ['J’arpente le plateau pas à pas : un jalon, puis un autre.', 'Du grès rose pour ma mairie : lis un document.', 'Ville, campagne, outre-mer : chaque territoire compte.'],
+    home: 'Ma mairie est finie. Tout le plateau peut y venir.',
   },
   'life-earth-sciences-6e-living-world': {
     greeting: 'Bonjour, bâtisseur ! Ici, on regarde le vivant : les plantes, les bêtes et la Terre. Chaque bonne réponse te donne un fossile. Un fossile, c’est la trace d’un être vivant très ancien, gardée dans la pierre.',

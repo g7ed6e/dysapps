@@ -147,25 +147,44 @@ const TETE_DE_LA_LIBELLULE: Anneau[] = [
   [8, 0.25, 0.25],
 ];
 /**
- * Ses deux paires d'ailes, de chaque côté : le bas et le haut de l'attache. Larges d'une case à l'attache (en bandes de
- * 0,5, elles se lisaient comme une arête, consultant Archipéo, HG-3), la pointe émoussée et relevée (un léger dièdre),
- * sans un triangle de plus : la marge des Gardiens du 5e est de quelques triangles.
+ * Ses deux paires d'ailes, de chaque côté, presque à plat (consultant Archipéo et DA, HG-3 : dressées, elles se
+ * lisaient comme les bras d'un poteau indicateur) : la hauteur de l'attache et le sens de la flèche (−1 : la paire du
+ * haut, tirée vers l'avant, côté visage ; 1 : celle du bas, tirée vers l'arrière). Vues d'en haut, les quatre ailes
+ * font un X. Larges d'une case à l'attache, la pointe émoussée, sans un triangle de plus : la marge des Gardiens du 5e
+ * est de quelques triangles.
  */
-const AILES_DE_LA_LIBELLULE: [number, number][] = [
-  [4.5, 5.5],
-  [5.6, 6.6],
+const AILES_DE_LA_LIBELLULE: [hauteur: number, fleche: -1 | 1][] = [
+  [5.3, 1],
+  [6.0, -1],
 ];
+/** Le léger dièdre des ailes de la Libellule (radians) : la pointe relevée. */
+const DIEDRE_DE_LA_LIBELLULE = 0.16;
+/** Le contour d'une aile de la Libellule, à plat : (écart au corps, profondeur), la paire du haut (flèche −1). */
+const AILE_DE_LA_LIBELLULE: [number, number][] = [
+  [0, -0.35],
+  [1.95, -0.95],
+  [2.1, -0.4],
+  [0, 0.25],
+];
+/**
+ * Le repère d'une aile à plat de la Libellule (`s` : −1 à gauche, 1 à droite) : le contour (x, y) de la dalle devient
+ * l'écart et la profondeur, son épaisseur la hauteur, retournée (la face −Z de la dalle regarde le ciel : la nervure s'y
+ * pose) ; puis le dièdre relève la pointe.
+ */
+const repereDAileAPlat = (s: -1 | 1, hauteur: number) => {
+  const [c, n] = [Math.cos(s * DIEDRE_DE_LA_LIBELLULE), Math.sin(s * DIEDRE_DE_LA_LIBELLULE)];
+  return ([x, y, z]: [number, number, number]): [number, number, number] => [s * 0.3 + x * c + z * n, hauteur + x * n - z * c, y];
+};
 
 /**
- * Les ailes du Griffon et de la Libellule s'ouvrent en V, chacune reculée de cet angle depuis sa racine (radians) : vues
- * par la tranche, de profil, elles se lisaient comme un obélisque (DA, relecture des planches, HG-3) ; ouvertes, elles
- * ont de l'aire de face comme de profil, dans les cinq cases.
+ * Les ailes du Griffon s'ouvrent en V, chacune reculée de cet angle depuis sa racine (radians) : vues par la tranche, de
+ * profil, elles se lisaient comme un obélisque (DA, relecture des planches, HG-3) ; ouvertes, elles ont de l'aire de
+ * face comme de profil, dans les cinq cases.
  */
 const OUVERTURE_DES_AILES = 0.55;
 /** Le repère d'une aile (`s` : −1 à gauche, 1 à droite) : sa racine en `racine`, reculée de `OUVERTURE_DES_AILES`. */
 const repereDAile = (s: number, racine: [number, number]) => repere([s * racine[0], 0, racine[1]], 0, -s * OUVERTURE_DES_AILES, 0);
 const RACINE_DES_AILES_DU_GRIFFON: [number, number] = [0.7, 0.4];
-const RACINE_DES_AILES_DE_LA_LIBELLULE: [number, number] = [0.3, 0];
 
 export const STATUES_5E: Partial<Record<BiomeId, Statue>> = {
   'maths-5e-signed-numbers': {
@@ -612,16 +631,11 @@ export const STATUES_5E: Partial<Record<BiomeId, Statue>> = {
     sculpture: (T, a) => {
       fuseau(T, CORPS_DE_LA_LIBELLULE, 5, a.pierre, { bas: false });
       fuseau(T, TETE_DE_LA_LIBELLULE, 5, a.moussue((k, j) => k === 1 && j % 2 === 0), { bas: false });
-      for (const s of [-1, 1])
-        for (const [y0, y1] of AILES_DE_LA_LIBELLULE)
+      for (const s of [-1, 1] as const)
+        for (const [hauteur, fleche] of AILES_DE_LA_LIBELLULE)
           dalle(
-            pose(T, repereDAile(s, RACINE_DES_AILES_DE_LA_LIBELLULE)),
-            [
-              [0, y0],
-              [s * 2.2, y0 + 0.45],
-              [s * 2.35, y1 + 0.25],
-              [0, y1],
-            ],
+            pose(T, repereDAileAPlat(s, hauteur)),
+            AILE_DE_LA_LIBELLULE.map(([x, y]): [number, number] => [s * x, -fleche * y]),
             -0.05,
             0.05,
             a.pierre,
@@ -629,9 +643,9 @@ export const STATUES_5E: Partial<Record<BiomeId, Statue>> = {
       orbites(T, a, 0, 7.3, devant(TETE_DE_LA_LIBELLULE, 5, 7.3).z, 0.26, 0.14);
     },
     veines: (T, a) => {
-      // Une nervure sur chaque aile du haut.
-      for (const s of [-1, 1])
-        for (const [y0, y1] of AILES_DE_LA_LIBELLULE.slice(1)) plaque(pose(T, repereDAile(s, RACINE_DES_AILES_DE_LA_LIBELLULE)), s * 1.1, (y0 + y1) / 2 + 0.2, 0.7, 0.07 * a.veines, 4, a.lueur, () => -0.05);
+      // Une nervure sur chaque aile du haut, sur sa face tournée vers le ciel.
+      for (const s of [-1, 1] as const)
+        for (const [hauteur, fleche] of AILES_DE_LA_LIBELLULE.slice(1)) plaque(pose(T, repereDAileAPlat(s, hauteur)), s * 1.0, fleche * 0.3, 0.65, 0.07 * a.veines, 4, a.lueur, () => -0.05);
     },
   },
 };

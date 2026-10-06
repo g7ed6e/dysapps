@@ -343,7 +343,7 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 | [Studio des ondes](https://g7ed6e.github.io/dysapps/pedagogie/iles/english-3e-comprehension.html) (Anglais) | Écho | chauve-souris animatrice radio | chauve-souris animatrice radio | La Grande Antenne |
 | [Château des hypothèses](https://g7ed6e.github.io/dysapps/pedagogie/iles/english-3e-grammar.html) (Anglais) | Knight | petit chevalier | petit chevalier | Le Dragon gallois |
 | [Kiosque des témoins](https://g7ed6e.github.io/dysapps/pedagogie/iles/history-3e-twentieth-century.html) (Histoire-géo) | Mémo | marmotte bibliothécaire | marmotte bibliothécaire | La Colombe d’albâtre |
-| [Vallée des territoires](https://g7ed6e.github.io/dysapps/pedagogie/iles/geography-3e-france.html) (Histoire-géo) | Jalon | fourmi arpenteuse | fourmi arpenteuse | Le Cerf de lauze |
+| [Plateau des territoires](https://g7ed6e.github.io/dysapps/pedagogie/iles/geography-3e-france.html) (Histoire-géo) | Jalon | fourmi arpenteuse | fourmi arpenteuse | Le Cerf de lauze |
 | [Refuge des carnets](https://g7ed6e.github.io/dysapps/pedagogie/iles/lv2-3e-travel.html) (LV2 (espagnol ou allemand)) | Timbre | loutre factrice | loutre factrice | Le Papillon de cuivre |
 
 ### Le Sphinx de marbre, Belvédère de Thalès
@@ -402,13 +402,13 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 | À la fin | Je me rallume, jusqu’au rameau vert. Le Kiosque est à toi, et à Mémo. Merci de te souvenir avec moi. | Mes plumes se rallument, jusqu’au rameau vert. Le kiosque est à toi, et à Mémo. |
 | Mémo à l’arrivée | Bonjour, bâtisseur. Ici, on garde la parole des témoins. Chaque bonne réponse te donne un bloc de reliure. Une reliure, c’est la couverture solide d’un livre. | Bonjour, bâtisseur. Ici, on garde la parole des témoins. Chaque bonne réponse te donne un bloc de reliure. Une reliure, c’est la couverture solide d’un livre. |
 
-### Le Cerf de lauze, Vallée des territoires
+### Le Cerf de lauze, Plateau des territoires
 
 |  | Blocland | Archipéo |
 | --- | --- | --- |
-| Au défi | Le Cerf de lauze lève la tête : « Mon pelage est tout gris. Une lauze, c’est une pierre plate : mes bois en sont faits. Tu as parcouru toute la vallée : dis-moi comment vit le territoire. » | Le Cerf de lauze dit doucement : « Les lauzes de ma poitrine sont éteintes. Une lauze, c’est une pierre plate. Tu as parcouru toute la vallée : dis-moi comment vit le territoire. » |
-| À la fin | Je me rallume, des sabots jusqu’au bout des bois. La Vallée est à toi, et à Jalon. | Mes lauzes se rallument. La vallée est à toi, et à Jalon. |
-| Jalon à l’arrivée | Bonjour, bâtisseur ! Dans la vallée, on regarde la France : ses villes, ses campagnes, ses routes. Chaque bonne réponse te donne un bloc de grès rose. Le grès, c’est une pierre faite de sable serré. | Bonjour, bâtisseur ! Dans la vallée, on regarde la France : ses villes, ses campagnes, ses routes. Chaque bonne réponse te donne un bloc de grès rose. Le grès, c’est une pierre faite de sable serré. |
+| Au défi | Le Cerf de lauze lève la tête : « Mon pelage est tout gris. Une lauze, c’est une pierre plate : mes bois en sont faits. Tu as parcouru tout le plateau. Dis-moi comment vit le territoire. » | Le Cerf de lauze dit doucement : « Les lauzes de ma poitrine sont éteintes. Une lauze, c’est une pierre plate. Tu as parcouru tout le plateau. Dis-moi comment vit le territoire. » |
+| À la fin | Je me rallume, du museau jusqu’aux oreilles, sous mes bois de lauze. Le Plateau est à toi, et à Jalon. | Mes lauzes se rallument. Le Plateau est à toi, et à Jalon. |
+| Jalon à l’arrivée | Bonjour, bâtisseur ! Sur le plateau, on regarde la France : ses villes, ses campagnes, ses routes. Chaque bonne réponse te donne un bloc de grès rose. Le grès, c’est une pierre faite de sable serré. | Bonjour, bâtisseur ! Sur le plateau, on regarde la France : ses villes, ses campagnes, ses routes. Chaque bonne réponse te donne un bloc de grès rose. Le grès, c’est une pierre faite de sable serré. |
 
 ### Le Papillon de cuivre, Refuge des carnets
 

@@ -397,7 +397,7 @@ function reliure(t: TonsDeReliure, dessus: boolean): Painter {
 type TonsDuGres = { pierre: string; clair: string; sombre: string; lit: string };
 
 /**
- * Du grès rose (la Vallée des territoires, géographie 3e ; DA, HG-3) : une pierre à grain fin, des pixels clairs et
+ * Du grès rose (le Plateau des territoires, géographie 3e ; DA, HG-3) : une pierre à grain fin, des pixels clairs et
  * sombres semés par un hachage, et des assises de cinq pixels à peine marquées : un lit d'un ton à peine plus sombre que
  * la pierre, sans joint vertical. Quatre tons proches, sans hasard : ni les joints de la brique, ni les rangs de la
  * tuile, ni le blanc veiné du marbre.
@@ -720,7 +720,7 @@ export const PAINTERS: Record<TextureKind, { top: Painter; side: Painter; bottom
     top: reliure({ dos: '#2f6f74', autre: '#285e63', nerf: '#5a9a9c', creux: '#16383c', pages: '#e6dcc4' }, true),
     side: reliure({ dos: '#22545a', autre: '#2c6a70', nerf: '#5a9294', creux: '#122e32', pages: '#e6dcc4' }, false),
   },
-  // Grès rose (la Vallée des territoires, géographie 3e) : un grain fin en assises à peine marquées.
+  // Grès rose (le Plateau des territoires, géographie 3e) : un grain fin en assises à peine marquées.
   gres: {
     top: gres({ pierre: '#d49a94', clair: '#e4b2ac', sombre: '#c08680', lit: '#c88e88' }),
     side: gres({ pierre: '#b07872', clair: '#c28c86', sombre: '#9c6862', lit: '#a46e68' }),

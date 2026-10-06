@@ -538,23 +538,25 @@ const MEMO = fromLayers(
   { B: '#8a7058', C: '#e6d8bc', W: '#f6f1e6', N: '#1f1a16', E: '#1f1a16', L: '#2f6f74' },
 );
 
-// Jalon : une fourmi arpenteuse (DA, HG-3), à l'horizontale, brun-rouge, trois parties à la file (la tête aux deux
-// antennes, le thorax étroit, le gros abdomen derrière) sur six pattes sombres ; son jalon d'arpenteur planté, rayé
-// blanc et rouge par deux cubes, d'un cube plus haut que ses antennes (DA, relecture des planches : plus une cheminée ni
-// un phare), au bout de son abdomen et sur le côté, séparé d'elle d'une case. La caméra de la Vallée la regarde de
-// l'est (`viewYaw`, −40°), donc de profil, la tête d'un côté, l'abdomen de l'autre : le jalon se lit à côté de son
-// abdomen, jamais entre elle et la caméra (il s'y tenait, contre son flanc, et la cachait : consultant Blocland et DA,
-// HG-3) ; de face (les portraits), derrière elle, à sa droite.
+// Jalon : une fourmi arpenteuse (DA, HG-3), à l'horizontale, ocre sable (DA : plus brun-rouge, la couleur de Pince,
+// la fourmi bricoleuse du Hangar des inventions), trois parties à la file (la tête aux deux antennes, le thorax étroit,
+// le gros abdomen derrière) sur six pattes sombres ; son jalon d'arpenteur planté, rayé blanc et rouge par deux cubes,
+// d'un cube plus haut que ses antennes (DA, relecture des planches : plus une cheminée ni un phare), à côté de son
+// abdomen, séparé d'elle d'une case. La caméra du Plateau la regarde de l'est (`viewYaw`, −40°), donc de profil, la
+// tête d'un côté, l'abdomen de l'autre ; la mairie se tient plus à l'est et au-delà de l'abdomen (x et y croissants) :
+// le jalon est du côté ouest (x = 0 du modèle), celui qui s'éloigne de la mairie, à hauteur de l'abdomen et non plus
+// au-delà, pour ne pas se lire comme une cheminée sur le toit de la mairie (consultant Blocland et DA, HG-3) ; il n'est
+// jamais entre elle et la caméra. De face (les portraits), derrière elle, à sa gauche.
 const JALON = fromLayers(
   [
-    ['.......', 'A...A..', 'A...A..', 'A...A..', '.......', '.......', '.......', '......P'],
-    ['.RRR...', '.ARA...', '.ARA...', '.RRR...', '.RRR...', '..R....', '.......', '......P'],
-    ['.ERE...', '..R....', '..R....', '.RRR...', '.RRR...', '.RRR...', '.......', '......Q'],
-    ['.A.A...', '.......', '.......', '..R....', '.RRR...', '..R....', '.......', '......Q'],
-    ['A...A..', '.......', '.......', '.......', '.......', '.......', '.......', '......P'],
-    ['.......', '.......', '.......', '.......', '.......', '.......', '.......', '......P'],
+    ['.......', '..A...A', '..A...A', '..A...A', 'P......', '.......'],
+    ['...RRR.', '...ARA.', '...ARA.', '...RRR.', 'P..RRR.', '....R..'],
+    ['...ERE.', '....R..', '....R..', '...RRR.', 'Q..RRR.', '...RRR.'],
+    ['...A.A.', '.......', '.......', '....R..', 'Q..RRR.', '....R..'],
+    ['..A...A', '.......', '.......', '.......', 'P......', '.......'],
+    ['.......', '.......', '.......', '.......', 'P......', '.......'],
   ],
-  { R: '#9c3f24', A: '#1f1a16', E: '#1f1a16', P: '#f6f1e6', Q: '#d23a2e' },
+  { R: '#c9a066', A: '#1f1a16', E: '#1f1a16', P: '#f6f1e6', Q: '#d23a2e' },
 );
 
 // Fougère : un escargot jardinier (DA, SC-2), tourné vers la droite pour montrer sa coquille : la coquille brun roux et

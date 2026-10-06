@@ -335,9 +335,12 @@ function placerSansSouples(
   const visibles = montrees(boxes, offsets, couvert, bounds, w, iles);
   // Une étiquette que l'écart laisse sur un obstacle dur ne s'y montre pas : elle cherche plus bas une autre place (les
   // places simples autour de son île, puis la dernière chance de la Carte), qui évitent les obstacles.
-  if (dures.length)
+  // Sur la Carte, de même, une étiquette que l'écart laisse sur la bulle de la destination ou le médaillon du bonhomme
+  // (l'écart les évite sans l'exiger : la Vallée du vivant se posait sous le médaillon au 6e en OpenDyslexic, DA, HG-3).
+  const interdits = carte ? obstacles : dures;
+  if (interdits.length)
     boxes.forEach((b, i) => {
-      if (visibles[i] && dures.some((v) => overlap({ ...b, x: b.x + offsets[i].dx, y: b.y + offsets[i].dy }, v, 0) > 0)) visibles[i] = false;
+      if (visibles[i] && interdits.some((v) => overlap({ ...b, x: b.x + offsets[i].dx, y: b.y + offsets[i].dy }, v, 0) > 0)) visibles[i] = false;
     });
   // Avant de renoncer à un nom dont l'île se voit : les places simples autour d'elle, dessus, dessous, à gauche, à
   // droite (DA-31), sans trait de rappel ni place plus loin. La plus lourde d'abord ; une place prise n'en change pas
@@ -606,9 +609,11 @@ function rechercheDuCadrage(): RechercheDuCadrage {
 /**
  * Sur la Carte, le placement simple d'abord (DA, 6 octobre 2026) : `placer` sans recherche complète (`recherche` à
  * `null`), comme avant HG-3 ; la recherche complète (`chercherToutesLesPlaces`) ne se lance que si ce placement tait un
- * nom dont l'île se voit, ou en pose un plus près d'une autre île que de la sienne (vu de son milieu). Au 6e, chaque nom
- * gardait ainsi la place qu'il avait avant HG-3 ; depuis les îles de sciences (SC-2), la Mine des lettres et la Ferme
- * des accords passent par la recherche complète (mapLabels.test.ts). `etroites` : la largeur de chaque étiquette repliée sans son bloc
+ * nom dont l'île se voit, ou en pose un plus près d'une autre île que de la sienne (vu de son milieu). Au 6e, depuis
+ * les îles de sciences (SC-2, les îles déplacées), la Mine des lettres et la Ferme des accords passent par la recherche
+ * complète, qui les remet sur leur île : le DA lève sa règle « au 6e, chaque nom garde sa place d'avant HG-3 » ; au 6e
+ * comme ailleurs, chaque nom sur son île et aucun tu, le placement simple d'abord (mapLabels.test.ts). `etroites` : la
+ * largeur de chaque étiquette repliée sans son bloc
  * (`replierLesSignes`), pour juger la place d'un nom replié à sa largeur.
  */
 export function placerDAbordSimplement<R extends { offsets: LabelOffset[]; visibles: boolean[]; sansSigne?: boolean[] }>(

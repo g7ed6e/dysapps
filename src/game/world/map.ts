@@ -257,7 +257,7 @@ const STARTING_MAP: MapPlace[] = [
   // relie), sur le pas des places, à quatre cases d'eau au moins de leurs voisines ; leur terre est plate, sans relief
   // ni pic, comme au 6e. Aux Îles Brumeuses, le Bourg des chroniques et le Delta des ressources au second rang, au-delà
   // du Manoir (le cadre du 5e s'élargit de 24 cases vers l'est) ; aux Anciens Ateliers, l'Imprimerie des révolutions et
-  // l'Escale des échanges derrière la Gare ; aux Îles du Ciel, le Kiosque des témoins derrière le Studio et la Vallée
+  // l'Escale des échanges derrière la Gare ; aux Îles du Ciel, le Kiosque des témoins derrière le Studio et le Plateau
   // des territoires derrière le Château.
   { id: 'history-5e-middle-ages', region: 'basses-terres', core: { x: 129, y: 365 }, altitude: 3, ext: e(2, 2, 2, 2), relief: 'plat', seed: 63 },
   { id: 'geography-5e-resources', region: 'basses-terres', core: { x: 157, y: 365 }, altitude: 3, ext: e(2, 2, 2, 2), relief: 'plat', seed: 64 },

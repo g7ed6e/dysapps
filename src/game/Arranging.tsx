@@ -102,6 +102,7 @@ function refus(reason: string): Extract<LigneDuMode, { genre: 'refus' }> {
   const textes: Readonly<Record<string, string>> = {
     occupee: PLACE_PRISE,
     reunis: 'Pas de réunion ici',
+    tourne: 'Pas de place',
     liaison: 'Pas ici',
     inconnu: 'Pas ici',
   };
@@ -531,8 +532,11 @@ export function useAmenagement({
       return direTexte(sentence);
     }
     if (choix.genre !== 'lieu') return;
-    // Il tourne sur place, même si la place devient prise : la croix grise le montre (choix 3 du mainteneur).
-    choisir(turnChoice(choix));
+    // Il tourne sur place, même si la place devient prise : la croix grise le montre (choix 3 du mainteneur). Un lieu qui,
+    // tourné, n'a aucune place libre ne tourne pas : la croix et « Pas de place » (consultant UX UI, HG-3).
+    const t = turnChoice(worldRef.current, choix);
+    if (!t) return direRefus(refus('tourne'));
+    choisir(t);
   };
   const defaire = () => {
     if (!session || enCours.current) return;

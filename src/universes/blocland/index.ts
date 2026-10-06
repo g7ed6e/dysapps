@@ -271,11 +271,11 @@ export const BLOCLAND = {
       },
     },
     'geography-3e-france': {
-      challenge: 'Le Cerf de lauze lève la tête : « Mon pelage est tout gris. Une lauze, c’est une pierre plate : mes bois en sont faits. Tu as parcouru toute la vallée : dis-moi comment vit le territoire. »',
+      challenge: 'Le Cerf de lauze lève la tête : « Mon pelage est tout gris. Une lauze, c’est une pierre plate : mes bois en sont faits. Tu as parcouru tout le plateau. Dis-moi comment vit le territoire. »',
       guardianSays: {
-        hit: 'Juste. Un bloc de mon pelage redevient fauve.',
+        hit: 'Juste. Un bloc de mon pelage reprend sa couleur.',
         miss: 'Mes couleurs restent. Relis le document, cherche le mot du rappel, et reprends.',
-        beaten: 'Je me rallume, des sabots jusqu’au bout des bois. La Vallée est à toi, et à Jalon.',
+        beaten: 'Je me rallume, du museau jusqu’aux oreilles, sous mes bois de lauze. Le Plateau est à toi, et à Jalon.',
       },
     },
     'life-earth-sciences-6e-living-world': {

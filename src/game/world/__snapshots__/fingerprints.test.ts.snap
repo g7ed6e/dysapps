@@ -12,9 +12,9 @@ exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 
 
 exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 3e, partie mi-parcours 1`] = `
 {
-  "créatures et Gardiens": "9a94f534",
+  "créatures et Gardiens": "2e30da6d",
   "cubes": "6c905732",
-  "cubes avec créatures": "da67172e",
+  "cubes avec créatures": "da94d3d5",
   "décor posé sur la pente": "890d1cb9",
   "navire": "b4f5e3d8",
   "sol (facettes)": "57154ca1",
@@ -25,9 +25,9 @@ exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 
 
 exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 3e, partie tout construit 1`] = `
 {
-  "créatures et Gardiens": "29aabe45",
+  "créatures et Gardiens": "b471b326",
   "cubes": "5ba5cf21",
-  "cubes avec créatures": "813ecf09",
+  "cubes avec créatures": "e7479488",
   "décor posé sur la pente": "f7fab437",
   "navire": "b4f5e3d8",
   "sol (facettes)": "8cf0f9c4",

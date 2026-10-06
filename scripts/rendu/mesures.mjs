@@ -618,8 +618,9 @@ const CAPTURES = [
   // en OpenDyslexic 32 px (UX UI) ; « Mes blocs » avec le Conteneur et la Reliure côte à côte, puis le Grès rose à côté
   // de la Brique et de la Tuile, de jour et de nuit (référent dys) ; chaque Gardien de près, au défi, éteint puis à
   // mi-parcours (consultant Archipéo).
-  // Deuxième tour (UX UI, référent dys) : le 3e aussi ; la Carte du 6e au téléphone et en OpenDyslexic 32 px, pour
-  // comparer avant et après (au 6e, chaque nom garde la place du placement simple, DA).
+  // Deuxième tour (UX UI, référent dys) : le 3e aussi ; la Carte du 6e au téléphone et en OpenDyslexic 32 px (au 6e
+  // comme ailleurs, chaque nom sur son île et aucun tu, le placement simple d'abord : le DA lève sa règle du 6e, dont
+  // les îles ont bougé avec SC-2). Troisième tour (DA) : aucun nom sous un bouton, hors de l'écran ni sous le médaillon.
   ...[
     ['5e', 'history-5e-middle-ages'],
     ['4e', 'history-4e-revolutions'],
@@ -668,15 +669,25 @@ const CAPTURES = [
   // Des petites constructions posées, chacune près de sa créature (sa fiche ouverte, la caméra rapprochée) : la boîte à
   // livres de Jalon, de profil, son jalon à côté (consultant Blocland, DA) ; l'équerre de Théo, le haut-parleur d'Écho, la
   // cabane de Frimas (DA).
+  // L'équerre de Théo, la fiche fermée : ouverte, sa bulle cachait la branche couchée (consultant Blocland, HG-3).
   ...[
     ['jalon-boite-a-livres', 'geography-3e-france'],
-    ['theo-equerre', 'maths-3e-geometry'],
+    ['theo-equerre', 'maths-3e-geometry', { sansFiche: true }],
     ['echo-haut-parleur', 'english-3e-comprehension'],
     ['frimas-cabane', 'maths-5e-signed-numbers'],
-  ].map(([sujet, ile]) => ({ nom: `histoire-geo-college-${sujet}`, vue: 'île', famille: 'histoire-geo-college', ile, posees: 'toutes', fiche: { genre: 'creature', id: ile }, zoomer: 1 })),
-  // La baleine du 5e vue du port, entière, de l'eau autour (DA) : de l'île et de l'archipel.
-  { nom: 'histoire-geo-college-baleine-5e-port', vue: 'île', famille: 'histoire-geo-college', ile: 'maths-5e-proportionality' },
-  { nom: 'histoire-geo-college-baleine-5e-port-archipel', vue: 'archipel', famille: 'histoire-geo-college', ile: 'maths-5e-proportionality' },
+  ].map(([sujet, ile, { sansFiche } = {}]) => ({
+    nom: `histoire-geo-college-${sujet}`,
+    vue: 'île',
+    famille: 'histoire-geo-college',
+    ile,
+    posees: 'toutes',
+    ...(sansFiche ? {} : { fiche: { genre: 'creature', id: ile } }),
+    zoomer: 1,
+  })),
+  // La baleine du 5e vue du port, entière, de l'eau autour (DA) : à la vue de l'archipel, 77 pas de plus (9,6 s de plus
+  // de la scène, le hasard fixe) la posent en surface, son souffle ouvert, au large de la jetée. À la vue de l'île, aucune
+  // ne passe dans le cadre (la plus proche tourne juste sous son bord) : pas de capture de l'île.
+  { nom: 'histoire-geo-college-baleine-5e-port-archipel', vue: 'archipel', famille: 'histoire-geo-college', ile: 'maths-5e-proportionality', pasEnPlus: 77 },
   // Les îles de sciences de 6e (lot SC-2, famille `sciences`), à retirer une fois le lot fusionné : la Vallée du vivant,
   // le Laboratoire des éléments et le Hangar des inventions de près, de jour et de nuit, avant leur restauration
   // (`sansIles`) et tout construit, chacune avec la fiche de son Gardien ; le défi de l'Alambic de verre à mi-parcours ;

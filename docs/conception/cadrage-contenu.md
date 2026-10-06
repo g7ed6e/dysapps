@@ -39,7 +39,7 @@ Un archipel par classe. En français et en maths, une île par grand thème ; en
 | 6e, Premiers Rivages | Forêt des sons, Mine des lettres, Carrière des mots, Ferme des accords, Tour du lecteur | Plaine des nombres, Rivière des fractions, Volcan des décimaux | Baie des mots, Horloge des verbes | Fouille des siècles, Pointe des paysages | Vallée du vivant (SVT), Laboratoire des éléments (physique-chimie), Hangar des inventions (technologie) | — |
 | 5e, Îles Brumeuses | Carrefour des homophones, Marais des temps | Glacier des relatifs, Marché des proportions | Comptoir, Manoir du passé | Bourg des chroniques, Delta des ressources | — | Relais des voyageurs |
 | 4e, Anciens Ateliers | Falaise des accords, Cabinet des mots | Forge des puissances, Atelier du calcul littéral | Théâtre des voix, Gare du futur | Imprimerie des révolutions, Escale des échanges | — | Jardin des heures |
-| 3e, Îles du Ciel | Observatoire des textes | Belvédère de Thalès, Observatoire des données, Phare des fonctions | Studio des ondes, Château des hypothèses | Kiosque des témoins, Vallée des territoires | — | Refuge des carnets |
+| 3e, Îles du Ciel | Observatoire des textes | Belvédère de Thalès, Observatoire des données, Phare des fonctions | Studio des ondes, Château des hypothèses | Kiosque des témoins, Plateau des territoires | — | Refuge des carnets |
 
 Soit 42 îles et 144 missions, dont 24 de LV2 (quatre par île et par langue), 24 d’histoire-géographie et 9 de sciences, plus 7 missions au portail.
 

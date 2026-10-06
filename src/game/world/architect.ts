@@ -684,7 +684,7 @@ function mairie(b: BlockId): Stages {
   for (const x of [0, 1, 3, 4]) place.push({ x, y: 0, z: 0, block: BLOC.barriere });
   place.push({ x: 0, y: 0, z: 1, block: BLOC.lanterne }, { x: 4, y: 0, z: 1, block: BLOC.lanterne }, { x: doorX, y: 1, z: 0, block: BLOC.escalier });
   place.push({ x: 0, y: 1, z: 0, block: b }, { x: 4, y: 1, z: 0, block: b });
-  // Tout est tracé la façade côté y = 0, puis tourné d'un quart de tour : à la Vallée, la caméra de l'île pivote à fond
+  // Tout est tracé la façade côté y = 0, puis tourné d'un quart de tour : au Plateau, la caméra de l'île pivote à fond
   // vers l'est (`viewYaw`) et voyait le pignon ; la façade, sa porte au milieu, regarde maintenant l'est, vers elle (DA,
   // relecture des planches).
   const versLEst = (cells: ArchCell[]) => cells.map((c) => ({ ...c, x: ZW - 1 - c.y, y: c.x }));

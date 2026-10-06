@@ -171,7 +171,7 @@ it('le massif posé sur le plancher (DA-20) : ses bouts se perdent sous les nuag
   }
 });
 
-// Environ 40 triangles par île : 320 au plus pour sept îles, 400 pour neuf depuis le Kiosque des témoins et la Vallée des
+// Environ 40 triangles par île : 320 au plus pour sept îles, 400 pour neuf depuis le Kiosque des témoins et le Plateau des
 // territoires (HG-3 : 378 mesurés).
 it('les nappes des sommets : une seule couche plate sous chaque île, sous son sol, environ 380 triangles, qui s’efface vers ses bords', () => {
   const n = nappesDesSommets('3e', [])!;

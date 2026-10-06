@@ -9,7 +9,7 @@ icône : route
 créature : Jalon
 ---
 
-# Vallée des territoires
+# Plateau des territoires
 
 > Écrans existants seulement : le niveau 1 de chaque mission est une question à trou (repères et lexique), le niveau 2 une question sur un document. Pas de carte à voir : un document est un texte court, un petit tableau ou la description d’une photo, quatre lignes au plus, une information par ligne. Plus tard, une carte à toucher ferait situer les grandes aires urbaines, les territoires ultramarins et les pays de l’Union européenne.
 
@@ -423,7 +423,7 @@ Pour tous les items :
 
 | plan | nom | XP | quand c’est bâti |
 | --- | --- | --- | --- |
-| `geography-3e-france-1` | La mairie de Jalon | 40 | Ma mairie ! Tous les habitants de la vallée peuvent y venir. Merci, bâtisseur. |
+| `geography-3e-france-1` | La mairie de Jalon | 40 | Ma mairie ! Tous les habitants du plateau peuvent y venir. Merci, bâtisseur. |
 | `geography-3e-france-2` | Le toit de la mairie | 50 | Le toit est posé. Les cartes de la vallée sont à l’abri. |
 | `geography-3e-france-3` | La place de la mairie | 60 | La place est prête. Ma mairie est complète : la ville, les champs et les routes s’y retrouvent. |
 

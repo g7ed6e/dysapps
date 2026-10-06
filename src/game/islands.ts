@@ -1853,7 +1853,7 @@ export const ILES = [
   },
   {
     "id": "geography-3e-france",
-    "name": "Vallée des territoires",
+    "name": "Plateau des territoires",
     "module": "Géographie, la France et l’Union européenne",
     "subject": "history-geography",
     "classe": "3e",

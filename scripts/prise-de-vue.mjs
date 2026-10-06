@@ -94,6 +94,8 @@ export function hasardFixe() {
 const PAS_MS = 125;
 /** Les pas joués une fois le monde construit : trois secondes de la page, les promenades et les vagues partent. */
 const PAS_APRES_LE_MONDE = 24;
+/** Au plus, les pas de plus pour que le cadrage se pose (deux secondes de la page). */
+const ATTENTES_DU_CADRAGE = 16;
 
 /**
  * Pilote l'horloge de la page (heure, minuteries, images, `performance.now`), arrêtée à `time` : elle n'avance que par
@@ -127,9 +129,22 @@ export async function preparerLaScene(page, max) {
     await page.waitForTimeout(30);
   }
   if (monde) {
+    // Les polices chargées d'abord : un texte qui change de police déplace l'interface, donc la place libre et le
+    // cadrage (la Carte en OpenDyslexic, HG-3).
+    await page.evaluate(() => document.fonts?.ready).catch(() => {});
     await page.evaluate(() => window.__dysappsCamera?.poser());
     await page.clock.runFor(PAS_MS);
     await page.waitForTimeout(100);
+    // Puis jusqu'à ce que le cadrage ne bouge plus : `poser` rend l'écart qu'il restait. Si la place libre a changé
+    // pendant le pas (une bulle fermée, l'interface remise en place), la caméra glissait encore à la prise, les étiquettes
+    // déjà posées pour son but (la Carte du 6e en OpenDyslexic, la vue de nuit de l'archipel du 6e, HG-3). Un cadrage
+    // déjà posé ne coûte aucun pas de plus : les autres prises restent au même instant.
+    for (let i = 0; i < ATTENTES_DU_CADRAGE; i++) {
+      const ecart = await page.evaluate(() => window.__dysappsCamera?.poser() ?? 0);
+      if (!(ecart > 0.01)) break;
+      await page.clock.runFor(PAS_MS);
+      await page.waitForTimeout(100);
+    }
   }
   return monde;
 }

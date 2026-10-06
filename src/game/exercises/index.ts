@@ -104,7 +104,7 @@ const ORDER: (string | ExerciseDef[])[] = [
   'history-6e-antiquity-early-humans-1', 'history-6e-antiquity-early-humans-2', 'history-6e-antiquity-ancient-peoples-1', 'history-6e-antiquity-ancient-peoples-2', 'history-6e-antiquity-roman-empire-1', 'history-6e-antiquity-roman-empire-2',
   'geography-6e-living-metropolises-1', 'geography-6e-living-metropolises-2', 'geography-6e-living-low-density-1', 'geography-6e-living-low-density-2', 'geography-6e-living-inhabited-world-1', 'geography-6e-living-inhabited-world-2',
   // Histoire et géographie (Bourg des chroniques, Delta des ressources, 5e ; Imprimerie des révolutions, Escale des
-  // échanges, 4e ; Kiosque des témoins, Vallée des territoires, 3e).
+  // échanges, 4e ; Kiosque des témoins, Plateau des territoires, 3e).
   'history-5e-middle-ages-christendoms-islam-1', 'history-5e-middle-ages-christendoms-islam-2', 'history-5e-middle-ages-feudal-west-1', 'history-5e-middle-ages-feudal-west-2', 'history-5e-middle-ages-new-worlds-1', 'history-5e-middle-ages-new-worlds-2',
   'geography-5e-resources-population-1', 'geography-5e-resources-population-2', 'geography-5e-resources-resources-1', 'geography-5e-resources-resources-2', 'geography-5e-resources-risks-1', 'geography-5e-resources-risks-2',
   'history-4e-revolutions-enlightenment-1', 'history-4e-revolutions-enlightenment-2', 'history-4e-revolutions-industrial-europe-1', 'history-4e-revolutions-industrial-europe-2', 'history-4e-revolutions-french-society-1', 'history-4e-revolutions-french-society-2',

@@ -18,10 +18,10 @@ export type Couverture = 'ardoise' | 'terre-cuite';
  * des voyageurs (5e), voisin du Comptoir (jamais deux voisins en terre cuite), le Jardin des heures (4e, DA LV2-4), voisin
  * du Théâtre, d'ardoise #3E3636, et le Refuge des carnets (3e, DA LV2-5), d'ardoise enneigée. Les îles
  * d'histoire-géographie de 5e à 3e (HG-3, DA) : en terre cuite le Delta des ressources (5e), l'Imprimerie des révolutions
- * (4e) et la Vallée des territoires (3e) ; d'ardoise le Bourg des chroniques et l'Escale des échanges, d'ardoise
+ * (4e) et le Plateau des territoires (3e) ; d'ardoise le Bourg des chroniques et l'Escale des échanges, d'ardoise
  * enneigée le Kiosque des témoins. Chaque archipel des 5e à 3e garde ainsi deux îles de terre cuite, jamais voisines :
  * au 5e, le Relais et le Bourg séparent le Comptoir du Delta ; au 4e, l'Escale sépare l'Imprimerie du Théâtre (deux sur
- * dix) ; au 3e, le Belvédère et la Vallée sont aux deux bouts de l'archipel.
+ * dix) ; au 3e, le Belvédère et le Plateau sont aux deux bouts de l'archipel.
  */
 export const TERRE_CUITE_SUR: readonly string[] = [
   'french-6e-grammar-spelling',

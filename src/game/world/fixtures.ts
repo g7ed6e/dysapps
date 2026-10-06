@@ -217,7 +217,7 @@ const FORMES: Record<string, Cube[]> = {
   // devant (un escalier : le bois du contenu n'est ni de l'île ni de finition), la lanterne à côté.
   'history-3e-twentieth-century-fixture-1': [[0, 1, 0, BLOC.quartz], [1, 1, 0, BLOC.quartz], [1, 1, 1, BLOC.quartz], [1, 0, 0, 'stairs'], [0, 0, 0, 'lantern']],
   // Jalon, la boîte à livres (HG-3, retouches du consultant Blocland et du DA) : trois reliures en rang au sol, comme une
-  // étagère, la lanterne sur celle du milieu ; sans eau. Le rang va le long des y : la caméra de la Vallée regarde l'île
+  // étagère, la lanterne sur celle du milieu ; sans eau. Le rang va le long des y : la caméra du Plateau regarde l'île
   // le long des x (`viewYaw`, −40°), elle le voit de face.
   'geography-3e-france-fixture-1': [[0, 0, 0, BLOC.reliure], [0, 1, 0, BLOC.reliure], [0, 2, 0, BLOC.reliure], [0, 1, 1, 'lantern']],
 };
@@ -294,7 +294,7 @@ const PLACES: Record<string, readonly [number, number]> = {
   'history-4e-revolutions-fixture-1': [8, 6],
   'geography-4e-globalization-fixture-1': [10, 3],
   'history-3e-twentieth-century-fixture-1': [10, 3],
-  'geography-3e-france-fixture-1': [7, 7],
+  'geography-3e-france-fixture-1': [5, 12],
   'life-earth-sciences-6e-living-world-fixture-1': [3, 9],
   'physics-chemistry-6e-matter-energy-fixture-1': [1, 11],
   'technology-6e-objects-fixture-1': [8, 6],
