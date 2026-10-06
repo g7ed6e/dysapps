@@ -256,7 +256,7 @@ Pour tous les items :
    - choix : la fondation de Rome · la République · les deux en même temps
    - réponse : la fondation de Rome
    - indice : Avant Jésus-Christ, le plus grand numéro est le plus ancien.
-   - explication : VIII est plus grand que VI : avant J.-C., le VIIIe siècle vient avant le VIe siècle. La fondation vient en premier.
+   - explication : Le huitième est plus grand que le sixième : avant J.-C., le VIIIe siècle vient avant le VIe siècle. La fondation vient en premier.
 5. énoncé : "Description d’une photo\nLe Parthénon, sur l’Acropole d’Athènes\nUn temple dédié à Athéna\nConstruit au Ve siècle avant J.-C."
    - question : Pour quelle déesse ce temple a-t-il été construit ?
    - lu : Description d’une photo. Le Parthénon, sur l’Acropole d’Athènes. Un temple dédié à Athéna. Construit au cinquième siècle avant Jésus-Christ.
