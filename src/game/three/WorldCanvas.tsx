@@ -326,6 +326,8 @@ export default function WorldCanvas({
       },
     };
     if (import.meta.env.DEV || mesuresDemandees()) window.__dysappsCamera = pourLesCaptures;
+    // Étude Babylon.js (branche d'étude, jamais fusionnée) : la scène lue par scripts/rendu/etude-babylon/.
+    if (import.meta.env.DEV) (window as unknown as { __dysappsScene: unknown }).__dysappsScene = { scene, camera, renderer };
     /** La vue déplacée, telle que la page la connaît : on ne la prévient que quand cela change. */
     let deplacee = false;
     const signaler = () => {

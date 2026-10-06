@@ -1,0 +1,13 @@
+import { createServer } from 'vite';
+import { chromium } from 'playwright-core';
+const server = await createServer({ root: process.cwd(), logLevel: 'error', server: { port: 5301, hmr: false } });
+await server.listen();
+const base = server.resolvedUrls.local[0].replace(/\/$/, '');
+const browser = await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
+const page = await browser.newPage({ viewport: { width: 320, height: 240 } });
+page.on('console', (m) => console.log(m.text()));
+await page.goto(`${base}/scripts/rendu/etude-babylon/banc.html?scene=6e-ile&images=5&${process.argv[2] ?? ''}`);
+await page.waitForFunction(() => window.__resultat, null, { timeout: 300000 });
+console.log(await page.evaluate(() => JSON.stringify(window.__dbg ?? null)));
+await page.screenshot({ path: process.argv[3] ?? '/tmp/claude-0/-home-user-dysapps/4a13e228-b49c-5460-bfce-4d39aa354640/scratchpad/dbg.png' });
+await browser.close(); await server.close();
