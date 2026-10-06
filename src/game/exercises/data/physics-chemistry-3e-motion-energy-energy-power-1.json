@@ -1,0 +1,241 @@
+{
+  "id": "physics-chemistry-3e-motion-energy-energy-power-1",
+  "biome": "physics-chemistry-3e-motion-energy",
+  "type": "energy-power",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "physics-chemistry-3e-motion-energy-energy-power-1-0",
+      "prompt": "Le skateur qui file en bas de la rampe a beaucoup d’énergie …",
+      "spoken": "Le skateur qui file en bas de la rampe a beaucoup d’énergie  (mot manquant) ",
+      "choices": [
+        "cinétique",
+        "de position",
+        "nucléaire"
+      ],
+      "answer": "cinétique",
+      "hint": "Relis la ligne « Cinétique » du rappel.",
+      "explanation": "Le skateur va vite : il a beaucoup d’énergie cinétique, l’énergie du mouvement.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les formes d’énergie",
+          "lines": [
+            "Cinétique : l’énergie d’un objet qui bouge. Plus il va vite, plus elle est grande.",
+            "De position : l’énergie d’un objet en hauteur.",
+            "D’autres formes : thermique, électrique, chimique, lumineuse, nucléaire.",
+            "Un convertisseur change une forme d’énergie en une autre.",
+            "L’énergie se mesure en joules (J). Elle ne se crée pas, elle se convertit.",
+            "Une partie part toujours en énergie thermique : de la chaleur."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-3e-motion-energy-energy-power-1-1",
+      "prompt": "L’eau retenue en haut du barrage a de l’énergie de …",
+      "spoken": "L’eau retenue en haut du barrage a de l’énergie de  (mot manquant) ",
+      "choices": [
+        "mouvement",
+        "position",
+        "chaleur"
+      ],
+      "answer": "position",
+      "hint": "Relis la ligne « De position » du rappel.",
+      "explanation": "L’eau est en hauteur : elle a de l’énergie de position. En descendant, elle la convertit en énergie cinétique.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les formes d’énergie",
+          "lines": [
+            "Cinétique : l’énergie d’un objet qui bouge. Plus il va vite, plus elle est grande.",
+            "De position : l’énergie d’un objet en hauteur.",
+            "D’autres formes : thermique, électrique, chimique, lumineuse, nucléaire.",
+            "Un convertisseur change une forme d’énergie en une autre.",
+            "L’énergie se mesure en joules (J). Elle ne se crée pas, elle se convertit.",
+            "Une partie part toujours en énergie thermique : de la chaleur."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-3e-motion-energy-energy-power-1-2",
+      "prompt": "La pomme tombe de l’arbre : son énergie de position se change en énergie …",
+      "spoken": "La pomme tombe de l’arbre : son énergie de position se change en énergie  (mot manquant) ",
+      "choices": [
+        "chimique",
+        "lumineuse",
+        "cinétique"
+      ],
+      "answer": "cinétique",
+      "hint": "En tombant, la pomme va de plus en plus vite.",
+      "explanation": "La pomme perd de la hauteur et gagne de la vitesse : l’énergie de position devient de l’énergie cinétique.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les formes d’énergie",
+          "lines": [
+            "Cinétique : l’énergie d’un objet qui bouge. Plus il va vite, plus elle est grande.",
+            "De position : l’énergie d’un objet en hauteur.",
+            "D’autres formes : thermique, électrique, chimique, lumineuse, nucléaire.",
+            "Un convertisseur change une forme d’énergie en une autre.",
+            "L’énergie se mesure en joules (J). Elle ne se crée pas, elle se convertit.",
+            "Une partie part toujours en énergie thermique : de la chaleur."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-3e-motion-energy-energy-power-1-3",
+      "prompt": "La lampe torche\nLa pile : énergie chimique.\nLes fils : ?\nLa lampe : énergie lumineuse, et un peu de chaleur.",
+      "question": "Quelle forme d’énergie passe dans les fils ?",
+      "spoken": "La lampe torche. La pile, énergie chimique. Les fils, on cherche. La lampe, énergie lumineuse, et un peu de chaleur.",
+      "choices": [
+        "électrique",
+        "nucléaire",
+        "cinétique"
+      ],
+      "answer": "électrique",
+      "hint": "Qu’est-ce qui passe dans un fil ?",
+      "explanation": "La pile convertit son énergie chimique en énergie électrique, qui passe dans les fils jusqu’à la lampe.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les formes d’énergie",
+          "lines": [
+            "Cinétique : l’énergie d’un objet qui bouge. Plus il va vite, plus elle est grande.",
+            "De position : l’énergie d’un objet en hauteur.",
+            "D’autres formes : thermique, électrique, chimique, lumineuse, nucléaire.",
+            "Un convertisseur change une forme d’énergie en une autre.",
+            "L’énergie se mesure en joules (J). Elle ne se crée pas, elle se convertit.",
+            "Une partie part toujours en énergie thermique : de la chaleur."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-3e-motion-energy-energy-power-1-4",
+      "prompt": "La centrale nucléaire\nLe combustible chauffe l’eau.\nLa vapeur fait tourner une turbine.\nL’alternateur produit l’électricité.",
+      "question": "Quelle est la forme d’énergie au départ ?",
+      "spoken": "La centrale nucléaire. Le combustible chauffe l’eau. La vapeur fait tourner une turbine. L’alternateur produit l’électricité.",
+      "choices": [
+        "thermique",
+        "nucléaire",
+        "électrique"
+      ],
+      "answer": "nucléaire",
+      "hint": "Que contient le combustible d’une centrale nucléaire ?",
+      "explanation": "Au départ, l’énergie nucléaire du combustible ; puis la chaleur, le mouvement de la turbine, et à la fin l’électricité.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les formes d’énergie",
+          "lines": [
+            "Cinétique : l’énergie d’un objet qui bouge. Plus il va vite, plus elle est grande.",
+            "De position : l’énergie d’un objet en hauteur.",
+            "D’autres formes : thermique, électrique, chimique, lumineuse, nucléaire.",
+            "Un convertisseur change une forme d’énergie en une autre.",
+            "L’énergie se mesure en joules (J). Elle ne se crée pas, elle se convertit.",
+            "Une partie part toujours en énergie thermique : de la chaleur."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-3e-motion-energy-energy-power-1-5",
+      "prompt": "Le moteur électrique convertit l’énergie électrique en énergie …",
+      "spoken": "Le moteur électrique convertit l’énergie électrique en énergie  (mot manquant) ",
+      "choices": [
+        "chimique",
+        "cinétique",
+        "lumineuse"
+      ],
+      "answer": "cinétique",
+      "hint": "À quoi sert un moteur ?",
+      "explanation": "Le moteur fait tourner une roue ou une hélice : il convertit l’énergie électrique en énergie cinétique, et un peu en chaleur.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les formes d’énergie",
+          "lines": [
+            "Cinétique : l’énergie d’un objet qui bouge. Plus il va vite, plus elle est grande.",
+            "De position : l’énergie d’un objet en hauteur.",
+            "D’autres formes : thermique, électrique, chimique, lumineuse, nucléaire.",
+            "Un convertisseur change une forme d’énergie en une autre.",
+            "L’énergie se mesure en joules (J). Elle ne se crée pas, elle se convertit.",
+            "Une partie part toujours en énergie thermique : de la chaleur."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-3e-motion-energy-energy-power-1-6",
+      "prompt": "Le moteur chauffe un peu : une partie de l’énergie électrique devient de l’énergie …",
+      "spoken": "Le moteur chauffe un peu : une partie de l’énergie électrique devient de l’énergie  (mot manquant) ",
+      "choices": [
+        "thermique",
+        "nucléaire",
+        "chimique"
+      ],
+      "answer": "thermique",
+      "hint": "Relis la ligne « Une partie part toujours » du rappel.",
+      "explanation": "La chaleur, c’est de l’énergie thermique. Elle ne sert pas à faire tourner le moteur, mais elle ne disparaît pas : elle part dans l’air.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les formes d’énergie",
+          "lines": [
+            "Cinétique : l’énergie d’un objet qui bouge. Plus il va vite, plus elle est grande.",
+            "De position : l’énergie d’un objet en hauteur.",
+            "D’autres formes : thermique, électrique, chimique, lumineuse, nucléaire.",
+            "Un convertisseur change une forme d’énergie en une autre.",
+            "L’énergie se mesure en joules (J). Elle ne se crée pas, elle se convertit.",
+            "Une partie part toujours en énergie thermique : de la chaleur."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-3e-motion-energy-energy-power-1-7",
+      "prompt": "Le bilan du moteur\nIl reçoit 100 J (joules) d’énergie électrique.\nIl donne 70 J d’énergie cinétique.\nLe reste part en chaleur.",
+      "question": "Combien d’énergie part en chaleur ?",
+      "spoken": "Le bilan du moteur. Il reçoit 100 joules d’énergie électrique. Il donne 70 joules d’énergie cinétique. Le reste part en chaleur.",
+      "choices": [
+        "30 joules",
+        "70 joules",
+        "170 joules"
+      ],
+      "answer": "30 joules",
+      "hint": "L’énergie ne se crée pas et ne disparaît pas.",
+      "explanation": "Rien ne se perd : 100 moins 70, 30 joules partent en chaleur.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les formes d’énergie",
+          "lines": [
+            "Cinétique : l’énergie d’un objet qui bouge. Plus il va vite, plus elle est grande.",
+            "De position : l’énergie d’un objet en hauteur.",
+            "D’autres formes : thermique, électrique, chimique, lumineuse, nucléaire.",
+            "Un convertisseur change une forme d’énergie en une autre.",
+            "L’énergie se mesure en joules (J). Elle ne se crée pas, elle se convertit.",
+            "Une partie part toujours en énergie thermique : de la chaleur."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "physics-chemistry-3e-motion-energy",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

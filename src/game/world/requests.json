@@ -456,6 +456,45 @@
     }
   },
   {
+    "id": "life-earth-sciences-5e-active-planet-request-1",
+    "biome": "life-earth-sciences-5e-active-planet",
+    "block": "technology-5e-design",
+    "count": 3,
+    "fixture": "life-earth-sciences-5e-active-planet-fixture-1",
+    "blocland": {
+      "name": "le composteur",
+      "ask": "Il me faut {objet} pour mon composteur. Joue une mission de la Menuiserie des objets.",
+      "ready": "Tu as les {blocs} ! Livre-les à Humus.",
+      "done": "Composteur posé chez Humus !"
+    }
+  },
+  {
+    "id": "physics-chemistry-5e-matter-universe-request-1",
+    "biome": "physics-chemistry-5e-matter-universe",
+    "block": "life-earth-sciences-5e-active-planet",
+    "count": 3,
+    "fixture": "physics-chemistry-5e-matter-universe-fixture-1",
+    "blocland": {
+      "name": "le filtre",
+      "ask": "Il me faut {objet} pour mon filtre. Joue une mission de la Prairie des climats.",
+      "ready": "Tu as les {blocs} ! Livre-les à Perle.",
+      "done": "Filtre posé chez Perle !"
+    }
+  },
+  {
+    "id": "technology-5e-design-request-1",
+    "biome": "technology-5e-design",
+    "block": "physics-chemistry-5e-matter-universe",
+    "count": 3,
+    "fixture": "technology-5e-design-fixture-1",
+    "blocland": {
+      "name": "la salière",
+      "ask": "Il me faut {objet} pour ma salière. Joue une mission de la Saline des mélanges.",
+      "ready": "Tu as les {blocs} ! Livre-les à Rabot.",
+      "done": "Salière posée chez Rabot !"
+    }
+  },
+  {
     "id": "history-4e-revolutions-request-1",
     "biome": "history-4e-revolutions",
     "block": "french-4e-agreement",
@@ -482,6 +521,45 @@
     }
   },
   {
+    "id": "life-earth-sciences-4e-cells-evolution-request-1",
+    "biome": "life-earth-sciences-4e-cells-evolution",
+    "block": "technology-4e-modeling",
+    "count": 3,
+    "fixture": "life-earth-sciences-4e-cells-evolution-fixture-1",
+    "blocland": {
+      "name": "la jardinière",
+      "ask": "Il me faut {objet} pour ma jardinière. Joue une mission du Bassin des maquettes.",
+      "ready": "Tu as les {blocs} ! Livre-les à Nectar.",
+      "done": "Jardinière posée chez Nectar !"
+    }
+  },
+  {
+    "id": "physics-chemistry-4e-signals-circuits-request-1",
+    "biome": "physics-chemistry-4e-signals-circuits",
+    "block": "geography-4e-globalization",
+    "count": 4,
+    "fixture": "physics-chemistry-4e-signals-circuits-fixture-1",
+    "blocland": {
+      "name": "l’estrade",
+      "ask": "Il me faut {objet} pour mon estrade. Joue une mission de l’Escale des échanges.",
+      "ready": "Tu as les {blocs} ! Livre-les à Radar.",
+      "done": "Estrade posée chez Radar !"
+    }
+  },
+  {
+    "id": "technology-4e-modeling-request-1",
+    "biome": "technology-4e-modeling",
+    "block": "physics-chemistry-4e-signals-circuits",
+    "count": 3,
+    "fixture": "technology-4e-modeling-fixture-1",
+    "blocland": {
+      "name": "le moteur",
+      "ask": "Il me faut {objet} pour mon moteur. Joue une mission de la Vigie des signaux.",
+      "ready": "Tu as les {blocs} ! Livre-les à Manivelle.",
+      "done": "Moteur posé chez Manivelle !"
+    }
+  },
+  {
     "id": "history-3e-twentieth-century-request-1",
     "biome": "history-3e-twentieth-century",
     "block": "maths-3e-statistics",
@@ -505,6 +583,45 @@
       "ask": "Il me faut {objet} pour ma boîte à livres. Joue une mission du Kiosque des témoins.",
       "ready": "Tu as les {blocs} ! Livre-les à Jalon.",
       "done": "Boîte à livres posée chez Jalon !"
+    }
+  },
+  {
+    "id": "life-earth-sciences-3e-human-body-request-1",
+    "biome": "life-earth-sciences-3e-human-body",
+    "block": "technology-3e-digital",
+    "count": 2,
+    "fixture": "life-earth-sciences-3e-human-body-fixture-1",
+    "blocland": {
+      "name": "la veilleuse",
+      "ask": "Il me faut {objet} pour ma veilleuse. Joue une mission de la Ruche des réseaux.",
+      "ready": "Tu as les {blocs} ! Livre-les à Olive.",
+      "done": "Veilleuse posée chez Olive !"
+    }
+  },
+  {
+    "id": "physics-chemistry-3e-motion-energy-request-1",
+    "biome": "physics-chemistry-3e-motion-energy",
+    "block": "geography-3e-france",
+    "count": 4,
+    "fixture": "physics-chemistry-3e-motion-energy-fixture-1",
+    "blocland": {
+      "name": "le portique",
+      "ask": "Il me faut {objet} pour mon portique. Joue une mission du Plateau des territoires.",
+      "ready": "Tu as les {blocs} ! Livre-les à Virage.",
+      "done": "Portique posé chez Virage !"
+    }
+  },
+  {
+    "id": "technology-3e-digital-request-1",
+    "biome": "technology-3e-digital",
+    "block": "physics-chemistry-3e-motion-energy",
+    "count": 2,
+    "fixture": "technology-3e-digital-fixture-1",
+    "blocland": {
+      "name": "le carillon",
+      "ask": "Il me faut {objet} pour mon carillon. Joue une mission du Tremplin des forces.",
+      "ready": "Tu as les {blocs} ! Livre-les à Navette.",
+      "done": "Carillon posé chez Navette !"
     }
   }
 ]

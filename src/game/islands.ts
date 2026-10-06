@@ -1682,6 +1682,139 @@ export const ILES = [
     ]
   },
   {
+    "id": "life-earth-sciences-5e-active-planet",
+    "name": "Prairie des climats",
+    "module": "La planète Terre et l’action humaine",
+    "subject": "life-earth-sciences",
+    "classe": "5e",
+    "description": "La Terre active, ses séismes et ses volcans, la météo et le climat, puis les ressources et ce que l’humain change dans les milieux, avec un document court sous les yeux.",
+    "block": "life-earth-sciences-5e-active-planet",
+    "guardian": "la Tortue d’ocre",
+    "icon": "cloud-sun",
+    "creature": {
+      "name": "Humus"
+    },
+    "exercises": [
+      {
+        "id": "active-earth",
+        "title": "La Terre active",
+        "description": "Les couches de la Terre, les plaques qui bougent, les séismes et les volcans, puis les risques et comment s’en protéger.",
+        "programme": [
+          "c4.sv.terre.geologie",
+          "c4.sv.demarches.langages",
+          "c4.sv.demarches.raisonner"
+        ]
+      },
+      {
+        "id": "weather-climate",
+        "title": "Météo et climat",
+        "description": "Distinguer la météo et le climat, comprendre ce qui fait bouger l’air et l’eau, puis le climat qui change et les risques météo.",
+        "programme": [
+          "c4.sv.terre.climat",
+          "c4.sv.demarches.langages",
+          "c4.sv.demarches.raisonner"
+        ]
+      },
+      {
+        "id": "human-impact",
+        "title": "Ressources et action humaine",
+        "description": "Les ressources que l’humain prend dans la nature, celles qui s’épuisent, puis ce qu’il change dans les écosystèmes et les gestes qui les protègent.",
+        "programme": [
+          "c4.sv.terre.action-humaine",
+          "c4.sv.demarches.raisonner",
+          "c4.sv.demarches.langages"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "physics-chemistry-5e-matter-universe",
+    "name": "Saline des mélanges",
+    "module": "La matière, de la goutte aux étoiles",
+    "subject": "physics-chemistry",
+    "classe": "5e",
+    "description": "Les molécules et les changements d’état, les corps purs, les mélanges et la masse volumique, puis l’Univers, le système solaire et l’atome.",
+    "block": "physics-chemistry-5e-matter-universe",
+    "guardian": "le Flamant de sel",
+    "icon": "scale",
+    "creature": {
+      "name": "Perle"
+    },
+    "exercises": [
+      {
+        "id": "changes-of-state",
+        "title": "États et molécules",
+        "description": "Les molécules dans un solide, un liquide et un gaz, puis les changements d’état : le palier, la masse qui se conserve, le volume qui change.",
+        "programme": [
+          "c4.pc.matiere.etats",
+          "c4.pc.demarches.langages"
+        ]
+      },
+      {
+        "id": "mixtures-density",
+        "title": "Mélanges et masse volumique",
+        "description": "Corps purs et mélanges, dissoudre et mélanger deux liquides, puis la masse, le volume et la masse volumique : ce qui flotte et ce qui coule.",
+        "programme": [
+          "c4.pc.matiere.etats",
+          "c4.pc.demarches.experimenter",
+          "c4.pc.demarches.langages"
+        ]
+      },
+      {
+        "id": "universe-atoms",
+        "title": "L’Univers et l’atome",
+        "description": "Du système solaire aux galaxies, l’année-lumière, puis l’atome, son noyau et ses électrons, et les atomes nés dans les étoiles.",
+        "programme": [
+          "c4.pc.matiere.univers",
+          "c4.pc.demarches.langages"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "technology-5e-design",
+    "name": "Menuiserie des objets",
+    "module": "Design et objets responsables",
+    "subject": "technology",
+    "classe": "5e",
+    "description": "Du besoin au cahier des charges, une solution technique pour chaque fonction, puis la vie d’un objet, de sa fabrication à son recyclage.",
+    "block": "technology-5e-design",
+    "guardian": "le Cheval à bascule",
+    "icon": "drafting-compass",
+    "creature": {
+      "name": "Rabot"
+    },
+    "exercises": [
+      {
+        "id": "specifications",
+        "title": "Du besoin au cahier des charges",
+        "description": "Le besoin et le problème technique, puis le cahier des charges : fonctions, contraintes et normes.",
+        "programme": [
+          "c4.te.design.besoin",
+          "c4.te.demarches.langages"
+        ]
+      },
+      {
+        "id": "technical-solutions",
+        "title": "Une solution pour chaque fonction",
+        "description": "Associer une solution technique à chaque fonction, puis choisir la solution qui respecte le cahier des charges.",
+        "programme": [
+          "c4.te.design.solutions",
+          "c4.te.design.besoin"
+        ]
+      },
+      {
+        "id": "life-cycle",
+        "title": "La vie d’un objet",
+        "description": "Le cycle de vie d’un objet, de la matière au recyclage, puis l’énergie qu’il consomme et son impact sur la planète.",
+        "programme": [
+          "c4.te.demarches.responsable",
+          "c4.te.demarches.langages"
+        ]
+      }
+    ]
+  },
+  {
     "id": "history-4e-revolutions",
     "name": "Imprimerie des révolutions",
     "module": "Histoire, du XVIIIe siècle à la France du XIXe siècle",
@@ -1797,6 +1930,141 @@ export const ILES = [
     ]
   },
   {
+    "id": "life-earth-sciences-4e-cells-evolution",
+    "name": "Source des espèces",
+    "module": "Le vivant et son évolution",
+    "subject": "life-earth-sciences",
+    "classe": "4e",
+    "description": "La cellule et la nutrition des plantes et des animaux, la reproduction et les gènes, puis la biodiversité et l’évolution des espèces, avec un document ou une expérience sous les yeux.",
+    "block": "life-earth-sciences-4e-cells-evolution",
+    "guardian": "la Girafe d’ambre",
+    "icon": "flower",
+    "creature": {
+      "name": "Nectar"
+    },
+    "exercises": [
+      {
+        "id": "cells-nutrition",
+        "title": "Cellules et nutrition",
+        "description": "La cellule, unité du vivant, puis comment les plantes fabriquent leur matière et comment les animaux s’en nourrissent et respirent.",
+        "programme": [
+          "c4.sv.vivant.nutrition",
+          "c4.sv.demarches.langages",
+          "c4.sv.demarches.raisonner"
+        ]
+      },
+      {
+        "id": "heredity",
+        "title": "Reproduction et gènes",
+        "description": "Reproduction sexuée et asexuée, les populations qui grandissent ou diminuent, puis les chromosomes, les gènes et l’ADN, qui font de chacun un être unique.",
+        "programme": [
+          "c4.sv.vivant.genetique",
+          "c4.sv.demarches.langages",
+          "c4.sv.demarches.raisonner"
+        ]
+      },
+      {
+        "id": "species-evolution",
+        "title": "Biodiversité et évolution",
+        "description": "La biodiversité, les espèces qui apparaissent et disparaissent, les liens de parenté, puis la sélection naturelle qui fait évoluer les espèces.",
+        "programme": [
+          "c4.sv.vivant.evolution",
+          "c4.sv.demarches.raisonner",
+          "c4.sv.demarches.langages"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "physics-chemistry-4e-signals-circuits",
+    "name": "Vigie des signaux",
+    "module": "Lumière, son, circuits et réactions",
+    "subject": "physics-chemistry",
+    "classe": "4e",
+    "description": "La lumière et le son qui se propagent, les circuits en série et en dérivation, l’intensité, la tension et la loi d’Ohm, puis les transformations chimiques et leurs atomes.",
+    "block": "physics-chemistry-4e-signals-circuits",
+    "guardian": "la Cloche de cobalt",
+    "icon": "audio-waveform",
+    "creature": {
+      "name": "Radar"
+    },
+    "exercises": [
+      {
+        "id": "light-sound",
+        "title": "Lumière et son",
+        "description": "La lumière va en ligne droite et très vite ; le son a besoin de matière pour avancer, sa fréquence fait un son aigu ou grave, et un son trop fort abîme l’oreille.",
+        "programme": [
+          "c4.pc.signaux.lumiere-son",
+          "c4.pc.demarches.langages"
+        ]
+      },
+      {
+        "id": "electric-circuits",
+        "title": "Circuits et loi d’Ohm",
+        "description": "Série et dérivation, l’intensité et la tension et leurs lois, la résistance et la loi d’Ohm, et la sécurité.",
+        "programme": [
+          "c4.pc.energie.circuits",
+          "c4.pc.demarches.experimenter",
+          "c4.pc.demarches.langages"
+        ]
+      },
+      {
+        "id": "chemical-reactions",
+        "title": "Transformations chimiques",
+        "description": "Reconnaître une transformation chimique, la combustion, les réactifs et les produits, puis les atomes qui se regroupent, la masse qui se conserve et l’équation de réaction.",
+        "programme": [
+          "c4.pc.matiere.transformations",
+          "c4.pc.demarches.experimenter",
+          "c4.pc.demarches.langages"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "technology-4e-modeling",
+    "name": "Bassin des maquettes",
+    "module": "Modéliser et simuler",
+    "subject": "technology",
+    "classe": "4e",
+    "description": "Comment un objet reçoit et transforme l’énergie, comment il capte et traite l’information, et ce que dit une simulation.",
+    "block": "technology-4e-modeling",
+    "guardian": "le Grand-bi d’érable",
+    "icon": "workflow",
+    "creature": {
+      "name": "Manivelle"
+    },
+    "exercises": [
+      {
+        "id": "energy-chain",
+        "title": "La chaîne d’énergie",
+        "description": "Alimenter, distribuer, convertir et transmettre : le chemin de l’énergie dans un objet, puis son schéma.",
+        "programme": [
+          "c4.te.modelisation.fonctionnement",
+          "c4.te.demarches.langages"
+        ]
+      },
+      {
+        "id": "information-chain",
+        "title": "La chaîne d’information",
+        "description": "Acquérir, traiter et communiquer : capteurs, carte programmable et actionneurs, puis les deux chaînes ensemble.",
+        "programme": [
+          "c4.te.modelisation.fonctionnement",
+          "c4.te.demarches.langages"
+        ]
+      },
+      {
+        "id": "simulation",
+        "title": "Lire une simulation",
+        "description": "Ce qu’est un modèle et une simulation, puis lire un résultat (tableau, courbe) et le comparer au cahier des charges.",
+        "programme": [
+          "c4.te.modelisation.simuler",
+          "c4.te.design.besoin",
+          "c4.te.demarches.langages"
+        ]
+      }
+    ]
+  },
+  {
     "id": "history-3e-twentieth-century",
     "name": "Kiosque des témoins",
     "module": "Histoire, de 1914 à nos jours",
@@ -1900,6 +2168,141 @@ export const ILES = [
           "c4.hg.espace.situer",
           "c4.hg.demarches.lexique",
           "c4.hg.demarches.document"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "life-earth-sciences-3e-human-body",
+    "name": "Verger de la santé",
+    "module": "Le corps humain et la santé",
+    "subject": "life-earth-sciences",
+    "classe": "3e",
+    "description": "L’effort, le cerveau et le sommeil, la digestion et les défenses contre les microbes, puis la puberté et la reproduction humaine, avec un document ou une expérience sous les yeux.",
+    "block": "life-earth-sciences-3e-human-body",
+    "guardian": "le Dauphin de turquoise",
+    "icon": "apple",
+    "creature": {
+      "name": "Olive"
+    },
+    "exercises": [
+      {
+        "id": "effort-brain",
+        "title": "Effort, cerveau et sommeil",
+        "description": "Ce que change un effort dans les muscles, le cœur et la respiration, puis le trajet d’un message nerveux, et ce que le sommeil, les écrans, l’alcool et le tabac changent au cerveau.",
+        "programme": [
+          "c4.sv.corps.effort-nerveux",
+          "c4.sv.demarches.langages",
+          "c4.sv.demarches.raisonner"
+        ]
+      },
+      {
+        "id": "digestion-microbes",
+        "title": "Digestion et microbes",
+        "description": "Le trajet des aliments et ce qu’ils deviennent, le microbiote, puis les microbes, les défenses du corps, les vaccins, les antiseptiques et les antibiotiques.",
+        "programme": [
+          "c4.sv.corps.digestion-microbes",
+          "c4.sv.demarches.raisonner",
+          "c4.sv.demarches.langages"
+        ]
+      },
+      {
+        "id": "puberty-reproduction",
+        "title": "Puberté et reproduction",
+        "description": "Ce qui change à la puberté, les cellules et les organes de la reproduction, puis la fécondation, la grossesse et ce que permet la contraception.",
+        "programme": [
+          "c4.sv.corps.reproduction",
+          "c4.sv.vivant.genetique",
+          "c4.sv.demarches.langages"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "physics-chemistry-3e-motion-energy",
+    "name": "Tremplin des forces",
+    "module": "Mouvement, forces, énergie",
+    "subject": "physics-chemistry",
+    "classe": "3e",
+    "description": "Décrire un mouvement et calculer une vitesse, les forces, le poids et la gravitation, les formes d’énergie, la puissance et le kilowattheure, puis le pH, les acides et les bases.",
+    "block": "physics-chemistry-3e-motion-energy",
+    "guardian": "le Kangourou de rubis",
+    "icon": "gauge",
+    "creature": {
+      "name": "Virage"
+    },
+    "exercises": [
+      {
+        "id": "motion-forces",
+        "title": "Mouvements et forces",
+        "description": "Décrire un mouvement par rapport à une référence, uniforme, accéléré ou ralenti, calculer une vitesse, puis les forces, le poids, la masse et la gravitation.",
+        "programme": [
+          "c4.pc.mouvement.decrire",
+          "c4.pc.mouvement.forces",
+          "c4.pc.demarches.langages"
+        ]
+      },
+      {
+        "id": "energy-power",
+        "title": "Énergie et puissance",
+        "description": "Les formes d’énergie, ce qui les convertit et ce qui se perd en chaleur, puis la puissance électrique, l’énergie consommée et le kilowattheure.",
+        "programme": [
+          "c4.pc.energie.formes",
+          "c4.pc.energie.circuits",
+          "c4.pc.demarches.langages"
+        ]
+      },
+      {
+        "id": "acids-bases",
+        "title": "Acides et bases",
+        "description": "Le pH des solutions de tous les jours, acides, neutres et basiques, puis les précautions, la réaction d’un acide avec le fer et le test du gaz qui se forme.",
+        "programme": [
+          "c4.pc.matiere.acides-bases",
+          "c4.pc.matiere.transformations",
+          "c4.pc.demarches.experimenter"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "technology-3e-digital",
+    "name": "Ruche des réseaux",
+    "module": "Informatique, réseaux et société",
+    "subject": "technology",
+    "classe": "3e",
+    "description": "Ce qui compose un réseau et comment les données y voyagent, les objets connectés et les données personnelles, puis lire un programme simple.",
+    "block": "technology-3e-digital",
+    "guardian": "l’Abeille de topaze",
+    "icon": "network",
+    "creature": {
+      "name": "Navette"
+    },
+    "exercises": [
+      {
+        "id": "computer-networks",
+        "title": "Le réseau informatique",
+        "description": "Les éléments d’un réseau et l’adresse de chaque appareil, puis internet, les protocoles et le stockage des données.",
+        "programme": [
+          "c4.te.informatique.reseaux",
+          "c4.te.demarches.responsable"
+        ]
+      },
+      {
+        "id": "connected-objects",
+        "title": "Objets connectés et données personnelles",
+        "description": "Comment les objets évoluent et changent la société, les objets connectés, puis protéger ses données personnelles.",
+        "programme": [
+          "c4.te.objets.evolution",
+          "c4.te.informatique.reseaux"
+        ]
+      },
+      {
+        "id": "algorithms",
+        "title": "Lire un programme",
+        "description": "Un algorithme et un programme : séquence, boucle et événement, puis condition et variable, dans un programme court à lire.",
+        "programme": [
+          "c4.te.modelisation.fonctionnement",
+          "c4.te.demarches.langages"
         ]
       }
     ]

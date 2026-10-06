@@ -1,0 +1,241 @@
+{
+  "id": "physics-chemistry-3e-motion-energy-acids-bases-1",
+  "biome": "physics-chemistry-3e-motion-energy",
+  "type": "acids-bases",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "physics-chemistry-3e-motion-energy-acids-bases-1-0",
+      "prompt": "Le jus de citron a un pH de 2 : il est …",
+      "spoken": "Le jus de citron a un pé-ache de 2, il est (mot manquant).",
+      "choices": [
+        "acide",
+        "neutre",
+        "basique"
+      ],
+      "answer": "acide",
+      "hint": "2 est-il plus petit ou plus grand que 7 ?",
+      "explanation": "Le pH 2 est plus petit que 7 : le jus de citron est acide.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le pH",
+          "lines": [
+            "Le pH va de 0 à 14. On le mesure avec du papier pH ou un pH-mètre.",
+            "pH plus petit que 7 : la solution est acide.",
+            "pH égal à 7 : la solution est neutre.",
+            "pH plus grand que 7 : la solution est basique.",
+            "Plus le pH est petit, plus la solution est acide.",
+            "Acide : beaucoup d’ions hydrogène. Basique : beaucoup d’ions hydroxyde."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-3e-motion-energy-acids-bases-1-1",
+      "prompt": "L’eau pure a un pH de 7 : elle est …",
+      "spoken": "L’eau pure a un pé-ache de 7, elle est (mot manquant).",
+      "choices": [
+        "acide",
+        "neutre",
+        "basique"
+      ],
+      "answer": "neutre",
+      "hint": "Relis la troisième ligne du rappel.",
+      "explanation": "Un pH égal à 7, c’est une solution neutre, ni acide ni basique.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le pH",
+          "lines": [
+            "Le pH va de 0 à 14. On le mesure avec du papier pH ou un pH-mètre.",
+            "pH plus petit que 7 : la solution est acide.",
+            "pH égal à 7 : la solution est neutre.",
+            "pH plus grand que 7 : la solution est basique.",
+            "Plus le pH est petit, plus la solution est acide.",
+            "Acide : beaucoup d’ions hydrogène. Basique : beaucoup d’ions hydroxyde."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-3e-motion-energy-acids-bases-1-2",
+      "prompt": "L’eau savonneuse a un pH de 10 : elle est …",
+      "spoken": "L’eau savonneuse a un pé-ache de 10, elle est (mot manquant).",
+      "choices": [
+        "acide",
+        "neutre",
+        "basique"
+      ],
+      "answer": "basique",
+      "hint": "10 est-il plus petit ou plus grand que 7 ?",
+      "explanation": "Le pH 10 est plus grand que 7 : l’eau savonneuse est basique.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le pH",
+          "lines": [
+            "Le pH va de 0 à 14. On le mesure avec du papier pH ou un pH-mètre.",
+            "pH plus petit que 7 : la solution est acide.",
+            "pH égal à 7 : la solution est neutre.",
+            "pH plus grand que 7 : la solution est basique.",
+            "Plus le pH est petit, plus la solution est acide.",
+            "Acide : beaucoup d’ions hydrogène. Basique : beaucoup d’ions hydroxyde."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-3e-motion-energy-acids-bases-1-3",
+      "prompt": "Le pH de trois liquides de la maison\nVinaigre : 3\nEau du robinet : 7\nEau de Javel : 12",
+      "question": "Lequel est le plus acide ?",
+      "spoken": "Le pé-ache de trois liquides de la maison. Vinaigre, 3. Eau du robinet, 7. Eau de Javel, 12.",
+      "choices": [
+        "le vinaigre",
+        "l’eau du robinet",
+        "l’eau de Javel"
+      ],
+      "answer": "le vinaigre",
+      "hint": "Relis la cinquième ligne du rappel.",
+      "explanation": "Le plus acide a le pH le plus petit : le vinaigre, pH 3. L’eau de Javel, pH 12, est dangereuse, mais elle est basique.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le pH",
+          "lines": [
+            "Le pH va de 0 à 14. On le mesure avec du papier pH ou un pH-mètre.",
+            "pH plus petit que 7 : la solution est acide.",
+            "pH égal à 7 : la solution est neutre.",
+            "pH plus grand que 7 : la solution est basique.",
+            "Plus le pH est petit, plus la solution est acide.",
+            "Acide : beaucoup d’ions hydrogène. Basique : beaucoup d’ions hydroxyde."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-3e-motion-energy-acids-bases-1-4",
+      "prompt": "Plus le pH est petit, plus la solution est …",
+      "spoken": "Plus le pé-ache est petit, plus la solution est (mot manquant).",
+      "choices": [
+        "acide",
+        "neutre",
+        "basique"
+      ],
+      "answer": "acide",
+      "hint": "Relis la cinquième ligne du rappel.",
+      "explanation": "Un pH petit, c’est une solution très acide. En montant vers 7, elle l’est de moins en moins.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le pH",
+          "lines": [
+            "Le pH va de 0 à 14. On le mesure avec du papier pH ou un pH-mètre.",
+            "pH plus petit que 7 : la solution est acide.",
+            "pH égal à 7 : la solution est neutre.",
+            "pH plus grand que 7 : la solution est basique.",
+            "Plus le pH est petit, plus la solution est acide.",
+            "Acide : beaucoup d’ions hydrogène. Basique : beaucoup d’ions hydroxyde."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-3e-motion-energy-acids-bases-1-5",
+      "prompt": "Une solution basique contient beaucoup d’ions …",
+      "spoken": "Une solution basique contient beaucoup d’ions  (mot manquant) ",
+      "choices": [
+        "hydrogène",
+        "hydroxyde",
+        "oxygène"
+      ],
+      "answer": "hydroxyde",
+      "hint": "Relis la ligne « Acide » du rappel.",
+      "explanation": "Une solution basique contient beaucoup d’ions hydroxyde. Une solution acide, beaucoup d’ions hydrogène.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le pH",
+          "lines": [
+            "Le pH va de 0 à 14. On le mesure avec du papier pH ou un pH-mètre.",
+            "pH plus petit que 7 : la solution est acide.",
+            "pH égal à 7 : la solution est neutre.",
+            "pH plus grand que 7 : la solution est basique.",
+            "Plus le pH est petit, plus la solution est acide.",
+            "Acide : beaucoup d’ions hydrogène. Basique : beaucoup d’ions hydroxyde."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-3e-motion-energy-acids-bases-1-6",
+      "prompt": "Du papier pH dans une boisson\nLe papier devient orange.\nSur l’échelle des couleurs de la boîte, orange veut dire pH 4.",
+      "question": "Comment est la boisson ?",
+      "spoken": "Du papier pé-ache dans une boisson. Le papier devient orange. Sur l’échelle des couleurs de la boîte, orange veut dire pé-ache 4.",
+      "choices": [
+        "acide",
+        "neutre",
+        "basique"
+      ],
+      "answer": "acide",
+      "hint": "4 est-il plus petit ou plus grand que 7 ?",
+      "explanation": "Le pH 4 est plus petit que 7 : la boisson est acide, comme beaucoup de sodas et de jus de fruits.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le pH",
+          "lines": [
+            "Le pH va de 0 à 14. On le mesure avec du papier pH ou un pH-mètre.",
+            "pH plus petit que 7 : la solution est acide.",
+            "pH égal à 7 : la solution est neutre.",
+            "pH plus grand que 7 : la solution est basique.",
+            "Plus le pH est petit, plus la solution est acide.",
+            "Acide : beaucoup d’ions hydrogène. Basique : beaucoup d’ions hydroxyde."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-3e-motion-energy-acids-bases-1-7",
+      "prompt": "On ajoute beaucoup d’eau à du vinaigre\nAvant : pH 3.\nAprès : pH 5.",
+      "question": "Que fait l’acidité du vinaigre ?",
+      "spoken": "On ajoute beaucoup d’eau à du vinaigre. Avant, pé-ache 3. Après, pé-ache 5.",
+      "choices": [
+        "elle augmente",
+        "elle diminue",
+        "elle ne change pas"
+      ],
+      "answer": "elle diminue",
+      "hint": "Relis la cinquième ligne du rappel.",
+      "explanation": "Le pH monte de 3 à 5 en se rapprochant de 7 : le vinaigre dilué est moins acide. Le pH monte, l’acidité diminue.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le pH",
+          "lines": [
+            "Le pH va de 0 à 14. On le mesure avec du papier pH ou un pH-mètre.",
+            "pH plus petit que 7 : la solution est acide.",
+            "pH égal à 7 : la solution est neutre.",
+            "pH plus grand que 7 : la solution est basique.",
+            "Plus le pH est petit, plus la solution est acide.",
+            "Acide : beaucoup d’ions hydrogène. Basique : beaucoup d’ions hydroxyde."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "physics-chemistry-3e-motion-energy",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

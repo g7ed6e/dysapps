@@ -1,0 +1,228 @@
+{
+  "id": "technology-3e-digital-algorithms-2",
+  "biome": "technology-3e-digital",
+  "type": "algorithms",
+  "level": 2,
+  "instruction": "Lis la phrase ou le programme, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "technology-3e-digital-algorithms-2-0",
+      "prompt": "Le programme de la lampe du couloir\nSi le capteur voit quelqu’un, alors allumer la lampe.\nSinon, éteindre la lampe.",
+      "question": "Personne ne passe. Que fait la lampe ?",
+      "spoken": "Le programme de la lampe du couloir. Si le capteur voit quelqu’un, alors allumer la lampe. Sinon, éteindre la lampe.",
+      "choices": [
+        "elle s’allume",
+        "elle s’éteint",
+        "elle clignote"
+      ],
+      "answer": "elle s’éteint",
+      "hint": "Personne ne passe : on lit la ligne « Sinon ».",
+      "explanation": "Le capteur ne voit personne : la condition est fausse, le programme passe à « Sinon » et éteint la lampe.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Conditions et variables",
+          "lines": [
+            "Une condition : si c’est vrai, alors on fait une chose ; sinon, une autre.",
+            "Une variable : une case qui garde une valeur, comme un score.",
+            "La valeur d’une variable peut changer pendant le programme.",
+            "Le capteur donne l’information ; la condition la teste."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-algorithms-2-1",
+      "prompt": "« S’il pleut, alors fermer la fenêtre » est une …",
+      "spoken": "« S’il pleut, alors fermer la fenêtre » est une  (mot manquant) ",
+      "choices": [
+        "boucle",
+        "variable",
+        "condition"
+      ],
+      "answer": "condition",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "« Si », puis « alors » : le programme teste quelque chose avant d’agir : c’est une condition. Une boucle répète, sans tester.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Conditions et variables",
+          "lines": [
+            "Une condition : si c’est vrai, alors on fait une chose ; sinon, une autre.",
+            "Une variable : une case qui garde une valeur, comme un score.",
+            "La valeur d’une variable peut changer pendant le programme.",
+            "Le capteur donne l’information ; la condition la teste."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-algorithms-2-2",
+      "prompt": "Le jeu de Nina\nAu début, le score vaut 0.\nÀ chaque pièce attrapée, ajouter 1 au score.\nNina attrape 3 pièces.",
+      "question": "Combien vaut le score ?",
+      "spoken": "Le jeu de Nina. Au début, le score vaut 0. À chaque pièce attrapée, ajouter 1 au score. Nina attrape 3 pièces.",
+      "choices": [
+        "1",
+        "3",
+        "4"
+      ],
+      "answer": "3",
+      "hint": "Le score part de 0, et gagne 1 à chaque pièce.",
+      "explanation": "Le score part de 0 et gagne 1 pour chacune des 3 pièces : il vaut 3. La variable a changé trois fois.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Conditions et variables",
+          "lines": [
+            "Une condition : si c’est vrai, alors on fait une chose ; sinon, une autre.",
+            "Une variable : une case qui garde une valeur, comme un score.",
+            "La valeur d’une variable peut changer pendant le programme.",
+            "Le capteur donne l’information ; la condition la teste."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-algorithms-2-3",
+      "prompt": "Le score, qui change pendant le jeu, est gardé dans une …",
+      "spoken": "Le score, qui change pendant le jeu, est gardé dans une  (mot manquant) ",
+      "choices": [
+        "variable",
+        "boucle",
+        "condition"
+      ],
+      "answer": "variable",
+      "hint": "Relis la deuxième ligne du rappel.",
+      "explanation": "Une variable garde une valeur qui peut changer : le score en est une.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Conditions et variables",
+          "lines": [
+            "Une condition : si c’est vrai, alors on fait une chose ; sinon, une autre.",
+            "Une variable : une case qui garde une valeur, comme un score.",
+            "La valeur d’une variable peut changer pendant le programme.",
+            "Le capteur donne l’information ; la condition la teste."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-algorithms-2-4",
+      "prompt": "Le programme de l’arrosage\nSi la terre est sèche, alors arroser 5 minutes.\nSinon, ne rien faire.",
+      "question": "La terre est humide. Que fait le programme ?",
+      "spoken": "Le programme de l’arrosage. Si la terre est sèche, alors arroser 5 minutes. Sinon, ne rien faire.",
+      "choices": [
+        "il arrose 5 minutes",
+        "il arrose sans arrêt",
+        "il ne fait rien"
+      ],
+      "answer": "il ne fait rien",
+      "hint": "La terre est-elle sèche ? Si non, lis la ligne « Sinon ».",
+      "explanation": "La terre est humide : la condition « sèche » est fausse. Le programme passe à « Sinon » : il ne fait rien.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Conditions et variables",
+          "lines": [
+            "Une condition : si c’est vrai, alors on fait une chose ; sinon, une autre.",
+            "Une variable : une case qui garde une valeur, comme un score.",
+            "La valeur d’une variable peut changer pendant le programme.",
+            "Le capteur donne l’information ; la condition la teste."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-algorithms-2-5",
+      "prompt": "Le programme du feu pour piétons\nRépéter sans fin :\nvert pendant 20 secondes,\nrouge pendant 40 secondes.",
+      "question": "Quelle instruction fait recommencer le feu ?",
+      "spoken": "Le programme du feu pour piétons. Répéter sans fin, vert pendant 20 secondes, rouge pendant 40 secondes.",
+      "choices": [
+        "vert pendant 20 secondes",
+        "répéter sans fin",
+        "rouge pendant 40 secondes"
+      ],
+      "answer": "répéter sans fin",
+      "hint": "Quelle ligne fait une boucle ?",
+      "explanation": "« Répéter sans fin » est une boucle : après le rouge, le feu repasse au vert, encore et encore.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Conditions et variables",
+          "lines": [
+            "Une condition : si c’est vrai, alors on fait une chose ; sinon, une autre.",
+            "Une variable : une case qui garde une valeur, comme un score.",
+            "La valeur d’une variable peut changer pendant le programme.",
+            "Le capteur donne l’information ; la condition la teste."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-algorithms-2-6",
+      "prompt": "Le programme du chauffage\nSi la pièce est plus froide que 19 degrés, alors allumer.\nSinon, éteindre.\nIl fait 17 degrés.",
+      "question": "Que fait le chauffage ?",
+      "spoken": "Le programme du chauffage. Si la pièce est plus froide que 19 degrés, alors allumer. Sinon, éteindre. Il fait 17 degrés.",
+      "choices": [
+        "il s’allume",
+        "il s’éteint",
+        "il ne change pas"
+      ],
+      "answer": "il s’allume",
+      "hint": "17 degrés, est-ce plus froid que 19 degrés ?",
+      "explanation": "17 degrés, c’est plus froid que 19 degrés : la condition est vraie, le chauffage s’allume.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Conditions et variables",
+          "lines": [
+            "Une condition : si c’est vrai, alors on fait une chose ; sinon, une autre.",
+            "Une variable : une case qui garde une valeur, comme un score.",
+            "La valeur d’une variable peut changer pendant le programme.",
+            "Le capteur donne l’information ; la condition la teste."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-algorithms-2-7",
+      "prompt": "Le programme de la barrière\nQuand une voiture arrive :\nsi le ticket est bon, alors lever la barrière ;\nsinon, afficher « Ticket refusé ».",
+      "question": "Le ticket n’est pas bon. Que se passe-t-il ?",
+      "spoken": "Le programme de la barrière. Quand une voiture arrive, si le ticket est bon, alors lever la barrière. Sinon, afficher, ticket refusé.",
+      "choices": [
+        "la barrière se lève",
+        "l’écran affiche « Ticket refusé »",
+        "rien ne se passe"
+      ],
+      "answer": "l’écran affiche « Ticket refusé »",
+      "hint": "Le ticket n’est pas bon : lis la partie « sinon ».",
+      "explanation": "La condition « le ticket est bon » est fausse : le programme fait la partie « sinon » et affiche « Ticket refusé ». La barrière reste baissée.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Conditions et variables",
+          "lines": [
+            "Une condition : si c’est vrai, alors on fait une chose ; sinon, une autre.",
+            "Une variable : une case qui garde une valeur, comme un score.",
+            "La valeur d’une variable peut changer pendant le programme.",
+            "Le capteur donne l’information ; la condition la teste."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "technology-3e-digital",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -1,6 +1,6 @@
 # L’aventure
 
-L’aventure, ce sont **quatre archipels** de blocs, un par classe : les Basses Terres (6e), les Collines du Large (5e), les Monts de Feu (4e) et les Îles du Ciel (3e), soit quarante-deux îles. Dans Archipéo, les trois premiers s’appellent les Premiers Rivages, les Îles Brumeuses et les Anciens Ateliers (voir [Les nouveaux noms des archipels](#les-nouveaux-noms-des-archipels)). Le village est en ruine et l’élève est le bâtisseur : chaque exercice réussi rapporte des blocs, les blocs construisent des ouvrages entre les îles, reconstruisent les bâtiments des créatures et, au port, le **Bloc-Navire** qui mène à l’archipel suivant. Chaque île est un thème du programme, en français, en maths, en anglais, en histoire-géographie, en sciences (SVT, physique-chimie, technologie) ou dans la deuxième langue (LV2). Le détail du contenu de chaque île est dans [L’archipel](../pedagogie/archipel.md).
+L’aventure, ce sont **quatre archipels** de blocs, un par classe : les Basses Terres (6e), les Collines du Large (5e), les Monts de Feu (4e) et les Îles du Ciel (3e), soit cinquante et une îles. Dans Archipéo, les trois premiers s’appellent les Premiers Rivages, les Îles Brumeuses et les Anciens Ateliers (voir [Les nouveaux noms des archipels](#les-nouveaux-noms-des-archipels)). Le village est en ruine et l’élève est le bâtisseur : chaque exercice réussi rapporte des blocs, les blocs construisent des ouvrages entre les îles, reconstruisent les bâtiments des créatures et, au port, le **Bloc-Navire** qui mène à l’archipel suivant. Chaque île est un thème du programme, en français, en maths, en anglais, en histoire-géographie, en sciences (SVT, physique-chimie, technologie) ou dans la deuxième langue (LV2). Le détail du contenu de chaque île est dans [L’archipel](../pedagogie/archipel.md).
 
 L’aventure a deux univers, qui se choisissent dans les [Réglages](reglages.md#univers) : **Blocland**, le monde en blocs, par défaut, et **Archipéo**, une aventure en mer. Ils ont les mêmes îles, les mêmes missions et la même progression ; cette page décrit Blocland, et dit ce qui change dans Archipéo.
 
@@ -246,6 +246,22 @@ Aux Collines du Large (5e), aux Monts de Feu (4e) et aux Îles du Ciel (3e), l�
 | 3e | **Plateau des territoires** : les territoires de la France et l’Union européenne | Jalon, la fourmi arpenteuse | le Cerf de lauze | le grès rose (une pierre faite de sable serré) | la mairie de Jalon (sa cour est une place) |
 
 Le Kiosque des témoins parle des guerres avec des faits, des dates et des nombres ronds, sans détail violent ni image choquante ; sa Colombe d’albâtre tient un rameau vert. Dans Archipéo, Sillon est un ibis des rizières.
+
+Les sciences continuent aussi : trois îles par archipel, de la 5e à la 3e, une de SVT, une de physique-chimie et une de technologie, fermées au départ, qui s’ouvrent par un ouvrage. Chaque île a sa créature, son Gardien, son bloc et son bâtiment en trois plans ; ses missions font retrouver les mots du programme, lire un document court (un texte, un tableau de mesures, un schéma ou une courbe décrits en mots) et raisonner sur une expérience.
+
+| Archipel | Île | Créature | Gardien | Bloc | Bâtiment |
+| --- | --- | --- | --- | --- | --- |
+| 5e | **Prairie des climats** (SVT) : la Terre active, la météo et le climat, les ressources | Humus, le ver de terre laboureur | la Tortue d’ocre | la strate (une couche de roche) | la station d’Humus |
+| 5e | **Saline des mélanges** (physique-chimie) : les états de la matière, les mélanges, l’Univers et l’atome | Perle, le canard saunier | le Flamant de sel | le sel (ce qui reste quand l’eau de mer s’en va) | le chalet de Perle |
+| 5e | **Menuiserie des objets** (technologie) : le cahier des charges, les solutions techniques, la vie d’un objet | Rabot, le pic-vert menuisier | le Cheval à bascule | le bambou (une grande herbe très solide) | la scierie de Rabot |
+| 4e | **Source des espèces** (SVT) : la cellule, les gènes, l’évolution des espèces | Nectar, le colibri butineur | la Girafe d’ambre | le pétale | la pépinière de Nectar |
+| 4e | **Vigie des signaux** (physique-chimie) : la lumière et le son, les circuits, les transformations chimiques | Radar, le suricate guetteur | la Cloche de cobalt | la bobine (du fil de cuivre enroulé) | le pavillon de Radar |
+| 4e | **Bassin des maquettes** (technologie) : la chaîne d’énergie, la chaîne d’information, la simulation | Manivelle, le lémurien maquettiste | le Grand-bi d’érable | le liège (une écorce très légère, qui flotte) | l’usine de Manivelle |
+| 3e | **Verger de la santé** (SVT) : l’effort, le cerveau et le sommeil, la digestion, la puberté et la reproduction | Olive, le koala soigneur | le Dauphin de turquoise | le savon | l’infirmerie d’Olive |
+| 3e | **Tremplin des forces** (physique-chimie) : les mouvements, les forces, l’énergie, les acides et les bases | Virage, le tatou rouleur | le Kangourou de rubis | le ressort | le gymnase de Virage |
+| 3e | **Ruche des réseaux** (technologie) : les réseaux, les objets connectés, lire un programme | Navette, la chenille tisseuse | l’Abeille de topaze | la cire (les abeilles font leurs cases en cire) | le poste de Navette |
+
+Le Verger de la santé parle du corps avec des mots simples et un ton neutre, sans image ; l’infirmerie d’Olive est un lieu de repos. À la Ruche des réseaux, un programme court se lit, une instruction par ligne : on ne l’écrit pas et on ne le lance pas. Dans Archipéo, Humus est un ver de terre météorologue et Manivelle une otarie maquettiste.
 
 | Ouvrage | Coût | Condition en plus |
 | --- | --- | --- |

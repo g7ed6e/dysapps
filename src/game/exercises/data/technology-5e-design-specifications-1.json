@@ -1,0 +1,241 @@
+{
+  "id": "technology-5e-design-specifications-1",
+  "biome": "technology-5e-design",
+  "type": "specifications",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "technology-5e-design-specifications-1-0",
+      "prompt": "Lina oublie souvent sa gourde. Elle voudrait un objet qui le lui rappelle : c’est son …",
+      "spoken": "Lina oublie souvent sa gourde. Elle voudrait un objet qui le lui rappelle : c’est son  (mot manquant) ",
+      "choices": [
+        "besoin",
+        "matériau",
+        "cahier des charges"
+      ],
+      "answer": "besoin",
+      "hint": "Relis la ligne « Le besoin » du rappel.",
+      "explanation": "Ce qui manque à Lina, c’est son besoin : ne plus oublier sa gourde. Le cahier des charges viendra après, pour dire ce que l’objet doit faire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le besoin et le cahier des charges",
+          "lines": [
+            "Le besoin : ce qui manque à quelqu’un.",
+            "Le problème technique : la question que l’objet doit résoudre.",
+            "Le cahier des charges : ce que l’objet doit faire et respecter.",
+            "Une fonction : ce que l’objet doit faire, dit avec un verbe.",
+            "Une contrainte : une limite à respecter (prix, taille, poids).",
+            "Une norme : une règle commune aux fabricants, souvent pour la sécurité."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-5e-design-specifications-1-1",
+      "prompt": "Ce que l’objet doit faire, dit avec un verbe, est une …",
+      "spoken": "Ce que l’objet doit faire, dit avec un verbe, est une  (mot manquant) ",
+      "choices": [
+        "contrainte",
+        "fonction",
+        "norme"
+      ],
+      "answer": "fonction",
+      "hint": "Relis la ligne « Une fonction » du rappel.",
+      "explanation": "Une fonction dit ce que l’objet doit faire : éclairer, ranger, protéger. Une contrainte est une limite à respecter.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le besoin et le cahier des charges",
+          "lines": [
+            "Le besoin : ce qui manque à quelqu’un.",
+            "Le problème technique : la question que l’objet doit résoudre.",
+            "Le cahier des charges : ce que l’objet doit faire et respecter.",
+            "Une fonction : ce que l’objet doit faire, dit avec un verbe.",
+            "Une contrainte : une limite à respecter (prix, taille, poids).",
+            "Une norme : une règle commune aux fabricants, souvent pour la sécurité."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-5e-design-specifications-1-2",
+      "prompt": "Cahier des charges de la lampe de bureau\nFonction : éclairer le cahier.\nContrainte : coûter moins de 20 euros.\nContrainte : tenir sur un coin du bureau.",
+      "question": "Que doit faire la lampe ?",
+      "spoken": "Cahier des charges de la lampe de bureau. Fonction, éclairer le cahier. Contrainte, coûter moins de 20 euros. Contrainte, tenir sur un coin du bureau.",
+      "choices": [
+        "coûter moins de 20 euros",
+        "éclairer le cahier",
+        "tenir sur un coin du bureau"
+      ],
+      "answer": "éclairer le cahier",
+      "hint": "Cherche la ligne « Fonction ».",
+      "explanation": "La fonction dit ce que la lampe doit faire : éclairer le cahier. Le prix et la place sont des contraintes : des limites à respecter.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le besoin et le cahier des charges",
+          "lines": [
+            "Le besoin : ce qui manque à quelqu’un.",
+            "Le problème technique : la question que l’objet doit résoudre.",
+            "Le cahier des charges : ce que l’objet doit faire et respecter.",
+            "Une fonction : ce que l’objet doit faire, dit avec un verbe.",
+            "Une contrainte : une limite à respecter (prix, taille, poids).",
+            "Une norme : une règle commune aux fabricants, souvent pour la sécurité."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-5e-design-specifications-1-3",
+      "prompt": "Le sac à dos ne doit pas peser plus de 1 kilogramme : c’est une …",
+      "spoken": "Le sac à dos ne doit pas peser plus de 1 kilogramme : c’est une  (mot manquant) ",
+      "choices": [
+        "fonction",
+        "solution",
+        "contrainte"
+      ],
+      "answer": "contrainte",
+      "hint": "Le poids, est-ce ce que fait le sac, ou une limite ?",
+      "explanation": "Un poids à ne pas dépasser est une limite : c’est une contrainte. La fonction du sac, c’est porter les affaires.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le besoin et le cahier des charges",
+          "lines": [
+            "Le besoin : ce qui manque à quelqu’un.",
+            "Le problème technique : la question que l’objet doit résoudre.",
+            "Le cahier des charges : ce que l’objet doit faire et respecter.",
+            "Une fonction : ce que l’objet doit faire, dit avec un verbe.",
+            "Une contrainte : une limite à respecter (prix, taille, poids).",
+            "Une norme : une règle commune aux fabricants, souvent pour la sécurité."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-5e-design-specifications-1-4",
+      "prompt": "Une règle commune aux fabricants, par exemple pour la sécurité des jouets, s’appelle une …",
+      "spoken": "Une règle commune aux fabricants, par exemple pour la sécurité des jouets, s’appelle une  (mot manquant) ",
+      "choices": [
+        "notice",
+        "norme",
+        "fonction"
+      ],
+      "answer": "norme",
+      "hint": "Relis la ligne « Une norme » du rappel.",
+      "explanation": "Une norme est une règle commune aux fabricants : tous les jouets la respectent, pour la sécurité. La notice explique comment se servir de l’objet.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le besoin et le cahier des charges",
+          "lines": [
+            "Le besoin : ce qui manque à quelqu’un.",
+            "Le problème technique : la question que l’objet doit résoudre.",
+            "Le cahier des charges : ce que l’objet doit faire et respecter.",
+            "Une fonction : ce que l’objet doit faire, dit avec un verbe.",
+            "Une contrainte : une limite à respecter (prix, taille, poids).",
+            "Une norme : une règle commune aux fabricants, souvent pour la sécurité."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-5e-design-specifications-1-5",
+      "prompt": "Le problème de la classe\nLes plantes de la classe sèchent pendant les vacances.\nPersonne n’est là pour les arroser.",
+      "question": "Quel est le problème technique ?",
+      "spoken": "Le problème de la classe. Les plantes de la classe sèchent pendant les vacances. Personne n’est là pour les arroser.",
+      "choices": [
+        "Quelles plantes acheter ?",
+        "Comment ranger les arrosoirs ?",
+        "Comment arroser les plantes sans personne ?"
+      ],
+      "answer": "Comment arroser les plantes sans personne ?",
+      "hint": "Le problème technique est la question que l’objet doit résoudre.",
+      "explanation": "L’objet à inventer doit arroser les plantes quand personne n’est là : c’est le problème technique. Acheter d’autres plantes ne répond pas au besoin.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le besoin et le cahier des charges",
+          "lines": [
+            "Le besoin : ce qui manque à quelqu’un.",
+            "Le problème technique : la question que l’objet doit résoudre.",
+            "Le cahier des charges : ce que l’objet doit faire et respecter.",
+            "Une fonction : ce que l’objet doit faire, dit avec un verbe.",
+            "Une contrainte : une limite à respecter (prix, taille, poids).",
+            "Une norme : une règle commune aux fabricants, souvent pour la sécurité."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-5e-design-specifications-1-6",
+      "prompt": "La liste de ce que l’objet doit faire et respecter s’appelle le …",
+      "spoken": "La liste de ce que l’objet doit faire et respecter s’appelle le  (mot manquant) ",
+      "choices": [
+        "cahier des charges",
+        "mode d’emploi",
+        "catalogue"
+      ],
+      "answer": "cahier des charges",
+      "hint": "Relis la ligne « Le cahier des charges » du rappel.",
+      "explanation": "Le cahier des charges dit ce que l’objet doit faire et respecter, avant de le fabriquer. Le mode d’emploi explique comment se servir d’un objet déjà fait.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le besoin et le cahier des charges",
+          "lines": [
+            "Le besoin : ce qui manque à quelqu’un.",
+            "Le problème technique : la question que l’objet doit résoudre.",
+            "Le cahier des charges : ce que l’objet doit faire et respecter.",
+            "Une fonction : ce que l’objet doit faire, dit avec un verbe.",
+            "Une contrainte : une limite à respecter (prix, taille, poids).",
+            "Une norme : une règle commune aux fabricants, souvent pour la sécurité."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-5e-design-specifications-1-7",
+      "prompt": "Cahier des charges du porte-clés lumineux\nIl éclaire la serrure.\nIl pèse moins de 30 grammes.\nIl respecte la norme de sécurité des piles.",
+      "question": "Quelle ligne est une fonction ?",
+      "spoken": "Cahier des charges du porte-clés lumineux. Il éclaire la serrure. Il pèse moins de 30 grammes. Il respecte la norme de sécurité des piles.",
+      "choices": [
+        "il pèse moins de 30 grammes",
+        "il respecte la norme de sécurité des piles",
+        "il éclaire la serrure"
+      ],
+      "answer": "il éclaire la serrure",
+      "hint": "Une fonction dit ce que fait l’objet, avec un verbe d’action.",
+      "explanation": "Éclairer la serrure, c’est ce que fait le porte-clés : c’est sa fonction. Le poids est une contrainte, la sécurité des piles une norme.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le besoin et le cahier des charges",
+          "lines": [
+            "Le besoin : ce qui manque à quelqu’un.",
+            "Le problème technique : la question que l’objet doit résoudre.",
+            "Le cahier des charges : ce que l’objet doit faire et respecter.",
+            "Une fonction : ce que l’objet doit faire, dit avec un verbe.",
+            "Une contrainte : une limite à respecter (prix, taille, poids).",
+            "Une norme : une règle commune aux fabricants, souvent pour la sécurité."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "technology-5e-design",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

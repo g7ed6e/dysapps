@@ -63,6 +63,17 @@ const BUILDING_OF: Record<BiomeId, BuildingStyle> = {
   'life-earth-sciences-6e-living-world': { kind: 'serre' },
   'physics-chemistry-6e-matter-energy': { kind: 'laboratoire' },
   'technology-6e-objects': { kind: 'atelier' },
+  // SC-3, provisoire : les neuf îles de sciences de 5e à 3e reprennent la forme du bâtiment de 6e de leur matière, en attendant
+  // l'artiste technique 3D (décision du directeur artistique, SC-3).
+  'life-earth-sciences-5e-active-planet': { kind: 'serre' },
+  'physics-chemistry-5e-matter-universe': { kind: 'laboratoire' },
+  'technology-5e-design': { kind: 'atelier' },
+  'life-earth-sciences-4e-cells-evolution': { kind: 'serre' },
+  'physics-chemistry-4e-signals-circuits': { kind: 'laboratoire' },
+  'technology-4e-modeling': { kind: 'atelier' },
+  'life-earth-sciences-3e-human-body': { kind: 'serre' },
+  'physics-chemistry-3e-motion-energy': { kind: 'laboratoire' },
+  'technology-3e-digital': { kind: 'atelier' },
   // Îles Brumeuses (5e)
   'maths-5e-signed-numbers': { kind: 'dome' },
   'maths-5e-proportionality': { kind: 'echoppe' },

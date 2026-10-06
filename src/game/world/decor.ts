@@ -374,6 +374,16 @@ export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => numb
     put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.carton].side);
     put(9, 3, h(9, 3) + 2, BLOCKS[BLOC.carton].side);
   },
+  // SC-3, provisoire : aucun décor pour les neuf îles de sciences de 5e à 3e, en attendant l'artiste technique 3D.
+  'life-earth-sciences-5e-active-planet': () => {},
+  'physics-chemistry-5e-matter-universe': () => {},
+  'technology-5e-design': () => {},
+  'life-earth-sciences-4e-cells-evolution': () => {},
+  'physics-chemistry-4e-signals-circuits': () => {},
+  'technology-4e-modeling': () => {},
+  'life-earth-sciences-3e-human-body': () => {},
+  'physics-chemistry-3e-motion-energy': () => {},
+  'technology-3e-digital': () => {},
   'english-5e-vocabulary': (put, h) => {
     // Un étal : deux poteaux, un auvent de tuiles, une caisse de bois devant ; une pile de tuiles au sol.
     for (const px of [8, 10]) for (let z = 1; z <= 2; z++) put(px, 3, h(px, 3) + z, TRUNK);

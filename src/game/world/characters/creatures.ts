@@ -642,6 +642,17 @@ export const CREATURE_CUBES: Record<BiomeId, CubeDeModele[]> = {
   'life-earth-sciences-6e-living-world': FOUGERE,
   'physics-chemistry-6e-matter-energy': BULLE,
   'technology-6e-objects': BOULON,
+  // SC-3, provisoire : les neuf îles de sciences de 5e à 3e reprennent la créature en cubes de 6e de leur matière, en attendant
+  // l'artiste technique 3D (décision du directeur artistique, SC-3).
+  'life-earth-sciences-5e-active-planet': FOUGERE,
+  'physics-chemistry-5e-matter-universe': BULLE,
+  'technology-5e-design': BOULON,
+  'life-earth-sciences-4e-cells-evolution': FOUGERE,
+  'physics-chemistry-4e-signals-circuits': BULLE,
+  'technology-4e-modeling': BOULON,
+  'life-earth-sciences-3e-human-body': FOUGERE,
+  'physics-chemistry-3e-motion-energy': BULLE,
+  'technology-3e-digital': BOULON,
   'english-5e-vocabulary': PUDDING,
   'english-5e-grammar': MOUSTACHE,
   'lv2-5e-introductions': LINA,

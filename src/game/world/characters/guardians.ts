@@ -804,6 +804,17 @@ export const GUARDIAN_CUBES: Record<BiomeId, CubeDeModele[]> = {
   'life-earth-sciences-6e-living-world': CERF,
   'physics-chemistry-6e-matter-energy': ALAMBIC,
   'technology-6e-objects': AUTOMATE,
+  // SC-3, provisoire : les neuf îles de sciences de 5e à 3e reprennent le Gardien de 6e de leur matière, en attendant
+  // l'artiste technique 3D (décision du directeur artistique, SC-3).
+  'life-earth-sciences-5e-active-planet': CERF,
+  'physics-chemistry-5e-matter-universe': ALAMBIC,
+  'technology-5e-design': AUTOMATE,
+  'life-earth-sciences-4e-cells-evolution': CERF,
+  'physics-chemistry-4e-signals-circuits': ALAMBIC,
+  'technology-4e-modeling': AUTOMATE,
+  'life-earth-sciences-3e-human-body': CERF,
+  'physics-chemistry-3e-motion-energy': ALAMBIC,
+  'technology-3e-digital': AUTOMATE,
   'english-5e-vocabulary': REINE,
   'english-5e-grammar': SPECTRE,
   'lv2-5e-introductions': DILIGENCE,

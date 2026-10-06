@@ -1,0 +1,232 @@
+{
+  "id": "physics-chemistry-5e-matter-universe-changes-of-state-1",
+  "biome": "physics-chemistry-5e-matter-universe",
+  "type": "changes-of-state",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "physics-chemistry-5e-matter-universe-changes-of-state-1-0",
+      "prompt": "Dans un gaz, les molécules sont éloignées et en …",
+      "spoken": "Dans un gaz, les molécules sont éloignées et en  (mot manquant) ",
+      "choices": [
+        "ordre",
+        "désordre",
+        "repos"
+      ],
+      "answer": "désordre",
+      "hint": "Relis la ligne « Gaz » du rappel.",
+      "explanation": "Dans un gaz, les molécules sont loin les unes des autres et bougent dans tous les sens : elles sont en désordre. Rangées, c’est dans un solide.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les états et les molécules",
+          "lines": [
+            "Toute matière est faite de molécules, bien trop petites pour être vues.",
+            "Solide : molécules serrées et rangées. Il garde sa forme.",
+            "Liquide : molécules serrées, en désordre. Elles glissent les unes sur les autres.",
+            "Gaz : molécules éloignées, en désordre. On peut le comprimer.",
+            "Changer d’état : les molécules restent les mêmes, elles s’éloignent ou se rapprochent."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-5e-matter-universe-changes-of-state-1-1",
+      "prompt": "Dans un solide, les molécules sont serrées et …",
+      "spoken": "Dans un solide, les molécules sont serrées et  (mot manquant) ",
+      "choices": [
+        "éloignées",
+        "rangées",
+        "en désordre"
+      ],
+      "answer": "rangées",
+      "hint": "Un solide garde sa forme.",
+      "explanation": "Dans un solide, les molécules sont serrées et rangées : c’est pour cela qu’il garde sa forme.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les états et les molécules",
+          "lines": [
+            "Toute matière est faite de molécules, bien trop petites pour être vues.",
+            "Solide : molécules serrées et rangées. Il garde sa forme.",
+            "Liquide : molécules serrées, en désordre. Elles glissent les unes sur les autres.",
+            "Gaz : molécules éloignées, en désordre. On peut le comprimer.",
+            "Changer d’état : les molécules restent les mêmes, elles s’éloignent ou se rapprochent."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-5e-matter-universe-changes-of-state-1-2",
+      "prompt": "Dans un liquide, les molécules sont serrées, mais elles …",
+      "spoken": "Dans un liquide, les molécules sont serrées, mais elles  (mot manquant) ",
+      "choices": [
+        "sont immobiles",
+        "sont très éloignées",
+        "glissent les unes sur les autres"
+      ],
+      "answer": "glissent les unes sur les autres",
+      "hint": "Un liquide coule.",
+      "explanation": "Les molécules d’un liquide sont serrées, mais elles glissent les unes sur les autres : le liquide coule et prend la forme du récipient.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les états et les molécules",
+          "lines": [
+            "Toute matière est faite de molécules, bien trop petites pour être vues.",
+            "Solide : molécules serrées et rangées. Il garde sa forme.",
+            "Liquide : molécules serrées, en désordre. Elles glissent les unes sur les autres.",
+            "Gaz : molécules éloignées, en désordre. On peut le comprimer.",
+            "Changer d’état : les molécules restent les mêmes, elles s’éloignent ou se rapprochent."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-5e-matter-universe-changes-of-state-1-3",
+      "prompt": "Trois dessins de molécules\nDessin A : serrées et rangées.\nDessin B : serrées, en désordre.\nDessin C : éloignées, en désordre.",
+      "question": "Quel dessin montre de l’eau liquide ?",
+      "spoken": "Trois dessins de molécules. Dessin A, serrées et rangées. Dessin B, serrées, en désordre. Dessin C, éloignées, en désordre.",
+      "choices": [
+        "le dessin A",
+        "le dessin B",
+        "le dessin C"
+      ],
+      "answer": "le dessin B",
+      "hint": "Relis la ligne « Liquide » du rappel.",
+      "explanation": "Dans un liquide, les molécules sont serrées et en désordre : c’est le dessin B. Le dessin A montre un solide, le dessin C un gaz.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les états et les molécules",
+          "lines": [
+            "Toute matière est faite de molécules, bien trop petites pour être vues.",
+            "Solide : molécules serrées et rangées. Il garde sa forme.",
+            "Liquide : molécules serrées, en désordre. Elles glissent les unes sur les autres.",
+            "Gaz : molécules éloignées, en désordre. On peut le comprimer.",
+            "Changer d’état : les molécules restent les mêmes, elles s’éloignent ou se rapprochent."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-5e-matter-universe-changes-of-state-1-4",
+      "prompt": "Quand l’eau bout, ses molécules …",
+      "spoken": "Quand l’eau bout, ses molécules  (mot manquant) ",
+      "choices": [
+        "s’éloignent",
+        "se rapprochent",
+        "s’arrêtent"
+      ],
+      "answer": "s’éloignent",
+      "hint": "L’eau liquide devient un gaz.",
+      "explanation": "En devenant de la vapeur, un gaz, l’eau voit ses molécules s’éloigner les unes des autres.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les états et les molécules",
+          "lines": [
+            "Toute matière est faite de molécules, bien trop petites pour être vues.",
+            "Solide : molécules serrées et rangées. Il garde sa forme.",
+            "Liquide : molécules serrées, en désordre. Elles glissent les unes sur les autres.",
+            "Gaz : molécules éloignées, en désordre. On peut le comprimer.",
+            "Changer d’état : les molécules restent les mêmes, elles s’éloignent ou se rapprochent."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-5e-matter-universe-changes-of-state-1-5",
+      "prompt": "Sur la vitre froide, la vapeur d’eau redevient liquide : ses molécules …",
+      "spoken": "Sur la vitre froide, la vapeur d’eau redevient liquide : ses molécules  (mot manquant) ",
+      "choices": [
+        "s’éloignent",
+        "se cassent",
+        "se rapprochent"
+      ],
+      "answer": "se rapprochent",
+      "hint": "Un gaz devient un liquide.",
+      "explanation": "Les molécules d’un gaz sont éloignées, celles d’un liquide serrées : en devenant liquide, elles se rapprochent. Elles ne se cassent pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les états et les molécules",
+          "lines": [
+            "Toute matière est faite de molécules, bien trop petites pour être vues.",
+            "Solide : molécules serrées et rangées. Il garde sa forme.",
+            "Liquide : molécules serrées, en désordre. Elles glissent les unes sur les autres.",
+            "Gaz : molécules éloignées, en désordre. On peut le comprimer.",
+            "Changer d’état : les molécules restent les mêmes, elles s’éloignent ou se rapprochent."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-5e-matter-universe-changes-of-state-1-6",
+      "prompt": "Quand la glace fond, les molécules d’eau …",
+      "spoken": "Quand la glace fond, les molécules d’eau  (mot manquant) ",
+      "choices": [
+        "deviennent plus petites",
+        "restent les mêmes",
+        "disparaissent"
+      ],
+      "answer": "restent les mêmes",
+      "hint": "Relis la ligne « Changer d’état » du rappel.",
+      "explanation": "Pendant la fusion, les molécules d’eau ne changent pas : elles quittent leur rang et se mettent en désordre. Rien ne disparaît.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les états et les molécules",
+          "lines": [
+            "Toute matière est faite de molécules, bien trop petites pour être vues.",
+            "Solide : molécules serrées et rangées. Il garde sa forme.",
+            "Liquide : molécules serrées, en désordre. Elles glissent les unes sur les autres.",
+            "Gaz : molécules éloignées, en désordre. On peut le comprimer.",
+            "Changer d’état : les molécules restent les mêmes, elles s’éloignent ou se rapprochent."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-5e-matter-universe-changes-of-state-1-7",
+      "prompt": "Deux seringues bouchées\nSeringue A : pleine d’air. On pousse : le piston avance.\nSeringue B : pleine d’eau. On pousse : le piston ne bouge presque pas.",
+      "question": "Pourquoi peut-on comprimer l’air ?",
+      "spoken": "Deux seringues bouchées. Seringue A, pleine d’air. On pousse, le piston avance. Seringue B, pleine d’eau. On pousse, le piston ne bouge presque pas.",
+      "choices": [
+        "ses molécules sont rangées",
+        "ses molécules sont éloignées",
+        "ses molécules sont plus petites"
+      ],
+      "answer": "ses molécules sont éloignées",
+      "hint": "Relis la ligne « Gaz » du rappel.",
+      "explanation": "L’air est un gaz : ses molécules sont éloignées, on peut les rapprocher en poussant. Dans l’eau liquide, elles sont déjà serrées.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les états et les molécules",
+          "lines": [
+            "Toute matière est faite de molécules, bien trop petites pour être vues.",
+            "Solide : molécules serrées et rangées. Il garde sa forme.",
+            "Liquide : molécules serrées, en désordre. Elles glissent les unes sur les autres.",
+            "Gaz : molécules éloignées, en désordre. On peut le comprimer.",
+            "Changer d’état : les molécules restent les mêmes, elles s’éloignent ou se rapprochent."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "physics-chemistry-5e-matter-universe",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}
