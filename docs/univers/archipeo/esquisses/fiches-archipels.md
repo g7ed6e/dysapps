@@ -34,6 +34,9 @@ Les esquisses qui les illustrent sont **dessinées en code** (Three.js rendu dan
 - **À éviter** : herbe citron, mer bleu roi, cocotiers, pastel, volcan fumant.
 - **Composition** : horizon à 30 % du haut, deux rangs de montagnes bleues ; l'île-héros au centre-droit (x 35-95 %) ; le phare à x 70 %, de y 55 % à y 12 % ; le village étagé à gauche du phare ; au premier plan le lagon, la plage, le ponton et une barque ; un îlot boisé coupé par le bord gauche.
 
+- **La Fouille des siècles (HG)** : au bout du second rang ; le musée de Silex en mosaïque ocre et crème, toit d’ardoise ; un éclat de mosaïque et un tas de sable. Silex : ourson des fouilles brun, museau crème, pinceau de fouille. L’Amphore peinte : terre cuite à bandes sombres et ocre.
+- **La Pointe des paysages (HG)** : à côté de la Fouille ; le quartier de Boussole, murs de chaume, toits de terre cuite, ses champs et son quai. Boussole : pélican des ports, blanc, au bec à poche jaune pâle. Le Castor de glaise : assis, la queue en dalle plate.
+
 ## 5e — Les Îles Brumeuses
 
 - **Intention** : l'exploration ; on devine plus qu'on ne voit.
