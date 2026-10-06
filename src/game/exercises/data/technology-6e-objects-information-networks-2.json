@@ -26,7 +26,7 @@
             "Un objet change avec les besoins des gens.",
             "Il change aussi avec les techniques et les matériaux nouveaux.",
             "Lire une frise : d’abord, ensuite, puis, aujourd’hui.",
-            "Une lampe à LED consomme peu d’énergie."
+            "Une lampe d’aujourd’hui consomme peu d’énergie."
           ]
         }
       }
@@ -36,13 +36,13 @@
       "prompt": "Avant l’ampoule électrique, on s’éclairait avec des bougies et des lampes à …",
       "spoken": "Avant l’ampoule électrique, on s’éclairait avec des bougies et des lampes à  (mot manquant) ",
       "choices": [
-        "LED",
+        "basse consommation",
         "pétrole",
         "piles"
       ],
       "answer": "pétrole",
       "hint": "Il n’y avait pas encore d’électricité dans les maisons.",
-      "explanation": "Avant l’électricité, on s’éclairait à la bougie et à la lampe à pétrole. Les lampes à LED sont bien plus récentes.",
+      "explanation": "Avant l’électricité, on s’éclairait à la bougie et à la lampe à pétrole. Les lampes basse consommation et les lampes à piles sont bien plus récentes.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -51,15 +51,15 @@
             "Un objet change avec les besoins des gens.",
             "Il change aussi avec les techniques et les matériaux nouveaux.",
             "Lire une frise : d’abord, ensuite, puis, aujourd’hui.",
-            "Une lampe à LED consomme peu d’énergie."
+            "Une lampe d’aujourd’hui consomme peu d’énergie."
           ]
         }
       }
     },
     {
       "key": "technology-6e-objects-information-networks-2-2",
-      "prompt": "La lampe à LED éclaire autant que l’ancienne ampoule, mais elle consomme …",
-      "spoken": "La lampe à LED éclaire autant que l’ancienne ampoule, mais elle consomme  (mot manquant) ",
+      "prompt": "La lampe d’aujourd’hui éclaire autant que l’ancienne ampoule, mais elle consomme …",
+      "spoken": "La lampe d’aujourd’hui éclaire autant que l’ancienne ampoule, mais elle consomme  (mot manquant) ",
       "choices": [
         "plus d’énergie",
         "moins d’énergie",
@@ -67,7 +67,7 @@
       ],
       "answer": "moins d’énergie",
       "hint": "Relis la dernière ligne du rappel.",
-      "explanation": "La lampe à LED consomme beaucoup moins d’énergie pour éclairer autant : une nouvelle technique a fait changer l’objet.",
+      "explanation": "La lampe d’aujourd’hui consomme beaucoup moins d’énergie pour éclairer autant : une nouvelle technique a fait changer l’objet.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -76,7 +76,7 @@
             "Un objet change avec les besoins des gens.",
             "Il change aussi avec les techniques et les matériaux nouveaux.",
             "Lire une frise : d’abord, ensuite, puis, aujourd’hui.",
-            "Une lampe à LED consomme peu d’énergie."
+            "Une lampe d’aujourd’hui consomme peu d’énergie."
           ]
         }
       }
@@ -102,7 +102,7 @@
             "Un objet change avec les besoins des gens.",
             "Il change aussi avec les techniques et les matériaux nouveaux.",
             "Lire une frise : d’abord, ensuite, puis, aujourd’hui.",
-            "Une lampe à LED consomme peu d’énergie."
+            "Une lampe d’aujourd’hui consomme peu d’énergie."
           ]
         }
       }
@@ -127,7 +127,7 @@
             "Un objet change avec les besoins des gens.",
             "Il change aussi avec les techniques et les matériaux nouveaux.",
             "Lire une frise : d’abord, ensuite, puis, aujourd’hui.",
-            "Une lampe à LED consomme peu d’énergie."
+            "Une lampe d’aujourd’hui consomme peu d’énergie."
           ]
         }
       }
@@ -153,7 +153,7 @@
             "Un objet change avec les besoins des gens.",
             "Il change aussi avec les techniques et les matériaux nouveaux.",
             "Lire une frise : d’abord, ensuite, puis, aujourd’hui.",
-            "Une lampe à LED consomme peu d’énergie."
+            "Une lampe d’aujourd’hui consomme peu d’énergie."
           ]
         }
       }
@@ -178,7 +178,7 @@
             "Un objet change avec les besoins des gens.",
             "Il change aussi avec les techniques et les matériaux nouveaux.",
             "Lire une frise : d’abord, ensuite, puis, aujourd’hui.",
-            "Une lampe à LED consomme peu d’énergie."
+            "Une lampe d’aujourd’hui consomme peu d’énergie."
           ]
         }
       }
@@ -204,7 +204,7 @@
             "Un objet change avec les besoins des gens.",
             "Il change aussi avec les techniques et les matériaux nouveaux.",
             "Lire une frise : d’abord, ensuite, puis, aujourd’hui.",
-            "Une lampe à LED consomme peu d’énergie."
+            "Une lampe d’aujourd’hui consomme peu d’énergie."
           ]
         }
       }

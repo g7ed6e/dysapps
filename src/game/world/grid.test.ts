@@ -103,6 +103,7 @@ describe('La disposition en grille', () => {
     // Chaque paire d'îles de chaque archipel : quinze îles au 6e depuis les sciences (SC-2), plus de cinq secondes.
   }, 30_000);
 
+  // Chaque paire d'îles du 6e (quinze îles depuis SC-2), avec un aller et deux retours : plusieurs secondes.
   it('changer de but en chemin : le trajet part de l’île où il se trouve, sans finir de traverser l’ouvrage', () => {
     const a = '6e';
     const { g } = grilleDe(a);

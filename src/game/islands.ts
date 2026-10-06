@@ -1538,7 +1538,7 @@ export const ILES = [
     "guardian": "l’Automate de laiton",
     "icon": "ruler",
     "creature": {
-      "name": "Boulon"
+      "name": "Pince"
     },
     "exercises": [
       {

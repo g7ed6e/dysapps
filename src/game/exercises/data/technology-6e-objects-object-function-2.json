@@ -7,9 +7,9 @@
   "items": [
     {
       "key": "technology-6e-objects-object-function-2-0",
-      "prompt": "Le croquis du vélo, en mots\nFlèche 1 : la grande roue dentée, aux pédales.\nFlèche 2 : la chaîne.\nFlèche 3 : la petite roue dentée, à la roue arrière.",
+      "prompt": "Le croquis du vélo\nFlèche 1 : la grande roue dentée, aux pédales.\nFlèche 2 : la chaîne.\nFlèche 3 : la petite roue dentée, à la roue arrière.",
       "question": "Quel mot de légende va avec la flèche 1 ?",
-      "spoken": "Le croquis du vélo, en mots. Flèche 1, la grande roue dentée, aux pédales. Flèche 2, la chaîne. Flèche 3, la petite roue dentée, à la roue arrière.",
+      "spoken": "Le croquis du vélo. Flèche 1, la grande roue dentée, aux pédales. Flèche 2, la chaîne. Flèche 3, la petite roue dentée, à la roue arrière.",
       "choices": [
         "le pignon",
         "le plateau",
@@ -92,9 +92,9 @@
     },
     {
       "key": "technology-6e-objects-object-function-2-3",
-      "prompt": "L’engrenage, en mots\nLa roue A tourne dans le sens des aiguilles d’une montre.\nSes dents touchent celles de la roue B.",
+      "prompt": "L’engrenage\nLa roue A tourne dans le sens des aiguilles d’une montre.\nSes dents touchent celles de la roue B.",
       "question": "Dans quel sens tourne la roue B ?",
-      "spoken": "L’engrenage, en mots. La roue A tourne dans le sens des aiguilles d’une montre. Ses dents touchent celles de la roue B.",
+      "spoken": "L’engrenage. La roue A tourne dans le sens des aiguilles d’une montre. Ses dents touchent celles de la roue B.",
       "choices": [
         "dans le même sens que A",
         "dans le sens contraire",
@@ -177,9 +177,9 @@
     },
     {
       "key": "technology-6e-objects-object-function-2-6",
-      "prompt": "Le dessin de Léa, en mots\nLéa trace vite, à main levée, la forme de sa lampe.\nElle écrit le nom de chaque partie à côté.",
+      "prompt": "Le dessin de Léa\nLéa trace vite, à main levée, la forme de sa lampe.\nElle écrit le nom de chaque partie à côté.",
       "question": "Comment s’appelle ce dessin ?",
-      "spoken": "Le dessin de Léa, en mots. Léa trace vite, à main levée, la forme de sa lampe. Elle écrit le nom de chaque partie à côté.",
+      "spoken": "Le dessin de Léa. Léa trace vite, à main levée, la forme de sa lampe. Elle écrit le nom de chaque partie à côté.",
       "choices": [
         "une photographie",
         "un croquis",
@@ -206,9 +206,9 @@
     },
     {
       "key": "technology-6e-objects-object-function-2-7",
-      "prompt": "Le store de la fenêtre, en mots\nOn tourne la manivelle.\nLa toile du store descend tout droit.",
+      "prompt": "Le store de la fenêtre\nOn tourne la manivelle.\nLa toile du store descend tout droit.",
       "question": "Quel mouvement fait la toile du store ?",
-      "spoken": "Le store de la fenêtre, en mots. On tourne la manivelle. La toile du store descend tout droit.",
+      "spoken": "Le store de la fenêtre. On tourne la manivelle. La toile du store descend tout droit.",
       "choices": [
         "une rotation",
         "une translation",

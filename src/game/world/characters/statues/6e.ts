@@ -627,6 +627,7 @@ export const STATUES_6E: Partial<Record<BiomeId, Statue>> = {
   'physics-chemistry-6e-matter-energy': {
     nom: 'l’Alambic de verre',
     allume: 'le liquide de son ballon',
+    sansFlamme: true,
     sculpture: (T, a) => {
       // Le trépied de bois, le ballon et son long col, le bec courbe qui descend dans un petit flacon. Aucune flamme.
       for (const t of [0, 1, 2]) {

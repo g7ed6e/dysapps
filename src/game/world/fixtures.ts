@@ -118,7 +118,7 @@ const FORMES: Record<string, Cube[]> = {
   // Bulle, l'étagère à flacons (DA, SC-2) : un casier de trois cartons au sol, deux montants d'aimant aux bouts, une
   // lanterne entre eux. Le carton remplace le verre, déjà demandé dans l'archipel (docs/contenu, à valider par le DA).
   'physics-chemistry-6e-matter-energy-fixture-1': [...rangee(0, 2, 0, 0, BLOC.carton), [0, 0, 1, BLOC.aimant], [1, 0, 1, 'lantern'], [2, 0, 1, BLOC.aimant]],
-  // Boulon, l'établi (DA, SC-2) : un plateau de trois cartons sur deux pieds de barrière, la barre de trois aimants
+  // Pince, l'établi (DA, SC-2) : un plateau de trois cartons sur deux pieds de barrière, la barre de trois aimants
   // dessus. L'aimant remplace le bois, déjà demandé dans l'archipel (docs/contenu, à valider par le DA).
   'technology-6e-objects-fixture-1': [[0, 0, 0, 'fence'], [2, 0, 0, 'fence'], ...rangee(0, 2, 0, 1, BLOC.carton), ...rangee(0, 2, 0, 2, BLOC.aimant)],
 

@@ -139,9 +139,9 @@
     },
     {
       "key": "life-earth-sciences-6e-living-world-living-groups-2-5",
-      "prompt": "La photo d’un fossile, en mots\nUn animal de la taille d’un pigeon, pris dans la roche.\nOn voit des plumes, des dents et une longue queue d’os.",
+      "prompt": "La photo d’un fossile\nUn animal de la taille d’un pigeon, pris dans la roche.\nOn voit des plumes, des dents et une longue queue d’os.",
       "question": "Quel attribut le rapproche des oiseaux ?",
-      "spoken": "La photo d’un fossile, en mots. Un animal de la taille d’un pigeon, pris dans la roche. On voit des plumes, des dents et une longue queue d’os.",
+      "spoken": "La photo d’un fossile. Un animal de la taille d’un pigeon, pris dans la roche. On voit des plumes, des dents et une longue queue d’os.",
       "choices": [
         "les dents",
         "la longue queue",

@@ -486,7 +486,7 @@ const BULLE = fromLayers(
   { B: '#8ec8ea', W: '#f6f8fa', K: '#1f1a16' },
 );
 
-// Boulon : une fourmi bricoleuse debout (DA, SC-2), brun-rouge, trois segments séparés par une taille fine (l'abdomen
+// Pince : une fourmi bricoleuse debout (DA, SC-2), brun-rouge, trois segments séparés par une taille fine (l'abdomen
 // derrière, le thorax et sa bavette de tablier de cuir, la tête), deux antennes coudées ; la clé plate grise levée à
 // sa droite. Haute et étroite, elle ne se confond pas avec Coco, ronde et rouge vif. Trois couleurs : les yeux
 // reprennent le cuir du tablier.

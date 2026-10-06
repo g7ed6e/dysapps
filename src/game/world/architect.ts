@@ -574,7 +574,7 @@ function laboratoire(b: BlockId): Stages {
 }
 
 /**
- * L'atelier (l'atelier de Boulon, technologie 6e) : trois plans (DA, SC-2). L'atelier : une salle de carton, cinq sur
+ * L'atelier (l'atelier de Pince, technologie 6e) : trois plans (DA, SC-2). L'atelier : une salle de carton, cinq sur
  * trois, trois blocs de haut, à gauche de la zone, une porte large (deux cases, deux de haut) sur sa façade. Le toit de
  * l'atelier : les quatre portes de la porte large, une lanterne au mur à côté d'elle, le toit bas à deux pans. La cour
  * de l'atelier : la barrière et son portillon, deux lanternes, la marche, deux jardinières.

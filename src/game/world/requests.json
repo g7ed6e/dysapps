@@ -425,8 +425,8 @@
     "blocland": {
       "name": "l’établi",
       "ask": "Il me faut {objet} pour mon établi. Joue une mission du Laboratoire des éléments.",
-      "ready": "Tu as les {blocs} ! Livre-les à Boulon.",
-      "done": "Établi posé chez Boulon !"
+      "ready": "Tu as les {blocs} ! Livre-les à Pince.",
+      "done": "Établi posé chez Pince !"
     }
   }
 ]

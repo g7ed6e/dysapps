@@ -252,7 +252,7 @@ export const ARCHIPEO = {
       guardianSays: {
         hit: 'Un bouton de ma poitrine s’allume. C’est juste.',
         miss: 'Rien ne s’éteint. Relis le schéma, cherche à quoi sert l’objet, et reprends.',
-        beaten: 'Mes boutons se rallument. Le hangar est à toi, et à Boulon.',
+        beaten: 'Mes boutons se rallument. Le hangar est à toi, et à Pince.',
       },
     },
     'lv2-3e-travel': {

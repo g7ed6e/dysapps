@@ -59,9 +59,9 @@
     },
     {
       "key": "physics-chemistry-6e-matter-energy-motion-signals-1-2",
-      "prompt": "Photos de la bille, une par seconde, en mots\nLes positions de la bille sont de plus en plus écartées.",
+      "prompt": "Photos de la bille, une par seconde\nLes positions de la bille sont de plus en plus écartées.",
       "question": "Que fait la vitesse de la bille ?",
-      "spoken": "Photos de la bille, une par seconde, en mots. Les positions de la bille sont de plus en plus écartées.",
+      "spoken": "Photos de la bille, une par seconde. Les positions de la bille sont de plus en plus écartées.",
       "choices": [
         "elle reste la même",
         "elle augmente",
@@ -139,9 +139,9 @@
     },
     {
       "key": "physics-chemistry-6e-matter-energy-motion-signals-1-5",
-      "prompt": "Le compteur du bus, en mots\nL’aiguille est sur le nombre 30.\nSous les nombres, il est écrit : km/h.",
+      "prompt": "Le compteur du bus\nL’aiguille est sur le nombre 30.\nSous les nombres, il est écrit : km/h.",
       "question": "À quelle vitesse roule le bus ?",
-      "spoken": "Le compteur du bus, en mots. L’aiguille est sur le nombre 30. Sous les nombres, il est écrit kilomètres par heure.",
+      "spoken": "Le compteur du bus. L’aiguille est sur le nombre 30. Sous les nombres, il est écrit kilomètres par heure.",
       "choices": [
         "30 kilomètres",
         "30 heures",
@@ -192,9 +192,9 @@
     },
     {
       "key": "physics-chemistry-6e-matter-energy-motion-signals-1-7",
-      "prompt": "Photos du skieur en bas de la piste, une par seconde, en mots\nLes positions du skieur sont de plus en plus serrées.",
+      "prompt": "Photos du skieur en bas de la piste, une par seconde\nLes positions du skieur sont de plus en plus serrées.",
       "question": "Que fait la vitesse du skieur ?",
-      "spoken": "Photos du skieur en bas de la piste, une par seconde, en mots. Les positions du skieur sont de plus en plus serrées.",
+      "spoken": "Photos du skieur en bas de la piste, une par seconde. Les positions du skieur sont de plus en plus serrées.",
       "choices": [
         "elle augmente",
         "elle diminue",

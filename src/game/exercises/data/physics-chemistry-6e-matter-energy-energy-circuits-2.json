@@ -89,9 +89,9 @@
     },
     {
       "key": "physics-chemistry-6e-matter-energy-energy-circuits-2-3",
-      "prompt": "Le schéma d’un circuit, en mots\nUne pile : un grand trait et un petit trait.\nUn rond avec une croix dedans.\nUn interrupteur fermé.\nDes fils relient le tout en boucle.",
+      "prompt": "Le schéma d’un circuit\nUne pile : un grand trait et un petit trait.\nUn rond avec une croix dedans.\nUn interrupteur fermé.\nDes fils relient le tout en boucle.",
       "question": "Que représente le rond avec une croix ?",
-      "spoken": "Le schéma d’un circuit, en mots. Une pile, un grand trait et un petit trait. Un rond avec une croix dedans. Un interrupteur fermé. Des fils relient le tout en boucle.",
+      "spoken": "Le schéma d’un circuit. Une pile, un grand trait et un petit trait. Un rond avec une croix dedans. Un interrupteur fermé. Des fils relient le tout en boucle.",
       "choices": [
         "la pile",
         "la lampe",

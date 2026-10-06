@@ -7,9 +7,9 @@
   "items": [
     {
       "key": "physics-chemistry-6e-matter-energy-states-of-matter-2-0",
-      "prompt": "L’éprouvette graduée, en mots\nLes traits sont en millilitres.\nLe bas de la surface de l’eau touche le trait 40.",
+      "prompt": "L’éprouvette graduée\nLes traits sont en millilitres.\nLe bas de la surface de l’eau touche le trait 40.",
       "question": "Quel est le volume d’eau ?",
-      "spoken": "L’éprouvette graduée, en mots. Les traits sont en millilitres. Le bas de la surface de l’eau touche le trait 40.",
+      "spoken": "L’éprouvette graduée. Les traits sont en millilitres. Le bas de la surface de l’eau touche le trait 40.",
       "choices": [
         "40 centimètres",
         "40 grammes",

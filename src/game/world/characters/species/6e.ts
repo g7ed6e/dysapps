@@ -385,7 +385,7 @@ export const ESPECES_6E = {
     },
   },
   // Archipéo est en pause (2 octobre 2026) : ces trois habitants n'ont que le strict nécessaire, sans pièce de plus que
-  // leur signature (budget de l'archipel). Fougère y est un escargot jardinier, Bulle un poulpe chimiste, Boulon une
+  // leur signature (budget de l'archipel). Fougère y est un escargot jardinier, Bulle un poulpe chimiste, Pince une
   // fourmi bricoleuse (DA, SC-2).
   'life-earth-sciences-6e-living-world': {
     nom: 'Fougère',
@@ -396,7 +396,7 @@ export const ESPECES_6E = {
     tenue: { couleur: TENUE.lin, vetements: ['ceinture'] },
     silhouette: { tete: 0.3, teteProfondeur: 0.27, crane: 0.9 },
     coiffe: (T, k) => {
-      // Les deux antennes, un bouton brun au bout.
+      // Les deux antennes.
       for (const c of [-1, 1]) pointe(T, [c * 0.1, 2.45, 0], 0.03, 0.26, k.dom, [0, 0, -c * 0.3], 3);
     },
     corps: (T, k) => {
@@ -437,7 +437,7 @@ export const ESPECES_6E = {
     },
   },
   'technology-6e-objects': {
-    nom: 'Boulon',
+    nom: 'Pince',
     metier: 'bricoleuse',
     dominante: 0x8e3a26,
     marque: { couleur: 0x6a2a1c, ou: ['tete'] },

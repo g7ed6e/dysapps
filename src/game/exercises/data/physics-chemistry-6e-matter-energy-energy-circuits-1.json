@@ -112,9 +112,9 @@
     },
     {
       "key": "physics-chemistry-6e-matter-energy-energy-circuits-1-4",
-      "prompt": "Le vélo à dynamo, en mots\nLe cycliste pédale.\nLa dynamo frotte sur la roue qui tourne.\nLa lampe du vélo s’allume.",
+      "prompt": "Le vélo à dynamo\nLe cycliste pédale.\nLa dynamo frotte sur la roue qui tourne.\nLa lampe du vélo s’allume.",
       "question": "D’où vient l’énergie qui allume la lampe ?",
-      "spoken": "Le vélo à dynamo, en mots. Le cycliste pédale. La dynamo frotte sur la roue qui tourne. La lampe du vélo s’allume.",
+      "spoken": "Le vélo à dynamo. Le cycliste pédale. La dynamo frotte sur la roue qui tourne. La lampe du vélo s’allume.",
       "choices": [
         "d’une pile cachée dans la lampe",
         "des muscles du cycliste",
@@ -191,9 +191,9 @@
     },
     {
       "key": "physics-chemistry-6e-matter-energy-energy-circuits-1-7",
-      "prompt": "Le grille-pain, en mots\nIl est branché sur la prise.\nSes fils deviennent rouges et chauds.\nLe pain dore.",
+      "prompt": "Le grille-pain\nIl est branché sur la prise.\nSes fils deviennent rouges et chauds.\nLe pain dore.",
       "question": "En quoi le grille-pain change-t-il l’énergie électrique ?",
-      "spoken": "Le grille-pain, en mots. Il est branché sur la prise. Ses fils deviennent rouges et chauds. Le pain dore.",
+      "spoken": "Le grille-pain. Il est branché sur la prise. Ses fils deviennent rouges et chauds. Le pain dore.",
       "choices": [
         "en mouvement",
         "en chaleur",

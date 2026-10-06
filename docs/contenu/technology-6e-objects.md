@@ -6,7 +6,7 @@ classe : 6e
 description : À quoi sert un objet et comment il marche, de quoi il est fait et ce qu’il devient, comment il stocke et transmet l’information, et comment il a changé.
 gardien : l’Automate de laiton
 icône : ruler
-créature : Boulon
+créature : Pince
 ---
 
 # Hangar des inventions
@@ -97,9 +97,9 @@ Pour tous les items :
   - Vélo : le plateau aux pédales, le pignon à la roue arrière.
   - Croquis : un dessin rapide, à main levée, avec une légende.
 
-1. énoncé : "Le croquis du vélo, en mots\nFlèche 1 : la grande roue dentée, aux pédales.\nFlèche 2 : la chaîne.\nFlèche 3 : la petite roue dentée, à la roue arrière."
+1. énoncé : "Le croquis du vélo\nFlèche 1 : la grande roue dentée, aux pédales.\nFlèche 2 : la chaîne.\nFlèche 3 : la petite roue dentée, à la roue arrière."
    - question : Quel mot de légende va avec la flèche 1 ?
-   - lu : Le croquis du vélo, en mots. Flèche 1, la grande roue dentée, aux pédales. Flèche 2, la chaîne. Flèche 3, la petite roue dentée, à la roue arrière.
+   - lu : Le croquis du vélo. Flèche 1, la grande roue dentée, aux pédales. Flèche 2, la chaîne. Flèche 3, la petite roue dentée, à la roue arrière.
    - choix : le pignon · le plateau · le guidon
    - réponse : le plateau
    - indice : Relis la ligne « Vélo » du rappel.
@@ -114,9 +114,9 @@ Pour tous les items :
    - réponse : engrenage
    - indice : Relis la ligne « Engrenage » du rappel.
    - explication : Deux roues dentées en contact forment un engrenage : l’une fait tourner l’autre.
-4. énoncé : "L’engrenage, en mots\nLa roue A tourne dans le sens des aiguilles d’une montre.\nSes dents touchent celles de la roue B."
+4. énoncé : "L’engrenage\nLa roue A tourne dans le sens des aiguilles d’une montre.\nSes dents touchent celles de la roue B."
    - question : Dans quel sens tourne la roue B ?
-   - lu : L’engrenage, en mots. La roue A tourne dans le sens des aiguilles d’une montre. Ses dents touchent celles de la roue B.
+   - lu : L’engrenage. La roue A tourne dans le sens des aiguilles d’une montre. Ses dents touchent celles de la roue B.
    - choix : dans le même sens que A · dans le sens contraire · elle ne tourne pas
    - réponse : dans le sens contraire
    - indice : Relis la ligne « Engrenage » du rappel, et celle qui suit.
@@ -131,16 +131,16 @@ Pour tous les items :
    - réponse : musculaire
    - indice : Qui la fait avancer ?
    - explication : Sans moteur, c’est le pied qui pousse : l’énergie vient des muscles. Une trottinette électrique, elle, a une batterie.
-7. énoncé : "Le dessin de Léa, en mots\nLéa trace vite, à main levée, la forme de sa lampe.\nElle écrit le nom de chaque partie à côté."
+7. énoncé : "Le dessin de Léa\nLéa trace vite, à main levée, la forme de sa lampe.\nElle écrit le nom de chaque partie à côté."
    - question : Comment s’appelle ce dessin ?
-   - lu : Le dessin de Léa, en mots. Léa trace vite, à main levée, la forme de sa lampe. Elle écrit le nom de chaque partie à côté.
+   - lu : Le dessin de Léa. Léa trace vite, à main levée, la forme de sa lampe. Elle écrit le nom de chaque partie à côté.
    - choix : une photographie · un croquis · un dessin technique
    - réponse : un croquis
    - indice : Relis la ligne « Croquis » du rappel.
    - explication : Un dessin rapide, à main levée, est un croquis ; les noms des parties sont sa légende. Un dessin technique est précis, fait avec des instruments ou un logiciel.
-8. énoncé : "Le store de la fenêtre, en mots\nOn tourne la manivelle.\nLa toile du store descend tout droit."
+8. énoncé : "Le store de la fenêtre\nOn tourne la manivelle.\nLa toile du store descend tout droit."
    - question : Quel mouvement fait la toile du store ?
-   - lu : Le store de la fenêtre, en mots. On tourne la manivelle. La toile du store descend tout droit.
+   - lu : Le store de la fenêtre. On tourne la manivelle. La toile du store descend tout droit.
    - choix : une rotation · une translation · aucun mouvement
    - réponse : une translation
    - indice : La toile tourne-t-elle, ou descend-elle en ligne droite ?
@@ -360,7 +360,7 @@ Pour tous les items :
   - Un objet change avec les besoins des gens.
   - Il change aussi avec les techniques et les matériaux nouveaux.
   - Lire une frise : d’abord, ensuite, puis, aujourd’hui.
-  - Une lampe à LED consomme peu d’énergie.
+  - Une lampe d’aujourd’hui consomme peu d’énergie.
 
 1. énoncé : "Trois téléphones, du plus ancien au plus récent\nLe téléphone fixe, relié au mur par un fil.\nLe téléphone portable, à touches.\nLe smartphone, à écran tactile."
    - question : Quel nouveau besoin le téléphone portable a-t-il satisfait ?
@@ -370,15 +370,15 @@ Pour tous les items :
    - indice : Qu’est-ce qui change entre le fixe et le portable ?
    - explication : Le fixe est relié au mur par un fil ; le portable permet de téléphoner partout. Les vidéos et les photos sont venues avec le smartphone.
 2. énoncé : Avant l’ampoule électrique, on s’éclairait avec des bougies et des lampes à …
-   - choix : LED · pétrole · piles
+   - choix : basse consommation · pétrole · piles
    - réponse : pétrole
    - indice : Il n’y avait pas encore d’électricité dans les maisons.
-   - explication : Avant l’électricité, on s’éclairait à la bougie et à la lampe à pétrole. Les lampes à LED sont bien plus récentes.
-3. énoncé : La lampe à LED éclaire autant que l’ancienne ampoule, mais elle consomme …
+   - explication : Avant l’électricité, on s’éclairait à la bougie et à la lampe à pétrole. Les lampes basse consommation et les lampes à piles sont bien plus récentes.
+3. énoncé : La lampe d’aujourd’hui éclaire autant que l’ancienne ampoule, mais elle consomme …
    - choix : plus d’énergie · moins d’énergie · autant d’énergie
    - réponse : moins d’énergie
    - indice : Relis la dernière ligne du rappel.
-   - explication : La lampe à LED consomme beaucoup moins d’énergie pour éclairer autant : une nouvelle technique a fait changer l’objet.
+   - explication : La lampe d’aujourd’hui consomme beaucoup moins d’énergie pour éclairer autant : une nouvelle technique a fait changer l’objet.
 4. énoncé : "La draisienne, l’ancêtre du vélo\nDeux roues en bois et un guidon.\nPas de pédales : on pousse le sol avec les pieds."
    - question : Qu’a ajouté le vélo d’aujourd’hui ?
    - lu : La draisienne, l’ancêtre du vélo. Deux roues en bois et un guidon. Pas de pédales, on pousse le sol avec les pieds.
@@ -415,7 +415,7 @@ Pour tous les items :
 
 | plan | nom | XP | quand c’est bâti |
 | --- | --- | --- | --- |
-| `technology-6e-objects-1` | L’atelier de Boulon | 40 | Mon atelier ! Chaque outil aura sa place. Merci, bâtisseur. |
+| `technology-6e-objects-1` | L’atelier de Pince | 40 | Mon atelier ! Chaque outil aura sa place. Merci, bâtisseur. |
 | `technology-6e-objects-2` | Le toit de l’atelier | 50 | Un toit, une porte et une lanterne qui consomme très peu ! |
 | `technology-6e-objects-3` | La cour de l’atelier | 60 | Une cour pour essayer mes inventions. L’atelier est complet, bâtisseur. |
 
@@ -423,12 +423,12 @@ Pour tous les items :
 
 ### `technology-6e-objects-request-1`
 
-- habitant : Boulon
+- habitant : Pince
 - bloc : `physics-chemistry-6e-matter-energy`
 - combien : 3
 - petite construction : l’établi
 - demande : Il me faut {objet} pour mon établi. Joue une mission du Laboratoire des éléments.
-- prête : Tu as les {blocs} ! Livre-les à Boulon.
-- posée : Établi posé chez Boulon !
+- prête : Tu as les {blocs} ! Livre-les à Pince.
+- posée : Établi posé chez Pince !
 
 > Forme, pour l’artiste technique 3D : un plateau de 3 cartons sur deux pieds de barrière, et dessus la barre de 3 aimants où tiennent les outils ; 8 cubes, 3 cases, 3 de haut. Le DA avait choisi 4 bois : le bois est déjà demandé aux Premiers Rivages (Coco), et un bloc ne se demande qu’une fois par archipel (GD-7) ; l’aimant du Laboratoire, encore libre, le remplace (à valider par le directeur artistique).

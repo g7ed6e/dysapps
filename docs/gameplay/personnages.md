@@ -38,7 +38,7 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 | [Pointe des paysages](https://g7ed6e.github.io/dysapps/pedagogie/iles/geography-6e-living.html) (Histoire-géo) | Boussole | tortue géographe | pélican des ports | Le Castor de glaise |
 | [Vallée du vivant](https://g7ed6e.github.io/dysapps/pedagogie/iles/life-earth-sciences-6e-living-world.html) (SVT) | Fougère | escargot jardinier | escargot jardinier | Le Cerf des sous-bois |
 | [Laboratoire des éléments](https://g7ed6e.github.io/dysapps/pedagogie/iles/physics-chemistry-6e-matter-energy.html) (Physique-chimie) | Bulle | goutte chimiste | poulpe chimiste | L’Alambic de verre |
-| [Hangar des inventions](https://g7ed6e.github.io/dysapps/pedagogie/iles/technology-6e-objects.html) (Technologie) | Boulon | fourmi bricoleuse | fourmi bricoleuse | L’Automate de laiton |
+| [Hangar des inventions](https://g7ed6e.github.io/dysapps/pedagogie/iles/technology-6e-objects.html) (Technologie) | Pince | fourmi bricoleuse | fourmi bricoleuse | L’Automate de laiton |
 
 ### Le Grand Chêne, Forêt des sons
 
@@ -148,7 +148,7 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 
 |  | Blocland | Archipéo |
 | --- | --- | --- |
-| Au défi | L’Alambic de verre fait une petite bulle : « Mon ballon est tout gris. Tu as fait toutes mes expériences : explique-les-moi. » | L’Alambic de verre dit doucement : « Mon ballon de verre est éteint. Tu as fait toutes les expériences du laboratoire : aide-moi à les comprendre. » |
+| Au défi | L’Alambic de verre fait une petite bulle : « Mon ballon est tout gris. Tu as fait toutes mes expériences : aide-moi à les comprendre. » | L’Alambic de verre dit doucement : « Mon ballon de verre est éteint. Tu as fait toutes les expériences du laboratoire : aide-moi à les comprendre. » |
 | À la fin | Blop ! Je me rallume, du pied jusqu’au bec. Le Laboratoire est à toi, et à Bulle. | Mon ballon se rallume. Le laboratoire est à toi, et à Bulle. |
 | Bulle à l’arrivée | Bonjour, bâtisseur ! Ici, on fait des expériences : l’eau, les mouvements et les circuits. Chaque bonne réponse te donne un aimant. Un aimant attire le fer. | Bonjour, bâtisseur ! Ici, on fait des expériences : l’eau, les mouvements et les circuits. Chaque bonne réponse te donne un aimant. Un aimant attire le fer. |
 
@@ -157,8 +157,8 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 |  | Blocland | Archipéo |
 | --- | --- | --- |
 | Au défi | L’Automate de laiton fait tourner sa clé : « Me voilà tout gris. Tu as ouvert tous mes objets : dis-moi à quoi ils servent. » | L’Automate de laiton dit doucement : « Les boutons de ma poitrine sont éteints. Tu as essayé tous les objets du hangar : dis-moi à quoi ils servent. » |
-| À la fin | Clic ! Je me rallume, des pieds jusqu’à la clé. Le Hangar est à toi, et à Boulon. | Mes boutons se rallument. Le hangar est à toi, et à Boulon. |
-| Boulon à l’arrivée | Bonjour, bâtisseur ! Ici, on ouvre les objets pour voir comment ils marchent. Chaque bonne réponse te donne du carton. Le carton, c’est du papier épais : on le plie, on le découpe, on le recycle. | Bonjour, bâtisseur ! Ici, on ouvre les objets pour voir comment ils marchent. Chaque bonne réponse te donne du carton. Le carton, c’est du papier épais : on le plie, on le découpe, on le recycle. |
+| À la fin | Clic ! Je me rallume, des pieds jusqu’à la clé. Le Hangar est à toi, et à Pince. | Mes boutons se rallument. Le hangar est à toi, et à Pince. |
+| Pince à l’arrivée | Bonjour, bâtisseur ! Ici, on ouvre les objets pour voir comment ils marchent. Chaque bonne réponse te donne du carton. Le carton, c’est du papier épais : on le plie, on le découpe, on le recycle. | Bonjour, bâtisseur ! Ici, on ouvre les objets pour voir comment ils marchent. Chaque bonne réponse te donne du carton. Le carton, c’est du papier épais : on le plie, on le découpe, on le recycle. |
 
 ## Les Collines du Large (Blocland), les Îles Brumeuses (Archipéo), 5e
 

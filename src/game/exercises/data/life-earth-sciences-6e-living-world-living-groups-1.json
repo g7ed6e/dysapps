@@ -143,9 +143,9 @@
     },
     {
       "key": "life-earth-sciences-6e-living-world-living-groups-1-5",
-      "prompt": "Le schéma des groupes, en mots\nUne grande boîte : les vertébrés.\nDedans, une boîte : les mammifères.\nDedans aussi, une autre boîte : les oiseaux.\nLe lapin est dans la boîte des mammifères.",
+      "prompt": "Le schéma des groupes\nUne grande boîte : les vertébrés.\nDedans, une boîte : les mammifères.\nDedans aussi, une autre boîte : les oiseaux.\nLe lapin est dans la boîte des mammifères.",
       "question": "Dans quelles boîtes se trouve le lapin ?",
-      "spoken": "Le schéma des groupes, en mots. Une grande boîte, les vertébrés. Dedans, une boîte, les mammifères. Dedans aussi, une autre boîte, les oiseaux. Le lapin est dans la boîte des mammifères.",
+      "spoken": "Le schéma des groupes. Une grande boîte, les vertébrés. Dedans, une boîte, les mammifères. Dedans aussi, une autre boîte, les oiseaux. Le lapin est dans la boîte des mammifères.",
       "choices": [
         "mammifères seulement",
         "mammifères et vertébrés",

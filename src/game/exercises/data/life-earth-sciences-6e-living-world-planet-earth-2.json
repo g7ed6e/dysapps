@@ -86,9 +86,9 @@
     },
     {
       "key": "life-earth-sciences-6e-living-world-planet-earth-2-3",
-      "prompt": "Le schéma d’une chaîne alimentaire, en mots\nUne flèche va de la salade à l’escargot.\nUne autre flèche va de l’escargot au hérisson.",
+      "prompt": "Le schéma d’une chaîne alimentaire\nUne flèche va de la salade à l’escargot.\nUne autre flèche va de l’escargot au hérisson.",
       "question": "Qui mange l’escargot ?",
-      "spoken": "Le schéma d’une chaîne alimentaire, en mots. Une flèche va de la salade à l’escargot. Une autre flèche va de l’escargot au hérisson.",
+      "spoken": "Le schéma d’une chaîne alimentaire. Une flèche va de la salade à l’escargot. Une autre flèche va de l’escargot au hérisson.",
       "choices": [
         "la salade",
         "le hérisson",

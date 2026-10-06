@@ -67,9 +67,9 @@ Pour tous les items :
    - réponse : six
    - indice : Relis la ligne « Six pattes » du rappel.
    - explication : Un insecte a six pattes, une araignée en a huit : l’araignée n’est donc pas un insecte.
-6. énoncé : "Le schéma des groupes, en mots\nUne grande boîte : les vertébrés.\nDedans, une boîte : les mammifères.\nDedans aussi, une autre boîte : les oiseaux.\nLe lapin est dans la boîte des mammifères."
+6. énoncé : "Le schéma des groupes\nUne grande boîte : les vertébrés.\nDedans, une boîte : les mammifères.\nDedans aussi, une autre boîte : les oiseaux.\nLe lapin est dans la boîte des mammifères."
    - question : Dans quelles boîtes se trouve le lapin ?
-   - lu : Le schéma des groupes, en mots. Une grande boîte, les vertébrés. Dedans, une boîte, les mammifères. Dedans aussi, une autre boîte, les oiseaux. Le lapin est dans la boîte des mammifères.
+   - lu : Le schéma des groupes. Une grande boîte, les vertébrés. Dedans, une boîte, les mammifères. Dedans aussi, une autre boîte, les oiseaux. Le lapin est dans la boîte des mammifères.
    - choix : mammifères seulement · mammifères et vertébrés · mammifères, vertébrés et oiseaux
    - réponse : mammifères et vertébrés
    - indice : La boîte des mammifères est rangée dans une plus grande boîte.
@@ -124,9 +124,9 @@ Pour tous les items :
    - réponse : change
    - indice : Relis la ligne « Des espèces » du rappel.
    - explication : La biodiversité change au cours du temps : des espèces apparaissent et d’autres disparaissent. Les fossiles le montrent.
-6. énoncé : "La photo d’un fossile, en mots\nUn animal de la taille d’un pigeon, pris dans la roche.\nOn voit des plumes, des dents et une longue queue d’os."
+6. énoncé : "La photo d’un fossile\nUn animal de la taille d’un pigeon, pris dans la roche.\nOn voit des plumes, des dents et une longue queue d’os."
    - question : Quel attribut le rapproche des oiseaux ?
-   - lu : La photo d’un fossile, en mots. Un animal de la taille d’un pigeon, pris dans la roche. On voit des plumes, des dents et une longue queue d’os.
+   - lu : La photo d’un fossile. Un animal de la taille d’un pigeon, pris dans la roche. On voit des plumes, des dents et une longue queue d’os.
    - choix : les dents · la longue queue · les plumes
    - réponse : les plumes
    - indice : Quel attribut a-t-on pour classer les oiseaux ?
@@ -268,9 +268,9 @@ Pour tous les items :
    - réponse : germination
    - indice : On dit qu’une graine « germe ».
    - explication : Quand la graine se met à pousser, c’est la germination. Une petite plante en sort.
-8. énoncé : "De la fleur au fruit, en mots\nLa fleur est fécondée.\nSes pétales tombent.\nUne partie de la fleur grossit.\nElle devient le fruit, avec les graines dedans."
+8. énoncé : "De la fleur au fruit\nLa fleur est fécondée.\nSes pétales tombent.\nUne partie de la fleur grossit.\nElle devient le fruit, avec les graines dedans."
    - question : D’où vient le fruit ?
-   - lu : De la fleur au fruit, en mots. La fleur est fécondée. Ses pétales tombent. Une partie de la fleur grossit. Elle devient le fruit, avec les graines dedans.
+   - lu : De la fleur au fruit. La fleur est fécondée. Ses pétales tombent. Une partie de la fleur grossit. Elle devient le fruit, avec les graines dedans.
    - choix : de la fleur · de la racine · de la feuille
    - réponse : de la fleur
    - indice : Relis les deux dernières lignes du document.
@@ -379,9 +379,9 @@ Pour tous les items :
    - réponse : migre
    - indice : Elle part loin, elle ne dort pas.
    - explication : L’hirondelle part passer l’hiver dans un pays chaud : elle migre. Elle revient au printemps.
-4. énoncé : "Le schéma d’une chaîne alimentaire, en mots\nUne flèche va de la salade à l’escargot.\nUne autre flèche va de l’escargot au hérisson."
+4. énoncé : "Le schéma d’une chaîne alimentaire\nUne flèche va de la salade à l’escargot.\nUne autre flèche va de l’escargot au hérisson."
    - question : Qui mange l’escargot ?
-   - lu : Le schéma d’une chaîne alimentaire, en mots. Une flèche va de la salade à l’escargot. Une autre flèche va de l’escargot au hérisson.
+   - lu : Le schéma d’une chaîne alimentaire. Une flèche va de la salade à l’escargot. Une autre flèche va de l’escargot au hérisson.
    - choix : la salade · le hérisson · personne
    - réponse : le hérisson
    - indice : La flèche veut dire « est mangé par ».

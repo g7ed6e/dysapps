@@ -54,9 +54,9 @@ Pour tous les items :
    - réponse : liquide
    - indice : Relis la première ligne du rappel.
    - explication : Un liquide prend la forme du récipient qui le contient. Un solide garde sa forme.
-4. énoncé : "Le thermomètre de la classe, en mots\nLe liquide rouge s’arrête au trait marqué 20.\nLes traits sont en degrés Celsius."
+4. énoncé : "Le thermomètre de la classe\nLe liquide rouge s’arrête au trait marqué 20.\nLes traits sont en degrés Celsius."
    - question : Quelle température fait-il dans la classe ?
-   - lu : Le thermomètre de la classe, en mots. Le liquide rouge s’arrête au trait marqué 20. Les traits sont en degrés Celsius.
+   - lu : Le thermomètre de la classe. Le liquide rouge s’arrête au trait marqué 20. Les traits sont en degrés Celsius.
    - choix : 20 grammes · 20 degrés · 20 centimètres
    - réponse : 20 degrés
    - indice : Que mesure un thermomètre ?
@@ -73,9 +73,9 @@ Pour tous les items :
    - réponse : liquéfaction
    - indice : Elle était gaz, elle devient liquide.
    - explication : Un gaz qui devient liquide, c’est la liquéfaction : la buée se forme.
-7. énoncé : "Au-dessus de la casserole qui bout, en mots\nJuste au-dessus de l’eau, on ne voit rien.\nPlus haut, on voit un petit nuage blanc."
+7. énoncé : "Au-dessus de la casserole qui bout\nJuste au-dessus de l’eau, on ne voit rien.\nPlus haut, on voit un petit nuage blanc."
    - question : Le petit nuage blanc, qu’est-ce que c’est ?
-   - lu : Au-dessus de la casserole qui bout, en mots. Juste au-dessus de l’eau, on ne voit rien. Plus haut, on voit un petit nuage blanc.
+   - lu : Au-dessus de la casserole qui bout. Juste au-dessus de l’eau, on ne voit rien. Plus haut, on voit un petit nuage blanc.
    - choix : de la vapeur d’eau · de la fumée qui sort de la casserole · de minuscules gouttes d’eau liquide
    - réponse : de minuscules gouttes d’eau liquide
    - indice : La vapeur d’eau est un gaz : peut-on la voir ?
@@ -97,9 +97,9 @@ Pour tous les items :
   - Hétérogène : on voit plusieurs choses. Homogène : on n’en voit qu’une.
   - Séparer : laisser reposer, filtrer, ou faire partir l’eau.
 
-1. énoncé : "L’éprouvette graduée, en mots\nLes traits sont en millilitres.\nLe bas de la surface de l’eau touche le trait 40."
+1. énoncé : "L’éprouvette graduée\nLes traits sont en millilitres.\nLe bas de la surface de l’eau touche le trait 40."
    - question : Quel est le volume d’eau ?
-   - lu : L’éprouvette graduée, en mots. Les traits sont en millilitres. Le bas de la surface de l’eau touche le trait 40.
+   - lu : L’éprouvette graduée. Les traits sont en millilitres. Le bas de la surface de l’eau touche le trait 40.
    - choix : 40 centimètres · 40 grammes · 40 millilitres
    - réponse : 40 millilitres
    - indice : L’éprouvette mesure un volume.
@@ -180,9 +180,9 @@ Pour tous les items :
    - réponse : curviligne
    - indice : Le ballon monte, puis redescend en arrondi.
    - explication : Le ballon suit une courbe : sa trajectoire est curviligne. Elle n’est pas circulaire : le ballon ne fait pas un cercle.
-3. énoncé : "Photos de la bille, une par seconde, en mots\nLes positions de la bille sont de plus en plus écartées."
+3. énoncé : "Photos de la bille, une par seconde\nLes positions de la bille sont de plus en plus écartées."
    - question : Que fait la vitesse de la bille ?
-   - lu : Photos de la bille, une par seconde, en mots. Les positions de la bille sont de plus en plus écartées.
+   - lu : Photos de la bille, une par seconde. Les positions de la bille sont de plus en plus écartées.
    - choix : elle reste la même · elle augmente · elle diminue
    - réponse : elle augmente
    - indice : Chaque seconde, la bille va-t-elle plus loin ou moins loin ?
@@ -199,9 +199,9 @@ Pour tous les items :
    - réponse : diminue
    - indice : Freiner, c’est aller moins vite.
    - explication : En freinant, la voiture va de moins en moins vite : sa vitesse diminue.
-6. énoncé : "Le compteur du bus, en mots\nL’aiguille est sur le nombre 30.\nSous les nombres, il est écrit : km/h."
+6. énoncé : "Le compteur du bus\nL’aiguille est sur le nombre 30.\nSous les nombres, il est écrit : km/h."
    - question : À quelle vitesse roule le bus ?
-   - lu : Le compteur du bus, en mots. L’aiguille est sur le nombre 30. Sous les nombres, il est écrit kilomètres par heure.
+   - lu : Le compteur du bus. L’aiguille est sur le nombre 30. Sous les nombres, il est écrit kilomètres par heure.
    - choix : 30 kilomètres · 30 heures · 30 kilomètres par heure
    - réponse : 30 kilomètres par heure
    - indice : Relis la dernière ligne du rappel.
@@ -211,9 +211,9 @@ Pour tous les items :
    - réponse : trajectoire
    - indice : Relis la première ligne du rappel.
    - explication : Le chemin suivi par l’objet est sa trajectoire. La vitesse dit s’il va vite ou lentement.
-8. énoncé : "Photos du skieur en bas de la piste, une par seconde, en mots\nLes positions du skieur sont de plus en plus serrées."
+8. énoncé : "Photos du skieur en bas de la piste, une par seconde\nLes positions du skieur sont de plus en plus serrées."
    - question : Que fait la vitesse du skieur ?
-   - lu : Photos du skieur en bas de la piste, une par seconde, en mots. Les positions du skieur sont de plus en plus serrées.
+   - lu : Photos du skieur en bas de la piste, une par seconde. Les positions du skieur sont de plus en plus serrées.
    - choix : elle augmente · elle diminue · elle reste la même
    - réponse : elle diminue
    - indice : Chaque seconde, le skieur va-t-il plus loin ou moins loin ?
@@ -324,9 +324,9 @@ Pour tous les items :
    - réponse : lumineuse
    - indice : À quoi sert une lampe ?
    - explication : La lampe change l’énergie électrique en lumière : l’énergie lumineuse. Elle chauffe aussi un peu.
-5. énoncé : "Le vélo à dynamo, en mots\nLe cycliste pédale.\nLa dynamo frotte sur la roue qui tourne.\nLa lampe du vélo s’allume."
+5. énoncé : "Le vélo à dynamo\nLe cycliste pédale.\nLa dynamo frotte sur la roue qui tourne.\nLa lampe du vélo s’allume."
    - question : D’où vient l’énergie qui allume la lampe ?
-   - lu : Le vélo à dynamo, en mots. Le cycliste pédale. La dynamo frotte sur la roue qui tourne. La lampe du vélo s’allume.
+   - lu : Le vélo à dynamo. Le cycliste pédale. La dynamo frotte sur la roue qui tourne. La lampe du vélo s’allume.
    - choix : d’une pile cachée dans la lampe · des muscles du cycliste · du Soleil
    - réponse : des muscles du cycliste
    - indice : Que se passe-t-il si le cycliste s’arrête de pédaler ?
@@ -341,9 +341,9 @@ Pour tous les items :
    - réponse : chimique
    - indice : Relis la dernière ligne du rappel.
    - explication : La pile garde de l’énergie chimique. Quand on l’utilise, elle la change en énergie électrique.
-8. énoncé : "Le grille-pain, en mots\nIl est branché sur la prise.\nSes fils deviennent rouges et chauds.\nLe pain dore."
+8. énoncé : "Le grille-pain\nIl est branché sur la prise.\nSes fils deviennent rouges et chauds.\nLe pain dore."
    - question : En quoi le grille-pain change-t-il l’énergie électrique ?
-   - lu : Le grille-pain, en mots. Il est branché sur la prise. Ses fils deviennent rouges et chauds. Le pain dore.
+   - lu : Le grille-pain. Il est branché sur la prise. Ses fils deviennent rouges et chauds. Le pain dore.
    - choix : en mouvement · en chaleur · en son
    - réponse : en chaleur
    - indice : Que fait le grille-pain au pain ?
@@ -377,9 +377,9 @@ Pour tous les items :
    - réponse : la cuillère en acier
    - indice : Avec quel objet la lampe brille-t-elle ?
    - explication : La lampe brille avec la cuillère : l’acier, un métal, laisse passer le courant. Il est conducteur. Le plastique et la gomme sont isolants.
-4. énoncé : "Le schéma d’un circuit, en mots\nUne pile : un grand trait et un petit trait.\nUn rond avec une croix dedans.\nUn interrupteur fermé.\nDes fils relient le tout en boucle."
+4. énoncé : "Le schéma d’un circuit\nUne pile : un grand trait et un petit trait.\nUn rond avec une croix dedans.\nUn interrupteur fermé.\nDes fils relient le tout en boucle."
    - question : Que représente le rond avec une croix ?
-   - lu : Le schéma d’un circuit, en mots. Une pile, un grand trait et un petit trait. Un rond avec une croix dedans. Un interrupteur fermé. Des fils relient le tout en boucle.
+   - lu : Le schéma d’un circuit. Une pile, un grand trait et un petit trait. Un rond avec une croix dedans. Un interrupteur fermé. Des fils relient le tout en boucle.
    - choix : la pile · la lampe · l’interrupteur
    - réponse : la lampe
    - indice : La pile et l’interrupteur ont déjà leur ligne.

@@ -228,7 +228,7 @@ const AIMANT_EN_U = ['###....###', '###....###', '###....###', '###....###', '##
 
 /**
  * De l'aimant (le Laboratoire des éléments, physique-chimie 6e ; DA, SC-2). Le dessus en deux moitiés, rouge à gauche et
- * bleue à droite, séparées d'un trait sombre d'un pixel : les deux pôles se lisent au partage, jamais à la couleur
+ * bleue à droite, séparées d'un trait sombre de deux pixels : les deux pôles se lisent au partage, jamais à la couleur
  * seule. Les côtés gris métal, deux reflets clairs en haut, un U de métal sombre au milieu. Sans hasard.
  */
 function aimant(face: 'top' | 'side'): Painter {

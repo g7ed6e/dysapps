@@ -198,9 +198,9 @@
     },
     {
       "key": "life-earth-sciences-6e-living-world-food-growth-2-7",
-      "prompt": "De la fleur au fruit, en mots\nLa fleur est fécondée.\nSes pétales tombent.\nUne partie de la fleur grossit.\nElle devient le fruit, avec les graines dedans.",
+      "prompt": "De la fleur au fruit\nLa fleur est fécondée.\nSes pétales tombent.\nUne partie de la fleur grossit.\nElle devient le fruit, avec les graines dedans.",
       "question": "D’où vient le fruit ?",
-      "spoken": "De la fleur au fruit, en mots. La fleur est fécondée. Ses pétales tombent. Une partie de la fleur grossit. Elle devient le fruit, avec les graines dedans.",
+      "spoken": "De la fleur au fruit. La fleur est fécondée. Ses pétales tombent. Une partie de la fleur grossit. Elle devient le fruit, avec les graines dedans.",
       "choices": [
         "de la fleur",
         "de la racine",

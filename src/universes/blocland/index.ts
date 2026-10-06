@@ -239,7 +239,7 @@ export const BLOCLAND = {
       },
     },
     'physics-chemistry-6e-matter-energy': {
-      challenge: 'L’Alambic de verre fait une petite bulle : « Mon ballon est tout gris. Tu as fait toutes mes expériences : explique-les-moi. »',
+      challenge: 'L’Alambic de verre fait une petite bulle : « Mon ballon est tout gris. Tu as fait toutes mes expériences : aide-moi à les comprendre. »',
       guardianSays: {
         hit: 'Juste. Une bulle de mon ballon reprend sa couleur.',
         miss: 'Mes couleurs restent. Regarde l’instrument, cherche le mot du rappel, et reprends.',
@@ -251,7 +251,7 @@ export const BLOCLAND = {
       guardianSays: {
         hit: 'Juste. Un bouton de ma poitrine reprend sa couleur.',
         miss: 'Mes couleurs restent. Regarde le schéma, relis la légende, et reprends.',
-        beaten: 'Clic ! Je me rallume, des pieds jusqu’à la clé. Le Hangar est à toi, et à Boulon.',
+        beaten: 'Clic ! Je me rallume, des pieds jusqu’à la clé. Le Hangar est à toi, et à Pince.',
       },
     },
     'lv2-3e-travel': {
