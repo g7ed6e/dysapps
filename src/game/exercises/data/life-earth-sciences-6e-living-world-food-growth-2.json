@@ -1,0 +1,241 @@
+{
+  "id": "life-earth-sciences-6e-living-world-food-growth-2",
+  "biome": "life-earth-sciences-6e-living-world",
+  "type": "food-growth",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "life-earth-sciences-6e-living-world-food-growth-2-0",
+      "prompt": "La grenouille pond des œufs. De chaque œuf sort un …",
+      "spoken": "La grenouille pond des œufs. De chaque œuf sort un  (mot manquant) ",
+      "choices": [
+        "poisson",
+        "têtard",
+        "insecte"
+      ],
+      "answer": "têtard",
+      "hint": "Il vit dans l’eau, avec une queue, avant d’avoir des pattes.",
+      "explanation": "De l’œuf sort un têtard, qui devient une grenouille. Il vit dans l’eau comme un poisson, mais ce n’en est pas un.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Grandir et se reproduire",
+          "lines": [
+            "Un être vivant naît, grandit, peut se reproduire, puis meurt.",
+            "Changer de forme en grandissant : la métamorphose.",
+            "Une cellule mâle et une cellule femelle s’unissent : la fécondation.",
+            "La puberté : le corps change et devient capable de se reproduire.",
+            "La plante verte a besoin de lumière, d’eau, d’air, de sels minéraux.",
+            "Avec eux, elle fabrique sa propre matière : elle ne mange pas."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-food-growth-2-1",
+      "prompt": "Les stades du papillon, dans le désordre\nla chrysalide\nl’œuf\nle papillon\nla chenille",
+      "question": "Quel stade vient juste après l’œuf ?",
+      "spoken": "Les stades du papillon, dans le désordre. La chrysalide. L’œuf. Le papillon. La chenille.",
+      "choices": [
+        "la chrysalide",
+        "la chenille",
+        "le papillon"
+      ],
+      "answer": "la chenille",
+      "hint": "Qui sort de l’œuf, et mange des feuilles ?",
+      "explanation": "L’œuf donne une chenille, qui devient une chrysalide, puis un papillon. La liste est dans le désordre : la chrysalide n’est pas juste après l’œuf.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Grandir et se reproduire",
+          "lines": [
+            "Un être vivant naît, grandit, peut se reproduire, puis meurt.",
+            "Changer de forme en grandissant : la métamorphose.",
+            "Une cellule mâle et une cellule femelle s’unissent : la fécondation.",
+            "La puberté : le corps change et devient capable de se reproduire.",
+            "La plante verte a besoin de lumière, d’eau, d’air, de sels minéraux.",
+            "Avec eux, elle fabrique sa propre matière : elle ne mange pas."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-food-growth-2-2",
+      "prompt": "Le têtard devient une grenouille en changeant de forme : c’est une …",
+      "spoken": "Le têtard devient une grenouille en changeant de forme : c’est une  (mot manquant) ",
+      "choices": [
+        "métamorphose",
+        "germination",
+        "fécondation"
+      ],
+      "answer": "métamorphose",
+      "hint": "Relis la ligne « Changer » du rappel.",
+      "explanation": "Changer de forme en grandissant s’appelle une métamorphose. La germination concerne la graine.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Grandir et se reproduire",
+          "lines": [
+            "Un être vivant naît, grandit, peut se reproduire, puis meurt.",
+            "Changer de forme en grandissant : la métamorphose.",
+            "Une cellule mâle et une cellule femelle s’unissent : la fécondation.",
+            "La puberté : le corps change et devient capable de se reproduire.",
+            "La plante verte a besoin de lumière, d’eau, d’air, de sels minéraux.",
+            "Avec eux, elle fabrique sa propre matière : elle ne mange pas."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-food-growth-2-3",
+      "prompt": "Quand une cellule mâle et une cellule femelle s’unissent, c’est la …",
+      "spoken": "Quand une cellule mâle et une cellule femelle s’unissent, c’est la  (mot manquant) ",
+      "choices": [
+        "germination",
+        "fécondation",
+        "digestion"
+      ],
+      "answer": "fécondation",
+      "hint": "Relis la ligne « Une cellule » du rappel.",
+      "explanation": "L’union d’une cellule mâle et d’une cellule femelle s’appelle la fécondation. C’est le début de la reproduction sexuée.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Grandir et se reproduire",
+          "lines": [
+            "Un être vivant naît, grandit, peut se reproduire, puis meurt.",
+            "Changer de forme en grandissant : la métamorphose.",
+            "Une cellule mâle et une cellule femelle s’unissent : la fécondation.",
+            "La puberté : le corps change et devient capable de se reproduire.",
+            "La plante verte a besoin de lumière, d’eau, d’air, de sels minéraux.",
+            "Avec eux, elle fabrique sa propre matière : elle ne mange pas."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-food-growth-2-4",
+      "prompt": "À la puberté, le corps change et devient capable de se …",
+      "spoken": "À la puberté, le corps change et devient capable de se  (mot manquant) ",
+      "choices": [
+        "nourrir",
+        "déplacer",
+        "reproduire"
+      ],
+      "answer": "reproduire",
+      "hint": "Relis la ligne « La puberté » du rappel.",
+      "explanation": "À la puberté, le corps change : il devient capable de se reproduire. Ces changements arrivent à des âges différents selon chacun.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Grandir et se reproduire",
+          "lines": [
+            "Un être vivant naît, grandit, peut se reproduire, puis meurt.",
+            "Changer de forme en grandissant : la métamorphose.",
+            "Une cellule mâle et une cellule femelle s’unissent : la fécondation.",
+            "La puberté : le corps change et devient capable de se reproduire.",
+            "La plante verte a besoin de lumière, d’eau, d’air, de sels minéraux.",
+            "Avec eux, elle fabrique sa propre matière : elle ne mange pas."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-food-growth-2-5",
+      "prompt": "Expérience avec trois pots de haricots\nPot 1 : lumière et eau. Il pousse bien.\nPot 2 : lumière, sans eau. Il se fane.\nPot 3 : eau, dans un placard noir. Il jaunit.",
+      "question": "Que montre le pot 3 ?",
+      "spoken": "Expérience avec trois pots de haricots. Pot 1, lumière et eau. Il pousse bien. Pot 2, lumière, sans eau. Il se fane. Pot 3, eau, dans un placard noir. Il jaunit.",
+      "choices": [
+        "la plante a besoin d’eau",
+        "la plante a besoin de lumière",
+        "la plante pousse mieux dans le noir"
+      ],
+      "answer": "la plante a besoin de lumière",
+      "hint": "Qu’est-ce qui manque au pot 3, et pas au pot 1 ?",
+      "explanation": "Le pot 3 a de l’eau mais pas de lumière, et il jaunit : la plante verte a besoin de lumière. Dans le noir, elle peut s’allonger, mais elle s’abîme. Le pot 2 montre, lui, le besoin d’eau.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Grandir et se reproduire",
+          "lines": [
+            "Un être vivant naît, grandit, peut se reproduire, puis meurt.",
+            "Changer de forme en grandissant : la métamorphose.",
+            "Une cellule mâle et une cellule femelle s’unissent : la fécondation.",
+            "La puberté : le corps change et devient capable de se reproduire.",
+            "La plante verte a besoin de lumière, d’eau, d’air, de sels minéraux.",
+            "Avec eux, elle fabrique sa propre matière : elle ne mange pas."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-food-growth-2-6",
+      "prompt": "La graine qui se met à pousser : c’est la …",
+      "spoken": "La graine qui se met à pousser : c’est la  (mot manquant) ",
+      "choices": [
+        "floraison",
+        "fécondation",
+        "germination"
+      ],
+      "answer": "germination",
+      "hint": "On dit qu’une graine « germe ».",
+      "explanation": "Quand la graine se met à pousser, c’est la germination. Une petite plante en sort.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Grandir et se reproduire",
+          "lines": [
+            "Un être vivant naît, grandit, peut se reproduire, puis meurt.",
+            "Changer de forme en grandissant : la métamorphose.",
+            "Une cellule mâle et une cellule femelle s’unissent : la fécondation.",
+            "La puberté : le corps change et devient capable de se reproduire.",
+            "La plante verte a besoin de lumière, d’eau, d’air, de sels minéraux.",
+            "Avec eux, elle fabrique sa propre matière : elle ne mange pas."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-food-growth-2-7",
+      "prompt": "De la fleur au fruit, en mots\nLa fleur est fécondée.\nSes pétales tombent.\nUne partie de la fleur grossit.\nElle devient le fruit, avec les graines dedans.",
+      "question": "D’où vient le fruit ?",
+      "spoken": "De la fleur au fruit, en mots. La fleur est fécondée. Ses pétales tombent. Une partie de la fleur grossit. Elle devient le fruit, avec les graines dedans.",
+      "choices": [
+        "de la fleur",
+        "de la racine",
+        "de la feuille"
+      ],
+      "answer": "de la fleur",
+      "hint": "Relis les deux dernières lignes du document.",
+      "explanation": "Après la fécondation, une partie de la fleur grossit et devient le fruit. Les graines du fruit pourront germer.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Grandir et se reproduire",
+          "lines": [
+            "Un être vivant naît, grandit, peut se reproduire, puis meurt.",
+            "Changer de forme en grandissant : la métamorphose.",
+            "Une cellule mâle et une cellule femelle s’unissent : la fécondation.",
+            "La puberté : le corps change et devient capable de se reproduire.",
+            "La plante verte a besoin de lumière, d’eau, d’air, de sels minéraux.",
+            "Avec eux, elle fabrique sa propre matière : elle ne mange pas."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "life-earth-sciences-6e-living-world",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

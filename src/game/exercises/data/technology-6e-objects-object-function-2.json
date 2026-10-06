@@ -1,0 +1,250 @@
+{
+  "id": "technology-6e-objects-object-function-2",
+  "biome": "technology-6e-objects",
+  "type": "object-function",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "technology-6e-objects-object-function-2-0",
+      "prompt": "Le croquis du vélo, en mots\nFlèche 1 : la grande roue dentée, aux pédales.\nFlèche 2 : la chaîne.\nFlèche 3 : la petite roue dentée, à la roue arrière.",
+      "question": "Quel mot de légende va avec la flèche 1 ?",
+      "spoken": "Le croquis du vélo, en mots. Flèche 1, la grande roue dentée, aux pédales. Flèche 2, la chaîne. Flèche 3, la petite roue dentée, à la roue arrière.",
+      "choices": [
+        "le pignon",
+        "le plateau",
+        "le guidon"
+      ],
+      "answer": "le plateau",
+      "hint": "Relis la ligne « Vélo » du rappel.",
+      "explanation": "La grande roue dentée des pédales s’appelle le plateau. La petite, à la roue arrière, est le pignon.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Comment ça marche",
+          "lines": [
+            "L’énergie d’un objet : les muscles, une pile, la prise, le Soleil.",
+            "Rotation : l’objet tourne. Translation : il avance en ligne droite.",
+            "Engrenage : deux roues dentées qui se touchent.",
+            "Elles tournent en sens contraire.",
+            "Chaîne ou courroie : les deux roues tournent dans le même sens.",
+            "Vélo : le plateau aux pédales, le pignon à la roue arrière.",
+            "Croquis : un dessin rapide, à main levée, avec une légende."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-object-function-2-1",
+      "prompt": "Sur le vélo, le mouvement des pédales passe à la roue arrière grâce à la …",
+      "spoken": "Sur le vélo, le mouvement des pédales passe à la roue arrière grâce à la  (mot manquant) ",
+      "choices": [
+        "selle",
+        "chaîne",
+        "sonnette"
+      ],
+      "answer": "chaîne",
+      "hint": "Elle relie deux roues dentées.",
+      "explanation": "La chaîne relie le plateau des pédales au pignon de la roue arrière : elle transmet le mouvement.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Comment ça marche",
+          "lines": [
+            "L’énergie d’un objet : les muscles, une pile, la prise, le Soleil.",
+            "Rotation : l’objet tourne. Translation : il avance en ligne droite.",
+            "Engrenage : deux roues dentées qui se touchent.",
+            "Elles tournent en sens contraire.",
+            "Chaîne ou courroie : les deux roues tournent dans le même sens.",
+            "Vélo : le plateau aux pédales, le pignon à la roue arrière.",
+            "Croquis : un dessin rapide, à main levée, avec une légende."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-object-function-2-2",
+      "prompt": "Deux roues dentées qui se touchent forment un …",
+      "spoken": "Deux roues dentées qui se touchent forment un  (mot manquant) ",
+      "choices": [
+        "engrenage",
+        "circuit",
+        "moteur"
+      ],
+      "answer": "engrenage",
+      "hint": "Relis la ligne « Engrenage » du rappel.",
+      "explanation": "Deux roues dentées en contact forment un engrenage : l’une fait tourner l’autre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Comment ça marche",
+          "lines": [
+            "L’énergie d’un objet : les muscles, une pile, la prise, le Soleil.",
+            "Rotation : l’objet tourne. Translation : il avance en ligne droite.",
+            "Engrenage : deux roues dentées qui se touchent.",
+            "Elles tournent en sens contraire.",
+            "Chaîne ou courroie : les deux roues tournent dans le même sens.",
+            "Vélo : le plateau aux pédales, le pignon à la roue arrière.",
+            "Croquis : un dessin rapide, à main levée, avec une légende."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-object-function-2-3",
+      "prompt": "L’engrenage, en mots\nLa roue A tourne dans le sens des aiguilles d’une montre.\nSes dents touchent celles de la roue B.",
+      "question": "Dans quel sens tourne la roue B ?",
+      "spoken": "L’engrenage, en mots. La roue A tourne dans le sens des aiguilles d’une montre. Ses dents touchent celles de la roue B.",
+      "choices": [
+        "dans le même sens que A",
+        "dans le sens contraire",
+        "elle ne tourne pas"
+      ],
+      "answer": "dans le sens contraire",
+      "hint": "Relis la ligne « Engrenage » du rappel, et celle qui suit.",
+      "explanation": "Dans un engrenage, les dents de A poussent celles de B dans l’autre sens : les deux roues tournent en sens contraire. Avec une chaîne, elles tourneraient dans le même sens.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Comment ça marche",
+          "lines": [
+            "L’énergie d’un objet : les muscles, une pile, la prise, le Soleil.",
+            "Rotation : l’objet tourne. Translation : il avance en ligne droite.",
+            "Engrenage : deux roues dentées qui se touchent.",
+            "Elles tournent en sens contraire.",
+            "Chaîne ou courroie : les deux roues tournent dans le même sens.",
+            "Vélo : le plateau aux pédales, le pignon à la roue arrière.",
+            "Croquis : un dessin rapide, à main levée, avec une légende."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-object-function-2-4",
+      "prompt": "Le tiroir avance en ligne droite : son mouvement est une …",
+      "spoken": "Le tiroir avance en ligne droite : son mouvement est une  (mot manquant) ",
+      "choices": [
+        "rotation",
+        "translation",
+        "vibration"
+      ],
+      "answer": "translation",
+      "hint": "Relis la ligne « Rotation » du rappel.",
+      "explanation": "Avancer en ligne droite, c’est une translation. Tourner, c’est une rotation.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Comment ça marche",
+          "lines": [
+            "L’énergie d’un objet : les muscles, une pile, la prise, le Soleil.",
+            "Rotation : l’objet tourne. Translation : il avance en ligne droite.",
+            "Engrenage : deux roues dentées qui se touchent.",
+            "Elles tournent en sens contraire.",
+            "Chaîne ou courroie : les deux roues tournent dans le même sens.",
+            "Vélo : le plateau aux pédales, le pignon à la roue arrière.",
+            "Croquis : un dessin rapide, à main levée, avec une légende."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-object-function-2-5",
+      "prompt": "La trottinette sans moteur avance grâce à l’énergie …",
+      "spoken": "La trottinette sans moteur avance grâce à l’énergie  (mot manquant) ",
+      "choices": [
+        "électrique",
+        "solaire",
+        "musculaire"
+      ],
+      "answer": "musculaire",
+      "hint": "Qui la fait avancer ?",
+      "explanation": "Sans moteur, c’est le pied qui pousse : l’énergie vient des muscles. Une trottinette électrique, elle, a une batterie.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Comment ça marche",
+          "lines": [
+            "L’énergie d’un objet : les muscles, une pile, la prise, le Soleil.",
+            "Rotation : l’objet tourne. Translation : il avance en ligne droite.",
+            "Engrenage : deux roues dentées qui se touchent.",
+            "Elles tournent en sens contraire.",
+            "Chaîne ou courroie : les deux roues tournent dans le même sens.",
+            "Vélo : le plateau aux pédales, le pignon à la roue arrière.",
+            "Croquis : un dessin rapide, à main levée, avec une légende."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-object-function-2-6",
+      "prompt": "Le dessin de Léa, en mots\nLéa trace vite, à main levée, la forme de sa lampe.\nElle écrit le nom de chaque partie à côté.",
+      "question": "Comment s’appelle ce dessin ?",
+      "spoken": "Le dessin de Léa, en mots. Léa trace vite, à main levée, la forme de sa lampe. Elle écrit le nom de chaque partie à côté.",
+      "choices": [
+        "une photographie",
+        "un croquis",
+        "un dessin technique"
+      ],
+      "answer": "un croquis",
+      "hint": "Relis la ligne « Croquis » du rappel.",
+      "explanation": "Un dessin rapide, à main levée, est un croquis ; les noms des parties sont sa légende. Un dessin technique est précis, fait avec des instruments ou un logiciel.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Comment ça marche",
+          "lines": [
+            "L’énergie d’un objet : les muscles, une pile, la prise, le Soleil.",
+            "Rotation : l’objet tourne. Translation : il avance en ligne droite.",
+            "Engrenage : deux roues dentées qui se touchent.",
+            "Elles tournent en sens contraire.",
+            "Chaîne ou courroie : les deux roues tournent dans le même sens.",
+            "Vélo : le plateau aux pédales, le pignon à la roue arrière.",
+            "Croquis : un dessin rapide, à main levée, avec une légende."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-6e-objects-object-function-2-7",
+      "prompt": "Le store de la fenêtre, en mots\nOn tourne la manivelle.\nLa toile du store descend tout droit.",
+      "question": "Quel mouvement fait la toile du store ?",
+      "spoken": "Le store de la fenêtre, en mots. On tourne la manivelle. La toile du store descend tout droit.",
+      "choices": [
+        "une rotation",
+        "une translation",
+        "aucun mouvement"
+      ],
+      "answer": "une translation",
+      "hint": "La toile tourne-t-elle, ou descend-elle en ligne droite ?",
+      "explanation": "La manivelle tourne, mais la toile descend en ligne droite : c’est une translation. Le store change une rotation en translation.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Comment ça marche",
+          "lines": [
+            "L’énergie d’un objet : les muscles, une pile, la prise, le Soleil.",
+            "Rotation : l’objet tourne. Translation : il avance en ligne droite.",
+            "Engrenage : deux roues dentées qui se touchent.",
+            "Elles tournent en sens contraire.",
+            "Chaîne ou courroie : les deux roues tournent dans le même sens.",
+            "Vélo : le plateau aux pédales, le pignon à la roue arrière.",
+            "Croquis : un dessin rapide, à main levée, avec une légende."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "technology-6e-objects",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -338,13 +338,13 @@ describe('Les créatures en facettes', () => {
     expect(new Set(Object.values(ESPECES).map((e) => e.nom)).size).toBe(BIOMES.length);
   });
 
-  it('ont les gabarits du directeur artistique : six trapus, six élancés, les autres standard', () => {
+  it('ont les gabarits du directeur artistique : sept trapus (Fougère, SC-2), six élancés, les autres standard', () => {
     const de = (g: Gabarit) =>
       Object.entries(ESPECES)
         .filter(([, e]) => (e.gabarit ?? 'standard') === g)
         .map(([, e]) => e.nom)
         .sort();
-    expect(de('trapu')).toEqual(['Bazar', 'Braise', 'Grimoire', 'Kroa', 'Pudding', 'Tunel']);
+    expect(de('trapu')).toEqual(['Bazar', 'Braise', 'Fougère', 'Grimoire', 'Kroa', 'Pudding', 'Tunel']);
     expect(de('elance')).toEqual(['Cléa', 'Fi', 'Frimas', 'Nénu', 'Stat', 'Théo']);
     expect(GABARITS).toEqual({ trapu: { taille: 2.3, largeur: 1.2 }, standard: { taille: 2.6, largeur: 1 }, elance: { taille: 2.9, largeur: 0.85 } });
     expect(GABARITS.standard.taille).toBeCloseTo(1.3 * TAILLE_DU_BONHOMME, 9);

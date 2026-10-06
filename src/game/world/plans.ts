@@ -102,6 +102,15 @@ import fouilleCour from './plans/history-6e-antiquity-3.json';
 import pointeQuartier from './plans/geography-6e-living-1.json';
 import pointeChamps from './plans/geography-6e-living-2.json';
 import pointeQuai from './plans/geography-6e-living-3.json';
+import valleeSerre from './plans/life-earth-sciences-6e-living-world-1.json';
+import valleeToit from './plans/life-earth-sciences-6e-living-world-2.json';
+import valleeJardin from './plans/life-earth-sciences-6e-living-world-3.json';
+import laboratoireSalle from './plans/physics-chemistry-6e-matter-energy-1.json';
+import laboratoireToit from './plans/physics-chemistry-6e-matter-energy-2.json';
+import laboratoireCour from './plans/physics-chemistry-6e-matter-energy-3.json';
+import hangarAtelier from './plans/technology-6e-objects-1.json';
+import hangarToit from './plans/technology-6e-objects-2.json';
+import hangarCour from './plans/technology-6e-objects-3.json';
 
 export interface PlanCell {
   x: number;
@@ -285,6 +294,15 @@ const PLAN_FILES = [
   pointeQuartier,
   pointeChamps,
   pointeQuai,
+  valleeSerre,
+  valleeToit,
+  valleeJardin,
+  laboratoireSalle,
+  laboratoireToit,
+  laboratoireCour,
+  hangarAtelier,
+  hangarToit,
+  hangarCour,
 ] as (Omit<PlanDef, 'cells' | 'origin' | 'reward'> & { reward: { xp: number } })[];
 
 /**

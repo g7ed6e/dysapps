@@ -21,11 +21,12 @@ import { chosenGuardian, layoutCache, type Rectangle } from '../placement';
  * terre, îlot ou ponton (`r` = éloignement − 3, comme ailleurs). Vérifié par terrain.test.ts et three/whales.test.ts.
  *
  * Depuis GD-9, les lieux se déplacent et les clairières suivent : celle du 5e, calée sur la clairière de 91, 345, ne
- * l'est plus. Au 6e, la clairière de 3, 109 passe d'un pas vers l'ouest (DA, 5 octobre 2026 : depuis la vue du port,
- * une côte cachait le bord de son rond) ; elle ne l'est que tant que la clairière choisie est celle-là.
+ * l'est plus. Au 6e, la clairière de 3, 109 passait d'un pas vers l'ouest (DA, 5 octobre 2026) ; depuis les îles de
+ * sciences (SC-2), le cadre agrandi vers le fond, elle n'est plus choisie. Celle de 45, 151, au fond, se cache derrière
+ * la Baie des mots depuis le port : elle passe à 15, 151, à l'ouest, au plus près où tout son rond se voit.
  */
 export const BALEINES_REPLACEES: Readonly<Partial<Record<ArchipelagoId, readonly { de: { x: number; y: number }; vers: { x: number; y: number } }[]>>> = {
-  '6e': [{ de: { x: 3, y: 109 }, vers: { x: -1, y: 109 } }],
+  '6e': [{ de: { x: 45, y: 151 }, vers: { x: 15, y: 151 } }],
 };
 
 const whaleCache = layoutCache<string, { x: number; y: number; r: number }[]>();

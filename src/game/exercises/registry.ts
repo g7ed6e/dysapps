@@ -214,6 +214,17 @@ export const SCREEN_TYPES: Record<string, ScreenType> = {
   'metropolises': { component: CalculationScreen, batch: 1 },
   'low-density': { component: CalculationScreen, batch: 1 },
   'inhabited-world': { component: CalculationScreen, batch: 1 },
+  // Sciences et technologie (6e) : une notion et son lexique, un document court (texte, tableau, schéma décrit en mots),
+  // la question et trois choix, le rappel affiché, comme l'histoire-géographie.
+  'living-groups': { component: CalculationScreen, batch: 1 },
+  'food-growth': { component: CalculationScreen, batch: 1 },
+  'planet-earth': { component: CalculationScreen, batch: 1 },
+  'states-of-matter': { component: CalculationScreen, batch: 1 },
+  'motion-signals': { component: CalculationScreen, batch: 1 },
+  'energy-circuits': { component: CalculationScreen, batch: 1 },
+  'object-function': { component: CalculationScreen, batch: 1 },
+  materials: { component: CalculationScreen, batch: 1 },
+  'information-networks': { component: CalculationScreen, batch: 1 },
   // La question d'un bloc assemblé (GD-2) : un document à lire sur deux matières, sa question, trois choix, le rappel
   // des deux matières toujours affiché (docs/contenu/assemblage.md). Hors des îles : elle se pose à la Fabrique.
   assembly: { component: CalculationScreen, batch: 1 },

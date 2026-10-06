@@ -1,0 +1,233 @@
+{
+  "id": "physics-chemistry-6e-matter-energy-energy-circuits-1",
+  "biome": "physics-chemistry-6e-matter-energy",
+  "type": "energy-circuits",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "physics-chemistry-6e-matter-energy-energy-circuits-1-0",
+      "prompt": "L’éolienne change l’énergie du vent en énergie …",
+      "spoken": "L’éolienne change l’énergie du vent en énergie  (mot manquant) ",
+      "choices": [
+        "électrique",
+        "lumineuse",
+        "chimique"
+      ],
+      "answer": "électrique",
+      "hint": "L’éolienne est reliée à des câbles.",
+      "explanation": "Le vent fait tourner l’éolienne, qui produit de l’électricité : de l’énergie de mouvement devient de l’énergie électrique.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les sources d’énergie",
+          "lines": [
+            "Renouvelables : le Soleil, le vent, l’eau qui coule.",
+            "Non renouvelables : le pétrole, le charbon, le gaz. Ils s’épuisent.",
+            "Un objet convertit l’énergie : il la change de forme.",
+            "Formes : électrique, lumineuse, thermique (la chaleur), de mouvement.",
+            "Énergie chimique : dans une pile, dans les aliments."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-energy-circuits-1-1",
+      "prompt": "Le charbon est une source d’énergie …",
+      "spoken": "Le charbon est une source d’énergie  (mot manquant) ",
+      "choices": [
+        "renouvelable",
+        "non renouvelable",
+        "inépuisable"
+      ],
+      "answer": "non renouvelable",
+      "hint": "Relis la ligne « Non renouvelables » du rappel.",
+      "explanation": "Le charbon se forme en des millions d’années : ses réserves s’épuisent. C’est une source non renouvelable.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les sources d’énergie",
+          "lines": [
+            "Renouvelables : le Soleil, le vent, l’eau qui coule.",
+            "Non renouvelables : le pétrole, le charbon, le gaz. Ils s’épuisent.",
+            "Un objet convertit l’énergie : il la change de forme.",
+            "Formes : électrique, lumineuse, thermique (la chaleur), de mouvement.",
+            "Énergie chimique : dans une pile, dans les aliments."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-energy-circuits-1-2",
+      "prompt": "Les sources d’énergie d’une région\nÉoliennes : le vent\nPanneaux solaires : la lumière du Soleil\nCentrale : le gaz\nBarrage : l’eau de la rivière",
+      "question": "Quelle source va s’épuiser un jour ?",
+      "spoken": "Les sources d’énergie d’une région. Éoliennes, le vent. Panneaux solaires, la lumière du Soleil. Centrale, le gaz. Barrage, l’eau de la rivière.",
+      "choices": [
+        "le vent",
+        "le gaz",
+        "l’eau de la rivière"
+      ],
+      "answer": "le gaz",
+      "hint": "Cherche la source non renouvelable.",
+      "explanation": "Le gaz est non renouvelable : ses réserves s’épuisent. Le vent, le Soleil et l’eau qui coule se renouvellent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les sources d’énergie",
+          "lines": [
+            "Renouvelables : le Soleil, le vent, l’eau qui coule.",
+            "Non renouvelables : le pétrole, le charbon, le gaz. Ils s’épuisent.",
+            "Un objet convertit l’énergie : il la change de forme.",
+            "Formes : électrique, lumineuse, thermique (la chaleur), de mouvement.",
+            "Énergie chimique : dans une pile, dans les aliments."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-energy-circuits-1-3",
+      "prompt": "La lampe de poche change l’énergie électrique en énergie …",
+      "spoken": "La lampe de poche change l’énergie électrique en énergie  (mot manquant) ",
+      "choices": [
+        "sonore",
+        "chimique",
+        "lumineuse"
+      ],
+      "answer": "lumineuse",
+      "hint": "À quoi sert une lampe ?",
+      "explanation": "La lampe change l’énergie électrique en lumière : l’énergie lumineuse. Elle chauffe aussi un peu.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les sources d’énergie",
+          "lines": [
+            "Renouvelables : le Soleil, le vent, l’eau qui coule.",
+            "Non renouvelables : le pétrole, le charbon, le gaz. Ils s’épuisent.",
+            "Un objet convertit l’énergie : il la change de forme.",
+            "Formes : électrique, lumineuse, thermique (la chaleur), de mouvement.",
+            "Énergie chimique : dans une pile, dans les aliments."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-energy-circuits-1-4",
+      "prompt": "Le vélo à dynamo, en mots\nLe cycliste pédale.\nLa dynamo frotte sur la roue qui tourne.\nLa lampe du vélo s’allume.",
+      "question": "D’où vient l’énergie qui allume la lampe ?",
+      "spoken": "Le vélo à dynamo, en mots. Le cycliste pédale. La dynamo frotte sur la roue qui tourne. La lampe du vélo s’allume.",
+      "choices": [
+        "d’une pile cachée dans la lampe",
+        "des muscles du cycliste",
+        "du Soleil"
+      ],
+      "answer": "des muscles du cycliste",
+      "hint": "Que se passe-t-il si le cycliste s’arrête de pédaler ?",
+      "explanation": "Le cycliste fait tourner la roue avec ses muscles ; la dynamo change ce mouvement en électricité, et la lampe s’allume. S’il s’arrête, la lampe s’éteint.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les sources d’énergie",
+          "lines": [
+            "Renouvelables : le Soleil, le vent, l’eau qui coule.",
+            "Non renouvelables : le pétrole, le charbon, le gaz. Ils s’épuisent.",
+            "Un objet convertit l’énergie : il la change de forme.",
+            "Formes : électrique, lumineuse, thermique (la chaleur), de mouvement.",
+            "Énergie chimique : dans une pile, dans les aliments."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-energy-circuits-1-5",
+      "prompt": "Le panneau solaire change la lumière du Soleil en énergie …",
+      "spoken": "Le panneau solaire change la lumière du Soleil en énergie  (mot manquant) ",
+      "choices": [
+        "chimique",
+        "électrique",
+        "sonore"
+      ],
+      "answer": "électrique",
+      "hint": "Le panneau solaire est relié à des câbles.",
+      "explanation": "Le panneau solaire change l’énergie lumineuse en énergie électrique.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les sources d’énergie",
+          "lines": [
+            "Renouvelables : le Soleil, le vent, l’eau qui coule.",
+            "Non renouvelables : le pétrole, le charbon, le gaz. Ils s’épuisent.",
+            "Un objet convertit l’énergie : il la change de forme.",
+            "Formes : électrique, lumineuse, thermique (la chaleur), de mouvement.",
+            "Énergie chimique : dans une pile, dans les aliments."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-energy-circuits-1-6",
+      "prompt": "Dans une pile, l’énergie est rangée sous forme …",
+      "spoken": "Dans une pile, l’énergie est rangée sous forme  (mot manquant) ",
+      "choices": [
+        "chimique",
+        "lumineuse",
+        "sonore"
+      ],
+      "answer": "chimique",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "La pile garde de l’énergie chimique. Quand on l’utilise, elle la change en énergie électrique.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les sources d’énergie",
+          "lines": [
+            "Renouvelables : le Soleil, le vent, l’eau qui coule.",
+            "Non renouvelables : le pétrole, le charbon, le gaz. Ils s’épuisent.",
+            "Un objet convertit l’énergie : il la change de forme.",
+            "Formes : électrique, lumineuse, thermique (la chaleur), de mouvement.",
+            "Énergie chimique : dans une pile, dans les aliments."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-energy-circuits-1-7",
+      "prompt": "Le grille-pain, en mots\nIl est branché sur la prise.\nSes fils deviennent rouges et chauds.\nLe pain dore.",
+      "question": "En quoi le grille-pain change-t-il l’énergie électrique ?",
+      "spoken": "Le grille-pain, en mots. Il est branché sur la prise. Ses fils deviennent rouges et chauds. Le pain dore.",
+      "choices": [
+        "en mouvement",
+        "en chaleur",
+        "en son"
+      ],
+      "answer": "en chaleur",
+      "hint": "Que fait le grille-pain au pain ?",
+      "explanation": "Le grille-pain change l’énergie électrique en chaleur, l’énergie thermique : le pain dore.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les sources d’énergie",
+          "lines": [
+            "Renouvelables : le Soleil, le vent, l’eau qui coule.",
+            "Non renouvelables : le pétrole, le charbon, le gaz. Ils s’épuisent.",
+            "Un objet convertit l’énergie : il la change de forme.",
+            "Formes : électrique, lumineuse, thermique (la chaleur), de mouvement.",
+            "Énergie chimique : dans une pile, dans les aliments."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "physics-chemistry-6e-matter-energy",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

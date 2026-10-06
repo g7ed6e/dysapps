@@ -100,12 +100,12 @@ describe('les commandes des habitants en Markdown', () => {
     expect(verifier([...tunel, '- après le plan : `french-6e-reading-2`'])).toThrow('n’est pas un plan de l’île');
   });
 
-  it('suit docs/contenu/ : une commande par île de français, de maths, d’anglais et d’histoire-géographie, aucune en LV2', () => {
+  it('suit docs/contenu/ : une commande par île de français, de maths, d’anglais, d’histoire-géographie et de sciences, aucune en LV2', () => {
     const { sortie } = produire();
     const demandes = JSON.parse(sortie.get(DEMANDES));
     expect(readFileSync(DEMANDES, 'utf8')).toBe(sortie.get(DEMANDES));
     const scolaires = ilesDuJeu().filter((b) => b.subject !== 'lv2');
-    expect(scolaires).toHaveLength(30);
+    expect(scolaires).toHaveLength(33);
     expect(demandes.map((d) => d.biome)).toEqual(scolaires.map((b) => b.id));
     expect(new Set(demandes.map((d) => d.id)).size).toBe(demandes.length);
     expect(new Set(demandes.map((d) => d.fixture)).size).toBe(demandes.length);

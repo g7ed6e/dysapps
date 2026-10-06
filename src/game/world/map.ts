@@ -160,7 +160,7 @@ export const DANS_LE_CIEL: Record<ArchipelagoId, boolean> = { '6e': false, '5e':
 const e = (left: number, right: number, front: number, back: number) => ({ left, right, front, back });
 
 /**
- * Les trente-trois îles, placées à la main. Les Premiers Rivages (6e) : la Forêt et la Plaine au centre. Les trois autres archipels
+ * Les trente-six îles, placées à la main. Les Premiers Rivages (6e) : la Forêt et la Plaine au centre. Les trois autres archipels
  * sont des bandes plus au nord (y ≈ 300, 600, 900), jamais visibles depuis la 6e : chaque archipel est sa propre scène.
  * Dans chaque archipel, l'île-port est celle dont le quai (devant, côté −y) accueille le Bloc-Navire.
  *
@@ -224,6 +224,14 @@ const STARTING_MAP: MapPlace[] = [
   // Leur terre est plate, sans relief ni pic : l'archipel le plus chargé du monde, ses îles les plus sobres.
   { id: 'history-6e-antiquity', region: 'basses-terres', core: { x: 124, y: 99 }, altitude: 0, ext: e(2, 2, 2, 2), relief: 'plat', seed: 53 },
   { id: 'geography-6e-living', region: 'basses-terres', core: { x: 152, y: 99 }, altitude: 0, ext: e(2, 2, 2, 2), relief: 'plat', seed: 54 },
+  // Sciences 6e (SC-2) : au bout de l'archipel, dans le cadre agrandi vers le fond, un rang qui revient d'est en ouest
+  // après la Fouille et la Pointe : la Vallée du vivant derrière la Pointe, le Laboratoire des éléments derrière la
+  // Fouille, le Hangar des inventions au bout (sa terre cuite n'a ainsi que des voisines d'ardoise) ; fermées au départ
+  // (on les relie). Sur le pas des places, à quatre cases d'eau au moins de leurs voisines, l'îlot de leur Gardien
+  // devant elles. Terre plate, sans relief ni pic, comme l'histoire-géographie.
+  { id: 'life-earth-sciences-6e-living-world', region: 'basses-terres', core: { x: 152, y: 139 }, altitude: 0, ext: e(2, 2, 2, 2), relief: 'plat', seed: 55 },
+  { id: 'physics-chemistry-6e-matter-energy', region: 'basses-terres', core: { x: 124, y: 139 }, altitude: 0, ext: e(2, 2, 2, 2), relief: 'plat', seed: 56 },
+  { id: 'technology-6e-objects', region: 'basses-terres', core: { x: 96, y: 139 }, altitude: 0, ext: e(2, 2, 2, 2), relief: 'plat', seed: 57 },
   // Anglais 5e : une colonne à droite du Marché et du Marais.
   { id: 'english-5e-vocabulary', region: 'basses-terres', core: { x: 105, y: 321 }, repere: { x: 103, y: 320 }, deplacee: { x: 2, y: 0 }, altitude: 3, ext: e(3, 4, 2, 4), relief: 'plat', seed: 61 },
   { id: 'english-5e-grammar', region: 'hauteurs', core: { x: 101, y: 365 }, repere: { x: 103, y: 366 }, deplacee: { x: 2, y: 0 }, altitude: 3, ext: e(3, 4, 2, 4), relief: 'collines', seed: 62 },

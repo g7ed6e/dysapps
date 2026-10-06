@@ -1,0 +1,242 @@
+{
+  "id": "life-earth-sciences-6e-living-world-planet-earth-1",
+  "biome": "life-earth-sciences-6e-living-world",
+  "type": "planet-earth",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "life-earth-sciences-6e-living-world-planet-earth-1-0",
+      "prompt": "Le Soleil n’est pas une planète : c’est une …",
+      "spoken": "Le Soleil n’est pas une planète : c’est une  (mot manquant) ",
+      "choices": [
+        "comète",
+        "étoile",
+        "lune"
+      ],
+      "answer": "étoile",
+      "hint": "Il brille de sa propre lumière.",
+      "explanation": "Le Soleil est une étoile : il produit sa propre lumière. La Terre est une planète qui tourne autour de lui.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La Terre",
+          "lines": [
+            "Le Soleil est une étoile. La Terre est une planète qui tourne autour.",
+            "La Terre tourne aussi sur elle-même : le jour, puis la nuit.",
+            "Un tour du Soleil dure un an. L’axe penché fait les saisons.",
+            "Météo : le temps qu’il fait un jour.",
+            "Climat : le temps habituel d’une région, sur des années.",
+            "Volcan : il rejette de la lave. Séisme : le sol tremble."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-planet-earth-1-1",
+      "prompt": "La Terre tourne sur elle-même : cela fait le jour et la …",
+      "spoken": "La Terre tourne sur elle-même : cela fait le jour et la  (mot manquant) ",
+      "choices": [
+        "saison",
+        "nuit",
+        "pluie"
+      ],
+      "answer": "nuit",
+      "hint": "Le côté tourné vers le Soleil est éclairé. Et l’autre côté ?",
+      "explanation": "En tournant sur elle-même, la Terre montre au Soleil un côté, puis l’autre : c’est le jour, puis la nuit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La Terre",
+          "lines": [
+            "Le Soleil est une étoile. La Terre est une planète qui tourne autour.",
+            "La Terre tourne aussi sur elle-même : le jour, puis la nuit.",
+            "Un tour du Soleil dure un an. L’axe penché fait les saisons.",
+            "Météo : le temps qu’il fait un jour.",
+            "Climat : le temps habituel d’une région, sur des années.",
+            "Volcan : il rejette de la lave. Séisme : le sol tremble."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-planet-earth-1-2",
+      "prompt": "Deux idées pour expliquer l’été\nLéo : en été, la Terre est plus près du Soleil.\nSami : en été, les rayons arrivent plus droit et les journées sont plus longues.",
+      "question": "Quelle idée est juste ?",
+      "spoken": "Deux idées pour expliquer l’été. Léo, en été, la Terre est plus près du Soleil. Sami, en été, les rayons arrivent plus droit et les journées sont plus longues.",
+      "choices": [
+        "celle de Léo",
+        "celle de Sami",
+        "aucune des deux"
+      ],
+      "answer": "celle de Sami",
+      "hint": "Relis la ligne « Un tour » du rappel : qu’est-ce qui fait les saisons ?",
+      "explanation": "Les saisons viennent de l’axe penché de la Terre, pas de sa distance au Soleil. En été, les rayons arrivent plus droit et les jours sont plus longs.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La Terre",
+          "lines": [
+            "Le Soleil est une étoile. La Terre est une planète qui tourne autour.",
+            "La Terre tourne aussi sur elle-même : le jour, puis la nuit.",
+            "Un tour du Soleil dure un an. L’axe penché fait les saisons.",
+            "Météo : le temps qu’il fait un jour.",
+            "Climat : le temps habituel d’une région, sur des années.",
+            "Volcan : il rejette de la lave. Séisme : le sol tremble."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-planet-earth-1-3",
+      "prompt": "La Terre fait le tour du Soleil en une …",
+      "spoken": "La Terre fait le tour du Soleil en une  (mot manquant) ",
+      "choices": [
+        "journée",
+        "semaine",
+        "année"
+      ],
+      "answer": "année",
+      "hint": "Relis la ligne « Un tour » du rappel.",
+      "explanation": "La Terre met un an à faire le tour du Soleil. En une journée, elle fait un tour sur elle-même.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La Terre",
+          "lines": [
+            "Le Soleil est une étoile. La Terre est une planète qui tourne autour.",
+            "La Terre tourne aussi sur elle-même : le jour, puis la nuit.",
+            "Un tour du Soleil dure un an. L’axe penché fait les saisons.",
+            "Météo : le temps qu’il fait un jour.",
+            "Climat : le temps habituel d’une région, sur des années.",
+            "Volcan : il rejette de la lave. Séisme : le sol tremble."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-planet-earth-1-4",
+      "prompt": "Bulletin du jour\nCe matin : pluie et vent.\nCet après-midi : éclaircies.\nTempérature : 14 °C",
+      "question": "De quoi parle ce bulletin ?",
+      "spoken": "Bulletin du jour. Ce matin, pluie et vent. Cet après-midi, éclaircies. Température, 14 degrés.",
+      "choices": [
+        "du climat",
+        "de la météo",
+        "des saisons"
+      ],
+      "answer": "de la météo",
+      "hint": "Le bulletin parle d’un seul jour, ou de nombreuses années ?",
+      "explanation": "Le bulletin décrit le temps d’un seul jour : c’est la météo. Le climat, c’est le temps habituel d’une région, sur de nombreuses années.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La Terre",
+          "lines": [
+            "Le Soleil est une étoile. La Terre est une planète qui tourne autour.",
+            "La Terre tourne aussi sur elle-même : le jour, puis la nuit.",
+            "Un tour du Soleil dure un an. L’axe penché fait les saisons.",
+            "Météo : le temps qu’il fait un jour.",
+            "Climat : le temps habituel d’une région, sur des années.",
+            "Volcan : il rejette de la lave. Séisme : le sol tremble."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-planet-earth-1-5",
+      "prompt": "Dans un livre sur la Bretagne\nDepuis très longtemps, les hivers y sont doux.\nIl y pleut souvent, en toute saison.",
+      "question": "De quoi parle ce texte ?",
+      "spoken": "Dans un livre sur la Bretagne. Depuis très longtemps, les hivers y sont doux. Il y pleut souvent, en toute saison.",
+      "choices": [
+        "de la météo d’un jour",
+        "d’un séisme",
+        "du climat"
+      ],
+      "answer": "du climat",
+      "hint": "« Depuis très longtemps » : un jour, ou des années ?",
+      "explanation": "Le texte décrit le temps habituel de la Bretagne, depuis très longtemps : c’est son climat.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La Terre",
+          "lines": [
+            "Le Soleil est une étoile. La Terre est une planète qui tourne autour.",
+            "La Terre tourne aussi sur elle-même : le jour, puis la nuit.",
+            "Un tour du Soleil dure un an. L’axe penché fait les saisons.",
+            "Météo : le temps qu’il fait un jour.",
+            "Climat : le temps habituel d’une région, sur des années.",
+            "Volcan : il rejette de la lave. Séisme : le sol tremble."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-planet-earth-1-6",
+      "prompt": "Récit d’une éruption\nLe sommet de la montagne s’ouvre.\nUne roche fondue, très chaude, coule sur les pentes.\nUn nuage de cendres monte dans le ciel.",
+      "question": "Comment s’appelle la roche fondue qui coule ?",
+      "spoken": "Récit d’une éruption. Le sommet de la montagne s’ouvre. Une roche fondue, très chaude, coule sur les pentes. Un nuage de cendres monte dans le ciel.",
+      "choices": [
+        "la cendre",
+        "le sable",
+        "la lave"
+      ],
+      "answer": "la lave",
+      "hint": "Relis la dernière ligne du rappel.",
+      "explanation": "La roche fondue qui coule d’un volcan est la lave. Les cendres, elles, montent en nuage dans le ciel.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La Terre",
+          "lines": [
+            "Le Soleil est une étoile. La Terre est une planète qui tourne autour.",
+            "La Terre tourne aussi sur elle-même : le jour, puis la nuit.",
+            "Un tour du Soleil dure un an. L’axe penché fait les saisons.",
+            "Météo : le temps qu’il fait un jour.",
+            "Climat : le temps habituel d’une région, sur des années.",
+            "Volcan : il rejette de la lave. Séisme : le sol tremble."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-6e-living-world-planet-earth-1-7",
+      "prompt": "Pendant un séisme, en classe, on s’abrite sous une …",
+      "spoken": "Pendant un séisme, en classe, on s’abrite sous une  (mot manquant) ",
+      "choices": [
+        "table",
+        "fenêtre",
+        "étagère"
+      ],
+      "answer": "table",
+      "hint": "Il faut se protéger de ce qui peut tomber.",
+      "explanation": "On s’abrite sous une table solide, loin des vitres et des meubles qui peuvent tomber. Puis on suit les consignes de l’adulte.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La Terre",
+          "lines": [
+            "Le Soleil est une étoile. La Terre est une planète qui tourne autour.",
+            "La Terre tourne aussi sur elle-même : le jour, puis la nuit.",
+            "Un tour du Soleil dure un an. L’axe penché fait les saisons.",
+            "Météo : le temps qu’il fait un jour.",
+            "Climat : le temps habituel d’une région, sur des années.",
+            "Volcan : il rejette de la lave. Séisme : le sol tremble."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien observé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "life-earth-sciences-6e-living-world",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

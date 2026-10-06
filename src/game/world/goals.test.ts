@@ -164,9 +164,10 @@ const ouvrage = (id: string) => getBridge(id) as BridgeDef;
 
 it('la matière la moins jouée se mesure par île : l’anglais, avec deux îles, ne gagne pas parce qu’il en a moins', () => {
   // Français : 2 missions sur 5 îles (0,4) ; maths : 3 missions sur 3 îles (1) ; anglais : 1 mission sur 2 îles (0,5) ;
-  // histoire-géographie : 2 missions sur 2 îles (1), fermées.
-  const progress = { ...joue('french-6e-phonology', 2), ...joue('maths-6e-calculation', 3), ...joue('english-6e-grammar', 1), ...joue('history-6e-antiquity', 2) };
-  expect(partJouee(progress, '6e')).toEqual({ french: 0.4, maths: 1, english: 0.5, 'history-geography': 1 });
+  // histoire-géographie : 2 missions sur 2 îles (1), fermées ; chaque science : 2 missions sur son île (2), fermée.
+  const sciences = { ...joue('life-earth-sciences-6e-living-world', 2), ...joue('physics-chemistry-6e-matter-energy', 2), ...joue('technology-6e-objects', 2) };
+  const progress = { ...joue('french-6e-phonology', 2), ...joue('maths-6e-calculation', 3), ...joue('english-6e-grammar', 1), ...joue('history-6e-antiquity', 2), ...sciences };
+  expect(partJouee(progress, '6e')).toEqual({ french: 0.4, maths: 1, english: 0.5, 'history-geography': 1, 'life-earth-sciences': 2, 'physics-chemistry': 2, technology: 2 });
   // En missions seules, l'anglais (1) serait le moins joué ; divisé par ses îles, c'est le français.
   const state = sanitizeState({ progress, stock: { [BLOC.bois]: 4 }, world: { links: ['french-6e-phonology-english-6e-grammar'] } });
   expect(ouvrageSuggere(state, '6e')).toMatchObject({
@@ -182,7 +183,7 @@ it('la matière la moins jouée se mesure par île : l’anglais, avec deux île
 it('à égalité, l’ordre des matières de l’archipel : le français, puis les maths, puis l’anglais', () => {
   // Une mission sur chaque île de la 6e : chaque matière à 1.
   const egal = Object.assign({}, ...islandsOf('6e').map((b) => joue(b.id, 1)));
-  expect(partJouee(egal, '6e')).toEqual({ french: 1, maths: 1, english: 1, 'history-geography': 1 });
+  expect(partJouee(egal, '6e')).toEqual({ french: 1, maths: 1, english: 1, 'history-geography': 1, 'life-earth-sciences': 1, 'physics-chemistry': 1, technology: 1 });
   const choix = ouvragesParSuggestion(sanitizeState({ progress: egal }), [ouvrage('french-6e-phonology-english-6e-grammar'), ouvrage('maths-6e-calculation-maths-6e-fractions'), ouvrage('french-6e-phonology-french-6e-grammar-spelling')]);
   expect(choix.map((b) => b.id)).toEqual(['french-6e-phonology-french-6e-grammar-spelling', 'maths-6e-calculation-maths-6e-fractions', 'french-6e-phonology-english-6e-grammar']);
 });
@@ -226,6 +227,9 @@ it('sur l’île d’où part l’ouvrage suggéré, son objectif est cet ouvrag
     ...joue('english-6e-vocabulary', 99),
     ...joue('history-6e-antiquity', 99),
     ...joue('geography-6e-living', 99),
+    ...joue('life-earth-sciences-6e-living-world', 99),
+    ...joue('physics-chemistry-6e-matter-energy', 99),
+    ...joue('technology-6e-objects', 99),
   };
   const presque = planCells(coque).map((c) => c.key).slice(1);
   const state = sanitizeState({ progress, stock: { [BLOC.bois]: 1 }, world: { place: 'french-6e-phonology', links: [], parts: { [coque.id]: presque } } });

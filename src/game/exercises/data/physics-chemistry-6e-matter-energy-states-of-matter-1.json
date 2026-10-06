@@ -1,0 +1,233 @@
+{
+  "id": "physics-chemistry-6e-matter-energy-states-of-matter-1",
+  "biome": "physics-chemistry-6e-matter-energy",
+  "type": "states-of-matter",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "physics-chemistry-6e-matter-energy-states-of-matter-1-0",
+      "prompt": "Le glaçon sorti du congélateur devient de l’eau liquide : c’est la …",
+      "spoken": "Le glaçon sorti du congélateur devient de l’eau liquide : c’est la  (mot manquant) ",
+      "choices": [
+        "solidification",
+        "fusion",
+        "vaporisation"
+      ],
+      "answer": "fusion",
+      "hint": "Il était solide, il devient liquide.",
+      "explanation": "Un solide qui devient liquide, c’est la fusion : la glace fond. La solidification, c’est l’inverse.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les états de l’eau",
+          "lines": [
+            "Solide : il garde sa forme. Liquide : il prend la forme du récipient.",
+            "Gaz : il occupe tout l’espace. La vapeur d’eau est invisible.",
+            "Fusion : un solide devient liquide. Solidification : l’inverse.",
+            "Vaporisation : un liquide devient gaz. Liquéfaction : l’inverse.",
+            "La glace fond à 0 degré. L’eau bout à 100 degrés."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-states-of-matter-1-1",
+      "prompt": "Le jus de fruit, mis au congélateur, devient solide : c’est la …",
+      "spoken": "Le jus de fruit, mis au congélateur, devient solide : c’est la  (mot manquant) ",
+      "choices": [
+        "fusion",
+        "liquéfaction",
+        "solidification"
+      ],
+      "answer": "solidification",
+      "hint": "Il était liquide, il devient solide.",
+      "explanation": "Un liquide qui devient solide, c’est la solidification. La fusion, c’est l’inverse.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les états de l’eau",
+          "lines": [
+            "Solide : il garde sa forme. Liquide : il prend la forme du récipient.",
+            "Gaz : il occupe tout l’espace. La vapeur d’eau est invisible.",
+            "Fusion : un solide devient liquide. Solidification : l’inverse.",
+            "Vaporisation : un liquide devient gaz. Liquéfaction : l’inverse.",
+            "La glace fond à 0 degré. L’eau bout à 100 degrés."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-states-of-matter-1-2",
+      "prompt": "Le lait versé dans un verre prend la forme du verre : c’est un …",
+      "spoken": "Le lait versé dans un verre prend la forme du verre : c’est un  (mot manquant) ",
+      "choices": [
+        "liquide",
+        "solide",
+        "gaz"
+      ],
+      "answer": "liquide",
+      "hint": "Relis la première ligne du rappel.",
+      "explanation": "Un liquide prend la forme du récipient qui le contient. Un solide garde sa forme.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les états de l’eau",
+          "lines": [
+            "Solide : il garde sa forme. Liquide : il prend la forme du récipient.",
+            "Gaz : il occupe tout l’espace. La vapeur d’eau est invisible.",
+            "Fusion : un solide devient liquide. Solidification : l’inverse.",
+            "Vaporisation : un liquide devient gaz. Liquéfaction : l’inverse.",
+            "La glace fond à 0 degré. L’eau bout à 100 degrés."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-states-of-matter-1-3",
+      "prompt": "Le thermomètre de la classe, en mots\nLe liquide rouge s’arrête au trait marqué 20.\nLes traits sont en degrés Celsius.",
+      "question": "Quelle température fait-il dans la classe ?",
+      "spoken": "Le thermomètre de la classe, en mots. Le liquide rouge s’arrête au trait marqué 20. Les traits sont en degrés Celsius.",
+      "choices": [
+        "20 grammes",
+        "20 degrés",
+        "20 centimètres"
+      ],
+      "answer": "20 degrés",
+      "hint": "Que mesure un thermomètre ?",
+      "explanation": "Le thermomètre mesure la température, en degrés Celsius : il fait 20 degrés. Les grammes sont pour la masse, les centimètres pour la longueur.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les états de l’eau",
+          "lines": [
+            "Solide : il garde sa forme. Liquide : il prend la forme du récipient.",
+            "Gaz : il occupe tout l’espace. La vapeur d’eau est invisible.",
+            "Fusion : un solide devient liquide. Solidification : l’inverse.",
+            "Vaporisation : un liquide devient gaz. Liquéfaction : l’inverse.",
+            "La glace fond à 0 degré. L’eau bout à 100 degrés."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-states-of-matter-1-4",
+      "prompt": "On chauffe de la glace, et on relève la température\nAu début : −10 °C\nLa glace fond : 0 °C\nLa glace fond encore : 0 °C\nTout est liquide : 5 °C",
+      "question": "Que fait la température pendant que la glace fond ?",
+      "spoken": "On chauffe de la glace, et on relève la température. Au début, moins 10 degrés. La glace fond, 0 degré. La glace fond encore, 0 degré. Tout est liquide, 5 degrés.",
+      "choices": [
+        "elle monte sans arrêt",
+        "elle reste à 0 degré",
+        "elle descend"
+      ],
+      "answer": "elle reste à 0 degré",
+      "hint": "Regarde les deux lignes où la glace fond.",
+      "explanation": "Pendant toute la fusion, le tableau dit 0 degré : la température de la glace qui fond ne change pas. Elle remonte quand tout est liquide.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les états de l’eau",
+          "lines": [
+            "Solide : il garde sa forme. Liquide : il prend la forme du récipient.",
+            "Gaz : il occupe tout l’espace. La vapeur d’eau est invisible.",
+            "Fusion : un solide devient liquide. Solidification : l’inverse.",
+            "Vaporisation : un liquide devient gaz. Liquéfaction : l’inverse.",
+            "La glace fond à 0 degré. L’eau bout à 100 degrés."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-states-of-matter-1-5",
+      "prompt": "Sur le miroir de la salle de bains, la vapeur d’eau redevient liquide : c’est la …",
+      "spoken": "Sur le miroir de la salle de bains, la vapeur d’eau redevient liquide : c’est la  (mot manquant) ",
+      "choices": [
+        "liquéfaction",
+        "fusion",
+        "solidification"
+      ],
+      "answer": "liquéfaction",
+      "hint": "Elle était gaz, elle devient liquide.",
+      "explanation": "Un gaz qui devient liquide, c’est la liquéfaction : la buée se forme.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les états de l’eau",
+          "lines": [
+            "Solide : il garde sa forme. Liquide : il prend la forme du récipient.",
+            "Gaz : il occupe tout l’espace. La vapeur d’eau est invisible.",
+            "Fusion : un solide devient liquide. Solidification : l’inverse.",
+            "Vaporisation : un liquide devient gaz. Liquéfaction : l’inverse.",
+            "La glace fond à 0 degré. L’eau bout à 100 degrés."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-states-of-matter-1-6",
+      "prompt": "Au-dessus de la casserole qui bout, en mots\nJuste au-dessus de l’eau, on ne voit rien.\nPlus haut, on voit un petit nuage blanc.",
+      "question": "Le petit nuage blanc, qu’est-ce que c’est ?",
+      "spoken": "Au-dessus de la casserole qui bout, en mots. Juste au-dessus de l’eau, on ne voit rien. Plus haut, on voit un petit nuage blanc.",
+      "choices": [
+        "de la vapeur d’eau",
+        "de la fumée qui sort de la casserole",
+        "de minuscules gouttes d’eau liquide"
+      ],
+      "answer": "de minuscules gouttes d’eau liquide",
+      "hint": "La vapeur d’eau est un gaz : peut-on la voir ?",
+      "explanation": "La vapeur d’eau, juste au-dessus de l’eau, est invisible. Plus haut, elle refroidit et devient de minuscules gouttes, qu’on voit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les états de l’eau",
+          "lines": [
+            "Solide : il garde sa forme. Liquide : il prend la forme du récipient.",
+            "Gaz : il occupe tout l’espace. La vapeur d’eau est invisible.",
+            "Fusion : un solide devient liquide. Solidification : l’inverse.",
+            "Vaporisation : un liquide devient gaz. Liquéfaction : l’inverse.",
+            "La glace fond à 0 degré. L’eau bout à 100 degrés."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-6e-matter-energy-states-of-matter-1-7",
+      "prompt": "L’eau qui bout dans la casserole se transforme en …",
+      "spoken": "L’eau qui bout dans la casserole se transforme en  (mot manquant) ",
+      "choices": [
+        "glace",
+        "fumée",
+        "vapeur"
+      ],
+      "answer": "vapeur",
+      "hint": "L’eau liquide devient un gaz.",
+      "explanation": "L’eau qui bout devient de la vapeur d’eau, un gaz : c’est la vaporisation. Ce n’est pas de la fumée, qui vient de ce qui brûle.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les états de l’eau",
+          "lines": [
+            "Solide : il garde sa forme. Liquide : il prend la forme du récipient.",
+            "Gaz : il occupe tout l’espace. La vapeur d’eau est invisible.",
+            "Fusion : un solide devient liquide. Solidification : l’inverse.",
+            "Vaporisation : un liquide devient gaz. Liquéfaction : l’inverse.",
+            "La glace fond à 0 degré. L’eau bout à 100 degrés."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "physics-chemistry-6e-matter-energy",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

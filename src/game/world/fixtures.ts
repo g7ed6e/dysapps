@@ -113,6 +113,14 @@ const FORMES: Record<string, Cube[]> = {
   'history-6e-antiquity-fixture-1': [...rangee(0, 2, 1, 0, BLOC.sable), [1, 0, 0, 'fence'], [1, 2, 0, 'fence']],
   // Boussole, la placette (DA, HG-2) : quatre mosaïques en carré au sol, une barrière au coin, une lanterne dessus.
   'geography-6e-living-fixture-1': [...rangee(0, 1, 0, 0, BLOC.mosaique), ...rangee(0, 1, 1, 0, BLOC.mosaique), [2, 2, 0, 'fence'], [2, 2, 1, 'lantern']],
+  // Fougère, le nichoir (DA, SC-2) : un poteau de barrière, trois chaumes en ligne dessus, un toit au milieu.
+  'life-earth-sciences-6e-living-world-fixture-1': [[1, 0, 0, 'fence'], ...rangee(0, 2, 0, 1, BLOC.chaume), [1, 0, 2, 'roof']],
+  // Bulle, l'étagère à flacons (DA, SC-2) : un casier de trois cartons au sol, deux montants d'aimant aux bouts, une
+  // lanterne entre eux. Le carton remplace le verre, déjà demandé dans l'archipel (docs/contenu, à valider par le DA).
+  'physics-chemistry-6e-matter-energy-fixture-1': [...rangee(0, 2, 0, 0, BLOC.carton), [0, 0, 1, BLOC.aimant], [1, 0, 1, 'lantern'], [2, 0, 1, BLOC.aimant]],
+  // Boulon, l'établi (DA, SC-2) : un plateau de trois cartons sur deux pieds de barrière, la barre de trois aimants
+  // dessus. L'aimant remplace le bois, déjà demandé dans l'archipel (docs/contenu, à valider par le DA).
+  'technology-6e-objects-fixture-1': [[0, 0, 0, 'fence'], [2, 0, 0, 'fence'], ...rangee(0, 2, 0, 1, BLOC.carton), ...rangee(0, 2, 0, 2, BLOC.aimant)],
 
   // 5e : les Collines du Large.
   // Frimas, la cabane : des murs de portes sur deux rangs (la glace se perdait sur le sol de glace du Glacier,
@@ -261,6 +269,9 @@ const PLACES: Record<string, readonly [number, number]> = {
   'english-6e-grammar-fixture-1': [10, 9],
   'history-6e-antiquity-fixture-1': [0, 10],
   'geography-6e-living-fixture-1': [-1, 11],
+  'life-earth-sciences-6e-living-world-fixture-1': [1, 9],
+  'physics-chemistry-6e-matter-energy-fixture-1': [1, 11],
+  'technology-6e-objects-fixture-1': [3, 10],
   'english-5e-vocabulary-fixture-1': [4, 11],
   'english-5e-grammar-fixture-1': [10, 3],
   'english-4e-comprehension-fixture-1': [7, 9],

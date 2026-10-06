@@ -1,0 +1,9 @@
+{
+  "id": "technology-6e-objects-2",
+  "biome": "technology-6e-objects",
+  "name": "Le toit de l’atelier",
+  "reward": {
+    "xp": 50
+  },
+  "done": "Un toit, une porte et une lanterne qui consomme très peu !"
+}

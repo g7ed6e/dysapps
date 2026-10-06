@@ -1,0 +1,9 @@
+{
+  "id": "technology-6e-objects-1",
+  "biome": "technology-6e-objects",
+  "name": "L’atelier de Boulon",
+  "reward": {
+    "xp": 40
+  },
+  "done": "Mon atelier ! Chaque outil aura sa place. Merci, bâtisseur."
+}

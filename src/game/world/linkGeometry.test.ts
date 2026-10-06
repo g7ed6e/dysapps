@@ -205,8 +205,10 @@ describe('une sauvegarde d’avant les liaisons posées par l’élève', () => 
     const liaisons = LINKS_BEFORE_GD9.filter((b) => b.cost > 0).map((b) => b.id);
     const avant = [...liaisons, ...VOYAGES.map((v) => v.id)];
     const ouverts = reachableIslands(avant);
-    // Tous les lieux d'avant GD-9 ; les îles d'histoire-géographie de 6e, venues après (HG-2), restent à relier.
-    for (const b of BIOMES) expect(ouverts.has(b.id), b.id).toBe(b.subject !== 'history-geography');
+    // Tous les lieux d'avant GD-9 ; les îles d'histoire-géographie et de sciences de 6e, venues après (HG-2, SC-2), restent
+    // à relier.
+    const VENUES_APRES: readonly string[] = ['history-geography', 'life-earth-sciences', 'physics-chemistry', 'technology'];
+    for (const b of BIOMES) expect(ouverts.has(b.id), b.id).toBe(!VENUES_APRES.includes(b.subject));
     for (const id of liaisons) {
       const b = getBridge(id)!;
       expect(b, id).toBeDefined();

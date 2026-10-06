@@ -58,14 +58,14 @@ describe('la disposition de la sauvegarde', () => {
       { islands: { 'maths-6e-decimals': { x: 1.5, y: 1, turn: 0 } } }, // hors du pas
       { islands: { 'maths-6e-decimals': { x: 1, y: 1, turn: 4 } } }, // une orientation qui n'existe pas
       { islands: { 'maths-6e-decimals': { x: 49, y: 1, turn: 0 } } }, // hors du cadre (48 pas au plus aux Premiers Rivages)
-      { islands: { 'maths-6e-decimals': { x: 1, y: 37, turn: 0 } } }, // hors du cadre (36 pas au plus)
+      { islands: { 'maths-6e-decimals': { x: 1, y: 44, turn: 0 } } }, // hors du cadre (43 pas au plus)
       { guardians: { 'maths-6e-decimals': { side: 'haut', step: 0, turn: 0 } } },
       { joined: [['french-6e-phonology', 'french-6e-phonology']] },
       { joined: [['french-6e-phonology', 'french-6e-letter-confusion'], ['french-6e-phonology', 'french-6e-reading']] },
     ];
     for (const r of casses) expect(sanitizeLayout({ '6e': r, '5e': { relink: [lien5e] } }), JSON.stringify(r)).toEqual({ '5e': { relink: [lien5e] } });
     // Le bout du cadre est encore une place.
-    expect(sanitizeLayout({ '6e': { islands: { 'maths-6e-decimals': { x: 48, y: 36, turn: 0 } } } })).toEqual({ '6e': { islands: { 'maths-6e-decimals': { x: 48, y: 36, turn: 0 } } } });
+    expect(sanitizeLayout({ '6e': { islands: { 'maths-6e-decimals': { x: 48, y: 43, turn: 0 } } } })).toEqual({ '6e': { islands: { 'maths-6e-decimals': { x: 48, y: 43, turn: 0 } } } });
   });
 
   it('une borne, une arrivée, un raccourci ou une liaison à reposer invalide n’oublie qu’elle-même', () => {

@@ -11,14 +11,15 @@ import { ambianceDe, type Couleur, type Faces } from './palette';
 export type Couverture = 'ardoise' | 'terre-cuite';
 
 /**
- * Les îles couvertes de terre cuite : 6e la Ferme, la Mine et la Pointe des paysages (HG-2 : ses toits de ville, jamais
- * voisine de la Mine ; la Fouille des siècles, sa voisine, reste d'ardoise), 5e le Comptoir, 4e le Théâtre, 3e le
+ * Les îles couvertes de terre cuite : 6e la Ferme, la Mine, la Pointe des paysages (HG-2 : ses toits de ville, jamais
+ * voisine de la Mine ; la Fouille des siècles, sa voisine, reste d'ardoise) et le Hangar des inventions (DA, SC-2 ; la
+ * Vallée du vivant et le Laboratoire des éléments, ses voisins, restent d'ardoise), 5e le Comptoir, 4e le Théâtre, 3e le
  * Belvédère. Les îles
  * de la LV2 restent d'ardoise et sont hors de ce compte : le Relais des voyageurs (5e), voisin du Comptoir (jamais deux
  * voisins en terre cuite), le Jardin des heures (4e, DA LV2-4), voisin du Théâtre, d'ardoise #3E3636 (le 4e garde
  * une île de terre cuite sur six), et le Refuge des carnets (3e, DA LV2-5), d'ardoise enneigée.
  */
-export const TERRE_CUITE_SUR: readonly string[] = ['french-6e-grammar-spelling', 'french-6e-letter-confusion', 'geography-6e-living', 'english-5e-vocabulary', 'english-4e-comprehension', 'maths-3e-geometry'];
+export const TERRE_CUITE_SUR: readonly string[] = ['french-6e-grammar-spelling', 'french-6e-letter-confusion', 'geography-6e-living', 'technology-6e-objects', 'english-5e-vocabulary', 'english-4e-comprehension', 'maths-3e-geometry'];
 
 /** La terre cuite, la même dans les quatre archipels. */
 const TERRE_CUITE: Couleur = 0xc0764a;

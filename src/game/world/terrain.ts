@@ -156,7 +156,7 @@ function poserLIle(
   // Les cœurs en herbe ; le Jardin des heures aussi (DA, LV2-4) : l'osier, son bloc, reste aux bordures, aux paniers et
   // à la serre ; et le Refuge des carnets (DA, LV2-5) : le bardeau reste aux murs ; la Fouille des siècles et la Pointe
   // des paysages (HG-2) : la mosaïque et le chaume restent aux plans, au décor et aux commandes, l'archipel le plus chargé
-  // garde un sol calme.
+  // garde un sol calme ; de même la Vallée du vivant, le Laboratoire des éléments et le Hangar des inventions (SC-2).
   const grassy =
     biome.id === 'french-6e-phonology' ||
     biome.id === 'french-6e-grammar-spelling' ||
@@ -167,7 +167,10 @@ function poserLIle(
     biome.id === 'lv2-4e-daily-life' ||
     biome.id === 'lv2-3e-travel' ||
     biome.id === 'history-6e-antiquity' ||
-    biome.id === 'geography-6e-living';
+    biome.id === 'geography-6e-living' ||
+    biome.id === 'life-earth-sciences-6e-living-world' ||
+    biome.id === 'physics-chemistry-6e-matter-energy' ||
+    biome.id === 'technology-6e-objects';
   const h = (x: number, y: number) => groundHeight(index, x, y);
   // Cubes du cœur (coordonnées relatives au cœur, z relatif au sol de l'île).
   // Cubes de la terre autour du cœur (coordonnées du monde). Île verrouillée : mêmes formes, couleurs délavées.

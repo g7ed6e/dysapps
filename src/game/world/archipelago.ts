@@ -417,6 +417,9 @@ export const BRIDGE_BLOCKS: BlockId[] = [
   BLOC.bardeau,
   BLOC.mosaique,
   BLOC.chaume,
+  BLOC.fossile,
+  BLOC.aimant,
+  BLOC.carton,
 ];
 
 export function getBridge(id: string): BridgeDef | undefined {
