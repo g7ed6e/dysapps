@@ -146,6 +146,14 @@ const SHOTS = [
   { name: 'fiche-relier', state: EARLY_MINE, go: '/adventure/french-6e-phonology', act: relierDepuisUneAutreIle('maths-6e-fractions') },
   // Aménager sa région (GD-9) : sur la Carte, le mode ouvert, un lieu choisi et son fantôme calé sur une place libre.
   { name: 'amenager', state: MID, go: '/adventure/map', act: amenager('maths-6e-fractions', { x: 150, y: 100 }) },
+  // Choix 1a du mainteneur (6 octobre 2026) : le mode ouvert sans choix, un petit radeau au bout de chaque ouvrage ;
+  // puis l'arrivée d'un bout choisie par sa poignée, les flèches autour d'elle.
+  { name: 'amenager-bouts', state: MID, go: '/adventure/map', act: amenagerOuvrir },
+  { name: 'amenager-arrivee', state: MID, go: '/adventure/map', act: amenagerUnBout },
+  // Choix 3 : une flèche mène le fantôme d'un cran sur une place prise : la croix grise, « Place prise », Poser éteint.
+  { name: 'amenager-place-prise', state: MID, go: '/adventure/map', act: amenagerPlacePrise('maths-6e-fractions', ['Est', 'Nord', 'Ouest', 'Sud']) },
+  // Choix 2a, pour les relectures : la Tour choisie, les places qui la colleraient à un voisin portent l'icône de Réunir.
+  { name: 'amenager-reunir-places', state: REUNIR, go: '/adventure/map', act: amenagerChoisir('french-6e-reading'), surDemande: true },
   // Réunir deux lieux (GD-9, point 10) : la Tour du lecteur choisie, « Réunir » touché, la question, « Réunir avec la
   // Ferme des accords », « Valider » ; la digue finie depuis son panneau, puis regardée de près sur la Carte (l'herbe
   // sur la pierre, la marche).
@@ -294,6 +302,38 @@ function amenager(ile, point) {
     await page.evaluate((ile) => window.__dysappsAmenager?.({ genre: 'ile', id: ile }), ile);
     await page.waitForTimeout(800);
     await page.evaluate((point) => window.__dysappsAmenager?.({ genre: 'mer', point }), point);
+    await page.waitForTimeout(2500);
+  };
+}
+/** Ouvre le mode « Aménager » sur la Carte, sans rien choisir : les poignées des bouts des ouvrages se montrent. */
+async function amenagerOuvrir(page) {
+  await fermerLesBandeaux(page);
+  await page.getByRole('button', { name: /^Modifier le plan/ }).click();
+  await page.waitForTimeout(500);
+  await fermerLesBandeaux(page);
+  const rester = page.getByRole('button', { name: /Rester sur la Carte/ });
+  if (await rester.count()) await rester.click();
+  await page.waitForTimeout(2500);
+}
+/** Ouvre le mode et touche la poignée du premier bout d'ouvrage (un vrai toucher sur son bouton) : son arrivée est choisie. */
+async function amenagerUnBout(page) {
+  await amenagerOuvrir(page);
+  await page.getByRole('group', { name: 'Déplacer une arrivée' }).getByRole('button').first().click();
+  await page.waitForTimeout(2500);
+}
+/** Choisit un lieu, puis touche une flèche, cran par cran (au plus 12 par direction), jusqu'à une place prise. */
+function amenagerPlacePrise(ile, fleches) {
+  return async (page) => {
+    await amenagerChoisir(ile)(page);
+    for (const fleche of fleches) {
+      for (let i = 0; i < 12; i++) {
+        await page.getByRole('button', { name: fleche, exact: true }).click();
+        await page.waitForTimeout(300);
+        const ligne = (await page.locator('.arrange-signes').textContent()) ?? '';
+        if (ligne.includes('Place prise')) return page.waitForTimeout(2500);
+        if (ligne.includes('Plus de place')) break;
+      }
+    }
     await page.waitForTimeout(2500);
   };
 }

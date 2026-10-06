@@ -1,8 +1,8 @@
 // Les boutons transparents posés sur les poignées dessinées dans le monde (GD-9, 6 octobre 2026) : chacun sur sa
 // poignée, jamais sous 48 px, jamais détaché d’elle ; la dernière place donnée aux boutons qui arrivent après
-// elle ; et les touchers transmis à la 3D.
+// elle ; et les touchers transmis à la 3D. Sans choix, un bouton sur chaque bout de liaison (choix 1a du mainteneur).
 import { describe, expect, it } from 'vitest';
-import { creerSuiviALEcran, placerLesBoutons } from './ArrangeHandles';
+import { creerSuiviALEcran, placerLesBoutons, placerLesBoutsDesLiaisons } from './ArrangeHandles';
 import type { ChoixALEcran } from './world/view';
 
 const LIBRE = { x0: 0, y0: 80, x1: 800, y1: 500 };
@@ -43,5 +43,20 @@ describe('les boutons des poignées', () => {
     fin();
     suivi.toucher('nord');
     expect(touches).toEqual(['tourner']);
+  });
+
+  it('les bouts des liaisons : un bouton sur chaque petit radeau, 48 px au moins, nommé par son bout (choix 1a)', () => {
+    const b: ChoixALEcran = {
+      libre: LIBRE,
+      poignees: [],
+      bouts: [
+        { link: 'a-b', end: 'from', x: 100, y: 120, w: 20, h: 14 },
+        { link: 'a-b', end: 'to', x: 300, y: 220, w: 60, h: 50 },
+      ],
+    };
+    const p = placerLesBoutsDesLiaisons(b);
+    expect(p.get('a-b|from')).toEqual({ x: 100, y: 120, w: 48, h: 48 });
+    expect(p.get('a-b|to')).toEqual({ x: 300, y: 220, w: 60, h: 50 });
+    expect(placerLesBoutsDesLiaisons({ libre: LIBRE, poignees: [] }).size).toBe(0);
   });
 });

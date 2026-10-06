@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import { describe, expect, it } from 'vitest';
 import type { World } from '../engine/state';
 import type { BiomeId } from '../biomes';
-import { DIRECTION_STEP, type Direction, nextFreeSpot, placeIn, spotOf } from '../world/arrange';
+import { DIRECTION_STEP, type Direction, placeIn, spotOf, stepSpot } from '../world/arrange';
 import { archipelagoOfIsland, ARCHIPELAGO_IDS } from '../world/archipelagos';
 import { landRectangle, poseOfSpot } from '../world/footprint';
 import type { LayoutSpot } from '../world/savedLayout';
@@ -74,15 +74,15 @@ describe('les mots du mode « Aménager » et la caméra de la Carte', () => {
     it(`${a} : la flèche déplace le fantôme du lieu du bon côté de l'écran`, () => {
       const cam = cameraDeLaCarte(a);
       const alt = mapOf(a)[0]?.altitude ?? 0;
-      const id = placesOf(a).find((l) => (['est', 'ouest', 'nord', 'sud'] as Direction[]).some((d) => nextFreeSpot(VIDE, l, spotOf(VIDE, l), d)))!;
+      const id = placesOf(a).find((l) => (['est', 'ouest', 'nord', 'sud'] as Direction[]).some((d) => stepSpot(VIDE, l, spotOf(VIDE, l), d)))!;
       expect(archipelagoOfIsland(id)).toBe(a);
       const depuis = spotOf(VIDE, id);
       for (const dir of Object.keys(ATTENDU) as Direction[]) {
-        const s = nextFreeSpot(VIDE, id, depuis, dir);
+        const s = stepSpot(VIDE, id, depuis, dir);
         if (!s) continue;
         const p0 = ecran(cam, milieuDeLaPlace(id, depuis), alt);
         const p1 = ecran(cam, milieuDeLaPlace(id, s), alt);
-        // Le pas avance du côté nommé (la place suivante peut glisser un peu de côté).
+        // Le cran avance du côté nommé.
         const d = { x: p1.x - p0.x, y: p1.y - p0.y };
         const avance = dir === 'est' ? d.x : dir === 'ouest' ? -d.x : dir === 'nord' ? -d.y : d.y;
         expect(avance, `${a} ${id} ${dir}`).toBeGreaterThan(0);

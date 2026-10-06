@@ -500,6 +500,13 @@ export default function WorldCanvas({
     // Reposé aussi quand la scène est refaite (un lieu posé, la préférence de mouvement).
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vueDuMode, reduceMotion, archipelago]);
+  // ---- Sans choix, les poignées des bouts de liaison (choix 1a du mainteneur, 6 octobre 2026)
+  const boutsDuMode = amenager?.bouts ?? null;
+  useEffect(() => {
+    world.current?.amenagement.poserLesBouts(boutsDuMode);
+    // Reposé aussi quand la scène est refaite (un lieu posé, la préférence de mouvement).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [boutsDuMode, reduceMotion, archipelago]);
   // ---- Le bouton d'une poignée touché : la poignée dessinée s'enfonce et remonte
   const touchersDuMode = amenager?.touchers;
   useEffect(() => touchersDuMode?.ecouter((cle) => world.current?.amenagement.toucher(cle)), [touchersDuMode]);

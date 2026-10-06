@@ -13,7 +13,7 @@ import { BRIDGES, type BridgeDef, getBridge, isBiomeUnlocked, reachableIslands }
 import { ARCHIPELAGO_IDS, type ArchipelagoId, archipelagoOfIsland, bornesDuCoeur, CORE, type IslandDef, startingIsland } from './map';
 import { SIDE_OF, LAYOUT_SIDE_OF } from './appliedLayout';
 import { fittingPlaces, footprintOf, frameOf, GAP_BETWEEN_PLACES, gapBetween, LINK_GAP, placedIsland, poseOfSpot, spotInSteps, tooSmallGaps } from './footprint';
-import { STEP, type Quarts, type Rectangle, SIDES, turnDirection, turnedSide } from './placement';
+import { STEP, type Quarts, type Rectangle, SIDES, turnedSide } from './placement';
 import { LONG_LENGTH, possibleLandings, RegionRouter, type LinkLandings, type LinkRoute, startingPlaces, placesOf } from './routing';
 import { LAYOUT_LAST_SPOT, type LayoutGuardian, type LayoutLanding, type LayoutSide, type LayoutSpot, type LayoutTurn, type RegionLayout } from './savedLayout';
 import { reefsOutside } from './terrain/sea';
@@ -389,9 +389,18 @@ export function nextIn<T>(items: readonly T[], at: (t: T) => { x: number; y: num
   return best;
 }
 
-/** La place libre suivante d'un lieu dans une direction (les flèches), depuis `from` ; `null` : « Plus de place par là ». */
-export function nextFreeSpot(world: World, id: BiomeId, from: LayoutSpot, dir: Direction): LayoutSpot | null {
-  return nextIn(freeSpots(world, id, from.turn), (s) => s, from, dir);
+/**
+ * Le cran suivant d'un lieu dans une direction (les flèches ; 6 octobre 2026, choix 3 du mainteneur) : une place de la
+ * grille plus loin, libre ou prise (le fantôme y montre alors une croix grise, et « Poser » s'éteint), jamais la place
+ * libre suivante plus loin sur la carte ; `null` seulement au bord de la carte : « Plus de place par là ». Deux lieux
+ * réunis restent tous deux sur la grille.
+ */
+export function stepSpot(world: World, id: BiomeId, from: LayoutSpot, dir: Direction): LayoutSpot | null {
+  const max = LAYOUT_LAST_SPOT[archipelagoOfIsland(id)];
+  const { dx, dy } = DIRECTION_STEP[dir];
+  const spot: LayoutSpot = { x: from.x + dx, y: from.y + dy, turn: from.turn };
+  for (const g of companions(world, id, spot)) if (g.spot.x < 0 || g.spot.y < 0 || g.spot.x > max.x || g.spot.y > max.y) return null;
+  return spot;
 }
 
 /**
@@ -470,11 +479,24 @@ export function groupAt(world: World, id: BiomeId, spot: LayoutSpot): { id: Biom
  * près de la grille sur un côté commun (`joinShape`), et la construction loin des autres lieux.
  */
 export function joinCandidates(world: World, id: BiomeId): BiomeId[] {
+  return joinableFrom(world, id, placeIn(world, id));
+}
+
+/**
+ * Les lieux avec lesquels un lieu se réunirait s'il était posé à `spot` (6 octobre 2026, choix 2a du mainteneur : ces
+ * places portent l'icône de « Réunir ») ; vide pour deux lieux déjà réunis.
+ */
+export function joinCandidatesAt(world: World, id: BiomeId, spot: LayoutSpot): BiomeId[] {
+  return joinableFrom(world, id, placedIsland(id, poseOfSpot(archipelagoOfIsland(id), spot)));
+}
+
+/** Les voisins avec lesquels un lieu, posé comme `def`, se réunirait (les règles de `joinCandidates`). */
+function joinableFrom(world: World, id: BiomeId, def: IslandDef): BiomeId[] {
   if (!getBiome(id) || joinedWith(world, id) || !isBiomeUnlocked(id, world.links)) return [];
   const a = archipelagoOfIsland(id);
   return placesOf(a).filter((b) => {
     if (b === id || joinedWith(world, b) || !isBiomeUnlocked(b, world.links)) return false;
-    const forme = joinShape(placeIn(world, id), placeIn(world, b));
+    const forme = joinShape(def, placeIn(world, b));
     return forme !== null && farEnough([forme.zone], othersFootprints(world, a, [id, b]));
   });
 }
@@ -549,16 +571,11 @@ function isletMiddle(world: World, id: BiomeId, g: Pick<LayoutGuardian, 'side' |
  * cadre, loin des autres lieux, à l'écart de la terre, des grandes constructions et du quai de son lieu,
  * et des liaisons posées (aucune ne se défait).
  */
-function isFreeGuardianSpot(world: World, id: BiomeId, g: Pick<LayoutGuardian, 'side' | 'step'>): boolean {
+export function isFreeGuardianSpot(world: World, id: BiomeId, g: Pick<LayoutGuardian, 'side' | 'step'>): boolean {
   const a = archipelagoOfIsland(id);
-  const def = placeIn(world, id);
-  const parts = footprintOf(id, def, g);
+  const parts = footprintOf(id, placeIn(world, id), g);
   const ilot = parts.find((p) => p.genre === 'ilot')!;
-  const terre = parts.find((p) => p.genre === 'terre')!;
-  // Contre son lieu : l'îlot et la terre se font face sur au moins 4 cases.
-  const face = Math.min(ilot.x1, terre.x1) - Math.max(ilot.x0, terre.x0);
-  const faceY = Math.min(ilot.y1, terre.y1) - Math.max(ilot.y0, terre.y0);
-  if (Math.max(face, faceY) < 4) return false;
+  if (!againstItsLand(world, id, g)) return false;
   if (!inFrame(a, [ilot]) || !farEnough([ilot], othersFootprints(world, a, id))) return false;
   // Les grandes constructions et le quai de son lieu : au moins une case d'eau.
   if (parts.some((p) => p.genre !== 'ilot' && p.genre !== 'terre' && gapBetween(p, ilot) < 1)) return false;
@@ -566,6 +583,16 @@ function isFreeGuardianSpot(world: World, id: BiomeId, g: Pick<LayoutGuardian, '
   for (const t of routesIn(world, a).values())
     for (const c of t?.cases ?? []) if (c.x >= ilot.x0 - LINK_GAP && c.x < ilot.x1 + LINK_GAP && c.y >= ilot.y0 - LINK_GAP && c.y < ilot.y1 + LINK_GAP) return false;
   return true;
+}
+
+/** L'îlot d'un Gardien à une place est-il contre son lieu (l'îlot et la terre se font face sur au moins 4 cases) ? */
+function againstItsLand(world: World, id: BiomeId, g: Pick<LayoutGuardian, 'side' | 'step'>): boolean {
+  const parts = footprintOf(id, placeIn(world, id), g);
+  const ilot = parts.find((p) => p.genre === 'ilot')!;
+  const terre = parts.find((p) => p.genre === 'terre')!;
+  const face = Math.min(ilot.x1, terre.x1) - Math.max(ilot.x0, terre.x0);
+  const faceY = Math.min(ilot.y1, terre.y1) - Math.max(ilot.y0, terre.y0);
+  return Math.max(face, faceY) >= 4;
 }
 
 /** Les places libres de l'îlot d'un Gardien autour de son lieu (sa place du moment comprise). */
@@ -580,9 +607,14 @@ export function nearestGuardianSpot(world: World, id: BiomeId, point: { x: numbe
   return closest(freeGuardianSpots(world, id), (g) => isletMiddle(world, id, g), point);
 }
 
-/** La place libre suivante de l'îlot d'un Gardien dans une direction ; `null` : « Plus de place par là ». */
-export function nextGuardianSpot(world: World, id: BiomeId, from: Pick<LayoutGuardian, 'side' | 'step'>, dir: Direction): Pick<LayoutGuardian, 'side' | 'step'> | null {
-  return nextIn(freeGuardianSpots(world, id), (g) => isletMiddle(world, id, g), isletMiddle(world, id, from), dir);
+/**
+ * Le cran suivant de l'îlot d'un Gardien dans une direction (choix 3 du mainteneur) : la place la plus proche de ce
+ * côté parmi toutes celles contre son lieu, libre ou prise ; `null` : « Plus de place par là ».
+ */
+export function stepGuardianSpot(world: World, id: BiomeId, from: Pick<LayoutGuardian, 'side' | 'step'>, dir: Direction): Pick<LayoutGuardian, 'side' | 'step'> | null {
+  const contre: Pick<LayoutGuardian, 'side' | 'step'>[] = [];
+  for (const cote of SIDES) for (const step of GUARDIAN_STEPS) if (againstItsLand(world, id, { side: LAYOUT_SIDE_OF[cote], step })) contre.push({ side: LAYOUT_SIDE_OF[cote], step });
+  return nextIn(contre, (g) => isletMiddle(world, id, g), isletMiddle(world, id, from), dir);
 }
 
 /** Le monde avec un Gardien à une place (à sa place de départ, il quitte la disposition). */
@@ -695,17 +727,17 @@ export function moveStation(world: World, key: string, to: { x: number; y: numbe
   return { ok: true, world: withRegion(world, a, { ...r, stations }), relink: [] };
 }
 
-/** La place libre suivante d'une borne dans une direction (dans le monde, son lieu tourné) ; `null` : « Plus de place par là ». */
-export function nextStationSpot(world: World, key: string, dir: Direction): { x: number; y: number } | null {
-  const [id] = key.split(':') as [BiomeId];
-  const from = stationOf(world, key);
-  if (!from) return null;
-  // Les flèches parlent du monde : la direction est ramenée dans le repère du lieu tourné.
-  const q = spotOf(world, id).turn;
-  const d = DIRECTION_STEP[dir];
-  const local = turnDirection(d.dx, d.dy, ((4 - q) % 4) as Quarts);
-  const dirLocale = DIRECTIONS.find((k) => DIRECTION_STEP[k].dx === local.dx && DIRECTION_STEP[k].dy === local.dy)!;
-  return nextIn(freeStationSpots(world, key), (p) => p, from, dirLocale);
+/**
+ * Toutes les places d'une borne, libres ou prises (choix 3 du mainteneur : une flèche avance d'un cran, même sur une
+ * place prise) : la bande de devant de son lieu, et sa place de départ.
+ */
+export function stationSpots(world: World, key: string): { x: number; y: number }[] {
+  const [id, mission] = key.split(':') as [BiomeId, string];
+  if (!stationOf(world, key)) return [];
+  const depart = startingStations(id).find((st) => st.typeId === mission)!;
+  const out = [...stationBand(id)];
+  if (!out.some((p) => p.x === depart.x && p.y === depart.y)) out.push({ x: depart.x, y: depart.y });
+  return out;
 }
 
 // ---------- Les arrivées ----------
@@ -735,6 +767,13 @@ export function freeLandings(world: World, linkId: string, end: LinkEnd): Layout
   return possibleLandings(placeIn(world, id))
     .map((l) => ({ side: LAYOUT_SIDE_OF[l.cote], step: l.pas }))
     .filter((l) => !prises.has(depart ? `${l.side}|${l.step}` : l.side));
+}
+
+/** Toutes les arrivées d'un bout d'une liaison, libres ou prises : la côte de son lieu, une par côté, au pas. */
+export function landingSpots(world: World, linkId: string, end: LinkEnd): LayoutLanding[] {
+  const b = getBridge(linkId);
+  if (!b) return [];
+  return possibleLandings(placeIn(world, end === 'from' ? b.from : b.to)).map((l) => ({ side: LAYOUT_SIDE_OF[l.cote], step: l.pas }));
 }
 
 /**

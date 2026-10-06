@@ -1,7 +1,7 @@
 // Le mode « Aménager » (GD-9, L5) : ce que l'élève a choisi (un lieu, un Gardien, une borne, une arrivée, une liaison à
 // reposer), où se tient son fantôme, et ce que font les gestes de la barre du mode : toucher la mer (le fantôme se cale
-// sur la place libre la plus proche), les flèches (la place libre suivante, ou « Plus de place par là »), « Tourner »,
-// « Poser ». La phrase écrite et lue dit toujours où. Les actions elles-mêmes sont dans ./arrange.ts ; ici, le choix
+// sur la place libre la plus proche), les flèches (un cran, même sur une place prise, que le fantôme montre d'une croix
+// grise ; « Plus de place par là » au bord de la carte ; 6 octobre 2026, choix 3 du mainteneur), « Tourner », « Poser ». La phrase écrite et lue dit toujours où. Les actions elles-mêmes sont dans ./arrange.ts ; ici, le choix
 // en cours et son fantôme ; un lieu réuni emmène son voisin et leur réunion. Code pur, sans Three.js.
 import { thePlace } from './placeArticle';
 import { type BiomeId, getBiome } from '../biomes';
@@ -19,7 +19,9 @@ import {
   guardianFacing,
   guardianOf,
   isFixedPlace,
+  isFreeGuardianSpot,
   isFreeSpot,
+  landingSpots,
   type LinkEnd,
   moveGuardian,
   moveIsland,
@@ -27,18 +29,18 @@ import {
   moveStation,
   nearestFreeSpot,
   nearestGuardianSpot,
-  nextFreeSpot,
-  nextGuardianSpot,
   nextIn,
   placeIn,
   relinkBetween,
   relinkChoices,
   spotOf,
   stationOf,
+  stationSpots,
+  stepGuardianSpot,
+  stepSpot,
   turnGuardian,
 } from './arrange';
-import { archipelagoOfIsland, toWorld } from './map';
-import { poseOfSpot } from './footprint';
+import { toWorld } from './map';
 import { turnedSide, type Quarts, type Side } from './placement';
 import { type LinkPhrases, linkPhrases } from './linkWord';
 import { guardianSentence, ofPlace, placeSentence, type PlaceName } from './placeSentence';
@@ -91,6 +93,12 @@ export function chooseLanding(world: World, link: string, point: { x: number; y:
   return { genre: 'arrivee', link, end: bout, landing: l[bout] };
 }
 
+/** Toucher la poignée d'un bout de liaison (6 octobre 2026, choix 1a du mainteneur) : l'arrivée de ce bout. */
+export function chooseLinkEnd(world: World, link: string, end: LinkEnd): ArrangeChoice | null {
+  const l = currentLandings(world, link);
+  return l ? { genre: 'arrivee', link, end, landing: l[end] } : null;
+}
+
 /** Choisir une liaison à reposer : la première liaison où elle se pose (la plus courte). */
 export function chooseRelink(world: World, link: string): ArrangeChoice {
   return { genre: 'liaison', link, to: relinkChoices(world, link)[0] ?? null };
@@ -107,6 +115,18 @@ export function landingInWorld(world: World, id: BiomeId, l: LayoutLanding): { x
   return { x: a.x, y: a.y };
 }
 
+/**
+ * Le bout du ponton d'une arrivée dans le monde : la case d'eau devant sa case de côte, vers le large (là où le
+ * ponton de deux cubes finit, et où se pose la poignée de ce bout de liaison).
+ */
+export function landingTip(world: World, id: BiomeId, l: LayoutLanding): { x: number; y: number } {
+  const p = landingInWorld(world, id, l);
+  const core = placeIn(world, id).core;
+  const ex = p.x - (core.x + 8);
+  const ey = p.y - (core.y + 8);
+  return Math.abs(ex) > Math.abs(ey) ? { x: p.x + Math.sign(ex), y: p.y } : { x: p.x, y: p.y + Math.sign(ey) };
+}
+
 /** La case d'une borne dans le monde (son lieu à sa place dans `world`), depuis sa place dans le repère du lieu. */
 export function stationInWorld(world: World, key: string, p: { x: number; y: number }): { x: number; y: number } {
   const id = key.split(':')[0] as BiomeId;
@@ -119,12 +139,6 @@ export function placeOfChoice(c: ArrangeChoice): BiomeId {
   if (c.genre === 'borne') return c.key.split(':')[0] as BiomeId;
   const b = getBridge(c.link)!;
   return c.genre === 'arrivee' && c.end === 'to' ? b.to : b.from;
-}
-
-/** Le milieu d'un lieu posé à une place, en cases du monde. */
-function middleOfSpot(id: BiomeId, s: LayoutSpot): { x: number; y: number } {
-  const p = poseOfSpot(archipelagoOfIsland(id), s);
-  return { x: p.x + 8, y: p.y + 8 };
 }
 
 // ---------- Les gestes de la barre ----------
@@ -158,27 +172,31 @@ export function snapChoice(world: World, c: ArrangeChoice, point: { x: number; y
   }
 }
 
-/** Une flèche (nommée en mots, au clavier aussi) : la place libre suivante dans sa direction ; `null` : « Plus de place par là ». */
+/**
+ * Une flèche (nommée en mots, au clavier aussi) : un cran dans sa direction (6 octobre 2026, choix 3 du mainteneur),
+ * même sur une place prise (`choiceFits` le dit ; le fantôme y montre une croix grise, « Poser » s'éteint), jamais la
+ * place libre suivante plus loin sur la carte ; `null` au bord seulement : « Plus de place par là ».
+ */
 export function stepChoice(world: World, c: ArrangeChoice, dir: Direction): ArrangeChoice | null {
   switch (c.genre) {
     case 'lieu': {
-      const s = nextFreeSpot(world, c.id, c.spot, dir);
+      const s = stepSpot(world, c.id, c.spot, dir);
       return s && { ...c, spot: s };
     }
     case 'gardien': {
-      const g = nextGuardianSpot(world, c.id, c.place, dir);
+      const g = stepGuardianSpot(world, c.id, c.place, dir);
       return g && { ...c, place: g };
     }
     case 'borne': {
       const at = (q: { x: number; y: number }) => stationInWorld(world, c.key, q);
-      const p = nextIn(freeStationSpots(world, c.key), at, at(c.place), dir);
+      const p = nextIn(stationSpots(world, c.key), at, at(c.place), dir);
       return p && { ...c, place: p };
     }
     case 'arrivee': {
       const b = getBridge(c.link)!;
       const id = c.end === 'from' ? b.from : b.to;
       const at = (q: LayoutLanding) => landingInWorld(world, id, q);
-      const l = nextIn(freeLandings(world, c.link, c.end), at, at(c.landing), dir);
+      const l = nextIn(landingSpots(world, c.link, c.end), at, at(c.landing), dir);
       return l && { ...c, landing: l };
     }
     case 'liaison': {
@@ -192,19 +210,34 @@ export function stepChoice(world: World, c: ArrangeChoice, dir: Direction): Arra
   }
 }
 
+/**
+ * Le choix est-il sur une place où il se pose (une place libre) ? Sinon, une place prise : le fantôme montre une croix
+ * grise, « Poser » s'éteint, et « Valider » le laisse à sa place d'avant.
+ */
+export function choiceFits(world: World, c: ArrangeChoice): boolean {
+  switch (c.genre) {
+    case 'lieu':
+      return isFreeSpot(world, c.id, c.spot);
+    case 'gardien':
+      return isFreeGuardianSpot(world, c.id, c.place);
+    case 'borne':
+      return freeStationSpots(world, c.key).some((p) => p.x === c.place.x && p.y === c.place.y);
+    case 'arrivee':
+      return freeLandings(world, c.link, c.end).some((l) => l.side === c.landing.side && l.step === c.landing.step);
+    case 'liaison':
+      return c.to !== null;
+  }
+}
+
 /** Le lieu choisi a-t-il « Tourner » (un lieu, un Gardien) ? */
 export const canTurn = (c: ArrangeChoice | null): boolean => c?.genre === 'lieu' || c?.genre === 'gardien';
 
 /**
- * « Tourner » un lieu choisi : son fantôme pivote d'un quart de tour, à sa place s'il y tient, sinon à la place libre
- * la plus proche ; `null` s'il n'en a aucune. (Un Gardien, lui, tourne tout de suite : `turnGuardian`, une pose.)
+ * « Tourner » un lieu choisi : son fantôme pivote d'un quart de tour, à sa place, même si elle est prise (choix 3 du
+ * mainteneur : le fantôme montre alors une croix grise, jamais un saut ailleurs sur la carte).
  */
-export function turnChoice(world: World, c: Extract<ArrangeChoice, { genre: 'lieu' }>): ArrangeChoice | null {
-  const turn = ((c.spot.turn + 1) % 4) as LayoutTurn;
-  const ici = { ...c.spot, turn };
-  if (isFreeSpot(world, c.id, ici)) return { ...c, spot: ici };
-  const s = nearestFreeSpot(world, c.id, middleOfSpot(c.id, c.spot), turn);
-  return s && { ...c, spot: s };
+export function turnChoice(c: Extract<ArrangeChoice, { genre: 'lieu' }>): ArrangeChoice {
+  return { ...c, spot: { ...c.spot, turn: ((c.spot.turn + 1) % 4) as LayoutTurn } };
 }
 
 /** « Poser » : l'action du choix. */
@@ -273,7 +306,8 @@ export function choiceSentence(world: World, c: ArrangeChoice, nom: PlaceName = 
  * du monde qui descendent vers la droite), ou du haut quand le lieu tourné la met debout ; 0 hors de la rangée.
  */
 function rangDeLaBorne(world: World, c: Extract<ArrangeChoice, { genre: 'borne' }>): { rang: number; n: number; debout: boolean } {
-  const places = freeStationSpots(world, c.key).map((p) => ({ p, m: stationInWorld(world, c.key, p) }));
+  // Toutes les places de la rangée, libres ou prises (une flèche avance d'un cran, même sur une place prise).
+  const places = stationSpots(world, c.key).map((p) => ({ p, m: stationInWorld(world, c.key, p) }));
   const debout = places.length > 1 && places.every((q) => q.m.x === places[0].m.x);
   places.sort((u, v) => (debout ? v.m.y - u.m.y : v.m.x - u.m.x));
   return { rang: places.findIndex((q) => q.p.x === c.place.x && q.p.y === c.place.y) + 1, n: places.length, debout };

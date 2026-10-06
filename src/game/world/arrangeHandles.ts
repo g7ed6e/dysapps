@@ -5,16 +5,21 @@
 // une flèche en cubes dessus (une tige longue, la pointe large en triangle à marches, sans biais) ; « Tourner » : un arc
 // ouvert, sa pointe en marches (↷). Dans Archipéo (rattrapage), un radeau de trois planches, une flèche peinte à plat ;
 // « Tourner » : une flèche en arc fin peinte sur une bouée ronde à huit pans, sa pointe marquée, dans le même sens (↷).
-// Quand une terre occupe la place d'une poignée, la flèche se pose quand même là, par-dessus, toujours visible. Indisponible : le radeau gris pierre, la pointe disparaît (la tige seule). Rien à lire dans le monde : les
-// boutons HTML transparents posés par-dessus (ArrangeHandles.tsx) portent les noms.
+// Quand une terre occupe la place d'une poignée, la flèche se pose quand même là, par-dessus, toujours visible.
+// Indisponible (au bord de la carte) : le radeau gris pierre, la pointe disparaît (la tige seule). Le choix sur une
+// place prise (choix 3 du mainteneur, 6 octobre 2026) : une croix grise, bordée de sombre, au milieu de son emprise.
+// Sans choix, chaque bout de liaison posée porte un petit radeau (choix 1a) : le toucher choisit cette arrivée. Rien à
+// lire dans le monde : les boutons HTML transparents posés par-dessus (ArrangeHandles.tsx) portent les noms.
 // Ici : où se tient chaque poignée (à une place du bord de l'emprise du choix, jamais plus loin, par-dessus la terre si
 // l'eau n'est pas là), sa forme (sommets et couleurs, en cases, dans le repère de Three : x, hauteur, y) et ce
 // qu'elle coûte. Code pur, sans Three.js ; la 3D les dessine en un seul maillage (three/arrangeHandles.ts).
 import type { World } from '../engine/state';
-import { DIRECTION_STEP, nextFreeSpot, nextGuardianSpot } from './arrange';
-import { type ArrangeChoice, canTurn, stepChoice, turnChoice } from './arrangeMode';
+import { getBridge } from './archipelago';
+import { currentLandings, DIRECTION_STEP, placeIn, routesIn } from './arrange';
+import { type ArrangeChoice, canTurn, choiceFits, landingTip, stepChoice } from './arrangeMode';
+import type { ArchipelagoId } from './map';
 import type { Rectangle } from './placement';
-import type { CleDePoignee, PoigneeDuMonde, PoigneesDuChoix } from './view';
+import type { CleDePoignee, LinkEndHandle, PoigneeDuMonde, PoigneesDuChoix } from './view';
 
 
 /** Le côté d'un radeau, en cases (à l'échelle 1). */
@@ -47,16 +52,17 @@ export type { CleDePoignee, PoigneeDuMonde, PoigneesDuChoix } from './view';
 /** L'ordre des poignées : les quatre flèches, puis « Tourner ». */
 export const CLES_DES_POIGNEES: readonly CleDePoignee[] = ['nord', 'sud', 'ouest', 'est', 'tourner'];
 
-/** La poignée sert-elle (la flèche trouve une place de ce côté ; « Tourner » trouve où tourner) ? */
+/**
+ * La poignée sert-elle ? Une flèche, tant qu'elle n'est pas au bord de la carte (un cran, même sur une place prise :
+ * choix 3 du mainteneur) ; « Tourner », toujours (il tourne sur place).
+ */
 function sert(world: World, c: ArrangeChoice, cle: CleDePoignee): boolean {
-  if (cle !== 'tourner') {
-    // Le même calcul que la flèche ; pour un lieu et un Gardien, sans construire le choix suivant.
-    if (c.genre === 'lieu') return nextFreeSpot(world, c.id, c.spot, cle) !== null;
-    if (c.genre === 'gardien') return nextGuardianSpot(world, c.id, c.place, cle) !== null;
-    return stepChoice(world, c, cle) !== null;
-  }
-  if (c.genre === 'lieu') return turnChoice(world, c) !== null;
-  return true;
+  return cle === 'tourner' || stepChoice(world, c, cle) !== null;
+}
+
+/** La demi-taille de la croix grise d'une place prise, en cases à l'échelle 1 : à la mesure de l'emprise du choix. */
+function brasDeLaCroix(rx: number, ry: number): number {
+  return Math.min(5, Math.max(1.2, Math.min(rx, ry) * 0.6));
 }
 
 /**
@@ -92,7 +98,36 @@ export function poigneesDuChoix(world: World, c: ArrangeChoice, r: Rectangle, z:
     x1: Math.max(r.x1, ...xs.map((x) => x + demi)),
     y1: Math.max(r.y1, ...ys.map((y) => y + demi)),
   };
-  return { cx, cy, z, liste, emprise };
+  return {
+    cx,
+    cy,
+    z,
+    liste,
+    emprise,
+    ...(c.genre === 'arrivee' ? { bout: true } : {}),
+    ...(choiceFits(world, c) ? {} : { prise: { bras: brasDeLaCroix(rx, ry) } }),
+  };
+}
+
+// ---------- Les bouts des liaisons (6 octobre 2026, choix 1a du mainteneur) ----------
+
+/**
+ * Les poignées des bouts des liaisons posées d'une région : chaque bout au bout de son ponton, sur l'eau, à la hauteur
+ * de l'eau de son lieu. Montrées dans le mode quand rien n'est choisi ; toucher l'une choisit cette arrivée.
+ */
+export function linkEndHandles(world: World, a: ArchipelagoId): LinkEndHandle[] {
+  const out: LinkEndHandle[] = [];
+  for (const [link, t] of routesIn(world, a)) {
+    const b = getBridge(link);
+    const l = t && b ? currentLandings(world, link) : null;
+    if (!l || !b) continue;
+    for (const end of ['from', 'to'] as const) {
+      const id = end === 'from' ? b.from : b.to;
+      const p = landingTip(world, id, l[end]);
+      out.push({ link, end, x: p.x + 0.5, y: p.y + 0.5, z: placeIn(world, id).altitude });
+    }
+  }
+  return out;
 }
 
 /**
@@ -187,11 +222,14 @@ class Traceur {
   dessus(x0: number, y0: number, x1: number, y1: number, h: number, k: Rgb): void {
     this.quad([x0, h, y0], [x0, h, y1], [x1, h, y1], [x1, h, y0], k);
   }
-  /** Un pavé sans dessous (dessus et quatre côtés) : 10 triangles. */
-  pave(x0: number, y0: number, x1: number, y1: number, h0: number, h1: number, haut: Rgb, cotes: Rgb): void {
+  /**
+   * Un pavé sans dessous (dessus et quatre côtés) : 10 triangles ; `sansNord` : sans son côté nord (8 triangles), que
+   * la caméra de la Carte, qui regarde depuis le sud, ne voit jamais (caché derrière le dessus, de la même couleur).
+   */
+  pave(x0: number, y0: number, x1: number, y1: number, h0: number, h1: number, haut: Rgb, cotes: Rgb, sansNord = false): void {
     this.dessus(x0, y0, x1, y1, h1, haut);
     this.quad([x0, h0, y0], [x1, h0, y0], [x1, h1, y0], [x0, h1, y0], cotes);
-    this.quad([x1, h0, y1], [x0, h0, y1], [x0, h1, y1], [x1, h1, y1], cotes);
+    if (!sansNord) this.quad([x1, h0, y1], [x0, h0, y1], [x0, h1, y1], [x1, h1, y1], cotes);
     this.quad([x0, h0, y1], [x0, h0, y0], [x0, h1, y0], [x0, h1, y1], cotes);
     this.quad([x1, h0, y0], [x1, h0, y1], [x1, h1, y1], [x1, h1, y0], cotes);
   }
@@ -262,7 +300,8 @@ function cubesDeLaFleche(t: Traceur, cases: readonly Cases[], n: number, k: Rgb)
   for (const [u0, v0, u1, v1] of cases) {
     const a = tourne(-(u0 - 0.5) * PAS, (v0 - 0.5) * PAS, n);
     const b = tourne(-(u1 + 0.5) * PAS, (v1 + 0.5) * PAS, n);
-    t.pave(Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.max(a[0], b[0]), Math.max(a[1], b[1]), RADEAU_HAUT, RADEAU_HAUT + FLECHE_HAUT, k, k);
+    // Sans son côté nord : la place de la croix grise d'une place prise, sous le plafond de 400 triangles.
+    t.pave(Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.max(a[0], b[0]), Math.max(a[1], b[1]), RADEAU_HAUT, RADEAU_HAUT + FLECHE_HAUT, k, k, true);
   }
 }
 
@@ -344,14 +383,57 @@ function poigneePeinte(t: Traceur, p: Pick<PoigneeDuMonde, 'cle' | 'dispo'>): vo
   if (p.dispo) t.tri(v(-0.8, 0.1), v(0, 1.15), v(0.8, 0.1), k.fleche);
 }
 
-/** La forme de toutes les poignées d'un choix, dans un seul maillage (un appel de dessin). */
-export function formeDesPoignees(liste: readonly Pick<PoigneeDuMonde, 'cle' | 'dispo'>[], style: StyleDesPoignees): FormeDesPoignees {
+/** L'épaisseur des barres de la croix grise, en part de sa demi-taille ; son bord sombre, en cases. */
+const CROIX_EPAISSEUR = 0.36;
+const CROIX_BORD = 0.14;
+
+/**
+ * La croix grise d'une place prise (choix 3 du mainteneur), de demi-taille `bras` : deux barres en diagonale, gris
+ * pierre bordé de sombre (la croix, pas la couleur seule, dit « prise »), à plat au-dessus de l'eau. 8 triangles.
+ */
+function croixGrise(t: Traceur, bras: number, style: StyleDesPoignees): void {
+  const k = COULEURS_DES_POIGNEES[style];
+  const e = Math.max(0.3, bras * CROIX_EPAISSEUR) / 2;
+  const h = RADEAU_HAUT;
+  const barre = (sens: 1 | -1, long: number, large: number, haut: number, c: Rgb) => {
+    // Une barre le long de la diagonale (1, sens), de demi-longueur `long` et de demi-largeur `large`.
+    const ux = Math.SQRT1_2;
+    const uy = sens * Math.SQRT1_2;
+    const v = (a: number, b: number) => [a * ux - b * uy, haut, a * uy + b * ux];
+    t.quad(v(-long, -large), v(long, -large), v(long, large), v(-long, large), c);
+  };
+  // Les bords sombres d'abord, le gris par-dessus : le croisement reste net (sans test de profondeur).
+  barre(1, bras + CROIX_BORD, e + CROIX_BORD, h - 0.02, k.bord);
+  barre(-1, bras + CROIX_BORD, e + CROIX_BORD, h - 0.02, k.bord);
+  barre(1, bras, e, h, k.pierre);
+  barre(-1, bras, e, h, k.pierre);
+}
+
+/**
+ * La forme de toutes les poignées d'un choix, dans un seul maillage (un appel de dessin) ; puis, au milieu du choix, le
+ * petit radeau d'un bout de liaison choisi (`bout`), et la croix grise d'une place prise (`prise`), par-dessus : une
+ * pièce de plus chacun dans `debuts`, dans cet ordre.
+ */
+export function formeDesPoignees(
+  liste: readonly Pick<PoigneeDuMonde, 'cle' | 'dispo'>[],
+  style: StyleDesPoignees,
+  prise?: PoigneesDuChoix['prise'],
+  bout = false,
+): FormeDesPoignees {
   const t = new Traceur();
   const debuts: number[] = [];
   for (const p of liste) {
     debuts.push(t.pos.length / 3);
     if (style === 'blocs') poigneeEnCubes(t, p);
     else poigneePeinte(t, p);
+  }
+  if (bout) {
+    debuts.push(t.pos.length / 3);
+    petitRadeau(t, style);
+  }
+  if (prise) {
+    debuts.push(t.pos.length / 3);
+    croixGrise(t, prise.bras, style);
   }
   debuts.push(t.pos.length / 3);
   return { positions: Float32Array.from(t.pos), couleurs: Float32Array.from(t.col), index: Uint16Array.from(t.idx), debuts };
@@ -360,8 +442,44 @@ export function formeDesPoignees(liste: readonly Pick<PoigneeDuMonde, 'cle' | 'd
 /** Le plafond des poignées (intention du directeur artistique, point 9) : 400 triangles, un appel de dessin. */
 export const BUDGET_DES_POIGNEES = { triangles: 400, drawCalls: 1 } as const;
 
-/** Ce que coûtent les poignées d'un choix : un appel de dessin pour toutes, seulement pendant un choix. */
+/** Ce que coûtent les poignées d'un choix (et la croix d'une place prise) : un appel de dessin pour toutes, seulement pendant un choix. */
 export function coutDesPoignees(p: PoigneesDuChoix | null | undefined, style: StyleDesPoignees): { triangles: number; drawCalls: number } {
   if (!p?.liste.length) return { triangles: 0, drawCalls: 0 };
-  return { triangles: formeDesPoignees(p.liste, style).index.length / 3, drawCalls: 1 };
+  return { triangles: formeDesPoignees(p.liste, style, p.prise, p.bout).index.length / 3, drawCalls: 1 };
+}
+
+/** Le côté du petit radeau d'un bout de liaison, en cases (à l'échelle 1), et sa poignée sombre au milieu. */
+export const COTE_DU_BOUT = 2;
+const PRISE_DU_BOUT = 0.7;
+
+/**
+ * La forme des poignées des bouts de liaison (choix 1a du mainteneur), du même style que les radeaux des flèches : un
+ * petit radeau clair à bord sombre (Blocland : crème ; Archipéo : Brume bordé de Nuit océan), une prise sombre au
+ * milieu, à plat. 6 triangles par bout, tous dans un seul maillage (un appel), seulement quand rien n'est choisi.
+ */
+export function formeDesBouts(n: number, style: StyleDesPoignees): FormeDesPoignees {
+  const t = new Traceur();
+  const debuts: number[] = [];
+  for (let i = 0; i < n; i++) {
+    debuts.push(t.pos.length / 3);
+    petitRadeau(t, style);
+  }
+  debuts.push(t.pos.length / 3);
+  return { positions: Float32Array.from(t.pos), couleurs: Float32Array.from(t.col), index: Uint16Array.from(t.idx), debuts };
+}
+
+/** Le petit radeau d'un bout de liaison : son bord sombre, son dessus clair, sa prise sombre au milieu (6 triangles). */
+function petitRadeau(t: Traceur, style: StyleDesPoignees): void {
+  const k = COULEURS_DES_POIGNEES[style];
+  const d = COTE_DU_BOUT / 2;
+  const c = d - BORD_DU_RADEAU * 1.5;
+  const m = PRISE_DU_BOUT / 2;
+  t.dessus(-d, -d, d, d, RADEAU_HAUT - 0.02, k.bord);
+  t.dessus(-c, -c, c, c, RADEAU_HAUT, k.clair);
+  t.dessus(-m, -m, m, m, RADEAU_HAUT + 0.02, k.fleche);
+}
+
+/** Ce que coûtent les poignées des bouts de liaison : un appel pour toutes, sans choix en cours seulement. */
+export function coutDesBouts(n: number): { triangles: number; drawCalls: number } {
+  return n ? { triangles: formeDesBouts(n, 'blocs').index.length / 3, drawCalls: 1 } : { triangles: 0, drawCalls: 0 };
 }

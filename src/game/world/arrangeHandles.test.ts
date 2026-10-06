@@ -1,11 +1,17 @@
 // Les poignées du mode « Modifier le plan » dans le monde (GD-9, intention du directeur artistique du 6 octobre 2026) :
 // chacune de son côté, sur l'eau, à une place du bord de l'emprise du choix ; « Tourner » au coin nord-est et seulement
-// pour ce qui tourne ; indisponible quand la flèche ne trouve plus de place ; sans se toucher à aucune échelle ; et
-// leur forme sous le budget (400 triangles, un appel), sans le jaune des places libres.
+// pour ce qui tourne ; indisponible au bord de la carte ; sans se toucher à aucune échelle ; leur forme sous le budget
+// (400 triangles, un appel), sans le jaune des places libres ; la croix grise d'une place prise ; les petits radeaux
+// des bouts de liaison.
 import { describe, expect, it } from 'vitest';
-import { DIRECTION_STEP } from './arrange';
+import { DIRECTION_STEP, placeIn, routesIn, spotOf } from './arrange';
+import { getBridge } from './archipelago';
+import { ARCHIPELAGO_IDS } from './archipelagos';
 import {
   BUDGET_DES_POIGNEES,
+  coutDesBouts,
+  formeDesBouts,
+  linkEndHandles,
   ECHELLES,
   CLES_DES_POIGNEES,
   COTE_DU_RADEAU,
@@ -15,10 +21,10 @@ import {
   placerALEchelle,
   sortDeLaPlace,
 } from './arrangeHandles';
-import { chooseGuardian, chooseIsland, chooseStation, stepChoice } from './arrangeMode';
+import { choiceFits, chooseGuardian, chooseIsland, chooseLinkEnd, chooseStation, stepChoice } from './arrangeMode';
 import { arrangeView } from './arrangeView';
 import { toutConstruit } from './budget';
-import { mapOf } from './map';
+import { isLandInWorld, mapOf } from './map';
 import { questStations } from './terrain/markers';
 
 const { world } = toutConstruit();
@@ -49,7 +55,7 @@ describe('les poignées autour du choix', () => {
     }
   });
 
-  it('une flèche qui ne trouve plus de place est indisponible ; les autres servent', () => {
+  it('une flèche au bord de la carte est indisponible ; les autres servent', () => {
     for (const id of lieux) {
       const c = chooseIsland(world, id);
       if (!c) continue;
@@ -175,6 +181,61 @@ describe('la forme des poignées', () => {
     expect(base).toBeGreaterThan(2 * arc);
     // Indisponible : l'arc seul, sans pointe.
     expect(formeDesPoignees([{ cle: 'tourner', dispo: false }], 'peint').index.length).toBe(f.index.length - 3);
+  });
+});
+
+describe('une place prise (choix 3 du mainteneur)', () => {
+  it('la croix grise, bordée de sombre, au milieu du choix ; avec cinq poignées, toujours sous 400 triangles, un appel', () => {
+    const c = unLieu.genre === 'lieu' ? { ...unLieu, spot: spotOf(world, lieux.find((id) => id !== unLieu.id && chooseIsland(world, id))!) } : unLieu;
+    expect(choiceFits(world, c)).toBe(false);
+    const p = arrangeView(world, c).poignees!;
+    expect(p.prise?.bras).toBeGreaterThanOrEqual(1.2);
+    expect(p.liste.every((q) => q.dispo)).toBe(true);
+    for (const style of ['blocs', 'peint'] as const) {
+      const f = formeDesPoignees(p.liste, style, p.prise);
+      // Une pièce de plus que de poignées : la croix, en dernier.
+      expect(f.debuts.length).toBe(p.liste.length + 2);
+      expect(coutDesPoignees(p, style).triangles, style).toBeLessThanOrEqual(BUDGET_DES_POIGNEES.triangles);
+      const sans = formeDesPoignees(p.liste, style);
+      expect(f.index.length - sans.index.length).toBe(8 * 3);
+      const teintes = new Set(Array.from({ length: f.couleurs.length / 3 }, (_, i) => Array.from(f.couleurs.slice(3 * i, 3 * i + 3)).join(',')).slice(f.debuts.at(-2)));
+      expect(teintes.has(Float32Array.from(COULEURS_DES_POIGNEES[style].pierre).join(','))).toBe(true);
+      expect(teintes.has(Float32Array.from(COULEURS_DES_POIGNEES[style].bord).join(','))).toBe(true);
+    }
+    // Sur une place libre, pas de croix.
+    expect(arrangeView(world, unLieu).poignees!.prise).toBeUndefined();
+  });
+});
+
+describe('les poignées des bouts de liaison (choix 1a du mainteneur)', () => {
+  it('deux par liaison posée, chacune au bout de son ponton, sur l’eau, hors de la terre de son lieu', () => {
+    for (const a of ARCHIPELAGO_IDS) {
+      const bouts = linkEndHandles(world, a);
+      const tracees = [...routesIn(world, a).values()].filter(Boolean).length;
+      expect(bouts.length, a).toBe(2 * tracees);
+      for (const b of bouts) {
+        const l = getBridge(b.link)!;
+        const id = b.end === 'from' ? l.from : l.to;
+        expect(isLandInWorld(placeIn(world, id), Math.floor(b.x), Math.floor(b.y)), `${b.link} ${b.end}`).toBe(false);
+        expect(chooseLinkEnd(world, b.link, b.end)?.genre).toBe('arrivee');
+      }
+    }
+  });
+
+  it('un petit radeau clair à bord sombre et sa prise, 6 triangles, jamais le jaune ; toutes sous 400 triangles, un appel', () => {
+    const jaune = Array.from(Float32Array.from([0xff / 255, 0xc2 / 255, 0x1a / 255]));
+    for (const style of ['blocs', 'peint'] as const) {
+      const f = formeDesBouts(3, style);
+      expect(f.index.length / 3).toBe(18);
+      expect(f.debuts).toHaveLength(4);
+      for (let i = 0; i < f.couleurs.length; i += 3) expect([f.couleurs[i], f.couleurs[i + 1], f.couleurs[i + 2]]).not.toEqual(jaune);
+    }
+    for (const a of ARCHIPELAGO_IDS) {
+      const c = coutDesBouts(linkEndHandles(world, a).length);
+      expect(c.triangles, a).toBeLessThanOrEqual(BUDGET_DES_POIGNEES.triangles);
+      expect(c.drawCalls, a).toBe(1);
+    }
+    expect(coutDesBouts(0)).toEqual({ triangles: 0, drawCalls: 0 });
   });
 });
 

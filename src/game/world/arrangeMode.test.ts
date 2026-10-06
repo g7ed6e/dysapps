@@ -6,9 +6,12 @@ import type { BiomeId } from '../biomes';
 import type { World } from '../engine/state';
 import { DIRECTIONS, freeSpots, guardianOf, isFreeSpot, linksToRelink, spotOf, stationOf } from './arrange';
 import {
+  type ArrangeChoice,
+  choiceFits,
   chooseGuardian,
   chooseIsland,
   chooseLanding,
+  chooseLinkEnd,
   chooseRelink,
   chooseStation,
   choiceSentence,
@@ -38,39 +41,65 @@ describe('choisir', () => {
 });
 
 describe('un lieu : caler, décaler, tourner, poser', () => {
-  it('toucher la mer cale le fantôme sur une place libre ; les flèches vont de place libre en place libre', () => {
+  it('toucher la mer cale le fantôme sur une place libre ; les flèches avancent d’un cran, libre ou pris, jusqu’au bord', () => {
     const w = partie();
     const c = chooseIsland(w, VOLCAN)!;
     const cale = snapChoice(w, c, { x: 0, y: 0 });
     if (cale.genre !== 'lieu') throw new Error('lieu');
     expect(isFreeSpot(w, VOLCAN, cale.spot)).toBe(true);
+    expect(choiceFits(w, cale)).toBe(true);
+    let prise: ArrangeChoice | null = null;
     for (const dir of DIRECTIONS) {
       let s = stepChoice(w, cale, dir);
       let n = 0;
-      // Au bout, « Plus de place par là » (null).
-      while (s && n < 100) {
+      // Au bout, « Plus de place par là » (null), au bord de la carte seulement.
+      while (s && n < 200) {
         if (s.genre !== 'lieu') throw new Error('lieu');
-        expect(freeSpots(w, VOLCAN, s.spot.turn)).toContainEqual(s.spot);
+        expect(choiceFits(w, s)).toBe(isFreeSpot(w, VOLCAN, s.spot));
+        if (!choiceFits(w, s)) prise ??= s;
         s = stepChoice(w, s, dir);
         n++;
       }
       expect(s).toBeNull();
     }
+    // Sur une place prise : « Poser » refuse, et le dessin montre la croix grise (dans les poignées).
+    expect(prise).not.toBeNull();
+    expect(poseChoice(w, prise!)).toEqual({ ok: false, reason: 'occupee' });
+    expect(arrangeView(w, prise!).poignees?.prise).toBeDefined();
+    expect(arrangeView(w, cale).poignees?.prise).toBeUndefined();
   });
 
-  it('« Tourner » fait pivoter le fantôme sur une place libre ; « Poser » le pose, et la phrase le dit', () => {
+  it('« Tourner » fait pivoter le fantôme sur place, même sur une place prise (choix 3)', () => {
     const w = partie();
     const c = chooseIsland(w, VOLCAN)!;
     if (c.genre !== 'lieu') throw new Error('lieu');
-    const t = turnChoice(w, c)!;
+    const t = turnChoice(c);
     if (t.genre !== 'lieu') throw new Error('lieu');
-    expect(t.spot.turn).toBe(1);
-    expect(isFreeSpot(w, VOLCAN, t.spot)).toBe(true);
-    expect(choiceSentence(w, t)).toMatch(/^Volcan des décimaux : (à l’|au )\S+.* de (la |l’|du ).+, à \d+ cases?\.$/);
-    const r = poseChoice(w, t);
+    expect(t.spot).toEqual({ ...c.spot, turn: (c.spot.turn + 1) % 4 });
+    expect(choiceFits(w, t)).toBe(isFreeSpot(w, VOLCAN, t.spot));
+    // Sur une place libre, tourné : « Poser » le pose, et la phrase le dit.
+    const libre = snapChoice(w, t, { x: 0, y: 0 });
+    if (libre.genre !== 'lieu') throw new Error('lieu');
+    expect(libre.spot.turn).toBe(t.spot.turn);
+    expect(choiceSentence(w, libre)).toMatch(/^Volcan des décimaux : (à l’|au )\S+.* de (la |l’|du ).+, à \d+ cases?\.$/);
+    const r = poseChoice(w, libre);
     if (!r.ok) throw new Error(r.reason);
-    expect(spotOf(r.world, VOLCAN)).toEqual(t.spot);
-    expect(poseSentence(r.world, t)).toMatch(/^Volcan des décimaux : /);
+    expect(spotOf(r.world, VOLCAN)).toEqual(libre.spot);
+    expect(poseSentence(r.world, libre)).toMatch(/^Volcan des décimaux : /);
+  });
+
+  it('les places autour qui colleraient le lieu à un voisin portent l’icône de « Réunir » (choix 2a)', () => {
+    const w = partie();
+    const TOUR = 'french-6e-reading' as BiomeId;
+    const c = chooseIsland(w, TOUR)!;
+    const v = arrangeView(w, c);
+    const reunions = v.reunions ?? [];
+    expect(reunions.length).toBeGreaterThan(0);
+    // Chaque icône est au milieu d'une place libre montrée (son carré jaune), où le lieu se réunirait.
+    const places = v.cases.filter((x) => x.genre === 'place');
+    for (const r of reunions) expect(places.some((p) => p.x + 0.5 === r.x && p.y + 0.5 === r.y && p.z + 1 === r.z)).toBe(true);
+    // Pas toutes : seulement celles qui le colleraient à un voisin.
+    expect(reunions.length).toBeLessThan(places.length);
   });
 
   it('le dessin du choix : fantôme en pointillés, places autour seulement, liaisons retracées, barrées avec une croix', () => {
@@ -123,8 +152,15 @@ describe('un Gardien, une borne, une arrivée, une liaison à reposer', () => {
     const w = partie();
     const key = `${VOLCAN}:${questStations(VOLCAN)[0].typeId}`;
     const c = chooseStation(w, key)!;
-    const ailleurs = DIRECTIONS.map((d) => stepChoice(w, c, d)).find(Boolean)!;
+    // Un cran, puis un autre, jusqu'à une place libre de la bande (les places prises se montrent, sans se poser).
+    const crans = DIRECTIONS.flatMap((d) => {
+      const out: NonNullable<ReturnType<typeof stepChoice>>[] = [];
+      for (let s = stepChoice(w, c, d); s && out.length < 20; s = stepChoice(w, s, d)) out.push(s);
+      return out;
+    });
+    const ailleurs = crans.find((s) => choiceFits(w, s))!;
     expect(ailleurs).toBeTruthy();
+    for (const s of crans) if (!choiceFits(w, s)) expect(poseChoice(w, s).ok).toBe(false);
     expect(choiceSentence(w, ailleurs)).toMatch(/^La borne, à la place \d+ sur \d+ de la rangée des bornes du Volcan des décimaux, en partant de la gauche\.$/);
     const r = poseChoice(w, ailleurs);
     if (!r.ok || ailleurs.genre !== 'borne') throw new Error('borne');
@@ -139,6 +175,9 @@ describe('un Gardien, une borne, une arrivée, une liaison à reposer', () => {
     const autre = DIRECTIONS.map((d) => stepChoice(w, c!, d)).find(Boolean);
     if (autre) expect(poseChoice(w, autre).ok).toBe(true);
     expect(choiceSentence(w, c!)).toMatch(/^L’arrivée, sur la côte (nord|sud|est|ouest) /);
+    // La poignée d'un bout (choix 1a) choisit la même arrivée ; les flèches la mènent le long de la côte, d'un cran.
+    expect(chooseLinkEnd(w, lien, c!.genre === 'arrivee' ? c!.end : 'from')).toEqual(c);
+    expect(chooseLinkEnd(w, 'inconnue', 'from')).toBeNull();
   });
 
   it('une liaison séparée se repose entre deux voisins, gratuitement', () => {

@@ -3988,6 +3988,36 @@ figure.class-table {
   min-height: 48px;
   will-change: transform;
 }
+/* L'icône de « Réunir » sur une place libre qui collerait le lieu choisi à un voisin (GD-9, choix 2a du mainteneur) :
+   la même icône que le bouton de la barre, sombre sur un petit radeau clair bordé de sombre (le style des poignées),
+   posée au milieu de la place ; elle ne reçoit pas le toucher (toucher la place cale le fantôme dessus). */
+.arrange-reunir-place {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 2px solid #3b2d20;
+  border-radius: 6px;
+  background: #f3e4c0;
+  color: #3b2d20;
+  pointer-events: none;
+}
+.arrange-reunir-place[hidden] {
+  display: none;
+}
+:root[data-univers="archipeo"] .arrange-reunir-place {
+  border-color: #142b38;
+  background: #e5ebe3;
+  color: #142b38;
+}
+.arrange-reunir-place svg {
+  width: 20px;
+  height: 20px;
+}
 /* Les poignées sont dessinées dans le monde (three/arrangeHandles.ts) : leur bouton, par-dessus, est transparent, sans
    rien à lire ; seul son focus se voit (le contour du focus, bordé de blanc : lisible sur l'eau de jour comme de nuit). */
 .arrange-handle {

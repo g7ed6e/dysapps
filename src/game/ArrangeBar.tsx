@@ -9,7 +9,7 @@
 import { useEffect, useState } from 'react';
 import { Icon, IconButton } from '../components/Icon';
 import { SpeakButton } from '../components/SpeakButton';
-import { type Amenagement, FLECHES, type LigneDuMode } from './Arranging';
+import { type Amenagement, FLECHES, type LigneDuMode, PLACE_PRISE } from './Arranging';
 import { getBridge } from './world/archipelago';
 import { canTurn } from './world/arrangeMode';
 import { thePlace } from './world/placeArticle';
@@ -128,24 +128,37 @@ function SigneReunis({ a, b }: { a: string; b: string }) {
   );
 }
 
+/** Une place prise (choix 3 du mainteneur) : la croix et ses deux mots, comme un refus. */
+function SignePrise({ prise }: { prise?: boolean }) {
+  return prise ? (
+    <span className="signe signe-refus">
+      <Icon name="close" /> {PLACE_PRISE}
+    </span>
+  ) : null;
+}
+
 /** Ce que montre la ligne du mode (décoratif : ce qu'elle dit en mots est à côté). */
 function Signes({ ligne }: { ligne: LigneDuMode }) {
   switch (ligne.genre) {
     case 'texte':
-      return <>{ligne.texte}</>;
+      return (
+        <>
+          {ligne.texte} <SignePrise prise={ligne.prise} />
+        </>
+      );
     case 'gardien':
       return (
         <>
           <span className="signe">
             <Icon name="shield" />
           </span>{' '}
-          <PlaceSignsLine signes={ligne.signes} />
+          <PlaceSignsLine signes={ligne.signes} /> <SignePrise prise={ligne.prise} />
         </>
       );
     case 'place':
       return (
         <>
-          <PlaceSignsLine signes={ligne.signes} /> <SigneAReposer n={ligne.aReposer} />
+          <PlaceSignsLine signes={ligne.signes} /> <SigneAReposer n={ligne.aReposer} /> <SignePrise prise={ligne.prise} />
         </>
       );
     case 'refus':
@@ -294,7 +307,13 @@ export function ArrangeBar({ amenagement, className, croix = false }: { amenagem
       <div className="arrange-bar-outils">
         {croix && <IconButton icone="tourner" nom="Tourner" disabled={!canTurn(choix) || occupe} onClick={amenagement.tourner} />}
         <IconButton icone="defaire" nom="Défaire la dernière pose" mot="Défaire" disabled={!amenagement.peutDefaire || occupe} onClick={amenagement.defaire} />
-        <button type="button" className={`button arrange-pose${choix && !enQuestion && !amenagement.aConfirmer ? ' primary' : ''}`} disabled={!choix || occupe || enQuestion || amenagement.aConfirmer} onClick={amenagement.poserIci}>
+        {/* Sur une place prise (choix 3 du mainteneur), « Poser » s'éteint : la croix grise du fantôme le montre. */}
+        <button
+          type="button"
+          className={`button arrange-pose${choix && !enQuestion && !amenagement.aConfirmer && !amenagement.placePrise ? ' primary' : ''}`}
+          disabled={!choix || occupe || enQuestion || amenagement.aConfirmer || amenagement.placePrise}
+          onClick={amenagement.poserIci}
+        >
           <Icon name="poser" /> <span>Poser</span>
         </button>
         {/* La place de « Réunir », entre « Poser » et « Annuler », réservée dès qu'un lieu est choisi (sur la Carte ; la

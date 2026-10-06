@@ -18,9 +18,11 @@ import { type ArchipelagoId, archipelagoOfIsland } from './world/archipelagos';
 import { type Direction, guardianOf, joinCandidates, joinedWith, joinIslands, joinsIn, linksToRelink, NO_MORE_ROOM, placeIn, spotOf } from './world/arrange';
 import {
   type ArrangeChoice,
+  choiceFits,
   chooseGuardian,
   chooseIsland,
   chooseLanding,
+  chooseLinkEnd,
   chooseRelink,
   chooseStation,
   choiceSentence,
@@ -33,14 +35,16 @@ import {
 } from './world/arrangeMode';
 import { type ArrangeSession, canUndo, hasChanged, recordPose, resetToEntry, startArranging, undoLast } from './world/arrangeSession';
 import { arrangeView } from './world/arrangeView';
+import { linkEndHandles } from './world/arrangeHandles';
+import { getBridge } from './world/archipelago';
 import { GESTE_DU_LIEU, GESTE_SOUS_LE_SOL, gestureZone } from './world/arrangeGesture';
-import type { ArrangeGesture, ArrangeView, CadreDuMode } from './world/view';
+import type { ArrangeGesture, ArrangeView, CadreDuMode, LinkEndHandle } from './world/view';
 import { footprintOf } from './world/footprint';
 import type { Intention, Point } from './world/layout';
 import type { Rectangle } from './world/placement';
 import { guardianSigns, type PlaceName, type PlaceSigns, placeSigns, placeSignsSentence } from './world/placeSentence';
 import type { LayoutGuardian } from './world/savedLayout';
-import { joinedSentence, thePlace } from './world/placeArticle';
+import { joinedSentence, ofPlace, thePlace } from './world/placeArticle';
 import { LIAISON, type LinkPhrases, type LinkWord, linkPhrases } from './world/linkWord';
 
 /*
@@ -78,18 +82,22 @@ function explicationDeLaReunion(reunion: TextesDeLaReunion): string {
  * - `gardien` : le bouclier, son île, la flèche, l'écart (comme `place`, son île pour repère) ;
  * - `reunis` : les deux lieux réunis, l'icône de « Réunir » entre eux ;
  * - `texte` : une phrase écrite telle quelle (une borne, une arrivée, « Touche un lieu… »).
+ * `prise` : le choix est sur une place prise (choix 3 du mainteneur) ; la ligne y ajoute la croix et « Place prise ».
  */
 export type LigneDuMode =
-  | { genre: 'texte'; texte: string }
-  | { genre: 'place'; signes: PlaceSigns; aReposer: number }
-  | { genre: 'gardien'; signes: PlaceSigns }
+  | { genre: 'texte'; texte: string; prise?: boolean }
+  | { genre: 'place'; signes: PlaceSigns; aReposer: number; prise?: boolean }
+  | { genre: 'gardien'; signes: PlaceSigns; prise?: boolean }
   | { genre: 'refus'; icone: 'close' | 'lock'; texte: string }
   | { genre: 'reunis'; a: string; b: string; aReposer: number };
+
+/** Ce que dit le jeu d'un choix sur une place prise (le refus d'une pose là). */
+export const PLACE_PRISE = 'Place prise';
 
 /** Ce que montre le jeu quand une pose ne se fait pas : une croix ou un cadenas, et deux ou trois mots. */
 function refus(reason: string): Extract<LigneDuMode, { genre: 'refus' }> {
   const textes: Readonly<Record<string, string>> = {
-    occupee: 'Place prise',
+    occupee: PLACE_PRISE,
     reunis: 'Pas de réunion ici',
     liaison: 'Pas ici',
     inconnu: 'Pas ici',
@@ -166,6 +174,8 @@ interface GesteEnCours {
   phrase: string;
   timers: number[];
   remonte: boolean;
+  /** Le lieu posé là se collerait à un voisin : il reste choisi, « Réunir » allumé (choix 2a du mainteneur). */
+  rechoisir: ArrangeChoice | null;
 }
 
 export interface Amenagement {
@@ -235,6 +245,15 @@ export interface Amenagement {
   choisirDirect(c: ArrangeChoice): void;
   /** Le lieu avec lequel le lieu choisi se réunirait (« Réunir » allumé), ou rien. */
   reunirAvec: BiomeId | null;
+  /** Le choix est sur une place prise (choix 3 du mainteneur) : « Poser » éteint, la croix grise sur le fantôme. */
+  placePrise: boolean;
+  /**
+   * Les poignées des bouts des liaisons posées (choix 1a du mainteneur), quand rien n'est choisi ni en geste, avec le
+   * nom de leur bouton ; ou rien.
+   */
+  bouts: readonly (LinkEndHandle & { nom: string })[] | null;
+  /** Toucher la poignée d'un bout : son arrivée est choisie. */
+  choisirUnBout(link: string, end: 'from' | 'to'): void;
 }
 
 /**
@@ -326,15 +345,18 @@ export function useAmenagement({
     setAConfirmer(false);
     const w = worldRef.current;
     if (texte !== undefined || !c) return direTexte(texte ?? '');
-    if (c.genre === 'lieu') {
-      const l = ligneDuLieu(w, c.id, c.spot);
-      return annoncer(l.ligne, l.lu);
-    }
-    if (c.genre === 'gardien') {
-      const l = ligneDuGardien(w, c.id, c.place);
-      return annoncer(l.ligne, l.lu);
-    }
-    direTexte(choiceSentence(w, c, nom, mot));
+    const l =
+      c.genre === 'lieu'
+        ? ligneDuLieu(w, c.id, c.spot)
+        : c.genre === 'gardien'
+          ? ligneDuGardien(w, c.id, c.place)
+          : (() => {
+            const t = choiceSentence(w, c, nom, mot);
+            return { ligne: { genre: 'texte', texte: t } as LigneDuMode, lu: t };
+          })();
+    // Sur une place prise (choix 3 du mainteneur) : la ligne y ajoute la croix et « Place prise », dits aussi.
+    if (c.genre !== 'liaison' && !choiceFits(w, c) && l.ligne.genre !== 'refus' && l.ligne.genre !== 'reunis') return annoncer({ ...l.ligne, prise: true }, `${l.lu} ${PLACE_PRISE}.`);
+    annoncer(l.ligne, l.lu);
   };
 
   /** Le geste fini (ou touché) : le monde posé, le son, la phrase. */
@@ -345,6 +367,7 @@ export function useAmenagement({
     enCours.current = null;
     if (!g.remonte) arrange(g.apres);
     setGeste(null);
+    if (g.rechoisir) setChoix(g.rechoisir);
     if (sons) sonDeLaPose();
     annoncer(g.ligne, g.phrase);
   };
@@ -375,10 +398,13 @@ export function useAmenagement({
             return { ligne: { genre: 'texte', texte: lu } satisfies LigneDuMode, lu };
           })();
     setChoix(null);
+    // Posé là, le lieu se colle à un voisin (une place à l'icône de « Réunir ») : il reste choisi, « Réunir » s'allume.
+    const rechoisir = choix.genre === 'lieu' && joinCandidates(r.world, choix.id).length ? { ...choix, spot: spotOf(r.world, choix.id) } : null;
     // Le geste (un lieu seulement) : démonté à sa place d'avant, remonté à la nouvelle ; d'un coup avec moins d'animations.
     if (choix.genre !== 'lieu' || reduceMotion) {
       arrange(r.world);
       if (sons) sonDeLaPose();
+      if (rechoisir) setChoix(rechoisir);
       return annoncer(apres.ligne, apres.lu);
     }
     const id = choix.id;
@@ -387,7 +413,7 @@ export function useAmenagement({
     const autre = joinedWith(w, id);
     const sommets = [id, ...(autre ? [autre] : [])].map((l) => hautDuLieu?.(l)).filter((h): h is number => h !== undefined);
     const base = { bas: alt - GESTE_SOUS_LE_SOL, haut: sommets.length ? Math.max(...sommets) + 1 : alt + 24, dureeMs: GESTE_DU_LIEU.demonteMs };
-    const g: GesteEnCours = { apres: r.world, ligne: apres.ligne, phrase: apres.lu, timers: [], remonte: false };
+    const g: GesteEnCours = { apres: r.world, ligne: apres.ligne, phrase: apres.lu, timers: [], remonte: false, rechoisir };
     enCours.current = g;
     const ancienne = gestureZone(emprise(w, id));
     const nouvelle = gestureZone(emprise(r.world, id));
@@ -486,9 +512,8 @@ export function useAmenagement({
       return direTexte(sentence);
     }
     if (choix.genre !== 'lieu') return;
-    const t = turnChoice(worldRef.current, choix);
-    if (!t) return direRefus(refus('occupee'));
-    choisir(t);
+    // Il tourne sur place, même si la place devient prise : la croix grise le montre (choix 3 du mainteneur).
+    choisir(turnChoice(choix));
   };
   const defaire = () => {
     if (!session || enCours.current) return;
@@ -643,6 +668,22 @@ export function useAmenagement({
   const nomChoisi = choix?.genre === 'lieu' ? nom(choix.id) : undefined;
   const vue = useMemo(() => (choix ? { ...arrangeView(world, choix), ...(nomChoisi && choix.genre === 'lieu' ? { nom: nomChoisi, lieu: choix.id } : {}) } : null), [world, choix, nomChoisi]);
   const reunirAvec = choix?.genre === 'lieu' && sameSpot(choix.spot, spotOf(world, choix.id)) ? voisinAReunir(world, choix.id) : null;
+  const placePrise = useMemo(() => (choix ? !choiceFits(world, choix) : false), [world, choix]);
+  // Sans choix ni geste, chaque bout de liaison posée porte sa poignée, nommée pour son bouton.
+  const montrerLesBouts = ouvert && !choix && !geste && !question;
+  // Le tracé des liaisons se calcule une fois par monde ; les noms des boutons, à chaque fois (les noms de l'univers).
+  const boutsDuMonde = useMemo(() => (montrerLesBouts ? linkEndHandles(world, a) : null), [montrerLesBouts, world, a]);
+  const bouts = useMemo(
+    () =>
+      boutsDuMonde?.map((b) => {
+        const l = getBridge(b.link)!;
+        const [ici, la] = b.end === 'from' ? [l.from, l.to] : [l.to, l.from];
+        return { ...b, nom: `L’arrivée ${ofPlace(nom(ici))}, vers ${thePlace(nom(la))}` };
+      }) ?? null,
+    // Les noms ne changent qu'avec l'univers, comme `nom` : la liste reste la même tant que le monde ne bouge pas.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [boutsDuMonde],
+  );
   return {
     ouvert,
     ouvrir,
@@ -677,6 +718,13 @@ export function useAmenagement({
     reunir,
     annulerReunion,
     reunirAvec,
+    placePrise,
+    bouts,
+    choisirUnBout: (link, end) => {
+      if (enCours.current) return;
+      const c = chooseLinkEnd(worldRef.current, link, end);
+      if (c) choisir(c);
+    },
     voisinAReunir: (id) => voisinAReunir(world, id),
     choisirDirect: (c) => choisir(c),
   };
