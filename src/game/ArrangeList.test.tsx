@@ -10,7 +10,8 @@ import { ArrangeList } from './ArrangeList';
 import { BloclandProvider } from './BloclandContext';
 import { applyLayout } from './world/appliedLayout';
 import { islandsOf } from './world/archipelago';
-import { isFixedPlace, spotOf } from './world/arrange';
+import { freeSpots, isFixedPlace, spotOf } from './world/arrange';
+import type { BiomeId } from './biomes';
 import { EMPTY_STATE } from './engine/state';
 import { toutConstruit } from './world/budget';
 
@@ -40,6 +41,37 @@ afterEach(() => {
   localStorage.clear();
 });
 
+/**
+ * Les flèches, un cran à la fois (choix 3 du mainteneur : une place prise se montre, « Poser » éteint), dans la
+ * première direction qui mène à une autre place libre, où « Poser » s'allume.
+ */
+function jusquAUnePlaceLibre(): void {
+  const depart = screen.getByRole('status').textContent;
+  for (const nom of ['Est', 'Ouest', 'Nord', 'Sud']) {
+    for (let i = 0; i < 20; i++) {
+      fireEvent.click(screen.getByRole('button', { name: new RegExp(nom) }));
+      const t = screen.getByRole('status').textContent;
+      if (/Plus de place/.test(t ?? '')) break;
+      if (t !== depart && screen.getByRole('button', { name: 'Poser' }).matches(':enabled')) return;
+    }
+  }
+}
+
+/** Un lieu mené, cran par cran, à sa place libre la plus proche (en passant par des places prises). */
+function jusquALaPlaceLibreDuLieu(id: BiomeId): void {
+  const w = { ...EMPTY_STATE.world };
+  const s = spotOf(w, id);
+  const t = freeSpots(w, id)
+    .filter((q) => q.x !== s.x || q.y !== s.y)
+    .sort((p, q) => Math.abs(p.x - s.x) + Math.abs(p.y - s.y) - Math.abs(q.x - s.x) - Math.abs(q.y - s.y))[0];
+  // L'est est vers les x qui descendent, le nord vers les y qui montent.
+  const pas = (n: number, plus: string, moins: string) => {
+    for (let i = 0; i < Math.abs(n); i++) fireEvent.click(screen.getByRole('button', { name: new RegExp(n > 0 ? plus : moins) }));
+  };
+  pas(t.x - s.x, 'Ouest', 'Est');
+  pas(t.y - s.y, 'Nord', 'Sud');
+}
+
 describe('Aménager en vue simple', () => {
   it('une ligne par lieu et par Gardien, sa place en signes ; « Déplacer », une flèche, « Poser » ; l’ordre ne bouge pas', () => {
     monter();
@@ -65,11 +97,10 @@ describe('Aménager en vue simple', () => {
     expect(screen.getByRole('button', { name: `Déplacer ${mobile.name}` })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByRole('button', { name: 'Poser' }).className).toMatch(/primary/);
     const depart = spotOf({ ...EMPTY_STATE.world }, mobile.id);
-    // Une flèche qui trouve une place (la première des quatre qui en a une), puis « Poser ici ».
-    for (const nom of ['Est', 'Ouest', 'Nord', 'Sud']) {
-      fireEvent.click(screen.getByRole('button', { name: new RegExp(nom) }));
-      if (!screen.getByRole('status').textContent?.includes('Plus de place')) break;
-    }
+    // Les flèches, un cran à la fois (les places prises se montrent, « Poser » éteint), jusqu'à une place libre ; puis
+    // « Poser ici ».
+    jusquALaPlaceLibreDuLieu(mobile.id);
+    expect(screen.getByRole('button', { name: 'Poser' })).toBeEnabled();
     fireEvent.click(screen.getByRole('button', { name: 'Poser' }));
     expect(screen.getByRole('status')).toHaveTextContent(/ à \d+ cases?\.$/);
     const monde = JSON.parse(localStorage.getItem('dysapps:game')!).world;
@@ -96,7 +127,8 @@ describe('Aménager en vue simple', () => {
         fireEvent.click(screen.getByRole('button', { name: new RegExp(nom) }));
         const t = screen.getByRole('status').textContent;
         if (t?.includes('Plus de place')) break;
-        if (cote(t) && cote(t) !== depart) break tour;
+        // Un autre côté, sur une place libre (une place prise se montre, « Poser » éteint).
+        if (cote(t) && cote(t) !== depart && screen.getByRole('button', { name: 'Poser' }).matches(':enabled')) break tour;
       }
     }
     fireEvent.click(screen.getByRole('button', { name: 'Poser' }));
@@ -112,10 +144,7 @@ describe('Aménager en vue simple', () => {
     const avant = li.querySelector('p')!.textContent;
     fireEvent.click(borne);
     expect(borne).toHaveAttribute('aria-pressed', 'true');
-    for (const nom of ['Est', 'Ouest', 'Nord', 'Sud']) {
-      fireEvent.click(screen.getByRole('button', { name: new RegExp(nom) }));
-      if (!/Plus de place|ne peut/.test(screen.getByRole('status').textContent ?? '')) break;
-    }
+    jusquAUnePlaceLibre();
     fireEvent.click(screen.getByRole('button', { name: 'Poser' }));
     expect(screen.getByRole('status').textContent).not.toMatch(/C’est posé/);
     expect(li.querySelector('p')!.textContent).not.toBe(avant);

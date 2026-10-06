@@ -27,9 +27,13 @@ import {
   moveStation,
   nearestFreeSpot,
   nearestGuardianSpot,
-  nextFreeSpot,
-  nextGuardianSpot,
-  nextStationSpot,
+  stepSpot,
+  stepGuardianSpot,
+  stationSpots,
+  isFreeGuardianSpot,
+  joinCandidates,
+  joinCandidatesAt,
+  landingSpots,
   relinkBetween,
   relinkChoices,
   routesIn,
@@ -45,7 +49,7 @@ import { toutConstruit } from './budget';
 import { fittingPlaces, frameOf, guardianIsletRectangle, posesOfLayout } from './footprint';
 import { startingIsland } from './map';
 import { placesOf, startingPlaces } from './routing';
-import { sanitizeLayout } from './savedLayout';
+import { LAYOUT_LAST_SPOT, sanitizeLayout } from './savedLayout';
 import { rectangleDeLIlot } from './terrain/islets';
 import { questStations } from './terrain/markers';
 
@@ -113,27 +117,38 @@ describe('les places des lieux', () => {
     expect(moveIsland(w, VOLCAN, { x: -1, y: 0, turn: 0 })).toEqual({ ok: false, reason: 'occupee' });
   });
 
-  it('les flèches mènent à la place libre suivante dans leur direction, jusqu’au bord : « Plus de place par là »', () => {
+  it('les flèches avancent d’un cran, même sur une place prise, jusqu’au bord : « Plus de place par là » (choix 3)', () => {
     const w = partie();
     const depart = startingSpot(VOLCAN);
+    const max = LAYOUT_LAST_SPOT['6e'];
+    let prises = 0;
     for (const dir of DIRECTIONS) {
       const { dx, dy } = DIRECTION_STEP[dir];
       let at = depart;
-      const vus = new Set<string>();
-      for (let n = 0; n < 100; n++) {
-        const s = nextFreeSpot(w, VOLCAN, at, dir);
+      for (let n = 0; n < 200; n++) {
+        const s = stepSpot(w, VOLCAN, at, dir);
         if (!s) break;
-        // Toujours plus loin dans la direction, jamais plus de côté que d'avance.
-        const avance = (s.x - at.x) * dx + (s.y - at.y) * dy;
-        expect(avance).toBeGreaterThan(0);
-        expect(Math.abs((s.x - at.x) * dy - (s.y - at.y) * dx)).toBeLessThanOrEqual(avance);
-        expect(isFreeSpot(w, VOLCAN, s)).toBe(true);
-        expect(vus.has(`${s.x},${s.y}`)).toBe(false);
-        vus.add(`${s.x},${s.y}`);
+        // Un seul cran, jamais un saut vers la place libre suivante.
+        expect({ x: s.x - at.x, y: s.y - at.y, turn: s.turn }).toEqual({ x: dx, y: dy, turn: at.turn });
+        if (!isFreeSpot(w, VOLCAN, s)) prises++;
         at = s;
       }
-      expect(nextFreeSpot(w, VOLCAN, at, dir)).toBeNull();
+      // Au bord de la grille seulement.
+      expect(at.x === 0 || at.y === 0 || at.x === max.x || at.y === max.y).toBe(true);
+      expect(stepSpot(w, VOLCAN, at, dir)).toBeNull();
     }
+    // En chemin, des places prises : le fantôme y passe (la croix grise), sans sauter.
+    expect(prises).toBeGreaterThan(0);
+  });
+
+  it('une place qui colle le lieu à un voisin le dit (« Réunir », choix 2a) ; sa place de départ, voisine de la Ferme, aussi', () => {
+    const w = partie();
+    const TOUR = 'french-6e-reading' as BiomeId;
+    expect(joinCandidatesAt(w, TOUR, spotOf(w, TOUR))).toEqual(joinCandidates(w, TOUR));
+    expect(joinCandidates(w, TOUR).length).toBeGreaterThan(0);
+    // Loin de tous : aucune réunion.
+    const loin = freeSpots(w, VOLCAN).find((s) => !joinCandidatesAt(w, VOLCAN, s).length);
+    expect(loin).toBeDefined();
   });
 
   it('aux 5e, 4e et 3e, chaque lieu mobile de la carte de départ peut tourner (à sa place ou ailleurs), sauf deux (HG-3)', () => {
@@ -237,10 +252,12 @@ describe('les Gardiens autour de leur lieu', () => {
     // Le calage et les flèches restent sur les places libres.
     const proche = nearestGuardianSpot(w, VOLCAN, { x: 0, y: 0 })!;
     expect(places).toContainEqual(proche);
+    // Les flèches avancent d'un cran le long de son lieu, libre ou pris (choix 3) : toujours contre sa terre.
     for (const dir of DIRECTIONS) {
-      const n = nextGuardianSpot(w, VOLCAN, { side: 'front', step: 0 }, dir);
-      if (n) expect(places).toContainEqual(n);
+      const n = stepGuardianSpot(w, VOLCAN, { side: 'front', step: 0 }, dir);
+      if (n) expect(Math.abs(n.step) <= 8 && (n.side !== 'front' || n.step !== 0)).toBe(true);
     }
+    expect(isFreeGuardianSpot(w, VOLCAN, { side: 'front', step: 0 })).toBe(true);
     // Une place qui n'est pas contre son lieu : refusée.
     expect(moveGuardian(w, VOLCAN, { side: 'front', step: 8 })).toEqual({ ok: false, reason: 'occupee' });
   });
@@ -280,10 +297,10 @@ describe('les bornes dans la bande de devant', () => {
   it('une borne inconnue ne bouge pas, et les flèches restent dans la bande', () => {
     const w = partie();
     expect(moveStation(w, `${VOLCAN}:inconnue`, { x: 2, y: 1 })).toEqual({ ok: false, reason: 'inconnu' });
-    for (const dir of DIRECTIONS) {
-      const n = nextStationSpot(w, borne, dir);
-      if (n) expect(freeStationSpots(w, borne)).toContainEqual(n);
-    }
+    // Toutes ses places, libres ou prises (choix 3) : la bande de devant, et sa place de départ.
+    const depart = questStations(VOLCAN)[0];
+    for (const p of stationSpots(w, borne)) expect([...stationBand(VOLCAN), { x: depart.x, y: depart.y }]).toContainEqual(p);
+    for (const p of freeStationSpots(w, borne)) expect(stationSpots(w, borne)).toContainEqual(p);
   });
 });
 
@@ -302,6 +319,8 @@ describe('les arrivées des liaisons', () => {
     if (r.ok && r.relink.includes(id)) expect(t).toBeUndefined();
     else expect({ side: t!.vers.cote, step: t!.vers.pas }).toEqual({ side: { front: 'devant', right: 'droite', back: 'derriere', left: 'gauche' }[autre.side], step: autre.step });
     expect(sanitizeLayout(JSON.parse(JSON.stringify(w2.layout)))).toEqual(w2.layout);
+    // Toutes les arrivées de la côte, libres ou prises : les libres en sont.
+    for (const l of libres) expect(landingSpots(w, id, 'to')).toContainEqual(l);
     // Une arrivée qui n'est pas sur la côte : refusée.
     expect(moveLanding(w, id, 'to', { side: 'front', step: 40 }).ok).toBe(false);
   });

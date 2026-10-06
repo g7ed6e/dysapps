@@ -132,6 +132,9 @@ describe('le mode « Aménager »', () => {
     expect(screen.getByRole('status').textContent).toBe(NO_MORE_ROOM);
     // Le refus reste écrit, à côté de la croix.
     expect(document.querySelector('.signe-refus')?.textContent).toMatch(/Plus de place par là/);
+    // Au bord, la place peut être prise : on revient d'un cran à la fois jusqu'à une place libre.
+    for (let i = 0; i < 60 && dernier.placePrise; i++) fireEvent.click(screen.getByRole('button', { name: /Est/ }));
+    expect(screen.getByRole('button', { name: 'Poser' })).toBeEnabled();
     const avant = spotOf(monde, VOLCAN);
     fireEvent.click(screen.getByRole('button', { name: 'Poser' }));
     expect(spotOf(monde, VOLCAN)).not.toEqual(avant);
@@ -213,6 +216,101 @@ describe('le mode « Aménager »', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Annuler' }));
     expect(dernier.ouvert).toBe(false);
     expect(dit.slice(avant).filter((t) => /remis|comme avant/.test(t))).toHaveLength(0);
+  });
+
+  it('une flèche avance d’un cran, même sur une place prise : la croix et « Place prise », « Poser » éteint (choix 3)', () => {
+    const dit: string[] = [];
+    render(<SettingsProvider><Banc reduit depart={depart()} dire={(t) => dit.push(t)} /></SettingsProvider>);
+    fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
+    act(() => void dernier.intention({ genre: 'ile', id: VOLCAN }));
+    const depart0 = spotOf(monde, VOLCAN);
+    let vu = false;
+    for (const dir of ['Nord', 'Sud', 'Ouest', 'Est']) {
+      // Relâché (Échap), puis choisi de nouveau à sa place : retoucher le lieu choisi le relâcherait.
+      fireEvent.keyDown(window, { key: 'Escape' });
+      act(() => void dernier.intention({ genre: 'ile', id: VOLCAN }));
+      for (let i = 0; i < 40 && !vu; i++) {
+        const c = dernier.choix;
+        fireEvent.click(screen.getByRole('button', { name: dir }));
+        if (dernier.choix === c) break;
+        // Un seul cran de la grille à chaque fois, jamais un saut.
+        if (c?.genre === 'lieu' && dernier.choix?.genre === 'lieu') expect(Math.abs(dernier.choix.spot.x - c.spot.x) + Math.abs(dernier.choix.spot.y - c.spot.y)).toBe(1);
+        vu = dernier.placePrise;
+      }
+      if (vu) break;
+    }
+    expect(vu).toBe(true);
+    expect(screen.getByRole('button', { name: 'Poser' })).toBeDisabled();
+    expect(dernier.vue?.poignees?.prise).toBeDefined();
+    expect(document.querySelector('.signe-refus')?.textContent).toMatch(/Place prise/);
+    // Sur la même ligne que les signes de la place, sans nombre ni case (il n'y a pas d'écart à dire).
+    const ligne = document.querySelector('.arrange-signes')!;
+    expect(ligne.querySelector('.signe-refus')).not.toBeNull();
+    expect(ligne.querySelector('.signes-de-place strong')).toBeNull();
+    expect(dit.at(-1)).toMatch(/^(Au|À l’) [^,]+ (du |de la |de l’|des ).+\. Place prise\.$/);
+    // « Valider » ne pose rien sur une place prise.
+    fireEvent.click(screen.getByRole('button', { name: 'Valider' }));
+    expect(spotOf(monde, VOLCAN)).toEqual(depart0);
+  });
+
+  it('sans choix, chaque bout de liaison porte sa poignée nommée ; la toucher choisit l’arrivée, que les flèches déplacent (choix 1a)', () => {
+    render(<SettingsProvider><Banc reduit depart={depart()} /></SettingsProvider>);
+    fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
+    const groupe = screen.getByRole('group', { name: 'Déplacer une arrivée' });
+    const boutons = within(groupe).getAllByRole('button');
+    expect(boutons.length).toBe(dernier.bouts!.length);
+    expect(boutons.length % 2).toBe(0);
+    // « L’arrivée sur la Forêt des sons, de l’ouvrage vers la Ferme des accords » (le mot de l'univers).
+    expect(boutons[0].getAttribute('aria-label')).toMatch(/^L’arrivée sur (le |la |l’).+, (de la liaison|de l’ouvrage|du pont) vers (le |la |l’).+/);
+    fireEvent.click(boutons[0]);
+    expect(dernier.choix?.genre).toBe('arrivee');
+    expect(dernier.bouts).toBeNull();
+    expect(screen.queryByRole('group', { name: 'Déplacer une arrivée' })).toBeNull();
+    const autour = screen.getByRole('group', { name: 'Déplacer' });
+    expect(within(autour).queryByRole('button', { name: 'Tourner' })).toBeNull();
+    // La ligne dit vers quel lieu l'ouvrage part, en signes : l'icône de l'ouvrage, puis le lieu d'en face.
+    expect(dernier.ligne?.genre === 'texte' && dernier.ligne.vers).toBeTruthy();
+    expect(document.querySelector('.arrange-signes')!.textContent).toContain(dernier.ligne?.genre === 'texte' ? dernier.ligne.vers : '?');
+    // Dit aussi le lieu d'en face, comme le nom du bouton.
+    expect(dernier.phrase).toMatch(/^L’arrivée, sur la côte .+, vers (le |la |l’).+\.$/);
+    // Retoucher son ouvrage la relâche, comme le lieu, le Gardien ou la borne.
+    const ouvrage = dernier.choix?.genre === 'arrivee' ? dernier.choix.link : '';
+    act(() => void dernier.intention({ genre: 'ouvrage', id: ouvrage, point: { x: 0, y: 0 } } as Parameters<typeof dernier.intention>[0]));
+    expect(dernier.choix).toBeNull();
+    fireEvent.click(within(screen.getByRole('group', { name: 'Déplacer une arrivée' })).getAllByRole('button')[0]);
+    expect(dernier.choix?.genre).toBe('arrivee');
+    // Échap : plus de choix, les poignées des bouts reviennent.
+    fireEvent.keyDown(window, { key: 'Escape' });
+    expect(dernier.choix).toBeNull();
+    expect(screen.getByRole('group', { name: 'Déplacer une arrivée' })).toBeInTheDocument();
+  });
+
+  it('sans clavier, retoucher le lieu choisi sur sa terre le relâche, comme Échap : les poignées des bouts reviennent', () => {
+    render(<SettingsProvider><Banc reduit depart={depart()} /></SettingsProvider>);
+    fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
+    act(() => void dernier.intention({ genre: 'ile', id: VOLCAN }));
+    expect(dernier.choix?.genre).toBe('lieu');
+    expect(screen.queryByRole('group', { name: 'Déplacer une arrivée' })).toBeNull();
+    act(() => void dernier.intention({ genre: 'ile', id: VOLCAN }));
+    expect(dernier.choix).toBeNull();
+    expect(screen.getByRole('group', { name: 'Déplacer une arrivée' })).toBeInTheDocument();
+    // Un autre lieu touché, lui, est choisi.
+    act(() => void dernier.intention({ genre: 'ile', id: TOUR }));
+    expect(dernier.choix?.genre === 'lieu' && dernier.choix.id).toBe(TOUR);
+  });
+
+  it('posé sur une place à l’icône de « Réunir », le lieu reste choisi et « Réunir » s’allume (choix 2a)', () => {
+    render(<SettingsProvider><Banc reduit depart={depart()} /></SettingsProvider>);
+    fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
+    // La Tour, éloignée de la Ferme, puis rapprochée sur une place qui l'y colle.
+    act(() => void dernier.intention({ genre: 'ile', id: TOUR }));
+    const icone = dernier.vue!.reunions?.[0];
+    expect(icone).toBeDefined();
+    act(() => void dernier.intention({ genre: 'mer', point: { x: icone!.x, y: icone!.y } }));
+    expect(screen.getByRole('button', { name: 'Poser' })).toBeEnabled();
+    fireEvent.click(screen.getByRole('button', { name: 'Poser' }));
+    expect(dernier.choix?.genre).toBe('lieu');
+    expect(screen.getByRole('button', { name: 'Réunir' })).toBeEnabled();
   });
 
   it('« Valider » sur une place prise : le choix reste à sa place d’avant, rien de posé ne se perd', () => {
@@ -344,7 +442,8 @@ describe('le mode « Aménager »', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Ne pas réunir' }));
     expect(joinedWith(monde, TOUR)).toBeNull();
     expect(dernier.ligne).toBeNull();
-    act(() => void dernier.intention({ genre: 'ile', id: TOUR }));
+    // La Tour reste choisie : « Réunir » se retouche.
+    expect(dernier.choix?.genre === 'lieu' && dernier.choix.id).toBe(TOUR);
     fireEvent.click(reunir());
     // La deuxième fois, le mot n'est plus expliqué.
     expect(screen.getByRole('group', { name: `Réunir ${thePlace(nom(TOUR))} ?` }).querySelector('.arrange-explication')).toBeNull();

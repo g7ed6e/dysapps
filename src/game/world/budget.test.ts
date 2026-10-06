@@ -4,7 +4,7 @@ import { APPEL_DU_PASSAGE, bornesCost, linkCubes, worstCaseOfRegion, commandesCo
 import { ARCHIPELAGO_IDS, type ArchipelagoId, mapOf } from './map';
 import { chooseGuardian, chooseIsland } from './arrangeMode';
 import { arrangeView, arrangeViewCost } from './arrangeView';
-import { BUDGET_DES_POIGNEES, coutDesPoignees } from './arrangeHandles';
+import { BUDGET_DES_POIGNEES, coutDesBouts, coutDesPoignees, linkEndHandles } from './arrangeHandles';
 import { buildMesh } from './mesher';
 import { worldCubes } from './terrain';
 import { SHORT_LENGTH, LONG_LENGTH } from './routing';
@@ -256,6 +256,18 @@ it('GD-9 : les poignées du mode « Modifier le plan » (les flèches et « Tour
   // Hors d'un choix, rien.
   expect(arrangeViewCost(null)).toEqual({ triangles: 0, drawCalls: 0 });
 }, 20_000);
+
+it('GD-9, choix 1a : les poignées des bouts de liaison, sans choix, un appel et 400 triangles au plus, même au pire (autant de liaisons qu’un graphe planaire en a)', () => {
+  const { world } = toutConstruit();
+  for (const a of ARCHIPELAGO_IDS) {
+    const c = coutDesBouts(linkEndHandles(world, a).length);
+    expect(c.triangles, a).toBeLessThanOrEqual(BUDGET_DES_POIGNEES.triangles);
+    expect(c.drawCalls, a).toBe(1);
+    // Au pire : 3 n − 6 liaisons entre n lieux, deux bouts chacune.
+    const n = mapOf(a).length;
+    expect(coutDesBouts(2 * (3 * n - 6)).triangles, a).toBeLessThanOrEqual(BUDGET_DES_POIGNEES.triangles);
+  }
+});
 
 it('GD-9 : une liaison au plus long, de chaque sorte, ne prend aucun matériau nouveau (aucun appel de plus)', () => {
   const { progress, world } = toutConstruit();
