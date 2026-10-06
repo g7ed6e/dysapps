@@ -16,7 +16,7 @@ import { dispositionEnGrille } from '../world/grid';
 import { placeLibre, type Rect } from '../freeSpace';
 import { avatarRoute, bridgePath, cadreDeLaLiaison, cadreDeTraversee, islandCenter, worldBounds } from '../world/terrain';
 import { getBridge } from '../world/archipelago';
-import { AUTOUR_DE_LA_DESTINATION, cadrageDeLaCarte, cadrageDeLaTraversee, creerCamera, decalagePourViser, ECHELLE_MIN_DE_LA_TRAVERSEE, PLANCHER_DE_LA_CARTE } from './camera';
+import { AUTOUR_DE_LA_DESTINATION, cadrageDeLaCarte, cadrageDeLaTraversee, creerCamera, decalagePourViser, ECHELLE_MIN_DE_LA_TRAVERSEE, PLANCHER_DE_LA_CARTE, ZOOM_DU_MONDE } from './camera';
 import type { Derniers, Instant, Monde } from './scenePart';
 
 /** La scène de la tablette de référence (1024 × 768, moins la barre du haut) ; la vue d'une île, à gauche du panneau. */
@@ -303,13 +303,52 @@ describe('La Carte dans la place libre (DA-31)', () => {
     cam.animer!(0.3, 0.016, true);
     expect(cam.decale()).toBe(false);
     expect(camera.position.distanceTo(cam.cible)).toBeCloseTo(d0, 3);
-    // Hors de la Carte, pas de zoom ; la Carte refermée efface celui qu'on avait.
+    // La Carte refermée efface le zoom qu'on y avait.
     cam.zoomer(2, { x: 0, y: 0 });
     derniers.current = { ...derniers.current, carte: false };
     instant.carte = false;
     cam.animer!(0.4, 0.016, true);
     expect(cam.decale()).toBe(false);
+  });
+
+  it('le monde se zoome aussi, borné autour de son cadrage ; le zoom reste d’une île à l’autre, « Recentrer » l’efface', () => {
+    const b = worldBounds('6e');
+    const monde: Monde = { scene: new THREE.Scene(), archipel: '6e', habillage: HABILLAGES.blocland, surface: null, etendue: b, centre: { x: 0, y: 0 }, largeur: 200, liaisons: () => [] };
+    const camera = new THREE.PerspectiveCamera(40, T.w / T.h, 0.5, 2000);
+    const derniers = { current: { carte: false, focus: { island: 'french-6e-phonology', seq: 1 }, home: 'french-6e-phonology', forceDay: true, sons: false } as unknown as Derniers };
+    const instant: Instant = { now: 0, marche: false, traversee: null, navigue: null, carte: false, but: { target: new THREE.Vector3(), pos: new THREE.Vector3() } };
+    const cam = creerCamera(monde, camera, new THREE.Object3D(), derniers, instant);
+    // Avant la première image, la vue n'est pas encore celle du monde.
     expect(cam.zoomer(2, { x: 0, y: 0 })).toBe(false);
+    cam.animer!(0, 0.016, true);
+    const d0 = camera.position.distanceTo(cam.cible);
+    const q0 = camera.quaternion.clone();
+    expect(cam.zoomer(2, { x: 0.3, y: 0.2 })).toBe(true);
+    expect(cam.decale()).toBe(true);
+    expect(camera.position.distanceTo(cam.cible)).toBeCloseTo(d0 / 2, 3);
+    expect(camera.quaternion.angleTo(q0)).toBeCloseTo(0);
+    // Bornes : au plus près, puis au plus loin.
+    cam.zoomer(1000, { x: 0, y: 0 });
+    cam.animer!(0.1, 0.016, true);
+    expect(camera.position.distanceTo(cam.cible)).toBeCloseTo(d0 / ZOOM_DU_MONDE.pres, 3);
+    expect(cam.zoomer(2, { x: 0, y: 0 })).toBe(false);
+    cam.zoomer(1e-3, { x: 0, y: 0 });
+    cam.animer!(0.2, 0.016, true);
+    expect(camera.position.distanceTo(cam.cible)).toBeCloseTo(d0 / ZOOM_DU_MONDE.loin, 3);
+    // Une autre île : le décalage s'efface, le zoom reste.
+    cam.zoomer(2, { x: 0, y: 0 });
+    derniers.current = { ...derniers.current, focus: { island: 'french-6e-grammar-spelling', seq: 2 } };
+    cam.animer!(0.3, 0.016, true);
+    const d1 = camera.position.distanceTo(cam.cible);
+    expect(cam.decale()).toBe(true);
+    // Toucher une cible recentre sans effacer le zoom ; le bouton « Recentrer » l'efface.
+    cam.recentrer();
+    cam.animer!(0.4, 0.016, true);
+    expect(camera.position.distanceTo(cam.cible)).toBeCloseTo(d1, 3);
+    cam.recentrer(true);
+    cam.animer!(0.5, 0.016, true);
+    expect(cam.decale()).toBe(false);
+    expect(camera.position.distanceTo(cam.cible)).toBeCloseTo(d1 * (2 * ZOOM_DU_MONDE.loin), 3);
   });
 
   it('poser met la caméra d’un coup à son cadrage et rend l’écart qu’il restait (les captures)', () => {

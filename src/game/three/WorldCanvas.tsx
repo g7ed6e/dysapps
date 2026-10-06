@@ -299,7 +299,8 @@ export default function WorldCanvas({
       signes: signesDesCreatures,
       cubes: cubesDuMonde,
       navire,
-      recentrer: () => recentrer(),
+      // Le bouton « Recentrer » : la vue revient à son cadrage, zoom du monde compris.
+      recentrer: () => recentrer(true),
       sauter: (objet) => {
         if (objet.genre === 'creature') {
           if (!reduceMotion) signesDesCreatures.rebondir(cleDeLaCreature(objet.id));
@@ -332,8 +333,8 @@ export default function WorldCanvas({
       deplacee = d;
       vueDeplaceeRef.current?.(d);
     };
-    const recentrer = () => {
-      cadrage.recentrer();
+    const recentrer = (aussiLeZoom = false) => {
+      cadrage.recentrer(aussiLeZoom);
       signaler();
     };
     /** Ce qui bouge dans le monde, avant la caméra : le bonhomme, puis le navire (qui le fait embarquer et débarquer). */
@@ -383,8 +384,8 @@ export default function WorldCanvas({
      * aussi se fait glisser, une fois zoomée ou à son plancher, pour l'explorer.
      */
     const glissePermis = () => Boolean(vueDeplaceeRef.current) && !voyageRef.current && !instant.marche && !instant.navigue;
-    /** Le zoom est permis : sur la Carte seulement, quand le glissé l'est. */
-    const zoomPermis = () => glissePermis() && derniers.current.carte && instant.carte;
+    /** Le zoom est permis quand le glissé l'est, sur la Carte comme dans le monde (pas pendant que la Carte s'ouvre ou se ferme). */
+    const zoomPermis = () => glissePermis() && derniers.current.carte === instant.carte;
     // Le clavier (les flèches vont à l'île voisine) et les gestes (./gestures.ts).
     const scenePourLesGestes = {
       canvas: renderer.domElement,

@@ -2,8 +2,9 @@
 // Elle rejoint en douceur sa place : le navire en route, le bonhomme qui marche, l'île ouverte, sinon le bonhomme.
 // L'élève peut faire glisser la vue à plat pour explorer (./drag.ts) : un décalage s'ajoute à ce cadrage, borné à
 // l'archipel, et s'efface dès que l'application reprend la main (une île touchée, la Carte, une marche, un voyage).
-// Sur la Carte seulement, l'élève peut aussi zoomer (pincer, molette, touches + et −) : de l'archipel entier, son
-// cadrage d'ouverture, jusqu'à une île en gros plan (`zoomer`).
+// L'élève peut aussi zoomer (pincer, molette, touches + et −, `zoomer`). Sur la Carte : de l'archipel entier, son
+// cadrage d'ouverture, jusqu'à une île en gros plan ; effacé à sa fermeture. Dans le monde : un peu plus loin ou bien
+// plus près que le cadrage (`ZOOM_DU_MONDE`), gardé d'une île à l'autre jusqu'à « Recentrer ».
 // Les cadrages (les vues, la Carte, la traversée) sont dans ./camera/framings.ts ; ce fichier garde la caméra qui les
 // suit, et en réexporte les noms publics.
 import * as THREE from 'three';
@@ -14,8 +15,8 @@ import { type CadreDeCases, islandCenter, viewYaw, viewZone, VISEE_AU_DESSUS_DU_
 import { CADRAGE_DU_REPERE, repereDeLaVue } from '../world/framing';
 import { mapOf } from '../world/map';
 import { bornerLeDecalage, type Decalage, estDecale } from './drag';
-import { cadrageDeLaCarte, cadrageDeLaTraversee, cleDeLaDestination, decalagePourViser, ECHELLE_MIN_DE_LA_TRAVERSEE, FOLLOW_DISTANCE, FOLLOW_MAX, HAUTEUR_DE_TABLETTE, ISLAND_DISTANCE, ISLAND_VIEW, LARGEUR_D_UNE_ILE, type LectureDeLaCarte, PAS, VIEW, VISEE, VOYAGE_VIEW, ZOOM_DE_LA_CARTE } from './camera/framings';
-export { AUTOUR_DE_LA_DESTINATION, cadrageDeLaCarte, cadrageDeLaTraversee, decalagePourViser, ECHELLE_MIN_DE_LA_TRAVERSEE, ISLAND_VIEW, type LectureDeLaCarte, PLANCHER_DE_LA_CARTE } from './camera/framings';
+import { cadrageDeLaCarte, cadrageDeLaTraversee, cleDeLaDestination, decalagePourViser, ECHELLE_MIN_DE_LA_TRAVERSEE, FOLLOW_DISTANCE, FOLLOW_MAX, HAUTEUR_DE_TABLETTE, ISLAND_DISTANCE, ISLAND_VIEW, LARGEUR_D_UNE_ILE, type LectureDeLaCarte, PAS, VIEW, VISEE, VOYAGE_VIEW, ZOOM_DE_LA_CARTE, ZOOM_DU_MONDE } from './camera/framings';
+export { AUTOUR_DE_LA_DESTINATION, cadrageDeLaCarte, cadrageDeLaTraversee, decalagePourViser, ECHELLE_MIN_DE_LA_TRAVERSEE, ISLAND_VIEW, type LectureDeLaCarte, PLANCHER_DE_LA_CARTE, ZOOM_DU_MONDE } from './camera/framings';
 
 declare global {
   interface Window {
@@ -44,17 +45,20 @@ export interface Camera extends PartieDeLaScene {
    * (la vue suit le doigt), et sa place visée aussi. Le nord, la hauteur et la direction de vue ne changent pas.
    */
   glisser(dx: number, dz: number): void;
-  /** Remet le décalage à zéro : la caméra revient en douceur à son cadrage (d'un coup, avec moins d'animations). */
-  recentrer(): void;
+  /**
+   * Remet le décalage à zéro : la caméra revient en douceur à son cadrage (d'un coup, avec moins d'animations). Le zoom
+   * du monde n'est effacé qu'avec `aussiLeZoom` (le bouton « Recentrer ») : toucher une cible le garde.
+   */
+  recentrer(aussiLeZoom?: boolean): void;
   /** La vue a été déplacée (un décalage non nul) ou zoomée. */
   decale(): boolean;
   /** Le décalage de la vue glissée, en cases sur le plan horizontal (zéro : la vue à son cadrage). */
   decalage(): Readonly<{ x: number; z: number }>;
   /**
-   * Sur la Carte seulement : rapproche (`facteur` > 1) ou éloigne la vue, borné entre le cadrage d'ouverture et une île
-   * en gros plan (`ZOOM_DE_LA_CARTE`). Le point du sol vu en `vers` (coordonnées normalisées de l'écran, −1 à 1) reste
-   * sous le doigt ; la caméra y est tout de suite. Ni le nord, ni la direction de vue ne changent. Rend vrai si la vue a
-   * changé.
+   * Rapproche (`facteur` > 1) ou éloigne la vue. Sur la Carte, borné entre le cadrage d'ouverture et une île en gros plan
+   * (`ZOOM_DE_LA_CARTE`) ; dans le monde, entre les bornes de `ZOOM_DU_MONDE` (pas pendant un voyage ni une traversée
+   * au cadre fixe). Le point du sol vu en `vers` (coordonnées normalisées de l'écran, −1 à 1) reste sous le doigt ; la
+   * caméra y est tout de suite. Ni le nord, ni la direction de vue ne changent. Rend vrai si la vue a changé.
    */
   zoomer(facteur: number, vers: { x: number; y: number }): boolean;
   /**
@@ -221,10 +225,14 @@ export function creerCamera(
   const voulu: Decalage = { x: 0, z: 0 };
   /**
    * Le zoom de la Carte : 1 au cadrage d'ouverture, plus grand en se rapprochant (la distance à la cible est divisée
-   * d'autant) ; et celui que voient les étiquettes (gelé pendant un geste, comme le décalage).
+   * d'autant). Celui du monde, de même autour du cadrage, gardé quand l'application reprend la main. Et celui que voient
+   * les étiquettes (gelé pendant un geste, comme le décalage).
    */
   let zoom = 1;
+  let zoomDuMonde = 1;
   let zoomDuBut = 1;
+  /** À la dernière image, la vue était celle du monde (ni la Carte, ni un voyage, ni une traversée au cadre fixe). */
+  let dansLeMonde = false;
   const zero = () => {
     decalage.x = 0;
     decalage.z = 0;
@@ -294,18 +302,27 @@ export function creerCamera(
       camera.lookAt(camTarget);
       camera.updateMatrixWorld();
     },
-    recentrer: zero,
-    decale: () => estDecale(decalage) || zoom > 1 + 1e-6,
+    recentrer: (aussiLeZoom = false) => {
+      zero();
+      if (aussiLeZoom) zoomDuMonde = 1;
+    },
+    decale: () => estDecale(decalage) || zoom > 1 + 1e-6 || Math.abs(zoomDuMonde - 1) > 1e-6,
     decalage: () => decalage,
     zoomer: (facteur, vers) => {
-      if (!instant.carte || !cadrageCarte || !(facteur > 0)) return false;
-      const voulu = Math.min(cadrageCarte.zoomMax, Math.max(1, zoom * facteur));
-      if (Math.abs(voulu - zoom) < 1e-9) return false;
+      if (!(facteur > 0)) return false;
+      const surLaCarte = instant.carte;
+      if (surLaCarte ? !cadrageCarte : !dansLeMonde) return false;
+      const actuel = surLaCarte ? zoom : zoomDuMonde;
+      const min = surLaCarte ? 1 : ZOOM_DU_MONDE.loin;
+      const max = surLaCarte && cadrageCarte ? cadrageCarte.zoomMax : ZOOM_DU_MONDE.pres;
+      const voulu = Math.min(max, Math.max(min, actuel * facteur));
+      if (Math.abs(voulu - actuel) < 1e-9) return false;
       const saisi = solVu(vers, avantLeZoom);
       // La caméra avance (ou recule) vers sa cible tout de suite, sans attendre son pas : la vue suit les doigts.
-      const k = zoom / voulu;
+      const k = actuel / voulu;
       camPos.sub(camTarget).multiplyScalar(k).add(camTarget);
-      zoom = voulu;
+      if (surLaCarte) zoom = voulu;
+      else zoomDuMonde = voulu;
       camera.position.copy(camPos);
       camera.lookAt(camTarget);
       // Le point saisi revient sous le doigt : la vue glisse à plat d'autant.
@@ -379,14 +396,17 @@ export function creerCamera(
         target.add(glissement);
         pos.add(glissement);
       }
-      // Sur la Carte, le zoom rapproche la caméra de sa cible (la vue de l'élève, et celle que voient les étiquettes).
+      // Le zoom rapproche la caméra de sa cible (la vue de l'élève, et celle que voient les étiquettes) : celui de la
+      // Carte sur la Carte, celui du monde dans le monde ; ni l'un ni l'autre pendant un voyage ou une traversée fixe.
       const surLaCarteIci = instant.carte && !sailing && !fixe;
-      // Hors de la Carte, pas de zoom ; sur la Carte, la borne de près suit la place libre (la taille du texte a changé).
+      dansLeMonde = !instant.carte && !sailing && !fixe;
+      // Hors de la Carte, son zoom s'efface ; sur la Carte, la borne de près suit la place libre (la taille du texte a changé).
       if (!surLaCarteIci) zoom = 1;
       else if (cadrageCarte && zoom > cadrageCarte.zoomMax) zoom = cadrageCarte.zoomMax;
-      if (!self.glissant) zoomDuBut = zoom;
+      const zoomVu = surLaCarteIci ? zoom : dansLeMonde ? zoomDuMonde : 1;
+      if (!self.glissant) zoomDuBut = zoomVu;
       const kDuBut = 1 / zoomDuBut;
-      const kVu = 1 / zoom;
+      const kVu = 1 / zoomVu;
       base.x = target.x;
       base.z = target.z;
       // Sur la Carte, le mode « Aménager » garde le fantôme dans la bande libre (`recadrer`) : la Carte glisse une fois,
