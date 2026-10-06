@@ -5,6 +5,7 @@
 // ce composant les crée et leur passe les props ; les gestes (./gestures.ts) et la boucle d'image (./loop.ts) sont à part.
 import { useEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
+import { estDecale } from './drag';
 import type { BiomeId } from '../biomes';
 import { cadreDeLaLiaison, ileDeLaVueGlissee, islandCenter, worldBounds } from '../world/terrain';
 import { getBridge } from '../world/archipelago';
@@ -237,7 +238,7 @@ export default function WorldCanvas({
     const vise = { archipel: '', ici: '', x: NaN, z: NaN, ile: null as BiomeId | null };
     const ileVisee = () => {
       const ici = derniers.current.focus.island ?? derniers.current.home;
-      if (derniers.current.carte || !ici || !cadrage.decale()) return null;
+      if (derniers.current.carte || !ici || !estDecale(cadrage.decalage())) return null;
       const d = cadrage.decalage();
       const x = Math.round(d.x), z = Math.round(d.z);
       if (x !== vise.x || z !== vise.z || ici !== vise.ici || archRef.current !== vise.archipel) {
@@ -299,7 +300,8 @@ export default function WorldCanvas({
       signes: signesDesCreatures,
       cubes: cubesDuMonde,
       navire,
-      recentrer: () => recentrer(),
+      // Le bouton « Recentrer » : la vue revient à son cadrage, zoom du monde compris.
+      recentrer: () => recentrer(true),
       sauter: (objet) => {
         if (objet.genre === 'creature') {
           if (!reduceMotion) signesDesCreatures.rebondir(cleDeLaCreature(objet.id));
@@ -332,8 +334,8 @@ export default function WorldCanvas({
       deplacee = d;
       vueDeplaceeRef.current?.(d);
     };
-    const recentrer = () => {
-      cadrage.recentrer();
+    const recentrer = (aussiLeZoom = false) => {
+      cadrage.recentrer(aussiLeZoom);
       signaler();
     };
     /** Ce qui bouge dans le monde, avant la caméra : le bonhomme, puis le navire (qui le fait embarquer et débarquer). */
@@ -383,8 +385,8 @@ export default function WorldCanvas({
      * aussi se fait glisser, une fois zoomée ou à son plancher, pour l'explorer.
      */
     const glissePermis = () => Boolean(vueDeplaceeRef.current) && !voyageRef.current && !instant.marche && !instant.navigue;
-    /** Le zoom est permis : sur la Carte seulement, quand le glissé l'est. */
-    const zoomPermis = () => glissePermis() && derniers.current.carte && instant.carte;
+    /** Le zoom est permis quand le glissé l'est, sur la Carte comme dans le monde (pas pendant que la Carte s'ouvre ou se ferme). */
+    const zoomPermis = () => glissePermis() && derniers.current.carte === instant.carte;
     // Le clavier (les flèches vont à l'île voisine) et les gestes (./gestures.ts).
     const scenePourLesGestes = {
       canvas: renderer.domElement,
@@ -699,6 +701,6 @@ export default function WorldCanvas({
   }, [focus.island, focus.seq]);
 
   return (
-    <div ref={host} className={`voxel-canvas ${className ?? ''}`.trim()} data-rendu={rendu} role="img" aria-label={`${label}. ${onVueDeplacee ? 'Faire glisser pour explorer. ' : ''}Au clavier : les flèches vont à l'île voisine${map ? ' ; les touches plus et moins rapprochent ou éloignent la Carte' : ''}.`} />
+    <div ref={host} className={`voxel-canvas ${className ?? ''}`.trim()} data-rendu={rendu} role="img" aria-label={`${label}. ${onVueDeplacee ? 'Faire glisser pour explorer. ' : ''}Au clavier : les flèches vont à l'île voisine${map || onVueDeplacee ? ' ; les touches plus et moins rapprochent ou éloignent la vue' : ''}.`} />
   );
 }
