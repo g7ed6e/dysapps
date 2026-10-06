@@ -11,12 +11,11 @@
 // l'eau n'est pas là), sa forme (sommets et couleurs, en cases, dans le repère de Three : x, hauteur, y) et ce
 // qu'elle coûte. Code pur, sans Three.js ; la 3D les dessine en un seul maillage (three/arrangeHandles.ts).
 import type { World } from '../engine/state';
-import { type Direction, DIRECTION_STEP, nextFreeSpot, nextGuardianSpot } from './arrange';
+import { DIRECTION_STEP, nextFreeSpot, nextGuardianSpot } from './arrange';
 import { type ArrangeChoice, canTurn, stepChoice, turnChoice } from './arrangeMode';
 import type { Rectangle } from './placement';
+import type { CleDePoignee, PoigneeDuMonde, PoigneesDuChoix } from './view';
 
-/** Une poignée : une des quatre flèches, ou « Tourner ». */
-export type CleDePoignee = Direction | 'tourner';
 
 /** Le côté d'un radeau, en cases (à l'échelle 1). */
 export const COTE_DU_RADEAU = 3;
@@ -37,33 +36,13 @@ export const POIGNEE_MIN_PX = 48;
  */
 export const ECHELLES: readonly number[] = [1, 1.25, 1.5, 2, 2.5, 3, 3.5, 4, 5, 6, 8];
 
-/**
- * Une poignée posée : son décalage depuis le milieu du choix à chaque échelle de `ECHELLES` (en cases du monde, x puis y),
- * le premier à l'échelle 1 (`ox`, `oy`), et si elle sert.
- */
-export interface PoigneeDuMonde {
-  cle: CleDePoignee;
-  ox: number;
-  oy: number;
-  places: readonly number[];
-  dispo: boolean;
-}
-
-/** Les poignées d'un choix : le milieu de son emprise, la hauteur de l'eau (le dessus), et chaque poignée. */
-export interface PoigneesDuChoix {
-  cx: number;
-  cy: number;
-  z: number;
-  liste: PoigneeDuMonde[];
-  /** Ce que couvrent les radeaux à l'échelle 1, emprise du choix comprise : la vue le garde à l'écran. */
-  emprise: Rectangle;
-}
-
 /** Le côté de chaque poignée, en cases du monde : le nord vers les y qui montent, l'est vers les x qui descendent. */
 const SENS: Readonly<Record<CleDePoignee, { dx: number; dy: number }>> = {
   ...DIRECTION_STEP,
   tourner: { dx: DIRECTION_STEP.est.dx, dy: DIRECTION_STEP.nord.dy },
 };
+
+export type { CleDePoignee, PoigneeDuMonde, PoigneesDuChoix } from './view';
 
 /** L'ordre des poignées : les quatre flèches, puis « Tourner ». */
 export const CLES_DES_POIGNEES: readonly CleDePoignee[] = ['nord', 'sud', 'ouest', 'est', 'tourner'];

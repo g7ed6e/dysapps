@@ -11,7 +11,6 @@ import type { Ancrage, Intention, ObjetDeLaFiche } from './layout';
 import type { EtatsDesObjets } from './model';
 import { grilleDe } from './grid';
 import type { Rectangle } from './placement';
-import type { CleDePoignee, PoigneesDuChoix } from './arrangeHandles';
 
 /** Ce qu'est une case du dessin du mode « Aménager » (GD-9 ; calculé par ./arrangeView.ts). */
 export type ArrangeCellKind = 'fantome' | 'place' | 'liaison' | 'barree' | 'croix';
@@ -421,4 +420,32 @@ export function rappelsDeLaVue(onIntent: ((i: Intention) => void) | undefined, a
     onVoyageSkip: () => onIntent({ genre: 'voyage-saute' }),
     onArrive: () => onIntent({ genre: 'arrivee' }),
   };
+}
+
+// Les poignées du mode « Modifier le plan » (GD-9), calculées par ./arrangeHandles.ts : leurs types vivent ici, avec la vue,
+// pour que la vue ne dépende pas du calcul.
+
+/** Une poignée : une des quatre flèches, ou « Tourner ». */
+export type CleDePoignee = 'nord' | 'sud' | 'est' | 'ouest' | 'tourner';
+
+/**
+ * Une poignée posée : son décalage depuis le milieu du choix à chaque échelle de `ECHELLES` (en cases du monde, x puis y),
+ * le premier à l'échelle 1 (`ox`, `oy`), et si elle sert.
+ */
+export interface PoigneeDuMonde {
+  cle: CleDePoignee;
+  ox: number;
+  oy: number;
+  places: readonly number[];
+  dispo: boolean;
+}
+
+/** Les poignées d'un choix : le milieu de son emprise, la hauteur de l'eau (le dessus), et chaque poignée. */
+export interface PoigneesDuChoix {
+  cx: number;
+  cy: number;
+  z: number;
+  liste: PoigneeDuMonde[];
+  /** Ce que couvrent les radeaux à l'échelle 1, emprise du choix comprise : la vue le garde à l'écran. */
+  emprise: Rectangle;
 }

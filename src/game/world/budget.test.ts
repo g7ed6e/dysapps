@@ -209,6 +209,8 @@ it('GD-9 : au pire (autant de liaisons qu’un graphe planaire en a, au plus lon
   }
 });
 
+// Ces deux tests construisent le dessin de chaque choix possible de chaque région (plusieurs secondes sur la CI) : un délai
+// à leur mesure plutôt que les 5 s par défaut.
 it('GD-9 : au pire de chaque région, le dessin d’un choix du mode « Aménager » (au plus grand nombre de places) tient aussi sous le plafond', () => {
   const { world } = toutConstruit();
   for (const a of ARCHIPELAGO_IDS) {
@@ -229,7 +231,7 @@ it('GD-9 : au pire de chaque région, le dessin d’un choix du mode « Aménage
     // les cases du choix, et les poignées dessinées autour de lui (directeur artistique, 6 octobre 2026).
     expect(plus.drawCalls, a).toBeLessThanOrEqual(2);
   }
-});
+}, 20_000);
 
 it('GD-9 : les poignées du mode « Modifier le plan » (les flèches et « Tourner ») : un appel, 400 triangles au plus, seulement pendant un choix', () => {
   const { world } = toutConstruit();
@@ -248,7 +250,7 @@ it('GD-9 : les poignées du mode « Modifier le plan » (les flèches et « Tour
       }
   // Hors d'un choix, rien.
   expect(arrangeViewCost(null)).toEqual({ triangles: 0, drawCalls: 0 });
-});
+}, 20_000);
 
 it('GD-9 : une liaison au plus long, de chaque sorte, ne prend aucun matériau nouveau (aucun appel de plus)', () => {
   const { progress, world } = toutConstruit();
