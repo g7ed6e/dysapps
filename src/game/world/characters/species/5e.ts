@@ -242,4 +242,46 @@ export const ESPECES_5E = {
       },
     },
   },
+  // Les habitants d'histoire-géographie (HG-3) : Archipéo est en pause (2 octobre 2026), ils n'ont que le strict
+  // nécessaire (budget de l'archipel). Vélin est un lapin enlumineur, Sillon un ibis des rizières (DA, HG-3).
+  'history-5e-middle-ages': {
+    nom: 'Vélin',
+    metier: 'enlumineur',
+    dominante: 0xb8aea0,
+    marque: { couleur: 0xdcd0bc, ou: ['ventre', 'museau'] },
+    tenue: { couleur: TENUE.lin, vetements: ['tablier'] },
+    museau: { forme: 'museau', long: 0.14, r: 0.07 },
+    // Rond et dodu, deux longues oreilles debout, écartées : il ne se confond pas avec Moustache, mince aux oreilles pointues.
+    silhouette: { largeur: 0.4, ventre: 0.09, tete: 0.32 },
+    coiffe: (T, k) => {
+      for (const c of [-1, 1]) pointe(T, [c * 0.16, 2.4, 0.05], 0.08, 0.28, k.dom, [0, 0, -c * 0.45], 4, 0.035);
+    },
+    outil: {
+      // La plume d'enluminure : un fût de bois, la barbe dorée (les filets d'or de l'enluminure).
+      pose: [-0.2, 0, 0],
+      dessiner: (T, k) => {
+        manche(T, -0.02, 0.36, 0.018, k.bois, 3);
+        pointe(T, [0, 0.34, 0], 0.06, 0.3, k.laiton, [0, 0, 0], 3, 0.015);
+      },
+    },
+  },
+  'geography-5e-resources': {
+    nom: 'Sillon',
+    metier: 'cultivateur',
+    dominante: 0xf2efe6,
+    marque: { couleur: 0x2a2622, ou: ['tete'] },
+    tenue: { couleur: TENUE.cuir, vetements: ['ailes'] },
+    // Le long bec de l'ibis, sous un chapeau de paille (le lin des outils).
+    museau: { forme: 'bec', long: 0.42, r: 0.05, y: 2.15 },
+    silhouette: { jambes: 0.8, jambe: 0.06 },
+    coiffe: (T, k) => disque(T, 2.5, 0.32, 0.04, k.lin, 8),
+    outil: {
+      // La faucille du riz : un manche, la lame de fer recourbée.
+      pose: [0, 0, 0],
+      dessiner: (T, k) => {
+        manche(T, -0.05, 0.2, 0.02, k.bois, 3);
+        pointe(T, [0, 0.2, 0], 0.05, 0.2, k.fer, [0, 0, 0.9], 3, 0.015);
+      },
+    },
+  },
 } satisfies Partial<Record<BiomeId, Espece>>;

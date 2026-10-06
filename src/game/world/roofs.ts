@@ -16,9 +16,22 @@ export type Couverture = 'ardoise' | 'terre-cuite';
  * Belvédère. Les îles
  * de la LV2 restent d'ardoise et sont hors de ce compte : le Relais des voyageurs (5e), voisin du Comptoir (jamais deux
  * voisins en terre cuite), le Jardin des heures (4e, DA LV2-4), voisin du Théâtre, d'ardoise #3E3636 (le 4e garde
- * une île de terre cuite sur six), et le Refuge des carnets (3e, DA LV2-5), d'ardoise enneigée.
+ * une île de terre cuite sur six), et le Refuge des carnets (3e, DA LV2-5), d'ardoise enneigée. Les îles
+ * d'histoire-géographie de 5e à 3e (HG-3, DA) : en terre cuite le Delta des ressources (5e), l'Imprimerie des révolutions
+ * (4e) et la Vallée des territoires (3e) ; d'ardoise le Bourg des chroniques et l'Escale des échanges, d'ardoise
+ * enneigée le Kiosque des témoins.
  */
-export const TERRE_CUITE_SUR: readonly string[] = ['french-6e-grammar-spelling', 'french-6e-letter-confusion', 'geography-6e-living', 'english-5e-vocabulary', 'english-4e-comprehension', 'maths-3e-geometry'];
+export const TERRE_CUITE_SUR: readonly string[] = [
+  'french-6e-grammar-spelling',
+  'french-6e-letter-confusion',
+  'geography-6e-living',
+  'english-5e-vocabulary',
+  'geography-5e-resources',
+  'english-4e-comprehension',
+  'history-4e-revolutions',
+  'maths-3e-geometry',
+  'geography-3e-france',
+];
 
 /** La terre cuite, la même dans les quatre archipels. */
 const TERRE_CUITE: Couleur = 0xc0764a;

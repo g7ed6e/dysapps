@@ -457,6 +457,101 @@ const BOUSSOLE = fromLayers(
   { C: '#5e7a3e', H: '#b4a676', L: '#b4a676', E: '#1f1a16' },
 );
 
+// Vélin : un lapin enlumineur assis (DA, HG-3), gris-brun au ventre crème, le museau crème à la truffe rose, deux
+// longues oreilles debout, roses dedans ; à sa patte droite, debout, une plume d'enluminure violette à la pointe sombre.
+const VELIN = fromLayers(
+  [
+    ['.B.B.', 'BBBBB', 'BBBBB', '.BBB.'],
+    ['.CCC.', 'BBBBB', 'BBBBB', '.BBB.'],
+    ['.CCCK', 'BBBBB', 'BBBBB', '..C..'],
+    ['.CPCF', 'BBBBB', 'BBBBB', '.....'],
+    ['....F', 'BEBEB', 'BBBBB', '.....'],
+    ['.....', 'BBBBB', 'BBBBB', '.....'],
+    ['.P.P.', '.B.B.', '.....', '.....'],
+    ['.....', '.B.B.', '.....', '.....'],
+  ],
+  { B: '#b8aea0', C: '#f6f1e6', P: '#e0a0a8', E: '#1f1a16', K: '#1f1a16', F: '#6a4c9c' },
+);
+
+// Sillon : un ibis cultivateur (DA, HG-3), blanc, la queue noire, le cou et la tête noirs, le long bec noir qui se
+// courbe vers le bas, perché sur ses deux pattes fines ; un chapeau de paille sur la tête. Trois couleurs.
+const SILLON = fromLayers(
+  [
+    ['.....', '.K.K.', '.....', '.....'],
+    ['.....', '.K.K.', '.....', '.....'],
+    ['.WWW.', 'WWWWW', 'WWWWW', '.WWW.'],
+    ['.WWW.', 'WWWWW', 'WWWWW', '.KKK.'],
+    ['.....', '.WWW.', '.WWW.', '.....'],
+    ['..K..', '..K..', '.....', '.....'],
+    ['..K..', '.KKK.', '.....', '.....'],
+    ['.HHH.', 'HHHHH', '.HHH.', '.....'],
+    ['.....', '.HHH.', '.....', '.....'],
+  ],
+  { W: '#f2efe6', K: '#1f1a16', H: '#d8b860' },
+);
+
+// Typo : une souris imprimeuse (DA, HG-3), grise, deux grandes oreilles rondes, la truffe et la queue roses, un tablier
+// d'encre sombre. Quatre couleurs.
+const TYPO = fromLayers(
+  [
+    ['.G.G.', 'GGGGG', 'GGGGG', '.GGG.'],
+    ['.AAA.', 'GGGGG', 'GGGGG', '.GGG.'],
+    ['.AAA.', 'GGGGG', 'GGGGG', '..P..'],
+    ['.GPG.', 'GGGGG', 'GGGGG', '...P.'],
+    ['.....', 'GEGEG', 'GGGGG', '.....'],
+    ['.....', 'GGGGG', 'GGGGG', '.....'],
+    ['.....', 'GG.GG', '.....', '.....'],
+    ['.....', 'GG.GG', '.....', '.....'],
+  ],
+  { G: '#8c8a86', A: '#2e2622', P: '#e0a0a8', E: '#1f1a16' },
+);
+
+// Fret : un crabe grutier (DA, HG-3), large et bas, rouge, ses deux pinces levées devant, six pattes, deux yeux noirs
+// sur leurs tiges et un casque jaune entre eux. Trois couleurs.
+const FRET = fromLayers(
+  [
+    ['.......', 'R.....R', '.R...R.', 'R.....R', '.......'],
+    ['R.....R', '.RRRRR.', '.RRRRR.', '.RRRRR.', '.......'],
+    ['R.....R', '.RRRRR.', '.RRRRR.', '.RRRRR.', '.......'],
+    ['RR...RR', '..RRR..', '..RRR..', '.......', '.......'],
+    ['.......', '..RHR..', '...H...', '.......', '.......'],
+    ['.......', '..K.K..', '.......', '.......', '.......'],
+  ],
+  { R: '#c8502e', H: '#f2c944', K: '#1f1a16' },
+);
+
+// Mémo : une marmotte bibliothécaire assise (DA, HG-3), brun-gris, le ventre et le museau crème, deux incisives
+// blanches, deux petites oreilles ; elle tient contre elle un livre de reliure bleu-vert. Cinq couleurs.
+const MEMO = fromLayers(
+  [
+    ['.B.B.', 'BBBBB', 'BBBBB', '.BBB.'],
+    ['.LLL.', 'BCCCB', 'BBBBB', '.BBB.'],
+    ['.LLL.', 'BCCCB', 'BBBBB', '.BBB.'],
+    ['.CWC.', 'BBBBB', 'BBBBB', '.....'],
+    ['..N..', 'BEBEB', 'BBBBB', '.....'],
+    ['.....', 'BBBBB', 'BBBBB', '.....'],
+    ['.....', 'B...B', '.....', '.....'],
+  ],
+  { B: '#8a7058', C: '#e6d8bc', W: '#f6f1e6', N: '#1f1a16', E: '#1f1a16', L: '#2f6f74' },
+);
+
+// Jalon : une fourmi arpenteuse debout (DA, HG-3), brun-rouge sombre, le gros abdomen derrière, la taille fine, la tête
+// ronde et deux antennes ; à sa patte droite, un jalon d'arpenteur rayé blanc et rouge, plus haut qu'elle.
+const JALON = fromLayers(
+  [
+    ['.A.AP', '.....', '.....', '.....'],
+    ['.A.AQ', '.RRR.', '.RRR.', '.RRR.'],
+    ['....P', '.RRR.', 'RRRRR', '.RRR.'],
+    ['....Q', '..R..', '.RRR.', '.....'],
+    ['A...P', '.RRR.', '.....', '.....'],
+    ['....Q', 'RRRRR', 'RRRRR', '.....'],
+    ['....P', 'RARAR', 'RRRRR', '.....'],
+    ['....Q', '.RRR.', '.....', '.....'],
+    ['.A.A.', '.A.A.', '.....', '.....'],
+  ],
+  { R: '#6e2a22', A: '#1f1a16', P: '#f6f1e6', Q: '#c42e28' },
+);
+
 export const CREATURE_CUBES: Record<BiomeId, CubeDeModele[]> = {
   'french-6e-phonology': MOUSSO,
   'french-6e-letter-confusion': TUNEL,
@@ -482,6 +577,12 @@ export const CREATURE_CUBES: Record<BiomeId, CubeDeModele[]> = {
   'english-6e-grammar': TICK,
   'history-6e-antiquity': SILEX,
   'geography-6e-living': BOUSSOLE,
+  'history-5e-middle-ages': VELIN,
+  'geography-5e-resources': SILLON,
+  'history-4e-revolutions': TYPO,
+  'geography-4e-globalization': FRET,
+  'history-3e-twentieth-century': MEMO,
+  'geography-3e-france': JALON,
   'english-5e-vocabulary': PUDDING,
   'english-5e-grammar': MOUSTACHE,
   'lv2-5e-introductions': LINA,

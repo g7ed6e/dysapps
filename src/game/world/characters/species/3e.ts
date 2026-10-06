@@ -307,4 +307,38 @@ export const ESPECES_3E = {
       dessiner: (T, k) => pave(T, -0.02, -0.16, -0.12, 0.02, 0.02, 0.12, k.lin),
     },
   },
+  // Les habitants d'histoire-géographie (HG-3) : Archipéo est en pause (2 octobre 2026), ils n'ont que le strict
+  // nécessaire (budget de l'archipel). Mémo est une marmotte bibliothécaire, Jalon une fourmi arpenteuse (DA, HG-3).
+  'history-3e-twentieth-century': {
+    nom: 'Mémo',
+    metier: 'bibliothécaire',
+    dominante: 0x8a7058,
+    marque: { couleur: 0xe6d8bc, ou: ['ventre', 'museau'] },
+    tenue: { couleur: TENUE.lin, vetements: ['gilet'] },
+    museau: { forme: 'museau', long: 0.14, r: 0.07 },
+    // Ronde et dodue, la tête large : elle ne se confond ni avec Écho ni avec Astra.
+    silhouette: { largeur: 0.44, ventre: 0.12, tete: 0.33, jambes: 0.6 },
+    // Deux petites oreilles rondes, basses.
+    coiffe: (T, k) => {
+      for (const c of [-1, 1]) disque(pose(T, repere([c * 0.22, 2.4, 0.04], Math.PI / 2, 0, 0)), 0, 0.08, 0.04, k.dom, 5);
+    },
+    outil: {
+      // Un livre relié de cuir, fermé.
+      pose: [0, 0, 0],
+      dessiner: (T, k) => pave(T, -0.12, 0, -0.04, 0.12, 0.3, 0.04, k.cuir),
+    },
+  },
+  'geography-3e-france': {
+    nom: 'Jalon',
+    metier: 'arpenteuse',
+    dominante: 0x6e2a22,
+    tenue: { couleur: TENUE.cuir, vetements: ['ceinture'] },
+    silhouette: { largeur: 0.26, ventre: 0.08 },
+    // Les deux antennes de la fourmi.
+    coiffe: (T, k) => {
+      for (const c of [-1, 1]) pointe(T, [c * 0.1, 2.42, 0], 0.025, 0.26, k.dom, [-0.4, 0, -c * 0.4], 3);
+    },
+    // Le jalon d'arpenteur, rayé de lin et de cuir.
+    outil: { pose: [0, 0, -0.05], dessiner: (T, k) => jalon(T, -1.12, 1.35, 0.026, 6, k.lin, k.cuir) },
+  },
 } satisfies Partial<Record<BiomeId, Espece>>;

@@ -45,6 +45,14 @@ function outside(a: LabelBox, bounds: { w: number; h: number }): number {
 }
 
 /**
+ * Le point d'une île (une boîte d'un pixel) sort-il du cadre ? À l'arrondi près : `outside` d'une boîte d'un pixel
+ * entièrement dedans peut valoir 1e-13 (la Compréhension, au 3e, se taisait ainsi sur la Carte, HG-3).
+ */
+function horsDuCadre(p: LabelBox, bounds: { w: number; h: number }): boolean {
+  return outside(p, bounds) > 1e-6;
+}
+
+/**
  * Ce que coûte de couvrir un obstacle souple (le tracé de l'ouvrage suggéré, GD-7), par pixel couvert, quand une
  * étiquette ou un obstacle dur coûte 1 : une étiquette s'en écarte si une place proche est libre, mais le couvre plutôt
  * que d'en couvrir une autre.
@@ -194,7 +202,7 @@ export function montrees(boxes: LabelBox[], offsets: LabelOffset[], zones: Label
     const b = boxes[i];
     const o = offsets[i];
     const ile = { ...(iles?.[i] ?? b), w: 1, h: 1 };
-    if (outside(ile, bounds) > 0 || zones.some((z) => overlap(ile, z, 0) > 0)) continue;
+    if (horsDuCadre(ile, bounds) || zones.some((z) => overlap(ile, z, 0) > 0)) continue;
     const at = { ...b, x: b.x + o.dx, y: b.y + o.dy };
     const loin = (r: LabelBox, p: { x: number; y: number } = ile) => distanceA(r, p);
     if (loin(at) > loin(b) + ECART_MAX * b.h || !entiere(b, o, zones, bounds) || vues.some((v) => overlap(at, v, 0) > 0)) continue;
@@ -308,7 +316,7 @@ function placerSansSouples(
   const w = carte?.weights ?? poidsHors;
   const gardees = boxes.map((_, i) => i).filter((i) => {
     const ile = { ...iles[i], w: 1, h: 1 };
-    return outside(ile, bounds) === 0 && !zones.some((z) => overlap(ile, z, 0) > 0);
+    return !horsDuCadre(ile, bounds) && !zones.some((z) => overlap(ile, z, 0) > 0);
   });
   const sous = gardees.map((i) => boxes[i]);
   const placees = carte
@@ -442,11 +450,25 @@ const TRIES_FINS: [number, number][] = (() => {
   return out.sort((a, b) => Math.hypot(a[0] * 1.6, a[1]) - Math.hypot(b[0] * 1.6, b[1]));
 })();
 
-/** Les places essayées autour d'une étiquette (décalages de `TRIES_FINS`), rentrées dans le cadre, de la plus proche à la plus loin. */
-function placesAutour(b: LabelBox, bounds: { w: number; h: number }, gap: number): LabelBox[] {
+/**
+ * Les décalages de la recherche complète de la Carte (`chercherToutesLesPlaces`) : ceux de `TRIES_FINS`, et des pas de
+ * 0,1 hauteur jusqu'à 1,5 hauteur. Aux Anciens Ateliers, le nom de l'Escale n'a de place qu'entre le panneau et la
+ * flèche de l'ouvrage posée sur son île : une bande de 71 px pour un nom de 61 (HG-3, 6 octobre 2026).
+ */
+const TRIES_DE_LA_RECHERCHE: [number, number][] = (() => {
+  const out: [number, number][] = [...TRIES_FINS];
+  for (let k = 6; k <= 15; k++) {
+    if (k === 11) continue;
+    for (const fy of [k / 10, -k / 10]) for (const fx of [0, 0.15, -0.15, 0.3, -0.3]) out.push([fx, fy]);
+  }
+  return out.sort((a, b) => Math.hypot(a[0] * 1.6, a[1]) - Math.hypot(b[0] * 1.6, b[1]));
+})();
+
+/** Les places essayées autour d'une étiquette (décalages `essais`, `TRIES_FINS` par défaut), rentrées dans le cadre, de la plus proche à la plus loin. */
+function placesAutour(b: LabelBox, bounds: { w: number; h: number }, gap: number, essais: [number, number][] = TRIES_FINS): LabelBox[] {
   const x = clamp(b.x, b.w / 2 + gap, bounds.w - b.w / 2 - gap);
   const y = clamp(b.y, b.h / 2 + gap, bounds.h - b.h / 2 - gap);
-  return TRIES_FINS.map(([fx, fy]) => ({ x: x + fx * b.w, y: y + fy * b.h, w: b.w, h: b.h }));
+  return essais.map(([fx, fy]) => ({ x: x + fx * b.w, y: y + fy * b.h, w: b.w, h: b.h }));
 }
 
 /**
@@ -482,7 +504,7 @@ function reparerLaCarte(
   const { couvert, obstacles, bounds, gap } = vue;
   const ileVue = (i: number) => {
     const p = { ...iles[i], w: 1, h: 1 };
-    return outside(p, bounds) === 0 && !couvert.some((z) => overlap(p, z, 0) > 0);
+    return !horsDuCadre(p, bounds) && !couvert.some((z) => overlap(p, z, 0) > 0);
   };
   /** La place `at` tient-elle pour le nom `i`, sans compter les autres noms ? */
   const tient = (i: number, at: LabelBox) => {
@@ -531,6 +553,95 @@ function reparerLaCarte(
   if (voulue) for (const [j, at] of deplacer(voulue.i, [], [], POUSSEES_MAX, [voulue.at]) ?? []) poser(j, at);
   const tus = boxes.map((_, i) => i).filter((i) => !visibles[i] && ileVue(i)).sort((a, b) => poids(b) - poids(a) || a - b);
   for (const i of tus) for (const [j, at] of deplacer(i, [], [], POUSSEES_MAX) ?? []) poser(j, at);
+  chercherToutesLesPlaces(boxes, iles, vues, ileVue, tient, { bounds, gap }, poussable, voulue, poser);
+}
+
+/** Combien de places la recherche complète de la Carte essaie au plus (voir `chercherToutesLesPlaces`). */
+const ESSAIS_DE_LA_RECHERCHE = 2_000;
+
+/**
+ * Sur la Carte, le dernier recours de `reparerLaCarte` : quand un nom dont l'île se voit se tait encore, qu'un nom
+ * montré se lit plus près d'une autre île que de la sienne (vu de son milieu, `milieu`), ou que le nom de la destination
+ * n'a pas pu remonter au-dessus de sa flèche (`voulue`), toutes les places de tous les noms se cherchent ensemble : chaque
+ * nom parmi sa place actuelle (si elle tient) et les places autour de la sienne qui tiennent (`tient`), sans en couvrir
+ * un autre ; le nom de la destination garde la sienne (ou prend `voulue`). Les noms aux places les plus rares se posent
+ * d'abord, chacun à la plus proche ; au plus `ESSAIS_DE_LA_RECHERCHE` places essayées. La recherche ne change rien si
+ * elle ne trouve pas de quoi montrer tous les noms. Les Anciens Ateliers et les Îles du Ciel, avec leurs îles
+ * d'histoire-géographie (HG-3), serrent neuf noms dans la bande sous le panneau : les poussées de deux noms ne suffisent
+ * plus (6 octobre 2026).
+ */
+function chercherToutesLesPlaces(
+  boxes: LabelBox[],
+  iles: { x: number; y: number }[],
+  vues: Map<number, LabelBox>,
+  ileVue: (i: number) => boolean,
+  tient: (i: number, at: LabelBox) => boolean,
+  { bounds, gap }: { bounds: { w: number; h: number }; gap: number },
+  poussable: (j: number) => boolean,
+  voulue: { i: number; at: LabelBox } | null,
+  poser: (i: number, at: LabelBox) => void,
+): void {
+  const noms = boxes.map((_, i) => i).filter(ileVue);
+  const surSonIle = (i: number, at: LabelBox) => {
+    const m = milieu(at);
+    const d = distanceA(m, iles[i]);
+    return !iles.some((q, j) => j !== i && distanceA(m, q) < d);
+  };
+  const tus = noms.some((i) => !vues.has(i));
+  const ailleurs = noms.some((i) => poussable(i) && vues.has(i) && !surSonIle(i, vues.get(i)!));
+  const enBas = voulue !== null && vues.get(voulue.i) !== voulue.at;
+  if (!tus && !ailleurs && !enBas) return;
+  const placesDe = (i: number, fixe: LabelBox[] | undefined): LabelBox[] => {
+    if (fixe) return fixe;
+    const ici = vues.get(i);
+    const autour = placesAutour(boxes[i], bounds, gap, TRIES_DE_LA_RECHERCHE).filter((at) => tient(i, at));
+    return ici && tient(i, ici) ? [ici, ...autour] : autour;
+  };
+  const essayer = (fixes: Map<number, LabelBox[]>): Map<number, LabelBox> | null => {
+    const places = new Map(noms.map((i) => [i, placesDe(i, fixes.get(i))]));
+    if ([...places.values()].some((l) => !l.length)) return null;
+    const out = new Map<number, LabelBox>();
+    let essais = 0;
+    // Les places encore libres de chaque nom à poser : chaque nom posé retire celles qu'il couvre.
+    const poserLeSuivant = (restes: Map<number, LabelBox[]>): boolean => {
+      // Le nom qui a le moins de places encore libres se pose d'abord ; un nom sans place libre : on revient en arrière.
+      let suivant: number | undefined;
+      for (const [i, l] of restes) {
+        if (!l.length) return false;
+        if (suivant === undefined || l.length < restes.get(suivant)!.length) suivant = i;
+      }
+      if (suivant === undefined) return true;
+      for (const at of restes.get(suivant)!) {
+        if (++essais > ESSAIS_DE_LA_RECHERCHE) return false;
+        const suite = new Map<number, LabelBox[]>();
+        for (const [i, l] of restes) if (i !== suivant) suite.set(i, l.filter((q) => overlap(at, q, gap) <= 0));
+        out.set(suivant, at);
+        if (poserLeSuivant(suite)) return true;
+        out.delete(suivant);
+      }
+      return false;
+    };
+    return poserLeSuivant(places) ? out : null;
+  };
+  // Le nom de la destination (le seul qu'on ne pousse pas) garde sa place, ou prend celle au-dessus de sa flèche.
+  const destination = noms.find((i) => !poussable(i));
+  const ici = destination === undefined ? undefined : vues.get(destination);
+  const essais: Map<number, LabelBox[]>[] = [];
+  if (voulue) essais.push(new Map([[voulue.i, [voulue.at]]]));
+  if (destination !== undefined && ici) {
+    essais.push(new Map([[destination, [ici]]]));
+    // Sinon, une autre place au-dessus de son île (DA-31), toujours hors de sa flèche.
+    const dessus = placesAutour(boxes[destination], bounds, gap, TRIES_DE_LA_RECHERCHE).filter((at) => at.y + at.h / 2 <= iles[destination].y && tient(destination, at));
+    if (dessus.length) essais.push(new Map([[destination, dessus]]));
+  }
+  // Enfin, toutes ses places : plutôt son nom sous son île qu'un autre nom tu.
+  essais.push(new Map());
+  for (const fixes of essais) {
+    const r = essayer(fixes);
+    if (!r) continue;
+    for (const [i, at] of r) poser(i, at);
+    return;
+  }
 }
 
 /**

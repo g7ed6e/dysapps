@@ -182,6 +182,28 @@ describe('La Carte : chaque île a son nom (tablette 1024 × 768)', () => {
       }
   });
 
+  // Les six îles d'histoire-géographie des 5e, 4e et 3e (HG-3), deux par archipel, voisines dans les deux premiers.
+  const VOISINES_HG3 = {
+    '5e': ['history-5e-middle-ages', 'geography-5e-resources'],
+    '4e': ['history-4e-revolutions', 'geography-4e-globalization'],
+    '3e': ['history-3e-twentieth-century', 'geography-3e-france'],
+  } as const;
+
+  it.each(['5e', '4e', '3e'] as const)('%s, à l’ouverture de la Carte (sans panneau, la destination du jeu tout construit) : aucune île ne perd son nom, chacun sur son île (HG-3)', (a) => {
+    const { progress, world } = toutConstruit();
+    const etat = sanitizeState({ progress, world: { ...world, place: islandsOf(a)[0].id } } as never);
+    const d = nextDestination(etat, NOMS_ARCHIPELS, textesDe('blocland').libelles);
+    const destination = d.ouvrage ? { ouvrage: d.ouvrage, depuis: d.island } : d.island;
+    const hg: readonly string[] = VOISINES_HG3[a];
+    for (const [univers, mot] of Object.entries(ETATS))
+      for (const elargir of [1, 1.1]) {
+        const carte = laCarte(a, mot, 'atkinson-hyperlegible', elargir, destination, true);
+        expect(carte.tus, `${univers}, ×${elargir}`).toEqual([]);
+        expect(carte.ailleurs.filter((id) => hg.includes(id)), `${univers}, ×${elargir}`).toEqual([]);
+        expect(carte.vues.length, `${univers}, ×${elargir}`).toBe(islandsOf(a).length);
+      }
+  });
+
   it('le Marais des temps (5e) garde son nom, et l’Atelier (4e, la destination) le sien au-dessus de son île', () => {
     expect(nomsTus('5e', ETATS.blocland, 'atkinson-hyperlegible', 1)).not.toContain('french-5e-conjugation');
     for (const etat of Object.values(ETATS)) {

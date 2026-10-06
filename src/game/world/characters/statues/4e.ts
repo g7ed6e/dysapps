@@ -105,6 +105,36 @@ const CHEMINEE: Anneau[] = [
   [8, 0.45],
 ];
 
+/** Le Paon de faïence : le corps, puis la petite tête au bout du cou. */
+const CORPS_DU_PAON: Anneau[] = [
+  [1, 0.7, 0.8],
+  [2.6, 0.85, 0.95],
+  [3.6, 0.55, 0.6],
+];
+const TETE_DU_PAON: Anneau[] = [
+  [6.4, 0.32, 0.3, -0.3],
+  [7.2, 0.32, 0.3, -0.3],
+  [7.5, 0.12, 0.12, -0.3],
+];
+/** La roue du paon, derrière lui : son pied et son rayon, et le plan de son devant. */
+const ROUE = { y: 3.0, r: 2.4, z: 0.9 } as const;
+/** Les yeux de la roue, sur son devant. */
+const YEUX_DE_LA_ROUE: [number, number][] = [
+  [-1.3, 4.4],
+  [0, 4.9],
+  [1.3, 4.4],
+];
+
+/** Le Poulpe de corail : la tête dressée, du pied des bras au sommet. */
+const TETE_DU_POULPE: Anneau[] = [
+  [1, 0.9, 0.85],
+  [2.0, 1.0, 0.95],
+  [3.6, 1.3, 1.2],
+  [5.6, 1.15, 1.05],
+  [7.3, 0.6, 0.55],
+  [8, 0.2, 0.2],
+];
+
 export const STATUES_4E: Partial<Record<BiomeId, Statue>> = {
   'maths-4e-powers': {
     nom: 'le Titan',
@@ -421,6 +451,68 @@ export const STATUES_4E: Partial<Record<BiomeId, Statue>> = {
     veines: (T, a) => {
       plaque(T, 0, 4.9, 0.3, 0.3, 8, a.lueur, () => -1.4);
       for (const s of [-1, 1]) plaque(T, s * 0.65, 3.98, 0.1, 0.1, 4, a.lueur, () => -1.6);
+    },
+  },
+  // Les Gardiens d'histoire-géographie (HG-3) : Archipéo est en pause (2 octobre 2026), ces sentinelles n'ont que le
+  // strict nécessaire (budget de l'archipel). Le Paon de faïence ne porte aucun symbole national (DA, HG-3).
+  'history-4e-revolutions': {
+    nom: 'le Paon de faïence',
+    allume: 'les yeux de sa roue',
+    sculpture: (T, a) => {
+      // La roue déployée derrière lui, en éventail.
+      const bord: [number, number][] = [];
+      for (let i = 0; i <= 6; i++) {
+        const t = Math.PI * (0.08 + (0.84 * i) / 6);
+        bord.push([Math.cos(t) * ROUE.r, ROUE.y + Math.sin(t) * ROUE.r]);
+      }
+      dalle(T, [[0, ROUE.y - 0.6], ...bord], ROUE.z, ROUE.z + 0.15, a.pierre);
+      fuseau(T, CORPS_DU_PAON, 6, a.moussue((k, j) => k === 0 && j % 2 === 0), { bas: false });
+      tube(
+        T,
+        [
+          [0, 3.4, -0.1],
+          [0, 5.0, -0.3],
+          [0, 6.5, -0.3],
+        ],
+        0.22,
+        4,
+        a.pierre,
+      );
+      fuseau(T, TETE_DU_PAON, 5, a.pierre, { bas: false });
+      pointe(T, [0, 6.8, devant(TETE_DU_PAON, 5, 6.8).z + 0.05], 0.08, 0.3, a.pierre, [-Math.PI / 2, 0, 0], 3);
+      pointe(T, [0, 7.45, -0.3], 0.08, 0.55, a.pierre, [0, 0, 0], 3);
+      orbites(T, a, 0, 7.0, devant(TETE_DU_PAON, 5, 7.0).z, 0.14, 0.07);
+    },
+    veines: (T, a) => {
+      for (const [x, y] of YEUX_DE_LA_ROUE) plaque(T, x, y, 0.24 * a.veines, 0.3 * a.veines, 6, a.lueur, () => ROUE.z);
+    },
+  },
+  'geography-4e-globalization': {
+    nom: 'le Poulpe de corail',
+    allume: 'ses ventouses',
+    sculpture: (T, a) => {
+      fuseau(T, TETE_DU_POULPE, 6, a.moussue((k, j) => k === 0 && j % 2 === 1), { bas: false });
+      // Les huit bras, étalés tout autour sur le socle, le bout relevé.
+      for (let k = 0; k < 8; k++) {
+        const t = (k * Math.PI) / 4 + Math.PI / 8;
+        const [c, s] = [Math.cos(t), Math.sin(t)];
+        tube(
+          T,
+          [
+            [c * 0.8, 1.5, s * 0.8],
+            [c * 1.6, 1.1, s * 1.6],
+            [c * 2.1, 1.4, s * 2.1],
+          ],
+          [0.3, 0.2, 0],
+          3,
+          a.pierre,
+        );
+      }
+      orbites(T, a, 0, 3.6, devant(TETE_DU_POULPE, 6, 3.6).z, 0.42, 0.16);
+    },
+    veines: (T, a) => {
+      // Trois ventouses sur le devant, sous les yeux.
+      for (const x of [-0.5, 0, 0.5]) plaque(T, x, 2.3, 0.14 * a.veines, 0.14 * a.veines, 6, a.lueur, (y) => devant(TETE_DU_POULPE, 6, y).z);
     },
   },
 };

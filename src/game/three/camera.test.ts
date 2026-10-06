@@ -172,7 +172,10 @@ describe('La Carte dans la place libre (DA-31)', () => {
       const d0 = islandDef(dest);
       // Les voisines : celles qu'un pont relie (GD-9, `neighboursOf`), à moins de 45 cases. Elles restent à l'écran ; aux
       // Anciens Ateliers, dessinés en deux rangs (GD-9), une voisine du rang d'en face sort de la place libre.
-      for (const def of mapOf('4e').filter((d) => neighboursOf(dest).includes(d.id) && Math.hypot(d.core.x - d0.core.x, d.core.y - d0.core.y) < 45)) {
+      // Depuis HG-3, un troisième rang (l'Imprimerie et l'Escale, 16 cases au sud du deuxième) : l'Atelier et l'Escale, à 44
+      // cases l'un de l'autre du nord au sud, ne tiennent pas ensemble dans cette place de 180 px ; seules les voisines à
+      // moins de 40 cases du nord au sud (toutes celles d'avant, 28 au plus) s'y vérifient.
+      for (const def of mapOf('4e').filter((d) => neighboursOf(dest).includes(d.id) && Math.hypot(d.core.x - d0.core.x, d.core.y - d0.core.y) < 45 && Math.abs(d.core.y - d0.core.y) < 40)) {
         const q = centre(def.id, c, T);
         // Les Anciens Ateliers sont dessinés en deux rangs (GD-9) : une voisine du rang d'en face déborde la place
         // libre d'une demi-île (une trentaine de pixels au plancher), en haut comme en bas.

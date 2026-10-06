@@ -479,3 +479,12 @@ describe('replierLesSignes', () => {
     expect(r.sansSigne).toEqual([false]);
   });
 });
+
+describe('le point d’une île, à l’arrondi près (HG-3)', () => {
+  it('une île dans le cadre n’en sort pas par une erreur d’arrondi : son nom se montre', () => {
+    // La Compréhension, au 3e : la boîte d'un pixel de son île « sortait » du cadre de 1e-13 pixel carré.
+    const ile = { x: 511.62184540480104, y: 687.3745046021975 };
+    const b = { x: ile.x, y: ile.y - 40, w: 176, h: 61 };
+    expect(montrees([b], [{ dx: 0, dy: 0 }], [], { w: 1024, h: 768 }, undefined, [ile])).toEqual([true]);
+  });
+});

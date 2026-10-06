@@ -1,6 +1,6 @@
 import { BADGES } from '../../core/progress';
 import { trophyBlock } from '../trophies';
-import { APPEL_DU_PASSAGE, bornesCost, linkCubes, worstCaseOfRegion, commandesCost, constructionCost, decorCost, ENVELOPPES, enveloppeDe, fauneCost, merCost, navireCost, personnagesCost, PLAFOND_DU_MONDE_EN_BLOCS, RENDER_BUDGET, RENDER_BUDGET_6E, sceneCost, sceneCostArchipeo, signesCost, solCost, toutConstruit, type Poste } from './budget';
+import { APPEL_DU_PASSAGE, bornesCost, linkCubes, worstCaseOfRegion, commandesCost, constructionCost, decorCost, ENVELOPPES, enveloppeDe, fauneCost, merCost, navireCost, personnagesCost, PLAFOND_DU_MONDE_EN_BLOCS, RENDER_BUDGET, RENDER_BUDGET_6E, RENDER_BUDGET_AUTRES, renderBudgetOf, sceneCost, sceneCostArchipeo, signesCost, solCost, toutConstruit, type Poste } from './budget';
 import { ARCHIPELAGO_IDS, type ArchipelagoId, mapOf } from './map';
 import { chooseGuardian, chooseIsland } from './arrangeMode';
 import { arrangeView, arrangeViewCost } from './arrangeView';
@@ -27,6 +27,7 @@ it('le monde en blocs ne recule pas : triangles et appels de dessin de chaque ar
   }
   expect(RENDER_BUDGET).toEqual({ triangles: 60_000, drawCalls: 40 });
   expect(RENDER_BUDGET_6E).toEqual({ triangles: 63_400, drawCalls: 40 });
+  expect(RENDER_BUDGET_AUTRES).toEqual({ triangles: 62_900, drawCalls: 40 });
 });
 
 it('les petites constructions des commandes (GD-7, PR 3) se fondent dans le terrain : aucun appel de plus, sous le plafond', () => {
@@ -97,7 +98,7 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
   it('la somme des enveloppes tient dans le budget des tablettes, dans chaque archipel, baleine comprise', () => {
     for (const a of ARCHIPELAGO_IDS) {
       const somme = postes.reduce((t, p) => ({ triangles: t.triangles + enveloppeDe(p, a).triangles, drawCalls: t.drawCalls + enveloppeDe(p, a).drawCalls }), { triangles: 0, drawCalls: 0 });
-      const budget = a === '6e' ? RENDER_BUDGET_6E : RENDER_BUDGET;
+      const budget = renderBudgetOf(a);
       expect(somme.triangles, a).toBeLessThanOrEqual(budget.triangles);
       expect(somme.drawCalls + APPEL_DU_PASSAGE, a).toBeLessThanOrEqual(budget.drawCalls);
     }
@@ -106,11 +107,12 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
   // Ailleurs, 52 300 jusqu'au cœur agrandi de l'Atelier (01/10/2026) : son sol en demande 660 de plus (world/budget.ts),
   // enveloppe validée par le mainteneur le 01/10/2026 ; 53 040 avec la Halle aux matériaux (GD-2, validé par le mainteneur le 01/10/2026, world/budget.ts), 53 060 avec la salle des trophées (GD-3, même jour).
   // HG-2 (mainteneur, 6 octobre 2026) : les Premiers Rivages passent de 59 500 à 63 370 avec les deux îles d'histoire-géographie.
-  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2 : les îles d’histoire-géographie) : 63 370 triangles et 25 appels aux Premiers Rivages, 55 790 et 24 ailleurs', () => {
+  // HG-3 (même mot) : les autres archipels passent de 55 790 à 62 875 avec leurs six îles d'histoire-géographie.
+  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2 et HG-3 : les îles d’histoire-géographie) : 63 370 triangles et 25 appels aux Premiers Rivages, 62 875 et 24 ailleurs', () => {
     const total = (a: '6e' | '5e') => postes.reduce((n, p) => n + enveloppeDe(p, a).triangles, 0);
     const appels = (a: '6e' | '5e') => postes.reduce((n, p) => n + enveloppeDe(p, a).drawCalls, 0);
     expect([total('6e'), appels('6e')]).toEqual([63_370, 25]);
-    expect([total('5e'), appels('5e')]).toEqual([55_790, 24]);
+    expect([total('5e'), appels('5e')]).toEqual([62_875, 24]);
   });
 
   // GD-3 : la salle des trophées change avec les succès (une travée au 13e et au 19e, les trophées sous le toit) ; la

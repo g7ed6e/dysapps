@@ -148,6 +148,18 @@ const FORMES: Record<string, Cube[]> = {
   // Moustache, la serre : deux portes (le lambris se perdait sur le sol de lambris), deux vitraux, deux toits.
   'english-5e-grammar-fixture-1': [...rangee(0, 1, 0, 0, 'door'), ...rangee(0, 1, 0, 1, BLOC.vitrail), ...rangee(0, 1, 0, 2, 'roof')],
 
+  // Vélin, l'écritoire (HG-3) : un pied de trois tourbes en ligne au sol, le plateau d'enluminure (le bloc de l'île : le
+  // bois du contenu n'est ni de l'île ni de finition) sur celle du milieu, la lanterne sur celle du bout.
+  'history-5e-middle-ages-fixture-1': [...rangee(0, 2, 0, 0, BLOC.tourbe), [1, 0, 1, BLOC.enluminure], [2, 0, 1, 'lantern']],
+  // Sillon, l'abreuvoir (HG-3) : quatre enluminures au sol autour d'une case, l'eau au milieu (`EAU` : le verre du
+  // contenu n'est ni de l'île ni de finition, l'eau du terrain le remplace, comme au puits de Tunel).
+  'geography-5e-resources-fixture-1': [
+    [1, 0, 0, BLOC.enluminure],
+    [0, 1, 0, BLOC.enluminure],
+    [2, 1, 0, BLOC.enluminure],
+    [1, 2, 0, BLOC.enluminure],
+  ],
+
   // 4e : les Monts de Feu.
   // Braise, le wagonnet : une voie de trois rails, un wagonnet de deux aciers.
   'maths-4e-powers-fixture-1': [...rangee(0, 2, 0, 0, BLOC.rail), [0, 0, 1, BLOC.acier], [1, 0, 1, BLOC.acier]],
@@ -174,6 +186,12 @@ const FORMES: Record<string, Cube[]> = {
   // toit de trois calques.
   'english-4e-grammar-fixture-1': [[0, 0, 0, 'fence'], [0, 0, 1, BLOC.rail], [2, 0, 0, 'fence'], [2, 0, 1, BLOC.rail], ...rangee(0, 2, 0, 2, BLOC.calque)],
 
+  // Typo, le réverbère (HG-3) : un mât de deux ardoises, la lanterne au sommet, la troisième ardoise en socle au pied
+  // et une barrière de l'autre côté (trois de haut au plus : le contenu en demandait quatre).
+  'history-4e-revolutions-fixture-1': [[0, 0, 0, 'fence'], ...colonne(1, 0, 0, 1, BLOC.ardoise), [1, 0, 2, 'lantern'], [2, 0, 0, BLOC.ardoise]],
+  // Fret, le treuil (HG-3) : deux poteaux de deux fontes aux bouts, l'axe d'une barrière entre eux en haut (le bois du
+  // contenu n'est ni de l'île ni de finition).
+  'geography-4e-globalization-fixture-1': [...colonne(0, 0, 0, 1, BLOC.fonte), ...colonne(2, 0, 0, 1, BLOC.fonte), [1, 0, 1, 'fence']],
   // 3e : les Îles du Ciel.
   // Théo, l'équerre : une branche debout de trois prismes, une branche couchée de deux portes (le marbre se perdait sur
   // le sol de marbre du Belvédère, retouche du directeur artistique).
@@ -192,15 +210,23 @@ const FORMES: Record<string, Cube[]> = {
   // puis l'escalier beige sur ce sol beige : le bois brun de la barrière, déjà dessiné en 3e, arbitrage du directeur
   // artistique), une colonne de deux marbres au milieu.
   'english-3e-grammar-fixture-1': [[0, 0, 0, 'fence'], [2, 0, 0, 'fence'], ...rangee(0, 2, 1, 0, 'fence'), ...colonne(1, 0, 0, 1, BLOC.marbre)],
+  // Mémo, le pupitre (HG-3) : deux quartz côte à côte au fond, un troisième sur l'un d'eux (le plateau), la marche
+  // devant (un escalier : le bois du contenu n'est ni de l'île ni de finition), la lanterne à côté.
+  'history-3e-twentieth-century-fixture-1': [[0, 1, 0, BLOC.quartz], [1, 1, 0, BLOC.quartz], [1, 1, 1, BLOC.quartz], [1, 0, 0, 'stairs'], [0, 0, 0, 'lantern']],
+  // Jalon, la fontaine (HG-3) : trois reliures en U au sol autour de l'eau (`EAU`), la lanterne sur la reliure du fond.
+  'geography-3e-france-fixture-1': [[0, 0, 0, BLOC.reliure], [2, 0, 0, BLOC.reliure], [1, 1, 0, BLOC.reliure], [1, 1, 1, 'lantern']],
 };
 
 /**
  * L'eau d'une petite construction, en repère propre : un cube d'eau du terrain (la texture de l'eau des îles, aucun
  * matériau de plus), posé avec elle, hors de ses cases (il ne compte ni parmi ses cubes ni dans la sauvegarde). Le puits
- * de Tunel, plein jusqu'à la margelle (retouche du directeur artistique).
+ * de Tunel, plein jusqu'à la margelle (retouche du directeur artistique) ; l'abreuvoir de Sillon et la fontaine de Jalon.
  */
 const EAU: Record<string, readonly (readonly [number, number, number])[]> = {
   'french-6e-letter-confusion-fixture-1': [[1, 1, 0]],
+  // L'abreuvoir de Sillon et la fontaine de Jalon (HG-3).
+  'geography-5e-resources-fixture-1': [[1, 1, 0]],
+  'geography-3e-france-fixture-1': [[1, 0, 0]],
 };
 
 /** L'eau d'une petite construction (voir `EAU`), vide sans eau. */
@@ -261,6 +287,12 @@ const PLACES: Record<string, readonly [number, number]> = {
   'english-6e-grammar-fixture-1': [10, 9],
   'history-6e-antiquity-fixture-1': [0, 10],
   'geography-6e-living-fixture-1': [-1, 11],
+  'history-5e-middle-ages-fixture-1': [1, 10],
+  'geography-5e-resources-fixture-1': [0, 10],
+  'history-4e-revolutions-fixture-1': [8, 6],
+  'geography-4e-globalization-fixture-1': [10, 3],
+  'history-3e-twentieth-century-fixture-1': [6, 12],
+  'geography-3e-france-fixture-1': [1, 10],
   'english-5e-vocabulary-fixture-1': [4, 11],
   'english-5e-grammar-fixture-1': [10, 3],
   'english-4e-comprehension-fixture-1': [7, 9],

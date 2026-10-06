@@ -123,11 +123,23 @@ function yawDuLieu(home: BiomeId): number {
 /**
  * Les îles qui ne comptent pas dans la colonne centrale : le Refuge des carnets (3e), posé au bord de l'archipel, ne fait
  * pas pivoter les caméras des autres îles, qui gardent leur cadrage (DA, LV2-5) ; de même la Fouille des siècles et la
- * Pointe des paysages (6e, HG-2), au bout du second rang : le dessin des autres îles ne change pas. Le Relais des
+ * Pointe des paysages (6e, HG-2), au bout du second rang : le dessin des autres îles ne change pas ; et les six îles
+ * d'histoire-géographie de 5e à 3e (HG-3) : comptées, celles des Îles Brumeuses, au-delà du cadre d'avant, faisaient
+ * tourner toutes les caméras du 5e de plusieurs degrés (et avec elles la place des petites constructions). Le Relais des
  * voyageurs (5e) et le Jardin des heures (4e) y comptent : leurs lots ont validé avec eux le cadrage de leur archipel,
  * qu'on ne rouvre pas.
  */
-export const HORS_DE_LA_COLONNE: readonly BiomeId[] = ['lv2-3e-travel', 'history-6e-antiquity', 'geography-6e-living'];
+export const HORS_DE_LA_COLONNE: readonly BiomeId[] = [
+  'lv2-3e-travel',
+  'history-6e-antiquity',
+  'geography-6e-living',
+  'history-5e-middle-ages',
+  'geography-5e-resources',
+  'history-4e-revolutions',
+  'geography-4e-globalization',
+  'history-3e-twentieth-century',
+  'geography-3e-france',
+];
 
 const colonnes = new Map<ArchipelagoId, number>();
 

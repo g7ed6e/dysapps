@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, bulles, fiches, menu-tete, debut, histoire-geo ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-cycle4 ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 20` le plus long temps réel laissé au monde pour se construire (en secondes, 10 par défaut). L'horloge de la
 // page est pilotée (`preparerLaScene`, scripts/prise-de-vue.mjs) : deux prises du même état donnent la même image, les
@@ -596,6 +596,24 @@ const CAPTURES = [
     },
     { nom: `histoire-geo-mosaique-brique-chaume-archipel${suffixe}`, vue: 'archipel', famille: 'histoire-geo', ile: 'history-6e-antiquity', ...autres },
   ]),
+  // Les six îles d'histoire-géographie des 5e, 4e et 3e (lot HG-3, famille `histoire-geo-cycle4`), à retirer une fois le
+  // lot fusionné : chacune de près, de jour et de nuit, avant sa restauration (le Gardien en statue grise, `sansIles`)
+  // et tout construit (le Gardien rallumé) ; son Gardien, sa fiche ouverte, avant et après ; sa commande livrée (la
+  // petite construction posée) ; et la Carte de chaque archipel tout construit, pour les noms des îles.
+  ...['history-5e-middle-ages', 'geography-5e-resources', 'history-4e-revolutions', 'geography-4e-globalization', 'history-3e-twentieth-century', 'geography-3e-france'].flatMap((ile) => [
+    ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].flatMap(({ suffixe, ...autres }) => [
+      { nom: `histoire-geo-cycle4-${ile}-avant${suffixe}`, vue: 'île', famille: 'histoire-geo-cycle4', ile, sansIles: [ile], ...autres },
+      { nom: `histoire-geo-cycle4-${ile}-apres${suffixe}`, vue: 'île', famille: 'histoire-geo-cycle4', ile, ...autres },
+    ]),
+    { nom: `histoire-geo-cycle4-${ile}-gardien-avant`, vue: 'île', famille: 'histoire-geo-cycle4', ile, sansIles: [ile], fiche: { genre: 'gardien', id: ile } },
+    { nom: `histoire-geo-cycle4-${ile}-gardien-apres`, vue: 'île', famille: 'histoire-geo-cycle4', ile, fiche: { genre: 'gardien', id: ile } },
+    { nom: `histoire-geo-cycle4-${ile}-commande`, vue: 'île', famille: 'histoire-geo-cycle4', ile, posees: 'toutes' },
+  ]),
+  ...[
+    ['5e', 'history-5e-middle-ages'],
+    ['4e', 'history-4e-revolutions'],
+    ['3e', 'history-3e-twentieth-century'],
+  ].map(([a, ile]) => ({ nom: `histoire-geo-cycle4-carte-${a}`, vue: 'carte', famille: 'histoire-geo-cycle4', ile })),
 ];
 /** La lueur la nuit, à la vue île : au plus 3 % de la scène. */
 const LUEUR_MAX = 0.03;

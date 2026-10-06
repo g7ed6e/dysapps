@@ -200,7 +200,8 @@ describe('les liaisons à reposer', () => {
     expect(w3.links).toEqual(w.links);
     expect([...routesIn(w3, '6e').values()].filter((t) => !t).length).toBe([...routesIn(w, '6e').values()].filter((t) => !t).length);
     // Les autres régions gardent leur disposition.
-    const autre = apres(turnIsland(w2, 'english-5e-grammar'));
+    // (Le Relais des voyageurs : aux Îles Brumeuses, depuis HG-3, c'est le seul lieu qui tourne sur place.)
+    const autre = apres(turnIsland(w2, 'lv2-5e-introductions'));
     expect(backToStartingMap(autre, '6e')!.layout).toEqual({ '5e': autre.layout!['5e'] });
   });
 });

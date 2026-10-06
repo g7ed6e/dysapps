@@ -102,6 +102,24 @@ import fouilleCour from './plans/history-6e-antiquity-3.json';
 import pointeQuartier from './plans/geography-6e-living-1.json';
 import pointeChamps from './plans/geography-6e-living-2.json';
 import pointeQuai from './plans/geography-6e-living-3.json';
+import bourgLogis from './plans/history-5e-middle-ages-1.json';
+import bourgToit from './plans/history-5e-middle-ages-2.json';
+import bourgCour from './plans/history-5e-middle-ages-3.json';
+import deltaMoulin from './plans/geography-5e-resources-1.json';
+import deltaToit from './plans/geography-5e-resources-2.json';
+import deltaCour from './plans/geography-5e-resources-3.json';
+import imprimerieHalle from './plans/history-4e-revolutions-1.json';
+import imprimerieToit from './plans/history-4e-revolutions-2.json';
+import imprimerieCour from './plans/history-4e-revolutions-3.json';
+import escaleEntrepot from './plans/geography-4e-globalization-1.json';
+import escaleToit from './plans/geography-4e-globalization-2.json';
+import escaleCour from './plans/geography-4e-globalization-3.json';
+import kiosqueBibliotheque from './plans/history-3e-twentieth-century-1.json';
+import kiosqueToit from './plans/history-3e-twentieth-century-2.json';
+import kiosqueCour from './plans/history-3e-twentieth-century-3.json';
+import valleeMairie from './plans/geography-3e-france-1.json';
+import valleeToit from './plans/geography-3e-france-2.json';
+import valleePlace from './plans/geography-3e-france-3.json';
 
 export interface PlanCell {
   x: number;
@@ -285,6 +303,24 @@ const PLAN_FILES = [
   pointeQuartier,
   pointeChamps,
   pointeQuai,
+  bourgLogis,
+  bourgToit,
+  bourgCour,
+  deltaMoulin,
+  deltaToit,
+  deltaCour,
+  imprimerieHalle,
+  imprimerieToit,
+  imprimerieCour,
+  escaleEntrepot,
+  escaleToit,
+  escaleCour,
+  kiosqueBibliotheque,
+  kiosqueToit,
+  kiosqueCour,
+  valleeMairie,
+  valleeToit,
+  valleePlace,
 ] as (Omit<PlanDef, 'cells' | 'origin' | 'reward'> & { reward: { xp: number } })[];
 
 /**

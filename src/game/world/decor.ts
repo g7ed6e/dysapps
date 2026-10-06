@@ -313,6 +313,48 @@ export const DECOR: Record<BiomeId, (put: Put, h: (x: number, y: number) => numb
     put(10, 3, h(10, 3) + 1, BLOCKS[BLOC.chaume].side);
     put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.pierre].side);
   },
+  // Les îles d'histoire-géographie de 5e à 3e (HG-3) : un décor sobre, quelques blocs au sol, aucune lanterne.
+  'history-5e-middle-ages': (put, h) => {
+    // Un pupitre de copiste : un pied de planches, son plateau d'enluminure ; une pierre.
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.bois].side);
+    put(9, 3, h(9, 3) + 2, BLOCKS[BLOC.enluminure].side);
+    put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.pierre].side);
+  },
+  'geography-5e-resources': (put, h) => {
+    // Deux carrés de rizière au bord du delta, une botte de foin ; une pierre.
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.riziere].side);
+    put(10, 3, h(10, 3) + 1, BLOCKS[BLOC.riziere].side);
+    put(3, 9, h(3, 9) + 1, HAY);
+    put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.pierre].side);
+  },
+  'history-4e-revolutions': (put, h) => {
+    // Deux plaques de fonte empilées (une presse au repos), une caisse de planches ; une pierre.
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.fonte].side);
+    put(9, 3, h(9, 3) + 2, BLOCKS[BLOC.fonte].side);
+    put(10, 3, h(10, 3) + 1, BLOCKS[BLOC.bois].side);
+    put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.pierre].side);
+  },
+  'geography-4e-globalization': (put, h) => {
+    // Deux conteneurs côte à côte sur le quai, une caisse de planches ; une pierre.
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.conteneur].side);
+    put(10, 3, h(10, 3) + 1, BLOCKS[BLOC.conteneur].side);
+    put(3, 9, h(3, 9) + 1, BLOCKS[BLOC.bois].side);
+    put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.pierre].side);
+  },
+  'history-3e-twentieth-century': (put, h) => {
+    // Sobre, rien de ludique (DA, HG-3) : une pile de deux reliures, un banc de pierre ; une pierre.
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.reliure].side);
+    put(9, 3, h(9, 3) + 2, BLOCKS[BLOC.reliure].side);
+    put(3, 9, h(3, 9) + 1, BLOCKS[BLOC.pierre].side);
+    put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.pierre].side);
+  },
+  'geography-3e-france': (put, h) => {
+    // Une borne de grès rose au bord du chemin, deux blocs de grès ; une pierre.
+    put(9, 3, h(9, 3) + 1, BLOCKS[BLOC.gres].side);
+    put(9, 3, h(9, 3) + 2, BLOCKS[BLOC.gres].side);
+    put(10, 3, h(10, 3) + 1, BLOCKS[BLOC.gres].side);
+    put(1, 10, h(1, 10) + 1, BLOCKS[BLOC.pierre].side);
+  },
   'english-5e-vocabulary': (put, h) => {
     // Un étal : deux poteaux, un auvent de tuiles, une caisse de bois devant ; une pile de tuiles au sol.
     for (const px of [8, 10]) for (let z = 1; z <= 2; z++) put(px, 3, h(px, 3) + z, TRUNK);

@@ -1,8 +1,9 @@
 // Les Gardiens de L'Horizon (3e) en sentinelles de pierre (lot R6), d'après l'intention du directeur artistique : la
 // statue et ce qui s'allume. Six îles pour 1 800 triangles, socles compris.
 import type { BiomeId } from '../../../biomes';
+import { pointe } from '../template';
 import { devant, facette, fuseau, pave, pose, repere, type Anneau, type V3 } from '../painted';
-import { dalle, etoile, orbites, tube, veine, veineSur, type Statue } from '../sentinel';
+import { dalle, etoile, orbites, plaque, tube, veine, veineSur, type Statue } from '../sentinel';
 import { ailesDeployees, dragonAssis, HAUTEUR_DU_DRAGON, surLeSocle } from './common';
 
 const CORPS_DU_SPHINX: Anneau[] = [
@@ -143,6 +144,32 @@ function rentre(c: [number, number][], k: number): [number, number][] {
   const [cx, cy] = [c.reduce((s, p) => s + p[0], 0) / c.length, c.reduce((s, p) => s + p[1], 0) / c.length];
   return c.map(([x, y]) => [cx + (x - cx) * k, cy + (y - cy) * k]);
 }
+
+/** La Colombe d'albâtre, posée : le corps qui penche en avant, puis la tête. */
+const CORPS_DE_LA_COLOMBE: Anneau[] = [
+  [1, 0.9, 1.1, 0.3],
+  [3.0, 1.2, 1.4, 0.2],
+  [5.0, 0.95, 1.0, -0.1],
+  [6.4, 0.55, 0.55, -0.3],
+];
+const TETE_DE_LA_COLOMBE: Anneau[] = [
+  [6.2, 0.55, 0.55, -0.5],
+  [7.5, 0.55, 0.55, -0.6],
+  [8, 0.3, 0.3, -0.55],
+];
+
+/** Le Cerf de lauze, couché : le corps, le cou qui se lève ; puis la tête. */
+const CORPS_DU_CERF: Anneau[] = [
+  [1, 1.1, 1.3, 0.2],
+  [2.6, 1.1, 1.4, 0.2],
+  [3.4, 0.8, 0.9, 0],
+  [4.4, 0.45, 0.45, -0.5],
+];
+const TETE_DU_CERF: Anneau[] = [
+  [4.2, 0.45, 0.5, -0.6],
+  [5.4, 0.42, 0.5, -0.8],
+  [5.8, 0.2, 0.25, -0.9],
+];
 
 export const STATUES_3E: Partial<Record<BiomeId, Statue>> = {
   'maths-3e-geometry': {
@@ -529,6 +556,96 @@ export const STATUES_3E: Partial<Record<BiomeId, Statue>> = {
           veine(R, trace, l, a.lueur, () => -P.epaisseur - 0.005);
         }
       }
+    },
+  },
+  // Les Gardiens d'histoire-géographie (HG-3) : Archipéo est en pause (2 octobre 2026), ces sentinelles n'ont que le
+  // strict nécessaire (budget de l'archipel). La Colombe d'albâtre porte un rameau, aucune arme (DA, HG-3).
+  'history-3e-twentieth-century': {
+    nom: 'la Colombe d’albâtre',
+    allume: 'ses plumes',
+    sculpture: (T, a) => {
+      fuseau(T, CORPS_DE_LA_COLOMBE, 6, a.moussue((k, j) => k === 0 && j % 2 === 0), { bas: false });
+      fuseau(T, TETE_DE_LA_COLOMBE, 5, a.pierre, { bas: false });
+      // La queue relevée derrière elle, le bec, et le rameau en travers du bec.
+      dalle(
+        T,
+        [
+          [-0.5, 2.2],
+          [0.5, 2.2],
+          [0.8, 4.4],
+          [-0.8, 4.4],
+        ],
+        1.3,
+        1.5,
+        a.pierre,
+      );
+      const bec = devant(TETE_DE_LA_COLOMBE, 5, 6.9).z;
+      pointe(T, [0, 6.9, bec + 0.05], 0.12, 0.35, a.pierre, [-Math.PI / 2, 0, 0], 3);
+      tube(
+        T,
+        [
+          [-0.9, 6.7, bec - 0.25],
+          [0, 6.85, bec - 0.3],
+          [0.9, 7.0, bec - 0.25],
+        ],
+        0.06,
+        3,
+        a.pierre,
+      );
+      orbites(T, a, 0, 7.3, devant(TETE_DE_LA_COLOMBE, 5, 7.3).z, 0.26, 0.1);
+    },
+    veines: (T, a) => {
+      // Trois rangs de plumes sur la poitrine, en chevrons.
+      for (const y of [2.4, 3.3, 4.2])
+        veineSur(
+          T,
+          CORPS_DE_LA_COLOMBE,
+          6,
+          [
+            [-0.5, y + 0.15],
+            [0, y - 0.1],
+            [0.5, y + 0.15],
+          ],
+          0.09 * a.veines,
+          a.lueur,
+        );
+    },
+  },
+  'geography-3e-france': {
+    nom: 'le Cerf de lauze',
+    allume: 'les lauzes de ses bois',
+    sculpture: (T, a) => {
+      fuseau(T, CORPS_DU_CERF, 6, a.moussue((k, j) => k === 0 && j % 2 === 1), { bas: false });
+      fuseau(T, TETE_DU_CERF, 5, a.pierre, { bas: false });
+      // Les bois, qui s'ouvrent au-dessus de lui, un andouiller chacun.
+      for (const s of [-1, 1]) {
+        tube(
+          T,
+          [
+            [s * 0.25, 5.5, -0.6],
+            [s * 0.8, 6.7, -0.4],
+            [s * 1.3, 8, -0.3],
+          ],
+          [0.1, 0.08, 0],
+          3,
+          a.pierre,
+        );
+        tube(
+          T,
+          [
+            [s * 0.8, 6.7, -0.4],
+            [s * 0.5, 7.5, -0.55],
+          ],
+          [0.07, 0],
+          3,
+          a.pierre,
+        );
+      }
+      orbites(T, a, 0, 5.0, devant(TETE_DU_CERF, 5, 5.0).z, 0.26, 0.1);
+    },
+    // Deux lauzes sur le poitrail.
+    veines: (T, a) => {
+      for (const y of [2.0, 2.9]) plaque(T, 0, y, 0.5, 0.3, 6, a.lueur, (yy) => devant(CORPS_DU_CERF, 6, yy).z);
     },
   },
 };

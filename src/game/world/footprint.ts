@@ -16,13 +16,14 @@ import { rectangleDeLIlot, rectangleDeLIlotAutour } from './terrain/islets';
  * Le cadre de chaque région, en cases du monde : la Carte le montre tout entier, la mer et ses écueils y sont semés une
  * fois, et un lieu ne se pose qu'au-dedans. Son coin est sur la grille des places (au pas de `STEP`) : la place d'un lieu
  * s'écrit en pas depuis ce coin (`spotInSteps`). Ordres de grandeur décidés avec GD-9 : 192 × 144 aux Premiers Rivages,
- * 144 × 112 aux Îles Brumeuses, 168 × 112 aux Anciens Ateliers (redessinés : ils étaient en ligne ; leur cadre tient
+ * 144 × 112 aux Îles Brumeuses (156 × 112 depuis HG-3 : le cadre s'élargit de 12 cases vers l'est pour le Bourg des
+ * chroniques et le Delta des ressources, DA, 6 octobre 2026), 168 × 112 aux Anciens Ateliers (redessinés : ils étaient en ligne ; leur cadre tient
  * les côtes de la Gare et de l'île de la LV2, aux deux bouts), 208 × 112 aux Îles
  * du Ciel (leur arc, de l'artiste technique 3D).
  */
 const REGION_FRAMES: Readonly<Record<ArchipelagoId, Readonly<Rectangle>>> = Object.freeze({
   '6e': Object.freeze({ x0: -20, y0: -13, x1: 172, y1: 131 }),
-  '5e': Object.freeze({ x0: 21, y0: 289, x1: 165, y1: 401 }),
+  '5e': Object.freeze({ x0: 21, y0: 289, x1: 177, y1: 401 }),
   '4e': Object.freeze({ x0: -6, y0: 584, x1: 162, y1: 696 }),
   '3e': Object.freeze({ x0: -30, y0: 880, x1: 178, y1: 992 }),
 });

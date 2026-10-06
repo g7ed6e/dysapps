@@ -11,7 +11,7 @@ import { bornesDuCoeur, islandDef, landCells } from '../map';
 import { smooth } from '../../../core/math';
 import { cellHash } from '../../../core/random';
 import { origineDe } from '../terrain';
-import { amorcesDOrigine } from '../terrain/links';
+import { amorcesDOrigine, amorcesVersLesIlesVenues } from '../terrain/links';
 import type { Modele } from './types';
 
 /**
@@ -34,7 +34,9 @@ const ABORDS = 3;
 /**
  * Les crêtes de la fiche : Glacier 11 et 8 (il garde ses deux sommets), Carrefour 8, Manoir 9, Comptoir 7. Le Relais
  * des voyageurs (LV2, venu après la fiche) ferme la ligne à l'est d'une crête basse, 6, sur son flanc droit : le toit
- * d'ardoise de l'auberge se lit encore sur le ciel, et la ligne des crêtes ne finit pas à plat.
+ * d'ardoise de l'auberge se lit encore sur le ciel, et la ligne des crêtes ne finit pas à plat. Elle glisse de deux cases
+ * vers l'est et se resserre d'une case (x 13, l 7 avant HG-3) : la liaison du Relais au Bourg des chroniques passe derrière
+ * l'auberge, et la crête ne monte jamais sur les abords d'un ouvrage.
  */
 export const CRETES_5E: Partial<Record<BiomeId, Sommet[]>> = {
   'maths-5e-signed-numbers': [
@@ -44,7 +46,7 @@ export const CRETES_5E: Partial<Record<BiomeId, Sommet[]>> = {
   'french-5e-homophones': [{ x: 9, h: 8, l: 9 }],
   'english-5e-grammar': [{ x: 7, h: 9, l: 8 }],
   'english-5e-vocabulary': [{ x: 5, h: 7, l: 7 }],
-  'lv2-5e-introductions': [{ x: 13, h: 6, l: 7 }],
+  'lv2-5e-introductions': [{ x: 15, h: 6, l: 6 }],
 };
 
 /** Les paliers d'une masse cassée : des marches de 2 et 3 blocs en alternance (2, 5, 7, 10…), jusqu'à `h`. */
@@ -69,6 +71,8 @@ function crete(id: BiomeId, sommets: Sommet[]): Modele {
   // Les abords des ouvrages de l'île, et des liaisons du port qui la longent (GD-7) : leurs cases, en repère d'île.
   const abords: { x: number; y: number }[] = [];
   abords.push(...amorcesDOrigine(id, true));
+  // Et celles des liaisons vers les îles d'histoire-géographie (HG-3), venues après la fiche.
+  abords.push(...amorcesVersLesIlesVenues(id));
   const pres = (x: number, y: number) => abords.some((c) => Math.abs(c.x - x) <= ABORDS && Math.abs(c.y - y) <= ABORDS);
   const casse = sommets.some((s) => s.pans);
   // Les paliers de chaque sommet, calculés une fois.

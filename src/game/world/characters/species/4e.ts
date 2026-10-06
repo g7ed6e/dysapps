@@ -267,4 +267,60 @@ export const ESPECES_4E = {
       },
     },
   },
+  // Les habitants d'histoire-géographie (HG-3) : Archipéo est en pause (2 octobre 2026), ils n'ont que le strict
+  // nécessaire (budget de l'archipel). Typo est une souris imprimeuse, Fret un crabe grutier (DA, HG-3).
+  'history-4e-revolutions': {
+    nom: 'Typo',
+    metier: 'imprimeuse',
+    dominante: 0x8c8a86,
+    marque: { couleur: 0xe0a0a8, ou: ['museau'] },
+    tenue: { couleur: 0x2e2622, vetements: ['tablier'] },
+    museau: { forme: 'museau', long: 0.16, r: 0.06 },
+    // Mince, les deux grandes oreilles rondes de la souris, la longue queue fine levée derrière elle : elle ne se confond
+    // pas avec Muscade.
+    silhouette: { largeur: 0.27, ventre: 0.01 },
+    coiffe: (T, k) => {
+      for (const c of [-1, 1]) disque(pose(T, repere([c * 0.27, 2.48, 0.03], Math.PI / 2, 0, 0)), 0, 0.21, 0.04, k.dom, 6);
+    },
+    corps: (T, k) =>
+      fuseau(
+        pose(T, repere([0.1, 0.75, 0.2], 0.7, 0, -0.5)),
+        [
+          [0, 0.04],
+          [0.25, 0.035],
+          [0.5, 0.03],
+          [0.7, 0],
+        ],
+        4,
+        k.marque,
+      ),
+    outil: {
+      // Le rouleau d'encre : un manche, le rouleau sombre.
+      pose: [0, 0, 0],
+      dessiner: (T, k) => {
+        manche(T, -0.05, 0.25, 0.02, k.bois, 3);
+        pave(T, -0.12, 0.25, -0.04, 0.12, 0.33, 0.04, k.fer);
+      },
+    },
+  },
+  'geography-4e-globalization': {
+    nom: 'Fret',
+    metier: 'grutier',
+    dominante: 0xc8502e,
+    marque: { couleur: 0xe8a080, ou: ['ventre'] },
+    tenue: { couleur: TENUE.lin, vetements: ['gilet'] },
+    // Large et plat, le casque à large bord, une grosse pince à la main gauche : il ne se confond pas avec Braise.
+    silhouette: { largeur: 0.44, profondeur: 0.22, ventre: 0.02, tete: 0.33, crane: 1 },
+    coiffe: (T, k) => disque(T, 2.42, 0.38, 0.06, k.laiton, 8),
+    autreBras: { rz: 0.35 },
+    autreMain: { pose: [0, 0, 0], dessiner: (T, k) => pointe(T, [0, -0.05, 0], 0.14, 0.35, k.dom, [Math.PI, 0, 0], 4, 0.06) },
+    outil: {
+      // Le crochet de la grue : un câble, le crochet de fer.
+      pose: [0, 0, 0],
+      dessiner: (T, k) => {
+        manche(T, -0.1, 0.25, 0.012, k.fer, 3);
+        pointe(T, [0, -0.1, 0], 0.05, 0.12, k.fer, [Math.PI, 0, 0], 3);
+      },
+    },
+  },
 } satisfies Partial<Record<BiomeId, Espece>>;

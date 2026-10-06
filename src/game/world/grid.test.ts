@@ -87,7 +87,8 @@ describe('La disposition en grille', () => {
     }
   });
 
-  it('les trajets d’île en île : le chemin et la durée d’avant, sur le sol', () => {
+  // Chaque paire d'îles de chaque archipel, deux fois (39 îles depuis HG-3) : plus long que les 5 s par défaut.
+  it('les trajets d’île en île : le chemin et la durée d’avant, sur le sol', { timeout: 20_000 }, () => {
     for (const a of ARCHIPELAGO_IDS) {
       const { g, ground } = grilleDe(a);
       for (const from of islandsOf(a))
