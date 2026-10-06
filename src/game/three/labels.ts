@@ -317,20 +317,23 @@ export function creerEtiquettes(
           f = i + 1;
           break;
         }
-    let b = 0;
+    return f * 1024 + avatarIslandIndex(sprites) + 1;
+  };
+  /** L'indice de l'île la plus proche du bonhomme, -1 s'il ne se voit pas. */
+  const avatarIslandIndex = (sprites: THREE.Sprite[]): number => {
     const av = bonhomme();
-    if (av.visible) {
-      let bestD = Infinity;
-      for (let i = 0; i < sprites.length; i++) {
-        const p = sprites[i].position;
-        const d = (p.x - av.position.x) ** 2 + (p.z - av.position.z) ** 2;
-        if (d < bestD) {
-          b = i + 1;
-          bestD = d;
-        }
+    if (!av.visible) return -1;
+    let b = -1;
+    let bestD = Infinity;
+    for (let i = 0; i < sprites.length; i++) {
+      const p = sprites[i].position;
+      const d = (p.x - av.position.x) ** 2 + (p.z - av.position.z) ** 2;
+      if (d < bestD) {
+        b = i;
+        bestD = d;
       }
     }
-    return f * 1024 + b;
+    return b;
   };
   const indicesTenus = (cle: number): number[] => [...new Set([Math.floor(cle / 1024) - 1, (cle % 1024) - 1])].filter((i) => i >= 0);
   // L'interface posée sur la scène (le panneau de la Carte, les bulles, les boutons) : aucune étiquette ne se pose
@@ -349,7 +352,9 @@ export function creerEtiquettes(
     const indice = sprites.findIndex((s) => s.userData.id === destination);
     const auBout = arrivee ? sprites.findIndex((s) => s.userData.id === arrivee) : -1;
     const weights = sprites.map((s) => (s.userData.id === destination ? 2 : s.userData.fermee ? 0.5 : 1));
-    return { weights, ...(indice >= 0 ? { destination: indice } : {}), ...(auBout >= 0 ? { arrivee: auBout } : {}) };
+    // L'île du bonhomme : son nom ne se tait jamais, comme celui de la destination (DA, HG-3).
+    const avatarIsland = avatarIslandIndex(sprites);
+    return { weights, ...(indice >= 0 ? { destination: indice } : {}), ...(auBout >= 0 ? { arrivee: auBout } : {}), ...(avatarIsland >= 0 ? { avatarIsland } : {}) };
   };
   /** Le tracé de l'ouvrage désigné à l'écran, vu par `cam` : des obstacles souples pour les étiquettes (GD-7). */
   const souplesDuTrace = (cam: THREE.Camera, W: number, H: number): LabelBox[] => {

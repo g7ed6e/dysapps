@@ -424,7 +424,7 @@ Pour tous les items :
 | plan | nom | XP | quand c’est bâti |
 | --- | --- | --- | --- |
 | `geography-3e-france-1` | La mairie de Jalon | 40 | Ma mairie ! Tous les habitants du plateau peuvent y venir. Merci, bâtisseur. |
-| `geography-3e-france-2` | Le toit de la mairie | 50 | Le toit est posé. Les cartes de la vallée sont à l’abri. |
+| `geography-3e-france-2` | Le toit de la mairie | 50 | Le toit est posé. Les cartes du plateau sont à l’abri. |
 | `geography-3e-france-3` | La place de la mairie | 60 | La place est prête. Ma mairie est complète : la ville, les champs et les routes s’y retrouvent. |
 
 ## Les demandes

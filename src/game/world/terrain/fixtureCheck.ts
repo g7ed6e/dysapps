@@ -1,6 +1,6 @@
 // Le calcul de la place d'une petite construction (GD-7), que seul le test appelle pour vérifier la place écrite.
 import { type BiomeId, BIOMES, type BlockId, BLOCKS } from '../../biomes';
-import { casesDeLaPetiteConstruction } from '../fixtures';
+import { casesDeLaPetiteConstruction, wantedPlace } from '../fixtures';
 import { islandDef } from '../map';
 import { ARCHIPELAGOS, BRIDGES } from '../archipelago';
 import { planCells, plansFor } from '../plans';
@@ -122,11 +122,15 @@ function gapBetween(a: readonly [number, number][], b: readonly [number, number]
  * case (sinon ils s'y fondent) ; le moins possible de ses cubes cachés en partie (milieu et coins de chacun) ; une case
  * nue autour d'elle (ni mur, ni tronc, ni borne au-dessus du sol), pour que sa silhouette se détache. Parmi les places
  * qui restent, la plus proche de la créature, en préférant le côté au devant : une forme posée entre la caméra et la
- * créature compte deux cases de plus par case d'avance. `null` si rien ne la tient.
+ * créature compte deux cases de plus par case d'avance. `null` si rien ne la tient. Une place voulue (`wantedPlace`)
+ * passe avant la recherche, si elle tient les règles.
  */
 export function calculerLaPlaceDeLaPetiteConstruction(id: BiomeId, fixture: string): { x: number; y: number } | null {
   const examen = examenDeLaPetiteConstruction(id, fixture);
   if (!examen) return null;
+  // Une place voulue (`wantedPlace`, fixtures.ts) se garde si elle tient les règles.
+  const voulue = wantedPlace(fixture);
+  if (voulue && examen.examiner(voulue.x, voulue.y)) return voulue;
   // Les préférences, de la plus forte à la plus faible : derrière la rangée des bornes, puis rien d'elle sur la créature à
   // l'écran (jamais cachée derrière elle, retouche du directeur artistique, HG-3), puis jamais sur une borne à
   // l'écran, puis une case (à l'écran) entre elle et toute borne, puis sur un autre sol, puis entière (le moins de points

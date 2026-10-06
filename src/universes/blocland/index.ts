@@ -275,7 +275,7 @@ export const BLOCLAND = {
       guardianSays: {
         hit: 'Juste. Un bloc de mon pelage reprend sa couleur.',
         miss: 'Mes couleurs restent. Relis le document, cherche le mot du rappel, et reprends.',
-        beaten: 'Je me rallume, du museau jusqu’aux oreilles, sous mes bois de lauze. Le Plateau est à toi, et à Jalon.',
+        beaten: 'Je me rallume, du museau jusqu’aux oreilles, sous mes bois de lauze. Le plateau est à toi, et à Jalon.',
       },
     },
     'life-earth-sciences-6e-living-world': {

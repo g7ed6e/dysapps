@@ -332,19 +332,27 @@ function groupOf(world: World, id: BiomeId): BiomeId[] {
 
 /** Les places libres d’un lieu dans un monde (à son orientation `turn`, la sienne par défaut), dans l’ordre de la grille ; `autour` : à quelques crans d’une place seulement. */
 export function freeSpots(world: World, id: BiomeId, turn: LayoutTurn = spotOf(world, id).turn, autour?: { x: number; y: number; pas: number }): LayoutSpot[] {
+  return [...spotsThatFit(world, id, turn, autour)];
+}
+
+/** Le lieu a-t-il au moins une place libre dans son archipel, à cette orientation ? (S'arrête à la première.) */
+export function hasFreeSpot(world: World, id: BiomeId, turn: LayoutTurn): boolean {
+  return !spotsThatFit(world, id, turn).next().done;
+}
+
+/** Les places libres d'un lieu, une à une (voir `freeSpots`). */
+function* spotsThatFit(world: World, id: BiomeId, turn: LayoutTurn, autour?: { x: number; y: number; pas: number }): Generator<LayoutSpot> {
   const a = archipelagoOfIsland(id);
   const autres = othersFootprints(world, a, groupOf(world, id));
   const max = LAYOUT_LAST_SPOT[a];
-  const out: LayoutSpot[] = [];
   // `autour` : seulement les places à `pas` crans au plus d'une place (le dessin d'un choix n'en montre pas d'autres).
   const [x0, x1] = autour ? [Math.max(0, autour.x - autour.pas), Math.min(max.x, autour.x + autour.pas)] : [0, max.x];
   const [y0, y1] = autour ? [Math.max(0, autour.y - autour.pas), Math.min(max.y, autour.y + autour.pas)] : [0, max.y];
   for (let y = y0; y <= y1; y++)
     for (let x = x0; x <= x1; x++) {
       const spot: LayoutSpot = { x, y, turn };
-      if (fitsAt(world, id, spot, autres)) out.push(spot);
+      if (fitsAt(world, id, spot, autres)) yield spot;
     }
-  return out;
 }
 
 /** Une place est-elle libre pour un lieu (et celui avec lequel il est réuni) ? */

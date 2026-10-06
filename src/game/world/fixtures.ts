@@ -218,7 +218,7 @@ const FORMES: Record<string, Cube[]> = {
   'history-3e-twentieth-century-fixture-1': [[0, 1, 0, BLOC.quartz], [1, 1, 0, BLOC.quartz], [1, 1, 1, BLOC.quartz], [1, 0, 0, 'stairs'], [0, 0, 0, 'lantern']],
   // Jalon, la boîte à livres (HG-3, retouches du consultant Blocland et du DA) : trois reliures en rang au sol, comme une
   // étagère, la lanterne sur celle du milieu ; sans eau. Le rang va le long des y : la caméra du Plateau regarde l'île
-  // le long des x (`viewYaw`, −40°), elle le voit de face.
+  // le long des x (`viewYaw`, −40°), elle le voit de face. Sa place est voulue (`WANTED_PLACES`).
   'geography-3e-france-fixture-1': [[0, 0, 0, BLOC.reliure], [0, 1, 0, BLOC.reliure], [0, 2, 0, BLOC.reliure], [0, 1, 1, 'lantern']],
 };
 
@@ -294,7 +294,7 @@ const PLACES: Record<string, readonly [number, number]> = {
   'history-4e-revolutions-fixture-1': [8, 6],
   'geography-4e-globalization-fixture-1': [10, 3],
   'history-3e-twentieth-century-fixture-1': [10, 3],
-  'geography-3e-france-fixture-1': [5, 12],
+  'geography-3e-france-fixture-1': [14, 4],
   'life-earth-sciences-6e-living-world-fixture-1': [3, 9],
   'physics-chemistry-6e-matter-energy-fixture-1': [1, 11],
   'technology-6e-objects-fixture-1': [8, 6],
@@ -305,6 +305,24 @@ const PLACES: Record<string, readonly [number, number]> = {
   'english-3e-comprehension-fixture-1': [0, 12],
   'english-3e-grammar-fixture-1': [1, 10],
 };
+
+/**
+ * Les places voulues (relecture des captures) : le calcul (`calculerLaPlaceDeLaPetiteConstruction`) garde celle-ci si
+ * elle tient toutes ses règles, avant de chercher. Au Plateau des territoires, la boîte à livres de Jalon se posait
+ * derrière la mairie, cachée dans la vue de l'île : le calcul ne voit pas les bâtiments des îles des 5e, 4e et 3e (il
+ * ouvre les îles par les ouvrages, sans les voyages ; corrigé, il déplacerait presque toutes leurs petites constructions,
+ * à décider à part). Elle se pose donc sur l'herbe dégagée devant Jalon, à plus d'une case de lui, le rang face à la
+ * caméra, loin de la façade (consultant Blocland, DA, HG-3).
+ */
+const WANTED_PLACES: Record<string, readonly [number, number]> = {
+  'geography-3e-france-fixture-1': [14, 4],
+};
+
+/** La place voulue d'une petite construction (voir `WANTED_PLACES`), ou `null`. */
+export function wantedPlace(id: string): { x: number; y: number } | null {
+  const p = WANTED_PLACES[id];
+  return p ? { x: p[0], y: p[1] } : null;
+}
 
 /** La place écrite d'une petite construction (voir `PLACES`), ou `null` pour un identifiant inconnu. */
 export function placeEcrite(id: string): { x: number; y: number } | null {

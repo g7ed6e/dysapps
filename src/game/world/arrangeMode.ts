@@ -14,11 +14,11 @@ import {
   currentLandings,
   type Direction,
   freeLandings,
-  freeSpots,
   freeStationSpots,
   GUARDIAN_FACING_TEXT,
   guardianFacing,
   guardianOf,
+  hasFreeSpot,
   isFixedPlace,
   isFreeGuardianSpot,
   isFreeSpot,
@@ -241,7 +241,7 @@ export const canTurn = (c: ArrangeChoice | null): boolean => c?.genre === 'lieu'
  */
 export function turnChoice(world: World, c: Extract<ArrangeChoice, { genre: 'lieu' }>): ArrangeChoice | null {
   const turn = ((c.spot.turn + 1) % 4) as LayoutTurn;
-  if (!freeSpots(world, c.id, turn).length) return null;
+  if (!hasFreeSpot(world, c.id, turn)) return null;
   return { ...c, spot: { ...c.spot, turn } };
 }
 

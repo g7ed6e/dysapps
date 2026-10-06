@@ -131,7 +131,7 @@ export async function preparerLaScene(page, max) {
   if (monde) {
     // Les polices chargées d'abord : un texte qui change de police déplace l'interface, donc la place libre et le
     // cadrage (la Carte en OpenDyslexic, HG-3).
-    await page.evaluate(() => document.fonts?.ready).catch(() => {});
+    await page.evaluate(() => document.fonts?.ready.then(() => {})).catch(() => {});
     await page.evaluate(() => window.__dysappsCamera?.poser());
     await page.clock.runFor(PAS_MS);
     await page.waitForTimeout(100);

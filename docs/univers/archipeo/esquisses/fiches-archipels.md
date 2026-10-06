@@ -53,7 +53,7 @@ Les esquisses qui les illustrent sont **dessinées en code** (Three.js rendu dan
 
 - **Le Relais des voyageurs (LV2)** : une escale au bout du chemin, par un pont depuis le Comptoir ; l’auberge de Lina, l’écurie et la fontaine sur des dalles chaudes `#B8A07A` (côté `#9A8462`) ; un ponton à l’est et une girouette derrière l’auberge. Lina : cigogne blanche, bec et pattes orange, pointes d’ailes fer. La Diligence de cuivre : caisse sur quatre roues, de profil, boussole de laiton sur un mât au-dessus du siège.
 - **Le Bourg des chroniques (HG)** : le logis de Vélin, à étage en avancée, ni église ni château, en enluminure violette à filets d’or `#6A4C9C`, toit d’ardoise. Vélin : lapin enlumineur. Le Griffon d’émail.
-- **Le Delta des ressources (HG)** : le moulin à eau de Sillon, roue fixe, au bord de rizières `#A2BF42` sur l’eau `#4F8C86`, toit de terre cuite. Sillon : ibis des rizières. La Libellule de jade.
+- **Le Delta des ressources (HG)** : le moulin à eau de Sillon, roue fixe, au bord de rizières `#A2BF42` sur l’eau `#4F8C86`, toit de terre cuite. Sillon : ibis des rizières. La Libellule de jade, debout, quatre ailes presque à plat en X, un léger dièdre, jamais dressées (elles se liraient comme un poteau indicateur) ; ses nervures se rallument.
 
 ## 4e — Les Anciens Ateliers
 

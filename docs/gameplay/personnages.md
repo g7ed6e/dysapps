@@ -407,7 +407,7 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 |  | Blocland | Archipéo |
 | --- | --- | --- |
 | Au défi | Le Cerf de lauze lève la tête : « Mon pelage est tout gris. Une lauze, c’est une pierre plate : mes bois en sont faits. Tu as parcouru tout le plateau. Dis-moi comment vit le territoire. » | Le Cerf de lauze dit doucement : « Les lauzes de ma poitrine sont éteintes. Une lauze, c’est une pierre plate. Tu as parcouru tout le plateau. Dis-moi comment vit le territoire. » |
-| À la fin | Je me rallume, du museau jusqu’aux oreilles, sous mes bois de lauze. Le Plateau est à toi, et à Jalon. | Mes lauzes se rallument. Le Plateau est à toi, et à Jalon. |
+| À la fin | Je me rallume, du museau jusqu’aux oreilles, sous mes bois de lauze. Le plateau est à toi, et à Jalon. | Mes lauzes se rallument. Le plateau est à toi, et à Jalon. |
 | Jalon à l’arrivée | Bonjour, bâtisseur ! Sur le plateau, on regarde la France : ses villes, ses campagnes, ses routes. Chaque bonne réponse te donne un bloc de grès rose. Le grès, c’est une pierre faite de sable serré. | Bonjour, bâtisseur ! Sur le plateau, on regarde la France : ses villes, ses campagnes, ses routes. Chaque bonne réponse te donne un bloc de grès rose. Le grès, c’est une pierre faite de sable serré. |
 
 ### Le Papillon de cuivre, Refuge des carnets

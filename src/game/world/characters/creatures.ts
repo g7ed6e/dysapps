@@ -540,8 +540,9 @@ const MEMO = fromLayers(
 
 // Jalon : une fourmi arpenteuse (DA, HG-3), à l'horizontale, ocre sable (DA : plus brun-rouge, la couleur de Pince,
 // la fourmi bricoleuse du Hangar des inventions), trois parties à la file (la tête aux deux antennes, le thorax étroit,
-// le gros abdomen derrière) sur six pattes sombres ; son jalon d'arpenteur planté, rayé blanc et rouge par deux cubes,
-// d'un cube plus haut que ses antennes (DA, relecture des planches : plus une cheminée ni un phare), à côté de son
+// le gros abdomen derrière) sur six pattes d'un brun très sombre, plus doux que le noir des yeux (consultant Blocland,
+// HG-3 : en noir, pattes et antennes faisaient une masse plus grande que le corps) ; son jalon d'arpenteur planté, rayé
+// blanc et rouge par deux cubes, d'un cube plus haut que ses antennes (DA, relecture des planches : plus une cheminée ni un phare), à côté de son
 // abdomen, séparé d'elle d'une case. La caméra du Plateau la regarde de l'est (`viewYaw`, −40°), donc de profil, la
 // tête d'un côté, l'abdomen de l'autre ; la mairie se tient plus à l'est et au-delà de l'abdomen (x et y croissants) :
 // le jalon est du côté ouest (x = 0 du modèle), celui qui s'éloigne de la mairie, à hauteur de l'abdomen et non plus
@@ -556,7 +557,7 @@ const JALON = fromLayers(
     ['..A...A', '.......', '.......', '.......', 'P......', '.......'],
     ['.......', '.......', '.......', '.......', 'P......', '.......'],
   ],
-  { R: '#c9a066', A: '#1f1a16', E: '#1f1a16', P: '#f6f1e6', Q: '#d23a2e' },
+  { R: '#c9a066', A: '#3a2a1a', E: '#1f1a16', P: '#f6f1e6', Q: '#d23a2e' },
 );
 
 // Fougère : un escargot jardinier (DA, SC-2), tourné vers la droite pour montrer sa coquille : la coquille brun roux et

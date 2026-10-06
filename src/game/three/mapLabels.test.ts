@@ -90,6 +90,23 @@ const PORTRAIT_800: EcranDeLaCarte = (() => {
   return { taille: { w: 800, h: 1280 }, zones: [...bas, ...cote], bas, cote };
 })();
 
+/**
+ * Le téléphone 390 × 844, la Carte à l'ouverture, en taille de texte normale (relevé dans la page, HG-3) : Menu et la
+ * colonne des classes à droite, les trois boutons du bas en icônes.
+ */
+const TELEPHONE: EcranDeLaCarte = (() => {
+  const cote = [{ x: 352, y: 38, w: 52, h: 52 }, { x: 336, y: 183, w: 84, h: 218 }];
+  const bas = [131, 195, 259].map((x) => ({ x, y: 805, w: 56, h: 56 }));
+  return { taille: { w: 390, h: 844 }, zones: [...bas, ...cote], bas, cote };
+})();
+
+/**
+ * En OpenDyslexic, la chasse lue dans le fichier (`testFonts.ts`, sans crénage) fait les noms de 3 à 7 % plus larges que
+ * ceux que mesure la page (relevé sur les quinze étiquettes du 6e en OpenDyslexic 32 px, HG-3) : le test les prend 3 %
+ * plus étroits, jamais plus étroits que dans la page.
+ */
+const CHASSE_OD32 = 0.97;
+
 /** La largeur du bloc de l'île et de son écart avant le nom (`labelCanvas.ts`, `blocW`), le nom à 18 px. */
 const BLOC_W = (Math.sqrt(3) * 0.52 + 0.3) * 18;
 
@@ -164,7 +181,9 @@ function laCarte(a: ArchipelagoId, etat: string, police: PoliceDeTest, elargir: 
   const enFace = def && (dest === def.to ? def.from : def.to);
   const arrivee = parDefaut && enFace ? iles.findIndex((b) => b.id === enFace) : -1;
   const indice = iles.findIndex((b) => b.id === dest);
-  const poids = { weights: iles.map((b) => (b.id === dest ? 2 : 1)), ...(parDefaut && indice >= 0 ? { destination: indice } : {}), ...(arrivee >= 0 ? { arrivee } : {}) };
+  // Le nom de l'île du bonhomme ne se tait jamais, comme celui de la destination (`labels.ts`, DA, HG-3).
+  const avatarIsland = iles.findIndex((b) => b.id === bonhommeSur);
+  const poids = { weights: iles.map((b) => (b.id === dest ? 2 : 1)), ...(parDefaut && indice >= 0 ? { destination: indice } : {}), ...(arrivee >= 0 ? { arrivee } : {}), avatarIsland };
   // Le tracé de l'ouvrage, que les étiquettes évitent si elles peuvent (`souplesDuTrace`).
   const souples = parDefaut && def ? boitesDuTrace(casesDeLOuvrage(def, POSEES).map((p) => ecran(p.x + 0.5, p.z + 1, p.y + 0.5))) : [];
   // Le placement simple d'abord, puis une recherche complète pour tout le placement du cadrage s'il tait un nom ou en
@@ -234,6 +253,37 @@ const TUS_EN_PORTRAIT: Partial<Record<string, string[]>> = {
   '3e:maths-3e-functions': ['lv2-3e-travel'],
 };
 
+/**
+ * La tablette en OpenDyslexic 32 px, au 6e, selon l'île du bonhomme : les noms qui se taisent (mesurés, consultant UX
+ * UI). Onze îles serrées à gauche autour du bonhomme, des noms de 250 à 400 px de large : la place manque. Le nom de la
+ * destination et celui de l'île du bonhomme se montrent toujours (DA, HG-3) ; dans la page, la Fouille se montre sous son
+ * île, sous le médaillon.
+ */
+const TUS_EN_OD32: Record<string, string[]> = {
+  'history-6e-antiquity': ['french-6e-letter-confusion', 'english-6e-grammar', 'geography-6e-living'],
+  'french-6e-phonology': ['history-6e-antiquity', 'life-earth-sciences-6e-living-world'],
+};
+
+/**
+ * Le téléphone 390 × 844, au 6e, selon l'île du bonhomme : les noms qui se taisent (mesurés, consultant UX UI). La
+ * Carte y cadre la destination (la Forêt des sons) : sept îles se voient avec leur nom, sept autres sont hors du cadre,
+ * la Fouille comprise. Un seul nom se tait, en bas à droite, au bord de l'écran : le Volcan des décimaux ; dans la page,
+ * le bonhomme sur la Forêt, c'est son voisin le Hangar des inventions (les noms du test, un peu plus larges, laissent
+ * l'autre se taire). Le même nombre avant la règle du médaillon (preview, 161ded36) et après.
+ */
+const TUS_AU_TELEPHONE: Record<string, string[]> = {
+  'history-6e-antiquity': ['maths-6e-decimals'],
+  'french-6e-phonology': ['maths-6e-decimals'],
+};
+
+/** La destination que le jeu donne au village tout construit, le bonhomme sur l'île `ici` (`nextDestination`). */
+function destinationDuJeu(ici: BiomeId): BiomeId | { ouvrage: string; depuis?: BiomeId } {
+  const { progress, world } = toutConstruit();
+  const etat = sanitizeState({ progress, world: { ...world, place: ici } } as never);
+  const d = nextDestination(etat, NOMS_ARCHIPELS, textesDe('blocland').libelles);
+  return d.ouvrage ? { ouvrage: d.ouvrage, depuis: d.island } : d.island;
+}
+
 describe('La Carte : chaque île a son nom (tablette 1024 × 768)', () => {
   it.each(ARCHIPELAGO_IDS)('%s, archipel tout construit : toutes les îles sont à l’écran, hors de l’interface, et montrent leur nom', (a) => {
     for (const [univers, etat] of Object.entries(ETATS))
@@ -259,16 +309,14 @@ describe('La Carte : chaque île a son nom (tablette 1024 × 768)', () => {
       }
   });
 
-  it('6e, tablette en OpenDyslexic 32 px, deux univers : aucune étiquette sous un bouton ni hors de l’écran, aucune sous le médaillon (HG-3, DA)', () => {
-    // Comme la capture `carte-6e-od32` : le bonhomme sur la Fouille des siècles, ou sur la première île.
+  it('6e, tablette en OpenDyslexic 32 px, deux univers : aucune étiquette sous un bouton ni hors de l’écran, aucune sous le médaillon ; jamais tus, les noms de la destination et de l’île du bonhomme (HG-3, DA)', () => {
+    // Comme la capture `carte-6e-od32` : le bonhomme sur la Fouille des siècles, ou sur la première île. (Quatre Cartes
+    // serrées, chacune avec sa recherche complète : quelques secondes sous jsdom.)
     for (const ici of ['history-6e-antiquity', islandsOf('6e')[0].id] as BiomeId[]) {
-      const { progress, world } = toutConstruit();
-      const etat = sanitizeState({ progress, world: { ...world, place: ici } } as never);
-      const d = nextDestination(etat, NOMS_ARCHIPELS, textesDe('blocland').libelles);
-      const destination = d.ouvrage ? { ouvrage: d.ouvrage, depuis: d.island } : d.island;
+      const destination = destinationDuJeu(ici);
       const { w: W, h: H } = TABLETTE_OD32.taille;
       for (const [univers, mot] of Object.entries(ETATS)) {
-        const carte = laCarte('6e', mot, 'opendyslexic', 1, destination, true, TABLETTE_OD32, ici);
+        const carte = laCarte('6e', mot, 'opendyslexic', CHASSE_OD32, destination, true, TABLETTE_OD32, ici);
         const dit = (id: string) => `${univers}, bonhomme sur ${ici}, ${id}`;
         for (const m of carte.montrees) {
           expect(m.x - m.w / 2, dit(m.id)).toBeGreaterThanOrEqual(0);
@@ -277,13 +325,31 @@ describe('La Carte : chaque île a son nom (tablette 1024 × 768)', () => {
           expect(m.y + m.h / 2, dit(m.id)).toBeLessThanOrEqual(H);
           for (const z of [...TABLETTE_OD32.zones, carte.fanion]) expect(couvre(m, z), `${dit(m.id)} ${JSON.stringify(m)} sur ${JSON.stringify(z)}`).toBe(false);
         }
-        // Les autres noms se montrent : en OpenDyslexic 32 px, la Mine, la Carrière, la Fouille et la Vallée, serrées à
-        // gauche autour du bonhomme, et la Ferme sous la colonne des classes n'ont pas toutes une place entière, hors des
-        // boutons et du médaillon (voir l'en-tête ; sur la capture, la largeur réelle des noms en laisse moins se taire).
-        expect(carte.montrees.length, dit(carte.tus.join(' '))).toBeGreaterThanOrEqual(islandsOf('6e').length - 5);
+        // Le nom de la prochaine destination et celui de l'île du bonhomme ne se taisent jamais (DA, HG-3) ; les noms
+        // tus sont ceux mesurés (consultant UX UI), trois au plus (référent dys).
+        expect(carte.tus, dit('la destination')).not.toContain(typeof destination === 'string' ? destination : destination.depuis);
+        expect(carte.tus, dit('le bonhomme')).not.toContain(ici);
+        expect(carte.tus, dit('les noms tus')).toEqual(TUS_EN_OD32[ici]);
+        expect(carte.tus.length, dit('les noms tus')).toBeLessThanOrEqual(3);
       }
     }
-  });
+  }, 20_000);
+
+  it('6e, téléphone 390 × 844, deux univers : les noms tus sont ceux mesurés, jamais ceux de la destination ni de l’île du bonhomme (HG-3, UX UI)', () => {
+    for (const ici of ['history-6e-antiquity', islandsOf('6e')[0].id] as BiomeId[]) {
+      const destination = destinationDuJeu(ici);
+      for (const [univers, mot] of Object.entries(ETATS)) {
+        const carte = laCarte('6e', mot, 'atkinson-hyperlegible', 1, destination, true, TELEPHONE, ici);
+        const dit = (quoi: string) => `${univers}, bonhomme sur ${ici}, ${quoi}`;
+        expect(carte.tus, dit('les noms tus')).toEqual(TUS_AU_TELEPHONE[ici]);
+        // Sept noms montrés, comme dans la page.
+        expect(carte.vues, dit('les noms montrés')).toHaveLength(7);
+        expect(carte.tus, dit('la destination')).not.toContain(typeof destination === 'string' ? destination : destination.depuis);
+        expect(carte.tus, dit('le bonhomme')).not.toContain(ici);
+        for (const m of carte.montrees) for (const z of [...TELEPHONE.zones, carte.fanion]) expect(couvre(m, z), dit(m.id)).toBe(false);
+      }
+    }
+  }, 20_000);
 
   // Les six îles d'histoire-géographie des 5e, 4e et 3e (HG-3), deux par archipel, voisines dans les deux premiers.
   const VOISINES_HG3 = {
