@@ -5,7 +5,7 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, bulles, fiches, menu-tete, debut, hg-2 ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, bulles, fiches, menu-tete, debut, histoire-geo ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
 // `--attente 20` le plus long temps réel laissé au monde pour se construire (en secondes, 10 par défaut). L'horloge de la
 // page est pilotée (`preparerLaScene`, scripts/prise-de-vue.mjs) : deux prises du même état donnent la même image, les
@@ -565,22 +565,22 @@ const CAPTURES = [
     'french-4e-agreement', 'french-4e-vocabulary', 'english-4e-comprehension', 'english-4e-grammar', 'maths-3e-geometry', 'maths-3e-statistics',
     'maths-3e-functions', 'french-3e-close-reading', 'english-3e-comprehension', 'english-3e-grammar',
   ].map((ile) => ({ nom: `commandes-ile-${ile}`, vue: 'île', famille: 'commandes-iles', ile, posees: 'toutes' })),
-  // Les îles d'histoire-géographie de 6e (lot HG-2, famille `hg-2`), à retirer une fois le lot fusionné : la Fouille des
+  // Les îles d'histoire-géographie de 6e (lot HG-2, famille `histoire-geo`), à retirer une fois le lot fusionné : la Fouille des
   // siècles et la Pointe des paysages de près, de jour et de nuit, avant leur restauration (l'île ouverte, rien d'y joué
   // ni posé, le Gardien en statue grise : `sansIles`) et tout construit (le Gardien rallumé) ; le défi de l'Amphore peinte
   // à mi-parcours (trois épreuves réussies sur six, `reussir`, le Gardien encore à rallumer) ; « Mes blocs » ouvert
   // dans le monde (`lieu` « stock ») avec des blocs de Mosaïque et de Chaume en poche.
   ...['history-6e-antiquity', 'geography-6e-living'].flatMap((ile) =>
     [{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].flatMap(({ suffixe, ...autres }) => [
-      { nom: `hg-2-${ile}-avant${suffixe}`, vue: 'île', famille: 'hg-2', ile, sansIles: [ile], ...autres },
-      { nom: `hg-2-${ile}-apres${suffixe}`, vue: 'île', famille: 'hg-2', ile, ...autres },
+      { nom: `hg-2-${ile}-avant${suffixe}`, vue: 'île', famille: 'histoire-geo', ile, sansIles: [ile], ...autres },
+      { nom: `hg-2-${ile}-apres${suffixe}`, vue: 'île', famille: 'histoire-geo', ile, ...autres },
       // Le Gardien, hors du cadre de l'île : sa fiche ouverte comme d'un toucher, la caméra recadrée sur lui.
-      { nom: `hg-2-${ile}-gardien-avant${suffixe}`, vue: 'île', famille: 'hg-2', ile, sansIles: [ile], fiche: { genre: 'gardien', id: ile }, ...autres },
-      { nom: `hg-2-${ile}-gardien-apres${suffixe}`, vue: 'île', famille: 'hg-2', ile, fiche: { genre: 'gardien', id: ile }, ...autres },
+      { nom: `hg-2-${ile}-gardien-avant${suffixe}`, vue: 'île', famille: 'histoire-geo', ile, sansIles: [ile], fiche: { genre: 'gardien', id: ile }, ...autres },
+      { nom: `hg-2-${ile}-gardien-apres${suffixe}`, vue: 'île', famille: 'histoire-geo', ile, fiche: { genre: 'gardien', id: ile }, ...autres },
     ]),
   ),
-  { nom: 'hg-2-defi-amphore-mi', vue: 'défi', famille: 'hg-2', ile: 'history-6e-antiquity', debout: 'history-6e-antiquity', reussir: 3 },
-  { nom: 'hg-2-mes-blocs', vue: 'île', famille: 'hg-2', ile: 'history-6e-antiquity', lieu: 'stock', inventaire: { 'history-6e-antiquity': 6, 'geography-6e-living': 5 } },
+  { nom: 'hg-2-defi-amphore-mi', vue: 'défi', famille: 'histoire-geo', ile: 'history-6e-antiquity', debout: 'history-6e-antiquity', reussir: 3 },
+  { nom: 'hg-2-mes-blocs', vue: 'île', famille: 'histoire-geo', ile: 'history-6e-antiquity', lieu: 'stock', inventaire: { 'history-6e-antiquity': 6, 'geography-6e-living': 5 } },
 ];
 /** La lueur la nuit, à la vue île : au plus 3 % de la scène. */
 const LUEUR_MAX = 0.03;
