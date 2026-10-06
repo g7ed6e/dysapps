@@ -1,0 +1,238 @@
+{
+  "id": "history-6e-antiquity-ancient-peoples-1",
+  "biome": "history-6e-antiquity",
+  "type": "ancient-peoples",
+  "level": 1,
+  "instruction": "Choisis le mot qui complète la phrase. La frise est affichée.",
+  "items": [
+    {
+      "key": "history-6e-antiquity-ancient-peoples-1-0",
+      "prompt": "Athènes et Sparte sont deux … grecques.",
+      "spoken": "Athènes et Sparte sont deux (mot manquant) grecques.",
+      "choices": [
+        "provinces",
+        "cités",
+        "îles"
+      ],
+      "answer": "cités",
+      "hint": "Une ville, ses campagnes, ses propres lois.",
+      "explanation": "Une cité grecque : une ville et ses campagnes, avec ses lois et ses dieux protecteurs. Athènes et Sparte sont des cités.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise de l’Antiquité",
+          "lines": [
+            "J.-C. : Jésus-Christ.",
+            "I vaut 1, V vaut 5, X vaut 10 : VIII vaut 8.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "VIIIe siècle avant J.-C. : Jeux d’Olympie, fondation de Rome.",
+            "VIe siècle avant J.-C. : Rome devient une République.",
+            "Ve siècle avant J.-C. : Athènes et sa démocratie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-ancient-peoples-1-1",
+      "prompt": "À Athènes, l’assemblée des citoyens s’appelle … .",
+      "spoken": "À Athènes, l’assemblée des citoyens s’appelle (mot manquant) .",
+      "choices": [
+        "le Sénat",
+        "l’Ecclésia",
+        "l’Acropole"
+      ],
+      "answer": "l’Ecclésia",
+      "hint": "Le Sénat, c’est à Rome.",
+      "explanation": "L’Ecclésia réunit les citoyens d’Athènes, qui votent les lois. L’Acropole est la colline des temples. Le Sénat est romain.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise de l’Antiquité",
+          "lines": [
+            "J.-C. : Jésus-Christ.",
+            "I vaut 1, V vaut 5, X vaut 10 : VIII vaut 8.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "VIIIe siècle avant J.-C. : Jeux d’Olympie, fondation de Rome.",
+            "VIe siècle avant J.-C. : Rome devient une République.",
+            "Ve siècle avant J.-C. : Athènes et sa démocratie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-ancient-peoples-1-2",
+      "prompt": "À Athènes, seuls les … peuvent voter à l’assemblée.",
+      "spoken": "À Athènes, seuls les (mot manquant) peuvent voter à l’assemblée.",
+      "choices": [
+        "citoyens",
+        "habitants",
+        "esclaves"
+      ],
+      "answer": "citoyens",
+      "hint": "Les femmes et les étrangers habitent Athènes, mais ne votent pas.",
+      "explanation": "Seuls les citoyens votent : des hommes nés de parents athéniens. Les femmes, les esclaves et les étrangers ne votent pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise de l’Antiquité",
+          "lines": [
+            "J.-C. : Jésus-Christ.",
+            "I vaut 1, V vaut 5, X vaut 10 : VIII vaut 8.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "VIIIe siècle avant J.-C. : Jeux d’Olympie, fondation de Rome.",
+            "VIe siècle avant J.-C. : Rome devient une République.",
+            "Ve siècle avant J.-C. : Athènes et sa démocratie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-ancient-peoples-1-3",
+      "prompt": "Les Jeux d’Olympie ont lieu en l’honneur de … .",
+      "spoken": "Les Jeux d’Olympie ont lieu en l’honneur de (mot manquant) .",
+      "choices": [
+        "Zeus",
+        "Athéna",
+        "Jupiter"
+      ],
+      "answer": "Zeus",
+      "hint": "C’est le roi des dieux grecs.",
+      "explanation": "Les Jeux d’Olympie honorent Zeus, le roi des dieux grecs. Jupiter est son nom chez les Romains.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise de l’Antiquité",
+          "lines": [
+            "J.-C. : Jésus-Christ.",
+            "I vaut 1, V vaut 5, X vaut 10 : VIII vaut 8.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "VIIIe siècle avant J.-C. : Jeux d’Olympie, fondation de Rome.",
+            "VIe siècle avant J.-C. : Rome devient une République.",
+            "Ve siècle avant J.-C. : Athènes et sa démocratie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-ancient-peoples-1-4",
+      "prompt": "Selon la légende, Rome est fondée par … .",
+      "spoken": "Selon la légende, Rome est fondée par (mot manquant) .",
+      "choices": [
+        "Jules César",
+        "Ulysse",
+        "Romulus"
+      ],
+      "answer": "Romulus",
+      "hint": "Le nom de la ville ressemble au sien.",
+      "explanation": "Selon la légende, Romulus fonde Rome. Ulysse est un héros grec. Jules César vit bien plus tard.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise de l’Antiquité",
+          "lines": [
+            "J.-C. : Jésus-Christ.",
+            "I vaut 1, V vaut 5, X vaut 10 : VIII vaut 8.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "VIIIe siècle avant J.-C. : Jeux d’Olympie, fondation de Rome.",
+            "VIe siècle avant J.-C. : Rome devient une République.",
+            "Ve siècle avant J.-C. : Athènes et sa démocratie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-ancient-peoples-1-5",
+      "prompt": "Les Grecs et les Romains croient en plusieurs dieux : ils sont … .",
+      "spoken": "Les Grecs et les Romains croient en plusieurs dieux : ils sont (mot manquant) .",
+      "choices": [
+        "monothéistes",
+        "polythéistes",
+        "citoyens"
+      ],
+      "answer": "polythéistes",
+      "hint": "« Poly » veut dire plusieurs.",
+      "explanation": "Polythéiste : qui croit en plusieurs dieux. Monothéiste : qui croit en un seul Dieu, comme les Hébreux.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise de l’Antiquité",
+          "lines": [
+            "J.-C. : Jésus-Christ.",
+            "I vaut 1, V vaut 5, X vaut 10 : VIII vaut 8.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "VIIIe siècle avant J.-C. : Jeux d’Olympie, fondation de Rome.",
+            "VIe siècle avant J.-C. : Rome devient une République.",
+            "Ve siècle avant J.-C. : Athènes et sa démocratie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-ancient-peoples-1-6",
+      "prompt": "Un siècle, c’est une période de … .",
+      "spoken": "Un siècle, c’est une période de (mot manquant) .",
+      "choices": [
+        "dix ans",
+        "cent ans",
+        "mille ans"
+      ],
+      "answer": "cent ans",
+      "hint": "Mille ans, c’est un millénaire.",
+      "explanation": "Un siècle dure cent ans. Un millénaire dure mille ans.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise de l’Antiquité",
+          "lines": [
+            "J.-C. : Jésus-Christ.",
+            "I vaut 1, V vaut 5, X vaut 10 : VIII vaut 8.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "VIIIe siècle avant J.-C. : Jeux d’Olympie, fondation de Rome.",
+            "VIe siècle avant J.-C. : Rome devient une République.",
+            "Ve siècle avant J.-C. : Athènes et sa démocratie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-ancient-peoples-1-7",
+      "prompt": "Le VIIIe siècle avant J.-C. est … que le Ve siècle avant J.-C.",
+      "spoken": "Le huitième siècle avant Jésus-Christ est (mot manquant) que le cinquième siècle avant Jésus-Christ.",
+      "choices": [
+        "plus récent",
+        "plus ancien",
+        "aussi ancien"
+      ],
+      "answer": "plus ancien",
+      "hint": "Sur la frise, lequel est le plus haut ?",
+      "explanation": "Avant J.-C., plus le numéro est grand, plus c’est ancien : le VIIIe siècle vient avant le Ve siècle.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise de l’Antiquité",
+          "lines": [
+            "J.-C. : Jésus-Christ.",
+            "I vaut 1, V vaut 5, X vaut 10 : VIII vaut 8.",
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "VIIIe siècle avant J.-C. : Jeux d’Olympie, fondation de Rome.",
+            "VIe siècle avant J.-C. : Rome devient une République.",
+            "Ve siècle avant J.-C. : Athènes et sa démocratie."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "history-6e-antiquity",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

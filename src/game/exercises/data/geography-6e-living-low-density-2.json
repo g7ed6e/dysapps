@@ -1,0 +1,230 @@
+{
+  "id": "geography-6e-living-low-density-2",
+  "biome": "geography-6e-living",
+  "type": "low-density",
+  "level": 2,
+  "instruction": "Lis la question, puis le document. Choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "geography-6e-living-low-density-2-0",
+      "prompt": "Densité de population\nAustralie : environ 3 habitants par km²\nFrance : environ 120 habitants par km²\nInde : environ 440 habitants par km²",
+      "question": "Quel pays a la densité la plus faible ?",
+      "spoken": "Densité de population. Australie : environ trois habitants par kilomètre carré. France : environ cent vingt habitants par kilomètre carré. Inde : environ quatre cent quarante habitants par kilomètre carré.",
+      "choices": [
+        "l’Inde",
+        "la France",
+        "l’Australie"
+      ],
+      "answer": "l’Australie",
+      "hint": "Cherche le plus petit nombre.",
+      "explanation": "3 est le plus petit nombre : l’Australie a la densité la plus faible. Son centre est presque vide.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un tableau, une photo",
+          "lines": [
+            "km² se lit « kilomètre carré ».",
+            "Densité : plus le nombre est grand, plus les habitants sont serrés.",
+            "Premier plan : ce qui est devant, sur la photo.",
+            "Arrière-plan : ce qui est au fond."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-6e-living-low-density-2-1",
+      "prompt": "Canada : 40 millions d’habitants\nCanada : 4 habitants par km²\nPays-Bas : 18 millions d’habitants\nPays-Bas : plus de 500 habitants par km²",
+      "question": "Quel pays est le plus densément peuplé ?",
+      "spoken": "Canada : quarante millions d’habitants. Canada : quatre habitants par kilomètre carré. Pays-Bas : dix-huit millions d’habitants. Pays-Bas : plus de cinq cents habitants par kilomètre carré.",
+      "choices": [
+        "le Canada",
+        "les Pays-Bas",
+        "les deux autant"
+      ],
+      "answer": "les Pays-Bas",
+      "hint": "Compare les lignes « par km² », pas le nombre d’habitants.",
+      "explanation": "Les Pays-Bas ont moins d’habitants, mais sur un petit territoire : plus de 500 par km². Le Canada est immense : 4 par km².",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un tableau, une photo",
+          "lines": [
+            "km² se lit « kilomètre carré ».",
+            "Densité : plus le nombre est grand, plus les habitants sont serrés.",
+            "Premier plan : ce qui est devant, sur la photo.",
+            "Arrière-plan : ce qui est au fond."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-6e-living-low-density-2-2",
+      "prompt": "Description d’une photo de la Beauce\nDe grands champs de blé à perte de vue\nUne moissonneuse-batteuse\nUne ferme isolée et des silos",
+      "question": "Quelle agriculture montre la photo ?",
+      "spoken": "Description d’une photo de la Beauce. De grands champs de blé à perte de vue. Une moissonneuse-batteuse. Une ferme isolée et des silos.",
+      "choices": [
+        "de petits jardins familiaux",
+        "un élevage nomade",
+        "une agriculture mécanisée"
+      ],
+      "answer": "une agriculture mécanisée",
+      "hint": "La moissonneuse-batteuse est une machine.",
+      "explanation": "De grands champs et une machine pour la moisson : c’est une agriculture mécanisée, avec peu d’agriculteurs.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un tableau, une photo",
+          "lines": [
+            "km² se lit « kilomètre carré ».",
+            "Densité : plus le nombre est grand, plus les habitants sont serrés.",
+            "Premier plan : ce qui est devant, sur la photo.",
+            "Arrière-plan : ce qui est au fond."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-6e-living-low-density-2-3",
+      "prompt": "Une grande ferme des États-Unis\nDes champs de maïs immenses\n2 personnes y travaillent.\nLe maïs est vendu dans le monde entier.",
+      "question": "Où va la récolte ?",
+      "spoken": "Une grande ferme des États-Unis. Des champs de maïs immenses. Deux personnes y travaillent. Le maïs est vendu dans le monde entier.",
+      "choices": [
+        "elle est vendue dans le monde",
+        "elle nourrit seulement la famille",
+        "elle est vendue au village voisin"
+      ],
+      "answer": "elle est vendue dans le monde",
+      "hint": "Relis la dernière ligne.",
+      "explanation": "Le maïs est vendu dans le monde entier : c’est une agriculture tournée vers l’exportation, sur un espace où vivent peu de gens.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un tableau, une photo",
+          "lines": [
+            "km² se lit « kilomètre carré ».",
+            "Densité : plus le nombre est grand, plus les habitants sont serrés.",
+            "Premier plan : ce qui est devant, sur la photo.",
+            "Arrière-plan : ce qui est au fond."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-6e-living-low-density-2-4",
+      "prompt": "Description d’une photo dans le Sahara\nAu premier plan : des palmiers et des jardins\nÀ l’arrière-plan : des dunes de sable",
+      "question": "Pourquoi peut-on cultiver des jardins à cet endroit ?",
+      "spoken": "Description d’une photo dans le Sahara. Au premier plan : des palmiers et des jardins. À l’arrière-plan : des dunes de sable.",
+      "choices": [
+        "il pleut beaucoup",
+        "il fait froid",
+        "il y a de l’eau"
+      ],
+      "answer": "il y a de l’eau",
+      "hint": "Qu’est-ce qu’une oasis ?",
+      "explanation": "C’est une oasis : l’eau vient du sous-sol, pas de la pluie. Autour, sans eau, c’est le désert.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un tableau, une photo",
+          "lines": [
+            "km² se lit « kilomètre carré ».",
+            "Densité : plus le nombre est grand, plus les habitants sont serrés.",
+            "Premier plan : ce qui est devant, sur la photo.",
+            "Arrière-plan : ce qui est au fond."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-6e-living-low-density-2-5",
+      "prompt": "La forêt amazonienne\nLa plus grande forêt tropicale du monde\nDes milliers d’espèces d’arbres\nChaque année, une partie est coupée.",
+      "question": "Quelle menace pèse sur la forêt ?",
+      "spoken": "La forêt amazonienne. La plus grande forêt tropicale du monde. Des milliers d’espèces d’arbres. Chaque année, une partie est coupée.",
+      "choices": [
+        "la déforestation",
+        "le grand froid",
+        "la montée de la mer"
+      ],
+      "answer": "la déforestation",
+      "hint": "Relis la dernière ligne.",
+      "explanation": "Couper la forêt, c’est la déforestation, souvent pour l’élevage. Elle menace la biodiversité de l’Amazonie.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un tableau, une photo",
+          "lines": [
+            "km² se lit « kilomètre carré ».",
+            "Densité : plus le nombre est grand, plus les habitants sont serrés.",
+            "Premier plan : ce qui est devant, sur la photo.",
+            "Arrière-plan : ce qui est au fond."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-6e-living-low-density-2-6",
+      "prompt": "Un village du Népal, dans l’Himalaya\nÀ 2 000 mètres d’altitude\nDes champs en terrasses sur les pentes\nUn sentier, pas de route",
+      "question": "Pourquoi les champs sont-ils en terrasses ?",
+      "spoken": "Un village du Népal, dans l’Himalaya. À deux mille mètres d’altitude. Des champs en terrasses sur les pentes. Un sentier, pas de route.",
+      "choices": [
+        "pour cultiver sur la pente",
+        "pour attirer les touristes",
+        "pour se protéger du froid"
+      ],
+      "answer": "pour cultiver sur la pente",
+      "hint": "Sur une pente, la terre et l’eau glissent.",
+      "explanation": "Les terrasses font des marches plates sur la pente : on peut y cultiver. Les habitants s’adaptent à la contrainte.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un tableau, une photo",
+          "lines": [
+            "km² se lit « kilomètre carré ».",
+            "Densité : plus le nombre est grand, plus les habitants sont serrés.",
+            "Premier plan : ce qui est devant, sur la photo.",
+            "Arrière-plan : ce qui est au fond."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-6e-living-low-density-2-7",
+      "prompt": "Le Nunavut, au nord du Canada\nUn immense territoire\nEnviron 40 000 habitants\nEn hiver : souvent moins 30 degrés",
+      "question": "Quelle contrainte rend la vie difficile ici ?",
+      "spoken": "Le Nunavut, au nord du Canada. Un immense territoire. Environ quarante mille habitants. En hiver : souvent moins trente degrés.",
+      "choices": [
+        "la chaleur",
+        "le grand froid",
+        "le manque de place"
+      ],
+      "answer": "le grand froid",
+      "hint": "Relis la dernière ligne.",
+      "explanation": "Moins 30 degrés en hiver : le grand froid est la contrainte. Il y a beaucoup de place, mais très peu d’habitants.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un tableau, une photo",
+          "lines": [
+            "km² se lit « kilomètre carré ».",
+            "Densité : plus le nombre est grand, plus les habitants sont serrés.",
+            "Premier plan : ce qui est devant, sur la photo.",
+            "Arrière-plan : ce qui est au fond."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "geography-6e-living",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

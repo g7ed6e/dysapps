@@ -1,0 +1,230 @@
+{
+  "id": "history-6e-antiquity-ancient-peoples-2",
+  "biome": "history-6e-antiquity",
+  "type": "ancient-peoples",
+  "level": 2,
+  "instruction": "Lis la question, puis le document. Choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "history-6e-antiquity-ancient-peoples-2-0",
+      "prompt": "Récit de la fondation de Rome\nDes jumeaux sont abandonnés près du Tibre.\nUne louve les nourrit.\nL’un d’eux, Romulus, fonde Rome.",
+      "question": "Quel genre de récit est-ce ?",
+      "spoken": "Récit de la fondation de Rome. Des jumeaux sont abandonnés près du Tibre. Une louve les nourrit. L’un d’eux, Romulus, fonde Rome.",
+      "choices": [
+        "une loi",
+        "une légende",
+        "un fait prouvé"
+      ],
+      "answer": "une légende",
+      "hint": "Une louve qui nourrit des bébés : est-ce un fait prouvé ?",
+      "explanation": "C’est une légende, un récit inventé que les Romains racontent sur leur ville. Il ne prouve pas que Romulus a existé.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "Une légende : un récit inventé, avec des dieux ou des héros.",
+            "Les fouilles disent ce qui a vraiment existé.",
+            "J.-C. : Jésus-Christ.",
+            "Avant J.-C. : plus le numéro du siècle est grand, plus c’est ancien."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-ancient-peoples-2-1",
+      "prompt": "Fouilles sur le Palatin, une colline de Rome\nTraces de cabanes\nVIIIe siècle avant J.-C.",
+      "question": "Que montrent ces fouilles ?",
+      "spoken": "Fouilles sur le Palatin, une colline de Rome. Traces de cabanes. Huitième siècle avant Jésus-Christ.",
+      "choices": [
+        "un village existait là",
+        "une louve vivait là",
+        "Romulus vivait là"
+      ],
+      "answer": "un village existait là",
+      "hint": "Des traces de cabanes : qu’est-ce qu’elles prouvent ?",
+      "explanation": "Les cabanes prouvent qu’un village existait là au VIIIe siècle avant J.-C. Elles ne disent rien de Romulus ni de la louve.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "Une légende : un récit inventé, avec des dieux ou des héros.",
+            "Les fouilles disent ce qui a vraiment existé.",
+            "J.-C. : Jésus-Christ.",
+            "Avant J.-C. : plus le numéro du siècle est grand, plus c’est ancien."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-ancient-peoples-2-2",
+      "prompt": "Pour voter à l’assemblée d’Athènes :\nêtre un homme ;\navoir un père et une mère athéniens ;\nêtre adulte.",
+      "question": "Qui peut voter ?",
+      "spoken": "Pour voter à l’assemblée d’Athènes : être un homme ; avoir un père et une mère athéniens ; être adulte.",
+      "choices": [
+        "une femme, fille d’Athéniens",
+        "un homme adulte, fils d’Athéniens",
+        "un homme adulte d’une autre cité"
+      ],
+      "answer": "un homme adulte, fils d’Athéniens",
+      "hint": "Vérifie les trois lignes, une par une.",
+      "explanation": "Il faut les trois : un homme, des parents athéniens, adulte. Une femme ne vote pas. Un homme d’une autre cité non plus.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "Une légende : un récit inventé, avec des dieux ou des héros.",
+            "Les fouilles disent ce qui a vraiment existé.",
+            "J.-C. : Jésus-Christ.",
+            "Avant J.-C. : plus le numéro du siècle est grand, plus c’est ancien."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-ancient-peoples-2-3",
+      "prompt": "Deux événements\nRome fondée : VIIIe siècle avant J.-C.\nLa République : VIe siècle avant J.-C.",
+      "question": "Lequel vient en premier ?",
+      "spoken": "Deux événements. Rome fondée : huitième siècle avant Jésus-Christ. La République : sixième siècle avant Jésus-Christ.",
+      "choices": [
+        "la fondation de Rome",
+        "la République",
+        "les deux en même temps"
+      ],
+      "answer": "la fondation de Rome",
+      "hint": "Avant Jésus-Christ, le plus grand numéro est le plus ancien.",
+      "explanation": "VIII est plus grand que VI : avant J.-C., le VIIIe siècle vient avant le VIe siècle. La fondation vient en premier.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "Une légende : un récit inventé, avec des dieux ou des héros.",
+            "Les fouilles disent ce qui a vraiment existé.",
+            "J.-C. : Jésus-Christ.",
+            "Avant J.-C. : plus le numéro du siècle est grand, plus c’est ancien."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-ancient-peoples-2-4",
+      "prompt": "Description d’une photo\nLe Parthénon, sur l’Acropole d’Athènes\nUn temple dédié à Athéna\nConstruit au Ve siècle avant J.-C.",
+      "question": "Pour quelle déesse ce temple a-t-il été construit ?",
+      "spoken": "Description d’une photo. Le Parthénon, sur l’Acropole d’Athènes. Un temple dédié à Athéna. Construit au cinquième siècle avant Jésus-Christ.",
+      "choices": [
+        "Athéna",
+        "Héra",
+        "Aphrodite"
+      ],
+      "answer": "Athéna",
+      "hint": "« Dédié à » veut dire « construit pour ».",
+      "explanation": "Le Parthénon est dédié à Athéna, la déesse qui protège Athènes. La ville porte presque son nom.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "Une légende : un récit inventé, avec des dieux ou des héros.",
+            "Les fouilles disent ce qui a vraiment existé.",
+            "J.-C. : Jésus-Christ.",
+            "Avant J.-C. : plus le numéro du siècle est grand, plus c’est ancien."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-ancient-peoples-2-5",
+      "prompt": "Extrait de la Bible hébraïque\n« Écoute, Israël :\nle Seigneur est notre Dieu,\nle Seigneur est unique. »",
+      "question": "Quelle idée ce texte affirme-t-il ?",
+      "spoken": "Extrait de la Bible hébraïque. « Écoute, Israël : le Seigneur est notre Dieu, le Seigneur est unique. »",
+      "choices": [
+        "il y a beaucoup de dieux",
+        "il n’y a qu’un seul Dieu",
+        "le roi est un dieu"
+      ],
+      "answer": "il n’y a qu’un seul Dieu",
+      "hint": "Relis le dernier mot du texte.",
+      "explanation": "Le texte dit que Dieu est unique : les Hébreux sont monothéistes. Autour d’eux, les autres peuples ont plusieurs dieux.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "Une légende : un récit inventé, avec des dieux ou des héros.",
+            "Les fouilles disent ce qui a vraiment existé.",
+            "J.-C. : Jésus-Christ.",
+            "Avant J.-C. : plus le numéro du siècle est grand, plus c’est ancien."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-ancient-peoples-2-6",
+      "prompt": "Les croyances\nLes Grecs : Zeus, Athéna et bien d’autres\nLes Hébreux : un seul Dieu",
+      "question": "Quel peuple est monothéiste ?",
+      "spoken": "Les croyances. Les Grecs : Zeus, Athéna et bien d’autres. Les Hébreux : un seul Dieu.",
+      "choices": [
+        "les Grecs",
+        "les deux",
+        "les Hébreux"
+      ],
+      "answer": "les Hébreux",
+      "hint": "« Mono » veut dire un seul.",
+      "explanation": "Monothéiste : qui croit en un seul Dieu. Ce sont les Hébreux. Les Grecs, avec plusieurs dieux, sont polythéistes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "Une légende : un récit inventé, avec des dieux ou des héros.",
+            "Les fouilles disent ce qui a vraiment existé.",
+            "J.-C. : Jésus-Christ.",
+            "Avant J.-C. : plus le numéro du siècle est grand, plus c’est ancien."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-ancient-peoples-2-7",
+      "prompt": "Rome, à partir du VIe siècle avant J.-C.\nIl n’y a plus de roi.\nDeux consuls sont élus pour un an.\nLe Sénat les conseille.",
+      "question": "Comment s’appelle ce régime ?",
+      "spoken": "Rome, à partir du sixième siècle avant Jésus-Christ. Il n’y a plus de roi. Deux consuls sont élus pour un an. Le Sénat les conseille.",
+      "choices": [
+        "l’Empire",
+        "la monarchie",
+        "la République"
+      ],
+      "answer": "la République",
+      "hint": "Plus de roi : ce n’est plus une monarchie.",
+      "explanation": "Sans roi, avec des chefs élus pour un an : c’est la République romaine. L’Empire viendra plus tard, avec Auguste.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "Une légende : un récit inventé, avec des dieux ou des héros.",
+            "Les fouilles disent ce qui a vraiment existé.",
+            "J.-C. : Jésus-Christ.",
+            "Avant J.-C. : plus le numéro du siècle est grand, plus c’est ancien."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "history-6e-antiquity",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

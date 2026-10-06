@@ -21,10 +21,6 @@ const LV2_LANGAGES = A_COUVRIR(
   'Médias, chansons et cinéma : rien ne s’emprunte ; il faudrait des documents inventés (programme de télévision, affiche de concert, message sur un réseau), comme ceux de c4.en.culture.langages en anglais (Studio des ondes, School and media).',
 );
 
-// Histoire et géographie : deux îles de 6e prévues (histoire, géographie), choix C du mainteneur du 5 octobre 2026 ;
-// elles entrent au jeu après les îles sur la grille (GD-9). Le cycle 4 viendra ensuite.
-const HG_6E = A_COUVRIR('Prévu avec les deux îles d’histoire et de géographie de 6e (cadrage du contenu, « L’histoire et la géographie »).');
-
 export const EXCLUSIONS: Partial<Record<ProgrammeId, Exclusion>> = {
   // ---------- Cycle 3, français ----------
   'c3.fr.oral.comprendre-s-exprimer': HORS(ORAL),
@@ -77,32 +73,7 @@ export const EXCLUSIONS: Partial<Record<ProgrammeId, Exclusion>> = {
   'c4.es.culture.langages': LV2_LANGAGES,
   'c4.es.langue.phonologie': HORS(ORAL),
   // ---------- Cycle 3, histoire et géographie ----------
-  'c3.hg.temps.periodes': HG_6E,
-  'c3.hg.temps.ordonner': HG_6E,
-  'c3.hg.temps.frise': HG_6E,
-  'c3.hg.espace.localiser': HG_6E,
-  'c3.hg.espace.situer': HG_6E,
-  'c3.hg.demarches.document': HG_6E,
-  'c3.hg.demarches.point-de-vue': HG_6E,
-  'c3.hg.demarches.lexique': HG_6E,
-  'c3.hg.demarches.cartes': HG_6E,
+  'c3.hg.demarches.point-de-vue': A_COUVRIR('Questionner le point de vue d’un document : aucune question de la Fouille des siècles ni de la Pointe des paysages ne le fait encore ; prévu en niveau de plus.'),
   'c3.hg.demarches.ecrire-dire': HORS('Écrire et dire : l’application propose des réponses à choisir, sans rédaction ni micro.'),
   'c3.hg.demarches.raisonner': HORS('Enquêter, chercher en ligne, travailler en groupe : la démarche de classe, que l’application ne remplace pas.'),
-  'c3.hg.histoire.debuts-humanite': HG_6E,
-  'c3.hg.histoire.neolithique': HG_6E,
-  'c3.hg.histoire.premiers-etats': HG_6E,
-  'c3.hg.histoire.cites-grecques': HG_6E,
-  'c3.hg.histoire.rome-mythe': HG_6E,
-  'c3.hg.histoire.monotheisme-juif': HG_6E,
-  'c3.hg.histoire.empire-romain': HG_6E,
-  'c3.hg.histoire.chretiens': HG_6E,
-  'c3.hg.histoire.route-de-la-soie': HG_6E,
-  'c3.hg.geographie.metropoles': HG_6E,
-  'c3.hg.geographie.ville-de-demain': HG_6E,
-  'c3.hg.geographie.contraintes': HG_6E,
-  'c3.hg.geographie.agricole': HG_6E,
-  'c3.hg.geographie.littoral-portuaire': HG_6E,
-  'c3.hg.geographie.littoral-touristique': HG_6E,
-  'c3.hg.geographie.population-mondiale': HG_6E,
-  'c3.hg.geographie.occupation': HG_6E,
 };

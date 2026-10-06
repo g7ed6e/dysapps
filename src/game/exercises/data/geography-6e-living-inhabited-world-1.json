@@ -1,0 +1,230 @@
+{
+  "id": "geography-6e-living-inhabited-world-1",
+  "biome": "geography-6e-living",
+  "type": "inhabited-world",
+  "level": 1,
+  "instruction": "Choisis le mot qui complète la phrase. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "geography-6e-living-inhabited-world-1-0",
+      "prompt": "Une ville de vacances au bord de la mer est une station … .",
+      "spoken": "Une ville de vacances au bord de la mer est une station (mot manquant) .",
+      "choices": [
+        "de ski",
+        "balnéaire",
+        "thermale"
+      ],
+      "answer": "balnéaire",
+      "hint": "La station de ski est à la montagne.",
+      "explanation": "Une station balnéaire est faite pour les bains de mer : plages, hôtels, restaurants.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Littoraux et peuplement",
+          "lines": [
+            "Littoral : là où la terre touche la mer.",
+            "Un littoral industriel : un port, des usines, des conteneurs.",
+            "Un littoral touristique : des plages, des hôtels, des vacanciers.",
+            "Foyer de peuplement : beaucoup d’habitants.",
+            "Désert humain : presque personne."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-6e-living-inhabited-world-1-1",
+      "prompt": "Les grandes boîtes en métal qui transportent les marchandises sont des … .",
+      "spoken": "Les grandes boîtes en métal qui transportent les marchandises sont des (mot manquant) .",
+      "choices": [
+        "conteneurs",
+        "cargos",
+        "entrepôts"
+      ],
+      "answer": "conteneurs",
+      "hint": "Le cargo est le bateau qui les porte.",
+      "explanation": "Un conteneur est une grande boîte en métal. Les cargos les portent d’un port à l’autre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Littoraux et peuplement",
+          "lines": [
+            "Littoral : là où la terre touche la mer.",
+            "Un littoral industriel : un port, des usines, des conteneurs.",
+            "Un littoral touristique : des plages, des hôtels, des vacanciers.",
+            "Foyer de peuplement : beaucoup d’habitants.",
+            "Désert humain : presque personne."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-6e-living-inhabited-world-1-2",
+      "prompt": "Shanghai, en Chine, est le premier … à conteneurs du monde.",
+      "spoken": "Shanghai, en Chine, est le premier (mot manquant) à conteneurs du monde.",
+      "choices": [
+        "aéroport",
+        "port",
+        "canal"
+      ],
+      "answer": "port",
+      "hint": "Les conteneurs voyagent par bateau.",
+      "explanation": "Shanghai est le premier port à conteneurs du monde. La Chine vend ses marchandises partout.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Littoraux et peuplement",
+          "lines": [
+            "Littoral : là où la terre touche la mer.",
+            "Un littoral industriel : un port, des usines, des conteneurs.",
+            "Un littoral touristique : des plages, des hôtels, des vacanciers.",
+            "Foyer de peuplement : beaucoup d’habitants.",
+            "Désert humain : presque personne."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-6e-living-inhabited-world-1-3",
+      "prompt": "Rotterdam, aux Pays-Bas, est le premier port … .",
+      "spoken": "Rotterdam, aux Pays-Bas, est le premier port (mot manquant) .",
+      "choices": [
+        "d’Europe",
+        "d’Afrique",
+        "d’Asie"
+      ],
+      "answer": "d’Europe",
+      "hint": "Les Pays-Bas sont au nord de la France.",
+      "explanation": "Rotterdam est le premier port d’Europe, au bord de la mer du Nord.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Littoraux et peuplement",
+          "lines": [
+            "Littoral : là où la terre touche la mer.",
+            "Un littoral industriel : un port, des usines, des conteneurs.",
+            "Un littoral touristique : des plages, des hôtels, des vacanciers.",
+            "Foyer de peuplement : beaucoup d’habitants.",
+            "Désert humain : presque personne."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-6e-living-inhabited-world-1-4",
+      "prompt": "Plus de huit … d’humains vivent sur la Terre.",
+      "spoken": "Plus de huit (mot manquant) d’humains vivent sur la Terre.",
+      "choices": [
+        "millions",
+        "milliards",
+        "mille"
+      ],
+      "answer": "milliards",
+      "hint": "La France seule a déjà près de 70 millions d’habitants.",
+      "explanation": "Plus de 8 milliards d’humains vivent sur la Terre. Un milliard, c’est mille millions.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Littoraux et peuplement",
+          "lines": [
+            "Littoral : là où la terre touche la mer.",
+            "Un littoral industriel : un port, des usines, des conteneurs.",
+            "Un littoral touristique : des plages, des hôtels, des vacanciers.",
+            "Foyer de peuplement : beaucoup d’habitants.",
+            "Désert humain : presque personne."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-6e-living-inhabited-world-1-5",
+      "prompt": "Aujourd’hui, le pays le plus peuplé du monde est … .",
+      "spoken": "Aujourd’hui, le pays le plus peuplé du monde est (mot manquant) .",
+      "choices": [
+        "la Chine",
+        "l’Inde",
+        "les États-Unis"
+      ],
+      "answer": "l’Inde",
+      "hint": "Depuis 2023, un pays a dépassé la Chine.",
+      "explanation": "Depuis 2023, l’Inde a plus d’habitants que la Chine. Les États-Unis viennent loin derrière.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Littoraux et peuplement",
+          "lines": [
+            "Littoral : là où la terre touche la mer.",
+            "Un littoral industriel : un port, des usines, des conteneurs.",
+            "Un littoral touristique : des plages, des hôtels, des vacanciers.",
+            "Foyer de peuplement : beaucoup d’habitants.",
+            "Désert humain : presque personne."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-6e-living-inhabited-world-1-6",
+      "prompt": "Une région presque vide d’habitants est un … humain.",
+      "spoken": "Une région presque vide d’habitants est un (mot manquant) humain.",
+      "choices": [
+        "désert",
+        "foyer",
+        "littoral"
+      ],
+      "answer": "désert",
+      "hint": "Regarde la dernière ligne du rappel.",
+      "explanation": "Un désert humain : presque personne n’y vit. Le contraire est un foyer de peuplement.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Littoraux et peuplement",
+          "lines": [
+            "Littoral : là où la terre touche la mer.",
+            "Un littoral industriel : un port, des usines, des conteneurs.",
+            "Un littoral touristique : des plages, des hôtels, des vacanciers.",
+            "Foyer de peuplement : beaucoup d’habitants.",
+            "Désert humain : presque personne."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-6e-living-inhabited-world-1-7",
+      "prompt": "Plus de la moitié des humains vivent en … .",
+      "spoken": "Plus de la moitié des humains vivent en (mot manquant) .",
+      "choices": [
+        "campagne",
+        "montagne",
+        "ville"
+      ],
+      "answer": "ville",
+      "hint": "Pense aux métropoles.",
+      "explanation": "Aujourd’hui, plus de la moitié des humains vivent en ville. Les villes grandissent partout.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Littoraux et peuplement",
+          "lines": [
+            "Littoral : là où la terre touche la mer.",
+            "Un littoral industriel : un port, des usines, des conteneurs.",
+            "Un littoral touristique : des plages, des hôtels, des vacanciers.",
+            "Foyer de peuplement : beaucoup d’habitants.",
+            "Désert humain : presque personne."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "geography-6e-living",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

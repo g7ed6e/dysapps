@@ -1,0 +1,230 @@
+{
+  "id": "geography-6e-living-low-density-1",
+  "biome": "geography-6e-living",
+  "type": "low-density",
+  "level": 1,
+  "instruction": "Choisis le mot qui complète la phrase. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "geography-6e-living-low-density-1-0",
+      "prompt": "Peu d’habitants sur un grand territoire : la densité est … .",
+      "spoken": "Peu d’habitants sur un grand territoire : la densité est (mot manquant) .",
+      "choices": [
+        "forte",
+        "faible",
+        "nulle"
+      ],
+      "answer": "faible",
+      "hint": "Regarde la deuxième ligne du rappel.",
+      "explanation": "Peu d’habitants pour beaucoup d’espace : la densité est faible. Nulle voudrait dire personne.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Densité et contraintes",
+          "lines": [
+            "Densité : le nombre d’habitants sur un kilomètre carré.",
+            "Faible densité : peu d’habitants pour beaucoup d’espace.",
+            "Contrainte : ce qui rend la vie difficile.",
+            "Par exemple : le grand froid, le manque d’eau.",
+            "Biodiversité : la variété des plantes et des animaux."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-6e-living-low-density-1-1",
+      "prompt": "Le Sahara, le plus grand désert chaud du monde, se trouve en … .",
+      "spoken": "Le Sahara, le plus grand désert chaud du monde, se trouve en (mot manquant) .",
+      "choices": [
+        "Asie",
+        "Amérique",
+        "Afrique"
+      ],
+      "answer": "Afrique",
+      "hint": "Il touche le Maroc, l’Algérie, l’Égypte.",
+      "explanation": "Le Sahara couvre le nord de l’Afrique. Le désert de Gobi, lui, est en Asie.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Densité et contraintes",
+          "lines": [
+            "Densité : le nombre d’habitants sur un kilomètre carré.",
+            "Faible densité : peu d’habitants pour beaucoup d’espace.",
+            "Contrainte : ce qui rend la vie difficile.",
+            "Par exemple : le grand froid, le manque d’eau.",
+            "Biodiversité : la variété des plantes et des animaux."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-6e-living-low-density-1-2",
+      "prompt": "Dans le désert, un lieu avec de l’eau et des palmiers est une … .",
+      "spoken": "Dans le désert, un lieu avec de l’eau et des palmiers est une (mot manquant) .",
+      "choices": [
+        "oasis",
+        "dune",
+        "rizière"
+      ],
+      "answer": "oasis",
+      "hint": "C’est là que vivent et cultivent les habitants du désert.",
+      "explanation": "Une oasis : un lieu du désert où l’on trouve de l’eau. On y cultive des palmiers dattiers et des jardins.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Densité et contraintes",
+          "lines": [
+            "Densité : le nombre d’habitants sur un kilomètre carré.",
+            "Faible densité : peu d’habitants pour beaucoup d’espace.",
+            "Contrainte : ce qui rend la vie difficile.",
+            "Par exemple : le grand froid, le manque d’eau.",
+            "Biodiversité : la variété des plantes et des animaux."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-6e-living-low-density-1-3",
+      "prompt": "La forêt amazonienne a une très grande … : des milliers d’espèces de plantes et d’animaux.",
+      "spoken": "La forêt amazonienne a une très grande (mot manquant) : des milliers d’espèces de plantes et d’animaux.",
+      "choices": [
+        "densité",
+        "biodiversité",
+        "altitude"
+      ],
+      "answer": "biodiversité",
+      "hint": "Regarde la dernière ligne du rappel.",
+      "explanation": "Biodiversité : la variété des êtres vivants. L’Amazonie en a une des plus grandes du monde.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Densité et contraintes",
+          "lines": [
+            "Densité : le nombre d’habitants sur un kilomètre carré.",
+            "Faible densité : peu d’habitants pour beaucoup d’espace.",
+            "Contrainte : ce qui rend la vie difficile.",
+            "Par exemple : le grand froid, le manque d’eau.",
+            "Biodiversité : la variété des plantes et des animaux."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-6e-living-low-density-1-4",
+      "prompt": "En haute montagne, le froid et la … rendent la vie difficile.",
+      "spoken": "En haute montagne, le froid et la (mot manquant) rendent la vie difficile.",
+      "choices": [
+        "pente",
+        "plaine",
+        "mer"
+      ],
+      "answer": "pente",
+      "hint": "Ce qui rend difficile de construire et de cultiver sur une montagne.",
+      "explanation": "La pente rend difficile de construire, de cultiver, de faire des routes. C’est une contrainte, comme le froid.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Densité et contraintes",
+          "lines": [
+            "Densité : le nombre d’habitants sur un kilomètre carré.",
+            "Faible densité : peu d’habitants pour beaucoup d’espace.",
+            "Contrainte : ce qui rend la vie difficile.",
+            "Par exemple : le grand froid, le manque d’eau.",
+            "Biodiversité : la variété des plantes et des animaux."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-6e-living-low-density-1-5",
+      "prompt": "Dans la Beauce, près de Paris, les grandes exploitations cultivent surtout des … .",
+      "spoken": "Dans la Beauce, près de Paris, les grandes exploitations cultivent surtout des (mot manquant) .",
+      "choices": [
+        "vignes",
+        "oliviers",
+        "céréales"
+      ],
+      "answer": "céréales",
+      "hint": "Le blé, le maïs, l’orge.",
+      "explanation": "La Beauce est une grande plaine de céréales : blé, maïs, orge. Les oliviers poussent dans le Sud, au bord de la Méditerranée.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Densité et contraintes",
+          "lines": [
+            "Densité : le nombre d’habitants sur un kilomètre carré.",
+            "Faible densité : peu d’habitants pour beaucoup d’espace.",
+            "Contrainte : ce qui rend la vie difficile.",
+            "Par exemple : le grand froid, le manque d’eau.",
+            "Biodiversité : la variété des plantes et des animaux."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-6e-living-low-density-1-6",
+      "prompt": "De grands champs, de grandes machines et peu d’agriculteurs : c’est une agriculture … .",
+      "spoken": "De grands champs, de grandes machines et peu d’agriculteurs : c’est une agriculture (mot manquant) .",
+      "choices": [
+        "mécanisée",
+        "vivrière",
+        "nomade"
+      ],
+      "answer": "mécanisée",
+      "hint": "Les machines font le travail.",
+      "explanation": "Mécanisée : faite avec des machines. Une agriculture vivrière nourrit d’abord la famille qui cultive.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Densité et contraintes",
+          "lines": [
+            "Densité : le nombre d’habitants sur un kilomètre carré.",
+            "Faible densité : peu d’habitants pour beaucoup d’espace.",
+            "Contrainte : ce qui rend la vie difficile.",
+            "Par exemple : le grand froid, le manque d’eau.",
+            "Biodiversité : la variété des plantes et des animaux."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-6e-living-low-density-1-7",
+      "prompt": "Les éleveurs qui se déplacent avec leurs troupeaux sont des éleveurs … .",
+      "spoken": "Les éleveurs qui se déplacent avec leurs troupeaux sont des éleveurs (mot manquant) .",
+      "choices": [
+        "sédentaires",
+        "nomades",
+        "urbains"
+      ],
+      "answer": "nomades",
+      "hint": "Ils ne restent pas au même endroit.",
+      "explanation": "Nomade : qui se déplace. Dans le Sahara ou en Mongolie, des éleveurs suivent leurs troupeaux vers l’eau et l’herbe.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Densité et contraintes",
+          "lines": [
+            "Densité : le nombre d’habitants sur un kilomètre carré.",
+            "Faible densité : peu d’habitants pour beaucoup d’espace.",
+            "Contrainte : ce qui rend la vie difficile.",
+            "Par exemple : le grand froid, le manque d’eau.",
+            "Biodiversité : la variété des plantes et des animaux."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "geography-6e-living",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

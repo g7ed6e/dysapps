@@ -1,0 +1,230 @@
+{
+  "id": "history-6e-antiquity-roman-empire-2",
+  "biome": "history-6e-antiquity",
+  "type": "roman-empire",
+  "level": 2,
+  "instruction": "Lis la question, puis le document. Choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "history-6e-antiquity-roman-empire-2-0",
+      "prompt": "Une loi de l’empereur Caracalla\nAn 212 après J.-C.\nTous les hommes libres de l’empire\ndeviennent citoyens romains.",
+      "question": "En quel siècle est cette loi ?",
+      "spoken": "Une loi de l’empereur Caracalla. An deux cent douze après Jésus-Christ. Tous les hommes libres de l’empire deviennent citoyens romains.",
+      "choices": [
+        "au IIe siècle après J.-C.",
+        "au IIIe siècle après J.-C.",
+        "au IIIe siècle avant J.-C."
+      ],
+      "answer": "au IIIe siècle après J.-C.",
+      "hint": "Dans le rappel, 212 est-il entre 101 et 200, ou entre 201 et 300 ?",
+      "explanation": "L’an 212 après J.-C. est entre l’an 201 et l’an 300 : c’est le IIIe siècle après J.-C. Le IIe siècle s’arrête à l’an 200.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "Qui a écrit ? À qui ? La première ligne le dit souvent.",
+            "J.-C. : Jésus-Christ.",
+            "Le IIe siècle après J.-C. : de l’an 101 à l’an 200.",
+            "Le IIIe siècle après J.-C. : de l’an 201 à l’an 300."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-roman-empire-2-1",
+      "prompt": "Description d’une photo\nLe pont du Gard, près de Nîmes\nIl portait l’eau jusqu’à la ville.",
+      "question": "À quoi servait ce pont ?",
+      "spoken": "Description d’une photo. Le pont du Gard, près de Nîmes. Il portait l’eau jusqu’à la ville.",
+      "choices": [
+        "à faire passer les chars",
+        "à défendre la ville",
+        "à amener l’eau en ville"
+      ],
+      "answer": "à amener l’eau en ville",
+      "hint": "Relis la dernière ligne.",
+      "explanation": "Le pont du Gard est un aqueduc : il amenait l’eau à Nîmes. Les Romains construisent ainsi en Gaule.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "Qui a écrit ? À qui ? La première ligne le dit souvent.",
+            "J.-C. : Jésus-Christ.",
+            "Le IIe siècle après J.-C. : de l’an 101 à l’an 200.",
+            "Le IIIe siècle après J.-C. : de l’an 201 à l’an 300."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-roman-empire-2-2",
+      "prompt": "Plan d’une ville de Gaule romaine\nUn forum au centre\nDes thermes et un amphithéâtre\nDes rues droites",
+      "question": "Que montre ce plan ?",
+      "spoken": "Plan d’une ville de Gaule romaine. Un forum au centre. Des thermes et un amphithéâtre. Des rues droites.",
+      "choices": [
+        "une cité grecque",
+        "la romanisation de la Gaule",
+        "un village du Néolithique"
+      ],
+      "answer": "la romanisation de la Gaule",
+      "hint": "Forum, thermes, amphithéâtre : où les trouve-t-on ?",
+      "explanation": "Forum, thermes et amphithéâtre sont des bâtiments romains. En Gaule, les villes se construisent comme Rome : c’est la romanisation.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "Qui a écrit ? À qui ? La première ligne le dit souvent.",
+            "J.-C. : Jésus-Christ.",
+            "Le IIe siècle après J.-C. : de l’an 101 à l’an 200.",
+            "Le IIIe siècle après J.-C. : de l’an 201 à l’an 300."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-roman-empire-2-3",
+      "prompt": "D’après une lettre de Pline, gouverneur romain\nÀ l’empereur Trajan\n« J’ai demandé aux accusés s’ils étaient chrétiens.\nCeux qui ont dit oui, je les ai fait condamner. »",
+      "question": "Qui a écrit cette lettre ?",
+      "spoken": "D’après une lettre de Pline, gouverneur romain. À l’empereur Trajan. « J’ai demandé aux accusés s’ils étaient chrétiens. Ceux qui ont dit oui, je les ai fait condamner. »",
+      "choices": [
+        "un gouverneur romain",
+        "l’empereur Trajan",
+        "un chrétien"
+      ],
+      "answer": "un gouverneur romain",
+      "hint": "« À l’empereur » : Trajan reçoit la lettre.",
+      "explanation": "Pline, gouverneur romain, écrit à l’empereur Trajan. Il lui raconte ce qu’il fait des chrétiens accusés.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "Qui a écrit ? À qui ? La première ligne le dit souvent.",
+            "J.-C. : Jésus-Christ.",
+            "Le IIe siècle après J.-C. : de l’an 101 à l’an 200.",
+            "Le IIIe siècle après J.-C. : de l’an 201 à l’an 300."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-roman-empire-2-4",
+      "prompt": "L’empereur Théodose, IVe siècle après J.-C.\nLe christianisme devient la religion de l’empire.\nLes cultes des anciens dieux sont interdits.",
+      "question": "Que deviennent les cultes des anciens dieux ?",
+      "spoken": "L’empereur Théodose, quatrième siècle après Jésus-Christ. Le christianisme devient la religion de l’empire. Les cultes des anciens dieux sont interdits.",
+      "choices": [
+        "ils sont interdits",
+        "ils restent la religion de l’empire",
+        "ils sont réservés à l’empereur"
+      ],
+      "answer": "ils sont interdits",
+      "hint": "Relis la dernière ligne.",
+      "explanation": "Au IVe siècle, le christianisme devient la religion de l’empire, et les cultes des anciens dieux sont interdits.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "Qui a écrit ? À qui ? La première ligne le dit souvent.",
+            "J.-C. : Jésus-Christ.",
+            "Le IIe siècle après J.-C. : de l’an 101 à l’an 200.",
+            "Le IIIe siècle après J.-C. : de l’an 201 à l’an 300."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-roman-empire-2-5",
+      "prompt": "Sur la route de la soie\nDe la Chine vers Rome : de la soie\nDe Rome vers la Chine : de l’or, du verre",
+      "question": "Que vend la Chine aux Romains ?",
+      "spoken": "Sur la route de la soie. De la Chine vers Rome : de la soie. De Rome vers la Chine : de l’or, du verre.",
+      "choices": [
+        "du verre",
+        "de la soie",
+        "de l’or"
+      ],
+      "answer": "de la soie",
+      "hint": "Lis la ligne qui commence par « De la Chine ».",
+      "explanation": "La soie part de la Chine vers Rome. L’or et le verre font le chemin inverse.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "Qui a écrit ? À qui ? La première ligne le dit souvent.",
+            "J.-C. : Jésus-Christ.",
+            "Le IIe siècle après J.-C. : de l’an 101 à l’an 200.",
+            "Le IIIe siècle après J.-C. : de l’an 201 à l’an 300."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-roman-empire-2-6",
+      "prompt": "La Chine des Han\nÀ la même époque que l’Empire romain\nUn immense territoire\nDirigé par un empereur",
+      "question": "Qu’ont en commun la Chine des Han et Rome ?",
+      "spoken": "La Chine des Han. À la même époque que l’Empire romain. Un immense territoire. Dirigé par un empereur.",
+      "choices": [
+        "ce sont deux cités",
+        "ce sont deux républiques",
+        "ce sont deux empires"
+      ],
+      "answer": "ce sont deux empires",
+      "hint": "Qui dirige la Chine des Han ?",
+      "explanation": "Un immense territoire dirigé par un empereur : c’est un empire, comme Rome à la même époque.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "Qui a écrit ? À qui ? La première ligne le dit souvent.",
+            "J.-C. : Jésus-Christ.",
+            "Le IIe siècle après J.-C. : de l’an 101 à l’an 200.",
+            "Le IIIe siècle après J.-C. : de l’an 201 à l’an 300."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-6e-antiquity-roman-empire-2-7",
+      "prompt": "Ce que disent les historiens\nLa soie part de Chine.\nElle passe de marchand en marchand.\nPresque aucun Romain n’a vu la Chine.",
+      "question": "Comment la soie arrive-t-elle à Rome ?",
+      "spoken": "Ce que disent les historiens. La soie part de Chine. Elle passe de marchand en marchand. Presque aucun Romain n’a vu la Chine.",
+      "choices": [
+        "de marchand en marchand",
+        "avec un seul marchand romain",
+        "par la mer depuis la Gaule"
+      ],
+      "answer": "de marchand en marchand",
+      "hint": "Lis la ligne qui commence par « Elle passe ».",
+      "explanation": "La soie passe de marchand en marchand, à travers l’Asie. Romains et Chinois ne se rencontrent presque jamais.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "Qui a écrit ? À qui ? La première ligne le dit souvent.",
+            "J.-C. : Jésus-Christ.",
+            "Le IIe siècle après J.-C. : de l’an 101 à l’an 200.",
+            "Le IIIe siècle après J.-C. : de l’an 201 à l’an 300."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "history-6e-antiquity",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -1,0 +1,230 @@
+{
+  "id": "geography-6e-living-metropolises-2",
+  "biome": "geography-6e-living",
+  "type": "metropolises",
+  "level": 2,
+  "instruction": "Lis la question, puis le document. Choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "geography-6e-living-metropolises-2-0",
+      "prompt": "Paris en chiffres\nLa ville : environ 2 millions d’habitants\nL’agglomération : environ 11 millions",
+      "question": "Combien de personnes vivent dans l’agglomération de Paris ?",
+      "spoken": "Paris en chiffres. La ville : environ deux millions d’habitants. L’agglomération : environ onze millions.",
+      "choices": [
+        "2 millions",
+        "11 millions",
+        "13 millions"
+      ],
+      "answer": "11 millions",
+      "hint": "Lis la ligne qui commence par « L’agglomération ».",
+      "explanation": "L’agglomération, la ville et ses banlieues, compte 11 millions d’habitants. La ville seule en compte 2 millions, et ils sont déjà dans les 11.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "Premier plan : ce qui est devant, sur la photo.",
+            "Arrière-plan : ce qui est au fond.",
+            "La ville : la commune seule.",
+            "L’agglomération : la ville et ses banlieues."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-6e-living-metropolises-2-1",
+      "prompt": "Description d’une photo de Mumbai\nAu premier plan : des cabanes en tôle\nÀ l’arrière-plan : de grandes tours de verre",
+      "question": "Que montre cette photo ?",
+      "spoken": "Description d’une photo de Mumbai. Au premier plan : des cabanes en tôle. À l’arrière-plan : de grandes tours de verre.",
+      "choices": [
+        "une ville où tous sont riches",
+        "de grandes inégalités",
+        "un village de campagne"
+      ],
+      "answer": "de grandes inégalités",
+      "hint": "Compare le premier plan et l’arrière-plan.",
+      "explanation": "Un bidonville devant, des tours de bureaux au fond : riches et pauvres vivent côte à côte. Ce sont des inégalités.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "Premier plan : ce qui est devant, sur la photo.",
+            "Arrière-plan : ce qui est au fond.",
+            "La ville : la commune seule.",
+            "L’agglomération : la ville et ses banlieues."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-6e-living-metropolises-2-2",
+      "prompt": "Chaque matin, à Lyon\nDes milliers de gens arrivent des communes autour.\nLa plupart viennent en voiture.\nLe soir, ils repartent chez eux.",
+      "question": "Quel problème ces trajets causent-ils ?",
+      "spoken": "Chaque matin, à Lyon. Des milliers de gens arrivent des communes autour. La plupart viennent en voiture. Le soir, ils repartent chez eux.",
+      "choices": [
+        "des inondations",
+        "des embouteillages",
+        "moins de pollution"
+      ],
+      "answer": "des embouteillages",
+      "hint": "Des milliers de voitures, à la même heure.",
+      "explanation": "Des milliers de voitures à la même heure : ce sont des embouteillages, et ils polluent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "Premier plan : ce qui est devant, sur la photo.",
+            "Arrière-plan : ce qui est au fond.",
+            "La ville : la commune seule.",
+            "L’agglomération : la ville et ses banlieues."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-6e-living-metropolises-2-3",
+      "prompt": "Deux photos du même endroit, près d’une ville\nIl y a 30 ans : des champs\nAujourd’hui : des maisons, un centre commercial",
+      "question": "Que s’est-il passé ?",
+      "spoken": "Deux photos du même endroit, près d’une ville. Il y a trente ans : des champs. Aujourd’hui : des maisons, un centre commercial.",
+      "choices": [
+        "la ville s’est étendue sur les champs",
+        "les champs ont remplacé la ville",
+        "rien n’a changé"
+      ],
+      "answer": "la ville s’est étendue sur les champs",
+      "hint": "Qu’y avait-il avant ? Qu’y a-t-il maintenant ?",
+      "explanation": "Les maisons ont pris la place des champs : la ville s’étend. On parle d’étalement urbain.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "Premier plan : ce qui est devant, sur la photo.",
+            "Arrière-plan : ce qui est au fond.",
+            "La ville : la commune seule.",
+            "L’agglomération : la ville et ses banlieues."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-6e-living-metropolises-2-4",
+      "prompt": "Fiche : Tokyo, au Japon\nPlus de 30 millions d’habitants\nDes entreprises du monde entier",
+      "question": "Pourquoi Tokyo est-elle une métropole mondiale ?",
+      "spoken": "Fiche : Tokyo, au Japon. Plus de trente millions d’habitants. Des entreprises du monde entier.",
+      "choices": [
+        "elle a peu d’habitants",
+        "elle est en Chine",
+        "elle attire le monde entier"
+      ],
+      "answer": "elle attire le monde entier",
+      "hint": "Relis la dernière ligne.",
+      "explanation": "Beaucoup d’habitants et des entreprises du monde entier : Tokyo commande une partie de l’économie mondiale. Elle est au Japon, pas en Chine.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "Premier plan : ce qui est devant, sur la photo.",
+            "Arrière-plan : ce qui est au fond.",
+            "La ville : la commune seule.",
+            "L’agglomération : la ville et ses banlieues."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-6e-living-metropolises-2-5",
+      "prompt": "Projet pour un nouveau quartier\nDes pistes cyclables et un tram\nDes toits couverts de plantes\nDes panneaux solaires",
+      "question": "Quel quartier est prévu ?",
+      "spoken": "Projet pour un nouveau quartier. Des pistes cyclables et un tram. Des toits couverts de plantes. Des panneaux solaires.",
+      "choices": [
+        "un écoquartier",
+        "une zone industrielle",
+        "un bidonville"
+      ],
+      "answer": "un écoquartier",
+      "hint": "Vélo, plantes, soleil : c’est bon pour quoi ?",
+      "explanation": "Un écoquartier pollue peu et respecte la nature : c’est un morceau de ville durable.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "Premier plan : ce qui est devant, sur la photo.",
+            "Arrière-plan : ce qui est au fond.",
+            "La ville : la commune seule.",
+            "L’agglomération : la ville et ses banlieues."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-6e-living-metropolises-2-6",
+      "prompt": "Les trains de banlieue de Mumbai\nPlus de 7 millions de voyageurs par jour\nDes wagons pleins aux heures de pointe",
+      "question": "Que montre ce document ?",
+      "spoken": "Les trains de banlieue de Mumbai. Plus de sept millions de voyageurs par jour. Des wagons pleins aux heures de pointe.",
+      "choices": [
+        "tout le monde roule en voiture",
+        "les trains sont trop pleins",
+        "Mumbai a peu d’habitants"
+      ],
+      "answer": "les trains sont trop pleins",
+      "hint": "Relis la dernière ligne.",
+      "explanation": "Des millions de voyageurs et des wagons pleins : les trains sont trop pleins. Les transports ont du mal à suivre la croissance de la ville.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "Premier plan : ce qui est devant, sur la photo.",
+            "Arrière-plan : ce qui est au fond.",
+            "La ville : la commune seule.",
+            "L’agglomération : la ville et ses banlieues."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-6e-living-metropolises-2-7",
+      "prompt": "Trois métropoles\nNew York : États-Unis, Amérique du Nord\nLagos : Nigeria, Afrique\nShanghai : Chine, Asie",
+      "question": "Quelle métropole est en Afrique ?",
+      "spoken": "Trois métropoles. New York : États-Unis, Amérique du Nord. Lagos : Nigeria, Afrique. Shanghai : Chine, Asie.",
+      "choices": [
+        "New York",
+        "Shanghai",
+        "Lagos"
+      ],
+      "answer": "Lagos",
+      "hint": "Cherche le mot « Afrique » dans les lignes.",
+      "explanation": "Lagos est au Nigeria, en Afrique. C’est la plus grande ville du pays.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "Premier plan : ce qui est devant, sur la photo.",
+            "Arrière-plan : ce qui est au fond.",
+            "La ville : la commune seule.",
+            "L’agglomération : la ville et ses banlieues."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "geography-6e-living",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}
