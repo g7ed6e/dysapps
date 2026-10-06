@@ -7,17 +7,19 @@
 // Moins d'animations : le lieu se soulève d'un coup, et la page pose sans geste.
 // Les poignées (les quatre flèches et « Tourner ») sont dessinées sur l'eau autour du choix, en un appel de dessin de plus
 // (./arrangeHandles.ts) ; à chaque image où elles bougent à l'écran, leur place est donnée à la page (`ChoixALEcran`) :
-// elle y pose des boutons HTML transparents (ArrangeHandles.tsx), qui portent leur nom et reçoivent le toucher.
+// elle y pose des boutons HTML transparents (ArrangeHandles.tsx), qui portent leur nom et reçoivent le toucher. Sans
+// choix, les petits radeaux des bouts de liaison (choix 1a du mainteneur, 6 octobre 2026), de même : un appel, et leurs
+// places à l'écran données à la page.
 import type { Lumiere } from './light';
 import { mixColor } from '../world/daylight';
 import * as THREE from 'three';
 import { GESTE_SOUS_LE_SOL, gestureCut, veilFootprint, veilOpacity, veilZone } from '../world/arrangeGesture';
-import type { ArrangeCellKind, ArrangeGesture, ArrangeView, ChoixALEcran } from '../world/view';
+import type { ArrangeCellKind, ArrangeGesture, ArrangeView, ChoixALEcran, LinkEndHandle } from '../world/view';
 import { lirePlaceReelle, type Rect } from '../freeSpace';
 import { drawIslandLabel, measureIslandLabel } from '../world/labelCanvas';
 import type { Monde, PartieDeLaScene } from './scenePart';
 import { mesuresDemandees } from '../rendering';
-import { creerPoignees } from './arrangeHandles';
+import { creerBoutsDesLiaisons, creerPoignees } from './arrangeHandles';
 import { type CleDePoignee, type PoigneesDuChoix, sortDeLaPlace } from '../world/arrangeHandles';
 import type { LabelBox } from '../world/labelLayout';
 
@@ -188,6 +190,8 @@ export interface Amenagement extends PartieDeLaScene {
   poser(vue: ArrangeView | null): void;
   /** Le geste de la pose en cours, ou rien. */
   geste(g: ArrangeGesture | null): void;
+  /** Les poignées des bouts de liaison, sans choix en cours (ou rien). */
+  poserLesBouts(bouts: readonly LinkEndHandle[] | null): void;
   /** Le mode est ouvert : les matériaux des blocs portent son ajout ; fermé, ils redeviennent ceux d'avant. */
   ouvrir(oui: boolean): void;
   /** Une poignée vient d'être touchée (son bouton) : elle s'enfonce et remonte. */
@@ -310,6 +314,11 @@ export function creerAmenagement(
   // n'est alloué à chaque image : les places vont dans un tableau gardé, et l'objet donné à la page n'est construit que
   // s'il a changé.
   const poignees = creerPoignees(monde.scene, camera, blocs ? 'blocs' : 'peint', reduit);
+  const bouts = creerBoutsDesLiaisons(monde.scene, camera, blocs ? 'blocs' : 'peint');
+  /** Les places des bouts à l'écran (cinq nombres chacun), à la mesure des bouts posés. */
+  let iciDesBouts = new Float32Array(0);
+  /** Les places qui colleraient le lieu à un voisin, à l'écran (deux nombres chacune). */
+  let iciDesReunions = new Float32Array(0);
   let vueCourante: ArrangeView | null = null;
   let dernierALEcran: ChoixALEcran | null = null;
   let dernierSuivi: ((b: ChoixALEcran | null) => void) | null = null;
@@ -330,7 +339,9 @@ export function creerAmenagement(
     const f = aLEcran?.() ?? null;
     if (!f) return;
     const vue = vueCourante;
-    if (vue && !enCours && (!place || maintenant - placeLue > RELECTURE_DE_LA_PLACE_MS)) {
+    // Sans choix, les bouts des liaisons ; avec un choix, ses poignées.
+    const montre = Boolean(vue) || bouts.nombre > 0;
+    if (montre && !enCours && (!place || maintenant - placeLue > RELECTURE_DE_LA_PLACE_MS)) {
       const scene = el.closest('[data-scene]');
       const r = el.getBoundingClientRect();
       const s = scene?.getBoundingClientRect();
@@ -338,20 +349,42 @@ export function creerAmenagement(
       placeLue = maintenant;
     }
     // La place, seulement quand les poignées se montrent : le typage suit, sans assertion.
-    const p = vue && !enCours && place && place.w && place.h ? place : null;
+    const p = montre && !enCours && place && place.w && place.h ? place : null;
     let n = 0;
+    let nb = 0;
+    let nr = 0;
     if (p) {
       // La caméra de cette image (le cadrage l'a déjà bougée) : ses matrices à jour avant de projeter.
       camera.updateMatrixWorld();
-      n = poignees.aLEcran(camera, p.w, p.h, ici);
-      const toutes = n === (vue?.poignees?.liste.length ?? 0);
-      if (vue?.poignees && (!toutes || sortDeLaPlace(ici, n, p.libre)) && maintenant - rameneeA > RAMENER_MS && ramener?.(vue.poignees)) rameneeA = maintenant;
+      if (vue) {
+        n = poignees.aLEcran(camera, p.w, p.h, ici);
+        const toutes = n === (vue.poignees?.liste.length ?? 0);
+        if (vue.poignees && (!toutes || sortDeLaPlace(ici, n, p.libre)) && maintenant - rameneeA > RAMENER_MS && ramener?.(vue.poignees)) rameneeA = maintenant;
+        for (const r of vue.reunions ?? []) {
+          if (2 * nr >= iciDesReunions.length) break;
+          point.set(r.x, r.z, r.y).project(camera);
+          if (point.z > 1) continue;
+          iciDesReunions[2 * nr] = ((point.x + 1) / 2) * p.w;
+          iciDesReunions[2 * nr + 1] = ((1 - point.y) / 2) * p.h;
+          nr++;
+        }
+      } else nb = bouts.aLEcran(camera, p.w, p.h, iciDesBouts);
     }
     const d = dernierALEcran;
     let pareil: boolean;
-    if (!p || !n) pareil = d === null;
+    if (!p || !(n || nb)) pareil = d === null;
     else {
-      pareil = d !== null && d.poignees.length === n && d.libre.x0 === p.libre.x0 + p.dx && d.libre.y0 === p.libre.y0 + p.dy && d.libre.x1 === p.libre.x1 + p.dx && d.libre.y1 === p.libre.y1 + p.dy;
+      const db = d?.bouts ?? [];
+      const dr = d?.reunions ?? [];
+      pareil =
+        d !== null &&
+        d.poignees.length === n &&
+        db.length === nb &&
+        dr.length === nr &&
+        d.libre.x0 === p.libre.x0 + p.dx &&
+        d.libre.y0 === p.libre.y0 + p.dy &&
+        d.libre.x1 === p.libre.x1 + p.dx &&
+        d.libre.y1 === p.libre.y1 + p.dy;
       for (let k = 0; d && pareil && k < n; k++) {
         const q = d.poignees[k];
         pareil =
@@ -361,17 +394,41 @@ export function creerAmenagement(
           Math.abs(q.w - ici[5 * k + 3]) < 0.5 &&
           Math.abs(q.h - ici[5 * k + 4]) < 0.5;
       }
+      for (let k = 0; pareil && k < nr; k++) pareil = Math.abs(dr[k].x - (iciDesReunions[2 * k] + p.dx)) < 0.5 && Math.abs(dr[k].y - (iciDesReunions[2 * k + 1] + p.dy)) < 0.5;
+      for (let k = 0; pareil && k < nb; k++) {
+        const q = db[k];
+        const b = bouts.bout(iciDesBouts[5 * k]);
+        pareil =
+          b !== null &&
+          q.link === b.link &&
+          q.end === b.end &&
+          Math.abs(q.x - (iciDesBouts[5 * k + 1] + p.dx)) < 0.5 &&
+          Math.abs(q.y - (iciDesBouts[5 * k + 2] + p.dy)) < 0.5 &&
+          Math.abs(q.w - iciDesBouts[5 * k + 3]) < 0.5 &&
+          Math.abs(q.h - iciDesBouts[5 * k + 4]) < 0.5;
+      }
     }
     if (f === dernierSuivi && pareil) return;
     dernierSuivi = f;
     if (pareil) return f(d);
     const liste: ChoixALEcran['poignees'][number][] = [];
-    if (p)
+    const listeDesBouts: NonNullable<ChoixALEcran['bouts']>[number][] = [];
+    const reunions: { x: number; y: number }[] = [];
+    if (p) {
+      for (let k = 0; k < nr; k++) reunions.push({ x: iciDesReunions[2 * k] + p.dx, y: iciDesReunions[2 * k + 1] + p.dy });
       for (let k = 0; k < n; k++) {
         const cle = poignees.cle(ici[5 * k]);
         if (cle) liste.push({ cle, x: ici[5 * k + 1] + p.dx, y: ici[5 * k + 2] + p.dy, w: ici[5 * k + 3], h: ici[5 * k + 4] });
       }
-    dernierALEcran = p && liste.length ? { poignees: liste, libre: { x0: p.libre.x0 + p.dx, y0: p.libre.y0 + p.dy, x1: p.libre.x1 + p.dx, y1: p.libre.y1 + p.dy } } : null;
+      for (let k = 0; k < nb; k++) {
+        const b = bouts.bout(iciDesBouts[5 * k]);
+        if (b) listeDesBouts.push({ link: b.link, end: b.end, x: iciDesBouts[5 * k + 1] + p.dx, y: iciDesBouts[5 * k + 2] + p.dy, w: iciDesBouts[5 * k + 3], h: iciDesBouts[5 * k + 4] });
+      }
+    }
+    dernierALEcran =
+      p && (liste.length || listeDesBouts.length)
+        ? { poignees: liste, ...(listeDesBouts.length ? { bouts: listeDesBouts } : {}), ...(reunions.length ? { reunions } : {}), libre: { x0: p.libre.x0 + p.dx, y0: p.libre.y0 + p.dy, x1: p.libre.x1 + p.dx, y1: p.libre.y1 + p.dy } }
+        : null;
     f(dernierALEcran);
   };
 
@@ -420,6 +477,7 @@ export function creerAmenagement(
     poser(vue) {
       vider();
       vueCourante = vue;
+      iciDesReunions = new Float32Array(2 * (vue?.reunions?.length ?? 0));
       const meme = souleve && vue?.souleve && souleve.x0 === vue.souleve.x0 && souleve.y0 === vue.souleve.y0 && souleve.x1 === vue.souleve.x1;
       if (!meme) souleveDepuis = performance.now();
       souleve = vue?.souleve ?? null;
@@ -443,6 +501,10 @@ export function creerAmenagement(
       cases = dessin;
       monde.scene.add(dessin);
     },
+    poserLesBouts(b) {
+      bouts.poser(b);
+      iciDesBouts = new Float32Array(5 * bouts.nombre);
+    },
     geste(g) {
       enCours = g;
       regler(performance.now());
@@ -458,7 +520,8 @@ export function creerAmenagement(
     poignees: {
       // Les poignées, et le nom posé au-dessus d'elles : aucune étiquette d'île ne se pose dessus.
       boites(cam, w, h) {
-        const out = poignees.boites(cam, w, h);
+        // Sans choix, les petits radeaux des bouts de liaison (choix 1a) ; avec un choix, ses poignées.
+        const out = [...poignees.boites(cam, w, h), ...bouts.boites(cam, w, h)];
         if (nomSprite.visible && nomTaille.w) {
           point.copy(nomSprite.position).project(cam);
           if (point.z <= 1) {
@@ -470,7 +533,7 @@ export function creerAmenagement(
         return out;
       },
       get version() {
-        return poignees.version;
+        return poignees.version + bouts.version;
       },
     },
     animer() {
@@ -478,6 +541,7 @@ export function creerAmenagement(
       regler(maintenant);
       tailleDuNom();
       poignees.animer(maintenant, el.clientHeight);
+      bouts.animer(el.clientHeight);
       suivreALEcran(maintenant);
     },
     dispose() {
@@ -487,6 +551,7 @@ export function creerAmenagement(
       if (dernierSuivi && dernierALEcran) dernierSuivi(null);
       oublierLesMateriaux();
       poignees.dispose();
+      bouts.dispose();
       monde.scene.remove(nomSprite);
       nomMat.map?.dispose();
       nomMat.dispose();

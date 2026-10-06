@@ -1,7 +1,8 @@
 // Ce que le monde montre pendant le choix du mode « Aménager » (GD-9, L5), en cases du monde : le fantôme du choix au
 // contour en pointillés, à fleur d'eau ; les places libres autour de lui seulement ; les liaisons retracées en
 // pointillés comme elles le seraient après la pose ; celles qui ne tiendraient plus, barrées, avec une croix au-dessus
-// (une icône : la couleur n'est jamais seule) ; le lieu choisi, soulevé ; et le point que la vue suit. La 3D le dessine
+// (une icône : la couleur n'est jamais seule) ; les places qui colleraient le lieu à un voisin, où la page pose l'icône
+// de « Réunir » (6 octobre 2026, choix 2a du mainteneur) ; le lieu choisi, soulevé ; et le point que la vue suit. La 3D le dessine
 // en un seul maillage (three/arrange.ts). Code pur, sans Three.js.
 import type { BiomeId } from '../biomes';
 import { BIOMES } from '../biomes';
@@ -14,6 +15,7 @@ import {
   freeStationSpots,
   groupAt,
   guardianOf,
+  joinsAround,
   joinsIn,
   moveIsland,
   moveLanding,
@@ -148,11 +150,23 @@ function dessinDuChoix(world: World, c: ArrangeChoice): ArrangeView {
       const forme = groupe.length === 2 ? joinShape(groupe[0].def, groupe[1].def) : null;
       if (forme) contourDuRectangle(forme.zone, eau, out);
       const debut = out.length;
-      for (const s of freeSpots(world, c.id, c.spot.turn)) {
+      // Pour chaque voisin auquel il se collerait, la place la plus proche du fantôme : une seule icône par voisin (des
+      // places voisines, d'un pas l'une de l'autre, empileraient leurs icônes à l'écran).
+      const parVoisin = new Map<BiomeId, { d: number; x: number; y: number }>();
+      const reunionsA = joinsAround(world, c.id);
+      for (const s of freeSpots(world, c.id, c.spot.turn, { ...c.spot, pas: PAS_AUTOUR })) {
         if (Math.max(Math.abs(s.x - c.spot.x), Math.abs(s.y - c.spot.y)) > PAS_AUTOUR || (s.x === c.spot.x && s.y === c.spot.y)) continue;
         const p = poseOfSpot(a, s);
         place({ x: p.x + 8, y: p.y + 8 }, eau, 3, out);
+        // Posé là, le lieu se collerait à un voisin : l'icône de « Réunir » sur la jointure, sur l'eau entre les deux terres,
+        // là où irait leur construction (jamais sur la terre du lieu) ; « Réunir » s'allumera dans la barre.
+        const d = Math.abs(s.x - c.spot.x) + Math.abs(s.y - c.spot.y);
+        for (const j of reunionsA(s)) {
+          const q = parVoisin.get(j.id);
+          if (!q || d < q.d) parVoisin.set(j.id, { d, x: (j.zone.x0 + j.zone.x1) / 2, y: (j.zone.y0 + j.zone.y1) / 2 });
+        }
       }
+      const reunions = [...new Map([...parVoisin.values()].map((q) => [`${q.x},${q.y}`, { x: q.x, y: q.y, z: eau + 1 }])).values()];
       const r = moveIsland(world, c.id, c.spot);
       const relink = r.ok ? r.relink : [];
       const lieux = groupe.map((g) => g.id);
@@ -163,7 +177,7 @@ function dessinDuChoix(world: World, c: ArrangeChoice): ArrangeView {
       // La vue garde entier le fantôme : les deux lieux réunis et leur réunion, pas seulement son milieu.
       const fantome = out.slice(0, debut);
       const cadre = fantome.length ? { rect: union(fantome.map((q) => ({ x0: q.x, y0: q.y, x1: q.x + 1, y1: q.y + 1 }))), z: eau, seq: 0 } : undefined;
-      return { cases: out, souleve: union(zone ? [...ici2, zone] : ici2), suivre: milieu(fantome, eau), barrees: relink, ...(cadre ? { cadre } : {}) };
+      return { cases: out, souleve: union(zone ? [...ici2, zone] : ici2), suivre: milieu(fantome, eau), barrees: relink, ...(cadre ? { cadre } : {}), ...(reunions.length ? { reunions } : {}) };
     }
     case 'gardien': {
       const r = guardianIsletRectangle(ici, c.place);

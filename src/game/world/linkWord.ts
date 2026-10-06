@@ -24,6 +24,8 @@ export interface LinkPhrases {
   le: string;
   /** « cet ouvrage », « cette liaison ». */
   ce: string;
+  /** « de l’ouvrage », « du pont », « de la liaison ». */
+  du: string;
   /** « ouvrage », « liaison ». */
   nom: string;
   /** « ouvrages », « liaisons ». */
@@ -42,11 +44,13 @@ export function linkPhrases(m: LinkWord = LIAISON): LinkPhrases {
   const un = `${m.feminin ? 'une' : 'un'} ${m.nom}`;
   const le = voyelle(m.nom) ? `l’${m.nom}` : `${m.feminin ? 'la' : 'le'} ${m.nom}`;
   const ce = `${m.feminin ? 'cette' : voyelle(m.nom) ? 'cet' : 'ce'} ${m.nom}`;
+  const du = voyelle(m.nom) || m.feminin ? `de ${le}` : `du ${m.nom}`;
   const accord = (masculin: string, feminin = `${masculin}e`) => (m.feminin ? feminin : masculin);
   return {
     un,
     le,
     ce,
+    du,
     nom: m.nom,
     pluriel: m.pluriel,
     accord,

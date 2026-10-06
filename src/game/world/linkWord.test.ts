@@ -19,5 +19,6 @@ describe('le mot d’une liaison', () => {
     expect([l.un, l.le, l.ce]).toEqual(['une liaison', 'la liaison', 'cette liaison']);
     expect(l.accord('reposé')).toBe('reposée');
     expect(linkPhrases({ nom: 'pont', pluriel: 'ponts', feminin: false }).ce).toBe('ce pont');
+    expect([o.du, l.du, linkPhrases({ nom: 'pont', pluriel: 'ponts', feminin: false }).du]).toEqual(['de l’ouvrage', 'de la liaison', 'du pont']);
   });
 });

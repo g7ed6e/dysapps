@@ -8,6 +8,12 @@
  */
 export const SEUIL_DU_GLISSE = 10;
 
+/**
+ * La marque d'un appui relayé à la scène par un bouton posé par-dessus (la poignée d'un bout de liaison,
+ * ArrangeHandles.tsx) : le doigt y est parti en glissé, la vue glisse avec lui, et le lever n'ouvre rien.
+ */
+export const RELAYE_DEPUIS_UN_BOUTON = 'dysappsRelaye';
+
 /** Un décalage sur le plan horizontal, en cases du monde (`x` : vers l'est, `z` : la grille `y`). */
 export interface Decalage {
   x: number;

@@ -45,6 +45,12 @@ export interface ArrangeView {
   cadre?: CadreDuMode;
   /** Les flèches et « Tourner », dessinées sur l'eau autour du choix (./arrangeHandles.ts). */
   poignees?: PoigneesDuChoix;
+  /**
+   * Les places libres montrées qui colleraient le lieu à un voisin (6 octobre 2026, choix 2a du mainteneur), une par
+   * voisin, la plus proche du fantôme : le milieu de leur jointure (sur l'eau, là où irait la construction), en cases du
+   * monde, `z` le dessus de l'eau ; la page y pose l'icône de « Réunir ».
+   */
+  reunions?: { x: number; y: number; z: number }[];
 }
 
 /** Un rectangle du monde (en cases, x et y) à garder entier à l'écran, à une hauteur ; `seq` change à chaque demande. */
@@ -70,7 +76,37 @@ interface PoigneeALEcran {
  */
 export interface ChoixALEcran {
   poignees: readonly PoigneeALEcran[];
+  /** Les poignées des bouts de liaison, à l'écran (sans choix en cours ; choix 1a du mainteneur). */
+  bouts?: readonly LinkEndOnScreen[];
+  /** Les places qui colleraient le lieu choisi à un voisin, à l'écran (le milieu de leur jointure ; choix 2a du mainteneur). */
+  reunions?: readonly { x: number; y: number }[];
   libre: Rectangle;
+}
+
+/** La poignée d'un bout de liaison à l'écran : son milieu et sa taille (pixels CSS, 48 px au moins pour le bouton). */
+export interface LinkEndOnScreen {
+  link: string;
+  end: 'from' | 'to';
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
+/**
+ * La poignée d'un bout de liaison posée (6 octobre 2026, choix 1a du mainteneur) : dans le mode, sans choix en cours,
+ * chaque bout porte un petit radeau, au bout de son ponton (en cases du monde, `z` le dessus de l'eau) ; la toucher
+ * choisit cette arrivée (./arrangeHandles.ts la place).
+ */
+export interface LinkEndHandle {
+  link: string;
+  end: 'from' | 'to';
+  x: number;
+  y: number;
+  z: number;
+  /** Le sens du ponton, de la côte vers le large (une case) : un bout trop près d'un autre recule à l'opposé. */
+  dx: number;
+  dy: number;
 }
 
 /**
@@ -332,6 +368,8 @@ export interface WorldViewProps {
    */
   amenager?: {
     vue: ArrangeView | null;
+    /** Les poignées des bouts de liaison, dessinées quand rien n'est choisi (choix 1a du mainteneur), ou rien. */
+    bouts?: readonly LinkEndHandle[] | null;
     cadre?: CadreDuMode | null;
     ecran?: (b: ChoixALEcran | null) => void;
     /** Les touchers des boutons posés sur les poignées : la poignée touchée s'enfonce dans le monde. */
@@ -446,6 +484,13 @@ export interface PoigneesDuChoix {
   cy: number;
   z: number;
   liste: PoigneeDuMonde[];
+  /**
+   * Le choix est sur une place prise (choix 3 du mainteneur) : une croix grise se dessine au milieu de son emprise,
+   * de la demi-taille `bras` (en cases, à l'échelle 1) ; rien sinon.
+   */
+  prise?: { bras: number };
+  /** Une arrivée choisie (choix 1a) : le petit radeau de son bout se dessine au milieu du choix, sous les flèches. */
+  bout?: boolean;
   /** Ce que couvrent les radeaux à l'échelle 1, emprise du choix comprise : la vue le garde à l'écran. */
   emprise: Rectangle;
 }

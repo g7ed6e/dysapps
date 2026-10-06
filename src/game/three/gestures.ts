@@ -17,7 +17,7 @@ import type { Signes } from './signs';
 import type { Cubes } from './cubes';
 import type { Amarre, Navire } from './ship';
 import type { Camera } from './camera';
-import { glisseCommence, pointDuPlan, SEUIL_DU_GLISSE } from './drag';
+import { glisseCommence, pointDuPlan, RELAYE_DEPUIS_UN_BOUTON, SEUIL_DU_GLISSE } from './drag';
 
 /** Le doigt posé sur le monde : son pointeur, où, et le point du sol saisi une fois le seuil passé (sinon `null`). */
 interface Appui {
@@ -30,6 +30,11 @@ interface Appui {
   cy: number;
   /** Un second doigt s'est posé (la vue se pince) : lever les doigts n'ouvre rien. */
   pince?: boolean;
+  /**
+   * Un glissé parti d'un bouton posé sur la scène (la poignée d'un bout de liaison, GD-9), relayé ici une fois le doigt
+   * parti (`RELAYE_DEPUIS_UN_BOUTON`) : c'est un glissé, lever le doigt n'ouvre rien.
+   */
+  relaye?: boolean;
 }
 
 /** Ce que les gestes lisent de la scène : ses parties, les rappels de la vue, et ce que la vue permet. */
@@ -156,7 +161,7 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
     if (down && !pince && e.pointerType === 'touch' && e.pointerId !== down.id && zoomPermis()) return pincer(e, down);
     // Un seul doigt : le second, posé pendant que le premier touche ou glisse, ne fait rien.
     if (down || !e.isPrimary || (e.pointerType === 'mouse' && e.button !== 0)) return;
-    down = { id: e.pointerId, x: e.clientX, y: e.clientY, cx: e.clientX, cy: e.clientY, ancre: null };
+    down = { id: e.pointerId, x: e.clientX, y: e.clientY, cx: e.clientX, cy: e.clientY, ancre: null, ...(RELAYE_DEPUIS_UN_BOUTON in e ? { relaye: true } : {}) };
     // Le glissé continue même si le doigt sort du canvas (sur un bouton, un panneau).
     try {
       canvas.setPointerCapture(e.pointerId);
@@ -344,7 +349,7 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
     if (pinceAvec(e.pointerId)) return finDuPincement(e);
     if (!down || e.pointerId !== down.id) return;
     const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y);
-    const glisse = down.ancre !== null || Boolean(down.pince);
+    const glisse = down.ancre !== null || Boolean(down.pince) || Boolean(down.relaye);
     lacher(e);
     // Après un glissé (ou un doigt qui a bougé pendant une marche ou un voyage), lever le doigt n'ouvre rien.
     if (glisse || moved >= SEUIL_DU_GLISSE) return;

@@ -9,7 +9,7 @@
 import { useEffect, useState } from 'react';
 import { Icon, IconButton } from '../components/Icon';
 import { SpeakButton } from '../components/SpeakButton';
-import { type Amenagement, FLECHES, type LigneDuMode } from './Arranging';
+import { type Amenagement, FLECHES, type LigneDuMode, PLACE_PRISE } from './Arranging';
 import { getBridge } from './world/archipelago';
 import { canTurn } from './world/arrangeMode';
 import { thePlace } from './world/placeArticle';
@@ -86,21 +86,27 @@ export function ArrangeListOffer({ onListe, onCarte }: { onListe: () => void; on
 /**
  * Où est un lieu, en signes, dans l'ordre de la voix : le nom du voisin repère, la flèche, le nombre, la case
  * (« Mine des lettres ↖ 4 ⬚ »). En grand texte, le mot de la direction s'ajoute à la flèche, et « cases » au nombre.
- * Décoratif : la phrase en mots est dite à côté (`role="status"`, le haut-parleur).
+ * Décoratif : la phrase en mots est dite à côté (`role="status"`, le haut-parleur). `sansEcart` : sur une place prise, ni
+ * nombre ni case (la croix et « Place prise » les remplacent).
  */
-export function PlaceSignsLine({ signes }: { signes: PlaceSigns }) {
+export function PlaceSignsLine({ signes, sansEcart = false }: { signes: PlaceSigns; sansEcart?: boolean }) {
   return (
     <span className="signes-de-place">
       <span className="signe-voisin">{signes.voisin}</span>{' '}
       <span className="signe">
         <Icon name={signes.direction.icone} />
         <span className="mot-signe">{signes.direction.mot}</span>
-      </span>{' '}
-      <span className="signe">
-        <strong>{signes.cases}</strong>
-        <Icon name="case" />
-        <span className="mot-signe">{casesWord(signes.cases).replace(/^\d+ /, '')}</span>
       </span>
+      {!sansEcart && (
+        <>
+          {' '}
+          <span className="signe">
+            <strong>{signes.cases}</strong>
+            <Icon name="case" />
+            <span className="mot-signe">{casesWord(signes.cases).replace(/^\d+ /, '')}</span>
+          </span>
+        </>
+      )}
     </span>
   );
 }
@@ -119,33 +125,58 @@ function SigneAReposer({ n }: { n: number }) {
 function SigneReunis({ a, b }: { a: string; b: string }) {
   return (
     <>
-      {a}{' '}
+      <span className="signe-voisin">{a}</span>{' '}
       <span className="signe">
         <Icon name="reunir" />
       </span>{' '}
-      {b}
+      <span className="signe-voisin">{b}</span>
     </>
   );
+}
+
+/**
+ * Une place prise (choix 3 du mainteneur) : la croix et ses deux mots, comme un refus, sur la même ligne que les signes
+ * de la place (à la place du nombre de cases : la ligne garde sa hauteur).
+ */
+function SignePrise({ prise }: { prise?: boolean }) {
+  return prise ? (
+    <span className="signe signe-refus">
+      <Icon name="close" /> {PLACE_PRISE}
+    </span>
+  ) : null;
 }
 
 /** Ce que montre la ligne du mode (décoratif : ce qu'elle dit en mots est à côté). */
 function Signes({ ligne }: { ligne: LigneDuMode }) {
   switch (ligne.genre) {
     case 'texte':
-      return <>{ligne.texte}</>;
+      return (
+        <>
+          {ligne.texte}
+          {ligne.vers && (
+            <>
+              {' '}
+              <span className="signe">
+                <Icon name="ouvrage" /> <span className="signe-voisin">{ligne.vers}</span>
+              </span>
+            </>
+          )}{' '}
+          <SignePrise prise={ligne.prise} />
+        </>
+      );
     case 'gardien':
       return (
         <>
           <span className="signe">
             <Icon name="shield" />
           </span>{' '}
-          <PlaceSignsLine signes={ligne.signes} />
+          <PlaceSignsLine signes={ligne.signes} sansEcart={ligne.prise} /> <SignePrise prise={ligne.prise} />
         </>
       );
     case 'place':
       return (
         <>
-          <PlaceSignsLine signes={ligne.signes} /> <SigneAReposer n={ligne.aReposer} />
+          <PlaceSignsLine signes={ligne.signes} sansEcart={ligne.prise} /> <SigneAReposer n={ligne.aReposer} /> <SignePrise prise={ligne.prise} />
         </>
       );
     case 'refus':
@@ -294,7 +325,13 @@ export function ArrangeBar({ amenagement, className, croix = false }: { amenagem
       <div className="arrange-bar-outils">
         {croix && <IconButton icone="tourner" nom="Tourner" disabled={!canTurn(choix) || occupe} onClick={amenagement.tourner} />}
         <IconButton icone="defaire" nom="Défaire la dernière pose" mot="Défaire" disabled={!amenagement.peutDefaire || occupe} onClick={amenagement.defaire} />
-        <button type="button" className={`button arrange-pose${choix && !enQuestion && !amenagement.aConfirmer ? ' primary' : ''}`} disabled={!choix || occupe || enQuestion || amenagement.aConfirmer} onClick={amenagement.poserIci}>
+        {/* Sur une place prise (choix 3 du mainteneur), « Poser » s'éteint : la croix grise du fantôme le montre. */}
+        <button
+          type="button"
+          className={`button arrange-pose${choix && !enQuestion && !amenagement.aConfirmer && !amenagement.placePrise ? ' primary' : ''}`}
+          disabled={!choix || occupe || enQuestion || amenagement.aConfirmer || amenagement.placePrise}
+          onClick={amenagement.poserIci}
+        >
           <Icon name="poser" /> <span>Poser</span>
         </button>
         {/* La place de « Réunir », entre « Poser » et « Annuler », réservée dès qu'un lieu est choisi (sur la Carte ; la
