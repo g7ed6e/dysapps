@@ -32,6 +32,12 @@ Les îles, dans l’ordre du jeu : `npm run contenu` en produit `src/game/island
 28. `english-3e-grammar`
 29. `history-6e-antiquity`
 30. `geography-6e-living`
-31. `lv2-5e-introductions`
-32. `lv2-4e-daily-life`
-33. `lv2-3e-travel`
+31. `history-5e-middle-ages`
+32. `geography-5e-resources`
+33. `history-4e-revolutions`
+34. `geography-4e-globalization`
+35. `history-3e-twentieth-century`
+36. `geography-3e-france`
+37. `lv2-5e-introductions`
+38. `lv2-4e-daily-life`
+39. `lv2-3e-travel`

@@ -1,0 +1,238 @@
+{
+  "id": "geography-3e-france-territories-1",
+  "biome": "geography-3e-france",
+  "type": "territories",
+  "level": 1,
+  "instruction": "Choisis le mot qui complète la phrase. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "geography-3e-france-territories-1-0",
+      "prompt": "Une ville, ses banlieues et ses communes périurbaines forment une … urbaine.",
+      "spoken": "Une ville, ses banlieues et ses communes périurbaines forment une (mot manquant) urbaine.",
+      "choices": [
+        "commune",
+        "aire",
+        "région"
+      ],
+      "answer": "aire",
+      "hint": "Regarde la première ligne du rappel.",
+      "explanation": "L’aire urbaine réunit la ville, ses banlieues et les communes autour d’où l’on vient y travailler. Une commune n’en est qu’un morceau.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots du territoire",
+          "lines": [
+            "Aire urbaine : une ville, ses banlieues et ses communes périurbaines.",
+            "Périurbain : entre la ville et la campagne.",
+            "Métropole : une grande ville qui attire et commande une région.",
+            "Espace productif : un lieu où l’on produit, champ, usine ou bureau.",
+            "Primaire : l’agriculture ; secondaire : l’industrie ; tertiaire : les services.",
+            "Faible densité : peu d’habitants pour beaucoup d’espace."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-3e-france-territories-1-1",
+      "prompt": "Les communes entre la ville et la campagne, pleines de maisons neuves, forment l’espace … .",
+      "spoken": "Les communes entre la ville et la campagne, pleines de maisons neuves, forment l’espace (mot manquant) .",
+      "choices": [
+        "central",
+        "industriel",
+        "périurbain"
+      ],
+      "answer": "périurbain",
+      "hint": "« Péri » veut dire autour.",
+      "explanation": "L’espace périurbain est autour de la ville, entre la ville et les champs. Beaucoup de familles y font construire une maison.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots du territoire",
+          "lines": [
+            "Aire urbaine : une ville, ses banlieues et ses communes périurbaines.",
+            "Périurbain : entre la ville et la campagne.",
+            "Métropole : une grande ville qui attire et commande une région.",
+            "Espace productif : un lieu où l’on produit, champ, usine ou bureau.",
+            "Primaire : l’agriculture ; secondaire : l’industrie ; tertiaire : les services.",
+            "Faible densité : peu d’habitants pour beaucoup d’espace."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-3e-france-territories-1-2",
+      "prompt": "Paris, Lyon et Marseille sont de grandes … .",
+      "spoken": "Paris, Lyon et Marseille sont de grandes (mot manquant) .",
+      "choices": [
+        "métropoles",
+        "régions",
+        "campagnes"
+      ],
+      "answer": "métropoles",
+      "hint": "Ces villes attirent habitants et entreprises.",
+      "explanation": "Paris, Lyon et Marseille sont des métropoles : elles attirent et commandent une grande région. Une région, elle, est un territoire avec plusieurs villes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots du territoire",
+          "lines": [
+            "Aire urbaine : une ville, ses banlieues et ses communes périurbaines.",
+            "Périurbain : entre la ville et la campagne.",
+            "Métropole : une grande ville qui attire et commande une région.",
+            "Espace productif : un lieu où l’on produit, champ, usine ou bureau.",
+            "Primaire : l’agriculture ; secondaire : l’industrie ; tertiaire : les services.",
+            "Faible densité : peu d’habitants pour beaucoup d’espace."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-3e-france-territories-1-3",
+      "prompt": "Quand la ville s’étend sur les champs autour, on parle d’… urbain.",
+      "spoken": "Quand la ville s’étend sur les champs autour, on parle d’(mot manquant) urbain.",
+      "choices": [
+        "exode",
+        "étalement",
+        "aménagement"
+      ],
+      "answer": "étalement",
+      "hint": "La ville s’étale, comme une tache.",
+      "explanation": "L’étalement urbain : la ville gagne sur les champs. L’exode rural, c’est le départ des habitants de la campagne vers la ville.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots du territoire",
+          "lines": [
+            "Aire urbaine : une ville, ses banlieues et ses communes périurbaines.",
+            "Périurbain : entre la ville et la campagne.",
+            "Métropole : une grande ville qui attire et commande une région.",
+            "Espace productif : un lieu où l’on produit, champ, usine ou bureau.",
+            "Primaire : l’agriculture ; secondaire : l’industrie ; tertiaire : les services.",
+            "Faible densité : peu d’habitants pour beaucoup d’espace."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-3e-france-territories-1-4",
+      "prompt": "Un lieu où l’on produit des richesses, comme une usine ou une ferme, est un espace … .",
+      "spoken": "Un lieu où l’on produit des richesses, comme une usine ou une ferme, est un espace (mot manquant) .",
+      "choices": [
+        "productif",
+        "résidentiel",
+        "protégé"
+      ],
+      "answer": "productif",
+      "hint": "Le mot ressemble à « produire ».",
+      "explanation": "Un espace productif est un lieu où l’on produit : des champs, des usines, des bureaux. Un espace résidentiel est fait d’abord pour habiter.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots du territoire",
+          "lines": [
+            "Aire urbaine : une ville, ses banlieues et ses communes périurbaines.",
+            "Périurbain : entre la ville et la campagne.",
+            "Métropole : une grande ville qui attire et commande une région.",
+            "Espace productif : un lieu où l’on produit, champ, usine ou bureau.",
+            "Primaire : l’agriculture ; secondaire : l’industrie ; tertiaire : les services.",
+            "Faible densité : peu d’habitants pour beaucoup d’espace."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-3e-france-territories-1-5",
+      "prompt": "Les bureaux, les commerces et les hôpitaux font partie du secteur … .",
+      "spoken": "Les bureaux, les commerces et les hôpitaux font partie du secteur (mot manquant) .",
+      "choices": [
+        "primaire",
+        "secondaire",
+        "tertiaire"
+      ],
+      "answer": "tertiaire",
+      "hint": "Regarde l’avant-dernière ligne du rappel.",
+      "explanation": "Les services forment le secteur tertiaire, qui emploie la plupart des Français. Le primaire, c’est l’agriculture ; le secondaire, l’industrie.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots du territoire",
+          "lines": [
+            "Aire urbaine : une ville, ses banlieues et ses communes périurbaines.",
+            "Périurbain : entre la ville et la campagne.",
+            "Métropole : une grande ville qui attire et commande une région.",
+            "Espace productif : un lieu où l’on produit, champ, usine ou bureau.",
+            "Primaire : l’agriculture ; secondaire : l’industrie ; tertiaire : les services.",
+            "Faible densité : peu d’habitants pour beaucoup d’espace."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-3e-france-territories-1-6",
+      "prompt": "Un lieu qui réunit universités, laboratoires et entreprises de pointe est une … .",
+      "spoken": "Un lieu qui réunit universités, laboratoires et entreprises de pointe est une (mot manquant) .",
+      "choices": [
+        "zone industrielle",
+        "technopole",
+        "métropole"
+      ],
+      "answer": "technopole",
+      "hint": "Le mot commence comme « technologie ».",
+      "explanation": "Une technopole réunit la recherche et des entreprises de pointe, comme Sophia Antipolis, près de Nice. Une zone industrielle réunit surtout des usines et des entrepôts.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots du territoire",
+          "lines": [
+            "Aire urbaine : une ville, ses banlieues et ses communes périurbaines.",
+            "Périurbain : entre la ville et la campagne.",
+            "Métropole : une grande ville qui attire et commande une région.",
+            "Espace productif : un lieu où l’on produit, champ, usine ou bureau.",
+            "Primaire : l’agriculture ; secondaire : l’industrie ; tertiaire : les services.",
+            "Faible densité : peu d’habitants pour beaucoup d’espace."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-3e-france-territories-1-7",
+      "prompt": "Une commune de montagne avec très peu d’habitants est un espace de … densité.",
+      "spoken": "Une commune de montagne avec très peu d’habitants est un espace de (mot manquant) densité.",
+      "choices": [
+        "forte",
+        "grande",
+        "faible"
+      ],
+      "answer": "faible",
+      "hint": "Regarde la dernière ligne du rappel.",
+      "explanation": "Peu d’habitants pour beaucoup d’espace : la densité est faible. Une forte densité, c’est beaucoup d’habitants serrés, comme en ville.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots du territoire",
+          "lines": [
+            "Aire urbaine : une ville, ses banlieues et ses communes périurbaines.",
+            "Périurbain : entre la ville et la campagne.",
+            "Métropole : une grande ville qui attire et commande une région.",
+            "Espace productif : un lieu où l’on produit, champ, usine ou bureau.",
+            "Primaire : l’agriculture ; secondaire : l’industrie ; tertiaire : les services.",
+            "Faible densité : peu d’habitants pour beaucoup d’espace."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "geography-3e-france",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

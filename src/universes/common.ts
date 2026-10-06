@@ -340,6 +340,36 @@ export const REPLIQUES: Record<BiomeId, TextesCreature> = {
     lines: ['Je regarde le paysage de loin avant de répondre : prends ton temps, toi aussi.', 'Du chaume pour mon quartier : lis un document.', 'Ville, champs, littoral : chaque paysage a ses habitants.'],
     home: 'Mon quartier est complet : la ville, les champs et la mer.',
   },
+  'history-5e-middle-ages': {
+    greeting: 'Bonjour, bâtisseur ! Ici, on écrit les chroniques du Moyen Âge. Chaque bonne réponse te donne un bloc d’enluminure. Une enluminure, c’est une page peinte à la main, avec des filets d’or.',
+    lines: ['Une page à la fois, un siècle à la fois.', 'De l’enluminure pour mon logis : réponds à une question.', 'Un siècle, c’est cent ans. Le rappel te dit où il commence.'],
+    home: 'Mon logis est fini. Mes pages enluminées ont leur place.',
+  },
+  'geography-5e-resources': {
+    greeting: 'Bonjour, bâtisseur ! Au delta, on partage l’eau, l’énergie et la nourriture. Chaque bonne réponse te donne un bloc de rizière. Une rizière, c’est un champ plein d’eau où pousse le riz.',
+    lines: ['Je marche dans l’eau du delta : elle nourrit les champs.', 'De la rizière pour mon moulin : lis un document.', 'Les nombres sont arrondis : on les compare, on ne calcule pas.'],
+    home: 'Mon moulin tourne. L’eau du delta est partagée.',
+  },
+  'history-4e-revolutions': {
+    greeting: 'Bonjour, bâtisseur ! À l’imprimerie, on imprime les nouvelles des révolutions. Chaque bonne réponse te donne un bloc de fonte. La fonte, c’est un métal lourd, coulé dans un moule.',
+    lines: ['Une date, une nouvelle : je les range dans l’ordre.', 'De la fonte pour ma halle : réponds à une question.', 'Un document dit qui l’a écrit. Regarde la première ligne.'],
+    home: 'Ma halle est finie. Les presses peuvent tourner.',
+  },
+  'geography-4e-globalization': {
+    greeting: 'Bonjour, bâtisseur ! À l’escale, les bateaux arrivent du monde entier. Chaque bonne réponse te donne un conteneur. Un conteneur, c’est une grande boîte en métal qui voyage sur les bateaux.',
+    lines: ['Je lève les conteneurs un par un, sans me presser.', 'Des conteneurs pour mon entrepôt : lis un document.', 'Port, canal, détroit : les mots du rappel t’aident.'],
+    home: 'Mon entrepôt est fini. Le monde entier fait escale ici.',
+  },
+  'history-3e-twentieth-century': {
+    greeting: 'Bonjour, bâtisseur. Ici, on garde la parole des témoins. Chaque bonne réponse te donne un bloc de reliure. Une reliure, c’est la couverture solide d’un livre.',
+    lines: ['Chaque document a un auteur. Je regarde d’abord qui parle.', 'De la reliure pour ma bibliothèque : lis un témoignage.', 'On se souvient pour comprendre. Prends ton temps.'],
+    home: 'Ma bibliothèque est prête. On peut venir lire et se souvenir, au calme.',
+  },
+  'geography-3e-france': {
+    greeting: 'Bonjour, bâtisseur ! Dans la vallée, on regarde la France : ses villes, ses campagnes, ses routes. Chaque bonne réponse te donne un bloc de grès rose. Le grès, c’est une pierre faite de sable serré.',
+    lines: ['J’arpente la vallée pas à pas : un jalon, puis un autre.', 'Du grès rose pour ma mairie : lis un document.', 'Ville, campagne, outre-mer : chaque territoire compte.'],
+    home: 'Ma mairie est finie. Toute la vallée peut y venir.',
+  },
   'lv2-3e-travel': {
     greeting:
       'Bonjour, bâtisseur ! Au refuge, les voyageurs racontent leurs voyages dans ta deuxième langue. Appuie sur Écouter : la voix lit la question et l’histoire pour toi. Chaque bonne réponse te donne un bardeau. Les bardeaux, ce sont les petites planches de bois qui couvrent les murs du refuge.',

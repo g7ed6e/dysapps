@@ -37,11 +37,11 @@ Un archipel par classe. En français et en maths, une île par grand thème ; en
 | Archipel | Français | Maths | Anglais | Histoire-géo | LV2 |
 | --- | --- | --- | --- | --- | --- |
 | 6e, Premiers Rivages | Forêt des sons, Mine des lettres, Carrière des mots, Ferme des accords, Tour du lecteur | Plaine des nombres, Rivière des fractions, Volcan des décimaux | Baie des mots, Horloge des verbes | Fouille des siècles, Pointe des paysages | — |
-| 5e, Îles Brumeuses | Carrefour des homophones, Marais des temps | Glacier des relatifs, Marché des proportions | Comptoir, Manoir du passé | — | Relais des voyageurs |
-| 4e, Anciens Ateliers | Falaise des accords, Cabinet des mots | Forge des puissances, Atelier du calcul littéral | Théâtre des voix, Gare du futur | — | Jardin des heures |
-| 3e, Îles du Ciel | Observatoire des textes | Belvédère de Thalès, Observatoire des données, Phare des fonctions | Studio des ondes, Château des hypothèses | — | Refuge des carnets |
+| 5e, Îles Brumeuses | Carrefour des homophones, Marais des temps | Glacier des relatifs, Marché des proportions | Comptoir, Manoir du passé | Bourg des chroniques, Delta des ressources | Relais des voyageurs |
+| 4e, Anciens Ateliers | Falaise des accords, Cabinet des mots | Forge des puissances, Atelier du calcul littéral | Théâtre des voix, Gare du futur | Imprimerie des révolutions, Escale des échanges | Jardin des heures |
+| 3e, Îles du Ciel | Observatoire des textes | Belvédère de Thalès, Observatoire des données, Phare des fonctions | Studio des ondes, Château des hypothèses | Kiosque des témoins, Vallée des territoires | Refuge des carnets |
 
-Soit 33 îles et 117 missions, dont 24 de LV2 (quatre par île et par langue) et 6 d’histoire-géographie, plus 7 missions au portail.
+Soit 39 îles et 135 missions, dont 24 de LV2 (quatre par île et par langue) et 24 d’histoire-géographie, plus 7 missions au portail.
 
 ### L’anglais
 
@@ -104,7 +104,7 @@ Choix du mainteneur du 5 octobre 2026 (« C pour l’instant ») : commencer par
 | 3e | histoire | `c4.hg.histoire.guerres-totales` | `c4.hg.histoire.monde-depuis-1945` | `c4.hg.histoire.republique-repensee` |
 | 3e | géographie | `c4.hg.geographie.dynamiques-france` | `c4.hg.geographie.amenager` | `c4.hg.geographie.france-ue` |
 
-  Le référentiel du cycle 4 (`src/curriculum/cycle4.ts`, 28 compétences) est écrit de mémoire, le PDF n’ayant pas pu être téléchargé : libellés et pages sont marqués « à vérifier ». Toutes ses compétences sont exclues (`a-couvrir`, « île pas encore écrite ») et quittent les exclusions quand leur île entre au jeu ; écrire, dire et produire (`c4.hg.demarches.ecrire-dire`) est hors périmètre. L’enseignement moral et civique, qui suit dans le PDF, n’est pas une matière de l’application : il reste hors périmètre, sans entrée au référentiel.
+  Le référentiel du cycle 4 (`src/curriculum/cycle4.ts`, 28 compétences) est écrit de mémoire, le PDF n’ayant pas pu être téléchargé : libellés et pages sont marqués « à vérifier ». Ses compétences ont quitté les exclusions avec l’entrée des six îles au jeu (HG-3) : chacune est citée par une mission, sauf écrire, dire et produire (`c4.hg.demarches.ecrire-dire`), hors périmètre. L’enseignement moral et civique, qui suit dans le PDF, n’est pas une matière de l’application : il reste hors périmètre, sans entrée au référentiel.
 - **Les étapes HG-n** : HG-1, le référentiel de 6e ; HG-2, les deux îles au jeu ; le référentiel du cycle 4 (6 octobre 2026), puis les six îles de 5e à 3e. À proposer ensuite : une frise à remettre dans l’ordre et une carte à toucher (écrans nouveaux), le point de vue d’un document en 6e, et le nouveau programme de 6e à la rentrée 2027.
 
 ### Les sciences et la technologie

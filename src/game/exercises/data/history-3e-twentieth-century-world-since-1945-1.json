@@ -1,0 +1,238 @@
+{
+  "id": "history-3e-twentieth-century-world-since-1945-1",
+  "biome": "history-3e-twentieth-century",
+  "type": "world-since-1945",
+  "level": 1,
+  "instruction": "Choisis le mot qui complète la phrase. La frise est affichée.",
+  "items": [
+    {
+      "key": "history-3e-twentieth-century-world-since-1945-1-0",
+      "prompt": "En 1945, … est créée pour garder la paix dans le monde.",
+      "spoken": "En 1945, (mot manquant) est créée pour garder la paix dans le monde.",
+      "choices": [
+        "la Société des Nations",
+        "l’ONU",
+        "l’Union européenne"
+      ],
+      "answer": "l’ONU",
+      "hint": "Regarde la deuxième ligne de la frise.",
+      "explanation": "L’ONU, l’Organisation des Nations unies, est créée en 1945. La Société des Nations date de 1919, après la Première Guerre mondiale.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise depuis 1945",
+          "lines": [
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "1945 : l’ONU est créée.",
+            "De 1947 à 1991 : la guerre froide.",
+            "1957 : le traité de Rome, début de la construction européenne.",
+            "1962 : l’Algérie devient indépendante.",
+            "1989 : le mur de Berlin tombe."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-3e-twentieth-century-world-since-1945-1-1",
+      "prompt": "Pendant la guerre froide, les États-Unis s’opposent à … .",
+      "spoken": "Pendant la guerre froide, les États-Unis s’opposent à (mot manquant) .",
+      "choices": [
+        "l’Union soviétique",
+        "la France",
+        "l’Allemagne"
+      ],
+      "answer": "l’Union soviétique",
+      "hint": "Le grand pays communiste de l’est de l’Europe.",
+      "explanation": "Deux camps s’opposent : les États-Unis à l’ouest, l’Union soviétique, communiste, à l’est. La France est dans le camp des États-Unis.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise depuis 1945",
+          "lines": [
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "1945 : l’ONU est créée.",
+            "De 1947 à 1991 : la guerre froide.",
+            "1957 : le traité de Rome, début de la construction européenne.",
+            "1962 : l’Algérie devient indépendante.",
+            "1989 : le mur de Berlin tombe."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-3e-twentieth-century-world-since-1945-1-2",
+      "prompt": "Les États-Unis et l’Union soviétique ne se battent pas directement : c’est une guerre … .",
+      "spoken": "Les États-Unis et l’Union soviétique ne se battent pas directement : c’est une guerre (mot manquant) .",
+      "choices": [
+        "totale",
+        "mondiale",
+        "froide"
+      ],
+      "answer": "froide",
+      "hint": "Cherche le nom de la période dans la frise.",
+      "explanation": "Une guerre froide : les deux camps s’opposent sans se faire la guerre directement, l’un contre l’autre. Elle dure de 1947 à 1991.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise depuis 1945",
+          "lines": [
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "1945 : l’ONU est créée.",
+            "De 1947 à 1991 : la guerre froide.",
+            "1957 : le traité de Rome, début de la construction européenne.",
+            "1962 : l’Algérie devient indépendante.",
+            "1989 : le mur de Berlin tombe."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-3e-twentieth-century-world-since-1945-1-3",
+      "prompt": "De 1961 à 1989, un … coupe la ville de Berlin en deux.",
+      "spoken": "De 1961 à 1989, un (mot manquant) coupe la ville de Berlin en deux.",
+      "choices": [
+        "mur",
+        "front",
+        "rideau"
+      ],
+      "answer": "mur",
+      "hint": "Regarde la dernière ligne de la frise.",
+      "explanation": "Le mur de Berlin sépare l’Est et l’Ouest de la ville de 1961 à 1989. Le « rideau de fer » est une image : il coupe toute l’Europe en deux camps.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise depuis 1945",
+          "lines": [
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "1945 : l’ONU est créée.",
+            "De 1947 à 1991 : la guerre froide.",
+            "1957 : le traité de Rome, début de la construction européenne.",
+            "1962 : l’Algérie devient indépendante.",
+            "1989 : le mur de Berlin tombe."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-3e-twentieth-century-world-since-1945-1-4",
+      "prompt": "Quand une colonie devient un pays indépendant, c’est la … .",
+      "spoken": "Quand une colonie devient un pays indépendant, c’est la (mot manquant) .",
+      "choices": [
+        "colonisation",
+        "décolonisation",
+        "collaboration"
+      ],
+      "answer": "décolonisation",
+      "hint": "« Dé » veut dire le contraire.",
+      "explanation": "La décolonisation, c’est la fin des colonies : les peuples colonisés deviennent indépendants. La colonisation, c’est le contraire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise depuis 1945",
+          "lines": [
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "1945 : l’ONU est créée.",
+            "De 1947 à 1991 : la guerre froide.",
+            "1957 : le traité de Rome, début de la construction européenne.",
+            "1962 : l’Algérie devient indépendante.",
+            "1989 : le mur de Berlin tombe."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-3e-twentieth-century-world-since-1945-1-5",
+      "prompt": "En 1947, … devient indépendante, après la lutte menée par Gandhi.",
+      "spoken": "En 1947, (mot manquant) devient indépendante, après la lutte menée par Gandhi.",
+      "choices": [
+        "l’Algérie",
+        "la Tunisie",
+        "l’Inde"
+      ],
+      "answer": "l’Inde",
+      "hint": "Gandhi est un Indien.",
+      "explanation": "L’Inde devient indépendante en 1947 : le Royaume-Uni la quitte. L’Algérie devient indépendante plus tard, en 1962.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise depuis 1945",
+          "lines": [
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "1945 : l’ONU est créée.",
+            "De 1947 à 1991 : la guerre froide.",
+            "1957 : le traité de Rome, début de la construction européenne.",
+            "1962 : l’Algérie devient indépendante.",
+            "1989 : le mur de Berlin tombe."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-3e-twentieth-century-world-since-1945-1-6",
+      "prompt": "L’Algérie devient indépendante en … , après une longue guerre contre la France.",
+      "spoken": "L’Algérie devient indépendante en (mot manquant) , après une longue guerre contre la France.",
+      "choices": [
+        "1962",
+        "1945",
+        "1989"
+      ],
+      "answer": "1962",
+      "hint": "Cherche l’Algérie dans la frise.",
+      "explanation": "La guerre d’Algérie dure de 1954 à 1962. L’Algérie devient indépendante en 1962.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise depuis 1945",
+          "lines": [
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "1945 : l’ONU est créée.",
+            "De 1947 à 1991 : la guerre froide.",
+            "1957 : le traité de Rome, début de la construction européenne.",
+            "1962 : l’Algérie devient indépendante.",
+            "1989 : le mur de Berlin tombe."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-3e-twentieth-century-world-since-1945-1-7",
+      "prompt": "En 1957, six pays signent le traité de … : c’est le début de la construction européenne.",
+      "spoken": "En 1957, six pays signent le traité de (mot manquant) : c’est le début de la construction européenne.",
+      "choices": [
+        "Versailles",
+        "Rome",
+        "Maastricht"
+      ],
+      "answer": "Rome",
+      "hint": "Cherche 1957 dans la frise.",
+      "explanation": "Le traité de Rome, en 1957, unit six pays, dont la France et l’Allemagne. Le traité de Versailles date de 1919 ; celui de Maastricht, de 1992.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise depuis 1945",
+          "lines": [
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "1945 : l’ONU est créée.",
+            "De 1947 à 1991 : la guerre froide.",
+            "1957 : le traité de Rome, début de la construction européenne.",
+            "1962 : l’Algérie devient indépendante.",
+            "1989 : le mur de Berlin tombe."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "history-3e-twentieth-century",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

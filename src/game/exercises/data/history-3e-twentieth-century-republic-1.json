@@ -1,0 +1,238 @@
+{
+  "id": "history-3e-twentieth-century-republic-1",
+  "biome": "history-3e-twentieth-century",
+  "type": "republic",
+  "level": 1,
+  "instruction": "Choisis le mot qui complète la phrase. La frise est affichée.",
+  "items": [
+    {
+      "key": "history-3e-twentieth-century-republic-1-0",
+      "prompt": "En 1944, les femmes obtiennent le droit de … .",
+      "spoken": "En 1944, les femmes obtiennent le droit de (mot manquant) .",
+      "choices": [
+        "travailler",
+        "voter",
+        "étudier"
+      ],
+      "answer": "voter",
+      "hint": "Regarde la deuxième ligne de la frise.",
+      "explanation": "Les femmes pouvaient déjà travailler et étudier. En 1944, elles obtiennent le droit de voter ; elles votent pour la première fois en 1945.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise de la République",
+          "lines": [
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "1944 : les femmes obtiennent le droit de vote.",
+            "1945 : la Sécurité sociale est créée.",
+            "1958 : la Ve République, la cinquième, avec de Gaulle.",
+            "1962 : les électeurs élisent eux-mêmes le président.",
+            "1981 : François Mitterrand est élu ; la peine de mort est abolie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-3e-twentieth-century-republic-1-1",
+      "prompt": "En 1945, la France crée la … pour aider à payer les soins des malades.",
+      "spoken": "En 1945, la France crée la (mot manquant) pour aider à payer les soins des malades.",
+      "choices": [
+        "carte Vitale",
+        "Constitution",
+        "Sécurité sociale"
+      ],
+      "answer": "Sécurité sociale",
+      "hint": "Cherche 1945 dans la frise.",
+      "explanation": "La Sécurité sociale, créée en 1945, aide à payer les soins. La carte Vitale vient bien plus tard, dans les années 1990.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise de la République",
+          "lines": [
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "1944 : les femmes obtiennent le droit de vote.",
+            "1945 : la Sécurité sociale est créée.",
+            "1958 : la Ve République, la cinquième, avec de Gaulle.",
+            "1962 : les électeurs élisent eux-mêmes le président.",
+            "1981 : François Mitterrand est élu ; la peine de mort est abolie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-3e-twentieth-century-republic-1-2",
+      "prompt": "En 1958, la … République commence.",
+      "spoken": "En 1958, la (mot manquant) République commence.",
+      "choices": [
+        "troisième",
+        "quatrième",
+        "cinquième"
+      ],
+      "answer": "cinquième",
+      "hint": "Cherche 1958 dans la frise.",
+      "explanation": "La cinquième République commence en 1958, avec le général de Gaulle. C’est toujours la nôtre aujourd’hui.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise de la République",
+          "lines": [
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "1944 : les femmes obtiennent le droit de vote.",
+            "1945 : la Sécurité sociale est créée.",
+            "1958 : la Ve République, la cinquième, avec de Gaulle.",
+            "1962 : les électeurs élisent eux-mêmes le président.",
+            "1981 : François Mitterrand est élu ; la peine de mort est abolie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-3e-twentieth-century-republic-1-3",
+      "prompt": "La Constitution de 1958 donne beaucoup de pouvoir au … de la République.",
+      "spoken": "La Constitution de 1958 donne beaucoup de pouvoir au (mot manquant) de la République.",
+      "choices": [
+        "président",
+        "maire",
+        "préfet"
+      ],
+      "answer": "président",
+      "hint": "De Gaulle occupe cette place à partir de 1959.",
+      "explanation": "La Constitution de 1958 donne un grand pouvoir au président de la République. Le maire dirige une commune, le préfet représente l’État dans un département.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise de la République",
+          "lines": [
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "1944 : les femmes obtiennent le droit de vote.",
+            "1945 : la Sécurité sociale est créée.",
+            "1958 : la Ve République, la cinquième, avec de Gaulle.",
+            "1962 : les électeurs élisent eux-mêmes le président.",
+            "1981 : François Mitterrand est élu ; la peine de mort est abolie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-3e-twentieth-century-republic-1-4",
+      "prompt": "Depuis 1962, le président est élu directement par les … .",
+      "spoken": "Depuis 1962, le président est élu directement par les (mot manquant) .",
+      "choices": [
+        "députés",
+        "électeurs",
+        "maires"
+      ],
+      "answer": "électeurs",
+      "hint": "Cherche 1962 dans la frise.",
+      "explanation": "Depuis 1962, tous les électeurs élisent le président : c’est le suffrage universel direct. En 1958, de Gaulle avait été élu par des élus, pas par tous les électeurs.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise de la République",
+          "lines": [
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "1944 : les femmes obtiennent le droit de vote.",
+            "1945 : la Sécurité sociale est créée.",
+            "1958 : la Ve République, la cinquième, avec de Gaulle.",
+            "1962 : les électeurs élisent eux-mêmes le président.",
+            "1981 : François Mitterrand est élu ; la peine de mort est abolie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-3e-twentieth-century-republic-1-5",
+      "prompt": "En 1981, le pouvoir passe de la droite à la gauche avec François Mitterrand : c’est une … .",
+      "spoken": "En 1981, le pouvoir passe de la droite à la gauche avec François Mitterrand : c’est une (mot manquant) .",
+      "choices": [
+        "alternance",
+        "cohabitation",
+        "révolution"
+      ],
+      "answer": "alternance",
+      "hint": "Le pouvoir passe d’un camp à l’autre, par le vote.",
+      "explanation": "L’alternance : le pouvoir change de camp après une élection. La cohabitation, c’est quand le président et le Premier ministre sont de camps opposés.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise de la République",
+          "lines": [
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "1944 : les femmes obtiennent le droit de vote.",
+            "1945 : la Sécurité sociale est créée.",
+            "1958 : la Ve République, la cinquième, avec de Gaulle.",
+            "1962 : les électeurs élisent eux-mêmes le président.",
+            "1981 : François Mitterrand est élu ; la peine de mort est abolie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-3e-twentieth-century-republic-1-6",
+      "prompt": "En 1981, la France abolit … .",
+      "spoken": "En 1981, la France abolit (mot manquant) .",
+      "choices": [
+        "la monarchie",
+        "la peine de mort",
+        "le service militaire"
+      ],
+      "answer": "la peine de mort",
+      "hint": "Regarde la dernière ligne de la frise.",
+      "explanation": "En 1981, la loi supprime la peine de mort en France. La monarchie avait disparu bien avant ; le service militaire est suspendu plus tard, en 1997.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise de la République",
+          "lines": [
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "1944 : les femmes obtiennent le droit de vote.",
+            "1945 : la Sécurité sociale est créée.",
+            "1958 : la Ve République, la cinquième, avec de Gaulle.",
+            "1962 : les électeurs élisent eux-mêmes le président.",
+            "1981 : François Mitterrand est élu ; la peine de mort est abolie."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-3e-twentieth-century-republic-1-7",
+      "prompt": "Les femmes obtiennent le droit de vote … le début de la cinquième République.",
+      "spoken": "Les femmes obtiennent le droit de vote (mot manquant) le début de la cinquième République.",
+      "choices": [
+        "avant",
+        "après",
+        "en même temps que"
+      ],
+      "answer": "avant",
+      "hint": "Sur la frise, lequel est le plus haut ?",
+      "explanation": "Le droit de vote des femmes date de 1944, la cinquième République de 1958 : le droit de vote vient avant.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La frise de la République",
+          "lines": [
+            "En haut, le plus ancien ; en bas, le plus récent.",
+            "1944 : les femmes obtiennent le droit de vote.",
+            "1945 : la Sécurité sociale est créée.",
+            "1958 : la Ve République, la cinquième, avec de Gaulle.",
+            "1962 : les électeurs élisent eux-mêmes le président.",
+            "1981 : François Mitterrand est élu ; la peine de mort est abolie."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "history-3e-twentieth-century",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

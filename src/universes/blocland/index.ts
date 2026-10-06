@@ -230,6 +230,54 @@ export const BLOCLAND = {
         beaten: 'Je me rallume, de la queue jusqu’aux oreilles. La Pointe est à toi, et à Boussole.',
       },
     },
+    'history-5e-middle-ages': {
+      challenge: 'Le Griffon d’émail déploie ses ailes : « Mes émaux sont tout gris. Tu as lu toutes les chroniques du bourg : remets chaque siècle à sa place. »',
+      guardianSays: {
+        hit: 'Juste. Un émail de mes ailes reprend sa couleur.',
+        miss: 'Mes couleurs restent. Regarde la frise, relis le document, et reprends.',
+        beaten: 'Je me rallume, du bec jusqu’à la queue. Le Bourg est à toi, et à Vélin.',
+      },
+    },
+    'geography-5e-resources': {
+      challenge: 'La Libellule de jade se pose sur un roseau : « Mes ailes sont toutes grises. Tu as suivi l’eau de tout le delta : dis-moi comment on partage les ressources. »',
+      guardianSays: {
+        hit: 'Juste. Un bloc de mes ailes redevient vert.',
+        miss: 'Mes couleurs restent. Relis le document, compare les nombres, et reprends.',
+        beaten: 'Je me rallume, des ailes jusqu’au bout de la queue. Le Delta est à toi, et à Sillon.',
+      },
+    },
+    'history-4e-revolutions': {
+      challenge: 'Le Paon de faïence ouvre sa roue : « Ma roue est toute grise. Tu as lu toutes les pages de l’imprimerie : remets chaque révolution à sa date. »',
+      guardianSays: {
+        hit: 'Juste. Une plume de ma roue reprend sa couleur.',
+        miss: 'Mes couleurs restent. Regarde la frise, relis le document, et reprends.',
+        beaten: 'Je me rallume, de la crête jusqu’au bout de ma roue. L’Imprimerie est à toi, et à Typo.',
+      },
+    },
+    'geography-4e-globalization': {
+      challenge: 'Le Poulpe de corail sort de l’eau du quai : « Mes bras sont tout gris. Tu as vu passer tous les bateaux de l’escale : dis-moi comment le monde échange. »',
+      guardianSays: {
+        hit: 'Juste. Un bloc de mes bras redevient corail.',
+        miss: 'Mes couleurs restent. Relis le document, cherche le mot du rappel, et reprends.',
+        beaten: 'Je me rallume, de la tête au bout des huit bras. L’Escale est à toi, et à Fret.',
+      },
+    },
+    'history-3e-twentieth-century': {
+      challenge: 'La Colombe d’albâtre attend, un rameau vert au bec : « Mes plumes sont toutes grises. Tu as écouté tous les témoins du kiosque : aide-moi à me souvenir, date après date. »',
+      guardianSays: {
+        hit: 'Juste. Une plume reprend sa couleur.',
+        miss: 'Mes couleurs restent. Regarde la frise, relis qui parle, et reprends.',
+        beaten: 'Je me rallume, jusqu’au rameau vert. Le Kiosque est à toi, et à Mémo. Merci de te souvenir avec moi.',
+      },
+    },
+    'geography-3e-france': {
+      challenge: 'Le Cerf de lauze lève la tête : « Mes bois sont tout gris. Tu as parcouru toute la vallée : dis-moi comment vit le territoire. »',
+      guardianSays: {
+        hit: 'Juste. Une lauze de mes bois reprend sa couleur.',
+        miss: 'Mes couleurs restent. Relis le document, cherche le mot du rappel, et reprends.',
+        beaten: 'Je me rallume, des sabots jusqu’au bout des bois. La Vallée est à toi, et à Jalon.',
+      },
+    },
     'lv2-3e-travel': {
       challenge: 'Le Papillon de cuivre attend devant le refuge : « Mes ailes sont toutes grises. Tu as rencontré tous les voyageurs du refuge : dis-moi ce qu’ils ont vécu. »',
       guardianSays: {
@@ -312,6 +360,12 @@ export const BLOCLAND = {
     'lv2-3e-travel': 'loutre factrice',
     'history-6e-antiquity': 'ourson fouilleur',
     'geography-6e-living': 'tortue géographe',
+    'history-5e-middle-ages': 'lapin enlumineur',
+    'geography-5e-resources': 'ibis cultivateur',
+    'history-4e-revolutions': 'souris imprimeuse',
+    'geography-4e-globalization': 'crabe grutier',
+    'history-3e-twentieth-century': 'marmotte bibliothécaire',
+    'geography-3e-france': 'fourmi arpenteuse',
     'english-5e-grammar': 'chat du manoir',
     'english-4e-comprehension': 'lutin souffleur',
     'english-4e-grammar': 'blaireau chef de gare',

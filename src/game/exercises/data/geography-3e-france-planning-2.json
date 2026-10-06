@@ -1,0 +1,230 @@
+{
+  "id": "geography-3e-france-planning-2",
+  "biome": "geography-3e-france",
+  "type": "planning",
+  "level": 2,
+  "instruction": "Lis la question, puis le document. Choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "geography-3e-france-planning-2-0",
+      "prompt": "Dans un village de la Creuse\nLe dernier médecin part à la retraite.\nLa commune ouvre une maison de santé.\nTrois médecins s’y installent.",
+      "question": "Pourquoi la commune ouvre-t-elle une maison de santé ?",
+      "spoken": "Dans un village de la Creuse. Le dernier médecin part à la retraite. La commune ouvre une maison de santé. Trois médecins s’y installent.",
+      "choices": [
+        "pour attirer des touristes",
+        "pour avoir des médecins",
+        "pour construire des usines"
+      ],
+      "answer": "pour avoir des médecins",
+      "hint": "Que se passe-t-il quand le dernier médecin part ?",
+      "explanation": "Sans médecin, les habitants doivent aller loin pour se soigner. La maison de santé fait venir des médecins : l’aménagement réduit une inégalité.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Qui aménage ? L’État, la région, le département, la commune, l’Union européenne.",
+            "Outre-mer : loin de la France métropolitaine.",
+            "Comparer : chercher le plus grand nombre."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-3e-france-planning-2-1",
+      "prompt": "La ligne à grande vitesse entre Paris et Bordeaux, 2017\nAvant : environ 3 heures de train\nAprès : environ 2 heures",
+      "question": "Qu’apporte la nouvelle ligne ?",
+      "spoken": "La ligne à grande vitesse entre Paris et Bordeaux, deux mille dix-sept. Avant : environ trois heures de train. Après : environ deux heures.",
+      "choices": [
+        "un trajet plus court",
+        "un trajet plus long",
+        "moins de trains"
+      ],
+      "answer": "un trajet plus court",
+      "hint": "Compare « Avant » et « Après ».",
+      "explanation": "Après, le trajet est plus court : la ligne rapproche Bordeaux de Paris. C’est un aménagement de transport.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Qui aménage ? L’État, la région, le département, la commune, l’Union européenne.",
+            "Outre-mer : loin de la France métropolitaine.",
+            "Comparer : chercher le plus grand nombre."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-3e-france-planning-2-2",
+      "prompt": "Les personnes au chômage, en 2023\nEn France métropolitaine : environ 7 actifs sur 100\nÀ La Réunion : environ 18 actifs sur 100",
+      "question": "Où le chômage est-il le plus fort ?",
+      "spoken": "Les personnes au chômage, en deux mille vingt-trois. En France métropolitaine : environ sept actifs sur cent. À La Réunion : environ dix-huit actifs sur cent.",
+      "choices": [
+        "en France métropolitaine",
+        "à La Réunion",
+        "autant partout"
+      ],
+      "answer": "à La Réunion",
+      "hint": "Cherche le plus grand nombre.",
+      "explanation": "18 est plus grand que 7 : le chômage est plus fort à La Réunion. Les territoires ultramarins ont plus de chômage que la France métropolitaine : c’est une inégalité.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Qui aménage ? L’État, la région, le département, la commune, l’Union européenne.",
+            "Outre-mer : loin de la France métropolitaine.",
+            "Comparer : chercher le plus grand nombre."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-3e-france-planning-2-3",
+      "prompt": "Le centre spatial de Kourou, en Guyane\nLes fusées européennes partent d’ici.\nPrès de l’équateur, un lancement est plus facile.",
+      "question": "Pourquoi lance-t-on des fusées depuis la Guyane ?",
+      "spoken": "Le centre spatial de Kourou, en Guyane. Les fusées européennes partent d’ici. Près de l’équateur, un lancement est plus facile.",
+      "choices": [
+        "elle est en Europe",
+        "elle a peu de forêt",
+        "elle est près de l’équateur"
+      ],
+      "answer": "elle est près de l’équateur",
+      "hint": "Relis la dernière ligne.",
+      "explanation": "La Guyane est près de l’équateur : les fusées partent plus facilement. C’est un atout de ce territoire ultramarin, en Amérique du Sud.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Qui aménage ? L’État, la région, le département, la commune, l’Union européenne.",
+            "Outre-mer : loin de la France métropolitaine.",
+            "Comparer : chercher le plus grand nombre."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-3e-france-planning-2-4",
+      "prompt": "La France et ses mers\nLa France a le deuxième espace maritime du monde.\nPresque tout est autour des territoires d’outre-mer.",
+      "question": "D’où vient la plus grande partie de cet espace maritime ?",
+      "spoken": "La France et ses mers. La France a le deuxième espace maritime du monde. Presque tout est autour des territoires d’outre-mer.",
+      "choices": [
+        "des côtes de Bretagne",
+        "des territoires d’outre-mer",
+        "de la Méditerranée"
+      ],
+      "answer": "des territoires d’outre-mer",
+      "hint": "Relis la dernière ligne.",
+      "explanation": "Les îles d’outre-mer, dans tous les océans, donnent à la France un immense espace maritime, le deuxième du monde.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Qui aménage ? L’État, la région, le département, la commune, l’Union européenne.",
+            "Outre-mer : loin de la France métropolitaine.",
+            "Comparer : chercher le plus grand nombre."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-3e-france-planning-2-5",
+      "prompt": "Panneau d’un chantier\nNouvelle route du village\nPayée par la région, le département et l’Union européenne",
+      "question": "Qui paie cette route ?",
+      "spoken": "Panneau d’un chantier. Nouvelle route du village. Payée par la région, le département et l’Union européenne.",
+      "choices": [
+        "la commune seule",
+        "l’ONU",
+        "la région, le département et l’Union européenne"
+      ],
+      "answer": "la région, le département et l’Union européenne",
+      "hint": "Relis la dernière ligne.",
+      "explanation": "Plusieurs acteurs paient ensemble : la région, le département et l’Union européenne. Aménager se fait souvent à plusieurs.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Qui aménage ? L’État, la région, le département, la commune, l’Union européenne.",
+            "Outre-mer : loin de la France métropolitaine.",
+            "Comparer : chercher le plus grand nombre."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-3e-france-planning-2-6",
+      "prompt": "Deux quartiers d’une même métropole\nAu centre : des commerces, des musées, un tram\nEn périphérie : peu de commerces, un bus par heure",
+      "question": "Que montre ce document ?",
+      "spoken": "Deux quartiers d’une même métropole. Au centre : des commerces, des musées, un tram. En périphérie : peu de commerces, un bus par heure.",
+      "choices": [
+        "une ville sans transports",
+        "des inégalités entre quartiers",
+        "un village de montagne"
+      ],
+      "answer": "des inégalités entre quartiers",
+      "hint": "Compare les deux quartiers.",
+      "explanation": "Le centre a beaucoup de services, la périphérie très peu : ce sont des inégalités entre quartiers. Aménager, par exemple une ligne de tram, peut les réduire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Qui aménage ? L’État, la région, le département, la commune, l’Union européenne.",
+            "Outre-mer : loin de la France métropolitaine.",
+            "Comparer : chercher le plus grand nombre."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-3e-france-planning-2-7",
+      "prompt": "Une vallée des Pyrénées\nAvant : une route étroite, souvent fermée l’hiver\nAujourd’hui : une route large, ouverte toute l’année",
+      "question": "Qu’a permis cet aménagement ?",
+      "spoken": "Une vallée des Pyrénées. Avant : une route étroite, souvent fermée l’hiver. Aujourd’hui : une route large, ouverte toute l’année.",
+      "choices": [
+        "vider la vallée",
+        "désenclaver la vallée",
+        "construire une station de ski"
+      ],
+      "answer": "désenclaver la vallée",
+      "hint": "En hiver, la vallée est-elle encore coupée du reste du pays ?",
+      "explanation": "La vallée n’est plus coupée du reste du pays en hiver : elle est désenclavée, c’est-à-dire reliée au reste du pays.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Qui aménage ? L’État, la région, le département, la commune, l’Union européenne.",
+            "Outre-mer : loin de la France métropolitaine.",
+            "Comparer : chercher le plus grand nombre."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "geography-3e-france",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

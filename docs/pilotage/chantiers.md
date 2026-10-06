@@ -16,7 +16,7 @@ Chaque chantier a son préfixe ; on ne les mélange jamais (dans les fils, les p
 | **J0** à **J8**, **D** | Séparer le jeu du rendu | [Séparer le jeu du rendu](../conception/separation-jeu-rendu.md), §3 |
 | **U0** à **U6** | Les univers | [Plusieurs univers](../univers/univers.md), §6 |
 | **LV2-1** à **LV2-5** | La deuxième langue vivante | [Cadrage du contenu](../conception/cadrage-contenu.md), la LV2 |
-| **HG-1** à **HG-2** | L’histoire et la géographie | [Cadrage du contenu](../conception/cadrage-contenu.md), l’histoire et la géographie |
+| **HG-1** à **HG-3** | L’histoire et la géographie | [Cadrage du contenu](../conception/cadrage-contenu.md), l’histoire et la géographie |
 | **SC-1** à **SC-2** | Les sciences et la technologie | [Cadrage du contenu](../conception/cadrage-contenu.md), les sciences et la technologie |
 | **C-1** à **C-15** | Le contenu pédagogique à couvrir | [Cadrage du contenu](../conception/cadrage-contenu.md), le plan |
 | **M1** à **M5** | Le contenu écrit en Markdown, source du jeu et du site | [Contenu en Markdown](../contenu/README.md) et ci-dessous |
@@ -91,6 +91,8 @@ Les suites relevées par les relectures ne sont pas commencées : chacune attend
 ### L’histoire et la géographie (HG)
 
 HG-1 et HG-2 en pull request vers `preview` (choix C du mainteneur, 5 octobre 2026, puis « 1 » le 6 octobre) : le référentiel de 6e (`c3.hg.*`), la matière Histoire-géo (expédition Traces et paysages) et ses deux îles de 6e au jeu, la Fouille des siècles et la Pointe des paysages. Budget : plafonds relevés aux valeurs mesurées par le mainteneur (« Budget on augmente pour l’instant », 6 octobre 2026) : Blocland 100 000 triangles et 256 appels, Archipéo 63 400 aux Premiers Rivages ; la mesure sur un iPad 2020 reste à faire. La voix dit les siècles en mots (« huitième siècle avant Jésus-Christ »). Les habitants d’histoire-géographie ont une commande (GD-7 amendée, mot du mainteneur du 6 octobre 2026). Plus tard : un bouton Écouter sur la frise (référent dys) ; un retour vers la page d’où l’on vient, avec son nom (consultant UX UI). Restent à vérifier : les pages du PDF du programme et les chiffres de géographie. Le nouveau programme du cycle 3 s’applique en 6e à la rentrée 2027.
+
+HG-3 en cours : le référentiel du cycle 4 (`c4.hg.*`, pages « à vérifier ») et six îles de 5e à 3e, deux par classe, une d’histoire et une de géographie : le Bourg des chroniques et le Delta des ressources (5e), l’Imprimerie des révolutions et l’Escale des échanges (4e), le Kiosque des témoins et la Vallée des territoires (3e). Noms, Gardiens, habitants et blocs du directeur artistique (6 octobre 2026). Le jeu est prêt (contenu, blocs, textes des Gardiens et des habitants, commandes, programme) ; reste le monde en 3D des six îles (formes, décor, personnages, place sur la Carte, cadre du 5e élargi, budget relevé à la mesure), à l’artiste technique 3D. Restent à vérifier : les pages du programme du cycle 4 et les chiffres de géographie.
 
 ### Les sciences et la technologie (SC)
 

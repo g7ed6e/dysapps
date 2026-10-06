@@ -143,6 +143,8 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 | [Marais des temps](https://g7ed6e.github.io/dysapps/pedagogie/iles/french-5e-conjugation.html) (Français) | Kroa | triton des roseaux | triton des roseaux | L’Hydre des marais |
 | [Comptoir](https://g7ed6e.github.io/dysapps/pedagogie/iles/english-5e-vocabulary.html) (Anglais) | Pudding | bouledogue marchand | bouledogue marchand | La Reine du marché |
 | [Manoir du passé](https://g7ed6e.github.io/dysapps/pedagogie/iles/english-5e-grammar.html) (Anglais) | Moustache | chat du manoir | chat du manoir | Le Spectre du manoir |
+| [Bourg des chroniques](https://g7ed6e.github.io/dysapps/pedagogie/iles/history-5e-middle-ages.html) (Histoire-géo) | Vélin | lapin enlumineur | lapin enlumineur | Le Griffon d’émail |
+| [Delta des ressources](https://g7ed6e.github.io/dysapps/pedagogie/iles/geography-5e-resources.html) (Histoire-géo) | Sillon | ibis cultivateur | ibis des rizières | La Libellule de jade |
 | [Relais des voyageurs](https://g7ed6e.github.io/dysapps/pedagogie/iles/lv2-5e-introductions.html) (LV2 (espagnol ou allemand)) | Lina | cigogne voyageuse | cigogne voyageuse | La Diligence de cuivre |
 
 ### Le Mammouth de givre, Glacier des relatifs
@@ -193,6 +195,22 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 | À la fin | Bouh ! Je me rallume, blanc comme un drap propre. Le manoir est à toi, et à Moustache. | Ma lanterne se rallume sous mon voile. Le manoir est à toi, et à Moustache. |
 | Moustache à l’arrivée | Hello, bâtisseur ! Au manoir, chaque pièce a son temps : ce qui se passe now, ce qui s’est passé yesterday. Cherche le petit mot qui dit quand. Chaque bonne réponse, c’est un lambris pour le village. | Hello, bâtisseur ! Au manoir, chaque pièce a son temps : ce qui se passe now, ce qui s’est passé yesterday. Cherche le petit mot qui dit quand. Chaque bonne réponse, c’est un lambris pour le village. |
 
+### Le Griffon d’émail, Bourg des chroniques
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | Le Griffon d’émail déploie ses ailes : « Mes émaux sont tout gris. Tu as lu toutes les chroniques du bourg : remets chaque siècle à sa place. » | Le Griffon d’émail dit doucement : « Mes émaux sont éteints. Tu as lu toutes les chroniques du bourg : remets chaque siècle à sa place. » |
+| À la fin | Je me rallume, du bec jusqu’à la queue. Le Bourg est à toi, et à Vélin. | Mes émaux se rallument. Le bourg est à toi, et à Vélin. |
+| Vélin à l’arrivée | Bonjour, bâtisseur ! Ici, on écrit les chroniques du Moyen Âge. Chaque bonne réponse te donne un bloc d’enluminure. Une enluminure, c’est une page peinte à la main, avec des filets d’or. | Bonjour, bâtisseur ! Ici, on écrit les chroniques du Moyen Âge. Chaque bonne réponse te donne un bloc d’enluminure. Une enluminure, c’est une page peinte à la main, avec des filets d’or. |
+
+### La Libellule de jade, Delta des ressources
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | La Libellule de jade se pose sur un roseau : « Mes ailes sont toutes grises. Tu as suivi l’eau de tout le delta : dis-moi comment on partage les ressources. » | La Libellule de jade dit doucement : « Les nervures de mes ailes sont éteintes. Tu as suivi l’eau de tout le delta : dis-moi comment on partage les ressources. » |
+| À la fin | Je me rallume, des ailes jusqu’au bout de la queue. Le Delta est à toi, et à Sillon. | Mes ailes se rallument. Le delta est à toi, et à Sillon. |
+| Sillon à l’arrivée | Bonjour, bâtisseur ! Au delta, on partage l’eau, l’énergie et la nourriture. Chaque bonne réponse te donne un bloc de rizière. Une rizière, c’est un champ plein d’eau où pousse le riz. | Bonjour, bâtisseur ! Au delta, on partage l’eau, l’énergie et la nourriture. Chaque bonne réponse te donne un bloc de rizière. Une rizière, c’est un champ plein d’eau où pousse le riz. |
+
 ### La Diligence de cuivre, Relais des voyageurs
 
 |  | Blocland | Archipéo |
@@ -211,6 +229,8 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 | [Cabinet des mots](https://g7ed6e.github.io/dysapps/pedagogie/iles/french-4e-vocabulary.html) (Français) | Plume | pie collectionneuse | pie collectionneuse | Le Hibou lexicographe |
 | [Théâtre des voix](https://g7ed6e.github.io/dysapps/pedagogie/iles/english-4e-comprehension.html) (Anglais) | Puck | lutin souffleur | lutin souffleur | Le Masque |
 | [Gare du futur](https://g7ed6e.github.io/dysapps/pedagogie/iles/english-4e-grammar.html) (Anglais) | Vapeur | blaireau chef de gare | blaireau chef de gare | La Locomotive de fer |
+| [Imprimerie des révolutions](https://g7ed6e.github.io/dysapps/pedagogie/iles/history-4e-revolutions.html) (Histoire-géo) | Typo | souris imprimeuse | souris imprimeuse | Le Paon de faïence |
+| [Escale des échanges](https://g7ed6e.github.io/dysapps/pedagogie/iles/geography-4e-globalization.html) (Histoire-géo) | Fret | crabe grutier | crabe grutier | Le Poulpe de corail |
 | [Jardin des heures](https://g7ed6e.github.io/dysapps/pedagogie/iles/lv2-4e-daily-life.html) (LV2 (espagnol ou allemand)) | Muscade | écureuil cuisinier | écureuil cuisinier | Le Soleil de cuivre |
 
 ### Le Titan d’acier, Forge des puissances
@@ -261,6 +281,22 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 | À la fin | Tchou ! Je me rallume, jusqu’à la fumée. Les voies sont à toi, et à Vapeur. | Ma lampe se rallume. Les voies sont à toi, et à Vapeur. |
 | Vapeur à l’arrivée | Hello, bâtisseur ! À la gare, on parle de demain (will, going to), de ce qu’on doit faire (must, have to) et de ce qu’on a déjà fait (have been). Chaque bonne réponse, c’est un rail pour le village. | Hello, bâtisseur ! À la gare, on parle de demain (will, going to), de ce qu’on doit faire (must, have to) et de ce qu’on a déjà fait (have been). Chaque bonne réponse, c’est un rail pour le village. |
 
+### Le Paon de faïence, Imprimerie des révolutions
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | Le Paon de faïence ouvre sa roue : « Ma roue est toute grise. Tu as lu toutes les pages de l’imprimerie : remets chaque révolution à sa date. » | Le Paon de faïence dit doucement : « Les yeux de ma roue sont éteints. Tu as lu toutes les pages de l’imprimerie : remets chaque révolution à sa date. » |
+| À la fin | Je me rallume, de la crête jusqu’au bout de ma roue. L’Imprimerie est à toi, et à Typo. | Ma roue se rallume. L’imprimerie est à toi, et à Typo. |
+| Typo à l’arrivée | Bonjour, bâtisseur ! À l’imprimerie, on imprime les nouvelles des révolutions. Chaque bonne réponse te donne un bloc de fonte. La fonte, c’est un métal lourd, coulé dans un moule. | Bonjour, bâtisseur ! À l’imprimerie, on imprime les nouvelles des révolutions. Chaque bonne réponse te donne un bloc de fonte. La fonte, c’est un métal lourd, coulé dans un moule. |
+
+### Le Poulpe de corail, Escale des échanges
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | Le Poulpe de corail sort de l’eau du quai : « Mes bras sont tout gris. Tu as vu passer tous les bateaux de l’escale : dis-moi comment le monde échange. » | Le Poulpe de corail dit doucement : « Mes ventouses sont éteintes. Tu as vu passer tous les bateaux de l’escale : dis-moi comment le monde échange. » |
+| À la fin | Je me rallume, de la tête au bout des huit bras. L’Escale est à toi, et à Fret. | Mes bras se rallument. L’escale est à toi, et à Fret. |
+| Fret à l’arrivée | Bonjour, bâtisseur ! À l’escale, les bateaux arrivent du monde entier. Chaque bonne réponse te donne un conteneur. Un conteneur, c’est une grande boîte en métal qui voyage sur les bateaux. | Bonjour, bâtisseur ! À l’escale, les bateaux arrivent du monde entier. Chaque bonne réponse te donne un conteneur. Un conteneur, c’est une grande boîte en métal qui voyage sur les bateaux. |
+
 ### Le Soleil de cuivre, Jardin des heures
 
 |  | Blocland | Archipéo |
@@ -279,6 +315,8 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 | [Observatoire des textes](https://g7ed6e.github.io/dysapps/pedagogie/iles/french-3e-close-reading.html) (Français) | Astra | luciole lectrice | luciole lectrice | Le Grand Lecteur |
 | [Studio des ondes](https://g7ed6e.github.io/dysapps/pedagogie/iles/english-3e-comprehension.html) (Anglais) | Écho | chauve-souris animatrice radio | chauve-souris animatrice radio | La Grande Antenne |
 | [Château des hypothèses](https://g7ed6e.github.io/dysapps/pedagogie/iles/english-3e-grammar.html) (Anglais) | Knight | petit chevalier | petit chevalier | Le Dragon gallois |
+| [Kiosque des témoins](https://g7ed6e.github.io/dysapps/pedagogie/iles/history-3e-twentieth-century.html) (Histoire-géo) | Mémo | marmotte bibliothécaire | marmotte bibliothécaire | La Colombe d’albâtre |
+| [Vallée des territoires](https://g7ed6e.github.io/dysapps/pedagogie/iles/geography-3e-france.html) (Histoire-géo) | Jalon | fourmi arpenteuse | fourmi arpenteuse | Le Cerf de lauze |
 | [Refuge des carnets](https://g7ed6e.github.io/dysapps/pedagogie/iles/lv2-3e-travel.html) (LV2 (espagnol ou allemand)) | Timbre | loutre factrice | loutre factrice | Le Papillon de cuivre |
 
 ### Le Sphinx de marbre, Belvédère de Thalès
@@ -328,6 +366,22 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 | Au défi | Le Dragon gallois se pose sur le donjon : « Me voilà tout gris. Tu as franchi tous mes remparts : lis les phrases les plus longues à ton rythme. » | Le Dragon gallois dit à voix basse : « Mon bouclier est éteint. Tu as franchi tous mes remparts, lis les phrases les plus longues à ton rythme. » |
 | À la fin | Grrr ! Je me rallume, rouge et or, ailes violettes. Le château est à toi, et à Knight. | Mon bouclier se rallume. Le château est à toi, et à Knight. |
 | Knight à l’arrivée | Hello, bâtisseur ! Au château, les phrases sont longues : depuis quand (for, since), et si (if), et par qui (by). Pas de panique, la règle est affichée. Chaque bonne réponse, c’est une pierre de taille pour le village. | Hello, bâtisseur ! Au château, les phrases sont longues : depuis quand (for, since), et si (if), et par qui (by). Pas de panique, la règle est affichée. Chaque bonne réponse, c’est une pierre de taille pour le village. |
+
+### La Colombe d’albâtre, Kiosque des témoins
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | La Colombe d’albâtre attend, un rameau vert au bec : « Mes plumes sont toutes grises. Tu as écouté tous les témoins du kiosque : aide-moi à me souvenir, date après date. » | La Colombe d’albâtre dit doucement : « Mes plumes sont éteintes. Tu as écouté tous les témoins du kiosque : aide-moi à me souvenir, date après date. » |
+| À la fin | Je me rallume, jusqu’au rameau vert. Le Kiosque est à toi, et à Mémo. Merci de te souvenir avec moi. | Mes plumes se rallument, jusqu’au rameau vert. Le kiosque est à toi, et à Mémo. |
+| Mémo à l’arrivée | Bonjour, bâtisseur. Ici, on garde la parole des témoins. Chaque bonne réponse te donne un bloc de reliure. Une reliure, c’est la couverture solide d’un livre. | Bonjour, bâtisseur. Ici, on garde la parole des témoins. Chaque bonne réponse te donne un bloc de reliure. Une reliure, c’est la couverture solide d’un livre. |
+
+### Le Cerf de lauze, Vallée des territoires
+
+|  | Blocland | Archipéo |
+| --- | --- | --- |
+| Au défi | Le Cerf de lauze lève la tête : « Mes bois sont tout gris. Tu as parcouru toute la vallée : dis-moi comment vit le territoire. » | Le Cerf de lauze dit doucement : « Les lauzes de mes bois sont éteintes. Tu as parcouru toute la vallée : dis-moi comment vit le territoire. » |
+| À la fin | Je me rallume, des sabots jusqu’au bout des bois. La Vallée est à toi, et à Jalon. | Mes bois se rallument. La vallée est à toi, et à Jalon. |
+| Jalon à l’arrivée | Bonjour, bâtisseur ! Dans la vallée, on regarde la France : ses villes, ses campagnes, ses routes. Chaque bonne réponse te donne un bloc de grès rose. Le grès, c’est une pierre faite de sable serré. | Bonjour, bâtisseur ! Dans la vallée, on regarde la France : ses villes, ses campagnes, ses routes. Chaque bonne réponse te donne un bloc de grès rose. Le grès, c’est une pierre faite de sable serré. |
 
 ### Le Papillon de cuivre, Refuge des carnets
 

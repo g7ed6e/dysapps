@@ -1,0 +1,230 @@
+{
+  "id": "history-4e-revolutions-french-society-2",
+  "biome": "history-4e-revolutions",
+  "type": "french-society",
+  "level": 2,
+  "instruction": "Lis la question, puis le document. Choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "history-4e-revolutions-french-society-2-0",
+      "prompt": "Le vote en France, en 1848\nTous les hommes de 21 ans et plus votent.\nLes femmes ne votent pas.",
+      "question": "Le suffrage de 1848 est-il vraiment universel ?",
+      "spoken": "Le vote en France, en mille huit cent quarante-huit. Tous les hommes de vingt et un ans et plus votent. Les femmes ne votent pas.",
+      "choices": [
+        "oui, tout le monde vote",
+        "non, seuls les riches votent",
+        "non, les femmes ne votent pas"
+      ],
+      "answer": "non, les femmes ne votent pas",
+      "hint": "Relis la dernière ligne.",
+      "explanation": "Tous les hommes votent, mais pas les femmes : le suffrage est universel pour les hommes seulement. On dit « masculin ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Qui parle ? Pour quoi ? Contre quoi ?",
+            "Suffrage universel masculin : tous les hommes votent.",
+            "Laïque : neutre, sans religion officielle."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-4e-revolutions-french-society-2-1",
+      "prompt": "Le nombre d’électeurs en France\n1846 : environ 250 000\n1848 : plus de 9 000 000",
+      "question": "Pourquoi y a-t-il bien plus d’électeurs en 1848 ?",
+      "spoken": "Le nombre d’électeurs en France. Mille huit cent quarante-six : environ deux cent cinquante mille. Mille huit cent quarante-huit : plus de neuf millions.",
+      "choices": [
+        "les femmes votent",
+        "tous les hommes votent",
+        "la population double"
+      ],
+      "answer": "tous les hommes votent",
+      "hint": "Que se passe-t-il en 1848 ?",
+      "explanation": "En 1848, le suffrage universel masculin remplace le suffrage censitaire : tous les hommes votent, et plus seulement les riches.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Qui parle ? Pour quoi ? Contre quoi ?",
+            "Suffrage universel masculin : tous les hommes votent.",
+            "Laïque : neutre, sans religion officielle."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-4e-revolutions-french-society-2-2",
+      "prompt": "Victor Hugo, écrivain\nEn 1851, il s’oppose au coup d’État de Louis-Napoléon Bonaparte.\nIl vit en exil jusqu’en 1870.",
+      "question": "Pourquoi Victor Hugo vit-il en exil ?",
+      "spoken": "Victor Hugo, écrivain. En mille huit cent cinquante et un, il s’oppose au coup d’État de Louis-Napoléon Bonaparte. Il vit en exil jusqu’en mille huit cent soixante-dix.",
+      "choices": [
+        "il s’oppose à Louis-Napoléon Bonaparte",
+        "il soutient Louis-Napoléon Bonaparte",
+        "il veut voyager"
+      ],
+      "answer": "il s’oppose à Louis-Napoléon Bonaparte",
+      "hint": "Relis la deuxième ligne.",
+      "explanation": "Victor Hugo s’oppose au coup d’État : il doit quitter la France. Louis-Napoléon Bonaparte devient l’empereur Napoléon III. Hugo rentre quand l’Empire tombe, en 1870.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Qui parle ? Pour quoi ? Contre quoi ?",
+            "Suffrage universel masculin : tous les hommes votent.",
+            "Laïque : neutre, sans religion officielle."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-4e-revolutions-french-society-2-3",
+      "prompt": "Les symboles de la République\n1879 : la Marseillaise devient l’hymne national.\n1880 : le 14 juillet devient la fête nationale.\nMarianne entre dans les mairies.",
+      "question": "Pourquoi la République choisit-elle ces symboles ?",
+      "spoken": "Les symboles de la République. Mille huit cent soixante-dix-neuf : la Marseillaise devient l’hymne national. Mille huit cent quatre-vingts : le quatorze juillet devient la fête nationale. Marianne entre dans les mairies.",
+      "choices": [
+        "pour rappeler le roi",
+        "pour que les Français aiment la République",
+        "pour fêter Napoléon"
+      ],
+      "answer": "pour que les Français aiment la République",
+      "hint": "Le 14 juillet rappelle la prise de la Bastille.",
+      "explanation": "Un hymne, une fête, un visage : la Troisième République veut que tous les Français s’attachent à elle. Ces symboles viennent de la Révolution.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Qui parle ? Pour quoi ? Contre quoi ?",
+            "Suffrage universel masculin : tous les hommes votent.",
+            "Laïque : neutre, sans religion officielle."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-4e-revolutions-french-society-2-4",
+      "prompt": "D’après la loi du 28 mars 1882\nL’école est obligatoire de 6 à 13 ans,\npour les garçons et pour les filles.",
+      "question": "Qui doit aller à l’école ?",
+      "spoken": "D’après la loi du vingt-huit mars mille huit cent quatre-vingt-deux. L’école est obligatoire de six à treize ans, pour les garçons et pour les filles.",
+      "choices": [
+        "les garçons seulement",
+        "les garçons et les filles",
+        "les enfants riches seulement"
+      ],
+      "answer": "les garçons et les filles",
+      "hint": "Relis la dernière ligne.",
+      "explanation": "La loi oblige tous les enfants, garçons et filles, à aller à l’école. Elle est gratuite depuis 1881 : riches ou pauvres, tous y vont.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Qui parle ? Pour quoi ? Contre quoi ?",
+            "Suffrage universel masculin : tous les hommes votent.",
+            "Laïque : neutre, sans religion officielle."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-4e-revolutions-french-society-2-5",
+      "prompt": "D’après la loi du 9 décembre 1905\nLa République garantit la liberté de croire ou de ne pas croire.\nElle ne paie aucun culte.",
+      "question": "Que change cette loi pour les religions ?",
+      "spoken": "D’après la loi du neuf décembre mille neuf cent cinq. La République garantit la liberté de croire ou de ne pas croire. Elle ne paie aucun culte.",
+      "choices": [
+        "l’État interdit les religions",
+        "l’État choisit une religion",
+        "l’État ne paie aucune religion"
+      ],
+      "answer": "l’État ne paie aucune religion",
+      "hint": "Relis la dernière ligne.",
+      "explanation": "L’État ne paie plus aucun culte, mais chacun reste libre de croire : la laïcité n’interdit pas les religions.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Qui parle ? Pour quoi ? Contre quoi ?",
+            "Suffrage universel masculin : tous les hommes votent.",
+            "Laïque : neutre, sans religion officielle."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-4e-revolutions-french-society-2-6",
+      "prompt": "Julie-Victoire Daubié\nEn 1861, elle est la première femme\nreçue au baccalauréat en France.",
+      "question": "Que montre ce document ?",
+      "spoken": "Julie-Victoire Daubié. En mille huit cent soixante et un, elle est la première femme reçue au baccalauréat en France.",
+      "choices": [
+        "les femmes votent dès 1861",
+        "les femmes commencent à faire des études",
+        "le baccalauréat est réservé aux femmes"
+      ],
+      "answer": "les femmes commencent à faire des études",
+      "hint": "« La première femme » : avant elle, aucune.",
+      "explanation": "Avant 1861, aucune femme n’a le baccalauréat : peu à peu, les femmes accèdent aux études. Le droit de vote viendra bien plus tard.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Qui parle ? Pour quoi ? Contre quoi ?",
+            "Suffrage universel masculin : tous les hommes votent.",
+            "Laïque : neutre, sans religion officielle."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-4e-revolutions-french-society-2-7",
+      "prompt": "Hubertine Auclert, 1881\nElle crée un journal, La Citoyenne.\nElle demande le droit de vote pour les femmes.",
+      "question": "Que réclame Hubertine Auclert ?",
+      "spoken": "Hubertine Auclert, mille huit cent quatre-vingt-un. Elle crée un journal, La Citoyenne. Elle demande le droit de vote pour les femmes.",
+      "choices": [
+        "la fin de l’école obligatoire",
+        "le droit de vote des femmes",
+        "le retour du roi"
+      ],
+      "answer": "le droit de vote des femmes",
+      "hint": "Relis la dernière ligne.",
+      "explanation": "Hubertine Auclert se bat pour que les femmes votent. Au XIXe siècle, elles n’ont pas ce droit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Qui parle ? Pour quoi ? Contre quoi ?",
+            "Suffrage universel masculin : tous les hommes votent.",
+            "Laïque : neutre, sans religion officielle."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "history-4e-revolutions",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

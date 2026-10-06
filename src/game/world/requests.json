@@ -389,5 +389,83 @@
       "ready": "Tu as les {blocs} ! Livre-les à Boussole.",
       "done": "Placette posée chez Boussole !"
     }
+  },
+  {
+    "id": "history-5e-middle-ages-request-1",
+    "biome": "history-5e-middle-ages",
+    "block": "french-5e-conjugation",
+    "count": 3,
+    "fixture": "history-5e-middle-ages-fixture-1",
+    "blocland": {
+      "name": "l’écritoire",
+      "ask": "Il me faut {objet} pour mon écritoire. Joue une mission du Marais des temps.",
+      "ready": "Tu as les {blocs} ! Livre-les à Vélin.",
+      "done": "Écritoire posée chez Vélin !"
+    }
+  },
+  {
+    "id": "geography-5e-resources-request-1",
+    "biome": "geography-5e-resources",
+    "block": "history-5e-middle-ages",
+    "count": 4,
+    "fixture": "geography-5e-resources-fixture-1",
+    "blocland": {
+      "name": "l’abreuvoir",
+      "ask": "Il me faut {objet} pour mon abreuvoir. Joue une mission du Bourg des chroniques.",
+      "ready": "Tu as les {blocs} ! Livre-les à Sillon.",
+      "done": "Abreuvoir posé chez Sillon !"
+    }
+  },
+  {
+    "id": "history-4e-revolutions-request-1",
+    "biome": "history-4e-revolutions",
+    "block": "french-4e-agreement",
+    "count": 3,
+    "fixture": "history-4e-revolutions-fixture-1",
+    "blocland": {
+      "name": "le réverbère",
+      "ask": "Il me faut {objet} pour mon réverbère. Joue une mission de la Falaise des accords.",
+      "ready": "Tu as les {blocs} ! Livre-les à Typo.",
+      "done": "Réverbère posé chez Typo !"
+    }
+  },
+  {
+    "id": "geography-4e-globalization-request-1",
+    "biome": "geography-4e-globalization",
+    "block": "history-4e-revolutions",
+    "count": 4,
+    "fixture": "geography-4e-globalization-fixture-1",
+    "blocland": {
+      "name": "le treuil",
+      "ask": "Il me faut {objet} pour mon treuil. Joue une mission de l’Imprimerie des révolutions.",
+      "ready": "Tu as les {blocs} ! Livre-les à Fret.",
+      "done": "Treuil posé chez Fret !"
+    }
+  },
+  {
+    "id": "history-3e-twentieth-century-request-1",
+    "biome": "history-3e-twentieth-century",
+    "block": "maths-3e-statistics",
+    "count": 3,
+    "fixture": "history-3e-twentieth-century-fixture-1",
+    "blocland": {
+      "name": "le pupitre",
+      "ask": "Il me faut {objet} pour mon pupitre. Joue une mission de l’Observatoire des données.",
+      "ready": "Tu as les {blocs} ! Livre-les à Mémo.",
+      "done": "Pupitre posé chez Mémo !"
+    }
+  },
+  {
+    "id": "geography-3e-france-request-1",
+    "biome": "geography-3e-france",
+    "block": "history-3e-twentieth-century",
+    "count": 3,
+    "fixture": "geography-3e-france-fixture-1",
+    "blocland": {
+      "name": "la fontaine",
+      "ask": "Il me faut {objet} pour ma fontaine. Joue une mission du Kiosque des témoins.",
+      "ready": "Tu as les {blocs} ! Livre-les à Jalon.",
+      "done": "Fontaine posée chez Jalon !"
+    }
   }
 ]

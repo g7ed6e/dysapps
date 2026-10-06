@@ -1,0 +1,230 @@
+{
+  "id": "history-4e-revolutions-industrial-europe-2",
+  "biome": "history-4e-revolutions",
+  "type": "industrial-europe",
+  "level": 2,
+  "instruction": "Lis la question, puis le document. Choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "history-4e-revolutions-industrial-europe-2-0",
+      "prompt": "Le travail des enfants, d’après une enquête de 1840\nDes enfants de 8 ans travaillent à l’usine.\nIls y passent plus de 12 heures par jour.",
+      "question": "Que montre cette enquête ?",
+      "spoken": "Le travail des enfants, d’après une enquête de mille huit cent quarante. Des enfants de huit ans travaillent à l’usine. Ils y passent plus de douze heures par jour.",
+      "choices": [
+        "les enfants travaillent très dur",
+        "les enfants vont tous à l’école",
+        "les enfants jouent à l’usine"
+      ],
+      "answer": "les enfants travaillent très dur",
+      "hint": "Relis la dernière ligne.",
+      "explanation": "Des enfants de 8 ans, plus de 12 heures par jour : le travail à l’usine est très dur. Des lois le limitent peu à peu.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Qui parle ? Un colonisateur et un colonisé ne voient pas la même chose.",
+            "Le XIXe siècle : de l’an 1801 à l’an 1900.",
+            "Colonie : un territoire dominé par un pays étranger."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-4e-revolutions-industrial-europe-2-1",
+      "prompt": "Le chemin de fer en France\n1850 : environ 3 000 km de voies\n1900 : plus de 35 000 km de voies",
+      "question": "Comment change le réseau ?",
+      "spoken": "Le chemin de fer en France. Mille huit cent cinquante : environ trois mille kilomètres de voies. Mille neuf cents : plus de trente-cinq mille kilomètres de voies.",
+      "choices": [
+        "il diminue",
+        "il s’agrandit beaucoup",
+        "il ne change pas"
+      ],
+      "answer": "il s’agrandit beaucoup",
+      "hint": "Compare les deux nombres.",
+      "explanation": "35 000 est bien plus grand que 3 000 : le réseau s’agrandit beaucoup. Le train transporte le charbon, les marchandises et les voyageurs.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Qui parle ? Un colonisateur et un colonisé ne voient pas la même chose.",
+            "Le XIXe siècle : de l’an 1801 à l’an 1900.",
+            "Colonie : un territoire dominé par un pays étranger."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-4e-revolutions-industrial-europe-2-2",
+      "prompt": "Description d’un tableau : une ville industrielle\nDes cheminées d’usine\nUne fumée noire dans le ciel\nDes maisons d’ouvriers serrées",
+      "question": "Quel problème montre ce tableau ?",
+      "spoken": "Description d’un tableau : une ville industrielle. Des cheminées d’usine. Une fumée noire dans le ciel. Des maisons d’ouvriers serrées.",
+      "choices": [
+        "la pollution",
+        "le manque d’usines",
+        "la vie à la campagne"
+      ],
+      "answer": "la pollution",
+      "hint": "Relis la troisième ligne.",
+      "explanation": "La fumée noire du charbon salit l’air : c’est la pollution. Les ouvriers vivent serrés, près des usines.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Qui parle ? Un colonisateur et un colonisé ne voient pas la même chose.",
+            "Le XIXe siècle : de l’an 1801 à l’an 1900.",
+            "Colonie : un territoire dominé par un pays étranger."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-4e-revolutions-industrial-europe-2-3",
+      "prompt": "Une grève, d’après un journal ouvrier\nLes ouvriers arrêtent le travail.\nIls demandent un meilleur salaire\net moins d’heures de travail.",
+      "question": "Comment s’appelle cette action ?",
+      "spoken": "Une grève, d’après un journal ouvrier. Les ouvriers arrêtent le travail. Ils demandent un meilleur salaire et moins d’heures de travail.",
+      "choices": [
+        "une élection",
+        "une grève",
+        "une révolution"
+      ],
+      "answer": "une grève",
+      "hint": "Relis la première ligne.",
+      "explanation": "Arrêter le travail pour obtenir quelque chose, c’est faire grève. En France, la grève est autorisée en 1864.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Qui parle ? Un colonisateur et un colonisé ne voient pas la même chose.",
+            "Le XIXe siècle : de l’an 1801 à l’an 1900.",
+            "Colonie : un territoire dominé par un pays étranger."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-4e-revolutions-industrial-europe-2-4",
+      "prompt": "D’après un discours de Jules Ferry, 1885\nIl faut des colonies pour vendre\nles produits de nos usines.\nIl dit aussi vouloir « civiliser » d’autres peuples.",
+      "question": "Selon Jules Ferry, à quoi servent les colonies ?",
+      "spoken": "D’après un discours de Jules Ferry, mille huit cent quatre-vingt-cinq. Il faut des colonies pour vendre les produits de nos usines. Il dit aussi vouloir « civiliser » d’autres peuples.",
+      "choices": [
+        "à fermer des usines",
+        "à rendre leur liberté aux peuples",
+        "à vendre les produits des usines"
+      ],
+      "answer": "à vendre les produits des usines",
+      "hint": "Relis la deuxième et la troisième ligne.",
+      "explanation": "Pour Jules Ferry, les colonies achètent ce que fabriquent les usines françaises. C’est son point de vue de colonisateur.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Qui parle ? Un colonisateur et un colonisé ne voient pas la même chose.",
+            "Le XIXe siècle : de l’an 1801 à l’an 1900.",
+            "Colonie : un territoire dominé par un pays étranger."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-4e-revolutions-industrial-europe-2-5",
+      "prompt": "D’après la réponse de Georges Clemenceau, 1885\nIl répond à Jules Ferry, devant les députés.\nPour lui, aucun peuple n’a le droit\nd’en dominer un autre.",
+      "question": "Quel est le point de vue de Clemenceau ?",
+      "spoken": "D’après la réponse de Georges Clemenceau, mille huit cent quatre-vingt-cinq. Il répond à Jules Ferry, devant les députés. Pour lui, aucun peuple n’a le droit d’en dominer un autre.",
+      "choices": [
+        "il veut plus de colonies",
+        "il est contre la colonisation",
+        "il veut civiliser l’Afrique"
+      ],
+      "answer": "il est contre la colonisation",
+      "hint": "Dominer un autre peuple : est-il pour ou contre ?",
+      "explanation": "Clemenceau refuse qu’un peuple en domine un autre : il est contre la colonisation. En 1885, deux députés ont deux points de vue opposés.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Qui parle ? Un colonisateur et un colonisé ne voient pas la même chose.",
+            "Le XIXe siècle : de l’an 1801 à l’an 1900.",
+            "Colonie : un territoire dominé par un pays étranger."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-4e-revolutions-industrial-europe-2-6",
+      "prompt": "L’Afrique vers 1900\nAlgérie, Sénégal, Madagascar : dominés par la France\nNigeria, Kenya : dominés par le Royaume-Uni",
+      "question": "Quel pays domine Madagascar ?",
+      "spoken": "L’Afrique vers mille neuf cents. Algérie, Sénégal, Madagascar : dominés par la France. Nigeria, Kenya : dominés par le Royaume-Uni.",
+      "choices": [
+        "le Royaume-Uni",
+        "la France",
+        "l’Allemagne"
+      ],
+      "answer": "la France",
+      "hint": "Cherche Madagascar dans les lignes.",
+      "explanation": "Madagascar est sur la ligne de la France : c’est une colonie française. À la fin du XIXe siècle, la France et le Royaume-Uni ont les plus grands empires coloniaux.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Qui parle ? Un colonisateur et un colonisé ne voient pas la même chose.",
+            "Le XIXe siècle : de l’an 1801 à l’an 1900.",
+            "Colonie : un territoire dominé par un pays étranger."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-4e-revolutions-industrial-europe-2-7",
+      "prompt": "Paris, deux recensements\n1801 : environ 550 000 habitants\n1901 : environ 2 700 000 habitants",
+      "question": "Comment change la population de Paris ?",
+      "spoken": "Paris, deux recensements. Mille huit cent un : environ cinq cent cinquante mille habitants. Mille neuf cent un : environ deux millions sept cent mille habitants.",
+      "choices": [
+        "elle augmente beaucoup",
+        "elle diminue",
+        "elle reste la même"
+      ],
+      "answer": "elle augmente beaucoup",
+      "hint": "Compare les deux nombres.",
+      "explanation": "2 700 000 est bien plus grand que 550 000 : Paris grandit beaucoup. Des paysans viennent y travailler : c’est l’exode rural.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "Qui parle ? Un colonisateur et un colonisé ne voient pas la même chose.",
+            "Le XIXe siècle : de l’an 1801 à l’an 1900.",
+            "Colonie : un territoire dominé par un pays étranger."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "history-4e-revolutions",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

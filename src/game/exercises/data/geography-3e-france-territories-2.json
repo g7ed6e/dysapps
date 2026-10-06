@@ -1,0 +1,230 @@
+{
+  "id": "geography-3e-france-territories-2",
+  "biome": "geography-3e-france",
+  "type": "territories",
+  "level": 2,
+  "instruction": "Lis la question, puis le document. Choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "geography-3e-france-territories-2-0",
+      "prompt": "La population de la France, en 2025\nPrès de 69 millions d’habitants\nPlus de 8 sur 10 vivent dans une aire urbaine.",
+      "question": "Où vivent la plupart des Français ?",
+      "spoken": "La population de la France, en deux mille vingt-cinq. Près de soixante-neuf millions d’habitants. Plus de huit sur dix vivent dans une aire urbaine.",
+      "choices": [
+        "dans les campagnes isolées",
+        "en haute montagne",
+        "dans une aire urbaine"
+      ],
+      "answer": "dans une aire urbaine",
+      "hint": "Relis la dernière ligne.",
+      "explanation": "Plus de 8 Français sur 10 vivent dans une aire urbaine : la ville, ses banlieues ou ses communes périurbaines.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "km² se lit « kilomètre carré ».",
+            "Premier plan : ce qui est devant ; arrière-plan : ce qui est au fond.",
+            "Densité : plus le nombre est grand, plus les habitants sont serrés."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-3e-france-territories-2-1",
+      "prompt": "Les plus grandes aires urbaines de France\nParis : environ 13 millions d’habitants\nLyon : environ 2 millions\nMarseille : environ 2 millions",
+      "question": "Quelle aire urbaine est de loin la plus peuplée ?",
+      "spoken": "Les plus grandes aires urbaines de France. Paris : environ treize millions d’habitants. Lyon : environ deux millions. Marseille : environ deux millions.",
+      "choices": [
+        "Lyon",
+        "Paris",
+        "Marseille"
+      ],
+      "answer": "Paris",
+      "hint": "Cherche le plus grand nombre.",
+      "explanation": "13 millions, c’est le plus grand nombre : l’aire urbaine de Paris est de loin la plus peuplée. Lyon et Marseille viennent loin derrière.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "km² se lit « kilomètre carré ».",
+            "Premier plan : ce qui est devant ; arrière-plan : ce qui est au fond.",
+            "Densité : plus le nombre est grand, plus les habitants sont serrés."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-3e-france-territories-2-2",
+      "prompt": "Description d’une photo, près de Toulouse\nAu premier plan : des maisons neuves avec jardin\nÀ l’arrière-plan : des champs",
+      "question": "Dans quel espace a-t-on pris cette photo ?",
+      "spoken": "Description d’une photo, près de Toulouse. Au premier plan : des maisons neuves avec jardin. À l’arrière-plan : des champs.",
+      "choices": [
+        "dans l’espace périurbain",
+        "dans le centre-ville",
+        "en haute montagne"
+      ],
+      "answer": "dans l’espace périurbain",
+      "hint": "Des maisons neuves au bord des champs : entre la ville et quoi ?",
+      "explanation": "Des maisons neuves qui gagnent sur les champs, près d’une grande ville : c’est l’espace périurbain.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "km² se lit « kilomètre carré ».",
+            "Premier plan : ce qui est devant ; arrière-plan : ce qui est au fond.",
+            "Densité : plus le nombre est grand, plus les habitants sont serrés."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-3e-france-territories-2-3",
+      "prompt": "Le port du Havre\nLe premier port de France pour les conteneurs\nDes usines et une raffinerie autour",
+      "question": "Quel espace productif montre ce document ?",
+      "spoken": "Le port du Havre. Le premier port de France pour les conteneurs. Des usines et une raffinerie autour.",
+      "choices": [
+        "un espace agricole",
+        "un espace industriel et portuaire",
+        "un espace touristique"
+      ],
+      "answer": "un espace industriel et portuaire",
+      "hint": "Un port, des usines : on y vient pour quoi ?",
+      "explanation": "Un port et des usines au bord de la mer : c’est un espace industriel et portuaire, ouvert sur le monde.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "km² se lit « kilomètre carré ».",
+            "Premier plan : ce qui est devant ; arrière-plan : ce qui est au fond.",
+            "Densité : plus le nombre est grand, plus les habitants sont serrés."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-3e-france-territories-2-4",
+      "prompt": "Sophia Antipolis, près de Nice\nDes universités et des laboratoires\nDes entreprises d’informatique",
+      "question": "Qu’est-ce que Sophia Antipolis ?",
+      "spoken": "Sophia Antipolis, près de Nice. Des universités et des laboratoires. Des entreprises d’informatique.",
+      "choices": [
+        "une station de ski",
+        "une technopole",
+        "un port"
+      ],
+      "answer": "une technopole",
+      "hint": "La recherche et des entreprises de pointe, au même endroit.",
+      "explanation": "Universités, laboratoires, entreprises d’informatique : Sophia Antipolis est une technopole : un espace productif de pointe.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "km² se lit « kilomètre carré ».",
+            "Premier plan : ce qui est devant ; arrière-plan : ce qui est au fond.",
+            "Densité : plus le nombre est grand, plus les habitants sont serrés."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-3e-france-territories-2-5",
+      "prompt": "La Beauce, au sud-ouest de Paris\nDe très grandes exploitations de céréales\nPeu d’agriculteurs, beaucoup de machines",
+      "question": "Quel espace productif est-ce ?",
+      "spoken": "La Beauce, au sud-ouest de Paris. De très grandes exploitations de céréales. Peu d’agriculteurs, beaucoup de machines.",
+      "choices": [
+        "un espace industriel",
+        "un espace de services",
+        "un espace agricole"
+      ],
+      "answer": "un espace agricole",
+      "hint": "Des céréales, des agriculteurs : quel secteur ?",
+      "explanation": "Des céréales et des agriculteurs : la Beauce est un espace agricole, du secteur primaire. Les machines y font la plus grande partie du travail.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "km² se lit « kilomètre carré ».",
+            "Premier plan : ce qui est devant ; arrière-plan : ce qui est au fond.",
+            "Densité : plus le nombre est grand, plus les habitants sont serrés."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-3e-france-territories-2-6",
+      "prompt": "Une station de ski des Alpes\nEn hiver : des milliers de touristes\nDes emplois dans les hôtels et sur les pistes",
+      "question": "Quelle activité fait vivre cette montagne ?",
+      "spoken": "Une station de ski des Alpes. En hiver : des milliers de touristes. Des emplois dans les hôtels et sur les pistes.",
+      "choices": [
+        "le tourisme",
+        "l’industrie",
+        "la pêche"
+      ],
+      "answer": "le tourisme",
+      "hint": "Qui vient en hiver ?",
+      "explanation": "Les touristes font vivre la station : hôtels, pistes, magasins. Le tourisme rend productif un espace de montagne.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "km² se lit « kilomètre carré ».",
+            "Premier plan : ce qui est devant ; arrière-plan : ce qui est au fond.",
+            "Densité : plus le nombre est grand, plus les habitants sont serrés."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-3e-france-territories-2-7",
+      "prompt": "Densité de population\nParis : environ 20 000 habitants par km²\nLa Lozère : environ 15 habitants par km²",
+      "question": "Quel territoire est un espace de faible densité ?",
+      "spoken": "Densité de population. Paris : environ vingt mille habitants par kilomètre carré. La Lozère : environ quinze habitants par kilomètre carré.",
+      "choices": [
+        "Paris",
+        "la Lozère",
+        "les deux"
+      ],
+      "answer": "la Lozère",
+      "hint": "Cherche le plus petit nombre.",
+      "explanation": "15 habitants par km², c’est très peu : la Lozère, dans le Massif central, est un espace de faible densité. Paris est très dense.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document de géographie",
+          "lines": [
+            "La première ligne dit ce qu’est le document.",
+            "km² se lit « kilomètre carré ».",
+            "Premier plan : ce qui est devant ; arrière-plan : ce qui est au fond.",
+            "Densité : plus le nombre est grand, plus les habitants sont serrés."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "geography-3e-france",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

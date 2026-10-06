@@ -1,0 +1,230 @@
+{
+  "id": "history-3e-twentieth-century-republic-2",
+  "biome": "history-3e-twentieth-century",
+  "type": "republic",
+  "level": 2,
+  "instruction": "Lis la question, puis le document. Choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "history-3e-twentieth-century-republic-2-0",
+      "prompt": "Les élections municipales, avril 1945\nPour la première fois en France,\nles femmes votent.",
+      "question": "Qu’y a-t-il de nouveau à ces élections ?",
+      "spoken": "Les élections municipales, avril mille neuf cent quarante-cinq. Pour la première fois en France, les femmes votent.",
+      "choices": [
+        "les femmes votent",
+        "les jeunes de 18 ans votent",
+        "le président est élu"
+      ],
+      "answer": "les femmes votent",
+      "hint": "Relis la dernière ligne.",
+      "explanation": "En avril 1945, les femmes votent pour la première fois en France. Elles ont obtenu ce droit en 1944.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document d’histoire",
+          "lines": [
+            "La première ligne dit ce qu’est le document et sa date.",
+            "Qui parle ? À qui ? Quand ?",
+            "La Constitution : le texte qui fixe les règles de l’État.",
+            "Un référendum : les électeurs répondent oui ou non."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-3e-twentieth-century-republic-2-1",
+      "prompt": "Programme du Conseil national de la Résistance, 1944\nUn plan complet de sécurité sociale\npour tous les citoyens",
+      "question": "Qui a écrit ce programme ?",
+      "spoken": "Programme du Conseil national de la Résistance, mille neuf cent quarante-quatre. Un plan complet de sécurité sociale pour tous les citoyens.",
+      "choices": [
+        "le régime de Vichy",
+        "la Résistance",
+        "l’armée allemande"
+      ],
+      "answer": "la Résistance",
+      "hint": "Lis la première ligne : qui parle ?",
+      "explanation": "Le Conseil national de la Résistance réunit les résistants. Il prépare la France d’après la guerre : la Sécurité sociale naît en 1945.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document d’histoire",
+          "lines": [
+            "La première ligne dit ce qu’est le document et sa date.",
+            "Qui parle ? À qui ? Quand ?",
+            "La Constitution : le texte qui fixe les règles de l’État.",
+            "Un référendum : les électeurs répondent oui ou non."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-3e-twentieth-century-republic-2-2",
+      "prompt": "Paris, 4 septembre 1958\nDe Gaulle présente une nouvelle Constitution.\nLes Français l’approuvent par référendum.",
+      "question": "Comment cette Constitution est-elle approuvée ?",
+      "spoken": "Paris, le quatre septembre mille neuf cent cinquante-huit. De Gaulle présente une nouvelle Constitution. Les Français l’approuvent par référendum.",
+      "choices": [
+        "par un vote des députés",
+        "par un référendum",
+        "par une décision du président"
+      ],
+      "answer": "par un référendum",
+      "hint": "Relis la dernière ligne.",
+      "explanation": "Les Français approuvent la Constitution par référendum : chaque électeur répond oui ou non. Elle fonde la cinquième République.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document d’histoire",
+          "lines": [
+            "La première ligne dit ce qu’est le document et sa date.",
+            "Qui parle ? À qui ? Quand ?",
+            "La Constitution : le texte qui fixe les règles de l’État.",
+            "Un référendum : les électeurs répondent oui ou non."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-3e-twentieth-century-republic-2-3",
+      "prompt": "La France, en 1986\nPrésident : François Mitterrand, de gauche\nPremier ministre : Jacques Chirac, de droite",
+      "question": "Comment appelle-t-on cette situation ?",
+      "spoken": "La France, en mille neuf cent quatre-vingt-six. Président : François Mitterrand, de gauche. Premier ministre : Jacques Chirac, de droite.",
+      "choices": [
+        "l’alternance",
+        "le Front populaire",
+        "la cohabitation"
+      ],
+      "answer": "la cohabitation",
+      "hint": "Le président et le Premier ministre sont-ils du même camp ?",
+      "explanation": "Un président de gauche, un Premier ministre de droite : ils doivent gouverner ensemble, c’est la cohabitation. L’alternance, c’est le changement de camp, comme en 1981.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document d’histoire",
+          "lines": [
+            "La première ligne dit ce qu’est le document et sa date.",
+            "Qui parle ? À qui ? Quand ?",
+            "La Constitution : le texte qui fixe les règles de l’État.",
+            "Un référendum : les électeurs répondent oui ou non."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-3e-twentieth-century-republic-2-4",
+      "prompt": "Les années 1960, en France\nDe plus en plus de familles achètent\nune télévision, un réfrigérateur, une voiture.",
+      "question": "Comment appelle-t-on cette société ?",
+      "spoken": "Les années mille neuf cent soixante, en France. De plus en plus de familles achètent une télévision, un réfrigérateur, une voiture.",
+      "choices": [
+        "la société de consommation",
+        "la société rurale",
+        "la société d’ordres"
+      ],
+      "answer": "la société de consommation",
+      "hint": "Les familles achètent de plus en plus.",
+      "explanation": "On achète de plus en plus d’objets : c’est la société de consommation, pendant les Trente Glorieuses. La société d’ordres, c’est la France d’avant 1789.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document d’histoire",
+          "lines": [
+            "La première ligne dit ce qu’est le document et sa date.",
+            "Qui parle ? À qui ? Quand ?",
+            "La Constitution : le texte qui fixe les règles de l’État.",
+            "Un référendum : les électeurs répondent oui ou non."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-3e-twentieth-century-republic-2-5",
+      "prompt": "Les campagnes françaises, années 1950\nLes jeunes quittent les fermes.\nIls partent travailler en ville.",
+      "question": "Comment appelle-t-on ce départ ?",
+      "spoken": "Les campagnes françaises, années mille neuf cent cinquante. Les jeunes quittent les fermes. Ils partent travailler en ville.",
+      "choices": [
+        "l’étalement urbain",
+        "l’exode rural",
+        "la décolonisation"
+      ],
+      "answer": "l’exode rural",
+      "hint": "Exode veut dire départ ; rural veut dire de la campagne.",
+      "explanation": "Quitter la campagne pour la ville, c’est l’exode rural. L’étalement urbain, c’est la ville qui s’étend sur les champs.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document d’histoire",
+          "lines": [
+            "La première ligne dit ce qu’est le document et sa date.",
+            "Qui parle ? À qui ? Quand ?",
+            "La Constitution : le texte qui fixe les règles de l’État.",
+            "Un référendum : les électeurs répondent oui ou non."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-3e-twentieth-century-republic-2-6",
+      "prompt": "Une loi de 1965\nUne femme mariée peut travailler\nsans l’accord de son mari.\nElle peut ouvrir un compte en banque.",
+      "question": "Que change cette loi pour les femmes mariées ?",
+      "spoken": "Une loi de mille neuf cent soixante-cinq. Une femme mariée peut travailler sans l’accord de son mari. Elle peut ouvrir un compte en banque.",
+      "choices": [
+        "elles obtiennent le droit de vote",
+        "elles deviennent plus libres",
+        "elles doivent rester à la maison"
+      ],
+      "answer": "elles deviennent plus libres",
+      "hint": "Relis les mots « sans l’accord de son mari ».",
+      "explanation": "Travailler et avoir un compte sans demander à son mari : les femmes mariées deviennent plus libres. Le droit de vote, elles l’ont depuis 1944.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document d’histoire",
+          "lines": [
+            "La première ligne dit ce qu’est le document et sa date.",
+            "Qui parle ? À qui ? Quand ?",
+            "La Constitution : le texte qui fixe les règles de l’État.",
+            "Un référendum : les électeurs répondent oui ou non."
+          ]
+        }
+      }
+    },
+    {
+      "key": "history-3e-twentieth-century-republic-2-7",
+      "prompt": "Paris, mai 1968\nDes étudiants manifestent.\nDes millions d’ouvriers font grève.",
+      "question": "Que font les ouvriers ?",
+      "spoken": "Paris, mai mille neuf cent soixante-huit. Des étudiants manifestent. Des millions d’ouvriers font grève.",
+      "choices": [
+        "ils votent",
+        "ils font grève",
+        "ils partent à la campagne"
+      ],
+      "answer": "ils font grève",
+      "hint": "Relis la dernière ligne.",
+      "explanation": "En mai 1968, les étudiants manifestent et des millions d’ouvriers font grève : ils arrêtent le travail pour demander des changements.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Lire un document d’histoire",
+          "lines": [
+            "La première ligne dit ce qu’est le document et sa date.",
+            "Qui parle ? À qui ? Quand ?",
+            "La Constitution : le texte qui fixe les règles de l’État.",
+            "Un référendum : les électeurs répondent oui ou non."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "history-3e-twentieth-century",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

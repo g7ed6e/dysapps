@@ -103,6 +103,14 @@ const ORDER: (string | ExerciseDef[])[] = [
   // Histoire et géographie (Fouille des siècles, Pointe des paysages, 6e).
   'history-6e-antiquity-early-humans-1', 'history-6e-antiquity-early-humans-2', 'history-6e-antiquity-ancient-peoples-1', 'history-6e-antiquity-ancient-peoples-2', 'history-6e-antiquity-roman-empire-1', 'history-6e-antiquity-roman-empire-2',
   'geography-6e-living-metropolises-1', 'geography-6e-living-metropolises-2', 'geography-6e-living-low-density-1', 'geography-6e-living-low-density-2', 'geography-6e-living-inhabited-world-1', 'geography-6e-living-inhabited-world-2',
+  // Histoire et géographie (Bourg des chroniques, Delta des ressources, 5e ; Imprimerie des révolutions, Escale des
+  // échanges, 4e ; Kiosque des témoins, Vallée des territoires, 3e).
+  'history-5e-middle-ages-christendoms-islam-1', 'history-5e-middle-ages-christendoms-islam-2', 'history-5e-middle-ages-feudal-west-1', 'history-5e-middle-ages-feudal-west-2', 'history-5e-middle-ages-new-worlds-1', 'history-5e-middle-ages-new-worlds-2',
+  'geography-5e-resources-population-1', 'geography-5e-resources-population-2', 'geography-5e-resources-resources-1', 'geography-5e-resources-resources-2', 'geography-5e-resources-risks-1', 'geography-5e-resources-risks-2',
+  'history-4e-revolutions-enlightenment-1', 'history-4e-revolutions-enlightenment-2', 'history-4e-revolutions-industrial-europe-1', 'history-4e-revolutions-industrial-europe-2', 'history-4e-revolutions-french-society-1', 'history-4e-revolutions-french-society-2',
+  'geography-4e-globalization-urbanization-1', 'geography-4e-globalization-urbanization-2', 'geography-4e-globalization-mobilities-1', 'geography-4e-globalization-mobilities-2', 'geography-4e-globalization-globalization-1', 'geography-4e-globalization-globalization-2',
+  'history-3e-twentieth-century-total-wars-1', 'history-3e-twentieth-century-total-wars-2', 'history-3e-twentieth-century-world-since-1945-1', 'history-3e-twentieth-century-world-since-1945-2', 'history-3e-twentieth-century-republic-1', 'history-3e-twentieth-century-republic-2',
+  'geography-3e-france-territories-1', 'geography-3e-france-territories-2', 'geography-3e-france-planning-1', 'geography-3e-france-planning-2', 'geography-3e-france-france-eu-1', 'geography-3e-france-france-eu-2',
   // LV2 (Relais des voyageurs, 5e) : une mission par langue et par thème, l’allemand puis l’espagnol.
   'lv2-5e-introductions-de-greetings-1', 'lv2-5e-introductions-de-greetings-2', 'lv2-5e-introductions-de-numbers-1', 'lv2-5e-introductions-de-numbers-2', 'lv2-5e-introductions-de-family-1',
   'lv2-5e-introductions-de-family-2', 'lv2-5e-introductions-de-articles-1', 'lv2-5e-introductions-de-articles-2', 'lv2-5e-introductions-es-greetings-1', 'lv2-5e-introductions-es-greetings-2',

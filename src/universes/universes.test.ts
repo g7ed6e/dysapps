@@ -60,7 +60,7 @@ describe('les textes d’univers', () => {
         return [b.id, { challenge: g.challenge, ...g.guardianSays, species: t.especes[b.id] }];
       }),
     );
-    expect(createHash('sha256').update(JSON.stringify(textes)).digest('hex')).toBe('0dfa55c43bbc336e0c5f1902058a272bf616b165621f6f6e40998a13f03c1cc2');
+    expect(createHash('sha256').update(JSON.stringify(textes)).digest('hex')).toBe('f44c18bd56bbc2f0ad32fce8bf574140c978ca1b8ddc54993ca7a61704a0b7ce');
     const l = t.libelles;
     expect([l.dejaFait, l.etoiles, l.etoilesSur3(2), l.resistance(2, 6), l.dejaFaitArene('Le Grand Chêne')]).toEqual([
       'Déjà rallumé. On rejoue ?',
@@ -175,8 +175,20 @@ describe('les textes communs (J8, U4)', () => {
     for (const u of UNIVERS) {
       const t = textesDe(u);
       // Les îles venues après U4 (le Jardin des heures, LV2-4 ; le Refuge des carnets, LV2-5 ; la Fouille des siècles et la
-      // Pointe des paysages, HG-2) n'ont pas de réplique « d'avant » : hors de l'empreinte.
-      const APRES_U4: readonly string[] = ['lv2-4e-daily-life', 'lv2-3e-travel', 'history-6e-antiquity', 'geography-6e-living'];
+      // Pointe des paysages, HG-2 ; les six îles d'histoire-géographie de 5e, 4e et 3e, HG-3) n'ont pas de réplique
+      // « d'avant » : hors de l'empreinte.
+      const APRES_U4: readonly string[] = [
+        'lv2-4e-daily-life',
+        'lv2-3e-travel',
+        'history-6e-antiquity',
+        'geography-6e-living',
+        'history-5e-middle-ages',
+        'geography-5e-resources',
+        'history-4e-revolutions',
+        'geography-4e-globalization',
+        'history-3e-twentieth-century',
+        'geography-3e-france',
+      ];
       const r = Object.fromEntries(BIOMES.filter((b) => !APRES_U4.includes(b.id)).map((b) => [ANCIEN_LIEU[b.id], t.creatures[b.id]]));
       expect(createHash('sha256').update(JSON.stringify(r)).digest('hex')).toBe('ee5d7b2fcc1a7a49749e0a41c5077b279215383439d33d63e023e6b85b618ccf');
     }

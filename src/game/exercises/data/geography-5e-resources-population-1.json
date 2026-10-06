@@ -1,0 +1,238 @@
+{
+  "id": "geography-5e-resources-population-1",
+  "biome": "geography-5e-resources",
+  "type": "population",
+  "level": 1,
+  "instruction": "Choisis le mot qui complète la phrase. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "geography-5e-resources-population-1-0",
+      "prompt": "Le nombre de naissances dans un pays, en un an, mesure la … .",
+      "spoken": "Le nombre de naissances dans un pays, en un an, mesure la (mot manquant) .",
+      "choices": [
+        "mortalité",
+        "natalité",
+        "densité"
+      ],
+      "answer": "natalité",
+      "hint": "Lis la première ligne du rappel.",
+      "explanation": "La natalité compte les naissances. La mortalité compte les décès.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots de la population",
+          "lines": [
+            "Natalité : les naissances.",
+            "Mortalité : les décès.",
+            "Fécondité : le nombre moyen d’enfants par femme.",
+            "Espérance de vie : combien d’années on vit en moyenne.",
+            "Vieillissement : la part des personnes âgées augmente.",
+            "Développement : mieux se nourrir, se soigner, s’instruire."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-5e-resources-population-1-1",
+      "prompt": "Au Japon, on vit en moyenne plus de 80 ans : l’espérance de vie est … .",
+      "spoken": "Au Japon, on vit en moyenne plus de quatre-vingts ans : l’espérance de vie est (mot manquant).",
+      "choices": [
+        "élevée",
+        "faible",
+        "moyenne"
+      ],
+      "answer": "élevée",
+      "hint": "Plus de 80 ans, est-ce beaucoup ?",
+      "explanation": "Plus de 80 ans en moyenne : l’espérance de vie du Japon est l’une des plus élevées du monde. Les Japonais se soignent bien.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots de la population",
+          "lines": [
+            "Natalité : les naissances.",
+            "Mortalité : les décès.",
+            "Fécondité : le nombre moyen d’enfants par femme.",
+            "Espérance de vie : combien d’années on vit en moyenne.",
+            "Vieillissement : la part des personnes âgées augmente.",
+            "Développement : mieux se nourrir, se soigner, s’instruire."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-5e-resources-population-1-2",
+      "prompt": "Aujourd’hui, la population grandit le plus vite en … .",
+      "spoken": "Aujourd’hui, la population grandit le plus vite en (mot manquant) .",
+      "choices": [
+        "Europe",
+        "Amérique",
+        "Afrique"
+      ],
+      "answer": "Afrique",
+      "hint": "C’est le continent où naissent le plus d’enfants par femme.",
+      "explanation": "En Afrique, les naissances sont nombreuses : c’est là que la population grandit le plus vite. En Europe, elle grandit très peu.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots de la population",
+          "lines": [
+            "Natalité : les naissances.",
+            "Mortalité : les décès.",
+            "Fécondité : le nombre moyen d’enfants par femme.",
+            "Espérance de vie : combien d’années on vit en moyenne.",
+            "Vieillissement : la part des personnes âgées augmente.",
+            "Développement : mieux se nourrir, se soigner, s’instruire."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-5e-resources-population-1-3",
+      "prompt": "Au Niger, une femme a en moyenne environ 6 enfants : la fécondité est … .",
+      "spoken": "Au Niger, une femme a en moyenne environ six enfants : la fécondité est (mot manquant).",
+      "choices": [
+        "faible",
+        "forte",
+        "moyenne"
+      ],
+      "answer": "forte",
+      "hint": "En France, c’est moins de 2 enfants par femme.",
+      "explanation": "Environ 6 enfants par femme, c’est beaucoup : la fécondité du Niger est l’une des plus fortes du monde.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots de la population",
+          "lines": [
+            "Natalité : les naissances.",
+            "Mortalité : les décès.",
+            "Fécondité : le nombre moyen d’enfants par femme.",
+            "Espérance de vie : combien d’années on vit en moyenne.",
+            "Vieillissement : la part des personnes âgées augmente.",
+            "Développement : mieux se nourrir, se soigner, s’instruire."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-5e-resources-population-1-4",
+      "prompt": "Au Japon, la part des personnes âgées augmente : la population … .",
+      "spoken": "Au Japon, la part des personnes âgées augmente : la population (mot manquant) .",
+      "choices": [
+        "rajeunit",
+        "grandit",
+        "vieillit"
+      ],
+      "answer": "vieillit",
+      "hint": "Lis la ligne qui commence par « Vieillissement ».",
+      "explanation": "Plus de personnes âgées, moins d’enfants : la population vieillit. Au Japon, elle baisse même chaque année.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots de la population",
+          "lines": [
+            "Natalité : les naissances.",
+            "Mortalité : les décès.",
+            "Fécondité : le nombre moyen d’enfants par femme.",
+            "Espérance de vie : combien d’années on vit en moyenne.",
+            "Vieillissement : la part des personnes âgées augmente.",
+            "Développement : mieux se nourrir, se soigner, s’instruire."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-5e-resources-population-1-5",
+      "prompt": "Quand presque tous les habitants peuvent se nourrir, se soigner et aller à l’école, le pays est … .",
+      "spoken": "Quand presque tous les habitants peuvent se nourrir, se soigner et aller à l’école, le pays est (mot manquant) .",
+      "choices": [
+        "développé",
+        "en développement",
+        "pauvre"
+      ],
+      "answer": "développé",
+      "hint": "Lis la dernière ligne du rappel.",
+      "explanation": "Se nourrir, se soigner, s’instruire : quand presque tous le peuvent, le pays est développé, comme la Norvège ou le Japon.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots de la population",
+          "lines": [
+            "Natalité : les naissances.",
+            "Mortalité : les décès.",
+            "Fécondité : le nombre moyen d’enfants par femme.",
+            "Espérance de vie : combien d’années on vit en moyenne.",
+            "Vieillissement : la part des personnes âgées augmente.",
+            "Développement : mieux se nourrir, se soigner, s’instruire."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-5e-resources-population-1-6",
+      "prompt": "Pour mesurer le développement, on regarde la santé, l’éducation et la … .",
+      "spoken": "Pour mesurer le développement, on regarde la santé, l’éducation et la (mot manquant) .",
+      "choices": [
+        "superficie",
+        "richesse",
+        "religion"
+      ],
+      "answer": "richesse",
+      "hint": "Ce que gagnent les habitants.",
+      "explanation": "Santé, éducation, richesse : c’est l’indice de développement humain, que calcule l’ONU. La taille du pays ne compte pas.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots de la population",
+          "lines": [
+            "Natalité : les naissances.",
+            "Mortalité : les décès.",
+            "Fécondité : le nombre moyen d’enfants par femme.",
+            "Espérance de vie : combien d’années on vit en moyenne.",
+            "Vieillissement : la part des personnes âgées augmente.",
+            "Développement : mieux se nourrir, se soigner, s’instruire."
+          ]
+        }
+      }
+    },
+    {
+      "key": "geography-5e-resources-population-1-7",
+      "prompt": "Quand les naissances sont plus nombreuses que les décès, la population … .",
+      "spoken": "Quand les naissances sont plus nombreuses que les décès, la population (mot manquant) .",
+      "choices": [
+        "diminue",
+        "reste pareille",
+        "augmente"
+      ],
+      "answer": "augmente",
+      "hint": "Plus de bébés qui arrivent que de personnes qui meurent.",
+      "explanation": "Plus de naissances que de décès : il y a chaque année plus d’habitants. La population augmente.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Les mots de la population",
+          "lines": [
+            "Natalité : les naissances.",
+            "Mortalité : les décès.",
+            "Fécondité : le nombre moyen d’enfants par femme.",
+            "Espérance de vie : combien d’années on vit en moyenne.",
+            "Vieillissement : la part des personnes âgées augmente.",
+            "Développement : mieux se nourrir, se soigner, s’instruire."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "geography-5e-resources",
+    "amount": 4,
+    "xp": 12
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

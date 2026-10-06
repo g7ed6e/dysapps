@@ -24,9 +24,6 @@ const LV2_LANGAGES = A_COUVRIR(
 // Sciences et technologie : trois îles de 6e prévues (SVT, physique-chimie, technologie), choix C du mainteneur du
 // 5 octobre 2026 ; elles entrent au jeu après les îles sur la grille (GD-9). Le cycle 4 viendra ensuite.
 const SCIENCES_6E = A_COUVRIR('Prévu avec les trois îles de sciences de 6e (cadrage du contenu, « Les sciences et la technologie »).');
-// Histoire et géographie du cycle 4 : six îles prévues, deux par classe de la 5e à la 3e (une d'histoire, une de
-// géographie, une mission par thème), comme en 6e ; motif provisoire, retiré quand chaque île entre au jeu.
-const HG_C4 = A_COUVRIR('Île pas encore écrite : prévue avec les îles d’histoire et de géographie de 5e, 4e et 3e (cadrage du contenu, « L’histoire et la géographie »).');
 const FABRIQUER = HORS('Fabriquer, mesurer pour de vrai, travailler en équipe : le travail de la classe, que l’application ne remplace pas.');
 
 export const EXCLUSIONS: Partial<Record<ProgrammeId, Exclusion>> = {
@@ -85,33 +82,6 @@ export const EXCLUSIONS: Partial<Record<ProgrammeId, Exclusion>> = {
   'c3.hg.demarches.ecrire-dire': HORS('Écrire et dire : l’application propose des réponses à choisir, sans rédaction ni micro.'),
   'c3.hg.demarches.raisonner': HORS('Enquêter, chercher en ligne, travailler en groupe : la démarche de classe, que l’application ne remplace pas.'),
   // ---------- Cycle 4, histoire et géographie ----------
-  'c4.hg.temps.reperes': HG_C4,
-  'c4.hg.temps.ordonner': HG_C4,
-  'c4.hg.espace.localiser': HG_C4,
-  'c4.hg.espace.situer': HG_C4,
-  'c4.hg.demarches.document': HG_C4,
-  'c4.hg.demarches.point-de-vue': HG_C4,
-  'c4.hg.demarches.lexique': HG_C4,
-  'c4.hg.demarches.cartes': HG_C4,
-  'c4.hg.demarches.raisonner': HG_C4,
-  'c4.hg.histoire.chretientes-islam': HG_C4,
-  'c4.hg.histoire.occident-feodal': HG_C4,
-  'c4.hg.histoire.europe-xvie-xviie': HG_C4,
-  'c4.hg.histoire.xviiie-revolutions': HG_C4,
-  'c4.hg.histoire.europe-monde-xixe': HG_C4,
-  'c4.hg.histoire.france-xixe': HG_C4,
-  'c4.hg.histoire.guerres-totales': HG_C4,
-  'c4.hg.histoire.monde-depuis-1945': HG_C4,
-  'c4.hg.histoire.republique-repensee': HG_C4,
-  'c4.hg.geographie.demographie-developpement': HG_C4,
-  'c4.hg.geographie.ressources': HG_C4,
-  'c4.hg.geographie.risques-changement-global': HG_C4,
-  'c4.hg.geographie.urbanisation': HG_C4,
-  'c4.hg.geographie.mobilites': HG_C4,
-  'c4.hg.geographie.mondialisation': HG_C4,
-  'c4.hg.geographie.dynamiques-france': HG_C4,
-  'c4.hg.geographie.amenager': HG_C4,
-  'c4.hg.geographie.france-ue': HG_C4,
   'c4.hg.demarches.ecrire-dire': HORS('Écrire, dire et réaliser une production audiovisuelle : l’application propose des réponses à choisir, sans rédaction ni micro.'),
   // ---------- Cycle 3, sciences et technologie (SVT, physique-chimie, technologie) ----------
   'c3.sv.demarches.observer': SCIENCES_6E,

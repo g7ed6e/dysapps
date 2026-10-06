@@ -66,7 +66,8 @@ describe('déblocage des biomes', () => {
     // Fouille des siècles (HG-2) : elles s'ouvriront de proche en proche.
     expect(screen.queryAllByText(/Île lointaine/).length).toBe(3);
     expect(screen.getAllByText(/Bac à construire : 4 blocs/).length).toBe(1);
-    expect(screen.getAllByText(/Archipel à rejoindre/).length).toBe(21);
+    // Les îles des archipels de 5e, 4e et 3e, dont les six d'histoire-géographie (HG-3).
+    expect(screen.getAllByText(/Archipel à rejoindre/).length).toBe(27);
     await user.click(screen.getByRole('link', { name: /^Mine des lettres/ }));
     // Le message est découpé en syllabes (plusieurs éléments) : on lit le texte complet.
     expect(document.body.textContent).toMatch(/Pas si vite/);
