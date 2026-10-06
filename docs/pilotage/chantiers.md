@@ -89,7 +89,7 @@ Les suites relevées par les relectures ne sont pas commencées : chacune attend
 
 ### L’histoire et la géographie (HG)
 
-HG-1 en cours (choix C du mainteneur, 5 octobre 2026 : deux îles de 6e, histoire et géographie, sur le programme en vigueur) : le référentiel de 6e (`c3.hg.*`, toutes « à couvrir » ou hors périmètre) et le contenu des deux îles, écrit avant le monde sur la grille. Les pages du PDF sont à vérifier (téléchargement refusé). HG-2, l’entrée au jeu, attend la première pull request de GD-9. Le nouveau programme du cycle 3 s’applique en 6e à la rentrée 2027.
+HG-1 et HG-2 en pull request vers `preview` (choix C du mainteneur, 5 octobre 2026, puis « 1 » le 6 octobre) : le référentiel de 6e (`c3.hg.*`), la matière Histoire-géo (expédition Traces et paysages) et ses deux îles de 6e au jeu, la Fouille des siècles et la Pointe des paysages. Attendent le mainteneur : le budget de la 6e (deux îles de plus dépassent les plafonds de Blocland et l’objectif tablette d’Archipéo) et l’extension des commandes à l’histoire-géographie (GD-7). Restent à vérifier : les pages du PDF du programme et les chiffres de géographie. Le nouveau programme du cycle 3 s’applique en 6e à la rentrée 2027.
 
 ### Le contenu en Markdown (M)
 

@@ -34,14 +34,14 @@ Le contenu livré, île par île, est décrit par les pages générées (archipe
 
 Un archipel par classe. En français et en maths, une île par grand thème ; en anglais, deux îles par classe : une de vocabulaire et d’écoute, une de grammaire ; en LV2, une île par classe à partir de la 5e, la même pour l’allemand et l’espagnol.
 
-| Archipel | Français | Maths | Anglais | LV2 |
-| --- | --- | --- | --- | --- |
-| 6e, Premiers Rivages | Forêt des sons, Mine des lettres, Carrière des mots, Ferme des accords, Tour du lecteur | Plaine des nombres, Rivière des fractions, Volcan des décimaux | Baie des mots, Horloge des verbes | — |
-| 5e, Îles Brumeuses | Carrefour des homophones, Marais des temps | Glacier des relatifs, Marché des proportions | Comptoir, Manoir du passé | Relais des voyageurs |
-| 4e, Anciens Ateliers | Falaise des accords, Cabinet des mots | Forge des puissances, Atelier du calcul littéral | Théâtre des voix, Gare du futur | Jardin des heures |
-| 3e, Îles du Ciel | Observatoire des textes | Belvédère de Thalès, Observatoire des données, Phare des fonctions | Studio des ondes, Château des hypothèses | Refuge des carnets |
+| Archipel | Français | Maths | Anglais | Histoire-géo | LV2 |
+| --- | --- | --- | --- | --- | --- |
+| 6e, Premiers Rivages | Forêt des sons, Mine des lettres, Carrière des mots, Ferme des accords, Tour du lecteur | Plaine des nombres, Rivière des fractions, Volcan des décimaux | Baie des mots, Horloge des verbes | Fouille des siècles, Pointe des paysages | — |
+| 5e, Îles Brumeuses | Carrefour des homophones, Marais des temps | Glacier des relatifs, Marché des proportions | Comptoir, Manoir du passé | — | Relais des voyageurs |
+| 4e, Anciens Ateliers | Falaise des accords, Cabinet des mots | Forge des puissances, Atelier du calcul littéral | Théâtre des voix, Gare du futur | — | Jardin des heures |
+| 3e, Îles du Ciel | Observatoire des textes | Belvédère de Thalès, Observatoire des données, Phare des fonctions | Studio des ondes, Château des hypothèses | — | Refuge des carnets |
 
-Soit 31 îles et 111 missions, dont 24 de LV2 (quatre par île et par langue), plus 7 missions au portail.
+Soit 33 îles et 117 missions, dont 24 de LV2 (quatre par île et par langue) et 6 d’histoire-géographie, plus 7 missions au portail.
 
 ### L’anglais
 
@@ -86,13 +86,14 @@ Plan validé par le mainteneur le 28 septembre 2026.
 
 ### L’histoire et la géographie
 
-Choix du mainteneur du 5 octobre 2026 (« C pour l’instant ») : commencer par la 6e, avec deux îles, une d’histoire et une de géographie, avant le reste du collège.
+Choix du mainteneur du 5 octobre 2026 (« C pour l’instant ») : commencer par la 6e, avec deux îles, une d’histoire et une de géographie ; le 6 octobre (« 1 »), elles entrent au jeu dans la même pull request que leur contenu.
 
-- **Le programme** : celui du cycle 3 en vigueur (arrêté du 17 juillet 2020), le même PDF que le français et les maths. Le nouveau programme du cycle 3 (BO n° 22 du 28 mai 2026) ne s’applique en 6e qu’à la rentrée 2027 : la bascule sera une étape à part. Le référentiel résume la 6e seule (`c3.hg.*`) : les repères dans le temps et dans l’espace, comprendre un document, le lexique, les cartes, puis les trois thèmes d’histoire et les quatre de géographie. Écrire, dire, enquêter et coopérer sont hors périmètre, comme l’oral et l’écriture libre ailleurs. Les pages du PDF n’ont pas pu être vérifiées (téléchargement refusé depuis l’environnement de travail) : elles sont à relire avant la première île.
-- **Deux îles de 6e**, trois missions chacune, deux niveaux de huit items, sur les écrans existants : la question à trou et la question sur un document. Chaque mission mêle un repère, le lexique et un document court.
-- **Les dates** s’écrivent en siècles, en chiffres romains, et se lisent en toutes lettres ; elles se situent sur une frise décrite dans l’aide, jamais par un calcul de durée.
-- **Pas de carte à voir** tant qu’il n’y a pas d’écran pour elle : un document de géographie est un texte court, un petit tableau ou la description d’une photographie de paysage.
-- **Les étapes HG-n** : HG-1, le référentiel de 6e et le contenu des deux îles, écrit en attendant le monde sur la grille ([GD-9](../gameplay/propositions/GD-9.md)) ; HG-2, l’entrée au jeu après la première pull request de GD-9 (matière de l’application, îles dans `archipel.md` et `BIOME_IDS`, noms, Gardiens et créatures par les consultants d’univers, plans et commandes, types de missions dans `SCREEN_TYPES` et `ORDER`) ; puis, à proposer, une frise à remettre dans l’ordre et une carte à toucher, le cycle 4 et le nouveau programme de 6e.
+- **Le programme** : celui du cycle 3 en vigueur (arrêté du 17 juillet 2020), le même PDF que le français et les maths. Le nouveau programme du cycle 3 (BO n° 22 du 28 mai 2026) ne s’applique en 6e qu’à la rentrée 2027 : la bascule sera une étape à part. Le référentiel résume la 6e seule (`c3.hg.*`). Écrire, dire, enquêter et coopérer sont hors périmètre ; questionner le point de vue d’un document reste à couvrir. Les pages du PDF n’ont pas pu être vérifiées (téléchargement refusé depuis l’environnement de travail), ni les chiffres de géographie (habitants, densités) : à relire.
+- **La matière** : « Histoire-géo », expédition **Traces et paysages**, icône `landmark`, vert mousse. Elle n’a pas de mission au portail : sa page ramène au Menu, pas à l’onglet Missions.
+- **Deux îles de 6e** : la **Fouille des siècles** (`history-6e-antiquity`, Gardien l’Amphore peinte, créature Silex, bloc Mosaïque) et la **Pointe des paysages** (`geography-6e-living`, Gardien le Castor d’argile, créature Boussole, bloc Chaume), noms tranchés par le directeur artistique entre les deux consultants. Trois missions chacune, deux niveaux de huit items, sur l’écran de la question à trou (niveau 1, repères et lexique) et de la question sur un document (niveau 2) ; aucun écran nouveau.
+- **Les dates** s’écrivent en siècles (« Ve siècle », sans exposant, toujours suivi de « siècle »), se lisent en toutes lettres, et se situent sur une frise affichée dans le rappel (« En haut, le plus ancien ; en bas, le plus récent. », « J.-C. : Jésus-Christ ») ; jamais un calcul de durée, jamais de chiffre romain ni de « J.-C. » dans un indice. La Préhistoire se date en « il y a … ans ».
+- **Pas de carte à voir** tant qu’il n’y a pas d’écran pour elle : un document de géographie est un texte court, un petit tableau ou la description d’une photographie de paysage, quatre lignes au plus.
+- **Les étapes HG-n** : HG-1, le référentiel de 6e ; HG-2, les deux îles au jeu. À proposer ensuite : une frise à remettre dans l’ordre et une carte à toucher (écrans nouveaux), le point de vue d’un document, le cycle 4, et le nouveau programme de 6e à la rentrée 2027.
 
 ### Les problèmes situés dans l’archipel
 
