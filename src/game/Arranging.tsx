@@ -43,12 +43,13 @@ import type { LayoutGuardian } from './world/savedLayout';
 import { joinedSentence, thePlace } from './world/placeArticle';
 import { LIAISON, type LinkPhrases, type LinkWord, linkPhrases } from './world/linkWord';
 
-/**
- * Les phrases d'explication de la première fois (GD-9, piste A, en attente du choix du mainteneur) : l'ouvrage « à
- * reposer », « Réunir » et la construction de l'univers (la digue, la jetée), et « Tes ouvrages restent » avant
- * « Revenir » (MenuSheet.tsx). `false` les retire toutes d'un coup ; le reste du mode n'en dépend pas.
+/*
+ * Les phrases d'explication de la première fois (GD-9 ; 6 octobre 2026, choix 2a du mainteneur) : l'ouvrage « à
+ * reposer », et « Réunir » avec la construction de l'univers (la digue, la jetée). Chacune tient en une phrase, écrite
+ * et lue, et ne se montre qu'une fois par appareil (`CLE_DE_L_EXPLICATION`, `CLE_DE_LA_REUNION`, retenues dans
+ * l'appareil comme le mot de la baleine). « Tes ouvrages restent. » avant « Revenir » (MenuSheet.tsx) se dit, lui, à
+ * chaque fois.
  */
-export const EXPLICATIONS_DE_LA_PREMIERE_FOIS: boolean = true;
 
 /** La clé de l'appareil qui retient que le mot « ouvrage à reposer » (le mot de l'univers) a été expliqué (une fois). */
 const CLE_DE_L_EXPLICATION = 'amenager-liaison-expliquee';
@@ -58,7 +59,7 @@ const CLE_DE_LA_REUNION = 'amenager-reunir-explique';
 
 /** Ce que dit le mot « ouvrage à reposer » (le mot de l'univers), la première fois. */
 function explicationDeLaLiaison(m: LinkPhrases): string {
-  return `${m.Un} à reposer, c’est ${m.un} que tu as déjà ${m.accord('construit')} : en déplaçant un lieu, ${m.accord('il', 'elle')} s’est ${m.accord('séparé')}. Rien n’est perdu : tu ${m.accord('le', 'la')} reposes gratuitement entre deux lieux voisins, quand tu veux.`;
+  return `${m.Un} à reposer, c’est ${m.un} ${m.accord('séparé')} en déplaçant un lieu : tu ${m.accord('le', 'la')} reposes gratuitement.`;
 }
 
 /**
@@ -505,7 +506,7 @@ export function useAmenagement({
     const voisins = id ? joinCandidates(w, id) : [];
     if (!id || !voisins.length) return direRefus(refus('reunis'));
     // Le mot « réunir » et la construction de l'univers, expliqués la première fois.
-    const premiere = EXPLICATIONS_DE_LA_PREMIERE_FOIS && !loadJSON<{ vu: boolean }>(CLE_DE_LA_REUNION, { vu: false }).vu;
+    const premiere = !loadJSON<{ vu: boolean }>(CLE_DE_LA_REUNION, { vu: false }).vu;
     if (premiere) saveJSON(CLE_DE_LA_REUNION, { vu: true });
     const q: QuestionDeReunion = { id, voisins, explication: premiere ? explicationDeLaReunion(reunion) : null };
     setQuestion(q);
@@ -541,7 +542,7 @@ export function useAmenagement({
     if (!ouvert) ouvrir();
     setListe(true);
     setExplication(false);
-    if (EXPLICATIONS_DE_LA_PREMIERE_FOIS && !loadJSON<{ vu: boolean }>(CLE_DE_L_EXPLICATION, { vu: false }).vu) {
+    if (!loadJSON<{ vu: boolean }>(CLE_DE_L_EXPLICATION, { vu: false }).vu) {
       setExplication(true);
       saveJSON(CLE_DE_L_EXPLICATION, { vu: true });
       dire(explicationDeLaLiaison(mot));

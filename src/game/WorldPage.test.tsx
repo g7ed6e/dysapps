@@ -700,13 +700,16 @@ it('le menu : « Carte de départ » remet la région à sa carte de départ, ap
   const menu = await screen.findByRole('dialog', { name: 'Menu' });
   await user.click(within(menu).getByRole('button', { name: /Carte de départ/ }));
   const question = within(menu).getByRole('group', { name: 'Revenir à la carte de départ ?' });
-  // La phrase « Tes ouvrages restent » attend le choix du mainteneur (EXPLICATIONS_DE_LA_PREMIERE_FOIS).
-  expect(question).toHaveTextContent('rien n’est perdu');
+  // « Tes ouvrages restent. » avant « Revenir », à chaque fois (choix 2a du mainteneur, 6 octobre 2026) : écrite, et lue
+  // par le haut-parleur à côté quand l'appareil sait lire.
+  expect(question).toHaveTextContent('Tes ouvrages restent.');
   // Un seul bouton nommé, « Revenir » ; « Non » en icône. « Non » ne change rien.
   expect(within(question).getByRole('button', { name: 'Revenir à la carte de départ' })).toHaveTextContent(/^ ?Revenir$/);
   await user.click(within(question).getByRole('button', { name: /Non, garder ma carte/ }));
   expect(JSON.parse(localStorage.getItem('dysapps:game')!).world.layout).toBeTruthy();
   await user.click(within(menu).getByRole('button', { name: /Carte de départ/ }));
+  // La deuxième fois aussi : la réassurance n'est pas une explication de la première fois.
+  expect(within(menu).getByRole('group', { name: 'Revenir à la carte de départ ?' })).toHaveTextContent('Tes ouvrages restent.');
   await user.click(within(menu).getByRole('button', { name: /Revenir à la carte de départ/ }));
   expect(within(menu).getByRole('status')).toHaveTextContent('C’est fait');
   await waitFor(() => expect(JSON.parse(localStorage.getItem('dysapps:game')!).world.layout?.['6e']).toBeUndefined());

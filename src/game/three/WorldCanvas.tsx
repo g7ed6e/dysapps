@@ -257,7 +257,17 @@ export default function WorldCanvas({
       },
     };
     const cadrage = creerCamera(monde, camera, personnages.avatar, derniers, instant, lecture);
-    const amenagement = creerAmenagement(monde, reduceMotion, camera, el, lumiere, () => ecranDuModeRef.current);
+    // Une poignée du mode sort de la place libre : la Carte glisse pour poser le milieu du choix au milieu de la place
+    // libre (pas pendant un glissé de l'élève ; une fois le doigt levé).
+    const ramenerLesPoignees = (p: { cx: number; cy: number; z: number }) => {
+      if (cadrage.glissant) return false;
+      const libre = lirePlaceReelle(el);
+      const w = Math.max(1, el.clientWidth);
+      const h = Math.max(1, el.clientHeight);
+      cadrage.recadrer(new THREE.Vector3(p.cx, p.z, p.cy), { x: (libre.x0 + libre.x1) / w - 1, y: 1 - (libre.y0 + libre.y1) / h });
+      return true;
+    };
+    const amenagement = creerAmenagement(monde, reduceMotion, camera, el, lumiere, () => ecranDuModeRef.current, ramenerLesPoignees);
     world.current = {
       amenagement,
       garderEnVue: ({ rect: r, z }) => {

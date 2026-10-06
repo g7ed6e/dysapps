@@ -10,6 +10,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { World } from './engine/state';
 import { type Amenagement, QUESTION_D_ANNULATION, useAmenagement } from './Arranging';
 import { ArrangeBar, ArrangeButton, ArrangeSentence } from './ArrangeBar';
+import { Icon } from '../components/Icon';
 import { ArrangeHandles } from './ArrangeHandles';
 import { HABILLAGES } from './world/skin';
 import { toutConstruit } from './world/budget';
@@ -145,11 +146,20 @@ describe('le mode « Aménager »', () => {
     act(() => void dernier.intention({ genre: 'mer', point: { x: 0, y: 0 } }));
     fireEvent.click(screen.getByRole('button', { name: 'Poser' }));
     expect(spotOf(monde, VOLCAN)).not.toEqual(avant);
-    // Quelque chose a bougé : « Annuler » demande d'abord, à sa place (« Garder » ou « Annuler »).
+    // Quelque chose a bougé : « Annuler » demande d'abord. « Garder » prend sa place, l'« Annuler » qui confirme se pose
+    // juste avant, à la place de « Réunir » ; « Valider » ne bouge pas.
+    const fin = () => Array.from(document.querySelectorAll('.arrange-bar-fin button')).map((b) => b.textContent?.trim());
+    expect(fin()).toEqual(['Annuler', 'Valider']);
     fireEvent.click(screen.getByRole('button', { name: 'Annuler' }));
-    const question = screen.getByRole('group', { name: QUESTION_D_ANNULATION });
-    expect(within(question).getByRole('button', { name: 'Garder' })).toBeInTheDocument();
-    fireEvent.click(within(question).getByRole('button', { name: 'Annuler' }));
+    expect(fin()).toEqual(['Garder', 'Valider']);
+    const ordre = Array.from(document.querySelectorAll('.arrange-bar button')).map((b) => b.getAttribute('aria-label') ?? b.textContent?.trim());
+    expect(ordre.indexOf('Garder')).toBe(ordre.indexOf('Annuler') + 1);
+    // « Garder » porte l'icône du mode (on continue d'aménager), celle de « Modifier le plan », pas la flèche de retour.
+    const dessin = (name: 'amenager' | 'back') => render(<Icon name={name} />).container.querySelector('svg')?.innerHTML;
+    const garder = document.querySelector('.arrange-garder svg')?.innerHTML;
+    expect(garder).toBe(dessin('amenager'));
+    expect(garder).not.toBe(dessin('back'));
+    fireEvent.click(screen.getByRole('button', { name: 'Annuler' }));
     expect(spotOf(monde, VOLCAN)).toEqual(avant);
     expect(dernier.ouvert).toBe(false);
   });
@@ -191,7 +201,7 @@ describe('le mode « Aménager »', () => {
     expect(spotOf(monde, VOLCAN)).toEqual(deplacee);
     // Confirmé : le plan revient à l'entrée du mode.
     fireEvent.click(screen.getByRole('button', { name: 'Annuler' }));
-    fireEvent.click(within(screen.getByRole('group', { name: QUESTION_D_ANNULATION })).getByRole('button', { name: 'Annuler' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Annuler' }));
     expect(dernier.ouvert).toBe(false);
     expect(spotOf(monde, VOLCAN)).toEqual(posee);
     expect(dit.at(-1)).toBe('Le plan est remis comme avant.');
@@ -276,14 +286,38 @@ describe('le mode « Aménager »', () => {
       expect(screen.getByRole('dialog').textContent).not.toMatch(/Une liaison à reposer, c’est/);
     }
   });
-  it('« Réunir » : absent sans voisin, près de la Tour à sa place ; la paire réunie, ↶ la défait', () => {
+  it('les explications de la première fois (choix 2a) : une phrase, écrite et lue, une seule fois par appareil, même l’application relancée', () => {
+    const dit: string[] = [];
+    const question = () => {
+      render(<SettingsProvider><Banc reduit depart={depart()} dire={(t) => dit.push(t)} /></SettingsProvider>);
+      fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
+      act(() => void dernier.intention({ genre: 'ile', id: TOUR }));
+      fireEvent.click(screen.getByRole('button', { name: 'Réunir' }));
+      return screen.getByRole('group', { name: `Réunir ${thePlace(nom(TOUR))} ?` }).querySelector('.arrange-explication')?.textContent ?? null;
+    };
+    // La première fois sur l'appareil : écrite, une seule phrase, et dite avec la question.
+    const premiere = question();
+    expect(premiere).toBeTruthy();
+    expect(premiere!.trim().split(/[.!?](\s|$)/).filter((x) => x.trim()).length).toBe(1);
+    expect(dit.at(-1)).toContain(premiere!);
+    // L'application relancée (un nouveau montage, l'appareil garde sa mémoire) : plus d'explication.
+    cleanup();
+    expect(question()).toBeNull();
+    expect(dit.at(-1)).not.toContain(premiere!);
+    // Un autre appareil (la mémoire vide) : de nouveau la première fois.
+    cleanup();
+    localStorage.clear();
+    expect(question()).toBe(premiere);
+  });
+  it('« Réunir » : sa place réservée dès qu’un lieu est choisi, éteint sans voisin, allumé près de la Tour ; la paire réunie, ↶ la défait', () => {
     render(<SettingsProvider><Banc reduit depart={depart()} /></SettingsProvider>);
     fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
     const reunir = () => screen.getByRole('button', { name: 'Réunir' });
     expect(screen.queryByRole('button', { name: 'Réunir' })).toBeNull();
     act(() => void dernier.intention({ genre: 'ile', id: VOLCAN }));
-    expect(screen.queryByRole('button', { name: 'Réunir' })).toBeNull();
+    expect(reunir()).toBeDisabled();
     act(() => void dernier.intention({ genre: 'ile', id: TOUR }));
+    expect(reunir()).toBeEnabled();
     // Dans la barre du bas, entre « Poser » et « Annuler » (intention du directeur artistique, 6 octobre 2026).
     expect(reunir().closest('.arrange-bar')).not.toBeNull();
     const ordre = Array.from(document.querySelectorAll('.arrange-bar button')).map((b) => b.getAttribute('aria-label') ?? b.textContent?.trim());

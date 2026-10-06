@@ -18,7 +18,7 @@ import { drawIslandLabel, measureIslandLabel } from '../world/labelCanvas';
 import type { Monde, PartieDeLaScene } from './scenePart';
 import { mesuresDemandees } from '../rendering';
 import { creerPoignees } from './arrangeHandles';
-import type { CleDePoignee } from '../world/arrangeHandles';
+import { type CleDePoignee, type PoigneesDuChoix, sortDeLaPlace } from '../world/arrangeHandles';
 import type { LabelBox } from '../world/labelLayout';
 
 /** Ce qui ne coupe ni ne soulève rien. */
@@ -218,11 +218,27 @@ function textureDuNom(texte: string): { map: THREE.CanvasTexture; w: number; h: 
 const RELECTURE_DE_LA_PLACE_MS = 250;
 /** Cinq poignées au plus, cinq nombres chacune (`Poignees.aLEcran`). */
 const POIGNEES_MAX = 5;
+/** Le temps laissé à la caméra pour glisser après un recadrage, avant d'en demander un autre. */
+const RAMENER_MS = 1000;
 
 /** Où le mode dit à la page que se tient le choix à l'écran (rien : la page ne pose pas de flèches). */
 type EcouteDuChoixALEcran = () => ((b: ChoixALEcran | null) => void) | null | undefined;
 
-export function creerAmenagement(monde: Monde, reduit: boolean, camera: THREE.PerspectiveCamera, el: HTMLElement, lumiere?: Lumiere, aLEcran?: EcouteDuChoixALEcran): Amenagement {
+/**
+ * Une poignée sort de la place libre : la vue se recadre pour ramener les poignées du choix `p` au milieu de la place
+ * libre ; rend `false` si elle ne le peut pas maintenant (un glissé en cours).
+ */
+type RamenerLesPoignees = (p: PoigneesDuChoix) => boolean;
+
+export function creerAmenagement(
+  monde: Monde,
+  reduit: boolean,
+  camera: THREE.PerspectiveCamera,
+  el: HTMLElement,
+  lumiere?: Lumiere,
+  aLEcran?: EcouteDuChoixALEcran,
+  ramener?: RamenerLesPoignees,
+): Amenagement {
   const blocs = monde.habillage.pose === 'geste';
   // Un carré plat, couché : deux triangles par case.
   const forme = new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2);
@@ -299,9 +315,13 @@ export function creerAmenagement(monde: Monde, reduit: boolean, camera: THREE.Pe
   let placeLue = -Infinity;
   const ici = new Float32Array(5 * POIGNEES_MAX);
   const point = new THREE.Vector3();
+  /** Le dernier recadrage demandé parce qu'une poignée sortait de la place libre (horloge de la page). */
+  let rameneeA = -Infinity;
   /**
    * Où se tiennent les poignées à l'écran maintenant (la caméra de cette image), donné à `f` si l'une a bougé d'au moins
-   * un demi-pixel, ou si la page vient d'arriver.
+   * un demi-pixel, ou si la page vient d'arriver. Une poignée sort de la place libre (sous la ligne du haut, sous la
+   * barre, hors de l'écran) : la vue se recadre pour la ramener (`ramener`), une fois le temps que la caméra glisse ;
+   * les boutons restent posés sur les flèches dessinées.
    */
   const suivreALEcran = (maintenant: number) => {
     const f = aLEcran?.() ?? null;
@@ -314,31 +334,27 @@ export function creerAmenagement(monde: Monde, reduit: boolean, camera: THREE.Pe
       place = { libre: lirePlaceReelle(el), dx: s ? r.left - s.left : 0, dy: s ? r.top - s.top : 0, w: el.clientWidth, h: el.clientHeight };
       placeLue = maintenant;
     }
+    // La place, seulement quand les poignées se montrent : le typage suit, sans assertion.
+    const p = vue && !enCours && place && place.w && place.h ? place : null;
     let n = 0;
-    const visible = Boolean(vue && !enCours && place && place.w && place.h);
-    if (visible) {
+    if (p) {
       // La caméra de cette image (le cadrage l'a déjà bougée) : ses matrices à jour avant de projeter.
       camera.updateMatrixWorld();
-      n = poignees.aLEcran(camera, place!.w, place!.h, ici);
+      n = poignees.aLEcran(camera, p.w, p.h, ici);
+      const toutes = n === (vue?.poignees?.liste.length ?? 0);
+      if (vue?.poignees && (!toutes || sortDeLaPlace(ici, n, p.libre)) && maintenant - rameneeA > RAMENER_MS && ramener?.(vue.poignees)) rameneeA = maintenant;
     }
     const d = dernierALEcran;
-    const p = place;
     let pareil: boolean;
-    if (!visible || !n) pareil = d === null;
+    if (!p || !n) pareil = d === null;
     else {
-      pareil =
-        d !== null &&
-        d.poignees.length === n &&
-        d.libre.x0 === p!.libre.x0 + p!.dx &&
-        d.libre.y0 === p!.libre.y0 + p!.dy &&
-        d.libre.x1 === p!.libre.x1 + p!.dx &&
-        d.libre.y1 === p!.libre.y1 + p!.dy;
-      for (let k = 0; pareil && k < n; k++) {
-        const q = d!.poignees[k];
+      pareil = d !== null && d.poignees.length === n && d.libre.x0 === p.libre.x0 + p.dx && d.libre.y0 === p.libre.y0 + p.dy && d.libre.x1 === p.libre.x1 + p.dx && d.libre.y1 === p.libre.y1 + p.dy;
+      for (let k = 0; d && pareil && k < n; k++) {
+        const q = d.poignees[k];
         pareil =
           q.cle === poignees.cle(ici[5 * k]) &&
-          Math.abs(q.x - (ici[5 * k + 1] + p!.dx)) < 0.5 &&
-          Math.abs(q.y - (ici[5 * k + 2] + p!.dy)) < 0.5 &&
+          Math.abs(q.x - (ici[5 * k + 1] + p.dx)) < 0.5 &&
+          Math.abs(q.y - (ici[5 * k + 2] + p.dy)) < 0.5 &&
           Math.abs(q.w - ici[5 * k + 3]) < 0.5 &&
           Math.abs(q.h - ici[5 * k + 4]) < 0.5;
       }
@@ -347,11 +363,12 @@ export function creerAmenagement(monde: Monde, reduit: boolean, camera: THREE.Pe
     dernierSuivi = f;
     if (pareil) return f(d);
     const liste: ChoixALEcran['poignees'][number][] = [];
-    for (let k = 0; k < n; k++) {
-      const cle = poignees.cle(ici[5 * k]);
-      if (cle) liste.push({ cle, x: ici[5 * k + 1] + p!.dx, y: ici[5 * k + 2] + p!.dy, w: ici[5 * k + 3], h: ici[5 * k + 4] });
-    }
-    dernierALEcran = visible && liste.length ? { poignees: liste, libre: { x0: p!.libre.x0 + p!.dx, y0: p!.libre.y0 + p!.dy, x1: p!.libre.x1 + p!.dx, y1: p!.libre.y1 + p!.dy } } : null;
+    if (p)
+      for (let k = 0; k < n; k++) {
+        const cle = poignees.cle(ici[5 * k]);
+        if (cle) liste.push({ cle, x: ici[5 * k + 1] + p.dx, y: ici[5 * k + 2] + p.dy, w: ici[5 * k + 3], h: ici[5 * k + 4] });
+      }
+    dernierALEcran = p && liste.length ? { poignees: liste, libre: { x0: p.libre.x0 + p.dx, y0: p.libre.y0 + p.dy, x1: p.libre.x1 + p.dx, y1: p.libre.y1 + p.dy } } : null;
     f(dernierALEcran);
   };
 
@@ -408,19 +425,20 @@ export function creerAmenagement(monde: Monde, reduit: boolean, camera: THREE.Pe
       poignees.poser(vue?.poignees ?? null);
       tailleDuNom();
       if (!vue || !vue.cases.length) return;
-      cases = new THREE.InstancedMesh(forme, matiere, vue.cases.length);
-      cases.frustumCulled = false;
+      const dessin = new THREE.InstancedMesh(forme, matiere, vue.cases.length);
+      dessin.frustumCulled = false;
       // Le dessin du mode ne se touche pas : le toucher passe à la mer ou au lieu dessous.
-      cases.raycast = () => {};
-      cases.renderOrder = 2;
+      dessin.raycast = () => {};
+      dessin.renderOrder = 2;
       vue.cases.forEach((c, i) => {
         const a = ALLURE[c.genre];
         const l = a.l * (c.l ?? 1);
         m.makeScale(l, 1, l).setPosition(c.x + 0.5, c.z + 1 + AU_DESSUS, c.y + 0.5);
-        cases!.setMatrixAt(i, m);
-        cases!.setColorAt(i, couleur.setHex(a.couleur));
+        dessin.setMatrixAt(i, m);
+        dessin.setColorAt(i, couleur.setHex(a.couleur));
       });
-      monde.scene.add(cases);
+      cases = dessin;
+      monde.scene.add(dessin);
     },
     geste(g) {
       enCours = g;

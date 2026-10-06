@@ -187,9 +187,15 @@ const deBase = (n) => SHOTS.find((s) => s.name === n) ?? (() => { throw new Erro
 // Le nom de la capture garde le mot affiché du thème ; le réglage, sa valeur neutre.
 const THEMES = { creme: 'cream', nuit: 'night', clair: 'light' };
 const extreme = (name, theme) => ({ ...deBase(name), name: `extreme-${name}-${theme}`, settings: { ...EXTREMES, theme: THEMES[theme] }, reduit: true, surDemande: true });
+// Le mode aux réglages extrêmes : la Tour du lecteur choisie près de la Ferme, « Réunir » allumé à sa place réservée ;
+// puis, après une pose, un premier toucher sur « Annuler » : « Garder » à sa place, l'« Annuler » qui confirme avant lui.
+const AMENAGER_REUNIR = { state: REUNIR, act: amenagerChoisir('french-6e-reading') };
+const AMENAGER_GARDER = { state: MID, act: amenagerGarder('maths-6e-fractions', { x: 150, y: 100 }) };
 SHOTS.push(
-  extreme('amenager', 'creme'),
-  extreme('telephone-amenager', 'nuit'),
+  { ...extreme('amenager', 'creme'), ...AMENAGER_REUNIR },
+  { ...extreme('telephone-amenager', 'nuit'), ...AMENAGER_REUNIR },
+  { ...extreme('amenager', 'creme'), ...AMENAGER_GARDER, name: 'extreme-amenager-garder-creme' },
+  { ...extreme('telephone-amenager', 'nuit'), ...AMENAGER_GARDER, name: 'extreme-telephone-amenager-garder-nuit' },
   extreme('quete-correction', 'creme'),
   extreme('telephone-quete', 'creme'),
   extreme('carte', 'nuit'),
@@ -289,6 +295,32 @@ function amenager(ile, point) {
     await page.waitForTimeout(800);
     await page.evaluate((point) => window.__dysappsAmenager?.({ genre: 'mer', point }), point);
     await page.waitForTimeout(2500);
+  };
+}
+/** Ouvre le mode « Aménager » sur la Carte et choisit un lieu, laissé à sa place. */
+function amenagerChoisir(ile) {
+  return async (page) => {
+    await fermerLesBandeaux(page);
+    await page.getByRole('button', { name: /^Modifier le plan/ }).click();
+    await page.waitForTimeout(500);
+    await fermerLesBandeaux(page);
+    const rester = page.getByRole('button', { name: /Rester sur la Carte/ });
+    if (await rester.count()) await rester.click();
+    await page.evaluate((ile) => window.__dysappsAmenager?.({ genre: 'ile', id: ile }), ile);
+    await page.waitForTimeout(2500);
+  };
+}
+/** Choisit un lieu, le pose en `point`, le choisit de nouveau, puis touche une fois « Annuler » : « Garder » paraît. */
+function amenagerGarder(ile, point) {
+  const choisir = amenager(ile, point);
+  return async (page) => {
+    await choisir(page);
+    await page.getByRole('button', { name: 'Poser', exact: true }).click();
+    await page.waitForTimeout(2000);
+    await page.evaluate((ile) => window.__dysappsAmenager?.({ genre: 'ile', id: ile }), ile);
+    await page.waitForTimeout(800);
+    await page.getByRole('button', { name: 'Annuler', exact: true }).click();
+    await page.waitForTimeout(1500);
   };
 }
 /** Touche « Modifier le plan », puis « En liste » (au téléphone en grand texte), et choisit la Rivière des fractions. */

@@ -13,6 +13,7 @@ import {
   coutDesPoignees,
   formeDesPoignees,
   placerALEchelle,
+  sortDeLaPlace,
 } from './arrangeHandles';
 import { chooseGuardian, chooseIsland, chooseStation, stepChoice } from './arrangeMode';
 import { arrangeView } from './arrangeView';
@@ -156,5 +157,35 @@ describe('la forme des poignées', () => {
       };
       expect(largeur(avant), cle).toBeLessThan(largeur(arriere));
     }
+  });
+
+  it('« Tourner » d’Archipéo tourne comme celui de Blocland (↷) : la pointe à droite de l’écran, vers le bas', () => {
+    const f = formeDesPoignees([{ cle: 'tourner', dispo: true }], 'peint');
+    const n = f.positions.length / 3;
+    // La pointe : le dernier triangle (sa base, puis son bout). À l'écran, la droite est vers les x qui descendent.
+    const u = (i: number) => -f.positions[3 * i];
+    const v = (i: number) => f.positions[3 * i + 2];
+    const baseU = (u(n - 3) + u(n - 2)) / 2;
+    const baseV = (v(n - 3) + v(n - 2)) / 2;
+    expect(baseU).toBeGreaterThan(0.5);
+    expect(v(n - 1)).toBeLessThan(baseV - 0.3);
+    // Une pointe bien marquée : sa base au moins deux fois plus large que l'arc n'est épais.
+    const base = Math.hypot(u(n - 3) - u(n - 2), v(n - 3) - v(n - 2));
+    const arc = Math.hypot(u(n - 4) - u(n - 7), v(n - 4) - v(n - 7));
+    expect(base).toBeGreaterThan(2 * arc);
+    // Indisponible : l'arc seul, sans pointe.
+    expect(formeDesPoignees([{ cle: 'tourner', dispo: false }], 'peint').index.length).toBe(f.index.length - 3);
+  });
+});
+
+describe('une poignée hors de la place libre', () => {
+  const libre = { x0: 0, y0: 80, x1: 800, y1: 500 };
+  it('dedans : rien ; sous la ligne du haut, sous la barre, hors de l’écran : elle sort', () => {
+    const une = (x: number, y: number) => Float32Array.from([0, x, y, 48, 48]);
+    expect(sortDeLaPlace(une(400, 300), 1, libre)).toBe(false);
+    expect(sortDeLaPlace(une(400, 90), 1, libre)).toBe(true);
+    expect(sortDeLaPlace(une(400, 490), 1, libre)).toBe(true);
+    expect(sortDeLaPlace(une(-30, 300), 1, libre)).toBe(true);
+    expect(sortDeLaPlace(Float32Array.from([0, 400, 300, 48, 48, 1, 790, 300, 48, 48]), 2, libre)).toBe(true);
   });
 });

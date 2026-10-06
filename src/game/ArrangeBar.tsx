@@ -1,7 +1,7 @@
 // Le mode « Aménager » à l'écran (GD-9, point 1 ; piste A « des signes à la place des phrases ») : le bouton
 // « Modifier le plan » de la Carte et sa pastille, la ligne du mode (des signes : « Mine des lettres ↖ 4 ⬚ », dits en
 // mots par la voix), la question de « Réunir », la proposition de la liste au téléphone en grand texte, et la barre du
-// mode (↶, « Poser », « Réunir » quand il sert, puis « Annuler » et « Valider », qui le ferment ; décision du mainteneur,
+// mode (↶, « Poser », la place de « Réunir », puis « Annuler » et « Valider », qui le ferment ; décision du mainteneur,
 // 6 octobre 2026 ; « Annuler » demande confirmation quand quelque chose a bougé). Les flèches et « Tourner » sont
 // dessinées dans le monde autour du choix, leurs boutons transparents par-dessus (ArrangeHandles.tsx). Les icônes sans mot sont nommées
 // pour les lecteurs d'écran, leur mot dessous en grand texte (comme la barre du monde). Les icônes et les signes sont
@@ -9,7 +9,7 @@
 import { useEffect, useState } from 'react';
 import { Icon, IconButton } from '../components/Icon';
 import { SpeakButton } from '../components/SpeakButton';
-import { type Amenagement, FLECHES, type LigneDuMode, QUESTION_D_ANNULATION } from './Arranging';
+import { type Amenagement, FLECHES, type LigneDuMode } from './Arranging';
 import { getBridge } from './world/archipelago';
 import { canTurn } from './world/arrangeMode';
 import { thePlace } from './world/placeArticle';
@@ -231,7 +231,7 @@ export function ArrangeSentence({ amenagement, nom, questionAilleurs = false }: 
  * signes : « A ⋈ B 🔒 » (le cadenas : ils ne se sépareront plus ; « pour toujours » dessous en grand texte), dite en
  * mots. Un seul voisin : le bouton « Réunir » ; plusieurs : un bouton par voisin, son nom à côté de l'icône. La croix
  * en haut à droite : ne pas réunir. La première fois, la phrase sur la construction de l'univers
- * (`EXPLICATIONS_DE_LA_PREMIERE_FOIS`, Arranging.tsx).
+ * (une phrase, une seule fois par appareil ; Arranging.tsx).
  */
 export function ArrangeJoinQuestion({ amenagement, nom, className }: { amenagement: Amenagement; nom: PlaceName; className?: string }) {
   const { question, phrase } = amenagement;
@@ -265,7 +265,7 @@ export function ArrangeJoinQuestion({ amenagement, nom, className }: { amenageme
 
 /**
  * La barre du mode, à place fixe, en bas (décision du mainteneur, 6 octobre 2026) : ↶ « Défaire » en icône et
- * « Poser », « Réunir » quand il sert (sur la Carte), puis les deux boutons qui ferment le mode, ✕ « Annuler » et ✓ « Valider », qui gardent leur mot partout
+ * « Poser », la place de « Réunir » dès qu'un lieu est choisi (sur la Carte ; éteint quand il ne sert pas), puis les deux boutons qui ferment le mode, ✕ « Annuler » et ✓ « Valider », qui gardent leur mot partout
  * (en grand texte, il passe sous l'icône). Un seul bouton mis en avant : « Poser » pendant un choix, « Valider » quand
  * rien n'est en cours. Les boutons sans effet restent à leur place, éteints. Sur la Carte, les flèches et « Tourner » sont
  * dessinées autour du choix (ArrangeHandles.tsx) ; en vue simple (`croix`), sans scène, la croix des flèches et « Tourner »
@@ -297,23 +297,35 @@ export function ArrangeBar({ amenagement, className, croix = false }: { amenagem
         <button type="button" className={`button arrange-pose${choix && !enQuestion ? ' primary' : ''}`} disabled={!choix || occupe || enQuestion} onClick={amenagement.poserIci}>
           <Icon name="poser" /> <span>Poser</span>
         </button>
-        {/* « Réunir », entre « Poser » et « Annuler », seulement quand il sert (sur la Carte ; la vue simple l'a dans sa liste). */}
-        {!croix && amenagement.reunirAvec && !occupe && (
-          <IconButton icone="reunir" nom="Réunir" className="arrange-reunir" aria-pressed={enQuestion} onClick={() => amenagement.demanderReunion()} />
+        {/* La place de « Réunir », entre « Poser » et « Annuler », réservée dès qu'un lieu est choisi (sur la Carte ; la
+            vue simple l'a dans sa liste) : le bouton y est éteint quand il ne sert pas. Quand « Annuler » demande
+            confirmation, l'« Annuler » qui confirme se pose à cette place, à côté de « Garder ». */}
+        {amenagement.aConfirmer ? (
+          <button type="button" className="button arrange-confirmer" onClick={amenagement.confirmerLAnnulation}>
+            <Icon name="close" /> <span>Annuler</span>
+          </button>
+        ) : (
+          !croix &&
+          choix?.genre === 'lieu' && (
+            <IconButton
+              icone="reunir"
+              nom="Réunir"
+              className="arrange-reunir"
+              aria-pressed={enQuestion}
+              disabled={!amenagement.reunirAvec || occupe}
+              onClick={() => amenagement.demanderReunion()}
+            />
+          )
         )}
       </div>
       {/* Les deux boutons qui ferment le mode, toujours à la même place, jamais dans la partie qui défile. Quand quelque
-          chose a bougé, « Annuler » demande confirmation à sa place : « Garder » ou « Annuler ». */}
+          chose a bougé, « Annuler » demande d'abord : « Garder » (l'icône du mode : on continue d'aménager) prend sa
+          place, l'« Annuler » qui confirme se pose juste avant ; rien ne se décale. */}
       <div className="arrange-bar-fin">
         {amenagement.aConfirmer ? (
-          <div className="arrange-confirmer" role="group" aria-label={QUESTION_D_ANNULATION}>
-            <button type="button" className="button bouton-cta arrange-garder" onClick={amenagement.garder}>
-              <Icon name="back" /> <span>Garder</span>
-            </button>
-            <button type="button" className="button bouton-cta arrange-annuler" onClick={amenagement.confirmerLAnnulation}>
-              <Icon name="close" /> <span>Annuler</span>
-            </button>
-          </div>
+          <button type="button" className="button bouton-cta arrange-garder" onClick={amenagement.garder}>
+            <Icon name="amenager" /> <span>Garder</span>
+          </button>
         ) : (
           <button type="button" className="button bouton-cta arrange-annuler" onClick={amenagement.annuler}>
             <Icon name="close" /> <span>Annuler</span>

@@ -1,10 +1,11 @@
 // Les poignées du mode « Modifier le plan » (GD-9), dessinées dans le monde (mot du mainteneur, 6 octobre 2026 : « Il
 // faut intégrer les boutons dans le dessin », « Pour rotation et translation ») : les quatre flèches et « Tourner », sur
 // des radeaux posés sur l'eau autour du choix (intention du directeur artistique du 6 octobre 2026). Dans Blocland, un
-// radeau carré de 3 × 3 cubes plats, une flèche en cubes dessus (une tige longue, la pointe large en triangle à marches,
-// sans biais) ; « Tourner » : un arc ouvert, sa pointe en marches (↷). Dans Archipéo (rattrapage),
-// un radeau de trois planches, une flèche peinte à plat ; « Tourner » : une flèche en arc sur une bouée ronde à huit
-// pans. Indisponible : le radeau gris pierre, la pointe disparaît (la tige seule). Rien à lire dans le monde : les
+// radeau carré en damier crème jointif (3 × 3 carrés de deux crèmes proches, sans joint sombre, sur un bord sombre),
+// une flèche en cubes dessus (une tige longue, la pointe large en triangle à marches, sans biais) ; « Tourner » : un arc
+// ouvert, sa pointe en marches (↷). Dans Archipéo (rattrapage), un radeau de trois planches, une flèche peinte à plat ;
+// « Tourner » : une flèche en arc fin peinte sur une bouée ronde à huit pans, sa pointe marquée, dans le même sens (↷).
+// Quand une terre occupe la place d'une poignée, la flèche se pose quand même là, par-dessus, toujours visible. Indisponible : le radeau gris pierre, la pointe disparaît (la tige seule). Rien à lire dans le monde : les
 // boutons HTML transparents posés par-dessus (ArrangeHandles.tsx) portent les noms.
 // Ici : où se tient chaque poignée (à une place du bord de l'emprise du choix, jamais plus loin, par-dessus la terre si
 // l'eau n'est pas là), sa forme (sommets et couleurs, en cases, dans le repère de Three : x, hauteur, y) et ce
@@ -130,6 +131,21 @@ export function placerALEchelle(p: PoigneesDuChoix, s: number, out: Float32Array
     out[2 * k] = p.cx + ox + Math.sign(ox) * plus;
     out[2 * k + 1] = p.cy + oy + Math.sign(oy) * plus;
   });
+}
+
+/**
+ * Une poignée sort-elle de la place libre `libre` (pixels de la vue) ? `ici` : ses boîtes à l'écran, cinq nombres par
+ * poignée (son rang, x, y au milieu, largeur, hauteur), `n` poignées. Pur.
+ */
+export function sortDeLaPlace(ici: ArrayLike<number>, n: number, libre: Rectangle): boolean {
+  for (let k = 0; k < n; k++) {
+    const x = ici[5 * k + 1];
+    const y = ici[5 * k + 2];
+    const w = ici[5 * k + 3] / 2;
+    const h = ici[5 * k + 4] / 2;
+    if (x - w < libre.x0 || x + w > libre.x1 || y - h < libre.y0 || y + h > libre.y1) return true;
+  }
+  return false;
 }
 
 // ---------- La forme ----------
@@ -289,6 +305,22 @@ function poigneeEnCubes(t: Traceur, p: Pick<PoigneeDuMonde, 'cle' | 'dispo'>): v
   cubesDeLaFleche(t, p.dispo ? forme.pleine : forme.seule, quartsVers(p.cle), k.fleche);
 }
 
+/** Le dessus clair de la bouée d'Archipéo, en part de son rayon (le reste, son bord sombre). */
+const DESSUS_DE_LA_BOUEE = 0.93;
+/**
+ * L'arc de « Tourner » sur la bouée, en cases et en radians (vu de l'écran, l'angle compté depuis la droite, vers le
+ * haut) : de 200° (en bas à gauche) à 5° (à droite), fin (un quart de case) ; la pointe deux fois et demie plus large
+ * que lui, longue d'un demi-case, au bout.
+ */
+const ARC_DEBUT = (200 / 180) * Math.PI;
+const ARC_FIN = (5 / 180) * Math.PI;
+const ARC_FACETTES = 6;
+const ARC_DEDANS = 0.66;
+const ARC_DEHORS = 0.9;
+const POINTE_DEDANS = 0.42;
+const POINTE_DEHORS = 1.14;
+const POINTE_LONGUE = 0.72;
+
 /** Une poignée d'Archipéo : trois planches claires sur un fond sombre (leur bord), la flèche peinte à plat. */
 function poigneePeinte(t: Traceur, p: Pick<PoigneeDuMonde, 'cle' | 'dispo'>): void {
   const k = COULEURS_DES_POIGNEES.peint;
@@ -301,24 +333,19 @@ function poigneePeinte(t: Traceur, p: Pick<PoigneeDuMonde, 'cle' | 'dispo'>): vo
     // Les flancs d'abord, le dessus ensuite : la 3D les dessine dans l'ordre, sans test de profondeur.
     for (let i = 0; i < 8; i++) t.quad(pan(demi, i, RADEAU_BAS), pan(demi, i + 1, RADEAU_BAS), pan(demi, i + 1, RADEAU_HAUT), pan(demi, i, RADEAU_HAUT), k.bord);
     for (let i = 0; i < 8; i++) {
-      t.tri([0, RADEAU_HAUT, 0], pan(demi * 0.86, i + 1, RADEAU_HAUT), pan(demi * 0.86, i, RADEAU_HAUT), clair);
-      t.quad(pan(demi * 0.86, i, RADEAU_HAUT), pan(demi * 0.86, i + 1, RADEAU_HAUT), pan(demi, i + 1, RADEAU_HAUT), pan(demi, i, RADEAU_HAUT), k.bord);
+      t.tri([0, RADEAU_HAUT, 0], pan(demi * DESSUS_DE_LA_BOUEE, i + 1, RADEAU_HAUT), pan(demi * DESSUS_DE_LA_BOUEE, i, RADEAU_HAUT), clair);
+      t.quad(pan(demi * DESSUS_DE_LA_BOUEE, i, RADEAU_HAUT), pan(demi * DESSUS_DE_LA_BOUEE, i + 1, RADEAU_HAUT), pan(demi, i + 1, RADEAU_HAUT), pan(demi, i, RADEAU_HAUT), k.bord);
     }
-    // L'arc : quatre facettes d'un quart de cercle, du bas à gauche jusqu'en haut, puis la pointe vers la droite de l'écran.
-    // Vue de l'écran, la droite est vers les x qui descendent : l'arc monte à gauche et tourne vers la droite (↱).
+    // L'arc ↷, comme dans Blocland (le sens des aiguilles d'une montre, comme le lieu tourne) : fin, six facettes, il
+    // part en bas à gauche, passe par-dessus et redescend à droite ; la pointe, large et longue, tournée vers le bas.
+    // Vue de l'écran, la droite est vers les x qui descendent : (u, v) = (r cos a, r sin a) est (−u, v) dans le monde.
     const arc = (a: number, r: number) => [-r * Math.cos(a), peinture, r * Math.sin(a)];
-    const a0 = Math.PI * 1.25;
-    const a1 = Math.PI * 0.5;
-    const segments = p.dispo ? 3 : 4;
-    for (let i = 0; i < segments; i++) {
-      const u = a0 + ((a1 - a0) * i) / 4;
-      const v = a0 + ((a1 - a0) * (i + 1)) / 4;
-      t.quad(arc(u, 0.6), arc(v, 0.6), arc(v, 1.1), arc(u, 1.1), k.fleche);
+    for (let i = 0; i < ARC_FACETTES; i++) {
+      const u = ARC_DEBUT + ((ARC_FIN - ARC_DEBUT) * i) / ARC_FACETTES;
+      const v = ARC_DEBUT + ((ARC_FIN - ARC_DEBUT) * (i + 1)) / ARC_FACETTES;
+      t.quad(arc(u, ARC_DEDANS), arc(v, ARC_DEDANS), arc(v, ARC_DEHORS), arc(u, ARC_DEHORS), k.fleche);
     }
-    if (p.dispo) {
-      const u = a0 + ((a1 - a0) * 3) / 4;
-      t.tri(arc(u, 0.4), arc(u, 1.3), arc(a1 - 0.4, 0.85), k.fleche);
-    }
+    if (p.dispo) t.tri(arc(ARC_FIN, POINTE_DEDANS), arc(ARC_FIN, POINTE_DEHORS), arc(ARC_FIN - POINTE_LONGUE, (ARC_DEDANS + ARC_DEHORS) / 2), k.fleche);
     return;
   }
   // Le radeau : le fond sombre, puis trois planches claires (leurs joints sombres), dans le sens de la flèche.

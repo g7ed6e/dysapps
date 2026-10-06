@@ -22,7 +22,7 @@ import { Sheet } from './Sheet';
 import { archipelagoOf } from './world/archipelago';
 import { backToStartingMap, startingMapState } from './world/arrange';
 import { linkPhrases } from './world/linkWord';
-import { EXPLICATIONS_DE_LA_PREMIERE_FOIS } from './Arranging';
+import { SpeakButton } from '../components/SpeakButton';
 
 interface Props {
   /** La croix ou Échap : le menu se ferme, on est dans le village. */
@@ -176,17 +176,15 @@ export function MenuSheet({ onClose, onAller, onAide }: Props) {
           </p>
           {confirmer && retour === 'possible' && (
             <div className="menu-confirmer" role="group" aria-label="Revenir à la carte de départ ?">
-              {EXPLICATIONS_DE_LA_PREMIERE_FOIS ? (
-                <p>Tous les lieux de cette région reviennent à leur place de départ. {`${mot.accord('Tous', 'Toutes')} tes ${mot.pluriel} restent ${mot.accord('construits', 'construites')}`} : rien n’est perdu.</p>
-              ) : (
-                <p>
-                  <span className="visually-hidden">{`${mot.accord('Tous', 'Toutes')} tes ${mot.pluriel} restent.`}</span>
-                  <span className="signe" aria-hidden="true">
-                    <Icon name="ouvrage" />
-                    <Icon name="check" />
-                  </span>
-                </p>
-              )}
+              {/* Avant une action qui semble tout défaire, la même phrase à chaque fois (6 octobre 2026, choix 2a du
+                  mainteneur) : une phrase, écrite et lue. */}
+              <p>
+                <span className="signe" aria-hidden="true">
+                  <Icon name="ouvrage" />
+                  <Icon name="check" />
+                </span>{' '}
+                {`Tes ${mot.pluriel} restent.`} <SpeakButton text={`Tes ${mot.pluriel} restent.`} compact />
+              </p>
               <div className="menu-confirmer-boutons">
                 <button type="button" className="button primary" aria-label="Revenir à la carte de départ" onClick={revenirALaCarteDeDepart}>
                   <Icon name="history" /> Revenir

@@ -55,18 +55,13 @@ export function creerSuiviALEcran(): SuiviALEcran {
 const CIBLE_MIN = 48;
 
 /**
- * Le bouton de chaque poignée à sa place : au-dessus de la poignée dessinée, aussi grand qu'elle (`CIBLE_MIN` au moins),
- * ramené dans la place libre (jamais sous la ligne du mode, sa barre ou le bouton Menu). Pur.
+ * Le bouton de chaque poignée à sa place : exactement sur la poignée dessinée, aussi grand qu'elle (`CIBLE_MIN` au
+ * moins), jamais déplacé sans elle. Une poignée qui sort de la place libre (sous la ligne du mode, sous sa barre, hors
+ * de l'écran), c'est la vue qui se recadre pour la ramener (three/arrange.ts) ; le bouton la suit. Pur.
  */
 export function placerLesBoutons(b: ChoixALEcran): Map<CleDePoignee, { x: number; y: number; w: number; h: number }> {
   const out = new Map<CleDePoignee, { x: number; y: number; w: number; h: number }>();
-  const { libre } = b;
-  const dans = (v: number, a: number, z: number, m: number) => (z - a < 2 * m ? (a + z) / 2 : Math.min(Math.max(v, a + m), z - m));
-  for (const p of b.poignees) {
-    const w = Math.max(CIBLE_MIN, p.w);
-    const h = Math.max(CIBLE_MIN, p.h);
-    out.set(p.cle, { x: dans(p.x, libre.x0, libre.x1, w / 2), y: dans(p.y, libre.y0, libre.y1, h / 2), w, h });
-  }
+  for (const p of b.poignees) out.set(p.cle, { x: p.x, y: p.y, w: Math.max(CIBLE_MIN, p.w), h: Math.max(CIBLE_MIN, p.h) });
   return out;
 }
 

@@ -1,5 +1,5 @@
 // Les boutons transparents posés sur les poignées dessinées dans le monde (GD-9, 6 octobre 2026) : chacun sur sa
-// poignée, jamais sous 48 px, toujours dans la place libre ; la dernière place donnée aux boutons qui arrivent après
+// poignée, jamais sous 48 px, jamais détaché d’elle ; la dernière place donnée aux boutons qui arrivent après
 // elle ; et les touchers transmis à la 3D.
 import { describe, expect, it } from 'vitest';
 import { creerSuiviALEcran, placerLesBoutons } from './ArrangeHandles';
@@ -22,11 +22,9 @@ describe('les boutons des poignées', () => {
     expect(p.get('sud')).toBeUndefined();
   });
 
-  it('au bord de l’écran, sous le bandeau : ramenés dans la place libre', () => {
+  it('au bord de l’écran, sous le bandeau : le bouton reste sur la flèche (c’est la vue qui se recadre)', () => {
     const p = placerLesBoutons({ libre: LIBRE, poignees: [{ cle: 'nord', x: 10, y: 60, w: 48, h: 48 }] });
-    const n = p.get('nord')!;
-    expect(n.x - n.w / 2).toBeGreaterThanOrEqual(LIBRE.x0);
-    expect(n.y - n.h / 2).toBeGreaterThanOrEqual(LIBRE.y0);
+    expect(p.get('nord')).toEqual({ x: 10, y: 60, w: 48, h: 48 });
   });
 
   it('les boutons qui arrivent reçoivent la dernière place ; les touchers vont à la 3D', () => {
