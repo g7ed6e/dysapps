@@ -726,6 +726,12 @@ async function reussirLesEpreuves(page, n, reponses) {
 }
 
 /** Le panneau de l'île ouvert par son bouton (il ne s'ouvre jamais tout seul), quand `selecteur` n'est pas déjà à l'écran. */
+/** Recule ou rapproche la vue (`zoomer` : autant de touches − ou + que sa valeur), le monde ayant le focus. */
+async function zoomerLaVue(page, zoomer) {
+  await page.locator('.voxel-canvas').first().focus();
+  for (let i = 0; i < Math.abs(zoomer); i++) await page.keyboard.press(zoomer > 0 ? '+' : '-');
+}
+
 async function ouvrirLePanneauPour(page, selecteur) {
   if (await page.locator(selecteur).count()) return;
   const bouton = page.getByRole('button', { name: /^Ouvrir le panneau de / });
@@ -874,6 +880,8 @@ async function scenes() {
     // Les mesures : les trois vues de jour en 3D. Avec `--captures`, toutes les captures déclarées (voir `CAPTURES`).
     const views = [
       ...['île', 'archipel', 'carte'].map((vue) => ({ vue, go: routes[vue], mesure: true, nom: CAPTURES.find((c) => c.vue === vue && c.famille === 'jour').nom })),
+      // L'île au plus reculé que permet le pincement du monde (×0,75 : deux fois la touche −) : le pire cas de la vue île.
+      { vue: 'île', libelle: 'île (recul)', go: routes['île'], mesure: true, nom: 'ile-recul', zoomer: -2 },
       ...(SHOTS
         ? CAPTURES.filter((c) => c.famille !== 'jour' && (!FAMILLES || FAMILLES.includes(c.famille)) && (!c.ile || classe(c.ile) === a)).flatMap((c) =>
             (c.parIle ? iles : [null]).map((parIle) => ({
@@ -923,7 +931,7 @@ async function scenes() {
           )
         : []),
     ];
-    for (const { vue, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages, succes, inventaire, pose, poseA, missions, pasEnPlus, revisions, voir, allerA, depart, jouees, liens, xp, commandes, posees, cliquer, fiche, zoomer, reussir } of views) {
+    for (const { vue, libelle, go, time = DAY, view = '3d', sansEtoiles, nom, mesure, ile, plans, bridges, lv2, taille, recadre, sansIles, depuis, fige, finesse, debout, reglages, succes, inventaire, pose, poseA, missions, pasEnPlus, revisions, voir, allerA, depart, jouees, liens, xp, commandes, posees, cliquer, fiche, zoomer, reussir } of views) {
       const page = await browser.newPage({ viewport: taille ?? TABLET, deviceScaleFactor: finesse ?? (recadre ? 1.5 : 1), ...(fige ? { reducedMotion: 'reduce' } : {}) });
       await piloterLHorloge(page, time);
       await page.addInitScript(hasardFixe);
@@ -992,10 +1000,7 @@ async function scenes() {
         // le temps que la caméra glisse pour la laisser voir (16 pas, deux secondes de la scène).
         if (fiche) await page.evaluate((objet) => window.__dysappsFiche?.(objet), fiche);
         // La Carte zoomée (`zoomer`) : la touche +, le monde ayant le focus, autour du centre de la place libre.
-        if (zoomer) {
-          await page.locator('.voxel-canvas').first().focus();
-          for (let i = 0; i < zoomer; i++) await page.keyboard.press('+');
-        }
+        if (zoomer) await zoomerLaVue(page, zoomer);
         // Plus loin dans le temps de la scène (la pose finie, par exemple), du même pas que la préparation.
         for (let i = 0; i < (pasEnPlus ?? (fiche || zoomer ? 16 : 0)); i++) {
           await page.clock.runFor(125);
@@ -1032,12 +1037,20 @@ async function scenes() {
       try {
         // Le monde se construit en quelques secondes (rendu logiciel) ; l'horloge pilotée le fait avancer pas à pas.
         if (!(await preparerLaScene(page, WAIT))) throw new Error(`aucun monde 3D en ${WAIT / 1000} s`);
+        // Reculé ou rapproché (`zoomer` : la touche − ou +, le monde ayant le focus), le temps que la caméra s'y pose.
+        if (zoomer) {
+          await zoomerLaVue(page, zoomer);
+          for (let i = 0; i < 16; i++) {
+            await page.clock.runFor(125);
+            await page.waitForTimeout(30);
+          }
+        }
         const s = await page.evaluate(() => ({ ...window.__dysappsRendu }));
         if (!s.calls) throw new Error('aucune image dessinée');
-        rows.push({ archipel: a, vue, ...s });
+        rows.push({ archipel: a, vue: libelle ?? vue, ...s });
         if (file) await capturer(page, { path: file, type: 'jpeg', quality: 85, timeout: 90000 });
       } catch (e) {
-        rows.push({ archipel: a, vue, erreur: e.message.split('\n')[0] });
+        rows.push({ archipel: a, vue: libelle ?? vue, erreur: e.message.split('\n')[0] });
       }
       await page.close();
     }
