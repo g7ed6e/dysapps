@@ -73,6 +73,8 @@ export function pourLaVoix(text: string): string {
   return text
     .replace(/(\d)[\u00a0\u202f](?=\d{3}(?!\d))/g, '$1')
     .replace(/\b([IVXL]+)(?:er|e)(?=[\s\u00a0]+siècles?\b)/g, (tout, romain: string) => siecleEnMots(romain) ?? tout)
+    // Le point de « J.-C. » qui finit une phrase reste un point, pour la pause.
+    .replace(/\bJ\.-C\.(?=\s+\p{Lu}|\s*$)/gu, 'Jésus-Christ.')
     .replace(/\bJ\.-C\./g, 'Jésus-Christ');
 }
 
