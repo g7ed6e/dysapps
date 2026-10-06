@@ -594,7 +594,7 @@ export const STATUES_3E: Partial<Record<BiomeId, Statue>> = {
       const bec = devant(TETE_DE_LA_COLOMBE, 5, 6.6).z;
       pointe(T, [0, 6.6, bec + 0.05], 0.12, 0.35, a.pierre, [-Math.PI / 2, 0, 0], 3);
       // Le rameau, d'un seul côté du bec (jamais en travers : de face, il faisait un masque, DA) : une tige fine en biais,
-      // deux feuilles plates au bout.
+      // deux feuilles plates au bout, assez grandes pour se lire de loin (DA, relecture des planches, HG-3).
       const z = bec - 0.3;
       tube(
         T,
@@ -610,15 +610,15 @@ export const STATUES_3E: Partial<Record<BiomeId, Statue>> = {
       for (const f of [
         [
           [0.55, 6.05],
-          [0.85, 6.35],
-          [1.0, 6.2],
-          [0.75, 5.95],
+          [1.03, 6.53],
+          [1.27, 6.29],
+          [0.87, 5.89],
         ],
         [
           [1.0, 5.6],
-          [1.35, 5.75],
-          [1.45, 5.45],
-          [1.1, 5.4],
+          [1.56, 5.84],
+          [1.72, 5.36],
+          [1.16, 5.28],
         ],
       ] as [number, number][][])
         dalle(T, f, z - 0.03, z + 0.03, a.rameau);
@@ -645,8 +645,8 @@ export const STATUES_3E: Partial<Record<BiomeId, Statue>> = {
   },
   'geography-3e-france': {
     nom: 'le Cerf de lauze',
-    // Ce qui s'allume, ce que dit le texte : les lauzes de son poitrail (HG-3, sans un triangle de plus).
-    allume: 'les lauzes de son poitrail',
+    // Ce qui s'allume, ce que dit le texte : les lauzes de sa poitrine (HG-3, sans un triangle de plus).
+    allume: 'les lauzes de sa poitrine',
     sculpture: (T, a) => {
       fuseau(T, CORPS_DU_CERF, 6, a.moussue((k, j) => k === 0 && j % 2 === 1), { bas: false });
       fuseau(T, TETE_DU_CERF, 5, a.pierre, { bas: false });
@@ -676,7 +676,7 @@ export const STATUES_3E: Partial<Record<BiomeId, Statue>> = {
       }
       orbites(T, a, 0, 5.0, devant(TETE_DU_CERF, 5, 5.0).z, 0.26, 0.1);
     },
-    // Deux lauzes sur le poitrail.
+    // Deux lauzes sur la poitrine.
     veines: (T, a) => {
       for (const y of [2.0, 2.9]) plaque(T, 0, y, 0.5, 0.3, 6, a.lueur, (yy) => devant(CORPS_DU_CERF, 6, yy).z);
     },

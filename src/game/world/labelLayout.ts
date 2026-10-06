@@ -254,7 +254,7 @@ export function placerEtiquettes(
   carte: CarteDesEtiquettes | null,
   tenues: number[] = [],
 ): { offsets: LabelOffset[]; visibles: boolean[] } {
-  if (carte && !vue.recherche) vue = { ...vue, recherche: rechercheDuCadrage() };
+  if (carte && vue.recherche === undefined) vue = { ...vue, recherche: rechercheDuCadrage() };
   const souples = carte ? (vue.souples ?? []) : [];
   const arrivee = carte?.arrivee;
   const lourde = carte && arrivee !== undefined && carte.weights[arrivee] !== undefined ? carte.weights.map((p, i) => (i === arrivee ? Math.max(p, ...carte.weights) : p)) : null;
@@ -287,9 +287,10 @@ export interface VueDesEtiquettes {
   dures?: LabelBox[];
   /**
    * Sur la Carte, la recherche complète partagée par tous les placements d'un même cadrage (`RechercheDuCadrage`) ;
-   * sans elle, chaque appel de `placerEtiquettes` ou de `placerAvecLaFlecheDOuvrage` en prend une neuve.
+   * sans elle, chaque appel de `placerEtiquettes` ou de `placerAvecLaFlecheDOuvrage` en prend une neuve ; `null` : le
+   * placement simple seul, sans recherche complète (voir `placerDAbordSimplement`).
    */
-  recherche?: RechercheDuCadrage;
+  recherche?: RechercheDuCadrage | null;
 }
 
 /**
@@ -419,7 +420,7 @@ function placerSansSouples(
       const at = { ...b, x: ile.x, y: Math.min(ile.y, ...fleches.map((v) => v.y - v.h / 2)) - b.h / 2 - gap };
       if (entiere(b, { dx: at.x - b.x, dy: at.y - b.y }, couvert, bounds) && !obstacles.some((v) => overlap(at, v, gap) > 0)) dessus = { i: destination, at };
     }
-    reparerLaCarte(boxes, iles, offsets, visibles, vues, { couvert, obstacles, bounds, gap, recherche: vue.recherche ?? rechercheDuCadrage() }, poids, horsDeLaGarde, autreQueLaDestination, dessus);
+    reparerLaCarte(boxes, iles, offsets, visibles, vues, { couvert, obstacles, bounds, gap, recherche: vue.recherche === undefined ? rechercheDuCadrage() : vue.recherche }, poids, horsDeLaGarde, autreQueLaDestination, dessus);
   }
   // Une étiquette tenue dont l'île se voit ne se tait jamais : sans place simple libre, elle garde la place que lui donne
   // l'écart (rentrée dans le cadre, hors de l'interface), et les noms plus légers qu'elle couvre se taisent. Elle ne se
@@ -501,7 +502,7 @@ function reparerLaCarte(
   offsets: LabelOffset[],
   visibles: boolean[],
   vues: Map<number, LabelBox>,
-  vue: { couvert: LabelBox[]; obstacles: LabelBox[]; bounds: { w: number; h: number }; gap: number; recherche: RechercheDuCadrage },
+  vue: { couvert: LabelBox[]; obstacles: LabelBox[]; bounds: { w: number; h: number }; gap: number; recherche: RechercheDuCadrage | null },
   poids: (i: number) => number,
   libre: (i: number, at: LabelBox) => boolean,
   poussable: (j: number) => boolean,
@@ -565,7 +566,8 @@ function reparerLaCarte(
   if (voulue) for (const [j, at] of deplacer(voulue.i, [], [], POUSSEES_MAX, [voulue.at]) ?? []) poser(j, at);
   const tus = boxes.map((_, i) => i).filter((i) => !visibles[i] && ileVue(i)).sort((a, b) => poids(b) - poids(a) || a - b);
   for (const i of tus) for (const [j, at] of deplacer(i, [], [], POUSSEES_MAX) ?? []) poser(j, at);
-  chercherToutesLesPlaces({ boxes, iles, vues, ileVue, tientSeule, horsDesReperes, bounds, gap, poussable, voulue, poser, recherche, autour: { couvert, obstacles } });
+  // Le placement simple seul (`placerDAbordSimplement`) : pas de recherche complète.
+  if (recherche) chercherToutesLesPlaces({ boxes, iles, vues, ileVue, tientSeule, horsDesReperes, bounds, gap, poussable, voulue, poser, recherche, autour: { couvert, obstacles } });
 }
 
 /**
@@ -585,6 +587,8 @@ const RETOURS_PAR_NOM = 4;
  * chaque recherche déjà faite a trouvé (`null` : rien), pour ne pas la refaire sur les mêmes boîtes ; `autour`, les
  * places de chaque nom qui tiennent (hors repères), pour ne pas les vérifier deux fois. Au 6e, la recherche
  * se lançait onze fois par ouverture de la Carte et vérifiait 52 000 places (HG-3, expert frontend, 6 octobre 2026).
+ * Une recherche est à ne jamais partager entre deux cadrages ni deux cartes : ses places ne valent que pour les boîtes
+ * d'un cadrage.
  */
 export interface RechercheDuCadrage {
   essais: number;
@@ -597,6 +601,37 @@ export interface RechercheDuCadrage {
 /** Une recherche neuve, pour le placement d'un cadrage (voir `RechercheDuCadrage`). */
 export function rechercheDuCadrage(): RechercheDuCadrage {
   return { essais: 0, places: 0, deja: new Map(), autour: new Map() };
+}
+
+/**
+ * Sur la Carte, le placement simple d'abord (DA, 6 octobre 2026) : `placer` sans recherche complète (`recherche` à
+ * `null`), comme avant HG-3 ; la recherche complète (`chercherToutesLesPlaces`) ne se lance que si ce placement tait un
+ * nom dont l'île se voit, ou en pose un plus près d'une autre île que de la sienne (vu de son milieu). Au 6e, chaque nom
+ * garde ainsi la place qu'il avait avant HG-3. `etroites` : la largeur de chaque étiquette repliée sans son bloc
+ * (`replierLesSignes`), pour juger la place d'un nom replié à sa largeur.
+ */
+export function placerDAbordSimplement<R extends { offsets: LabelOffset[]; visibles: boolean[]; sansSigne?: boolean[] }>(
+  boxes: LabelBox[],
+  iles: { x: number; y: number }[],
+  vue: { zones: LabelBox[]; bulles: LabelBox[]; bounds: { w: number; h: number } },
+  placer: (recherche: RechercheDuCadrage | null) => R,
+  etroites: readonly (number | undefined)[] = [],
+): R {
+  const simple = placer(null);
+  const couvert = [...vue.zones, ...vue.bulles];
+  const ileVue = (i: number) => {
+    const p = { ...iles[i], w: 1, h: 1 };
+    return !horsDuCadre(p, vue.bounds) && !couvert.some((z) => overlap(p, z, 0) > 0);
+  };
+  const aReprendre = boxes.some((b, i) => {
+    if (!ileVue(i)) return false;
+    if (!simple.visibles[i]) return true;
+    const w = simple.sansSigne?.[i] && etroites[i] !== undefined ? etroites[i]! : b.w;
+    const m = milieu({ ...b, w, x: b.x + simple.offsets[i].dx, y: b.y + simple.offsets[i].dy });
+    const d = distanceA(m, iles[i]);
+    return iles.some((q, j) => j !== i && distanceA(m, q) < d);
+  });
+  return aReprendre ? placer(rechercheDuCadrage()) : simple;
 }
 
 /** Ce que reçoit la recherche complète de la Carte (voir `chercherToutesLesPlaces`). */
@@ -851,7 +886,7 @@ export function placerAvecLaFlecheDOuvrage(
   carte: CarteDesEtiquettes,
 ): { fleche: number; offsets: LabelOffset[]; visibles: boolean[] } {
   const fleches = toutes.slice(0, PLACES_DE_LA_FLECHE_MAX);
-  if (!vue.recherche) vue = { ...vue, recherche: rechercheDuCadrage() };
+  if (vue.recherche === undefined) vue = { ...vue, recherche: rechercheDuCadrage() };
   const { zones, bounds } = vue;
   const avec = (k: number) => ({ fleche: k, ...placerEtiquettes(boxes, iles, { ...vue, dures: fleches[k] ? [...(vue.dures ?? []), fleches[k]] : (vue.dures ?? []) }, carte) });
   if (!fleches.length) return avec(0);

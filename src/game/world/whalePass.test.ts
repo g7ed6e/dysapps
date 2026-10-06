@@ -10,6 +10,7 @@ import {
   whalePassRoute,
 } from "./whalePass";
 
+// Chaque île de chaque archipel (39 îles depuis HG-3) : plus long que les 5 s par défaut.
 it("chaque île avec la mer a un passage de baleine sur l’eau libre, au large de cette île, jamais sur la terre", { timeout: 20_000 }, () => {
   for (const b of BIOMES) {
     const a = archipelagoOfIsland(b.id);

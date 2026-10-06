@@ -669,18 +669,20 @@ const POULPE = fromLayers(
 );
 
 // La Colombe d'albâtre (DA, HG-3 ; aucune arme) : une colombe posée, d'albâtre, les ailes repliées, la queue relevée
-// derrière. Sa tête, plus étroite que le corps, en sort vers l'avant ; elle se tourne vers la droite, côté caméra : le bec
-// d'un cube, gris rosé, sur le côté droit de la tête, les yeux sur ses côtés (de face, plus de masque, DA). Le rameau,
-// d'un seul côté du bec : une tige fine en biais, deux feuilles d'un cube au bout. Rallumée, le rameau est vert.
+// derrière. Sa tête, plus étroite que le corps, en sort vers l'avant ; le bec d'un cube, gris rosé, sur un côté de la
+// tête, les yeux sur ses côtés, dans sa moitié avant (de face, plus de masque, DA). Le rameau, court, d'un seul côté du
+// bec et à sa hauteur : une tige d'un cube, deux feuilles, rien sous la poitrine (DA, relecture des planches, HG-3).
+// Rallumée, le rameau est vert. Dans le monde, elle se tourne de trois quarts de tour (`QUARTS_DE_TOUR_DU_GARDIEN`) :
+// la caméra du Kiosque la voit de flanc, l'œil et le rameau de son côté.
 const COLOMBE = fromLayers(
   [
     ['........', '........', '........', '...B.B..', '........', '........', '........'],
     ['........', '........', '..AAA...', '.AAAAA..', '.AAAAA..', '..AAA...', '........'],
     ['........', '........', '.AAAAA..', '.AAAAA..', '.AAAAA..', '.AAAAA..', '..AAA...'],
-    ['......V.', '........', '.AAAAA..', '.AAAAA..', '.AAAAA..', '..AAA...', '..AAA...'],
-    ['......TV', '........', '..AAA...', '.AAAAA..', '..AAA...', '........', '...A....'],
-    ['.....T..', '..AAA...', '..AAA...', '........', '........', '........', '........'],
-    ['....B...', '..AAA...', '..KAK...', '........', '........', '........', '........'],
+    ['........', '........', '.AAAAA..', '.AAAAA..', '.AAAAA..', '..AAA...', '..AAA...'],
+    ['........', '........', '..AAA...', '.AAAAA..', '..AAA...', '........', '...A....'],
+    ['......V.', '..AAA...', '..AAA...', '........', '........', '........', '........'],
+    ['....BTV.', '..KAK...', '..AAA...', '........', '........', '........', '........'],
     ['........', '..AAA...', '..AAA...', '........', '........', '........', '........'],
   ],
   { A: '#ece8de', B: '#c9a69a', K: '#1f1a16', V: '#5a9a3e', T: '#4f7a34' },

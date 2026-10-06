@@ -44,8 +44,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Vérifie les entrées (jamais recopiées dans un script : seulement par l'environnement) et trouve le commit de main
-  # dont la branche part.
+  # Vérifie les entrées (jamais recopiées dans un script : seulement par l'environnement) et trouve le commit de la
+  # branche `contre` (main ou preview) dont la branche du lot part.
   plan:
     runs-on: ubuntu-latest
     timeout-minutes: 5

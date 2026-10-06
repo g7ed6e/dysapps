@@ -18,7 +18,7 @@ import * as THREE from 'three';
 import type { BiomeId } from '../biomes';
 import { getArchipelago, islandsOf } from '../world/archipelago';
 import { ARCHIPELAGO_IDS, type ArchipelagoId } from '../world/archipelagos';
-import { boitesDuTrace, placerAvecLaFlecheDOuvrage, placerEtiquettes, rechercheDuCadrage, replierLesSignes, separateMark, type LabelBox } from '../world/labelLayout';
+import { boitesDuTrace, placerAvecLaFlecheDOuvrage, placerDAbordSimplement, placerEtiquettes, replierLesSignes, separateMark, type LabelBox, type RechercheDuCadrage } from '../world/labelLayout';
 import { avatarHome, casesDeLOuvrage, islandCenter } from '../world/terrain';
 import { BRIDGES, getBridge, linkWholeRegion, NOMS_ARCHIPELS, VOYAGES } from '../world/archipelago';
 import { archipelagoOfIsland } from '../world/archipelagos';
@@ -126,21 +126,33 @@ function laCarte(a: ArchipelagoId, etat: string, police: PoliceDeTest, elargir: 
   const poids = { weights: iles.map((b) => (b.id === dest ? 2 : 1)), ...(parDefaut && indice >= 0 ? { destination: indice } : {}), ...(arrivee >= 0 ? { arrivee } : {}) };
   // Le tracé de l'ouvrage, que les étiquettes évitent si elles peuvent (`souplesDuTrace`).
   const souples = parDefaut && def ? boitesDuTrace(casesDeLOuvrage(def, POSEES).map((p) => ecran(p.x + 0.5, p.z + 1, p.y + 0.5))) : [];
-  // Une recherche complète pour tout le placement du cadrage, comme `labels.ts`.
-  const recherche = rechercheDuCadrage();
-  const vue = { zones, bulles: [], bounds: cadre, gap: 6, souples, recherche };
-  const placer = (b: LabelBox[]) =>
+  // Le placement simple d'abord, puis une recherche complète pour tout le placement du cadrage s'il tait un nom ou en
+  // pose un sur une autre île, comme `labels.ts` (`placerDAbordSimplement`).
+  const vue = { zones, bulles: [], bounds: cadre, gap: 6, souples };
+  let recherche: RechercheDuCadrage | null = null;
+  const placer = (r: RechercheDuCadrage | null) => (b: LabelBox[]) =>
     places.length
-      ? placerAvecLaFlecheDOuvrage(fleches, b, points, { ...vue, obstacles: [fanion] }, poids)
-      : { fleche: 0, ...placerEtiquettes(b, points, { ...vue, obstacles: [flecheEn(ecran(d.x + 0.5, d.z + 8, d.y + 0.5)), fanion] }, poids) };
-  const { visibles, offsets, fleche: prise } = parDefaut ? replierLesSignes(boxes, sansBloc.map((b) => b.w), placer) : placer(boxes);
+      ? placerAvecLaFlecheDOuvrage(fleches, b, points, { ...vue, obstacles: [fanion], recherche: r }, poids)
+      : { fleche: 0, ...placerEtiquettes(b, points, { ...vue, obstacles: [flecheEn(ecran(d.x + 0.5, d.z + 8, d.y + 0.5)), fanion], recherche: r }, poids) };
+  const etroites = parDefaut ? sansBloc.map((b) => b.w) : [];
+  const { visibles, offsets, fleche: prise } = placerDAbordSimplement(
+    boxes,
+    points,
+    vue,
+    (r) => ((recherche = r), parDefaut ? replierLesSignes(boxes, etroites, placer(r)) : placer(r)(boxes)),
+    etroites,
+  );
+  /** Le placement simple seul, sans recherche complète, pour comparer. */
+  const simple = parDefaut ? replierLesSignes(boxes, etroites, placer(null)) : placer(null)(boxes);
   const fleche = places.length ? fleches[prise] : flecheEn(ecran(d.x + 0.5, d.z + 8, d.y + 0.5));
   const sousLInterface = (p: { x: number; y: number }) => zones.some((z) => Math.abs(p.x - z.x) < z.w / 2 && Math.abs(p.y - z.y) < z.h / 2);
   const seVoit = (p: { x: number; y: number }) => p.x >= 0 && p.x <= W && p.y >= 0 && p.y <= H && !sousLInterface(p);
   const recouvre = (p: LabelBox, q: LabelBox) => Math.abs(p.x - q.x) < (p.w + q.w) / 2 && Math.abs(p.y - q.y) < (p.h + q.h) / 2;
   return {
-    /** Ce que la recherche complète a dépensé pour ce cadrage (`RechercheDuCadrage`). */
-    recherche,
+    /** Ce que la recherche complète a dépensé pour ce cadrage (`RechercheDuCadrage`), `null` si elle ne s'est pas lancée. */
+    recherche: recherche as RechercheDuCadrage | null,
+    /** Les noms se posent-ils comme le placement simple seul (même place, mêmes noms montrés) ? */
+    commeLePlacementSimple: visibles.every((v, i) => v === simple.visibles[i] && (!v || (offsets[i].dx === simple.offsets[i].dx && offsets[i].dy === simple.offsets[i].dy))),
     /** Sur un ouvrage, l'indice de la place prise par la flèche. */
     prise,
     /** Les îles qui se voient et montrent leur nom. */
@@ -182,8 +194,9 @@ describe('La Carte : chaque île a son nom (tablette 1024 × 768)', () => {
       for (const elargir of [1, 1.1]) {
         const carte = laCarte('6e', mot, 'atkinson-hyperlegible', elargir, destination, true);
         expect(carte.tus, `${univers}, ×${elargir}`).toEqual([]);
-        // La Fouille des siècles et la Pointe des paysages, voisines : chaque nom sur son île, pas sur l'autre.
-        expect(carte.ailleurs.filter((id) => id === 'history-6e-antiquity' || id === 'geography-6e-living'), `${univers}, ×${elargir}`).toEqual([]);
+        // Chaque nom sur son île, pas sur une voisine : la Fouille des siècles et la Pointe des paysages comme les autres
+        // (HG-3, consultant UX UI).
+        expect(carte.ailleurs, `${univers}, ×${elargir}`).toEqual([]);
         // Toutes les îles du 6e se voient (aucune sous l'interface) : aucune ne perd son nom.
         expect(carte.vues.length, `${univers}, ×${elargir}`).toBe(islandsOf('6e').length);
       }
@@ -216,18 +229,25 @@ describe('La Carte : chaque île a son nom (tablette 1024 × 768)', () => {
       }
   });
 
-  it('6e, à l’ouverture de la Carte : la recherche complète des places reste bornée (HG-3, expert frontend)', () => {
-    // Avant : onze recherches par ouverture, 52 000 places vérifiées et 2 000 essais. Les places de chaque nom se vérifient
-    // une fois par cadrage, une recherche impossible s'arrête tôt, et les essais ont un seul plafond pour le cadrage.
+  it('6e, à l’ouverture de la Carte : chaque nom garde la place du placement simple ; la recherche complète reste bornée (HG-3, DA)', () => {
+    // Le DA, 6 octobre 2026 : au 6e, chaque nom garde la place qu'il avait avant HG-3 ; la recherche complète ne se lance
+    // que si le placement simple tait un nom ou en pose un sur une autre île (`placerDAbordSimplement`). Dans la police
+    // de lecture, rien ne la lance ; 10 % plus large, la Grammaire (anglais) se poserait sur le Vocabulaire : la
+    // recherche la remet sur son île, en quelques centaines d'essais (avant : onze recherches par ouverture, 52 000
+    // places vérifiées et 2 000 essais).
     const { progress, world } = toutConstruit();
     const etat = sanitizeState({ progress, world: { ...world, place: islandsOf('6e')[0].id } } as never);
     const d = nextDestination(etat, NOMS_ARCHIPELS, textesDe('blocland').libelles);
     const destination = d.ouvrage ? { ouvrage: d.ouvrage, depuis: d.island } : d.island;
-    for (const elargir of [1, 1.1]) {
-      const { recherche, tus } = laCarte('6e', ETATS.blocland, 'atkinson-hyperlegible', elargir, destination, true);
-      expect(tus, `×${elargir}`).toEqual([]);
-      expect(recherche.essais, `×${elargir}`).toBeLessThanOrEqual(300);
-      expect(recherche.places, `×${elargir}`).toBeLessThanOrEqual(4_000);
+    for (const [univers, mot] of Object.entries(ETATS)) {
+      const simple = laCarte('6e', mot, 'atkinson-hyperlegible', 1, destination, true);
+      expect(simple.recherche, univers).toBeNull();
+      expect(simple.commeLePlacementSimple, univers).toBe(true);
+      expect(simple.ailleurs, univers).toEqual([]);
+      const large = laCarte('6e', mot, 'atkinson-hyperlegible', 1.1, destination, true);
+      expect(large.tus, `${univers}, ×1,1`).toEqual([]);
+      expect(large.recherche?.essais ?? 0, `${univers}, ×1,1`).toBeLessThanOrEqual(300);
+      expect(large.recherche?.places ?? 0, `${univers}, ×1,1`).toBeLessThanOrEqual(4_000);
     }
   });
 

@@ -208,9 +208,10 @@ const FORMES: Record<string, Cube[]> = {
   // Mémo, le pupitre (HG-3) : deux quartz côte à côte au fond, un troisième sur l'un d'eux (le plateau), la marche
   // devant (un escalier : le bois du contenu n'est ni de l'île ni de finition), la lanterne à côté.
   'history-3e-twentieth-century-fixture-1': [[0, 1, 0, BLOC.quartz], [1, 1, 0, BLOC.quartz], [1, 1, 1, BLOC.quartz], [1, 0, 0, 'stairs'], [0, 0, 0, 'lantern']],
-  // Jalon, la boîte à livres (HG-3, retouche du consultant Blocland) : trois reliures en U au sol, la lanterne sur la
-  // reliure du fond ; sans eau.
-  'geography-3e-france-fixture-1': [[0, 0, 0, BLOC.reliure], [2, 0, 0, BLOC.reliure], [1, 1, 0, BLOC.reliure], [1, 1, 1, 'lantern']],
+  // Jalon, la boîte à livres (HG-3, retouches du consultant Blocland et du DA) : trois reliures en rang au sol, comme une
+  // étagère, la lanterne sur celle du milieu ; sans eau. Le rang va le long des y : la caméra de la Vallée regarde l'île
+  // le long des x (`viewYaw`, −40°), elle le voit de face.
+  'geography-3e-france-fixture-1': [[0, 0, 0, BLOC.reliure], [0, 1, 0, BLOC.reliure], [0, 2, 0, BLOC.reliure], [0, 1, 1, 'lantern']],
 };
 
 /**
@@ -285,7 +286,7 @@ const PLACES: Record<string, readonly [number, number]> = {
   'history-4e-revolutions-fixture-1': [8, 6],
   'geography-4e-globalization-fixture-1': [10, 3],
   'history-3e-twentieth-century-fixture-1': [10, 3],
-  'geography-3e-france-fixture-1': [5, 12],
+  'geography-3e-france-fixture-1': [7, 7],
   'english-5e-vocabulary-fixture-1': [4, 11],
   'english-5e-grammar-fixture-1': [10, 3],
   'english-4e-comprehension-fixture-1': [7, 9],

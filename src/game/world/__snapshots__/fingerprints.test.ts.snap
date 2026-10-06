@@ -12,9 +12,9 @@ exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 
 
 exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 3e, partie mi-parcours 1`] = `
 {
-  "créatures et Gardiens": "7f882c61",
+  "créatures et Gardiens": "9a94f534",
   "cubes": "6c905732",
-  "cubes avec créatures": "ca041275",
+  "cubes avec créatures": "da67172e",
   "décor posé sur la pente": "890d1cb9",
   "navire": "b4f5e3d8",
   "sol (facettes)": "57154ca1",
@@ -25,9 +25,9 @@ exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 
 
 exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 3e, partie tout construit 1`] = `
 {
-  "créatures et Gardiens": "091579a5",
+  "créatures et Gardiens": "29aabe45",
   "cubes": "5ba5cf21",
-  "cubes avec créatures": "5c940264",
+  "cubes avec créatures": "813ecf09",
   "décor posé sur la pente": "f7fab437",
   "navire": "b4f5e3d8",
   "sol (facettes)": "8cf0f9c4",
@@ -124,9 +124,9 @@ exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 
 exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 5e, partie tout construit 1`] = `
 {
   "créatures et Gardiens": "148ba970",
-  "cubes": "a8b345b5",
-  "cubes avec créatures": "50377441",
-  "décor posé sur la pente": "ad079944",
+  "cubes": "3f143760",
+  "cubes avec créatures": "55975242",
+  "décor posé sur la pente": "e8d1965d",
   "navire": "11613e8f",
   "sol (facettes)": "cc631ed3",
   "sol (lave)": "13fe3a3b",
@@ -260,7 +260,7 @@ exports[`Empreintes de la grille (filet de la séparation du jeu et du rendu) > 
   "geography-4e-globalization-3": "5265cbb7",
   "geography-5e-resources-1": "4dbc8a4c",
   "geography-5e-resources-2": "32f48288",
-  "geography-5e-resources-3": "f04a7687",
+  "geography-5e-resources-3": "762833d3",
   "geography-6e-living-1": "f06ffc6c",
   "geography-6e-living-2": "3544dac4",
   "geography-6e-living-3": "34329ad5",

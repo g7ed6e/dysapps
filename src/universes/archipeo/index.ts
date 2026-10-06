@@ -234,7 +234,7 @@ export const ARCHIPEO = {
     'history-5e-middle-ages': {
       challenge: 'Le Griffon d’émail dit doucement : « Mes émaux sont éteints. Tu as lu toutes les chroniques du bourg : dis-moi en quel siècle vient chaque chose. »',
       guardianSays: {
-        hit: 'Un émail de mon poitrail s’allume. C’est juste.',
+        hit: 'Un émail de ma poitrine s’allume. C’est juste.',
         miss: 'Rien ne s’éteint. Regarde la frise, relis le document, et reprends.',
         beaten: 'Mes émaux se rallument. Le bourg est à toi, et à Vélin.',
       },
@@ -272,9 +272,9 @@ export const ARCHIPEO = {
       },
     },
     'geography-3e-france': {
-      challenge: 'Le Cerf de lauze dit doucement : « Les lauzes de mon poitrail sont éteintes. Une lauze, c’est une pierre plate. Tu as parcouru toute la vallée : dis-moi comment vit le territoire. »',
+      challenge: 'Le Cerf de lauze dit doucement : « Les lauzes de ma poitrine sont éteintes. Une lauze, c’est une pierre plate. Tu as parcouru toute la vallée : dis-moi comment vit le territoire. »',
       guardianSays: {
-        hit: 'Une lauze de mon poitrail s’allume. C’est juste.',
+        hit: 'Une lauze de ma poitrine s’allume. C’est juste.',
         miss: 'Rien ne s’éteint. Relis le document, cherche le mot du rappel, et reprends.',
         beaten: 'Mes lauzes se rallument. La vallée est à toi, et à Jalon.',
       },

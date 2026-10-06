@@ -539,17 +539,20 @@ const MEMO = fromLayers(
 );
 
 // Jalon : une fourmi arpenteuse (DA, HG-3), à l'horizontale, brun-rouge, trois parties à la file (la tête aux deux
-// antennes, le thorax étroit, le gros abdomen derrière) sur six pattes sombres ; à côté d'elle, séparé d'une case, son
-// jalon d'arpenteur planté, rayé blanc et rouge par deux cubes, d'un cube plus haut que ses antennes (DA, relecture des
-// planches : plus une cheminée ni un phare).
+// antennes, le thorax étroit, le gros abdomen derrière) sur six pattes sombres ; son jalon d'arpenteur planté, rayé
+// blanc et rouge par deux cubes, d'un cube plus haut que ses antennes (DA, relecture des planches : plus une cheminée ni
+// un phare), au bout de son abdomen et sur le côté, séparé d'elle d'une case. La caméra de la Vallée la regarde de
+// l'est (`viewYaw`, −40°), donc de profil, la tête d'un côté, l'abdomen de l'autre : le jalon se lit à côté de son
+// abdomen, jamais entre elle et la caméra (il s'y tenait, contre son flanc, et la cachait : consultant Blocland et DA,
+// HG-3) ; de face (les portraits), derrière elle, à sa droite.
 const JALON = fromLayers(
   [
-    ['.......', 'A...A..', 'A...A.P', 'A...A..', '.......', '.......'],
-    ['.RRR...', '.ARA...', '.ARA..P', '.RRR...', '.RRR...', '..R....'],
-    ['.ERE...', '..R....', '..R...Q', '.RRR...', '.RRR...', '.RRR...'],
-    ['.A.A...', '.......', '......Q', '..R....', '.RRR...', '..R....'],
-    ['A...A..', '.......', '......P', '.......', '.......', '.......'],
-    ['.......', '.......', '......P', '.......', '.......', '.......'],
+    ['.......', 'A...A..', 'A...A..', 'A...A..', '.......', '.......', '.......', '......P'],
+    ['.RRR...', '.ARA...', '.ARA...', '.RRR...', '.RRR...', '..R....', '.......', '......P'],
+    ['.ERE...', '..R....', '..R....', '.RRR...', '.RRR...', '.RRR...', '.......', '......Q'],
+    ['.A.A...', '.......', '.......', '..R....', '.RRR...', '..R....', '.......', '......Q'],
+    ['A...A..', '.......', '.......', '.......', '.......', '.......', '.......', '......P'],
+    ['.......', '.......', '.......', '.......', '.......', '.......', '.......', '......P'],
   ],
   { R: '#9c3f24', A: '#1f1a16', E: '#1f1a16', P: '#f6f1e6', Q: '#d23a2e' },
 );

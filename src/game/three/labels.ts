@@ -11,7 +11,7 @@ import { visageDuJoueur } from '../world/characters/face';
 import { CASE, PLAQUE, caseALEcran, dessinerLaCase } from './signs';
 import { tenirDansLaPlace, type PlaceLue } from '../freeSpace';
 import { reperesDe } from '../world/framing';
-import { boitesDuTrace, placerAvecLaFlecheDOuvrage, placerEtiquettes, rechercheDuCadrage, replierLesSignes, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
+import { boitesDuTrace, placerAvecLaFlecheDOuvrage, placerDAbordSimplement, placerEtiquettes, replierLesSignes, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
 import { islandCenter } from '../world/terrain';
 import { HAUTEUR_DES_NOMS } from './camera/framings';
 import { lecteurDeZones } from '../coveredZones';
@@ -430,17 +430,20 @@ export function creerEtiquettes(
     const souples = ouvrage ? souplesDuTrace(goalCamera, W, H) : [];
     // Les poignées du mode « Modifier le plan », des obstacles durs : une étiquette ne s'y pose jamais, elle se tait plutôt.
     const dures = poignees?.boites(goalCamera, W, H) ?? [];
-    // Une seule recherche complète pour tout le placement de ce cadrage (ses essais sous un même plafond).
-    const vue = { zones, bulles, obstacles, souples, bounds: cadre, gap: 6, dures, recherche: rechercheDuCadrage() };
+    // Le placement simple d'abord ; sur la Carte, une seule recherche complète pour tout le placement de ce cadrage (ses
+    // essais sous un même plafond), seulement s'il tait un nom ou en pose un sur une autre île (`placerDAbordSimplement`).
+    const vue = { zones, bulles, obstacles, souples, bounds: cadre, gap: 6, dures };
     let offsets: LabelOffset[];
     let visibles: boolean[];
     let sansSigne: boolean[];
     if (ouvrage && carte) {
       const fleches = pointes.map((p) => marksOnScreen(goalCamera, W, H, p).arrow).filter((b): b is LabelBox => b !== null);
-      const r = replierLesSignes(boxes, etroites, (b) => placerAvecLaFlecheDOuvrage(fleches, b, iles, vue, carte));
+      const r = placerDAbordSimplement(boxes, iles, vue, (recherche) => replierLesSignes(boxes, etroites, (b) => placerAvecLaFlecheDOuvrage(fleches, b, iles, { ...vue, recherche }, carte)), etroites);
       placeDeLOuvrage = { ouvrage, i: r.fleche };
       ({ offsets, visibles, sansSigne } = r);
-    } else ({ offsets, visibles, sansSigne } = replierLesSignes(boxes, etroites, (b) => placerEtiquettes(b, iles, vue, carte, tenues)));
+    } else if (carte)
+      ({ offsets, visibles, sansSigne } = placerDAbordSimplement(boxes, iles, vue, (recherche) => replierLesSignes(boxes, etroites, (b) => placerEtiquettes(b, iles, { ...vue, recherche }, carte, tenues)), etroites));
+    else ({ offsets, visibles, sansSigne } = replierLesSignes(boxes, etroites, (b) => placerEtiquettes(b, iles, vue, carte, tenues)));
     labelLayout = { key, offsets };
     offsets.forEach((o, i) => {
       const s = sprites[i];

@@ -570,7 +570,10 @@ function logis(b: BlockId): Stages {
  * Le moulin (le moulin de Sillon, géographie 5e ; DA, HG-3) : un moulin à eau, sa roue fixe. Le moulin : une tour basse de
  * rizière, trois sur trois, trois blocs de haut. Le toit du moulin : la porte, deux fenêtres, le toit à deux pans, et sur
  * son flanc est la roue, un anneau de huit planches debout, à une case du mur, immobile. La cour du moulin : le bief
- * d'eau (du verre) entre le mur et la roue, un rang de rizière au bord, la barrière, son portillon, deux lanternes et la marche.
+ * d'eau (du verre) entre le mur et la roue, un rang de rizière devant, la barrière, son portillon, deux lanternes et la marche.
+ * Au Delta, la caméra de l'île pivote à fond vers l'est (`viewYaw`, −40°) : l'anneau, sur le flanc est, lui fait face ;
+ * rien ne se pose devant lui (le rang de rizière, au bord est, en cachait le bas et le milieu vide : la roue se lisait
+ * comme un mur de planches, DA, relecture des planches, HG-3).
  */
 function moulin(b: BlockId): Stages {
   const doorX = 1;
@@ -587,7 +590,8 @@ function moulin(b: BlockId): Stages {
   const roof = [...ouvertures([doorX, 2, 0], fenetres), ...deuxPans(0, 2, 2, 3, b, 0, 2), ...roue];
   const cour: ArchCell[] = [];
   for (let y = 2; y <= 4; y++) cour.push({ x: 3, y, z: 0, block: BLOC.verre });
-  for (let y = 1; y <= 4; y++) cour.push({ x: 5, y, z: 0, block: b });
+  // Le rang de rizière, devant, à côté de la marche : jamais entre la roue et la caméra.
+  for (let x = 2; x < ZW; x++) cour.push({ x, y: 1, z: 0, block: b });
   for (let x = 0; x < ZW; x++) if (x !== doorX) cour.push({ x, y: 0, z: 0, block: BLOC.barriere });
   cour.push({ x: 0, y: 0, z: 1, block: BLOC.lanterne }, { x: ZW - 1, y: 0, z: 1, block: BLOC.lanterne }, { x: doorX, y: 1, z: 0, block: BLOC.escalier });
   return [without(walls, [[doorX, 2, 0], ...fenetres]), roof, cour];

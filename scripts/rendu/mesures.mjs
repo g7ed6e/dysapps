@@ -618,9 +618,12 @@ const CAPTURES = [
   // en OpenDyslexic 32 px (UX UI) ; « Mes blocs » avec le Conteneur et la Reliure côte à côte, puis le Grès rose à côté
   // de la Brique et de la Tuile, de jour et de nuit (référent dys) ; chaque Gardien de près, au défi, éteint puis à
   // mi-parcours (consultant Archipéo).
+  // Deuxième tour (UX UI, référent dys) : le 3e aussi ; la Carte du 6e au téléphone et en OpenDyslexic 32 px, pour
+  // comparer avant et après (au 6e, chaque nom garde la place du placement simple, DA).
   ...[
     ['5e', 'history-5e-middle-ages'],
     ['4e', 'history-4e-revolutions'],
+    ['3e', 'history-3e-twentieth-century'],
   ].flatMap(([a, ile]) =>
     [
       { suffixe: '-800x1280', taille: { width: 800, height: 1280 } },
@@ -628,7 +631,13 @@ const CAPTURES = [
       { suffixe: '-od32', reglages: { font: 'opendyslexic', fontSize: 32 } },
     ].map(({ suffixe, ...autres }) => ({ nom: `histoire-geo-college-carte-${a}${suffixe}`, vue: 'carte', famille: 'histoire-geo-college', ile, ...autres })),
   ),
-  ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].flatMap(({ suffixe, ...autres }) => [
+  ...[
+    { suffixe: '-390x844', taille: { width: 390, height: 844 } },
+    { suffixe: '-od32', reglages: { font: 'opendyslexic', fontSize: 32 } },
+  ].map(({ suffixe, ...autres }) => ({ nom: `histoire-geo-college-carte-6e${suffixe}`, vue: 'carte', famille: 'histoire-geo-college', ile: 'history-6e-antiquity', ...autres })),
+  // « Mes blocs » en thème Nuit de l'interface (le fond des panneaux #16304a : le liseré clair des icônes, référent dys),
+  // et de jour.
+  ...[{ suffixe: '' }, { suffixe: '-theme-nuit', reglages: { theme: 'night' } }].flatMap(({ suffixe, ...autres }) => [
     {
       nom: `histoire-geo-college-mes-blocs-conteneur-reliure${suffixe}`,
       vue: 'île',
@@ -651,7 +660,23 @@ const CAPTURES = [
   ...['history-5e-middle-ages', 'geography-5e-resources', 'history-4e-revolutions', 'geography-4e-globalization', 'history-3e-twentieth-century', 'geography-3e-france'].flatMap((ile) => [
     { nom: `histoire-geo-college-${ile}-defi`, vue: 'défi', famille: 'histoire-geo-college', ile, debout: ile },
     { nom: `histoire-geo-college-${ile}-defi-mi`, vue: 'défi', famille: 'histoire-geo-college', ile, debout: ile, reussir: 3 },
+    // Le Gardien de près, dans le monde (consultant Archipéo) : sa fiche ouverte, la caméra rapprochée de deux crans,
+    // éteint puis rallumé.
+    { nom: `histoire-geo-college-${ile}-gardien-pres-avant`, vue: 'île', famille: 'histoire-geo-college', ile, sansIles: [ile], fiche: { genre: 'gardien', id: ile }, zoomer: 2 },
+    { nom: `histoire-geo-college-${ile}-gardien-pres-apres`, vue: 'île', famille: 'histoire-geo-college', ile, fiche: { genre: 'gardien', id: ile }, zoomer: 2 },
   ]),
+  // Des petites constructions posées, chacune près de sa créature (sa fiche ouverte, la caméra rapprochée) : la boîte à
+  // livres de Jalon, de profil, son jalon à côté (consultant Blocland, DA) ; l'équerre de Théo, le haut-parleur d'Écho, la
+  // cabane de Frimas (DA).
+  ...[
+    ['jalon-boite-a-livres', 'geography-3e-france'],
+    ['theo-equerre', 'maths-3e-geometry'],
+    ['echo-haut-parleur', 'english-3e-comprehension'],
+    ['frimas-cabane', 'maths-5e-signed-numbers'],
+  ].map(([sujet, ile]) => ({ nom: `histoire-geo-college-${sujet}`, vue: 'île', famille: 'histoire-geo-college', ile, posees: 'toutes', fiche: { genre: 'creature', id: ile }, zoomer: 1 })),
+  // La baleine du 5e vue du port, entière, de l'eau autour (DA) : de l'île et de l'archipel.
+  { nom: 'histoire-geo-college-baleine-5e-port', vue: 'île', famille: 'histoire-geo-college', ile: 'maths-5e-proportionality' },
+  { nom: 'histoire-geo-college-baleine-5e-port-archipel', vue: 'archipel', famille: 'histoire-geo-college', ile: 'maths-5e-proportionality' },
 ];
 /** La lueur la nuit, à la vue île : au plus 3 % de la scène. */
 const LUEUR_MAX = 0.03;

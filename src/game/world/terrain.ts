@@ -36,7 +36,7 @@ export { bornesDesLieux, type CadreDeCases, cadreDeLaLiaison, cadreDeTraversee, 
 export { type BorneVue, cacheUneBorne, PLACES_DES_BORNES_DES_ECOLES, placesDesBornes, PORTEE_DEVANT_LA_BORNE, questStations, rangeeDevantLesBornes } from './terrain/markers';
 export { avatarRoute, BAC_LONG, boardingRoute, bridgePath, casesDeLOuvrage, placesDeLaFleche, portsDAttache, premierCoude, routeAt, routeLengths, tablier } from './terrain/links';
 export { ASSEMBLAGE_SIZE, type Atelier, atelierModel, cacheUnLieu, casesDesLieux, HALLE, lieuxVus, placeDoor, placeSpot, schoolModel, TROPHY_AT, TROPHY_SIZE, TROPHY_SLOTS, trophyModel, VILLAGE_PLACES } from './terrain/village';
-export { CREATURE_STEPS, creatureDuMonde, creaturePlacements, creatureSpot, gardienDuMonde, QUARTS_DE_TOUR, QUARTS_DE_TOUR_DE_LA_CREATURE } from './terrain/creatures';
+export { CREATURE_STEPS, creatureDuMonde, creaturePlacements, creatureSpot, gardienDuMonde, QUARTS_DE_TOUR, QUARTS_DE_TOUR_DE_LA_CREATURE, QUARTS_DE_TOUR_DU_GARDIEN } from './terrain/creatures';
 export { bossIsletCenter, bossIsletOrigin, ILOT_DE_COTE, ISLET_GAP, ISLET_H, ISLET_W, origineDeLIlot } from './terrain/islets';
 export { bossIsletCells, bossIsletSteps, gardienEnPartieRallume, guardianPlacements, statueDe } from './terrain/guardians';
 export { casesDeLaPetiteConstructionDansLeMonde, placeDeLaPetiteConstruction } from './terrain/fixture';

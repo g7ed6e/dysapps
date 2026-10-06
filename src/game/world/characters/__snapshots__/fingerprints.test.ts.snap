@@ -54,8 +54,8 @@ exports[`Empreintes des personnages en facettes > les créatures, île par île 
 exports[`Empreintes des personnages en facettes > les fusions, archipel par archipel (tout construit) 1`] = `
 {
   "3e": {
-    "creatures": "2405 ee823f14 804e4be5",
-    "gardiens": "2045 9ec401a8",
+    "creatures": "2405 ed193332 929eeaaf",
+    "gardiens": "2045 e6e5a0f5",
   },
   "4e": {
     "creatures": "2292 45d2b0c4 9f5be038",
@@ -63,7 +63,7 @@ exports[`Empreintes des personnages en facettes > les fusions, archipel par arch
   },
   "5e": {
     "creatures": "2296 2d4ee3d0 5fded4ff",
-    "gardiens": "2144 bfc06914",
+    "gardiens": "2144 13e28cb8",
   },
   "6e": {
     "creatures": "2917 bc745c32 46904ee0",
@@ -91,10 +91,10 @@ exports[`Empreintes des personnages en facettes > les sentinelles, île par île
   "gare": "268 ad1ed548",
   "geography-3e-france": "169 a7a3c81a",
   "geography-4e-globalization": "226 39c885cf",
-  "geography-5e-resources": "188 a15403b7",
+  "geography-5e-resources": "188 c64abc61",
   "geography-6e-living": "149 50fdef34",
   "glacier": "324 c03d8f81",
-  "history-3e-twentieth-century": "213 d1a7ecd2",
+  "history-3e-twentieth-century": "213 afdc7451",
   "history-4e-revolutions": "189 71eb8840",
   "history-5e-middle-ages": "165 a614ba62",
   "history-6e-antiquity": "190 c078b9a1",

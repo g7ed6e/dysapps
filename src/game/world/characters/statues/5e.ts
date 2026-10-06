@@ -146,10 +146,14 @@ const TETE_DE_LA_LIBELLULE: Anneau[] = [
   [7.3, 0.5, 0.45],
   [8, 0.25, 0.25],
 ];
-/** Ses deux paires d'ailes, de chaque côté : le bas et le haut de l'attache, la pointe. */
+/**
+ * Ses deux paires d'ailes, de chaque côté : le bas et le haut de l'attache. Larges d'une case à l'attache (en bandes de
+ * 0,5, elles se lisaient comme une arête, consultant Archipéo, HG-3), la pointe émoussée et relevée (un léger dièdre),
+ * sans un triangle de plus : la marge des Gardiens du 5e est de quelques triangles.
+ */
 const AILES_DE_LA_LIBELLULE: [number, number][] = [
-  [4.9, 5.4],
-  [5.9, 6.4],
+  [4.5, 5.5],
+  [5.6, 6.6],
 ];
 
 /**
@@ -614,8 +618,8 @@ export const STATUES_5E: Partial<Record<BiomeId, Statue>> = {
             pose(T, repereDAile(s, RACINE_DES_AILES_DE_LA_LIBELLULE)),
             [
               [0, y0],
-              [s * 2.1, y0 + 0.5],
-              [s * 2.2, y1],
+              [s * 2.2, y0 + 0.45],
+              [s * 2.35, y1 + 0.25],
               [0, y1],
             ],
             -0.05,

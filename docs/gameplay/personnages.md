@@ -371,7 +371,7 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 
 |  | Blocland | Archipéo |
 | --- | --- | --- |
-| Au défi | La Colombe d’albâtre attend, un rameau vert au bec : « Mes plumes sont toutes grises. Tu as écouté tous les témoins du kiosque : aide-moi à me souvenir, date après date. » | La Colombe d’albâtre dit doucement : « Mes plumes sont éteintes. Tu as écouté tous les témoins du kiosque : aide-moi à me souvenir, date après date. » |
+| Au défi | La Colombe d’albâtre attend, un rameau au bec : « Mes plumes sont toutes grises. Tu as écouté tous les témoins du kiosque : aide-moi à me souvenir, date après date. » | La Colombe d’albâtre dit doucement : « Mes plumes sont éteintes. Tu as écouté tous les témoins du kiosque : aide-moi à me souvenir, date après date. » |
 | À la fin | Je me rallume, jusqu’au rameau vert. Le Kiosque est à toi, et à Mémo. Merci de te souvenir avec moi. | Mes plumes se rallument, jusqu’au rameau vert. Le kiosque est à toi, et à Mémo. |
 | Mémo à l’arrivée | Bonjour, bâtisseur. Ici, on garde la parole des témoins. Chaque bonne réponse te donne un bloc de reliure. Une reliure, c’est la couverture solide d’un livre. | Bonjour, bâtisseur. Ici, on garde la parole des témoins. Chaque bonne réponse te donne un bloc de reliure. Une reliure, c’est la couverture solide d’un livre. |
 
@@ -379,7 +379,7 @@ Rare, aux grandes étapes d’un archipel (l’arrivée, le dernier Gardien, l�
 
 |  | Blocland | Archipéo |
 | --- | --- | --- |
-| Au défi | Le Cerf de lauze lève la tête : « Mes bois sont tout gris. Une lauze, c’est une pierre plate. Tu as parcouru toute la vallée : dis-moi comment vit le territoire. » | Le Cerf de lauze dit doucement : « Les lauzes de mon poitrail sont éteintes. Une lauze, c’est une pierre plate. Tu as parcouru toute la vallée : dis-moi comment vit le territoire. » |
+| Au défi | Le Cerf de lauze lève la tête : « Mon pelage est tout gris. Une lauze, c’est une pierre plate : mes bois en sont faits. Tu as parcouru toute la vallée : dis-moi comment vit le territoire. » | Le Cerf de lauze dit doucement : « Les lauzes de ma poitrine sont éteintes. Une lauze, c’est une pierre plate. Tu as parcouru toute la vallée : dis-moi comment vit le territoire. » |
 | À la fin | Je me rallume, des sabots jusqu’au bout des bois. La Vallée est à toi, et à Jalon. | Mes lauzes se rallument. La vallée est à toi, et à Jalon. |
 | Jalon à l’arrivée | Bonjour, bâtisseur ! Dans la vallée, on regarde la France : ses villes, ses campagnes, ses routes. Chaque bonne réponse te donne un bloc de grès rose. Le grès, c’est une pierre faite de sable serré. | Bonjour, bâtisseur ! Dans la vallée, on regarde la France : ses villes, ses campagnes, ses routes. Chaque bonne réponse te donne un bloc de grès rose. Le grès, c’est une pierre faite de sable serré. |
 

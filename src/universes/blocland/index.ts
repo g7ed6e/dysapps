@@ -233,7 +233,7 @@ export const BLOCLAND = {
     'history-5e-middle-ages': {
       challenge: 'Le Griffon d’émail déploie ses ailes : « Mes émaux sont tout gris. Tu as lu toutes les chroniques du bourg : dis-moi en quel siècle vient chaque chose. »',
       guardianSays: {
-        hit: 'Juste. Un émail de mes ailes reprend sa couleur.',
+        hit: 'Juste. Un bloc d’émail reprend sa couleur.',
         miss: 'Mes couleurs restent. Regarde la frise, relis le document, et reprends.',
         beaten: 'Je me rallume, du bec jusqu’à la queue. Le Bourg est à toi, et à Vélin.',
       },
@@ -263,7 +263,7 @@ export const BLOCLAND = {
       },
     },
     'history-3e-twentieth-century': {
-      challenge: 'La Colombe d’albâtre attend, un rameau vert au bec : « Mes plumes sont toutes grises. Tu as écouté tous les témoins du kiosque : aide-moi à me souvenir, date après date. »',
+      challenge: 'La Colombe d’albâtre attend, un rameau au bec : « Mes plumes sont toutes grises. Tu as écouté tous les témoins du kiosque : aide-moi à me souvenir, date après date. »',
       guardianSays: {
         hit: 'Juste. Une plume reprend sa couleur.',
         miss: 'Mes couleurs restent. Regarde la frise, relis qui parle, et reprends.',
@@ -271,9 +271,9 @@ export const BLOCLAND = {
       },
     },
     'geography-3e-france': {
-      challenge: 'Le Cerf de lauze lève la tête : « Mes bois sont tout gris. Une lauze, c’est une pierre plate. Tu as parcouru toute la vallée : dis-moi comment vit le territoire. »',
+      challenge: 'Le Cerf de lauze lève la tête : « Mon pelage est tout gris. Une lauze, c’est une pierre plate : mes bois en sont faits. Tu as parcouru toute la vallée : dis-moi comment vit le territoire. »',
       guardianSays: {
-        hit: 'Juste. Une lauze de mes bois reprend sa couleur.',
+        hit: 'Juste. Un bloc de mon pelage redevient fauve.',
         miss: 'Mes couleurs restent. Relis le document, cherche le mot du rappel, et reprends.',
         beaten: 'Je me rallume, des sabots jusqu’au bout des bois. La Vallée est à toi, et à Jalon.',
       },

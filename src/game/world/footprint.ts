@@ -19,7 +19,8 @@ import { rectangleDeLIlot, rectangleDeLIlotAutour } from './terrain/islets';
  * 144 × 112 aux Îles Brumeuses (168 × 112 depuis HG-3, comme les Anciens Ateliers : le cadre s'élargit de 24 cases vers
  * l'est pour le Bourg des chroniques et le Delta des ressources, DA, 6 octobre 2026 ; chaque lieu mobile y tourne, sauf le
  * Glacier des relatifs, 52 cases de large tourné avec son monument, qu'aucune place libre ne tient), 168 × 112 aux Anciens Ateliers (redessinés : ils étaient en ligne ; leur cadre tient
- * les côtes de la Gare et de l'île de la LV2, aux deux bouts), 208 × 112 aux Îles
+ * les côtes de la Gare et de l'île de la LV2, aux deux bouts ; chaque lieu mobile y tourne, sauf la Gare du futur,
+ * 37 × 28 cases tournée, qu'aucune place libre ne tient : `SANS_PLACE`, arrange.test.ts), 208 × 112 aux Îles
  * du Ciel (leur arc, de l'artiste technique 3D).
  */
 const REGION_FRAMES: Readonly<Record<ArchipelagoId, Readonly<Rectangle>>> = Object.freeze({
