@@ -342,4 +342,38 @@ export const ESPECES_6E = {
     autreBras: { rx: 0.35, rz: 0.2 },
     autreMain: { pose: [Math.PI / 2, 0, 0], dessiner: (T, k) => disque(T, 0.06, 0.2, 0.08, k.laiton, 6) },
   },
+  // Archipéo est en pause (2 octobre 2026) : ces deux habitants n'ont que le strict nécessaire, sans coiffe ni pièce de
+  // plus (budget de l'archipel). Silex y est un blaireau des fouilles, Boussole un pélican des ports (DA, HG-2).
+  'history-6e-antiquity': {
+    nom: 'Silex',
+    metier: 'fouilleur',
+    // Large, deux petites oreilles rondes : sa silhouette ne se confond ni avec Rouxel ni avec Lavi.
+    dominante: 0x6a6a66,
+    marque: { couleur: 0xd8d2c4, ou: ['museau'] },
+    silhouette: { largeur: 0.46, ventre: 0.08, tete: 0.34 },
+    coiffe: (T, k) => {
+      for (const c of [-1, 1]) pointe(T, [c * 0.2, 2.38, 0.04], 0.1, 0.16, k.dom, [0, 0, -c * 0.7], 3);
+    },
+    tenue: { couleur: TENUE.lin, vetements: ['tablier'] },
+    museau: { forme: 'museau', long: 0.2, r: 0.08 },
+    outil: {
+      // Le pinceau de fouille : un manche de bois, une touffe sombre au bout.
+      pose: [-0.2, 0, 0],
+      dessiner: (T, k) => manche(T, -0.02, 0.62, 0.03, k.bois),
+    },
+  },
+  'geography-6e-living': {
+    nom: 'Boussole',
+    metier: 'géographe',
+    dominante: 0xeeeae0,
+    tenue: { couleur: TENUE.cuir, vetements: ['ailes'] },
+    // Le long bec du pélican, élancé sur de longues pattes : sa silhouette ne se confond avec aucune autre.
+    museau: { forme: 'bec', long: 0.5, r: 0.09, y: 2.18 },
+    silhouette: { largeur: 0.28, jambes: 0.9, tete: 0.22 },
+    outil: {
+      // Le rouleau de la carte.
+      pose: [0, 0, 0],
+      dessiner: (T, k) => manche(T, -0.1, 0.2, 0.04, k.lin, 4),
+    },
+  },
 } satisfies Partial<Record<BiomeId, Espece>>;

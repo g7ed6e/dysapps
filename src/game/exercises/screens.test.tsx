@@ -62,8 +62,10 @@ describe('déblocage des biomes', () => {
     renderAt('/adventure');
     // GD-9 : de la Plaine ou de la Forêt, une liaison vers chaque île qu'on peut relier, 4 blocs chacune.
     expect(screen.getAllByText(/Pont à construire : 4 blocs/).length).toBe(6);
-    // Deux îles qu'aucune liaison n'atteint encore depuis un lieu relié (GD-9) : elles s'ouvriront de proche en proche.
-    expect(screen.queryAllByText(/Île lointaine/).length).toBe(2);
+    // Trois îles qu'aucune liaison n'atteint encore depuis un lieu relié (GD-9), dont la Pointe des paysages, derrière la
+    // Fouille des siècles (HG-2) : elles s'ouvriront de proche en proche.
+    expect(screen.queryAllByText(/Île lointaine/).length).toBe(3);
+    expect(screen.getAllByText(/Bac à construire : 4 blocs/).length).toBe(1);
     expect(screen.getAllByText(/Archipel à rejoindre/).length).toBe(21);
     await user.click(screen.getByRole('link', { name: /^Mine des lettres/ }));
     // Le message est découpé en syllabes (plusieurs éléments) : on lit le texte complet.

@@ -96,6 +96,12 @@ import chateauRempart from './plans/english-3e-grammar-3.json';
 import refugePoste from './plans/lv2-3e-travel-1.json';
 import refugeSalle from './plans/lv2-3e-travel-2.json';
 import refugePigeonnier from './plans/lv2-3e-travel-3.json';
+import fouilleMusee from './plans/history-6e-antiquity-1.json';
+import fouilleToit from './plans/history-6e-antiquity-2.json';
+import fouilleCour from './plans/history-6e-antiquity-3.json';
+import pointeQuartier from './plans/geography-6e-living-1.json';
+import pointeChamps from './plans/geography-6e-living-2.json';
+import pointeQuai from './plans/geography-6e-living-3.json';
 
 export interface PlanCell {
   x: number;
@@ -267,6 +273,12 @@ const PLAN_FILES = [
   refugePoste,
   refugeSalle,
   refugePigeonnier,
+  fouilleMusee,
+  fouilleToit,
+  fouilleCour,
+  pointeQuartier,
+  pointeChamps,
+  pointeQuai,
 ] as (Omit<PlanDef, 'cells' | 'origin' | 'reward'> & { reward: { xp: number } })[];
 
 /**

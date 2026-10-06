@@ -1,5 +1,6 @@
 // L'architecte du village : le dessin des bâtiments des îles, en trois étapes (les murs, le toit, la cour), calculé à partir
-// d'une forme (maison, tour, dôme, échoppe, hutte, kiosque, relais, jardin, refuge) et du bloc de l'île. Les cases sont relatives à la zone des
+// d'une forme (maison, tour, dôme, échoppe, hutte, kiosque, relais, jardin, refuge,
+// musée, quartier) et du bloc de l'île. Les cases sont relatives à la zone des
 // plans de l'île (6 × 5 cases, z = 0 : premier bloc sur le sol) ; la façade et la porte sont devant (y bas), la cour aussi.
 // Les blocs de finition (toit, porte, lanterne, barrière, escalier) viennent des coffres des étapes précédentes : un coffre
 // donne exactement ceux de l'étape suivante (voir plans.ts).
@@ -29,7 +30,9 @@ type BuildingStyle =
   | { kind: 'kiosque' }
   | { kind: 'relais' }
   | { kind: 'jardin' }
-  | { kind: 'refuge' };
+  | { kind: 'refuge' }
+  | { kind: 'musee' }
+  | { kind: 'quartier' };
 
 /** La forme du bâtiment de chaque île (son nom, sa récompense et sa réplique sont dans docs/contenu/<île>.md, section « Les plans »). */
 const BUILDING_OF: Record<BiomeId, BuildingStyle> = {
@@ -44,6 +47,8 @@ const BUILDING_OF: Record<BiomeId, BuildingStyle> = {
   'maths-6e-decimals': { kind: 'hutte' },
   'english-6e-vocabulary': { kind: 'maison' },
   'english-6e-grammar': { kind: 'tour', top: 'horloge' },
+  'history-6e-antiquity': { kind: 'musee' },
+  'geography-6e-living': { kind: 'quartier' },
   // Îles Brumeuses (5e)
   'maths-5e-signed-numbers': { kind: 'dome' },
   'maths-5e-proportionality': { kind: 'echoppe' },
@@ -431,6 +436,79 @@ function refuge(b: BlockId): Stages {
   return [retourne(poste), retourne(roof), retourne(yard)];
 }
 
+/**
+ * Le musée (le musée de Silex, histoire 6e) : trois plans, trois choses qu'on reconnaît (DA, HG-2). Le musée : une salle
+ * longue et basse de mosaïque, six sur trois, trois blocs de haut, une porte et deux vitrines sur sa façade longue. Le
+ * toit du musée : la porte, les deux vitrines de verre, un toit bas à deux pans de tuiles qui court sur toute sa
+ * longueur, ses deux pignons de mosaïque aux bouts. La cour du musée : la barrière et son portillon, deux lanternes, la
+ * marche, une jardinière. Ni fronton, ni colonnade, ni aqueduc, aucun monument réel, aucun édifice religieux, pas de
+ * strates.
+ */
+function musee(b: BlockId): Stages {
+  const x0 = 0;
+  const y0 = 2;
+  const w = ZW;
+  const d = 3;
+  const h = 3;
+  const doorX = 2;
+  const vitrines: [number, number, number][] = [
+    [1, y0, 1],
+    [4, y0, 1],
+  ];
+  const walls: ArchCell[] = [];
+  for (let z = 0; z < h; z++) for (const [x, y] of ring(x0, y0, w, d)) walls.push({ x, y, z, block: b });
+  const roof: ArchCell[] = [{ x: doorX, y: y0, z: 0, block: BLOC.porte }, ...vitrines.map(([x, y, z]) => ({ x, y, z, block: BLOC.verre }))];
+  // Les deux pans (devant et derrière, au niveau h) et le faîte au milieu (h + 1), sur toute la longueur ; les pignons.
+  for (let x = x0; x < x0 + w; x++) {
+    roof.push({ x, y: y0, z: h, block: BLOC.toit }, { x, y: y0 + d - 1, z: h, block: BLOC.toit }, { x, y: y0 + 1, z: h + 1, block: BLOC.toit });
+  }
+  roof.push({ x: x0, y: y0 + 1, z: h, block: b }, { x: x0 + w - 1, y: y0 + 1, z: h, block: b });
+  return [without(walls, [[doorX, y0, 0], ...vitrines]), roof, yard(b, doorX, y0)];
+}
+
+/**
+ * Le quartier (le quartier de Boussole, géographie 6e) : trois plans, trois paysages qu'on lit l'un après l'autre (DA,
+ * HG-2). Le quartier : une ville serrée, deux maisons de chaume mur contre mur au fond à gauche, l'une de trois blocs,
+ * l'autre de deux. Les champs du quartier : les toits à deux pans de tuiles, les portes et les fenêtres des maisons, et à droite deux
+ * rangs de bottes de chaume, une de plus sur le rang du fond ; les maisons s'espacent. Le quai du quartier : devant, un rang de
+ * planches, une bitte d'amarrage, deux barrières, une lanterne, et la marche devant la porte. Ni amer ni phare.
+ */
+function quartier(b: BlockId): Stages {
+  const y0 = 2;
+  const d = 3;
+  const maisons = [
+    { x0: 0, h: 3, porte: [0, y0, 0], fenetre: [1, y0, 1] },
+    { x0: 2, h: 2, porte: [3, y0, 0], fenetre: [2, y0, 1] },
+  ] as const;
+  const murs: ArchCell[] = [];
+  const champs: ArchCell[] = [];
+  for (const m of maisons) {
+    for (let z = 0; z < m.h; z++) for (let x = m.x0; x < m.x0 + 2; x++) for (let y = y0; y < y0 + d; y++) murs.push({ x, y, z, block: b });
+    champs.push({ x: m.porte[0], y: m.porte[1], z: m.porte[2], block: BLOC.porte }, { x: m.fenetre[0], y: m.fenetre[1], z: m.fenetre[2], block: BLOC.lanterne });
+    // Le toit à deux pans de chaque maison : devant et derrière au niveau de son haut, le faîte au milieu, un cran plus
+    // haut, sur ses pignons de chaume.
+    for (let x = m.x0; x < m.x0 + 2; x++)
+      champs.push({ x, y: y0, z: m.h, block: BLOC.toit }, { x, y: y0 + d - 1, z: m.h, block: BLOC.toit }, { x, y: y0 + 1, z: m.h, block: b }, { x, y: y0 + 1, z: m.h + 1, block: BLOC.toit });
+  }
+  const ville = without(
+    murs,
+    maisons.flatMap((m) => [m.porte, m.fenetre] as [number, number, number][]),
+  );
+  // Les champs : deux rangs de bottes de chaume, un rang d'herbe entre eux, une botte de plus sur le rang du fond.
+  for (const x of [4, 5]) champs.push({ x, y: 1, z: 0, block: b }, { x, y: 3, z: 0, block: b });
+  champs.push({ x: 5, y: 3, z: 1, block: b });
+  const quai: ArchCell[] = [];
+  for (let x = 0; x < ZW; x++) quai.push({ x, y: 0, z: 0, block: BLOC.bois });
+  quai.push(
+    { x: 0, y: 0, z: 1, block: BLOC.bois },
+    { x: 2, y: 0, z: 1, block: BLOC.barriere },
+    { x: 3, y: 0, z: 1, block: BLOC.barriere },
+    { x: 5, y: 0, z: 1, block: BLOC.lanterne },
+    { x: 3, y: 1, z: 0, block: BLOC.escalier },
+  );
+  return [ville, champs, quai];
+}
+
 /** Les trois étapes du bâtiment d'une île. */
 export function buildingStages(biome: BiomeId, block: BlockId): Stages {
   const style = BUILDING_OF[biome];
@@ -453,6 +531,10 @@ export function buildingStages(biome: BiomeId, block: BlockId): Stages {
       return jardin(block);
     case 'refuge':
       return refuge(block);
+    case 'musee':
+      return musee(block);
+    case 'quartier':
+      return quartier(block);
   }
 }
 

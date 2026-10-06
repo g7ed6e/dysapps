@@ -10,9 +10,9 @@
 import { type BiomeId, getBiome } from '../biomes';
 import type { World } from '../engine/state';
 import { BRIDGES, type BridgeDef, getBridge, isBiomeUnlocked, reachableIslands } from './archipelago';
-import { type ArchipelagoId, archipelagoOfIsland, bornesDuCoeur, type IslandDef, startingIsland } from './map';
+import { ARCHIPELAGO_IDS, type ArchipelagoId, archipelagoOfIsland, bornesDuCoeur, type IslandDef, startingIsland } from './map';
 import { SIDE_OF, LAYOUT_SIDE_OF } from './appliedLayout';
-import { fittingPlaces, footprintOf, frameOf, GAP_BETWEEN_PLACES, gapBetween, LINK_GAP, placedIsland, poseOfSpot, spotInSteps } from './footprint';
+import { fittingPlaces, footprintOf, frameOf, GAP_BETWEEN_PLACES, gapBetween, LINK_GAP, placedIsland, poseOfSpot, spotInSteps, tooSmallGaps } from './footprint';
 import { STEP, type Quarts, type Rectangle, SIDES, turnDirection, turnedSide } from './placement';
 import { LONG_LENGTH, possibleLandings, RegionRouter, type LinkLandings, type LinkRoute, startingPlaces, placesOf } from './routing';
 import { LAYOUT_LAST_SPOT, type LayoutGuardian, type LayoutLanding, type LayoutSide, type LayoutSpot, type LayoutTurn, type RegionLayout } from './savedLayout';
@@ -412,6 +412,48 @@ export function moveIsland(world: World, id: BiomeId, spot: LayoutSpot): Arrange
     else islands[g.id] = { x: g.spot.x, y: g.spot.y, turn: g.spot.turn };
   }
   return settle(world, withRegion(world, a, { ...r, islands }), a);
+}
+
+/**
+ * Les lieux entrés au jeu après qu'une région a été aménagée (les deux îles d'histoire-géographie de 6e, HG-2) : absents
+ * de la disposition sauvegardée, ils sont à leur place de la carte de départ. Si elle touche un lieu que l'élève a
+ * déplacé, la disposition ne tiendrait plus (`fittingPlaces`) et toute la région reviendrait à la carte de départ : le
+ * lieu nouveau se pose plutôt à la place libre la plus proche de sa place de départ, de face, et rien d'autre ne bouge.
+ * Rend le même monde quand chaque région tient déjà, ou quand aucune place libre ne la ferait tenir (la région revient
+ * alors à la carte de départ, comme avant).
+ */
+export function settleNewPlaces(world: World): World {
+  let w = world;
+  for (const a of ARCHIPELAGO_IDS) {
+    const r = regionOf(w, a);
+    if (!r.islands || fittingPlaces(a, r.islands, r.guardians ?? {})) continue;
+    const poses = r.islands;
+    const bouge = (id: BiomeId) => poses[id] !== undefined || r.guardians?.[id] !== undefined;
+    const ecarts = tooSmallGaps(
+      a,
+      placesOf(a).map((id) => placeIn(w, id)),
+      bouge,
+      (id) => r.guardians?.[id],
+    );
+    // Un lieu resté à sa place de départ ne touche jamais un lieu déplacé (`moveIsland` le refuse) : s'il le touche, il
+    // est nouveau.
+    const nouveaux = placesOf(a).filter((id) => !bouge(id) && ecarts.some((e) => e.place === id || e.other === id));
+    if (!nouveaux.length) continue;
+    let essai: World | null = w;
+    for (const id of nouveaux) {
+      const depart = startingIsland(id).core;
+      const libre: LayoutSpot | null = essai && nearestFreeSpot(essai, id, { x: depart.x + 8, y: depart.y + 8 }, 0);
+      if (!essai || !libre) {
+        essai = null;
+        break;
+      }
+      const ici = regionOf(essai, a);
+      essai = withRegion(essai, a, { ...ici, islands: { ...ici.islands, [id]: libre } });
+    }
+    const apres = essai && regionOf(essai, a);
+    if (essai && apres && fittingPlaces(a, apres.islands ?? {}, apres.guardians ?? {})) w = essai;
+  }
+  return w;
 }
 
 /** Les lieux d'une région où le lieu `id` est (avec celui avec lequel il est réuni) quand il est posé à `spot`. */

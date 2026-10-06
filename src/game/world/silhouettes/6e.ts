@@ -16,4 +16,6 @@ export const SILHOUETTES_6E = {
   'maths-6e-decimals': { pics: [{ x: 8, y: 19, h: 8, r: 6 }] },
   'english-6e-vocabulary': { pics: [] },
   'english-6e-grammar': { pics: [] },
+  'history-6e-antiquity': { pics: [] },
+  'geography-6e-living': { pics: [] },
 } satisfies Partial<Record<BiomeId, Silhouette>>;

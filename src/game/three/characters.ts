@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import type { BiomeId } from '../biomes';
 import { AVATAR_PARTS, AVATAR_SCALE } from '../Avatar';
 import { piedsSur, type ChampDuSol } from '../world/landMesh';
+import { RALLUMAGE_DU_HAUT } from '../world/characters/guardians';
 import { buildMesh } from '../world/mesher';
 import { gardienDuMonde, statueDe } from '../world/terrain';
 import { avatarWalk, startStrolls, strollAt, walkPose, type Stroll, type Walk } from '../world/scene';
@@ -94,7 +95,7 @@ function habitsEnCubes(monde: Monde, champ: () => ChampDuSol | null, instant: In
   /** Le début du geste de chaque créature qui fait signe, gardé quand les créatures sont reposées. */
   const signes = new Map<BiomeId, number>();
   // Le rallumage en cours (GD-8) : le Gardien, le début et la durée de son fondu, et ses couches de cubes, des pieds vers
-  // la tête, chacune en pierre puis en couleurs. Chaque couche passe d'un coup, comme pendant le défi (pas de teinte
+  // la tête (du haut vers le bas pour `RALLUMAGE_DU_HAUT`), chacune en pierre puis en couleurs. Chaque couche passe d'un coup, comme pendant le défi (pas de teinte
   // entre les deux) ; les couches ne vivent que le temps du fondu (1,8 s), puis il est rebâti d'un seul maillage.
   let fondu: { id: BiomeId; t0: number; dureeMs: number; fini: boolean } | null = null;
   let couches: { pierre: THREE.Group; couleurs: THREE.Group }[] = [];
@@ -142,7 +143,9 @@ function habitsEnCubes(monde: Monde, champ: () => ChampDuSol | null, instant: In
       return;
     }
     const cubes = gardienDuMonde(id);
-    for (const z of [...new Set(cubes.map((c) => c.z))].sort((a, b) => a - b)) {
+    // Des pieds vers la tête ; du col vers le pied pour ceux qui se rallument du haut (l'Amphore peinte).
+    const sens = RALLUMAGE_DU_HAUT.has(id) ? -1 : 1;
+    for (const z of [...new Set(cubes.map((c) => c.z))].sort((a, b) => sens * (a - b))) {
       const couche = cubes.filter((c) => c.z === z);
       const pierre = new THREE.Group();
       const couleurs = new THREE.Group();

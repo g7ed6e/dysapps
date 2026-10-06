@@ -13,10 +13,13 @@ import { ARCHIPELAGO_IDS } from './archipelagos';
 const lien6e = BRIDGES.find((b) => archipelagoOfIsland(b.from) === '6e')!.id;
 const lien5e = BRIDGES.find((b) => archipelagoOfIsland(b.from) === '5e')!.id;
 
-/** Une disposition du 6e complète et valide : la Ferme déplacée au coin bas-droit du cadre, sans rien toucher. */
+/**
+ * Une disposition du 6e complète et valide : la Ferme déplacée vers un coin du cadre, sans rien toucher (au coin bas-droit
+ * jusqu'à HG-2 : les îles d'histoire-géographie y sont entrées).
+ */
 const valide: Layout = {
   '6e': {
-    islands: { 'maths-6e-decimals': { x: 39, y: 27, turn: 1 } },
+    islands: { 'maths-6e-decimals': { x: 42, y: 3, turn: 1 } },
     guardians: { 'maths-6e-decimals': { side: 'left', step: 1, turn: 2 } },
     stations: { 'maths-6e-decimals:ordering': { x: 4, y: 14 } },
     landings: { [lien6e]: { from: { side: 'back', step: 2 }, to: { side: 'front', step: -1 } } },
@@ -84,10 +87,10 @@ describe('la disposition de la sauvegarde', () => {
   });
 
   it('se pose seulement si elle tient sur la grille : dans le cadre, et ses lieux déplacés à quatre cases d’eau au moins', () => {
-    // La Ferme au coin bas-droit du cadre : elle tient.
+    // La Ferme vers un coin du cadre : elle tient.
     const poses = posesOfLayout(valide);
     const c = frameOf('6e');
-    expect(poses.get('maths-6e-decimals')).toEqual({ x: c.x0 + 39 * STEP, y: c.y0 + 27 * STEP, quarts: 1 });
+    expect(poses.get('maths-6e-decimals')).toEqual({ x: c.x0 + 42 * STEP, y: c.y0 + 3 * STEP, quarts: 1 });
     // Posée sur la Forêt, ou hors du cadre : la région reste à sa carte de départ.
     const foret = startingIsland('french-6e-phonology').core;
     const surLaForet = { x: (foret.x - c.x0) / STEP, y: Math.round((foret.y - c.y0) / STEP), turn: 0 as const };

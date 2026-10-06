@@ -108,6 +108,10 @@ const FORMES: Record<string, Cube[]> = {
   'english-6e-vocabulary-fixture-1': [...rangee(0, 1, 0, 0, 'door'), ...rangee(0, 1, 0, 1, BLOC.cabine), [0, 0, 2, BLOC.cadran], [1, 0, 2, BLOC.cadran]],
   // Tick, la vitrine : un soubassement de portes (les cadrans se perdaient sur le sol de cadrans), trois verres, trois toits.
   'english-6e-grammar-fixture-1': [...rangee(0, 2, 0, 0, 'door'), ...rangee(0, 2, 0, 1, BLOC.verre), ...rangee(0, 2, 0, 2, 'roof')],
+  // Silex, le tamis (DA, HG-2) : trois sables en ligne au sol, dans un cadre de deux barrières aux coins opposés.
+  'history-6e-antiquity-fixture-1': [...rangee(0, 2, 1, 0, BLOC.sable), [0, 0, 0, 'fence'], [2, 2, 0, 'fence']],
+  // Boussole, la placette (DA, HG-2) : quatre mosaïques en carré au sol, une barrière au coin, une lanterne dessus.
+  'geography-6e-living-fixture-1': [...rangee(0, 1, 0, 0, BLOC.mosaique), ...rangee(0, 1, 1, 0, BLOC.mosaique), [2, 2, 0, 'fence'], [2, 2, 1, 'lantern']],
 
   // 5e : les Collines du Large.
   // Frimas, la cabane : des murs de portes sur deux rangs (la glace se perdait sur le sol de glace du Glacier,
@@ -254,6 +258,8 @@ const PLACES: Record<string, readonly [number, number]> = {
   'french-3e-close-reading-fixture-1': [5, 11],
   'english-6e-vocabulary-fixture-1': [8, 6],
   'english-6e-grammar-fixture-1': [10, 9],
+  'history-6e-antiquity-fixture-1': [0, 10],
+  'geography-6e-living-fixture-1': [-1, 11],
   'english-5e-vocabulary-fixture-1': [4, 11],
   'english-5e-grammar-fixture-1': [10, 3],
   'english-4e-comprehension-fixture-1': [7, 9],

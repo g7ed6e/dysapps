@@ -556,6 +556,50 @@ const PAPILLON: CubeDeModele[] = (() => {
   return out;
 })();
 
+// L'Amphore peinte (DA, HG-2) : une amphore de terre cuite sur un pied étroit, la panse large, l'épaule, le col et sa
+// lèvre, deux anses du col à l'épaule ; des bandes peintes, sombres et ocre, d'un rang chacune ; deux yeux ocre dans la
+// bande sombre de la panse. Trois couleurs. Elle se rallume du col vers le pied (`RALLUMAGE_DU_HAUT`).
+const AMPHORE = fromLayers(
+  [
+    ['.......', '..TTT..', '..TTT..', '..TTT..', '.......'],
+    ['.......', '..KKK..', '..KKK..', '..KKK..', '.......'],
+    ['..TTT..', '.TTTTT.', '.TTTTT.', '.TTTTT.', '..TTT..'],
+    ['.OOOOO.', 'OOOOOOO', 'OOOOOOO', 'OOOOOOO', '.OOOOO.'],
+    ['.TTTTT.', 'TTTTTTT', 'TTTTTTT', 'TTTTTTT', '.TTTTT.'],
+    ['.KOKOK.', 'KKKKKKK', 'KKKKKKK', 'KKKKKKK', '.KKKKK.'],
+    ['.TTTTT.', 'TTTTTTT', 'TTTTTTT', 'TTTTTTT', '.TTTTT.'],
+    ['..TTT..', '.TTTTT.', '.TTTTT.', '.TTTTT.', '..TTT..'],
+    ['.......', '..OOO..', '.TOOOT.', '..OOO..', '.......'],
+    ['.......', '..TTT..', '.TTTTT.', '..TTT..', '.......'],
+    ['.......', '..KKK..', '.KK.KK.', '..KKK..', '.......'],
+  ],
+  { T: '#b5653a', K: '#2e2622', O: '#d9a441' },
+);
+
+// Le Castor d'argile (DA, HG-2) : un castor assis, d'argile ocre, la queue en dalle plate posée derrière lui, deux dents
+// blanches sous le museau, la truffe et les yeux sombres, deux petites oreilles. Trois couleurs.
+const CASTOR = fromLayers(
+  [
+    ['.......', '.AA.AA.', '.AAAAA.', '.AAAAA.', '..AAA..', '.AAAAA.', '.AAAAA.', '..AAA..'],
+    ['.......', '.AAAAA.', 'AAAAAAA', 'AAAAAAA', '.AAAAA.'],
+    ['.......', '.AAAAA.', 'AAAAAAA', 'AAAAAAA', '.AAAAA.'],
+    ['.......', '.AAAAA.', 'AAAAAAA', 'AAAAAAA', '.AAAAA.'],
+    ['.......', '.AAAAA.', '.AAAAA.', '.AAAAA.', '..AAA..'],
+    ['..W.W..', '.AAAAA.', '.AAAAA.', '.AAAAA.', '..AAA..'],
+    ['..AKA..', '.AAAAA.', '.AAAAA.', '.AAAAA.', '.......'],
+    ['.......', '.AKAKA.', '.AAAAA.', '.AAAAA.', '.......'],
+    ['.......', '..AAA..', '.AAAAA.', '..AAA..', '.......'],
+    ['.......', '.......', '.A...A.', '.......', '.......'],
+  ],
+  { A: '#b07a48', W: '#f6f1e6', K: '#2a2622' },
+);
+
+/**
+ * Les Gardiens qui se rallument du haut vers le bas (GD-8 : les autres, des pieds vers la tête) : l'Amphore peinte, dont
+ * les bandes reprennent leurs couleurs du col vers le pied (DA, HG-2).
+ */
+export const RALLUMAGE_DU_HAUT: ReadonlySet<BiomeId> = new Set<BiomeId>(['history-6e-antiquity']);
+
 export const GUARDIAN_CUBES: Record<BiomeId, CubeDeModele[]> = {
   'french-6e-phonology': GRAND_CHENE,
   'french-6e-letter-confusion': GOLEM,
@@ -579,6 +623,8 @@ export const GUARDIAN_CUBES: Record<BiomeId, CubeDeModele[]> = {
   'french-3e-close-reading': LECTEUR,
   'english-6e-vocabulary': LION,
   'english-6e-grammar': COUCOU,
+  'history-6e-antiquity': AMPHORE,
+  'geography-6e-living': CASTOR,
   'english-5e-vocabulary': REINE,
   'english-5e-grammar': SPECTRE,
   'lv2-5e-introductions': DILIGENCE,

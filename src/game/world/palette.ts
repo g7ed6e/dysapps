@@ -337,6 +337,10 @@ export const MATIERES: Record<TextureKind, Faces> = {
   // Le bardeau du Refuge : un bois brun chaud, entre les planches et le lambris, moins orangé que le cuivre, plus
   // sombre et plus rouge que la dalle ; jamais le gris de la pierre, de l'ardoise ou de la roche du massif.
   bardeau: { dessus: 0x9e7a56, cote: 0x7e5e40 },
+  // La mosaïque de la Fouille : une terre cuite chaude, plus rouge que la dalle, plus claire que la brique.
+  mosaique: { dessus: 0xc98a5c, cote: 0xa86c44 },
+  // Le chaume de la Pointe : une paille dorée, plus jaune que l'osier, plus sombre que le sable.
+  chaume: { dessus: 0xd8b860, cote: 0xb0903e },
   // Les blocs assemblés (GD-2) : la couleur de fond de chaque bloc ; son motif (world/construction.ts, `MOTIF_ASSEMBLE`)
   // le peint par-dessus, avec les couleurs de `DETAILS_ASSEMBLES`. Le madrier, un bois de charpente plus clair que les
   // planches ; le hublot, son cadre jaune ; la poulie, sa chape brune ; la loupe, sur une pierre mauve pâle.

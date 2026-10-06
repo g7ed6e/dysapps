@@ -120,6 +120,31 @@ const TOUR_DU_COUCOU: Anneau[] = [
   [5.9, 1.05, 0.9],
 ];
 
+/** L'Amphore peinte : le pied, la panse, l'épaule, le col et la lèvre. */
+const AMPHORE: Anneau[] = [
+  [1, 0.5],
+  [1.7, 0.42],
+  [2.8, 1.25],
+  [4.6, 1.4],
+  [5.9, 0.85],
+  [6.5, 0.42],
+  [7.6, 0.42],
+  [8, 0.62],
+];
+
+/** Le Castor d'argile, assis : le corps, puis la tête au museau avancé. */
+const CORPS_DU_CASTOR: Anneau[] = [
+  [1, 1.0, 0.85],
+  [3.0, 1.2, 1.0],
+  [5.0, 0.85, 0.75],
+  [5.6, 0.5, 0.45],
+];
+const TETE_DU_CASTOR: Anneau[] = [
+  [5.4, 0.62, 0.55, -0.15],
+  [7.3, 0.58, 0.52, -0.3],
+  [8, 0.3, 0.28, -0.3],
+];
+
 export const STATUES_6E: Partial<Record<BiomeId, Statue>> = {
   'french-6e-phonology': {
     nom: 'le Grand Chêne',
@@ -496,5 +521,54 @@ export const STATUES_6E: Partial<Record<BiomeId, Statue>> = {
       pave(T, -0.03, 3.77, z - 0.02, 0.32, 3.83, z, a.pierre);
     },
     veines: (T, a) => plaque(T, 0, 3.8, 0.6, 0.6, 8, a.lueur, (y) => devant(TOUR_DU_COUCOU, 4, y).z),
+  },
+  // Archipéo est en pause (2 octobre 2026) : ces deux sentinelles n'ont que le strict nécessaire (budget de l'archipel).
+  'history-6e-antiquity': {
+    nom: 'l’Amphore peinte',
+    allume: 'ses bandes peintes',
+    sculpture: (T, a) => {
+      fuseau(T, AMPHORE, 6, a.moussue((k, j) => k === 0 && j % 2 === 0), { bas: false });
+      // Les deux anses, du col à l'épaule.
+      for (const s of [-1, 1])
+        tube(
+          T,
+          [
+            [s * 0.4, 7.3, 0],
+            [s * 1.0, 7.1, 0],
+            [s * 0.95, 5.95, 0],
+          ],
+          0.1,
+          3,
+          a.pierre,
+        );
+      orbites(T, a, 0, 5.1, devant(AMPHORE, 6, 5.1).z, 0.3, 0.16);
+    },
+    veines: (T, a) => {
+      // Deux bandes peintes, sur la panse et sous l'épaule.
+      for (const y of [3.6, 5.6])
+        veineSur(
+          T,
+          AMPHORE,
+          6,
+          [
+            [-0.6, y],
+            [0.6, y],
+          ],
+          0.09 * a.veines,
+          a.lueur,
+        );
+    },
+  },
+  'geography-6e-living': {
+    nom: 'le Castor d’argile',
+    allume: 'sa queue plate',
+    sculpture: (T, a) => {
+      fuseau(T, CORPS_DU_CASTOR, 6, a.moussue((k, j) => k === 0 && j % 2 === 1), { bas: false });
+      fuseau(T, TETE_DU_CASTOR, 5, a.pierre, { bas: false });
+      // La queue en dalle plate, posée derrière lui.
+      pave(T, -0.55, 1, 0.8, 0.55, 1.25, 2.3, a.pierre);
+      orbites(T, a, 0, 7.0, devant(TETE_DU_CASTOR, 5, 7.0).z, 0.2, 0.12);
+    },
+    veines: (T, a) => plaque(T, 0, 3.0, 0.45, 0.6, 6, a.lueur, (y) => devant(CORPS_DU_CASTOR, 6, y).z),
   },
 };
