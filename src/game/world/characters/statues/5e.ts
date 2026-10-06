@@ -3,7 +3,7 @@
 // socles compris.
 import type { BiomeId } from '../../../biomes';
 import { pointe } from '../template';
-import { devant, fuseau, pave, pose, repere, type Anneau } from '../painted';
+import { devant, fuseau, pave, pose, repere, type Anneau, type V3 } from '../painted';
 import { dalle, orbites, plaque, tube, veineSur, type Statue } from '../sentinel';
 
 const TETE_DU_MAMMOUTH: Anneau[] = [
@@ -185,6 +185,77 @@ const OUVERTURE_DES_AILES = 0.55;
 /** Le repère d'une aile (`s` : −1 à gauche, 1 à droite) : sa racine en `racine`, reculée de `OUVERTURE_DES_AILES`. */
 const repereDAile = (s: number, racine: [number, number]) => repere([s * racine[0], 0, racine[1]], 0, -s * OUVERTURE_DES_AILES, 0);
 const RACINE_DES_AILES_DU_GRIFFON: [number, number] = [0.7, 0.4];
+
+// Les Gardiens de sciences (SC-3) : Archipéo est en pause (2 octobre 2026), ces sentinelles n'ont que le strict
+// nécessaire (budget de l'archipel).
+
+/**
+ * La Tortue d'ocre, en tortue de mer qui grimpe sur son rocher : le rocher derrière elle, la carapace en dôme penchée
+ * vers l'élève (ses écailles se voient), les nageoires posées de part et d'autre, la tête levée qui regarde l'élève.
+ */
+const ROCHER_DE_LA_TORTUE: Anneau[] = [
+  [1, 1.4, 1.0, 0.3],
+  [3.2, 1.15, 0.9, 0.5],
+  [5.2, 0.7, 0.6, 0.8],
+];
+/** La carapace, dans son repère : de son ventre (y = 0) au plat du dôme, le long de son dos (Y local). */
+const CARAPACE_DE_LA_TORTUE: Anneau[] = [
+  [0, 1.1, 1.45],
+  [0.35, 1.15, 1.5],
+  [0.75, 0.8, 1.05],
+  [0.9, 0.5, 0.65],
+];
+/** Le milieu du ventre de la carapace, et son penché : le dos regarde l'élève, à 20° au-dessus de l'horizontale. */
+const MILIEU_DE_LA_CARAPACE: V3 = [0, 4.3, -0.15];
+const PENCHE_DE_LA_CARAPACE = Math.PI / 2 - 0.35;
+const repereDeLaCarapace = () => repere(MILIEU_DE_LA_CARAPACE, -PENCHE_DE_LA_CARAPACE, 0, 0);
+/** Le plat du dôme, où sont les écailles : un repère dont −Z sort du dos. */
+const repereDesEcailles = () => {
+  const h = CARAPACE_DE_LA_TORTUE[CARAPACE_DE_LA_TORTUE.length - 1][0];
+  const [s, c] = [Math.sin(0.35), Math.cos(0.35)];
+  return repere([MILIEU_DE_LA_CARAPACE[0], MILIEU_DE_LA_CARAPACE[1] + h * s, MILIEU_DE_LA_CARAPACE[2] - h * c], 0.35, 0, 0);
+};
+const TETE_DE_LA_TORTUE: Anneau[] = [
+  [6.9, 0.4, 0.45],
+  [7.6, 0.42, 0.48],
+  [8, 0.2, 0.25],
+];
+const Z_DE_LA_TETE_DE_LA_TORTUE = -0.75;
+
+/** Le Flamant de sel, sur une patte : le corps en œuf, le cou en S, la tête et le bec courbé vers le bas. */
+const CORPS_DU_FLAMANT: Anneau[] = [
+  [3.5, 0.3, 0.4, 0.2],
+  [3.9, 0.75, 1.1, 0.25],
+  [4.6, 0.8, 1.2, 0.3],
+  [5.1, 0.4, 0.7, 0.5],
+];
+const TETE_DU_FLAMANT: Anneau[] = [
+  [7.1, 0.3, 0.32],
+  [7.7, 0.32, 0.36],
+  [8, 0.15, 0.18],
+];
+const Z_DE_LA_TETE_DU_FLAMANT = -0.85;
+/** Les grains de sel de ses ailes : un petit cube de chaque côté du corps (x, y, z de son centre, à droite). */
+const GRAINS_DE_SEL: [number, number, number][] = [[0.8, 4.45, 0.35]];
+const DEMI_GRAIN = 0.12;
+
+/**
+ * Le Cheval à bascule, de face (sa tête vers l'élève) : deux patins courbes le long de Z, quatre jambes écartées, le
+ * corps couché le long de Z, le cou et la tête, deux oreilles.
+ */
+const CORPS_DU_CHEVAL: Anneau[] = [
+  [-1.5, 0.45],
+  [-1.1, 0.7],
+  [1.0, 0.7],
+  [1.5, 0.4],
+];
+const TETE_DU_CHEVAL: Anneau[] = [
+  [5.8, 0.36, 0.55, -0.25],
+  [6.8, 0.38, 0.5, -0.1],
+  [7.4, 0.3, 0.4, 0],
+];
+const Z_DE_LA_TETE_DU_CHEVAL = -1.55;
+const HAUT_DU_CORPS_DU_CHEVAL = 3.6;
 
 export const STATUES_5E: Partial<Record<BiomeId, Statue>> = {
   'maths-5e-signed-numbers': {
@@ -646,6 +717,172 @@ export const STATUES_5E: Partial<Record<BiomeId, Statue>> = {
       // Une nervure sur chaque aile du haut, sur sa face tournée vers le ciel.
       for (const s of [-1, 1] as const)
         for (const [hauteur, fleche] of AILES_DE_LA_LIBELLULE.slice(1)) plaque(pose(T, repereDAileAPlat(s, hauteur)), s * 1.0, fleche * 0.3, 0.65, 0.07 * a.veines, 4, a.lueur, () => -0.05);
+    },
+  },
+  // Les Gardiens de sciences (SC-3), au strict nécessaire comme ceux d'histoire-géographie.
+  'life-earth-sciences-5e-active-planet': {
+    nom: 'la Tortue d’ocre',
+    allume: 'les écailles de sa carapace',
+    sculpture: (T, a) => {
+      fuseau(T, ROCHER_DE_LA_TORTUE, 4, a.moussue((k, j) => k === 0 && j % 2 === 1), { bas: false });
+      fuseau(pose(T, repereDeLaCarapace()), CARAPACE_DE_LA_TORTUE, 5, a.moussue((k, j) => k === 0 && j % 3 === 0));
+      // Le cou, du haut de la carapace à la tête levée.
+      tube(
+        T,
+        [
+          [0, 5.6, 0.1],
+          [0, 6.5, -0.35],
+          [0, 7.1, Z_DE_LA_TETE_DE_LA_TORTUE],
+        ],
+        [0.3, 0.28, 0.26],
+        3,
+        a.pierre,
+      );
+      fuseau(T, TETE_DE_LA_TORTUE, 4, a.pierre, { z: Z_DE_LA_TETE_DE_LA_TORTUE, bas: false });
+      // Les nageoires, plates, posées de part et d'autre : les deux grandes en haut, les deux petites en bas.
+      for (const s of [-1, 1]) {
+        tube(
+          T,
+          [
+            [s * 1.0, 4.9, -0.35],
+            [s * 2.15, 4.3, -0.2],
+          ],
+          [0.1, 0.03],
+          3,
+          a.pierre,
+          3,
+        );
+        tube(
+          T,
+          [
+            [s * 0.95, 3.4, -0.3],
+            [s * 1.65, 2.75, -0.3],
+          ],
+          [0.08, 0.03],
+          3,
+          a.pierre,
+          3,
+        );
+      }
+      orbites(T, a, 0, 7.5, devant(TETE_DE_LA_TORTUE, 4, 7.5, Z_DE_LA_TETE_DE_LA_TORTUE).z, 0.2, 0.12);
+    },
+    // Trois écailles sur le plat du dôme, serrées : une seule lueur.
+    veines: (T, a) => {
+      for (const [x, y] of [
+        [-0.22, -0.12],
+        [0.22, -0.12],
+        [0, 0.24],
+      ])
+        plaque(pose(T, repereDesEcailles()), x, y, 0.17 * a.veines, 0.17, 6, a.lueur, () => 0);
+    },
+  },
+  'physics-chemistry-5e-matter-universe': {
+    nom: 'le Flamant de sel',
+    allume: 'les grains de sel de ses ailes',
+    sculpture: (T, a) => {
+      // La patte dressée ; l'autre, repliée sous le ventre.
+      tube(
+        T,
+        [
+          [0, 1.1, 0],
+          [0, 2.4, 0.08],
+          [0, 3.7, 0.2],
+        ],
+        0.19,
+        3,
+        a.pierre,
+      );
+      tube(
+        T,
+        [
+          [0.2, 3.75, 0.35],
+          [0.3, 3.05, 0.75],
+        ],
+        0.12,
+        3,
+        a.pierre,
+      );
+      fuseau(T, CORPS_DU_FLAMANT, 5, a.moussue((k, j) => k === 1 && j % 2 === 0), { bas: false });
+      tube(
+        T,
+        [
+          [0, 4.9, -0.55],
+          [0, 5.8, -0.95],
+          [0, 6.5, -0.5],
+          [0, 7.2, Z_DE_LA_TETE_DU_FLAMANT],
+        ],
+        [0.24, 0.2, 0.2, 0.2],
+        4,
+        a.pierre,
+      );
+      fuseau(T, TETE_DU_FLAMANT, 4, a.pierre, { z: Z_DE_LA_TETE_DU_FLAMANT, bas: false });
+      // Le bec courbé vers le bas, vers l'élève.
+      pointe(T, [0, 7.5, devant(TETE_DU_FLAMANT, 4, 7.5, Z_DE_LA_TETE_DU_FLAMANT).z + 0.08], 0.13, 0.55, a.pierre, [-Math.PI / 2 - 0.6, 0, 0], 3);
+      orbites(T, a, 0, 7.72, devant(TETE_DU_FLAMANT, 4, 7.72, Z_DE_LA_TETE_DU_FLAMANT).z, 0.14, 0.1);
+    },
+    // Un grain de sel sur chaque aile : deux lueurs.
+    veines: (T, a) => {
+      for (const s of [-1, 1])
+        for (const [x, y, z] of GRAINS_DE_SEL) {
+          const d = DEMI_GRAIN * a.veines;
+          pave(T, s * x - d, y - d, z - d, s * x + d, y + d, z + d, a.lueur);
+        }
+    },
+  },
+  'technology-5e-design': {
+    nom: 'le Cheval à bascule',
+    allume: 'les taches de sa robe',
+    sculpture: (T, a) => {
+      for (const s of [-1, 1]) {
+        // Le patin courbe, le long de Z.
+        tube(
+          T,
+          [
+            [s * 0.75, 1.62, -2.0],
+            [s * 0.75, 1.13, 0],
+            [s * 0.75, 1.62, 2.0],
+          ],
+          0.12,
+          3,
+          a.pierre,
+        );
+        // Les jambes, de devant et de derrière, écartées vers les bouts du patin.
+        for (const [z0, z1] of [
+          [-1.35, -0.85],
+          [1.35, 0.95],
+        ])
+          tube(
+            T,
+            [
+              [s * 0.72, 1.3, z0],
+              [s * 0.42, HAUT_DU_CORPS_DU_CHEVAL - 0.2, z1],
+            ],
+            0.13,
+            3,
+            a.pierre,
+          );
+      }
+      fuseau(pose(T, repere([0, HAUT_DU_CORPS_DU_CHEVAL, 0.15], Math.PI / 2, 0, 0)), CORPS_DU_CHEVAL, 6, a.moussue((k, j) => k === 1 && j === 3), { rot: Math.PI / 6 });
+      tube(
+        T,
+        [
+          [0, 3.9, -1.05],
+          [0, 5.0, -1.4],
+          [0, 6.0, Z_DE_LA_TETE_DU_CHEVAL],
+        ],
+        [0.45, 0.38, 0.35],
+        4,
+        a.pierre,
+      );
+      fuseau(T, TETE_DU_CHEVAL, 4, a.pierre, { z: Z_DE_LA_TETE_DU_CHEVAL, bas: false });
+      // Deux oreilles, leur pointe exactement en haut ; la queue, tombante, derrière.
+      for (const s of [-1, 1]) pointe(T, [s * 0.17, 7.35, Z_DE_LA_TETE_DU_CHEVAL + 0.05], 0.1, 0.65, a.pierre, [0, 0, 0], 3);
+      pointe(T, [0, 3.8, 1.6], 0.16, 0.9, a.pierre, [Math.PI / 2 + 0.7, 0, 0], 3);
+      orbites(T, a, 0, 6.95, devant(TETE_DU_CHEVAL, 4, 6.95, Z_DE_LA_TETE_DU_CHEVAL).z, 0.2, 0.12);
+    },
+    // Une tache sur chaque flanc, tournée vers son côté.
+    veines: (T, a) => {
+      for (const s of [-1, 1]) plaque(pose(T, repere([s * 0.61, HAUT_DU_CORPS_DU_CHEVAL + 0.05, 0.35], 0, -s * (Math.PI / 2), 0)), 0, 0, 0.34, 0.24 * a.veines, 6, a.lueur, () => 0);
     },
   },
 };
