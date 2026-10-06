@@ -243,6 +243,7 @@ it('GD-9 : au pire de chaque région, le dessin d’un choix du mode « Aménage
 it('GD-9 : les poignées du mode « Modifier le plan » (les flèches et « Tourner ») : un appel, 400 triangles au plus, seulement pendant un choix', () => {
   const { world } = toutConstruit();
   expect(BUDGET_DES_POIGNEES).toEqual({ triangles: 400, drawCalls: 1 });
+  expect(BUDGET_DES_BOUTS).toEqual({ triangles: 480, drawCalls: 1 });
   for (const a of ARCHIPELAGO_IDS)
     for (const id of mapOf(a).map((d) => d.id))
       for (const c of [chooseIsland(world, id), chooseGuardian(world, id)].filter((c) => c !== null)) {

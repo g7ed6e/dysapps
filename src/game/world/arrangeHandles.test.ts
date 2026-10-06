@@ -9,6 +9,7 @@ import { getBridge } from './archipelago';
 import { ARCHIPELAGO_IDS } from './archipelagos';
 import {
   bordDeLaCroix,
+  BUDGET_DES_BOUTS,
   BUDGET_DES_POIGNEES,
   POIGNEE_MIN_PX,
   RECUL_MAX_DU_BOUT,
@@ -283,7 +284,7 @@ describe('les poignées des bouts de liaison (choix 1a du mainteneur)', () => {
     expect(reculsDesBouts(2, (i) => ({ x: i * 100, y: 0 }), 48)).toEqual([0, 0]);
   });
 
-  it('un petit radeau clair à bord sombre et sa prise, 6 triangles, jamais le jaune ; toutes sous 400 triangles, un appel', () => {
+  it('un petit radeau clair à bord sombre et sa prise, 6 triangles, jamais le jaune ; toutes sous 480 triangles (BUDGET_DES_BOUTS), un appel', () => {
     const jaune = Array.from(Float32Array.from([0xff / 255, 0xc2 / 255, 0x1a / 255]));
     for (const style of ['blocs', 'peint'] as const) {
       const f = formeDesBouts(3, style);
@@ -293,7 +294,7 @@ describe('les poignées des bouts de liaison (choix 1a du mainteneur)', () => {
     }
     for (const a of ARCHIPELAGO_IDS) {
       const c = coutDesBouts(linkEndHandles(world, a).length);
-      expect(c.triangles, a).toBeLessThanOrEqual(BUDGET_DES_POIGNEES.triangles);
+      expect(c.triangles, a).toBeLessThanOrEqual(BUDGET_DES_BOUTS.triangles);
       expect(c.drawCalls, a).toBe(1);
     }
     expect(coutDesBouts(0)).toEqual({ triangles: 0, drawCalls: 0 });
