@@ -599,7 +599,7 @@ export interface RechercheDuCadrage {
 }
 
 /** Une recherche neuve, pour le placement d'un cadrage (voir `RechercheDuCadrage`). */
-export function rechercheDuCadrage(): RechercheDuCadrage {
+function rechercheDuCadrage(): RechercheDuCadrage {
   return { essais: 0, places: 0, deja: new Map(), autour: new Map() };
 }
 

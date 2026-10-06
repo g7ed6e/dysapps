@@ -60,7 +60,7 @@ function tourner(cubes: CubeDeModele[], quarts = 0): CubeDeModele[] {
  * trois quarts de tour, elle montre son flanc, la tête vers l'ouest, l'œil, le bec et le rameau du côté de la caméra
  * (DA, relecture des planches, HG-3).
  */
-export const QUARTS_DE_TOUR_DU_GARDIEN: Partial<Record<BiomeId, number>> = { 'history-3e-twentieth-century': 3 };
+const QUARTS_DE_TOUR_DU_GARDIEN: Partial<Record<BiomeId, number>> = { 'history-3e-twentieth-century': 3 };
 
 const personnagesTournes = new Map<string, CubeDeModele[]>();
 
