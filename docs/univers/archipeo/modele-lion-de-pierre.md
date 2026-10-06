@@ -33,20 +33,20 @@ Le prix : un nouveau modèle demande de relancer `npm run rendu:lion` (`--check`
 
 Le script tourne le modèle d’un demi-tour (le museau vers −Z, le visage des sentinelles), le pose les pieds en 0, centré, à **six blocs de haut, dalle comprise** (décision du mainteneur du 1er octobre 2026), soude les sommets, puis applique les retouches du directeur artistique et du référent dys, sans toucher à la forme :
 
-- **De trois-quarts, la tête vers l’élève**, comme sur le concept (vu de l’avant gauche, le corps qui file à droite) : au défi, la caméra est déjà de trois-quarts, il y reste droit ; dans le monde, où la caméra regarde l’îlot de face, il se tourne de 35° (`tour`, comme la Diligence).
+- **La dalle sur l’axe nord-sud**, dans le monde comme au défi (décision du mainteneur du 6 octobre 2026) : le modèle n’est jamais tourné. Le modèle réduit a déjà sa dalle droite (à un demi-degré près, mesuré sur ses sommets du bas), le museau vers le nord du modèle (−Z) ; le tour de 35° qu’il prenait dans le monde est retiré. Au défi, la caméra de trois-quarts le montre comme le concept.
 - **Deux modèles** (décision du mainteneur) : **700 triangles dans le monde** (la sentinelle de la Carte et de l’archipel, à l’échelle des sentinelles, environ quatre blocs de haut), **1 500 au gros plan de l’écran du défi**. Dans le monde, il tient dans la place du Gardien en cubes de son îlot (7 × 8 cases).
 - **Le lichen en taches.** Le lichen épars de TRELLIS.2 est oublié ; quatre taches au défi (deux sur les mèches de droite vues de la caméra du défi, une en bas à gauche de la crinière, une grande sur l’épaule), la seule tache de l’épaule dans le monde ; jamais à moins de 0,25 bloc d’une veine.
 - **La crinière qui se rallume.** Au défi, huit veines d’or sur la crête des huit mèches de devant (deux au sommet de la tête, deux par joue : la tempe et le bas de la joue, deux sur le poitrail), de la racine vers la pointe. Elles suivent les arêtes saillantes du maillage ; le jeu y plie un ruban d’or à cheval sur la crête, posé sur un serti sombre plus large (#403D38, qui ne s’allume jamais). À hauteur des yeux, une veine horizontale près du museau se lisait comme une moustache : les mèches de la joue choisies sont celles de la tempe et du bas de la joue. Dans le monde, à 700 triangles, pas de veines : la pierre qui se réchauffe suffit.
 - **Le contraste de l’or** (référent dys). En niveaux de gris, l’or #FFD866 ne fait que 2,5:1 sur la pierre grise et 1,6:1 sur le Sable de la pierre rallumée ; sur son serti, 7,9:1. Le serti déborde de l’or des deux côtés : l’or se lit à plus de 3:1, éteint, en cours de défi ou rallumé (`statues/lion.test.ts`). L’allumage est le fondu commun des sentinelles, sans flash.
 - **Les orbites** sont les deux facettes déjà sombres des yeux du modèle, peintes de la couleur des orbites (#45423D, jamais allumée) : ni creusées davantage, ni gueule ouverte.
-- **Le quai.** Par défaut, la dalle du concept sert de quai : pas de socle octogonal commun, pas de flamme (proposition du directeur artistique, que le mainteneur tranchera). `QUAI_DU_LION = 'socle'` (`statues/lion.ts`) pose à la place le Lion et sa dalle, réduits, sur le socle commun, la flamme devant ses pattes.
+- **Le quai : la dalle et la flamme** (décision du mainteneur du 6 octobre 2026). La dalle du concept sert de quai, sans socle octogonal commun ; la coupe et la flamme communes, à 0,8, sont posées sur la dalle, au milieu, entre son bord et le museau (`FLAMME_SUR_LA_DALLE`, `statues/lion.ts`), et s’allument avec les veines ; la dalle reste de pierre. 28 triangles de plus, aux deux modèles. `QUAI_DU_LION = 'socle'` poserait encore le Lion et sa dalle, réduits, sur le socle commun.
 
 ## Le budget
 
 | | Triangles | Appels de dessin |
 | --- | --- | --- |
-| Le Lion dans le monde | 700 (183 pour le Lion redessiné) | 0 de plus : fondu avec les neuf autres Gardiens |
-| Les dix Gardiens des Premiers Rivages | 2 243 (1 726 avant) ; enveloppe portée de 1 800 à 2 300 | 1 |
-| Le Lion au défi | 1 692 : 1 500, plus 192 pour l’or et le serti des huit veines (24 arêtes de crête) | 1 (la scène du défi) |
+| Le Lion dans le monde | 728 : 700, plus 28 pour la coupe et la flamme (183 pour le Lion redessiné) | 0 de plus : fondu avec les neuf autres Gardiens |
+| Les dix Gardiens des Premiers Rivages | 2 271 (1 726 avant) ; enveloppe portée de 1 800 à 2 300 | 1 |
+| Le Lion au défi | 1 720 : 1 500, plus 192 pour l’or et le serti des huit veines (24 arêtes de crête) et 28 pour la coupe et la flamme | 1 (la scène du défi) |
 
 La somme des enveloppes des Premiers Rivages passe de 58 500 à 59 000, sous les 60 000 des tablettes.

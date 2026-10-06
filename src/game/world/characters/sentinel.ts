@@ -76,10 +76,12 @@ export interface Statue {
    */
   tour?: Record<OuSeMontre, number>;
   /**
-   * `false` : la statue apporte son propre quai et n'a ni le socle commun ni la flamme (le Lion de pierre, sur la dalle
-   * de son concept) ; ses pièces sont alors la sculpture et les veines.
+   * `false` : la statue apporte son propre quai et n'a pas le socle commun (le Lion de pierre, sur la dalle de son
+   * concept) ; ses pièces sont alors la sculpture et les veines, et la flamme si `flamme` dit où elle brûle.
    */
   socle?: boolean;
+  /** Sans socle commun : où se pose le pied de la coupe et de sa flamme (sur la dalle du Lion), et leur échelle. */
+  flamme?: { pied: V3; echelle: number };
   /** La statue a un modèle propre au défi, plus fin (le Lion de pierre : 1 500 triangles au lieu de 700). */
   grosPlan?: boolean;
 }
@@ -101,6 +103,16 @@ export const FOYER = { z: -1.3, haut: 1.12 } as const;
 /** Le socle octogonal, le même pour toutes les sentinelles, et la coupe du foyer. */
 function socle(T: Trace, a: Atelier): void {
   fuseau(T, SOCLE, 8, a.moussue((k, j) => k === 0 && (j === 0 || j === 3 || j === 5)), { bas: false });
+  coupe(T, a);
+}
+
+/** La coupe du foyer et sa flamme posées ailleurs que sur le socle commun : le pied de la coupe en `pied`, à l'échelle `e`. */
+function horsDuSocle(T: Trace, { pied, echelle: e }: { pied: V3; echelle: number }): Trace {
+  return pose(T, (p) => [pied[0] + p[0] * e, pied[1] + (p[1] - 0.9) * e, pied[2] + (p[2] - FOYER.z) * e]);
+}
+
+/** La coupe du foyer, sur le devant du socle commun ou sur le quai d'une statue. */
+function coupe(T: Trace, a: Atelier): void {
   fuseau(
     T,
     [
@@ -351,11 +363,18 @@ function piecesDeSentinelle(s: Statue, { ou = 'monde', veines = 1 }: { ou?: OuSe
   const tour = s.tour?.[ou] ?? 0;
   const tourne = repere([0, 0, 0], 0, tour, 0);
   const R = (T: Trace): Trace => (tour ? pose(T, tourne) : T);
-  if (s.socle === false)
+  if (s.socle === false) {
+    const f = s.flamme;
+    const sculpture = (T: Trace, pot: Pot) => {
+      s.sculpture(R(T), a(pot));
+      if (f) coupe(R(horsDuSocle(T, f)), a(pot));
+    };
     return [
-      { nom: 'sculpture', pivot: [0, 0, 0], dessiner: (T, pot) => s.sculpture(R(T), a(pot)) },
+      { nom: 'sculpture', pivot: [0, 0, 0], dessiner: sculpture },
+      ...(f ? [{ nom: 'flamme', pivot: tourne([f.pied[0], f.pied[1] + (FOYER.haut - 0.9) * f.echelle, f.pied[2]]), lueur: 'allumage' as const, dessiner: (T: Trace, pot: Pot) => flamme(R(horsDuSocle(T, f)), a(pot)) }] : []),
       { nom: 'veines', pivot: [0, 0, 0], lueur: 'allumage', dessiner: (T, pot) => s.veines(R(T), a(pot)) },
     ];
+  }
   return [
     { nom: 'socle', pivot: [0, 0, 0], dessiner: (T, pot) => socle(T, a(pot)) },
     { nom: 'sculpture', pivot: [0, HAUT_DU_SOCLE, 0], dessiner: (T, pot) => s.sculpture(R(T), a(pot)) },

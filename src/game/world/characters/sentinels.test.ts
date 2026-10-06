@@ -88,7 +88,7 @@ const BASSES: Partial<Record<BiomeId, [number, number]>> = {
 };
 /**
  * Les sentinelles tirées d'un modèle importé (le Lion de pierre, ./statues/lion.ts) : couchées sur leur propre quai, sans
- * le socle commun ni la flamme, plus longues que les cinq cases (leur emprise est tenue par ./lion.test.ts), et la
+ * le socle commun, la flamme commune posée sur le quai, plus longues que les cinq cases (leur emprise est tenue par ./lion.test.ts), et la
  * crinière comme lueur (huit veines, au défi seulement). Leurs règles propres sont dans ./lion.test.ts.
  */
 const IMPORTEES: BiomeId[] = ['english-6e-vocabulary'];
@@ -218,10 +218,10 @@ describe('Les Gardiens en sentinelles', () => {
       });
 
       if (importee)
-        it('deux pièces figées, la sculpture et les veines ; seules les veines s’allument, et elles seules sont de lueur', () => {
-          expect(f.table.map((p) => p.nom)).toEqual(['sculpture', 'veines']);
-          expect(f.table.map((p) => p.lueur ?? null)).toEqual([null, 'allumage']);
-          for (const g of [f, sentinelleAuDefi(b.id)]) for (let t = 0; t < nbTriangles(g); t++) expect(g.teintes[t] === LUEUR).toBe(g.table[g.pieces[t]].nom === 'veines');
+        it('trois pièces figées, la sculpture, la flamme et les veines ; seules la flamme et les veines s’allument, et elles seules sont de lueur', () => {
+          expect(f.table.map((p) => p.nom)).toEqual(['sculpture', 'flamme', 'veines']);
+          expect(f.table.map((p) => p.lueur ?? null)).toEqual([null, 'allumage', 'allumage']);
+          for (const g of [f, sentinelleAuDefi(b.id)]) for (let t = 0; t < nbTriangles(g); t++) expect(g.teintes[t] === LUEUR).toBe(['flamme', 'veines'].includes(g.table[g.pieces[t]].nom));
         });
       else
       it('quatre pièces figées ; seules la flamme et les veines s’allument, et elles seules sont de lueur', () => {
@@ -272,8 +272,8 @@ describe('Les Gardiens en sentinelles', () => {
 
 describe('Les sentinelles qui se tournent pour se montrer de profil (la Diligence)', () => {
   const tournees = BIOMES.filter((b) => STATUES[b.id].tour);
-  it('la Diligence, et le Soleil et le Papillon de cuivre, qu’on ne doit pas voir par la tranche ; le Lion de pierre, de trois-quarts dans le monde', () =>
-    expect(tournees.map((b) => b.id).sort()).toEqual(['english-6e-vocabulary', 'lv2-3e-travel', 'lv2-4e-daily-life', 'lv2-5e-introductions']));
+  it('la Diligence, et le Soleil et le Papillon de cuivre, qu’on ne doit pas voir par la tranche (le Lion de pierre ne tourne jamais : sa dalle suit l’axe nord-sud)', () =>
+    expect(tournees.map((b) => b.id).sort()).toEqual(['lv2-3e-travel', 'lv2-4e-daily-life', 'lv2-5e-introductions']));
 
   it('le Soleil de cuivre, dans le monde : de face (à 33° au plus) pour la caméra du Jardin (72°), du Théâtre (20 à 42°) et du rallumage (85°) ; dans les cinq cases', () => {
     const f = sentinellePeinte('lv2-4e-daily-life');

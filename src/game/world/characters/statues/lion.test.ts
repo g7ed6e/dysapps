@@ -44,17 +44,39 @@ describe('Le Lion de pierre, tiré de son modèle (Baie des mots, 6e)', () => {
   const monde = sentinellePeinte(ID);
   const defi = sentinelleAuDefi(ID);
 
-  it('est le Gardien de la Baie des mots ; sa dalle sert de quai, sans socle commun ni flamme (proposition du directeur artistique)', () => {
+  it('est le Gardien de la Baie des mots ; sa dalle sert de quai, sans socle commun, la flamme commune devant ses pattes (décision du mainteneur du 06/10/2026)', () => {
     expect(STATUES[ID]).toBe(LION_DE_PIERRE);
     expect(QUAI_DU_LION).toBe('dalle');
     expect(LION_DE_PIERRE.socle).toBe(false);
-    for (const f of [monde, defi]) expect(f.table.map((p) => p.nom)).toEqual(['sculpture', 'veines']);
+    for (const f of [monde, defi]) expect(f.table.map((p) => p.nom)).toEqual(['sculpture', 'flamme', 'veines']);
+  });
+
+  it('la flamme brûle sur la dalle, entre son bord et le museau, sous la tête ; la coupe est de pierre', () => {
+    for (const f of [monde, defi]) {
+      const flamme = triangles(f, 'flamme');
+      expect(flamme.length).toBeGreaterThan(0);
+      for (const t of flamme) for (let k = 0; k < 3; k++) {
+        const [x, y, z] = sommet(f, t, k);
+        expect(Math.abs(x)).toBeLessThan(0.3);
+        expect(z).toBeGreaterThan(-4.2);
+        expect(z).toBeLessThan(-3.6);
+        expect(y).toBeGreaterThan(1.2);
+        expect(y).toBeLessThan(2.2);
+      }
+    }
+  });
+
+  it('la dalle a ses bords sur l’axe nord-sud, dans le monde comme au défi : le modèle n’est jamais tourné (décision du mainteneur du 06/10/2026)', () => {
+    expect(LION_DE_PIERRE.tour).toBeUndefined();
   });
 
   it('deux modèles : 700 triangles dans le monde, sans veines ; 1 500 au défi, plus ses huit veines serties', () => {
     expect(LION_DU_MONDE.triangles.length / 3).toBe(700);
     expect(LION_DU_DEFI.triangles.length / 3).toBe(1_500);
-    expect(monde.pieces.length).toBe(700);
+    // La coupe et sa flamme ajoutent les mêmes quelques triangles aux deux modèles.
+    const feu = monde.pieces.length - 700;
+    expect(feu).toBeGreaterThan(0);
+    expect(feu).toBeLessThanOrEqual(30);
     expect(triangles(monde, 'veines')).toEqual([]);
     expect(LION_DU_MONDE.veines).toEqual([]);
     expect(LION_DU_DEFI.veines.length).toBe(8);
@@ -62,7 +84,7 @@ describe('Le Lion de pierre, tiré de son modèle (Baie des mots, 6e)', () => {
     const aretes = LION_DU_DEFI.veines.reduce((n, v) => n + v.length / 18, 0);
     expect(triangles(defi, 'veines', LUEUR).length).toBe(aretes * 4);
     expect(triangles(defi, 'sculpture', SENTINELLE.serti).length).toBe(aretes * 4);
-    expect(defi.pieces.length).toBe(1_500 + aretes * 8);
+    expect(defi.pieces.length).toBe(1_500 + aretes * 8 + feu);
     // Le gros plan reste léger : moins de 1 800 triangles, veines comprises.
     expect(defi.pieces.length).toBeLessThan(1_800);
   });

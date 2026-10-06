@@ -11,23 +11,21 @@ import { pose, type Peindre, type Trace, type V3 } from '../painted';
 import { HAUT_DU_SOCLE, type Atelier, type Statue } from '../sentinel';
 import { LION_DU_DEFI, LION_DU_MONDE, type ModeleDuLion } from './lionData';
 
-/**
- * Le Lion se tourne pour être vu de trois-quarts, la tête vers l'élève, comme sur son concept (de l'avant gauche, le
- * corps qui file à droite) : au défi, la caméra est déjà de trois-quarts (Guardians.tsx, `cameraDirection` [−0,55 ;
- * −0,85]), il y reste droit ; dans le monde, la caméra regarde l'îlot de face, il s'y tourne de 35° (le museau vers +X).
- */
-const TOUR_DU_LION = { monde: -0.61, defi: 0 } as const;
 
 /** La hauteur du Lion, dalle comprise, en blocs du modèle (sous les huit de la hauteur commune). */
 export const HAUTEUR_DU_LION = 6;
 
 /**
- * Sur quoi le Lion se couche : la dalle de son concept, qui sert de quai, sans socle commun (proposition du directeur
- * artistique, à trancher par le mainteneur), ou le socle octogonal commun et sa flamme, le Lion et sa dalle réduits pour
- * y tenir. Changer cette constante suffit.
+ * Sur quoi le Lion se couche : la dalle de son concept, qui sert de quai, et la flamme commune devant ses pattes
+ * (décision du mainteneur du 06/10/2026), ou le socle octogonal commun et sa flamme, le Lion et sa dalle réduits pour y
+ * tenir. Changer cette constante suffit. Les bords de la dalle suivent l'axe nord-sud, dans le monde comme au défi
+ * (décision du mainteneur du 06/10/2026) : le modèle n'est jamais tourné.
  */
 export type QuaiDuLion = 'dalle' | 'socle';
 export const QUAI_DU_LION = 'dalle' as QuaiDuLion;
+
+/** Sur la dalle : le pied de la coupe et de la flamme, au milieu, entre le bord de la dalle et le museau, et leur échelle. */
+const FLAMME_SUR_LA_DALLE = { pied: [0, 1.21, -3.88] as V3, echelle: 0.8 };
 
 /**
  * Sur le socle commun : le Lion réduit (sa dalle tient sur l'octogone) et reculé derrière le foyer, pour que la flamme
@@ -110,8 +108,8 @@ export const LION_DE_PIERRE: Statue = {
   nom: 'le Lion de pierre',
   allume: 'la crinière : huit veines d’or, de la racine vers la pointe des mèches',
   socle: QUAI_DU_LION === 'socle',
+  ...(QUAI_DU_LION === 'dalle' ? { flamme: FLAMME_SUR_LA_DALLE } : {}),
   grosPlan: true,
-  tour: TOUR_DU_LION,
   sculpture: sculptureDuLion,
   veines: veinesDuLion,
 };
