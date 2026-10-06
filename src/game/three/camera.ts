@@ -47,10 +47,11 @@ export interface Camera extends PartieDeLaScene {
   glisser(dx: number, dz: number): void;
   /**
    * Remet le décalage à zéro : la caméra revient en douceur à son cadrage (d'un coup, avec moins d'animations). Le zoom
-   * du monde n'est effacé qu'avec `aussiLeZoom` (le bouton « Recentrer ») : toucher une cible le garde.
+   * du monde n'est effacé qu'avec `aussiLeZoom` (le bouton « Recentrer »), et hors de la Carte : toucher une cible le
+   * garde, et « Recentrer » sur la Carte ne remet que la Carte.
    */
   recentrer(aussiLeZoom?: boolean): void;
-  /** La vue a été déplacée (un décalage non nul) ou zoomée. */
+  /** La vue a été déplacée (un décalage non nul) ou zoomée (sur la Carte, seul son zoom compte, pas celui du monde). */
   decale(): boolean;
   /** Le décalage de la vue glissée, en cases sur le plan horizontal (zéro : la vue à son cadrage). */
   decalage(): Readonly<{ x: number; z: number }>;
@@ -304,9 +305,9 @@ export function creerCamera(
     },
     recentrer: (aussiLeZoom = false) => {
       zero();
-      if (aussiLeZoom) zoomDuMonde = 1;
+      if (aussiLeZoom && !instant.carte) zoomDuMonde = 1;
     },
-    decale: () => estDecale(decalage) || zoom > 1 + 1e-6 || Math.abs(zoomDuMonde - 1) > 1e-6,
+    decale: () => estDecale(decalage) || zoom > 1 + 1e-6 || (!instant.carte && Math.abs(zoomDuMonde - 1) > 1e-6),
     decalage: () => decalage,
     zoomer: (facteur, vers) => {
       if (!(facteur > 0)) return false;

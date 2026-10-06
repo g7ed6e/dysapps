@@ -5,6 +5,7 @@
 // ce composant les crée et leur passe les props ; les gestes (./gestures.ts) et la boucle d'image (./loop.ts) sont à part.
 import { useEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
+import { estDecale } from './drag';
 import type { BiomeId } from '../biomes';
 import { cadreDeLaLiaison, ileDeLaVueGlissee, islandCenter, worldBounds } from '../world/terrain';
 import { getBridge } from '../world/archipelago';
@@ -237,7 +238,7 @@ export default function WorldCanvas({
     const vise = { archipel: '', ici: '', x: NaN, z: NaN, ile: null as BiomeId | null };
     const ileVisee = () => {
       const ici = derniers.current.focus.island ?? derniers.current.home;
-      if (derniers.current.carte || !ici || !cadrage.decale()) return null;
+      if (derniers.current.carte || !ici || !estDecale(cadrage.decalage())) return null;
       const d = cadrage.decalage();
       const x = Math.round(d.x), z = Math.round(d.z);
       if (x !== vise.x || z !== vise.z || ici !== vise.ici || archRef.current !== vise.archipel) {
@@ -700,6 +701,6 @@ export default function WorldCanvas({
   }, [focus.island, focus.seq]);
 
   return (
-    <div ref={host} className={`voxel-canvas ${className ?? ''}`.trim()} data-rendu={rendu} role="img" aria-label={`${label}. ${onVueDeplacee ? 'Faire glisser pour explorer. ' : ''}Au clavier : les flèches vont à l'île voisine${map ? ' ; les touches plus et moins rapprochent ou éloignent la Carte' : ''}.`} />
+    <div ref={host} className={`voxel-canvas ${className ?? ''}`.trim()} data-rendu={rendu} role="img" aria-label={`${label}. ${onVueDeplacee ? 'Faire glisser pour explorer. ' : ''}Au clavier : les flèches vont à l'île voisine${map || onVueDeplacee ? ' ; les touches plus et moins rapprochent ou éloignent la vue' : ''}.`} />
   );
 }

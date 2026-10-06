@@ -345,6 +345,17 @@ describe('La Carte dans la place libre (DA-31)', () => {
     cam.recentrer();
     cam.animer!(0.4, 0.016, true);
     expect(camera.position.distanceTo(cam.cible)).toBeCloseTo(d1, 3);
+    // Sur la Carte, le zoom du monde ne compte pas, et « Recentrer » ne l'efface pas ; il revient à la fermeture.
+    derniers.current = { ...derniers.current, carte: true };
+    instant.carte = true;
+    cam.animer!(0.41, 0.016, true);
+    expect(cam.decale()).toBe(false);
+    cam.recentrer(true);
+    derniers.current = { ...derniers.current, carte: false };
+    instant.carte = false;
+    cam.animer!(0.42, 0.016, true);
+    expect(cam.decale()).toBe(true);
+    expect(camera.position.distanceTo(cam.cible)).toBeCloseTo(d1, 3);
     cam.recentrer(true);
     cam.animer!(0.5, 0.016, true);
     expect(cam.decale()).toBe(false);

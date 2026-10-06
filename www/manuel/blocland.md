@@ -36,7 +36,7 @@ Pour explorer, on peut **faire glisser le monde** d’un doigt (ou à la souris)
 
 On peut aussi **zoomer sur le monde** en pinçant à deux doigts (à l’ordinateur, la molette, le pavé tactile ou les touches + et −) : le point sous les doigts reste sous les doigts, le nord ne tourne pas. La vue recule un peu, jusqu’à montrer l’île et ses voisines (tout l’archipel se voit sur la Carte), ou s’approche jusqu’au bonhomme et aux blocs en gros plan. Le zoom reste quand on va d’une île à l’autre ; le bouton **Recentrer** le remet comme au départ. Il n’y a pas de bouton pour zoomer : tout reste faisable sans zoomer.
 
-Dès que la vue a bougé, le bouton **Recentrer** apparaît en haut à droite, sous le bouton Menu : un rond clair qui porte ton visage (la tête du bonhomme dans Blocland, son visage peint dans Archipéo), le même que le médaillon « toi » de la Carte. Il ramène la caméra en douceur. Il s’efface tant qu’une bulle est ouverte en haut de l’écran, pour ne jamais cacher son bouton Fermer. Toucher une autre île, ouvrir la Carte ou envoyer le bonhomme sur une autre île recentre aussi la vue ; le promener sur son île ne la recentre pas. Le glissé n’est pas possible pendant un trajet d’une île à l’autre ou un voyage. Tout reste faisable sans glisser ni zoomer, par un simple toucher.
+Dès que la vue a bougé, le bouton **Recentrer** apparaît en haut à droite, sous le bouton Menu : un rond clair qui porte ton visage (la tête du bonhomme dans Blocland, son visage peint dans Archipéo), le même que le médaillon « toi » de la Carte. Il ramène la caméra en douceur, au zoom de départ. Il s’efface tant qu’une bulle est ouverte en haut de l’écran, pour ne jamais cacher son bouton Fermer. Toucher une autre île, ouvrir la Carte ou envoyer le bonhomme sur une autre île recentre aussi la vue ; le promener sur son île ne la recentre pas. Le zoom, lui, reste : seul le bouton le remet. Le glissé n’est pas possible pendant un trajet d’une île à l’autre ou un voyage. Tout reste faisable sans glisser ni zoomer, par un simple toucher.
 
 ### Les fiches
 
@@ -497,7 +497,7 @@ Les sons sont générés par le code, sans aucun fichier : à la pose, trois pou
 | Faire glisser le monde (un doigt ou la souris) | La vue se déplace, sans rotation ; le bouton « Recentrer » apparaît |
 | Pincer le monde à deux doigts (molette, touches + et −) | La vue s’approche ou recule un peu, et le reste d’une île à l’autre ; le bouton « Recentrer » apparaît |
 | Pincer la Carte à deux doigts (molette, touches + et −) | La Carte se zoome, de tout l’archipel à une île en gros plan ; le bouton « Recentrer » apparaît |
-| Bouton « Recentrer » (en haut à droite ; le rond à ton visage) | La caméra revient sur l’île ou le bonhomme |
+| Bouton « Recentrer » (en haut à droite ; le rond à ton visage) | La caméra revient sur l’île ou le bonhomme, au zoom de départ |
 | Bouton Menu (trois traits, en haut à droite) | Le menu du village, en plein écran ; la croix ou Échap le referment |
 | Toucher la salle des trophées (ou un trophée) | Le bonhomme y marche, le panneau de la salle (le profil et les succès) s’ouvre |
 | Bouton Carte | L’archipel vu du ciel, l’état de chaque île, la prochaine destination sous la bulle bordée d’or, toi dans le médaillon |
