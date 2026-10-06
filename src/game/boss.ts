@@ -128,3 +128,8 @@ export async function bossDef(biome: BiomeDef, state: GameState, rng: () => numb
     adaptive: { promoteAt: 1.1, demoteAt: -1 },
   };
 }
+
+/** « Chasse au son » : un titre de mission cité dans une phrase. */
+export function quoted(titre: string): string {
+  return `«\u00a0${titre}\u00a0»`;
+}

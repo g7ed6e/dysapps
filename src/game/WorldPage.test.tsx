@@ -1032,7 +1032,7 @@ describe('les fiches du monde (lot 2 de « Toucher le monde »)', () => {
     renderAt('/adventure');
     await user.click(screen.getByRole('button', { name: 'Toucher le Gardien de la Forêt' }));
     const f = screen.getByRole('dialog', { name: 'Le Grand Chêne' });
-    expect(f).toHaveTextContent('Pour ouvrir son défi, gagne 2 étoiles dans Abattage syllabique, Chasse au son et Rimes-échelle.');
+    expect(f).toHaveTextContent('Pour ouvrir son défi, gagne 2 étoiles dans « Abattage syllabique », « Chasse au son » et « Rimes-échelle ».');
     expect(within(f).queryByRole('link', { name: /Rallumer/ })).not.toBeInTheDocument();
     cleanup();
     const { getBiome, missionsJouables } = await import('./biomes');

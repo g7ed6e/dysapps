@@ -35,7 +35,7 @@ function ready(biomeId: string) {
 it('la page du biome montre le Gardien verrouillé, puis prêt quand chaque mission a deux étoiles', () => {
   renderAt('/adventure/french-6e-phonology');
   expect(screen.getByText('Le Grand Chêne')).toBeInTheDocument();
-  expect(screen.getByText(/2 étoiles dans : Abattage syllabique, Chasse au son, Rimes-échelle/)).toBeInTheDocument();
+  expect(screen.getByText(/2 étoiles dans : « Abattage syllabique », « Chasse au son », « Rimes-échelle »/)).toBeInTheDocument();
   expect(screen.queryByRole('link', { name: /Le Grand Chêne/ })).not.toBeInTheDocument();
 });
 
@@ -44,7 +44,7 @@ it('sans les étoiles, le Gardien refuse et renvoie aux missions', async () => {
   await loaded();
   expect(screen.getByRole('heading', { name: /Grand Chêne/ })).toBeInTheDocument();
   // Une seule phrase : ce qu'il y a à faire, jamais ce qui manque (GD-8).
-  expect(document.body.textContent).toMatch(/Pour ouvrir son défi, gagne 2 étoiles dans Abattage syllabique, Chasse au son et Rimes-échelle\./);
+  expect(document.body.textContent).toMatch(/Pour ouvrir son défi, gagne 2 étoiles dans «\u00a0Abattage syllabique\u00a0», «\u00a0Chasse au son\u00a0» et «\u00a0Rimes-échelle\u00a0»\./);
   expect(document.body.textContent).not.toMatch(/manque/);
   expect(screen.getByRole('link', { name: /Voir les missions/ })).toBeInTheDocument();
 });
