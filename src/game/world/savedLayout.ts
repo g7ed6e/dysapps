@@ -97,9 +97,9 @@ function readLanding(v: unknown): LayoutLanding | null {
  */
 export const LAYOUT_LAST_SPOT: Readonly<Record<ArchipelagoId, Readonly<{ x: number; y: number }>>> = {
   '6e': { x: 48, y: 36 },
-  '5e': { x: 42, y: 28 },
-  '4e': { x: 42, y: 28 },
-  '3e': { x: 52, y: 28 },
+  '5e': { x: 42, y: 34 },
+  '4e': { x: 42, y: 35 },
+  '3e': { x: 52, y: 30 },
 };
 
 /** Une mission du lieu : la clé d'une borne est « lieu:mission », la mission parmi celles du lieu (toutes LV2 comprises). */

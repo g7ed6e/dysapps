@@ -69,6 +69,15 @@ export const TEXTURES: Record<string, string> = {
   [BLOCKS[BLOC.fossile].side]: 'fossile',
   [BLOCKS[BLOC.aimant].side]: 'aimant',
   [BLOCKS[BLOC.carton].side]: 'carton',
+  [BLOCKS[BLOC.strate].side]: 'strate',
+  [BLOCKS[BLOC.sel].side]: 'sel',
+  [BLOCKS[BLOC.bambou].side]: 'bambou',
+  [BLOCKS[BLOC.petale].side]: 'petale',
+  [BLOCKS[BLOC.bobine].side]: 'bobine',
+  [BLOCKS[BLOC.liege].side]: 'liege',
+  [BLOCKS[BLOC.savon].side]: 'savon',
+  [BLOCKS[BLOC.ressort].side]: 'ressort',
+  [BLOCKS[BLOC.cire].side]: 'cire',
   [BLOCKS[BLOC.poutre].side]: 'poutre',
   [BLOCKS[BLOC.vitrail].side]: 'vitrail',
   [BLOCKS[BLOC.engrenage].side]: 'engrenage',
@@ -138,7 +147,7 @@ const estIndexDEcole = (index: number) =>
 
 /**
  * Les îles entrées au jeu au milieu de la liste des îles (`BIOMES`) : les îles d'histoire-géographie (HG-2 en 6e, HG-3 de
- * la 5e à la 3e) et de sciences de 6e (SC-2), rangées avant les îles de LV2. La forme du plateau d'une île se tire de son rang (`groundHeight`) ; compté sans elles, le
+ * la 5e à la 3e) et de sciences (SC-2 en 6e, SC-3 de la 5e à la 3e), rangées avant les îles de LV2. La forme du plateau d'une île se tire de son rang (`groundHeight`) ; compté sans elles, le
  * rang des îles d'avant ne bouge pas, ni leur relief.
  */
 const VENUES_AU_MILIEU: readonly string[] = [
@@ -155,6 +164,16 @@ const VENUES_AU_MILIEU: readonly string[] = [
   'geography-4e-globalization',
   'history-3e-twentieth-century',
   'geography-3e-france',
+  // Les îles de sciences de 5e à 3e (SC-3, DA, 6 octobre 2026).
+  'life-earth-sciences-5e-active-planet',
+  'physics-chemistry-5e-matter-universe',
+  'technology-5e-design',
+  'life-earth-sciences-4e-cells-evolution',
+  'physics-chemistry-4e-signals-circuits',
+  'technology-4e-modeling',
+  'life-earth-sciences-3e-human-body',
+  'physics-chemistry-3e-motion-energy',
+  'technology-3e-digital',
 ];
 
 let rangsDuDessin: readonly number[] | undefined;

@@ -131,7 +131,8 @@ function yawDuLieu(home: BiomeId): number {
  * Pointe des paysages (6e, HG-2), au bout du second rang, puis la Vallée du vivant, le Laboratoire des éléments et le
  * Hangar des inventions (6e, SC-2), aux places qui restaient : le dessin des autres îles ne change pas ; et les six îles
  * d'histoire-géographie de 5e à 3e (HG-3) : comptées, celles des Îles Brumeuses, au-delà du cadre d'avant, faisaient
- * tourner toutes les caméras du 5e de plusieurs degrés (et avec elles la place des petites constructions). Le Relais des
+ * tourner toutes les caméras du 5e de plusieurs degrés (et avec elles la place des petites constructions) ; de même les
+ * neuf îles de sciences de 5e à 3e (SC-3). Le Relais des
  * voyageurs (5e) et le Jardin des heures (4e) y comptent : leurs lots ont validé avec eux le cadrage de leur archipel,
  * qu'on ne rouvre pas.
  */
@@ -148,6 +149,15 @@ export const HORS_DE_LA_COLONNE: readonly BiomeId[] = [
   'geography-4e-globalization',
   'history-3e-twentieth-century',
   'geography-3e-france',
+  'life-earth-sciences-5e-active-planet',
+  'physics-chemistry-5e-matter-universe',
+  'technology-5e-design',
+  'life-earth-sciences-4e-cells-evolution',
+  'physics-chemistry-4e-signals-circuits',
+  'technology-4e-modeling',
+  'life-earth-sciences-3e-human-body',
+  'physics-chemistry-3e-motion-energy',
+  'technology-3e-digital',
 ];
 
 const colonnes = new Map<ArchipelagoId, number>();

@@ -23,13 +23,16 @@ import { rectangleDeLIlot, rectangleDeLIlotAutour } from './terrain/islets';
  * Glacier des relatifs, 52 cases de large tourné avec son monument, qu'aucune place libre ne tient), 168 × 112 aux Anciens Ateliers (redessinés : ils étaient en ligne ; leur cadre tient
  * les côtes de la Gare et de l'île de la LV2, aux deux bouts ; chaque lieu mobile y tourne, sauf la Gare du futur,
  * 37 × 28 cases tournée, qu'aucune place libre ne tient : `SANS_PLACE`, arrange.test.ts), 208 × 112 aux Îles
- * du Ciel (leur arc, de l'artiste technique 3D).
+ * du Ciel (leur arc, de l'artiste technique 3D). Les îles de sciences de 5e à 3e (SC-3) : chaque cadre n'avait plus qu'une
+ * place libre ; il s'approfondit vers le fond, juste assez pour un rang de plus : 168 × 136 aux Îles Brumeuses (24 cases),
+ * 168 × 140 aux Anciens Ateliers (28 cases), 208 × 120 aux Îles du Ciel (8 cases), sous les 192 × 144 des Premiers
+ * Rivages, qui tiennent sur la Carte de la tablette.
  */
 const REGION_FRAMES: Readonly<Record<ArchipelagoId, Readonly<Rectangle>>> = Object.freeze({
   '6e': Object.freeze({ x0: -20, y0: -13, x1: 172, y1: 131 }),
-  '5e': Object.freeze({ x0: 21, y0: 289, x1: 189, y1: 401 }),
-  '4e': Object.freeze({ x0: -6, y0: 584, x1: 162, y1: 696 }),
-  '3e': Object.freeze({ x0: -30, y0: 880, x1: 178, y1: 992 }),
+  '5e': Object.freeze({ x0: 21, y0: 289, x1: 189, y1: 425 }),
+  '4e': Object.freeze({ x0: -6, y0: 584, x1: 162, y1: 724 }),
+  '3e': Object.freeze({ x0: -30, y0: 880, x1: 178, y1: 1000 }),
 });
 
 /** Le cadre d'une région (`REGION_FRAMES`). */

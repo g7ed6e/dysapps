@@ -160,7 +160,7 @@ export const DANS_LE_CIEL: Record<ArchipelagoId, boolean> = { '6e': false, '5e':
 const e = (left: number, right: number, front: number, back: number) => ({ left, right, front, back });
 
 /**
- * Les quarante-deux îles, placées à la main. Les Premiers Rivages (6e) : la Forêt et la Plaine au centre. Les trois autres archipels
+ * Les cinquante et une îles, placées à la main. Les Premiers Rivages (6e) : la Forêt et la Plaine au centre. Les trois autres archipels
  * sont des bandes plus au nord (y ≈ 300, 600, 900), jamais visibles depuis la 6e : chaque archipel est sa propre scène.
  * Dans chaque archipel, l'île-port est celle dont le quai (devant, côté −y) accueille le Bloc-Navire.
  *
@@ -265,6 +265,25 @@ const STARTING_MAP: MapPlace[] = [
   { id: 'geography-4e-globalization', region: 'basses-terres', core: { x: 58, y: 676 }, altitude: 6, ext: e(2, 2, 2, 2), relief: 'plat', seed: 74 },
   { id: 'history-3e-twentieth-century', region: 'basses-terres', core: { x: -18, y: 964 }, altitude: 9, ext: e(2, 2, 2, 2), relief: 'plat', seed: 83 },
   { id: 'geography-3e-france', region: 'basses-terres', core: { x: 130, y: 964 }, altitude: 9, ext: e(2, 2, 2, 2), relief: 'plat', seed: 84 },
+  // Sciences de 5e à 3e (SC-3, DA, 6 octobre 2026) : trois îles par archipel, fermées au départ (on les relie), sur le pas
+  // des places, à quatre cases d'eau au moins de leurs voisines, l'îlot de leur Gardien devant elles ; terre plate, sans
+  // relief ni pic, comme l'histoire-géographie. Les cadres des régions n'avaient plus qu'une place libre chacun : ils
+  // s'approfondissent vers le fond (footprint.ts). Aux Îles Brumeuses, la Menuiserie des objets au coin de devant, à
+  // l'est, après le Relais (sa terre cuite loin du Comptoir et du Delta), la Prairie des climats et la Saline des mélanges
+  // au rang du fond, derrière le Bourg et le Delta ; aux Anciens Ateliers, la Source des espèces au coin de devant, à
+  // l'ouest, avant la Forge (sa terre cuite loin du Théâtre et de l'Imprimerie), la Vigie des signaux et le Bassin des
+  // maquettes au rang du fond, derrière le Cabinet et le Jardin ; aux Îles du Ciel, le Verger de la santé à côté du
+  // Kiosque (sa terre cuite loin du Belvédère et du Plateau), le Tremplin des forces entre l'Observatoire des textes et
+  // le Plateau, la Ruche des réseaux derrière le Refuge.
+  { id: 'life-earth-sciences-5e-active-planet', region: 'basses-terres', core: { x: 129, y: 405 }, altitude: 3, ext: e(2, 2, 2, 2), relief: 'plat', seed: 65 },
+  { id: 'physics-chemistry-5e-matter-universe', region: 'basses-terres', core: { x: 157, y: 405 }, altitude: 3, ext: e(2, 2, 2, 2), relief: 'plat', seed: 66 },
+  { id: 'technology-5e-design', region: 'basses-terres', core: { x: 165, y: 317 }, altitude: 3, ext: e(2, 2, 2, 2), relief: 'plat', seed: 67 },
+  { id: 'life-earth-sciences-4e-cells-evolution', region: 'basses-terres', core: { x: -2, y: 612 }, altitude: 6, ext: e(2, 2, 2, 2), relief: 'plat', seed: 75 },
+  { id: 'physics-chemistry-4e-signals-circuits', region: 'basses-terres', core: { x: 110, y: 704 }, altitude: 6, ext: e(2, 2, 2, 2), relief: 'plat', seed: 76 },
+  { id: 'technology-4e-modeling', region: 'basses-terres', core: { x: 138, y: 704 }, altitude: 6, ext: e(2, 2, 2, 2), relief: 'plat', seed: 77 },
+  { id: 'life-earth-sciences-3e-human-body', region: 'basses-terres', core: { x: 10, y: 980 }, altitude: 9, ext: e(2, 2, 2, 2), relief: 'plat', seed: 85 },
+  { id: 'physics-chemistry-3e-motion-energy', region: 'basses-terres', core: { x: 94, y: 972 }, altitude: 9, ext: e(2, 2, 2, 2), relief: 'plat', seed: 86 },
+  { id: 'technology-3e-digital', region: 'basses-terres', core: { x: 158, y: 980 }, altitude: 9, ext: e(2, 2, 2, 2), relief: 'plat', seed: 87 },
 ];
 
 /**
