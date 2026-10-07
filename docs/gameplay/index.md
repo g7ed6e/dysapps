@@ -185,6 +185,9 @@ Quand une mission change de lieu (les programmes de 2025-2026, format 4 de la pa
 - les parties dues à une mission arrivée se posent même sur un lieu fermé : elles ne se voient ni dans le monde ni sur la Carte tant que le lieu est fermé, et sont là quand il s’ouvre ;
 - les révisions d’un lieu fermé attendent son ouverture : ni le compteur ni « Mes révisions du jour » ne les comptent, et « Ma dernière mission » ne mène jamais à un lieu fermé (la suggestion la remplace) ;
 - à la migration seulement, et seulement pour une sauvegarde plus ancienne, le défi de chaque lieu touché se juge avec les missions et la progression d’avant le déplacement ; ouvert, il reste ouvert (`challengesKeptOpen`) jusqu’à ce qu’il soit réussi. Une partie neuve garde la règle entière : deux étoiles dans chaque mission.
+- les étoiles d’une mission ne baissent jamais : une mission qui reste à sa place mais perd un niveau garde ses étoiles et son meilleur score dans un niveau qui reste, sans partie jouée de plus ; le niveau parti les garde aussi à sa nouvelle place ;
+- un lieu qui gagne ou perd une mission recoupe son bâtiment en autant de parties que de missions, sur les mêmes cases : rien de posé ne s’enlève. Une partie dont toutes les cases sont posées compte comme posée (un bâtiment fini le reste, et la mission arrivée ne pose rien) ; une partie posée en partie seulement se complète quand le lieu a assez de missions terminées, à l’ouverture du jeu ou à la mission suivante. La phrase de pose ne nomme que les parties d’aujourd’hui ;
+- une question retirée du jeu quitte la file de révision, à la migration ou à la partie suivante de son exercice : aucune révision n’attend une question qui n’existe plus.
 
 ## Les univers
 

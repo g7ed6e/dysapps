@@ -8,11 +8,11 @@ import { STARS_TO_BEAT, STARS_TO_UNLOCK, bossId } from '../game/bossCore';
 
 /**
  * Les missions des lieux touchés, telles qu'elles étaient au format 3 : les missions d'aujourd'hui, moins les arrivées
- * (le Fourneau à la Forge, les Liens au Cabinet, les Partages à l'Observatoire, les Reflets au Marais), plus les départs
+ * (le Fourneau à la Forge, les Liens au Cabinet, les Cargaisons à l'Observatoire, les Reflets au Marais), plus les départs
  * (le subjonctif au Marais, `subtracting` au Glacier). Le Marché et le Carrefour gardent leurs missions, mais un de
  * leurs exercices est parti : leur règle se lit aussi sur la progression d'avant.
  */
-export const MISSIONS_BEFORE_MOVE: Readonly<Record<string, readonly string[]>> = {
+export const MISSIONS_BEFORE_MOVE = {
   'maths-4e-powers': ['powers', 'square-roots', 'scientific-notation'],
   'french-4e-vocabulary': ['word-roots', 'meaning', 'nuances'],
   'maths-3e-statistics': ['mean', 'probability', 'data'],
@@ -20,7 +20,10 @@ export const MISSIONS_BEFORE_MOVE: Readonly<Record<string, readonly string[]>> =
   'maths-5e-signed-numbers': ['thermometer', 'adding', 'subtracting', 'fractions'],
   'maths-5e-proportionality': ['proportion-tables', 'percentages', 'ratios'],
   'french-5e-homophones': ['pairs', 'choices', 'homophone-sentences'],
-};
+} as const satisfies Partial<Record<BiomeId, readonly string[]>>;
+
+/** Un lieu touché par le déplacement : seul l'un d'eux peut garder son défi ouvert. */
+export const isMovedPlace = (id: string): id is keyof typeof MISSIONS_BEFORE_MOVE => Object.hasOwn(MISSIONS_BEFORE_MOVE, id);
 
 /** Les étoiles d'une progression encore brute (lue avant sanitize), 0 si elle est illisible. */
 function starsOf(p: unknown): number {
@@ -38,8 +41,7 @@ export function challengesOpenBeforeMove(progress: Readonly<Record<string, unkno
   const won = Object.entries(progress)
     .filter(([, p]) => starsOf(p) >= STARS_TO_UNLOCK)
     .map(([id]) => id);
-  return Object.entries(MISSIONS_BEFORE_MOVE)
-    .filter(([place]) => starsOf(progress[bossId(place as BiomeId)]) < STARS_TO_BEAT)
-    .filter(([place, missions]) => missions.every((m) => won.some((id) => id.startsWith(`${place}-${m}-`))))
-    .map(([place]) => place);
+  return (Object.keys(MISSIONS_BEFORE_MOVE) as (keyof typeof MISSIONS_BEFORE_MOVE)[])
+    .filter((place) => starsOf(progress[bossId(place)]) < STARS_TO_BEAT)
+    .filter((place) => MISSIONS_BEFORE_MOVE[place].every((m) => won.some((id) => id.startsWith(`${place}-${m}-`))));
 }

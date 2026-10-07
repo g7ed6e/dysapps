@@ -29,6 +29,7 @@ import { type AppliedJoin, getJoin } from './game/world/join';
 import { getMonument, type MonumentDef } from './game/world/monuments';
 import { MENU_PATH } from './core/paths';
 import { translatePath } from './core/legacyIds';
+import { movedPath } from './core/movedIds';
 import { useImmersive } from './game/useImmersive';
 
 // HashRouter : les URL en « #/… » fonctionnent sur GitHub Pages sans configuration serveur.
@@ -63,7 +64,7 @@ export function AppRoutes() {
         {/* La question d'un bloc assemblé (GD-2), en plein écran comme une mission, en 3D comme en vue simple. */}
         <Route path="adventure/assembly/:bloc" element={<AssemblyQuestionPage />} />
         <Route path="adventure/:biomeId/challenge" element={<BossPage />} />
-        <Route path="adventure/:biomeId/:typeId" element={<ExercisePage />} />
+        <Route path="adventure/:biomeId/:typeId" element={<MissionEntry />} />
         {/* Les anciennes adresses (/aventure/…, noms français) mènent à leur page sous les noms neutres. */}
         <Route path="aventure/*" element={<LegacyAdventure />} />
         <Route path="reglages" element={<SettingsPage />} />
@@ -79,6 +80,14 @@ export function AppRoutes() {
 function LegacyAdventure() {
   const { pathname, search } = useLocation();
   return <Navigate to={translatePath(pathname + search)} replace />;
+}
+
+// Une mission déplacée par les programmes de 2025-2026 (core/movedIds.ts) : son ancienne adresse (favori, lien
+// d'enseignant) ouvre la mission à sa nouvelle place.
+function MissionEntry() {
+  const { pathname, search } = useLocation();
+  const to = movedPath(pathname + search);
+  return to === pathname + search ? <ExercisePage /> : <Navigate to={to} replace />;
 }
 
 // L'appli s'ouvre sur le village. La page Accueil (le menu en page) n'existe plus dans le monde en 3D (mot du mainteneur,

@@ -268,9 +268,6 @@ function programmeLine(ids, d, from) {
   return `Programme officiel : ${parts.join(' ; ')}.`;
 }
 
-/** Les textes rangés par classe (2025, 2026) : leurs compétences n'ont pas d'attendus de fin de cycle. */
-const PAR_CLASSE = new Set(['c3-fr-2025', 'c3-ma-2025', 'c4-fr-2026', 'c4-ma-2026', 'lv-en-2025', 'lv-de-2025', 'lv-es-2025']);
-
 function programmesPage(d) {
   const { PROGRAMME, DOMAINES, DISCIPLINES, SOURCES, INFORMATIONS_PUBLIQUES } = d.programme;
   const { EXCLUSIONS, coverage } = d;
@@ -309,8 +306,8 @@ function programmesPage(d) {
         lines.push(`### ${dom.title} {#${dom.id}}`, '');
         const attendus = [...new Set(entries.map((e) => e.attendu))];
         const texte = dom.source ? ` de [${SOURCES[dom.source].title}](${SOURCES[dom.source].pdfUrl})` : '';
-        // Les textes de 2025 et 2026, rangés par classe, n'ont pas d'attendus de fin de cycle : leurs titres en tiennent lieu.
-        const parClasse = dom.source && PAR_CLASSE.has(dom.source);
+        // Les textes rangés par classe (2025, 2026, `targets` de la source) n'ont pas d'attendus de fin de cycle : leurs titres en tiennent lieu.
+        const parClasse = dom.source && SOURCES[dom.source].targets === 'per-class';
         lines.push(`*${parClasse ? 'Ce que le texte attend' : 'Attendus de fin de cycle'} (p. ${dom.page}${texte}${dom.unverified ? ', à vérifier' : ''}) : ${attendus.map((a) => `${a.replace(/\.$/, '')}`).join(' ; ')}.*`, '');
         lines.push(
           table(

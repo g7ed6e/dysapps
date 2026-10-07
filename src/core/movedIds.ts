@@ -11,7 +11,7 @@ export const MOVED_EXERCISES: Readonly<Record<string, string>> = {
   'maths-5e-signed-numbers-subtracting-1': 'maths-4e-powers-subtracting-1',
   'maths-5e-signed-numbers-subtracting-2': 'maths-4e-powers-subtracting-2',
   'maths-5e-signed-numbers-fractions-3': 'maths-4e-powers-subtracting-3',
-  // Le partage selon un ratio : des Étals du Marché (5e) aux Partages de l'Observatoire des données (3e).
+  // Le partage selon un ratio : des Étals du Marché (5e) aux Cargaisons de l'Observatoire des données (3e).
   'maths-5e-proportionality-proportion-tables-3': 'maths-3e-statistics-ratio-sharing-1',
   // Mais, mes, met, m'est : de l'Aiguillage du Carrefour (5e) aux Liens du Cabinet (4e).
   'french-5e-homophones-choices-3': 'french-4e-vocabulary-conjunctions-1',
@@ -27,6 +27,34 @@ export const MOVED_EXERCISES: Readonly<Record<string, string>> = {
 export const MOVED_ITEMS: Readonly<Record<string, string>> = Object.fromEntries([
   ...[0, 1, 2, 3].map((i) => [`french-5e-homophones-choices-2:french-5e-homophones-choices-2-${i}`, 'french-4e-vocabulary-conjunctions-2']),
   ...[0, 1, 6, 7].map((i) => [`french-5e-homophones-choices-1:french-5e-homophones-choices-1-${i}`, 'french-4e-vocabulary-conjunctions-2']),
+]);
+
+/**
+ * Les étoiles d'une mission ne baissent jamais (www/pedagogie/principes.md) : une mission qui reste à sa place mais
+ * perd un niveau (l'Aiguillage du Carrefour, les Étals du Marché, les Icebergs du Glacier) garderait sinon ses étoiles
+ * dans le seul niveau parti. Ses étoiles sont aussi données à un niveau qui reste (`<exercice parti>` → `<exercice
+ * resté>`), sans partie jouée de plus ; le niveau parti les garde aussi dans sa nouvelle place.
+ */
+export const STARS_KEPT_IN_MISSION: Readonly<Record<string, string>> = {
+  'french-5e-homophones-choices-3': 'french-5e-homophones-choices-2',
+  'maths-5e-proportionality-proportion-tables-3': 'maths-5e-proportionality-proportion-tables-2',
+  'maths-5e-signed-numbers-fractions-3': 'maths-5e-signed-numbers-fractions-2',
+};
+
+/**
+ * Les items retirés par le lot, sans place dans aucun exercice (identifiants d'avant le déplacement) : ils quittent la
+ * file de révision à la migration (sinon ils resteraient dus pour toujours, sans écran pour les revoir). Plus tôt et
+ * plutôt (homophones lexicaux, en 3e) quittent l'Aiguillage ; deux phrases de l'ancien niveau 2 des Roseaux ne suivent
+ * pas aux Reflets ; quatre phrases des homophones en phrases sont remplacées ; ou / où et quand / quant / qu'en (des
+ * conjonctions, en 4e) quittent les Panneaux pour le portail seul. Les exercices générés (maths) ne figurent pas ici :
+ * leurs clés décrivent un calcul que leur générateur peut encore tirer, ailleurs que dans leur échantillon fixe.
+ */
+export const RETIRED_ITEMS: ReadonlySet<string> = new Set([
+  ...[4, 5, 6, 7].map((i) => `french-5e-homophones-choices-2:french-5e-homophones-choices-2-${i}`),
+  ...[2, 7].map((i) => `french-5e-conjugation-subjunctive-2:french-5e-conjugation-subjunctive-2-${i}`),
+  ...[0, 2, 4, 7].map((i) => `french-5e-homophones-homophone-sentences-2:french-5e-homophones-homophone-sentences-2-${i}`),
+  ...[0, 1, 2, 3, 4, 5, 6, 7].map((i) => `french-5e-homophones-pairs-ou:ou-${i}`),
+  ...[0, 1, 2, 3, 4, 5, 6, 7].map((i) => `french-5e-homophones-pairs-quand:quand-${i}`),
 ]);
 
 /** Les adresses des missions déplacées (« Ma dernière mission ») : l'ancienne → la nouvelle. */

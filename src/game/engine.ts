@@ -249,14 +249,20 @@ export function completeExercise(state: GameState, def: ExerciseDef, results: It
 
   // Une révision (des questions de la mission étaient à revoir aujourd'hui) rapporte toujours autant, quel que soit le
   // score (GD-6, point 4) ; sinon, des blocs même avec des erreurs, jamais zéro si au moins une bonne réponse.
-  const revision = estUneRevision(state.spaced, def.id, today);
+  // Un item de la file dont la clé n'est plus dans l'exercice (retiré par une mise à jour du contenu) n'a plus d'écran
+  // pour être revu : il quitte la file, sans compter comme une révision. Pas pour un exercice généré, dont les items
+  // tirés à chaque partie ne sont pas dans son échantillon fixe (`items`).
+  const known = def.generate ? null : new Set(def.items.map((it) => it.key));
+  const prefix = `${def.id}:`;
+  const queue = known ? state.spaced.filter((s) => !s.itemId.startsWith(prefix) || known.has(s.itemId.slice(prefix.length))) : state.spaced;
+  const revision = estUneRevision(queue, def.id, today);
   const anyCorrect = results.some((r) => r.correct);
   const bonus = revision ? { stars: 0, first: 0 } : blocksBonus(stars, prev.attempts === 0, anyCorrect);
   const blocks = revision ? blocsDUneRevision(def) : anyCorrect ? Math.max(1, Math.round(def.reward.amount * score)) + bonus.stars + bonus.first : 0;
   // XP à chaque exercice terminé ; bonus si terminé sans aide.
   const xp = Math.round(def.reward.xp * (perfect ? 1.5 : 1));
 
-  let spaced = state.spaced;
+  let spaced = queue;
   for (const r of results) spaced = recordSpaced(spaced, `${def.id}:${r.key}`, r.correct && r.attempts <= 1, today);
 
   const { streak, inventory, chests, chestBlock } = playedToday(state, def.reward.block, blocks, today, rng);

@@ -1,6 +1,7 @@
 // La lecture d'une sauvegarde : une partie d'avant les mots neutres se lit traduite (core/migration.ts), puis chaque
 // champ est vérifié et complété ; une vieille sauvegarde (plans v1, ponts, Bloc-Navire…) est remise au format du jour.
 import { GAME_VERSION, translateGame } from '../../core/migration';
+import { isMovedPlace } from '../../core/movedChallenges';
 import { MOVED_EXERCISES } from '../../core/movedIds';
 import { isBossBeaten } from '../bossCore';
 import { type BiomeDef, type BiomeId, BIOMES, type BlockId, BLOCKS, getBiome } from '../biomes';
@@ -210,13 +211,13 @@ export function sanitizeState(input: unknown): GameState {
       if (requests.filter((r) => archipelDeLaCommande(getCommande(r)!) === archipelDeLaCommande(c)).length >= MAX_COMMANDES_OUVERTES) continue;
       requests.push(c.id);
     }
-  // Les défis restés ouverts après le déplacement (core/movedChallenges.ts) : des lieux connus, sans doublon, dont le
-  // défi n'est pas encore réussi ; une fois le Gardien rallumé, le lieu n'a plus rien à y faire.
+  // Les défis restés ouverts après le déplacement (core/movedChallenges.ts) : des lieux touchés par le déplacement, sans
+  // doublon, dont le défi n'est pas encore réussi ; une fois le Gardien rallumé, le lieu n'a plus rien à y faire.
   const challengesKeptOpen: BiomeId[] = [];
   if (Array.isArray(world.challengesKeptOpen))
     for (const id of world.challengesKeptOpen) {
-      const biome = typeof id === 'string' ? getBiome(id) : undefined;
-      if (biome && !challengesKeptOpen.includes(biome.id) && !isBossBeaten(biome.id, progress)) challengesKeptOpen.push(biome.id);
+      if (typeof id !== 'string' || !isMovedPlace(id) || challengesKeptOpen.includes(id) || isBossBeaten(id, progress)) continue;
+      challengesKeptOpen.push(id);
     }
   return {
     version: GAME_VERSION,

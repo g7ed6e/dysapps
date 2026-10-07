@@ -1,7 +1,8 @@
 // Un défi ouvert avant les programmes de 2025-2026 reste ouvert jusqu'à ce qu'il soit réussi : la règle se lit, à la
 // migration vers le format 4, avec les missions et la progression d'avant ; une partie neuve garde la règle entière.
 import { getBiome } from '../game/biomes';
-import { guardianStatus, isBossOpen, isBossUnlocked } from '../game/boss';
+import { bossDef, guardianStatus, isBossOpen, isBossUnlocked } from '../game/boss';
+import type { ExerciseItem } from '../game/exercises/types';
 import { sanitizeState } from '../game/engine';
 import { grantAccess } from '../game/world/archipelago';
 import { translateGame } from './migration';
@@ -48,8 +49,10 @@ it('la Forge et le Glacier : une mission arrivée ou partie ne referme pas un d�
   };
   const s = sanitizeState(format3({ ...forge, ...glacier }));
   expect(s.world.challengesKeptOpen).toEqual(['maths-4e-powers', 'maths-5e-signed-numbers']);
-  // Le Glacier a perdu ses fractions étoilées : la règle d'aujourd'hui dirait non, le champ le garde ouvert.
-  expect(isBossUnlocked(getBiome('maths-5e-signed-numbers')!, s.progress)).toBe(false);
+  // Les Icebergs ont perdu leur niveau étoilé, mais pas leurs étoiles (gardées au niveau 2) : la règle d'aujourd'hui
+  // dit oui elle aussi, et le champ le garde ouvert quoi qu'il arrive.
+  expect(s.progress['maths-5e-signed-numbers-fractions-2']).toEqual({ stars: 3, attempts: 0, best: 0.8 });
+  expect(isBossUnlocked(getBiome('maths-5e-signed-numbers')!, s.progress)).toBe(true);
   for (const id of ['maths-4e-powers', 'maths-5e-signed-numbers']) expect(isBossOpen(getBiome(id)!, s.progress, s.world.challengesKeptOpen), id).toBe(true);
   // Sans rien de ce qui part au Fourneau, la Forge a une mission sans étoile : son défi reste ouvert quand même.
   const f = sanitizeState(format3(forge));
@@ -79,4 +82,15 @@ it('seulement à la migration d’une sauvegarde plus ancienne : une partie neuv
   // Un lieu inconnu ou en double, dans une sauvegarde abîmée, est ignoré.
   const abimee = sanitizeState({ version: 4, world: { parts: {}, log: [], links: [], challengesKeptOpen: ['nulle-part', 'maths-4e-powers', 'maths-4e-powers', 3] } });
   expect(abimee.world.challengesKeptOpen).toEqual(['maths-4e-powers']);
+});
+
+it('le défi gardé ouvert du Marais tire les Reflets au niveau 1, avec leur tableau des temps affiché', async () => {
+  const s = sanitizeState(format3(MARAIS));
+  const def = await bossDef(getBiome('french-5e-conjugation')!, s, () => 0.5);
+  const reflets = (def.items as unknown as { screenType: string; exerciseId: string; items: ExerciseItem[] }[]).filter((r) => r.screenType === 'tense-recognition');
+  expect(reflets.length).toBeGreaterThan(0);
+  for (const r of reflets) {
+    expect(r.exerciseId).toBe('french-5e-conjugation-tense-recognition-1');
+    for (const item of r.items) expect(item.aid, item.key).toBeTruthy();
+  }
 });

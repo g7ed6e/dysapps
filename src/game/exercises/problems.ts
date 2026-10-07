@@ -1,7 +1,7 @@
 // Problèmes situés dans l’archipel : la mission « Carnet du passeur » de la Plaine des nombres (6e), avec un pont entre deux
 // falaises, un quai à clôturer, une traversée en bateau ; au Marché des proportions (5e), le niveau 3 des Balances (une
 // carte à l’échelle) et le niveau 4 (une traversée à vitesse constante, la durée vue comme une part d’heure) ; à
-// l’Observatoire des données (3e), les Partages (une cargaison partagée selon un ratio) ; le niveau 3 de Pythagore au
+// l’Observatoire des données (3e), les Cargaisons (une cargaison partagée selon un ratio) ; le niveau 3 de Pythagore au
 // Belvédère (3e), avec un mât tenu par un câble, et le niveau 2 de Thalès (l’ombre d’un mât). Pour chaque item : un énoncé d’une ou deux phrases, le schéma de la situation
 // (aide `scene`, voir Scene.tsx) avec ses cotes et un seul « ? », et le rappel de la méthode. Toutes les données de
 // l’énoncé sont sur le schéma, sans donnée parasite ; aucune cote affichée n’est proposée comme réponse, sauf si c’est
@@ -427,7 +427,8 @@ const partageTrois: ItemGenerator = (rng) => {
 // ---------- Marché des proportions : la traversée à vitesse constante (Balances, niveau 4, 5e-4e) ----------
 
 /** Des durées qui se changent en heures sans reste pénible : 15 min = 0,25 h, 1 h 30 min = 1,5 h. L’heure pile est rare. */
-const DUREES = [15, 30, 45, 90, 15, 30, 45, 90, 120];
+const DUREES = [15, 30, 45, 90, 15, 30, 45, 90, 120] as const;
+type Duree = (typeof DUREES)[number];
 /** Un piège qui s’écrit simplement (au dixième) : on ne propose pas 2,667 m. */
 const clean = (traps: number[]) => traps.filter((t) => Math.abs(Math.round(t * 10) - t * 10) < 1e-9);
 const km = unit('km');
@@ -435,7 +436,7 @@ const kmh = (n: number): string => `${formatNombre(n)} km/h`;
 /** Ce que devient la durée si on prend une heure pour 100 minutes : 30 min lu 0,3 h, 1 h 30 min lu 1,3 h. */
 const centiemes = (min: number): number => Math.floor(min / 60) + (min % 60) / 100;
 /** Une durée, puis une vitesse qui donne une distance entière ; trois nombres différents (une cote ne vaut pas la réponse). */
-function traversee(rng: Rng, durees: readonly number[] = DUREES): { v: number; t: number; d: number } {
+function traversee(rng: Rng, durees: readonly Duree[] = DUREES): { v: number; t: Duree; d: number } {
   const t = pick(durees, rng);
   const speeds = Array.from({ length: 17 }, (_, i) => i + 8).filter((v) => Number.isInteger((v * t) / 60) && new Set([v, t, (v * t) / 60]).size === 3);
   const v = pick(speeds, rng);
@@ -443,19 +444,27 @@ function traversee(rng: Rng, durees: readonly number[] = DUREES): { v: number; t
 }
 /**
  * La traversée en proportionnalité (5e : la vitesse est un coefficient de proportionnalité, M4 p18 ; la formule des
- * grandeurs quotients est en 4e) : une durée vue comme une part d’heure, et le calcul qui passe des kilomètres d’une
- * heure à ceux de la traversée (`versDuree`), ou l’inverse (`versHeure`). Les durées tirées sont 15, 30, 45, 90 et
- * 120 minutes : chaque calcul tombe juste (la vitesse est choisie pour cela).
+ * grandeurs quotients est en 4e) : une durée vue comme une part d’heure (`said`, `ofPhrase`), et le calcul qui passe des
+ * kilomètres d’une heure à ceux de la traversée (`toDuration`), ou l’inverse (`toHour`). Une part pour chaque durée
+ * tirée (`DUREES`) : chaque calcul tombe juste (la vitesse est choisie pour cela).
  */
-const PART_D_HEURE: Record<number, { dit: string; versDuree: (v: number) => string; versHeure: (d: number) => string; ce: string }> = {
-  15: { dit: 'le quart d’une heure', ce: 'le quart de', versDuree: (v) => `${v} ÷ 4`, versHeure: (d) => `${d} × 4` },
-  30: { dit: 'la moitié d’une heure', ce: 'la moitié de', versDuree: (v) => `${v} ÷ 2`, versHeure: (d) => `${d} × 2` },
-  45: { dit: 'trois quarts d’heure', ce: 'les trois quarts de', versDuree: (v) => `${v} ÷ 4 × 3`, versHeure: (d) => `${d} ÷ 3 × 4` },
-  60: { dit: 'une heure', ce: 'autant que', versDuree: (v) => `${v}`, versHeure: (d) => `${d}` },
-  90: { dit: 'une heure et demie', ce: 'une fois et demie', versDuree: (v) => `${v} + ${v} ÷ 2`, versHeure: (d) => `${d} ÷ 3 × 2` },
-  120: { dit: 'deux heures', ce: 'deux fois', versDuree: (v) => `${v} × 2`, versHeure: (d) => `${d} ÷ 2` },
+interface HourFraction {
+  /** « le quart d’une heure ». */
+  said: string;
+  /** « le quart de » (… 12 km). */
+  ofPhrase: string;
+  /** Des kilomètres d’une heure à ceux de la traversée : « 12 ÷ 4 ». */
+  toDuration: (v: number) => string;
+  /** Des kilomètres de la traversée à ceux d’une heure : « 3 × 4 ». */
+  toHour: (d: number) => string;
+}
+const HOUR_FRACTIONS: Record<Duree, HourFraction> = {
+  15: { said: 'le quart d’une heure', ofPhrase: 'le quart de', toDuration: (v) => `${v} ÷ 4`, toHour: (d) => `${d} × 4` },
+  30: { said: 'la moitié d’une heure', ofPhrase: 'la moitié de', toDuration: (v) => `${v} ÷ 2`, toHour: (d) => `${d} × 2` },
+  45: { said: 'trois quarts d’heure', ofPhrase: 'les trois quarts de', toDuration: (v) => `${v} ÷ 4 × 3`, toHour: (d) => `${d} ÷ 3 × 4` },
+  90: { said: 'une heure et demie', ofPhrase: 'une fois et demie', toDuration: (v) => `${v} + ${v} ÷ 2`, toHour: (d) => `${d} ÷ 3 × 2` },
+  120: { said: 'deux heures', ofPhrase: 'deux fois', toDuration: (v) => `${v} × 2`, toHour: (d) => `${d} ÷ 2` },
 };
-const partDHeure = (t: number) => PART_D_HEURE[t];
 const ruleVitesse = (last: string) =>
   rule('La vitesse', [
     '12 km/h : en une heure, le bateau fait 12 km.',
@@ -472,7 +481,7 @@ const RULE_DUREE_ROUTE = ruleVitesse('La durée : compare la distance aux kilom�
 /** La distance parcourue, la vitesse et la durée connues. */
 const distanceRoute: ItemGenerator = (rng) => {
   const { v, t, d } = traversee(rng);
-  const part = partDHeure(t);
+  const fraction = HOUR_FRACTIONS[t];
   return {
     key: `route-distance-${v}-${t}`,
     prompt: `Le bateau avance à ${kmh(v)}. La traversée dure ${formatDuree(t)} : quelle distance parcourt-il ?`,
@@ -480,8 +489,8 @@ const distanceRoute: ItemGenerator = (rng) => {
     // Pièges : les minutes non converties, une heure comptée comme 100 minutes, la vitesse divisée au lieu de multipliée.
     choices: options(d, clean([v * t, v * centiemes(t), (v * 60) / t, d * 2]), [v, t], rng, km, 1),
     answer: km(d),
-    hint: `En une heure, ${km(v)}. ${formatDuree(t)}, c’est ${part.dit}.`,
-    explanation: `En une heure, le bateau fait ${km(v)}. ${formatDuree(t)}, c’est ${part.dit} : ${part.versDuree(v)} = ${formatNombre(d)}. Il parcourt ${km(d)}.`,
+    hint: `En une heure, ${km(v)}. ${formatDuree(t)}, c’est ${fraction.said}.`,
+    explanation: `En une heure, le bateau fait ${km(v)}. ${formatDuree(t)}, c’est ${fraction.said} : ${fraction.toDuration(v)} = ${formatNombre(d)}. Il parcourt ${km(d)}.`,
     figure: scene({ scene: 'route', distance: '?', duree: t, vitesse: v }),
     aid: RULE_DISTANCE,
   };
@@ -490,7 +499,7 @@ const distanceRoute: ItemGenerator = (rng) => {
 /** La vitesse du bateau, la distance et la durée connues. */
 const vitesseRoute: ItemGenerator = (rng) => {
   const { v, t, d } = traversee(rng);
-  const part = partDHeure(t);
+  const fraction = HOUR_FRACTIONS[t];
   return {
     key: `route-vitesse-${v}-${t}`,
     prompt: `La traversée fait ${km(d)} et dure ${formatDuree(t)}. À quelle vitesse avance le bateau ?`,
@@ -498,8 +507,8 @@ const vitesseRoute: ItemGenerator = (rng) => {
     // Pièges : une heure comptée comme 100 minutes, la multiplication au lieu de la division, la distance divisée par deux.
     choices: options(v, clean([d / centiemes(t), (d * t) / 60, v * 2, d / 2]), [d, t], rng, kmh, 1),
     answer: kmh(v),
-    hint: `${formatDuree(t)}, c’est ${part.dit}. Combien de kilomètres en une heure ?`,
-    explanation: `${formatDuree(t)}, c’est ${part.dit}. En une heure : ${part.versHeure(d)} = ${formatNombre(v)}. Le bateau avance à ${kmh(v)}.`,
+    hint: `${formatDuree(t)}, c’est ${fraction.said}. Combien de kilomètres en une heure ?`,
+    explanation: `${formatDuree(t)}, c’est ${fraction.said}. En une heure : ${fraction.toHour(d)} = ${formatNombre(v)}. Le bateau avance à ${kmh(v)}.`,
     figure: scene({ scene: 'route', distance: d, duree: t, vitesse: '?' }),
     aid: RULE_VITESSE,
   };
@@ -509,7 +518,7 @@ const vitesseRoute: ItemGenerator = (rng) => {
 const dureeRoute: ItemGenerator = (rng) => {
   // Une réponse en minutes : au plus 1 h 30 min.
   const { v, t, d } = traversee(rng, [15, 30, 45, 90]);
-  const part = partDHeure(t);
+  const fraction = HOUR_FRACTIONS[t];
   return {
     key: `route-duree-${v}-${t}`,
     prompt: `La traversée fait ${km(d)} et le bateau avance à ${kmh(v)}. Combien de minutes dure la traversée ?`,
@@ -518,7 +527,7 @@ const dureeRoute: ItemGenerator = (rng) => {
     choices: options(t, [round((d / v) * 100), d * v, 60, t + 60], [d, v], rng, minutes, 15),
     answer: minutes(t),
     hint: `En une heure (60 minutes), ${km(v)}. ${km(d)}, c’est plus ou moins ?`,
-    explanation: `En 60 minutes, le bateau fait ${km(v)}. ${km(d)}, c’est ${part.ce} ${km(v)} : la traversée dure ${part.dit}, ${part.versDuree(60)} = ${t} minutes.`,
+    explanation: `En 60 minutes, le bateau fait ${km(v)}. ${km(d)}, c’est ${fraction.ofPhrase} ${km(v)} : la traversée dure ${fraction.said}, ${fraction.toDuration(60)} = ${t} minutes.`,
     figure: scene({ scene: 'route', distance: d, duree: '?', vitesse: v }),
     aid: RULE_DUREE_ROUTE,
   };
@@ -686,7 +695,7 @@ export const PROBLEMES_EXERCISES: ExerciseDef[] = [
 ];
 
 /**
- * Les problèmes situés du collège : la cargaison des Partages (une mission de l’Observatoire, 3e : le partage selon un
+ * Les problèmes situés du collège : les Cargaisons (une mission de l’Observatoire, 3e : le partage selon un
  * ratio quitte la 5e avec les programmes de 2026), puis des niveaux de plus de missions existantes (le Marché est l’île
  * de l’école des Îles Brumeuses : pas de quatrième borne) : la carte (niveau 3) et la traversée (niveau 4) des Balances,
  * le mât de Pythagore, l’ombre de Thalès.

@@ -55,6 +55,11 @@ export interface ProgrammeSource {
   classes: readonly Classe[];
   /** Date de consultation, AAAA-MM-JJ. */
   consulted: string;
+  /**
+   * Ce que le texte fixe : des attendus de fin de cycle (les programmes de 2016 à 2024), ou des attendus rangés par
+   * classe (2025, 2026), qui n'en ont pas de fin de cycle : leurs titres en tiennent lieu (page Programmes du site).
+   */
+  targets: 'end-of-cycle' | 'per-class';
 }
 
 /** Un domaine du programme (« Étude de la langue », « Thème A – Nombres et calculs », « Écouter et comprendre »). */

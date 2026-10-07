@@ -14,12 +14,19 @@ import {
   translateResourceId,
 } from './legacyIds';
 import { challengesOpenBeforeMove } from './movedChallenges';
-import { movedExerciseId, movedItemId, movedPath } from './movedIds';
+import { RETIRED_ITEMS, STARS_KEPT_IN_MISSION, movedExerciseId, movedItemId } from './movedIds';
 
 /**
  * Le format de la partie (`dysapps:game`) : 2 depuis les champs neutres, 3 depuis les identifiants neutres (lieux,
  * ressources, parties, missions, exercices), 4 depuis les exercices déplacés par les programmes de 2025-2026
  * (movedIds.ts). Une partie sans numéro est d'avant.
+ *
+ * Limite connue du format 4 : un onglet resté ouvert sur le code d'avant relit une partie au format 4 sans la
+ * comprendre. Sa propre lecture (sanitize d'avant) ouvre les lieux où sont arrivés des exercices déplacés (ses étoiles
+ * comptent pour un lieu fermé) et perd `challengesKeptOpen`, qu'il ne connaît pas. S'il enregistre (au format 3),
+ * les lieux ouverts le restent, et la migration, qui repasse à la lecture suivante, ne retrouve plus les défis gardés
+ * ouverts sur une progression déjà déplacée. Les étoiles et la file de révision ne se perdent pas : `moveExercises`
+ * réunit les deux identifiants. La mise à jour est proposée, jamais imposée (docs/conception/deploiement.md).
  */
 export const GAME_VERSION = 4;
 /** Le format des identifiants neutres : une partie à ce format, ou à un format plus récent, ne repasse pas par legacyIds. */
@@ -138,10 +145,11 @@ function mergeProgress(a: unknown, b: unknown): unknown {
 
 /**
  * Les exercices déplacés par les programmes de 2025-2026 (format 4, movedIds.ts) : leurs étoiles et leur file de
- * révision passent au nouvel identifiant, sans rien perdre. Si le nouvel identifiant a déjà une progression (un onglet
- * resté ouvert sur la version d'avant), les deux se réunissent. Les niveaux adaptés (`types`) ne bougent pas : les
- * missions déplacées gardent leur type (`subtracting`), les autres repartent du niveau 1, qui est leur premier niveau.
- * Le stock, les parties posées et les liaisons ne dépendent pas des exercices : ils restent tels quels.
+ * révision passent au nouvel identifiant, sans rien perdre ; une mission qui perd un niveau garde ses étoiles
+ * (STARS_KEPT_IN_MISSION) ; un item retiré (RETIRED_ITEMS) quitte la file. Si le nouvel identifiant a déjà une
+ * progression (un onglet resté ouvert sur la version d'avant), les deux se réunissent. Les niveaux adaptés (`types`) ne
+ * bougent pas : les missions déplacées gardent leur type (`subtracting`), les autres repartent du niveau 1, qui est leur
+ * premier niveau. Le stock, les parties posées et les liaisons ne dépendent pas des exercices : ils restent tels quels.
  */
 function moveExercises(game: Record<string, unknown>): void {
   if (isRecord(game.progress)) {
@@ -151,12 +159,25 @@ function moveExercises(game: Record<string, unknown>): void {
       if (to === '__proto__') continue;
       out[to] = Object.hasOwn(out, to) ? mergeProgress(out[to], p) : p;
     }
+    // Une mission qui perd un niveau garde ses étoiles dans un niveau qui reste (STARS_KEPT_IN_MISSION).
+    for (const [from, keep] of Object.entries(STARS_KEPT_IN_MISSION)) {
+      const p = game.progress[from];
+      const stars = isRecord(p) && Number.isFinite(Number(p.stars)) ? Number(p.stars) : 0;
+      if (stars <= 0) continue;
+      const kept = out[keep];
+      const best = Number((p as { best?: unknown }).best) || 0;
+      out[keep] = isRecord(kept)
+        ? { ...kept, stars: Math.max(Number(kept.stars) || 0, stars), best: Math.max(Number(kept.best) || 0, best) }
+        : { stars, attempts: 0, best };
+    }
     game.progress = out;
   }
   if (Array.isArray(game.spaced)) {
     const seen = new Set<string>();
     game.spaced = game.spaced.flatMap((s: unknown) => {
       if (!isRecord(s) || typeof s.itemId !== 'string') return [s];
+      // Un item retiré par le lot n'a plus d'écran : il quitte la file.
+      if (RETIRED_ITEMS.has(s.itemId)) return [];
       const itemId = movedItemId(s.itemId);
       // Un même item deux fois (déjà déplacé par un autre onglet) : la première entrée reste.
       if (seen.has(itemId)) return [];
@@ -216,9 +237,12 @@ export function translateGame(input: unknown): unknown {
 /** Les Gardiens déjà vus rallumés, par lieu. */
 const translateGuardiansSeen = (v: unknown): unknown => mapKeys(v, translatePlaceId);
 
-/** « Ma dernière mission » : l'adresse de la dernière page ouverte, sous les mots neutres, puis la mission déplacée. */
+/**
+ * « Ma dernière mission » : l'adresse de la dernière page ouverte, sous les mots neutres. Une mission déplacée
+ * (movedIds.ts) garde ici son adresse d'avant : `lastPlace` la suit à la lecture, avec le libellé de sa nouvelle place.
+ */
 function translateResume(v: unknown): unknown {
-  return isRecord(v) && typeof v.path === 'string' ? { ...v, path: movedPath(translatePath(v.path)) } : v;
+  return isRecord(v) && typeof v.path === 'string' ? { ...v, path: translatePath(v.path) } : v;
 }
 
 /** La progression (XP, compteurs, succès) aux mots neutres. */

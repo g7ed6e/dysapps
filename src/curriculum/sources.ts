@@ -45,6 +45,7 @@ export const SOURCES: Record<SourceId, ProgrammeSource> = {
     // En 6e, n'est plus cité que pour l'histoire et la géographie : le français et les maths suivent le texte de 2025,
     // l'anglais celui de 2025, les sciences celui de 2023.
     classes: ['6e'],
+    targets: 'end-of-cycle',
     consulted: '2026-09-27',
   },
   c4: {
@@ -59,6 +60,7 @@ export const SOURCES: Record<SourceId, ProgrammeSource> = {
     // L'histoire et la géographie, la physique-chimie et la SVT de la 5e à la 3e ; le français, les maths et les langues
     // vivantes en 4e et en 3e seulement (la 5e suit les textes de 2025 et 2026 ; la 4e les suivra en 2027, la 3e en 2028).
     classes: ['5e', '4e', '3e'],
+    targets: 'end-of-cycle',
     consulted: '2026-09-27',
   },
   'c3-2023': {
@@ -71,6 +73,7 @@ export const SOURCES: Record<SourceId, ProgrammeSource> = {
     licence: INFORMATIONS_PUBLIQUES,
     legal: 'D’après le Bulletin officiel n° 31 du 30 juillet 2020 et le Bulletin officiel n° 25 du 22 juin 2023',
     classes: ['6e'],
+    targets: 'end-of-cycle',
     consulted: '2026-10-07',
   },
   'c4-te-2024': {
@@ -83,6 +86,7 @@ export const SOURCES: Record<SourceId, ProgrammeSource> = {
     licence: INFORMATIONS_PUBLIQUES,
     legal: 'Bulletin officiel n° 9 du 29 février 2024',
     classes: ['5e', '4e', '3e'],
+    targets: 'end-of-cycle',
     consulted: '2026-10-07',
   },
   // Les textes de 2025 et 2026 : les PDF sont ceux que lie le calendrier de mise en œuvre des nouveaux programmes
@@ -101,6 +105,7 @@ export const SOURCES: Record<SourceId, ProgrammeSource> = {
     licence: INFORMATIONS_PUBLIQUES,
     legal: BO_NON_LU,
     classes: ['6e'],
+    targets: 'per-class',
     consulted: '2026-10-07',
   },
   'c3-ma-2025': {
@@ -113,6 +118,7 @@ export const SOURCES: Record<SourceId, ProgrammeSource> = {
     licence: INFORMATIONS_PUBLIQUES,
     legal: BO_NON_LU,
     classes: ['6e'],
+    targets: 'per-class',
     consulted: '2026-10-07',
   },
   'c4-fr-2026': {
@@ -125,6 +131,7 @@ export const SOURCES: Record<SourceId, ProgrammeSource> = {
     licence: INFORMATIONS_PUBLIQUES,
     legal: LEGAL_2026,
     classes: ['5e'],
+    targets: 'per-class',
     consulted: '2026-10-07',
   },
   'c4-ma-2026': {
@@ -137,6 +144,7 @@ export const SOURCES: Record<SourceId, ProgrammeSource> = {
     licence: INFORMATIONS_PUBLIQUES,
     legal: LEGAL_2026,
     classes: ['5e'],
+    targets: 'per-class',
     consulted: '2026-10-07',
   },
   'lv-en-2025': {
@@ -149,6 +157,7 @@ export const SOURCES: Record<SourceId, ProgrammeSource> = {
     licence: INFORMATIONS_PUBLIQUES,
     legal: 'Bulletin officiel n° 22 de 2025, annexe 3',
     classes: ['6e', '5e'],
+    targets: 'per-class',
     consulted: '2026-10-07',
   },
   'lv-de-2025': {
@@ -162,6 +171,7 @@ export const SOURCES: Record<SourceId, ProgrammeSource> = {
     legal: 'Bulletin officiel n° 22 de 2025, annexe 1',
     // La LV2 commence en 5e dans l'application : le texte de 6e (LVA, bilangue) n'y est pas cité.
     classes: ['5e'],
+    targets: 'per-class',
     consulted: '2026-10-07',
   },
   'lv-es-2025': {
@@ -174,6 +184,7 @@ export const SOURCES: Record<SourceId, ProgrammeSource> = {
     licence: INFORMATIONS_PUBLIQUES,
     legal: 'Bulletin officiel n° 22 de 2025, annexe 9',
     classes: ['5e'],
+    targets: 'per-class',
     consulted: '2026-10-07',
   },
 };
