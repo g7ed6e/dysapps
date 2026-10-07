@@ -172,7 +172,7 @@
    - indice : De moins 3 à 0, puis de 0 à 4 : compte les bonds. Puis : ces ou ses ?
    - explication : 4 − (−3) = 4 + 3 = 7 degrés. « ces » montre (ces moments-là) ; « ses » veut dire les siens. 1, c’est 4 − 3 : le signe moins a été oublié.
    - aide « Écart, et ces, ses » :
-     - Soustraire un négatif, c’est ajouter : 5 − (−2) = 5 + 2.
+     - Soustraire un négatif, c’est ajouter : 5 − (−1) = 5 + 1.
      - ces = on montre (ces livres-là). ses = les siens, les siennes.
 2. énoncé : "Lina place le nombre −2\nsur la droite graduée."
    - question : Quelle phrase est juste ?

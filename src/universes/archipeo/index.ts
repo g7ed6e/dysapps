@@ -139,7 +139,7 @@ export const ARCHIPEO = {
       challenge: 'Le Hibou lexicographe chuchote entre ses tiroirs : « Mon livre est éteint. Tu as ouvert tous mes tiroirs, démontons les mots ensemble. »',
       guardianSays: {
         hit: 'Une veine d’or s’allume sur mon livre. Tu as trouvé la racine.',
-        miss: 'Rien ne s’éteint. Relis la règle affichée, et reprends.',
+        miss: 'Rien ne s’éteint. Relis l’aide sous la question, et reprends.',
         beaten: 'Mon livre se rallume. Le cabinet est à toi, et à Plume.',
       },
     },
