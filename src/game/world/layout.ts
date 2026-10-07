@@ -92,7 +92,7 @@ export type Intention =
   | { genre: 'lieu'; id: string; ile: BiomeId }
   /** Un ouvrage ; dans le mode « Aménager », touché en `point` (en cases du monde) : le bout le plus proche se choisit. */
   | { genre: 'ouvrage'; id: string; point?: { x: number; y: number } }
-  /** Dans le mode « Aménager » (GD-9), la mer touchée en `point`, en cases du monde : le fantôme s'y cale. */
+  /** Dans le mode « Aménager » (GD-9), la mer touchée en `point`, en cases du monde : elle relâche le choix. */
   | { genre: 'mer'; point: { x: number; y: number } }
   | { genre: 'creature'; id: BiomeId; gardien: boolean }
   | { genre: 'navire'; port: BiomeId }

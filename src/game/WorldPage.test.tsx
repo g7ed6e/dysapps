@@ -791,6 +791,26 @@ it('la Carte fermée rend le monde sur l’île où l’on est, sans panneau', a
   expect(sheet()).not.toBeInTheDocument();
 });
 
+it('sur la Carte, on ne touche qu’une île : on y va, à sa place, sans fiche ni marche jusqu’à la case touchée (piste A)', async () => {
+  localStorage.setItem('dysapps:tutorials', JSON.stringify({ 'village-immersif': true }));
+  localStorage.setItem('dysapps:guide-messages', JSON.stringify({ 'baleine-6e-arrivee': true, 'map-reshaped': true }));
+  const user = userEvent.setup();
+  renderAt('/adventure/french-6e-phonology');
+  const carte = () => within(screen.getByRole('navigation', { name: 'Village' })).getByRole('button', { name: /Carte/ });
+  await user.click(carte());
+  expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/map');
+  // L'île où l'on est : la Carte se ferme sur elle (avant, le toucher ne faisait rien).
+  await user.click(screen.getByRole('button', { name: 'Toucher la Forêt dans le monde' }));
+  expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/french-6e-phonology');
+  expect(vu.fiche).toBeNull();
+  // Son sol : on y va, mais le bonhomme ne part pas jusqu'à la case touchée.
+  await user.click(carte());
+  await user.click(screen.getByRole('button', { name: 'Toucher le sol de la Forêt' }));
+  expect(screen.getByTestId('adresse')).toHaveTextContent('/adventure/french-6e-phonology');
+  expect(screen.getByTestId('bonhomme')).not.toHaveTextContent('8,4');
+  expect(sheet()).not.toBeInTheDocument();
+});
+
 it('au retour d’un exercice (le monde se remonte), aucun panneau ne s’ouvre tout seul', () => {
   renderAt('/adventure/french-6e-phonology');
   expect(sheet()).not.toBeInTheDocument();

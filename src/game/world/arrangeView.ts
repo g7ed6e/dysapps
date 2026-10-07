@@ -15,7 +15,6 @@ import { getBridge } from './archipelago';
 import {
   detachedIsletTooCloseTo,
   DIRECTION_STEP,
-  freeGuardianSpots,
   isDetached,
   othersFootprintsOf,
   freeLandings,
@@ -30,11 +29,10 @@ import {
   placeIn,
   relinkBetween,
   routesIn,
-  sameGuardianPlace,
 } from './arrange';
 import { type ArrangeChoice, landingInWorld, placeOfChoice, stationInWorld } from './arrangeMode';
 import { coutDesPoignees, poigneesDuChoix, type StyleDesPoignees } from './arrangeHandles';
-import { footprintOf, frameOf, gapBetween, GAP_BETWEEN_PLACES, guardianIsletRectangle, landRectangle, poseOfSpot } from './footprint';
+import { footprintOf, frameOf, gapBetween, GAP_BETWEEN_PLACES, guardianIsletRectangle, landRectangle } from './footprint';
 import { joinShape } from './join';
 import { type ArchipelagoId, archipelagoOfIsland, type IslandDef, isLandInWorld } from './map';
 import { type Rectangle, STEP } from './placement';
@@ -61,11 +59,6 @@ function contourDeLaTerre(def: IslandDef, z: number, out: ArrangeCell[]): void {
       if ((x + y) % 2 !== 0 || !isLandInWorld(def, x, y)) continue;
       if (!isLandInWorld(def, x + 1, y) || !isLandInWorld(def, x - 1, y) || !isLandInWorld(def, x, y + 1) || !isLandInWorld(def, x, y - 1)) out.push({ x, y, z, genre: 'fantome' });
     }
-}
-
-/** Une place libre : un seul carré plat de `l` cases de côté, centré sur une case, à fleur d'eau (deux triangles). */
-function place(p: { x: number; y: number }, z: number, l: number, out: ArrangeCell[]): void {
-  out.push({ x: p.x, y: p.y, z, genre: 'place', l });
 }
 
 /** La grille montrée pendant le glissé : tant de places de côté autour du fantôme (choix 1b du mainteneur). */
@@ -317,11 +310,11 @@ function dessinDuChoix(world: World, c: ArrangeChoice, glisse: boolean): Arrange
       // places voisines, d'un pas l'une de l'autre, empileraient leurs icônes à l'écran).
       const parVoisin = new Map<BiomeId, { d: number; x: number; y: number }>();
       const reunionsA = joinsAround(world, c.id);
-      // Pendant le glissé, la grille prend la place des places libres jaunes.
-      for (const s of glisse ? [] : freeSpots(world, c.id, c.spot.turn, { ...c.spot, pas: PAS_AUTOUR })) {
+      // Aucune place libre jaune au repos : toucher la mer relâche le choix (mainteneur, 7 octobre 2026), rien sur l'eau
+      // ne doit sembler se toucher. Pendant le glissé, la grille et l'empreinte disent où il se pose, et l'icône de
+      // « Réunir » où il se collerait.
+      for (const s of glisse ? freeSpots(world, c.id, c.spot.turn, { ...c.spot, pas: PAS_AUTOUR }) : []) {
         if (Math.max(Math.abs(s.x - c.spot.x), Math.abs(s.y - c.spot.y)) > PAS_AUTOUR || (s.x === c.spot.x && s.y === c.spot.y)) continue;
-        const p = poseOfSpot(a, s);
-        place({ x: p.x + 8, y: p.y + 8 }, eau, 3, out);
         // Posé là, le lieu se collerait à un voisin : l'icône de « Réunir » sur la jointure, sur l'eau entre les deux terres,
         // là où irait leur construction (jamais sur la terre du lieu) ; « Réunir » s'allumera dans la barre.
         const d = Math.abs(s.x - c.spot.x) + Math.abs(s.y - c.spot.y);
@@ -361,12 +354,7 @@ function dessinDuChoix(world: World, c: ArrangeChoice, glisse: boolean): Arrange
         zoneDuGlisse = grilleDuGlisse(a, m, [r], obstacles, terres, eau, out);
       }
       const nomAuNord = glisse ? auNord(r, eau) : undefined;
-      // Les places libres autour de l'îlot seulement (la région entière en compte des centaines) ; la grille pendant le glissé.
-      for (const g of glisse ? [] : freeGuardianSpots(world, c.id, { ...m, r: 2 * STEP })) {
-        if (sameGuardianPlace(g, c.place)) continue;
-        const q = guardianIsletRectangle(ici, g);
-        place({ x: Math.floor((q.x0 + q.x1) / 2), y: Math.floor((q.y0 + q.y1) / 2) }, eau, 2, out);
-      }
+      // Aucune place libre jaune au repos (la mer touchée relâche le choix) ; la grille pendant le glissé.
       const avant = footprintOf(c.id, ici, guardianOf(world, c.id)).find((p) => p.genre === 'ilot')!;
       return { cases: out, souleve: avant, suivre: { x: (r.x0 + r.x1) / 2, y: (r.y0 + r.y1) / 2, z: eau }, barrees: [], ...(zoneDuGlisse ? { zoneDuGlisse } : {}), ...(nomAuNord ? { nomAuNord } : {}) };
     }

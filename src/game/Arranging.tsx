@@ -15,14 +15,13 @@ import { sonDePose } from './sound';
 import { mesuresDemandees } from './rendering';
 import type { Habillage } from './skin';
 import { type ArchipelagoId, archipelagoOfIsland } from './world/archipelagos';
-import { type Direction, groupAt, guardianOf, type GuardianPlaceAt, guardianPlacesAt, isDetached, joinCandidates, joinedWith, joinIslands, joinsIn, linksToRelink, NO_MORE_ROOM, placeIn, sameGuardianPlace, spotOf } from './world/arrange';
+import { type Direction, groupAt, guardianOf, type GuardianPlaceAt, guardianPlacesAt, isDetached, joinCandidates, joinedWith, joinIslands, joinsIn, linksToRelink, NO_MORE_ROOM, placeIn, sameGuardianPlace, spotOf, stationOf, currentLandings } from './world/arrange';
 import {
   type ArrangeChoice,
   choiceFits,
   chooseGuardian,
   chooseIsland,
   chooseLanding,
-  chooseLinkEnd,
   chooseRelink,
   chooseStation,
   choiceMiddle,
@@ -37,10 +36,9 @@ import {
 } from './world/arrangeMode';
 import { type ArrangeSession, canUndo, hasChanged, recordPose, resetToEntry, startArranging, undoLast } from './world/arrangeSession';
 import { arrangeView } from './world/arrangeView';
-import { linkEndHandles } from './world/arrangeHandles';
 import { getBridge } from './world/archipelago';
 import { DESCENTE_MS, GESTE_DU_LIEU, GESTE_SOUS_LE_SOL, gestureZone } from './world/arrangeGesture';
-import type { ArrangeGesture, ArrangeView, CadreDuMode, GlisserLeChoix, LinkEndHandle } from './world/view';
+import type { ArrangeGesture, ArrangeView, CadreDuMode, GlisserLeChoix } from './world/view';
 import { footprintOf, guardianIsletRectangle, landRectangle } from './world/footprint';
 import { mapOf } from './world/map';
 import type { Intention, Point } from './world/layout';
@@ -253,15 +251,6 @@ export interface Amenagement {
   reunirAvec: BiomeId | null;
   /** Le choix est sur une place prise (choix 3 du mainteneur) : « Poser » éteint, la croix grise sur le fantôme. */
   placePrise: boolean;
-  /**
-   * Les poignées des bouts des liaisons posées (choix 1a du mainteneur), quand rien n'est choisi ni en geste, avec le
-   * nom de leur bouton ; ou rien.
-   */
-  bouts: readonly (LinkEndHandle & { nom: string })[] | null;
-  /** Les mêmes poignées, sans leur nom, pour la 3D : la même liste tant que le monde ne bouge pas. */
-  boutsDuMonde: readonly LinkEndHandle[] | null;
-  /** Toucher la poignée d'un bout : son arrivée est choisie. */
-  choisirUnBout(link: string, end: 'from' | 'to'): void;
   /** Le choix glissé au doigt (7 octobre 2026, choix 1b, 2a et 3a du mainteneur) : la vue le prend, le suit, le lâche. */
   glisser: GlisserLeChoix;
   /** Le doigt glisse le choix : la grille et l'empreinte se dessinent, les flèches se cachent. */
@@ -693,18 +682,31 @@ export function useAmenagement({
       if (!c) return;
       const w = worldRef.current;
       const bouge = c.genre === 'lieu' ? !sameSpot(c.spot, spotOf(w, c.id)) : c.genre === 'gardien' ? !sameGuardianPlace(c.place, guardianOf(w, c.id)) : false;
-      // Levé sur une place libre : posé tout de suite (« Défaire » rattrape) ; sur une place prise, il reste là, croix
-      // grise, « Poser » éteint (choix 2a) ; la voix dit où.
+      // Levé sur une place libre : posé tout de suite ; sur une place prise, il reste là, croix grise (choix 2a) ; la
+      // voix dit où.
       if (poser && bouge && choiceFits(w, c)) return poserIci(true);
       choisir(c);
     },
+  };
+  /**
+   * Une borne ou une arrivée, qu'on ne glisse pas : calée sur la place touchée de son lieu, elle s'y pose tout de suite
+   * (mainteneur, 7 octobre 2026 : « il y a trop de boutons », plus de « Poser ») ; sur une place prise, elle y reste,
+   * croix grise ; à sa place d'avant, rien n'est posé (ni son, ni pas à défaire).
+   */
+  const caleEtPose = (c: ArrangeChoice, point: { x: number; y: number }) => {
+    const w = worldRef.current;
+    const s = snapChoice(w, c, point);
+    if (s.genre === 'liaison' || dejaEnPlace(w, s) || !choiceFits(w, s)) return choisir(s);
+    choixRef.current = s;
+    setChoix(s);
+    poserIci(true);
   };
   /** Un point touché sur un lieu est-il hors de son emprise (la mer à côté, un écueil) ? */
   const horsDuLieu = (id: BiomeId, p: Point) => {
     const r = emprise(worldRef.current, id);
     return p.x < r.x0 || p.x >= r.x1 || p.y < r.y0 || p.y >= r.y1;
   };
-  /** Le choix relâché (Échap, ou le choix retouché) : rien n'est choisi, les poignées des bouts reviennent. */
+  /** Le choix relâché (Échap, ou le choix retouché) : rien n'est choisi. */
   const relacher = (): true => {
     choisir(null, '');
     return true;
@@ -718,20 +720,20 @@ export function useAmenagement({
     const w = worldRef.current;
     switch (i.genre) {
       case 'mer':
-        if (choix) choisir(snapChoice(w, choix, i.point));
-        else direTexte('Touche d’abord un lieu, un gardien, une borne ou une liaison.');
+        // Toucher la mer relâche le choix, comme dans les jeux de base mobiles (mainteneur, 7 octobre 2026) : on
+        // déplace en glissant ; la vue simple et le clavier restent pour qui ne glisse pas.
+        if (choix) return relacher();
+        direTexte('Touche d’abord un lieu, un gardien, une borne ou une liaison.');
         return true;
       case 'ile': {
         const p = i.sol ? versMonde(i.sol) : null;
-        // Une borne ou une arrivée choisie : toucher son lieu la cale là ; la mer à côté d'un lieu, comme la mer.
+        // Une borne ou une arrivée choisie : toucher son lieu, ou la mer tout contre, la cale là ; avec un autre choix, la mer
+        // tout contre un lieu le relâche, comme la mer.
         if (p && choix && (choix.genre === 'borne' || choix.genre === 'arrivee')) {
-          choisir(snapChoice(w, choix, p));
+          caleEtPose(choix, p);
           return true;
         }
-        if (p && choix && horsDuLieu(i.id, p)) {
-          choisir(snapChoice(w, choix, p));
-          return true;
-        }
+        if (p && choix && horsDuLieu(i.id, p)) return relacher();
         // Le lieu choisi, retouché sur sa terre : il est relâché, comme avec Échap (sans clavier aussi).
         if (choix?.genre === 'lieu' && choix.id === i.id) return relacher();
         const c = chooseIsland(w, i.id);
@@ -785,6 +787,12 @@ export function useAmenagement({
         else if (choix && !enCours.current) relacher();
         return;
       }
+      // Entrée pose le choix décalé aux flèches (le bouton « Poser » n'est plus sur la Carte).
+      if (e.key === 'Enter' && !e.repeat && choix && !enCours.current && !question && !aConfirmer && !(e.target as Element | null)?.closest?.('button, a, [role="button"], summary')) {
+        e.preventDefault();
+        poserIci();
+        return;
+      }
       const f = FLECHES.find((x) => x.touche === e.key);
       if (!f) return;
       e.preventDefault();
@@ -799,16 +807,6 @@ export function useAmenagement({
   const vue = useMemo(() => (choix ? { ...arrangeView(world, choix, glisse), ...(nomChoisi && choix.genre === 'lieu' ? { nom: nomChoisi, lieu: choix.id } : {}) } : null), [world, choix, nomChoisi, glisse]);
   const reunirAvec = choix?.genre === 'lieu' && sameSpot(choix.spot, spotOf(world, choix.id)) ? voisinAReunir(world, choix.id) : null;
   const placePrise = useMemo(() => (choix ? !choiceFits(world, choix) : false), [world, choix]);
-  // Sans choix ni geste, chaque bout de liaison posée porte sa poignée, nommée pour son bouton.
-  const montrerLesBouts = ouvert && !choix && !geste && !question;
-  // Le tracé des liaisons se calcule une fois par monde (la 3D le reçoit tel quel) ; les noms des boutons, à chaque fois.
-  const boutsDuMonde = useMemo(() => (montrerLesBouts ? linkEndHandles(world, a) : null), [montrerLesBouts, world, a]);
-  const bouts =
-    boutsDuMonde?.map((b) => {
-      const la = lieuDEnFace(b.link, b.end);
-      const ici = lieuDEnFace(b.link, b.end === 'from' ? 'to' : 'from');
-      return { ...b, nom: `L’arrivée sur ${ici ? thePlace(nom(ici)) : ''}, ${mot.du} vers ${la ? thePlace(nom(la)) : ''}` };
-    }) ?? null;
   return {
     ouvert,
     ouvrir,
@@ -844,13 +842,6 @@ export function useAmenagement({
     annulerReunion,
     reunirAvec,
     placePrise,
-    bouts,
-    boutsDuMonde,
-    choisirUnBout: (link, end) => {
-      if (enCours.current) return;
-      const c = chooseLinkEnd(worldRef.current, link, end);
-      if (c) choisir(c);
-    },
     voisinAReunir: (id) => voisinAReunir(world, id),
     choisirDirect: (c) => choisir(c),
     glisser,
@@ -863,6 +854,19 @@ function sameChoicePlace(c: ArrangeChoice, d: ArrangeChoice): boolean {
   if (c.genre === 'lieu' && d.genre === 'lieu') return sameSpot(c.spot, d.spot);
   if (c.genre === 'gardien' && d.genre === 'gardien') return sameGuardianPlace(c.place, d.place);
   return c === d;
+}
+
+/** Une borne ou une arrivée calée est-elle déjà à sa place dans le monde ? */
+function dejaEnPlace(w: World, c: ArrangeChoice): boolean {
+  if (c.genre === 'borne') {
+    const p = stationOf(w, c.key);
+    return Boolean(p && p.x === c.place.x && p.y === c.place.y);
+  }
+  if (c.genre === 'arrivee') {
+    const l = currentLandings(w, c.link)?.[c.end];
+    return Boolean(l && l.side === c.landing.side && l.step === c.landing.step);
+  }
+  return false;
 }
 
 /** Le lieu à l'autre bout d'une liaison, vu depuis son bout `end`. */

@@ -4,7 +4,7 @@
 import * as THREE from 'three';
 import { estUnBiome, type BiomeId } from '../biomes';
 import type { ArchipelagoId } from '../world/archipelago';
-import { ARROW_DIRS, cubeTags, enRoute, finishWalk, groundTap, islandInDirection, recentrerApres, toucheRetenue, walkPose, type GroundTap, type Touche, type VoyageRun } from '../world/scene';
+import { ARROW_DIRS, cubeTags, enRoute, finishWalk, groundTap, ileSurLaCarte, islandInDirection, recentrerApres, toucheRetenue, walkPose, type GroundTap, type Touche, type VoyageRun } from '../world/scene';
 import { lirePlaceLibre } from '../freeSpace';
 import type { RappelsDeLaVue } from '../world/view';
 import { borneDe, cleDeLaCreature, SIGNE, zoneDuToucher, type ObjetTouche, type ToucherDirect } from '../world/affordance';
@@ -17,7 +17,7 @@ import type { Signes } from './signs';
 import type { Cubes } from './cubes';
 import type { Amarre, Navire } from './ship';
 import type { Camera } from './camera';
-import { glisseCommence, pointDuPlan, quiGlisse, RELAYE_DEPUIS_UN_BOUTON, SEUIL_DU_GLISSE } from './drag';
+import { glisseCommence, pointDuPlan, quiGlisse, SEUIL_DU_GLISSE } from './drag';
 
 /** Le doigt posé sur le monde : son pointeur, où, et le point du sol saisi une fois le seuil passé (sinon `null`). */
 interface Appui {
@@ -30,11 +30,6 @@ interface Appui {
   cy: number;
   /** Un second doigt s'est posé (la vue se pince) : lever les doigts n'ouvre rien. */
   pince?: boolean;
-  /**
-   * Un glissé parti d'un bouton posé sur la scène (la poignée d'un bout de liaison, GD-9), relayé ici une fois le doigt
-   * parti (`RELAYE_DEPUIS_UN_BOUTON`) : c'est un glissé, lever le doigt n'ouvre rien.
-   */
-  relaye?: boolean;
   /**
    * Le mode « Aménager », un choix en cours : au départ du glissé, le doigt est-il parti du choix (choix 3a du
    * mainteneur) ? `undefined` : pas encore décidé ; `null` : non, la vue glisse ; sinon la hauteur du plan où il le glisse.
@@ -177,7 +172,7 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
     if (down && !pince && e.pointerType === 'touch' && e.pointerId !== down.id && zoomPermis()) return pincer(e, down);
     // Un seul doigt : le second, posé pendant que le premier touche ou glisse, ne fait rien.
     if (down || !e.isPrimary || (e.pointerType === 'mouse' && e.button !== 0)) return;
-    down = { id: e.pointerId, x: e.clientX, y: e.clientY, cx: e.clientX, cy: e.clientY, ancre: null, ...(RELAYE_DEPUIS_UN_BOUTON in e ? { relaye: true } : {}) };
+    down = { id: e.pointerId, x: e.clientX, y: e.clientY, cx: e.clientX, cy: e.clientY, ancre: null };
     // Le glissé continue même si le doigt sort du canvas (sur un bouton, un panneau).
     try {
       canvas.setPointerCapture(e.pointerId);
@@ -283,8 +278,8 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
     appui.cx = e.clientX;
     appui.cy = e.clientY;
     // Le mode « Aménager », un choix en cours (GD-9) : un glissé parti du choix le glisse au doigt (7 octobre 2026, choix
-    // 1b et 3a du mainteneur) ; tout autre glissé fait glisser la vue. Un glissé relayé d'un bouton (une poignée) aussi.
-    if (appui.tient === undefined && !appui.relaye && derniers.current.amenager === 'choix') {
+    // 1b et 3a du mainteneur) ; tout autre glissé fait glisser la vue.
+    if (appui.tient === undefined && derniers.current.amenager === 'choix') {
       if (!glisseCommence(e.clientX - appui.x, e.clientY - appui.y)) return;
       // Parti d'ailleurs que du choix : la Carte glisse dès `SEUIL_DU_GLISSE`. Parti du choix : il ne part qu'au-delà
       // d'un seuil plus grand (`SEUIL_DU_CHOIX`), et d'ici là la Carte non plus (`quiGlisse`).
@@ -409,7 +404,7 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
     if (pinceAvec(e.pointerId)) return finDuPincement(e);
     if (!down || e.pointerId !== down.id) return;
     const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y);
-    const glisse = down.ancre !== null || Boolean(down.pince) || Boolean(down.relaye);
+    const glisse = down.ancre !== null || Boolean(down.pince);
     // Le choix glissé, lâché : posé tout de suite sur une place libre (choix 2a du mainteneur).
     lacherLeChoix(down, true);
     lacher(e);
@@ -418,12 +413,10 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
     // Pendant le voyage, un tap n'importe où fait arriver le navire tout de suite.
     if (voyageRef.current) return rappels.current.onVoyageSkip?.();
     if (derniers.current.amenager !== 'non') return toucherEnAmenageant(e);
+    if (derniers.current.carte) return toucherSurLaCarte(e);
     // Une bulle sous le doigt (sa plaque, pas les marges de sa case) passe d'abord : elle est dessinée par-dessus tout
     // (Blocland, world/affordance.ts).
     const vue = canvas.getBoundingClientRect();
-    // Sur la Carte glissée ou zoomée, la bulle d'or tenue au bord ramène la vue d'ensemble, où sa cible se voit ; dans
-    // la vue d'ensemble, le toucher va à ce qui est dessous.
-    if (derniers.current.carte && cadrage.decale() && etiquettes.bulleAuBordSous(e.clientX - vue.left, e.clientY - vue.top)) return recentrer();
     const bulle = signesDesCreatures.sous(e.clientX - vue.left, e.clientY - vue.top, vue.width, vue.height);
     if (bulle?.genre === 'creature') {
       if (!reduceMotion) signesDesCreatures.rebondir(cleDeLaCreature(bulle.id));
@@ -467,8 +460,7 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
     // `recentrerApres`) : en chantier on pose bloc après bloc là où l'on regarde, et le bonhomme qui y va ne déplace
     // pas la vue.
     const tap = !creature && hit ? tapSur(hit) : null;
-    // Sur la Carte, tout toucher qui fait quelque chose ramène la vue d'ensemble (le chemin d'une île pâle y est entier).
-    if (recentrerApres(tap, Boolean(creature)) || (derniers.current.carte && (tap || creature))) recentrer();
+    if (recentrerApres(tap, Boolean(creature))) recentrer();
     if (creature) {
       const quest = questIdOf(creature.object);
       if (quest) sauterLeSigne({ genre: 'borne', id: `${quest.biome}:${quest.typeId}` });
@@ -490,6 +482,31 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
     if (tap.kind === 'face') rappels.current.build?.onPickFace(tap.cell, tap.next, { terrain: { enRoute: enRouteIci } });
     // Le sol d'une île : la colonne touchée (celle où pousse un élément du décor touché), le bonhomme y va.
     else if (tap.kind === 'island') rappels.current.onPickIsland?.(tap.id, tap.cell, enRouteIci);
+  };
+  /**
+   * Un toucher sur la Carte (piste A du mainteneur, 7 octobre 2026) : la Carte sert à s'orienter, on n'y touche que des
+   * îles. Une borne, une créature, un Gardien, le navire ou un lieu comptent pour leur île : ni fiche, ni signe qui
+   * saute, ni zone de toucher, et on va sur l'île, pas jusqu'à la case touchée. Un ouvrage, la mer : rien. Le toucher
+   * ramène la vue d'ensemble (le chemin d'une île pâle y est entier) ; sur la Carte glissée ou zoomée, la bulle d'or
+   * tenue au bord la ramène aussi.
+   */
+  const toucherSurLaCarte = (e: PointerEvent) => {
+    const vue = canvas.getBoundingClientRect();
+    if (cadrage.decale() && etiquettes.bulleAuBordSous(e.clientX - vue.left, e.clientY - vue.top)) return recentrer();
+    const ile = ileSousLeDoigt(e);
+    if (!ile) return;
+    recentrer();
+    rappels.current.onPickIsland?.(ile);
+  };
+  /** L'île de ce qui est sous le doigt : celle d'une borne, d'une créature, d'un Gardien, du navire, ou son sol. */
+  const ileSousLeDoigt = (e: PointerEvent): BiomeId | null => {
+    const { creature, hit } = aim(e);
+    if (creature) {
+      if (vehicleRef.current && isInside(creature.object, navire.groupe)) return vehicleRef.current.port;
+      return questIdOf(creature.object)?.biome ?? creatureIdOf(creature.object)?.id ?? null;
+    }
+    if (!hit) return null;
+    return ileSurLaCarte(archRef.current, { ...cubesDuMonde.casesTouchees(hit), ground: { x: hit.point.x, y: hit.point.z } }, tags.current);
   };
   /**
    * Un toucher dans le mode « Aménager » (GD-9) : un Gardien, une borne, une liaison posée (son arrivée la plus proche),

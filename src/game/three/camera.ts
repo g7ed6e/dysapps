@@ -3,7 +3,7 @@
 // L'élève peut faire glisser la vue à plat pour explorer (./drag.ts) : un décalage s'ajoute à ce cadrage, borné à
 // l'archipel, et s'efface dès que l'application reprend la main (une île touchée, la Carte, une marche, un voyage).
 // L'élève peut aussi zoomer (pincer, molette, touches + et −, `zoomer`). Sur la Carte : de l'archipel entier, son
-// cadrage d'ouverture, jusqu'à une île en gros plan ; effacé à sa fermeture. Dans le monde : un peu plus loin ou bien
+// cadrage d'ouverture, jusqu'à deux îles environ ; effacé à sa fermeture. Dans le monde : un peu plus loin ou bien
 // plus près que le cadrage (`ZOOM_DU_MONDE`), gardé d'une île à l'autre jusqu'à « Recentrer ».
 // Les cadrages (les vues, la Carte, la traversée) sont dans ./camera/framings.ts ; ce fichier garde la caméra qui les
 // suit, et en réexporte les noms publics.
@@ -56,7 +56,7 @@ export interface Camera extends PartieDeLaScene {
   /** Le décalage de la vue glissée, en cases sur le plan horizontal (zéro : la vue à son cadrage). */
   decalage(): Readonly<{ x: number; z: number }>;
   /**
-   * Rapproche (`facteur` > 1) ou éloigne la vue. Sur la Carte, borné entre le cadrage d'ouverture et une île en gros plan
+   * Rapproche (`facteur` > 1) ou éloigne la vue. Sur la Carte, borné entre le cadrage d'ouverture et deux îles environ
    * (`ZOOM_DE_LA_CARTE`) ; dans le monde, entre les bornes de `ZOOM_DU_MONDE` (pas pendant un voyage ni une traversée
    * au cadre fixe). Le point du sol vu en `vers` (coordonnées normalisées de l'écran, −1 à 1) reste sous le doigt ; la
    * caméra y est tout de suite. Ni le nord, ni la direction de vue ne changent. Rend vrai si la vue a changé.
@@ -122,7 +122,7 @@ export function creerCamera(
       const h = lue ? Math.max(1, lue.h) : HAUTEUR_DE_TABLETTE;
       const libre = lue?.libre ?? { x0: 0, y0: 0, x1: w, y1: h - RESERVE_DU_BAS };
       const c = cadrageDeLaCarte(monde.archipel, destination, w, h, libre);
-      // Au plus près, une île remplit les deux tiers du petit côté de la place libre (jamais moins près qu'à l'ouverture).
+      // Au plus près, une île remplit la moitié du petit côté de la place libre (`ZOOM_DE_LA_CARTE` ; jamais moins près qu’à l’ouverture).
       const cote = Math.max(1, Math.min(libre.x1 - libre.x0, libre.y1 - libre.y0));
       const zoomMax = Math.max(1, (ZOOM_DE_LA_CARTE.ile * cote) / (LARGEUR_D_UNE_ILE * c.echelle));
       cadrageCarte = { lue, destination: cle, aspect, ...c, zoomMax };

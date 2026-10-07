@@ -17,6 +17,7 @@ import { placeLibre, type Rect } from '../freeSpace';
 import { avatarRoute, bridgePath, cadreDeLaLiaison, cadreDeTraversee, islandCenter, worldBounds } from '../world/terrain';
 import { getBridge } from '../world/archipelago';
 import { AUTOUR_DE_LA_DESTINATION, cadrageDeLaCarte, cadrageDeLaTraversee, creerCamera, decalagePourViser, ECHELLE_MIN_DE_LA_TRAVERSEE, PLANCHER_DE_LA_CARTE, ZOOM_DU_MONDE } from './camera';
+import { ZOOM_DE_LA_CARTE } from './camera/framings';
 import type { Derniers, Instant, Monde } from './scenePart';
 
 /** La scène de la tablette de référence (1024 × 768, moins la barre du haut) ; la vue d'une île, à gauche du panneau. */
@@ -263,7 +264,7 @@ describe('La Carte dans la place libre (DA-31)', () => {
     }
   });
 
-  it('la Carte se zoome : de son cadrage d’ouverture jusqu’à une île en gros plan, le point visé reste sous le doigt ; la Carte refermée l’efface', () => {
+  it('la Carte se zoome : de son cadrage d’ouverture jusqu’à deux îles environ, le point visé reste sous le doigt ; la Carte refermée l’efface', () => {
     const b = worldBounds('6e');
     const monde: Monde = { scene: new THREE.Scene(), archipel: '6e', habillage: HABILLAGES.blocland, surface: null, etendue: b, centre: { x: 0, y: 0 }, largeur: 200, liaisons: () => [] };
     const camera = new THREE.PerspectiveCamera(40, T.w / T.h, 0.5, 2000);
@@ -296,11 +297,11 @@ describe('La Carte dans la place libre (DA-31)', () => {
     // L'image suivante garde le zoom.
     cam.animer!(0.1, 0.016, true);
     expect(camera.position.distanceTo(cam.cible)).toBeCloseTo(d0 / 2, 3);
-    // Au plus près, une île (22 cases) remplit les deux tiers du petit côté de la place libre, pas plus.
+    // Au plus près, une île (22 cases) remplit la moitié du petit côté de la place libre, pas plus : deux îles environ.
     cam.zoomer(1000, { x: 0, y: 0 });
     cam.animer!(0.2, 0.016, true);
     const echelle = T.h / (2 * camera.position.distanceTo(cam.cible) * Math.tan((40 * Math.PI) / 360));
-    expect(22 * echelle).toBeCloseTo((2 / 3) * (libre.y1 - libre.y0), 0);
+    expect(22 * echelle).toBeCloseTo(ZOOM_DE_LA_CARTE.ile * (libre.y1 - libre.y0), 0);
     // « Recentrer » revient au cadrage d'ouverture.
     cam.recentrer();
     cam.animer!(0.3, 0.016, true);

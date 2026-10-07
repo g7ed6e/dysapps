@@ -14,7 +14,6 @@ import {
   chooseGuardian,
   chooseIsland,
   chooseLanding,
-  chooseLinkEnd,
   chooseRelink,
   chooseStation,
   choiceSentence,
@@ -45,7 +44,7 @@ describe('choisir', () => {
 });
 
 describe('un lieu : caler, décaler, tourner, poser', () => {
-  it('toucher la mer cale le fantôme sur une place libre ; les flèches avancent d’un cran, libre ou pris, jusqu’au bord', () => {
+  it('un point touché cale le fantôme sur une place libre ; les flèches avancent d’un cran, libre ou pris, jusqu’au bord', () => {
     const w = partie();
     const c = chooseIsland(w, VOLCAN)!;
     const cale = snapChoice(w, c, { x: 0, y: 0 });
@@ -104,25 +103,28 @@ describe('un lieu : caler, décaler, tourner, poser', () => {
     }
   });
 
-  it('les places autour qui colleraient le lieu à un voisin portent l’icône de « Réunir » (choix 2a)', () => {
+  it('pendant le glissé, les places qui colleraient le lieu à un voisin portent l’icône de « Réunir » (choix 2a) ; au repos, rien sur l’eau', () => {
     const w = partie();
     const TOUR = 'french-6e-reading' as BiomeId;
     const c = chooseIsland(w, TOUR)!;
-    const v = arrangeView(w, c);
+    // Au repos, toucher la mer relâche le choix (mainteneur, 7 octobre 2026) : ni place jaune ni icône sur l'eau.
+    const auRepos = arrangeView(w, c);
+    expect(auRepos.reunions).toBeUndefined();
+    expect(auRepos.cases.some((x) => x.genre === 'place')).toBe(false);
+    const v = arrangeView(w, c, true);
     const reunions = v.reunions ?? [];
     expect(reunions.length).toBeGreaterThan(0);
     // Chaque icône est sur la jointure, sur l'eau où irait la construction : jamais sur une terre (ni celle du lieu
     // choisi, ni à sa place d'aujourd'hui), à fleur d'eau ; une par voisin au plus.
-    const places = v.cases.filter((x) => x.genre === 'place');
+    const eau = v.cases.find((x) => x.genre === 'grille')!.z;
     for (const r of reunions) {
       for (const l of mapOf('6e').map((d) => d.id)) expect(isLandInWorld(placeIn(w, l), Math.floor(r.x), Math.floor(r.y)), l).toBe(false);
-      expect(r.z).toBe(places[0].z + 1);
+      expect(r.z).toBe(eau + 1);
     }
-    // Pas toutes : seulement celles qui le colleraient à un voisin.
-    expect(reunions.length).toBeLessThan(places.length);
+    expect(new Set(reunions.map((r) => `${r.x},${r.y}`)).size).toBe(reunions.length);
   });
 
-  it('le dessin du choix : fantôme en pointillés, places autour seulement, liaisons retracées, barrées avec une croix', () => {
+  it('le dessin du choix : fantôme en pointillés, aucune place jaune au repos, liaisons retracées, barrées avec une croix', () => {
     const w = partie();
     const c = snapChoice(w, chooseIsland(w, VOLCAN)!, { x: 200, y: 200 });
     if (c.genre !== 'lieu') throw new Error('lieu');
@@ -132,8 +134,8 @@ describe('un lieu : caler, décaler, tourner, poser', () => {
     // Pointillés : jamais deux cases voisines.
     const k = new Set(fantome.map((x) => `${x.x},${x.y}`));
     for (const x of fantome) expect(k.has(`${x.x + 1},${x.y}`) || k.has(`${x.x},${x.y + 1}`)).toBe(false);
-    // Les places montrées : moins que toutes les places libres.
-    expect(v.cases.filter((x) => x.genre === 'place').length).toBeLessThan(freeSpots(w, VOLCAN).length);
+    // Aucune place jaune au repos : la mer touchée relâche le choix.
+    expect(v.cases.some((x) => x.genre === 'place')).toBe(false);
     // Loin de ses voisins, ses liaisons ne tiennent plus : barrées, chacune sous une croix.
     const barrees = v.barrees.length;
     expect(v.cases.filter((x) => x.genre === 'croix').length).toBe(barrees * 5);
@@ -197,9 +199,6 @@ describe('un Gardien, une borne, une arrivée, une liaison à reposer', () => {
     const autre = DIRECTIONS.map((d) => stepChoice(w, c!, d)).find(Boolean);
     if (autre) expect(poseChoice(w, autre).ok).toBe(true);
     expect(choiceSentence(w, c!)).toMatch(/^L’arrivée, sur la côte (nord|sud|est|ouest) /);
-    // La poignée d'un bout (choix 1a) choisit la même arrivée ; les flèches la mènent le long de la côte, d'un cran.
-    expect(chooseLinkEnd(w, lien, c!.genre === 'arrivee' ? c!.end : 'from')).toEqual(c);
-    expect(chooseLinkEnd(w, 'inconnue', 'from')).toBeNull();
   });
 
   it('une liaison séparée se repose entre deux voisins, gratuitement', () => {
