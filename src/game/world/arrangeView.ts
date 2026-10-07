@@ -182,6 +182,11 @@ function ligneDuGardien(terre: Rectangle, ilot: Rectangle, z: number, out: Arran
   }
 }
 
+/** Le milieu du bord nord d'une emprise (le nord vers les y qui montent), où se pose le nom du choix pendant le glissé. */
+function auNord(r: Rectangle, z: number): { x: number; y: number; z: number } {
+  return { x: (r.x0 + r.x1) / 2, y: DIRECTION_STEP.nord.dy > 0 ? r.y1 : r.y0, z };
+}
+
 /** Le point le plus proche d'un point, parmi d'autres. */
 function closestPoint(ps: readonly { x: number; y: number }[], p: { x: number; y: number }): { x: number; y: number } {
   return ps.reduce((best, q) => (Math.hypot(q.x - p.x, q.y - p.y) < Math.hypot(best.x - p.x, best.y - p.y) ? q : best));
@@ -297,6 +302,7 @@ function dessinDuChoix(world: World, c: ArrangeChoice, glisse: boolean): Arrange
       const sonGardien = guardianOf(world, c.id);
       if (isDetached(sonGardien)) ligneDuGardien(landRectangle(groupe[0].def), guardianIsletRectangle(groupe[0].def, sonGardien), eau, out);
       let zoneDuGlisse: Rectangle | undefined;
+      let nomAuNord: ArrangeView['nomAuNord'];
       if (glisse) {
         const emprise: Rectangle[] = groupe.flatMap((g) => footprintOf(g.id, g.def, guardianOf(world, g.id)).filter((p) => p.genre === 'terre' || (p.genre === 'ilot' && !isDetached(guardianOf(world, g.id)))));
         if (forme) emprise.push(forme.zone);
@@ -305,6 +311,7 @@ function dessinDuChoix(world: World, c: ArrangeChoice, glisse: boolean): Arrange
         // Sur l'eau seulement : ni sous les autres lieux, ni sous le lieu soulevé à sa place d'avant.
         const terres = [...autres, ...groupe.flatMap((g) => footprintOf(g.id, placeIn(world, g.id), guardianOf(world, g.id)))];
         zoneDuGlisse = grilleDuGlisse(a, middleOfGroup(groupe[0].def), emprise, obstacles, terres, eau, out);
+        nomAuNord = auNord(union(emprise), eau);
       }
       // Pour chaque voisin auquel il se collerait, la place la plus proche du fantôme : une seule icône par voisin (des
       // places voisines, d'un pas l'une de l'autre, empileraient leurs icônes à l'écran).
@@ -334,7 +341,7 @@ function dessinDuChoix(world: World, c: ArrangeChoice, glisse: boolean): Arrange
       // La vue garde entier le fantôme : les deux lieux réunis et leur réunion, pas seulement son milieu.
       const fantome = out.slice(0, debut);
       const cadre = fantome.length ? { rect: union(fantome.map((q) => ({ x0: q.x, y0: q.y, x1: q.x + 1, y1: q.y + 1 }))), z: eau, seq: 0 } : undefined;
-      return { cases: out, souleve: union(zone ? [...ici2, zone] : ici2), suivre: milieu(fantome, eau), barrees: relink, ...(cadre ? { cadre } : {}), ...(reunions.length ? { reunions } : {}), ...(zoneDuGlisse ? { zoneDuGlisse } : {}) };
+      return { cases: out, souleve: union(zone ? [...ici2, zone] : ici2), suivre: milieu(fantome, eau), barrees: relink, ...(cadre ? { cadre } : {}), ...(reunions.length ? { reunions } : {}), ...(zoneDuGlisse ? { zoneDuGlisse } : {}), ...(nomAuNord ? { nomAuNord } : {}) };
     }
     case 'gardien': {
       const r = guardianIsletRectangle(ici, c.place);
@@ -353,6 +360,7 @@ function dessinDuChoix(world: World, c: ArrangeChoice, glisse: boolean): Arrange
         const terres = [...autres, ...footprintOf(c.id, ici, guardianOf(world, c.id))];
         zoneDuGlisse = grilleDuGlisse(a, m, [r], obstacles, terres, eau, out);
       }
+      const nomAuNord = glisse ? auNord(r, eau) : undefined;
       // Les places libres autour de l'îlot seulement (la région entière en compte des centaines) ; la grille pendant le glissé.
       for (const g of glisse ? [] : freeGuardianSpots(world, c.id, { ...m, r: 2 * STEP })) {
         if (sameGuardianPlace(g, c.place)) continue;
@@ -360,7 +368,7 @@ function dessinDuChoix(world: World, c: ArrangeChoice, glisse: boolean): Arrange
         place({ x: Math.floor((q.x0 + q.x1) / 2), y: Math.floor((q.y0 + q.y1) / 2) }, eau, 2, out);
       }
       const avant = footprintOf(c.id, ici, guardianOf(world, c.id)).find((p) => p.genre === 'ilot')!;
-      return { cases: out, souleve: avant, suivre: { x: (r.x0 + r.x1) / 2, y: (r.y0 + r.y1) / 2, z: eau }, barrees: [], ...(zoneDuGlisse ? { zoneDuGlisse } : {}) };
+      return { cases: out, souleve: avant, suivre: { x: (r.x0 + r.x1) / 2, y: (r.y0 + r.y1) / 2, z: eau }, barrees: [], ...(zoneDuGlisse ? { zoneDuGlisse } : {}), ...(nomAuNord ? { nomAuNord } : {}) };
     }
     case 'borne': {
       const p = stationInWorld(world, c.key, c.place);

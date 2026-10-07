@@ -65,6 +65,8 @@ export interface ArrangeView {
    * des autres lieux qui s'y trouvent s'estompent, jusqu'au lever du doigt.
    */
   zoneDuGlisse?: Rectangle;
+  /** Pendant le glissé : le milieu du bord nord de l'empreinte, où le nom du choix se pose, au-dessus d'elle à l'écran. */
+  nomAuNord?: { x: number; y: number; z: number };
 }
 
 /**
@@ -76,6 +78,8 @@ export interface ArrangeView {
  * `lacher(false)`.
  */
 export interface GlisserLeChoix {
+  /** Le doigt parti de `point` part-il du choix ? Rien n'est pris : la vue en décide son seuil (`SEUIL_DU_CHOIX`). */
+  partDuChoix(point: { x: number; y: number }, touche: { lieu?: BiomeId; gardien?: BiomeId }): boolean;
   prendre(point: { x: number; y: number }, touche: { lieu?: BiomeId; gardien?: BiomeId }): boolean;
   suivre(point: { x: number; y: number }): void;
   lacher(poser: boolean): void;

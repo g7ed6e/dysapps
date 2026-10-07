@@ -202,14 +202,16 @@ describe('l’îlot d’un Gardien détaché (choix 4a du mainteneur)', () => {
   const essayer = (lieux: IslandDef[], gardiens?: (id: BiomeId) => GuardianPlace | undefined) => new RegionRouter('6e', { lieux, gardiens }).essayer(lien, LONG_LENGTH);
 
   it('posé sur le chemin, la liaison le contourne', () => {
-    const lieux = [plaine, pose(galet, 60 - (galet.core.x - plaine.core.x), 0)];
+    // Le Galet en biais de la Plaine : la liaison en L a deux coudes possibles ; l'îlot sur l'un, elle prend l'autre.
+    const lieux = [plaine, pose(galet, 60 - (galet.core.x - plaine.core.x), 24)];
     const droit = essayer(lieux)!;
     const spot = placeSur(droit.cases[Math.floor(droit.cases.length / 2)]);
     const ici: GuardianPlace = { side: 'front', step: 0, spot };
     const ilot = footprintOf(plaine.id, plaine, ici).find((p) => p.genre === 'ilot')!;
     const t = essayer(lieux, (id) => (id === plaine.id ? ici : undefined));
     expect(droit.cases.some((c) => distanceAuRectangle(c.x, c.y, ilot) === 0)).toBe(true);
-    if (t) for (const c of t.cases) expect(distanceAuRectangle(c.x, c.y, ilot)).toBeGreaterThanOrEqual(2);
+    expect(t).not.toBeNull();
+    for (const c of t!.cases) expect(distanceAuRectangle(c.x, c.y, ilot)).toBeGreaterThanOrEqual(2);
   });
 
   it('parti au loin, la place qu’il quitte redevient de l’eau', () => {

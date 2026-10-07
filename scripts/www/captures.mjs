@@ -85,7 +85,7 @@ const MID = {
   progress: { xp: 1450, totalAnswers: 310, correctAnswers: 250, sessionsCompleted: 28, structuresCompleted: 6, challengesWon: 2, bestStreak: 9, badges: badges(9) },
 };
 /** Au milieu des Premiers Rivages, le Gardien de la Rivière des fractions détaché de son lieu, au sud (choix 4a), */
-const DETACHE = { '6e': { guardians: { 'maths-6e-fractions': { side: 'front', step: 0, turn: 0, spot: { x: 32, y: 2 } } } } };
+const DETACHE = { '6e': { guardians: { 'maths-6e-fractions': { side: 'front', step: 0, turn: 0, spot: { x: 34, y: 2 } } } } };
 /** et le bonhomme sur la Rivière des fractions, dont le Gardien est prêt. */
 const MID_FRACTIONS_DETACHE = { ...MID, game: { ...MID.game, world: { ...MID.game.world, layout: DETACHE, place: 'maths-6e-fractions' } } };
 /** Les Premiers Rivages reconstruits : tout est ouvert et bâti, le navire a pris la mer. */
@@ -159,6 +159,9 @@ const SHOTS = [
   // loin au sud de son lieu, son lieu choisi (la ligne en pointillés entre eux, choix 4a).
   { name: 'amenager-glisse', state: MID, go: '/adventure/map', act: amenagerGlisse('maths-6e-fractions'), surDemande: true },
   { name: 'amenager-glisse-prise', state: MID, go: '/adventure/map', act: amenagerGlisse('maths-6e-fractions', { cherche: 'prise' }), surDemande: true },
+  // Une place prise pendant le glissé, en grand texte, en tablette et au téléphone : la ligne du haut et l'empreinte.
+  { name: 'tablette-amenager-glisse-prise-grand-texte', state: MID, go: '/adventure/map', settings: { fontSize: 28 }, act: amenagerGlisse('maths-6e-fractions', { cherche: 'prise' }), surDemande: true },
+  { name: 'telephone-amenager-glisse-prise-grand-texte', state: MID, go: '/adventure/map', size: PHONE, settings: { fontSize: 28 }, act: amenagerGlisse('maths-6e-fractions', { cherche: 'prise' }), surDemande: true },
   { name: 'amenager-gardien-detache', state: MID, go: '/adventure/map', act: amenagerGlisse('maths-6e-fractions', { gardien: true, cherche: 'loin', directions: [[0, -1]], poser: true }), surDemande: true },
   // Le glissé en tablette portrait et au téléphone ; la fiche du Gardien détaché en grand texte ; un Gardien détaché prêt,
   // le bonhomme sur son lieu (sa bulle reste visible, au bord de l'écran si son îlot est hors de vue).

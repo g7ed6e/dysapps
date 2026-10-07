@@ -136,6 +136,14 @@ function isStationKey(a: ArchipelagoId, key: string): boolean {
  * entrée invalide de `stations`, `landings`, `shortcuts` ou `relink` n'oublie qu'elle-même ; la place détachée invalide
  * d'un Gardien (`spot`) le ramène seulement devant son lieu.
  */
+/**
+ * L'orientation d'un Gardien détaché (celle du monde) une fois revenu contre son lieu, où elle se compte depuis son lieu
+ * tourné de `lieu` quarts : le Gardien reste tourné dans le monde comme il l'était.
+ */
+export function turnAgainstPlace(turn: LayoutTurn, lieu: LayoutTurn): LayoutTurn {
+  return (((turn - lieu) % 4) + 4) % 4 as LayoutTurn;
+}
+
 function readRegion(a: ArchipelagoId, raw: unknown): RegionLayout | null {
   if (!isRecord(raw)) return null;
   const out: RegionLayout = {};
@@ -178,7 +186,9 @@ function readRegion(a: ArchipelagoId, raw: unknown): RegionLayout | null {
       const s = g.spot;
       const x = isRecord(s) && isInt(s.x) && s.x >= 0 && s.x <= max.x ? s.x : null;
       const y = isRecord(s) && isInt(s.y) && s.y >= 0 && s.y <= max.y ? s.y : null;
-      guardians[id] = x !== null && y !== null ? { side: 'front', step: 0, turn: g.turn, spot: { x, y } } : { side: 'front', step: 0, turn: g.turn };
+      // Revenu devant son lieu, il reste tourné dans le monde comme il l'était (`turnAgainstPlace`, comme quand
+      // `settleNewPlaces` ramène un îlot qui ne tient plus) : les deux chemins donnent la même orientation.
+      guardians[id] = x !== null && y !== null ? { side: 'front', step: 0, turn: g.turn, spot: { x, y } } : { side: 'front', step: 0, turn: turnAgainstPlace(g.turn, out.islands?.[id]?.turn ?? 0) };
     }
     if (Object.keys(guardians).length) out.guardians = guardians;
   }

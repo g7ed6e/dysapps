@@ -15,7 +15,7 @@ import { SIDE_OF, LAYOUT_SIDE_OF } from './appliedLayout';
 import { detachedIsletTooClose, fittingPlaces, type FootprintPart, footprintOf, frameOf, GAP_BETWEEN_PLACES, gapBetween, LINK_GAP, placedIsland, poseOfSpot, spotInSteps, tooSmallGaps } from './footprint';
 import { STEP, type Quarts, type Rectangle, SIDES, TOWARDS_SEA, turnedSide, wrapQuarts } from './placement';
 import { LONG_LENGTH, possibleLandings, RegionRouter, type LinkLandings, type LinkRoute, startingPlaces, placesOf } from './routing';
-import { type GuardianPlace, LAYOUT_LAST_ISLET_SPOT, LAYOUT_LAST_SPOT, type LayoutGuardian, type LayoutLanding, type LayoutSide, type LayoutSpot, type LayoutTurn, type RegionLayout } from './savedLayout';
+import { type GuardianPlace, LAYOUT_LAST_ISLET_SPOT, LAYOUT_LAST_SPOT, turnAgainstPlace, type LayoutGuardian, type LayoutLanding, type LayoutSide, type LayoutSpot, type LayoutTurn, type RegionLayout } from './savedLayout';
 import { reefsOutside } from './terrain/sea';
 import { zoneDesPlans } from './plans';
 import { AVATAR_HOME } from './terrain/base';
@@ -828,7 +828,7 @@ function settleDetachedGuardians(world: World): World {
       const ilot = parts.find((p) => p.genre === 'ilot')!;
       if (inFrame(a, [ilot]) && farEnough([ilot], othersFootprints(w, a, id)) && !detachedIsletTooClose(parts).length) continue;
       // Son orientation détachée est celle du monde ; contre son lieu, elle se compte depuis son lieu (comme `moveGuardian`).
-      w = withGuardian(w, id, { side: 'front', step: 0, turn: wrapQuarts(g.turn - placeIn(w, id).quarts) });
+      w = withGuardian(w, id, { side: 'front', step: 0, turn: turnAgainstPlace(g.turn, placeIn(w, id).quarts) });
     }
   }
   return w;

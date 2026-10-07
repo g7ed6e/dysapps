@@ -11,7 +11,7 @@ import { visageDuJoueur } from '../world/characters/face';
 import { CASE, PLAQUE, caseALEcran, dessinerLaCase } from './signs';
 import { tenirDansLaPlace, type PlaceLue } from '../freeSpace';
 import { reperesDe } from '../world/framing';
-import { boitesDuTrace, placerAvecLaFlecheDOuvrage, placerEtiquettes, replierLesSignes, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
+import { boiteDesPoints, boitesDuTrace, placerAvecLaFlecheDOuvrage, recoupe, placerEtiquettes, replierLesSignes, separateMark, type LabelBox, type LabelOffset } from '../world/labelLayout';
 import { islandCenter } from '../world/terrain';
 import { lecteurDeZones } from '../coveredZones';
 import type { IslandLabel, WorldViewProps } from '../world/view';
@@ -73,10 +73,11 @@ export interface Etiquettes extends PartieDeLaScene {
    */
   cacher(id: string | null): void;
   /**
-   * Pendant le glissé du choix (7 octobre 2026, choix 1b du mainteneur) : la zone de la grille, en cases du monde, où les
-   * étiquettes des autres lieux s'estompent (`ESTOMPEE`) ; rien : toutes reviennent.
+   * Pendant le glissé du choix (7 octobre 2026, choix 1b du mainteneur) : la zone de la grille, en cases du monde, à la
+   * hauteur `z` ; toute étiquette dont le rectangle à l'écran recoupe celui de la zone s'estompe (`ESTOMPEE`) ; rien :
+   * toutes reviennent.
    */
-  estomper(zone: { x0: number; y0: number; x1: number; y1: number } | null): void;
+  estomper(zone: { x0: number; y0: number; x1: number; y1: number; z: number } | null): void;
   vider(): void;
 }
 
@@ -465,14 +466,37 @@ export function creerEtiquettes(
   /** Le lieu dont l'étiquette se tait (le lieu choisi du mode « Modifier le plan »). */
   let cachee: string | null = null;
   /** La zone du glissé, où les étiquettes s'estompent. */
-  let estompee: { x0: number; y0: number; x1: number; y1: number } | null = null;
-  /** Chaque étiquette montrée, sauf celle qui se tait ; estompée dans la zone du glissé : à chaque image, sans rien allouer. */
+  let estompee: { x0: number; y0: number; x1: number; y1: number; z: number } | null = null;
+  const coinDeLaZone = new THREE.Vector3();
+  const centreALEcran = new THREE.Vector3();
+  /**
+   * Chaque étiquette montrée, sauf celle qui se tait ; estompée si son rectangle à l'écran recoupe celui de la zone du
+   * glissé (ses quatre coins projetés) : à chaque image, la caméra pouvant glisser pendant le glissé.
+   */
   const montrerLesEtiquettes = () => {
+    const W = Math.max(1, el.clientWidth);
+    const H = Math.max(1, el.clientHeight);
+    const z = estompee;
+    const zone = z
+      ? boiteDesPoints(
+          [
+            [z.x0, z.y0],
+            [z.x1, z.y0],
+            [z.x0, z.y1],
+            [z.x1, z.y1],
+          ].map(([x, y]) => toScreen(coinDeLaZone.set(x, z.z, y), camera, W, H)),
+        )
+      : null;
     for (const c of labelsGroup.children) {
       c.visible = Boolean(c.userData.montree) && c.userData.id !== cachee;
-      const p = c.userData.centre as { x: number; y: number };
-      const dans = estompee !== null && p.x >= estompee.x0 && p.x < estompee.x1 && p.y >= estompee.y0 && p.y < estompee.y1;
-      (c as THREE.Sprite).material.opacity = dans ? ESTOMPEE : 1;
+      const sprite = c as THREE.Sprite;
+      let dans = false;
+      if (zone && c.visible) {
+        const px = c.userData.px as { w: number; h: number };
+        const p = toScreen(centreALEcran.copy(c.position), camera, W, H);
+        dans = recoupe({ x: p.x + (0.5 - sprite.center.x) * px.w, y: p.y - (0.5 - sprite.center.y) * px.h, w: px.w, h: px.h }, zone);
+      }
+      sprite.material.opacity = dans ? ESTOMPEE : 1;
     }
   };
 
@@ -505,7 +529,6 @@ export function creerEtiquettes(
         sprite.renderOrder = l.state?.id === 'fermee' ? 10 : 11;
         sprite.raycast = () => {};
         const c = islandCenter(l.id);
-        sprite.userData.centre = { x: c.x, y: c.y };
         sprite.position.set(c.x + 0.5, c.z + ETIQUETTE_AU_DESSUS, c.y + 0.5);
         labelsGroup.add(sprite);
       }

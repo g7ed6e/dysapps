@@ -17,7 +17,7 @@ import type { Signes } from './signs';
 import type { Cubes } from './cubes';
 import type { Amarre, Navire } from './ship';
 import type { Camera } from './camera';
-import { choixCommence, glisseCommence, pointDuPlan, RELAYE_DEPUIS_UN_BOUTON, SEUIL_DU_GLISSE } from './drag';
+import { glisseCommence, pointDuPlan, quiGlisse, RELAYE_DEPUIS_UN_BOUTON, SEUIL_DU_GLISSE } from './drag';
 
 /** Le doigt posé sur le monde : son pointeur, où, et le point du sol saisi une fois le seuil passé (sinon `null`). */
 interface Appui {
@@ -42,6 +42,15 @@ interface Appui {
   tient?: { hauteur: number } | null;
   /** La case sous le doigt qui tient le choix : le choix ne suit que quand elle change. */
   place?: string;
+  /** Parti du choix, ce que le doigt touchait, gardé jusqu'à `SEUIL_DU_CHOIX` (d'ici là, ni le choix ni la vue ne bougent). */
+  depuis?: CibleDuChoix;
+}
+
+/** Ce que touchait le doigt au départ d'un glissé : le point (en cases du monde), sa hauteur, le lieu ou le Gardien. */
+interface CibleDuChoix {
+  point: { x: number; y: number };
+  hauteur: number;
+  touche: { lieu?: BiomeId; gardien?: BiomeId };
 }
 
 /** Ce que les gestes lisent de la scène : ses parties, les rappels de la vue, et ce que la vue permet. */
@@ -250,22 +259,24 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
   };
   /**
    * Le mode « Aménager », un choix en cours : le doigt parti en (x, y) est-il parti du choix (choix 3a du mainteneur) ?
-   * Ce qu'il touchait (le Gardien, la terre d'un lieu, ou la mer) est demandé à la page ; oui : la hauteur du point pris,
-   * où le choix se glisse ensuite.
+   * Ce qu'il touchait (le Gardien, la terre d'un lieu, ou la mer) est demandé à la page, sans rien prendre encore.
    */
-  const prendreLeChoix = (x: number, y: number): { hauteur: number } | null => {
+  const cibleDuChoix = (x: number, y: number): CibleDuChoix | null => {
     const g = derniers.current.glisserLeChoix;
     if (derniers.current.amenager !== 'choix' || !g) return null;
     const { creature, hit } = aim({ clientX: x, clientY: y });
     const found = creature ? creatureIdOf(creature.object) : null;
-    if (creature && found) return g.prendre({ x: creature.point.x, y: creature.point.z }, found.kind === 'guardian' ? { gardien: found.id } : { lieu: found.id }) ? { hauteur: creature.point.y } : null;
-    if (hit) {
+    let cible: CibleDuChoix | null = null;
+    if (creature && found) cible = { point: { x: creature.point.x, y: creature.point.z }, hauteur: creature.point.y, touche: found.kind === 'guardian' ? { gardien: found.id } : { lieu: found.id } };
+    else if (hit) {
       const tap = tapSur(hit);
       const lieu = tap.kind === 'island' ? tap.id : tap.kind === 'place' ? tap.island : undefined;
-      return g.prendre({ x: hit.point.x, y: hit.point.z }, lieu ? { lieu } : {}) ? { hauteur: hit.point.y } : null;
+      cible = { point: { x: hit.point.x, y: hit.point.z }, hauteur: hit.point.y, touche: lieu ? { lieu } : {} };
+    } else {
+      const p = merSous(x, y);
+      if (p) cible = { point: p, hauteur: 0, touche: {} };
     }
-    const p = merSous(x, y);
-    return p && g.prendre(p, {}) ? { hauteur: 0 } : null;
+    return cible && g.partDuChoix(cible.point, cible.touche) ? cible : null;
   };
   /** Le doigt posé bouge : passé le seuil (et si c'est permis), la vue glisse avec lui ; ou le choix, s'il est parti de lui. */
   const glisser = (e: PointerEvent, appui: Appui) => {
@@ -275,9 +286,12 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
     // 1b et 3a du mainteneur) ; tout autre glissé fait glisser la vue. Un glissé relayé d'un bouton (une poignée) aussi.
     if (appui.tient === undefined && !appui.relaye && derniers.current.amenager === 'choix') {
       if (!glisseCommence(e.clientX - appui.x, e.clientY - appui.y)) return;
-      // Le choix ne part qu'au-delà d'un seuil plus grand (`SEUIL_DU_CHOIX`) ; d'ici là, la Carte non plus.
-      if (!choixCommence(e.clientX - appui.x, e.clientY - appui.y)) return;
-      appui.tient = prendreLeChoix(appui.x, appui.y);
+      // Parti d'ailleurs que du choix : la Carte glisse dès `SEUIL_DU_GLISSE`. Parti du choix : il ne part qu'au-delà
+      // d'un seuil plus grand (`SEUIL_DU_CHOIX`), et d'ici là la Carte non plus (`quiGlisse`).
+      appui.depuis ??= cibleDuChoix(appui.x, appui.y) ?? undefined;
+      const depuis = appui.depuis;
+      if (quiGlisse(e.clientX - appui.x, e.clientY - appui.y, Boolean(depuis)) === 'attendre') return;
+      appui.tient = depuis && derniers.current.glisserLeChoix?.prendre(depuis.point, depuis.touche) ? { hauteur: depuis.hauteur } : null;
       if (appui.tient) {
         appui.ancre = new THREE.Vector3();
         cubesDuMonde.viser(null);

@@ -659,6 +659,10 @@ export function useAmenagement({
     return false;
   };
   const glisser: GlisserLeChoix = {
+    partDuChoix(point, touche) {
+      const c = choixRef.current;
+      return Boolean(ouvert && c && partDuChoix(c, point, touche));
+    },
     prendre(point, touche) {
       const c = choixRef.current;
       if (!ouvert || !c || enCours.current || question || aConfirmer || !partDuChoix(c, point, touche)) return false;

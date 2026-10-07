@@ -333,7 +333,12 @@ export function creerAmenagement(
     if (!nomSprite.visible) return;
     // Avec des poignées, le nom se pose au-dessus d'elles (le bas du nom sur le bord nord du plus haut radeau) : jamais
     // sur une poignée. Sans elles, au-dessus du fantôme.
-    if (poignees.auDessus(nomSprite.position)) nomSprite.center.set(0.5, -0.15);
+    // Pendant le glissé (les poignées cachées), au-dessus du bord nord de l'empreinte : jamais sur elle.
+    const nord = vueCourante?.nomAuNord;
+    if (nord) {
+      nomSprite.center.set(0.5, -0.15);
+      nomSprite.position.set(nord.x, nord.z, nord.y);
+    } else if (poignees.auDessus(nomSprite.position)) nomSprite.center.set(0.5, -0.15);
     else if (vueCourante) {
       nomSprite.center.set(0.5, 0.5);
       nomSprite.position.set(vueCourante.suivre.x, vueCourante.suivre.z + NOM_AU_DESSUS, vueCourante.suivre.y);

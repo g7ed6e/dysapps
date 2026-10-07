@@ -346,6 +346,9 @@ describe('les Gardiens détachés de leur lieu (7 octobre 2026, choix 4a, 5a du 
     const hors = sanitizeLayout({ '6e': { islands: { [VOLCAN]: { x: 2, y: 3, turn: 0 } }, guardians: { [VOLCAN]: { side: 'left', step: 2, turn: 1, spot: { x: -1, y: 4 } } } } });
     expect(hors?.['6e']?.guardians?.[VOLCAN]).toEqual({ side: 'front', step: 0, turn: 1 });
     expect(hors?.['6e']?.islands?.[VOLCAN]).toEqual({ x: 2, y: 3, turn: 0 });
+    // Son lieu tourné, hors de la grille à la lecture : la même orientation que par `settleNewPlaces` (2 − 1 = 1).
+    const horsTourne = sanitizeLayout({ '6e': { islands: { [VOLCAN]: { ...spotOf(tourne, VOLCAN) } }, guardians: { [VOLCAN]: { side: 'front', step: 0, turn: 2, spot: { x: -1, y: 4 } } } } });
+    expect(horsTourne?.['6e']?.guardians?.[VOLCAN]).toEqual(guardianOf(settleNewPlaces(abimeeTournee), VOLCAN));
     // Une sauvegarde d'avant (sans `spot`) se lit sans rien perdre.
     const avant = { '6e': { guardians: { [VOLCAN]: { side: 'left', step: 2, turn: 1 } } } };
     expect(sanitizeLayout(avant)).toEqual(avant);

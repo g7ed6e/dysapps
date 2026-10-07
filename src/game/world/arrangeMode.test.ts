@@ -245,6 +245,14 @@ describe('glisser au doigt (7 octobre 2026, choix 1b, 2a, 3a, 6a du mainteneur)'
     expect(v.cases.filter((k) => k.genre === 'socle').length).toBe(v.cases.filter((k) => k.genre === 'empreinte').length);
     expect(v.zoneDuGlisse).toBeDefined();
     expect(v.cases.some((k) => k.genre === 'conflit')).toBe(false);
+    // Le nom du choix se pose au bord nord de l'empreinte (au-dessus d'elle à l'écran), jamais sur elle.
+    const empreinte = v.cases.filter((k) => k.genre === 'empreinte');
+    const nordDeLEmpreinte = DIRECTION_STEP.nord.dy > 0 ? Math.max(...empreinte.map((k) => k.y)) : Math.min(...empreinte.map((k) => k.y));
+    expect(v.nomAuNord).toBeDefined();
+    expect(Math.abs(v.nomAuNord!.y - nordDeLEmpreinte)).toBeLessThanOrEqual(4);
+    expect(v.nomAuNord!.x).toBeGreaterThanOrEqual(Math.min(...empreinte.map((k) => k.x)));
+    expect(v.nomAuNord!.x).toBeLessThanOrEqual(Math.max(...empreinte.map((k) => k.x)));
+    expect(arrangeView(w, versLibre).nomAuNord).toBeUndefined();
     // Sur une place prise : les cases en conflit en gris pierre, chacune barrée de deux barres (jamais la couleur seule).
     const vp = arrangeView(w, surVoisin, true);
     const conflits = vp.cases.filter((k) => k.genre === 'conflit').length;

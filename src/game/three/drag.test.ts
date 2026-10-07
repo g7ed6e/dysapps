@@ -1,5 +1,5 @@
 // Faire glisser le monde : le seuil entre un toucher et un glissé, le point du sol sous le doigt, le bornage.
-import { bornerLeDecalage, choixCommence, estDecale, glisseCommence, pointDuPlan, SEUIL_DU_CHOIX, SEUIL_DU_GLISSE } from './drag';
+import { bornerLeDecalage, choixCommence, estDecale, glisseCommence, pointDuPlan, quiGlisse, SEUIL_DU_CHOIX, SEUIL_DU_GLISSE } from './drag';
 
 const E = { minX: 0, maxX: 100, minY: 0, maxY: 60 };
 
@@ -18,6 +18,15 @@ describe('Faire glisser le monde', () => {
     expect(glisseCommence(9, 12)).toBe(true);
     expect(choixCommence(9, 12)).toBe(false);
     expect(choixCommence(0, SEUIL_DU_CHOIX)).toBe(true);
+  });
+
+  it('un choix en cours : parti d’ailleurs, la Carte glisse dès 10 px ; parti du choix, le choix seulement après 24 px', () => {
+    expect(quiGlisse(6, 7, false)).toBe('attendre');
+    expect(quiGlisse(0, 12, false)).toBe('carte');
+    expect(quiGlisse(0, 20, false)).toBe('carte');
+    expect(quiGlisse(0, 12, true)).toBe('attendre');
+    expect(quiGlisse(0, 20, true)).toBe('attendre');
+    expect(quiGlisse(0, SEUIL_DU_CHOIX, true)).toBe('choix');
   });
 
   it('le décalage garde la cible au-dessus de l’archipel : arrêt net au bord', () => {

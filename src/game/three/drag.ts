@@ -35,6 +35,17 @@ export interface Etendue {
   maxY: number;
 }
 
+/**
+ * Dans le mode « Aménager », un choix en cours : qui glisse sous un doigt parti de l'appui de (dx, dy) ? Parti d'ailleurs
+ * que du choix, la Carte, dès `SEUIL_DU_GLISSE` ; parti du choix, le choix, au-delà de `SEUIL_DU_CHOIX` seulement ; d'ici
+ * là, rien (`attendre`).
+ */
+export function quiGlisse(dx: number, dy: number, partiDuChoix: boolean): 'attendre' | 'carte' | 'choix' {
+  if (!glisseCommence(dx, dy)) return 'attendre';
+  if (!partiDuChoix) return 'carte';
+  return choixCommence(dx, dy) ? 'choix' : 'attendre';
+}
+
 /** Le doigt a assez bougé depuis l'appui pour glisser le choix du mode « Aménager » (`SEUIL_DU_CHOIX`). */
 export function choixCommence(dx: number, dy: number): boolean {
   return Math.hypot(dx, dy) >= SEUIL_DU_CHOIX;
