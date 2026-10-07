@@ -921,11 +921,17 @@ export function WorldPage() {
   const onIsland = (id: BiomeId, sol?: Point, enRoute?: Point) => {
     const ouverte = isBiomeUnlocked(id, state.world.links);
     if (mapOpen && !ouverte) return setMapTarget(id);
+    // Sur la Carte, une île ouverte : on y va, à sa place d'arrivée (piste A du mainteneur, 7 octobre 2026 : la Carte
+    // sert à s'orienter, on ne fait rien d'autre que choisir une île).
+    if (mapOpen) {
+      setFiche(null);
+      return openIsland(id);
+    }
     if (sol && !voyage && island?.id === id && at === id) {
       setFiche(null);
       return flaner(id, sol, enRoute);
     }
-    if (!mapOpen && !voyage && !ouverte) return ouvrirLIlePale(id);
+    if (!voyage && !ouverte) return ouvrirLIlePale(id);
     if (island?.id === id && !sheetOpen) return onCreature(id, 'creature');
     setFiche(null);
     // Une autre île ouverte : l'effet du changement d'île l'y emmène, jusqu'à la case touchée.

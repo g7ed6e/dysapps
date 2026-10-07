@@ -297,6 +297,19 @@ export function groundTap(
 }
 
 /**
+ * Sur la Carte (piste A du mainteneur, 7 octobre 2026), l'île d'un toucher sur le terrain : une borne ou un lieu comptent
+ * pour l'île où ils sont ; un ouvrage ne mène nulle part (rien).
+ */
+export function ileSurLaCarte(
+  a: ArchipelagoId,
+  hit: { cell: Cell; next: Cell; ground: { x: number; y: number } },
+  tags: { bridges: Map<string, string>; quests: Map<string, string>; places?: Map<string, PlaceId> },
+): BiomeId | null {
+  const tap = groundTap(a, hit, tags, { quest: false, bridge: true, build: false });
+  return tap.kind === 'island' ? tap.id : null;
+}
+
+/**
  * Après un toucher, la vue revient-elle à son cadrage (le décalage d'un glissé s'efface) ? Oui sur une cible (une
  * créature, le navire, une borne, un lieu, un ouvrage) : l'application reprend la main. Non sur le sol (une face en
  * chantier, ou le sol d'une île) : on pose bloc après bloc là où l'on regarde, ou le bonhomme y va sans que la vue

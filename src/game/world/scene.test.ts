@@ -9,6 +9,7 @@ import {
   enRoute,
   finishWalk,
   groundTap,
+  ileSurLaCarte,
   islandInDirection,
   recentrerApres,
   startStrolls,
@@ -169,6 +170,16 @@ describe('toucher le sol', () => {
       id: islandAt('6e', Math.floor(c.x + 0.4), Math.floor(c.y + 0.7)),
       cell: c,
     });
+  });
+
+  it('sur la Carte, une borne ou un lieu comptent pour leur île ; un ouvrage ne mène nulle part (piste A)', () => {
+    const c = islandCenter('french-6e-phonology');
+    const school = cubeTags([{ x: c.x, y: c.y, z: 3, color: '#fff', place: 'school' }]);
+    const surLEcole = { cell: { x: c.x, y: c.y, z: 3 }, next: { x: c.x, y: c.y, z: 4 }, ground: { x: c.x + 0.5, y: c.y + 0.5 } };
+    expect(ileSurLaCarte('6e', surLEcole, school)).toBe('french-6e-phonology');
+    const borne = cubeTags([{ x: c.x, y: c.y, z: 3, color: '#fff', quest: 'french-6e-phonology:rhymes' }]);
+    expect(ileSurLaCarte('6e', surLEcole, borne)).toBe('french-6e-phonology');
+    expect(ileSurLaCarte('6e', { cell, next, ground: cell }, tags)).toBeNull();
   });
 
   it('la vue revient à son cadrage sur une cible, jamais sur le sol (une face en chantier, le sol où le bonhomme va)', () => {
