@@ -972,10 +972,11 @@ async function scenes() {
     // Les mesures : les trois vues de jour en 3D. Avec `--captures`, toutes les captures déclarées (voir `CAPTURES`).
     const views = [
       ...['île', 'archipel', 'carte'].map((vue) => ({ vue, go: routes[vue], mesure: true, nom: CAPTURES.find((c) => c.vue === vue && c.famille === 'jour').nom })),
-      // L'île et l'archipel au plus reculé que permet le pincement du monde (×0,3 : six fois la touche −) : leur pire cas,
-      // qui reste sous celui de la Carte (tout l'archipel dans la vue).
-      { vue: 'île', libelle: 'île (recul)', go: routes['île'], mesure: true, nom: 'ile-recul', zoomer: -6 },
-      { vue: 'archipel', libelle: 'archipel (recul)', go: routes.archipel, mesure: true, nom: 'archipel-recul', zoomer: -6 },
+      // L'île et l'archipel au plus reculé que permet le pincement du monde (ZOOM_DU_MONDE.loin, ×0,3) : leur pire cas,
+      // qui reste sous celui de la Carte (tout l'archipel dans la vue). Chaque touche − recule de ×0,8 (three/gestures.ts) :
+      // six suffisent (×0,26), dix laissent de la marge si la borne descend ; le zoom s'arrête à sa borne.
+      { vue: 'île', libelle: 'île (recul)', go: routes['île'], mesure: true, nom: 'ile-recul', zoomer: -10 },
+      { vue: 'archipel', libelle: 'archipel (recul)', go: routes.archipel, mesure: true, nom: 'archipel-recul', zoomer: -10 },
       ...(SHOTS
         ? CAPTURES.filter((c) => c.famille !== 'jour' && (!FAMILLES || FAMILLES.includes(c.famille)) && (!c.ile || classe(c.ile) === a)).flatMap((c) =>
             (c.parIle ? iles : [null]).map((parIle) => ({

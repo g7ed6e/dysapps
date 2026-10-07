@@ -56,6 +56,11 @@ export interface Instant {
   carte: boolean;
   /** Là où la caméra arrive : l'écart des étiquettes se calcule pour ce cadrage, pas image par image. */
   but: { target: THREE.Vector3; pos: THREE.Vector3 };
+  /**
+   * Ce que le zoom du monde ajoute à la distance de la caméra quand il recule, en cases (0 au cadrage ou plus près) : la
+   * brume recule d'autant (./mist.ts), pour que l'archipel vu de loin ne s'y noie pas. Écrit par ./camera.ts.
+   */
+  recul?: number;
 }
 
 /**

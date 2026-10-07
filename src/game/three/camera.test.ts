@@ -338,6 +338,8 @@ describe('La Carte dans la place libre (DA-31)', () => {
     cam.zoomer(1e-3, { x: 0, y: 0 });
     cam.animer!(0.2, 0.016, true);
     expect(camera.position.distanceTo(cam.cible)).toBeCloseTo(d0 / ZOOM_DU_MONDE.loin, 3);
+    // Vu de plus loin, la brume recule d'autant que la caméra.
+    expect(instant.recul).toBeCloseTo(d0 / ZOOM_DU_MONDE.loin - d0, 3);
     // Une autre île : le décalage s'efface, le zoom reste.
     cam.zoomer(2, { x: 0, y: 0 });
     derniers.current = { ...derniers.current, focus: { island: 'french-6e-grammar-spelling', seq: 2 } };
@@ -362,6 +364,7 @@ describe('La Carte dans la place libre (DA-31)', () => {
     cam.recentrer(true);
     cam.animer!(0.5, 0.016, true);
     expect(cam.decale()).toBe(false);
+    expect(instant.recul).toBe(0);
     expect(camera.position.distanceTo(cam.cible)).toBeCloseTo(d1 * (2 * ZOOM_DU_MONDE.loin), 3);
   });
 
