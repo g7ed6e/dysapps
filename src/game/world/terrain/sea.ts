@@ -48,6 +48,8 @@ function distanceToNearest(cells: readonly { x: number; y: number }[]): (x: numb
   if (!cells.length) return () => Infinity;
   let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
   for (const c of cells) {
+    // Une case non entière ne s'écrirait pas dans la grille : les clairières grandiraient sans bruit.
+    if (!Number.isInteger(c.x) || !Number.isInteger(c.y)) throw new Error(`case non entière : ${c.x}, ${c.y}`);
     x0 = Math.min(x0, c.x);
     y0 = Math.min(y0, c.y);
     x1 = Math.max(x1, c.x);
