@@ -43,7 +43,7 @@
       ],
       "answer": "Coran",
       "hint": "La Bible est le livre des chrétiens.",
-      "explanation": "Le Coran est le livre sacré de l’islam. La Bible est celui des chrétiens, la Torah celui des juifs.",
+      "explanation": "Le Coran est le livre sacré de l’islam. La Bible est le livre sacré des chrétiens. La Torah est au cœur de la Bible des juifs.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -169,8 +169,8 @@
     },
     {
       "key": "history-5e-middle-ages-christendoms-islam-1-6",
-      "prompt": "Une expédition de chrétiens pour prendre Jérusalem s’appelle une … .",
-      "spoken": "Une expédition de chrétiens pour prendre Jérusalem s’appelle une (mot manquant) .",
+      "prompt": "Une expédition armée de chrétiens pour prendre Jérusalem s’appelle une … .",
+      "spoken": "Une expédition armée de chrétiens pour prendre Jérusalem s’appelle une (mot manquant) .",
       "choices": [
         "croisade",
         "Hégire",

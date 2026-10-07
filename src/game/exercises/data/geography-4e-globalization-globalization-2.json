@@ -43,7 +43,7 @@
       ],
       "answer": "de l’Asie à l’Europe",
       "hint": "La Chine et les Pays-Bas : sur quels continents ?",
-      "explanation": "Shanghai est en Asie, Rotterdam en Europe. Ce sont deux des plus grands ports du monde.",
+      "explanation": "Shanghai est en Asie, Rotterdam en Europe. Shanghai est le premier port à conteneurs du monde, Rotterdam le premier port d’Europe.",
       "aid": {
         "kind": "rule-card",
         "props": {

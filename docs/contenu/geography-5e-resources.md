@@ -82,7 +82,7 @@ Pour tous les items :
    - choix : diminue · reste pareille · augmente
    - réponse : augmente
    - indice : Plus de bébés qui arrivent que de personnes qui meurent.
-   - explication : Plus de naissances que de décès : il y a chaque année plus d’habitants. La population augmente.
+   - explication : Plus de naissances que de décès : sans compter les départs et les arrivées, il y a chaque année plus d’habitants. La population augmente.
 
 ### Niveau 2 · `geography-5e-resources-population-2`
 
@@ -212,7 +212,7 @@ Pour tous les items :
    - choix : réchauffent · refroidissent · protègent
    - réponse : réchauffent
    - indice : On parle de réchauffement climatique.
-   - explication : Brûler des énergies fossiles rejette des gaz qui réchauffent la Terre : c’est l’effet de serre.
+   - explication : Brûler des énergies fossiles rejette des gaz qui réchauffent la Terre : ces gaz renforcent l’effet de serre.
 8. énoncé : Quand des personnes n’ont pas assez à manger, on parle de … .
    - choix : surpopulation · sous-alimentation · pollution
    - réponse : sous-alimentation
@@ -289,7 +289,7 @@ Pour tous les items :
 
 ## Risques et changement climatique · `risks`
 
-- description : Séismes, inondations, sécheresses et canicules : prévenir les risques, et s’adapter au changement climatique.
+- description : Accidents d’usine, inondations, sécheresses et canicules : prévenir les risques, et s’adapter au changement climatique.
 - compétences : c4.hg.geographie.risques-changement-global · c4.hg.espace.localiser · c4.hg.espace.situer · c4.hg.demarches.lexique · c4.hg.demarches.document · c4.hg.demarches.cartes · c4.hg.demarches.raisonner
 - bravo : Bien vu !
 - erreur : {explanation}
@@ -306,23 +306,23 @@ Pour tous les items :
 Pour tous les items :
 - trou lu : (mot manquant)
 - aide « Les mots du risque » :
-  - Aléa : ce qui peut arriver, comme un séisme ou une crue.
+  - Aléa : ce qui peut arriver, comme une crue ou un incendie d’usine.
   - Enjeux : les personnes et les biens menacés.
   - Risque : un aléa là où il y a des enjeux.
   - Prévention : se préparer avant la catastrophe.
   - Réchauffement climatique : la Terre se réchauffe, la mer monte.
   - S’adapter : changer sa façon de vivre ou de construire.
 
-1. énoncé : Un tremblement de terre s’appelle aussi un … .
-   - choix : tsunami · séisme · cyclone
-   - réponse : séisme
-   - indice : La première ligne du rappel en donne un exemple.
-   - explication : Un séisme est un tremblement de terre. Un tsunami est la grande vague qu’un séisme peut causer sous la mer.
-2. énoncé : Une très grande vague, causée par un séisme sous la mer, est un … .
-   - choix : tsunami · cyclone · volcan
-   - réponse : tsunami
-   - indice : Ce mot vient du japonais.
-   - explication : Un tsunami est une vague géante causée par un séisme sous la mer. Un cyclone est une tempête très violente.
+1. énoncé : Un incendie ou une explosion dans une usine est un risque … .
+   - choix : climatique · industriel · sanitaire
+   - réponse : industriel
+   - indice : Les usines, c’est l’industrie.
+   - explication : Une usine qui brûle ou qui explose : c’est un risque industriel. En 2019, à Rouen, l’usine Lubrizol a brûlé.
+2. énoncé : La sirène d’alerte sonne : il faut se mettre à l’abri dans un … .
+   - choix : parc · bâtiment · voiture
+   - réponse : bâtiment
+   - indice : Où est-on le mieux protégé : dedans ou dehors ?
+   - explication : Quand la sirène d’alerte sonne, on entre dans un bâtiment et on ferme portes et fenêtres. Dehors ou dans une voiture, on est moins protégé.
 3. énoncé : Quand un fleuve déborde, il provoque une … .
    - choix : sécheresse · éruption · inondation
    - réponse : inondation
@@ -348,11 +348,11 @@ Pour tous les items :
    - réponse : basses
    - indice : Quelles îles l’eau recouvre-t-elle en premier ?
    - explication : Avec le réchauffement climatique, la mer monte : les îles basses, presque au niveau de la mer, risquent d’être recouvertes.
-8. énoncé : Au Japon, les élèves s’entraînent à se protéger d’un … : ils se cachent sous les tables.
-   - choix : cyclone · incendie · séisme
-   - réponse : séisme
-   - indice : Sous une table, on est à l’abri de ce qui tombe.
-   - explication : Pendant un séisme, des objets tombent : on se cache sous une table. Au Japon, les séismes sont fréquents, alors on s’y prépare.
+8. énoncé : Avec la chaleur et la sécheresse, en été, les forêts risquent de … .
+   - choix : geler · brûler · être inondées
+   - réponse : brûler
+   - indice : Que devient une forêt très sèche, près d’une flamme ?
+   - explication : Chaleur et sécheresse dessèchent les arbres : un feu de forêt part plus vite. Avec le réchauffement climatique, ce risque augmente.
 
 ### Niveau 2 · `geography-5e-resources-risks-2`
 
@@ -365,13 +365,13 @@ Pour tous les items :
   - Enjeux : les personnes et les biens menacés.
   - Avant : on se prépare. Après : on répare.
 
-1. énoncé : "Le Japon, en mars 2011\nUn très fort séisme sous la mer\nPuis une vague géante frappe la côte.\nPlus de 15 000 morts"
-   - question : Comment s’appelle cette vague géante ?
-   - lu : Le Japon, en mars deux mille onze. Un très fort séisme sous la mer. Puis une vague géante frappe la côte. Plus de quinze mille morts.
-   - choix : un cyclone · un tsunami · une crue
-   - réponse : un tsunami
-   - indice : La vague vient après un séisme sous la mer.
-   - explication : Un séisme sous la mer peut causer une vague géante : un tsunami. En 2011, il a frappé la côte du Japon.
+1. énoncé : "Le Japon, en mars 2011\nUne vague géante frappe la côte.\nElle inonde la centrale nucléaire de Fukushima.\nLa centrale a un grave accident."
+   - question : Quel accident a lieu à Fukushima ?
+   - lu : Le Japon, en mars deux mille onze. Une vague géante frappe la côte. Elle inonde la centrale nucléaire de Fukushima. La centrale a un grave accident.
+   - choix : un feu de forêt · une épidémie · un accident nucléaire
+   - réponse : un accident nucléaire
+   - indice : Relis la ligne qui parle de la centrale.
+   - explication : La vague a inondé la centrale nucléaire de Fukushima : un grave accident a suivi. Une centrale nucléaire est une technologie : c’est un risque technologique.
 2. énoncé : "Description de la carte des risques d’une ville\nEn bleu : les zones qui peuvent être inondées\nDans ces zones, on ne construit plus de maisons."
    - question : Pourquoi ne construit-on plus de maisons dans ces zones ?
    - lu : Description de la carte des risques d’une ville. En bleu : les zones qui peuvent être inondées. Dans ces zones, on ne construit plus de maisons.
@@ -385,7 +385,7 @@ Pour tous les items :
    - choix : il est en haute montagne · il a peu d’habitants · il est bas et la mer monte
    - réponse : il est bas et la mer monte
    - indice : Relis la ligne « Un pays bas » et la ligne « Le niveau de la mer ».
-   - explication : Un pays bas, la mer qui monte : c’est l’aléa. Des millions d’habitants : ce sont les enjeux. Le risque est grand.
+   - explication : La mer qui monte et les inondations : c’est l’aléa. Les millions d’habitants de ces terres basses : ce sont les enjeux. Le risque est grand.
 4. énoncé : "En France, en août 2003\nUne très forte canicule\nBeaucoup de personnes âgées meurent de la chaleur."
    - question : Qui est le plus touché ?
    - lu : En France, en août deux mille trois. Une très forte canicule. Beaucoup de personnes âgées meurent de la chaleur.
@@ -393,13 +393,13 @@ Pour tous les items :
    - réponse : les personnes âgées
    - indice : Relis la ligne qui commence par « Beaucoup ».
    - explication : Pendant la canicule de 2003, les personnes âgées sont les plus touchées. Depuis, on veille sur elles dès les premières chaleurs.
-5. énoncé : "Un exercice dans une école de Tokyo\nL’alarme sonne : « Séisme ! »\nLes élèves se cachent sous les tables.\nPuis ils sortent dans la cour."
-   - question : Que fait cette école ?
-   - lu : Un exercice dans une école de Tokyo. L’alarme sonne : « Séisme ! » Les élèves se cachent sous les tables. Puis ils sortent dans la cour.
-   - choix : elle répare après un séisme · elle ignore le risque · elle se prépare au risque
-   - réponse : elle se prépare au risque
-   - indice : Relis la première ligne : c’est un exercice.
-   - explication : C’est un exercice, avant tout séisme : l’école se prépare. C’est de la prévention.
+5. énoncé : "Rouen, en septembre 2019\nUn grand incendie dans l’usine Lubrizol\nUne fumée noire passe sur la ville.\nLes écoles ferment pour la journée."
+   - question : Pourquoi les écoles ferment-elles ?
+   - lu : Rouen, en septembre deux mille dix-neuf. Un grand incendie dans l’usine Lubrizol. Une fumée noire passe sur la ville. Les écoles ferment pour la journée.
+   - choix : à cause d’une inondation · pour protéger les élèves de la fumée · parce que ce sont les vacances
+   - réponse : pour protéger les élèves de la fumée
+   - indice : Relis la ligne qui parle de la fumée.
+   - explication : L’incendie d’une usine est un risque industriel. On ferme les écoles pour protéger les élèves de la fumée.
 6. énoncé : "Les Pays-Bas\nUne partie du pays est plus basse que la mer.\nDes digues et des barrages le protègent."
    - question : Comment les Pays-Bas se protègent-ils de la mer ?
    - lu : Les Pays-Bas. Une partie du pays est plus basse que la mer. Des digues et des barrages le protègent.
@@ -414,13 +414,13 @@ Pour tous les items :
    - réponse : le réchauffement climatique
    - indice : Lis la ligne qui commence par « La cause ».
    - explication : Avec le réchauffement climatique, les glaciers des Alpes fondent. La mer de Glace devient plus mince chaque année.
-8. énoncé : "Deux séismes de même force\nDans un pays riche : des immeubles faits pour résister\nDans un pays pauvre : des maisons qui s’effondrent"
-   - question : Pourquoi les dégâts ne sont-ils pas les mêmes ?
-   - lu : Deux séismes de même force. Dans un pays riche : des immeubles faits pour résister. Dans un pays pauvre : des maisons qui s’effondrent.
-   - choix : le séisme est plus fort dans le pays pauvre · le pays pauvre a moins d’habitants · les maisons sont plus solides dans le pays riche
-   - réponse : les maisons sont plus solides dans le pays riche
-   - indice : La première ligne dit que la force est la même.
-   - explication : Même aléa, dégâts différents : le pays riche construit des immeubles qui résistent. Face au risque, les pays sont inégaux.
+8. énoncé : "Toulouse, en septembre 2001\nL’usine chimique AZF explose.\nElle était tout près des maisons.\nDepuis, on évite de construire près de ces usines."
+   - question : Que fait-on depuis pour réduire le risque ?
+   - lu : Toulouse, en septembre deux mille un. L’usine chimique AZF explose. Elle était tout près des maisons. Depuis, on évite de construire près de ces usines.
+   - choix : on construit plus de maisons autour · on évite de construire près de ces usines · on ferme toutes les usines
+   - réponse : on évite de construire près de ces usines
+   - indice : Relis la ligne qui commence par « Depuis ».
+   - explication : Moins de maisons près des usines dangereuses, c’est moins d’enjeux menacés. C’est de la prévention.
 
 ## Les plans
 

@@ -189,9 +189,9 @@
     },
     {
       "key": "history-6e-antiquity-early-humans-2-7",
-      "prompt": "Ce que fait le roi de Mésopotamie\nIl fait les lois.\nIl lève des impôts.\nIl commande l’armée.",
+      "prompt": "Ce que fait un roi de Mésopotamie\nIl fait les lois.\nIl lève des impôts.\nIl commande l’armée.",
       "question": "Comment appelle-t-on cette organisation ?",
-      "spoken": "Ce que fait le roi de Mésopotamie. Il fait les lois. Il lève des impôts. Il commande l’armée.",
+      "spoken": "Ce que fait un roi de Mésopotamie. Il fait les lois. Il lève des impôts. Il commande l’armée.",
       "choices": [
         "un État",
         "un village",

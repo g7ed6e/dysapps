@@ -205,7 +205,7 @@
       ],
       "answer": "augmente",
       "hint": "Plus de bébés qui arrivent que de personnes qui meurent.",
-      "explanation": "Plus de naissances que de décès : il y a chaque année plus d’habitants. La population augmente.",
+      "explanation": "Plus de naissances que de décès : sans compter les départs et les arrivées, il y a chaque année plus d’habitants. La population augmente.",
       "aid": {
         "kind": "rule-card",
         "props": {

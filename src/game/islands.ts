@@ -1668,7 +1668,7 @@ export const ILES = [
       {
         "id": "risks",
         "title": "Risques et changement climatique",
-        "description": "Séismes, inondations, sécheresses et canicules : prévenir les risques, et s’adapter au changement climatique.",
+        "description": "Accidents d’usine, inondations, sécheresses et canicules : prévenir les risques, et s’adapter au changement climatique.",
         "programme": [
           "c4.hg.geographie.risques-changement-global",
           "c4.hg.espace.localiser",

@@ -90,11 +90,11 @@
       "choices": [
         "préfecture",
         "commune",
-        "mairie"
+        "capitale"
       ],
       "answer": "commune",
       "hint": "Le maire la dirige.",
-      "explanation": "La commune, le département et la région aménagent le territoire, avec l’État. La mairie est le bâtiment de la commune ; la préfecture, celui de l’État dans le département.",
+      "explanation": "La commune, le département et la région aménagent le territoire, avec l’État. La préfecture, c’est l’État dans le département ; une capitale est une ville.",
       "aid": {
         "kind": "rule-card",
         "props": {

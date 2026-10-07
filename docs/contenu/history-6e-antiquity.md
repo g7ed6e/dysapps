@@ -142,9 +142,9 @@ Pour tous les items :
    - réponse : sa boue rend la terre fertile
    - indice : Relis la dernière ligne.
    - explication : La crue du Nil laisse une boue fertile : les paysans peuvent cultiver au bord du désert.
-8. énoncé : "Ce que fait le roi de Mésopotamie\nIl fait les lois.\nIl lève des impôts.\nIl commande l’armée."
+8. énoncé : "Ce que fait un roi de Mésopotamie\nIl fait les lois.\nIl lève des impôts.\nIl commande l’armée."
    - question : Comment appelle-t-on cette organisation ?
-   - lu : Ce que fait le roi de Mésopotamie. Il fait les lois. Il lève des impôts. Il commande l’armée.
+   - lu : Ce que fait un roi de Mésopotamie. Il fait les lois. Il lève des impôts. Il commande l’armée.
    - choix : un État · un village · une tribu
    - réponse : un État
    - indice : Regarde la dernière ligne du rappel.
@@ -333,11 +333,11 @@ Pour tous les items :
    - réponse : romanisation
    - indice : Le mot ressemble à « romain ».
    - explication : La romanisation : les peuples conquis adoptent la langue, les villes et la façon de vivre des Romains.
-5. énoncé : Jésus a vécu en Judée, dans l’Empire … .
-   - choix : romain · grec · chinois
-   - réponse : romain
+5. énoncé : Jésus a vécu en Galilée et en Judée, sous la domination de … .
+   - choix : Rome · la Grèce · la Chine
+   - réponse : Rome
    - indice : À cette époque, Rome domine tout le tour de la Méditerranée.
-   - explication : La Judée est une province de l’Empire romain. Jésus y vit au Ier siècle après J.-C.
+   - explication : Jésus vit au début du Ier siècle après J.-C., en Galilée et en Judée. Ces régions sont alors sous la domination de Rome.
 6. énoncé : Les premiers chrétiens sont parfois … : on les arrête, on les condamne.
    - choix : protégés · persécutés · respectés
    - réponse : persécutés

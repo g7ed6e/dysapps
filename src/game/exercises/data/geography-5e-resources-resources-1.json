@@ -178,7 +178,7 @@
       ],
       "answer": "réchauffent",
       "hint": "On parle de réchauffement climatique.",
-      "explanation": "Brûler des énergies fossiles rejette des gaz qui réchauffent la Terre : c’est l’effet de serre.",
+      "explanation": "Brûler des énergies fossiles rejette des gaz qui réchauffent la Terre : ces gaz renforcent l’effet de serre.",
       "aid": {
         "kind": "rule-card",
         "props": {

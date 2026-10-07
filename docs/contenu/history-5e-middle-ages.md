@@ -50,7 +50,7 @@ Pour tous les items :
    - choix : Bible · Coran · Torah
    - réponse : Coran
    - indice : La Bible est le livre des chrétiens.
-   - explication : Le Coran est le livre sacré de l’islam. La Bible est celui des chrétiens, la Torah celui des juifs.
+   - explication : Le Coran est le livre sacré de l’islam. La Bible est le livre sacré des chrétiens. La Torah est au cœur de la Bible des juifs.
 3. énoncé : Les musulmans se réunissent pour prier dans une … .
    - choix : église · synagogue · mosquée
    - réponse : mosquée
@@ -73,7 +73,7 @@ Pour tous les items :
    - réponse : byzantin
    - indice : Constantinople s’appelait d’abord Byzance.
    - explication : Constantinople, l’ancienne Byzance, est la capitale de l’Empire byzantin. La capitale de Charlemagne est Aix-la-Chapelle.
-7. énoncé : Une expédition de chrétiens pour prendre Jérusalem s’appelle une … .
+7. énoncé : Une expédition armée de chrétiens pour prendre Jérusalem s’appelle une … .
    - choix : croisade · Hégire · pèlerinage
    - réponse : croisade
    - indice : Relis la ligne de 1095 dans la frise.
@@ -246,7 +246,7 @@ Pour tous les items :
    - choix : les paysans le lui demandent · il fait lui-même partie du clergé · le roi prie toute la journée
    - réponse : il fait lui-même partie du clergé
    - indice : Qui écrit ? Lis la première ligne.
-   - explication : Un évêque est un homme d’Église : il place le clergé en premier. C’est son point de vue.
+   - explication : Un évêque est un homme d’Église : il place le clergé en premier. Pour l’Église, prier est le plus important. C’est son point de vue.
 3. énoncé : "Ce que les paysans doivent au seigneur\nUne part de la récolte\nDes journées de travail gratuit\nUn paiement pour utiliser son moulin"
    - question : Comment s’appellent les journées de travail gratuit ?
    - lu : Ce que les paysans doivent au seigneur. Une part de la récolte. Des journées de travail gratuit. Un paiement pour utiliser son moulin.
@@ -408,9 +408,9 @@ Pour tous les items :
    - réponse : le grec et le latin
    - indice : Lis la ligne qui commence par « d’abord ».
    - explication : Le grec et le latin sont les langues de l’Antiquité. Apprendre les langues anciennes pour lire les vieux textes : c’est l’idée des humanistes.
-6. énoncé : "Ce que pense Luther, en 1517\nOn ne gagne pas le paradis en payant l’Église.\nSeule la Bible dit ce qu’il faut croire."
+6. énoncé : "Ce que pense Luther\nOn ne gagne pas le paradis en payant l’Église.\nSeule la Bible dit ce qu’il faut croire."
    - question : Que critique Luther ?
-   - lu : Ce que pense Luther, en mille cinq cent dix-sept. On ne gagne pas le paradis en payant l’Église. Seule la Bible dit ce qu’il faut croire.
+   - lu : Ce que pense Luther. On ne gagne pas le paradis en payant l’Église. Seule la Bible dit ce qu’il faut croire.
    - choix : l’argent payé à l’Église pour le paradis · la Bible · l’imprimerie
    - réponse : l’argent payé à l’Église pour le paradis
    - indice : Lis la ligne qui commence par « On ne gagne ».
