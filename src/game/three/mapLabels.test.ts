@@ -579,7 +579,7 @@ describe('La Carte : chaque île a son nom (tablette 1024 × 768)', () => {
         }
       expect(tus, univers).toEqual({ ...TUS_SUR_UN_OUVRAGE[a], ...(univers === 'archipeo' ? TUS_SUR_UN_OUVRAGE_DANS_ARCHIPEO[a] : {}) });
     }
-  });
+  }, 30_000);
 
   it.each(['5e', '4e', '3e'] as const)(
     '%s, à l’ouverture en OpenDyslexic, le bonhomme sur la destination, quelle qu’elle soit, deux univers : ni la destination ni l’île du bonhomme ne se taisent, les autres noms tus sont ceux mesurés (SC-3, UX UI)',

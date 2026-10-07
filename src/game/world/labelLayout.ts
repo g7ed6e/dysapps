@@ -940,6 +940,8 @@ function chercherToutesLesPlaces(d: DemandeDeRecherche): void {
     // Ce que la recherche sans ce nom a déjà donné dans ce cadrage, quelle que soit la place actuelle des autres noms :
     // les places qu'elle trouve tiennent sans eux (même boîtes, mêmes îles, même interface, mêmes repères). Les
     // placements d'un cadrage la relançaient sur les mêmes boîtes, une quinzaine de fois au 3e en OpenDyslexic 32 px.
+    // Un échec gardé ne regarde pas la place actuelle des autres noms : il peut cacher une solution, et taire au pire
+    // un nom de plus.
     const commeAvant = JSON.stringify([tous, tous.filter((i) => !poussable(i)), boxes, iles, voulue, ici, d.autour, bounds, gap]);
     for (const k of aLaisser) {
       const cleSansLui = `${k} ${commeAvant}`;

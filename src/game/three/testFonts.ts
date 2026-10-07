@@ -4,7 +4,6 @@
 // (tables `cmap`, `hhea`, `hmtx`, `head`) ; le crénage est ignoré.
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
-import { resolve } from 'node:path';
 import { brotliDecompressSync, inflateSync } from 'node:zlib';
 
 export type PoliceDeTest = 'luciole' | 'atkinson-hyperlegible' | 'opendyslexic';
@@ -104,7 +103,7 @@ export function largeurEnGras(police: PoliceDeTest): (texte: string) => number {
     const require = createRequire(import.meta.url);
     const t =
       police === 'luciole'
-        ? tablesWoff2(readFileSync(resolve(process.cwd(), 'public/fonts/luciole/Luciole-Bold.woff2')))
+        ? tablesWoff2(readFileSync(require.resolve('../../../public/fonts/luciole/Luciole-Bold.woff2')))
         : tables(readFileSync(require.resolve(`@fontsource/${police}/files/${police}-latin-700-normal.woff`)));
     const em = t.get('head')!.readUInt16BE(18);
     const nh = t.get('hhea')!.readUInt16BE(34);
