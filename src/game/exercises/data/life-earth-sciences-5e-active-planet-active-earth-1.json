@@ -1,0 +1,240 @@
+{
+  "id": "life-earth-sciences-5e-active-planet-active-earth-1",
+  "biome": "life-earth-sciences-5e-active-planet",
+  "type": "active-earth",
+  "level": 1,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "life-earth-sciences-5e-active-planet-active-earth-1-0",
+      "prompt": "La couche au centre de la Terre s’appelle le …",
+      "spoken": "La couche au centre de la Terre s’appelle le  (mot manquant) ",
+      "choices": [
+        "manteau",
+        "noyau",
+        "croûte"
+      ],
+      "answer": "noyau",
+      "hint": "Relis la ligne « La Terre a trois couches » du rappel : quelle couche est au milieu ?",
+      "explanation": "Au centre de la Terre, il y a le noyau. Autour, le manteau, puis la croûte, la couche sur laquelle nous vivons.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La Terre active",
+          "lines": [
+            "La Terre a trois couches : la croûte, le manteau, le noyau.",
+            "Sa surface est découpée en grandes plaques, qui bougent lentement.",
+            "Séisme : des roches cassent et glissent le long d’une faille.",
+            "Le foyer est sous terre ; l’épicentre est juste au-dessus, en surface.",
+            "Volcan : du magma monte et sort en lave, en cendres et en gaz.",
+            "Le vent, la pluie et les rivières usent les roches : c’est l’érosion."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-5e-active-planet-active-earth-1-1",
+      "prompt": "La couche de la Terre sur laquelle nous vivons est la …",
+      "spoken": "La couche de la Terre sur laquelle nous vivons est la  (mot manquant) ",
+      "choices": [
+        "croûte",
+        "manteau",
+        "noyau"
+      ],
+      "answer": "croûte",
+      "hint": "C’est la couche la plus à l’extérieur, la plus fine.",
+      "explanation": "Nous vivons sur la croûte, la couche du dessus. Le manteau est en dessous, le noyau tout au centre.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La Terre active",
+          "lines": [
+            "La Terre a trois couches : la croûte, le manteau, le noyau.",
+            "Sa surface est découpée en grandes plaques, qui bougent lentement.",
+            "Séisme : des roches cassent et glissent le long d’une faille.",
+            "Le foyer est sous terre ; l’épicentre est juste au-dessus, en surface.",
+            "Volcan : du magma monte et sort en lave, en cendres et en gaz.",
+            "Le vent, la pluie et les rivières usent les roches : c’est l’érosion."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-5e-active-planet-active-earth-1-2",
+      "prompt": "Les plaques bougent très lentement : de quelques centimètres par …",
+      "spoken": "Les plaques bougent très lentement : de quelques centimètres par  (mot manquant) ",
+      "choices": [
+        "minute",
+        "jour",
+        "an"
+      ],
+      "answer": "an",
+      "hint": "C’est à peu près la vitesse à laquelle poussent tes ongles.",
+      "explanation": "Une plaque avance de quelques centimètres par an, à peu près comme tes ongles poussent. On ne le sent pas, mais en des millions d’années, cela fait des centaines de kilomètres.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La Terre active",
+          "lines": [
+            "La Terre a trois couches : la croûte, le manteau, le noyau.",
+            "Sa surface est découpée en grandes plaques, qui bougent lentement.",
+            "Séisme : des roches cassent et glissent le long d’une faille.",
+            "Le foyer est sous terre ; l’épicentre est juste au-dessus, en surface.",
+            "Volcan : du magma monte et sort en lave, en cendres et en gaz.",
+            "Le vent, la pluie et les rivières usent les roches : c’est l’érosion."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-5e-active-planet-active-earth-1-3",
+      "prompt": "Pendant un séisme, les roches cassent et glissent le long d’une …",
+      "spoken": "Pendant un séisme, les roches cassent et glissent le long d’une  (mot manquant) ",
+      "choices": [
+        "plaque",
+        "faille",
+        "coulée"
+      ],
+      "answer": "faille",
+      "hint": "Relis la ligne « Séisme » du rappel.",
+      "explanation": "Les roches cassent et glissent le long d’une faille : le sol tremble. Une plaque est bien plus grande : c’est un morceau entier de la surface.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La Terre active",
+          "lines": [
+            "La Terre a trois couches : la croûte, le manteau, le noyau.",
+            "Sa surface est découpée en grandes plaques, qui bougent lentement.",
+            "Séisme : des roches cassent et glissent le long d’une faille.",
+            "Le foyer est sous terre ; l’épicentre est juste au-dessus, en surface.",
+            "Volcan : du magma monte et sort en lave, en cendres et en gaz.",
+            "Le vent, la pluie et les rivières usent les roches : c’est l’érosion."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-5e-active-planet-active-earth-1-4",
+      "prompt": "Le point de la surface, juste au-dessus du foyer d’un séisme, est l’…",
+      "spoken": "Le point de la surface, juste au-dessus du foyer d’un séisme, est l’ (mot manquant) ",
+      "choices": [
+        "cratère",
+        "noyau",
+        "épicentre"
+      ],
+      "answer": "épicentre",
+      "hint": "Relis la ligne « Le foyer » du rappel.",
+      "explanation": "Le foyer est l’endroit où la roche casse, sous terre. L’épicentre est le point de la surface juste au-dessus : c’est souvent là que le séisme est le plus fort.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La Terre active",
+          "lines": [
+            "La Terre a trois couches : la croûte, le manteau, le noyau.",
+            "Sa surface est découpée en grandes plaques, qui bougent lentement.",
+            "Séisme : des roches cassent et glissent le long d’une faille.",
+            "Le foyer est sous terre ; l’épicentre est juste au-dessus, en surface.",
+            "Volcan : du magma monte et sort en lave, en cendres et en gaz.",
+            "Le vent, la pluie et les rivières usent les roches : c’est l’érosion."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-5e-active-planet-active-earth-1-5",
+      "prompt": "Où se produisent les séismes ?\nAu bord des plaques : très nombreux.\nAu milieu des plaques : rares.",
+      "question": "Où un séisme a-t-il le plus de chances de se produire ?",
+      "spoken": "Où se produisent les séismes ? Au bord des plaques, très nombreux. Au milieu des plaques, rares.",
+      "choices": [
+        "au milieu d’une plaque",
+        "au bord d’une plaque",
+        "au centre de la Terre"
+      ],
+      "answer": "au bord d’une plaque",
+      "hint": "Sur quelle ligne lis-tu « très nombreux » ?",
+      "explanation": "Les séismes sont très nombreux au bord des plaques : c’est là qu’elles se frottent, s’écartent ou se rapprochent. Au milieu d’une plaque, ils sont rares.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La Terre active",
+          "lines": [
+            "La Terre a trois couches : la croûte, le manteau, le noyau.",
+            "Sa surface est découpée en grandes plaques, qui bougent lentement.",
+            "Séisme : des roches cassent et glissent le long d’une faille.",
+            "Le foyer est sous terre ; l’épicentre est juste au-dessus, en surface.",
+            "Volcan : du magma monte et sort en lave, en cendres et en gaz.",
+            "Le vent, la pluie et les rivières usent les roches : c’est l’érosion."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-5e-active-planet-active-earth-1-6",
+      "prompt": "Deux éruptions\nVolcan A : une lave très liquide coule en rivières.\nVolcan B : une lave épaisse bouche le sommet.\nVolcan B, ensuite : les gaz font exploser le sommet.",
+      "question": "Quelle éruption est la plus dangereuse pour les habitants ?",
+      "spoken": "Deux éruptions. Volcan A, une lave très liquide coule en rivières. Volcan B, une lave épaisse bouche le sommet. Volcan B, ensuite, les gaz font exploser le sommet.",
+      "choices": [
+        "celle du volcan B",
+        "celle du volcan A",
+        "elles sont pareilles"
+      ],
+      "answer": "celle du volcan B",
+      "hint": "Contre quoi est-il le plus difficile de se protéger : une coulée ou une explosion ?",
+      "explanation": "L’éruption du volcan B est explosive : les cendres et les blocs partent loin et vite. La lave liquide du volcan A coule plus lentement : on a le temps de s’éloigner.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La Terre active",
+          "lines": [
+            "La Terre a trois couches : la croûte, le manteau, le noyau.",
+            "Sa surface est découpée en grandes plaques, qui bougent lentement.",
+            "Séisme : des roches cassent et glissent le long d’une faille.",
+            "Le foyer est sous terre ; l’épicentre est juste au-dessus, en surface.",
+            "Volcan : du magma monte et sort en lave, en cendres et en gaz.",
+            "Le vent, la pluie et les rivières usent les roches : c’est l’érosion."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-5e-active-planet-active-earth-1-7",
+      "prompt": "Le vent et la pluie usent lentement les roches : c’est l’…",
+      "spoken": "Le vent et la pluie usent lentement les roches : c’est l’ (mot manquant) ",
+      "choices": [
+        "érosion",
+        "éruption",
+        "évaporation"
+      ],
+      "answer": "érosion",
+      "hint": "Relis la ligne « Le vent » du rappel.",
+      "explanation": "L’usure des roches par le vent, la pluie et les rivières s’appelle l’érosion. L’éruption, c’est le volcan qui rejette de la lave : les deux mots se ressemblent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La Terre active",
+          "lines": [
+            "La Terre a trois couches : la croûte, le manteau, le noyau.",
+            "Sa surface est découpée en grandes plaques, qui bougent lentement.",
+            "Séisme : des roches cassent et glissent le long d’une faille.",
+            "Le foyer est sous terre ; l’épicentre est juste au-dessus, en surface.",
+            "Volcan : du magma monte et sort en lave, en cendres et en gaz.",
+            "Le vent, la pluie et les rivières usent les roches : c’est l’érosion."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "life-earth-sciences-5e-active-planet",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

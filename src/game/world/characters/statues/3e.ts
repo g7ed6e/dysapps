@@ -182,6 +182,99 @@ const TETE_DU_CERF: Anneau[] = [
   [5.8, 0.2, 0.25, -0.9],
 ];
 
+// Les Gardiens de sciences (SC-3) : Archipéo est en pause (2 octobre 2026), ces sentinelles n'ont que le strict
+// nécessaire (budget de l'archipel).
+
+/**
+ * Le Dauphin de turquoise, dressé en bond au-dessus de son rocher : les nageoires de la queue posées sur le rocher, le
+ * corps arqué, la tête en haut et le rostre vers l'élève, l'aileron sur le dos.
+ */
+const ROCHER_DU_DAUPHIN: Anneau[] = [
+  [1, 1.2, 0.95],
+  [2.2, 1.0, 0.9],
+  [2.8, 0.6, 0.55],
+];
+const DOS_DU_DAUPHIN: V3[] = [
+  [0, 2.85, 0.3],
+  [0, 3.8, 0.6],
+  [0, 5.0, 0.55],
+  [0, 6.1, 0.1],
+  [0, 6.9, -0.45],
+];
+const TETE_DU_DAUPHIN: Anneau[] = [
+  [6.7, 0.5, 0.55],
+  [7.5, 0.45, 0.5],
+  [8, 0],
+];
+const Z_DE_LA_TETE_DU_DAUPHIN = -0.5;
+
+/** Le Kangourou de rubis, assis sur sa queue : les grands pieds, les cuisses, le corps, la tête, les oreilles hautes. */
+const CUISSE_DU_KANGOUROU: Anneau[] = [
+  [1.3, 0.45, 0.6],
+  [2.2, 0.55, 0.75],
+  [3.0, 0.35, 0.5],
+];
+const X_DES_CUISSES = 0.52;
+const Z_DES_CUISSES = 0.1;
+const CORPS_DU_KANGOUROU: Anneau[] = [
+  [2.2, 0.75, 0.65, 0.3],
+  [3.6, 0.8, 0.7, 0.2],
+  [5.0, 0.55, 0.5, 0],
+  [5.6, 0.35, 0.35, -0.1],
+];
+const TETE_DU_KANGOUROU: Anneau[] = [
+  [5.5, 0.4, 0.45, -0.15],
+  [6.4, 0.38, 0.5, -0.35],
+  [6.8, 0.22, 0.3, -0.3],
+];
+const PIED_DES_OREILLES = 6.65;
+const PENTE_DES_OREILLES = 0.15;
+/** Un ressort gravé sur le devant d'une cuisse : un zigzag (x, y). */
+const RESSORT: [number, number][] = [
+  [0, 1.5],
+  [0.2, 1.75],
+  [-0.2, 2.05],
+  [0.2, 2.35],
+  [-0.2, 2.65],
+  [0, 2.85],
+];
+
+/**
+ * L'Abeille de topaze, posée sur une fleur : la tige et la corolle, l'abdomen couché vers l'arrière, le thorax, la tête
+ * aux antennes, les ailes ouvertes en V (sans dard).
+ */
+const COROLLE: Anneau[] = [
+  [4.5, 0.25],
+  [4.9, 1.1],
+  [5.05, 1.15],
+];
+const ABDOMEN_DE_L_ABEILLE: Anneau[] = [
+  [-0.5, 0.5],
+  [0.1, 0.65],
+  [0.7, 0.45],
+  [1.0, 0],
+];
+const THORAX_DE_L_ABEILLE: Anneau[] = [
+  [5.2, 0.45],
+  [5.7, 0.6],
+  [6.3, 0.5],
+  [6.6, 0.25],
+];
+const TETE_DE_L_ABEILLE: Anneau[] = [
+  [6.4, 0.45, 0.4],
+  [7.1, 0.48, 0.42],
+  [7.4, 0.25, 0.25],
+];
+const Z_DE_LA_TETE_DE_L_ABEILLE = -0.75;
+/** Une aile de l'Abeille (`s` : −1 à gauche, 1 à droite), dans son repère, ouverte en V vers l'arrière. */
+const AILE_DE_L_ABEILLE: [number, number][] = [
+  [0, 5.9],
+  [1.5, 6.5],
+  [1.8, 7.4],
+  [0.5, 7.25],
+];
+const repereDAileDAbeille = (s: number) => repere([s * 0.35, 0, 0.05], 0, -s * 0.5, 0);
+
 export const STATUES_3E: Partial<Record<BiomeId, Statue>> = {
   'maths-3e-geometry': {
     nom: 'le Sphinx de marbre',
@@ -679,6 +772,126 @@ export const STATUES_3E: Partial<Record<BiomeId, Statue>> = {
     // Deux lauzes sur la poitrine.
     veines: (T, a) => {
       for (const y of [2.0, 2.9]) plaque(T, 0, y, 0.5, 0.3, 6, a.lueur, (yy) => devant(CORPS_DU_CERF, 6, yy).z);
+    },
+  },
+  // Les Gardiens de sciences (SC-3), au strict nécessaire comme ceux d'histoire-géographie.
+  'life-earth-sciences-3e-human-body': {
+    nom: 'le Dauphin de turquoise',
+    allume: 'les reflets de son dos',
+    sculpture: (T, a) => {
+      fuseau(T, ROCHER_DU_DAUPHIN, 5, a.moussue((k, j) => k === 0 && j % 2 === 1), { bas: false });
+      // Les deux lobes de la queue, à plat sur le rocher.
+      for (const s of [-1, 1])
+        dalle(
+          pose(T, repere([0, 2.86, 0.3], Math.PI / 2, 0, 0)),
+          [
+            [0, -0.1],
+            [s * 1.0, 0.5],
+            [0, 0.25],
+          ],
+          -0.06,
+          0.06,
+          a.pierre,
+        );
+      tube(T, DOS_DU_DAUPHIN, [0.25, 0.5, 0.68, 0.62, 0.48], 6, a.pierre);
+      fuseau(T, TETE_DU_DAUPHIN, 6, a.pierre, { z: Z_DE_LA_TETE_DU_DAUPHIN, bas: false });
+      pointe(T, [0, 7.15, devant(TETE_DU_DAUPHIN, 6, 7.15, Z_DE_LA_TETE_DU_DAUPHIN).z + 0.1], 0.17, 0.5, a.pierre, [-Math.PI / 2, 0, 0], 4);
+      // L'aileron, sur le dos ; deux petites nageoires sur les côtés.
+      dalle(
+        pose(T, repere([0, 0, 0], 0, Math.PI / 2, 0)),
+        [
+          [-0.95, 4.5],
+          [-1.75, 5.5],
+          [-0.55, 5.35],
+        ],
+        -0.06,
+        0.06,
+        a.pierre,
+      );
+      for (const s of [-1, 1]) pointe(T, [s * 0.5, 6.05, -0.05], 0.13, 0.55, a.pierre, [0.4, 0, -s * 2.0], 3);
+      orbites(T, a, 0, 7.45, devant(TETE_DU_DAUPHIN, 6, 7.45, Z_DE_LA_TETE_DU_DAUPHIN).z, 0.24, 0.12);
+    },
+    // Un reflet sur chaque flanc, sous l'aileron, tourné vers son côté.
+    veines: (T, a) => {
+      for (const s of [-1, 1]) plaque(pose(T, repere([s * 0.7, 4.75, 0.5], 0, -s * (Math.PI / 2), 0)), 0, 0, 0.32, 0.16 * a.veines, 6, a.lueur, () => 0);
+    },
+  },
+  'physics-chemistry-3e-motion-energy': {
+    nom: 'le Kangourou de rubis',
+    allume: 'les ressorts de ses pattes',
+    sculpture: (T, a) => {
+      for (const s of [-1, 1]) {
+        pave(T, s * 0.28, 1, -0.85, s * 0.78, 1.28, 0.45, a.pierre);
+        fuseau(T, CUISSE_DU_KANGOUROU, 5, a.moussue((k, j) => k === 0 && j === 2), { x: s * X_DES_CUISSES, z: Z_DES_CUISSES, bas: false });
+        // Les bras, courts, devant la poitrine.
+        tube(
+          T,
+          [
+            [s * 0.45, 4.6, -0.35],
+            [s * 0.3, 4.0, -0.75],
+          ],
+          [0.14, 0.1],
+          3,
+          a.pierre,
+        );
+        // Les oreilles hautes, un peu écartées : leur pointe en haut de la sentinelle.
+        pointe(T, [s * 0.2, PIED_DES_OREILLES, -0.25], 0.2, (8 - PIED_DES_OREILLES) / Math.cos(PENTE_DES_OREILLES), a.pierre, [0, 0, -s * PENTE_DES_OREILLES], 3, 0.08);
+      }
+      tube(
+        T,
+        [
+          [0, 1.9, 0.75],
+          [0, 1.25, 1.6],
+          [0, 1.1, 2.2],
+        ],
+        [0.32, 0.22, 0.1],
+        3,
+        a.pierre,
+      );
+      fuseau(T, CORPS_DU_KANGOUROU, 5, a.pierre, { bas: false });
+      fuseau(T, TETE_DU_KANGOUROU, 5, a.pierre, { bas: false });
+      orbites(T, a, 0, 6.35, devant(TETE_DU_KANGOUROU, 5, 6.35).z, 0.19, 0.1);
+    },
+    // Un ressort gravé sur chaque cuisse : deux lueurs.
+    veines: (T, a) => {
+      for (const s of [-1, 1]) veineSur(T, CUISSE_DU_KANGOUROU, 5, RESSORT, 0.08 * a.veines, a.lueur, { x: s * X_DES_CUISSES, z: Z_DES_CUISSES });
+    },
+  },
+  'technology-3e-digital': {
+    nom: 'l’Abeille de topaze',
+    allume: 'les cases de ses ailes',
+    sculpture: (T, a) => {
+      fuseau(T, [[1, 0.2], [4.55, 0.17]], 4, a.pierre, { bas: false, haut: false });
+      fuseau(T, COROLLE, 6, a.moussue((k, j) => k === 0 && j % 2 === 0), { bas: false });
+      // L'abdomen rayé (une bande de lichen), couché vers l'arrière ; le thorax ; la tête.
+      fuseau(pose(T, repere([0, 5.75, 0.6], Math.PI / 2, 0, 0)), ABDOMEN_DE_L_ABEILLE, 5, a.moussue((k) => k === 1));
+      fuseau(T, THORAX_DE_L_ABEILLE, 5, a.pierre, { z: -0.3, bas: false });
+      fuseau(T, TETE_DE_L_ABEILLE, 6, a.pierre, { z: Z_DE_LA_TETE_DE_L_ABEILLE, bas: false });
+      for (const s of [-1, 1]) {
+        tube(
+          T,
+          [
+            [s * 0.15, 7.3, -0.85],
+            [s * 0.3, 7.75, -0.95],
+            [s * 0.5, 8, -1.25],
+          ],
+          [0.06, 0.05, 0],
+          3,
+          a.pierre,
+        );
+        dalle(
+          pose(T, repereDAileDAbeille(s)),
+          AILE_DE_L_ABEILLE.map(([x, y]): [number, number] => [s * x, y]),
+          -0.05,
+          0.05,
+          a.pierre,
+        );
+      }
+      orbites(T, a, 0, 6.95, devant(TETE_DE_L_ABEILLE, 6, 6.95, Z_DE_LA_TETE_DE_L_ABEILLE).z, 0.22, 0.14);
+    },
+    // Deux cases hexagonales sur chaque aile, côte à côte : deux lueurs.
+    veines: (T, a) => {
+      for (const s of [-1, 1]) for (const [x, y] of [[0.75, 6.65], [1.2, 6.85]]) plaque(pose(T, repereDAileDAbeille(s)), s * x, y, 0.2 * a.veines, 0.2, 6, a.lueur, () => -0.05);
     },
   },
 };

@@ -47,6 +47,15 @@ export type TextureKind =
   | 'fossile'
   | 'aimant'
   | 'carton'
+  | 'strate'
+  | 'sel'
+  | 'bambou'
+  | 'petale'
+  | 'bobine'
+  | 'liege'
+  | 'savon'
+  | 'ressort'
+  | 'cire'
   | 'poutre'
   | 'vitrail'
   | 'engrenage'
@@ -295,6 +304,242 @@ function carton(t: TonsDuCarton): Painter {
     const u = x % 4;
     if (u === 0) return creux;
     if (u === 1) return clair;
+    return fond;
+  };
+}
+
+// ---------- Les blocs des îles de sciences de 5e à 3e (SC-3) : chacun son motif obligatoire (DA, 6 octobre 2026) ----------
+
+/** Les tons de la strate : les trois bandes du côté, leur joint, et le dessus de terre, son grain clair et sombre. */
+type StrataTones = { ocre: string; rouge: string; gris: string; joint: string; dessus: string; clair: string; sombre: string };
+
+/**
+ * De la strate (la Prairie des climats, SVT 5e ; DA, SC-3) : sur le côté, trois couches de roche couchées, l'ocre en
+ * haut, le brun-rouge au milieu, le gris en bas, un joint sombre d'un pixel entre elles, quelques grains plus clairs dans
+ * chaque couche ; sur le dessus, la terre brune d'un grain fin. Les bandes la séparent de la terre (un grain seul), de
+ * la tourbe et du grès (des assises d'un seul ton).
+ */
+function paintStrata(t: StrataTones, face: 'top' | 'side'): Painter {
+  const [ocre, rouge, gris, joint, dessus, clair, sombre] = [t.ocre, t.rouge, t.gris, t.joint, t.dessus, t.clair, t.sombre].map(hexToRgb);
+  if (face === 'top')
+    return (x, y) => {
+      const h = hacher(x, y);
+      return h < 90 ? clair : h < 180 ? sombre : dessus;
+    };
+  return (x, y) => {
+    if (y === 5 || y === 10) return joint;
+    const couche = y < 5 ? ocre : y < 10 ? rouge : gris;
+    return hacher(x + 3, y) < 70 ? clair : couche;
+  };
+}
+
+/** Les tons du sel : le fond, le cristal clair, son cerne. */
+type SaltTones = { fond: string; cristal: string; cerne: string };
+
+/** Les coins des quatre cristaux du sel (4 × 4 pixels, cerne compris), un peu décalés pour ne pas faire un damier. */
+const SALT_CRYSTALS: readonly (readonly [number, number])[] = [
+  [2, 2],
+  [9, 3],
+  [3, 9],
+  [10, 10],
+];
+
+/**
+ * Du sel (la Saline des mélanges, physique-chimie 5e ; DA, SC-3) : sur chaque face, quatre petits cristaux carrés,
+ * cernés de gris-bleu, plus clairs que le fond (motif obligatoire). Trois tons, sans hasard : les cristaux cernés le
+ * séparent de la glace (des reflets en biais), du sable et du marbre (des veines).
+ */
+function paintSalt(t: SaltTones): Painter {
+  const [fond, cristal, cerne] = [hexToRgb(t.fond), hexToRgb(t.cristal), hexToRgb(t.cerne)];
+  return (x, y) => {
+    for (const [cx, cy] of SALT_CRYSTALS) {
+      const [u, v] = [x - cx, y - cy];
+      if (u < 0 || u > 3 || v < 0 || v > 3) continue;
+      return u === 0 || u === 3 || v === 0 || v === 3 ? cerne : cristal;
+    }
+    return fond;
+  };
+}
+
+/** Les tons du bambou : la canne, son reflet, le creux entre deux cannes, le nœud. */
+type BambooTones = { canne: string; reflet: string; creux: string; noeud: string };
+
+/**
+ * Du bambou (la Menuiserie des objets, technologie 5e ; DA, SC-3) : sur le côté, des cannes debout de quatre pixels, un
+ * creux sombre et un reflet clair à leur bord, un nœud vert sombre en travers de chacune, à deux hauteurs qui alternent ;
+ * sur le dessus, les bouts ronds de quatre cannes, creux au milieu. Quatre tons, sans hasard : les nœuds le séparent du carton
+ * (des cannelures sans nœud) et des planches (des lames couchées).
+ */
+function paintBamboo(t: BambooTones, face: 'top' | 'side'): Painter {
+  const [canne, reflet, creux, noeud] = [hexToRgb(t.canne), hexToRgb(t.reflet), hexToRgb(t.creux), hexToRgb(t.noeud)];
+  if (face === 'top')
+    return (x, y) => {
+      // Quatre bouts de canne ronds de huit pixels : le creux au milieu, l'anneau de la canne, le vide entre elles.
+      const r = Math.hypot((x % 8) - 3.5, (y % 8) - 3.5);
+      if (r < 1.6) return noeud;
+      if (r < 2.6) return reflet;
+      if (r < 3.8) return canne;
+      return creux;
+    };
+  return (x, y) => {
+    const u = x % 4;
+    if (u === 0) return creux;
+    const n = Math.floor(x / 4) % 2 ? 11 : 4;
+    if (y === n) return noeud;
+    if (y === n - 1) return reflet;
+    return u === 1 ? reflet : canne;
+  };
+}
+
+/** Les tons du pétale : le pétale, son bord sombre, son reflet, le cœur jaune et son ombre. */
+type PetalTones = { petale: string; bord: string; reflet: string; coeur: string; ombre: string };
+
+/**
+ * Du pétale (la Source des espèces, SVT 4e ; DA, SC-3) : des pétales posés en écailles, des arcs de huit pixels en
+ * quinconce, le bord sombre en bas de chacun, un reflet clair en haut ; au milieu de chaque face, un cœur jaune de
+ * quatre pixels, son ombre orangée en bas. Cinq tons, sans hasard : les écailles et le cœur le séparent de la brique et
+ * de la tuile (des joints droits).
+ */
+function paintPetal(t: PetalTones): Painter {
+  const [petaleRgb, bord, reflet, coeur, ombre] = [hexToRgb(t.petale), hexToRgb(t.bord), hexToRgb(t.reflet), hexToRgb(t.coeur), hexToRgb(t.ombre)];
+  return (x, y) => {
+    // Le cœur, un carré de 4 × 4 aux coins coupés.
+    const [cu, cv] = [x - 6, y - 6];
+    if (cu >= 0 && cu < 4 && cv >= 0 && cv < 4 && !((cu === 0 || cu === 3) && (cv === 0 || cv === 3))) return cv === 3 || (cv === 2 && cu === 3) ? ombre : coeur;
+    // Les écailles : quatre rangs de quatre pixels, décalés d'une demi-écaille d'un rang à l'autre.
+    const rang = Math.floor(y / 4);
+    const u = (x + (rang % 2) * 4) % 8;
+    const v = y % 4;
+    const d = Math.abs(u - 3.5);
+    if (v === 3 || (v === 2 && d >= 2.5) || (v === 1 && d >= 3.5)) return bord;
+    if (v === 0 && d <= 1.5) return reflet;
+    return petaleRgb;
+  };
+}
+
+/** Les tons de la bobine : le cuivre, son reflet, la spire sombre, l'axe gris et son ombre. */
+type CoilTones = { cuivre: string; reflet: string; spire: string; axe: string; ombreAxe: string };
+
+/**
+ * De la bobine (la Vigie des signaux, physique-chimie 4e ; DA, SC-3) : du fil de cuivre enroulé. Sur le côté, des spires
+ * couchées, une sur trois pixels, un trait sombre et un reflet, qui montent d'un pixel tous les six (le fil s'enroule) ;
+ * sur le dessus, des anneaux de cuivre autour de l'axe gris. Cinq tons, sans hasard : les spires en pente la séparent
+ * des planches (des lames droites), l'axe et les anneaux de la brique.
+ */
+function paintCoil(t: CoilTones, face: 'top' | 'side'): Painter {
+  const [cuivre, reflet, spire, axe, ombreAxe] = [hexToRgb(t.cuivre), hexToRgb(t.reflet), hexToRgb(t.spire), hexToRgb(t.axe), hexToRgb(t.ombreAxe)];
+  if (face === 'top')
+    return (x, y) => {
+      const r = Math.hypot(x - 7.5, y - 7.5);
+      if (r < 2) return axe;
+      if (r < 3) return ombreAxe;
+      const anneau = Math.floor(r) % 2;
+      return anneau ? spire : r > 7 ? cuivre : reflet;
+    };
+  return (x, y) => {
+    const k = (y + Math.floor(x / 6)) % 3;
+    return k === 2 ? spire : k === 0 ? reflet : cuivre;
+  };
+}
+
+/** Les tons du liège : le liège, ses mouchetures sombres et claires. */
+type CorkTones = { liege: string; sombre: string; clair: string };
+
+/**
+ * Du liège (le Bassin des maquettes, technologie 4e ; DA, SC-3) : un liège cannelle moucheté de brun très sombre et de
+ * beige clair, des mouchetures d'un ou deux pixels semées par un hachage. Trois tons très contrastés, sans hasard : les
+ * mouchetures le séparent du carton (des cannelures) et du grès (un grain fin en assises).
+ */
+function paintCork(t: CorkTones): Painter {
+  const [fond, sombre, clair] = [hexToRgb(t.liege), hexToRgb(t.sombre), hexToRgb(t.clair)];
+  return (x, y) => {
+    const h = hacher(x + 5, y + 11);
+    if (h < 80 || hacher(x + 4, y + 11) < 40) return sombre;
+    if (h > 880) return clair;
+    return fond;
+  };
+}
+
+/** Les tons du savon : le savon, le relief clair, la rainure et l'ombre du relief. */
+type SoapTones = { savon: string; relief: string; rainure: string };
+
+/**
+ * Du savon (le Verger de la santé, SVT 3e ; DA, SC-3) : un pain vert menthe, son bord en relief clair, une rainure sombre
+ * juste dedans ; sur le dessus, un ovale en relief clair au milieu, une ombre en bas ; sur le côté, une rainure en
+ * travers à mi-hauteur. Trois tons, sans hasard : le relief le sépare du verre et de la lentille (des reflets en biais).
+ */
+function paintSoap(t: SoapTones, face: 'top' | 'side'): Painter {
+  const [fond, relief, rainure] = [hexToRgb(t.savon), hexToRgb(t.relief), hexToRgb(t.rainure)];
+  return (x, y) => {
+    const bord = Math.min(x, y, 15 - x, 15 - y);
+    if (bord === 0) return relief;
+    if (bord === 1) return rainure;
+    if (face === 'side') return y === 7 ? rainure : y === 8 ? relief : fond;
+    const e = ((x - 7.5) / 4.5) ** 2 + ((y - 7.5) / 3) ** 2;
+    if (e <= 1 && e > 0.55) return y > 7.5 ? rainure : relief;
+    return fond;
+  };
+}
+
+/** Les tons du ressort : le métal, son reflet, le laiton du ressort et son ombre. */
+type SpringTones = { metal: string; reflet: string; laiton: string; ombre: string };
+
+/** Le zigzag du ressort sur le côté, de haut en bas : ses sommets, en pixels. */
+const SPRING_ZIGZAG: readonly (readonly [number, number])[] = [
+  [4, 0],
+  [11, 4],
+  [4, 8],
+  [11, 12],
+  [4, 16],
+];
+
+/** La distance d'un point à un segment. */
+function distanceToSegment(px: number, py: number, [ax, ay]: readonly [number, number], [bx, by]: readonly [number, number]): number {
+  const [dx, dy] = [bx - ax, by - ay];
+  const t = Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / (dx * dx + dy * dy)));
+  return Math.hypot(px - ax - t * dx, py - ay - t * dy);
+}
+
+/**
+ * Du ressort (le Tremplin des forces, physique-chimie 3e ; DA, SC-3) : un métal gris, sur le côté un ressort en zigzag
+ * de laiton, deux pixels d'épaisseur, son ombre d'un côté ; sur le dessus, l'anneau de laiton du ressort vu d'en haut.
+ * Quatre tons, sans hasard : le zigzag le sépare de l'acier (des stries) et de la fonte (des rivets).
+ */
+function paintSpring(t: SpringTones, face: 'top' | 'side'): Painter {
+  const [metal, reflet, laiton, ombre] = [hexToRgb(t.metal), hexToRgb(t.reflet), hexToRgb(t.laiton), hexToRgb(t.ombre)];
+  if (face === 'top')
+    return (x, y) => {
+      const r = Math.hypot(x - 7.5, y - 7.5);
+      if (r >= 4 && r < 5.5) return laiton;
+      if (r >= 5.5 && r < 6.3) return ombre;
+      return (x + y) % 7 === 0 ? reflet : metal;
+    };
+  return (x, y) => {
+    let d = Infinity;
+    for (let i = 0; i + 1 < SPRING_ZIGZAG.length; i++) d = Math.min(d, distanceToSegment(x + 0.5, y + 0.5, SPRING_ZIGZAG[i], SPRING_ZIGZAG[i + 1]));
+    if (d <= 1) return laiton;
+    if (d <= 1.7) return ombre;
+    return x === 1 || x === 14 ? reflet : metal;
+  };
+}
+
+/** Les tons de la cire : la cire, l'alvéole en trait fin, le reflet du miel. */
+type WaxTones = { cire: string; trait: string; reflet: string };
+
+/**
+ * De la cire (la Ruche des réseaux, technologie 3e ; DA, SC-3) : des alvéoles à six côtés en traits fins d'un pixel, de
+ * huit pixels de large, en rangs décalés d'une demi-alvéole ; un reflet de miel en haut de chacune. Trois tons, sans
+ * hasard : les alvéoles la séparent de l'or (uni, brillant) et du prisme ; le motif se raccorde d'un bloc à l'autre.
+ */
+function paintWax(t: WaxTones): Painter {
+  const [fond, trait, reflet] = [hexToRgb(t.cire), hexToRgb(t.trait), hexToRgb(t.reflet)];
+  return (x, y) => {
+    const rang = Math.floor(y / 8);
+    const v = y % 8;
+    const u = (x - 4 * (rang % 2) + 16) % 8;
+    if ((v >= 1 && v <= 5 && u === 0) || ((v === 0 || v === 6) && (u === 1 || u === 7)) || (v === 7 && (u === 2 || u === 6))) return trait;
+    // Le reflet : deux pixels clairs en haut à gauche de l'alvéole.
+    if (v === 2 && (u === 2 || u === 3)) return reflet;
     return fond;
   };
 }
@@ -737,6 +982,52 @@ export const PAINTERS: Record<TextureKind, { top: Painter; side: Painter; bottom
   carton: {
     top: carton({ carton: '#b98d5a', creux: '#8a6a40', clair: '#cca474' }),
     side: carton({ carton: '#9a7246', creux: '#6e5030', clair: '#ae8858' }),
+  },
+  // Les blocs des îles de sciences de 5e à 3e (SC-3) : chacun son motif obligatoire (DA).
+  // Strate (la Prairie des climats, SVT 5e) : trois couches de roche sur le côté, la terre brune dessus.
+  strate: {
+    top: paintStrata({ ocre: '#d4a656', rouge: '#8a5a3a', gris: '#8e8a84', joint: '#5a3e2a', dessus: '#9a6a44', clair: '#b08058', sombre: '#7e5436' }, 'top'),
+    side: paintStrata({ ocre: '#d4a656', rouge: '#8a5a3a', gris: '#8e8a84', joint: '#5a3e2a', dessus: '#9a6a44', clair: '#e2bc78', sombre: '#7e5436' }, 'side'),
+  },
+  // Sel (la Saline des mélanges, physique-chimie 5e) : quatre petits cristaux cernés sur chaque face.
+  sel: {
+    top: paintSalt({ fond: '#ece8e2', cristal: '#fbfaf6', cerne: '#8a98a6' }),
+    side: paintSalt({ fond: '#c8ccd0', cristal: '#eef0f2', cerne: '#8a98a6' }),
+  },
+  // Bambou (la Menuiserie des objets, technologie 5e) : des cannes debout et leurs nœuds, leurs bouts ronds dessus.
+  bambou: {
+    top: paintBamboo({ canne: '#cdb46a', reflet: '#e0ca86', creux: '#8a7638', noeud: '#9c8440' }, 'top'),
+    side: paintBamboo({ canne: '#b49c4e', reflet: '#cab466', creux: '#7e6c30', noeud: '#6f7a34' }, 'side'),
+  },
+  // Pétale (la Source des espèces, SVT 4e) : des pétales en écailles, un cœur jaune.
+  petale: {
+    top: paintPetal({ petale: '#e88fb4', bord: '#c4648e', reflet: '#f4b4ce', coeur: '#f2cf4a', ombre: '#d89a2a' }),
+    side: paintPetal({ petale: '#c8638e', bord: '#9e4470', reflet: '#de88ac', coeur: '#e8c040', ombre: '#c88a24' }),
+  },
+  // Bobine (la Vigie des signaux, physique-chimie 4e) : des spires de cuivre, l'axe gris dessus.
+  bobine: {
+    top: paintCoil({ cuivre: '#c47a3c', reflet: '#d8945a', spire: '#8a4a22', axe: '#9a9ea4', ombreAxe: '#5e6268' }, 'top'),
+    side: paintCoil({ cuivre: '#b5652e', reflet: '#cc8048', spire: '#8a4a22', axe: '#9a9ea4', ombreAxe: '#5e6268' }, 'side'),
+  },
+  // Liège (le Bassin des maquettes, technologie 4e) : un liège cannelle moucheté de sombre et de clair.
+  liege: {
+    top: paintCork({ liege: '#b0785a', sombre: '#4e3020', clair: '#d0a070' }),
+    side: paintCork({ liege: '#93603f', sombre: '#4e3020', clair: '#d0a070' }),
+  },
+  // Savon (le Verger de la santé, SVT 3e) : un pain vert menthe, son bord et son ovale en relief.
+  savon: {
+    top: paintSoap({ savon: '#a6d8c0', relief: '#d8f0e4', rainure: '#78b096' }, 'top'),
+    side: paintSoap({ savon: '#86bfa4', relief: '#d8f0e4', rainure: '#629a80' }, 'side'),
+  },
+  // Ressort (le Tremplin des forces, physique-chimie 3e) : un ressort de laiton en zigzag sur un métal gris.
+  ressort: {
+    top: paintSpring({ metal: '#5a606a', reflet: '#6c727c', laiton: '#d6b04a', ombre: '#3a3e46' }, 'top'),
+    side: paintSpring({ metal: '#4a4f58', reflet: '#5c626c', laiton: '#d6b04a', ombre: '#8a6e26' }, 'side'),
+  },
+  // Cire (la Ruche des réseaux, technologie 3e) : des alvéoles en traits fins sur une cire couleur miel.
+  cire: {
+    top: paintWax({ cire: '#d9a03c', trait: '#8f5f1e', reflet: '#ecc068' }),
+    side: paintWax({ cire: '#b98030', trait: '#8f5f1e', reflet: '#d0a050' }),
   },
   // Les blocs assemblés (GD-2), chacun son motif : la poutre (un rondin équarri, ses chevilles), le vitrail (des
   // carreaux sertis de plomb), l'engrenage (une roue dentée sur l'ardoise), le miroir (un disque clair cerclé de violet).

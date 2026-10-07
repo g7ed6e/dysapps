@@ -5,9 +5,10 @@
 // les images par seconde si ; elles se mesurent sur la tablette de référence avec `?mesures` dans l'adresse.
 // `--captures <dossier>` enregistre en plus les captures déclarées dans `CAPTURES` (ci-dessous), pour comparer un lot de
 // rendu à l'état d'avant ; elles ne sont pas versionnées (la branche `captures` en garde un dossier par lot).
-// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-college, sciences ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
+// `--familles nuit,ciel` n'en refait que certaines familles (jour, nuit, personnages, lisibilite, fusee, ciel, cadrage, lieux, lieux-pres, lieux-salle, salle, ecoles, trois-bandes, etoile, commandes, commandes-iles, bulles, fiches, menu-tete, debut, histoire-geo, histoire-geo-college, sciences, sciences-college ; celles d'un lot fusionné sont retirées). `--rendu archipeo` mesure le rendu en construction (le drapeau
 // `?rendu=archipeo`, et l'univers Archipéo choisi dans les Réglages pour que les textes le suivent), `--style a|b|c` une option de style de surface (lot R1), `--archipel 6e` un seul archipel,
-// `--attente 20` le plus long temps réel laissé au monde pour se construire (en secondes, 10 par défaut). L'horloge de la
+// `--attente 40` le plus long temps réel laissé au monde pour se construire (en secondes, 30 par défaut : un monde pas prêt
+// à temps donnait une capture la caméra encore en route, les noms posés pour son but, voir `preparerLaScene`). L'horloge de la
 // page est pilotée (`preparerLaScene`, scripts/prise-de-vue.mjs) : deux prises du même état donnent la même image, les
 // animations au même instant ; les images par seconde du tableau sont donc celles de l'horloge pilotée (8), pas une mesure.
 // Sur chaque capture de nuit en 3D, la part des pixels de la scène qui sont « de lueur » (fenêtres, lanternes, et plus
@@ -45,7 +46,7 @@ const QUERY = (() => {
 const ONLY = option('--archipel');
 /** Avec `--comparer <dossier>` : les captures de main (mêmes noms), à comparer à celles-ci (scripts/rendu/comparer.mjs). */
 const REFERENCES = option('--comparer');
-const WAIT = Number(option('--attente') ?? 10) * 1000;
+const WAIT = Number(option('--attente') ?? 30) * 1000;
 /** Les vues sans monde 3D (le défi, la bulle d'une créature) : rien à attendre avant la prise. */
 const VUES_SANS_MONDE = new Set(['défi', 'bulle', 'page']);
 /** Une heure de jour et une de nuit, pour que le ciel et la lumière soient les mêmes à chaque fois. */
@@ -717,6 +718,66 @@ const CAPTURES = [
     ile: 'life-earth-sciences-6e-living-world',
     ...autres,
   })),
+  // Les neuf îles de sciences des 5e, 4e et 3e (lot SC-3, famille `sciences-college`), à retirer une fois le lot fusionné :
+  // chacune de près, de jour et de nuit, avant sa restauration (le Gardien en statue grise, `sansIles`) et tout
+  // construit (le Gardien rallumé) ; son Gardien, sa fiche ouverte, avant et après ; sa commande livrée (la petite
+  // construction posée) ; et la Carte de chaque archipel tout construit, sur la tablette, en portrait 800 × 1280 et en
+  // OpenDyslexic 32 px, pour les noms des îles.
+  ...[
+    'life-earth-sciences-5e-active-planet',
+    'physics-chemistry-5e-matter-universe',
+    'technology-5e-design',
+    'life-earth-sciences-4e-cells-evolution',
+    'physics-chemistry-4e-signals-circuits',
+    'technology-4e-modeling',
+    'life-earth-sciences-3e-human-body',
+    'physics-chemistry-3e-motion-energy',
+    'technology-3e-digital',
+  ].flatMap((ile) => [
+    ...[{ suffixe: '' }, { suffixe: '-nuit', nuit: true }].flatMap(({ suffixe, ...autres }) => [
+      { nom: `sciences-college-${ile}-avant${suffixe}`, vue: 'île', famille: 'sciences-college', ile, sansIles: [ile], ...autres },
+      { nom: `sciences-college-${ile}-apres${suffixe}`, vue: 'île', famille: 'sciences-college', ile, ...autres },
+    ]),
+    { nom: `sciences-college-${ile}-gardien-avant`, vue: 'île', famille: 'sciences-college', ile, sansIles: [ile], fiche: { genre: 'gardien', id: ile } },
+    { nom: `sciences-college-${ile}-gardien-apres`, vue: 'île', famille: 'sciences-college', ile, fiche: { genre: 'gardien', id: ile } },
+    { nom: `sciences-college-${ile}-commande`, vue: 'île', famille: 'sciences-college', ile, posees: 'toutes' },
+  ]),
+  ...[
+    ['5e', 'life-earth-sciences-5e-active-planet'],
+    ['4e', 'life-earth-sciences-4e-cells-evolution'],
+    ['3e', 'life-earth-sciences-3e-human-body'],
+  ].flatMap(([a, ile]) =>
+    [
+      { suffixe: '' },
+      { suffixe: '-800x1280', taille: { width: 800, height: 1280 } },
+      { suffixe: '-od32', reglages: { font: 'opendyslexic', fontSize: 32 } },
+    ].map(({ suffixe, ...autres }) => ({ nom: `sciences-college-carte-${a}${suffixe}`, vue: 'carte', famille: 'sciences-college', ile, ...autres })),
+  ),
+  // « Mes blocs » de chaque archipel avec ses trois blocs de sciences en poche (les blocs clairs voisins), le panneau
+  // d'une île avec sa commande ouverte au grand texte (OpenDyslexic 32 px), et le défi neuf du Grand-bi au grand texte.
+  ...[
+    ['5e', ['life-earth-sciences-5e-active-planet', 'physics-chemistry-5e-matter-universe', 'technology-5e-design']],
+    ['4e', ['life-earth-sciences-4e-cells-evolution', 'physics-chemistry-4e-signals-circuits', 'technology-4e-modeling']],
+    ['3e', ['life-earth-sciences-3e-human-body', 'physics-chemistry-3e-motion-energy', 'technology-3e-digital']],
+  ].map(([a, iles]) => ({ nom: `sciences-college-mes-blocs-${a}`, vue: 'île', famille: 'sciences-college', ile: iles[0], lieu: 'stock', inventaire: Object.fromEntries(iles.map((i, k) => [i, 6 - k])) })),
+  {
+    nom: 'sciences-college-panneau-commande-ouverte-od32',
+    vue: 'île',
+    famille: 'sciences-college',
+    ile: 'technology-4e-modeling',
+    commandes: ['technology-4e-modeling-request-1'],
+    inventaire: { 'physics-chemistry-4e-signals-circuits': 1 },
+    // Sur la tablette, les commandes sont dans un volet replié du panneau : il s'ouvre, puis la page défile jusqu'à elles.
+    cliquer: '.island-fold-commandes > summary',
+    voir: '.commandes-list',
+    reglages: { font: 'opendyslexic', fontSize: 32 },
+  },
+  // Pour les relecteurs (SC-3) : la Carte du 3e en OpenDyslexic, taille normale, le bonhomme sur la Ruche des réseaux ;
+  // la Vigie des signaux la nuit, la vue reculée (deux touches −) : la Cloche de cobalt rallumée et sa lampe, au premier
+  // plan (hors du cadre de la vue de nuit ordinaire).
+  { nom: 'sciences-college-carte-3e-od-ruche', vue: 'carte', famille: 'sciences-college', ile: 'technology-3e-digital', reglages: { font: 'opendyslexic' } },
+  { nom: 'sciences-college-physics-chemistry-4e-signals-circuits-apres-nuit-recul', vue: 'île', famille: 'sciences-college', ile: 'physics-chemistry-4e-signals-circuits', nuit: true, zoomer: -2 },
+  { nom: 'sciences-college-defi-grand-bi-od32', vue: 'défi', famille: 'sciences-college', ile: 'technology-4e-modeling', debout: 'technology-4e-modeling', reglages: { font: 'opendyslexic', fontSize: 32 } },
 ];
 /** La lueur la nuit, à la vue île : au plus 3 % de la scène. */
 const LUEUR_MAX = 0.03;
@@ -1082,7 +1143,10 @@ async function scenes() {
       const file = SHOTS && join(SHOTS, `${a}-${nom}.jpg`);
       if (!mesure) {
         // Les autres captures (nuit, personnages, chantier, ponts) : pas de mesure, seulement l'image.
-        await preparerLaScene(page, VUES_SANS_MONDE.has(vue) || view === 'list' ? 0 : WAIT);
+        const sansMonde = VUES_SANS_MONDE.has(vue) || view === 'list';
+        // Un monde 3D pas prêt à temps : la caméra n'a pas été posée à son cadrage, la capture la montrerait encore en
+        // route, les étiquettes déjà posées pour son but (des noms coupés au bord, SC-3). La capture est prise, signalée.
+        if (!(await preparerLaScene(page, sansMonde ? 0 : WAIT)) && !sansMonde) console.log(`::warning::${a}, ${nom} : monde 3D pas prêt en ${WAIT / 1000} s, la caméra peut être encore en route (--attente).`);
         // Une île touchée une fois la scène prête (`allerA`) : le bonhomme part, la caméra prend le trajet.
         if (allerA) await page.evaluate((id) => (location.hash = `#/adventure/${id}`), allerA);
         // Un bouton touché une fois la scène prête (`cliquer` : « Livrer », GD-7), qui lance une vague de pose ; dans le

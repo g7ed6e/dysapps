@@ -27,7 +27,7 @@ it('le monde en blocs ne recule pas : triangles et appels de dessin de chaque ar
   }
   expect(RENDER_BUDGET).toEqual({ triangles: 60_000, drawCalls: 40 });
   expect(RENDER_BUDGET_6E).toEqual({ triangles: 72_800, drawCalls: 40 });
-  expect(RENDER_BUDGET_AUTRES).toEqual({ triangles: 62_900, drawCalls: 40 });
+  expect(RENDER_BUDGET_AUTRES).toEqual({ triangles: 74_900, drawCalls: 40 });
 });
 
 it('les petites constructions des commandes (GD-7, PR 3) se fondent dans le terrain : aucun appel de plus, sous le plafond', () => {
@@ -63,8 +63,9 @@ it('le rendu Archipéo : le sol en facettes tient en deux appels de dessin et la
     // trois avec ses fumées, qui bougent (R4b-6e).
     expect(decor.drawCalls, a).toBeLessThanOrEqual(3);
     expect(decor.triangles, a).toBeLessThanOrEqual(15_000);
-    // Aux Premiers Rivages, la moitié de leur budget relevé (SC-2 : 32 724 mesurés, mainteneur, 6 octobre 2026).
-    expect(sol.triangles, a).toBeLessThanOrEqual((a === '6e' ? RENDER_BUDGET_6E : RENDER_BUDGET).triangles / 2);
+    // La moitié du budget relevé de chaque archipel : aux Premiers Rivages depuis SC-2 (32 724 mesurés, mainteneur,
+    // 6 octobre 2026), ailleurs depuis SC-3 (37 194 aux Anciens Ateliers, sous 37 450).
+    expect(sol.triangles, a).toBeLessThanOrEqual(renderBudgetOf(a).triangles / 2);
     // Et les modèles de la scène (sans la mer ni la faune, que le monde en blocs ne compte pas) ne dessinent pas plus
     // que le monde en blocs.
     const blocs = sceneCost(a);
@@ -110,12 +111,13 @@ describe('Les postes du budget d’Archipéo (socle de la piste Rendu, cadrage A
   // enveloppe validée par le mainteneur le 01/10/2026 ; 53 040 avec la Halle aux matériaux (GD-2, validé par le mainteneur le 01/10/2026, world/budget.ts), 53 060 avec la salle des trophées (GD-3, même jour).
   // HG-2 (mainteneur, 6 octobre 2026) : les Premiers Rivages passent de 59 500 à 63 370 avec les deux îles d'histoire-géographie,
   // puis à 72 770 avec les trois îles de sciences (SC-2, même mot : « Budget on augmente pour l'instant »).
-  // HG-3 (même mot) : les autres archipels passent de 55 790 à 62 875 avec leurs six îles d'histoire-géographie.
-  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2, SC-2 et HG-3 : les îles d’histoire-géographie et de sciences) : 72 770 triangles et 25 appels aux Premiers Rivages, 62 875 et 24 ailleurs', () => {
+  // HG-3 (même mot) : les autres archipels passent de 55 790 à 62 875 avec leurs six îles d'histoire-géographie, puis à
+  // 74 805 avec leurs neuf îles de sciences (SC-3).
+  it('les enveloppes décidées le 28 septembre 2026, relevées depuis (GD-9, puis HG-2, SC-2, HG-3 et SC-3 : les îles d’histoire-géographie et de sciences) : 72 770 triangles et 25 appels aux Premiers Rivages, 74 805 et 24 ailleurs', () => {
     const total = (a: '6e' | '5e') => postes.reduce((n, p) => n + enveloppeDe(p, a).triangles, 0);
     const appels = (a: '6e' | '5e') => postes.reduce((n, p) => n + enveloppeDe(p, a).drawCalls, 0);
     expect([total('6e'), appels('6e')]).toEqual([72_770, 25]);
-    expect([total('5e'), appels('5e')]).toEqual([62_875, 24]);
+    expect([total('5e'), appels('5e')]).toEqual([74_805, 24]);
   });
 
   // GD-3 : la salle des trophées change avec les succès (une travée au 13e et au 19e, les trophées sous le toit) ; la

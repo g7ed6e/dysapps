@@ -1,0 +1,234 @@
+{
+  "id": "technology-3e-digital-connected-objects-2",
+  "biome": "technology-3e-digital",
+  "type": "connected-objects",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "technology-3e-digital-connected-objects-2-0",
+      "prompt": "Ton nom, ta photo et l’adresse de ta maison sont des données …",
+      "spoken": "Ton nom, ta photo et l’adresse de ta maison sont des données  (mot manquant) ",
+      "choices": [
+        "personnelles",
+        "publiques",
+        "techniques"
+      ],
+      "answer": "personnelles",
+      "hint": "Relis la ligne « Une donnée personnelle » du rappel.",
+      "explanation": "Ce sont des informations sur toi : des données personnelles. Elles se protègent, et ne se donnent pas à n’importe qui.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Tes données personnelles",
+          "lines": [
+            "Une donnée personnelle : une information sur toi (nom, photo, adresse, lieu où tu es).",
+            "Les objets connectés en collectent beaucoup.",
+            "Un mot de passe : long, et différent pour chaque compte.",
+            "Avant d’accepter, lis ce que l’application demande.",
+            "Une photo publiée peut être copiée, et rester en ligne."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-connected-objects-2-1",
+      "prompt": "L’application de lampe de poche demande deux accès\nAllumer le flash du téléphone.\nLire tes contacts.",
+      "question": "Quel accès est inutile pour éclairer ?",
+      "spoken": "L’application de lampe de poche demande deux accès. Allumer le flash du téléphone. Lire tes contacts.",
+      "choices": [
+        "allumer le flash",
+        "lire tes contacts",
+        "aucun des deux"
+      ],
+      "answer": "lire tes contacts",
+      "hint": "De quoi a besoin une lampe pour éclairer ?",
+      "explanation": "Pour éclairer, il faut le flash. Tes contacts ne servent à rien pour une lampe : on peut refuser cet accès.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Tes données personnelles",
+          "lines": [
+            "Une donnée personnelle : une information sur toi (nom, photo, adresse, lieu où tu es).",
+            "Les objets connectés en collectent beaucoup.",
+            "Un mot de passe : long, et différent pour chaque compte.",
+            "Avant d’accepter, lis ce que l’application demande.",
+            "Une photo publiée peut être copiée, et rester en ligne."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-connected-objects-2-2",
+      "prompt": "Un bon mot de passe est long, et … pour chaque compte.",
+      "spoken": "Un bon mot de passe est long, et  (mot manquant)  pour chaque compte.",
+      "choices": [
+        "le même",
+        "différent",
+        "ton prénom"
+      ],
+      "answer": "différent",
+      "hint": "Relis la ligne « Un mot de passe » du rappel.",
+      "explanation": "Avec un mot de passe différent pour chaque compte, un mot de passe volé n’ouvre pas tous les autres.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Tes données personnelles",
+          "lines": [
+            "Une donnée personnelle : une information sur toi (nom, photo, adresse, lieu où tu es).",
+            "Les objets connectés en collectent beaucoup.",
+            "Un mot de passe : long, et différent pour chaque compte.",
+            "Avant d’accepter, lis ce que l’application demande.",
+            "Une photo publiée peut être copiée, et rester en ligne."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-connected-objects-2-3",
+      "prompt": "La montre de sport de Hugo\nElle compte ses pas.\nElle enregistre les endroits où il court.\nElle envoie tout au serveur de la marque.",
+      "question": "Pourquoi faire attention ?",
+      "spoken": "La montre de sport de Hugo. Elle compte ses pas. Elle enregistre les endroits où il court. Elle envoie tout au serveur de la marque.",
+      "choices": [
+        "la montre peut se casser",
+        "la marque sait où il court",
+        "les pas comptés sont faux"
+      ],
+      "answer": "la marque sait où il court",
+      "hint": "Relis les deux dernières lignes du document.",
+      "explanation": "Les endroits où Hugo court sont des données personnelles, et elles partent au serveur de la marque. Il peut régler la montre pour ne pas les envoyer.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Tes données personnelles",
+          "lines": [
+            "Une donnée personnelle : une information sur toi (nom, photo, adresse, lieu où tu es).",
+            "Les objets connectés en collectent beaucoup.",
+            "Un mot de passe : long, et différent pour chaque compte.",
+            "Avant d’accepter, lis ce que l’application demande.",
+            "Une photo publiée peut être copiée, et rester en ligne."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-connected-objects-2-4",
+      "prompt": "Une photo publiée en ligne peut être copiée, et …",
+      "spoken": "Une photo publiée en ligne peut être copiée, et  (mot manquant) ",
+      "choices": [
+        "s’effacer toute seule",
+        "changer de couleur",
+        "rester longtemps en ligne"
+      ],
+      "answer": "rester longtemps en ligne",
+      "hint": "Relis la ligne « Une photo publiée » du rappel.",
+      "explanation": "Une photo publiée peut être copiée par d’autres : même effacée chez toi, elle peut rester en ligne. On réfléchit avant de publier.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Tes données personnelles",
+          "lines": [
+            "Une donnée personnelle : une information sur toi (nom, photo, adresse, lieu où tu es).",
+            "Les objets connectés en collectent beaucoup.",
+            "Un mot de passe : long, et différent pour chaque compte.",
+            "Avant d’accepter, lis ce que l’application demande.",
+            "Une photo publiée peut être copiée, et rester en ligne."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-connected-objects-2-5",
+      "prompt": "Le message reçu par Inès\nTon compte va être fermé.\nClique ici, et donne ton mot de passe.\nL’expéditeur est inconnu.",
+      "question": "Que doit faire Inès ?",
+      "spoken": "Le message reçu par Inès. Ton compte va être fermé. Clique ici, et donne ton mot de passe. L’expéditeur est inconnu.",
+      "choices": [
+        "donner son mot de passe",
+        "répondre pour demander pourquoi",
+        "ne pas cliquer, et en parler à un adulte"
+      ],
+      "answer": "ne pas cliquer, et en parler à un adulte",
+      "hint": "Un vrai service demande-t-il ton mot de passe par message ?",
+      "explanation": "Un vrai service ne demande jamais le mot de passe par message : c’est un piège pour le voler. On ne clique pas, et on en parle à un adulte.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Tes données personnelles",
+          "lines": [
+            "Une donnée personnelle : une information sur toi (nom, photo, adresse, lieu où tu es).",
+            "Les objets connectés en collectent beaucoup.",
+            "Un mot de passe : long, et différent pour chaque compte.",
+            "Avant d’accepter, lis ce que l’application demande.",
+            "Une photo publiée peut être copiée, et rester en ligne."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-connected-objects-2-6",
+      "prompt": "Partager sa position en direct avec des inconnus est …",
+      "spoken": "Partager sa position en direct avec des inconnus est  (mot manquant) ",
+      "choices": [
+        "obligatoire",
+        "risqué",
+        "sans effet"
+      ],
+      "answer": "risqué",
+      "hint": "La position dit où tu es, à chaque instant.",
+      "explanation": "Ta position est une donnée personnelle : des inconnus sauraient où tu es. C’est risqué ; on la partage seulement avec des proches.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Tes données personnelles",
+          "lines": [
+            "Une donnée personnelle : une information sur toi (nom, photo, adresse, lieu où tu es).",
+            "Les objets connectés en collectent beaucoup.",
+            "Un mot de passe : long, et différent pour chaque compte.",
+            "Avant d’accepter, lis ce que l’application demande.",
+            "Une photo publiée peut être copiée, et rester en ligne."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-3e-digital-connected-objects-2-7",
+      "prompt": "Le profil de Léo\nProfil public : tout le monde voit ses photos.\nProfil privé : seuls ses amis acceptés les voient.",
+      "question": "Quel réglage protège le mieux ses photos ?",
+      "spoken": "Le profil de Léo. Profil public, tout le monde voit ses photos. Profil privé, seuls ses amis acceptés les voient.",
+      "choices": [
+        "le profil public",
+        "le profil privé",
+        "c’est pareil"
+      ],
+      "answer": "le profil privé",
+      "hint": "Avec quel réglage moins de gens voient ses photos ?",
+      "explanation": "En profil privé, seuls les amis acceptés voient les photos : elles sont mieux protégées.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Tes données personnelles",
+          "lines": [
+            "Une donnée personnelle : une information sur toi (nom, photo, adresse, lieu où tu es).",
+            "Les objets connectés en collectent beaucoup.",
+            "Un mot de passe : long, et différent pour chaque compte.",
+            "Avant d’accepter, lis ce que l’application demande.",
+            "Une photo publiée peut être copiée, et rester en ligne."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "technology-3e-digital",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

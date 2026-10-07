@@ -68,8 +68,8 @@ describe('déblocage des biomes', () => {
     expect(screen.queryAllByText(/Île lointaine/).length).toBe(5);
     // Deux bacs : vers la Fouille des siècles et vers le Hangar des inventions (SC-2).
     expect(screen.getAllByText(/Bac à construire : 4 blocs/).length).toBe(2);
-    // Les îles des archipels de 5e, 4e et 3e, dont les six d'histoire-géographie (HG-3).
-    expect(screen.getAllByText(/Archipel à rejoindre/).length).toBe(27);
+    // Les îles des archipels de 5e, 4e et 3e, dont les six d'histoire-géographie (HG-3) et les neuf de sciences (SC-3).
+    expect(screen.getAllByText(/Archipel à rejoindre/).length).toBe(36);
     await user.click(screen.getByRole('link', { name: /^Mine des lettres/ }));
     // Le message est découpé en syllabes (plusieurs éléments) : on lit le texte complet.
     expect(document.body.textContent).toMatch(/Pas si vite/);

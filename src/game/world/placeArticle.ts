@@ -3,7 +3,7 @@
 // noms). Code pur, sans Three.js.
 
 /** Les premiers mots des noms de lieux au féminin (« de la Forêt des sons ») ; les autres sont au masculin (« du Volcan »). */
-const FEMININS = new Set(['forêt', 'forge', 'mine', 'carrière', 'ferme', 'tour', 'plaine', 'rivière', 'falaise', 'baie', 'horloge', 'gare', 'île', 'halle', 'fabrique', 'fouille', 'pointe', 'imprimerie', 'escale', 'vallée']);
+const FEMININS = new Set(['forêt', 'forge', 'mine', 'carrière', 'ferme', 'tour', 'plaine', 'rivière', 'falaise', 'baie', 'horloge', 'gare', 'île', 'halle', 'fabrique', 'fouille', 'pointe', 'imprimerie', 'escale', 'vallée', 'prairie', 'saline', 'menuiserie', 'source', 'vigie', 'ruche']);
 
 /** Les premiers mots qui s'élident devant un h muet. */
 const H_MUETS = new Set(['horloge']);

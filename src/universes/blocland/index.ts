@@ -302,6 +302,78 @@ export const BLOCLAND = {
         beaten: 'Clic ! Je me rallume, des pieds jusqu’à la clé. Le Hangar est à toi, et à Pince.',
       },
     },
+    'life-earth-sciences-5e-active-planet': {
+      challenge: 'La Tortue d’ocre lève lentement la tête : « Me voilà toute grise. Tu as parcouru toute ma prairie : dis-moi comment change la Terre. »',
+      guardianSays: {
+        hit: 'Juste. Une écaille de ma carapace reprend sa couleur.',
+        miss: 'Mes couleurs restent. Relis le document, cherche le mot du rappel, et reprends.',
+        beaten: 'Je me rallume, des pattes jusqu’à la carapace. La Prairie est à toi, et à Humus.',
+      },
+    },
+    'physics-chemistry-5e-matter-universe': {
+      challenge: 'Le Flamant de sel lève une patte : « Mes plumes sont toutes grises. Tu as fait tous les mélanges de la saline : dis-moi ce qu’il y a dedans. »',
+      guardianSays: {
+        hit: 'Juste. Un bloc de mon aile redevient rose.',
+        miss: 'Mes couleurs restent. Regarde la mesure, vérifie l’unité, et reprends.',
+        beaten: 'Je me rallume, des pattes jusqu’au bout du bec. La Saline est à toi, et à Perle.',
+      },
+    },
+    'technology-5e-design': {
+      challenge: 'Le Cheval à bascule se balance doucement : « Me voilà tout gris. Tu as vu tous les objets de la menuiserie : dis-moi pourquoi ils sont faits comme ça. »',
+      guardianSays: {
+        hit: 'Juste. Un bloc de ma robe reprend sa couleur.',
+        miss: 'Mes couleurs restent. Relis le cahier des charges, regarde le critère, et reprends.',
+        beaten: 'Je me rallume, des patins jusqu’à la crinière. La Menuiserie est à toi, et à Rabot.',
+      },
+    },
+    'life-earth-sciences-4e-cells-evolution': {
+      challenge: 'La Girafe d’ambre baisse son long cou : « Mes taches sont toutes grises. Tu as fait le tour de ma source : dis-moi comment le vivant se transmet et change. »',
+      guardianSays: {
+        hit: 'Juste. Une tache de mon cou reprend sa couleur.',
+        miss: 'Mes couleurs restent. Compare les deux cas du document, regarde ce qui change, et reprends.',
+        beaten: 'Je me rallume, des sabots jusqu’au bout du cou. La Source est à toi, et à Nectar.',
+      },
+    },
+    'physics-chemistry-4e-signals-circuits': {
+      challenge: 'La Cloche de cobalt tinte tout bas : « Me voilà toute grise. Tu as suivi tous les signaux de la vigie : dis-moi comment ils voyagent. »',
+      guardianSays: {
+        hit: 'Ding ! Juste. Un bloc de ma cloche reprend sa couleur.',
+        miss: 'Mes couleurs restent. Suis le circuit d’une borne à l’autre, et reprends.',
+        beaten: 'Ding, dong ! Je me rallume, et ma lampe aussi. La Vigie est à toi, et à Radar.',
+      },
+    },
+    'technology-4e-modeling': {
+      challenge: 'Le Grand-bi d’érable fait tourner doucement sa grande roue : « Me voilà tout gris. Tu as vu toutes les maquettes du bassin : dis-moi comment l’énergie et l’information circulent. »',
+      guardianSays: {
+        hit: 'Juste. Un rayon de ma roue reprend sa couleur.',
+        miss: 'Mes couleurs restent. Suis les cases du schéma, dans l’ordre, et reprends.',
+        beaten: 'Je me rallume, des roues jusqu’à la selle. Le Bassin est à toi, et à Manivelle.',
+      },
+    },
+    'life-earth-sciences-3e-human-body': {
+      challenge: 'Le Dauphin de turquoise souffle doucement : « Me voilà tout gris. Tu as fait le tour du verger : dis-moi comment ton corps fonctionne. »',
+      guardianSays: {
+        hit: 'Juste. Un bloc de mon dos reprend sa couleur.',
+        miss: 'Mes couleurs restent. Relis le document, cherche le mot du rappel, et reprends.',
+        beaten: 'Je me rallume, de la queue jusqu’au museau. Le Verger est à toi, et à Olive.',
+      },
+    },
+    'physics-chemistry-3e-motion-energy': {
+      challenge: 'Le Kangourou de rubis fait un petit bond : « Me voilà tout gris. Tu as essayé tout mon tremplin : dis-moi ce qui fait bouger les choses. »',
+      guardianSays: {
+        hit: 'Hop ! Juste. Un bloc de ma queue reprend sa couleur.',
+        miss: 'Mes couleurs restent. Repère la force, regarde son sens, et reprends.',
+        beaten: 'Hop ! Je me rallume, de la queue jusqu’aux oreilles. Le Tremplin est à toi, et à Virage.',
+      },
+    },
+    'technology-3e-digital': {
+      challenge: 'L’Abeille de topaze bat doucement des ailes : « Me voilà toute grise. Tu as suivi tous les chemins de la ruche : dis-moi comment voyagent les données. »',
+      guardianSays: {
+        hit: 'Juste. Une case de mes ailes reprend sa couleur.',
+        miss: 'Mes couleurs restent. Relis le document ligne par ligne, et reprends.',
+        beaten: 'Bzzz ! Je me rallume, des antennes jusqu’aux rayures. La Ruche est à toi, et à Navette.',
+      },
+    },
     'lv2-3e-travel': {
       challenge: 'Le Papillon de cuivre attend devant le refuge : « Mes ailes sont toutes grises. Tu as rencontré tous les voyageurs du refuge : dis-moi ce qu’ils ont vécu. »',
       guardianSays: {
@@ -393,6 +465,15 @@ export const BLOCLAND = {
     'life-earth-sciences-6e-living-world': 'escargot jardinier',
     'physics-chemistry-6e-matter-energy': 'goutte chimiste',
     'technology-6e-objects': 'fourmi bricoleuse',
+    'life-earth-sciences-5e-active-planet': 'ver de terre laboureur',
+    'physics-chemistry-5e-matter-universe': 'canard saunier',
+    'technology-5e-design': 'pic-vert menuisier',
+    'life-earth-sciences-4e-cells-evolution': 'colibri butineur',
+    'physics-chemistry-4e-signals-circuits': 'suricate guetteur',
+    'technology-4e-modeling': 'lémurien maquettiste',
+    'life-earth-sciences-3e-human-body': 'koala soigneur',
+    'physics-chemistry-3e-motion-energy': 'tatou rouleur',
+    'technology-3e-digital': 'chenille tisseuse',
     'english-5e-grammar': 'chat du manoir',
     'english-4e-comprehension': 'lutin souffleur',
     'english-4e-grammar': 'blaireau chef de gare',

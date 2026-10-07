@@ -1,0 +1,235 @@
+{
+  "id": "technology-5e-design-life-cycle-2",
+  "biome": "technology-5e-design",
+  "type": "life-cycle",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "technology-5e-design-life-cycle-2-0",
+      "prompt": "L’impact d’un téléphone\nFabrication : la plus grande part.\nTransport : une petite part.\nUtilisation : une petite part.\nFin de vie : une très petite part.",
+      "question": "Quelle étape a le plus d’impact ?",
+      "spoken": "L’impact d’un téléphone. Fabrication, la plus grande part. Transport, une petite part. Utilisation, une petite part. Fin de vie, une très petite part.",
+      "choices": [
+        "l’utilisation",
+        "la fabrication",
+        "le transport"
+      ],
+      "answer": "la fabrication",
+      "hint": "Cherche « la plus grande part ».",
+      "explanation": "Pour un téléphone, c’est la fabrication qui compte le plus : extraire les métaux et assembler les pièces. L’utilisation compte peu.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’impact d’un objet",
+          "lines": [
+            "L’impact : ce que l’objet change pour la planète et pour les gens.",
+            "On le mesure à chaque étape du cycle de vie.",
+            "Pour un téléphone, la fabrication compte le plus.",
+            "Garder un objet plus longtemps réduit son impact.",
+            "Un objet facile à réparer dure plus longtemps."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-5e-design-life-cycle-2-1",
+      "prompt": "Pour réduire l’impact de son téléphone, le mieux est de le garder plus …",
+      "spoken": "Pour réduire l’impact de son téléphone, le mieux est de le garder plus  (mot manquant) ",
+      "choices": [
+        "chargé",
+        "longtemps",
+        "loin"
+      ],
+      "answer": "longtemps",
+      "hint": "Quelle étape compte le plus ? Comment en fabriquer moins ?",
+      "explanation": "La fabrication compte le plus : garder son téléphone plus longtemps, c’est en fabriquer moins.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’impact d’un objet",
+          "lines": [
+            "L’impact : ce que l’objet change pour la planète et pour les gens.",
+            "On le mesure à chaque étape du cycle de vie.",
+            "Pour un téléphone, la fabrication compte le plus.",
+            "Garder un objet plus longtemps réduit son impact.",
+            "Un objet facile à réparer dure plus longtemps."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-5e-design-life-cycle-2-2",
+      "prompt": "Deux bouilloires\nBouilloire A : chauffe juste l’eau qu’il faut.\nBouilloire B : chauffe toujours un litre entier.",
+      "question": "Pour une tasse de thé, laquelle consomme le moins ?",
+      "spoken": "Deux bouilloires. Bouilloire A, chauffe juste l’eau qu’il faut. Bouilloire B, chauffe toujours un litre entier.",
+      "choices": [
+        "la bouilloire A",
+        "la bouilloire B",
+        "c’est pareil"
+      ],
+      "answer": "la bouilloire A",
+      "hint": "Chauffer plus d’eau demande plus d’énergie.",
+      "explanation": "La bouilloire A chauffe seulement l’eau d’une tasse : elle consomme moins. La B chauffe un litre pour rien.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’impact d’un objet",
+          "lines": [
+            "L’impact : ce que l’objet change pour la planète et pour les gens.",
+            "On le mesure à chaque étape du cycle de vie.",
+            "Pour un téléphone, la fabrication compte le plus.",
+            "Garder un objet plus longtemps réduit son impact.",
+            "Un objet facile à réparer dure plus longtemps."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-5e-design-life-cycle-2-3",
+      "prompt": "Un objet facile à démonter et à réparer a une vie plus …",
+      "spoken": "Un objet facile à démonter et à réparer a une vie plus  (mot manquant) ",
+      "choices": [
+        "courte",
+        "chère",
+        "longue"
+      ],
+      "answer": "longue",
+      "hint": "Relis la ligne « Un objet facile à réparer » du rappel.",
+      "explanation": "Un objet qu’on peut réparer sert plus longtemps : on en fabrique moins, et son impact baisse.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’impact d’un objet",
+          "lines": [
+            "L’impact : ce que l’objet change pour la planète et pour les gens.",
+            "On le mesure à chaque étape du cycle de vie.",
+            "Pour un téléphone, la fabrication compte le plus.",
+            "Garder un objet plus longtemps réduit son impact.",
+            "Un objet facile à réparer dure plus longtemps."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-5e-design-life-cycle-2-4",
+      "prompt": "Le chargeur oublié\nLe chargeur reste branché, sans téléphone.\nIl est tiède.",
+      "question": "Que montre la chaleur ?",
+      "spoken": "Le chargeur oublié. Le chargeur reste branché, sans téléphone. Il est tiède.",
+      "choices": [
+        "il charge le téléphone",
+        "il consomme encore un peu d’énergie",
+        "il est cassé"
+      ],
+      "answer": "il consomme encore un peu d’énergie",
+      "hint": "Il n’y a pas de téléphone : d’où vient la chaleur ?",
+      "explanation": "Branché sans téléphone, le chargeur consomme encore un peu d’électricité, qui part en chaleur. Mieux vaut le débrancher.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’impact d’un objet",
+          "lines": [
+            "L’impact : ce que l’objet change pour la planète et pour les gens.",
+            "On le mesure à chaque étape du cycle de vie.",
+            "Pour un téléphone, la fabrication compte le plus.",
+            "Garder un objet plus longtemps réduit son impact.",
+            "Un objet facile à réparer dure plus longtemps."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-5e-design-life-cycle-2-5",
+      "prompt": "Acheter un vélo d’occasion plutôt qu’un neuf, c’est …",
+      "spoken": "Acheter un vélo d’occasion plutôt qu’un neuf, c’est  (mot manquant) ",
+      "choices": [
+        "réutiliser",
+        "recycler",
+        "réparer"
+      ],
+      "answer": "réutiliser",
+      "hint": "Le vélo reste un vélo, et il change de propriétaire.",
+      "explanation": "Le vélo sert à quelqu’un d’autre tel qu’il est : c’est réutiliser. On évite d’en fabriquer un neuf.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’impact d’un objet",
+          "lines": [
+            "L’impact : ce que l’objet change pour la planète et pour les gens.",
+            "On le mesure à chaque étape du cycle de vie.",
+            "Pour un téléphone, la fabrication compte le plus.",
+            "Garder un objet plus longtemps réduit son impact.",
+            "Un objet facile à réparer dure plus longtemps."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-5e-design-life-cycle-2-6",
+      "prompt": "Trois lampes qui éclairent autant\nLampe A : 5 watts.\nLampe B : 40 watts.\nLampe C : 60 watts.",
+      "question": "Allumées une heure, laquelle consomme le moins ?",
+      "spoken": "Trois lampes qui éclairent autant. Lampe A, 5 watts. Lampe B, 40 watts. Lampe C, 60 watts.",
+      "choices": [
+        "la lampe A",
+        "la lampe B",
+        "la lampe C"
+      ],
+      "answer": "la lampe A",
+      "hint": "Cherche le plus petit nombre de watts.",
+      "explanation": "Pour la même lumière et le même temps, moins de watts veut dire moins d’énergie : la lampe A consomme le moins.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’impact d’un objet",
+          "lines": [
+            "L’impact : ce que l’objet change pour la planète et pour les gens.",
+            "On le mesure à chaque étape du cycle de vie.",
+            "Pour un téléphone, la fabrication compte le plus.",
+            "Garder un objet plus longtemps réduit son impact.",
+            "Un objet facile à réparer dure plus longtemps."
+          ]
+        }
+      }
+    },
+    {
+      "key": "technology-5e-design-life-cycle-2-7",
+      "prompt": "La canette en aluminium\nL’aluminium vient d’une roche.\nRecycler une canette demande bien moins d’énergie que d’en faire une neuve.",
+      "question": "Pourquoi trier sa canette ?",
+      "spoken": "La canette en aluminium. L’aluminium vient d’une roche. Recycler une canette demande bien moins d’énergie que d’en faire une neuve.",
+      "choices": [
+        "pour qu’elle devienne du plastique",
+        "pour économiser de l’énergie et de la roche",
+        "pour la jeter plus vite"
+      ],
+      "answer": "pour économiser de l’énergie et de la roche",
+      "hint": "Relis la dernière ligne du document.",
+      "explanation": "La canette recyclée redevient de l’aluminium : on prend moins de roche, et on consomme bien moins d’énergie.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’impact d’un objet",
+          "lines": [
+            "L’impact : ce que l’objet change pour la planète et pour les gens.",
+            "On le mesure à chaque étape du cycle de vie.",
+            "Pour un téléphone, la fabrication compte le plus.",
+            "Garder un objet plus longtemps réduit son impact.",
+            "Un objet facile à réparer dure plus longtemps."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "technology-5e-design",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

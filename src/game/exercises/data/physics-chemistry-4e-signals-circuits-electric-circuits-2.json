@@ -1,0 +1,242 @@
+{
+  "id": "physics-chemistry-4e-signals-circuits-electric-circuits-2",
+  "biome": "physics-chemistry-4e-signals-circuits",
+  "type": "electric-circuits",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "physics-chemistry-4e-signals-circuits-electric-circuits-2-0",
+      "prompt": "En dérivation, chaque branche a la même tension que la …",
+      "spoken": "En dérivation, chaque branche a la même tension que la  (mot manquant) ",
+      "choices": [
+        "lampe",
+        "résistance",
+        "pile"
+      ],
+      "answer": "pile",
+      "hint": "Relis la ligne « En dérivation » du rappel.",
+      "explanation": "En dérivation, chaque branche est reliée aux deux bornes de la pile : elle a la même tension qu’elle.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Tension et loi d’Ohm",
+          "lines": [
+            "En série, les tensions des appareils s’ajoutent : leur somme est la tension de la pile.",
+            "En dérivation, chaque branche a la même tension que la pile.",
+            "La résistance, en ohms : elle freine le courant.",
+            "La loi d’Ohm : la tension est égale à la résistance fois l’intensité.",
+            "On l’écrit U = R × I : U en volts, R en ohms, I en ampères.",
+            "Pour trouver la résistance : on divise la tension par l’intensité."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-4e-signals-circuits-electric-circuits-2-1",
+      "prompt": "Le circuit en série\nTension de la pile : 9 V (volts).\nTension de la lampe : 5 V.\nTension du moteur : on la cherche.",
+      "question": "Quelle est la tension du moteur ?",
+      "spoken": "Le circuit en série. Tension de la pile, 9 volts. Tension de la lampe, 5 volts. Tension du moteur, on la cherche.",
+      "choices": [
+        "4 volts",
+        "9 volts",
+        "14 volts"
+      ],
+      "answer": "4 volts",
+      "hint": "Relis la ligne « En série » du rappel.",
+      "explanation": "En série, la lampe et le moteur se partagent la tension de la pile : 9 moins 5, il reste 4 volts pour le moteur.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Tension et loi d’Ohm",
+          "lines": [
+            "En série, les tensions des appareils s’ajoutent : leur somme est la tension de la pile.",
+            "En dérivation, chaque branche a la même tension que la pile.",
+            "La résistance, en ohms : elle freine le courant.",
+            "La loi d’Ohm : la tension est égale à la résistance fois l’intensité.",
+            "On l’écrit U = R × I : U en volts, R en ohms, I en ampères.",
+            "Pour trouver la résistance : on divise la tension par l’intensité."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-4e-signals-circuits-electric-circuits-2-2",
+      "prompt": "La résistance freine le courant ; elle se mesure en …",
+      "spoken": "La résistance freine le courant ; elle se mesure en  (mot manquant) ",
+      "choices": [
+        "volts",
+        "ohms",
+        "ampères"
+      ],
+      "answer": "ohms",
+      "hint": "Relis la ligne « La résistance » du rappel.",
+      "explanation": "La résistance se mesure en ohms. Les volts sont pour la tension, les ampères pour l’intensité.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Tension et loi d’Ohm",
+          "lines": [
+            "En série, les tensions des appareils s’ajoutent : leur somme est la tension de la pile.",
+            "En dérivation, chaque branche a la même tension que la pile.",
+            "La résistance, en ohms : elle freine le courant.",
+            "La loi d’Ohm : la tension est égale à la résistance fois l’intensité.",
+            "On l’écrit U = R × I : U en volts, R en ohms, I en ampères.",
+            "Pour trouver la résistance : on divise la tension par l’intensité."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-4e-signals-circuits-electric-circuits-2-3",
+      "prompt": "Avec la même pile, on met une résistance plus grande : l’intensité …",
+      "spoken": "Avec la même pile, on met une résistance plus grande : l’intensité  (mot manquant) ",
+      "choices": [
+        "augmente",
+        "reste la même",
+        "diminue"
+      ],
+      "answer": "diminue",
+      "hint": "La résistance freine le courant.",
+      "explanation": "Plus la résistance est grande, plus elle freine le courant : l’intensité diminue.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Tension et loi d’Ohm",
+          "lines": [
+            "En série, les tensions des appareils s’ajoutent : leur somme est la tension de la pile.",
+            "En dérivation, chaque branche a la même tension que la pile.",
+            "La résistance, en ohms : elle freine le courant.",
+            "La loi d’Ohm : la tension est égale à la résistance fois l’intensité.",
+            "On l’écrit U = R × I : U en volts, R en ohms, I en ampères.",
+            "Pour trouver la résistance : on divise la tension par l’intensité."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-4e-signals-circuits-electric-circuits-2-4",
+      "prompt": "Une résistance dans un circuit\nRésistance : 6 Ω (ohms).\nIntensité : 2 A (ampères).\nLoi d’Ohm : U = R × I.",
+      "question": "Quelle est la tension à ses bornes ?",
+      "spoken": "Une résistance dans un circuit. Résistance, 6 ohms. Intensité, 2 ampères. Loi d’Ohm, U égale R fois I.",
+      "choices": [
+        "3 volts",
+        "8 volts",
+        "12 volts"
+      ],
+      "answer": "12 volts",
+      "hint": "Multiplie la résistance par l’intensité.",
+      "explanation": "La tension est égale à la résistance fois l’intensité : 6 fois 2, 12 volts.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Tension et loi d’Ohm",
+          "lines": [
+            "En série, les tensions des appareils s’ajoutent : leur somme est la tension de la pile.",
+            "En dérivation, chaque branche a la même tension que la pile.",
+            "La résistance, en ohms : elle freine le courant.",
+            "La loi d’Ohm : la tension est égale à la résistance fois l’intensité.",
+            "On l’écrit U = R × I : U en volts, R en ohms, I en ampères.",
+            "Pour trouver la résistance : on divise la tension par l’intensité."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-4e-signals-circuits-electric-circuits-2-5",
+      "prompt": "Des mesures sur une résistance\nTension 2 V : intensité 1 A.\nTension 4 V : intensité 2 A.\nTension 6 V : intensité 3 A.",
+      "question": "Quand la tension double, que fait l’intensité ?",
+      "spoken": "Des mesures sur une résistance. Tension 2 volts, intensité 1 ampère. Tension 4 volts, intensité 2 ampères. Tension 6 volts, intensité 3 ampères.",
+      "choices": [
+        "elle reste la même",
+        "elle double aussi",
+        "elle diminue de moitié"
+      ],
+      "answer": "elle double aussi",
+      "hint": "Compare les lignes « Tension 2 V » et « Tension 4 V ».",
+      "explanation": "De 2 à 4 volts, l’intensité passe de 1 à 2 ampères : elle double aussi. La tension et l’intensité sont proportionnelles, c’est la loi d’Ohm.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Tension et loi d’Ohm",
+          "lines": [
+            "En série, les tensions des appareils s’ajoutent : leur somme est la tension de la pile.",
+            "En dérivation, chaque branche a la même tension que la pile.",
+            "La résistance, en ohms : elle freine le courant.",
+            "La loi d’Ohm : la tension est égale à la résistance fois l’intensité.",
+            "On l’écrit U = R × I : U en volts, R en ohms, I en ampères.",
+            "Pour trouver la résistance : on divise la tension par l’intensité."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-4e-signals-circuits-electric-circuits-2-6",
+      "prompt": "Trouver la résistance\nTension : 12 V (volts).\nIntensité : 3 A (ampères).",
+      "question": "Quelle est la résistance ?",
+      "spoken": "Trouver la résistance. Tension, 12 volts. Intensité, 3 ampères.",
+      "choices": [
+        "4 ohms",
+        "15 ohms",
+        "36 ohms"
+      ],
+      "answer": "4 ohms",
+      "hint": "Relis la ligne « Pour trouver la résistance » du rappel.",
+      "explanation": "On divise la tension par l’intensité : 12 divisé par 3, 4 ohms.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Tension et loi d’Ohm",
+          "lines": [
+            "En série, les tensions des appareils s’ajoutent : leur somme est la tension de la pile.",
+            "En dérivation, chaque branche a la même tension que la pile.",
+            "La résistance, en ohms : elle freine le courant.",
+            "La loi d’Ohm : la tension est égale à la résistance fois l’intensité.",
+            "On l’écrit U = R × I : U en volts, R en ohms, I en ampères.",
+            "Pour trouver la résistance : on divise la tension par l’intensité."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-4e-signals-circuits-electric-circuits-2-7",
+      "prompt": "Pour mesurer la tension aux bornes de la résistance, on branche le voltmètre en …",
+      "spoken": "Pour mesurer la tension aux bornes de la résistance, on branche le voltmètre en  (mot manquant) ",
+      "choices": [
+        "série",
+        "dérivation",
+        "boucle"
+      ],
+      "answer": "dérivation",
+      "hint": "Le voltmètre se branche aux deux bornes.",
+      "explanation": "Le voltmètre se branche aux deux bornes de la résistance, en dérivation. C’est l’ampèremètre qui se branche en série.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Tension et loi d’Ohm",
+          "lines": [
+            "En série, les tensions des appareils s’ajoutent : leur somme est la tension de la pile.",
+            "En dérivation, chaque branche a la même tension que la pile.",
+            "La résistance, en ohms : elle freine le courant.",
+            "La loi d’Ohm : la tension est égale à la résistance fois l’intensité.",
+            "On l’écrit U = R × I : U en volts, R en ohms, I en ampères.",
+            "Pour trouver la résistance : on divise la tension par l’intensité."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "physics-chemistry-4e-signals-circuits",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

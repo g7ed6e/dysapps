@@ -1,0 +1,243 @@
+{
+  "id": "life-earth-sciences-5e-active-planet-active-earth-2",
+  "biome": "life-earth-sciences-5e-active-planet",
+  "type": "active-earth",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "life-earth-sciences-5e-active-planet-active-earth-2-0",
+      "prompt": "Deux îles avec le même volcan actif\nÎle A : personne n’y habite.\nÎle B : une ville est au pied du volcan.",
+      "question": "Sur quelle île le risque est-il le plus grand ?",
+      "spoken": "Deux îles avec le même volcan actif. Île A, personne n’y habite. Île B, une ville est au pied du volcan.",
+      "choices": [
+        "l’île A",
+        "l’île B",
+        "pareil sur les deux"
+      ],
+      "answer": "l’île B",
+      "hint": "L’aléa est le même. Où y a-t-il des enjeux ?",
+      "explanation": "Le volcan est le même : l’aléa est pareil. Sur l’île B, une ville peut être touchée : il y a des enjeux, donc un risque plus grand.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le risque",
+          "lines": [
+            "Aléa : le phénomène naturel, comme un séisme ou une éruption.",
+            "Enjeux : les personnes et les bâtiments qui peuvent être touchés.",
+            "Il y a un risque quand un aléa menace des enjeux.",
+            "On ne sait pas empêcher un séisme, ni prévoir son jour.",
+            "Prévenir : construire solide, surveiller, informer, s’entraîner.",
+            "Les débris de l’érosion se déposent en couches : ils forment de nouvelles roches."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-5e-active-planet-active-earth-2-1",
+      "prompt": "Le phénomène naturel lui-même, comme un séisme, s’appelle l’…",
+      "spoken": "Le phénomène naturel lui-même, comme un séisme, s’appelle l’ (mot manquant) ",
+      "choices": [
+        "aléa",
+        "enjeu",
+        "alerte"
+      ],
+      "answer": "aléa",
+      "hint": "Relis la ligne « Aléa » du rappel.",
+      "explanation": "Le phénomène naturel, c’est l’aléa. Les enjeux sont les personnes et les biens qu’il peut toucher.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le risque",
+          "lines": [
+            "Aléa : le phénomène naturel, comme un séisme ou une éruption.",
+            "Enjeux : les personnes et les bâtiments qui peuvent être touchés.",
+            "Il y a un risque quand un aléa menace des enjeux.",
+            "On ne sait pas empêcher un séisme, ni prévoir son jour.",
+            "Prévenir : construire solide, surveiller, informer, s’entraîner.",
+            "Les débris de l’érosion se déposent en couches : ils forment de nouvelles roches."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-5e-active-planet-active-earth-2-2",
+      "prompt": "Au Japon, les immeubles sont construits pour résister aux séismes : c’est de la …",
+      "spoken": "Au Japon, les immeubles sont construits pour résister aux séismes : c’est de la  (mot manquant) ",
+      "choices": [
+        "prévision",
+        "pollution",
+        "prévention"
+      ],
+      "answer": "prévention",
+      "hint": "Relis la ligne « Prévenir » du rappel.",
+      "explanation": "Construire solide, c’est de la prévention : on réduit les dégâts à l’avance. La prévision, ce serait annoncer le jour du séisme, ce qu’on ne sait pas faire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le risque",
+          "lines": [
+            "Aléa : le phénomène naturel, comme un séisme ou une éruption.",
+            "Enjeux : les personnes et les bâtiments qui peuvent être touchés.",
+            "Il y a un risque quand un aléa menace des enjeux.",
+            "On ne sait pas empêcher un séisme, ni prévoir son jour.",
+            "Prévenir : construire solide, surveiller, informer, s’entraîner.",
+            "Les débris de l’érosion se déposent en couches : ils forment de nouvelles roches."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-5e-active-planet-active-earth-2-3",
+      "prompt": "Les appareils posés sur un volcan\nIls mesurent si la montagne gonfle.\nIls comptent les petits séismes sous le volcan.\nIls analysent les gaz qui sortent.",
+      "question": "À quoi servent ces appareils ?",
+      "spoken": "Les appareils posés sur un volcan. Ils mesurent si la montagne gonfle. Ils comptent les petits séismes sous le volcan. Ils analysent les gaz qui sortent.",
+      "choices": [
+        "à arrêter l’éruption",
+        "à surveiller le volcan",
+        "à refroidir la lave"
+      ],
+      "answer": "à surveiller le volcan",
+      "hint": "Les appareils mesurent, comptent et analysent : ils agissent sur le volcan, ou ils l’observent ?",
+      "explanation": "Ces appareils surveillent le volcan. Quand il se réveille, on peut prévenir les habitants et les faire partir à temps. Personne ne peut arrêter une éruption.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le risque",
+          "lines": [
+            "Aléa : le phénomène naturel, comme un séisme ou une éruption.",
+            "Enjeux : les personnes et les bâtiments qui peuvent être touchés.",
+            "Il y a un risque quand un aléa menace des enjeux.",
+            "On ne sait pas empêcher un séisme, ni prévoir son jour.",
+            "Prévenir : construire solide, surveiller, informer, s’entraîner.",
+            "Les débris de l’érosion se déposent en couches : ils forment de nouvelles roches."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-5e-active-planet-active-earth-2-4",
+      "prompt": "La question de la classe\nPourquoi trouve-t-on des fossiles de coquillages en haut d’une montagne ?\nL’hypothèse de Romy : ces roches se sont formées au fond de la mer, puis ont été soulevées.",
+      "question": "Quelle observation appuie l’hypothèse de Romy ?",
+      "spoken": "La question de la classe. Pourquoi trouve-t-on des fossiles de coquillages en haut d’une montagne ? L’hypothèse de Romy, ces roches se sont formées au fond de la mer, puis ont été soulevées.",
+      "choices": [
+        "d’autres fossiles d’animaux marins dans ces roches",
+        "des arbres au sommet",
+        "de la neige en hiver"
+      ],
+      "answer": "d’autres fossiles d’animaux marins dans ces roches",
+      "hint": "Romy dit que ces roches viennent de la mer. Quelle observation le montre ?",
+      "explanation": "Des fossiles d’animaux marins montrent que ces roches se sont formées sous la mer. Les plaques, en se rapprochant, les ont ensuite soulevées. Les arbres et la neige ne disent rien de l’origine des roches.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le risque",
+          "lines": [
+            "Aléa : le phénomène naturel, comme un séisme ou une éruption.",
+            "Enjeux : les personnes et les bâtiments qui peuvent être touchés.",
+            "Il y a un risque quand un aléa menace des enjeux.",
+            "On ne sait pas empêcher un séisme, ni prévoir son jour.",
+            "Prévenir : construire solide, surveiller, informer, s’entraîner.",
+            "Les débris de l’érosion se déposent en couches : ils forment de nouvelles roches."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-5e-active-planet-active-earth-2-5",
+      "prompt": "Le sable et la boue se déposent au fond de la mer, couche après couche : ils forment des roches …",
+      "spoken": "Le sable et la boue se déposent au fond de la mer, couche après couche : ils forment des roches  (mot manquant) ",
+      "choices": [
+        "volcaniques",
+        "sédimentaires",
+        "précieuses"
+      ],
+      "answer": "sédimentaires",
+      "hint": "Relis la ligne « Les débris » du rappel.",
+      "explanation": "Les débris déposés en couches forment des roches sédimentaires, comme le calcaire ou le grès. Les roches volcaniques, elles, viennent de la lave refroidie.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le risque",
+          "lines": [
+            "Aléa : le phénomène naturel, comme un séisme ou une éruption.",
+            "Enjeux : les personnes et les bâtiments qui peuvent être touchés.",
+            "Il y a un risque quand un aléa menace des enjeux.",
+            "On ne sait pas empêcher un séisme, ni prévoir son jour.",
+            "Prévenir : construire solide, surveiller, informer, s’entraîner.",
+            "Les débris de l’érosion se déposent en couches : ils forment de nouvelles roches."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-5e-active-planet-active-earth-2-6",
+      "prompt": "Consignes en cas de séisme\nÀ l’intérieur : s’abriter sous une table solide.\nÀ l’extérieur : s’éloigner des bâtiments et des fils électriques.\nAprès : sortir à pied, par l’escalier.",
+      "question": "Tu es dans la rue quand le sol tremble. Que fais-tu ?",
+      "spoken": "Consignes en cas de séisme. À l’intérieur, s’abriter sous une table solide. À l’extérieur, s’éloigner des bâtiments et des fils électriques. Après, sortir à pied, par l’escalier.",
+      "choices": [
+        "je rentre vite dans un immeuble",
+        "je m’abrite sous un balcon",
+        "je m’éloigne des bâtiments"
+      ],
+      "answer": "je m’éloigne des bâtiments",
+      "hint": "Tu es dehors : relis la ligne « À l’extérieur ».",
+      "explanation": "Dehors, on s’éloigne des bâtiments : des tuiles, des vitres ou un balcon peuvent tomber. Rentrer dans un immeuble pendant la secousse est plus dangereux.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le risque",
+          "lines": [
+            "Aléa : le phénomène naturel, comme un séisme ou une éruption.",
+            "Enjeux : les personnes et les bâtiments qui peuvent être touchés.",
+            "Il y a un risque quand un aléa menace des enjeux.",
+            "On ne sait pas empêcher un séisme, ni prévoir son jour.",
+            "Prévenir : construire solide, surveiller, informer, s’entraîner.",
+            "Les débris de l’érosion se déposent en couches : ils forment de nouvelles roches."
+          ]
+        }
+      }
+    },
+    {
+      "key": "life-earth-sciences-5e-active-planet-active-earth-2-7",
+      "prompt": "La carte des séismes d’une région\nZone rouge : séismes fréquents.\nZone verte : séismes très rares.",
+      "question": "Où faut-il construire les bâtiments les plus solides ?",
+      "spoken": "La carte des séismes d’une région. Zone rouge, séismes fréquents. Zone verte, séismes très rares.",
+      "choices": [
+        "en zone rouge",
+        "en zone verte",
+        "nulle part"
+      ],
+      "answer": "en zone rouge",
+      "hint": "Où l’aléa est-il le plus fort ?",
+      "explanation": "En zone rouge, les séismes sont fréquents : on y construit des bâtiments qui résistent aux secousses. C’est une façon de réduire le risque.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le risque",
+          "lines": [
+            "Aléa : le phénomène naturel, comme un séisme ou une éruption.",
+            "Enjeux : les personnes et les bâtiments qui peuvent être touchés.",
+            "Il y a un risque quand un aléa menace des enjeux.",
+            "On ne sait pas empêcher un séisme, ni prévoir son jour.",
+            "Prévenir : construire solide, surveiller, informer, s’entraîner.",
+            "Les débris de l’érosion se déposent en couches : ils forment de nouvelles roches."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "life-earth-sciences-5e-active-planet",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

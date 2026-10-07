@@ -608,6 +608,146 @@ const BOULON = fromLayers(
   { N: '#8e3a26', T: '#5a3a22', M: '#9aa2aa' },
 );
 
+// Humus : un ver de terre laboureur dressé en S (DA, SC-3), rose-brun, des anneaux plus clairs ; à côté de lui, son
+// petit râteau debout, plus court que lui (relecture des captures : un manche de six cubes faisait lampadaire) : les
+// deux dents de fer au sol, la traverse, un manche de bois de trois cubes.
+const HUMUS = fromLayers(
+  [
+    ['.......', '....F.F', '.RA....'],
+    ['.......', '..R.FFF', '..R....'],
+    ['.......', '..A..W.', '.......'],
+    ['.......', '.RR..W.', '.......'],
+    ['.......', '.AR..W.', '.......'],
+    ['..A....', '..R....', '.......'],
+    ['.KRK...', '.RRR...', '.......'],
+    ['.......', '..R....', '.......'],
+  ],
+  { R: '#b07468', A: '#d8a49a', W: '#8a6236', F: '#5c6470', K: '#1f1a16' },
+);
+
+// Perle : un canard saunier (DA, SC-3), blanc, le bec et les pattes orangés ; son râteau à sel en bois debout à côté,
+// la traverse au sol, un manche de trois cubes, plus court que lui (relecture des captures), une colonne vide entre lui
+// et le canard : collé à son flanc, on croyait le canard perché sur un poteau (consultant de Blocland).
+const PERLE = fromLayers(
+  [
+    ['......B', '.O.O..B', '......B', '.......', '.......'],
+    ['.......', 'WWWWW.B', 'WWWWW..', 'WWWWW..', '.......'],
+    ['.......', 'WWWWW.B', 'WWWWW..', 'WWWWW..', '.......'],
+    ['.......', 'WWWWW.B', 'WWWWW..', 'WWWWW..', '.WWW...'],
+    ['.WOW...', '.WWW...', '.WWW...', '.......', '.......'],
+    ['.KWK...', '.WWW...', '.WWW...', '.......', '.......'],
+  ],
+  { W: '#f2efe6', O: '#e0902a', B: '#8a6236', K: '#1f1a16' },
+);
+
+// Rabot : un pic-vert menuisier (DA, SC-3), le dos vert, la crête rouge, un tablier de cuir, son rabot de bois à la main.
+const RABOT = fromLayers(
+  [
+    ['.......', '.K.K...', '.......', '.......', '.......', '.......'],
+    ['.TTT...', 'GGGGG..', 'GGGGG..', 'GGGGG..', '..G....', '..G....'],
+    ['.TTT.WW', 'GGGGGWW', 'GGGGG..', 'GGGGG..', '..G....', '..G....'],
+    ['.TTT.W.', 'GGGGG..', 'GGGGG..', 'GGGGG..', '.......', '.......'],
+    ['.......', 'GGGGG..', 'GGGGG..', 'GGGGG..', '.......', '.......'],
+    ['.GKG...', '.GGG...', '.GGG...', '.......', '.......', '.......'],
+    ['.KGK...', '.GGG...', '.GGG...', '..C....', '.......', '.......'],
+    ['.......', '.CCC...', '.CCC...', '.......', '.......', '.......'],
+  ],
+  { G: '#5e8a3a', C: '#c0392b', T: '#a87a4a', W: '#8a6236', K: '#1f1a16' },
+);
+
+// Nectar : un colibri butineur (DA, SC-3), posé, de profil (son flanc côté y = 0, celui de la caméra de la Source) :
+// le corps vert, la gorge rose sur le devant, la petite tête et ses yeux sur les flancs, le long bec fin de deux cubes
+// brun bois qui avance ; les ailes bleu-vert levées en V au-dessus du dos, la queue derrière. Repris de zéro à la
+// relecture des captures (DA, consultant de Blocland) : plus de tête carrée de face, plus de bouche.
+const NECTAR = fromLayers(
+  [
+    ['........', '....B.B.', '........'],
+    ['....GGG.', '....GGG.', '....GGG.'],
+    ['...PGGG.', '...PGGGG', '...PGGG.'],
+    ['...PGGG.', '...PGGG.', '...PGGG.'],
+    ['..GG....', 'BBGG.V..', '..GG....'],
+    ['..KG....', '..GGV.V.', '..KG....'],
+    ['........', '...V...V', '........'],
+  ],
+  { G: '#3a9a6a', P: '#e07aa0', V: '#3f8fb8', B: '#8a6236', K: '#1f1a16' },
+);
+
+// Radar : un suricate guetteur debout (DA, SC-3), couleur sable, le ventre clair plaqué sur le devant du corps (relecture
+// des captures : détaché devant lui, il se lisait comme un poteau), le masque et les oreilles sombres, les pattes de
+// devant écartées ; la queue au sol, son bout sombre.
+const RADAR = fromLayers(
+  [
+    ['.....', '.S.S.', '.....', '..S..', '..S..', '..S..'],
+    ['.....', '.SCS.', '.SSS.', '.....', '.....', '..D..'],
+    ['.....', '.SCS.', '.SSS.', '.....', '.....', '.....'],
+    ['.....', '.SCS.', '.SSS.', '.....', '.....', '.....'],
+    ['S...S', 'SSCSS', '.SSS.', '.....', '.....', '.....'],
+    ['.....', '.SCS.', '.SSS.', '.....', '.....', '.....'],
+    ['.SDS.', '.SSS.', '.SSS.', '.....', '.....', '.....'],
+    ['.DSD.', '.SSS.', '.SSS.', '.....', '.....', '.....'],
+    ['.....', '.D.D.', '.....', '.....', '.....', '.....'],
+  ],
+  { S: '#c8a878', C: '#ece0c4', D: '#5a4030', K: '#1f1a16' },
+);
+
+// Manivelle : un lémurien maquettiste (DA, SC-3), gris, le ventre clair, le masque sombre, sa longue queue annelée
+// dressée derrière lui ; la manivelle de fer à la main.
+const MANIVELLE = fromLayers(
+  [
+    ['......', '.G.G..', '......', '..W...', '......'],
+    ['..W...', '.GGG..', '.GGG..', '..W...', '......'],
+    ['..W...', '.GGG..', '.GGG..', '......', '..W...'],
+    ['..W..F', '.GGGGF', '.GGG..', '......', '..D...'],
+    ['.....F', '.GGG..', '.GGG..', '......', '..W...'],
+    ['.GDG..', '.GGG..', '.GGG..', '......', '..D...'],
+    ['.KGK..', '.GGG..', '.GGG..', '......', '..W...'],
+    ['......', 'D...D.', '......', '......', '..D...'],
+  ],
+  { G: '#8e8c88', W: '#f2efe6', D: '#2e2c2a', F: '#5c6470', K: '#1f1a16' },
+);
+
+// Olive : un koala soigneur (DA, SC-3), gris, les grandes oreilles rondes, la truffe sombre, un tablier blanc ; sa trousse
+// de toile à la main, sans croix.
+const OLIVE = fromLayers(
+  [
+    ['......', '.G.G..', '......'],
+    ['.WWWTT', '.GGGTT', '.GGG..'],
+    ['.WWWTT', '.GGGTT', '.GGG..'],
+    ['.WWW..', '.GGG..', '.GGG..'],
+    ['.WWW..', '.GGG..', '.GGG..'],
+    ['.GNG..', '.GGG..', '.GGG..'],
+    ['GKGKG.', 'GGGGG.', 'GGGGG.'],
+    ['W...W.', 'G...G.', 'G...G.'],
+  ],
+  { G: '#9a9a96', W: '#f2f0ea', N: '#3a3634', T: '#c8b48a', K: '#1f1a16' },
+);
+
+// Virage : un tatou rouleur (DA, SC-3), sa carapace en bandes, la tête pointue rose, la petite queue derrière.
+const VIRAGE = fromLayers(
+  [
+    ['.....', 'P...P', '.....', 'P...P', '.....', '.....', '..A..'],
+    ['APPPA', 'BBBBB', 'AAAAA', 'BBBBB', 'AAAAA', '..A..', '.....'],
+    ['AKPKA', 'BBBBB', 'AAAAA', 'BBBBB', 'AAAAA', '.....', '.....'],
+    ['.APA.', '.BBB.', '.AAA.', '.BBB.', '.AAA.', '.....', '.....'],
+  ],
+  { A: '#a8845e', B: '#6e5238', P: '#e0b8a0', K: '#1f1a16' },
+);
+
+// Navette : une chenille tisseuse vert tendre (DA, SC-3), couchée de profil (son flanc côté y = 0) : six anneaux au sol,
+// clairs et foncés en alternance, la tête relevée de deux cubes au bout, l'œil sur le flanc, deux antennes ; devant elle,
+// au ras du sol, sa petite navette de bois et sa bobine de fil (relecture des captures : dressée, elle se lisait comme
+// une colonne). Dans le monde, tournée de flanc vers la caméra de la Ruche (`QUARTS_DE_TOUR_DE_LA_CREATURE`).
+const NAVETTE = fromLayers(
+  [
+    ['.WWW.F.', 'VLVLVLV', 'VLVLVLV'],
+    ['.......', 'VLVLVLV', 'VLVLVLV'],
+    ['.......', 'K......', 'V......'],
+    ['.......', 'V......', 'V......'],
+    ['.......', 'K......', 'K......'],
+  ],
+  { V: '#9ac860', L: '#c8e48e', W: '#8a6236', F: '#e8e0cc', K: '#1f1a16' },
+);
+
 export const CREATURE_CUBES: Record<BiomeId, CubeDeModele[]> = {
   'french-6e-phonology': MOUSSO,
   'french-6e-letter-confusion': TUNEL,
@@ -642,6 +782,15 @@ export const CREATURE_CUBES: Record<BiomeId, CubeDeModele[]> = {
   'life-earth-sciences-6e-living-world': FOUGERE,
   'physics-chemistry-6e-matter-energy': BULLE,
   'technology-6e-objects': BOULON,
+  'life-earth-sciences-5e-active-planet': HUMUS,
+  'physics-chemistry-5e-matter-universe': PERLE,
+  'technology-5e-design': RABOT,
+  'life-earth-sciences-4e-cells-evolution': NECTAR,
+  'physics-chemistry-4e-signals-circuits': RADAR,
+  'technology-4e-modeling': MANIVELLE,
+  'life-earth-sciences-3e-human-body': OLIVE,
+  'physics-chemistry-3e-motion-energy': VIRAGE,
+  'technology-3e-digital': NAVETTE,
   'english-5e-vocabulary': PUDDING,
   'english-5e-grammar': MOUSTACHE,
   'lv2-5e-introductions': LINA,

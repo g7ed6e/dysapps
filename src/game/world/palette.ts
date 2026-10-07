@@ -354,6 +354,16 @@ export const MATIERES: Record<TextureKind, Faces> = {
   aimant: { dessus: 0xa4aab0, cote: 0x8c9298 },
   // Le carton du Hangar : un brun clair, plus jaune que la terre, plus terne que les planches.
   carton: { dessus: 0xb98d5a, cote: 0x9a7246 },
+  // Les blocs des îles de sciences de 5e à 3e (SC-3) : la couleur de leur bloc (biomes.ts).
+  strate: { dessus: 0x9a6a44, cote: 0x8a5a3a },
+  sel: { dessus: 0xece8e2, cote: 0xc8ccd0 },
+  bambou: { dessus: 0xcdb46a, cote: 0xb49c4e },
+  petale: { dessus: 0xe88fb4, cote: 0xc8638e },
+  bobine: { dessus: 0xc47a3c, cote: 0xb5652e },
+  liege: { dessus: 0xb0785a, cote: 0x93603f },
+  savon: { dessus: 0xa6d8c0, cote: 0x86bfa4 },
+  ressort: { dessus: 0x5a606a, cote: 0x4a4f58 },
+  cire: { dessus: 0xd9a03c, cote: 0xb98030 },
   // Les blocs assemblés (GD-2) : la couleur de fond de chaque bloc ; son motif (world/construction.ts, `MOTIF_ASSEMBLE`)
   // le peint par-dessus, avec les couleurs de `DETAILS_ASSEMBLES`. Le madrier, un bois de charpente plus clair que les
   // planches ; le hublot, son cadre jaune ; la poulie, sa chape brune ; la loupe, sur une pierre mauve pâle.

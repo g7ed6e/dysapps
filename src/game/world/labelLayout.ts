@@ -463,7 +463,8 @@ const KEPT_NAME_PLACES = 8;
  * Sur la Carte, les noms qui ne se taisent jamais tant que leur île se voit (`kept` : la prochaine destination, puis
  * l'île du bonhomme ; DA, HG-3). Un tel nom encore tu essaie les places simples autour de son île (dessus, dessous, de
  * côté ; dessus et dessous passent le médaillon ou la bulle posés sur l'île : sa place de plus, sous son île, consultant
- * UX UI), puis celles de la dernière chance (`TRIES_FINS`) : entière, hors de l'interface et des repères (la bulle, le
+ * UX UI), puis celles de la dernière chance (`TRIES_FINS`), puis dessus et dessous glissés de côté pour tenir dans le
+ * cadre (la distance à l'île comptée sans le repère passé) : entière, hors de l'interface et des repères (la bulle, le
  * médaillon, la flèche d'un ouvrage), pas plus loin de son île que d'`ECART_MAX` hauteurs de plus, pas plus près d'une
  * autre île que de la sienne (vu de son milieu), hors de la garde de la destination (`isFree`), sans couvrir l'autre nom
  * gardé. Les noms montrés qu'elle couvre se taisent, puis cherchent une autre place (`repair`) ; parmi les
@@ -490,16 +491,24 @@ function showAtAllCosts(
       if (!inTheWay.length) return y;
       return side < 0 ? Math.min(...inTheWay.map((v) => v.y - v.h / 2)) - b.h / 2 - gap : Math.max(...inTheWay.map((v) => v.y + v.h / 2)) + b.h / 2 + gap;
     };
+    const natural = [ile.y - b.h / 2 - gap, ile.y + b.h / 2 + gap];
     const simple = [
-      { ...b, x: ile.x, y: pass(ile.y - b.h / 2 - gap, -1) },
-      { ...b, x: ile.x, y: pass(ile.y + b.h / 2 + gap, 1) },
+      { ...b, x: ile.x, y: pass(natural[0], -1) },
+      { ...b, x: ile.x, y: pass(natural[1], 1) },
       { ...b, x: ile.x - b.w / 2 - gap, y: ile.y },
       { ...b, x: ile.x + b.w / 2 + gap, y: ile.y },
     ];
+    // Une île au bord de l'écran : dessus et dessous, le nom glissé de côté pour y tenir entier, en dernier ; sa distance
+    // à l'île se compte sans la hauteur du repère qu'il passe (la bulle de la destination est plus haute qu'`ECART_MAX` ;
+    // la Ruche des réseaux, au bord gauche de la Carte du 3e en OpenDyslexic, le bonhomme dessus : consultant UX UI, SC-3).
+    const slid = simple
+      .slice(0, 2)
+      .map((s, k) => ({ at: { ...s, x: clamp(s.x, b.w / 2 + gap, bounds.w - b.w / 2 - gap) }, passed: Math.abs(s.y - natural[k]) }))
+      .filter((s) => s.at.x !== ile.x);
     const candidates: { at: LabelBox; covered: number[] }[] = [];
-    for (const at of [...simple, ...placesAutour(b, bounds, gap)]) {
+    for (const { at, passed } of [...[...simple, ...placesAutour(b, bounds, gap)].map((at) => ({ at, passed: 0 })), ...slid]) {
       if (!entiere(b, { dx: at.x - b.x, dy: at.y - b.y }, couvert, bounds) || obstacles.some((v) => overlap(at, v, gap) > 0) || !isFree(i, at)) continue;
-      if (distanceA(at, ile) > distanceA(b, ile) + ECART_MAX * b.h) continue;
+      if (distanceA(at, ile) - passed > distanceA(b, ile) + ECART_MAX * b.h) continue;
       const half = milieu(at);
       const d = distanceA(half, ile);
       if (iles.some((q, j) => j !== i && distanceA(half, q) < d)) continue;
@@ -675,9 +684,26 @@ const ESSAIS_DE_LA_RECHERCHE = 2_000;
 const RETOURS_PAR_NOM = 4;
 
 /**
+ * Combien de places la recherche d'un nom tu de moins essaie au plus par nom, pour chaque nom laissé de côté (voir
+ * `chercherToutesLesPlaces`) : au 3e, en OpenDyslexic 32 px, elle trouve en 15 essais. À 40, le premier nom laissé de
+ * côté, sans solution, y dépensait 440 essais à chaque placement, et le plafond du cadrage (`ESSAIS_D_UN_NOM_DE_MOINS`)
+ * s'épuisait avant le placement qui trouve.
+ */
+const RETOURS_D_UN_NOM_DE_MOINS = 10;
+
+/**
+ * Combien de places la recherche d'un nom tu de moins essaie au plus pendant tout le placement d'un cadrage, à part de
+ * `ESSAIS_DE_LA_RECHERCHE` (voir `RechercheDuCadrage`) : sans ce plafond, elle se relançait à chaque placement du
+ * cadrage et dépensait jusqu'à 25 000 essais de plus au 6e en OpenDyslexic 32 px, une centaine de millisecondes sur un
+ * poste, quatre à cinq fois plus sur la tablette de référence (expert frontend, SC-3).
+ */
+const ESSAIS_D_UN_NOM_DE_MOINS = 1_000;
+
+/**
  * Ce que la recherche complète de la Carte (`chercherToutesLesPlaces`) dépense pendant le placement d'un cadrage, à
  * partager entre tous les placements de ce cadrage (`VueDesEtiquettes.recherche`) : `essais`, les places essayées, sous
- * un seul plafond (`ESSAIS_DE_LA_RECHERCHE`) ; `places`, les places dont on a vérifié qu'elles tiennent (`tientSeule`) ; `deja`, ce que
+ * un seul plafond (`ESSAIS_DE_LA_RECHERCHE`) ; `essaisDUnNomDeMoins`, celles de la recherche d'un nom tu de moins, sous le
+ * sien (`ESSAIS_D_UN_NOM_DE_MOINS`) ; `places`, les places dont on a vérifié qu'elles tiennent (`tientSeule`) ; `deja`, ce que
  * chaque recherche déjà faite a trouvé (`null` : rien), pour ne pas la refaire sur les mêmes boîtes ; `autour`, les
  * places de chaque nom qui tiennent (hors repères), pour ne pas les vérifier deux fois. Au 6e, la recherche
  * se lançait onze fois par ouverture de la Carte et vérifiait 52 000 places (HG-3, expert frontend, 6 octobre 2026).
@@ -686,15 +712,19 @@ const RETOURS_PAR_NOM = 4;
  */
 export interface RechercheDuCadrage {
   essais: number;
+  /** Les places essayées par la recherche d'un nom tu de moins, sous son plafond (`ESSAIS_D_UN_NOM_DE_MOINS`). */
+  essaisDUnNomDeMoins: number;
   places: number;
   readonly deja: Map<string, readonly (readonly [number, LabelBox])[] | null>;
+  /** Ce que chaque recherche d'un nom tu de moins a trouvé (`null` : rien), par nom laissé de côté et par boîtes. */
+  readonly unNomDeMoins: Map<string, readonly (readonly [number, LabelBox])[] | null>;
   /** Les places autour de chaque nom qui tiennent (sans les repères), déjà vérifiées dans ce cadrage. */
   readonly autour: Map<string, LabelBox[]>;
 }
 
 /** Une recherche neuve, pour le placement d'un cadrage (voir `RechercheDuCadrage`). */
 function rechercheDuCadrage(): RechercheDuCadrage {
-  return { essais: 0, places: 0, deja: new Map(), autour: new Map() };
+  return { essais: 0, essaisDUnNomDeMoins: 0, places: 0, deja: new Map(), unNomDeMoins: new Map(), autour: new Map() };
 }
 
 /**
@@ -849,13 +879,14 @@ function chercherToutesLesPlaces(d: DemandeDeRecherche): void {
     Math.min(bords[4 * a + 3], bords[4 * b + 3]) - Math.max(bords[4 * a + 2], bords[4 * b + 2]) + gap > 0;
   /**
    * Une place pour chaque nom, parmi les siennes (`fixes`, sinon `placesDe`), en `retours` places essayées au plus par
-   * nom (et sous le plafond du cadrage) : les places trouvées, ou `null`.
+   * nom, et sous le plafond du cadrage de son compteur (`compteur` : `essais`, ou `essaisDUnNomDeMoins`) : les places
+   * trouvées, ou `null`.
    */
-  const essayer = (fixes: Map<number, LabelBox[]>, retours: number): Map<number, LabelBox> | null => {
+  const essayer = (fixes: Map<number, LabelBox[]>, retours: number, compteur: 'essais' | 'essaisDUnNomDeMoins' = 'essais'): Map<number, LabelBox> | null => {
     const places = new Map(noms.map((i) => [i, (fixes.get(i) ?? placesDe(i)).map(indiceDe)]));
     if ([...places.values()].some((l) => !l.length)) return null;
     const out = new Map<number, LabelBox>();
-    const plafond = Math.min(ESSAIS_DE_LA_RECHERCHE, recherche.essais + retours * noms.length);
+    const plafond = Math.min(compteur === 'essais' ? ESSAIS_DE_LA_RECHERCHE : ESSAIS_D_UN_NOM_DE_MOINS, recherche[compteur] + retours * noms.length);
     // Les places encore libres de chaque nom à poser : chaque nom posé retire celles qu'il couvre.
     const poserLeSuivant = (restes: Map<number, number[]>): boolean => {
       // Le nom qui a le moins de places encore libres se pose d'abord ; un nom sans place libre : on revient en arrière.
@@ -866,8 +897,8 @@ function chercherToutesLesPlaces(d: DemandeDeRecherche): void {
       }
       if (suivant === undefined) return true;
       for (const at of restes.get(suivant)!) {
-        if (recherche.essais >= plafond) return false;
-        recherche.essais++;
+        if (recherche[compteur] >= plafond) return false;
+        recherche[compteur]++;
         const suite = new Map<number, number[]>();
         for (const [i, l] of restes) if (i !== suivant) suite.set(i, l.filter((q) => !secouvrent(at, q)));
         out.set(suivant, toutesLesPlaces[at]);
@@ -890,8 +921,46 @@ function chercherToutesLesPlaces(d: DemandeDeRecherche): void {
   if (voulue) ajouter(voulue.i, voulue.at);
   if (destination !== undefined && ici) ajouter(destination, ici);
   const une = essayer(large, Infinity);
-  // Rien qui montre tous les noms (ou le plafond du cadrage atteint) : rien ne change, et l'échec est retenu.
-  if (!une) return appliquer(null);
+  if (!une) {
+    // Rien qui montre tous les noms : un nom tu de moins vaut mieux que rien (référent dys, SC-3 : au 3e, en OpenDyslexic
+    // 32 px, le Kiosque des témoins, le Plateau des territoires et l'Observatoire des données se taisaient ensemble,
+    // faute d'une place pour les trois). Chaque nom tu, celui qui a le moins de places d'abord, est laissé de côté à son
+    // tour ; les autres se cherchent une place ensemble, celles sous leur île d'abord (la Carte laisse de la place en bas,
+    // sous les îles, et la recherche par la plus proche s'y perdait en centaines de milliers d'essais), en
+    // `RETOURS_D_UN_NOM_DE_MOINS` places essayées au plus par nom, sous son propre plafond pour tout le cadrage
+    // (`ESSAIS_D_UN_NOM_DE_MOINS`, à part de celui de la recherche large : les placements suivants du même cadrage gardent
+    // leurs essais). Seulement quand deux noms au moins se taisent (laisser de côté le seul nom tu ne montrerait rien de
+    // plus), et quand la recherche large a fini sans trouver : arrêtée par son plafond, elle n'a pas montré qu'aucune
+    // solution n'existe (expert frontend, SC-3). Sinon, rien ne change, et l'échec est retenu.
+    if (recherche.essais >= ESSAIS_DE_LA_RECHERCHE) return appliquer(null);
+    const aLaisser = tus.filter((i) => !fixables.has(i)).sort((i, j) => placesDe(i).length - placesDe(j).length || i - j);
+    if (aLaisser.length < 2) return appliquer(null);
+    const tous = noms;
+    let trouvees: Map<number, LabelBox> | null = null;
+    // Ce que la recherche sans ce nom a déjà donné dans ce cadrage, quelle que soit la place actuelle des autres noms :
+    // les places qu'elle trouve tiennent sans eux (même boîtes, mêmes îles, même interface, mêmes repères). Les
+    // placements d'un cadrage la relançaient sur les mêmes boîtes, une quinzaine de fois au 3e en OpenDyslexic 32 px.
+    // Un échec gardé ne regarde pas la place actuelle des autres noms : il peut cacher une solution, et taire au pire
+    // un nom de plus.
+    const commeAvant = JSON.stringify([tous, tous.filter((i) => !poussable(i)), boxes, iles, voulue, ici, d.autour, bounds, gap]);
+    for (const k of aLaisser) {
+      const cleSansLui = `${k} ${commeAvant}`;
+      const dejaSansLui = recherche.unNomDeMoins.get(cleSansLui);
+      if (dejaSansLui !== undefined) {
+        trouvees = dejaSansLui && new Map(dejaSansLui);
+        if (trouvees) break;
+        continue;
+      }
+      if (recherche.essaisDUnNomDeMoins >= ESSAIS_D_UN_NOM_DE_MOINS) break;
+      noms = tous.filter((i) => i !== k);
+      const parLeBas = new Map(noms.map((i) => [i, [...(large.get(i) ?? placesDe(i))].sort((p, q) => q.y - p.y)]));
+      trouvees = essayer(parLeBas, RETOURS_D_UN_NOM_DE_MOINS, 'essaisDUnNomDeMoins');
+      recherche.unNomDeMoins.set(cleSansLui, trouvees && [...trouvees]);
+      if (trouvees) break;
+    }
+    noms = tous;
+    return appliquer(trouvees ? [...trouvees] : null);
+  }
   const contraintes: Map<number, LabelBox[]>[] = [];
   if (voulue) contraintes.push(new Map([[voulue.i, [voulue.at]]]));
   if (destination !== undefined && ici) {

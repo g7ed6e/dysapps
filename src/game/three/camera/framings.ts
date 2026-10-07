@@ -170,6 +170,21 @@ export function cadrageDeLaCarte(
     }
     return r;
   };
+  /**
+   * À l'écran, le cadre des îles : en largeur, leurs cœurs (le milieu de chaque île, sous son nom) ; en hauteur, les lieux
+   * d'aujourd'hui et leurs noms (`lieux`).
+   */
+  const ilesALEcran = () => {
+    const r = { x0: Infinity, x1: -Infinity, ...lieux() };
+    for (const def of mapOf(archipel)) {
+      const p = islandCenter(def.id);
+      v.set(p.x + 0.5, p.z, p.y + 0.5).project(cam);
+      const q = ((v.x + 1) / 2) * w;
+      r.x0 = Math.min(r.x0, q);
+      r.x1 = Math.max(r.x1, q);
+    }
+    return r;
+  };
   const lw = libre.x1 - libre.x0 - 2 * MARGE_DE_LA_CARTE;
   const lh = libre.y1 - libre.y0 - 2 * MARGE_DE_LA_CARTE;
   const centreDesTerres = () => target.set((e.minX + e.maxX) / 2, sol, (e.minY + e.maxY) / 2);
@@ -240,6 +255,26 @@ export function cadrageDeLaCarte(
     const ecart = Math.min(libre.y1 - MARGE_DE_LA_CARTE - r.y1, Math.max(libre.y0 + MARGE_DE_LA_CARTE - r.y0, voulu));
     if (Math.abs(ecart) > 0.5) {
       vise.y += ecart;
+      glisser();
+    }
+  }
+  if (auPlancher && dest && h > w) {
+    // Au plancher, la destination au centre laissait sortir le bord de l'archipel alors qu'il tenait dans la place : en
+    // portrait 800 × 1280, au 3e, la Ruche des réseaux et le Refuge des carnets sortaient à gauche, 450 px vides en haut
+    // (référent dys, SC-3). En portrait, les îles et leurs noms glissent au milieu de la place, dans chaque sens où elles
+    // y tiennent (en largeur, le milieu de chacune), tant que la destination et ce qui l'entoure restent dedans. En
+    // paysage (la tablette, panneau ouvert), la destination reste au centre : les noms tus mesurés y restent ceux d'avant
+    // (three/mapLabels.test.ts).
+    placer(d);
+    const l = ilesALEcran();
+    const r = cadre(false);
+    const M = MARGE_DE_LA_CARTE;
+    const centrer = (tient: boolean, voulu: number, bas: number, haut: number) => (tient && bas <= haut ? Math.min(haut, Math.max(bas, voulu)) : 0);
+    const ex = centrer(l.x1 - l.x0 <= lw, (libre.x0 + libre.x1) / 2 - (l.x0 + l.x1) / 2, libre.x0 + M - r.x0, libre.x1 - M - r.x1);
+    const ey = centrer(l.y1 - l.y0 <= lh, (libre.y0 + libre.y1) / 2 - (l.y0 + l.y1) / 2, libre.y0 + M - r.y0, libre.y1 - M - r.y1);
+    if (Math.abs(ex) > 0.5 || Math.abs(ey) > 0.5) {
+      vise.x += ex;
+      vise.y += ey;
       glisser();
     }
   }

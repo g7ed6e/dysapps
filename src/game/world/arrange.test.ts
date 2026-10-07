@@ -151,13 +151,17 @@ describe('les places des lieux', () => {
     expect(loin).toBeDefined();
   });
 
-  it('aux 5e, 4e et 3e, chaque lieu mobile de la carte de départ peut tourner (à sa place ou ailleurs), sauf deux (HG-3)', () => {
-    // Tournés, le Glacier des relatifs (52 × 34 cases avec son monument) et la Gare du futur (4e, 37 × 28) ne trouvent
-    // aucune place libre : il faudrait au Glacier un cadre de 48 cases de plus vers l'est, ou de 20 vers le nord.
-    const SANS_PLACE: readonly BiomeId[] = ['maths-5e-signed-numbers', 'english-4e-grammar'];
+  it('aux 5e, 4e et 3e, chaque lieu mobile de la carte de départ peut tourner (à sa place ou ailleurs), sauf quatre (HG-3, SC-3)', () => {
+    // Tournés, le Glacier des relatifs (52 × 34 cases avec son monument) et la Gare du futur (4e, 37 × 28) ne trouvaient
+    // aucune place libre (HG-3). Depuis les îles de sciences (SC-3), trois îles de plus par classe sur les places libres :
+    // la Grammaire (5e) et le Refuge des carnets (3e) n'en trouvent plus non plus (mesuré). Limite connue d'Aménager : le
+    // fantôme ne pivote pas, la ligne dit le refus (arrangeMode.test.ts).
+    const SANS_PLACE: readonly BiomeId[] = ['maths-5e-signed-numbers', 'english-5e-grammar', 'english-4e-grammar', 'lv2-3e-travel'];
     const w = partie();
+    const sans: string[] = [];
     for (const a of ['5e', '4e', '3e'] as const)
-      for (const id of placesOf(a).filter((p) => !isFixedPlace(p))) expect(turnIsland(w, id).ok, id).toBe(!SANS_PLACE.includes(id));
+      for (const id of placesOf(a).filter((p) => !isFixedPlace(p))) if (!turnIsland(w, id).ok) sans.push(id);
+    expect(sans).toEqual(SANS_PLACE);
   });
 
   it('tourner un lieu d’un quart de tour, quatre fois, le ramène à son orientation', () => {
@@ -378,6 +382,30 @@ describe('Un lieu nouveau dans une région déjà aménagée (HG-2)', () => {
     expect(fittingPlaces('5e', islands)).not.toBeNull();
     // Les autres régions n'ont pas de disposition : rien n'y bouge.
     expect(Object.keys(w.layout ?? {})).toEqual(['5e']);
+  });
+
+  // Une sauvegarde d'avant les îles de sciences (SC-3) : un lieu posé sur la place de départ d'une île de sciences, dans
+  // le cadre d'alors (le Château des hypothèses, 4e, sur la Source des espèces ; le Kiosque des témoins, 3e, sur le
+  // Tremplin des forces).
+  it.each([
+    { a: '4e', lieu: 'english-4e-grammar', sur: 'life-earth-sciences-4e-cells-evolution' },
+    { a: '3e', lieu: 'history-3e-twentieth-century', sur: 'physics-chemistry-3e-motion-energy' },
+    // Le Refuge des carnets avance de (158, 928) à (158, 912) pour tous (map.ts, SC-3) : un lieu que l'élève a posé sur sa
+    // nouvelle place y reste, et le Refuge se pose ailleurs.
+    { a: '3e', lieu: 'history-3e-twentieth-century', sur: 'lv2-3e-travel' },
+  ] as const)('au $a (SC-3) : un lieu posé sur la place de départ d’une île de sciences (ou la nouvelle place du Refuge) reste où l’élève l’a mis ; l’île nouvelle se pose ailleurs', ({ a, lieu, sur }) => {
+    const ici = startingSpot(sur);
+    expect(fittingPlaces(a, { [lieu]: ici })).toBeNull();
+    const w = settleNewPlaces({ ...partie(), layout: { [a]: { islands: { [lieu]: ici } } } });
+    const islands = w.layout?.[a]?.islands ?? {};
+    expect(islands[lieu]).toEqual(ici);
+    expect(islands[sur]).toBeDefined();
+    expect(islands[sur]).not.toEqual(ici);
+    expect(islands[sur]?.turn).toBe(0);
+    // Rien d'autre ne bouge : seuls le lieu de l'élève et l'île nouvelle sont dans la disposition, qui tient.
+    expect(Object.keys(islands).sort()).toEqual([lieu, sur].sort());
+    expect(fittingPlaces(a, islands)).not.toBeNull();
+    expect(Object.keys(w.layout ?? {})).toEqual([a]);
   });
 
   it('une disposition qui tient, ou pas de disposition, reste la même', () => {

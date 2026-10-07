@@ -4,6 +4,11 @@
 // (`placerEtiquettes`). Les étiquettes ont la taille de `labelCanvas.ts`, le texte mesuré dans la police de lecture
 // (la chasse lue dans son fichier, `testFonts.ts`) ; l'interface est celle relevée sur les captures de la tablette.
 // Ce que le test ne couvre pas :
+// - Luciole, la police de lecture par défaut de l'application (réglages) : sauf en portrait (`TUS_EN_PORTRAIT`), les
+//   tables sont mesurées dans Atkinson Hyperlegible, de 10 à 13 % plus étroite en gras (« Verger de la santé » : 157 px
+//   contre 178 dans Luciole, relevé dans la page, SC-3). Les cas « 10 % plus large » (×1,1) s'en approchent. Mesurées
+//   dans Luciole, la tablette panneau ouvert, le téléphone et la flèche sur un ouvrage taisent plus de noms : à remesurer
+//   (au pilotage, SC-3).
 // - OpenDyslexic. En taille normale, son panneau est plus haut que celui relevé ici (non mesuré sans navigateur) ; avec
 //   un panneau de 214 px, un nom se tait encore au 3e (les Données) ; à 310 px, aussi au 6e (la Carrière) et au 5e (le
 //   Marais). C'était déjà le cas avant les îles-écoles agrandies, et plus souvent (référent dys). En grand texte,
@@ -242,16 +247,29 @@ const nomsTus = (...args: Parameters<typeof laCarte>) => laCarte(...args).tus;
 const ETATS = { blocland: 'Bâtie', archipeo: 'Restaurée' };
 
 /**
- * En portrait 800 × 1280, la Carte est au plancher (`PLANCHER_DE_LA_CARTE`) et la destination au centre de la place
- * libre : l'île du bord gauche se voit à peine, et un nom n'a alors aucune place entière, près de son île et pas plus
- * près d'une autre (la recherche complète n'en trouve pas, même sans plafond d'essais). Limite connue (HG-3), à trancher
- * par un cadrage du portrait (UX UI, DA) : au 5e vers les Rencontres, le Delta ; au 3e vers le Phare (la capture
- * `carte-3e-800x1280`), le Refuge ici, l'Observatoire des données dans la page.
+ * En portrait 800 × 1280 (une tablette tenue debout), le bonhomme sur l'île d'histoire, selon la destination : les noms
+ * qui se taisent, mesurés dans Luciole, la police de lecture par défaut de l'application (les autres tables de ce fichier
+ * se mesurent encore dans Atkinson Hyperlegible, de 10 à 13 % plus étroite en gras : voir l'en-tête). La Carte y est au
+ * plancher (`PLANCHER_DE_LA_CARTE`) ; les îles et leurs noms glissent au milieu de la place quand elles y tiennent
+ * (`cadrageDeLaCarte`, référent dys, SC-3). Un nom au plus par Carte, jamais celui de la destination ni de l'île du
+ * bonhomme ; aucun nom coupé par le bord (UX UI, SC-3). Limite connue (HG-3, SC-3), au pilotage.
  */
 const TUS_EN_PORTRAIT: Partial<Record<string, string[]>> = {
+  '5e:french-5e-conjugation': ['english-5e-grammar'],
+  '5e:technology-5e-design': ['geography-5e-resources'],
   '5e:lv2-5e-introductions': ['geography-5e-resources'],
-  '3e:maths-3e-functions': ['lv2-3e-travel'],
+  '4e:maths-4e-algebra': ['english-4e-comprehension'],
+  '4e:english-4e-comprehension': ['french-4e-vocabulary'],
+  '4e:geography-4e-globalization': ['history-4e-revolutions'],
+  '4e:life-earth-sciences-4e-cells-evolution': ['english-4e-comprehension'],
 };
+
+/**
+ * Au 3e, en portrait, le bonhomme sur le Verger de la santé (la capture `sciences-college-carte-3e-800x1280`), vers la
+ * destination du jeu tout construit (l'ouvrage depuis l'Observatoire des textes) : le Plateau des territoires se tait, dans
+ * Luciole (la page le montre ainsi), son île dans le cadre.
+ */
+const TUS_EN_PORTRAIT_AU_VERGER = ['geography-3e-france'];
 
 /**
  * La tablette en OpenDyslexic 32 px, au 6e, selon l'île du bonhomme : les noms qui se taisent (mesurés, consultant UX
@@ -261,19 +279,87 @@ const TUS_EN_PORTRAIT: Partial<Record<string, string[]>> = {
  */
 const TUS_EN_OD32: Record<string, string[]> = {
   'history-6e-antiquity': ['french-6e-letter-confusion', 'english-6e-grammar', 'geography-6e-living'],
+  // (La Vallée du vivant aussi : la recherche large y épuise son plafond d'essais, et la recherche d'un nom tu de moins ne
+  // se lance plus après elle, faute de preuve qu'aucune place n'existe ; sans plafond, elle coûtait jusqu'à 25 000 essais
+  // de plus par cadrage, expert frontend, SC-3.)
   'french-6e-phonology': ['history-6e-antiquity', 'life-earth-sciences-6e-living-world'],
+};
+
+/**
+ * La tablette, panneau ouvert, selon la destination : les noms qui se taisent depuis les îles de sciences (SC-3, mesurés).
+ * Trois îles de plus par classe, posées sur les seules places libres hors de la colonne de la caméra : la recherche des
+ * places (cœurs de `map.ts`) laisse un nom tu par classe, une seule destination chacune, jamais celui de la destination.
+ * Limite connue, à revoir par le référent dys et le consultant UX UI.
+ */
+const TUS_VERS_UNE_DESTINATION: Partial<Record<ArchipelagoId, Record<string, string[]>>> = {
+  '5e': { 'maths-5e-signed-numbers': ['physics-chemistry-5e-matter-universe'] },
+  '4e': { 'history-4e-revolutions': ['geography-4e-globalization'] },
+  '3e': { 'life-earth-sciences-3e-human-body': ['maths-3e-functions'] },
+};
+
+/**
+ * La flèche sur un ouvrage (GD-7), panneau ouvert : les noms qui se taisent depuis les îles de sciences (SC-3, mesurés),
+ * jamais celui de l'île de départ. Même limite que `TUS_VERS_UNE_DESTINATION`.
+ */
+const TUS_SUR_UN_OUVRAGE: Partial<Record<ArchipelagoId, Record<string, string[]>>> = {
+  '5e': { 'english-5e-grammar-history-5e-middle-ages depuis history-5e-middle-ages': ['lv2-5e-introductions'] },
+  '4e': {
+    'french-4e-agreement-french-4e-vocabulary depuis french-4e-agreement': ['geography-4e-globalization'],
+    'french-4e-vocabulary-technology-4e-modeling depuis technology-4e-modeling': ['french-4e-agreement'],
+    'history-4e-revolutions-physics-chemistry-4e-signals-circuits depuis physics-chemistry-4e-signals-circuits': ['maths-4e-algebra'],
+    'maths-4e-algebra-maths-4e-powers depuis maths-4e-powers': ['geography-4e-globalization'],
+  },
+};
+
+/**
+ * Les mêmes, dans Archipéo, là où ils diffèrent (« Restaurée » est plus large que « Bâtie », UX UI, SC-3) : au 5e, sur
+ * le pont du Manoir au Bourg, c'est le Manoir du passé qui se tait, et non le Relais des voyageurs.
+ */
+const TUS_SUR_UN_OUVRAGE_DANS_ARCHIPEO: Partial<Record<ArchipelagoId, Record<string, string[]>>> = {
+  '5e': { 'english-5e-grammar-history-5e-middle-ages depuis history-5e-middle-ages': ['english-5e-grammar'] },
+};
+
+/**
+ * La tablette à l'ouverture de la Carte, en OpenDyslexic, le bonhomme sur la destination (il y est arrivé) : les noms
+ * qui se taisent selon la destination, dans les deux univers, sauf une clé « blocland:… », qui ne vaut que dans Blocland
+ * (« Bâtie » et « Restaurée » n'ont pas la même largeur) (SC-3, mesurés ; consultant UX UI). La bulle et
+ * le médaillon se posent alors sur la même île et prennent la place de plusieurs noms ; jamais celui de la destination.
+ * Au 3e, la Ruche des réseaux et le Refuge des carnets, au bord gauche de l'écran, s'y taisaient eux-mêmes : la Ruche
+ * prend son nom au-dessus de la bulle, glissé pour tenir dans l'écran (`showAtAllCosts`), et le Refuge avance à hauteur du
+ * Château (map.ts). Huit destinations sur douze y taisent un à trois autres noms.
+ */
+const TUS_EN_OD_SUR_LA_DESTINATION: Partial<Record<ArchipelagoId, Record<string, string[]>>> = {
+  '5e': {
+    'blocland:english-5e-vocabulary': ['history-5e-middle-ages'],
+    'geography-5e-resources': ['history-5e-middle-ages'],
+  },
+  '4e': {
+    'maths-4e-powers': ['geography-4e-globalization'],
+    'french-4e-agreement': ['lv2-4e-daily-life'],
+    'geography-4e-globalization': ['history-4e-revolutions'],
+  },
+  '3e': {
+    'maths-3e-geometry': ['history-3e-twentieth-century', 'physics-chemistry-3e-motion-energy'],
+    'maths-3e-statistics': ['french-3e-close-reading', 'geography-3e-france', 'physics-chemistry-3e-motion-energy'],
+    'history-3e-twentieth-century': ['technology-3e-digital'],
+    'geography-3e-france': ['physics-chemistry-3e-motion-energy'],
+    'life-earth-sciences-3e-human-body': ['physics-chemistry-3e-motion-energy'],
+    'physics-chemistry-3e-motion-energy': ['history-3e-twentieth-century'],
+    'technology-3e-digital': ['french-3e-close-reading'],
+    'lv2-3e-travel': ['french-3e-close-reading'],
+  },
 };
 
 /**
  * Le téléphone 390 × 844, au 6e, selon l'île du bonhomme : les noms qui se taisent (mesurés, consultant UX UI). La
  * Carte y cadre la destination (la Forêt des sons) : sept îles se voient avec leur nom, sept autres sont hors du cadre,
- * la Fouille comprise. Un seul nom se tait, en bas à droite, au bord de l'écran : le Volcan des décimaux ; dans la page,
- * le bonhomme sur la Forêt, c'est son voisin le Hangar des inventions (les noms du test, un peu plus larges, laissent
- * l'autre se taire). Le même nombre avant la règle du médaillon (preview, 161ded36) et après.
+ * la Fouille comprise. Un seul nom se tait, en bas à droite, au bord de l'écran : le Hangar des inventions (le Volcan des
+ * décimaux jusqu'à SC-3 : les îles glissent depuis au milieu de la place, en hauteur, quand elles y tiennent,
+ * `cadrageDeLaCarte`). Le même nombre avant la règle du médaillon (preview, 161ded36) et après.
  */
 const TUS_AU_TELEPHONE: Record<string, string[]> = {
-  'history-6e-antiquity': ['maths-6e-decimals'],
-  'french-6e-phonology': ['maths-6e-decimals'],
+  'history-6e-antiquity': ['technology-6e-objects'],
+  'french-6e-phonology': ['technology-6e-objects'],
 };
 
 /** La destination que le jeu donne au village tout construit, le bonhomme sur l'île `ici` (`nextDestination`). */
@@ -376,17 +462,35 @@ describe('La Carte : chaque île a son nom (tablette 1024 × 768)', () => {
         expect(elargir === 1 ? od.tus : od.tus.filter((id) => hg.includes(id)), `${univers}, OpenDyslexic ×${elargir}`).toEqual([]);
         expect(od.ailleurs.filter((id) => hg.includes(id)), `${univers}, OpenDyslexic ×${elargir}`).toEqual([]);
       }
-    // En portrait 800 × 1280 (une tablette tenue debout), dans la police de lecture, le bonhomme sur l'île d'histoire
-    // comme la capture `carte-<classe>-800x1280`, quelle que soit l'île de destination : chaque nom montré est hors des
-    // boutons et du médaillon, et chaque île qui se voit garde son nom, sauf `TUS_EN_PORTRAIT` (consultant UX UI, HG-3).
+    // En portrait 800 × 1280 (une tablette tenue debout), dans Luciole, la police de lecture par défaut, le bonhomme sur
+    // l'île d'histoire comme la capture `carte-<classe>-800x1280`, quelle que soit l'île de destination : chaque nom
+    // montré est entier dans l'écran, hors des boutons et du médaillon, et chaque île qui se voit garde son nom, sauf
+    // `TUS_EN_PORTRAIT` (consultant UX UI, HG-3, SC-3).
     const ici: BiomeId = VOISINES_HG3[a][0];
+    const tusDebout: Record<string, string[]> = {};
     for (const vers of islandsOf(a).map((b) => b.id))
       for (const [univers, mot] of Object.entries(ETATS)) {
-        const debout = laCarte(a, mot, 'atkinson-hyperlegible', 1, vers, true, PORTRAIT_800, ici);
-        expect(debout.tus, `${univers}, 800 × 1280, vers ${vers}`).toEqual(TUS_EN_PORTRAIT[`${a}:${vers}`] ?? []);
-        for (const m of debout.montrees) for (const z of [...PORTRAIT_800.zones, debout.fanion]) expect(couvre(m, z), `${univers}, 800 × 1280, vers ${vers}, ${m.id}`).toBe(false);
+        const debout = laCarte(a, mot, 'luciole', 1, vers, true, PORTRAIT_800, ici);
+        if (debout.tus.length) tusDebout[`${univers}:${vers}`] = debout.tus;
+        for (const m of debout.montrees) {
+          const dit = `${univers}, 800 × 1280, vers ${vers}, ${m.id}`;
+          for (const z of [...PORTRAIT_800.zones, debout.fanion]) expect(couvre(m, z), dit).toBe(false);
+          // Chaque nom montré, entier dans l'écran (UX UI, SC-3), comme en OpenDyslexic 32 px.
+          expect(m.x - m.w / 2, dit).toBeGreaterThanOrEqual(0);
+          expect(m.x + m.w / 2, dit).toBeLessThanOrEqual(PORTRAIT_800.taille.w);
+          expect(m.y - m.h / 2, dit).toBeGreaterThanOrEqual(0);
+          expect(m.y + m.h / 2, dit).toBeLessThanOrEqual(PORTRAIT_800.taille.h);
+        }
       }
-  });
+    const attendus: Record<string, string[]> = {};
+    for (const vers of islandsOf(a).map((b) => b.id))
+      for (const univers of Object.keys(ETATS)) {
+        const t = TUS_EN_PORTRAIT[`${a}:${vers}`];
+        if (t) attendus[`${univers}:${vers}`] = t;
+      }
+    expect(tusDebout, '800 × 1280').toEqual(attendus);
+    // Huit Cartes et vingt-quatre en portrait, chacune avec sa recherche : plus que les 5 s par défaut sur la CI.
+  }, 30_000);
 
   it('6e, à l’ouverture de la Carte : chaque nom sur son île ; la recherche complète reste bornée (HG-3, DA ; SC-2)', () => {
     // La recherche complète ne se lance que si le placement simple tait un nom ou en pose un sur une autre île
@@ -414,8 +518,19 @@ describe('La Carte : chaque île a son nom (tablette 1024 × 768)', () => {
       expect(large.tus, `${univers}, ×1,1`).toEqual([]);
       expect(large.recherche?.essais ?? 0, `${univers}, ×1,1`).toBeLessThanOrEqual(300);
       expect(large.recherche?.places ?? 0, `${univers}, ×1,1`).toBeLessThanOrEqual(4_000);
+      // Dans la police de lecture, aucun nom tu : la recherche d'un nom tu de moins ne se lance pas.
+      for (const r of [simple.recherche, large.recherche]) expect(r?.essaisDUnNomDeMoins ?? 0, univers).toBe(0);
+      // En OpenDyslexic 32 px, la recherche d'un nom tu de moins garde son plafond pour tout le cadrage (1 000 essais),
+      // à part de celui de la recherche large (2 000) : elle ne repart plus de zéro à chaque placement du cadrage
+      // (jusqu'à 25 000 essais de plus au 6e, expert frontend, SC-3), ni après une recherche large arrêtée par son plafond.
+      for (const ici of ['history-6e-antiquity', islandsOf('6e')[0].id] as BiomeId[]) {
+        const od = laCarte('6e', mot, 'opendyslexic', CHASSE_OD32, destinationDuJeu(ici), true, TABLETTE_OD32, ici);
+        expect(od.recherche?.essais ?? 0, `${univers}, OpenDyslexic 32 px, bonhomme sur ${ici}`).toBeLessThanOrEqual(2_000);
+        expect(od.recherche?.essaisDUnNomDeMoins ?? 0, `${univers}, OpenDyslexic 32 px, bonhomme sur ${ici}`).toBeLessThanOrEqual(1_000);
+      }
     }
-  });
+    // Quatre Cartes en OpenDyslexic 32 px, chacune avec sa recherche : quelques secondes sous jsdom.
+  }, 30_000);
 
   it('le Marais des temps (5e) garde son nom, et l’Atelier (4e, la destination) le sien au-dessus de son île', () => {
     expect(nomsTus('5e', ETATS.blocland, 'atkinson-hyperlegible', 1)).not.toContain('french-5e-conjugation');
@@ -427,8 +542,16 @@ describe('La Carte : chaque île a son nom (tablette 1024 × 768)', () => {
     }
   });
 
-  it.each(['5e', '4e', '3e'] as const)('%s : quelle que soit la destination, chaque île qui se voit garde son nom', (a) => {
-    for (const dest of islandsOf(a).map((b) => b.id)) expect(nomsTus(a, ETATS.blocland, 'atkinson-hyperlegible', 1, dest), `${a} → ${dest}`).toEqual([]);
+  it.each(['5e', '4e', '3e'] as const)('%s : quelle que soit la destination, chaque île qui se voit garde son nom, sauf les limites mesurées (SC-3)', (a) => {
+    // Dans les deux univers (« Bâtie » et « Restaurée » n'ont pas la même largeur, UX UI, SC-3).
+    for (const [univers, mot] of Object.entries(ETATS)) {
+      const tus: Record<string, string[]> = {};
+      for (const dest of islandsOf(a).map((b) => b.id)) {
+        const t = nomsTus(a, mot, 'atkinson-hyperlegible', 1, dest);
+        if (t.length) tus[dest] = t;
+      }
+      expect(tus, univers).toEqual(TUS_VERS_UNE_DESTINATION[a] ?? {});
+    }
   });
 
   const posees = POSEES;
@@ -446,10 +569,63 @@ describe('La Carte : chaque île a son nom (tablette 1024 × 768)', () => {
       for (const depuis of [def.from, def.to]) expect(nomsTus(a, ETATS.blocland, 'atkinson-hyperlegible', 1, { ouvrage: def.id, depuis }), `${def.id} depuis ${depuis}`).not.toContain(depuis);
   });
 
-  it.each(['5e', '4e', '3e'] as const)('%s : la flèche sur un ouvrage, chaque île qui se voit garde son nom', (a) => {
-    for (const def of BRIDGES.filter((b) => archipelagoOfIsland(b.from) === a && posees.includes(b.id)))
-      for (const depuis of [def.from, def.to]) {
-        expect(nomsTus(a, ETATS.blocland, 'atkinson-hyperlegible', 1, { ouvrage: def.id, depuis }), `${def.id} depuis ${depuis}`).toEqual([]);
+  it.each(['5e', '4e', '3e'] as const)('%s : la flèche sur un ouvrage, chaque île qui se voit garde son nom, sauf les limites mesurées (SC-3)', (a) => {
+    for (const [univers, mot] of Object.entries(ETATS)) {
+      const tus: Record<string, string[]> = {};
+      for (const def of BRIDGES.filter((b) => archipelagoOfIsland(b.from) === a && posees.includes(b.id)))
+        for (const depuis of [def.from, def.to]) {
+          const t = nomsTus(a, mot, 'atkinson-hyperlegible', 1, { ouvrage: def.id, depuis });
+          if (t.length) tus[`${def.id} depuis ${depuis}`] = t;
+        }
+      expect(tus, univers).toEqual({ ...TUS_SUR_UN_OUVRAGE[a], ...(univers === 'archipeo' ? TUS_SUR_UN_OUVRAGE_DANS_ARCHIPEO[a] : {}) });
+    }
+  }, 30_000);
+
+  it.each(['5e', '4e', '3e'] as const)(
+    '%s, à l’ouverture en OpenDyslexic, le bonhomme sur la destination, quelle qu’elle soit, deux univers : ni la destination ni l’île du bonhomme ne se taisent, les autres noms tus sont ceux mesurés (SC-3, UX UI)',
+    (a) => {
+      const tus: Record<string, string[]> = {};
+      for (const vers of islandsOf(a).map((b) => b.id))
+        for (const [univers, mot] of Object.entries(ETATS)) {
+          const carte = laCarte(a, mot, 'opendyslexic', 1, vers, true, TABLETTE_A_L_OUVERTURE, vers);
+          expect(carte.tus, `${univers}, vers ${vers}`).not.toContain(vers);
+          if (carte.tus.length) tus[`${univers}:${vers}`] = carte.tus;
+        }
+      const attendus: Record<string, string[]> = {};
+      for (const [cle, noms] of Object.entries(TUS_EN_OD_SUR_LA_DESTINATION[a] ?? {}))
+        for (const univers of cle.includes(':') ? [''] : Object.keys(ETATS)) attendus[univers ? `${univers}:${cle}` : cle] = noms;
+      expect(tus).toEqual(attendus);
+    },
+    30_000,
+  );
+
+  it('3e, le bonhomme sur le Verger de la santé (les captures de SC-3), deux univers : en OpenDyslexic 32 px sur la tablette, un nom tu au plus ; en portrait 800 × 1280, chaque île dans le cadre, chaque nom entier, un nom tu (référent dys, UX UI, SC-3)', () => {
+    const ici: BiomeId = 'life-earth-sciences-3e-human-body';
+    const destination = destinationDuJeu(ici);
+    for (const [univers, mot] of Object.entries(ETATS)) {
+      // Le Kiosque des témoins, le Plateau des territoires et l'Observatoire des données s'y taisaient ensemble : faute
+      // de place pour les trois, un seul se tait (`chercherToutesLesPlaces`, un nom tu de moins). Ici, l'Observatoire des
+      // données ; dans la page (la capture `sciences-college-carte-3e-od32`), le Kiosque des témoins. Même caméra, mêmes
+      // places (relevé dans la page, SC-3) : seules les largeurs diffèrent, celles du test de 1 à 4 % plus larges que
+      // celles de la page (`CHASSE_OD32`, sans crénage). À 394 px dans la page, l'Observatoire des données tient à sa
+      // place ; à 406 px ici, non, et c'est lui que la recherche laisse de côté.
+      const od = laCarte('3e', mot, 'opendyslexic', CHASSE_OD32, destination, true, TABLETTE_OD32, ici);
+      expect(od.tus, `${univers}, OpenDyslexic 32 px`).toEqual(['maths-3e-statistics']);
+      for (const m of od.montrees) {
+        expect(m.x - m.w / 2, m.id).toBeGreaterThanOrEqual(0);
+        expect(m.x + m.w / 2, m.id).toBeLessThanOrEqual(TABLETTE_OD32.taille.w);
+        for (const z of [...TABLETTE_OD32.zones, od.fanion]) expect(couvre(m, z), `${univers}, ${m.id}`).toBe(false);
       }
-  });
+      // En portrait, la Ruche des réseaux et le Refuge des carnets sortaient à gauche, 450 px vides en haut : les îles
+      // glissent au milieu de la place (`cadrageDeLaCarte`). Toutes dans le cadre, chaque nom montré entier ; dans
+      // Luciole, la police par défaut, un nom se tait (`TUS_EN_PORTRAIT_AU_VERGER`), comme dans la page.
+      const debout = laCarte('3e', mot, 'luciole', 1, destination, true, PORTRAIT_800, ici);
+      expect(debout.tus, `${univers}, 800 × 1280`).toEqual(TUS_EN_PORTRAIT_AU_VERGER);
+      expect(debout.vues.length + debout.tus.length, `${univers}, 800 × 1280`).toBe(islandsOf('3e').length);
+      for (const m of debout.montrees) {
+        expect(m.x - m.w / 2, `${univers}, 800 × 1280, ${m.id}`).toBeGreaterThanOrEqual(0);
+        expect(m.x + m.w / 2, `${univers}, 800 × 1280, ${m.id}`).toBeLessThanOrEqual(PORTRAIT_800.taille.w);
+      }
+    }
+  }, 30_000);
 });

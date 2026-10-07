@@ -1,0 +1,235 @@
+{
+  "id": "physics-chemistry-4e-signals-circuits-chemical-reactions-2",
+  "biome": "physics-chemistry-4e-signals-circuits",
+  "type": "chemical-reactions",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "physics-chemistry-4e-signals-circuits-chemical-reactions-2-0",
+      "prompt": "Pendant une transformation chimique, les atomes ne disparaissent pas : ils se …",
+      "spoken": "Pendant une transformation chimique, les atomes ne disparaissent pas : ils se  (mot manquant) ",
+      "choices": [
+        "détruisent",
+        "fondent",
+        "regroupent autrement"
+      ],
+      "answer": "regroupent autrement",
+      "hint": "Relis la ligne « Pendant la réaction » du rappel.",
+      "explanation": "Les atomes des réactifs se séparent, puis se regroupent autrement pour former les produits. Aucun n’est détruit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Atomes et équation de réaction",
+          "lines": [
+            "Pendant la réaction, les atomes se séparent et se regroupent autrement.",
+            "Aucun atome ne disparaît, aucun n’apparaît : la masse se conserve.",
+            "Une équation : les réactifs à gauche, une flèche, les produits à droite.",
+            "Le signe plus se lit « et ». La flèche se lit « donnent ».",
+            "Il y a autant de chaque sorte d’atome à gauche et à droite."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-4e-signals-circuits-chemical-reactions-2-1",
+      "prompt": "Le flacon fermé par un ballon\nDans le flacon : du vinaigre et un sachet de bicarbonate.\nLa balance affiche 200 g.\nOn renverse le sachet : ça mousse, le ballon gonfle.",
+      "question": "Que va afficher la balance ?",
+      "spoken": "Le flacon fermé par un ballon. Dans le flacon, du vinaigre et un sachet de bicarbonate. La balance affiche 200 grammes. On renverse le sachet, ça mousse, le ballon gonfle.",
+      "choices": [
+        "180 grammes",
+        "200 grammes",
+        "220 grammes"
+      ],
+      "answer": "200 grammes",
+      "hint": "Le gaz qui se forme peut-il sortir ?",
+      "explanation": "Le gaz reste dans le ballon : aucun atome ne sort. La masse se conserve, la balance affiche encore 200 grammes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Atomes et équation de réaction",
+          "lines": [
+            "Pendant la réaction, les atomes se séparent et se regroupent autrement.",
+            "Aucun atome ne disparaît, aucun n’apparaît : la masse se conserve.",
+            "Une équation : les réactifs à gauche, une flèche, les produits à droite.",
+            "Le signe plus se lit « et ». La flèche se lit « donnent ».",
+            "Il y a autant de chaque sorte d’atome à gauche et à droite."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-4e-signals-circuits-chemical-reactions-2-2",
+      "prompt": "Le même essai, sans ballon\nAvant : 200 g.\nÇa mousse, le gaz part dans l’air.\nAprès : 195 g.",
+      "question": "Pourquoi la masse a-t-elle baissé ?",
+      "spoken": "Le même essai, sans ballon. Avant, 200 grammes. Ça mousse, le gaz part dans l’air. Après, 195 grammes.",
+      "choices": [
+        "des atomes ont disparu",
+        "le gaz est parti dans l’air",
+        "la balance s’est trompée"
+      ],
+      "answer": "le gaz est parti dans l’air",
+      "hint": "Relis la troisième ligne du document.",
+      "explanation": "Les atomes ne disparaissent pas : ils sont partis dans l’air, avec le gaz. Sur la balance, il en reste moins.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Atomes et équation de réaction",
+          "lines": [
+            "Pendant la réaction, les atomes se séparent et se regroupent autrement.",
+            "Aucun atome ne disparaît, aucun n’apparaît : la masse se conserve.",
+            "Une équation : les réactifs à gauche, une flèche, les produits à droite.",
+            "Le signe plus se lit « et ». La flèche se lit « donnent ».",
+            "Il y a autant de chaque sorte d’atome à gauche et à droite."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-4e-signals-circuits-chemical-reactions-2-3",
+      "prompt": "La combustion du carbone\ncarbone + dioxygène → dioxyde de carbone",
+      "question": "Quels sont les réactifs ?",
+      "spoken": "La combustion du carbone. Carbone et dioxygène donnent dioxyde de carbone.",
+      "choices": [
+        "le carbone et le dioxygène",
+        "le dioxyde de carbone",
+        "le carbone seul"
+      ],
+      "answer": "le carbone et le dioxygène",
+      "hint": "Relis la ligne « Une équation » du rappel.",
+      "explanation": "Les réactifs sont à gauche de la flèche : le carbone et le dioxygène. Le dioxyde de carbone, à droite, est le produit.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Atomes et équation de réaction",
+          "lines": [
+            "Pendant la réaction, les atomes se séparent et se regroupent autrement.",
+            "Aucun atome ne disparaît, aucun n’apparaît : la masse se conserve.",
+            "Une équation : les réactifs à gauche, une flèche, les produits à droite.",
+            "Le signe plus se lit « et ». La flèche se lit « donnent ».",
+            "Il y a autant de chaque sorte d’atome à gauche et à droite."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-4e-signals-circuits-chemical-reactions-2-4",
+      "prompt": "Dans une équation de réaction, la flèche se lit …",
+      "spoken": "Dans une équation de réaction, la flèche se lit  (mot manquant) ",
+      "choices": [
+        "« égale »",
+        "« donnent »",
+        "« plus »"
+      ],
+      "answer": "« donnent »",
+      "hint": "Relis la ligne « Le signe » du rappel.",
+      "explanation": "La flèche se lit « donnent » : les réactifs donnent les produits. Ce n’est pas un signe égal.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Atomes et équation de réaction",
+          "lines": [
+            "Pendant la réaction, les atomes se séparent et se regroupent autrement.",
+            "Aucun atome ne disparaît, aucun n’apparaît : la masse se conserve.",
+            "Une équation : les réactifs à gauche, une flèche, les produits à droite.",
+            "Le signe plus se lit « et ». La flèche se lit « donnent ».",
+            "Il y a autant de chaque sorte d’atome à gauche et à droite."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-4e-signals-circuits-chemical-reactions-2-5",
+      "prompt": "La combustion du carbone, en formules\nC + O₂ → CO₂\nÀ gauche : 1 atome de carbone, 2 atomes d’oxygène.\nÀ droite : on compte.",
+      "question": "Combien d’atomes d’oxygène à droite ?",
+      "spoken": "La combustion du carbone, en formules. C plus O deux donnent C O deux. À gauche, un atome de carbone, deux atomes d’oxygène. À droite, on compte.",
+      "choices": [
+        "1",
+        "2",
+        "3"
+      ],
+      "answer": "2",
+      "hint": "Relis la ligne « Il y a autant » du rappel.",
+      "explanation": "Dans CO₂, le petit 2 compte 2 atomes d’oxygène : autant qu’à gauche. Aucun atome n’a disparu.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Atomes et équation de réaction",
+          "lines": [
+            "Pendant la réaction, les atomes se séparent et se regroupent autrement.",
+            "Aucun atome ne disparaît, aucun n’apparaît : la masse se conserve.",
+            "Une équation : les réactifs à gauche, une flèche, les produits à droite.",
+            "Le signe plus se lit « et ». La flèche se lit « donnent ».",
+            "Il y a autant de chaque sorte d’atome à gauche et à droite."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-4e-signals-circuits-chemical-reactions-2-6",
+      "prompt": "La question de Tom : le fer rouille-t-il sans eau ?\nTube A : un clou, de l’air et un peu d’eau.\nTube B : un clou et de l’air sec, sans eau.\nUne semaine plus tard, seul le clou A a rouillé.",
+      "question": "Que peut conclure Tom ?",
+      "spoken": "La question de Tom, le fer rouille-t-il sans eau ? Tube A, un clou, de l’air et un peu d’eau. Tube B, un clou et de l’air sec, sans eau. Une semaine plus tard, seul le clou A a rouillé.",
+      "choices": [
+        "le fer rouille dans l’air sec",
+        "le fer a besoin d’eau pour rouiller",
+        "le clou B était différent"
+      ],
+      "answer": "le fer a besoin d’eau pour rouiller",
+      "hint": "Qu’est-ce qui change entre les deux tubes ?",
+      "explanation": "Seule l’eau change d’un tube à l’autre, et seul le clou avec de l’eau rouille : le fer a besoin d’eau pour rouiller.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Atomes et équation de réaction",
+          "lines": [
+            "Pendant la réaction, les atomes se séparent et se regroupent autrement.",
+            "Aucun atome ne disparaît, aucun n’apparaît : la masse se conserve.",
+            "Une équation : les réactifs à gauche, une flèche, les produits à droite.",
+            "Le signe plus se lit « et ». La flèche se lit « donnent ».",
+            "Il y a autant de chaque sorte d’atome à gauche et à droite."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-4e-signals-circuits-chemical-reactions-2-7",
+      "prompt": "La rouille qui se forme sur le clou est une espèce chimique …",
+      "spoken": "La rouille qui se forme sur le clou est une espèce chimique  (mot manquant) ",
+      "choices": [
+        "nouvelle",
+        "fondue",
+        "dissoute"
+      ],
+      "answer": "nouvelle",
+      "hint": "La rouille était-elle là avant ?",
+      "explanation": "La rouille n’existait pas avant : c’est une espèce chimique nouvelle, le produit d’une transformation chimique du fer.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Atomes et équation de réaction",
+          "lines": [
+            "Pendant la réaction, les atomes se séparent et se regroupent autrement.",
+            "Aucun atome ne disparaît, aucun n’apparaît : la masse se conserve.",
+            "Une équation : les réactifs à gauche, une flèche, les produits à droite.",
+            "Le signe plus se lit « et ». La flèche se lit « donnent ».",
+            "Il y a autant de chaque sorte d’atome à gauche et à droite."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "physics-chemistry-4e-signals-circuits",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

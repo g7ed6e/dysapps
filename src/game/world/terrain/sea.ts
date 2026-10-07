@@ -27,7 +27,12 @@ import { chosenGuardian, layoutCache, type Rectangle } from '../placement';
  * lecteur, qui la cache tout entière depuis le port : en -12, 73 au village tout construit, en -9, 76 sans liaison (les
  * liaisons posées la déplacent). Elle passe à 47, 85, au même rang, dans la passe entre la Ferme et la Forêt. Au 5e,
  * depuis le cadre élargi de 24 cases (HG-3), la clairière de 29, 345 se cache derrière les îles de l'ouest : la baleine
- * nage en 97, 313, au nord du port : la seule clairière (un rond de 4 cases) qui s'y voit entière.
+ * nage en 97, 313, au nord du port : la seule clairière (un rond de 4 cases) qui s'y voit entière. Depuis les îles de
+ * sciences (SC-3), les cadres des 5e et 4e s'approfondissent et les clairières qu'on voit depuis le port se cachent
+ * derrière les îles (three/whales.test.ts). Au 5e, celle de 131, 420 (131, 417 sans liaison) nage au nord du port, en
+ * 97, 304 ; celle de 29, 420 nage dans une autre clairière, au sud, en 93, 429 (DA, relecture des captures : les
+ * deux baleines nageaient l'une contre l'autre, en 97, 304 et 98, 314) : ronde de 5 cases, à plus de cent cases de la
+ * première, entière dans la vue du port. Au 4e, celle de 41, 715 (29, 706 sans liaison) passe en 82, 705.
  */
 export const BALEINES_REPLACEES: Readonly<Partial<Record<ArchipelagoId, readonly { de: { x: number; y: number }; vers: { x: number; y: number } }[]>>> = {
   '6e': [
@@ -35,7 +40,15 @@ export const BALEINES_REPLACEES: Readonly<Partial<Record<ArchipelagoId, readonly
     { de: { x: -9, y: 76 }, vers: { x: 47, y: 85 } },
     { de: { x: -12, y: 73 }, vers: { x: 47, y: 85 } },
   ],
-  '5e': [{ de: { x: 29, y: 345 }, vers: { x: 97, y: 313 } }],
+  '5e': [
+    { de: { x: 131, y: 420 }, vers: { x: 97, y: 304 } },
+    { de: { x: 131, y: 417 }, vers: { x: 97, y: 304 } },
+    { de: { x: 29, y: 420 }, vers: { x: 93, y: 429 } },
+  ],
+  '4e': [
+    { de: { x: 41, y: 715 }, vers: { x: 82, y: 705 } },
+    { de: { x: 29, y: 706 }, vers: { x: 82, y: 705 } },
+  ],
 };
 
 /**

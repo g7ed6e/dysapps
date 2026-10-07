@@ -1,0 +1,241 @@
+{
+  "id": "physics-chemistry-5e-matter-universe-universe-atoms-2",
+  "biome": "physics-chemistry-5e-matter-universe",
+  "type": "universe-atoms",
+  "level": 2,
+  "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "items": [
+    {
+      "key": "physics-chemistry-5e-matter-universe-universe-atoms-2-0",
+      "prompt": "Au centre de l’atome, il y a le …",
+      "spoken": "Au centre de l’atome, il y a le  (mot manquant) ",
+      "choices": [
+        "noyau",
+        "électron",
+        "vide"
+      ],
+      "answer": "noyau",
+      "hint": "Relis la ligne « Un atome » du rappel.",
+      "explanation": "Le noyau est au centre de l’atome ; les électrons se déplacent autour.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’atome et les éléments",
+          "lines": [
+            "Toute la matière est faite d’atomes, bien trop petits pour être vus.",
+            "Un atome : un noyau au centre, des électrons qui se déplacent autour.",
+            "Le noyau porte presque toute la masse. Autour, c’est surtout du vide.",
+            "Une molécule : des atomes liés ensemble.",
+            "Chaque sorte d’atome a un symbole : H hydrogène, O oxygène, C carbone.",
+            "Des atomes comme le carbone et l’oxygène sont nés dans des étoiles."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-5e-matter-universe-universe-atoms-2-1",
+      "prompt": "Autour du noyau se déplacent les …",
+      "spoken": "Autour du noyau se déplacent les  (mot manquant) ",
+      "choices": [
+        "molécules",
+        "électrons",
+        "étoiles"
+      ],
+      "answer": "électrons",
+      "hint": "Relis la ligne « Un atome » du rappel.",
+      "explanation": "Les électrons se déplacent autour du noyau. Les molécules, elles, sont faites de plusieurs atomes.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’atome et les éléments",
+          "lines": [
+            "Toute la matière est faite d’atomes, bien trop petits pour être vus.",
+            "Un atome : un noyau au centre, des électrons qui se déplacent autour.",
+            "Le noyau porte presque toute la masse. Autour, c’est surtout du vide.",
+            "Une molécule : des atomes liés ensemble.",
+            "Chaque sorte d’atome a un symbole : H hydrogène, O oxygène, C carbone.",
+            "Des atomes comme le carbone et l’oxygène sont nés dans des étoiles."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-5e-matter-universe-universe-atoms-2-2",
+      "prompt": "Presque toute la masse de l’atome est dans son …",
+      "spoken": "Presque toute la masse de l’atome est dans son  (mot manquant) ",
+      "choices": [
+        "électron",
+        "vide",
+        "noyau"
+      ],
+      "answer": "noyau",
+      "hint": "Relis la ligne « Le noyau » du rappel.",
+      "explanation": "Le noyau est tout petit, mais il porte presque toute la masse de l’atome. Les électrons sont très légers.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’atome et les éléments",
+          "lines": [
+            "Toute la matière est faite d’atomes, bien trop petits pour être vus.",
+            "Un atome : un noyau au centre, des électrons qui se déplacent autour.",
+            "Le noyau porte presque toute la masse. Autour, c’est surtout du vide.",
+            "Une molécule : des atomes liés ensemble.",
+            "Chaque sorte d’atome a un symbole : H hydrogène, O oxygène, C carbone.",
+            "Des atomes comme le carbone et l’oxygène sont nés dans des étoiles."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-5e-matter-universe-universe-atoms-2-3",
+      "prompt": "Des atomes liés ensemble forment une …",
+      "spoken": "Des atomes liés ensemble forment une  (mot manquant) ",
+      "choices": [
+        "cellule",
+        "molécule",
+        "galaxie"
+      ],
+      "answer": "molécule",
+      "hint": "Relis la ligne « Une molécule » du rappel.",
+      "explanation": "Des atomes liés ensemble forment une molécule, comme la molécule d’eau. La cellule, c’est en sciences de la vie : elle contient des milliards de molécules.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’atome et les éléments",
+          "lines": [
+            "Toute la matière est faite d’atomes, bien trop petits pour être vus.",
+            "Un atome : un noyau au centre, des électrons qui se déplacent autour.",
+            "Le noyau porte presque toute la masse. Autour, c’est surtout du vide.",
+            "Une molécule : des atomes liés ensemble.",
+            "Chaque sorte d’atome a un symbole : H hydrogène, O oxygène, C carbone.",
+            "Des atomes comme le carbone et l’oxygène sont nés dans des étoiles."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-5e-matter-universe-universe-atoms-2-4",
+      "prompt": "La molécule d’eau\nSa formule : H₂O.\nH, c’est l’hydrogène. O, c’est l’oxygène.\nLe petit 2 compte les atomes d’hydrogène.",
+      "question": "Combien d’atomes d’hydrogène dans une molécule d’eau ?",
+      "spoken": "La molécule d’eau. Sa formule, H deux O. H, c’est l’hydrogène. O, c’est l’oxygène. Le petit deux compte les atomes d’hydrogène.",
+      "choices": [
+        "1",
+        "2",
+        "3"
+      ],
+      "answer": "2",
+      "hint": "Relis la dernière ligne du document.",
+      "explanation": "Le petit 2 après le H dit qu’il y a 2 atomes d’hydrogène. Le O, sans petit chiffre, compte pour un seul atome d’oxygène.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’atome et les éléments",
+          "lines": [
+            "Toute la matière est faite d’atomes, bien trop petits pour être vus.",
+            "Un atome : un noyau au centre, des électrons qui se déplacent autour.",
+            "Le noyau porte presque toute la masse. Autour, c’est surtout du vide.",
+            "Une molécule : des atomes liés ensemble.",
+            "Chaque sorte d’atome a un symbole : H hydrogène, O oxygène, C carbone.",
+            "Des atomes comme le carbone et l’oxygène sont nés dans des étoiles."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-5e-matter-universe-universe-atoms-2-5",
+      "prompt": "La molécule de dioxyde de carbone\nSa formule : CO₂.\nC, c’est le carbone. O, c’est l’oxygène.\nLe petit 2 compte les atomes d’oxygène.",
+      "question": "Combien d’atomes en tout dans cette molécule ?",
+      "spoken": "La molécule de dioxyde de carbone. Sa formule, C O deux. C, c’est le carbone. O, c’est l’oxygène. Le petit deux compte les atomes d’oxygène.",
+      "choices": [
+        "2",
+        "3",
+        "4"
+      ],
+      "answer": "3",
+      "hint": "Compte le carbone, puis les oxygènes.",
+      "explanation": "Un atome de carbone et 2 atomes d’oxygène : 1 plus 2, 3 atomes en tout.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’atome et les éléments",
+          "lines": [
+            "Toute la matière est faite d’atomes, bien trop petits pour être vus.",
+            "Un atome : un noyau au centre, des électrons qui se déplacent autour.",
+            "Le noyau porte presque toute la masse. Autour, c’est surtout du vide.",
+            "Une molécule : des atomes liés ensemble.",
+            "Chaque sorte d’atome a un symbole : H hydrogène, O oxygène, C carbone.",
+            "Des atomes comme le carbone et l’oxygène sont nés dans des étoiles."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-5e-matter-universe-universe-atoms-2-6",
+      "prompt": "Le carbone de notre corps est né il y a très longtemps, dans une …",
+      "spoken": "Le carbone de notre corps est né il y a très longtemps, dans une  (mot manquant) ",
+      "choices": [
+        "planète",
+        "étoile",
+        "comète"
+      ],
+      "answer": "étoile",
+      "hint": "Relis la ligne « Des atomes » du rappel.",
+      "explanation": "Les atomes de carbone se sont formés au cœur d’étoiles, il y a des milliards d’années. Ils sont passés ensuite par la Terre, les plantes, puis notre corps.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’atome et les éléments",
+          "lines": [
+            "Toute la matière est faite d’atomes, bien trop petits pour être vus.",
+            "Un atome : un noyau au centre, des électrons qui se déplacent autour.",
+            "Le noyau porte presque toute la masse. Autour, c’est surtout du vide.",
+            "Une molécule : des atomes liés ensemble.",
+            "Chaque sorte d’atome a un symbole : H hydrogène, O oxygène, C carbone.",
+            "Des atomes comme le carbone et l’oxygène sont nés dans des étoiles."
+          ]
+        }
+      }
+    },
+    {
+      "key": "physics-chemistry-5e-matter-universe-universe-atoms-2-7",
+      "prompt": "Si l’atome était grand comme un stade\nLe noyau serait une bille, au centre du terrain.\nLes électrons seraient autour des tribunes.",
+      "question": "Qu’y a-t-il surtout dans un atome ?",
+      "spoken": "Si l’atome était grand comme un stade. Le noyau serait une bille, au centre du terrain. Les électrons seraient autour des tribunes.",
+      "choices": [
+        "des noyaux",
+        "du vide",
+        "de l’eau"
+      ],
+      "answer": "du vide",
+      "hint": "Entre la bille et les tribunes, qu’y a-t-il ?",
+      "explanation": "Entre le noyau et les électrons, il n’y a rien : l’atome est surtout fait de vide.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "L’atome et les éléments",
+          "lines": [
+            "Toute la matière est faite d’atomes, bien trop petits pour être vus.",
+            "Un atome : un noyau au centre, des électrons qui se déplacent autour.",
+            "Le noyau porte presque toute la masse. Autour, c’est surtout du vide.",
+            "Une molécule : des atomes liés ensemble.",
+            "Chaque sorte d’atome a un symbole : H hydrogène, O oxygène, C carbone.",
+            "Des atomes comme le carbone et l’oxygène sont nés dans des étoiles."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "physics-chemistry-5e-matter-universe",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

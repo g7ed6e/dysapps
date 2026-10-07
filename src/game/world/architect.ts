@@ -1,6 +1,7 @@
 // L'architecte du village : le dessin des bâtiments des îles, en trois étapes (les murs, le toit, la cour), calculé à partir
 // d'une forme (maison, tour, dôme, échoppe, hutte, kiosque, relais, jardin, refuge,
-// musée, quartier, logis, moulin, halle, entrepôt, bibliothèque, mairie, serre, laboratoire, atelier) et du bloc de l'île. Les cases sont relatives à la zone des
+// musée, quartier, logis, moulin, halle, entrepôt, bibliothèque, mairie, serre, laboratoire, atelier, station, chalet, scierie,
+// pépinière, pavillon, usine, infirmerie, gymnase, poste) et du bloc de l'île. Les cases sont relatives à la zone des
 // plans de l'île (6 × 5 cases, z = 0 : premier bloc sur le sol) ; la façade et la porte sont devant (y bas), la cour aussi.
 // Les blocs de finition (toit, porte, lanterne, barrière, escalier) viennent des coffres des étapes précédentes : un coffre
 // donne exactement ceux de l'étape suivante (voir plans.ts).
@@ -43,7 +44,16 @@ type BuildingStyle =
   | { kind: 'mairie' }
   | { kind: 'serre' }
   | { kind: 'laboratoire' }
-  | { kind: 'atelier' };
+  | { kind: 'atelier' }
+  | { kind: 'station' }
+  | { kind: 'chalet' }
+  | { kind: 'scierie' }
+  | { kind: 'pepiniere' }
+  | { kind: 'pavillon' }
+  | { kind: 'usine' }
+  | { kind: 'infirmerie' }
+  | { kind: 'gymnase' }
+  | { kind: 'poste' };
 
 /** La forme du bâtiment de chaque île (son nom, sa récompense et sa réplique sont dans docs/contenu/<île>.md, section « Les plans »). */
 const BUILDING_OF: Record<BiomeId, BuildingStyle> = {
@@ -73,6 +83,10 @@ const BUILDING_OF: Record<BiomeId, BuildingStyle> = {
   'lv2-5e-introductions': { kind: 'relais' },
   'history-5e-middle-ages': { kind: 'logis' },
   'geography-5e-resources': { kind: 'moulin' },
+  // Sciences 5e (SC-3)
+  'life-earth-sciences-5e-active-planet': { kind: 'station' },
+  'physics-chemistry-5e-matter-universe': { kind: 'chalet' },
+  'technology-5e-design': { kind: 'scierie' },
   // Anciens Ateliers (4e)
   'maths-4e-algebra': { kind: 'maison' },
   'maths-4e-powers': { kind: 'maison', chimney: 2 },
@@ -83,6 +97,10 @@ const BUILDING_OF: Record<BiomeId, BuildingStyle> = {
   'lv2-4e-daily-life': { kind: 'jardin' },
   'history-4e-revolutions': { kind: 'halle' },
   'geography-4e-globalization': { kind: 'entrepot' },
+  // Sciences 4e (SC-3)
+  'life-earth-sciences-4e-cells-evolution': { kind: 'pepiniere' },
+  'physics-chemistry-4e-signals-circuits': { kind: 'pavillon' },
+  'technology-4e-modeling': { kind: 'usine' },
   // Îles du Ciel (3e)
   'maths-3e-functions': { kind: 'tour', top: 'phare' },
   'maths-3e-geometry': { kind: 'kiosque' },
@@ -93,6 +111,10 @@ const BUILDING_OF: Record<BiomeId, BuildingStyle> = {
   'lv2-3e-travel': { kind: 'refuge' },
   'history-3e-twentieth-century': { kind: 'bibliotheque' },
   'geography-3e-france': { kind: 'mairie' },
+  // Sciences 3e (SC-3)
+  'life-earth-sciences-3e-human-body': { kind: 'infirmerie' },
+  'physics-chemistry-3e-motion-energy': { kind: 'gymnase' },
+  'technology-3e-digital': { kind: 'poste' },
 };
 
 // ---------- Outils ----------
@@ -762,6 +784,182 @@ function atelier(b: BlockId): Stages {
   return [without(walls, [...porte, lanterne]), roof, yard(b, 1, y0)];
 }
 
+// ---------- Les bâtiments des îles de sciences de 5e à 3e (SC-3) ----------
+// Décision du directeur artistique (6 octobre 2026) : les murs du bloc de l'île, le toit de l'univers (rouge dans Blocland,
+// sa couverture dans Archipéo, `roofs.ts`), aucun fronton, aucune pièce nouvelle : les blocs de finition de toujours
+// (porte, lanterne, barrière, escalier, verre, planches).
+
+/** Les murs d'une salle de `w` × 3 cases, `h` blocs de haut, coin en `x0`, 2 (la façade sur le rang 2). */
+function room(b: BlockId, x0: number, w: number, h: number): ArchCell[] {
+  const walls: ArchCell[] = [];
+  for (let z = 0; z < h; z++) for (const [x, y] of ring(x0, 2, w, 3)) walls.push({ x, y, z, block: b });
+  return walls;
+}
+
+/** La barrière de devant (rang 0), sauf aux cases `ouvertes`, et une lanterne sur les poteaux `lanternes`. */
+function frontFence(openings: number[], lanterns: number[]): ArchCell[] {
+  const out: ArchCell[] = [];
+  for (let x = 0; x < ZW; x++) if (!openings.includes(x)) out.push({ x, y: 0, z: 0, block: BLOC.barriere });
+  for (const x of lanterns) out.push({ x, y: 0, z: 1, block: BLOC.lanterne });
+  return out;
+}
+
+/**
+ * La station (la station météo d'Humus, SVT 5e ; DA, SC-3). La station : quatre sur trois, trois blocs de haut, de
+ * strate. Le toit de la station : la porte, une fenêtre éclairée, le toit à deux pans et, sur son faîte, la lanterne qui
+ * relève le ciel la nuit. La haie de la station : la barrière sur le devant et en retour sur les côtés, deux lanternes,
+ * la marche, deux jardinières de strate.
+ */
+function weatherStation(b: BlockId): Stages {
+  const doorX = 2;
+  const windows: [number, number, number][] = [[3, 2, 1]];
+  const roof = [...ouvertures([doorX, 2, 0], windows), ...deuxPans(1, 4, 2, 3, b, 1, 4), { x: 3, y: 3, z: 5, block: BLOC.lanterne }];
+  const hedge = [...frontFence([doorX], [0, ZW - 1]), { x: 0, y: 1, z: 0, block: BLOC.barriere }, { x: ZW - 1, y: 1, z: 0, block: BLOC.barriere }];
+  hedge.push({ x: doorX, y: 1, z: 0, block: BLOC.escalier }, { x: 0, y: 2, z: 0, block: b }, { x: ZW - 1, y: 2, z: 0, block: b });
+  return [without(room(b, 1, 4, 3), [[doorX, 2, 0], ...windows]), roof, hedge];
+}
+
+/**
+ * Le chalet (le chalet de Perle, physique-chimie 5e ; DA, SC-3) : bas et large. Le chalet : cinq sur trois, deux blocs de
+ * haut, de sel. Le toit du chalet : la porte, une fenêtre éclairée, le toit à deux pans qui déborde à l'est. Les bassins
+ * du chalet : deux bassins d'eau (du verre) au ras du sol, cernés de sel, de part et d'autre de la marche, la barrière et
+ * une lanterne au portillon.
+ */
+function saltChalet(b: BlockId): Stages {
+  const doorX = 3;
+  const windows: [number, number, number][] = [[1, 2, 1]];
+  const roof = [...ouvertures([doorX, 2, 0], windows), ...deuxPans(0, ZW - 1, 2, 2, b, 0, 4)];
+  const pools: ArchCell[] = [];
+  for (const x of [0, 1, 4, 5]) pools.push({ x, y: 1, z: 0, block: BLOC.verre }, { x, y: 0, z: 0, block: b });
+  pools.push({ x: doorX, y: 1, z: 0, block: BLOC.escalier }, { x: 2, y: 0, z: 0, block: BLOC.barriere }, { x: 2, y: 0, z: 1, block: BLOC.lanterne });
+  return [without(room(b, 0, 5, 2), [[doorX, 2, 0], ...windows]), roof, pools];
+}
+
+/**
+ * La scierie (la scierie de Rabot, technologie 5e ; DA, SC-3) : un atelier, sans lame ni hache. La scierie : quatre sur
+ * trois, trois blocs de haut, de bambou. Le toit de la scierie : la porte, une fenêtre éclairée, le toit à deux pans. La
+ * cour de la scierie : à droite, le bois qui sèche (trois planches au sol, la dernière une botte de cannes, deux dessus), la barrière, son portillon, deux
+ * lanternes et la marche.
+ */
+function sawmill(b: BlockId): Stages {
+  const doorX = 1;
+  const windows: [number, number, number][] = [[2, 2, 1]];
+  const roof = [...ouvertures([doorX, 2, 0], windows), ...deuxPans(0, 3, 2, 3, b, 0, 3)];
+  const courtyard: ArchCell[] = [];
+  // La planche de devant est une botte de cannes de l'île : son dessus se voit, comme celui du composteur d'Humus (la
+  // commande de la Prairie), qui ne demande ainsi aucun appel de dessin de plus dans Blocland (budget.test.ts).
+  for (let y = 2; y <= 4; y++) courtyard.push({ x: 5, y, z: 0, block: y === 4 ? b : BLOC.bois });
+  courtyard.push({ x: 5, y: 2, z: 1, block: BLOC.bois }, { x: 5, y: 3, z: 1, block: BLOC.bois }, { x: doorX, y: 1, z: 0, block: BLOC.escalier }, ...frontFence([doorX], [0, ZW - 1]));
+  return [without(room(b, 0, 4, 3), [[doorX, 2, 0], ...windows]), roof, courtyard];
+}
+
+/**
+ * La pépinière (la pépinière de Nectar, SVT 4e ; DA, SC-3) : longue et basse, sans verrière. La pépinière : six sur trois,
+ * deux blocs de haut, de pétale. Le toit de la pépinière : la porte, le toit à deux pans sur toute la longueur (de terre
+ * cuite dans Archipéo). Les allées de la pépinière : un rang de pétale de part et d'autre de la marche, la barrière, son
+ * portillon, deux lanternes.
+ */
+function nursery(b: BlockId): Stages {
+  const doorX = 2;
+  const roof = [...ouvertures([doorX, 2, 0], []), ...deuxPans(0, ZW - 1, 2, 2, b, 0, ZW - 1)];
+  const rows: ArchCell[] = [];
+  for (let x = 0; x < ZW; x++) if (x !== doorX) rows.push({ x, y: 1, z: 0, block: b });
+  rows.push({ x: doorX, y: 1, z: 0, block: BLOC.escalier }, ...frontFence([doorX], [0, ZW - 1]));
+  return [without(room(b, 0, ZW, 2), [[doorX, 2, 0]]), roof, rows];
+}
+
+/**
+ * Le pavillon (le pavillon de Radar, physique-chimie 4e ; DA, SC-3). Le pavillon : quatre sur trois, trois blocs de haut,
+ * de bobine. Le toit du pavillon : la porte, une fenêtre éclairée, le toit à deux pans. Le mât du pavillon : à droite, un
+ * mât de quatre barrières, sa lanterne au sommet (la nuit, rien ne brille plus que les lanternes ; aucun éclair), la
+ * barrière, son portillon, une lanterne et la marche.
+ */
+function pavilion(b: BlockId): Stages {
+  const doorX = 1;
+  const windows: [number, number, number][] = [[2, 2, 1]];
+  const roof = [...ouvertures([doorX, 2, 0], windows), ...deuxPans(0, 3, 2, 3, b, 0, 3)];
+  const mast: ArchCell[] = [];
+  for (let z = 0; z < 4; z++) mast.push({ x: 5, y: 3, z, block: BLOC.barriere });
+  mast.push({ x: 5, y: 3, z: 4, block: BLOC.lanterne }, { x: doorX, y: 1, z: 0, block: BLOC.escalier }, ...frontFence([doorX], [0]));
+  return [without(room(b, 0, 4, 3), [[doorX, 2, 0], ...windows]), roof, mast];
+}
+
+/**
+ * L'usine (l'usine de Manivelle, technologie 4e ; DA, SC-3) : ni cheminée ni fumée. L'usine : cinq sur trois, trois blocs
+ * de haut, de liège. Le toit de l'usine : la porte large (deux cases, deux de haut), le toit à deux pans. La cour de
+ * l'usine : deux maquettes posées (deux lièges), la barrière, son portillon large, deux lanternes et la marche.
+ */
+function factory(b: BlockId): Stages {
+  const doors: [number, number, number][] = [
+    [1, 2, 0],
+    [2, 2, 0],
+    [1, 2, 1],
+    [2, 2, 1],
+  ];
+  const roof = [...doors.map(([x, y, z]) => ({ x, y, z, block: BLOC.porte })), ...deuxPans(0, 4, 2, 3, b, 0, 4)];
+  const courtyard = [...frontFence([1, 2], [0, ZW - 1]), { x: 1, y: 1, z: 0, block: BLOC.escalier }, { x: 2, y: 1, z: 0, block: BLOC.escalier }, { x: 4, y: 1, z: 0, block: b }, { x: 5, y: 3, z: 0, block: b }];
+  return [without(room(b, 0, 5, 3), doors), roof, courtyard];
+}
+
+/**
+ * L'infirmerie (l'infirmerie d'Olive, SVT 3e ; DA, SC-3) : un lieu de repos, sans croix. L'infirmerie : cinq sur trois,
+ * trois blocs de haut, de savon, la porte au milieu. Le toit de l'infirmerie : la porte, une fenêtre éclairée de chaque
+ * côté, le toit à deux pans (de terre cuite dans Archipéo). Le jardin de l'infirmerie : la cour de toujours (barrière,
+ * portillon, lanternes, marche, jardinières) ; les arbres fruitiers sont au décor de l'île.
+ */
+function infirmary(b: BlockId): Stages {
+  const doorX = 3;
+  const windows: [number, number, number][] = [
+    [2, 2, 1],
+    [4, 2, 1],
+  ];
+  const roof = [...ouvertures([doorX, 2, 0], windows), ...deuxPans(1, ZW - 1, 2, 3, b, 1, ZW - 1)];
+  return [without(room(b, 1, 5, 3), [[doorX, 2, 0], ...windows]), roof, yard(b, doorX, 2)];
+}
+
+/**
+ * Le gymnase (le gymnase de Virage, physique-chimie 3e ; DA, SC-3). Le gymnase : cinq sur trois, trois blocs de haut, de
+ * ressort. Le toit du gymnase : la grande porte (deux cases, deux de haut), le toit à deux pans. La piste du gymnase : à
+ * droite, une piste en marches du fond vers le devant (l'élan en haut, le saut, l'atterrissage au sol), la barrière, son
+ * portillon large, deux lanternes.
+ */
+function gym(b: BlockId): Stages {
+  const doors: [number, number, number][] = [
+    [1, 2, 0],
+    [2, 2, 0],
+    [1, 2, 1],
+    [2, 2, 1],
+  ];
+  const roof = [...doors.map(([x, y, z]) => ({ x, y, z, block: BLOC.porte })), ...deuxPans(0, 4, 2, 3, b, 0, 4)];
+  const track: ArchCell[] = [
+    { x: 5, y: 4, z: 0, block: b },
+    { x: 5, y: 4, z: 1, block: b },
+    { x: 5, y: 3, z: 0, block: b },
+    { x: 5, y: 3, z: 1, block: BLOC.escalier },
+    { x: 5, y: 2, z: 0, block: BLOC.escalier },
+    ...frontFence([1, 2, ZW - 1], [0, 3]),
+  ];
+  return [without(room(b, 0, 5, 3), doors), roof, track];
+}
+
+/**
+ * Le poste (le poste de Navette, technologie 3e ; DA, SC-3) : ni écran ni antenne. Le poste : quatre sur trois, trois
+ * blocs de haut, de cire. Le toit du poste : la porte, une fenêtre éclairée, le toit à deux pans. Les piquets du poste :
+ * quatre piquets (des barrières), reliés deux à deux par un fil de cire au ras du sol, une lanterne sur les deux de devant,
+ * et la marche. Aucune corde qui pend.
+ */
+function outpost(b: BlockId): Stages {
+  const doorX = 2;
+  const windows: [number, number, number][] = [[3, 2, 1]];
+  const roof = [...ouvertures([doorX, 2, 0], windows), ...deuxPans(1, 4, 2, 3, b, 1, 4)];
+  const posts: ArchCell[] = [];
+  for (const x of [0, ZW - 1]) {
+    posts.push({ x, y: 1, z: 0, block: BLOC.barriere }, { x, y: 4, z: 0, block: BLOC.barriere }, { x, y: 2, z: 0, block: b }, { x, y: 3, z: 0, block: b }, { x, y: 1, z: 1, block: BLOC.lanterne });
+  }
+  posts.push({ x: doorX, y: 1, z: 0, block: BLOC.escalier });
+  return [without(room(b, 1, 4, 3), [[doorX, 2, 0], ...windows]), roof, posts];
+}
+
 /** Les trois étapes du bâtiment d'une île. */
 export function buildingStages(biome: BiomeId, block: BlockId): Stages {
   const style = BUILDING_OF[biome];
@@ -806,6 +1004,24 @@ export function buildingStages(biome: BiomeId, block: BlockId): Stages {
       return laboratoire(block);
     case 'atelier':
       return atelier(block);
+    case 'station':
+      return weatherStation(block);
+    case 'chalet':
+      return saltChalet(block);
+    case 'scierie':
+      return sawmill(block);
+    case 'pepiniere':
+      return nursery(block);
+    case 'pavillon':
+      return pavilion(block);
+    case 'usine':
+      return factory(block);
+    case 'infirmerie':
+      return infirmary(block);
+    case 'gymnase':
+      return gym(block);
+    case 'poste':
+      return outpost(block);
   }
 }
 

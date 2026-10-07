@@ -125,8 +125,8 @@ it('l’habillage de la mer affleure, la cascade tombe du bord de sa case jusqu�
   }
   const cascades = elements.map((e, i) => ({ e, i })).filter(({ e }) => e.genre === 'cascade');
   // Trois, celle du Relais des voyageurs (LV2), qui a son lac, et celles du Bourg des chroniques et du Delta des
-  // ressources (HG-3).
-  expect(cascades.length).toBe(6);
+  // ressources (HG-3) ; deux de plus depuis les îles de sciences (SC-3).
+  expect(cascades.length).toBe(8);
   for (const { e, i } of cascades) {
     const pts = sommets(maillage, i);
     const col = colonneEn(champ, e.x, e.y)!;
