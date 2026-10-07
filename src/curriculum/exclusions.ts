@@ -22,8 +22,9 @@ const LV2_LANGAGES = A_COUVRIR(
 );
 
 // Sciences et technologie : les trois îles de 6e (la Vallée du vivant, le Laboratoire des éléments, le Hangar des
-// inventions, SC-2) couvrent le cycle 3, sauf fabriquer. Les neuf îles de 5e, 4e et 3e (SC-3) couvrent le cycle 4, sauf
-// manipuler, fabriquer un prototype et programmer un objet réel (docs/conception/cadrage-contenu.md, « Sciences »).
+// inventions, SC-2) couvrent le cycle 3 en vigueur (BO n° 25 du 22 juin 2023), sauf fabriquer et ce que la relecture du
+// 7 octobre 2026 a ajouté au référentiel. Les neuf îles de 5e, 4e et 3e (SC-3) couvrent le cycle 4, sauf manipuler,
+// fabriquer un prototype et programmer un objet réel (docs/conception/cadrage-contenu.md, « Sciences »).
 const FABRIQUER = HORS('Fabriquer, mesurer pour de vrai, travailler en équipe : le travail de la classe, que l’application ne remplace pas.');
 const MANIPULER = HORS('Manipuler, mesurer, observer pour de vrai (montage, microscope, terrain) : le travail de la classe, que l’application ne remplace pas.');
 
@@ -87,11 +88,24 @@ export const EXCLUSIONS: Partial<Record<ProgrammeId, Exclusion>> = {
   // ---------- Cycle 3, sciences et technologie (SVT, physique-chimie, technologie) : fabriquer reste à la classe ----------
   'c3.te.demarches.concevoir': FABRIQUER,
   'c3.te.objets.realiser': FABRIQUER,
+  // Ajoutés le 7 octobre 2026 à la lecture du texte de 2023, pas encore cités par une mission.
+  'c3.sv.demarches.situer': A_COUVRIR('Échelles d’espace et de temps : la Vallée du vivant place des fossiles dans les couches d’une falaise (Classer le vivant), sans encore citer cette compétence ; à rattacher après relecture des questions, ou par un item sur l’échelle des temps.'),
+  'c3.sv.demarches.esprit-critique': A_COUVRIR('Distinguer une croyance d’un savoir scientifique, juger une source : prévu en niveau de plus à la Vallée du vivant (deux affirmations, laquelle repose sur une preuve).'),
+  'c3.sv.vivant.cellule': A_COUVRIR('La cellule, unité du vivant : une cellule décrite en mots sur un document (le microscope reste à la classe), prévue à la Vallée du vivant.'),
+  'c3.sv.terre.climat': A_COUVRIR('Le réchauffement climatique récent, argumenté à partir de données : un relevé de températures décrit en mots, prévu à la Vallée du vivant (La Terre et ses milieux).'),
+  'c3.pc.matiere.materiaux': A_COUVRIR('Trier des matériaux selon leurs propriétés physiques : la conductivité électrique est déjà travaillée avec le circuit (Laboratoire des éléments, Énergie et circuits) ; l’aimant, la conductivité thermique et la décomposition dans la nature restent à écrire.'),
+  'c3.pc.matiere.transformations': A_COUVRIR('Transformation chimique, pictogrammes de danger, composition de l’air : prévus au Laboratoire des éléments, sur des documents (rien ne se manipule).'),
+  'c3.pc.matiere.lumiere': A_COUVRIR('Le jour et la nuit, les saisons : le texte de 2023 les range en physique-chimie ; la Vallée du vivant en pose des questions (La Terre et ses milieux) au titre de la SVT. Prévu au Laboratoire des éléments, avec les ombres.'),
+  'c3.te.objets.probleme': A_COUVRIR('Comparer des solutions à un problème technique et prendre en compte une contrainte : prévu au Hangar des inventions, sur une fiche décrite en mots.'),
+  'c3.te.objets.programmer': A_COUVRIR('Comprendre un programme simple et le dire en mots : prévu au Hangar des inventions, comme à la Ruche des réseaux en 3e ; coder un objet réel reste à la classe.'),
   // ---------- Cycle 4, physique-chimie (SC-3) : manipuler reste à la classe ----------
   'c4.pc.demarches.manipuler': MANIPULER,
   // ---------- Cycle 4, SVT (SC-3) : manipuler reste à la classe ----------
   'c4.sv.demarches.manipuler': MANIPULER,
-  // ---------- Cycle 4, technologie (SC-3) : fabriquer et programmer un objet réel restent à la classe ----------
-  'c4.te.design.prototype': FABRIQUER,
-  'c4.te.informatique.programmer': HORS('Programmer un objet réel : demande un éditeur de programme et un système à commander, hors du périmètre de l’application (comme c4.ma.e.programmation). Un programme court se lit à la Ruche des réseaux (« Lire un programme ») ; l’écrire et l’exécuter reste hors périmètre.'),
+  // ---------- Cycle 4, technologie (BO n° 9 du 29 février 2024) : fabriquer, réparer et programmer un objet réel restent à la classe ----------
+  'c4.te.conception.prototype': FABRIQUER,
+  'c4.te.conception.programmer': HORS('Programmer un objet réel : demande un éditeur de programme et un système à commander, hors du périmètre de l’application (comme c4.ma.e.programmation). Comprendre un programme court et le traduire en langage naturel se fait à la Ruche des réseaux (« Lire un programme », c4.te.fonctionnement.programme).'),
+  'c4.te.fonctionnement.donnees': A_COUVRIR('Décrire un objet par des données (descripteurs, types), le bit, trier et filtrer un tableau : prévu sur la question sur un document, à la Ruche des réseaux ou au Bassin des maquettes.'),
+  'c4.te.fonctionnement.depanner': A_COUVRIR('Repérer une panne et formuler une hypothèse sur un objet décrit en mots (ses symptômes, ses pièces) ; réparer reste au travail de l’atelier.'),
+  'c4.te.conception.projet': A_COUVRIR('Lire un diagramme de planification des tâches, les étapes d’un projet, l’écoconception : prévu à la Menuiserie des objets, sur la question sur un document.'),
 };

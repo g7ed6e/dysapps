@@ -11,12 +11,12 @@ créature : Rabot
 
 # Menuiserie des objets
 
-> Île de 5e en technologie, programme du cycle 4 en vigueur (annexe 3 du BO n° 31 du 30 juillet 2020). Écrans existants seulement : la question à trou et la question sur un document (quatre lignes au plus sous le titre, une information par ligne). Réaliser un prototype en équipe (`c4.te.design.prototype`) reste au travail de la classe. Une carte mentale ou un diagramme se décrit ligne par ligne, et l’élève choisit la ligne ; les prix, poids et durées sont des nombres entiers, à comparer, jamais à calculer. Les unités s’écrivent en toutes lettres.
+> Île de 5e en technologie, programme du cycle 4 en vigueur (BO n° 9 du 29 février 2024). Écrans existants seulement : la question à trou et la question sur un document (quatre lignes au plus sous le titre, une information par ligne). Réaliser un prototype en équipe (`c4.te.conception.prototype`) reste au travail de la classe. Une carte mentale ou un diagramme se décrit ligne par ligne, et l’élève choisit la ligne ; les prix, poids et durées sont des nombres entiers, à comparer, jamais à calculer. Les unités s’écrivent en toutes lettres.
 
 ## Du besoin au cahier des charges · `specifications`
 
 - description : Le besoin et le problème technique, puis le cahier des charges : fonctions, contraintes et normes.
-- compétences : c4.te.design.besoin · c4.te.demarches.langages
+- compétences : c4.te.usages.interactions
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
 - bravo : Bien vu !
 - erreur : {explanation}
@@ -151,7 +151,7 @@ Pour tous les items :
 ## Une solution pour chaque fonction · `technical-solutions`
 
 - description : Associer une solution technique à chaque fonction, puis choisir la solution qui respecte le cahier des charges.
-- compétences : c4.te.design.solutions · c4.te.design.besoin
+- compétences : c4.te.conception.solutions · c4.te.usages.interactions
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
 - bravo : Bien vu !
 - erreur : {explanation}
@@ -288,7 +288,7 @@ Pour tous les items :
 ## La vie d’un objet · `life-cycle`
 
 - description : Le cycle de vie d’un objet, de la matière au recyclage, puis l’énergie qu’il consomme et son impact sur la planète.
-- compétences : c4.te.demarches.responsable · c4.te.demarches.langages
+- compétences : c4.te.usages.choisir · c4.te.fonctionnement.materiaux
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
 - bravo : Bien vu !
 - erreur : {explanation}

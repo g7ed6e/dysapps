@@ -18,7 +18,11 @@ export type Discipline =
   | 'physics-chemistry'
   | 'technology';
 
-export type SourceId = 'c3' | 'c4';
+/**
+ * c3, c4 : les annexes de 2020 (data.gouv.fr), source par défaut de chaque cycle. Les autres : un programme plus récent,
+ * en vigueur pour une discipline et cité par ses domaines (champ `source`).
+ */
+export type SourceId = 'c3' | 'c4' | 'c3-2023' | 'c4-te-2024';
 
 /** D'où vient le texte : le jeu de données data.gouv.fr, son PDF, sa licence. */
 export interface ProgrammeSource {
@@ -47,6 +51,8 @@ export interface ProgrammeDomaine {
   title: string;
   /** Page du PDF où le domaine commence. */
   page: number;
+  /** Le texte cité, quand ce n'est pas l'annexe de 2020 du cycle (c3, c4) : ses pages et celles de ses compétences. */
+  source?: SourceId;
   /** Page estimée, pas encore lue dans le texte en vigueur : le site l'affiche « à vérifier ». */
   unverified?: true;
 }

@@ -1,12 +1,13 @@
 // Le référentiel des programmes officiels : les compétences des cycles 3 et 4 (français, maths, anglais, histoire et
 // géographie ; SVT, physique-chimie et technologie ; allemand et espagnol en LV2, cycle 4 seulement) que les missions
 // citent (champ `programme` de biomes.ts et de apps/registry.ts).
-// Provenance : data.gouv.fr, Licence Ouverte.
+// Provenance : data.gouv.fr, Licence Ouverte ; les programmes plus récents, du Bulletin officiel et d'éduscol (sources.ts).
 // Ce module n'entre pas dans le bundle de l'application : les missions n'en importent que des types.
 import type { Classe } from '../game/biomes';
 import { DOMAINES_C3, ENTRIES_C3 } from './cycle3';
 import { DOMAINES_C4, ENTRIES_C4 } from './cycle4';
-import type { Cycle, Discipline, ProgrammeDomaine, ProgrammeEntry } from './types';
+import { SOURCES } from './sources';
+import type { Cycle, Discipline, ProgrammeDomaine, ProgrammeEntry, ProgrammeSource } from './types';
 
 export type { Cycle, Discipline, Exclusion, ExclusionKind, ProgrammeDomaine, ProgrammeEntry, ProgrammeSource, SourceId } from './types';
 export { SOURCES, LICENCE_OUVERTE } from './sources';
@@ -43,6 +44,11 @@ export function byId(id: string): ProgrammeEntry | undefined {
 
 export function domaineOf(entry: ProgrammeEntry): ProgrammeDomaine | undefined {
   return DOMAINES.find((d) => d.id === entry.domaine);
+}
+
+/** Le texte où lire une compétence ou un domaine : le sien, sinon l'annexe de 2020 de son cycle. */
+export function sourceOf(d: ProgrammeDomaine): ProgrammeSource {
+  return SOURCES[d.source ?? `c${d.cycle}`];
 }
 
 export function entriesOf(cycle: Cycle, discipline: Discipline): ProgrammeEntry[] {

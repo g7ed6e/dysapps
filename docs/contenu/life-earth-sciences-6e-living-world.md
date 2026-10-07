@@ -147,7 +147,7 @@ Pour tous les items :
 ## Se nourrir et grandir · `food-growth`
 
 - description : Les groupes d’aliments et leur conservation, puis les étapes de la vie d’un animal et d’une plante.
-- compétences : c3.sv.vivant.alimentation · c3.sv.vivant.developpement · c3.sv.vivant.matiere-organique · c3.sv.demarches.observer · c3.sv.demarches.responsable
+- compétences : c3.sv.vivant.alimentation · c3.sv.vivant.developpement · c3.sv.terre.chaines-alimentaires · c3.sv.demarches.observer · c3.sv.demarches.responsable
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
 - bravo : Bien vu !
 - erreur : {explanation}
@@ -279,7 +279,7 @@ Pour tous les items :
 ## La Terre et ses milieux · `planet-earth`
 
 - description : La Terre dans le système solaire, les volcans, les séismes et le temps qu’il fait, puis les milieux de vie et ce que l’humain y change.
-- compétences : c3.sv.terre.systeme-solaire · c3.sv.terre.phenomenes · c3.sv.terre.peuplement · c3.sv.terre.environnement · c3.sv.vivant.matiere-organique · c3.sv.demarches.responsable
+- compétences : c3.sv.terre.systeme-solaire · c3.sv.terre.phenomenes · c3.sv.terre.peuplement · c3.sv.terre.environnement · c3.sv.terre.chaines-alimentaires · c3.sv.demarches.responsable
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
 - bravo : Bien observé !
 - erreur : {explanation}

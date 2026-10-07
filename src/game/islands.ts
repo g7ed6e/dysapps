@@ -1458,7 +1458,7 @@ export const ILES = [
         "programme": [
           "c3.sv.vivant.alimentation",
           "c3.sv.vivant.developpement",
-          "c3.sv.vivant.matiere-organique",
+          "c3.sv.terre.chaines-alimentaires",
           "c3.sv.demarches.observer",
           "c3.sv.demarches.responsable"
         ]
@@ -1472,7 +1472,7 @@ export const ILES = [
           "c3.sv.terre.phenomenes",
           "c3.sv.terre.peuplement",
           "c3.sv.terre.environnement",
-          "c3.sv.vivant.matiere-organique",
+          "c3.sv.terre.chaines-alimentaires",
           "c3.sv.demarches.responsable"
         ]
       }
@@ -1790,8 +1790,7 @@ export const ILES = [
         "title": "Du besoin au cahier des charges",
         "description": "Le besoin et le problème technique, puis le cahier des charges : fonctions, contraintes et normes.",
         "programme": [
-          "c4.te.design.besoin",
-          "c4.te.demarches.langages"
+          "c4.te.usages.interactions"
         ]
       },
       {
@@ -1799,8 +1798,8 @@ export const ILES = [
         "title": "Une solution pour chaque fonction",
         "description": "Associer une solution technique à chaque fonction, puis choisir la solution qui respecte le cahier des charges.",
         "programme": [
-          "c4.te.design.solutions",
-          "c4.te.design.besoin"
+          "c4.te.conception.solutions",
+          "c4.te.usages.interactions"
         ]
       },
       {
@@ -1808,8 +1807,8 @@ export const ILES = [
         "title": "La vie d’un objet",
         "description": "Le cycle de vie d’un objet, de la matière au recyclage, puis l’énergie qu’il consomme et son impact sur la planète.",
         "programme": [
-          "c4.te.demarches.responsable",
-          "c4.te.demarches.langages"
+          "c4.te.usages.choisir",
+          "c4.te.fonctionnement.materiaux"
         ]
       }
     ]
@@ -2039,8 +2038,7 @@ export const ILES = [
         "title": "La chaîne d’énergie",
         "description": "Alimenter, distribuer, convertir et transmettre : le chemin de l’énergie dans un objet, puis son schéma.",
         "programme": [
-          "c4.te.modelisation.fonctionnement",
-          "c4.te.demarches.langages"
+          "c4.te.fonctionnement.energie"
         ]
       },
       {
@@ -2048,8 +2046,8 @@ export const ILES = [
         "title": "La chaîne d’information",
         "description": "Acquérir, traiter et communiquer : capteurs, carte programmable et actionneurs, puis les deux chaînes ensemble.",
         "programme": [
-          "c4.te.modelisation.fonctionnement",
-          "c4.te.demarches.langages"
+          "c4.te.fonctionnement.information",
+          "c4.te.fonctionnement.energie"
         ]
       },
       {
@@ -2057,9 +2055,8 @@ export const ILES = [
         "title": "Lire une simulation",
         "description": "Ce qu’est un modèle et une simulation, puis lire un résultat (tableau, courbe) et le comparer au cahier des charges.",
         "programme": [
-          "c4.te.modelisation.simuler",
-          "c4.te.design.besoin",
-          "c4.te.demarches.langages"
+          "c4.te.conception.valider",
+          "c4.te.usages.interactions"
         ]
       }
     ]
@@ -2283,8 +2280,8 @@ export const ILES = [
         "title": "Le réseau informatique",
         "description": "Les éléments d’un réseau et l’adresse de chaque appareil, puis internet, les protocoles et le stockage des données.",
         "programme": [
-          "c4.te.informatique.reseaux",
-          "c4.te.demarches.responsable"
+          "c4.te.fonctionnement.reseaux",
+          "c4.te.usages.numerique"
         ]
       },
       {
@@ -2292,8 +2289,8 @@ export const ILES = [
         "title": "Objets connectés et données personnelles",
         "description": "Comment les objets évoluent et changent la société, les objets connectés, puis protéger ses données personnelles.",
         "programme": [
-          "c4.te.objets.evolution",
-          "c4.te.informatique.reseaux"
+          "c4.te.usages.evolution",
+          "c4.te.usages.numerique"
         ]
       },
       {
@@ -2301,8 +2298,7 @@ export const ILES = [
         "title": "Lire un programme",
         "description": "Un algorithme et un programme : séquence, boucle et événement, puis condition et variable, dans un programme court à lire.",
         "programme": [
-          "c4.te.modelisation.fonctionnement",
-          "c4.te.demarches.langages"
+          "c4.te.fonctionnement.programme"
         ]
       }
     ]

@@ -1,4 +1,5 @@
-// Cycle 3 (CM1, CM2, 6e) : le programme en vigueur à la rentrée 2020 (annexe 2), résumé au grain d'une mission.
+// Cycle 3 (CM1, CM2, 6e) : le programme en vigueur à la rentrée 2020 (annexe 2), résumé au grain d'une mission ; pour
+// les sciences et la technologie, le programme en vigueur à la rentrée 2023 (champ `source` des domaines).
 // Les libellés sont des résumés fidèles du texte officiel ; le texte fait foi (page du PDF indiquée).
 import type { ProgrammeDomaine, ProgrammeEntry } from './types';
 
@@ -26,18 +27,18 @@ export const DOMAINES_C3: readonly ProgrammeDomaine[] = [
   { id: 'c3-hg-histoire', cycle: 3, discipline: 'history-geography', title: 'Histoire, classe de sixième', page: 71 },
   { id: 'c3-hg-geographie', cycle: 3, discipline: 'history-geography', title: 'Géographie, classe de sixième', page: 75 },
   // Sciences et technologie, découpées en trois disciplines comme au collège (choix C du mainteneur, 5 octobre 2026) :
-  // SVT (le vivant, la planète Terre), physique-chimie (matière, mouvement, énergie, signal), technologie (matériaux
-  // et objets techniques). Le texte en vigueur en 6e est celui du BO n° 25 du 22 juin 2023, qui a remplacé cette partie
-  // du PDF de 2020 ; il n'a pas pu être lu (téléchargement refusé depuis l'environnement de travail, 5 octobre 2026) :
-  // libellés et pages sont estimés, à relire avant la première île. Les démarches sont communes au programme : chaque
-  // discipline reprend celles qu'elle travaille.
-  { id: 'c3-sv-demarches', cycle: 3, discipline: 'life-earth-sciences', title: 'Sciences et technologie : compétences travaillées (SVT)', page: 82, unverified: true },
-  { id: 'c3-sv-vivant', cycle: 3, discipline: 'life-earth-sciences', title: 'Le vivant, sa diversité et les fonctions qui le caractérisent', page: 86, unverified: true },
-  { id: 'c3-sv-terre', cycle: 3, discipline: 'life-earth-sciences', title: 'La planète Terre. Les êtres vivants dans leur environnement', page: 89, unverified: true },
-  { id: 'c3-pc-demarches', cycle: 3, discipline: 'physics-chemistry', title: 'Sciences et technologie : compétences travaillées (physique-chimie)', page: 82, unverified: true },
-  { id: 'c3-pc-matiere', cycle: 3, discipline: 'physics-chemistry', title: 'Matière, mouvement, énergie, information', page: 84, unverified: true },
-  { id: 'c3-te-demarches', cycle: 3, discipline: 'technology', title: 'Sciences et technologie : compétences travaillées (technologie)', page: 82, unverified: true },
-  { id: 'c3-te-objets', cycle: 3, discipline: 'technology', title: 'Matériaux et objets techniques', page: 87, unverified: true },
+  // SVT (le vivant, la Terre peuplée par des êtres vivants), physique-chimie (matière, mouvement, énergie,
+  // information), technologie (les objets techniques au cœur de la société). Le texte en vigueur en 6e est celui du
+  // BO n° 25 du 22 juin 2023, qui a remplacé cette partie du PDF de 2020 : libellés et pages sont lus dans le
+  // programme du cycle 3 en vigueur à la rentrée 2023 (source c3-2023, 7 octobre 2026). Les compétences travaillées
+  // sont communes aux trois disciplines (page 80) : chaque discipline reprend celles qu'elle travaille.
+  { id: 'c3-sv-demarches', cycle: 3, discipline: 'life-earth-sciences', title: 'Sciences et technologie : compétences travaillées (SVT)', page: 80, source: 'c3-2023' },
+  { id: 'c3-sv-vivant', cycle: 3, discipline: 'life-earth-sciences', title: 'Le vivant, sa diversité et les fonctions qui le caractérisent', page: 87, source: 'c3-2023' },
+  { id: 'c3-sv-terre', cycle: 3, discipline: 'life-earth-sciences', title: 'La Terre, une planète peuplée par des êtres vivants', page: 95, source: 'c3-2023' },
+  { id: 'c3-pc-demarches', cycle: 3, discipline: 'physics-chemistry', title: 'Sciences et technologie : compétences travaillées (physique-chimie)', page: 80, source: 'c3-2023' },
+  { id: 'c3-pc-matiere', cycle: 3, discipline: 'physics-chemistry', title: 'Matière, mouvement, énergie, information', page: 81, source: 'c3-2023' },
+  { id: 'c3-te-demarches', cycle: 3, discipline: 'technology', title: 'Sciences et technologie : compétences travaillées (technologie)', page: 80, source: 'c3-2023' },
+  { id: 'c3-te-objets', cycle: 3, discipline: 'technology', title: 'Les objets techniques au cœur de la société', page: 91, source: 'c3-2023' },
 ];
 
 // Attendus de fin de cycle, cités (raccourcis) une fois pour ne pas les répéter à chaque entrée.
@@ -79,26 +80,31 @@ const HG_G2 = 'Thème 2 : habiter un espace de faible densité';
 const HG_G3 = 'Thème 3 : habiter les littoraux';
 const HG_G4 = 'Thème 4 : le monde habité';
 
+// Sciences et technologie (programme du cycle 3 en vigueur à la rentrée 2023) : les compétences travaillées (page 80),
+// puis les attendus de fin de cycle de chaque partie, réunis quand une compétence en couvre plusieurs.
 const ST_DEMARCHE = 'Pratiquer des démarches scientifiques et technologiques';
-const ST_OUTILS = 'S’approprier des outils et des méthodes';
+const ST_CONCEVOIR = 'Concevoir, créer, réaliser';
 const ST_LANGAGES = 'Pratiquer des langages';
 const ST_NUMERIQUE = 'Mobiliser des outils numériques';
 const ST_RESPONSABLE = 'Adopter un comportement éthique et responsable';
-const SV_CLASSER = 'Classer les organismes, exploiter les liens de parenté pour comprendre et expliquer l’évolution des organismes';
-const SV_ALIMENTS = 'Expliquer les besoins variables en aliments de l’être humain ; l’origine et les techniques mises en œuvre pour transformer et conserver les aliments';
-const SV_DEVELOPPEMENT = 'Décrire comment les êtres vivants se développent et deviennent aptes à se reproduire';
-const SV_MATIERE = 'Expliquer l’origine de la matière organique des êtres vivants et son devenir';
-const SV_TERRE = 'Situer la Terre dans le système solaire et caractériser les conditions de la vie terrestre';
-const SV_ENVIRONNEMENT = 'Identifier des enjeux liés à l’environnement';
-const PC_MATIERE = 'Décrire les états et la constitution de la matière à l’échelle macroscopique';
-const PC_MOUVEMENT = 'Observer et décrire différents types de mouvements';
-const PC_ENERGIE = 'Identifier différentes sources et connaître quelques conversions d’énergie';
-const PC_SIGNAL = 'Identifier un signal et une information';
-const TE_BESOIN = 'Identifier les principales évolutions du besoin et des objets';
-const TE_FONCTIONNEMENT = 'Décrire le fonctionnement d’objets techniques, leurs fonctions et leurs constitutions';
-const TE_MATERIAUX = 'Identifier les principales familles de matériaux';
-const TE_CONCEVOIR = 'Concevoir et produire tout ou partie d’un objet technique en équipe pour traduire une solution technologique répondant à un besoin';
-const TE_INFORMATION = 'Repérer et comprendre la communication et la gestion de l’information';
+const ST_SITUER = 'Se situer dans l’espace et dans le temps';
+const ST_CRITIQUE = 'Faire preuve d’esprit critique';
+const PC_MATIERE = 'Décrire un échantillon de matière à l’aide du vocabulaire scientifique et des grandeurs physiques : masse, volume ; caractériser la diversité de la matière et de ses transformations à l’échelle macroscopique';
+const PC_MATERIAUX = 'Utiliser les propriétés physiques des matériaux pour les classer, notamment à des fins de tri';
+const PC_MOUVEMENT = 'Décrire un mouvement en précisant le point de vue ; caractériser un mouvement par des mesures';
+const PC_ENERGIE = 'Identifier les formes d’énergie mises en jeu dans un dispositif de conversion d’énergie ; rechercher et exploiter des informations sur les ressources en énergie et leur utilisation, en exerçant son esprit critique';
+const PC_OMBRES = 'Interpréter la formation d’ombres, en particulier dans le contexte du système Soleil-Terre-Lune';
+const PC_CIRCUIT = 'Mettre en œuvre des circuits électriques à une boucle en respectant des consignes de sécurité';
+const PC_SIGNAL = 'Identifier des signaux de natures différentes et citer des applications dans lesquelles un signal permet de transmettre une information';
+const SV_PANORAMA = 'Caractériser la richesse, l’unité et la diversité actuelle et passée du vivant ; classer les organismes et établir les liens de parenté';
+const SV_ALIMENTS = 'Expliquer le rôle des aliments pour le fonctionnement de l’organisme ; identifier les principes des technologies mises en œuvre pour transformer et conserver les aliments';
+const SV_CYCLE = 'Décrire le cycle de vie d’une plante à fleurs et celui d’un animal ; décrire les changements pubertaires associés à la capacité de se reproduire ; distinguer la dimension biologique de la sexualité humaine de ses autres dimensions';
+const SV_TERRE = 'Identifier l’activité de la planète Terre et ses conséquences ; décrire les conditions de la vie terrestre ; différencier la météorologie du climat ; construire une argumentation scientifique pour expliquer le réchauffement climatique actuel';
+const SV_ECOSYSTEME = 'Décrire un écosystème et caractériser ses interactions ; mettre en évidence la place et l’interdépendance des êtres vivants dans un réseau trophique ; caractériser les conséquences d’une action humaine sur un écosystème';
+const TE_BESOIN = 'Identifier un besoin exprimé par la société et lui associer des objets techniques ; distinguer un objet technique d’un objet naturel ; repérer les évolutions des objets techniques selon leur contexte d’utilisation ; citer des objets détournés de leur usage initial';
+const TE_FONCTIONNEMENT = 'Distinguer besoins, fonctions techniques et solutions technologiques ; décrire un objet technique par un schéma (son fonctionnement) et un croquis (ce que l’on observe)';
+const TE_CONCEPTION = 'Décrire et pratiquer la démarche technologique dans le cadre d’un projet ; participer à un travail collectif ; identifier les liens entre des choix de conception et leurs effets sur les étapes du cycle de vie d’un objet technique';
+const TE_PROGRAMMATION = 'Repérer la chaîne d’information et la chaîne d’action d’un objet programmable ; programmer un objet technique pour obtenir un comportement attendu';
 
 export const ENTRIES_C3 = [
   // ---------- Français ----------
@@ -207,39 +213,50 @@ export const ENTRIES_C3 = [
   { id: 'c3.hg.geographie.littoral-touristique', cycle: 3, discipline: 'history-geography', domaine: 'c3-hg-geographie', attendu: HG_G3, competence: 'Un littoral touristique', page: 76 },
   { id: 'c3.hg.geographie.population-mondiale', cycle: 3, discipline: 'history-geography', domaine: 'c3-hg-geographie', attendu: HG_G4, competence: 'La répartition de la population mondiale et ses dynamiques', page: 76 },
   { id: 'c3.hg.geographie.occupation', cycle: 3, discipline: 'history-geography', domaine: 'c3-hg-geographie', attendu: HG_G4, competence: 'La variété des formes d’occupation spatiale dans le monde', page: 76 },
-  // ---------- SVT (sciences et technologie, 6e ; libellés et pages à vérifier) ----------
-  { id: 'c3.sv.demarches.observer', cycle: 3, discipline: 'life-earth-sciences', domaine: 'c3-sv-demarches', attendu: ST_DEMARCHE, competence: 'Formuler une question ou une hypothèse, observer, interpréter un résultat et en tirer une conclusion', page: 82, unverified: true },
-  { id: 'c3.sv.demarches.langages', cycle: 3, discipline: 'life-earth-sciences', domaine: 'c3-sv-demarches', attendu: ST_LANGAGES, competence: 'Lire et compléter un schéma, un tableau, un graphique ; utiliser un vocabulaire scientifique précis', page: 83, unverified: true },
-  { id: 'c3.sv.demarches.responsable', cycle: 3, discipline: 'life-earth-sciences', domaine: 'c3-sv-demarches', attendu: ST_RESPONSABLE, competence: 'Relier des connaissances acquises à des questions de santé, de sécurité et d’environnement', page: 83, unverified: true },
-  { id: 'c3.sv.vivant.classer', cycle: 3, discipline: 'life-earth-sciences', domaine: 'c3-sv-vivant', attendu: SV_CLASSER, competence: 'Classer les organismes selon les attributs qu’ils partagent (groupes emboîtés)', page: 86, unverified: true },
-  { id: 'c3.sv.vivant.evolution', cycle: 3, discipline: 'life-earth-sciences', domaine: 'c3-sv-vivant', attendu: SV_CLASSER, competence: 'La biodiversité change au cours du temps : fossiles, espèces apparues et disparues, liens de parenté', page: 86, unverified: true },
-  { id: 'c3.sv.vivant.alimentation', cycle: 3, discipline: 'life-earth-sciences', domaine: 'c3-sv-vivant', attendu: SV_ALIMENTS, competence: 'Les aliments, leurs groupes et les besoins de l’organisme ; transformer et conserver les aliments, le rôle des micro-organismes', page: 86, unverified: true },
-  { id: 'c3.sv.vivant.developpement', cycle: 3, discipline: 'life-earth-sciences', domaine: 'c3-sv-vivant', attendu: SV_DEVELOPPEMENT, competence: 'Les stades du développement d’un être vivant ; la reproduction sexuée ; les changements de la puberté', page: 87, unverified: true },
-  { id: 'c3.sv.vivant.matiere-organique', cycle: 3, discipline: 'life-earth-sciences', domaine: 'c3-sv-vivant', attendu: SV_MATIERE, competence: 'Les besoins des plantes vertes ; les chaînes alimentaires ; le rôle des décomposeurs', page: 87, unverified: true },
-  { id: 'c3.sv.terre.systeme-solaire', cycle: 3, discipline: 'life-earth-sciences', domaine: 'c3-sv-terre', attendu: SV_TERRE, competence: 'La Terre dans le système solaire ; ses mouvements : la journée, les saisons', page: 89, unverified: true },
-  { id: 'c3.sv.terre.phenomenes', cycle: 3, discipline: 'life-earth-sciences', domaine: 'c3-sv-terre', attendu: SV_TERRE, competence: 'Les phénomènes géologiques (séismes, volcans) et la météorologie et le climat', page: 89, unverified: true },
-  { id: 'c3.sv.terre.peuplement', cycle: 3, discipline: 'life-earth-sciences', domaine: 'c3-sv-terre', attendu: SV_ENVIRONNEMENT, competence: 'La répartition des êtres vivants et le peuplement des milieux ; leurs interactions', page: 90, unverified: true },
-  { id: 'c3.sv.terre.environnement', cycle: 3, discipline: 'life-earth-sciences', domaine: 'c3-sv-terre', attendu: SV_ENVIRONNEMENT, competence: 'L’impact des activités humaines sur l’environnement ; les ressources et les gestes responsables', page: 90, unverified: true },
-  // ---------- Physique-chimie (sciences et technologie, 6e ; libellés et pages à vérifier) ----------
-  { id: 'c3.pc.demarches.experimenter', cycle: 3, discipline: 'physics-chemistry', domaine: 'c3-pc-demarches', attendu: ST_DEMARCHE, competence: 'Proposer une expérience pour tester une hypothèse, l’interpréter et conclure', page: 82, unverified: true },
-  { id: 'c3.pc.demarches.mesurer', cycle: 3, discipline: 'physics-chemistry', domaine: 'c3-pc-demarches', attendu: ST_OUTILS, competence: 'Utiliser un instrument de mesure, lire une graduation, choisir l’unité qui convient', page: 82, unverified: true },
-  { id: 'c3.pc.demarches.langages', cycle: 3, discipline: 'physics-chemistry', domaine: 'c3-pc-demarches', attendu: ST_LANGAGES, competence: 'Lire et compléter un tableau de mesures, un graphique, un schéma légendé', page: 83, unverified: true },
-  { id: 'c3.pc.matiere.etats', cycle: 3, discipline: 'physics-chemistry', domaine: 'c3-pc-matiere', attendu: PC_MATIERE, competence: 'Les états de la matière (solide, liquide, gaz) et les changements d’état', page: 84, unverified: true },
-  { id: 'c3.pc.matiere.grandeurs', cycle: 3, discipline: 'physics-chemistry', domaine: 'c3-pc-matiere', attendu: PC_MATIERE, competence: 'Caractériser la matière par des grandeurs : masse, volume, température ; la masse se conserve', page: 84, unverified: true },
-  { id: 'c3.pc.matiere.melanges', cycle: 3, discipline: 'physics-chemistry', domaine: 'c3-pc-matiere', attendu: PC_MATIERE, competence: 'Mélanges et solutions ; séparer les constituants (décantation, filtration, évaporation)', page: 84, unverified: true },
-  { id: 'c3.pc.matiere.mouvements', cycle: 3, discipline: 'physics-chemistry', domaine: 'c3-pc-matiere', attendu: PC_MOUVEMENT, competence: 'Décrire un mouvement : sa trajectoire, sa vitesse (constante, qui augmente, qui diminue)', page: 85, unverified: true },
-  { id: 'c3.pc.matiere.energie', cycle: 3, discipline: 'physics-chemistry', domaine: 'c3-pc-matiere', attendu: PC_ENERGIE, competence: 'Les sources d’énergie, renouvelables ou non ; quelques conversions d’énergie', page: 85, unverified: true },
-  { id: 'c3.pc.matiere.circuit', cycle: 3, discipline: 'physics-chemistry', domaine: 'c3-pc-matiere', attendu: PC_ENERGIE, competence: 'Le circuit électrique simple ; conducteurs et isolants ; les règles de sécurité', page: 85, unverified: true },
-  { id: 'c3.pc.matiere.signal', cycle: 3, discipline: 'physics-chemistry', domaine: 'c3-pc-matiere', attendu: PC_SIGNAL, competence: 'Un signal lumineux, sonore ou électrique transporte une information', page: 85, unverified: true },
-  // ---------- Technologie (sciences et technologie, 6e ; libellés et pages à vérifier) ----------
-  { id: 'c3.te.demarches.concevoir', cycle: 3, discipline: 'technology', domaine: 'c3-te-demarches', attendu: ST_DEMARCHE, competence: 'Concevoir, réaliser et tester un objet en équipe, en suivant un cahier des charges', page: 82, unverified: true },
-  { id: 'c3.te.demarches.representer', cycle: 3, discipline: 'technology', domaine: 'c3-te-demarches', attendu: ST_LANGAGES, competence: 'Lire et compléter un croquis, un schéma, un dessin technique', page: 83, unverified: true },
-  { id: 'c3.te.demarches.numerique', cycle: 3, discipline: 'technology', domaine: 'c3-te-demarches', attendu: ST_NUMERIQUE, competence: 'Utiliser des outils numériques pour chercher, organiser et présenter des informations', page: 83, unverified: true },
-  { id: 'c3.te.objets.evolution', cycle: 3, discipline: 'technology', domaine: 'c3-te-objets', attendu: TE_BESOIN, competence: 'L’évolution des objets dans le temps, selon les besoins, les techniques et les matériaux', page: 87, unverified: true },
-  { id: 'c3.te.objets.fonction', cycle: 3, discipline: 'technology', domaine: 'c3-te-objets', attendu: TE_FONCTIONNEMENT, competence: 'Le besoin, la fonction d’usage d’un objet ; ses éléments et ce qu’ils font', page: 87, unverified: true },
-  { id: 'c3.te.objets.fonctionnement', cycle: 3, discipline: 'technology', domaine: 'c3-te-objets', attendu: TE_FONCTIONNEMENT, competence: 'Le fonctionnement d’un objet : l’énergie qui le fait marcher, les mouvements qu’il transmet', page: 87, unverified: true },
-  { id: 'c3.te.objets.materiaux', cycle: 3, discipline: 'technology', domaine: 'c3-te-objets', attendu: TE_MATERIAUX, competence: 'Les familles de matériaux (métaux, bois, plastiques, verre, céramiques) et leurs propriétés', page: 88, unverified: true },
-  { id: 'c3.te.objets.recyclage', cycle: 3, discipline: 'technology', domaine: 'c3-te-objets', attendu: TE_MATERIAUX, competence: 'L’impact environnemental d’un matériau : origine, recyclage, valorisation', page: 88, unverified: true },
-  { id: 'c3.te.objets.realiser', cycle: 3, discipline: 'technology', domaine: 'c3-te-objets', attendu: TE_CONCEVOIR, competence: 'Réaliser tout ou partie d’un objet technique : choisir, découper, assembler, tester', page: 88, unverified: true },
-  { id: 'c3.te.objets.information', cycle: 3, discipline: 'technology', domaine: 'c3-te-objets', attendu: TE_INFORMATION, competence: 'Les objets qui communiquent ; stocker et transmettre l’information ; les réseaux', page: 88, unverified: true },
+  // ---------- SVT (sciences et technologie, 6e : programme du cycle 3 en vigueur à la rentrée 2023) ----------
+  { id: 'c3.sv.demarches.observer', cycle: 3, discipline: 'life-earth-sciences', domaine: 'c3-sv-demarches', attendu: ST_DEMARCHE, competence: 'Formuler une question ou une hypothèse ; proposer ou suivre un protocole ; utiliser des instruments d’observation ; interpréter des résultats et en tirer des conclusions', page: 80 },
+  { id: 'c3.sv.demarches.langages', cycle: 3, discipline: 'life-earth-sciences', domaine: 'c3-sv-demarches', attendu: ST_LANGAGES, competence: 'Exploiter un document constitué de divers supports (texte, schéma, graphique, tableau, carte heuristique) ; passer d’une représentation à une autre ; rendre compte avec un vocabulaire précis', page: 80 },
+  { id: 'c3.sv.demarches.responsable', cycle: 3, discipline: 'life-earth-sciences', domaine: 'c3-sv-demarches', attendu: ST_RESPONSABLE, competence: 'Relier des connaissances acquises en sciences et technologie à des questions de santé, de sécurité et d’environnement ; comprendre et expliquer des décisions collectives et responsables', page: 81 },
+  { id: 'c3.sv.demarches.situer', cycle: 3, discipline: 'life-earth-sciences', domaine: 'c3-sv-demarches', attendu: ST_SITUER, competence: 'Maîtriser les notions d’échelle spatiale et temporelle et en citer quelques ordres de grandeur ; identifier comment se construit un savoir scientifique dans son contexte', page: 81 },
+  { id: 'c3.sv.demarches.esprit-critique', cycle: 3, discipline: 'life-earth-sciences', domaine: 'c3-sv-demarches', attendu: ST_CRITIQUE, competence: 'Identifier des sources d’informations fiables ; vérifier l’existence de preuves ; évaluer la pertinence des arguments ; distinguer une croyance d’un savoir scientifique', page: 81 },
+  { id: 'c3.sv.vivant.cellule', cycle: 3, discipline: 'life-earth-sciences', domaine: 'c3-sv-vivant', attendu: SV_PANORAMA, competence: 'Les niveaux d’organisation d’un être vivant (organisme, appareil, organe) ; observer des cellules au microscope ; la cellule, unité structurale commune à tous les êtres vivants', page: 88 },
+  { id: 'c3.sv.vivant.classer', cycle: 3, discipline: 'life-earth-sciences', domaine: 'c3-sv-vivant', attendu: SV_PANORAMA, competence: 'Classer en groupes emboîtés et établir des parentés à partir des attributs ; lire des arbres de parenté simples ; les différents types de classification et leurs objectifs', page: 88 },
+  { id: 'c3.sv.vivant.evolution', cycle: 3, discipline: 'life-earth-sciences', domaine: 'c3-sv-vivant', attendu: SV_PANORAMA, competence: 'La biodiversité actuelle et passée : la diversité au sein d’une espèce, les clés de détermination, les fossiles et les paléoenvironnements, les grandes crises biologiques sur une échelle des temps', page: 88 },
+  { id: 'c3.sv.vivant.alimentation', cycle: 3, discipline: 'life-earth-sciences', domaine: 'c3-sv-vivant', attendu: SV_ALIMENTS, competence: 'Les besoins alimentaires et des comportements favorables à la santé ; la diversité des aliments selon les cultures ; conserver les aliments pour limiter les risques sanitaires ; les microorganismes et la fermentation', page: 89 },
+  { id: 'c3.sv.vivant.developpement', cycle: 3, discipline: 'life-earth-sciences', domaine: 'c3-sv-vivant', attendu: SV_CYCLE, competence: 'Les étapes d’un cycle de vie ; la pollinisation, de la fleur au fruit ; la puberté ; les organes reproducteurs, la fécondation et le développement de l’être humain', page: 90 },
+  { id: 'c3.sv.terre.systeme-solaire', cycle: 3, discipline: 'life-earth-sciences', domaine: 'c3-sv-terre', attendu: SV_TERRE, competence: 'Situer la Terre dans le système solaire ; les conditions qui permettent la vie sur Terre : atmosphère et température compatibles avec la vie, présence d’eau liquide', page: 96 },
+  { id: 'c3.sv.terre.phenomenes', cycle: 3, discipline: 'life-earth-sciences', domaine: 'c3-sv-terre', attendu: SV_TERRE, competence: 'Les indices de l’activité interne ou externe de la Terre (séismes, volcans, vents, courants océaniques) ; distinguer la météorologie du climat ; un risque naturel et sa prévention ; des ressources liées à l’activité de la Terre', page: 96 },
+  { id: 'c3.sv.terre.climat', cycle: 3, discipline: 'life-earth-sciences', domaine: 'c3-sv-terre', attendu: SV_TERRE, competence: 'Le réchauffement climatique récent : argumenter à partir de données, le relier aux gaz à effet de serre émis par les activités humaines ; ses conséquences sur le peuplement des milieux ; atténuation et adaptation', page: 96 },
+  { id: 'c3.sv.terre.peuplement', cycle: 3, discipline: 'life-earth-sciences', domaine: 'c3-sv-terre', attendu: SV_ECOSYSTEME, competence: 'Un écosystème : milieu de vie, êtres vivants et relations entre espèces ; relier le peuplement d’un milieu à ses conditions et aux saisons ; les adaptations à la mauvaise saison ; les effets d’une perturbation', page: 97 },
+  { id: 'c3.sv.terre.chaines-alimentaires', cycle: 3, discipline: 'life-earth-sciences', domaine: 'c3-sv-terre', attendu: SV_ECOSYSTEME, competence: 'Les besoins des végétaux (lumière, eau, sels minéraux, dioxyde de carbone) et leur place à la base des chaînes alimentaires ; les réseaux alimentaires ; la décomposition de la matière organique par les êtres vivants du sol', page: 97 },
+  { id: 'c3.sv.terre.environnement', cycle: 3, discipline: 'life-earth-sciences', domaine: 'c3-sv-terre', attendu: SV_ECOSYSTEME, competence: 'Les répercussions positives et négatives des actions humaines sur l’environnement ; une exploitation raisonnée des ressources ; des actions et des objets qui favorisent la biodiversité', page: 98 },
+  // ---------- Physique-chimie (sciences et technologie, 6e : programme du cycle 3 en vigueur à la rentrée 2023) ----------
+  { id: 'c3.pc.demarches.experimenter', cycle: 3, discipline: 'physics-chemistry', domaine: 'c3-pc-demarches', attendu: ST_DEMARCHE, competence: 'Formuler une question ou une hypothèse ; concevoir et mettre en œuvre une expérience pour la tester ; interpréter les résultats et en tirer des conclusions', page: 80 },
+  { id: 'c3.pc.demarches.mesurer', cycle: 3, discipline: 'physics-chemistry', domaine: 'c3-pc-demarches', attendu: ST_DEMARCHE, competence: 'Utiliser des instruments d’observation et de mesure ; étudier les phénomènes en mobilisant des grandeurs physiques', page: 80 },
+  { id: 'c3.pc.demarches.langages', cycle: 3, discipline: 'physics-chemistry', domaine: 'c3-pc-demarches', attendu: ST_LANGAGES, competence: 'Exploiter un document constitué de divers supports (texte, schéma, graphique, tableau) ; utiliser différents modes de représentation et passer de l’un à l’autre ; rendre compte avec un vocabulaire précis', page: 80 },
+  { id: 'c3.pc.matiere.etats', cycle: 3, discipline: 'physics-chemistry', domaine: 'c3-pc-matiere', attendu: PC_MATIERE, competence: 'Les états solide, liquide et gazeux ; les changements d’état et leur réversibilité ; les températures de changement d’état et les paliers de température', page: 82 },
+  { id: 'c3.pc.matiere.grandeurs', cycle: 3, discipline: 'physics-chemistry', domaine: 'c3-pc-matiere', attendu: PC_MATIERE, competence: 'Masse et volume : les mesurer (balance, déplacement de liquide), convertir leurs unités ; la proportionnalité entre la masse et le volume d’un corps homogène', page: 82 },
+  { id: 'c3.pc.matiere.materiaux', cycle: 3, discipline: 'physics-chemistry', domaine: 'c3-pc-matiere', attendu: PC_MATERIAUX, competence: 'Comparer et trier des matériaux selon leurs propriétés physiques (conductivité thermique ou électrique, capacité à interagir avec un aimant) ; leur durée de décomposition dans la nature', page: 82 },
+  { id: 'c3.pc.matiere.melanges', cycle: 3, discipline: 'physics-chemistry', domaine: 'c3-pc-matiere', attendu: PC_MATIERE, competence: 'Séparer les constituants d’un mélange (tamisage, décantation, filtration, évaporation) ; la dissolution et la saturation ; la masse totale se conserve ; les liquides non miscibles', page: 83 },
+  { id: 'c3.pc.matiere.transformations', cycle: 3, discipline: 'physics-chemistry', domaine: 'c3-pc-matiere', attendu: PC_MATIERE, competence: 'Un mélange qui produit une transformation chimique (changement de couleur, gaz) ; la sécurité des produits ménagers et les pictogrammes de danger ; la composition de l’air et les gaz à effet de serre', page: 83 },
+  { id: 'c3.pc.matiere.mouvements', cycle: 3, discipline: 'physics-chemistry', domaine: 'c3-pc-matiere', attendu: PC_MOUVEMENT, competence: 'Mouvement rectiligne ou circulaire, par rapport à un observateur ; vitesse constante ou variable ; calculer la vitesse d’un mouvement uniforme ; l’année et la révolution de la Terre, le jour et sa rotation', page: 84 },
+  { id: 'c3.pc.matiere.energie', cycle: 3, discipline: 'physics-chemistry', domaine: 'c3-pc-matiere', attendu: PC_ENERGIE, competence: 'Les formes d’énergie (de pesanteur, cinétique, chimique, thermique, électrique, nucléaire, lumineuse) ; une chaîne énergétique ; les ressources renouvelables ou non, et les conséquences de leur utilisation sur l’environnement', page: 85 },
+  { id: 'c3.pc.matiere.lumiere', cycle: 3, discipline: 'physics-chemistry', domaine: 'c3-pc-matiere', attendu: PC_OMBRES, competence: 'Interpréter l’alternance du jour et de la nuit à l’aide d’un modèle ; associer les saisons à l’inclinaison du Soleil et à la durée du jour pour un observateur sur la Terre', page: 86 },
+  { id: 'c3.pc.matiere.circuit', cycle: 3, discipline: 'physics-chemistry', domaine: 'c3-pc-matiere', attendu: PC_CIRCUIT, competence: 'Le circuit électrique à une boucle, avec un convertisseur d’énergie ou un capteur ; sa représentation schématique normalisée ; la conductivité électrique des matériaux ; les règles de sécurité électrique', page: 86 },
+  { id: 'c3.pc.matiere.signal', cycle: 3, discipline: 'physics-chemistry', domaine: 'c3-pc-matiere', attendu: PC_SIGNAL, competence: 'Identifier différents signaux pour transmettre de l’information (signal sonore, lumineux, électrique) ; citer quelques applications', page: 87 },
+  // ---------- Technologie (sciences et technologie, 6e : programme du cycle 3 en vigueur à la rentrée 2023) ----------
+  // En 6e, la partie « Les objets techniques au cœur de la société » ne fixe que des attendus de fin de cours moyen,
+  // repris en sixième par leurs liens avec les autres thèmes (pages 91 à 95) : les compétences les résument ensemble.
+  { id: 'c3.te.demarches.concevoir', cycle: 3, discipline: 'technology', domaine: 'c3-te-demarches', attendu: ST_CONCEVOIR, competence: 'Imaginer un objet technique en réponse à un besoin ; concevoir et réaliser une maquette pour modéliser un phénomène naturel ou un objet technique', page: 80 },
+  { id: 'c3.te.demarches.representer', cycle: 3, discipline: 'technology', domaine: 'c3-te-demarches', attendu: ST_LANGAGES, competence: 'Utiliser différents modes de représentation (schéma, dessin, croquis, tableau, texte) et passer de l’un à l’autre ; rendre compte avec un vocabulaire précis', page: 80 },
+  { id: 'c3.te.demarches.numerique', cycle: 3, discipline: 'technology', domaine: 'c3-te-demarches', attendu: ST_NUMERIQUE, competence: 'Utiliser des outils numériques pour communiquer des résultats, faire des recherches, traiter des données, simuler des phénomènes', page: 80 },
+  { id: 'c3.te.objets.evolution', cycle: 3, discipline: 'technology', domaine: 'c3-te-objets', attendu: TE_BESOIN, competence: 'Les besoins (se déplacer, se chauffer, s’alimenter) et leur évolution ; les évolutions d’un objet selon le contexte (historique, géographique, économique, culturel, technologique) ; les détournements d’usage', page: 91 },
+  { id: 'c3.te.objets.fonction', cycle: 3, discipline: 'technology', domaine: 'c3-te-objets', attendu: TE_FONCTIONNEMENT, competence: 'Distinguer un objet technique d’un objet naturel ; distinguer le besoin et les fonctions techniques d’un objet ; associer les solutions technologiques aux fonctions techniques', page: 91 },
+  { id: 'c3.te.objets.fonctionnement', cycle: 3, discipline: 'technology', domaine: 'c3-te-objets', attendu: TE_FONCTIONNEMENT, competence: 'Identifier les sous-ensembles d’un objet et décrire son fonctionnement par un schéma ; les mouvements de ses parties (poulies, engrenages) et les conversions d’énergie qu’il réalise', page: 92 },
+  { id: 'c3.te.objets.materiaux', cycle: 3, discipline: 'technology', domaine: 'c3-te-objets', attendu: TE_FONCTIONNEMENT, competence: 'Identifier les matériaux d’un objet ; choisir un matériau selon ses propriétés physiques (thermiques, électriques), en lien avec les propriétés de la matière', page: 92 },
+  { id: 'c3.te.objets.probleme', cycle: 3, discipline: 'technology', domaine: 'c3-te-objets', attendu: TE_CONCEPTION, competence: 'Rechercher des idées de solutions à un problème technique par des croquis ou des schémas ; comparer des solutions par une analyse critique ; prendre en compte une contrainte (imperméabilité, poids, autonomie)', page: 93 },
+  { id: 'c3.te.objets.recyclage', cycle: 3, discipline: 'technology', domaine: 'c3-te-objets', attendu: TE_CONCEPTION, competence: 'Les étapes du cycle de vie d’un objet technique ; des choix raisonnés selon leurs conséquences sur l’environnement, en lien avec la décomposition des matériaux', page: 94 },
+  { id: 'c3.te.objets.realiser', cycle: 3, discipline: 'technology', domaine: 'c3-te-objets', attendu: TE_CONCEPTION, competence: 'Organiser et planifier en équipe la réalisation d’une maquette ; réaliser des maquettes simples pour matérialiser une solution ; vérifier qu’elle répond au problème posé', page: 94 },
+  { id: 'c3.te.objets.information', cycle: 3, discipline: 'technology', domaine: 'c3-te-objets', attendu: TE_PROGRAMMATION, competence: 'Les objets reliés entre eux par des réseaux (objets communicants, transmission et traitement de données) ; la chaîne d’information et d’action d’un objet programmable, ses capteurs et ses actionneurs', page: 94 },
+  { id: 'c3.te.objets.programmer', cycle: 3, discipline: 'technology', domaine: 'c3-te-objets', attendu: TE_PROGRAMMATION, competence: 'Coder un algorithme simple qui agit sur un objet technique (programmation par blocs) ; comprendre un programme simple et le traduire en langage naturel ; critiquer un programme', page: 95 },
 ] as const satisfies readonly ProgrammeEntry[];

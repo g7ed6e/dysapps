@@ -1,4 +1,4 @@
-import { DISCIPLINES, DOMAINES, PROGRAMME, SOURCES, byId, domaineOf, entriesOf } from './index';
+import { DISCIPLINES, DOMAINES, PROGRAMME, SOURCES, byId, domaineOf, entriesOf, sourceOf } from './index';
 import { EXCLUSIONS } from './exclusions';
 import { COFFRE_HORS_LISTE, MOTS_OUTILS_CE1, MOTS_OUTILS_CP, MOTS_OUTILS_SOURCE, motDictable, motsOutilsDictables } from './functionWords';
 
@@ -14,9 +14,11 @@ it('le référentiel a une taille raisonnable et chaque discipline est présente
   // cycle 4 est commun à toutes les langues) : le plafond passe de 200 à 250 pour les accueillir, puis à 300 pour
   // l'histoire et la géographie et les sciences de 6e. L'histoire et la géographie du cycle 4 (28 compétences) y
   // tiennent : 284 en tout. Le plafond passe à 320 pour la SVT, la physique-chimie et la technologie du cycle 4
-  // (34 compétences) : 318 en tout.
+  // (34 compétences) : 318 en tout. Le plafond passe à 350 quand les sciences sont relues dans les textes en vigueur
+  // (7 octobre 2026) : neuf compétences de plus en 6e (programme de 2023), cinq de plus en technologie du cycle 4
+  // (programme de 2024, trois thèmes et neuf compétences de fin de cycle).
   expect(PROGRAMME.length).toBeGreaterThanOrEqual(100);
-  expect(PROGRAMME.length).toBeLessThanOrEqual(320);
+  expect(PROGRAMME.length).toBeLessThanOrEqual(350);
   for (const discipline of Object.keys(DISCIPLINES) as (keyof typeof DISCIPLINES)[]) {
     const lv2 = (LV2 as readonly string[]).includes(discipline);
     if (lv2) expect(entriesOf(3, discipline), `${discipline} : pas de LV2 au cycle 3`).toHaveLength(0);
@@ -63,10 +65,10 @@ it('les libellés sont courts, sans apostrophe droite ni barre verticale, avec u
       expect(straightApostrophe(text), `${e.id} : apostrophe droite`).toBe(false);
       expect(text.includes('|'), `${e.id} : barre verticale`).toBe(false);
     }
-    const source = SOURCES[`c${e.cycle}`];
+    const d = domaineOf(e)!;
+    const source = sourceOf(d);
     expect(e.page, e.id).toBeGreaterThanOrEqual(1);
     expect(e.page, e.id).toBeLessThanOrEqual(source.pages);
-    const d = domaineOf(e)!;
     expect(e.page, `${e.id} : avant la page du domaine`).toBeGreaterThanOrEqual(d.page);
   }
   const domaineIds = DOMAINES.map((d) => d.id);
@@ -76,13 +78,14 @@ it('les libellés sont courts, sans apostrophe droite ni barre verticale, avec u
 
 it('les sources disent d’où vient le texte : jeu de données, PDF, licence, texte réglementaire, date', () => {
   for (const s of Object.values(SOURCES)) {
-    expect(s.datasetUrl).toMatch(/^https:\/\/www\.data\.gouv\.fr\//);
-    expect(s.pdfUrl).toMatch(/^https:\/\/static\.data\.gouv\.fr\/.+\.pdf$/);
-    expect(s.licence.name).toContain('Licence Ouverte');
+    // Le ministère : data.gouv.fr, le Bulletin officiel ou éduscol.
+    expect(s.datasetUrl).toMatch(/^https:\/\/(www\.data\.gouv\.fr|www\.education\.gouv\.fr|eduscol\.education\.gouv\.fr)\//);
+    expect(s.pdfUrl).toMatch(/^https:\/\/(static\.data\.gouv\.fr|www\.education\.gouv\.fr|eduscol\.education\.gouv\.fr)\/.+\.pdf$/);
+    expect(s.licence.name).toMatch(/Licence Ouverte|réutilisation libre/);
     expect(s.licence.url).toMatch(/^https:\/\//);
-    expect(s.legal).toContain('2020');
+    expect(s.legal).toMatch(/Bulletin officiel n° \d+ du .+ 20\d\d/);
     expect(s.consulted).toMatch(/^\d{4}-\d{2}-\d{2}$/);
-    expect(s.pages).toBeGreaterThan(50);
+    expect(s.pages).toBeGreaterThan(10);
   }
 });
 

@@ -11,12 +11,12 @@ créature : Navette
 
 # Ruche des réseaux
 
-> Île de 3e en technologie, programme du cycle 4 en vigueur (annexe 3 du BO n° 31 du 30 juillet 2020). Écrans existants seulement : la question à trou et la question sur un document (quatre lignes au plus sous le titre, une information par ligne). Écrire, mettre au point et exécuter un programme qui commande un objet réel (`c4.te.informatique.programmer`) reste au travail de la classe : ici, un programme court se lit, écrit en français, une instruction par ligne, et l’élève dit ce qu’il fait. Les sigles sont évités ; « adresse IP » est expliquée une fois dans le rappel. L’évolution des objets se dit sans date, par « d’abord », « ensuite », « aujourd’hui ».
+> Île de 3e en technologie, programme du cycle 4 en vigueur (BO n° 9 du 29 février 2024). Écrans existants seulement : la question à trou et la question sur un document (quatre lignes au plus sous le titre, une information par ligne). Écrire, mettre au point et exécuter un programme qui commande un objet réel (`c4.te.conception.programmer`) reste au travail de la classe : ici, un programme court se lit, écrit en français, une instruction par ligne, et l’élève dit ce qu’il fait. Les sigles sont évités ; « adresse IP » est expliquée une fois dans le rappel. L’évolution des objets se dit sans date, par « d’abord », « ensuite », « aujourd’hui ».
 
 ## Le réseau informatique · `computer-networks`
 
 - description : Les éléments d’un réseau et l’adresse de chaque appareil, puis internet, les protocoles et le stockage des données.
-- compétences : c4.te.informatique.reseaux · c4.te.demarches.responsable
+- compétences : c4.te.fonctionnement.reseaux · c4.te.usages.numerique
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
 - bravo : Bien vu !
 - erreur : {explanation}
@@ -148,7 +148,7 @@ Pour tous les items :
 ## Objets connectés et données personnelles · `connected-objects`
 
 - description : Comment les objets évoluent et changent la société, les objets connectés, puis protéger ses données personnelles.
-- compétences : c4.te.objets.evolution · c4.te.informatique.reseaux
+- compétences : c4.te.usages.evolution · c4.te.usages.numerique
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
 - bravo : Bien vu !
 - erreur : {explanation}
@@ -282,7 +282,7 @@ Pour tous les items :
 ## Lire un programme · `algorithms`
 
 - description : Un algorithme et un programme : séquence, boucle et événement, puis condition et variable, dans un programme court à lire.
-- compétences : c4.te.modelisation.fonctionnement · c4.te.demarches.langages
+- compétences : c4.te.fonctionnement.programme
 - consigne : Lis la phrase ou le programme, puis choisis la bonne réponse. Le rappel est affiché.
 - bravo : Bien vu !
 - erreur : {explanation}

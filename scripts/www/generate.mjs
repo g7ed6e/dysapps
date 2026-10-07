@@ -305,7 +305,8 @@ function programmesPage(d) {
         const entries = PROGRAMME.filter((e) => e.domaine === dom.id);
         lines.push(`### ${dom.title} {#${dom.id}}`, '');
         const attendus = [...new Set(entries.map((e) => e.attendu))];
-        lines.push(`*Attendus de fin de cycle (p. ${dom.page}${dom.unverified ? ', à vérifier' : ''}) : ${attendus.map((a) => `${a.replace(/\.$/, '')}`).join(' ; ')}.*`, '');
+        const texte = dom.source ? ` de [${SOURCES[dom.source].title}](${SOURCES[dom.source].pdfUrl})` : '';
+        lines.push(`*Attendus de fin de cycle (p. ${dom.page}${texte}${dom.unverified ? ', à vérifier' : ''}) : ${attendus.map((a) => `${a.replace(/\.$/, '')}`).join(' ; ')}.*`, '');
         lines.push(
           table(
             ['Compétence', 'Page', 'Missions'],
@@ -342,7 +343,7 @@ function programmesPage(d) {
     '',
     '## Sources et licence {#sources}',
     '',
-    `Les programmes viennent du jeu de données [${SOURCES.c3.dataset}](${SOURCES.c3.datasetUrl}) publié sur data.gouv.fr par le ministère de l’Éducation nationale, sous ${SOURCES.c3.licence.name} ([texte de la licence](${SOURCES.c3.licence.url})) : réutilisation libre, avec mention de la source et de la date.`,
+    `Les programmes viennent du jeu de données [${SOURCES.c3.dataset}](${SOURCES.c3.datasetUrl}) publié sur data.gouv.fr par le ministère de l’Éducation nationale, sous ${SOURCES.c3.licence.name} ([texte de la licence](${SOURCES.c3.licence.url})) : réutilisation libre, avec mention de la source et de la date. Quand une discipline suit un programme plus récent, publié au Bulletin officiel ou sur éduscol, ses domaines citent ce texte ; ce sont des informations publiques, réutilisables librement avec la même mention ([code des relations entre le public et l’administration](${SOURCES['c3-2023'].licence.url})).`,
     '',
     ...Object.values(SOURCES).map((s) => `- [${s.title}](${s.pdfUrl}) : ${s.pages} pages, ${s.legal}, consulté le ${s.consulted.split('-').reverse().join('/')}.`),
     '',
