@@ -72,8 +72,16 @@ export interface Etiquettes extends PartieDeLaScene {
    * son fantôme, three/arrange.ts) ; l'écart des autres ne change pas.
    */
   cacher(id: string | null): void;
+  /**
+   * Pendant le glissé du choix (7 octobre 2026, choix 1b du mainteneur) : la zone de la grille, en cases du monde, où les
+   * étiquettes des autres lieux s'estompent (`ESTOMPEE`) ; rien : toutes reviennent.
+   */
+  estomper(zone: { x0: number; y0: number; x1: number; y1: number } | null): void;
   vider(): void;
 }
+
+/** L'opacité d'une étiquette estompée pendant le glissé du choix : son nom se devine, la grille se lit. */
+const ESTOMPEE = 0.25;
 
 /**
  * Les étiquettes, dans l'élément `el` (sa taille en pixels CSS) ; `donnees` : ce que montre la flèche de la destination
@@ -456,9 +464,16 @@ export function creerEtiquettes(
   };
   /** Le lieu dont l'étiquette se tait (le lieu choisi du mode « Modifier le plan »). */
   let cachee: string | null = null;
-  /** Chaque étiquette montrée, sauf celle qui se tait : à chaque image, sans rien allouer. */
+  /** La zone du glissé, où les étiquettes s'estompent. */
+  let estompee: { x0: number; y0: number; x1: number; y1: number } | null = null;
+  /** Chaque étiquette montrée, sauf celle qui se tait ; estompée dans la zone du glissé : à chaque image, sans rien allouer. */
   const montrerLesEtiquettes = () => {
-    for (const c of labelsGroup.children) c.visible = Boolean(c.userData.montree) && c.userData.id !== cachee;
+    for (const c of labelsGroup.children) {
+      c.visible = Boolean(c.userData.montree) && c.userData.id !== cachee;
+      const p = c.userData.centre as { x: number; y: number };
+      const dans = estompee !== null && p.x >= estompee.x0 && p.x < estompee.x1 && p.y >= estompee.y0 && p.y < estompee.y1;
+      (c as THREE.Sprite).material.opacity = dans ? ESTOMPEE : 1;
+    }
   };
 
   const vider = () => {
@@ -490,6 +505,7 @@ export function creerEtiquettes(
         sprite.renderOrder = l.state?.id === 'fermee' ? 10 : 11;
         sprite.raycast = () => {};
         const c = islandCenter(l.id);
+        sprite.userData.centre = { x: c.x, y: c.y };
         sprite.position.set(c.x + 0.5, c.z + ETIQUETTE_AU_DESSUS, c.y + 0.5);
         labelsGroup.add(sprite);
       }
@@ -503,6 +519,9 @@ export function creerEtiquettes(
     },
     cacher: (id) => {
       cachee = id;
+    },
+    estomper: (zone) => {
+      estompee = zone;
     },
     bulleAuBordSous: (x, y) => bulleALEcran.visible && Math.abs(x - bulleALEcran.x) <= bulleALEcran.w / 2 && Math.abs(y - bulleALEcran.y) <= bulleALEcran.h / 2,
     animer: (t, _dt, reduit) => {

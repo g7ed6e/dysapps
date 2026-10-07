@@ -493,6 +493,7 @@ export default function WorldCanvas({
     w.amenagement.poser(vueDuMode);
     // Le lieu choisi : son nom n'est écrit qu'une fois, sur son fantôme.
     w.etiquettes.cacher(vueDuMode?.lieu ?? null);
+    w.etiquettes.estomper(vueDuMode?.zoneDuGlisse ?? null);
     // La vue garde à l'écran le fantôme et ses poignées sur l'eau autour de lui.
     if (vueDuMode) {
       const p = vueDuMode.poignees;

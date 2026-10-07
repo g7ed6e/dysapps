@@ -23,6 +23,7 @@ import {
   isFreeSpot,
   isletMiddle,
   guardianPlaceNear,
+  type GuardianPlaceAt,
   spotNear,
   landingSpots,
   type LinkEnd,
@@ -195,15 +196,16 @@ export function choiceMiddle(world: World, c: ArrangeChoice): { x: number; y: nu
 /**
  * Le doigt glisse le choix, son milieu voulu en `point` (en cases du monde) : le fantôme se cale sur la place de la grille
  * la plus proche, libre ou prise (sur une place prise, l'empreinte le montre en gris pierre, barrée) ; le même choix au
- * bord de la carte, ou pour un choix qui ne se glisse pas.
+ * bord de la carte, ou pour un choix qui ne se glisse pas. `placesDuGardien` : les places de l'îlot du Gardien glissé,
+ * calculées une fois au départ du glissé (`guardianPlacesAt`).
  */
-export function dragChoice(world: World, c: ArrangeChoice, point: { x: number; y: number }): ArrangeChoice {
+export function dragChoice(world: World, c: ArrangeChoice, point: { x: number; y: number }, placesDuGardien?: readonly GuardianPlaceAt[]): ArrangeChoice {
   if (c.genre === 'lieu') {
     const s = spotNear(world, c.id, point, c.spot.turn);
     return s ? { ...c, spot: s } : c;
   }
   if (c.genre === 'gardien') {
-    const g = guardianPlaceNear(world, c.id, point);
+    const g = guardianPlaceNear(world, c.id, point, placesDuGardien);
     return g ? { ...c, place: g } : c;
   }
   return c;

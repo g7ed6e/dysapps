@@ -4,7 +4,7 @@
 import { describe, expect, it } from 'vitest';
 import type { BiomeId } from '../biomes';
 import type { World } from '../engine/state';
-import { DIRECTIONS, freeSpots, guardianOf, isFreeSpot, linksToRelink, placeIn, spotOf, stationOf } from './arrange';
+import { DIRECTION_STEP, DIRECTIONS, freeSpots, guardianOf, isFreeSpot, linksToRelink, placeIn, spotOf, stationOf } from './arrange';
 import { isLandInWorld, mapOf } from './map';
 import {
   type ArrangeChoice,
@@ -26,6 +26,7 @@ import {
   turnGuardianNow,
 } from './arrangeMode';
 import { arrangeView } from './arrangeView';
+import { landRectangle } from './footprint';
 import { toutConstruit } from './budget';
 import { questStations } from './terrain/markers';
 import { startingPlaces } from './routing';
@@ -231,8 +232,18 @@ describe('glisser au doigt (7 octobre 2026, choix 1b, 2a, 3a, 6a du mainteneur)'
     const v = arrangeView(w, versLibre, true);
     expect(v.poignees).toBeUndefined();
     expect(v.cases.some((k) => k.genre === 'place')).toBe(false);
-    expect(v.cases.filter((k) => k.genre === 'grille').length).toBeGreaterThan(30);
-    expect(v.cases.some((k) => k.genre === 'empreinte')).toBe(true);
+    const grille = v.cases.filter((k) => k.genre === 'grille');
+    expect(grille.length).toBeGreaterThan(15);
+    // La grille ne se pose que sur l'eau : jamais sur la terre d'un lieu, ni sur le lieu soulevé à sa place d'avant.
+    for (const k of grille)
+      for (const d of mapOf('6e')) {
+        const t = landRectangle(placeIn(w, d.id));
+        expect(k.x >= t.x0 && k.x < t.x1 && k.y >= t.y0 && k.y < t.y1, d.id).toBe(false);
+      }
+    // L'empreinte libre : le jaune des places libres sur son socle sombre ; la zone où les étiquettes s'estompent.
+    expect(v.cases.filter((k) => k.genre === 'empreinte').length).toBeGreaterThan(0);
+    expect(v.cases.filter((k) => k.genre === 'socle').length).toBe(v.cases.filter((k) => k.genre === 'empreinte').length);
+    expect(v.zoneDuGlisse).toBeDefined();
     expect(v.cases.some((k) => k.genre === 'conflit')).toBe(false);
     // Sur une place prise : les cases en conflit en gris pierre, chacune barrée de deux barres (jamais la couleur seule).
     const vp = arrangeView(w, surVoisin, true);
@@ -266,7 +277,16 @@ describe('glisser au doigt (7 octobre 2026, choix 1b, 2a, 3a, 6a du mainteneur)'
     const loin = dragChoice(w, c, { x: m.x + 40, y: m.y + 8 });
     if (loin.genre !== 'gardien') throw new Error('gardien');
     expect(loin.place.spot).toBeDefined();
-    expect(arrangeView(w, loin).cases.filter((k) => k.genre === 'lien').length).toBeGreaterThan(3);
+    const ligne = arrangeView(w, loin).cases.filter((k) => k.genre === 'lien');
+    expect(ligne.length).toBeGreaterThan(1);
+    // Au-dessus des radeaux, chaque point sur son socle sombre.
+    expect(ligne.every((k) => k.dessus)).toBe(true);
+    // Elle part d'un coin de la terre de son lieu, jamais du coin nord-est, où se pose « Tourner ».
+    const t = landRectangle(placeIn(w, VOLCAN));
+    const ne = { x: DIRECTION_STEP.est.dx > 0 ? t.x1 - 1 : t.x0, y: DIRECTION_STEP.nord.dy > 0 ? t.y1 - 1 : t.y0 };
+    expect([t.x0, t.x1 - 1]).toContain(ligne[0].x);
+    expect([t.y0, t.y1 - 1]).toContain(ligne[0].y);
+    expect(ligne[0].x === ne.x && ligne[0].y === ne.y).toBe(false);
     // Contre son lieu, pas de ligne.
     expect(arrangeView(w, c).cases.some((k) => k.genre === 'lien')).toBe(false);
   });

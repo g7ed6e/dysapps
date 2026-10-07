@@ -6,7 +6,7 @@
 import type { BiomeId } from '../biomes';
 import { type BridgeDef, type BridgeKind, BRIDGES, bridgesOf, getBridge, otherEnd, provideLinkGeometry, SHORT_LINK } from './archipelago';
 import { type ArchipelagoId, archipelagoOfIsland, DANS_LE_CIEL, mapOf } from './map';
-import { layoutCache, layoutChanged } from './placement';
+import { chosenGuardian, layoutCache, layoutChanged } from './placement';
 import { linkBetweenJoined, type LinkLandings, LONG_LENGTH, type LinkRoute, RegionRouter } from './routing';
 import { visibleReefs } from './terrain/sea';
 import { appliedJoins, joinOf } from './join';
@@ -42,7 +42,7 @@ const soleRoutes = layoutCache<string, LinkRoute | null>();
 /** Le traceur d'une région, sans aucune liaison : la terre, les îlots, les quais, les écueils et les lieux réunis. */
 function emptyRouter(a: ArchipelagoId): RegionRouter {
   const reunions = appliedJoins(a).map((j) => ({ pair: j.pair, zone: j.shape.zone }));
-  return new RegionRouter(a, { lieux: mapOf(a), ecueils: visibleReefs(a), arriveesDeLaLiaison: chosenLandings, reunions });
+  return new RegionRouter(a, { lieux: mapOf(a), ecueils: visibleReefs(a), arriveesDeLaLiaison: chosenLandings, reunions, gardiens: chosenGuardian });
 }
 
 const emptyRouters = layoutCache<ArchipelagoId, RegionRouter>();

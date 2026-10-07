@@ -8,7 +8,7 @@ import { BIOMES } from '../biomes';
 import { ARCHIPELAGO_IDS } from './archipelagos';
 import { type ArchipelagoId, archipelagoOfIsland, coeurDe, islandDef, type IslandDef, isthmusOf, startingIsland } from './map';
 import { MONUMENT_ISLET, monumentsOf, type MonumentDef } from './monuments';
-import { STEP, type PlacePose, type Rectangle, turnRectangle } from './placement';
+import { chosenGuardian, STEP, type PlacePose, type Rectangle, turnRectangle } from './placement';
 import type { GuardianPlace, Layout, LayoutGuardian, LayoutSpot } from './savedLayout';
 import { ISLET_H, ISLET_W, rectangleDeLIlot, rectangleDeLIlotAutour } from './terrain/islets';
 
@@ -99,6 +99,15 @@ export function guardianIsletRectangle(def: IslandDef, g: GuardianPlace & { at?:
   const r = rectangleDeLIlotAutour(def, g);
   const t = turnRectangle({ x0: r.x0 - def.core.x, y0: r.y0 - def.core.y, x1: r.x1 - def.core.x, y1: r.y1 - def.core.y }, def.quarts);
   return { x0: def.core.x + t.x0, y0: def.core.y + t.y0, x1: def.core.x + t.x1, y1: def.core.y + t.y1 };
+}
+
+/**
+ * L'îlot du Gardien d'un lieu à sa vraie place dans la disposition de la partie (`chosenGuardian`) : devant son lieu,
+ * déplacé autour de lui, ou détaché (choix 4a du mainteneur). Le décor (baleines, brume, nuages, monuments) le lit.
+ */
+export function isletInWorld(def: IslandDef): Rectangle {
+  const g = chosenGuardian(def.id);
+  return g ? guardianIsletRectangle(def, g) : rectangleDeLIlot(def);
 }
 
 /**

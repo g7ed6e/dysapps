@@ -11,6 +11,7 @@ import { decorate, LANDMARK_OF, landmark } from './decor';
 import { frameOf, LINK_GAP, tooSmallGaps, footprintOf } from './footprint';
 import { type ArchipelagoId, bornesDuCoeur, CORE, isLand, isLandInWorld, isthmusOf, type IslandDef, landCells, landscape, margesDuCoeur, noise, reliefHeight, tirage, toWorld } from './map';
 import { LOW } from './paths';
+import type { GuardianPlace } from './savedLayout';
 import { type Rectangle, type Side, SIDES, STEP, type Quarts, turnDirection, TOWARDS_SEA } from './placement';
 
 /** La longueur d'une liaison courte (un pont, un sentier entre deux voisins), en cases sur l'eau. */
@@ -308,6 +309,11 @@ export interface RegionPlans {
    * ne relie deux lieux réunis (elle les relierait deux fois).
    */
   reunions?: readonly { pair: readonly [BiomeId, BiomeId]; zone: Rectangle }[];
+  /**
+   * La place du Gardien de chaque lieu (GD-9) : contre son lieu, déplacé autour, ou détaché (choix 4a du mainteneur) ;
+   * son îlot est dur là où il se tient, et sa place de départ redevient de l'eau. Sans elle, l'îlot est devant son lieu.
+   */
+  gardiens?: (id: BiomeId) => GuardianPlace | undefined;
 }
 
 /** Une arrivée choisie : un côté du lieu (dans son repère) et sa place le long de ce côté, en pas. */
@@ -350,7 +356,7 @@ export class RegionRouter {
     this.g = g;
     // Ce qui est dur : la terre de chaque lieu, ses îlots et son quai (et leur abord), les écueils (et leur abord).
     for (const d of lieux)
-      for (const p of footprintOf(d.id, d)) {
+      for (const p of footprintOf(d.id, d, plans.gardiens?.(d.id))) {
         if (p.genre === 'terre') {
           const bit = 1 << this.rang.get(d.id)!;
           g.rectangle(p, LINK_GAP - 1, (i) => (g.pres[i] |= bit));

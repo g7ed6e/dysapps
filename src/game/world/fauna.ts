@@ -8,7 +8,7 @@
 // le long de X ; le nuage s'allonge le long de X, le dessous plat à Y = 0.
 import { AMBIENCE, mixColor } from './daylight';
 import { ALTITUDE, landBox, mapOf, type ArchipelagoId } from './map';
-import { ISLET_H, ISLET_W, origineDeLIlot } from './terrain';
+import { isletInWorld } from './footprint';
 import { passPhase, type WhaleRoute } from './whalePass';
 import { BRUME, type Couleur } from './palette';
 import { cellHash } from '../../core/random';
@@ -58,8 +58,8 @@ export function placeDesNuages(a: ArchipelagoId, bounds: { minX: number; minY: n
   // Les îlots des Gardiens (devant leur île, voir `bossIsletOrigin`) : aucun nuage, haut ou bas, n'y mord.
   const ilots = ciel
     ? mapOf(a).map((d) => {
-        const o = origineDeLIlot(d);
-        return { x0: o.x, x1: o.x + ISLET_W - 1, y0: o.y, y1: o.y + ISLET_H - 1 };
+        const r = isletInWorld(d);
+        return { x0: r.x0, x1: r.x1 - 1, y0: r.y0, y1: r.y1 - 1 };
       })
     : [];
   const iles = ciel ? mapOf(a).map((d) => landBox(d)) : [];

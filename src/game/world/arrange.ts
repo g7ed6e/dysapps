@@ -13,9 +13,9 @@ import { BRIDGES, type BridgeDef, getBridge, isBiomeUnlocked, reachableIslands }
 import { ARCHIPELAGO_IDS, type ArchipelagoId, archipelagoOfIsland, bornesDuCoeur, CORE, type IslandDef, startingIsland } from './map';
 import { SIDE_OF, LAYOUT_SIDE_OF } from './appliedLayout';
 import { detachedIsletTooClose, fittingPlaces, type FootprintPart, footprintOf, frameOf, GAP_BETWEEN_PLACES, gapBetween, LINK_GAP, placedIsland, poseOfSpot, spotInSteps, tooSmallGaps } from './footprint';
-import { STEP, type Quarts, type Rectangle, SIDES, TOWARDS_SEA, turnedSide } from './placement';
+import { STEP, type Quarts, type Rectangle, SIDES, TOWARDS_SEA, turnedSide, wrapQuarts } from './placement';
 import { LONG_LENGTH, possibleLandings, RegionRouter, type LinkLandings, type LinkRoute, startingPlaces, placesOf } from './routing';
-import { type GuardianPlace, LAYOUT_LAST_SPOT, type LayoutGuardian, type LayoutLanding, type LayoutSide, type LayoutSpot, type LayoutTurn, type RegionLayout } from './savedLayout';
+import { type GuardianPlace, LAYOUT_LAST_ISLET_SPOT, LAYOUT_LAST_SPOT, type LayoutGuardian, type LayoutLanding, type LayoutSide, type LayoutSpot, type LayoutTurn, type RegionLayout } from './savedLayout';
 import { reefsOutside } from './terrain/sea';
 import { zoneDesPlans } from './plans';
 import { AVATAR_HOME } from './terrain/base';
@@ -214,7 +214,7 @@ function routerOf(world: World, a: ArchipelagoId): RegionRouter {
   // Les écueils qu'un lieu posé dessus cache ne barrent rien (GD-9, « Cacher »).
   const ecueils = reefsOutside(a, placesOf(a).flatMap((id) => footprintIn(world, id)));
   const reunions = joinsIn(world, a).map((j) => ({ pair: j.pair, zone: j.shape.zone }));
-  return new RegionRouter(a, { lieux, ecueils, arriveesDeLaLiaison: landingsOf(r), reunions });
+  return new RegionRouter(a, { lieux, ecueils, arriveesDeLaLiaison: landingsOf(r), reunions, gardiens: (id) => r.guardians?.[id] });
 }
 
 /** Les tracés des liaisons posées d'une région dans un monde, dans leur ordre (`null` : elle ne se trace pas). */
@@ -306,7 +306,7 @@ function companions(world: World, id: BiomeId, spot: LayoutSpot): { id: BiomeId;
   if (!p) return [{ id, spot }];
   const s0 = spotOf(world, id);
   const q0 = spotOf(world, p);
-  const q = (((spot.turn - s0.turn) % 4) + 4) % 4;
+  const q = wrapQuarts(spot.turn - s0.turn);
   let dx = q0.x - s0.x;
   let dy = q0.y - s0.y;
   // Un quart de tour (le sens de `turnPoint`, ./placement.ts) : (dx, dy) devient (dy, −dx).
@@ -719,7 +719,7 @@ export function guardianPlaces(world: World, id: BiomeId, autour?: { x: number; 
       if (againstLand(footprintOf(id, def, g)) && pres(g)) out.push(g);
     }
   const c = frameOf(a);
-  const [w, h] = [Math.floor((c.x1 - c.x0 - ISLET_W) / STEP), Math.floor((c.y1 - c.y0 - ISLET_H) / STEP)];
+  const { x: w, y: h } = LAYOUT_LAST_ISLET_SPOT[a];
   // Le milieu de l'îlot à une place détachée, depuis le coin du cadre : de quoi ne parcourir que les places autour.
   const [mx, my] = [c.x0 + ISLET_W / 2, c.y0 + ISLET_H / 2];
   const [x0, x1] = autour ? [Math.max(0, Math.ceil((autour.x - autour.r - mx) / STEP)), Math.min(w, Math.floor((autour.x + autour.r - mx) / STEP))] : [0, w];
@@ -746,8 +746,28 @@ export function nearestGuardianSpot(world: World, id: BiomeId, point: { x: numbe
 }
 
 /** La place de l'îlot d'un Gardien la plus proche d'un point, libre ou prise (le doigt qui glisse l'îlot, choix 1b). */
-export function guardianPlaceNear(world: World, id: BiomeId, point: { x: number; y: number }): GuardianPlace | null {
-  return closest(guardianPlaces(world, id, { ...point, r: 2 * STEP }), (g) => isletMiddle(world, id, g), point);
+export function guardianPlaceNear(world: World, id: BiomeId, point: { x: number; y: number }, places?: readonly GuardianPlaceAt[]): GuardianPlace | null {
+  const r = GUARDIAN_DRAG_REACH;
+  const autour = places ?? guardianPlacesAt(world, id, { ...point, r });
+  const proches = autour.filter((p) => Math.max(Math.abs(p.milieu.x - point.x), Math.abs(p.milieu.y - point.y)) <= r);
+  return closest(proches, (p) => p.milieu, point)?.place ?? null;
+}
+
+/** Jusqu'où, en cases, la place de l'îlot d'un Gardien glissé se cherche autour du doigt (le milieu de l'îlot). */
+const GUARDIAN_DRAG_REACH = 2 * STEP;
+
+/** Une place de l'îlot d'un Gardien et son milieu dans le monde. */
+export interface GuardianPlaceAt {
+  place: GuardianPlace;
+  milieu: { x: number; y: number };
+}
+
+/**
+ * Les places de l'îlot d'un Gardien (`guardianPlaces`) et leur milieu : calculées une fois au départ d'un glissé
+ * (choix 1b du mainteneur), puis seulement parcourues à chaque case franchie (`guardianPlaceNear`).
+ */
+export function guardianPlacesAt(world: World, id: BiomeId, autour?: { x: number; y: number; r: number }): GuardianPlaceAt[] {
+  return guardianPlaces(world, id, autour).map((place) => ({ place, milieu: isletMiddle(world, id, place) }));
 }
 
 /**
@@ -779,13 +799,12 @@ export function moveGuardian(world: World, id: BiomeId, to: GuardianPlace): Arra
   if (!getBiome(id)) return { ok: false, reason: 'inconnu' };
   if (!isFreeGuardianSpot(world, id, to)) return { ok: false, reason: 'occupee' };
   const g = guardianOf(world, id);
-  const quarts = placeIn(world, id).quarts;
-  const tour = (n: number) => (((n % 4) + 4) % 4) as LayoutTurn;
-  if (to.spot) return { ok: true, world: withGuardian(world, id, { side: 'front', step: 0, turn: g.spot ? g.turn : tour(g.turn + quarts), spot: { ...to.spot } }), relink: [] };
-  if (g.spot) return { ok: true, world: withGuardian(world, id, { side: to.side, step: to.step, turn: tour(g.turn - quarts) }), relink: [] };
+  const q = placeIn(world, id).quarts;
+  if (to.spot) return { ok: true, world: withGuardian(world, id, { side: 'front', step: 0, turn: g.spot ? g.turn : wrapQuarts(g.turn + q), spot: { ...to.spot } }), relink: [] };
+  if (g.spot) return { ok: true, world: withGuardian(world, id, { side: to.side, step: to.step, turn: wrapQuarts(g.turn - q) }), relink: [] };
   // Le quart de tour qui mène de son côté d'avant au nouveau : il tourne d'autant.
-  const q = ([0, 1, 2, 3] as Quarts[]).find((k) => turnedSide(SIDE_OF[g.side], k) === SIDE_OF[to.side])!;
-  return { ok: true, world: withGuardian(world, id, { side: to.side, step: to.step, turn: tour(g.turn + q) }), relink: [] };
+  const k = ([0, 1, 2, 3] as Quarts[]).find((n) => turnedSide(SIDE_OF[g.side], n) === SIDE_OF[to.side])!;
+  return { ok: true, world: withGuardian(world, id, { side: to.side, step: to.step, turn: wrapQuarts(g.turn + k) }), relink: [] };
 }
 
 /** Tourne un Gardien d'un quart de tour sur son îlot (sur la grille, rien en biais). */
@@ -797,7 +816,7 @@ export function turnGuardian(world: World, id: BiomeId): ArrangeResult {
 
 /**
  * Les Gardiens détachés dont l'îlot ne tient plus à sa place (une sauvegarde abîmée, un lieu entré au jeu depuis) :
- * chacun revient devant son lieu, de face comme il était, et rien d'autre ne bouge (choix 4a du mainteneur).
+ * chacun revient devant son lieu, tourné dans le monde comme il l'était, et rien d'autre ne bouge (choix 4a du mainteneur).
  */
 function settleDetachedGuardians(world: World): World {
   let w = world;
@@ -808,7 +827,8 @@ function settleDetachedGuardians(world: World): World {
       const parts = footprintIn(w, id);
       const ilot = parts.find((p) => p.genre === 'ilot')!;
       if (inFrame(a, [ilot]) && farEnough([ilot], othersFootprints(w, a, id)) && !detachedIsletTooClose(parts).length) continue;
-      w = withGuardian(w, id, { side: 'front', step: 0, turn: g.turn });
+      // Son orientation détachée est celle du monde ; contre son lieu, elle se compte depuis son lieu (comme `moveGuardian`).
+      w = withGuardian(w, id, { side: 'front', step: 0, turn: wrapQuarts(g.turn - placeIn(w, id).quarts) });
     }
   }
   return w;

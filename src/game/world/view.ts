@@ -18,7 +18,7 @@ import type { Rectangle } from './placement';
  * libre ; `conflit`, une place qu'il couvre, trop près d'un autre lieu, barrée de deux `barre` en biais. `lien` : la ligne
  * en pointillés entre un Gardien détaché et son lieu (choix 4a).
  */
-export type ArrangeCellKind = 'fantome' | 'place' | 'liaison' | 'barree' | 'croix' | 'grille' | 'empreinte' | 'conflit' | 'barre' | 'lien';
+export type ArrangeCellKind = 'fantome' | 'place' | 'liaison' | 'barree' | 'croix' | 'grille' | 'empreinte' | 'conflit' | 'barre' | 'lien' | 'socle';
 
 /**
  * Une case du dessin du mode, en cases du monde : un carré plat posé sur le dessus de la case (z + 1), bordé d'un
@@ -33,6 +33,8 @@ export interface ArrangeCell {
   l?: number;
   /** Une barre de croix : tournée de tant (radians) sur l'eau, mince ; sans elle, un carré droit. */
   angle?: number;
+  /** Dessinée au-dessus des poignées (la ligne d'un Gardien détaché vers son lieu, choix 4a), dans un maillage à part. */
+  dessus?: boolean;
 }
 
 /** Le dessin du mode pendant un choix (./arrangeView.ts). */
@@ -58,6 +60,11 @@ export interface ArrangeView {
    * monde, `z` le dessus de l'eau ; la page y pose l'icône de « Réunir ».
    */
   reunions?: { x: number; y: number; z: number }[];
+  /**
+   * Pendant le glissé (7 octobre 2026, choix 1b du mainteneur) : la zone de la grille, en cases du monde ; les étiquettes
+   * des autres lieux qui s'y trouvent s'estompent, jusqu'au lever du doigt.
+   */
+  zoneDuGlisse?: Rectangle;
 }
 
 /**
@@ -137,7 +144,11 @@ export interface LinkEndHandle {
  */
 export interface ArrangeGesture {
   seq: number;
-  phase: 'demonte' | 'remonte';
+  /**
+   * `descend` (7 octobre 2026, choix 2a du mainteneur, Blocland) : le choix lâché sur une place libre redescend d'un cube,
+   * déjà à sa nouvelle place, puis la pose sonne ; sans démontage.
+   */
+  phase: 'demonte' | 'remonte' | 'descend';
   zone: Rectangle;
   /**
    * L'autre place du geste (la nouvelle pendant le démontage, l'ancienne pendant le remontage) : le voile de brume

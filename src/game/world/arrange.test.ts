@@ -337,6 +337,11 @@ describe('les Gardiens détachés de leur lieu (7 octobre 2026, choix 4a, 5a du 
     const abimee: World = { ...w2, layout: { ...w2.layout, '6e': { ...w2.layout!['6e'], guardians: { [VOLCAN]: { side: 'front', step: 0, turn: 2, spot: { x: s0.x, y: s0.y } } } } } };
     const lue = settleNewPlaces(abimee);
     expect(guardianOf(lue, VOLCAN)).toEqual({ side: 'front', step: 0, turn: 2 });
+    // Son lieu tourné d'un quart : il regardait le monde vers 2, il regarde encore par là, compté depuis son lieu.
+    const tourne = apres(turnIsland(w2, VOLCAN));
+    const abimeeTournee: World = { ...tourne, layout: { ...tourne.layout, '6e': { ...tourne.layout!['6e'], guardians: { [VOLCAN]: { side: 'front', step: 0, turn: 2, spot: { x: s0.x, y: s0.y } } } } } };
+    expect(placeIn(abimeeTournee, VOLCAN).quarts).toBe(1);
+    expect(guardianOf(settleNewPlaces(abimeeTournee), VOLCAN)).toEqual({ side: 'front', step: 0, turn: 1 });
     // Hors de la grille, à la lecture : de même, et la région reste.
     const hors = sanitizeLayout({ '6e': { islands: { [VOLCAN]: { x: 2, y: 3, turn: 0 } }, guardians: { [VOLCAN]: { side: 'left', step: 2, turn: 1, spot: { x: -1, y: 4 } } } } });
     expect(hors?.['6e']?.guardians?.[VOLCAN]).toEqual({ side: 'front', step: 0, turn: 1 });

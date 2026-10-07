@@ -4,6 +4,8 @@ import { APPEL_DU_PASSAGE, bornesCost, linkCubes, worstCaseOfRegion, commandesCo
 import { ARCHIPELAGO_IDS, type ArchipelagoId, mapOf } from './map';
 import { chooseGuardian, chooseIsland, choiceMiddle, dragChoice } from './arrangeMode';
 import { arrangeView, arrangeViewCost } from './arrangeView';
+import { freeGuardianSpots, moveGuardian, placeIn } from './arrange';
+import { gapBetween, guardianIsletRectangle, landRectangle } from './footprint';
 import { BUDGET_DES_BOUTS, BUDGET_DES_POIGNEES, coutDesBouts, coutDesPoignees, linkEndHandles } from './arrangeHandles';
 import { buildMesh } from './mesher';
 import { worldCubes } from './terrain';
@@ -252,17 +254,43 @@ it('GD-9, choix 1b : pendant le glissé, la grille et l’empreinte (un seul app
         // Sur sa place, sur une place voisine, et vers un voisin (une place prise, ses cases barrées).
         for (const [dx, dy] of [[0, 0], [12, 0], [0, -12], [-20, 8], [30, 0]]) {
           const v = arrangeView(world, dragChoice(world, c, { x: m.x + dx, y: m.y + dy }), true);
-          sol = Math.max(sol, 2 * v.cases.filter((k) => k.genre === 'grille' || k.genre === 'empreinte' || k.genre === 'conflit' || k.genre === 'barre').length);
+          sol = Math.max(sol, 2 * v.cases.filter((k) => k.genre === 'grille' || k.genre === 'empreinte' || k.genre === 'socle' || k.genre === 'conflit' || k.genre === 'barre').length);
           const cout = arrangeViewCost(v);
           if (cout.triangles > plus.triangles) plus = cout;
         }
       }
-    // Mesuré le 7 octobre 2026 : 394 à 418 triangles au pire selon la région (9 × 9 places, l'empreinte et ses croix).
-    expect(sol, a).toBeLessThanOrEqual(420);
+    // Mesuré le 7 octobre 2026, après les relectures : 370 à 382 triangles au pire selon la région (la grille sur l'eau
+    // seulement, l'empreinte sur son socle, ses croix).
+    expect(sol, a).toBeLessThanOrEqual(400);
     expect(plus.drawCalls, a).toBe(1);
     expect(pire.triangles + plus.triangles, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.triangles);
   }
 }, 30_000);
+
+it('GD-9, choix 4a : la ligne d’un Gardien détaché vers son lieu, au-dessus des poignées, un appel de plus, sous le plafond', () => {
+  const { world } = toutConstruit();
+  for (const a of ARCHIPELAGO_IDS) {
+    const pire = worstCaseOfRegion(a);
+    let plus = { triangles: 0, drawCalls: 0 };
+    for (const id of mapOf(a).map((d) => d.id)) {
+      // Son Gardien posé le plus loin possible de lui, dans sa région.
+      const terre = landRectangle(placeIn(world, id));
+      const loin = freeGuardianSpots(world, id)
+        .filter((g) => g.spot)
+        .sort((g, h) => gapBetween(guardianIsletRectangle(placeIn(world, id), h), terre) - gapBetween(guardianIsletRectangle(placeIn(world, id), g), terre))[0];
+      if (!loin) continue;
+      const r = moveGuardian(world, id, loin);
+      if (!r.ok) continue;
+      for (const c of [chooseIsland(r.world, id), chooseGuardian(r.world, id)].filter((c) => c !== null)) {
+        const cout = arrangeViewCost(arrangeView(r.world, c));
+        if (cout.triangles > plus.triangles) plus = cout;
+      }
+    }
+    // Les cases, la ligne au-dessus des poignées, les poignées : trois appels, pendant un choix seulement.
+    expect(plus.drawCalls, a).toBe(3);
+    expect(pire.triangles + plus.triangles, a).toBeLessThanOrEqual(PLAFOND_DU_MONDE_EN_BLOCS.triangles);
+  }
+}, 60_000);
 
 it('GD-9 : les poignées du mode « Modifier le plan » (les flèches et « Tourner ») : un appel, 400 triangles au plus, seulement pendant un choix', () => {
   const { world } = toutConstruit();

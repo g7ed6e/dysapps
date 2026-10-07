@@ -111,6 +111,18 @@ export const LAYOUT_LAST_SPOT: Readonly<Record<ArchipelagoId, Readonly<{ x: numb
   '3e': { x: 52, y: 28 },
 };
 
+/**
+ * La dernière place détachée de l'îlot d'un Gardien (choix 4a du mainteneur) dans chaque région, en pas depuis le coin de
+ * son cadre : l'îlot (13 × 12 cases, ./terrain/islets.ts) y tient encore entier. Recopiée ici comme `LAYOUT_LAST_SPOT`
+ * (savedLayout.test.ts vérifie qu'elles s'accordent).
+ */
+export const LAYOUT_LAST_ISLET_SPOT: Readonly<Record<ArchipelagoId, Readonly<{ x: number; y: number }>>> = {
+  '6e': { x: 44, y: 33 },
+  '5e': { x: 32, y: 25 },
+  '4e': { x: 38, y: 25 },
+  '3e': { x: 48, y: 25 },
+};
+
 /** Une mission du lieu : la clé d'une borne est « lieu:mission », la mission parmi celles du lieu (toutes LV2 comprises). */
 function isStationKey(a: ArchipelagoId, key: string): boolean {
   const [id, mission, ...rest] = key.split(':');
@@ -154,7 +166,7 @@ function readRegion(a: ArchipelagoId, raw: unknown): RegionLayout | null {
   if (raw.guardians !== undefined) {
     if (!isRecord(raw.guardians)) return null;
     const guardians: Partial<Record<BiomeId, LayoutGuardian>> = {};
-    const max = LAYOUT_LAST_SPOT[a];
+    const max = LAYOUT_LAST_ISLET_SPOT[a];
     for (const [id, g] of Object.entries(raw.guardians)) {
       if (!isIslandOf(a, id) || !isRecord(g) || !isSide(g.side) || !isInt(g.step) || Math.abs(g.step) > 8 || !isTurn(g.turn)) return null;
       if (g.spot === undefined) {

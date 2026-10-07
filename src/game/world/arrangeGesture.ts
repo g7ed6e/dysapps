@@ -9,6 +9,15 @@ import type { ArrangeGesture } from './view';
 /** Les deux temps du geste (ms) : ensemble, au plus 1,5 s (GD-9, « Ce qui ne bouge pas »). */
 export const GESTE_DU_LIEU = { demonteMs: 600, remonteMs: 600 } as const;
 
+/** Le choix lâché au doigt sur une place libre redescend d'un cube en tant de ms, ralenti à la fin (choix 2a, Blocland). */
+export const DESCENTE_MS = 180;
+
+/** La hauteur du choix qui redescend (`descend`), en part de son soulèvement : de 1 à 0, ralentie à la fin. */
+export function descentLift(g: ArrangeGesture, now: number): number {
+  const k = gestureProgress(g, now);
+  return (1 - k) * (1 - k);
+}
+
 /** Le bas du geste est à tant de cases sous le sol du lieu (la coupe part de là, sous l'eau). */
 export const GESTE_SOUS_LE_SOL = 5;
 

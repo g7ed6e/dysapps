@@ -13,8 +13,8 @@
 import type { Lumiere } from './light';
 import { mixColor } from '../world/daylight';
 import * as THREE from 'three';
-import { GESTE_SOUS_LE_SOL, gestureCut, veilFootprint, veilOpacity, veilZone } from '../world/arrangeGesture';
-import type { ArrangeCellKind, ArrangeGesture, ArrangeView, ChoixALEcran, LinkEndHandle } from '../world/view';
+import { descentLift, GESTE_SOUS_LE_SOL, gestureCut, veilFootprint, veilOpacity, veilZone } from '../world/arrangeGesture';
+import type { ArrangeCell, ArrangeCellKind, ArrangeGesture, ArrangeView, ChoixALEcran, LinkEndHandle } from '../world/view';
 import { lirePlaceReelle, type Rect } from '../freeSpace';
 import { drawIslandLabel, measureIslandLabel } from '../world/labelCanvas';
 import type { Monde, PartieDeLaScene } from './scenePart';
@@ -118,20 +118,26 @@ const ALLURE: Readonly<Record<ArrangeCellKind, { l: number; couleur: number }>> 
   liaison: { l: 0.7, couleur: 0xffffff },
   barree: { l: 0.7, couleur: 0xd8432f },
   croix: { l: 0.85, couleur: 0xd8432f },
-  // Le glissé (choix 1b du mainteneur) : la grille en carrés plats crème, l'empreinte claire, le conflit en gris pierre
-  // barré de sombre (la croix dit « prise » avec la couleur).
+  // Le glissé (choix 1b du mainteneur) : la grille en petits carrés crème, discrète ; l'empreinte libre, le signe « libre »
+  // des places libres (jaune plein sur un socle brun sombre, son bord épais) ; le conflit du gris pierre clair de la grande
+  // croix d'une place prise (#D2CFC6 : 3,9:1 sur l'eau de jour, le gris plus sombre n'y faisait que 1,7), barré de sombre.
   grille: { l: 1, couleur: 0xf2e6c8 },
-  empreinte: { l: 1, couleur: 0xffffff },
-  conflit: { l: 1, couleur: 0x8c877d },
+  empreinte: { l: 1, couleur: 0xffc21a },
+  socle: { l: 1, couleur: 0x2f2b26 },
+  conflit: { l: 1, couleur: 0xd2cfc6 },
   barre: { l: 1, couleur: 0x2f2b26 },
-  // La ligne en pointillés d'un Gardien détaché vers son lieu (choix 4a).
-  lien: { l: 0.7, couleur: 0xffffff },
+  // La ligne en pointillés d'un Gardien détaché vers son lieu (choix 4a) : des points blancs sur leur socle sombre.
+  lien: { l: 1, couleur: 0xffffff },
 };
 
-/** Archipéo (rattrapage du jeu commun) : la grille en Brume (#E5EBE3), la croix en Nuit océan (#142B38). */
+/**
+ * Archipéo (rattrapage du jeu commun) : la grille en Brume (#E5EBE3), le socle et la croix en Nuit océan (#142B38), la
+ * place en conflit du gris de la grande croix d'une place prise (#D3D8D3) : un seul gris pour « prise ».
+ */
 const ALLURE_PEINTE: Readonly<Partial<Record<ArrangeCellKind, { l: number; couleur: number }>>> = {
   grille: { l: 1, couleur: 0xe5ebe3 },
-  conflit: { l: 1, couleur: 0x8e958f },
+  socle: { l: 1, couleur: 0x142b38 },
+  conflit: { l: 1, couleur: 0xd3d8d3 },
   barre: { l: 1, couleur: 0x142b38 },
 };
 
@@ -274,7 +280,11 @@ export function creerAmenagement(
   const forme = new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2);
   const bordure = textureBordee();
   const matiere = new THREE.MeshBasicMaterial({ map: bordure, transparent: true, opacity: 0.92, depthWrite: false });
+  // Ce qui passe au-dessus des poignées (la ligne d'un Gardien détaché, choix 4a) : sans test de profondeur, après elles.
+  // Transparente (mais opaque) pour être dessinée avec la mer, après elle : sinon la mer, dessinée ensuite, la voile.
+  const matiereDessus = new THREE.MeshBasicMaterial({ map: bordure, transparent: true, depthTest: false, depthWrite: false });
   let cases: THREE.InstancedMesh | null = null;
+  let dessus: THREE.InstancedMesh | null = null;
   const m = new THREE.Matrix4();
   const tourne = new THREE.Quaternion();
   const ici3 = new THREE.Vector3();
@@ -459,10 +469,13 @@ export function creerAmenagement(
   };
 
   const vider = () => {
-    if (!cases) return;
-    monde.scene.remove(cases);
-    cases.dispose();
+    for (const d of [cases, dessus]) {
+      if (!d) continue;
+      monde.scene.remove(d);
+      d.dispose();
+    }
     cases = null;
+    dessus = null;
   };
 
   const zone = (r: { x0: number; y0: number; x1: number; y1: number }) => zoneDuMode.uAmZone.value.set(r.x0, r.y0, r.x1, r.y1);
@@ -472,6 +485,16 @@ export function creerAmenagement(
     // Les captures tiennent le geste à un moment choisi (`__dysappsGesteA`).
     const tenue = window.__dysappsGesteA;
     const now = enCours && typeof tenue === 'number' && Number.isFinite(tenue) && (import.meta.env.DEV || mesuresDemandees()) ? enCours.debut + tenue : maintenant;
+    if (enCours?.phase === 'descend') {
+      // Lâché au doigt (choix 2a) : déjà à sa nouvelle place, il redescend du soulèvement, sans coupe.
+      if (voile) voile.visible = false;
+      if (blocs) {
+        zone(enCours.zone);
+        zoneDuMode.uAmLift.value = SOULEVEMENT.hauteur * descentLift(enCours, now);
+        zoneDuMode.uAmCut.value = LOIN;
+      } else neutre();
+      return;
+    }
     if (enCours) {
       if (blocs) {
         zone(enCours.zone);
@@ -499,6 +522,30 @@ export function creerAmenagement(
     } else neutre();
   };
 
+  /** Un maillage instancié de carrés plats (deux triangles chacun), ajouté à la scène. */
+  const maillageDes = (liste: readonly ArrangeCell[], mat: THREE.Material, ordre: number): THREE.InstancedMesh => {
+    const dessin = new THREE.InstancedMesh(forme, mat, liste.length);
+    dessin.frustumCulled = false;
+    // Le dessin du mode ne se touche pas : le toucher passe à la mer ou au lieu dessous.
+    dessin.raycast = () => {};
+    dessin.renderOrder = ordre;
+    liste.forEach((c, i) => {
+      const a = (!blocs && ALLURE_PEINTE[c.genre]) || ALLURE[c.genre];
+      const l = a.l * (c.l ?? 1);
+      if (c.angle !== undefined) {
+        // Une barre de croix, tournée sur l'eau, un peu au-dessus de sa place (dessinée après elle).
+        tourne.setFromAxisAngle(HAUT, c.angle);
+        ici3.set(c.x + 0.5, c.z + 1 + AU_DESSUS, c.y + 0.5);
+        echelle.set(l * BARRE.long, 1, l * BARRE.large);
+        m.compose(ici3, tourne, echelle);
+      } else m.makeScale(l, 1, l).setPosition(c.x + 0.5, c.z + 1 + AU_DESSUS, c.y + 0.5);
+      dessin.setMatrixAt(i, m);
+      dessin.setColorAt(i, couleur.setHex(a.couleur));
+    });
+    monde.scene.add(dessin);
+    return dessin;
+  };
+
   return {
     poser(vue) {
       vider();
@@ -512,26 +559,11 @@ export function creerAmenagement(
       poignees.poser(vue?.poignees ?? null);
       tailleDuNom();
       if (!vue || !vue.cases.length) return;
-      const dessin = new THREE.InstancedMesh(forme, matiere, vue.cases.length);
-      dessin.frustumCulled = false;
-      // Le dessin du mode ne se touche pas : le toucher passe à la mer ou au lieu dessous.
-      dessin.raycast = () => {};
-      dessin.renderOrder = 2;
-      vue.cases.forEach((c, i) => {
-        const a = (!blocs && ALLURE_PEINTE[c.genre]) || ALLURE[c.genre];
-        const l = a.l * (c.l ?? 1);
-        if (c.angle !== undefined) {
-          // Une barre de croix, tournée sur l'eau, un peu au-dessus de sa place (dessinée après elle).
-          tourne.setFromAxisAngle(HAUT, c.angle);
-          ici3.set(c.x + 0.5, c.z + 1 + AU_DESSUS, c.y + 0.5);
-          echelle.set(l * BARRE.long, 1, l * BARRE.large);
-          m.compose(ici3, tourne, echelle);
-        } else m.makeScale(l, 1, l).setPosition(c.x + 0.5, c.z + 1 + AU_DESSUS, c.y + 0.5);
-        dessin.setMatrixAt(i, m);
-        dessin.setColorAt(i, couleur.setHex(a.couleur));
-      });
-      cases = dessin;
-      monde.scene.add(dessin);
+      const dessous = vue.cases.filter((c) => !c.dessus);
+      const audessus = vue.cases.filter((c) => c.dessus);
+      cases = dessous.length ? maillageDes(dessous, matiere, 2) : null;
+      // Après les poignées (9), avant les étiquettes (10, 11) : la ligne d'un Gardien détaché ne passe jamais dessous.
+      dessus = audessus.length ? maillageDes(audessus, matiereDessus, 9.5) : null;
     },
     poserLesBouts(b) {
       bouts.poser(b);
@@ -590,6 +622,7 @@ export function creerAmenagement(
       forme.dispose();
       bordure.dispose();
       matiere.dispose();
+      matiereDessus.dispose();
       if (voile) {
         monde.scene.remove(voile);
         voile.geometry.dispose();

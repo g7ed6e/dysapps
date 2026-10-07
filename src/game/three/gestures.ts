@@ -17,7 +17,7 @@ import type { Signes } from './signs';
 import type { Cubes } from './cubes';
 import type { Amarre, Navire } from './ship';
 import type { Camera } from './camera';
-import { glisseCommence, pointDuPlan, RELAYE_DEPUIS_UN_BOUTON, SEUIL_DU_GLISSE } from './drag';
+import { choixCommence, glisseCommence, pointDuPlan, RELAYE_DEPUIS_UN_BOUTON, SEUIL_DU_GLISSE } from './drag';
 
 /** Le doigt posé sur le monde : son pointeur, où, et le point du sol saisi une fois le seuil passé (sinon `null`). */
 interface Appui {
@@ -40,6 +40,8 @@ interface Appui {
    * mainteneur) ? `undefined` : pas encore décidé ; `null` : non, la vue glisse ; sinon la hauteur du plan où il le glisse.
    */
   tient?: { hauteur: number } | null;
+  /** La case sous le doigt qui tient le choix : le choix ne suit que quand elle change. */
+  place?: string;
 }
 
 /** Ce que les gestes lisent de la scène : ses parties, les rappels de la vue, et ce que la vue permet. */
@@ -273,6 +275,8 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
     // 1b et 3a du mainteneur) ; tout autre glissé fait glisser la vue. Un glissé relayé d'un bouton (une poignée) aussi.
     if (appui.tient === undefined && !appui.relaye && derniers.current.amenager === 'choix') {
       if (!glisseCommence(e.clientX - appui.x, e.clientY - appui.y)) return;
+      // Le choix ne part qu'au-delà d'un seuil plus grand (`SEUIL_DU_CHOIX`) ; d'ici là, la Carte non plus.
+      if (!choixCommence(e.clientX - appui.x, e.clientY - appui.y)) return;
       appui.tient = prendreLeChoix(appui.x, appui.y);
       if (appui.tient) {
         appui.ancre = new THREE.Vector3();
@@ -282,7 +286,14 @@ export function ecouterLesGestes(scene: ScenePourLesGestes): () => void {
     }
     if (appui.tient) {
       const p = solSous(e.clientX, e.clientY, appui.tient.hauteur);
-      if (p) derniers.current.glisserLeChoix?.suivre({ x: p.x, y: p.z });
+      if (!p) return;
+      // Une fois par case franchie, pas à chaque mouvement : la même case sous le doigt ne change rien. Pas par place de
+      // la grille (4 cases) : le choix se cale sur la place la plus proche du doigt décalé de la prise, dont les bords
+      // ne tombent pas sur ceux des places sous le doigt ; le choix y retarderait d'une place.
+      const place = `${Math.floor(p.x)},${Math.floor(p.z)}`;
+      if (place === appui.place) return;
+      appui.place = place;
+      derniers.current.glisserLeChoix?.suivre({ x: p.x, y: p.z });
       return;
     }
     let ancre = appui.ancre;

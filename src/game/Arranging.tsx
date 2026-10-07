@@ -15,7 +15,7 @@ import { sonDePose } from './sound';
 import { mesuresDemandees } from './rendering';
 import type { Habillage } from './skin';
 import { type ArchipelagoId, archipelagoOfIsland } from './world/archipelagos';
-import { type Direction, groupAt, guardianOf, isDetached, joinCandidates, joinedWith, joinIslands, joinsIn, linksToRelink, NO_MORE_ROOM, placeIn, spotOf } from './world/arrange';
+import { type Direction, groupAt, guardianOf, type GuardianPlaceAt, guardianPlacesAt, isDetached, joinCandidates, joinedWith, joinIslands, joinsIn, linksToRelink, NO_MORE_ROOM, placeIn, sameGuardianPlace, spotOf } from './world/arrange';
 import {
   type ArrangeChoice,
   choiceFits,
@@ -39,7 +39,7 @@ import { type ArrangeSession, canUndo, hasChanged, recordPose, resetToEntry, sta
 import { arrangeView } from './world/arrangeView';
 import { linkEndHandles } from './world/arrangeHandles';
 import { getBridge } from './world/archipelago';
-import { GESTE_DU_LIEU, GESTE_SOUS_LE_SOL, gestureZone } from './world/arrangeGesture';
+import { DESCENTE_MS, GESTE_DU_LIEU, GESTE_SOUS_LE_SOL, gestureZone } from './world/arrangeGesture';
 import type { ArrangeGesture, ArrangeView, CadreDuMode, GlisserLeChoix, LinkEndHandle } from './world/view';
 import { footprintOf, guardianIsletRectangle, landRectangle } from './world/footprint';
 import { mapOf } from './world/map';
@@ -315,6 +315,8 @@ export function useAmenagement({
   // Le doigt glisse le choix (choix 1b) : l'écart entre le doigt et le milieu du choix, pris au départ.
   const [glisse, setGlisse] = useState(false);
   const prise = useRef<{ dx: number; dy: number } | null>(null);
+  // Les places de l'îlot du Gardien glissé, calculées une fois au départ du glissé.
+  const placesDuGardien = useRef<GuardianPlaceAt[] | undefined>(undefined);
   const [phrase, setPhrase] = useState('');
   const [ligne, setLigne] = useState<LigneDuMode | null>(null);
   const [liste, setListe] = useState(false);
@@ -340,12 +342,11 @@ export function useAmenagement({
    */
   const insecable = (texte: string) => mapOf(a).reduce((t, d) => t.split(nom(d.id)).join(nom(d.id).replace(/ /g, '\u00a0')), texte);
   /** La ligne du mode (des signes) et ce qu'elle dit en mots, lu à voix haute. */
-  const annoncerALaVoix = (l: LigneDuMode | null, lu: string) => {
+  const annoncer = (l: LigneDuMode | null, lu: string) => {
     setLigne(l);
     setPhrase(lu);
     if (lu) dire(lu);
   };
-  const annoncer = annoncerALaVoix;
   /** Une phrase écrite telle quelle (vide : la ligne s'efface). */
   const direTexte = (texte: string) => annoncer(texte ? { genre: 'texte', texte } : null, texte);
   /** Un refus : ses mots écrits, et dits. */
@@ -375,7 +376,7 @@ export function useAmenagement({
     const w = worldRef.current;
     if (texte !== undefined || !c) return direTexte(texte ?? '');
     // Pendant le glissé, la ligne suit le fantôme sans rien dire : la voix parle au lever du doigt.
-    const annoncer = muet ? (l: LigneDuMode | null, lu: string) => (setLigne(l), setPhrase(lu)) : annoncerALaVoix;
+    const montrer = muet ? (l: LigneDuMode | null, lu: string) => (setLigne(l), setPhrase(lu)) : annoncer;
     const prise = c.genre !== 'liaison' && !choiceFits(w, c);
     // Sur une place prise (choix 3 du mainteneur) : la croix et « Place prise » prennent la place du nombre de cases, sur
     // la même ligne ; la voix dit « À l’ouest de la Plaine des nombres. Place prise. ».
@@ -392,11 +393,11 @@ export function useAmenagement({
             const lu = vers ? `${t.replace(/\.$/, '')}, vers ${thePlace(nom(vers))}.` : t;
             return { ligne: { genre: 'texte', texte: insecable(t), ...(vers ? { vers: nom(vers) } : {}) } satisfies LigneDuMode, lu };
           })();
-    if (!prise) return annoncer(l.ligne, l.lu);
-    if (l.ligne.genre === 'place') return annoncer({ ...l.ligne, prise: true }, `${enPhrase(ou(l.ligne.signes))} ${PLACE_PRISE}.`);
-    if (l.ligne.genre === 'gardien') return annoncer({ ...l.ligne, prise: true }, `Le Gardien : ${ou(l.ligne.signes)}. ${PLACE_PRISE}.`);
-    if (l.ligne.genre === 'texte') return annoncer({ ...l.ligne, prise: true }, `${l.lu} ${PLACE_PRISE}.`);
-    annoncer(l.ligne, l.lu);
+    if (!prise) return montrer(l.ligne, l.lu);
+    if (l.ligne.genre === 'place') return montrer({ ...l.ligne, prise: true }, `${enPhrase(ou(l.ligne.signes))} ${PLACE_PRISE}.`);
+    if (l.ligne.genre === 'gardien') return montrer({ ...l.ligne, prise: true }, `Le Gardien : ${ou(l.ligne.signes)}. ${PLACE_PRISE}.`);
+    if (l.ligne.genre === 'texte') return montrer({ ...l.ligne, prise: true }, `${l.lu} ${PLACE_PRISE}.`);
+    montrer(l.ligne, l.lu);
   };
 
   /** Le geste fini (ou touché) : le monde posé, le son, la phrase. */
@@ -445,6 +446,17 @@ export function useAmenagement({
     setChoix(null);
     // Posé là, le lieu se colle à un voisin (une place à l'icône de « Réunir ») : il reste choisi, « Réunir » s'allume.
     const rechoisir = choix.genre === 'lieu' && joinCandidates(r.world, choix.id).length ? { ...choix, spot: spotOf(r.world, choix.id) } : null;
+    // Lâché au doigt sur une place libre (choix 2a), dans Blocland : déjà à sa nouvelle place, il redescend d'un cube,
+    // puis le « clac » ; d'un coup avec moins d'animations, et dans Archipéo (son voile reste pour « Poser »).
+    if (sansGeste && !reduceMotion && habillage.pose === 'geste' && (choix.genre === 'lieu' || choix.genre === 'gardien')) {
+      arrange(r.world);
+      const zone = choix.genre === 'lieu' ? emprise(r.world, choix.id) : guardianIsletRectangle(placeIn(r.world, choix.id), guardianOf(r.world, choix.id));
+      const g: GesteEnCours = { apres: r.world, ligne: apres.ligne, phrase: apres.lu, timers: [], remonte: true, rechoisir };
+      enCours.current = g;
+      setGeste({ seq: ++seq.current, phase: 'descend', zone, debut: performance.now(), dureeMs: DESCENTE_MS, bas: 0, haut: 0 });
+      g.timers.push(window.setTimeout(finirLeGeste, DESCENTE_MS));
+      return;
+    }
     // Le geste (un lieu seulement) : démonté à sa place d'avant, remonté à la nouvelle ; d'un coup avec moins d'animations.
     if (choix.genre !== 'lieu' || reduceMotion || sansGeste) {
       arrange(r.world);
@@ -653,6 +665,7 @@ export function useAmenagement({
       const m = choiceMiddle(worldRef.current, c);
       if (!m) return false;
       prise.current = { dx: m.x - point.x, dy: m.y - point.y };
+      placesDuGardien.current = c.genre === 'gardien' ? guardianPlacesAt(worldRef.current, c.id) : undefined;
       setGlisse(true);
       return true;
     },
@@ -660,17 +673,18 @@ export function useAmenagement({
       const c = choixRef.current;
       const d = prise.current;
       if (!c || !d) return;
-      const s2 = dragChoice(worldRef.current, c, { x: point.x + d.dx, y: point.y + d.dy });
+      const s2 = dragChoice(worldRef.current, c, { x: point.x + d.dx, y: point.y + d.dy }, placesDuGardien.current);
       // Le fantôme ne change qu'à chaque place franchie : la ligne (sans la voix) et les liaisons se retracent alors.
-      if (JSON.stringify(s2) !== JSON.stringify(c)) choisir(s2, undefined, true);
+      if (!sameChoicePlace(c, s2)) choisir(s2, undefined, true);
     },
     lacher(poser) {
       const c = choixRef.current;
       prise.current = null;
+      placesDuGardien.current = undefined;
       setGlisse(false);
       if (!c) return;
       const w = worldRef.current;
-      const bouge = c.genre === 'lieu' ? !sameSpot(c.spot, spotOf(w, c.id)) : c.genre === 'gardien' ? JSON.stringify(c.place) !== JSON.stringify(placeOf(guardianOf(w, c.id))) : false;
+      const bouge = c.genre === 'lieu' ? !sameSpot(c.spot, spotOf(w, c.id)) : c.genre === 'gardien' ? !sameGuardianPlace(c.place, guardianOf(w, c.id)) : false;
       // Levé sur une place libre : posé tout de suite (« Défaire » rattrape) ; sur une place prise, il reste là, croix
       // grise, « Poser » éteint (choix 2a) ; la voix dit où.
       if (poser && bouge && choiceFits(w, c)) return poserIci(true);
@@ -836,9 +850,11 @@ export function useAmenagement({
   };
 }
 
-/** La place d'un Gardien sans son orientation (ce que garde un choix). */
-function placeOf(g: GuardianPlace): GuardianPlace {
-  return { side: g.side, step: g.step, ...(g.spot ? { spot: g.spot } : {}) };
+/** Deux choix du même objet sont-ils à la même place (un lieu, orientation comprise ; un Gardien, son îlot) ? */
+function sameChoicePlace(c: ArrangeChoice, d: ArrangeChoice): boolean {
+  if (c.genre === 'lieu' && d.genre === 'lieu') return sameSpot(c.spot, d.spot);
+  if (c.genre === 'gardien' && d.genre === 'gardien') return sameGuardianPlace(c.place, d.place);
+  return c === d;
 }
 
 /** Le lieu à l'autre bout d'une liaison, vu depuis son bout `end`. */

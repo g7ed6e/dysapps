@@ -14,8 +14,8 @@ export type Quarts = 0 | 1 | 2 | 3;
 /** Les quatre orientations, dans l'ordre. */
 export const ORIENTATIONS: readonly Quarts[] = [0, 1, 2, 3];
 
-/** Une orientation quelconque ramenée de 0 à 3. */
-function quarts(n: number): Quarts {
+/** Une orientation quelconque (un nombre de quarts de tour, négatif compris) ramenée de 0 à 3. */
+export function wrapQuarts(n: number): Quarts {
   return (((Math.round(n) % 4) + 4) % 4) as Quarts;
 }
 
@@ -50,7 +50,7 @@ export function turnCell(x: number, y: number, q: Quarts): { x: number; y: numbe
 
 /** L'inverse de `turnCell` : la case du repère d'un lieu qui, tournée de `q`, tombe en (x, y). */
 export function unturnCell(x: number, y: number, q: Quarts): { x: number; y: number } {
-  return turnCell(x, y, quarts(4 - q));
+  return turnCell(x, y, wrapQuarts(4 - q));
 }
 
 /** Un point (pas une case : un coin, un milieu) du repère d'un lieu, tourné de `q` quarts de tour autour du milieu du cœur. */

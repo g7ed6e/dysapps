@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { SpeakButton } from '../components/SpeakButton';
@@ -823,7 +823,9 @@ export function WorldPage() {
   // Pour les captures (en développement, ou avec `?mesures`) : un toucher dans le mode « Aménager », sans viser la scène.
   const intentionRef = useRef<(i: Intention) => void>(() => {});
   const glisserRef = useRef<GlisserLeChoix>(amenagement.glisser);
-  glisserRef.current = amenagement.glisser;
+  useLayoutEffect(() => {
+    glisserRef.current = amenagement.glisser;
+  });
   useEffect(() => {
     if (!(import.meta.env.DEV || mesuresDemandees())) return;
     const toucher = (i: Intention) => intentionRef.current(i);

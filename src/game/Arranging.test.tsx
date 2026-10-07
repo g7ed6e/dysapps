@@ -16,7 +16,7 @@ import { HABILLAGES } from './world/skin';
 import { toutConstruit } from './world/budget';
 import { freeGuardianSpots, freeSpots, guardianOf, isletMiddle, joinedWith, linksToRelink, NO_MORE_ROOM, placeIn, spotOf } from './world/arrange';
 import { frameOf } from './world/footprint';
-import { GESTE_DU_LIEU } from './world/arrangeGesture';
+import { DESCENTE_MS, GESTE_DU_LIEU } from './world/arrangeGesture';
 import { applyLayout } from './world/appliedLayout';
 import { thePlace } from './world/placeArticle';
 
@@ -171,6 +171,7 @@ describe('le mode « Aménager »', () => {
   });
 
   it('glisser le lieu choisi au doigt (choix 1b, 2a, 3a) : seul un glissé parti de lui le prend ; levé sur une place libre, il est posé avec son « clac »', () => {
+    vi.useFakeTimers();
     const dit: string[] = [];
     render(<SettingsProvider><Banc reduit={false} depart={depart()} dire={(t) => dit.push(t)} /></SettingsProvider>);
     fireEvent.click(screen.getByRole('button', { name: 'Modifier le plan' }));
@@ -199,11 +200,16 @@ describe('le mode « Aménager »', () => {
     // La ligne suit, sans la voix : elle parle au lever.
     expect(dit.length).toBe(dits);
     act(() => dernier.glisser.lacher(true));
-    // Posé tout de suite, sans le démontage couche par couche, avec le « clac » ; les flèches sont parties avec le choix.
-    expect(dernier.geste).toBeNull();
+    // Posé tout de suite, à sa nouvelle place, sans le démontage couche par couche : il redescend d'un cube, puis le
+    // « clac » et la voix ; les flèches sont parties avec le choix.
     expect(spotOf(monde, VOLCAN)).toEqual(libre);
+    expect(dernier.geste).toMatchObject({ phase: 'descend', dureeMs: DESCENTE_MS });
+    expect(dit.length).toBe(dits);
+    act(() => void vi.advanceTimersByTime(DESCENTE_MS));
+    expect(dernier.geste).toBeNull();
     expect(dit.length).toBe(dits + 1);
     expect(dernier.glisse).toBe(false);
+    vi.useRealTimers();
     // ↶ rattrape.
     fireEvent.click(screen.getByRole('button', { name: /Défaire/ }));
     expect(spotOf(monde, VOLCAN)).toEqual(depart0);
@@ -248,6 +254,8 @@ describe('le mode « Aménager »', () => {
     expect(dernier.vue?.cases.some((k) => k.genre === 'lien')).toBe(true);
     act(() => dernier.glisser.lacher(true));
     expect(guardianOf(monde, VOLCAN).spot).toBeDefined();
+    // Avec moins d'animations : posé d'un coup, sans descente.
+    expect(dernier.geste).toBeNull();
   });
 
   it('« Valider » pose le choix en cours et garde le plan ; Échap n’annule jamais ; « Annuler » demande, sauf sans changement', () => {

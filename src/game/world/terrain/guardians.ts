@@ -2,7 +2,7 @@
 import { type BiomeDef, type BiomeId, BIOMES, BLOC, BLOCKS } from '../../biomes';
 import { type ArchipelagoId, type Decor, type Ground, isLand, islandDef, type IslandDef, landscape, noise, smoothNoise, tirage } from '../map';
 import type { VoxelCube } from '../cube';
-import { chosenGuardian, type Quarts, turnModel, turnPlacedModel } from '../placement';
+import { chosenGuardian, turnModel, turnPlacedModel, wrapQuarts } from '../placement';
 import { decorate } from '../decor';
 import { guardianStatus } from '../../boss';
 import { gardienDuMonde } from './creatures';
@@ -285,7 +285,7 @@ export function guardianPlacements(
     if (choisi) {
       // Déplacé ou tourné (GD-9) : tourné de son orientation, au milieu de son îlot (là où il l'emporte). Détaché de son
       // lieu (choix 4a), son orientation est celle du monde : le lieu tourné ne le tourne pas.
-      const tourne = turnModel(modele, choisi.at ? ((((choisi.turn - def.quarts) % 4) + 4) % 4 as Quarts) : choisi.turn);
+      const tourne = turnModel(modele, choisi.at ? wrapQuarts(choisi.turn - def.quarts) : choisi.turn);
       const w = Math.max(...tourne.map((c) => c.x)) + 1;
       const h = Math.max(...tourne.map((c) => c.y)) + 1;
       const centre = { x: x + off.x + (Math.max(...modele.map((c) => c.x)) + 1) / 2, y: y + off.y + (Math.max(...modele.map((c) => c.y)) + 1) / 2 };

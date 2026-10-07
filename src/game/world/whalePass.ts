@@ -1,10 +1,10 @@
 // Le passage de la baleine (Archipéo, lot 5) : quand le mot de la baleine s'ouvre, une baleine quitte sa ronde et
 // passe au large de l'île concernée. Code pur (sans Three.js) : le trajet sur l'eau, loin de toute terre, et son
 // déroulé dans le temps (plonger, refaire surface, souffler, replonger, revenir). La 3D ne fait que le dessiner.
-import { BIOMES, type BiomeId } from "../biomes";
+import type { BiomeId } from "../biomes";
 import { getArchipelago } from "./archipelago";
 import { placedLinksOf } from "./linkGeometry";
-import { monumentIslet } from "./footprint";
+import { isletInWorld, monumentIslet } from "./footprint";
 import { dockBox } from "./harbor";
 import {
   archipelagoOfIsland,
@@ -15,9 +15,6 @@ import {
 } from "./map";
 import { MONUMENT_ISLET, monumentsOf } from "./monuments";
 import {
-  ISLET_H,
-  ISLET_W,
-  bossIsletOrigin,
   bridgePath,
   islandCenter,
   seaDecor,
@@ -73,9 +70,9 @@ function obstacles(a: ArchipelagoId, links: readonly string[]): Grid {
   };
   for (const def of mapOf(a)) {
     for (const c of landCells(def)) mark(c.x, c.y);
-    const o = bossIsletOrigin(BIOMES.findIndex((bi) => bi.id === def.id));
-    for (let x = 0; x < ISLET_W; x++)
-      for (let y = 0; y < ISLET_H; y++) mark(o.x + x, o.y + y);
+    const r = isletInWorld(def);
+    for (let x = r.x0; x < r.x1; x++)
+      for (let y = r.y0; y < r.y1; y++) mark(x, y);
   }
   for (const def of placedLinksOf(a, links)) for (const c of bridgePath(def, links)) mark(c.x, c.y);
   const dock = dockBox(getArchipelago(a).port);
