@@ -154,3 +154,8 @@ export function modelMeshes(cubes: VoxelCube[], surface: Surface | null = null):
   if (surface) return meshesOf(buildMesh(cubes), surface);
   return buildBlockMesh(cubes, { fondre: true, morceau: Infinity }).map(blockMeshOf);
 }
+
+/** Ajoute des maillages à un groupe ; aucun pour un modèle vide (`add()` sans rien se plaint dans la console). */
+export function addMeshes(parent: THREE.Object3D, meshes: readonly THREE.Mesh[]): void {
+  if (meshes.length) parent.add(...meshes);
+}

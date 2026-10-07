@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { VoxelCube } from './cube';
-import { buildBlockMesh, chunkFaceCount, GRAIN_LAYER, LAYER_COUNT, layerContent, layerOf, linearRgb, type BlockChunk, type BlockMeshOptions } from './blockMesh';
+import { blockRegions, buildBlockMesh, buildRegionMesh, chunkFaceCount, GRAIN_LAYER, LAYER_COUNT, layerContent, layerOf, linearRgb, type BlockChunk, type BlockMeshOptions } from './blockMesh';
 import { buildMesh, faceCount } from './mesher';
 import { TEXTURE_KINDS } from './pixels';
 import { toutConstruit } from './budget';
@@ -154,5 +154,24 @@ describe('le maillage des blocs en une seule texture', () => {
     const unes = buildBlockMesh(cubes, options);
     expect(chunkFaceCount(unes)).toBe(faceCount(buildMesh(cubes, [], options)));
     expect(chunkFaceCount(buildBlockMesh(cubes, { ...options, fondre: true }))).toBeLessThan(chunkFaceCount(unes) / 2);
+  });
+
+  it('refait le monde région par région : les mêmes faces, et une pose ne change que la région qu’elle touche', () => {
+    const { progress, world } = toutConstruit();
+    const cubes = worldCubes('6e', progress, world, false);
+    const options = { hiddenBottomsUpTo: hiddenBottomLevel('6e') };
+    const regions = blockRegions(cubes);
+    for (const fondre of [false, true]) {
+      const parRegion = [...regions.values()].flatMap((r) => buildRegionMesh(r, { ...options, fondre }));
+      const entier = buildBlockMesh(cubes, { ...options, fondre });
+      const compte = (chunks: BlockChunk[]) => new Map(chunks.map((g) => [g.key, g.indices.length]));
+      expect(compte(parRegion)).toEqual(compte(entier));
+    }
+    // Un cube posé au bord d'une région : elle change, et sa voisine aussi (le cube cache une de ses faces) ; pas les autres.
+    const bord = cubes.find((c) => c.x % 32 === 31 && c.y % 32 > 0 && c.y % 32 < 31 && regions.has(`${Math.floor(c.x / 32) + 1},${Math.floor(c.y / 32)}`))!;
+    const r = regions.get(`${Math.floor(bord.x / 32)},${Math.floor(bord.y / 32)}`)!;
+    const apres = blockRegions([...cubes, { ...bord, z: bord.z + 1 }]);
+    const changees = [...apres.values()].filter((x) => regions.get(x.key)?.signature !== x.signature).map((x) => x.key);
+    expect(changees.sort()).toEqual([r.key, `${r.rx + 1},${r.ry}`].sort());
   });
 });

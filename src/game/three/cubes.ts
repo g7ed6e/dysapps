@@ -14,7 +14,7 @@ import { hiddenBottomLevel } from '../world/sea';
 import { gesteFini, hauteurDuGeste } from '../world/pose';
 import { avanceeDuFondu, couchesPosees, cubesPartis, hauteurDansLaVague, planDeLaVague, type PlanDeLaVague } from '../world/wave';
 import { maillageAvecLaVague, vagueEnBlocs, type QueueDeLaVague } from '../world/waveMesh';
-import { buildBlockMesh } from '../world/blockMesh';
+import { blockRegions, buildBlockMesh, buildRegionMesh } from '../world/blockMesh';
 import { couleurDuFondu, maillageDuFondu, type FonduDeLaPose } from '../world/fadeMesh';
 import type { EnCasesDuMonde } from '../world/view';
 import { styleDuMonde } from '../rendering';
@@ -147,38 +147,82 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
    */
   const enBlocs = !sol && !surface;
   const neplusSuivreLeMode = enBlocs ? suivreLeMode(() => (aRefaire = true)) : () => {};
+  /**
+   * Blocland : les maillages de chaque région du monde, faces fondues ou non, avec la signature de ses cubes. Une pose ne
+   * refait que les régions qu'elle touche ; celles de l'autre état (fondu, ou non dans le mode) restent de côté, hors de
+   * la scène, et reviennent telles quelles si rien n'a changé entre-temps (le mode ouvert puis fermé sans rien bouger).
+   */
+  const regions = { fondues: new Map<string, { signature: string; meshes: THREE.Mesh[] }>(), unes: new Map<string, { signature: string; meshes: THREE.Mesh[] }>() };
 
-  const viderLeTerrain = () => {
-    for (const child of [...terrain.children]) {
+  const jeter = (meshes: readonly THREE.Object3D[]) => {
+    for (const child of meshes) {
       terrain.remove(child);
       (child as THREE.Mesh).geometry.dispose();
     }
   };
+  const viderLeTerrain = () => {
+    jeter([...terrain.children]);
+    for (const m of [regions.fondues, regions.unes]) {
+      for (const r of m.values()) jeter(r.meshes);
+      m.clear();
+    }
+  };
+  /** La vague à part (Blocland), refaite à chaque terrain. */
+  let maillagesDeLaVague: THREE.Mesh[] = [];
 
-  /** Le terrain : un maillage par matériau (Blocland), ou le sol à facettes, la construction et le décor (Archipéo). */
+  /** Le terrain de Blocland, région par région : seules les régions dont les cubes ont changé sont refaites. */
+  const poserLesRegions = (cubes: VoxelCube[]) => {
+    const fondre = !modeOuvertDansLesMateriaux();
+    const ici = fondre ? regions.fondues : regions.unes;
+    const ailleurs = fondre ? regions.unes : regions.fondues;
+    // Les régions de l'autre état quittent la scène (gardées de côté).
+    for (const r of ailleurs.values()) for (const m of r.meshes) terrain.remove(m);
+    const neuves = blockRegions(cubes);
+    for (const [k, r] of ici) {
+      if (neuves.get(k)?.signature === r.signature) continue;
+      jeter(r.meshes);
+      ici.delete(k);
+    }
+    for (const [k, region] of neuves) {
+      let r = ici.get(k);
+      if (!r) ici.set(k, (r = { signature: region.signature, meshes: buildRegionMesh(region, { ...dessous, fondre }).map(blockMeshOf) }));
+      for (const m of r.meshes) if (m.parent !== terrain) terrain.add(m);
+    }
+  };
+
+  /** Un maillage qui porte une part de la vague : ses sommets bougent, depuis leur hauteur de repos. */
+  const brancherLaQueue = (mesh: THREE.Mesh, queue: QueueDeLaVague) => {
+    if (!vague) return;
+    // Les cubes de la vague descendent de haut, hors de la sphère englobante : ces maillages-là se dessinent toujours.
+    mesh.frustumCulled = false;
+    const position = mesh.geometry.getAttribute('position') as THREE.BufferAttribute;
+    position.setUsage(THREE.DynamicDrawUsage);
+    const repos = new Float32Array(queue.rangDuSommet.length);
+    for (let i = 0; i < repos.length; i++) repos[i] = position.getY(queue.premierSommet + i);
+    vague.queues.push({ mesh, queue, repos });
+  };
+
+  /** Le terrain : région par région, en une texture (Blocland), ou le sol à facettes, la construction et le décor (Archipéo). */
   const poserLeTerrain = (cubes: VoxelCube[]) => {
-    viderLeTerrain();
     derniers = cubes;
     aRefaire = false;
     if (enBlocs) {
-      for (const g of buildBlockMesh(cubes, { ...dessous, fondre: !modeOuvertDansLesMateriaux() })) terrain.add(blockMeshOf(g));
+      jeter(maillagesDeLaVague);
+      maillagesDeLaVague = [];
+      poserLesRegions(cubes);
       if (!vague) return;
       // La vague à part, un maillage par passe : ses sommets bougent, le terrain non.
       vague.queues = [];
       for (const { morceau, vague: queue } of vagueEnBlocs(vague.cubes, vague.plan)) {
         const mesh = blockMeshOf(morceau);
         terrain.add(mesh);
-        // Les cubes de la vague descendent de haut, hors de la sphère englobante : ces maillages-là se dessinent toujours.
-        mesh.frustumCulled = false;
-        const position = mesh.geometry.getAttribute('position') as THREE.BufferAttribute;
-        position.setUsage(THREE.DynamicDrawUsage);
-        const repos = new Float32Array(queue.rangDuSommet.length);
-        for (let i = 0; i < repos.length; i++) repos[i] = position.getY(queue.premierSommet + i);
-        vague.queues.push({ mesh, queue, repos });
+        maillagesDeLaVague.push(mesh);
+        brancherLaQueue(mesh, queue);
       }
       placerLaVague(vague.ecoule ?? 0);
       return;
     }
+    viderLeTerrain();
     if (!sol && vague) {
       // La vague à la fin des maillages du terrain : ses sommets bougent, le terrain non.
       vague.queues = [];
@@ -186,13 +230,7 @@ export function creerCubes(monde: Monde, large: Large, lumiere: Lumiere, instant
         const mesh = meshOf(groupe, surface);
         terrain.add(mesh);
         if (!queue) continue;
-        // Les cubes de la vague descendent de haut, hors de la sphère englobante : ces maillages-là se dessinent toujours.
-        mesh.frustumCulled = false;
-        const position = mesh.geometry.getAttribute('position') as THREE.BufferAttribute;
-        position.setUsage(THREE.DynamicDrawUsage);
-        const repos = new Float32Array(queue.rangDuSommet.length);
-        for (let i = 0; i < repos.length; i++) repos[i] = position.getY(queue.premierSommet + i);
-        vague.queues.push({ mesh, queue, repos });
+        brancherLaQueue(mesh, queue);
       }
       placerLaVague(vague.ecoule ?? 0);
       return;

@@ -294,9 +294,13 @@ function modelesEnCubes(a: ArchipelagoId, partie: ReturnType<typeof toutConstrui
  * dessine. `uneTexture` faux : comme avant la piste 2 du budget, un appel par texture et par face (les couleurs unies
  * d'un personnage ensemble), cube par cube : la mesure à laquelle le rendu Archipéo se compare.
  */
-export function sceneCost(a: ArchipelagoId, commandes = false, uneTexture = true): { triangles: number; drawCalls: number } {
-  // La partie toute construite, une fois (elle se calcule lentement).
-  const partie = commandes ? toutConstruitAvecLesCommandes() : toutConstruit();
+export function sceneCost(
+  a: ArchipelagoId,
+  commandes = false,
+  uneTexture = true,
+  // La partie toute construite, une fois (elle se calcule lentement) : celle de l'appelant s'il l'a déjà.
+  partie = commandes ? toutConstruitAvecLesCommandes() : toutConstruit(),
+): { triangles: number; drawCalls: number } {
   if (uneTexture) {
     const chunks = [...terrainChunks(a, commandes, partie), ...sceneModels(a, commandes, partie).flatMap((m) => m.chunks)];
     return { triangles: chunkFaceCount(chunks) * 2, drawCalls: chunks.length };
@@ -432,10 +436,10 @@ export function linkTriangles(a: ArchipelagoId, kind: BridgeKind, longueur: numb
  * (un par morceau du monde et par passe).
  */
 export function worstCaseOfRegion(a: ArchipelagoId): { base: number; liaisons: number; reunions: number; triangles: number; drawCalls: number } {
-  const { progress, world } = toutConstruitAvecLesCommandes();
-  const terrain = worldCubes(a, progress, world, false);
-  const scene = sceneCost(a, true, false);
-  const appels = sceneCost(a, true).drawCalls;
+  const partie = toutConstruitAvecLesCommandes();
+  const terrain = worldCubes(a, partie.progress, partie.world, false);
+  const scene = sceneCost(a, true, false, partie);
+  const appels = sceneCost(a, true, true, partie).drawCalls;
   const signes = signesCost();
   const dessous = { hiddenBottomsUpTo: hiddenBottomLevel(a) };
   const liaisonsDAujourdhui = (faceCount(buildMesh(terrain, [], dessous)) - faceCount(buildMesh(terrain.filter((c) => !c.bridge), [], dessous))) * 2;

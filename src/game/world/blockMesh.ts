@@ -94,7 +94,10 @@ interface Allure {
 const BLANC: [number, number, number] = [1, 1, 1];
 const NOIR: [number, number, number] = [0, 0, 0];
 
-/** Les allures déjà vues, par ce qui les fait : chaque face n'en refait pas le calcul. */
+/**
+ * Les allures déjà vues, par ce qui les fait : chaque face n'en refait pas le calcul. Bornées par les sortes de blocs et
+ * de couleurs ; leur numéro suit l'ordre des appels, sans effet sur le dessin (il ne sert qu'à comparer deux faces).
+ */
 const ALLURES = new Map<string, Allure>();
 
 function allureDe(c: VoxelCube, face: FaceSide): Allure {
@@ -164,9 +167,10 @@ const morceauVide = (key: string, pass: BlockPass): BlockChunk => ({ key, pass, 
 /**
  * Les faces visibles d'un ensemble de cubes, rangées par morceau du monde (`morceau` cases de côté) et par passe. Avec
  * `fondre`, les faces voisines de la même allure, dans le même plan et le même morceau, se fondent en rectangles : moins
- * de triangles, la même image (la texture se répète case par case).
+ * de triangles, la même image (la texture se répète case par case). `garder` : seulement les faces de ces cubes-là (les
+ * autres ne font que cacher ou montrer leurs faces).
  */
-export function buildBlockMesh(cubes: readonly VoxelCube[], options: BlockMeshOptions = {}): BlockChunk[] {
+export function buildBlockMesh(cubes: readonly VoxelCube[], options: BlockMeshOptions = {}, garder: (c: VoxelCube) => boolean = () => true): BlockChunk[] {
   const { fondre = false, morceau = COTE_D_UN_MORCEAU } = options;
   const chunks = new Map<string, BlockChunk>();
   const chunkDe = (c: VoxelCube, pass: BlockPass) => {
@@ -178,6 +182,7 @@ export function buildBlockMesh(cubes: readonly VoxelCube[], options: BlockMeshOp
   // Les plans à fondre : par morceau, passe, direction, plan et allure, leurs faces.
   const plans = new Map<string, { d: [number, number, number]; ua: number; va: number; faces: FaceAPlat[] }>();
   eachVisibleFace(cubes, [], options, (c, d, face) => {
+    if (!garder(c)) return;
     const allure = allureDe(c, face);
     if (!fondre) {
       ajouter(chunkDe(c, allure.pass), c, d, 0, 2, 1, 1, allure);
@@ -218,6 +223,59 @@ export function buildBlockMesh(cubes: readonly VoxelCube[], options: BlockMeshOp
     }
   }
   return [...chunks.values()];
+}
+
+/** Une région du monde (un morceau de `morceau` cases de côté) : ses cubes, ceux qui la bordent, et leur signature. */
+export interface BlockRegion {
+  key: string;
+  /** Ce qui fait ses faces : ses cubes et ceux qui la bordent, dans l'ordre (le dernier de deux cubes à la même place gagne). */
+  signature: string;
+  rx: number;
+  ry: number;
+  morceau: number;
+  /** Ses cubes, puis ceux des régions voisines qui la touchent (ils cachent ou montrent ses faces de bord). */
+  cubes: VoxelCube[];
+}
+
+/** Ce qui, dans un cube, change ses faces ou celles de ses voisins (eachVisibleFace, allureDe). */
+const signatureDuCube = (c: VoxelCube) =>
+  `${c.x},${c.y},${c.z},${c.color},${c.texture ?? ''},${c.ghost ? 1 : 0}${c.muted ? 1 : 0}${c.sansDessous ? 1 : 0}${c.dessusCommeLesCotes ? 1 : 0}`;
+
+/**
+ * Les cubes rangés par région du monde, chacune avec sa signature : une région dont la signature n'a pas bougé donne les
+ * mêmes morceaux (three/cubes.ts ne refait que les régions touchées par une pose).
+ */
+export function blockRegions(cubes: readonly VoxelCube[], morceau = COTE_D_UN_MORCEAU): Map<string, BlockRegion> {
+  const regions = new Map<string, BlockRegion>();
+  const dans = (rx: number, ry: number, c: VoxelCube) => {
+    const key = `${rx},${ry}`;
+    let r = regions.get(key);
+    if (!r) regions.set(key, (r = { key, signature: '', rx, ry, morceau, cubes: [] }));
+    r.cubes.push(c);
+  };
+  // Les cubes de chaque région d'abord, puis ceux qui la bordent : une face de bord ne dépend que du voisin d'à côté.
+  const bords: [number, number, VoxelCube][] = [];
+  for (const c of cubes) {
+    const rx = Math.floor(c.x / morceau);
+    const ry = Math.floor(c.y / morceau);
+    dans(rx, ry, c);
+    const ix = c.x - rx * morceau;
+    const iy = c.y - ry * morceau;
+    if (ix === 0) bords.push([rx - 1, ry, c]);
+    if (ix === morceau - 1) bords.push([rx + 1, ry, c]);
+    if (iy === 0) bords.push([rx, ry - 1, c]);
+    if (iy === morceau - 1) bords.push([rx, ry + 1, c]);
+  }
+  for (const [rx, ry, c] of bords) if (regions.has(`${rx},${ry}`)) dans(rx, ry, c);
+  for (const r of regions.values()) r.signature = r.cubes.map(signatureDuCube).join(';');
+  return regions;
+}
+
+/** Les morceaux d'une seule région : ses faces, que ses voisins de bord cachent ou montrent comme dans le monde entier. */
+export function buildRegionMesh(region: BlockRegion, options: Omit<BlockMeshOptions, 'morceau'> = {}): BlockChunk[] {
+  const { rx, ry, morceau } = region;
+  const a = (c: VoxelCube) => Math.floor(c.x / morceau) === rx && Math.floor(c.y / morceau) === ry;
+  return buildBlockMesh(region.cubes, { ...options, morceau }, a);
 }
 
 /** Nombre de faces (quadrilatères) des morceaux. */

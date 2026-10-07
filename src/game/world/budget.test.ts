@@ -1,6 +1,6 @@
 import { BADGES } from '../../core/progress';
 import { trophyBlock } from '../trophies';
-import { APPEL_DU_PASSAGE, bornesCost, linkCubes, worstCaseOfRegion, commandesCost, constructionCost, decorCost, ENVELOPPES, enveloppeDe, fauneCost, merCost, navireCost, personnagesCost, PLAFOND_DU_MONDE_EN_BLOCS, RENDER_BUDGET, RENDER_BUDGET_6E, RENDER_BUDGET_AUTRES, renderBudgetOf, sceneCost, sceneCostArchipeo, signesCost, solCost, toutConstruit, type Poste } from './budget';
+import { APPEL_DU_PASSAGE, bornesCost, linkCubes, worstCaseOfRegion, commandesCost, constructionCost, decorCost, ENVELOPPES, enveloppeDe, fauneCost, merCost, navireCost, personnagesCost, PLAFOND_DU_MONDE_EN_BLOCS, RENDER_BUDGET, RENDER_BUDGET_6E, RENDER_BUDGET_AUTRES, renderBudgetOf, sceneCost, sceneCostArchipeo, signesCost, solCost, toutConstruit, toutConstruitAvecLesCommandes, type Poste } from './budget';
 import { ARCHIPELAGO_IDS, type ArchipelagoId, mapOf } from './map';
 import { chooseGuardian, chooseIsland } from './arrangeMode';
 import { arrangeView, arrangeViewCost } from './arrangeView';
@@ -31,9 +31,10 @@ it('le monde en blocs ne recule pas : triangles et appels de dessin de chaque ar
 });
 
 it('les petites constructions des commandes (GD-7, PR 3) se fondent dans le terrain : un appel de plus au plus, sous le plafond', () => {
+  const [tout, avecLesCommandes] = [toutConstruit(), toutConstruitAvecLesCommandes()];
   for (const a of ARCHIPELAGO_IDS) {
-    const sans = sceneCost(a);
-    const avec = sceneCost(a, true);
+    const sans = sceneCost(a, false, true, tout);
+    const avec = sceneCost(a, true, true, avecLesCommandes);
     // Dans les morceaux du terrain (world/blockMesh.ts) : une petite construction n'en ouvre un que s'il n'y avait rien.
     expect(avec.drawCalls, a).toBeLessThanOrEqual(sans.drawCalls + 1);
     expect(avec.triangles, a).toBeGreaterThan(sans.triangles);

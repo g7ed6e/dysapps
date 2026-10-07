@@ -11,7 +11,7 @@ import type { WorldViewProps } from '../world/view';
 import { vehiclePath } from '../world/voyage';
 import type { Cubes } from './cubes';
 import { creerConstruction } from './construction';
-import { modelMeshes } from './meshes';
+import { addMeshes, modelMeshes } from './meshes';
 import type { Derniers, Instant, Monde, PartieDeLaScene } from './scenePart';
 import type { Personnages } from './characters';
 
@@ -94,8 +94,8 @@ export function creerNavire(
         taille.coque.peindre(maillageDeLaConstruction(archipel, hull, [], { navire: true }));
         taille.ballon.peindre(maillageDeLaConstruction(archipel, balloon, [], { navire: true }));
       } else {
-        hullGroup.add(...modelMeshes(hull, surface));
-        balloonGroup.add(...modelMeshes(balloon, surface));
+        addMeshes(hullGroup, modelMeshes(hull, surface));
+        addMeshes(balloonGroup, modelMeshes(balloon, surface));
       }
       balloonGroup.position.set(2, MAST_TOP, 3);
       vehicleGroup.position.set(vehicle.origin.x, vehicle.origin.z, vehicle.origin.y);
