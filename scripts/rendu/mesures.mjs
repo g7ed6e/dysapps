@@ -752,6 +752,24 @@ const CAPTURES = [
       { suffixe: '-od32', reglages: { font: 'opendyslexic', fontSize: 32 } },
     ].map(({ suffixe, ...autres }) => ({ nom: `sciences-college-carte-${a}${suffixe}`, vue: 'carte', famille: 'sciences-college', ile, ...autres })),
   ),
+  // « Mes blocs » de chaque archipel avec ses trois blocs de sciences en poche (les blocs clairs voisins), le panneau
+  // d'une île avec sa commande ouverte au grand texte (OpenDyslexic 32 px), et le défi neuf du Grand-bi au grand texte.
+  ...[
+    ['5e', ['life-earth-sciences-5e-active-planet', 'physics-chemistry-5e-matter-universe', 'technology-5e-design']],
+    ['4e', ['life-earth-sciences-4e-cells-evolution', 'physics-chemistry-4e-signals-circuits', 'technology-4e-modeling']],
+    ['3e', ['life-earth-sciences-3e-human-body', 'physics-chemistry-3e-motion-energy', 'technology-3e-digital']],
+  ].map(([a, iles]) => ({ nom: `sciences-college-mes-blocs-${a}`, vue: 'île', famille: 'sciences-college', ile: iles[0], lieu: 'stock', inventaire: Object.fromEntries(iles.map((i, k) => [i, 6 - k])) })),
+  {
+    nom: 'sciences-college-panneau-commande-od32',
+    vue: 'île',
+    famille: 'sciences-college',
+    ile: 'technology-4e-modeling',
+    commandes: ['technology-4e-modeling-request-1'],
+    inventaire: { 'physics-chemistry-4e-signals-circuits': 1 },
+    voir: '.commandes-list',
+    reglages: { font: 'opendyslexic', fontSize: 32 },
+  },
+  { nom: 'sciences-college-defi-grand-bi-od32', vue: 'défi', famille: 'sciences-college', ile: 'technology-4e-modeling', debout: 'technology-4e-modeling', reglages: { font: 'opendyslexic', fontSize: 32 } },
 ];
 /** La lueur la nuit, à la vue île : au plus 3 % de la scène. */
 const LUEUR_MAX = 0.03;
