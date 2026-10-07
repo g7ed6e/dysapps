@@ -351,7 +351,7 @@ it('LV2 (allemand, espagnol) : la langue de la mission, la règle affichée, ¿ 
       expect(String(it.spoken), it.key).not.toMatch(/[…¿¡]/);
       const prompt = String(it.prompt);
       if (prompt.includes('…')) {
-        expect(def.programme?.some((id) => id.endsWith('.ecrire.dictee-fiche')), `${def.id} : un trou, seulement en dictée`).toBe(true);
+        expect(def.programme?.some((id) => /\.(ecrire\.dictee-fiche|exprimer\.dictee)$/.test(id)), `${def.id} : un trou, seulement en dictée`).toBe(true);
         expect(prompt.split('…').length, it.key).toBe(2);
         expect(it.question, it.key).toBeUndefined();
         expect(String(it.spoken), it.key).toBe(prompt.replace('…', String(it.answer)).replace(/[¿¡]/g, ''));

@@ -2,7 +2,7 @@
 // `npm run contenu` dans data/assemblage-<bloc>.json. Chaque bloc a ses questions ; chacune mobilise les deux matières
 // de sa recette, au niveau de son archipel ; trois choix, une aide, rien que la voix lirait mal.
 import { APPS } from '../../apps/registry';
-import { CYCLE_OF, byId } from '../../curriculum';
+import { byId, citable } from '../../curriculum';
 import { BIOMES } from '../biomes';
 import { RECETTES } from '../world/assembly';
 import { ILES } from '../islands';
@@ -17,6 +17,14 @@ for (const r of RECETTES) {
   if (def) QUESTIONS.set(r.bloc, def);
 }
 const EXERCISES = await loadAllExercises();
+
+/**
+ * En attente, comme les missions qu'elles reprennent (src/game/curriculum.test.ts, EN_ATTENTE) : les questions du bloc
+ * de 5e qui multiplient des relatifs ou citent des conjonctions gardent leur compétence de 2020, de la 4e et de la 3e.
+ */
+const EN_ATTENTE: Record<string, readonly string[]> = {
+  'compound-5e': ['c4.ma.a.calcul-relatifs', 'c4.fr.langue.orthographe-lexicale'],
+};
 
 /** La matière (au sens du programme) de l'île qui donne un bloc. */
 function matiereDuBloc(bloc: string): string | undefined {
@@ -85,17 +93,15 @@ describe.each(RECETTES.map((r) => [r.bloc, r] as const))('les questions du bloc 
         `${bloc} : aucune compétence de ${m}`,
       ).toBe(true);
     for (const e of entries) expect(matieres, `${bloc} cite ${e.id}, d’une autre matière`).toContain(e.discipline);
-    // 6e : le cycle 3 seul ; 5e à 3e : au moins une compétence du cycle 4.
-    if (CYCLE_OF[recette.archipelago] === 3)
-      expect(
-        entries.every((e) => e.cycle === 3),
-        `${bloc} cite le cycle 4`,
-      ).toBe(true);
-    else
-      expect(
-        entries.some((e) => e.cycle === 4),
-        `${bloc} ne cite aucune compétence du cycle 4`,
-      ).toBe(true);
+    // Au moins une compétence de la classe de l'archipel ; les autres d'une classe d'avant, jamais d'une classe d'après.
+    const classe = recette.archipelago;
+    for (const e of entries)
+      if (!citable(e, classe))
+        expect(EN_ATTENTE[bloc] ?? [], `${bloc} (${classe}) cite ${e.id}, au programme de ${e.classes.join(', ')}`).toContain(e.id);
+    expect(
+      entries.some((e) => citable(e, classe) === 'classe'),
+      `${bloc} ne cite aucune compétence de sa classe (${classe})`,
+    ).toBe(true);
   });
 
   it('citent des compétences déjà travaillées par une île ou le portail : la couverture du programme ne bouge pas', () => {

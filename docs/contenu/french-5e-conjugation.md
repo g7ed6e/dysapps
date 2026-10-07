@@ -14,7 +14,7 @@ créature : Kroa
 ## Rives du passé · `past-tenses`
 
 - description : Imparfait ou passé composé, puis le passé simple du récit.
-- compétences : c3.fr.langue.temps-a-memoriser · c4.fr.langue.valeurs-des-temps
+- compétences : c4.fr.5e.grammaire.temps-modes · c3.fr.langue.temps-a-memoriser
 - bravo : Bonne route !
 - erreur : {explanation}
 - bloc gagné : french-5e-conjugation
@@ -132,7 +132,7 @@ Pour tous les items :
 ## Brume du futur · `future-tense`
 
 - description : Futur ou conditionnel, puis les formes du futur.
-- compétences : c4.fr.langue.temps-a-memoriser · c3.fr.langue.temps-a-memoriser
+- compétences : c4.fr.5e.grammaire.formes-verbales · c3.fr.langue.temps-a-memoriser
 - bravo : Bonne route !
 - erreur : {explanation}
 - bloc gagné : french-5e-conjugation
@@ -344,7 +344,7 @@ Pour tous les items :
 ## Gué des temps · `tense-choice`
 
 - description : Le présent et l’impératif, puis le plus-que-parfait et le futur antérieur, puis ce que dit chaque temps.
-- compétences : c4.fr.langue.valeurs-des-temps · c4.fr.langue.temps-a-memoriser · c4.fr.langue.morphologie-verbale · c3.fr.langue.temps-a-memoriser
+- compétences : c4.fr.5e.grammaire.temps-modes · c4.fr.5e.grammaire.formes-verbales · c3.fr.langue.temps-a-memoriser
 - bravo : Bonne route !
 - erreur : {explanation}
 - bloc gagné : french-5e-conjugation

@@ -14,7 +14,7 @@ créature : Pudding
 ## Shopping · `shopping`
 
 - description : Au magasin : quantités, prix, repas.
-- compétences : c4.en.dialoguer.echanges-sociaux · c3.en.dialoguer.renseignements · c4.en.langue.lexique
+- compétences : c4.en.5e.interagir.echanges · c4.en.5e.langue.lexique · c3.en.dialoguer.renseignements
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
 - bravo : Bien dit !
@@ -133,7 +133,7 @@ Pour tous les items :
 ## Routine · `routine`
 
 - description : La journée (get up, have breakfast…) et always, often, never.
-- compétences : c4.en.langue.temps-verbaux · c3.en.culture.vie-quotidienne
+- compétences : c4.en.5e.langue.verbe · c4.en.5e.culture.quotidien · c3.en.culture.vie-quotidienne
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
 - bravo : Bien dit !
@@ -244,7 +244,7 @@ Pour tous les items :
 ## Listening · `listening`
 
 - description : Écouter une phrase et trouver son sens.
-- compétences : c4.en.ecouter.intervention-breve
+- compétences : c4.en.5e.comprendre.oral-ecrit
 - langue : en
 - consigne : Écoute la phrase en anglais, puis choisis ce qu’elle veut dire.
 - bravo : Bien entendu !
@@ -342,7 +342,7 @@ Pour tous les items :
 ## Notices · `notices`
 
 - description : Lire un panneau, une consigne, un menu ou un horaire, et y trouver ce qu’on cherche.
-- compétences : c4.en.lire.consignes-panneaux · c4.en.lire.informations · c4.en.langue.lexique
+- compétences : c4.en.5e.comprendre.informations-pratiques · c4.en.5e.comprendre.oral-ecrit · c4.en.5e.langue.lexique
 - langue : en
 - bravo : Bien lu !
 - erreur : {explanation}

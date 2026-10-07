@@ -18,7 +18,7 @@ Le contenu livré, île par île, est décrit par les pages générées (archipe
 - **Une île = un thème du programme**, avec une classe indicative (6e à 3e). En général trois missions par île ; la Plaine des nombres, le Glacier des relatifs, le Comptoir, le Marais des temps, la Falaise des accords et l’Observatoire des textes en ont quatre, la Mine des lettres deux, la Tour du lecteur une.
 - **Deux ou trois niveaux par mission** (deux en anglais ; quatre au plus sur une île de l’école, où ce qui s’ajoute passe par un niveau de plus, comme aux Balances), **huit items par exercice** (dix pour une dictée, avec `perRun`).
 - **Le contenu monte, les règles ne changent pas** : de la 6e à la 3e, les mêmes principes dys ; en 4e et 3e, l’énoncé peut s’allonger mais reste découpé.
-- **Chaque mission cite le programme** (`compétences` dans `docs/contenu/<lieu>.md`, `programme` dans `src/apps/registry.ts`). Une île de 6e ne cite que le cycle 3 ; une île de 5e à 3e cite au moins une compétence du cycle 4 et peut consolider le cycle 3.
+- **Chaque mission cite le programme** (`compétences` dans `docs/contenu/<lieu>.md`, `programme` dans `src/apps/registry.ts`). Chaque mission cite au moins une compétence de la classe de son île ; elle peut consolider une compétence d’une classe d’avant, jamais citer celle d’une classe d’après (« Programmes 2025-2026 », ci-dessous). Une île de 6e ne cite donc que le cycle 3.
 
 ### Maths générées, français et anglais écrits à la main
 
@@ -161,6 +161,13 @@ Le test, joué comme un élève de 6e dyslexique (11 ans, lecture lente, souvent
 - **Les mots difficiles avant le texte** : un texte de lecture donne son lexique avant qu’on le lise, pas après.
 
 Le test a aussi confirmé ce qu’il faut garder : les séances courtes, la correction qui explique la règle, le point d’effort, les fractions en colonne, les lignes numérotées et colorées de la lecture, et un univers qui donne envie d’entrer.
+
+### Programmes 2025-2026 (décision du 7 octobre 2026)
+
+- **Le référentiel suit les textes en vigueur, classe par classe.** En 6e : le français et les maths des programmes de 2025, l’anglais du programme des langues vivantes des classes de collège (2025). En 5e : le français et les maths des annexes de l’arrêté du 18 février 2026, l’anglais, l’allemand et l’espagnol des programmes de 2025. En 4e et en 3e, jusqu’à l’entrée en vigueur des nouveaux textes dans ces classes : l’annexe de 2020. Chaque compétence dit son texte et ses classes ; la page « Programmes officiels » les affiche ([Le référentiel des programmes](programmes.md)).
+- **Une mission cite sa classe, ou une classe d’avant.** Ce que le texte de 2026 place en 4e (multiplier et diviser des relatifs, multiplier des fractions, le subjonctif, les conjonctions de subordination, le partage selon un ratio) n’est plus au programme de 5e. Les missions de 5e qui le travaillent gardent leur compétence de 2020 en attendant la seconde moitié du lot, qui les déplace (`EN_ATTENTE` dans `src/game/curriculum.test.ts` et `src/game/exercises/assembly.test.ts`, une ligne par mission et par compétence) : `french-5e-conjugation/subjunctive`, les trois missions de `french-5e-homophones` (items de conjonctions), `maths-5e-signed-numbers/subtracting` et `fractions` (niveau 3), `maths-5e-proportionality/proportion-tables` (ratio), et le bloc assemblé `compound-5e`.
+- **Ce que la 6e ne porte plus** n’est plus cité : les homophones grammaticaux sont l’orthographe grammaticale (`c3.fr.langue.orthographe-grammaticale`), les mots invariables et les régularités sont les mots fréquents à mémoriser (`c3.fr.langue.mots-frequents`) ; les critères de divisibilité par 3 et 9 sont en 5e (`c4.ma.5e.nombres.divisibilite`, consolidés par la Forge des puissances).
+- **Les compétences de 2020 que la 5e travaillait** (relatifs, fractions, proportionnalité, pourcentages, vitesse, repérage, valeurs des temps, panneaux et échanges en langues vivantes) restent à couvrir en 4e et en 3e jusqu’au nouveau texte de 4e : leur exclusion le dit.
 
 ## La suite à couvrir
 

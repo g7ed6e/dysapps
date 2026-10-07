@@ -16,12 +16,12 @@ créature : Sema
 > Ses exercices sont produits par le code (`src/game/exercises/`), pas écrits ici.
 
 - description : Ses / ces, ou / où, la / là / l’a, leur / leurs, quand, peu, c’est / s’est.
-- compétences : c4.fr.langue.orthographe-lexicale · c3.fr.langue.homophonie
+- compétences : c4.fr.5e.vocabulaire.orthographe · c4.fr.5e.grammaire.classes-de-mots · c3.fr.langue.orthographe-grammaticale · c4.fr.langue.orthographe-lexicale
 
 ## Aiguillage · `choices`
 
 - description : Quel / qu’elle, sans / s’en, dans / d’en, ni / n’y, plus tôt / plutôt, mais / mes / met / m’est…
-- compétences : c4.fr.langue.orthographe-lexicale · c3.fr.langue.homophonie
+- compétences : c4.fr.5e.vocabulaire.orthographe · c4.fr.5e.grammaire.classes-de-mots · c3.fr.langue.orthographe-grammaticale · c4.fr.langue.orthographe-lexicale
 - consigne : Choisis le bon mot pour compléter la phrase. La règle est affichée : lis-la avant de répondre.
 - bravo : Bonne route !
 - erreur : {explanation}
@@ -188,7 +188,7 @@ Pour tous les items :
 ## Bifurcation · `homophone-sentences`
 
 - description : Deux trous dans la phrase : choisis la bonne paire de mots.
-- compétences : c4.fr.langue.orthographe-lexicale · c3.fr.langue.homophonie
+- compétences : c4.fr.5e.vocabulaire.orthographe · c4.fr.5e.grammaire.classes-de-mots · c3.fr.langue.orthographe-grammaticale · c4.fr.langue.orthographe-lexicale
 - consigne : Deux trous dans la phrase : choisis la paire de mots qui convient, dans l’ordre.
 - bravo : Bonne route !
 - erreur : {explanation}

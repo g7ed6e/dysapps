@@ -31,7 +31,7 @@
 
 ### La poutre · `compound-6e`
 
-- compétences : c3.fr.langue.genre-nombre · c3.fr.langue.accord-sujet-verbe · c3.fr.langue.homophonie · c3.fr.langue.phonemes-graphemes · c3.fr.langue.mots-invariables · c3.fr.lecture.reprises · c3.fr.lecture.explicite · c3.fr.lecture.lexique-contexte · c3.ma.nombres.problemes · c3.ma.nombres.calcul-mental · c3.ma.grandeurs.perimetre · c3.ma.grandeurs.durees
+- compétences : c3.fr.langue.genre-nombre · c3.fr.langue.accord-sujet-verbe · c3.fr.langue.orthographe-grammaticale · c3.fr.langue.phonemes-graphemes · c3.fr.langue.mots-frequents · c3.fr.lecture.reprises · c3.fr.lecture.explicite · c3.fr.lecture.lexique-contexte · c3.ma.nombres.problemes · c3.ma.nombres.calcul-mental · c3.ma.grandeurs.perimetre · c3.ma.grandeurs.durees
 - consigne : Lis, calcule, puis choisis la bonne réponse. Le rappel est affiché.
 - bravo : Bien assemblé !
 - erreur : {explanation}
@@ -159,7 +159,7 @@
 
 ### Le vitrail · `compound-5e`
 
-- compétences : c4.ma.a.relatifs · c4.ma.a.calcul-relatifs · c4.ma.a.fractions · c4.ma.a.calcul-fractions · c4.fr.langue.orthographe-lexicale · c3.fr.langue.homophonie
+- compétences : c4.ma.5e.nombres.relatifs · c4.ma.5e.nombres.calcul-relatifs · c4.ma.5e.nombres.fractions · c4.ma.5e.nombres.calcul-fractions · c4.ma.a.calcul-relatifs · c4.fr.5e.vocabulaire.orthographe · c4.fr.5e.grammaire.classes-de-mots · c3.fr.langue.orthographe-grammaticale · c4.fr.langue.orthographe-lexicale
 - consigne : Lis, calcule, puis choisis la phrase juste et bien écrite. Le rappel est affiché.
 - bravo : Bien assemblé !
 - erreur : {explanation}
@@ -419,7 +419,7 @@ Pour tous les items :
 
 ### Le miroir · `compound-3e`
 
-- compétences : c4.fr.langue.sens-des-mots · c4.fr.langue.enonciation · c4.fr.langue.discours-rapporte · c4.fr.langue.passif · c4.fr.langue.coherence-textuelle · c4.fr.lecture.procedes · c4.fr.lecture.controle · c3.fr.lecture.implicite · c4.ma.b.probabilites · c4.ma.b.indicateurs · c4.ma.b.effectifs-frequences · c4.ma.b.lire-donnees · c4.ma.b.pourcentages-echelles
+- compétences : c4.fr.langue.sens-des-mots · c4.fr.langue.enonciation · c4.fr.langue.discours-rapporte · c4.fr.langue.passif · c4.fr.langue.coherence-textuelle · c4.fr.lecture.procedes · c4.fr.lecture.controle · c3.fr.lecture.implicite · c4.ma.b.probabilites · c4.ma.b.indicateurs · c4.ma.b.effectifs-frequences · c4.ma.b.lire-donnees · c4.ma.5e.proportionnalite.pourcentages
 - consigne : Lis le texte, puis choisis la bonne réponse. Le rappel est affiché.
 - bravo : Bien assemblé !
 - erreur : {explanation}

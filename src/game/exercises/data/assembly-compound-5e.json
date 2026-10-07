@@ -5,12 +5,15 @@
   "level": 1,
   "instruction": "Lis, calcule, puis choisis la phrase juste et bien écrite. Le rappel est affiché.",
   "programme": [
-    "c4.ma.a.relatifs",
+    "c4.ma.5e.nombres.relatifs",
+    "c4.ma.5e.nombres.calcul-relatifs",
+    "c4.ma.5e.nombres.fractions",
+    "c4.ma.5e.nombres.calcul-fractions",
     "c4.ma.a.calcul-relatifs",
-    "c4.ma.a.fractions",
-    "c4.ma.a.calcul-fractions",
-    "c4.fr.langue.orthographe-lexicale",
-    "c3.fr.langue.homophonie"
+    "c4.fr.5e.vocabulaire.orthographe",
+    "c4.fr.5e.grammaire.classes-de-mots",
+    "c3.fr.langue.orthographe-grammaticale",
+    "c4.fr.langue.orthographe-lexicale"
   ],
   "items": [
     {

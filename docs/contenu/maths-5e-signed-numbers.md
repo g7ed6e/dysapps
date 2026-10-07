@@ -16,14 +16,14 @@ créature : Frimas
 > Ses exercices sont produits par le code (`src/game/exercises/`), pas écrits ici.
 
 - description : Compare deux relatifs, puis lis un point sur la droite.
-- compétences : c4.ma.a.relatifs · c4.ma.d.reperage
+- compétences : c4.ma.5e.nombres.relatifs · c4.ma.5e.geometrie.reperage
 
 ## Banquise · `adding`
 
 > Ses exercices sont produits par le code (`src/game/exercises/`), pas écrits ici.
 
 - description : Additionne et soustrais des relatifs avec le bond sur la droite.
-- compétences : c4.ma.a.calcul-relatifs
+- compétences : c4.ma.5e.nombres.calcul-relatifs
 
 ## Crevasses · `subtracting`
 
@@ -37,7 +37,7 @@ créature : Frimas
 > Ses exercices sont produits par le code (`src/game/exercises/`), pas écrits ici.
 
 - description : Compare, puis additionne, soustrais, multiplie et divise des fractions : la règle reste affichée.
-- compétences : c4.ma.a.fractions · c4.ma.a.calcul-fractions
+- compétences : c4.ma.5e.nombres.fractions · c4.ma.5e.nombres.calcul-fractions · c4.ma.a.calcul-fractions
 
 ## Les plans
 

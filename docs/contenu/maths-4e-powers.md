@@ -30,7 +30,7 @@ créature : Braise
 > Ses exercices sont produits par le code (`src/game/exercises/`), pas écrits ici.
 
 - description : Racines carrées, puis diviseurs et nombres premiers, puis décomposition en facteurs premiers.
-- compétences : c4.ma.a.carres-racine · c4.ma.a.divisibilite-premiers · c3.ma.nombres.divisibilite
+- compétences : c4.ma.a.carres-racine · c4.ma.a.divisibilite-premiers · c4.ma.5e.nombres.divisibilite
 
 ## Les plans
 

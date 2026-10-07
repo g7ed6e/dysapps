@@ -128,6 +128,8 @@ Le plan C-1 à C-15 et l’ordre décidé sont dans le [cadrage du contenu](../c
 | C-12 à C-14 (l’île des Grandeurs) | À cadrer avec le directeur artistique, les deux consultants et l’artiste technique 3D |
 | C-15 (géométrie à figures) | Sans lot |
 
+Programmes 2025-2026 (français, maths, langues vivantes, 6e et 5e), première moitié faite sur la branche `lot-fr-maths-lv` (7 octobre 2026) : le référentiel suit les textes en vigueur, chaque compétence avec son texte et ses classes, et les missions de 6e et de 5e y sont rattachées ; sept missions de 5e et le bloc `compound-5e` attendent la seconde moitié (déplacements vers la 4e), qui attend les choix du mainteneur (où vont les conjonctions, le subjonctif et le partage selon un ratio ; le Carrefour des homophones).
+
 Encore ouverts : le découpage syllabique selon l’écrit ou selon l’oral (le référent dys tranche), le nom de Tunel et « Bien piochée ! » (le directeur artistique), « Entendre les choix » (technique).
 
 ### Combiner les blocs (GD-2)

@@ -93,7 +93,7 @@ export const ILES = [
         "title": "Mot troué",
         "description": "Glisse le bloc de lettres qui manque.",
         "programme": [
-          "c3.fr.langue.regularites-orthographiques"
+          "c3.fr.langue.mots-frequents"
         ]
       },
       {
@@ -111,7 +111,7 @@ export const ILES = [
         "title": "Coffre à mots",
         "description": "Les mots-outils à réviser, en dictée.",
         "programme": [
-          "c3.fr.langue.mots-invariables"
+          "c3.fr.langue.mots-frequents"
         ]
       },
       {
@@ -151,7 +151,7 @@ export const ILES = [
         "title": "Tri des graines",
         "description": "Phrases à trous : a/à, et/est, on/ont, son/sont, ce/se.",
         "programme": [
-          "c3.fr.langue.homophonie"
+          "c3.fr.langue.orthographe-grammaticale"
         ]
       },
       {
@@ -385,8 +385,8 @@ export const ILES = [
         "title": "Thermomètre",
         "description": "Compare deux relatifs, puis lis un point sur la droite.",
         "programme": [
-          "c4.ma.a.relatifs",
-          "c4.ma.d.reperage"
+          "c4.ma.5e.nombres.relatifs",
+          "c4.ma.5e.geometrie.reperage"
         ]
       },
       {
@@ -394,7 +394,7 @@ export const ILES = [
         "title": "Banquise",
         "description": "Additionne et soustrais des relatifs avec le bond sur la droite.",
         "programme": [
-          "c4.ma.a.calcul-relatifs"
+          "c4.ma.5e.nombres.calcul-relatifs"
         ]
       },
       {
@@ -410,7 +410,8 @@ export const ILES = [
         "title": "Icebergs des fractions",
         "description": "Compare, puis additionne, soustrais, multiplie et divise des fractions : la règle reste affichée.",
         "programme": [
-          "c4.ma.a.fractions",
+          "c4.ma.5e.nombres.fractions",
+          "c4.ma.5e.nombres.calcul-fractions",
           "c4.ma.a.calcul-fractions"
         ]
       }
@@ -435,9 +436,9 @@ export const ILES = [
         "title": "Étals",
         "description": "Complète un tableau de proportionnalité, puis partage une cargaison entre les navires selon un ratio.",
         "programme": [
-          "c4.ma.b.proportionnalite",
-          "c4.ma.b.ratio",
-          "c3.ma.nombres.proportionnalite"
+          "c4.ma.5e.proportionnalite.proportionnalite",
+          "c3.ma.proportionnalite.proportionnalite",
+          "c4.ma.b.ratio"
         ]
       },
       {
@@ -445,8 +446,8 @@ export const ILES = [
         "title": "Remises",
         "description": "Prends un pourcentage, puis applique une hausse ou une baisse.",
         "programme": [
-          "c4.ma.b.pourcentages-echelles",
-          "c3.ma.nombres.proportionnalite"
+          "c4.ma.5e.proportionnalite.pourcentages",
+          "c3.ma.nombres.pourcentages"
         ]
       },
       {
@@ -454,10 +455,8 @@ export const ILES = [
         "title": "Balances",
         "description": "Vitesses constantes et échelles de carte, puis la carte de l’archipel, en mots ou en fraction, puis une traversée : la distance, la vitesse ou la durée, les minutes changées en heures.",
         "programme": [
-          "c4.ma.c.grandeurs-composees",
-          "c4.ma.b.pourcentages-echelles",
-          "c3.ma.espace.echelle",
-          "c4.ma.c.conversions"
+          "c4.ma.5e.proportionnalite.proportionnalite",
+          "c3.ma.proportionnalite.echelle"
         ]
       }
     ]
@@ -481,8 +480,10 @@ export const ILES = [
         "title": "Panneaux",
         "description": "Ses / ces, ou / où, la / là / l’a, leur / leurs, quand, peu, c’est / s’est.",
         "programme": [
-          "c4.fr.langue.orthographe-lexicale",
-          "c3.fr.langue.homophonie"
+          "c4.fr.5e.vocabulaire.orthographe",
+          "c4.fr.5e.grammaire.classes-de-mots",
+          "c3.fr.langue.orthographe-grammaticale",
+          "c4.fr.langue.orthographe-lexicale"
         ]
       },
       {
@@ -490,8 +491,10 @@ export const ILES = [
         "title": "Aiguillage",
         "description": "Quel / qu’elle, sans / s’en, dans / d’en, ni / n’y, plus tôt / plutôt, mais / mes / met / m’est…",
         "programme": [
-          "c4.fr.langue.orthographe-lexicale",
-          "c3.fr.langue.homophonie"
+          "c4.fr.5e.vocabulaire.orthographe",
+          "c4.fr.5e.grammaire.classes-de-mots",
+          "c3.fr.langue.orthographe-grammaticale",
+          "c4.fr.langue.orthographe-lexicale"
         ]
       },
       {
@@ -499,8 +502,10 @@ export const ILES = [
         "title": "Bifurcation",
         "description": "Deux trous dans la phrase : choisis la bonne paire de mots.",
         "programme": [
-          "c4.fr.langue.orthographe-lexicale",
-          "c3.fr.langue.homophonie"
+          "c4.fr.5e.vocabulaire.orthographe",
+          "c4.fr.5e.grammaire.classes-de-mots",
+          "c3.fr.langue.orthographe-grammaticale",
+          "c4.fr.langue.orthographe-lexicale"
         ]
       }
     ]
@@ -524,8 +529,8 @@ export const ILES = [
         "title": "Rives du passé",
         "description": "Imparfait ou passé composé, puis le passé simple du récit.",
         "programme": [
-          "c3.fr.langue.temps-a-memoriser",
-          "c4.fr.langue.valeurs-des-temps"
+          "c4.fr.5e.grammaire.temps-modes",
+          "c3.fr.langue.temps-a-memoriser"
         ]
       },
       {
@@ -533,7 +538,7 @@ export const ILES = [
         "title": "Brume du futur",
         "description": "Futur ou conditionnel, puis les formes du futur.",
         "programme": [
-          "c4.fr.langue.temps-a-memoriser",
+          "c4.fr.5e.grammaire.formes-verbales",
           "c3.fr.langue.temps-a-memoriser"
         ]
       },
@@ -552,9 +557,8 @@ export const ILES = [
         "title": "Gué des temps",
         "description": "Le présent et l’impératif, puis le plus-que-parfait et le futur antérieur, puis ce que dit chaque temps.",
         "programme": [
-          "c4.fr.langue.valeurs-des-temps",
-          "c4.fr.langue.temps-a-memoriser",
-          "c4.fr.langue.morphologie-verbale",
+          "c4.fr.5e.grammaire.temps-modes",
+          "c4.fr.5e.grammaire.formes-verbales",
           "c3.fr.langue.temps-a-memoriser"
         ]
       }
@@ -598,7 +602,7 @@ export const ILES = [
         "programme": [
           "c4.ma.a.carres-racine",
           "c4.ma.a.divisibilite-premiers",
-          "c3.ma.nombres.divisibilite"
+          "c4.ma.5e.nombres.divisibilite"
         ]
       }
     ]
@@ -952,7 +956,8 @@ export const ILES = [
         "programme": [
           "c3.en.culture.vie-quotidienne",
           "c3.en.langue.phonologie",
-          "c3.en.langue.phonie-graphie"
+          "c3.en.langue.phonie-graphie",
+          "c3.en.langue.lexique"
         ]
       },
       {
@@ -1045,9 +1050,9 @@ export const ILES = [
         "title": "Shopping",
         "description": "Au magasin : quantités, prix, repas.",
         "programme": [
-          "c4.en.dialoguer.echanges-sociaux",
-          "c3.en.dialoguer.renseignements",
-          "c4.en.langue.lexique"
+          "c4.en.5e.interagir.echanges",
+          "c4.en.5e.langue.lexique",
+          "c3.en.dialoguer.renseignements"
         ]
       },
       {
@@ -1055,7 +1060,8 @@ export const ILES = [
         "title": "Routine",
         "description": "La journée (get up, have breakfast…) et always, often, never.",
         "programme": [
-          "c4.en.langue.temps-verbaux",
+          "c4.en.5e.langue.verbe",
+          "c4.en.5e.culture.quotidien",
           "c3.en.culture.vie-quotidienne"
         ]
       },
@@ -1064,7 +1070,7 @@ export const ILES = [
         "title": "Listening",
         "description": "Écouter une phrase et trouver son sens.",
         "programme": [
-          "c4.en.ecouter.intervention-breve"
+          "c4.en.5e.comprendre.oral-ecrit"
         ]
       },
       {
@@ -1072,9 +1078,9 @@ export const ILES = [
         "title": "Notices",
         "description": "Lire un panneau, une consigne, un menu ou un horaire, et y trouver ce qu’on cherche.",
         "programme": [
-          "c4.en.lire.consignes-panneaux",
-          "c4.en.lire.informations",
-          "c4.en.langue.lexique"
+          "c4.en.5e.comprendre.informations-pratiques",
+          "c4.en.5e.comprendre.oral-ecrit",
+          "c4.en.5e.langue.lexique"
         ]
       }
     ]
@@ -1098,7 +1104,7 @@ export const ILES = [
         "title": "-ing",
         "description": "Be + -ing (maintenant) ou présent simple (d’habitude).",
         "programme": [
-          "c4.en.langue.temps-verbaux"
+          "c4.en.5e.langue.verbe"
         ]
       },
       {
@@ -1106,7 +1112,7 @@ export const ILES = [
         "title": "Prétérit",
         "description": "Was, were, les verbes en -ed ; did pour la question et la négation.",
         "programme": [
-          "c4.en.langue.temps-verbaux"
+          "c4.en.5e.langue.verbe"
         ]
       },
       {
@@ -1114,8 +1120,7 @@ export const ILES = [
         "title": "Comparatifs",
         "description": "Taller than, the tallest, more… than, better, the best.",
         "programme": [
-          "c4.en.langue.groupe-nominal",
-          "c3.en.langue.groupe-nominal"
+          "c4.en.5e.langue.groupe-nominal"
         ]
       }
     ]
@@ -2322,9 +2327,9 @@ export const ILES = [
         "title": "Hola",
         "description": "Se présenter : une question en espagnol, la bonne réponse (ser et tener).",
         "programme": [
-          "c4.es.dialoguer.echanges-sociaux",
-          "c4.es.langue.temps-verbaux",
-          "c4.es.langue.lexique"
+          "c4.es.5e.interagir.echanges",
+          "c4.es.5e.langue.verbe",
+          "c4.es.5e.langue.lexique"
         ],
         "lv2": "es"
       },
@@ -2333,8 +2338,8 @@ export const ILES = [
         "title": "Números",
         "description": "Les nombres entendus : sesenta ou setenta, doce ou dos ?",
         "programme": [
-          "c4.es.ecouter.intervention-breve",
-          "c4.es.langue.lexique"
+          "c4.es.5e.comprendre.oral-ecrit",
+          "c4.es.5e.langue.lexique"
         ],
         "lv2": "es"
       },
@@ -2343,8 +2348,8 @@ export const ILES = [
         "title": "Familia y colegio",
         "description": "La famille, les consignes de la classe, un panneau ; tu ou tú ?",
         "programme": [
-          "c4.es.lire.consignes-panneaux",
-          "c4.es.langue.lexique"
+          "c4.es.5e.comprendre.oral-ecrit",
+          "c4.es.5e.langue.lexique"
         ],
         "lv2": "es"
       },
@@ -2353,7 +2358,7 @@ export const ILES = [
         "title": "El, la, los, las",
         "description": "L’article du nom, au singulier et au pluriel (el día).",
         "programme": [
-          "c4.es.langue.groupe-nominal"
+          "c4.es.5e.langue.groupe-nominal"
         ],
         "lv2": "es"
       },
@@ -2362,9 +2367,9 @@ export const ILES = [
         "title": "Hallo",
         "description": "Se présenter : une question en allemand, la bonne réponse (sein et haben).",
         "programme": [
-          "c4.de.dialoguer.echanges-sociaux",
-          "c4.de.langue.temps-verbaux",
-          "c4.de.langue.lexique"
+          "c4.de.5e.interagir.echanges",
+          "c4.de.5e.langue.verbe",
+          "c4.de.5e.langue.lexique"
         ],
         "lv2": "de"
       },
@@ -2373,8 +2378,8 @@ export const ILES = [
         "title": "Zahlen",
         "description": "Les nombres entendus : -zehn ou -zig, 24 ou 42 ?",
         "programme": [
-          "c4.de.ecouter.intervention-breve",
-          "c4.de.langue.lexique"
+          "c4.de.5e.comprendre.oral-ecrit",
+          "c4.de.5e.langue.lexique"
         ],
         "lv2": "de"
       },
@@ -2383,8 +2388,8 @@ export const ILES = [
         "title": "Familie und Schule",
         "description": "La famille, les consignes de la classe, un panneau ; schon ou schön ?",
         "programme": [
-          "c4.de.lire.consignes-panneaux",
-          "c4.de.langue.lexique"
+          "c4.de.5e.comprendre.oral-ecrit",
+          "c4.de.5e.langue.lexique"
         ],
         "lv2": "de"
       },
@@ -2393,7 +2398,7 @@ export const ILES = [
         "title": "Der, die, das",
         "description": "L’article du nom, toujours avec sa majuscule (das Mädchen).",
         "programme": [
-          "c4.de.langue.groupe-nominal"
+          "c4.de.5e.langue.groupe-nominal"
         ],
         "lv2": "de"
       }

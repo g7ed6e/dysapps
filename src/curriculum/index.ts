@@ -1,6 +1,6 @@
 // Le référentiel des programmes officiels : les compétences des cycles 3 et 4 (français, maths, anglais, histoire et
 // géographie ; SVT, physique-chimie et technologie ; allemand et espagnol en LV2, cycle 4 seulement) que les missions
-// citent (champ `programme` de biomes.ts et de apps/registry.ts).
+// citent (champ `programme` de biomes.ts et de apps/registry.ts), chacune avec son texte et ses classes.
 // Provenance : data.gouv.fr, Licence Ouverte ; les programmes plus récents, du Bulletin officiel et d'éduscol (sources.ts).
 // Ce module n'entre pas dans le bundle de l'application : les missions n'en importent que des types.
 import type { Classe } from '../game/biomes';
@@ -35,6 +35,19 @@ export type ProgrammeId = (typeof PROGRAMME)[number]['id'];
 
 /** Le cycle d'une classe : la 6e termine le cycle 3, la 5e, la 4e et la 3e sont le cycle 4. */
 export const CYCLE_OF: Record<Classe, Cycle> = { '6e': 3, '5e': 4, '4e': 4, '3e': 4 };
+
+/** Les classes de l'application, dans l'ordre de la scolarité. */
+export const CLASSES: readonly Classe[] = ['6e', '5e', '4e', '3e'];
+
+/**
+ * Ce qu'une île d'une classe peut citer : une compétence de sa classe (« classe »), ou d'une classe d'avant seulement,
+ * pour la consolider (« consolidation ») ; jamais une compétence d'une classe d'après (false).
+ */
+export function citable(entry: ProgrammeEntry, classe: Classe): 'classe' | 'consolidation' | false {
+  if (entry.classes.includes(classe)) return 'classe';
+  const rang = CLASSES.indexOf(classe);
+  return entry.classes.every((c) => CLASSES.indexOf(c) < rang) ? 'consolidation' : false;
+}
 
 const BY_ID = new Map<string, ProgrammeEntry>(PROGRAMME.map((e) => [e.id, e]));
 

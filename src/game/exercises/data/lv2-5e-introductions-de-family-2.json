@@ -6,7 +6,7 @@
   "lang": "de",
   "instruction": "Écoute le mot en allemand, puis choisis les lettres qui manquent. La règle est affichée.",
   "programme": [
-    "c4.de.ecrire.dictee-fiche"
+    "c4.de.5e.exprimer.dictee"
   ],
   "items": [
     {

@@ -17,7 +17,7 @@ créature : Lina
 ## Hola · `es-greetings`
 
 - description : Se présenter : une question en espagnol, la bonne réponse (ser et tener).
-- compétences : c4.es.dialoguer.echanges-sociaux · c4.es.langue.temps-verbaux · c4.es.langue.lexique
+- compétences : c4.es.5e.interagir.echanges · c4.es.5e.langue.verbe · c4.es.5e.langue.lexique
 - lv2 : es
 - langue : es
 - bravo : Bien répondu !
@@ -93,7 +93,7 @@ Pour tous les items :
 ### Niveau 2 · `lv2-5e-introductions-es-greetings-2`
 
 - consigne : Lis et écoute la phrase en espagnol, puis choisis la bonne réaction. La règle est affichée : lis-la avant de répondre.
-- programme : c4.es.dialoguer.reagir
+- programme : c4.es.5e.interagir.reagir
 
 Pour tous les items :
 - aide « Réagir » :
@@ -156,7 +156,7 @@ Pour tous les items :
 ## Números · `es-numbers`
 
 - description : Les nombres entendus : sesenta ou setenta, doce ou dos ?
-- compétences : c4.es.ecouter.intervention-breve · c4.es.langue.lexique
+- compétences : c4.es.5e.comprendre.oral-ecrit · c4.es.5e.langue.lexique
 - lv2 : es
 - langue : es
 - consigne : Écoute le nombre en espagnol et choisis le bon nombre. La règle est affichée.
@@ -294,7 +294,7 @@ Pour tous les items :
 ## Familia y colegio · `es-family`
 
 - description : La famille, les consignes de la classe, un panneau ; tu ou tú ?
-- compétences : c4.es.lire.consignes-panneaux · c4.es.langue.lexique
+- compétences : c4.es.5e.comprendre.oral-ecrit · c4.es.5e.langue.lexique
 - lv2 : es
 - langue : es
 - erreur : {explanation}
@@ -378,7 +378,7 @@ Pour tous les items :
 ### Niveau 2 · `lv2-5e-introductions-es-family-2`
 
 - consigne : Écoute le mot ou la phrase en espagnol, puis choisis ce qui manque. La règle est affichée.
-- programme : c4.es.ecrire.dictee-fiche
+- programme : c4.es.5e.exprimer.dictee
 - bravo : Bien écrit !
 
 Pour tous les items :
@@ -444,7 +444,7 @@ Pour tous les items :
 ## El, la, los, las · `es-articles`
 
 - description : L’article du nom, au singulier et au pluriel (el día).
-- compétences : c4.es.langue.groupe-nominal
+- compétences : c4.es.5e.langue.groupe-nominal
 - lv2 : es
 - langue : es
 - erreur : {explanation}
@@ -577,7 +577,7 @@ Pour tous les items :
 ## Hallo · `de-greetings`
 
 - description : Se présenter : une question en allemand, la bonne réponse (sein et haben).
-- compétences : c4.de.dialoguer.echanges-sociaux · c4.de.langue.temps-verbaux · c4.de.langue.lexique
+- compétences : c4.de.5e.interagir.echanges · c4.de.5e.langue.verbe · c4.de.5e.langue.lexique
 - lv2 : de
 - langue : de
 - bravo : Bien répondu !
@@ -652,7 +652,7 @@ Pour tous les items :
 ### Niveau 2 · `lv2-5e-introductions-de-greetings-2`
 
 - consigne : Lis et écoute la phrase en allemand, puis choisis la bonne réaction. La règle est affichée : lis-la avant de répondre.
-- programme : c4.de.dialoguer.reagir
+- programme : c4.de.5e.interagir.reagir
 
 Pour tous les items :
 - aide « Réagir » :
@@ -716,7 +716,7 @@ Pour tous les items :
 ## Zahlen · `de-numbers`
 
 - description : Les nombres entendus : -zehn ou -zig, 24 ou 42 ?
-- compétences : c4.de.ecouter.intervention-breve · c4.de.langue.lexique
+- compétences : c4.de.5e.comprendre.oral-ecrit · c4.de.5e.langue.lexique
 - lv2 : de
 - langue : de
 - consigne : Écoute le nombre en allemand et choisis le bon nombre. La règle est affichée.
@@ -855,7 +855,7 @@ Pour tous les items :
 ## Familie und Schule · `de-family`
 
 - description : La famille, les consignes de la classe, un panneau ; schon ou schön ?
-- compétences : c4.de.lire.consignes-panneaux · c4.de.langue.lexique
+- compétences : c4.de.5e.comprendre.oral-ecrit · c4.de.5e.langue.lexique
 - lv2 : de
 - langue : de
 - erreur : {explanation}
@@ -939,7 +939,7 @@ Pour tous les items :
 ### Niveau 2 · `lv2-5e-introductions-de-family-2`
 
 - consigne : Écoute le mot en allemand, puis choisis les lettres qui manquent. La règle est affichée.
-- programme : c4.de.ecrire.dictee-fiche
+- programme : c4.de.5e.exprimer.dictee
 - bravo : Bien écrit !
 
 Pour tous les items :
@@ -1004,7 +1004,7 @@ Pour tous les items :
 ## Der, die, das · `de-articles`
 
 - description : L’article du nom, toujours avec sa majuscule (das Mädchen).
-- compétences : c4.de.langue.groupe-nominal
+- compétences : c4.de.5e.langue.groupe-nominal
 - lv2 : de
 - langue : de
 - bravo : Bon article !

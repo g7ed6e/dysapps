@@ -1,9 +1,10 @@
-import { DISCIPLINES, DOMAINES, PROGRAMME, SOURCES, byId, domaineOf, entriesOf, sourceOf } from './index';
+import { CYCLE_OF, DISCIPLINES, DOMAINES, PROGRAMME, SOURCES, byId, domaineOf, entriesOf, sourceOf } from './index';
 import { EXCLUSIONS } from './exclusions';
 import { COFFRE_HORS_LISTE, MOTS_OUTILS_CE1, MOTS_OUTILS_CP, MOTS_OUTILS_SOURCE, motDictable, motsOutilsDictables } from './functionWords';
 
 const SHORTS = Object.values(DISCIPLINES).map((d) => d.short).join('|');
-const ID = new RegExp(`^c[34]\\.(${SHORTS})\\.[a-z0-9-]+\\.[a-z0-9-]+$`);
+// c<cycle>.<short>[.<classe>].<domaine>.<compétence> : la classe, pour les textes rangés par classe (types.ts).
+const ID = new RegExp(`^c[34]\\.(${SHORTS})(\\.[3-6]e)?\\.[a-z0-9-]+\\.[a-z0-9-]+$`);
 const straightApostrophe = (t: string) => t.includes("'");
 
 /** Les LV2 commencent en 5e : elles n'ont que le cycle 4. */
@@ -16,9 +17,12 @@ it('le référentiel a une taille raisonnable et chaque discipline est présente
   // tiennent : 284 en tout. Le plafond passe à 320 pour la SVT, la physique-chimie et la technologie du cycle 4
   // (34 compétences) : 318 en tout. Le plafond passe à 350 quand les sciences sont relues dans les textes en vigueur
   // (7 octobre 2026) : neuf compétences de plus en 6e (programme de 2023), cinq de plus en technologie du cycle 4
-  // (programme de 2024, trois thèmes et neuf compétences de fin de cycle).
+  // (programme de 2024, trois thèmes et neuf compétences de fin de cycle). Le plafond passe à 450 quand la 6e et la 5e
+  // suivent les textes en vigueur (7 octobre 2026) : le français, les maths et l'anglais de 6e réécrits sur les textes
+  // de 2025 (87 compétences au lieu de 73), et 82 compétences de 5e (français et maths de 2026, anglais, allemand et
+  // espagnol de 2025) à côté de celles de 2020, réservées à la 4e et à la 3e : 427 en tout.
   expect(PROGRAMME.length).toBeGreaterThanOrEqual(100);
-  expect(PROGRAMME.length).toBeLessThanOrEqual(350);
+  expect(PROGRAMME.length).toBeLessThanOrEqual(450);
   for (const discipline of Object.keys(DISCIPLINES) as (keyof typeof DISCIPLINES)[]) {
     const lv2 = (LV2 as readonly string[]).includes(discipline);
     if (lv2) expect(entriesOf(3, discipline), `${discipline} : pas de LV2 au cycle 3`).toHaveLength(0);
@@ -27,11 +31,13 @@ it('le référentiel a une taille raisonnable et chaque discipline est présente
   }
 });
 
-it('chaque LV2 reprend le programme de langues vivantes de l’anglais au cycle 4 : mêmes compétences, libellés et pages', () => {
-  const en = entriesOf(4, 'english');
+it('chaque LV2 reprend le programme de langues vivantes de 2020 de l’anglais en 4e et 3e : mêmes compétences, libellés et pages', () => {
+  // Le texte de 2020 est commun à toutes les langues ; ceux de 2025 (la 5e) sont propres à chaque langue.
+  const de2020 = (e: { source: string }) => e.source === 'c4';
+  const en = entriesOf(4, 'english').filter(de2020);
   for (const discipline of LV2) {
     const short = DISCIPLINES[discipline].short;
-    const lv = entriesOf(4, discipline);
+    const lv = entriesOf(4, discipline).filter(de2020);
     expect(lv.map((e) => e.id)).toEqual(en.map((e) => e.id.replace('c4.en.', `c4.${short}.`)));
     lv.forEach((e, i) => {
       expect([e.attendu, e.competence, e.page], e.id).toEqual([en[i].attendu, en[i].competence, en[i].page]);
@@ -45,9 +51,19 @@ it('chaque compétence a un identifiant unique, au format, cohérent avec son cy
   expect(new Set(ids).size).toBe(ids.length);
   for (const e of PROGRAMME) {
     expect(e.id).toMatch(ID);
-    const [cycle, short, domaine] = e.id.split('.');
+    const parts = e.id.split('.');
+    const [cycle, short] = parts;
+    const classe = parts.length === 5 ? parts[2] : undefined;
+    const domaine = parts.length === 5 ? `${classe}-${parts[3]}` : parts[2];
     expect(cycle, e.id).toBe(`c${e.cycle}`);
     expect(short, e.id).toBe(DISCIPLINES[e.discipline].short);
+    // Les classes : au moins une, toutes du cycle, toutes régies par le texte cité ; la classe de l'identifiant, seule.
+    expect(e.classes.length, e.id).toBeGreaterThanOrEqual(1);
+    for (const c of e.classes) {
+      expect(CYCLE_OF[c], `${e.id} : ${c} n’est pas du cycle ${e.cycle}`).toBe(e.cycle);
+      expect(SOURCES[e.source].classes, `${e.id} : ${c} n’est pas régie par ${e.source}`).toContain(c);
+    }
+    if (classe) expect(e.classes, e.id).toEqual([classe]);
     const d = domaineOf(e);
     expect(d, `${e.id} : domaine ${e.domaine} inconnu`).toBeTruthy();
     expect(d!.cycle, e.id).toBe(e.cycle);
@@ -57,20 +73,29 @@ it('chaque compétence a un identifiant unique, au format, cohérent avec son cy
   }
 });
 
+/**
+ * Les compétences dont la page précède celle de leur domaine : le texte de 2025 ne nomme plus en 6e les correspondances
+ * entre graphèmes et phonèmes, que la compétence cite dans ses principes (page 2) ; elle reste dans le domaine de la
+ * langue, où les îles la travaillent (cycle3.ts).
+ */
+const PAGE_AVANT_DOMAINE = new Set(['c3.fr.langue.phonemes-graphemes']);
+
 it('les libellés sont courts, sans apostrophe droite ni barre verticale, avec une page du PDF source', () => {
   for (const e of PROGRAMME) {
-    for (const text of [e.attendu, e.competence]) {
-      expect(text.length, e.id).toBeGreaterThan(10);
+    // L'attendu des textes de 2025 et 2026 est un titre du texte, parfois d'un mot (« Angles ») ; la compétence, jamais.
+    for (const [text, min] of [[e.attendu, 5], [e.competence, 11]] as const) {
+      expect(text.length, e.id).toBeGreaterThanOrEqual(min);
       expect(text.length, e.id).toBeLessThan(400);
       expect(straightApostrophe(text), `${e.id} : apostrophe droite`).toBe(false);
       expect(text.includes('|'), `${e.id} : barre verticale`).toBe(false);
     }
     const d = domaineOf(e)!;
     const source = sourceOf(d);
-    if (d.source) expect(d.source.startsWith(`c${d.cycle}`), `${d.id} : source d’un autre cycle`).toBe(true);
+    // La compétence cite le texte de son domaine (un texte de langues vivantes vaut pour les deux cycles du collège).
+    expect(e.source, `${e.id} : source différente de celle du domaine ${d.id}`).toBe(source.id);
     expect(e.page, e.id).toBeGreaterThanOrEqual(1);
     expect(e.page, e.id).toBeLessThanOrEqual(source.pages);
-    expect(e.page, `${e.id} : avant la page du domaine`).toBeGreaterThanOrEqual(d.page);
+    if (!PAGE_AVANT_DOMAINE.has(e.id)) expect(e.page, `${e.id} : avant la page du domaine`).toBeGreaterThanOrEqual(d.page);
   }
   const domaineIds = DOMAINES.map((d) => d.id);
   expect(new Set(domaineIds).size).toBe(domaineIds.length);
@@ -84,7 +109,10 @@ it('les sources disent d’où vient le texte : jeu de données, PDF, licence, t
     expect(s.pdfUrl).toMatch(/^https:\/\/(static\.data\.gouv\.fr|www\.education\.gouv\.fr|eduscol\.education\.gouv\.fr)\/.+\.pdf$/);
     expect(s.licence.name).toMatch(/Licence Ouverte|réutilisation libre/);
     expect(s.licence.url).toMatch(/^https:\/\//);
-    expect(s.legal).toMatch(/Bulletin officiel n° \d+ du .+ 20\d\d/);
+    // Le texte réglementaire tel qu'il est lu : numéro et date du Bulletin officiel, numéro et année quand la date n'a
+    // pas été lue, ou l'aveu que le PDF ne le dit pas (sources.ts) ; jamais une référence inventée.
+    expect(s.legal).toMatch(/Bulletin officiel n° \d+ (du .+|de) 20\d\d|Bulletin officiel : référence non lue/);
+    expect(s.classes.length, s.id).toBeGreaterThanOrEqual(1);
     expect(s.consulted).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     expect(s.pages).toBeGreaterThan(10);
   }

@@ -133,7 +133,7 @@ Pour tous les items :
 ## Numbers · `numbers`
 
 - description : Les nombres (-teen ou -ty ?), l’heure et la date.
-- compétences : c3.en.culture.vie-quotidienne · c3.en.langue.phonologie · c3.en.langue.phonie-graphie
+- compétences : c3.en.culture.vie-quotidienne · c3.en.langue.phonologie · c3.en.langue.phonie-graphie · c3.en.langue.lexique
 - langue : en
 - bravo : Bien compté !
 - erreur : {explanation}
