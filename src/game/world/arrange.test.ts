@@ -390,7 +390,10 @@ describe('Un lieu nouveau dans une région déjà aménagée (HG-2)', () => {
   it.each([
     { a: '4e', lieu: 'english-4e-grammar', sur: 'life-earth-sciences-4e-cells-evolution' },
     { a: '3e', lieu: 'history-3e-twentieth-century', sur: 'physics-chemistry-3e-motion-energy' },
-  ] as const)('au $a (SC-3) : un lieu posé sur la place de départ d’une île de sciences reste où l’élève l’a mis ; l’île nouvelle se pose ailleurs', ({ a, lieu, sur }) => {
+    // Le Refuge des carnets avance de (158, 928) à (158, 912) pour tous (map.ts, SC-3) : un lieu que l'élève a posé sur sa
+    // nouvelle place y reste, et le Refuge se pose ailleurs.
+    { a: '3e', lieu: 'history-3e-twentieth-century', sur: 'lv2-3e-travel' },
+  ] as const)('au $a (SC-3) : un lieu posé sur la place de départ d’une île de sciences (ou la nouvelle place du Refuge) reste où l’élève l’a mis ; l’île nouvelle se pose ailleurs', ({ a, lieu, sur }) => {
     const ici = startingSpot(sur);
     expect(fittingPlaces(a, { [lieu]: ici })).toBeNull();
     const w = settleNewPlaces({ ...partie(), layout: { [a]: { islands: { [lieu]: ici } } } });

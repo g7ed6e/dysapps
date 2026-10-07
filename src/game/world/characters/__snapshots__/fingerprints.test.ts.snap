@@ -74,8 +74,8 @@ exports[`Empreintes des personnages en facettes > les fusions, archipel par arch
     "gardiens": "2652 dca1b304",
   },
   "5e": {
-    "creatures": "2963 3a05f06d 7ccc22cd",
-    "gardiens": "2761 8ba00113",
+    "creatures": "2963 124e6e3c e96ea011",
+    "gardiens": "2761 b2174aa3",
   },
   "6e": {
     "creatures": "3635 29a10646 8b92a535",
@@ -114,7 +114,7 @@ exports[`Empreintes des personnages en facettes > les sentinelles, île par île
   "jardin": "258 1f00506c",
   "life-earth-sciences-3e-human-body": "213 2ba0210c",
   "life-earth-sciences-4e-cells-evolution": "213 61e2cc34",
-  "life-earth-sciences-5e-active-planet": "186 2b71a754",
+  "life-earth-sciences-5e-active-planet": "186 a7ffef40",
   "life-earth-sciences-6e-living-world": "227 fbd8aafe",
   "manoir": "198 eb770b39",
   "marais": "265 5cb2305e",

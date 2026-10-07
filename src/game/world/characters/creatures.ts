@@ -626,15 +626,16 @@ const HUMUS = fromLayers(
 );
 
 // Perle : un canard saunier (DA, SC-3), blanc, le bec et les pattes orangés ; son râteau à sel en bois debout à côté,
-// la traverse au sol, un manche de trois cubes, plus court que lui (relecture des captures).
+// la traverse au sol, un manche de trois cubes, plus court que lui (relecture des captures), une colonne vide entre lui
+// et le canard : collé à son flanc, on croyait le canard perché sur un poteau (consultant de Blocland).
 const PERLE = fromLayers(
   [
-    ['.....B', '.O.O.B', '.....B', '......', '......'],
-    ['......', 'WWWWWB', 'WWWWW.', 'WWWWW.', '......'],
-    ['......', 'WWWWWB', 'WWWWW.', 'WWWWW.', '......'],
-    ['......', 'WWWWWB', 'WWWWW.', 'WWWWW.', '.WWW..'],
-    ['.WOW..', '.WWW..', '.WWW..', '......', '......'],
-    ['.KWK..', '.WWW..', '.WWW..', '......', '......'],
+    ['......B', '.O.O..B', '......B', '.......', '.......'],
+    ['.......', 'WWWWW.B', 'WWWWW..', 'WWWWW..', '.......'],
+    ['.......', 'WWWWW.B', 'WWWWW..', 'WWWWW..', '.......'],
+    ['.......', 'WWWWW.B', 'WWWWW..', 'WWWWW..', '.WWW...'],
+    ['.WOW...', '.WWW...', '.WWW...', '.......', '.......'],
+    ['.KWK...', '.WWW...', '.WWW...', '.......', '.......'],
   ],
   { W: '#f2efe6', O: '#e0902a', B: '#8a6236', K: '#1f1a16' },
 );

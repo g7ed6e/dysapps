@@ -85,7 +85,8 @@ const YEUX_DE_COTE: BiomeId[] = ['history-3e-twentieth-century'];
 const BASSES: Partial<Record<BiomeId, [number, number]>> = {
   'lv2-5e-introductions': [5, 5.5],
   'lv2-4e-daily-life': [5.8, 6.3],
-  'life-earth-sciences-5e-active-planet': [3.9, 4.4],
+  // (Plus basse encore depuis la relecture des captures sc-3b : la carapace bien plus large que haute, DA.)
+  'life-earth-sciences-5e-active-planet': [3.2, 3.6],
 };
 /** Les sentinelles basses plus longues que hautes. */
 const LONGUES: BiomeId[] = ['lv2-5e-introductions'];
@@ -98,6 +99,9 @@ describe('L’allumage des sentinelles', () => {
     expect(allumage(SENTINELLE.pierre, 1)).toBe(0xdaa66a);
     expect(allumage(SENTINELLE.lichen, 1)).toBe(0xdaa66a);
     expect(allumage(LUEUR, 1)).toBe(0xffd866);
+    // Le rocher de la Tortue d'ocre reste gris, rallumé ou non (DA, SC-3).
+    expect(allumage(SENTINELLE.roche, 0)).toBe(SENTINELLE.roche);
+    expect(allumage(SENTINELLE.roche, 1)).toBe(SENTINELLE.roche);
     expect(allumage(SENTINELLE.pierre, -1)).toBe(0x8e8c84);
     expect(allumage(SENTINELLE.pierre, 2)).toBe(0xdaa66a);
   });
@@ -224,8 +228,8 @@ describe('Les Gardiens en sentinelles', () => {
       });
 
       it('de la pierre, du lichen, des orbites et la lueur, rien d’autre', () => {
-        // (Et le rameau de la Colombe d'albâtre, vert une fois rallumée, HG-3.)
-        const permises = new Set<number>([SENTINELLE.pierre, SENTINELLE.lichen, SENTINELLE.orbite, LUEUR, ...(b.id === 'history-3e-twentieth-century' ? [SENTINELLE.rameau] : [])]);
+        // (Et le rameau de la Colombe d'albâtre, vert une fois rallumée, HG-3 ; le rocher gris de la Tortue d'ocre, SC-3.)
+        const permises = new Set<number>([SENTINELLE.pierre, SENTINELLE.lichen, SENTINELLE.orbite, LUEUR, ...(b.id === 'history-3e-twentieth-century' ? [SENTINELLE.rameau] : []), ...(b.id === 'life-earth-sciences-5e-active-planet' ? [SENTINELLE.roche] : [])]);
         for (const p of f.palette) expect(permises.has(p.couleur), p.couleur.toString(16)).toBe(true);
       });
 
