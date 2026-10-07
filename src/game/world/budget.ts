@@ -81,10 +81,10 @@ export function renderBudgetOf(a: ArchipelagoId): { triangles: number; drawCalls
  * n'ont pas à être relevés, les appels sont ramenés aux valeurs mesurées avec une petite marge. Aux Premiers Rivages,
  * avec les sciences : 81 154 triangles et 167 appels tout construit (81 646 avec les commandes posées), 168 avec les
  * bulles, 97 732 triangles au pire de la région aménagée. Les appels ramenés à 120 par la piste 2 du budget (une seule
- * texture pour les blocs, les faces voisines fondues, « Ok démarre piste 2 », mainteneur, 7 octobre 2026) : aux Premiers
- * Rivages, 33 340 triangles et 100 appels tout construit, 102 au pire de la région aménagée. Les triangles restent à
- * 100 000 : pendant « Modifier le plan », le terrain se dessine face par face (97 860 triangles au pire aux Premiers
- * Rivages, 99 150 aux Anciens Ateliers). La mesure sur tablette reste à faire.
+ * texture pour les blocs, les faces voisines fondues ; « Ok démarre piste 2 », puis « 1 » pour 120, mainteneur, 7
+ * octobre 2026) : aux Premiers Rivages, 33 340 triangles et 100 appels tout construit, 102 au pire de la région
+ * aménagée. Les triangles restent à 100 000 : pendant « Modifier le plan », le terrain se dessine face par face
+ * (97 860 triangles au pire aux Premiers Rivages, 99 150 aux Anciens Ateliers). La mesure sur tablette reste à faire.
  */
 export const PLAFOND_DU_MONDE_EN_BLOCS = { triangles: 100_000, drawCalls: 120 } as const;
 
